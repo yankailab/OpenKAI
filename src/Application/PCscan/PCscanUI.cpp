@@ -13,6 +13,7 @@ namespace open3d
                 static const string kShaderLit = "defaultLit";
                 static const string kShaderUnlit = "defaultUnlit";
                 static const string kShaderUnlitLines = "unlitLine";
+                static const string kShaderDepth = "depth";
 
                 template <typename T>
                 shared_ptr<T> GiveOwnership(T *ptr)
@@ -20,20 +21,6 @@ namespace open3d
                     return shared_ptr<T>(ptr);
                 }
             }
-
-            struct UIState
-            {
-                bool m_bSceneCache = false;
-                Shader m_sceneShader = Shader::STANDARD;
-                bool m_bShowSettings = true;
-                bool m_bShowAxes = true;
-
-                Eigen::Vector4f bg_color = {0.0f, 0.0f, 0.0f, 0.0f};
-                double m_selectPointSize = 0.025;
-                int m_pointSize = 2;
-                int m_lineWidth = 5;
-                SceneWidget::Controls m_mouseMode = SceneWidget::Controls::FLY;
-            };
 
             struct PCscanUI::Impl
             {
@@ -67,7 +54,7 @@ namespace open3d
                 //UI handler
                 O3D_UI_Cb m_cbBtnScan;
                 O3D_UI_Cb m_cbBtnSavePC;
-                O3D_UI_Cb m_cbBtnAutoCam;
+                O3D_UI_Cb m_cbBtnCamReset;
 
                 void Construct(PCscanUI *w)
                 {
@@ -81,17 +68,16 @@ namespace open3d
 
                     m_cbBtnScan.init();
                     m_cbBtnSavePC.init();
-                    m_cbBtnAutoCam.init();
+                    m_cbBtnCamReset.init();
 
                     m_pWindow = w;
                     m_pScene = new SceneWidget();
                     m_sVertex = make_shared<O3DVisualizerSelections>(*m_pScene);
                     m_pScene->SetScene(make_shared<Open3DScene>(w->GetRenderer()));
-                    m_pScene->EnableSceneCaching(m_uiState.m_bSceneCache); // smoother UI with large geometry
                     m_pScene->SetOnPointsPicked(
                         [this](const map<
                                    string,
-                                   vector<pair<size_t, Eigen::Vector3d>>>
+                                   vector<pair<size_t, Vector3d>>>
                                    &indices,
                                int keymods) {
                             if (keymods & int(KeyModifier::SHIFT))
@@ -107,16 +93,22 @@ namespace open3d
                         });
                     w->AddChild(GiveOwnership(m_pScene));
 
+                    InitCtrlPanel();
+                    UpdateUIsettings();
+                    SetMouseCameraMode();
+                }
+
+                void UpdateUIsettings(void)
+                {
                     auto o3dscene = m_pScene->GetScene();
                     o3dscene->SetBackground(m_uiState.bg_color);
                     Eigen::Vector3f sun_dir(0, 0, 0);
                     o3dscene->SetLighting(Open3DScene::LightingProfile::NO_SHADOWS, sun_dir);
 
-                    InitCtrlPanel();
+                    m_pScene->EnableSceneCaching(m_uiState.m_bSceneCache); // smoother UI with large geometry
                     ShowAxes(true);
                     SetPointSize(m_uiState.m_pointSize); // sync selections_' point size
                     SetLineWidth(m_uiState.m_lineWidth);
-                    SetMouseCameraMode();
                 }
 
                 void InitCtrlPanel(void)
@@ -167,7 +159,8 @@ namespace open3d
 
                     auto btnCamReset = new Button("     Reset    ");
                     btnCamReset->SetOnClicked([this]() {
-                        m_cbBtnAutoCam.call();
+                        m_cbBtnCamReset.call();
+                        m_pScene->ForceRedraw();
                         SetMouseCameraMode();
                     });
                     h->AddChild(GiveOwnership(btnCamReset));
@@ -291,9 +284,9 @@ namespace open3d
                     m_cbBtnSavePC.add(pCb, pPCV);
                 }
 
-                void SetCbBtnAutoCam(OnBtnClickedCb pCb, void *pPCV)
+                void SetCbBtnCamReset(OnBtnClickedCb pCb, void *pPCV)
                 {
-                    m_cbBtnAutoCam.add(pCb, pPCV);
+                    m_cbBtnCamReset.add(pCb, pPCV);
                 }
 
                 void SetProgressBar(float v)
@@ -400,12 +393,7 @@ namespace open3d
                     }
 
                     mat.base_color = {1.0f, 1.0f, 1.0f, 1.0f};
-                    mat.shader = kShaderUnlit;
-                    // if (has_normals)
-                    // {
-                    //     mat.shader = kShaderLit;
-                    // }
-
+                    mat.shader = kShaderDepth;
                     mat.point_size = ConvertToScaledPixels(m_uiState.m_pointSize);
 
                     m_vObject.push_back({name, nullptr, tgeom, mat, bVisible});
@@ -548,7 +536,7 @@ namespace open3d
                     for (auto &o : m_vObject)
                     {
                         o.m_material.point_size = float(px);
-                        OverrideMaterial(o.m_name, o.m_material, m_uiState.m_sceneShader);
+                        UpdateMaterial(o.m_name, o.m_material);
                     }
 
                     if (m_sVertex->GetNumberOfSets())
@@ -566,35 +554,15 @@ namespace open3d
                     for (auto &o : m_vObject)
                     {
                         o.m_material.line_width = float(px);
-                        OverrideMaterial(o.m_name, o.m_material, m_uiState.m_sceneShader);
+                        UpdateMaterial(o.m_name, o.m_material);
                     }
                     m_pScene->ForceRedraw();
                 }
 
-                void SetShader(Shader shader)
+                void UpdateMaterial(const string &name,
+                                    const Material &mat)
                 {
-                    m_uiState.m_sceneShader = shader;
-                    for (auto &o : m_vObject)
-                    {
-                        OverrideMaterial(o.m_name, o.m_material, shader);
-                    }
-                    m_pScene->ForceRedraw();
-                }
-
-                void OverrideMaterial(const string &name,
-                                      const Material &original_material,
-                                      Shader shader)
-                {
-                    bool is_lines = (original_material.shader == "unlitLine" ||
-                                     original_material.shader == "lines");
-                    auto scene = m_pScene->GetScene();
-                    // Lines are already unlit, so keep using the original shader when in
-                    // unlit mode so that we can keep the wide lines.
-                    if (shader == Shader::STANDARD ||
-                        (shader == Shader::UNLIT && is_lines))
-                    {
-                        scene->GetScene()->OverrideMaterial(name, original_material);
-                    }
+                    m_pScene->GetScene()->GetScene()->OverrideMaterial(name, mat);
                 }
 
                 float ConvertToScaledPixels(int px)
@@ -755,10 +723,10 @@ namespace open3d
                     Vector3f vPaf = Vector3f(vPa.x(), vPa.y(), vPa.z());
                     shared_ptr<Label3D> spA = m_pScene->AddLabel(vPaf, strS.c_str());
                     spA->SetPosition(vPaf);
-                    spA->SetTextColor(Color(1, 1, 0));
+                    spA->SetTextColor(Color(1, 1, 1));
                     m_vspDistLabel.push_back(spA);
 
-                    strS = "Area"+ i2str(iS+1) +" = " + f2str(S, 3) + " m^2";
+                    strS = "Area" + i2str(iS + 1) + " = " + f2str(S, 3) + " m^2";
                     SetLabelArea(strS);
                     m_pWindow->PostRedraw();
                 }
@@ -986,9 +954,24 @@ namespace open3d
                 impl_->SetCbBtnSavePC(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbBtnAutoCam(OnBtnClickedCb pCb, void *pPCV)
+            void PCscanUI::SetCbBtnCamReset(OnBtnClickedCb pCb, void *pPCV)
             {
-                impl_->SetCbBtnAutoCam(pCb, pPCV);
+                impl_->SetCbBtnCamReset(pCb, pPCV);
+            }
+
+            UIState *PCscanUI::getUIState(void)
+            {
+                return &impl_->m_uiState;
+            }
+
+            void PCscanUI::UpdateUIsettings(void)
+            {
+                impl_->UpdateUIsettings();
+            }
+
+            void PCscanUI::SetMouseMode(void)
+            {
+                impl_->SetMouseCameraMode();
             }
 
         } // namespace visualizer

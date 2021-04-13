@@ -50,7 +50,7 @@ namespace kai
 
 		static void OnBtnScan(void *pPCV, void* pD);
 		static void OnBtnSavePC(void *pPCV, void* pD);
-		static void OnBtnAutoCam(void *pPCV, void* pD);
+		static void OnBtnCamReset(void *pPCV, void* pD);
 		virtual void updateUI(void);
 		static void *getUpdateUI(void *This)
 		{
@@ -64,6 +64,9 @@ namespace kai
 		string m_modelName;
 		_Thread *m_pTk;
 		_SlamBase *m_pSB;
+
+		bool m_bSceneCache;
+		float m_selectPointSize;
 
 		bool m_bScanning;
 	};

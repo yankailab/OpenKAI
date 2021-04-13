@@ -81,6 +81,8 @@ namespace kai
         virtual void getFrame(void* p);
         virtual void getLattice(void* p);
 
+        virtual bool bRange(const Vector3d& vP);
+
     protected:
         PC_TYPE m_type;
         int m_nPread;
@@ -95,6 +97,9 @@ namespace kai
         vDouble3 m_vRoffset; //rotation
     	Matrix4d m_mToffset;
         Eigen::Affine3d m_Aoffset;
+
+        //filter
+        vDouble2 m_vRange;
 
         //dynamic transform
         vDouble3 m_vT; //translation

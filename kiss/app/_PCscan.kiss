@@ -46,6 +46,8 @@
 	"camAspect":1.8,
 	"vCamNF":[0,100],
 	"camFovType":0,
+	"bSceneCache":0,
+	"selectPointSize":0.025,
 }
 
 {
@@ -119,6 +121,7 @@
 	"vAxisIdx":[1, 0, 2],
 	"vAxisK":[-1, 1, 1],
 	"unitK":0.001,
+	"vRange":[0.6, 300],
 }
 
 {

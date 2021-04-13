@@ -25,6 +25,7 @@ namespace kai
         m_vAxisIdx.init(0,1,2);
         m_vAxisK.init(1.0);
         m_unitK = 1.0;
+        m_vRange.init(0.0, 1000.0);
         m_vColOvrr.init(-1.0);
 
         m_pInCtx.init();
@@ -43,6 +44,10 @@ namespace kai
         pK->v("vAxisK", &m_vAxisK);
         pK->v("unitK", &m_unitK);
         pK->v("vColOvrr", &m_vColOvrr);
+
+        pK->v("vRange", &m_vRange);
+        m_vRange.x *= m_vRange.x;
+        m_vRange.y *= m_vRange.y;
 
         //origin offset
         pK->v("vToffset", &m_vToffset);
@@ -136,6 +141,15 @@ namespace kai
 
     void _PCbase::getLattice(void *p)
     {
+    }
+
+    bool _PCbase::bRange(const Vector3d& vP)
+    {
+        double ds = vP[0]*vP[0] + vP[1]*vP[1] + vP[2]*vP[2];
+        IF_F(ds < m_vRange.x);
+        IF_F(ds > m_vRange.y);
+
+        return true;
     }
 
     void _PCbase::draw(void)

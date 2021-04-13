@@ -58,10 +58,11 @@ namespace kai
         m_bAccept = b;
     }
 
-    void _PCstream::add(Vector3d &vP, Vector3d &vC, uint64_t tStamp)
+    void _PCstream::add(const Vector3d &vP, const Vector3d &vC, uint64_t tStamp)
     {
         NULL_(m_pP);
         IF_(!m_bAccept);
+        IF_(!bRange(vP));
 
         Vector3d uP = Vector3d(
                             vP[m_vAxisIdx.x] * m_vAxisK.x,

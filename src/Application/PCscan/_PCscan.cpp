@@ -18,6 +18,9 @@ namespace kai
 		m_pSB = NULL;
 		m_bScanning = false;
 		m_modelName = "PCMODEL";
+
+		m_bSceneCache = false;
+		m_selectPointSize = 0.025;
 	}
 
 	_PCscan::~_PCscan()
@@ -29,6 +32,9 @@ namespace kai
 	{
 		IF_F(!this->_PCviewer::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+
+		pK->v("bSceneCache", &m_bSceneCache);
+		pK->v("selectPointSize", &m_selectPointSize);
 
 		string n = "";
 		pK->v("_SlamBase", &n);
@@ -88,9 +94,6 @@ namespace kai
 								   t::geometry::PointCloud::FromLegacyPointCloud(
 									   *m_sPC.get(),
 									   core::Dtype::Float32)));
-
-		updateCamProj();
-		updateCamPose();
 
 		while (m_pT->bRun())
 		{
@@ -210,6 +213,7 @@ namespace kai
 		}
 	}
 
+
 	void _PCscan::updateUI(void)
 	{
 		auto &app = gui::Application::GetInstance();
@@ -220,7 +224,14 @@ namespace kai
 
 		m_spWin->SetCbBtnScan(OnBtnScan, (void *)this);
 		m_spWin->SetCbBtnSavePC(OnBtnSavePC, (void *)this);
-		m_spWin->SetCbBtnAutoCam(OnBtnAutoCam, (void *)this);
+		m_spWin->SetCbBtnCamReset(OnBtnCamReset, (void *)this);
+
+		visualizer::UIState* pU = m_spWin->getUIState();
+		pU->m_bSceneCache = m_bSceneCache;
+		pU->m_selectPointSize = m_selectPointSize;
+		m_spWin->UpdateUIsettings();
+		updateCamProj();
+		updateCamPose();
 
 		m_pT->wakeUp();
 		app.Run();
@@ -256,7 +267,7 @@ namespace kai
 		io::WritePointCloudToPLY((const char *)pD, pc, par);
 	}
 
-	void _PCscan::OnBtnAutoCam(void *pPCV, void *pD)
+	void _PCscan::OnBtnCamReset(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		_PCscan *pV = (_PCscan *)pPCV;

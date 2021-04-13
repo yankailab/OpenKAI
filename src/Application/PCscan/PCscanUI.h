@@ -69,15 +69,6 @@ namespace open3d
 
 		namespace visualizer
 		{
-
-			enum class Shader
-			{
-				STANDARD,
-				UNLIT,
-				NORMALS,
-				DEPTH
-			};
-
 			struct DrawObject
 			{
 				string m_name;
@@ -86,6 +77,19 @@ namespace open3d
 				rendering::Material m_material;
 				bool m_bVisible = true;
 			};
+
+			struct UIState
+            {
+                bool m_bSceneCache = false;
+                bool m_bShowSettings = true;
+                bool m_bShowAxes = true;
+
+                Eigen::Vector4f bg_color = {0.0f, 0.0f, 0.0f, 0.0f};
+                double m_selectPointSize = 0.025;
+                int m_pointSize = 2;
+                int m_lineWidth = 5;
+                SceneWidget::Controls m_mouseMode = SceneWidget::Controls::FLY;
+            };
 
 			class PCscanUI : public gui::Window
 			{
@@ -108,6 +112,8 @@ namespace open3d
 					const Eigen::Vector3f &up);
 				void CamAutoBound(const Eigen::Vector3f &CoR);
 
+				UIState* getUIState(void);
+				void UpdateUIsettings(void);
 				void ShowSettings(bool show);
 				void ShowAxes(bool show);
 				void SetPointSize(int point_size);
@@ -139,8 +145,10 @@ namespace open3d
 
 				void SetCbBtnScan(OnBtnClickedCb pCb, void *pPCV);
 				void SetCbBtnSavePC(OnBtnClickedCb pCb, void *pPCV);
-				void SetCbBtnAutoCam(OnBtnClickedCb pCb, void *pPCV);
+				void SetCbBtnCamReset(OnBtnClickedCb pCb, void *pPCV);
 				void SetProgressBar(float v);
+
+				void SetMouseMode(void);
 
 			protected:
 				void Layout(const gui::Theme &theme);
