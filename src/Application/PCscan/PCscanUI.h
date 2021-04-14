@@ -80,15 +80,18 @@ namespace open3d
 
 			struct UIState
 			{
+				SceneWidget::Controls m_mouseMode = SceneWidget::Controls::FLY;
 				bool m_bSceneCache = false;
-				bool m_bShowSettings = true;
+				bool m_bShowPanel = true;
 				bool m_bShowAxes = true;
 
-				Eigen::Vector4f bg_color = {0.0f, 0.0f, 0.0f, 0.0f};
-				double m_selectPointSize = 0.025;
+				int m_panelWidth = 15;
 				int m_pointSize = 2;
+				double m_selectPointSize = 0.025;
 				int m_lineWidth = 5;
-				SceneWidget::Controls m_mouseMode = SceneWidget::Controls::FLY;
+				Vector4f m_vBgCol = {0.0f, 0.0f, 0.0f, 0.0f};
+				Vector3f m_vSunDir = {0.0f, 0.0f, 0.0f};
+                Vector3d m_vAreaLineCol = Vector3d(1.0, 0.0, 1.0);
 			};
 
 			class PCscanUI : public gui::Window
@@ -119,33 +122,32 @@ namespace open3d
 					double near,
 					double far,
 					uint8_t fov_type);
-				void CamSetPose(
-					const Eigen::Vector3f &center,
-					const Eigen::Vector3f &eye,
-					const Eigen::Vector3f &up);
-				void CamAutoBound(const Eigen::Vector3f &CoR);
 
-				void UpdateUIsettings(void);
-				void SetBackground(const Vector4f &bg_color,
-								   shared_ptr<geometry::Image> bg_image = nullptr);
-				void ShowSettings(bool show);
-				void ShowAxes(bool show);
+				void CamSetPose(
+					const Vector3f &center,
+					const Vector3f &eye,
+					const Vector3f &up);
+
+				void CamAutoBound(const geometry::AxisAlignedBoundingBox& aabb,
+                                  const Vector3f &CoR);
+
+				UIState *getUIState(void);
+				void UpdateUIstate(void);
             	void SetPointSize(int px);
     	        void SetLineWidth(int px);
 
-	            void SetMouseCameraMode(void);
-	            void SetMousePickingMode(void);
-				void SetCbBtnScan(OnBtnClickedCb pCb, void *pPCV);
-				void SetCbBtnSavePC(OnBtnClickedCb pCb, void *pPCV);
-				void SetCbBtnCamReset(OnBtnClickedCb pCb, void *pPCV);
-				void SetProgressBar(float v);
-	            void SetLabelArea(const string &s);
-
 				DrawObject GetGeometry(const string &name) const;
 				vector<O3DVisualizerSelections::SelectionSet> GetSelectionSets() const;
-				UIState *getUIState(void);
 				rendering::Open3DScene *GetScene() const;
 				void ExportCurrentImage(const string &path);
+
+	            void SetMouseCameraMode(void);
+	            void SetMousePickingMode(void);
+				void SetProgressBar(float v);
+	            void SetLabelArea(const string &s);
+				void SetCbBtnScan(OnBtnClickedCb pCb, void *pPCV);
+				void SetCbBtnSavePC(OnBtnClickedCb pCb, void *pPCV);
+				void SetCbBtnCamSet(OnBtnClickedCb pCb, void *pPCV);
 
 			protected:
 				void Layout(const gui::Theme &theme);
@@ -173,13 +175,12 @@ namespace open3d
 				vector<DrawObject> m_vObject;
 				shared_ptr<O3DVisualizerSelections> m_sVertex;
 
-				UIState m_uiState;
 				Window *m_pWindow = nullptr;
 				SceneWidget *m_pScene = nullptr;
-				bool m_bScanning;
+				UIState m_uiState;
 				string m_modelName;
 				string m_areaName;
-				Vector3d m_areaLineCol;
+				bool m_bScanning;
 				vector<shared_ptr<Label3D>> m_vspDistLabel;
 
 				//UI components
@@ -196,7 +197,7 @@ namespace open3d
 				//UI handler
 				O3D_UI_Cb m_cbBtnScan;
 				O3D_UI_Cb m_cbBtnSavePC;
-				O3D_UI_Cb m_cbBtnCamReset;
+				O3D_UI_Cb m_cbBtnCamSet;
 			};
 
 		} // namespace visualizer

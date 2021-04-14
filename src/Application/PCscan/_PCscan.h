@@ -30,8 +30,8 @@ namespace kai
 		virtual bool stopScan(void);
 
 	protected:
-		virtual void updateCamProj(void);
-		virtual void updateCamPose(void);
+		virtual void addUIpc(const PointCloud& pc);
+		virtual void updateUIpc(const PointCloud& pc);
 		virtual void updateScan(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
@@ -48,15 +48,19 @@ namespace kai
 			return NULL;
 		}
 
-		static void OnBtnScan(void *pPCV, void* pD);
-		static void OnBtnSavePC(void *pPCV, void* pD);
-		static void OnBtnCamReset(void *pPCV, void* pD);
+		virtual void updateCamProj(void);
+		virtual void updateCamPose(void);
+		virtual void camBound(const AxisAlignedBoundingBox& aabb);
 		virtual void updateUI(void);
 		static void *getUpdateUI(void *This)
 		{
 			((_PCscan *)This)->updateUI();
 			return NULL;
 		}
+
+		static void OnBtnScan(void *pPCV, void* pD);
+		static void OnBtnSavePC(void *pPCV, void* pD);
+		static void OnBtnCamSet(void *pPCV, void* pD);
 
 	protected:
 		_PCstream* m_pPS;
@@ -68,7 +72,9 @@ namespace kai
 		bool m_bSceneCache;
 		float m_selectPointSize;
 
+		pthread_mutex_t m_mutexScan;
 		bool m_bScanning;
+		AxisAlignedBoundingBox m_aabb;
 	};
 
 }

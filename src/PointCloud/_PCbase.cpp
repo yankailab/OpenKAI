@@ -40,10 +40,11 @@ namespace kai
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
+        pK->v("vColOvrr", &m_vColOvrr);
         pK->v("vAxisIdx", &m_vAxisIdx);
         pK->v("vAxisK", &m_vAxisK);
         pK->v("unitK", &m_unitK);
-        pK->v("vColOvrr", &m_vColOvrr);
+        m_vAxisK *= m_unitK;
 
         pK->v("vRange", &m_vRange);
         m_vRange.x *= m_vRange.x;

@@ -124,13 +124,9 @@ namespace kai
 		updatePC();
 	}
 
-	void _PCviewer::makeInitPC(PointCloud* pPC, int n, double l, int iAxis, Vector3d vCol)
+	void _PCviewer::addDummyPC(PointCloud* pPC, int n, double l, int iAxis, Vector3d vCol)
 	{
 		NULL_(pPC);
-
-		pPC->points_.clear();
-		pPC->colors_.clear();
-		pPC->normals_.clear();
 
 		double pFrom = -l*0.5;
 		double d = l / n;

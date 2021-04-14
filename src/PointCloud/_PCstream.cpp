@@ -62,14 +62,13 @@ namespace kai
     {
         NULL_(m_pP);
         IF_(!m_bAccept);
-        IF_(!bRange(vP));
 
         Vector3d uP = Vector3d(
                             vP[m_vAxisIdx.x] * m_vAxisK.x,
                             vP[m_vAxisIdx.y] * m_vAxisK.y,
                             vP[m_vAxisIdx.z] * m_vAxisK.z
                             );
-        uP *= m_unitK;
+        IF_(!bRange(uP));
 
         PC_POINT *pP = &m_pP[m_iP];
         pP->m_vP = m_A * uP;

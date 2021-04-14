@@ -44,7 +44,7 @@
 	"vCamCoR":[0,0,0],
 	"camFov":70,
 	"camAspect":1.8,
-	"vCamNF":[0,100],
+	"vCamNF":[0, 200],
 	"camFovType":0,
 	"bSceneCache":0,
 	"selectPointSize":0.025,

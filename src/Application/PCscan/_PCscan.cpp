@@ -21,10 +21,13 @@ namespace kai
 
 		m_bSceneCache = false;
 		m_selectPointSize = 0.025;
+
+        pthread_mutex_init(&m_mutexScan, NULL);
 	}
 
 	_PCscan::~_PCscan()
 	{
+        pthread_mutex_destroy(&m_mutexScan);
 		DEL(m_pTk);
 	}
 
@@ -82,19 +85,6 @@ namespace kai
 	{
 		m_pT->sleepT(0);
 
-		makeInitPC(
-			m_sPC.next(),
-			m_pPS->nP(),
-			10,
-			0,
-			Vector3d(1, 0, 0));
-		updatePC();
-		m_spWin->AddPointCloud(m_modelName,
-							   make_shared<t::geometry::PointCloud>(
-								   t::geometry::PointCloud::FromLegacyPointCloud(
-									   *m_sPC.get(),
-									   core::Dtype::Float32)));
-
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPSfrom();
@@ -110,83 +100,89 @@ namespace kai
 		IF_(check() < 0);
 		IF_(!m_bScanning);
 
+        pthread_mutex_lock(&m_mutexScan);
+
 		readAllPC();
 		PointCloud *pPC = m_sPC.get();
+		pPC->normals_.clear();
 		int n = pPC->points_.size();
-		IF_(n <= 0);
 		int nP = m_pPS->nP();
 
+		m_aabb = pPC->GetAxisAlignedBoundingBox();
+
+		PointCloud pc = *pPC;
 		if (n < nP)
 		{
-			PointCloud pc;
-			makeInitPC(
-				&pc,
-				nP - n,
-				10,
-				0,
-				Vector3d(1, 0, 0));
-			*pPC += pc;
+			addDummyPC(&pc, nP - n, 10, 0, Vector3d(1, 0, 0));
 		}
 		else if (n > nP)
 		{
 			int d = n - nP;
-			pPC->points_.erase(pPC->points_.end()-d, pPC->points_.end());
-			pPC->colors_.erase(pPC->colors_.end()-d, pPC->colors_.end());
+			pc.points_.erase(pc.points_.end()-d, pc.points_.end());
+			pc.colors_.erase(pc.colors_.end()-d, pc.colors_.end());
 		}
 
-		pPC->normals_.clear();
+		updateUIpc(pc);
+		m_spWin->SetProgressBar((float)m_pPS->iP() / (float)m_pPS->nP());
 
-		m_spWin->UpdatePointCloud(m_modelName,
-								  make_shared<t::geometry::PointCloud>(
-									  t::geometry::PointCloud::FromLegacyPointCloud(
-										  *pPC,
-										  core::Dtype::Float32)));
-
-		float m = 0.0;
-		if (m_pPS)
-			m = (float)m_pPS->iP() / (float)m_pPS->nP();
-		m_spWin->SetProgressBar(m);
-	}
-
-	void _PCscan::updateCamProj(void)
-	{
-		IF_(check()<0);
-		IF_(!m_spWin);
-
-		m_spWin->CamSetProj(m_camProj.m_fov,
-							m_camProj.m_aspect,
-							m_camProj.m_vNF.x,
-							m_camProj.m_vNF.y,
-							m_camProj.m_fovType);
-	}
-
-	void _PCscan::updateCamPose(void)
-	{
-		IF_(check()<0);
-		IF_(!m_spWin);
-
-		Vector3f vCenter(m_vCamCenter.x, m_vCamCenter.y, m_vCamCenter.z);
-		Vector3f vEye(m_vCamEye.x, m_vCamEye.y, m_vCamEye.z);
-		Vector3f vUp(m_vCamUp.x, m_vCamUp.y, m_vCamUp.z);
-		m_spWin->CamSetPose(vCenter, vEye, vUp);
+        pthread_mutex_unlock(&m_mutexScan);
 	}
 
 	bool _PCscan::startScan(void)
 	{
 		IF_F(check() < 0);
-		m_bScanning = false;
+
+        pthread_mutex_lock(&m_mutexScan);
 
 		m_pSB->reset();
 		sleep(1);
 		m_pPS->clear();
+
+		m_spWin->RemoveGeometry(m_modelName);
+
+		addDummyPC(m_sPC.next(), m_pPS->nP(), 10, 0, Vector3d(1, 0, 0));
+		updatePC();
+
+		addUIpc(*m_sPC.get());
+		m_aabb = m_sPC.get()->GetAxisAlignedBoundingBox();	
+
 		m_bScanning = true;
+
+        pthread_mutex_unlock(&m_mutexScan);
 	}
 
 	bool _PCscan::stopScan(void)
 	{
+        pthread_mutex_lock(&m_mutexScan);
+
+		m_spWin->RemoveGeometry(m_modelName);
+
+		addUIpc(*m_sPC.get());
+		m_aabb = m_sPC.get()->GetAxisAlignedBoundingBox();
+
 		m_bScanning = false;
+
+        pthread_mutex_unlock(&m_mutexScan);
 	}
 
+	void _PCscan::addUIpc(const PointCloud& pc)
+	{
+		m_spWin->AddPointCloud(m_modelName,
+							   make_shared<t::geometry::PointCloud>(
+								   t::geometry::PointCloud::FromLegacyPointCloud(
+									   pc,
+									   core::Dtype::Float32)));		
+	}
+
+	void _PCscan::updateUIpc(const PointCloud& pc)
+	{
+		m_spWin->UpdatePointCloud(m_modelName,
+								  make_shared<t::geometry::PointCloud>(
+									  t::geometry::PointCloud::FromLegacyPointCloud(
+										  pc,
+										  core::Dtype::Float32)));		
+	}
+	
 
 	void _PCscan::updateKinematics(void)
 	{
@@ -224,18 +220,50 @@ namespace kai
 
 		m_spWin->SetCbBtnScan(OnBtnScan, (void *)this);
 		m_spWin->SetCbBtnSavePC(OnBtnSavePC, (void *)this);
-		m_spWin->SetCbBtnCamReset(OnBtnCamReset, (void *)this);
+		m_spWin->SetCbBtnCamSet(OnBtnCamSet, (void *)this);
 
 		visualizer::UIState* pU = m_spWin->getUIState();
 		pU->m_bSceneCache = m_bSceneCache;
 		pU->m_selectPointSize = m_selectPointSize;
-		m_spWin->UpdateUIsettings();
+		m_spWin->UpdateUIstate();
 		updateCamProj();
 		updateCamPose();
 
 		m_pT->wakeUp();
 		app.Run();
 		exit(0);
+	}
+
+	void _PCscan::updateCamProj(void)
+	{
+		IF_(check()<0);
+		IF_(!m_spWin);
+
+		m_spWin->CamSetProj(m_camProj.m_fov,
+							m_camProj.m_aspect,
+							m_camProj.m_vNF.x,
+							m_camProj.m_vNF.y,
+							m_camProj.m_fovType);
+	}
+
+	void _PCscan::updateCamPose(void)
+	{
+		IF_(check()<0);
+		IF_(!m_spWin);
+
+		Vector3f vCenter(m_vCamCenter.x, m_vCamCenter.y, m_vCamCenter.z);
+		Vector3f vEye(m_vCamEye.x, m_vCamEye.y, m_vCamEye.z);
+		Vector3f vUp(m_vCamUp.x, m_vCamUp.y, m_vCamUp.z);
+		m_spWin->CamSetPose(vCenter, vEye, vUp);
+	}
+
+	void _PCscan::camBound(const AxisAlignedBoundingBox& aabb)
+	{
+		IF_(check()<0);
+		IF_(!m_spWin);
+
+		Vector3f cor(m_vCamCoR.x, m_vCamCoR.y, m_vCamCoR.z);
+		m_spWin->CamAutoBound(aabb, cor);
 	}
 
 	void _PCscan::OnBtnScan(void *pPCV, void *pD)
@@ -267,12 +295,20 @@ namespace kai
 		io::WritePointCloudToPLY((const char *)pD, pc, par);
 	}
 
-	void _PCscan::OnBtnCamReset(void *pPCV, void *pD)
+	void _PCscan::OnBtnCamSet(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
+		NULL_(pD);
 		_PCscan *pV = (_PCscan *)pPCV;
+		bool bAuto = *(bool*)pD;
 
-		pV->updateCamPose();
+		if(!bAuto)
+		{
+			pV->updateCamPose();
+			return;
+		}
+
+		pV->camBound(pV->m_aabb);
 	}
 
 

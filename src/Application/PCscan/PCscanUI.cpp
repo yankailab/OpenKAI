@@ -38,11 +38,10 @@ namespace open3d
                 m_bScanning = false;
                 m_modelName = "PCMODEL";
                 m_areaName = "PCAREA";
-                m_areaLineCol = Vector3d(1.0, 0.0, 1.0);
 
                 m_cbBtnScan.init();
                 m_cbBtnSavePC.init();
-                m_cbBtnCamReset.init();
+                m_cbBtnCamSet.init();
 
                 m_pWindow = this;
                 m_pScene = new SceneWidget();
@@ -53,7 +52,8 @@ namespace open3d
                                string,
                                vector<pair<size_t, Vector3d>>>
                                &indices,
-                           int keymods) {
+                           int keymods)
+                    {
                         if (keymods & int(KeyModifier::SHIFT))
                         {
                             m_sVertex->UnselectIndices(indices);
@@ -68,7 +68,7 @@ namespace open3d
                 m_pWindow->AddChild(GiveOwnership(m_pScene));
 
                 InitCtrlPanel();
-                UpdateUIsettings();
+                UpdateUIstate();
                 SetMouseCameraMode();
             }
 
@@ -165,13 +165,13 @@ namespace open3d
                 }
 
                 mat.base_color = {1.0f, 1.0f, 1.0f, 1.0f};
-                mat.shader = kShaderDepth;
+                mat.shader = kShaderUnlit;
                 mat.point_size = ConvertToScaledPixels(m_uiState.m_pointSize);
 
                 m_vObject.push_back({name, nullptr, sTg, mat, bVisible});
                 auto scene = m_pScene->GetScene();
 
-                scene->AddGeometry(name, sTg.get(), mat);
+                scene->AddGeometry(name, sTg.get(), mat, false);
                 scene->GetScene()->GeometryShadows(name, false, false);
                 scene->ShowGeometry(name, bVisible);
 
@@ -237,9 +237,9 @@ namespace open3d
             }
 
             void PCscanUI::CamSetPose(
-                const Eigen::Vector3f &center,
-                const Eigen::Vector3f &eye,
-                const Eigen::Vector3f &up)
+                const Vector3f &center,
+                const Vector3f &eye,
+                const Vector3f &up)
             {
                 auto sCam = m_pScene->GetScene()->GetCamera();
                 sCam->LookAt(center, eye, up);
@@ -247,52 +247,37 @@ namespace open3d
                 m_pScene->ForceRedraw();
             }
 
-            void PCscanUI::CamAutoBound(const Eigen::Vector3f &CoR)
+            void PCscanUI::CamAutoBound(const geometry::AxisAlignedBoundingBox& aabb,
+                                        const Vector3f &CoR)
             {
-                auto scene = m_pScene->GetScene();
-                auto sCam = scene->GetCamera();
-                m_pScene->SetupCamera(sCam->GetFieldOfView(),
-                                      scene->GetBoundingBox(),
+                m_pScene->SetupCamera(m_pScene->GetScene()->GetCamera()->GetFieldOfView(),
+                                      aabb,
                                       CoR);
                 m_pScene->ForceRedraw();
             }
 
 
-            void PCscanUI::UpdateUIsettings(void)
+            UIState *PCscanUI::getUIState(void)
             {
-                auto o3dscene = m_pScene->GetScene();
-                o3dscene->SetBackground(m_uiState.bg_color);
-                Eigen::Vector3f sun_dir(0, 0, 0);
-                o3dscene->SetLighting(Open3DScene::LightingProfile::NO_SHADOWS, sun_dir);
+                return &m_uiState;
+            }
 
-                m_pScene->EnableSceneCaching(m_uiState.m_bSceneCache); // smoother UI with large geometry
-                ShowAxes(true);
-                SetPointSize(m_uiState.m_pointSize); // sync selections_' point size
+            void PCscanUI::UpdateUIstate(void)
+            {
+                m_pScene->EnableSceneCaching(m_uiState.m_bSceneCache);
+                m_panelCtrl->SetVisible(m_uiState.m_bShowPanel);
+                auto pO3DScene = m_pScene->GetScene();
+                pO3DScene->ShowAxes(m_uiState.m_bShowAxes);
+                pO3DScene->SetBackground(m_uiState.m_vBgCol, nullptr);
+                pO3DScene->SetLighting(Open3DScene::LightingProfile::NO_SHADOWS, m_uiState.m_vSunDir);
+
+                SetPointSize(m_uiState.m_pointSize);
                 SetLineWidth(m_uiState.m_lineWidth);
-            }
 
-            void PCscanUI::SetBackground(const Eigen::Vector4f &bg_color,
-                                         shared_ptr<geometry::Image> bg_image)
-            {
-                m_uiState.bg_color = bg_color;
-                auto scene = m_pScene->GetScene();
-                scene->SetBackground(m_uiState.bg_color, bg_image);
-                m_pScene->ForceRedraw();
-            }
-
-            void PCscanUI::ShowSettings(bool show)
-            {
-                m_uiState.m_bShowSettings = show;
-                m_panelCtrl->SetVisible(show);
                 m_pWindow->SetNeedsLayout();
-            }
-
-            void PCscanUI::ShowAxes(bool show)
-            {
-                m_uiState.m_bShowAxes = show;
-                m_pScene->GetScene()->ShowAxes(show);
                 m_pScene->ForceRedraw();
             }
+
 
             void PCscanUI::SetPointSize(int px)
             {
@@ -351,9 +336,9 @@ namespace open3d
                 m_cbBtnSavePC.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbBtnCamReset(OnBtnClickedCb pCb, void *pPCV)
+            void PCscanUI::SetCbBtnCamSet(OnBtnClickedCb pCb, void *pPCV)
             {
-                m_cbBtnCamReset.add(pCb, pPCV);
+                m_cbBtnCamSet.add(pCb, pPCV);
             }
 
             void PCscanUI::SetProgressBar(float v)
@@ -384,11 +369,6 @@ namespace open3d
                 return m_sVertex->GetSets();
             }
 
-            UIState *PCscanUI::getUIState(void)
-            {
-                return &m_uiState;
-            }
-
             Open3DScene *PCscanUI::GetScene() const
             {
                 return m_pScene->GetScene().get();
@@ -403,9 +383,7 @@ namespace open3d
                         {
                             this->m_pWindow->ShowMessageBox(
                                 "Error",
-                                (string("Could not write image to ") +
-                                 path + ".")
-                                    .c_str());
+                                (string("Could not write image to ") + path + ".").c_str());
                         }
                         m_pScene->EnableSceneCaching(m_uiState.m_bSceneCache);
                     });
@@ -415,7 +393,7 @@ namespace open3d
             void PCscanUI::Layout(const Theme &theme)
             {
                 auto em = theme.font_size;
-                int settings_width = 10 * theme.font_size;
+                int settings_width = m_uiState.m_panelWidth * theme.font_size;
 
                 auto f = GetContentRect();
                 if (m_panelCtrl->IsVisible())
@@ -470,18 +448,22 @@ namespace open3d
                 m_panelCtrl->AddChild(GiveOwnership(panelCam));
                 h = new Horiz(v_spacing);
 
-                auto btnCamAuto = new Button("  Auto  ");
-                btnCamAuto->SetOnClicked([this]() {
-                    Vector3f CoR(0, 0, 0);
-                    CamAutoBound(CoR);
+                auto btnCamAuto = new Button(" Auto ");
+                btnCamAuto->SetOnClicked([this]()
+                {
+                    bool b = true;
+                    m_cbBtnCamSet.call(&b);
+                    m_pScene->ForceRedraw();
                     SetMouseCameraMode();
                 });
                 h->AddChild(GiveOwnership(btnCamAuto));
                 h->AddStretch();
 
-                auto btnCamReset = new Button("  Reset  ");
-                btnCamReset->SetOnClicked([this]() {
-                    m_cbBtnCamReset.call();
+                auto btnCamReset = new Button(" Reset ");
+                btnCamReset->SetOnClicked([this]()
+                {
+                    bool b = false;
+                    m_cbBtnCamSet.call(&b);
                     m_pScene->ForceRedraw();
                     SetMouseCameraMode();
                 });
@@ -728,7 +710,7 @@ namespace open3d
                 {
                     int j = (i + 1) % nP;
                     spLS->lines_.push_back(Vector2i(i, j));
-                    spLS->colors_.push_back(m_areaLineCol);
+                    spLS->colors_.push_back(m_uiState.m_vAreaLineCol);
                 }
 
                 RemoveGeometry(m_areaName);
