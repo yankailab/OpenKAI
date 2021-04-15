@@ -49,7 +49,7 @@
 	"bSceneCache":0,
 	"selectPointSize":0.025,
 	"rDummyDome":1000.0,
-	"sVoxel":0.1,
+	"dHiddenRemove":100.0,
 }
 
 {

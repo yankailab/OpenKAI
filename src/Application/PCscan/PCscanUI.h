@@ -144,11 +144,10 @@ namespace open3d
 	            void SetLabelArea(const string &s);
 				void SetCbBtnScan(OnBtnClickedCb pCb, void *pPCV);
 				void SetCbBtnOpenPC(OnBtnClickedCb pCb, void *pPCV);
-				void SetCbBtnSavePC(OnBtnClickedCb pCb, void *pPCV);
 				void SetCbBtnCamSet(OnBtnClickedCb pCb, void *pPCV);
+				void SetCbVoxelDown(OnBtnClickedCb pCb, void *pPCV);
 				void SetCbBtnHiddenRemove(OnBtnClickedCb pCb, void *pPCV);
-				void SetCbBtnFilterReset(OnBtnClickedCb pCb, void *pPCV);
-				void SetCbFilter(OnBtnClickedCb pCb, void *pPCV);
+				void SetCbBtnResetPC(OnBtnClickedCb pCb, void *pPCV);
 
 				void ShowMsg(const char* pTitle, const char* pMsg, bool bOK = false);
 				void CloseMsg(void);
@@ -205,12 +204,11 @@ namespace open3d
 
 				//UI handler
 				O3D_UI_Cb m_cbBtnScan;
-				O3D_UI_Cb m_cbBtnSavePC;
 				O3D_UI_Cb m_cbBtnOpenPC;
 				O3D_UI_Cb m_cbBtnCamSet;
+				O3D_UI_Cb m_cbVoxelDown;
 				O3D_UI_Cb m_cbBtnHiddenRemove;
-				O3D_UI_Cb m_cbBtnFilterReset;
-				O3D_UI_Cb m_cbFilter;
+				O3D_UI_Cb m_cbBtnResetPC;
 			};
 
 		} // namespace visualizer

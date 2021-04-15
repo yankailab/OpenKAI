@@ -11,10 +11,20 @@
 #include "../../PointCloud/_PCstream.h"
 #include "../../PointCloud/_PCviewer.h"
 #include "../../SLAM/_SlamBase.h"
+#include "../../Utility/BitFlag.h"
 #include "PCscanUI.h"
 
 namespace kai
 {
+	namespace
+	{
+		static const int pcfScanning = 0;
+		static const int pcfScanStart = 1;
+		static const int pcfScanStop = 2;
+		static const int pcfVoxelDown = 3;
+		static const int pcfHiddenRemove = 4;
+		static const int pcfResetPC = 5;
+	}
 
 	class _PCscan : public _PCviewer
 	{
@@ -26,12 +36,12 @@ namespace kai
 		virtual bool start(void);
 		virtual int check(void);
 
-		virtual bool startScan(void);
-		virtual bool stopScan(void);
-
 	protected:
 		virtual void addUIpc(const PointCloud& pc);
 		virtual void updateUIpc(const PointCloud& pc);
+		virtual void updateProcess(void);
+		virtual void startScan(void);
+		virtual void stopScan(void);
 		virtual void updateScan(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
@@ -60,15 +70,15 @@ namespace kai
 
 		static void OnBtnScan(void *pPCV, void* pD);
 		static void OnBtnOpenPC(void *pPCV, void* pD);
-		static void OnBtnSavePC(void *pPCV, void* pD);
 		static void OnBtnCamSet(void *pPCV, void* pD);
+		static void OnVoxelDown(void *pPCV, void* pD);
 		static void OnBtnHiddenRemove(void *pPCV, void* pD);
-		static void OnBtnFilterReset(void *pPCV, void* pD);
-		static void OnFilterPC(void *pPCV, void* pD);
+		static void OnBtnResetPC(void *pPCV, void* pD);
 
 	protected:
 		_PCstream* m_pPS;
 		shared_ptr<visualizer::PCscanUI> m_spWin;
+		visualizer::UIState* m_pUIstate;
 		string m_modelName;
 		_Thread *m_pTk;
 		_SlamBase *m_pSB;
@@ -76,12 +86,11 @@ namespace kai
 		bool m_bSceneCache;
 		float m_selectPointSize;
 		float m_rDummyDome;
-		float m_sVoxel;
-
-		bool m_bScanning;
-		bool m_bStartScan;
-		bool m_bStopScan;
+		float m_dHiddenRemove;
 		AxisAlignedBoundingBox m_aabb;
+
+		//filter flags
+		BIT_FLAG m_fProcess;
 	};
 
 }
