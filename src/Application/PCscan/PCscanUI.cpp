@@ -22,7 +22,7 @@ namespace open3d
             }
 
             PCscanUI::PCscanUI(const string &title, int width, int height)
-            : Window(title, width, height)
+                : Window(title, width, height)
             {
                 Init();
                 Application::GetInstance().SetMenubar(NULL);
@@ -52,8 +52,7 @@ namespace open3d
                                string,
                                vector<pair<size_t, Vector3d>>>
                                &indices,
-                           int keymods)
-                    {
+                           int keymods) {
                         if (keymods & int(KeyModifier::SHIFT))
                         {
                             m_sVertex->UnselectIndices(indices);
@@ -73,9 +72,9 @@ namespace open3d
             }
 
             void PCscanUI::AddGeometry(const string &name,
-								 shared_ptr<geometry::Geometry3D> sTg,
-								 rendering::Material *material,
-								 bool bVisible)
+                                       shared_ptr<geometry::Geometry3D> sTg,
+                                       rendering::Material *material,
+                                       bool bVisible)
             {
                 bool is_default_color;
                 bool no_shadows = false;
@@ -142,9 +141,9 @@ namespace open3d
             }
 
             void PCscanUI::AddPointCloud(const string &name,
-								   shared_ptr<t::geometry::PointCloud> sTg,
-								   rendering::Material *material,
-								   bool bVisible)
+                                         shared_ptr<t::geometry::PointCloud> sTg,
+                                         rendering::Material *material,
+                                         bool bVisible)
             {
                 bool no_shadows = false;
                 Material mat;
@@ -217,7 +216,6 @@ namespace open3d
                 m_pScene->ForceRedraw();
             }
 
-
             void PCscanUI::CamSetProj(
                 double fov,
                 double aspect,
@@ -247,7 +245,7 @@ namespace open3d
                 m_pScene->ForceRedraw();
             }
 
-            void PCscanUI::CamAutoBound(const geometry::AxisAlignedBoundingBox& aabb,
+            void PCscanUI::CamAutoBound(const geometry::AxisAlignedBoundingBox &aabb,
                                         const Vector3f &CoR)
             {
                 m_pScene->SetupCamera(m_pScene->GetScene()->GetCamera()->GetFieldOfView(),
@@ -255,7 +253,6 @@ namespace open3d
                                       CoR);
                 m_pScene->ForceRedraw();
             }
-
 
             UIState *PCscanUI::getUIState(void)
             {
@@ -277,7 +274,6 @@ namespace open3d
                 m_pWindow->SetNeedsLayout();
                 m_pScene->ForceRedraw();
             }
-
 
             void PCscanUI::SetPointSize(int px)
             {
@@ -310,7 +306,6 @@ namespace open3d
                 }
                 m_pScene->ForceRedraw();
             }
-
 
             void PCscanUI::SetMouseCameraMode(void)
             {
@@ -353,7 +348,6 @@ namespace open3d
                 m_labelArea->SetText(s.c_str());
             }
 
-
             DrawObject PCscanUI::GetGeometry(const string &name) const
             {
                 for (auto &o : m_vObject)
@@ -388,7 +382,6 @@ namespace open3d
                         m_pScene->EnableSceneCaching(m_uiState.m_bSceneCache);
                     });
             }
-
 
             void PCscanUI::Layout(const Theme &theme)
             {
@@ -427,16 +420,16 @@ namespace open3d
                 auto h = new Horiz(v_spacing);
                 auto btnCamSavePC = new Button(" Save PLY ");
                 btnCamSavePC->SetOnClicked([this]() {
-                    OnExportPLY();
+                    OnSavePLY();
                 });
                 h->AddChild(GiveOwnership(btnCamSavePC));
                 h->AddStretch();
                 panelFile->AddChild(GiveOwnership(h));
 
                 h = new Horiz(v_spacing);
-                auto btnCamSaveRGB = new Button(" Save RGB ");
+                auto btnCamSaveRGB = new Button(" Save PNG ");
                 btnCamSaveRGB->SetOnClicked([this]() {
-                    OnExportRGB();
+                    OnSaveRGB();
                 });
                 h->AddChild(GiveOwnership(btnCamSaveRGB));
                 h->AddStretch();
@@ -449,8 +442,7 @@ namespace open3d
                 h = new Horiz(v_spacing);
 
                 auto btnCamAuto = new Button(" Auto ");
-                btnCamAuto->SetOnClicked([this]()
-                {
+                btnCamAuto->SetOnClicked([this]() {
                     bool b = true;
                     m_cbBtnCamSet.call(&b);
                     m_pScene->ForceRedraw();
@@ -460,8 +452,7 @@ namespace open3d
                 h->AddStretch();
 
                 auto btnCamReset = new Button(" Reset ");
-                btnCamReset->SetOnClicked([this]()
-                {
+                btnCamReset->SetOnClicked([this]() {
                     bool b = false;
                     m_cbBtnCamSet.call(&b);
                     m_pScene->ForceRedraw();
@@ -482,7 +473,6 @@ namespace open3d
                     RemoveAllVertexSet();
 
                     m_bScanning = !m_bScanning;
-
                     m_btnScanStart->SetOn(m_bScanning);
                     if (m_bScanning)
                     {
@@ -490,6 +480,7 @@ namespace open3d
                         m_btnNewVertexSet->SetEnabled(false);
                         m_btnDeleteVertexSet->SetEnabled(false);
                         m_listVertexSet->SetEnabled(false);
+                        m_labelArea->SetText("Area not selected");
                     }
                     else
                     {
@@ -661,8 +652,6 @@ namespace open3d
                 UpdateArea();
             }
 
-
-
             void PCscanUI::UpdateArea(void)
             {
                 int iS = m_listVertexSet->GetSelectedIndex();
@@ -758,7 +747,7 @@ namespace open3d
                 m_vspDistLabel.clear();
             }
 
-                        double PCscanUI::Area(vector<Vector3d> &vP)
+            double PCscanUI::Area(vector<Vector3d> &vP)
             {
                 int nP = vP.size();
                 Vector3d vA(0, 0, 0);
@@ -774,8 +763,7 @@ namespace open3d
                 return vA.norm();
             }
 
-
-            void PCscanUI::OnExportRGB(void)
+            void PCscanUI::OnSaveRGB(void)
             {
                 auto dlg = make_shared<gui::FileDialog>(
                     gui::FileDialog::Mode::SAVE, "Save File", m_pWindow->GetTheme());
@@ -789,7 +777,7 @@ namespace open3d
                 m_pWindow->ShowDialog(dlg);
             }
 
-            void PCscanUI::OnExportPLY(void)
+            void PCscanUI::OnSavePLY(void)
             {
                 auto dlg = make_shared<gui::FileDialog>(
                     gui::FileDialog::Mode::SAVE, "Save File", m_pWindow->GetTheme());
@@ -801,6 +789,44 @@ namespace open3d
                     this->m_cbBtnSavePC.call((void *)path);
                 });
                 m_pWindow->ShowDialog(dlg);
+            }
+
+            void PCscanUI::OnOpenPLY(void)
+            {
+                auto dlg = make_shared<gui::FileDialog>(
+                    gui::FileDialog::Mode::OPEN, "Save File", m_pWindow->GetTheme());
+                dlg->AddFilter(".ply", "Point Cloud Files (.ply)");
+                dlg->AddFilter("", "All files");
+                dlg->SetOnCancel([this]() { this->m_pWindow->CloseDialog(); });
+                dlg->SetOnDone([this](const char *path) {
+                    this->m_pWindow->CloseDialog();
+                    this->m_cbBtnOpenPC.call((void *)path);
+                });
+                m_pWindow->ShowDialog(dlg);
+            }
+
+            void PCscanUI::ShowMsg(const char* pTitle, const char* pMsg, bool bOK)
+            {
+                auto em = GetTheme().font_size;
+                auto margins = Margins(GetTheme().default_margin);
+                auto dlg = std::make_shared<Dialog>(pTitle);
+                auto layout = std::make_shared<Vert>(em, margins);
+                layout->AddChild(std::make_shared<Label>(pMsg));
+                if(bOK)
+                {
+                    auto ok = std::make_shared<Button>("OK");
+                    ok->SetOnClicked([this]() { this->CloseDialog(); });
+                    layout->AddChild(Horiz::MakeCentered(ok));
+                }
+
+                dlg->AddChild(layout);
+                ShowDialog(dlg);
+            }
+
+            void PCscanUI::CloseMsg(void)
+            {
+                m_pWindow->CloseDialog();
+                m_pWindow->PostRedraw();
             }
 
         } // namespace visualizer

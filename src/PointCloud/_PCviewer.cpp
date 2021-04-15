@@ -124,20 +124,53 @@ namespace kai
 		updatePC();
 	}
 
-	void _PCviewer::addDummyPC(PointCloud* pPC, int n, double l, int iAxis, Vector3d vCol)
+	void _PCviewer::addDummyDome(PointCloud* pPC, int n, float r, Vector3d vCol)
 	{
 		NULL_(pPC);
 
-		double pFrom = -l*0.5;
-		double d = l / n;
-		for(int i=0; i<n; i++)
+		float nV = floor(sqrt((float)n));
+		float nH = ceil(n / nV);
+
+		float dV = OK_PI / nV;
+		float dH = (OK_PI * 2.0) / nH;
+
+		int k = 0;
+		for(int i=0; i<nH; i++)
 		{
-			Vector3d vP(0,0,0);
-			vP[iAxis] = pFrom + i * d;
-			
-			pPC->points_.push_back(vP);
-			pPC->colors_.push_back(vCol);
+			float h = dH * i;
+			float sinH = sin(h);
+			float cosH = cos(h);
+
+			for(int j=0; j<nV; j++)
+			{
+				float v = dV * j;
+				float sinV = sin(v);
+				float cosV = cos(v);
+
+				Vector3d vP
+				(
+					r * sinV * sinH,
+					r * sinV * cosH,
+					r * cosV
+				);
+
+				pPC->points_.push_back(vP);
+				pPC->colors_.push_back(vCol);
+
+				IF_(++k >= n);
+			}
 		}
+
+		// double pFrom = -l*0.5;
+		// double d = l / n;
+		// for(int i=0; i<n; i++)
+		// {
+		// 	Vector3d vP(0,0,0);
+		// 	vP[iAxis] = pFrom + i * d;
+			
+		// 	pPC->points_.push_back(vP);
+		// 	pPC->colors_.push_back(vCol);
+		// }
 	}
 
 	void _PCviewer::updateUI(void)

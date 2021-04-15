@@ -43,7 +43,7 @@ namespace kai
 
 	protected:
 		virtual void readAllPC(void);
-		virtual void addDummyPC(PointCloud *pPC, int n, double l, int iAxis, Vector3d vCol);
+		virtual void addDummyDome(PointCloud* pPC, int n, float r, Vector3d vCol = {0,0,0});
 
 		virtual void update(void);
 		static void *getUpdate(void *This)

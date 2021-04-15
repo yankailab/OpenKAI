@@ -146,8 +146,12 @@ namespace open3d
 				void SetProgressBar(float v);
 	            void SetLabelArea(const string &s);
 				void SetCbBtnScan(OnBtnClickedCb pCb, void *pPCV);
+				void SetCbBtnOpenPC(OnBtnClickedCb pCb, void *pPCV);
 				void SetCbBtnSavePC(OnBtnClickedCb pCb, void *pPCV);
 				void SetCbBtnCamSet(OnBtnClickedCb pCb, void *pPCV);
+
+				void ShowMsg(const char* pTitle, const char* pMsg, bool bOK = false);
+				void CloseMsg(void);
 
 			protected:
 				void Layout(const gui::Theme &theme);
@@ -168,8 +172,9 @@ namespace open3d
 				void RemoveDistLabel(void);
 				double Area(vector<Vector3d> &vP);
 
-				void OnExportRGB(void);
-				void OnExportPLY(void);
+				void OnSaveRGB(void);
+				void OnSavePLY(void);
+				void OnOpenPLY(void);
 
 			private:
 				vector<DrawObject> m_vObject;
@@ -197,6 +202,7 @@ namespace open3d
 				//UI handler
 				O3D_UI_Cb m_cbBtnScan;
 				O3D_UI_Cb m_cbBtnSavePC;
+				O3D_UI_Cb m_cbBtnOpenPC;
 				O3D_UI_Cb m_cbBtnCamSet;
 			};
 

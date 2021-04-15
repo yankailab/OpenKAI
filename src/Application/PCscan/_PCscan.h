@@ -71,9 +71,12 @@ namespace kai
 
 		bool m_bSceneCache;
 		float m_selectPointSize;
+		float m_rDummyDome;
+		float m_sVoxel;
 
-		pthread_mutex_t m_mutexScan;
 		bool m_bScanning;
+		bool m_bStartScan;
+		bool m_bStopScan;
 		AxisAlignedBoundingBox m_aabb;
 	};
 

@@ -17,17 +17,18 @@ namespace kai
 		m_pTk = NULL;
 		m_pSB = NULL;
 		m_bScanning = false;
+		m_bStartScan = false;
+		m_bStopScan = false;
 		m_modelName = "PCMODEL";
 
 		m_bSceneCache = false;
 		m_selectPointSize = 0.025;
-
-        pthread_mutex_init(&m_mutexScan, NULL);
+		m_rDummyDome = 1000.0;
+		m_sVoxel = 0.1;
 	}
 
 	_PCscan::~_PCscan()
 	{
-        pthread_mutex_destroy(&m_mutexScan);
 		DEL(m_pTk);
 	}
 
@@ -38,6 +39,8 @@ namespace kai
 
 		pK->v("bSceneCache", &m_bSceneCache);
 		pK->v("selectPointSize", &m_selectPointSize);
+		pK->v("rDummyDome", &m_rDummyDome);
+		pK->v("sVoxel", &m_sVoxel);
 
 		string n = "";
 		pK->v("_SlamBase", &n);
@@ -89,7 +92,22 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			updateScan();
+			if(m_bStartScan)
+			{
+				startScan();
+				m_bStartScan = false;
+			}
+
+			if(m_bStopScan)
+			{
+				stopScan();
+				m_bStopScan = false;
+			}
+
+			if(m_bScanning)
+			{
+				updateScan();
+			}
 
 			m_pT->autoFPSto();
 		}
@@ -98,14 +116,12 @@ namespace kai
 	void _PCscan::updateScan(void)
 	{
 		IF_(check() < 0);
-		IF_(!m_bScanning);
-
-        pthread_mutex_lock(&m_mutexScan);
 
 		readAllPC();
 		PointCloud *pPC = m_sPC.get();
 		pPC->normals_.clear();
 		int n = pPC->points_.size();
+		IF_(n<=0);
 		int nP = m_pPS->nP();
 
 		m_aabb = pPC->GetAxisAlignedBoundingBox();
@@ -113,7 +129,7 @@ namespace kai
 		PointCloud pc = *pPC;
 		if (n < nP)
 		{
-			addDummyPC(&pc, nP - n, 10, 0, Vector3d(1, 0, 0));
+			addDummyDome(&pc, nP - n, m_rDummyDome);
 		}
 		else if (n > nP)
 		{
@@ -124,45 +140,44 @@ namespace kai
 
 		updateUIpc(pc);
 		m_spWin->SetProgressBar((float)m_pPS->iP() / (float)m_pPS->nP());
-
-        pthread_mutex_unlock(&m_mutexScan);
 	}
 
 	bool _PCscan::startScan(void)
 	{
 		IF_F(check() < 0);
 
-        pthread_mutex_lock(&m_mutexScan);
+		m_spWin->ShowMsg("Scan", "Initializing");
 
 		m_pSB->reset();
 		sleep(1);
 		m_pPS->clear();
 
 		m_spWin->RemoveGeometry(m_modelName);
-
-		addDummyPC(m_sPC.next(), m_pPS->nP(), 10, 0, Vector3d(1, 0, 0));
+		addDummyDome(m_sPC.next(), m_pPS->nP(), m_rDummyDome);
 		updatePC();
-
 		addUIpc(*m_sPC.get());
 		m_aabb = m_sPC.get()->GetAxisAlignedBoundingBox();	
-
 		m_bScanning = true;
 
-        pthread_mutex_unlock(&m_mutexScan);
+		m_spWin->CloseDialog();
 	}
 
 	bool _PCscan::stopScan(void)
 	{
-        pthread_mutex_lock(&m_mutexScan);
+		IF_F(check() < 0);
+
+		m_spWin->ShowMsg("Scan", "Processing");
 
 		m_spWin->RemoveGeometry(m_modelName);
 
-		addUIpc(*m_sPC.get());
-		m_aabb = m_sPC.get()->GetAxisAlignedBoundingBox();
-
+		//post processing
+		PointCloud pc = *m_sPC.get()->VoxelDownSample(m_sVoxel);
+		m_aabb = pc.GetAxisAlignedBoundingBox();
+		addUIpc(pc);
+		
 		m_bScanning = false;
 
-        pthread_mutex_unlock(&m_mutexScan);
+		m_spWin->CloseDialog();
 	}
 
 	void _PCscan::addUIpc(const PointCloud& pc)
@@ -274,9 +289,9 @@ namespace kai
 		bool bScanning = *((bool*)pD);
 
 		if (bScanning)
-			pV->startScan();
+			pV->m_bStartScan = true;
 		else
-			pV->stopScan();
+			pV->m_bStopScan = true;
 	}
 
 	void _PCscan::OnBtnSavePC(void *pPCV, void *pD)
@@ -302,7 +317,7 @@ namespace kai
 		_PCscan *pV = (_PCscan *)pPCV;
 		bool bAuto = *(bool*)pD;
 
-		if(!bAuto)
+		if(!bAuto || pV->m_sPC.get()->points_.empty())
 		{
 			pV->updateCamPose();
 			return;
@@ -310,7 +325,6 @@ namespace kai
 
 		pV->camBound(pV->m_aabb);
 	}
-
 
 }
 #endif
