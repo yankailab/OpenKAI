@@ -41,6 +41,7 @@ namespace kai
 		pK->v("selectPointSize", &m_selectPointSize);
 		pK->v("rDummyDome", &m_rDummyDome);
 		pK->v("sVoxel", &m_sVoxel);
+		if(m_sVoxel <= 0.0)m_sVoxel = 0.0001;
 
 		string n = "";
 		pK->v("_SlamBase", &n);
@@ -169,12 +170,8 @@ namespace kai
 		m_spWin->ShowMsg("Scan", "Processing");
 
 		m_spWin->RemoveGeometry(m_modelName);
-
-		//post processing
-		PointCloud pc = *m_sPC.get()->VoxelDownSample(m_sVoxel);
-		m_aabb = pc.GetAxisAlignedBoundingBox();
-		addUIpc(pc);
-		
+		m_aabb = m_sPC.get()->GetAxisAlignedBoundingBox();
+		addUIpc(*m_sPC.get());
 		m_bScanning = false;
 
 		m_spWin->CloseDialog();
@@ -234,8 +231,12 @@ namespace kai
 		app.AddWindow(m_spWin);
 
 		m_spWin->SetCbBtnScan(OnBtnScan, (void *)this);
+		m_spWin->SetCbBtnOpenPC(OnBtnOpenPC, (void *)this);
 		m_spWin->SetCbBtnSavePC(OnBtnSavePC, (void *)this);
 		m_spWin->SetCbBtnCamSet(OnBtnCamSet, (void *)this);
+		m_spWin->SetCbBtnHiddenRemove(OnBtnHiddenRemove, (void *)this);
+		m_spWin->SetCbBtnFilterReset(OnBtnFilterReset, (void *)this);
+		m_spWin->SetCbFilter(OnFilterPC, (void *)this);
 
 		visualizer::UIState* pU = m_spWin->getUIState();
 		pU->m_bSceneCache = m_bSceneCache;
@@ -294,6 +295,21 @@ namespace kai
 			pV->m_bStopScan = true;
 	}
 
+	void _PCscan::OnBtnOpenPC(void *pPCV, void *pD)
+	{
+		NULL_(pPCV);
+		NULL_(pD);
+		_PCscan *pV = (_PCscan *)pPCV;
+
+		pthread_mutex_lock(&pV->m_mutexPC);
+		IF_(!io::ReadPointCloud((const char *)pD, *pV->m_sPC.next()));	
+		pV->updatePC();
+		pthread_mutex_unlock(&pV->m_mutexPC);
+
+		pV->m_aabb = pV->m_sPC.get()->GetAxisAlignedBoundingBox();
+		pV->addUIpc(*pV->m_sPC.get());
+	}
+
 	void _PCscan::OnBtnSavePC(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
@@ -324,6 +340,46 @@ namespace kai
 		}
 
 		pV->camBound(pV->m_aabb);
+	}
+
+	void _PCscan::OnBtnHiddenRemove(void *pPCV, void* pD)
+	{
+		NULL_(pPCV);
+		NULL_(pD);
+		_PCscan *pV = (_PCscan *)pPCV;
+		visualizer::UIState* us = (visualizer::UIState*)pD;
+
+		pV->m_spWin->RemoveGeometry(pV->m_modelName);
+//TODO
+//		PointCloud pc = *pV->m_sPC.get()->HiddenPointRemoval();
+//		pV->m_aabb = pc.GetAxisAlignedBoundingBox();
+//		pV->addUIpc(pc);
+	}
+
+	void _PCscan::OnBtnFilterReset(void *pPCV, void* pD)
+	{
+		NULL_(pPCV);
+		NULL_(pD);
+		_PCscan *pV = (_PCscan *)pPCV;
+
+		pV->m_spWin->RemoveGeometry(pV->m_modelName);
+		pV->m_aabb = pV->m_sPC.get()->GetAxisAlignedBoundingBox();
+		pV->addUIpc(*pV->m_sPC.get());
+	}
+
+	void _PCscan::OnFilterPC(void *pPCV, void* pD)
+	{
+		NULL_(pPCV);
+		NULL_(pD);
+		_PCscan *pV = (_PCscan *)pPCV;
+		visualizer::UIState* us = (visualizer::UIState*)pD;
+		pV->m_sVoxel = us->m_voxelSize;
+		if(pV->m_sVoxel <= 0.0)pV->m_sVoxel = 0.0001;
+
+		pV->m_spWin->RemoveGeometry(pV->m_modelName);
+		PointCloud pc = *pV->m_sPC.get()->VoxelDownSample(pV->m_sVoxel);
+		pV->m_aabb = pc.GetAxisAlignedBoundingBox();
+		pV->addUIpc(pc);
 	}
 
 }

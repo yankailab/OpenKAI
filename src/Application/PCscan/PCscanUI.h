@@ -13,14 +13,8 @@ using namespace Eigen;
 typedef void (*OnBtnClickedCb)(void *pPCV, void *pD);
 struct O3D_UI_Cb
 {
-	OnBtnClickedCb m_pCb;
-	void *m_pPCV;
-
-	void init(void)
-	{
-		m_pCb = NULL;
-		m_pPCV = NULL;
-	}
+	OnBtnClickedCb m_pCb = NULL;
+	void *m_pPCV = NULL;
 
 	void add(OnBtnClickedCb pCb, void *pPCV)
 	{
@@ -88,10 +82,13 @@ namespace open3d
 				int m_panelWidth = 15;
 				int m_pointSize = 2;
 				double m_selectPointSize = 0.025;
+				double m_voxelSize = 0.01;
 				int m_lineWidth = 5;
 				Vector4f m_vBgCol = {0.0f, 0.0f, 0.0f, 0.0f};
 				Vector3f m_vSunDir = {0.0f, 0.0f, 0.0f};
                 Vector3d m_vAreaLineCol = Vector3d(1.0, 0.0, 1.0);
+
+				Vector3f m_vCamPos;
 			};
 
 			class PCscanUI : public gui::Window
@@ -149,6 +146,9 @@ namespace open3d
 				void SetCbBtnOpenPC(OnBtnClickedCb pCb, void *pPCV);
 				void SetCbBtnSavePC(OnBtnClickedCb pCb, void *pPCV);
 				void SetCbBtnCamSet(OnBtnClickedCb pCb, void *pPCV);
+				void SetCbBtnHiddenRemove(OnBtnClickedCb pCb, void *pPCV);
+				void SetCbBtnFilterReset(OnBtnClickedCb pCb, void *pPCV);
+				void SetCbFilter(OnBtnClickedCb pCb, void *pPCV);
 
 				void ShowMsg(const char* pTitle, const char* pMsg, bool bOK = false);
 				void CloseMsg(void);
@@ -191,19 +191,26 @@ namespace open3d
 				//UI components
 				Vert *m_panelCtrl;
 				Button *m_btnScanStart;
+
+				Slider* m_sliderVsize;
+				Button* m_btnHiddenRemove;
+				Button* m_btnFilterReset;
+
 				ProgressBar *m_progScan;
 				Label *m_labelProg;
 				Button *m_btnNewVertexSet;
 				Button *m_btnDeleteVertexSet;
 				ListView *m_listVertexSet;
 				Label *m_labelArea;
-				Slider *m_sliderPointSize;
 
 				//UI handler
 				O3D_UI_Cb m_cbBtnScan;
 				O3D_UI_Cb m_cbBtnSavePC;
 				O3D_UI_Cb m_cbBtnOpenPC;
 				O3D_UI_Cb m_cbBtnCamSet;
+				O3D_UI_Cb m_cbBtnHiddenRemove;
+				O3D_UI_Cb m_cbBtnFilterReset;
+				O3D_UI_Cb m_cbFilter;
 			};
 
 		} // namespace visualizer

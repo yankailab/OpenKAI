@@ -39,10 +39,6 @@ namespace open3d
                 m_modelName = "PCMODEL";
                 m_areaName = "PCAREA";
 
-                m_cbBtnScan.init();
-                m_cbBtnSavePC.init();
-                m_cbBtnCamSet.init();
-
                 m_pWindow = this;
                 m_pScene = new SceneWidget();
                 m_sVertex = make_shared<O3DVisualizerSelections>(*m_pScene);
@@ -278,7 +274,6 @@ namespace open3d
             void PCscanUI::SetPointSize(int px)
             {
                 m_uiState.m_pointSize = px;
-                m_sliderPointSize->SetValue(double(px));
 
                 px = int(ConvertToScaledPixels(px));
                 for (auto &o : m_vObject)
@@ -321,9 +316,26 @@ namespace open3d
                 m_sVertex->MakeActive();
             }
 
+            void PCscanUI::SetProgressBar(float v)
+            {
+                m_progScan->SetValue(v);
+                string s = "Memory used: " + i2str((int)(v * 100)) + "%";
+                m_labelProg->SetText(s.c_str());
+            }
+
+            void PCscanUI::SetLabelArea(const string &s)
+            {
+                m_labelArea->SetText(s.c_str());
+            }
+
             void PCscanUI::SetCbBtnScan(OnBtnClickedCb pCb, void *pPCV)
             {
                 m_cbBtnScan.add(pCb, pPCV);
+            }
+
+            void PCscanUI::SetCbBtnOpenPC(OnBtnClickedCb pCb, void *pPCV)
+            {
+                m_cbBtnOpenPC.add(pCb, pPCV);
             }
 
             void PCscanUI::SetCbBtnSavePC(OnBtnClickedCb pCb, void *pPCV)
@@ -336,17 +348,21 @@ namespace open3d
                 m_cbBtnCamSet.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetProgressBar(float v)
+            void PCscanUI::SetCbBtnHiddenRemove(OnBtnClickedCb pCb, void *pPCV)
             {
-                m_progScan->SetValue(v);
-                string s = "Memory used: " + i2str((int)(v * 100)) + "%";
-                m_labelProg->SetText(s.c_str());
+                m_cbBtnHiddenRemove.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetLabelArea(const string &s)
+            void PCscanUI::SetCbBtnFilterReset(OnBtnClickedCb pCb, void *pPCV)
             {
-                m_labelArea->SetText(s.c_str());
+                m_cbBtnFilterReset.add(pCb, pPCV);
             }
+
+            void PCscanUI::SetCbFilter(OnBtnClickedCb pCb, void *pPCV)
+            {
+                m_cbFilter.add(pCb, pPCV);
+            }
+
 
             DrawObject PCscanUI::GetGeometry(const string &name) const
             {
@@ -417,20 +433,18 @@ namespace open3d
                 auto panelFile = new CollapsableVert("FILE", v_spacing, margins);
                 m_panelCtrl->AddChild(GiveOwnership(panelFile));
 
-                auto h = new Horiz(v_spacing);
                 auto btnCamSavePC = new Button(" Save PLY ");
                 btnCamSavePC->SetOnClicked([this]() {
                     OnSavePLY();
                 });
-                h->AddChild(GiveOwnership(btnCamSavePC));
-                h->AddStretch();
-                panelFile->AddChild(GiveOwnership(h));
 
-                h = new Horiz(v_spacing);
                 auto btnCamSaveRGB = new Button(" Save PNG ");
                 btnCamSaveRGB->SetOnClicked([this]() {
                     OnSaveRGB();
                 });
+
+                auto h = new Horiz(v_spacing);
+                h->AddChild(GiveOwnership(btnCamSavePC));
                 h->AddChild(GiveOwnership(btnCamSaveRGB));
                 h->AddStretch();
                 panelFile->AddChild(GiveOwnership(h));
@@ -439,7 +453,6 @@ namespace open3d
                 // Camera
                 auto panelCam = new CollapsableVert("CAMERA", v_spacing, margins);
                 m_panelCtrl->AddChild(GiveOwnership(panelCam));
-                h = new Horiz(v_spacing);
 
                 auto btnCamAuto = new Button(" Auto ");
                 btnCamAuto->SetOnClicked([this]() {
@@ -448,8 +461,6 @@ namespace open3d
                     m_pScene->ForceRedraw();
                     SetMouseCameraMode();
                 });
-                h->AddChild(GiveOwnership(btnCamAuto));
-                h->AddStretch();
 
                 auto btnCamReset = new Button(" Reset ");
                 btnCamReset->SetOnClicked([this]() {
@@ -458,9 +469,64 @@ namespace open3d
                     m_pScene->ForceRedraw();
                     SetMouseCameraMode();
                 });
+
+                h = new Horiz(v_spacing);
+                h->AddChild(GiveOwnership(btnCamAuto));
                 h->AddChild(GiveOwnership(btnCamReset));
                 h->AddStretch();
                 panelCam->AddChild(GiveOwnership(h));
+
+                // View
+                auto panelView = new CollapsableVert("VIEW", v_spacing, margins);
+                panelView->SetIsOpen(true);
+                m_panelCtrl->AddChild(GiveOwnership(panelView));
+
+                auto sliderPointSize = new Slider(Slider::INT);
+                sliderPointSize->SetLimits(1, 10);
+                sliderPointSize->SetValue(m_uiState.m_pointSize);
+                sliderPointSize->SetOnValueChanged([this](const double v)
+                {
+                    SetPointSize(int(v));
+                });
+
+                m_sliderVsize = new Slider(Slider::DOUBLE);
+                m_sliderVsize->SetLimits(0.001, 1.0);
+                m_sliderVsize->SetValue(m_uiState.m_voxelSize);
+                m_sliderVsize->SetOnValueChanged([this](const double v)
+                {
+                    m_uiState.m_voxelSize = v;
+                    m_cbFilter.call(&m_uiState);
+                    m_pScene->ForceRedraw();
+                });
+
+                auto *grid = new VGrid(2, v_spacing);
+                grid->AddChild(make_shared<Label>("PointSize"));
+                grid->AddChild(GiveOwnership(sliderPointSize));
+                grid->AddChild(make_shared<Label>("VoxelSize"));
+                grid->AddChild(GiveOwnership(m_sliderVsize));
+                panelView->AddChild(GiveOwnership(grid));
+
+                m_btnHiddenRemove = new Button(" Z-Culling ");
+                m_btnHiddenRemove->SetOnClicked([this]()
+                {
+                    m_uiState.m_vCamPos = m_pScene->GetScene()->GetCamera()->GetPosition();
+                    m_cbBtnHiddenRemove.call(&m_uiState);
+                    m_pScene->ForceRedraw();
+                });
+
+                m_btnFilterReset = new Button(" Reset ");
+                m_btnFilterReset->SetOnClicked([this]()
+                {
+                    m_cbBtnFilterReset.call();
+                    m_pScene->ForceRedraw();
+                });
+
+                h = new Horiz(v_spacing);
+                h->AddChild(GiveOwnership(m_btnHiddenRemove));
+                h->AddStretch();
+                h->AddChild(GiveOwnership(m_btnFilterReset));
+                h->AddStretch();
+                panelView->AddChild(GiveOwnership(h));
 
                 // Scan
                 auto panelScan = new CollapsableVert("SCAN", v_spacing, margins);
@@ -468,7 +534,8 @@ namespace open3d
 
                 m_btnScanStart = new Button("        Start        ");
                 m_btnScanStart->SetToggleable(true);
-                m_btnScanStart->SetOnClicked([this]() {
+                m_btnScanStart->SetOnClicked([this]()
+                {
                     SetMouseCameraMode();
                     RemoveAllVertexSet();
 
@@ -480,6 +547,9 @@ namespace open3d
                         m_btnNewVertexSet->SetEnabled(false);
                         m_btnDeleteVertexSet->SetEnabled(false);
                         m_listVertexSet->SetEnabled(false);
+                        m_sliderVsize->SetEnabled(false);
+                        m_btnHiddenRemove->SetEnabled(false);
+                        m_btnFilterReset->SetEnabled(false);
                         m_labelArea->SetText("Area not selected");
                     }
                     else
@@ -488,6 +558,9 @@ namespace open3d
                         m_btnNewVertexSet->SetEnabled(true);
                         m_btnDeleteVertexSet->SetEnabled(true);
                         m_listVertexSet->SetEnabled(true);
+                        m_sliderVsize->SetEnabled(true);
+                        m_btnHiddenRemove->SetEnabled(true);
+                        m_btnFilterReset->SetEnabled(true);
                     }
 
                     m_cbBtnScan.call(&m_bScanning);
@@ -546,22 +619,6 @@ namespace open3d
                         UpdateArea();
                     });
                 panelVertexSet->AddChild(GiveOwnership(m_listVertexSet));
-
-                // Scene controls
-                auto panelSetting = new CollapsableVert("SETTING", v_spacing, margins);
-                panelSetting->SetIsOpen(false);
-                m_panelCtrl->AddChild(GiveOwnership(panelSetting));
-                m_sliderPointSize = new Slider(Slider::INT);
-                m_sliderPointSize->SetLimits(1, 10);
-                m_sliderPointSize->SetValue(m_uiState.m_pointSize);
-                m_sliderPointSize->SetOnValueChanged([this](const double newValue) {
-                    this->SetPointSize(int(newValue));
-                });
-
-                auto *grid = new VGrid(2, v_spacing);
-                panelSetting->AddChild(GiveOwnership(grid));
-                grid->AddChild(make_shared<Label>("PointSize"));
-                grid->AddChild(GiveOwnership(m_sliderPointSize));
             }
 
             void PCscanUI::UpdateTgeometry(const string &name, shared_ptr<t::geometry::PointCloud> sTg)

@@ -59,8 +59,12 @@ namespace kai
 		}
 
 		static void OnBtnScan(void *pPCV, void* pD);
+		static void OnBtnOpenPC(void *pPCV, void* pD);
 		static void OnBtnSavePC(void *pPCV, void* pD);
 		static void OnBtnCamSet(void *pPCV, void* pD);
+		static void OnBtnHiddenRemove(void *pPCV, void* pD);
+		static void OnBtnFilterReset(void *pPCV, void* pD);
+		static void OnFilterPC(void *pPCV, void* pD);
 
 	protected:
 		_PCstream* m_pPS;
