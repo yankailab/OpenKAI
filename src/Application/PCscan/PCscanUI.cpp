@@ -26,6 +26,13 @@ namespace open3d
             {
                 Init();
                 Application::GetInstance().SetMenubar(NULL);
+
+//                glfwGetWindowSize(window_, &saved_window_size_(0), &saved_window_size_(1));
+//        glfwGetWindowPos(window_, &saved_window_pos_(0), &saved_window_pos_(1));
+        // GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+        // const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+        // glfwSetWindowMonitor(window_, monitor, 0, 0, mode->width, mode->height,
+        //                      mode->refreshRate);
             }
 
             PCscanUI::~PCscanUI() {}
@@ -427,25 +434,25 @@ namespace open3d
                 auto panelFile = new CollapsableVert("FILE", v_spacing, margins);
                 m_panelCtrl->AddChild(GiveOwnership(panelFile));
 
-                auto btnCamOpenPC = new Button(" Open ");
-                btnCamOpenPC->SetOnClicked([this]() {
+                m_btnOpenPC = new Button(" Open ");
+                m_btnOpenPC->SetOnClicked([this]() {
                     OnOpenPLY();
                 });
 
-                auto btnCamSavePC = new Button(" Save ");
-                btnCamSavePC->SetOnClicked([this]() {
+                m_btnSavePC = new Button(" Save ");
+                m_btnSavePC->SetOnClicked([this]() {
                     OnSavePLY();
                 });
 
-                auto btnCamSaveRGB = new Button("Export PNG");
-                btnCamSaveRGB->SetOnClicked([this]() {
+                m_btnSaveRGB = new Button("Export PNG");
+                m_btnSaveRGB->SetOnClicked([this]() {
                     OnSaveRGB();
                 });
 
                 auto pH = new Horiz(v_spacing);
-                pH->AddChild(GiveOwnership(btnCamOpenPC));
-                pH->AddChild(GiveOwnership(btnCamSavePC));
-                pH->AddChild(GiveOwnership(btnCamSaveRGB));
+                pH->AddChild(GiveOwnership(m_btnOpenPC));
+                pH->AddChild(GiveOwnership(m_btnSavePC));
+                pH->AddChild(GiveOwnership(m_btnSaveRGB));
                 pH->AddStretch();
                 panelFile->AddChild(GiveOwnership(pH));
                 panelFile->SetIsOpen(false);
@@ -454,15 +461,23 @@ namespace open3d
                 auto panelCam = new CollapsableVert("CAMERA", v_spacing, margins);
                 m_panelCtrl->AddChild(GiveOwnership(panelCam));
 
-                auto btnCamAuto = new Button(" Auto ");
-                btnCamAuto->SetOnClicked([this]() {
+                m_btnCamAuto = new Button(" Auto ");
+                m_btnCamAuto->SetOnClicked([this]() {
                     bool b = true;
                     m_cbBtnCamSet.call(&b);
                     m_pScene->ForceRedraw();
                     SetMouseCameraMode();
                 });
 
-                auto btnCamReset = new Button(" Reset ");
+                auto btnCamAll = new Button(" All ");
+                btnCamAll->SetOnClicked([this]() {
+                    bool b = true;
+                    m_cbBtnCamSet.call(&b);
+                    m_pScene->ForceRedraw();
+                    SetMouseCameraMode();
+                });
+
+                auto btnCamReset = new Button(" Origin ");
                 btnCamReset->SetOnClicked([this]() {
                     bool b = false;
                     m_cbBtnCamSet.call(&b);
@@ -471,7 +486,8 @@ namespace open3d
                 });
 
                 pH = new Horiz(v_spacing);
-                pH->AddChild(GiveOwnership(btnCamAuto));
+                pH->AddChild(GiveOwnership(m_btnCamAuto));
+                pH->AddChild(GiveOwnership(btnCamAll));
                 pH->AddChild(GiveOwnership(btnCamReset));
                 pH->AddStretch();
                 panelCam->AddChild(GiveOwnership(pH));
@@ -537,6 +553,9 @@ namespace open3d
                     if (m_bScanning)
                     {
                         m_btnScanStart->SetText("        Stop        ");
+                        m_btnOpenPC->SetEnabled(false);
+                        m_btnSavePC->SetEnabled(false);
+                        m_btnSaveRGB->SetEnabled(false);
                         m_btnNewVertexSet->SetEnabled(false);
                         m_btnDeleteVertexSet->SetEnabled(false);
                         m_listVertexSet->SetEnabled(false);
@@ -548,6 +567,9 @@ namespace open3d
                     else
                     {
                         m_btnScanStart->SetText("        Start        ");
+                        m_btnOpenPC->SetEnabled(true);
+                        m_btnSavePC->SetEnabled(true);
+                        m_btnSaveRGB->SetEnabled(true);
                         m_btnNewVertexSet->SetEnabled(true);
                         m_btnDeleteVertexSet->SetEnabled(true);
                         m_listVertexSet->SetEnabled(true);

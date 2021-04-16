@@ -342,10 +342,7 @@ namespace kai
 		if (io::ReadPointCloud((const char *)pD, *pV->m_sPC.next()))
 			pV->updatePC();
 
-		PointCloud *pPC = pV->m_sPC.get();
-		IF_(pPC->IsEmpty());
-		pV->m_aabb = pPC->GetAxisAlignedBoundingBox();
-		pV->addUIpc(*pPC);
+		pV->m_fProcess.set(pcfResetPC);
 	}
 
 	void _PCscan::OnBtnCamSet(void *pPCV, void *pD)

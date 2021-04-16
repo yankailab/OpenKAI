@@ -189,14 +189,21 @@ namespace open3d
 
 				//UI components
 				Vert *m_panelCtrl;
-				Button *m_btnScanStart;
+
+				Button* m_btnCamAuto;
+
+				Button* m_btnOpenPC;
+				Button* m_btnSavePC;
+				Button* m_btnSaveRGB;
 
 				Slider* m_sliderVsize;
 				Button* m_btnHiddenRemove;
 				Button* m_btnFilterReset;
 
+				Button *m_btnScanStart;
 				ProgressBar *m_progScan;
 				Label *m_labelProg;
+
 				Button *m_btnNewVertexSet;
 				Button *m_btnDeleteVertexSet;
 				ListView *m_listVertexSet;
