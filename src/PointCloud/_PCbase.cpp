@@ -26,7 +26,10 @@ namespace kai
         m_vAxisK.init(1.0);
         m_unitK = 1.0;
         m_vRange.init(0.0, 1000.0);
-        m_vColOvrr.init(-1.0);
+        
+        m_shade = pcShade_original;
+        m_vShadeCol.init(1.0);
+        m_rShadePosCol = 1000.0;
 
         m_pInCtx.init();
     }
@@ -40,7 +43,11 @@ namespace kai
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        pK->v("vColOvrr", &m_vColOvrr);
+        pK->v("shade", (int*)&m_shade);
+        pK->v("vShadeCol", &m_vShadeCol);
+        pK->v("rShadePosCol", &m_rShadePosCol);
+        m_rShadePosCol = 1.0/m_rShadePosCol;
+
         pK->v("vAxisIdx", &m_vAxisIdx);
         pK->v("vAxisK", &m_vAxisK);
         pK->v("unitK", &m_unitK);

@@ -24,6 +24,12 @@ namespace kai
         pc_lattice = 2,
     };
 
+    enum PC_SHADE{
+        pcShade_original = 0,
+        pcShade_colOvrr = 1,
+        pcShade_colPos = 2,
+    };
+
     struct PC_POINT
     {
         Vector3d m_vP; //pos
@@ -111,7 +117,9 @@ namespace kai
         PC_PIPIN_CTX m_pInCtx;
 
         //color override
-  		vFloat3 m_vColOvrr;
+        PC_SHADE m_shade;
+  		vFloat3 m_vShadeCol;
+        float m_rShadePosCol;
     };
 
 }

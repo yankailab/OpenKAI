@@ -254,7 +254,7 @@ namespace kai
 	void _PCscan::updateSlam(void)
 	{
 		IF_(check() < 0);
-		IF_(!m_fProcess.b(pcfScanning));
+		IF_(!m_fProcess.b(pcfScanning, false));
 
 		auto mT = m_pSB->mT();
 		for (int i = 0; i < m_vpPCB.size(); i++)

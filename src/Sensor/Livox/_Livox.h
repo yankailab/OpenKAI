@@ -49,9 +49,7 @@ public:
     bool m_bOpen;
     string m_broadcastCode;
     LivoxLidar* m_pL;
-    uint32_t m_iTransformed;
-    
-    vDouble3 m_vCol;
+    uint32_t m_iTransformed;    
 };
 
 }

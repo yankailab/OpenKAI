@@ -14,8 +14,6 @@ namespace kai
         m_bOpen = false;
         m_pL = NULL;
         m_iTransformed = 0;
-
-        m_vCol.init(-1.0, -1.0, -1.0);
     }
 
     _Livox::~_Livox()
@@ -28,7 +26,6 @@ namespace kai
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("broadcastCode", &m_broadcastCode);
-        pK->v("vCol", &m_vCol);
 
         string n;
         n = "";
@@ -129,14 +126,14 @@ namespace kai
     void _Livox::addP(LivoxRawPoint *pP, uint64_t &tStamp)
     {
         Vector3d vP(pP->x, pP->y, pP->z);
-        Vector3d vC(m_vCol.x, m_vCol.y, m_vCol.z);
+        Vector3d vC(m_vShadeCol.x, m_vShadeCol.y, m_vShadeCol.z);
         add(vP, vC, tStamp);
     }
 
     void _Livox::addP(LivoxExtendRawPoint *pP, uint64_t &tStamp)
     {
         Vector3d vP(pP->x, pP->y, pP->z);
-        Vector3d vC(m_vCol.x, m_vCol.y, m_vCol.z);
+        Vector3d vC(m_vShadeCol.x, m_vShadeCol.y, m_vShadeCol.z);
         add(vP, vC, tStamp);
     }
 
@@ -144,7 +141,7 @@ namespace kai
     {
         Vector3d vP1(pP->x1, pP->y1, pP->z1);
         Vector3d vP2(pP->x2, pP->y2, pP->z2);
-        Vector3d vC(m_vCol.x, m_vCol.y, m_vCol.z);
+        Vector3d vC(m_vShadeCol.x, m_vShadeCol.y, m_vShadeCol.z);
         add(vP1, vC, tStamp);
         add(vP2, vC, tStamp);
     }
@@ -154,7 +151,7 @@ namespace kai
         Vector3d vP1(pP->x1, pP->y1, pP->z1);
         Vector3d vP2(pP->x2, pP->y2, pP->z2);
         Vector3d vP3(pP->x3, pP->y3, pP->z3);
-        Vector3d vC(m_vCol.x, m_vCol.y, m_vCol.z);
+        Vector3d vC(m_vShadeCol.x, m_vShadeCol.y, m_vShadeCol.z);
         add(vP1, vC, tStamp);
         add(vP2, vC, tStamp);
         add(vP3, vC, tStamp);
