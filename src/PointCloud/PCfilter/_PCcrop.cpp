@@ -96,7 +96,7 @@ bool _PCcrop::bFilter(Eigen::Vector3d& vP)
 	for (POINTCLOUD_VOL v : m_vFilter)
 	{
 		vFloat3 vf;
-		vf = vP;
+		vf = vP.cast<float>();
 		IF_CONT(v.bValid(vf));
 		return false;
 	}

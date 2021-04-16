@@ -58,7 +58,7 @@ namespace kai
         m_bAccept = b;
     }
 
-    void _PCstream::add(const Vector3d &vP, const Vector3d &vC, uint64_t tStamp)
+    void _PCstream::add(const Vector3d &vP, const Vector3f &vC, uint64_t tStamp)
     {
         NULL_(m_pP);
         IF_(!m_bAccept);

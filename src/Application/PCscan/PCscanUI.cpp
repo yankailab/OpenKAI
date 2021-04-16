@@ -522,13 +522,6 @@ namespace open3d
                 pG->AddChild(GiveOwnership(m_btnFilterReset));
                 panelView->AddChild(GiveOwnership(pG));
 
-                // pH = new Horiz(v_spacing);
-                // pH->AddChild(GiveOwnership(m_btnHiddenRemove));
-                // pH->AddStretch();
-                // pH->AddChild(GiveOwnership(m_btnFilterReset));
-                // pH->AddStretch();
-                // panelView->AddChild(GiveOwnership(pH));
-
                 // Scan
                 auto panelScan = new CollapsableVert("SCAN", v_spacing, margins);
                 m_panelCtrl->AddChild(GiveOwnership(panelScan));

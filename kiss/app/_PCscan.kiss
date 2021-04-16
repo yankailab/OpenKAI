@@ -35,7 +35,7 @@
 	"vWinSize":[1920,1080],
 	"pathRes":"/home/kai/dev/Open3D/build/bin/resources",
 	"device":"CPU:0",
-	"vPCbase":["pcFile","pcRS","/pcLivox"],
+	"vPCbase":["pcFile","pcRS","pcLivox"],
 	"_SlamBase":"T265",
 	"_PCstream":"pcLivox",
 	"vCamCenter":[0,0,0],
@@ -52,7 +52,7 @@
 	"dHiddenRemove":100.0,
 	"shade":2,
 	"vShadeCol":[1.0, 1.0, 1.0],
-	"rShadePosCol":10.0,
+	"rShadePosCol":20.0,
 }
 
 {

@@ -308,10 +308,9 @@ namespace kai
 		IF_(check() < 0);
 		IF_(!m_spWin);
 
-		Vector3f vCenter(m_vCamCenter.x, m_vCamCenter.y, m_vCamCenter.z);
-		Vector3f vEye(m_vCamEye.x, m_vCamEye.y, m_vCamEye.z);
-		Vector3f vUp(m_vCamUp.x, m_vCamUp.y, m_vCamUp.z);
-		m_spWin->CamSetPose(vCenter, vEye, vUp);
+		m_spWin->CamSetPose(m_vCamCenter.v3f(),
+							m_vCamEye.v3f(),
+							m_vCamUp.v3f());
 	}
 
 	void _PCscan::camBound(const AxisAlignedBoundingBox &aabb)
@@ -319,8 +318,7 @@ namespace kai
 		IF_(check() < 0);
 		IF_(!m_spWin);
 
-		Vector3f cor(m_vCamCoR.x, m_vCamCoR.y, m_vCamCoR.z);
-		m_spWin->CamAutoBound(aabb, cor);
+		m_spWin->CamAutoBound(aabb, m_vCamCoR.v3f());
 	}
 
 	void _PCscan::OnBtnScan(void *pPCV, void *pD)

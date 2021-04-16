@@ -17,14 +17,16 @@ using namespace Eigen;
 
 namespace kai
 {
-    enum PC_TYPE{
+    enum PC_TYPE
+    {
         pc_unknown = -1,
         pc_stream = 0,
         pc_frame = 1,
         pc_lattice = 2,
     };
 
-    enum PC_SHADE{
+    enum PC_SHADE
+    {
         pcShade_original = 0,
         pcShade_colOvrr = 1,
         pcShade_colPos = 2,
@@ -33,13 +35,13 @@ namespace kai
     struct PC_POINT
     {
         Vector3d m_vP; //pos
-        Vector3d m_vC; //color
+        Vector3f m_vC; //color
         uint64_t m_tStamp;
 
         void init(void)
         {
-            m_vP = Vector3d(0.0, 0.0, 0.0);
-            m_vC = Vector3d(0.0, 0.0, 0.0);
+            m_vP = Vector3d(0,0,0);
+            m_vC = Vector3f(0,0,0);
             m_tStamp = 0;
         }
     };

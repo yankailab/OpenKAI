@@ -140,9 +140,9 @@ void _PCrecv::decodeStream(void)
         x = unpack_int16(&m_recvMsg.m_pB[i+6], false);
         y = unpack_int16(&m_recvMsg.m_pB[i+8], false);
         z = unpack_int16(&m_recvMsg.m_pB[i+10], false);
-        Eigen::Vector3d vC(((double)x)*PC_SCALE_INV,
-                            ((double)y)*PC_SCALE_INV,
-                            ((double)z)*PC_SCALE_INV);
+        Eigen::Vector3f vC(((float)x)*PC_SCALE_INV,
+                            ((float)y)*PC_SCALE_INV,
+                            ((float)z)*PC_SCALE_INV);
 
 		add(vP, vC, m_pT->getTfrom());
     }

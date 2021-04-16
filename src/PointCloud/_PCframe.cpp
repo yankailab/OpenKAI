@@ -86,14 +86,14 @@ namespace kai
             IF_CONT(pP->m_tStamp <= tFrom);
 
 
-            Vector3d C = pP->m_vC;
+            Vector3f C = pP->m_vC;
             if (m_shade == pcShade_colOvrr)
             {
-                C = Vector3d(m_vShadeCol.x, m_vShadeCol.y, m_vShadeCol.z);
+                C = m_vShadeCol.v3f();
             }
             else if (m_shade == pcShade_colPos)
             {
-                C = Vector3d(
+                C = Vector3f(
                     1.0 - abs(pP->m_vP[0]) * m_rShadePosCol,
                     1.0 - abs(pP->m_vP[1]) * m_rShadePosCol,
                     1.0 - abs(pP->m_vP[2]) * m_rShadePosCol
@@ -105,7 +105,7 @@ namespace kai
             }
 
             pPC->points_.push_back(pP->m_vP);
-            pPC->colors_.push_back(C);
+            pPC->colors_.push_back(C.cast<double>());
             m_nPread++;
         }
     }
@@ -130,11 +130,7 @@ namespace kai
     {
         NULL_(pPC);
 
-        pPC->PaintUniformColor(
-            Vector3d(
-                m_vShadeCol.x,
-                m_vShadeCol.y,
-                m_vShadeCol.z));
+        pPC->PaintUniformColor(m_vShadeCol.v3f().cast<double>());
     }
 
     int _PCframe::size(void)

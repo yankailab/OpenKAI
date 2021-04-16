@@ -96,11 +96,11 @@ struct vFloat3
 		z = r;
 	}
 
-	inline void operator=(Eigen::Vector3d& r)
+	inline void operator=(Eigen::Vector3f r)
     {
-		x = r.x();
-		y = r.y();
-		z = r.z();
+		x = r[0];
+		y = r[1];
+		z = r[2];
 	}
 
 	inline void operator+=(vFloat3 r)
@@ -147,6 +147,11 @@ struct vFloat3
 		IF_F(z != r.z);
 
 		return true;
+	}
+
+	Eigen::Vector3f v3f(void)
+	{
+		return Eigen::Vector3f(x,y,z);
 	}
 
 	float len(void)
