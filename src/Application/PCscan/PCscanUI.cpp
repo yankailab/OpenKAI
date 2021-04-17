@@ -27,12 +27,12 @@ namespace open3d
                 Init();
                 Application::GetInstance().SetMenubar(NULL);
 
-//                glfwGetWindowSize(window_, &saved_window_size_(0), &saved_window_size_(1));
-//        glfwGetWindowPos(window_, &saved_window_pos_(0), &saved_window_pos_(1));
-        // GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-        // const GLFWvidmode *mode = glfwGetVideoMode(monitor);
-        // glfwSetWindowMonitor(window_, monitor, 0, 0, mode->width, mode->height,
-        //                      mode->refreshRate);
+                //                glfwGetWindowSize(window_, &saved_window_size_(0), &saved_window_size_(1));
+                //        glfwGetWindowPos(window_, &saved_window_pos_(0), &saved_window_pos_(1));
+                // GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+                // const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+                // glfwSetWindowMonitor(window_, monitor, 0, 0, mode->width, mode->height,
+                //                      mode->refreshRate);
             }
 
             PCscanUI::~PCscanUI() {}
@@ -51,7 +51,7 @@ namespace open3d
                 m_sVertex = make_shared<O3DVisualizerSelections>(*m_pScene);
                 m_pScene->SetScene(make_shared<Open3DScene>(m_pWindow->GetRenderer()));
                 m_pScene->SetOnPointsPicked(
-                    [this](const map<
+                    [this](const std::map<
                                string,
                                vector<pair<size_t, Vector3d>>>
                                &indices,
@@ -69,13 +69,39 @@ namespace open3d
                     });
                 m_pWindow->AddChild(GiveOwnership(m_pScene));
 
+                m_pScene->SetOnCameraChanged(
+                    [this](Camera *pC) {
+                        int iS = m_listVertexSet->GetSelectedIndex();
+                        size_t nSet = m_sVertex->GetNumberOfSets();
+                        if (iS < 0 || iS >= nSet)
+                            return;
+
+                        std::map<string, set<O3DVisualizerSelections::SelectedIndex>> msSI;
+                        msSI = m_sVertex->GetSets().at(iS);
+                        set<O3DVisualizerSelections::SelectedIndex> sSI = msSI[m_modelName];
+                        int nP = sSI.size();
+
+                        if (nP <= 0)
+                            return;
+
+                        //update selected point size based on its pos related to camera
+                        m_uiState.m_vCamPos = pC->GetPosition();
+                        float dAvr = 0.0;
+                        for (O3DVisualizerSelections::SelectedIndex s : sSI)
+                        {
+                            dAvr += (m_uiState.m_vCamPos - s.point.cast<float>()).norm();
+                        }
+                        dAvr /= (float)nP;
+                        SetSelectedPointSize(constrain(dAvr / 100.0, 0.025, 100.0));
+                    });
+
                 InitCtrlPanel();
                 UpdateUIstate();
                 SetMouseCameraMode();
             }
 
             void PCscanUI::AddGeometry(const string &name,
-                                       shared_ptr<geometry::Geometry3D> sTg,
+                                       shared_ptr<geometry::Geometry3D> spG,
                                        rendering::Material *material,
                                        bool bVisible)
             {
@@ -92,9 +118,9 @@ namespace open3d
                     bool has_colors = false;
                     bool has_normals = false;
 
-                    auto cloud = dynamic_pointer_cast<geometry::PointCloud>(sTg);
-                    auto lines = dynamic_pointer_cast<geometry::LineSet>(sTg);
-                    auto mesh = dynamic_pointer_cast<geometry::MeshBase>(sTg);
+                    auto cloud = dynamic_pointer_cast<geometry::PointCloud>(spG);
+                    auto lines = dynamic_pointer_cast<geometry::LineSet>(spG);
+                    auto mesh = dynamic_pointer_cast<geometry::MeshBase>(spG);
 
                     if (cloud)
                     {
@@ -132,10 +158,10 @@ namespace open3d
                     mat.point_size = ConvertToScaledPixels(m_uiState.m_pointSize);
                 }
 
-                m_vObject.push_back({name, sTg, nullptr, mat, bVisible});
+                m_vObject.push_back({name, spG, nullptr, mat, bVisible});
 
                 auto scene = m_pScene->GetScene();
-                scene->AddGeometry(name, sTg.get(), mat);
+                scene->AddGeometry(name, spG.get(), mat);
                 scene->GetScene()->GeometryShadows(name, false, false);
                 scene->ShowGeometry(name, bVisible);
 
@@ -272,6 +298,7 @@ namespace open3d
                 pO3DScene->SetLighting(Open3DScene::LightingProfile::NO_SHADOWS, m_uiState.m_vSunDir);
 
                 SetPointSize(m_uiState.m_pointSize);
+                SetSelectedPointSize(m_uiState.m_selectPointSize);
                 SetLineWidth(m_uiState.m_lineWidth);
 
                 m_pWindow->SetNeedsLayout();
@@ -281,18 +308,23 @@ namespace open3d
             void PCscanUI::SetPointSize(int px)
             {
                 m_uiState.m_pointSize = px;
-
                 px = int(ConvertToScaledPixels(px));
                 for (auto &o : m_vObject)
                 {
                     o.m_material.point_size = float(px);
                     m_pScene->GetScene()->GetScene()->OverrideMaterial(o.m_name, o.m_material);
                 }
-
-                if (m_sVertex->GetNumberOfSets())
-                    m_sVertex->SetPointSize(m_uiState.m_selectPointSize);
-
                 m_pScene->SetPickablePointSize(px);
+
+                m_pScene->ForceRedraw();
+            }
+
+            void PCscanUI::SetSelectedPointSize(double px)
+            {
+                m_uiState.m_selectPointSize = px;
+                IF_(!m_sVertex->GetNumberOfSets());
+
+                m_sVertex->SetPointSize(m_uiState.m_selectPointSize);
                 m_pScene->ForceRedraw();
             }
 
@@ -493,7 +525,7 @@ namespace open3d
                 panelCam->AddChild(GiveOwnership(pH));
 
                 // View
-                auto panelView = new CollapsableVert("VIEW", v_spacing, margins);
+                auto panelView = new CollapsableVert("FILTER", v_spacing, margins);
                 panelView->SetIsOpen(true);
                 m_panelCtrl->AddChild(GiveOwnership(panelView));
 
@@ -513,11 +545,33 @@ namespace open3d
                     m_pScene->ForceRedraw();
                 });
 
+                m_sliderORemovN = new Slider(Slider::INT);
+                m_sliderORemovN->SetLimits(0, 20);
+                m_sliderORemovN->SetValue(m_uiState.m_oRemovN);
+                m_sliderORemovN->SetOnValueChanged([this](const double v) {
+                     m_uiState.m_oRemovN = v;
+                    // m_cbVoxelDown.call(&m_uiState);
+                    m_pScene->ForceRedraw();
+                });
+
+                m_sliderORemovD = new Slider(Slider::DOUBLE);
+                m_sliderORemovD->SetLimits(0, 10.0);
+                m_sliderORemovD->SetValue(m_uiState.m_oRemovD);
+                m_sliderORemovD->SetOnValueChanged([this](const double v) {
+                     m_uiState.m_oRemovD = v;
+                    // m_cbVoxelDown.call(&m_uiState);
+                    m_pScene->ForceRedraw();
+                });
+
                 auto *pG = new VGrid(2, v_spacing);
                 pG->AddChild(make_shared<Label>("PointSize"));
                 pG->AddChild(GiveOwnership(sliderPointSize));
                 pG->AddChild(make_shared<Label>("VoxelSize"));
                 pG->AddChild(GiveOwnership(m_sliderVsize));
+                pG->AddChild(make_shared<Label>("O-remove N"));
+                pG->AddChild(GiveOwnership(m_sliderORemovN));
+                pG->AddChild(make_shared<Label>("O-remove D"));
+                pG->AddChild(GiveOwnership(m_sliderORemovD));
                 panelView->AddChild(GiveOwnership(pG));
 
                 m_btnHiddenRemove = new Button(" Z-Culling ");
@@ -728,6 +782,8 @@ namespace open3d
             {
                 int iS = m_listVertexSet->GetSelectedIndex();
                 size_t nSet = m_sVertex->GetNumberOfSets();
+
+                //no vertex set is selecrted
                 if (iS < 0 || iS >= nSet)
                 {
                     RemoveGeometry(m_areaName);
@@ -736,17 +792,20 @@ namespace open3d
                 }
 
                 //draw polygon
-                map<string, set<O3DVisualizerSelections::SelectedIndex>> msSI;
+                std::map<string, set<O3DVisualizerSelections::SelectedIndex>> msSI;
                 msSI = m_sVertex->GetSets().at(iS);
                 set<O3DVisualizerSelections::SelectedIndex> sSI = msSI[m_modelName];
                 int nP = sSI.size();
-                if (nP < 3)
+
+                //only one point is slected
+                if (nP < 2)
                 {
                     RemoveGeometry(m_areaName);
                     RemoveDistLabel();
                     return;
                 }
 
+                //Make a line if more than a line is selected
                 vector<O3DVisualizerSelections::SelectedIndex> vSI;
                 for (O3DVisualizerSelections::SelectedIndex sI : sSI)
                 {
@@ -774,6 +833,12 @@ namespace open3d
                     spLS->colors_.push_back(m_uiState.m_vAreaLineCol);
                 }
 
+                if (nP < 3)
+                {
+                    spLS->lines_.erase(spLS->lines_.end());
+                    spLS->colors_.erase(spLS->colors_.end());
+                }
+
                 RemoveGeometry(m_areaName);
                 AddGeometry(m_areaName, spLS);
 
@@ -796,17 +861,26 @@ namespace open3d
                     m_vspDistLabel.push_back(spL);
                 }
 
-                double S = Area(spLS->points_);
-                string strS = "Area = " + f2str(S, 3) + " m^2";
-                vPa /= nP;
-                Vector3f vPaf = Vector3f(vPa.x(), vPa.y(), vPa.z());
-                shared_ptr<Label3D> spA = m_pScene->AddLabel(vPaf, strS.c_str());
-                spA->SetPosition(vPaf);
-                spA->SetTextColor(Color(1, 1, 1));
-                m_vspDistLabel.push_back(spA);
+                if (nP < 3)
+                {
+                    m_pScene->RemoveLabel(m_vspDistLabel.back());
+                    m_vspDistLabel.erase(m_vspDistLabel.end());
+                }
+                else
+                {
+                    double S = Area(spLS->points_);
+                    string strS = "Area = " + f2str(S, 3) + " m^2";
+                    vPa /= nP;
+                    Vector3f vPaf = Vector3f(vPa.x(), vPa.y(), vPa.z());
+                    shared_ptr<Label3D> spA = m_pScene->AddLabel(vPaf, strS.c_str());
+                    spA->SetPosition(vPaf);
+                    spA->SetTextColor(Color(1, 1, 1));
+                    m_vspDistLabel.push_back(spA);
 
-                strS = "Area" + i2str(iS + 1) + " = " + f2str(S, 3) + " m^2";
-                SetLabelArea(strS);
+                    strS = "Area" + i2str(iS + 1) + " = " + f2str(S, 3) + " m^2";
+                    SetLabelArea(strS);
+                }
+
                 m_pWindow->PostRedraw();
             }
 
@@ -858,7 +932,7 @@ namespace open3d
                 dlg->SetOnCancel([this]() { this->m_pWindow->CloseDialog(); });
                 dlg->SetOnDone([this](const char *path) {
                     this->m_pWindow->CloseDialog();
-                    
+
                     ShowMsg("Save", "Saving .Ply file");
                     io::WritePointCloudOption par;
                     par.write_ascii = io::WritePointCloudOption::IsAscii::Binary;

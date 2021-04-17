@@ -1,6 +1,7 @@
 #pragma once
 #ifdef USE_OPEN3D
 #include "../../Base/open3d.h"
+#include "../../Utility/util.h"
 #include "../../Utility/utilStr.h"
 #include <set>
 #include <unordered_map>
@@ -9,6 +10,7 @@ using namespace open3d::visualization::gui;
 using namespace open3d::visualization::rendering;
 using namespace std;
 using namespace Eigen;
+using namespace kai;
 
 typedef void (*OnBtnClickedCb)(void *pPCV, void *pD);
 struct O3D_UI_Cb
@@ -83,6 +85,9 @@ namespace open3d
 				int m_pointSize = 2;
 				double m_selectPointSize = 0.025;
 				double m_voxelSize = 0.01;
+				int m_oRemovN = 10;
+				double m_oRemovD = 0.1;
+
 				int m_lineWidth = 5;
 				Vector4f m_vBgCol = {0.0f, 0.0f, 0.0f, 0.0f};
 				Vector3f m_vSunDir = {0.0f, 0.0f, 0.0f};
@@ -102,7 +107,7 @@ namespace open3d
 				void Init(void);
 
 				void AddGeometry(const string &name,
-								 shared_ptr<geometry::Geometry3D> sTg,
+								 shared_ptr<geometry::Geometry3D> spG,
 								 rendering::Material *material = nullptr,
 								 bool bVisible = true);
 				void AddPointCloud(const string &name,
@@ -131,6 +136,7 @@ namespace open3d
 				UIState *getUIState(void);
 				void UpdateUIstate(void);
             	void SetPointSize(int px);
+            	void SetSelectedPointSize(double px);
     	        void SetLineWidth(int px);
 
 				DrawObject GetGeometry(const string &name) const;
@@ -195,6 +201,9 @@ namespace open3d
 				Button* m_btnOpenPC;
 				Button* m_btnSavePC;
 				Button* m_btnSaveRGB;
+
+				Slider* m_sliderORemovN;
+				Slider* m_sliderORemovD;
 
 				Slider* m_sliderVsize;
 				Button* m_btnHiddenRemove;
