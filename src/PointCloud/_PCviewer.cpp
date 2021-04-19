@@ -18,12 +18,7 @@ namespace kai
 		m_pTui = NULL;
 		m_pathRes = "";
 		m_device = "CPU:0";
-
-		m_camProj.init();
-		m_vCamCenter.init(0);
-		m_vCamEye.init(0, 0, 1);
-		m_vCamUp.init(0, 1, 0);
-		m_vCamCoR.init(0, 0, 0);
+		m_vCoR.init(0, 0, 0);
 	}
 
 	_PCviewer::~_PCviewer()
@@ -44,10 +39,16 @@ namespace kai
 		pK->v("vCamNF", &m_camProj.m_vNF);
 		pK->v("camFovType", &m_camProj.m_fovType);
 
-		pK->v("vCamCenter", &m_vCamCenter);
-		pK->v("vCamEye", &m_vCamEye);
-		pK->v("vCamUp", &m_vCamUp);
-		pK->v("vCamCoR", &m_vCamCoR);
+		pK->v("vCamLookAt", &m_camDefault.m_vLookAt);
+		pK->v("vCamEye", &m_camDefault.m_vEye);
+		pK->v("vCamUp", &m_camDefault.m_vUp);
+		m_cam = m_camDefault;
+
+		pK->v("vCamAutoLookAt", &m_camAuto.m_vLookAt);
+		pK->v("vCamAutoEye", &m_camAuto.m_vEye);
+		pK->v("vCamAutoUp", &m_camAuto.m_vUp);
+
+		pK->v("vCoR", &m_vCoR);
 
 		utility::SetVerbosityLevel(utility::VerbosityLevel::Error);
 
@@ -160,17 +161,11 @@ namespace kai
 				IF_(++k >= n);
 			}
 		}
+	}
 
-		// double pFrom = -l*0.5;
-		// double d = l / n;
-		// for(int i=0; i<n; i++)
-		// {
-		// 	Vector3d vP(0,0,0);
-		// 	vP[iAxis] = pFrom + i * d;
-			
-		// 	pPC->points_.push_back(vP);
-		// 	pPC->colors_.push_back(vCol);
-		// }
+	void _PCviewer::resetCamPose(void)
+	{
+		m_cam = m_camDefault;
 	}
 
 	void _PCviewer::updateUI(void)

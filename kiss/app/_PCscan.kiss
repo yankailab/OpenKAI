@@ -21,7 +21,7 @@
 	"bInst":1,
     {
 		"name":"thread",
-		"FPS":2,
+		"FPS":5,
 	}
     {
 		"name":"threadK",
@@ -38,16 +38,18 @@
 	"vPCbase":["pcFile","pcRS","pcLivox"],
 	"_SlamBase":"T265",
 	"_PCstream":"pcLivox",
-	"vCamCenter":[0,0,0],
-	"vCamEye":[0,0,1],
+	"vCamLookAt":[0,0,0],
+	"vCamEye":[0,0,2],
 	"vCamUp":[0,1,0],
-	"vCamCoR":[0,0,0],
+	"vCamAutoLookAt":[0,0,0],
+	"vCamAutoEye":[0,-2,0],
+	"vCamAutoUp":[0,1,0],
+	"vCoR":[0,0,0],
 	"camFov":70,
 	"camAspect":1.8,
 	"vCamNF":[0, 200],
 	"camFovType":1,
 	"bSceneCache":0,
-	"selectPointSize":0.025,
 	"rDummyDome":1000.0,
 	"dHiddenRemove":100.0,
 	"shade":2,
@@ -58,7 +60,7 @@
 {
 	"name":"pcFile",
 	"class":"_PCfile",
-	"bInst":1,
+	"bInst":0,
     {
 		"name":"thread",
 		"FPS":30,

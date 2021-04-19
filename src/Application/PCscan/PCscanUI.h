@@ -83,16 +83,14 @@ namespace open3d
 
 				int m_panelWidth = 15;
 				int m_pointSize = 2;
-				double m_selectPointSize = 0.025;
 				double m_voxelSize = 0.01;
 				int m_oRemovN = 10;
 				double m_oRemovD = 0.1;
 
-				int m_lineWidth = 5;
+				int m_lineWidth = 10;
 				Vector4f m_vBgCol = {0.0f, 0.0f, 0.0f, 0.0f};
 				Vector3f m_vSunDir = {0.0f, 0.0f, 0.0f};
                 Vector3d m_vAreaLineCol = Vector3d(1.0, 0.0, 1.0);
-
 				Vector3f m_vCamPos;
 			};
 
@@ -191,23 +189,25 @@ namespace open3d
 				string m_modelName;
 				string m_areaName;
 				bool m_bScanning;
+				bool m_bCamAuto;
 				vector<shared_ptr<Label3D>> m_vspDistLabel;
 
 				//UI components
 				Vert *m_panelCtrl;
 
-				Button* m_btnCamAuto;
-
 				Button* m_btnOpenPC;
 				Button* m_btnSavePC;
 				Button* m_btnSaveRGB;
 
-				Slider* m_sliderORemovN;
-				Slider* m_sliderORemovD;
+				Button* m_btnCamAuto;
+				Button* m_btnCamAll;
+				Button* m_btnCamOrigin;
 
 				Slider* m_sliderVsize;
 				Button* m_btnHiddenRemove;
 				Button* m_btnFilterReset;
+				// Slider* m_sliderORemovN;
+				// Slider* m_sliderORemovD;
 
 				Button *m_btnScanStart;
 				ProgressBar *m_progScan;

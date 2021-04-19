@@ -20,7 +20,6 @@ namespace kai
 		m_modelName = "PCMODEL";
 
 		m_bSceneCache = false;
-		m_selectPointSize = 0.025;
 		m_rDummyDome = 1000.0;
 		m_dHiddenRemove = 100.0;
 
@@ -38,7 +37,6 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("bSceneCache", &m_bSceneCache);
-		pK->v("selectPointSize", &m_selectPointSize);
 		pK->v("rDummyDome", &m_rDummyDome);
 		pK->v("dHiddenRemove", &m_dHiddenRemove);
 
@@ -111,6 +109,9 @@ namespace kai
 				updateProcess();
 			}
 
+			if (m_fProcess.b(pcfCamAuto, false))
+				updateCamAuto();
+
 			m_pT->autoFPSto();
 		}
 	}
@@ -176,6 +177,18 @@ namespace kai
 
 		updateUIpc(pc);
 		m_spWin->SetProgressBar((float)m_pPS->iP() / (float)m_pPS->nP());
+	}
+
+	void _PCscan::updateCamAuto(void)
+	{
+		IF_(check() < 0);
+
+		Eigen::Affine3f A;
+		A = m_pSB->mT().cast<float>();
+		m_cam.m_vEye = A * m_camAuto.m_vEye.v3f();
+		m_cam.m_vLookAt = A * m_camAuto.m_vLookAt.v3f();
+
+		updateCamPose();
 	}
 
 	void _PCscan::updateProcess(void)
@@ -281,7 +294,6 @@ namespace kai
 
 		visualizer::UIState *pU = m_spWin->getUIState();
 		pU->m_bSceneCache = m_bSceneCache;
-		pU->m_selectPointSize = m_selectPointSize;
 		m_spWin->UpdateUIstate();
 		updateCamProj();
 		updateCamPose();
@@ -308,9 +320,9 @@ namespace kai
 		IF_(check() < 0);
 		IF_(!m_spWin);
 
-		m_spWin->CamSetPose(m_vCamCenter.v3f(),
-							m_vCamEye.v3f(),
-							m_vCamUp.v3f());
+		m_spWin->CamSetPose(m_cam.m_vLookAt.v3f(),
+							m_cam.m_vEye.v3f(),
+							m_cam.m_vUp.v3f());
 	}
 
 	void _PCscan::camBound(const AxisAlignedBoundingBox &aabb)
@@ -318,7 +330,7 @@ namespace kai
 		IF_(check() < 0);
 		IF_(!m_spWin);
 
-		m_spWin->CamAutoBound(aabb, m_vCamCoR.v3f());
+		m_spWin->CamAutoBound(aabb, m_vCoR.v3f());
 	}
 
 	void _PCscan::OnBtnScan(void *pPCV, void *pD)
@@ -350,15 +362,25 @@ namespace kai
 		NULL_(pPCV);
 		NULL_(pD);
 		_PCscan *pV = (_PCscan *)pPCV;
-		bool bAuto = *(bool *)pD;
+		int camMode = *(int *)pD;
 
-		if (!bAuto || pV->m_sPC.get()->points_.empty())
+		if(camMode == 0)	//auto off
 		{
-			pV->updateCamPose();
-			return;
+			pV->m_fProcess.clear(pcfCamAuto);
 		}
-
-		pV->camBound(pV->m_aabb);
+		else if(camMode == 1)	//auto on
+		{
+			pV->m_fProcess.set(pcfCamAuto);
+		}
+		else if(camMode == 3 || pV->m_sPC.get()->points_.empty())	//origin or no point data
+		{
+			pV->resetCamPose();
+			pV->updateCamPose();	
+		}
+		else if(camMode == 4)	//all
+		{
+			pV->camBound(pV->m_aabb);
+		}
 	}
 
 	void _PCscan::OnBtnHiddenRemove(void *pPCV, void *pD)

@@ -24,6 +24,7 @@ namespace kai
 		static const int pcfVoxelDown = 3;
 		static const int pcfHiddenRemove = 4;
 		static const int pcfResetPC = 5;
+		static const int pcfCamAuto = 6;
 	}
 
 	class _PCscan : public _PCviewer
@@ -42,6 +43,7 @@ namespace kai
 		virtual void updateProcess(void);
 		virtual void startScan(void);
 		virtual void stopScan(void);
+		virtual void updateCamAuto(void);
 		virtual void updateScan(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
@@ -84,7 +86,6 @@ namespace kai
 		_SlamBase *m_pSB;
 
 		bool m_bSceneCache;
-		float m_selectPointSize;
 		float m_rDummyDome;
 		float m_dHiddenRemove;
 		AxisAlignedBoundingBox m_aabb;

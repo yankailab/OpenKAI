@@ -43,6 +43,7 @@ namespace open3d
                     return;
 
                 m_bScanning = false;
+                m_bCamAuto = false;
                 m_modelName = "PCMODEL";
                 m_areaName = "PCAREA";
 
@@ -270,8 +271,6 @@ namespace open3d
             {
                 auto sCam = m_pScene->GetScene()->GetCamera();
                 sCam->LookAt(center, eye, up);
-
-                m_pScene->ForceRedraw();
             }
 
             void PCscanUI::CamAutoBound(const geometry::AxisAlignedBoundingBox &aabb,
@@ -296,9 +295,7 @@ namespace open3d
                 pO3DScene->ShowAxes(m_uiState.m_bShowAxes);
                 pO3DScene->SetBackground(m_uiState.m_vBgCol, nullptr);
                 pO3DScene->SetLighting(Open3DScene::LightingProfile::NO_SHADOWS, m_uiState.m_vSunDir);
-
                 SetPointSize(m_uiState.m_pointSize);
-                SetSelectedPointSize(m_uiState.m_selectPointSize);
                 SetLineWidth(m_uiState.m_lineWidth);
 
                 m_pWindow->SetNeedsLayout();
@@ -321,10 +318,8 @@ namespace open3d
 
             void PCscanUI::SetSelectedPointSize(double px)
             {
-                m_uiState.m_selectPointSize = px;
                 IF_(!m_sVertex->GetNumberOfSets());
-
-                m_sVertex->SetPointSize(m_uiState.m_selectPointSize);
+                m_sVertex->SetPointSize(px);
                 m_pScene->ForceRedraw();
             }
 
@@ -495,37 +490,52 @@ namespace open3d
 
                 m_btnCamAuto = new Button(" Auto ");
                 m_btnCamAuto->SetOnClicked([this]() {
-                    bool b = true;
-                    m_cbBtnCamSet.call(&b);
+                    m_bCamAuto = !m_bCamAuto;
+                    int m = m_bCamAuto?1:0;
+                    m_cbBtnCamSet.call(&m);
+
+                    if(m_bCamAuto)
+                    {
+                        m_btnCamAuto->SetOn(true);
+                        m_btnCamAll->SetEnabled(false);
+                        m_btnCamOrigin->SetEnabled(false);
+                    }
+                    else
+                    {
+                        m_btnCamAuto->SetOn(false);
+                        m_btnCamAll->SetEnabled(true);
+                        m_btnCamOrigin->SetEnabled(true);
+                    }
+
                     m_pScene->ForceRedraw();
                     SetMouseCameraMode();
                 });
 
-                auto btnCamAll = new Button(" All ");
-                btnCamAll->SetOnClicked([this]() {
-                    bool b = true;
-                    m_cbBtnCamSet.call(&b);
+                m_btnCamAll = new Button(" All ");
+                m_btnCamAll->SetOnClicked([this]() {
+                    int m = 4;
+                    m_cbBtnCamSet.call(&m);
                     m_pScene->ForceRedraw();
                     SetMouseCameraMode();
                 });
 
-                auto btnCamReset = new Button(" Origin ");
-                btnCamReset->SetOnClicked([this]() {
-                    bool b = false;
-                    m_cbBtnCamSet.call(&b);
+                m_btnCamOrigin = new Button(" Origin ");
+                m_btnCamOrigin->SetOnClicked([this]() {
+                    int m = 3;
+                    m_cbBtnCamSet.call(&m);
                     m_pScene->ForceRedraw();
                     SetMouseCameraMode();
                 });
 
                 pH = new Horiz(v_spacing);
                 pH->AddChild(GiveOwnership(m_btnCamAuto));
-                pH->AddChild(GiveOwnership(btnCamAll));
-                pH->AddChild(GiveOwnership(btnCamReset));
+                pH->AddChild(GiveOwnership(m_btnCamAll));
+                pH->AddChild(GiveOwnership(m_btnCamOrigin));
                 pH->AddStretch();
                 panelCam->AddChild(GiveOwnership(pH));
 
                 // View
-                auto panelView = new CollapsableVert("FILTER", v_spacing, margins);
+                auto panelView = new CollapsableVert("VIEW", v_spacing, margins);
                 panelView->SetIsOpen(true);
                 m_panelCtrl->AddChild(GiveOwnership(panelView));
 
@@ -545,33 +555,33 @@ namespace open3d
                     m_pScene->ForceRedraw();
                 });
 
-                m_sliderORemovN = new Slider(Slider::INT);
-                m_sliderORemovN->SetLimits(0, 20);
-                m_sliderORemovN->SetValue(m_uiState.m_oRemovN);
-                m_sliderORemovN->SetOnValueChanged([this](const double v) {
-                     m_uiState.m_oRemovN = v;
-                    // m_cbVoxelDown.call(&m_uiState);
-                    m_pScene->ForceRedraw();
-                });
+                // m_sliderORemovN = new Slider(Slider::INT);
+                // m_sliderORemovN->SetLimits(0, 20);
+                // m_sliderORemovN->SetValue(m_uiState.m_oRemovN);
+                // m_sliderORemovN->SetOnValueChanged([this](const double v) {
+                //      m_uiState.m_oRemovN = v;
+                //     // m_cbVoxelDown.call(&m_uiState);
+                //     m_pScene->ForceRedraw();
+                // });
 
-                m_sliderORemovD = new Slider(Slider::DOUBLE);
-                m_sliderORemovD->SetLimits(0, 10.0);
-                m_sliderORemovD->SetValue(m_uiState.m_oRemovD);
-                m_sliderORemovD->SetOnValueChanged([this](const double v) {
-                     m_uiState.m_oRemovD = v;
-                    // m_cbVoxelDown.call(&m_uiState);
-                    m_pScene->ForceRedraw();
-                });
+                // m_sliderORemovD = new Slider(Slider::DOUBLE);
+                // m_sliderORemovD->SetLimits(0, 10.0);
+                // m_sliderORemovD->SetValue(m_uiState.m_oRemovD);
+                // m_sliderORemovD->SetOnValueChanged([this](const double v) {
+                //      m_uiState.m_oRemovD = v;
+                //     // m_cbVoxelDown.call(&m_uiState);
+                //     m_pScene->ForceRedraw();
+                // });
 
                 auto *pG = new VGrid(2, v_spacing);
                 pG->AddChild(make_shared<Label>("PointSize"));
                 pG->AddChild(GiveOwnership(sliderPointSize));
                 pG->AddChild(make_shared<Label>("VoxelSize"));
                 pG->AddChild(GiveOwnership(m_sliderVsize));
-                pG->AddChild(make_shared<Label>("O-remove N"));
-                pG->AddChild(GiveOwnership(m_sliderORemovN));
-                pG->AddChild(make_shared<Label>("O-remove D"));
-                pG->AddChild(GiveOwnership(m_sliderORemovD));
+                // pG->AddChild(make_shared<Label>("O-remove N"));
+                // pG->AddChild(GiveOwnership(m_sliderORemovN));
+                // pG->AddChild(make_shared<Label>("O-remove D"));
+                // pG->AddChild(GiveOwnership(m_sliderORemovD));
                 panelView->AddChild(GiveOwnership(pG));
 
                 m_btnHiddenRemove = new Button(" Z-Culling ");
