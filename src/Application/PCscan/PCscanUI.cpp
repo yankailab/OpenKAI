@@ -27,12 +27,7 @@ namespace open3d
                 Init();
                 Application::GetInstance().SetMenubar(NULL);
 
-                //                glfwGetWindowSize(window_, &saved_window_size_(0), &saved_window_size_(1));
-                //        glfwGetWindowPos(window_, &saved_window_pos_(0), &saved_window_pos_(1));
-                // GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-                // const GLFWvidmode *mode = glfwGetVideoMode(monitor);
-                // glfwSetWindowMonitor(window_, monitor, 0, 0, mode->width, mode->height,
-                //                      mode->refreshRate);
+                SetFullScreen(true);                
             }
 
             PCscanUI::~PCscanUI() {}
@@ -260,7 +255,6 @@ namespace open3d
                     near,
                     far,
                     (fov_type == 0) ? Camera::FovType::Horizontal : Camera::FovType::Vertical);
-
                 m_pScene->ForceRedraw();
             }
 
@@ -271,6 +265,7 @@ namespace open3d
             {
                 auto sCam = m_pScene->GetScene()->GetCamera();
                 sCam->LookAt(center, eye, up);
+                m_pScene->ForceRedraw();
             }
 
             void PCscanUI::CamAutoBound(const geometry::AxisAlignedBoundingBox &aabb,
