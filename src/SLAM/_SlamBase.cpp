@@ -36,7 +36,7 @@ bool _SlamBase::init(void* pKiss)
 
 bool _SlamBase::bReady(void)
 {
-	return m_bReady;
+	return m_bReady && (!m_bReset);
 }
 
 void _SlamBase::reset(void)
@@ -52,7 +52,6 @@ void _SlamBase::resetAll(void)
 	m_vQ.init();
 	m_mT = Matrix4d::Identity();
 	m_confidence = 0.0;
-	m_bReset = false;
 }
 
 vFloat3 _SlamBase::t(void)

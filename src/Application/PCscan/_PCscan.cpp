@@ -19,7 +19,11 @@ namespace kai
 		m_pUIstate = NULL;
 		m_modelName = "PCMODEL";
 
+		m_bFullScreen = false;
 		m_bSceneCache = false;
+		m_wPanel = 15;
+		m_mouseMode = 0;
+		m_dMove = 0.5;
 		m_rDummyDome = 1000.0;
 		m_dHiddenRemove = 100.0;
 
@@ -36,7 +40,11 @@ namespace kai
 		IF_F(!this->_PCviewer::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
+		pK->v("bFullScreen", &m_bFullScreen);
 		pK->v("bSceneCache", &m_bSceneCache);
+		pK->v("wPanel", &m_wPanel);
+		pK->v("mouseMode", &m_mouseMode);
+		pK->v("dMove", &m_dMove);
 		pK->v("rDummyDome", &m_rDummyDome);
 		pK->v("dHiddenRemove", &m_dHiddenRemove);
 
@@ -123,7 +131,9 @@ namespace kai
 		m_spWin->ShowMsg("Scan", "Initializing");
 
 		m_pSB->reset();
-		sleep(1);
+		while(!m_pSB->bReady())
+			m_pT->sleepT(100000);
+
 		m_pPS->clear();
 
 		m_spWin->RemoveGeometry(m_modelName);
@@ -133,6 +143,9 @@ namespace kai
 		m_aabb = m_sPC.get()->GetAxisAlignedBoundingBox();
 		m_fProcess.set(pcfScanning);
 
+		resetCamPose();
+		updateCamPose();
+		
 		m_spWin->CloseDialog();
 	}
 
@@ -208,7 +221,7 @@ namespace kai
 
 			m_spWin->RemoveGeometry(m_modelName);
 			PointCloud pc;
-			float s = m_pUIstate->m_voxelSize;
+			float s = m_pUIstate->m_sVoxel;
 			if (s > 0.0)
 				pc = *m_sPC.get()->VoxelDownSample(s);
 			else
@@ -236,6 +249,8 @@ namespace kai
 
 	void _PCscan::addUIpc(const PointCloud &pc)
 	{
+		IF_(pc.IsEmpty());
+
 		m_spWin->AddPointCloud(m_modelName,
 							   make_shared<t::geometry::PointCloud>(
 								   t::geometry::PointCloud::FromLegacyPointCloud(
@@ -245,6 +260,8 @@ namespace kai
 
 	void _PCscan::updateUIpc(const PointCloud &pc)
 	{
+		IF_(pc.IsEmpty());
+
 		m_spWin->UpdatePointCloud(m_modelName,
 								  make_shared<t::geometry::PointCloud>(
 									  t::geometry::PointCloud::FromLegacyPointCloud(
@@ -294,7 +311,11 @@ namespace kai
 
 		visualizer::UIState *pU = m_spWin->getUIState();
 		pU->m_bSceneCache = m_bSceneCache;
+		pU->m_mouseMode = (visualization::gui::SceneWidget::Controls)m_mouseMode;
+		pU->m_wPanel = m_wPanel;
+		pU->m_dMove = m_dMove;
 		m_spWin->UpdateUIstate();
+		m_spWin->SetFullScreen(m_bFullScreen);
 		updateCamProj();
 		updateCamPose();
 

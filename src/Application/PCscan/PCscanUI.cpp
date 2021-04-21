@@ -9,11 +9,6 @@ namespace open3d
         {
             namespace
             {
-                static const string kShaderLit = "defaultLit";
-                static const string kShaderUnlit = "defaultUnlit";
-                static const string kShaderUnlitLines = "unlitLine";
-                static const string kShaderDepth = "depth";
-
                 template <typename T>
                 shared_ptr<T> GiveOwnership(T *ptr)
                 {
@@ -26,8 +21,6 @@ namespace open3d
             {
                 Init();
                 Application::GetInstance().SetMenubar(NULL);
-
-                SetFullScreen(true);                
             }
 
             PCscanUI::~PCscanUI() {}
@@ -135,11 +128,11 @@ namespace open3d
                     }
 
                     mat.base_color = {1.0f, 1.0f, 1.0f, 1.0f};
-                    mat.shader = kShaderUnlit;
+                    mat.shader = "defaultUnlit";
                     if (lines)
                     {
-                        mat.shader = kShaderUnlitLines;
-                        mat.line_width = m_uiState.m_lineWidth * m_pWindow->GetScaling();
+                        mat.shader = "unlitLine";
+                        mat.line_width = m_uiState.m_wLine * m_pWindow->GetScaling();
                     }
                     is_default_color = true;
                     if (has_colors)
@@ -148,10 +141,10 @@ namespace open3d
                     }
                     if (has_normals)
                     {
-                        mat.shader = kShaderLit;
+                        mat.shader = "defaultLit";
                         is_default_color = false;
                     }
-                    mat.point_size = ConvertToScaledPixels(m_uiState.m_pointSize);
+                    mat.point_size = ConvertToScaledPixels(m_uiState.m_sPoint);
                 }
 
                 m_vObject.push_back({name, spG, nullptr, mat, bVisible});
@@ -161,7 +154,7 @@ namespace open3d
                 scene->GetScene()->GeometryShadows(name, false, false);
                 scene->ShowGeometry(name, bVisible);
 
-                SetPointSize(m_uiState.m_pointSize);
+                SetPointSize(m_uiState.m_sPoint);
                 m_pScene->ForceRedraw();
             }
 
@@ -189,8 +182,8 @@ namespace open3d
                 }
 
                 mat.base_color = {1.0f, 1.0f, 1.0f, 1.0f};
-                mat.shader = kShaderUnlit;
-                mat.point_size = ConvertToScaledPixels(m_uiState.m_pointSize);
+                mat.shader = "defaultUnlit";
+                mat.point_size = ConvertToScaledPixels(m_uiState.m_sPoint);
 
                 m_vObject.push_back({name, nullptr, sTg, mat, bVisible});
                 auto scene = m_pScene->GetScene();
@@ -199,7 +192,7 @@ namespace open3d
                 scene->GetScene()->GeometryShadows(name, false, false);
                 scene->ShowGeometry(name, bVisible);
 
-                SetPointSize(m_uiState.m_pointSize);
+                SetPointSize(m_uiState.m_sPoint);
                 m_pScene->ForceRedraw();
             }
 
@@ -236,7 +229,7 @@ namespace open3d
 
                 // Bounds have changed, so update the selection point size, since they
                 // depend on the bounds.
-                SetPointSize(m_uiState.m_pointSize);
+                SetPointSize(m_uiState.m_sPoint);
 
                 m_pScene->ForceRedraw();
             }
@@ -290,8 +283,8 @@ namespace open3d
                 pO3DScene->ShowAxes(m_uiState.m_bShowAxes);
                 pO3DScene->SetBackground(m_uiState.m_vBgCol, nullptr);
                 pO3DScene->SetLighting(Open3DScene::LightingProfile::NO_SHADOWS, m_uiState.m_vSunDir);
-                SetPointSize(m_uiState.m_pointSize);
-                SetLineWidth(m_uiState.m_lineWidth);
+                SetPointSize(m_uiState.m_sPoint);
+                SetLineWidth(m_uiState.m_wLine);
 
                 m_pWindow->SetNeedsLayout();
                 m_pScene->ForceRedraw();
@@ -299,7 +292,7 @@ namespace open3d
 
             void PCscanUI::SetPointSize(int px)
             {
-                m_uiState.m_pointSize = px;
+                m_uiState.m_sPoint = px;
                 px = int(ConvertToScaledPixels(px));
                 for (auto &o : m_vObject)
                 {
@@ -320,7 +313,7 @@ namespace open3d
 
             void PCscanUI::SetLineWidth(int px)
             {
-                m_uiState.m_lineWidth = px;
+                m_uiState.m_wLine = px;
 
                 px = int(ConvertToScaledPixels(px));
                 for (auto &o : m_vObject)
@@ -424,8 +417,7 @@ namespace open3d
 
             void PCscanUI::Layout(const Theme &theme)
             {
-                auto em = theme.font_size;
-                int settings_width = m_uiState.m_panelWidth * theme.font_size;
+                int settings_width = m_uiState.m_wPanel * theme.font_size;
 
                 auto f = GetContentRect();
                 if (m_panelCtrl->IsVisible())
@@ -466,7 +458,7 @@ namespace open3d
                     OnSavePLY();
                 });
 
-                m_btnSaveRGB = new Button("Export PNG");
+                m_btnSaveRGB = new Button("Save PNG");
                 m_btnSaveRGB->SetOnClicked([this]() {
                     OnSaveRGB();
                 });
@@ -483,30 +475,42 @@ namespace open3d
                 auto panelCam = new CollapsableVert("CAMERA", v_spacing, margins);
                 m_panelCtrl->AddChild(GiveOwnership(panelCam));
 
-                m_btnCamAuto = new Button(" Auto ");
+                m_btnCamAuto = new Button("  Auto  ");
                 m_btnCamAuto->SetOnClicked([this]() {
                     m_bCamAuto = !m_bCamAuto;
-                    int m = m_bCamAuto?1:0;
+                    int m = m_bCamAuto ? 1 : 0;
                     m_cbBtnCamSet.call(&m);
 
-                    if(m_bCamAuto)
+                    if (m_bCamAuto)
                     {
                         m_btnCamAuto->SetOn(true);
                         m_btnCamAll->SetEnabled(false);
                         m_btnCamOrigin->SetEnabled(false);
+                        m_btnCamL->SetEnabled(false);
+                        m_btnCamR->SetEnabled(false);
+                        m_btnCamF->SetEnabled(false);
+                        m_btnCamB->SetEnabled(false);
+                        m_btnCamU->SetEnabled(false);
+                        m_btnCamD->SetEnabled(false);
                     }
                     else
                     {
                         m_btnCamAuto->SetOn(false);
                         m_btnCamAll->SetEnabled(true);
                         m_btnCamOrigin->SetEnabled(true);
+                        m_btnCamL->SetEnabled(true);
+                        m_btnCamR->SetEnabled(true);
+                        m_btnCamF->SetEnabled(true);
+                        m_btnCamB->SetEnabled(true);
+                        m_btnCamU->SetEnabled(true);
+                        m_btnCamD->SetEnabled(true);
                     }
 
                     m_pScene->ForceRedraw();
                     SetMouseCameraMode();
                 });
 
-                m_btnCamAll = new Button(" All ");
+                m_btnCamAll = new Button("    All    ");
                 m_btnCamAll->SetOnClicked([this]() {
                     int m = 4;
                     m_cbBtnCamSet.call(&m);
@@ -522,12 +526,77 @@ namespace open3d
                     SetMouseCameraMode();
                 });
 
-                pH = new Horiz(v_spacing);
-                pH->AddChild(GiveOwnership(m_btnCamAuto));
-                pH->AddChild(GiveOwnership(m_btnCamAll));
-                pH->AddChild(GiveOwnership(m_btnCamOrigin));
-                pH->AddStretch();
-                panelCam->AddChild(GiveOwnership(pH));
+                m_btnCamL = new Button(" < ");
+                m_btnCamL->SetOnClicked([this]() {
+                    auto pC = m_pScene->GetScene()->GetCamera();
+                    auto mm = pC->GetModelMatrix();
+                    Vector3f v = {-m_uiState.m_dMove, 0, 0};
+                    mm.translate(v);
+                    pC->SetModelMatrix(mm);
+                    m_pScene->ForceRedraw();
+                });
+
+                m_btnCamR = new Button(" > ");
+                m_btnCamR->SetOnClicked([this]() {
+                    auto pC = m_pScene->GetScene()->GetCamera();
+                    auto mm = pC->GetModelMatrix();
+                    Vector3f v = {m_uiState.m_dMove, 0, 0};
+                    mm.translate(v);
+                    pC->SetModelMatrix(mm);
+                    m_pScene->ForceRedraw();
+                });
+
+                m_btnCamF = new Button(" ^ ");
+                m_btnCamF->SetOnClicked([this]() {
+                    auto pC = m_pScene->GetScene()->GetCamera();
+                    auto mm = pC->GetModelMatrix();
+                    Vector3f v = {0, 0, -m_uiState.m_dMove};
+                    mm.translate(v);
+                    pC->SetModelMatrix(mm);
+                    m_pScene->ForceRedraw();
+                });
+
+                m_btnCamB = new Button(" v ");
+                m_btnCamB->SetOnClicked([this]() {
+                    auto pC = m_pScene->GetScene()->GetCamera();
+                    auto mm = pC->GetModelMatrix();
+                    Vector3f v = {0, 0, m_uiState.m_dMove};
+                    mm.translate(v);
+                    pC->SetModelMatrix(mm);
+                    m_pScene->ForceRedraw();
+                });
+
+                m_btnCamU = new Button(" U ");
+                m_btnCamU->SetOnClicked([this]() {
+                    auto pC = m_pScene->GetScene()->GetCamera();
+                    auto mm = pC->GetModelMatrix();
+                    Vector3f v = {0, m_uiState.m_dMove, 0};
+                    mm.translate(v);
+                    pC->SetModelMatrix(mm);
+                    m_pScene->ForceRedraw();
+                });
+
+                m_btnCamD = new Button(" D ");
+                m_btnCamD->SetOnClicked([this]() {
+                    auto pC = m_pScene->GetScene()->GetCamera();
+                    auto mm = pC->GetModelMatrix();
+                    Vector3f v = {0, -m_uiState.m_dMove, 0};
+                    mm.translate(v);
+                    pC->SetModelMatrix(mm);
+                    m_pScene->ForceRedraw();
+                });
+
+                auto *pN = new VGrid(3, v_spacing);
+                pN->AddChild(GiveOwnership(m_btnCamAuto));
+                pN->AddChild(GiveOwnership(m_btnCamAll));
+                pN->AddChild(GiveOwnership(m_btnCamOrigin));
+                pN->AddChild(GiveOwnership(m_btnCamD));
+                pN->AddChild(GiveOwnership(m_btnCamF));
+                pN->AddChild(GiveOwnership(m_btnCamU));
+                pN->AddChild(GiveOwnership(m_btnCamL));
+                pN->AddChild(GiveOwnership(m_btnCamB));
+                pN->AddChild(GiveOwnership(m_btnCamR));
+                panelCam->AddChild(GiveOwnership(pN));
 
                 // View
                 auto panelView = new CollapsableVert("VIEW", v_spacing, margins);
@@ -536,16 +605,16 @@ namespace open3d
 
                 auto sliderPointSize = new Slider(Slider::INT);
                 sliderPointSize->SetLimits(1, 10);
-                sliderPointSize->SetValue(m_uiState.m_pointSize);
+                sliderPointSize->SetValue(m_uiState.m_sPoint);
                 sliderPointSize->SetOnValueChanged([this](const double v) {
                     SetPointSize(int(v));
                 });
 
                 m_sliderVsize = new Slider(Slider::DOUBLE);
                 m_sliderVsize->SetLimits(0.0, 1.0);
-                m_sliderVsize->SetValue(m_uiState.m_voxelSize);
+                m_sliderVsize->SetValue(m_uiState.m_sVoxel);
                 m_sliderVsize->SetOnValueChanged([this](const double v) {
-                    m_uiState.m_voxelSize = v;
+                    m_uiState.m_sVoxel = v;
                     m_cbVoxelDown.call(&m_uiState);
                     m_pScene->ForceRedraw();
                 });
@@ -579,7 +648,7 @@ namespace open3d
                 // pG->AddChild(GiveOwnership(m_sliderORemovD));
                 panelView->AddChild(GiveOwnership(pG));
 
-                m_btnHiddenRemove = new Button(" Z-Culling ");
+                m_btnHiddenRemove = new Button(" Z-Cull ");
                 m_btnHiddenRemove->SetOnClicked([this]() {
                     m_uiState.m_vCamPos = m_pScene->GetScene()->GetCamera()->GetPosition();
                     m_cbBtnHiddenRemove.call(&m_uiState);
@@ -691,6 +760,7 @@ namespace open3d
                     [this](const char *, bool) {
                         SelectVertexSet(m_listVertexSet->GetSelectedIndex());
                         UpdateArea();
+                        SetMousePickingMode();
                     });
                 panelVertexSet->AddChild(GiveOwnership(m_listVertexSet));
             }
@@ -716,7 +786,6 @@ namespace open3d
             void PCscanUI::UpdateSelectableGeometry(void)
             {
                 vector<SceneWidget::PickableGeometry> pickable;
-                pickable.reserve(m_vObject.size());
                 for (auto &o : m_vObject)
                 {
                     if (!o.m_bVisible)

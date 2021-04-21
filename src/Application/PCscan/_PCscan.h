@@ -85,7 +85,11 @@ namespace kai
 		_Thread *m_pTk;
 		_SlamBase *m_pSB;
 
+		bool m_bFullScreen;
 		bool m_bSceneCache;
+		int	m_wPanel;
+		int m_mouseMode;
+		float m_dMove;
 		float m_rDummyDome;
 		float m_dHiddenRemove;
 		AxisAlignedBoundingBox m_aabb;

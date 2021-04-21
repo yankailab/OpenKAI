@@ -76,22 +76,28 @@ namespace open3d
 
 			struct UIState
 			{
-				SceneWidget::Controls m_mouseMode = SceneWidget::Controls::FLY;
+				//general
 				bool m_bSceneCache = false;
 				bool m_bShowPanel = true;
 				bool m_bShowAxes = true;
 
-				int m_panelWidth = 15;
-				int m_pointSize = 2;
-				double m_voxelSize = 0.01;
+				//render
+				int m_wPanel = 15;
+				int m_sPoint = 2;
+				int m_wLine = 10;
+				Vector4f m_vBgCol = {0.0f, 0.0f, 0.0f, 0.0f};
+				Vector3f m_vSunDir = {0.0f, 0.0f, 0.0f};
+                Vector3d m_vAreaLineCol = {1.0, 0.0, 1.0};
+
+				//filter
+				double m_sVoxel = 0.01;
 				int m_oRemovN = 10;
 				double m_oRemovD = 0.1;
 
-				int m_lineWidth = 10;
-				Vector4f m_vBgCol = {0.0f, 0.0f, 0.0f, 0.0f};
-				Vector3f m_vSunDir = {0.0f, 0.0f, 0.0f};
-                Vector3d m_vAreaLineCol = Vector3d(1.0, 0.0, 1.0);
+				//interactive
 				Vector3f m_vCamPos;
+				float m_dMove = 0.5;
+				SceneWidget::Controls m_mouseMode = SceneWidget::Controls::ROTATE_CAMERA;
 			};
 
 			class PCscanUI : public gui::Window
@@ -202,6 +208,12 @@ namespace open3d
 				Button* m_btnCamAuto;
 				Button* m_btnCamAll;
 				Button* m_btnCamOrigin;
+				Button* m_btnCamL;
+				Button* m_btnCamR;
+				Button* m_btnCamF;
+				Button* m_btnCamB;
+				Button* m_btnCamU;
+				Button* m_btnCamD;
 
 				Slider* m_sliderVsize;
 				Button* m_btnHiddenRemove;
