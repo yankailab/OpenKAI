@@ -234,6 +234,16 @@ namespace open3d
                 m_pScene->ForceRedraw();
             }
 
+            DrawObject PCscanUI::GetGeometry(const string &name) const
+            {
+                for (auto &o : m_vObject)
+                {
+                    if (o.m_name == name)
+                        return o;
+                }
+                return DrawObject();
+            }
+
             void PCscanUI::CamSetProj(
                 double fov,
                 double aspect,
@@ -267,6 +277,18 @@ namespace open3d
                 m_pScene->SetupCamera(m_pScene->GetScene()->GetCamera()->GetFieldOfView(),
                                       aabb,
                                       CoR);
+                m_pScene->ForceRedraw();
+            }
+
+            void PCscanUI::camMove(Vector3f vM)
+            {
+                auto pC = m_pScene->GetScene()->GetCamera();
+                auto mm = pC->GetModelMatrix();
+                mm.translate(vM);
+                pC->SetModelMatrix(mm);
+                if (m_uiMode == uiMode_pointPick)
+                    UpdateSelectableGeometry();
+
                 m_pScene->ForceRedraw();
             }
 
@@ -330,12 +352,17 @@ namespace open3d
                     m_sVertex->MakeInactive();
 
                 m_pScene->SetViewControls(m_uiState.m_mouseMode);
+                CamAutoBound(m_pScene->GetScene()->GetBoundingBox(), {0.0f, 0.0f, 0.0f});
+                m_uiMode = uiMode_cam;
             }
 
             void PCscanUI::SetMousePickingMode(void)
             {
-                UpdateSelectableGeometry();
-                m_sVertex->MakeActive();
+                if (m_sVertex->GetNumberOfSets() > 0)
+                    m_sVertex->MakeActive();
+
+                m_pScene->SetViewControls(SceneWidget::Controls::PICK_POINTS);
+                m_uiMode = uiMode_pointPick;
             }
 
             void PCscanUI::SetProgressBar(float v)
@@ -380,24 +407,9 @@ namespace open3d
                 m_cbVoxelDown.add(pCb, pPCV);
             }
 
-            DrawObject PCscanUI::GetGeometry(const string &name) const
-            {
-                for (auto &o : m_vObject)
-                {
-                    if (o.m_name == name)
-                        return o;
-                }
-                return DrawObject();
-            }
-
             vector<O3DVisualizerSelections::SelectionSet> PCscanUI::GetSelectionSets() const
             {
                 return m_sVertex->GetSets();
-            }
-
-            Open3DScene *PCscanUI::GetScene() const
-            {
-                return m_pScene->GetScene().get();
             }
 
             void PCscanUI::ExportCurrentImage(const string &path)
@@ -458,7 +470,7 @@ namespace open3d
                     OnSavePLY();
                 });
 
-                m_btnSaveRGB = new Button("Save PNG");
+                m_btnSaveRGB = new Button("Screen");
                 m_btnSaveRGB->SetOnClicked([this]() {
                     OnSaveRGB();
                 });
@@ -469,7 +481,6 @@ namespace open3d
                 pH->AddChild(GiveOwnership(m_btnSaveRGB));
                 pH->AddStretch();
                 panelFile->AddChild(GiveOwnership(pH));
-                panelFile->SetIsOpen(false);
 
                 // Camera
                 auto panelCam = new CollapsableVert("CAMERA", v_spacing, margins);
@@ -492,6 +503,8 @@ namespace open3d
                         m_btnCamB->SetEnabled(false);
                         m_btnCamU->SetEnabled(false);
                         m_btnCamD->SetEnabled(false);
+
+                        SetMouseCameraMode();
                     }
                     else
                     {
@@ -507,83 +520,54 @@ namespace open3d
                     }
 
                     m_pScene->ForceRedraw();
-                    SetMouseCameraMode();
                 });
 
                 m_btnCamAll = new Button("    All    ");
                 m_btnCamAll->SetOnClicked([this]() {
                     int m = 4;
                     m_cbBtnCamSet.call(&m);
+                    if (m_uiMode == uiMode_pointPick)
+                        UpdateSelectableGeometry();
                     m_pScene->ForceRedraw();
-                    SetMouseCameraMode();
                 });
 
                 m_btnCamOrigin = new Button(" Origin ");
                 m_btnCamOrigin->SetOnClicked([this]() {
                     int m = 3;
                     m_cbBtnCamSet.call(&m);
+                    if (m_uiMode == uiMode_pointPick)
+                        UpdateSelectableGeometry();
                     m_pScene->ForceRedraw();
-                    SetMouseCameraMode();
                 });
 
                 m_btnCamL = new Button(" < ");
                 m_btnCamL->SetOnClicked([this]() {
-                    auto pC = m_pScene->GetScene()->GetCamera();
-                    auto mm = pC->GetModelMatrix();
-                    Vector3f v = {-m_uiState.m_dMove, 0, 0};
-                    mm.translate(v);
-                    pC->SetModelMatrix(mm);
-                    m_pScene->ForceRedraw();
+                    camMove(Vector3f(-m_uiState.m_dMove, 0, 0));
                 });
 
                 m_btnCamR = new Button(" > ");
                 m_btnCamR->SetOnClicked([this]() {
-                    auto pC = m_pScene->GetScene()->GetCamera();
-                    auto mm = pC->GetModelMatrix();
-                    Vector3f v = {m_uiState.m_dMove, 0, 0};
-                    mm.translate(v);
-                    pC->SetModelMatrix(mm);
-                    m_pScene->ForceRedraw();
+                    camMove(Vector3f(m_uiState.m_dMove, 0, 0));
                 });
 
                 m_btnCamF = new Button(" ^ ");
                 m_btnCamF->SetOnClicked([this]() {
-                    auto pC = m_pScene->GetScene()->GetCamera();
-                    auto mm = pC->GetModelMatrix();
-                    Vector3f v = {0, 0, -m_uiState.m_dMove};
-                    mm.translate(v);
-                    pC->SetModelMatrix(mm);
-                    m_pScene->ForceRedraw();
+                    camMove(Vector3f(0, 0, -m_uiState.m_dMove));
                 });
 
                 m_btnCamB = new Button(" v ");
                 m_btnCamB->SetOnClicked([this]() {
-                    auto pC = m_pScene->GetScene()->GetCamera();
-                    auto mm = pC->GetModelMatrix();
-                    Vector3f v = {0, 0, m_uiState.m_dMove};
-                    mm.translate(v);
-                    pC->SetModelMatrix(mm);
-                    m_pScene->ForceRedraw();
+                    camMove(Vector3f(0, 0, m_uiState.m_dMove));
                 });
 
                 m_btnCamU = new Button(" U ");
                 m_btnCamU->SetOnClicked([this]() {
-                    auto pC = m_pScene->GetScene()->GetCamera();
-                    auto mm = pC->GetModelMatrix();
-                    Vector3f v = {0, m_uiState.m_dMove, 0};
-                    mm.translate(v);
-                    pC->SetModelMatrix(mm);
-                    m_pScene->ForceRedraw();
+                    camMove(Vector3f(0, m_uiState.m_dMove, 0));
                 });
 
                 m_btnCamD = new Button(" D ");
                 m_btnCamD->SetOnClicked([this]() {
-                    auto pC = m_pScene->GetScene()->GetCamera();
-                    auto mm = pC->GetModelMatrix();
-                    Vector3f v = {0, -m_uiState.m_dMove, 0};
-                    mm.translate(v);
-                    pC->SetModelMatrix(mm);
-                    m_pScene->ForceRedraw();
+                    camMove(Vector3f(0, -m_uiState.m_dMove, 0));
                 });
 
                 auto *pN = new VGrid(3, v_spacing);
@@ -673,8 +657,8 @@ namespace open3d
                 m_btnScanStart = new Button("        Start        ");
                 m_btnScanStart->SetToggleable(true);
                 m_btnScanStart->SetOnClicked([this]() {
-                    SetMouseCameraMode();
                     RemoveAllVertexSet();
+                    UpdateArea();
 
                     m_bScanning = !m_bScanning;
                     m_btnScanStart->SetOn(m_bScanning);
@@ -691,6 +675,8 @@ namespace open3d
                         m_btnHiddenRemove->SetEnabled(false);
                         m_btnFilterReset->SetEnabled(false);
                         m_labelArea->SetText("Area not selected");
+                        m_btnCamAuto->SetEnabled(true);
+                        SetMouseCameraMode();
                     }
                     else
                     {
@@ -704,6 +690,7 @@ namespace open3d
                         m_sliderVsize->SetEnabled(true);
                         m_btnHiddenRemove->SetEnabled(true);
                         m_btnFilterReset->SetEnabled(true);
+                        m_btnCamAuto->SetEnabled(false);
                     }
 
                     m_cbBtnScan.call(&m_bScanning);
@@ -730,17 +717,19 @@ namespace open3d
                 auto panelVertexSet = new CollapsableVert("MEASURE", v_spacing, margins);
                 m_panelCtrl->AddChild(GiveOwnership(panelVertexSet));
 
-                m_btnNewVertexSet = new SmallButton("  +  ");
+                m_btnNewVertexSet = new SmallButton("   +   ");
                 m_btnNewVertexSet->SetOnClicked(
                     [this]() {
+                        UpdateSelectableGeometry();
                         NewVertexSet();
                         SetMousePickingMode();
+                        UpdateArea();
                     });
-                m_btnDeleteVertexSet = new SmallButton("  -  ");
+                m_btnDeleteVertexSet = new SmallButton("   -   ");
                 m_btnDeleteVertexSet->SetOnClicked(
                     [this]() {
-                        int idx = m_listVertexSet->GetSelectedIndex();
-                        RemoveVertexSet(idx);
+                        RemoveVertexSet(m_listVertexSet->GetSelectedIndex());
+                        UpdateArea();
                     });
                 pH = new Horiz(v_spacing);
                 pH->AddChild(make_shared<Label>("Select Area"));
@@ -758,9 +747,10 @@ namespace open3d
                 m_listVertexSet = new ListView();
                 m_listVertexSet->SetOnValueChanged(
                     [this](const char *, bool) {
+                        UpdateSelectableGeometry();
                         SelectVertexSet(m_listVertexSet->GetSelectedIndex());
-                        UpdateArea();
                         SetMousePickingMode();
+                        UpdateArea();
                     });
                 panelVertexSet->AddChild(GiveOwnership(m_listVertexSet));
             }
@@ -800,14 +790,13 @@ namespace open3d
             {
                 m_sVertex->NewSet();
                 UpdateVertexSetList();
-                SelectVertexSet(int(m_sVertex->GetNumberOfSets()) - 1);
-                UpdateArea();
+                SelectVertexSet(m_sVertex->GetNumberOfSets() - 1);
             }
 
-            void PCscanUI::SelectVertexSet(int index)
+            void PCscanUI::SelectVertexSet(int i)
             {
-                m_listVertexSet->SetSelectedIndex(index);
-                m_sVertex->SelectSet(index);
+                m_sVertex->SelectSet(i);
+                m_listVertexSet->SetSelectedIndex(i);
             }
 
             void PCscanUI::UpdateVertexSetList(void)
@@ -823,24 +812,15 @@ namespace open3d
                 }
                 m_listVertexSet->SetItems(items);
 
-                if (n > 0)
-                {
-                    int idx = m_listVertexSet->GetSelectedIndex();
-                    idx = min(idx, int(n) - 1);
-                    idx = max(0, idx);
-                    SelectVertexSet(idx);
-                }
-
                 m_pWindow->PostRedraw();
             }
 
-            void PCscanUI::RemoveVertexSet(int index)
+            void PCscanUI::RemoveVertexSet(int i)
             {
-                if (index < 0)
+                if (i < 0)
                     return;
-                m_sVertex->RemoveSet(index);
+                m_sVertex->RemoveSet(i);
                 UpdateVertexSetList();
-                UpdateArea();
             }
 
             void PCscanUI::RemoveAllVertexSet(void)
@@ -849,7 +829,6 @@ namespace open3d
                     m_sVertex->RemoveSet(0);
 
                 UpdateVertexSetList();
-                UpdateArea();
             }
 
             void PCscanUI::UpdateArea(void)

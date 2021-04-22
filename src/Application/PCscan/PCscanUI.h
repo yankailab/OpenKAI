@@ -74,6 +74,12 @@ namespace open3d
 				bool m_bVisible = true;
 			};
 
+			enum UImode
+			{
+				uiMode_cam = 0,
+				uiMode_pointPick = 1,
+			};
+
 			struct UIState
 			{
 				//general
@@ -121,6 +127,8 @@ namespace open3d
 				void UpdatePointCloud(const string &name,
 									  shared_ptr<t::geometry::PointCloud> sTg);
 				void RemoveGeometry(const string &name);
+				DrawObject GetGeometry(const string &name) const;
+				vector<O3DVisualizerSelections::SelectionSet> GetSelectionSets() const;
 
 				void CamSetProj(
 					double fov,
@@ -137,16 +145,13 @@ namespace open3d
 				void CamAutoBound(const geometry::AxisAlignedBoundingBox& aabb,
                                   const Vector3f &CoR);
 
+				void camMove(Vector3f vM);
+
 				UIState *getUIState(void);
 				void UpdateUIstate(void);
             	void SetPointSize(int px);
             	void SetSelectedPointSize(double px);
     	        void SetLineWidth(int px);
-
-				DrawObject GetGeometry(const string &name) const;
-				vector<O3DVisualizerSelections::SelectionSet> GetSelectionSets() const;
-				rendering::Open3DScene *GetScene() const;
-				void ExportCurrentImage(const string &path);
 
 	            void SetMouseCameraMode(void);
 	            void SetMousePickingMode(void);
@@ -161,6 +166,7 @@ namespace open3d
 
 				void ShowMsg(const char* pTitle, const char* pMsg, bool bOK = false);
 				void CloseMsg(void);
+				void ExportCurrentImage(const string &path);
 
 			protected:
 				void Layout(const gui::Theme &theme);
@@ -172,9 +178,9 @@ namespace open3d
 	            void UpdateSelectableGeometry(void);
 
 	            void NewVertexSet(void);
-            	void SelectVertexSet(int index);
+            	void SelectVertexSet(int i);
 	            void UpdateVertexSetList(void);
-            	void RemoveVertexSet(int index);
+            	void RemoveVertexSet(int i);
 	            void RemoveAllVertexSet(void);
 
 				void UpdateArea(void);
@@ -192,6 +198,7 @@ namespace open3d
 				Window *m_pWindow = nullptr;
 				SceneWidget *m_pScene = nullptr;
 				UIState m_uiState;
+				UImode m_uiMode = uiMode_cam;
 				string m_modelName;
 				string m_areaName;
 				bool m_bScanning;

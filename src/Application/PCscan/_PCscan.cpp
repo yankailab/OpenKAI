@@ -396,7 +396,7 @@ namespace kai
 		else if(camMode == 3 || pV->m_sPC.get()->points_.empty())	//origin or no point data
 		{
 			pV->resetCamPose();
-			pV->updateCamPose();	
+			pV->updateCamPose();
 		}
 		else if(camMode == 4)	//all
 		{

@@ -45,12 +45,12 @@
 	"vCamAutoEye":[0,-2,0],
 	"vCamAutoUp":[0,1,0],
 	"vCoR":[0,0,0],
-	"camFov":70,
+	"camFov":80,
 	"camAspect":1.8,
 	"vCamNF":[0, 200],
 	"camFovType":1,
 	"bFullScreen":0,
-	"wPanel":13,
+	"wPanel":15,
 	"mouseMode":0,
 	"dMove":0.5,
 	"bSceneCache":0,
@@ -64,7 +64,7 @@
 {
 	"name":"pcFile",
 	"class":"_PCfile",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,

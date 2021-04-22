@@ -289,6 +289,18 @@ make all -j$(nproc)
 
 # Copy startup sh into home
 sudo chmod a+x $HOME/ok.sh
+
+#----------------------------------------------------
+# Misc.
+# Screen and touch screen input rotate
+xrandr -o left
+xinput set-prop 'GXTP7386:00 27C6:0113' 'Coordinate Transformation Matrix' 0 -1 1 1 0 0 0 0 1
+
+#Block on screen keyboard
+sudo apt install gnome-tweaks
+sudo apt install gnome-shell-extensions
+https://extensions.gnome.org/extension/3222/block-caribou-36/
+
 #----------------------------------------------------
 
 Make Jetson boot SD image
