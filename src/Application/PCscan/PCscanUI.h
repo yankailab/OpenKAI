@@ -171,6 +171,7 @@ namespace open3d
 			protected:
 				void Layout(const gui::Theme &theme);
 	            void InitCtrlPanel(void);
+				void UpdateBtnState(void);
 
 	            void UpdateTgeometry(const string &name, shared_ptr<t::geometry::PointCloud> sTg);
 

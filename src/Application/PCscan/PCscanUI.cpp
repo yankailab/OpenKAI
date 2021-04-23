@@ -307,8 +307,46 @@ namespace open3d
                 pO3DScene->SetLighting(Open3DScene::LightingProfile::NO_SHADOWS, m_uiState.m_vSunDir);
                 SetPointSize(m_uiState.m_sPoint);
                 SetLineWidth(m_uiState.m_wLine);
+                UpdateBtnState();
 
                 m_pWindow->SetNeedsLayout();
+                m_pScene->ForceRedraw();
+            }
+
+            void PCscanUI::UpdateBtnState(void)
+            {
+                m_btnScanStart->SetOn(m_bScanning);
+                m_btnCamAuto->SetOn(m_bCamAuto);
+                m_btnCamAll->SetEnabled(!m_bCamAuto);
+                m_btnCamOrigin->SetEnabled(!m_bCamAuto);
+                m_btnCamL->SetEnabled(!m_bCamAuto);
+                m_btnCamR->SetEnabled(!m_bCamAuto);
+                m_btnCamF->SetEnabled(!m_bCamAuto);
+                m_btnCamB->SetEnabled(!m_bCamAuto);
+                m_btnCamU->SetEnabled(!m_bCamAuto);
+                m_btnCamD->SetEnabled(!m_bCamAuto);
+
+                m_btnOpenPC->SetEnabled(!m_bScanning);
+                m_btnSavePC->SetEnabled(!m_bScanning);
+                m_btnSaveRGB->SetEnabled(!m_bScanning);
+                m_btnNewVertexSet->SetEnabled(!m_bScanning);
+                m_btnDeleteVertexSet->SetEnabled(!m_bScanning);
+                m_listVertexSet->SetEnabled(!m_bScanning);
+                m_sliderVsize->SetEnabled(!m_bScanning);
+                m_btnHiddenRemove->SetEnabled(!m_bScanning);
+                m_btnFilterReset->SetEnabled(!m_bScanning);
+
+                if (m_bScanning)
+                {
+                    m_btnScanStart->SetText("        Stop        ");
+                    m_labelArea->SetText("Area not selected");
+                    SetMouseCameraMode();
+                }
+                else
+                {
+                    m_btnScanStart->SetText("        Start        ");
+                }
+
                 m_pScene->ForceRedraw();
             }
 
@@ -483,7 +521,7 @@ namespace open3d
                 panelFile->AddChild(GiveOwnership(pH));
 
                 // Camera
-                auto panelCam = new CollapsableVert("CAMERA", v_spacing, margins);
+                auto panelCam = new CollapsableVert("CAM", v_spacing, margins);
                 m_panelCtrl->AddChild(GiveOwnership(panelCam));
 
                 m_btnCamAuto = new Button("  Auto  ");
@@ -491,34 +529,7 @@ namespace open3d
                     m_bCamAuto = !m_bCamAuto;
                     int m = m_bCamAuto ? 1 : 0;
                     m_cbBtnCamSet.call(&m);
-
-                    if (m_bCamAuto)
-                    {
-                        m_btnCamAuto->SetOn(true);
-                        m_btnCamAll->SetEnabled(false);
-                        m_btnCamOrigin->SetEnabled(false);
-                        m_btnCamL->SetEnabled(false);
-                        m_btnCamR->SetEnabled(false);
-                        m_btnCamF->SetEnabled(false);
-                        m_btnCamB->SetEnabled(false);
-                        m_btnCamU->SetEnabled(false);
-                        m_btnCamD->SetEnabled(false);
-
-                        SetMouseCameraMode();
-                    }
-                    else
-                    {
-                        m_btnCamAuto->SetOn(false);
-                        m_btnCamAll->SetEnabled(true);
-                        m_btnCamOrigin->SetEnabled(true);
-                        m_btnCamL->SetEnabled(true);
-                        m_btnCamR->SetEnabled(true);
-                        m_btnCamF->SetEnabled(true);
-                        m_btnCamB->SetEnabled(true);
-                        m_btnCamU->SetEnabled(true);
-                        m_btnCamD->SetEnabled(true);
-                    }
-
+                    UpdateBtnState();
                     m_pScene->ForceRedraw();
                 });
 
@@ -560,12 +571,12 @@ namespace open3d
                     camMove(Vector3f(0, 0, m_uiState.m_dMove));
                 });
 
-                m_btnCamU = new Button(" U ");
+                m_btnCamU = new Button(" Up ");
                 m_btnCamU->SetOnClicked([this]() {
                     camMove(Vector3f(0, m_uiState.m_dMove, 0));
                 });
 
-                m_btnCamD = new Button(" D ");
+                m_btnCamD = new Button(" Down ");
                 m_btnCamD->SetOnClicked([this]() {
                     camMove(Vector3f(0, -m_uiState.m_dMove, 0));
                 });
@@ -659,41 +670,9 @@ namespace open3d
                 m_btnScanStart->SetOnClicked([this]() {
                     RemoveAllVertexSet();
                     UpdateArea();
-
                     m_bScanning = !m_bScanning;
-                    m_btnScanStart->SetOn(m_bScanning);
-                    if (m_bScanning)
-                    {
-                        m_btnScanStart->SetText("        Stop        ");
-                        m_btnOpenPC->SetEnabled(false);
-                        m_btnSavePC->SetEnabled(false);
-                        m_btnSaveRGB->SetEnabled(false);
-                        m_btnNewVertexSet->SetEnabled(false);
-                        m_btnDeleteVertexSet->SetEnabled(false);
-                        m_listVertexSet->SetEnabled(false);
-                        m_sliderVsize->SetEnabled(false);
-                        m_btnHiddenRemove->SetEnabled(false);
-                        m_btnFilterReset->SetEnabled(false);
-                        m_labelArea->SetText("Area not selected");
-                        m_btnCamAuto->SetEnabled(true);
-                        SetMouseCameraMode();
-                    }
-                    else
-                    {
-                        m_btnScanStart->SetText("        Start        ");
-                        m_btnOpenPC->SetEnabled(true);
-                        m_btnSavePC->SetEnabled(true);
-                        m_btnSaveRGB->SetEnabled(true);
-                        m_btnNewVertexSet->SetEnabled(true);
-                        m_btnDeleteVertexSet->SetEnabled(true);
-                        m_listVertexSet->SetEnabled(true);
-                        m_sliderVsize->SetEnabled(true);
-                        m_btnHiddenRemove->SetEnabled(true);
-                        m_btnFilterReset->SetEnabled(true);
-                        m_btnCamAuto->SetEnabled(false);
-                    }
-
                     m_cbBtnScan.call(&m_bScanning);
+                    UpdateBtnState();
                     m_pWindow->PostRedraw();
                 });
                 pH = new Horiz(v_spacing);
