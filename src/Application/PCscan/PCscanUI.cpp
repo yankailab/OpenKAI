@@ -822,6 +822,7 @@ namespace open3d
                 {
                     RemoveGeometry(m_areaName);
                     RemoveDistLabel();
+                    m_pWindow->PostRedraw();
                     return;
                 }
 
