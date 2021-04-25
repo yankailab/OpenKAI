@@ -149,6 +149,7 @@ namespace open3d
 				UIState *getUIState(void);
 				void UpdateUIstate(void);
             	void SetPointSize(int px);
+            	void UpdateSelectedPointSize(void);
             	void SetSelectedPointSize(double px);
     	        void SetLineWidth(int px);
 

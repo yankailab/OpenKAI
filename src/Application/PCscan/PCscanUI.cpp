@@ -54,34 +54,14 @@ namespace open3d
                             m_sVertex->SelectIndices(indices);
                         }
 
+                        UpdateSelectedPointSize();
                         UpdateArea();
                     });
                 m_pWindow->AddChild(GiveOwnership(m_pScene));
 
                 m_pScene->SetOnCameraChanged(
                     [this](Camera *pC) {
-                        int iS = m_listVertexSet->GetSelectedIndex();
-                        size_t nSet = m_sVertex->GetNumberOfSets();
-                        if (iS < 0 || iS >= nSet)
-                            return;
-
-                        std::map<string, set<O3DVisualizerSelections::SelectedIndex>> msSI;
-                        msSI = m_sVertex->GetSets().at(iS);
-                        set<O3DVisualizerSelections::SelectedIndex> sSI = msSI[m_modelName];
-                        int nP = sSI.size();
-
-                        if (nP <= 0)
-                            return;
-
-                        //update selected point size based on its pos related to camera
-                        m_uiState.m_vCamPos = pC->GetPosition();
-                        float dAvr = 0.0;
-                        for (O3DVisualizerSelections::SelectedIndex s : sSI)
-                        {
-                            dAvr += (m_uiState.m_vCamPos - s.point.cast<float>()).norm();
-                        }
-                        dAvr /= (float)nP;
-                        SetSelectedPointSize(constrain(dAvr / 100.0, 0.025, 100.0));
+                        UpdateSelectedPointSize();
                     });
 
                 InitCtrlPanel();
@@ -366,6 +346,32 @@ namespace open3d
                 m_pScene->ForceRedraw();
             }
 
+            void PCscanUI::UpdateSelectedPointSize(void)
+            {
+                int iS = m_listVertexSet->GetSelectedIndex();
+                size_t nSet = m_sVertex->GetNumberOfSets();
+                if (iS < 0 || iS >= nSet)
+                    return;
+
+                std::map<string, set<O3DVisualizerSelections::SelectedIndex>> msSI;
+                msSI = m_sVertex->GetSets().at(iS);
+                set<O3DVisualizerSelections::SelectedIndex> sSI = msSI[m_modelName];
+                int nP = sSI.size();
+
+                if (nP <= 0)
+                    return;
+
+                //update selected point size based on its pos related to camera
+                m_uiState.m_vCamPos = m_pScene->GetScene()->GetCamera()->GetPosition();
+                float dAvr = 0.0;
+                for (O3DVisualizerSelections::SelectedIndex s : sSI)
+                {
+                    dAvr += (m_uiState.m_vCamPos - s.point.cast<float>()).norm();
+                }
+                dAvr /= (float)nP;
+                SetSelectedPointSize(constrain(dAvr / 100.0, 0.025, 100.0));
+            }
+
             void PCscanUI::SetSelectedPointSize(double px)
             {
                 IF_(!m_sVertex->GetNumberOfSets());
@@ -392,7 +398,6 @@ namespace open3d
                     m_sVertex->MakeInactive();
 
                 m_pScene->SetViewControls(m_uiState.m_mouseMode);
-//                CamAutoBound(m_pScene->GetScene()->GetBoundingBox(), {0.0f, 0.0f, 0.0f});
                 m_uiMode = uiMode_cam;
             }
 
