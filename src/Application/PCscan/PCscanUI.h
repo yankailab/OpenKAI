@@ -102,7 +102,7 @@ namespace open3d
 
 				//interactive
 				Vector3f m_vCamPos;
-				float m_dMove = 0.5;
+				float m_sMove = 0.5;
 				SceneWidget::Controls m_mouseMode = SceneWidget::Controls::ROTATE_CAMERA;
 			};
 

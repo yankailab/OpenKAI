@@ -38,8 +38,9 @@ namespace kai
 		virtual int check(void);
 
 	protected:
-		virtual void addUIpc(const PointCloud& pc);
-		virtual void updateUIpc(const PointCloud& pc);
+		void addUIpc(const PointCloud& pc);
+		void updateUIpc(const PointCloud& pc);
+		void removeUIpc(void);
 		virtual void updateProcess(void);
 		virtual void startScan(void);
 		virtual void stopScan(void);
@@ -89,7 +90,7 @@ namespace kai
 		bool m_bSceneCache;
 		int	m_wPanel;
 		int m_mouseMode;
-		float m_dMove;
+		vFloat2 m_vDmove;
 		float m_rDummyDome;
 		float m_dHiddenRemove;
 		AxisAlignedBoundingBox m_aabb;

@@ -85,7 +85,6 @@ namespace kai
             PC_POINT *pP = &pS->m_pP[i];
             IF_CONT(pP->m_tStamp <= tFrom);
 
-
             Vector3f C = pP->m_vC;
             if (m_shade == pcShade_colOvrr)
             {
@@ -93,15 +92,8 @@ namespace kai
             }
             else if (m_shade == pcShade_colPos)
             {
-                C = Vector3f(
-                    1.0 - abs(pP->m_vP[0]) * m_rShadePosCol,
-                    1.0 - abs(pP->m_vP[1]) * m_rShadePosCol,
-                    1.0 - abs(pP->m_vP[2]) * m_rShadePosCol
-                );
-
-                C[0] *= m_vShadeCol.x;
-                C[1] *= m_vShadeCol.y;
-                C[2] *= m_vShadeCol.z;
+                C = m_vShadeCol.v3f();
+                C[0] *= constrain<float>(1.0 - abs(pP->m_vP[2]) * m_rShadePosCol, 0, 1);
             }
 
             pPC->points_.push_back(pP->m_vP);

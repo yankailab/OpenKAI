@@ -23,7 +23,7 @@ namespace kai
 		m_bSceneCache = false;
 		m_wPanel = 15;
 		m_mouseMode = 0;
-		m_dMove = 0.5;
+		m_vDmove.init(0.5, 5.0);
 		m_rDummyDome = 1000.0;
 		m_dHiddenRemove = 100.0;
 
@@ -44,7 +44,7 @@ namespace kai
 		pK->v("bSceneCache", &m_bSceneCache);
 		pK->v("wPanel", &m_wPanel);
 		pK->v("mouseMode", &m_mouseMode);
-		pK->v("dMove", &m_dMove);
+		pK->v("vDmove", &m_vDmove);
 		pK->v("rDummyDome", &m_rDummyDome);
 		pK->v("dHiddenRemove", &m_dHiddenRemove);
 
@@ -136,11 +136,10 @@ namespace kai
 
 		m_pPS->clear();
 
-		m_spWin->RemoveGeometry(m_modelName);
+		removeUIpc();
 		addDummyDome(m_sPC.next(), m_pPS->nP(), m_rDummyDome);
 		updatePC();
 		addUIpc(*m_sPC.get());
-		m_aabb = m_sPC.get()->GetAxisAlignedBoundingBox();
 		m_fProcess.set(pcfScanning);
 
 		resetCamPose();
@@ -155,7 +154,7 @@ namespace kai
 
 		m_spWin->ShowMsg("Scan", "Processing");
 
-		m_spWin->RemoveGeometry(m_modelName);
+		removeUIpc();
 		m_aabb = m_sPC.get()->GetAxisAlignedBoundingBox();
 		addUIpc(*m_sPC.get());
 		m_fProcess.clear(pcfScanning);
@@ -175,6 +174,8 @@ namespace kai
 		int nP = m_pPS->nP();
 
 		m_aabb = pPC->GetAxisAlignedBoundingBox();
+		if(m_pUIstate)
+			m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
 
 		PointCloud pc = *pPC;
 		if (n < nP)
@@ -210,7 +211,7 @@ namespace kai
 
 		if (m_fProcess.b(pcfResetPC))
 		{
-			m_spWin->RemoveGeometry(m_modelName);
+			removeUIpc();
 			m_aabb = m_sPC.get()->GetAxisAlignedBoundingBox();
 			addUIpc(*m_sPC.get());
 		}
@@ -219,7 +220,7 @@ namespace kai
 		{
 			m_spWin->ShowMsg("Voxel Down Sampling", "Processing");
 
-			m_spWin->RemoveGeometry(m_modelName);
+			removeUIpc();
 			PointCloud pc;
 			float s = m_pUIstate->m_sVoxel;
 			if (s > 0.0)
@@ -236,7 +237,7 @@ namespace kai
 		{
 			m_spWin->ShowMsg("Hidden Point Removal", "Processing");
 
-			m_spWin->RemoveGeometry(m_modelName);
+			removeUIpc();
 
 			PointCloud pc = *m_sPC.get();
 			auto pcR = pc.HiddenPointRemoval(m_pUIstate->m_vCamPos.cast<double>(), m_dHiddenRemove);
@@ -267,6 +268,11 @@ namespace kai
 									  t::geometry::PointCloud::FromLegacyPointCloud(
 										  pc,
 										  core::Dtype::Float32)));
+	}
+
+	void _PCscan::removeUIpc(void)
+	{
+		m_spWin->RemoveGeometry(m_modelName);
 	}
 
 	void _PCscan::updateKinematics(void)
@@ -309,11 +315,11 @@ namespace kai
 		m_spWin->SetCbBtnResetPC(OnBtnResetPC, (void *)this);
 		m_spWin->SetCbVoxelDown(OnVoxelDown, (void *)this);
 
-		visualizer::UIState *pU = m_spWin->getUIState();
-		pU->m_bSceneCache = m_bSceneCache;
-		pU->m_mouseMode = (visualization::gui::SceneWidget::Controls)m_mouseMode;
-		pU->m_wPanel = m_wPanel;
-		pU->m_dMove = m_dMove;
+		m_pUIstate = m_spWin->getUIState();
+		m_pUIstate->m_bSceneCache = m_bSceneCache;
+		m_pUIstate->m_mouseMode = (visualization::gui::SceneWidget::Controls)m_mouseMode;
+		m_pUIstate->m_wPanel = m_wPanel;
+		m_pUIstate->m_sMove = m_vDmove.x;
 		m_spWin->UpdateUIstate();
 		m_spWin->SetFullScreen(m_bFullScreen);
 		updateCamProj();
@@ -409,7 +415,6 @@ namespace kai
 		NULL_(pPCV);
 		NULL_(pD);
 		_PCscan *pV = (_PCscan *)pPCV;
-		pV->m_pUIstate = (visualizer::UIState *)pD;
 		pV->m_fProcess.set(pcfHiddenRemove);
 	}
 
@@ -418,7 +423,6 @@ namespace kai
 		NULL_(pPCV);
 		NULL_(pD);
 		_PCscan *pV = (_PCscan *)pPCV;
-		pV->m_pUIstate = (visualizer::UIState *)pD;
 		pV->m_fProcess.set(pcfVoxelDown);
 	}
 

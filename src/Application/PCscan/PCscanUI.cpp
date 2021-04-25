@@ -284,11 +284,12 @@ namespace open3d
             {
                 auto pC = m_pScene->GetScene()->GetCamera();
                 auto mm = pC->GetModelMatrix();
+                vM *= m_uiState.m_sMove;
                 mm.translate(vM);
                 pC->SetModelMatrix(mm);
+
                 if (m_uiMode == uiMode_pointPick)
                     UpdateSelectableGeometry();
-
                 m_pScene->ForceRedraw();
             }
 
@@ -553,32 +554,32 @@ namespace open3d
 
                 m_btnCamL = new Button(" < ");
                 m_btnCamL->SetOnClicked([this]() {
-                    camMove(Vector3f(-m_uiState.m_dMove, 0, 0));
+                    camMove(Vector3f(-1, 0, 0));
                 });
 
                 m_btnCamR = new Button(" > ");
                 m_btnCamR->SetOnClicked([this]() {
-                    camMove(Vector3f(m_uiState.m_dMove, 0, 0));
+                    camMove(Vector3f(1, 0, 0));
                 });
 
                 m_btnCamF = new Button(" ^ ");
                 m_btnCamF->SetOnClicked([this]() {
-                    camMove(Vector3f(0, 0, -m_uiState.m_dMove));
+                    camMove(Vector3f(0, 0, -1));
                 });
 
                 m_btnCamB = new Button(" v ");
                 m_btnCamB->SetOnClicked([this]() {
-                    camMove(Vector3f(0, 0, m_uiState.m_dMove));
+                    camMove(Vector3f(0, 0, 1));
                 });
 
                 m_btnCamU = new Button(" Up ");
                 m_btnCamU->SetOnClicked([this]() {
-                    camMove(Vector3f(0, m_uiState.m_dMove, 0));
+                    camMove(Vector3f(0, 1, 0));
                 });
 
                 m_btnCamD = new Button(" Down ");
                 m_btnCamD->SetOnClicked([this]() {
-                    camMove(Vector3f(0, -m_uiState.m_dMove, 0));
+                    camMove(Vector3f(0, -1, 0));
                 });
 
                 auto *pN = new VGrid(3, v_spacing);
@@ -672,6 +673,9 @@ namespace open3d
                     UpdateArea();
                     m_bScanning = !m_bScanning;
                     m_cbBtnScan.call(&m_bScanning);
+                    m_bCamAuto = m_bScanning;
+                    int m = m_bCamAuto ? 1 : 0;
+                    m_cbBtnCamSet.call(&m);
                     UpdateBtnState();
                     m_pWindow->PostRedraw();
                 });
