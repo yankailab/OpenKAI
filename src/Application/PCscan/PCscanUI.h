@@ -132,7 +132,6 @@ namespace open3d
 
 				void CamSetProj(
 					double fov,
-					double aspect,
 					double near,
 					double far,
 					uint8_t fov_type);

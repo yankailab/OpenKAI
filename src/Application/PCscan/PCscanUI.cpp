@@ -246,15 +246,15 @@ namespace open3d
 
             void PCscanUI::CamSetProj(
                 double fov,
-                double aspect,
                 double near,
                 double far,
                 uint8_t fov_type)
             {
+                auto f = m_pScene->GetFrame();
                 auto sCam = m_pScene->GetScene()->GetCamera();
                 sCam->SetProjection(
                     fov,
-                    aspect,
+                    float(f.width) / float(f.height),
                     near,
                     far,
                     (fov_type == 0) ? Camera::FovType::Horizontal : Camera::FovType::Vertical);
@@ -318,6 +318,7 @@ namespace open3d
             {
                 m_btnScanStart->SetOn(m_bScanning);
                 m_btnCamAuto->SetOn(m_bCamAuto);
+                m_btnCamAuto->SetEnabled(m_bScanning);
                 m_btnCamAll->SetEnabled(!m_bCamAuto);
                 m_btnCamOrigin->SetEnabled(!m_bCamAuto);
                 m_btnCamL->SetEnabled(!m_bCamAuto);
@@ -391,7 +392,7 @@ namespace open3d
                     m_sVertex->MakeInactive();
 
                 m_pScene->SetViewControls(m_uiState.m_mouseMode);
-                CamAutoBound(m_pScene->GetScene()->GetBoundingBox(), {0.0f, 0.0f, 0.0f});
+//                CamAutoBound(m_pScene->GetScene()->GetBoundingBox(), {0.0f, 0.0f, 0.0f});
                 m_uiMode = uiMode_cam;
             }
 
@@ -615,33 +616,11 @@ namespace open3d
                     m_pScene->ForceRedraw();
                 });
 
-                // m_sliderORemovN = new Slider(Slider::INT);
-                // m_sliderORemovN->SetLimits(0, 20);
-                // m_sliderORemovN->SetValue(m_uiState.m_oRemovN);
-                // m_sliderORemovN->SetOnValueChanged([this](const double v) {
-                //      m_uiState.m_oRemovN = v;
-                //     // m_cbVoxelDown.call(&m_uiState);
-                //     m_pScene->ForceRedraw();
-                // });
-
-                // m_sliderORemovD = new Slider(Slider::DOUBLE);
-                // m_sliderORemovD->SetLimits(0, 10.0);
-                // m_sliderORemovD->SetValue(m_uiState.m_oRemovD);
-                // m_sliderORemovD->SetOnValueChanged([this](const double v) {
-                //      m_uiState.m_oRemovD = v;
-                //     // m_cbVoxelDown.call(&m_uiState);
-                //     m_pScene->ForceRedraw();
-                // });
-
                 auto *pG = new VGrid(2, v_spacing);
                 pG->AddChild(make_shared<Label>("PointSize"));
                 pG->AddChild(GiveOwnership(sliderPointSize));
                 pG->AddChild(make_shared<Label>("VoxelSize"));
                 pG->AddChild(GiveOwnership(m_sliderVsize));
-                // pG->AddChild(make_shared<Label>("O-remove N"));
-                // pG->AddChild(GiveOwnership(m_sliderORemovN));
-                // pG->AddChild(make_shared<Label>("O-remove D"));
-                // pG->AddChild(GiveOwnership(m_sliderORemovD));
                 panelView->AddChild(GiveOwnership(pG));
 
                 m_btnHiddenRemove = new Button(" Z-Cull ");

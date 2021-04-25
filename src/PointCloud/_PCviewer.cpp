@@ -35,7 +35,6 @@ namespace kai
 		pK->v("device", &m_device);
 
 		pK->v("camFov", &m_camProj.m_fov);
-		pK->v("camAspect", &m_camProj.m_aspect);
 		pK->v("vCamNF", &m_camProj.m_vNF);
 		pK->v("camFovType", &m_camProj.m_fovType);
 

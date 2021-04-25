@@ -17,7 +17,6 @@ namespace kai
 	struct CAM_PROJ
 	{
 		float m_fov = 70.0;
-		float m_aspect = 16.0/9.0;		
 		vFloat2 m_vNF = {0, FLT_MAX};	//near far plane
 		uint8_t m_fovType = 0;
 	};

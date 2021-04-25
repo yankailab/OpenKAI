@@ -61,15 +61,17 @@ namespace kai
 			return NULL;
 		}
 
-		virtual void updateCamProj(void);
-		virtual void updateCamPose(void);
-		virtual void camBound(const AxisAlignedBoundingBox& aabb);
+		void updateCamProj(void);
+		void updateCamPose(void);
+		void camBound(const AxisAlignedBoundingBox& aabb);
 		virtual void updateUI(void);
 		static void *getUpdateUI(void *This)
 		{
 			((_PCscan *)This)->updateUI();
 			return NULL;
 		}
+
+		AxisAlignedBoundingBox createDefaultAABB(void);
 
 		static void OnBtnScan(void *pPCV, void* pD);
 		static void OnBtnOpenPC(void *pPCV, void* pD);

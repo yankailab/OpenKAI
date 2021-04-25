@@ -322,6 +322,8 @@ namespace kai
 		m_pUIstate->m_sMove = m_vDmove.x;
 		m_spWin->UpdateUIstate();
 		m_spWin->SetFullScreen(m_bFullScreen);
+		m_aabb = createDefaultAABB();
+		camBound(m_aabb);
 		updateCamProj();
 		updateCamPose();
 
@@ -336,7 +338,6 @@ namespace kai
 		IF_(!m_spWin);
 
 		m_spWin->CamSetProj(m_camProj.m_fov,
-							m_camProj.m_aspect,
 							m_camProj.m_vNF.x,
 							m_camProj.m_vNF.y,
 							m_camProj.m_fovType);
@@ -358,6 +359,18 @@ namespace kai
 		IF_(!m_spWin);
 
 		m_spWin->CamAutoBound(aabb, m_vCoR.v3f());
+	}
+
+	AxisAlignedBoundingBox _PCscan::createDefaultAABB(void)
+	{
+		PointCloud pc;
+		pc.points_.push_back(Vector3d(0,0,1));
+		pc.points_.push_back(Vector3d(0,0,-1));
+		pc.points_.push_back(Vector3d(0,1,0));
+		pc.points_.push_back(Vector3d(0,-1,0));
+		pc.points_.push_back(Vector3d(1,0,0));
+		pc.points_.push_back(Vector3d(-1,0,0));
+		return pc.GetAxisAlignedBoundingBox();
 	}
 
 	void _PCscan::OnBtnScan(void *pPCV, void *pD)
@@ -413,7 +426,6 @@ namespace kai
 	void _PCscan::OnBtnHiddenRemove(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
-		NULL_(pD);
 		_PCscan *pV = (_PCscan *)pPCV;
 		pV->m_fProcess.set(pcfHiddenRemove);
 	}
@@ -421,7 +433,6 @@ namespace kai
 	void _PCscan::OnVoxelDown(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
-		NULL_(pD);
 		_PCscan *pV = (_PCscan *)pPCV;
 		pV->m_fProcess.set(pcfVoxelDown);
 	}
