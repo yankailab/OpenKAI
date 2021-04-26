@@ -155,10 +155,12 @@ namespace kai
 		m_spWin->ShowMsg("Scan", "Processing");
 
 		removeUIpc();
-		m_aabb = m_sPC.get()->GetAxisAlignedBoundingBox();
 		addUIpc(*m_sPC.get());
-		m_fProcess.clear(pcfScanning);
+		m_aabb = m_sPC.get()->GetAxisAlignedBoundingBox();
+		camBound(m_aabb);
+		updateCamPose();
 
+		m_fProcess.clear(pcfScanning);
 		m_spWin->CloseDialog();
 	}
 
@@ -212,8 +214,9 @@ namespace kai
 		if (m_fProcess.b(pcfResetPC))
 		{
 			removeUIpc();
-			m_aabb = m_sPC.get()->GetAxisAlignedBoundingBox();
 			addUIpc(*m_sPC.get());
+			m_aabb = m_sPC.get()->GetAxisAlignedBoundingBox();
+			camBound(m_aabb);
 		}
 
 		if (m_fProcess.b(pcfVoxelDown) && m_pUIstate)

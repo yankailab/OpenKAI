@@ -800,16 +800,14 @@ namespace open3d
 
             void PCscanUI::UpdateArea(void)
             {
+                RemoveGeometry(m_areaName);
+                RemoveDistLabel();
+
                 int iS = m_listVertexSet->GetSelectedIndex();
                 size_t nSet = m_sVertex->GetNumberOfSets();
 
                 //no vertex set is selecrted
-                if (iS < 0 || iS >= nSet)
-                {
-                    RemoveGeometry(m_areaName);
-                    RemoveDistLabel();
-                    return;
-                }
+                IF_(iS < 0 || iS >= nSet);
 
                 //draw polygon
                 std::map<string, set<O3DVisualizerSelections::SelectedIndex>> msSI;
@@ -820,8 +818,6 @@ namespace open3d
                 //only one point is slected
                 if (nP < 2)
                 {
-                    RemoveGeometry(m_areaName);
-                    RemoveDistLabel();
                     m_pWindow->PostRedraw();
                     return;
                 }
@@ -859,12 +855,9 @@ namespace open3d
                     spLS->lines_.erase(spLS->lines_.end());
                     spLS->colors_.erase(spLS->colors_.end());
                 }
-
-                RemoveGeometry(m_areaName);
                 AddGeometry(m_areaName, spLS);
 
                 //Distance labels
-                RemoveDistLabel();
                 Vector3d vPa(0, 0, 0);
                 for (int i = 0; i < nP; i++)
                 {

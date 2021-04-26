@@ -90,7 +90,7 @@ namespace open3d
 				//render
 				int m_wPanel = 15;
 				int m_sPoint = 2;
-				int m_wLine = 10;
+				int m_wLine = 15;
 				Vector4f m_vBgCol = {0.0f, 0.0f, 0.0f, 0.0f};
 				Vector3f m_vSunDir = {0.0f, 0.0f, 0.0f};
                 Vector3d m_vAreaLineCol = {1.0, 0.0, 1.0};
