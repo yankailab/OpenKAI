@@ -54,7 +54,7 @@
 	"vDmove":[0.5, 5.0],
 	"rDummyDome":1000.0,
 	"dHiddenRemove":100.0,
-	"shade":2,
+	"shade":0,
 	"vShadeCol":[1.0, 1.0, 1.0],
 	"rShadePosCol":15.0,
 }

@@ -126,13 +126,17 @@ namespace kai
     void _Livox::addP(LivoxRawPoint *pP, uint64_t &tStamp)
     {
         Vector3d vP(pP->x, pP->y, pP->z);
-        add(vP, m_vShadeCol.v3f(), tStamp);
+        Vector3f vC = m_vShadeCol.v3f();
+        vC[0] = float(pP->reflectivity) * m_ovRef;
+        add(vP, vC, tStamp);
     }
 
     void _Livox::addP(LivoxExtendRawPoint *pP, uint64_t &tStamp)
     {
         Vector3d vP(pP->x, pP->y, pP->z);
-        add(vP, m_vShadeCol.v3f(), tStamp);
+        Vector3f vC = m_vShadeCol.v3f();
+        vC[0] = float(pP->reflectivity) * m_ovRef;
+        add(vP, vC, tStamp);
     }
 
     void _Livox::addDualP(LivoxDualExtendRawPoint *pP, uint64_t &tStamp)
@@ -140,7 +144,9 @@ namespace kai
         Vector3d vP1(pP->x1, pP->y1, pP->z1);
         Vector3d vP2(pP->x2, pP->y2, pP->z2);
         Vector3f vC = m_vShadeCol.v3f();
+        vC[0] = float(pP->reflectivity1) * m_ovRef;
         add(vP1, vC, tStamp);
+        vC[0] = float(pP->reflectivity2) * m_ovRef;
         add(vP2, vC, tStamp);
     }
 
@@ -150,8 +156,11 @@ namespace kai
         Vector3d vP2(pP->x2, pP->y2, pP->z2);
         Vector3d vP3(pP->x3, pP->y3, pP->z3);
         Vector3f vC = m_vShadeCol.v3f();
+        vC[0] = float(pP->reflectivity1) * m_ovRef;
         add(vP1, vC, tStamp);
+        vC[0] = float(pP->reflectivity2) * m_ovRef;
         add(vP2, vC, tStamp);
+        vC[0] = float(pP->reflectivity3) * m_ovRef;
         add(vP3, vC, tStamp);
     }
 
