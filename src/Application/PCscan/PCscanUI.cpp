@@ -17,7 +17,7 @@ namespace open3d
             }
 
             PCscanUI::PCscanUI(const string &title, int width, int height)
-                : Window(title, width, height)
+                : O3DUI(title, width, height)
             {
                 Init();
                 Application::GetInstance().SetMenubar(NULL);
@@ -27,18 +27,13 @@ namespace open3d
 
             void PCscanUI::Init(void)
             {
-                if (m_pWindow)
-                    return;
+                this->O3DUI::Init();
 
                 m_bScanning = false;
                 m_bCamAuto = false;
-                m_modelName = "PCMODEL";
                 m_areaName = "PCAREA";
 
-                m_pWindow = this;
-                m_pScene = new SceneWidget();
                 m_sVertex = make_shared<O3DVisualizerSelections>(*m_pScene);
-                m_pScene->SetScene(make_shared<Open3DScene>(m_pWindow->GetRenderer()));
                 m_pScene->SetOnPointsPicked(
                     [this](const std::map<
                                string,
@@ -57,8 +52,6 @@ namespace open3d
                         UpdateSelectedPointSize();
                         UpdateArea();
                     });
-                m_pWindow->AddChild(GiveOwnership(m_pScene));
-
                 m_pScene->SetOnCameraChanged(
                     [this](Camera *pC) {
                         UpdateSelectedPointSize();
@@ -67,197 +60,6 @@ namespace open3d
                 InitCtrlPanel();
                 UpdateUIstate();
                 SetMouseCameraMode();
-            }
-
-            void PCscanUI::AddGeometry(const string &name,
-                                       shared_ptr<geometry::Geometry3D> spG,
-                                       rendering::Material *material,
-                                       bool bVisible)
-            {
-                bool is_default_color;
-                bool no_shadows = false;
-                Material mat;
-                if (material)
-                {
-                    mat = *material;
-                    is_default_color = false;
-                }
-                else
-                {
-                    bool has_colors = false;
-                    bool has_normals = false;
-
-                    auto cloud = dynamic_pointer_cast<geometry::PointCloud>(spG);
-                    auto lines = dynamic_pointer_cast<geometry::LineSet>(spG);
-                    auto mesh = dynamic_pointer_cast<geometry::MeshBase>(spG);
-
-                    if (cloud)
-                    {
-                        has_colors = !cloud->colors_.empty();
-                        has_normals = !cloud->normals_.empty();
-                    }
-                    else if (lines)
-                    {
-                        has_colors = !lines->colors_.empty();
-                        no_shadows = true;
-                    }
-                    else if (mesh)
-                    {
-                        has_normals = !mesh->vertex_normals_.empty();
-                        has_colors = true; // always want base_color as white
-                    }
-
-                    mat.base_color = {1.0f, 1.0f, 1.0f, 1.0f};
-                    mat.shader = "defaultUnlit";
-                    if (lines)
-                    {
-                        mat.shader = "unlitLine";
-                        mat.line_width = m_uiState.m_wLine * m_pWindow->GetScaling();
-                    }
-                    is_default_color = true;
-                    if (has_colors)
-                    {
-                        is_default_color = false;
-                    }
-                    if (has_normals)
-                    {
-                        mat.shader = "defaultLit";
-                        is_default_color = false;
-                    }
-                    mat.point_size = ConvertToScaledPixels(m_uiState.m_sPoint);
-                }
-
-                m_vObject.push_back({name, spG, nullptr, mat, bVisible});
-
-                auto scene = m_pScene->GetScene();
-                scene->AddGeometry(name, spG.get(), mat);
-                scene->GetScene()->GeometryShadows(name, false, false);
-                scene->ShowGeometry(name, bVisible);
-
-                SetPointSize(m_uiState.m_sPoint);
-                m_pScene->ForceRedraw();
-            }
-
-            void PCscanUI::AddPointCloud(const string &name,
-                                         shared_ptr<t::geometry::PointCloud> sTg,
-                                         rendering::Material *material,
-                                         bool bVisible)
-            {
-                bool no_shadows = false;
-                Material mat;
-                bool has_colors = false;
-                bool has_normals = false;
-
-                auto t_cloud = dynamic_pointer_cast<t::geometry::PointCloud>(sTg);
-                auto t_mesh = dynamic_pointer_cast<t::geometry::TriangleMesh>(sTg);
-                if (t_cloud)
-                {
-                    has_colors = t_cloud->HasPointColors();
-                    has_normals = t_cloud->HasPointNormals();
-                }
-                else if (t_mesh)
-                {
-                    has_normals = !t_mesh->HasVertexNormals();
-                    has_colors = true; // always want base_color as white
-                }
-
-                mat.base_color = {1.0f, 1.0f, 1.0f, 1.0f};
-                mat.shader = "defaultUnlit";
-                mat.point_size = ConvertToScaledPixels(m_uiState.m_sPoint);
-
-                m_vObject.push_back({name, nullptr, sTg, mat, bVisible});
-                auto scene = m_pScene->GetScene();
-
-                scene->AddGeometry(name, sTg.get(), mat, false);
-                scene->GetScene()->GeometryShadows(name, false, false);
-                scene->ShowGeometry(name, bVisible);
-
-                SetPointSize(m_uiState.m_sPoint);
-                m_pScene->ForceRedraw();
-            }
-
-            void PCscanUI::UpdatePointCloud(const string &name,
-                                            shared_ptr<t::geometry::PointCloud> sTg)
-            {
-                UpdateTgeometry(name, sTg);
-
-                gui::Application::GetInstance().PostToMainThread(
-                    this, [this, name]() {
-                        m_pScene->GetScene()->GetScene()->UpdateGeometry(
-                            name,
-                            *GetGeometry(name).m_sTgeometry,
-                            open3d::visualization::rendering::Scene::kUpdatePointsFlag |
-                                open3d::visualization::rendering::Scene::kUpdateColorsFlag);
-
-                        m_pScene->ForceRedraw();
-                    });
-            }
-
-            void PCscanUI::RemoveGeometry(const string &name)
-            {
-                m_pScene->GetScene()->RemoveGeometry(name);
-
-                for (size_t i = 0; i < m_vObject.size(); i++)
-                {
-                    DrawObject *pO = &m_vObject[i];
-                    if (pO->m_name != name)
-                        continue;
-
-                    m_vObject.erase(m_vObject.begin() + i);
-                    break;
-                }
-
-                // Bounds have changed, so update the selection point size, since they
-                // depend on the bounds.
-                SetPointSize(m_uiState.m_sPoint);
-
-                m_pScene->ForceRedraw();
-            }
-
-            DrawObject PCscanUI::GetGeometry(const string &name) const
-            {
-                for (auto &o : m_vObject)
-                {
-                    if (o.m_name == name)
-                        return o;
-                }
-                return DrawObject();
-            }
-
-            void PCscanUI::CamSetProj(
-                double fov,
-                double near,
-                double far,
-                uint8_t fov_type)
-            {
-                auto f = m_pScene->GetFrame();
-                auto sCam = m_pScene->GetScene()->GetCamera();
-                sCam->SetProjection(
-                    fov,
-                    float(f.width) / float(f.height),
-                    near,
-                    far,
-                    (fov_type == 0) ? Camera::FovType::Horizontal : Camera::FovType::Vertical);
-                m_pScene->ForceRedraw();
-            }
-
-            void PCscanUI::CamSetPose(
-                const Vector3f &center,
-                const Vector3f &eye,
-                const Vector3f &up)
-            {
-                auto sCam = m_pScene->GetScene()->GetCamera();
-                sCam->LookAt(center, eye, up);
-                m_pScene->ForceRedraw();
-            }
-
-            void PCscanUI::CamAutoBound(const geometry::AxisAlignedBoundingBox &aabb,
-                                        const Vector3f &CoR)
-            {
-                m_pScene->SetupCamera(m_pScene->GetScene()->GetCamera()->GetFieldOfView(),
-                                      aabb,
-                                      CoR);
-                m_pScene->ForceRedraw();
             }
 
             void PCscanUI::camMove(Vector3f vM)
@@ -273,25 +75,12 @@ namespace open3d
                 m_pScene->ForceRedraw();
             }
 
-            UIState *PCscanUI::getUIState(void)
-            {
-                return &m_uiState;
-            }
-
             void PCscanUI::UpdateUIstate(void)
             {
-                m_pScene->EnableSceneCaching(m_uiState.m_bSceneCache);
                 m_panelCtrl->SetVisible(m_uiState.m_bShowPanel);
-                auto pO3DScene = m_pScene->GetScene();
-                pO3DScene->ShowAxes(m_uiState.m_bShowAxes);
-                pO3DScene->SetBackground(m_uiState.m_vBgCol, nullptr);
-                pO3DScene->SetLighting(Open3DScene::LightingProfile::NO_SHADOWS, m_uiState.m_vSunDir);
-                SetPointSize(m_uiState.m_sPoint);
-                SetLineWidth(m_uiState.m_wLine);
                 UpdateBtnState();
 
-                m_pWindow->SetNeedsLayout();
-                m_pScene->ForceRedraw();
+                this->O3DUI::UpdateUIstate();
             }
 
             void PCscanUI::UpdateBtnState(void)
@@ -332,17 +121,10 @@ namespace open3d
                 m_pScene->ForceRedraw();
             }
 
-            void PCscanUI::SetPointSize(int px)
+            void PCscanUI::SetSelectedPointSize(double px)
             {
-                m_uiState.m_sPoint = px;
-                px = int(ConvertToScaledPixels(px));
-                for (auto &o : m_vObject)
-                {
-                    o.m_material.point_size = float(px);
-                    m_pScene->GetScene()->GetScene()->OverrideMaterial(o.m_name, o.m_material);
-                }
-                m_pScene->SetPickablePointSize(px);
-
+                IF_(!m_sVertex->GetNumberOfSets());
+                m_sVertex->SetPointSize(px);
                 m_pScene->ForceRedraw();
             }
 
@@ -372,25 +154,6 @@ namespace open3d
                 SetSelectedPointSize(constrain(dAvr / 100.0, 0.025, 100.0));
             }
 
-            void PCscanUI::SetSelectedPointSize(double px)
-            {
-                IF_(!m_sVertex->GetNumberOfSets());
-                m_sVertex->SetPointSize(px);
-                m_pScene->ForceRedraw();
-            }
-
-            void PCscanUI::SetLineWidth(int px)
-            {
-                m_uiState.m_wLine = px;
-
-                px = int(ConvertToScaledPixels(px));
-                for (auto &o : m_vObject)
-                {
-                    o.m_material.line_width = float(px);
-                    m_pScene->GetScene()->GetScene()->OverrideMaterial(o.m_name, o.m_material);
-                }
-                m_pScene->ForceRedraw();
-            }
 
             void PCscanUI::SetMouseCameraMode(void)
             {
@@ -408,6 +171,11 @@ namespace open3d
 
                 m_pScene->SetViewControls(SceneWidget::Controls::PICK_POINTS);
                 m_uiMode = uiMode_pointPick;
+            }
+
+            vector<O3DVisualizerSelections::SelectionSet> PCscanUI::GetSelectionSets() const
+            {
+                return m_sVertex->GetSets();
             }
 
             void PCscanUI::SetProgressBar(float v)
@@ -437,6 +205,11 @@ namespace open3d
                 m_cbBtnCamSet.add(pCb, pPCV);
             }
 
+            void PCscanUI::SetCbVoxelDown(OnBtnClickedCb pCb, void *pPCV)
+            {
+                m_cbVoxelDown.add(pCb, pPCV);
+            }
+
             void PCscanUI::SetCbBtnHiddenRemove(OnBtnClickedCb pCb, void *pPCV)
             {
                 m_cbBtnHiddenRemove.add(pCb, pPCV);
@@ -447,30 +220,6 @@ namespace open3d
                 m_cbBtnResetPC.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbVoxelDown(OnBtnClickedCb pCb, void *pPCV)
-            {
-                m_cbVoxelDown.add(pCb, pPCV);
-            }
-
-            vector<O3DVisualizerSelections::SelectionSet> PCscanUI::GetSelectionSets() const
-            {
-                return m_sVertex->GetSets();
-            }
-
-            void PCscanUI::ExportCurrentImage(const string &path)
-            {
-                m_pScene->EnableSceneCaching(false);
-                m_pScene->GetScene()->GetScene()->RenderToImage(
-                    [this, path](shared_ptr<geometry::Image> image) mutable {
-                        if (!io::WriteImage(path, *image))
-                        {
-                            this->m_pWindow->ShowMessageBox(
-                                "Error",
-                                (string("Could not write image to ") + path + ".").c_str());
-                        }
-                        m_pScene->EnableSceneCaching(m_uiState.m_bSceneCache);
-                    });
-            }
 
             void PCscanUI::Layout(const Theme &theme)
             {
@@ -487,17 +236,17 @@ namespace open3d
                     m_pScene->SetFrame(f);
                 }
 
-                Super::Layout(theme);
+                gui::Window::Layout(theme);
             }
 
             void PCscanUI::InitCtrlPanel(void)
             {
-                auto em = m_pWindow->GetTheme().font_size;
+                auto em = GetTheme().font_size;
                 auto half_em = int(round(0.5f * float(em)));
                 auto v_spacing = int(round(0.25 * float(em)));
 
                 m_panelCtrl = new Vert(half_em);
-                m_pWindow->AddChild(GiveOwnership(m_panelCtrl));
+                AddChild(GiveOwnership(m_panelCtrl));
 
                 Margins margins(em, 0, half_em, 0);
 
@@ -661,7 +410,7 @@ namespace open3d
                     int m = m_bCamAuto ? 1 : 0;
                     m_cbBtnCamSet.call(&m);
                     UpdateBtnState();
-                    m_pWindow->PostRedraw();
+                    PostRedraw();
                 });
                 pH = new Horiz(v_spacing);
                 pH->AddChild(GiveOwnership(m_btnScanStart));
@@ -722,24 +471,6 @@ namespace open3d
                 panelVertexSet->AddChild(GiveOwnership(m_listVertexSet));
             }
 
-            void PCscanUI::UpdateTgeometry(const string &name, shared_ptr<t::geometry::PointCloud> sTg)
-            {
-                for (size_t i = 0; i < m_vObject.size(); i++)
-                {
-                    DrawObject *pO = &m_vObject[i];
-                    if (pO->m_name != name)
-                        continue;
-
-                    m_vObject[i].m_sTgeometry = sTg;
-                    break;
-                }
-            }
-
-            float PCscanUI::ConvertToScaledPixels(int px)
-            {
-                return round(px * m_pWindow->GetScaling());
-            }
-
             void PCscanUI::UpdateSelectableGeometry(void)
             {
                 vector<SceneWidget::PickableGeometry> pickable;
@@ -779,7 +510,7 @@ namespace open3d
                 }
                 m_listVertexSet->SetItems(items);
 
-                m_pWindow->PostRedraw();
+                PostRedraw();
             }
 
             void PCscanUI::RemoveVertexSet(int i)
@@ -818,7 +549,7 @@ namespace open3d
                 //only one point is slected
                 if (nP < 2)
                 {
-                    m_pWindow->PostRedraw();
+                    PostRedraw();
                     return;
                 }
 
@@ -895,7 +626,7 @@ namespace open3d
                     SetLabelArea(strS);
                 }
 
-                m_pWindow->PostRedraw();
+                PostRedraw();
             }
 
             void PCscanUI::RemoveDistLabel(void)
@@ -926,26 +657,26 @@ namespace open3d
             void PCscanUI::OnSaveRGB(void)
             {
                 auto dlg = make_shared<gui::FileDialog>(
-                    gui::FileDialog::Mode::SAVE, "Save File", m_pWindow->GetTheme());
+                    gui::FileDialog::Mode::SAVE, "Save File", this->GetTheme());
                 dlg->AddFilter(".png", "PNG images (.png)");
                 dlg->AddFilter("", "All files");
-                dlg->SetOnCancel([this]() { this->m_pWindow->CloseDialog(); });
+                dlg->SetOnCancel([this]() { this->CloseDialog(); });
                 dlg->SetOnDone([this](const char *path) {
-                    this->m_pWindow->CloseDialog();
+                    this->CloseDialog();
                     this->ExportCurrentImage(path);
                 });
-                m_pWindow->ShowDialog(dlg);
+                ShowDialog(dlg);
             }
 
             void PCscanUI::OnSavePLY(void)
             {
                 auto dlg = make_shared<gui::FileDialog>(
-                    gui::FileDialog::Mode::SAVE, "Save File", m_pWindow->GetTheme());
+                    gui::FileDialog::Mode::SAVE, "Save File", this->GetTheme());
                 dlg->AddFilter(".ply", "Point Cloud Files (.ply)");
                 dlg->AddFilter("", "All files");
-                dlg->SetOnCancel([this]() { this->m_pWindow->CloseDialog(); });
+                dlg->SetOnCancel([this]() { this->CloseDialog(); });
                 dlg->SetOnDone([this](const char *path) {
-                    this->m_pWindow->CloseDialog();
+                    this->CloseDialog();
 
                     ShowMsg("Save", "Saving .Ply file");
                     io::WritePointCloudOption par;
@@ -956,45 +687,21 @@ namespace open3d
                     io::WritePointCloudToPLY(path, spTpc->ToLegacyPointCloud(), par);
                     CloseMsg();
                 });
-                m_pWindow->ShowDialog(dlg);
+                ShowDialog(dlg);
             }
 
             void PCscanUI::OnOpenPLY(void)
             {
                 auto dlg = make_shared<gui::FileDialog>(
-                    gui::FileDialog::Mode::OPEN, "Save File", m_pWindow->GetTheme());
+                    gui::FileDialog::Mode::OPEN, "Save File", this->GetTheme());
                 dlg->AddFilter(".ply", "Point Cloud Files (.ply)");
                 dlg->AddFilter("", "All files");
-                dlg->SetOnCancel([this]() { this->m_pWindow->CloseDialog(); });
+                dlg->SetOnCancel([this]() { this->CloseDialog(); });
                 dlg->SetOnDone([this](const char *path) {
-                    this->m_pWindow->CloseDialog();
+                    this->CloseDialog();
                     this->m_cbBtnOpenPC.call((void *)path);
                 });
-                m_pWindow->ShowDialog(dlg);
-            }
-
-            void PCscanUI::ShowMsg(const char *pTitle, const char *pMsg, bool bOK)
-            {
-                auto em = GetTheme().font_size;
-                auto margins = Margins(GetTheme().default_margin);
-                auto dlg = std::make_shared<Dialog>(pTitle);
-                auto layout = std::make_shared<Vert>(em, margins);
-                layout->AddChild(std::make_shared<Label>(pMsg));
-                if (bOK)
-                {
-                    auto ok = std::make_shared<Button>("OK");
-                    ok->SetOnClicked([this]() { this->CloseDialog(); });
-                    layout->AddChild(Horiz::MakeCentered(ok));
-                }
-
-                dlg->AddChild(layout);
                 ShowDialog(dlg);
-            }
-
-            void PCscanUI::CloseMsg(void)
-            {
-                m_pWindow->CloseDialog();
-                m_pWindow->PostRedraw();
             }
 
         } // namespace visualizer

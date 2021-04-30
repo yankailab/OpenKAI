@@ -33,7 +33,7 @@
 	}
 	"_Console":"console",
 	"vWinSize":[1920,1080],
-	"pathRes":"/home/lab/dev/Open3D/build/bin/resources",
+	"pathRes":"/home/kai/dev/Open3D/build/bin/resources",
 	"device":"CPU:0",
 	"vPCbase":["pcFile","pcRS","pcLivox"],
 	"_SlamBase":"T265",
@@ -62,7 +62,7 @@
 {
 	"name":"pcFile",
 	"class":"_PCfile",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,
