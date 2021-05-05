@@ -221,6 +221,7 @@
 #include "../PointCloud/PCregistration/_PCregistICP.h"
 #include "../PointCloud/PCregistration/_PCregistGlobal.h"
 #include "../Application/PCscan/_PCscan.h"
+#include "../Application/PCscan/_PCcalib.h"
 #ifdef USE_REALSENSE
 #include "../PointCloud/_PCrs.h"
 #endif

@@ -1,0 +1,145 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"PCscan",
+	"bWindow":0,
+	"bDraw":1,
+	"bLog":1,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bInst":0,
+}
+
+{
+	"name":"pcScan",
+	"class":"_PCcalib",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":5,
+	}
+    {
+		"name":"threadK",
+		"FPS":200,
+	}
+    {
+		"name":"threadUI",
+		"FPS":30,
+	}
+	"_Console":"console",
+	"vWinSize":[1920,1080],
+	"pathRes":"/home/kai/dev/Open3D/build/bin/resources",
+	"device":"CPU:0",
+	"vPCbase":["pcFile","pcRS","pcLivox"],
+	"_SlamBase":"T265",
+	"_PCstream":"pcLivox",
+	"vCamLookAt":[0,0,0],
+	"vCamEye":[0,0,2],
+	"vCamUp":[0,1,0],
+	"vCamAutoLookAt":[0,0,0],
+	"vCamAutoEye":[0,-2,0],
+	"vCamAutoUp":[0,1,0],
+	"vCoR":[0,0,0],
+	"camFov":80,
+	"vCamNF":[0, 200],
+	"camFovType":1,
+	"bFullScreen":0,
+	"wPanel":13,
+	"mouseMode":1,
+	"vDmove":[0.5, 5.0],
+	"rDummyDome":1000.0,
+	"dHiddenRemove":100.0,
+	"shade":0,
+	"vShadeCol":[1.0, 1.0, 1.0],
+	"rShadePosCol":15.0,
+}
+
+{
+	"name":"pcFile",
+	"class":"_PCfile",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_Console":"console",
+	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
+}
+
+{
+	"name":"pcRS",
+	"class":"_PCrs",
+	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":1,
+	"_Console":"console",
+	"vPreset":"Short Range",
+	"rsRGB":1,
+	"vWHcol":[1280,720],
+	"rsFPS":30,
+	"vWHd":[640,480],
+	"rsDFPS":30,
+	"fDec":0,
+	"fSpat":0,
+	"vRange":[0.1,15.0],
+	"bAlign":0,
+	"rsSN":"f0211594",
+	"vRz":[0, 1000.0],
+}
+
+{
+	"name":"LivoxLidar",
+	"class":"LivoxLidar",
+	"bInst":1,
+	"bLog":1,
+	"_Console":"console",
+	"vBroadcastCode":["3JEDHC900100791","3GGDJ1500105411","0TFDHAW001808W1"],
+	"bEnableFan":1,
+	"returnMode":1,
+	"coordinate":0,
+	"imuRate":1,
+	"scanPattern":0,
+}
+
+{
+	"name":"pcLivox",
+	"class":"_Livox",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":1,
+	"_Console":"console",
+	"LivoxLidar":"LivoxLidar",
+	"/broadcastCode":"3JEDHC900100791",
+	"broadcastCode":"3GGDJ1500105411",
+	"/broadcastCode":"0TFDHAW001808W1",
+	"nP":256000,
+	"vToffset":[-0.0098, -0.046, 0.002],
+	"vRoffset":[0, 0, 0],
+	"vAxisIdx":[1, 0, 2],
+	"vAxisK":[-1, 1, 1],
+	"unitK":0.001,
+	"vRange":[0.6, 300],
+}
+
+{
+	"name":"T265",
+	"class":"_RStracking",
+    {
+		"name":"thread",
+		"FPS":200,
+	}
+	"bInst":1,
+	"bLog":1,
+	"_Console":"console",
+}
