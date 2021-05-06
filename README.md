@@ -46,7 +46,7 @@ and more are coming.
 * Hiphen Airphen
 * Canon SLR
 * Sony RX0 series
-* Livox (Coming soon)
+* Livox
 
 and more are coming.
 
@@ -60,16 +60,5 @@ and more are coming.
 * Mutrics ARiC AR glasses (Coming soon)
 
 ## Showcase of Solutions
-Visual obstacle avoidance using ZED camera and Pixhawk (APMcopter 3.5-dev and above).
 
-On-board camera (Click to jump to YouTube):
-
-[![APMcopter+OpenKAI+ZED: visual obstacle avoidance](https://img.youtube.com/vi/MOFullt5k3g/0.jpg)](https://www.youtube.com/watch?v=MOFullt5k3g)
-
-External camera (Click to jump to YouTube):
-
-[![APMcopter+OpenKAI+ZED: visual obstacle avoidance](https://img.youtube.com/vi/qk_hEtRASqg/0.jpg)](https://www.youtube.com/watch?v=qk_hEtRASqg)
-
-## Getting started
-###[Set up and compilation](https://github.com/yankailab/OpenKAI/blob/master/sh/Setup/OpenKAI_dev_setup.sh)
 Updating...

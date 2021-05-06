@@ -8,6 +8,35 @@ namespace open3d
 	{
 		namespace visualizer
 		{
+			struct PCCALIB_PARAM
+			{
+				float m_Fx = 0.0;
+				float m_Fy = 0.0;
+				float m_Cx = 0.0;
+				float m_Cy = 0.0;
+
+				float m_oTx = 0.0;
+				float m_oTy = 0.0;
+				float m_oTz = 0.0;
+
+				float m_oRx = 0.0;
+				float m_oRy = 0.0;
+				float m_oRz = 0.0;
+
+				float m_k1 = 0.0;
+				float m_k2 = 0.0;
+				float m_k3 = 0.0;
+				float m_k4 = 0.0;
+			};
+
+			enum MenuId
+			{
+				MENU_LOAD_IMGS,
+				MENU_IMPORT_PARAMS,
+				MENU_EXPORT_PARAMS,
+				MENU_RESET_PC
+			};
+
 			class PCcalibUI : public O3DUI
 			{
 			public:
@@ -18,47 +47,48 @@ namespace open3d
 				virtual void Init(void);
 				virtual void UpdateUIstate(void);
 
-				void SetCbBtnCalib(OnBtnClickedCb pCb, void *pPCV);
+				PCCALIB_PARAM *GetCalibParams(void);
+				void UpdateCalibParams(void);
+
+				void SetCbLoadImgs(OnBtnClickedCb pCb, void *pPCV);
+				void SetCbResetPC(OnBtnClickedCb pCb, void *pPCV);
 
 			protected:
 				virtual void Layout(const gui::Theme &theme);
-	            
 				void InitCtrlPanel(void);
-				void UpdateBtnState(void);
 
-				void OnSaveData(void);
+				void OnLoadImgs(void);
+				void OnImportParams(void);
+				void OnExportParams(void);
 
 			private:
 				float m_dV;
-				float m_Fx;
+				PCCALIB_PARAM m_calibParam;
 
 				//UI components
 				Vert *m_panelCtrl;
 
-				TextEdit* m_pFx;
-				TextEdit* m_pFy;
-				TextEdit* m_pCx;
-				TextEdit* m_pCy;
+				TextEdit *m_pFx;
+				TextEdit *m_pFy;
+				TextEdit *m_pCx;
+				TextEdit *m_pCy;
 
+				TextEdit *m_poTx;
+				TextEdit *m_poTy;
+				TextEdit *m_poTz;
 
-				Button* m_btnOpenPC;
-				Button* m_btnSavePC;
-				Button* m_btnSaveRGB;
-				Button* m_btnCamAuto;
+				TextEdit *m_poRx;
+				TextEdit *m_poRy;
+				TextEdit *m_poRz;
 
-				Slider* m_sliderVsize;
-				Button* m_btnHiddenRemove;
-				Button* m_btnFilterReset;
-				Button *m_btnScanStart;
-				ProgressBar *m_progScan;
+				TextEdit *m_pk1;
+				TextEdit *m_pk2;
+				TextEdit *m_pk3;
+				TextEdit *m_pk4;
 
 				//UI handler
-				O3D_UI_Cb m_cbBtnScan;
-				O3D_UI_Cb m_cbBtnOpenPC;
-				O3D_UI_Cb m_cbBtnCamSet;
-				O3D_UI_Cb m_cbVoxelDown;
-				O3D_UI_Cb m_cbBtnHiddenRemove;
-				O3D_UI_Cb m_cbBtnResetPC;
+				O3D_UI_Cb m_cbLoadImgs;
+				O3D_UI_Cb m_cbResetPC;
 			};
 
 		} // namespace visualizer

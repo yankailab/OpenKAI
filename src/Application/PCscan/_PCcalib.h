@@ -10,7 +10,6 @@
 #ifdef USE_OPEN3D
 #include "../../PointCloud/_PCstream.h"
 #include "../../PointCloud/_PCviewer.h"
-#include "../../SLAM/_SlamBase.h"
 #include "../../Utility/BitFlag.h"
 #include "PCcalibUI.h"
 
@@ -31,21 +30,11 @@ namespace kai
 		void updateUIpc(const PointCloud& pc);
 		void removeUIpc(void);
 		virtual void startScan(void);
-		virtual void stopScan(void);
-		virtual void updateCamAuto(void);
 		virtual void updateScan(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_PCcalib *)This)->update();
-			return NULL;
-		}
-
-		virtual void updateSlam(void);
-		virtual void updateKinematics(void);
-		static void *getUpdateKinematics(void *This)
-		{
-			((_PCcalib *)This)->updateKinematics();
 			return NULL;
 		}
 
@@ -61,23 +50,18 @@ namespace kai
 
 		AxisAlignedBoundingBox createDefaultAABB(void);
 
-		static void OnBtnLoadImgs(void *pPCV, void* pD);
+		static void OnLoadImgs(void *pPCV, void* pD);
+		static void OnResetPC(void *pPCV, void* pD);
 
 	protected:
 		_PCstream* m_pPS;
 		shared_ptr<visualizer::PCcalibUI> m_spWin;
 		visualizer::UIState* m_pUIstate;
 		string m_modelName;
-		_Thread *m_pTk;
-		_SlamBase *m_pSB;
 
 		bool m_bFullScreen;
-		bool m_bSceneCache;
-		int	m_wPanel;
 		int m_mouseMode;
-		vFloat2 m_vDmove;
 		float m_rDummyDome;
-		float m_dHiddenRemove;
 		AxisAlignedBoundingBox m_aabb;
 
 		//filter flags
