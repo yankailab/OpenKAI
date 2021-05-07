@@ -78,18 +78,22 @@ bool _StateBase::bStateChanged(void)
 	return m_bStateChanged;
 }
 
-void _StateBase::drawActive(void)
+void _StateBase::msgActive(void* pConsole)
 {
+	NULL_(pConsole);
+
+	_Console *pC = (_Console *)pConsole;
 	if(!bActive())
-		addMsg("[Inactive]", 0);
+		pC->addMsg("[Inactive]", 0);
 	else
-		addMsg("[ACTIVE]", 0);
+		pC->addMsg("[ACTIVE]", 0);
 }
 
-void _StateBase::draw(void)
+void _StateBase::console(void* pConsole)
 {
-	this->_ModuleBase::draw();
-    drawActive();
+	NULL_(pConsole);
+	this->_ModuleBase::console(pConsole);
+    msgActive(pConsole);
 }
 
 }

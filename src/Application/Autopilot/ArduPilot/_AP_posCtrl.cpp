@@ -182,24 +182,26 @@ void _AP_posCtrl::releaseCtrl(void)
 	m_pAP->m_pMav->setPositionTargetLocalNED(m_sptLocal);
 }
 
-void _AP_posCtrl::draw(void)
+void _AP_posCtrl::console(void* pConsole)
 {
-	this->_StateBase::draw();
+	NULL_(pConsole);
+	this->_StateBase::console(pConsole);
 
-	addMsg( "Local NED:");
-	addMsg(	"vTargetP = (" + f2str(m_vTargetP.x) + ", "
+	_Console *pC = (_Console *)pConsole;
+	pC->addMsg( "Local NED:");
+	pC->addMsg(	"vTargetP = (" + f2str(m_vTargetP.x) + ", "
 					+ f2str(m_vTargetP.y) + ", " + f2str(m_vTargetP.z)
 					+ ", " + f2str(m_vTargetP.w) + ")",1);
-	addMsg(	"vP = (" + f2str(m_vP.x) + ", " + f2str(m_vP.y) + ", "
+	pC->addMsg(	"vP = (" + f2str(m_vP.x) + ", " + f2str(m_vP.y) + ", "
 					+ f2str(m_vP.z) + ", " + f2str(m_vP.w) + ")",1);
-	addMsg(	"setV = (" + f2str(m_sptLocal.vx,7) + ", " + f2str(m_sptLocal.vy,7)
+	pC->addMsg(	"setV = (" + f2str(m_sptLocal.vx,7) + ", " + f2str(m_sptLocal.vy,7)
 					+ ", " + f2str(m_sptLocal.vz,7) + ")",1);
-	addMsg(	"setP = (" + f2str(m_sptLocal.x,7) + ", " + f2str(m_sptLocal.y,7)
+	pC->addMsg(	"setP = (" + f2str(m_sptLocal.x,7) + ", " + f2str(m_sptLocal.y,7)
 					+ ", " + f2str(m_sptLocal.z,7) + ")",1);
-	addMsg(	"yawRate=" + f2str(m_sptLocal.yaw_rate) + ", yaw=" + f2str(m_sptLocal.yaw),1);
+	pC->addMsg(	"yawRate=" + f2str(m_sptLocal.yaw_rate) + ", yaw=" + f2str(m_sptLocal.yaw),1);
 
-	addMsg( "Global INT:");
-	addMsg(	"vTargetGlobal = (" + lf2str(m_vTargetGlobal.x,7) + ", "
+	pC->addMsg( "Global INT:");
+	pC->addMsg(	"vTargetGlobal = (" + lf2str(m_vTargetGlobal.x,7) + ", "
 					+ lf2str(m_vTargetGlobal.y,7) + ", " + lf2str(m_vTargetGlobal.z,2)
 					+ ", " + lf2str(m_vTargetGlobal.w,2) + ")",1);
 

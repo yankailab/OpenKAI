@@ -203,9 +203,4 @@ void _OrientalMotor::readStatus(void)
 	LOG_I("step: "+f2str(m_pA->m_p.m_v) + ", speed: " + f2str(m_pA->m_s.m_v));
 }
 
-void _OrientalMotor::draw(void)
-{
-	this->_ActuatorBase::draw();
-}
-
 }

@@ -23,7 +23,7 @@ public:
 	bool start(void);
 	bool open(void);
 	void close(void);
-	void draw(void);
+	void console(void* pConsole);
 	bool bComplete(void);
 
 public:

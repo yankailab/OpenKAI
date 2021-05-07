@@ -9,6 +9,7 @@
 #define OpenKAI_src_Actuator__ActuatorBase_H_
 
 #include "../Base/_ModuleBase.h"
+#include "../UI/_Console.h"
 
 namespace kai
 {
@@ -94,7 +95,7 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
-	virtual void draw(void);
+	virtual void console(void* pConsole);
 
 	virtual void atomicFrom(void);
 	virtual void atomicTo(void);

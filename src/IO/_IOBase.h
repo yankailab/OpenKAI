@@ -9,6 +9,7 @@
 #define OpenKAI_src_IO_IOBase_H_
 
 #include "../Base/_ModuleBase.h"
+#include "../UI/_Console.h"
 
 #define N_IO_BUF 512
 
@@ -140,7 +141,7 @@ public:
 	virtual bool open(void);
 	virtual bool isOpen(void);
 	virtual void close(void);
-	virtual void draw(void);
+	virtual void console(void* pConsole);
 	virtual IO_TYPE ioType(void);
 
 	virtual int  read(uint8_t* pBuf, int nB);

@@ -51,10 +51,5 @@ void _PClattice::render(void)
 {
 }
 
-void _PClattice::draw(void)
-{
-	this->_ModuleBase::draw();
-}
-
 }
 #endif

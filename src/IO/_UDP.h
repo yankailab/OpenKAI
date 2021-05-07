@@ -26,7 +26,7 @@ public:
 	bool init(void* pKiss);
 	bool start(void);
 	void close(void);
-	void draw(void);
+	void console(void* pConsole);
 	bool open(void);
 
 private:

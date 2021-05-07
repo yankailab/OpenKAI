@@ -103,10 +103,4 @@ void _AP_mission::updateMission(void)
 
 }
 
-void _AP_mission::draw(void)
-{
-	this->_StateBase::draw();
-
-}
-
 }

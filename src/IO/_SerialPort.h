@@ -28,7 +28,7 @@ public:
 	bool open(void);
 	void close(void);
 	bool start(void);
-    void draw(void);
+	void console(void* pConsole);
 
 private:
 	bool setup(void);

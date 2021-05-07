@@ -121,10 +121,11 @@ namespace kai
             KDTreeSearchParamHybrid(m_rFeature, m_maxNNfpfh));
     }
 
-    void _PCregistGlobal::draw(void)
+    void _PCregistGlobal::console(void* pConsole)
     {
-        this->_ModuleBase::draw();
-        addMsg("Fitness = " + f2str((float)m_RR.fitness_) +
+        NULL_(pConsole);
+        this->_ModuleBase::console(pConsole);
+        ((_Console*)pConsole)->addMsg("Fitness = " + f2str((float)m_RR.fitness_) +
                ", Inliner_rmse = " + f2str((float)m_RR.inlier_rmse_));
     }
 

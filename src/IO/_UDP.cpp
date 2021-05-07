@@ -149,14 +149,15 @@ void _UDP::updateR(void)
 	}
 }
 
-void _UDP::draw(void)
+void _UDP::console(void* pConsole)
 {
-	this->_IOBase::draw();
+	NULL_(pConsole);
+	this->_IOBase::console(pConsole);
     
     NULL_(m_pTr);
-    m_pTr->draw();
+    m_pTr->console(pConsole);
 
-	addMsg("Port:" + i2str(m_port));
+	((_Console*)pConsole)->addMsg("Port:" + i2str(m_port));
 }
 
 }

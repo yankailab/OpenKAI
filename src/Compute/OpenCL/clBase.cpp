@@ -111,12 +111,5 @@ void clBase::update ( void )
 {
 }
 
-
-void clBase::draw ( void )
-{
-    this->BASE::draw();
-
-}
-
 }
 #endif

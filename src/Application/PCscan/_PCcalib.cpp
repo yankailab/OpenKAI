@@ -1,7 +1,7 @@
 /*
  * _PCcalib.cpp
  *
- *  Created on: May 28, 2020
+ *  Created on: May 6, 2021
  *      Author: yankai
  */
 
@@ -16,6 +16,8 @@ namespace kai
 		m_pPS = NULL;
 		m_pUIstate = NULL;
 		m_modelName = "PCMODEL";
+		m_pTrgb = NULL;
+		m_pV = NULL;
 
 		m_bFullScreen = false;
 		m_mouseMode = 0;
@@ -43,6 +45,19 @@ namespace kai
 		pK->v("_PCstream", &n);
 		m_pPS = (_PCstream *)(pK->getInst(n));
 
+		n = "";
+		pK->v("_VisionBase", &n);
+		m_pV = (_VisionBase *)(pK->getInst(n));
+
+		Kiss *pKr = pK->child("threadRGB");
+		IF_F(pKr->empty());
+		m_pTrgb = new _Thread();
+		if (!m_pTrgb->init(pKr))
+		{
+			DEL(m_pTrgb);
+			return false;
+		}
+
 		return true;
 	}
 
@@ -54,12 +69,16 @@ namespace kai
 		NULL_F(m_pTui);
 		IF_F(!m_pTui->start(getUpdateUI, this));
 
+		NULL_F(m_pTrgb);
+		IF_F(!m_pTrgb->start(getUpdateRGB, this));
+
 		return true;
 	}
 
 	int _PCcalib::check(void)
 	{
 		NULL__(m_pPS, -1);
+		NULL__(m_pV, -1);
 
 		return this->_PCviewer::check();
 	}
@@ -75,6 +94,7 @@ namespace kai
 			m_pT->autoFPSfrom();
 
 			updateScan();
+			updateProcess();
 
 			m_pT->autoFPSto();
 		}
@@ -83,8 +103,6 @@ namespace kai
 	void _PCcalib::startScan(void)
 	{
 		IF_(check() < 0);
-
-		m_spWin->ShowMsg("Scan", "Initializing");
 
 		m_pPS->clear();
 
@@ -95,8 +113,6 @@ namespace kai
 
 		resetCamPose();
 		updateCamPose();
-		
-		m_spWin->CloseDialog();
 	}
 
 	void _PCcalib::updateScan(void)
@@ -127,6 +143,16 @@ namespace kai
 		updateUIpc(pc);
 	}
 
+	void _PCcalib::updateProcess(void)
+	{
+		IF_(check() < 0);
+
+		if (m_fProcess.b(pcfCalibReset))
+		{
+			startScan();
+		}
+	}
+
 	void _PCcalib::addUIpc(const PointCloud &pc)
 	{
 		IF_(pc.IsEmpty());
@@ -152,6 +178,23 @@ namespace kai
 	void _PCcalib::removeUIpc(void)
 	{
 		m_spWin->RemoveGeometry(m_modelName);
+	}
+
+	void _PCcalib::updateRGB(void)
+	{
+		while (m_pTrgb->bRun())
+		{
+			m_pTrgb->autoFPSfrom();
+
+			updateRGBtransform();
+
+			m_pTrgb->autoFPSto();
+		}		
+	}
+
+	void _PCcalib::updateRGBtransform(void)
+	{
+
 	}
 
 	void _PCcalib::updateUI(void)
@@ -211,12 +254,12 @@ namespace kai
 	AxisAlignedBoundingBox _PCcalib::createDefaultAABB(void)
 	{
 		PointCloud pc;
-		pc.points_.push_back(Vector3d(0,0,1));
-		pc.points_.push_back(Vector3d(0,0,-1));
-		pc.points_.push_back(Vector3d(0,1,0));
-		pc.points_.push_back(Vector3d(0,-1,0));
-		pc.points_.push_back(Vector3d(1,0,0));
-		pc.points_.push_back(Vector3d(-1,0,0));
+		pc.points_.push_back(Vector3d(0, 0, 1));
+		pc.points_.push_back(Vector3d(0, 0, -1));
+		pc.points_.push_back(Vector3d(0, 1, 0));
+		pc.points_.push_back(Vector3d(0, -1, 0));
+		pc.points_.push_back(Vector3d(1, 0, 0));
+		pc.points_.push_back(Vector3d(-1, 0, 0));
 		return pc.GetAxisAlignedBoundingBox();
 	}
 
@@ -228,7 +271,6 @@ namespace kai
 
 		if (io::ReadPointCloud((const char *)pD, *pV->m_sPC.next()))
 			pV->updatePC();
-
 	}
 
 	void _PCcalib::OnResetPC(void *pPCV, void *pD)
@@ -237,10 +279,14 @@ namespace kai
 		NULL_(pD);
 		_PCcalib *pV = (_PCcalib *)pPCV;
 
-		if (io::ReadPointCloud((const char *)pD, *pV->m_sPC.next()))
-			pV->updatePC();
-
+		pV->m_fProcess.set(pcfCalibReset);
 	}
+
+	void _PCcalib::calibRGB(const char* pPath)
+	{
+		
+	}
+
 
 }
 #endif

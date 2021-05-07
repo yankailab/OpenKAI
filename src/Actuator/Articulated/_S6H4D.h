@@ -140,7 +140,7 @@ public:
 	virtual bool init(void *pKiss);
 	virtual bool start(void);
 	virtual int check(void);
-	virtual void draw(void);
+	virtual void console(void* pConsole);
 
 protected:
 	bool checkArm(void);

@@ -23,7 +23,7 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	void draw(void);
+	void cvDraw(void* pWindow);
 	int check(void);
 	bool classify(Mat m, _Object* pO, float minConfidence=0.0);
 

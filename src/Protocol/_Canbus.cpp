@@ -207,9 +207,10 @@ void _Canbus::pinOut(uint8_t pin, uint8_t output)
 	m_pIO->write(pBuf, 5);
 }
 
-void _Canbus::draw(void)
+void _Canbus::console(void* pConsole)
 {
-	this->_ModuleBase::draw();
+	NULL_(pConsole);
+	this->_ModuleBase::console(pConsole);
 
 	string msg = *this->getName();
 	if (m_pIO->isOpen())
@@ -217,7 +218,7 @@ void _Canbus::draw(void)
 	else
 		msg += ": Not connected";
 
-	addMsg(msg);
+	((_Console*)pConsole)->addMsg(msg);
 
 }
 

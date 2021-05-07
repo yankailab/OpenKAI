@@ -98,7 +98,7 @@ public:
 	int	 check(void);
 	bool update(void);
 	void reset(void);
-	void draw(void);
+	void console(void* pConsole);
 
 	void setPos(vDouble4& vPos);
 	STATE_WAYPOINT* getWaypoint(void);

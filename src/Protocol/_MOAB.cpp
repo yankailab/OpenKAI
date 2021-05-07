@@ -83,21 +83,20 @@ void _MOAB::setSpeed(float speed, float steer)
 {
 	speed = constrain(speed, -1.0f, 1.0f);
 	steer = constrain(steer, -1.0f, 1.0f);
-
-
-
 }
 
-void _MOAB::draw(void)
+void _MOAB::console(void* pConsole)
 {
-	this->_ModuleBase::draw();
+	NULL_(pConsole);
+	this->_ModuleBase::console(pConsole);
 
+	_Console *pC = (_Console *)pConsole;
 	if (!m_pIO->isOpen())
-		addMsg("Not connected");
+		pC->addMsg("Not connected");
 	else
-		addMsg("Connected");
+		pC->addMsg("Connected");
 
-	addMsg("vSpeed=(" + f2str(m_vSpeed.x) + ", " + f2str(m_vSpeed.y) + ")");
+	pC->addMsg("vSpeed=(" + f2str(m_vSpeed.x) + ", " + f2str(m_vSpeed.y) + ")");
 }
 
 }

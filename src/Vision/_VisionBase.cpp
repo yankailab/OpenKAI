@@ -12,92 +12,97 @@
 namespace kai
 {
 
-_VisionBase::_VisionBase()
-{
-	m_bOpen = false;
-	m_type = vision_unknown;
-    m_vSize.init(1280,720);
-    m_vFov.init(60,60);
-	m_bbDraw.x = -1.0;
-}
-
-_VisionBase::~_VisionBase()
-{
-}
-
-bool _VisionBase::init(void* pKiss)
-{
-	IF_F(!this->_ModuleBase::init(pKiss));
-	Kiss* pK = (Kiss*)pKiss;
-
-	pK->v("vSize",&m_vSize);
-    pK->v("vFov",&m_vFov);
-	pK->v("bbDraw",&m_bbDraw);
-
-	m_bOpen = false;
-	return true;
-}
-
-Frame* _VisionBase::BGR(void)
-{
-	return &m_fBGR;
-}
-
-vInt2 _VisionBase::getSize(void)
-{
-	return m_vSize;
-}
-
-VISION_TYPE _VisionBase::getType(void)
-{
-	return m_type;
-}
-
-bool _VisionBase::open(void)
-{
-	return true;
-}
-
-bool _VisionBase::isOpened(void)
-{
-	return m_bOpen;
-}
-
-void _VisionBase::close(void)
-{
-    IF_(check()<0);
-
-    m_pT->goSleep();
-	while(!m_pT->bSleeping());
-
-	m_bOpen = false;
-}
-
-void _VisionBase::draw(void)
-{
-	NULL_(m_pWindow);
-	Frame* pFrame = ((_WindowCV*)m_pWindow)->getFrame();
-
-	if(!m_fBGR.bEmpty())
+	_VisionBase::_VisionBase()
 	{
-		if(m_bbDraw.x < 0.0)
+		m_bOpen = false;
+		m_type = vision_unknown;
+		m_vSize.init(1280, 720);
+		m_vFov.init(60, 60);
+		m_bbDraw.x = -1.0;
+	}
+
+	_VisionBase::~_VisionBase()
+	{
+	}
+
+	bool _VisionBase::init(void *pKiss)
+	{
+		IF_F(!this->_ModuleBase::init(pKiss));
+		Kiss *pK = (Kiss *)pKiss;
+
+		pK->v("vSize", &m_vSize);
+		pK->v("vFov", &m_vFov);
+		pK->v("bbDraw", &m_bbDraw);
+
+		m_bOpen = false;
+		return true;
+	}
+
+	Frame *_VisionBase::BGR(void)
+	{
+		return &m_fBGR;
+	}
+
+	vInt2 _VisionBase::getSize(void)
+	{
+		return m_vSize;
+	}
+
+	VISION_TYPE _VisionBase::getType(void)
+	{
+		return m_type;
+	}
+
+	bool _VisionBase::open(void)
+	{
+		return true;
+	}
+
+	bool _VisionBase::isOpened(void)
+	{
+		return m_bOpen;
+	}
+
+	void _VisionBase::close(void)
+	{
+		IF_(check() < 0);
+
+		m_pT->goSleep();
+		while (!m_pT->bSleeping())
+			;
+
+		m_bOpen = false;
+	}
+
+	void _VisionBase::cvDraw(void *pWindow)
+	{
+		NULL_(pWindow);
+		this->_ModuleBase::cvDraw(pWindow);
+		IF_(check()<0);
+
+		_WindowCV *pWin = (_WindowCV *)pWindow;
+		Frame *pF = pWin->getFrame();
+		NULL_(pF);
+		Mat *pM = pF->m();
+		IF_(pM->empty());
+
+		IF_(m_fBGR.bEmpty());
+
+		if (m_bbDraw.x < 0.0)
 		{
-			pFrame->copy(m_fBGR);
+			pF->copy(m_fBGR);
 		}
 		else
 		{
-			Mat* pM = pFrame->m();
+			Mat *pM = pF->m();
 			Rect r = bb2Rect(bbScale(m_bbDraw, pM->cols, pM->rows));
 
 			Mat m;
-			cv::resize(*m_fBGR.m(),m,Size(r.width,r.height));
+			cv::resize(*m_fBGR.m(), m, Size(r.width, r.height));
 
-			m.copyTo((*pFrame->m())(r));
+			m.copyTo((*pM)(r));
 		}
 	}
-
-	this->_ModuleBase::draw();
-}
 
 }
 #endif

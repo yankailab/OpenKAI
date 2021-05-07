@@ -253,15 +253,17 @@ void _APcopter_photo::shutter(void)
 	m_pAP->m_pMav->clDoSetRelay(m_iRelayShutter, false);
 }
 
-void _APcopter_photo::draw(void)
+void _APcopter_photo::console(void* pConsole)
 {
+	NULL_(pConsole);
+	this->_StateBase::console(pConsole);
 	IF_(check()<0);
-	this->_StateBase::draw();
-	drawActive();
+	msgActive(pConsole);
 
-	addMsg("alt = " + f2str(m_alt) + ", lastAlt = " + f2str(m_lastAlt) + ", dAlt = " + f2str(m_dAlt));
-	addMsg("iTake = " + i2str(m_iTake));
-	addMsg("Dir = " + m_subDir);
+	_Console *pC = (_Console *)pConsole;
+	pC->addMsg("alt = " + f2str(m_alt) + ", lastAlt = " + f2str(m_lastAlt) + ", dAlt = " + f2str(m_dAlt));
+	pC->addMsg("iTake = " + i2str(m_iTake));
+	pC->addMsg("Dir = " + m_subDir);
 }
 
 }

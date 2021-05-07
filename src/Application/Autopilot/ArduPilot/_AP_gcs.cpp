@@ -177,9 +177,4 @@ namespace kai
             m_pSC->transit(m_state.TAKEOFF_READY);
     }
 
-    void _AP_gcs::draw(void)
-    {
-        this->_GCSbase::draw();
-    }
-
 }

@@ -169,7 +169,6 @@ void _AP_droneBoxJSON::handleMsg ( string& str )
 void _AP_droneBoxJSON::heartbeat(picojson::object& o)
 {
     IF_(check()<0 );
-    
 }
 
 void _AP_droneBoxJSON::ack (picojson::object& o)
@@ -193,12 +192,12 @@ void _AP_droneBoxJSON::ack (picojson::object& o)
     }
 }
 
-void _AP_droneBoxJSON::draw ( void )
+void _AP_droneBoxJSON::console ( void* pConsole )
 {
-    this->_JSONbase::draw();
+    this->_JSONbase::console(pConsole);
     
     NULL_(m_pTr);
-    m_pTr->draw();
+    m_pTr->console(pConsole);
 }
 
 }

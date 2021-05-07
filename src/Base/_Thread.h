@@ -10,8 +10,6 @@
 
 #include "BASE.h"
 #include "../Script/Kiss.h"
-#include "../UI/_WindowCV.h"
-#include "../UI/_Console.h"
 
 namespace kai
 {
@@ -24,7 +22,7 @@ public:
 
 	virtual bool init(void* pKiss);
     virtual bool start(void *(*__start_routine) (void *), void *__restrict __arg);
-	virtual void draw(void);
+	virtual void console(void* pConsole);
 
     virtual bool bRun(void);
 	virtual void goSleep(void);

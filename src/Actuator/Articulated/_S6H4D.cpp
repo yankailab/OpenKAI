@@ -452,20 +452,22 @@ void _S6H4D::decodeState(void)
 	}
 }
 
-void _S6H4D::draw(void)
+void _S6H4D::console(void* pConsole)
 {
-	addMsg(	"vOriginTarget = (" + f2str(m_vOriginTarget.x) + ", "
+	NULL_(pConsole);
+
+	_Console *pC = (_Console *)pConsole;
+	pC->addMsg(	"vOriginTarget = (" + f2str(m_vOriginTarget.x) + ", "
 								+ f2str(m_vOriginTarget.y) + ", "
 								+ f2str(m_vOriginTarget.z) + ")", 1);
-	addMsg(	"vOrigin = (" + f2str(m_vOrigin.x) + ", "
+	pC->addMsg(	"vOrigin = (" + f2str(m_vOrigin.x) + ", "
 						  + f2str(m_vOrigin.y) + ", "
 						  + f2str(m_vOrigin.z) + ")", 1);
-	addMsg(	"vLastValidP = (" + f2str(m_vLastValidP.x) + ", "
+	pC->addMsg(	"vLastValidP = (" + f2str(m_vLastValidP.x) + ", "
 							  + f2str(m_vLastValidP.y) + ", "
 							  + f2str(m_vLastValidP.z) + ")", 1);
 
-	this->_ActuatorBase::draw();
-
+	this->_ActuatorBase::console(pConsole);
 }
 
 }

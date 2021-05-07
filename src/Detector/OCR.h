@@ -28,8 +28,6 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual void update(void);
-	virtual bool draw(void);
-	virtual bool _Console(int& iY);
 
 	virtual void setFrame(Frame& f);
 	virtual void setMat(Mat m);

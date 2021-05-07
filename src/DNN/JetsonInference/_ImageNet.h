@@ -29,7 +29,6 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	bool draw(void);
 	int getClassIdx(string& className);
 	string getClassName(int iClass);
 	int classify(Frame* pBGR, string* pName);

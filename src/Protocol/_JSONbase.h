@@ -3,6 +3,7 @@
 
 #include "../Base/_ModuleBase.h"
 #include "../IO/_WebSocket.h"
+#include "../UI/_Console.h"
 #include <openssl/md5.h>
 
 using namespace picojson;
@@ -19,7 +20,7 @@ public:
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
 	virtual int check(void);
-	virtual void draw(void);
+	virtual void console(void* pConsole);
 
 protected:
 	virtual void send(void);

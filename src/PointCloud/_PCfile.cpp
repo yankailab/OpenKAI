@@ -62,10 +62,5 @@ void _PCfile::update(void)
 	}
 }
 
-void _PCfile::draw(void)
-{
-	this->_ModuleBase::draw();
-}
-
 }
 #endif

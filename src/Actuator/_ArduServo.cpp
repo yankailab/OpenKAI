@@ -164,17 +164,19 @@ void _ArduServo::updatePWM(void)
 	pA->m_p.m_v = pA->m_p.m_vTarget;
 }
 
-void _ArduServo::draw(void)
+void _ArduServo::console(void* pConsole)
 {
-	this->_ActuatorBase::draw();
+	NULL_(pConsole);
+	this->_ActuatorBase::console(pConsole);
 
+	_Console *pC = (_Console *)pConsole;
 	if (!m_pIO->isOpen())
 	{
-		addMsg("Not Connected",1);
+		pC->addMsg("Not Connected",1);
 		return;
 	}
 
-	addMsg("nCMD = " + i2str(m_nCMDrecv),1);
+	pC->addMsg("nCMD = " + i2str(m_nCMDrecv),1);
 }
 
 }

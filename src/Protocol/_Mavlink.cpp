@@ -791,19 +791,20 @@ void _Mavlink::setCmdRoute(uint32_t iCmd, bool bON)
 	}
 }
 
-void _Mavlink::draw(void)
+void _Mavlink::console(void* pConsole)
 {
-	this->_ModuleBase::draw();
+	this->_ModuleBase::console(pConsole);
 
+	_Console *pC = (_Console *)pConsole;
 	if (!m_pIO->isOpen())
 	{
-		addMsg("Not Connected", 0);
+		pC->addMsg("Not Connected", 0);
 		return;
 	}
 
-    addMsg("Connected", 0);
-	addMsg("mySysID=" + i2str(m_mySystemID) + " myComID=" + i2str(m_myComponentID) + " myType=" + i2str(m_myType));
-	addMsg("devSysID=" + i2str(m_devSystemID) + " devComID=" + i2str(m_devComponentID) + " devType=" + i2str(m_devType));
+    pC->addMsg("Connected", 0);
+	pC->addMsg("mySysID=" + i2str(m_mySystemID) + " myComID=" + i2str(m_myComponentID) + " myType=" + i2str(m_myType));
+	pC->addMsg("devSysID=" + i2str(m_devSystemID) + " devComID=" + i2str(m_devComponentID) + " devType=" + i2str(m_devType));
 }
 
 }

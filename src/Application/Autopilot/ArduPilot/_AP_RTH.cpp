@@ -119,9 +119,4 @@ void _AP_RTH::update(void)
 */
 }
 
-void _AP_RTH::draw(void)
-{
-	this->_StateBase::draw();
-}
-
 }

@@ -360,12 +360,4 @@ uint64_t _Object::getTstamp(void)
 	return m_tStamp;
 }
 
-void _Object::draw(void)
-{
-	this->_ModuleBase::draw();
-
-//	IF_(!checkWindow());
-//	Mat* pMat = ((_WindowCV*) this->m_pWindow)->getFrame()->m();
-}
-
 }

@@ -153,10 +153,12 @@ void _ORB_SLAM::detect(void)
 			"Q: "  << "  " << fixed << m_vQ.x << "  " << fixed << m_vQ.y << "  " << fixed << m_vQ.z << "  " << fixed << m_vQ.w << endl;
 }
 
-void _ORB_SLAM::draw(void)
+void _ORB_SLAM::console(void* pConsole)
 {
-	this->_ModuleBase::draw();
+	NULL_(pConsole);
+	this->_ModuleBase::console(pConsole);
 
+	_Console *pC = (_Console *)pConsole;
 	string msg;
 	if (m_bTracking)
 	{
@@ -166,10 +168,10 @@ void _ORB_SLAM::draw(void)
 	{
 		msg = "Tracking lost";
 	}
-	addMsg(msg);
+	pC->addMsg(msg);
 
 	msg = "Global pos: x=" + f2str(m_vT.x) + ", y=" + f2str(m_vT.y) + ", z=" + f2str(m_vT.z);
-	addMsg(msg);
+	pC->addMsg(msg);
 }
 
 }

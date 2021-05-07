@@ -1,7 +1,7 @@
 /*
  * _PCcalib.h
  *
- *  Created on: May 28, 2020
+ *  Created on: May 6, 2021
  *      Author: yankai
  */
 
@@ -10,11 +10,17 @@
 #ifdef USE_OPEN3D
 #include "../../PointCloud/_PCstream.h"
 #include "../../PointCloud/_PCviewer.h"
+#include "../../Vision/_VisionBase.h"
 #include "../../Utility/BitFlag.h"
 #include "PCcalibUI.h"
 
 namespace kai
 {
+	namespace
+	{
+		static const int pcfCalibReset = 0;
+	}
+
 	class _PCcalib : public _PCviewer
 	{
 	public:
@@ -29,12 +35,21 @@ namespace kai
 		void addUIpc(const PointCloud& pc);
 		void updateUIpc(const PointCloud& pc);
 		void removeUIpc(void);
+		void updateProcess(void);
 		virtual void startScan(void);
 		virtual void updateScan(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_PCcalib *)This)->update();
+			return NULL;
+		}
+
+		void updateRGBtransform(void);
+		void updateRGB(void);
+		static void *getUpdateRGB(void *This)
+		{
+			((_PCcalib *)This)->updateRGB();
 			return NULL;
 		}
 
@@ -53,11 +68,15 @@ namespace kai
 		static void OnLoadImgs(void *pPCV, void* pD);
 		static void OnResetPC(void *pPCV, void* pD);
 
+		void calibRGB(const char* pPath);
+
 	protected:
 		_PCstream* m_pPS;
 		shared_ptr<visualizer::PCcalibUI> m_spWin;
 		visualizer::UIState* m_pUIstate;
 		string m_modelName;
+		_Thread *m_pTrgb;
+		_VisionBase* m_pV;
 
 		bool m_bFullScreen;
 		int m_mouseMode;

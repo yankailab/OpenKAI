@@ -20,7 +20,8 @@ public:
 	bool start(void);
 	int	 check(void);
 	void update(void);
-	void draw(void);
+	void cvDraw(void* pWindow);
+	void console(void* pConsole);
 
 private:
 	void updateTarget(void);

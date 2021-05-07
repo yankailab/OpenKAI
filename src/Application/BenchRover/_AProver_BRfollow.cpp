@@ -159,13 +159,15 @@ _Object* _AProver_BRfollow::findTarget ( void )
     return tO;
 }
 
-void _AProver_BRfollow::draw ( void )
+void _AProver_BRfollow::console ( void* pConsole )
 {
-    this->_StateBase::draw();
-    drawActive();
+    NULL_(pConsole);
+    this->_StateBase::console(pConsole);
+    msgActive(pConsole);
 
-   	addMsg("nSpd=" + f2str(m_nSpd) + ", nStr=" + f2str(m_nStr));
-   	addMsg("errX=" + f2str(m_errX) + ", errHdg=" + f2str(m_errHdg));
+	_Console *pC = (_Console *)pConsole;
+   	pC->addMsg("nSpd=" + f2str(m_nSpd) + ", nStr=" + f2str(m_nStr));
+   	pC->addMsg("errX=" + f2str(m_errX) + ", errHdg=" + f2str(m_errHdg));
 }
 
 }

@@ -210,42 +210,45 @@ float _ActuatorBase::getStarget(int i)
 	return m_vAxis[i].m_s.m_vTarget;
 }
 
-void _ActuatorBase::draw(void)
+void _ActuatorBase::console(void *pConsole)
 {
-	this->_ModuleBase::draw();
+	NULL_(pConsole);
+	this->_ModuleBase::console(pConsole);
+
+	_Console *pC = (_Console *)pConsole;
 
 	for(int i=0; i<m_vAxis.size(); i++)
 	{
 		ACTUATOR_AXIS* pA = &m_vAxis[i];
 
-		addMsg("-----------------------", 1);
-		addMsg(pA->m_name, 1);
-		addMsg("p=" + f2str(pA->m_p.m_v) +
+		pC->addMsg("-----------------------", 1);
+		pC->addMsg(pA->m_name, 1);
+		pC->addMsg("p=" + f2str(pA->m_p.m_v) +
 				", pT=" + f2str(pA->m_p.m_vTarget) +
 				", pRange=[" + f2str(pA->m_p.m_vRange.x) + ", " + f2str(pA->m_p.m_vRange.y) + "]" +
 				", pO=" + f2str(pA->m_pOrigin) +
 				", pE=" + f2str(pA->m_p.m_vErr)
 				, 1);
 
-		addMsg("s=" + f2str(pA->m_s.m_v) +
+		pC->addMsg("s=" + f2str(pA->m_s.m_v) +
 				", sT=" + f2str(pA->m_s.m_vTarget) +
 				", sRange=[" + f2str(pA->m_s.m_vRange.x) + ", " + f2str(pA->m_s.m_vRange.y) + "]" +
 				", sE=" + f2str(pA->m_s.m_vErr)
 				, 1);
 
-		addMsg("a=" + f2str(pA->m_a.m_v) +
+		pC->addMsg("a=" + f2str(pA->m_a.m_v) +
 				", aT=" + f2str(pA->m_a.m_vTarget) +
 				", aRange=[" + f2str(pA->m_a.m_vRange.x) + ", " + f2str(pA->m_a.m_vRange.y) + "]" +
 				", aE=" + f2str(pA->m_a.m_vErr)
 				, 1);
 
-		addMsg("b=" + f2str(pA->m_b.m_v) +
+		pC->addMsg("b=" + f2str(pA->m_b.m_v) +
 				", bT=" + f2str(pA->m_b.m_vTarget) +
 				", bRange=[" + f2str(pA->m_b.m_vRange.x) + ", " + f2str(pA->m_b.m_vRange.y) + "]" +
 				", bE=" + f2str(pA->m_b.m_vErr)
 				, 1);
 
-		addMsg("c=" + f2str(pA->m_c.m_v) +
+		pC->addMsg("c=" + f2str(pA->m_c.m_v) +
 				", cT=" + f2str(pA->m_c.m_vTarget) +
 				", cRange=[" + f2str(pA->m_c.m_vRange.x) + ", " + f2str(pA->m_c.m_vRange.y) + "]" +
 				", cE=" + f2str(pA->m_c.m_vErr)

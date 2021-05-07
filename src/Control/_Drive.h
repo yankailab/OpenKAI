@@ -47,7 +47,7 @@ public:
 	virtual	bool init(void* pKiss);
 	virtual bool start(void);
 	virtual int check(void);
-	virtual void draw(void);
+	virtual void console(void* pConsole);
 
 	virtual void setSpeed(float nSpd);
     virtual void setDirection(float nDir);

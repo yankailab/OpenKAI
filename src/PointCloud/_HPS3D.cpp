@@ -31,10 +31,6 @@ bool _HPS3D::init(void *pKiss)
 
 	string n;
 
-
-
-
-
 	char fileName[DEV_NUM][DEV_NAME_SIZE] = {0};
 	uint32_t i=0;
 	uint32_t n = 0;

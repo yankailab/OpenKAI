@@ -60,9 +60,4 @@ bool Land::update(void)
 	return true;
 }
 
-void Land::draw(void)
-{
-	this->State::draw();
-}
-
 }

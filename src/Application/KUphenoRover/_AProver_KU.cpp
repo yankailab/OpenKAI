@@ -121,13 +121,15 @@ void _AProver_KU::updateMode ( void )
     }
 }
 
-void _AProver_KU::draw(void)
+void _AProver_KU::console(void* pConsole)
 {
-	this->_StateBase::draw();
-    drawActive();
+    NULL_(pConsole);
+	this->_StateBase::console(pConsole);
+    msgActive(pConsole);
 
-   	addMsg("rcMode pwm=" + i2str(m_rcMode.m_pwm) + ", i=" + i2str(m_rcMode.i()));
-   	addMsg("rcDir pwm=" + i2str(m_rcDir.m_pwm) + ", i=" + i2str(m_rcDir.i()));
+	_Console *pC = (_Console *)pConsole;
+   	pC->addMsg("rcMode pwm=" + i2str(m_rcMode.m_pwm) + ", i=" + i2str(m_rcMode.i()));
+   	pC->addMsg("rcDir pwm=" + i2str(m_rcDir.m_pwm) + ", i=" + i2str(m_rcDir.i()));
 }
 
 }

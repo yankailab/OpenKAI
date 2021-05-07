@@ -160,10 +160,5 @@ namespace kai
         return true;
     }
 
-    void _PCbase::draw(void)
-    {
-        this->_ModuleBase::draw();
-    }
-
 }
 #endif

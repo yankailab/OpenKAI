@@ -97,12 +97,12 @@ bool _StepperGripper::bGrip(void)
 	return m_bState;
 }
 
-void _StepperGripper::draw(void)
+void _StepperGripper::console(void* pConsole)
 {
-	this->_DRV8825_RS485::draw();
+	NULL_(pConsole);
+	this->_DRV8825_RS485::console(pConsole);
 
-	addMsg("bOpen=" + i2str(m_bOpen) + ", bState=" + i2str(m_bState));
-
+	((_Console*)pConsole)->addMsg("bOpen=" + i2str(m_bOpen) + ", bState=" + i2str(m_bState));
 }
 
 }

@@ -81,12 +81,13 @@ void _AP_takeoff::updateMission(void)
 	m_pAP->m_pMav->clNavTakeoff(pTO->m_alt);
 }
 
-void _AP_takeoff::draw(void)
+void _AP_takeoff::console(void* pConsole)
 {
+	NULL_(pConsole);
 	IF_(check()<0);
-	this->_StateBase::draw();
+	this->_StateBase::console(pConsole);
 
-	addMsg("alt = "+f2str(m_pAP->m_vGlobalPos.w) + ", dAlt = " + f2str(m_dAlt));
+	((_Console*)pConsole)->addMsg("alt = "+f2str(m_pAP->m_vGlobalPos.w) + ", dAlt = " + f2str(m_dAlt));
 }
 
 }

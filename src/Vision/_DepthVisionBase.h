@@ -8,8 +8,6 @@
 #ifndef OpenKAI_src_Vision__DepthVisionBase_H_
 #define OpenKAI_src_Vision__DepthVisionBase_H_
 
-#include "../Base/common.h"
-
 #ifdef USE_OPENCV
 #include "_VisionBase.h"
 #include "../Filter/Median.h"
@@ -24,7 +22,7 @@ public:
 	virtual ~_DepthVisionBase();
 
 	virtual bool init(void* pKiss);
-	virtual void draw(void);
+	virtual void cvDraw(void* pWindow);
 
 	virtual Frame* Depth(void);
 	float d(vInt4* pROI);

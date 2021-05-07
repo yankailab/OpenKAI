@@ -14,18 +14,12 @@ namespace kai
 
 _WindowCV::_WindowCV()
 {
-	m_textY = 0;
-	m_vTextStart.init(20,20);
-	m_vSize.init(1280,720);
+	m_waitKey = 50;
 	m_bFullScreen = false;
-	m_pixTab = 20;
-	m_lineHeight = 20;
-	m_textSize = 0.5;
-	m_textCol = Scalar(0, 255, 0);
-	m_bWindow = true;
-	m_bDrawMsg = true;
 	m_gstOutput = "";
 	m_fileRec = "";
+	m_vSize.init(1280,720);
+	m_bWindow = true;
 }
 
 _WindowCV::~_WindowCV()
@@ -38,16 +32,26 @@ _WindowCV::~_WindowCV()
 
 bool _WindowCV::init(void* pKiss)
 {
-	IF_F(!this->BASE::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
+
+	vector<string> vB;
+	pK->a("vBASE", &vB);
+	for (string p : vB)
+	{
+		BASE *pB = (BASE*)(pK->getInst(p));
+		IF_CONT(!pB);
+
+		m_vpB.push_back(pB);
+	}
 
 	pK->root()->child("APP")->v("bWindow", &m_bWindow);
 	if (!m_bWindow)
 		LOG_I("Window mode is disabled. Turn \"bWindow\":1 to enable");
 
 	pK->v("bFullScreen",&m_bFullScreen);
-	pK->v("bDrawMsg", &m_bDrawMsg);
 	pK->v("vSize", &m_vSize);
+	pK->v("waitKey", &m_waitKey);
 
 	if (m_vSize.area() <= 0)
 	{
@@ -103,12 +107,6 @@ bool _WindowCV::init(void* pKiss)
 		}
 	}
 
-	pK->v("vTextStart", &m_vTextStart);
-	pK->v("pixTab", &m_pixTab);
-	pK->v("lineH", &m_lineHeight);
-	pK->v("textSize", &m_textSize);
-	pK->v("textCol", &m_textCol);
-
 	m_frame.allocate(m_vSize.x, m_vSize.y);
 
 	IF_T(!m_bWindow);
@@ -126,8 +124,30 @@ bool _WindowCV::init(void* pKiss)
 	return true;
 }
 
-void _WindowCV::draw(void)
+bool _WindowCV::start(void)
 {
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
+}
+
+void _WindowCV::update(void)
+{
+	while (m_pT->bRun())
+	{
+		m_pT->autoFPSfrom();
+        
+		updateWindow();
+
+		m_pT->autoFPSto();
+	}
+}
+
+void _WindowCV::updateWindow(void)
+{
+	for (BASE* pB : m_vpB)
+	{
+		pB->cvDraw(this);
+	}
 	IF_(m_frame.bEmpty());
 
 	Mat m = *m_frame.m();
@@ -161,36 +181,13 @@ void _WindowCV::draw(void)
 			m_gst << *m_F.m();
 	}
 
-	m_textY = m_vTextStart.y;
+	int key = waitKey(m_waitKey);
 	*m_frame.m() = Scalar(0,0,0);
 }
 
 Frame* _WindowCV::getFrame(void)
 {
 	return &m_frame;
-}
-
-double _WindowCV::textSize(void)
-{
-	return m_textSize;
-}
-
-Scalar _WindowCV::textColor(void)
-{
-	return m_textCol;
-}
-
-void _WindowCV::addMsg(const string& pMsg, int iTab)
-{
-	IF_(!m_bDrawMsg);
-
-	Point p;
-	p.x = m_vTextStart.x + iTab * m_pixTab;
-	p.y = m_textY;
-
-	putText(*m_frame.m(), pMsg, p, FONT_HERSHEY_SIMPLEX,
-			m_textSize, m_textCol, 1);
-	m_textY += m_lineHeight;
 }
 
 }

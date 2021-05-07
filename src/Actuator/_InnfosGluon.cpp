@@ -130,11 +130,6 @@ void _InnfosGluon::readStatus(void)
     m_bReady = true;
 }
 
-void _InnfosGluon::draw(void)
-{
-	this->_ActuatorBase::draw();
-}
-
 }
 #endif
 

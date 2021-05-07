@@ -119,15 +119,17 @@ float _Drive::getMotorSpeed(int iM)
     return m_vM[iM].m_spd;
 }
 
-void _Drive::draw(void)
+void _Drive::console(void* pConsole)
 {
-	this->_ModuleBase::draw();
+    NULL_(pConsole);
+	this->_ModuleBase::console(pConsole);
 
-	addMsg("nSpd = " + f2str(m_nSpd) + ", nDir = " + f2str(m_nDir) + ", nStr = " + f2str(m_nStr));
+	_Console *pC = (_Console *)pConsole;
+	pC->addMsg("nSpd = " + f2str(m_nSpd) + ", nDir = " + f2str(m_nDir) + ", nStr = " + f2str(m_nStr));
     for(int i=0; i<m_vM.size(); i++)
     {
         DRIVE_MOTOR* pM = &m_vM[i];
-        addMsg("iMotor" + i2str(i) + ": spd=" + f2str(pM->m_spd));
+        pC->addMsg("iMotor" + i2str(i) + ": spd=" + f2str(pM->m_spd));
     }
 }
 

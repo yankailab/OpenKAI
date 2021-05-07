@@ -155,14 +155,16 @@ void _AProver_BR::updateMode ( void )
     m_pD->setSteering(v);
 }
 
-void _AProver_BR::draw ( void )
+void _AProver_BR::console ( void* pConsole )
 {
-    this->_StateBase::draw();
-    drawActive();
+    NULL_(pConsole);
+    this->_StateBase::console(pConsole);
+    msgActive(pConsole);
 
-    addMsg ( "rcMode pwm=" + i2str ( m_rcMode.m_pwm ) + ", i=" + i2str ( m_rcMode.i() ) );
-    addMsg ( "rcStickV pwm=" + i2str ( m_rcStickV.m_pwm ) + ", v=" + f2str ( m_rcStickV.v() ) );
-    addMsg ( "rcStickH pwm=" + i2str ( m_rcStickH.m_pwm ) + ", v=" + f2str ( m_rcStickH.v() ) );
+	_Console *pC = (_Console *)pConsole;
+    pC->addMsg ( "rcMode pwm=" + i2str ( m_rcMode.m_pwm ) + ", i=" + i2str ( m_rcMode.i() ) );
+    pC->addMsg ( "rcStickV pwm=" + i2str ( m_rcStickV.m_pwm ) + ", v=" + f2str ( m_rcStickV.v() ) );
+    pC->addMsg ( "rcStickH pwm=" + i2str ( m_rcStickH.m_pwm ) + ", v=" + f2str ( m_rcStickH.v() ) );
 }
 
 }

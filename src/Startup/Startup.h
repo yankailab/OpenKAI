@@ -16,14 +16,6 @@ using namespace kai;
 namespace kai
 {
 
-typedef void (*CallbackKey)(int key, void* pfInst);
-
-struct KEY_CALLBACK
-{
-	CallbackKey m_cbKey;
-	void* m_pInst;
-};
-
 struct OK_INST
 {
 	BASE* m_pInst;
@@ -37,10 +29,8 @@ public:
 	~Startup();
 
 	bool start(Kiss* pKiss);
-	void handleKey(int key);
 	bool createAllInst(Kiss* pKiss);
 	void printEnvironment(void);
-	bool addKeyCallback(CallbackKey cbKey, void* pInst);
 
 private:
 	string* getName(void);
@@ -50,16 +40,11 @@ public:
 	vector<OK_INST> m_vInst;
 
 	string	m_appName;
-	int		m_key;
 	bool	m_bRun;
 	bool	m_bWindow;
-	bool	m_bDraw;
-	int		m_waitKey;
 	bool	m_bLog;
 	bool	m_bStdErr;
 	string	m_rc;
-
-	vector<KEY_CALLBACK> m_vKeyCallback;
 };
 
 }

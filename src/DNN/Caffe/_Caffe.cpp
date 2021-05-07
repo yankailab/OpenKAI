@@ -470,12 +470,6 @@ string _Caffe::getClassName(int iClass)
 	return className;
 }
 
-bool _Caffe::draw(void)
-{
-	IF_F(!this->_DetectorBase::draw());
-	return true;
-}
-
 }
 #endif
 #endif

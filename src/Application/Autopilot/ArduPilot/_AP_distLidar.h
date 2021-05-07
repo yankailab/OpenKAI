@@ -37,7 +37,7 @@ public:
 
 	bool init(void* pKiss);
 	void update(void);
-	void draw(void);
+	void cvDraw(void* pWindow);
 
 private:
 	void updateMavlink(void);

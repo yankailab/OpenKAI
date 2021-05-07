@@ -55,12 +55,12 @@ void _ModuleBase::update(void)
 {
 }
 
-void _ModuleBase::draw(void)
+void _ModuleBase::console(void* pConsole)
 {
-    this->BASE::draw();
-    
+    this->BASE::console(pConsole);
+
     NULL_(m_pT);
-    m_pT->draw();
+    m_pT->console(pConsole);
 }
 
 }

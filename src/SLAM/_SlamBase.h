@@ -9,6 +9,7 @@
 #define OpenKAI_src_SLAM__SlamBase_H_
 
 #include "../Base/_ModuleBase.h"
+#include "../UI/_Console.h"
 using namespace Eigen;
 
 namespace kai
@@ -21,7 +22,7 @@ public:
 	virtual ~_SlamBase();
 
 	virtual bool init(void* pKiss);
-	virtual void draw(void);
+	virtual void console(void* pConsole);
 
 	virtual bool bReady(void);
 	virtual void reset(void);

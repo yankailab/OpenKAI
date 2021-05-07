@@ -105,7 +105,6 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual int check(void);
-	virtual void draw(void);
     
     virtual int getID (void);
     virtual GCS_STATE* getState(void);

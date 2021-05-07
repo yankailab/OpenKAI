@@ -165,11 +165,12 @@ bool _AP_GPS::reset(void)
 	return true;
 }
 
-void _AP_GPS::draw(void)
+void _AP_GPS::console(void* pConsole)
 {
-	this->_StateBase::draw();
+	NULL_(pConsole);
+	this->_StateBase::console(pConsole);
 
-	addMsg("lat=" + lf2str(m_llPos.m_lat,7) + ", lon=" + lf2str(m_llPos.m_lng,7) + ", yaw=" + f2str(m_yaw));
+	((_Console*)pConsole)->addMsg("lat=" + lf2str(m_llPos.m_lat,7) + ", lon=" + lf2str(m_llPos.m_lng,7) + ", yaw=" + f2str(m_yaw));
 }
 
 }

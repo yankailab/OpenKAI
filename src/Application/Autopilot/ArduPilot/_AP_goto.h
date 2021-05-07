@@ -16,7 +16,6 @@ public:
 	virtual bool start(void);
 	virtual int check(void);
 	virtual void update(void);
-	virtual void draw(void);
 
 private:
 	bool updateGoto(void);

@@ -179,10 +179,5 @@ namespace kai
 		app.Run();
 	}
 
-	void _PCviewer::draw(void)
-	{
-		this->_PCframe::draw();
-	}
-
 }
 #endif

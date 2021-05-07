@@ -72,7 +72,6 @@ namespace kai
 
         virtual bool init(void *pKiss);
         virtual int check(void);
-        virtual void draw(void);
 
         virtual PC_TYPE getType(void);
         virtual void setTranslation(const vDouble3 &vT, const vDouble3 &vR);

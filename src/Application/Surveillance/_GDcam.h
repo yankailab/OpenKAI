@@ -5,14 +5,13 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Application__GDcam_H_
-#define OpenKAI_src_Application__GDcam_H_
+#ifndef OpenKAI_src_Application_Surveillance__GDcam_H_
+#define OpenKAI_src_Application_Surveillance__GDcam_H_
 
+#ifdef USE_OPENCV
 #include "../../Base/_ModuleBase.h"
 #include "../../Detector/_DetectorBase.h"
 #include "../../Script/JSON.h"
-
-#ifdef USE_OPENCV
 
 #define GD_N_CLASS 64
 
@@ -27,7 +26,7 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	void draw(void);
+	void cvDraw(void* pWindow);
 	int check(void);
 
 private:

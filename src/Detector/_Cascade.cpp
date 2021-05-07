@@ -74,7 +74,6 @@ void _Cascade::update(void)
 
 		m_pT->autoFPSto();
 	}
-
 }
 
 void _Cascade::detectGPU(void)
@@ -151,12 +150,6 @@ void _Cascade::detectCPU(void)
 	}
 
 	m_pU->updateObj();
-}
-
-void _Cascade::draw(void)
-{
-	this->_DetectorBase::draw();
-
 }
 
 }

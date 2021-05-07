@@ -24,7 +24,6 @@ public:
 	virtual ~_DetectorBase();
 
 	virtual bool init(void *pKiss);
-	virtual void draw(void);
 	virtual int check(void);
 	virtual int getClassIdx(string &className);
 	virtual string getClassName(int iClass);

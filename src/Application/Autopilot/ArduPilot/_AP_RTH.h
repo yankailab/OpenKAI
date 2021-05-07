@@ -16,7 +16,6 @@ public:
 	~_AP_RTH();
 
 	virtual	bool init(void* pKiss);
-	virtual void draw(void);
 	virtual int check(void);
 	virtual void update(void);
 

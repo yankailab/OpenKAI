@@ -87,10 +87,11 @@ int _IOBase::read(uint8_t* pBuf, int nB)
 	return m_fifoR.output(pBuf,nB);
 }
 
-void _IOBase::draw(void)
+void _IOBase::console(void* pConsole)
 {
-	this->_ModuleBase::draw();
-	addMsg("nFifoW=" + i2str(m_fifoW.m_nData) + ", nFifoR=" + i2str(m_fifoR.m_nData), 0);
+	NULL_(pConsole);
+	this->_ModuleBase::console(pConsole);
+	((_Console*)pConsole)->addMsg("nFifoW=" + i2str(m_fifoW.m_nData) + ", nFifoR=" + i2str(m_fifoR.m_nData), 0);
 }
 
 }

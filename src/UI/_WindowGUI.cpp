@@ -65,9 +65,9 @@ namespace kai
     // {
     // }
 
-    void _WindowGUI::draw(void)
+    void _WindowGUI::cvDraw(void* pWindow)
     {
-        this->_ModuleBase::draw();
+        this->_ModuleBase::cvDraw(pWindow);
     }
 
 }

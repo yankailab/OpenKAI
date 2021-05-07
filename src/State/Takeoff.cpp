@@ -38,11 +38,11 @@ bool Takeoff::update(void)
 	return true;
 }
 
-void Takeoff::draw(void)
+void Takeoff::console(void* pConsole)
 {
-	this->State::draw();
-	addMsg("alt = "+f2str(m_alt));
-
+	NULL_(pConsole);
+	this->State::console(pConsole);
+	((_Console*)pConsole)->addMsg("alt = "+f2str(m_alt));
 }
 
 }

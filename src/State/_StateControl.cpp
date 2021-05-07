@@ -164,23 +164,25 @@ STATE_TYPE _StateControl::getStateType(void)
 	return pMB->m_type;
 }
 
-void _StateControl::draw(void)
+void _StateControl::console(void* pConsole)
 {
-	this->_ModuleBase::draw();
+	NULL_(pConsole);
+	this->_ModuleBase::console(pConsole);
 
-	addMsg("nState: "+i2str(m_vState.size()), 0);
+	_Console *pC = (_Console *)pConsole;
+	pC->addMsg("nState: "+i2str(m_vState.size()), 0);
 	IF_(m_vState.size() <= 0);
 
-	addMsg("iState: "+i2str(m_iS),1);
+	pC->addMsg("iState: "+i2str(m_iS),1);
 	IF_(m_iS < 0);
 
 	State* pMB = m_vState[m_iS].m_pInst;
-	addMsg("Current state: " + ((Kiss*)pMB->m_pKiss)->m_name,1);
+	pC->addMsg("Current state: " + ((Kiss*)pMB->m_pKiss)->m_name,1);
 
 	if(pMB->type() == state_wp)
-		((Waypoint*)pMB)->draw();
+		((Waypoint*)pMB)->console(pConsole);
 	else
-		pMB->draw();
+		pMB->console(pConsole);
 
 }
 

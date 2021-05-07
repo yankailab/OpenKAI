@@ -176,10 +176,5 @@ bool _AP_follow::findTarget(void)
 	return true;
 }
 
-void _AP_follow::draw(void)
-{
-	this->_AP_posCtrl::draw();
-}
-
 }
 #endif

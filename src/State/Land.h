@@ -33,7 +33,6 @@ public:
 
 	bool init(void* pKiss);
 	bool update(void);
-	void draw(void);
 
 public:
 	int m_tag;

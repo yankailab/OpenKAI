@@ -158,15 +158,16 @@ bool _TCPclient::bComplete(void)
 	return m_bComplete;
 }
 
-void _TCPclient::draw(void)
+void _TCPclient::console(void* pConsole)
 {
-	this->_IOBase::draw();
+	NULL_(pConsole);
+	this->_IOBase::console(pConsole);
     
     NULL_(m_pTr);
-    m_pTr->draw();
+    m_pTr->console(pConsole);
     
 	string msg = "Peer IP: " + m_strAddr + ":" + i2str(m_port) + ((m_bClient) ? "; Client" : "; Server");
-	addMsg(msg);
+	((_Console*)pConsole)->addMsg(msg);
 }
 
 }

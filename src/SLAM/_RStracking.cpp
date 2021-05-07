@@ -165,10 +165,5 @@ namespace kai
 		}
 	}
 
-	void _RStracking::draw(void)
-	{
-		this->_SlamBase::draw();
-	}
-
 }
 #endif

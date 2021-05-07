@@ -9,6 +9,7 @@
 #define OpenKAI_src_Data_Video__FrameCutOut_H_
 
 #include "../_DataBase.h"
+#include "../../Vision/Frame.h"
 
 #ifdef USE_OPENCV
 

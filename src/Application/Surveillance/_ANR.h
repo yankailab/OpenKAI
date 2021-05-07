@@ -9,6 +9,7 @@
 #define OpenKAI_src_Application__ANR_H_
 
 #include "../../Base/_ModuleBase.h"
+#include "../../UI/_Console.h"
 #include "../../Detector/_DetectorBase.h"
 #include "../../Detector/OCR.h"
 #include "../../IO/_WebSocket.h"
@@ -27,7 +28,8 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	void draw(void);
+	void cvDraw(void* pWindow);
+	void console(void* pConsole);
 	int check(void);
 
 private:

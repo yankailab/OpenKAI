@@ -234,9 +234,4 @@ bool _DRV8825_RS485::readStatus(void)
 	return true;
 }
 
-void _DRV8825_RS485::draw(void)
-{
-	this->_ActuatorBase::draw();
-}
-
 }

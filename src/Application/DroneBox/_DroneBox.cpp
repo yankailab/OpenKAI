@@ -224,9 +224,4 @@ bool _DroneBox::boxRecover ( void )
     return true;
 }
 
-void _DroneBox::draw ( void )
-{
-    this->_GCSbase::draw();
-}
-
 }

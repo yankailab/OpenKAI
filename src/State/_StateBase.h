@@ -14,12 +14,11 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual void update(void);
-	virtual void draw(void);
 	virtual bool bActive(void);
 	virtual bool bStateChanged(void);
 	virtual int check(void);
-
-	virtual void drawActive(void);
+	virtual void console(void* pConsole);
+	virtual void msgActive(void* pConsole);
 
 public:
 	_StateControl* m_pSC;

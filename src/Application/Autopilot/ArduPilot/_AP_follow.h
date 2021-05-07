@@ -52,7 +52,6 @@ public:
 	virtual int check(void);
 	virtual bool start(void);
 	virtual void update(void);
-	virtual void draw(void);
 
 protected:
 	bool updateTarget(void);

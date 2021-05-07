@@ -9,6 +9,8 @@
 #define OpenKAI_src_Sensor__DistSensorBase_H_
 
 #include "../Base/_ModuleBase.h"
+#include "../UI/_Console.h"
+#include "../UI/_WindowCV.h"
 #include "../Filter/Median.h"
 #include "../Filter/Average.h"
 
@@ -89,7 +91,8 @@ public:
 	virtual ~_DistSensorBase();
 
 	bool init(void* pKiss);
-	void draw(void);
+	void cvDraw(void* pWindow);
+	void console(void* pConsole);
 	void update(void);
 
 	float rMin(void);

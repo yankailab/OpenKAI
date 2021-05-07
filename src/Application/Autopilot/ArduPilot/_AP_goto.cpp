@@ -124,9 +124,4 @@ bool _AP_goto::findTarget(void)
 	return true;
 }
 
-void _AP_goto::draw(void)
-{
-	this->_AP_posCtrl::draw();
-}
-
 }

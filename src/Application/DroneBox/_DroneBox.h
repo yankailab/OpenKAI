@@ -29,7 +29,6 @@ public:
 	virtual bool start(void);
 	virtual int check(void);
 	virtual void update(void);
-	virtual void draw(void);
     
     //Drone Box mechanical control
     bool boxLandingPrepare (void);

@@ -175,10 +175,5 @@ namespace kai
                pD->acc_z);
     }
 
-    void _Livox::draw(void)
-    {
-        this->_PCstream::draw();
-    }
-
 }
 #endif

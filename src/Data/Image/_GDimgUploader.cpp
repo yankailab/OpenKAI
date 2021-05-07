@@ -106,10 +106,5 @@ void _GDimgUploader::updateUpload(void)
 	system(cmd.c_str());
 }
 
-void _GDimgUploader::draw(void)
-{
-	this->_ModuleBase::draw();
-}
-
 }
 #endif

@@ -7,23 +7,34 @@
 
 #ifndef OpenKAI_src_UI__Console_H_
 #define OpenKAI_src_UI__Console_H_
-
-#include "../Base/BASE.h"
+#include "../Base/_ModuleBase.h"
 
 namespace kai
 {
 
-class _Console: public BASE
+class _Console: public _ModuleBase
 {
 public:
 	_Console();
 	virtual ~_Console();
 
 	bool init(void *pKiss);
-	void draw(void);
-	void addMsg(const string &msg, int iCol, int iX, int iLine = 0);
+	bool start(void);
 
-public:
+	void addMsg(const string& msg, int iLine = 1);
+	void addMsg(const string& msg, int iCol, int iX, int iLine = 0);
+
+protected:
+	void updateConsole(void);
+	void update(void);
+	static void* getUpdate(void* This)
+	{
+		((_Console*) This)->update();
+		return NULL;
+	}
+
+private:
+	vector<BASE*> m_vpB;
 	int m_iY;
 
 };

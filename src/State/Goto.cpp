@@ -53,17 +53,19 @@ void Goto::setPos(vDouble3& p)
 	m_vPos = p;
 }
 
-void Goto::draw(void)
+void Goto::console(void* pConsole)
 {
-	this->State::draw();
+	NULL_(pConsole);
+	this->State::console(pConsole);
 
-	addMsg("Pos = (" + f2str(m_vPos.x,7) + ", "
+	_Console *pC = (_Console *)pConsole;
+	pC->addMsg("Pos = (" + f2str(m_vPos.x,7) + ", "
 				   + f2str(m_vPos.y,7) + ", "
 		           + f2str(m_vPos.z,7) + ")",1);
 
 	int tOut = (int)((double)(m_tTimeout - (m_tStamp - m_tStart))*USEC_2_SEC);
 	tOut = constrain(tOut, 0, INT_MAX);
-	addMsg("Timeout = " + i2str(tOut),1);
+	pC->addMsg("Timeout = " + i2str(tOut),1);
 }
 
 }

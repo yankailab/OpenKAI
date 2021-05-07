@@ -192,9 +192,4 @@ int _Modbus::writeRegisters(int iSlave, int addr, int nRegister, uint16_t* pB)
 	return r;
 }
 
-void _Modbus::draw(void)
-{
-	this->_ModuleBase::draw();
-}
-
 }

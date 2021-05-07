@@ -254,59 +254,61 @@ vFloat3 _AP_base::getApAttitude(void)
 	return m_vAtti;
 }
 
-void _AP_base::draw(void)
+void _AP_base::console(void* pConsole)
 {
-	this->_StateBase::draw();
+	NULL_(pConsole);
+	this->_StateBase::console(pConsole);
 
-	addMsg("State-----------------------------",1);
+	_Console *pC = (_Console *)pConsole;
+	pC->addMsg("State-----------------------------",1);
 	if(m_bApArmed)
-		addMsg("ARMED",1);
+		pC->addMsg("ARMED",1);
 	else
-		addMsg("DISARMED",1);
+		pC->addMsg("DISARMED",1);
 
-	addMsg("Mode------------------------------",1);
-	addMsg("apMode = " + i2str(m_apMode) + ": " + getApModeName(),1);
+	pC->addMsg("Mode------------------------------",1);
+	pC->addMsg("apMode = " + i2str(m_apMode) + ": " + getApModeName(),1);
 
-	addMsg("Attitude--------------------------",1);
-	addMsg("y=" + f2str(m_vAtti.x) +
+	pC->addMsg("Attitude--------------------------",1);
+	pC->addMsg("y=" + f2str(m_vAtti.x) +
 			", p=" + f2str(m_vAtti.y) +
 			", r=" + f2str(m_vAtti.z) +
 			", hdg=" + f2str(m_apHdg),1);
 
-	addMsg("Global Pos-----------------------",1);
-	addMsg("lat=" + lf2str(m_vGlobalPos.x, 7) + ", lon=" + lf2str(m_vGlobalPos.y, 7),1);
-	addMsg("alt=" + lf2str(m_vGlobalPos.z, 2) + ", relAlt=" + lf2str(m_vGlobalPos.w, 2),1);
+	pC->addMsg("Global Pos-----------------------",1);
+	pC->addMsg("lat=" + lf2str(m_vGlobalPos.x, 7) + ", lon=" + lf2str(m_vGlobalPos.y, 7),1);
+	pC->addMsg("alt=" + lf2str(m_vGlobalPos.z, 2) + ", relAlt=" + lf2str(m_vGlobalPos.w, 2),1);
 
-	addMsg("Local Pos-------------------------",1);
-	addMsg("x=" + f2str(m_pMav->m_localPositionNED.m_msg.x)+
+	pC->addMsg("Local Pos-------------------------",1);
+	pC->addMsg("x=" + f2str(m_pMav->m_localPositionNED.m_msg.x)+
 				 ", y=" + f2str(m_pMav->m_localPositionNED.m_msg.y)+
 				 ", z=" + f2str(m_pMav->m_localPositionNED.m_msg.z),1);
 
-	addMsg("Home Pos--------------------------",1);
-	addMsg("lat=" + f2str(m_vHomePos.x, 7)
+	pC->addMsg("Home Pos--------------------------",1);
+	pC->addMsg("lat=" + f2str(m_vHomePos.x, 7)
 			+ ", lon=" + f2str(m_vHomePos.y, 7)
 			+ ", alt=" + f2str(m_vHomePos.z, 7),1);
 
-	addMsg("Speed-----------------------------",1);
-	addMsg("vx=" + f2str(m_pMav->m_localPositionNED.m_msg.vx)+
+	pC->addMsg("Speed-----------------------------",1);
+	pC->addMsg("vx=" + f2str(m_pMav->m_localPositionNED.m_msg.vx)+
 				 ", vy=" + f2str(m_pMav->m_localPositionNED.m_msg.vy)+
 				 ", vz=" + f2str(m_pMav->m_localPositionNED.m_msg.vz),1);
 
-	addMsg("System-----------------------------",1);
-	addMsg("status="+i2str(m_pMav->m_heartbeat.m_msg.system_status));
+	pC->addMsg("System-----------------------------",1);
+	pC->addMsg("status="+i2str(m_pMav->m_heartbeat.m_msg.system_status));
 
 	if(m_bDebug)
 	{
-		addMsg("Sensor----------------------------",1);
-		addMsg("xAcc=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xacc)
+		pC->addMsg("Sensor----------------------------",1);
+		pC->addMsg("xAcc=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xacc)
 					 + ", yAcc=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.yacc)
 					 + ", zAcc=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zacc),1);
 
-		addMsg("xGyro=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xgyro)
+		pC->addMsg("xGyro=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xgyro)
 					 + ", yGyro=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.ygyro)
 					 + ", zGyro=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zgyro),1);
 
-		addMsg("xMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xmag)
+		pC->addMsg("xMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xmag)
 					 + ", yMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.ymag)
 					 + ", zMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zmag),1);
 	}

@@ -83,11 +83,12 @@ double PID::o(void)
 	return m_vOut;
 }
 
-void PID::draw(void)
+void PID::console(void* pConsole)
 {
-	this->BASE::draw();
+	NULL_(pConsole);
+	this->BASE::console(pConsole);
 
-	addMsg("v=" + f2str(m_v)
+	((_Console*)pConsole)->addMsg("v=" + f2str(m_v)
 			+ ", vT=" + f2str(m_vT)
 			+ ", vO=" + f2str(m_vOut), 1);
 }

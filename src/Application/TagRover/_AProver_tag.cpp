@@ -112,12 +112,13 @@ void _AProver_tag::updateMode(void)
     m_pD->setDirection(dir);
 }
 
-void _AProver_tag::draw(void)
+void _AProver_tag::console(void* pConsole)
 {
-	this->_StateBase::draw();
-    drawActive();
+    NULL_(pConsole);
+	this->_StateBase::console(pConsole);
+    msgActive(pConsole);
 
-   	addMsg("rcMode pwm=" + i2str(m_rcMode.m_pwm) + ", i=" + i2str(m_rcMode.i()));
+   	((_Console*)pConsole)->addMsg("rcMode pwm=" + i2str(m_rcMode.m_pwm) + ", i=" + i2str(m_rcMode.i()));
 }
 
 }

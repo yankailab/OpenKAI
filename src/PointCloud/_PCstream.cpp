@@ -126,10 +126,5 @@ namespace kai
         return m_iP;
     }
 
-    void _PCstream::draw(void)
-    {
-        this->_ModuleBase::draw();
-    }
-
 }
 #endif

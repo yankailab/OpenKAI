@@ -23,7 +23,7 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	void draw(void);
+	void console(void* pConsole);
 
 	LL_POS getLLpos(void);
 	UTM_POS getUTMpos(void);

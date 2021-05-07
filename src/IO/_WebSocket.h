@@ -52,7 +52,7 @@ public:
 	bool start(void);
 	bool open(void);
 	void close(void);
-	void draw(void);
+	void console(void* pConsole);
 
 	bool write(uint8_t* pBuf, int nB, uint32_t mode = WS_MODE_BIN);
 	bool writeTo(uint32_t id, uint8_t* pBuf, int nB, uint32_t mode = WS_MODE_BIN);

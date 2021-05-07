@@ -148,16 +148,17 @@ _TCPclient* _TCPserver::getFirstSocket(void)
 	return m_lSocket.front();
 }
 
-void _TCPserver::draw(void)
+void _TCPserver::console(void* pConsole)
 {
-	this->_ModuleBase::draw();
+	NULL_(pConsole);
+	this->_ModuleBase::console(pConsole);
 
 	string msg = "Server port: " + i2str(m_listenPort);
-	addMsg(msg);
+	((_Console*)pConsole)->addMsg(msg);
 
 	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); ++itr)
 	{
-		((_TCPclient*) *itr)->draw();
+		((_TCPclient*) *itr)->console(pConsole);
 	}
 }
 

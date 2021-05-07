@@ -23,7 +23,6 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual double v(int x);
-	virtual void draw(void);
 
 protected:
 	PolyFit m_fit;

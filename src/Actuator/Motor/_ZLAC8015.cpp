@@ -198,9 +198,4 @@ bool _ZLAC8015::clearAlarm(void)
 	return true;
 }
 
-void _ZLAC8015::draw(void)
-{
-	this->_ActuatorBase::draw();
-}
-
 }

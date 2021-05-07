@@ -22,7 +22,7 @@ public:
 	bool start(void);
 	void update(void);
 	int check(void);
-	void draw(void);
+	void console(void* pConsole);
 
 private:
 	void autoMode(void);

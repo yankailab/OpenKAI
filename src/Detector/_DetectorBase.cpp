@@ -129,11 +129,5 @@ string _DetectorBase::getClassName(int iClass)
 	return m_vClass[iClass].m_name;
 }
 
-void _DetectorBase::draw(void)
-{
-	this->_ModuleBase::draw();
-
-}
-
 }
 #endif

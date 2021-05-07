@@ -33,9 +33,4 @@ double Destimator::v(int x)
 	return 0.0;//m_vOut;
 }
 
-void Destimator::draw(void)
-{
-	this->BASE::draw();
-}
-
 }

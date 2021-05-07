@@ -17,15 +17,15 @@ public:
 	_MultiRsScan();
 	~_MultiRsScan();
 
-	virtual bool init(void* pKiss);
-	virtual bool start(void);
-	virtual int check(void);
-	virtual void draw(void);
+	bool init(void* pKiss);
+	bool start(void);
+	int check(void);
+	void console(void* pConsole);
 
 protected:
-	virtual void send(void);
-	virtual bool recv(void);
-	virtual void handleMsg(string& str);
+	void send(void);
+	bool recv(void);
+	void handleMsg(string& str);
 
 private:
 	virtual _PCbase* findPC(string& n);

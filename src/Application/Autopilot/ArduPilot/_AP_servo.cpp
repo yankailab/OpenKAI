@@ -78,15 +78,16 @@ void _AP_servo::updateServo(void)
 	}
 }
 
-void _AP_servo::draw(void)
+void _AP_servo::console(void* pConsole)
 {
+	NULL_(pConsole);
+	this->_StateBase::console(pConsole);
 	IF_(check()<0);
-	this->_StateBase::draw();
-	drawActive();
+	msgActive(pConsole);
 
 	for(AP_SERVO s : m_vServo)
 	{
-		addMsg("Chan:" + i2str((int)s.m_iChan) + ", pwm=" + i2str((int)s.m_pwm), 1);
+		((_Console*)pConsole)->addMsg("Chan:" + i2str((int)s.m_iChan) + ", pwm=" + i2str((int)s.m_pwm), 1);
 	}
 
 }

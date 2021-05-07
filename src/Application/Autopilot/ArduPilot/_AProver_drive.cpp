@@ -153,15 +153,15 @@ void _AProver_drive::setYawMode(bool bRelative)
 		m_yawMode = 0.0;
 }
 
-void _AProver_drive::draw(void)
+void _AProver_drive::console(void* pConsole)
 {
-	this->_StateBase::draw();
-    drawActive();
+	NULL_(pConsole);
+	this->_StateBase::console(pConsole);
+    msgActive(pConsole);
     
     NULL_(m_pRcYaw);
     NULL_(m_pRcThrottle);
-
-	addMsg("yawMode=" + f2str(m_yawMode) + ", yaw=" + i2str(*m_pRcYaw) + ", throttle=" + i2str(*m_pRcThrottle));
+	((_Console*)pConsole)->addMsg("yawMode=" + f2str(m_yawMode) + ", yaw=" + i2str(*m_pRcYaw) + ", throttle=" + i2str(*m_pRcThrottle));
 }
 
 }

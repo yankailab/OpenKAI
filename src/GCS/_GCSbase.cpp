@@ -79,9 +79,4 @@ bool _GCSbase::landingRequest ( int vID )
     return false;
 }
 
-void _GCSbase::draw ( void )
-{
-    this->_StateBase::draw();
-}
-
 }

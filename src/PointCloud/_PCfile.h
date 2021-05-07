@@ -23,7 +23,6 @@ public:
 	bool init(void* pKiss);
 	bool start(void);
 	bool open(void);
-	void draw(void);
 
 private:
 	void update(void);

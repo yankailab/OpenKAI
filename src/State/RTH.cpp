@@ -94,19 +94,21 @@ double RTH::getHdg(void)
 	return m_hdg;
 }
 
-void RTH::draw(void)
+void RTH::console(void* pConsole)
 {
-	this->State::draw();
+	NULL_(pConsole);
+	this->State::console(pConsole);
 
-	addMsg("Home = (" + f2str(m_vHome.x,7) + ", "
+	_Console *pC = (_Console *)pConsole;
+	pC->addMsg("Home = (" + f2str(m_vHome.x,7) + ", "
 				   + f2str(m_vHome.y,7) + ", "
 		           + f2str(m_vHome.z,7) + ")",1);
 
-	addMsg("Pos = (" + f2str(m_vPos.x,7) + ", "
+	pC->addMsg("Pos = (" + f2str(m_vPos.x,7) + ", "
 				   + f2str(m_vPos.y,7) + ", "
 		           + f2str(m_vPos.z,7) + ")",1);
 
-	addMsg("eH = " + f2str(m_eH,7) +
+	pC->addMsg("eH = " + f2str(m_eH,7) +
 				 ", eV = " + f2str(m_eV,7),1);
 }
 

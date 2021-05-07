@@ -9,6 +9,7 @@
 #define OpenKAI_src_Universe__Universe_H_
 
 #include "_ObjectArray.h"
+#include "../UI/_WindowCV.h"
 
 namespace kai
 {
@@ -34,7 +35,8 @@ public:
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
 	virtual void update(void);
-	virtual void draw(void);
+	virtual void cvDraw(void* pWindow);
+	virtual void console(void* pConsole);
 
 	//io
 	virtual _Object* add(_Object& pO);

@@ -78,15 +78,16 @@ void _AP_relay::updateRelay(void)
 	}
 }
 
-void _AP_relay::draw(void)
+void _AP_relay::console(void* pConsole)
 {
+	NULL_(pConsole);
+	this->_StateBase::console(pConsole);
 	IF_(check()<0);
-	this->_StateBase::draw();
-	drawActive();
+	msgActive(pConsole);
 
 	for(AP_relay s : m_vRelay)
 	{
-		addMsg("Chan:" + i2str((int)s.m_iChan) + ", bRelay=" + i2str((int)s.m_bRelay), 1);
+		((_Console*)pConsole)->addMsg("Chan:" + i2str((int)s.m_iChan) + ", bRelay=" + i2str((int)s.m_bRelay), 1);
 	}
 
 }

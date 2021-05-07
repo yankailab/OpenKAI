@@ -14,7 +14,7 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	void draw(void);
+	void console(void* pConsole);
 
 	void setSpeed(float speed, float steer);
 

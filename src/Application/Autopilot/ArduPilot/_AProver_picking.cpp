@@ -190,21 +190,22 @@ bool _AProver_picking::updatePicking(void)
 	{
 		if(armMission == "EXTERNAL")
 			m_pArmMC->transit("RECOVER");
-
 	}
 
 	return true;
 }
 
-void _AProver_picking::draw(void)
+void _AProver_picking::console(void* pConsole)
 {
-	this->_StateBase::draw();
+	NULL_(pConsole);
+	this->_StateBase::console(pConsole);
 	IF_(check()<0);
 
-	addMsg("RC mode: " + i2str(m_rcMode.i()));
+	_Console *pC = (_Console *)pConsole;
+	pC->addMsg("RC mode: " + i2str(m_rcMode.i()));
 
 	for(RC_CHANNEL rc : m_vRC)
-		addMsg("Chan" + i2str(rc.m_iChan) + ": " + i2str(rc.m_pwm) + " | " + f2str(rc.v()) + " | " + i2str(rc.i()));
+		pC->addMsg("Chan" + i2str(rc.m_iChan) + ": " + i2str(rc.m_pwm) + " | " + f2str(rc.v()) + " | " + i2str(rc.i()));
 
 }
 

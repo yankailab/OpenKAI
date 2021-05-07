@@ -101,7 +101,7 @@ public:
 	bool start(void);
 	int check(void);
 	void update(void);
-	void draw(void);
+	void console(void* pConsole);
 
 	void setApMode(uint32_t iMode);
 	void setApArm(bool bArm);

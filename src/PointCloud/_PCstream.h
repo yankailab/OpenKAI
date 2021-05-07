@@ -30,7 +30,6 @@ namespace kai
 
         virtual bool init(void *pKiss);
         virtual int check(void);
-        virtual void draw(void);
 
         virtual void AcceptAdd(bool b);
         virtual void add(const Vector3d &vP, const Vector3f &vC, uint64_t tStamp = UINT64_MAX);

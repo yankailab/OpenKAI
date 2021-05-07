@@ -9,6 +9,7 @@
 #define OpenKAI_src_Mission_Mission_H_
 
 #include "../Base/_ModuleBase.h"
+#include "../UI/_Console.h"
 
 namespace kai
 {
@@ -34,7 +35,6 @@ public:
 	virtual bool init(void* pKiss);
 	virtual bool update(void);
 	virtual void reset(void);
-	virtual void draw(void);
 	virtual STATE_TYPE type(void);
 
 	virtual void complete(void);

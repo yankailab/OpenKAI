@@ -130,10 +130,5 @@ namespace kai
         return m_sPC.get()->points_.size();
     }
 
-    void _PCframe::draw(void)
-    {
-        this->_PCbase::draw();
-    }
-
 }
 #endif

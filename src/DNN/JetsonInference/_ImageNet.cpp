@@ -205,13 +205,6 @@ int _ImageNet::classify(Frame* pBGR, string* pName)
 	return iClass;
 }
 
-bool _ImageNet::draw(void)
-{
-	IF_F(!this->_DetectorBase::draw());
-
-	return true;
-}
-
 }
 */
 #endif

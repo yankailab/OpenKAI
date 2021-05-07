@@ -195,9 +195,4 @@ void _AP_link::setHdg(float dH)
 	m_pIO->write(m_pBuf, PB_N_HDR + (int)m_pBuf[2]);
 }
 
-void _AP_link::draw(void)
-{
-	this->_ProtocolBase::draw();
-}
-
 }

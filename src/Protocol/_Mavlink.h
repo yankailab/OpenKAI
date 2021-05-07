@@ -493,7 +493,7 @@ public:
 
 	bool init(void *pKiss);
 	bool start(void);
-	void draw(void);
+	void console(void* pConsole);
 
 	//Receive
 	void handleMessages();

@@ -170,13 +170,15 @@ void _AProver_UTfollowTag::updateFollow ( void )
     m_pD->setSpeed(nSpd);    
 }
 
-void _AProver_UTfollowTag::draw ( void )
+void _AProver_UTfollowTag::console ( void* pConsole )
 {
-    this->_StateBase::draw();
-    drawActive();
+    NULL_(pConsole);
+    this->_StateBase::console(pConsole);
+    msgActive(pConsole);
 
-   	addMsg("nSpd=" + f2str(m_nSpd) + ", nStr=" + f2str(m_nStr));
-   	addMsg("errSide=" + f2str( m_errSide ));
+	_Console *pC = (_Console *)pConsole;
+   	pC->addMsg("nSpd=" + f2str(m_nSpd) + ", nStr=" + f2str(m_nStr));
+   	pC->addMsg("errSide=" + f2str( m_errSide ));
 }
 
 }

@@ -18,8 +18,7 @@ public:
 	virtual ~clBase();
 
 	virtual bool init(void* pKiss);
-	virtual void draw(void);
-    
+   
 protected:
     virtual void update(void);
 

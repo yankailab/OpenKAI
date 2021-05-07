@@ -5,16 +5,11 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_DNN_TensorRT__DetectNet_H_
-#define OpenKAI_src_DNN_TensorRT__DetectNet_H_
-
-#include "../../Base/common.h"
+#ifndef OpenKAI_src_DNN_JetsonInference__DetectNet_H_
+#define OpenKAI_src_DNN_JetsonInference__DetectNet_H_
 
 #ifdef USE_OPENCV
 #ifdef USE_JETSON_INFERENCE
-//#include <cuda_runtime.h>
-//#include "cudaMappedMemory.h"
-//#include "cudaNormalize.h"
 #include "detectNet.h"
 #include "../../Vision/_VisionBase.h"
 #include "../../Detector/_DetectorBase.h"
@@ -37,7 +32,6 @@ public:
 	bool init(void* pKiss);
 	bool start(void);
 	int check(void);
-	void draw(void);
 
 private:
 	bool open(void);

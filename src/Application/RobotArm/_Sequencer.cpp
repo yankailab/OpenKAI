@@ -202,9 +202,4 @@ void _Sequencer::gotoAction(const string& name)
 	m_iGoAction = getActionIdx(name);
 }
 
-void _Sequencer::draw(void)
-{
-	this->_ModuleBase::draw();
-}
-
 }

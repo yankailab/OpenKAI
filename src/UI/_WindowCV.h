@@ -5,43 +5,44 @@
  *      Author: Kai Yan
  */
 
-#ifndef OpenKAI_src_UI_Window_H_
-#define OpenKAI_src_UI_Window_H_
+#ifndef OpenKAI_src_UI_WindowCV_H_
+#define OpenKAI_src_UI_WindowCV_H_
 #ifdef USE_OPENCV
-#include "../Base/BASE.h"
+#include "../Base/_ModuleBase.h"
 #include "../Vision/Frame.h"
 
 namespace kai
 {
 
-class _WindowCV: public BASE
+class _WindowCV: public _ModuleBase
 {
 public:
 	_WindowCV();
 	virtual ~_WindowCV();
 
 	bool init(void *pKiss);
-	void draw(void);
+	bool start(void);
+
 	Frame* getFrame(void);
 
-	void addMsg(const string &pMsg, int iTab=0);
-	double textSize(void);
-	Scalar textColor(void);
+protected:
+	void updateWindow(void);
+	void update(void);
+	static void* getUpdate(void* This)
+	{
+		((_WindowCV*) This)->update();
+		return NULL;
+	}
 
 public:
+	vector<BASE*> m_vpB;
+	int	m_waitKey;
+
 	bool m_bWindow;
 	bool m_bFullScreen;
-	bool m_bDrawMsg;
 
 	Frame m_frame;
 	vInt2 m_vSize;
-	vInt2 m_vTextStart;
-	int m_textY;
-	int m_pixTab;
-	int m_lineHeight;
-	Point m_tPoint;
-	float m_textSize;
-	Scalar m_textCol;
 
 	string m_gstOutput;
 	VideoWriter m_gst;

@@ -17,8 +17,7 @@ public:
 	virtual bool start(void);
 	virtual int check(void);
 	virtual void update(void);
-	virtual void draw(void);
-    
+
     void landingReady(bool bReady);
     void takeoffReady(bool bReady);
     

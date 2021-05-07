@@ -209,9 +209,10 @@ _PCbase* _MultiRsScan::findPC ( string& n )
     return NULL;
 }
 
-void _MultiRsScan::draw ( void )
+void _MultiRsScan::console( void* pConsole )
 {
-    this->_ModuleBase::draw();
+    NULL_(pConsole);
+    this->_ModuleBase::console(pConsole);
 
     string msg;
     if ( m_pIO->isOpen() )
@@ -219,7 +220,7 @@ void _MultiRsScan::draw ( void )
     else
         msg = "STANDBY, Not connected";
 
-    addMsg ( msg );
+    ((_Console*)pConsole)->addMsg ( msg );
 
 }
 

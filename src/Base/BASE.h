@@ -23,21 +23,17 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
-	virtual void draw(void);
 	virtual int check(void);
+	virtual void cvDraw(void* pWindow);
+	virtual void console(void* pConsole);
 	virtual int serialize(uint8_t* pB, int nB);
 	virtual int deSerialize(uint8_t* pB, int nB);
 
 	string* getName(void);
 	string* getClass(void);
 
-	bool checkWindow(void);
-	void addMsg(const string& msg, int iLine = 1);
-
 public:
 	void*	m_pKiss;
-	void*	m_pWindow;
-	void*	m_p_Console;
 	bool	m_bLog;
 	bool	m_bDebug;
 };

@@ -8,10 +8,10 @@
 #ifndef OpenKAI_src_Vision__VisionBase_H_
 #define OpenKAI_src_Vision__VisionBase_H_
 
-#include "../Base/_ModuleBase.h"
-
 #ifdef USE_OPENCV
-#include "../Base/cv.h"
+#include "../Base/_ModuleBase.h"
+#include "../UI/_Console.h"
+#include "../UI/_WindowCV.h"
 
 namespace kai
 {
@@ -50,7 +50,7 @@ public:
 	virtual ~_VisionBase();
 
 	virtual bool init(void* pKiss);
-	virtual void draw(void);
+	virtual void cvDraw(void* pWindow);
 
 	virtual bool open(void);
 	virtual bool isOpened(void);

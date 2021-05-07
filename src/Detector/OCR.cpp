@@ -91,16 +91,6 @@ string OCR::scan(Rect* pR)
 	return strO;
 }
 
-bool OCR::draw(void)
-{
-	return this->BASE::draw();
-}
-
-bool OCR::_Console(int& iY)
-{
-	return this->BASE::_Console(iY);
-}
-
 }
 #endif
 #endif

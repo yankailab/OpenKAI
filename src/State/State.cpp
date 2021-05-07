@@ -72,9 +72,4 @@ STATE_TYPE State::type(void)
 	return m_type;
 }
 
-void State::draw(void)
-{
-	this->BASE::draw();
-}
-
 }

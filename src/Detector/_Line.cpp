@@ -137,10 +137,11 @@ void _Line::detect(void)
 
 }
 
-void _Line::draw(void)
+void _Line::console(void* pConsole)
 {
-	this->_DetectorBase::draw();
-	addMsg("line = " + f2str(m_line), 1);
+	NULL_(pConsole);
+	this->_DetectorBase::console(pConsole);
+	((_Console*)pConsole)->addMsg("line = " + f2str(m_line), 1);
 }
 
 }

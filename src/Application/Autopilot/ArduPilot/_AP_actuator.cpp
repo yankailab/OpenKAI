@@ -106,15 +106,17 @@ void _AP_actuator::updateActuator(void)
 
 }
 
-void _AP_actuator::draw(void)
+void _AP_actuator::console(void* pConsole)
 {
+	NULL_(pConsole);
 	IF_(check() < 0);
-	this->_StateBase::draw();
-	drawActive();
+	this->_StateBase::console(pConsole);
+	msgActive(pConsole);
 
-	addMsg("iMode: "+i2str(m_rcMode.i()), 1);
-	addMsg("stickV v = "+f2str(m_rcStickV.v()), 1);
-	addMsg("stickH v = "+f2str(m_rcStickH.v()), 1);
+	_Console *pC = (_Console *)pConsole;
+	pC->addMsg("iMode: "+i2str(m_rcMode.i()), 1);
+	pC->addMsg("stickV v = "+f2str(m_rcStickV.v()), 1);
+	pC->addMsg("stickH v = "+f2str(m_rcStickH.v()), 1);
 }
 
 }

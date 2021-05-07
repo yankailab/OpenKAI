@@ -24,7 +24,8 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	void draw(void);
+	void cvDraw(void* pWindow);
+	void console(void* pConsole);
 	int check(void);
 
 private:

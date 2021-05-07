@@ -51,7 +51,7 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
-	virtual void draw(void);
+	virtual void console(void* pConsole);
 
 	virtual bool readCMD(void);
 	virtual void handleCMD(void);

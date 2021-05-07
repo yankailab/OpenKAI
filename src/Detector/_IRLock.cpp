@@ -137,11 +137,11 @@ bool _IRLock::readPacket(void)
 	return false;
 }
 
-void _IRLock::draw(void)
+void _IRLock::console(void* pConsole)
 {
+	NULL_(pConsole);
 	IF_(check() < 0);
-
-	this->_DetectorBase::draw();
+	this->_DetectorBase::console(pConsole);
 
 	string msg = "| ";
 	_Object *pO;
@@ -150,7 +150,8 @@ void _IRLock::draw(void)
 	{
 		msg += f2str(pO->getPos().z) + " | ";
 	}
-	addMsg(msg, 1);
+	
+	((_Console*)pConsole)->addMsg(msg, 1);
 }
 
 }

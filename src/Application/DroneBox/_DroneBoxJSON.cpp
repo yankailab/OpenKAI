@@ -178,12 +178,13 @@ void _DroneBoxJSON::req ( picojson::object& o )
     sendMsg ( jo );
 }
 
-void _DroneBoxJSON::draw ( void )
+void _DroneBoxJSON::console ( void* pConsole )
 {
-    this->_JSONbase::draw();
+    NULL_(pConsole);
+    this->_JSONbase::console(pConsole);
     
     NULL_(m_pTr);
-    m_pTr->draw();
+    m_pTr->console(pConsole);
 }
 
 }

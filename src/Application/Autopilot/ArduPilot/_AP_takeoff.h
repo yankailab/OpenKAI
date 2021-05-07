@@ -17,7 +17,7 @@ public:
 	bool start(void);
 	int check(void);
 	void update(void);
-	void draw(void);
+	void console(void* pConsole);
 
 private:
 	void updateMission(void);

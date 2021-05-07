@@ -313,7 +313,7 @@ void _RealSense::updateTPP ( void )
     }
 }
 
-void _RealSense::draw ( void )
+void _RealSense::cvDraw(void* pWindow)
 {
     if ( m_pDepthWin )
     {
@@ -325,7 +325,7 @@ void _RealSense::draw ( void )
         m_depthShow = mDColor;
     }
 
-    this->_DepthVisionBase::draw();
+    this->_DepthVisionBase::cvDraw(pWindow);
 }
 
 }

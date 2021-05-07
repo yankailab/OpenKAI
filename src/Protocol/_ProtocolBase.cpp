@@ -129,17 +129,19 @@ void _ProtocolBase::setCallback(CallbackProtocol cb, void* pInst)
 	m_pfInst = pInst;
 }
 
-void _ProtocolBase::draw(void)
+void _ProtocolBase::console(void* pConsole)
 {
-	this->_ModuleBase::draw();
+	NULL_(pConsole);
+	this->_ModuleBase::console(pConsole);
 
+	_Console *pC = (_Console *)pConsole;
 	if (!m_pIO->isOpen())
 	{
-		addMsg("Not Connected",1);
+		pC->addMsg("Not Connected",1);
 		return;
 	}
 
-	addMsg("nCMD = " + i2str(m_nCMDrecv),1);
+	pC->addMsg("nCMD = " + i2str(m_nCMDrecv),1);
 }
 
 }

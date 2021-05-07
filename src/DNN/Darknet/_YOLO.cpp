@@ -2,10 +2,9 @@
  *  Created on: Mar 7, 2018
  *      Author: yankai
  */
-#include "_YOLO.h"
-
 #ifdef USE_OPENCV
 #ifdef USE_DARKNET
+#include "_YOLO.h"
 
 namespace kai
 {
@@ -130,13 +129,6 @@ bool _YOLO::detect(void)
 		this->add(&obj);
 		LOG_I("Class: " + i2str(obj.getTopClass()));
 	}
-
-	return true;
-}
-
-bool _YOLO::draw(void)
-{
-	IF_F(!this->_DetectorBase::draw());
 
 	return true;
 }

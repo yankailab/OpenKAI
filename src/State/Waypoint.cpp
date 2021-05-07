@@ -138,28 +138,30 @@ void Waypoint::reset(void)
 	m_iWP = 0;
 }
 
-void Waypoint::draw(void)
+void Waypoint::console(void* pConsole)
 {
-	this->State::draw();
+	NULL_(pConsole);
+	this->State::console(pConsole);
 
+	_Console *pC = (_Console *)pConsole;
 	string msg;
-	addMsg("nWP=" + i2str(m_vWP.size()) + ", iWP=" + i2str(m_iWP),1);
+	pC->addMsg("nWP=" + i2str(m_vWP.size()) + ", iWP=" + i2str(m_iWP),1);
 
 	IF_(check()<0);
 
 	STATE_WAYPOINT* pWP = &m_vWP[m_iWP];
 
-	addMsg("WP = (" + f2str(pWP->m_vP.x,7) + ", "
+	pC->addMsg("WP = (" + f2str(pWP->m_vP.x,7) + ", "
 				   + f2str(pWP->m_vP.y,7) + ", "
 				   + f2str(pWP->m_vP.x,7) + ", "
 		           + f2str(pWP->m_vP.w,7) + ")",1);
 
-	addMsg("Pos = (" + f2str(m_vPos.x,7) + ", "
+	pC->addMsg("Pos = (" + f2str(m_vPos.x,7) + ", "
 				   + f2str(m_vPos.y,7) + ", "
 				   + f2str(m_vPos.z,7) + ", "
 		           + f2str(m_vPos.w,7) + ")",1);
 
-	addMsg("Err = (" + f2str(m_vErr.x,7) + ", "
+	pC->addMsg("Err = (" + f2str(m_vErr.x,7) + ", "
 				   + f2str(m_vErr.y,7) + ", "
 				   + f2str(m_vErr.z,7) + ", "
 		           + f2str(m_vErr.w,7) + ")",1);

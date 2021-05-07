@@ -8,8 +8,6 @@
 #ifndef OpenKAI_src_Vision__Mynteye_H_
 #define OpenKAI_src_Vision__Mynteye_H_
 
-#include "../Base/common.h"
-
 #ifdef USE_OPENCV
 #ifdef USE_MYNTEYE
 
@@ -33,7 +31,7 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	void draw(void);
+	void cvDraw(void* pWindow);
 	bool open(void);
 	void close(void);
 

@@ -9,6 +9,7 @@
 #define OpenKAI_src_Universe__Object_H_
 
 #include "../Base/_ModuleBase.h"
+#include "../UI/_Console.h"
 
 namespace kai
 {
@@ -24,7 +25,6 @@ public:
 	virtual void init(void);
 	virtual bool start(void);
 	virtual void update(void);
-	virtual void draw(void);
 
 	//pos
 	void setPos(vFloat3& p);

@@ -51,7 +51,6 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	bool draw(void);
 
 	bool setup(void);
 	vector<vector<Prediction> > Classify(const vector<GpuMat> vImg);

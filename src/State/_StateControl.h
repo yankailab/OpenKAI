@@ -9,6 +9,7 @@
 #define OpenKAI_src_State__StateControl_H_
 
 #include "../Base/_ModuleBase.h"
+#include "../UI/_Console.h"
 #include "../State/Goto.h"
 #include "../State/Waypoint.h"
 #include "../State/Land.h"
@@ -42,7 +43,7 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	void draw(void);
+	void console(void* pConsole);
 
 	State* getState(void);
 	string getStateName(void);

@@ -16,7 +16,7 @@ public:
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
 	virtual void update(void);
-	virtual void draw(void);
+	virtual void console(void* pConsole);
 	virtual int check(void);
 
 	void clear(void);

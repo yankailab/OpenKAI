@@ -293,14 +293,15 @@ WS_CLIENT* _WebSocket::findClientById(uint32_t id)
 	return &m_vClient[i];
 }
 
-void _WebSocket::draw(void)
+void _WebSocket::console(void* pConsole)
 {
-	this->_IOBase::draw();
+	NULL_(pConsole);
+	this->_IOBase::console(pConsole);
     
     NULL_(m_pTr);
-    m_pTr->draw();
+    m_pTr->console(pConsole);
 
-	addMsg("nClients: " + i2str(m_vClient.size()),1);
+	((_Console*)pConsole)->addMsg("nClients: " + i2str(m_vClient.size()),1);
 }
 
 }

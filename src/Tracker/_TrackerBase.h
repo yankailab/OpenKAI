@@ -31,10 +31,11 @@ public:
 	virtual
 	~_TrackerBase();
 
-	bool init(void* pKiss);
-	void update(void);
-	int check(void);
-	virtual void draw(void);
+	virtual bool init(void* pKiss);
+	virtual void update(void);
+	virtual int check(void);
+	virtual void cvDraw(void* pWindow);
+	virtual void console(void* pConsole);
 
 	virtual void createTracker(void);
 	virtual bool startTrack(vFloat4& bb);

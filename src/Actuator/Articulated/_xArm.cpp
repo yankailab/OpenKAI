@@ -160,11 +160,5 @@ void _xArm::readState(void)
     ret = m_pArm->get_servo_angle(angles);
 }
 
-void _xArm::draw(void)
-{
-	this->_ActuatorBase::draw();
-
-}
-
 }
 #endif

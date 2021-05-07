@@ -73,9 +73,4 @@ int _ObjectArray::size(void)
 	return m_nO;
 }
 
-void _ObjectArray::draw(void)
-{
-	this->_ModuleBase::draw();
-}
-
 }

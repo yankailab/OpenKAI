@@ -26,7 +26,6 @@ namespace kai
 		virtual bool init(void *pKiss);
 		virtual int size(void);
 		virtual int check(void);
-		virtual void draw(void);
 
 		//frame
 		virtual void getPC(PointCloud *pPC);

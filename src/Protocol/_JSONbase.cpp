@@ -195,9 +195,10 @@ void _JSONbase:: md5( string& str, string* pDigest )
     LOG_I( "md5: " + *pDigest );
 }
 
-void _JSONbase::draw ( void )
+void _JSONbase::console ( void* pConsole )
 {
-    this->_ModuleBase::draw();
+    NULL_(pConsole);
+    this->_ModuleBase::console(pConsole);
 
     string msg;
     if ( m_pIO->isOpen() )
@@ -205,7 +206,7 @@ void _JSONbase::draw ( void )
     else
         msg = "Not connected";
 
-    addMsg ( msg, 0 );
+    ((_Console*)pConsole)->addMsg ( msg, 0 );
 
 }
 

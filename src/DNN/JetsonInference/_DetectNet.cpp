@@ -149,12 +149,6 @@ void _DetectNet::detect(void)
 
 }
 
-void _DetectNet::draw(void)
-{
-	this->_DetectorBase::draw();
-
-}
-
 }
 #endif
 #endif

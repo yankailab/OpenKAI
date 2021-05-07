@@ -127,11 +127,11 @@ void _Mynteye::update(void)
 	}
 }
 
-void _Mynteye::draw(void)
+void _Mynteye::cvDraw(void* pWindow)
 {
 	m_depthShow.copy(m_fDepth);
 
-	this->_DepthVisionBase::draw();
+	this->_DepthVisionBase::cvDraw(pWindow);
 }
 
 }

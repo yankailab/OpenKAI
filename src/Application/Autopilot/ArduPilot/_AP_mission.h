@@ -18,7 +18,6 @@ public:
 	bool start(void);
 	int check(void);
 	void update(void);
-	void draw(void);
 
 private:
 	void updateMission(void);

@@ -29,7 +29,7 @@ public:
 	bool init(void* pKiss);
 	bool start(void);
     int check(void);
-	void draw(void);
+	void cvDraw(void* pWindow);
 	bool open(void);
 	void close(void);
 

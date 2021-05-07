@@ -8,8 +8,6 @@
 #ifndef OpenKAI_src_DNN_Darknet__YOLO_H_
 #define OpenKAI_src_DNN_Darknet__YOLO_H_
 
-#include "../../Base/common.h"
-
 #ifdef USE_OPENCV
 #ifdef USE_DARKNET
 #include "../../Vision/_VisionBase.h"
@@ -30,7 +28,6 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	void draw(void);
 
 private:
 	bool detect(void);

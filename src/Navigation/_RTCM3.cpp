@@ -59,16 +59,16 @@ void _RTCM3::decode(void)
 {
 }
 
-void _RTCM3::draw(void)
+void _RTCM3::console(void* pConsole)
 {
-	this->_ModuleBase::draw();
+	NULL_(pConsole);
+	this->_ModuleBase::console(pConsole);
 
 	if(!m_pIO->isOpen())
 	{
-		addMsg("Not connected");
+		((_Console*)pConsole)->addMsg("Not connected");
 		return;
 	}
-
 }
 
 }
