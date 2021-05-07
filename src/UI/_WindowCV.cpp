@@ -148,6 +148,7 @@ void _WindowCV::updateWindow(void)
 	{
 		pB->cvDraw(this);
 	}
+	
 	IF_(m_frame.bEmpty());
 
 	Mat m = *m_frame.m();

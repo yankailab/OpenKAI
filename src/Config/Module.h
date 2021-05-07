@@ -104,6 +104,7 @@
 #include "../Vision/ImgFilter/_Invert.h"
 #include "../Vision/ImgFilter/_InRange.h"
 #include "../Vision/ImgFilter/_Resize.h"
+#include "../Vision/ImgFilter/_Remap.h"
 #include "../Vision/ImgFilter/_Rotate.h"
 
 #include "../Data/Image/_GDimgUploader.h"

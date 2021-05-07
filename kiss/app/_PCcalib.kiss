@@ -2,8 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"PCscan",
-	"bWindow":0,
-	"bDraw":1,
+	"bWindow":1,
 	"bLog":1,
 	"bStdErr":1,
 	"waitKey":30,
@@ -16,7 +15,30 @@
 }
 
 {
-	"name":"pcScan",
+	"name":"winRGB",
+	"class":"_WindowCV",
+	"bInst":1,
+	"bFullScreen":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["cam"],
+}
+
+{
+	"name":"cam",
+	"class":"_GStreamer",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"pipeline":"v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! appsink",
+}
+
+{
+	"name":"pcCalib",
 	"class":"_PCcalib",
 	"bInst":1,
     {
@@ -24,8 +46,8 @@
 		"FPS":5,
 	}
     {
-		"name":"threadK",
-		"FPS":200,
+		"name":"threadRGB",
+		"FPS":30,
 	}
     {
 		"name":"threadUI",
@@ -35,9 +57,9 @@
 	"vWinSize":[1920,1080],
 	"pathRes":"/home/kai/dev/Open3D/build/bin/resources",
 	"device":"CPU:0",
-	"vPCbase":["pcFile","pcRS","pcLivox"],
-	"_SlamBase":"T265",
+	"vPCbase":["pcFile","pcLivox"],
 	"_PCstream":"pcLivox",
+	"_VisionBase":"cam",
 	"vCamLookAt":[0,0,0],
 	"vCamEye":[0,0,2],
 	"vCamUp":[0,1,0],
@@ -53,7 +75,6 @@
 	"mouseMode":1,
 	"vDmove":[0.5, 5.0],
 	"rDummyDome":1000.0,
-	"dHiddenRemove":100.0,
 	"shade":0,
 	"vShadeCol":[1.0, 1.0, 1.0],
 	"rShadePosCol":15.0,
@@ -69,30 +90,6 @@
 	}
 	"_Console":"console",
 	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
-}
-
-{
-	"name":"pcRS",
-	"class":"_PCrs",
-	"bInst":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"bLog":1,
-	"_Console":"console",
-	"vPreset":"Short Range",
-	"rsRGB":1,
-	"vWHcol":[1280,720],
-	"rsFPS":30,
-	"vWHd":[640,480],
-	"rsDFPS":30,
-	"fDec":0,
-	"fSpat":0,
-	"vRange":[0.1,15.0],
-	"bAlign":0,
-	"rsSN":"f0211594",
-	"vRz":[0, 1000.0],
 }
 
 {
@@ -130,16 +127,4 @@
 	"vAxisK":[-1, 1, 1],
 	"unitK":0.001,
 	"vRange":[0.6, 300],
-}
-
-{
-	"name":"T265",
-	"class":"_RStracking",
-    {
-		"name":"thread",
-		"FPS":200,
-	}
-	"bInst":1,
-	"bLog":1,
-	"_Console":"console",
 }

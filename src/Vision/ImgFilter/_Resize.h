@@ -8,8 +8,6 @@
 #ifndef OpenKAI_src_Vision__Resize_H_
 #define OpenKAI_src_Vision__Resize_H_
 
-#include "../../Base/common.h"
-
 #ifdef USE_OPENCV
 #include "../_VisionBase.h"
 
@@ -38,8 +36,6 @@ private:
 
 public:
 	_VisionBase* m_pV;
-	Frame m_fIn;
-
 };
 
 }

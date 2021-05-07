@@ -19,6 +19,9 @@ namespace kai
 	namespace
 	{
 		static const int pcfCalibReset = 0;
+
+		// Defining the dimensions of checkerboard
+		int CHECKERBOARD[2]{6,9}; 
 	}
 
 	class _PCcalib : public _PCviewer

@@ -31,10 +31,8 @@ namespace open3d
 
 			enum MenuId
 			{
-				MENU_LOAD_IMGS,
 				MENU_IMPORT_PARAMS,
 				MENU_EXPORT_PARAMS,
-				MENU_RESET_PC
 			};
 
 			class PCcalibUI : public O3DUI
@@ -57,7 +55,6 @@ namespace open3d
 				virtual void Layout(const gui::Theme &theme);
 				void InitCtrlPanel(void);
 
-				void OnLoadImgs(void);
 				void OnImportParams(void);
 				void OnExportParams(void);
 
@@ -67,6 +64,8 @@ namespace open3d
 
 				//UI components
 				Vert *m_panelCtrl;
+
+				TextEdit *m_pPath;
 
 				TextEdit *m_pFx;
 				TextEdit *m_pFy;

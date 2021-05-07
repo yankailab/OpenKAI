@@ -1,12 +1,12 @@
 /*
- * _Contrast.h
+ * _Remap.h
  *
- *  Created on: March 12, 2019
+ *  Created on: May 7, 2021
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Vision__Contrast_H_
-#define OpenKAI_src_Vision__Contrast_H_
+#ifndef OpenKAI_src_Vision__Remap_H_
+#define OpenKAI_src_Vision__Remap_H_
 
 #ifdef USE_OPENCV
 #include "../_VisionBase.h"
@@ -14,30 +14,32 @@
 namespace kai
 {
 
-class _Contrast: public _VisionBase
+class _Remap: public _VisionBase
 {
 public:
-	_Contrast();
-	virtual ~_Contrast();
+	_Remap();
+	virtual ~_Remap();
 
 	bool init(void* pKiss);
 	bool start(void);
 	bool open(void);
 	void close(void);
 
+	void setRemap(Mat mX, Mat mY);
+
 private:
 	void filter(void);
 	void update(void);
 	static void* getUpdate(void* This)
 	{
-		((_Contrast*) This)->update();
+		((_Remap*) This)->update();
 		return NULL;
 	}
 
 public:
 	_VisionBase* m_pV;
-	double m_alpha;
-	double m_beta;
+	Mat m_mX;
+	Mat m_mY;
 };
 
 }

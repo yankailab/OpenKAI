@@ -67,7 +67,7 @@ void _Resize::update(void)
 
 		if(m_bOpen)
 		{
-			if(m_fIn.tStamp() < m_pV->BGR()->tStamp())
+			if(m_fBGR.tStamp() < m_pV->BGR()->tStamp())
 				filter();
 		}
 

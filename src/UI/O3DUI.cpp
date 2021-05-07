@@ -294,6 +294,7 @@ namespace open3d
 
                 dlg->AddChild(layout);
                 ShowDialog(dlg);
+                PostRedraw();
             }
 
             void O3DUI::CloseMsg(void)

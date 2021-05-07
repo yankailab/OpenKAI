@@ -41,6 +41,7 @@ enum VISION_TYPE
 	vision_grayscale,
 	vision_crop,
 	vision_gphoto,
+	vision_remap,
 };
 
 class _VisionBase: public _ModuleBase

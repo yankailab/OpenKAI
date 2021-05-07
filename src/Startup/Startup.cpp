@@ -80,7 +80,7 @@ bool Startup::start(Kiss* pKiss)
 	m_bRun = true;
 	while (m_bRun)
 	{
-		usleep(100000);
+		sleep(1);
 	}
 
 	for (i = 0; i < m_vInst.size(); i++)

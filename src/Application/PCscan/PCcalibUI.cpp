@@ -36,25 +36,15 @@ namespace open3d
 
                 auto menu = std::make_shared<Menu>();
                 auto file_menu = std::make_shared<Menu>();
-                file_menu->AddItem("Load calibration images", MENU_LOAD_IMGS);
-                file_menu->AddSeparator();
                 file_menu->AddItem("Import params", MENU_IMPORT_PARAMS);
                 file_menu->AddItem("Export params", MENU_EXPORT_PARAMS);
-                file_menu->AddSeparator();
-                file_menu->AddItem("Reset Pointcloud", MENU_RESET_PC);
                 menu->AddMenu("File", file_menu);
 
                 Application::GetInstance().SetMenubar(menu);
-                SetOnMenuItemActivated(MENU_LOAD_IMGS,
-                                       [this]() { OnLoadImgs(); });
                 SetOnMenuItemActivated(MENU_IMPORT_PARAMS,
                                        [this]() { OnImportParams(); });
                 SetOnMenuItemActivated(MENU_EXPORT_PARAMS,
                                        [this]() { OnExportParams(); });
-                SetOnMenuItemActivated(MENU_RESET_PC,
-                                       [this]() {
-                                           m_cbResetPC.call();
-                                       });
             }
 
             void PCcalibUI::UpdateUIstate(void)
@@ -125,8 +115,42 @@ namespace open3d
 
                 m_panelCtrl = new Vert(half_em);
                 AddChild(GiveOwnership(m_panelCtrl));
-
                 Margins margins(em, 0, half_em, 0);
+
+                // Point cloud
+                auto panelPC = new CollapsableVert("Point Cloud", v_spacing, margins);
+                m_panelCtrl->AddChild(GiveOwnership(panelPC));
+
+                auto pH = new Horiz(v_spacing);
+                panelPC->AddChild(GiveOwnership(pH));
+                auto btnReset = new Button(" Reset ");
+                btnReset->SetOnClicked([this]() {
+                    m_cbResetPC.call();
+                });
+                pH->AddChild(GiveOwnership(btnReset));
+                pH->AddStretch();
+
+                // Calibration using images
+                auto panelImg = new CollapsableVert("Calibration", v_spacing, margins);
+                m_panelCtrl->AddChild(GiveOwnership(panelImg));
+
+                pH = new Horiz(v_spacing);
+                panelImg->AddChild(GiveOwnership(pH));
+                m_pPath = new TextEdit();
+                m_pPath->SetText("/home/");
+                pH->AddChild(GiveOwnership(m_pPath));
+                pH->AddStretch();
+
+                pH = new Horiz(v_spacing);
+                panelImg->AddChild(GiveOwnership(pH));
+                auto btnCalib = new Button(" Calibrate ");
+                btnCalib->SetOnClicked([this]() { 
+                    ShowMsg("Camera calibration", "Calibrating");
+                    m_cbLoadImgs.call((void *)m_pPath->GetText());
+                    CloseMsg();
+                });
+                pH->AddChild(GiveOwnership(btnCalib));
+                pH->AddStretch();
 
                 // Cam Intrinsic
                 auto panelCam = new CollapsableVert("Cam Intrinsic", v_spacing, margins);
@@ -402,19 +426,6 @@ namespace open3d
                 pG->AddChild(GiveOwnership(pEdec));
             }
 
-            void PCcalibUI::OnLoadImgs(void)
-            {
-                auto dlg = make_shared<gui::FileDialog>(
-                    gui::FileDialog::Mode::OPEN, "Open Directory", this->GetTheme());
-                dlg->AddFilter("", "All files");
-                dlg->SetOnCancel([this]() { this->CloseDialog(); });
-                dlg->SetOnDone([this](const char *path) {
-                    this->CloseDialog();
-                    m_cbLoadImgs.call((void*)path);
-                });
-                ShowDialog(dlg);
-            }
-
             void PCcalibUI::OnImportParams(void)
             {
                 auto dlg = make_shared<gui::FileDialog>(
@@ -424,8 +435,6 @@ namespace open3d
                 dlg->SetOnCancel([this]() { this->CloseDialog(); });
                 dlg->SetOnDone([this](const char *path) {
                     this->CloseDialog();
-
-
                 });
                 ShowDialog(dlg);
             }
@@ -439,8 +448,6 @@ namespace open3d
                 dlg->SetOnCancel([this]() { this->CloseDialog(); });
                 dlg->SetOnDone([this](const char *path) {
                     this->CloseDialog();
-
-                    
                 });
                 ShowDialog(dlg);
             }

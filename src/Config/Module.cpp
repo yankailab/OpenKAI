@@ -112,6 +112,7 @@ namespace kai
 		ADD_MODULE(_HandKey);
 		ADD_MODULE(_Raspivid);
 		ADD_MODULE(_Resize);
+		ADD_MODULE(_Remap);
 		ADD_MODULE(_Rotate);
 		ADD_MODULE(_RTCM3);
 		ADD_MODULE(_SlideWindow);
