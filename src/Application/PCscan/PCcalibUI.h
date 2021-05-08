@@ -10,23 +10,24 @@ namespace open3d
 		{
 			struct PCCALIB_PARAM
 			{
-				float m_Fx = 0.0;
-				float m_Fy = 0.0;
-				float m_Cx = 0.0;
-				float m_Cy = 0.0;
+				double m_Fx = 0.0;
+				double m_Fy = 0.0;
+				double m_Cx = 0.0;
+				double m_Cy = 0.0;
 
-				float m_oTx = 0.0;
-				float m_oTy = 0.0;
-				float m_oTz = 0.0;
+				double m_oTx = 0.0;
+				double m_oTy = 0.0;
+				double m_oTz = 0.0;
 
-				float m_oRx = 0.0;
-				float m_oRy = 0.0;
-				float m_oRz = 0.0;
+				double m_oRx = 0.0;
+				double m_oRy = 0.0;
+				double m_oRz = 0.0;
 
-				float m_k1 = 0.0;
-				float m_k2 = 0.0;
-				float m_k3 = 0.0;
-				float m_k4 = 0.0;
+				double m_k1 = 0.0;
+				double m_k2 = 0.0;
+				double m_p1 = 0.0;
+				double m_p2 = 0.0;
+				double m_k3 = 0.0;
 			};
 
 			enum MenuId
@@ -48,8 +49,9 @@ namespace open3d
 				PCCALIB_PARAM *GetCalibParams(void);
 				void UpdateCalibParams(void);
 
-				void SetCbLoadImgs(OnBtnClickedCb pCb, void *pPCV);
-				void SetCbResetPC(OnBtnClickedCb pCb, void *pPCV);
+				void SetCbLoadImgs(OnCbO3DUI pCb, void *pPCV);
+				void SetCbResetPC(OnCbO3DUI pCb, void *pPCV);
+				void SetCbUpdateParams(OnCbO3DUI pCb, void *pPCV);
 
 			protected:
 				virtual void Layout(const gui::Theme &theme);
@@ -59,7 +61,8 @@ namespace open3d
 				void OnExportParams(void);
 
 			private:
-				float m_dV;
+				double m_dV;
+				int m_nD;
 				PCCALIB_PARAM m_calibParam;
 
 				//UI components
@@ -82,12 +85,14 @@ namespace open3d
 
 				TextEdit *m_pk1;
 				TextEdit *m_pk2;
+				TextEdit *m_pp1;
+				TextEdit *m_pp2;
 				TextEdit *m_pk3;
-				TextEdit *m_pk4;
 
 				//UI handler
 				O3D_UI_Cb m_cbLoadImgs;
 				O3D_UI_Cb m_cbResetPC;
+				O3D_UI_Cb m_cbUpdateParams;
 			};
 
 		} // namespace visualizer

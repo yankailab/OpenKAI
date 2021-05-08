@@ -87,6 +87,7 @@ namespace kai
 #ifdef USE_OPENCV
 		ADD_MODULE(_ANR);
 		ADD_MODULE(_Camera);
+		ADD_MODULE(_CamCalib);
 		ADD_MODULE(_Contrast);
 		ADD_MODULE(_Crop);
 		ADD_MODULE(_DNNclassifier);

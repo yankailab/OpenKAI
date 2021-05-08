@@ -17,7 +17,7 @@ namespace kai
 		m_pUIstate = NULL;
 		m_modelName = "PCMODEL";
 		m_pTrgb = NULL;
-		m_pV = NULL;
+		m_pVremap = NULL;
 
 		m_bFullScreen = false;
 		m_mouseMode = 0;
@@ -46,8 +46,8 @@ namespace kai
 		m_pPS = (_PCstream *)(pK->getInst(n));
 
 		n = "";
-		pK->v("_VisionBase", &n);
-		m_pV = (_VisionBase *)(pK->getInst(n));
+		pK->v("_Remap", &n);
+		m_pVremap = (_Remap *)(pK->getInst(n));
 
 		Kiss *pKr = pK->child("threadRGB");
 		IF_F(pKr->empty());
@@ -78,7 +78,7 @@ namespace kai
 	int _PCcalib::check(void)
 	{
 		NULL__(m_pPS, -1);
-		NULL__(m_pV, -1);
+		NULL__(m_pVremap, -1);
 
 		return this->_PCviewer::check();
 	}
@@ -203,6 +203,7 @@ namespace kai
 
 		m_spWin->SetCbLoadImgs(OnLoadImgs, (void *)this);
 		m_spWin->SetCbResetPC(OnResetPC, (void *)this);
+		m_spWin->SetCbUpdateParams(OnUpdateParams, (void *)this);
 
 		m_pUIstate = m_spWin->getUIState();
 		m_pUIstate->m_mouseMode = (visualization::gui::SceneWidget::Controls)m_mouseMode;
@@ -277,85 +278,62 @@ namespace kai
 		pV->m_fProcess.set(pcfCalibReset);
 	}
 
-	void _PCcalib::calibRGB(const char *pPath)
+	void _PCcalib::OnUpdateParams(void *pPCV, void *pD)
 	{
-		vector<vector<Point3f>> objpoints;		// Creating vector to store vectors of 3D points for each checkerboard image
-		vector<vector<Point2f>> imgpoints;		// Creating vector to store vectors of 2D points for each checkerboard image
-		vector<Point3f> objp;		// Defining the world coordinates for 3D points
+		NULL_(pPCV);
+		_PCcalib *pV = (_PCcalib *)pPCV;
 
-		for (int i{0}; i < CHECKERBOARD[1]; i++)
-		{
-			for (int j{0}; j < CHECKERBOARD[0]; j++)
-				objp.push_back(cv::Point3f(j, i, 0));
-		}
-
-		// Extracting path of individual image stored in a given directory
-		vector<cv::String> images;
-		string path(pPath);
-		cv::glob(path, images);
-
-		Mat frame, gray;
-		vector<Point2f> corner_pts;	// vector to store the pixel coordinates of detected checker board corners
-		bool success;
-
-		for (int i{0}; i < images.size(); i++)
-		{
-			frame = cv::imread(images[i]);
-			cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
-
-			// If desired number of corners are found in the image then success = true
-			success = cv::findChessboardCorners(gray, cv::Size(CHECKERBOARD[0], CHECKERBOARD[1]), corner_pts, cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_FAST_CHECK | cv::CALIB_CB_NORMALIZE_IMAGE);
-
-			/*
-		     * If desired number of corner are detected,
-     		 * we refine the pixel coordinates and display 
-    		 * them on the images of checker board
-		    */
-			if (success)
-			{
-				cv::TermCriteria criteria(cv::TermCriteria::EPS | cv::TermCriteria::MAX_ITER, 30, 0.001);
-
-				// refining pixel coordinates for given 2d points.
-				cv::cornerSubPix(gray, corner_pts, cv::Size(11, 11), cv::Size(-1, -1), criteria);
-
-				// Displaying the detected corner points on the checker board
-				cv::drawChessboardCorners(frame, cv::Size(CHECKERBOARD[0], CHECKERBOARD[1]), corner_pts, success);
-
-				objpoints.push_back(objp);
-				imgpoints.push_back(corner_pts);
-			}
-
-			cv::imshow("CalibrationImages", frame);
-			cv::waitKey(0);
-		}
-
-		Mat cameraMatrix, distCoeffs, R, T;
-		cv::calibrateCamera(objpoints, imgpoints, cv::Size(gray.rows, gray.cols), cameraMatrix, distCoeffs, R, T);
-
-		cout << "cameraMatrix : " << cameraMatrix << std::endl;
-		cout << "distCoeffs : " << distCoeffs << std::endl;
-		cout << "Rotation vector : " << R << std::endl;
-		cout << "Translation vector : " << T << std::endl;
-
-		// Trying to undistort the image using the camera parameters obtained from calibration
-
-		cv::Mat image;
-		image = cv::imread(images[0]);
-		cv::Mat dst, map1, map2, new_camera_matrix;
-		cv::Size imageSize(cv::Size(image.cols, image.rows));
-
-		// Refining the camera matrix using parameters obtained by calibration
-		new_camera_matrix = cv::getOptimalNewCameraMatrix(cameraMatrix, distCoeffs, imageSize, 1, imageSize, 0);
-
-		// Method 1 to undistort the image
-//		cv::undistort(frame, dst, new_camera_matrix, distCoeffs, new_camera_matrix);
-
-		// Method 2 to undistort the image
-		cv::initUndistortRectifyMap(cameraMatrix, distCoeffs, cv::Mat(), new_camera_matrix, imageSize, CV_16SC2, map1, map2);
-
-		cv::remap(frame, dst, map1, map2, cv::INTER_LINEAR);
-
+		pV->updateParams();
 	}
 
+	bool _PCcalib::calibRGB(const char *pPath)
+	{
+		IF_F(check() < 0);
+		NULL_F(pPath);
+
+		IF_F(!m_cc.calibRGB(pPath));
+		Mat mC = m_cc.camMatrix();
+		Mat mD = m_cc.distCoeffs();
+
+		//update to UI
+		PCCALIB_PARAM* pP = m_spWin->GetCalibParams();
+		pP->m_Fx = mC.at<double>(0,0);
+		pP->m_Fy = mC.at<double>(1,1);
+		pP->m_Cx = mC.at<double>(0,2);
+		pP->m_Cy = mC.at<double>(1,2);
+
+		pP->m_k1 = mD.at<double>(0,0);
+		pP->m_k2 = mD.at<double>(0,1);
+		pP->m_p1 = mD.at<double>(0,2);
+		pP->m_p2 = mD.at<double>(0,3);
+		pP->m_k3 = mD.at<double>(0,4);
+		m_spWin->UpdateCalibParams();
+
+		//update self
+		updateParams();
+
+		return true;
+	}
+
+	void _PCcalib::updateParams(void)
+	{
+		//update from UI
+		Mat mC = Mat::zeros(3,3,CV_64FC1);
+		Mat mD = Mat::zeros(1,5,CV_64FC1);
+
+		PCCALIB_PARAM* pP = m_spWin->GetCalibParams();
+		mC.at<double>(0,0) = pP->m_Fx;
+		mC.at<double>(1,1) = pP->m_Fy;
+		mC.at<double>(0,2) = pP->m_Cx;
+		mC.at<double>(1,2) = pP->m_Cy;
+
+		mD.at<double>(0,0) = pP->m_k1;
+		mD.at<double>(0,1) = pP->m_k2;
+		mD.at<double>(0,2) = pP->m_p1;
+		mD.at<double>(0,3) = pP->m_p2;
+		mD.at<double>(0,4) = pP->m_k3;
+
+		m_pVremap->setCamMatrices(mC, mD);
+	}
 }
 #endif

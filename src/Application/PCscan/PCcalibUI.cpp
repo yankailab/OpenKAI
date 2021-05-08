@@ -29,6 +29,7 @@ namespace open3d
                 this->O3DUI::Init();
 
                 m_dV = 0.01;
+                m_nD = 15;
                 InitCtrlPanel();
                 UpdateUIstate();
 
@@ -60,33 +61,39 @@ namespace open3d
 
             void PCcalibUI::UpdateCalibParams(void)
             {
-                m_pFx->SetText(f2str(m_calibParam.m_Fx).c_str());
-                m_pFy->SetText(f2str(m_calibParam.m_Fy).c_str());
-                m_pCx->SetText(f2str(m_calibParam.m_Cx).c_str());
-                m_pCy->SetText(f2str(m_calibParam.m_Cy).c_str());
+                m_pFx->SetText(lf2str(m_calibParam.m_Fx,m_nD).c_str());
+                m_pFy->SetText(lf2str(m_calibParam.m_Fy,m_nD).c_str());
+                m_pCx->SetText(lf2str(m_calibParam.m_Cx,m_nD).c_str());
+                m_pCy->SetText(lf2str(m_calibParam.m_Cy,m_nD).c_str());
 
-                m_poTx->SetText(f2str(m_calibParam.m_oTx).c_str());
-                m_poTy->SetText(f2str(m_calibParam.m_oTy).c_str());
-                m_poTz->SetText(f2str(m_calibParam.m_oTz).c_str());
+                m_poTx->SetText(lf2str(m_calibParam.m_oTx,m_nD).c_str());
+                m_poTy->SetText(lf2str(m_calibParam.m_oTy,m_nD).c_str());
+                m_poTz->SetText(lf2str(m_calibParam.m_oTz,m_nD).c_str());
 
-                m_poRx->SetText(f2str(m_calibParam.m_oRx).c_str());
-                m_poRy->SetText(f2str(m_calibParam.m_oRy).c_str());
-                m_poRz->SetText(f2str(m_calibParam.m_oRz).c_str());
+                m_poRx->SetText(lf2str(m_calibParam.m_oRx,m_nD).c_str());
+                m_poRy->SetText(lf2str(m_calibParam.m_oRy,m_nD).c_str());
+                m_poRz->SetText(lf2str(m_calibParam.m_oRz,m_nD).c_str());
 
-                m_pk1->SetText(f2str(m_calibParam.m_k1).c_str());
-                m_pk2->SetText(f2str(m_calibParam.m_k2).c_str());
-                m_pk3->SetText(f2str(m_calibParam.m_k3).c_str());
-                m_pk4->SetText(f2str(m_calibParam.m_k4).c_str());
+                m_pk1->SetText(lf2str(m_calibParam.m_k1,m_nD).c_str());
+                m_pk2->SetText(lf2str(m_calibParam.m_k2,m_nD).c_str());
+                m_pp1->SetText(lf2str(m_calibParam.m_p1,m_nD).c_str());
+                m_pp2->SetText(lf2str(m_calibParam.m_p2,m_nD).c_str());
+                m_pk3->SetText(lf2str(m_calibParam.m_k3,m_nD).c_str());
             }
 
-            void PCcalibUI::SetCbLoadImgs(OnBtnClickedCb pCb, void *pPCV)
+            void PCcalibUI::SetCbLoadImgs(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbLoadImgs.add(pCb, pPCV);
             }
 
-            void PCcalibUI::SetCbResetPC(OnBtnClickedCb pCb, void *pPCV)
+            void PCcalibUI::SetCbResetPC(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbResetPC.add(pCb, pPCV);
+            }
+
+            void PCcalibUI::SetCbUpdateParams(OnCbO3DUI pCb, void *pPCV)
+            {
+                m_cbUpdateParams.add(pCb, pPCV);
             }
 
             void PCcalibUI::Layout(const Theme &theme)
@@ -163,14 +170,15 @@ namespace open3d
                 m_pFx->SetText("0.0");
                 m_pFx->SetOnTextChanged([this](const char *) {
                     m_calibParam.m_Fx = atof(m_pFx->GetText());
+                    m_cbUpdateParams.call();
                 });
                 auto *pEinc = new SmallButton(" + ");
                 pEinc->SetOnClicked([this]() {
-                    m_pFx->SetText(f2str(atof(m_pFx->GetText()) + m_dV).c_str());
+                    m_pFx->SetText(lf2str(atof(m_pFx->GetText()) + m_dV,m_nD).c_str());
                 });
                 auto *pEdec = new SmallButton(" - ");
                 pEdec->SetOnClicked([this]() {
-                    m_pFx->SetText(f2str(atof(m_pFx->GetText()) - m_dV).c_str());
+                    m_pFx->SetText(lf2str(atof(m_pFx->GetText()) - m_dV,m_nD).c_str());
                 });
                 pG->AddChild(GiveOwnership(new Label("Fx")));
                 pG->AddChild(GiveOwnership(m_pFx));
@@ -181,14 +189,15 @@ namespace open3d
                 m_pFy->SetText("0.0");
                 m_pFy->SetOnTextChanged([this](const char *) {
                     m_calibParam.m_Fy = atof(m_pFy->GetText());
+                    m_cbUpdateParams.call();
                 });
                 pEinc = new SmallButton(" + ");
                 pEinc->SetOnClicked([this]() {
-                    m_pFy->SetText(f2str(atof(m_pFy->GetText()) + m_dV).c_str());
+                    m_pFy->SetText(lf2str(atof(m_pFy->GetText()) + m_dV, m_nD).c_str());
                 });
                 pEdec = new SmallButton(" - ");
                 pEdec->SetOnClicked([this]() {
-                    m_pFy->SetText(f2str(atof(m_pFy->GetText()) - m_dV).c_str());
+                    m_pFy->SetText(lf2str(atof(m_pFy->GetText()) - m_dV, m_nD).c_str());
                 });
                 pG->AddChild(GiveOwnership(new Label("Fy")));
                 pG->AddChild(GiveOwnership(m_pFy));
@@ -199,14 +208,15 @@ namespace open3d
                 m_pCx->SetText("0.0");
                 m_pCx->SetOnTextChanged([this](const char *) {
                     m_calibParam.m_Cx = atof(m_pCx->GetText());
+                    m_cbUpdateParams.call();
                 });
                 pEinc = new SmallButton(" + ");
                 pEinc->SetOnClicked([this]() {
-                    m_pCx->SetText(f2str(atof(m_pCx->GetText()) + m_dV).c_str());
+                    m_pCx->SetText(lf2str(atof(m_pCx->GetText()) + m_dV, m_nD).c_str());
                 });
                 pEdec = new SmallButton(" - ");
                 pEdec->SetOnClicked([this]() {
-                    m_pCx->SetText(f2str(atof(m_pCx->GetText()) - m_dV).c_str());
+                    m_pCx->SetText(lf2str(atof(m_pCx->GetText()) - m_dV, m_nD).c_str());
                 });
                 pG->AddChild(GiveOwnership(new Label("Cx")));
                 pG->AddChild(GiveOwnership(m_pCx));
@@ -217,14 +227,15 @@ namespace open3d
                 m_pCy->SetText("0.0");
                 m_pCy->SetOnTextChanged([this](const char *) {
                     m_calibParam.m_Cy = atof(m_pCy->GetText());
+                    m_cbUpdateParams.call();
                 });
                 pEinc = new SmallButton(" + ");
                 pEinc->SetOnClicked([this]() {
-                    m_pCy->SetText(f2str(atof(m_pCy->GetText()) + m_dV).c_str());
+                    m_pCy->SetText(lf2str(atof(m_pCy->GetText()) + m_dV, m_nD).c_str());
                 });
                 pEdec = new SmallButton(" - ");
                 pEdec->SetOnClicked([this]() {
-                    m_pCy->SetText(f2str(atof(m_pCy->GetText()) - m_dV).c_str());
+                    m_pCy->SetText(lf2str(atof(m_pCy->GetText()) - m_dV, m_nD).c_str());
                 });
                 pG->AddChild(GiveOwnership(new Label("Cy")));
                 pG->AddChild(GiveOwnership(m_pCy));
@@ -242,14 +253,15 @@ namespace open3d
                 m_pk1->SetText("0.0");
                 m_pk1->SetOnTextChanged([this](const char *) {
                     m_calibParam.m_k1 = atof(m_pk1->GetText());
+                    m_cbUpdateParams.call();
                 });
                 pEinc = new SmallButton(" + ");
                 pEinc->SetOnClicked([this]() {
-                    m_pk1->SetText(f2str(atof(m_pk1->GetText()) + m_dV).c_str());
+                    m_pk1->SetText(lf2str(atof(m_pk1->GetText()) + m_dV, m_nD).c_str());
                 });
                 pEdec = new SmallButton(" - ");
                 pEdec->SetOnClicked([this]() {
-                    m_pk1->SetText(f2str(atof(m_pk1->GetText()) - m_dV).c_str());
+                    m_pk1->SetText(lf2str(atof(m_pk1->GetText()) - m_dV, m_nD).c_str());
                 });
                 pG->AddChild(GiveOwnership(new Label("k1")));
                 pG->AddChild(GiveOwnership(m_pk1));
@@ -260,17 +272,56 @@ namespace open3d
                 m_pk2->SetText("0.0");
                 m_pk2->SetOnTextChanged([this](const char *) {
                     m_calibParam.m_k2 = atof(m_pk2->GetText());
+                    m_cbUpdateParams.call();
                 });
                 pEinc = new SmallButton(" + ");
                 pEinc->SetOnClicked([this]() {
-                    m_pk2->SetText(f2str(atof(m_pk2->GetText()) + m_dV).c_str());
+                    m_pk2->SetText(lf2str(atof(m_pk2->GetText()) + m_dV, m_nD).c_str());
                 });
                 pEdec = new SmallButton(" - ");
                 pEdec->SetOnClicked([this]() {
-                    m_pk2->SetText(f2str(atof(m_pk2->GetText()) - m_dV).c_str());
+                    m_pk2->SetText(lf2str(atof(m_pk2->GetText()) - m_dV, m_nD).c_str());
                 });
                 pG->AddChild(GiveOwnership(new Label("k2")));
                 pG->AddChild(GiveOwnership(m_pk2));
+                pG->AddChild(GiveOwnership(pEinc));
+                pG->AddChild(GiveOwnership(pEdec));
+
+                m_pp1 = new TextEdit();
+                m_pp1->SetText("0.0");
+                m_pp1->SetOnTextChanged([this](const char *) {
+                    m_calibParam.m_p1 = atof(m_pp1->GetText());
+                    m_cbUpdateParams.call();
+                });
+                pEinc = new SmallButton(" + ");
+                pEinc->SetOnClicked([this]() {
+                    m_pp1->SetText(lf2str(atof(m_pp1->GetText()) + m_dV, m_nD).c_str());
+                });
+                pEdec = new SmallButton(" - ");
+                pEdec->SetOnClicked([this]() {
+                    m_pp1->SetText(lf2str(atof(m_pp1->GetText()) - m_dV, m_nD).c_str());
+                });
+                pG->AddChild(GiveOwnership(new Label("p1")));
+                pG->AddChild(GiveOwnership(m_pp1));
+                pG->AddChild(GiveOwnership(pEinc));
+                pG->AddChild(GiveOwnership(pEdec));
+
+                m_pp2 = new TextEdit();
+                m_pp2->SetText("0.0");
+                m_pp2->SetOnTextChanged([this](const char *) {
+                    m_calibParam.m_p2 = atof(m_pp2->GetText());
+                    m_cbUpdateParams.call();
+                });
+                pEinc = new SmallButton(" + ");
+                pEinc->SetOnClicked([this]() {
+                    m_pp2->SetText(lf2str(atof(m_pp2->GetText()) + m_dV, m_nD).c_str());
+                });
+                pEdec = new SmallButton(" - ");
+                pEdec->SetOnClicked([this]() {
+                    m_pp2->SetText(lf2str(atof(m_pp2->GetText()) - m_dV, m_nD).c_str());
+                });
+                pG->AddChild(GiveOwnership(new Label("p2")));
+                pG->AddChild(GiveOwnership(m_pp2));
                 pG->AddChild(GiveOwnership(pEinc));
                 pG->AddChild(GiveOwnership(pEdec));
 
@@ -278,37 +329,21 @@ namespace open3d
                 m_pk3->SetText("0.0");
                 m_pk3->SetOnTextChanged([this](const char *) {
                     m_calibParam.m_k3 = atof(m_pk3->GetText());
+                    m_cbUpdateParams.call();
                 });
                 pEinc = new SmallButton(" + ");
                 pEinc->SetOnClicked([this]() {
-                    m_pk3->SetText(f2str(atof(m_pk3->GetText()) + m_dV).c_str());
+                    m_pk3->SetText(lf2str(atof(m_pk3->GetText()) + m_dV, m_nD).c_str());
                 });
                 pEdec = new SmallButton(" - ");
                 pEdec->SetOnClicked([this]() {
-                    m_pk3->SetText(f2str(atof(m_pk3->GetText()) - m_dV).c_str());
+                    m_pk3->SetText(lf2str(atof(m_pk3->GetText()) - m_dV, m_nD).c_str());
                 });
                 pG->AddChild(GiveOwnership(new Label("k3")));
                 pG->AddChild(GiveOwnership(m_pk3));
                 pG->AddChild(GiveOwnership(pEinc));
                 pG->AddChild(GiveOwnership(pEdec));
 
-                m_pk4 = new TextEdit();
-                m_pk4->SetText("0.0");
-                m_pk4->SetOnTextChanged([this](const char *) {
-                    m_calibParam.m_k4 = atof(m_pk4->GetText());
-                });
-                pEinc = new SmallButton(" + ");
-                pEinc->SetOnClicked([this]() {
-                    m_pk4->SetText(f2str(atof(m_pk4->GetText()) + m_dV).c_str());
-                });
-                pEdec = new SmallButton(" - ");
-                pEdec->SetOnClicked([this]() {
-                    m_pk4->SetText(f2str(atof(m_pk4->GetText()) - m_dV).c_str());
-                });
-                pG->AddChild(GiveOwnership(new Label("k4")));
-                pG->AddChild(GiveOwnership(m_pk4));
-                pG->AddChild(GiveOwnership(pEinc));
-                pG->AddChild(GiveOwnership(pEdec));
 
                 // Sensor offset
                 auto panelOffset = new CollapsableVert("Sensor Offset", v_spacing, margins);
@@ -321,14 +356,15 @@ namespace open3d
                 m_poTx->SetText("0.0");
                 m_poTx->SetOnTextChanged([this](const char *) {
                     m_calibParam.m_oTx = atof(m_poTx->GetText());
+                    m_cbUpdateParams.call();
                 });
                 pEinc = new SmallButton(" + ");
                 pEinc->SetOnClicked([this]() {
-                    m_poTx->SetText(f2str(atof(m_poTx->GetText()) + m_dV).c_str());
+                    m_poTx->SetText(lf2str(atof(m_poTx->GetText()) + m_dV, m_nD).c_str());
                 });
                 pEdec = new SmallButton(" - ");
                 pEdec->SetOnClicked([this]() {
-                    m_poTx->SetText(f2str(atof(m_poTx->GetText()) - m_dV).c_str());
+                    m_poTx->SetText(lf2str(atof(m_poTx->GetText()) - m_dV, m_nD).c_str());
                 });
                 pG->AddChild(GiveOwnership(new Label("tX")));
                 pG->AddChild(GiveOwnership(m_poTx));
@@ -339,14 +375,15 @@ namespace open3d
                 m_poTy->SetText("0.0");
                 m_poTy->SetOnTextChanged([this](const char *) {
                     m_calibParam.m_oTy = atof(m_poTy->GetText());
+                    m_cbUpdateParams.call();
                 });
                 pEinc = new SmallButton(" + ");
                 pEinc->SetOnClicked([this]() {
-                    m_poTy->SetText(f2str(atof(m_poTy->GetText()) + m_dV).c_str());
+                    m_poTy->SetText(lf2str(atof(m_poTy->GetText()) + m_dV, m_nD).c_str());
                 });
                 pEdec = new SmallButton(" - ");
                 pEdec->SetOnClicked([this]() {
-                    m_poTy->SetText(f2str(atof(m_poTy->GetText()) - m_dV).c_str());
+                    m_poTy->SetText(lf2str(atof(m_poTy->GetText()) - m_dV, m_nD).c_str());
                 });
                 pG->AddChild(GiveOwnership(new Label("tY")));
                 pG->AddChild(GiveOwnership(m_poTy));
@@ -357,14 +394,15 @@ namespace open3d
                 m_poTz->SetText("0.0");
                 m_poTz->SetOnTextChanged([this](const char *) {
                     m_calibParam.m_oTz = atof(m_poTz->GetText());
+                    m_cbUpdateParams.call();
                 });
                 pEinc = new SmallButton(" + ");
                 pEinc->SetOnClicked([this]() {
-                    m_poTz->SetText(f2str(atof(m_poTz->GetText()) + m_dV).c_str());
+                    m_poTz->SetText(lf2str(atof(m_poTz->GetText()) + m_dV, m_nD).c_str());
                 });
                 pEdec = new SmallButton(" - ");
                 pEdec->SetOnClicked([this]() {
-                    m_poTz->SetText(f2str(atof(m_poTz->GetText()) - m_dV).c_str());
+                    m_poTz->SetText(lf2str(atof(m_poTz->GetText()) - m_dV, m_nD).c_str());
                 });
                 pG->AddChild(GiveOwnership(new Label("tZ")));
                 pG->AddChild(GiveOwnership(m_poTz));
@@ -375,14 +413,15 @@ namespace open3d
                 m_poRx->SetText("0.0");
                 m_poRx->SetOnTextChanged([this](const char *) {
                     m_calibParam.m_oRx = atof(m_poRx->GetText());
+                    m_cbUpdateParams.call();
                 });
                 pEinc = new SmallButton(" + ");
                 pEinc->SetOnClicked([this]() {
-                    m_poRx->SetText(f2str(atof(m_poRx->GetText()) + m_dV).c_str());
+                    m_poRx->SetText(lf2str(atof(m_poRx->GetText()) + m_dV, m_nD).c_str());
                 });
                 pEdec = new SmallButton(" - ");
                 pEdec->SetOnClicked([this]() {
-                    m_poRx->SetText(f2str(atof(m_poRx->GetText()) - m_dV).c_str());
+                    m_poRx->SetText(lf2str(atof(m_poRx->GetText()) - m_dV, m_nD).c_str());
                 });
                 pG->AddChild(GiveOwnership(new Label("rX")));
                 pG->AddChild(GiveOwnership(m_poRx));
@@ -393,14 +432,15 @@ namespace open3d
                 m_poRy->SetText("0.0");
                 m_poRy->SetOnTextChanged([this](const char *) {
                     m_calibParam.m_oRy = atof(m_poRy->GetText());
+                    m_cbUpdateParams.call();
                 });
                 pEinc = new SmallButton(" + ");
                 pEinc->SetOnClicked([this]() {
-                    m_poRy->SetText(f2str(atof(m_poRy->GetText()) + m_dV).c_str());
+                    m_poRy->SetText(lf2str(atof(m_poRy->GetText()) + m_dV, m_nD).c_str());
                 });
                 pEdec = new SmallButton(" - ");
                 pEdec->SetOnClicked([this]() {
-                    m_poRy->SetText(f2str(atof(m_poRy->GetText()) - m_dV).c_str());
+                    m_poRy->SetText(lf2str(atof(m_poRy->GetText()) - m_dV, m_nD).c_str());
                 });
                 pG->AddChild(GiveOwnership(new Label("rY")));
                 pG->AddChild(GiveOwnership(m_poRy));
@@ -411,14 +451,15 @@ namespace open3d
                 m_poRz->SetText("0.0");
                 m_poRz->SetOnTextChanged([this](const char *) {
                     m_calibParam.m_oRz = atof(m_poRz->GetText());
+                    m_cbUpdateParams.call();
                 });
                 pEinc = new SmallButton(" + ");
                 pEinc->SetOnClicked([this]() {
-                    m_poRz->SetText(f2str(atof(m_poRz->GetText()) + m_dV).c_str());
+                    m_poRz->SetText(lf2str(atof(m_poRz->GetText()) + m_dV, m_nD).c_str());
                 });
                 pEdec = new SmallButton(" - ");
                 pEdec->SetOnClicked([this]() {
-                    m_poRz->SetText(f2str(atof(m_poRz->GetText()) - m_dV).c_str());
+                    m_poRz->SetText(lf2str(atof(m_poRz->GetText()) - m_dV, m_nD).c_str());
                 });
                 pG->AddChild(GiveOwnership(new Label("rZ")));
                 pG->AddChild(GiveOwnership(m_poRz));

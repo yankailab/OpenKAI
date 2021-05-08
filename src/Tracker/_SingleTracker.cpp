@@ -33,21 +33,13 @@ bool _SingleTracker::init(void* pKiss)
 
 void _SingleTracker::createTracker(void)
 {
-	if (m_trackerType == "boosting")
-		m_pTracker = TrackerBoosting::create();
-	else if (m_trackerType == "mil")
-		m_pTracker = TrackerMIL::create();
-	else if (m_trackerType == "tld")
-		m_pTracker = TrackerTLD::create();
-	else if (m_trackerType == "medianFlow")
-		m_pTracker = TrackerMedianFlow::create();
-	else if (m_trackerType == "goturn")
-		m_pTracker = TrackerGOTURN::create();
-	else if (m_trackerType == "mosse")
-		m_pTracker = TrackerMOSSE::create();
-	else if (m_trackerType == "csrt")
-		m_pTracker = TrackerCSRT::create();
-	else
+//	if (m_trackerType == "mil")
+//		m_pTracker = TrackerMIL::create();
+//	else if (m_trackerType == "goturn")
+//		m_pTracker = TrackerGOTURN::create();
+//	else if (m_trackerType == "csrt")
+//		m_pTracker = TrackerCSRT::create();
+//	else
 		m_pTracker = TrackerKCF::create();
 }
 
@@ -95,11 +87,9 @@ void _SingleTracker::track(void)
 		IF_(m_trackState != track_update);
 		IF_(m_pTracker.empty());
 
-		m_pTracker->update(m, m_rBB);
-
-		m_bb = bbScale(rect2BB<vFloat4>(m_rBB), 1.0/m.cols, 1.0/m.rows);
+//		m_pTracker->update(m, m_rBB);
+//		m_bb = bbScale(rect2BB<vFloat4>(m_rBB), 1.0/m.cols, 1.0/m.rows);
 	}
-
 }
 
 }

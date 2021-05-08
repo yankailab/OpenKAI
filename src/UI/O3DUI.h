@@ -12,13 +12,13 @@ using namespace std;
 using namespace Eigen;
 using namespace kai;
 
-typedef void (*OnBtnClickedCb)(void *pPCV, void *pD);
+typedef void (*OnCbO3DUI)(void *pPCV, void *pD);
 struct O3D_UI_Cb
 {
-	OnBtnClickedCb m_pCb = NULL;
+	OnCbO3DUI m_pCb = NULL;
 	void *m_pPCV = NULL;
 
-	void add(OnBtnClickedCb pCb, void *pPCV)
+	void add(OnCbO3DUI pCb, void *pPCV)
 	{
 		m_pCb = pCb;
 		m_pPCV = pPCV;

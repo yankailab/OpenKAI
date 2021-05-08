@@ -162,6 +162,7 @@ namespace kai
 
 		IF_(m_pU->size() <= 0);
 		int i = 0;
+		_Object* pO;
 		while ((pO = m_pU->get(i++)) != NULL)
 		{
 			Point pCenter = Point(pO->getX() * pM->cols,

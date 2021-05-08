@@ -14,7 +14,7 @@ namespace kai
 
 _WindowCV::_WindowCV()
 {
-	m_waitKey = 50;
+	m_waitKey = 30;
 	m_bFullScreen = false;
 	m_gstOutput = "";
 	m_fileRec = "";
@@ -51,7 +51,7 @@ bool _WindowCV::init(void* pKiss)
 
 	pK->v("bFullScreen",&m_bFullScreen);
 	pK->v("vSize", &m_vSize);
-	pK->v("waitKey", &m_waitKey);
+	m_waitKey = 1000.0f / m_pT->getTargetFPS();
 
 	if (m_vSize.area() <= 0)
 	{

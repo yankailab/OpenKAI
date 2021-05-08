@@ -37,6 +37,7 @@
 #include "../Application/Autopilot/ArduPilot/_AProver_picking.h"
 #include "../Application/RobotArm/_Sequencer.h"
 
+#include "../Application/CamCalib/_CamCalib.h"
 #include "../Application/UTphenoRover/_AProver_UT.h"
 #include "../Application/UTphenoRover/_UTprArmL.h"
 #include "../Application/UTphenoRover/_AProver_UTfollowTag.h"

@@ -25,7 +25,7 @@ public:
 	bool open(void);
 	void close(void);
 
-	void setRemap(Mat mX, Mat mY);
+	void setCamMatrices(const Mat& mCam, const Mat& mDistCoeffs);
 
 private:
 	void filter(void);
@@ -38,6 +38,9 @@ private:
 
 public:
 	_VisionBase* m_pV;
+	Mat m_mCam;
+	Mat m_mCamNew;
+	Mat m_mDistCoeffs;
 	Mat m_mX;
 	Mat m_mY;
 };

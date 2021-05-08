@@ -12,12 +12,17 @@
 	"name":"console",
 	"class":"_Console",
 	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["cam","RGBview","PCcalib"],
 }
 
 {
-	"name":"winRGB",
+	"name":"RGBview",
 	"class":"_WindowCV",
-	"bInst":1,
+	"bInst":0,
 	"bFullScreen":0,
     {
 		"name":"thread",
@@ -34,7 +39,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"pipeline":"v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! appsink",
+	"pipeline":"v4l2src device=/dev/video4 ! image/jpeg,width=3840,height=2160,framerate=30/1 ! jpegdec ! videoconvert ! appsink",
 }
 
 {
@@ -59,7 +64,7 @@
 	"device":"CPU:0",
 	"vPCbase":["pcFile","pcLivox"],
 	"_PCstream":"pcLivox",
-	"_VisionBase":"cam",
+	"_Remap":"cam",
 	"vCamLookAt":[0,0,0],
 	"vCamEye":[0,0,2],
 	"vCamUp":[0,1,0],

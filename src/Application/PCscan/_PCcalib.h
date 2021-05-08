@@ -10,18 +10,18 @@
 #ifdef USE_OPEN3D
 #include "../../PointCloud/_PCstream.h"
 #include "../../PointCloud/_PCviewer.h"
-#include "../../Vision/_VisionBase.h"
+#include "../../Vision/ImgFilter/_Remap.h"
 #include "../../Utility/BitFlag.h"
+#include "../CamCalib/_CamCalib.h"
 #include "PCcalibUI.h"
+
+using namespace open3d::visualization::visualizer;
 
 namespace kai
 {
 	namespace
 	{
 		static const int pcfCalibReset = 0;
-
-		// Defining the dimensions of checkerboard
-		int CHECKERBOARD[2]{6,9}; 
 	}
 
 	class _PCcalib : public _PCviewer
@@ -70,8 +70,10 @@ namespace kai
 
 		static void OnLoadImgs(void *pPCV, void* pD);
 		static void OnResetPC(void *pPCV, void* pD);
+		static void OnUpdateParams(void *pPCV, void* pD);
 
-		void calibRGB(const char* pPath);
+		bool calibRGB(const char* pPath);
+		void updateParams(void);
 
 	protected:
 		_PCstream* m_pPS;
@@ -79,7 +81,7 @@ namespace kai
 		visualizer::UIState* m_pUIstate;
 		string m_modelName;
 		_Thread *m_pTrgb;
-		_VisionBase* m_pV;
+		_Remap* m_pVremap;
 
 		bool m_bFullScreen;
 		int m_mouseMode;
@@ -88,6 +90,8 @@ namespace kai
 
 		//filter flags
 		BIT_FLAG m_fProcess;
+
+		_CamCalib m_cc;
 	};
 
 }

@@ -28,12 +28,12 @@ namespace open3d
 
 				void SetProgressBar(float v);
 	            void SetLabelArea(const string &s);
-				void SetCbBtnScan(OnBtnClickedCb pCb, void *pPCV);
-				void SetCbBtnOpenPC(OnBtnClickedCb pCb, void *pPCV);
-				void SetCbBtnCamSet(OnBtnClickedCb pCb, void *pPCV);
-				void SetCbVoxelDown(OnBtnClickedCb pCb, void *pPCV);
-				void SetCbBtnHiddenRemove(OnBtnClickedCb pCb, void *pPCV);
-				void SetCbBtnResetPC(OnBtnClickedCb pCb, void *pPCV);
+				void SetCbBtnScan(OnCbO3DUI pCb, void *pPCV);
+				void SetCbBtnOpenPC(OnCbO3DUI pCb, void *pPCV);
+				void SetCbBtnCamSet(OnCbO3DUI pCb, void *pPCV);
+				void SetCbVoxelDown(OnCbO3DUI pCb, void *pPCV);
+				void SetCbBtnHiddenRemove(OnCbO3DUI pCb, void *pPCV);
+				void SetCbBtnResetPC(OnCbO3DUI pCb, void *pPCV);
 
 			protected:
 				virtual void Layout(const gui::Theme &theme);

@@ -190,32 +190,32 @@ namespace open3d
                 m_labelArea->SetText(s.c_str());
             }
 
-            void PCscanUI::SetCbBtnScan(OnBtnClickedCb pCb, void *pPCV)
+            void PCscanUI::SetCbBtnScan(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbBtnScan.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbBtnOpenPC(OnBtnClickedCb pCb, void *pPCV)
+            void PCscanUI::SetCbBtnOpenPC(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbBtnOpenPC.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbBtnCamSet(OnBtnClickedCb pCb, void *pPCV)
+            void PCscanUI::SetCbBtnCamSet(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbBtnCamSet.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbVoxelDown(OnBtnClickedCb pCb, void *pPCV)
+            void PCscanUI::SetCbVoxelDown(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbVoxelDown.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbBtnHiddenRemove(OnBtnClickedCb pCb, void *pPCV)
+            void PCscanUI::SetCbBtnHiddenRemove(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbBtnHiddenRemove.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbBtnResetPC(OnBtnClickedCb pCb, void *pPCV)
+            void PCscanUI::SetCbBtnResetPC(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbBtnResetPC.add(pCb, pPCV);
             }
