@@ -43,6 +43,28 @@
 }
 
 {
+	"name":"remap",
+	"class":"_Remap",
+	"FPS":30,
+	"bInst":0,
+	"_VisionBase":"cam",
+	"yml":"",
+}
+
+{
+	"name":"camCalib",
+	"class":"_CamCalib",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"path":"",
+	"vChessBoardSize":[9,6],
+	"squareSize":0.03,
+}
+
+{
 	"name":"pcCalib",
 	"class":"_PCcalib",
 	"bInst":1,
@@ -65,6 +87,7 @@
 	"vPCbase":["pcFile","pcLivox"],
 	"_PCstream":"pcLivox",
 	"_Remap":"cam",
+	"_CamCalib":"camCalib",
 	"vCamLookAt":[0,0,0],
 	"vCamEye":[0,0,2],
 	"vCamUp":[0,1,0],

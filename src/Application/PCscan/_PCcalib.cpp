@@ -18,6 +18,7 @@ namespace kai
 		m_modelName = "PCMODEL";
 		m_pTrgb = NULL;
 		m_pVremap = NULL;
+		m_pCC = NULL;
 
 		m_bFullScreen = false;
 		m_mouseMode = 0;
@@ -49,6 +50,10 @@ namespace kai
 		pK->v("_Remap", &n);
 		m_pVremap = (_Remap *)(pK->getInst(n));
 
+		n = "";
+		pK->v("_CamCalib", &n);
+		m_pCC = (_CamCalib *)(pK->getInst(n));
+
 		Kiss *pKr = pK->child("threadRGB");
 		IF_F(pKr->empty());
 		m_pTrgb = new _Thread();
@@ -79,6 +84,7 @@ namespace kai
 	{
 		NULL__(m_pPS, -1);
 		NULL__(m_pVremap, -1);
+		NULL__(m_pCC, -1);
 
 		return this->_PCviewer::check();
 	}
@@ -291,9 +297,9 @@ namespace kai
 		IF_F(check() < 0);
 		NULL_F(pPath);
 
-		IF_F(!m_cc.calibRGB(pPath));
-		Mat mC = m_cc.camMatrix();
-		Mat mD = m_cc.distCoeffs();
+		IF_F(!m_pCC->calibRGB(pPath));
+		Mat mC = m_pCC->camMatrix();
+		Mat mD = m_pCC->distCoeffs();
 
 		//update to UI
 		PCCALIB_PARAM* pP = m_spWin->GetCalibParams();

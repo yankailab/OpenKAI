@@ -13,8 +13,10 @@
 	"bInst":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
 	"path":"/home/kai/calib/\*.jpg",
+	"vChessBoardSize":[9,6],
+	"squareSize":0.03,
 }
 

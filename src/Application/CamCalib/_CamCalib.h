@@ -6,11 +6,6 @@
 
 namespace kai
 {
-	namespace
-	{
-		int CHECKERBOARD[2]{6, 9};
-	}
-
 	class _CamCalib : public _ModuleBase
 	{
 	public:
@@ -34,6 +29,9 @@ namespace kai
 
 	public:
 		string m_path;
+		vInt2 m_vChessBoardSize;	//col, row
+		float m_squareSize;
+
 		Mat m_mCam;
 		Mat m_mDistCoeffs;
 	};

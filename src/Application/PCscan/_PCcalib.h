@@ -82,6 +82,7 @@ namespace kai
 		string m_modelName;
 		_Thread *m_pTrgb;
 		_Remap* m_pVremap;
+		_CamCalib* m_pCC;
 
 		bool m_bFullScreen;
 		int m_mouseMode;
@@ -90,8 +91,6 @@ namespace kai
 
 		//filter flags
 		BIT_FLAG m_fProcess;
-
-		_CamCalib m_cc;
 	};
 
 }

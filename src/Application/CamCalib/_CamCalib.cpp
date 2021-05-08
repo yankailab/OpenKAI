@@ -7,6 +7,8 @@ namespace kai
     _CamCalib::_CamCalib()
     {
         m_path = "";
+        m_vChessBoardSize.init(9,6);
+        m_squareSize = 1.0;
     }
 
     _CamCalib::~_CamCalib()
@@ -19,6 +21,8 @@ namespace kai
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("path", &m_path);
+        pK->v("vChessBoardSize", &m_vChessBoardSize);
+        pK->v("squareSize", &m_squareSize);
 
         return true;
     }
@@ -31,11 +35,9 @@ namespace kai
 
     void _CamCalib::update(void)
     {
-        if(!m_path.empty())
-        {
-            calibRGB(m_path.c_str());
-        }
+        IF_(m_path.empty());
 
+        calibRGB(m_path.c_str());
         exit(0);
     }
 
@@ -45,9 +47,9 @@ namespace kai
         vector<vector<Point2f>> vvPimg; // 2D points for each checkerboard image
         vector<Point3f> vObj;           // world coordinates for 3D points
 
-        for (int i{0}; i < CHECKERBOARD[1]; i++)
+        for (int j = 0; j < m_vChessBoardSize.y; j++)
         {
-            for (int j{0}; j < CHECKERBOARD[0]; j++)
+            for (int i = 0; i < m_vChessBoardSize.x; i++)
                 vObj.push_back(cv::Point3f(j, i, 0));
         }
 
@@ -65,7 +67,10 @@ namespace kai
             cvtColor(m, mGray, cv::COLOR_BGR2GRAY);
 
             // If desired number of corners are found in the image then bSuccess = true
-            bSuccess = cv::findChessboardCorners(mGray, cv::Size(CHECKERBOARD[0], CHECKERBOARD[1]), vPcorner, cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_FAST_CHECK | cv::CALIB_CB_NORMALIZE_IMAGE);
+            bSuccess = cv::findChessboardCorners(mGray, 
+                                            cv::Size(m_vChessBoardSize.y, m_vChessBoardSize.x), 
+                                            vPcorner, 
+                                            cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_FAST_CHECK | cv::CALIB_CB_NORMALIZE_IMAGE);
             if (bSuccess)
             {
                 TermCriteria criteria(TermCriteria::EPS | TermCriteria::MAX_ITER, 30, 0.001);
@@ -74,7 +79,7 @@ namespace kai
                 cornerSubPix(mGray, vPcorner, cv::Size(11, 11), cv::Size(-1, -1), criteria);
 
                 // Displaying the detected corner points on the checker board
-                drawChessboardCorners(m, cv::Size(CHECKERBOARD[0], CHECKERBOARD[1]), vPcorner, bSuccess);
+                drawChessboardCorners(m, cv::Size(m_vChessBoardSize.y, m_vChessBoardSize.x), vPcorner, bSuccess);
 
                 vvPobj.push_back(vObj);
                 vvPimg.push_back(vPcorner);
