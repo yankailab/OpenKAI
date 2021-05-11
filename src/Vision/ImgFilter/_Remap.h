@@ -26,6 +26,8 @@ public:
 	void close(void);
 
 	void setCamMatrices(const Mat& mCam, const Mat& mDistCoeffs);
+	Mat mC(void);
+	Mat mD(void);
 
 private:
 	void filter(void);

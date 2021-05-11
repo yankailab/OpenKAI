@@ -114,5 +114,15 @@ namespace kai
 		m_pV->BGR()->setRemap(m_mX, m_mY);
 	}
 
+	Mat _Remap::mC(void)
+	{
+		return m_mCamNew;
+	}
+
+	Mat _Remap::mD(void)
+	{
+		return m_mDistCoeffs;
+	}
+
 }
 #endif

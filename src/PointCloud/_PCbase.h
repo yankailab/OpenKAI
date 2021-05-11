@@ -9,7 +9,7 @@
 #define OpenKAI_src_PointCloud__PCbase_H_
 #ifdef USE_OPEN3D
 
-#include "../Base/_ModuleBase.h"
+#include "../Vision/ImgFilter/_Remap.h"
 using namespace open3d;
 using namespace open3d::geometry;
 using namespace open3d::visualization;
@@ -74,20 +74,23 @@ namespace kai
         virtual int check(void);
 
         virtual PC_TYPE getType(void);
+        virtual void setOffset(const vDouble3 &vT, const vDouble3 &vR);
+        virtual void setRGBoffset(const vDouble3 &vT, const vDouble3 &vR);
+        virtual void updateRGBmatrix(void);
         virtual void setTranslation(const vDouble3 &vT, const vDouble3 &vR);
         virtual void setTranslation(const Matrix4d &mT);
         virtual void readPC(void* pPC);
 
-        virtual Matrix4d getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR);
         virtual int nPread(void);
-
         virtual void clear(void);
 
     protected:
+        virtual Matrix4d getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR);
         virtual void getStream(void* p);
         virtual void getFrame(void* p);
         virtual void getLattice(void* p);
 
+        virtual Vector3d getColor(const Vector3d &vP);
         virtual bool bRange(const Vector3d& vP);
 
     protected:
@@ -116,6 +119,13 @@ namespace kai
 
         //pipeline input
         PC_PIPIN_CTX m_pInCtx;
+
+        //RGB offset
+        _Remap* m_pV;
+        vDouble3 m_vToffsetRGB;
+        vDouble3 m_vRoffsetRGB;
+    	Matrix4d m_mToffsetRGB;
+    	Matrix4d m_mRGB;
 
         //color override
         PC_SHADE m_shade;

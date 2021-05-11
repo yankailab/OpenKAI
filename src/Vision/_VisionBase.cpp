@@ -17,7 +17,6 @@ namespace kai
 		m_bOpen = false;
 		m_type = vision_unknown;
 		m_vSize.init(1280, 720);
-		m_vFov.init(60, 60);
 		m_bbDraw.x = -1.0;
 	}
 
@@ -31,7 +30,6 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("vSize", &m_vSize);
-		pK->v("vFov", &m_vFov);
 		pK->v("bbDraw", &m_bbDraw);
 
 		m_bOpen = false;

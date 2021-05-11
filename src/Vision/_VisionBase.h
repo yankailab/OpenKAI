@@ -64,9 +64,7 @@ public:
 public:
 	bool m_bOpen;
 	VISION_TYPE m_type;
-
     vInt2 m_vSize;
-    vFloat2 m_vFov;
     
 	Frame	m_fBGR;
 	vFloat4	m_bbDraw;
