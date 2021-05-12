@@ -28,6 +28,7 @@ namespace open3d
             {
                 this->O3DUI::Init();
 
+                m_bScanning = false;
                 m_dV = 0.01;
                 m_nD = 15;
                 InitCtrlPanel();
@@ -86,15 +87,21 @@ namespace open3d
                 m_cbLoadImgs.add(pCb, pPCV);
             }
 
+            void PCcalibUI::SetCbUpdateParams(OnCbO3DUI pCb, void *pPCV)
+            {
+                m_cbUpdateParams.add(pCb, pPCV);
+            }
+
+            void PCcalibUI::SetCbScan(OnCbO3DUI pCb, void *pPCV)
+            {
+                m_cbScan.add(pCb, pPCV);
+            }
+
             void PCcalibUI::SetCbResetPC(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbResetPC.add(pCb, pPCV);
             }
 
-            void PCcalibUI::SetCbUpdateParams(OnCbO3DUI pCb, void *pPCV)
-            {
-                m_cbUpdateParams.add(pCb, pPCV);
-            }
 
             void PCcalibUI::Layout(const Theme &theme)
             {
@@ -127,9 +134,19 @@ namespace open3d
                 // Point cloud
                 auto panelPC = new CollapsableVert("Point Cloud", v_spacing, margins);
                 m_panelCtrl->AddChild(GiveOwnership(panelPC));
-
                 auto pH = new Horiz(v_spacing);
                 panelPC->AddChild(GiveOwnership(pH));
+
+                m_btnScan = new Button(" Start ");
+                m_btnScan->SetToggleable(true);
+                m_btnScan->SetOnClicked([this]()
+                {
+                    m_bScanning = !m_bScanning;
+                    m_cbScan.call(&m_bScanning);
+                    PostRedraw();
+                });
+                pH->AddChild(GiveOwnership(m_btnScan));
+
                 auto btnReset = new Button(" Reset ");
                 btnReset->SetOnClicked([this]() {
                     m_cbResetPC.call();

@@ -8,23 +8,13 @@
 #ifndef OpenKAI_src_Application_PCcalib__PCcalib_H_
 #define OpenKAI_src_Application_PCcalib__PCcalib_H_
 #ifdef USE_OPEN3D
-#include "../../PointCloud/_PCstream.h"
-#include "../../PointCloud/_PCviewer.h"
-#include "../../Vision/ImgFilter/_Remap.h"
-#include "../../Utility/BitFlag.h"
-#include "../CamCalib/_CamCalib.h"
+#include "_PCscan.h"
 #include "PCcalibUI.h"
-
-using namespace open3d::visualization::visualizer;
+#include "../CamCalib/_CamCalib.h"
 
 namespace kai
 {
-	namespace
-	{
-		static const int pcfCalibReset = 0;
-	}
-
-	class _PCcalib : public _PCviewer
+	class _PCcalib : public _PCscan
 	{
 	public:
 		_PCcalib();
@@ -35,12 +25,8 @@ namespace kai
 		virtual int check(void);
 
 	protected:
-		void addUIpc(const PointCloud& pc);
-		void updateUIpc(const PointCloud& pc);
-		void removeUIpc(void);
-		void updateProcess(void);
-		virtual void startScan(void);
-		virtual void updateScan(void);
+		// point cloud
+		virtual void updateProcess(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -48,17 +34,14 @@ namespace kai
 			return NULL;
 		}
 
-		void updateRGBtransform(void);
-		void updateRGB(void);
-		static void *getUpdateRGB(void *This)
+		// Kinetics
+		static void *getUpdateKinematics(void *This)
 		{
-			((_PCcalib *)This)->updateRGB();
+			((_PCcalib *)This)->updateKinematics();
 			return NULL;
 		}
 
-		void updateCamProj(void);
-		void updateCamPose(void);
-		void camBound(const AxisAlignedBoundingBox& aabb);
+		// UI
 		virtual void updateUI(void);
 		static void *getUpdateUI(void *This)
 		{
@@ -66,31 +49,15 @@ namespace kai
 			return NULL;
 		}
 
-		AxisAlignedBoundingBox createDefaultAABB(void);
-
+		// handlers
 		static void OnLoadImgs(void *pPCV, void* pD);
-		static void OnResetPC(void *pPCV, void* pD);
 		static void OnUpdateParams(void *pPCV, void* pD);
 
 		bool calibRGB(const char* pPath);
 		void updateParams(void);
 
 	protected:
-		_PCstream* m_pPS;
-		shared_ptr<visualizer::PCcalibUI> m_spWin;
-		visualizer::UIState* m_pUIstate;
-		string m_modelName;
-		_Thread *m_pTrgb;
-		_Remap* m_pVremap;
 		_CamCalib* m_pCC;
-
-		bool m_bFullScreen;
-		int m_mouseMode;
-		float m_rDummyDome;
-		AxisAlignedBoundingBox m_aabb;
-
-		//filter flags
-		BIT_FLAG m_fProcess;
 	};
 
 }

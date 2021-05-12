@@ -13,13 +13,6 @@ namespace kai
 
 	_PCcalib::_PCcalib()
 	{
-		m_pPS = NULL;
-		m_pUIstate = NULL;
-		m_modelName = "PCMODEL";
-		m_pTrgb = NULL;
-		m_pVremap = NULL;
-		m_pCC = NULL;
-
 		m_bFullScreen = false;
 		m_mouseMode = 0;
 		m_rDummyDome = 1000.0;
@@ -33,35 +26,13 @@ namespace kai
 
 	bool _PCcalib::init(void *pKiss)
 	{
-		IF_F(!this->_PCviewer::init(pKiss));
+		IF_F(!this->_PCscan::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("bFullScreen", &m_bFullScreen);
-		pK->v("mouseMode", &m_mouseMode);
-		pK->v("rDummyDome", &m_rDummyDome);
-
 		string n;
-
-		n = "";
-		pK->v("_PCstream", &n);
-		m_pPS = (_PCstream *)(pK->getInst(n));
-
-		n = "";
-		pK->v("_Remap", &n);
-		m_pVremap = (_Remap *)(pK->getInst(n));
-
 		n = "";
 		pK->v("_CamCalib", &n);
 		m_pCC = (_CamCalib *)(pK->getInst(n));
-
-		Kiss *pKr = pK->child("threadRGB");
-		IF_F(pKr->empty());
-		m_pTrgb = new _Thread();
-		if (!m_pTrgb->init(pKr))
-		{
-			DEL(m_pTrgb);
-			return false;
-		}
 
 		return true;
 	}
@@ -71,132 +42,96 @@ namespace kai
 		NULL_F(m_pT);
 		IF_F(!m_pT->start(getUpdate, this));
 
+		NULL_F(m_pTk);
+		IF_F(!m_pTk->start(getUpdateKinematics, this));
+
 		NULL_F(m_pTui);
 		IF_F(!m_pTui->start(getUpdateUI, this));
-
-		NULL_F(m_pTrgb);
-		IF_F(!m_pTrgb->start(getUpdateRGB, this));
 
 		return true;
 	}
 
 	int _PCcalib::check(void)
 	{
-		NULL__(m_pPS, -1);
-		NULL__(m_pVremap, -1);
+		NULL__(m_pV, -1);
 		NULL__(m_pCC, -1);
 
-		return this->_PCviewer::check();
+		return this->_PCscan::check();
 	}
 
 	void _PCcalib::update(void)
 	{
 		m_pT->sleepT(0);
 
-		startScan();
-
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPSfrom();
 
-			updateScan();
-			updateProcess();
+			if (m_fProcess.b(pc_ScanStart))
+			{
+				startScan();
+			}
+
+			if (m_fProcess.b(pc_ScanStop))
+			{
+				stopScan();
+			}
+
+			if (m_fProcess.b(pc_Scanning, false))
+			{
+				updateScan();
+			}
+			else
+			{
+				updateProcess();
+			}
 
 			m_pT->autoFPSto();
 		}
-	}
-
-	void _PCcalib::startScan(void)
-	{
-		IF_(check() < 0);
-
-		m_pPS->clear();
-
-		removeUIpc();
-		addDummyDome(m_sPC.next(), m_pPS->nP(), m_rDummyDome);
-		updatePC();
-		addUIpc(*m_sPC.get());
-	}
-
-	void _PCcalib::updateScan(void)
-	{
-		IF_(check() < 0);
-
-		readAllPC();
-		PointCloud *pPC = m_sPC.get();
-		pPC->normals_.clear();
-		int n = pPC->points_.size();
-		IF_(n <= 0);
-		int nP = m_pPS->nP();
-
-		m_aabb = pPC->GetAxisAlignedBoundingBox();
-
-		PointCloud pc = *pPC;
-		if (n < nP)
-		{
-			addDummyDome(&pc, nP - n, m_rDummyDome);
-		}
-		else if (n > nP)
-		{
-			int d = n - nP;
-			pc.points_.erase(pc.points_.end() - d, pc.points_.end());
-			pc.colors_.erase(pc.colors_.end() - d, pc.colors_.end());
-		}
-
-		updateUIpc(pc);
 	}
 
 	void _PCcalib::updateProcess(void)
 	{
 		IF_(check() < 0);
 
-		if (m_fProcess.b(pcfCalibReset))
+		if (m_fProcess.b(pc_ResetPC))
 		{
-			startScan();
+			removeUIpc();
+			addUIpc(*m_sPC.get());
+			m_aabb = m_sPC.get()->GetAxisAlignedBoundingBox();
+			camBound(m_aabb);
 		}
-	}
 
-	void _PCcalib::addUIpc(const PointCloud &pc)
-	{
-		IF_(pc.IsEmpty());
-
-		m_spWin->AddPointCloud(m_modelName,
-							   make_shared<t::geometry::PointCloud>(
-								   t::geometry::PointCloud::FromLegacyPointCloud(
-									   pc,
-									   core::Dtype::Float32)));
-	}
-
-	void _PCcalib::updateUIpc(const PointCloud &pc)
-	{
-		IF_(pc.IsEmpty());
-
-		m_spWin->UpdatePointCloud(m_modelName,
-								  make_shared<t::geometry::PointCloud>(
-									  t::geometry::PointCloud::FromLegacyPointCloud(
-										  pc,
-										  core::Dtype::Float32)));
-	}
-
-	void _PCcalib::removeUIpc(void)
-	{
-		m_spWin->RemoveGeometry(m_modelName);
-	}
-
-	void _PCcalib::updateRGB(void)
-	{
-		while (m_pTrgb->bRun())
+		if (m_fProcess.b(pc_VoxelDown) && m_pUIstate)
 		{
-			m_pTrgb->autoFPSfrom();
+			m_pWin->ShowMsg("Voxel Down Sampling", "Processing");
 
-			updateRGBtransform();
+			removeUIpc();
+			PointCloud pc;
+			float s = m_pUIstate->m_sVoxel;
+			if (s > 0.0)
+				pc = *m_sPC.get()->VoxelDownSample(s);
+			else
+				pc = *m_sPC.get();
 
-			m_pTrgb->autoFPSto();
+			m_aabb = pc.GetAxisAlignedBoundingBox();
+			addUIpc(pc);
+			m_pWin->CloseDialog();
 		}
-	}
 
-	void _PCcalib::updateRGBtransform(void)
-	{
+		if (m_fProcess.b(pc_HiddenRemove) && m_pUIstate)
+		{
+			m_pWin->ShowMsg("Hidden Point Removal", "Processing");
+
+			removeUIpc();
+
+			PointCloud pc = *m_sPC.get();
+			auto pcR = pc.HiddenPointRemoval(m_pUIstate->m_vCamPos.cast<double>(), m_dHiddenRemove);
+			pc = *pc.SelectByIndex(std::get<1>(pcR));
+
+			addUIpc(pc);
+			m_pWin->CloseDialog();
+		}
 	}
 
 	void _PCcalib::updateUI(void)
@@ -204,17 +139,22 @@ namespace kai
 		auto &app = gui::Application::GetInstance();
 		app.Initialize(m_pathRes.c_str());
 
-		m_spWin = std::make_shared<visualizer::PCcalibUI>(*this->getName(), 2000, 1000);
-		app.AddWindow(m_spWin);
+		m_pWin = new PCcalibUI(*this->getName(), 2000, 1000);
+		PCcalibUI* pW = (PCcalibUI*)m_pWin;
+		app.AddWindow(shared_ptr<PCcalibUI>(pW));
 
-		m_spWin->SetCbLoadImgs(OnLoadImgs, (void *)this);
-		m_spWin->SetCbResetPC(OnResetPC, (void *)this);
-		m_spWin->SetCbUpdateParams(OnUpdateParams, (void *)this);
+		pW->SetCbScan(OnBtnScan, (void *)this);
+		pW->SetCbResetPC(OnBtnResetPC, (void *)this);
+		pW->SetCbLoadImgs(OnLoadImgs, (void *)this);
+		pW->SetCbUpdateParams(OnUpdateParams, (void *)this);
 
-		m_pUIstate = m_spWin->getUIState();
+		m_pUIstate = m_pWin->getUIState();
+		m_pUIstate->m_bSceneCache = m_bSceneCache;
 		m_pUIstate->m_mouseMode = (visualization::gui::SceneWidget::Controls)m_mouseMode;
-		m_spWin->UpdateUIstate();
-		m_spWin->SetFullScreen(m_bFullScreen);
+		m_pUIstate->m_wPanel = m_wPanel;
+		m_pUIstate->m_sMove = m_vDmove.x;
+		m_pWin->UpdateUIstate();
+		m_pWin->SetFullScreen(m_bFullScreen);
 		m_aabb = createDefaultAABB();
 		camBound(m_aabb);
 		updateCamProj();
@@ -225,47 +165,6 @@ namespace kai
 		exit(0);
 	}
 
-	void _PCcalib::updateCamProj(void)
-	{
-		IF_(check() < 0);
-		IF_(!m_spWin);
-
-		m_spWin->CamSetProj(m_camProj.m_fov,
-							m_camProj.m_vNF.x,
-							m_camProj.m_vNF.y,
-							m_camProj.m_fovType);
-	}
-
-	void _PCcalib::updateCamPose(void)
-	{
-		IF_(check() < 0);
-		IF_(!m_spWin);
-
-		m_spWin->CamSetPose(m_cam.m_vLookAt.v3f(),
-							m_cam.m_vEye.v3f(),
-							m_cam.m_vUp.v3f());
-	}
-
-	void _PCcalib::camBound(const AxisAlignedBoundingBox &aabb)
-	{
-		IF_(check() < 0);
-		IF_(!m_spWin);
-
-		m_spWin->CamAutoBound(aabb, m_vCoR.v3f());
-	}
-
-	AxisAlignedBoundingBox _PCcalib::createDefaultAABB(void)
-	{
-		PointCloud pc;
-		pc.points_.push_back(Vector3d(0, 0, 1));
-		pc.points_.push_back(Vector3d(0, 0, -1));
-		pc.points_.push_back(Vector3d(0, 1, 0));
-		pc.points_.push_back(Vector3d(0, -1, 0));
-		pc.points_.push_back(Vector3d(1, 0, 0));
-		pc.points_.push_back(Vector3d(-1, 0, 0));
-		return pc.GetAxisAlignedBoundingBox();
-	}
-
 	void _PCcalib::OnLoadImgs(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
@@ -273,15 +172,6 @@ namespace kai
 		_PCcalib *pV = (_PCcalib *)pPCV;
 
 		pV->calibRGB((const char *)pD);
-	}
-
-	void _PCcalib::OnResetPC(void *pPCV, void *pD)
-	{
-		NULL_(pPCV);
-		NULL_(pD);
-		_PCcalib *pV = (_PCcalib *)pPCV;
-
-		pV->m_fProcess.set(pcfCalibReset);
 	}
 
 	void _PCcalib::OnUpdateParams(void *pPCV, void *pD)
@@ -302,7 +192,8 @@ namespace kai
 		Mat mD = m_pCC->distCoeffs();
 
 		//update to UI
-		PCCALIB_PARAM* pP = m_spWin->GetCalibParams();
+		PCcalibUI* pW = (PCcalibUI*)m_pWin;
+		PCCALIB_PARAM* pP = pW->GetCalibParams();
 		pP->m_Fx = mC.at<double>(0,0);
 		pP->m_Fy = mC.at<double>(1,1);
 		pP->m_Cx = mC.at<double>(0,2);
@@ -313,7 +204,7 @@ namespace kai
 		pP->m_p1 = mD.at<double>(0,2);
 		pP->m_p2 = mD.at<double>(0,3);
 		pP->m_k3 = mD.at<double>(0,4);
-		m_spWin->UpdateCalibParams();
+		pW->UpdateCalibParams();
 
 		//update self
 		updateParams();
@@ -327,7 +218,8 @@ namespace kai
 		Mat mC = Mat::zeros(3,3,CV_64FC1);
 		Mat mD = Mat::zeros(1,5,CV_64FC1);
 
-		PCCALIB_PARAM* pP = m_spWin->GetCalibParams();
+		PCcalibUI* pW = (PCcalibUI*)m_pWin;
+		PCCALIB_PARAM* pP = pW->GetCalibParams();
 		mC.at<double>(0,0) = pP->m_Fx;
 		mC.at<double>(1,1) = pP->m_Fy;
 		mC.at<double>(0,2) = pP->m_Cx;
@@ -339,7 +231,7 @@ namespace kai
 		mD.at<double>(0,3) = pP->m_p2;
 		mD.at<double>(0,4) = pP->m_k3;
 
-		m_pVremap->setCamMatrices(mC, mD);
+//		m_pVremap->setCamMatrices(mC, mD);
 	}
 }
 #endif

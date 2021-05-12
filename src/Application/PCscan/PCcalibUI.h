@@ -50,8 +50,9 @@ namespace open3d
 				void UpdateCalibParams(void);
 
 				void SetCbLoadImgs(OnCbO3DUI pCb, void *pPCV);
-				void SetCbResetPC(OnCbO3DUI pCb, void *pPCV);
 				void SetCbUpdateParams(OnCbO3DUI pCb, void *pPCV);
+				void SetCbScan(OnCbO3DUI pCb, void *pPCV);
+				void SetCbResetPC(OnCbO3DUI pCb, void *pPCV);
 
 			protected:
 				virtual void Layout(const gui::Theme &theme);
@@ -64,10 +65,11 @@ namespace open3d
 				double m_dV;
 				int m_nD;
 				PCCALIB_PARAM m_calibParam;
+				bool m_bScanning;
 
 				//UI components
 				Vert *m_panelCtrl;
-
+				Button *m_btnScan;
 				TextEdit *m_pPath;
 
 				TextEdit *m_pFx;
@@ -91,6 +93,7 @@ namespace open3d
 
 				//UI handler
 				O3D_UI_Cb m_cbLoadImgs;
+				O3D_UI_Cb m_cbScan;
 				O3D_UI_Cb m_cbResetPC;
 				O3D_UI_Cb m_cbUpdateParams;
 			};

@@ -169,18 +169,15 @@ FrameGPU FrameGPU::cvtColor(int code)
 	return fb;
 }
 
-void FrameGPU::setRemap(Mat& mX, Mat& mY)
-{
-	m_mapX.upload(mX);
-	m_mapY.upload(mY);
-}
-
-FrameGPU FrameGPU::remap(void)
+FrameGPU FrameGPU::remap(const Mat& mX, const Mat& mY)
 {
 	updateG();
 
+	GpuMat mgX,mgY;
+	mgX.upload(mX);
+	mgY.upload(mY);
 	FrameGPU fb;
-	cuda::remap(m_matG, fb.m_matG, m_mapX, m_mapY, INTER_LINEAR);
+	cuda::remap(m_matG, fb.m_matG, mgX, mgY, INTER_LINEAR);
 	fb.updateTstampG(m_tStampG);
 
 	return fb;

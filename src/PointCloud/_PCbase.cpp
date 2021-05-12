@@ -25,18 +25,18 @@ namespace kai
         m_mT = Matrix4d::Identity();
         m_A = Matrix4d::Identity();
 
+        m_pV = NULL;
         m_vToffsetRGB.init(0);
         m_vRoffsetRGB.init(0);
         m_mToffsetRGB = Matrix4d::Identity();
 
-        m_vAxisIdx.init(0,1,2);
+        m_vAxisIdx.init(0, 1, 2);
         m_vAxisK.init(1.0);
         m_unitK = 1.0;
         m_vRange.init(0.0, 1000.0);
-        
-        m_shade = pcShade_original;
-        m_vShadeCol.init(1.0);
-        m_rShadePosCol = 1000.0;
+
+        m_vAxisIdxRGB.init(0, 1, 2);
+        m_vAxisKrgb.init(1.0);
 
         m_pInCtx.init();
         m_pV = NULL;
@@ -51,15 +51,13 @@ namespace kai
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        pK->v("shade", (int*)&m_shade);
-        pK->v("vShadeCol", &m_vShadeCol);
-        pK->v("rShadePosCol", &m_rShadePosCol);
-        m_rShadePosCol = 1.0/m_rShadePosCol;
-
+        pK->v("unitK", &m_unitK);
         pK->v("vAxisIdx", &m_vAxisIdx);
         pK->v("vAxisK", &m_vAxisK);
-        pK->v("unitK", &m_unitK);
         m_vAxisK *= m_unitK;
+        pK->v("vAxisIdxRGB", &m_vAxisIdxRGB);
+        pK->v("vAxisKrgb", &m_vAxisKrgb);
+        m_vAxisKrgb *= m_unitK;
 
         pK->v("vRange", &m_vRange);
         m_vRange.x *= m_vRange.x;
@@ -78,7 +76,7 @@ namespace kai
         //RGB offset
         pK->v("vToffsetRGB", &m_vToffsetRGB);
         pK->v("vRoffsetRGB", &m_vRoffsetRGB);
-        m_mToffsetRGB = getTranslationMatrix(m_vToffsetRGB, m_vRoffsetRGB);
+        setRGBoffset(m_vToffsetRGB, m_vRoffsetRGB);
 
         //pipeline ctx
         pK->v("ctxdT", &m_pInCtx.m_dT);
@@ -90,6 +88,7 @@ namespace kai
 
         m_nPread = 0;
 
+        //RGB map
         n = "";
         pK->v("_Remap", &n);
         m_pV = (_Remap *)(pK->getInst(n));
@@ -132,21 +131,7 @@ namespace kai
         m_vToffsetRGB = vT;
         m_vRoffsetRGB = vR;
         m_mToffsetRGB = getTranslationMatrix(vT, vR);
-    }
-
-    void _PCbase::updateRGBmatrix(void)
-    {
-        NULL_(m_pV);
-        IF_(m_pV->getType() != vision_remap);
-
-        Mat mC =  m_pV->mC();
-        Matrix4d mRGB = Matrix4d::Zero();
-		mRGB(0,0) = mC.at<double>(0,0);
-		mRGB(1,1) = mC.at<double>(1,1);
-		mRGB(0,2) = mC.at<double>(0,2);
-		mRGB(1,2) = mC.at<double>(1,2);
-
-        m_mRGB = mRGB * m_mToffsetRGB;
+        m_AoffsetRGB = m_mToffsetRGB;
     }
 
     void _PCbase::setTranslation(const vDouble3 &vT, const vDouble3 &vR)
@@ -198,23 +183,44 @@ namespace kai
     {
     }
 
-    Vector3d _PCbase::getColor(const Vector3d &vP)
+    Vector3f _PCbase::getColor(const Vector3d &vP)
     {
-        Vector3d vN(0,0,0);
+        Vector3f vN(1, 1, 1);
         NULL__(m_pV, vN);
-        IF__(m_pV->BGR(), vN);
+        NULL__(m_pV->BGR(), vN);
         IF__(m_pV->BGR()->bEmpty(), vN);
+        IF__(m_pV->getType() != vision_remap, vN);
 
-        Vector4d vPt{vP[0], vP[1], vP[2], 1};
-        Vector4d vPrgb = m_mRGB * vPt;
-        Vec3f vC = m_pV->BGR()->m()->at<Vec3f>(vPrgb[0], vPrgb[1]);
+        Vector3d vPrgb = m_AoffsetRGB * vP;
+        Vector3d vPa = Vector3d(
+            vPrgb[m_vAxisIdxRGB.x] * m_vAxisKrgb.x,
+            vPrgb[m_vAxisIdxRGB.y] * m_vAxisKrgb.y,
+            vPrgb[m_vAxisIdxRGB.z] * m_vAxisKrgb.z);
 
-        return Vector3d(vC[0], vC[1], vC[2]);
+        Mat mC = m_pV->mC();
+        double Fx = mC.at<double>(0, 0);
+        double Fy = mC.at<double>(1, 1);
+        double Cx = mC.at<double>(0, 2);
+        double Cy = mC.at<double>(1, 2);
+
+        float ovZ = 1.0/vPa[2];
+        float x = (Fx*vPa[0] + Cx*vPa[2]) * ovZ;
+        float y = (Fy*vPa[1] + Cy*vPa[2]) * ovZ;
+
+        Mat* pM = m_pV->BGR()->m();
+        x = constrain<float>(x + pM->cols/2, 0, pM->cols-1);
+        y = constrain<float>(y + pM->rows/2, 0, pM->rows-1);
+
+        Vec3b vC = pM->at<Vec3b>((int)y, (int)x);
+        Vector3f vCf(vC[2], vC[1], vC[0]);
+        vCf *= 1.0/255.0;
+
+        return vCf;
     }
 
-    bool _PCbase::bRange(const Vector3d& vP)
+    bool _PCbase::bRange(const Vector3d &vP)
     {
-        double ds = vP[0]*vP[0] + vP[1]*vP[1] + vP[2]*vP[2];
+        double ds = vP[0] * vP[0] + vP[1] * vP[1] + vP[2] * vP[2];
         IF_F(ds < m_vRange.x);
         IF_F(ds > m_vRange.y);
 

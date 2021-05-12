@@ -126,7 +126,7 @@ namespace kai
     void _Livox::addP(LivoxRawPoint *pP, uint64_t &tStamp)
     {
         Vector3d vP(pP->x, pP->y, pP->z);
-        Vector3f vC = m_vShadeCol.v3f();
+        Vector3f vC(1,1,1);
         vC[0] = float(pP->reflectivity) * m_ovRef;
         add(vP, vC, tStamp);
     }
@@ -134,7 +134,7 @@ namespace kai
     void _Livox::addP(LivoxExtendRawPoint *pP, uint64_t &tStamp)
     {
         Vector3d vP(pP->x, pP->y, pP->z);
-        Vector3f vC = m_vShadeCol.v3f();
+        Vector3f vC(1,1,1);
         vC[0] = float(pP->reflectivity) * m_ovRef;
         add(vP, vC, tStamp);
     }
@@ -143,7 +143,7 @@ namespace kai
     {
         Vector3d vP1(pP->x1, pP->y1, pP->z1);
         Vector3d vP2(pP->x2, pP->y2, pP->z2);
-        Vector3f vC = m_vShadeCol.v3f();
+        Vector3f vC(1,1,1);
         vC[0] = float(pP->reflectivity1) * m_ovRef;
         add(vP1, vC, tStamp);
         vC[0] = float(pP->reflectivity2) * m_ovRef;
@@ -155,7 +155,7 @@ namespace kai
         Vector3d vP1(pP->x1, pP->y1, pP->z1);
         Vector3d vP2(pP->x2, pP->y2, pP->z2);
         Vector3d vP3(pP->x3, pP->y3, pP->z3);
-        Vector3f vC = m_vShadeCol.v3f();
+        Vector3f vC(1,1,1);
         vC[0] = float(pP->reflectivity1) * m_ovRef;
         add(vP1, vC, tStamp);
         vC[0] = float(pP->reflectivity2) * m_ovRef;
@@ -166,13 +166,13 @@ namespace kai
 
     void _Livox::updateIMU(LivoxImuPoint *pD)
     {
-        printf("gxyz=(%f, %f, %f) axyz=(%f, %f, %f)\n",
-               pD->gyro_x,
-               pD->gyro_y,
-               pD->gyro_z,
-               pD->acc_x,
-               pD->acc_y,
-               pD->acc_z);
+        // printf("gxyz=(%f, %f, %f) axyz=(%f, %f, %f)\n",
+        //        pD->gyro_x,
+        //        pD->gyro_y,
+        //        pD->gyro_z,
+        //        pD->acc_x,
+        //        pD->acc_y,
+        //        pD->acc_z);
     }
 
 }

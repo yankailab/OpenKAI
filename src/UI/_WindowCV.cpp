@@ -19,7 +19,7 @@ _WindowCV::_WindowCV()
 	m_gstOutput = "";
 	m_fileRec = "";
 	m_vSize.init(1280,720);
-	m_bWindow = true;
+	m_bShow = true;
 }
 
 _WindowCV::~_WindowCV()
@@ -45,10 +45,7 @@ bool _WindowCV::init(void* pKiss)
 		m_vpB.push_back(pB);
 	}
 
-	pK->root()->child("APP")->v("bWindow", &m_bWindow);
-	if (!m_bWindow)
-		LOG_I("Window mode is disabled. Turn \"bWindow\":1 to enable");
-
+	pK->v("bShow", &m_bShow);
 	pK->v("bFullScreen",&m_bFullScreen);
 	pK->v("vSize", &m_vSize);
 	m_waitKey = 1000.0f / m_pT->getTargetFPS();
@@ -109,7 +106,7 @@ bool _WindowCV::init(void* pKiss)
 
 	m_frame.allocate(m_vSize.x, m_vSize.y);
 
-	IF_T(!m_bWindow);
+	IF_T(!m_bShow);
 
 	if (m_bFullScreen)
 	{
@@ -153,7 +150,7 @@ void _WindowCV::updateWindow(void)
 
 	Mat m = *m_frame.m();
 
-	if (m_bWindow)
+	if (m_bShow)
 	{
 		imshow(*this->getName(), m);
 	}

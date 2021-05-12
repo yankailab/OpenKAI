@@ -27,8 +27,7 @@ public:
 
 	virtual FrameBase warpAffine(Mat& mWA);
 	virtual FrameBase flip(int iOpt);
-	virtual void setRemap(Mat& mX, Mat& mY);
-	virtual FrameBase remap(void);
+	virtual FrameBase remap(const Mat& mX, const Mat& mY);
 	virtual FrameBase crop(Rect bb);
 	virtual FrameBase resize(int w, int h);
 	virtual FrameBase resize(double scaleW, double scaleH);
@@ -44,11 +43,6 @@ public:
 public:
 	uint64_t m_tStamp;
 	Mat m_mat;
-
-	//calibration remap
-	Mat m_mapX;
-	Mat m_mapY;
-
 };
 
 }

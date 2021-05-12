@@ -28,12 +28,12 @@ namespace open3d
 
 				void SetProgressBar(float v);
 	            void SetLabelArea(const string &s);
-				void SetCbBtnScan(OnCbO3DUI pCb, void *pPCV);
-				void SetCbBtnOpenPC(OnCbO3DUI pCb, void *pPCV);
-				void SetCbBtnCamSet(OnCbO3DUI pCb, void *pPCV);
+				void SetCbScan(OnCbO3DUI pCb, void *pPCV);
+				void SetCbOpenPC(OnCbO3DUI pCb, void *pPCV);
+				void SetCbCamSet(OnCbO3DUI pCb, void *pPCV);
 				void SetCbVoxelDown(OnCbO3DUI pCb, void *pPCV);
-				void SetCbBtnHiddenRemove(OnCbO3DUI pCb, void *pPCV);
-				void SetCbBtnResetPC(OnCbO3DUI pCb, void *pPCV);
+				void SetCbHiddenRemove(OnCbO3DUI pCb, void *pPCV);
+				void SetCbResetPC(OnCbO3DUI pCb, void *pPCV);
 
 			protected:
 				virtual void Layout(const gui::Theme &theme);
@@ -85,7 +85,7 @@ namespace open3d
 				Button* m_btnFilterReset;
 				// Slider* m_sliderORemovN;
 				// Slider* m_sliderORemovD;
-				Button *m_btnScanStart;
+				Button *m_btnScan;
 				ProgressBar *m_progScan;
 				Label *m_labelProg;
 
@@ -95,12 +95,12 @@ namespace open3d
 				Label *m_labelArea;
 
 				//UI handler
-				O3D_UI_Cb m_cbBtnScan;
-				O3D_UI_Cb m_cbBtnOpenPC;
-				O3D_UI_Cb m_cbBtnCamSet;
+				O3D_UI_Cb m_cbScan;
+				O3D_UI_Cb m_cbOpenPC;
+				O3D_UI_Cb m_cbCamSet;
 				O3D_UI_Cb m_cbVoxelDown;
-				O3D_UI_Cb m_cbBtnHiddenRemove;
-				O3D_UI_Cb m_cbBtnResetPC;
+				O3D_UI_Cb m_cbHiddenRemove;
+				O3D_UI_Cb m_cbResetPC;
 			};
 
 		} // namespace visualizer

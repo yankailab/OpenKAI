@@ -6,6 +6,7 @@
 #include <set>
 #include <unordered_map>
 #include <unordered_set>
+using namespace open3d::visualization::visualizer;
 using namespace open3d::visualization::gui;
 using namespace open3d::visualization::rendering;
 using namespace std;

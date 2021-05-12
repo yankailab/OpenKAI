@@ -16,6 +16,10 @@ namespace kai
 	{
 		m_type = vision_remap;
 		m_pV = NULL;
+
+		m_mCam = Mat::eye(3, 3, CV_64FC1);
+		m_mCamNew = m_mCam;
+		m_mDistCoeffs = Mat::zeros(1, 5, CV_64FC1);
 	}
 
 	_Remap::~_Remap()
@@ -30,12 +34,21 @@ namespace kai
 
 		string path;
 		pK->v("yml", &path);
-		FileStorage fs(path.c_str(), FileStorage::READ);
-		IF_F(!fs.isOpened());
+		if (!path.empty())
+		{
+			FileStorage fs(path.c_str(), FileStorage::READ);
+			if (fs.isOpened())
+			{
+				fs["mCam"] >> m_mCam;
+				fs["mDistCoeffs"] >> m_mDistCoeffs;
+				fs.release();
+			}
+		}
 
-		fs["mCam"] >> m_mCam;
-		fs["mDistCoeffs"] >> m_mDistCoeffs;
-		fs.release();
+		double t;
+		pK->v("test", &t);
+		m_mCamNew *= t;
+//		setCamMatrices(m_mCam, m_mDistCoeffs);
 
 		string n;
 		n = "";
@@ -73,14 +86,8 @@ namespace kai
 			{
 				open();
 
-				if (m_bOpen)
-				{
-					m_pV->BGR()->setRemap(m_mX, m_mY);
-				}
-				else
-				{
+				if (!m_bOpen)
 					continue;
-				}
 			}
 
 			m_pT->autoFPSfrom();
@@ -95,23 +102,19 @@ namespace kai
 	{
 		Frame *pF = m_pV->BGR();
 		IF_(pF->bEmpty());
-		IF_(m_fBGR.tStamp() < pF->tStamp())
+		IF_(m_fBGR.tStamp() >= pF->tStamp())
 
-		m_fBGR.copy(pF->remap());
+//		m_fBGR.copy(pF->remap(m_mX, m_mY));
+		m_fBGR.copy(*pF);
 	}
 
 	void _Remap::setCamMatrices(const Mat &mCam, const Mat &mDistCoeffs)
 	{
-		NULL_(!m_pV);
-		IF_(m_fBGR.bEmpty());
-
 		m_mCam = mCam;
 		m_mDistCoeffs = mDistCoeffs;
 
 		m_mCamNew = getOptimalNewCameraMatrix(mCam, m_mDistCoeffs, m_fBGR.size(), 1, m_fBGR.size(), 0);
 		initUndistortRectifyMap(mCam, m_mDistCoeffs, Mat(), m_mCamNew, m_fBGR.size(), CV_16SC2, m_mX, m_mY);
-
-		m_pV->BGR()->setRemap(m_mX, m_mY);
 	}
 
 	Mat _Remap::mC(void)

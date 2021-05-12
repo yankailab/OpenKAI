@@ -38,7 +38,7 @@ public:
 	vector<BASE*> m_vpB;
 	int	m_waitKey;
 
-	bool m_bWindow;
+	bool m_bShow;
 	bool m_bFullScreen;
 
 	Frame m_frame;

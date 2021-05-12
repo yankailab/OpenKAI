@@ -85,19 +85,8 @@ namespace kai
             PC_POINT *pP = &pS->m_pP[i];
             IF_CONT(pP->m_tStamp <= tFrom);
 
-            Vector3f C = pP->m_vC;
-            if (m_shade == pcShade_colOvrr)
-            {
-                C = m_vShadeCol.v3f();
-            }
-            else if (m_shade == pcShade_colPos)
-            {
-                C = m_vShadeCol.v3f();
-                C[0] *= constrain<float>(1.0 - abs(pP->m_vP[2]) * m_rShadePosCol, 0, 1);
-            }
-
             pPC->points_.push_back(pP->m_vP);
-            pPC->colors_.push_back(C.cast<double>());
+            pPC->colors_.push_back(pP->m_vC.cast<double>());
             m_nPread++;
         }
     }
@@ -116,13 +105,6 @@ namespace kai
 
     void _PCframe::getLattice(void *p)
     {
-    }
-
-    void _PCframe::paintPC(PointCloud *pPC)
-    {
-        NULL_(pPC);
-
-        pPC->PaintUniformColor(m_vShadeCol.v3f().cast<double>());
     }
 
     int _PCframe::size(void)

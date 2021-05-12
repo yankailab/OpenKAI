@@ -29,8 +29,7 @@ public:
 
 	virtual FrameGPU warpAffine(Mat& mWA);
 	virtual FrameGPU flip(int iOpt);
-	virtual void setRemap(Mat& mX, Mat& mY);
-	virtual FrameGPU remap(void);
+	virtual FrameGPU remap(const Mat& mX, const Mat& mY);
 	virtual FrameGPU crop(Rect bb);
 	virtual FrameGPU resize(int w, int h);
 	virtual FrameGPU resize(double scaleW, double scaleH);
@@ -60,11 +59,6 @@ public:
 
 	uint64_t m_tStampG;
 	GpuMat m_matG;
-
-	//calibration remap
-	GpuMat m_mapX;
-	GpuMat m_mapY;
-
 };
 
 }

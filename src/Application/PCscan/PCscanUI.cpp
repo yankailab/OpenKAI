@@ -85,7 +85,7 @@ namespace open3d
 
             void PCscanUI::UpdateBtnState(void)
             {
-                m_btnScanStart->SetOn(m_bScanning);
+                m_btnScan->SetOn(m_bScanning);
                 m_btnCamAuto->SetOn(m_bCamAuto);
                 m_btnCamAuto->SetEnabled(m_bScanning);
                 m_btnCamAll->SetEnabled(!m_bCamAuto);
@@ -109,13 +109,13 @@ namespace open3d
 
                 if (m_bScanning)
                 {
-                    m_btnScanStart->SetText("        Stop        ");
+                    m_btnScan->SetText("        Stop        ");
                     m_labelArea->SetText("Area not selected");
                     SetMouseCameraMode();
                 }
                 else
                 {
-                    m_btnScanStart->SetText("        Start        ");
+                    m_btnScan->SetText("        Start        ");
                 }
 
                 m_pScene->ForceRedraw();
@@ -190,19 +190,19 @@ namespace open3d
                 m_labelArea->SetText(s.c_str());
             }
 
-            void PCscanUI::SetCbBtnScan(OnCbO3DUI pCb, void *pPCV)
+            void PCscanUI::SetCbScan(OnCbO3DUI pCb, void *pPCV)
             {
-                m_cbBtnScan.add(pCb, pPCV);
+                m_cbScan.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbBtnOpenPC(OnCbO3DUI pCb, void *pPCV)
+            void PCscanUI::SetCbOpenPC(OnCbO3DUI pCb, void *pPCV)
             {
-                m_cbBtnOpenPC.add(pCb, pPCV);
+                m_cbOpenPC.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbBtnCamSet(OnCbO3DUI pCb, void *pPCV)
+            void PCscanUI::SetCbCamSet(OnCbO3DUI pCb, void *pPCV)
             {
-                m_cbBtnCamSet.add(pCb, pPCV);
+                m_cbCamSet.add(pCb, pPCV);
             }
 
             void PCscanUI::SetCbVoxelDown(OnCbO3DUI pCb, void *pPCV)
@@ -210,14 +210,14 @@ namespace open3d
                 m_cbVoxelDown.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbBtnHiddenRemove(OnCbO3DUI pCb, void *pPCV)
+            void PCscanUI::SetCbHiddenRemove(OnCbO3DUI pCb, void *pPCV)
             {
-                m_cbBtnHiddenRemove.add(pCb, pPCV);
+                m_cbHiddenRemove.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbBtnResetPC(OnCbO3DUI pCb, void *pPCV)
+            void PCscanUI::SetCbResetPC(OnCbO3DUI pCb, void *pPCV)
             {
-                m_cbBtnResetPC.add(pCb, pPCV);
+                m_cbResetPC.add(pCb, pPCV);
             }
 
 
@@ -284,7 +284,7 @@ namespace open3d
                 m_btnCamAuto->SetOnClicked([this]() {
                     m_bCamAuto = !m_bCamAuto;
                     int m = m_bCamAuto ? 1 : 0;
-                    m_cbBtnCamSet.call(&m);
+                    m_cbCamSet.call(&m);
                     UpdateBtnState();
                     m_pScene->ForceRedraw();
                 });
@@ -292,7 +292,7 @@ namespace open3d
                 m_btnCamAll = new Button("    All    ");
                 m_btnCamAll->SetOnClicked([this]() {
                     int m = 4;
-                    m_cbBtnCamSet.call(&m);
+                    m_cbCamSet.call(&m);
                     if (m_uiMode == uiMode_pointPick)
                         UpdateSelectableGeometry();
                     m_pScene->ForceRedraw();
@@ -301,7 +301,7 @@ namespace open3d
                 m_btnCamOrigin = new Button(" Origin ");
                 m_btnCamOrigin->SetOnClicked([this]() {
                     int m = 3;
-                    m_cbBtnCamSet.call(&m);
+                    m_cbCamSet.call(&m);
                     if (m_uiMode == uiMode_pointPick)
                         UpdateSelectableGeometry();
                     m_pScene->ForceRedraw();
@@ -380,13 +380,13 @@ namespace open3d
                 m_btnHiddenRemove = new Button(" Z-Cull ");
                 m_btnHiddenRemove->SetOnClicked([this]() {
                     m_uiState.m_vCamPos = m_pScene->GetScene()->GetCamera()->GetPosition();
-                    m_cbBtnHiddenRemove.call(&m_uiState);
+                    m_cbHiddenRemove.call(&m_uiState);
                     m_pScene->ForceRedraw();
                 });
 
                 m_btnFilterReset = new Button(" Reset ");
                 m_btnFilterReset->SetOnClicked([this]() {
-                    m_cbBtnResetPC.call();
+                    m_cbResetPC.call();
                     m_pScene->ForceRedraw();
                 });
 
@@ -399,21 +399,21 @@ namespace open3d
                 auto panelScan = new CollapsableVert("SCAN", v_spacing, margins);
                 m_panelCtrl->AddChild(GiveOwnership(panelScan));
 
-                m_btnScanStart = new Button("        Start        ");
-                m_btnScanStart->SetToggleable(true);
-                m_btnScanStart->SetOnClicked([this]() {
+                m_btnScan = new Button("        Start        ");
+                m_btnScan->SetToggleable(true);
+                m_btnScan->SetOnClicked([this]() {
                     RemoveAllVertexSet();
                     UpdateArea();
                     m_bScanning = !m_bScanning;
-                    m_cbBtnScan.call(&m_bScanning);
+                    m_cbScan.call(&m_bScanning);
                     m_bCamAuto = m_bScanning;
                     int m = m_bCamAuto ? 1 : 0;
-                    m_cbBtnCamSet.call(&m);
+                    m_cbCamSet.call(&m);
                     UpdateBtnState();
                     PostRedraw();
                 });
                 pH = new Horiz(v_spacing);
-                pH->AddChild(GiveOwnership(m_btnScanStart));
+                pH->AddChild(GiveOwnership(m_btnScan));
                 pH->AddStretch();
                 panelScan->AddChild(GiveOwnership(pH));
 
@@ -699,7 +699,7 @@ namespace open3d
                 dlg->SetOnCancel([this]() { this->CloseDialog(); });
                 dlg->SetOnDone([this](const char *path) {
                     this->CloseDialog();
-                    this->m_cbBtnOpenPC.call((void *)path);
+                    this->m_cbOpenPC.call((void *)path);
                 });
                 ShowDialog(dlg);
             }

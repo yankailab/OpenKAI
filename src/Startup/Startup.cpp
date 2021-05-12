@@ -15,7 +15,6 @@ namespace kai
 Startup::Startup()
 {
 	m_appName = "";
-	m_bWindow = true;
 	m_bRun = true;
 	m_bLog = true;
 	m_bStdErr = true;
@@ -44,7 +43,6 @@ bool Startup::start(Kiss* pKiss)
 	pApp->m_pInst = (BASE*)this;
 
 	pApp->v("appName", &m_appName);
-	pApp->v("bWindow", &m_bWindow);
 	pApp->v("bLog", &m_bLog);
 	pApp->v("bStdErr", &m_bStdErr);
 	pApp->v("rc", &m_rc);

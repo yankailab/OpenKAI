@@ -35,7 +35,6 @@ namespace kai
 		virtual void getStream(void *p);
 		virtual void getFrame(void *p);
 		virtual void getLattice(void *p);
-		virtual void paintPC(PointCloud *pPC);
 
 	protected:
 		//frame buf

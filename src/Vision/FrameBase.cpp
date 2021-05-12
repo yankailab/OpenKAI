@@ -114,17 +114,11 @@ FrameBase FrameBase::cvtColor(int code)
 	return fb;
 }
 
-void FrameBase::setRemap(Mat& mX, Mat& mY)
-{
-	m_mapX = mX;
-	m_mapY = mY;
-}
-
-FrameBase FrameBase::remap(void)
+FrameBase FrameBase::remap(const Mat& mX, const Mat& mY)
 {
 	FrameBase fb;
 	fb.m_tStamp = m_tStamp;
-	cv::remap(m_mat, fb.m_mat, m_mapX, m_mapY, INTER_LINEAR);
+	cv::remap(m_mat, fb.m_mat, mX, mY, INTER_LINEAR);
 
 	return fb;
 }

@@ -32,6 +32,17 @@ namespace kai
         pcShade_colPos = 2,
     };
 
+    enum PC_THREAD_ACTION
+	{
+		pc_Scanning = 0,
+		pc_ScanStart = 1,
+		pc_ScanStop = 2,
+		pc_VoxelDown = 3,
+		pc_HiddenRemove = 4,
+		pc_ResetPC = 5,
+		pc_CamAuto = 6,
+	};
+
     struct PC_POINT
     {
         Vector3d m_vP; //pos
@@ -76,7 +87,6 @@ namespace kai
         virtual PC_TYPE getType(void);
         virtual void setOffset(const vDouble3 &vT, const vDouble3 &vR);
         virtual void setRGBoffset(const vDouble3 &vT, const vDouble3 &vR);
-        virtual void updateRGBmatrix(void);
         virtual void setTranslation(const vDouble3 &vT, const vDouble3 &vR);
         virtual void setTranslation(const Matrix4d &mT);
         virtual void readPC(void* pPC);
@@ -90,7 +100,7 @@ namespace kai
         virtual void getFrame(void* p);
         virtual void getLattice(void* p);
 
-        virtual Vector3d getColor(const Vector3d &vP);
+        virtual Vector3f getColor(const Vector3d &vP);
         virtual bool bRange(const Vector3d& vP);
 
     protected:
@@ -125,12 +135,9 @@ namespace kai
         vDouble3 m_vToffsetRGB;
         vDouble3 m_vRoffsetRGB;
     	Matrix4d m_mToffsetRGB;
-    	Matrix4d m_mRGB;
-
-        //color override
-        PC_SHADE m_shade;
-  		vFloat3 m_vShadeCol;
-        float m_rShadePosCol;
+    	Eigen::Affine3d m_AoffsetRGB;
+        vInt3 m_vAxisIdxRGB;
+        vFloat3 m_vAxisKrgb;
     };
 
 }
