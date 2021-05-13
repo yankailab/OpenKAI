@@ -103,45 +103,45 @@ namespace kai
 		if(!m_bReady)
 		{
 			m_fBGR.copy(*pF);
-			setup();
+			m_bReady = setup();
 			IF_(!m_bReady);
 		}
 
 		if(m_fBGR.size() != m_s)
 		{
-			m_bReady = false;
-			setup();
+			m_bReady = setup();
 			IF_(!m_bReady);
 		}
 
-		m_fBGR.copy(pF->remap(m_mX, m_mY));
+		m_fBGR.copy(pF->remap(m_m1, m_m2));
 	}
 
-	void _Remap::setup(void)
+	bool _Remap::setup(void)
 	{
-		IF_(m_mC.empty() || m_mD.empty());
+		IF_F(m_mC.empty() || m_mD.empty());
 
-		setCamMatrices(m_mC, m_mD);
-		m_bReady = true;
+		return setCamMatrices(m_mC, m_mD);
 	}
 
-	void _Remap::setCamMatrices(const Mat &mC, const Mat &mD)
+	bool _Remap::setCamMatrices(const Mat &mC, const Mat &mD)
 	{
-		IF_(m_fBGR.bEmpty());
+		IF_F(m_fBGR.bEmpty());
 
 		m_mC = mC;
 		m_mD = mD;
-
 		m_s = m_fBGR.size();
-		Mat mCs = m_mC;
-		mCs.at<float>(0,0) *= (float)m_s.width;  //Fx
-		mCs.at<float>(1,1) *= (float)m_s.height; //Fy
-		mCs.at<float>(0,2) *= (float)m_s.width;  //Cx
-		mCs.at<float>(1,2) *= (float)m_s.height; //Cy
+
+		Mat mCs;
+		m_mC.copyTo(mCs);
+		mCs.at<double>(0,0) *= (double)m_s.width;  //Fx
+		mCs.at<double>(1,1) *= (double)m_s.height; //Fy
+		mCs.at<double>(0,2) *= (double)m_s.width;  //Cx
+		mCs.at<double>(1,2) *= (double)m_s.height; //Cy
 
 		m_mCscaled = getOptimalNewCameraMatrix(mCs, m_mD, m_s, 1, m_s, 0);
-//		initUndistortRectifyMap(mCs, m_mD, Mat(), m_mCscaled, m_s, CV_32FC1, m_mX, m_mY);
-		initUndistortRectifyMap(mCs, m_mD, Mat(), mCs, m_s, CV_16SC2, m_mX, m_mY);
+		initUndistortRectifyMap(mCs, m_mD, Mat(), m_mCscaled, m_s, CV_16SC2, m_m1, m_m2);
+
+		return true;
 	}
 
 	Mat _Remap::mC(void)

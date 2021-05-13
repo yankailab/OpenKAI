@@ -140,13 +140,15 @@ namespace kai
 		app.Initialize(m_pathRes.c_str());
 
 		m_pWin = new PCcalibUI(*this->getName(), 2000, 1000);
-		PCcalibUI* pW = (PCcalibUI*)m_pWin;
+		PCcalibUI *pW = (PCcalibUI *)m_pWin;
 		app.AddWindow(shared_ptr<PCcalibUI>(pW));
 
 		pW->SetCbScan(OnBtnScan, (void *)this);
 		pW->SetCbResetPC(OnBtnResetPC, (void *)this);
 		pW->SetCbLoadImgs(OnLoadImgs, (void *)this);
 		pW->SetCbUpdateParams(OnUpdateParams, (void *)this);
+		pW->SetCbImportParams(OnImportParams, (void *)this);
+		pW->SetCbExportParams(OnExportParams, (void *)this);
 
 		m_pUIstate = m_pWin->getUIState();
 		m_pUIstate->m_bSceneCache = m_bSceneCache;
@@ -179,7 +181,16 @@ namespace kai
 		NULL_(pPCV);
 		_PCcalib *pV = (_PCcalib *)pPCV;
 
-		pV->updateParams();
+		pV->updateParamsData();
+	}
+
+	void _PCcalib::OnImportParams(void *pPCV, void *pD)
+	{
+		NULL_(pPCV);
+		NULL_(pD);
+		_PCcalib *pV = (_PCcalib *)pPCV;
+
+		pV->importParams((char *)pD);
 	}
 
 	void _PCcalib::OnExportParams(void *pPCV, void *pD)
@@ -188,18 +199,35 @@ namespace kai
 		NULL_(pD);
 		_PCcalib *pV = (_PCcalib *)pPCV;
 
-		pV->exportParams((char*)pD);
+		pV->exportParams((char *)pD);
 	}
 
-	void _PCcalib::exportParams(const char* pPath)
+	void _PCcalib::importParams(const char *pPath)
 	{
 		NULL_(pPath);
 		string yml = string(pPath);
 		IF_(yml.empty());
 
-		updateParams();
+		FileStorage fs(yml.c_str(), FileStorage::READ);
+		IF_(!fs.isOpened());
+		Mat mC,mD;
+		fs["mC"] >> mC;
+		fs["mD"] >> mD;
+		fs.release();
+
+		updateParamsUI(mC, mD);
+		updateParamsData();
+	}
+
+	void _PCcalib::exportParams(const char *pPath)
+	{
+		NULL_(pPath);
+		string yml = string(pPath);
+		IF_(yml.empty());
+
+		updateParamsData();
 		IF_(m_pV->getType() != vision_remap);
-		_Remap* pR = ((_Remap*)m_pV);
+		_Remap *pR = ((_Remap *)m_pV);
 		Mat mC = pR->mC();
 		Mat mD = pR->mD();
 
@@ -216,52 +244,53 @@ namespace kai
 		NULL_F(pPath);
 
 		IF_F(!m_pCC->calibRGB(pPath));
-		Mat mC = m_pCC->mC();
-		Mat mD = m_pCC->mD();
 
-		//update to UI
-		PCcalibUI* pW = (PCcalibUI*)m_pWin;
-		PCCALIB_PARAM* pP = pW->GetCalibParams();
-		pP->m_Fx = mC.at<double>(0,0);
-		pP->m_Fy = mC.at<double>(1,1);
-		pP->m_Cx = mC.at<double>(0,2);
-		pP->m_Cy = mC.at<double>(1,2);
-
-		pP->m_k1 = mD.at<double>(0,0);
-		pP->m_k2 = mD.at<double>(0,1);
-		pP->m_p1 = mD.at<double>(0,2);
-		pP->m_p2 = mD.at<double>(0,3);
-		pP->m_k3 = mD.at<double>(0,4);
-		pW->UpdateCalibParams();
-
-		//update self
-		updateParams();
+		updateParamsUI(m_pCC->mC(), m_pCC->mD());
+		updateParamsData();
 
 		return true;
 	}
 
-	void _PCcalib::updateParams(void)
+	void _PCcalib::updateParamsUI(const Mat& mC, const Mat& mD)
+	{
+		//update to UI
+		PCcalibUI *pW = (PCcalibUI *)m_pWin;
+		PCCALIB_PARAM *pP = pW->GetCalibParams();
+		pP->m_Fx = mC.at<double>(0, 0);
+		pP->m_Fy = mC.at<double>(1, 1);
+		pP->m_Cx = mC.at<double>(0, 2);
+		pP->m_Cy = mC.at<double>(1, 2);
+
+		pP->m_k1 = mD.at<double>(0, 0);
+		pP->m_k2 = mD.at<double>(0, 1);
+		pP->m_p1 = mD.at<double>(0, 2);
+		pP->m_p2 = mD.at<double>(0, 3);
+		pP->m_k3 = mD.at<double>(0, 4);
+		pW->UpdateCalibParams();
+	}
+
+	void _PCcalib::updateParamsData(void)
 	{
 		//update from UI
-		Mat mC = Mat::zeros(3,3,CV_32FC1);
-		Mat mD = Mat::zeros(1,5,CV_32FC1);
+		Mat mC = Mat::zeros(3, 3, CV_64FC1);
+		Mat mD = Mat::zeros(1, 5, CV_64FC1);
 
-		PCcalibUI* pW = (PCcalibUI*)m_pWin;
-		PCCALIB_PARAM* pP = pW->GetCalibParams();
-		mC.at<float>(0,0) = pP->m_Fx;
-		mC.at<float>(1,1) = pP->m_Fy;
-		mC.at<float>(0,2) = pP->m_Cx;
-		mC.at<float>(1,2) = pP->m_Cy;
-		mC.at<float>(2,2) = 1.0;
+		PCcalibUI *pW = (PCcalibUI *)m_pWin;
+		PCCALIB_PARAM *pP = pW->GetCalibParams();
+		mC.at<double>(0, 0) = pP->m_Fx;
+		mC.at<double>(1, 1) = pP->m_Fy;
+		mC.at<double>(0, 2) = pP->m_Cx;
+		mC.at<double>(1, 2) = pP->m_Cy;
+		mC.at<double>(2, 2) = 1.0;
 
-		mD.at<float>(0,0) = pP->m_k1;
-		mD.at<float>(0,1) = pP->m_k2;
-		mD.at<float>(0,2) = pP->m_p1;
-		mD.at<float>(0,3) = pP->m_p2;
-		mD.at<float>(0,4) = pP->m_k3;
+		mD.at<double>(0, 0) = pP->m_k1;
+		mD.at<double>(0, 1) = pP->m_k2;
+		mD.at<double>(0, 2) = pP->m_p1;
+		mD.at<double>(0, 3) = pP->m_p2;
+		mD.at<double>(0, 4) = pP->m_k3;
 
 		IF_(m_pV->getType() != vision_remap);
-		((_Remap*)m_pV)->setCamMatrices(mC, mD);
+		((_Remap *)m_pV)->setCamMatrices(mC, mD);
 	}
 }
 #endif

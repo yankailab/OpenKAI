@@ -26,8 +26,8 @@ public:
 	void close(void);
 	bool bReady(void);
 
-	void setup(void);
-	void setCamMatrices(const Mat& mC, const Mat& mD);
+	bool setup(void);
+	bool setCamMatrices(const Mat& mC, const Mat& mD);
 	Mat mC(void);
 	Mat mCscaled(void);
 	Mat mD(void);
@@ -52,8 +52,8 @@ public:
 
 	//scaled with input image size
 	Mat m_mCscaled;
-	Mat m_mX;
-	Mat m_mY;
+	Mat m_m1;
+	Mat m_m2;
 	cv::Size m_s;
 };
 

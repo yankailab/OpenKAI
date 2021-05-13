@@ -25,6 +25,7 @@ namespace kai
 		virtual bool start(void);
 		virtual int check(void);
 	
+	    void importParams(const char* pPath);
 	    void exportParams(const char* pPath);
 
 	protected:
@@ -55,10 +56,12 @@ namespace kai
 		// handlers
 		static void OnLoadImgs(void *pPCV, void* pD);
 		static void OnUpdateParams(void *pPCV, void* pD);
+		static void OnImportParams(void *pPCV, void* pD);
 		static void OnExportParams(void *pPCV, void* pD);
 
 		bool calibRGB(const char* pPath);
-		void updateParams(void);
+		void updateParamsUI(const Mat& mC, const Mat& mD);
+		void updateParamsData(void);
 
 	protected:
 		_CamCalib* m_pCC;

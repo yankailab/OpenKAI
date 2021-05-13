@@ -93,13 +93,12 @@ namespace kai
 
         Mat mR, mT;
         calibrateCamera(vvPobj, vvPimg, cv::Size(mGray.rows, mGray.cols), m_mC, m_mD, mR, mT);
-        cout << "Camera Matrix : " << m_mC << endl;
-
      	m_mC.at<double>(0,0) /= (double)mGray.cols; //Fx
 		m_mC.at<double>(1,1) /= (double)mGray.rows; //Fy
 		m_mC.at<double>(0,2) /= (double)mGray.cols; //Cx
 		m_mC.at<double>(1,2) /= (double)mGray.rows; //Cy
-        cout << "Camera Matrix (Scaled) : " << m_mC << endl;
+
+        cout << "Camera Matrix : " << m_mC << endl;
         cout << "DistCoeffs : " << m_mD << endl;
         cout << "Rotation vector : " << mR << endl;
         cout << "Translation vector : " << mT << endl;

@@ -49,10 +49,12 @@ namespace open3d
 				PCCALIB_PARAM *GetCalibParams(void);
 				void UpdateCalibParams(void);
 
-				void SetCbLoadImgs(OnCbO3DUI pCb, void *pPCV);
-				void SetCbUpdateParams(OnCbO3DUI pCb, void *pPCV);
 				void SetCbScan(OnCbO3DUI pCb, void *pPCV);
 				void SetCbResetPC(OnCbO3DUI pCb, void *pPCV);
+				void SetCbLoadImgs(OnCbO3DUI pCb, void *pPCV);
+				void SetCbUpdateParams(OnCbO3DUI pCb, void *pPCV);
+				void SetCbImportParams(OnCbO3DUI pCb, void *pPCV);
+				void SetCbExportParams(OnCbO3DUI pCb, void *pPCV);
 
 			protected:
 				virtual void Layout(const gui::Theme &theme);
@@ -92,10 +94,12 @@ namespace open3d
 				TextEdit *m_pk3;
 
 				//UI handler
-				O3D_UI_Cb m_cbLoadImgs;
 				O3D_UI_Cb m_cbScan;
 				O3D_UI_Cb m_cbResetPC;
+				O3D_UI_Cb m_cbLoadImgs;
 				O3D_UI_Cb m_cbUpdateParams;
+				O3D_UI_Cb m_cbImportParams;
+				O3D_UI_Cb m_cbExportParams;
 			};
 
 		} // namespace visualizer

@@ -82,16 +82,6 @@ namespace open3d
                 m_pk3->SetText(lf2str(m_calibParam.m_k3,m_nD).c_str());
             }
 
-            void PCcalibUI::SetCbLoadImgs(OnCbO3DUI pCb, void *pPCV)
-            {
-                m_cbLoadImgs.add(pCb, pPCV);
-            }
-
-            void PCcalibUI::SetCbUpdateParams(OnCbO3DUI pCb, void *pPCV)
-            {
-                m_cbUpdateParams.add(pCb, pPCV);
-            }
-
             void PCcalibUI::SetCbScan(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbScan.add(pCb, pPCV);
@@ -102,6 +92,25 @@ namespace open3d
                 m_cbResetPC.add(pCb, pPCV);
             }
 
+            void PCcalibUI::SetCbLoadImgs(OnCbO3DUI pCb, void *pPCV)
+            {
+                m_cbLoadImgs.add(pCb, pPCV);
+            }
+
+            void PCcalibUI::SetCbUpdateParams(OnCbO3DUI pCb, void *pPCV)
+            {
+                m_cbUpdateParams.add(pCb, pPCV);
+            }
+
+            void PCcalibUI::SetCbImportParams(OnCbO3DUI pCb, void *pPCV)
+            {
+                m_cbImportParams.add(pCb, pPCV);
+            }
+
+            void PCcalibUI::SetCbExportParams(OnCbO3DUI pCb, void *pPCV)
+            {
+                m_cbExportParams.add(pCb, pPCV);
+            }
 
             void PCcalibUI::Layout(const Theme &theme)
             {
@@ -142,6 +151,7 @@ namespace open3d
                 m_btnScan->SetOnClicked([this]()
                 {
                     m_bScanning = !m_bScanning;
+                    m_btnScan->SetText((m_bScanning)?" Stop ":" Start ");
                     m_cbScan.call(&m_bScanning);
                     PostRedraw();
                 });
@@ -488,10 +498,11 @@ namespace open3d
             {
                 auto dlg = make_shared<gui::FileDialog>(
                     gui::FileDialog::Mode::OPEN, "Open Calibration File", this->GetTheme());
-                dlg->AddFilter(".kiss", "Calibration file (.kiss)");
+                dlg->AddFilter(".yml", "Camera calibration file (.yml)");
                 dlg->AddFilter("", "All files");
                 dlg->SetOnCancel([this]() { this->CloseDialog(); });
                 dlg->SetOnDone([this](const char *path) {
+                    this->m_cbImportParams.call((void*)path);
                     this->CloseDialog();
                 });
                 ShowDialog(dlg);
@@ -501,10 +512,11 @@ namespace open3d
             {
                 auto dlg = make_shared<gui::FileDialog>(
                     gui::FileDialog::Mode::SAVE, "Save File", this->GetTheme());
-                dlg->AddFilter(".kiss", "Calibration file (.kiss)");
+                dlg->AddFilter(".yml", "Camera calibration file (.yml)");
                 dlg->AddFilter("", "All files");
                 dlg->SetOnCancel([this]() { this->CloseDialog(); });
                 dlg->SetOnDone([this](const char *path) {
+                    this->m_cbExportParams.call((void*)path);
                     this->CloseDialog();
                 });
                 ShowDialog(dlg);
