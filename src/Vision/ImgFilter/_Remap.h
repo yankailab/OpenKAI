@@ -24,9 +24,12 @@ public:
 	bool start(void);
 	bool open(void);
 	void close(void);
+	bool bReady(void);
 
-	void setCamMatrices(const Mat& mCam, const Mat& mDistCoeffs);
+	void setup(void);
+	void setCamMatrices(const Mat& mC, const Mat& mD);
 	Mat mC(void);
+	Mat mCscaled(void);
 	Mat mD(void);
 
 private:
@@ -40,11 +43,18 @@ private:
 
 public:
 	_VisionBase* m_pV;
-	Mat m_mCam;
-	Mat m_mCamNew;
-	Mat m_mDistCoeffs;
+	string m_yml;
+	bool m_bReady;
+
+	//original
+	Mat m_mC;
+	Mat m_mD;
+
+	//scaled with input image size
+	Mat m_mCscaled;
 	Mat m_mX;
 	Mat m_mY;
+	cv::Size m_s;
 };
 
 }

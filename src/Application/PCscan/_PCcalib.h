@@ -11,6 +11,7 @@
 #include "_PCscan.h"
 #include "PCcalibUI.h"
 #include "../CamCalib/_CamCalib.h"
+#include "../../Vision/ImgFilter/_Remap.h"
 
 namespace kai
 {
@@ -23,6 +24,8 @@ namespace kai
 		virtual bool init(void *pKiss);
 		virtual bool start(void);
 		virtual int check(void);
+	
+	    void exportParams(const char* pPath);
 
 	protected:
 		// point cloud
@@ -52,6 +55,7 @@ namespace kai
 		// handlers
 		static void OnLoadImgs(void *pPCV, void* pD);
 		static void OnUpdateParams(void *pPCV, void* pD);
+		static void OnExportParams(void *pPCV, void* pD);
 
 		bool calibRGB(const char* pPath);
 		void updateParams(void);

@@ -19,10 +19,22 @@ namespace kai
 		m_pathRes = "";
 		m_device = "CPU:0";
 		m_vCoR.init(0, 0, 0);
+
+		m_pWin = NULL;
+		m_pUIstate = NULL;
+		m_modelName = "PCMODEL";
+
+		m_bFullScreen = false;
+		m_bSceneCache = false;
+		m_wPanel = 15;
+		m_mouseMode = 0;
+		m_vDmove.init(0.5, 5.0);
+		m_rDummyDome = 1000.0;
 	}
 
 	_PCviewer::~_PCviewer()
 	{
+		DEL(m_pWin);
 	}
 
 	bool _PCviewer::init(void *pKiss)
@@ -33,6 +45,13 @@ namespace kai
 		pK->v("vWinSize", &m_vWinSize);
 		pK->v("pathRes", &m_pathRes);
 		pK->v("device", &m_device);
+
+		pK->v("bFullScreen", &m_bFullScreen);
+		pK->v("bSceneCache", &m_bSceneCache);
+		pK->v("wPanel", &m_wPanel);
+		pK->v("mouseMode", &m_mouseMode);
+		pK->v("vDmove", &m_vDmove);
+		pK->v("rDummyDome", &m_rDummyDome);
 
 		pK->v("camFov", &m_camProj.m_fov);
 		pK->v("vCamNF", &m_camProj.m_vNF);
@@ -99,18 +118,46 @@ namespace kai
 		while(m_nPread <= 0)
 			readAllPC();
 
-		m_spWin->SetGeometry(shared_ptr<PointCloud>(m_sPC.get()));
+		removeUIpc();
+		updatePC();
+		addUIpc(*m_sPC.get());
 
+		resetCamPose();
+		updateCamPose();
+		
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPSfrom();
 
-			readAllPC();
-			m_spWin->UpdateGeometry(shared_ptr<PointCloud>(m_sPC.get()));
-
 			m_pT->autoFPSto();
 		}
+	}
 
+	void _PCviewer::addUIpc(const PointCloud &pc)
+	{
+		IF_(pc.IsEmpty());
+
+		m_pWin->AddPointCloud(m_modelName,
+							   make_shared<t::geometry::PointCloud>(
+								   t::geometry::PointCloud::FromLegacyPointCloud(
+									   pc,
+									   core::Dtype::Float32)));
+	}
+
+	void _PCviewer::updateUIpc(const PointCloud &pc)
+	{
+		IF_(pc.IsEmpty());
+
+		m_pWin->UpdatePointCloud(m_modelName,
+								  make_shared<t::geometry::PointCloud>(
+									  t::geometry::PointCloud::FromLegacyPointCloud(
+										  pc,
+										  core::Dtype::Float32)));
+	}
+
+	void _PCviewer::removeUIpc(void)
+	{
+		m_pWin->RemoveGeometry(m_modelName);
 	}
 
 	void _PCviewer::readAllPC(void)
@@ -162,6 +209,35 @@ namespace kai
 		}
 	}
 
+	void _PCviewer::updateCamProj(void)
+	{
+		IF_(check() < 0);
+		IF_(!m_pWin);
+
+		m_pWin->CamSetProj(m_camProj.m_fov,
+							m_camProj.m_vNF.x,
+							m_camProj.m_vNF.y,
+							m_camProj.m_fovType);
+	}
+
+	void _PCviewer::updateCamPose(void)
+	{
+		IF_(check() < 0);
+		IF_(!m_pWin);
+
+		m_pWin->CamSetPose(m_cam.m_vLookAt.v3f(),
+							m_cam.m_vEye.v3f(),
+							m_cam.m_vUp.v3f());
+	}
+
+	void _PCviewer::camBound(const AxisAlignedBoundingBox &aabb)
+	{
+		IF_(check() < 0);
+		IF_(!m_pWin);
+
+		m_pWin->CamAutoBound(aabb, m_vCoR.v3f());
+	}
+
 	void _PCviewer::resetCamPose(void)
 	{
 		m_cam = m_camDefault;
@@ -172,11 +248,20 @@ namespace kai
 		auto &app = gui::Application::GetInstance();
 		app.Initialize(m_pathRes.c_str());
 
-		m_spWin = std::make_shared<PCviewerUI>(*this->getName(), 2000, 1000);
-		gui::Application::GetInstance().AddWindow(m_spWin);
+		m_pWin = new O3DUI(*this->getName(), 2000, 1000);
+		app.AddWindow(shared_ptr<O3DUI>(m_pWin));
+
+		m_pUIstate = m_pWin->getUIState();
+		m_pUIstate->m_bSceneCache = m_bSceneCache;
+		m_pUIstate->m_mouseMode = (visualization::gui::SceneWidget::Controls)m_mouseMode;
+		m_pUIstate->m_wPanel = m_wPanel;
+		m_pUIstate->m_sMove = m_vDmove.x;
+		m_pWin->UpdateUIstate();
+		m_pWin->SetFullScreen(m_bFullScreen);
 
 		m_pT->wakeUp();
 		app.Run();
+		exit(0);
 	}
 
 }

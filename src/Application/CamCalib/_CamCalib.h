@@ -16,8 +16,8 @@ namespace kai
 		bool start(void);
 
 		bool calibRGB(const char *pPath);
-		Mat camMatrix(void);
-		Mat distCoeffs(void);
+		Mat mC(void);
+		Mat mD(void);
 
 	protected:
 		void update(void);
@@ -32,8 +32,8 @@ namespace kai
 		vInt2 m_vChessBoardSize;	//col, row
 		float m_squareSize;
 
-		Mat m_mCam;
-		Mat m_mDistCoeffs;
+		Mat m_mC;
+		Mat m_mD;
 	};
 
 }

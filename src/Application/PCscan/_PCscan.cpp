@@ -16,26 +16,14 @@ namespace kai
 		m_pPS = NULL;
 		m_pSB = NULL;
 		m_pTk = NULL;
-		m_pWin = NULL;
 
-		m_pUIstate = NULL;
-		m_modelName = "PCMODEL";
-
-		m_bFullScreen = false;
-		m_bSceneCache = false;
-		m_wPanel = 15;
-		m_mouseMode = 0;
-		m_vDmove.init(0.5, 5.0);
-		m_rDummyDome = 1000.0;
 		m_dHiddenRemove = 100.0;
-
 		m_fProcess.clearAll();
 	}
 
 	_PCscan::~_PCscan()
 	{
 		DEL(m_pTk);
-		DEL(m_pWin);
 	}
 
 	bool _PCscan::init(void *pKiss)
@@ -43,12 +31,6 @@ namespace kai
 		IF_F(!this->_PCviewer::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("bFullScreen", &m_bFullScreen);
-		pK->v("bSceneCache", &m_bSceneCache);
-		pK->v("wPanel", &m_wPanel);
-		pK->v("mouseMode", &m_mouseMode);
-		pK->v("vDmove", &m_vDmove);
-		pK->v("rDummyDome", &m_rDummyDome);
 		pK->v("dHiddenRemove", &m_dHiddenRemove);
 
 		string n = "";
@@ -256,33 +238,6 @@ namespace kai
 		}
 	}
 
-	void _PCscan::addUIpc(const PointCloud &pc)
-	{
-		IF_(pc.IsEmpty());
-
-		m_pWin->AddPointCloud(m_modelName,
-							   make_shared<t::geometry::PointCloud>(
-								   t::geometry::PointCloud::FromLegacyPointCloud(
-									   pc,
-									   core::Dtype::Float32)));
-	}
-
-	void _PCscan::updateUIpc(const PointCloud &pc)
-	{
-		IF_(pc.IsEmpty());
-
-		m_pWin->UpdatePointCloud(m_modelName,
-								  make_shared<t::geometry::PointCloud>(
-									  t::geometry::PointCloud::FromLegacyPointCloud(
-										  pc,
-										  core::Dtype::Float32)));
-	}
-
-	void _PCscan::removeUIpc(void)
-	{
-		m_pWin->RemoveGeometry(m_modelName);
-	}
-
 	void _PCscan::updateKinematics(void)
 	{
 		while (m_pTk->bRun())
@@ -339,35 +294,6 @@ namespace kai
 		m_pT->wakeUp();
 		app.Run();
 		exit(0);
-	}
-
-	void _PCscan::updateCamProj(void)
-	{
-		IF_(check() < 0);
-		IF_(!m_pWin);
-
-		m_pWin->CamSetProj(m_camProj.m_fov,
-							m_camProj.m_vNF.x,
-							m_camProj.m_vNF.y,
-							m_camProj.m_fovType);
-	}
-
-	void _PCscan::updateCamPose(void)
-	{
-		IF_(check() < 0);
-		IF_(!m_pWin);
-
-		m_pWin->CamSetPose(m_cam.m_vLookAt.v3f(),
-							m_cam.m_vEye.v3f(),
-							m_cam.m_vUp.v3f());
-	}
-
-	void _PCscan::camBound(const AxisAlignedBoundingBox &aabb)
-	{
-		IF_(check() < 0);
-		IF_(!m_pWin);
-
-		m_pWin->CamAutoBound(aabb, m_vCoR.v3f());
 	}
 
 	AxisAlignedBoundingBox _PCscan::createDefaultAABB(void)

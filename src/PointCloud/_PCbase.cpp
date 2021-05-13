@@ -26,6 +26,8 @@ namespace kai
         m_A = Matrix4d::Identity();
 
         m_pV = NULL;
+        m_vFrgb.init(1.0);
+        m_vCrgb.init(0.0);
         m_vToffsetRGB.init(0);
         m_vRoffsetRGB.init(0);
         m_mToffsetRGB = Matrix4d::Identity();
@@ -73,10 +75,29 @@ namespace kai
         pK->v("vR", &m_vR);
         setTranslation(m_vT, m_vR);
 
-        //RGB offset
+        //RGB
         pK->v("vToffsetRGB", &m_vToffsetRGB);
         pK->v("vRoffsetRGB", &m_vRoffsetRGB);
         setRGBoffset(m_vToffsetRGB, m_vRoffsetRGB);
+
+        pK->v("vFrgb", &m_vFrgb);
+        pK->v("vCrgb", &m_vCrgb);
+        string yml;
+        pK->v("yml", &yml);
+        if (!yml.empty())
+        {
+            FileStorage fs(yml.c_str(), FileStorage::READ);
+            if (fs.isOpened())
+            {
+                Mat mC;
+                fs["mC"] >> mC;
+                fs.release();
+                m_vFrgb.x = mC.at<double>(0, 0);
+                m_vFrgb.y = mC.at<double>(1, 1);
+                m_vCrgb.x = mC.at<double>(0, 2);
+                m_vCrgb.y = mC.at<double>(1, 2);
+            }
+        }
 
         //pipeline ctx
         pK->v("ctxdT", &m_pInCtx.m_dT);
@@ -90,8 +111,8 @@ namespace kai
 
         //RGB map
         n = "";
-        pK->v("_Remap", &n);
-        m_pV = (_Remap *)(pK->getInst(n));
+        pK->v("_VisionBase", &n);
+        m_pV = (_VisionBase *)(pK->getInst(n));
 
         return true;
     }
@@ -183,13 +204,12 @@ namespace kai
     {
     }
 
-    Vector3f _PCbase::getColor(const Vector3d &vP)
+    bool _PCbase::getColor(const Vector3d &vP, Vector3f *pvC)
     {
-        Vector3f vN(1, 1, 1);
-        NULL__(m_pV, vN);
-        NULL__(m_pV->BGR(), vN);
-        IF__(m_pV->BGR()->bEmpty(), vN);
-        IF__(m_pV->getType() != vision_remap, vN);
+        NULL_F(m_pV);
+        NULL_F(m_pV->BGR());
+        IF_F(m_pV->BGR()->bEmpty());
+        IF_F(m_pV->getType() != vision_remap);
 
         Vector3d vPrgb = m_AoffsetRGB * vP;
         Vector3d vPa = Vector3d(
@@ -197,25 +217,27 @@ namespace kai
             vPrgb[m_vAxisIdxRGB.y] * m_vAxisKrgb.y,
             vPrgb[m_vAxisIdxRGB.z] * m_vAxisKrgb.z);
 
-        Mat mC = m_pV->mC();
-        double Fx = mC.at<double>(0, 0);
-        double Fy = mC.at<double>(1, 1);
-        double Cx = mC.at<double>(0, 2);
-        double Cy = mC.at<double>(1, 2);
+        Mat *pM = m_pV->BGR()->m();
+        float w = pM->cols;
+        float h = pM->rows;
 
-        float ovZ = 1.0/vPa[2];
-        float x = (Fx*vPa[0] + Cx*vPa[2]) * ovZ;
-        float y = (Fy*vPa[1] + Cy*vPa[2]) * ovZ;
+        float ovZ = 1.0 / vPa[2];
+        float x = w * (m_vFrgb.x * vPa[0] + m_vCrgb.x * vPa[2]) * ovZ;
+        float y = h * (m_vFrgb.y * vPa[1] + m_vCrgb.y * vPa[2]) * ovZ;
+        x += float(pM->cols) * 0.5;
+        y += float(pM->rows) * 0.5;
 
-        Mat* pM = m_pV->BGR()->m();
-        x = constrain<float>(x + pM->cols/2, 0, pM->cols-1);
-        y = constrain<float>(y + pM->rows/2, 0, pM->rows-1);
+        IF_F(x < 0);
+        IF_F(x > pM->cols - 1);
+        IF_F(y < 0);
+        IF_F(y > pM->rows - 1);
 
         Vec3b vC = pM->at<Vec3b>((int)y, (int)x);
         Vector3f vCf(vC[2], vC[1], vC[0]);
-        vCf *= 1.0/255.0;
+        vCf *= 1.0 / 255.0;
+        *pvC = vCf;
 
-        return vCf;
+        return true;
     }
 
     bool _PCbase::bRange(const Vector3d &vP)

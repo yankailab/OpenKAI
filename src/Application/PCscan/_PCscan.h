@@ -28,10 +28,6 @@ namespace kai
 
 	protected:
 		//point cloud
-		void addUIpc(const PointCloud& pc);
-		void updateUIpc(const PointCloud& pc);
-		void removeUIpc(void);
-		
 		virtual void updateProcess(void);
 		virtual void startScan(void);
 		virtual void stopScan(void);
@@ -54,9 +50,6 @@ namespace kai
 		}
 
 		// UI
-		void updateCamProj(void);
-		void updateCamPose(void);
-		void camBound(const AxisAlignedBoundingBox& aabb);
 		virtual void updateUI(void);
 		static void *getUpdateUI(void *This)
 		{
@@ -76,19 +69,9 @@ namespace kai
 
 	protected:
 		_PCstream* m_pPS;
-		O3DUI* m_pWin;
-		UIState* m_pUIstate;
-		string m_modelName;
-
 		_SlamBase *m_pSB;
 		_Thread *m_pTk;
 
-		bool m_bFullScreen;
-		bool m_bSceneCache;
-		int	m_wPanel;
-		int m_mouseMode;
-		vFloat2 m_vDmove;
-		float m_rDummyDome;
 		float m_dHiddenRemove;
 		AxisAlignedBoundingBox m_aabb;
 

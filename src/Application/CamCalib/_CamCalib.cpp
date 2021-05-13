@@ -50,7 +50,7 @@ namespace kai
         for (int j = 0; j < m_vChessBoardSize.y; j++)
         {
             for (int i = 0; i < m_vChessBoardSize.x; i++)
-                vObj.push_back(cv::Point3f(j, i, 0));
+                vObj.push_back(cv::Point3f(j*m_squareSize, i*m_squareSize, 0));
         }
 
         vector<cv::String> vImgs;
@@ -92,25 +92,29 @@ namespace kai
         IF_F(vvPobj.empty());
 
         Mat mR, mT;
-        calibrateCamera(vvPobj, vvPimg, cv::Size(mGray.rows, mGray.cols), m_mCam, m_mDistCoeffs, mR, mT);
+        calibrateCamera(vvPobj, vvPimg, cv::Size(mGray.rows, mGray.cols), m_mC, m_mD, mR, mT);
+        cout << "Camera Matrix : " << m_mC << endl;
 
-        cout << "Camera Matrix : " << m_mCam << endl;
-        cout << "DistCoeffs : " << m_mDistCoeffs << endl;
+     	m_mC.at<double>(0,0) /= (double)mGray.cols; //Fx
+		m_mC.at<double>(1,1) /= (double)mGray.rows; //Fy
+		m_mC.at<double>(0,2) /= (double)mGray.cols; //Cx
+		m_mC.at<double>(1,2) /= (double)mGray.rows; //Cy
+        cout << "Camera Matrix (Scaled) : " << m_mC << endl;
+        cout << "DistCoeffs : " << m_mD << endl;
         cout << "Rotation vector : " << mR << endl;
         cout << "Translation vector : " << mT << endl;
 
         return true;
     }
 
-	Mat _CamCalib::camMatrix(void)
+	Mat _CamCalib::mC(void)
     {
-        return m_mCam;
+        return m_mC;
     }
 
-	Mat _CamCalib::distCoeffs(void)
+	Mat _CamCalib::mD(void)
     {
-        return m_mDistCoeffs;
+        return m_mD;
     }
-
 }
 #endif

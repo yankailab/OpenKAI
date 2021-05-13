@@ -9,7 +9,7 @@
 #define OpenKAI_src_PointCloud__PCviewer_H_
 #ifdef USE_OPEN3D
 #include "_PCframe.h"
-#include "PCviewerUI.h"
+#include "../UI/O3DUI.h"
 
 namespace kai
 {
@@ -41,9 +41,12 @@ namespace kai
 		virtual void resetCamPose(void);
 
 	protected:
-		virtual void readAllPC(void);
-		virtual void addDummyDome(PointCloud* pPC, int n, float r, Vector3d vCol = {0,0,0});
-
+		//data
+		void addUIpc(const PointCloud& pc);
+		void updateUIpc(const PointCloud& pc);
+		void removeUIpc(void);
+		void readAllPC(void);
+		void addDummyDome(PointCloud* pPC, int n, float r, Vector3d vCol = {0,0,0});
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -51,6 +54,10 @@ namespace kai
 			return NULL;
 		}
 
+		//UI
+		void updateCamProj(void);
+		void updateCamPose(void);
+		void camBound(const AxisAlignedBoundingBox& aabb);
 		virtual void updateUI(void);
 		static void *getUpdateUI(void *This)
 		{
@@ -59,10 +66,22 @@ namespace kai
 		}
 
 	protected:
+		O3DUI* m_pWin;
+		UIState* m_pUIstate;
+		_Thread *m_pTui;
+		string m_modelName;
+
 		string m_pathRes;
 		Visualizer m_vis;
 		vInt2 m_vWinSize;
 		string m_device;
+
+		bool m_bFullScreen;
+		bool m_bSceneCache;
+		int	m_wPanel;
+		int m_mouseMode;
+		vFloat2 m_vDmove;
+		float m_rDummyDome;
 
 		CAM_PROJ m_camProj;
 		PC_CAM m_cam;
@@ -71,9 +90,6 @@ namespace kai
 		vFloat3 m_vCoR;
 
 		vector<_PCbase *> m_vpPCB;
-
-		_Thread *m_pTui;
-		shared_ptr<PCviewerUI> m_spWin;
 	};
 
 }

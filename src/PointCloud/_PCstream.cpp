@@ -70,9 +70,15 @@ namespace kai
                             );
         IF_(!bRange(vPa));
 
+        Vector3f vCrgb = vC;
+        if(m_pV)
+        {
+            IF_(!getColor(vP, &vCrgb));
+        }
+
         PC_POINT *pP = &m_pP[m_iP];
         pP->m_vP = m_A * vPa;
-        pP->m_vC = (m_pV)?getColor(vP):vC;
+        pP->m_vC = vCrgb;
         pP->m_tStamp = tStamp;
 
         m_iP = iInc(m_iP, m_nP);

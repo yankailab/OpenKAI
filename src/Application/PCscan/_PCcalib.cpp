@@ -182,14 +182,42 @@ namespace kai
 		pV->updateParams();
 	}
 
+	void _PCcalib::OnExportParams(void *pPCV, void *pD)
+	{
+		NULL_(pPCV);
+		NULL_(pD);
+		_PCcalib *pV = (_PCcalib *)pPCV;
+
+		pV->exportParams((char*)pD);
+	}
+
+	void _PCcalib::exportParams(const char* pPath)
+	{
+		NULL_(pPath);
+		string yml = string(pPath);
+		IF_(yml.empty());
+
+		updateParams();
+		IF_(m_pV->getType() != vision_remap);
+		_Remap* pR = ((_Remap*)m_pV);
+		Mat mC = pR->mC();
+		Mat mD = pR->mD();
+
+		FileStorage fs(yml.c_str(), FileStorage::WRITE);
+		IF_(!fs.isOpened());
+		fs << "mC" << mC;
+		fs << "mD" << mD;
+		fs.release();
+	}
+
 	bool _PCcalib::calibRGB(const char *pPath)
 	{
 		IF_F(check() < 0);
 		NULL_F(pPath);
 
 		IF_F(!m_pCC->calibRGB(pPath));
-		Mat mC = m_pCC->camMatrix();
-		Mat mD = m_pCC->distCoeffs();
+		Mat mC = m_pCC->mC();
+		Mat mD = m_pCC->mD();
 
 		//update to UI
 		PCcalibUI* pW = (PCcalibUI*)m_pWin;
@@ -215,23 +243,25 @@ namespace kai
 	void _PCcalib::updateParams(void)
 	{
 		//update from UI
-		Mat mC = Mat::zeros(3,3,CV_64FC1);
-		Mat mD = Mat::zeros(1,5,CV_64FC1);
+		Mat mC = Mat::zeros(3,3,CV_32FC1);
+		Mat mD = Mat::zeros(1,5,CV_32FC1);
 
 		PCcalibUI* pW = (PCcalibUI*)m_pWin;
 		PCCALIB_PARAM* pP = pW->GetCalibParams();
-		mC.at<double>(0,0) = pP->m_Fx;
-		mC.at<double>(1,1) = pP->m_Fy;
-		mC.at<double>(0,2) = pP->m_Cx;
-		mC.at<double>(1,2) = pP->m_Cy;
+		mC.at<float>(0,0) = pP->m_Fx;
+		mC.at<float>(1,1) = pP->m_Fy;
+		mC.at<float>(0,2) = pP->m_Cx;
+		mC.at<float>(1,2) = pP->m_Cy;
+		mC.at<float>(2,2) = 1.0;
 
-		mD.at<double>(0,0) = pP->m_k1;
-		mD.at<double>(0,1) = pP->m_k2;
-		mD.at<double>(0,2) = pP->m_p1;
-		mD.at<double>(0,3) = pP->m_p2;
-		mD.at<double>(0,4) = pP->m_k3;
+		mD.at<float>(0,0) = pP->m_k1;
+		mD.at<float>(0,1) = pP->m_k2;
+		mD.at<float>(0,2) = pP->m_p1;
+		mD.at<float>(0,3) = pP->m_p2;
+		mD.at<float>(0,4) = pP->m_k3;
 
-//		m_pVremap->setCamMatrices(mC, mD);
+		IF_(m_pV->getType() != vision_remap);
+		((_Remap*)m_pV)->setCamMatrices(mC, mD);
 	}
 }
 #endif
