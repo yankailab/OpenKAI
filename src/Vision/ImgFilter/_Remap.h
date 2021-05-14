@@ -10,6 +10,7 @@
 
 #ifdef USE_OPENCV
 #include "../_VisionBase.h"
+#include "../../IO/_File.h"
 
 namespace kai
 {

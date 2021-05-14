@@ -181,7 +181,7 @@ namespace kai
 		NULL_(pPCV);
 		_PCcalib *pV = (_PCcalib *)pPCV;
 
-		pV->updateParamsData();
+		pV->updateParams();
 	}
 
 	void _PCcalib::OnImportParams(void *pPCV, void *pD)
@@ -205,37 +205,112 @@ namespace kai
 	void _PCcalib::importParams(const char *pPath)
 	{
 		NULL_(pPath);
-		string yml = string(pPath);
-		IF_(yml.empty());
+		string fKiss = string(pPath);
+		IF_(fKiss.empty());
 
-		FileStorage fs(yml.c_str(), FileStorage::READ);
-		IF_(!fs.isOpened());
-		Mat mC,mD;
-		fs["mC"] >> mC;
-		fs["mD"] >> mD;
-		fs.release();
+		_File *pF = new _File();
+		IF_(!pF->open(&fKiss, ios::in));
+		string f;
+		IF_(!pF->readAll(&f));
+		IF_(f.empty());
+		pF->close();
+		DEL(pF);
 
-		updateParamsUI(mC, mD);
-		updateParamsData();
+		Kiss *pKf = new Kiss();
+		IF_(!pKf->parse(&f));
+		Kiss* pK = pKf->child("calib");
+
+		//update to UI
+		PCcalibUI *pW = (PCcalibUI *)m_pWin;
+		PCCALIB_PARAM *pP = pW->GetCalibParams();
+
+		pK->v("Fx", &pP->m_Fx);
+		pK->v("Fy", &pP->m_Fy);
+		pK->v("Cx", &pP->m_Cx);
+		pK->v("Cy", &pP->m_Cy);
+
+		pK->v("k1", &pP->m_k1);
+		pK->v("k2", &pP->m_k2);
+		pK->v("p1", &pP->m_p1);
+		pK->v("p2", &pP->m_p2);
+		pK->v("k3", &pP->m_k3);
+
+		vDouble3 v;
+		pK->v("vOffsetPt", &v);
+		pP->m_poTx = v.x;
+		pP->m_poTy = v.y;
+		pP->m_poTz = v.z;
+		pK->v("vOffsetPr", &v);
+		pP->m_poRx = v.x;
+		pP->m_poRy = v.y;
+		pP->m_poRz = v.z;
+		pK->v("vOffsetCt", &v);
+		pP->m_coTx = v.x;
+		pP->m_coTy = v.y;
+		pP->m_coTz = v.z;
+		pK->v("vOffsetCr", &v);
+		pP->m_coRx = v.x;
+		pP->m_coRy = v.y;
+		pP->m_coRz = v.z;
+
+		delete pKf;
+	
+		pW->UpdateCalibParams();
+		updateParams();
 	}
 
 	void _PCcalib::exportParams(const char *pPath)
 	{
 		NULL_(pPath);
-		string yml = string(pPath);
-		IF_(yml.empty());
+		string fKiss = string(pPath);
+		IF_(fKiss.empty());
 
-		updateParamsData();
-		IF_(m_pV->getType() != vision_remap);
-		_Remap *pR = ((_Remap *)m_pV);
-		Mat mC = pR->mC();
-		Mat mD = pR->mD();
+		updateParams();
+		PCcalibUI *pW = (PCcalibUI *)m_pWin;
+		PCCALIB_PARAM *pP = pW->GetCalibParams();
 
-		FileStorage fs(yml.c_str(), FileStorage::WRITE);
-		IF_(!fs.isOpened());
-		fs << "mC" << mC;
-		fs << "mD" << mD;
-		fs.release();
+		picojson::object o;
+		o.insert(make_pair("name", "calib"));
+		o.insert(make_pair("Fx", value(pP->m_Fx)));
+		o.insert(make_pair("Fy", value(pP->m_Fy)));
+		o.insert(make_pair("Cx", value(pP->m_Cx)));
+		o.insert(make_pair("Cy", value(pP->m_Cy)));
+
+		o.insert(make_pair("k1", value(pP->m_k1)));
+		o.insert(make_pair("k2", value(pP->m_k2)));
+		o.insert(make_pair("p1", value(pP->m_p1)));
+		o.insert(make_pair("p2", value(pP->m_p2)));
+		o.insert(make_pair("k3", value(pP->m_k3)));
+
+		picojson::array v;
+		v.push_back(value(pP->m_poTx));
+		v.push_back(value(pP->m_poTy));
+		v.push_back(value(pP->m_poTz));
+		o.insert(make_pair("vOffsetPt", value(v)));
+		v.clear();
+		v.push_back(value(pP->m_poRx));
+		v.push_back(value(pP->m_poRy));
+		v.push_back(value(pP->m_poRz));
+		o.insert(make_pair("vOffsetPr", value(v)));
+		v.clear();
+		v.push_back(value(pP->m_coTx));
+		v.push_back(value(pP->m_coTy));
+		v.push_back(value(pP->m_coTz));
+		o.insert(make_pair("vOffsetCt", value(v)));
+		v.clear();
+		v.push_back(value(pP->m_coRx));
+		v.push_back(value(pP->m_coRy));
+		v.push_back(value(pP->m_coRz));
+		o.insert(make_pair("vOffsetCr", value(v)));
+		v.clear();
+
+		string f = picojson::value(o).serialize();
+
+		_File *pF = new _File();
+		IF_(!pF->open(&fKiss, ios::out));
+		pF->write((uint8_t *)f.c_str(), f.length());
+		pF->close();
+		DEL(pF);
 	}
 
 	bool _PCcalib::calibRGB(const char *pPath)
@@ -245,17 +320,11 @@ namespace kai
 
 		IF_F(!m_pCC->calibRGB(pPath));
 
-		updateParamsUI(m_pCC->mC(), m_pCC->mD());
-		updateParamsData();
-
-		return true;
-	}
-
-	void _PCcalib::updateParamsUI(const Mat& mC, const Mat& mD)
-	{
-		//update to UI
 		PCcalibUI *pW = (PCcalibUI *)m_pWin;
 		PCCALIB_PARAM *pP = pW->GetCalibParams();
+		Mat mC = m_pCC->mC();
+		Mat mD = m_pCC->mD();
+
 		pP->m_Fx = mC.at<double>(0, 0);
 		pP->m_Fy = mC.at<double>(1, 1);
 		pP->m_Cx = mC.at<double>(0, 2);
@@ -266,12 +335,15 @@ namespace kai
 		pP->m_p1 = mD.at<double>(0, 2);
 		pP->m_p2 = mD.at<double>(0, 3);
 		pP->m_k3 = mD.at<double>(0, 4);
+
 		pW->UpdateCalibParams();
+		updateParams();
+		return true;
 	}
 
-	void _PCcalib::updateParamsData(void)
+	void _PCcalib::updateParams(void)
 	{
-		//update from UI
+		//get data from UI and update the remap
 		Mat mC = Mat::zeros(3, 3, CV_64FC1);
 		Mat mD = Mat::zeros(1, 5, CV_64FC1);
 
@@ -291,6 +363,10 @@ namespace kai
 
 		IF_(m_pV->getType() != vision_remap);
 		((_Remap *)m_pV)->setCamMatrices(mC, mD);
+
+		//set offset
+		NULL_(m_pPS);
+
 	}
 }
 #endif

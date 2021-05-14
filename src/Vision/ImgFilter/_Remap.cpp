@@ -30,23 +30,48 @@ namespace kai
 		IF_F(!_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("yml", &m_yml);
-		if (!m_yml.empty())
-		{
-			FileStorage fs(m_yml.c_str(), FileStorage::READ);
-			if (fs.isOpened())
-			{
-				fs["mC"] >> m_mC;
-				fs["mD"] >> m_mD;
-				fs.release();
-			}
-		}
-
 		string n;
 		n = "";
 		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->getInst(n));
 		IF_Fl(!m_pV, n + ": not found");
+
+        pK->v("fCalib", &n);
+		_File *pF = new _File();
+		IF_T(!pF->open(&n, ios::in));
+		IF_T(!pF->readAll(&n));
+		IF_T(n.empty());
+		pF->close();
+		DEL(pF);
+
+		Kiss *pKf = new Kiss();
+		if(!pKf->parse(&n))
+        {
+            delete pKf;
+            return true;
+        }
+		pK = pKf->child("calib");
+		if(!pK)
+        {
+            delete pKf;
+            return true;
+        }
+
+		Mat mC = Mat::zeros(3, 3, CV_64FC1);
+		mC.at<double>(2, 2) = 1.0;
+		pK->v("Fx", &mC.at<double>(0, 0));
+		pK->v("Fy", &mC.at<double>(1, 1));
+		pK->v("Cx", &mC.at<double>(0, 2));
+		pK->v("Cy", &mC.at<double>(1, 2));
+	
+		Mat mD = Mat::zeros(1, 5, CV_64FC1);
+		pK->v("k1", &mD.at<double>(0, 0));
+		pK->v("k2", &mD.at<double>(0, 1));
+		pK->v("p1", &mD.at<double>(0, 2));
+		pK->v("p2", &mD.at<double>(0, 3));
+		pK->v("k3", &mD.at<double>(0, 4));
+
+		setCamMatrices(mC,mD);
 
 		return true;
 	}

@@ -30,16 +30,11 @@ bool BASE::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 	m_pKiss = pKiss;
 
-	string n="";
-	F_ERROR_F(pK->v("name",&n ));
-	IF_F( n.empty());
-
 	bool bLog = false;
 	pK->root()->child("APP")->v("bLog",&bLog);
 	if(bLog)
-	{
 		pK->v("bLog",&m_bLog);
-	}
+
 	pK->v("bDebug",&m_bDebug);
 
 	return true;

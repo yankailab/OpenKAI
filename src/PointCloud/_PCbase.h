@@ -10,6 +10,7 @@
 #ifdef USE_OPEN3D
 
 #include "../Vision/_VisionBase.h"
+#include "../IO/_File.h"
 using namespace open3d;
 using namespace open3d::geometry;
 using namespace open3d::visualization;
@@ -112,7 +113,7 @@ namespace kai
         vFloat3 m_vAxisK;
         float m_unitK;
 
-        //static offset
+        //static SLAM offset
         vDouble3 m_vToffset; //translation
         vDouble3 m_vRoffset; //rotation
     	Matrix4d m_mToffset;

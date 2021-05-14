@@ -26,7 +26,7 @@ bool _ModuleBase::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
     Kiss* pKt = pK->child("thread");
-    IF_F(pKt->empty());
+    IF_T(pKt->empty());
     
     m_pT = new _Thread();
     if(!m_pT->init(pKt))

@@ -51,7 +51,7 @@
 		"FPS":30,
 	}
 	"_VisionBase":"cam",
-	"yml":"",
+	"fCalib":"",
 }
 
 {
@@ -157,6 +157,7 @@
 	"vAxisIdxRGB":[1, 2, 0],
 	"vAxisKrgb":[-1, -1, 1],
 	"vToffsetRGB":[0.0516, 0.005, 0.01],
+	"fCalib":"",
 }
 
 {

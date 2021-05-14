@@ -8,10 +8,11 @@
 #ifndef OpenKAI_src_Application_PCcalib__PCcalib_H_
 #define OpenKAI_src_Application_PCcalib__PCcalib_H_
 #ifdef USE_OPEN3D
+#include "../../Vision/ImgFilter/_Remap.h"
+#include "../../IO/_File.h"
+#include "../CamCalib/_CamCalib.h"
 #include "_PCscan.h"
 #include "PCcalibUI.h"
-#include "../CamCalib/_CamCalib.h"
-#include "../../Vision/ImgFilter/_Remap.h"
 
 namespace kai
 {
@@ -60,8 +61,7 @@ namespace kai
 		static void OnExportParams(void *pPCV, void* pD);
 
 		bool calibRGB(const char* pPath);
-		void updateParamsUI(const Mat& mC, const Mat& mD);
-		void updateParamsData(void);
+		void updateParams(void);
 
 	protected:
 		_CamCalib* m_pCC;

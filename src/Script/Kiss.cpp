@@ -19,6 +19,9 @@ Kiss::~Kiss(void)
 		DEL(k);
 
 	m_vChild.clear();
+
+	if(!m_pParent)
+		DEL(m_pNULL);
 }
 
 bool Kiss::parse(string* pStr)

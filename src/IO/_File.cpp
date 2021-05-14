@@ -10,6 +10,7 @@ _File::_File(void)
 	m_name = "";
 	m_buf = "";
 	m_iByte = 0;
+	m_ioStatus = io_closed;
 }
 
 _File::~_File(void)
@@ -22,7 +23,6 @@ bool _File::init(void* pKiss)
 	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	m_ioStatus = io_closed;
 	return true;
 }
 
@@ -31,7 +31,6 @@ bool _File::open(string* pName, ios_base::openmode mode)
 	NULL_F(pName);
 	IF_T(m_ioStatus == io_opened);
 	m_name = *pName;
-	m_ioStatus = io_closed;
 
 	return open(mode);
 }
@@ -59,8 +58,7 @@ void _File::close(void)
 
 	m_file.flush();
 	m_file.close();
-
-	this->_IOBase::close();
+	m_ioStatus = io_closed;
 }
 
 int _File::read(uint8_t* pBuf, int nB)

@@ -75,30 +75,6 @@ namespace kai
         pK->v("vR", &m_vR);
         setTranslation(m_vT, m_vR);
 
-        //RGB
-        pK->v("vToffsetRGB", &m_vToffsetRGB);
-        pK->v("vRoffsetRGB", &m_vRoffsetRGB);
-        setRGBoffset(m_vToffsetRGB, m_vRoffsetRGB);
-
-        pK->v("vFrgb", &m_vFrgb);
-        pK->v("vCrgb", &m_vCrgb);
-        string yml;
-        pK->v("yml", &yml);
-        if (!yml.empty())
-        {
-            FileStorage fs(yml.c_str(), FileStorage::READ);
-            if (fs.isOpened())
-            {
-                Mat mC;
-                fs["mC"] >> mC;
-                fs.release();
-                m_vFrgb.x = mC.at<double>(0, 0);
-                m_vFrgb.y = mC.at<double>(1, 1);
-                m_vCrgb.x = mC.at<double>(0, 2);
-                m_vCrgb.y = mC.at<double>(1, 2);
-            }
-        }
-
         //pipeline ctx
         pK->v("ctxdT", &m_pInCtx.m_dT);
 
@@ -109,10 +85,41 @@ namespace kai
 
         m_nPread = 0;
 
-        //RGB map
+        //RGB
         n = "";
         pK->v("_VisionBase", &n);
         m_pV = (_VisionBase *)(pK->getInst(n));
+
+        pK->v("fCalib", &n);
+		_File *pF = new _File();
+		IF_T(!pF->open(&n, ios::in));
+		IF_T(!pF->readAll(&n));
+		IF_T(n.empty());
+		pF->close();
+		DEL(pF);
+
+		Kiss *pKf = new Kiss();
+		if(!pKf->parse(&n))
+        {
+            delete pKf;
+            return true;
+        }
+		pK = pKf->child("calib");
+		if(!pK)
+        {
+            delete pKf;
+            return true;
+        }
+
+		pK->v("Fx", &m_vFrgb.x);
+		pK->v("Fy", &m_vFrgb.y);
+		pK->v("Cx", &m_vCrgb.x);
+		pK->v("Cy", &m_vCrgb.y);
+        pK->v("vOffsetCt", &m_vToffsetRGB);
+        pK->v("vOffsetCr", &m_vRoffsetRGB);
+	
+		delete pKf;
+        setRGBoffset(m_vToffsetRGB, m_vRoffsetRGB);
 
         return true;
     }
