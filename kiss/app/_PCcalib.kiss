@@ -51,7 +51,7 @@
 		"FPS":30,
 	}
 	"_VisionBase":"cam",
-	"fCalib":"",
+	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calib.kiss",
 }
 
 {
@@ -146,18 +146,14 @@
 	"/broadcastCode":"3GGDJ1500105411",
 	"/broadcastCode":"0TFDHAW001808W1",
 	"nP":256000,
-	"vRange":[0.6, 500],
-	"/vToffset":[-0.0098, -0.046, 0.002],
-	"vToffset":[0.027, -0.0026, 0.0475],
-	"vRoffset":[0, 0, 0],
+	"vRange":[0.5, 500],
 	"vAxisIdx":[1, 0, 2],
 	"vAxisK":[-1, 1, 1],
 	"unitK":0.001,
 	"_VisionBase":"remap",
 	"vAxisIdxRGB":[1, 2, 0],
 	"vAxisKrgb":[-1, -1, 1],
-	"vToffsetRGB":[0.0516, 0.005, 0.01],
-	"fCalib":"",
+	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calib.kiss",
 }
 
 {

@@ -366,7 +366,15 @@ namespace kai
 
 		//set offset
 		NULL_(m_pPS);
+		vDouble3 vT,vR;
+		
+		vT.init(pP->m_poTx, pP->m_poTy, pP->m_poTz);
+		vR.init(pP->m_poRx, pP->m_poRy, pP->m_poRz);
+		m_pPS->setOffset(vT, vR);
 
+		vT.init(pP->m_coTx, pP->m_coTy, pP->m_coTz);
+		vR.init(pP->m_coRx, pP->m_coRy, pP->m_coRz);
+		m_pPS->setRGBoffset(vT, vR);
 	}
 }
 #endif

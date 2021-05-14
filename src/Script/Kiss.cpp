@@ -16,12 +16,17 @@ Kiss::Kiss(void)
 Kiss::~Kiss(void)
 {
 	for(Kiss* k : m_vChild)
-		DEL(k);
-
+	{
+		IF_CONT(!k);
+		delete k;
+	}
 	m_vChild.clear();
 
 	if(!m_pParent)
+	{
+		IF_(m_bNULL);
 		DEL(m_pNULL);
+	}
 }
 
 bool Kiss::parse(string* pStr)

@@ -38,31 +38,24 @@ namespace kai
 
         pK->v("fCalib", &n);
 		_File *pF = new _File();
-		IF_T(!pF->open(&n, ios::in));
-		IF_T(!pF->readAll(&n));
-		IF_T(n.empty());
+		IF_d_T(!pF->open(&n, ios::in), DEL(pF));
+		IF_d_T(!pF->readAll(&n), DEL(pF));
+		IF_d_T(n.empty(), DEL(pF));
 		pF->close();
 		DEL(pF);
 
 		Kiss *pKf = new Kiss();
-		if(!pKf->parse(&n))
-        {
-            delete pKf;
-            return true;
-        }
+		IF_d_T(!pKf->parse(&n),DEL(pKf));
+
 		pK = pKf->child("calib");
-		if(!pK)
-        {
-            delete pKf;
-            return true;
-        }
+		IF_d_T(pK->empty(), DEL(pKf));
 
 		Mat mC = Mat::zeros(3, 3, CV_64FC1);
-		mC.at<double>(2, 2) = 1.0;
 		pK->v("Fx", &mC.at<double>(0, 0));
 		pK->v("Fy", &mC.at<double>(1, 1));
 		pK->v("Cx", &mC.at<double>(0, 2));
 		pK->v("Cy", &mC.at<double>(1, 2));
+		mC.at<double>(2, 2) = 1.0;
 	
 		Mat mD = Mat::zeros(1, 5, CV_64FC1);
 		pK->v("k1", &mD.at<double>(0, 0));
@@ -71,8 +64,9 @@ namespace kai
 		pK->v("p2", &mD.at<double>(0, 3));
 		pK->v("k3", &mD.at<double>(0, 4));
 
-		setCamMatrices(mC,mD);
+		DEL(pKf);
 
+		setCamMatrices(mC,mD);
 		return true;
 	}
 

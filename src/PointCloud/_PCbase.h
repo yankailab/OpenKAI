@@ -94,6 +94,7 @@ namespace kai
         virtual void clear(void);
 
         virtual void setRGBoffset(const vDouble3 &vT, const vDouble3 &vR);
+        virtual void setRGBintrinsic(const vDouble2 &vF, const vDouble2 &vC);
 
     protected:
         virtual Matrix4d getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR);

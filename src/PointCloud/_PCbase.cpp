@@ -27,7 +27,7 @@ namespace kai
 
         m_pV = NULL;
         m_vFrgb.init(1.0);
-        m_vCrgb.init(0.0);
+        m_vCrgb.init(0.5);
         m_vToffsetRGB.init(0);
         m_vRoffsetRGB.init(0);
         m_mToffsetRGB = Matrix4d::Identity();
@@ -65,11 +65,6 @@ namespace kai
         m_vRange.x *= m_vRange.x;
         m_vRange.y *= m_vRange.y;
 
-        //origin offset
-        pK->v("vToffset", &m_vToffset);
-        pK->v("vRoffset", &m_vRoffset);
-        setOffset(m_vToffset, m_vRoffset);
-
         //transform
         pK->v("vT", &m_vT);
         pK->v("vR", &m_vR);
@@ -92,35 +87,31 @@ namespace kai
 
         pK->v("fCalib", &n);
 		_File *pF = new _File();
-		IF_T(!pF->open(&n, ios::in));
-		IF_T(!pF->readAll(&n));
-		IF_T(n.empty());
+		IF_d_T(!pF->open(&n, ios::in), DEL(pF));
+		IF_d_T(!pF->readAll(&n), DEL(pF));
+		IF_d_T(n.empty(), DEL(pF));
 		pF->close();
 		DEL(pF);
 
 		Kiss *pKf = new Kiss();
-		if(!pKf->parse(&n))
-        {
-            delete pKf;
-            return true;
-        }
+		IF_d_T(!pKf->parse(&n),DEL(pKf));
+
 		pK = pKf->child("calib");
-		if(!pK)
-        {
-            delete pKf;
-            return true;
-        }
+		IF_d_T(pK->empty(), DEL(pKf));
 
 		pK->v("Fx", &m_vFrgb.x);
 		pK->v("Fy", &m_vFrgb.y);
 		pK->v("Cx", &m_vCrgb.x);
 		pK->v("Cy", &m_vCrgb.y);
+        pK->v("vOffsetPt", &m_vToffset);
+        pK->v("vOffsetPr", &m_vRoffset);
         pK->v("vOffsetCt", &m_vToffsetRGB);
         pK->v("vOffsetCr", &m_vRoffsetRGB);
-	
-		delete pKf;
-        setRGBoffset(m_vToffsetRGB, m_vRoffsetRGB);
+		DEL(pKf);
 
+        setOffset(m_vToffset, m_vRoffset);
+        setRGBintrinsic(m_vFrgb, m_vCrgb);
+        setRGBoffset(m_vToffsetRGB, m_vRoffsetRGB);
         return true;
     }
 
@@ -154,14 +145,6 @@ namespace kai
         m_Aoffset = m_mToffset;
     }
 
-    void _PCbase::setRGBoffset(const vDouble3 &vT, const vDouble3 &vR)
-    {
-        m_vToffsetRGB = vT;
-        m_vRoffsetRGB = vR;
-        m_mToffsetRGB = getTranslationMatrix(vT, vR);
-        m_AoffsetRGB = m_mToffsetRGB;
-    }
-
     void _PCbase::setTranslation(const vDouble3 &vT, const vDouble3 &vR)
     {
         m_vT = vT;
@@ -174,6 +157,20 @@ namespace kai
     {
         m_mT = mT * m_mToffset;
         m_A = m_mT;
+    }
+
+    void _PCbase::setRGBoffset(const vDouble3 &vT, const vDouble3 &vR)
+    {
+        m_vToffsetRGB = vT;
+        m_vRoffsetRGB = vR;
+        m_mToffsetRGB = getTranslationMatrix(vT, vR);
+        m_AoffsetRGB = m_mToffsetRGB;
+    }
+
+    void _PCbase::setRGBintrinsic(const vDouble2 &vF, const vDouble2 &vC)
+    {
+        m_vFrgb = vF;
+        m_vCrgb = vC;
     }
 
     void _PCbase::readPC(void *pPC)
@@ -231,8 +228,6 @@ namespace kai
         float ovZ = 1.0 / vPa[2];
         float x = w * (m_vFrgb.x * vPa[0] + m_vCrgb.x * vPa[2]) * ovZ;
         float y = h * (m_vFrgb.y * vPa[1] + m_vCrgb.y * vPa[2]) * ovZ;
-        x += float(pM->cols) * 0.5;
-        y += float(pM->rows) * 0.5;
 
         IF_F(x < 0);
         IF_F(x > pM->cols - 1);
