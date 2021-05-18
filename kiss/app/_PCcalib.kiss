@@ -39,7 +39,7 @@
 		"FPS":30,
 	}
 	"/pipeline":"v4l2src device=/dev/video4 ! image/jpeg,width=3840,height=2160,framerate=30/1 ! jpegdec ! videoconvert ! appsink",
-	"pipeline":"v4l2src device=/dev/video4 ! image/jpeg,width=1280,height=720,framerate=30/1 ! jpegdec ! videoconvert ! appsink",
+	"pipeline":"v4l2src device=/dev/video5 ! image/jpeg,width=1920,height=1080,framerate=30/1 ! jpegdec ! videoconvert ! appsink",
 }
 
 {
@@ -51,7 +51,7 @@
 		"FPS":30,
 	}
 	"_VisionBase":"cam",
-	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calib.kiss",
+	"fCalib":"/home/kai/sq60_12x9/calib.kiss",
 }
 
 {
@@ -63,8 +63,8 @@
 		"FPS":10,
 	}
 	"path":"",
-	"vChessBoardSize":[9,6],
-	"squareSize":0.038,
+	"vChessBoardSize":[11,8],
+	"squareSize":0.06,
 }
 
 {
@@ -153,7 +153,7 @@
 	"_VisionBase":"remap",
 	"vAxisIdxRGB":[1, 2, 0],
 	"vAxisKrgb":[-1, -1, 1],
-	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calib.kiss",
+	"fCalib":"/home/kai/sq60_12x9/calib.kiss",
 }
 
 {

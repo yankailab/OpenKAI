@@ -14,6 +14,7 @@
 	"class":"_Console",
 	"bInst":1,
 }
+
 {
 	"name":"apSerial",
 	"class":"_SerialPort",

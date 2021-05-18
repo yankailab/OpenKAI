@@ -215,8 +215,8 @@ namespace kai
         IF_F(m_pV->BGR()->bEmpty());
         IF_F(m_pV->getType() != vision_remap);
 
-        Vector3d vPrgb = m_AoffsetRGB * vP;
-        Vector3d vPa = Vector3d(
+        Vector3d vPrgb = m_AoffsetRGB * vP; //vP raw lidar coordinate
+        Vector3d vPa = Vector3d(            //transform to RGB coordinate
             vPrgb[m_vAxisIdxRGB.x] * m_vAxisKrgb.x,
             vPrgb[m_vAxisIdxRGB.y] * m_vAxisKrgb.y,
             vPrgb[m_vAxisIdxRGB.z] * m_vAxisKrgb.z);

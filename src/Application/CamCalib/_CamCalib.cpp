@@ -47,9 +47,9 @@ namespace kai
         vector<vector<Point2f>> vvPimg; // 2D points for each checkerboard image
         vector<Point3f> vObj;           // world coordinates for 3D points
 
-        for (int j = 0; j < m_vChessBoardSize.y; j++)
+        for (int i = 0; i < m_vChessBoardSize.x; i++)
         {
-            for (int i = 0; i < m_vChessBoardSize.x; i++)
+            for (int j = 0; j < m_vChessBoardSize.y; j++)
                 vObj.push_back(cv::Point3f(j*m_squareSize, i*m_squareSize, 0));
         }
 

@@ -45,6 +45,7 @@ namespace kai
 
 		ADD_MODULE(_ArduServo);
 		ADD_MODULE(_ActuatorSync);
+		ADD_MODULE(_AgileX);
 		ADD_MODULE(_Sequencer);
 		ADD_MODULE(_OrientalMotor);
 		ADD_MODULE(_DRV8825_RS485);
