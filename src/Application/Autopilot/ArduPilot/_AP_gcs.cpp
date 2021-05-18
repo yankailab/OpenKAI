@@ -133,7 +133,6 @@ namespace kai
         if (m_state.bLANDING())
         {
             //vision navigated descend
-
             IF_(alt > m_altLand);
 
             m_pSC->transit(m_state.TOUCHDOWN);

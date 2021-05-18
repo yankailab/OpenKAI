@@ -6,7 +6,7 @@ namespace kai
 	_AP_land::_AP_land()
 	{
 		m_zrK = 1.0;
-		m_targetAlt = 1.0;
+		m_dComplete = 1.0;
 		m_dTarget = -1.0;
 	}
 
@@ -19,8 +19,8 @@ namespace kai
 		IF_F(!this->_AP_follow::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("targetAlt", &m_targetAlt);
 		pK->v("zrK", &m_zrK);
+		pK->v("dComplete", &m_dComplete);
 
 		return true;
 	}
@@ -57,13 +57,22 @@ namespace kai
 		IF_F(check() < 0);
 		IF_F(!bActive());
 
-		m_bTarget = findTarget();
-
 		if (m_apMount.m_bEnable)
 			m_pAP->setMount(m_apMount);
 
-		if (!m_bTarget)
+		m_bTarget = findTarget();
+		if (m_bTarget)
+		{
+			if(m_dTarget > m_dComplete)
+			{
+				m_pSC->transit();
+				m_vP = m_vTargetP;
+			}
+		}
+		else
+		{
 			m_vP = m_vTargetP;
+		}
 
 		setPosLocal();
 		return true;
@@ -129,8 +138,7 @@ namespace kai
 		m_vP.w = *pH;
 
 		//distance
-		//	m_filter.input(tO->getZ());
-		//	m_dTarget = m_filter.v();
+		m_dTarget = *pR; //temporal
 
 		return true;
 	}

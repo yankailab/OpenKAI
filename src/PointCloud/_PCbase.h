@@ -109,30 +109,24 @@ namespace kai
         PC_TYPE m_type;
         int m_nPread;
 
-        //axis index for sensors
+        // axis index for Pos/Atti sensor
         vInt3 m_vAxisIdx;
         vFloat3 m_vAxisK;
         float m_unitK;
 
-        //static SLAM offset
-        vDouble3 m_vToffset; //translation
-        vDouble3 m_vRoffset; //rotation
+        // pos/atti sensor offset in pos/atti sensor coordinate
+        vDouble3 m_vToffset;
+        vDouble3 m_vRoffset;
     	Matrix4d m_mToffset;
         Eigen::Affine3d m_Aoffset;
 
-        //filter
-        vDouble2 m_vRange;
-
-        //dynamic transform
-        vDouble3 m_vT; //translation
-        vDouble3 m_vR; //rotation
+        // dynamic transform
+        vDouble3 m_vT;
+        vDouble3 m_vR;
     	Matrix4d m_mT;
         Eigen::Affine3d m_A;
 
-        //pipeline input
-        PC_PIPIN_CTX m_pInCtx;
-
-        //RGB offset
+        //RGB offset in Lidar coordinate
         _VisionBase* m_pV;
         vDouble2 m_vFrgb;
         vDouble2 m_vCrgb;
@@ -142,6 +136,13 @@ namespace kai
     	Eigen::Affine3d m_AoffsetRGB;
         vInt3 m_vAxisIdxRGB;
         vFloat3 m_vAxisKrgb;
+
+        // filter
+        vDouble2 m_vRange;
+
+        // pipeline input
+        PC_PIPIN_CTX m_pInCtx;
+
     };
 
 }
