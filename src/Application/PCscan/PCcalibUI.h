@@ -57,6 +57,7 @@ namespace open3d
 
 				void SetCbScan(OnCbO3DUI pCb, void *pPCV);
 				void SetCbResetPC(OnCbO3DUI pCb, void *pPCV);
+				void SetCbRefreshCol(OnCbO3DUI pCb, void *pPCV);
 				void SetCbLoadImgs(OnCbO3DUI pCb, void *pPCV);
 				void SetCbUpdateParams(OnCbO3DUI pCb, void *pPCV);
 				void SetCbImportParams(OnCbO3DUI pCb, void *pPCV);
@@ -110,6 +111,7 @@ namespace open3d
 				//UI handler
 				O3D_UI_Cb m_cbScan;
 				O3D_UI_Cb m_cbResetPC;
+				O3D_UI_Cb m_cbRefreshCol;
 				O3D_UI_Cb m_cbLoadImgs;
 				O3D_UI_Cb m_cbUpdateParams;
 				O3D_UI_Cb m_cbImportParams;

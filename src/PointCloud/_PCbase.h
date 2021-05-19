@@ -42,6 +42,7 @@ namespace kai
 		pc_HiddenRemove = 4,
 		pc_ResetPC = 5,
 		pc_CamAuto = 6,
+		pc_RefreshCol = 7,
 	};
 
     struct PC_POINT

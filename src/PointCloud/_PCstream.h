@@ -37,6 +37,7 @@ namespace kai
         virtual int iP(void);
 
         virtual void clear(void);
+        virtual void refreshCol(void);
 
     protected:
         virtual void getStream(void *p);

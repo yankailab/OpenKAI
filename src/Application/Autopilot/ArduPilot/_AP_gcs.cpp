@@ -8,7 +8,6 @@ namespace kai
         m_pAP = NULL;
         m_bAutoArm = false;
         m_altAirborne = 20.0;
-        m_altLand = 5.0;
         m_dLanded = 5;
     }
 
@@ -23,7 +22,6 @@ namespace kai
 
         pK->v("bAutoArm", &m_bAutoArm);
         pK->v("altAirborne", &m_altAirborne);
-        pK->v("altLand", &m_altLand);
         pK->v("dLanded", &m_dLanded);
 
         string n;
@@ -85,8 +83,8 @@ namespace kai
         {
             IF_(apMode != AP_COPTER_GUIDED);
 
-            //        m_pSC->transit(m_state.TAKEOFF_REQUEST);
-            m_pSC->transit(m_state.LANDING);
+            m_pSC->transit(m_state.TAKEOFF_REQUEST);
+//          m_pSC->transit(m_state.LANDING); // for quick manual test
             return;
         }
 
@@ -98,13 +96,20 @@ namespace kai
 
         if (m_state.bTAKEOFF_READY())
         {
+            IF_(apMode != AP_COPTER_GUIDED);
+
             if (m_bAutoArm)
                 m_pAP->setApArm(true);
 
-            m_pAP->m_pMav->clNavTakeoff(m_altAirborne + 0.5);
+            IF_(!bApArmed);
 
-            if (bApArmed && alt > m_altAirborne)
+            m_pAP->m_pMav->clNavTakeoff(m_altAirborne + 1.0);
+
+            if (alt > m_altAirborne)
+            {
+                m_pT->sleepT(SEC_2_USEC * 5); //wait to send droneBox to close
                 m_pSC->transit(m_state.AIRBORNE);
+            }
 
             return;
         }
@@ -114,28 +119,30 @@ namespace kai
             if (apMode == AP_COPTER_GUIDED)
                 m_pAP->setApMode(AP_COPTER_AUTO);
 
+            IF_(apMode != AP_COPTER_AUTO);
+
             IF_(alt > m_altAirborne);
 
             m_pSC->transit(m_state.LANDING_REQUEST);
             return;
         }
 
-        //Landing procedure
+        // landing procedure
         if (m_state.bLANDING_REQUEST())
         {
-            //hold pos for landing ready
+            // hold pos until landing ready
             if (apMode == AP_COPTER_AUTO)
                 m_pAP->setApMode(AP_COPTER_GUIDED);
 
             return;
         }
 
+        // vision navigated descend
         if (m_state.bLANDING())
         {
-            //vision navigated descend
-            IF_(alt > m_altLand);
+            if (apMode == AP_COPTER_AUTO)
+                m_pAP->setApMode(AP_COPTER_GUIDED);
 
-            m_pSC->transit(m_state.TOUCHDOWN);
             return;
         }
 

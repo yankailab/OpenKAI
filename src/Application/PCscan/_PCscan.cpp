@@ -272,11 +272,11 @@ namespace kai
 		PCscanUI* pW = (PCscanUI*)m_pWin;
 		app.AddWindow(shared_ptr<PCscanUI>(pW));
 
-		pW->SetCbScan(OnBtnScan, (void *)this);
-		pW->SetCbOpenPC(OnBtnOpenPC, (void *)this);
-		pW->SetCbCamSet(OnBtnCamSet, (void *)this);
-		pW->SetCbHiddenRemove(OnBtnHiddenRemove, (void *)this);
-		pW->SetCbResetPC(OnBtnResetPC, (void *)this);
+		pW->SetCbScan(OnScan, (void *)this);
+		pW->SetCbOpenPC(OnOpenPC, (void *)this);
+		pW->SetCbCamSet(OnCamSet, (void *)this);
+		pW->SetCbHiddenRemove(OnHiddenRemove, (void *)this);
+		pW->SetCbResetPC(OnResetPC, (void *)this);
 		pW->SetCbVoxelDown(OnVoxelDown, (void *)this);
 
 		m_pUIstate = m_pWin->getUIState();
@@ -308,7 +308,7 @@ namespace kai
 		return pc.GetAxisAlignedBoundingBox();
 	}
 
-	void _PCscan::OnBtnScan(void *pPCV, void *pD)
+	void _PCscan::OnScan(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		NULL_(pD);
@@ -320,7 +320,7 @@ namespace kai
 			pV->m_fProcess.set(pc_ScanStop);
 	}
 
-	void _PCscan::OnBtnOpenPC(void *pPCV, void *pD)
+	void _PCscan::OnOpenPC(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		NULL_(pD);
@@ -332,7 +332,7 @@ namespace kai
 		pV->m_fProcess.set(pc_ResetPC);
 	}
 
-	void _PCscan::OnBtnCamSet(void *pPCV, void *pD)
+	void _PCscan::OnCamSet(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		NULL_(pD);
@@ -358,7 +358,7 @@ namespace kai
 		}
 	}
 
-	void _PCscan::OnBtnHiddenRemove(void *pPCV, void *pD)
+	void _PCscan::OnHiddenRemove(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		_PCscan *pV = (_PCscan *)pPCV;
@@ -372,7 +372,7 @@ namespace kai
 		pV->m_fProcess.set(pc_VoxelDown);
 	}
 
-	void _PCscan::OnBtnResetPC(void *pPCV, void *pD)
+	void _PCscan::OnResetPC(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		_PCscan *pV = (_PCscan *)pPCV;

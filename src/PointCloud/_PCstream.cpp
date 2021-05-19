@@ -122,6 +122,32 @@ namespace kai
         m_iP = 0;
     }
 
+    void _PCstream::refreshCol(void)
+    {
+        NULL_(m_pP);
+
+        // Vector3d vPa = Vector3d(
+        //                     vP[m_vAxisIdx.x] * m_vAxisK.x,
+        //                     vP[m_vAxisIdx.y] * m_vAxisK.y,
+        //                     vP[m_vAxisIdx.z] * m_vAxisK.z
+        //                     );
+        // IF_(!bRange(vPa));
+
+        // Vector3f vCrgb = vC;
+        // if(m_pV)
+        // {
+        //     IF_(!getColor(vP, &vCrgb));
+        // }
+
+        // PC_POINT *pP = &m_pP[m_iP];
+        // pP->m_vP = m_A * vPa;
+        // pP->m_vC = vCrgb;
+        // pP->m_tStamp = tStamp;
+
+        // m_iP = iInc(m_iP, m_nP);
+        // m_nPread++;
+    }
+
     int _PCstream::nP(void)
     {
         return m_nP;

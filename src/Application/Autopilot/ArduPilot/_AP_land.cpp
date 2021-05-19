@@ -6,8 +6,9 @@ namespace kai
 	_AP_land::_AP_land()
 	{
 		m_zrK = 1.0;
-		m_dComplete = 1.0;
 		m_dTarget = -1.0;
+		m_dComplete = 1.0;
+		m_altComplete = 1.0;
 	}
 
 	_AP_land::~_AP_land()
@@ -21,6 +22,7 @@ namespace kai
 
 		pK->v("zrK", &m_zrK);
 		pK->v("dComplete", &m_dComplete);
+		pK->v("altComplete", &m_altComplete);
 
 		return true;
 	}
@@ -60,18 +62,27 @@ namespace kai
 		if (m_apMount.m_bEnable)
 			m_pAP->setMount(m_apMount);
 
+		float alt = m_pAP->getGlobalPos().w; //relative altitude
 		m_bTarget = findTarget();
-		if (m_bTarget)
+
+		if (alt > m_altComplete)
 		{
-			if(m_dTarget > m_dComplete)
-			{
-				m_pSC->transit();
+			// landing
+			if (!m_bTarget)
 				m_vP = m_vTargetP;
-			}
 		}
 		else
 		{
-			m_vP = m_vTargetP;
+			if(m_bTarget && m_dTarget < m_dComplete)
+			{
+				// not yet close enough to the target marker, keep descending
+			}
+			else
+			{
+				// going to touch down
+				m_pSC->transit("TOUCHDOWN");
+				m_vP = m_vTargetP;
+			}
 		}
 
 		setPosLocal();

@@ -58,12 +58,12 @@ namespace kai
 		}
 
 		// handlers
-		static void OnBtnScan(void *pPCV, void* pD);
-		static void OnBtnOpenPC(void *pPCV, void* pD);
-		static void OnBtnCamSet(void *pPCV, void* pD);
+		static void OnScan(void *pPCV, void* pD);
+		static void OnOpenPC(void *pPCV, void* pD);
+		static void OnCamSet(void *pPCV, void* pD);
 		static void OnVoxelDown(void *pPCV, void* pD);
-		static void OnBtnHiddenRemove(void *pPCV, void* pD);
-		static void OnBtnResetPC(void *pPCV, void* pD);
+		static void OnHiddenRemove(void *pPCV, void* pD);
+		static void OnResetPC(void *pPCV, void* pD);
 
 		AxisAlignedBoundingBox createDefaultAABB(void);
 

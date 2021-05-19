@@ -56,6 +56,7 @@ namespace kai
 
 		// handlers
 		static void OnLoadImgs(void *pPCV, void* pD);
+		static void OnRefreshCol(void *pPCV, void* pD);
 		static void OnUpdateParams(void *pPCV, void* pD);
 		static void OnImportParams(void *pPCV, void* pD);
 		static void OnExportParams(void *pPCV, void* pD);

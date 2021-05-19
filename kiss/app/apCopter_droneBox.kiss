@@ -19,7 +19,6 @@
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
-	"_Console":"OK_Console",
 }
 
 {
@@ -30,7 +29,6 @@
 		"FPS":30,
 	}
 	"bInst":1,
-	"_Console":"OK_Console",
 	"/start":"STANDBY",
 	"start":"LANDING",
 
@@ -170,7 +168,6 @@
 	}
 }
 
-
 {
 	"name":"cam",
 	"class":"_GStreamer",
@@ -179,8 +176,6 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"Window":"OKview",
-	"_Console":"OK_Console",
 	"pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)360, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.16.198 port=5678 auto-multicast=false",
 }
 
@@ -192,8 +187,6 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"Window":"OKview",
-	"_Console":"OK_Console",
 	"deviceID":0,
 	"vSize":[640,480],
 }
@@ -206,8 +199,6 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"Window":"OKview",
-	"_Console":"OK_Console",
 }
 
 {
@@ -218,10 +209,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"bDraw":1,
-	"Window":"OKview",
 	"_VisionBase":"cam",
-	"_Console":"OK_Console",
 	"_Universe":"univTag",
 	"dict":17,
 }
@@ -230,8 +218,6 @@
 	"name":"PIDroll",
 	"class":"PID",
 	"bInst":1,
-	"Window":"OKview",
-	"_Console":"OK_Console",
 	"P":-1.0,
 	"I":0.0,
 	"Imax":0.0,
@@ -244,8 +230,6 @@
 	"name":"PIDpitch",
 	"class":"PID",
 	"bInst":1,
-	"Window":"OKview",
-	"_Console":"OK_Console",
 	"P":1.0,
 	"I":0.0,
 	"Imax":0.0,
@@ -258,8 +242,6 @@
 	"name":"PIDyaw",
 	"class":"PID",
 	"bInst":1,
-	"Window":"OKview",
-	"_Console":"OK_Console",
 	"P":-0.5,
 	"I":0.0,
 	"Imax":0.0,
@@ -277,8 +259,6 @@
 	}
 	"bInst":1,
 	"bLog":1,
-	"Window":"OKview",
-	"_Console":"OK_Console",
 	"_StateControl":"state",
 	"vActiveState":["LANDING"],
 	"_AP_base":"apBase",
@@ -287,12 +267,13 @@
 	"PIDpitch":"PIDpitch",
 	"PIDyaw":"PIDyaw",
 	"vTargetP":[0.48, 0.46, 0.3, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
-	"targetAlt":0.8,
-	"zrK":10.0,
 	"nWmed":0,
 	"nWpred":0,
 	"dThold":0,
 	"iClass":-1,
+	"zrK":10.0,
+	"dComplete":0.2,
+	"altComplete":1.5,
 	
 	{
 		"name":"mount",
@@ -316,8 +297,6 @@
 		"FPS":10,
 	}
 	"bLog":1,
-	"bDraw":1,
-	"_Console":"OK_Console",
 	"_AP_base":"apBase",
 	"_StateControl":"state",
 	"altAirborne":15.0,
@@ -339,7 +318,6 @@
 		"FPS":1,
 	}
 	"bLog":0,
-	"_Console":"OK_Console",
 	"port":"/dev/ttyUSB0",
 	"baud":57600,
 	"_wakeUp":"dbjTelem",
@@ -358,7 +336,6 @@
 		"FPS":30,
 	}
 	"bLog":1,
-	"_Console":"OK_Console",
 	"_AP_gcs":"apGCS",
 	"_IOBase":"telem",
 }
@@ -376,7 +353,6 @@
 		"FPS":1,
 	}
 	"bLog":0,
-	"_Console":"OK_Console",
 	"addr":"192.168.16.100",
 	"port":20000,
 	"_wakeUp":"dbjUDP",
@@ -395,8 +371,6 @@
 		"FPS":30,
 	}
 	"bLog":1,
-	"_Console":"OK_Console",
 	"_AP_gcs":"apGCS",
 	"_IOBase":"udp",
 }
-

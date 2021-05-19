@@ -4,7 +4,6 @@
 	"appName":"PCcalib",
 	"bLog":1,
 	"bStdErr":1,
-	"waitKey":30,
 }
 
 {
@@ -39,7 +38,7 @@
 		"FPS":30,
 	}
 	"/pipeline":"v4l2src device=/dev/video4 ! image/jpeg,width=3840,height=2160,framerate=30/1 ! jpegdec ! videoconvert ! appsink",
-	"pipeline":"v4l2src device=/dev/video5 ! image/jpeg,width=1920,height=1080,framerate=30/1 ! jpegdec ! videoconvert ! appsink",
+	"pipeline":"v4l2src device=/dev/video4 ! image/jpeg,width=1920,height=1080,framerate=30/1 ! jpegdec ! videoconvert ! appsink",
 }
 
 {
@@ -51,7 +50,7 @@
 		"FPS":30,
 	}
 	"_VisionBase":"cam",
-	"fCalib":"/home/kai/sq60_12x9/calib.kiss",
+	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calib.kiss",
 }
 
 {
@@ -98,8 +97,8 @@
 	"vCamAutoEye":[0,-2,0],
 	"vCamAutoUp":[0,1,0],
 	"vCoR":[0,0,0],
-	"camFov":70,
-	"vCamNF":[0, 200],
+	"camFov":80,
+	"vCamNF":[0, 500],
 	"camFovType":1,
 	"bFullScreen":0,
 	"wPanel":15,
@@ -153,7 +152,7 @@
 	"_VisionBase":"remap",
 	"vAxisIdxRGB":[1, 2, 0],
 	"vAxisKrgb":[-1, -1, 1],
-	"fCalib":"/home/kai/sq60_12x9/calib.kiss",
+	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calib.kiss",
 }
 
 {

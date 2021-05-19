@@ -77,6 +77,11 @@ namespace kai
 				stopScan();
 			}
 
+			if (m_fProcess.b(pc_RefreshCol))
+			{
+				m_pPS->refreshCol();
+			}
+
 			if (m_fProcess.b(pc_Scanning, false))
 			{
 				updateScan();
@@ -143,8 +148,9 @@ namespace kai
 		PCcalibUI *pW = (PCcalibUI *)m_pWin;
 		app.AddWindow(shared_ptr<PCcalibUI>(pW));
 
-		pW->SetCbScan(OnBtnScan, (void *)this);
-		pW->SetCbResetPC(OnBtnResetPC, (void *)this);
+		pW->SetCbScan(OnScan, (void *)this);
+		pW->SetCbResetPC(OnResetPC, (void *)this);
+		pW->SetCbRefreshCol(OnRefreshCol, (void *)this);
 		pW->SetCbLoadImgs(OnLoadImgs, (void *)this);
 		pW->SetCbUpdateParams(OnUpdateParams, (void *)this);
 		pW->SetCbImportParams(OnImportParams, (void *)this);
@@ -168,6 +174,15 @@ namespace kai
 	}
 
 	void _PCcalib::OnLoadImgs(void *pPCV, void *pD)
+	{
+		NULL_(pPCV);
+		NULL_(pD);
+		_PCcalib *pV = (_PCcalib *)pPCV;
+
+		pV->calibRGB((const char *)pD);
+	}
+
+	void _PCcalib::OnRefreshCol(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		NULL_(pD);
