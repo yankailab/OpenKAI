@@ -131,7 +131,7 @@ namespace kai
         if (m_state.bLANDING_REQUEST())
         {
             // hold pos until landing ready
-            if (apMode == AP_COPTER_AUTO)
+            if (apMode == AP_COPTER_AUTO || apMode == AP_COPTER_RTL)
                 m_pAP->setApMode(AP_COPTER_GUIDED);
 
             return;
@@ -140,7 +140,7 @@ namespace kai
         // vision navigated descend
         if (m_state.bLANDING())
         {
-            if (apMode == AP_COPTER_AUTO)
+            if (apMode == AP_COPTER_AUTO || apMode == AP_COPTER_RTL)
                 m_pAP->setApMode(AP_COPTER_GUIDED);
 
             return;

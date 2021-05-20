@@ -185,10 +185,9 @@ namespace kai
 	void _PCcalib::OnRefreshCol(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
-		NULL_(pD);
 		_PCcalib *pV = (_PCcalib *)pPCV;
-
-		pV->calibRGB((const char *)pD);
+		
+		pV->m_fProcess.set(pc_RefreshCol);
 	}
 
 	void _PCcalib::OnUpdateParams(void *pPCV, void *pD)

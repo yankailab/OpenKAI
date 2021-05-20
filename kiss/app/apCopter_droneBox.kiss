@@ -222,8 +222,8 @@
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
-	"oMin":-1.0,
-	"oMax":1.0,
+	"oMin":-0.5,
+	"oMax":0.5,
 }
 
 {
@@ -234,8 +234,8 @@
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
-	"oMin":-1.0,
-	"oMax":1.0,
+	"oMin":-0.5,
+	"oMax":0.5,
 }
 
 {
@@ -272,8 +272,8 @@
 	"dThold":0,
 	"iClass":-1,
 	"zrK":10.0,
-	"dComplete":0.2,
-	"altComplete":1.5,
+	"dComplete":0.1,
+	"altComplete":2.0,
 	
 	{
 		"name":"mount",
@@ -300,7 +300,6 @@
 	"_AP_base":"apBase",
 	"_StateControl":"state",
 	"altAirborne":15.0,
-	"altLand":-2.5,
 	"dLanded":5,
 	"bAutoArm":0,
 }

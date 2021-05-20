@@ -125,27 +125,31 @@ namespace kai
     void _PCstream::refreshCol(void)
     {
         NULL_(m_pP);
+        NULL_(m_pV);
 
-        // Vector3d vPa = Vector3d(
-        //                     vP[m_vAxisIdx.x] * m_vAxisK.x,
-        //                     vP[m_vAxisIdx.y] * m_vAxisK.y,
-        //                     vP[m_vAxisIdx.z] * m_vAxisK.z
-        //                     );
-        // IF_(!bRange(vPa));
+        vDouble3 vTr, vRr;
+        vTr.init(-m_vToffset.x, -m_vToffset.y, -m_vToffset.z);
+        vRr.init(-m_vRoffset.x, -m_vRoffset.y, -m_vRoffset.z);
+        Eigen::Affine3d aRev;
+        aRev = getTranslationMatrix(vTr, vRr);
 
-        // Vector3f vCrgb = vC;
-        // if(m_pV)
-        // {
-        //     IF_(!getColor(vP, &vCrgb));
-        // }
+        for (int i = 0; i < m_nP; i++)
+        {
+            PC_POINT *pP = &m_pP[i];
+            IF_CONT(pP->m_tStamp <= 0);
 
-        // PC_POINT *pP = &m_pP[m_iP];
-        // pP->m_vP = m_A * vPa;
-        // pP->m_vC = vCrgb;
-        // pP->m_tStamp = tStamp;
+            Vector3d vPr = aRev * pP->m_vP;
+            Vector3d vP;
+            vP[m_vAxisIdx.x] = vPr[0] / m_vAxisK.x;
+            vP[m_vAxisIdx.y] = vPr[1] / m_vAxisK.y;
+            vP[m_vAxisIdx.z] = vPr[2] / m_vAxisK.z;            
 
-        // m_iP = iInc(m_iP, m_nP);
-        // m_nPread++;
+            Vector3f vC;
+            if(getColor(vP, &vC))
+                pP->m_vC = vC;
+            else
+                pP->m_vC = Vector3f(0,0,0);
+        }
     }
 
     int _PCstream::nP(void)
