@@ -7,7 +7,7 @@ namespace kai
 	{
 		m_zrK = 1.0;
 		m_dTarget = -1.0;
-		m_dComplete = 1.0;
+		m_dTargetComplete = 1.0;
 		m_altComplete = 1.0;
 	}
 
@@ -21,7 +21,7 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("zrK", &m_zrK);
-		pK->v("dComplete", &m_dComplete);
+		pK->v("dTargetComplete", &m_dTargetComplete);
 		pK->v("altComplete", &m_altComplete);
 
 		return true;
@@ -65,15 +65,24 @@ namespace kai
 		float alt = m_pAP->getGlobalPos().w; //relative altitude
 		m_bTarget = findTarget();
 
+		m_vKpid.init(1.0);
+		if(m_bTarget)
+		{
+			float kD = 1.0 - (m_vKpidIn.constrain(m_dTarget) - m_vKpidIn.x)/m_vKpidIn.len();
+			kD = m_vKpidOut.constrain(kD);
+			m_vKpid.x = kD;
+			m_vKpid.y = kD;
+		}
+
 		if (alt > m_altComplete)
 		{
-			// landing
+			// descending
 			if (!m_bTarget)
 				m_vP = m_vTargetP;
 		}
 		else
 		{
-			if(m_bTarget && m_dTarget < m_dComplete)
+			if(m_bTarget && m_dTarget < m_dTargetComplete)
 			{
 				// not yet close enough to the target marker, keep descending
 			}

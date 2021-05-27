@@ -17,6 +17,7 @@ namespace kai
 		m_pSB = NULL;
 		m_pTk = NULL;
 
+		m_bSlam = true;
 		m_dHiddenRemove = 100.0;
 		m_fProcess.clearAll();
 	}
@@ -31,6 +32,7 @@ namespace kai
 		IF_F(!this->_PCviewer::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
+		pK->v("bSlam", &m_bSlam);
 		pK->v("dHiddenRemove", &m_dHiddenRemove);
 
 		string n = "";
@@ -254,12 +256,13 @@ namespace kai
 	{
 		IF_(check() < 0);
 		IF_(!m_fProcess.b(pc_Scanning, false));
+		IF_(!m_bSlam);
 
 		auto mT = m_pSB->mT();
 		for (int i = 0; i < m_vpPCB.size(); i++)
 		{
 			_PCbase *pP = m_vpPCB[i];
-//			pP->setTranslation(mT);
+			pP->setTranslation(mT);
 		}
 	}
 

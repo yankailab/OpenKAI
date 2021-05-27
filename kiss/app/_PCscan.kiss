@@ -20,7 +20,7 @@
 {
 	"name":"RGBview",
 	"class":"_WindowCV",
-	"bInst":1,
+	"bInst":0,
 	"bFullScreen":0,
     {
 		"name":"thread",
@@ -86,9 +86,9 @@
 	"camFov":80,
 	"vCamNF":[0, 500],
 	"camFovType":1,
-	"bFullScreen":0,
+	"bFullScreen":1,
 	"wPanel":13,
-	"mouseMode":1,
+	"mouseMode":0,
 	"vDmove":[0.5, 5.0],
 	"rDummyDome":1000.0,
 	"dHiddenRemove":100.0,

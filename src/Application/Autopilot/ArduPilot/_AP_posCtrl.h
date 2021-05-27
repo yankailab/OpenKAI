@@ -46,6 +46,9 @@ public:
 	PID* m_pPitch;
 	PID* m_pAlt;
 	PID* m_pYaw;
+	vFloat2 m_vKpidIn;
+	vFloat2 m_vKpidOut;
+	vFloat4 m_vKpid; //extra factor for distance effected PID aggresiveness adjustment
 };
 
 }

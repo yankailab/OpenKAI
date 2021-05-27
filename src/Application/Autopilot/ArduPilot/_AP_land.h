@@ -31,7 +31,7 @@ protected:
 public:
     float m_zrK;
 	float m_dTarget;	//dist to target
-	float m_dComplete;
+	float m_dTargetComplete;
 	float m_altComplete;
 };
 }

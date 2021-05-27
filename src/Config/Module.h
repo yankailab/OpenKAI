@@ -135,7 +135,6 @@
 #include "../Application/Surveillance/_GDcam.h"
 
 #include "../Application/RobotArm/_PickingArm.h"
-#include "../Application/AgileX/_AgileX.h"
 
 #ifdef USE_OPENCV_CONTRIB
 #include "../Detector/_ArUco.h"

@@ -72,6 +72,7 @@ namespace kai
 		_SlamBase *m_pSB;
 		_Thread *m_pTk;
 
+		bool m_bSlam;
 		float m_dHiddenRemove;
 		AxisAlignedBoundingBox m_aabb;
 

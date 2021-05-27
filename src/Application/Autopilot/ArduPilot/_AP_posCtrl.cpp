@@ -18,6 +18,9 @@ _AP_posCtrl::_AP_posCtrl()
 	m_pPitch = NULL;
 	m_pAlt = NULL;
 	m_pYaw = NULL;
+	m_vKpidIn.init(0.0,1.0);
+	m_vKpidOut.init(0.0,1.0);
+	m_vKpid.init(1.0);
 
 	m_sptLocal.vx = 0.0;
 	m_sptLocal.vy = 0.0;
@@ -50,6 +53,8 @@ bool _AP_posCtrl::init(void* pKiss)
 
 	pK->v("vTargetP", &m_vTargetP);
 	pK->v("vTargetGlobal", &m_vTargetGlobal);
+	pK->v("vKpidIn", &m_vKpidIn);
+	pK->v("vKpidOut", &m_vKpidOut);
 
 	string n;
 
@@ -123,6 +128,11 @@ void _AP_posCtrl::setPosLocal(void)
 
 	if(m_pYaw)
 		y = m_pYaw->update(dHdg<float>(m_vTargetP.w, m_vP.w), 0.0, dTs);
+
+	r *= m_vKpid.x;
+	p *= m_vKpid.y;
+	a *= m_vKpid.z;
+	y *= m_vKpid.w;
 
 	m_sptLocal.coordinate_frame = MAV_FRAME_BODY_OFFSET_NED;
 	m_sptLocal.vx = p;		//forward

@@ -88,6 +88,7 @@
 	"vPCbase":["/pcFile","pcLivox"],
 	"_PCstream":"pcLivox",
 	"_SlamBase":"T265",
+	"bSlam":1,
 	"_VisionBase":"remap",
 	"_CamCalib":"camCalib",
 	"vCamLookAt":[0,0,0],
