@@ -263,16 +263,16 @@
 	"PIDroll":"PIDroll",
 	"PIDpitch":"PIDpitch",
 	"PIDyaw":"PIDyaw",
-	"vTargetP":[0.48, 0.46, 0.3, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
+	"vTargetP":[0.46, 0.46, 0.3, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
 	"nWmed":0,
 	"nWpred":0,
-	"dThold":0,
+	"dThold":0.5,
 	"iClass":-1,
 	"zrK":10.0,
-	"altComplete":2.0,
-	"dTargetComplete":0.1,
-	"vKd":[0.01, 0.1],
-	"vKr":[0.2, 1.0],
+	"altComplete":1.25,
+	"dTargetComplete":0.3,
+	"vKpidIn":[0.2, 0.3],
+	"vKpidOut":[0.3, 1.0],
 	
 	{
 		"name":"mount",

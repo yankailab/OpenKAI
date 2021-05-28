@@ -11,7 +11,6 @@
 #ifdef USE_OPENCV
 #ifdef USE_OPENCV_CONTRIB
 #include "../Detector/_DetectorBase.h"
-#include "../Arithmetic/Destimator.h"
 
 namespace kai
 {
@@ -39,10 +38,8 @@ private:
 
 public:
 	cv::Ptr<cv::aruco::Dictionary> m_pDict;
-
 	uint8_t m_dict;
-	Destimator* m_pDe;
-
+	float m_realSize;
 };
 
 }

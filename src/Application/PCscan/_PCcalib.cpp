@@ -375,8 +375,7 @@ namespace kai
 		mD.at<double>(0, 3) = pP->m_p2;
 		mD.at<double>(0, 4) = pP->m_k3;
 
-		IF_(m_pV->getType() != vision_remap);
-		((_Remap *)m_pV)->setCamMatrices(mC, mD);
+		m_pV->setCamMatrices(mC, mD);
 
 		//set offset
 		NULL_(m_pPS);

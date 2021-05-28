@@ -15,6 +15,7 @@ namespace kai
 	_ArUco::_ArUco()
 	{
 		m_dict = aruco::DICT_4X4_50; //aruco::DICT_APRILTAG_16h5;
+		m_realSize = 0.05;
 	}
 
 	_ArUco::~_ArUco()
@@ -28,6 +29,8 @@ namespace kai
 
 		pK->v<uint8_t>("dict", &m_dict);
 		m_pDict = aruco::getPredefinedDictionary(m_dict);
+
+		pK->v("realSize", &m_realSize);
 
 		return true;
 	}
@@ -70,8 +73,12 @@ namespace kai
 		IF_(m.empty());
 
 		vector<int> vID;
-		vector<vector<cv::Point2f>> vvCorner;
-		cv::aruco::detectMarkers(m, m_pDict, vvCorner, vID);
+		vector<vector<Point2f>> vvCorner;
+		aruco::detectMarkers(m, m_pDict, vvCorner, vID);
+
+		// pose
+		vector<Vec3d> vvR, vvT;
+        aruco::estimatePoseSingleMarkers(vvCorner, m_realSize, m_pV->mCscaled(), m_pV->mD(), vvR, vvT);
 
 		_Object o;
 		float dx, dy;

@@ -95,7 +95,6 @@ namespace kai
         virtual void clear(void);
 
         virtual void setRGBoffset(const vDouble3 &vT, const vDouble3 &vR);
-        virtual void setRGBintrinsic(const vDouble2 &vF, const vDouble2 &vC);
 
     protected:
         virtual Matrix4d getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR);
@@ -127,10 +126,8 @@ namespace kai
     	Matrix4d m_mT;
         Eigen::Affine3d m_A;
 
-        //RGB offset in Lidar coordinate
+        // RGB offset in Lidar coordinate
         _VisionBase* m_pV;
-        vDouble2 m_vFrgb;
-        vDouble2 m_vCrgb;
         vDouble3 m_vToffsetRGB;
         vDouble3 m_vRoffsetRGB;
     	Matrix4d m_mToffsetRGB;

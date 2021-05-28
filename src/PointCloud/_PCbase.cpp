@@ -26,8 +26,6 @@ namespace kai
         m_A = Matrix4d::Identity();
 
         m_pV = NULL;
-        m_vFrgb.init(1.0);
-        m_vCrgb.init(0.5);
         m_vToffsetRGB.init(0);
         m_vRoffsetRGB.init(0);
         m_mToffsetRGB = Matrix4d::Identity();
@@ -99,10 +97,6 @@ namespace kai
 		pK = pKf->child("calib");
 		IF_d_T(pK->empty(), DEL(pKf));
 
-		pK->v("Fx", &m_vFrgb.x);
-		pK->v("Fy", &m_vFrgb.y);
-		pK->v("Cx", &m_vCrgb.x);
-		pK->v("Cy", &m_vCrgb.y);
         pK->v("vOffsetPt", &m_vToffset);
         pK->v("vOffsetPr", &m_vRoffset);
         pK->v("vOffsetCt", &m_vToffsetRGB);
@@ -110,8 +104,8 @@ namespace kai
 		DEL(pKf);
 
         setOffset(m_vToffset, m_vRoffset);
-        setRGBintrinsic(m_vFrgb, m_vCrgb);
         setRGBoffset(m_vToffsetRGB, m_vRoffsetRGB);
+
         return true;
     }
 
@@ -167,12 +161,6 @@ namespace kai
         m_AoffsetRGB = m_mToffsetRGB;
     }
 
-    void _PCbase::setRGBintrinsic(const vDouble2 &vF, const vDouble2 &vC)
-    {
-        m_vFrgb = vF;
-        m_vCrgb = vC;
-    }
-
     void _PCbase::readPC(void *pPC)
     {
         NULL_(pPC);
@@ -224,10 +212,12 @@ namespace kai
         Mat *pM = m_pV->BGR()->m();
         float w = pM->cols;
         float h = pM->rows;
+        vDouble2 vFrgb = m_pV->getF();
+        vDouble2 vCrgb = m_pV->getC();
 
         float ovZ = 1.0 / vPa[2];
-        float x = w * (m_vFrgb.x * vPa[0] + m_vCrgb.x * vPa[2]) * ovZ;
-        float y = h * (m_vFrgb.y * vPa[1] + m_vCrgb.y * vPa[2]) * ovZ;
+        float x = w * (vFrgb.x * vPa[0] + vCrgb.x * vPa[2]) * ovZ;
+        float y = h * (vFrgb.y * vPa[1] + vCrgb.y * vPa[2]) * ovZ;
 
         IF_F(x < 0);
         IF_F(x > pM->cols - 1);
