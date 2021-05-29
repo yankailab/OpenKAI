@@ -58,7 +58,7 @@ void _Line::update(void)
 		detect();
 
 		if (m_pT->bGoSleep())
-			m_pU->m_pPrev->clear();
+			m_pU->clear();
 
 		m_pT->autoFPSto();
 	}
@@ -133,7 +133,7 @@ void _Line::detect(void)
 	m_line = o.getY();
 	LOG_I("Line pos: " + f2str(m_line));
 
-	m_pU->updateObj();
+	m_pU->swap();
 
 }
 

@@ -56,7 +56,7 @@ namespace kai
 				detect();
 
 				if (m_pT->bGoSleep())
-					m_pU->m_pPrev->clear();
+					m_pU->clear();
 			}
 
 			m_pT->autoFPSto();
@@ -112,7 +112,7 @@ namespace kai
 				break;
 		}
 
-		m_pU->updateObj();
+		m_pU->swap();
 	}
 
 	void _DepthSegment::cvDraw(void *pWindow)

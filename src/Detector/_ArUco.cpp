@@ -60,7 +60,7 @@ namespace kai
 				detect();
 
 				if (m_pT->bGoSleep())
-					m_pU->m_pPrev->clear();
+					m_pU->clear();
 			}
 
 			m_pT->autoFPSto();
@@ -78,7 +78,12 @@ namespace kai
 
 		// pose
 		vector<Vec3d> vvR, vvT;
-        aruco::estimatePoseSingleMarkers(vvCorner, m_realSize, m_pV->mCscaled(), m_pV->mD(), vvR, vvT);
+        aruco::estimatePoseSingleMarkers(vvCorner, 
+										m_realSize, 
+										m_pV->mCscaled(), 
+										m_pV->mD(), 
+										vvR, 
+										vvT);
 
 		_Object o;
 		float dx, dy;
@@ -90,12 +95,21 @@ namespace kai
 			o.init();
 			o.setTopClass(vID[i], 1.0);
 
+			// pose
+			Vec3d v;
+			v = vvT[i];
+			vFloat3 vP{v[0], v[1], v[2]};
+			o.setPos(vP);
+			v = vvR[i];
+			vFloat3 vR{v[0], v[1], v[2]};
+			o.setAttitude(vR);
+
+			// bbox
 			Point2f pLT = vvCorner[i][0];
 			Point2f pRT = vvCorner[i][1];
 			Point2f pRB = vvCorner[i][2];
 			Point2f pLB = vvCorner[i][3];
 
-			// bbox
 			vFloat2 pV[4];
 			for (int j = 0; j < 4; j++)
 			{
@@ -104,16 +118,6 @@ namespace kai
 			}
 			o.setVertices2D(pV, 4);
 			o.scale(kx, ky);
-
-			// distance
-			if (m_pDV)
-			{
-				vFloat4 bb = o.getBB2D();
-				o.setZ(m_pDV->d(&bb));
-			}
-			else
-			{
-			}
 
 			// center position
 			dx = (float)(pLT.x + pRT.x + pRB.x + pLB.x) * 0.25;
@@ -135,7 +139,7 @@ namespace kai
 			LOG_I("ID: " + i2str(o.getTopClass()));
 		}
 
-		m_pU->updateObj();
+		m_pU->swap();
 	}
 
 	void _ArUco::console(void *pConsole)
@@ -144,15 +148,15 @@ namespace kai
 		IF_(check() < 0);
 		this->_DetectorBase::console(pConsole);
 
-		string msg = "| ";
 		_Object *pO;
 		int i = 0;
 		while ((pO = m_pU->get(i++)) != NULL)
 		{
-			msg += i2str(pO->getTopClass()) + "(" + f2str(pO->getZ()) + ") | ";
+			string msg = "id=" + i2str(pO->getTopClass()) +
+						 ", pos=(" + f2str(pO->getX()) + ", " + f2str(pO->getY()) + ", " + f2str(pO->getZ()) +
+						 ")";
+			((_Console *)pConsole)->addMsg(msg, 1);
 		}
-
-		((_Console *)pConsole)->addMsg(msg, 1);
 	}
 
 	void _ArUco::cvDraw(void *pWindow)

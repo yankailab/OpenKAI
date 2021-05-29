@@ -7,13 +7,8 @@ namespace kai
 template<typename T>
 struct tSwap
 {
-    int m_iT;
+    int m_iT = 0;
     T m_pT[2];
-
-    tSwap(void)
-    {
-        m_iT = 0;
-    }
 
     void swap(void)
     {

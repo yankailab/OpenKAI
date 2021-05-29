@@ -70,7 +70,7 @@ void _IRLock::update(void)
 			detect();
 
 			if (m_pT->bGoSleep())
-				m_pU->m_pPrev->clear();
+				m_pU->clear();
 		}
 
 		m_pT->autoFPSto();
@@ -94,7 +94,7 @@ void _IRLock::detect(void)
 	//TODO:distance
 
 	m_pU->add(o);
-	m_pU->updateObj();
+	m_pU->swap();
 }
 
 bool _IRLock::readPacket(void)

@@ -65,7 +65,7 @@ namespace kai
 				detect();
 
 				if (m_pT->bGoSleep())
-					m_pU->m_pPrev->clear();
+					m_pU->clear();
 			}
 
 			m_pT->autoFPSto();

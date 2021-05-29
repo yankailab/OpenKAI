@@ -11,7 +11,6 @@ namespace kai
 _DetectorBase::_DetectorBase()
 {
 	m_pV = NULL;
-	m_pDV = NULL;
 	m_pDB = NULL;
 	m_pU = NULL;
 
@@ -20,14 +19,6 @@ _DetectorBase::_DetectorBase()
 	m_fMean = "";
 	m_fClass = "";
 	m_nClass = 0;
-
-	m_bDrawStatistics = false;
-	m_classLegendPos.x = 25;
-	m_classLegendPos.y = 100;
-	m_classLegendPos.z = 15;
-	m_bDrawClass = false;
-	m_bDrawText = false;
-	m_bDrawPos = false;
 }
 
 _DetectorBase::~_DetectorBase()
@@ -81,19 +72,9 @@ bool _DetectorBase::init(void* pKiss)
 		}
 	}
 
-	//draw
-	pK->v<bool>("bDrawStatistics", &m_bDrawStatistics);
-	pK->v<bool>("bDrawClass", &m_bDrawClass);
-	pK->v<bool>("bDrawText", &m_bDrawText);
-	pK->v<bool>("bDrawPos", &m_bDrawPos);
-
 	string n = "";
 	F_INFO(pK->v("_VisionBase", &n));
 	m_pV = (_VisionBase*) (pK->getInst(n));
-
-	n = "";
-	pK->v("_DepthVisionBase",&n);
-	m_pDV = (_DepthVisionBase*)(pK->getInst(n));
 
 	n = "";
 	pK->v("_DetectorBase", &n);

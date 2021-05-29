@@ -75,7 +75,7 @@ namespace kai
 
 			if (check() >= 0)
 			{
-				m_pU->updateObj();
+				m_pU->swap();
 				detect();
 			}
 

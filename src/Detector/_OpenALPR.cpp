@@ -71,7 +71,7 @@ namespace kai
 
 			IF_CONT(!detect());
 
-			updateObj();
+			swap();
 
 			if (m_bGoSleep)
 			{

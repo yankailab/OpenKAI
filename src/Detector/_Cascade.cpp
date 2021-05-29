@@ -114,7 +114,7 @@ void _Cascade::detectGPU(void)
 		m_pU->add(o);
 	}
 
-	m_pU->updateObj();
+	m_pU->swap();
 }
 
 void _Cascade::detectCPU(void)
@@ -149,7 +149,7 @@ void _Cascade::detectCPU(void)
 		m_pU->add(o);
 	}
 
-	m_pU->updateObj();
+	m_pU->swap();
 }
 
 }

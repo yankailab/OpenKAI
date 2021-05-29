@@ -108,7 +108,7 @@ void _DetectNet::update(void)
 		m_pT->autoFPSfrom();
 
 		detect();
-		m_pU->updateObj();
+		m_pU->swap();
 
 		m_pT->autoFPSto();
 	}

@@ -37,6 +37,11 @@ public:
 	float getY(void);
 	float getZ(void);
 
+	void setPosScr(vFloat2& p);
+	vFloat2 getPosScr(void);
+	void setDimScr(vFloat2& d);
+	vFloat2 getDimScr(void);
+
 	//attitude
 	void setAttitude(vFloat3& a);
 	vFloat3 getAttitude(void);
@@ -89,9 +94,6 @@ public:
 	void setText(string& txt);
 	string getText(void);
 
-	//interactions
-	virtual float nIoU(_Object& obj);
-
 	//kinetics
 	virtual void updateKinetics(void);
 
@@ -108,10 +110,15 @@ private:
 
 protected:
 	//general
-	vFloat3		m_vPos;		//center pos x, y, z
+	uint64_t	m_tStamp;
+
+	//pos and dim
+	vFloat3		m_vPos;		//world pos x, y, z
 	vFloat3		m_vAtti;	//attitude roll, pith, yaw
 	vFloat4		m_vDim;		//width, height, depth, radius
-	uint64_t	m_tStamp;
+
+	vFloat2		m_vPosScr;	//screen pos x, y
+	vFloat2		m_vDimScr;	//w,h
 
 	//kinetics
 	vFloat3		m_vSpeed;
@@ -122,9 +129,6 @@ protected:
 	float		m_topProb;		//prob for the topClass
 	uint64_t	m_mClass;		//all candidate class mask
 	string		m_txt;
-
-	//trajectory
-	vector<vFloat3> m_vTraj;
 
 	//vertex
 	vector<vFloat2> m_vVertex;

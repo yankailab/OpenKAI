@@ -11,7 +11,6 @@
 
 #include "../Universe/_Universe.h"
 #include "../Vision/_VisionBase.h"
-#include "../Vision/_DepthVisionBase.h"
 #include "../Protocol/_Mavlink.h"
 
 namespace kai
@@ -31,7 +30,6 @@ public:
 public:
 	//input
 	_VisionBase *m_pV;
-	_DepthVisionBase* m_pDV;
 	_DetectorBase *m_pDB;
 
 	//data
@@ -45,14 +43,6 @@ public:
 	string m_fClass;
 	int m_nClass;
 	vector<OBJ_CLASS> m_vClass;
-
-	//show
-	bool m_bDrawStatistics;
-	vInt3 m_classLegendPos;
-	bool m_bDrawClass;
-	bool m_bDrawText;
-	bool m_bDrawPos;
-
 };
 
 }

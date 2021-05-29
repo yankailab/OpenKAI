@@ -103,7 +103,7 @@ namespace kai
 					detect();
 
 				if (m_pT->bGoSleep())
-					m_pU->m_pPrev->clear();
+					m_pU->clear();
 			}
 
 			m_pT->autoFPSto();
@@ -193,7 +193,7 @@ namespace kai
 			LOG_I("Class: " + i2str(o.getTopClass()));
 		}
 
-		m_pU->updateObj();
+		m_pU->swap();
 	}
 
 	void _DNNdetect::detect(void)
@@ -231,7 +231,7 @@ namespace kai
 			LOG_I("Class: " + i2str(o.getTopClass()));
 		}
 
-		m_pU->updateObj();
+		m_pU->swap();
 	}
 
 	void _DNNdetect::cvDraw(void *pWindow)

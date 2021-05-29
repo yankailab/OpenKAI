@@ -59,7 +59,7 @@ void _Bullseye::update(void)
 			detect();
 
 			if(m_bGoSleep)
-				m_pU->m_pPrev->clear();
+				m_pU->clear();
 		}
 
 		m_pT->autoFPSto();
@@ -124,7 +124,7 @@ void _Bullseye::detect(void)
 		LOG_I("ID: "+ i2str(o.getTopClass()));
 	}
 
-	m_pU->updateObj();
+	m_pU->swap();
 }
 
 }
