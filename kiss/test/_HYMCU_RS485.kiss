@@ -2,26 +2,30 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
-	"bDraw":1,
 	"bLog":0,
 	"bStdErr":1,
-	"waitKey":30,
 }
 
 {
-	"name":"OK_Console",
+	"name":"console",
 	"class":"_Console",
 	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["modbus","stepper"],
 }
 
 {
 	"name":"modbus",
 	"class":"_Modbus",
 	"bInst":1,
-	"FPS":30,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"bLog":0,
-	"_Console":"OK_Console",
 	"port":"/dev/ttyUSB0",
 	"baud":9600,
 	"parity":"N",	
@@ -29,11 +33,58 @@
 
 {
 	"name":"stepper",
-	"class":"_DRV8825_RS485",
+	"class":"_HYMCU_RS485",
 	"bInst":1,
-	"FPS":5,
+    {
+		"name":"thread",
+		"FPS":5,
+	}
 	"bLog":1,
-	"_Console":"OK_Console",
+	"_Modbus":"modbus",
+	"iSlave":1,
+	"dpr":1,
+	"bFeedback":1,
+	"dInit":1,
+
+	{
+		"name":"addr",
+		"setDPR":4,
+		"setDist":9,
+		"setDir":11,
+		"setSpd":8,
+		"setAcc":2,
+		"bComplete":12,
+		"readStat":22,
+		"run":7,
+		"stop":3,
+		"resPos":10,
+	}
+
+	{
+		"name":"axis",
+		{
+			"name":"X",
+			"pOrigin":0.0,
+			"pTarget":0.0,
+			"pErr":0.01,
+			"pRange":[0,15],
+			"sTarget":20.0,
+			"sRange":[0,300],
+			"aTarget":10.0,
+			"aRange":[10,300],
+		}
+	}
+}
+
+{
+	"name":"stepper",
+	"class":"_HYMCU_RS485",
+	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":5,
+	}
+	"bLog":1,
 	"_Modbus":"modbus",
 	"iSlave":1,
 	"dpr":1,
@@ -59,10 +110,12 @@
 {
 	"name":"gripper",
 	"class":"_StepperGripper",
-	"bInst":1,
-	"FPS":5,
+	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":5,
+	}
 	"bLog":1,
-	"_Console":"OK_Console",
 	"_Modbus":"modbus",
 	"iSlave":1,
 	"dpr":1,

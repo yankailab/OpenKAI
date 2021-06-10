@@ -1,0 +1,190 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"APactuator",
+	"bLog":0,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["modbus","stepper1","stepper2","apActuator","apBase"],
+}
+
+{
+	"name":"modbus",
+	"class":"_Modbus",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"port":"/dev/ttyUSB0",
+	"baud":9600,
+	"parity":"N",	
+}
+
+{
+	"name":"stepper1",
+	"class":"_HYMCU_RS485",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":5,
+	}
+	"bLog":1,
+	"_Modbus":"modbus",
+	"iSlave":1,
+	"dpr":1,
+	"bFeedback":1,
+	"dInit":1,
+
+	{
+		"name":"axis",
+		{
+			"name":"X",
+			"pOrigin":0.0,
+			"pTarget":0.0,
+			"pErr":0.01,
+			"pRange":[0,15],
+			"sTarget":20.0,
+			"sRange":[0,300],
+			"aTarget":10.0,
+			"aRange":[10,300],
+		}
+	}
+}
+
+{
+	"name":"stepper2",
+	"class":"_HYMCU_RS485",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":5,
+	}
+	"bLog":1,
+	"_Modbus":"modbus",
+	"iSlave":2,
+	"dpr":1,
+	"bFeedback":1,
+	"dInit":1,
+
+	{
+		"name":"axis",
+		{
+			"name":"X",
+			"pOrigin":0.0,
+			"pTarget":0.0,
+			"pErr":0.01,
+			"pRange":[0,15],
+			"sTarget":20.0,
+			"sRange":[0,300],
+			"aTarget":10.0,
+			"aRange":[10,300],
+		}
+	}
+}
+
+{
+	"name":"apActuator",
+	"class":"_AP_actuator",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":1,
+	"_AP_base":"apBase",
+	"_ActuatorBase1":"stepper1",
+	"_ActuatorBase2":"stepper2",
+	"iRCmodeChan":5,
+	"vRCmodeDiv":[1000,1500,2000],
+	"iRCstickV":2,
+	"iRCstickH":4,
+}
+
+{
+	"name":"apSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":1,
+	}
+	"bLog":0,
+	"port":"/dev/ttyTHS1",
+	"/port":"/dev/ttyACM0",
+	"baud":115200,
+}
+
+{
+	"name":"apMavlink",
+	"class":"_Mavlink",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"_IOBase":"apSerial",	
+}
+
+{
+	"name":"apBase",
+	"class":"_AP_base",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"_Mavlink":"apMavlink",
+	"freqSendHeartbeat":1,
+	"apType":1,
+	
+	{
+		"name":"mavMsgInt",
+		
+		{
+			"name":"heartbeat",
+			"id":0,
+			"tInt":1.0,
+		}
+		{
+			"name":"attitude",
+			"id":30,
+			"tInt":1.0,
+		}
+		{
+			"name":"rcChannels",
+			"id":65,
+			"tInt":0.2,
+		}
+		{
+			"name":"localPosition",
+			"id":32,
+			"tInt":1.0,
+		}
+		{
+			"name":"globalPosition",
+			"id":33,
+			"tInt":1.0,
+		}
+		{
+			"name":"batteryStatus",
+			"id":147,
+			"tInt":10,
+		}
+	}
+}

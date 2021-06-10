@@ -22,6 +22,8 @@ _ActuatorBase::_ActuatorBase()
 
 	pthread_mutex_init(&m_mutex, NULL);
 	m_pParent = NULL;
+
+	m_bf.clearAll();
 }
 
 _ActuatorBase::~_ActuatorBase()
@@ -90,7 +92,12 @@ bool _ActuatorBase::init(void* pKiss)
 
 bool _ActuatorBase::power(bool bON)
 {
-    return true;    
+    return true;
+}
+
+void _ActuatorBase::setStop(void)
+{
+	m_bf.set(ACT_BF_STOP);
 }
 
 bool _ActuatorBase::start(void)

@@ -5,7 +5,6 @@
 #include "_AP_base.h"
 #include "../../../Utility/RC.h"
 
-
 namespace kai
 {
 
@@ -31,7 +30,8 @@ private:
 
 private:
 	_AP_base* m_pAP;
-    _ActuatorBase* m_pAB;
+    _ActuatorBase* m_pAB1;
+    _ActuatorBase* m_pAB2;
 
     RC_CHANNEL m_rcMode;
     RC_CHANNEL m_rcStickV;

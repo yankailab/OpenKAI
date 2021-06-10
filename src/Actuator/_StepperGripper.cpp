@@ -22,7 +22,7 @@ _StepperGripper::~_StepperGripper()
 
 bool _StepperGripper::init(void* pKiss)
 {
-	IF_F(!this->_DRV8825_RS485::init(pKiss));
+	IF_F(!this->_HYMCU_RS485::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("pOpen", &m_pOpen);
@@ -100,7 +100,7 @@ bool _StepperGripper::bGrip(void)
 void _StepperGripper::console(void* pConsole)
 {
 	NULL_(pConsole);
-	this->_DRV8825_RS485::console(pConsole);
+	this->_HYMCU_RS485::console(pConsole);
 
 	((_Console*)pConsole)->addMsg("bOpen=" + i2str(m_bOpen) + ", bState=" + i2str(m_bState));
 }

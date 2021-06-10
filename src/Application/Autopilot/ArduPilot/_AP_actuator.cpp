@@ -6,7 +6,8 @@ namespace kai
 _AP_actuator::_AP_actuator()
 {
 	m_pAP = NULL;
-    m_pAB = NULL;
+    m_pAB1 = NULL;
+    m_pAB2 = NULL;
     
     m_rcMode.init();
     m_rcStickV.init();
@@ -37,9 +38,13 @@ bool _AP_actuator::init(void* pKiss)
 	m_pAP = (_AP_base*) (pK->getInst( n ));
 	IF_Fl(!m_pAP, n + ": not found");
     
-   	pK->v("_ActuatorBase", &n );
-	m_pAB = (_ActuatorBase*) (pK->getInst( n ));
-	IF_Fl(!m_pAB, n + ": not found");
+   	pK->v("_ActuatorBase1", &n );
+	m_pAB1 = (_ActuatorBase*) (pK->getInst( n ));
+	IF_Fl(!m_pAB1, n + ": not found");
+
+   	pK->v("_ActuatorBase2", &n );
+	m_pAB2 = (_ActuatorBase*) (pK->getInst( n ));
+	IF_Fl(!m_pAB2, n + ": not found");
 
 	return true;
 }
@@ -54,7 +59,8 @@ int _AP_actuator::check(void)
 {
 	NULL__(m_pAP, -1);
 	NULL__(m_pAP->m_pMav, -1);
-	NULL__(m_pAB, -1);
+	NULL__(m_pAB1, -1);
+	NULL__(m_pAB2, -1);
 
 	return this->_StateBase::check();
 }
@@ -78,10 +84,10 @@ void _AP_actuator::updateActuator(void)
 
     uint16_t pwm;
     
-    pwm = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcMode.m_iChan );
-    IF_ ( pwm == UINT16_MAX );
-    m_rcMode.pwm ( pwm );
-    int iMode = m_rcMode.i();
+    // pwm = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcMode.m_iChan );
+    // IF_ ( pwm == UINT16_MAX );
+    // m_rcMode.pwm ( pwm );
+    // int iMode = m_rcMode.i();
     
     pwm = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcStickV.m_iChan );
     IF_ ( pwm == UINT16_MAX );
@@ -91,19 +97,30 @@ void _AP_actuator::updateActuator(void)
     IF_ ( pwm == UINT16_MAX );
     m_rcStickH.pwm ( pwm );
 
-    
-    
-    m_pAB->power(iMode!=0?true:false);
-    IF_(iMode == 0);
-        
-//    m_pAB->setPtarget(0, m_pAB->getPtarget(0) + m_rcStickV.d());
-//    m_pAB->setPtarget(1, m_pAB->getPtarget(1) + m_rcStickH.d());
+    // m_pAB1->power(iMode!=0?true:false);
+    // IF_(iMode == 0);
 
-//    m_pAB->setStarget(0, m_rcStickV.d());
-//    m_pAB->setStarget(1, m_rcStickH.d());
-//    m_pAB->setPtarget(0, (m_rcStickV.v() - 0.5) * CV_PI);
-//    m_pAB->setPtarget(1, (m_rcStickH.v() - 0.5) * CV_PI);
+	int i;
 
+	i=m_rcStickV.i();
+	if(i==1)
+	{
+		m_pAB1->setStop();
+	}
+	else
+	{
+		m_pAB1->setPtarget(0, (i-1)*20);
+	}
+
+	i=m_rcStickH.i();
+	if(i==1)
+	{
+		m_pAB2->setStop();
+	}
+	else
+	{
+		m_pAB2->setPtarget(0, (i-1)*20);
+	}
 }
 
 void _AP_actuator::console(void* pConsole)
@@ -115,8 +132,8 @@ void _AP_actuator::console(void* pConsole)
 
 	_Console *pC = (_Console *)pConsole;
 	pC->addMsg("iMode: "+i2str(m_rcMode.i()), 1);
-	pC->addMsg("stickV v = "+f2str(m_rcStickV.v()), 1);
-	pC->addMsg("stickH v = "+f2str(m_rcStickH.v()), 1);
+	pC->addMsg("stickV = "+f2str(m_rcStickV.v()), 1);
+	pC->addMsg("stickH = "+f2str(m_rcStickH.v()), 1);
 }
 
 }

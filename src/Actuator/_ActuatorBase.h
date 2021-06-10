@@ -10,9 +10,12 @@
 
 #include "../Base/_ModuleBase.h"
 #include "../UI/_Console.h"
+#include "../Utility/BitFlag.h"
 
 namespace kai
 {
+
+#define ACT_BF_STOP 0
 
 struct ACTUATOR_AXIS_PARAM
 {
@@ -111,6 +114,7 @@ public:
 	virtual float getStarget(int i);
     
     virtual bool power(bool bON);
+    virtual void setStop(void);
 
 protected:
 	virtual bool bCmdTimeout(void);
@@ -139,6 +143,7 @@ public:
 
 	_ActuatorBase* m_pParent;
 
+	BIT_FLAG m_bf;
 };
 
 }

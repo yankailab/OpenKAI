@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Actuator__StepperGripper_H_
 #define OpenKAI_src_Actuator__StepperGripper_H_
 
-#include "_DRV8825_RS485.h"
+#include "_HYMCU_RS485.h"
 
 namespace kai
 {
 
-class _StepperGripper: public _DRV8825_RS485
+class _StepperGripper: public _HYMCU_RS485
 {
 public:
 	_StepperGripper();

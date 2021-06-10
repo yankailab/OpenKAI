@@ -1,5 +1,5 @@
 /*
- * _DRV8825_RS485.h
+ * _HYMCU_RS485.h
  *
  *  Created on: June 22, 2020
  *      Author: yankai
@@ -14,17 +14,39 @@
 namespace kai
 {
 
-class _DRV8825_RS485: public _ActuatorBase
+struct HYMCU_MODBUS_ADDR
+{
+	//default for DRV8825
+	uint16_t m_setDPR = 4;
+	uint16_t m_setDist = 9;
+	uint16_t m_setDir = 11;
+	uint16_t m_setSpd = 8;
+	uint16_t m_setAcc = 2;
+	uint16_t m_setSlaveID = 16;
+
+	uint16_t m_bComplete = 12;
+	uint16_t m_readStat = 22;
+
+	uint16_t m_run = 7;
+	uint16_t m_stop = 3;
+	uint16_t m_resPos = 10;
+	uint16_t m_saveData = 0;
+};
+
+class _HYMCU_RS485: public _ActuatorBase
 {
 public:
-	_DRV8825_RS485();
-	~_DRV8825_RS485();
+	_HYMCU_RS485();
+	~_HYMCU_RS485();
 
 	bool init(void* pKiss);
 	bool start(void);
 	int check(void);
 
 protected:
+	bool setSlaveID(uint16_t iSlave);
+	bool saveData(void);
+
 	bool setDistPerRound(int32_t dpr);
 	bool setPos(void);
 	bool setSpeed(void);
@@ -42,7 +64,7 @@ protected:
 	void update(void);
 	static void* getUpdate(void* This)
 	{
-		((_DRV8825_RS485*) This)->update();
+		((_HYMCU_RS485*) This)->update();
 		return NULL;
 	}
 
@@ -53,6 +75,7 @@ public:
 	int32_t m_dpr;	//distance per round
 	ACTUATOR_AXIS* m_pA;
 
+	HYMCU_MODBUS_ADDR m_addr;
 	int32_t m_dInit;
 	uint32_t m_cmdInt;
 

@@ -14,7 +14,7 @@
 
 #include "../Actuator/_ArduServo.h"
 #include "../Actuator/_ActuatorSync.h"
-#include "../Actuator/_DRV8825_RS485.h"
+#include "../Actuator/_HYMCU_RS485.h"
 #include "../Actuator/_OrientalMotor.h"
 #include "../Actuator/Articulated/_S6H4D.h"
 #include "../Actuator/_StepperGripper.h"
