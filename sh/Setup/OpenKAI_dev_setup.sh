@@ -194,7 +194,7 @@ sudo make install
 
 #----------------------------------------------------
 # (Optional) Open3D
-git clone --branch v0.12.0 --depth 1 --recursive https://github.com/intel-isl/Open3D
+git clone --branch v0.13.0 --depth 1 --recursive https://github.com/intel-isl/Open3D
 cd Open3D
 git submodule update --init --recursive
 mkdir build

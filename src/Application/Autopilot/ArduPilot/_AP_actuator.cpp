@@ -27,10 +27,14 @@ bool _AP_actuator::init(void* pKiss)
     pK->a ( "vRCmodeDiv", &m_rcMode.m_vDiv );
     pK->v ( "iRCstickV", &m_rcStickV.m_iChan );
     pK->v ( "iRCstickH", &m_rcStickH.m_iChan );
+
+    pK->a ( "vRCmodeDiv", &m_rcStickV.m_vDiv );
+    pK->a ( "vRCmodeDiv", &m_rcStickH.m_vDiv );
+
     
     m_rcMode.setup();
     m_rcStickV.setup();
-    m_rcStickH.setup();    
+    m_rcStickH.setup();
 
 	string n = "";
 
@@ -109,7 +113,7 @@ void _AP_actuator::updateActuator(void)
 	}
 	else
 	{
-		m_pAB1->setPtarget(0, (i-1)*20);
+		m_pAB1->setPtarget(0, (i-1)*10);
 	}
 
 	i=m_rcStickH.i();
@@ -119,7 +123,7 @@ void _AP_actuator::updateActuator(void)
 	}
 	else
 	{
-		m_pAB2->setPtarget(0, (i-1)*20);
+		m_pAB2->setPtarget(0, (i-1)*10);
 	}
 }
 

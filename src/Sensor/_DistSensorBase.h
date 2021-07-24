@@ -22,9 +22,10 @@ namespace kai
 enum DIST_SENSOR_TYPE
 {
 	ds_Unknown,
-	ds_RPLIDAR,
+	ds_YDLIDAR,
 	ds_LeddarVu,
 	ds_TOFsense,
+	ds_BenewakeTF03,
 };
 
 struct DIST_SENSOR_DIV

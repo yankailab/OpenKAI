@@ -82,7 +82,7 @@ void _HYMCU_RS485::update(void)
 //	setSlaveID(2);
 //	saveData();
 
-	while(!initPos());
+//	while(!initPos());
 
 	while(m_pT->bRun())
 	{
@@ -105,7 +105,7 @@ void _HYMCU_RS485::updateMove(void)
 		return;
 	}
 
-	IF_(!bComplete()); //Moving
+//	IF_(!bComplete()); //Moving
 
 	IF_(!setPos());
 	IF_(!setSpeed());
@@ -130,7 +130,8 @@ bool _HYMCU_RS485::setPos(void)
 {
 	IF_F(check()<0);
 
-	int32_t step = m_pA->m_p.m_vTarget - m_pA->m_p.m_v;
+//	int32_t step = m_pA->m_p.m_vTarget - m_pA->m_p.m_v;
+	int32_t step = m_pA->m_p.m_vTarget;
 	IF_F(step==0);
 	int32_t ds = abs(step);
 

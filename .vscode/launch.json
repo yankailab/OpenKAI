@@ -9,11 +9,10 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/OpenKAI",
-            "args": ["${workspaceFolder}/kiss/test/_HYMCU_RS485.kiss"],
+            "args": ["${workspaceFolder}/kiss/test/_BenewakeTF03.kiss"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "external_Console": false,
             "MIMode": "gdb",
             "setupCommands": [
                 {

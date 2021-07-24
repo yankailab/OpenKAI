@@ -44,7 +44,7 @@
 	"iSlave":1,
 	"dpr":1,
 	"bFeedback":1,
-	"dInit":1,
+	"dInit":0,
 
 	{
 		"name":"axis",
@@ -53,8 +53,8 @@
 			"pOrigin":0.0,
 			"pTarget":0.0,
 			"pErr":0.01,
-			"pRange":[0,15],
-			"sTarget":20.0,
+			"pRange":[-10,10],
+			"sTarget":100.0,
 			"sRange":[0,300],
 			"aTarget":10.0,
 			"aRange":[10,300],
@@ -75,7 +75,7 @@
 	"iSlave":2,
 	"dpr":1,
 	"bFeedback":1,
-	"dInit":1,
+	"dInit":0,
 
 	{
 		"name":"axis",
@@ -84,8 +84,8 @@
 			"pOrigin":0.0,
 			"pTarget":0.0,
 			"pErr":0.01,
-			"pRange":[0,15],
-			"sTarget":20.0,
+			"pRange":[-10,10],
+			"sTarget":100.0,
 			"sRange":[0,300],
 			"aTarget":10.0,
 			"aRange":[10,300],
@@ -106,7 +106,7 @@
 	"_ActuatorBase1":"stepper1",
 	"_ActuatorBase2":"stepper2",
 	"iRCmodeChan":5,
-	"vRCmodeDiv":[1000,1500,2000],
+	"vRCmodeDiv":[1010,1510,2010],
 	"iRCstickV":2,
 	"iRCstickH":4,
 }
@@ -124,8 +124,8 @@
 		"FPS":1,
 	}
 	"bLog":0,
-	"port":"/dev/ttyTHS1",
-	"/port":"/dev/ttyACM0",
+	"/port":"/dev/ttyTHS1",
+	"port":"/dev/ttyACM0",
 	"baud":115200,
 }
 
@@ -169,7 +169,7 @@
 		{
 			"name":"rcChannels",
 			"id":65,
-			"tInt":0.2,
+			"tInt":0.5,
 		}
 		{
 			"name":"localPosition",

@@ -1,0 +1,47 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["TF03"],
+}
+
+{
+	"name":"serial",
+	"class":"_SerialPort",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"bLog":0,
+	"port":"/dev/ttyACM0",
+	"baud":115200,
+}
+
+{
+	"name":"TF03",
+	"class":"_BenewakeTF03",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":1,
+	"_IOBase":"serial",
+}

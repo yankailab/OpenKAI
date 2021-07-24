@@ -2,10 +2,8 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
 	"bLog":1,
 	"bStdErr":1,
-	"waitKey":30,
 }
 
 {
@@ -16,7 +14,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["camera"],
+	"vBASE":["camera","gst"],
 }
 
 {
@@ -30,17 +28,17 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["camera"],
+	"vBASE":["resize"],
 }
 
 {
 	"name":"camera",
 	"class":"_Camera",
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"_Console":"OKconsole",
 	"deviceID":0,
-	"vSize":[640,480],	
+	"vSize":[640,480],
     {
 		"name":"thread",
 		"FPS":30,
@@ -50,12 +48,11 @@
 {
 	"name":"gst",
 	"class":"_GStreamer",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"Window":"OKview",
 	"/pipeline":"nvcamerasrc fpsRange='60.0 60.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)60/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
 	"/pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1920, height=1080, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)360, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.1.253 port=5678 auto-multicast=false",
 	"/pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=640, height=480, format=(string)NV12, framerate=(fraction)60/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)480, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.1.253 port=5678 auto-multicast=false",
@@ -66,7 +63,8 @@
 	"/pipeline":"v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"/pipeline":"rtspsrc location=rtsp://admin:12345@192.168.1.121:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
 	"/pipeline":"udpsrc port=5678 ! application/x-rtp, media=video, encoding-name=h264, payload=96, clock-rate=90000 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
-	"pipeline":"udpsrc port=5678 ! application/x-rtp, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
+	"/pipeline":"udpsrc port=5678 ! application/x-rtp, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
+	"pipeline":"rtspsrc location=rtsp://admin:admin@192.168.100.2/webcam latency=0 ! decodebin ! videoconvert ! appsink",
 }
 
 {
@@ -74,10 +72,8 @@
 	"class":"_VideoFile",
 	"FPS":30,
 	"bInst":0,
-	"Window":"OKview",
 	"videoFile":"/home/kai/Videos/sz.ts",
-	"w":1280,
-	"h":720,
+	"vSize":[1280,720],
 }
 
 {
@@ -85,8 +81,19 @@
 	"class":"_ImgFile",
 	"FPS":30,
 	"bInst":0,
-	"Window":"OKiew",
 	"file":"/home/kai/Pictures/test.jpg",
-	"w":1280,
-	"h":720,
+	"vSize":[1280,720],
 }
+
+{
+	"name":"resize",
+	"class":"_Resize",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"gst",
+	"vSize":[640,512],
+}
+
