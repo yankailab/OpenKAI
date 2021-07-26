@@ -134,8 +134,8 @@
 
 #include "../Application/Surveillance/_ANR.h"
 #include "../Application/Surveillance/_GDcam.h"
-
 #include "../Application/RobotArm/_PickingArm.h"
+#include "../Application/Measurement/_ARarea.h"
 
 #ifdef USE_OPENCV_CONTRIB
 #include "../Detector/_ArUco.h"

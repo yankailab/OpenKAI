@@ -123,9 +123,9 @@ namespace open3d
                 m_cbExportParams.add(pCb, pPCV);
             }
 
-            void PCcalibUI::Layout(const Theme &theme)
+            void PCcalibUI::Layout(const gui::LayoutContext &context)
             {
-                int settings_width = m_uiState.m_wPanel * theme.font_size;
+                int settings_width = m_uiState.m_wPanel * context.theme.font_size;
 
                 auto f = GetContentRect();
                 if (m_panelCtrl->IsVisible())
@@ -138,7 +138,7 @@ namespace open3d
                     m_pScene->SetFrame(f);
                 }
 
-                gui::Window::Layout(theme);
+                gui::Window::Layout(context);
             }
 
             void PCcalibUI::InitCtrlPanel(void)

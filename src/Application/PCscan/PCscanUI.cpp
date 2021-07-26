@@ -221,9 +221,9 @@ namespace open3d
             }
 
 
-            void PCscanUI::Layout(const Theme &theme)
+            void PCscanUI::Layout(const gui::LayoutContext &context)
             {
-                int settings_width = m_uiState.m_wPanel * theme.font_size;
+                int settings_width = m_uiState.m_wPanel * context.theme.font_size;
 
                 auto f = GetContentRect();
                 if (m_panelCtrl->IsVisible())
@@ -236,7 +236,7 @@ namespace open3d
                     m_pScene->SetFrame(f);
                 }
 
-                gui::Window::Layout(theme);
+                gui::Window::Layout(context);
             }
 
             void PCscanUI::InitCtrlPanel(void)

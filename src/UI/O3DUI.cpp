@@ -318,10 +318,10 @@ namespace open3d
                     });
             }
 
-            void O3DUI::Layout(const Theme &theme)
+            void O3DUI::Layout(const gui::LayoutContext &context)
             {
                 m_pScene->SetFrame(GetContentRect());
-                gui::Window::Layout(theme);
+                gui::Window::Layout(context);
             }
 
             void O3DUI::UpdateTgeometry(const string &name, shared_ptr<t::geometry::PointCloud> sTg)

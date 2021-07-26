@@ -20,19 +20,33 @@
 {
 	"name":"RGBview",
 	"class":"_WindowCV",
-	"bInst":0,
+	"bInst":1,
 	"bFullScreen":0,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["/cam","remap"],
+	"vBASE":["cam","/remap"],
+}
+
+{
+	"name":"cam",
+	"class":"_Camera",
+	"bInst":1,
+	"/deviceID":0,
+	"/vSize":[640,480],
+	"deviceID":4,
+	"vSize":[1920,1080],
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 }
 
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bInst":1,
+	"bInst":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -44,7 +58,7 @@
 {
 	"name":"remap",
 	"class":"_Remap",
-	"bInst":1,
+	"bInst":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -74,8 +88,8 @@
 	"device":"CPU:0",
 	"vPCbase":["pcFile","pcRS","pcLivox"],
 	"_SlamBase":"T265",
-	"_VisionBase":"remap",
-	"_PCstream":"pcLivox",
+	"_VisionBase":"cam",
+	"_PCstream":"pcFile",
 	"vCamLookAt":[0,0,0],
 	"vCamEye":[0,0,2],
 	"vCamUp":[0,1,0],
@@ -97,13 +111,13 @@
 {
 	"name":"pcFile",
 	"class":"_PCfile",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
 	"_Console":"console",
-	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
+	"fName":"/home/kai/dev/Open3D_v12/examples/test_data/fragment.pcd",
 }
 
 {
@@ -132,7 +146,7 @@
 {
 	"name":"LivoxLidar",
 	"class":"LivoxLidar",
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"vBroadcastCode":["3JEDHC900100791","3GGDJ1500105411","0TFDHAW001808W1"],
 	"bEnableFan":1,
@@ -145,7 +159,7 @@
 {
 	"name":"pcLivox",
 	"class":"_Livox",
-	"bInst":1,
+	"bInst":0,
     {
 		"name":"thread",
 		"FPS":30,

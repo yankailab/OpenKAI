@@ -194,6 +194,11 @@ sudo make install
 
 #----------------------------------------------------
 # (Optional) Open3D
+# GCC
+sudo apt-get -y install g++-9 gcc-9
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 9 --slave /usr/bin/g++ g++ /usr/bin/g++-9
+sudo update-alternatives --config gcc
+
 git clone --branch v0.13.0 --depth 1 --recursive https://github.com/intel-isl/Open3D
 cd Open3D
 git submodule update --init --recursive
@@ -201,7 +206,7 @@ mkdir build
 cd build
 
 #PC
-cmake -DCMAKE_BUILD_TYPE=Release -DGLIBCXX_USE_CXX11_ABI=ON -DBUILD_CUDA_MODULE=ON -DBUILD_EXAMPLES=OFF -DBUILD_FILAMENT_FROM_SOURCE=ON -DBUILD_GUI=ON -DBUILD_PYTHON_MODULE=OFF -DBUILD_SHARED_LIBS=ON -DDEVELOPER_BUILD=OFF -DUSE_BLAS=OFF -DUSE_SYSTEM_JPEG=ON -DUSE_SIMD=ON ../
+cmake -DCMAKE_BUILD_TYPE=Release -DGLIBCXX_USE_CXX11_ABI=ON -DBUILD_CUDA_MODULE=ON -DBUILD_EXAMPLES=OFF -DBUILD_FILAMENT_FROM_SOURCE=ON -DBUILD_GUI=ON -DBUILD_PYTHON_MODULE=OFF -DBUILD_SHARED_LIBS=ON -DBUILD_WEBRTC=OFF -DDEVELOPER_BUILD=OFF -DWITH_SIMD=ON ../
 
 #Jetson
 Open3D/cpp/open3d/core/linalg/BlasWrapper.h

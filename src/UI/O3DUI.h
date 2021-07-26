@@ -154,7 +154,7 @@ namespace open3d
 				virtual void ExportCurrentImage(const string &path);
 
 			protected:
-				virtual void Layout(const gui::Theme &theme);
+				virtual void Layout(const gui::LayoutContext &context);
 	            virtual void UpdateTgeometry(const string &name, shared_ptr<t::geometry::PointCloud> sTg);
 	            virtual float ConvertToScaledPixels(int px);
 

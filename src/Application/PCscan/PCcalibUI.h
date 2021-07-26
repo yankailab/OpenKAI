@@ -64,7 +64,7 @@ namespace open3d
 				void SetCbExportParams(OnCbO3DUI pCb, void *pPCV);
 
 			protected:
-				virtual void Layout(const gui::Theme &theme);
+				virtual void Layout(const gui::LayoutContext &context);
 				void InitCtrlPanel(void);
 
 				void OnImportParams(void);
