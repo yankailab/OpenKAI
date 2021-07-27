@@ -15,6 +15,17 @@
 
 namespace kai
 {
+	struct ARAREA_VERTEX
+	{
+		Vector3f m_vPw;
+		vInt2 m_vPscr;
+		
+		void init(void)
+		{
+			m_vPw = {0,0,0};
+			m_vPscr.init(0,0);
+		}
+	};
 
 	class _ARarea : public _ModuleBase
 	{
@@ -28,7 +39,7 @@ namespace kai
 		void cvDraw(void *pWindow);
 
 	private:
-		bool world2Scr(const Vector3d &vP, vInt2* vPscr);
+		bool world2Scr(const Vector3f &vPw, const Eigen::Affine3f &aA, vInt2* vPscr);
 		bool updateARarea(void);
 		void update(void);
 		static void *getUpdate(void *This)
@@ -44,20 +55,19 @@ namespace kai
 
 		// distance sensor
 		float m_d;
-		vDouble2 m_vRange;
+		vFloat2 m_vRange;
 
-		// distance sensor in attitude sensor coordinate
-		Vector3d m_vEyeOrigin;	// origin of the distance sensor (offset to attitude sensor)
-		Vector3d m_vEye;	// dynamic world coordinate
-		Vector3d m_vPtAt;	// dynamic world coordinate of the point where the distance sensor is pointing at
+		// distance sensor offset in attitude sensor coordinate
+		vFloat3 m_vDoriginA; // origin of the distance sensor (offset to attitude sensor)
+		Vector3f m_vDptW;	// dynamic world coordinate of the point where the distance sensor is pointing at
 
-		// RGB offset in Lidar coordinate
-		vDouble3 m_vToffsetRGB;
-		vDouble3 m_vRoffsetRGB;
-		Matrix4d m_mToffsetRGB;
-		Eigen::Affine3d m_AoffsetRGB;
-        vInt3 m_vAxisIdxRGB;
-        vFloat3 m_vAxisKrgb;
+		// camera offset in attitude sensor coordinate
+		vFloat3 m_vCoriginA;
+		Matrix4f m_mCoriginA;
+		Eigen::Affine3f m_aW2C;
+        vInt3 m_vAxisIdx;
+
+		vector<ARAREA_VERTEX> m_vVertex;
 
 	};
 

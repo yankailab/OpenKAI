@@ -19,15 +19,13 @@ namespace kai
 		m_pS = NULL;
 
         m_vRange.init(0.0, 1000.0);
-		m_vEyeOrigin = {0,0,0};
-		m_vEye = {0,0,0};
-		m_vPtAt = {0,0,0};
+		m_vDoriginA.init(0,0,0);
+		m_vDptW = {0,0,0};
 
-        m_vToffsetRGB.init(0);
-        m_vRoffsetRGB.init(0);
-        m_mToffsetRGB = Matrix4d::Identity();
-        m_vAxisIdxRGB.init(0, 1, 2);
-        m_vAxisKrgb.init(1.0);
+        m_vCoriginA.init(0);
+        m_mCoriginA = Matrix4f::Identity();
+
+        m_vAxisIdx.init(0, 1, 2);
 
 	}
 
@@ -41,37 +39,15 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
         pK->v("vRange", &m_vRange);
-        pK->v("vAxisIdxRGB", &m_vAxisIdxRGB);
-        pK->v("vAxisKrgb", &m_vAxisKrgb);
+        pK->v("vAxisIdx", &m_vAxisIdx);
+
+        pK->v("vCoriginA", &m_vCoriginA);
+        m_mCoriginA = Matrix4f::Identity();
+        m_mCoriginA(0, 3) = m_vCoriginA.x;
+        m_mCoriginA(1, 3) = m_vCoriginA.y;
+        m_mCoriginA(2, 3) = m_vCoriginA.z;
 
 		string n;
-
-        pK->v("fCalib", &n);
-		_File *pF = new _File();
-		IF_d_T(!pF->open(&n, ios::in), DEL(pF));
-		IF_d_T(!pF->readAll(&n), DEL(pF));
-		IF_d_T(n.empty(), DEL(pF));
-		pF->close();
-		DEL(pF);
-
-		Kiss *pKf = new Kiss();
-		IF_d_T(!pKf->parse(&n),DEL(pKf));
-
-		pK = pKf->child("calib");
-		IF_d_T(pK->empty(), DEL(pKf));
-
-        pK->v("vOffsetCt", &m_vToffsetRGB);
-        pK->v("vOffsetCr", &m_vRoffsetRGB);
-		DEL(pKf);
-
-        m_mToffsetRGB = Matrix4d::Identity();
-//        Vector3d eR(m_vRoffsetRGB.x, m_vRoffsetRGB.y, m_vRoffsetRGB.z);
-//        m_mToffsetRGB.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromXYZ(eR);
-        m_mToffsetRGB(0, 3) = m_vToffsetRGB.x;
-        m_mToffsetRGB(1, 3) = m_vToffsetRGB.y;
-        m_mToffsetRGB(2, 3) = m_vToffsetRGB.z;
-        m_AoffsetRGB = m_mToffsetRGB;
-
 
 		n = "";
 		pK->v("_VisionBase", &n);
@@ -124,31 +100,33 @@ namespace kai
 		IF_F(check() < 0);
 
 		m_d = m_pD->d((int)0);
-		Vector3d vPtAt = m_vEyeOrigin;
-		vPtAt[0] = m_d;
+		Vector3f vDptA = m_vDoriginA.v3f();
+		vDptA[0] = m_d;
 
-		Eigen::Affine3d A;
-		A = m_pS->mT();
-		m_vEye = A * m_vEyeOrigin;
-		m_vPtAt = A * vPtAt;
+		Matrix4f mAtti = m_pS->mT().cast<float>();
+		Eigen::Affine3f aAtti;
+		aAtti = mAtti;
+		m_vDptW = aAtti * vDptA;
+
+		m_aW2C = m_mCoriginA * mAtti;
 
 		vInt2 vPtScr;
-		IF_F(!world2Scr(m_vPtAt, &vPtScr));
+		IF_F(!world2Scr(m_vDptW, m_aW2C, &vPtScr));
 		
 
 		return false;
 	}
 
-    bool _ARarea::world2Scr(const Vector3d &vP, vInt2* vPscr)
+    bool _ARarea::world2Scr(const Vector3f &vPw, const Eigen::Affine3f &aA, vInt2* vPscr)
     {
 		IF_F(check() < 0);
 		NULL_F(vPscr);
 
-        Vector3d vPrgb = m_AoffsetRGB * vP; //vP raw lidar coordinate
-        Vector3d vPa = Vector3d(            //transform to RGB coordinate
-            vPrgb[m_vAxisIdxRGB.x] * m_vAxisKrgb.x,
-            vPrgb[m_vAxisIdxRGB.y] * m_vAxisKrgb.y,
-            vPrgb[m_vAxisIdxRGB.z] * m_vAxisKrgb.z);
+        Vector3f vPcamW = aA * vPw;
+        Vector3f vPcam = Vector3f(
+            vPcamW[m_vAxisIdx.x],
+            vPcamW[m_vAxisIdx.y],
+            vPcamW[m_vAxisIdx.z]);
 
         Mat *pM = m_pV->BGR()->m();
         float w = pM->cols;
@@ -156,14 +134,11 @@ namespace kai
         vDouble2 vFrgb = m_pV->getF();
         vDouble2 vCrgb = m_pV->getC();
 
-        float ovZ = 1.0 / vPa[2];
-        float x = w * (vFrgb.x * vPa[0] + vCrgb.x * vPa[2]) * ovZ;
-        float y = h * (vFrgb.y * vPa[1] + vCrgb.y * vPa[2]) * ovZ;
+        float ovZ = 1.0 / vPcam[2];
+        float x = w * (vFrgb.x * vPcam[0] + vCrgb.x * vPcam[2]) * ovZ;
+        float y = h * (vFrgb.y * vPcam[1] + vCrgb.y * vPcam[2]) * ovZ;
 
-        IF_F(x < 0);
-        IF_F(x > pM->cols - 1);
-        IF_F(y < 0);
-        IF_F(y > pM->rows - 1);
+		//Todo: limit to screen inside
 
         Vec3b vC = pM->at<Vec3b>((int)y, (int)x);
     }
