@@ -87,7 +87,7 @@
 	"pathRes":"/home/kai/dev/Open3D/build/bin/resources",
 	"device":"CPU:0",
 	"vPCbase":["pcFile","pcRS","pcLivox"],
-	"_SlamBase":"T265",
+	"_NavBase":"T265",
 	"_VisionBase":"cam",
 	"_PCstream":"pcFile",
 	"vCamLookAt":[0,0,0],

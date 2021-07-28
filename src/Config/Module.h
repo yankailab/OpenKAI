@@ -226,7 +226,7 @@
 #endif
 
 #ifdef USE_REALSENSE
-#include "../SLAM/_RStracking.h"
+#include "../Navigation/_RStracking.h"
 #endif
 
 #ifdef USE_DYNAMIXEL

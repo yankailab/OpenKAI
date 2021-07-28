@@ -87,7 +87,7 @@
 	"device":"CPU:0",
 	"vPCbase":["/pcFile","pcLivox"],
 	"_PCstream":"pcLivox",
-	"_SlamBase":"T265",
+	"_NavBase":"T265",
 	"bSlam":1,
 	"_VisionBase":"remap",
 	"_CamCalib":"camCalib",

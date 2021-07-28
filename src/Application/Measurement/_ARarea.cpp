@@ -16,17 +16,13 @@ namespace kai
 	{
 		m_pV = NULL;
 		m_pD = NULL;
-		m_pS = NULL;
+		m_pN = NULL;
 
-        m_vRange.init(0.0, 1000.0);
-		m_vDoriginA.init(0,0,0);
-		m_vDptW = {0,0,0};
-
-        m_vCoriginA.init(0);
-        m_mCoriginA = Matrix4f::Identity();
-
-        m_vAxisIdx.init(0, 1, 2);
-
+		m_vRange.init(0.0, 100.0);
+		m_vDoriginP.init(0, 0, 0);
+		m_vDptW = {0, 0, 0};
+		m_vCoriginP.init(0);
+		m_vAxisIdx.init(0, 1, 2);
 	}
 
 	_ARarea::~_ARarea()
@@ -38,14 +34,9 @@ namespace kai
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-        pK->v("vRange", &m_vRange);
-        pK->v("vAxisIdx", &m_vAxisIdx);
-
-        pK->v("vCoriginA", &m_vCoriginA);
-        m_mCoriginA = Matrix4f::Identity();
-        m_mCoriginA(0, 3) = m_vCoriginA.x;
-        m_mCoriginA(1, 3) = m_vCoriginA.y;
-        m_mCoriginA(2, 3) = m_vCoriginA.z;
+		pK->v("vRange", &m_vRange);
+		pK->v("vAxisIdx", &m_vAxisIdx);
+		pK->v("vCoriginA", &m_vCoriginP);
 
 		string n;
 
@@ -60,9 +51,9 @@ namespace kai
 		IF_Fl(!m_pD, n + " not found");
 
 		n = "";
-		pK->v("_SlamBase", &n);
-		m_pS = (_SlamBase *)(pK->getInst(n));
-		IF_Fl(!m_pS, n + " not found");
+		pK->v("_NavBase", &n);
+		m_pN = (_NavBase *)(pK->getInst(n));
+		IF_Fl(!m_pN, n + " not found");
 
 		return true;
 	}
@@ -78,7 +69,7 @@ namespace kai
 		NULL__(m_pV, -1);
 		IF__(m_pV->BGR()->bEmpty(), -1);
 		NULL__(m_pD, -1);
-		NULL__(m_pS, -1);
+		NULL__(m_pN, -1);
 
 		return 0;
 	}
@@ -100,48 +91,50 @@ namespace kai
 		IF_F(check() < 0);
 
 		m_d = m_pD->d((int)0);
-		Vector3f vDptA = m_vDoriginA.v3f();
+		Vector3f vDptA = m_vDoriginP.v3f();
 		vDptA[0] = m_d;
 
-		Matrix4f mAtti = m_pS->mT().cast<float>();
-		Eigen::Affine3f aAtti;
-		aAtti = mAtti;
-		m_vDptW = aAtti * vDptA;
+		Matrix4f mTpose = m_pN->mT();
+		Eigen::Affine3f aTpose;
+		aTpose = mTpose;
+		m_vDptW = aTpose * vDptA;
 
-		m_aW2C = m_mCoriginA * mAtti;
+		Matrix3f mR = m_pN->mR();
+		Matrix3f mRt = mR.transpose();
+		Matrix4f mTwc = Matrix4f::Identity();
+		mTwc.block(0, 0, 3, 3) = mRt;
+		mTwc(0, 3) = -mTpose(0, 3) + m_vCoriginP.x;
+		mTwc(1, 3) = -mTpose(1, 3) + m_vCoriginP.y;
+		mTwc(2, 3) = -mTpose(2, 3) + m_vCoriginP.z;
 
-		vInt2 vPtScr;
-		IF_F(!world2Scr(m_vDptW, m_aW2C, &vPtScr));
-		
+		m_aW2C = mTwc;
 
 		return false;
 	}
 
-    bool _ARarea::world2Scr(const Vector3f &vPw, const Eigen::Affine3f &aA, vInt2* vPscr)
-    {
-		IF_F(check() < 0);
-		NULL_F(vPscr);
+	bool _ARarea::w2c(const Vector3f &vPw,
+					  const Eigen::Affine3f &aA,
+					  float w,
+					  float h,
+					  vFloat2 &vF,
+					  vFloat2 &vC,
+					  vInt2 *pvPc)
+	{
+		NULL_F(pvPc);
 
-        Vector3f vPcamW = aA * vPw;
-        Vector3f vPcam = Vector3f(
-            vPcamW[m_vAxisIdx.x],
-            vPcamW[m_vAxisIdx.y],
-            vPcamW[m_vAxisIdx.z]);
+		Vector3f vPcW = aA * vPw;
+		Vector3f vP = Vector3f(
+			vPcW[m_vAxisIdx.x],
+			vPcW[m_vAxisIdx.y],
+			vPcW[m_vAxisIdx.z]);
 
-        Mat *pM = m_pV->BGR()->m();
-        float w = pM->cols;
-        float h = pM->rows;
-        vDouble2 vFrgb = m_pV->getF();
-        vDouble2 vCrgb = m_pV->getC();
+		float ovZ = 1.0 / vP[2];
+		float x = w * (vF.x * vP[0] + vC.x * vP[2]) * ovZ;
+		float y = h * (vF.y * vP[1] + vC.y * vP[2]) * ovZ;
 
-        float ovZ = 1.0 / vPcam[2];
-        float x = w * (vFrgb.x * vPcam[0] + vCrgb.x * vPcam[2]) * ovZ;
-        float y = h * (vFrgb.y * vPcam[1] + vCrgb.y * vPcam[2]) * ovZ;
-
-		//Todo: limit to screen inside
-
-        Vec3b vC = pM->at<Vec3b>((int)y, (int)x);
-    }
+		pvPc->x = x;
+		pvPc->y = y;
+	}
 
 	void _ARarea::cvDraw(void *pWindow)
 	{
@@ -155,9 +148,25 @@ namespace kai
 		Mat *pM = pF->m();
 		IF_(pM->empty());
 
+		Mat mV;
+		m_pV->BGR()->m()->copyTo(mV);
+		float w = mV.cols;
+		float h = mV.rows;
+		vFloat2 vF = m_pV->getFf();
+		vFloat2 vC = m_pV->getCf();
+
+		vInt2 vPc;
+		IF_(!w2c(m_vDptW, m_aW2C, w, h, vF, vC, &vPc));
+
 		Scalar col = Scalar(0, 255, 0);
 
-//		rectangle(*pM, r, col, 3);
+		circle(mV, Point(vPc.x, vPc.y), 5, col, 1);
+
+		//Todo: limit to screen inside
+
+		Mat m;
+		cv::resize(mV, m, Size(pM->cols, pM->rows));
+		m.copyTo(*pM);
 	}
 
 }

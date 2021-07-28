@@ -36,8 +36,8 @@ namespace kai
 		pK->v("dHiddenRemove", &m_dHiddenRemove);
 
 		string n = "";
-		pK->v("_SlamBase", &n);
-		m_pSB = (_SlamBase *)(pK->getInst(n));
+		pK->v("_NavBase", &n);
+		m_pSB = (_NavBase *)(pK->getInst(n));
 
 		n = "";
 		pK->v("_PCstream", &n);

@@ -5,17 +5,17 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Vision_RStracking_H_
-#define OpenKAI_src_Vision_RStracking_H_
+#ifndef OpenKAI_src_Navigation_RStracking_H_
+#define OpenKAI_src_Navigation_RStracking_H_
 
 #ifdef USE_REALSENSE
-#include "_SlamBase.h"
+#include "_NavBase.h"
 #include <librealsense2/rs.hpp>
 
 namespace kai
 {
 
-class _RStracking: public _SlamBase
+class _RStracking: public _NavBase
 {
 public:
 	_RStracking();

@@ -1,0 +1,121 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"ARarea",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["cam"],
+}
+
+{
+	"name":"RGBview",
+	"class":"_WindowCV",
+	"bInst":1,
+	"bFullScreen":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["cam","/remap"],
+}
+
+{
+	"name":"cam",
+	"class":"_Camera",
+	"bInst":1,
+	"deviceID":0,
+	"vSize":[640,480],
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+}
+
+{
+	"name":"cam",
+	"class":"_GStreamer",
+	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"/pipeline":"v4l2src device=/dev/video4 ! image/jpeg,width=3840,height=2160,framerate=30/1 ! jpegdec ! videoconvert ! appsink",
+	"pipeline":"v4l2src device=/dev/video4 ! image/jpeg,width=1920,height=1080,framerate=30/1 ! jpegdec ! videoconvert ! appsink",
+}
+
+{
+	"name":"remap",
+	"class":"_Remap",
+	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"cam",
+	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calib.kiss",
+}
+
+{
+	"name":"ARarea",
+	"class":"_ARarea",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"_VisionBase":"cam",
+	"_DistSensorBase":"TF03",
+	"_NavBase":"T265",
+	"vRange":[0,100],
+	"vAxisIdx":[0,1,2],
+	"vCoriginA":[0,0,0],
+}
+
+{
+	"name":"T265",
+	"class":"_RStracking",
+    {
+		"name":"thread",
+		"FPS":200,
+	}
+	"bInst":1,
+}
+
+{
+	"name":"serial",
+	"class":"_SerialPort",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadR",
+		"FPS":100,
+	}
+	"bLog":0,
+	"port":"/dev/ttyACM0",
+	"baud":115200,
+}
+
+{
+	"name":"TF03",
+	"class":"_BenewakeTF03",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":100,
+	}
+	"bLog":1,
+	"_IOBase":"serial",
+}

@@ -147,6 +147,22 @@ namespace kai
 		return vC;
 	}
 
+	vFloat2 _VisionBase::getFf(void)
+	{
+		vFloat2 vF;
+		vF.x = m_mCscaled.at<double>(0, 0);
+		vF.y = m_mCscaled.at<double>(1, 1);
+		return vF;
+	}
+
+	vFloat2 _VisionBase::getCf(void)
+	{
+		vFloat2 vC;
+		vC.x = m_mCscaled.at<double>(0, 2);
+		vC.y = m_mCscaled.at<double>(1, 2);
+		return vC;
+	}
+
 	Mat _VisionBase::mC(void)
 	{
 		return m_mC;

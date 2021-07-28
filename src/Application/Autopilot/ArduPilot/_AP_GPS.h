@@ -3,7 +3,7 @@
 
 #include "../../../Filter/Median.h"
 #include "../../../Navigation/Coordinate.h"
-#include "../../../SLAM/_SlamBase.h"
+#include "../../../Navigation/_NavBase.h"
 #include "../ArduPilot/_AP_base.h"
 
 #ifdef USE_REALSENSE
@@ -35,7 +35,7 @@ protected:
 
 public:
 	_AP_base* m_pAP;
-	_SlamBase* m_pSB;
+	_NavBase* m_pSB;
 	Coordinate m_GPS;
 
 	double	m_yaw;

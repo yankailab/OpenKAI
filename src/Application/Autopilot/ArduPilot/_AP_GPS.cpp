@@ -64,8 +64,8 @@ bool _AP_GPS::init(void* pKiss)
 	IF_Fl(!m_pAP, n + ": not found");
 
 	n = "";
-	F_ERROR_F(pK->v("_SlamBase", &n));
-	m_pSB = (_SlamBase*) (pK->getInst(n));
+	F_ERROR_F(pK->v("_NavBase", &n));
+	m_pSB = (_NavBase*) (pK->getInst(n));
 	IF_Fl(!m_pSB, n + ": not found");
 
 	return true;

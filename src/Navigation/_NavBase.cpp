@@ -1,16 +1,16 @@
 /*
- * _SlamBase.cpp
+ * _NavBase.cpp
  *
  *  Created on: May 29, 2018
  *      Author: yankai
  */
 
-#include "_SlamBase.h"
+#include "_NavBase.h"
 
 namespace kai
 {
 
-_SlamBase::_SlamBase()
+_NavBase::_NavBase()
 {
 	m_bReady = false;
 	m_bReset = false;
@@ -19,11 +19,11 @@ _SlamBase::_SlamBase()
 	resetAll();
 }
 
-_SlamBase::~_SlamBase()
+_NavBase::~_NavBase()
 {
 }
 
-bool _SlamBase::init(void* pKiss)
+bool _NavBase::init(void* pKiss)
 {
 	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -34,52 +34,57 @@ bool _SlamBase::init(void* pKiss)
 	return true;
 }
 
-bool _SlamBase::bReady(void)
+bool _NavBase::bReady(void)
 {
 	return m_bReady && (!m_bReset);
 }
 
-void _SlamBase::reset(void)
+void _NavBase::reset(void)
 {
 	m_bReset = true;
 }
 
-void _SlamBase::resetAll(void)
+void _NavBase::resetAll(void)
 {
 	m_vT.init();
 	m_vV.init();
 	m_vR.init();
 	m_vQ.init();
-	m_mT = Matrix4d::Identity();
+	m_mT = Matrix4f::Identity();
 	m_confidence = 0.0;
 }
 
-vFloat3 _SlamBase::t(void)
+vFloat3 _NavBase::t(void)
 {
 	return m_vT;
 }
 
-vFloat3 _SlamBase::v(void)
+vFloat3 _NavBase::v(void)
 {
 	return m_vV;
 }
 
-vFloat3 _SlamBase::r(void)
+vFloat3 _NavBase::r(void)
 {
 	return m_vR;
 }
 
-vFloat4 _SlamBase::q(void)
+vFloat4 _NavBase::q(void)
 {
 	return m_vQ;
 }
 
-const Matrix4d& _SlamBase::mT(void)
+const Matrix4f& _NavBase::mT(void)
 {
 	return m_mT;
 }
 
-void _SlamBase::console(void* pConsole)
+const Matrix3f& _NavBase::mR(void)
+{
+	return m_mR;
+}
+
+void _NavBase::console(void* pConsole)
 {
 	NULL_(pConsole);
 	this->_ModuleBase::console(pConsole);

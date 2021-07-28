@@ -222,7 +222,7 @@
 	"_Console":"OK_Console",
 	"_MissionControl":"mission",
 	"_AP_base":"apBase",
-	"_SlamBase":"T265",
+	"_NavBase":"T265",
 	"gpsID":0,
 	"iFixType":3,
 	"nSat":10,

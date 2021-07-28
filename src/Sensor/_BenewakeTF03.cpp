@@ -146,44 +146,4 @@ namespace kai
 		pC->addMsg(msg);
 	}
 
-	void _BenewakeTF03::cvDraw(void *pWindow)
-	{
-#ifdef USE_OPENCV
-		NULL_(pWindow);
-		this->_ModuleBase::cvDraw(pWindow);
-		IF_(check() < 0);
-
-		_WindowCV *pWin = (_WindowCV *)pWindow;
-		Frame *pF = pWin->getFrame();
-		NULL_(pF);
-		Mat *pM = pF->m();
-		IF_(pM->empty());
-
-		Point pCenter(pM->cols * 0.5, pM->rows * 0.5);
-		Scalar col = Scalar(0, 255, 0);
-		Scalar colD = Scalar(0, 0, 255);
-		float rMax = m_rMax * m_showScale;
-
-		for (int i = 0; i < m_nDiv; i++)
-		{
-			float radFrom = (i * m_dDeg + m_showDegOffset) * DEG_2_RAD;
-			float radTo = ((i + 1) * m_dDeg + m_showDegOffset) * DEG_2_RAD;
-			float d = m_pDiv[i].d() * m_showScale;
-
-			vDouble2 pFrom, pTo;
-			pFrom.x = sin(radFrom);
-			pFrom.y = -cos(radFrom);
-			pTo.x = sin(radTo);
-			pTo.y = -cos(radTo);
-
-			line(*pM, pCenter + Point(pFrom.x * d, pFrom.y * d),
-				 pCenter + Point(pTo.x * d, pTo.y * d), colD, 2);
-			line(*pM, pCenter + Point(pFrom.x * rMax, pFrom.y * rMax), pCenter,
-				 col, 1);
-			line(*pM, pCenter, pCenter + Point(pTo.x * rMax, pTo.y * rMax), col,
-				 1);
-		}
-#endif
-	}
-
 }

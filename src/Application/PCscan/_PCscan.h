@@ -10,7 +10,7 @@
 #ifdef USE_OPEN3D
 #include "../../PointCloud/_PCstream.h"
 #include "../../PointCloud/_PCviewer.h"
-#include "../../SLAM/_SlamBase.h"
+#include "../../Navigation/_NavBase.h"
 #include "../../Utility/BitFlag.h"
 #include "PCscanUI.h"
 
@@ -69,7 +69,7 @@ namespace kai
 
 	protected:
 		_PCstream* m_pPS;
-		_SlamBase *m_pSB;
+		_NavBase *m_pSB;
 		_Thread *m_pTk;
 
 		bool m_bSlam;

@@ -65,6 +65,8 @@ public:
 	bool scaleCamMatrices(void);
 	vDouble2 getF(void);
 	vDouble2 getC(void);
+	vFloat2 getFf(void);
+	vFloat2 getCf(void);
 	Mat mC(void);
 	Mat mCscaled(void);
 	Mat mD(void);

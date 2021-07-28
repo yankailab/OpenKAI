@@ -10,7 +10,7 @@
 
 #ifdef USE_OPENCV
 #include "../../Vision/_VisionBase.h"
-#include "../../SLAM/_SlamBase.h"
+#include "../../Navigation/_NavBase.h"
 #include "../../Sensor/_DistSensorBase.h"
 
 namespace kai
@@ -39,7 +39,13 @@ namespace kai
 		void cvDraw(void *pWindow);
 
 	private:
-		bool world2Scr(const Vector3f &vPw, const Eigen::Affine3f &aA, vInt2* vPscr);
+		bool w2c(const Vector3f &vPw,
+				 const Eigen::Affine3f &aA,
+				 float w,
+				 float h,
+				 vFloat2& vF,
+				 vFloat2& vC,				 
+				 vInt2* pvPc);
 		bool updateARarea(void);
 		void update(void);
 		static void *getUpdate(void *This)
@@ -51,21 +57,20 @@ namespace kai
 	private:
 		_VisionBase *m_pV;
 		_DistSensorBase *m_pD;
-		_SlamBase *m_pS;
+		_NavBase *m_pN;
 
 		// distance sensor
 		float m_d;
 		vFloat2 m_vRange;
+		vFloat3 m_vDoriginP;	// distance sensor offset in pose sensor coordinate
+		Vector3f m_vDptW;		// point where the distance sensor is pointing at in world coordinate
 
-		// distance sensor offset in attitude sensor coordinate
-		vFloat3 m_vDoriginA; // origin of the distance sensor (offset to attitude sensor)
-		Vector3f m_vDptW;	// dynamic world coordinate of the point where the distance sensor is pointing at
-
-		// camera offset in attitude sensor coordinate
-		vFloat3 m_vCoriginA;
-		Matrix4f m_mCoriginA;
+		// camera
+		vFloat3 m_vCoriginP;	// camera offset in pose sensor coordinate
 		Eigen::Affine3f m_aW2C;
         vInt3 m_vAxisIdx;
+
+		
 
 		vector<ARAREA_VERTEX> m_vVertex;
 
