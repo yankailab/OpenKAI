@@ -150,16 +150,16 @@ namespace kai
 	vFloat2 _VisionBase::getFf(void)
 	{
 		vFloat2 vF;
-		vF.x = m_mCscaled.at<double>(0, 0);
-		vF.y = m_mCscaled.at<double>(1, 1);
+		vF.x = (float)m_mCscaled.at<double>(0, 0);
+		vF.y = (float)m_mCscaled.at<double>(1, 1);
 		return vF;
 	}
 
 	vFloat2 _VisionBase::getCf(void)
 	{
 		vFloat2 vC;
-		vC.x = m_mCscaled.at<double>(0, 2);
-		vC.y = m_mCscaled.at<double>(1, 2);
+		vC.x = (float)m_mCscaled.at<double>(0, 2);
+		vC.y = (float)m_mCscaled.at<double>(1, 2);
 		return vC;
 	}
 
@@ -198,7 +198,6 @@ namespace kai
 		}
 		else
 		{
-			Mat *pM = pF->m();
 			Rect r = bb2Rect(bbScale(m_bbDraw, pM->cols, pM->rows));
 
 			Mat m;

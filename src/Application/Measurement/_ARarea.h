@@ -17,14 +17,9 @@ namespace kai
 {
 	struct ARAREA_VERTEX
 	{
-		Vector3f m_vPw;
-		vInt2 m_vPscr;
-		
-		void init(void)
-		{
-			m_vPw = {0,0,0};
-			m_vPscr.init(0,0);
-		}
+		Vector3f m_vVertW;	//world coordinate
+		cv::Point m_vPs;	//screen
+		bool m_bP;			//if inside the projection plane
 	};
 
 	class _ARarea : public _ModuleBase
@@ -38,14 +33,12 @@ namespace kai
 		int check(void);
 		void cvDraw(void *pWindow);
 
-	private:
-		bool w2c(const Vector3f &vPw,
-				 const Eigen::Affine3f &aA,
-				 float w,
-				 float h,
-				 vFloat2& vF,
-				 vFloat2& vC,				 
-				 vInt2* pvPc);
+		// UI handler
+		static void sOnMouse(int event, int x, int y, int flags, void* pInst);
+		void onMouse(int event, int x, int y, int flags);
+		void addVertex(void);
+
+	protected:
 		bool updateARarea(void);
 		void update(void);
 		static void *getUpdate(void *This)
@@ -54,25 +47,39 @@ namespace kai
 			return NULL;
 		}
 
+		bool c2scr(const Vector3f &vPc,
+				 const cv::Size& vSize,
+				 const vFloat2& vF,
+				 const vFloat2& vC,				 
+				 cv::Point* pvPs);
+		float area(vector<Vector3f> &vP);
+
 	private:
 		_VisionBase *m_pV;
 		_DistSensorBase *m_pD;
 		_NavBase *m_pN;
 
+		// pose
+		Eigen::Affine3f m_aPose;
+		Vector3f m_vDptP;
+
 		// distance sensor
 		float m_d;
 		vFloat2 m_vRange;
-		vFloat3 m_vDoriginP;	// distance sensor offset in pose sensor coordinate
-		Vector3f m_vDptW;		// point where the distance sensor is pointing at in world coordinate
+		vFloat3 m_vDorgP;	// distance sensor offset in pose sensor coordinate
+		Vector3f m_vDptW;	// point where the distance sensor is pointing at in world coordinate
 
 		// camera
-		vFloat3 m_vCoriginP;	// camera offset in pose sensor coordinate
+		vFloat3 m_vCorgP;	// camera offset in pose sensor coordinate
 		Eigen::Affine3f m_aW2C;
         vInt3 m_vAxisIdx;
 
-		
+		// area
+		vector<ARAREA_VERTEX> m_vVert;
 
-		vector<ARAREA_VERTEX> m_vVertex;
+		// UI
+		uint64_t m_tLastMouseDown;
+		uint64_t m_tLongTap;
 
 	};
 

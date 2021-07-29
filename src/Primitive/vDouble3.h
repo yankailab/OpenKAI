@@ -113,6 +113,12 @@ struct vDouble3
 	{
 		return x+y+z;
 	}
+
+	Eigen::Vector3d v3d(void)
+	{
+		return Eigen::Vector3d(x,y,z);
+	}
+
 };
 
 }

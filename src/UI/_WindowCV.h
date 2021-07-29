@@ -14,6 +14,32 @@
 namespace kai
 {
 
+typedef void (*CbWindowCVMouse)(int event, int x, int y, int flags, void* pInst);
+struct WindowCV_CbMouse
+{
+	CbWindowCVMouse m_pCb = NULL;
+	void *m_pInst = NULL;
+
+	void add(CbWindowCVMouse pCb, void *pPinst)
+	{
+		m_pCb = pCb;
+		m_pInst = pPinst;
+	}
+
+	bool bValid(void)
+	{
+		return (m_pCb && m_pInst) ? true : false;
+	}
+
+	void call(int event, int x, int y, int flags)
+	{
+		if (!bValid())
+			return;
+
+		m_pCb(event, x, y, flags, m_pInst);
+	}
+};
+
 class _WindowCV: public _ModuleBase
 {
 public:
@@ -25,6 +51,8 @@ public:
 
 	Frame* getFrame(void);
 
+	void setCbMouse(CbWindowCVMouse pCb, void *pInst);
+
 protected:
 	void updateWindow(void);
 	void update(void);
@@ -33,6 +61,8 @@ protected:
 		((_WindowCV*) This)->update();
 		return NULL;
 	}
+
+	static void OnMouse(int event, int x, int y, int flags, void* userdata);
 
 public:
 	vector<BASE*> m_vpB;
@@ -52,6 +82,9 @@ public:
 
 	Frame m_F;
 	Frame m_F2;
+
+	// callback
+	WindowCV_CbMouse m_cbMouse;
 };
 
 }

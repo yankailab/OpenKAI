@@ -19,10 +19,13 @@ namespace kai
 		m_pN = NULL;
 
 		m_vRange.init(0.0, 100.0);
-		m_vDoriginP.init(0, 0, 0);
+		m_vDorgP.init(0);
 		m_vDptW = {0, 0, 0};
-		m_vCoriginP.init(0);
+		m_vCorgP.init(0);
 		m_vAxisIdx.init(0, 1, 2);
+
+		m_tLastMouseDown = 0;
+		m_tLongTap = SEC_2_USEC * 2;
 	}
 
 	_ARarea::~_ARarea()
@@ -36,7 +39,9 @@ namespace kai
 
 		pK->v("vRange", &m_vRange);
 		pK->v("vAxisIdx", &m_vAxisIdx);
-		pK->v("vCoriginA", &m_vCoriginP);
+		pK->v("vDorgP", &m_vDorgP);
+		pK->v("vCorgP", &m_vCorgP);
+		pK->v("tLongTap", &m_tLongTap);
 
 		string n;
 
@@ -91,49 +96,64 @@ namespace kai
 		IF_F(check() < 0);
 
 		m_d = m_pD->d((int)0);
-		Vector3f vDptA = m_vDoriginP.v3f();
-		vDptA[0] = m_d;
+		m_vDptP = {m_vDorgP.x, m_vDorgP.y + m_d, m_vDorgP.z};
 
 		Matrix4f mTpose = m_pN->mT();
-		Eigen::Affine3f aTpose;
-		aTpose = mTpose;
-		m_vDptW = aTpose * vDptA;
-
-		Matrix3f mR = m_pN->mR();
-		Matrix3f mRt = mR.transpose();
+		m_aPose = mTpose;
+		m_vDptW = m_aPose * m_vDptP;
+        
 		Matrix4f mTwc = Matrix4f::Identity();
-		mTwc.block(0, 0, 3, 3) = mRt;
-		mTwc(0, 3) = -mTpose(0, 3) + m_vCoriginP.x;
-		mTwc(1, 3) = -mTpose(1, 3) + m_vCoriginP.y;
-		mTwc(2, 3) = -mTpose(2, 3) + m_vCoriginP.z;
-
+		mTwc.block(0, 0, 3, 3) = m_pN->mR().transpose();
+		mTwc(0, 3) = -mTpose(0, 3) - m_vCorgP.x;
+		mTwc(1, 3) = -mTpose(1, 3) - m_vCorgP.y;
+		mTwc(2, 3) = -mTpose(2, 3) - m_vCorgP.z;
 		m_aW2C = mTwc;
 
 		return false;
 	}
 
-	bool _ARarea::w2c(const Vector3f &vPw,
-					  const Eigen::Affine3f &aA,
-					  float w,
-					  float h,
-					  vFloat2 &vF,
-					  vFloat2 &vC,
-					  vInt2 *pvPc)
+	bool _ARarea::c2scr(const Vector3f &vPc,
+						const cv::Size &vSize,
+						const vFloat2 &vF,
+						const vFloat2 &vC,
+						cv::Point *pvPs)
 	{
-		NULL_F(pvPc);
+		NULL_F(pvPs);
 
-		Vector3f vPcW = aA * vPw;
 		Vector3f vP = Vector3f(
-			vPcW[m_vAxisIdx.x],
-			vPcW[m_vAxisIdx.y],
-			vPcW[m_vAxisIdx.z]);
+			vPc[m_vAxisIdx.x],
+			-vPc[m_vAxisIdx.y],
+			vPc[m_vAxisIdx.z]);
 
-		float ovZ = 1.0 / vP[2];
-		float x = w * (vF.x * vP[0] + vC.x * vP[2]) * ovZ;
-		float y = h * (vF.y * vP[1] + vC.y * vP[2]) * ovZ;
+		float ovZ = 1.0 / abs(vP.z());
+		pvPs->x = vF.x * vP.x() * ovZ + vC.x;
+		pvPs->y = vF.y * vP.y() * ovZ + vC.y;
 
-		pvPc->x = x;
-		pvPc->y = y;
+		bool b = true; //wether inside the projection plane
+		if (vP.z() < 0.0)
+			b = false;
+		if (pvPs->x < 0 || pvPs->x > vSize.width)
+			b = false;
+		if (pvPs->y < 0 || pvPs->y > vSize.height)
+			b = false;
+
+		return b;
+	}
+
+	float _ARarea::area(vector<Vector3f> &vP)
+	{
+		int nV = vP.size();
+		Vector3f vA(0, 0, 0);
+		int j = 0;
+
+		for (int i = 0; i < nV; i++)
+		{
+			j = (i + 1) % nV;
+			vA += vP[i].cross(vP[j]);
+		}
+
+		vA *= 0.5;
+		return vA.norm();
 	}
 
 	void _ARarea::cvDraw(void *pWindow)
@@ -143,6 +163,8 @@ namespace kai
 		IF_(check() < 0);
 
 		_WindowCV *pWin = (_WindowCV *)pWindow;
+		pWin->setCbMouse(sOnMouse, this);
+
 		Frame *pF = pWin->getFrame();
 		NULL_(pF);
 		Mat *pM = pF->m();
@@ -150,24 +172,83 @@ namespace kai
 
 		Mat mV;
 		m_pV->BGR()->m()->copyTo(mV);
-		float w = mV.cols;
-		float h = mV.rows;
 		vFloat2 vF = m_pV->getFf();
 		vFloat2 vC = m_pV->getCf();
-
-		vInt2 vPc;
-		IF_(!w2c(m_vDptW, m_aW2C, w, h, vF, vC, &vPc));
-
+		cv::Size s = mV.size();
 		Scalar col = Scalar(0, 255, 0);
 
-		circle(mV, Point(vPc.x, vPc.y), 5, col, 1);
+		Vector3f vDptC = m_aW2C * m_vDptW;
+		cv::Point vPs;
+		if (c2scr(vDptC, s, vF, vC, &vPs))
+		{
+			circle(mV, vPs, 10, col, 3);
+		}
 
-		//Todo: limit to screen inside
+		int i, j;
+		int nV = m_vVert.size();
+
+		for (i = 0; i < nV; i++)
+		{
+			ARAREA_VERTEX *pA = &m_vVert[i];
+			Vector3f vPc = m_aW2C * pA->m_vVertW;
+			pA->m_bP = c2scr(vPc, s, vF, vC, &pA->m_vPs);
+
+			IF_CONT(!pA->m_bP);
+			circle(mV, pA->m_vPs, 10, col, 3);
+		}
+
+		if (nV > 1)
+		{
+			for (i = 0; i < nV; i++)
+			{
+				j = (i + 1) % nV;
+				ARAREA_VERTEX *pA = &m_vVert[i];
+				ARAREA_VERTEX *pB = &m_vVert[j];
+				IF_CONT(!pA->m_bP && !pB->m_bP);
+
+				Point p = pA->m_vPs;
+				Point q = pB->m_vPs;
+				clipLine(s, p, q);
+				line(mV, p, q, col, 3);
+			}
+		}
 
 		Mat m;
-		cv::resize(mV, m, Size(pM->cols, pM->rows));
+		cv::resize(mV, m, pM->size());
 		m.copyTo(*pM);
 	}
 
+	void _ARarea::addVertex(void)
+	{
+		ARAREA_VERTEX av;
+		av.m_vVertW = m_vDptW;
+		m_vVert.push_back(av);
+	}
+
+	void _ARarea::sOnMouse(int event, int x, int y, int flags, void *pInst)
+	{
+		NULL_(pInst);
+		_ARarea *pA = (_ARarea *)pInst;
+		pA->onMouse(event, x, y, flags);
+	}
+
+	void _ARarea::onMouse(int event, int x, int y, int flags)
+	{
+		uint64_t t = getApproxTbootUs();
+
+		if (event == EVENT_LBUTTONDOWN)
+		{
+			m_tLastMouseDown = t;
+		}
+		else if (event == EVENT_LBUTTONUP)
+		{
+			uint64_t dTtap = t - m_tLastMouseDown;
+
+			if (dTtap < m_tLongTap)
+				addVertex();
+			else
+				m_vVert.clear();
+		}
+	}
 }
 #endif

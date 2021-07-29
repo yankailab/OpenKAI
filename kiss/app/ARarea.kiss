@@ -9,12 +9,12 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["cam"],
+	"vBASE":["cam","remap","Ararea","T265","TF03"],
 }
 
 {
@@ -26,14 +26,14 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["cam","/remap"],
+	"vBASE":["/cam","/remap","ARarea"],
 }
 
 {
 	"name":"cam",
 	"class":"_Camera",
-	"bInst":1,
-	"deviceID":0,
+	"bInst":0,
+	"deviceID":1,
 	"vSize":[640,480],
     {
 		"name":"thread",
@@ -44,7 +44,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -56,13 +56,14 @@
 {
 	"name":"remap",
 	"class":"_Remap",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
 	"_VisionBase":"cam",
 	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calib.kiss",
+	"vSize":[1920, 1080],
 }
 
 {
@@ -73,12 +74,14 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"_VisionBase":"cam",
+	"_VisionBase":"remap",
 	"_DistSensorBase":"TF03",
 	"_NavBase":"T265",
 	"vRange":[0,100],
-	"vAxisIdx":[0,1,2],
-	"vCoriginA":[0,0,0],
+	"vAxisIdx":[0,2,1],
+	"vDorgP":[0,0,0],
+	"vCorgP":[0,0,0],
+	"tLongTap":2000000,
 }
 
 {
