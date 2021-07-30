@@ -23,9 +23,6 @@ namespace kai
 		m_vDptW = {0, 0, 0};
 		m_vCorgP.init(0);
 		m_vAxisIdx.init(0, 1, 2);
-
-		m_tLastMouseDown = 0;
-		m_tLongTap = SEC_2_USEC * 2;
 	}
 
 	_ARarea::~_ARarea()
@@ -41,7 +38,6 @@ namespace kai
 		pK->v("vAxisIdx", &m_vAxisIdx);
 		pK->v("vDorgP", &m_vDorgP);
 		pK->v("vCorgP", &m_vCorgP);
-		pK->v("tLongTap", &m_tLongTap);
 
 		string n;
 
@@ -59,6 +55,15 @@ namespace kai
 		pK->v("_NavBase", &n);
 		m_pN = (_NavBase *)(pK->getInst(n));
 		IF_Fl(!m_pN, n + " not found");
+
+		n = "";
+		pK->v("_WindowCV", &n);
+		_WindowCV *pW = (_WindowCV *)(pK->getInst(n));
+		IF_Fl(!pW, n + " not found");
+
+		pW->setCbBtn("Add", sOnBtnAdd, this);
+		pW->setCbBtn("Clear", sOnBtnClear, this);
+		pW->setCbBtn("Save", sOnBtnSave, this);
 
 		return true;
 	}
@@ -101,7 +106,7 @@ namespace kai
 		Matrix4f mTpose = m_pN->mT();
 		m_aPose = mTpose;
 		m_vDptW = m_aPose * m_vDptP;
-        
+
 		Matrix4f mTwc = Matrix4f::Identity();
 		mTwc.block(0, 0, 3, 3) = m_pN->mR().transpose();
 		mTwc(0, 3) = -mTpose(0, 3) - m_vCorgP.x;
@@ -140,16 +145,16 @@ namespace kai
 		return b;
 	}
 
-	float _ARarea::area(vector<Vector3f> &vP)
+	float _ARarea::area(void)
 	{
-		int nV = vP.size();
+		int nV = m_vVert.size();
 		Vector3f vA(0, 0, 0);
 		int j = 0;
 
 		for (int i = 0; i < nV; i++)
 		{
 			j = (i + 1) % nV;
-			vA += vP[i].cross(vP[j]);
+			vA += m_vVert[i].m_vVertW.cross(m_vVert[j].m_vVertW);
 		}
 
 		vA *= 0.5;
@@ -163,8 +168,6 @@ namespace kai
 		IF_(check() < 0);
 
 		_WindowCV *pWin = (_WindowCV *)pWindow;
-		pWin->setCbMouse(sOnMouse, this);
-
 		Frame *pF = pWin->getFrame();
 		NULL_(pF);
 		Mat *pM = pF->m();
@@ -210,12 +213,24 @@ namespace kai
 				Point q = pB->m_vPs;
 				clipLine(s, p, q);
 				line(mV, p, q, col, 3);
+
+				Vector3f vD = pA->m_vVertW - pB->m_vVertW;
+				putText(mV, f2str(vD.norm(), 2) + "m",
+						(p + q) * 0.5,
+						FONT_HERSHEY_SIMPLEX, 0.6, col, 1);
 			}
 		}
 
 		Mat m;
 		cv::resize(mV, m, pM->size());
 		m.copyTo(*pM);
+
+		if (nV > 2)
+		{
+			putText(*pM, f2str(area(), 2) + " m^2",
+					Point(0, pM->rows - 10),
+					FONT_HERSHEY_SIMPLEX, 0.8, col, 1);
+		}
 	}
 
 	void _ARarea::addVertex(void)
@@ -225,30 +240,25 @@ namespace kai
 		m_vVert.push_back(av);
 	}
 
-	void _ARarea::sOnMouse(int event, int x, int y, int flags, void *pInst)
+	void _ARarea::sOnBtnAdd(void *pInst)
 	{
 		NULL_(pInst);
 		_ARarea *pA = (_ARarea *)pInst;
-		pA->onMouse(event, x, y, flags);
+		pA->addVertex();
 	}
 
-	void _ARarea::onMouse(int event, int x, int y, int flags)
+	void _ARarea::sOnBtnClear(void *pInst)
 	{
-		uint64_t t = getApproxTbootUs();
-
-		if (event == EVENT_LBUTTONDOWN)
-		{
-			m_tLastMouseDown = t;
-		}
-		else if (event == EVENT_LBUTTONUP)
-		{
-			uint64_t dTtap = t - m_tLastMouseDown;
-
-			if (dTtap < m_tLongTap)
-				addVertex();
-			else
-				m_vVert.clear();
-		}
+		NULL_(pInst);
+		_ARarea *pA = (_ARarea *)pInst;
+		pA->m_vVert.clear();
 	}
+
+	void _ARarea::sOnBtnSave(void *pInst)
+	{
+		NULL_(pInst);
+		_ARarea *pA = (_ARarea *)pInst;
+	}
+
 }
 #endif

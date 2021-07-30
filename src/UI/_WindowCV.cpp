@@ -120,7 +120,28 @@ namespace kai
 			namedWindow(wn, WINDOW_AUTOSIZE);
 		}
 
-		setMouseCallback(wn, OnMouse, this);
+		setMouseCallback(wn, sOnMouse, this);
+
+		Kiss *pKwb = pK->child("btn");
+		IF_T(pKwb->empty());
+		WindowCV_Btn wb;
+		int i = 0;
+		while (1)
+		{
+			Kiss *pKb = pKwb->child(i++);
+			if (pKb->empty())
+				break;
+
+			pKb->v("name", &wb.m_name);
+			pKb->v("vRegion", &wb.m_vRegion);
+			pKb->v("colUp", &wb.m_colUp);
+			pKb->v("colDown", &wb.m_colDown);
+			pKb->v("colBorder", &wb.m_colBorder);
+			pKb->v("colFont", &wb.m_colFont);
+			wb.setScrSize(m_frame.size());
+			
+			m_vBtn.push_back(wb);
+		}
 
 		return true;
 	}
@@ -145,6 +166,7 @@ namespace kai
 
 	void _WindowCV::updateWindow(void)
 	{
+		// draw contents
 		for (BASE *pB : m_vpB)
 		{
 			pB->cvDraw(this);
@@ -152,8 +174,14 @@ namespace kai
 
 		IF_(m_frame.bEmpty());
 
+		// draw UI
 		Mat m = *m_frame.m();
+		for(WindowCV_Btn wb : m_vBtn)
+		{
+			wb.draw(&m);
+		}
 
+		// show window
 		if (m_bShow)
 		{
 			imshow(*this->getName(), m);
@@ -192,18 +220,43 @@ namespace kai
 		return &m_frame;
 	}
 
-	void _WindowCV::OnMouse(int event, int x, int y, int flags, void *userdata)
+	bool _WindowCV::setCbBtn(const string &btnLabel, CbWindowCVbtn pCb, void *pInst)
+	{
+		NULL_F(pInst);
+
+		for (int i = 0; i < m_vBtn.size(); i++)
+		{
+			WindowCV_Btn *pB = &m_vBtn[i];
+			IF_CONT(btnLabel != pB->m_name);
+
+			pB->setCallback(pCb, pInst);
+			return true;
+		}
+
+		return false;
+	}
+
+	void _WindowCV::sOnMouse(int event, int x, int y, int flags, void *userdata)
 	{
 		NULL_(userdata);
 
 		_WindowCV *pW = (_WindowCV *)userdata;
-		pW->m_cbMouse.call(event,x,y,flags);
+		pW->onMouse(event, x, y, flags);
 	}
 
-	void _WindowCV::setCbMouse(CbWindowCVMouse pCb, void *pInst)
+	void _WindowCV::onMouse(int event, int x, int y, int flags)
 	{
-		m_cbMouse.add(pCb, pInst);
-	}
+		for (int i = 0; i < m_vBtn.size(); i++)
+		{
+			WindowCV_Btn *pB = &m_vBtn[i];
 
+			if (event == EVENT_LBUTTONDOWN)
+				pB->mouseDown(x, y);
+			else if (event == EVENT_MOUSEMOVE)
+				pB->mouseMove(x, y);
+			else if (event == EVENT_LBUTTONUP)
+				pB->mouseUp(x, y);
+		}
+	}
 }
 #endif

@@ -26,6 +26,19 @@
 		"name":"thread",
 		"FPS":30,
 	}
+
+    {
+		"name":"btn",
+	    {
+			"name":"Add",
+			"vRegion":[0.8, 0.8, 1.0, 1.0],
+			"colUp":[100, 100, 100],
+			"colDown":[200, 200, 200],
+			"colBorder":[255, 255, 255],
+			"colFont":[255, 255, 255],
+		}
+	}
+
 	"vBASE":["/cam","/remap","ARarea"],
 }
 
@@ -77,6 +90,7 @@
 	"_VisionBase":"remap",
 	"_DistSensorBase":"TF03",
 	"_NavBase":"T265",
+	"_WindowCV":"RGBview",
 	"vRange":[0,100],
 	"vAxisIdx":[0,2,1],
 	"vDorgP":[0,0,0],
