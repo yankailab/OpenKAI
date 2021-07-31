@@ -122,6 +122,45 @@ namespace kai
 
 		setMouseCallback(wn, sOnMouse, this);
 
+		// UI
+		// Freetype font
+		pK->v("font", &m_font);
+		if(m_font != "")
+		{
+			m_pFT = freetype::createFreeType2();
+			m_pFT->loadFontData(m_font.c_str(), 0);
+		}
+
+		// int baseline = 0;
+		// Size textSize = ft2->getTextSize(text,
+		// 								 fontHeight,
+		// 								 thickness,
+		// 								 &baseline);
+		// if (thickness > 0)
+		// {
+		// 	baseline += thickness;
+		// }
+
+		// // center the text
+		// Point textOrg((img.cols - textSize.width) / 2,
+		// 			  (img.rows + textSize.height) / 2);
+		// // draw the box
+		// rectangle(img, textOrg + Point(0, baseline),
+		// 		  textOrg + Point(textSize.width, -textSize.height),
+		// 		  Scalar(0, 255, 0), 1, 8);
+
+		// // ... and the baseline first
+		// line(img, textOrg + Point(0, thickness),
+		// 	 textOrg + Point(textSize.width, thickness),
+		// 	 Scalar(0, 0, 255), 1, 8);
+
+		// // then put the text itself
+		// ft2->putText(img, text, textOrg, fontHeight,
+		// 			 Scalar::all(255), thickness, linestyle, true);
+
+
+
+		// buttons
 		Kiss *pKwb = pK->child("btn");
 		IF_T(pKwb->empty());
 		WindowCV_Btn wb;
@@ -139,7 +178,7 @@ namespace kai
 			pKb->v("colBorder", &wb.m_colBorder);
 			pKb->v("colFont", &wb.m_colFont);
 			wb.setScrSize(m_frame.size());
-			
+
 			m_vBtn.push_back(wb);
 		}
 
@@ -176,9 +215,9 @@ namespace kai
 
 		// draw UI
 		Mat m = *m_frame.m();
-		for(WindowCV_Btn wb : m_vBtn)
+		for (WindowCV_Btn wb : m_vBtn)
 		{
-			wb.draw(&m);
+			wb.draw(&m, m_pFT);
 		}
 
 		// show window

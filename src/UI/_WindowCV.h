@@ -94,7 +94,7 @@ namespace kai
 			m_bDown = false;
 		}
 
-		void draw(Mat *pM)
+		void draw(Mat *pM, cv::Ptr<freetype::FreeType2> pFont = NULL)
 		{
 			Rect r = bb2Rect(m_vR);
 			Scalar colBg;
@@ -106,10 +106,26 @@ namespace kai
 			rectangle(*pM, r, colBg, FILLED);
 			rectangle(*pM, r, Scalar(m_colBorder.x, m_colBorder.y, m_colBorder.z), 1);
 
+			if (pFont)
+			{
+				pFont->putText(*pM, m_name,
+							   Point(m_vR.x, m_vR.y),
+							   25,
+							   Scalar(m_colFont.x, m_colFont.y, m_colFont.z),
+							   -1,
+							   cv::LINE_AA,
+							   false);
+
+				return;
+			}
+
 			putText(*pM, m_name,
 					Point(m_vR.x, m_vR.y + 25),
-					FONT_HERSHEY_SIMPLEX, 1.0, Scalar(m_colFont.x, m_colFont.y, m_colFont.z), 2);
-
+					FONT_HERSHEY_SIMPLEX,
+					1.0,
+					Scalar(m_colFont.x, m_colFont.y, m_colFont.z),
+					1,
+					cv::LINE_AA);
 		}
 	};
 
@@ -159,6 +175,8 @@ namespace kai
 
 		// UI
 		vector<WindowCV_Btn> m_vBtn;
+		cv::Ptr<freetype::FreeType2> m_pFT;
+		string m_font;
 	};
 
 }

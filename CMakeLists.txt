@@ -68,7 +68,7 @@ if(USE_OPENCV)
   set(OpenCV_lib "/usr/local/lib" CACHE STRING "")
   set(OpenKAI_include ${OpenKAI_include} ${OpenCV_include})
   set(OpenKAI_libDir ${OpenKAI_libDir} ${OpenCV_lib})
-  set(OpenKAI_lib ${OpenKAI_lib} opencv_core opencv_imgcodecs opencv_highgui opencv_imgproc opencv_videoio opencv_calib3d opencv_objdetect opencv_features2d opencv_dnn)
+  set(OpenKAI_lib ${OpenKAI_lib} opencv_core opencv_imgcodecs opencv_highgui opencv_imgproc opencv_videoio opencv_calib3d opencv_objdetect opencv_features2d opencv_dnn opencv_freetype)
 endif()
 
 if(USE_OPENCV_CONTRIB)

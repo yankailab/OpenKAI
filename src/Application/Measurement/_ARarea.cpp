@@ -134,15 +134,17 @@ namespace kai
 		pvPs->x = vF.x * vP.x() * ovZ + vC.x;
 		pvPs->y = vF.y * vP.y() * ovZ + vC.y;
 
-		bool b = true; //wether inside the projection plane
-		if (vP.z() < 0.0)
-			b = false;
-		if (pvPs->x < 0 || pvPs->x > vSize.width)
-			b = false;
-		if (pvPs->y < 0 || pvPs->y > vSize.height)
-			b = false;
+		return (vP.z() > 0.0);
+	}
 
-		return b;
+	bool _ARarea::bInsideScr(const cv::Size& s, const cv::Point& p)
+	{
+		IF_F(p.x < 0);
+		IF_F(p.x > s.width);
+		IF_F(p.y < 0);
+		IF_F(p.y > s.height);
+
+		return true;
 	}
 
 	float _ARarea::area(void)
@@ -182,10 +184,8 @@ namespace kai
 
 		Vector3f vDptC = m_aW2C * m_vDptW;
 		cv::Point vPs;
-		if (c2scr(vDptC, s, vF, vC, &vPs))
-		{
-			circle(mV, vPs, 10, col, 3);
-		}
+		c2scr(vDptC, s, vF, vC, &vPs);
+		circle(mV, vPs, 10, col, 3, cv::LINE_AA);
 
 		int i, j;
 		int nV = m_vVert.size();
@@ -194,10 +194,12 @@ namespace kai
 		{
 			ARAREA_VERTEX *pA = &m_vVert[i];
 			Vector3f vPc = m_aW2C * pA->m_vVertW;
-			pA->m_bP = c2scr(vPc, s, vF, vC, &pA->m_vPs);
+			pA->m_bZ = c2scr(vPc, s, vF, vC, &pA->m_vPs);
 
-			IF_CONT(!pA->m_bP);
-			circle(mV, pA->m_vPs, 10, col, 3);
+			IF_CONT(!pA->m_bZ);
+			IF_CONT(!bInsideScr(s, pA->m_vPs));
+
+			circle(mV, pA->m_vPs, 10, col, 3, cv::LINE_AA);
 		}
 
 		if (nV > 1)
@@ -207,17 +209,17 @@ namespace kai
 				j = (i + 1) % nV;
 				ARAREA_VERTEX *pA = &m_vVert[i];
 				ARAREA_VERTEX *pB = &m_vVert[j];
-				IF_CONT(!pA->m_bP && !pB->m_bP);
+				IF_CONT(!pA->m_bZ && !pB->m_bZ);
 
 				Point p = pA->m_vPs;
 				Point q = pB->m_vPs;
-				clipLine(s, p, q);
-				line(mV, p, q, col, 3);
+				IF_CONT(!clipLine(s, p, q));
 
+				line(mV, p, q, col, 3, cv::LINE_AA);
 				Vector3f vD = pA->m_vVertW - pB->m_vVertW;
 				putText(mV, f2str(vD.norm(), 2) + "m",
 						(p + q) * 0.5,
-						FONT_HERSHEY_SIMPLEX, 0.6, col, 1);
+						FONT_HERSHEY_SIMPLEX, 0.6, col, 1, cv::LINE_AA);
 			}
 		}
 

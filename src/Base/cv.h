@@ -9,6 +9,7 @@
 #include <opencv2/aruco.hpp>
 #include <opencv2/bgsegm.hpp>
 #include <opencv2/dnn.hpp>
+#include <opencv2/freetype.hpp>
 
 #ifdef USE_OPENCV_CONTRIB
 #include <opencv2/tracking.hpp>

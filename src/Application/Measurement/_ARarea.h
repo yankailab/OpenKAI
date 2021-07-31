@@ -19,7 +19,7 @@ namespace kai
 	{
 		Vector3f m_vVertW;	//world coordinate
 		cv::Point m_vPs;	//screen
-		bool m_bP;			//if inside the projection plane
+		bool m_bZ;			//if inside the projection plane
 	};
 
 	class _ARarea : public _ModuleBase
@@ -54,6 +54,7 @@ namespace kai
 				 const vFloat2& vF,
 				 const vFloat2& vC,				 
 				 cv::Point* pvPs);
+		bool bInsideScr(const cv::Size& s, const cv::Point& p);
 		float area(void);
 
 	private:

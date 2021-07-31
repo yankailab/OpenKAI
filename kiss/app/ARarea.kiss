@@ -39,6 +39,7 @@
 		}
 	}
 
+	"font":"/home/kai/dev/font/bebas-neue-font/BebasNeueRegular-2O7wW.ttf",
 	"vBASE":["/cam","/remap","ARarea"],
 }
 
@@ -63,7 +64,7 @@
 		"FPS":30,
 	}
 	"/pipeline":"v4l2src device=/dev/video4 ! image/jpeg,width=3840,height=2160,framerate=30/1 ! jpegdec ! videoconvert ! appsink",
-	"pipeline":"v4l2src device=/dev/video4 ! image/jpeg,width=1920,height=1080,framerate=30/1 ! jpegdec ! videoconvert ! appsink",
+	"pipeline":"v4l2src device=/dev/video2 ! image/jpeg,width=1920,height=1080,framerate=30/1 ! jpegdec ! videoconvert ! appsink",
 }
 
 {
@@ -95,7 +96,6 @@
 	"vAxisIdx":[0,2,1],
 	"vDorgP":[0,0,0],
 	"vCorgP":[0,0,0],
-	"tLongTap":2000000,
 }
 
 {
