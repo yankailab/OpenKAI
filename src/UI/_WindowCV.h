@@ -49,8 +49,27 @@ namespace kai
 		vInt3 m_colDown = {200, 200, 200};
 		vInt3 m_colBorder = {255, 255, 255};
 		vInt3 m_colFont = {255, 255, 255};
+		int m_hFont = 25;
+		cv::Point m_pT;
+
 		bool m_bDown = false;
 		WindowCV_CbBtn m_cb;
+
+		void init(const cv::Size &s, cv::Ptr<freetype::FreeType2> pFont = NULL)
+		{
+			setScrSize(s);
+
+			NULL_(pFont);
+
+			int baseline = 0;
+			Size ts = pFont->getTextSize(m_name,
+											 m_hFont,
+											 -1,
+											 &baseline);
+
+			m_pT.x = (m_vR.x + m_vR.z)/2 - ts.width/2;
+			m_pT.y = (m_vR.y + m_vR.w)/2 - ts.height;
+		}
 
 		void setCallback(CbWindowCVbtn pCb, void *pInst)
 		{
@@ -109,8 +128,8 @@ namespace kai
 			if (pFont)
 			{
 				pFont->putText(*pM, m_name,
-							   Point(m_vR.x, m_vR.y),
-							   25,
+							   m_pT,
+							   m_hFont,
 							   Scalar(m_colFont.x, m_colFont.y, m_colFont.z),
 							   -1,
 							   cv::LINE_AA,

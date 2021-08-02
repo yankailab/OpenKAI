@@ -18,7 +18,7 @@
 }
 
 {
-	"name":"RGBview",
+	"name":"UI",
 	"class":"_WindowCV",
 	"bInst":1,
 	"bFullScreen":0,
@@ -30,15 +30,35 @@
     {
 		"name":"btn",
 	    {
-			"name":"Add",
-			"vRegion":[0.8, 0.8, 1.0, 1.0],
-			"colUp":[100, 100, 100],
-			"colDown":[200, 200, 200],
-			"colBorder":[255, 255, 255],
+			"name":"Reset",
+			"vRegion":[0.8, 0.0, 1.0, 0.3],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[200, 200, 200],
 			"colFont":[255, 255, 255],
+			"hFont":80,
+		}
+	    {
+			"name":"Save",
+			"vRegion":[0.8, 0.3, 1.0, 0.6],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[200, 200, 200],
+			"colFont":[255, 255, 255],
+			"hFont":80,
+		}
+	    {
+			"name":"Add",
+			"vRegion":[0.8, 0.6, 1.0, 1.0],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[200, 200, 200],
+			"colFont":[255, 255, 255],
+			"hFont":80,
 		}
 	}
 
+	"/vSize":[720,480],
 	"font":"/home/kai/dev/font/bebas-neue-font/BebasNeueRegular-2O7wW.ttf",
 	"vBASE":["/cam","/remap","ARarea"],
 }
@@ -58,13 +78,28 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bInst":1,
+	"bInst":0,
     {
 		"name":"thread",
 		"FPS":30,
 	}
 	"/pipeline":"v4l2src device=/dev/video4 ! image/jpeg,width=3840,height=2160,framerate=30/1 ! jpegdec ! videoconvert ! appsink",
-	"pipeline":"v4l2src device=/dev/video2 ! image/jpeg,width=1920,height=1080,framerate=30/1 ! jpegdec ! videoconvert ! appsink",
+	"pipeline":"v4l2src device=/dev/video4 ! image/jpeg,width=1920,height=1080,framerate=30/1 ! jpegdec ! videoconvert ! appsink",
+}
+
+{
+	"name":"cam",
+	"class":"_Raspivid",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bInst":1,
+	"vSize":[1280,720],
+	"cmd":"raspividyuv",
+	"cMode":"rgb",
+	"option":"--nopreview -rot 180",
+	"/option":"--nopreview",
 }
 
 {
@@ -77,7 +112,8 @@
 	}
 	"_VisionBase":"cam",
 	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calib.kiss",
-	"vSize":[1920, 1080],
+	"/vSize":[1920, 1080],
+	"vSize":[1280, 720],
 }
 
 {
@@ -91,7 +127,7 @@
 	"_VisionBase":"remap",
 	"_DistSensorBase":"TF03",
 	"_NavBase":"T265",
-	"_WindowCV":"RGBview",
+	"_WindowCV":"UI",
 	"vRange":[0,100],
 	"vAxisIdx":[0,2,1],
 	"vDorgP":[0,0,0],
@@ -122,6 +158,7 @@
 	}
 	"bLog":0,
 	"port":"/dev/ttyACM0",
+	"/port":"/dev/ttyAMA0",
 	"baud":115200,
 }
 

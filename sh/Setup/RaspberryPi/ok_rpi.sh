@@ -11,7 +11,7 @@ sudo rpi-update
 
 # Disable OS use of UART and Enable UART hardware
 set +H
-sudo sh -c "echo 'dtoverlay=pi3-disable-bt\n' >> /boot/config.txt"
+sudo sh -c "echo 'dtoverlay=disable-bt\ndtoverlay=disable-wifi\n' >> /boot/config.txt"
 set -H
 sudo reboot now
 
@@ -43,10 +43,9 @@ sudo reboot now
 sudo sh -c 'wpa_passphrase (ssid) (passphrase) | grep -v "#psk=" >> /etc/wpa_supplicant/wpa_supplicant.conf'
 sudo reboot now
 
-# Auto start on bootup	
+# Auto start on bootup
 sudo rm /etc/rc.local
 set +H
 sudo sh -c "echo '#!/bin/sh\n/home/ubuntu/jetson_clocks.sh\nnvpmodel -m 0\nexit 0\n' >> /etc/rc.local"
 set -H
 sudo chmod a+x /etc/rc.local
-	

@@ -131,35 +131,6 @@ namespace kai
 			m_pFT->loadFontData(m_font.c_str(), 0);
 		}
 
-		// int baseline = 0;
-		// Size textSize = ft2->getTextSize(text,
-		// 								 fontHeight,
-		// 								 thickness,
-		// 								 &baseline);
-		// if (thickness > 0)
-		// {
-		// 	baseline += thickness;
-		// }
-
-		// // center the text
-		// Point textOrg((img.cols - textSize.width) / 2,
-		// 			  (img.rows + textSize.height) / 2);
-		// // draw the box
-		// rectangle(img, textOrg + Point(0, baseline),
-		// 		  textOrg + Point(textSize.width, -textSize.height),
-		// 		  Scalar(0, 255, 0), 1, 8);
-
-		// // ... and the baseline first
-		// line(img, textOrg + Point(0, thickness),
-		// 	 textOrg + Point(textSize.width, thickness),
-		// 	 Scalar(0, 0, 255), 1, 8);
-
-		// // then put the text itself
-		// ft2->putText(img, text, textOrg, fontHeight,
-		// 			 Scalar::all(255), thickness, linestyle, true);
-
-
-
 		// buttons
 		Kiss *pKwb = pK->child("btn");
 		IF_T(pKwb->empty());
@@ -177,7 +148,8 @@ namespace kai
 			pKb->v("colDown", &wb.m_colDown);
 			pKb->v("colBorder", &wb.m_colBorder);
 			pKb->v("colFont", &wb.m_colFont);
-			wb.setScrSize(m_frame.size());
+			pKb->v("hFont", &wb.m_hFont);
+			wb.init(m_frame.size(), m_pFT);
 
 			m_vBtn.push_back(wb);
 		}

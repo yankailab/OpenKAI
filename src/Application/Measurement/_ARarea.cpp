@@ -107,11 +107,14 @@ namespace kai
 		m_aPose = mTpose;
 		m_vDptW = m_aPose * m_vDptP;
 
+		Matrix3f mRRpose = m_pN->mR().transpose();
 		Matrix4f mTwc = Matrix4f::Identity();
-		mTwc.block(0, 0, 3, 3) = m_pN->mR().transpose();
-		mTwc(0, 3) = -mTpose(0, 3) - m_vCorgP.x;
-		mTwc(1, 3) = -mTpose(1, 3) - m_vCorgP.y;
-		mTwc(2, 3) = -mTpose(2, 3) - m_vCorgP.z;
+		mTwc.block(0, 0, 3, 3) = mRRpose;
+		Vector3f mRT = {mTpose(0, 3), mTpose(1, 3), mTpose(2, 3)};
+		mRT = mRRpose * mRT;
+		mTwc(0, 3) = -mRT(0);// - m_vCorgP.x;
+		mTwc(1, 3) = -mRT(1);// - m_vCorgP.y;
+		mTwc(2, 3) = -mRT(2);// - m_vCorgP.z;
 		m_aW2C = mTwc;
 
 		return false;

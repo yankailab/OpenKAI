@@ -101,8 +101,8 @@ sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/us
 #----------------------------------------------------
 # CMake
 wget https://github.com/Kitware/CMake/releases/download/v3.20.0/cmake-3.20.0.tar.gz
-tar xvf cmake-3.20.0.tar.gz
-cd cmake-3.20.0
+tar xvf cmake-3.21.1.tar.gz
+cd cmake-3.21.1
 ./bootstrap
 make -j$(nproc)
 sudo make install
@@ -125,7 +125,7 @@ cd librealsense
 mkdir build
 cd build
 #cmake -DCMAKE_BUILD_TYPE=Release ../
-cmake -DFORCE_LIBUVC=true -DBUILD_WITH_CUDA=true -DCMAKE_BUILD_TYPE=Release ../
+cmake -DFORCE_LIBUVC=true -DBUILD_WITH_CUDA=ON -DCMAKE_BUILD_TYPE=Release ../
 make -j$(nproc)
 sudo make install
 
@@ -148,8 +148,8 @@ gphoto2 --stdout --capture-movie | ffmpeg -i - -vcodec rawvideo -pix_fmt yuv420p
 
 #----------------------------------------------------
 # (Optional) OpenCV
-git clone --branch 4.5.2 --depth 1 https://github.com/opencv/opencv.git
-git clone --branch 4.5.2 --depth 1 https://github.com/opencv/opencv_contrib.git
+git clone --branch 4.5.3 --depth 1 https://github.com/opencv/opencv.git
+git clone --branch 4.5.3 --depth 1 https://github.com/opencv/opencv_contrib.git
 cd opencv
 mkdir build
 cd build
