@@ -27,12 +27,15 @@ public:
 	void close(void);
 
 private:
+	bool updateRS(void);
     void update(void);
 	static void* getUpdate(void* This)
 	{
 		((_RStracking *) This)->update();
 		return NULL;
 	}
+
+	void hardwareReset ( void );
 
 public:
     rs2::pipeline m_rsPipe;

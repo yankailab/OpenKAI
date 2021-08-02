@@ -74,6 +74,12 @@ namespace kai
 		m_bReady = false;
 	}
 
+	void _RStracking::hardwareReset(void)
+	{
+		rs2::device dev = m_rsPipe.get_active_profile().get_device();
+		dev.hardware_reset();
+	}
+
 	bool _RStracking::start(void)
 	{
 		NULL_F(m_pT);
@@ -89,80 +95,99 @@ namespace kai
 				if (!open())
 				{
 					LOG_E("Cannot open RealSense tracking");
+	                hardwareReset();
 					m_pT->sleepT(SEC_2_USEC);
 					continue;
 				}
+
+				resetAll();
 			}
 
 			if (m_bReset)
 			{
 				close();
-				resetAll();
+				m_bReady = false;
 				continue;
 			}
 
 			m_pT->autoFPSfrom();
 
-			try
+			if (!updateRS())
 			{
-				auto frames = m_rsPipe.wait_for_frames();
-				auto f = frames.first_or_default(RS2_STREAM_POSE);
-				auto pose = f.as<rs2::pose_frame>().get_pose_data();
-
-				*m_vT.v(m_vAxisIdx.x) = pose.translation.x;
-				*m_vT.v(m_vAxisIdx.y) = pose.translation.y;
-				*m_vT.v(m_vAxisIdx.z) = pose.translation.z;
-
-				m_vQ.x = pose.rotation.x;
-				m_vQ.y = pose.rotation.y;
-				m_vQ.z = pose.rotation.z;
-				m_vQ.w = pose.rotation.w;
-
-				m_mR = Eigen::Quaternionf(
-										 m_vQ.w,
-										 m_vQ.x,
-										 m_vQ.y,
-										 m_vQ.z)
-										 .toRotationMatrix();
-
-				Matrix4f mT = Matrix4f::Identity();
-				mT.block(0, 0, 3, 3) = m_mR;
-				mT(0, 3) = m_vT.x;
-				mT(1, 3) = m_vT.y;
-				mT(2, 3) = m_vT.z;
-				m_mT = mT;
-
-				//TODO: calc with mR
-				// float w = m_vQ.w;
-				// float x = -m_vQ.z;
-				// float y = m_vQ.x;
-				// float z = -m_vQ.y;
-				// const float ovP = 180.0 / OK_PI;
-				// *m_vR.v(m_vAxisIdx.x) = -asin(2.0 * (x * z - w * y)) * ovP;								  //pitch
-				// *m_vR.v(m_vAxisIdx.y) = atan2(2.0 * (w * x + y * z), w * w - x * x - y * y + z * z) * ovP; //roll
-				// *m_vR.v(m_vAxisIdx.z) = atan2(2.0 * (w * z + x * y), w * w + x * x - y * y - z * z) * ovP; //yaw
-
-				m_confidence = pose.tracker_confidence;
-			}
-			catch (const rs2::camera_disconnected_error &e)
-			{
-				LOG_E("Realsense tracking disconnected");
-			}
-			catch (const rs2::recoverable_error &e)
-			{
-				LOG_E("Realsense tracking open failed");
-			}
-			catch (const rs2::error &e)
-			{
-				LOG_E("Realsense tracking error");
-			}
-			catch (const std::exception &e)
-			{
-				LOG_E("Realsense exception");
+				hardwareReset();
+				m_pT->sleepT(SEC_2_USEC);
+				m_bReady = false;
 			}
 
 			m_pT->autoFPSto();
 		}
+	}
+
+	bool _RStracking::updateRS(void)
+	{
+		try
+		{
+			auto frames = m_rsPipe.wait_for_frames();
+			auto f = frames.first_or_default(RS2_STREAM_POSE);
+			auto pose = f.as<rs2::pose_frame>().get_pose_data();
+
+			*m_vT.v(m_vAxisIdx.x) = pose.translation.x;
+			*m_vT.v(m_vAxisIdx.y) = pose.translation.y;
+			*m_vT.v(m_vAxisIdx.z) = pose.translation.z;
+
+			m_vQ.x = pose.rotation.x;
+			m_vQ.y = pose.rotation.y;
+			m_vQ.z = pose.rotation.z;
+			m_vQ.w = pose.rotation.w;
+
+			m_mR = Eigen::Quaternionf(
+					   m_vQ.w,
+					   m_vQ.x,
+					   m_vQ.y,
+					   m_vQ.z)
+					   .toRotationMatrix();
+
+			Matrix4f mT = Matrix4f::Identity();
+			mT.block(0, 0, 3, 3) = m_mR;
+			mT(0, 3) = m_vT.x;
+			mT(1, 3) = m_vT.y;
+			mT(2, 3) = m_vT.z;
+			m_mT = mT;
+
+			//TODO: calc with mR
+			// float w = m_vQ.w;
+			// float x = -m_vQ.z;
+			// float y = m_vQ.x;
+			// float z = -m_vQ.y;
+			// const float ovP = 180.0 / OK_PI;
+			// *m_vR.v(m_vAxisIdx.x) = -asin(2.0 * (x * z - w * y)) * ovP;								  //pitch
+			// *m_vR.v(m_vAxisIdx.y) = atan2(2.0 * (w * x + y * z), w * w - x * x - y * y + z * z) * ovP; //roll
+			// *m_vR.v(m_vAxisIdx.z) = atan2(2.0 * (w * z + x * y), w * w + x * x - y * y - z * z) * ovP; //yaw
+
+			m_confidence = pose.tracker_confidence;
+		}
+		catch (const rs2::camera_disconnected_error &e)
+		{
+			LOG_E("Realsense tracking disconnected");
+			return false;
+		}
+		catch (const rs2::recoverable_error &e)
+		{
+			LOG_E("Realsense tracking open failed");
+			return false;
+		}
+		catch (const rs2::error &e)
+		{
+			LOG_E("Realsense tracking error");
+			return false;
+		}
+		catch (const std::exception &e)
+		{
+			LOG_E("Realsense exception");
+			return false;
+		}
+
+		return true;
 	}
 
 }

@@ -4,6 +4,7 @@
 	"appName":"ARarea",
 	"bLog":1,
 	"bStdErr":1,
+	"rc":"sudo modprobe bcm2835-v4l2\nv4l2-ctl -d /dev/video0 --set-ctrl=rotate=180",
 }
 
 {
@@ -21,7 +22,7 @@
 	"name":"UI",
 	"class":"_WindowCV",
 	"bInst":1,
-	"bFullScreen":0,
+	"bFullScreen":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -36,7 +37,7 @@
 			"colDown":[100, 100, 100],
 			"colBorder":[200, 200, 200],
 			"colFont":[255, 255, 255],
-			"hFont":80,
+			"hFont":60,
 		}
 	    {
 			"name":"Save",
@@ -45,7 +46,7 @@
 			"colDown":[100, 100, 100],
 			"colBorder":[200, 200, 200],
 			"colFont":[255, 255, 255],
-			"hFont":80,
+			"hFont":60,
 		}
 	    {
 			"name":"Add",
@@ -54,21 +55,22 @@
 			"colDown":[100, 100, 100],
 			"colBorder":[200, 200, 200],
 			"colFont":[255, 255, 255],
-			"hFont":80,
+			"hFont":60,
 		}
 	}
 
-	"/vSize":[720,480],
-	"font":"/home/kai/dev/font/bebas-neue-font/BebasNeueRegular-2O7wW.ttf",
 	"vBASE":["/cam","/remap","ARarea"],
+	"vSize":[800,480],
+	"/font":"/home/kai/dev/font/bebas-neue-font/BebasNeueRegular-2O7wW.ttf",
+	"font":"/home/pi/ARarea/bn.ttf",
 }
 
 {
 	"name":"cam",
 	"class":"_Camera",
-	"bInst":0,
-	"deviceID":1,
-	"vSize":[640,480],
+	"bInst":1,
+	"deviceID":0,
+	"vSize":[1280, 720],
     {
 		"name":"thread",
 		"FPS":30,
@@ -94,7 +96,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"bInst":1,
+	"bInst":0,
 	"vSize":[1280,720],
 	"cmd":"raspividyuv",
 	"cMode":"rgb",
@@ -113,6 +115,7 @@
 	"_VisionBase":"cam",
 	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calib.kiss",
 	"/vSize":[1920, 1080],
+	"fCalib":"/home/pi/ARarea/calib.kiss",
 	"vSize":[1280, 720],
 }
 
