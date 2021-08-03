@@ -23,10 +23,13 @@ namespace kai
 		m_vDptW = {0, 0, 0};
 		m_vCorgP.init(0);
 		m_vAxisIdx.init(0, 1, 2);
+
+		m_pTs = NULL;
 	}
 
 	_ARarea::~_ARarea()
 	{
+		DEL(m_pTs);
 	}
 
 	bool _ARarea::init(void *pKiss)
@@ -65,13 +68,25 @@ namespace kai
 		pW->setCbBtn("Clear", sOnBtnClear, this);
 		pW->setCbBtn("Save", sOnBtnSave, this);
 
+		// slow jobs
+		Kiss *pKt = pK->child("threadSlow");
+		IF_F(pKt->empty());
+		m_pTs = new _Thread();
+		if (!m_pTs->init(pKt))
+		{
+			DEL(m_pTs);
+			return false;
+		}
+
 		return true;
 	}
 
 	bool _ARarea::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		NULL_F(m_pTs);
+		IF_F(!m_pT->start(getUpdate, this));
+		return m_pTs->start(getUpdateSlow, this);
 	}
 
 	int _ARarea::check(void)
@@ -112,9 +127,9 @@ namespace kai
 		mTwc.block(0, 0, 3, 3) = mRRpose;
 		Vector3f mRT = {mTpose(0, 3), mTpose(1, 3), mTpose(2, 3)};
 		mRT = mRRpose * mRT;
-		mTwc(0, 3) = -mRT(0);// - m_vCorgP.x;
-		mTwc(1, 3) = -mRT(1);// - m_vCorgP.y;
-		mTwc(2, 3) = -mRT(2);// - m_vCorgP.z;
+		mTwc(0, 3) = -mRT(0); // - m_vCorgP.x;
+		mTwc(1, 3) = -mRT(1); // - m_vCorgP.y;
+		mTwc(2, 3) = -mRT(2); // - m_vCorgP.z;
 		m_aW2C = mTwc;
 
 		return false;
@@ -140,7 +155,7 @@ namespace kai
 		return (vP.z() > 0.0);
 	}
 
-	bool _ARarea::bInsideScr(const cv::Size& s, const cv::Point& p)
+	bool _ARarea::bInsideScr(const cv::Size &s, const cv::Point &p)
 	{
 		IF_F(p.x < 0);
 		IF_F(p.x > s.width);
@@ -175,14 +190,16 @@ namespace kai
 		_WindowCV *pWin = (_WindowCV *)pWindow;
 		Frame *pF = pWin->getFrame();
 		NULL_(pF);
-		Mat *pM = pF->m();
-		IF_(pM->empty());
+		Mat *pMw = pF->m();
+		IF_(pMw->empty());
+		cv::Ptr<freetype::FreeType2> pFt = pWin->getFont();
 
 		Mat mV;
 		m_pV->BGR()->m()->copyTo(mV);
+
 		vFloat2 vF = m_pV->getFf();
 		vFloat2 vC = m_pV->getCf();
-		cv::Size s = mV.size();
+		cv::Size s = m_pV->BGR()->size();
 		Scalar col = Scalar(0, 255, 0);
 
 		Vector3f vDptC = m_aW2C * m_vDptW;
@@ -220,21 +237,59 @@ namespace kai
 
 				line(mV, p, q, col, 3, cv::LINE_AA);
 				Vector3f vD = pA->m_vVertW - pB->m_vVertW;
-				putText(mV, f2str(vD.norm(), 2) + "m",
-						(p + q) * 0.5,
-						FONT_HERSHEY_SIMPLEX, 0.6, col, 1, cv::LINE_AA);
+
+				string sL = f2str(vD.norm(), 2) + "m";
+				if (pFt)
+				{
+					pFt->putText(mV, sL,
+								 (p + q) * 0.5,
+								 20,
+								 col,
+								 -1,
+								 cv::LINE_AA,
+								 false);
+				}
+				else
+				{
+					putText(mV, f2str(vD.norm(), 2) + "m",
+							(p + q) * 0.5,
+							FONT_HERSHEY_SIMPLEX, 0.6, col, 1, cv::LINE_AA);
+				}
 			}
 		}
 
-		Mat m;
-		cv::resize(mV, m, pM->size());
-		m.copyTo(*pM);
+		Rect r;
+		r.x = 0;
+		r.y = 0;
+		r.width = mV.cols;
+		r.height = mV.rows;
+		mV.copyTo((*pMw)(r));
 
 		if (nV > 2)
 		{
-			putText(*pM, f2str(area(), 2) + " m^2",
-					Point(0, pM->rows - 10),
-					FONT_HERSHEY_SIMPLEX, 0.8, col, 1);
+			r.x = 0;
+			r.y = 440;
+			r.width = 640;
+			r.height = 40;
+			(*pMw)(r) = Scalar(0);
+
+			string sA = "Area = " + f2str(area(), 2) + " Sq. M";
+			if (pFt)
+			{
+				pFt->putText(*pMw, sA,
+							 Point(40, pMw->rows - 40),
+							 40,
+							 Scalar(255,255,255),
+							 -1,
+							 cv::LINE_AA,
+							 false);
+			}
+			else
+			{
+				putText(*pMw, sA,
+						Point(10, pMw->rows - 20),
+						FONT_HERSHEY_SIMPLEX, 0.8, col, 1, cv::LINE_AA);
+			}
 		}
 	}
 
@@ -263,6 +318,43 @@ namespace kai
 	{
 		NULL_(pInst);
 		_ARarea *pA = (_ARarea *)pInst;
+	}
+
+	void _ARarea::updateSlow(void)
+	{
+		while (m_pTs->bRun())
+		{
+			m_pTs->autoFPSfrom();
+
+			// check battery
+			FILE *pFr = popen("python3 INA219.py", "r");
+			if (pFr <= 0)
+			{
+				//battery unknown
+			}
+			else
+			{
+				int iFr = fileno(pFr);
+				char pB[256];
+				int nR = 0;
+				while ((nR += read(iFr, &pB[nR], 256 - nR)) >= 0)
+					;
+
+				// decode battery info
+				printf("Battery: %s", pB);
+			}
+
+			m_pTs->autoFPSto();
+		}
+	}
+
+	void _ARarea::console(void *pConsole)
+	{
+		NULL_(pConsole);
+		this->_ModuleBase::console(pConsole);
+
+		NULL_(m_pTs);
+		m_pTs->console(pConsole);
 	}
 
 }

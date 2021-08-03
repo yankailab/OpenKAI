@@ -24,11 +24,21 @@ sudo reboot now
 	
 # Raspberry camera
 sudo apt-get -y install gstreamer1.0-omx libraspberrypi-dev
-git clone https://github.com/thaytan/gst-rpicamsrc.git
+git clone --depth 1 https://github.com/thaytan/gst-rpicamsrc.git
 cd gst-rpicamsrc
 ./autogen.sh --prefix=/usr --libdir=/usr/lib/arm-linux-gnueabihf/
 make
 sudo make install
+
+# USB reset for Realsense
+sudo apt-get install libusb-1.0-0-dev
+git clone --depth 1 https://github.com/mvp/uhubctl.git
+cd uhubctl
+make
+sudo make install
+sudo uhubctl -a cycle -l 1 -p 1-4
+sudo uhubctl -a cycle -l 2 -p 1-4
+
 
 # Wifi Setup
 # Disable the internal Wifi
@@ -46,6 +56,7 @@ sudo reboot now
 # Auto start on bootup
 sudo rm /etc/rc.local
 set +H
-sudo sh -c "echo '#!/bin/sh\n/home/ubuntu/jetson_clocks.sh\nnvpmodel -m 0\nexit 0\n' >> /etc/rc.local"
+sudo sh -c "echo '#!/bin/sh\n/home/pi/usbReset.sh\n/home/pi/ok.sh &\nexit 0\n' >> /etc/rc.local"
 set -H
 sudo chmod a+x /etc/rc.local
+

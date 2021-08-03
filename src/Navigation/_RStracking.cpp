@@ -34,10 +34,16 @@ namespace kai
 
 		try
 		{
-			rs2::config cfg;
-			cfg.enable_stream(RS2_STREAM_POSE, RS2_FORMAT_6DOF);
+			if (!m_rsSN.empty())
+				m_rsConfig.enable_device(m_rsSN);
 
-			m_rsPipe.start(cfg);
+			m_rsConfig.enable_stream(RS2_STREAM_POSE, RS2_FORMAT_6DOF);
+			m_rsProfile = m_rsPipe.start(m_rsConfig);
+			rs2::device dev = m_rsProfile.get_device();
+			LOG_I("Device Name:" + string(dev.get_info(RS2_CAMERA_INFO_NAME)));
+			LOG_I("Firmware Version:" + string(dev.get_info(RS2_CAMERA_INFO_FIRMWARE_VERSION)));
+			LOG_I("Serial Number:" + string(dev.get_info(RS2_CAMERA_INFO_SERIAL_NUMBER)));
+			LOG_I("Product Id:" + string(dev.get_info(RS2_CAMERA_INFO_PRODUCT_ID)));
 
 			rs2::frameset rsFrameset = m_rsPipe.wait_for_frames();
 		}
@@ -76,7 +82,7 @@ namespace kai
 
 	void _RStracking::hardwareReset(void)
 	{
-		rs2::device dev = m_rsPipe.get_active_profile().get_device();
+		rs2::device dev = m_rsProfile.get_device();
 		dev.hardware_reset();
 	}
 
@@ -95,7 +101,7 @@ namespace kai
 				if (!open())
 				{
 					LOG_E("Cannot open RealSense tracking");
-	                hardwareReset();
+					hardwareReset();
 					m_pT->sleepT(SEC_2_USEC);
 					continue;
 				}

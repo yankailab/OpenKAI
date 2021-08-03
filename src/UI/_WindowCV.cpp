@@ -125,7 +125,7 @@ namespace kai
 		// UI
 		// Freetype font
 		pK->v("font", &m_font);
-		if(m_font != "")
+		if (m_font != "")
 		{
 			m_pFT = freetype::createFreeType2();
 			m_pFT->loadFontData(m_font.c_str(), 0);
@@ -229,6 +229,11 @@ namespace kai
 	Frame *_WindowCV::getFrame(void)
 	{
 		return &m_frame;
+	}
+
+	cv::Ptr<freetype::FreeType2> _WindowCV::getFont(void)
+	{
+		return m_pFT;
 	}
 
 	bool _WindowCV::setCbBtn(const string &btnLabel, CbWindowCVbtn pCb, void *pInst)

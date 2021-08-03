@@ -49,7 +49,6 @@ public:
 
     int m_nFB;
     uint8_t* m_pFB;
-    std::vector<uint8_t> m_vImg;
 };
 
 }

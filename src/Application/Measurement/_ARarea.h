@@ -17,9 +17,9 @@ namespace kai
 {
 	struct ARAREA_VERTEX
 	{
-		Vector3f m_vVertW;	//world coordinate
-		cv::Point m_vPs;	//screen
-		bool m_bZ;			//if inside the projection plane
+		Vector3f m_vVertW; //world coordinate
+		cv::Point m_vPs;   //screen
+		bool m_bZ;		   //if inside the projection plane
 	};
 
 	class _ARarea : public _ModuleBase
@@ -31,12 +31,13 @@ namespace kai
 		bool init(void *pKiss);
 		bool start(void);
 		int check(void);
+		void console(void *pConsole);
 		void cvDraw(void *pWindow);
 
 		// UI handler
-		static void sOnBtnAdd(void* pInst);
-		static void sOnBtnClear(void* pInst);
-		static void sOnBtnSave(void* pInst);
+		static void sOnBtnAdd(void *pInst);
+		static void sOnBtnClear(void *pInst);
+		static void sOnBtnSave(void *pInst);
 
 		void addVertex(void);
 
@@ -50,12 +51,19 @@ namespace kai
 		}
 
 		bool c2scr(const Vector3f &vPc,
-				 const cv::Size& vSize,
-				 const vFloat2& vF,
-				 const vFloat2& vC,				 
-				 cv::Point* pvPs);
-		bool bInsideScr(const cv::Size& s, const cv::Point& p);
+				   const cv::Size &vSize,
+				   const vFloat2 &vF,
+				   const vFloat2 &vC,
+				   cv::Point *pvPs);
+		bool bInsideScr(const cv::Size &s, const cv::Point &p);
 		float area(void);
+
+		void updateSlow(void);
+		static void *getUpdateSlow(void *This)
+		{
+			((_ARarea *)This)->updateSlow();
+			return NULL;
+		}
 
 	private:
 		_VisionBase *m_pV;
@@ -69,16 +77,23 @@ namespace kai
 		// distance sensor
 		float m_d;
 		vFloat2 m_vRange;
-		vFloat3 m_vDorgP;	// distance sensor offset in pose sensor coordinate
-		Vector3f m_vDptW;	// point where the distance sensor is pointing at in world coordinate
+		vFloat3 m_vDorgP; // distance sensor offset in pose sensor coordinate
+		Vector3f m_vDptW; // point where the distance sensor is pointing at in world coordinate
 
 		// camera
-		vFloat3 m_vCorgP;	// camera offset in pose sensor coordinate
+		vFloat3 m_vCorgP; // camera offset in pose sensor coordinate
 		Eigen::Affine3f m_aW2C;
-        vInt3 m_vAxisIdx;
+		vInt3 m_vAxisIdx;
 
 		// area
 		vector<ARAREA_VERTEX> m_vVert;
+
+		// slow jobs, system check etc.
+	    _Thread* m_pTs;
+		float m_battV;	// voltage
+		float m_battA;	// current
+		float m_battW;	// power
+		float m_battP;	// percent
 
 	};
 

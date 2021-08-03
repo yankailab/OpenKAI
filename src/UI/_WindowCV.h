@@ -158,6 +158,7 @@ namespace kai
 		bool start(void);
 
 		Frame *getFrame(void);
+		cv::Ptr<freetype::FreeType2> getFont(void);
 
 		bool setCbBtn(const string &btnLabel, CbWindowCVbtn pCb, void *pInst);
 
