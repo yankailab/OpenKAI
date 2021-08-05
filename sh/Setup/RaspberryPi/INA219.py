@@ -204,10 +204,10 @@ if __name__=='__main__':
     # INA219 measure bus voltage on the load side. So PSU voltage = bus_voltage + shunt_voltage
     #print("PSU Voltage:   {:6.3f} V".format(bus_voltage + shunt_voltage))
     #print("Shunt Voltage: {:9.6f} V".format(shunt_voltage))
-    print("Load Voltage:  {:6.3f} V".format(bus_voltage))
-    print("Current:       {:9.6f} A".format(current/1000))
-    print("Power:         {:6.3f} W".format(power))
-    print("Percent:       {:3.1f}%".format(p))
-    print("")
+    print("{:6.3f}".format(bus_voltage))
+    print("{:9.6f}".format(current/1000))
+    print("{:6.3f}".format(power))
+    print("{:3.1f}".format(p))
 
+#    print("")
 #        time.sleep(2)

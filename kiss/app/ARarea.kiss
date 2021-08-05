@@ -22,7 +22,7 @@
 	"name":"UI",
 	"class":"_WindowCV",
 	"bInst":1,
-	"bFullScreen":1,
+	"bFullScreen":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -35,7 +35,7 @@
 			"vRegion":[0.8, 0.0, 1.0, 0.3],
 			"colUp":[40, 40, 40],
 			"colDown":[100, 100, 100],
-			"colBorder":[200, 200, 200],
+			"colBorder":[150, 150, 150],
 			"colFont":[255, 255, 255],
 			"hFont":50,
 		}
@@ -44,7 +44,7 @@
 			"vRegion":[0.8, 0.3, 1.0, 0.6],
 			"colUp":[40, 40, 40],
 			"colDown":[100, 100, 100],
-			"colBorder":[200, 200, 200],
+			"colBorder":[150, 150, 150],
 			"colFont":[255, 255, 255],
 			"hFont":50,
 		}
@@ -53,7 +53,7 @@
 			"vRegion":[0.8, 0.6, 1.0, 1.0],
 			"colUp":[40, 40, 40],
 			"colDown":[100, 100, 100],
-			"colBorder":[200, 200, 200],
+			"colBorder":[150, 150, 150],
 			"colFont":[255, 255, 255],
 			"hFont":50,
 		}
@@ -136,6 +136,9 @@
 	"vAxisIdx":[0,2,1],
 	"vDorgP":[0,0,0],
 	"vCorgP":[0,0,0],
+
+	"cmdBatt":"python3 /home/pi/INA219.py",
+	"battShutdown":10,
 }
 
 {
@@ -160,8 +163,8 @@
 		"name":"threadR",
 		"FPS":100,
 	}
-	"/port":"/dev/ttyACM0",
-	"port":"/dev/ttyAMA0",
+	"port":"/dev/ttyACM0",
+	"/port":"/dev/ttyAMA0",
 	"baud":115200,
 }
 

@@ -58,6 +58,7 @@ namespace kai
 		bool bInsideScr(const cv::Size &s, const cv::Point &p);
 		float area(void);
 
+		bool updateBatt(void);
 		void updateSlow(void);
 		static void *getUpdateSlow(void *This)
 		{
@@ -90,10 +91,12 @@ namespace kai
 
 		// slow jobs, system check etc.
 	    _Thread* m_pTs;
+		string m_cmdBatt;
 		float m_battV;	// voltage
 		float m_battA;	// current
 		float m_battW;	// power
 		float m_battP;	// percent
+		float m_battShutdown;
 
 	};
 

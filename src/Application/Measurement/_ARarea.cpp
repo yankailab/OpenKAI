@@ -25,6 +25,8 @@ namespace kai
 		m_vAxisIdx.init(0, 1, 2);
 
 		m_pTs = NULL;
+		m_cmdBatt = "python3 INA219.py";
+		m_battShutdown = 10;
 	}
 
 	_ARarea::~_ARarea()
@@ -41,6 +43,8 @@ namespace kai
 		pK->v("vAxisIdx", &m_vAxisIdx);
 		pK->v("vDorgP", &m_vDorgP);
 		pK->v("vCorgP", &m_vCorgP);
+		pK->v("cmdBatt", &m_cmdBatt);
+		pK->v("battShutdown", &m_battShutdown);
 
 		string n;
 
@@ -279,7 +283,7 @@ namespace kai
 				pFt->putText(*pMw, sA,
 							 Point(40, pMw->rows - 40),
 							 40,
-							 Scalar(255,255,255),
+							 Scalar(255, 255, 255),
 							 -1,
 							 cv::LINE_AA,
 							 false);
@@ -326,26 +330,38 @@ namespace kai
 		{
 			m_pTs->autoFPSfrom();
 
-			// check battery
-			FILE *pFr = popen("python3 INA219.py", "r");
-			if (pFr <= 0)
-			{
-				//battery unknown
-			}
-			else
-			{
-				int iFr = fileno(pFr);
-				char pB[256];
-				int nR = 0;
-				while ((nR += read(iFr, &pB[nR], 256 - nR)) >= 0)
-					;
-
-				// decode battery info
-				printf("Battery: %s", pB);
-			}
+			updateBatt();
 
 			m_pTs->autoFPSto();
 		}
+	}
+
+	bool _ARarea::updateBatt(void)
+	{
+		// check battery
+		FILE *pFr = popen(m_cmdBatt.c_str(), "r");
+		IF_F(pFr <= 0);
+
+		char pB[256];
+		float pBatt[4]; //voltage, current, power, percent
+		for (int i = 0; i < 4 && fgets(pB, sizeof(pB), pFr) != NULL; i++)
+			pBatt[i] = atof(pB);
+
+		m_battV = pBatt[0];
+		m_battA = pBatt[1];
+		m_battW = pBatt[2];
+		m_battP = pBatt[3];
+		pclose(pFr);
+
+		LOG_I("Battery: V=" + f2str(m_battV) +
+			  ", A=" + f2str(m_battA) +
+			  ", W=" + f2str(m_battW) +
+			  ", P=" + f2str(m_battP));
+
+		if (m_battP < m_battShutdown)
+			system("shutdown -P now");
+
+		return true;
 	}
 
 	void _ARarea::console(void *pConsole)

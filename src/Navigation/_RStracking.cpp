@@ -82,8 +82,23 @@ namespace kai
 
 	void _RStracking::hardwareReset(void)
 	{
-		rs2::device dev = m_rsProfile.get_device();
-		dev.hardware_reset();
+		try
+		{
+			rs2::device dev = m_rsProfile.get_device();
+			dev.hardware_reset();
+		}
+		catch (const rs2::camera_disconnected_error &e)
+		{
+		}
+		catch (const rs2::recoverable_error &e)
+		{
+		}
+		catch (const rs2::error &e)
+		{
+		}
+		catch (const std::exception &e)
+		{
+		}
 	}
 
 	bool _RStracking::start(void)
