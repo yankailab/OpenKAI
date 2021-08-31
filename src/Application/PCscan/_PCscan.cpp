@@ -262,7 +262,7 @@ namespace kai
 		for (int i = 0; i < m_vpPCB.size(); i++)
 		{
 			_PCbase *pP = m_vpPCB[i];
-			pP->setTranslation(mT);
+			pP->setTranslation(mT.cast<double>());
 		}
 	}
 

@@ -31,8 +31,8 @@
     {
 		"name":"btn",
 	    {
-			"name":"Clear",
-			"vRegion":[0.8, 0.0, 1.0, 0.3],
+			"name":"Add",
+			"vRegion":[0.8, 0.0, 1.0, 0.25],
 			"colUp":[40, 40, 40],
 			"colDown":[100, 100, 100],
 			"colBorder":[150, 150, 150],
@@ -41,7 +41,7 @@
 		}
 	    {
 			"name":"Save",
-			"vRegion":[0.8, 0.3, 1.0, 0.6],
+			"vRegion":[0.8, 0.25, 1.0, 0.5],
 			"colUp":[40, 40, 40],
 			"colDown":[100, 100, 100],
 			"colBorder":[150, 150, 150],
@@ -49,8 +49,17 @@
 			"hFont":50,
 		}
 	    {
-			"name":"Add",
-			"vRegion":[0.8, 0.6, 1.0, 1.0],
+			"name":"Clear",
+			"vRegion":[0.8, 0.5, 1.0, 0.75],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":50,
+		}
+	    {
+			"name":"Mode",
+			"vRegion":[0.8, 0.75, 1.0, 1.0],
 			"colUp":[40, 40, 40],
 			"colDown":[100, 100, 100],
 			"colBorder":[150, 150, 150],
@@ -99,7 +108,8 @@
 	"vSize":[640,480],
 	"cmd":"raspividyuv",
 	"cMode":"rgb",
-	"option":"-n -rot 180",
+	"/option":"-n -rot 180",
+	"option":"-n",
 }
 
 {

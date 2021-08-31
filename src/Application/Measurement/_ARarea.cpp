@@ -18,11 +18,17 @@ namespace kai
 		m_pD = NULL;
 		m_pN = NULL;
 
+		m_d = 0.0;
 		m_vRange.init(0.0, 100.0);
 		m_vDorgP.init(0);
 		m_vDptW = {0, 0, 0};
 		m_vCorgP.init(0);
 		m_vAxisIdx.init(0, 1, 2);
+
+		m_vCircleSize.init(10, 20);
+		m_crossSize = 20;
+		m_drawCol = Scalar(0, 255, 0);
+		m_pFt = NULL;
 
 		m_pTs = NULL;
 		m_cmdBatt = "python3 INA219.py";
@@ -43,6 +49,10 @@ namespace kai
 		pK->v("vAxisIdx", &m_vAxisIdx);
 		pK->v("vDorgP", &m_vDorgP);
 		pK->v("vCorgP", &m_vCorgP);
+
+		pK->v("vCircleSize", &m_vCircleSize);
+		pK->v("crossSize", &m_crossSize);
+
 		pK->v("cmdBatt", &m_cmdBatt);
 		pK->v("battShutdown", &m_battShutdown);
 
@@ -185,6 +195,178 @@ namespace kai
 		return vA.norm();
 	}
 
+	void _ARarea::drawCross(Mat *pM)
+	{
+		NULL_(pM);
+
+		vFloat2 vF = m_pV->getFf();
+		vFloat2 vC = m_pV->getCf();
+		cv::Size s = m_pV->BGR()->size();
+
+		// target circle and cross
+		Vector3f vDptC = m_aW2C * m_vDptW;
+		cv::Point vPs;
+		c2scr(vDptC, s, vF, vC, &vPs);
+
+		float rd = (m_vRange.y - m_d) / m_vRange.len();
+		Scalar colT = Scalar(0, 255.0 * rd, 255.0 * (1.0 - rd));
+		circle(*pM,
+			   vPs,
+			   m_vCircleSize.x + m_vCircleSize.len() * rd,
+			   colT,
+			   2, cv::LINE_AA);
+
+		line(*pM,
+			 Point(vPs.x - m_crossSize, vPs.y),
+			 Point(vPs.x + m_crossSize, vPs.y),
+			 colT,
+			 1);
+
+		line(*pM,
+			 Point(vPs.x, vPs.y - m_crossSize),
+			 Point(vPs.x, vPs.y + m_crossSize),
+			 colT,
+			 1);
+	}
+
+	void _ARarea::drawVertices(Mat *pM)
+	{
+		NULL_(pM);
+		NULL_(m_pFt);
+
+		vFloat2 vF = m_pV->getFf();
+		vFloat2 vC = m_pV->getCf();
+		cv::Size s = m_pV->BGR()->size();
+
+		// vertices
+		int i, j;
+		int nV = m_vVert.size();
+		for (i = 0; i < nV; i++)
+		{
+			ARAREA_VERTEX *pA = &m_vVert[i];
+			Vector3f vPc = m_aW2C * pA->m_vVertW;
+			pA->m_bZ = c2scr(vPc, s, vF, vC, &pA->m_vPs);
+
+			IF_CONT(!pA->m_bZ);
+			IF_CONT(!bInsideScr(s, pA->m_vPs));
+
+			circle(*pM, pA->m_vPs, 10, m_drawCol, 3, cv::LINE_AA);
+		}
+
+		IF_(nV <= 1);
+
+		// distances between vertices
+		for (i = 0; i < nV; i++)
+		{
+			j = (i + 1) % nV;
+			ARAREA_VERTEX *pA = &m_vVert[i];
+			ARAREA_VERTEX *pB = &m_vVert[j];
+			IF_CONT(!pA->m_bZ && !pB->m_bZ);
+
+			Point p = pA->m_vPs;
+			Point q = pB->m_vPs;
+			IF_CONT(!clipLine(s, p, q));
+
+			line(*pM, p, q, m_drawCol, 3, cv::LINE_AA);
+			Vector3f vD = pA->m_vVertW - pB->m_vVertW;
+
+			string sL = f2str(vD.norm(), 2) + "m";
+			m_pFt->putText(*pM, sL,
+						   (p + q) * 0.5,
+						   20,
+						   m_drawCol,
+						   -1,
+						   cv::LINE_AA,
+						   false);
+		}
+	}
+
+	void _ARarea::drawArea(Mat *pM)
+	{
+		NULL_(pM);
+		NULL_(m_pFt);
+
+		int nV = m_vVert.size();
+		IF_(nV <= 2);
+
+		// area
+		string sA = "Area = " + f2str(area(), 2);
+		int baseline = 0;
+		Size ts = m_pFt->getTextSize(sA,
+									 40,
+									 -1,
+									 &baseline);
+
+		Point pt;
+		pt.x = 220;
+		pt.y = pM->rows - 45;
+
+		m_pFt->putText(*pM, sA,
+					   pt,
+					   40,
+					   Scalar(255, 255, 255),
+					   -1,
+					   cv::LINE_AA,
+					   false);
+
+		pt.x += ts.width + 10;
+		m_pFt->putText(*pM, "m",
+					   pt,
+					   40,
+					   Scalar(255, 255, 255),
+					   -1,
+					   cv::LINE_AA,
+					   false);
+
+		pt.x += 25;
+		m_pFt->putText(*pM, "2",
+					   pt,
+					   25,
+					   Scalar(255, 255, 255),
+					   -1,
+					   cv::LINE_AA,
+					   false);
+	}
+
+	void _ARarea::drawDist(Mat *pM)
+	{
+		NULL_(pM);
+	}
+
+	void _ARarea::drawAngle(Mat *pM)
+	{
+		NULL_(pM);
+	}
+
+	void _ARarea::drawResult(Mat *pM)
+	{
+		NULL_(pM);
+
+		Rect r;
+		r.x = 0;
+		r.y = 440;
+		r.width = 640;
+		r.height = 40;
+		(*pM)(r) = Scalar(0);
+
+		string sD = "D = ";
+		if(m_d < 0.0)
+			sD += "?";
+		else
+			sD += f2str(m_d, 2) + "m";
+		Point pt;
+		pt.x = 20;
+		pt.y = pM->rows - 45;
+
+		m_pFt->putText(*pM, sD,
+					   pt,
+					   40,
+					   Scalar(255, 255, 255),
+					   -1,
+					   cv::LINE_AA,
+					   false);
+	}
+
 	void _ARarea::cvDraw(void *pWindow)
 	{
 		NULL_(pWindow);
@@ -196,71 +378,14 @@ namespace kai
 		NULL_(pF);
 		Mat *pMw = pF->m();
 		IF_(pMw->empty());
-		cv::Ptr<freetype::FreeType2> pFt = pWin->getFont();
+		m_pFt = pWin->getFont();
 
+		// video input
 		Mat mV;
 		m_pV->BGR()->m()->copyTo(mV);
 
-		vFloat2 vF = m_pV->getFf();
-		vFloat2 vC = m_pV->getCf();
-		cv::Size s = m_pV->BGR()->size();
-		Scalar col = Scalar(0, 255, 0);
-
-		Vector3f vDptC = m_aW2C * m_vDptW;
-		cv::Point vPs;
-		c2scr(vDptC, s, vF, vC, &vPs);
-		circle(mV, vPs, 10, col, 3, cv::LINE_AA);
-
-		int i, j;
-		int nV = m_vVert.size();
-
-		for (i = 0; i < nV; i++)
-		{
-			ARAREA_VERTEX *pA = &m_vVert[i];
-			Vector3f vPc = m_aW2C * pA->m_vVertW;
-			pA->m_bZ = c2scr(vPc, s, vF, vC, &pA->m_vPs);
-
-			IF_CONT(!pA->m_bZ);
-			IF_CONT(!bInsideScr(s, pA->m_vPs));
-
-			circle(mV, pA->m_vPs, 10, col, 3, cv::LINE_AA);
-		}
-
-		if (nV > 1)
-		{
-			for (i = 0; i < nV; i++)
-			{
-				j = (i + 1) % nV;
-				ARAREA_VERTEX *pA = &m_vVert[i];
-				ARAREA_VERTEX *pB = &m_vVert[j];
-				IF_CONT(!pA->m_bZ && !pB->m_bZ);
-
-				Point p = pA->m_vPs;
-				Point q = pB->m_vPs;
-				IF_CONT(!clipLine(s, p, q));
-
-				line(mV, p, q, col, 3, cv::LINE_AA);
-				Vector3f vD = pA->m_vVertW - pB->m_vVertW;
-
-				string sL = f2str(vD.norm(), 2) + "m";
-				if (pFt)
-				{
-					pFt->putText(mV, sL,
-								 (p + q) * 0.5,
-								 20,
-								 col,
-								 -1,
-								 cv::LINE_AA,
-								 false);
-				}
-				else
-				{
-					putText(mV, f2str(vD.norm(), 2) + "m",
-							(p + q) * 0.5,
-							FONT_HERSHEY_SIMPLEX, 0.6, col, 1, cv::LINE_AA);
-				}
-			}
-		}
+		drawCross(&mV);
+		drawVertices(&mV);
 
 		Rect r;
 		r.x = 0;
@@ -269,61 +394,11 @@ namespace kai
 		r.height = mV.rows;
 		mV.copyTo((*pMw)(r));
 
-		if (nV > 2)
-		{
-			r.x = 0;
-			r.y = 440;
-			r.width = 640;
-			r.height = 40;
-			(*pMw)(r) = Scalar(0);
-
-			string sA = "Area = " + f2str(area(), 2) + " Sq. M";
-			if (pFt)
-			{
-				pFt->putText(*pMw, sA,
-							 Point(40, pMw->rows - 40),
-							 40,
-							 Scalar(255, 255, 255),
-							 -1,
-							 cv::LINE_AA,
-							 false);
-			}
-			else
-			{
-				putText(*pMw, sA,
-						Point(10, pMw->rows - 20),
-						FONT_HERSHEY_SIMPLEX, 0.8, col, 1, cv::LINE_AA);
-			}
-		}
+		drawResult(pMw);
+		drawArea(pMw);
 	}
 
-	void _ARarea::addVertex(void)
-	{
-		ARAREA_VERTEX av;
-		av.m_vVertW = m_vDptW;
-		m_vVert.push_back(av);
-	}
-
-	void _ARarea::sOnBtnAdd(void *pInst)
-	{
-		NULL_(pInst);
-		_ARarea *pA = (_ARarea *)pInst;
-		pA->addVertex();
-	}
-
-	void _ARarea::sOnBtnClear(void *pInst)
-	{
-		NULL_(pInst);
-		_ARarea *pA = (_ARarea *)pInst;
-		pA->m_vVert.clear();
-	}
-
-	void _ARarea::sOnBtnSave(void *pInst)
-	{
-		NULL_(pInst);
-		_ARarea *pA = (_ARarea *)pInst;
-	}
-
+	//slow update jobs
 	void _ARarea::updateSlow(void)
 	{
 		while (m_pTs->bRun())
@@ -344,8 +419,11 @@ namespace kai
 
 		char pB[256];
 		float pBatt[4]; //voltage, current, power, percent
-		for (int i = 0; i < 4 && fgets(pB, sizeof(pB), pFr) != NULL; i++)
+		int i;
+		for (i = 0; i < 4 && fgets(pB, sizeof(pB), pFr) != NULL; i++)
 			pBatt[i] = atof(pB);
+
+		IF_F(i < 4);
 
 		m_battV = pBatt[0];
 		m_battA = pBatt[1];
@@ -371,6 +449,34 @@ namespace kai
 
 		NULL_(m_pTs);
 		m_pTs->console(pConsole);
+	}
+
+	// UI handler
+	void _ARarea::addVertex(void)
+	{
+		ARAREA_VERTEX av;
+		av.m_vVertW = m_vDptW;
+		m_vVert.push_back(av);
+	}
+
+	void _ARarea::sOnBtnAdd(void *pInst)
+	{
+		NULL_(pInst);
+		_ARarea *pA = (_ARarea *)pInst;
+		pA->addVertex();
+	}
+
+	void _ARarea::sOnBtnClear(void *pInst)
+	{
+		NULL_(pInst);
+		_ARarea *pA = (_ARarea *)pInst;
+		pA->m_vVert.clear();
+	}
+
+	void _ARarea::sOnBtnSave(void *pInst)
+	{
+		NULL_(pInst);
+		_ARarea *pA = (_ARarea *)pInst;
 	}
 
 }

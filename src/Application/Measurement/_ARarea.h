@@ -66,6 +66,13 @@ namespace kai
 			return NULL;
 		}
 
+		void drawCross(Mat* pM);
+		void drawVertices(Mat* pM);
+		void drawArea(Mat* pM);
+		void drawDist(Mat* pM);
+		void drawAngle(Mat* pM);
+		void drawResult(Mat* pM);
+
 	private:
 		_VisionBase *m_pV;
 		_DistSensorBase *m_pD;
@@ -89,6 +96,12 @@ namespace kai
 		// area
 		vector<ARAREA_VERTEX> m_vVert;
 
+		// draw
+		vFloat2 m_vCircleSize;
+		int m_crossSize;
+		Scalar m_drawCol;
+		cv::Ptr<freetype::FreeType2> m_pFt;
+		
 		// slow jobs, system check etc.
 	    _Thread* m_pTs;
 		string m_cmdBatt;
