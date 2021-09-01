@@ -84,7 +84,9 @@ namespace kai
 
 		// distance sensor
 		float m_d;
-		vFloat2 m_vRange;
+		bool m_bValid;
+		vFloat2 m_vKlaserSpot; // laser spot size over distance
+		vFloat2 m_vRange; // dist measured out this range is ignored as invalid
 		vFloat3 m_vDorgP; // distance sensor offset in pose sensor coordinate
 		Vector3f m_vDptW; // point where the distance sensor is pointing at in world coordinate
 

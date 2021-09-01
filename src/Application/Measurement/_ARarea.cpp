@@ -19,7 +19,9 @@ namespace kai
 		m_pN = NULL;
 
 		m_d = 0.0;
-		m_vRange.init(0.0, 100.0);
+		m_bValid = false;
+		m_vKlaserSpot.init(0.7 / 100.0, 0.2 / 100.0);
+		m_vRange.init(0.5, 330.0);
 		m_vDorgP.init(0);
 		m_vDptW = {0, 0, 0};
 		m_vCorgP.init(0);
@@ -46,6 +48,7 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("vRange", &m_vRange);
+		pK->v("vKlaserSpot", &m_vKlaserSpot);
 		pK->v("vAxisIdx", &m_vAxisIdx);
 		pK->v("vDorgP", &m_vDorgP);
 		pK->v("vCorgP", &m_vCorgP);
@@ -130,6 +133,7 @@ namespace kai
 		IF_F(check() < 0);
 
 		m_d = m_pD->d((int)0);
+		m_bValid = m_vRange.bInside(m_d);
 		m_vDptP = {m_vDorgP.x, m_vDorgP.y + m_d, m_vDorgP.z};
 
 		Matrix4f mTpose = m_pN->mT();
@@ -203,30 +207,68 @@ namespace kai
 		vFloat2 vC = m_pV->getCf();
 		cv::Size s = m_pV->BGR()->size();
 
-		// target circle and cross
-		Vector3f vDptC = m_aW2C * m_vDptW;
-		cv::Point vPs;
-		c2scr(vDptC, s, vF, vC, &vPs);
+		// target cross and laser spot
+		Vector3f vLSc = {m_vDorgP.x, m_vDorgP.y + m_d, m_vDorgP.z};
+		Vector3f vLSl = {m_vDorgP.x - m_d * m_vKlaserSpot.x,
+						 m_vDorgP.y + m_d,
+						 m_vDorgP.z};
+		Vector3f vLSt = {m_vDorgP.x,
+						 m_vDorgP.y + m_d,
+						 m_vDorgP.z - m_d * m_vKlaserSpot.y};
+
+		Eigen::Affine3f aL2C = m_aW2C * m_aPose;
+		vLSc = aL2C * vLSc;
+		vLSl = aL2C * vLSl;
+		vLSt = aL2C * vLSt;
+
+		cv::Point vPc, vPl, vPt;
+		c2scr(vLSc, s, vF, vC, &vPc);
+		c2scr(vLSl, s, vF, vC, &vPl);
+		c2scr(vLSt, s, vF, vC, &vPt);
 
 		float rd = (m_vRange.y - m_d) / m_vRange.len();
-		Scalar colT = Scalar(0, 255.0 * rd, 255.0 * (1.0 - rd));
-		circle(*pM,
-			   vPs,
-			   m_vCircleSize.x + m_vCircleSize.len() * rd,
-			   colT,
-			   2, cv::LINE_AA);
+		Scalar col = (m_bValid) ? Scalar(0, 255.0 * rd, 255.0 * (1.0 - rd)) : Scalar(0, 0, 255);
+
+		if (m_bValid)
+		{
+			Rect2i r;
+			r.x = vPl.x;
+			r.y = vPt.y;
+			r.width = (vPc.x - vPl.x) * 2;
+			r.height = (vPc.y - vPt.y) * 2;
+			rectangle(*pM, r, col);
+		}
 
 		line(*pM,
-			 Point(vPs.x - m_crossSize, vPs.y),
-			 Point(vPs.x + m_crossSize, vPs.y),
-			 colT,
+			 Point(vPc.x - m_crossSize, vPc.y),
+			 Point(vPc.x + m_crossSize, vPc.y),
+			 col,
 			 1);
 
 		line(*pM,
-			 Point(vPs.x, vPs.y - m_crossSize),
-			 Point(vPs.x, vPs.y + m_crossSize),
-			 colT,
+			 Point(vPc.x, vPc.y - m_crossSize),
+			 Point(vPc.x, vPc.y + m_crossSize),
+			 col,
 			 1);
+
+		// Vector3f vDptC = m_aW2C * m_vDptW;
+		// cv::Point vPs;
+		// c2scr(vDptC, s, vF, vC, &vPs);
+
+		// float rd = (m_vRange.y - m_d) / m_vRange.len();
+		// Scalar colT = Scalar(0, 255.0 * rd, 255.0 * (1.0 - rd));
+
+		// line(*pM,
+		// 	 Point(vPs.x - m_crossSize, vPs.y),
+		// 	 Point(vPs.x + m_crossSize, vPs.y),
+		// 	 colT,
+		// 	 1);
+
+		// line(*pM,
+		// 	 Point(vPs.x, vPs.y - m_crossSize),
+		// 	 Point(vPs.x, vPs.y + m_crossSize),
+		// 	 colT,
+		// 	 1);
 	}
 
 	void _ARarea::drawVertices(Mat *pM)
@@ -350,7 +392,7 @@ namespace kai
 		(*pM)(r) = Scalar(0);
 
 		string sD = "D = ";
-		if(m_d < 0.0)
+		if (m_d < 0.0)
 			sD += "?";
 		else
 			sD += f2str(m_d, 2) + "m";
