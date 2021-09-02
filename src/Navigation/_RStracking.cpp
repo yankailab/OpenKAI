@@ -30,7 +30,7 @@ namespace kai
 
 	bool _RStracking::open(void)
 	{
-		IF_T(m_bReady);
+		IF_T(m_flag.b(F_OPEN));
 
 		try
 		{
@@ -68,24 +68,45 @@ namespace kai
 			return false;
 		}
 
-		m_bReady = true;
-		m_bReset = false;
+		m_flag.set(F_OPEN);
 		return true;
 	}
 
 	void _RStracking::close(void)
 	{
-		IF_(!m_bReady);
-		m_rsPipe.stop();
-		m_bReady = false;
-	}
+		IF_(!m_flag.b(F_OPEN));
 
-	void _RStracking::hardwareReset(void)
-	{
 		try
 		{
+			m_flag.clear(F_READY);
+			m_flag.clear(F_OPEN);
+			m_rsPipe.stop();
+		}
+		catch (const rs2::camera_disconnected_error &e)
+		{
+		}
+		catch (const rs2::recoverable_error &e)
+		{
+		}
+		catch (const rs2::error &e)
+		{
+		}
+		catch (const std::exception &e)
+		{
+		}
+	}
+
+	void _RStracking::sensorReset(void)
+	{
+		IF_(!m_flag.b(F_OPEN));
+
+		try
+		{
+			m_flag.clear(F_READY);
+			m_flag.clear(F_OPEN);
 			rs2::device dev = m_rsProfile.get_device();
 			dev.hardware_reset();
+			m_pT->sleepT(SEC_2_USEC);
 		}
 		catch (const rs2::camera_disconnected_error &e)
 		{
@@ -111,12 +132,11 @@ namespace kai
 	{
 		while (m_pT->bRun())
 		{
-			if (!m_bReady)
+			if (!m_flag.b(F_OPEN))
 			{
 				if (!open())
 				{
 					LOG_E("Cannot open RealSense tracking");
-					hardwareReset();
 					m_pT->sleepT(SEC_2_USEC);
 					continue;
 				}
@@ -124,21 +144,16 @@ namespace kai
 				resetAll();
 			}
 
-			if (m_bReset)
+			if (m_flag.b(F_RESET, true))
 			{
-				close();
-				m_bReady = false;
+				sensorReset();
 				continue;
 			}
 
 			m_pT->autoFPSfrom();
 
-			if (!updateRS())
-			{
-				hardwareReset();
-				m_pT->sleepT(SEC_2_USEC);
-				m_bReady = false;
-			}
+			if(updateRS())
+				m_flag.set(F_READY);
 
 			m_pT->autoFPSto();
 		}
@@ -151,6 +166,7 @@ namespace kai
 			auto frames = m_rsPipe.wait_for_frames();
 			auto f = frames.first_or_default(RS2_STREAM_POSE);
 			auto pose = f.as<rs2::pose_frame>().get_pose_data();
+			m_confidence = (float)pose.tracker_confidence * 0.333;
 
 			*m_vT.v(m_vAxisIdx.x) = pose.translation.x;
 			*m_vT.v(m_vAxisIdx.y) = pose.translation.y;
@@ -184,8 +200,6 @@ namespace kai
 			// *m_vR.v(m_vAxisIdx.x) = -asin(2.0 * (x * z - w * y)) * ovP;								  //pitch
 			// *m_vR.v(m_vAxisIdx.y) = atan2(2.0 * (w * x + y * z), w * w - x * x - y * y + z * z) * ovP; //roll
 			// *m_vR.v(m_vAxisIdx.z) = atan2(2.0 * (w * z + x * y), w * w + x * x - y * y - z * z) * ovP; //yaw
-
-			m_confidence = pose.tracker_confidence;
 		}
 		catch (const rs2::camera_disconnected_error &e)
 		{

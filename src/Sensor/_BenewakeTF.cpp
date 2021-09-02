@@ -2,22 +2,22 @@
  *  Created on: July 24, 2021
  *      Author: yankai
  */
-#include "_BenewakeTF03.h"
+#include "_BenewakeTF.h"
 
 namespace kai
 {
 
-	_BenewakeTF03::_BenewakeTF03()
+	_BenewakeTF::_BenewakeTF()
 	{
 		m_pIO = NULL;
 		m_nDiv = 1;
 	}
 
-	_BenewakeTF03::~_BenewakeTF03()
+	_BenewakeTF::~_BenewakeTF()
 	{
 	}
 
-	bool _BenewakeTF03::init(void *pKiss)
+	bool _BenewakeTF::init(void *pKiss)
 	{
 		IF_F(!this->_DistSensorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
@@ -30,18 +30,18 @@ namespace kai
 		IF_Fl(!m_pIO, n + " not found");
 
 		m_frame.init(9);
-		m_bReady = 1;
+		m_bReady = true;
 
 		return true;
 	}
 
-	bool _BenewakeTF03::start(void)
+	bool _BenewakeTF::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	void _BenewakeTF03::update(void)
+	void _BenewakeTF::update(void)
 	{
 		while (m_pT->bRun())
 		{
@@ -68,7 +68,7 @@ namespace kai
 		}
 	}
 
-	bool _BenewakeTF03::readCMD(void)
+	bool _BenewakeTF::readCMD(void)
 	{
 		uint8_t b;
 		int nB;
@@ -96,7 +96,7 @@ namespace kai
 		return false;
 	}
 
-	void _BenewakeTF03::handleCMD(void)
+	void _BenewakeTF::handleCMD(void)
 	{
 		uint8_t cs = verifyCheckSum(m_frame.m_pB, 9);
 //		IF_(!cs);
@@ -110,7 +110,7 @@ namespace kai
 		m_frame.reset();
 	}
 
-	uint8_t _BenewakeTF03::verifyCheckSum(const uint8_t *data, size_t dataLength)
+	uint8_t _BenewakeTF::verifyCheckSum(const uint8_t *data, size_t dataLength)
 	{
 		uint8_t sum = 0;
 		for (size_t i = 0; i < dataLength - 1; i++)
@@ -120,12 +120,12 @@ namespace kai
 		return sum == data[dataLength - 1];
 	}
 
-	DIST_SENSOR_TYPE _BenewakeTF03::type(void)
+	DIST_SENSOR_TYPE _BenewakeTF::type(void)
 	{
-		return ds_BenewakeTF03;
+		return ds_BenewakeTF;
 	}
 
-	void _BenewakeTF03::console(void *pConsole)
+	void _BenewakeTF::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);

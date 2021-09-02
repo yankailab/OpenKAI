@@ -34,7 +34,7 @@ public:
 	void close(void);
 
 private:
-    void hardwareReset(void);
+    void sensorReset(void);
 	void update(void);
 	bool updateRS(void);
 	static void* getUpdate(void* This)

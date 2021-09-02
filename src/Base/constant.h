@@ -32,4 +32,8 @@
 #define _Console_X_FPS 18
 #define _Console_X_MSG 30
 
+#define F_OPEN 0
+#define F_READY 1
+#define F_RESET 2
+
 #endif

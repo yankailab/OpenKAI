@@ -10,6 +10,7 @@
 
 #include "../Base/_ModuleBase.h"
 #include "../UI/_Console.h"
+#include "../Utility/BitFlag.h"
 using namespace Eigen;
 
 namespace kai
@@ -24,8 +25,11 @@ public:
 	virtual bool init(void* pKiss);
 	virtual void console(void* pConsole);
 
+	virtual bool bOpen(void);
 	virtual bool bReady(void);
+
 	virtual void reset(void);
+	virtual float confidence(void);
 
 	virtual vFloat3 t(void);
 	virtual vFloat3 v(void);
@@ -39,8 +43,7 @@ protected:
 	virtual void resetAll(void);
 
 protected:
-	bool	m_bReady;
-	bool	m_bReset;
+	BIT_FLAG m_flag;
 
 	vInt3 m_vAxisIdx; //idx of yaw, pitch, roll
 	vFloat3	m_vT;	//translation

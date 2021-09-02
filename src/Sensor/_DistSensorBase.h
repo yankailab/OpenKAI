@@ -25,7 +25,7 @@ enum DIST_SENSOR_TYPE
 	ds_YDLIDAR,
 	ds_LeddarVu,
 	ds_TOFsense,
-	ds_BenewakeTF03,
+	ds_BenewakeTF,
 };
 
 struct DIST_SENSOR_DIV

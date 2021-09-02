@@ -12,8 +12,7 @@ namespace kai
 
 _NavBase::_NavBase()
 {
-	m_bReady = false;
-	m_bReset = false;
+	m_flag.clearAll();
 	m_vAxisIdx.init(0,1,2);
 	m_vRoffset.init(0.0);
 	resetAll();
@@ -34,18 +33,30 @@ bool _NavBase::init(void* pKiss)
 	return true;
 }
 
+bool _NavBase::bOpen(void)
+{
+	return m_flag.b(F_OPEN);
+}
+
 bool _NavBase::bReady(void)
 {
-	return m_bReady && (!m_bReset);
+	return m_flag.b(F_READY);
 }
 
 void _NavBase::reset(void)
 {
-	m_bReset = true;
+	m_flag.clear(F_READY);
+	m_flag.set(F_RESET);
+}
+
+float _NavBase::confidence(void)
+{
+	return m_confidence;
 }
 
 void _NavBase::resetAll(void)
 {
+	m_flag.clear(F_READY);
 	m_vT.init();
 	m_vV.init();
 	m_vR.init();

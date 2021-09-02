@@ -1,12 +1,12 @@
 /*
- * _BenewakeTF03.h
+ * _BenewakeTF.h
  *
  *  Created on: July 24, 2021
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Sensor__BenewakeTF03_H_
-#define OpenKAI_src_Sensor__BenewakeTF03_H_
+#ifndef OpenKAI_src_Sensor__BenewakeTF_H_
+#define OpenKAI_src_Sensor__BenewakeTF_H_
 
 #include "_DistSensorBase.h"
 #include "../IO/_IOBase.h"
@@ -38,11 +38,11 @@ struct BENEWAKE_FRAME
 	}
 };
 
-class _BenewakeTF03: public _DistSensorBase
+class _BenewakeTF: public _DistSensorBase
 {
 public:
-	_BenewakeTF03();
-	~_BenewakeTF03();
+	_BenewakeTF();
+	~_BenewakeTF();
 
 	bool init(void *pKiss);
 	bool start(void);
@@ -57,7 +57,7 @@ private:
 	void update(void);
 	static void* getUpdate(void *This)
 	{
-		((_BenewakeTF03*) This)->update();
+		((_BenewakeTF*) This)->update();
 		return NULL;
 	}
 

@@ -36,7 +36,7 @@
 
 {
 	"name":"TF03",
-	"class":"_BenewakeTF03",
+	"class":"_BenewakeTF",
 	"bInst":1,
     {
 		"name":"thread",

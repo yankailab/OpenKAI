@@ -86,17 +86,17 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			if (m_fProcess.b(pc_ScanStart))
+			if (m_fProcess.b(pc_ScanStart, true))
 			{
 				startScan();
 			}
 
-			if (m_fProcess.b(pc_ScanStop))
+			if (m_fProcess.b(pc_ScanStop, true))
 			{
 				stopScan();
 			}
 
-			if (m_fProcess.b(pc_Scanning, false))
+			if (m_fProcess.b(pc_Scanning))
 			{
 				updateScan();
 			}
@@ -105,7 +105,7 @@ namespace kai
 				updateProcess();
 			}
 
-			if (m_fProcess.b(pc_CamAuto, false))
+			if (m_fProcess.b(pc_CamAuto))
 				updateCamAuto();
 
 			m_pT->autoFPSto();
@@ -200,7 +200,7 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		if (m_fProcess.b(pc_ResetPC))
+		if (m_fProcess.b(pc_ResetPC, true))
 		{
 			removeUIpc();
 			addUIpc(*m_sPC.get());
@@ -208,7 +208,7 @@ namespace kai
 			camBound(m_aabb);
 		}
 
-		if (m_fProcess.b(pc_VoxelDown) && m_pUIstate)
+		if (m_fProcess.b(pc_VoxelDown, true) && m_pUIstate)
 		{
 			m_pWin->ShowMsg("Voxel Down Sampling", "Processing");
 
@@ -225,7 +225,7 @@ namespace kai
 			m_pWin->CloseDialog();
 		}
 
-		if (m_fProcess.b(pc_HiddenRemove) && m_pUIstate)
+		if (m_fProcess.b(pc_HiddenRemove, true) && m_pUIstate)
 		{
 			m_pWin->ShowMsg("Hidden Point Removal", "Processing");
 
@@ -255,7 +255,7 @@ namespace kai
 	void _PCscan::updateSlam(void)
 	{
 		IF_(check() < 0);
-		IF_(!m_fProcess.b(pc_Scanning, false));
+		IF_(!m_fProcess.b(pc_Scanning));
 		IF_(!m_bSlam);
 
 		auto mT = m_pSB->mT();

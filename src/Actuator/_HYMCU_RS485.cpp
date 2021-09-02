@@ -99,7 +99,7 @@ void _HYMCU_RS485::updateMove(void)
 {
 	IF_(check()<0);
 
-	if(m_bf.b(ACT_BF_STOP))
+	if(m_bf.b(ACT_BF_STOP, true))
 	{
 		stop();
 		return;

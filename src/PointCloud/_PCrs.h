@@ -27,7 +27,7 @@ namespace kai
 		int check(void);
 
 	private:
-		void hardwareReset(void);
+		void sensorReset(void);
 		bool updateRS(void);
 		void update(void);
 		static void *getUpdate(void *This)

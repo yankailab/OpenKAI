@@ -35,7 +35,7 @@ private:
 		return NULL;
 	}
 
-	void hardwareReset ( void );
+	void sensorReset (void);
 
 public:
 	string m_rsSN;

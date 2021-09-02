@@ -10,7 +10,6 @@ OPTION(USE_CHILITAGS "Use Chilitags" OFF)
 OPTION(USE_DARKNET "Use Darknet" OFF)
 OPTION(USE_DYNAMIXEL "Use Dynamixel" OFF)
 OPTION(USE_GUI "Use GUI" OFF)
-OPTION(USE_INNFOS "Use Innfos" OFF)
 OPTION(USE_JETSON_INFERENCE "Use NVIDIA TensorRT" OFF)
 OPTION(USE_LIVOX "Use Livox" OFF)
 OPTION(USE_MYNTEYE "Use Mynteye" OFF)
@@ -26,6 +25,39 @@ OPTION(USE_PYLON "Use Basler camera with Pylon" OFF)
 OPTION(USE_REALSENSE "Use Intel RealSense" OFF)
 OPTION(USE_XARM "Use xArm" OFF)
 
+OPTION(WITH_ACTUATOR "" OFF)
+OPTION(WITH_APP_3DSCAN "" OFF)
+OPTION(WITH_APP_AUTOPILOT "" OFF)
+OPTION(WITH_APP_BENCHROVER "" OFF)
+OPTION(WITH_APP_CAMCALIB "" OFF)
+OPTION(WITH_APP_DRONEBOX "" OFF)
+OPTION(WITH_APP_KUPHENOROVER "" OFF)
+OPTION(WITH_APP_MEASUREMENT "" OFF)
+OPTION(WITH_APP_PCSCAN "" OFF)
+OPTION(WITH_APP_ROBOTARM "" OFF)
+OPTION(WITH_APP_SURVEILLENCE "" OFF)
+OPTION(WITH_APP_TAGROVER "" OFF)
+OPTION(WITH_APP_UTPHENOROVER "" OFF)
+OPTION(WITH_COMPUTE "" OFF)
+OPTION(WITH_CONTROL "" OFF)
+OPTION(WITH_DATA "" OFF)
+OPTION(WITH_DETECTOR "" OFF)
+OPTION(WITH_DNN "" OFF)
+OPTION(WITH_FILTER "" OFF)
+OPTION(WITH_GCS "" OFF)
+OPTION(WITH_IO "" OFF)
+OPTION(WITH_NAVIGATION "" OFF)
+OPTION(WITH_POINTCLOUD "" OFF)
+OPTION(WITH_PROTOCOL "" OFF)
+OPTION(WITH_REGRESSION "" OFF)
+OPTION(WITH_SENSOR "" OFF)
+OPTION(WITH_SLAM "" OFF)
+OPTION(WITH_STATE "" OFF)
+OPTION(WITH_TRACKER "" OFF)
+OPTION(WITH_UI "" OFF)
+OPTION(WITH_UNIVERSE "" OFF)
+OPTION(WITH_VISION "" OFF)
+
 find_package(Eigen3 3.1.0 REQUIRED)
 
 #set(OpenKAI_definitions "-O3 -w -Wall -c -fmessage-length=0 -MMD -MP -std=c++17")
@@ -34,15 +66,40 @@ set(OpenKAI_libDir /usr/lib /usr/local/lib)
 set(OpenKAI_include /usr/local/include /usr/include ${EIGEN3_INCLUDE_DIR})
 set(OpenKAI_lib pthread boost_system glog uuid ${EIGEN3_LIBS} gsl gslcblas ncurses ssl crypto)
 
+# File
+#file(GLOB_RECURSE OpenKAI_cpp CONFIGURE_DEPENDS src/*.cpp src/*.cc src/*.c)
+file(GLOB OpenKAI_cpp src/Base/*.cpp src/Base/*.cc src/Base/*.c)
+
+file(GLOB Arithmetic_cpp src/Arithmetic/*.cpp src/Arithmetic/*.cc src/Arithmetic/*.c)
+set(OpenKAI_cpp ${OpenKAI_cpp} ${Arithmetic_cpp})
+
+file(GLOB Config_cpp src/Config/*.cpp src/Config/*.cc src/Config/*.c)
+set(OpenKAI_cpp ${OpenKAI_cpp} ${Config_cpp})
+
+file(GLOB Dependency_cpp src/Dependency/*.cpp src/Dependency/*.cc src/Dependency/*.c)
+set(OpenKAI_cpp ${OpenKAI_cpp} ${Dependency_cpp})
+
+file(GLOB Primitive_cpp src/Primitive/*.cpp src/Primitive/*.cc src/Primitive/*.c)
+set(OpenKAI_cpp ${OpenKAI_cpp} ${Primitive_cpp})
+
+file(GLOB Script_cpp src/Script/*.cpp src/Script/*.cc src/Script/*.c)
+set(OpenKAI_cpp ${OpenKAI_cpp} ${Script_cpp})
+
+file(GLOB Startup_cpp src/Startup/*.cpp src/Startup/*.cc src/Startup/*.c)
+set(OpenKAI_cpp ${OpenKAI_cpp} ${Startup_cpp})
+
+
+if(WITH_ACTUATOR)
+file(GLOB Actuator_cpp src/Actuator/*.cpp src/Actuator/*.cc src/Actuator/*.c)
+set(OpenKAI_cpp ${OpenKAI_cpp} ${Actuator_cpp})
+endif()
+
+
+
+# Dependencies
 if(USE_CHILITAGS)
   add_definitions(-DUSE_CHILITAGS)
   set(OpenKAI_lib ${OpenKAI_lib} chilitags)
-endif()
-
-if(USE_INNFOS)
-  add_definitions(-DUSE_INNFOS)
-  set(OpenKAI_include ${OpenKAI_include} /usr/local/include/innfos_sdk /usr/local/include/innfos_sca_sdk)
-  set(OpenKAI_lib ${OpenKAI_lib} kdl ActuatorController)
 endif()
 
 if(USE_OPEN3D)
@@ -162,9 +219,11 @@ if(USE_LIVOX)
   set(OpenKAI_lib ${OpenKAI_lib} livox_sdk_static)
 endif()
 
-#if(USE_GUI)
-#  add_definitions(-DUSE_GUI)
-#endif()
+if(USE_GUI)
+  add_definitions(-DUSE_GUI)
+  set(OpenKAI_lib ${OpenKAI_lib} glfw GL m GLU GLEW)
+endif()
+
 
 # Setting specific lib here
 link_directories(${OpenKAI_libDir})
@@ -181,15 +240,7 @@ endif()
 # Definitions
 add_definitions(${OpenKAI_definitions})
 
-# File
-file(GLOB_RECURSE OpenKAI_cpp CONFIGURE_DEPENDS src/*.cpp src/*.cc src/*.c)
-if(USE_GUI)
-  add_definitions(-DUSE_GUI)
-#  file(GLOB GUI_cpp GUI/*.c GUI/*.h GUI/*/*.c GUI/*/*.h)
-#  set(OpenKAI_cpp ${OpenKAI_cpp} ${GUI_cpp})
-  set(OpenKAI_lib ${OpenKAI_lib} glfw GL m GLU GLEW)
-endif()
-
+# Exe
 if(USE_CUDA)
 cuda_add_executable(OpenKAI ${OpenKAI_cpp})
 else()

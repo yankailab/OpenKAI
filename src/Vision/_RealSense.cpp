@@ -177,7 +177,7 @@ bool _RealSense::open ( void )
     return true;
 }
 
-void _RealSense::hardwareReset ( void )
+void _RealSense::sensorReset ( void )
 {
 //    m_rsConfig.resolve(m_rsPipe).get_device().hardware_reset();
     rs2::device dev = m_rsProfile.get_device();
@@ -215,7 +215,7 @@ void _RealSense::update ( void )
             if ( !open() )
             {
                 LOG_E ( "Cannot open RealSense" );
-                hardwareReset();
+                sensorReset();
                 m_pT->sleepT ( SEC_2_USEC );
                 continue;
             }
@@ -229,7 +229,7 @@ void _RealSense::update ( void )
         }
         else
         {
-            hardwareReset();
+            sensorReset();
             m_pT->sleepT ( SEC_2_USEC );
             m_bOpen = false;
         }

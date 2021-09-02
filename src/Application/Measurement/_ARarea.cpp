@@ -18,9 +18,11 @@ namespace kai
 		m_pD = NULL;
 		m_pN = NULL;
 
+		m_minPoseConfidence = 0.5;
+		
 		m_d = 0.0;
-		m_bValid = false;
-		m_vKlaserSpot.init(0.7 / 100.0, 0.2 / 100.0);
+		m_bValidDist = false;
+		m_vKlaserSpot.init(0.7 / 100.0, -0.2 / 100.0);
 		m_vRange.init(0.5, 330.0);
 		m_vDorgP.init(0);
 		m_vDptW = {0, 0, 0};
@@ -30,6 +32,7 @@ namespace kai
 		m_vCircleSize.init(10, 20);
 		m_crossSize = 20;
 		m_drawCol = Scalar(0, 255, 0);
+		m_drawMsg = "";
 		m_pFt = NULL;
 
 		m_pTs = NULL;
@@ -47,6 +50,7 @@ namespace kai
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
+		pK->v("minPoseConfidence", &m_minPoseConfidence);
 		pK->v("vRange", &m_vRange);
 		pK->v("vKlaserSpot", &m_vKlaserSpot);
 		pK->v("vAxisIdx", &m_vAxisIdx);
@@ -122,7 +126,7 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			updateARarea();
+			m_bValidDist = updateARarea();
 
 			m_pT->autoFPSto();
 		}
@@ -131,9 +135,12 @@ namespace kai
 	bool _ARarea::updateARarea(void)
 	{
 		IF_F(check() < 0);
+		IF_F(!m_pD->bReady());
+		IF_F(!m_pN->bReady());
 
 		m_d = m_pD->d((int)0);
-		m_bValid = m_vRange.bInside(m_d);
+		IF_F(!m_vRange.bInside(m_d));
+
 		m_vDptP = {m_vDorgP.x, m_vDorgP.y + m_d, m_vDorgP.z};
 
 		Matrix4f mTpose = m_pN->mT();
@@ -150,7 +157,7 @@ namespace kai
 		mTwc(2, 3) = -mRT(2); // - m_vCorgP.z;
 		m_aW2C = mTwc;
 
-		return false;
+		return true;
 	}
 
 	bool _ARarea::c2scr(const Vector3f &vPc,
@@ -199,6 +206,84 @@ namespace kai
 		return vA.norm();
 	}
 
+
+	// UI handler
+	void _ARarea::addVertex(void)
+	{
+		IF_(!m_bValidDist);
+
+		ARAREA_VERTEX av;
+		av.m_vVertW = m_vDptW;
+		m_vVert.push_back(av);
+	}
+
+	void _ARarea::sOnBtnAdd(void *pInst)
+	{
+		NULL_(pInst);
+		_ARarea *pA = (_ARarea *)pInst;
+		pA->addVertex();
+	}
+
+	void _ARarea::sOnBtnClear(void *pInst)
+	{
+		NULL_(pInst);
+		_ARarea *pA = (_ARarea *)pInst;
+		pA->m_vVert.clear();
+	}
+
+	void _ARarea::sOnBtnSave(void *pInst)
+	{
+		NULL_(pInst);
+		_ARarea *pA = (_ARarea *)pInst;
+	}
+
+
+	//slow update jobs
+	void _ARarea::updateSlow(void)
+	{
+		while (m_pTs->bRun())
+		{
+			m_pTs->autoFPSfrom();
+
+			updateBatt();
+
+			m_pTs->autoFPSto();
+		}
+	}
+
+	bool _ARarea::updateBatt(void)
+	{
+		// check battery
+		FILE *pFr = popen(m_cmdBatt.c_str(), "r");
+		IF_F(pFr <= 0);
+
+		char pB[256];
+		float pBatt[4]; //voltage, current, power, percent
+		int i;
+		for (i = 0; i < 4 && fgets(pB, sizeof(pB), pFr) != NULL; i++)
+			pBatt[i] = atof(pB);
+
+		IF_F(i < 4);
+
+		m_battV = pBatt[0];
+		m_battA = pBatt[1];
+		m_battW = pBatt[2];
+		m_battP = pBatt[3];
+		pclose(pFr);
+
+		LOG_I("Battery: V=" + f2str(m_battV) +
+			  ", A=" + f2str(m_battA) +
+			  ", W=" + f2str(m_battW) +
+			  ", P=" + f2str(m_battP));
+
+		if (m_battP < m_battShutdown)
+			system("shutdown -P now");
+
+		return true;
+	}
+
+
+	// UI draw
 	void _ARarea::drawCross(Mat *pM)
 	{
 		NULL_(pM);
@@ -207,14 +292,14 @@ namespace kai
 		vFloat2 vC = m_pV->getCf();
 		cv::Size s = m_pV->BGR()->size();
 
-		// target cross and laser spot
+		// laser spot
 		Vector3f vLSc = {m_vDorgP.x, m_vDorgP.y + m_d, m_vDorgP.z};
-		Vector3f vLSl = {m_vDorgP.x - m_d * m_vKlaserSpot.x,
+		Vector3f vLSl = {m_vDorgP.x + m_d * m_vKlaserSpot.y,
 						 m_vDorgP.y + m_d,
 						 m_vDorgP.z};
 		Vector3f vLSt = {m_vDorgP.x,
 						 m_vDorgP.y + m_d,
-						 m_vDorgP.z - m_d * m_vKlaserSpot.y};
+						 m_vDorgP.z + m_d * m_vKlaserSpot.x};
 
 		Eigen::Affine3f aL2C = m_aW2C * m_aPose;
 		vLSc = aL2C * vLSc;
@@ -227,18 +312,19 @@ namespace kai
 		c2scr(vLSt, s, vF, vC, &vPt);
 
 		float rd = (m_vRange.y - m_d) / m_vRange.len();
-		Scalar col = (m_bValid) ? Scalar(0, 255.0 * rd, 255.0 * (1.0 - rd)) : Scalar(0, 0, 255);
+		Scalar col = (m_bValidDist) ? Scalar(0, 255.0 * rd, 255.0 * (1.0 - rd)) : Scalar(0, 0, 255);
 
-		if (m_bValid)
+		if (m_bValidDist)
 		{
 			Rect2i r;
 			r.x = vPl.x;
 			r.y = vPt.y;
-			r.width = (vPc.x - vPl.x) * 2;
-			r.height = (vPc.y - vPt.y) * 2;
-			rectangle(*pM, r, col);
+			r.width = abs(vPc.x - vPl.x) * 2 + 1;
+			r.height = abs(vPc.y - vPt.y) * 2 + 1;
+			rectangle(*pM, r, col, 1);
 		}
 
+		// target cross
 		line(*pM,
 			 Point(vPc.x - m_crossSize, vPc.y),
 			 Point(vPc.x + m_crossSize, vPc.y),
@@ -250,25 +336,6 @@ namespace kai
 			 Point(vPc.x, vPc.y + m_crossSize),
 			 col,
 			 1);
-
-		// Vector3f vDptC = m_aW2C * m_vDptW;
-		// cv::Point vPs;
-		// c2scr(vDptC, s, vF, vC, &vPs);
-
-		// float rd = (m_vRange.y - m_d) / m_vRange.len();
-		// Scalar colT = Scalar(0, 255.0 * rd, 255.0 * (1.0 - rd));
-
-		// line(*pM,
-		// 	 Point(vPs.x - m_crossSize, vPs.y),
-		// 	 Point(vPs.x + m_crossSize, vPs.y),
-		// 	 colT,
-		// 	 1);
-
-		// line(*pM,
-		// 	 Point(vPs.x, vPs.y - m_crossSize),
-		// 	 Point(vPs.x, vPs.y + m_crossSize),
-		// 	 colT,
-		// 	 1);
 	}
 
 	void _ARarea::drawVertices(Mat *pM)
@@ -391,11 +458,13 @@ namespace kai
 		r.height = 40;
 		(*pM)(r) = Scalar(0);
 
+		Scalar col = (m_bValidDist) ? Scalar(255,255,255) : Scalar(0, 0, 255);
 		string sD = "D = ";
-		if (m_d < 0.0)
-			sD += "?";
-		else
+		if (m_bValidDist)
 			sD += f2str(m_d, 2) + "m";
+		else
+			sD += "OoR";
+
 		Point pt;
 		pt.x = 20;
 		pt.y = pM->rows - 45;
@@ -403,7 +472,31 @@ namespace kai
 		m_pFt->putText(*pM, sD,
 					   pt,
 					   40,
-					   Scalar(255, 255, 255),
+					   col,
+					   -1,
+					   cv::LINE_AA,
+					   false);
+	}
+
+	void _ARarea::drawMsg(Mat* pM)
+	{
+		NULL_(pM);
+
+		m_drawMsg = "";
+		
+		if(m_pN->confidence() < m_minPoseConfidence)
+			m_drawMsg = "Tracking lost";
+
+		IF_(m_drawMsg.empty());
+
+		Point pt;
+		pt.x = 50;
+		pt.y = pM->rows/2;
+
+		m_pFt->putText(*pM, m_drawMsg,
+					   pt,
+					   40,
+					   Scalar(0,0,255),
 					   -1,
 					   cv::LINE_AA,
 					   false);
@@ -438,50 +531,7 @@ namespace kai
 
 		drawResult(pMw);
 		drawArea(pMw);
-	}
-
-	//slow update jobs
-	void _ARarea::updateSlow(void)
-	{
-		while (m_pTs->bRun())
-		{
-			m_pTs->autoFPSfrom();
-
-			updateBatt();
-
-			m_pTs->autoFPSto();
-		}
-	}
-
-	bool _ARarea::updateBatt(void)
-	{
-		// check battery
-		FILE *pFr = popen(m_cmdBatt.c_str(), "r");
-		IF_F(pFr <= 0);
-
-		char pB[256];
-		float pBatt[4]; //voltage, current, power, percent
-		int i;
-		for (i = 0; i < 4 && fgets(pB, sizeof(pB), pFr) != NULL; i++)
-			pBatt[i] = atof(pB);
-
-		IF_F(i < 4);
-
-		m_battV = pBatt[0];
-		m_battA = pBatt[1];
-		m_battW = pBatt[2];
-		m_battP = pBatt[3];
-		pclose(pFr);
-
-		LOG_I("Battery: V=" + f2str(m_battV) +
-			  ", A=" + f2str(m_battA) +
-			  ", W=" + f2str(m_battW) +
-			  ", P=" + f2str(m_battP));
-
-		if (m_battP < m_battShutdown)
-			system("shutdown -P now");
-
-		return true;
+		drawMsg(pMw);
 	}
 
 	void _ARarea::console(void *pConsole)
@@ -491,34 +541,6 @@ namespace kai
 
 		NULL_(m_pTs);
 		m_pTs->console(pConsole);
-	}
-
-	// UI handler
-	void _ARarea::addVertex(void)
-	{
-		ARAREA_VERTEX av;
-		av.m_vVertW = m_vDptW;
-		m_vVert.push_back(av);
-	}
-
-	void _ARarea::sOnBtnAdd(void *pInst)
-	{
-		NULL_(pInst);
-		_ARarea *pA = (_ARarea *)pInst;
-		pA->addVertex();
-	}
-
-	void _ARarea::sOnBtnClear(void *pInst)
-	{
-		NULL_(pInst);
-		_ARarea *pA = (_ARarea *)pInst;
-		pA->m_vVert.clear();
-	}
-
-	void _ARarea::sOnBtnSave(void *pInst)
-	{
-		NULL_(pInst);
-		_ARarea *pA = (_ARarea *)pInst;
 	}
 
 }

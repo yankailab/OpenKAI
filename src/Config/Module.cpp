@@ -22,7 +22,7 @@ namespace kai
 	{
 		IF_N(!pK);
 
-		ADD_MODULE(_BenewakeTF03);
+		ADD_MODULE(_BenewakeTF);
 		ADD_MODULE(_Console);
 		ADD_MODULE(_Canbus);
 		ADD_MODULE(_GPS);

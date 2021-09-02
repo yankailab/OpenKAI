@@ -72,6 +72,7 @@ namespace kai
 		void drawDist(Mat* pM);
 		void drawAngle(Mat* pM);
 		void drawResult(Mat* pM);
+		void drawMsg(Mat* pM);
 
 	private:
 		_VisionBase *m_pV;
@@ -81,10 +82,11 @@ namespace kai
 		// pose
 		Eigen::Affine3f m_aPose;
 		Vector3f m_vDptP;
+		float m_minPoseConfidence;
 
 		// distance sensor
 		float m_d;
-		bool m_bValid;
+		bool m_bValidDist;
 		vFloat2 m_vKlaserSpot; // laser spot size over distance
 		vFloat2 m_vRange; // dist measured out this range is ignored as invalid
 		vFloat3 m_vDorgP; // distance sensor offset in pose sensor coordinate
@@ -99,6 +101,7 @@ namespace kai
 		vector<ARAREA_VERTEX> m_vVert;
 
 		// draw
+		string m_drawMsg;
 		vFloat2 m_vCircleSize;
 		int m_crossSize;
 		Scalar m_drawCol;

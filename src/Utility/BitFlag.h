@@ -25,7 +25,7 @@ struct BIT_FLAG
 		m_flag &= ~(1<<i);
 	}
 
-	bool b(int i, bool bClearAfterRead = true)
+	bool b(int i, bool bClearAfterRead = false)
 	{
 		bool b = m_flag & (1<<i);
 		if(bClearAfterRead)

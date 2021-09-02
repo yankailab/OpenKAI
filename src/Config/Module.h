@@ -74,7 +74,7 @@
 #include "../Protocol/_Modbus.h"
 #include "../Sensor/_LeddarVu.h"
 #include "../Sensor/_TOFsense.h"
-#include "../Sensor/_BenewakeTF03.h"
+#include "../Sensor/_BenewakeTF.h"
 
 #include "../UI/_Console.h"
 

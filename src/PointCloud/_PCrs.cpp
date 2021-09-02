@@ -164,7 +164,7 @@ namespace kai
 		return true;
 	}
 
-	void _PCrs::hardwareReset(void)
+	void _PCrs::sensorReset(void)
 	{
 		//    m_rsConfig.resolve(m_rsPipe).get_device().hardware_reset();
 
@@ -192,7 +192,7 @@ namespace kai
 				if (!open())
 				{
 					LOG_E("Cannot open RealSense");
-					hardwareReset();
+					sensorReset();
 					m_pT->sleepT(SEC_2_USEC);
 					continue;
 				}
@@ -206,7 +206,7 @@ namespace kai
 			}
 			else
 			{
-				hardwareReset();
+				sensorReset();
 				m_pT->sleepT(SEC_2_USEC);
 				m_bOpen = false;
 			}
