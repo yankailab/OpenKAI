@@ -12,82 +12,276 @@
 #include "../Base/BASE.h"
 #include "../Script/Kiss.h"
 
+#include "../Arithmetic/Destimator.h"
+
+#ifdef WITH_ACTUATOR
 #include "../Actuator/_ArduServo.h"
 #include "../Actuator/_ActuatorSync.h"
-#include "../Actuator/_HYMCU_RS485.h"
 #include "../Actuator/_OrientalMotor.h"
+#include "../Actuator/_HYMCU_RS485.h"
 #include "../Actuator/Articulated/_S6H4D.h"
 #include "../Actuator/_StepperGripper.h"
 #include "../Actuator/Motor/_ZLAC8015.h"
+#ifdef USE_INNFOS
+#include "../Actuator/_InnfosGluon.h"
+#endif
+#ifdef USE_DYNAMIXEL
+#endif
+#ifdef USE_XARM
+#include "../Actuator/Articulated/_xArm.h"
+#endif
+#endif
 
+#ifdef WITH_APP_3DSCAN
+#endif
+
+#ifdef WITH_APP_AUTOPILOT
 #include "../Application/Autopilot/ArduPilot/_AP_base.h"
 #include "../Application/Autopilot/ArduPilot/_AP_actuator.h"
 #include "../Application/Autopilot/ArduPilot/_AP_distLidar.h"
 #include "../Application/Autopilot/ArduPilot/_AP_goto.h"
 #include "../Application/Autopilot/ArduPilot/_AP_gcs.h"
-#include "../Application/Autopilot/ArduPilot/_AP_GPS.h"
-#include "../Application/Autopilot/ArduPilot/_AP_link.h"
 #include "../Application/Autopilot/ArduPilot/_AP_mission.h"
 #include "../Application/Autopilot/ArduPilot/_AP_posCtrl.h"
 #include "../Application/Autopilot/ArduPilot/_AP_RTH.h"
 #include "../Application/Autopilot/ArduPilot/_AP_relay.h"
 #include "../Application/Autopilot/ArduPilot/_AP_servo.h"
 #include "../Application/Autopilot/ArduPilot/_AP_takeoff.h"
+#include "../Application/Autopilot/ArduPilot/_AP_link.h"
 #include "../Application/Autopilot/ArduPilot/_AProver_drive.h"
+#ifdef USE_OPENCV
+#include "../Application/Autopilot/ArduPilot/_AP_avoid.h"
+#include "../Application/Autopilot/ArduPilot/_AP_depthVision.h"
+#include "../Application/Autopilot/ArduPilot/_AP_land.h"
+#include "../Application/Autopilot/ArduPilot/_AP_follow.h"
+#include "../Application/Autopilot/ArduPilot/_APcopter_photo.h"
 #include "../Application/Autopilot/ArduPilot/_AProver_picking.h"
-#include "../Application/RobotArm/_Sequencer.h"
+#ifdef USE_REALSENSE
+#include "../Application/Autopilot/ArduPilot/_AP_GPS.h"
+#endif
+#endif
+#endif
 
-#include "../Application/CamCalib/_CamCalib.h"
-#include "../Application/UTphenoRover/_AProver_UT.h"
-#include "../Application/UTphenoRover/_UTprArmL.h"
-#include "../Application/UTphenoRover/_AProver_UTfollowTag.h"
-#include "../Application/KUphenoRover/_AProver_KU.h"
-#include "../Application/KUphenoRover/_AProver_KUfollowTag.h"
+#ifdef WITH_APP_BENCHROVER
 #include "../Application/BenchRover/_AProver_BR.h"
 #include "../Application/BenchRover/_AProver_BRfollow.h"
-#include "../Application/TagRover/_AProver_tag.h"
-#include "../Application/TagRover/_AProver_followTag.h"
+#endif
+
+#ifdef WITH_APP_CAMCALIB
+#include "../Application/CamCalib/_CamCalib.h"
+#endif
+
+#ifdef WITH_APP_DRONEBOX
 #include "../Application/DroneBox/_DroneBox.h"
 #include "../Application/DroneBox/_DroneBoxJSON.h"
 #include "../Application/DroneBox/_AP_droneBoxJSON.h"
+#endif
 
-#include "../Arithmetic/Destimator.h"
+#ifdef WITH_APP_KUPHENOROVER
+#include "../Application/KUphenoRover/_AProver_KU.h"
+#include "../Application/KUphenoRover/_AProver_KUfollowTag.h"
+#endif
 
+#ifdef WITH_APP_MEASUREMENT && USE_OPENCV
+#include "../Application/Measurement/_ARarea.h"
+#endif
+
+#ifdef WITH_APP_PCSCAN && USE_OPEN3D
+#include "../Application/PCscan/_PCscan.h"
+#include "../Application/PCscan/_PCcalib.h"
+#endif
+
+#ifdef WITH_APP_ROBOTARM
+#include "../Application/RobotArm/_Sequencer.h"
+#ifdef USE_OPENCV
+#include "../Application/RobotArm/_PickingArm.h"
+#endif
+#endif
+
+#ifdef WITH_APP_SURVEILLANCE && USE_OPENCV
+#include "../Application/Surveillance/_ANR.h"
+#include "../Application/Surveillance/_GDcam.h"
+#endif
+
+#ifdef WITH_APP_TAGROVER
+#include "../Application/TagRover/_AProver_tag.h"
+#include "../Application/TagRover/_AProver_followTag.h"
+#endif
+
+#ifdef WITH_APP_UTPHENOROVER
+#include "../Application/UTphenoRover/_AProver_UT.h"
+#include "../Application/UTphenoRover/_UTprArmL.h"
+#include "../Application/UTphenoRover/_AProver_UTfollowTag.h"
+#endif
+
+#ifdef WITH_COMPUTE
+#ifdef USE_OPENCL
+#include "../Compute/OpenCL/clBase.h"
+#endif
+#endif
+
+#ifdef WITH_CONTROL
 #include "../Control/PID.h"
 #include "../Control/_Drive.h"
+#endif
 
-#include "../State/_StateControl.h"
+#ifdef WITH_DATA
+#include "../Data/Image/_GDimgUploader.h"
+#include "../Data/Image/_BBoxCutOut.h"
+#include "../Data/Image/_CutOut.h"
+#include "../Data/Video/_FrameCutOut.h"
+#endif
 
-#include "../Navigation/_GPS.h"
-#include "../Navigation/_RTCM3.h"
+#ifdef WITH_DETECTOR
+#ifdef USE_OPENCV
+#include "../Detector/_Lane.h"
+#include "../Detector/_DNNdetect.h"
+#include "../Detector/_DNNclassifier.h"
+#include "../Detector/_DNNtext.h"
+#include "../Detector/_DepthSegment.h"
+#include "../Detector/_IRLock.h"
+#include "../Detector/_Line.h"
+#include "../Detector/_OpenPose.h"
+#include "../Detector/_HandKey.h"
+#include "../Detector/_SlideWindow.h"
+#include "../Detector/_Thermal.h"
+#ifdef USE_OPENCV_CONTRIB
+#include "../Detector/_ArUco.h"
+#include "../Detector/_MotionDetector.h"
+#include "../Tracker/_SingleTracker.h"
+#endif
+#ifdef USE_CUDA
+#include "../Detector/_Bullseye.h"
+#include "../Detector/_Cascade.h"
+#endif
+#ifdef USE_OCR
+#include "../Detector/OCR.h"
+#endif
+#ifdef USE_OPENALPR
+#include "../Detector/_OpenALPR.h"
+#endif
+#ifdef USE_CHILITAGS
+#include "../Detector/_Chilitags.h"
+#endif
+#endif
+#endif
 
+#ifdef WITH_DNN
+#ifdef USE_OPENCV
+#ifdef USE_JETSON_INFERENCE
+#include "../DNN/JetsonInference/_ImageNet.h"
+#include "../DNN/JetsonInference/_DetectNet.h"
+#endif
+#ifdef USE_CAFFE
+#include "../DNN/Caffe/_Caffe.h"
+#include "../Regression/_CaffeRegressionTrain.h"
+#include "../Regression/_CaffeRegressionInf.h"
+#endif
+#ifdef USE_DARKNET
+#include "../DNN/Darknet/_YOLO.h"
+#endif
+#endif
+#endif
+
+#ifdef WITH_FILTER
+#endif
+
+#ifdef WITH_GCS
+#endif
+
+#ifdef WITH_IO
+#include "../IO/_File.h"
 #include "../IO/_TCPserver.h"
 #include "../IO/_TCPclient.h"
-#include "../IO/_File.h"
 #include "../IO/_SerialPort.h"
 #include "../IO/_UDP.h"
 #include "../IO/_WebSocket.h"
+#endif
+
+#ifdef WITH_NAVIGATION
+#include "../Navigation/_GPS.h"
+#include "../Navigation/_RTCM3.h"
+#ifdef USE_REALSENSE
+#include "../Navigation/_RStracking.h"
+#endif
+#endif
+
+#ifdef WITH_POINTCLOUD
+#ifdef USE_OPEN3D
+#include "../PointCloud/_PCstream.h"
+#include "../PointCloud/_PCframe.h"
+#include "../PointCloud/_PClattice.h"
+#include "../PointCloud/_PCfile.h"
+#include "../PointCloud/_PCmerge.h"
+#include "../PointCloud/_PCviewer.h"
+#include "../PointCloud/_PCsend.h"
+#include "../PointCloud/_PCrecv.h"
+#include "../PointCloud/PCfilter/_PCtransform.h"
+#include "../PointCloud/PCfilter/_PCcrop.h"
+#include "../PointCloud/PCfilter/_PCremove.h"
+#include "../PointCloud/PCfilter/_PCdownSample.h"
+#include "../PointCloud/PCregistration/_PCregistCol.h"
+#include "../PointCloud/PCregistration/_PCregistICP.h"
+#include "../PointCloud/PCregistration/_PCregistGlobal.h"
+#ifdef USE_REALSENSE
+#include "../PointCloud/_PCrs.h"
+#endif
+#ifdef USE_HPS3D
+#include "../PointCloud/_HPS3D.h"
+#endif
+#endif
+#endif
+
+#ifdef WITH_PROTOCOL
 #include "../Protocol/_Canbus.h"
 #include "../Protocol/_Mavlink.h"
 #include "../Protocol/_MOAB.h"
 #include "../Protocol/_ProtocolBase.h"
 #include "../Protocol/_Modbus.h"
+#endif
+
+#ifdef WITH_SENSOR
 #include "../Sensor/_LeddarVu.h"
 #include "../Sensor/_TOFsense.h"
 #include "../Sensor/_BenewakeTF.h"
-
-#include "../UI/_Console.h"
-
-#include "../Universe/_Object.h"
-#include "../Universe/_Universe.h"
-
-#ifdef USE_OPENCL
-#include "../Compute/OpenCL/clBase.h"
+#ifdef USE_LIVOX
+#include "../Sensor/Livox/_Livox.h"
+#include "../Sensor/Livox/LivoxLidar.h"
+#endif
 #endif
 
+#ifdef WITH_SLAM
 #ifdef USE_OPENCV
+#ifdef USE_ORB_SLAM
+#include "../SLAM/_ORB_SLAM.h"
+#endif
+#endif
+#endif
 
+#ifdef WITH_STATE
+#include "../State/_StateControl.h"
+#endif
+
+#ifdef WITH_TRACKER
+#endif
+
+#ifdef WITH_UI
+#include "../UI/_Console.h"
+#ifdef USE_OPENCV
 #include "../UI/_WindowCV.h"
+#endif
+#ifdef USE_GUI
+#include "../UI/_WindowGUI.h"
+#endif
+#endif
+
+#ifdef WITH_UNIVERSE
+#include "../Universe/_Object.h"
+#include "../Universe/_Universe.h"
+#endif
+
+#ifdef WITH_VISION
+#ifdef USE_OPENCV
 #include "../Vision/_Camera.h"
 #include "../Vision/_VideoFile.h"
 #include "../Vision/_ImgFile.h"
@@ -108,157 +302,42 @@
 #include "../Vision/ImgFilter/_Resize.h"
 #include "../Vision/ImgFilter/_Remap.h"
 #include "../Vision/ImgFilter/_Rotate.h"
-
-#include "../Data/Image/_GDimgUploader.h"
-#include "../Data/Image/_BBoxCutOut.h"
-#include "../Data/Image/_CutOut.h"
-#include "../Data/Video/_FrameCutOut.h"
-
-#include "../Detector/_Lane.h"
-#include "../Detector/_DNNdetect.h"
-#include "../Detector/_DNNclassifier.h"
-#include "../Detector/_DNNtext.h"
-#include "../Detector/_DepthSegment.h"
-#include "../Detector/_IRLock.h"
-#include "../Detector/_Line.h"
-#include "../Detector/_OpenPose.h"
-#include "../Detector/_HandKey.h"
-#include "../Detector/_SlideWindow.h"
-#include "../Detector/_Thermal.h"
-
-#include "../Application/Autopilot/ArduPilot/_AP_avoid.h"
-#include "../Application/Autopilot/ArduPilot/_AP_depthVision.h"
-#include "../Application/Autopilot/ArduPilot/_AP_land.h"
-#include "../Application/Autopilot/ArduPilot/_AP_follow.h"
-#include "../Application/Autopilot/ArduPilot/_APcopter_photo.h"
-
-#include "../Application/Surveillance/_ANR.h"
-#include "../Application/Surveillance/_GDcam.h"
-#include "../Application/RobotArm/_PickingArm.h"
-#include "../Application/Measurement/_ARarea.h"
-
-#ifdef USE_OPENCV_CONTRIB
-#include "../Detector/_ArUco.h"
-#include "../Detector/_MotionDetector.h"
-#include "../Tracker/_SingleTracker.h"
-#endif
-
 #ifdef USE_CUDA
-#include "../Detector/_Bullseye.h"
-#include "../Detector/_Cascade.h"
 #include "../Vision/_DenseFlow.h"
 #endif
-
-#ifdef USE_REALSENSE
-#include "../Vision/_RealSense.h"
-#endif
-
 #ifdef USE_MYNTEYE
 #include "../Vision/_Mynteye.h"
 #endif
-
-#ifdef USE_INNFOS
-#include "../Actuator/_InnfosGluon.h"
+#ifdef USE_REALSENSE
+#include "../Vision/_RealSense.h"
 #endif
-
-#ifdef USE_JETSON_INFERENCE
-#include "../DNN/JetsonInference/_ImageNet.h"
-#include "../DNN/JetsonInference/_DetectNet.h"
-#endif
-
-#ifdef USE_OCR
-#include "../Detector/OCR.h"
-#endif
-
-#ifdef USE_OPENALPR
-#include "../Detector/_OpenALPR.h"
-#endif
-
-#ifdef USE_CAFFE
-#include "../DNN/Caffe/_Caffe.h"
-#include "../Regression/_CaffeRegressionTrain.h"
-#include "../Regression/_CaffeRegressionInf.h"
-#endif
-
-#ifdef USE_DARKNET
-#include "../DNN/Darknet/_YOLO.h"
-#endif
-
 #ifdef USE_PYLON
 #include "../Vision/_Pylon.h"
 #endif
-
-#ifdef USE_CHILITAGS
-#include "../Detector/_Chilitags.h"
-#endif
-
-#ifdef USE_ORB_SLAM
-#include "../SLAM/_ORB_SLAM.h"
-#endif
-
-#endif	//USE_OPENCV
-
-#ifdef USE_OPEN3D
-#include "../PointCloud/_PCstream.h"
-#include "../PointCloud/_PCframe.h"
-#include "../PointCloud/_PClattice.h"
-#include "../PointCloud/_PCfile.h"
-#include "../PointCloud/_PCmerge.h"
-#include "../PointCloud/_PCviewer.h"
-#include "../PointCloud/_PCsend.h"
-#include "../PointCloud/_PCrecv.h"
-#include "../PointCloud/PCfilter/_PCtransform.h"
-#include "../PointCloud/PCfilter/_PCcrop.h"
-#include "../PointCloud/PCfilter/_PCremove.h"
-#include "../PointCloud/PCfilter/_PCdownSample.h"
-#include "../PointCloud/PCregistration/_PCregistCol.h"
-#include "../PointCloud/PCregistration/_PCregistICP.h"
-#include "../PointCloud/PCregistration/_PCregistGlobal.h"
-#include "../Application/PCscan/_PCscan.h"
-#include "../Application/PCscan/_PCcalib.h"
-#ifdef USE_REALSENSE
-#include "../PointCloud/_PCrs.h"
 #endif
 #endif
 
-#ifdef USE_HPS3D
-#include "../PointCloud/_HPS3D.h"
-#endif
 
-#ifdef USE_REALSENSE
-#include "../Navigation/_RStracking.h"
-#endif
-
-#ifdef USE_DYNAMIXEL
-#endif
-
-#ifdef USE_LIVOX
-#include "../Sensor/Livox/_Livox.h"
-#include "../Sensor/Livox/LivoxLidar.h"
-#endif
-
-#ifdef USE_XARM
-#include "../Actuator/Articulated/_xArm.h"
-#endif
-
-#ifdef USE_GUI
-#include "../UI/_WindowGUI.h"
-#endif
-
-#define ADD_MODULE(x) if(pK->m_class == #x){return createInst<x>(pK);}
+#define ADD_MODULE(x)             \
+	if (pK->m_class == #x)        \
+	{                             \
+		return createInst<x>(pK); \
+	}
 
 namespace kai
 {
 
-class Module
-{
-public:
-	Module();
-	virtual ~Module();
-	BASE* createInstance(Kiss* pK);
-private:
-	template <typename T> BASE* createInst(Kiss* pKiss);
-};
+	class Module
+	{
+	public:
+		Module();
+		virtual ~Module();
+		BASE *createInstance(Kiss *pK);
+
+	private:
+		template <typename T>
+		BASE *createInst(Kiss *pKiss);
+	};
 
 }
 
