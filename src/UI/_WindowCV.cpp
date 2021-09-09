@@ -143,6 +143,7 @@ namespace kai
 				break;
 
 			pKb->v("name", &wb.m_name);
+			pKb->v("label", &wb.m_label);
 			pKb->v("vRegion", &wb.m_vRegion);
 			pKb->v("colUp", &wb.m_colUp);
 			pKb->v("colDown", &wb.m_colDown);
@@ -236,14 +237,28 @@ namespace kai
 		return m_pFT;
 	}
 
-	bool _WindowCV::setCbBtn(const string &btnLabel, CbWindowCVbtn pCb, void *pInst)
+	bool _WindowCV::setBtnLabel(const string &btnName, const string &btnLabel)
+	{
+		for (int i = 0; i < m_vBtn.size(); i++)
+		{
+			WindowCV_Btn *pB = &m_vBtn[i];
+			IF_CONT(btnName != pB->m_name);
+
+			pB->m_label = btnLabel;
+			return true;
+		}
+
+		return false;
+	}
+
+	bool _WindowCV::setCbBtn(const string &btnName, CbWindowCVbtn pCb, void *pInst)
 	{
 		NULL_F(pInst);
 
 		for (int i = 0; i < m_vBtn.size(); i++)
 		{
 			WindowCV_Btn *pB = &m_vBtn[i];
-			IF_CONT(btnLabel != pB->m_name);
+			IF_CONT(btnName != pB->m_name);
 
 			pB->setCallback(pCb, pInst);
 			return true;

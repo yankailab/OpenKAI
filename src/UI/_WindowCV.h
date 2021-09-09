@@ -13,7 +13,6 @@
 
 namespace kai
 {
-
 	typedef void (*CbWindowCVbtn)(void *pInst);
 	struct WindowCV_CbBtn
 	{
@@ -43,6 +42,7 @@ namespace kai
 	struct WindowCV_Btn
 	{
 		string m_name = "btn";
+		string m_label = "btn";
 		vFloat4 m_vRegion = {0, 0, 1, 1};
 		vInt4 m_vR;
 		vInt3 m_colUp = {100, 100, 100};
@@ -62,7 +62,7 @@ namespace kai
 			NULL_(pFont);
 
 			int baseline = 0;
-			Size ts = pFont->getTextSize(m_name,
+			Size ts = pFont->getTextSize(m_label,
 											 m_hFont,
 											 -1,
 											 &baseline);
@@ -127,7 +127,7 @@ namespace kai
 
 			if (pFont)
 			{
-				pFont->putText(*pM, m_name,
+				pFont->putText(*pM, m_label,
 							   m_pT,
 							   m_hFont,
 							   Scalar(m_colFont.x, m_colFont.y, m_colFont.z),
@@ -138,7 +138,7 @@ namespace kai
 				return;
 			}
 
-			putText(*pM, m_name,
+			putText(*pM, m_label,
 					Point(m_vR.x, m_vR.y + 25),
 					FONT_HERSHEY_SIMPLEX,
 					1.0,
@@ -160,7 +160,8 @@ namespace kai
 		Frame *getFrame(void);
 		cv::Ptr<freetype::FreeType2> getFont(void);
 
-		bool setCbBtn(const string &btnLabel, CbWindowCVbtn pCb, void *pInst);
+		bool setCbBtn(const string &btnName, CbWindowCVbtn pCb, void *pInst);
+		bool setBtnLabel(const string &btnName, const string &btnLabel);
 
 	protected:
 		void updateWindow(void);

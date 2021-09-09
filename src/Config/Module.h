@@ -83,7 +83,7 @@
 #endif
 
 #ifdef WITH_APP_MEASUREMENT && USE_OPENCV
-#include "../Application/Measurement/_ARarea.h"
+#include "../Application/Measurement/_ARmeasure.h"
 #endif
 
 #ifdef WITH_APP_PCSCAN && USE_OPEN3D

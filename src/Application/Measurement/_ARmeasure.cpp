@@ -1,27 +1,27 @@
 /*
- * _ARarea.cpp
+ * _ARmeasure.cpp
  *
  *  Created on: July 26, 2021
  *      Author: yankai
  */
 
-#include "_ARarea.h"
-
-#ifdef USE_OPENCV
+#include "_ARmeasure.h"
 
 namespace kai
 {
 
-	_ARarea::_ARarea()
+	_ARmeasure::_ARmeasure()
 	{
 		m_pV = NULL;
 		m_pD = NULL;
 		m_pN = NULL;
+		m_pW = NULL;
 
+		m_mode = ARmeasure_area;
 		m_minPoseConfidence = 0.5;
-		
 		m_d = 0.0;
 		m_bValidDist = false;
+		m_bValidPose = false;
 		m_vKlaserSpot.init(0.7 / 100.0, -0.2 / 100.0);
 		m_vRange.init(0.5, 330.0);
 		m_vDorgP.init(0);
@@ -37,15 +37,19 @@ namespace kai
 
 		m_pTs = NULL;
 		m_cmdBatt = "python3 INA219.py";
+		m_battV = 0;
+		m_battA = 0;
+		m_battW = 0;
+		m_battP = 100;
 		m_battShutdown = 10;
 	}
 
-	_ARarea::~_ARarea()
+	_ARmeasure::~_ARmeasure()
 	{
 		DEL(m_pTs);
 	}
 
-	bool _ARarea::init(void *pKiss)
+	bool _ARmeasure::init(void *pKiss)
 	{
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
@@ -82,12 +86,13 @@ namespace kai
 
 		n = "";
 		pK->v("_WindowCV", &n);
-		_WindowCV *pW = (_WindowCV *)(pK->getInst(n));
-		IF_Fl(!pW, n + " not found");
+		m_pW = (_WindowCV *)(pK->getInst(n));
+		IF_Fl(!m_pW, n + " not found");
 
-		pW->setCbBtn("Add", sOnBtnAdd, this);
-		pW->setCbBtn("Clear", sOnBtnClear, this);
-		pW->setCbBtn("Save", sOnBtnSave, this);
+		m_pW->setCbBtn("Add", sOnBtnAction, this);
+		m_pW->setCbBtn("Save", sOnBtnSave, this);
+		m_pW->setCbBtn("Clear", sOnBtnClear, this);
+		m_pW->setCbBtn("Mode", sOnBtnMode, this);
 
 		// slow jobs
 		Kiss *pKt = pK->child("threadSlow");
@@ -102,7 +107,7 @@ namespace kai
 		return true;
 	}
 
-	bool _ARarea::start(void)
+	bool _ARmeasure::start(void)
 	{
 		NULL_F(m_pT);
 		NULL_F(m_pTs);
@@ -110,36 +115,53 @@ namespace kai
 		return m_pTs->start(getUpdateSlow, this);
 	}
 
-	int _ARarea::check(void)
+	int _ARmeasure::check(void)
 	{
 		NULL__(m_pV, -1);
 		IF__(m_pV->BGR()->bEmpty(), -1);
 		NULL__(m_pD, -1);
 		NULL__(m_pN, -1);
+		NULL__(m_pW, -1);
 
 		return 0;
 	}
 
-	void _ARarea::update(void)
+	void _ARmeasure::update(void)
 	{
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPSfrom();
 
-			m_bValidDist = updateARarea();
+			if (updatePose())
+			{
+			}
 
 			m_pT->autoFPSto();
 		}
 	}
 
-	bool _ARarea::updateARarea(void)
+	bool _ARmeasure::updatePose(void)
 	{
 		IF_F(check() < 0);
-		IF_F(!m_pD->bReady());
-		IF_F(!m_pN->bReady());
 
-		m_d = m_pD->d((int)0);
-		IF_F(!m_vRange.bInside(m_d));
+		if (!m_pD->bReady())
+		{
+			m_bValidDist = false;
+		}
+		else
+		{
+			m_d = m_pD->d((int)0);
+			m_bValidDist = m_vRange.bInside(m_d);
+		}
+
+		if (!m_pN->bReady())
+			m_bValidPose = false;
+		else
+			m_bValidPose = (m_pN->confidence() > m_minPoseConfidence);
+
+		IF_F(!m_bValidDist);
+		IF_F(!m_bValidPose);
+
 
 		m_vDptP = {m_vDorgP.x, m_vDorgP.y + m_d, m_vDorgP.z};
 
@@ -160,37 +182,7 @@ namespace kai
 		return true;
 	}
 
-	bool _ARarea::c2scr(const Vector3f &vPc,
-						const cv::Size &vSize,
-						const vFloat2 &vF,
-						const vFloat2 &vC,
-						cv::Point *pvPs)
-	{
-		NULL_F(pvPs);
-
-		Vector3f vP = Vector3f(
-			vPc[m_vAxisIdx.x],
-			-vPc[m_vAxisIdx.y],
-			vPc[m_vAxisIdx.z]);
-
-		float ovZ = 1.0 / abs(vP.z());
-		pvPs->x = vF.x * vP.x() * ovZ + vC.x;
-		pvPs->y = vF.y * vP.y() * ovZ + vC.y;
-
-		return (vP.z() > 0.0);
-	}
-
-	bool _ARarea::bInsideScr(const cv::Size &s, const cv::Point &p)
-	{
-		IF_F(p.x < 0);
-		IF_F(p.x > s.width);
-		IF_F(p.y < 0);
-		IF_F(p.y > s.height);
-
-		return true;
-	}
-
-	float _ARarea::area(void)
+	void _ARmeasure::updateArea(void)
 	{
 		int nV = m_vVert.size();
 		Vector3f vA(0, 0, 0);
@@ -203,12 +195,26 @@ namespace kai
 		}
 
 		vA *= 0.5;
-		return vA.norm();
+		m_result = vA.norm();
 	}
 
+	void _ARmeasure::updateDist(void)
+	{
+
+	}
+
+	void _ARmeasure::updateFreeArea(void)
+	{
+
+	}
+
+	void _ARmeasure::updateFreeDist(void)
+	{
+
+	}
 
 	// UI handler
-	void _ARarea::addVertex(void)
+	void _ARmeasure::action(void)
 	{
 		IF_(!m_bValidDist);
 
@@ -217,29 +223,49 @@ namespace kai
 		m_vVert.push_back(av);
 	}
 
-	void _ARarea::sOnBtnAdd(void *pInst)
+	void _ARmeasure::save(void)
 	{
-		NULL_(pInst);
-		_ARarea *pA = (_ARarea *)pInst;
-		pA->addVertex();
 	}
 
-	void _ARarea::sOnBtnClear(void *pInst)
+	void _ARmeasure::clear(void)
 	{
-		NULL_(pInst);
-		_ARarea *pA = (_ARarea *)pInst;
-		pA->m_vVert.clear();
 	}
 
-	void _ARarea::sOnBtnSave(void *pInst)
+	void _ARmeasure::mode(void)
 	{
-		NULL_(pInst);
-		_ARarea *pA = (_ARarea *)pInst;
+		int i = (int)m_mode + 1;
+		m_mode = (ARmeasure_Mode)(i % 4);
+
+		m_pW->setBtnLabel("Mode",ARmeasureModeLabel[(int)m_mode]);
 	}
 
+	// callbacks
+	void _ARmeasure::sOnBtnAction(void *pInst)
+	{
+		NULL_(pInst);
+		((_ARmeasure *)pInst)->action();
+	}
 
-	//slow update jobs
-	void _ARarea::updateSlow(void)
+	void _ARmeasure::sOnBtnSave(void *pInst)
+	{
+		NULL_(pInst);
+		((_ARmeasure *)pInst)->save();
+	}
+
+	void _ARmeasure::sOnBtnClear(void *pInst)
+	{
+		NULL_(pInst);
+		((_ARmeasure *)pInst)->clear();
+	}
+
+	void _ARmeasure::sOnBtnMode(void *pInst)
+	{
+		NULL_(pInst);
+		((_ARmeasure *)pInst)->mode();
+	}
+
+	// slow update jobs
+	void _ARmeasure::updateSlow(void)
 	{
 		while (m_pTs->bRun())
 		{
@@ -251,7 +277,7 @@ namespace kai
 		}
 	}
 
-	bool _ARarea::updateBatt(void)
+	bool _ARmeasure::updateBatt(void)
 	{
 		// check battery
 		FILE *pFr = popen(m_cmdBatt.c_str(), "r");
@@ -283,8 +309,38 @@ namespace kai
 	}
 
 
+	bool _ARmeasure::c2scr(const Vector3f &vPc,
+						   const cv::Size &vSize,
+						   const vFloat2 &vF,
+						   const vFloat2 &vC,
+						   cv::Point *pvPs)
+	{
+		NULL_F(pvPs);
+
+		Vector3f vP = Vector3f(
+			vPc[m_vAxisIdx.x],
+			-vPc[m_vAxisIdx.y],
+			vPc[m_vAxisIdx.z]);
+
+		float ovZ = 1.0 / abs(vP.z());
+		pvPs->x = vF.x * vP.x() * ovZ + vC.x;
+		pvPs->y = vF.y * vP.y() * ovZ + vC.y;
+
+		return (vP.z() > 0.0);
+	}
+
+	bool _ARmeasure::bInsideScr(const cv::Size &s, const cv::Point &p)
+	{
+		IF_F(p.x < 0);
+		IF_F(p.x > s.width);
+		IF_F(p.y < 0);
+		IF_F(p.y > s.height);
+
+		return true;
+	}
+
 	// UI draw
-	void _ARarea::drawCross(Mat *pM)
+	void _ARmeasure::drawCross(Mat *pM)
 	{
 		NULL_(pM);
 
@@ -338,7 +394,7 @@ namespace kai
 			 1);
 	}
 
-	void _ARarea::drawVertices(Mat *pM)
+	void _ARmeasure::drawVertices(Mat *pM)
 	{
 		NULL_(pM);
 		NULL_(m_pFt);
@@ -390,7 +446,7 @@ namespace kai
 		}
 	}
 
-	void _ARarea::drawArea(Mat *pM)
+	void _ARmeasure::drawArea(Mat *pM)
 	{
 		NULL_(pM);
 		NULL_(m_pFt);
@@ -399,7 +455,7 @@ namespace kai
 		IF_(nV <= 2);
 
 		// area
-		string sA = "Area = " + f2str(area(), 2);
+		string sA = "Area = " + f2str(m_result, 2);
 		int baseline = 0;
 		Size ts = m_pFt->getTextSize(sA,
 									 40,
@@ -407,7 +463,7 @@ namespace kai
 									 &baseline);
 
 		Point pt;
-		pt.x = 220;
+		pt.x = 200;
 		pt.y = pM->rows - 45;
 
 		m_pFt->putText(*pM, sA,
@@ -437,19 +493,15 @@ namespace kai
 					   false);
 	}
 
-	void _ARarea::drawDist(Mat *pM)
+	void _ARmeasure::drawDist(Mat *pM)
 	{
 		NULL_(pM);
 	}
 
-	void _ARarea::drawAngle(Mat *pM)
+	void _ARmeasure::drawLidarRead(Mat *pM)
 	{
 		NULL_(pM);
-	}
-
-	void _ARarea::drawResult(Mat *pM)
-	{
-		NULL_(pM);
+		NULL_(m_pFt);
 
 		Rect r;
 		r.x = 0;
@@ -458,12 +510,12 @@ namespace kai
 		r.height = 40;
 		(*pM)(r) = Scalar(0);
 
-		Scalar col = (m_bValidDist) ? Scalar(255,255,255) : Scalar(0, 0, 255);
+		Scalar col = (m_bValidDist) ? Scalar(255, 255, 255) : Scalar(0, 0, 255);
 		string sD = "D = ";
 		if (m_bValidDist)
 			sD += f2str(m_d, 2) + "m";
 		else
-			sD += "OoR";
+			sD += "Err";
 
 		Point pt;
 		pt.x = 20;
@@ -478,31 +530,59 @@ namespace kai
 					   false);
 	}
 
-	void _ARarea::drawMsg(Mat* pM)
+	void _ARmeasure::drawMsg(Mat *pM)
 	{
 		NULL_(pM);
+		NULL_(m_pFt);
 
 		m_drawMsg = "";
-		
-		if(m_pN->confidence() < m_minPoseConfidence)
+
+		if (m_pN->confidence() < m_minPoseConfidence)
 			m_drawMsg = "Tracking lost";
 
 		IF_(m_drawMsg.empty());
 
+		int baseline = 0;
+		Size ts = m_pFt->getTextSize(m_drawMsg,
+									 40,
+									 -1,
+									 &baseline);
+
 		Point pt;
-		pt.x = 50;
-		pt.y = pM->rows/2;
+		pt.x = constrain(320 - ts.width / 2, 0, pM->cols);
+		pt.y = constrain(pM->rows / 2 - ts.height, 0, pM->rows);
 
 		m_pFt->putText(*pM, m_drawMsg,
 					   pt,
 					   40,
-					   Scalar(0,0,255),
+					   Scalar(0, 0, 255),
 					   -1,
 					   cv::LINE_AA,
 					   false);
 	}
 
-	void _ARarea::cvDraw(void *pWindow)
+	void _ARmeasure::drawBatt(Mat *pM)
+	{
+		NULL_(pM);
+		NULL_(m_pFt);
+
+		Scalar col = (m_battP > m_battShutdown * 1.5) ? Scalar(255, 255, 255) : Scalar(0, 0, 255);
+		string sB = "Bat." + i2str((int)m_battP) + "%";
+
+		Point pt;
+		pt.x = 500;
+		pt.y = pM->rows - 45;
+
+		m_pFt->putText(*pM, sB,
+					   pt,
+					   40,
+					   col,
+					   -1,
+					   cv::LINE_AA,
+					   false);
+	}
+
+	void _ARmeasure::cvDraw(void *pWindow)
 	{
 		NULL_(pWindow);
 		this->_ModuleBase::cvDraw(pWindow);
@@ -529,12 +609,13 @@ namespace kai
 		r.height = mV.rows;
 		mV.copyTo((*pMw)(r));
 
-		drawResult(pMw);
+		drawLidarRead(pMw);
 		drawArea(pMw);
+		drawBatt(pMw);
 		drawMsg(pMw);
 	}
 
-	void _ARarea::console(void *pConsole)
+	void _ARmeasure::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
@@ -544,4 +625,3 @@ namespace kai
 	}
 
 }
-#endif

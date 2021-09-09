@@ -93,7 +93,7 @@ namespace kai
 #endif
 
 #ifdef WITH_APP_MEASUREMENT
-		ADD_MODULE(_ARarea);
+		ADD_MODULE(_ARmeasure);
 #endif
 
 #ifdef WITH_APP_PCSCAN
