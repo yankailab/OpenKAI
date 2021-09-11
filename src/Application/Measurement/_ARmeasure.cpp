@@ -17,7 +17,12 @@ namespace kai
 		m_pN = NULL;
 		m_pW = NULL;
 
-		m_mode = ARmeasure_area;
+		m_mode = ARmeasure_vertex;
+		m_bStarted = false;
+		m_bSave = false;
+		m_area = 0;
+		m_Dtot = 0;
+
 		m_minPoseConfidence = 0.5;
 		m_d = 0.0;
 		m_bValidDist = false;
@@ -89,7 +94,7 @@ namespace kai
 		m_pW = (_WindowCV *)(pK->getInst(n));
 		IF_Fl(!m_pW, n + " not found");
 
-		m_pW->setCbBtn("Add", sOnBtnAction, this);
+		m_pW->setCbBtn("Action", sOnBtnAction, this);
 		m_pW->setCbBtn("Save", sOnBtnSave, this);
 		m_pW->setCbBtn("Clear", sOnBtnClear, this);
 		m_pW->setCbBtn("Mode", sOnBtnMode, this);
@@ -132,15 +137,21 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			if (updatePose())
+			if (updateSensor())
 			{
+				if (m_mode == ARmeasure_vertex)
+					updateVertexMode();
+				else if (m_mode == ARmeasure_free)
+					updateFreeMode();
+				else if (m_mode == ARmeasure_calib)
+					updateCalibMode();
 			}
 
 			m_pT->autoFPSto();
 		}
 	}
 
-	bool _ARmeasure::updatePose(void)
+	bool _ARmeasure::updateSensor(void)
 	{
 		IF_F(check() < 0);
 
@@ -162,7 +173,6 @@ namespace kai
 		IF_F(!m_bValidDist);
 		IF_F(!m_bValidPose);
 
-
 		m_vDptP = {m_vDorgP.x, m_vDorgP.y + m_d, m_vDorgP.z};
 
 		Matrix4f mTpose = m_pN->mT();
@@ -182,7 +192,7 @@ namespace kai
 		return true;
 	}
 
-	void _ARmeasure::updateArea(void)
+	void _ARmeasure::updateVertexMode(void)
 	{
 		int nV = m_vVert.size();
 		Vector3f vA(0, 0, 0);
@@ -195,73 +205,136 @@ namespace kai
 		}
 
 		vA *= 0.5;
-		m_result = vA.norm();
+		m_area = vA.norm();
 	}
 
-	void _ARmeasure::updateDist(void)
+	void _ARmeasure::updateFreeMode(void)
 	{
-
 	}
 
-	void _ARmeasure::updateFreeArea(void)
+	void _ARmeasure::updateCalibMode(void)
 	{
-
-	}
-
-	void _ARmeasure::updateFreeDist(void)
-	{
-
 	}
 
 	// UI handler
 	void _ARmeasure::action(void)
 	{
-		IF_(!m_bValidDist);
+		if (m_mode == ARmeasure_vertex)
+			actionVertexMode();
+		else if (m_mode == ARmeasure_free)
+			actionFreeMode();
+		else if (m_mode == ARmeasure_calib)
+			actionCablibMode();
+	}
 
+	void _ARmeasure::actionVertexMode(void)
+	{
+		IF_(!m_bValidDist);
+		IF_(!m_bValidPose);
+
+		// add new vertex
 		ARAREA_VERTEX av;
 		av.m_vVertW = m_vDptW;
 		m_vVert.push_back(av);
 	}
 
+	void _ARmeasure::actionFreeMode(void)
+	{
+		m_bStarted = (m_bStarted) ? false : true;
+
+		if (m_bStarted)
+		{
+			m_pW->setBtnLabel("Action", "Stop");
+			clear();
+		}
+		else
+		{
+			m_pW->setBtnLabel("Action", "Start");
+		}
+	}
+
+	void _ARmeasure::actionCablibMode(void)
+	{
+		
+	}
+
 	void _ARmeasure::save(void)
 	{
+		// save screen shot to USB memory
+		m_bSave = true;
 	}
 
 	void _ARmeasure::clear(void)
 	{
+		m_vVert.clear();
 	}
 
-	void _ARmeasure::mode(void)
+	void _ARmeasure::mode(uint32_t f)
 	{
-		int i = (int)m_mode + 1;
-		m_mode = (ARmeasure_Mode)(i % 4);
+		if (m_mode == ARmeasure_calib)
+		{
+			if (f & 1)
+			{
+				//long push
+				//TODO: save the calib data
+				m_mode = ARmeasure_vertex;
+			}
+		}
+		else
+		{
+			if (f & 1)
+			{
+				//long push
+				m_mode = ARmeasure_calib;
+			}
+			else
+			{
+				int i = (int)m_mode + 1;
+				m_mode = (ARmeasure_Mode)(i % 2);
+			}
+		}
 
-		m_pW->setBtnLabel("Mode",ARmeasureModeLabel[(int)m_mode]);
+		m_pW->setBtnLabel("Mode", ARmeasureModeLabel[(int)m_mode]);
+
+		if (m_mode == ARmeasure_vertex)
+		{
+			m_pW->setBtnLabel("Action", "Add");
+		}
+		else if (m_mode == ARmeasure_free)
+		{
+			m_pW->setBtnLabel("Action", "Start");
+			m_bStarted = false;
+			clear();
+		}
+		if (m_mode == ARmeasure_calib)
+		{
+			m_pW->setBtnLabel("Action", "Add");
+		}
 	}
 
 	// callbacks
-	void _ARmeasure::sOnBtnAction(void *pInst)
+	void _ARmeasure::sOnBtnAction(void *pInst, uint32_t f)
 	{
 		NULL_(pInst);
 		((_ARmeasure *)pInst)->action();
 	}
 
-	void _ARmeasure::sOnBtnSave(void *pInst)
+	void _ARmeasure::sOnBtnSave(void *pInst, uint32_t f)
 	{
 		NULL_(pInst);
 		((_ARmeasure *)pInst)->save();
 	}
 
-	void _ARmeasure::sOnBtnClear(void *pInst)
+	void _ARmeasure::sOnBtnClear(void *pInst, uint32_t f)
 	{
 		NULL_(pInst);
 		((_ARmeasure *)pInst)->clear();
 	}
 
-	void _ARmeasure::sOnBtnMode(void *pInst)
+	void _ARmeasure::sOnBtnMode(void *pInst, uint32_t f)
 	{
 		NULL_(pInst);
-		((_ARmeasure *)pInst)->mode();
+		((_ARmeasure *)pInst)->mode(f);
 	}
 
 	// slow update jobs
@@ -307,7 +380,6 @@ namespace kai
 
 		return true;
 	}
-
 
 	bool _ARmeasure::c2scr(const Vector3f &vPc,
 						   const cv::Size &vSize,
@@ -446,7 +518,7 @@ namespace kai
 		}
 	}
 
-	void _ARmeasure::drawArea(Mat *pM)
+	void _ARmeasure::drawMeasure(Mat *pM)
 	{
 		NULL_(pM);
 		NULL_(m_pFt);
@@ -455,7 +527,7 @@ namespace kai
 		IF_(nV <= 2);
 
 		// area
-		string sA = "Area = " + f2str(m_result, 2);
+		string sA = "Area = " + f2str(m_area, 2);
 		int baseline = 0;
 		Size ts = m_pFt->getTextSize(sA,
 									 40,
@@ -491,11 +563,6 @@ namespace kai
 					   -1,
 					   cv::LINE_AA,
 					   false);
-	}
-
-	void _ARmeasure::drawDist(Mat *pM)
-	{
-		NULL_(pM);
 	}
 
 	void _ARmeasure::drawLidarRead(Mat *pM)
@@ -610,9 +677,15 @@ namespace kai
 		mV.copyTo((*pMw)(r));
 
 		drawLidarRead(pMw);
-		drawArea(pMw);
+		drawMeasure(pMw);
 		drawBatt(pMw);
 		drawMsg(pMw);
+
+		if(m_bSave)
+		{
+			//TODO: save screenshot to USB memory
+			m_bSave = false;
+		}
 	}
 
 	void _ARmeasure::console(void *pConsole)

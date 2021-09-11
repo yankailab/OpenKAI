@@ -237,34 +237,36 @@ namespace kai
 		return m_pFT;
 	}
 
-	bool _WindowCV::setBtnLabel(const string &btnName, const string &btnLabel)
+	WindowCV_Btn* _WindowCV::findBtn(const string& btnName)
 	{
 		for (int i = 0; i < m_vBtn.size(); i++)
 		{
 			WindowCV_Btn *pB = &m_vBtn[i];
 			IF_CONT(btnName != pB->m_name);
-
-			pB->m_label = btnLabel;
-			return true;
+			return pB;
 		}
 
-		return false;
+		return NULL;
+	}
+
+	bool _WindowCV::setBtnLabel(const string &btnName, const string &btnLabel)
+	{
+		WindowCV_Btn* pB = findBtn(btnName);
+		NULL_F(pB);
+
+		pB->setLabel(btnLabel, m_pFT);
+		return true;
 	}
 
 	bool _WindowCV::setCbBtn(const string &btnName, CbWindowCVbtn pCb, void *pInst)
 	{
 		NULL_F(pInst);
 
-		for (int i = 0; i < m_vBtn.size(); i++)
-		{
-			WindowCV_Btn *pB = &m_vBtn[i];
-			IF_CONT(btnName != pB->m_name);
+		WindowCV_Btn* pB = findBtn(btnName);
+		NULL_F(pB);
 
-			pB->setCallback(pCb, pInst);
-			return true;
-		}
-
-		return false;
+		pB->setCallback(pCb, pInst);
+		return true;
 	}
 
 	void _WindowCV::sOnMouse(int event, int x, int y, int flags, void *userdata)

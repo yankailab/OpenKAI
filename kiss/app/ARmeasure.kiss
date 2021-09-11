@@ -31,7 +31,7 @@
     {
 		"name":"btn",
 	    {
-			"name":"Add",
+			"name":"Action",
 			"label":"Add",
 			"vRegion":[0.797, 0.0, 1.0, 0.25],
 			"colUp":[40, 40, 40],
@@ -62,7 +62,7 @@
 		}
 	    {
 			"name":"Mode",
-			"label":"M",
+			"label":"V",
 			"vRegion":[0.797, 0.75, 1.0, 1.0],
 			"colUp":[40, 40, 40],
 			"colDown":[100, 100, 100],

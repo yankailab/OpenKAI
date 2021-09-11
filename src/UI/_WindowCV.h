@@ -13,7 +13,7 @@
 
 namespace kai
 {
-	typedef void (*CbWindowCVbtn)(void *pInst);
+	typedef void (*CbWindowCVbtn)(void *pInst, uint32_t flag);
 	struct WindowCV_CbBtn
 	{
 		CbWindowCVbtn m_pCb = NULL;
@@ -30,12 +30,12 @@ namespace kai
 			return (m_pCb && m_pInst) ? true : false;
 		}
 
-		void call(void)
+		void call(uint32_t flag = 0)
 		{
 			if (!bValid())
 				return;
 
-			m_pCb(m_pInst);
+			m_pCb(m_pInst, flag);
 		}
 	};
 
@@ -51,6 +51,8 @@ namespace kai
 		vInt3 m_colFont = {255, 255, 255};
 		int m_hFont = 25;
 		cv::Point m_pT;
+		uint64_t m_tDown;
+		uint64_t m_tLongTap = 5 * SEC_2_USEC;
 
 		bool m_bDown = false;
 		WindowCV_CbBtn m_cb;
@@ -58,7 +60,11 @@ namespace kai
 		void init(const cv::Size &s, cv::Ptr<freetype::FreeType2> pFont = NULL)
 		{
 			setScrSize(s);
+			updateLabelPos(pFont);
+		}
 
+		void updateLabelPos(cv::Ptr<freetype::FreeType2> pFont = NULL)
+		{
 			NULL_(pFont);
 
 			int baseline = 0;
@@ -69,6 +75,12 @@ namespace kai
 
 			m_pT.x = (m_vR.x + m_vR.z)/2 - ts.width/2;
 			m_pT.y = (m_vR.y + m_vR.w)/2 - ts.height;
+		}
+
+		void setLabel(const string& label, cv::Ptr<freetype::FreeType2> pFont = NULL)
+		{
+			m_label = label;
+			updateLabelPos(pFont);						
 		}
 
 		void setCallback(CbWindowCVbtn pCb, void *pInst)
@@ -97,6 +109,7 @@ namespace kai
 		void mouseDown(int x, int y)
 		{
 			m_bDown = bInside(x, y);
+			m_tDown = getApproxTbootUs();
 		}
 
 		void mouseMove(int x, int y)
@@ -109,7 +122,8 @@ namespace kai
 			m_bDown &= bInside(x, y);
 			IF_(!m_bDown);
 
-			m_cb.call();
+			uint32_t f = (getApproxTbootUs() - m_tDown > m_tLongTap)?1:0;
+			m_cb.call(f);
 			m_bDown = false;
 		}
 
@@ -160,6 +174,7 @@ namespace kai
 		Frame *getFrame(void);
 		cv::Ptr<freetype::FreeType2> getFont(void);
 
+		WindowCV_Btn* findBtn(const string& btnName);
 		bool setCbBtn(const string &btnName, CbWindowCVbtn pCb, void *pInst);
 		bool setBtnLabel(const string &btnName, const string &btnLabel);
 

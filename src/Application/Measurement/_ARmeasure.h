@@ -16,15 +16,14 @@ namespace kai
 {
 	enum ARmeasure_Mode
 	{
-		ARmeasure_area = 0,
-		ARmeasure_dist = 1,
-		ARmeasure_freeArea = 2,
-		ARmeasure_freeDist = 3,
+		ARmeasure_vertex = 0,
+		ARmeasure_free = 1,
+		ARmeasure_calib = 2,
 	};
 
 	const string ARmeasureModeLabel[] =
 	{
-		"A","D","FA","FD",
+		"V","F","Calib",
 	};
 
 	struct ARAREA_VERTEX
@@ -47,22 +46,24 @@ namespace kai
 		void cvDraw(void *pWindow);
 
 		// callbacks
-		static void sOnBtnAction(void *pInst);
-		static void sOnBtnSave(void *pInst);
-		static void sOnBtnClear(void *pInst);
-		static void sOnBtnMode(void *pInst);
+		static void sOnBtnAction(void *pInst, uint32_t f);
+		static void sOnBtnSave(void *pInst, uint32_t f);
+		static void sOnBtnClear(void *pInst, uint32_t f);
+		static void sOnBtnMode(void *pInst, uint32_t f);
 
 		void action(void);
+		void actionVertexMode(void);
+		void actionFreeMode(void);
+		void actionCablibMode(void);
 		void save(void);
 		void clear(void);
-		void mode(void);
+		void mode(uint32_t f);
 
 	protected:
-		bool updatePose(void);
-		void updateArea(void);
-		void updateDist(void);
-		void updateFreeArea(void);
-		void updateFreeDist(void);
+		void updateVertexMode(void);
+		void updateFreeMode(void);
+		void updateCalibMode(void);
+		bool updateSensor(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -87,10 +88,7 @@ namespace kai
 
 		void drawCross(Mat* pM);
 		void drawVertices(Mat* pM);
-		void drawArea(Mat* pM);
-		void drawDist(Mat* pM);
-		void drawFreeArea(Mat* pM);
-		void drawFreeDist(Mat* pM);
+		void drawMeasure(Mat* pM);
 		void drawLidarRead(Mat* pM);
 		void drawMsg(Mat* pM);
 		void drawBatt(Mat* pM);
@@ -102,7 +100,15 @@ namespace kai
 		_WindowCV *m_pW;
 
 		ARmeasure_Mode m_mode;
-		float m_result;
+		bool m_bStarted;
+		bool m_bSave;
+
+		// result
+		float m_area;
+		float m_Dtot;
+
+		// vertices
+		vector<ARAREA_VERTEX> m_vVert;
 
 		// pose
 		Eigen::Affine3f m_aPose;
@@ -122,9 +128,6 @@ namespace kai
 		vFloat3 m_vCorgP; // camera offset in pose sensor coordinate
 		Eigen::Affine3f m_aW2C;
 		vInt3 m_vAxisIdx;
-
-		// area
-		vector<ARAREA_VERTEX> m_vVert;
 
 		// draw
 		string m_drawMsg;
