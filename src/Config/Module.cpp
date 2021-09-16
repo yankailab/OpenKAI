@@ -94,6 +94,10 @@ namespace kai
 
 #ifdef WITH_APP_MEASUREMENT
 		ADD_MODULE(_ARmeasure);
+		ADD_MODULE(_ARmeasureVertex);
+		ADD_MODULE(_ARmeasureFree);
+		ADD_MODULE(_ARmeasureCalib);
+		ADD_MODULE(_RaspiWSbattery);
 #endif
 
 #ifdef WITH_APP_PCSCAN

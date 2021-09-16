@@ -84,6 +84,10 @@
 
 #ifdef WITH_APP_MEASUREMENT && USE_OPENCV
 #include "../Application/Measurement/_ARmeasure.h"
+#include "../Application/Measurement/_ARmeasureVertex.h"
+#include "../Application/Measurement/_ARmeasureFree.h"
+#include "../Application/Measurement/_ARmeasureCalib.h"
+#include "../Application/Measurement/_RaspiWSbattery.h"
 #endif
 
 #ifdef WITH_APP_PCSCAN && USE_OPEN3D
