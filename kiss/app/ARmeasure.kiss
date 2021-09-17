@@ -1,7 +1,7 @@
 {
 	"name":"APP",
 	"class":"Startup",
-	"appName":"ARarea",
+	"appName":"ARmeasure",
 	"bLog":1,
 	"bStdErr":1,
 	"/rc":"sudo modprobe bcm2835-v4l2\nv4l2-ctl -d /dev/video0 --set-ctrl=rotate=180\n",
@@ -72,7 +72,7 @@
 		}
 	}
 
-	"vBASE":["/cam","/remap","ARarea"],
+	"vBASE":["/cam","/remap","ARvertex","ARmeasure"],
 	"vSize":[800,480],
 	"font":"/home/kai/dev/font/bebas-neue-font/BebasNeueRegular-2O7wW.ttf",
 	"/font":"/home/pi/ARarea/bn.ttf",
@@ -88,17 +88,6 @@
 		"name":"thread",
 		"FPS":30,
 	}
-}
-
-{
-	"name":"cam",
-	"class":"_GStreamer",
-	"bInst":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"pipeline":"v4l2src device=/dev/video4 ! image/jpeg,width=1920,height=1080,framerate=30/1 ! jpegdec ! videoconvert ! appsink",
 }
 
 {
@@ -128,32 +117,6 @@
 	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calib.kiss",
 	"/fCalib":"/home/pi/ARarea/calib.kiss",
 	"vSize":[640, 480],
-}
-
-{
-	"name":"ARarea",
-	"class":"_ARmeasure",
-	"bInst":1,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-    {
-		"name":"threadSlow",
-		"FPS":0.1,
-	}
-	"_VisionBase":"remap",
-	"_DistSensorBase":"TF03",
-	"_NavBase":"T265",
-	"_WindowCV":"UI",
-	"vRange":[0,100],
-	"vKlaserSpot":[0.007, -0.002],
-	"vAxisIdx":[0,2,1],
-	"vDorgP":[0,0,0],
-	"vCorgP":[0,0,0],
-
-	"cmdBatt":"python3 /home/pi/INA219.py",
-	"battShutdown":10,
 }
 
 {
@@ -192,4 +155,81 @@
 		"FPS":100,
 	}
 	"_IOBase":"serial",
+}
+
+{
+	"name":"ARmeasure",
+	"class":"_ARmeasure",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_StateControl":"state",
+	"_VisionBase":"remap",
+	"_DistSensorBase":"TF03",
+	"_NavBase":"T265",
+	"_WindowCV":"UI",
+	"vRange":[0.1,330],
+	"vKlaserSpot":[0.007, -0.002],
+	"vAxisIdx":[0,2,1],
+	"vDorgP":[0,0,0],
+	"vCorgP":[0,0,0],
+
+	"_RaspiWSbattery":"RaspiBatt",
+	"battShutdown":10,
+}
+
+{
+	"name":"ARvertex",
+	"class":"_ARmeasureVertex",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_ARmeasure":"ARmeasure",
+	"_VisionBase":"remap",
+	"_WindowCV":"UI",
+	"_StateControl":"state",
+}
+
+{
+	"name":"RaspiBatt",
+	"class":"_RaspiWSbattery",
+	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":0.1,
+	}
+	"cmdBatt":"python3 /home/pi/INA219.py",
+}
+
+{
+	"name":"state",
+	"class":"_StateControl",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bInst":1,
+	"start":"V",
+	{
+		"name":"state",
+		{
+			"bInst":1,
+			"name":"V",
+			"class":"State",
+		}
+		{
+			"bInst":1,
+			"name":"F",
+			"class":"State",
+		}
+		{
+			"bInst":1,
+			"name":"C",
+			"class":"State",
+		}
+	}
 }

@@ -231,11 +231,15 @@ namespace kai
 			}
 			else
 			{
-				m_pSC->transit();
+				if(s == "V")
+					m_pSC->transit("F");
+				else
+					m_pSC->transit("V");
 			}
 		}
 
-		m_pW->setBtnLabel("Mode", m_pSC->getStateName());
+		s = m_pSC->getStateName();
+		m_pW->setBtnLabel("Mode", s);
 
 		if (s == "V")
 		{
@@ -395,19 +399,7 @@ namespace kai
 		IF_(pMw->empty());
 		m_pFt = pWin->getFont();
 
-		// video input
-		Mat mV;
-		m_pV->BGR()->m()->copyTo(mV);
-
-		drawCross(&mV);
-
-		Rect r;
-		r.x = 0;
-		r.y = 0;
-		r.width = mV.cols;
-		r.height = mV.rows;
-		mV.copyTo((*pMw)(r));
-
+		drawCross(pMw);
 		drawLidarRead(pMw);
 		drawMsg(pMw);
 

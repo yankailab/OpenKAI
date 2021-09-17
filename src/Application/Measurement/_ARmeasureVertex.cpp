@@ -257,6 +257,12 @@ namespace kai
 		r.height = mV.rows;
 		mV.copyTo((*pMw)(r));
 
+		r.x = 0;
+		r.y = 440;
+		r.width = 640;
+		r.height = 40;
+		(*pMw)(r) = Scalar(0);
+
 		drawMeasure(pMw);
 	}
 
