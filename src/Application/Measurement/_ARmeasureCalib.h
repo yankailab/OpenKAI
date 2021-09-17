@@ -9,6 +9,7 @@
 #define OpenKAI_src_Application_Measurement__ARmeasureCalib_H_
 
 #include "_ARmeasure.h"
+#include "../../Vision/ImgFilter/_Remap.h"
 
 namespace kai
 {
@@ -26,11 +27,14 @@ namespace kai
 		// callbacks
 		static void sOnBtnAction(void *pInst, uint32_t f);
 		static void sOnBtnClear(void *pInst, uint32_t f);
+		static void sOnBtnMode(void *pInst, uint32_t f);
+
 		void action(void);
 		void clear(void);
+		void mode(uint32_t f);
 
 	protected:
-		void updateVertex(void);
+		void updateCalib(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -38,20 +42,25 @@ namespace kai
 			return NULL;
 		}
 
-		void drawVertices(Mat* pM);
-		void drawMeasure(Mat* pM);
+	    bool camCalib(void);
+	    bool saveCalib(void);
 
 	private:
 		_ARmeasure* m_pA;
-		_VisionBase *m_pV;
+		_Remap *m_pV;
 		_WindowCV *m_pW;
 
-		// result
-		float m_area;
-		float m_Dtot;
+		vector<Point3f> m_vPo;			// world coordinates for 3D points
+		vector<Mat> m_vImg;
+		vector<vector<Point3f>> m_vvPpo; // 3D points for each checkerboard image
+		vector<vector<Point2f>> m_vvPimg; // 2D points for each checkerboard image
 
-		// vertices
-		vector<ARAREA_VERTEX> m_vVert;
+		vInt2 m_vChessBoardSize;	//col, row
+		float m_squareSize;
+		Mat m_mC;
+		Mat m_mD;
+
+		string m_fKiss;
 
 		// draw
 		Scalar m_drawCol;

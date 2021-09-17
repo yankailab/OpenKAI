@@ -79,7 +79,6 @@ namespace kai
 		IF_Fl(!m_pW, n + " not found");
 
 		m_pW->setCbBtn("Save", sOnBtnSave, this);
-		m_pW->setCbBtn("Mode", sOnBtnMode, this);
 
 		return true;
 	}
@@ -207,65 +206,11 @@ namespace kai
 		m_bSave = true;
 	}
 
-	void _ARmeasure::mode(uint32_t f)
-	{
-		NULL_(m_pSC);
-
-		string s = m_pSC->getStateName();
-
-		if (s == "C")
-		{
-			if (f & 1)
-			{
-				//long push
-				//TODO: save the calib data
-				m_pSC->transit("V");
-			}
-		}
-		else
-		{
-			if (f & 1)
-			{
-				//long push
-				m_pSC->transit("C");
-			}
-			else
-			{
-				if(s == "V")
-					m_pSC->transit("F");
-				else
-					m_pSC->transit("V");
-			}
-		}
-
-		s = m_pSC->getStateName();
-		m_pW->setBtnLabel("Mode", s);
-
-		if (s == "V")
-		{
-			m_pW->setBtnLabel("Action", "Add");
-		}
-		else if (s == "F")
-		{
-			m_pW->setBtnLabel("Action", "Start");
-		}
-		if (s == "C")
-		{
-			m_pW->setBtnLabel("Action", "Add");
-		}
-	}
-
 	// callbacks
 	void _ARmeasure::sOnBtnSave(void *pInst, uint32_t f)
 	{
 		NULL_(pInst);
 		((_ARmeasure *)pInst)->save();
-	}
-
-	void _ARmeasure::sOnBtnMode(void *pInst, uint32_t f)
-	{
-		NULL_(pInst);
-		((_ARmeasure *)pInst)->mode(f);
 	}
 
 	// UI draw

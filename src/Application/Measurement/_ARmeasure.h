@@ -51,9 +51,7 @@ namespace kai
 
 		// callbacks
 		static void sOnBtnSave(void *pInst, uint32_t f);
-		static void sOnBtnMode(void *pInst, uint32_t f);
 		void save(void);
-		void mode(uint32_t f);
 
 	protected:
 		bool updateSensor(void);

@@ -49,9 +49,6 @@ namespace kai
 		m_pW = (_WindowCV *)(pK->getInst(n));
 		IF_Fl(!m_pW, n + " not found");
 
-		m_pW->setCbBtn("Action", sOnBtnAction, this);
-		m_pW->setCbBtn("Clear", sOnBtnClear, this);
-
 		return true;
 	}
 
@@ -87,6 +84,17 @@ namespace kai
 	void _ARmeasureVertex::updateVertex(void)
 	{
 		IF_(!bActive());
+		if (bStateChanged())
+		{
+			m_pW->setCbBtn("Action", sOnBtnAction, this);
+			m_pW->setCbBtn("Clear", sOnBtnClear, this);
+			m_pW->setCbBtn("Mode", sOnBtnMode, this);
+
+			m_pW->setBtnLabel("Action", "Add");
+			m_pW->setBtnLabel("Mode", "V");
+
+			clear();
+		}
 
 		int nV = m_vVert.size();
 		Vector3f vA(0, 0, 0);
@@ -115,6 +123,12 @@ namespace kai
 		((_ARmeasureVertex *)pInst)->clear();
 	}
 
+	void _ARmeasureVertex::sOnBtnMode(void *pInst, uint32_t f)
+	{
+		NULL_(pInst);
+		((_ARmeasureVertex *)pInst)->mode(f);
+	}
+
 	// UI handler
 	void _ARmeasureVertex::action(void)
 	{
@@ -129,6 +143,16 @@ namespace kai
 	void _ARmeasureVertex::clear(void)
 	{
 		m_vVert.clear();
+	}
+
+	void _ARmeasureVertex::mode(uint32_t f)
+	{
+		NULL_(m_pSC);
+
+		if (f & 1) //long push
+			m_pSC->transit("C");
+		else
+			m_pSC->transit("F");
 	}
 
 	// UI draw
@@ -234,7 +258,9 @@ namespace kai
 	void _ARmeasureVertex::cvDraw(void *pWindow)
 	{
 		NULL_(pWindow);
-		this->_ModuleBase::cvDraw(pWindow);
+		IF_(!bActive());
+
+		this->_StateBase::cvDraw(pWindow);
 		IF_(check() < 0);
 
 		_WindowCV *pWin = (_WindowCV *)pWindow;

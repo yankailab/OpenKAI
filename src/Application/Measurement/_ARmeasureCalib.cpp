@@ -16,8 +16,9 @@ namespace kai
 		m_pV = NULL;
 		m_pW = NULL;
 
-		m_area = 0;
-		m_Dtot = 0;
+		m_vChessBoardSize.init(9, 6);
+		m_squareSize = 1.0;
+		m_fKiss = "";
 
 		m_drawCol = Scalar(0, 255, 0);
 		m_pFt = NULL;
@@ -32,6 +33,17 @@ namespace kai
 		IF_F(!this->_StateBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
+		pK->v("vChessBoardSize", &m_vChessBoardSize);
+		pK->v("squareSize", &m_squareSize);
+
+		for (int i = 0; i < m_vChessBoardSize.x; i++)
+		{
+			for (int j = 0; j < m_vChessBoardSize.y; j++)
+				m_vPo.push_back(cv::Point3f(j * m_squareSize, i * m_squareSize, 0));
+		}
+
+		pK->v("fKiss", &m_fKiss);
+
 		string n;
 
 		n = "";
@@ -40,17 +52,14 @@ namespace kai
 		IF_Fl(!m_pA, n + " not found");
 
 		n = "";
-		pK->v("_VisionBase", &n);
-		m_pV = (_VisionBase *)(pK->getInst(n));
+		pK->v("_Remap", &n);
+		m_pV = (_Remap *)(pK->getInst(n));
 		IF_Fl(!m_pV, n + " not found");
 
 		n = "";
 		pK->v("_WindowCV", &n);
 		m_pW = (_WindowCV *)(pK->getInst(n));
 		IF_Fl(!m_pW, n + " not found");
-
-		m_pW->setCbBtn("Action", sOnBtnAction, this);
-		m_pW->setCbBtn("Clear", sOnBtnClear, this);
 
 		return true;
 	}
@@ -78,28 +87,116 @@ namespace kai
 			m_pT->autoFPSfrom();
 
 			this->_StateBase::update();
-			updateVertex();
+			updateCalib();
 
 			m_pT->autoFPSto();
 		}
 	}
 
-	void _ARmeasureCalib::updateVertex(void)
+	void _ARmeasureCalib::updateCalib(void)
 	{
 		IF_(!bActive());
-
-		int nV = m_vVert.size();
-		Vector3f vA(0, 0, 0);
-		int j = 0;
-
-		for (int i = 0; i < nV; i++)
+		if (bStateChanged())
 		{
-			j = (i + 1) % nV;
-			vA += m_vVert[i].m_vVertW.cross(m_vVert[j].m_vVertW);
+			m_pW->setCbBtn("Action", sOnBtnAction, this);
+			m_pW->setCbBtn("Clear", sOnBtnClear, this);
+			m_pW->setCbBtn("Mode", sOnBtnMode, this);
+
+			m_pW->setBtnLabel("Action", "Add");
+			m_pW->setBtnLabel("Mode", "V");
+
+			clear();
+		}
+	}
+
+	bool _ARmeasureCalib::camCalib(void)
+	{
+		Mat mGray;
+		vector<Point2f> vPcorner; // vector to store the pixel coordinates of detected checker board corners
+		bool bSuccess;
+
+		for (int i{0}; i < m_vImg.size(); i++)
+		{
+			cvtColor(m_vImg[i], mGray, cv::COLOR_BGR2GRAY);
+
+			// If desired number of corners are found in the image then bSuccess = true
+			bSuccess = cv::findChessboardCorners(mGray,
+												 cv::Size(m_vChessBoardSize.y, m_vChessBoardSize.x),
+												 vPcorner,
+												 cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_FAST_CHECK | cv::CALIB_CB_NORMALIZE_IMAGE);
+			IF_CONT(!bSuccess);
+
+			TermCriteria criteria(TermCriteria::EPS | TermCriteria::MAX_ITER, 30, 0.001);
+
+			// refining pixel coordinates for given 2d points.
+			cornerSubPix(mGray, vPcorner, cv::Size(11, 11), cv::Size(-1, -1), criteria);
+
+			// Displaying the detected corner points on the checker board
+			//                drawChessboardCorners(m, cv::Size(m_vChessBoardSize.y, m_vChessBoardSize.x), vPcorner, bSuccess);
+
+			m_vvPpo.push_back(m_vPo);
+			m_vvPimg.push_back(vPcorner);
 		}
 
-		vA *= 0.5;
-		m_area = vA.norm();
+		IF_F(m_vvPpo.empty());
+
+		Mat mR, mT;
+		calibrateCamera(m_vvPpo, m_vvPimg, cv::Size(mGray.rows, mGray.cols), m_mC, m_mD, mR, mT);
+		m_mC.at<double>(0, 0) /= (double)mGray.cols; //Fx
+		m_mC.at<double>(1, 1) /= (double)mGray.rows; //Fy
+		m_mC.at<double>(0, 2) /= (double)mGray.cols; //Cx
+		m_mC.at<double>(1, 2) /= (double)mGray.rows; //Cy
+
+		return true;
+	}
+
+	bool _ARmeasureCalib::saveCalib(void)
+	{
+		double Fx = m_mC.at<double>(0, 0);
+		double Fy = m_mC.at<double>(1, 1);
+		double Cx = m_mC.at<double>(0, 2);
+		double Cy = m_mC.at<double>(1, 2);
+
+		double k1 = m_mD.at<double>(0, 0);
+		double k2 = m_mD.at<double>(0, 1);
+		double p1 = m_mD.at<double>(0, 2);
+		double p2 = m_mD.at<double>(0, 3);
+		double k3 = m_mD.at<double>(0, 4);
+
+		picojson::object o;
+		o.insert(make_pair("name", "calib"));
+		o.insert(make_pair("Fx", value(Fx)));
+		o.insert(make_pair("Fy", value(Fy)));
+		o.insert(make_pair("Cx", value(Cx)));
+		o.insert(make_pair("Cy", value(Cy)));
+
+		o.insert(make_pair("k1", value(k1)));
+		o.insert(make_pair("k2", value(k2)));
+		o.insert(make_pair("p1", value(p1)));
+		o.insert(make_pair("p2", value(p2)));
+		o.insert(make_pair("k3", value(k3)));
+
+		// picojson::array v;
+		// v.push_back(value(pP->m_coTx));
+		// v.push_back(value(pP->m_coTy));
+		// v.push_back(value(pP->m_coTz));
+		// o.insert(make_pair("vOffsetCt", value(v)));
+		// v.clear();
+		// v.push_back(value(pP->m_coRx));
+		// v.push_back(value(pP->m_coRy));
+		// v.push_back(value(pP->m_coRz));
+		// o.insert(make_pair("vOffsetCr", value(v)));
+		// v.clear();
+
+		string f = picojson::value(o).serialize();
+
+		_File *pF = new _File();
+		IF_F(!pF->open(&m_fKiss, ios::out));
+		pF->write((uint8_t *)f.c_str(), f.length());
+		pF->close();
+		DEL(pF);
+
+		return true;
 	}
 
 	// callbacks
@@ -115,126 +212,49 @@ namespace kai
 		((_ARmeasureCalib *)pInst)->clear();
 	}
 
+	void _ARmeasureCalib::sOnBtnMode(void *pInst, uint32_t f)
+	{
+		NULL_(pInst);
+		((_ARmeasureCalib *)pInst)->mode(f);
+	}
+
 	// UI handler
 	void _ARmeasureCalib::action(void)
 	{
-		IF_(!m_pA->bValid());
+		IF_(check() < 0);
 
-		// add new vertex
-		ARAREA_VERTEX av;
-		av.m_vVertW = m_pA->vDptW();
-		m_vVert.push_back(av);
+		Mat mV;
+		m_pV->BGR()->m()->copyTo(mV);
+
+		m_vImg.push_back(mV);
 	}
 
 	void _ARmeasureCalib::clear(void)
 	{
-		m_vVert.clear();
+		m_vImg.clear();
+		m_vvPpo.clear();
+		m_vvPimg.clear();
+	}
+
+	void _ARmeasureCalib::mode(uint32_t f)
+	{
+		NULL_(m_pSC);
+
+		if (f & 1)
+		{
+			//long pushed, save calib data
+		}
+
+		m_pSC->transit("V");
 	}
 
 	// UI draw
-	void _ARmeasureCalib::drawVertices(Mat *pM)
-	{
-		NULL_(pM);
-		NULL_(m_pFt);
-
-		vFloat2 vF = m_pV->getFf();
-		vFloat2 vC = m_pV->getCf();
-		cv::Size s = m_pV->BGR()->size();
-
-		// vertices
-		int i, j;
-		int nV = m_vVert.size();
-		for (i = 0; i < nV; i++)
-		{
-			ARAREA_VERTEX *pA = &m_vVert[i];
-			Vector3f vPc = m_pA->aW2C() * pA->m_vVertW;
-			pA->m_bZ = m_pA->c2scr(vPc, s, vF, vC, &pA->m_vPs);
-
-			IF_CONT(!pA->m_bZ);
-			IF_CONT(!m_pA->bInsideScr(s, pA->m_vPs));
-
-			circle(*pM, pA->m_vPs, 10, m_drawCol, 3, cv::LINE_AA);
-		}
-
-		IF_(nV <= 1);
-
-		// distances between vertices
-		for (i = 0; i < nV; i++)
-		{
-			j = (i + 1) % nV;
-			ARAREA_VERTEX *pA = &m_vVert[i];
-			ARAREA_VERTEX *pB = &m_vVert[j];
-			IF_CONT(!pA->m_bZ && !pB->m_bZ);
-
-			Point p = pA->m_vPs;
-			Point q = pB->m_vPs;
-			IF_CONT(!clipLine(s, p, q));
-
-			line(*pM, p, q, m_drawCol, 3, cv::LINE_AA);
-			Vector3f vD = pA->m_vVertW - pB->m_vVertW;
-
-			string sL = f2str(vD.norm(), 2) + "m";
-			m_pFt->putText(*pM, sL,
-						   (p + q) * 0.5,
-						   20,
-						   m_drawCol,
-						   -1,
-						   cv::LINE_AA,
-						   false);
-		}
-	}
-
-	void _ARmeasureCalib::drawMeasure(Mat *pM)
-	{
-		NULL_(pM);
-		NULL_(m_pFt);
-
-		int nV = m_vVert.size();
-		IF_(nV <= 2);
-
-		// area
-		string sA = "Area = " + f2str(m_area, 2);
-		int baseline = 0;
-		Size ts = m_pFt->getTextSize(sA,
-									 40,
-									 -1,
-									 &baseline);
-
-		Point pt;
-		pt.x = 200;
-		pt.y = pM->rows - 45;
-
-		m_pFt->putText(*pM, sA,
-					   pt,
-					   40,
-					   Scalar(255, 255, 255),
-					   -1,
-					   cv::LINE_AA,
-					   false);
-
-		pt.x += ts.width + 10;
-		m_pFt->putText(*pM, "m",
-					   pt,
-					   40,
-					   Scalar(255, 255, 255),
-					   -1,
-					   cv::LINE_AA,
-					   false);
-
-		pt.x += 25;
-		m_pFt->putText(*pM, "2",
-					   pt,
-					   25,
-					   Scalar(255, 255, 255),
-					   -1,
-					   cv::LINE_AA,
-					   false);
-	}
-
 	void _ARmeasureCalib::cvDraw(void *pWindow)
 	{
 		NULL_(pWindow);
-		this->_ModuleBase::cvDraw(pWindow);
+		IF_(!bActive());
+
+		this->_StateBase::cvDraw(pWindow);
 		IF_(check() < 0);
 
 		_WindowCV *pWin = (_WindowCV *)pWindow;
@@ -244,11 +264,8 @@ namespace kai
 		IF_(pMw->empty());
 		m_pFt = pWin->getFont();
 
-		// video input
 		Mat mV;
 		m_pV->BGR()->m()->copyTo(mV);
-
-		drawVertices(&mV);
 
 		Rect r;
 		r.x = 0;
@@ -256,8 +273,6 @@ namespace kai
 		r.width = mV.cols;
 		r.height = mV.rows;
 		mV.copyTo((*pMw)(r));
-
-		drawMeasure(pMw);
 	}
 
 }

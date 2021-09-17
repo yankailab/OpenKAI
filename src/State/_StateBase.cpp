@@ -6,7 +6,7 @@ namespace kai
 _StateBase::_StateBase()
 {
 	m_pSC = NULL;
-	m_iLastState = 0;
+	m_iLastState = -1;
 	m_bStateChanged = false;
 }
 
@@ -34,7 +34,7 @@ bool _StateBase::init(void* pKiss)
 		m_vActiveState.push_back( iS );
 	}
 
-	m_iLastState = m_pSC->getStateIdx();
+	m_iLastState = -1;
 
 	return true;
 }
