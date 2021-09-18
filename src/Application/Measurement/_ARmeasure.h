@@ -49,6 +49,9 @@ namespace kai
 		Vector3f vDptW(void);
 		Eigen::Affine3f aW2C(void);
 
+		vFloat3 getDofsP(void);
+		void setDofsP(const vFloat3& v);
+
 		// callbacks
 		static void sOnBtnSave(void *pInst, uint32_t f);
 		void save(void);
@@ -85,11 +88,11 @@ namespace kai
 		bool m_bValidPose;
 		vFloat2 m_vKlaserSpot; // laser spot size over distance
 		vFloat2 m_vRange; // dist measured out this range is ignored as invalid
-		vFloat3 m_vDorgP; // distance sensor offset in pose sensor coordinate
+		vFloat3 m_vDofsP; // distance sensor offset in pose sensor coordinate
 		Vector3f m_vDptW; // point where the distance sensor is pointing at in world coordinate
 
 		// camera
-		vFloat3 m_vCorgP; // camera offset in pose sensor coordinate
+		vFloat3 m_vCofsP; // camera offset in pose sensor coordinate
 		Eigen::Affine3f m_aW2C;
 		vInt3 m_vAxisIdx;
 

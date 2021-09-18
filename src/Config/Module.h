@@ -86,7 +86,8 @@
 #include "../Application/Measurement/_ARmeasure.h"
 #include "../Application/Measurement/_ARmeasureVertex.h"
 #include "../Application/Measurement/_ARmeasureFree.h"
-#include "../Application/Measurement/_ARmeasureCalib.h"
+#include "../Application/Measurement/_ARmeasureCalibCam.h"
+#include "../Application/Measurement/_ARmeasureCalibDofs.h"
 #include "../Application/Measurement/_RaspiWSbattery.h"
 #endif
 

@@ -96,7 +96,8 @@ namespace kai
 		ADD_MODULE(_ARmeasure);
 		ADD_MODULE(_ARmeasureVertex);
 		ADD_MODULE(_ARmeasureFree);
-		ADD_MODULE(_ARmeasureCalib);
+		ADD_MODULE(_ARmeasureCalibCam);
+		ADD_MODULE(_ARmeasureCalibDofs);
 		ADD_MODULE(_RaspiWSbattery);
 #endif
 

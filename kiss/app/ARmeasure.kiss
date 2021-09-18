@@ -33,6 +33,7 @@
 	    {
 			"name":"Action",
 			"label":"Add",
+			"bShow":1,
 			"vRegion":[0.797, 0.0, 1.0, 0.25],
 			"colUp":[40, 40, 40],
 			"colDown":[100, 100, 100],
@@ -43,6 +44,7 @@
 	    {
 			"name":"Save",
 			"label":"Save",
+			"bShow":1,
 			"vRegion":[0.797, 0.25, 1.0, 0.5],
 			"colUp":[40, 40, 40],
 			"colDown":[100, 100, 100],
@@ -53,6 +55,7 @@
 	    {
 			"name":"Clear",
 			"label":"Clear",
+			"bShow":1,
 			"vRegion":[0.797, 0.5, 1.0, 0.75],
 			"colUp":[40, 40, 40],
 			"colDown":[100, 100, 100],
@@ -63,12 +66,85 @@
 	    {
 			"name":"Mode",
 			"label":"V",
+			"bShow":1,
 			"vRegion":[0.797, 0.75, 1.0, 1.0],
 			"colUp":[40, 40, 40],
 			"colDown":[100, 100, 100],
 			"colBorder":[150, 150, 150],
 			"colFont":[255, 255, 255],
 			"hFont":50,
+		}
+
+	    {
+			"name":"L",
+			"label":"<",
+			"bShow":0,
+			"vRegion":[0.797, 0.75, 1.0, 1.0],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":20,
+		}
+
+	    {
+			"name":"R",
+			"label":">",
+			"bShow":0,
+			"vRegion":[0.797, 0.75, 1.0, 1.0],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":20,
+		}
+
+	    {
+			"name":"U",
+			"label":"^",
+			"bShow":0,
+			"vRegion":[0.797, 0.75, 1.0, 1.0],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":20,
+		}
+
+	    {
+			"name":"D",
+			"label":"v",
+			"bShow":0,
+			"vRegion":[0.797, 0.75, 1.0, 1.0],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":20,
+		}
+
+	    {
+			"name":"F",
+			"label":"F",
+			"bShow":0,
+			"vRegion":[0.797, 0.75, 1.0, 1.0],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":20,
+		}
+
+	    {
+			"name":"B",
+			"label":"B",
+			"bShow":0,
+			"vRegion":[0.797, 0.75, 1.0, 1.0],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":20,
 		}
 	}
 

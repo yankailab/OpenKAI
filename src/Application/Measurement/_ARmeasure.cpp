@@ -25,9 +25,9 @@ namespace kai
 		m_bValidPose = false;
 		m_vKlaserSpot.init(0.7 / 100.0, -0.2 / 100.0);
 		m_vRange.init(0.5, 330.0);
-		m_vDorgP.init(0);
+		m_vDofsP.init(0);
 		m_vDptW = {0, 0, 0};
-		m_vCorgP.init(0);
+		m_vCofsP.init(0);
 		m_vAxisIdx.init(0, 1, 2);
 
 		m_vCircleSize.init(10, 20);
@@ -50,8 +50,8 @@ namespace kai
 		pK->v("vRange", &m_vRange);
 		pK->v("vKlaserSpot", &m_vKlaserSpot);
 		pK->v("vAxisIdx", &m_vAxisIdx);
-		pK->v("vDorgP", &m_vDorgP);
-		pK->v("vCorgP", &m_vCorgP);
+		pK->v("vDorgP", &m_vDofsP);
+		pK->v("vCorgP", &m_vCofsP);
 
 		pK->v("vCircleSize", &m_vCircleSize);
 		pK->v("crossSize", &m_crossSize);
@@ -135,7 +135,7 @@ namespace kai
 		IF_F(!m_bValidDist);
 		IF_F(!m_bValidPose);
 
-		m_vDptP = {m_vDorgP.x, m_vDorgP.y + m_d, m_vDorgP.z};
+		m_vDptP = {m_vDofsP.x, m_vDofsP.y + m_d, m_vDofsP.z};
 
 		Matrix4f mTpose = m_pN->mT();
 		m_aPose = mTpose;
@@ -146,9 +146,9 @@ namespace kai
 		mTwc.block(0, 0, 3, 3) = mRRpose;
 		Vector3f mRT = {mTpose(0, 3), mTpose(1, 3), mTpose(2, 3)};
 		mRT = mRRpose * mRT;
-		mTwc(0, 3) = -mRT(0); // - m_vCorgP.x;
-		mTwc(1, 3) = -mRT(1); // - m_vCorgP.y;
-		mTwc(2, 3) = -mRT(2); // - m_vCorgP.z;
+		mTwc(0, 3) = -mRT(0); // - m_vCofsP.x;
+		mTwc(1, 3) = -mRT(1); // - m_vCofsP.y;
+		mTwc(2, 3) = -mRT(2); // - m_vCofsP.z;
 		m_aW2C = mTwc;
 
 		return true;
@@ -199,6 +199,16 @@ namespace kai
 		return m_aW2C;
 	}
 
+	vFloat3 _ARmeasure::getDofsP(void)
+	{
+		return m_vDofsP;
+	}
+
+	void _ARmeasure::setDofsP(const vFloat3& v)
+	{
+		m_vDofsP = v;
+	}
+
 	// UI handler
 	void _ARmeasure::save(void)
 	{
@@ -223,13 +233,13 @@ namespace kai
 		cv::Size s = m_pV->BGR()->size();
 
 		// laser spot
-		Vector3f vLSc = {m_vDorgP.x, m_vDorgP.y + m_d, m_vDorgP.z};
-		Vector3f vLSl = {m_vDorgP.x + m_d * m_vKlaserSpot.y,
-						 m_vDorgP.y + m_d,
-						 m_vDorgP.z};
-		Vector3f vLSt = {m_vDorgP.x,
-						 m_vDorgP.y + m_d,
-						 m_vDorgP.z + m_d * m_vKlaserSpot.x};
+		Vector3f vLSc = {m_vDofsP.x, m_vDofsP.y + m_d, m_vDofsP.z};
+		Vector3f vLSl = {m_vDofsP.x + m_d * m_vKlaserSpot.y,
+						 m_vDofsP.y + m_d,
+						 m_vDofsP.z};
+		Vector3f vLSt = {m_vDofsP.x,
+						 m_vDofsP.y + m_d,
+						 m_vDofsP.z + m_d * m_vKlaserSpot.x};
 
 		Eigen::Affine3f aL2C = m_aW2C * m_aPose;
 		vLSc = aL2C * vLSc;

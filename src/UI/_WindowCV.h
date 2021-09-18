@@ -43,6 +43,7 @@ namespace kai
 	{
 		string m_name = "btn";
 		string m_label = "btn";
+		bool m_bShow = false;
 		vFloat4 m_vRegion = {0, 0, 1, 1};
 		vInt4 m_vR;
 		vInt3 m_colUp = {100, 100, 100};
@@ -83,6 +84,11 @@ namespace kai
 			updateLabelPos(pFont);						
 		}
 
+		void setVisible(bool bShow)
+		{
+			m_bShow = bShow;
+		}
+
 		void setCallback(CbWindowCVbtn pCb, void *pInst)
 		{
 			m_cb.add(pCb, pInst);
@@ -108,17 +114,23 @@ namespace kai
 
 		void mouseDown(int x, int y)
 		{
+			IF_(!m_bShow);
+
 			m_bDown = bInside(x, y);
 			m_tDown = getApproxTbootUs();
 		}
 
 		void mouseMove(int x, int y)
 		{
+			IF_(!m_bShow);
+
 			m_bDown &= bInside(x, y);
 		}
 
 		void mouseUp(int x, int y)
 		{
+			IF_(!m_bShow);
+
 			m_bDown &= bInside(x, y);
 			IF_(!m_bDown);
 
@@ -129,6 +141,8 @@ namespace kai
 
 		void draw(Mat *pM, cv::Ptr<freetype::FreeType2> pFont = NULL)
 		{
+			IF_(!m_bShow);
+
 			Rect r = bb2Rect(m_vR);
 			Scalar colBg;
 			if (m_bDown)
@@ -177,6 +191,7 @@ namespace kai
 		WindowCV_Btn* findBtn(const string& btnName);
 		bool setCbBtn(const string &btnName, CbWindowCVbtn pCb, void *pInst);
 		bool setBtnLabel(const string &btnName, const string &btnLabel);
+		bool setBtnVisible(const string &btnName, bool bShow);
 
 	protected:
 		void updateWindow(void);

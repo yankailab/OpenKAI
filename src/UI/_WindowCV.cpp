@@ -144,6 +144,7 @@ namespace kai
 
 			pKb->v("name", &wb.m_name);
 			pKb->v("label", &wb.m_label);
+			pKb->v("bShow", &wb.m_bShow);
 			pKb->v("vRegion", &wb.m_vRegion);
 			pKb->v("colUp", &wb.m_colUp);
 			pKb->v("colDown", &wb.m_colDown);
@@ -255,6 +256,15 @@ namespace kai
 		NULL_F(pB);
 
 		pB->setLabel(btnLabel, m_pFT);
+		return true;
+	}
+
+	bool _WindowCV::setBtnVisible(const string &btnName, bool bShow)
+	{
+		WindowCV_Btn* pB = findBtn(btnName);
+		NULL_F(pB);
+
+		pB->setVisible(bShow);
 		return true;
 	}
 
