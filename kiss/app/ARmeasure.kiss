@@ -27,6 +27,10 @@
 		"name":"thread",
 		"FPS":30,
 	}
+	"vBASE":["/cam","/remap","ARvertex","ARcalibCam","ARmeasure"],
+	"vSize":[800,480],
+	"font":"/home/kai/dev/font/bebas-neue-font/BebasNeueRegular-2O7wW.ttf",
+	"/font":"/home/pi/ARarea/bn.ttf",
 
     {
 		"name":"btn",
@@ -147,11 +151,6 @@
 			"hFont":20,
 		}
 	}
-
-	"vBASE":["/cam","/remap","ARvertex","ARmeasure"],
-	"vSize":[800,480],
-	"font":"/home/kai/dev/font/bebas-neue-font/BebasNeueRegular-2O7wW.ttf",
-	"/font":"/home/pi/ARarea/bn.ttf",
 }
 
 {
@@ -234,6 +233,35 @@
 }
 
 {
+	"name":"state",
+	"class":"_StateControl",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bInst":1,
+	"start":"V",
+	{
+		"name":"state",
+		{
+			"bInst":1,
+			"name":"vertex",
+			"class":"State",
+		}
+		{
+			"bInst":1,
+			"name":"free",
+			"class":"State",
+		}
+		{
+			"bInst":1,
+			"name":"calibCam",
+			"class":"State",
+		}
+	}
+}
+
+{
 	"name":"ARmeasure",
 	"class":"_ARmeasure",
 	"bInst":1,
@@ -268,6 +296,26 @@
 	"_VisionBase":"remap",
 	"_WindowCV":"UI",
 	"_StateControl":"state",
+	"vActiveState":["vertex"],
+}
+
+{
+	"name":"ARcalibCam",
+	"class":"_ARmeasureCalibCam",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_ARmeasure":"ARmeasure",
+	"_Remap":"remap",
+	"_WindowCV":"UI",
+	"_StateControl":"state",
+	"fKiss":"/home/kai/calibTest.kiss",
+	"vChessBoardSize":[9,6],
+	"squareSize":1.0,
+	"vActiveState":["calibCam"],
+	"tPreview":1,
 }
 
 {
@@ -281,31 +329,3 @@
 	"cmdBatt":"python3 /home/pi/INA219.py",
 }
 
-{
-	"name":"state",
-	"class":"_StateControl",
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"bInst":1,
-	"start":"V",
-	{
-		"name":"state",
-		{
-			"bInst":1,
-			"name":"V",
-			"class":"State",
-		}
-		{
-			"bInst":1,
-			"name":"F",
-			"class":"State",
-		}
-		{
-			"bInst":1,
-			"name":"C",
-			"class":"State",
-		}
-	}
-}

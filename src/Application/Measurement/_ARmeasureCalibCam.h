@@ -60,7 +60,10 @@ namespace kai
 		vector<vector<Point3f>> m_vvPpo; // 3D points for each checkerboard image
 		vector<vector<Point2f>> m_vvPimg; // 2D points for each checkerboard image
 
-		vInt2 m_vChessBoardSize;	//col, row
+		Mat m_mCalib;	// for calib preview
+		int m_iPreview;
+		int m_tPreview;
+		vInt2 m_vChessBoardSize;	// col, row
 		float m_squareSize;
 		Mat m_mC;
 		Mat m_mD;

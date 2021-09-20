@@ -16,6 +16,8 @@ namespace kai
 		m_pV = NULL;
 		m_pW = NULL;
 
+		m_iPreview = 0;
+		m_tPreview = 3;
 		m_vChessBoardSize.init(9, 6);
 		m_squareSize = 1.0;
 		m_fKiss = "";
@@ -35,6 +37,7 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("fKiss", &m_fKiss);
+		pK->v("tPreview", &m_tPreview);
 		pK->v("vChessBoardSize", &m_vChessBoardSize);
 		pK->v("squareSize", &m_squareSize);
 
@@ -98,13 +101,18 @@ namespace kai
 		IF_(!bActive());
 		if (bStateChanged())
 		{
+			m_pW->setBtnVisibleAll(false);
 			m_pW->setCbBtn("Action", sOnBtnAction, this);
-			m_pW->setCbBtn("Clear", sOnBtnClear, this);
 			m_pW->setCbBtn("Save", sOnBtnSave, this);
+			m_pW->setCbBtn("Clear", sOnBtnClear, this);
 			m_pW->setCbBtn("Mode", sOnBtnMode, this);
-			m_pW->setBtnLabel("Action", "Add");
+			m_pW->setBtnLabel("Action", "Take");
 			m_pW->setBtnLabel("Mode", "CC");
 
+			m_pW->setBtnVisible("Action", true);
+			m_pW->setBtnVisible("Save", true);
+			m_pW->setBtnVisible("Clear", true);
+			m_pW->setBtnVisible("Mode", true);
 			clear();
 		}
 	}
@@ -116,9 +124,9 @@ namespace kai
 		Mat mR, mT;
 		cv::Size s = m_pV->BGR()->size();
 		calibrateCamera(m_vvPpo, m_vvPimg, s, m_mC, m_mD, mR, mT);
-		m_mC.at<double>(0, 0) /= (double)s.width; //Fx
+		m_mC.at<double>(0, 0) /= (double)s.width;  //Fx
 		m_mC.at<double>(1, 1) /= (double)s.height; //Fy
-		m_mC.at<double>(0, 2) /= (double)s.width; //Cx
+		m_mC.at<double>(0, 2) /= (double)s.width;  //Cx
 		m_mC.at<double>(1, 2) /= (double)s.height; //Cy
 		m_pV->setCamMatrices(m_mC, m_mD);
 
@@ -160,6 +168,8 @@ namespace kai
 		pF->close();
 		DEL(pF);
 
+		m_drawMsg = "Calib data saved";
+
 		return true;
 	}
 
@@ -193,12 +203,11 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		Mat mV;
-		m_pV->BGR()->m()->copyTo(mV);
+		m_pV->BGR()->m()->copyTo(m_mCalib);
 
 		Mat mGray;
 		vector<Point2f> vPcorner; // vector to store the pixel coordinates of detected checker board corners
-		cvtColor(mV, mGray, cv::COLOR_BGR2GRAY);
+		cvtColor(m_mCalib, mGray, cv::COLOR_BGR2GRAY);
 
 		// If desired number of corners are found in the image then bSuccess = true
 		IF_(!cv::findChessboardCorners(mGray,
@@ -212,7 +221,8 @@ namespace kai
 		cornerSubPix(mGray, vPcorner, cv::Size(11, 11), cv::Size(-1, -1), criteria);
 
 		// Displaying the detected corner points on the checker board
-		//                drawChessboardCorners(m, cv::Size(m_vChessBoardSize.y, m_vChessBoardSize.x), vPcorner, bSuccess);
+		drawChessboardCorners(m_mCalib, cv::Size(m_vChessBoardSize.y, m_vChessBoardSize.x), vPcorner, true);
+		m_iPreview = 1;
 
 		m_vvPpo.push_back(m_vPo);
 		m_vvPimg.push_back(vPcorner);
@@ -256,10 +266,17 @@ namespace kai
 
 		string c[5];
 		c[0] = "Nsample: " + i2str(m_vvPimg.size());
-		c[1] = "Fx: " + lf2str(m_mC.at<double>(0, 0), nd);
-		c[2] = "Fy: " + lf2str(m_mC.at<double>(1, 1), nd);
-		c[3] = "Cx: " + lf2str(m_mC.at<double>(0, 2), nd);
-		c[4] = "Cy: " + lf2str(m_mC.at<double>(1, 2), nd);
+		if (m_mC.empty())
+		{
+			n = 1;
+		}
+		else
+		{
+			c[1] = "Fx: " + lf2str(m_mC.at<double>(0, 0), nd);
+			c[2] = "Fy: " + lf2str(m_mC.at<double>(1, 1), nd);
+			c[3] = "Cx: " + lf2str(m_mC.at<double>(0, 2), nd);
+			c[4] = "Cy: " + lf2str(m_mC.at<double>(1, 2), nd);
+		}
 
 		for (int i = 0; i < n; i++)
 		{
@@ -303,8 +320,22 @@ namespace kai
 		IF_(pMw->empty());
 		m_pFt = pWin->getFont();
 
+		if(m_iPreview == 2)
+		{
+			sleep(m_tPreview);
+			m_iPreview = 0;
+		}
+
 		Mat mV;
-		m_pV->BGR()->m()->copyTo(mV);
+		if (m_iPreview == 1)
+		{
+			m_mCalib.copyTo(mV);
+			m_iPreview++;			
+		}
+		else
+		{
+			m_pV->BGR()->m()->copyTo(mV);
+		}
 
 		Rect r;
 		r.x = 0;

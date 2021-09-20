@@ -192,6 +192,7 @@ namespace kai
 		bool setCbBtn(const string &btnName, CbWindowCVbtn pCb, void *pInst);
 		bool setBtnLabel(const string &btnName, const string &btnLabel);
 		bool setBtnVisible(const string &btnName, bool bShow);
+		void setBtnVisibleAll(bool bShow);
 
 	protected:
 		void updateWindow(void);

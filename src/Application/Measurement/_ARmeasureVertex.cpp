@@ -150,9 +150,9 @@ namespace kai
 		NULL_(m_pSC);
 
 		if (f & 1) //long push
-			m_pSC->transit("C");
+			m_pSC->transit("calibCam");
 		else
-			m_pSC->transit("F");
+			m_pSC->transit("free");
 	}
 
 	// UI draw

@@ -268,6 +268,15 @@ namespace kai
 		return true;
 	}
 
+	void _WindowCV::setBtnVisibleAll(bool bShow)
+	{
+		for (int i = 0; i < m_vBtn.size(); i++)
+		{
+			WindowCV_Btn *pB = &m_vBtn[i];
+			pB->setVisible(bShow);
+		}
+	}
+
 	bool _WindowCV::setCbBtn(const string &btnName, CbWindowCVbtn pCb, void *pInst)
 	{
 		NULL_F(pInst);
