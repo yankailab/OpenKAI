@@ -204,7 +204,7 @@ namespace kai
 		return m_vDofsP;
 	}
 
-	void _ARmeasure::setDofsP(const vFloat3& v)
+	void _ARmeasure::setDofsP(const vFloat3 &v)
 	{
 		m_vDofsP = v;
 	}
@@ -227,6 +227,7 @@ namespace kai
 	void _ARmeasure::drawCross(Mat *pM)
 	{
 		NULL_(pM);
+		IF_(!m_bValidDist);
 
 		vFloat2 vF = m_pV->getFf();
 		vFloat2 vC = m_pV->getCf();
@@ -254,15 +255,12 @@ namespace kai
 		float rd = (m_vRange.y - m_d) / m_vRange.len();
 		Scalar col = (m_bValidDist) ? Scalar(0, 255.0 * rd, 255.0 * (1.0 - rd)) : Scalar(0, 0, 255);
 
-		if (m_bValidDist)
-		{
-			Rect2i r;
-			r.x = vPl.x;
-			r.y = vPt.y;
-			r.width = abs(vPc.x - vPl.x) * 2 + 1;
-			r.height = abs(vPc.y - vPt.y) * 2 + 1;
-			rectangle(*pM, r, col, 1);
-		}
+		Rect2i r;
+		r.x = vPl.x;
+		r.y = vPt.y;
+		r.width = abs(vPc.x - vPl.x) * 2 + 1;
+		r.height = abs(vPc.y - vPt.y) * 2 + 1;
+		rectangle(*pM, r, col, 1);
 
 		// target cross
 		line(*pM,

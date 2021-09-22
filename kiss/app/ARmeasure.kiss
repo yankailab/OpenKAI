@@ -27,7 +27,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["/cam","/remap","ARvertex","ARcalibCam","ARmeasure"],
+	"vBASE":["/cam","/remap","ARvertex","ARcalibCam","ARcalibDofs","ARmeasure"],
 	"vSize":[800,480],
 	"font":"/home/kai/dev/font/bebas-neue-font/BebasNeueRegular-2O7wW.ttf",
 	"/font":"/home/pi/ARarea/bn.ttf",
@@ -83,7 +83,7 @@
 			"name":"L",
 			"label":"<",
 			"bShow":0,
-			"vRegion":[0.797, 0.75, 1.0, 1.0],
+			"vRegion":[0.0, 0.0, 0.1, 0.1],
 			"colUp":[40, 40, 40],
 			"colDown":[100, 100, 100],
 			"colBorder":[150, 150, 150],
@@ -95,7 +95,7 @@
 			"name":"R",
 			"label":">",
 			"bShow":0,
-			"vRegion":[0.797, 0.75, 1.0, 1.0],
+			"vRegion":[0.1, 0.0, 0.2, 0.1],
 			"colUp":[40, 40, 40],
 			"colDown":[100, 100, 100],
 			"colBorder":[150, 150, 150],
@@ -107,7 +107,7 @@
 			"name":"U",
 			"label":"^",
 			"bShow":0,
-			"vRegion":[0.797, 0.75, 1.0, 1.0],
+			"vRegion":[0.2, 0.0, 0.3, 0.1],
 			"colUp":[40, 40, 40],
 			"colDown":[100, 100, 100],
 			"colBorder":[150, 150, 150],
@@ -119,7 +119,7 @@
 			"name":"D",
 			"label":"v",
 			"bShow":0,
-			"vRegion":[0.797, 0.75, 1.0, 1.0],
+			"vRegion":[0.3, 0.0, 0.4, 0.1],
 			"colUp":[40, 40, 40],
 			"colDown":[100, 100, 100],
 			"colBorder":[150, 150, 150],
@@ -131,7 +131,7 @@
 			"name":"F",
 			"label":"F",
 			"bShow":0,
-			"vRegion":[0.797, 0.75, 1.0, 1.0],
+			"vRegion":[0.4, 0.0, 0.5, 0.1],
 			"colUp":[40, 40, 40],
 			"colDown":[100, 100, 100],
 			"colBorder":[150, 150, 150],
@@ -143,7 +143,31 @@
 			"name":"B",
 			"label":"B",
 			"bShow":0,
-			"vRegion":[0.797, 0.75, 1.0, 1.0],
+			"vRegion":[0.5, 0.0, 0.6, 0.1],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":20,
+		}
+
+	    {
+			"name":"Sl",
+			"label":"S+",
+			"bShow":0,
+			"vRegion":[0.6, 0.0, 0.8, 0.1],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":20,
+		}
+
+	    {
+			"name":"Ss",
+			"label":"S-",
+			"bShow":0,
+			"vRegion":[0.8, 0.0, 1.0, 0.1],
 			"colUp":[40, 40, 40],
 			"colDown":[100, 100, 100],
 			"colBorder":[150, 150, 150],
@@ -258,6 +282,11 @@
 			"name":"calibCam",
 			"class":"State",
 		}
+		{
+			"bInst":1,
+			"name":"calibDofs",
+			"class":"State",
+		}
 	}
 }
 
@@ -316,6 +345,22 @@
 	"squareSize":1.0,
 	"vActiveState":["calibCam"],
 	"tPreview":1,
+}
+
+{
+	"name":"ARcalibDofs",
+	"class":"_ARmeasureCalibDofs",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_ARmeasure":"ARmeasure",
+	"_VisionBase":"remap",
+	"_WindowCV":"UI",
+	"_StateControl":"state",
+	"fKiss":"/home/kai/calibTest.kiss",
+	"vActiveState":["calibDofs"],
 }
 
 {

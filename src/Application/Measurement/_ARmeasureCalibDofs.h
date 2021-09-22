@@ -9,7 +9,6 @@
 #define OpenKAI_src_Application_Measurement__ARmeasureCalibDofs_H_
 
 #include "_ARmeasure.h"
-#include "../../Vision/ImgFilter/_Remap.h"
 
 namespace kai
 {
@@ -66,7 +65,7 @@ namespace kai
 
 	private:
 		_ARmeasure* m_pA;
-		_Remap *m_pV;
+		_VisionBase *m_pV;
 		_WindowCV *m_pW;
 
 		string m_fKiss;

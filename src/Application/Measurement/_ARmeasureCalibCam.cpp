@@ -249,7 +249,7 @@ namespace kai
 		if (f & 1) //long push
 			m_pSC->transit("V");
 		else
-			m_pSC->transit("CalibDofs");
+			m_pSC->transit("calibDofs");
 	}
 
 	// UI draw

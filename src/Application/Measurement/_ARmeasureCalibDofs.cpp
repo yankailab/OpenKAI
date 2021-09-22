@@ -43,8 +43,8 @@ namespace kai
 		IF_Fl(!m_pA, n + " not found");
 
 		n = "";
-		pK->v("_Remap", &n);
-		m_pV = (_Remap *)(pK->getInst(n));
+		pK->v("_VisionBase", &n);
+		m_pV = (_VisionBase *)(pK->getInst(n));
 		IF_Fl(!m_pV, n + " not found");
 
 		n = "";
@@ -89,11 +89,15 @@ namespace kai
 		IF_(!bActive());
 		if (bStateChanged())
 		{
-			m_pW->setCbBtn("Action", sOnBtnAction, this);
+			m_pW->setBtnVisibleAll(false);
+			m_pW->setCbBtn("Save", sOnBtnSave, this);
 			m_pW->setCbBtn("Clear", sOnBtnClear, this);
 			m_pW->setCbBtn("Mode", sOnBtnMode, this);
-			m_pW->setBtnLabel("Action", "Add");
-			m_pW->setBtnLabel("Mode", "V");
+
+			m_pW->setBtnVisible("Save", true);
+			m_pW->setBtnVisible("Clear", true);
+			m_pW->setBtnLabel("Mode", "CD");
+			m_pW->setBtnVisible("Mode", true);
 
 			m_pW->setCbBtn("L", sOnBtnL, this);
 			m_pW->setCbBtn("R", sOnBtnR, this);
@@ -241,7 +245,7 @@ namespace kai
 		if (f & 1) //long push
 			m_pSC->transit("V");
 		else
-			m_pSC->transit("CalibCam");
+			m_pSC->transit("calibCam");
 	}
 
 	void _ARmeasureCalibDofs::L(void)
@@ -309,7 +313,7 @@ namespace kai
 		NULL_(m_pFt);
 
 		int x = 30;
-		int y = 20;
+		int y = 50;
 		int s = 20;
 		int n = 4;
 		int nd = 6;
