@@ -50,7 +50,9 @@ namespace kai
 		Eigen::Affine3f aW2C(void);
 
 		vFloat3 getDofsP(void);
+		vFloat3 getCofsP(void);
 		void setDofsP(const vFloat3& v);
+		void setCofsP(const vFloat3& v);
 
 		// callbacks
 		static void sOnBtnSave(void *pInst, uint32_t f);

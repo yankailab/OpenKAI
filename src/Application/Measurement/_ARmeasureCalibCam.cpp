@@ -282,7 +282,7 @@ namespace kai
 		{
 			m_pFt->putText(*pM, c[i],
 						   Point(x, y + s * i),
-						   15,
+						   20,
 						   Scalar(0, 255, 0),
 						   -1,
 						   cv::LINE_AA,

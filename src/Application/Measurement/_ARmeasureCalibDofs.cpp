@@ -99,22 +99,22 @@ namespace kai
 			m_pW->setBtnLabel("Mode", "CD");
 			m_pW->setBtnVisible("Mode", true);
 
-			m_pW->setCbBtn("L", sOnBtnL, this);
-			m_pW->setCbBtn("R", sOnBtnR, this);
-			m_pW->setCbBtn("U", sOnBtnU, this);
-			m_pW->setCbBtn("D", sOnBtnD, this);
-			m_pW->setCbBtn("F", sOnBtnF, this);
-			m_pW->setCbBtn("B", sOnBtnB, this);
-			m_pW->setCbBtn("Sl", sOnBtnSl, this);
-			m_pW->setCbBtn("Ss", sOnBtnSs, this);
-			m_pW->setBtnVisible("L", true);
-			m_pW->setBtnVisible("R", true);
-			m_pW->setBtnVisible("U", true);
-			m_pW->setBtnVisible("D", true);
-			m_pW->setBtnVisible("F", true);
-			m_pW->setBtnVisible("B", true);
-			m_pW->setBtnVisible("Sl", true);
-			m_pW->setBtnVisible("Ss", true);
+			m_pW->setCbBtn("Xi", sOnBtnXi, this);
+			m_pW->setCbBtn("Xd", sOnBtnXd, this);
+			m_pW->setCbBtn("Yi", sOnBtnYi, this);
+			m_pW->setCbBtn("Yd", sOnBtnYd, this);
+			m_pW->setCbBtn("Zi", sOnBtnZi, this);
+			m_pW->setCbBtn("Zd", sOnBtnZd, this);
+			m_pW->setCbBtn("Si", sOnBtnSi, this);
+			m_pW->setCbBtn("Sd", sOnBtnSd, this);
+			m_pW->setBtnVisible("Xi", true);
+			m_pW->setBtnVisible("Xd", true);
+			m_pW->setBtnVisible("Yi", true);
+			m_pW->setBtnVisible("Yd", true);
+			m_pW->setBtnVisible("Zi", true);
+			m_pW->setBtnVisible("Zd", true);
+			m_pW->setBtnVisible("Si", true);
+			m_pW->setBtnVisible("Sd", true);
 
 			clear();
 		}
@@ -125,12 +125,20 @@ namespace kai
 		picojson::object o;
 		o.insert(make_pair("name", "calib"));
 
-		vFloat3 vDofsP = m_pA->getDofsP();
 		picojson::array v;
+
+		vFloat3 vDofsP = m_pA->getDofsP();
 		v.push_back(value(vDofsP.x));
 		v.push_back(value(vDofsP.y));
 		v.push_back(value(vDofsP.z));
 		o.insert(make_pair("vDofsP", value(v)));
+		v.clear();
+
+		vFloat3 vCofsP = m_pA->getCofsP();
+		v.push_back(value(vCofsP.x));
+		v.push_back(value(vCofsP.y));
+		v.push_back(value(vCofsP.z));
+		o.insert(make_pair("vCofsP", value(v)));
 		v.clear();
 
 		string f = picojson::value(o).serialize();
@@ -142,18 +150,11 @@ namespace kai
 		DEL(pF);
 
 		m_drawMsg = "Calibration saved";
-		sleep(1);
 
 		return true;
 	}
 
 	// callbacks
-	void _ARmeasureCalibDofs::sOnBtnAction(void *pInst, uint32_t f)
-	{
-		NULL_(pInst);
-		((_ARmeasureCalibDofs *)pInst)->action();
-	}
-
 	void _ARmeasureCalibDofs::sOnBtnClear(void *pInst, uint32_t f)
 	{
 		NULL_(pInst);
@@ -172,70 +173,68 @@ namespace kai
 		((_ARmeasureCalibDofs *)pInst)->mode(f);
 	}
 
-	void _ARmeasureCalibDofs::sOnBtnL(void *pInst, uint32_t f)
+	void _ARmeasureCalibDofs::sOnBtnXi(void *pInst, uint32_t f)
 	{
 		NULL_(pInst);
-		((_ARmeasureCalibDofs *)pInst)->L();
+		((_ARmeasureCalibDofs *)pInst)->Xi();
 	}
 
-	void _ARmeasureCalibDofs::sOnBtnR(void *pInst, uint32_t f)
+	void _ARmeasureCalibDofs::sOnBtnXd(void *pInst, uint32_t f)
 	{
 		NULL_(pInst);
-		((_ARmeasureCalibDofs *)pInst)->R();
+		((_ARmeasureCalibDofs *)pInst)->Xd();
 	}
 
-	void _ARmeasureCalibDofs::sOnBtnU(void *pInst, uint32_t f)
+	void _ARmeasureCalibDofs::sOnBtnYi(void *pInst, uint32_t f)
 	{
 		NULL_(pInst);
-		((_ARmeasureCalibDofs *)pInst)->U();
+		((_ARmeasureCalibDofs *)pInst)->Yi();
 	}
 
-	void _ARmeasureCalibDofs::sOnBtnD(void *pInst, uint32_t f)
+	void _ARmeasureCalibDofs::sOnBtnYd(void *pInst, uint32_t f)
 	{
 		NULL_(pInst);
-		((_ARmeasureCalibDofs *)pInst)->D();
+		((_ARmeasureCalibDofs *)pInst)->Yd();
 	}
 
-	void _ARmeasureCalibDofs::sOnBtnF(void *pInst, uint32_t f)
+	void _ARmeasureCalibDofs::sOnBtnZi(void *pInst, uint32_t f)
 	{
 		NULL_(pInst);
-		((_ARmeasureCalibDofs *)pInst)->F();
+		((_ARmeasureCalibDofs *)pInst)->Zi();
 	}
 
-	void _ARmeasureCalibDofs::sOnBtnB(void *pInst, uint32_t f)
+	void _ARmeasureCalibDofs::sOnBtnZd(void *pInst, uint32_t f)
 	{
 		NULL_(pInst);
-		((_ARmeasureCalibDofs *)pInst)->B();
+		((_ARmeasureCalibDofs *)pInst)->Zd();
 	}
 
-	void _ARmeasureCalibDofs::sOnBtnSl(void *pInst, uint32_t f)
+	void _ARmeasureCalibDofs::sOnBtnSi(void *pInst, uint32_t f)
 	{
 		NULL_(pInst);
-		((_ARmeasureCalibDofs *)pInst)->Sl();
+		((_ARmeasureCalibDofs *)pInst)->Si();
 	}
 
-	void _ARmeasureCalibDofs::sOnBtnSs(void *pInst, uint32_t f)
+	void _ARmeasureCalibDofs::sOnBtnSd(void *pInst, uint32_t f)
 	{
 		NULL_(pInst);
-		((_ARmeasureCalibDofs *)pInst)->Ss();
+		((_ARmeasureCalibDofs *)pInst)->Sd();
 	}
 
 	// UI handler
-	void _ARmeasureCalibDofs::action(void)
-	{
-		IF_(check() < 0);
-
-		Mat mV;
-		m_pV->BGR()->m()->copyTo(mV);
-
-	}
-
 	void _ARmeasureCalibDofs::clear(void)
 	{
+		NULL_(m_pA);
+		vFloat3 v;
+		v.init(0);
+		m_pA->setDofsP(v);
+
+		m_drawMsg = "";
 	}
 
 	void _ARmeasureCalibDofs::save(void)
 	{
+		saveCalib();
 	}
 
 	void _ARmeasureCalibDofs::mode(uint32_t f)
@@ -248,7 +247,7 @@ namespace kai
 			m_pSC->transit("calibCam");
 	}
 
-	void _ARmeasureCalibDofs::L(void)
+	void _ARmeasureCalibDofs::Xi(void)
 	{
 		NULL_(m_pA);
 		vFloat3 v = m_pA->getDofsP();
@@ -256,7 +255,7 @@ namespace kai
 		m_pA->setDofsP(v);
 	}
 
-	void _ARmeasureCalibDofs::R(void)
+	void _ARmeasureCalibDofs::Xd(void)
 	{
 		NULL_(m_pA);
 		vFloat3 v = m_pA->getDofsP();
@@ -264,44 +263,44 @@ namespace kai
 		m_pA->setDofsP(v);
 	}
 
-	void _ARmeasureCalibDofs::U(void)
+	void _ARmeasureCalibDofs::Yi(void)
 	{
 		NULL_(m_pA);
 		vFloat3 v = m_pA->getDofsP();
-		v.x += m_step;
+		v.y += m_step;
 		m_pA->setDofsP(v);
 	}
 
-	void _ARmeasureCalibDofs::D(void)
+	void _ARmeasureCalibDofs::Yd(void)
 	{
 		NULL_(m_pA);
 		vFloat3 v = m_pA->getDofsP();
-		v.x -= m_step;
+		v.y -= m_step;
 		m_pA->setDofsP(v);
 	}
 
-	void _ARmeasureCalibDofs::F(void)
+	void _ARmeasureCalibDofs::Zi(void)
 	{
 		NULL_(m_pA);
 		vFloat3 v = m_pA->getDofsP();
-		v.x += m_step;
+		v.z += m_step;
 		m_pA->setDofsP(v);
 	}
 
-	void _ARmeasureCalibDofs::B(void)
+	void _ARmeasureCalibDofs::Zd(void)
 	{
 		NULL_(m_pA);
 		vFloat3 v = m_pA->getDofsP();
-		v.x -= m_step;
+		v.z -= m_step;
 		m_pA->setDofsP(v);
 	}
 
-	void _ARmeasureCalibDofs::Sl(void)
+	void _ARmeasureCalibDofs::Si(void)
 	{
 		m_step *= 10.0;
 	}
 
-	void _ARmeasureCalibDofs::Ss(void)
+	void _ARmeasureCalibDofs::Sd(void)
 	{
 		m_step *= 0.1;
 	}
@@ -329,7 +328,7 @@ namespace kai
 		{
 			m_pFt->putText(*pM, c[i],
 						   Point(x, y+s*i),
-						   15,
+						   20,
 						   Scalar(0, 255, 0),
 						   -1,
 						   cv::LINE_AA,

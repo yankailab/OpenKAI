@@ -24,31 +24,29 @@ namespace kai
 		void cvDraw(void *pWindow);
 
 		// callbacks
-		static void sOnBtnAction(void *pInst, uint32_t f);
 		static void sOnBtnClear(void *pInst, uint32_t f);
 		static void sOnBtnSave(void *pInst, uint32_t f);
 		static void sOnBtnMode(void *pInst, uint32_t f);
-		static void sOnBtnL(void *pInst, uint32_t f);
-		static void sOnBtnR(void *pInst, uint32_t f);
-		static void sOnBtnU(void *pInst, uint32_t f);
-		static void sOnBtnD(void *pInst, uint32_t f);
-		static void sOnBtnF(void *pInst, uint32_t f);
-		static void sOnBtnB(void *pInst, uint32_t f);
-		static void sOnBtnSl(void *pInst, uint32_t f);
-		static void sOnBtnSs(void *pInst, uint32_t f);
+		static void sOnBtnXi(void *pInst, uint32_t f);
+		static void sOnBtnXd(void *pInst, uint32_t f);
+		static void sOnBtnYi(void *pInst, uint32_t f);
+		static void sOnBtnYd(void *pInst, uint32_t f);
+		static void sOnBtnZi(void *pInst, uint32_t f);
+		static void sOnBtnZd(void *pInst, uint32_t f);
+		static void sOnBtnSi(void *pInst, uint32_t f);
+		static void sOnBtnSd(void *pInst, uint32_t f);
 
-		void action(void);
 		void clear(void);
 		void save(void);
 		void mode(uint32_t f);
-		void L(void);
-		void R(void);
-		void U(void);
-		void D(void);
-		void F(void);
-		void B(void);
-		void Sl(void);
-		void Ss(void);
+		void Xi(void);
+		void Xd(void);
+		void Yi(void);
+		void Yd(void);
+		void Zi(void);
+		void Zd(void);
+		void Si(void);
+		void Sd(void);
 
 	protected:
 		void updateCalib(void);

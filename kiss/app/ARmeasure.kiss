@@ -80,8 +80,8 @@
 		}
 
 	    {
-			"name":"L",
-			"label":"<",
+			"name":"Xd",
+			"label":"X-",
 			"bShow":0,
 			"vRegion":[0.0, 0.0, 0.1, 0.1],
 			"colUp":[40, 40, 40],
@@ -92,8 +92,8 @@
 		}
 
 	    {
-			"name":"R",
-			"label":">",
+			"name":"Xi",
+			"label":"X+",
 			"bShow":0,
 			"vRegion":[0.1, 0.0, 0.2, 0.1],
 			"colUp":[40, 40, 40],
@@ -104,8 +104,8 @@
 		}
 
 	    {
-			"name":"U",
-			"label":"^",
+			"name":"Yd",
+			"label":"Y-",
 			"bShow":0,
 			"vRegion":[0.2, 0.0, 0.3, 0.1],
 			"colUp":[40, 40, 40],
@@ -116,8 +116,8 @@
 		}
 
 	    {
-			"name":"D",
-			"label":"v",
+			"name":"Yi",
+			"label":"Y+",
 			"bShow":0,
 			"vRegion":[0.3, 0.0, 0.4, 0.1],
 			"colUp":[40, 40, 40],
@@ -128,8 +128,8 @@
 		}
 
 	    {
-			"name":"F",
-			"label":"F",
+			"name":"Zd",
+			"label":"Z-",
 			"bShow":0,
 			"vRegion":[0.4, 0.0, 0.5, 0.1],
 			"colUp":[40, 40, 40],
@@ -140,8 +140,8 @@
 		}
 
 	    {
-			"name":"B",
-			"label":"B",
+			"name":"Zi",
+			"label":"Z+",
 			"bShow":0,
 			"vRegion":[0.5, 0.0, 0.6, 0.1],
 			"colUp":[40, 40, 40],
@@ -152,10 +152,10 @@
 		}
 
 	    {
-			"name":"Sl",
-			"label":"S+",
+			"name":"Sd",
+			"label":"S-",
 			"bShow":0,
-			"vRegion":[0.6, 0.0, 0.8, 0.1],
+			"vRegion":[0.797, 0.125, 1.0, 0.25],
 			"colUp":[40, 40, 40],
 			"colDown":[100, 100, 100],
 			"colBorder":[150, 150, 150],
@@ -164,10 +164,10 @@
 		}
 
 	    {
-			"name":"Ss",
-			"label":"S-",
+			"name":"Si",
+			"label":"S+",
 			"bShow":0,
-			"vRegion":[0.8, 0.0, 1.0, 0.1],
+			"vRegion":[0.797, 0.0, 1.0, 0.125],
 			"colUp":[40, 40, 40],
 			"colDown":[100, 100, 100],
 			"colBorder":[150, 150, 150],
@@ -311,6 +311,7 @@
 
 	"_RaspiWSbattery":"RaspiBatt",
 	"battShutdown":10,
+	"fOfsKiss":"/home/kai/calibTest.kiss",
 }
 
 {
@@ -359,7 +360,7 @@
 	"_VisionBase":"remap",
 	"_WindowCV":"UI",
 	"_StateControl":"state",
-	"fKiss":"/home/kai/calibTest.kiss",
+	"fKiss":"/home/kai/calibOfs.kiss",
 	"vActiveState":["calibDofs"],
 }
 
