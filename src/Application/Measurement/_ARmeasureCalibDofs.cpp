@@ -16,7 +16,6 @@ namespace kai
 		m_pV = NULL;
 		m_pW = NULL;
 
-		m_fKiss = "";
 		m_step = 0.01;
 
 		m_drawMsg = "";
@@ -32,8 +31,6 @@ namespace kai
 	{
 		IF_F(!this->_StateBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-
-		pK->v("fKiss", &m_fKiss);
 
 		string n;
 
@@ -93,11 +90,11 @@ namespace kai
 			m_pW->setCbBtn("Save", sOnBtnSave, this);
 			m_pW->setCbBtn("Clear", sOnBtnClear, this);
 			m_pW->setCbBtn("Mode", sOnBtnMode, this);
-
 			m_pW->setBtnVisible("Save", true);
 			m_pW->setBtnVisible("Clear", true);
-			m_pW->setBtnLabel("Mode", "CD");
 			m_pW->setBtnVisible("Mode", true);
+
+			m_pW->setBtnLabel("Mode", "CD");
 
 			m_pW->setCbBtn("Xi", sOnBtnXi, this);
 			m_pW->setCbBtn("Xd", sOnBtnXd, this);
@@ -115,43 +112,7 @@ namespace kai
 			m_pW->setBtnVisible("Zd", true);
 			m_pW->setBtnVisible("Si", true);
 			m_pW->setBtnVisible("Sd", true);
-
-			clear();
 		}
-	}
-
-	bool _ARmeasureCalibDofs::saveCalib(void)
-	{
-		picojson::object o;
-		o.insert(make_pair("name", "calib"));
-
-		picojson::array v;
-
-		vFloat3 vDofsP = m_pA->getDofsP();
-		v.push_back(value(vDofsP.x));
-		v.push_back(value(vDofsP.y));
-		v.push_back(value(vDofsP.z));
-		o.insert(make_pair("vDofsP", value(v)));
-		v.clear();
-
-		vFloat3 vCofsP = m_pA->getCofsP();
-		v.push_back(value(vCofsP.x));
-		v.push_back(value(vCofsP.y));
-		v.push_back(value(vCofsP.z));
-		o.insert(make_pair("vCofsP", value(v)));
-		v.clear();
-
-		string f = picojson::value(o).serialize();
-
-		_File *pF = new _File();
-		IF_F(!pF->open(&m_fKiss, ios::out));
-		pF->write((uint8_t *)f.c_str(), f.length());
-		pF->close();
-		DEL(pF);
-
-		m_drawMsg = "Calibration saved";
-
-		return true;
 	}
 
 	// callbacks
@@ -234,7 +195,8 @@ namespace kai
 
 	void _ARmeasureCalibDofs::save(void)
 	{
-		saveCalib();
+		NULL_(m_pA);
+		m_pA->saveCalib();
 	}
 
 	void _ARmeasureCalibDofs::mode(uint32_t f)
@@ -242,7 +204,7 @@ namespace kai
 		NULL_(m_pSC);
 
 		if (f & 1) //long push
-			m_pSC->transit("V");
+			m_pSC->transit("vertex");
 		else
 			m_pSC->transit("calibCam");
 	}

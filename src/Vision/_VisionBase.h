@@ -12,6 +12,7 @@
 #include "../IO/_File.h"
 #include "../UI/_Console.h"
 #include "../UI/_WindowCV.h"
+#include "../Utility/utilFile.h"
 
 namespace kai
 {

@@ -81,7 +81,7 @@ namespace kai
 		void setLabel(const string& label, cv::Ptr<freetype::FreeType2> pFont = NULL)
 		{
 			m_label = label;
-			updateLabelPos(pFont);						
+//			updateLabelPos(pFont);						
 		}
 
 		void setVisible(bool bShow)

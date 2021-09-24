@@ -96,6 +96,11 @@ namespace kai
 			clear();
 		}
 
+		m_area = calcArea();
+	}
+
+	float _ARmeasureVertex::calcArea(void)
+	{
 		int nV = m_vVert.size();
 		Vector3f vA(0, 0, 0);
 		int j = 0;
@@ -107,7 +112,7 @@ namespace kai
 		}
 
 		vA *= 0.5;
-		m_area = vA.norm();
+		return vA.norm();
 	}
 
 	// callbacks

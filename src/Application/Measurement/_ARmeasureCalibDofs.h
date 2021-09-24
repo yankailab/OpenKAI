@@ -57,7 +57,6 @@ namespace kai
 			return NULL;
 		}
 
-	    bool saveCalib(void);
 		void drawCalibData(Mat *pM);
 		void drawMsg(Mat *pM);
 
@@ -66,7 +65,6 @@ namespace kai
 		_VisionBase *m_pV;
 		_WindowCV *m_pW;
 
-		string m_fKiss;
 		float m_step;
 
 		// draw

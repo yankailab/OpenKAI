@@ -20,7 +20,7 @@ namespace kai
 		m_tPreview = 3;
 		m_vChessBoardSize.init(9, 6);
 		m_squareSize = 1.0;
-		m_fKiss = "";
+		m_fCalib = "";
 
 		m_drawMsg = "";
 		m_drawCol = Scalar(0, 255, 0);
@@ -36,7 +36,7 @@ namespace kai
 		IF_F(!this->_StateBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("fKiss", &m_fKiss);
+		pK->v("fCalib", &m_fCalib);
 		pK->v("tPreview", &m_tPreview);
 		pK->v("vChessBoardSize", &m_vChessBoardSize);
 		pK->v("squareSize", &m_squareSize);
@@ -106,7 +106,7 @@ namespace kai
 			m_pW->setCbBtn("Save", sOnBtnSave, this);
 			m_pW->setCbBtn("Clear", sOnBtnClear, this);
 			m_pW->setCbBtn("Mode", sOnBtnMode, this);
-			m_pW->setBtnLabel("Action", "Take");
+			m_pW->setBtnLabel("Action", "Add");
 			m_pW->setBtnLabel("Mode", "CC");
 
 			m_pW->setBtnVisible("Action", true);
@@ -163,7 +163,7 @@ namespace kai
 		string f = picojson::value(o).serialize();
 
 		_File *pF = new _File();
-		IF_F(!pF->open(&m_fKiss, ios::out));
+		IF_F(!pF->open(&m_fCalib, ios::out));
 		pF->write((uint8_t *)f.c_str(), f.length());
 		pF->close();
 		DEL(pF);
@@ -247,7 +247,7 @@ namespace kai
 		NULL_(m_pSC);
 
 		if (f & 1) //long push
-			m_pSC->transit("V");
+			m_pSC->transit("vertex");
 		else
 			m_pSC->transit("calibDofs");
 	}

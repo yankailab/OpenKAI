@@ -51,9 +51,6 @@ namespace kai
 		m_pW = (_WindowCV *)(pK->getInst(n));
 		IF_Fl(!m_pW, n + " not found");
 
-		m_pW->setCbBtn("Action", sOnBtnAction, this);
-		m_pW->setCbBtn("Clear", sOnBtnClear, this);
-
 		return true;
 	}
 
@@ -80,16 +77,32 @@ namespace kai
 			m_pT->autoFPSfrom();
 
 			this->_StateBase::update();
-			updateVertex();
+			updateFree();
 
 			m_pT->autoFPSto();
 		}
 	}
 
-	void _ARmeasureFree::updateVertex(void)
+	void _ARmeasureFree::updateFree(void)
 	{
 		IF_(!bActive());
+		if (bStateChanged())
+		{
+			m_pW->setCbBtn("Action", sOnBtnAction, this);
+			m_pW->setCbBtn("Clear", sOnBtnClear, this);
+			m_pW->setCbBtn("Mode", sOnBtnMode, this);
 
+			m_pW->setBtnLabel("Action", "S");
+			m_pW->setBtnLabel("Mode", "F");
+
+			clear();
+		}
+
+		m_area = calcArea();
+	}
+
+	float _ARmeasureFree::calcArea(void)
+	{
 		int nV = m_vVert.size();
 		Vector3f vA(0, 0, 0);
 		int j = 0;
@@ -101,7 +114,7 @@ namespace kai
 		}
 
 		vA *= 0.5;
-		m_area = vA.norm();
+		return vA.norm();
 	}
 
 	// callbacks
@@ -115,6 +128,12 @@ namespace kai
 	{
 		NULL_(pInst);
 		((_ARmeasureFree *)pInst)->clear();
+	}
+
+	void _ARmeasureFree::sOnBtnMode(void *pInst, uint32_t f)
+	{
+		NULL_(pInst);
+		((_ARmeasureFree *)pInst)->mode(f);
 	}
 
 	// UI handler
@@ -143,6 +162,13 @@ namespace kai
 	void _ARmeasureFree::clear(void)
 	{
 		m_vVert.clear();
+	}
+
+	void _ARmeasureFree::mode(uint32_t f)
+	{
+		NULL_(m_pSC);
+
+		m_pSC->transit("vertex");
 	}
 
 	// UI draw
@@ -270,6 +296,12 @@ namespace kai
 		r.width = mV.cols;
 		r.height = mV.rows;
 		mV.copyTo((*pMw)(r));
+
+		r.x = 0;
+		r.y = 440;
+		r.width = 640;
+		r.height = 40;
+		(*pMw)(r) = Scalar(0);
 
 		drawMeasure(pMw);
 	}

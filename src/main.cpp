@@ -1,4 +1,5 @@
 #include "main.h"
+#include "Script/Kiss.h"
 
 int main(int argc, char* argv[])
 {
@@ -17,38 +18,17 @@ int main(int argc, char* argv[])
 
 	printf("Kiss file: %s\n", argStr.c_str());
 
-    fstream f;
-    f.open(argStr.c_str(), ios::in);
-    if(!f.is_open())
-	{
-		printf("Kiss file not found\n");
-		return 1;
-	}
-	f.seekg(0, ios_base::beg);
-
-	string kiss = "";
-	while (f && !f.eof())
-	{
-        string s;
-        getline(f, s);
-		kiss += s;
-	}
-
-	if( kiss.empty())
-	{
-		printf("Kiss file is empty\n");
-		return 1;
-	}
-
 	g_pKiss = new Kiss();
-	if(!g_pKiss->parse(&kiss))
+	if(!parseKiss(argStr, g_pKiss))
 	{
 		printf("Kiss file parsing failed\n");
+		delete g_pKiss;
 		return 1;
 	}
     
 	g_pStart = new Startup();
 	g_pStart->start(g_pKiss);
 
+	delete g_pKiss;
 	return 0;
 }

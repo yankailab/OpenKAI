@@ -41,6 +41,8 @@ namespace kai
 			return NULL;
 		}
 
+		float calcArea(void);
+
 		void drawVertices(Mat* pM);
 		void drawMeasure(Mat* pM);
 

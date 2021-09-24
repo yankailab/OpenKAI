@@ -67,7 +67,7 @@ namespace kai
 		float m_squareSize;
 		Mat m_mC;
 		Mat m_mD;
-		string m_fKiss;
+		string m_fCalib;
 
 		// draw
 		string m_drawMsg;

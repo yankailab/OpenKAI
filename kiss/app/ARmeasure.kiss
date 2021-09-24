@@ -27,7 +27,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["/cam","/remap","ARvertex","ARcalibCam","ARcalibDofs","ARmeasure"],
+	"vBASE":["/cam","/remap","ARvertex","ARfree","ARcalibCam","ARcalibDofs","ARmeasure"],
 	"vSize":[800,480],
 	"font":"/home/kai/dev/font/bebas-neue-font/BebasNeueRegular-2O7wW.ttf",
 	"/font":"/home/pi/ARarea/bn.ttf",
@@ -213,8 +213,8 @@
 		"FPS":30,
 	}
 	"_VisionBase":"cam",
-	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calib.kiss",
-	"/fCalib":"/home/pi/ARarea/calib.kiss",
+	"fCalib":"/home/kai/ARmeasure/calibCam.kiss",
+	"/fCalib":"/home/pi/ARmeasure/calibCam.kiss",
 	"vSize":[640, 480],
 }
 
@@ -308,10 +308,8 @@
 	"vAxisIdx":[0,2,1],
 	"vDorgP":[0,0,0],
 	"vCorgP":[0,0,0],
-
-	"_RaspiWSbattery":"RaspiBatt",
-	"battShutdown":10,
-	"fOfsKiss":"/home/kai/calibTest.kiss",
+	"fCalibOfs":"/home/kai/ARmeasure/calibOfs.kiss",
+	"/fCalibOfs":"/home/pi/ARmeasure/calibOfs.kiss",
 }
 
 {
@@ -330,6 +328,21 @@
 }
 
 {
+	"name":"ARfree",
+	"class":"_ARmeasureFree",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_ARmeasure":"ARmeasure",
+	"_VisionBase":"remap",
+	"_WindowCV":"UI",
+	"_StateControl":"state",
+	"vActiveState":["free"],
+}
+
+{
 	"name":"ARcalibCam",
 	"class":"_ARmeasureCalibCam",
 	"bInst":1,
@@ -341,11 +354,12 @@
 	"_Remap":"remap",
 	"_WindowCV":"UI",
 	"_StateControl":"state",
-	"fKiss":"/home/kai/calibTest.kiss",
-	"vChessBoardSize":[9,6],
-	"squareSize":1.0,
+	"vChessBoardSize":[11,8],
+	"squareSize":0.06,
 	"vActiveState":["calibCam"],
 	"tPreview":1,
+	"fCalib":"/home/kai/ARmeasure/calibCam.kiss",
+	"/fCalib":"/home/pi/ARmeasure/calibCam.kiss",
 }
 
 {
@@ -360,7 +374,6 @@
 	"_VisionBase":"remap",
 	"_WindowCV":"UI",
 	"_StateControl":"state",
-	"fKiss":"/home/kai/calibOfs.kiss",
 	"vActiveState":["calibDofs"],
 }
 
@@ -372,6 +385,8 @@
 		"name":"thread",
 		"FPS":0.1,
 	}
+
 	"cmdBatt":"python3 /home/pi/INA219.py",
+	"battShutdown":10,
 }
 

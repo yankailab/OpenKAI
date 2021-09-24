@@ -26,17 +26,22 @@ namespace kai
 		// callbacks
 		static void sOnBtnAction(void *pInst, uint32_t f);
 		static void sOnBtnClear(void *pInst, uint32_t f);
+		static void sOnBtnMode(void *pInst, uint32_t f);
+
 		void action(void);
 		void clear(void);
+		void mode(uint32_t f);
 
 	protected:
-		void updateVertex(void);
+		void updateFree(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_ARmeasureFree *)This)->update();
 			return NULL;
 		}
+
+		float calcArea(void);
 
 		void drawVertices(Mat* pM);
 		void drawMeasure(Mat* pM);

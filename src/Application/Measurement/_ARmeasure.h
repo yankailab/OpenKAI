@@ -12,6 +12,7 @@
 #include "../../Vision/_VisionBase.h"
 #include "../../Navigation/_NavBase.h"
 #include "../../Sensor/_DistSensorBase.h"
+#include "../../Utility/utilFile.h"
 
 namespace kai
 {
@@ -54,6 +55,8 @@ namespace kai
 		void setDofsP(const vFloat3& v);
 		void setCofsP(const vFloat3& v);
 
+		bool saveCalib(void);
+
 		// callbacks
 		static void sOnBtnSave(void *pInst, uint32_t f);
 		void save(void);
@@ -78,6 +81,7 @@ namespace kai
 		_WindowCV *m_pW;
 
 		bool m_bSave;
+		string m_fCalibOfs;
 
 		// pose
 		Eigen::Affine3f m_aPose;

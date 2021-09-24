@@ -18,6 +18,7 @@ namespace kai
 		m_pW = NULL;
 
 		m_bSave = false;
+		m_fCalibOfs = "";
 
 		m_minPoseConfidence = 0.5;
 		m_d = 0.0;
@@ -80,23 +81,14 @@ namespace kai
 		m_pW->setCbBtn("Save", sOnBtnSave, this);
 
 		// read offset calib from file if exists
-        pK->v("fOfsKiss", &n);
-		_File *pF = new _File();
-		IF_d_T(!pF->open(&n, ios::in), DEL(pF));
-		IF_d_T(!pF->readAll(&n), DEL(pF));
-		IF_d_T(n.empty(), DEL(pF));
-		pF->close();
-		DEL(pF);
-
+		pK->v("fCalibOfs", &m_fCalibOfs);
 		Kiss *pKf = new Kiss();
-		IF_d_T(!pKf->parse(&n),DEL(pKf));
-
-		pK = pKf->child("calib");
-		IF_d_T(pK->empty(), DEL(pKf));
-
-		pK->v("vDorgP", &m_vDofsP);
-		pK->v("vCorgP", &m_vCofsP);
-
+		if(parseKiss(m_fCalibOfs, pKf))
+		{
+			pK = pKf->child("calib");
+			pK->v("vDofsP", &m_vDofsP);
+			pK->v("vCofsP", &m_vCofsP);
+		}
 		DEL(pKf);
 
 		return true;
@@ -238,6 +230,39 @@ namespace kai
 		m_vCofsP = v;
 	}
 
+	// config
+	bool _ARmeasure::saveCalib(void)
+	{
+		picojson::object o;
+		o.insert(make_pair("name", "calib"));
+
+		picojson::array v;
+
+		v.push_back(value(m_vDofsP.x));
+		v.push_back(value(m_vDofsP.y));
+		v.push_back(value(m_vDofsP.z));
+		o.insert(make_pair("vDofsP", value(v)));
+		v.clear();
+
+		v.push_back(value(m_vCofsP.x));
+		v.push_back(value(m_vCofsP.y));
+		v.push_back(value(m_vCofsP.z));
+		o.insert(make_pair("vCofsP", value(v)));
+		v.clear();
+
+		string f = picojson::value(o).serialize();
+
+		_File *pF = new _File();
+		IF_F(!pF->open(&m_fCalibOfs, ios::out));
+		pF->write((uint8_t *)f.c_str(), f.length());
+		pF->close();
+		DEL(pF);
+
+		m_drawMsg = "Calibration saved";
+
+		return true;
+	}
+
 	// UI handler
 	void _ARmeasure::save(void)
 	{
@@ -263,15 +288,16 @@ namespace kai
 		cv::Size s = m_pV->BGR()->size();
 
 		// laser spot
+		float yD = m_vDofsP.y + m_d;
 		Vector3f vLSc = {m_vDofsP.x,
-						 m_vDofsP.y + m_d,
+						 yD,
 						 m_vDofsP.z};
-		Vector3f vLSl = {(m_vDofsP.x + m_d) * m_vKlaserSpot.y,
-						 m_vDofsP.y + m_d,
+		Vector3f vLSl = {m_vDofsP.x + (yD * m_vKlaserSpot.y),
+						 yD,
 						 m_vDofsP.z};
 		Vector3f vLSt = {m_vDofsP.x,
-						 m_vDofsP.y + m_d,
-						 (m_vDofsP.z + m_d) * m_vKlaserSpot.x};
+						 yD,
+						 m_vDofsP.z + (yD * m_vKlaserSpot.x)};
 
 		Eigen::Affine3f aL2C = m_aW2C * m_aPose;
 		vLSc = aL2C * vLSc;
