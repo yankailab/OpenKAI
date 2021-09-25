@@ -106,7 +106,7 @@ namespace kai
         }
     }
 
-    void _PCstream::getFrame(void* p)
+    void _PCstream::getNextFrame(void* p)
     {
     }
 

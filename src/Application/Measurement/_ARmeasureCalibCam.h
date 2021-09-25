@@ -46,9 +46,7 @@ namespace kai
 
 	    bool camCalib(void);
 	    bool saveCalib(void);
-
 		void drawCalibData(Mat *pM);
-		void drawMsg(Mat *pM);
 
 	private:
 		_ARmeasure* m_pA;
@@ -70,7 +68,6 @@ namespace kai
 		string m_fCalib;
 
 		// draw
-		string m_drawMsg;
 		Scalar m_drawCol;
 		cv::Ptr<freetype::FreeType2> m_pFt;
 	};

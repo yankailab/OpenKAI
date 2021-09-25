@@ -91,7 +91,7 @@ namespace kai
         }
     }
 
-    void _PCframe::getFrame(void *p)
+    void _PCframe::getNextFrame(void *p)
     {
         NULL_(p);
 

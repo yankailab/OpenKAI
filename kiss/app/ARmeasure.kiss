@@ -4,7 +4,7 @@
 	"appName":"ARmeasure",
 	"bLog":1,
 	"bStdErr":1,
-	"/rc":"sudo modprobe bcm2835-v4l2\nv4l2-ctl -d /dev/video0 --set-ctrl=rotate=180\n",
+	"/rc":"sudo modprobe bcm2835-v4l2\nv4l2-ctl -d /dev/video0 --set-ctrl=rotate=0\n",
 }
 
 {
@@ -30,13 +30,13 @@
 	"vBASE":["/cam","/remap","ARvertex","ARfree","ARcalibCam","ARcalibDofs","ARmeasure"],
 	"vSize":[800,480],
 	"font":"/home/kai/dev/font/bebas-neue-font/BebasNeueRegular-2O7wW.ttf",
-	"/font":"/home/pi/ARarea/bn.ttf",
+	"/font":"/home/pi/ARmeasure/bn.ttf",
 
     {
 		"name":"btn",
 	    {
 			"name":"Action",
-			"label":"Add",
+			"label":"A",
 			"bShow":1,
 			"vRegion":[0.797, 0.0, 1.0, 0.25],
 			"colUp":[40, 40, 40],
@@ -264,7 +264,7 @@
 		"FPS":30,
 	}
 	"bInst":1,
-	"start":"V",
+	"start":"vertex",
 	{
 		"name":"state",
 		{
@@ -308,6 +308,8 @@
 	"vAxisIdx":[0,2,1],
 	"vDorgP":[0,0,0],
 	"vCorgP":[0,0,0],
+	"dirSave":"/home/kai/ARmeasure/",
+	"/dirSave":"/pi/mnt/usb0/",
 	"fCalibOfs":"/home/kai/ARmeasure/calibOfs.kiss",
 	"/fCalibOfs":"/home/pi/ARmeasure/calibOfs.kiss",
 }

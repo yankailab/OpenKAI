@@ -17,9 +17,8 @@ namespace kai
 		m_pN = NULL;
 		m_pW = NULL;
 
-		m_bSave = false;
 		m_fCalibOfs = "";
-
+		m_dirSave = "";
 		m_minPoseConfidence = 0.5;
 		m_d = 0.0;
 		m_bValidDist = false;
@@ -34,7 +33,6 @@ namespace kai
 		m_vCircleSize.init(10, 20);
 		m_crossSize = 20;
 		m_drawCol = Scalar(0, 255, 0);
-		m_drawMsg = "";
 		m_pFt = NULL;
 	}
 
@@ -55,6 +53,7 @@ namespace kai
 		pK->v("crossSize", &m_crossSize);
 		pK->v("vDorgP", &m_vDofsP);
 		pK->v("vCorgP", &m_vCofsP);
+		pK->v("dirSave", &m_dirSave);
 
 		string n;
 
@@ -83,7 +82,7 @@ namespace kai
 		// read offset calib from file if exists
 		pK->v("fCalibOfs", &m_fCalibOfs);
 		Kiss *pKf = new Kiss();
-		if(parseKiss(m_fCalibOfs, pKf))
+		if (parseKiss(m_fCalibOfs, pKf))
 		{
 			pK = pKf->child("calib");
 			pK->v("vDofsP", &m_vDofsP);
@@ -134,7 +133,7 @@ namespace kai
 		}
 		else
 		{
-			m_d = m_pD->d((int)0);
+			m_d = m_vDofsP.y + m_pD->d((int)0);
 			m_bValidDist = m_vRange.bInside(m_d);
 		}
 
@@ -143,10 +142,10 @@ namespace kai
 		else
 			m_bValidPose = (m_pN->confidence() > m_minPoseConfidence);
 
-		IF_F(!m_bValidDist);
-		IF_F(!m_bValidPose);
+		IF_d_F(!m_bValidDist, m_msg.set("Distance error", 1, false));
+		IF_d_F(!m_bValidPose, m_msg.set("Tracking lost", 1, false));
 
-		m_vDptP = {m_vDofsP.x, m_vDofsP.y + m_d, m_vDofsP.z};
+		m_vDptP = {m_vDofsP.x, m_d, m_vDofsP.z};
 
 		Matrix4f mTpose = m_pN->mT();
 		m_aPose = mTpose;
@@ -258,7 +257,7 @@ namespace kai
 		pF->close();
 		DEL(pF);
 
-		m_drawMsg = "Calibration saved";
+		m_msg.set("Calibration saved");
 
 		return true;
 	}
@@ -266,8 +265,23 @@ namespace kai
 	// UI handler
 	void _ARmeasure::save(void)
 	{
+		IF_(check() < 0);
+
 		// save screen shot to USB memory
-		m_bSave = true;
+		Mat m;
+		m_pW->getFrame()->m()->copyTo(m);
+		vector<int> vPNG;
+		vPNG.push_back(IMWRITE_PNG_COMPRESSION);
+		vPNG.push_back(1);
+
+		if (imwrite(m_dirSave + tFormat() + ".png", m, vPNG))
+		{
+			m_msg.set("Saved to USB memory");
+		}
+		else
+		{
+			m_msg.set("Cannot write to USB memory",1);
+		}
 	}
 
 	// callbacks
@@ -278,6 +292,11 @@ namespace kai
 	}
 
 	// UI draw
+	void _ARmeasure::setMsg(const string& msg, int type, bool bOverride)
+	{
+		m_msg.set(msg, type, bOverride);
+	}
+
 	void _ARmeasure::drawCross(Mat *pM)
 	{
 		NULL_(pM);
@@ -370,15 +389,10 @@ namespace kai
 		NULL_(pM);
 		NULL_(m_pFt);
 
-		m_drawMsg = "";
-
-		if (m_pN->confidence() < m_minPoseConfidence)
-			m_drawMsg = "Tracking lost";
-
-		IF_(m_drawMsg.empty());
+		IF_(!m_msg.update());
 
 		int baseline = 0;
-		Size ts = m_pFt->getTextSize(m_drawMsg,
+		Size ts = m_pFt->getTextSize(m_msg.get(),
 									 40,
 									 -1,
 									 &baseline);
@@ -386,11 +400,14 @@ namespace kai
 		Point pt;
 		pt.x = constrain(320 - ts.width / 2, 0, pM->cols);
 		pt.y = constrain(pM->rows / 2 - ts.height, 0, pM->rows);
+		Scalar c = Scalar(0,255,0);
+		if(m_msg.m_type == 1)
+			c = Scalar(0,0,255);
 
-		m_pFt->putText(*pM, m_drawMsg,
+		m_pFt->putText(*pM, m_msg.get(),
 					   pt,
 					   40,
-					   Scalar(0, 0, 255),
+					   c,
 					   -1,
 					   cv::LINE_AA,
 					   false);
@@ -403,21 +420,13 @@ namespace kai
 		IF_(check() < 0);
 
 		_WindowCV *pWin = (_WindowCV *)pWindow;
-		Frame *pF = pWin->getFrame();
-		NULL_(pF);
-		Mat *pMw = pF->m();
+		Mat *pMw = pWin->getNextFrame()->m();
 		IF_(pMw->empty());
 		m_pFt = pWin->getFont();
 
 		drawCross(pMw);
 		drawLidarRead(pMw);
 		drawMsg(pMw);
-
-		if (m_bSave)
-		{
-			//TODO: save screenshot to USB memory
-			m_bSave = false;
-		}
 	}
 
 	void _ARmeasure::console(void *pConsole)

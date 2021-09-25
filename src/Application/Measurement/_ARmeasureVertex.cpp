@@ -90,7 +90,6 @@ namespace kai
 			m_pW->setCbBtn("Clear", sOnBtnClear, this);
 			m_pW->setCbBtn("Mode", sOnBtnMode, this);
 
-			m_pW->setBtnLabel("Action", "Add");
 			m_pW->setBtnLabel("Mode", "V");
 
 			clear();
@@ -269,9 +268,7 @@ namespace kai
 		IF_(check() < 0);
 
 		_WindowCV *pWin = (_WindowCV *)pWindow;
-		Frame *pF = pWin->getFrame();
-		NULL_(pF);
-		Mat *pMw = pF->m();
+		Mat *pMw = pWin->getNextFrame()->m();
 		IF_(pMw->empty());
 		m_pFt = pWin->getFont();
 

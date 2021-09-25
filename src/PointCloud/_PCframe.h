@@ -33,7 +33,7 @@ namespace kai
 
 	protected:
 		virtual void getStream(void *p);
-		virtual void getFrame(void *p);
+		virtual void getNextFrame(void *p);
 		virtual void getLattice(void *p);
 
 	protected:

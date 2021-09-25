@@ -170,7 +170,7 @@ namespace kai
         if (t == pc_stream)
             getStream(pPC);
         else if (t == pc_frame)
-            getFrame(pPC);
+            getNextFrame(pPC);
         else if (t == pc_lattice)
             getLattice(pPC);
     }
@@ -188,7 +188,7 @@ namespace kai
     {
     }
 
-    void _PCbase::getFrame(void *p)
+    void _PCbase::getNextFrame(void *p)
     {
     }
 

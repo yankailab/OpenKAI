@@ -99,7 +99,7 @@ namespace kai
     protected:
         virtual Matrix4d getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR);
         virtual void getStream(void* p);
-        virtual void getFrame(void* p);
+        virtual void getNextFrame(void* p);
         virtual void getLattice(void* p);
         virtual bool bRange(const Vector3d& vP);
 

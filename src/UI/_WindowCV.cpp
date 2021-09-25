@@ -5,7 +5,6 @@
  *      Author: Kai Yan
  */
 
-#ifdef USE_OPENCV
 #include "_WindowCV.h"
 #include "../Script/Kiss.h"
 
@@ -104,7 +103,8 @@ namespace kai
 			}
 		}
 
-		m_frame.allocate(m_vSize.x, m_vSize.y);
+		m_sF.get()->allocate(m_vSize.x, m_vSize.y);
+		m_sF.next()->allocate(m_vSize.x, m_vSize.y);
 
 		IF_T(!m_bShow);
 
@@ -151,7 +151,7 @@ namespace kai
 			pKb->v("colBorder", &wb.m_colBorder);
 			pKb->v("colFont", &wb.m_colFont);
 			pKb->v("hFont", &wb.m_hFont);
-			wb.init(m_frame.size(), m_pFT);
+			wb.init(m_sF.get()->size(), m_pFT);
 
 			m_vBtn.push_back(wb);
 		}
@@ -185,52 +185,59 @@ namespace kai
 			pB->cvDraw(this);
 		}
 
-		IF_(m_frame.bEmpty());
+		IF_(m_sF.next()->bEmpty());
 
 		// draw UI
-		Mat m = *m_frame.m();
 		for (WindowCV_Btn wb : m_vBtn)
 		{
-			wb.draw(&m, m_pFT);
+			wb.draw(m_sF.next()->m(), m_pFT);
 		}
+
+		m_sF.swap();
+		*m_sF.next()->m() = Scalar(0, 0, 0);
 
 		// show window
 		if (m_bShow)
 		{
-			imshow(*this->getName(), m);
+			imshow(*this->getName(), *m_sF.get()->m());
 		}
 
+		Frame F,F2;
 		if (m_VW.isOpened() || m_gst.isOpened())
 		{
-			m_F.copy(m_frame);
-			Size fs = m_F.size();
+			F.copy(*m_sF.get());
+			Size fs = F.size();
 
 			if (fs.width != m_vSize.x || fs.height != m_vSize.y)
 			{
-				m_F2 = m_F.resize(m_vSize.x, m_vSize.y);
-				m_F = m_F2;
+				F2 = F.resize(m_vSize.x, m_vSize.y);
+				F = F2;
 			}
 
-			if (m_F.m()->type() != CV_8UC3)
+			if (F.m()->type() != CV_8UC3)
 			{
-				m_F2 = m_F.cvtColor(COLOR_GRAY2BGR);
-				m_F = m_F2;
+				F2 = F.cvtColor(COLOR_GRAY2BGR);
+				F = F2;
 			}
 
 			if (m_VW.isOpened())
-				m_VW << *m_F.m();
+				m_VW << *F.m();
 
 			if (m_gst.isOpened())
-				m_gst << *m_F.m();
+				m_gst << *F.m();
 		}
 
 		int key = waitKey(m_waitKey);
-		*m_frame.m() = Scalar(0, 0, 0);
 	}
 
 	Frame *_WindowCV::getFrame(void)
 	{
-		return &m_frame;
+		return m_sF.get();
+	}
+
+	Frame *_WindowCV::getNextFrame(void)
+	{
+		return m_sF.next();
 	}
 
 	cv::Ptr<freetype::FreeType2> _WindowCV::getFont(void)
@@ -311,4 +318,3 @@ namespace kai
 		}
 	}
 }
-#endif

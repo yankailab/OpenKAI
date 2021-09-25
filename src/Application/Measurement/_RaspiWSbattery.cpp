@@ -96,7 +96,7 @@ namespace kai
 		IF_(check() < 0);
 
 		_WindowCV *pWin = (_WindowCV *)pWindow;
-		Frame *pF = pWin->getFrame();
+		Frame *pF = pWin->getNextFrame();
 		NULL_(pF);
 		Mat *pMw = pF->m();
 		IF_(pMw->empty());

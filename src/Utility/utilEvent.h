@@ -58,5 +58,43 @@ struct STATE_CHANGE
 	}
 };
 
+struct MSG_SHOW
+{
+	string m_msg = "";
+	int m_type = 0;
+	int64_t m_tDuration = SEC_2_USEC * 2;
+	int64_t m_tSet = 0;
+	
+	void set(const string& msg, int type = 0, bool bOverride = true)
+	{
+		if(!bOverride)
+		{
+			IF_(update());
+		}
+
+		m_msg = msg;
+		m_type = type;
+		m_tSet = getApproxTbootUs();
+	}
+
+	string get(void)
+	{
+		return m_msg;
+	}
+
+	bool update(void)
+	{
+		IF_F(m_msg.empty());
+		
+		if(getApproxTbootUs() - m_tSet > m_tDuration)
+		{
+			m_msg = "";
+			return false;
+		}
+
+		return true;
+	}
+};
+
 }
 #endif

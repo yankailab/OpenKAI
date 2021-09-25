@@ -17,8 +17,6 @@ namespace kai
 		m_pW = NULL;
 
 		m_step = 0.01;
-
-		m_drawMsg = "";
 		m_drawCol = Scalar(0, 255, 0);
 		m_pFt = NULL;
 	}
@@ -189,8 +187,6 @@ namespace kai
 		vFloat3 v;
 		v.init(0);
 		m_pA->setDofsP(v);
-
-		m_drawMsg = "";
 	}
 
 	void _ARmeasureCalibDofs::save(void)
@@ -298,21 +294,6 @@ namespace kai
 		}
 	}
 
-	void _ARmeasureCalibDofs::drawMsg(Mat *pM)
-	{
-		NULL_(pM);
-		NULL_(m_pFt);
-		IF_(m_drawMsg.empty());
-
-		m_pFt->putText(*pM, m_drawMsg,
-					   Point(20, 20),
-					   40,
-					   Scalar(255, 0, 0),
-					   -1,
-					   cv::LINE_AA,
-					   false);
-	}
-
 	void _ARmeasureCalibDofs::cvDraw(void *pWindow)
 	{
 		NULL_(pWindow);
@@ -322,9 +303,7 @@ namespace kai
 		IF_(check() < 0);
 
 		_WindowCV *pWin = (_WindowCV *)pWindow;
-		Frame *pF = pWin->getFrame();
-		NULL_(pF);
-		Mat *pMw = pF->m();
+		Mat *pMw = pWin->getNextFrame()->m();
 		IF_(pMw->empty());
 		m_pFt = pWin->getFont();
 
@@ -339,7 +318,6 @@ namespace kai
 		mV.copyTo((*pMw)(r));
 
 		drawCalibData(pMw);
-		drawMsg(pMw);
 	}
 
 }

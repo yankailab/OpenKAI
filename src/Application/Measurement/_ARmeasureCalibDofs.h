@@ -58,7 +58,6 @@ namespace kai
 		}
 
 		void drawCalibData(Mat *pM);
-		void drawMsg(Mat *pM);
 
 	private:
 		_ARmeasure* m_pA;
@@ -68,7 +67,6 @@ namespace kai
 		float m_step;
 
 		// draw
-		string m_drawMsg;
 		Scalar m_drawCol;
 		cv::Ptr<freetype::FreeType2> m_pFt;
 	};

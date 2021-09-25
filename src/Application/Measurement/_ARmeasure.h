@@ -13,6 +13,7 @@
 #include "../../Navigation/_NavBase.h"
 #include "../../Sensor/_DistSensorBase.h"
 #include "../../Utility/utilFile.h"
+#include "../../Utility/utilEvent.h"
 
 namespace kai
 {
@@ -55,6 +56,7 @@ namespace kai
 		void setDofsP(const vFloat3& v);
 		void setCofsP(const vFloat3& v);
 
+		void setMsg(const string& msg, int type = 0, bool bOverride = true);
 		bool saveCalib(void);
 
 		// callbacks
@@ -80,8 +82,8 @@ namespace kai
 		_NavBase *m_pN;
 		_WindowCV *m_pW;
 
-		bool m_bSave;
 		string m_fCalibOfs;
+		string m_dirSave;
 
 		// pose
 		Eigen::Affine3f m_aPose;
@@ -103,7 +105,7 @@ namespace kai
 		vInt3 m_vAxisIdx;
 
 		// draw
-		string m_drawMsg;
+		MSG_SHOW m_msg;
 		vFloat2 m_vCircleSize;
 		int m_crossSize;
 		Scalar m_drawCol;

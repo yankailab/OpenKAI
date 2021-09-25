@@ -7,9 +7,10 @@
 
 #ifndef OpenKAI_src_UI_WindowCV_H_
 #define OpenKAI_src_UI_WindowCV_H_
-#ifdef USE_OPENCV
+
 #include "../Base/_ModuleBase.h"
 #include "../Vision/Frame.h"
+#include "../Primitive/tSwap.h"
 
 namespace kai
 {
@@ -186,6 +187,7 @@ namespace kai
 		bool start(void);
 
 		Frame *getFrame(void);
+		Frame *getNextFrame(void);
 		cv::Ptr<freetype::FreeType2> getFont(void);
 
 		WindowCV_Btn* findBtn(const string& btnName);
@@ -206,14 +208,14 @@ namespace kai
 		static void sOnMouse(int event, int x, int y, int flags, void *userdata);
 		void onMouse(int event, int x, int y, int flags);
 
-	public:
+	private:
 		vector<BASE *> m_vpB;
 		int m_waitKey;
 
 		bool m_bShow;
 		bool m_bFullScreen;
 
-		Frame m_frame;
+		tSwap<Frame> m_sF;
 		vInt2 m_vSize;
 
 		string m_gstOutput;
@@ -222,9 +224,6 @@ namespace kai
 		string m_fileRec;
 		VideoWriter m_VW;
 
-		Frame m_F;
-		Frame m_F2;
-
 		// UI
 		vector<WindowCV_Btn> m_vBtn;
 		cv::Ptr<freetype::FreeType2> m_pFT;
@@ -232,5 +231,4 @@ namespace kai
 	};
 
 }
-#endif
 #endif
