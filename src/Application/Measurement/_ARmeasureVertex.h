@@ -56,7 +56,7 @@ namespace kai
 		float m_Dtot;
 
 		// vertices
-		vector<ARAREA_VERTEX> m_vVert;
+		vector<ARMEASURE_VERTEX> m_vVert;
 
 		// draw
 		Scalar m_drawCol;

@@ -17,12 +17,7 @@
 
 namespace kai
 {
-	const string ARmeasureModeLabel[] =
-	{
-		"V","F","Calib",
-	};
-
-	struct ARAREA_VERTEX
+	struct ARMEASURE_VERTEX
 	{
 		Vector3f m_vVertW; //world coordinate
 		cv::Point m_vPs;   //screen

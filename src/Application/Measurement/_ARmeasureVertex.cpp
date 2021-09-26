@@ -139,7 +139,7 @@ namespace kai
 		IF_(!m_pA->bValid());
 
 		// add new vertex
-		ARAREA_VERTEX av;
+		ARMEASURE_VERTEX av;
 		av.m_vVertW = m_pA->vDptW();
 		m_vVert.push_back(av);
 	}
@@ -174,14 +174,14 @@ namespace kai
 		int nV = m_vVert.size();
 		for (i = 0; i < nV; i++)
 		{
-			ARAREA_VERTEX *pA = &m_vVert[i];
+			ARMEASURE_VERTEX *pA = &m_vVert[i];
 			Vector3f vPc = m_pA->aW2C() * pA->m_vVertW;
 			pA->m_bZ = m_pA->c2scr(vPc, s, vF, vC, &pA->m_vPs);
 
 			IF_CONT(!pA->m_bZ);
 			IF_CONT(!m_pA->bInsideScr(s, pA->m_vPs));
 
-			circle(*pM, pA->m_vPs, 10, m_drawCol, 3, cv::LINE_AA);
+			circle(*pM, pA->m_vPs, 3, m_drawCol, 1, cv::LINE_AA);
 		}
 
 		IF_(nV <= 1);
@@ -190,15 +190,15 @@ namespace kai
 		for (i = 0; i < nV; i++)
 		{
 			j = (i + 1) % nV;
-			ARAREA_VERTEX *pA = &m_vVert[i];
-			ARAREA_VERTEX *pB = &m_vVert[j];
+			ARMEASURE_VERTEX *pA = &m_vVert[i];
+			ARMEASURE_VERTEX *pB = &m_vVert[j];
 			IF_CONT(!pA->m_bZ && !pB->m_bZ);
 
 			Point p = pA->m_vPs;
 			Point q = pB->m_vPs;
 			IF_CONT(!clipLine(s, p, q));
 
-			line(*pM, p, q, m_drawCol, 3, cv::LINE_AA);
+			line(*pM, p, q, m_drawCol, 1, cv::LINE_AA);
 			Vector3f vD = pA->m_vVertW - pB->m_vVertW;
 
 			string sL = f2str(vD.norm(), 2) + "m";

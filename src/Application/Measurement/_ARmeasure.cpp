@@ -357,22 +357,15 @@ namespace kai
 		NULL_(pM);
 		NULL_(m_pFt);
 
-		Rect r;
-		r.x = 0;
-		r.y = 440;
-		r.width = 640;
-		r.height = 40;
-		(*pM)(r) = Scalar(0);
-
-		Scalar col = (m_bValidDist) ? Scalar(255, 255, 255) : Scalar(0, 0, 255);
-		string sD = "D = ";
+		Scalar col = (m_bValidDist) ? Scalar(0, 255, 0) : Scalar(0, 0, 255);
+		string sD;
 		if (m_bValidDist)
-			sD += f2str(m_d, 2) + "m";
+			sD = f2str(m_d, 2) + "m";
 		else
-			sD += "Err";
+			sD = "Err";
 
 		Point pt;
-		pt.x = 20;
+		pt.x = 10;
 		pt.y = pM->rows - 45;
 
 		m_pFt->putText(*pM, sD,

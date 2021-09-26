@@ -15,7 +15,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["cam","remap","ARarea","T265","TF03"],
+	"vBASE":["cam","remap","ARmeasure","T265","TF03"],
 }
 
 {
@@ -332,7 +332,7 @@
 {
 	"name":"ARfree",
 	"class":"_ARmeasureFree",
-	"bInst":1,
+	"bInst":0,
     {
 		"name":"thread",
 		"FPS":30,

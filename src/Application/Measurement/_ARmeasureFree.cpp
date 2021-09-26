@@ -154,7 +154,7 @@ namespace kai
 		}
 
 		// add new vertex
-		ARAREA_VERTEX av;
+		ARMEASURE_VERTEX av;
 		av.m_vVertW = m_pA->vDptW();
 		m_vVert.push_back(av);
 	}
@@ -186,7 +186,7 @@ namespace kai
 		int nV = m_vVert.size();
 		for (i = 0; i < nV; i++)
 		{
-			ARAREA_VERTEX *pA = &m_vVert[i];
+			ARMEASURE_VERTEX *pA = &m_vVert[i];
 			Vector3f vPc = m_pA->aW2C() * pA->m_vVertW;
 			pA->m_bZ = m_pA->c2scr(vPc, s, vF, vC, &pA->m_vPs);
 
@@ -202,8 +202,8 @@ namespace kai
 		for (i = 0; i < nV; i++)
 		{
 			j = (i + 1) % nV;
-			ARAREA_VERTEX *pA = &m_vVert[i];
-			ARAREA_VERTEX *pB = &m_vVert[j];
+			ARMEASURE_VERTEX *pA = &m_vVert[i];
+			ARMEASURE_VERTEX *pB = &m_vVert[j];
 			IF_CONT(!pA->m_bZ && !pB->m_bZ);
 
 			Point p = pA->m_vPs;
@@ -274,13 +274,13 @@ namespace kai
 	void _ARmeasureFree::cvDraw(void *pWindow)
 	{
 		NULL_(pWindow);
-		this->_ModuleBase::cvDraw(pWindow);
+		IF_(!bActive());
+
+		this->_StateBase::cvDraw(pWindow);
 		IF_(check() < 0);
 
 		_WindowCV *pWin = (_WindowCV *)pWindow;
-		Frame *pF = pWin->getNextFrame();
-		NULL_(pF);
-		Mat *pMw = pF->m();
+		Mat *pMw = pWin->getNextFrame()->m();
 		IF_(pMw->empty());
 		m_pFt = pWin->getFont();
 
