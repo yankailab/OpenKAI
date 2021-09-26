@@ -42,10 +42,7 @@ namespace kai
 #endif
 #endif
 
-#ifdef WITH_APP_3DSCAN
-#endif
-
-#ifdef WITH_APP_AUTOPILOT
+#ifdef WITH_ARDUPILOT
 		ADD_MODULE(_AP_base);
 		ADD_MODULE(_AP_distLidar);
 		ADD_MODULE(_AP_actuator);
@@ -70,6 +67,13 @@ namespace kai
 		ADD_MODULE(_AP_GPS);
 #endif
 #endif
+#endif
+
+#ifdef WITH_AUTOPILOT_DRIVE
+		ADD_MODULE(_Drive);
+#endif
+
+#ifdef WITH_APP_3DSCAN
 #endif
 
 #ifdef WITH_APP_BENCHROVER
@@ -141,7 +145,6 @@ namespace kai
 
 #ifdef WITH_CONTROL
 		ADD_MODULE(PID);
-		ADD_MODULE(_Drive);
 #endif
 
 #ifdef WITH_DATA
@@ -255,6 +258,7 @@ namespace kai
 		ADD_MODULE(_MOAB);
 		ADD_MODULE(_Mavlink);
 		ADD_MODULE(_Modbus);
+		ADD_MODULE(_SBus);
 		ADD_MODULE(_ProtocolBase);
 #endif
 

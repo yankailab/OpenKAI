@@ -1,29 +1,29 @@
 
-#ifndef OpenKAI_src_Autopilot_AP__AP_relay_H_
-#define OpenKAI_src_Autopilot_AP__AP_relay_H_
+#ifndef OpenKAI_src_Autopilot_AP__AP_servo_H_
+#define OpenKAI_src_Autopilot_AP__AP_servo_H_
 
-#include "../ArduPilot/_AP_base.h"
+#include "_AP_base.h"
 
 namespace kai
 {
 
-struct AP_relay
+struct AP_SERVO
 {
 	uint8_t m_iChan;
-	bool m_bRelay;
+	uint16_t m_pwm;
 
 	void init(void)
 	{
 		m_iChan = 9;
-		m_bRelay = false;
+		m_pwm = 1500;
 	}
 };
 
-class _AP_relay: public _StateBase
+class _AP_servo: public _StateBase
 {
 public:
-	_AP_relay();
-	~_AP_relay();
+	_AP_servo();
+	~_AP_servo();
 
 	bool init(void* pKiss);
 	bool start(void);
@@ -32,16 +32,16 @@ public:
 	void console(void* pConsole);
 
 private:
-	void updateRelay(void);
+	void updateServo(void);
 	static void* getUpdate(void* This)
 	{
-		((_AP_relay*) This)->update();
+		((_AP_servo*) This)->update();
 		return NULL;
 	}
 
 private:
 	_AP_base* m_pAP;
-	vector<AP_relay> m_vRelay;
+	vector<AP_SERVO> m_vServo;
 
 };
 

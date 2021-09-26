@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_link_H_
 #define OpenKAI_src_Autopilot_AP__AP_link_H_
 
-#include "../../../Protocol/_ProtocolBase.h"
+#include "../../Protocol/_ProtocolBase.h"
 
 namespace kai
 {

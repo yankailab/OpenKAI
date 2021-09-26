@@ -174,6 +174,8 @@ namespace kai
 
 	void _VisionBase::cvDraw(void *pWindow)
 	{
+#ifdef WITH_UI
+#ifdef USE_OPENCV
 		NULL_(pWindow);
 		this->_ModuleBase::cvDraw(pWindow);
 		IF_(check() < 0);
@@ -199,6 +201,8 @@ namespace kai
 
 			m.copyTo((*pM)(r));
 		}
+#endif
+#endif
 	}
 
 }

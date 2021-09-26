@@ -2,8 +2,8 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_avoid_H_
 #define OpenKAI_src_Autopilot_AP__AP_avoid_H_
 
-#include "../../../Detector/_DetectorBase.h"
-#include "../ArduPilot/_AP_base.h"
+#include "../../Detector/_DetectorBase.h"
+#include "_AP_base.h"
 
 #ifdef USE_OPENCV
 

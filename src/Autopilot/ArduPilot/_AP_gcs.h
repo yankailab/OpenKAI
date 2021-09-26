@@ -2,7 +2,7 @@
 #define OpenKAI_src_Application_Autopilot_ArduPilot__AP_gcs_H_
 
 #include "_AP_base.h"
-#include "../../../GCS/_GCSbase.h"
+#include "../../GCS/_GCSbase.h"
 
 namespace kai
 {

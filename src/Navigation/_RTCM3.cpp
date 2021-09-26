@@ -10,65 +10,66 @@
 namespace kai
 {
 
-_RTCM3::_RTCM3()
-{
-	m_pIO = NULL;
-	m_nRead = 0;
-	m_iRead = 0;
-	m_msg = "";
-
-}
-
-_RTCM3::~_RTCM3()
-{
-}
-
-bool _RTCM3::init(void* pKiss)
-{
-	IF_F(!this->_ModuleBase::init(pKiss));
-	Kiss* pK = (Kiss*) pKiss;
-
-	string n = "";
-	F_ERROR_F(pK->v("_IOBase", &n));
-	m_pIO = (_IOBase*) (pK->getInst(n));
-	IF_Fl(!m_pIO, "_IOBase not found");
-
-	return true;
-}
-
-bool _RTCM3::start(void)
-{
-    NULL_F(m_pT);
-	return m_pT->start(getUpdate, this);
-}
-
-void _RTCM3::update(void)
-{
-	while(m_pT->bRun())
+	_RTCM3::_RTCM3()
 	{
-		m_pT->autoFPSfrom();
-
-		decode();
+		m_pIO = NULL;
+		m_nRead = 0;
+		m_iRead = 0;
 		m_msg = "";
-
-		m_pT->autoFPSto();
 	}
-}
 
-void _RTCM3::decode(void)
-{
-}
-
-void _RTCM3::console(void* pConsole)
-{
-	NULL_(pConsole);
-	this->_ModuleBase::console(pConsole);
-
-	if(!m_pIO->isOpen())
+	_RTCM3::~_RTCM3()
 	{
-		((_Console*)pConsole)->addMsg("Not connected");
-		return;
 	}
-}
+
+	bool _RTCM3::init(void *pKiss)
+	{
+		IF_F(!this->_ModuleBase::init(pKiss));
+		Kiss *pK = (Kiss *)pKiss;
+
+		string n = "";
+		F_ERROR_F(pK->v("_IOBase", &n));
+		m_pIO = (_IOBase *)(pK->getInst(n));
+		IF_Fl(!m_pIO, "_IOBase not found");
+
+		return true;
+	}
+
+	bool _RTCM3::start(void)
+	{
+		NULL_F(m_pT);
+		return m_pT->start(getUpdate, this);
+	}
+
+	void _RTCM3::update(void)
+	{
+		while (m_pT->bRun())
+		{
+			m_pT->autoFPSfrom();
+
+			decode();
+			m_msg = "";
+
+			m_pT->autoFPSto();
+		}
+	}
+
+	void _RTCM3::decode(void)
+	{
+	}
+
+	void _RTCM3::console(void *pConsole)
+	{
+#ifdef WITH_UI
+		NULL_(pConsole);
+		this->_ModuleBase::console(pConsole);
+
+		if (!m_pIO->isOpen())
+		{
+			((_Console *)pConsole)->addMsg("Not connected");
+			return;
+		}
+#endif
+	}
 
 }

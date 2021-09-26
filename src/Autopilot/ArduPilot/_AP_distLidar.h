@@ -2,9 +2,9 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_distLidar_H_
 #define OpenKAI_src_Autopilot_AP__AP_distLidar_H_
 
-#include "../../../Base/common.h"
-#include "../../../Sensor/_DistSensorBase.h"
-#include "../ArduPilot/_AP_base.h"
+#include "../../Base/common.h"
+#include "../../Sensor/_DistSensorBase.h"
+#include "_AP_base.h"
 
 #define N_LIDAR_SECTION 10
 

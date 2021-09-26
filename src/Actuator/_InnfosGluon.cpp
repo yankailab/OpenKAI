@@ -114,6 +114,7 @@ void _InnfosGluon::updateGluon (void)
 
 void _InnfosGluon::readStatus(void)
 {
+#ifdef WITH_UI
 	IF_(check()<0);
 	IF_(!m_ieReadStatus.update(m_pT->getTfrom()));
     return;//
@@ -128,6 +129,7 @@ void _InnfosGluon::readStatus(void)
     }
     
     m_bReady = true;
+#endif
 }
 
 }

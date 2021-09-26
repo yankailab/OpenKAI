@@ -1,9 +1,9 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_base_H_
 #define OpenKAI_src_Autopilot_AP__AP_base_H_
 
-#include "../../../Base/common.h"
-#include "../../../Protocol/_Mavlink.h"
-#include "../../../State/_StateBase.h"
+#include "../../Base/common.h"
+#include "../../Protocol/_Mavlink.h"
+#include "../../State/_StateBase.h"
 
 #define AP_N_CUSTOM_MODE 28
 

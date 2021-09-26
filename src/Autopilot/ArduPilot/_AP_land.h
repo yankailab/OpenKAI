@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_land_H_
 #define OpenKAI_src_Autopilot_AP__AP_land_H_
-#include "../../../Detector/_DetectorBase.h"
-#include "../ArduPilot/_AP_follow.h"
+#include "../../Detector/_DetectorBase.h"
+#include "_AP_follow.h"
 
 namespace kai
 {

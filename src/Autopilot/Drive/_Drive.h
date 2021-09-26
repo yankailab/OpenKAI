@@ -1,8 +1,8 @@
-#ifndef OpenKAI_src_Control__Drive_H_
-#define OpenKAI_src_Control__Drive_H_
+#ifndef OpenKAI_src_Autopilot_Drive__Drive_H_
+#define OpenKAI_src_Autopilot_Drive__Drive_H_
 
-#include "../Base/_ModuleBase.h"
-#include "../Actuator/_ActuatorBase.h"
+#include "../../State/_StateBase.h"
+#include "../../Actuator/_ActuatorBase.h"
 
 namespace kai
 {
@@ -38,7 +38,7 @@ struct DRIVE_MOTOR
     }
 };
 
-class _Drive: public _ModuleBase
+class _Drive: public _StateBase
 {
 public:
 	_Drive();

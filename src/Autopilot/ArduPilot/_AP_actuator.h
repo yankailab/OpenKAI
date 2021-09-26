@@ -1,9 +1,9 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_actuator_H_
 #define OpenKAI_src_Autopilot_AP__AP_actuator_H_
 
-#include "../../../Actuator/_ActuatorBase.h"
+#include "../../Actuator/_ActuatorBase.h"
 #include "_AP_base.h"
-#include "../../../Utility/RC.h"
+#include "../../Utility/RC.h"
 
 namespace kai
 {

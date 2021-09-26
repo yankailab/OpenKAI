@@ -1,8 +1,8 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_posCtrl_H_
 #define OpenKAI_src_Autopilot_AP__AP_posCtrl_H_
 
-#include "../../../Control/PID.h"
-#include "../ArduPilot/_AP_base.h"
+#include "../../Control/PID.h"
+#include "_AP_base.h"
 
 namespace kai
 {

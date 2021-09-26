@@ -309,7 +309,7 @@
 	"vDorgP":[0,0,0],
 	"vCorgP":[0,0,0],
 	"dirSave":"/home/kai/ARmeasure/",
-	"/dirSave":"/pi/mnt/usb0/",
+	"/dirSave":"/media/pi/usb/",
 	"fCalibOfs":"/home/kai/ARmeasure/calibOfs.kiss",
 	"/fCalibOfs":"/home/pi/ARmeasure/calibOfs.kiss",
 }

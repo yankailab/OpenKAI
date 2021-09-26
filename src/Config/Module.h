@@ -32,34 +32,38 @@
 #endif
 #endif
 
-#ifdef WITH_APP_3DSCAN
+#ifdef WITH_ARDUPILOT
+#include "../Autopilot/ArduPilot/_AP_base.h"
+#include "../Autopilot/ArduPilot/_AP_actuator.h"
+#include "../Autopilot/ArduPilot/_AP_distLidar.h"
+#include "../Autopilot/ArduPilot/_AP_goto.h"
+#include "../Autopilot/ArduPilot/_AP_gcs.h"
+#include "../Autopilot/ArduPilot/_AP_mission.h"
+#include "../Autopilot/ArduPilot/_AP_posCtrl.h"
+#include "../Autopilot/ArduPilot/_AP_RTH.h"
+#include "../Autopilot/ArduPilot/_AP_relay.h"
+#include "../Autopilot/ArduPilot/_AP_servo.h"
+#include "../Autopilot/ArduPilot/_AP_takeoff.h"
+#include "../Autopilot/ArduPilot/_AP_link.h"
+#include "../Autopilot/ArduPilot/_AProver_drive.h"
+#ifdef USE_OPENCV
+#include "../Autopilot/ArduPilot/_AP_avoid.h"
+#include "../Autopilot/ArduPilot/_AP_depthVision.h"
+#include "../Autopilot/ArduPilot/_AP_land.h"
+#include "../Autopilot/ArduPilot/_AP_follow.h"
+#include "../Autopilot/ArduPilot/_APcopter_photo.h"
+#include "../Autopilot/ArduPilot/_AProver_picking.h"
+#ifdef USE_REALSENSE
+#include "../Autopilot/ArduPilot/_AP_GPS.h"
+#endif
+#endif
 #endif
 
-#ifdef WITH_APP_AUTOPILOT
-#include "../Application/Autopilot/ArduPilot/_AP_base.h"
-#include "../Application/Autopilot/ArduPilot/_AP_actuator.h"
-#include "../Application/Autopilot/ArduPilot/_AP_distLidar.h"
-#include "../Application/Autopilot/ArduPilot/_AP_goto.h"
-#include "../Application/Autopilot/ArduPilot/_AP_gcs.h"
-#include "../Application/Autopilot/ArduPilot/_AP_mission.h"
-#include "../Application/Autopilot/ArduPilot/_AP_posCtrl.h"
-#include "../Application/Autopilot/ArduPilot/_AP_RTH.h"
-#include "../Application/Autopilot/ArduPilot/_AP_relay.h"
-#include "../Application/Autopilot/ArduPilot/_AP_servo.h"
-#include "../Application/Autopilot/ArduPilot/_AP_takeoff.h"
-#include "../Application/Autopilot/ArduPilot/_AP_link.h"
-#include "../Application/Autopilot/ArduPilot/_AProver_drive.h"
-#ifdef USE_OPENCV
-#include "../Application/Autopilot/ArduPilot/_AP_avoid.h"
-#include "../Application/Autopilot/ArduPilot/_AP_depthVision.h"
-#include "../Application/Autopilot/ArduPilot/_AP_land.h"
-#include "../Application/Autopilot/ArduPilot/_AP_follow.h"
-#include "../Application/Autopilot/ArduPilot/_APcopter_photo.h"
-#include "../Application/Autopilot/ArduPilot/_AProver_picking.h"
-#ifdef USE_REALSENSE
-#include "../Application/Autopilot/ArduPilot/_AP_GPS.h"
+#ifdef WITH_AUTOPILOT_DRIVE
+#include "../Autopilot/Drive/_Drive.h"
 #endif
-#endif
+
+#ifdef WITH_APP_3DSCAN
 #endif
 
 #ifdef WITH_APP_BENCHROVER
@@ -127,7 +131,6 @@
 
 #ifdef WITH_CONTROL
 #include "../Control/PID.h"
-#include "../Control/_Drive.h"
 #endif
 
 #ifdef WITH_DATA
@@ -243,6 +246,7 @@
 #include "../Protocol/_MOAB.h"
 #include "../Protocol/_ProtocolBase.h"
 #include "../Protocol/_Modbus.h"
+#include "../Protocol/_SBus.h"
 #endif
 
 #ifdef WITH_SENSOR

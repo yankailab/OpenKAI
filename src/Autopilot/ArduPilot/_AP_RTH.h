@@ -1,10 +1,10 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_RTH_H_
 #define OpenKAI_src_Autopilot_AP__AP_RTH_H_
 
-#include "../../../Base/common.h"
-#include "../../../Sensor/_DistSensorBase.h"
-#include "../../../State/RTH.h"
-#include "../ArduPilot/_AP_base.h"
+#include "../../Base/common.h"
+#include "../../Sensor/_DistSensorBase.h"
+#include "../../State/RTH.h"
+#include "_AP_base.h"
 
 namespace kai
 {

@@ -62,10 +62,10 @@ struct MSG_SHOW
 {
 	string m_msg = "";
 	int m_type = 0;
-	int64_t m_tDuration = SEC_2_USEC * 2;
+	int64_t m_tDuration = SEC_2_USEC;
 	int64_t m_tSet = 0;
 	
-	void set(const string& msg, int type = 0, bool bOverride = true)
+	void set(const string& msg, int type = 0, bool bOverride = true, int64_t tDuration = SEC_2_USEC)
 	{
 		if(!bOverride)
 		{
@@ -74,6 +74,7 @@ struct MSG_SHOW
 
 		m_msg = msg;
 		m_type = type;
+		m_tDuration = tDuration;
 		m_tSet = getApproxTbootUs();
 	}
 

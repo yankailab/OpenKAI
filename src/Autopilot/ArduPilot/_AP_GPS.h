@@ -1,10 +1,10 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_GPS_H_
 #define OpenKAI_src_Autopilot_AP__AP_GPS_H_
 
-#include "../../../Filter/Median.h"
-#include "../../../Navigation/Coordinate.h"
-#include "../../../Navigation/_NavBase.h"
-#include "../ArduPilot/_AP_base.h"
+#include "../../Filter/Median.h"
+#include "../../Navigation/Coordinate.h"
+#include "../../Navigation/_NavBase.h"
+#include "_AP_base.h"
 
 #ifdef USE_REALSENSE
 

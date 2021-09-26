@@ -89,9 +89,11 @@ namespace kai
 
 	void _IOBase::console(void *pConsole)
 	{
+#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 		((_Console *)pConsole)->addMsg("nFifoW=" + i2str(m_fifoW.m_nData) + ", nFifoR=" + i2str(m_fifoR.m_nData), 0);
+#endif
 	}
 
 }

@@ -127,6 +127,7 @@ namespace kai
 
 	void _BenewakeTF::console(void *pConsole)
 	{
+#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
@@ -144,6 +145,7 @@ namespace kai
 		}
 		msg += " |";
 		pC->addMsg(msg);
+#endif
 	}
 
 }

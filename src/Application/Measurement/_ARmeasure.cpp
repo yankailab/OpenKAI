@@ -142,8 +142,8 @@ namespace kai
 		else
 			m_bValidPose = (m_pN->confidence() > m_minPoseConfidence);
 
-		IF_d_F(!m_bValidDist, m_msg.set("Distance error", 1, false));
-		IF_d_F(!m_bValidPose, m_msg.set("Tracking lost", 1, false));
+		IF_d_F(!m_bValidDist, m_msg.set("Distance error", 1, false, 100000));
+		IF_d_F(!m_bValidPose, m_msg.set("Tracking lost", 1, false, 100000));
 
 		m_vDptP = {m_vDofsP.x, m_d, m_vDofsP.z};
 

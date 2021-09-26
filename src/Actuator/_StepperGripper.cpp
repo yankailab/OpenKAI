@@ -99,10 +99,12 @@ bool _StepperGripper::bGrip(void)
 
 void _StepperGripper::console(void* pConsole)
 {
+#ifdef WITH_UI
 	NULL_(pConsole);
 	this->_HYMCU_RS485::console(pConsole);
 
 	((_Console*)pConsole)->addMsg("bOpen=" + i2str(m_bOpen) + ", bState=" + i2str(m_bState));
+#endif
 }
 
 }

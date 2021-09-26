@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_takeoff_H_
 #define OpenKAI_src_Autopilot_AP__AP_takeoff_H_
 
-#include "../../../Base/common.h"
+#include "../../Base/common.h"
 #include "_AP_base.h"
 
 namespace kai

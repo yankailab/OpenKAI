@@ -107,11 +107,11 @@ sudo systemctl disable networking.service
 sudo systemctl disable ssh.service
 
 # show no cursor
-sudo vi /etc/lightdm/lightdm.conf
+sudo nano /etc/lightdm/lightdm.conf
 xserver-command=X -nocursor
 
 # show no taskbar
-sudo vi /etc/xdg/lxsession/LXDE-pi/autostart
+sudo nano /etc/xdg/lxsession/LXDE-pi/autostart
 #@lxpanel --profile LXDE-pi
 
 # auto start GUI app with systemd
