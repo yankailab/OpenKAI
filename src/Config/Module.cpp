@@ -119,6 +119,12 @@ namespace kai
 #endif
 #endif
 
+#ifdef WITH_APP_ROVER
+		ADD_MODULE(_RCrover);
+#ifdef USE_OPENCV
+#endif
+#endif
+
 #ifdef WITH_APP_SURVEILLANCE
 #ifdef USE_OPENCV
 		ADD_MODULE(_ANR);

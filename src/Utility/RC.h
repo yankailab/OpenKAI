@@ -8,57 +8,44 @@ namespace kai
 
 struct RC_CHANNEL
 {
-	uint8_t m_iChan;
+	uint8_t m_iChan = 0;
 
-	int m_pwmL;
-	int m_pwmM;
-	int m_pwmH;
-	int m_pwm;
-	int m_pwmDz;
+	uint16_t m_rawL = 1000;
+	uint16_t m_rawM = 1500;
+	uint16_t m_rawH = 2000;
+	uint16_t m_raw = m_rawM;
+	uint16_t m_rawDz = 1;
 	float m_bH;
 	float m_bL;
-	float m_v;	//normalized to 0.0 ~ 1.0
+	float m_v = 0.5;	//normalized to 0.0 ~ 1.0
 
 	vector<int> m_vDiv;
-	int m_i;
+	int m_i = 0;
 
-	void init(void)
+	void update(void)
 	{
-		m_iChan = 0;
-		m_pwmL = 1000;
-		m_pwmM = 1500;
-		m_pwmH = 2000;
-		m_pwm = m_pwmM;
-        m_pwmDz = 1;
-
-        m_v = 0.5;
-		m_i = 0;
-	}
-
-	void setup(void)
-	{
-		m_bH = m_pwmH - m_pwmM;
+		m_bH = m_rawH - m_rawM;
 		m_bH = 0.5/m_bH;
 
-		m_bL = m_pwmM - m_pwmL;
+		m_bL = m_rawM - m_rawL;
 		m_bL = 0.5/m_bL;
 	}
 
-	void pwm(int pwm)
+	void set(uint16_t raw)
 	{
-		m_pwm = constrain(pwm, m_pwmL, m_pwmH);
+		m_raw = constrain<uint16_t>(raw, m_rawL, m_rawH);
 
-        int dPwm = m_pwm - m_pwmM;
-        if(abs(dPwm) < m_pwmDz)
+        int dRaw = (int)m_raw - (int)m_rawM;
+        if(abs(dRaw) < m_rawDz)
         {
             m_v = 0.5;
         }
         else
         {
-            if(dPwm > 0)
-                m_v = (float)dPwm * m_bH + 0.5;
+            if(dRaw > 0)
+                m_v = (float)dRaw * m_bH + 0.5;
             else
-                m_v = 0.5 + (float)dPwm * m_bL;
+                m_v = 0.5 + (float)dRaw * m_bL;
         }
 
 		IF_(m_vDiv.empty());
@@ -66,7 +53,7 @@ struct RC_CHANNEL
 		int i=0;
 		for(int d : m_vDiv)
 		{
-			if(m_pwm < d)break;
+			if(m_raw < d)break;
 			i++;
 		}
 		m_i = i;
@@ -75,6 +62,11 @@ struct RC_CHANNEL
 	float v(void)
 	{
 		return m_v;
+	}
+
+	int raw(void)
+	{
+		return m_raw;
 	}
 	
 	uint16_t i(void)

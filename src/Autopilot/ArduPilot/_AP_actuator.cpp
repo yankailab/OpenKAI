@@ -32,9 +32,9 @@ bool _AP_actuator::init(void* pKiss)
     pK->a ( "vRCmodeDiv", &m_rcStickH.m_vDiv );
 
     
-    m_rcMode.setup();
-    m_rcStickV.setup();
-    m_rcStickH.setup();
+    m_rcMode.update();
+    m_rcStickV.update();
+    m_rcStickH.update();
 
 	string n = "";
 
@@ -95,11 +95,11 @@ void _AP_actuator::updateActuator(void)
     
     pwm = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcStickV.m_iChan );
     IF_ ( pwm == UINT16_MAX );
-    m_rcStickV.pwm ( pwm );
+    m_rcStickV.set ( pwm );
     
     pwm = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcStickH.m_iChan );
     IF_ ( pwm == UINT16_MAX );
-    m_rcStickH.pwm ( pwm );
+    m_rcStickH.set ( pwm );
 
     // m_pAB1->power(iMode!=0?true:false);
     // IF_(iMode == 0);

@@ -25,12 +25,12 @@ bool _AProver_BR::init ( void* pKiss )
 
     pK->v ( "iRCmode", &m_rcMode.m_iChan );
     pK->a ( "vRCmode", &m_rcMode.m_vDiv );
-    m_rcMode.setup();
+    m_rcMode.update();
     
     pK->v ( "iRCstickV", &m_rcStickV.m_iChan );
     pK->v ( "iRCstickH", &m_rcStickH.m_iChan );    
-    m_rcStickV.setup();
-    m_rcStickH.setup();    
+    m_rcStickV.update();
+    m_rcStickH.update();    
 
     IF_F ( !m_pSC );
     IF_F ( !m_iMode.assign ( m_pSC ) );
@@ -88,7 +88,7 @@ void _AProver_BR::updateMode ( void )
     uint16_t pwm = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcMode.m_iChan );
     if ( pwm != UINT16_MAX )
     {
-        m_rcMode.pwm ( pwm );
+        m_rcMode.set ( pwm );
 
         int iMode = m_rcMode.i();
         switch ( iMode )
@@ -133,12 +133,12 @@ void _AProver_BR::updateMode ( void )
     
     //Manual mode
     pwm = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcStickV.m_iChan );
-    if( pwm == UINT16_MAX )pwm = m_rcStickV.m_pwmM;
-    m_rcStickV.pwm ( pwm );
+    if( pwm == UINT16_MAX )pwm = m_rcStickV.m_rawM;
+    m_rcStickV.set ( pwm );
     
     pwm = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcStickH.m_iChan );
-    if( pwm == UINT16_MAX )pwm = m_rcStickH.m_pwmM;
-    m_rcStickH.pwm ( pwm );
+    if( pwm == UINT16_MAX )pwm = m_rcStickH.m_rawM;
+    m_rcStickH.set ( pwm );
     
     m_pSC->transit ( mode );
     
@@ -162,9 +162,9 @@ void _AProver_BR::console ( void* pConsole )
     msgActive(pConsole);
 
 	_Console *pC = (_Console *)pConsole;
-    pC->addMsg ( "rcMode pwm=" + i2str ( m_rcMode.m_pwm ) + ", i=" + i2str ( m_rcMode.i() ) );
-    pC->addMsg ( "rcStickV pwm=" + i2str ( m_rcStickV.m_pwm ) + ", v=" + f2str ( m_rcStickV.v() ) );
-    pC->addMsg ( "rcStickH pwm=" + i2str ( m_rcStickH.m_pwm ) + ", v=" + f2str ( m_rcStickH.v() ) );
+    pC->addMsg ( "rcMode pwm=" + i2str ( m_rcMode.m_raw ) + ", i=" + i2str ( m_rcMode.i() ) );
+    pC->addMsg ( "rcStickV pwm=" + i2str ( m_rcStickV.m_raw ) + ", v=" + f2str ( m_rcStickV.v() ) );
+    pC->addMsg ( "rcStickH pwm=" + i2str ( m_rcStickH.m_raw ) + ", v=" + f2str ( m_rcStickH.v() ) );
 }
 
 }

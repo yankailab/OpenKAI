@@ -2,20 +2,21 @@
 #define OpenKAI_src_Protocol__SBus_H_
 
 #include "../IO/_IOBase.h"
+#include "../Utility/RC.h"
 
 //SBus definition
-#define HEADER_ 0x0F
-#define FOOTER_ 0x00
-#define FOOTER2_ 0x04
-#define LEN_ 35
-#define CH17_ 0x01
-#define CH18_ 0x02
-#define LOST_FRAME_ 0x04
-#define FAILSAFE_ 0x08
+#define SBUS_HEADER_ 0x0F
+#define SBUS_FOOTER_ 0x00
+#define SBUS_FOOTER2_ 0x04
+#define SBUS_LEN_ 35
+#define SBUS_CH17_ 0x01
+#define SBUS_CH18_ 0x02
+#define SBUS_LOST_FRAME_ 0x04
+#define SBUS_FAILSAFE_ 0x08
+#define SBUS_NCHAN 16
 
 namespace kai
 {
-
 	class _SBus : public _ModuleBase
 	{
 	public:
@@ -25,6 +26,9 @@ namespace kai
 		bool init(void *pKiss);
 		bool start(void);
 		void console(void *pConsole);
+
+		uint16_t raw(int i);
+		float v(int i);
 
 	private:
 		void send(void);
@@ -51,15 +55,16 @@ namespace kai
 	public:
 		_Thread *m_pTr;
 		_IOBase *m_pIO;
+		bool m_bSend;
 
-		uint8_t m_pB[LEN_];
+		uint8_t m_pB[SBUS_LEN_];
 		uint8_t m_iB;
 		uint8_t m_flag;
 		bool m_bLostFrame;
 		bool m_bFailSafe;
 		bool m_bCh17;
 		bool m_bCh18;
-		uint16_t m_pC[16];
+		RC_CHANNEL m_pRC[16];
 	};
 
 }

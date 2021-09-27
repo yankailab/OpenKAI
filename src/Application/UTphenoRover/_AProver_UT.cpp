@@ -24,7 +24,7 @@ bool _AProver_UT::init(void* pKiss)
 
     pK->v ( "iRCmodeChan", &m_rcMode.m_iChan );
     pK->a ( "vRCmodeDiv", &m_rcMode.m_vDiv );
-    m_rcMode.setup();
+    m_rcMode.update();
 
     m_iMode.MANUAL = m_pSC->getStateIdxByName ( "MANUAL" );
     m_iMode.FORWARD = m_pSC->getStateIdxByName ( "FORWARD" );
@@ -89,7 +89,7 @@ void _AProver_UT::updateMode(void)
 
     uint16_t pwmMode = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcMode.m_iChan );
     IF_ ( pwmMode == UINT16_MAX );
-    m_rcMode.pwm ( pwmMode );
+    m_rcMode.set ( pwmMode );
     int iMode = m_rcMode.i();
     switch ( iMode )
     {
@@ -118,7 +118,7 @@ void _AProver_UT::console(void* pConsole)
     this->_StateBase::console(pConsole);
     msgActive(pConsole);
 
-   	((_Console*)pConsole)->addMsg("rcMode pwm=" + i2str(m_rcMode.m_pwm) + ", i=" + i2str(m_rcMode.i()));
+   	((_Console*)pConsole)->addMsg("rcMode pwm=" + i2str(m_rcMode.m_raw) + ", i=" + i2str(m_rcMode.i()));
 }
 
 }

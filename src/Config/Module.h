@@ -107,6 +107,10 @@
 #endif
 #endif
 
+#ifdef WITH_APP_ROVER
+#include "../Application/Rover/_RCrover.h"
+#endif
+
 #ifdef WITH_APP_SURVEILLANCE && USE_OPENCV
 #include "../Application/Surveillance/_ANR.h"
 #include "../Application/Surveillance/_GDcam.h"

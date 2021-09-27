@@ -6,6 +6,7 @@ namespace kai
 	{
 		m_pTr = NULL;
 		m_pIO = NULL;
+		m_bSend = false;
 
 		reset();
 	}
@@ -18,6 +19,8 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+
+		pK->v("bSend", &m_bSend);
 
 		string n;
 		n = "";
@@ -42,7 +45,12 @@ namespace kai
 	{
 		NULL_F(m_pT);
 		NULL_F(m_pTr);
-		IF_F(!m_pT->start(getUpdateW, this));
+
+		if(m_bSend)
+		{
+			IF_F(!m_pT->start(getUpdateW, this));
+		}
+		
 		return m_pTr->start(getUpdateR, this);
 	}
 
@@ -91,7 +99,6 @@ namespace kai
 				decode();
 				reset();
 			}
-			//        m_pT->sleepT ( 0 ); //wait for the IObase to wake me up when received data
 
 			m_pTr->autoFPSto();
 		}
@@ -106,15 +113,15 @@ namespace kai
 		{
 			if (m_iB == 0)
 			{
-				IF_CONT(B != HEADER_);
+				IF_CONT(B != SBUS_HEADER_);
 			}
 
 			m_pB[m_iB++] = B;
-			IF_CONT(m_iB < LEN_);
+			IF_CONT(m_iB < SBUS_LEN_);
 
 			m_iB = 0;
 			uint8_t cs = checksum(&m_pB[1], 33);
-			IF_CONT(m_pB[LEN_ - 1] != cs);
+			IF_CONT(m_pB[SBUS_LEN_ - 1] != cs);
 
 			return true;
 		}
@@ -127,10 +134,10 @@ namespace kai
 		for (int i = 0; i < 16; i++)
 		{
 			int j = i * 2;
-			m_pC[i] = static_cast<uint16_t>(m_pB[j + 1] << 8 | m_pB[j + 2]);
+			m_pRC[i].set(static_cast<uint16_t>(m_pB[j + 1] << 8 | m_pB[j + 2]));
 		}
 
-		m_flag = m_pB[LEN_ - 2];
+		m_flag = m_pB[SBUS_LEN_ - 2];
 	}
 
 	void _SBus::encode(void)
@@ -138,8 +145,8 @@ namespace kai
 		for (int i = 0; i < 16; i++)
 		{
 			int j = i * 2;
-			m_pB[j + 1] = static_cast<uint8_t>(m_pC[i] >> 8);
-			m_pB[j + 2] = static_cast<uint8_t>(m_pC[i] & 0x00FF);
+			m_pB[j + 1] = static_cast<uint8_t>(m_pRC[i].raw() >> 8);
+			m_pB[j + 2] = static_cast<uint8_t>(m_pRC[i].raw() & 0x00FF);
 		}
 
 		m_pB[34] = checksum(&m_pB[1], 33);
@@ -165,6 +172,20 @@ namespace kai
 		m_bCh18 = false;
 	}
 
+	uint16_t _SBus::raw(int i)
+	{
+		IF__(i >= SBUS_NCHAN, 0);
+
+		return m_pRC[i].raw();
+	}
+
+	float _SBus::v(int i)
+	{
+		IF__(i >= SBUS_NCHAN, 0);
+
+		return m_pRC[i].v();
+	}
+
 	void _SBus::console(void *pConsole)
 	{
 #ifdef WITH_UI
@@ -177,7 +198,39 @@ namespace kai
 		else
 			pC->addMsg("Connected");
 
-		pC->addMsg("vSpeed=(" + f2str(m_vSpeed.x) + ", " + f2str(m_vSpeed.y) + ")");
+		pC->addMsg("Raw: " 	+ i2str(m_pRC[0].raw()) + "|"
+						   	+ i2str(m_pRC[1].raw()) + "|"
+							+ i2str(m_pRC[2].raw()) + "|"
+							+ i2str(m_pRC[3].raw()) + "|"
+							+ i2str(m_pRC[4].raw()) + "|"
+							+ i2str(m_pRC[5].raw()) + "|"
+							+ i2str(m_pRC[6].raw()) + "|"
+							+ i2str(m_pRC[7].raw()) + "|"
+							+ i2str(m_pRC[8].raw()) + "|"
+							+ i2str(m_pRC[9].raw()) + "|"
+							+ i2str(m_pRC[10].raw()) + "|"
+							+ i2str(m_pRC[11].raw()) + "|"
+							+ i2str(m_pRC[12].raw()) + "|"
+							+ i2str(m_pRC[13].raw()) + "|"
+							+ i2str(m_pRC[14].raw()) + "|"
+							+ i2str(m_pRC[15].raw()));
+
+		pC->addMsg("v: " 	+ f2str(m_pRC[0].v(),2) + "|"
+						   	+ f2str(m_pRC[1].v(),2) + "|"
+							+ f2str(m_pRC[2].v(),2) + "|"
+							+ f2str(m_pRC[3].v(),2) + "|"
+							+ f2str(m_pRC[4].v(),2) + "|"
+							+ f2str(m_pRC[5].v(),2) + "|"
+							+ f2str(m_pRC[6].v(),2) + "|"
+							+ f2str(m_pRC[7].v(),2) + "|"
+							+ f2str(m_pRC[8].v(),2) + "|"
+							+ f2str(m_pRC[9].v(),2) + "|"
+							+ f2str(m_pRC[10].v(),2) + "|"
+							+ f2str(m_pRC[11].v(),2) + "|"
+							+ f2str(m_pRC[12].v(),2) + "|"
+							+ f2str(m_pRC[13].v(),2) + "|"
+							+ f2str(m_pRC[14].v(),2) + "|"
+							+ f2str(m_pRC[15].v(),2));
 #endif
 	}
 

@@ -28,8 +28,8 @@ bool _AProver_KU::init(void* pKiss)
     pK->v ( "iRCdirChan", &m_rcDir.m_iChan );
     pK->a ( "vRCdirDiv", &m_rcDir.m_vDiv );
 
-    m_rcMode.setup();
-    m_rcDir.setup();
+    m_rcMode.update();
+    m_rcDir.update();
 
     m_iMode.STANDBY = m_pSC->getStateIdxByName ( "STANDBY" );
     m_iMode.HYBRID = m_pSC->getStateIdxByName ( "HYBRID" );
@@ -87,7 +87,7 @@ void _AProver_KU::updateMode ( void )
     float dir = 0.0;
     if ( pwmDir != UINT16_MAX )
     {
-        m_rcDir.pwm ( pwmDir );
+        m_rcDir.set ( pwmDir );
         dir = ( float ) m_rcDir.i();
         dir -= 1.0;
     }
@@ -102,7 +102,7 @@ void _AProver_KU::updateMode ( void )
     
     uint16_t pwmMode = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcMode.m_iChan );
     IF_ ( pwmMode == UINT16_MAX );
-    m_rcMode.pwm ( pwmMode );
+    m_rcMode.set ( pwmMode );
     int iMode = m_rcMode.i();
     switch ( iMode )
     {
@@ -128,8 +128,8 @@ void _AProver_KU::console(void* pConsole)
     msgActive(pConsole);
 
 	_Console *pC = (_Console *)pConsole;
-   	pC->addMsg("rcMode pwm=" + i2str(m_rcMode.m_pwm) + ", i=" + i2str(m_rcMode.i()));
-   	pC->addMsg("rcDir pwm=" + i2str(m_rcDir.m_pwm) + ", i=" + i2str(m_rcDir.i()));
+   	pC->addMsg("rcMode pwm=" + i2str(m_rcMode.m_raw) + ", i=" + i2str(m_rcMode.i()));
+   	pC->addMsg("rcDir pwm=" + i2str(m_rcDir.m_raw) + ", i=" + i2str(m_rcDir.i()));
 }
 
 }

@@ -25,7 +25,7 @@ bool _AProver_picking::init(void* pKiss)
 
 	pK->v("iRCmodeChan", &m_rcMode.m_iChan);
 	pK->a("vRCmodeDiv", &m_rcMode.m_vDiv);
-	m_rcMode.setup();
+	m_rcMode.update();
 
 	Kiss *pRC = pK->child("RC");
 	int i = 0;
@@ -38,11 +38,11 @@ bool _AProver_picking::init(void* pKiss)
 		RC_CHANNEL rc;
 		rc.init();
 		pC->v("iChan", &rc.m_iChan);
-		pC->v("pwmL", &rc.m_pwmL);
-		pC->v("pwmM", &rc.m_pwmM);
-		pC->v("pwmH", &rc.m_pwmH);
+		pC->v("pwmL", &rc.m_rawL);
+		pC->v("pwmM", &rc.m_rawM);
+		pC->v("pwmH", &rc.m_rawH);
 		pC->a("vDiv", &rc.m_vDiv);
-		rc.setup();
+		rc.update();
 		m_vRC.push_back(rc);
 	}
 
@@ -128,7 +128,7 @@ bool _AProver_picking::updateDrive(void)
 //	IF_F(apMode == AP_ROVER_HOLD);
 	IF_F(pwmMode == UINT16_MAX);
 
-	m_rcMode.pwm(pwmMode);
+	m_rcMode.set(pwmMode);
 	int iMode = m_rcMode.i();
 
 	switch(iMode)
@@ -159,8 +159,8 @@ bool _AProver_picking::updatePicking(void)
 	{
 		RC_CHANNEL* pRC = &m_vRC[i];
 		uint16_t r = m_pAP->m_pMav->m_rcChannels.getRC(pRC->m_iChan);
-		if(r == UINT16_MAX)r = pRC->m_pwmM;
-		pRC->pwm(r);
+		if(r == UINT16_MAX)r = pRC->m_rawM;
+		pRC->set(r);
 	}
 
 	int iM = m_pSC->getStateIdx();
@@ -205,7 +205,7 @@ void _AProver_picking::console(void* pConsole)
 	pC->addMsg("RC mode: " + i2str(m_rcMode.i()));
 
 	for(RC_CHANNEL rc : m_vRC)
-		pC->addMsg("Chan" + i2str(rc.m_iChan) + ": " + i2str(rc.m_pwm) + " | " + f2str(rc.v()) + " | " + i2str(rc.i()));
+		pC->addMsg("Chan" + i2str(rc.m_iChan) + ": " + i2str(rc.m_raw) + " | " + f2str(rc.v()) + " | " + i2str(rc.i()));
 
 }
 
