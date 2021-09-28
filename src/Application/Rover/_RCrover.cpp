@@ -11,8 +11,8 @@ namespace kai
 		m_iSpd = 2;
 		m_iSteer = 0;
 
-		m_nSpd = 0.0;
-		m_nSteer = 0.0;
+		m_nSpd = 0.5;
+		m_nSteer = 0.5;
 	}
 
 	_RCrover::~_RCrover()
@@ -81,8 +81,8 @@ namespace kai
 		m_nSpd = m_pS->v(m_iSpd);
 		m_nSteer = m_pS->v(m_iSteer);
 
-		m_pD->setSpeed(m_nSpd);
-		m_pD->setSteering(m_nSteer);
+		m_pD->setSpeed(m_nSpd - 0.5);
+		m_pD->setSteering(m_nSteer - 0.5);
 //		m_pD->setDirection();
 
 		return true;

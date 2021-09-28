@@ -1,0 +1,242 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"RCrover",
+	"bLog":1,
+	"bStdErr":0,
+	"/rc":"sudo modprobe bcm2835-v4l2\nv4l2-ctl -d /dev/video0 --set-ctrl=rotate=0\n",
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["sbus","T265"],
+}
+
+{
+	"name":"cam",
+	"class":"_Camera",
+	"bInst":0,
+	"deviceID":0,
+	"vSize":[640, 480],
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+}
+
+{
+	"name":"remap",
+	"class":"_Remap",
+	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"cam",
+	"fCalib":"/home/kai/ARmeasure/calibCam.kiss",
+	"/fCalib":"/home/pi/ARmeasure/calibCam.kiss",
+	"vSize":[640, 480],
+}
+
+{
+	"name":"T265",
+	"class":"_RStracking",
+    {
+		"name":"thread",
+		"FPS":200,
+	}
+	"bInst":1,
+}
+
+{
+	"name":"state",
+	"class":"_StateControl",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bInst":1,
+	"start":"standby",
+	{
+		"name":"state",
+		{
+			"bInst":1,
+			"name":"standby",
+			"class":"State",
+		}
+		{
+			"bInst":1,
+			"name":"rc",
+			"class":"State",
+		}
+	}
+}
+
+{
+	"name":"sSBus",
+	"class":"_SerialPort",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadR",
+		"FPS":100,
+	}
+	"port":"/dev/ttyACM0",
+	"/port":"/dev/ttyAMA0",
+	"baud":115200,
+}
+
+{
+	"name":"sbus",
+	"class":"_SBus",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"bLog":0,
+	"bSend":0,
+	"_IOBase":"sSBus",
+}
+
+{
+	"name":"RCrover",
+	"class":"_RCrover",
+	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"iSpd":0,
+	"iSteer":2,
+	"nSpd":0.5,
+	"nSteer":0.5,
+	"_SBus":"sbus",
+	"_Drive":"drive",
+}
+
+{
+	"name":"drive",
+	"class":"_Drive",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bInst":0,
+	"nSpd":0.0,
+	"nDir":0.0,
+	"nStr":0.0,
+	"vSpdRange":[-1.0, 1.0],
+	"vStrRange":[-1.0, 1.0],
+	
+	{
+		"name":"motor",
+		
+		{
+			"name":"mL",
+			"kSpd":100.0,
+			"kStr":100.0,
+			"_ActuatorBase":"motL",
+		}
+		{
+			"name":"mR",
+			"kSpd":-100.0,
+			"kStr":100.0,
+			"_ActuatorBase":"motR",
+		}
+	}
+}
+
+{
+	"name":"modbus",
+	"class":"_Modbus",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"bLog":0,
+	"port":"/dev/ttyUSB0",
+	"baud":115200,
+	"parity":"N",	
+}
+
+{
+	"name":"motL",
+	"class":"_ZLAC8015",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"bLog":0,
+	"_Modbus":"modbus",
+	"iSlave":1,
+	"iMode":3,
+	"tIntCheckAlarm":500000,
+	"tIntReadStatus":500000,
+
+	{
+		"name":"axis",
+		{
+			"name":"motor",
+			"pOrigin":0,
+			"pTarget":0,
+			"pErr":10,
+			"pRange":[-1, 1],
+			"sTarget":0,
+			"sRange":[-100, 100],
+			"aTarget":500,
+			"aRange":[0,32767],
+			"bTarget":500,
+			"bRange":[0,32767],
+		}
+	}
+}
+
+{
+	"name":"motR",
+	"class":"_ZLAC8015",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"bLog":0,
+	"_Modbus":"modbus",
+	"iSlave":2,
+	"iMode":3,
+	"tIntCheckAlarm":500000,
+	"tIntReadStatus":500000,
+
+	{
+		"name":"axis",
+		{
+			"name":"motor",
+			"pOrigin":0,
+			"pTarget":0,
+			"pErr":10,
+			"pRange":[-1, 1],
+			"sTarget":0,
+			"sRange":[-100, 100],
+			"aTarget":500,
+			"aRange":[0,32767],
+			"bTarget":500,
+			"bRange":[0,32767],
+		}
+	}
+}

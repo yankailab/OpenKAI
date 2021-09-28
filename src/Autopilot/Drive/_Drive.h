@@ -9,11 +9,8 @@ namespace kai
     
 struct DRIVE_MOTOR
 {
-    //config
     float m_kSpd;           //velocity +/-
     float m_kStr;
-    
-    //var
     float m_spd;
     
     _ActuatorBase* m_pActuator;
@@ -23,7 +20,6 @@ struct DRIVE_MOTOR
     {
         m_kSpd = 1.0;
         m_kStr = 1.0;
-        
         m_spd = 0.0;
         m_pActuator = NULL;
         m_iAxis = 0;
