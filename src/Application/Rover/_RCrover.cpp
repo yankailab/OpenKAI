@@ -94,6 +94,10 @@ namespace kai
 		NULL_(pConsole);
 		this->_StateBase::console(pConsole);
 		msgActive(pConsole);
+
+		_Console *pC = (_Console *)pConsole;
+		pC->addMsg("nSpd: "	+ f2str(m_nSpd));
+		pC->addMsg("nSteer: " + f2str(m_nSteer));
 #endif
 	}
 

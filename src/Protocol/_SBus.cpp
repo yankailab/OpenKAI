@@ -21,6 +21,16 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("bSend", &m_bSend);
+		pK->v("vRawRC", &m_vRawRC);
+		for(int i=0; i<SBUS_NCHAN; i++)
+		{
+			RC_CHANNEL* pC = &m_pRC[i];
+			pC->m_iChan = i;
+			pC->m_rawL = m_vRawRC.x;
+			pC->m_rawM = m_vRawRC.y;
+			pC->m_rawH = m_vRawRC.z;
+			pC->update();
+		}
 
 		string n;
 		n = "";

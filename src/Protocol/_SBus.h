@@ -64,7 +64,8 @@ namespace kai
 		bool m_bFailSafe;
 		bool m_bCh17;
 		bool m_bCh18;
-		RC_CHANNEL m_pRC[16];
+		RC_CHANNEL m_pRC[SBUS_NCHAN];
+		vInt3 m_vRawRC;		
 	};
 
 }

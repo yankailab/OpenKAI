@@ -15,7 +15,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["sbus","T265"],
+	"vBASE":["sbus","RCrover","drive","motL","motR"],
 }
 
 {
@@ -105,24 +105,25 @@
 	}
     {
 		"name":"threadR",
-		"FPS":30,
+		"FPS":100,
 	}
 	"bLog":0,
 	"bSend":0,
 	"_IOBase":"sSBus",
+	"vRawRC":[200,1002,1947],
 }
 
 {
 	"name":"RCrover",
 	"class":"_RCrover",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
 	"bLog":0,
-	"iSpd":0,
-	"iSteer":2,
+	"iSpd":2,
+	"iSteer":0,
 	"nSpd":0.5,
 	"nSteer":0.5,
 	"_SBus":"sbus",
@@ -136,9 +137,9 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"bInst":0,
+	"bInst":1,
 	"nSpd":0.0,
-	"nDir":0.0,
+	"nDir":1.0,
 	"nStr":0.0,
 	"vSpdRange":[-1.0, 1.0],
 	"vStrRange":[-1.0, 1.0],
@@ -154,8 +155,8 @@
 		}
 		{
 			"name":"mR",
-			"kSpd":-100.0,
-			"kStr":100.0,
+			"kSpd":100.0,
+			"kStr":-100.0,
 			"_ActuatorBase":"motR",
 		}
 	}
