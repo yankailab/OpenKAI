@@ -44,6 +44,10 @@ bool _HYMCU_RS485::init(void* pKiss)
 		pKa->v("setDir", &m_addr.m_setDir);
 		pKa->v("setSpd", &m_addr.m_setSpd);
 		pKa->v("setAcc", &m_addr.m_setAcc);
+		pKa->v("setSlaveID", &m_addr.m_setSlaveID);
+		pKa->v("setBaudL", &m_addr.m_setBaudL);
+		pKa->v("setBaudH", &m_addr.m_setBaudH);
+
 		pKa->v("bComplete", &m_addr.m_bComplete);
 		pKa->v("readStat", &m_addr.m_readStat);
 		pKa->v("run", &m_addr.m_run);
@@ -79,10 +83,11 @@ int _HYMCU_RS485::check(void)
 
 void _HYMCU_RS485::update(void)
 {
-//	setSlaveID(2);
-//	saveData();
+	// setSlaveID(2);
+	// setBaudrate(115200);
+	// saveData();
 
-//	while(!initPos());
+	while(!initPos());
 
 	while(m_pT->bRun())
 	{
@@ -182,6 +187,20 @@ bool _HYMCU_RS485::setSlaveID(uint16_t iSlave)
 	IF_F(check()<0);
 
 	IF_F(m_pMB->writeRegisters(m_iSlave, m_addr.m_setSlaveID, 1, &iSlave) != 1);
+	m_pT->sleepT (m_cmdInt);
+
+	return true;
+}
+
+bool _HYMCU_RS485::setBaudrate(uint32_t baudrate)
+{
+	IF_F(check()<0);
+
+	uint16_t bd;
+	bd = baudrate & 0xFFFF;
+	IF_F(m_pMB->writeRegisters(m_iSlave, m_addr.m_setBaudL, 1, &bd) != 1);
+	bd = baudrate >> 16;
+	IF_F(m_pMB->writeRegisters(m_iSlave, m_addr.m_setBaudH, 1, &bd) != 1);
 	m_pT->sleepT (m_cmdInt);
 
 	return true;

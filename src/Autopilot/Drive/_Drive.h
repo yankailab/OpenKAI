@@ -14,7 +14,7 @@ struct DRIVE_MOTOR
     float m_spd;
     
     _ActuatorBase* m_pActuator;
-    int8_t m_iAxis;
+    uint8_t m_iAxis;
 
     void init(void)
     {

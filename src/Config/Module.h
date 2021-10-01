@@ -22,6 +22,7 @@
 #include "../Actuator/Articulated/_S6H4D.h"
 #include "../Actuator/_StepperGripper.h"
 #include "../Actuator/Motor/_ZLAC8015.h"
+#include "../Actuator/Motor/_ZLAC8015D.h"
 #ifdef USE_INNFOS
 #include "../Actuator/_InnfosGluon.h"
 #endif

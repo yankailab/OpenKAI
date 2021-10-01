@@ -32,6 +32,7 @@ namespace kai
 		ADD_MODULE(_S6H4D);
 		ADD_MODULE(_StepperGripper);
 		ADD_MODULE(_ZLAC8015);
+		ADD_MODULE(_ZLAC8015D);
 #ifdef USE_INNFOS
 		ADD_MODULE(_InnfosGluon);
 #endif

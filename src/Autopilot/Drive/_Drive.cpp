@@ -42,6 +42,7 @@ namespace kai
             m.init();
             pM->v("kSpd", &m.m_kSpd);
             pM->v("kStr", &m.m_kStr);
+            pM->v("iAxis", &m.m_iAxis);
 
             string n = "";
             pM->v("_ActuatorBase", &n);
@@ -70,10 +71,13 @@ namespace kai
         {
             m_pT->autoFPSfrom();
 
+            if(m_nSpd < 0.0)
+                m_nStr *= -1.0;
+
             for (int i = 0; i < m_vM.size(); i++)
             {
                 DRIVE_MOTOR *pM = &m_vM[i];
-                pM->update(m_nSpd * m_nDir, m_nStr); // nStr should not be applied to nSpd calc in apRover mode
+                pM->update(m_nSpd * m_nDir, m_nStr);
             }
 
             m_pT->autoFPSto();

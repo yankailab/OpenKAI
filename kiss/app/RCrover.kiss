@@ -15,7 +15,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["sbus","RCrover","drive","motL","motR"],
+	"vBASE":["sbus","RCrover","drive","motor"],
 }
 
 {
@@ -105,7 +105,7 @@
 	}
     {
 		"name":"threadR",
-		"FPS":100,
+		"FPS":500,
 	}
 	"bLog":0,
 	"bSend":0,
@@ -151,13 +151,15 @@
 			"name":"mL",
 			"kSpd":100.0,
 			"kStr":100.0,
-			"_ActuatorBase":"motL",
+			"_ActuatorBase":"motor",
+			"iAxis":0,
 		}
 		{
 			"name":"mR",
-			"kSpd":100.0,
-			"kStr":-100.0,
-			"_ActuatorBase":"motR",
+			"kSpd":-100.0,
+			"kStr":100.0,
+			"_ActuatorBase":"motor",
+			"iAxis":1,
 		}
 	}
 }
@@ -173,12 +175,13 @@
 	"bLog":0,
 	"port":"/dev/ttyUSB0",
 	"baud":115200,
-	"parity":"N",	
+	"/baud":9800,
+	"parity":"N",
 }
 
 {
-	"name":"motL",
-	"class":"_ZLAC8015",
+	"name":"motor",
+	"class":"_ZLAC8015D",
 	"bInst":1,
     {
 		"name":"thread",
@@ -194,7 +197,20 @@
 	{
 		"name":"axis",
 		{
-			"name":"motor",
+			"name":"motL",
+			"pOrigin":0,
+			"pTarget":0,
+			"pErr":10,
+			"pRange":[-1, 1],
+			"sTarget":0,
+			"sRange":[-100, 100],
+			"aTarget":500,
+			"aRange":[0,32767],
+			"bTarget":500,
+			"bRange":[0,32767],
+		}
+		{
+			"name":"motR",
 			"pOrigin":0,
 			"pTarget":0,
 			"pErr":10,
@@ -210,34 +226,32 @@
 }
 
 {
-	"name":"motR",
-	"class":"_ZLAC8015",
+	"name":"stepper",
+	"class":"_HYMCU_RS485",
 	"bInst":1,
     {
 		"name":"thread",
 		"FPS":10,
 	}
-	"bLog":0,
+	"bLog":1,
 	"_Modbus":"modbus",
 	"iSlave":2,
-	"iMode":3,
-	"tIntCheckAlarm":500000,
-	"tIntReadStatus":500000,
+	"dpr":1,
+	"bFeedback":1,
+	"dInit":-100,
 
 	{
 		"name":"axis",
 		{
-			"name":"motor",
-			"pOrigin":0,
-			"pTarget":0,
-			"pErr":10,
-			"pRange":[-1, 1],
-			"sTarget":0,
-			"sRange":[-100, 100],
-			"aTarget":500,
-			"aRange":[0,32767],
-			"bTarget":500,
-			"bRange":[0,32767],
+			"name":"X",
+			"pOrigin":0.0,
+			"pTarget":0.0,
+			"pErr":0.01,
+			"pRange":[0,15],
+			"sTarget":1500.0,
+			"sRange":[0,1500],
+			"aTarget":10.0,
+			"aRange":[10,300],
 		}
 	}
 }

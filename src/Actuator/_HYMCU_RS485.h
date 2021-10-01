@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Actuator__DRV8825_RS485_H_
-#define OpenKAI_src_Actuator__DRV8825_RS485_H_
+#ifndef OpenKAI_src_Actuator__RS485_H_
+#define OpenKAI_src_Actuator__RS485_H_
 
 #include "../Protocol/_Modbus.h"
 #include "_ActuatorBase.h"
@@ -23,6 +23,8 @@ struct HYMCU_MODBUS_ADDR
 	uint16_t m_setSpd = 8;
 	uint16_t m_setAcc = 2;
 	uint16_t m_setSlaveID = 16;
+	uint16_t m_setBaudL = 73;
+	uint16_t m_setBaudH = 74;
 
 	uint16_t m_bComplete = 12;
 	uint16_t m_readStat = 22;
@@ -45,6 +47,7 @@ public:
 
 protected:
 	bool setSlaveID(uint16_t iSlave);
+	bool setBaudrate(uint32_t baudrate);
 	bool saveData(void);
 
 	bool setDistPerRound(int32_t dpr);
