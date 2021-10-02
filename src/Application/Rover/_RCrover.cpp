@@ -7,12 +7,15 @@ namespace kai
 	{
 		m_pS = NULL;
 		m_pD = NULL;
+		m_pA = NULL;
 
 		m_iSpd = 2;
 		m_iSteer = 0;
+		m_iElev = 8;
 
 		m_nSpd = 0.5;
 		m_nSteer = 0.5;
+		m_nElev = 0.5;
 	}
 
 	_RCrover::~_RCrover()
@@ -26,8 +29,10 @@ namespace kai
 
 		pK->v("iSpd", &m_iSpd);
 		pK->v("iSteer", &m_iSteer);
+		pK->v("iElev", &m_iElev);
 		pK->v("nSpd", &m_nSpd);
 		pK->v("nSteer", &m_nSteer);
+		pK->v("nElev", &m_nElev);
 
 		string n;
 
@@ -40,6 +45,11 @@ namespace kai
 		pK->v("_Drive", &n);
 		m_pD = (_Drive *)(pK->getInst(n));
 		IF_Fl(!m_pD, n + ": not found");
+
+		n = "";
+		pK->v("_ActuatorBase", &n);
+		m_pA = (_ActuatorBase *)(pK->getInst(n));
+		IF_Fl(!m_pA, n + ": not found");
 
 		return true;
 	}
@@ -85,6 +95,17 @@ namespace kai
 		m_pD->setSteering(m_nSteer - 0.5);
 //		m_pD->setDirection();
 
+		if(m_pA)
+		{
+			m_nElev = m_pS->v(m_iElev);
+			if(m_nElev < 0.4)
+				m_pA->setPtarget(0, -10);
+			else if(m_nElev > 0.6)
+				m_pA->setPtarget(0, 10);
+			else
+				m_pA->setStop();
+		}
+
 		return true;
 	}
 
@@ -98,6 +119,7 @@ namespace kai
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("nSpd: "	+ f2str(m_nSpd));
 		pC->addMsg("nSteer: " + f2str(m_nSteer));
+		pC->addMsg("nElev: " + f2str(m_nElev));
 #endif
 	}
 

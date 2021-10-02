@@ -50,7 +50,7 @@ namespace kai
 
 	private:
 		_ARmeasure* m_pA;
-		_Remap *m_pV;
+		_Remap *m_pRv;
 		_WindowCV *m_pW;
 
 		// camera

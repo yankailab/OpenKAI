@@ -69,7 +69,7 @@ namespace kai
 
 	protected:
 		_PCstream* m_pPS;
-		_NavBase *m_pSB;
+		_NavBase *m_pNav;
 		_Thread *m_pTk;
 
 		bool m_bSlam;

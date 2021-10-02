@@ -30,13 +30,15 @@ protected:
 public:
 	_SBus* 	m_pS;
     _Drive* m_pD;
+    _ActuatorBase* m_pA;
 
 	uint8_t m_iSpd;		// channel index
 	uint8_t m_iSteer;
+	uint8_t m_iElev;	// elevation bar
 
 	float m_nSpd;
 	float m_nSteer;
-
+	float m_nElev;
 
 };
 

@@ -124,10 +124,12 @@
 	"bLog":0,
 	"iSpd":2,
 	"iSteer":0,
+	"iElev":8,
 	"nSpd":0.5,
 	"nSteer":0.5,
 	"_SBus":"sbus",
 	"_Drive":"drive",
+	"_ActuatorBase":"stepper",
 }
 
 {

@@ -14,7 +14,7 @@ namespace kai
 	_PCscan::_PCscan()
 	{
 		m_pPS = NULL;
-		m_pSB = NULL;
+		m_pNav = NULL;
 		m_pTk = NULL;
 
 		m_bSlam = true;
@@ -37,7 +37,7 @@ namespace kai
 
 		string n = "";
 		pK->v("_NavBase", &n);
-		m_pSB = (_NavBase *)(pK->getInst(n));
+		m_pNav = (_NavBase *)(pK->getInst(n));
 
 		n = "";
 		pK->v("_PCstream", &n);
@@ -72,7 +72,7 @@ namespace kai
 	int _PCscan::check(void)
 	{
 		NULL__(m_pPS, -1);
-		NULL__(m_pSB, -1);
+		NULL__(m_pNav, -1);
 		NULL__(m_pWin, -1);
 
 		return this->_PCviewer::check();
@@ -118,8 +118,8 @@ namespace kai
 
 		m_pWin->ShowMsg("Scan", "Initializing");
 
-		m_pSB->reset();
-		while(!m_pSB->bReady())
+//		m_pNav->reset();
+		while(!m_pNav->bReady())
 			m_pT->sleepT(100000);
 
 		m_pPS->clear();
@@ -189,7 +189,7 @@ namespace kai
 		IF_(check() < 0);
 
 		Eigen::Affine3f A;
-		A = m_pSB->mT().cast<float>();
+		A = m_pNav->mT().cast<float>();
 		m_cam.m_vEye = A * m_camAuto.m_vEye.v3f();
 		m_cam.m_vLookAt = A * m_camAuto.m_vLookAt.v3f();
 
@@ -258,7 +258,7 @@ namespace kai
 		IF_(!m_fProcess.b(pc_Scanning));
 		IF_(!m_bSlam);
 
-		auto mT = m_pSB->mT();
+		auto mT = m_pNav->mT();
 		for (int i = 0; i < m_vpPCB.size(); i++)
 		{
 			_PCbase *pP = m_vpPCB[i];

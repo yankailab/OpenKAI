@@ -38,7 +38,7 @@ struct IMG_MORPH
 
 	void updateKernel(void)
 	{
-		m_kernel = getStructuringElement(m_kShape, Size(m_kW,m_kH), Point(m_aX,m_aY));
+		m_kernel = getStructuringElement(m_kShape, cv::Size(m_kW,m_kH), cv::Point(m_aX,m_aY));
 	}
 };
 

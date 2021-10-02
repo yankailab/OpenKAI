@@ -39,7 +39,6 @@ namespace kai
         m_vAxisKrgb.init(1.0);
 
         m_pInCtx.init();
-        m_pV = NULL;
     }
 
     _PCbase::~_PCbase()
@@ -83,25 +82,20 @@ namespace kai
         pK->v("_VisionBase", &n);
         m_pV = (_VisionBase *)(pK->getInst(n));
 
+        n = "";
         pK->v("fCalib", &n);
-		_File *pF = new _File();
-		IF_d_T(!pF->open(&n, ios::in), DEL(pF));
-		IF_d_T(!pF->readAll(&n), DEL(pF));
-		IF_d_T(n.empty(), DEL(pF));
-		pF->close();
-		DEL(pF);
+        Kiss *pKf = new Kiss();
+        if (parseKiss(n, pKf))
+        {
+            pK = pKf->child("calib");
+            IF_d_T(pK->empty(), DEL(pKf));
 
-		Kiss *pKf = new Kiss();
-		IF_d_T(!pKf->parse(&n),DEL(pKf));
-
-		pK = pKf->child("calib");
-		IF_d_T(pK->empty(), DEL(pKf));
-
-        pK->v("vOffsetPt", &m_vToffset);
-        pK->v("vOffsetPr", &m_vRoffset);
-        pK->v("vOffsetCt", &m_vToffsetRGB);
-        pK->v("vOffsetCr", &m_vRoffsetRGB);
-		DEL(pKf);
+            pK->v("vOffsetPt", &m_vToffset);
+            pK->v("vOffsetPr", &m_vRoffset);
+            pK->v("vOffsetCt", &m_vToffsetRGB);
+            pK->v("vOffsetCr", &m_vRoffsetRGB);
+        }
+        DEL(pKf);
 
         setOffset(m_vToffset, m_vRoffset);
         setRGBoffset(m_vToffsetRGB, m_vRoffsetRGB);
@@ -216,8 +210,8 @@ namespace kai
         vDouble2 vCrgb = m_pV->getC();
 
         float ovZ = 1.0 / vPa[2];
-        float x = w * (vFrgb.x * vPa[0] + vCrgb.x * vPa[2]) * ovZ;
-        float y = h * (vFrgb.y * vPa[1] + vCrgb.y * vPa[2]) * ovZ;
+        float x = vFrgb.x * vPa[0] * ovZ + vCrgb.x;
+        float y = vFrgb.y * vPa[1] * ovZ + vCrgb.y;
 
         IF_F(x < 0);
         IF_F(x > pM->cols - 1);

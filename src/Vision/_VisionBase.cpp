@@ -127,7 +127,9 @@ namespace kai
 
 	vDouble2 _VisionBase::getF(void)
 	{
-		vDouble2 vF;
+		vDouble2 vF = {0,0};
+		IF__(m_mCscaled.empty(), vF);
+
 		vF.x = m_mCscaled.at<double>(0, 0);
 		vF.y = m_mCscaled.at<double>(1, 1);
 		return vF;
@@ -135,7 +137,9 @@ namespace kai
 
 	vDouble2 _VisionBase::getC(void)
 	{
-		vDouble2 vC;
+		vDouble2 vC = {0,0};
+		IF__(m_mCscaled.empty(), vC);
+
 		vC.x = m_mCscaled.at<double>(0, 2);
 		vC.y = m_mCscaled.at<double>(1, 2);
 		return vC;
@@ -143,7 +147,9 @@ namespace kai
 
 	vFloat2 _VisionBase::getFf(void)
 	{
-		vFloat2 vF;
+		vFloat2 vF = {0,0};
+		IF__(m_mCscaled.empty(), vF);
+
 		vF.x = (float)m_mCscaled.at<double>(0, 0);
 		vF.y = (float)m_mCscaled.at<double>(1, 1);
 		return vF;
@@ -151,7 +157,9 @@ namespace kai
 
 	vFloat2 _VisionBase::getCf(void)
 	{
-		vFloat2 vC;
+		vFloat2 vC = {0,0};
+		IF__(m_mCscaled.empty(), vC);
+
 		vC.x = (float)m_mCscaled.at<double>(0, 2);
 		vC.y = (float)m_mCscaled.at<double>(1, 2);
 		return vC;

@@ -464,7 +464,7 @@ if(USE_OPEN3D)
   set(OpenKAI_include ${OpenKAI_include} ${Open3D_INCLUDE_DIRS})
   set(OpenKAI_lib ${OpenKAI_lib} ${Open3D_LIBRARIES})
   set(OpenKAI_libDir ${OpenKAI_libDir} ${Open3D_LIBRARY_DIRS})
-  set(Open3D_jsoncpp "Open3D/3rdparty/jsoncpp/include" CACHE STRING "")
+  set(Open3D_jsoncpp "Open3D/build/jsoncpp/include" CACHE STRING "")
   set(OpenKAI_include ${OpenKAI_include} ${Open3D_jsoncpp})
 endif()
 

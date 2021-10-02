@@ -87,17 +87,18 @@ namespace kai
 		IF_(pF->bEmpty());
 		IF_(m_fBGR.tStamp() >= pF->tStamp())
 
-		if(!m_bReady || 
-			pF->size() != cv::Size(m_vSize.x, m_vSize.y))
+		if(!m_bReady || pF->size() != cv::Size(m_vSize.x, m_vSize.y))
 		{
 			cv::Size s = pF->size();
 			m_vSize.x = s.width;
 			m_vSize.y = s.height;
 			m_bReady = scaleCamMatrices();
-			IF_(!m_bReady);
 		}
 
-		m_fBGR.copy(pF->remap(m_m1, m_m2));
+		if(m_bReady)
+			m_fBGR.copy(pF->remap(m_m1, m_m2));
+		else
+			m_fBGR.copy(*pF);
 	}
 }
 #endif
