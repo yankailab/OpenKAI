@@ -99,9 +99,9 @@ namespace kai
 		{
 			m_nElev = m_pS->v(m_iElev);
 			if(m_nElev < 0.4)
-				m_pA->setPtarget(0, -10);
+				m_pA->setPtarget(0, -100);
 			else if(m_nElev > 0.6)
-				m_pA->setPtarget(0, 10);
+				m_pA->setPtarget(0, 100);
 			else
 				m_pA->setStop();
 		}

@@ -121,6 +121,7 @@ void _SerialPort::updateR(void)
 		IF_CONT(nR <= 0);
 
 		m_fifoR.input(pB,nR);
+		m_pTr->wakeUpAll();
 
 		LOG_I("read: " + i2str(nR) + " bytes");
 	}

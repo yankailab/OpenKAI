@@ -22,7 +22,7 @@ namespace kai
 		m_tTo = 0;
 		m_bGoSleep = false;
 		m_bSleeping = false;
-		m_tWakeUp = 0;
+		m_bWakeUp = false;
 
 		pthread_mutex_init(&m_wakeupMutex, NULL);
 		pthread_cond_init(&m_wakeupSignal, NULL);
@@ -49,17 +49,25 @@ namespace kai
 		pK->v("FPS", &FPS);
 		setTargetFPS(FPS);
 
-		vector<string> vWakeup;
-		pK->a("vWakeup", &vWakeup);
-		for (int i = 0; i < vWakeup.size(); i++)
-		{
-			_Thread *pT = (_Thread *)(pK->getInst(vWakeup[i]));
-			IF_CONT(!pT);
-			m_vWakeUp.push_back(pT);
-		}
-
 		return true;
 	}
+
+    bool _Thread::link(void)
+    {
+        IF_F(!this->BASE::link());
+
+        Kiss *pK = (Kiss *)m_pKiss;
+		vector<string> vWakeup;
+		pK->a("vTwakeup", &vWakeup);
+		for (string s : vWakeup)
+		{
+			_Thread *pT = (_Thread *)(pK->getInst(s));
+            NULL_d_F(pT, LOG_E("instance not found: " + s));
+			m_vTwakeup.push_back(pT);
+		}
+
+        return true;
+    }
 
 	bool _Thread::start(void *(*__start_routine)(void *),
 						void *__restrict __arg)
@@ -131,9 +139,15 @@ namespace kai
 
 	void _Thread::wakeUp(void)
 	{
-		m_tWakeUp = m_tFrom;
+		m_bWakeUp = true;
 		m_bGoSleep = false;
 		pthread_cond_signal(&m_wakeupSignal);
+	}
+
+	void _Thread::wakeUpAll(void)
+	{
+		for(_Thread* pT : m_vTwakeup)
+			pT->wakeUp();
 	}
 
 	float _Thread::getFPS(void)
@@ -164,14 +178,9 @@ namespace kai
 
 	void _Thread::autoFPSto(void)
 	{
-		//Pipeline wakeup
-		if (!m_vWakeUp.empty())
-		{
-			for (int i = 0; i < m_vWakeUp.size(); i++)
-				m_vWakeUp[i]->wakeUp();
-		}
-
 		m_tTo = getApproxTbootUs();
+
+		IF_d_(m_bWakeUp, m_bWakeUp = false);
 
 		int uSleep = (int)(m_targetTframe - (m_tTo - m_tFrom));
 		if (uSleep > 1000)
@@ -181,7 +190,7 @@ namespace kai
 
 		if (m_bGoSleep)
 		{
-			IF_(m_tFrom <= m_tWakeUp);
+			IF_d_(m_bWakeUp, m_bWakeUp = false);
 			m_FPS = 0;
 			sleepT(0);
 		}

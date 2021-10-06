@@ -150,6 +150,7 @@ namespace kai
 			}
 
 			m_fifoR.input(pB, nR);
+			m_pTr->wakeUpAll();
 
 			LOG_I("received: " + i2str(nR) + " bytes");
 		}

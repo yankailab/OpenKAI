@@ -41,8 +41,8 @@ public:
 
 	string	m_appName;
 	bool	m_bRun;
-	bool	m_bLog;
 	bool	m_bStdErr;
+	bool	m_bLog;
 	string	m_rc;
 };
 

@@ -8,12 +8,13 @@
 #define SBUS_HEADER_ 0x0F
 #define SBUS_FOOTER_ 0x00
 #define SBUS_FOOTER2_ 0x04
-#define SBUS_LEN_ 35
 #define SBUS_CH17_ 0x01
 #define SBUS_CH18_ 0x02
 #define SBUS_LOST_FRAME_ 0x04
 #define SBUS_FAILSAFE_ 0x08
 #define SBUS_NCHAN 16
+
+#define SBUS_NBUF 35
 
 namespace kai
 {
@@ -24,7 +25,9 @@ namespace kai
 		~_SBus();
 
 		bool init(void *pKiss);
+		bool link(void);
 		bool start(void);
+		int check(void);
 		void console(void *pConsole);
 
 		uint16_t raw(int i);
@@ -47,6 +50,8 @@ namespace kai
 			return NULL;
 		}
 
+		void encodeRaw(void);
+		void decodeRaw(void);
 		void encode(void);
 		void decode(void);
 		uint8_t checksum(uint8_t *pB, uint8_t n);
@@ -57,7 +62,10 @@ namespace kai
 		_IOBase *m_pIO;
 		bool m_bSend;
 
-		uint8_t m_pB[SBUS_LEN_];
+		bool m_bRawSbus;
+		int m_nFrame;
+
+		uint8_t m_pB[SBUS_NBUF];
 		uint8_t m_iB;
 		uint8_t m_flag;
 		bool m_bLostFrame;

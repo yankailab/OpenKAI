@@ -88,7 +88,7 @@
 	}
     {
 		"name":"threadR",
-		"FPS":100,
+		"vTwakeup":["sbus.threadR"],
 	}
 	"port":"/dev/ttyACM0",
 	"/port":"/dev/ttyAMA0",
@@ -105,7 +105,7 @@
 	}
     {
 		"name":"threadR",
-		"FPS":500,
+		"FPS":30,
 	}
 	"bLog":0,
 	"bSend":0,
@@ -249,7 +249,7 @@
 			"pOrigin":0.0,
 			"pTarget":0.0,
 			"pErr":0.01,
-			"pRange":[0,15],
+			"pRange":[-50,50],
 			"sTarget":1500.0,
 			"sRange":[0,1500],
 			"aTarget":10.0,

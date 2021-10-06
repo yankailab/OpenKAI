@@ -30,12 +30,15 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 		m_pKiss = pKiss;
 
-		bool bLog = false;
-		pK->root()->child("APP")->v("bLog", &bLog);
-		if (bLog)
-			pK->v("bLog", &m_bLog);
-
+		pK->v("bLog", &m_bLog);
 		pK->v("bDebug", &m_bDebug);
+
+		return true;
+	}
+
+	bool BASE::link(void)
+	{
+		NULL_F(m_pKiss);
 
 		return true;
 	}

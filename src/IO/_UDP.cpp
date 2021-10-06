@@ -144,6 +144,7 @@ namespace kai
 			}
 
 			m_fifoR.input(pB, nR);
+			m_pTr->wakeUpAll();
 
 			LOG_I("Received " + i2str(nR) + " bytes from ip:" + string(inet_ntoa(m_sAddr.sin_addr)) + ", port:" + i2str(ntohs(m_sAddr.sin_port)));
 		}

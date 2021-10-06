@@ -13,29 +13,29 @@
 namespace kai
 {
 
-class _ModuleBase: public BASE
-{
-public:
-	_ModuleBase();
-	virtual ~_ModuleBase();
-
-	virtual bool init(void* pKiss);
-	virtual bool start(void);
-    virtual int check(void);
-	virtual void console(void* pConsole);
-
-private:
-	void update(void);
-	static void* getUpdate(void* This)
+	class _ModuleBase : public BASE
 	{
-		((_ModuleBase*) This)->update();
-		return NULL;
-	}
-	
-protected:
-    _Thread* m_pT;
-    
-};
+	public:
+		_ModuleBase();
+		virtual ~_ModuleBase();
+
+		virtual bool init(void *pKiss);
+		virtual bool link(void);
+		virtual bool start(void);
+		virtual int check(void);
+		virtual void console(void *pConsole);
+
+	private:
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_ModuleBase *)This)->update();
+			return NULL;
+		}
+
+	protected:
+		_Thread *m_pT;
+	};
 
 }
 #endif

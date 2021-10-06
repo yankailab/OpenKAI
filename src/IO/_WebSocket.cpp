@@ -138,6 +138,7 @@ namespace kai
 
 			m_fifoR.input(pB, nR);
 			decodeMsg();
+			m_pTr->wakeUpAll();
 		}
 	}
 

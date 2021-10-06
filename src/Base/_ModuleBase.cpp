@@ -10,57 +10,67 @@
 namespace kai
 {
 
-_ModuleBase::_ModuleBase()
-{
-    m_pT = NULL;
-}
+    _ModuleBase::_ModuleBase()
+    {
+        m_pT = NULL;
+    }
 
-_ModuleBase::~_ModuleBase()
-{
-    DEL(m_pT);
-}
-
-bool _ModuleBase::init(void* pKiss)
-{
-	IF_F(!this->BASE::init(pKiss));
-	Kiss* pK = (Kiss*) pKiss;
-
-    Kiss* pKt = pK->child("thread");
-    IF_T(pKt->empty());
-    
-    m_pT = new _Thread();
-    if(!m_pT->init(pKt))
+    _ModuleBase::~_ModuleBase()
     {
         DEL(m_pT);
-        return false;
     }
-    
-	return true;
-}
 
-bool _ModuleBase::start(void)
-{
-    NULL_F(m_pT);
-	return m_pT->start(getUpdate, this);
-}
+    bool _ModuleBase::init(void *pKiss)
+    {
+        IF_F(!this->BASE::init(pKiss));
+        Kiss *pK = (Kiss *)pKiss;
 
-int _ModuleBase::check(void)
-{
-    NULL__(m_pT, -1);
-    
-	return BASE::check();
-}
+        Kiss *pKt = pK->child("thread");
+        IF_d_T(pKt->empty(), LOG_E("thread not found"));
 
-void _ModuleBase::update(void)
-{
-}
+        m_pT = new _Thread();
+        if (!m_pT->init(pKt))
+        {
+            DEL(m_pT);
+            LOG_E("thread init failed");
+            return false;
+        }
 
-void _ModuleBase::console(void* pConsole)
-{
-    this->BASE::console(pConsole);
+        pKt->m_pInst = m_pT;
+        return true;
+    }
 
-    NULL_(m_pT);
-    m_pT->console(pConsole);
-}
+    bool _ModuleBase::link(void)
+    {
+        IF_F(!this->BASE::link());
+        IF_F(!m_pT->link());
+
+        return true;
+    }
+
+    bool _ModuleBase::start(void)
+    {
+        NULL_F(m_pT);
+        return m_pT->start(getUpdate, this);
+    }
+
+    int _ModuleBase::check(void)
+    {
+        NULL__(m_pT, -1);
+
+        return BASE::check();
+    }
+
+    void _ModuleBase::update(void)
+    {
+    }
+
+    void _ModuleBase::console(void *pConsole)
+    {
+        this->BASE::console(pConsole);
+
+        NULL_(m_pT);
+        m_pT->console(pConsole);
+    }
 
 }

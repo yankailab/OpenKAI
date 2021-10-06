@@ -21,6 +21,7 @@ public:
 	virtual ~_Thread();
 
 	virtual bool init(void* pKiss);
+	virtual bool link(void);
     virtual bool start(void *(*__start_routine) (void *), void *__restrict __arg);
 	virtual void console(void* pConsole);
 
@@ -29,7 +30,9 @@ public:
 	virtual bool bGoSleep(void);
 	virtual void sleepT (int64_t usec);
 	virtual bool bSleeping(void);
-	virtual void wakeUp(void);
+
+	virtual void wakeUp(void); //wake up this instance
+	void wakeUpAll(void); //wake up all the other instances
 
 	virtual float getFPS(void);
 	virtual void setTargetFPS(float fps);
@@ -55,10 +58,10 @@ protected:
 	float m_FPS;
 	bool m_bGoSleep;
 	bool m_bSleeping;
-    
-    //Pipeline
-    vector<_Thread*> m_vWakeUp;
-    uint64_t m_tWakeUp;
+    bool m_bWakeUp;
+
+	// linked
+    vector<_Thread*> m_vTwakeup;
 };
 
 }

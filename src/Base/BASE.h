@@ -22,6 +22,7 @@ public:
 	virtual ~BASE();
 
 	virtual bool init(void* pKiss);
+	virtual bool link(void);
 	virtual bool start(void);
 	virtual int check(void);
 	virtual void cvDraw(void* pWindow);

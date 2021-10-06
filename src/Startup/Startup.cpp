@@ -16,8 +16,8 @@ Startup::Startup()
 {
 	m_appName = "";
 	m_bRun = true;
-	m_bLog = true;
 	m_bStdErr = true;
+	m_bLog = false;
 	m_rc = "";
 	m_vInst.clear();
 }
@@ -43,8 +43,8 @@ bool Startup::start(Kiss* pKiss)
 	pApp->m_pInst = (BASE*)this;
 
 	pApp->v("appName", &m_appName);
-	pApp->v("bLog", &m_bLog);
 	pApp->v("bStdErr", &m_bStdErr);
+	pApp->v("bLog", &m_bLog);
 	pApp->v("rc", &m_rc);
 
 	if(!m_rc.empty())
@@ -62,11 +62,16 @@ bool Startup::start(Kiss* pKiss)
 	printEnvironment();
 
 	F_ERROR_F(createAllInst(pKiss));
-
 	unsigned int i;
+
 	for (i = 0; i < m_vInst.size(); i++)
 	{
 		F_ERROR_F(m_vInst[i].m_pInst->init(m_vInst[i].m_pKiss));
+	}
+
+	for (i = 0; i < m_vInst.size(); i++)
+	{
+		F_ERROR_F(m_vInst[i].m_pInst->link());
 	}
 
 	for (i = 0; i < m_vInst.size(); i++)
