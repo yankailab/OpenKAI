@@ -12,7 +12,6 @@ namespace kai
 
 	_UDP::_UDP()
 	{
-		m_pTr = NULL;
 		m_socket = -1;
 		m_addr = "";
 		m_port = DEFAULT_UDP_PORT;
@@ -25,7 +24,6 @@ namespace kai
 	_UDP::~_UDP()
 	{
 		close();
-		DEL(m_pTr);
 	}
 
 	bool _UDP::init(void *pKiss)
@@ -45,6 +43,7 @@ namespace kai
 			DEL(m_pTr);
 			return false;
 		}
+        pKt->m_pInst = m_pTr;
 
 		return true;
 	}

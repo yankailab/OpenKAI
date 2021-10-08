@@ -12,7 +12,6 @@ namespace kai
 
 	_TCPclient::_TCPclient()
 	{
-		m_pTr = NULL;
 		m_strAddr = "";
 		m_port = 0;
 		m_bClient = true;
@@ -25,7 +24,6 @@ namespace kai
 	_TCPclient::~_TCPclient()
 	{
 		close();
-		DEL(m_pTr);
 	}
 
 	bool _TCPclient::init(void *pKiss)
@@ -47,6 +45,7 @@ namespace kai
 			DEL(m_pTr);
 			return false;
 		}
+        pKt->m_pInst = m_pTr;
 
 		return true;
 	}

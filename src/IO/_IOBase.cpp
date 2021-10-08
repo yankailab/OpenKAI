@@ -12,8 +12,8 @@ namespace kai
 
 	_IOBase::_IOBase()
 	{
-		m_rThreadID = 0;
-		m_bRThreadON = false;
+		m_pTr = NULL;
+
 		m_ioType = io_none;
 		m_ioStatus = io_unknown;
 		m_nFIFO = 1280000;
@@ -21,6 +21,8 @@ namespace kai
 
 	_IOBase::~_IOBase()
 	{
+        DEL(m_pTr);
+
 		m_fifoW.release();
 		m_fifoR.release();
 	}
@@ -36,6 +38,18 @@ namespace kai
 
 		return true;
 	}
+
+    bool _IOBase::link(void)
+    {
+        IF_F(!this->_ModuleBase::link());
+
+		if(m_pTr)
+		{
+	        IF_F(!m_pTr->link());
+		}
+
+        return true;
+    }
 
 	bool _IOBase::open(void)
 	{

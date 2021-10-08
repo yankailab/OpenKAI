@@ -12,7 +12,6 @@ namespace kai
 
 	_WebSocket::_WebSocket()
 	{
-		m_pTr = NULL;
 		m_fifoIn = "/tmp/wspipein.fifo";
 		m_fifoOut = "/tmp/wspipeout.fifo";
 		m_fdW = 0;
@@ -29,7 +28,6 @@ namespace kai
 		pthread_mutex_destroy(&m_mutexW);
 		m_vClient.clear();
 		close();
-		DEL(m_pTr);
 	}
 
 	bool _WebSocket::init(void *pKiss)
@@ -51,6 +49,7 @@ namespace kai
 			DEL(m_pTr);
 			return false;
 		}
+        pKt->m_pInst = m_pTr;
 
 		return true;
 	}

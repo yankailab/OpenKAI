@@ -81,7 +81,6 @@ private:
 	}
 
 public:
-    _Thread* m_pTr;
 	string	m_fifoIn;
 	string	m_fifoOut;
 	int		m_fdW;

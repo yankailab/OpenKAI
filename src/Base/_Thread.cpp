@@ -170,6 +170,7 @@ namespace kai
 
 	void _Thread::autoFPSfrom(void)
 	{
+		m_bWakeUp = false;
 		uint64_t tNow = getApproxTbootUs();
 		m_dT = (float)(tNow - m_tFrom + 1);
 		m_tFrom = tNow;

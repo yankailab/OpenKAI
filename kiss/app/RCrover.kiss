@@ -2,7 +2,6 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"RCrover",
-	"bLog":1,
 	"bStdErr":0,
 	"/rc":"sudo modprobe bcm2835-v4l2\nv4l2-ctl -d /dev/video0 --set-ctrl=rotate=0\n",
 }
@@ -107,10 +106,11 @@
 		"name":"threadR",
 		"FPS":30,
 	}
-	"bLog":0,
+	"bLog":1,
 	"bSend":0,
 	"_IOBase":"sSBus",
 	"vRawRC":[200,1002,1947],
+	"bRawSbus":1,
 }
 
 {

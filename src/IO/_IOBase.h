@@ -136,6 +136,7 @@ public:
 	virtual ~_IOBase();
 
 	virtual bool init(void* pKiss);
+	virtual bool link(void);
 	virtual bool open(void);
 	virtual bool isOpen(void);
 	virtual void close(void);
@@ -154,8 +155,7 @@ public:
 	IO_FIFO		m_fifoW;
 	IO_FIFO		m_fifoR;
 
-	pthread_t m_rThreadID;
-	bool	m_bRThreadON;
+    _Thread* m_pTr;
 
 };
 
