@@ -101,6 +101,7 @@ namespace kai
 
 		// draw
 		MSG_SHOW m_msg;
+		int m_dMsg;
 		vFloat2 m_vCircleSize;
 		int m_crossSize;
 		Scalar m_drawCol;

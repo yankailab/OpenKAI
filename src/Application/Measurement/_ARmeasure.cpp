@@ -32,6 +32,7 @@ namespace kai
 
 		m_vCircleSize.init(10, 20);
 		m_crossSize = 20;
+		m_dMsg = 100000;
 		m_drawCol = Scalar(0, 255, 0);
 		m_pFt = NULL;
 	}
@@ -51,6 +52,7 @@ namespace kai
 		pK->v("vAxisIdx", &m_vAxisIdx);
 		pK->v("vCircleSize", &m_vCircleSize);
 		pK->v("crossSize", &m_crossSize);
+		pK->v("dMsg", &m_dMsg);
 		pK->v("vDorgP", &m_vDofsP);
 		pK->v("vCorgP", &m_vCofsP);
 		pK->v("dirSave", &m_dirSave);
@@ -142,8 +144,8 @@ namespace kai
 		else
 			m_bValidPose = (m_pN->confidence() > m_minPoseConfidence);
 
-		IF_d_F(!m_bValidDist, m_msg.set("Distance error", 1, false, 100000));
-		IF_d_F(!m_bValidPose, m_msg.set("Tracking lost", 1, false, 100000));
+		IF_d_F(!m_bValidDist, m_msg.set("Distance error", 1, false, m_dMsg));
+		IF_d_F(!m_bValidPose, m_msg.set("Tracking lost", 1, false, m_dMsg));
 
 		m_vDptP = {m_vDofsP.x, m_d, m_vDofsP.z};
 
@@ -267,20 +269,47 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		// save screen shot to USB memory
+		// save screenshot to USB memory
 		Mat m;
 		m_pW->getFrame()->m()->copyTo(m);
 		vector<int> vPNG;
 		vPNG.push_back(IMWRITE_PNG_COMPRESSION);
 		vPNG.push_back(1);
 
-		if (imwrite(m_dirSave + tFormat() + ".png", m, vPNG))
+		DIR *pDirIn = opendir(m_dirSave.c_str());
+		if (!pDirIn)
+		{
+			m_msg.set(m_dirSave + ": not found", 1);
+			return;
+		}
+
+		struct dirent *dir;
+		ifstream ifs;
+		string d = "";
+		while ((dir = readdir(pDirIn)) != NULL)
+		{
+			IF_CONT(dir->d_name[0] == '.');
+			IF_CONT(dir->d_type != 0x4); //0x4: folder
+
+			d = m_dirSave + string(dir->d_name);
+			d = checkDirName(d);
+		}
+
+		closedir(pDirIn);
+
+		if (d.empty())
+		{
+			m_msg.set("Insert USB memory", 1);
+			return;
+		}
+
+		if (imwrite(d + tFormat() + ".png", m, vPNG))
 		{
 			m_msg.set("Saved to USB memory");
 		}
 		else
 		{
-			m_msg.set("Cannot write to USB memory",1);
+			m_msg.set("Cannot write to USB memory", 1);
 		}
 	}
 
@@ -292,7 +321,7 @@ namespace kai
 	}
 
 	// UI draw
-	void _ARmeasure::setMsg(const string& msg, int type, bool bOverride)
+	void _ARmeasure::setMsg(const string &msg, int type, bool bOverride)
 	{
 		m_msg.set(msg, type, bOverride);
 	}
@@ -393,9 +422,9 @@ namespace kai
 		Point pt;
 		pt.x = constrain(320 - ts.width / 2, 0, pM->cols);
 		pt.y = constrain(pM->rows / 2 - ts.height, 0, pM->rows);
-		Scalar c = Scalar(0,255,0);
-		if(m_msg.m_type == 1)
-			c = Scalar(0,0,255);
+		Scalar c = Scalar(0, 255, 0);
+		if (m_msg.m_type == 1)
+			c = Scalar(0, 0, 255);
 
 		m_pFt->putText(*pM, m_msg.get(),
 					   pt,

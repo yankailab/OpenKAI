@@ -27,7 +27,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["ARvertex","ARfree","ARcalibCam","ARcalibDofs","ARmeasure","/cam","/remap"],
+	"vBASE":["ARvertex","ARfree","ARcalibCam","ARcalibDofs","ARmeasure","RaspiBatt","/cam","/remap"],
 	"vSize":[800,480],
 	"font":"/home/kai/dev/font/bebas-neue-font/BebasNeueRegular-2O7wW.ttf",
 	"/font":"/home/pi/ARmeasure/bn.ttf",
@@ -314,13 +314,14 @@
 	"_DistSensorBase":"TF03",
 	"_NavBase":"T265",
 	"_WindowCV":"UI",
+	"dMsg":100000,
 	"vRange":[0.1,330],
 	"vKlaserSpot":[0.007, -0.002],
 	"vAxisIdx":[0,2,1],
 	"vDorgP":[0,0,0],
 	"vCorgP":[0,0,0],
 	"dirSave":"/home/kai/ARmeasure/",
-	"/dirSave":"/media/pi/usb/",
+	"/dirSave":"/media/pi/",
 	"fCalibOfs":"/home/kai/ARmeasure/calibOfs.kiss",
 	"/fCalibOfs":"/home/pi/ARmeasure/calibOfs.kiss",
 }
@@ -393,7 +394,7 @@
 {
 	"name":"RaspiBatt",
 	"class":"_RaspiWSbattery",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":0.1,

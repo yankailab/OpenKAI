@@ -107,7 +107,7 @@ namespace kai
 		string sB = "Bat." + i2str((int)m_battP) + "%";
 
 		Point pt;
-		pt.x = 500;
+		pt.x = 510;
 		pt.y = pMw->rows - 45;
 
 		pFt->putText(*pMw, sB,

@@ -99,7 +99,7 @@
 	"class":"_SBus",
 	"bInst":1,
     {
-		"name":"thread",
+		"name":"thread", 
 		"FPS":30,
 	}
     {
