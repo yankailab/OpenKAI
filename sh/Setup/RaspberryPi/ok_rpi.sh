@@ -59,8 +59,6 @@ sudo sh -c "echo '#!/bin/sh\n/home/pi/usbReset.sh\n/home/pi/ok.sh &\nexit 0\n' >
 set -H
 sudo chmod a+x /etc/rc.local
 
-
-
 # speed up
 
 # overlays
@@ -119,3 +117,6 @@ sudo nano /etc/xdg/lxsession/LXDE-pi/autostart
 sudo nano /lib/systemd/system/ok.service
 sudo systemctl daemon-reload
 sudo systemctl enable ok.service
+
+# clear bash history
+history -c

@@ -197,7 +197,8 @@ if __name__=='__main__':
     shunt_voltage = ina219.getShuntVoltage_mV() / 1000 # voltage between V+ and V- across the shunt
     current = ina219.getCurrent_mA()                   # current in mA
     power = ina219.getPower_W()                        # power in W
-    p = (bus_voltage - 6)/2.4*100
+#    p = (bus_voltage - 6)/2.4*100
+    p = (bus_voltage - 6)/2*100
     if(p > 100):p = 100
     if(p < 0):p = 0
 

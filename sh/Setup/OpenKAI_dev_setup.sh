@@ -16,37 +16,10 @@ sudo apt-get install ssh
 systemctl start sshd
 
 #----------------------------------------------------
-# For Jetson
-# Change performace setting and make it auto start
-sudo rm /etc/rc.local
-set +H
-sudo sh -c "echo '#!/bin/sh\njetson_clocks\nnvpmodel -m 0\n/home/lab/ok.sh &\nexit 0\n' >> /etc/rc.local"
-set -H
-sudo chmod a+x /etc/rc.local
-#sudo nvpmodel -q --verbose
-#set nvpmodel -m 2 for Jetson Xavier NX
-
-# (Optional) auto mount sd card on boot
-#sudo sh -c "echo '#!/bin/sh\njetson_clocks\nnvpmodel -m 0\nmount /dev/mmcblk1p1 /mnt/sd\n/home/lab/ok.sh &\nexit 0\n' >> /etc/rc.local"
-
-# CUDA
-sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda/lib64:\$LD_LIBRARY_PATH\nexport LC_ALL=en_US.UTF-8" >> ~/.bashrc
-
-# Delete unused modules that conflicts the serial comm
-sudo systemctl stop ModemManager
-sudo apt-get -y purge whoopsie modemmanager && sudo apt autoremove
-systemctl stop nvgetty
-systemctl disable nvgetty
-udevadm trigger
-sudo reboot now
-
-# Switching start up desktop
-sudo systemctl set-default multi-user.target
-#sudo systemctl set-default graphical.target
-
-#----------------------------------------------------
 # System setup
 sudo apt-get update
+#sudo apt-get upgrade
+#sudo apt-get dist-upgrade
 
 # GCC
 sudo apt-get -y install g++-10 gcc-10
@@ -320,14 +293,6 @@ sudo dd if=~/sd.img of=/dev/sdb bs=6M
 
 
 # Outdated, to be updated
-#----------------------------------------------------
-# (Optional) Innfos Gluon
-git clone --depth 1 https://github.com/innfos/innfos-gluon-cpp-sdk.git
-sudo cp -r innfos-gluon-cpp-sdk/sdk/sca_sdk/include/ /usr/local/include/innfos_sca_sdk/
-sudo cp -r innfos-gluon-cpp-sdk/sdk/sca_sdk/lib/linux_x86_64/* /usr/local/lib/
-sudo cp -r innfos-gluon-cpp-sdk/sdk/sdk/include/ /usr/local/include/innfos_sdk/
-sudo cp -r innfos-gluon-cpp-sdk/sdk/sdk/lib/* /usr/local/lib/
-
 #----------------------------------------------------
 # (Optional) Hypersen HPS3D
 git clone --depth 1 https://github.com/hypersen/HPS3D_SDK.git
