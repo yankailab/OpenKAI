@@ -73,9 +73,9 @@ sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/us
 
 #----------------------------------------------------
 # CMake
-wget https://github.com/Kitware/CMake/releases/download/v3.20.0/cmake-3.20.0.tar.gz
-tar xvf cmake-3.21.1.tar.gz
-cd cmake-3.21.1
+wget https://github.com/Kitware/CMake/releases/download/v3.21.4/cmake-3.21.4.tar.gz
+tar xvf cmake-3.21.4.tar.gz
+cd cmake-3.21.4
 ./bootstrap
 make -j$(nproc)
 sudo make install

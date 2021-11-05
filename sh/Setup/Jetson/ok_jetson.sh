@@ -1,24 +1,25 @@
 #!/bin/bash
 
-sudo apt-get update
-sudo apt-get install nano
+sudo apt-get -y update
+sudo apt-get -y install nano
 
 # Rotate screen
-DISPLAY=:0 xrandr -o right
+# DISPLAY=:0 xrandr -o right
+echo -e '#!/bin/sh\nDISPLAY=:0 xrandr -o right\n' > ~/xrandr.sh
+sudo chmod a+x ~/xrandr.sh
 # add xrandr.sh to Startup Application
 
 # Rotate touchscreen
-# for Raspberry Pi
-sudo apt-get install xserver-xorg-input-libinput
 # for Ubuntu and Jetson
 sudo apt install xserver-xorg-input-synaptics
+# for Raspberry Pi
+# sudo apt-get install xserver-xorg-input-libinput
 # create the following dir if there isn't one
 sudo mkdir /etc/X11/xorg.conf.d
 sudo cp /usr/share/X11/xorg.conf.d/40-libinput.conf /etc/X11/xorg.conf.d/
 sudo nano /etc/X11/xorg.conf.d/40-libinput.conf 
 # add the following line into "touchscreen" section, then save it
 Option "CalibrationMatrix" "0 1 0 -1 0 1 0 0 1"
-sudo reboot
 # rotation matrix
 90 ： Option "CalibrationMatrix" "0 1 0 -1 0 1 0 0 1"
 180： Option "CalibrationMatrix" "-1 0 1 0 -1 1 0 0 1"
@@ -27,10 +28,11 @@ sudo reboot
 # Change performace setting and make it auto start
 sudo rm /etc/rc.local
 set +H
-sudo sh -c "echo '#!/bin/sh\njetson_clocks\nnvpmodel -m 0\n/home/lab/ok.sh &\nexit 0\n' >> /etc/rc.local"
+sudo sh -c "echo '#!/bin/sh\njetson_clocks\nnvpmodel -m 8\n/home/lab/ok.sh &\nexit 0\n' >> /etc/rc.local"
 set -H
 sudo chmod a+x /etc/rc.local
 #sudo nvpmodel -q --verbose
+#set nvpmodel -m 0 for Jetson Nano
 #set nvpmodel -m 8 for Jetson Xavier NX
 
 # (Optional) auto mount sd card on boot
@@ -46,11 +48,23 @@ sudo apt-get -y purge whoopsie modemmanager
 sudo systemctl stop nvgetty
 sudo systemctl disable nvgetty
 udevadm trigger
-sudo apt -y remove libreoffice* yelp thunderbird rhythmbox
-sudo apt -y remove --purge libreoffice*
+sudo apt -y remove --purge libreoffice* yelp thunderbird rhythmbox
 
 sudo apt autoremove
 sudo reboot now
+
+# Migrate system to SD card / NVMe if necessary
+
+# Clone SD image
+sudo dd if=/dev/sdb of=~/Jetson.img
+
+# set CSI camera interface
+sudo /opt/nvidia/jetson-io/jetson-io.py
+
+# install CUDA etc. with Nvidia SDK Manager
+
+
+
 
 
 # CUDA
@@ -82,7 +96,6 @@ sudo systemctl disable apt-daily.timer
 sudo systemctl disable apt-daily-upgrade.timer
 sudo systemctl disable apt-daily-upgrade.service
 sudo systemctl disable man-db.service
-sudo systemctl disable rpi-eeprom-update.service
 sudo systemctl disable wpa_supplicant.service
 sudo systemctl disable wifi-country.service
 sudo systemctl disable avahi-daemon.service

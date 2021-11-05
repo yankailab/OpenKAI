@@ -8,18 +8,24 @@ namespace open3d
 	{
 		namespace visualizer
 		{
-			class PCscanUI : public O3DUI
+			class PCselectUI : public O3DUI
 			{
 			public:
-				PCscanUI(const string &title, int width, int height);
-				virtual ~PCscanUI();
+				PCselectUI(const string &title, int width, int height);
+				virtual ~PCselectUI();
 
 				//overloaded
 				virtual void Init(void);
 				virtual void camMove(Vector3f vM);
 				virtual void UpdateUIstate(void);
 
+            	void SetSelectedPointSize(double px);
+            	void UpdateSelectedPointSize(void);
+
 	            void SetMouseCameraMode(void);
+	            void SetMousePickingMode(void);
+				vector<O3DVisualizerSelections::SelectionSet> GetSelectionSets() const;
+
 				void SetProgressBar(float v);
 	            void SetLabelArea(const string &s);
 				void SetCbScan(OnCbO3DUI pCb, void *pPCV);
@@ -35,6 +41,17 @@ namespace open3d
 				void InitCtrlPanel(void);
 				void UpdateBtnState(void);
 	            void UpdateSelectableGeometry(void);
+				
+	            void NewVertexSet(void);
+            	void SelectVertexSet(int i);
+	            void UpdateVertexSetList(void);
+            	void RemoveVertexSet(int i);
+	            void RemoveAllVertexSet(void);
+
+				void UpdateArea(void);
+				void RemoveDistLabel(void);
+				double Area(vector<Vector3d> &vP);
+
 				void OnSaveRGB(void);
 				void OnSavePLY(void);
 				void OnOpenPLY(void);
@@ -45,6 +62,7 @@ namespace open3d
 				string m_areaName;
 				bool m_bScanning;
 				bool m_bCamAuto;
+				vector<shared_ptr<Label3D>> m_vspDistLabel;
 
 				//UI components
 				Vert *m_panelCtrl;
@@ -70,6 +88,11 @@ namespace open3d
 				Button *m_btnScan;
 				ProgressBar *m_progScan;
 				Label *m_labelProg;
+
+				Button *m_btnNewVertexSet;
+				Button *m_btnDeleteVertexSet;
+				ListView *m_listVertexSet;
+				Label *m_labelArea;
 
 				//UI handler
 				O3D_UI_Cb m_cbScan;

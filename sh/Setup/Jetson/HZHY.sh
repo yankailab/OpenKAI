@@ -45,8 +45,7 @@ sudo ./flash.sh jetson-nano-emmc mmcblk0p1
 # Jetson Nano [developer kit version](P3448-0000 module)
 sudo ./flash.sh jetson-nano-devkit mmcblk0p1
 
-# copy system to SD card, insert a formated SD card
-# on Jetson
+# copy system to SD card, insert a formated SD card on Jetson
 df -h
 sudo umount /dev/mmcblk1p1
 sudo mkfs.ext4 /dev/mmcblk1p1
@@ -55,3 +54,9 @@ sudo ./setup-service.sh
 sync
 sudo reboot now
 df -h
+# clone the SD card and insert to another unit, then run
+sudo ./setup-service.sh
+sync
+sudo reboot now
+df -h
+

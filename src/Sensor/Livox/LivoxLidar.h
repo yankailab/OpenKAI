@@ -40,6 +40,7 @@ typedef enum {
 
 typedef struct {
     bool enable_fan;
+    LidarMode lidar_mode;
     uint32_t return_mode;
     uint32_t coordinate;
     uint32_t imu_rate;
@@ -60,7 +61,6 @@ typedef struct {
     LivoxDataCallback pDataCb;
     void* pLivox;
 } LidarDevice;
-
 
 /**
  * LiDAR data source, data from dependent lidar.
@@ -84,9 +84,20 @@ public:
     ~LivoxLidar();
     LivoxLidar& operator= ( const LivoxLidar& ) = delete;
 
+    bool setDataCallback ( const string& broadcastCode, LivoxDataCallback pCb, void* pLivox );
+    bool setLidarMode ( const string& broadcastCode, LidarMode m);
+    LidarDevice* findLidarDevice(const string& broadcastCode);
+
+public:
+    bool m_bEnableFan;
+    uint32_t m_returnMode;
+    uint32_t m_coordinate;
+    uint32_t m_imuRate;
+    uint32_t m_scanPattern;
+    vector<string> m_vBroadcastCode;
+
 private:
-    static void GetLidarDataCb ( uint8_t handle, LivoxEthPacket *data,
-                                 uint32_t data_num, void *client_data );
+    static void GetLidarDataCb      ( uint8_t handle, LivoxEthPacket *data, uint32_t data_num, void *client_data );
     static void OnDeviceBroadcast   ( const BroadcastDeviceInfo *info );
     static void OnDeviceChange      ( const DeviceInfo *info, DeviceEvent type );
     static void StartSampleCb       ( livox_status status, uint8_t handle, uint8_t response, void *clent_data );
@@ -94,6 +105,7 @@ private:
     static void DeviceInformationCb ( livox_status status, uint8_t handle, DeviceInformationResponse *ack, void *clent_data );
     static void LidarErrorStatusCb  ( livox_status status, uint8_t handle, ErrorMessage *message );
     static void ControlFanCb        ( livox_status status, uint8_t handle, uint8_t response, void *clent_data );
+    static void SetLidarModeCb   ( livox_status status, uint8_t handle, uint8_t response, void *clent_data );
     static void SetPointCloudReturnModeCb   ( livox_status status, uint8_t handle, uint8_t response, void *clent_data );
     static void SetCoordinateCb     ( livox_status status, uint8_t handle, uint8_t response, void *clent_data );
     static void SetImuRatePushFrequencyCb   ( livox_status status, uint8_t handle, uint8_t response, void *clent_data );
@@ -102,7 +114,6 @@ private:
     int AddBroadcastCodeToWhitelist ( const char* broadcast_code );
     void AddLocalBroadcastCode ( void );
     bool FindInWhitelist ( const char* broadcast_code );
-
     void EnableAutoConnectMode ( void )
     {
         auto_connect_mode_ = true;
@@ -123,18 +134,7 @@ private:
 
     uint32_t lidar_count_;
     LidarDevice lidars_[kMaxLidarCount];
-
     uint32_t data_recveive_count_[kMaxLidarCount];
-
-public:
-    bool setDataCallback ( const string& broadcastCode, LivoxDataCallback pCb, void* pLivox );
-    bool m_bEnableFan;
-    uint32_t m_returnMode;
-    uint32_t m_coordinate;
-    uint32_t m_imuRate;
-    uint32_t m_scanPattern;
-    vector<string> m_vBroadcastCode;
-
 };
 
 }

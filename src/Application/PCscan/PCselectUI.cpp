@@ -1,5 +1,5 @@
 #ifdef USE_OPEN3D
-#include "PCscanUI.h"
+#include "PCselectUI.h"
 
 namespace open3d
 {
@@ -16,16 +16,16 @@ namespace open3d
                 }
             }
 
-            PCscanUI::PCscanUI(const string &title, int width, int height)
+            PCselectUI::PCselectUI(const string &title, int width, int height)
                 : O3DUI(title, width, height)
             {
                 Init();
                 Application::GetInstance().SetMenubar(NULL);
             }
 
-            PCscanUI::~PCscanUI() {}
+            PCselectUI::~PCselectUI() {}
 
-            void PCscanUI::Init(void)
+            void PCselectUI::Init(void)
             {
                 this->O3DUI::Init();
 
@@ -34,12 +34,35 @@ namespace open3d
                 m_areaName = "PCAREA";
 
                 m_sVertex = make_shared<O3DVisualizerSelections>(*m_pScene);
+                m_pScene->SetOnPointsPicked(
+                    [this](const std::map<
+                               string,
+                               vector<pair<size_t, Vector3d>>>
+                               &indices,
+                           int keymods) {
+                        if (keymods & int(KeyModifier::SHIFT))
+                        {
+                            m_sVertex->UnselectIndices(indices);
+                        }
+                        else
+                        {
+                            m_sVertex->SelectIndices(indices);
+                        }
+
+                        UpdateSelectedPointSize();
+                        UpdateArea();
+                    });
+                m_pScene->SetOnCameraChanged(
+                    [this](Camera *pC) {
+                        UpdateSelectedPointSize();
+                    });
+
                 InitCtrlPanel();
                 UpdateUIstate();
                 SetMouseCameraMode();
             }
 
-            void PCscanUI::camMove(Vector3f vM)
+            void PCselectUI::camMove(Vector3f vM)
             {
                 auto pC = m_pScene->GetScene()->GetCamera();
                 auto mm = pC->GetModelMatrix();
@@ -52,7 +75,7 @@ namespace open3d
                 m_pScene->ForceRedraw();
             }
 
-            void PCscanUI::UpdateUIstate(void)
+            void PCselectUI::UpdateUIstate(void)
             {
                 m_panelCtrl->SetVisible(m_uiState.m_bShowPanel);
                 UpdateBtnState();
@@ -60,7 +83,7 @@ namespace open3d
                 this->O3DUI::UpdateUIstate();
             }
 
-            void PCscanUI::UpdateBtnState(void)
+            void PCselectUI::UpdateBtnState(void)
             {
                 m_btnScan->SetOn(m_bScanning);
                 m_btnCamAuto->SetOn(m_bCamAuto);
@@ -77,6 +100,9 @@ namespace open3d
                 m_btnOpenPC->SetEnabled(!m_bScanning);
                 m_btnSavePC->SetEnabled(!m_bScanning);
                 m_btnSaveRGB->SetEnabled(!m_bScanning);
+                m_btnNewVertexSet->SetEnabled(!m_bScanning);
+                m_btnDeleteVertexSet->SetEnabled(!m_bScanning);
+                m_listVertexSet->SetEnabled(!m_bScanning);
                 m_sliderVsize->SetEnabled(!m_bScanning);
                 m_btnHiddenRemove->SetEnabled(!m_bScanning);
                 m_btnFilterReset->SetEnabled(!m_bScanning);
@@ -84,6 +110,7 @@ namespace open3d
                 if (m_bScanning)
                 {
                     m_btnScan->SetText("        Stop        ");
+                    m_labelArea->SetText("Area not selected");
                     SetMouseCameraMode();
                 }
                 else
@@ -94,7 +121,41 @@ namespace open3d
                 m_pScene->ForceRedraw();
             }
 
-            void PCscanUI::SetMouseCameraMode(void)
+            void PCselectUI::SetSelectedPointSize(double px)
+            {
+                IF_(!m_sVertex->GetNumberOfSets());
+                m_sVertex->SetPointSize(px);
+                m_pScene->ForceRedraw();
+            }
+
+            void PCselectUI::UpdateSelectedPointSize(void)
+            {
+                int iS = m_listVertexSet->GetSelectedIndex();
+                size_t nSet = m_sVertex->GetNumberOfSets();
+                if (iS < 0 || iS >= nSet)
+                    return;
+
+                std::map<string, set<O3DVisualizerSelections::SelectedIndex>> msSI;
+                msSI = m_sVertex->GetSets().at(iS);
+                set<O3DVisualizerSelections::SelectedIndex> sSI = msSI[m_modelName];
+                int nP = sSI.size();
+
+                if (nP <= 0)
+                    return;
+
+                //update selected point size based on its pos related to camera
+                m_uiState.m_vCamPos = m_pScene->GetScene()->GetCamera()->GetPosition();
+                float dAvr = 0.0;
+                for (O3DVisualizerSelections::SelectedIndex s : sSI)
+                {
+                    dAvr += (m_uiState.m_vCamPos - s.point.cast<float>()).norm();
+                }
+                dAvr /= (float)nP;
+                SetSelectedPointSize(constrain(dAvr / 100.0, 0.025, 100.0));
+            }
+
+
+            void PCselectUI::SetMouseCameraMode(void)
             {
                 if (m_sVertex->IsActive() && m_sVertex->GetNumberOfSets() > 0)
                     m_sVertex->MakeInactive();
@@ -103,45 +164,64 @@ namespace open3d
                 m_uiMode = uiMode_cam;
             }
 
-            void PCscanUI::SetProgressBar(float v)
+            void PCselectUI::SetMousePickingMode(void)
+            {
+                if (m_sVertex->GetNumberOfSets() > 0)
+                    m_sVertex->MakeActive();
+
+                m_pScene->SetViewControls(SceneWidget::Controls::PICK_POINTS);
+                m_uiMode = uiMode_pointPick;
+            }
+
+            vector<O3DVisualizerSelections::SelectionSet> PCselectUI::GetSelectionSets() const
+            {
+                return m_sVertex->GetSets();
+            }
+
+            void PCselectUI::SetProgressBar(float v)
             {
                 m_progScan->SetValue(v);
                 string s = "Memory used: " + i2str((int)(v * 100)) + "%";
                 m_labelProg->SetText(s.c_str());
             }
 
-            void PCscanUI::SetCbScan(OnCbO3DUI pCb, void *pPCV)
+            void PCselectUI::SetLabelArea(const string &s)
+            {
+                m_labelArea->SetText(s.c_str());
+            }
+
+            void PCselectUI::SetCbScan(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbScan.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbOpenPC(OnCbO3DUI pCb, void *pPCV)
+            void PCselectUI::SetCbOpenPC(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbOpenPC.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbCamSet(OnCbO3DUI pCb, void *pPCV)
+            void PCselectUI::SetCbCamSet(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbCamSet.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbVoxelDown(OnCbO3DUI pCb, void *pPCV)
+            void PCselectUI::SetCbVoxelDown(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbVoxelDown.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbHiddenRemove(OnCbO3DUI pCb, void *pPCV)
+            void PCselectUI::SetCbHiddenRemove(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbHiddenRemove.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbResetPC(OnCbO3DUI pCb, void *pPCV)
+            void PCselectUI::SetCbResetPC(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbResetPC.add(pCb, pPCV);
             }
 
 
-            void PCscanUI::Layout(const gui::LayoutContext &context)
+            void PCselectUI::Layout(const gui::LayoutContext &context)
             {
                 int settings_width = m_uiState.m_wPanel * context.theme.font_size;
 
@@ -159,7 +239,7 @@ namespace open3d
                 gui::Window::Layout(context);
             }
 
-            void PCscanUI::InitCtrlPanel(void)
+            void PCselectUI::InitCtrlPanel(void)
             {
                 auto em = GetTheme().font_size;
                 auto half_em = int(round(0.5f * float(em)));
@@ -322,6 +402,8 @@ namespace open3d
                 m_btnScan = new Button("        Start        ");
                 m_btnScan->SetToggleable(true);
                 m_btnScan->SetOnClicked([this]() {
+                    RemoveAllVertexSet();
+                    UpdateArea();
                     m_bScanning = !m_bScanning;
                     m_cbScan.call(&m_bScanning);
                     m_bCamAuto = m_bScanning;
@@ -346,9 +428,50 @@ namespace open3d
                 pH = new Horiz(v_spacing);
                 pH->AddChild(GiveOwnership(m_progScan));
                 panelScan->AddChild(GiveOwnership(pH));
+
+                // Vertex selection
+                auto panelVertexSet = new CollapsableVert("MEASURE", v_spacing, margins);
+                m_panelCtrl->AddChild(GiveOwnership(panelVertexSet));
+
+                m_btnNewVertexSet = new SmallButton("   +   ");
+                m_btnNewVertexSet->SetOnClicked(
+                    [this]() {
+                        UpdateSelectableGeometry();
+                        NewVertexSet();
+                        SetMousePickingMode();
+                        UpdateArea();
+                    });
+                m_btnDeleteVertexSet = new SmallButton("   -   ");
+                m_btnDeleteVertexSet->SetOnClicked(
+                    [this]() {
+                        RemoveVertexSet(m_listVertexSet->GetSelectedIndex());
+                        UpdateArea();
+                    });
+                pH = new Horiz(v_spacing);
+                pH->AddChild(make_shared<Label>("Select Area"));
+                pH->AddStretch();
+                pH->AddChild(GiveOwnership(m_btnNewVertexSet));
+                pH->AddChild(GiveOwnership(m_btnDeleteVertexSet));
+                panelVertexSet->AddChild(GiveOwnership(pH));
+
+                pH = new Horiz(v_spacing);
+                m_labelArea = new Label("Area not selected");
+                pH->AddChild(GiveOwnership(m_labelArea));
+                pH->AddStretch();
+                panelVertexSet->AddChild(GiveOwnership(pH));
+
+                m_listVertexSet = new ListView();
+                m_listVertexSet->SetOnValueChanged(
+                    [this](const char *, bool) {
+                        UpdateSelectableGeometry();
+                        SelectVertexSet(m_listVertexSet->GetSelectedIndex());
+                        SetMousePickingMode();
+                        UpdateArea();
+                    });
+                panelVertexSet->AddChild(GiveOwnership(m_listVertexSet));
             }
 
-            void PCscanUI::UpdateSelectableGeometry(void)
+            void PCselectUI::UpdateSelectableGeometry(void)
             {
                 vector<SceneWidget::PickableGeometry> pickable;
                 for (auto &o : m_vObject)
@@ -361,7 +484,177 @@ namespace open3d
                 m_sVertex->SetSelectableGeometry(pickable);
             }
 
-            void PCscanUI::OnSaveRGB(void)
+            void PCselectUI::NewVertexSet(void)
+            {
+                m_sVertex->NewSet();
+                UpdateVertexSetList();
+                SelectVertexSet(m_sVertex->GetNumberOfSets() - 1);
+            }
+
+            void PCselectUI::SelectVertexSet(int i)
+            {
+                m_sVertex->SelectSet(i);
+                m_listVertexSet->SetSelectedIndex(i);
+            }
+
+            void PCselectUI::UpdateVertexSetList(void)
+            {
+                size_t n = m_sVertex->GetNumberOfSets();
+                vector<string> items;
+                items.reserve(n);
+                for (size_t i = 0; i < n; ++i)
+                {
+                    stringstream s;
+                    s << "Area " << (i + 1);
+                    items.push_back(s.str());
+                }
+                m_listVertexSet->SetItems(items);
+
+                PostRedraw();
+            }
+
+            void PCselectUI::RemoveVertexSet(int i)
+            {
+                if (i < 0)
+                    return;
+                m_sVertex->RemoveSet(i);
+                UpdateVertexSetList();
+            }
+
+            void PCselectUI::RemoveAllVertexSet(void)
+            {
+                while (m_sVertex->GetNumberOfSets() > 0)
+                    m_sVertex->RemoveSet(0);
+
+                UpdateVertexSetList();
+            }
+
+            void PCselectUI::UpdateArea(void)
+            {
+                RemoveGeometry(m_areaName);
+                RemoveDistLabel();
+
+                int iS = m_listVertexSet->GetSelectedIndex();
+                size_t nSet = m_sVertex->GetNumberOfSets();
+
+                //no vertex set is selecrted
+                IF_(iS < 0 || iS >= nSet);
+
+                //draw polygon
+                std::map<string, set<O3DVisualizerSelections::SelectedIndex>> msSI;
+                msSI = m_sVertex->GetSets().at(iS);
+                set<O3DVisualizerSelections::SelectedIndex> sSI = msSI[m_modelName];
+                int nP = sSI.size();
+
+                //only one point is slected
+                if (nP < 2)
+                {
+                    PostRedraw();
+                    return;
+                }
+
+                //Make a line if more than a line is selected
+                vector<O3DVisualizerSelections::SelectedIndex> vSI;
+                for (O3DVisualizerSelections::SelectedIndex sI : sSI)
+                {
+                    int i;
+                    for (i = vSI.size() - 1; i >= 0; i--)
+                    {
+                        if (vSI[i].order < sI.order)
+                            break;
+                    }
+
+                    vSI.insert(vSI.begin() + i + 1, sI);
+                }
+
+                shared_ptr<geometry::LineSet> spLS = shared_ptr<geometry::LineSet>(new geometry::LineSet());
+                for (int i = 0; i < vSI.size(); i++)
+                {
+                    spLS->points_.push_back(vSI[i].point);
+                }
+
+                nP = spLS->points_.size();
+                for (int i = 0; i < nP; i++)
+                {
+                    int j = (i + 1) % nP;
+                    spLS->lines_.push_back(Vector2i(i, j));
+                    spLS->colors_.push_back(m_uiState.m_vAreaLineCol);
+                }
+
+                if (nP < 3)
+                {
+                    spLS->lines_.erase(spLS->lines_.end());
+                    spLS->colors_.erase(spLS->colors_.end());
+                }
+                AddGeometry(m_areaName, spLS);
+
+                //Distance labels
+                Vector3d vPa(0, 0, 0);
+                for (int i = 0; i < nP; i++)
+                {
+                    int j = (i + 1) % nP;
+                    vPa += spLS->points_[i];
+                    Vector3d p1 = spLS->points_[i];
+                    Vector3d p2 = spLS->points_[j];
+                    Vector3d vPd = (p1 + p2) * 0.5;
+                    Vector3f vPdf = Vector3f(vPd.x(), vPd.y(), vPd.z());
+                    double d = (p2 - p1).norm();
+                    string strD = f2str(d, 3) + " m";
+                    shared_ptr<Label3D> spL = m_pScene->AddLabel(vPdf, strD.c_str());
+                    spL->SetPosition(vPdf);
+                    spL->SetTextColor(Color(1, 1, 1));
+                    m_vspDistLabel.push_back(spL);
+                }
+
+                if (nP < 3)
+                {
+                    m_pScene->RemoveLabel(m_vspDistLabel.back());
+                    m_vspDistLabel.erase(m_vspDistLabel.end());
+                }
+                else
+                {
+                    double S = Area(spLS->points_);
+                    string strS = "Area = " + f2str(S, 3) + " m^2";
+                    vPa /= nP;
+                    Vector3f vPaf = Vector3f(vPa.x(), vPa.y(), vPa.z());
+                    shared_ptr<Label3D> spA = m_pScene->AddLabel(vPaf, strS.c_str());
+                    spA->SetPosition(vPaf);
+                    spA->SetTextColor(Color(1, 1, 1));
+                    m_vspDistLabel.push_back(spA);
+
+                    strS = "Area" + i2str(iS + 1) + " = " + f2str(S, 3) + " m^2";
+                    SetLabelArea(strS);
+                }
+
+                PostRedraw();
+            }
+
+            void PCselectUI::RemoveDistLabel(void)
+            {
+                for (shared_ptr<Label3D> spLabel : m_vspDistLabel)
+                {
+                    m_pScene->RemoveLabel(spLabel);
+                }
+                m_vspDistLabel.clear();
+            }
+
+            double PCselectUI::Area(vector<Vector3d> &vP)
+            {
+                int nP = vP.size();
+                Vector3d vA(0, 0, 0);
+                int j = 0;
+
+                for (int i = 0; i < nP; i++)
+                {
+                    j = (i + 1) % nP;
+                    vA += vP[i].cross(vP[j]);
+                }
+
+                vA *= 0.5;
+                return vA.norm();
+            }
+
+            void PCselectUI::OnSaveRGB(void)
             {
                 auto dlg = make_shared<gui::FileDialog>(
                     gui::FileDialog::Mode::SAVE, "Save File", this->GetTheme());
@@ -375,7 +668,7 @@ namespace open3d
                 ShowDialog(dlg);
             }
 
-            void PCscanUI::OnSavePLY(void)
+            void PCselectUI::OnSavePLY(void)
             {
                 auto dlg = make_shared<gui::FileDialog>(
                     gui::FileDialog::Mode::SAVE, "Save File", this->GetTheme());
@@ -397,7 +690,7 @@ namespace open3d
                 ShowDialog(dlg);
             }
 
-            void PCscanUI::OnOpenPLY(void)
+            void PCselectUI::OnOpenPLY(void)
             {
                 auto dlg = make_shared<gui::FileDialog>(
                     gui::FileDialog::Mode::OPEN, "Save File", this->GetTheme());
