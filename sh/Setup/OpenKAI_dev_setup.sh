@@ -104,11 +104,51 @@ sudo make install
 
 #----------------------------------------------------
 # (Optional) gphoto2
-wget https://raw.githubusercontent.com/gonzalo/gphoto2-updater/master/gphoto2-updater.sh
-chmod +x gphoto2-updater.sh
-sudo ./gphoto2-updater.sh
+sudo apt-get update -qq
+sudo apt-get install -y build-essential libltdl-dev libusb-1.0-0-dev libexif-dev udev libpopt-dev libudev-dev pkg-config git automake autoconf autopoint gettext libtool wget
+
+git clone --branch libgphoto2-2_5_27-release --depth 1 https://github.com/gphoto/libgphoto2.git
+cd libgphoto2
+autoreconf --install --symlink
+./configure
+make -j$(nproc)
+sudo make install
+
+git clone --branch gphoto2-2_5_27-release --depth 1 https://github.com/gphoto/gphoto2.git
+cd gphoto2
+autoreconf --install --symlink
+./configure
+make -j$(nproc)
+sudo make install
+
+sudo ldconfig
+
+udev_version=$(udevadm --version)
+if   [ "$udev_version" -ge "201" ]
+then
+  udev_rules=201
+elif [ "$udev_version" -ge "175" ]
+then
+  udev_rules=175
+elif [ "$udev_version" -ge "136" ]
+then
+  udev_rules=136
+else
+  udev_rules=0.98
+fi
+set +H
+sudo sh -c "/usr/local/lib/libgphoto2/print-camera-list udev-rules version $udev_rules group plugdev mode 0660 > /etc/udev/rules.d/90-libgphoto2.rules"
+set -H
+if   [ "$udev_rules" = "201" ]
+then
+set +H
+sudo sh -c "/usr/local/lib/libgphoto2/print-camera-list hwdb > /etc/udev/hwdb.d/20-gphoto.hwdb"
+set -H
+fi
+
+gphoto2 --version
 gphoto2 --abilities
-gphoto2 --capture-image-and-download --filename /tmp/hoge.jpg
+# gphoto2 --capture-image-and-download --filename /tmp/hoge.jpg
 
 # (Optional) v4l2loopback
 git clone https://github.com/umlaeute/v4l2loopback.git
@@ -121,8 +161,8 @@ gphoto2 --stdout --capture-movie | ffmpeg -i - -vcodec rawvideo -pix_fmt yuv420p
 
 #----------------------------------------------------
 # (Optional) OpenCV
-git clone --branch 4.5.3 --depth 1 https://github.com/opencv/opencv.git
-git clone --branch 4.5.3 --depth 1 https://github.com/opencv/opencv_contrib.git
+git clone --branch 4.5.4 --depth 1 https://github.com/opencv/opencv.git
+git clone --branch 4.5.4 --depth 1 https://github.com/opencv/opencv_contrib.git
 cd opencv
 mkdir build
 cd build
@@ -181,20 +221,47 @@ cd build
 #PC
 cmake -DCMAKE_BUILD_TYPE=Release -DGLIBCXX_USE_CXX11_ABI=ON -DBUILD_CUDA_MODULE=ON -DBUILD_EXAMPLES=OFF -DBUILD_FILAMENT_FROM_SOURCE=ON -DBUILD_GUI=ON -DBUILD_PYTHON_MODULE=OFF -DBUILD_SHARED_LIBS=ON -DBUILD_WEBRTC=OFF -DDEVELOPER_BUILD=OFF -DWITH_SIMD=ON ../
 
-#Jetson
+# Jetson
+sudo apt-get install -y apt-utils build-essential git cmake
+sudo apt-get install -y python3 python3-dev python3-pip
+sudo apt-get install -y xorg-dev libglu1-mesa-dev
+sudo apt-get install -y libblas-dev liblapack-dev liblapacke-dev
+sudo apt-get install -y libsdl2-dev libc++-7-dev libc++abi-7-dev libxi-dev
+sudo apt-get install -y clang-7
+
+# change default python to python3
+python --version
+sudo su
+update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+exit
+python --version
+
+cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=ON \
+    -DGLIBCXX_USE_CXX11_ABI=ON \
+    -DBUILD_CUDA_MODULE=ON \
+    -DBUILD_EXAMPLES=OFF \
+    -DBUILD_FILAMENT_FROM_SOURCE=ON \
+    -DBUILD_GUI=ON \
+    -DBUILD_PYTHON_MODULE=OFF \
+    -DBUILD_SHARED_LIBS=ON \
+    -DBUILD_TENSORFLOW_OPS=OFF \
+    -DBUILD_UNIT_TESTS=OFF \
+    -DDEVELOPER_BUILD=OFF \
+    -DUSE_BLAS=ON \
+    -DWITH_FAISS=OFF \
+    -DWITH_IPPICV=OFF \
+    -DWITH_SIMD=OFF \
+    ..
+
+make -j$(nproc)
+sudo make install
+
+# If met blas error
 Open3D/cpp/open3d/core/linalg/BlasWrapper.h
 #include "/usr/include/aarch64-linux-gnu/cblas-netlib.h" <-- add this
 #include "open3d/core/linalg/LinalgHeadersCPU.h"
-cmake -DCMAKE_BUILD_TYPE=Release -DGLIBCXX_USE_CXX11_ABI=ON -DBUILD_CUDA_MODULE=ON -DBUILD_EXAMPLES=OFF -DBUILD_FILAMENT_FROM_SOURCE=OFF -DBUILD_GUI=OFF -DBUILD_PYTHON_MODULE=OFF -DBUILD_SHARED_LIBS=ON -DDEVELOPER_BUILD=OFF -DUSE_BLAS=ON -DUSE_SYSTEM_EIGEN3=OFF -DUSE_SYSTEM_JPEG=ON ../
-
-make -j$(nproc)
-
-#if error, try this
-mkdir filament-binaries/lib/x86_64
-cp filament-binaries/lib/*.a filament-binaries/lib/x86_64
-make -j$(nproc)
-
-sudo make install
 
 #----------------------------------------------------
 # (Optional, use Open3D included version if possible) Filament
@@ -207,6 +274,11 @@ CC=/usr/bin/clang CXX=/usr/bin/clang++ CXXFLAGS=-stdlib=libc++ cmake -G Ninja -D
 ninja -j6
 ninja install
 # need clang >= 7 for jetson!
+
+# If error, try this
+mkdir filament-binaries/lib/x86_64
+cp filament-binaries/lib/*.a filament-binaries/lib/x86_64
+make -j$(nproc)
 
 #----------------------------------------------------
 # (Optional) gwsocket
@@ -242,7 +314,7 @@ chmod +x build.sh
 
 #----------------------------------------------------
 # (Optional) Dynamixel
-git clone https://github.com/ROBOTIS-GIT/DynamixelSDK.git
+git clone --depth 1 https://github.com/ROBOTIS-GIT/DynamixelSDK.git
 cd DynamixelSDK/c++/build/linux64
 make -j$(nproc)
 sudo make install
@@ -251,14 +323,14 @@ sudo make install
 
 #----------------------------------------------------
 # (Optional) xArm
-git clone https://github.com/xArm-Developer/xArm-CPLUS-SDK.git
+git clone --depth 1 https://github.com/xArm-Developer/xArm-CPLUS-SDK.git
 cd xArm-CPLUS-SDK/
 make all -j$(nproc)
 sudo make install
 
 #----------------------------------------------------
 # OpenKAI
-git clone https://github.com/yankailab/OpenKAI.git
+git clone --depth 1 https://github.com/yankailab/OpenKAI.git
 cd OpenKAI
 mkdir build
 cd build

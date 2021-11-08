@@ -123,6 +123,7 @@ namespace kai
 			m_pT->sleepT(100000);
 
 		m_pPS->clear();
+		m_pPS->startStream();
 
 		removeUIpc();
 		addDummyDome(m_sPC.next(), m_pPS->nP(), m_rDummyDome);
@@ -141,6 +142,7 @@ namespace kai
 		IF_(check() < 0);
 
 		m_pWin->ShowMsg("Scan", "Processing");
+		m_pPS->stopStream();
 
 		removeUIpc();
 		addUIpc(*m_sPC.get());

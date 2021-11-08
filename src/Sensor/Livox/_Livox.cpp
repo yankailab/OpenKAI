@@ -14,6 +14,7 @@ namespace kai
         m_bOpen = false;
         m_pL = NULL;
         m_iTransformed = 0;
+        m_lidarMode = kLidarModeNormal;
     }
 
     _Livox::~_Livox()
@@ -26,6 +27,7 @@ namespace kai
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("broadcastCode", &m_broadcastCode);
+        pK->v("lidarMode", &m_lidarMode);
 
         string n;
         n = "";
@@ -87,8 +89,25 @@ namespace kai
 
     bool _Livox::updateLidar(void)
     {
+        m_pL->setLidarMode(m_broadcastCode, (LidarMode)m_lidarMode);
+
 
         return true;
+    }
+
+    void _Livox::setLidarMode(LidarMode m)
+    {
+        m_lidarMode = m;
+    }
+
+    void _Livox::startStream(void)
+    {
+        m_lidarMode = kLidarModeNormal;
+    }
+
+    void _Livox::stopStream(void)
+    {
+        m_lidarMode = kLidarModePowerSaving;
     }
 
     void _Livox::CbRecvData(LivoxEthPacket *pData, void *pLivox)

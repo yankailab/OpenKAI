@@ -31,29 +31,13 @@
 
 {
 	"name":"cam",
-	"class":"_Camera",
-	"bInst":0,
-	"/deviceID":0,
-	"/vSize":[640,480],
-	"deviceID":4,
-	"vSize":[1920,1080],
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-}
-
-{
-	"name":"cam",
 	"class":"_GStreamer",
 	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"/pipeline":"v4l2src device=/dev/video4 ! image/jpeg,width=3840,height=2160,framerate=30/1 ! jpegdec ! videoconvert ! appsink",
-	"/pipeline":"v4l2src device=/dev/video4 ! image/jpeg,width=1920,height=1080,framerate=30/1 ! jpegdec ! videoconvert ! appsink",
-	"pipeline":"v4l2src device=/dev/video8 ! videoflip method=0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
+	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! appsink",
 }
 
 {
@@ -85,7 +69,7 @@
 		"FPS":30,
 	}
 	"vWinSize":[1920,1080],
-	"pathRes":"/home/kai/dev/Open3D/build/bin/resources",
+	"pathRes":"/usr/local/bin/Open3D/resources",
 	"device":"CPU:0",
 	"_NavBase":"T265",
 	"_VisionBase":"cam",
@@ -110,46 +94,11 @@
 }
 
 {
-	"name":"pcFile",
-	"class":"_PCfile",
-	"bInst":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"_Console":"console",
-	"fName":"/home/kai/dev/Open3D_v12/examples/test_data/fragment.pcd",
-}
-
-{
-	"name":"pcRS",
-	"class":"_PCrs",
-	"bInst":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"bLog":1,
-	"vPreset":"Short Range",
-	"rsRGB":1,
-	"vWHcol":[1280,720],
-	"rsFPS":30,
-	"vWHd":[640,480],
-	"rsDFPS":30,
-	"fDec":0,
-	"fSpat":0,
-	"vRange":[0.1,15.0],
-	"bAlign":0,
-	"rsSN":"f0211594",
-	"vRz":[0, 1000.0],
-}
-
-{
 	"name":"LivoxLidar",
 	"class":"LivoxLidar",
 	"bInst":1,
 	"bLog":1,
-	"vBroadcastCode":["3JEDJ3A00101841","3JEDHC900100791","3GGDJ1500105411","0TFDHAW001808W1"],
+	"vBroadcastCode":["3JEDJ3A00101841"],
 	"bEnableFan":1,
 	"returnMode":1,
 	"coordinate":0,
@@ -167,9 +116,6 @@
 	}
 	"bLog":1,
 	"LivoxLidar":"LivoxLidar",
-	"/broadcastCode":"3JEDHC900100791",
-	"/broadcastCode":"3GGDJ1500105411",
-	"/broadcastCode":"0TFDHAW001808W1",
 	"broadcastCode":"3JEDJ3A00101841",
 	"nP":256000,
 	"vRange":[0.5, 500],

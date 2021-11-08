@@ -39,6 +39,9 @@ namespace kai
         virtual void clear(void);
         virtual void refreshCol(void);
 
+        virtual void startStream(void);
+        virtual void stopStream(void);
+
     protected:
         virtual void getStream(void *p);
         virtual void getNextFrame(void *p);

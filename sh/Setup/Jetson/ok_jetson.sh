@@ -66,10 +66,6 @@ sudo /opt/nvidia/jetson-io/jetson-io.py
 
 
 
-
-# CUDA
-sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda/lib64:\$LD_LIBRARY_PATH\nexport LC_ALL=en_US.UTF-8" >> ~/.bashrc
-
 # USB reset for Realsense
 sudo apt-get install libusb-1.0-0-dev
 git clone --depth 1 https://github.com/mvp/uhubctl.git

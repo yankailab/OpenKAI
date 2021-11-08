@@ -162,5 +162,13 @@ namespace kai
         return m_iP;
     }
 
+    void _PCstream::startStream(void)
+    {
+    }
+
+    void _PCstream::stopStream(void)
+    {
+    }
+
 }
 #endif
