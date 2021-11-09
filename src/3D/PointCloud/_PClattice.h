@@ -1,7 +1,6 @@
-#ifndef OpenKAI_src_PointCloud__PClattice_H_
-#define OpenKAI_src_PointCloud__PClattice_H_
+#ifndef OpenKAI_src_3D_PointCloud__PClattice_H_
+#define OpenKAI_src_3D_PointCloud__PClattice_H_
 
-#ifdef USE_OPEN3D
 #include "_PCbase.h"
 
 namespace kai
@@ -54,5 +53,4 @@ private:
 };
 
 }
-#endif
 #endif

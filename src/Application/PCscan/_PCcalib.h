@@ -7,7 +7,7 @@
 
 #ifndef OpenKAI_src_Application_PCcalib__PCcalib_H_
 #define OpenKAI_src_Application_PCcalib__PCcalib_H_
-#ifdef USE_OPEN3D
+
 #include "../../IO/_File.h"
 #include "../CamCalib/_CamCalib.h"
 #include "_PCscan.h"
@@ -68,5 +68,4 @@ namespace kai
 	};
 
 }
-#endif
 #endif

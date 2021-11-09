@@ -5,10 +5,9 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_PointCloud_PCremove_H_
-#define OpenKAI_src_PointCloud_PCremove_H_
+#ifndef OpenKAI_src_3D_PointCloud_PCremove_H_
+#define OpenKAI_src_3D_PointCloud_PCremove_H_
 
-#ifdef USE_OPEN3D
 #include "../_PCbase.h"
 
 namespace kai
@@ -40,5 +39,4 @@ public:
 };
 
 }
-#endif
 #endif

@@ -5,10 +5,9 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_PointCloud__PCframe_H_
-#define OpenKAI_src_PointCloud__PCframe_H_
+#ifndef OpenKAI_src_3D_PointCloud__PCframe_H_
+#define OpenKAI_src_3D_PointCloud__PCframe_H_
 
-#ifdef USE_OPEN3D
 #include "_PCbase.h"
 using namespace open3d;
 using namespace open3d::geometry;
@@ -43,5 +42,4 @@ namespace kai
 	};
 
 }
-#endif
 #endif

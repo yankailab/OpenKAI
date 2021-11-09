@@ -5,16 +5,12 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_PointCloud_HPS3D_H_
-#define OpenKAI_src_PointCloud_HPS3D_H_
+#ifndef OpenKAI_src_3D_PointCloud_HPS3D_H_
+#define OpenKAI_src_3D_PointCloud_HPS3D_H_
 
-#include "../Base/common.h"
-
-#ifdef USE_OPENCV
-#ifdef USE_OPEN3D
-#ifdef USE_HPS3D
+#include "../../Base/common.h"
 #include "_PCbase.h"
-#include "../Dependency/HPS3D.h"
+#include "../../Dependency/HPS3D.h"
 
 namespace kai
 {
@@ -87,7 +83,4 @@ public:
 };
 
 }
-#endif
-#endif
-#endif
 #endif

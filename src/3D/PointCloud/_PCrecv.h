@@ -5,14 +5,13 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_PointCloud_PCrecv_H_
-#define OpenKAI_src_PointCloud_PCrecv_H_
+#ifndef OpenKAI_src_3D_PointCloud_PCrecv_H_
+#define OpenKAI_src_3D_PointCloud_PCrecv_H_
 
-#ifdef USE_OPEN3D
 #include "_PCsend.h"
 #include "_PCstream.h"
-#include "../IO/_IOBase.h"
-#include "../Protocol/_ProtocolBase.h"
+#include "../../IO/_IOBase.h"
+#include "../../Protocol/_ProtocolBase.h"
 
 namespace kai
 {
@@ -45,5 +44,4 @@ public:
 };
 
 }
-#endif
 #endif

@@ -5,14 +5,12 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_PointCloud_PCsend_H_
-#define OpenKAI_src_PointCloud_PCsend_H_
+#ifndef OpenKAI_src_3D_PointCloud_PCsend_H_
+#define OpenKAI_src_3D_PointCloud_PCsend_H_
 
-#include "../Base/common.h"
-#include "../IO/_IOBase.h"
-#include "../Protocol/_ProtocolBase.h"
-
-#ifdef USE_OPEN3D
+#include "../../Base/common.h"
+#include "../../IO/_IOBase.h"
+#include "../../Protocol/_ProtocolBase.h"
 #include "_PCbase.h"
 
 #define PC_N_HDR 4
@@ -52,5 +50,4 @@ public:
 };
 
 }
-#endif
 #endif

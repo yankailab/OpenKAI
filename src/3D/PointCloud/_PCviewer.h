@@ -5,14 +5,25 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_PointCloud__PCviewer_H_
-#define OpenKAI_src_PointCloud__PCviewer_H_
-#ifdef USE_OPEN3D
+#ifndef OpenKAI_src_3D_PointCloud__PCviewer_H_
+#define OpenKAI_src_3D_PointCloud__PCviewer_H_
+
 #include "_PCframe.h"
-#include "../UI/O3DUI.h"
+#include "../../UI/O3DUI.h"
 
 namespace kai
 {
+    enum PC_THREAD_ACTION
+	{
+		pc_Scanning = 0,
+		pc_ScanStart = 1,
+		pc_ScanStop = 2,
+		pc_VoxelDown = 3,
+		pc_HiddenRemove = 4,
+		pc_ResetPC = 5,
+		pc_CamAuto = 6,
+		pc_RefreshCol = 7,
+	};
 
 	struct CAM_PROJ
 	{
@@ -93,5 +104,4 @@ namespace kai
 	};
 
 }
-#endif
 #endif

@@ -7,9 +7,9 @@
 
 #ifndef OpenKAI_src_Application_PCscan__PCscan_H_
 #define OpenKAI_src_Application_PCscan__PCscan_H_
-#ifdef USE_OPEN3D
-#include "../../PointCloud/_PCstream.h"
-#include "../../PointCloud/_PCviewer.h"
+
+#include "../../3D/PointCloud/_PCstream.h"
+#include "../../3D/PointCloud/_PCviewer.h"
 #include "../../Navigation/_NavBase.h"
 #include "../../Utility/BitFlag.h"
 #include "PCscanUI.h"
@@ -81,5 +81,4 @@ namespace kai
 	};
 
 }
-#endif
 #endif

@@ -5,9 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_PointCloud__PCstream_H_
-#define OpenKAI_src_PointCloud__PCstream_H_
-#ifdef USE_OPEN3D
+#ifndef OpenKAI_src_3D_PointCloud__PCstream_H_
+#define OpenKAI_src_3D_PointCloud__PCstream_H_
 
 #include "_PCbase.h"
 
@@ -60,5 +59,4 @@ namespace kai
     };
 
 }
-#endif
 #endif

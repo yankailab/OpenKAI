@@ -5,10 +5,9 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_PointCloud_PCrs_H_
-#define OpenKAI_src_PointCloud_PCrs_H_
-#ifdef USE_OPEN3D
-#ifdef USE_REALSENSE
+#ifndef OpenKAI_src_3D_PointCloud_PCrs_H_
+#define OpenKAI_src_3D_PointCloud_PCrs_H_
+
 #include "_PCframe.h"
 #include <librealsense2/rs.hpp>
 
@@ -68,6 +67,4 @@ namespace kai
 	};
 
 }
-#endif
-#endif
 #endif

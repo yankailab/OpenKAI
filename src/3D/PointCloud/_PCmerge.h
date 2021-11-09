@@ -5,12 +5,11 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_PointCloud_PCmerge_H_
-#define OpenKAI_src_PointCloud_PCmerge_H_
+#ifndef OpenKAI_src_3D_PointCloud_PCmerge_H_
+#define OpenKAI_src_3D_PointCloud_PCmerge_H_
 
-#include "../Base/common.h"
+#include "../../Base/common.h"
 
-#ifdef USE_OPEN3D
 #include "_PCbase.h"
 
 namespace kai
@@ -41,5 +40,4 @@ public:
 };
 
 }
-#endif
 #endif

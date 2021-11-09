@@ -5,10 +5,9 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_PointCloud_PCregistGlobal_H_
-#define OpenKAI_src_PointCloud_PCregistGlobal_H_
+#ifndef OpenKAI_src_3D_PointCloud_PCregistGlobal_H_
+#define OpenKAI_src_3D_PointCloud_PCregistGlobal_H_
 
-#ifdef USE_OPEN3D
 #include "../PCfilter/_PCtransform.h"
 #include <open3d/pipelines/registration/FastGlobalRegistration.h>
 using namespace open3d::pipelines::registration;
@@ -51,5 +50,4 @@ public:
 };
 
 }
-#endif
 #endif

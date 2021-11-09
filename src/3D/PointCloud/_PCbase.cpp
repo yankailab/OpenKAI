@@ -5,7 +5,6 @@
  *      Author: yankai
  */
 
-#ifdef USE_OPEN3D
 #include "_PCbase.h"
 
 namespace kai
@@ -236,4 +235,3 @@ namespace kai
     }
 
 }
-#endif
