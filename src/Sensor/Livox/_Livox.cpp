@@ -90,8 +90,7 @@ namespace kai
     bool _Livox::updateLidar(void)
     {
         m_pL->setLidarMode(m_broadcastCode, (LidarMode)m_lidarMode);
-
-
+        
         return true;
     }
 

@@ -7,7 +7,7 @@
 
 #ifndef OpenKAI_src_Vision_FrameBase_H_
 #define OpenKAI_src_Vision_FrameBase_H_
-#ifdef USE_OPENCV
+
 #include "../Base/common.h"
 #include "../Base/cv.h"
 
@@ -46,5 +46,4 @@ public:
 };
 
 }
-#endif
 #endif

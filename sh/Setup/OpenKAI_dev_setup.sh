@@ -290,7 +290,7 @@ make -j$(nproc)
 
 #----------------------------------------------------
 # (Optional) Livox
-git clone --depth 1 https://github.com/Livox-SDK/Livox-SDK.git
+git clone --depth 1 https://github.com/yankailab/Livox-SDK.git
 cd Livox-SDK/build
 cmake -DCMAKE_BUILD_TYPE=Release ../
 make -j$(nproc)

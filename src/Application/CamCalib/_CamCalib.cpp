@@ -64,7 +64,7 @@ namespace kai
         for (int i{0}; i < vImgs.size(); i++)
         {
             m = imread(vImgs[i]);
-            cvtColor(m, mGray, cv::COLOR_BGR2GRAY);
+            cv::cvtColor(m, mGray, cv::COLOR_BGR2GRAY);
 
             // If desired number of corners are found in the image then bSuccess = true
             bSuccess = cv::findChessboardCorners(mGray, 

@@ -120,7 +120,11 @@ namespace kai
 		mCs.at<double>(1, 2) *= (double)s.height; //Cy
 
 		m_mCscaled = getOptimalNewCameraMatrix(mCs, m_mD, s, 1, s, 0);
+#ifdef USE_CUDA
+		initUndistortRectifyMap(mCs, m_mD, Mat(), m_mCscaled, s, CV_32F, m_m1, m_m2);
+#else
 		initUndistortRectifyMap(mCs, m_mD, Mat(), m_mCscaled, s, CV_16SC2, m_m1, m_m2);
+#endif
 
 		return true;
 	}

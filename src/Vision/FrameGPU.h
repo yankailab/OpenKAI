@@ -9,9 +9,7 @@
 #define OpenKAI_src_Vision_FrameGPU_H_
 
 #include "../Base/common.h"
-
-#ifdef USE_OPENCV
-#ifdef USE_CUDA
+using namespace cv::cuda;
 
 namespace kai
 {
@@ -62,6 +60,4 @@ public:
 };
 
 }
-#endif
-#endif
 #endif

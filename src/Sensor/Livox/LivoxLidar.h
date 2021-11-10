@@ -50,7 +50,7 @@ typedef void ( *LivoxDataCallback ) ( LivoxEthPacket* pData, void* pLivox );
 typedef struct {
     uint8_t handle;
     LidarConnectState connect_state;
-    DeviceInfo info;
+    LivoxDeviceInfo info;
     UserConfig config;
 
     LivoxDataCallback pDataCb;
@@ -107,7 +107,7 @@ private:
     }
 
     static void OnDeviceBroadcast   ( const BroadcastDeviceInfo *info );
-    static void OnDeviceChange      ( const DeviceInfo *info, DeviceEvent type );
+    static void OnDeviceChange      ( const LivoxDeviceInfo *info, DeviceEvent type );
     static void DeviceInformationCb ( livox_status status, uint8_t handle, DeviceInformationResponse *ack, void *clent_data );
     static void LidarErrorStatusCb  ( livox_status status, uint8_t handle, ErrorMessage *message );
 

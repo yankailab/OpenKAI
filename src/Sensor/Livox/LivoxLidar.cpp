@@ -148,15 +148,10 @@ namespace kai
         LidarDevice *pL = findLidarDevice(broadcastCode);
         NULL_F(pL);
 
+        pL->config.set_bits |= kConfigLidarMode;
         pL->config.lidar_mode = m;
         LidarSetMode(pL->handle, pL->config.lidar_mode, LivoxLidar::SetLidarModeCb, g_pLidar);
     }
-
-    // if (!p_lidar->config.set_bits)
-    // {
-    //     LidarStartSampling(handle, LivoxLidar::StartSampleCb, lds_lidar);
-    //     p_lidar->connect_state = kConnectStateSampling;
-    // }
 
     LidarDevice *LivoxLidar::findLidarDevice(const string &broadcastCode)
     {
@@ -253,7 +248,7 @@ namespace kai
     }
 
     /** Callback function of changing of device state. */
-    void LivoxLidar::OnDeviceChange(const DeviceInfo *info, DeviceEvent type)
+    void LivoxLidar::OnDeviceChange(const LivoxDeviceInfo *info, DeviceEvent type)
     {
         NULL_(info);
 
@@ -263,7 +258,7 @@ namespace kai
         LidarDevice *p_lidar = &(g_pLidar->lidars_[handle]);
         if (type == kEventConnect)
         {
-            QueryDeviceInformation(handle, DeviceInformationCb, g_pLidar);
+            QueryDeviceInformation(handle, LivoxLidar::DeviceInformationCb, g_pLidar);
             if (p_lidar->connect_state == kConnectStateOff)
             {
                 p_lidar->connect_state = kConnectStateOn;
@@ -399,10 +394,7 @@ namespace kai
     {
         LivoxLidar *lds_lidar = static_cast<LivoxLidar *>(client_data);
 
-        if (handle >= kMaxLidarCount)
-        {
-            return;
-        }
+        IF_(handle >= kMaxLidarCount);
 
         LidarDevice *p_lidar = &(lds_lidar->lidars_[handle]);
         if (status == kStatusSuccess)
@@ -439,10 +431,19 @@ namespace kai
         LivoxLidar *lds_lidar = static_cast<LivoxLidar *>(client_data);
         LidarDevice *p_lidar = &(lds_lidar->lidars_[handle]);
 
-        IF_(status == kStatusSuccess);
+        if(status != kStatusSuccess)
+        {
+            // Retry
+            LidarSetMode(handle, p_lidar->config.lidar_mode, LivoxLidar::SetLidarModeCb, lds_lidar);
+            return;
+        }
 
-        LidarSetMode(handle, p_lidar->config.lidar_mode, LivoxLidar::SetLidarModeCb, lds_lidar);
-        printf("Retry: Set lidar mode\n");
+        p_lidar->config.set_bits &= ~((uint32_t)(kConfigLidarMode));
+        IF_(p_lidar->config.set_bits);
+        IF_(p_lidar->config.lidar_mode != kLidarModeNormal);
+
+        LidarStartSampling(handle, LivoxLidar::StartSampleCb, lds_lidar);
+        p_lidar->connect_state = kConnectStateSampling;
     }
 
     void LivoxLidar::SetPointCloudReturnModeCb(livox_status status, uint8_t handle,
