@@ -5,7 +5,6 @@
  *      Author: yankai
  */
 
-#ifdef USE_OPEN3D
 #include "_PCstream.h"
 
 namespace kai
@@ -30,7 +29,7 @@ namespace kai
 
     bool _PCstream::init(void *pKiss)
     {
-        IF_F(!this->_PCbase::init(pKiss));
+        IF_F(!this->_GeometryBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("bAccept", &m_bAccept);
@@ -50,7 +49,7 @@ namespace kai
 
     int _PCstream::check(void)
     {
-        return this->_PCbase::check();
+        return this->_GeometryBase::check();
     }
 
     void _PCstream::AcceptAdd(bool b)
@@ -171,4 +170,3 @@ namespace kai
     }
 
 }
-#endif

@@ -5,7 +5,6 @@
  *      Author: yankai
  */
 
-#ifdef USE_OPEN3D
 #include "_PCfile.h"
 
 namespace kai
@@ -63,4 +62,3 @@ void _PCfile::update(void)
 }
 
 }
-#endif

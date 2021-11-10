@@ -8,99 +8,108 @@
 #ifndef OpenKAI_src_3D_PointCloud_PCcrop_H_
 #define OpenKAI_src_3D_PointCloud_PCcrop_H_
 
-#include "../_PCbase.h"
+#include "../../_GeometryBase.h"
 
 namespace kai
 {
 
-enum POINTCLOUD_VOL_TYPE
-{
-	pc_vol_box = 0,
-	pc_vol_ball = 1,
-	pc_vol_cylinder = 2,
-};
-
-struct POINTCLOUD_VOL
-{
-	POINTCLOUD_VOL_TYPE m_type;
-	bool	m_bInside;	//true: inside valid
-
-	vFloat2 m_vX;
-	vFloat2 m_vY;
-	vFloat2 m_vZ;
-
-	vFloat3 m_vC;
-	vFloat2 m_vR;
-
-	void init(void)
+	enum POINTCLOUD_VOL_TYPE
 	{
-		m_type = pc_vol_ball;
-		m_bInside = false;
-		m_vX.init(0.0);
-		m_vY.init(0.0);
-		m_vZ.init(0.0);
-		m_vC.init(0.0);
-		m_vR.init(0.0);
-	}
+		pc_vol_box = 0,
+		pc_vol_ball = 1,
+		pc_vol_cylinder = 2,
+	};
 
-	bool bValid(vFloat3& vP)
+	struct POINTCLOUD_VOL
 	{
-		bool bInside = true;
+		POINTCLOUD_VOL_TYPE m_type;
+		bool m_bInside; //true: inside valid
 
-		if(m_type == pc_vol_box)
+		vFloat2 m_vX;
+		vFloat2 m_vY;
+		vFloat2 m_vZ;
+
+		vFloat3 m_vC;
+		vFloat2 m_vR;
+
+		void init(void)
 		{
-			if(vP.x < m_vX.x)bInside = false;
-			if(vP.x > m_vX.y)bInside = false;
-			if(vP.y < m_vY.x)bInside = false;
-			if(vP.y > m_vY.y)bInside = false;
-			if(vP.z < m_vZ.x)bInside = false;
-			if(vP.z > m_vZ.y)bInside = false;
-		}
-		else if(m_type == pc_vol_ball)
-		{
-			vFloat3 vR = vP - m_vC;
-			float r = vR.r();
-			if(r < m_vR.x)bInside = false;
-			if(r > m_vR.y)bInside = false;
-		}
-		else if(m_type == pc_vol_cylinder)
-		{
-			vFloat3 vR = vP - m_vC;
-			vR.z = 0.0;
-			float r = vR.r();
-			if(r < m_vR.x)bInside = false;
-			if(r > m_vR.y)bInside = false;
+			m_type = pc_vol_ball;
+			m_bInside = false;
+			m_vX.init(0.0);
+			m_vY.init(0.0);
+			m_vZ.init(0.0);
+			m_vC.init(0.0);
+			m_vR.init(0.0);
 		}
 
-		IF_F(m_bInside != bInside);
-		return true;
-	}
-};
+		bool bValid(vFloat3 &vP)
+		{
+			bool bInside = true;
 
-class _PCcrop: public _PCbase
-{
-public:
-	_PCcrop();
-	virtual ~_PCcrop();
+			if (m_type == pc_vol_box)
+			{
+				if (vP.x < m_vX.x)
+					bInside = false;
+				if (vP.x > m_vX.y)
+					bInside = false;
+				if (vP.y < m_vY.x)
+					bInside = false;
+				if (vP.y > m_vY.y)
+					bInside = false;
+				if (vP.z < m_vZ.x)
+					bInside = false;
+				if (vP.z > m_vZ.y)
+					bInside = false;
+			}
+			else if (m_type == pc_vol_ball)
+			{
+				vFloat3 vR = vP - m_vC;
+				float r = vR.r();
+				if (r < m_vR.x)
+					bInside = false;
+				if (r > m_vR.y)
+					bInside = false;
+			}
+			else if (m_type == pc_vol_cylinder)
+			{
+				vFloat3 vR = vP - m_vC;
+				vR.z = 0.0;
+				float r = vR.r();
+				if (r < m_vR.x)
+					bInside = false;
+				if (r > m_vR.y)
+					bInside = false;
+			}
 
-	bool init(void* pKiss);
-	bool start(void);
-	int check(void);
+			IF_F(m_bInside != bInside);
+			return true;
+		}
+	};
 
-private:
-	void update(void);
-	void updateFilter(void);
-	virtual bool bFilter(Eigen::Vector3d& vP);
-	static void* getUpdate(void* This)
+	class _PCcrop : public _GeometryBase
 	{
-		(( _PCcrop *) This)->update();
-		return NULL;
-	}
+	public:
+		_PCcrop();
+		virtual ~_PCcrop();
 
-public:
-	vector<POINTCLOUD_VOL> m_vFilter;
+		bool init(void *pKiss);
+		bool start(void);
+		int check(void);
 
-};
+	private:
+		void update(void);
+		void updateFilter(void);
+		virtual bool bFilter(Eigen::Vector3d &vP);
+		static void *getUpdate(void *This)
+		{
+			((_PCcrop *)This)->update();
+			return NULL;
+		}
+
+	public:
+		vector<POINTCLOUD_VOL> m_vFilter;
+	};
 
 }
 #endif

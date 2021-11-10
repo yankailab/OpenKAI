@@ -5,7 +5,6 @@
  *      Author: yankai
  */
 
-#ifdef USE_OPEN3D
 #include "_PCdownSample.h"
 
 namespace kai
@@ -22,7 +21,7 @@ _PCdownSample::~_PCdownSample()
 
 bool _PCdownSample::init(void *pKiss)
 {
-	IF_F(!_PCbase::init(pKiss));
+	IF_F(!_GeometryBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
     pK->v("rVoxel", &m_rVoxel);
@@ -40,7 +39,7 @@ int _PCdownSample::check(void)
 {
 	NULL__(m_pInCtx.m_pPCB, -1);
 
-	return _PCbase::check();
+	return _GeometryBase::check();
 }
 
 void _PCdownSample::update(void)
@@ -67,4 +66,3 @@ void _PCdownSample::updateFilter(void)
 }
 
 }
-#endif

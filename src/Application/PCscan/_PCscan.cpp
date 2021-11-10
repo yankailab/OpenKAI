@@ -5,12 +5,10 @@
  *      Author: yankai
  */
 
-#ifdef USE_OPEN3D
 #include "_PCscan.h"
 
 namespace kai
 {
-
 	_PCscan::_PCscan()
 	{
 		m_pPS = NULL;
@@ -29,7 +27,7 @@ namespace kai
 
 	bool _PCscan::init(void *pKiss)
 	{
-		IF_F(!this->_PCviewer::init(pKiss));
+		IF_F(!this->_GeometryViewer::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("bSlam", &m_bSlam);
@@ -75,7 +73,7 @@ namespace kai
 		NULL__(m_pNav, -1);
 		NULL__(m_pWin, -1);
 
-		return this->_PCviewer::check();
+		return this->_GeometryViewer::check();
 	}
 
 	void _PCscan::update(void)
@@ -263,7 +261,7 @@ namespace kai
 		auto mT = m_pNav->mT();
 		for (int i = 0; i < m_vpPCB.size(); i++)
 		{
-			_PCbase *pP = m_vpPCB[i];
+			_GeometryBase *pP = m_vpPCB[i];
 			pP->setTranslation(mT.cast<double>());
 		}
 	}
@@ -385,4 +383,3 @@ namespace kai
 	}
 
 }
-#endif

@@ -5,7 +5,6 @@
  *      Author: yankai
  */
 
-#ifdef USE_OPEN3D
 #include "_PCremove.h"
 
 namespace kai
@@ -23,7 +22,7 @@ _PCremove::~_PCremove()
 
 bool _PCremove::init(void *pKiss)
 {
-	IF_F(!_PCbase::init(pKiss));
+	IF_F(!_GeometryBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
     pK->v("nP", &m_nP);
@@ -42,7 +41,7 @@ int _PCremove::check(void)
 {
 	NULL__(m_pInCtx.m_pPCB, -1);
 
-	return _PCbase::check();
+	return _GeometryBase::check();
 }
 
 void _PCremove::update(void)
@@ -71,4 +70,3 @@ void _PCremove::updateFilter(void)
 }
 
 }
-#endif

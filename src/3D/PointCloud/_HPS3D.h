@@ -9,13 +9,13 @@
 #define OpenKAI_src_3D_PointCloud_HPS3D_H_
 
 #include "../../Base/common.h"
-#include "_PCbase.h"
+#include "../_GeometryBase.h"
 #include "../../Dependency/HPS3D.h"
 
 namespace kai
 {
 
-class _HPS3D: public _PCbase
+class _HPS3D: public _GeometryBase
 {
 public:
 	_HPS3D();

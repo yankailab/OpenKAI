@@ -1,10 +1,9 @@
 #ifndef OpenKAI_src_Application_3Dscan__MultiRsScan_H_
 #define OpenKAI_src_Application_3Dscan__MultiRsScan_H_
 
-#ifdef USE_OPEN3D
 #include "../../Protocol/_JSONbase.h"
 #include "../../IO/_WebSocket.h"
-#include "../../PointCloud/_PCbase.h"
+#include "../../PointCloud/../_GeometryBase.h"
 
 using namespace picojson;
 
@@ -28,7 +27,7 @@ protected:
 	void handleMsg(string& str);
 
 private:
-	virtual _PCbase* findPC(string& n);
+	virtual _GeometryBase* findPC(string& n);
 	void updateW(void);
 	static void* getUpdateW(void* This)
 	{
@@ -46,10 +45,9 @@ private:
 public:
     _Thread* m_pTr;
     
-    vector<_PCbase*> m_vPCB;
+    vector<_GeometryBase*> m_vPCB;
 
 };
 
 }
-#endif
 #endif

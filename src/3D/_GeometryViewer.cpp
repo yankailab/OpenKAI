@@ -1,17 +1,16 @@
 /*
- * _PCviewer.cpp
+ * _GeometryViewer.cpp
  *
  *  Created on: May 28, 2020
  *      Author: yankai
  */
 
-#ifdef USE_OPEN3D
-#include "_PCviewer.h"
+#include "_GeometryViewer.h"
 
 namespace kai
 {
 
-	_PCviewer::_PCviewer()
+	_GeometryViewer::_GeometryViewer()
 	{
 		m_vWinSize.init(1280, 720);
 
@@ -32,12 +31,12 @@ namespace kai
 		m_rDummyDome = 1000.0;
 	}
 
-	_PCviewer::~_PCviewer()
+	_GeometryViewer::~_GeometryViewer()
 	{
 		DEL(m_pWin);
 	}
 
-	bool _PCviewer::init(void *pKiss)
+	bool _GeometryViewer::init(void *pKiss)
 	{
 		IF_F(!this->_PCframe::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
@@ -76,7 +75,7 @@ namespace kai
 
 		for (string p : vPCB)
 		{
-			_PCbase *pPCB = (_PCbase *)(pK->getInst(p));
+			_GeometryBase *pPCB = (_GeometryBase *)(pK->getInst(p));
 			IF_CONT(!pPCB);
 
 			m_vpPCB.push_back(pPCB);
@@ -94,7 +93,7 @@ namespace kai
 		return true;
 	}
 
-	bool _PCviewer::start(void)
+	bool _GeometryViewer::start(void)
 	{
 		NULL_F(m_pT);
 		IF_F(!m_pT->start(getUpdate, this));
@@ -105,12 +104,12 @@ namespace kai
 		return true;
 	}
 
-	int _PCviewer::check(void)
+	int _GeometryViewer::check(void)
 	{
-		return this->_PCbase::check();
+		return this->_GeometryBase::check();
 	}
 
-	void _PCviewer::update(void)
+	void _GeometryViewer::update(void)
 	{
 		//wait for the UI thread to get window ready
 		m_pT->sleepT(0);
@@ -133,7 +132,7 @@ namespace kai
 		}
 	}
 
-	void _PCviewer::addUIpc(const PointCloud &pc)
+	void _GeometryViewer::addUIpc(const PointCloud &pc)
 	{
 		IF_(pc.IsEmpty());
 
@@ -144,7 +143,7 @@ namespace kai
 									   core::Dtype::Float32)));
 	}
 
-	void _PCviewer::updateUIpc(const PointCloud &pc)
+	void _GeometryViewer::updateUIpc(const PointCloud &pc)
 	{
 		IF_(pc.IsEmpty());
 
@@ -155,15 +154,15 @@ namespace kai
 										  core::Dtype::Float32)));
 	}
 
-	void _PCviewer::removeUIpc(void)
+	void _GeometryViewer::removeUIpc(void)
 	{
 		m_pWin->RemoveGeometry(m_modelName);
 	}
 
-	void _PCviewer::readAllPC(void)
+	void _GeometryViewer::readAllPC(void)
 	{
 		m_nPread = 0;
-		for (_PCbase *pPCB : m_vpPCB)
+		for (_GeometryBase *pPCB : m_vpPCB)
 		{
 			readPC(pPCB);
 		}
@@ -171,7 +170,7 @@ namespace kai
 		updatePC();
 	}
 
-	void _PCviewer::addDummyDome(PointCloud* pPC, int n, float r, Vector3d vCol)
+	void _GeometryViewer::addDummyDome(PointCloud* pPC, int n, float r, Vector3d vCol)
 	{
 		NULL_(pPC);
 
@@ -209,7 +208,7 @@ namespace kai
 		}
 	}
 
-	void _PCviewer::updateCamProj(void)
+	void _GeometryViewer::updateCamProj(void)
 	{
 		IF_(check() < 0);
 		IF_(!m_pWin);
@@ -220,7 +219,7 @@ namespace kai
 							m_camProj.m_fovType);
 	}
 
-	void _PCviewer::updateCamPose(void)
+	void _GeometryViewer::updateCamPose(void)
 	{
 		IF_(check() < 0);
 		IF_(!m_pWin);
@@ -230,7 +229,7 @@ namespace kai
 							m_cam.m_vUp.v3f());
 	}
 
-	void _PCviewer::camBound(const AxisAlignedBoundingBox &aabb)
+	void _GeometryViewer::camBound(const AxisAlignedBoundingBox &aabb)
 	{
 		IF_(check() < 0);
 		IF_(!m_pWin);
@@ -238,12 +237,12 @@ namespace kai
 		m_pWin->CamAutoBound(aabb, m_vCoR.v3f());
 	}
 
-	void _PCviewer::resetCamPose(void)
+	void _GeometryViewer::resetCamPose(void)
 	{
 		m_cam = m_camDefault;
 	}
 
-	void _PCviewer::updateUI(void)
+	void _GeometryViewer::updateUI(void)
 	{
 		auto &app = gui::Application::GetInstance();
 		app.Initialize(m_pathRes.c_str());
@@ -265,4 +264,3 @@ namespace kai
 	}
 
 }
-#endif

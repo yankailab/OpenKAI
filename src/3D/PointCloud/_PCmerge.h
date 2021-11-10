@@ -9,13 +9,12 @@
 #define OpenKAI_src_3D_PointCloud_PCmerge_H_
 
 #include "../../Base/common.h"
-
-#include "_PCbase.h"
+#include "../_GeometryBase.h"
 
 namespace kai
 {
 
-class _PCmerge: public _PCbase
+class _PCmerge: public _GeometryBase
 {
 public:
 	_PCmerge();
@@ -35,7 +34,7 @@ private:
 	}
 
 public:
-	vector<_PCbase*> m_vpPCB;
+	vector<_GeometryBase*> m_vpPCB;
     float m_rVoxel;
 };
 

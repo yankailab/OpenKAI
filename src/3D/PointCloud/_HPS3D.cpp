@@ -7,10 +7,6 @@
 
 #include "_HPS3D.h"
 
-#ifdef USE_OPENCV
-#ifdef USE_OPEN3D
-#ifdef USE_HPS3D
-
 namespace kai
 {
 
@@ -24,7 +20,7 @@ _HPS3D::~_HPS3D()
 
 bool _HPS3D::init(void *pKiss)
 {
-	IF_F(!_PCbase::init(pKiss));
+	IF_F(!_GeometryBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
 //	pK->v("vRz", &m_vRz);
@@ -91,7 +87,7 @@ bool _HPS3D::start(void)
 
 int _HPS3D::check(void)
 {
-	return this->_PCbase::check();
+	return this->_GeometryBase::check();
 }
 
 void _HPS3D::update(void)
@@ -114,6 +110,3 @@ void _HPS3D::updateRS(void)
 }
 
 }
-#endif
-#endif
-#endif

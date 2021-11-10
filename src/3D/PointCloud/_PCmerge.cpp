@@ -7,8 +7,6 @@
 
 #include "_PCmerge.h"
 
-#ifdef USE_OPEN3D
-
 namespace kai
 {
 
@@ -23,7 +21,7 @@ _PCmerge::~_PCmerge()
 
 bool _PCmerge::init(void *pKiss)
 {
-	IF_F(!_PCbase::init(pKiss));
+	IF_F(!_GeometryBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
     pK->v("rVoxel", &m_rVoxel);
@@ -36,7 +34,7 @@ bool _PCmerge::init(void *pKiss)
 
 	for(string p : vPCB)
 	{
-		_PCbase* pPCB = (_PCbase*) (pK->getInst(p));
+		_GeometryBase* pPCB = (_GeometryBase*) (pK->getInst(p));
 		IF_CONT(!pPCB);
 
 		m_vpPCB.push_back(pPCB);
@@ -54,7 +52,7 @@ bool _PCmerge::start(void)
 
 int _PCmerge::check(void)
 {
-	return this->_PCbase::check();
+	return this->_GeometryBase::check();
 }
 
 void _PCmerge::update(void)
@@ -74,7 +72,7 @@ void _PCmerge::updateMerge(void)
 	IF_(check() < 0);
 
 	//read all inputs into one ring
-	for(_PCbase* pPCB : m_vpPCB)
+	for(_GeometryBase* pPCB : m_vpPCB)
 	{
 //		m_ring.readSrc(pPCB->getRing());
 	}
@@ -82,4 +80,3 @@ void _PCmerge::updateMerge(void)
 }
 
 }
-#endif

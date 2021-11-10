@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_3D_PointCloud_PCremove_H_
 #define OpenKAI_src_3D_PointCloud_PCremove_H_
 
-#include "../_PCbase.h"
+#include "../../_GeometryBase.h"
 
 namespace kai
 {
 
-class _PCremove: public _PCbase
+class _PCremove: public _GeometryBase
 {
 public:
 	_PCremove();

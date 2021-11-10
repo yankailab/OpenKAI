@@ -234,14 +234,15 @@ namespace kai
 #endif
 #endif
 
-#ifdef WITH_POINTCLOUD
+#ifdef WITH_3D
 #ifdef USE_OPEN3D
+		ADD_MODULE(_GeometryViewer);
+		ADD_MODULE(_MeshStream);
 		ADD_MODULE(_PCstream);
 		ADD_MODULE(_PCframe);
 		ADD_MODULE(_PClattice);
 		ADD_MODULE(_PCfile);
 		ADD_MODULE(_PCmerge);
-		ADD_MODULE(_PCviewer);
 		ADD_MODULE(_PCsend);
 		ADD_MODULE(_PCrecv);
 		ADD_MODULE(_PCtransform);

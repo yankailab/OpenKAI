@@ -1,15 +1,15 @@
 /*
- * _PCviewer.h
+ * _GeometryViewer.h
  *
  *  Created on: May 28, 2020
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_3D_PointCloud__PCviewer_H_
-#define OpenKAI_src_3D_PointCloud__PCviewer_H_
+#ifndef OpenKAI_src_3D__GeometryViewer_H_
+#define OpenKAI_src_3D__GeometryViewer_H_
 
-#include "_PCframe.h"
-#include "../../UI/O3DUI.h"
+#include "PointCloud/_PCframe.h"
+#include "../UI/O3DUI.h"
 
 namespace kai
 {
@@ -39,11 +39,11 @@ namespace kai
 		vFloat3 m_vUp = {0,1,0};
 	};
 
-	class _PCviewer : public _PCframe
+	class _GeometryViewer : public _PCframe
 	{
 	public:
-		_PCviewer();
-		virtual ~_PCviewer();
+		_GeometryViewer();
+		virtual ~_GeometryViewer();
 
 		virtual bool init(void *pKiss);
 		virtual bool start(void);
@@ -61,7 +61,7 @@ namespace kai
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_PCviewer *)This)->update();
+			((_GeometryViewer *)This)->update();
 			return NULL;
 		}
 
@@ -72,7 +72,7 @@ namespace kai
 		virtual void updateUI(void);
 		static void *getUpdateUI(void *This)
 		{
-			((_PCviewer *)This)->updateUI();
+			((_GeometryViewer *)This)->updateUI();
 			return NULL;
 		}
 
@@ -100,7 +100,7 @@ namespace kai
 		PC_CAM m_camAuto;
 		vFloat3 m_vCoR;
 
-		vector<_PCbase *> m_vpPCB;
+		vector<_GeometryBase *> m_vpPCB;
 	};
 
 }

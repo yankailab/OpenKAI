@@ -5,8 +5,6 @@
  *      Author: yankai
  */
 
-#ifdef USE_OPEN3D
-#ifdef USE_REALSENSE
 #include "_PCrs.h"
 
 namespace kai
@@ -301,8 +299,6 @@ namespace kai
 	}
 
 }
-#endif
-#endif
 
 //		auto cIntr = m_pRS->m_cIntrinsics;
 //		auto dIntr = m_pRS->m_dIntrinsics;

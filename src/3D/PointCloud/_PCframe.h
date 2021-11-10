@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_3D_PointCloud__PCframe_H_
 #define OpenKAI_src_3D_PointCloud__PCframe_H_
 
-#include "_PCbase.h"
+#include "../_GeometryBase.h"
 using namespace open3d;
 using namespace open3d::geometry;
 using namespace open3d::visualization;
@@ -16,7 +16,7 @@ using namespace open3d::visualization;
 namespace kai
 {
 
-	class _PCframe : public _PCbase
+	class _PCframe : public _GeometryBase
 	{
 	public:
 		_PCframe();

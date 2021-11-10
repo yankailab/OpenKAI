@@ -5,7 +5,6 @@
  *      Author: yankai
  */
 
-#ifdef USE_OPEN3D
 #include "_PCframe.h"
 #include "_PCstream.h"
 #include "_PClattice.h"
@@ -27,7 +26,7 @@ namespace kai
 
     bool _PCframe::init(void *pKiss)
     {
-        IF_F(!this->_PCbase::init(pKiss));
+        IF_F(!this->_GeometryBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
         //frame buf
@@ -46,7 +45,7 @@ namespace kai
 
     int _PCframe::check(void)
     {
-        return this->_PCbase::check();
+        return this->_GeometryBase::check();
     }
 
     void _PCframe::getPC(PointCloud *pPC)
@@ -113,4 +112,3 @@ namespace kai
     }
 
 }
-#endif

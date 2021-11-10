@@ -219,28 +219,29 @@
 #endif
 #endif
 
-#ifdef WITH_POINTCLOUD
+#ifdef WITH_3D
 #ifdef USE_OPEN3D
-#include "../PointCloud/_PCstream.h"
-#include "../PointCloud/_PCframe.h"
-#include "../PointCloud/_PClattice.h"
-#include "../PointCloud/_PCfile.h"
-#include "../PointCloud/_PCmerge.h"
-#include "../PointCloud/_PCviewer.h"
-#include "../PointCloud/_PCsend.h"
-#include "../PointCloud/_PCrecv.h"
-#include "../PointCloud/PCfilter/_PCtransform.h"
-#include "../PointCloud/PCfilter/_PCcrop.h"
-#include "../PointCloud/PCfilter/_PCremove.h"
-#include "../PointCloud/PCfilter/_PCdownSample.h"
-#include "../PointCloud/PCregistration/_PCregistCol.h"
-#include "../PointCloud/PCregistration/_PCregistICP.h"
-#include "../PointCloud/PCregistration/_PCregistGlobal.h"
+#include "../3D/_GeometryViewer.h"
+#include "../3D/Mesh/_MeshStream.h"
+#include "../3D/PointCloud/_PCstream.h"
+#include "../3D/PointCloud/_PCframe.h"
+#include "../3D/PointCloud/_PClattice.h"
+#include "../3D/PointCloud/_PCfile.h"
+#include "../3D/PointCloud/_PCmerge.h"
+#include "../3D/PointCloud/_PCsend.h"
+#include "../3D/PointCloud/_PCrecv.h"
+#include "../3D/PointCloud/PCfilter/_PCtransform.h"
+#include "../3D/PointCloud/PCfilter/_PCcrop.h"
+#include "../3D/PointCloud/PCfilter/_PCremove.h"
+#include "../3D/PointCloud/PCfilter/_PCdownSample.h"
+#include "../3D/PointCloud/PCregistration/_PCregistCol.h"
+#include "../3D/PointCloud/PCregistration/_PCregistICP.h"
+#include "../3D/PointCloud/PCregistration/_PCregistGlobal.h"
 #ifdef USE_REALSENSE
-#include "../PointCloud/_PCrs.h"
+#include "../3D/PointCloud/_PCrs.h"
 #endif
 #ifdef USE_HPS3D
-#include "../PointCloud/_HPS3D.h"
+#include "../3D/PointCloud/_HPS3D.h"
 #endif
 #endif
 #endif

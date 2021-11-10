@@ -5,7 +5,6 @@
  *      Author: yankai
  */
 
-#ifdef USE_OPEN3D
 #include "_PCtransform.h"
 
 namespace kai
@@ -117,4 +116,3 @@ namespace kai
 	}
 
 }
-#endif

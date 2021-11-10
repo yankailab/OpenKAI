@@ -11,7 +11,7 @@
 #include "../../Base/common.h"
 #include "../../IO/_IOBase.h"
 #include "../../Protocol/_ProtocolBase.h"
-#include "_PCbase.h"
+#include "../_GeometryBase.h"
 
 #define PC_N_HDR 4
 #define PC_STREAM 0
@@ -20,7 +20,7 @@
 namespace kai
 {
 
-class _PCsend: public _PCbase
+class _PCsend: public _GeometryBase
 {
 public:
 	_PCsend();

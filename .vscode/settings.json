@@ -86,6 +86,8 @@
         "stdvector": "cpp",
         "tensor": "cpp",
         "threadpool": "cpp",
-        "specialfunctions": "cpp"
+        "specialfunctions": "cpp",
+        "__atomic_generated": "cpp",
+        "filesystem": "cpp"
     }
 }

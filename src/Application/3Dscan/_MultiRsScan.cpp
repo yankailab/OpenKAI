@@ -1,4 +1,3 @@
-#ifdef USE_OPEN3D
 #include "_MultiRsScan.h"
 
 namespace kai
@@ -24,7 +23,7 @@ bool _MultiRsScan::init ( void* pKiss )
 
     for ( int i=0; i<vPCB.size(); i++ )
     {
-        _PCbase* pP = ( _PCbase* ) ( pK->getInst ( vPCB[i] ) );
+        _GeometryBase* pP = ( _GeometryBase* ) ( pK->getInst ( vPCB[i] ) );
         IF_CONT ( !pP );
         m_vPCB.push_back ( pP );
     }
@@ -89,7 +88,7 @@ void _MultiRsScan::send ( void )
     int nC = 0;
     for ( int i=0; i<m_vPCB.size(); i++ )
     {
-        _PCbase* pP = m_vPCB[i];
+        _GeometryBase* pP = m_vPCB[i];
 //        IF_CONT ( pP->size() <= 0 );
         nC++;
     }
@@ -155,7 +154,7 @@ void _MultiRsScan::handleMsg ( string& str )
     string cmd = jo["cmd"].get<string>();
     string pct = jo["pct"].get<string>();
 
-    _PCbase* pPCB = findPC ( pct );
+    _GeometryBase* pPCB = findPC ( pct );
 
     if ( cmd == "save_kiss" )
     {
@@ -196,11 +195,11 @@ void _MultiRsScan::handleMsg ( string& str )
     }
 }
 
-_PCbase* _MultiRsScan::findPC ( string& n )
+_GeometryBase* _MultiRsScan::findPC ( string& n )
 {
     for ( int i=0; i<m_vPCB.size(); i++ )
     {
-        _PCbase* pP = m_vPCB[i];
+        _GeometryBase* pP = m_vPCB[i];
         IF_CONT ( *pP->getName() != n );
 
         return pP;
@@ -225,4 +224,3 @@ void _MultiRsScan::console( void* pConsole )
 }
 
 }
-#endif

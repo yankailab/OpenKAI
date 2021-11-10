@@ -1,18 +1,18 @@
 /*
- * _PCbase.cpp
+ * _GeometryBase.cpp
  *
  *  Created on: May 24, 2020
  *      Author: yankai
  */
 
-#include "_PCbase.h"
+#include "_GeometryBase.h"
 
 namespace kai
 {
 
-    _PCbase::_PCbase()
+    _GeometryBase::_GeometryBase()
     {
-        m_type = pc_unknown;
+        m_type = geometry_unknown;
 
         m_vToffset.init(0);
         m_vRoffset.init(0);
@@ -40,11 +40,11 @@ namespace kai
         m_pInCtx.init();
     }
 
-    _PCbase::~_PCbase()
+    _GeometryBase::~_GeometryBase()
     {
     }
 
-    bool _PCbase::init(void *pKiss)
+    bool _GeometryBase::init(void *pKiss)
     {
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
@@ -71,8 +71,8 @@ namespace kai
 
         string n;
         n = "";
-        pK->v("_PCbase", &n);
-        m_pInCtx.m_pPCB = (_PCbase *)(pK->getInst(n));
+        pK->v("_GeometryBase", &n);
+        m_pInCtx.m_pPCB = (_GeometryBase *)(pK->getInst(n));
 
         m_nPread = 0;
 
@@ -102,17 +102,17 @@ namespace kai
         return true;
     }
 
-    int _PCbase::check(void)
+    int _GeometryBase::check(void)
     {
         return this->_ModuleBase::check();
     }
 
-    PC_TYPE _PCbase::getType(void)
+    PC_TYPE _GeometryBase::getType(void)
     {
         return m_type;
     }
 
-    Matrix4d _PCbase::getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR)
+    Matrix4d _GeometryBase::getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR)
     {
         Matrix4d mT = Matrix4d::Identity();
         Vector3d eR(vR.x, vR.y, vR.z);
@@ -124,7 +124,7 @@ namespace kai
         return mT;
     }
 
-    void _PCbase::setOffset(const vDouble3 &vT, const vDouble3 &vR)
+    void _GeometryBase::setOffset(const vDouble3 &vT, const vDouble3 &vR)
     {
         m_vToffset = vT;
         m_vRoffset = vR;
@@ -132,7 +132,7 @@ namespace kai
         m_Aoffset = m_mToffset;
     }
 
-    void _PCbase::setTranslation(const vDouble3 &vT, const vDouble3 &vR)
+    void _GeometryBase::setTranslation(const vDouble3 &vT, const vDouble3 &vR)
     {
         m_vT = vT;
         m_vR = vR;
@@ -140,13 +140,13 @@ namespace kai
         m_A = m_mT;
     }
 
-    void _PCbase::setTranslation(const Matrix4d &mT)
+    void _GeometryBase::setTranslation(const Matrix4d &mT)
     {
         m_mT = mT * m_mToffset;
         m_A = m_mT;
     }
 
-    void _PCbase::setRGBoffset(const vDouble3 &vT, const vDouble3 &vR)
+    void _GeometryBase::setRGBoffset(const vDouble3 &vT, const vDouble3 &vR)
     {
         m_vToffsetRGB = vT;
         m_vRoffsetRGB = vR;
@@ -154,11 +154,11 @@ namespace kai
         m_AoffsetRGB = m_mToffsetRGB;
     }
 
-    void _PCbase::readPC(void *pPC)
+    void _GeometryBase::readPC(void *pPC)
     {
         NULL_(pPC);
 
-        PC_TYPE t = ((_PCbase *)pPC)->getType();
+        PC_TYPE t = ((_GeometryBase *)pPC)->getType();
 
         if (t == pc_stream)
             getStream(pPC);
@@ -168,28 +168,28 @@ namespace kai
             getLattice(pPC);
     }
 
-    int _PCbase::nPread(void)
+    int _GeometryBase::nPread(void)
     {
         return m_nPread;
     }
 
-    void _PCbase::clear(void)
+    void _GeometryBase::clear(void)
     {
     }
 
-    void _PCbase::getStream(void *p)
+    void _GeometryBase::getStream(void *p)
     {
     }
 
-    void _PCbase::getNextFrame(void *p)
+    void _GeometryBase::getNextFrame(void *p)
     {
     }
 
-    void _PCbase::getLattice(void *p)
+    void _GeometryBase::getLattice(void *p)
     {
     }
 
-    bool _PCbase::getColor(const Vector3d &vP, Vector3f *pvC)
+    bool _GeometryBase::getColor(const Vector3d &vP, Vector3f *pvC)
     {
         NULL_F(m_pV);
         NULL_F(m_pV->BGR());
@@ -225,7 +225,7 @@ namespace kai
         return true;
     }
 
-    bool _PCbase::bRange(const Vector3d &vP)
+    bool _GeometryBase::bRange(const Vector3d &vP)
     {
         double ds = vP[0] * vP[0] + vP[1] * vP[1] + vP[2] * vP[2];
         IF_F(ds < m_vRange.x);

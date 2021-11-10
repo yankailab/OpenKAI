@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_3D_PointCloud__PClattice_H_
 #define OpenKAI_src_3D_PointCloud__PClattice_H_
 
-#include "_PCbase.h"
+#include "../_GeometryBase.h"
 
 namespace kai
 {
@@ -24,7 +24,7 @@ struct PCLATTICE_CELL
 	}
 };
 
-class _PClattice: public _PCbase
+class _PClattice: public _GeometryBase
 {
 public:
 	_PClattice();

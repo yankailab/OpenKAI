@@ -7,8 +7,6 @@
 
 #include "_PCsend.h"
 
-#ifdef USE_OPEN3D
-
 namespace kai
 {
 
@@ -27,7 +25,7 @@ _PCsend::~_PCsend()
 
 bool _PCsend::init(void *pKiss)
 {
-	IF_F(!_PCbase::init(pKiss));
+	IF_F(!_GeometryBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
 	pK->v("tInt", &m_tInt);
@@ -56,7 +54,7 @@ int _PCsend::check(void)
 	NULL__(m_pIO, -1);
 	IF__(!m_pIO->isOpen(),-1);
 
-	return this->_PCbase::check();
+	return this->_GeometryBase::check();
 }
 
 void _PCsend::update(void)
@@ -132,4 +130,3 @@ void _PCsend::sendPC(void)
 }
 
 }
-#endif
