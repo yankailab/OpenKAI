@@ -53,15 +53,15 @@ sudo apt -y remove --purge libreoffice* yelp thunderbird rhythmbox
 sudo apt autoremove
 sudo reboot now
 
-# Migrate system to SD card / NVMe if necessary
-
-# Clone SD image
-sudo dd if=/dev/sdb of=~/Jetson.img
-
 # set CSI camera interface
 # if crashed run it from eMMC boot then copy the dtb file to SD card
 # /boot/kernel_tegra194-p3668-all-p3509-0000-user-custom.dtb.
 sudo /opt/nvidia/jetson-io/jetson-io.py
+
+# Migrate system to SD card / NVMe if necessary
+
+# Clone SD image
+sudo dd if=/dev/sdb of=~/Jetson.img
 
 # install CUDA etc. with Nvidia SDK Manager
 

@@ -64,7 +64,7 @@
 #include "../Autopilot/Drive/_Drive.h"
 #endif
 
-#ifdef WITH_APP_3DSCAN
+#ifdef WITH_APP_MULTI3DSCAN
 #endif
 
 #ifdef WITH_APP_BENCHROVER
@@ -96,9 +96,11 @@
 #include "../Application/Measurement/_RaspiWSbattery.h"
 #endif
 
-#ifdef WITH_APP_PCSCAN && USE_OPEN3D
-#include "../Application/PCscan/_PCscan.h"
-#include "../Application/PCscan/_PCcalib.h"
+#ifdef WITH_APP_3DSCAN && USE_OPEN3D
+#include "../Application/3Dscan/_3DScanCalibCam.h"
+#include "../Application/3Dscan/_3DScanCalibOfs.h"
+#include "../Application/3Dscan/_PCscan.h"
+#include "../Application/3Dscan/_PCcalib.h"
 #endif
 
 #ifdef WITH_APP_ROBOTARM

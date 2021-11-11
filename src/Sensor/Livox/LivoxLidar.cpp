@@ -31,6 +31,8 @@ namespace kai
         m_coordinate = kCoordinateCartesian;
         m_imuRate = kImuFreq200Hz;
         m_scanPattern = kNoneRepetitiveScanPattern;
+        m_pDefaultDataCb = NULL;
+        m_pDefaultLivox = NULL;
     }
 
     LivoxLidar::~LivoxLidar()
@@ -134,12 +136,20 @@ namespace kai
     bool LivoxLidar::setDataCallback(const string &broadcastCode, LivoxDataCallback pCb, void *pLivox)
     {
         NULL_F(pLivox);
+        NULL_F(pCb);
 
         LidarDevice *pL = findLidarDevice(broadcastCode);
-        NULL_F(pL);
+        if (pL)
+        {
+            pL->pDataCb = pCb;
+            pL->pLivox = pLivox;
+        }
+        else
+        {
+            m_pDefaultDataCb = pCb;
+            m_pDefaultLivox = pLivox;
+        }
 
-        pL->pDataCb = pCb;
-        pL->pLivox = pLivox;
         return true;
     }
 
@@ -379,13 +389,20 @@ namespace kai
     {
         IF_(!data || !data_num || (handle >= kMaxLidarCount));
 
-        LivoxLidar *lidar_this = static_cast<LivoxLidar *>(client_data);
+        LivoxLidar *pLL = static_cast<LivoxLidar *>(client_data);
         LivoxEthPacket *eth_packet = data;
 
-        LidarDevice *pLdev = &lidar_this->lidars_[handle];
-        NULL_(pLdev->pDataCb);
+        LidarDevice *pLdev = &pLL->lidars_[handle];
+        if(pLdev->pDataCb)
+        {
+            pLdev->pDataCb(data, pLdev->pLivox);
+            return;
+        }
 
-        pLdev->pDataCb(data, pLdev->pLivox);
+        if(pLL->m_pDefaultLivox && pLL->m_pDefaultDataCb)
+        {
+            pLL->m_pDefaultDataCb(data, pLL->m_pDefaultLivox);
+        }
     }
 
     /** Callback function of starting sampling. */
@@ -431,7 +448,7 @@ namespace kai
         LivoxLidar *lds_lidar = static_cast<LivoxLidar *>(client_data);
         LidarDevice *p_lidar = &(lds_lidar->lidars_[handle]);
 
-        if(status != kStatusSuccess)
+        if (status != kStatusSuccess)
         {
             // Retry
             LidarSetMode(handle, p_lidar->config.lidar_mode, LivoxLidar::SetLidarModeCb, lds_lidar);
@@ -457,9 +474,9 @@ namespace kai
 
         // set return mode fail, try again;
         LidarSetPointCloudReturnMode(handle,
-                                         (PointCloudReturnMode)(p_lidar->config.return_mode),
-                                         LivoxLidar::SetPointCloudReturnModeCb,
-                                         lds_lidar);
+                                     (PointCloudReturnMode)(p_lidar->config.return_mode),
+                                     LivoxLidar::SetPointCloudReturnModeCb,
+                                     lds_lidar);
     }
 
     void LivoxLidar::SetCoordinateCb(livox_status status, uint8_t handle,

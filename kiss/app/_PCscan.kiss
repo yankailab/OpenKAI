@@ -38,6 +38,7 @@
 		"FPS":30,
 	}
 	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! appsink",
+	"/pipeline":"nvarguscamerasrc sensor-id=0 ! video/x-raw(memory:NVMM), width=1920, height=1080, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)1920, height=(int)1080, format=(string)BGRx ! appsink",
 }
 
 {
@@ -50,6 +51,7 @@
 	}
 	"_VisionBase":"cam",
 	"fCalib":"/home/kai/GDR/calibCam.kiss",
+	"/fCalib":"/home/lab/3Dscan/calibCam.kiss",
 }
 
 {
@@ -98,7 +100,7 @@
 	"class":"LivoxLidar",
 	"bInst":1,
 	"bLog":1,
-	"vBroadcastCode":["3JEDJ3A00101841"],
+	"/vBroadcastCode":["3JEDJ3A00101841"],
 	"bEnableFan":1,
 	"returnMode":1,
 	"coordinate":0,
@@ -127,6 +129,7 @@
 	"vAxisKrgb":[-1, -1, 1],
 	"lidarMode":2,
 	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calib.kiss",
+	"/fCalib":"/home/lab/3Dscan/calib.kiss",
 }
 
 {

@@ -1,0 +1,271 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"3DscanCalib",
+	"bLog":1,
+	"bStdErr":1,
+	"/rc":"sudo modprobe bcm2835-v4l2\nv4l2-ctl -d /dev/video0 --set-ctrl=rotate=0\n",
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["cam","remap","T265","TF03"],
+}
+
+{
+	"name":"UI",
+	"class":"_WindowCV",
+	"bInst":1,
+	"bFullScreen":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["calibCam","calibOfs","cam","/remap"],
+	"vSize":[1920,1080],
+	"font":"/home/kai/dev/font/bebas-neue-font/BebasNeueRegular-2O7wW.ttf",
+	"/font":"/home/lab/3Dscan/bn.ttf",
+
+    {
+		"name":"btn",
+	    {
+			"name":"Action",
+			"label":"A",
+			"bShow":1,
+			"vRegion":[0.797, 0.0, 1.0, 0.25],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":50,
+		}
+	    {
+			"name":"Save",
+			"label":"Save",
+			"bShow":1,
+			"vRegion":[0.797, 0.25, 1.0, 0.5],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":50,
+		}
+	    {
+			"name":"Clear",
+			"label":"Clear",
+			"bShow":1,
+			"vRegion":[0.797, 0.5, 1.0, 0.75],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":50,
+		}
+	    {
+			"name":"Mode",
+			"label":"Cam",
+			"bShow":1,
+			"vRegion":[0.797, 0.75, 1.0, 1.0],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":50,
+		}
+
+	    {
+			"name":"Xd",
+			"label":"X-",
+			"bShow":0,
+			"vRegion":[0.0, 0.0, 0.1, 0.1],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":20,
+		}
+
+	    {
+			"name":"Xi",
+			"label":"X+",
+			"bShow":0,
+			"vRegion":[0.1, 0.0, 0.2, 0.1],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":20,
+		}
+
+	    {
+			"name":"Yd",
+			"label":"Y-",
+			"bShow":0,
+			"vRegion":[0.2, 0.0, 0.3, 0.1],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":20,
+		}
+
+	    {
+			"name":"Yi",
+			"label":"Y+",
+			"bShow":0,
+			"vRegion":[0.3, 0.0, 0.4, 0.1],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":20,
+		}
+
+	    {
+			"name":"Zd",
+			"label":"Z-",
+			"bShow":0,
+			"vRegion":[0.4, 0.0, 0.5, 0.1],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":20,
+		}
+
+	    {
+			"name":"Zi",
+			"label":"Z+",
+			"bShow":0,
+			"vRegion":[0.5, 0.0, 0.6, 0.1],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":20,
+		}
+
+	    {
+			"name":"Sd",
+			"label":"S-",
+			"bShow":0,
+			"vRegion":[0.797, 0.125, 1.0, 0.25],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":20,
+		}
+
+	    {
+			"name":"Si",
+			"label":"S+",
+			"bShow":0,
+			"vRegion":[0.797, 0.0, 1.0, 0.125],
+			"colUp":[40, 40, 40],
+			"colDown":[100, 100, 100],
+			"colBorder":[150, 150, 150],
+			"colFont":[255, 255, 255],
+			"hFont":20,
+		}
+	}
+}
+
+{
+	"name":"cam",
+	"class":"_GStreamer",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! appsink",
+	"/pipeline":"nvarguscamerasrc sensor-id=0 ! video/x-raw(memory:NVMM), width=1920, height=1080, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)1920, height=(int)1080, format=(string)BGRx ! appsink",
+}
+
+{
+	"name":"remap",
+	"class":"_Remap",
+	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"cam",
+	"fCalib":"/home/kai/3Dscan/calibCam.kiss",
+	"/fCalib":"/home/lab/3Dscan/calibCam.kiss",
+	"vSize":[1920, 1080],
+}
+
+{
+	"name":"T265",
+	"class":"_RStracking",
+    {
+		"name":"thread",
+		"FPS":200,
+	}
+	"bInst":0,
+}
+
+{
+	"name":"state",
+	"class":"_StateControl",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bInst":1,
+	"start":"calibCam",
+	{
+		"name":"state",
+		{
+			"bInst":1,
+			"name":"calibCam",
+			"class":"State",
+		}
+		{
+			"bInst":0,
+			"name":"calibOfs",
+			"class":"State",
+		}
+	}
+}
+
+{
+	"name":"calibCam",
+	"class":"_3DScanCalibCam",
+	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_Remap":"remap",
+	"_WindowCV":"UI",
+	"_StateControl":"state",
+	"vChessBoardSize":[11,8],
+	"squareSize":0.06,
+	"vActiveState":["calibCam"],
+	"tPreview":1,
+	"/fCalib":"/home/kai/GDR/calibCam.kiss",
+	"/fCalib":"/home/lab/3Dscan/calibCam.kiss",
+}
+
+{
+	"name":"calibOfs",
+	"class":"_3DScanCalibOfs",
+	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"remap",
+	"_WindowCV":"UI",
+	"_StateControl":"state",
+	"vActiveState":["calibDofs"],
+}

@@ -74,7 +74,7 @@ namespace kai
 		ADD_MODULE(_Drive);
 #endif
 
-#ifdef WITH_APP_3DSCAN
+#ifdef WITH_APP_MULTI3DSCAN
 #endif
 
 #ifdef WITH_APP_BENCHROVER
@@ -106,8 +106,10 @@ namespace kai
 		ADD_MODULE(_RaspiWSbattery);
 #endif
 
-#ifdef WITH_APP_PCSCAN
+#ifdef WITH_APP_3DSCAN
 #ifdef USE_OPEN3D
+		ADD_MODULE(_3DScanCalibCam);
+		ADD_MODULE(_3DScanCalibOfs);
 		ADD_MODULE(_PCscan);
 		ADD_MODULE(_PCcalib);
 #endif

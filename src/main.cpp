@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 	g_pKiss = new Kiss();
 	if(!parseKiss(argStr, g_pKiss))
 	{
-		printf("Kiss file parsing failed\n");
+		printf("Kiss file not found or parsing failed\n");
 		delete g_pKiss;
 		return 1;
 	}
