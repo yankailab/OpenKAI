@@ -49,7 +49,7 @@ namespace kai
 		void drawCalibData(Mat *pM);
 
 	private:
-		_Remap *m_pRv;
+		_Remap *m_pR;
 		_WindowCV *m_pW;
 
 		// camera

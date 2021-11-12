@@ -7,7 +7,7 @@
 
 #ifndef OpenKAI_src_Vision__VisionBase_H_
 #define OpenKAI_src_Vision__VisionBase_H_
-#ifdef USE_OPENCV
+
 #include "../Base/_ModuleBase.h"
 #include "../IO/_File.h"
 #include "../UI/_Console.h"
@@ -62,16 +62,6 @@ public:
 	virtual VISION_TYPE getType(void);
 	virtual Frame* BGR(void);
 
-	bool setCamMatrices(const Mat& mC, const Mat& mD);
-	bool scaleCamMatrices(void);
-	vDouble2 getF(void);
-	vDouble2 getC(void);
-	vFloat2 getFf(void);
-	vFloat2 getCf(void);
-	Mat mC(void);
-	Mat mCscaled(void);
-	Mat mD(void);
-
 protected:
 	bool m_bOpen;
 	VISION_TYPE m_type;
@@ -79,16 +69,7 @@ protected:
     
 	Frame	m_fBGR;
 	vFloat4	m_bbDraw;
-
-	//original camera matrix
-	Mat m_mC;		//Intrinsic
-	Mat m_mCscaled;	//scaled with input image size
-	Mat m_mD;		//Distortion
-	//Remap
-	Mat m_m1;
-	Mat m_m2;
 };
 
 }
-#endif
 #endif

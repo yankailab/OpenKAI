@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_3D_PointCloud__GeometryBase_H_
 #define OpenKAI_src_3D_PointCloud__GeometryBase_H_
 
-#include "../Vision/_VisionBase.h"
+#include "../Vision/ImgFilter/_Remap.h"
 #include "../IO/_File.h"
 using namespace open3d;
 using namespace open3d::geometry;
@@ -125,11 +125,10 @@ namespace kai
         virtual void setOffset(const vDouble3 &vT, const vDouble3 &vR);
         virtual void setTranslation(const vDouble3 &vT, const vDouble3 &vR);
         virtual void setTranslation(const Matrix4d &mT);
+        virtual void setRGBoffset(const vDouble3 &vT, const vDouble3 &vR);
         virtual void readPC(void* pPC);
         virtual int nPread(void);
         virtual void clear(void);
-
-        virtual void setRGBoffset(const vDouble3 &vT, const vDouble3 &vR);
 
     protected:
         virtual Matrix4d getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR);
@@ -162,7 +161,7 @@ namespace kai
         Eigen::Affine3d m_A;
 
         // RGB offset in Lidar coordinate
-        _VisionBase* m_pV;
+        _Remap* m_pR;
         vDouble3 m_vToffsetRGB;
         vDouble3 m_vRoffsetRGB;
     	Matrix4d m_mToffsetRGB;

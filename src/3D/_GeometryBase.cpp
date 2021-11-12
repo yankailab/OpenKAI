@@ -24,7 +24,7 @@ namespace kai
         m_mT = Matrix4d::Identity();
         m_A = Matrix4d::Identity();
 
-        m_pV = NULL;
+        m_pR = NULL;
         m_vToffsetRGB.init(0);
         m_vRoffsetRGB.init(0);
         m_mToffsetRGB = Matrix4d::Identity();
@@ -78,8 +78,8 @@ namespace kai
 
         //RGB
         n = "";
-        pK->v("_VisionBase", &n);
-        m_pV = (_VisionBase *)(pK->getInst(n));
+        pK->v("_Remap", &n);
+        m_pR = (_Remap *)(pK->getInst(n));
 
         n = "";
         pK->v("fCalib", &n);
@@ -191,10 +191,10 @@ namespace kai
 
     bool _GeometryBase::getColor(const Vector3d &vP, Vector3f *pvC)
     {
-        NULL_F(m_pV);
-        NULL_F(m_pV->BGR());
-        IF_F(m_pV->BGR()->bEmpty());
-        IF_F(m_pV->getType() != vision_remap);
+        NULL_F(m_pR);
+        NULL_F(m_pR->BGR());
+        IF_F(m_pR->BGR()->bEmpty());
+        IF_F(m_pR->getType() != vision_remap);
 
         Vector3d vPrgb = m_AoffsetRGB * vP; //vP raw lidar coordinate
         Vector3d vPa = Vector3d(            //transform to RGB coordinate
@@ -202,11 +202,11 @@ namespace kai
             vPrgb[m_vAxisIdxRGB.y] * m_vAxisKrgb.y,
             vPrgb[m_vAxisIdxRGB.z] * m_vAxisKrgb.z);
 
-        Mat *pM = m_pV->BGR()->m();
+        Mat *pM = m_pR->BGR()->m();
         float w = pM->cols;
         float h = pM->rows;
-        vDouble2 vFrgb = m_pV->getF();
-        vDouble2 vCrgb = m_pV->getC();
+        vDouble2 vFrgb = m_pR->getF();
+        vDouble2 vCrgb = m_pR->getC();
 
         float ovZ = 1.0 / vPa[2];
         float x = vFrgb.x * vPa[0] * ovZ + vCrgb.x;

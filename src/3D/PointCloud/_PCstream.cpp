@@ -70,7 +70,7 @@ namespace kai
         IF_(!bRange(vPa));
 
         Vector3f vCrgb = vC;
-        if(m_pV)
+        if(m_pR)
         {
             IF_(!getColor(vP, &vCrgb));
         }
@@ -124,7 +124,7 @@ namespace kai
     void _PCstream::refreshCol(void)
     {
         NULL_(m_pP);
-        NULL_(m_pV);
+        NULL_(m_pR);
 
         vDouble3 vTr, vRr;
         vTr.init(-m_vToffset.x, -m_vToffset.y, -m_vToffset.z);

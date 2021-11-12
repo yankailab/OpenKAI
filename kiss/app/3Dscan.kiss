@@ -50,7 +50,7 @@
 		"FPS":30,
 	}
 	"_VisionBase":"cam",
-	"fCalib":"/home/kai/GDR/calibCam.kiss",
+	"fCalib":"/home/kai/3Dscan/calibCam.kiss",
 	"/fCalib":"/home/lab/3Dscan/calibCam.kiss",
 }
 
@@ -74,7 +74,7 @@
 	"pathRes":"/usr/local/bin/Open3D/resources",
 	"device":"CPU:0",
 	"_NavBase":"T265",
-	"_VisionBase":"cam",
+	"_Remap":"remap",
 	"vPCbase":["pcLivox"],
 	"_PCstream":"pcLivox",
 	"vCamLookAt":[0,0,0],
@@ -128,8 +128,8 @@
 	"vAxisIdxRGB":[1, 2, 0],
 	"vAxisKrgb":[-1, -1, 1],
 	"lidarMode":2,
-	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calib.kiss",
-	"/fCalib":"/home/lab/3Dscan/calib.kiss",
+	"fCalib":"/home/kai/3Dscan/calibOfs.kiss",
+	"/fCalib":"/home/lab/3Dscan/calibOfs.kiss",
 }
 
 {

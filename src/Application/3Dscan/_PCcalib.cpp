@@ -53,7 +53,7 @@ namespace kai
 
 	int _PCcalib::check(void)
 	{
-		NULL__(m_pV, -1);
+		NULL__(m_pR, -1);
 		NULL__(m_pCC, -1);
 
 		return this->_PCscan::check();
@@ -375,7 +375,7 @@ namespace kai
 		mD.at<double>(0, 3) = pP->m_p2;
 		mD.at<double>(0, 4) = pP->m_k3;
 
-		m_pV->setCamMatrices(mC, mD);
+		m_pR->setCamMatrices(mC, mD);
 
 		//set offset
 		NULL_(m_pPS);

@@ -12,7 +12,7 @@ namespace kai
 
 	_3DScanCalibCam::_3DScanCalibCam()
 	{
-		m_pRv = NULL;
+		m_pR = NULL;
 		m_pW = NULL;
 
 		m_iPreview = 0;
@@ -49,8 +49,8 @@ namespace kai
 
 		n = "";
 		pK->v("_Remap", &n);
-		m_pRv = (_Remap *)(pK->getInst(n));
-		IF_Fl(!m_pRv, n + " not found");
+		m_pR = (_Remap *)(pK->getInst(n));
+		IF_Fl(!m_pR, n + " not found");
 
 		n = "";
 		pK->v("_WindowCV", &n);
@@ -69,8 +69,8 @@ namespace kai
 	int _3DScanCalibCam::check(void)
 	{
 		NULL__(m_pW, -1);
-		NULL__(m_pRv, -1);
-		IF__(m_pRv->BGR()->bEmpty(), -1);
+		NULL__(m_pR, -1);
+		IF__(m_pR->BGR()->bEmpty(), -1);
 
 		return 0;
 	}
@@ -114,13 +114,13 @@ namespace kai
 		IF_F(m_vvPpo.empty());
 
 		Mat mR, mT;
-		cv::Size s = m_pRv->BGR()->size();
+		cv::Size s = m_pR->BGR()->size();
 		calibrateCamera(m_vvPpo, m_vvPimg, s, m_mC, m_mD, mR, mT);
 		m_mC.at<double>(0, 0) /= (double)s.width;  //Fx
 		m_mC.at<double>(1, 1) /= (double)s.height; //Fy
 		m_mC.at<double>(0, 2) /= (double)s.width;  //Cx
 		m_mC.at<double>(1, 2) /= (double)s.height; //Cy
-		m_pRv->setCamMatrices(m_mC, m_mD);
+		m_pR->setCamMatrices(m_mC, m_mD);
 
 		clear();
 		return true;
@@ -193,7 +193,7 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		m_pRv->BGR()->m()->copyTo(m_mCalib);
+		m_pR->BGR()->m()->copyTo(m_mCalib);
 
 		Mat mGray;
 		vector<Point2f> vPcorner; // vector to store the pixel coordinates of detected checker board corners
@@ -227,9 +227,13 @@ namespace kai
 	void _3DScanCalibCam::save(uint32_t f)
 	{
 		if (f & 1) //long push
+		{
 			saveCalib();
+		}
 		else
+		{
 			camCalib();
+		}
 	}
 
 	void _3DScanCalibCam::mode(uint32_t f)
@@ -248,8 +252,8 @@ namespace kai
 		NULL_(pM);
 		NULL_(m_pFt);
 
-		int x = 30;
-		int y = 20;
+		int x = 100;
+		int y = 50;
 		int s = 20;
 		int n = 5;
 		int nd = 6;
@@ -307,7 +311,7 @@ namespace kai
 		}
 		else
 		{
-			m_pRv->BGR()->m()->copyTo(mV);
+			m_pR->BGR()->m()->copyTo(mV);
 		}
 
 		Rect r;

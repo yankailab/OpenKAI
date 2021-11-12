@@ -8,7 +8,6 @@
 #ifndef OpenKAI_src_Vision__Remap_H_
 #define OpenKAI_src_Vision__Remap_H_
 
-#ifdef USE_OPENCV
 #include "../_VisionBase.h"
 #include "../../IO/_File.h"
 
@@ -27,6 +26,17 @@ public:
 	void close(void);
 	bool bReady(void);
 
+	bool setCamMatrices(const Mat& mC, const Mat& mD);
+	bool scaleCamMatrices(void);
+	void updateCamMatrices(void);
+	vDouble2 getF(void);
+	vDouble2 getC(void);
+	vFloat2 getFf(void);
+	vFloat2 getCf(void);
+	Mat mC(void);
+	Mat mCscaled(void);
+	Mat mD(void);
+
 private:
 	void filter(void);
 	void update(void);
@@ -39,8 +49,16 @@ private:
 public:
 	_VisionBase* m_pV;
 	bool m_bReady;
+	string m_fCalib;
+
+	//original camera matrix
+	Mat m_mC;		//Intrinsic
+	Mat m_mCscaled;	//scaled with input image size
+	Mat m_mD;		//Distortion
+	//Remap
+	Mat m_m1;
+	Mat m_m2;
 };
 
 }
-#endif
 #endif
