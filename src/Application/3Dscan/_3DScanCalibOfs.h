@@ -27,7 +27,6 @@ namespace kai
 		// callbacks
 		static void sOnBtnClear(void *pInst, uint32_t f);
 		static void sOnBtnSave(void *pInst, uint32_t f);
-		static void sOnBtnMode(void *pInst, uint32_t f);
 		static void sOnBtnXi(void *pInst, uint32_t f);
 		static void sOnBtnXd(void *pInst, uint32_t f);
 		static void sOnBtnYi(void *pInst, uint32_t f);
@@ -39,7 +38,6 @@ namespace kai
 
 		void clear(void);
 		void save(void);
-		void mode(uint32_t f);
 		void Xi(void);
 		void Xd(void);
 		void Yi(void);

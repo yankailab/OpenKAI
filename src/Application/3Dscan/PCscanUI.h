@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Application_PCscan__PCscanUI_H_
-#define OpenKAI_src_Application_PCscan__PCscanUI_H_
+#ifndef OpenKAI_src_Application_3Dscan__PCscanUI_H_
+#define OpenKAI_src_Application_3Dscan__PCscanUI_H_
 
 #include "../../UI/O3DUI.h"
 

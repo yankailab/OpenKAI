@@ -31,7 +31,7 @@ namespace kai
 
 	bool _3DScanCalibCam::init(void *pKiss)
 	{
-		IF_F(!this->_StateBase::init(pKiss));
+		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("fCalib", &m_fCalib);
@@ -57,6 +57,10 @@ namespace kai
 		m_pW = (_WindowCV *)(pK->getInst(n));
 		IF_Fl(!m_pW, n + " not found");
 
+		m_pW->setCbBtn("Action", sOnBtnAction, this);
+		m_pW->setCbBtn("Save", sOnBtnSave, this);
+		m_pW->setCbBtn("Clear", sOnBtnClear, this);
+
 		return true;
 	}
 
@@ -81,7 +85,6 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			this->_StateBase::update();
 			updateCalib();
 
 			m_pT->autoFPSto();
@@ -90,23 +93,6 @@ namespace kai
 
 	void _3DScanCalibCam::updateCalib(void)
 	{
-		IF_(!bActive());
-		if (bStateChanged())
-		{
-			m_pW->setBtnVisibleAll(false);
-			m_pW->setCbBtn("Action", sOnBtnAction, this);
-			m_pW->setCbBtn("Save", sOnBtnSave, this);
-			m_pW->setCbBtn("Clear", sOnBtnClear, this);
-			m_pW->setCbBtn("Mode", sOnBtnMode, this);
-			m_pW->setBtnLabel("Action", "A");
-			m_pW->setBtnLabel("Mode", "CC");
-
-			m_pW->setBtnVisible("Action", true);
-			m_pW->setBtnVisible("Save", true);
-			m_pW->setBtnVisible("Clear", true);
-			m_pW->setBtnVisible("Mode", true);
-			clear();
-		}
 	}
 
 	bool _3DScanCalibCam::camCalib(void)
@@ -176,12 +162,6 @@ namespace kai
 		((_3DScanCalibCam *)pInst)->clear();
 	}
 
-	void _3DScanCalibCam::sOnBtnMode(void *pInst, uint32_t f)
-	{
-		NULL_(pInst);
-		((_3DScanCalibCam *)pInst)->mode(f);
-	}
-
 	void _3DScanCalibCam::sOnBtnSave(void *pInst, uint32_t f)
 	{
 		NULL_(pInst);
@@ -236,16 +216,6 @@ namespace kai
 		}
 	}
 
-	void _3DScanCalibCam::mode(uint32_t f)
-	{
-		NULL_(m_pSC);
-
-		if (f & 1) //long push
-			m_pSC->transit("vertex");
-		else
-			m_pSC->transit("calibDofs");
-	}
-
 	// UI draw
 	void _3DScanCalibCam::drawCalibData(Mat *pM)
 	{
@@ -287,9 +257,7 @@ namespace kai
 	void _3DScanCalibCam::cvDraw(void *pWindow)
 	{
 		NULL_(pWindow);
-		IF_(!bActive());
-
-		this->_StateBase::cvDraw(pWindow);
+		this->_ModuleBase::cvDraw(pWindow);
 		IF_(check() < 0);
 
 		_WindowCV *pWin = (_WindowCV *)pWindow;
@@ -297,7 +265,7 @@ namespace kai
 		IF_(pMw->empty());
 		m_pFt = pWin->getFont();
 
-		if(m_iPreview == 2)
+		if (m_iPreview == 2)
 		{
 			sleep(m_tPreview);
 			m_iPreview = 0;
@@ -307,7 +275,7 @@ namespace kai
 		if (m_iPreview == 1)
 		{
 			m_mCalib.copyTo(mV);
-			m_iPreview++;			
+			m_iPreview++;
 		}
 		else
 		{

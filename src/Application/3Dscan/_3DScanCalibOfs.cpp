@@ -74,19 +74,8 @@ namespace kai
 
 	void _3DScanCalibOfs::updateCalib(void)
 	{
-		IF_(!bActive());
-		if (bStateChanged())
-		{
-			m_pW->setBtnVisibleAll(false);
 			m_pW->setCbBtn("Save", sOnBtnSave, this);
 			m_pW->setCbBtn("Clear", sOnBtnClear, this);
-			m_pW->setCbBtn("Mode", sOnBtnMode, this);
-			m_pW->setBtnVisible("Save", true);
-			m_pW->setBtnVisible("Clear", true);
-			m_pW->setBtnVisible("Mode", true);
-
-			m_pW->setBtnLabel("Mode", "CD");
-
 			m_pW->setCbBtn("Xi", sOnBtnXi, this);
 			m_pW->setCbBtn("Xd", sOnBtnXd, this);
 			m_pW->setCbBtn("Yi", sOnBtnYi, this);
@@ -95,15 +84,6 @@ namespace kai
 			m_pW->setCbBtn("Zd", sOnBtnZd, this);
 			m_pW->setCbBtn("Si", sOnBtnSi, this);
 			m_pW->setCbBtn("Sd", sOnBtnSd, this);
-			m_pW->setBtnVisible("Xi", true);
-			m_pW->setBtnVisible("Xd", true);
-			m_pW->setBtnVisible("Yi", true);
-			m_pW->setBtnVisible("Yd", true);
-			m_pW->setBtnVisible("Zi", true);
-			m_pW->setBtnVisible("Zd", true);
-			m_pW->setBtnVisible("Si", true);
-			m_pW->setBtnVisible("Sd", true);
-		}
 	}
 
 	// callbacks
@@ -117,12 +97,6 @@ namespace kai
 	{
 		NULL_(pInst);
 		((_3DScanCalibOfs *)pInst)->save();
-	}
-
-	void _3DScanCalibOfs::sOnBtnMode(void *pInst, uint32_t f)
-	{
-		NULL_(pInst);
-		((_3DScanCalibOfs *)pInst)->mode(f);
 	}
 
 	void _3DScanCalibOfs::sOnBtnXi(void *pInst, uint32_t f)
@@ -185,16 +159,6 @@ namespace kai
 	{
 //		NULL_(m_pA);
 //		m_pA->saveCalib();
-	}
-
-	void _3DScanCalibOfs::mode(uint32_t f)
-	{
-		NULL_(m_pSC);
-
-		if (f & 1) //long push
-			m_pSC->transit("vertex");
-		else
-			m_pSC->transit("calibCam");
 	}
 
 	void _3DScanCalibOfs::Xi(void)

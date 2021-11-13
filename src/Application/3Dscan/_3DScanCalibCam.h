@@ -8,12 +8,11 @@
 #ifndef OpenKAI_src_Application_3Dscan__3DScanCalibCam_H_
 #define OpenKAI_src_Application_3Dscan__3DScanCalibCam_H_
 
-#include "../../State/_StateBase.h"
 #include "../../Vision/ImgFilter/_Remap.h"
 
 namespace kai
 {
-	class _3DScanCalibCam : public _StateBase
+	class _3DScanCalibCam : public _ModuleBase
 	{
 	public:
 		_3DScanCalibCam(void);
@@ -28,12 +27,10 @@ namespace kai
 		static void sOnBtnAction(void *pInst, uint32_t f);
 		static void sOnBtnClear(void *pInst, uint32_t f);
 		static void sOnBtnSave(void *pInst, uint32_t f);
-		static void sOnBtnMode(void *pInst, uint32_t f);
 
 		void action(void);
 		void clear(void);
 		void save(uint32_t f);
-		void mode(uint32_t f);
 
 	protected:
 		void updateCalib(void);
