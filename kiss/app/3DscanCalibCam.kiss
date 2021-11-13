@@ -27,9 +27,10 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["calibCam","calibOfs","cam","remap"],
-	"vSize":[1920,1080],
-	"font":"/home/kai/dev/font/bebas-neue-font/BebasNeueRegular-2O7wW.ttf",
+	"vBASE":["/remap","calibCam"],
+	"/vSize":[1920,1080],
+	"vSize":[640,480],
+	"font":"/home/kai/3Dscan/bn.ttf",
 	"/font":"/home/lab/3Dscan/bn.ttf",
 
     {
@@ -79,7 +80,7 @@
 		"FPS":30,
 	}
 	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! appsink",
-	"/pipeline":"nvarguscamerasrc sensor-id=0 ! video/x-raw(memory:NVMM), width=1920, height=1080, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)1920, height=(int)1080, format=(string)BGRx ! appsink",
+	"/pipeline":"nvarguscamerasrc sensor-id=0 ! video/x-raw(memory:NVMM), width=1920, height=1080, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)1920, height=(int)1080, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink",
 }
 
 {
@@ -106,27 +107,11 @@
 	}
 	"_Remap":"remap",
 	"_WindowCV":"UI",
-	"_StateControl":"state",
-	"vChessBoardSize":[11,8],
+	"/vChessBoardSize":[11,8],
+	"vChessBoardSize":[9,6],
 	"squareSize":0.06,
 	"vActiveState":["calibCam"],
 	"tPreview":1,
 	"fCalib":"/home/kai/3Dscan/calibCam.kiss",
 	"/fCalib":"/home/lab/3Dscan/calibCam.kiss",
-}
-
-{
-	"name":"calibOfs",
-	"class":"_3DScanCalibOfs",
-	"bInst":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"_VisionBase":"remap",
-	"_WindowCV":"UI",
-	"_StateControl":"state",
-	"vActiveState":["calibDofs"],
-	"fCalib":"/home/kai/3Dscan/calibOfs.kiss",
-	"/fCalib":"/home/lab/3Dscan/calibOfs.kiss",
 }

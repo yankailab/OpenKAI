@@ -146,6 +146,8 @@ namespace kai
 		pF->close();
 		DEL(pF);
 
+		m_msg.set("Calibration saved");
+
 		return true;
 	}
 
@@ -177,7 +179,7 @@ namespace kai
 
 		Mat mGray;
 		vector<Point2f> vPcorner; // vector to store the pixel coordinates of detected checker board corners
-		cvtColor(m_mCalib, mGray, cv::COLOR_BGR2GRAY);
+		cv::cvtColor(m_mCalib, mGray, cv::COLOR_BGR2GRAY);
 
 		// If desired number of corners are found in the image then bSuccess = true
 		IF_(!cv::findChessboardCorners(mGray,
@@ -254,6 +256,35 @@ namespace kai
 		}
 	}
 
+	void _3DScanCalibCam::drawMsg(Mat *pM)
+	{
+		NULL_(pM);
+		NULL_(m_pFt);
+
+		IF_(!m_msg.update());
+
+		int baseline = 0;
+		Size ts = m_pFt->getTextSize(m_msg.get(),
+									 40,
+									 -1,
+									 &baseline);
+
+		Point pt;
+		pt.x = constrain(320 - ts.width / 2, 0, pM->cols);
+		pt.y = constrain(pM->rows / 2 - ts.height, 0, pM->rows);
+		Scalar c = Scalar(0, 255, 0);
+		if (m_msg.m_type == 1)
+			c = Scalar(0, 0, 255);
+
+		m_pFt->putText(*pM, m_msg.get(),
+					   pt,
+					   40,
+					   c,
+					   -1,
+					   cv::LINE_AA,
+					   false);
+	}
+
 	void _3DScanCalibCam::cvDraw(void *pWindow)
 	{
 		NULL_(pWindow);
@@ -271,25 +302,18 @@ namespace kai
 			m_iPreview = 0;
 		}
 
-		Mat mV;
 		if (m_iPreview == 1)
 		{
-			m_mCalib.copyTo(mV);
+			m_mCalib.copyTo(*pMw);
 			m_iPreview++;
 		}
 		else
 		{
-			m_pR->BGR()->m()->copyTo(mV);
+			m_pR->BGR()->m()->copyTo(*pMw);
 		}
 
-		Rect r;
-		r.x = 0;
-		r.y = 0;
-		r.width = mV.cols;
-		r.height = mV.rows;
-		mV.copyTo((*pMw)(r));
-
 		drawCalibData(pMw);
+		drawMsg(pMw);
 	}
 
 }

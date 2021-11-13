@@ -9,6 +9,7 @@
 #define OpenKAI_src_Application_3Dscan__3DScanCalibCam_H_
 
 #include "../../Vision/ImgFilter/_Remap.h"
+#include "../../Utility/utilEvent.h"
 
 namespace kai
 {
@@ -44,6 +45,7 @@ namespace kai
 	    bool camCalib(void);
 	    bool saveCalib(void);
 		void drawCalibData(Mat *pM);
+		void drawMsg(Mat *pM);
 
 	private:
 		_Remap *m_pR;
@@ -64,6 +66,7 @@ namespace kai
 		string m_fCalib;
 
 		// draw
+		MSG_SHOW m_msg;
 		Scalar m_drawCol;
 		cv::Ptr<freetype::FreeType2> m_pFt;
 	};
