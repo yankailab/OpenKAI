@@ -168,7 +168,7 @@ namespace kai
 	{
 		NULL_(pInst);
 		((_3DScanCalibCam *)pInst)->save(f);
-	}
+	}\
 
 	// UI handler
 	void _3DScanCalibCam::action(void)

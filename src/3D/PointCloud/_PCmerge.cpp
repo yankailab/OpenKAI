@@ -37,9 +37,9 @@ bool _PCmerge::init(void *pKiss)
 		_GeometryBase* pPCB = (_GeometryBase*) (pK->getInst(p));
 		IF_CONT(!pPCB);
 
-		m_vpPCB.push_back(pPCB);
+		m_vpGB.push_back(pPCB);
 	}
-	IF_F(m_vpPCB.empty());
+	IF_F(m_vpGB.empty());
 
 	return true;
 }
@@ -72,7 +72,7 @@ void _PCmerge::updateMerge(void)
 	IF_(check() < 0);
 
 	//read all inputs into one ring
-	for(_GeometryBase* pPCB : m_vpPCB)
+	for(_GeometryBase* pPCB : m_vpGB)
 	{
 //		m_ring.readSrc(pPCB->getRing());
 	}

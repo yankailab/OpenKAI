@@ -70,15 +70,15 @@ namespace kai
 		utility::SetVerbosityLevel(utility::VerbosityLevel::Error);
 
 		string n;
-		vector<string> vPCB;
-		pK->a("vPCbase", &vPCB);
+		vector<string> vGB;
+		pK->a("vGeometryBase", &vGB);
 
-		for (string p : vPCB)
+		for (string p : vGB)
 		{
-			_GeometryBase *pPCB = (_GeometryBase *)(pK->getInst(p));
-			IF_CONT(!pPCB);
+			_GeometryBase *pGB = (_GeometryBase *)(pK->getInst(p));
+			IF_CONT(!pGB);
 
-			m_vpPCB.push_back(pPCB);
+			m_vpGB.push_back(pGB);
 		}
 
 		Kiss *pKt = pK->child("threadUI");
@@ -162,9 +162,9 @@ namespace kai
 	void _GeometryViewer::readAllPC(void)
 	{
 		m_nPread = 0;
-		for (_GeometryBase *pPCB : m_vpPCB)
+		for (_GeometryBase *pGB : m_vpGB)
 		{
-			readPC(pPCB);
+			readPC(pGB);
 		}
 
 		updatePC();

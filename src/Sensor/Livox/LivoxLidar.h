@@ -94,9 +94,6 @@ namespace kai
         uint32_t m_scanPattern;
         vector<string> m_vBroadcastCode;
 
-        LivoxDataCallback m_pDefaultDataCb;
-        void* m_pDefaultLivox;
-
     private:
         int AddBroadcastCodeToWhitelist(const char *broadcast_code);
         bool FindInWhitelist(const char *broadcast_code);

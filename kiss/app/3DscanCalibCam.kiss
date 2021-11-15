@@ -107,8 +107,8 @@
 	}
 	"_Remap":"remap",
 	"_WindowCV":"UI",
-	"/vChessBoardSize":[11,8],
-	"vChessBoardSize":[9,6],
+	"vChessBoardSize":[11,8],
+	"/vChessBoardSize":[9,6],
 	"squareSize":0.06,
 	"vActiveState":["calibCam"],
 	"tPreview":1,

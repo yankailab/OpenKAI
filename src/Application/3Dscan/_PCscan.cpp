@@ -11,7 +11,7 @@ namespace kai
 {
 	_PCscan::_PCscan()
 	{
-		m_pPS = NULL;
+//		m_pPS = NULL;
 		m_pNav = NULL;
 		m_pTk = NULL;
 
@@ -37,9 +37,9 @@ namespace kai
 		pK->v("_NavBase", &n);
 		m_pNav = (_NavBase *)(pK->getInst(n));
 
-		n = "";
-		pK->v("_PCstream", &n);
-		m_pPS = (_PCstream *)(pK->getInst(n));
+		// n = "";
+		// pK->v("_PCstream", &n);
+		// m_pPS = (_PCstream *)(pK->getInst(n));
 
 		Kiss *pKk = pK->child("threadK");
 		IF_F(pKk->empty());
@@ -69,9 +69,10 @@ namespace kai
 
 	int _PCscan::check(void)
 	{
-		NULL__(m_pPS, -1);
+//		NULL__(m_pPS, -1);
 		NULL__(m_pNav, -1);
 		NULL__(m_pWin, -1);
+		IF__(m_vpGB.empty(),-1);
 
 		return this->_GeometryViewer::check();
 	}
@@ -120,11 +121,12 @@ namespace kai
 		while(!m_pNav->bReady())
 			m_pT->sleepT(100000);
 
-		m_pPS->clear();
-		m_pPS->startStream();
+		_PCstream* pPS = (_PCstream*)m_vpGB[0];
+		pPS->clear();
+		pPS->startStream();
 
 		removeUIpc();
-		addDummyDome(m_sPC.next(), m_pPS->nP(), m_rDummyDome);
+		addDummyDome(m_sPC.next(), pPS->nP(), m_rDummyDome);
 		updatePC();
 		addUIpc(*m_sPC.get());
 		m_fProcess.set(pc_Scanning);
@@ -140,7 +142,8 @@ namespace kai
 		IF_(check() < 0);
 
 		m_pWin->ShowMsg("Scan", "Processing");
-		m_pPS->stopStream();
+		_PCstream* pPS = (_PCstream*)m_vpGB[0];
+		pPS->stopStream();
 
 		removeUIpc();
 		addUIpc(*m_sPC.get());
@@ -161,7 +164,9 @@ namespace kai
 		pPC->normals_.clear();
 		int n = pPC->points_.size();
 		IF_(n <= 0);
-		int nP = m_pPS->nP();
+		
+		_PCstream* pPS = (_PCstream*)m_vpGB[0];
+		int nP = pPS->nP();
 
 		m_aabb = pPC->GetAxisAlignedBoundingBox();
 		if(m_pUIstate)
@@ -259,9 +264,9 @@ namespace kai
 		IF_(!m_bSlam);
 
 		auto mT = m_pNav->mT();
-		for (int i = 0; i < m_vpPCB.size(); i++)
+		for (int i = 0; i < m_vpGB.size(); i++)
 		{
-			_GeometryBase *pP = m_vpPCB[i];
+			_GeometryBase *pP = m_vpGB[i];
 			pP->setTranslation(mT.cast<double>());
 		}
 	}

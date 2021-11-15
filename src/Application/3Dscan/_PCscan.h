@@ -68,7 +68,7 @@ namespace kai
 		AxisAlignedBoundingBox createDefaultAABB(void);
 
 	protected:
-		_PCstream* m_pPS;
+//		_PCstream* m_pPS;
 		_NavBase *m_pNav;
 		_Thread *m_pTk;
 

@@ -34,7 +34,7 @@ private:
 	}
 
 public:
-	vector<_GeometryBase*> m_vpPCB;
+	vector<_GeometryBase*> m_vpGB;
     float m_rVoxel;
 };
 

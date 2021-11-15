@@ -100,7 +100,7 @@ namespace kai
 		PC_CAM m_camAuto;
 		vFloat3 m_vCoR;
 
-		vector<_GeometryBase *> m_vpPCB;
+		vector<_GeometryBase *> m_vpGB;
 	};
 
 }

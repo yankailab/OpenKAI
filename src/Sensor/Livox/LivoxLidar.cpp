@@ -31,8 +31,6 @@ namespace kai
         m_coordinate = kCoordinateCartesian;
         m_imuRate = kImuFreq200Hz;
         m_scanPattern = kNoneRepetitiveScanPattern;
-        m_pDefaultDataCb = NULL;
-        m_pDefaultLivox = NULL;
     }
 
     LivoxLidar::~LivoxLidar()
@@ -139,17 +137,10 @@ namespace kai
         NULL_F(pCb);
 
         LidarDevice *pL = findLidarDevice(broadcastCode);
-        if (pL)
-        {
-            pL->pDataCb = pCb;
-            pL->pLivox = pLivox;
-        }
-        else
-        {
-            m_pDefaultDataCb = pCb;
-            m_pDefaultLivox = pLivox;
-        }
+        NULL_F(pL);
 
+        pL->pDataCb = pCb;
+        pL->pLivox = pLivox;
         return true;
     }
 
@@ -169,9 +160,10 @@ namespace kai
         {
             LidarDevice *pL = &lidars_[i];
             string bCode = string(pL->info.broadcast_code);
-            IF_CONT(broadcastCode != bCode);
+            IF_N(bCode.empty());
 
-            return pL;
+            IF__(broadcastCode.empty(),pL);
+            IF__(broadcastCode == bCode, pL);
         }
 
         return NULL;
@@ -397,11 +389,6 @@ namespace kai
         {
             pLdev->pDataCb(data, pLdev->pLivox);
             return;
-        }
-
-        if(pLL->m_pDefaultLivox && pLL->m_pDefaultDataCb)
-        {
-            pLL->m_pDefaultDataCb(data, pLL->m_pDefaultLivox);
         }
     }
 
