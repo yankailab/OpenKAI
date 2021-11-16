@@ -351,6 +351,26 @@ sudo apt install gnome-tweaks
 sudo apt install gnome-shell-extensions
 https://extensions.gnome.org/extension/3222/block-caribou-36/
 
+# Touchegg
+sudo apt-get install -y git build-essential gdb cmake debhelper libudev-dev libinput-dev libpugixml-dev libcairo2-dev libx11-dev libxtst-dev libxrandr-dev libxi-dev libglib2.0-dev libgtk-3-dev
+git clone --depth 1 https://github.com/JoseExposito/touchegg.git
+cd touchegg
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release ..
+make -j$(nproc)
+sudo make install
+sudo systemctl daemon-reload
+sudo systemctl restart touchegg
+touchegg
+
+# Touche
+sudo apt-get install -y build-essential git tar flatpak-builder meson nodejs npm gjs gettext appstream appstream-util libglib2.0-dev-bin libgirepository1.0-dev gobject-introspection libglib2.0-dev libx11-dev
+git clone --depth 1 https://github.com/JoseExposito/touche.git
+cd touche
+npm install
+npm run build
+
 #----------------------------------------------------
 
 Make Jetson boot SD image
