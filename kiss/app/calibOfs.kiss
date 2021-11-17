@@ -1,0 +1,12 @@
+{
+    "name":"calib",
+    "vOffsetCr":[0,0,0],
+    "vOffsetCt":[0.01,0.0516,-0.005],
+    "vOffsetPr":[0,0,0],
+    "vOffsetPt":[-0.027,0.0026,-0.0475],
+
+"/vOffsetCr":[0,0,0],
+"/vOffsetCt":[0.01,0.0516,-0.005],
+"/vOffsetPr":[0,0,0],
+"/vOffsetPt":[-0.027,0.0026,-0.0475]
+}

@@ -203,8 +203,8 @@ namespace kai
             vPrgb[m_vAxisIdxRGB.z] * m_vAxisKrgb.z);
 
         Mat *pM = m_pR->BGR()->m();
-        float w = pM->cols;
-        float h = pM->rows;
+//        float w = pM->cols;
+//        float h = pM->rows;
         vDouble2 vFrgb = m_pR->getF();
         vDouble2 vCrgb = m_pR->getC();
 

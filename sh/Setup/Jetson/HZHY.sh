@@ -45,6 +45,10 @@ sudo ./flash.sh jetson-nano-emmc mmcblk0p1
 # Jetson Nano [developer kit version](P3448-0000 module)
 sudo ./flash.sh jetson-nano-devkit mmcblk0p1
 
+# Finish the setup on Jetson
+# ssh using USB LAN
+ssh lab@192.158.55.1
+
 # copy system to SD card, insert a formated SD card on Jetson
 df -h
 sudo umount /dev/mmcblk1p1

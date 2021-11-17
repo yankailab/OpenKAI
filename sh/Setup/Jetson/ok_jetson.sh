@@ -65,6 +65,10 @@ sudo dd if=/dev/sdb of=~/Jetson.img
 
 # install CUDA etc. with Nvidia SDK Manager
 
+
+
+
+
 # USB reset for Realsense
 sudo apt-get install libusb-1.0-0-dev
 git clone --depth 1 https://github.com/mvp/uhubctl.git

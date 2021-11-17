@@ -295,6 +295,10 @@ cd Livox-SDK/build
 cmake -DCMAKE_BUILD_TYPE=Release ../
 make -j$(nproc)
 sudo make install
+# In direct connection mode configure the host ip to be 
+# IP: 192.168.1.50
+# Netmask: 255.255.255.0
+# Gateway: 192.168.1.1
 
 #----------------------------------------------------
 # (Optional) Pangolin & Orb_Slam3
@@ -346,30 +350,15 @@ sudo chmod a+x $HOME/ok.sh
 xrandr -o left
 xinput set-prop 'GXTP7386:00 27C6:0113' 'Coordinate Transformation Matrix' 0 -1 1 1 0 0 0 0 1
 
-#Block on screen keyboard
+# Block unity touch gestures
+sudo apt install dconf-editor
+dconf-editor
+com > canonical > unity > gestures
+
+# Block on screen keyboard
 sudo apt install gnome-tweaks
 sudo apt install gnome-shell-extensions
 https://extensions.gnome.org/extension/3222/block-caribou-36/
-
-# Touchegg
-sudo apt-get install -y git build-essential gdb cmake debhelper libudev-dev libinput-dev libpugixml-dev libcairo2-dev libx11-dev libxtst-dev libxrandr-dev libxi-dev libglib2.0-dev libgtk-3-dev
-git clone --depth 1 https://github.com/JoseExposito/touchegg.git
-cd touchegg
-mkdir build
-cd build
-cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release ..
-make -j$(nproc)
-sudo make install
-sudo systemctl daemon-reload
-sudo systemctl restart touchegg
-touchegg
-
-# Touche
-sudo apt-get install -y build-essential git tar flatpak-builder meson nodejs npm gjs gettext appstream appstream-util libglib2.0-dev-bin libgirepository1.0-dev gobject-introspection libglib2.0-dev libx11-dev
-git clone --depth 1 https://github.com/JoseExposito/touche.git
-cd touche
-npm install
-npm run build
 
 #----------------------------------------------------
 
