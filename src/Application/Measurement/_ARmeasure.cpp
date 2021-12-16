@@ -12,7 +12,7 @@ namespace kai
 
 	_ARmeasure::_ARmeasure()
 	{
-		m_pV = NULL;
+		m_pR = NULL;
 		m_pD = NULL;
 		m_pN = NULL;
 		m_pW = NULL;
@@ -60,9 +60,9 @@ namespace kai
 		string n;
 
 		n = "";
-		pK->v("_VisionBase", &n);
-		m_pV = (_VisionBase *)(pK->getInst(n));
-		IF_Fl(!m_pV, n + " not found");
+		pK->v("_Remap", &n);
+		m_pR = (_Remap *)(pK->getInst(n));
+		IF_Fl(!m_pR, n + " not found");
 
 		n = "";
 		pK->v("_DistSensorBase", &n);
@@ -103,8 +103,8 @@ namespace kai
 
 	int _ARmeasure::check(void)
 	{
-		NULL__(m_pV, -1);
-		IF__(m_pV->BGR()->bEmpty(), -1);
+		NULL__(m_pR, -1);
+		IF__(m_pR->BGR()->bEmpty(), -1);
 		NULL__(m_pD, -1);
 		NULL__(m_pN, -1);
 		NULL__(m_pW, -1);
@@ -331,9 +331,9 @@ namespace kai
 		NULL_(pM);
 		IF_(!m_bValidDist);
 
-		vFloat2 vF = m_pV->getFf();
-		vFloat2 vC = m_pV->getCf();
-		cv::Size s = m_pV->BGR()->size();
+		vFloat2 vF = m_pR->getFf();
+		vFloat2 vC = m_pR->getCf();
+		cv::Size s = m_pR->BGR()->size();
 
 		// laser spot
 		float yD = m_vDofsP.y + m_d;

@@ -206,7 +206,7 @@ namespace kai
 
 		Mat mGray;
 		vector<Point2f> vPcorner; // vector to store the pixel coordinates of detected checker board corners
-		cvtColor(m_mCalib, mGray, cv::COLOR_BGR2GRAY);
+		cv::cvtColor(m_mCalib, mGray, cv::COLOR_BGR2GRAY);
 
 		// If desired number of corners are found in the image then bSuccess = true
 		IF_(!cv::findChessboardCorners(mGray,

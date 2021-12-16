@@ -9,7 +9,7 @@
 #define OpenKAI_src_Application_Measurement__ARmeasure_H_
 
 #include "../../State/_StateBase.h"
-#include "../../Vision/_VisionBase.h"
+#include "../../Vision/ImgFilter/_Remap.h"
 #include "../../Navigation/_NavBase.h"
 #include "../../Sensor/_DistSensorBase.h"
 #include "../../Utility/utilFile.h"
@@ -72,7 +72,7 @@ namespace kai
 		void drawMsg(Mat* pM);
 
 	private:
-		_VisionBase *m_pV;
+		_Remap *m_pR;
 		_DistSensorBase *m_pD;
 		_NavBase *m_pN;
 		_WindowCV *m_pW;

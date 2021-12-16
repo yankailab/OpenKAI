@@ -48,8 +48,8 @@ namespace kai
 
 	private:
 		_ARmeasure* m_pA;
-		_VisionBase *m_pV;
-		_WindowCV *m_pW;
+		_Remap* m_pR;
+		_WindowCV* m_pW;
 
 		// result
 		float m_area;

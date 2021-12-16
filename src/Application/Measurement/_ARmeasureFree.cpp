@@ -13,7 +13,7 @@ namespace kai
 	_ARmeasureFree::_ARmeasureFree()
 	{
 		m_pA = NULL;
-		m_pV = NULL;
+		m_pR = NULL;
 		m_pW = NULL;
 
 		m_bStarted = false;
@@ -42,9 +42,9 @@ namespace kai
 		IF_Fl(!m_pA, n + " not found");
 
 		n = "";
-		pK->v("_VisionBase", &n);
-		m_pV = (_VisionBase *)(pK->getInst(n));
-		IF_Fl(!m_pV, n + " not found");
+		pK->v("_Remap", &n);
+		m_pR = (_Remap *)(pK->getInst(n));
+		IF_Fl(!m_pR, n + " not found");
 
 		n = "";
 		pK->v("_WindowCV", &n);
@@ -64,8 +64,8 @@ namespace kai
 	{
 		NULL__(m_pA, -1);
 		NULL__(m_pW, -1);
-		NULL__(m_pV, -1);
-		IF__(m_pV->BGR()->bEmpty(), -1);
+		NULL__(m_pR, -1);
+		IF__(m_pR->BGR()->bEmpty(), -1);
 
 		return 0;
 	}
@@ -177,9 +177,9 @@ namespace kai
 		NULL_(pM);
 		NULL_(m_pFt);
 
-		vFloat2 vF = m_pV->getFf();
-		vFloat2 vC = m_pV->getCf();
-		cv::Size s = m_pV->BGR()->size();
+		vFloat2 vF = m_pR->getFf();
+		vFloat2 vC = m_pR->getCf();
+		cv::Size s = m_pR->BGR()->size();
 
 		// vertices
 		int i, j;
@@ -286,7 +286,7 @@ namespace kai
 
 		// video input
 		Mat mV;
-		m_pV->BGR()->m()->copyTo(mV);
+		m_pR->BGR()->m()->copyTo(mV);
 
 		drawVertices(&mV);
 

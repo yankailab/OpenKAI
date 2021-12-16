@@ -2,9 +2,8 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
-	"bDraw":0,
-	"waitKey":30,
+	"bLog":1,
+	"bStdErr":1,
 	"rc":"sudo modprobe bcm2835-v4l2\nv4l2-ctl -d /dev/video0 --set-ctrl=rotate=180",
 }
 
@@ -12,6 +11,11 @@
 	"name":"OKview",
 	"class":"Window",
 	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["gstRaspiV4l2","cam"],
 	"bFullScreen":0,
 }
 
@@ -19,20 +23,22 @@
 	"name":"gstRaspiV4l2",
 	"class":"_GStreamer",
 	"FPS":60,
-	"bInst":1,
-	"Window":"OKview",
+	"bInst":0,
 	"pipeline":"v4l2src device=/dev/video0 ! video/x-raw,format=I420,width=640,height=480,framerate=60/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! omxh264enc ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
 }
 
 {
-	"name":"raspivid",
+	"name":"cam",
 	"class":"_Raspivid",
-	"FPS":90,
-	"bInst":0,
-	"Window":"OKview",
-	"w":640,
-	"h":480,
-	"cMode":"y",
-	"option":"--nopreview -rot 180",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bInst":1,
+	"vSize":[640,480],
 	"cmd":"raspividyuv",
+	"cMode":"rgb",
+	"/option":"-n -rot 180",
+	"option":"-n",
 }
+

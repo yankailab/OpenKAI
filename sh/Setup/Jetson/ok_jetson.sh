@@ -57,6 +57,8 @@ sudo reboot now
 # if crashed run it from eMMC boot then copy the dtb file to SD card
 # /boot/kernel_tegra194-p3668-all-p3509-0000-user-custom.dtb.
 sudo /opt/nvidia/jetson-io/jetson-io.py
+# quick test
+gst-launch-1.0 nvarguscamerasrc sensor-id=0 ! "video/x-raw(memory:NVMM),width=1920,heigh=1080,framerate=30/1" ! nvvidconv flip-method=3 ! nvoverlaysink
 
 # Migrate system to SD card / NVMe if necessary
 

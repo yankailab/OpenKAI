@@ -521,8 +521,6 @@ endif()
 
 if(USE_XARM)
   add_definitions(-DUSE_XARM)
-  set(XARM_include "/home/kai/dev/xArm-CPLUS-SDK/include" CACHE STRING "")
-  set(OpenKAI_include ${OpenKAI_include} ${XARM_include})
   set(OpenKAI_lib ${OpenKAI_lib} xarm)
 endif()
 

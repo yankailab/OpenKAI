@@ -48,7 +48,7 @@ namespace kai
 
 	private:
 		_ARmeasure* m_pA;
-		_VisionBase *m_pV;
+		_Remap *m_pR;
 		_WindowCV *m_pW;
 
 		bool m_bStarted;
