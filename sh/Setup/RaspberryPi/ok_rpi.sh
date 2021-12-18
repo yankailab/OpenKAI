@@ -8,7 +8,7 @@ sudo systemctl enable ssh
 sudo systemctl start ssh
 
 For headless setup
-SSH can be enabled by placing a file named ssh, without any extension, onto the boot partition of the SD card. When the Pi boots, it looks for the ssh file. If it is found, SSH is enabled, and the file is deleted.
+Placing a file named ssh, without any extension, onto the boot partition of the SD card. When the Pi boots, it looks for the ssh file. If it is found, SSH is enabled, and the file is deleted.
 
 # Setup
 sudo apt-get update

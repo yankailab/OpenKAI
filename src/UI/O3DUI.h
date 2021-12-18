@@ -1,5 +1,6 @@
-#pragma once
-#ifdef USE_OPEN3D
+#ifndef OpenKAI_src_UI_O3DUI_H_
+#define OpenKAI_src_UI_O3DUI_H_
+
 #include "../Base/open3d.h"
 #include "../Utility/util.h"
 #include "../Utility/utilStr.h"
@@ -92,9 +93,11 @@ namespace open3d
 				int m_wPanel = 15;
 				int m_sPoint = 2;
 				int m_wLine = 15;
+				float m_btnPaddingV = 0.5;
+				float m_btnPaddingH = 0.5;
 				Vector4f m_vBgCol = {0.0f, 0.0f, 0.0f, 0.0f};
 				Vector3f m_vSunDir = {0.0f, 0.0f, 0.0f};
-                Vector3d m_vAreaLineCol = {1.0, 0.0, 1.0};
+				Vector3d m_vAreaLineCol = {1.0, 0.0, 1.0};
 
 				//filter
 				double m_sVoxel = 0.01;
@@ -116,15 +119,15 @@ namespace open3d
 				virtual void Init(void);
 
 				virtual void AddGeometry(const string &name,
-								 shared_ptr<geometry::Geometry3D> spG,
-								 rendering::Material *material = nullptr,
-								 bool bVisible = true);
+										 shared_ptr<geometry::Geometry3D> spG,
+										 rendering::Material *material = nullptr,
+										 bool bVisible = true);
 				virtual void AddPointCloud(const string &name,
-								   shared_ptr<t::geometry::PointCloud> sTg,
-								   rendering::Material *material = nullptr,
-								   bool bVisible = true);
+										   shared_ptr<t::geometry::PointCloud> sTg,
+										   rendering::Material *material = nullptr,
+										   bool bVisible = true);
 				virtual void UpdatePointCloud(const string &name,
-									  shared_ptr<t::geometry::PointCloud> sTg);
+											  shared_ptr<t::geometry::PointCloud> sTg);
 				virtual void RemoveGeometry(const string &name);
 				virtual DrawObject GetGeometry(const string &name) const;
 
@@ -139,24 +142,24 @@ namespace open3d
 					const Vector3f &eye,
 					const Vector3f &up);
 
-				virtual void CamAutoBound(const geometry::AxisAlignedBoundingBox& aabb,
-                                  const Vector3f &CoR);
+				virtual void CamAutoBound(const geometry::AxisAlignedBoundingBox &aabb,
+										  const Vector3f &CoR);
 
 				virtual void camMove(Vector3f vM);
 
 				virtual UIState *getUIState(void);
 				virtual void UpdateUIstate(void);
-            	virtual void SetPointSize(int px);
-    	        virtual void SetLineWidth(int px);
+				virtual void SetPointSize(int px);
+				virtual void SetLineWidth(int px);
 
-				virtual void ShowMsg(const char* pTitle, const char* pMsg, bool bOK = false);
+				virtual void ShowMsg(const char *pTitle, const char *pMsg, bool bOK = false);
 				virtual void CloseMsg(void);
 				virtual void ExportCurrentImage(const string &path);
 
 			protected:
 				virtual void Layout(const gui::LayoutContext &context);
-	            virtual void UpdateTgeometry(const string &name, shared_ptr<t::geometry::PointCloud> sTg);
-	            virtual float ConvertToScaledPixels(int px);
+				virtual void UpdateTgeometry(const string &name, shared_ptr<t::geometry::PointCloud> sTg);
+				virtual float ConvertToScaledPixels(int px);
 
 			protected:
 				vector<DrawObject> m_vObject;

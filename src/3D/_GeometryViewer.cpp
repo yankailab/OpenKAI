@@ -48,6 +48,7 @@ namespace kai
 		pK->v("bFullScreen", &m_bFullScreen);
 		pK->v("bSceneCache", &m_bSceneCache);
 		pK->v("wPanel", &m_wPanel);
+		pK->v("vBtnPadding", &m_vBtnPadding);
 		pK->v("mouseMode", &m_mouseMode);
 		pK->v("vDmove", &m_vDmove);
 		pK->v("rDummyDome", &m_rDummyDome);

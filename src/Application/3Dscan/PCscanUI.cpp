@@ -19,8 +19,7 @@ namespace open3d
             PCscanUI::PCscanUI(const string &title, int width, int height)
                 : O3DUI(title, width, height)
             {
-                Init();
-                Application::GetInstance().SetMenubar(NULL);
+//                Init();
             }
 
             PCscanUI::~PCscanUI() {}
@@ -37,6 +36,8 @@ namespace open3d
                 InitCtrlPanel();
                 UpdateUIstate();
                 SetMouseCameraMode();
+
+                Application::GetInstance().SetMenubar(NULL);
             }
 
             void PCscanUI::camMove(Vector3f vM)
@@ -175,16 +176,19 @@ namespace open3d
                 m_panelCtrl->AddChild(GiveOwnership(panelFile));
 
                 m_btnOpenPC = new Button(" Open ");
+                m_btnOpenPC->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnOpenPC->SetOnClicked([this]() {
                     OnOpenPLY();
                 });
 
                 m_btnSavePC = new Button(" Save ");
+                m_btnSavePC->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnSavePC->SetOnClicked([this]() {
                     OnSavePLY();
                 });
 
                 m_btnSaveRGB = new Button("Screen");
+                m_btnSaveRGB->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnSaveRGB->SetOnClicked([this]() {
                     OnSaveRGB();
                 });
@@ -201,6 +205,7 @@ namespace open3d
                 m_panelCtrl->AddChild(GiveOwnership(panelCam));
 
                 m_btnCamAuto = new Button("  Auto  ");
+                m_btnCamAuto->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnCamAuto->SetOnClicked([this]() {
                     m_bCamAuto = !m_bCamAuto;
                     int m = m_bCamAuto ? 1 : 0;
@@ -210,6 +215,7 @@ namespace open3d
                 });
 
                 m_btnCamAll = new Button("    All    ");
+                m_btnCamAll->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnCamAll->SetOnClicked([this]() {
                     int m = 4;
                     m_cbCamSet.call(&m);
@@ -219,6 +225,7 @@ namespace open3d
                 });
 
                 m_btnCamOrigin = new Button(" Origin ");
+                m_btnCamOrigin->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnCamOrigin->SetOnClicked([this]() {
                     int m = 3;
                     m_cbCamSet.call(&m);
@@ -228,31 +235,37 @@ namespace open3d
                 });
 
                 m_btnCamL = new Button(" < ");
+                m_btnCamL->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnCamL->SetOnClicked([this]() {
                     camMove(Vector3f(-1, 0, 0));
                 });
 
                 m_btnCamR = new Button(" > ");
+                m_btnCamR->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnCamR->SetOnClicked([this]() {
                     camMove(Vector3f(1, 0, 0));
                 });
 
                 m_btnCamF = new Button(" ^ ");
+                m_btnCamF->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnCamF->SetOnClicked([this]() {
                     camMove(Vector3f(0, 0, -1));
                 });
 
                 m_btnCamB = new Button(" v ");
+                m_btnCamB->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnCamB->SetOnClicked([this]() {
                     camMove(Vector3f(0, 0, 1));
                 });
 
                 m_btnCamU = new Button(" Up ");
+                m_btnCamU->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnCamU->SetOnClicked([this]() {
                     camMove(Vector3f(0, 1, 0));
                 });
 
                 m_btnCamD = new Button(" Down ");
+                m_btnCamD->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnCamD->SetOnClicked([this]() {
                     camMove(Vector3f(0, -1, 0));
                 });
@@ -298,6 +311,7 @@ namespace open3d
                 panelView->AddChild(GiveOwnership(pG));
 
                 m_btnHiddenRemove = new Button(" Z-Cull ");
+                m_btnHiddenRemove->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnHiddenRemove->SetOnClicked([this]() {
                     m_uiState.m_vCamPos = m_pScene->GetScene()->GetCamera()->GetPosition();
                     m_cbHiddenRemove.call(&m_uiState);
@@ -305,6 +319,7 @@ namespace open3d
                 });
 
                 m_btnFilterReset = new Button(" Reset ");
+                m_btnFilterReset->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnFilterReset->SetOnClicked([this]() {
                     m_cbResetPC.call();
                     m_pScene->ForceRedraw();
@@ -320,6 +335,7 @@ namespace open3d
                 m_panelCtrl->AddChild(GiveOwnership(panelScan));
 
                 m_btnScan = new Button("        Start        ");
+                m_btnScan->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnScan->SetToggleable(true);
                 m_btnScan->SetOnClicked([this]() {
                     m_bScanning = !m_bScanning;

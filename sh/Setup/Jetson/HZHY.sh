@@ -1,5 +1,14 @@
 # install nvidia SDK manager
 
+# if using Ubuntu later than 18.04, fake it with
+sudo nano /etc/lsb-release
+# with the following content
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=18.04
+DISTRIB_CODENAME=bionic
+DISTRIB_DESCRIPTION=“Ubuntu 18.04.4 LTS”
+# run sdkmanager
+
 # download JetPack 4.6 rev2 withOUT flashing Jetson
 # JetPack 4.6 rev3 may also work but not tested yet
 
