@@ -18,9 +18,10 @@ sudo rpi-update
 
 # Disable OS use of UART and Enable UART hardware
 set +H
-sudo sh -c "echo 'dtoverlay=disable-bt\ndtoverlay=disable-wifi\n' >> /boot/config.txt"
+sudo sh -c "echo 'dtoverlay=disable-bt\n' >> /boot/config.txt"
 set -H
 sudo reboot now
+#sudo sh -c "echo 'dtoverlay=disable-bt\ndtoverlay=disable-wifi\n' >> /boot/config.txt"
 
 sudo systemctl disable hciuart
 sudo systemctl stop serial-getty@ttyAMA0.service
@@ -28,7 +29,7 @@ sudo systemctl disable serial-getty@ttyAMA0.service
 sudo systemctl stop serial-getty@ttyS0.service
 sudo systemctl disable serial-getty@ttyS0.service
 sudo reboot now
-	
+
 # Raspberry camera
 sudo apt-get -y install gstreamer1.0-omx libraspberrypi-dev
 git clone --depth 1 https://github.com/thaytan/gst-rpicamsrc.git

@@ -76,21 +76,42 @@ ssh lab@192.158.55.1
 
 # Following is optional only if you need to boot from SD card
 
-# copy system to SD card, insert a formated SD card on Jetson
+# Preparing SD card
+
+# insert SD card into your host PC, launch ubuntu Disks.
+
+# Ccick the SD card drive on the left column, in the right pane, click the three bar-ed button on top right corner, then "Format disk", choose partition table type to be "empty" form the pull down selection.
+
+# on host PC,
+sudo apt-get install Gparted
+
+# launch GParted, select /dev/sdb (the one represents SD card) from top right
+
+# click the main bar with label "/dev/sdb", then click menu "Device" -> "Create Partition table",
+
+# create the table with "Linux ext4" with "Primary partition" type, then make sure to click the "v" button on the menu bar to apply the operation.
+
+# on host PC,
+sudo fdisk -l
+#check if there is a /dev/sdb1 partition under /dev/sdb
+
+# insert the SD card into Jetson
+# on Jetson, run sudo fdisk -l, chcke if there is a /dev/mmcblk1p1 partition under /dev/mmcblk1
+
+# copy system to SD card
 df -h
 sudo umount /dev/mmcblk1p1
-sudo mkfs.ext4 /dev/mmcblk1p1
+#sudo mkfs.ext4 /dev/mmcblk1p1
 sudo ./copy-rootfs-tf.sh
 sudo ./setup-service.sh
 sync
 sudo reboot now
 df -h
 
-# Flash the new Jetson unit and complete the setup, camera settings
-
+# Clone
+# flash an new Jetson unit and complete the setup, camera settings
 # clone the SD card and insert to another unit, then run
 sudo ./setup-service.sh
 sync
 sudo reboot now
 df -h
-
