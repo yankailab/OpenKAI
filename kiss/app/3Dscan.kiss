@@ -98,6 +98,8 @@
 	"vDmove":[0.5, 5.0],
 	"rDummyDome":1000.0,
 	"dHiddenRemove":100.0,
+	"/dirSave":"/media/kai/",
+	"dirSave":"/media/lab/",
 }
 
 {

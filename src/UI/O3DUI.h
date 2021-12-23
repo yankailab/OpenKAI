@@ -88,6 +88,7 @@ namespace open3d
 				bool m_bSceneCache = false;
 				bool m_bShowPanel = true;
 				bool m_bShowAxes = true;
+				string m_dirSave = "";
 
 				//render
 				int m_wPanel = 15;
@@ -155,6 +156,7 @@ namespace open3d
 				virtual void ShowMsg(const char *pTitle, const char *pMsg, bool bOK = false);
 				virtual void CloseMsg(void);
 				virtual void ExportCurrentImage(const string &path);
+				virtual string getBaseDirSave(void);
 
 			protected:
 				virtual void Layout(const gui::LayoutContext &context);

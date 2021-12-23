@@ -284,7 +284,6 @@ namespace kai
 		}
 
 		struct dirent *dir;
-		ifstream ifs;
 		string d = "";
 		while ((dir = readdir(pDirIn)) != NULL)
 		{
@@ -293,6 +292,7 @@ namespace kai
 
 			d = m_dirSave + string(dir->d_name);
 			d = checkDirName(d);
+			break;
 		}
 
 		closedir(pDirIn);

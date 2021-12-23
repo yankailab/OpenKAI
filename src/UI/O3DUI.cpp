@@ -320,6 +320,27 @@ namespace open3d
                     });
             }
 
+            string O3DUI::getBaseDirSave(void)
+            {
+                DIR *pDir = opendir(m_uiState.m_dirSave.c_str());
+                if(!pDir)return "";
+
+                struct dirent *dir;
+                string d = "";
+                while ((dir = readdir(pDir)) != NULL)
+                {
+                    IF_CONT(dir->d_name[0] == '.');
+                    IF_CONT(dir->d_type != 0x4); //0x4: folder
+
+                    d = m_uiState.m_dirSave + string(dir->d_name);
+                    d = checkDirName(d);
+                    break;
+                }
+
+                closedir(pDir);
+                return d;
+            }
+
             void O3DUI::Layout(const gui::LayoutContext &context)
             {
                 m_pScene->SetFrame(GetContentRect());

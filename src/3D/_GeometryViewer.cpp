@@ -22,6 +22,7 @@ namespace kai
 		m_pWin = NULL;
 		m_pUIstate = NULL;
 		m_modelName = "PCMODEL";
+		m_dirSave = "/home/lab/";
 
 		m_bFullScreen = false;
 		m_bSceneCache = false;
@@ -44,6 +45,7 @@ namespace kai
 		pK->v("vWinSize", &m_vWinSize);
 		pK->v("pathRes", &m_pathRes);
 		pK->v("device", &m_device);
+		pK->v("dirSave", &m_dirSave);
 
 		pK->v("bFullScreen", &m_bFullScreen);
 		pK->v("bSceneCache", &m_bSceneCache);
@@ -256,6 +258,7 @@ namespace kai
 		m_pUIstate->m_mouseMode = (visualization::gui::SceneWidget::Controls)m_mouseMode;
 		m_pUIstate->m_wPanel = m_wPanel;
 		m_pUIstate->m_sMove = m_vDmove.x;
+		m_pUIstate->m_dirSave = m_dirSave;
 		m_pWin->UpdateUIstate();
 		m_pWin->SetFullScreen(m_bFullScreen);
 

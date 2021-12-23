@@ -81,6 +81,7 @@ namespace kai
 		UIState* m_pUIstate;
 		_Thread *m_pTui;
 		string m_modelName;
+		string m_dirSave;
 
 		string m_pathRes;
 		Visualizer m_vis;
