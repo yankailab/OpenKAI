@@ -154,6 +154,18 @@ namespace kai
         LidarSetMode(pL->handle, pL->config.lidar_mode, LivoxLidar::SetLidarModeCb, g_pLidar);
     }
 
+    bool LivoxLidar::setScanPattern(const string &broadcastCode, LidarScanPattern p)
+    {
+        LidarDevice *pL = findLidarDevice(broadcastCode);
+        NULL_F(pL);
+
+        pL->config.set_bits |= kConfigScanPattern;
+        pL->config.scan_pattern = p;
+        LidarSetScanPattern(pL->handle,
+                            (LidarScanPattern)(pL->config.scan_pattern),
+                            LivoxLidar::SetScanPatternCb, g_pLidar);
+    }
+
     LidarDevice *LivoxLidar::findLidarDevice(const string &broadcastCode)
     {
         for (int i = 0; i < kMaxLidarCount; i++)

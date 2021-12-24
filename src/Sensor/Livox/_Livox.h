@@ -28,6 +28,7 @@ public:
     virtual void stopStream(void);
 
     void setLidarMode(LidarMode m);
+    void setScanPattern(LidarScanPattern p);
 
 protected:
     static void CbRecvData(LivoxEthPacket* pData, void* pLivox);
@@ -55,6 +56,7 @@ public:
     uint32_t m_iTransformed;
     const float m_ovRef = 1.0/255.0;
     int m_lidarMode;
+    int m_scanPattern;
 };
 
 }

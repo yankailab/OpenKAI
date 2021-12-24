@@ -4,6 +4,7 @@
 	"appName":"PCscan",
 	"bLog":1,
 	"bStdErr":1,
+	"/rc":"umount /dev/mmcblk0p1",
 }
 
 {
@@ -121,7 +122,7 @@
 	"bInst":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
 	"bLog":0,
 	"LivoxLidar":"LivoxLidar",

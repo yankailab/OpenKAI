@@ -344,6 +344,10 @@ make all -j$(nproc)
 # Copy startup sh into home
 sudo chmod a+x $HOME/ok.sh
 
+# For startup on X, insert sleep before running OK to wait for X to be ready
+sleep 5
+./OK [kiss]
+
 #----------------------------------------------------
 # Misc.
 # Screen and touch screen input rotate

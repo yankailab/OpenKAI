@@ -15,6 +15,7 @@ namespace kai
         m_pL = NULL;
         m_iTransformed = 0;
         m_lidarMode = kLidarModeNormal;
+        m_scanPattern = LidarScanPattern::kNoneRepetitiveScanPattern;
     }
 
     _Livox::~_Livox()
@@ -28,6 +29,7 @@ namespace kai
 
         pK->v("broadcastCode", &m_broadcastCode);
         pK->v("lidarMode", &m_lidarMode);
+        pK->v("scanPattern", &m_scanPattern);
 
         string n;
         n = "";
@@ -91,12 +93,22 @@ namespace kai
     {
         m_pL->setLidarMode(m_broadcastCode, (LidarMode)m_lidarMode);
         
+        if(m_lidarMode == kLidarModePowerSaving)
+        {
+            m_pL->setScanPattern(m_broadcastCode, (LidarScanPattern)m_scanPattern);            
+        }
+
         return true;
     }
 
     void _Livox::setLidarMode(LidarMode m)
     {
         m_lidarMode = m;
+    }
+
+    void _Livox::setScanPattern(LidarScanPattern p)
+    {
+        m_scanPattern = p;        
     }
 
     void _Livox::startStream(void)

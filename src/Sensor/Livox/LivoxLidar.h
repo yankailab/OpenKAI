@@ -84,6 +84,7 @@ namespace kai
 
         bool setDataCallback(const string &broadcastCode, LivoxDataCallback pCb, void *pLivox);
         bool setLidarMode(const string &broadcastCode, LidarMode m);
+        bool setScanPattern(const string &broadcastCode, LidarScanPattern p);
         LidarDevice *findLidarDevice(const string &broadcastCode);
 
     public:
