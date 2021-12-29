@@ -9,6 +9,11 @@
 #include "cv.h"
 #endif
 
+#ifdef USE_MATHGL
+#include <mgl2/mgl.h>
+#include <mgl2/fltk.h>
+#endif
+
 #include <Eigen/Dense>
 
 #include "platform.h"

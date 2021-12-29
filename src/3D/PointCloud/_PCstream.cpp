@@ -62,12 +62,13 @@ namespace kai
         NULL_(m_pP);
         IF_(!m_bAccept);
 
-        Vector3d vPa = Vector3d(
+        // lidar to Nav coordinate
+        Vector3d vPnav = Vector3d(
                             vP[m_vAxisIdx.x] * m_vAxisK.x,
                             vP[m_vAxisIdx.y] * m_vAxisK.y,
                             vP[m_vAxisIdx.z] * m_vAxisK.z
                             );
-        IF_(!bRange(vPa));
+        IF_(!bRange(vPnav));
 
         Vector3f vCrgb = vC;
         if(m_pR)
@@ -76,7 +77,7 @@ namespace kai
         }
 
         PC_POINT *pP = &m_pP[m_iP];
-        pP->m_vP = m_A * vPa;
+        pP->m_vP = m_A * vPnav;   // m_A incorporates the offset in Nav coordinate
         pP->m_vC = vCrgb;
         pP->m_tStamp = tStamp;
 

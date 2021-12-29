@@ -258,6 +258,12 @@
 #endif
 
 #ifdef WITH_SENSOR
+#ifdef USE_MATHGL
+#include "../Science/_FourierSeries.h"
+#endif
+#endif
+
+#ifdef WITH_SENSOR
 #include "../Sensor/_LeddarVu.h"
 #include "../Sensor/_TOFsense.h"
 #include "../Sensor/_BenewakeTF.h"

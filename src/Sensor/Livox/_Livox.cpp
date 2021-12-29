@@ -93,10 +93,10 @@ namespace kai
     {
         m_pL->setLidarMode(m_broadcastCode, (LidarMode)m_lidarMode);
         
-        if(m_lidarMode == kLidarModePowerSaving)
-        {
-            m_pL->setScanPattern(m_broadcastCode, (LidarScanPattern)m_scanPattern);            
-        }
+        // if(m_lidarMode != kLidarModePowerSaving)
+        // {
+        //     m_pL->setScanPattern(m_broadcastCode, (LidarScanPattern)m_scanPattern);            
+        // }
 
         return true;
     }

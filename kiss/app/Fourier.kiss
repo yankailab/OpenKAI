@@ -1,0 +1,25 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"Science",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"Fourier",
+	"class":"_FourierSeries",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"S":100,
+	"M":1,
+	"N":1,
+	"w":0.5,
+	"vOrigin":[0, 0],
+	"vRangeX":[-10, 10],
+	"vRangeY":[-2, 2],
+}
+

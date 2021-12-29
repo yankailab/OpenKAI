@@ -272,6 +272,12 @@ namespace kai
 		ADD_MODULE(_ProtocolBase);
 #endif
 
+#ifdef WITH_SCIENCE
+#ifdef USE_MATHGL
+		ADD_MODULE(_FourierSeries);
+#endif
+#endif
+
 #ifdef WITH_SENSOR
 		ADD_MODULE(_BenewakeTF);
 		ADD_MODULE(_TOFsense);

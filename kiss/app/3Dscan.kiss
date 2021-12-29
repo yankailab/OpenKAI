@@ -127,7 +127,7 @@
 	"bLog":0,
 	"LivoxLidar":"LivoxLidar",
 	"/broadcastCode":"",
-	"nP":256000,
+	"nP":500000,
 	"vRange":[0.5, 500],
 	"vAxisIdx":[1, 0, 2],
 	"vAxisK":[1, -1, 1],
@@ -139,6 +139,7 @@
 	"lidarMode":2,
 	"fCalib":"/home/kai/3Dscan/calibOfs.kiss",
 	"/fCalib":"/home/lab/3Dscan/calibOfs.kiss",
+	"scanPattern":0,
 }
 
 {
