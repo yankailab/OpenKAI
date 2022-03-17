@@ -1,0 +1,31 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"Science",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"Solver",
+	"class":"_SolverBase",
+	"bInst":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vOrigin":[0, 0],
+	"vRangeX":[-10, 10],
+	"vRangeY":[-5, 5],
+	"nDigit":30,
+	"nF":100,
+	"A":1.0,
+	"d":1.0,
+	"Th":3.14,
+	"Trf":0.1,
+	"fName":"/home/kai/SAT/test.cnf",
+	"/fName":"/home/kai/SAT/uf20-91/uf20-01.cnf",
+	"/fName":"/home/kai/SAT/uf50-218/uf50-01.cnf",
+	"/fName":"/home/kai/SAT/uuf50-218/uuf50-01.cnf",
+}

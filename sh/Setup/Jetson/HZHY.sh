@@ -80,7 +80,7 @@ ssh lab@192.158.55.1
 
 # insert SD card into your host PC, launch ubuntu Disks.
 
-# Ccick the SD card drive on the left column, in the right pane, click the three bar-ed button on top right corner, then "Format disk", choose partition table type to be "empty" form the pull down selection.
+# Click the SD card drive on the left column, in the right pane, click the three bar-ed button on top right corner, then "Format disk", choose partition table type to be "empty" form the pull down selection.
 
 # on host PC,
 sudo apt-get install Gparted
@@ -111,6 +111,7 @@ df -h
 # Clone
 # flash an new Jetson unit and complete the setup, camera settings
 # clone the SD card and insert to another unit, then run
+sudo mount /dev/mmcblk1p1 /mnt
 sudo ./setup-service.sh
 sync
 sudo reboot now

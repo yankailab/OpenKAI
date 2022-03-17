@@ -71,7 +71,7 @@ inline string getFileExt(string& file)
 	return file.substr(extPos);
 }
 
-#define UTIL_BUF 32
+#define UTIL_BUF 64
 
 inline string i2str(int v)
 {

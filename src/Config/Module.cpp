@@ -86,6 +86,10 @@ namespace kai
 		ADD_MODULE(_CamCalib);
 #endif
 
+#ifdef WITH_APP_DEPTHCAM
+		ADD_MODULE(_DepthCam);
+#endif
+
 #ifdef WITH_APP_DRONEBOX
 		ADD_MODULE(_DroneBox);
 		ADD_MODULE(_DroneBoxJSON);
@@ -272,11 +276,13 @@ namespace kai
 		ADD_MODULE(_ProtocolBase);
 #endif
 
-#ifdef WITH_SCIENCE
-#ifdef USE_MATHGL
-		ADD_MODULE(_FourierSeries);
-#endif
-#endif
+// #ifdef WITH_SCIENCE
+// //		ADD_MODULE(_Solver);
+// 		ADD_MODULE(_SolverBase);
+// #ifdef USE_MATHGL
+// 		ADD_MODULE(_FourierSeries);
+// #endif
+// #endif
 
 #ifdef WITH_SENSOR
 		ADD_MODULE(_BenewakeTF);

@@ -195,7 +195,7 @@ bool _RealSense::start ( void )
     NULL_F(m_pT);
     NULL_F(m_pTPP);
     IF_F(!m_pT->start(getUpdate, this));
-	return m_pTPP->start(getUpdate, this);
+	return m_pTPP->start(getTPP, this);
 }
 
 int _RealSense::check(void)

@@ -76,6 +76,10 @@
 #include "../Application/CamCalib/_CamCalib.h"
 #endif
 
+#ifdef WITH_APP_DEPTHCAM
+#include "../Application/DepthCam/_DepthCam.h"
+#endif
+
 #ifdef WITH_APP_DRONEBOX
 #include "../Application/DroneBox/_DroneBox.h"
 #include "../Application/DroneBox/_DroneBoxJSON.h"
@@ -257,11 +261,13 @@
 #include "../Protocol/_SBus.h"
 #endif
 
-#ifdef WITH_SENSOR
-#ifdef USE_MATHGL
-#include "../Science/_FourierSeries.h"
-#endif
-#endif
+// #ifdef WITH_SCIENCE
+// #include "../Science/_Solver.h"
+// #include "../Science/_SolverBase.h"
+// #ifdef USE_MATHGL
+// #include "../Science/_FourierSeries.h"
+// #endif
+// #endif
 
 #ifdef WITH_SENSOR
 #include "../Sensor/_LeddarVu.h"

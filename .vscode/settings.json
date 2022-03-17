@@ -88,6 +88,8 @@
         "threadpool": "cpp",
         "specialfunctions": "cpp",
         "__atomic_generated": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "cerrno": "cpp",
+        "regex": "cpp"
     }
 }

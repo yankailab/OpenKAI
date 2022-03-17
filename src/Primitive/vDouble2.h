@@ -11,6 +11,11 @@ struct vDouble2
 	double x;
 	double y;
 
+	bool bEmpty(void)
+	{
+		return ((x+y)==0);
+	}
+
 	void init(void)
 	{
 		x = 0.0;

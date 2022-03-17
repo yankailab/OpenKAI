@@ -9,7 +9,7 @@
 namespace kai
 {
 
-inline bool readFile(const string& fName, string* pStr)
+inline bool readFile(const string& fName, string* pStr, string delim = "")
 {
 	NULL_F(pStr);
 
@@ -23,7 +23,7 @@ inline bool readFile(const string& fName, string* pStr)
 	{
         string s;
         getline(f, s);
-		*pStr += s;
+		*pStr += s + delim;
 	}
 
 	f.close();
