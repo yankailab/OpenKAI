@@ -17,7 +17,7 @@ namespace kai
 		m_bFullScreen = false;
 		m_gstOutput = "";
 		m_fileRec = "";
-		m_vSize.init(1280, 720);
+		m_vSize.set(1280, 720);
 		m_bShow = true;
 	}
 

@@ -9,8 +9,8 @@ namespace kai
         m_nDir = 1.0;
         m_nStr = 0.0;
 
-        m_vSpdRange.init(-1.0, 1.0);
-        m_vStrRange.init(-1.0, 1.0);
+        m_vSpdRange.set(-1.0, 1.0);
+        m_vStrRange.set(-1.0, 1.0);
     }
 
     _Drive::~_Drive()

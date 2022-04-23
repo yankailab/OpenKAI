@@ -20,12 +20,11 @@ public:
 
 protected:
 	void send(void);
+    void heartbeat(void);
 
     //msg handlers
 	void handleMsg(string& str);
-    void heartbeat(picojson::object& o);
-    void stat (picojson::object& o);
-    void req (picojson::object& o);
+    void detectPos(picojson::object& o);
     
 private:
 	void updateW(void);
@@ -44,7 +43,10 @@ private:
 
 public:
     _Thread* m_Tr;
-    _DepthVisionBase* m_pDB;
+    _DepthVisionBase* m_pDV;
+	vFloat4 m_vBBhb;
+
+	vFloat3 m_ofsRobot;
 };
 
 }

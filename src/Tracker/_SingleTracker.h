@@ -9,9 +9,6 @@
 #define OpenKAI_src_Tracker__SingleTracker_H_
 
 #include "../Base/_ModuleBase.h"
-
-#ifdef USE_OPENCV
-#ifdef USE_OPENCV_CONTRIB
 #include "../Vision/_VisionBase.h"
 #include "_TrackerBase.h"
 
@@ -43,6 +40,4 @@ public:
 };
 
 }
-#endif
-#endif
 #endif

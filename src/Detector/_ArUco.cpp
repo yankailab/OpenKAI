@@ -5,8 +5,6 @@
  *      Author: yankai
  */
 
-#ifdef USE_OPENCV
-#ifdef USE_OPENCV_CONTRIB
 #include "_ArUco.h"
 
 namespace kai
@@ -31,6 +29,10 @@ namespace kai
 		m_pDict = aruco::getPredefinedDictionary(m_dict);
 
 		pK->v("realSize", &m_realSize);
+
+		string n;
+		pK->v("fCalib", &n);
+		readCamMatrices(n, &m_mC, &m_mD);
 
 		return true;
 	}
@@ -72,18 +74,26 @@ namespace kai
 		Mat m = *m_pV->BGR()->m();
 		IF_(m.empty());
 
+		if (m_mCscaled.empty())
+		{
+			scaleCamMatrices(cv::Size(m.cols, m.rows),
+								  m_mC,
+								  m_mD,
+								  &m_mCscaled);
+		}
+
 		vector<int> vID;
 		vector<vector<Point2f>> vvCorner;
 		aruco::detectMarkers(m, m_pDict, vvCorner, vID);
 
 		// pose
 		vector<Vec3d> vvR, vvT;
-        aruco::estimatePoseSingleMarkers(vvCorner, 
-										m_realSize, 
-										m_pV->mCscaled(), 
-										m_pV->mD(), 
-										vvR, 
-										vvT);
+		aruco::estimatePoseSingleMarkers(vvCorner,
+										 m_realSize,
+										 m_mCscaled,
+										 m_mD,
+										 vvR,
+										 vvT);
 
 		_Object o;
 		float dx, dy;
@@ -173,7 +183,7 @@ namespace kai
 
 		IF_(m_pU->size() <= 0);
 		int i = 0;
-		_Object* pO;
+		_Object *pO;
 		while ((pO = m_pU->get(i++)) != NULL)
 		{
 			Point pCenter = Point(pO->getX() * pM->cols,
@@ -191,5 +201,3 @@ namespace kai
 	}
 
 }
-#endif
-#endif

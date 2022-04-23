@@ -12,6 +12,7 @@
 #include "../Universe/_Universe.h"
 #include "../Vision/_VisionBase.h"
 #include "../Protocol/_Mavlink.h"
+#include "../Utility/utilCV.h"
 
 namespace kai
 {

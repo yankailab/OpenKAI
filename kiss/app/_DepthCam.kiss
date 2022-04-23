@@ -7,17 +7,6 @@
 }
 
 {
-	"name":"console",
-	"class":"_Console",
-	"bInst":1,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"vBASE":["rs","gst","T265"],
-}
-
-{
 	"name":"RGBview",
 	"class":"_WindowCV",
 	"bInst":1,
@@ -26,8 +15,8 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["rs","gst"],
-	"bShow":0,
+	"vBASE":["rs"],
+	"bShow":1,
 	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",	
 }
@@ -41,7 +30,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"/vBASE":["rs","gst"],
+	"/vBASE":["rs"],
 }
 
 {
@@ -58,7 +47,7 @@
 	"bInst":1,
 	"bLog":1,
 	"bDraw":1,
-	"/depthWindow":"depthView",
+	"depthWindow":"depthView",
 	"vPreset":"Short Range",
 	"bRsRGB":1,
 	"vSize":[1280,720],
@@ -67,30 +56,44 @@
 	"vDsize":[640,480],
 	"fDec":0,
 	"fSpat":0,
-	"vRange":[0.1,15.0],
 	"bAlign":0,
-	"/rsSN":"f0211594",
+	"bDebug":1,
+	"nHistLevel":128,
+	"minHistD":0.5,
+	"vRange":[0.1,15.0],
 }
 
 {
-	"name":"gst",
-	"class":"_GStreamer",
+	"name":"udp",
+	"class":"_UDP",
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"bInst":0,
-	"pipeline":"v4l2src device=/dev/video3 ! videoflip method=2 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
-	"/pipeline":"v4l2src device=/dev/video2 ! videoflip method=2 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
+    {
+		"name":"threadR",
+		"FPS":1,
+	}
+	"port":20000,
+	"nFIFO":12800,
+	"_wakeUp":"DC",
 }
 
 {
-	"name":"T265",
-	"class":"_RStracking",
-    {
-		"name":"thread",
-		"FPS":100,
-	}
+	"name":"DC",
+	"class":"_DepthCam",
 	"bInst":0,
 	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"_IOBase":"udp",
+	"_DepthVisionBase":"rs",
+	"vBBhb":[0.4, 0.4, 0.6, 0.6],
 }

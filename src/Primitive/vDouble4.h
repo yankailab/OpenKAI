@@ -14,6 +14,30 @@ struct vDouble4
 	double z;
 	double w;
 
+	vDouble4(void)
+	{
+		x = 0.0;
+		y = 0.0;
+		z = 0.0;
+		w = 0.0;
+	}
+
+	vDouble4(double v)
+	{
+		x = v;
+		y = v;
+		z = v;
+		w = v;
+	}
+
+	vDouble4(double a, double b, double c, double d)
+	{
+		x = a;
+		y = b;
+		z = c;
+		w = d;
+	}
+
 	void init(void)
 	{
 		x = 0.0;
@@ -22,7 +46,7 @@ struct vDouble4
 		w = 0.0;
 	}
 
-	void init(double v)
+	void set(double v)
 	{
 		x = v;
 		y = v;
@@ -30,7 +54,7 @@ struct vDouble4
 		w = v;
 	}
 
-	void init(double a, double b, double c, double d)
+	void set(double a, double b, double c, double d)
 	{
 		x = a;
 		y = b;

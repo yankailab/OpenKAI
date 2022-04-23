@@ -7,9 +7,6 @@
 
 #include "_SingleTracker.h"
 
-#ifdef USE_OPENCV
-#ifdef USE_OPENCV_CONTRIB
-
 namespace kai
 {
 
@@ -93,5 +90,3 @@ void _SingleTracker::track(void)
 }
 
 }
-#endif
-#endif

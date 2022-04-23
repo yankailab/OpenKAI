@@ -38,14 +38,14 @@ struct vFloat3
 		z = 0.0;
 	}
 
-	void init(float v)
+	void set(float v)
 	{
 		x = v;
 		y = v;
 		z = v;
 	}
 
-	void init(float a, float b, float c)
+	void set(float a, float b, float c)
 	{
 		x = a;
 		y = b;

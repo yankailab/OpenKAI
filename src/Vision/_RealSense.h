@@ -29,7 +29,6 @@ public:
 	bool init(void* pKiss);
 	bool start(void);
     int check(void);
-	void cvDraw(void* pWindow);
 	bool open(void);
 	void close(void);
 
@@ -57,7 +56,7 @@ public:
 	rs2::pipeline m_rsPipe;
 	rs2::frame m_rsColor;
 	rs2::frame m_rsDepth;
-	rs2::frame m_rsDepthShow;
+//	rs2::frame m_rsDepthShow;
 	rs2::align* m_rspAlign;
     rs2::spatial_filter m_rsfSpat;
     rs2::decimation_filter m_rsfDec;

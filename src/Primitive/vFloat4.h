@@ -14,6 +14,30 @@ struct vFloat4
 	float z;
 	float w;
 
+	vFloat4(void)
+	{
+		x = 0.0;
+		y = 0.0;
+		z = 0.0;
+		w = 0.0;
+	}
+
+	vFloat4(float v)
+	{
+		x = v;
+		y = v;
+		z = v;
+		w = v;
+	}
+
+	vFloat4(float a, float b, float c, float d)
+	{
+		x = a;
+		y = b;
+		z = c;
+		w = d;
+	}
+
 	void init(void)
 	{
 		x = 0.0;
@@ -22,7 +46,7 @@ struct vFloat4
 		w = 0.0;
 	}
 
-	void init(float v)
+	void set(float v)
 	{
 		x = v;
 		y = v;
@@ -30,7 +54,7 @@ struct vFloat4
 		w = v;
 	}
 
-	void init(float a, float b, float c, float d)
+	void set(float a, float b, float c, float d)
 	{
 		x = a;
 		y = b;

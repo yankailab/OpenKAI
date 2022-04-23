@@ -14,7 +14,7 @@ namespace kai
 	{
 		m_bOpen = false;
 		m_type = vision_unknown;
-		m_vSize.init(1280, 720);
+		m_vSize.set(1280, 720);
 		m_bbDraw.x = -1.0;
 	}
 

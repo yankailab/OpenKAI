@@ -127,6 +127,7 @@ namespace kai
 #endif
 
 #ifdef WITH_APP_ROVER
+		ADD_MODULE(_PWMrover);
 		ADD_MODULE(_RCrover);
 #ifdef USE_OPENCV
 #endif

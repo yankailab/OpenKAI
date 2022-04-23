@@ -7,15 +7,13 @@
 
 #include "_DepthVisionBase.h"
 
-#ifdef USE_OPENCV
-
 namespace kai
 {
 
 	_DepthVisionBase::_DepthVisionBase()
 	{
 		m_pDepthWin = NULL;
-		m_vDsize.init(1280, 720);
+		m_vDsize.set(1280, 720);
 
 		m_nHistLev = 128;
 		m_iHistFrom = 0;
@@ -23,11 +21,7 @@ namespace kai
 		m_vRange.x = 0.8;
 		m_vRange.y = 16.0;
 		m_minHistD = 0.25;
-		m_vKpos.x = 0.0;
-		m_vKpos.y = 0.0;
-		m_vKpos.z = 1.0;
-		m_vKpos.w = 1.0;
-		m_vDRoi.init();
+		m_vDroi.init();
 	}
 
 	_DepthVisionBase::~_DepthVisionBase()
@@ -43,7 +37,6 @@ namespace kai
 		pK->v("nHistLev", &m_nHistLev);
 		pK->v("minHistD", &m_minHistD);
 		pK->v("vRange", &m_vRange);
-		pK->v("vKpos", &m_vKpos);
 
 		string n = "";
 		F_INFO(pK->v("depthWindow", &n));
@@ -58,22 +51,21 @@ namespace kai
 		IF__(m_fDepth.bEmpty(), -1.0);
 
 		Size s = m_fDepth.size();
+		m_vDroi.x = pROI->x * s.width;
+		m_vDroi.y = pROI->y * s.height;
+		m_vDroi.z = pROI->z * s.width;
+		m_vDroi.w = pROI->w * s.height;
 
-		m_vDRoi.x = (m_vKpos.x + (pROI->x * m_vKpos.z)) * s.width;
-		m_vDRoi.y = (m_vKpos.y + (pROI->y * m_vKpos.w)) * s.height;
-		m_vDRoi.z = (m_vKpos.x + (pROI->z * m_vKpos.z)) * s.width;
-		m_vDRoi.w = (m_vKpos.y + (pROI->w * m_vKpos.w)) * s.height;
+		if (m_vDroi.x < 0)
+			m_vDroi.x = 0;
+		if (m_vDroi.y < 0)
+			m_vDroi.y = 0;
+		if (m_vDroi.z > s.width)
+			m_vDroi.z = s.width;
+		if (m_vDroi.w > s.height)
+			m_vDroi.w = s.height;
 
-		if (m_vDRoi.x < 0)
-			m_vDRoi.x = 0;
-		if (m_vDRoi.y < 0)
-			m_vDRoi.y = 0;
-		if (m_vDRoi.z > s.width)
-			m_vDRoi.z = s.width;
-		if (m_vDRoi.w > s.height)
-			m_vDRoi.w = s.height;
-
-		return d(&m_vDRoi);
+		return d(&m_vDroi);
 	}
 
 	float _DepthVisionBase::d(vInt4 *pROI)
@@ -104,7 +96,7 @@ namespace kai
 				break;
 		}
 
-		return m_dScale * (m_vRange.x + (((float)i) / (float)m_nHistLev) * m_vRange.len());
+		return /*m_dScale **/ (m_vRange.x + (((float)i) / (float)m_nHistLev) * m_vRange.len());
 	}
 
 	Frame *_DepthVisionBase::Depth(void)
@@ -132,29 +124,26 @@ namespace kai
 			cs.x = pM->cols;
 			cs.y = pM->rows;
 
-			vFloat4 bb;
-			bb.x = 0.4 * pM->cols;
-			bb.y = 0.4 * pM->rows;
-			bb.z = 0.6 * pM->cols;
-			bb.w = 0.6 * pM->rows;
-			Rect r = bb2Rect(bb);
+			vFloat4 vRoi(0.4, 0.4, 0.6, 0.6);
 
+			vFloat4 bb;
+			bb.x = vRoi.x * pM->cols;
+			bb.y = vRoi.y * pM->rows;
+			bb.z = vRoi.z * pM->cols;
+			bb.w = vRoi.w * pM->rows;
+			Rect r = bb2Rect(bb);
 			rectangle(*pM, r, Scalar(0, 255, 0), 1);
 
-			//			putText(*pMat, f2str(d(&bb)),
-			//						Point(r.x + 15, r.y + 25),
-			//						FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0,255,0), 1);
-
-			r = bb2Rect(m_vDRoi);
-			rectangle(*pM, r, Scalar(0, 255, 255), 2);
+			putText(*pM, f2str(d(&vRoi)),
+					Point(r.x + 15, r.y + 25),
+					FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0, 255, 0), 1);
 		}
 
-		IF_(m_depthShow.bEmpty());
+		IF_(m_fDepthShow.bEmpty());
 		IF_(!m_pDepthWin);
-		m_pDepthWin->getNextFrame()->copy(*m_depthShow.m());
+		m_pDepthWin->getNextFrame()->copy(*m_fDepthShow.m());
 #endif
 #endif
 	}
 
 }
-#endif

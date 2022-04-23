@@ -26,9 +26,9 @@ public:
 	void close(void);
 	bool bReady(void);
 
-	bool setCamMatrices(const Mat& mC, const Mat& mD);
-	bool scaleCamMatrices(void);
-	void updateCamMatrices(void);
+	bool setCamMat(const Mat& mC, const Mat& mD);
+	bool scaleCamMat(void);
+//	void updateCamMat(void);
 	vDouble2 getF(void);
 	vDouble2 getC(void);
 	vFloat2 getFf(void);

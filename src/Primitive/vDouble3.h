@@ -12,6 +12,27 @@ struct vDouble3
 	double y;
 	double z;
 
+	vDouble3(void)
+	{
+		x = 0.0;
+		y = 0.0;
+		z = 0.0;
+	}
+
+	vDouble3(double v)
+	{
+		x = v;
+		y = v;
+		z = v;
+	}
+
+	vDouble3(double a, double b, double c)
+	{
+		x = a;
+		y = b;
+		z = c;
+	}
+
 	void init(void)
 	{
 		x = 0.0;
@@ -19,14 +40,14 @@ struct vDouble3
 		z = 0.0;
 	}
 
-	void init(double v)
+	void set(double v)
 	{
 		x = v;
 		y = v;
 		z = v;
 	}
 
-	void init(double a, double b, double c)
+	void set(double a, double b, double c)
 	{
 		x = a;
 		y = b;

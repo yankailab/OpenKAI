@@ -11,6 +11,7 @@
 #include "../Base/_ModuleBase.h"
 #include "../Vision/Frame.h"
 #include "../Primitive/tSwap.h"
+#include "../Utility/utilCV.h"
 
 namespace kai
 {

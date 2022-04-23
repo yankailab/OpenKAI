@@ -9,19 +9,37 @@ struct vFloat2
 	float x;
 	float y;
 
+	vFloat2(void)
+	{
+		x = 0.0;
+		y = 0.0;
+	}
+
+	vFloat2(float v)
+	{
+		x = v;
+		y = v;
+	}
+
+	vFloat2(float a, float b)
+	{
+		x = a;
+		y = b;
+	}
+
 	void init(void)
 	{
 		x = 0.0;
 		y = 0.0;
 	}
 
-	void init(float v)
+	void set(float v)
 	{
 		x = v;
 		y = v;
 	}
 
-	void init(float a, float b)
+	void set(float a, float b)
 	{
 		x = a;
 		y = b;

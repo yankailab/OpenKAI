@@ -9,7 +9,6 @@
 #define OpenKAI_src_DNN_JetsonInference__DetectNet_H_
 
 #ifdef USE_OPENCV
-#ifdef USE_JETSON_INFERENCE
 #include "detectNet.h"
 #include "../../Vision/_VisionBase.h"
 #include "../../Detector/_DetectorBase.h"

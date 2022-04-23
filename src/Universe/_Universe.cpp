@@ -10,12 +10,12 @@ namespace kai
 	_Universe::_Universe()
 	{
 		m_minConfidence = 0.0;
-		m_rArea.init(-FLT_MAX, FLT_MAX);
-		m_rW.init(-FLT_MAX, FLT_MAX);
-		m_rH.init(-FLT_MAX, FLT_MAX);
+		m_rArea.set(-FLT_MAX, FLT_MAX);
+		m_rW.set(-FLT_MAX, FLT_MAX);
+		m_rH.set(-FLT_MAX, FLT_MAX);
 
-		m_vRoi.init(0.0, 0.0, 1.0, 1.0);
-		m_vClassRange.init(-INT_MAX, INT_MAX);
+		m_vRoi.set(0.0, 0.0, 1.0, 1.0);
+		m_vClassRange.set(-INT_MAX, INT_MAX);
 
 		m_bDrawClass = false;
 		m_bDrawText = false;

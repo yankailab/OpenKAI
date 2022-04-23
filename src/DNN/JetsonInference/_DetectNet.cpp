@@ -5,7 +5,6 @@
 #include "../JetsonInference/_DetectNet.h"
 
 #ifdef USE_OPENCV
-#ifdef USE_JETSON_INFERENCE
 
 namespace kai
 {

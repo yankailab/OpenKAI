@@ -2,7 +2,6 @@
 #define OpenKAI_src_Primitive_vInt4_H_
 
 #include "../Base/platform.h"
-#include "vDouble4.h"
 
 namespace kai
 {
@@ -14,12 +13,28 @@ struct vInt4
 	int z;
 	int w;
 
-	inline void operator=(vDouble4& r)
-    {
-		x = r.x;
-		y = r.y;
-		z = r.z;
-		w = r.w;
+	vInt4(void)
+	{
+		x = 0;
+		y = 0;
+		z = 0;
+		w = 0;
+	}
+
+	vInt4(int v)
+	{
+		x = v;
+		y = v;
+		z = v;
+		w = v;
+	}
+
+	vInt4(int a, int b, int c, int d)
+	{
+		x = a;
+		y = b;
+		z = c;
+		w = d;
 	}
 
 	void init(void)
@@ -30,12 +45,20 @@ struct vInt4
 		w = 0;
 	}
 
-	void init(int v)
+	void set(int v)
 	{
 		x = v;
 		y = v;
 		z = v;
 		w = v;
+	}
+
+	void set(int a, int b, int c, int d)
+	{
+		x = a;
+		y = b;
+		z = c;
+		w = d;
 	}
 
 	int midX(void)

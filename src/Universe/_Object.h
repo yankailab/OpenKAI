@@ -10,6 +10,9 @@
 
 #include "../Base/_ModuleBase.h"
 #include "../UI/_Console.h"
+#ifdef USE_OPENCV
+#include "../Utility/utilCV.h"
+#endif
 
 namespace kai
 {

@@ -33,7 +33,6 @@
 #include "../Utility/util.h"
 #include "../Utility/utilEvent.h"
 #include "../Utility/utilStr.h"
-#include "../Utility/utilCV.h"
 
 #endif
 

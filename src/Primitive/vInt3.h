@@ -12,6 +12,27 @@ struct vInt3
 	int y;
 	int z;
 
+	vInt3(void)
+	{
+		x = 0;
+		y = 0;
+		z = 0;
+	}
+
+	vInt3(int v)
+	{
+		x = v;
+		y = v;
+		z = v;
+	}
+
+	vInt3(int a, int b, int c)
+	{
+		x = a;
+		y = b;
+		z = c;
+	}
+
 	void init(void)
 	{
 		x = 0;
@@ -19,7 +40,7 @@ struct vInt3
 		z = 0;
 	}
 
-	void init(int a, int b, int c)
+	void set(int a, int b, int c)
 	{
 		x = a;
 		y = b;

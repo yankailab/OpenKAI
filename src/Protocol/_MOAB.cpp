@@ -5,7 +5,7 @@ namespace kai
 	_MOAB::_MOAB()
 	{
 		m_pIO = NULL;
-		m_vK.init(1.0);
+		m_vK.set(1.0);
 		m_vSpeed.init();
 	}
 

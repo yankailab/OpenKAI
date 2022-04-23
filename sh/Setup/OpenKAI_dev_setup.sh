@@ -191,6 +191,7 @@ sudo make install
 sudo apt-get -y install libpython3-dev python3-numpy
 git clone --recursive --depth 1 https://github.com/dusty-nv/jetson-inference.git
 cd jetson-inference
+git submodule update --init --recursive
 mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release ../

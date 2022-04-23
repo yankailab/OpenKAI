@@ -6,7 +6,8 @@ namespace kai
 _DepthCam::_DepthCam()
 {
     m_Tr = NULL;
-    m_pDB = NULL;
+    m_pDV = NULL;
+    m_vBBhb.set(0.4, 0.4, 0.6, 0.6);
 }
 
 _DepthCam::~_DepthCam()
@@ -19,11 +20,13 @@ bool _DepthCam::init ( void* pKiss )
     IF_F ( !this->_JSONbase::init ( pKiss ) );
     Kiss* pK = ( Kiss* ) pKiss;
 
+    pK->v("vBBhb", &m_vBBhb);
+
     string n;
     n = "";
     pK->v ( "_DepthVisionBase", &n );
-    m_pDB = ( _DepthVisionBase* ) ( pK->getInst ( n ) );
-    IF_Fl ( !m_pDB, n + ": not found" );
+    m_pDV = ( _DepthVisionBase* ) ( pK->getInst ( n ) );
+    IF_Fl ( !m_pDV, n + ": not found" );
 
     Kiss* pKt = pK->child ( "threadR" );
     IF_F ( pKt->empty() );
@@ -48,7 +51,7 @@ bool _DepthCam::start ( void )
 
 int _DepthCam::check ( void )
 {
-    NULL__ ( m_pDB, -1 );
+    NULL__ ( m_pDV, -1 );
 
     return this->_JSONbase::check();
 }
@@ -87,6 +90,24 @@ void _DepthCam::send ( void )
     this->_JSONbase::send();
 }
 
+void _DepthCam::heartbeat ( void )
+{
+    IF_ ( check() <0 );
+
+    double d = m_pDV->d(&m_vBBhb);
+
+    object jo;
+    JO ( jo, "cmd", "heartBeat" );
+    JO ( jo, "id", (double)-1.0 );
+    JO ( jo, "x", (double)m_vBBhb.x );
+    JO ( jo, "y", (double)m_vBBhb.y );
+    JO ( jo, "z", (double)m_vBBhb.z );
+    JO ( jo, "w", (double)m_vBBhb.w );
+    JO ( jo, "d", (double)d );
+
+    sendMsg ( jo );
+}
+
 void _DepthCam::updateR ( void )
 {
     while ( m_pTr->bRun() )
@@ -112,43 +133,36 @@ void _DepthCam::handleMsg ( string& str )
     IF_ ( !jo["cmd"].is<string>() );
     string cmd = jo["cmd"].get<string>();
 
-    if ( cmd == "heartbeat" )
-        heartbeat ( jo );
-    else if ( cmd == "stat" )
-        stat ( jo );
-    else if ( cmd == "req" )
-        req ( jo );
+    if ( cmd == "detectPos" )
+        detectPos ( jo );
 }
 
-void _DepthCam::heartbeat ( picojson::object& o )
-{
-    IF_ ( check() <0 );
-
-}
-
-void _DepthCam::stat ( picojson::object& o )
+void _DepthCam::detectPos ( picojson::object& o )
 {
     IF_ ( check() <0 );
     IF_ ( !o["id"].is<double>() );
-    IF_ ( !o["stat"].is<string>() );
+    IF_ ( !o["x"].is<double>() );
+    IF_ ( !o["y"].is<double>() );
+    IF_ ( !o["z"].is<double>() );
+    IF_ ( !o["w"].is<double>() );
 
-    int vID = o["id"].get<double>();
-    string stat = o["stat"].get<string>();
+    int bbID = o["id"].get<double>();
+    vFloat4 vBB;
+    vBB.x = o["x"].get<double>();
+    vBB.y = o["y"].get<double>();
+    vBB.z = o["z"].get<double>();
+    vBB.w = o["w"].get<double>();
 
-}
-
-void _DepthCam::req ( picojson::object& o )
-{
-    IF_ ( check() <0 );
-    IF_ ( !o["id"].is<double>() );
-    IF_ ( !o["do"].is<string>() );
-
-    int vID = o["id"].get<double>();
-    string d = o["do"].get<string>();
+    double d = m_pDV->d(&vBB);
 
     object jo;
-    JO ( jo, "cmd", "ack" );
-    JO ( jo, "do", d );
+    JO ( jo, "cmd", "detectPos" );
+    JO ( jo, "id", (double)bbID );
+    JO ( jo, "x", (double)vBB.x );
+    JO ( jo, "y", (double)vBB.y );
+    JO ( jo, "z", (double)vBB.z );
+    JO ( jo, "w", (double)vBB.w );
+    JO ( jo, "d", (double)d );
 
     sendMsg ( jo );
 }

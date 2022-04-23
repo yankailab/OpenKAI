@@ -15,8 +15,8 @@ namespace kai
 		m_iWP = 0;
 		m_dWP = 1;
 		m_loop = wp_loop_none,
-		m_vPos.init(-1.0);
-		m_vErr.init(-1.0);
+		m_vPos.set(-1.0);
+		m_vErr.set(-1.0);
 
 		m_type = state_wp;
 	}

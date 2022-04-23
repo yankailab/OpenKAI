@@ -115,6 +115,7 @@
 #endif
 
 #ifdef WITH_APP_ROVER
+#include "../Application/Rover/_PWMrover.h"
 #include "../Application/Rover/_RCrover.h"
 #endif
 
