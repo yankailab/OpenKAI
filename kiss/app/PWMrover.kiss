@@ -1,0 +1,204 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"RCrover",
+	"bStdErr":0,
+	"/rc":"sudo modprobe bcm2835-v4l2\nv4l2-ctl -d /dev/video0 --set-ctrl=rotate=0\n",
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["rs","univ"],
+}
+
+{
+	"name":"RGBview",
+	"class":"_WindowCV",
+	"bInst":1,
+	"bFullScreen":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["rs","univ"],
+	"bShow":0,
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.4 port=5678 auto-multicast=false",
+}
+
+{
+	"name":"rs",
+	"class":"_RealSense",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadPP",
+		"FPS":30,
+	}
+	"bInst":1,
+	"bLog":0,
+	"bDraw":1,
+	"depthWindow":"depthView",
+	"vPreset":"Short Range",
+	"bRsRGB":1,
+	"vSize":[1280,720],
+	"rsFPS":30,
+	"rsDFPS":30,
+	"vDsize":[640,480],
+	"fDec":0,
+	"fSpat":0,
+	"bAlign":0,
+	"bDebug":1,
+	"nHistLevel":128,
+	"minHistD":0.5,
+	"vRange":[0.1,15.0],
+}
+
+{
+	"name":"univ",
+	"class":"_Universe",
+	"bInst":1,
+
+    {
+        "name":"thread",
+        "FPS":30,
+    }
+}
+
+{
+	"name":"DetectNet",
+	"class":"_DetectNet",
+	"bInst":0,
+	"bDraw":1,
+	"bLog":1,
+	{
+        "name":"thread",
+        "FPS":30,
+    }
+	"_VisionBase":"rs",
+	"_Universe":"univ",
+	"fModel":"/home/lab/dev/jetson-inference/data/networks/SSD-Inception-v2/ssd_inception_v2_coco.uff",
+	"fClass":"/home/lab/dev/jetson-inference/data/networks/SSD-Inception-v2/ssd_coco_labels.txt",
+	"bSwapRB":0,
+	"scale":1.0,
+	"vDimIn":[3,300,300],
+	"thr":0.1,
+	"iClassDraw":-1,
+}
+
+{
+	"name":"Yolo",
+	"class":"_DNNdetect",
+	"bInst":0,
+	"bDraw":1,
+	"bLog":1,
+	"FPS":30,
+	"_VisionBase":"rs",
+	"_Universe":"univ",
+	"threadMode":0,
+	"dnnType":"yolo",
+	"modelDir":"/home/kai/dev/model/yolov3/",
+	"fModel":"yolov3.cfg",
+	"fWeight":"yolov3.weights",
+	"fClass":"class.names",
+	"bSwapRB":1,
+	"scale":0.00392,
+	"thr":0.1,
+	"iClassDraw":-1,
+}
+
+{
+	"name":"serial",
+	"class":"_SerialPort",
+	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadR",
+		"vTwakeup":["PWMio.threadR"],
+	}
+	"port":"/dev/ttyACM0",
+	"/port":"/dev/ttyTHS1",
+	"baud":115200,
+}
+
+{
+	"name":"PWMio",
+	"class":"_PWMio",
+	"bInst":0,
+    {
+		"name":"thread", 
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"bLog":1,
+	"_IOBase":"serial",
+	"nCr":3,
+	"nCw":2,
+}
+
+{
+	"name":"PWMrover",
+	"class":"_PWMrover",
+	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"_DepthVisionBase":"rs",
+	"_Universe":"univ",
+	"_PWMio":"PWMio",
+	"iClass":1,
+	"vPWM":[1000,2000],
+	"pwmM":1500,
+	"Pstr":0.1,
+	"Pspd":0.1,
+}
+
+{
+	"name":"drive",
+	"class":"_Drive",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bInst":0,
+	"nSpd":0.0,
+	"nDir":1.0,
+	"nStr":0.0,
+	"vSpdRange":[-1.0, 1.0],
+	"vStrRange":[-1.0, 1.0],
+	
+	{
+		"name":"motor",
+		
+		{
+			"name":"mL",
+			"kSpd":100.0,
+			"kStr":100.0,
+			"_ActuatorBase":"motor",
+			"iAxis":0,
+		}
+		{
+			"name":"mR",
+			"kSpd":-100.0,
+			"kStr":100.0,
+			"_ActuatorBase":"motor",
+			"iAxis":1,
+		}
+	}
+}

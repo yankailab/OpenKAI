@@ -257,6 +257,7 @@
 #include "../Protocol/_Canbus.h"
 #include "../Protocol/_Mavlink.h"
 #include "../Protocol/_MOAB.h"
+#include "../Protocol/_PWMio.h"
 #include "../Protocol/_ProtocolBase.h"
 #include "../Protocol/_Modbus.h"
 #include "../Protocol/_SBus.h"

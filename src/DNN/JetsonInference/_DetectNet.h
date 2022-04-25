@@ -8,7 +8,6 @@
 #ifndef OpenKAI_src_DNN_JetsonInference__DetectNet_H_
 #define OpenKAI_src_DNN_JetsonInference__DetectNet_H_
 
-#ifdef USE_OPENCV
 #include "detectNet.h"
 #include "../../Vision/_VisionBase.h"
 #include "../../Detector/_DetectorBase.h"
@@ -19,7 +18,7 @@ namespace kai
 enum DETECTNET_TYPE
 {
 	detectNet_uff,
-	detectNet_cafffe,
+	detectNet_caffe,
 };
 
 class _DetectNet: public _DetectorBase
@@ -65,6 +64,4 @@ public:
 };
 
 }
-#endif
-#endif
 #endif

@@ -274,6 +274,7 @@ namespace kai
 		ADD_MODULE(_Mavlink);
 		ADD_MODULE(_Modbus);
 		ADD_MODULE(_SBus);
+		ADD_MODULE(_PWMio);
 		ADD_MODULE(_ProtocolBase);
 #endif
 

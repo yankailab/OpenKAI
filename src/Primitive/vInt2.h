@@ -50,6 +50,14 @@ struct vInt2
 	{
 		return abs(x * y);
 	}
+
+	int constrain(int v)
+	{
+		if(v < x)v=x;
+		else if(v > x)v=y;
+
+		return v;
+	}
 };
 
 }

@@ -45,16 +45,15 @@ namespace kai
 		return true;
 	}
 
-	float _DepthVisionBase::d(vFloat4 *pROI)
+	float _DepthVisionBase::d(const vFloat4& bb)
 	{
-		IF__(!pROI, -1.0);
 		IF__(m_fDepth.bEmpty(), -1.0);
 
 		Size s = m_fDepth.size();
-		m_vDroi.x = pROI->x * s.width;
-		m_vDroi.y = pROI->y * s.height;
-		m_vDroi.z = pROI->z * s.width;
-		m_vDroi.w = pROI->w * s.height;
+		m_vDroi.x = bb.x * s.width;
+		m_vDroi.y = bb.y * s.height;
+		m_vDroi.z = bb.z * s.width;
+		m_vDroi.w = bb.w * s.height;
 
 		if (m_vDroi.x < 0)
 			m_vDroi.x = 0;
@@ -65,19 +64,18 @@ namespace kai
 		if (m_vDroi.w > s.height)
 			m_vDroi.w = s.height;
 
-		return d(&m_vDroi);
+		return d(m_vDroi);
 	}
 
-	float _DepthVisionBase::d(vInt4 *pROI)
+	float _DepthVisionBase::d(const vInt4& bb)
 	{
-		IF__(!pROI, -1.0);
 		IF__(m_fDepth.bEmpty(), -1.0);
 
 		vector<int> vHistLev = {m_nHistLev};
 		vector<float> vRange = {m_vRange.x, m_vRange.y};
 		vector<int> vChannel = {0};
 
-		Rect r = bb2Rect(*pROI);
+		Rect r = bb2Rect(bb);
 		Mat mRoi = (*m_fDepth.m())(r);
 		vector<Mat> vRoi = {mRoi};
 		Mat mHist;
@@ -115,14 +113,11 @@ namespace kai
 		_WindowCV *pWin = (_WindowCV *)pWindow;
 		Frame *pF = pWin->getNextFrame();
 		NULL_(pF);
-		Mat *pM = pF->m();
-		IF_(pM->empty());
 
 		if (m_bDebug)
 		{
-			vInt2 cs;
-			cs.x = pM->cols;
-			cs.y = pM->rows;
+			Mat *pM = pF->m();
+			IF_(pM->empty());
 
 			vFloat4 vRoi(0.4, 0.4, 0.6, 0.6);
 
@@ -134,7 +129,7 @@ namespace kai
 			Rect r = bb2Rect(bb);
 			rectangle(*pM, r, Scalar(0, 255, 0), 1);
 
-			putText(*pM, f2str(d(&vRoi)),
+			putText(*pM, f2str(d(vRoi)),
 					Point(r.x + 15, r.y + 25),
 					FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0, 255, 0), 1);
 		}

@@ -94,7 +94,7 @@ void _DepthCam::heartbeat ( void )
 {
     IF_ ( check() <0 );
 
-    double d = m_pDV->d(&m_vBBhb);
+    double d = m_pDV->d(m_vBBhb);
 
     object jo;
     JO ( jo, "cmd", "heartBeat" );
@@ -153,7 +153,7 @@ void _DepthCam::detectPos ( picojson::object& o )
     vBB.z = o["z"].get<double>();
     vBB.w = o["w"].get<double>();
 
-    double d = m_pDV->d(&vBB);
+    double d = m_pDV->d(vBB);
 
     object jo;
     JO ( jo, "cmd", "detectPos" );

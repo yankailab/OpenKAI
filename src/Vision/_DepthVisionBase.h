@@ -24,8 +24,8 @@ public:
 	virtual void cvDraw(void* pWindow);
 
 	virtual Frame* Depth(void);
-	float d(vInt4* pROI);
-	float d(vFloat4* pROI);
+	float d(const vInt4& bb);
+	float d(const vFloat4& bb);
 
 public:
     vInt2   m_vDsize;

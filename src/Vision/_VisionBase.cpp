@@ -82,8 +82,6 @@ namespace kai
 		_WindowCV *pWin = (_WindowCV *)pWindow;
 		Frame *pF = pWin->getNextFrame();
 		NULL_(pF);
-		Mat *pM = pF->m();
-		IF_(pM->empty());
 
 		IF_(m_fBGR.bEmpty());
 
@@ -93,8 +91,9 @@ namespace kai
 		}
 		else
 		{
+			Mat *pM = pF->m();
+			IF_(pM->empty());
 			Rect r = bb2Rect(bbScale(m_bbDraw, pM->cols, pM->rows));
-
 			Mat m;
 			cv::resize(*m_fBGR.m(), m, Size(r.width, r.height));
 

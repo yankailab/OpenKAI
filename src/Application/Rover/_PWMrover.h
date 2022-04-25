@@ -3,13 +3,12 @@
 
 #include "../../Vision/_DepthVisionBase.h"
 #include "../../Universe/_Universe.h"
-#include "../../Protocol/_ProtocolBase.h"
-#include "../../Autopilot/Drive/_Drive.h"
+#include "../../Protocol/_PWMio.h"
 
 namespace kai
 {
 
-class _PWMrover: public _StateBase
+class _PWMrover: public _ModuleBase
 {
 public:
 	_PWMrover();
@@ -32,14 +31,18 @@ protected:
 public:
 	_DepthVisionBase* m_pDV;
 	_Universe* m_pU;
-	_ProtocolBase* m_pP;
-    _Drive* m_pD;
+	_PWMio* m_pPWM;
 
-	uint8_t m_iSpd;		// channel index
-	uint8_t m_iSteer;
+	int m_iClass;
+	vInt2 m_vPWM;
+	uint16_t m_pwmM;
+	float m_targetX;
+	float m_Kstr;
+	float m_targetD;
+	float m_Kspd;
 
-	float m_nSpd;
-	float m_nSteer;
+	uint8_t m_pwmL;
+	uint8_t m_pwmR;
 
 };
 

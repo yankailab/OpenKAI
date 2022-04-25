@@ -7,14 +7,18 @@ namespace kai
 	{
 		m_pDV = NULL;
 		m_pU = NULL;
-		m_pP = NULL;
-		m_pD = NULL;
+		m_pPWM = NULL;
 
-		m_iSpd = 2;
-		m_iSteer = 0;
+		m_iClass = 0;
+		m_vPWM.set(1000,2000);
+		m_pwmM = 1500;
+		m_targetX = 0.5;
+		m_Kstr = 0.0;
+		m_targetD = 1.0;
+		m_Kspd = 0.0;
 
-		m_nSpd = 0.5;
-		m_nSteer = 0.5;
+		m_pwmL = m_pwmM;
+		m_pwmR = m_pwmM;
 	}
 
 	_PWMrover::~_PWMrover()
@@ -23,13 +27,19 @@ namespace kai
 
 	bool _PWMrover::init(void *pKiss)
 	{
-		IF_F(!this->_StateBase::init(pKiss));
+		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("iSpd", &m_iSpd);
-		pK->v("iSteer", &m_iSteer);
-		pK->v("nSpd", &m_nSpd);
-		pK->v("nSteer", &m_nSteer);
+		pK->v("iClass", &m_iClass);
+		pK->v("vPWM", &m_vPWM);
+		pK->v("pwmM", &m_pwmM);
+		pK->v("targetX", &m_targetX);
+		pK->v("Kstr", &m_Kstr);
+		pK->v("targetD", &m_targetX);
+		pK->v("Kspd", &m_Kspd);
+
+		pK->v("pwmL", &m_pwmL);
+		pK->v("pwmR", &m_pwmR);
 
 		string n;
 
@@ -44,14 +54,9 @@ namespace kai
 		IF_Fl(!m_pU, n + ": not found");
 
 		n = "";
-		pK->v("_ProtocolBase", &n);
-		m_pP = (_ProtocolBase *)(pK->getInst(n));
-		IF_Fl(!m_pP, n + ": not found");
-
-		n = "";
-		pK->v("_Drive", &n);
-		m_pD = (_Drive *)(pK->getInst(n));
-		IF_Fl(!m_pD, n + ": not found");
+		pK->v("_PWMio", &n);
+		m_pPWM = (_PWMio *)(pK->getInst(n));
+		IF_Fl(!m_pPWM, n + ": not found");
 
 		return true;
 	}
@@ -66,10 +71,9 @@ namespace kai
 	{
 		NULL__(m_pDV, -1);
 		NULL__(m_pU, -1);
-		NULL__(m_pP, -1);
-		NULL__(m_pD, -1);
+		NULL__(m_pPWM, -1);
 
-		return this->_StateBase::check();
+		return this->_ModuleBase::check();
 	}
 
 	void _PWMrover::update(void)
@@ -87,18 +91,43 @@ namespace kai
 	bool _PWMrover::updateDrive(void)
 	{
 		IF_F(check() < 0);
-		if (!bActive())
+
+		//find target
+		_Object *tO = NULL;
+		_Object *pO;
+		float minD = FLT_MAX;
+		int i = 0;
+		while ((pO = m_pU->get(i++)) != NULL)
 		{
-			return false;
+			if (m_iClass >= 0)
+			{
+				IF_CONT(pO->getTopClass() != m_iClass);
+			}
+
+			float d = m_pDV->d(pO->getBB2D());
+			IF_CONT(d > minD);
+
+			tO = pO;
+			minD = d;
 		}
 
-		// m_nSpd = m_pS->v(m_iSpd);
-		// m_nSteer = m_pS->v(m_iSteer);
+		if (tO)
+		{
+			float x = tO->getX();
+			float str = m_Kstr * (x - m_targetX);
+			float spd = m_Kspd * (minD - m_targetD);
 
-		// m_pD->setSpeed(m_nSpd - 0.5);
-		// m_pD->setSteering(m_nSteer - 0.5);
-//		m_pD->setDirection();
+			m_pwmL = m_vPWM.constrain(m_pwmM + spd + str);
+			m_pwmR = m_vPWM.constrain(m_pwmM + spd - str);
+		}
+		else
+		{
+			m_pwmL = m_pwmM;
+			m_pwmR = m_pwmM;
+		}
 
+		m_pPWM->set(0,m_pwmL);
+		m_pPWM->set(1,m_pwmR);
 
 		return true;
 	}
@@ -107,12 +136,11 @@ namespace kai
 	{
 #ifdef WITH_UI
 		NULL_(pConsole);
-		this->_StateBase::console(pConsole);
-		msgActive(pConsole);
+		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		pC->addMsg("nSpd: "	+ f2str(m_nSpd));
-		pC->addMsg("nSteer: " + f2str(m_nSteer));
+		pC->addMsg("pwmL: "	+ i2str(m_pwmL));
+		pC->addMsg("pwmR: " + i2str(m_pwmR));
 #endif
 	}
 

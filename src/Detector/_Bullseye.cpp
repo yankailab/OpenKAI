@@ -7,9 +7,6 @@
 
 #include "_Bullseye.h"
 
-#ifdef USE_OPENCV
-#ifdef USE_CUDA
-
 namespace kai
 {
 
@@ -58,7 +55,7 @@ void _Bullseye::update(void)
 		{
 			detect();
 
-			if(m_bGoSleep)
+			if(m_pT->bGoSleep())
 				m_pU->clear();
 		}
 
@@ -128,5 +125,3 @@ void _Bullseye::detect(void)
 }
 
 }
-#endif
-#endif

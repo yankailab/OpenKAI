@@ -5,13 +5,11 @@ namespace kai
 
 	_ProtocolBase::_ProtocolBase()
 	{
+		m_pTr = NULL;
 		m_pIO = NULL;
 		m_pBuf = NULL;
 		m_nBuf = 256;
 		m_nCMDrecv = 0;
-
-		m_pfCallback = NULL;
-		m_pfInst = NULL;
 	}
 
 	_ProtocolBase::~_ProtocolBase()
@@ -27,6 +25,17 @@ namespace kai
 		m_pBuf = new uint8_t[m_nBuf];
 		m_recvMsg.init(m_nBuf);
 
+		Kiss *pKt = pK->child("threadR");
+		IF_d_F(pKt->empty(), LOG_E("threadR not found"));
+
+		m_pTr = new _Thread();
+		if (!m_pTr->init(pKt))
+		{
+			DEL(m_pTr);
+			return false;
+		}
+		pKt->m_pInst = m_pTr;
+
 		string n;
 		n = "";
 		F_ERROR_F(pK->v("_IOBase", &n));
@@ -39,7 +48,9 @@ namespace kai
 	bool _ProtocolBase::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		NULL_F(m_pTr);
+		IF_F(!m_pT->start(getUpdateW, this));
+		return m_pTr->start(getUpdateR, this);
 	}
 
 	int _ProtocolBase::check(void)
@@ -51,31 +62,51 @@ namespace kai
 		return this->_ModuleBase::check();
 	}
 
-	void _ProtocolBase::update(void)
+	void _ProtocolBase::updateW(void)
 	{
 		while (m_pT->bRun())
 		{
+			m_pT->autoFPSfrom();
+
+			send();
+
+			m_pT->autoFPSto();
+		}
+	}
+
+	void _ProtocolBase::send(void)
+	{
+		IF_(check() < 0);
+
+		//m_pIO->write(m_pB, 16);
+	}
+
+	void _ProtocolBase::updateR(void)
+	{
+		while (m_pTr->bRun())
+		{
 			if (!m_pIO)
 			{
-				m_pT->sleepT(SEC_2_USEC);
+				m_pTr->sleepT(SEC_2_USEC);
 				continue;
 			}
 
 			if (!m_pIO->isOpen())
 			{
-				m_pT->sleepT(SEC_2_USEC);
+				m_pTr->sleepT(SEC_2_USEC);
 				continue;
 			}
 
-			m_pT->autoFPSfrom();
+			m_pTr->autoFPSfrom();
 
 			while (readCMD())
 			{
 				handleCMD();
+				m_recvMsg.reset();
 				m_nCMDrecv++;
 			}
 
-			m_pT->autoFPSto();
+			m_pTr->autoFPSto();
 		}
 	}
 
@@ -112,21 +143,6 @@ namespace kai
 
 	void _ProtocolBase::handleCMD(void)
 	{
-		if (m_pfCallback)
-		{
-			m_pfCallback(m_recvMsg.m_pB, m_pfInst);
-		}
-
-		m_recvMsg.reset();
-	}
-
-	void _ProtocolBase::setCallback(CallbackProtocol cb, void *pInst)
-	{
-		NULL_(cb);
-		NULL_(pInst);
-
-		m_pfCallback = cb;
-		m_pfInst = pInst;
 	}
 
 	void _ProtocolBase::console(void *pConsole)

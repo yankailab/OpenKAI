@@ -10,9 +10,6 @@
 
 #include "../Detector/_DetectorBase.h"
 
-#ifdef USE_OPENCV
-#ifdef USE_CUDA
-
 namespace kai
 {
 
@@ -45,6 +42,4 @@ public:
 };
 
 }
-#endif
-#endif
 #endif

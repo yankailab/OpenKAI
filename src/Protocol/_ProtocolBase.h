@@ -38,8 +38,6 @@ struct PROTOCOL_CMD
 	}
 };
 
-typedef void (*CallbackProtocol)(uint8_t* pCMD, void* pInst);
-
 namespace kai
 {
 
@@ -54,27 +52,32 @@ public:
 	virtual int check(void);
 	virtual void console(void* pConsole);
 
+	virtual void send(void);
 	virtual bool readCMD(void);
 	virtual void handleCMD(void);
-	void setCallback(CallbackProtocol cb, void* pInst);
 
 private:
-	void update(void);
-	static void* getUpdate(void* This)
+	void updateW(void);
+	static void* getUpdateW(void* This)
 	{
-		((_ProtocolBase *) This)->update();
+		((_ProtocolBase *) This)->updateW();
+		return NULL;
+	}
+
+	void updateR(void);
+	static void* getUpdateR(void* This)
+	{
+		((_ProtocolBase *) This)->updateR();
 		return NULL;
 	}
 
 public:
+	_Thread*	m_pTr;
 	_IOBase*	m_pIO;
 	uint8_t*	m_pBuf;
 	int			m_nBuf;
 	PROTOCOL_CMD m_recvMsg;
 	uint64_t	m_nCMDrecv;
-
-	CallbackProtocol m_pfCallback;
-	void*		m_pfInst;
 };
 
 }

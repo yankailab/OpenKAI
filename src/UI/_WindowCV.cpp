@@ -214,11 +214,12 @@ namespace kai
 				F = F2;
 			}
 
-			if (F.m()->type() != CV_8UC3)
-			{
-				F2 = F.cvtColor(COLOR_GRAY2BGR);
-				F = F2;
-			}
+			// cuda convert crash on Jetson?
+			// if (F.m()->type() != CV_8UC3)
+			// {
+			// 	F2 = F.cvtColor(COLOR_GRAY2BGR);
+			// 	F = F2;
+			// }
 
 			if (m_VW.isOpened())
 				m_VW << *F.m();
