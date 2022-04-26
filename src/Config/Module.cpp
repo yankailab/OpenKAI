@@ -308,9 +308,6 @@ namespace kai
 		ADD_MODULE(_StateControl);
 #endif
 
-#ifdef WITH_TRACKER
-#endif
-
 #ifdef WITH_UI
 		ADD_MODULE(_Console);
 #ifdef USE_OPENCV

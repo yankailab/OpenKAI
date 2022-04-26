@@ -9,7 +9,6 @@
 #define OpenKAI_src_Detector__ArUco_H_
 
 #include "../Detector/_DetectorBase.h"
-#include "../Vision/ImgFilter/_Remap.h"
 
 namespace kai
 {
@@ -41,6 +40,7 @@ public:
 	float m_realSize;
 
 	//optional camera matrix
+	bool m_bPose;
 	Mat m_mC;		//Intrinsic
 	Mat m_mCscaled;	//scaled with input image size
 	Mat m_mD;		//Distortion

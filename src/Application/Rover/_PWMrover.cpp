@@ -10,12 +10,14 @@ namespace kai
 		m_pPWM = NULL;
 
 		m_iClass = 0;
-		m_vPWM.set(1000,2000);
+		m_vPWM.set(1000, 2000);
 		m_pwmM = 1500;
 		m_targetX = 0.5;
 		m_Kstr = 0.0;
 		m_targetD = 1.0;
 		m_Kspd = 0.0;
+		m_vKmotor.set(1.0);
+		m_vSpd.set(0,500);
 
 		m_pwmL = m_pwmM;
 		m_pwmR = m_pwmM;
@@ -37,6 +39,8 @@ namespace kai
 		pK->v("Kstr", &m_Kstr);
 		pK->v("targetD", &m_targetX);
 		pK->v("Kspd", &m_Kspd);
+		pK->v("vKmotor", &m_vKmotor);
+		pK->v("vSpd", &m_vSpd);
 
 		pK->v("pwmL", &m_pwmL);
 		pK->v("pwmR", &m_pwmR);
@@ -115,10 +119,15 @@ namespace kai
 		{
 			float x = tO->getX();
 			float str = m_Kstr * (x - m_targetX);
-			float spd = m_Kspd * (minD - m_targetD);
+			float spd = 0.0;
+			if (minD > 0.0)
+			{
+				spd = m_Kspd * (minD - m_targetD);
+				spd = m_vSpd.constrain(spd);
+			}
 
-			m_pwmL = m_vPWM.constrain(m_pwmM + spd + str);
-			m_pwmR = m_vPWM.constrain(m_pwmM + spd - str);
+			m_pwmL = m_vPWM.constrain(m_pwmM + spd + str * m_vKmotor.x);
+			m_pwmR = m_vPWM.constrain(m_pwmM + spd - str * m_vKmotor.y);
 		}
 		else
 		{
@@ -126,8 +135,8 @@ namespace kai
 			m_pwmR = m_pwmM;
 		}
 
-		m_pPWM->set(0,m_pwmL);
-		m_pPWM->set(1,m_pwmR);
+		m_pPWM->set(0, m_pwmL);
+		m_pPWM->set(1, m_pwmR);
 
 		return true;
 	}
@@ -139,8 +148,31 @@ namespace kai
 		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		pC->addMsg("pwmL: "	+ i2str(m_pwmL));
+		pC->addMsg("pwmL: " + i2str(m_pwmL));
 		pC->addMsg("pwmR: " + i2str(m_pwmR));
+#endif
+	}
+
+	void _PWMrover::cvDraw(void *pWindow)
+	{
+#ifdef WITH_UI
+#ifdef USE_OPENCV
+		NULL_(pWindow);
+		this->_ModuleBase::cvDraw(pWindow);
+		IF_(check() < 0);
+
+		_WindowCV *pWin = (_WindowCV *)pWindow;
+		Frame *pF = pWin->getNextFrame();
+		NULL_(pF);
+		Mat *pM = pF->m();
+		IF_(pM->empty());
+
+		float tX = pM->cols * m_targetX;
+		line(*pM,
+			 Point((int)tX, 0),
+			 Point((int)tX, pM->rows),
+			 Scalar(0, 0, 255), 2);
+#endif
 #endif
 	}
 

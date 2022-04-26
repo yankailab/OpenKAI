@@ -20,6 +20,14 @@ namespace kai
 		pK->v("nCr", &m_nCr);
 		pK->v("nCw", &m_nCw);
 
+		vector<int> vPWM;
+		pK->a("vPWM", &vPWM);
+		for(int i=0; i<vPWM.size(); i++)
+		{
+			if(i >= m_nCw)break;
+			m_pCw[i].set(vPWM[i]);
+		}
+
 		return true;
 	}
 
@@ -37,12 +45,6 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			static int pwm = 1600;
-			m_pCw[0].set(pwm);
-			m_pCw[1].set(pwm);
-//			pwm += 10;
-//			if(pwm>2000)pwm=1000;
-
 			send();
 
 			m_pT->autoFPSto();
@@ -56,7 +58,7 @@ namespace kai
 		uint8_t pB[256];
 		pB[0] = PB_BEGIN;	// start mark	
 		pB[1] = 0;			// cmd
-		pB[2] = 4;			// payload len
+		pB[2] = m_nCr * 2;			// payload len
 
 		int j=3;
 		for(int i=0; i<m_nCw; i++)
@@ -134,7 +136,7 @@ namespace kai
 	{
 #ifdef WITH_UI
 		NULL_(pConsole);
-		this->_ModuleBase::console(pConsole);
+		this->_ProtocolBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
 		if (!m_pIO->isOpen())

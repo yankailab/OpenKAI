@@ -19,6 +19,7 @@ public:
 	virtual int check(void);
 	virtual void update(void);
 	virtual void console(void* pConsole);
+	virtual void cvDraw(void* pWindow);
 
 protected:
 	bool updateDrive(void);
@@ -40,9 +41,11 @@ public:
 	float m_Kstr;
 	float m_targetD;
 	float m_Kspd;
+	vFloat2 m_vKmotor;
+	vInt2 m_vSpd;
 
-	uint8_t m_pwmL;
-	uint8_t m_pwmR;
+	uint16_t m_pwmL;
+	uint16_t m_pwmR;
 
 };
 

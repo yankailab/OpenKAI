@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["rs","univ","PWMio"],
+	"vBASE":["rs","univ","PWMio","PWMrover"],
 }
 
 {
@@ -26,8 +26,8 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["rs","univ"],
-	"bShow":0,
+	"vBASE":["rs","univ","arUco","PWMrover"],
+	"bShow":1,
 	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.4 port=5678 auto-multicast=false",
 }
@@ -95,24 +95,17 @@
 }
 
 {
-	"name":"Yolo",
-	"class":"_DNNdetect",
-	"bInst":0,
-	"bDraw":1,
-	"bLog":1,
-	"FPS":30,
+	"name":"arUco",
+	"class":"_ArUco",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"_VisionBase":"rs",
 	"_Universe":"univ",
-	"threadMode":0,
-	"dnnType":"yolo",
-	"modelDir":"/home/kai/dev/model/yolov3/",
-	"fModel":"yolov3.cfg",
-	"fWeight":"yolov3.weights",
-	"fClass":"class.names",
-	"bSwapRB":1,
-	"scale":0.00392,
-	"thr":0.1,
-	"iClassDraw":-1,
+	"dict":17,
+	"bPose":0,
 }
 
 {
@@ -144,7 +137,7 @@
 		"name":"threadR",
 		"FPS":30,
 	}
-	"bLog":1,
+	"bLog":0,
 	"_IOBase":"serial",
 	"nCr":5,
 	"nCw":2,
@@ -153,7 +146,7 @@
 {
 	"name":"PWMrover",
 	"class":"_PWMrover",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -163,8 +156,10 @@
 	"_Universe":"univ",
 	"_PWMio":"PWMio",
 	"iClass":1,
-	"vPWM":[1000,2000],
+	"vPWM":[1000, 2000],
 	"pwmM":1500,
-	"Pstr":0.1,
-	"Pspd":0.1,
+	"Kstr":500,
+	"Kspd":100,
+	"vKmotor":[1.0,1.0],
+	"vSpd":[0, 500],
 }

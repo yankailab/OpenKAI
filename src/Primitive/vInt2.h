@@ -54,7 +54,7 @@ struct vInt2
 	int constrain(int v)
 	{
 		if(v < x)v=x;
-		else if(v > x)v=y;
+		else if(v > y)v=y;
 
 		return v;
 	}

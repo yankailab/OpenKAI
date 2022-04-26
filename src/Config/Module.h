@@ -293,9 +293,6 @@
 #include "../State/_StateControl.h"
 #endif
 
-#ifdef WITH_TRACKER
-#endif
-
 #ifdef WITH_UI
 #include "../UI/_Console.h"
 #ifdef USE_OPENCV

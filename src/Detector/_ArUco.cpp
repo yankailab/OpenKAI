@@ -14,6 +14,7 @@ namespace kai
 	{
 		m_dict = aruco::DICT_4X4_50; //aruco::DICT_APRILTAG_16h5;
 		m_realSize = 0.05;
+		m_bPose = false;
 	}
 
 	_ArUco::~_ArUco()
@@ -27,12 +28,15 @@ namespace kai
 
 		pK->v<uint8_t>("dict", &m_dict);
 		m_pDict = aruco::getPredefinedDictionary(m_dict);
-
 		pK->v("realSize", &m_realSize);
 
-		string n;
-		pK->v("fCalib", &n);
-		readCamMatrices(n, &m_mC, &m_mD);
+		pK->v("bPose", &m_bPose);
+		if (m_bPose)
+		{
+			string n;
+			pK->v("fCalib", &n);
+			readCamMatrices(n, &m_mC, &m_mD);
+		}
 
 		return true;
 	}
@@ -74,29 +78,31 @@ namespace kai
 		Mat m = *m_pV->BGR()->m();
 		IF_(m.empty());
 
-		if (m_mCscaled.empty())
-		{
-			scaleCamMatrices(cv::Size(m.cols, m.rows),
-								  m_mC,
-								  m_mD,
-								  &m_mCscaled);
-		}
-
 		vector<int> vID;
 		vector<vector<Point2f>> vvCorner;
 		aruco::detectMarkers(m, m_pDict, vvCorner, vID);
-
-		// pose
 		vector<Vec3d> vvR, vvT;
-		aruco::estimatePoseSingleMarkers(vvCorner,
-										 m_realSize,
-										 m_mCscaled,
-										 m_mD,
-										 vvR,
-										 vvT);
+
+		if (m_bPose)
+		{
+			if (m_mCscaled.empty())
+			{
+				scaleCamMatrices(cv::Size(m.cols, m.rows),
+								 m_mC,
+								 m_mD,
+								 &m_mCscaled);
+			}
+
+			// pose
+			aruco::estimatePoseSingleMarkers(vvCorner,
+											 m_realSize,
+											 m_mCscaled,
+											 m_mD,
+											 vvR,
+											 vvT);
+		}
 
 		_Object o;
-		float dx, dy;
 		float kx = 1.0 / (float)m.cols;
 		float ky = 1.0 / (float)m.rows;
 
@@ -105,14 +111,17 @@ namespace kai
 			o.init();
 			o.setTopClass(vID[i], 1.0);
 
-			// pose
-			Vec3d v;
-			v = vvT[i];
-			vFloat3 vP{v[0], v[1], v[2]};
-			o.setPos(vP);
-			v = vvR[i];
-			vFloat3 vR{v[0], v[1], v[2]};
-			o.setAttitude(vR);
+			if (m_bPose)
+			{
+				// pose
+				Vec3d v;
+				v = vvT[i];
+				vFloat3 vP{v[0], v[1], v[2]};
+				o.setPos(vP);
+				v = vvR[i];
+				vFloat3 vR{v[0], v[1], v[2]};
+				o.setAttitude(vR);
+			}
 
 			// bbox
 			Point2f pLT = vvCorner[i][0];
@@ -127,18 +136,20 @@ namespace kai
 				pV[j].y = vvCorner[i][j].y;
 			}
 			o.setVertices2D(pV, 4);
-			o.scale(kx, ky);
 
 			// center position
-			dx = (float)(pLT.x + pRT.x + pRB.x + pLB.x) * 0.25;
-			dy = (float)(pLT.y + pRT.y + pRB.y + pLB.y) * 0.25;
-			o.setX(dx * kx);
-			o.setY(dy * ky);
+			float dx = (float)(pLT.x + pRT.x + pRB.x + pLB.x) * 0.25;
+			float dy = (float)(pLT.y + pRT.y + pRB.y + pLB.y) * 0.25;
+			o.setX(dx);
+			o.setY(dy);
 
 			// radius
 			dx -= pLT.x;
 			dy -= pLT.y;
 			o.setRadius(sqrt(dx * dx + dy * dy));
+
+			// normalize
+			o.scale(kx, ky);
 
 			// angle in deg
 			dx = pLB.x - pLT.x;
@@ -171,6 +182,8 @@ namespace kai
 
 	void _ArUco::cvDraw(void *pWindow)
 	{
+#ifdef WITH_UI
+#ifdef USE_OPENCV
 		NULL_(pWindow);
 		this->_DetectorBase::cvDraw(pWindow);
 		IF_(check() < 0);
@@ -188,16 +201,20 @@ namespace kai
 		{
 			Point pCenter = Point(pO->getX() * pM->cols,
 								  pO->getY() * pM->rows);
-			circle(*pM, pCenter, pO->getRadius(), Scalar(255, 255, 0), 2);
+			int r = pO->getRadius() * pM->cols;
+
+			circle(*pM, pCenter, r, Scalar(255, 255, 0), 2);
 
 			putText(*pM, "iTag=" + i2str(pO->getTopClass()) + ", angle=" + i2str(pO->getRoll()),
 					pCenter,
 					FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 0);
 
 			double rad = -pO->getRoll() * DEG_2_RAD;
-			Point pD = Point(pO->getRadius() * sin(rad), pO->getRadius() * cos(rad));
+			Point pD = Point(r * sin(rad), r * cos(rad));
 			line(*pM, pCenter + pD, pCenter - pD, Scalar(0, 0, 255), 2);
 		}
+#endif
+#endif
 	}
 
 }

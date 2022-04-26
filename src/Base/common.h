@@ -14,12 +14,15 @@
 #include <mgl2/fltk.h>
 #endif
 
+#ifdef USE_GLOG
+#include <glog/logging.h>
+#endif
+
 #include <Eigen/Dense>
 
 #include "platform.h"
 #include "macro.h"
 #include "constant.h"
-#include <glog/logging.h>
 #include "../Primitive/vInt2.h"
 #include "../Primitive/vInt3.h"
 #include "../Primitive/vInt4.h"

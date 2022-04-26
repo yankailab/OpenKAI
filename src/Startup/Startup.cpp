@@ -57,8 +57,10 @@ bool Startup::start(Kiss* pKiss)
 		freopen("/dev/null", "w", stderr);
 	}
 
+#ifdef USE_GLOG
 	FLAGS_logtostderr = 1;
 	google::InitGoogleLogging("OpenKAI");
+#endif
 	printEnvironment();
 
 	F_ERROR_F(createAllInst(pKiss));
