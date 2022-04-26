@@ -37,6 +37,12 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
+			static int pwm = 1600;
+			m_pCw[0].set(pwm);
+			m_pCw[1].set(pwm);
+//			pwm += 10;
+//			if(pwm>2000)pwm=1000;
+
 			send();
 
 			m_pT->autoFPSto();
@@ -96,17 +102,16 @@ namespace kai
 	{
 		switch (m_recvMsg.m_pB[1])
 		{
-		case ARDU_CMD_PWM:
-			uint16_t v;
+		case ARDU_CMD_HB:
+			for(int i=0; i<m_nCr; i++)
+			{
+				int iB = i*2;
+				if(iB >= m_recvMsg.m_nPayload)
+				break;
 
-			v = *((uint16_t *)(&m_recvMsg.m_pB[3]));
-			m_pCr[0].set(v);
-
-			v = *((uint16_t *)(&m_recvMsg.m_pB[5]));
-			m_pCr[1].set(v);
-
-			v = *((uint16_t *)(&m_recvMsg.m_pB[7]));
-			m_pCr[2].set(v);
+				uint16_t v = *((uint16_t *)(&m_recvMsg.m_pB[PB_N_HDR+iB]));
+				m_pCr[i].set(v);
+			}
 			break;
 		default:
 			break;
@@ -143,7 +148,7 @@ namespace kai
 			m += i2str(m_pCr[i].raw()) + " | ";
 
 		m += "ChanW: ";
-		for(int i=0;i<m_nCr;i++)
+		for(int i=0;i<m_nCw;i++)
 			m += i2str(m_pCw[i].raw()) + " | ";
 
 		m += " nCMD=" + i2str(m_nCMDrecv);

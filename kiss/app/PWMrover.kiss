@@ -1,7 +1,7 @@
 {
 	"name":"APP",
 	"class":"Startup",
-	"appName":"RCrover",
+	"appName":"PWMrover",
 	"bStdErr":0,
 	"/rc":"sudo modprobe bcm2835-v4l2\nv4l2-ctl -d /dev/video0 --set-ctrl=rotate=0\n",
 }
@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["rs","univ"],
+	"vBASE":["rs","univ","PWMio"],
 }
 
 {
@@ -118,10 +118,10 @@
 {
 	"name":"serial",
 	"class":"_SerialPort",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
-		"FPS":1,
+		"FPS":30,
 	}
     {
 		"name":"threadR",
@@ -135,10 +135,10 @@
 {
 	"name":"PWMio",
 	"class":"_PWMio",
-	"bInst":0,
+	"bInst":1,
     {
-		"name":"thread", 
-		"FPS":30,
+		"name":"thread",
+		"FPS":20,
 	}
     {
 		"name":"threadR",
@@ -146,7 +146,7 @@
 	}
 	"bLog":1,
 	"_IOBase":"serial",
-	"nCr":3,
+	"nCr":5,
 	"nCw":2,
 }
 
@@ -167,38 +167,4 @@
 	"pwmM":1500,
 	"Pstr":0.1,
 	"Pspd":0.1,
-}
-
-{
-	"name":"drive",
-	"class":"_Drive",
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"bInst":0,
-	"nSpd":0.0,
-	"nDir":1.0,
-	"nStr":0.0,
-	"vSpdRange":[-1.0, 1.0],
-	"vStrRange":[-1.0, 1.0],
-	
-	{
-		"name":"motor",
-		
-		{
-			"name":"mL",
-			"kSpd":100.0,
-			"kStr":100.0,
-			"_ActuatorBase":"motor",
-			"iAxis":0,
-		}
-		{
-			"name":"mR",
-			"kSpd":-100.0,
-			"kStr":100.0,
-			"_ActuatorBase":"motor",
-			"iAxis":1,
-		}
-	}
 }
