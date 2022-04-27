@@ -156,10 +156,10 @@
 	"_Universe":"univ",
 	"_PWMio":"PWMio",
 	"iClass":1,
-	"vPWM":[1000, 2000],
+	"vPWM":[1200, 1800],
 	"pwmM":1500,
 	"Kstr":500,
 	"Kspd":100,
-	"vKmotor":[1.0,1.0],
-	"vSpd":[0, 500],
+	"vKmotor":[1.0, -1.0],
+	"vSpd":[0, 200],
 }

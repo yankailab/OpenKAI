@@ -19,6 +19,7 @@ namespace kai
 		m_vKmotor.set(1.0);
 		m_vSpd.set(0,500);
 
+		m_d = 0;
 		m_pwmL = m_pwmM;
 		m_pwmR = m_pwmM;
 	}
@@ -109,6 +110,7 @@ namespace kai
 			}
 
 			float d = m_pDV->d(pO->getBB2D());
+			IF_CONT(d <= 0);
 			IF_CONT(d > minD);
 
 			tO = pO;
@@ -119,18 +121,17 @@ namespace kai
 		{
 			float x = tO->getX();
 			float str = m_Kstr * (x - m_targetX);
+			m_d = minD;
 			float spd = 0.0;
-			if (minD > 0.0)
-			{
-				spd = m_Kspd * (minD - m_targetD);
-				spd = m_vSpd.constrain(spd);
-			}
+			spd = m_Kspd * (m_d - m_targetD);
+			spd = m_vSpd.constrain(spd);
 
 			m_pwmL = m_vPWM.constrain(m_pwmM + spd + str * m_vKmotor.x);
-			m_pwmR = m_vPWM.constrain(m_pwmM + spd - str * m_vKmotor.y);
+			m_pwmR = m_vPWM.constrain(m_pwmM + spd + str * m_vKmotor.y);
 		}
 		else
 		{
+			m_d = 0.0;
 			m_pwmL = m_pwmM;
 			m_pwmR = m_pwmM;
 		}
@@ -148,6 +149,7 @@ namespace kai
 		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
+		pC->addMsg("d: " + f2str(m_d));
 		pC->addMsg("pwmL: " + i2str(m_pwmL));
 		pC->addMsg("pwmR: " + i2str(m_pwmR));
 #endif

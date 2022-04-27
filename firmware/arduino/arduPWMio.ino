@@ -24,6 +24,7 @@
 
 //Constants
 #define PWM_TOUT 200000
+#define SCOUNT 20
 
 struct ARDUINO_CMD
 {
@@ -41,6 +42,7 @@ uint16_t g_pwmOutB;
 uint16_t g_pwmInL;
 uint16_t g_pwmInR;
 uint16_t g_pwmInM;
+int g_iCount;
 
 void command(void)
 {
@@ -95,6 +97,8 @@ void receive(void)
 
 void send()
 {
+
+#ifndef _DEBUG
   Serial1.write(ARDU_CMD_BEGIN);            //start mark
   Serial1.write((uint8_t)ARDU_CMD_HB);      //cmd
   Serial1.write(10);                         //payload len
@@ -108,8 +112,7 @@ void send()
   Serial1.write((uint8_t)((g_pwmOutA >> 8) & 0xFF));
   Serial1.write((uint8_t)(g_pwmOutB & 0xFF));
   Serial1.write((uint8_t)((g_pwmOutB >> 8) & 0xFF));
-
-#ifdef _DEBUG
+#else
   Serial1.print("pwmIn: ");
   Serial1.print(g_pwmInL);
   Serial1.print(", ");
@@ -138,6 +141,7 @@ void setup()
   g_pwmInM = 0;
   g_pwmOutA = 1500;
   g_pwmOutB = 1500;
+  g_iCount = 0;
 
   g_servo1.writeMicroseconds(g_pwmOutA);
   g_servo2.writeMicroseconds(g_pwmOutB);
@@ -150,18 +154,23 @@ void loop()
   g_pwmInL = pulseIn(PWM_IN_L, HIGH, PWM_TOUT);
   g_pwmInR = pulseIn(PWM_IN_R, HIGH, PWM_TOUT);
   g_pwmInM = pulseIn(PWM_IN_M, HIGH, PWM_TOUT);
-  send();
 
   receive();
 
-  if(g_pwmInM < 1500 && g_pwmInM > 700)
-  {
-    g_servo1.writeMicroseconds(g_pwmInL);
-    g_servo2.writeMicroseconds(g_pwmInR);  
-  }
-  else if(g_pwmInM >= 1500 && g_pwmInM <= 2300)
+  if(g_pwmInM >= 1500 && g_pwmInM <= 2300)
   {
     g_servo1.writeMicroseconds(g_pwmOutA);
     g_servo2.writeMicroseconds(g_pwmOutB);
+  }
+  else
+  {
+    g_servo1.writeMicroseconds(g_pwmInL);
+    g_servo2.writeMicroseconds(g_pwmInR);
+  }
+
+  if(g_iCount++ >= SCOUNT)
+  {
+    send();
+    g_iCount = 0;    
   }
 }
