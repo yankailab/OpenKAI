@@ -338,6 +338,7 @@
 #endif
 #ifdef USE_REALSENSE
 #include "../Vision/_RealSense.h"
+#include "../Vision/ImgFilter/_RSdepth.h"
 #endif
 #ifdef USE_PYLON
 #include "../Vision/_Pylon.h"

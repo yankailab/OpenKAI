@@ -43,6 +43,7 @@ public:
 	float m_Kspd;
 	vFloat2 m_vKmotor;
 	vInt2 m_vSpd;
+	float m_minTarea;
 
 	float	 m_d;
 	uint16_t m_pwmL;

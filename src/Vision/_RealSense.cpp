@@ -30,6 +30,7 @@ namespace kai
         m_fEmitter = 1.0;
         m_fLaserPower = 1.0;
         m_iHistFrom = 0;
+        m_bDepthShow = false;
     }
 
     _RealSense::~_RealSense()
@@ -53,6 +54,7 @@ namespace kai
         pK->v("bAlign", &m_bAlign);
         pK->v("fEmitter", &m_fEmitter);
         pK->v("fLaserPower", &m_fLaserPower);
+        pK->v("bDepthShow", &m_bDepthShow);
 
         Kiss *pKt = pK->child("threadPP");
         IF_F(pKt->empty());
@@ -306,7 +308,7 @@ namespace kai
             mZ.convertTo(mD, CV_32FC1);
             m_fDepth = mD * m_dScale;
 
-            if (m_pDepthWin)
+            if (m_bDepthShow)
             {
                 IF_(m_fDepth.bEmpty());
                 rs2::colorizer rsColorMap;

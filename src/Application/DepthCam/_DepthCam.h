@@ -46,6 +46,7 @@ public:
     _DepthVisionBase* m_pDV;
 	vFloat4 m_vBBhb;
 
+	bool m_bHeartbeat;
 	vFloat3 m_ofsRobot;
 };
 

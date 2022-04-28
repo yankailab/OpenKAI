@@ -18,6 +18,7 @@ namespace kai
 		m_Kspd = 0.0;
 		m_vKmotor.set(1.0);
 		m_vSpd.set(0,500);
+		m_minTarea = 0.25;
 
 		m_d = 0;
 		m_pwmL = m_pwmM;
@@ -42,6 +43,7 @@ namespace kai
 		pK->v("Kspd", &m_Kspd);
 		pK->v("vKmotor", &m_vKmotor);
 		pK->v("vSpd", &m_vSpd);
+		pK->v("minTarea", &m_minTarea);
 
 		pK->v("pwmL", &m_pwmL);
 		pK->v("pwmR", &m_pwmR);
@@ -109,7 +111,9 @@ namespace kai
 				IF_CONT(pO->getTopClass() != m_iClass);
 			}
 
-			float d = m_pDV->d(pO->getBB2D());
+			vFloat4 bb = pO->getBB2D();
+			IF_CONT(bb.area() < m_minTarea);
+			float d = m_pDV->d(bb);
 			IF_CONT(d <= 0);
 			IF_CONT(d > minD);
 

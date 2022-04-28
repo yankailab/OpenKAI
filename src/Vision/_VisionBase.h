@@ -43,6 +43,7 @@ enum VISION_TYPE
 	vision_crop,
 	vision_gphoto,
 	vision_remap,
+	vision_RSdepth,
 };
 
 class _VisionBase: public _ModuleBase

@@ -12,7 +12,6 @@ namespace kai
 
 	_DepthVisionBase::_DepthVisionBase()
 	{
-		m_pDepthWin = NULL;
 		m_vDsize.set(1280, 720);
 
 		m_nHistLev = 128;
@@ -37,10 +36,6 @@ namespace kai
 		pK->v("nHistLev", &m_nHistLev);
 		pK->v("minHistD", &m_minHistD);
 		pK->v("vRange", &m_vRange);
-
-		string n = "";
-		F_INFO(pK->v("depthWindow", &n));
-		m_pDepthWin = (_WindowCV *)(pK->getInst(n));
 
 		return true;
 	}
@@ -102,6 +97,11 @@ namespace kai
 		return &m_fDepth;
 	}
 
+	Frame *_DepthVisionBase::DepthShow(void)
+	{
+		return &m_fDepthShow;
+	}
+
 	void _DepthVisionBase::cvDraw(void *pWindow)
 	{
 #ifdef WITH_UI
@@ -133,10 +133,6 @@ namespace kai
 					Point(r.x + 15, r.y + 25),
 					FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0, 255, 0), 1);
 		}
-
-		IF_(m_fDepthShow.bEmpty());
-		IF_(!m_pDepthWin);
-		m_pDepthWin->getNextFrame()->copy(*m_fDepthShow.m());
 #endif
 #endif
 	}

@@ -16,21 +16,24 @@
 		"FPS":30,
 	}
 	"vBASE":["rs"],
-	"bShow":1,
-	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+	"bShow":0,
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5679 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",	
 }
 
 {
 	"name":"depthView",
 	"class":"_WindowCV",
-	"bInst":0,
+	"bInst":1,
 	"bFullScreen":0,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"/vBASE":["rs"],
+	"bShow":0,
+	"vBASE":["RSdepth"],
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5680 auto-multicast=false",
+	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",	
 }
 
 {
@@ -47,7 +50,6 @@
 	"bInst":1,
 	"bLog":1,
 	"bDraw":1,
-	"depthWindow":"depthView",
 	"vPreset":"Short Range",
 	"bRsRGB":1,
 	"vSize":[1280,720],
@@ -57,10 +59,23 @@
 	"fDec":0,
 	"fSpat":0,
 	"bAlign":0,
-	"bDebug":1,
+	"bDebug":0,
 	"nHistLevel":128,
 	"minHistD":0.5,
 	"vRange":[0.1,15.0],
+	"bDepthShow":1,
+}
+
+{
+	"name":"RSdepth",
+	"class":"_RSdepth",
+	"FPS":30,
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_RealSense":"rs",
 }
 
 {
@@ -74,16 +89,16 @@
     {
 		"name":"threadR",
 		"FPS":1,
+		"/vTwakeup":["DC.threadR"],
 	}
 	"port":20000,
-	"nFIFO":12800,
-	"_wakeUp":"DC",
+	"nFIFO":128000,
 }
 
 {
 	"name":"DC",
 	"class":"_DepthCam",
-	"bInst":0,
+	"bInst":1,
 	"bLog":0,
     {
 		"name":"thread",
@@ -96,4 +111,5 @@
 	"_IOBase":"udp",
 	"_DepthVisionBase":"rs",
 	"vBBhb":[0.4, 0.4, 0.6, 0.6],
+	"bHeartbeat":0,
 }

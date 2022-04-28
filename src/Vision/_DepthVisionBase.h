@@ -26,6 +26,7 @@ public:
 	virtual Frame* Depth(void);
 	float d(const vInt4& bb);
 	float d(const vFloat4& bb);
+	virtual Frame* DepthShow(void);
 
 public:
     vInt2   m_vDsize;
@@ -39,7 +40,7 @@ public:
 	float	m_minHistD;
 
 	Frame	m_fDepthShow;
-	_WindowCV* m_pDepthWin;
+//	_WindowCV* m_pDepthWin;
 
 };
 
