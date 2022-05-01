@@ -2,7 +2,7 @@
 #define OpenKAI_src_Autopilot_AP__AProver_drive_H_
 
 #include "_AP_base.h"
-#include "../../Control/_Drive.h"
+#include "../Drive/_Drive.h"
 
 namespace kai
 {

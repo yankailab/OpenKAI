@@ -62,8 +62,11 @@ namespace kai
 		ADD_MODULE(_AP_depthVision);
 		ADD_MODULE(_AP_land);
 		ADD_MODULE(_AP_follow);
+		ADD_MODULE(_AP_video);
 		ADD_MODULE(_APcopter_photo);
+#ifdef WITH_APP_ROBOTARM
 		ADD_MODULE(_AProver_picking);
+#endif
 #ifdef USE_REALSENSE
 		ADD_MODULE(_AP_GPS);
 #endif
@@ -278,13 +281,13 @@ namespace kai
 		ADD_MODULE(_ProtocolBase);
 #endif
 
-// #ifdef WITH_SCIENCE
-// //		ADD_MODULE(_Solver);
-// 		ADD_MODULE(_SolverBase);
-// #ifdef USE_MATHGL
-// 		ADD_MODULE(_FourierSeries);
-// #endif
-// #endif
+		// #ifdef WITH_SCIENCE
+		// //		ADD_MODULE(_Solver);
+		// 		ADD_MODULE(_SolverBase);
+		// #ifdef USE_MATHGL
+		// 		ADD_MODULE(_FourierSeries);
+		// #endif
+		// #endif
 
 #ifdef WITH_SENSOR
 		ADD_MODULE(_BenewakeTF);

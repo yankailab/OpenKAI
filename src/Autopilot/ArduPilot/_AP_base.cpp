@@ -15,8 +15,8 @@ _AP_base::_AP_base()
 	m_freqSendHeartbeat = 1;
 
 	m_bHomeSet = false;
-	m_vHomePos.init(-1.0);
-	m_vGlobalPos.init(-1.0);
+	m_vHomePos.set(-1.0);
+	m_vGlobalPos.set(-1.0);
 	m_vLocalPos.init();
 	m_vSpeed.init();
 	m_vAtti.init();
@@ -205,7 +205,7 @@ vDouble3 _AP_base::getHomePos(void)
 	if(!m_bHomeSet)
 	{
 		vDouble3 vH;
-		vH.init(-1.0);
+		vH.set(-1.0);
 		return vH;
 	}
 

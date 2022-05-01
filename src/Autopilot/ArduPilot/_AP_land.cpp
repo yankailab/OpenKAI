@@ -65,7 +65,7 @@ namespace kai
 		float alt = m_pAP->getGlobalPos().w; //relative altitude
 		m_bTarget = findTarget();
 
-		m_vKpid.init(1.0);
+		m_vKpid.set(1.0);
 		if(m_bTarget)
 		{
 			float kD = 1.0 - (m_vKpidIn.constrain(m_dTarget) - m_vKpidIn.x)/m_vKpidIn.len();

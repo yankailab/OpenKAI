@@ -71,7 +71,7 @@ namespace kai
 		{
 			DEPTH_ROI *pR = &m_pROI[i];
 
-			float d = m_pDV->d(&pR->m_roi);
+			float d = m_pDV->d(pR->m_roi);
 			if (d <= range.x)
 				d = range.y;
 			if (d > range.y)
@@ -108,7 +108,7 @@ namespace kai
 		{
 			DEPTH_ROI *pR = &m_pROI[i];
 			vFloat4 roi = pR->m_roi;
-			float d = m_pDV->d(&roi);
+			float d = m_pDV->d(roi);
 
 			Rect r;
 			r.x = roi.x * pM->cols;

@@ -10,7 +10,7 @@ _AProver_picking::_AProver_picking()
 	m_pAP = NULL;
 	m_pDrive = NULL;
 	m_pArm = NULL;
-	m_rcMode.init();
+	m_rcMode.update();
 	m_pArmMC = NULL;
 }
 
@@ -36,7 +36,6 @@ bool _AProver_picking::init(void* pKiss)
 			break;
 
 		RC_CHANNEL rc;
-		rc.init();
 		pC->v("iChan", &rc.m_iChan);
 		pC->v("pwmL", &rc.m_rawL);
 		pC->v("pwmM", &rc.m_rawM);

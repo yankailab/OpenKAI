@@ -9,9 +9,9 @@ _AP_actuator::_AP_actuator()
     m_pAB1 = NULL;
     m_pAB2 = NULL;
     
-    m_rcMode.init();
-    m_rcStickV.init();
-    m_rcStickH.init();
+    m_rcMode.update();
+    m_rcStickV.update();
+    m_rcStickH.update();
 }
 
 _AP_actuator::~_AP_actuator()
