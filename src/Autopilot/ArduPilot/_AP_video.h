@@ -1,67 +1,47 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_video_H_
 #define OpenKAI_src_Autopilot_AP__AP_video_H_
 
-#include "../../Vision/_DepthVisionBase.h"
-#include "../../Vision/_GPhoto.h"
-#include "../../Sensor/_DistSensorBase.h"
+#include "../../Vision/_VisionBase.h"
 #include "_AP_base.h"
-#include "_AP_posCtrl.h"
 
 namespace kai
 {
 
-class _AP_video: public _StateBase
-{
-public:
-	_AP_video();
-	~_AP_video();
-
-	bool init(void* pKiss);
-	bool start(void);
-	void update(void);
-	int check(void);
-	void console(void* pConsole);
-
-private:
-	void autoMode(void);
-	void manualMode(void);
-	void shutter(void);
-	static void* getUpdate(void* This)
+	class _AP_video : public _StateBase
 	{
-		((_AP_video *) This)->update();
-		return NULL;
-	}
+	public:
+		_AP_video();
+		~_AP_video();
 
-private:
-	_AP_base* m_pAP;
-	_AP_posCtrl* m_pPC;
-	_DistSensorBase* m_pDS;
-	int m_iDiv;
-	float m_speed;
+		bool init(void *pKiss);
+		bool start(void);
+		void update(void);
+		int check(void);
+		void console(void *pConsole);
 
-	_VisionBase* m_pV;
-	_DepthVisionBase* m_pDV;
-	_GPhoto* m_pG;
+	private:
+		bool openStream(void);
+		void closeStream(void);
+		void writeStream(void);
+		static void *getUpdate(void *This)
+		{
+			((_AP_video *)This)->update();
+			return NULL;
+		}
 
-	int		m_iRCshutter;
-	STATE_CHANGE m_scShutter;
+	private:
+		_AP_base *m_pAP;
+		_VisionBase *m_pV;
 
-	float	m_alt;
-	float	m_dAlt;
-	float	m_lastAlt;
-	int		m_iRelayShutter;
+		string m_gstOutput;
+		VideoWriter m_gst;
+		vInt2 m_vSize;
 
-	int m_iTake;
-	uint64_t m_tDelay;
-
-	string m_dir;
-	string m_subDir;
-	bool m_bFlipRGB;
-	bool m_bFlipD;
-	vector<int> m_compress;
-	int m_quality;
-
-};
+		string m_dir;
+		string m_subDir;
+		bool m_bFlipRGB;
+		bool m_bFlipD;
+	};
 
 }
 #endif
