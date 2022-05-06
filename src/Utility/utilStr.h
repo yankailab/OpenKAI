@@ -5,43 +5,50 @@
 #include "../Base/macro.h"
 #include "../Base/constant.h"
 
-inline string deleteNonASCII(const char* pStr)
+inline string deleteNonASCII(const char *pStr)
 {
 	string asc = "";
-	if(!pStr)return asc;
+	if (!pStr)
+		return asc;
 
-	int i=0;
-	while(pStr[i]!=0)
+	int i = 0;
+	while (pStr[i] != 0)
 	{
 		char c = pStr[i++];
-		IF_CONT(c<0);
-		IF_CONT(c>=128);
+		IF_CONT(c < 0);
+		IF_CONT(c >= 128);
 		asc += c;
 	}
 	return asc;
 }
 
-inline string deleteNonNumber(const char* pStr)
+inline string deleteNonNumber(const char *pStr)
 {
 	string asc = "";
-	if(!pStr)return asc;
+	if (!pStr)
+		return asc;
 
-	int i=0;
-	while(pStr[i]!=0)
+	int i = 0;
+	while (pStr[i] != 0)
 	{
 		char c = pStr[i++];
-		IF_CONT(c<48);
-		IF_CONT(c>57);
+		IF_CONT(c < 48);
+		IF_CONT(c > 57);
 		asc += c;
 	}
 	return asc;
+}
+
+inline string replace(string str, const string &strF, const string &strR)
+{
+	return str.replace(str.find(strF), strF.length(), strR);
 }
 
 inline string tFormat(void)
 {
 	time_t timer;
 	char buffer[26];
-	struct tm* tm_info;
+	struct tm *tm_info;
 	time(&timer);
 	tm_info = localtime(&timer);
 	strftime(buffer, 26, "%Y-%m-%d_%H-%M-%S", tm_info);
@@ -56,7 +63,7 @@ inline string getFileDir(string file)
 	return file.erase(file.find_last_of('/') + 1, string::npos);
 }
 
-inline string checkDirName(string& dir)
+inline string checkDirName(string &dir)
 {
 	if (dir.at(dir.length() - 1) != '/')
 		dir.push_back('/');
@@ -64,10 +71,11 @@ inline string checkDirName(string& dir)
 	return dir;
 }
 
-inline string getFileExt(string& file)
+inline string getFileExt(string &file)
 {
 	size_t extPos = file.find_last_of(".");
-	if(extPos == std::string::npos)return "";
+	if (extPos == std::string::npos)
+		return "";
 	return file.substr(extPos);
 }
 
@@ -97,7 +105,7 @@ inline string f2str(float v)
 inline string f2str(float v, int nDigit)
 {
 	char buf[UTIL_BUF];
-	string format = "%."+i2str(nDigit)+"f";
+	string format = "%." + i2str(nDigit) + "f";
 	snprintf(buf, UTIL_BUF, format.c_str(), (float)v);
 	return string(buf);
 }
@@ -112,12 +120,12 @@ inline string lf2str(double v)
 inline string lf2str(double v, int nDigit)
 {
 	char buf[UTIL_BUF];
-	string format = "%."+i2str(nDigit)+"f";
+	string format = "%." + i2str(nDigit) + "f";
 	snprintf(buf, UTIL_BUF, format.c_str(), (double)v);
 	return string(buf);
 }
 
-inline void trimJson(string* pStr)
+inline void trimJson(string *pStr)
 {
 	unsigned int idx = pStr->rfind('}', pStr->size()) + 1;
 	if (pStr->size() > idx)

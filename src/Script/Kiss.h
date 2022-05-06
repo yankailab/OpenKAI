@@ -25,6 +25,7 @@ public:
 	Kiss* parent(void);
 	bool empty(void);
 
+	Kiss* find(const string& name);
 	void* getInst(const string& name);
 
 	template <typename T> bool v(const string& name, T* pVal)

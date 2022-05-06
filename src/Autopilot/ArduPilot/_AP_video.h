@@ -38,9 +38,8 @@ namespace kai
 		vInt2 m_vSize;
 
 		string m_dir;
-		string m_subDir;
-		bool m_bFlipRGB;
-		bool m_bFlipD;
+		string m_saveDir;
+		bool m_bRecording;
 	};
 
 }

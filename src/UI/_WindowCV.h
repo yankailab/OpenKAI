@@ -222,9 +222,6 @@ namespace kai
 		string m_gstOutput;
 		VideoWriter m_gst;
 
-		string m_fileRec;
-		VideoWriter m_VW;
-
 		// UI
 		vector<WindowCV_Btn> m_vBtn;
 		cv::Ptr<freetype::FreeType2> m_pFT;

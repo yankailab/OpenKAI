@@ -8,9 +8,10 @@ namespace kai
 		m_pAP = NULL;
 		m_pV = NULL;
 
-		m_vSize.set(1280,720);
+		m_vSize.set(1280, 720);
 		m_dir = "/home/";
-		m_subDir = "";
+		m_saveDir = "";
+		m_bRecording = false;
 	}
 
 	_AP_video::~_AP_video()
@@ -22,13 +23,8 @@ namespace kai
 		IF_F(!this->_StateBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("vSize", &m_vSize);
 		pK->v("dir", &m_dir);
-
-		if (m_subDir.empty())
-			m_subDir = m_dir + tFormat() + "/";
-		else
-			m_subDir = m_dir + m_subDir;
+		pK->v("gstOutput", &m_gstOutput);
 
 		string n;
 
@@ -40,6 +36,10 @@ namespace kai
 		n = "";
 		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->getInst(n));
+
+		Kiss* pKv = pK->find(n);
+		if(pKv)
+			pKv->v("vSize", &m_vSize);
 
 		return true;
 	}
@@ -60,24 +60,22 @@ namespace kai
 
 	void _AP_video::update(void)
 	{
+		openStream();
+
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPSfrom();
 			this->_StateBase::update();
 
-			if (bStateChanged())
-			{
-				if (this->bActive())
-				{
-					openStream();
-				}
-				else
-				{
-					closeStream();
-				}
-			}
+			// if (bStateChanged())
+			// {
+			// 	if (this->bActive())
+			// 		openStream();
+			// 	else
+			// 		closeStream();
+			// }
 
-			if (bActive())
+			if (m_bRecording)
 			{
 				writeStream();
 			}
@@ -89,35 +87,46 @@ namespace kai
 	bool _AP_video::openStream(void)
 	{
 		IF_F(check() < 0);
+		IF_F(m_bRecording);
+
+		string strT = tFormat();
+		m_saveDir = m_dir + strT + "/";
 
 		string cmd;
-		cmd = "mkdir /media/usb";
-		system(cmd.c_str());
-		cmd = "mount /dev/sda1 /media/usb";
-		system(cmd.c_str());
-		cmd = "mkdir " + m_subDir;
+		// cmd = "mkdir /media/usb";
+		// system(cmd.c_str());
+		// cmd = "mount /dev/sda1 /media/usb";
+		// system(cmd.c_str());
+		cmd = "mkdir " + m_saveDir;
 		system(cmd.c_str());
 
-		if (!m_gst.open(m_gstOutput,
+		string gst = replace(m_gstOutput, "[fName]", m_saveDir + strT);
+		if (!m_gst.open(gst,
 						CAP_GSTREAMER,
 						0,
 						30,
 						cv::Size(m_vSize.x, m_vSize.y),
 						true))
 		{
-			LOG_E("Cannot open GStreamer output");
+			LOG_E("Cannot open GStreamer output:" + gst);
 			return false;
 		}
 
+		m_bRecording = true;
 		return true;
 	}
 
 	void _AP_video::closeStream(void)
 	{
+		IF_(!m_bRecording);
+
+		m_bRecording = false;
 	}
 
 	void _AP_video::writeStream(void)
 	{
+		IF_(!m_gst.isOpened());
+
 		vDouble4 vP;
 		vP.init();
 		vP = m_pAP->getGlobalPos();
@@ -126,26 +135,9 @@ namespace kai
 		string alt = lf2str(vP.z, 3);
 
 		Frame fBGR = *m_pV->BGR();
-		if (m_bFlipRGB)
-			fBGR = fBGR.flip(-1);
-		Mat mBGR;
-		fBGR.m()->copyTo(mBGR);
-		IF_(mBGR.empty());
+		IF_(fBGR.bEmpty());
 
-		Frame F, F2;
-		if (m_gst.isOpened())
-		{
-			F.copy(fBGR);
-			Size fs = F.size();
-
-			if (fs.width != m_vSize.x || fs.height != m_vSize.y)
-			{
-				F2 = F.resize(m_vSize.x, m_vSize.y);
-				F = F2;
-			}
-
-			m_gst << *F.m();
-		}
+		m_gst << *fBGR.m();
 	}
 
 	void _AP_video::console(void *pConsole)
@@ -156,7 +148,7 @@ namespace kai
 		msgActive(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		pC->addMsg("Dir = " + m_subDir);
+		pC->addMsg("Dir = " + m_saveDir);
 	}
 
 }

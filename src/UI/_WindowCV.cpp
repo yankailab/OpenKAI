@@ -16,17 +16,12 @@ namespace kai
 		m_waitKey = 30;
 		m_bFullScreen = false;
 		m_gstOutput = "";
-		m_fileRec = "";
 		m_vSize.set(1280, 720);
 		m_bShow = true;
 	}
 
 	_WindowCV::~_WindowCV()
 	{
-		if (m_VW.isOpened())
-		{
-			m_VW.release();
-		}
 	}
 
 	bool _WindowCV::init(void *pKiss)
@@ -53,39 +48,6 @@ namespace kai
 		{
 			LOG_E("Window size too small");
 			return false;
-		}
-
-		pK->v("fileRec", &m_fileRec);
-		if (!m_fileRec.empty())
-		{
-			int recFPS = 30;
-			string reCodec = "MJPG";
-			pK->v("recFPS", &recFPS);
-			pK->v("recCodec", &reCodec);
-
-			time_t t = time(NULL);
-			struct tm *tm = localtime(&t);
-			char strTime[128];
-			strftime(strTime, sizeof(strTime), "%c", tm);
-			m_fileRec += strTime;
-			m_fileRec += ".avi";
-
-			if (!m_VW.open(m_fileRec,
-#if CV_VERSION_MAJOR == 3
-						   CV_FOURCC
-#else
-						   VideoWriter::fourcc
-#endif
-						   (reCodec.at(0),
-							reCodec.at(1),
-							reCodec.at(2),
-							reCodec.at(3)),
-						   recFPS,
-						   cv::Size(m_vSize.x, m_vSize.y)))
-			{
-				LOG_E("Cannot open file recording");
-				return false;
-			}
 		}
 
 		pK->v("gstOutput", &m_gstOutput);
@@ -203,7 +165,7 @@ namespace kai
 		}
 
 		Frame F,F2;
-		if (m_VW.isOpened() || m_gst.isOpened())
+		if (m_gst.isOpened())
 		{
 			F.copy(*m_sF.get());
 			Size fs = F.size();
@@ -221,11 +183,7 @@ namespace kai
 			// 	F = F2;
 			// }
 
-			if (m_VW.isOpened())
-				m_VW << *F.m();
-
-			if (m_gst.isOpened())
-				m_gst << *F.m();
+			m_gst << *F.m();
 		}
 
 		int key = waitKey(m_waitKey);

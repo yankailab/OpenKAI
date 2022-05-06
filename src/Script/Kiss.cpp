@@ -205,7 +205,7 @@ namespace kai
 		return m_pParent;
 	}
 
-	void *Kiss::getInst(const string &name)
+	Kiss *Kiss::find(const string &name)
 	{
 		vector<string> vName = splitBy(name, '.');
 		IF_N(vName.empty());
@@ -215,7 +215,24 @@ namespace kai
 			pK = pK->child(n);
 
 		IF_N(pK->empty());
+		return pK;
+	}
+
+	void *Kiss::getInst(const string &name)
+	{
+		Kiss* pK = find(name);
+		NULL_N(pK);
 		return pK->m_pInst;
+
+		// vector<string> vName = splitBy(name, '.');
+		// IF_N(vName.empty());
+
+		// Kiss *pK = root();
+		// for (string n : vName)
+		// 	pK = pK->child(n);
+
+		// IF_N(pK->empty());
+		// return pK->m_pInst;
 	}
 
 	bool Kiss::empty(void)
