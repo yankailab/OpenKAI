@@ -7,9 +7,10 @@ namespace kai
 	{
 		m_pAP = NULL;
 		m_pV = NULL;
+		m_pF = new _File();
 
 		m_vSize.set(1280, 720);
-		m_dir = "/home/";
+		m_dir = "/home/lab/";
 		m_saveDir = "";
 		m_bRecording = false;
 	}
@@ -60,20 +61,18 @@ namespace kai
 
 	void _AP_video::update(void)
 	{
-		openStream();
-
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPSfrom();
 			this->_StateBase::update();
 
-			// if (bStateChanged())
-			// {
-			// 	if (this->bActive())
-			// 		openStream();
-			// 	else
-			// 		closeStream();
-			// }
+			if (bStateChanged())
+			{
+				if (this->bActive())
+					openStream();
+				else
+					closeStream();
+			}
 
 			if (m_bRecording)
 			{
@@ -100,7 +99,10 @@ namespace kai
 		cmd = "mkdir " + m_saveDir;
 		system(cmd.c_str());
 
-		string gst = replace(m_gstOutput, "[fName]", m_saveDir + strT);
+		string fName = m_saveDir + strT;
+
+		// open video stream
+		string gst = replace(m_gstOutput, "[fName]", fName);
 		if (!m_gst.open(gst,
 						CAP_GSTREAMER,
 						0,
@@ -112,6 +114,12 @@ namespace kai
 			return false;
 		}
 
+		// open meta file
+		IF_F(!m_pF->open(fName + ".json"));
+
+		m_iFrame = 0;
+		m_tRecStart = getTbootMs();
+
 		m_bRecording = true;
 		return true;
 	}
@@ -120,6 +128,11 @@ namespace kai
 	{
 		IF_(!m_bRecording);
 
+		m_iFrame = 0;
+		m_tRecStart = 0;
+		m_pF->close();
+		m_gst.release();
+
 		m_bRecording = false;
 	}
 
@@ -127,17 +140,28 @@ namespace kai
 	{
 		IF_(!m_gst.isOpened());
 
-		vDouble4 vP;
-		vP.init();
-		vP = m_pAP->getGlobalPos();
-		string lat = lf2str(vP.x, 7);
-		string lon = lf2str(vP.y, 7);
-		string alt = lf2str(vP.z, 3);
-
+		// ouput one frame
 		Frame fBGR = *m_pV->BGR();
 		IF_(fBGR.bEmpty());
-
 		m_gst << *fBGR.m();
+
+		// output meta data
+		m_iFrame++;
+		uint64_t tFrame = getTbootMs() - m_tRecStart;
+		vDouble4 vP = m_pAP->getGlobalPos();
+		vFloat3 vA = m_pAP->getApAttitude();
+
+        object jo;
+        JO(jo, "iFrame", (double)m_iFrame);
+        JO(jo, "tFrame", (double)tFrame);
+        JO(jo, "lat", lf2str(vP.x, 7));
+        JO(jo, "lon", lf2str(vP.y, 7));
+        JO(jo, "alt", (double)vP.z);
+        JO(jo, "yaw", (double)vA.x);
+        JO(jo, "pitch", (double)vA.y);
+        JO(jo, "roll", (double)vA.z);
+        string m = picojson::value(jo).serialize();
+		m_pF->writeLine((uint8_t*)m.c_str(), m.length());
 	}
 
 	void _AP_video::console(void *pConsole)
@@ -148,7 +172,8 @@ namespace kai
 		msgActive(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		pC->addMsg("Dir = " + m_saveDir);
+		pC->addMsg("saveDir = " + m_saveDir);
+		pC->addMsg("iFrame = " + i2str(m_iFrame));
 	}
 
 }

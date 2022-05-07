@@ -2,7 +2,10 @@
 #define OpenKAI_src_Autopilot_AP__AP_video_H_
 
 #include "../../Vision/_VisionBase.h"
+#include "../../IO/_File.h"
 #include "_AP_base.h"
+
+using namespace picojson;
 
 namespace kai
 {
@@ -32,10 +35,13 @@ namespace kai
 	private:
 		_AP_base *m_pAP;
 		_VisionBase *m_pV;
+		_File* m_pF;
 
 		string m_gstOutput;
 		VideoWriter m_gst;
 		vInt2 m_vSize;
+		int m_iFrame;
+		uint64_t m_tRecStart;
 
 		string m_dir;
 		string m_saveDir;

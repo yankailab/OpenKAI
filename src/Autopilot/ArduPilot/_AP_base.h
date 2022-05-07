@@ -140,7 +140,7 @@ public:
 	vDouble4 m_vGlobalPos;	//lat, lon, alt, relative_alt in meters
 	vDouble3 m_vLocalPos;
 	vFloat3 m_vSpeed;
-	vFloat3 m_vAtti;	//yar, pitch, roll
+	vFloat3 m_vAtti;	//yaw, pitch, roll
 	float m_apHdg;		//heading in degree
 };
 
