@@ -43,6 +43,9 @@ namespace kai
 		int m_iFrame;
 		uint64_t m_tRecStart;
 
+		string m_fCalib;
+		Mat m_mC;
+		Mat m_mD;
 		string m_dir;
 		string m_saveDir;
 		bool m_bRecording;

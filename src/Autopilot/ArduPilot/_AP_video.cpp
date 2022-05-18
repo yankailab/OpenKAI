@@ -10,6 +10,7 @@ namespace kai
 		m_pF = new _File();
 
 		m_vSize.set(1280, 720);
+		m_fCalib = "";
 		m_dir = "/home/lab/";
 		m_saveDir = "";
 		m_bRecording = false;
@@ -41,6 +42,10 @@ namespace kai
 		Kiss* pKv = pK->find(n);
 		if(pKv)
 			pKv->v("vSize", &m_vSize);
+
+
+		pK->v("fCalib", &m_fCalib);
+		readCamMatrices(m_fCalib, &m_mC, &m_mD);
 
 		return true;
 	}
@@ -116,6 +121,19 @@ namespace kai
 
 		// open meta file
 		IF_F(!m_pF->open(fName + ".json"));
+        object jo;
+        JO(jo, "name", "calib");
+        JO(jo, "Fx", m_mC.at<double>(0, 0));
+        JO(jo, "Fy", m_mC.at<double>(1, 1));
+        JO(jo, "Cx", m_mC.at<double>(0, 2));
+        JO(jo, "Cy", m_mC.at<double>(1, 2));
+        JO(jo, "k1", m_mD.at<double>(0, 0));
+        JO(jo, "k2", m_mD.at<double>(0, 1));
+        JO(jo, "p1", m_mD.at<double>(0, 2));
+        JO(jo, "p2", m_mD.at<double>(0, 3));
+        JO(jo, "k3", m_mD.at<double>(0, 4));
+        string m = picojson::value(jo).serialize();
+		m_pF->writeLine((uint8_t*)m.c_str(), m.length());
 
 		m_iFrame = 0;
 		m_tRecStart = getTbootMs();

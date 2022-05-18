@@ -5,6 +5,7 @@
 	"bLog":1,
 	"bStdErr":1,
 	"/rc":"sudo modprobe bcm2835-v4l2\nv4l2-ctl -d /dev/video0 --set-ctrl=rotate=0\n",
+	"/rc":"sudo mkdir /home/pi/ssd\nsudo mount /dev/nvme0p1 /home/pi/ssd/\nsudo chown pi /home/pi/ssd\n",
 }
 
 {
@@ -216,9 +217,28 @@
 	"vActiveState":["STANDBY"],
 	"_AP_base":"apBase",
 	"_VisionBase":"cam",
-	"dir":"/home/kai/Videos/",
+	"dir":"/home/kai/Pictures/",
+	"fCalib":"/home/kai/3Dscan/calibCam.kiss",
 	"/gstOutput":"appsrc ! videoflip method=0 ! videoscale ! video/x-raw,width=1280,height=720 ! videoconvert ! omxh264enc insert-sps-pps=true ! matroskamux ! filesink location=[fName].mka",
 	"gstOutput":"appsrc ! videoflip method=0 ! videoscale ! video/x-raw,width=1280,height=720 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! matroskamux ! filesink location=[fName].mka",
+
+/*
+lsblk -f
+sudo mkfs -t ext4 /dev/nvme0n1
+# sudo mkfs -t vfat /dev/nvme0n1
+sudo mkdir -p /home/pi/ssd
+sudo mount -t auto /dev/nvme0n1 /home/pi/ssd
+sudo chown pi ssd/
+sudo mount /dev/nvme0n1 /home/pi/ssd
+sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=20/1 ! x264enc ! matroskamux ! filesink location=/home/pi/ssd/test.mkv
+sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! omxh264enc ! h264parse ! matroskamux ! filesink location=/home/pi/ssd/test1.mkv
+sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! omxh264enc ! video/x-h264, control-rate=2,bitrate=16650000,insert-sps-pps=true,profile=high ! h264parse ! matroskamux ! filesink location=/home/pi/ssd/test1.mkv
+sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! v4l2h264enc ! h264parse ! matroskamux ! filesink location=/home/pi/ssd/test1.mkv
+sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
+sudo gst-launch-1.0 libcamerasrc ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
+sudo gst-launch-1.0 libcamerasrc ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
+curl -T FourierToy.swf ftp://193.112.75.123/pub/ --user anonymous
+*/
 }
 
 {

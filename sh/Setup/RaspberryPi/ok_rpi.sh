@@ -8,13 +8,14 @@ sudo systemctl enable ssh
 sudo systemctl start ssh
 
 For headless setup
+nano /media/kai/boot/ssh
 Placing a file named ssh, without any extension, onto the boot partition of the SD card. When the Pi boots, it looks for the ssh file. If it is found, SSH is enabled, and the file is deleted.
 
 # Setup
 sudo apt-get update
 sudo apt-get upgrade
 sudo apt-get dist-upgrade
-sudo rpi-update
+# sudo rpi-update
 
 # Disable OS use of UART and Enable UART hardware
 set +H

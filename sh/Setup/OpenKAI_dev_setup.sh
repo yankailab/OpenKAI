@@ -27,13 +27,16 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10 --slave /
 sudo update-alternatives --config gcc
 
 # Basic
-sudo apt-get -y install build-essential clang libc++-dev libc++abi-dev cmake cmake-curses-gui ninja-build git autoconf automake libtool pkg-config libssl-dev libboost-all-dev libgflags-dev libgoogle-glog-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev libssl-dev libprotobuf-dev protobuf-compiler libcurl4 curl libgtk-3-dev libusb-1.0-0-dev libusb-dev libudev-dev libc++-dev libc++abi-dev libfmt-dev
+sudo apt-get -y install build-essential clang libc++-dev libc++abi-dev cmake cmake-curses-gui ninja-build git autoconf automake libtool pkg-config libssl-dev libboost-all-dev libgflags-dev libgoogle-glog-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev libssl-dev libprotobuf-dev protobuf-compiler libcurl4 curl libusb-1.0-0-dev libusb-dev libudev-dev libc++-dev libc++abi-dev libfmt-dev
 
 # Image, codecs, gstreamer
-sudo apt-get -y install gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 libv4l-dev v4l-utils libjpeg-dev libpng-dev libtiff-dev libturbojpeg libavcodec-dev libavformat-dev libxvidcore-dev x264
+sudo apt-get -y install gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-alsa gstreamer1.0-gl libv4l-dev v4l-utils libjpeg-dev libpng-dev libtiff-dev libavcodec-dev libavformat-dev libxvidcore-dev x264
 
 # OpenGL
 sudo apt-get -y install libglu1-mesa-dev libglu1-mesa libgl1-mesa-glx libgl1-mesa-dev libglfw3 libglfw3-dev libglew-dev mesa-common-dev freeglut3-dev xorg-dev libxt-dev libxi-dev libx11-dev
+
+# Desktop
+sudo apt-get -y install libgtk-3-dev gstreamer1.0-x gstreamer1.0-gtk3
 
 # Numerical
 sudo apt-get -y install libqhull-dev qhull-bin gfortran libblas-dev liblapack-dev liblapacke-dev liblapack3 libatlas-base-dev libopenblas-base libopenblas-dev gsl-bin libgsl0-dev libflann-dev libproj-dev
@@ -76,9 +79,9 @@ sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/us
 
 #----------------------------------------------------
 # CMake
-wget https://github.com/Kitware/CMake/releases/download/v3.21.4/cmake-3.21.4.tar.gz
-tar xvf cmake-3.21.4.tar.gz
-cd cmake-3.21.4
+wget https://github.com/Kitware/CMake/releases/download/v3.23.1/cmake-3.23.1.tar.gz
+tar xvf cmake-3.23.1.tar.gz
+cd cmake-3.23.1
 ./bootstrap
 make -j$(nproc)
 sudo make install
@@ -101,23 +104,22 @@ cd librealsense
 mkdir build
 cd build
 #cmake -DCMAKE_BUILD_TYPE=Release ../
-cmake -DFORCE_LIBUVC=true -DBUILD_WITH_CUDA=ON -DCMAKE_BUILD_TYPE=Release ../
+cmake -DFORCE_LIBUVC=true -DBUILD_WITH_CUDA=ON -DCMAKE_BUILD_TYPE=Release -DIMPORT_DEPTH_CAM_FW=ON ../
 make -j$(nproc)
 sudo make install
 
 #----------------------------------------------------
 # (Optional) gphoto2
-sudo apt-get update -qq
 sudo apt-get install -y build-essential libltdl-dev libusb-1.0-0-dev libexif-dev udev libpopt-dev libudev-dev pkg-config git automake autoconf autopoint gettext libtool wget
 
-git clone --branch libgphoto2-2_5_27-release --depth 1 https://github.com/gphoto/libgphoto2.git
+git clone --branch libgphoto2-2_5_28-release --depth 1 https://github.com/gphoto/libgphoto2.git
 cd libgphoto2
 autoreconf --install --symlink
 ./configure
 make -j$(nproc)
 sudo make install
 
-git clone --branch gphoto2-2_5_27-release --depth 1 https://github.com/gphoto/gphoto2.git
+git clone --branch gphoto2-2_5_28-release --depth 1 https://github.com/gphoto/gphoto2.git
 cd gphoto2
 autoreconf --install --symlink
 ./configure
@@ -164,8 +166,8 @@ gphoto2 --stdout --capture-movie | ffmpeg -i - -vcodec rawvideo -pix_fmt yuv420p
 
 #----------------------------------------------------
 # (Optional) OpenCV
-git clone --branch 4.5.4 --depth 1 https://github.com/opencv/opencv.git
-git clone --branch 4.5.4 --depth 1 https://github.com/opencv/opencv_contrib.git
+git clone --branch 4.5.5 --depth 1 https://github.com/opencv/opencv.git
+git clone --branch 4.5.5 --depth 1 https://github.com/opencv/opencv_contrib.git
 cd opencv
 mkdir build
 cd build
