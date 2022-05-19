@@ -10,8 +10,6 @@
 
 #include "_DetectorBase.h"
 
-#ifdef USE_OPENCV
-
 namespace kai
 {
 
@@ -45,5 +43,4 @@ public:
 };
 
 }
-#endif
 #endif

@@ -8,6 +8,7 @@
 #ifndef OpenKAI_src_Tracker__TrackerBase_H_
 #define OpenKAI_src_Tracker__TrackerBase_H_
 
+#include <opencv2/tracking.hpp>
 #include "../Base/_ModuleBase.h"
 #include "../Detector/_DetectorBase.h"
 #include "../Vision/_VisionBase.h"

@@ -186,10 +186,12 @@
 		"FPS":30,
 	}
 	"/pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)360, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.16.198 port=5678 auto-multicast=false",
-	"/pipeline":"rpicamsrc bitrate=1000000 preview=0 rotation=180 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! omxh264enc ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.4 port=5678 auto-multicast=false",
-	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=640,height=480,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+	"/pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=640,height=480,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"/pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=360 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
-	"vSize":[640,480],
+	"/pipeline":"libcamerasrc ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! videoflip method=0 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=360 ! videoconvert ! v4l2h264enc ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.4 port=5678 auto-multicast=false",
+	"pipeline":"libcamerasrc ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! videoflip method=0 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! fbdevsink",
+	"/vSize":[640,480],
+	"vSize":[1280,720],
 }
 
 {
@@ -219,8 +221,9 @@
 	"_VisionBase":"cam",
 	"dir":"/home/kai/Pictures/",
 	"fCalib":"/home/kai/3Dscan/calibCam.kiss",
+	"/gstOutput":"appsrc ! videoflip method=0 ! videoscale ! video/x-raw,width=1280,height=720 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! matroskamux ! filesink location=[fName].mka",
 	"/gstOutput":"appsrc ! videoflip method=0 ! videoscale ! video/x-raw,width=1280,height=720 ! videoconvert ! omxh264enc insert-sps-pps=true ! matroskamux ! filesink location=[fName].mka",
-	"gstOutput":"appsrc ! videoflip method=0 ! videoscale ! video/x-raw,width=1280,height=720 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! matroskamux ! filesink location=[fName].mka",
+	"gstOutput":"appsrc ! videoflip method=0 ! videoscale ! video/x-raw,width=1280,height=720 ! videoconvert ! v4l2h264enc ! h264parse ! matroskamux ! filesink location=[fName].mka",
 
 /*
 lsblk -f

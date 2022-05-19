@@ -85,6 +85,7 @@ namespace kai
 		setMouseCallback(wn, sOnMouse, this);
 
 		// UI
+#ifdef USE_FREETYPE
 		// Freetype font
 		pK->v("font", &m_font);
 		if (m_font != "")
@@ -92,6 +93,7 @@ namespace kai
 			m_pFT = freetype::createFreeType2();
 			m_pFT->loadFontData(m_font.c_str(), 0);
 		}
+#endif
 
 		// buttons
 		Kiss *pKwb = pK->child("btn");
@@ -113,8 +115,11 @@ namespace kai
 			pKb->v("colBorder", &wb.m_colBorder);
 			pKb->v("colFont", &wb.m_colFont);
 			pKb->v("hFont", &wb.m_hFont);
-			wb.init(m_sF.get()->size(), m_pFT);
-
+#ifdef USE_FREETYPE
+			wb.init(m_sF.get()->size(), &m_pFT);
+#else
+			wb.init(m_sF.get()->size());
+#endif
 			m_vBtn.push_back(wb);
 		}
 
@@ -152,7 +157,11 @@ namespace kai
 		// draw UI
 		for (WindowCV_Btn wb : m_vBtn)
 		{
-			wb.draw(m_sF.next()->m(), m_pFT);
+#ifdef USE_FREETYPE
+			wb.draw(m_sF.next()->m(), &m_pFT);
+#else
+			wb.draw(m_sF.next()->m());
+#endif
 		}
 
 		m_sF.swap();
@@ -199,10 +208,12 @@ namespace kai
 		return m_sF.next();
 	}
 
+#ifdef USE_FREETYPE
 	cv::Ptr<freetype::FreeType2> _WindowCV::getFont(void)
 	{
 		return m_pFT;
 	}
+#endif
 
 	WindowCV_Btn* _WindowCV::findBtn(const string& btnName)
 	{
@@ -221,7 +232,11 @@ namespace kai
 		WindowCV_Btn* pB = findBtn(btnName);
 		NULL_F(pB);
 
-		pB->setLabel(btnLabel, m_pFT);
+#ifdef USE_FREETYPE
+		pB->setLabel(btnLabel, &m_pFT);
+#else
+		pB->setLabel(btnLabel);
+#endif
 		return true;
 	}
 

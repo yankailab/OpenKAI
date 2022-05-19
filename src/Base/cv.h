@@ -3,17 +3,10 @@
 #include <opencv2/core.hpp>
 #include <opencv2/core/utility.hpp>
 #include <opencv2/core/ocl.hpp>
-#include <opencv2/features2d.hpp>
-#include <opencv2/highgui.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/aruco.hpp>
-#include <opencv2/bgsegm.hpp>
 #include <opencv2/dnn.hpp>
-#include <opencv2/freetype.hpp>
-
-#ifdef USE_OPENCV_CONTRIB
-#include <opencv2/tracking.hpp>
-#endif
+#include <opencv2/features2d.hpp>
 
 #ifdef USE_CUDA
 #include <opencv2/cudaobjdetect.hpp>

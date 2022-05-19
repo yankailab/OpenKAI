@@ -8,6 +8,11 @@
 #ifndef OpenKAI_src_UI_WindowCV_H_
 #define OpenKAI_src_UI_WindowCV_H_
 
+#ifdef USE_FREETYPE
+#include <opencv2/freetype.hpp>
+#endif
+
+#include <opencv2/highgui.hpp>
 #include "../Base/_ModuleBase.h"
 #include "../Vision/Frame.h"
 #include "../Primitive/tSwap.h"
@@ -60,27 +65,30 @@ namespace kai
 		bool m_bDown = false;
 		WindowCV_CbBtn m_cb;
 
-		void init(const cv::Size &s, cv::Ptr<freetype::FreeType2> pFont = NULL)
+		void init(const cv::Size &s, void* pFont = NULL)
 		{
 			setScrSize(s);
 			updateLabelPos(pFont);
 		}
 
-		void updateLabelPos(cv::Ptr<freetype::FreeType2> pFont = NULL)
+		void updateLabelPos(void* pFont = NULL)
 		{
+#ifdef USE_FREETYPE
 			NULL_(pFont);
 
 			int baseline = 0;
-			Size ts = pFont->getTextSize(m_label,
-											 m_hFont,
-											 -1,
-											 &baseline);
+			cv::Ptr<freetype::FreeType2> pF = *(cv::Ptr<freetype::FreeType2>*)pFont;
+			Size ts = pF->getTextSize(m_label,
+									 m_hFont,
+									 -1,
+									 &baseline);
 
 			m_pT.x = (m_vR.x + m_vR.z)/2 - ts.width/2;
 			m_pT.y = (m_vR.y + m_vR.w)/2 - ts.height;
+#endif
 		}
 
-		void setLabel(const string& label, cv::Ptr<freetype::FreeType2> pFont = NULL)
+		void setLabel(const string& label, void* pFont = NULL)
 		{
 			m_label = label;
 //			updateLabelPos(pFont);						
@@ -141,7 +149,7 @@ namespace kai
 			m_bDown = false;
 		}
 
-		void draw(Mat *pM, cv::Ptr<freetype::FreeType2> pFont = NULL)
+		void draw(Mat *pM, void* pFont = NULL)
 		{
 			IF_(!m_bShow);
 
@@ -155,9 +163,11 @@ namespace kai
 			rectangle(*pM, r, colBg, FILLED);
 			rectangle(*pM, r, Scalar(m_colBorder.x, m_colBorder.y, m_colBorder.z), 1);
 
+#ifdef USE_FREETYPE
 			if (pFont)
 			{
-				pFont->putText(*pM, m_label,
+				cv::Ptr<freetype::FreeType2> pF = *(cv::Ptr<freetype::FreeType2>*)pFont;
+				pF->putText(*pM, m_label,
 							   m_pT,
 							   m_hFont,
 							   Scalar(m_colFont.x, m_colFont.y, m_colFont.z),
@@ -167,6 +177,7 @@ namespace kai
 
 				return;
 			}
+#endif
 
 			putText(*pM, m_label,
 					Point(m_vR.x, m_vR.y + 25),
@@ -189,7 +200,9 @@ namespace kai
 
 		Frame *getFrame(void);
 		Frame *getNextFrame(void);
+#ifdef USE_FREETYPE
 		cv::Ptr<freetype::FreeType2> getFont(void);
+#endif
 
 		WindowCV_Btn* findBtn(const string& btnName);
 		bool setCbBtn(const string &btnName, CbWindowCVbtn pCb, void *pInst);
@@ -224,8 +237,10 @@ namespace kai
 
 		// UI
 		vector<WindowCV_Btn> m_vBtn;
-		cv::Ptr<freetype::FreeType2> m_pFT;
+#ifdef USE_FREETYPE
 		string m_font;
+		cv::Ptr<freetype::FreeType2> m_pFT;
+#endif
 	};
 
 }

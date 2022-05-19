@@ -7,8 +7,6 @@
 
 #include "_DepthSegment.h"
 
-#ifdef USE_OPENCV
-
 namespace kai
 {
 
@@ -128,4 +126,3 @@ namespace kai
 	}
 
 }
-#endif
