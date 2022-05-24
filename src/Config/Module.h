@@ -298,6 +298,7 @@
 
 #ifdef WITH_UI
 #include "../UI/_Console.h"
+#include "../UI/_FrameBuffer.h"
 #ifdef USE_OPENCV
 #include "../UI/_WindowCV.h"
 #endif

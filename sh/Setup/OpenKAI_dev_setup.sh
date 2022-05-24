@@ -356,6 +356,14 @@ sleep 5
 
 #----------------------------------------------------
 # Misc.
+
+# Upload to FTP
+curl -T FourierToy.swf ftp://193.112.75.123/pub/ --user anonymous
+
+# Test gstreamer
+sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=20/1 ! x264enc ! matroskamux ! filesink location=/home/pi/ssd/test.mkv
+sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
+
 # Screen and touch screen input rotate
 xrandr -o left
 xinput set-prop 'GXTP7386:00 27C6:0113' 'Coordinate Transformation Matrix' 0 -1 1 1 0 0 0 0 1
@@ -371,8 +379,7 @@ sudo apt install gnome-shell-extensions
 https://extensions.gnome.org/extension/3222/block-caribou-36/
 
 #----------------------------------------------------
-
-Make Jetson boot SD image
+# Make Jetson boot SD image
 
 sudo fdisk -l
 sudo umount /dev/sda
@@ -383,7 +390,7 @@ sudo umount /dev/sdb
 sudo dd if=~/sd.img of=/dev/sdb bs=6M
 
 
-# Outdated, to be updated
+# Outdated
 #----------------------------------------------------
 # (Optional) Hypersen HPS3D
 git clone --depth 1 https://github.com/hypersen/HPS3D_SDK.git

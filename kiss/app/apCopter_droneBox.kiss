@@ -22,7 +22,7 @@
 {
 	"name":"RGBview",
 	"class":"_WindowCV",
-	"bInst":1,
+	"bInst":0,
 	"bFullScreen":0,
     {
 		"name":"thread",
@@ -31,6 +31,19 @@
 	"vBASE":["cam"],
 	"bShow":1,
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5679 auto-multicast=false",
+}
+
+{
+	"name":"FB",
+	"class":"_FrameBuffer",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["cam"],
+	"gstOutput":"appsrc ! videoconvert ! fbdevsink",
+	"vSize":[1280,720],
 }
 
 {
@@ -180,24 +193,23 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bInst":1,
+	"bInst":0,
     {
 		"name":"thread",
 		"FPS":30,
 	}
 	"/pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)360, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.16.198 port=5678 auto-multicast=false",
-	"/pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=640,height=480,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"/pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=360 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
 	"/pipeline":"libcamerasrc ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! videoflip method=0 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=360 ! videoconvert ! v4l2h264enc ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.4 port=5678 auto-multicast=false",
-	"pipeline":"libcamerasrc ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! videoflip method=0 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! fbdevsink",
-	"/vSize":[640,480],
+	"/pipeline":"libcamerasrc ! video/x-raw,format=RGB,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! v4l2convert ! appsink t. ! queue ! v4l2convert ! fbdevsink",
+	"pipeline":"libcamerasrc ! video/x-raw,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! appsink",
 	"vSize":[1280,720],
 }
 
 {
 	"name":"cam",
 	"class":"_Camera",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -209,39 +221,22 @@
 {
 	"name":"apVideo",
 	"class":"_AP_video",
-	"bInst":1,
+	"bInst":0,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"bLog":1,
+	"bLog":0,
 	"_StateControl":"state",
 	"vActiveState":["STANDBY"],
 	"_AP_base":"apBase",
 	"_VisionBase":"cam",
-	"dir":"/home/kai/Pictures/",
-	"fCalib":"/home/kai/3Dscan/calibCam.kiss",
-	"/gstOutput":"appsrc ! videoflip method=0 ! videoscale ! video/x-raw,width=1280,height=720 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! matroskamux ! filesink location=[fName].mka",
-	"/gstOutput":"appsrc ! videoflip method=0 ! videoscale ! video/x-raw,width=1280,height=720 ! videoconvert ! omxh264enc insert-sps-pps=true ! matroskamux ! filesink location=[fName].mka",
-	"gstOutput":"appsrc ! videoflip method=0 ! videoscale ! video/x-raw,width=1280,height=720 ! videoconvert ! v4l2h264enc ! h264parse ! matroskamux ! filesink location=[fName].mka",
-
-/*
-lsblk -f
-sudo mkfs -t ext4 /dev/nvme0n1
-# sudo mkfs -t vfat /dev/nvme0n1
-sudo mkdir -p /home/pi/ssd
-sudo mount -t auto /dev/nvme0n1 /home/pi/ssd
-sudo chown pi ssd/
-sudo mount /dev/nvme0n1 /home/pi/ssd
-sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=20/1 ! x264enc ! matroskamux ! filesink location=/home/pi/ssd/test.mkv
-sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! omxh264enc ! h264parse ! matroskamux ! filesink location=/home/pi/ssd/test1.mkv
-sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! omxh264enc ! video/x-h264, control-rate=2,bitrate=16650000,insert-sps-pps=true,profile=high ! h264parse ! matroskamux ! filesink location=/home/pi/ssd/test1.mkv
-sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! v4l2h264enc ! h264parse ! matroskamux ! filesink location=/home/pi/ssd/test1.mkv
-sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
-sudo gst-launch-1.0 libcamerasrc ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
-sudo gst-launch-1.0 libcamerasrc ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
-curl -T FourierToy.swf ftp://193.112.75.123/pub/ --user anonymous
-*/
+	"dir":"/home/pi/ssd/video/",
+	"fCalib":"/home/pi/ok/calibCam.kiss",
+	"gstOutput":"appsrc ! tee name=t t. ! queue ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! matroskamux ! filesink location=[fName].mka t. ! queue ! v4l2convert ! fbdevsink",
+	"/gstOutput":"appsrc ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! matroskamux ! fakesink",
+	"/gstOutput":"appsrc ! videoconvert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! matroskamux ! fakesink",
+	"/gstOutput":"appsrc ! videoconvert ! fbdevsink",
 }
 
 {

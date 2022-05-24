@@ -40,6 +40,7 @@ namespace kai
 		string m_gstOutput;
 		VideoWriter m_gst;
 		vInt2 m_vSize;
+
 		int m_iFrame;
 		uint64_t m_tRecStart;
 

@@ -313,6 +313,7 @@ namespace kai
 
 #ifdef WITH_UI
 		ADD_MODULE(_Console);
+		ADD_MODULE(_FrameBuffer);
 #ifdef USE_OPENCV
 		ADD_MODULE(_WindowCV);
 #endif
