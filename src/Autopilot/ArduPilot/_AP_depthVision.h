@@ -34,7 +34,7 @@ public:
 
 	bool init(void* pKiss);
 	void update(void);
-	void cvDraw(void* pWindow);
+	void draw(void* pFrame);
 
 private:
 	_AP_base* m_pAP;

@@ -123,10 +123,10 @@ namespace kai
 		}
 	}
 
-	void _MotionDetector::cvDraw(void *pWindow)
+	void _MotionDetector::draw(void* pFrame)
 	{
-		NULL_(pWindow);
-		this->_DetectorBase::cvDraw(pWindow);
+		NULL_(pFrame);
+		this->_DetectorBase::draw(pFrame);
 		IF_(check() < 0);
 
 		if (!m_mFG.empty())

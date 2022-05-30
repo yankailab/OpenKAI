@@ -23,7 +23,7 @@ namespace kai
 		bool start(void);
 		int check(void);
 		void console(void *pConsole);
-		void cvDraw(void *pWindow);
+		void draw(void *pFrame);
 
 	protected:
 		bool updateBatt(void);

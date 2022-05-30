@@ -8,23 +8,20 @@
 #ifndef OpenKAI_src_UI_FrameBuffer_H_
 #define OpenKAI_src_UI_FrameBuffer_H_
 
-#include "../Base/_ModuleBase.h"
+#include "_UIbase.h"
 #include "../Vision/Frame.h"
 #include "../Primitive/tSwap.h"
 
 namespace kai
 {
-	class _FrameBuffer : public _ModuleBase
+	class _FrameBuffer : public _UIbase
 	{
 	public:
 		_FrameBuffer();
 		virtual ~_FrameBuffer();
 
-		bool init(void *pKiss);
-		bool start(void);
-
-		Frame *getFrame(void);
-		Frame *getNextFrame(void);
+		virtual bool init(void *pKiss);
+		virtual bool start(void);
 
 	protected:
 		void updateFB(void);
@@ -36,13 +33,11 @@ namespace kai
 		}
 
 	private:
-		vector<BASE *> m_vpB;
 		tSwap<Frame> m_sF;
 		vInt2 m_vSize;
 
 		string m_gstOutput;
 		VideoWriter m_gst;
-
 	};
 }
 #endif

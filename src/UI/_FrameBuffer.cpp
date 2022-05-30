@@ -22,24 +22,14 @@ namespace kai
 
 	bool _FrameBuffer::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		IF_F(!this->_UIbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		vector<string> vB;
-		pK->a("vBASE", &vB);
-		for (string p : vB)
-		{
-			BASE *pB = (BASE *)(pK->getInst(p));
-			IF_CONT(!pB);
-
-			m_vpB.push_back(pB);
-		}
-
 		pK->v("vSize", &m_vSize);
-		if (m_vSize.area() <= 0)
+		if (m_vSize.area() > 0)
 		{
-			LOG_E("Window size too small");
-			return false;
+			m_sF.get()->allocate(m_vSize.x, m_vSize.y);
+			m_sF.next()->allocate(m_vSize.x, m_vSize.y);
 		}
 
 		pK->v("gstOutput", &m_gstOutput);
@@ -57,9 +47,6 @@ namespace kai
 				return false;
 			}
 		}
-
-		m_sF.get()->allocate(m_vSize.x, m_vSize.y);
-		m_sF.next()->allocate(m_vSize.x, m_vSize.y);
 
 		return true;
 	}
@@ -84,12 +71,12 @@ namespace kai
 
 	void _FrameBuffer::updateFB(void)
 	{
-		IF_(m_gst.isOpened());
+		IF_(!m_gst.isOpened());
 
 		// draw contents
 		for (BASE *pB : m_vpB)
 		{
-			pB->cvDraw(this);
+			pB->draw((void*)m_sF.get());
 		}
 
 		IF_(m_sF.next()->bEmpty());
@@ -107,15 +94,5 @@ namespace kai
 		}
 
 		m_gst << *F.m();
-	}
-
-	Frame *_FrameBuffer::getFrame(void)
-	{
-		return m_sF.get();
-	}
-
-	Frame *_FrameBuffer::getNextFrame(void)
-	{
-		return m_sF.next();
 	}
 }

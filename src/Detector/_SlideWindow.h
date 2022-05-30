@@ -25,7 +25,7 @@ public:
 	bool init(void* pKiss);
 	bool start(void);
 	int check(void);
-	void cvDraw(void* pWindow);
+	void draw(void* pFrame);
 
 private:
 	void detect(void);

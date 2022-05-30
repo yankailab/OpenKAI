@@ -25,8 +25,11 @@ public:
 	virtual bool link(void);
 	virtual bool start(void);
 	virtual int check(void);
-	virtual void cvDraw(void* pWindow);
+
+	virtual void draw(void* pFrame);
 	virtual void console(void* pConsole);
+	virtual void context(void* pContext);
+
 	virtual int serialize(uint8_t* pB, int nB);
 	virtual int deSerialize(uint8_t* pB, int nB);
 

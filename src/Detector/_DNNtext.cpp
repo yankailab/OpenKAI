@@ -308,13 +308,13 @@ namespace kai
 		return mP;
 	}
 
-	void _DNNtext::cvDraw(void *pWindow)
+	void _DNNtext::draw(void* pFrame)
 	{
-		NULL_(pWindow);
-		this->_DetectorBase::cvDraw(pWindow);
+		NULL_(pFrame);
+		this->_DetectorBase::draw(pFrame);
 		IF_(check() < 0);
 
-		_WindowCV *pWin = (_WindowCV *)pWindow;
+		_WindowCV *pWin = (_WindowCV *)pFrame;
 		Frame *pF = pWin->getNextFrame();
 		NULL_(pF);
 		Mat *pM = pF->m();

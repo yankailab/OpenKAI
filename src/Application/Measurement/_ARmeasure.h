@@ -34,7 +34,7 @@ namespace kai
 		bool start(void);
 		int check(void);
 		void console(void *pConsole);
-		void cvDraw(void *pWindow);
+		void draw(void *pFrame);
 
 		bool c2scr(const Vector3f &vPc,
 				   const cv::Size &vSize,

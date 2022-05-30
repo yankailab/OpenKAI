@@ -36,7 +36,7 @@ public:
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
 	virtual void update(void);
-	virtual void cvDraw(void* pWindow);
+	virtual void draw(void* pFrame);
 	virtual void console(void* pConsole);
 
 	//io

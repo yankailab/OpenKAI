@@ -16,7 +16,7 @@ public:
 	bool start(void);
 	int check(void);
 	void update(void);
-	void cvDraw(void* pWindow);
+	void draw(void* pFrame);
 	void console(void* pConsole);
 
 protected:

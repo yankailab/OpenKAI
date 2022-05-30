@@ -182,14 +182,14 @@ namespace kai
 		pC->addMsg("Size=(" + f2str(m_vTargetBB.width()) + ", " + f2str(m_vTargetBB.height()) + ")", 1);
 	}
 
-	void _AP_land::cvDraw(void *pWindow)
+	void _AP_land::draw(void* pFrame)
 	{
 #ifdef USE_OPENCV
-		NULL_(pWindow);
-		this->_AP_follow::cvDraw(pWindow);
+		NULL_(pFrame);
+		this->_AP_follow::draw(pFrame);
 		IF_(check() < 0);
 
-		_WindowCV *pWin = (_WindowCV *)pWindow;
+		_WindowCV *pWin = (_WindowCV *)pFrame;
 		Frame *pF = pWin->getNextFrame();
 		NULL_(pF);
 		Mat *pM = pF->m();

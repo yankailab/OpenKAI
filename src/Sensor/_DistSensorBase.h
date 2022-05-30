@@ -92,7 +92,7 @@ public:
 	virtual ~_DistSensorBase();
 
 	bool init(void* pKiss);
-	void cvDraw(void* pWindow);
+	void draw(void* pFrame);
 	void console(void* pConsole);
 	void update(void);
 

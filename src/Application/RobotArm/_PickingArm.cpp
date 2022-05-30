@@ -436,13 +436,13 @@ namespace kai
 		pC->addMsg("baseAngle = " + f2str(m_baseAngle));
 	}
 
-	void _PickingArm::cvDraw(void *pWindow)
+	void _PickingArm::draw(void *pFrame)
 	{
-		NULL_(pWindow);
-		this->_StateBase::cvDraw(pWindow);
+		NULL_(pFrame);
+		this->_StateBase::draw(pFrame);
 		IF_(check() < 0);
 
-		_WindowCV *pWin = (_WindowCV *)pWindow;
+		_WindowCV *pWin = (_WindowCV *)pFrame;
 		Frame *pF = pWin->getNextFrame();
 		NULL_(pF);
 		Mat *pM = pF->m();

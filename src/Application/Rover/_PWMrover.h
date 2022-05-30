@@ -19,7 +19,7 @@ public:
 	virtual int check(void);
 	virtual void update(void);
 	virtual void console(void* pConsole);
-	virtual void cvDraw(void* pWindow);
+	virtual void draw(void* pFrame);
 
 protected:
 	bool updateDrive(void);

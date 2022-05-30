@@ -435,13 +435,13 @@ namespace kai
 					   false);
 	}
 
-	void _ARmeasure::cvDraw(void *pWindow)
+	void _ARmeasure::draw(void *pFrame)
 	{
-		NULL_(pWindow);
-		this->_ModuleBase::cvDraw(pWindow);
+		NULL_(pFrame);
+		this->_ModuleBase::draw(pFrame);
 		IF_(check() < 0);
 
-		_WindowCV *pWin = (_WindowCV *)pWindow;
+		_WindowCV *pWin = (_WindowCV *)pFrame;
 		Mat *pMw = pWin->getNextFrame()->m();
 		IF_(pMw->empty());
 		m_pFt = pWin->getFont();

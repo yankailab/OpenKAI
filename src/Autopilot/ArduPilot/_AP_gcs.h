@@ -7,35 +7,35 @@
 namespace kai
 {
 
-class _AP_gcs: public _GCSbase
-{
-public:
-	_AP_gcs();
-	~_AP_gcs();
-
-	virtual bool init(void* pKiss);
-	virtual bool start(void);
-	virtual int check(void);
-	virtual void update(void);
-
-    void landingReady(bool bReady);
-    void takeoffReady(bool bReady);
-    
-protected:
-    virtual void updateGCS (void);
-	static void* getUpdate(void* This)
+	class _AP_gcs : public _GCSbase
 	{
-		(( _AP_gcs*) This)->update();
-		return NULL;
-	}
+	public:
+		_AP_gcs();
+		~_AP_gcs();
 
-public:
-    _AP_base* m_pAP;
+		virtual bool init(void *pKiss);
+		virtual bool start(void);
+		virtual int check(void);
+		virtual void update(void);
 
-    bool m_bAutoArm;
-    float m_altAirborne;
-    int m_dLanded;
-};
+		void landingReady(bool bReady);
+		void takeoffReady(bool bReady);
+
+	protected:
+		virtual void updateGCS(void);
+		static void *getUpdate(void *This)
+		{
+			((_AP_gcs *)This)->update();
+			return NULL;
+		}
+
+	public:
+		_AP_base *m_pAP;
+
+		bool m_bAutoArm;
+		float m_altAirborne;
+		int m_dLanded;
+	};
 
 }
 #endif

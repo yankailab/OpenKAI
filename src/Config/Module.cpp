@@ -244,6 +244,10 @@ namespace kai
 #endif
 #endif
 
+#ifdef WITH_NET
+		ADD_MODULE(_Curl);
+#endif
+
 #ifdef WITH_3D
 #ifdef USE_OPEN3D
 		ADD_MODULE(_GeometryViewer);

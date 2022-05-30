@@ -102,15 +102,15 @@ namespace kai
 		return &m_fDepthShow;
 	}
 
-	void _DepthVisionBase::cvDraw(void *pWindow)
+	void _DepthVisionBase::draw(void *pFrame)
 	{
 #ifdef WITH_UI
 #ifdef USE_OPENCV
-		NULL_(pWindow);
-		this->_VisionBase::cvDraw(pWindow);
+		NULL_(pFrame);
+		this->_VisionBase::draw(pFrame);
 		IF_(check() < 0);
 
-		_WindowCV *pWin = (_WindowCV *)pWindow;
+		_WindowCV *pWin = (_WindowCV *)pFrame;
 		Frame *pF = pWin->getNextFrame();
 		NULL_(pF);
 

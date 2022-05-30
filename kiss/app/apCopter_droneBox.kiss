@@ -4,7 +4,6 @@
 	"appName":"OpenKAI",
 	"bLog":1,
 	"bStdErr":1,
-	"/rc":"sudo modprobe bcm2835-v4l2\nv4l2-ctl -d /dev/video0 --set-ctrl=rotate=0\n",
 	"/rc":"sudo mkdir /home/pi/ssd\nsudo mount /dev/nvme0p1 /home/pi/ssd/\nsudo chown pi /home/pi/ssd\n",
 }
 
@@ -103,7 +102,7 @@
 }
 
 {
-	"name":"apSerial",
+	"name":"serialAP",
 	"class":"_SerialPort",
 	"bInst":1,
     {
@@ -115,7 +114,6 @@
 		"FPS":1,
 	}
 	"bLog":0,
-	"/port":"/dev/ttyTHS1",
 	"port":"/dev/ttyACM0",
 	"baud":115200,
 }
@@ -129,8 +127,7 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"_IOBase":"apSerial",
-	
+	"_IOBase":"serialAP",	
     {
 		"name":"routing",
 	}
@@ -198,10 +195,6 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"/pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)360, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.16.198 port=5678 auto-multicast=false",
-	"/pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=360 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
-	"/pipeline":"libcamerasrc ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! videoflip method=0 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=360 ! videoconvert ! v4l2h264enc ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.4 port=5678 auto-multicast=false",
-	"/pipeline":"libcamerasrc ! video/x-raw,format=RGB,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! v4l2convert ! appsink t. ! queue ! v4l2convert ! fbdevsink",
 	"pipeline":"libcamerasrc ! video/x-raw,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! appsink",
 	"vSize":[1280,720],
 }
@@ -234,9 +227,6 @@
 	"dir":"/home/pi/ssd/video/",
 	"fCalib":"/home/pi/ok/calibCam.kiss",
 	"gstOutput":"appsrc ! tee name=t t. ! queue ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! matroskamux ! filesink location=[fName].mka t. ! queue ! v4l2convert ! fbdevsink",
-	"/gstOutput":"appsrc ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! matroskamux ! fakesink",
-	"/gstOutput":"appsrc ! videoconvert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! matroskamux ! fakesink",
-	"/gstOutput":"appsrc ! videoconvert ! fbdevsink",
 }
 
 {
@@ -260,6 +250,32 @@
 	"_VisionBase":"cam",
 	"_Universe":"univTag",
 	"dict":17,
+}
+
+{
+	"name":"serialTOF",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"port":"/dev/ttyACM1",
+	"baud":921600,
+}
+
+{
+	"name":"TOFsense",
+	"class":"_TOFsense",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"bLog":1,
+	"_IOBase":"serialTOF",
 }
 
 {
@@ -314,7 +330,7 @@
 	"PIDroll":"PIDroll",
 	"PIDpitch":"PIDpitch",
 	"PIDyaw":"PIDyaw",
-	"vTargetP":[0.46, 0.46, 0.3, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
+	"vTargetP":[0.56, 0.5, 0.3, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
 	"nWmed":0,
 	"nWpred":0,
 	"dThold":0.5,

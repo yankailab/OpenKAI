@@ -31,7 +31,7 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	void cvDraw(void* pWindow);
+	void draw(void* pFrame);
 	bool open(void);
 	void close(void);
 

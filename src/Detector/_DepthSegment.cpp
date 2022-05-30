@@ -113,10 +113,10 @@ namespace kai
 		m_pU->swap();
 	}
 
-	void _DepthSegment::cvDraw(void *pWindow)
+	void _DepthSegment::draw(void* pFrame)
 	{
-		NULL_(pWindow);
-		this->_DetectorBase::cvDraw(pWindow);
+		NULL_(pFrame);
+		this->_DetectorBase::draw(pFrame);
 		IF_(check() < 0);
 
 		if (!m_mR.empty())

@@ -229,6 +229,10 @@
 #endif
 #endif
 
+#ifdef WITH_NET
+#include "../Net/_Curl.h"
+#endif
+
 #ifdef WITH_3D
 #ifdef USE_OPEN3D
 #include "../3D/_GeometryViewer.h"

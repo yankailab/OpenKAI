@@ -33,7 +33,7 @@ public:
 	virtual bool init(void* pKiss);
 	virtual void update(void);
 	virtual int check(void);
-	virtual void cvDraw(void* pWindow);
+	virtual void draw(void* pFrame);
 	virtual void console(void* pConsole);
 
 	virtual void createTracker(void);

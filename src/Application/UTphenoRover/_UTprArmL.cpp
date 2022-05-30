@@ -251,14 +251,14 @@ namespace kai
 		pC->addMsg("vPtarget = (" + f2str(m_vPtarget.x) + ", " + f2str(m_vPtarget.y) + ", " + f2str(m_vPtarget.z) + ")");
 	}
 
-	void _UTprArmL::cvDraw(void *pWindow)
+	void _UTprArmL::draw(void *pFrame)
 	{
 #ifdef USE_OPENCV
-		NULL_(pWindow);
-		this->_StateBase::cvDraw(pWindow);
+		NULL_(pFrame);
+		this->_StateBase::draw(pFrame);
 		IF_(check() < 0);
 
-		_WindowCV *pWin = (_WindowCV *)pWindow;
+		_WindowCV *pWin = (_WindowCV *)pFrame;
 		Frame *pF = pWin->getNextFrame();
 		NULL_(pF);
 		Mat *pM = pF->m();

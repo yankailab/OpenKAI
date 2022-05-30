@@ -180,15 +180,15 @@ namespace kai
 		}
 	}
 
-	void _ArUco::cvDraw(void *pWindow)
+	void _ArUco::draw(void* pFrame)
 	{
 #ifdef WITH_UI
 #ifdef USE_OPENCV
-		NULL_(pWindow);
-		this->_DetectorBase::cvDraw(pWindow);
+		NULL_(pFrame);
+		this->_DetectorBase::draw(pFrame);
 		IF_(check() < 0);
 
-		_WindowCV *pWin = (_WindowCV *)pWindow;
+		_WindowCV *pWin = (_WindowCV *)pFrame;
 		Frame *pF = pWin->getNextFrame();
 		NULL_(pF);
 		Mat *pM = pF->m();

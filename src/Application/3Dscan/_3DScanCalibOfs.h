@@ -22,7 +22,7 @@ namespace kai
 		bool init(void *pKiss);
 		bool start(void);
 		int check(void);
-		void cvDraw(void *pWindow);
+		void draw(void *pFrame);
 
 		// callbacks
 		static void sOnBtnClear(void *pInst, uint32_t f);

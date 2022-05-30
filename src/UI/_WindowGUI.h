@@ -22,7 +22,7 @@ public:
     virtual bool init ( void* pKiss );
     virtual int check ( void );
     virtual bool start ( void );
-    virtual void cvDraw(void* pWindow);
+    virtual void draw(void* pFrame);
 
 protected:
     bool setup(void);

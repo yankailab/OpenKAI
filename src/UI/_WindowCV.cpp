@@ -149,7 +149,7 @@ namespace kai
 		// draw contents
 		for (BASE *pB : m_vpB)
 		{
-			pB->cvDraw(this);
+			pB->draw(this);
 		}
 
 		IF_(m_sF.next()->bEmpty());

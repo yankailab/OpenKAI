@@ -71,15 +71,15 @@ namespace kai
 		m_bOpen = false;
 	}
 
-	void _VisionBase::cvDraw(void *pWindow)
+	void _VisionBase::draw(void* pFrame)
 	{
 #ifdef WITH_UI
 #ifdef USE_OPENCV
-		NULL_(pWindow);
-		this->_ModuleBase::cvDraw(pWindow);
+		NULL_(pFrame);
+		this->_ModuleBase::draw(pFrame);
 		IF_(check() < 0);
 
-		_WindowCV *pWin = (_WindowCV *)pWindow;
+		_WindowCV *pWin = (_WindowCV *)pFrame;
 		Frame *pF = pWin->getNextFrame();
 		NULL_(pF);
 

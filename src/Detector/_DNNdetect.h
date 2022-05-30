@@ -29,7 +29,7 @@ namespace kai
 
 		bool init(void *pKiss);
 		bool start(void);
-		void cvDraw(void *pWindow);
+		void draw(void *pFrame);
 		int check(void);
 
 	private:
