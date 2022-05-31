@@ -12,13 +12,13 @@
 {
 	"name":"OK_Console",
 	"class":"_Console",
-	"bInst":0,
+	"bON":0,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 	"bDrawMsg":1,
 	"bFullScreen":0,
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.201 port=5678 auto-multicast=false",
@@ -29,7 +29,7 @@
 	"name":"cam",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)360, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.1.201 port=5678 auto-multicast=false",
@@ -41,7 +41,7 @@
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"deviceID":0,
@@ -53,7 +53,7 @@
 	"name":"cam",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"bDebug":0,
 	"Window":"OKview",
@@ -77,7 +77,7 @@
 {
 	"name":"univTag",
 	"class":"_Universe",
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 }
@@ -86,7 +86,7 @@
 	"name":"Chilitags",
 	"class":"_Chilitags",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bDraw":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
@@ -101,7 +101,7 @@
 {
 	"name":"apSerial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -116,7 +116,7 @@
 {
 	"name":"apMavlink",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -133,7 +133,7 @@
 	"name":"mission",
 	"class":"_MissionControl",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"start":"STANDBY",
@@ -141,19 +141,19 @@
 	{
 		"name":"mission",
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"STANDBY",
 			"class":"Mission",
 			"next":"STANDBY",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"HYBRID",
 			"class":"Mission",
 			"next":"HYBRID",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"AUTO",
 			"class":"Mission",
 			"next":"AUTO",
@@ -165,7 +165,7 @@
 	"name":"apBase",
 	"class":"_AP_base",
 	"FPS":10,
-	"bInst":1,
+	"bON":1,
 	"_MissionControl":"mission",
 	"Window":"OKview",
 	"_Console":"OK_Console",
@@ -218,7 +218,7 @@
 	"name":"apKU",
 	"class":"_AProver_KU",
 	"FPS":10,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"_MissionControl":"mission",
@@ -234,7 +234,7 @@
 {
 	"name":"drive",
 	"class":"Drive",
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"nSpd":0.0,
@@ -257,7 +257,7 @@
 	"name":"apDrive",
 	"class":"_AProver_drive",
 	"FPS":10,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"_MissionControl":"mission",
@@ -272,7 +272,7 @@
 {
 	"name":"PIDtagX", /*change x 0.0 to 0.5 to yaw */
 	"class":"PIDctrl",
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"P":-0.5,
@@ -285,7 +285,7 @@
 {
 	"name":"PIDtagHdg",
 	"class":"PIDctrl",
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"P":-0.01,
@@ -299,7 +299,7 @@
 	"name":"apFollowTag",
 	"class":"_AProver_followTag",
 	"FPS":5,
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",

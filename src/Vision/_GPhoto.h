@@ -8,7 +8,6 @@
 #ifndef OpenKAI_src_Vision__GPhoto_H_
 #define OpenKAI_src_Vision__GPhoto_H_
 
-#ifdef USE_OPENCV
 #include "_VisionBase.h"
 
 namespace kai
@@ -41,5 +40,4 @@ public:
 };
 
 }
-#endif
 #endif

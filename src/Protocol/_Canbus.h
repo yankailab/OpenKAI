@@ -21,65 +21,64 @@
 namespace kai
 {
 
-struct CAN_MESSAGE
-{
-	int m_cmd;
-	int m_iByte;
-	int m_payloadLen;
-	char m_pBuf[CAN_BUF];
-
-	void init(void)
+	struct CAN_MESSAGE
 	{
-		m_cmd = 0;
-		m_iByte = 0;
-		m_payloadLen = 0;
-	}
-};
+		int m_cmd;
+		int m_iByte;
+		int m_payloadLen;
+		char m_pBuf[CAN_BUF];
 
-struct CAN_DATA
-{
-	uint32_t		m_addr;
-	uint8_t			m_len;
-	uint8_t			m_pData[8];
+		void init(void)
+		{
+			m_cmd = 0;
+			m_iByte = 0;
+			m_payloadLen = 0;
+		}
+	};
 
-	void init(void)
+	struct CAN_DATA
 	{
-		m_addr = 0;
-		m_len = 0;
-	}
-};
+		uint32_t m_addr;
+		uint8_t m_len;
+		uint8_t m_pData[8];
 
-class _Canbus: public _ModuleBase
-{
-public:
-	_Canbus();
-	~_Canbus();
+		void init(void)
+		{
+			m_addr = 0;
+			m_len = 0;
+		}
+	};
 
-	bool init(void* pKiss);
-	bool start(void);
-	void console(void* pConsole);
-
-	void send(unsigned long addr, unsigned char len, unsigned char* pData);
-	void pinOut(uint8_t pin, uint8_t output);
-	bool recv();
-	uint8_t* get(unsigned long addr);
-
-public:
-	void recvMsg(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _Canbus : public _ModuleBase
 	{
-		((_Canbus *) This)->update();
-		return NULL;
-	}
+	public:
+		_Canbus();
+		~_Canbus();
 
-	_SerialPort* m_pIO;
+		bool init(void *pKiss);
+		bool start(void);
+		void console(void *pConsole);
 
-	CAN_MESSAGE m_recvMsg;
-	CAN_DATA m_pCanData[N_CANDATA];
-	int m_nCanData;
+		void send(unsigned long addr, unsigned char len, unsigned char *pData);
+		void pinOut(uint8_t pin, uint8_t output);
+		bool recv();
+		uint8_t *get(unsigned long addr);
 
-};
+	public:
+		void recvMsg(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_Canbus *)This)->update();
+			return NULL;
+		}
+
+		_SerialPort *m_pIO;
+
+		CAN_MESSAGE m_recvMsg;
+		CAN_DATA m_pCanData[N_CANDATA];
+		int m_nCanData;
+	};
 
 }
 #endif

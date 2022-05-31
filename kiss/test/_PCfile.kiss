@@ -12,7 +12,7 @@
 {
 	"name":"pcv",
 	"class":"_PCviewer",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -27,7 +27,7 @@
 {
 	"name":"pcFile",
 	"class":"_PCfile",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,

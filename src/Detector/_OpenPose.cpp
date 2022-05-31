@@ -4,8 +4,6 @@
  */
 #include "_OpenPose.h"
 
-#ifdef USE_OPENCV
-
 namespace kai
 {
 
@@ -156,4 +154,3 @@ namespace kai
 	}
 
 }
-#endif

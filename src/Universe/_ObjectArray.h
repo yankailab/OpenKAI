@@ -13,35 +13,34 @@
 namespace kai
 {
 
-class _ObjectArray: public _ModuleBase
-{
-public:
-	_ObjectArray();
-	virtual ~_ObjectArray();
-
-	virtual bool init(void* pKiss);
-	virtual bool start(void);
-	virtual void update(void);
-
-	//io
-	virtual _Object* add(_Object& o);
-	virtual _Object* get(int i);
-	virtual void clear(void);
-	virtual int size(void);
-
-private:
-	static void* getUpdate(void* This)
+	class _ObjectArray : public _ModuleBase
 	{
-		((_ObjectArray *) This)->update();
-		return NULL;
-	}
+	public:
+		_ObjectArray();
+		virtual ~_ObjectArray();
 
-private:
-	_Object* m_pO;
-	int m_nBuf;
-	int m_nO;
+		virtual bool init(void *pKiss);
+		virtual bool start(void);
+		virtual void update(void);
 
-};
+		//io
+		virtual _Object *add(_Object &o);
+		virtual _Object *get(int i);
+		virtual void clear(void);
+		virtual int size(void);
+
+	private:
+		static void *getUpdate(void *This)
+		{
+			((_ObjectArray *)This)->update();
+			return NULL;
+		}
+
+	private:
+		_Object *m_pO;
+		int m_nBuf;
+		int m_nO;
+	};
 
 }
 #endif

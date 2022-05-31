@@ -13,33 +13,32 @@
 namespace kai
 {
 
-class _RTCM3: public _ModuleBase
-{
-public:
-	_RTCM3(void);
-	virtual ~_RTCM3();
-
-	bool init(void* pKiss);
-	bool start(void);
-	void console(void* pConsole);
-
-private:
-	void decode(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _RTCM3 : public _ModuleBase
 	{
-		((_RTCM3 *) This)->update();
-		return NULL;
-	}
+	public:
+		_RTCM3(void);
+		virtual ~_RTCM3();
 
-private:
-	_IOBase* m_pIO;
-	uint8_t m_rBuf[N_IO_BUF];
-	int m_nRead;
-	int m_iRead;
-	string m_msg;
+		bool init(void *pKiss);
+		bool start(void);
+		void console(void *pConsole);
 
-};
+	private:
+		void decode(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_RTCM3 *)This)->update();
+			return NULL;
+		}
+
+	private:
+		_IOBase *m_pIO;
+		uint8_t m_rBuf[N_IO_BUF];
+		int m_nRead;
+		int m_iRead;
+		string m_msg;
+	};
 
 }
 #endif

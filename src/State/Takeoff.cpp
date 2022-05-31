@@ -40,11 +40,9 @@ namespace kai
 
 	void Takeoff::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->State::console(pConsole);
 		((_Console *)pConsole)->addMsg("alt = " + f2str(m_alt));
-#endif
 	}
 
 }

@@ -214,7 +214,6 @@ namespace kai
 
 	void _Thread::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 
 		string msg = "FPS: " + f2str(m_FPS, 2);
@@ -223,7 +222,6 @@ namespace kai
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg(t, COLOR_PAIR(_Console_COL_NAME) | A_BOLD, _Console_X_NAME, 1);
 		pC->addMsg(msg, COLOR_PAIR(_Console_COL_FPS) | A_BOLD, _Console_X_FPS);
-#endif
 	}
 
 }

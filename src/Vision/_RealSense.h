@@ -8,11 +8,6 @@
 #ifndef OpenKAI_src_Vision_RealSense_H_
 #define OpenKAI_src_Vision_RealSense_H_
 
-#include "../Base/common.h"
-
-#ifdef USE_OPENCV
-#ifdef USE_REALSENSE
-
 #include "_DepthVisionBase.h"
 #include "../Utility/util.h"
 #include <librealsense2/rs.hpp>
@@ -20,67 +15,64 @@
 namespace kai
 {
 
-class _RealSense: public _DepthVisionBase
-{
-public:
-	_RealSense();
-	virtual ~_RealSense();
-
-	bool init(void* pKiss);
-	bool start(void);
-    int check(void);
-	bool open(void);
-	void close(void);
-
-private:
-    void sensorReset(void);
-	void update(void);
-	bool updateRS(void);
-	static void* getUpdate(void* This)
+	class _RealSense : public _DepthVisionBase
 	{
-		((_RealSense *) This)->update();
-		return NULL;
-	}
+	public:
+		_RealSense();
+		virtual ~_RealSense();
 
-	void updateTPP(void);
-	static void* getTPP(void* This)
-	{
-		((_RealSense*) This)->updateTPP();
-		return NULL;
-	}
+		bool init(void *pKiss);
+		bool start(void);
+		int check(void);
+		bool open(void);
+		void close(void);
 
-public:
-	string m_rsSN;
-    rs2::config m_rsConfig;
-	rs2::pipeline_profile m_rsProfile;
-	rs2::pipeline m_rsPipe;
-	rs2::frame m_rsColor;
-	rs2::frame m_rsDepth;
-	rs2::align* m_rspAlign;
-    rs2::spatial_filter m_rsfSpat;
-    rs2::decimation_filter m_rsfDec;
-    float m_fDec;
-    float m_fSpat;
-    bool m_bAlign;
-    float m_fEmitter;
-    float m_fLaserPower;
+	private:
+		void sensorReset(void);
+		void update(void);
+		bool updateRS(void);
+		static void *getUpdate(void *This)
+		{
+			((_RealSense *)This)->update();
+			return NULL;
+		}
 
-	int	m_rsFPS;
-	int m_rsDFPS;
-	bool m_bRsRGB;
-	string m_vPreset;
+		void updateTPP(void);
+		static void *getTPP(void *This)
+		{
+			((_RealSense *)This)->updateTPP();
+			return NULL;
+		}
 
-	rs2_intrinsics m_cIntrinsics;
-	rs2_intrinsics m_dIntrinsics;
+	public:
+		string m_rsSN;
+		rs2::config m_rsConfig;
+		rs2::pipeline_profile m_rsProfile;
+		rs2::pipeline m_rsPipe;
+		rs2::frame m_rsColor;
+		rs2::frame m_rsDepth;
+		rs2::align *m_rspAlign;
+		rs2::spatial_filter m_rsfSpat;
+		rs2::decimation_filter m_rsfDec;
+		float m_fDec;
+		float m_fSpat;
+		bool m_bAlign;
+		float m_fEmitter;
+		float m_fLaserPower;
 
-	//depth filter processing thread
-    _Thread* m_pTPP;
+		int m_rsFPS;
+		int m_rsDFPS;
+		bool m_bRsRGB;
+		string m_vPreset;
 
-	bool m_bDepthShow;
+		rs2_intrinsics m_cIntrinsics;
+		rs2_intrinsics m_dIntrinsics;
 
-};
+		//depth filter processing thread
+		_Thread *m_pTPP;
+
+		bool m_bDepthShow;
+	};
 
 }
-#endif
-#endif
 #endif

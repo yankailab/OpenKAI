@@ -281,7 +281,6 @@ namespace kai
 
 	void _SBus::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
@@ -294,7 +293,6 @@ namespace kai
 		pC->addMsg("Raw: " + i2str(m_pRC[0].raw()) + "|" + i2str(m_pRC[1].raw()) + "|" + i2str(m_pRC[2].raw()) + "|" + i2str(m_pRC[3].raw()) + "|" + i2str(m_pRC[4].raw()) + "|" + i2str(m_pRC[5].raw()) + "|" + i2str(m_pRC[6].raw()) + "|" + i2str(m_pRC[7].raw()) + "|" + i2str(m_pRC[8].raw()) + "|" + i2str(m_pRC[9].raw()) + "|" + i2str(m_pRC[10].raw()) + "|" + i2str(m_pRC[11].raw()) + "|" + i2str(m_pRC[12].raw()) + "|" + i2str(m_pRC[13].raw()) + "|" + i2str(m_pRC[14].raw()) + "|" + i2str(m_pRC[15].raw()));
 
 		pC->addMsg("v: " + f2str(m_pRC[0].v(), 2) + "|" + f2str(m_pRC[1].v(), 2) + "|" + f2str(m_pRC[2].v(), 2) + "|" + f2str(m_pRC[3].v(), 2) + "|" + f2str(m_pRC[4].v(), 2) + "|" + f2str(m_pRC[5].v(), 2) + "|" + f2str(m_pRC[6].v(), 2) + "|" + f2str(m_pRC[7].v(), 2) + "|" + f2str(m_pRC[8].v(), 2) + "|" + f2str(m_pRC[9].v(), 2) + "|" + f2str(m_pRC[10].v(), 2) + "|" + f2str(m_pRC[11].v(), 2) + "|" + f2str(m_pRC[12].v(), 2) + "|" + f2str(m_pRC[13].v(), 2) + "|" + f2str(m_pRC[14].v(), 2) + "|" + f2str(m_pRC[15].v(), 2));
-#endif
 	}
 
 }

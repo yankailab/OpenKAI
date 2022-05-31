@@ -15,45 +15,44 @@
 namespace kai
 {
 
-class _DenseFlow: public _ModuleBase
-{
-public:
-	_DenseFlow();
-	virtual ~_DenseFlow();
-
-	bool init(void* pKiss);
-	bool start(void);
-	void draw(void* pFrame);
-
-	vDouble2 vFlow(vInt4* pROI);
-	vDouble2 vFlow(vDouble4* pROI);
-
-private:
-	bool isFlowCorrect(Point2f u);
-	Vec3b computeColor(float fx, float fy);
-	void drawOpticalFlow(const Mat_<float>& flowx, const Mat_<float>& flowy, Mat& dst, float maxmotion);
-	void detect(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _DenseFlow : public _ModuleBase
 	{
-		((_DenseFlow*) This)->update();
-		return NULL;
-	}
+	public:
+		_DenseFlow();
+		virtual ~_DenseFlow();
 
-public:
-	int	m_w;
-	int m_h;
-	_VisionBase*					m_pVision;
-	FrameGroup*						m_pGrayFrames;
-	Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
-	GpuMat							m_gFlow;
-	Mat								m_pFlow[2];
+		bool init(void *pKiss);
+		bool start(void);
+		void draw(void *pFrame);
 
-	int m_nHistLev;
-	vDouble2 m_vRange;
-	double m_minHistD;
+		vDouble2 vFlow(vInt4 *pROI);
+		vDouble2 vFlow(vDouble4 *pROI);
 
-};
+	private:
+		bool isFlowCorrect(Point2f u);
+		Vec3b computeColor(float fx, float fy);
+		void drawOpticalFlow(const Mat_<float> &flowx, const Mat_<float> &flowy, Mat &dst, float maxmotion);
+		void detect(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_DenseFlow *)This)->update();
+			return NULL;
+		}
+
+	public:
+		int m_w;
+		int m_h;
+		_VisionBase *m_pVision;
+		FrameGroup *m_pGrayFrames;
+		Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
+		GpuMat m_gFlow;
+		Mat m_pFlow[2];
+
+		int m_nHistLev;
+		vDouble2 m_vRange;
+		double m_minHistD;
+	};
 
 }
 #endif

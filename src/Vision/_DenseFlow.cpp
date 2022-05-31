@@ -7,9 +7,6 @@
 
 #include "_DenseFlow.h"
 
-#ifdef USE_OPENCV
-#ifdef USE_CUDA
-
 namespace kai
 {
 
@@ -302,5 +299,3 @@ namespace kai
 	}
 
 }
-#endif
-#endif

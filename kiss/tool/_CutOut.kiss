@@ -13,7 +13,7 @@
 {
 	"name":"CutOut1",
 	"class":"_CutOut",
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"extImgIn":".png",
 	"extImgOut":".png",

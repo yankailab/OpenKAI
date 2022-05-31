@@ -8,8 +8,6 @@
 #ifndef OpenKAI_src_Detector__MotionDetector_H_
 #define OpenKAI_src_Detector__MotionDetector_H_
 
-#ifdef USE_OPENCV
-#ifdef USE_OPENCV_CONTRIB
 #include "_DetectorBase.h"
 
 namespace kai
@@ -46,6 +44,4 @@ public:
 };
 
 }
-#endif
-#endif
 #endif

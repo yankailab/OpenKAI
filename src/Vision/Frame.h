@@ -7,7 +7,6 @@
 
 #ifndef OpenKAI_src_Vision_Frame_H_
 #define OpenKAI_src_Vision_Frame_H_
-#ifdef USE_OPENCV
 
 #include "FrameBase.h"
 #include "FrameGPU.h"
@@ -15,10 +14,9 @@
 namespace kai
 {
 #ifdef USE_CUDA
-typedef FrameGPU Frame;
+    typedef FrameGPU Frame;
 #else
-typedef FrameBase Frame;
+    typedef FrameBase Frame;
 #endif
 }
-#endif
 #endif

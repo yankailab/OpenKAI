@@ -10,7 +10,7 @@
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 	"bFullScreen":0,
 	"recFile_":"/media/ubuntu/data/OpenKAI_",
 	"recFPS":15,
@@ -22,6 +22,6 @@
 	"name":"WebSocket",
 	"class":"_WebSocket",
 	"FPS":100,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 }

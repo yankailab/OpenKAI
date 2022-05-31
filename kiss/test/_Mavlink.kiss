@@ -12,13 +12,13 @@
 {
 	"name":"OK_Console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"apSerial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -34,7 +34,7 @@
 {
 	"name":"mavAP",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -42,11 +42,11 @@
 	"_IOBase":"apSerial",
 	
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"mavGCS",
 	}
 	{
-		"bInst":0,
+		"bON":0,
 		"_Mavlink":"mavWS",
 	}
 }
@@ -54,7 +54,7 @@
 {
 	"name":"apUDP",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -66,7 +66,7 @@
 {
 	"name":"mavGCS",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -74,12 +74,12 @@
 	"_IOBase":"apUDP",
 	
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"mavAP",
 	}
 	
 	{
-		"bInst":0,
+		"bON":0,
 		"_Mavlink":"mavWS",
 	}
 }
@@ -87,7 +87,7 @@
 {
 	"name":"apWS",
 	"class":"_WebSocket",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"Window":"OKview",
 	"_Console":"OK_Console",
@@ -96,7 +96,7 @@
 {
 	"name":"mavWS",
 	"class":"_Mavlink",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -104,12 +104,12 @@
 	"_IOBase":"apWS",
 	
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"mavGCS",
 	}
 	
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"mavAP",
 	}
 }

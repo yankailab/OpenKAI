@@ -174,7 +174,7 @@ namespace kai
             string bCode = string(pL->info.broadcast_code);
             IF_N(bCode.empty());
 
-            IF__(broadcastCode.empty(),pL);
+            IF__(broadcastCode.empty(), pL);
             IF__(broadcastCode == bCode, pL);
         }
 
@@ -397,7 +397,7 @@ namespace kai
         LivoxEthPacket *eth_packet = data;
 
         LidarDevice *pLdev = &pLL->lidars_[handle];
-        if(pLdev->pDataCb)
+        if (pLdev->pDataCb)
         {
             pLdev->pDataCb(data, pLdev->pLivox);
             return;

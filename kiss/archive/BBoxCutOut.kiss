@@ -9,7 +9,7 @@
 {
 	"name":"BBoxCutOut",
 	"class":"_BBoxCutOut",
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"FPS":30,
 	"dirIn":"/home/kai/Downloads/cabbage/Batch1/CabbageAll/",

@@ -7,45 +7,43 @@
 namespace kai
 {
 
-struct AP_relay
-{
-	uint8_t m_iChan;
-	bool m_bRelay;
-
-	void init(void)
+	struct AP_relay
 	{
-		m_iChan = 9;
-		m_bRelay = false;
-	}
-};
+		uint8_t m_iChan;
+		bool m_bRelay;
 
-class _AP_relay: public _StateBase
-{
-public:
-	_AP_relay();
-	~_AP_relay();
+		void init(void)
+		{
+			m_iChan = 9;
+			m_bRelay = false;
+		}
+	};
 
-	bool init(void* pKiss);
-	bool start(void);
-	int	 check(void);
-	void update(void);
-	void console(void* pConsole);
-
-private:
-	void updateRelay(void);
-	static void* getUpdate(void* This)
+	class _AP_relay : public _StateBase
 	{
-		((_AP_relay*) This)->update();
-		return NULL;
-	}
+	public:
+		_AP_relay();
+		~_AP_relay();
 
-private:
-	_AP_base* m_pAP;
-	vector<AP_relay> m_vRelay;
+		bool init(void *pKiss);
+		bool start(void);
+		int check(void);
+		void update(void);
+		void console(void *pConsole);
 
-};
+	private:
+		void updateRelay(void);
+		static void *getUpdate(void *This)
+		{
+			((_AP_relay *)This)->update();
+			return NULL;
+		}
+
+	private:
+		_AP_base *m_pAP;
+		vector<AP_relay> m_vRelay;
+	};
 
 }
 
 #endif
-

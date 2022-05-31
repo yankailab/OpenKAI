@@ -12,32 +12,32 @@
 {
 	"name":"OpenKAI",
 	"class":"_Console",
-	"bInst":0,
+	"bON":0,
 }
 
 {
 	"name":"viewRGB",
 	"class":"Window",
-	"bInst":0,
+	"bON":0,
 }
 
 {
 	"name":"viewDepth",
 	"class":"Window",
-	"bInst":0,
+	"bON":0,
 }
 
 {
 	"name":"viewFilter",
 	"class":"Window",
-	"bInst":0,
+	"bON":0,
 }
 
 {
 	"name":"rs",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"Window":"viewRGB",
 	"_Console":"OpenKAI",
@@ -59,7 +59,7 @@
 {
 	"name":"Yolo",
 	"class":"_DNNdetect",
-	"bInst":1,
+	"bON":1,
 	"bDraw":1,
 	"bLog":1,
 	"FPS":30,
@@ -80,7 +80,7 @@
 {
 	"name":"rvUDP",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewRGB",
@@ -93,7 +93,7 @@
 {
 	"name":"rvCMD",
 	"class":"_Rover_CMD",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewRGB",
@@ -104,7 +104,7 @@
 {
 	"name":"apSerial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewRGB",
@@ -117,7 +117,7 @@
 {
 	"name":"apMavlink",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewRGB",
@@ -125,7 +125,7 @@
 	"_IOBase":"apSerial",	
 
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"mavGCS",
 	}
 }
@@ -133,7 +133,7 @@
 {
 	"name":"apUDP",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -144,14 +144,14 @@
 {
 	"name":"mavGCS",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
 	"_IOBase":"apUDP",
 	
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"apMavlink",
 	}
 }
@@ -159,7 +159,7 @@
 {
 	"name":"PIDdrive",
 	"class":"PIDctrl",
-	"bInst":1,
+	"bON":1,
 	"Window":"viewRGB",
 	"_Console":"OpenKAI",
 	"P":0.003,
@@ -170,7 +170,7 @@
 {
 	"name":"PIDfollow",
 	"class":"PIDctrl",
-	"bInst":1,
+	"bON":1,
 	"Window":"viewRGB",
 	"_Console":"OpenKAI",
 	"P":-50.0,
@@ -182,7 +182,7 @@
 	"name":"mission",
 	"class":"_MissionControl",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bDraw":1,
 	"Window":"viewRGB",
 	"_Console":"OpenKAI",
@@ -192,7 +192,7 @@
 		"name":"mission",
 
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"STOP",
 			"Window":"viewRGB",
 			"_Console":"OpenKAI",
@@ -200,7 +200,7 @@
 			"class":"MissionBase",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"MANUAL",
 			"Window":"viewRGB",
 			"_Console":"OpenKAI",
@@ -208,7 +208,7 @@
 			"class":"MissionBase",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"FOLLOW",
 			"Window":"viewRGB",
 			"_Console":"OpenKAI",
@@ -216,7 +216,7 @@
 			"class":"MissionBase",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"WP",
 			"Window":"viewRGB",
 			"_Console":"OpenKAI",
@@ -225,7 +225,7 @@
 			"loop":2,
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"RECORD",
 			"Window":"viewRGB",
 			"_Console":"OpenKAI",
@@ -238,7 +238,7 @@
 {
 	"name":"rvBase",
 	"class":"_Rover_base",
-	"bInst":1,
+	"bON":1,
 	"FPS":10,
 	"bLog":1,
 	"bDraw":1,
@@ -252,7 +252,7 @@
 {
 	"name":"rvFollow",
 	"class":"_Rover_follow",
-	"bInst":1,
+	"bON":1,
 	"FPS":10,
 	"bLog":1,
 	"bDraw":1,
@@ -270,7 +270,7 @@
 {
 	"name":"rvWP",
 	"class":"_Rover_WP",
-	"bInst":1,
+	"bON":1,
 	"FPS":10,
 	"bLog":1,
 	"bDraw":1,
@@ -288,7 +288,7 @@
 {
 	"name":"rvAvoid",
 	"class":"_Rover_avoid",
-	"bInst":1,
+	"bON":1,
 	"FPS":10,
 	"bLog":1,
 	"bDraw":1,
@@ -304,7 +304,7 @@
 {
 	"name":"rvDrive",
 	"class":"_Rover_drive",
-	"bInst":1,
+	"bON":1,
 	"FPS":5,
 	"bLog":1,
 	"bDraw":1,

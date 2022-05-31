@@ -10,38 +10,34 @@
 
 #include "_DetectorBase.h"
 
-#ifdef USE_OPENCV
-
 namespace kai
 {
 
-class _Thermal : public _DetectorBase
-{
-public:
-	_Thermal();
-	virtual ~_Thermal();
-
-	bool init(void* pKiss);
-	bool start(void);
-	int check(void);
-	void draw(void* pFrame);
-
-private:
-	void detect(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _Thermal : public _DetectorBase
 	{
-		((_Thermal*) This)->update();
-		return NULL;
-	}
+	public:
+		_Thermal();
+		virtual ~_Thermal();
 
-public:
-	Mat m_mR;
-	double	m_rL;
-	double	m_rU;
+		bool init(void *pKiss);
+		bool start(void);
+		int check(void);
+		void draw(void *pFrame);
 
-};
+	private:
+		void detect(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_Thermal *)This)->update();
+			return NULL;
+		}
+
+	public:
+		Mat m_mR;
+		double m_rL;
+		double m_rU;
+	};
 
 }
-#endif
 #endif

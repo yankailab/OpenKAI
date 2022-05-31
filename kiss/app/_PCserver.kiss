@@ -12,14 +12,14 @@
 {
 	"name":"_Console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"pcv",
 	"class":"_PCviewer",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"_Console",
 	"vWinSize":[1920,1080],
@@ -30,7 +30,7 @@
 	"name":"ws",
 	"class":"_WebSocket",
 	"FPS":100,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_wakeUp":"ui",
 }
@@ -39,7 +39,7 @@
 	"name":"ui",
 	"class":"_PCui",
 	"FPS":1,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"_Console",
 	"_IOBase":"ws",
@@ -62,7 +62,7 @@
 {
 	"name":"UDPrecv1",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"port":20001,
@@ -73,7 +73,7 @@
 {
 	"name":"PCrecv1",
 	"class":"_PCrecv",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"_IOBase":"UDPrecv1",
@@ -83,7 +83,7 @@
 {
 	"name":"tf1",
 	"class":"_PCtransform",
-	"bInst":1,
+	"bON":1,
 	"_Console":"_Console",
 	"_PCbase":"PCrecv1",
 	"_PCviewer":"pcv",
@@ -100,7 +100,7 @@
 {
 	"name":"UDPrecv2",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"port":20002,
@@ -111,7 +111,7 @@
 {
 	"name":"PCrecv2",
 	"class":"_PCrecv",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"_IOBase":"UDPrecv2",
@@ -121,7 +121,7 @@
 {
 	"name":"tf2",
 	"class":"_PCtransform",
-	"bInst":1,
+	"bON":1,
 	"_Console":"_Console",
 	"_PCbase":"PCrecv2",
 	"_PCviewer":"pcv",
@@ -138,7 +138,7 @@
 {
 	"name":"UDPrecv3",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"port":20003,
@@ -149,7 +149,7 @@
 {
 	"name":"PCrecv3",
 	"class":"_PCrecv",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"_IOBase":"UDPrecv3",
@@ -159,7 +159,7 @@
 {
 	"name":"tf3",
 	"class":"_PCtransform",
-	"bInst":1,
+	"bON":1,
 	"_Console":"_Console",
 	"_PCbase":"PCrecv3",
 	"_PCviewer":"pcv",
@@ -176,7 +176,7 @@
 {
 	"name":"UDPrecv4",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"port":20004,
@@ -187,7 +187,7 @@
 {
 	"name":"PCrecv4",
 	"class":"_PCrecv",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"_IOBase":"UDPrecv4",
@@ -197,7 +197,7 @@
 {
 	"name":"tf4",
 	"class":"_PCtransform",
-	"bInst":1,
+	"bON":1,
 	"_Console":"_Console",
 	"_PCbase":"PCrecv4",
 	"_PCviewer":"pcv",
@@ -214,7 +214,7 @@
 {
 	"name":"UDPrecv5",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"port":20005,
@@ -225,7 +225,7 @@
 {
 	"name":"PCrecv5",
 	"class":"_PCrecv",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"_IOBase":"UDPrecv5",
@@ -235,7 +235,7 @@
 {
 	"name":"tf5",
 	"class":"_PCtransform",
-	"bInst":1,
+	"bON":1,
 	"_Console":"_Console",
 	"_PCbase":"PCrecv5",
 	"_PCviewer":"pcv",
@@ -252,7 +252,7 @@
 {
 	"name":"UDPrecv6",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"port":20006,
@@ -263,7 +263,7 @@
 {
 	"name":"PCrecv6",
 	"class":"_PCrecv",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"_IOBase":"UDPrecv6",
@@ -273,7 +273,7 @@
 {
 	"name":"tf6",
 	"class":"_PCtransform",
-	"bInst":1,
+	"bON":1,
 	"_Console":"_Console",
 	"_PCbase":"PCrecv6",
 	"_PCviewer":"pcv",
@@ -290,7 +290,7 @@
 {
 	"name":"UDPrecv7",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"port":20007,
@@ -301,7 +301,7 @@
 {
 	"name":"PCrecv7",
 	"class":"_PCrecv",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"_IOBase":"UDPrecv7",
@@ -311,7 +311,7 @@
 {
 	"name":"tf7",
 	"class":"_PCtransform",
-	"bInst":1,
+	"bON":1,
 	"_Console":"_Console",
 	"_PCbase":"PCrecv7",
 	"_PCviewer":"pcv",
@@ -328,7 +328,7 @@
 {
 	"name":"UDPrecv8",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"port":20008,
@@ -339,7 +339,7 @@
 {
 	"name":"PCrecv8",
 	"class":"_PCrecv",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"_IOBase":"UDPrecv8",
@@ -349,7 +349,7 @@
 {
 	"name":"tf8",
 	"class":"_PCtransform",
-	"bInst":1,
+	"bON":1,
 	"_Console":"_Console",
 	"_PCbase":"PCrecv8",
 	"_PCviewer":"pcv",
@@ -366,7 +366,7 @@
 {
 	"name":"UDPrecv9",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"port":20009,
@@ -377,7 +377,7 @@
 {
 	"name":"PCrecv9",
 	"class":"_PCrecv",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"_IOBase":"UDPrecv9",
@@ -387,7 +387,7 @@
 {
 	"name":"tf9",
 	"class":"_PCtransform",
-	"bInst":1,
+	"bON":1,
 	"_Console":"_Console",
 	"_PCbase":"PCrecv9",
 	"_PCviewer":"pcv",
@@ -404,7 +404,7 @@
 {
 	"name":"UDPrecv10",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"port":20010,
@@ -415,7 +415,7 @@
 {
 	"name":"PCrecv10",
 	"class":"_PCrecv",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"_Console":"_Console",
 	"_IOBase":"UDPrecv10",
@@ -425,7 +425,7 @@
 {
 	"name":"tf10",
 	"class":"_PCtransform",
-	"bInst":1,
+	"bON":1,
 	"_Console":"_Console",
 	"_PCbase":"PCrecv10",
 	"_PCviewer":"pcv",

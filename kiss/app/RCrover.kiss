@@ -9,7 +9,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -20,7 +20,7 @@
 {
 	"name":"cam",
 	"class":"_Camera",
-	"bInst":0,
+	"bON":0,
 	"deviceID":0,
 	"vSize":[640, 480],
     {
@@ -32,7 +32,7 @@
 {
 	"name":"remap",
 	"class":"_Remap",
-	"bInst":0,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -50,7 +50,7 @@
 		"name":"thread",
 		"FPS":200,
 	}
-	"bInst":1,
+	"bON":1,
 }
 
 {
@@ -60,17 +60,17 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"bInst":1,
+	"bON":1,
 	"start":"standby",
 	{
 		"name":"state",
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"standby",
 			"class":"State",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"rc",
 			"class":"State",
 		}
@@ -80,7 +80,7 @@
 {
 	"name":"sSBus",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":1,
@@ -97,7 +97,7 @@
 {
 	"name":"sbus",
 	"class":"_SBus",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread", 
 		"FPS":30,
@@ -116,7 +116,7 @@
 {
 	"name":"RCrover",
 	"class":"_RCrover",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -139,7 +139,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"bInst":1,
+	"bON":1,
 	"nSpd":0.0,
 	"nDir":1.0,
 	"nStr":0.0,
@@ -169,7 +169,7 @@
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":1,
@@ -184,7 +184,7 @@
 {
 	"name":"motor",
 	"class":"_ZLAC8015D",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
@@ -230,7 +230,7 @@
 {
 	"name":"stepper",
 	"class":"_HYMCU_RS485",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,

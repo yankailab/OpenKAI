@@ -13,20 +13,20 @@
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"filterView",
 	"class":"Window",
-	"bInst":0,
+	"bON":0,
 }
 
 {
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"deviceID":1,
 	"w":1920,
@@ -37,7 +37,7 @@
 	"name":"cam",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"bLog":1,
 	"Window":"OKview",
 	"vPreset":"High Density",
@@ -52,7 +52,7 @@
 	"name":"camCont",
 	"class":"_Contrast",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"filterView",
 	"_VisionBase":"cam",
 	"alpha":1.5,
@@ -63,7 +63,7 @@
 	"name":"camInv",
 	"class":"_Invert",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"filterView",
 	"_VisionBase":"cam",
 }
@@ -71,7 +71,7 @@
 {
 	"name":"detCN",
 	"class":"_OpenALPR",
-	"bInst":1,
+	"bON":1,
 	"bDraw":0,
 	"bLog":0,
 	"FPS":30,
@@ -86,7 +86,7 @@
 {
 	"name":"detLP",
 	"class":"_OpenALPR",
-	"bInst":1,
+	"bON":1,
 	"bDraw":0,
 	"bLog":0,
 	"FPS":30,
@@ -101,7 +101,7 @@
 {
 	"name":"ocr",
 	"class":"OCR",
-	"bInst":0,
+	"bON":0,
 	"bDraw":0,
 	"bLog":0,
 	"Window":"OKview",
@@ -115,7 +115,7 @@
 {
 	"name":"ws",
 	"class":"_WebSocket",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"Window":"OKview",
 }
@@ -124,7 +124,7 @@
 	"name":"anr",
 	"class":"_ANR",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"bDraw":1,
 	"Window":"OKview",

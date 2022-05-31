@@ -11,52 +11,52 @@ using namespace picojson;
 namespace kai
 {
 
-class _JSONbase: public _ModuleBase
-{
-public:
-	_JSONbase();
-	~_JSONbase();
-
-	virtual bool init(void* pKiss);
-	virtual bool start(void);
-	virtual int check(void);
-	virtual void console(void* pConsole);
-
-protected:
-	virtual void send(void);
-    virtual bool sendMsg (picojson::object& o);
-    virtual bool sendHeartbeat (void);    
-
-	virtual bool recv(void);
-	virtual void handleMsg(string& str);
-    virtual void md5(string& str, string* pDigest);
-   	virtual bool str2JSON(string& str, picojson::value* pJson);
-
-private:
-	void updateW(void);
-	static void* getUpdateW(void* This)
+	class _JSONbase : public _ModuleBase
 	{
-		((_JSONbase*) This)->updateW();
-		return NULL;
-	}
+	public:
+		_JSONbase();
+		~_JSONbase();
 
-	void updateR(void);
-	static void* getUpdateR(void* This)
-	{
-		((_JSONbase*) This)->updateR();
-		return NULL;
-	}
+		virtual bool init(void *pKiss);
+		virtual bool start(void);
+		virtual int check(void);
+		virtual void console(void *pConsole);
 
-public:
-    _Thread* m_pTr;
-    _IOBase* m_pIO;
+	protected:
+		virtual void send(void);
+		virtual bool sendMsg(picojson::object &o);
+		virtual bool sendHeartbeat(void);
 
-	string m_msgFinishSend;
-	string m_msgFinishRecv;
-    string m_strB;
+		virtual bool recv(void);
+		virtual void handleMsg(string &str);
+		virtual void md5(string &str, string *pDigest);
+		virtual bool str2JSON(string &str, picojson::value *pJson);
 
-    INTERVAL_EVENT m_tIntHeartbeat;
-};
+	private:
+		void updateW(void);
+		static void *getUpdateW(void *This)
+		{
+			((_JSONbase *)This)->updateW();
+			return NULL;
+		}
+
+		void updateR(void);
+		static void *getUpdateR(void *This)
+		{
+			((_JSONbase *)This)->updateR();
+			return NULL;
+		}
+
+	public:
+		_Thread *m_pTr;
+		_IOBase *m_pIO;
+
+		string m_msgFinishSend;
+		string m_msgFinishRecv;
+		string m_strB;
+
+		INTERVAL_EVENT m_tIntHeartbeat;
+	};
 
 }
 #endif

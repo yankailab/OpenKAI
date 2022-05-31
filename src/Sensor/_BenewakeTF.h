@@ -16,55 +16,55 @@
 namespace kai
 {
 
-struct BENEWAKE_FRAME
-{
-	uint8_t m_header;
-	int m_iB;
-	uint8_t *m_pB;
-
-	void init(int nB)
+	struct BENEWAKE_FRAME
 	{
-		reset();
+		uint8_t m_header;
+		int m_iB;
+		uint8_t *m_pB;
 
-		if (nB <= 0)
-			nB = 256;
-		m_pB = new uint8_t[nB];
-	}
+		void init(int nB)
+		{
+			reset();
 
-	void reset(void)
+			if (nB <= 0)
+				nB = 256;
+			m_pB = new uint8_t[nB];
+		}
+
+		void reset(void)
+		{
+			m_header = 0;
+			m_iB = 0;
+		}
+	};
+
+	class _BenewakeTF : public _DistSensorBase
 	{
-		m_header = 0;
-		m_iB = 0;
-	}
-};
+	public:
+		_BenewakeTF();
+		~_BenewakeTF();
 
-class _BenewakeTF: public _DistSensorBase
-{
-public:
-	_BenewakeTF();
-	~_BenewakeTF();
+		bool init(void *pKiss);
+		bool start(void);
+		void console(void *pConsole);
 
-	bool init(void *pKiss);
-	bool start(void);
-	void console(void* pConsole);
+		DIST_SENSOR_TYPE type(void);
+		uint8_t verifyCheckSum(const uint8_t *data, size_t dataLength);
 
-	DIST_SENSOR_TYPE type(void);
-	uint8_t verifyCheckSum(const uint8_t *data, size_t dataLength);
+	private:
+		bool readCMD(void);
+		void handleCMD(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_BenewakeTF *)This)->update();
+			return NULL;
+		}
 
-private:
-	bool readCMD(void);
-	void handleCMD(void);
-	void update(void);
-	static void* getUpdate(void *This)
-	{
-		((_BenewakeTF*) This)->update();
-		return NULL;
-	}
-
-public:
-	_IOBase *m_pIO;
-	BENEWAKE_FRAME m_frame;
-};
+	public:
+		_IOBase *m_pIO;
+		BENEWAKE_FRAME m_frame;
+	};
 
 }
 #endif

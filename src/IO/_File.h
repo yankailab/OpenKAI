@@ -19,7 +19,7 @@ namespace kai
 		void reset(void);
 
 		bool open(ios_base::openmode mode = ios::in | ios::out | ios::app);
-		bool open(const string& fName, ios_base::openmode mode = ios::in | ios::out | ios::app);
+		bool open(const string &fName, ios_base::openmode mode = ios::in | ios::out | ios::app);
 		int read(uint8_t *pBuf, int nB);
 		bool readAll(string *pStr);
 		bool write(uint8_t *pBuf, int nB);

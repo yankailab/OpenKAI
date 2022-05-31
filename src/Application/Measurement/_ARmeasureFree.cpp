@@ -279,8 +279,8 @@ namespace kai
 		this->_StateBase::draw(pFrame);
 		IF_(check() < 0);
 
-		_WindowCV *pWin = (_WindowCV *)pFrame;
-		Mat *pMw = pWin->getNextFrame()->m();
+		Frame *pF = (Frame*)pFrame;
+		Mat *pMw = pF->m();
 		IF_(pMw->empty());
 		m_pFt = pWin->getFont();
 

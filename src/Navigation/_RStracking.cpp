@@ -5,7 +5,6 @@
  *      Author: yankai
  */
 
-#ifdef USE_REALSENSE
 #include "_RStracking.h"
 
 namespace kai
@@ -152,7 +151,7 @@ namespace kai
 
 			m_pT->autoFPSfrom();
 
-			if(updateRS())
+			if (updateRS())
 				m_flag.set(F_READY);
 
 			m_pT->autoFPSto();
@@ -226,4 +225,3 @@ namespace kai
 	}
 
 }
-#endif

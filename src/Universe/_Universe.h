@@ -10,70 +10,72 @@
 
 #include "_ObjectArray.h"
 #include "../Primitive/tSwap.h"
-#include "../UI/_WindowCV.h"
+#ifdef USE_OPENCV
+#include "../Vision/Frame.h"
+#endif
 
 namespace kai
 {
 
-struct OBJ_CLASS
-{
-	string m_name;
-	int m_n;
-
-	void init(void)
+	struct OBJ_CLASS
 	{
-		m_n = 0;
-		m_name = "";
-	}
-};
+		string m_name;
+		int m_n;
 
-class _Universe: public _ModuleBase
-{
-public:
-	_Universe();
-	virtual ~_Universe();
+		void init(void)
+		{
+			m_n = 0;
+			m_name = "";
+		}
+	};
 
-	virtual bool init(void* pKiss);
-	virtual bool start(void);
-	virtual void update(void);
-	virtual void draw(void* pFrame);
-	virtual void console(void* pConsole);
-
-	//io
-	virtual _Object* add(_Object& pO);
-	virtual _Object* get(int i);
-	virtual int size(void);
-
-	virtual void clear(void);
-	virtual void swap(void);
-
-private:
-	static void* getUpdate(void* This)
+	class _Universe : public _ModuleBase
 	{
-		((_Universe *) This)->update();
-		return NULL;
-	}
+	public:
+		_Universe();
+		virtual ~_Universe();
 
-public:
-	//general
-	uint8_t	m_nDim;
+		virtual bool init(void *pKiss);
+		virtual bool start(void);
+		virtual void update(void);
+		virtual void draw(void *pFrame);
+		virtual void console(void *pConsole);
 
-	//data
-	tSwap<_ObjectArray> m_sO;
+		//io
+		virtual _Object *add(_Object &pO);
+		virtual _Object *get(int i);
+		virtual int size(void);
 
-	//config
-	float m_minConfidence;
-	vFloat2 m_rArea;
-	vFloat2 m_rW;
-	vFloat2 m_rH;
-	vFloat4 m_vRoi;
-    vInt2 m_vClassRange;
+		virtual void clear(void);
+		virtual void swap(void);
 
-	//show
-	bool m_bDrawClass;
-	bool m_bDrawText;
-	bool m_bDrawPos;
-};
+	private:
+		static void *getUpdate(void *This)
+		{
+			((_Universe *)This)->update();
+			return NULL;
+		}
+
+	public:
+		//general
+		uint8_t m_nDim;
+
+		//data
+		tSwap<_ObjectArray> m_sO;
+
+		//config
+		float m_minConfidence;
+		vFloat2 m_rArea;
+		vFloat2 m_rW;
+		vFloat2 m_rH;
+		vFloat4 m_vRoi;
+		vInt2 m_vClassRange;
+
+		//show
+		bool m_bDrawClass;
+		bool m_bDrawText;
+		bool m_bDrawPos;
+	};
 
 }
 #endif

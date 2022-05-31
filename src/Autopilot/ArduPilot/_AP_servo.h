@@ -7,45 +7,43 @@
 namespace kai
 {
 
-struct AP_SERVO
-{
-	uint8_t m_iChan;
-	uint16_t m_pwm;
-
-	void init(void)
+	struct AP_SERVO
 	{
-		m_iChan = 9;
-		m_pwm = 1500;
-	}
-};
+		uint8_t m_iChan;
+		uint16_t m_pwm;
 
-class _AP_servo: public _StateBase
-{
-public:
-	_AP_servo();
-	~_AP_servo();
+		void init(void)
+		{
+			m_iChan = 9;
+			m_pwm = 1500;
+		}
+	};
 
-	bool init(void* pKiss);
-	bool start(void);
-	int	 check(void);
-	void update(void);
-	void console(void* pConsole);
-
-private:
-	void updateServo(void);
-	static void* getUpdate(void* This)
+	class _AP_servo : public _StateBase
 	{
-		((_AP_servo*) This)->update();
-		return NULL;
-	}
+	public:
+		_AP_servo();
+		~_AP_servo();
 
-private:
-	_AP_base* m_pAP;
-	vector<AP_SERVO> m_vServo;
+		bool init(void *pKiss);
+		bool start(void);
+		int check(void);
+		void update(void);
+		void console(void *pConsole);
 
-};
+	private:
+		void updateServo(void);
+		static void *getUpdate(void *This)
+		{
+			((_AP_servo *)This)->update();
+			return NULL;
+		}
+
+	private:
+		_AP_base *m_pAP;
+		vector<AP_SERVO> m_vServo;
+	};
 
 }
 
 #endif
-

@@ -7,72 +7,69 @@
 
 #include "_ImgFile.h"
 
-#ifdef USE_OPENCV
-
 namespace kai
 {
 
-_ImgFile::_ImgFile()
-{
-	m_type = vision_file;
-	m_file = "";
-}
-
-_ImgFile::~_ImgFile()
-{
-}
-
-bool _ImgFile::init(void* pKiss)
-{
-	IF_F(!_VisionBase::init(pKiss));
-	Kiss* pK = (Kiss*) pKiss;
-
-	pK->v("file",&m_file);
-
-	return true;
-}
-
-bool _ImgFile::open(void)
-{
-	Mat m = imread(m_file);
-	if (m.empty())
+	_ImgFile::_ImgFile()
 	{
-		LOG_E("Cannot open file: " + m_file);
-		return false;
+		m_type = vision_file;
+		m_file = "";
 	}
 
-	m_fBGR.copy(m);
-	m_vSize.x = m.cols;
-	m_vSize.y = m.rows;
-
-	m_bOpen = true;
-	return true;
-}
-
-bool _ImgFile::start(void)
-{
-    NULL_F(m_pT);
-	return m_pT->start(getUpdate, this);
-}
-
-void _ImgFile::update(void)
-{
-	while(m_pT->bRun())
+	_ImgFile::~_ImgFile()
 	{
-		if (!m_bOpen)
+	}
+
+	bool _ImgFile::init(void *pKiss)
+	{
+		IF_F(!_VisionBase::init(pKiss));
+		Kiss *pK = (Kiss *)pKiss;
+
+		pK->v("file", &m_file);
+
+		return true;
+	}
+
+	bool _ImgFile::open(void)
+	{
+		Mat m = imread(m_file);
+		if (m.empty())
 		{
-			if (!open())
-			{
-				m_pT->sleepT (SEC_2_USEC);
-				continue;
-			}
+			LOG_E("Cannot open file: " + m_file);
+			return false;
 		}
 
-		m_pT->autoFPSfrom();
+		m_fBGR.copy(m);
+		m_vSize.x = m.cols;
+		m_vSize.y = m.rows;
 
-		m_pT->autoFPSto();
+		m_bOpen = true;
+		return true;
 	}
-}
+
+	bool _ImgFile::start(void)
+	{
+		NULL_F(m_pT);
+		return m_pT->start(getUpdate, this);
+	}
+
+	void _ImgFile::update(void)
+	{
+		while (m_pT->bRun())
+		{
+			if (!m_bOpen)
+			{
+				if (!open())
+				{
+					m_pT->sleepT(SEC_2_USEC);
+					continue;
+				}
+			}
+
+			m_pT->autoFPSfrom();
+
+			m_pT->autoFPSto();
+		}
+	}
 
 }
-#endif

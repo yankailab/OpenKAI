@@ -13,22 +13,21 @@
 namespace kai
 {
 
-class Takeoff: public State
-{
-public:
-	Takeoff();
-	virtual ~Takeoff();
+	class Takeoff : public State
+	{
+	public:
+		Takeoff();
+		virtual ~Takeoff();
 
-	bool init(void* pKiss);
-	bool update(void);
-	void console(void* pConsole);
+		bool init(void *pKiss);
+		bool update(void);
+		void console(void *pConsole);
 
-	void setTakeoffed(bool bTakeoffed);
+		void setTakeoffed(bool bTakeoffed);
 
-public:
-	float m_alt;
-
-};
+	public:
+		float m_alt;
+	};
 
 }
 #endif

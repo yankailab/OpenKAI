@@ -222,7 +222,6 @@ namespace kai
 
 	void _GPS::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
@@ -268,7 +267,6 @@ namespace kai
 		//ZDA
 		pC->addMsg("ZDA");
 		pC->addMsg("" + i2str(m_zda.time.hours) + ":" + i2str(m_zda.time.minutes) + ":" + i2str(m_zda.time.seconds) + " " + i2str(m_zda.date.day) + "." + i2str(m_zda.date.month) + "." + i2str(m_zda.date.year) + " UTC%+" + i2str(m_zda.hour_offset) + ":" + i2str(m_zda.minute_offset));
-#endif
 	}
 
 }

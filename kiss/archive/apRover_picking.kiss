@@ -12,19 +12,19 @@
 {
 	"name":"rov_Console",
 	"class":"_Console",
-	"bInst":0,
+	"bON":0,
 }
 
 {
 	"name":"arm_Console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 	"bDrawMsg":1,
 	"bFullScreen":0,
 	"_Console":"rov_Console",
@@ -36,7 +36,7 @@
 	"name":"cam",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"rov_Console",
 	"/pipeline":"v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
@@ -48,7 +48,7 @@
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"bLog":1,
 	"Window":"OKview",
 	"_Console":"rov_Console",
@@ -60,7 +60,7 @@
 {
 	"name":"apSerial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -75,7 +75,7 @@
 {
 	"name":"apMavlink",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -88,7 +88,7 @@
 	"tTimeout":10000000,
 
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"mavGCS",
 	}	
 }
@@ -96,7 +96,7 @@
 {
 	"name":"apUDP",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -108,14 +108,14 @@
 {
 	"name":"mavGCS",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":1,
 	"_Console":"rov_Console",
 	"_IOBase":"apUDP",
 	
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"apMavlink",
 	}	
 }
@@ -124,7 +124,7 @@
 	"name":"mission",
 	"class":"_MissionControl",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"rov_Console",
 	"start":"STANDBY",
@@ -132,25 +132,25 @@
 	{
 		"name":"mission",
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"STANDBY",
 			"class":"Mission",
 			"next":"STANDBY",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"MANUAL",
 			"class":"Mission",
 			"next":"MANUAL",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"AUTOPICK",
 			"class":"Mission",
 			"next":"AUTOPICK",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"AUTO",
 			"class":"Mission",
 			"next":"AUTO",
@@ -162,7 +162,7 @@
 	"name":"apBase",
 	"class":"_AP_base",
 	"FPS":10,
-	"bInst":1,
+	"bON":1,
 	"_MissionControl":"mission",
 	"Window":"OKview",
 	"_Console":"rov_Console",
@@ -215,7 +215,7 @@
 	"name":"apDrive",
 	"class":"_AProver_drive",
 	"FPS":5,
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"_Console":"rov_Console",
 	"_MissionControl":"mission",
@@ -231,7 +231,7 @@
 	"name":"apPicking",
 	"class":"_AProver_picking",
 	"FPS":10,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"rov_Console",
 	"_MissionControl":"mission",
@@ -274,7 +274,7 @@
 	"name":"armMission",
 	"class":"_MissionControl",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"arm_Console",
 	"start":"EXTERNAL",
@@ -282,43 +282,43 @@
 	{
 		"name":"mission",
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"EXTERNAL",
 			"class":"Mission",
 			"next":"EXTERNAL",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"RECOVER",
 			"class":"Mission",
 			"next":"FOLLOW",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"FOLLOW",
 			"class":"Mission",
 			"next":"ASCEND",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"ASCEND",
 			"class":"Mission",
 			"next":"DELIVER",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"DELIVER",
 			"class":"Mission",
 			"next":"DESCEND",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"DESCEND",
 			"class":"Mission",
 			"next":"DROP",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"DROP",
 			"class":"Mission",
 			"next":"RECOVER",
@@ -329,7 +329,7 @@
 {
 	"name":"armSerial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -341,7 +341,7 @@
 {
 	"name":"S6H4D",
 	"class":"_S6H4D",
-	"bInst":1,
+	"bON":1,
 	"FPS":5,
 	"bLog":1,
 	"_Console":"arm_Console",
@@ -466,7 +466,7 @@
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"_Console":"arm_Console",
@@ -478,7 +478,7 @@
 {
 	"name":"gripper",
 	"class":"_StepperGripper",
-	"bInst":1,
+	"bON":1,
 	"FPS":10,
 	"bLog":1,
 	"_Console":"arm_Console",
@@ -512,7 +512,7 @@
 {
 	"name":"universe",
 	"class":"_Universe",
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"arm_Console",
 	"FPS":30,
@@ -523,7 +523,7 @@
 	"name":"arUco",
 	"class":"_ArUco",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"_Console":"arm_Console",
 	"_VisionBase":"cam",
@@ -534,7 +534,7 @@
 {
 	"name":"DetectNet",
 	"class":"_DetectNet",
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"FPS":30,
 	"Window":"OKview",
@@ -553,7 +553,7 @@
 {
 	"name":"tofSerial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"_Console":"arm_Console",
@@ -564,7 +564,7 @@
 {
 	"name":"TOFsense",
 	"class":"_TOFsense",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -575,7 +575,7 @@
 {
 	"name":"PIDx",
 	"class":"PIDctrl",
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"arm_Console",
 	"P":1.0,
@@ -590,7 +590,7 @@
 {
 	"name":"PIDy",
 	"class":"PIDctrl",
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"arm_Console",
 	"P":1.0,
@@ -605,7 +605,7 @@
 {
 	"name":"PIDz",
 	"class":"PIDctrl",
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"arm_Console",
 	"P":-1.0,
@@ -620,7 +620,7 @@
 {
 	"name":"pickingArm",
 	"class":"_PickingArm",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",

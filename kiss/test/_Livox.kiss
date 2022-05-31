@@ -12,13 +12,13 @@
 {
 	"name":"OK_Console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"LivoxLidar",
 	"class":"LivoxLidar",
-	"bInst":0,
+	"bON":0,
 	"bLog":1,
 	"_Console":"OK_Console",
 	"/vBroadcastCode":["3JEDHC900100791"],
@@ -33,7 +33,7 @@
 {
 	"name":"Livox",
 	"class":"_Livox",
-	"bInst":0,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -52,7 +52,7 @@
 {
 	"name":"pcv",
 	"class":"_PCviewer",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -69,7 +69,7 @@
 	"name":"T265",
 	"class":"_RStracking",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"bLog":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
@@ -79,7 +79,7 @@
 {
 	"name":"GUI",
 	"class":"GUIwindow",
-	"bInst":0,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,

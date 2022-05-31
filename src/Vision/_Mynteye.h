@@ -8,9 +8,6 @@
 #ifndef OpenKAI_src_Vision__Mynteye_H_
 #define OpenKAI_src_Vision__Mynteye_H_
 
-#ifdef USE_OPENCV
-#ifdef USE_MYNTEYE
-
 #include "_DepthVisionBase.h"
 #include "../Utility/util.h"
 
@@ -23,34 +20,31 @@ MYNTEYE_USE_NAMESPACE
 namespace kai
 {
 
-class _Mynteye: public _DepthVisionBase
-{
-public:
-	_Mynteye();
-	virtual ~_Mynteye();
-
-	bool init(void* pKiss);
-	bool start(void);
-	void draw(void* pFrame);
-	bool open(void);
-	void close(void);
-
-private:
-	void update(void);
-	static void* getUpdate(void* This)
+	class _Mynteye : public _DepthVisionBase
 	{
-		((_Mynteye *) This)->update();
-		return NULL;
-	}
+	public:
+		_Mynteye();
+		virtual ~_Mynteye();
 
-public:
-	Camera m_me;
-	::mynteyed::DeviceInfo m_devInfo;
-	OpenParams m_op;
+		bool init(void *pKiss);
+		bool start(void);
+		void draw(void *pFrame);
+		bool open(void);
+		void close(void);
 
-};
+	private:
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_Mynteye *)This)->update();
+			return NULL;
+		}
+
+	public:
+		Camera m_me;
+		::mynteyed::DeviceInfo m_devInfo;
+		OpenParams m_op;
+	};
 
 }
-#endif
-#endif
 #endif

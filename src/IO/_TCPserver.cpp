@@ -150,7 +150,6 @@ namespace kai
 
 	void _TCPserver::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
@@ -161,7 +160,6 @@ namespace kai
 		{
 			((_TCPclient *)*itr)->console(pConsole);
 		}
-#endif
 	}
 
 }

@@ -55,7 +55,6 @@ namespace kai
 
 	void Goto::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->State::console(pConsole);
 
@@ -65,7 +64,6 @@ namespace kai
 		int tOut = (int)((double)(m_tTimeout - (m_tStamp - m_tStart)) * USEC_2_SEC);
 		tOut = constrain(tOut, 0, INT_MAX);
 		pC->addMsg("Timeout = " + i2str(tOut), 1);
-#endif
 	}
 
 }

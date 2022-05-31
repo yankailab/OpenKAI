@@ -21,7 +21,7 @@ namespace kai
 
 	_IOBase::~_IOBase()
 	{
-        DEL(m_pTr);
+		DEL(m_pTr);
 
 		m_fifoW.release();
 		m_fifoR.release();
@@ -39,17 +39,17 @@ namespace kai
 		return true;
 	}
 
-    bool _IOBase::link(void)
-    {
-        IF_F(!this->_ModuleBase::link());
+	bool _IOBase::link(void)
+	{
+		IF_F(!this->_ModuleBase::link());
 
-		if(m_pTr)
+		if (m_pTr)
 		{
-	        IF_F(!m_pTr->link());
+			IF_F(!m_pTr->link());
 		}
 
-        return true;
-    }
+		return true;
+	}
 
 	bool _IOBase::open(void)
 	{
@@ -103,11 +103,9 @@ namespace kai
 
 	void _IOBase::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 		((_Console *)pConsole)->addMsg("nFifoW=" + i2str(m_fifoW.m_nData) + ", nFifoR=" + i2str(m_fifoR.m_nData), 0);
-#endif
 	}
 
 }

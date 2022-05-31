@@ -238,7 +238,7 @@ void _AProver_KUfollowTag::console ( void* pConsole )
 	"name":"gphoto",
 	"class":"_GPhoto",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"_WindowCV":"OKview",
 	"_Console":"OK_Console",
 	"cmdUnmount":"gio mount -s gphoto2",

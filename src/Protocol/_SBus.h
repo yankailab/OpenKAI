@@ -73,7 +73,7 @@ namespace kai
 		bool m_bCh17;
 		bool m_bCh18;
 		RC_CHANNEL m_pRC[SBUS_NCHAN];
-		vInt3 m_vRawRC;		
+		vInt3 m_vRawRC;
 	};
 
 }

@@ -12,13 +12,13 @@
 {
 	"name":"OK_Console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"armSerial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"_Console":"OK_Console",
@@ -30,7 +30,7 @@
 {
 	"name":"S6H4D",
 	"class":"_S6H4D",
-	"bInst":1,
+	"bON":1,
 	"FPS":5,
 	"bLog":1,
 	"_Console":"OK_Console",

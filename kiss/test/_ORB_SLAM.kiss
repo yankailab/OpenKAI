@@ -12,20 +12,20 @@
 {
 	"name":"OK_Console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":0,
+	"bON":0,
 	"bFullScreen":0,
 }
 
 {
 	"name":"cam",
 	"class":"_Camera",
-	"bInst":0,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -38,7 +38,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -54,7 +54,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"bInst":1,
+	"bON":1,
 	"/Window":"OKview",
 	"_VisionBase":"cam",
 }
@@ -66,7 +66,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_VisionBase":"gray",
 	"vSize":[640,360],
@@ -79,7 +79,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"bInst":1,
+	"bON":1,
 	"/Window":"OKview",
 	"_VisionBase":"resize",
 	"fVocabulary":"/home/kai/dev/ORB_SLAM3/Vocabulary/ORBvoc.txt",

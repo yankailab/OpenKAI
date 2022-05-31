@@ -6,121 +6,120 @@
 namespace kai
 {
 
-struct GCS_STATE
-{
-    int8_t m_iState;
-    int8_t STANDBY;
-    int8_t TAKEOFF_REQUEST;
-    int8_t TAKEOFF_READY;
-    int8_t AIRBORNE;
-	int8_t LANDING_REQUEST;
-    int8_t LANDING;
-    int8_t TOUCHDOWN;
-    int8_t LANDED;
-    
-	bool assign(_StateControl* pSC )
+    struct GCS_STATE
     {
-        NULL_F( pSC );
+        int8_t m_iState;
+        int8_t STANDBY;
+        int8_t TAKEOFF_REQUEST;
+        int8_t TAKEOFF_READY;
+        int8_t AIRBORNE;
+        int8_t LANDING_REQUEST;
+        int8_t LANDING;
+        int8_t TOUCHDOWN;
+        int8_t LANDED;
 
-        m_iState = -1;
-        STANDBY = pSC->getStateIdxByName ("STANDBY");
-        TAKEOFF_REQUEST = pSC->getStateIdxByName ("TAKEOFF_REQUEST");
-        TAKEOFF_READY = pSC->getStateIdxByName ("TAKEOFF_READY");
-        AIRBORNE = pSC->getStateIdxByName ("AIRBORNE");
-        LANDING_REQUEST = pSC->getStateIdxByName ("LANDING_REQUEST");
-        LANDING = pSC->getStateIdxByName ("LANDING");
-        TOUCHDOWN = pSC->getStateIdxByName ("TOUCHDOWN");
-        LANDED = pSC->getStateIdxByName ("LANDED");
-        
-        return bValid();
-    }
+        bool assign(_StateControl *pSC)
+        {
+            NULL_F(pSC);
 
-    bool bValid(void)
-	{
-		IF_F(STANDBY < 0);
-		IF_F(TAKEOFF_REQUEST < 0);
-		IF_F(TAKEOFF_READY < 0);
-		IF_F(AIRBORNE < 0);
-		IF_F(LANDING_REQUEST < 0);
-		IF_F(LANDING < 0);
-		IF_F(TOUCHDOWN < 0);
-		IF_F(LANDED < 0);
+            m_iState = -1;
+            STANDBY = pSC->getStateIdxByName("STANDBY");
+            TAKEOFF_REQUEST = pSC->getStateIdxByName("TAKEOFF_REQUEST");
+            TAKEOFF_READY = pSC->getStateIdxByName("TAKEOFF_READY");
+            AIRBORNE = pSC->getStateIdxByName("AIRBORNE");
+            LANDING_REQUEST = pSC->getStateIdxByName("LANDING_REQUEST");
+            LANDING = pSC->getStateIdxByName("LANDING");
+            TOUCHDOWN = pSC->getStateIdxByName("TOUCHDOWN");
+            LANDED = pSC->getStateIdxByName("LANDED");
 
-		return true;
-	}
-	
-	void update(_StateControl* pSC)
+            return bValid();
+        }
+
+        bool bValid(void)
+        {
+            IF_F(STANDBY < 0);
+            IF_F(TAKEOFF_REQUEST < 0);
+            IF_F(TAKEOFF_READY < 0);
+            IF_F(AIRBORNE < 0);
+            IF_F(LANDING_REQUEST < 0);
+            IF_F(LANDING < 0);
+            IF_F(TOUCHDOWN < 0);
+            IF_F(LANDED < 0);
+
+            return true;
+        }
+
+        void update(_StateControl *pSC)
+        {
+            NULL_(pSC);
+            m_iState = pSC->getStateIdx();
+        }
+
+        bool bSTANDBY(void)
+        {
+            return (m_iState == STANDBY);
+        }
+
+        bool bTAKEOFF_REQUEST(void)
+        {
+            return (m_iState == TAKEOFF_REQUEST);
+        }
+
+        bool bTAKEOFF_READY(void)
+        {
+            return (m_iState == TAKEOFF_READY);
+        }
+
+        bool bAIRBORNE(void)
+        {
+            return (m_iState == AIRBORNE);
+        }
+
+        bool bLANDING_REQUEST(void)
+        {
+            return (m_iState == LANDING_REQUEST);
+        }
+
+        bool bLANDING(void)
+        {
+            return (m_iState == LANDING);
+        }
+
+        bool bTOUCHDOWN(void)
+        {
+            return (m_iState == TOUCHDOWN);
+        }
+
+        bool bLANDED(void)
+        {
+            return (m_iState == LANDED);
+        }
+    };
+
+    class _GCSbase : public _StateBase
     {
-        NULL_(pSC);
-        m_iState = pSC->getStateIdx();
-    }
-	
-	bool bSTANDBY(void)
-    {
-        return (m_iState == STANDBY);
-    }
-    
-   	bool bTAKEOFF_REQUEST(void)
-    {
-        return (m_iState == TAKEOFF_REQUEST);
-    }
+    public:
+        _GCSbase();
+        ~_GCSbase();
 
-	bool bTAKEOFF_READY(void)
-    {
-        return (m_iState == TAKEOFF_READY);
-    }
+        virtual bool init(void *pKiss);
+        virtual int check(void);
 
-   	bool bAIRBORNE(void)
-    {
-        return (m_iState == AIRBORNE);
-    }
+        virtual int getID(void);
+        virtual GCS_STATE *getState(void);
 
-   	bool bLANDING_REQUEST(void)
-    {
-        return (m_iState == LANDING_REQUEST);
-    }
+        virtual void status(int vID, const string &stat);
+        virtual bool takeoffRequest(int vID);
+        virtual bool landingRequest(int vID);
 
-   	bool bLANDING(void)
-    {
-        return (m_iState == LANDING);
-    }
-    
-    bool bTOUCHDOWN(void)
-    {
-        return (m_iState == TOUCHDOWN );
-    }
+    protected:
+        virtual void updateGCS(void);
 
-    bool bLANDED(void)
-    {
-        return (m_iState == LANDED);
-    }
+    public:
+        int m_gcsID;
 
-};
-
-class _GCSbase: public _StateBase
-{
-public:
-	_GCSbase();
-	~_GCSbase();
-
-	virtual bool init(void* pKiss);
-	virtual int check(void);
-    
-    virtual int getID (void);
-    virtual GCS_STATE* getState(void);
-
-    virtual void status (int vID, const string& stat);
-    virtual bool takeoffRequest(int vID);
-    virtual bool landingRequest(int vID);
-
-protected:
-    virtual void updateGCS (void);
-
-public:
-    int m_gcsID;
-
-    GCS_STATE m_state;
-};
+        GCS_STATE m_state;
+    };
 
 }
 #endif

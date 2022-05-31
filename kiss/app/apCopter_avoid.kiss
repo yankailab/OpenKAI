@@ -11,20 +11,20 @@
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"depthView",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"rs",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"Window":"OKview",
 	"depthWindow":"depthView",
@@ -52,7 +52,7 @@
 {
 	"name":"apSerial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -64,7 +64,7 @@
 {
 	"name":"mavAP",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -75,7 +75,7 @@
 {
 	"name":"apMission",
 	"class":"_MissionControl",
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"startState":"AP_STANDBY",
 
@@ -88,7 +88,7 @@
 	"name":"apPilot",
 	"class":"_AutoPilot",
 	"_MissionControl":"apMission",
-	"bInst":1,
+	"bON":1,
 	"FPS":20,
 	"Window":"OKview",
 	
@@ -98,7 +98,7 @@
 		{
 			"name":"apBase",
 			"class":"APcopter_base",
-			"bInst":1,
+			"bON":1,
 			"_MissionControl":"apMission",
 			"Window":"OKview",
 			"_Mavlink":"mavAP",
@@ -110,7 +110,7 @@
 		{
 			"name":"apAvoid",
 			"class":"APcopter_depthVision",
-			"bInst":1,
+			"bON":1,
 			"bDraw":1,
 			"Window":"OKview",
 			"_MissionControl":"apMission",

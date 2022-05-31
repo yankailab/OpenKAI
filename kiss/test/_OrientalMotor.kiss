@@ -12,20 +12,20 @@
 {
 	"name":"_Console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 	"bFullScreen":0,
 }
 
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -37,7 +37,7 @@
 {
 	"name":"omRot",
 	"class":"_OrientalMotor",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -72,7 +72,7 @@
 {
 	"name":"omWX",
 	"class":"_OrientalMotor",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -106,7 +106,7 @@
 {
 	"name":"omWY",
 	"class":"_OrientalMotor",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -140,7 +140,7 @@
 {
 	"name":"omR",
 	"class":"_OrientalMotor",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -174,7 +174,7 @@
 {
 	"name":"omL",
 	"class":"_OrientalMotor",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -208,7 +208,7 @@
 {
 	"name":"omM",
 	"class":"_OrientalMotor",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",

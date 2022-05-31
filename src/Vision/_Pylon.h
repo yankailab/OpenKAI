@@ -8,10 +8,6 @@
 #ifndef OpenKAI_src_Vision__Pylon_H_
 #define OpenKAI_src_Vision__Pylon_H_
 
-#include "../Base/common.h"
-
-#ifdef USE_OPENCV
-#ifdef USE_PYLON
 #include "_VisionBase.h"
 #include <pylon/PylonIncludes.h>
 
@@ -20,37 +16,34 @@ using namespace Pylon;
 namespace kai
 {
 
-class _Pylon: public _VisionBase
-{
-public:
-	_Pylon();
-	virtual ~_Pylon();
-
-	bool init(void* pKiss);
-	bool start(void);
-
-private:
-	bool open(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _Pylon : public _VisionBase
 	{
-		((_Pylon*) This)->update();
-		return NULL;
-	}
+	public:
+		_Pylon();
+		virtual ~_Pylon();
 
-public:
-	PylonAutoInitTerm m_pylonAutoInit;
-	CInstantCamera* m_pPylonCam;
-	CImageFormatConverter m_pylonFC;
-	CPylonImage m_pylonImg;
-	CGrabResultPtr m_pylonGrab;
+		bool init(void *pKiss);
+		bool start(void);
 
-	string m_SN;
-	int	m_grabTimeout;
+	private:
+		bool open(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_Pylon *)This)->update();
+			return NULL;
+		}
 
-};
+	public:
+		PylonAutoInitTerm m_pylonAutoInit;
+		CInstantCamera *m_pPylonCam;
+		CImageFormatConverter m_pylonFC;
+		CPylonImage m_pylonImg;
+		CGrabResultPtr m_pylonGrab;
+
+		string m_SN;
+		int m_grabTimeout;
+	};
 
 }
-#endif
-#endif
 #endif

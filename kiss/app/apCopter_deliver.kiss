@@ -12,13 +12,13 @@
 {
 	"name":"OK_Console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 	"bDrawMsg":1,
 	"bFullScreen":0,
 	"gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.201 port=5678 auto-multicast=false",
@@ -28,7 +28,7 @@
 {
 	"name":"depthView",
 	"class":"Window",
-	"bInst":0,
+	"bON":0,
 	"bFullScreen":0,
 	"gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.201 port=5679 auto-multicast=false",
 }
@@ -37,7 +37,7 @@
 	"name":"cam",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)360, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.1.201 port=5678 auto-multicast=false",
@@ -49,7 +49,7 @@
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"deviceID":0,
@@ -61,7 +61,7 @@
 	"name":"cam",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"bDebug":0,
 	"Window":"OKview",
@@ -86,7 +86,7 @@
 	"name":"arUco",
 	"class":"_ArUco",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"_VisionBase":"cam",
@@ -99,7 +99,7 @@
 {
 	"name":"apSerial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -114,7 +114,7 @@
 {
 	"name":"apMavlink",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -127,7 +127,7 @@
 	"tTimeout":10000000,
 
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"mavGCS",
 	}	
 }
@@ -135,7 +135,7 @@
 {
 	"name":"apUDP",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -147,14 +147,14 @@
 {
 	"name":"mavGCS",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":1,
 	"_Console":"OK_Console",
 	"_IOBase":"apUDP",
 	
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"apMavlink",
 	}	
 }
@@ -162,7 +162,7 @@
 {
 	"name":"remoteSerial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -175,7 +175,7 @@
 {
 	"name":"remoteMavlink",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -192,7 +192,7 @@
 {
 	"name":"PIDroll",
 	"class":"PIDctrl",
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"P":-1.0,
@@ -207,7 +207,7 @@
 {
 	"name":"PIDpitch",
 	"class":"PIDctrl",
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"P":1.0,
@@ -224,7 +224,7 @@
 	"name":"mission",
 	"class":"_MissionControl",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"startMission":"STANDBY",
@@ -232,7 +232,7 @@
 	{
 		"name":"mission",
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"STANDBY",
 			"Window":"OKview",
 			"bDraw":1,
@@ -241,7 +241,7 @@
 			"nextMission":"TAKEOFF",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"TAKEOFF",
 			"Window":"OKview",
 			"bDraw":1,
@@ -251,7 +251,7 @@
 			"nextMission":"FOLLOW",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"FOLLOW",
 			"Window":"OKview",
 			"bDraw":1,
@@ -260,7 +260,7 @@
 			"nextMission":"DESCENT",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"DESCENT",
 			"Window":"OKview",
 			"bDraw":1,
@@ -269,7 +269,7 @@
 			"nextMission":"RELEASE",			
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"RELEASE",
 			"Window":"OKview",
 			"bDraw":1,
@@ -279,7 +279,7 @@
 			"nextMission":"RTH",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"RTH",
 			"Window":"OKview",
 			"bDraw":1,
@@ -294,7 +294,7 @@
 	"name":"apBase",
 	"class":"_AP_base",
 	"FPS":5,
-	"bInst":1,
+	"bON":1,
 	"_MissionControl":"mission",
 	"Window":"OKview",
 	"_Console":"OK_Console",
@@ -347,7 +347,7 @@
 	"name":"apMission",
 	"class":"_AP_mission",
 	"FPS":5,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"_MissionControl":"mission",
@@ -359,7 +359,7 @@
 	"name":"apTakeoff",
 	"class":"_AP_takeoff",
 	"FPS":5,
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
@@ -373,7 +373,7 @@
 	"name":"apGoto",
 	"class":"_AP_goto",
 	"FPS":5,
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
@@ -403,7 +403,7 @@
 	"name":"apDescent",
 	"class":"_AP_descent",
 	"FPS":10,
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
@@ -440,7 +440,7 @@
 	"name":"apTargetBase",
 	"class":"_AP_base",
 	"FPS":5,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"_Mavlink":"remoteMavlink",
@@ -466,7 +466,7 @@
 	"name":"apServoStandby",
 	"class":"_AP_servo",
 	"FPS":2,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"_MissionControl":"mission",
@@ -484,7 +484,7 @@
 	"name":"apServoRelease",
 	"class":"_AP_servo",
 	"FPS":2,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"_MissionControl":"mission",

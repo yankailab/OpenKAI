@@ -7,8 +7,6 @@
 
 #include "_PickingArm.h"
 
-#ifdef USE_OPENCV
-
 namespace kai
 {
 
@@ -442,9 +440,8 @@ namespace kai
 		this->_StateBase::draw(pFrame);
 		IF_(check() < 0);
 
-		_WindowCV *pWin = (_WindowCV *)pFrame;
-		Frame *pF = pWin->getNextFrame();
-		NULL_(pF);
+		Frame *pF = (Frame*)pFrame;
+
 		Mat *pM = pF->m();
 		IF_(pM->empty());
 
@@ -453,4 +450,3 @@ namespace kai
 	}
 
 }
-#endif

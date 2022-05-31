@@ -9,7 +9,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -20,7 +20,7 @@
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -34,7 +34,7 @@
 {
 	"name":"stepper1",
 	"class":"_HYMCU_RS485",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":5,
@@ -65,7 +65,7 @@
 {
 	"name":"stepper2",
 	"class":"_HYMCU_RS485",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":5,
@@ -96,7 +96,7 @@
 {
 	"name":"apActuator",
 	"class":"_AP_actuator",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -114,7 +114,7 @@
 {
 	"name":"apSerial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -132,7 +132,7 @@
 {
 	"name":"apMavlink",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -144,7 +144,7 @@
 {
 	"name":"apBase",
 	"class":"_AP_base",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,

@@ -12,13 +12,13 @@
 {
 	"name":"OK_Console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":0,
+	"bON":0,
 	"bDrawMsg":1,
 	"bFullScreen":0,
 }
@@ -27,7 +27,7 @@
 	"name":"cam",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)360, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.1.201 port=5678 auto-multicast=false",
@@ -37,7 +37,7 @@
 	"name":"T265",
 	"class":"_RStracking",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
@@ -47,7 +47,7 @@
 	"name":"gphoto",
 	"class":"_GPhoto",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"cmdUnmount":"gio mount -s gphoto2",
@@ -56,7 +56,7 @@
 {
 	"name":"apSerial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -72,7 +72,7 @@
 {
 	"name":"apMavlink",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -84,7 +84,7 @@
 	"devComponentID":-1,
 
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"mavGCS",
 	}	
 }
@@ -92,7 +92,7 @@
 {
 	"name":"apUDP",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -104,7 +104,7 @@
 {
 	"name":"mavGCS",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -116,7 +116,7 @@
 	"devComponentID":-1,
 	
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"apMavlink",
 	}	
 }
@@ -125,7 +125,7 @@
 	"name":"leddarVu",
 	"class":"_LeddarVu",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bLog":0,
 	"Window":"OKview",
 	"_Console":"OK_Console",
@@ -161,7 +161,7 @@
 	"name":"mission",
 	"class":"_MissionControl",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bDraw":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
@@ -170,7 +170,7 @@
 	{
 		"name":"mission",
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"STANDBY",
 			"Window":"OKview",
 			"_Console":"OK_Console",
@@ -184,7 +184,7 @@
 	"name":"apBase",
 	"class":"_AP_base",
 	"FPS":5,
-	"bInst":1,
+	"bON":1,
 	"bDraw":1,
 	"_MissionControl":"mission",
 	"Window":"OKview",
@@ -217,7 +217,7 @@
 	"name":"apGPS",
 	"class":"_AP_GPS",
 	"FPS":10,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"_MissionControl":"mission",
@@ -248,7 +248,7 @@
 	"name":"apPosCtrl",
 	"class":"_AP_posCtrl",
 	"FPS":5,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"_MissionControl":"mission",
@@ -259,7 +259,7 @@
 	"name":"apPhoto",
 	"class":"_APcopter_photo",
 	"FPS":5,
-	"bInst":1,
+	"bON":1,
 	"bLog":0,
 	"Window":"OKview",
 	"_Console":"OK_Console",

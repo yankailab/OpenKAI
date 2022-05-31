@@ -10,7 +10,7 @@
 {
 	"name":"camCalib",
 	"class":"_CamCalib",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,

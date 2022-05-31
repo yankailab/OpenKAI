@@ -12,7 +12,7 @@
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":0,
+	"bON":0,
 	"bDraw":0,
 	"w":640,
 	"h":360,
@@ -22,7 +22,7 @@
 	"name":"gstRaspiV4l2",
 	"class":"_GStreamer",
 	"FPS":60,
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"bFlip":0,
 	"bGray":0,
@@ -33,7 +33,7 @@
 	"name":"raspivid",
 	"class":"_Raspivid",
 	"FPS":90,
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"bFlip":0,
 	"bGray":0,
@@ -47,7 +47,7 @@
 {
 	"name":"apSerial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -61,7 +61,7 @@
 {
 	"name":"apUDP",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -72,7 +72,7 @@
 {
 	"name":"apWS",
 	"class":"_WebSocket",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"Window":"OKview",
 }
@@ -80,19 +80,19 @@
 {
 	"name":"mavAP",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
 	"_IOBase":"apSerial",
 	
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"mavGCS",
 	}
 	
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"mavWS",
 	}
 }
@@ -100,19 +100,19 @@
 {
 	"name":"mavWS",
 	"class":"_Mavlink",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
 	"_IOBase":"apWS",
 	
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"mavGCS",
 	}
 	
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"mavAP",
 	}
 }
@@ -120,19 +120,19 @@
 {
 	"name":"mavGCS",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
 	"_IOBase":"apUDP",
 	
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"mavAP",
 	}
 	
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"mavWS",
 	}
 }
@@ -140,7 +140,7 @@
 {
 	"name":"apMission",
 	"class":"_MissionControl",
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"startState":"AP_STANDBY",
 
@@ -157,7 +157,7 @@
 	"name":"apPilot",
 	"class":"_AutoPilot",
 	"_MissionControl":"apMission",
-	"bInst":1,
+	"bON":1,
 	"FPS":20,
 	"Window":"OKview",
 	
@@ -167,7 +167,7 @@
 		{
 			"name":"apBase",
 			"class":"APcopter_base",
-			"bInst":1,
+			"bON":1,
 			"_MissionControl":"apMission",
 			"Window":"OKview",
 			"_Mavlink":"mavAP",

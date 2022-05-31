@@ -18,54 +18,58 @@
 #include "../State/RTH.h"
 #include "../State/Takeoff.h"
 
-#define ADD_STATE(x) if(pKs->m_class==#x){S.m_pInst=new x();S.m_pKiss=pKs;}
+#define ADD_STATE(x)         \
+	if (pKs->m_class == #x)  \
+	{                        \
+		S.m_pInst = new x(); \
+		S.m_pKiss = pKs;     \
+	}
 
 namespace kai
 {
 
-struct STATE_INST 
-{
-	State* m_pInst;
-	Kiss* m_pKiss;
-
-	void init(void)
+	struct STATE_INST
 	{
-		m_pInst = NULL;
-		m_pKiss = NULL;
-	}
-};
+		State *m_pInst;
+		Kiss *m_pKiss;
 
-class _StateControl: public _ModuleBase
-{
-public:
-	_StateControl();
-	virtual ~_StateControl();
+		void init(void)
+		{
+			m_pInst = NULL;
+			m_pKiss = NULL;
+		}
+	};
 
-	bool init(void* pKiss);
-	bool start(void);
-	void console(void* pConsole);
-
-	State* getState(void);
-	string getStateName(void);
-	int getStateIdx(void);
-	STATE_TYPE getStateType(void);
-	int getStateIdxByName (const string& n);
-	void transit(void);
-	void transit(const string& n);
-	void transit(int iS);
-
-private:
-	void update(void);
-	static void* getUpdate(void* This)
+	class _StateControl : public _ModuleBase
 	{
-		(( _StateControl *) This)->update();
-		return NULL;
-	}
+	public:
+		_StateControl();
+		virtual ~_StateControl();
 
-	vector<STATE_INST> m_vState;
-	int m_iS;	//current state
+		bool init(void *pKiss);
+		bool start(void);
+		void console(void *pConsole);
 
-};
+		State *getState(void);
+		string getStateName(void);
+		int getStateIdx(void);
+		STATE_TYPE getStateType(void);
+		int getStateIdxByName(const string &n);
+		void transit(void);
+		void transit(const string &n);
+		void transit(int iS);
+
+	private:
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_StateControl *)This)->update();
+			return NULL;
+		}
+
+		vector<STATE_INST> m_vState;
+		int m_iS; //current state
+	};
 
 }
 #endif

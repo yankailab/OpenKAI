@@ -10,7 +10,7 @@
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 	"bFullScreen":0,
 	"recFile_":"/media/ubuntu/data/OpenKAI_",
 	"recFPS":15,
@@ -22,7 +22,7 @@
 	"name":"camera",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"deviceID":0,
 	"width":1280,
@@ -33,7 +33,7 @@
 	"name":"camera",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"depthWindow":"depthView",
 	"vPreset":"High Density",
@@ -53,7 +53,7 @@
 	"name":"lane",
 	"class":"_Lane",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_VisionBase":"camera",
 	"roiLTx":0.425,
@@ -74,9 +74,9 @@
 
 	{
 		"name":"colorFilter",
-		"bInst":1,
+		"bON":1,
 		{
-			"bInst":1,
+			"bON":1,
 			"iColorSpace":44, /*CV_BGR2Lab*/
 			"iChannel":2,
 			"nTile":4,
@@ -84,7 +84,7 @@
 			"clipLim":2.0,
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"iColorSpace":40, /*CV_BGR2HSV*/
 			"iChannel":2,
 			"nTile":4,
@@ -92,7 +92,7 @@
 			"clipLim":6.0,
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"iColorSpace":52, /*CV_BGR2HLS*/
 			"iChannel":1,
 			"nTile":4,
@@ -103,9 +103,9 @@
 	
 	{
 		"name":"lane",
-		"bInst":1,
+		"bON":1,
 		{
-			"bInst":1,
+			"bON":1,
 			"l":0.0,
 			"t":0.0,
 			"r":1.0,

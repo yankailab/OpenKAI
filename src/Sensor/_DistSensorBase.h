@@ -10,7 +10,7 @@
 
 #include "../Base/_ModuleBase.h"
 #include "../UI/_Console.h"
-#include "../UI/_WindowCV.h"
+#include "../Vision/Frame.h""
 #include "../Filter/Median.h"
 #include "../Filter/Average.h"
 

@@ -9,7 +9,7 @@
 {
 	"name":"RGBview",
 	"class":"_WindowCV",
-	"bInst":1,
+	"bON":1,
 	"bFullScreen":0,
     {
 		"name":"thread",
@@ -24,7 +24,7 @@
 {
 	"name":"depthView",
 	"class":"_WindowCV",
-	"bInst":1,
+	"bON":1,
 	"bFullScreen":0,
     {
 		"name":"thread",
@@ -47,7 +47,7 @@
 		"name":"threadPP",
 		"FPS":30,
 	}
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"bDraw":1,
 	"vPreset":"Short Range",
@@ -70,7 +70,7 @@
 	"name":"RSdepth",
 	"class":"_RSdepth",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -81,7 +81,7 @@
 {
 	"name":"udp",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -98,7 +98,7 @@
 {
 	"name":"DC",
 	"class":"_DepthCam",
-	"bInst":1,
+	"bON":1,
 	"bLog":0,
     {
 		"name":"thread",

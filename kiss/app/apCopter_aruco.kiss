@@ -11,14 +11,14 @@
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 	"bFullScreen":0,
 }
 
 {
 	"name":"depthView",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 	"bFullScreen":0,
 }
 
@@ -26,7 +26,7 @@
 	"name":"gst",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"bFlip":0,
 	"bGray":0,
@@ -39,7 +39,7 @@
 	"name":"rs",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"depthWindow":"depthView",
 	"vPreset":"High Density",
@@ -67,7 +67,7 @@
 {
 	"name":"arUco",
 	"class":"_ArUco",
-	"bInst":1,
+	"bON":1,
 	"bDraw":1,
 	"bLog":0,
 	"FPS":30,
@@ -80,7 +80,7 @@
 {
 	"name":"apSerial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
 	"bLog":0,
 	"FPS":100,
 	"Window":"OKview",
@@ -93,7 +93,7 @@
 {
 	"name":"mavAP",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"FPS":100,
 	"Window":"OKview",
@@ -103,7 +103,7 @@
 {
 	"name":"apMission",
 	"class":"_MissionControl",
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"startState":"AP_STANDBY",
 
@@ -120,7 +120,7 @@
 	"name":"apPilot",
 	"class":"_AutoPilot",
 	"_MissionControl":"apMission",
-	"bInst":1,
+	"bON":1,
 	"FPS":20,
 	"Window":"OKview",
 	
@@ -130,7 +130,7 @@
 		{
 			"name":"apBase",
 			"class":"APcopter_base",
-			"bInst":1,
+			"bON":1,
 			"_MissionControl":"apMission",
 			"Window":"OKview",
 			"_Mavlink":"mavAP",
@@ -142,7 +142,7 @@
 		{
 			"name":"apAruco",
 			"class":"APcopter_arucoLanding",
-			"bInst":0,
+			"bON":0,
 			"Window":"OKview",
 			"APcopter_base":"apBase",
 			"_ArUco":"arUco",

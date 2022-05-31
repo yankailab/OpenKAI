@@ -9,7 +9,7 @@
 {
 	"name":"Solver",
 	"class":"_SolverBase",
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
     {
 		"name":"thread",

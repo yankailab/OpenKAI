@@ -3,8 +3,6 @@
 #define OpenKAI_src_Autopilot__AP_depthVision_H_
 
 #include "../../Vision/_DepthVisionBase.h"
-
-#ifdef USE_OPENCV
 #include "_AP_base.h"
 
 #define N_DEPTH_ROI 16
@@ -12,39 +10,37 @@
 namespace kai
 {
 
-struct DEPTH_ROI
-{
-	uint8_t		m_orientation;
-	vFloat4		m_roi;
-	float		m_minD;
-
-	void init(void)
+	struct DEPTH_ROI
 	{
-		m_minD = 0.0;
-		m_orientation = 0;
-		m_roi.init();
-	}
-};
+		uint8_t m_orientation;
+		vFloat4 m_roi;
+		float m_minD;
 
-class _AP_depthVision: public _StateBase
-{
-public:
-	_AP_depthVision();
-	~_AP_depthVision();
+		void init(void)
+		{
+			m_minD = 0.0;
+			m_orientation = 0;
+			m_roi.init();
+		}
+	};
 
-	bool init(void* pKiss);
-	void update(void);
-	void draw(void* pFrame);
+	class _AP_depthVision : public _StateBase
+	{
+	public:
+		_AP_depthVision();
+		~_AP_depthVision();
 
-private:
-	_AP_base* m_pAP;
-	_DepthVisionBase* m_pDV;
+		bool init(void *pKiss);
+		void update(void);
+		void draw(void *pFrame);
 
-	int m_nROI;
-	DEPTH_ROI m_pROI[N_DEPTH_ROI];
+	private:
+		_AP_base *m_pAP;
+		_DepthVisionBase *m_pDV;
 
-};
+		int m_nROI;
+		DEPTH_ROI m_pROI[N_DEPTH_ROI];
+	};
 
 }
-#endif
 #endif

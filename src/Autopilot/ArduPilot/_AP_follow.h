@@ -3,13 +3,11 @@
 
 #include "../../Universe/_Universe.h"
 #include "../../Tracker/_TrackerBase.h"
-#include "_AP_posCtrl.h"
 #include "../../Filter/Median.h"
 #include "../../Filter/Average.h"
 #include "../../Filter/Predict.h"
 #include "../../Filter/Hold.h"
-
-#ifdef USE_OPENCV
+#include "_AP_posCtrl.h"
 
 namespace kai
 {
@@ -80,5 +78,4 @@ public:
 };
 
 }
-#endif
 #endif

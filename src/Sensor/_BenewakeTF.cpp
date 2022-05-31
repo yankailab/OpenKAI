@@ -99,7 +99,7 @@ namespace kai
 	void _BenewakeTF::handleCMD(void)
 	{
 		uint8_t cs = verifyCheckSum(m_frame.m_pB, 9);
-//		IF_(!cs);
+		//		IF_(!cs);
 		uint16_t d = m_frame.m_pB[2];
 		d |= m_frame.m_pB[3] << 8;
 		float df = d * 0.01;
@@ -127,7 +127,6 @@ namespace kai
 
 	void _BenewakeTF::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
@@ -145,7 +144,6 @@ namespace kai
 		}
 		msg += " |";
 		pC->addMsg(msg);
-#endif
 	}
 
 }

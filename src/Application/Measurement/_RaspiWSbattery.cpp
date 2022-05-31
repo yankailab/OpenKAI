@@ -95,9 +95,7 @@ namespace kai
 		this->_ModuleBase::draw(pFrame);
 		IF_(check() < 0);
 
-		_WindowCV *pWin = (_WindowCV *)pFrame;
-		Frame *pF = pWin->getNextFrame();
-		NULL_(pF);
+		Frame *pF = (Frame*)pFrame;
 		Mat *pMw = pF->m();
 		IF_(pMw->empty());
 		cv::Ptr<freetype::FreeType2> pFt = pWin->getFont();

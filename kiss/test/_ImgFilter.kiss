@@ -12,27 +12,27 @@
 {
 	"name":"OK_Console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 	"bFullScreen":0,
 }
 
 {
 	"name":"FilterView",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"deviceID":0,
 	"w":1280,
@@ -43,7 +43,7 @@
 	"name":"cam",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"/pipeline":"nvcamerasrc fpsRange='60.0 60.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)60/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
 	"/pipeline":"udpsrc port=5678 ! application/x-rtp, media=video, encoding-name=h264, payload=96, clock-rate=90000 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
@@ -56,7 +56,7 @@
 	"name":"cam",
 	"class":"_VideoFile",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"videoFile":"/home/kai/Videos/sz.ts",
 	"w":1280,
@@ -67,7 +67,7 @@
 	"name":"cam",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
@@ -90,7 +90,7 @@
 	"name":"histEqualize",
 	"class":"_HistEqualize",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"FilterView",
 	"_VisionBase":"cam",
 }
@@ -99,7 +99,7 @@
 	"name":"contrast",
 	"class":"_Contrast",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"FilterView",
 	"_VisionBase":"cam",
 	"alpha":1.5,
@@ -110,7 +110,7 @@
 	"name":"d2g",
 	"class":"_Depth2Gray",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"/Window":"FilterView",
 	"_DepthVisionBase":"cam",
 }
@@ -119,7 +119,7 @@
 	"name":"resize",
 	"class":"_Resize",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"/Window":"FilterView",
 	"_VisionBase":"d2g",
 	"w":1920,
@@ -130,7 +130,7 @@
 	"name":"inRange",
 	"class":"_InRange",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"/FilterView",
 	"_VisionBase":"resize",
 	"rFrom":10,
@@ -141,7 +141,7 @@
 	"name":"thr",
 	"class":"_Threshold",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"FilterView",
 	"_VisionBase":"contrast",
 
@@ -158,12 +158,12 @@
 	"name":"morph",
 	"class":"_Morphology",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"FilterView",
 	"_VisionBase":"cam",
 
 	{
-		"bInst":1,	
+		"bON":1,	
 		"morphOp":2, /*open*/
 		"nItr":1,
 		"kW":3,
@@ -173,7 +173,7 @@
 	}
 	
 	{
-		"bInst":0,
+		"bON":0,
 		"morphOp":3, /*close*/
 		"nItr":2,
 	}
@@ -183,7 +183,7 @@
 	"name":"erode",
 	"class":"_Erode",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"/FilterView",
 	"_VisionBase":"inRange",
 
@@ -198,7 +198,7 @@
 	"name":"mask",
 	"class":"_Mask",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"FilterView",
 	"_VisionBase":"cam",
 	"_VisionBaseMask":"erode",

@@ -4,8 +4,6 @@
  */
 #include "_Livox.h"
 
-#ifdef USE_LIVOX
-
 namespace kai
 {
 
@@ -206,4 +204,3 @@ namespace kai
     }
 
 }
-#endif

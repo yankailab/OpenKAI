@@ -97,7 +97,6 @@ namespace kai
 
 	void _NavBase::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
@@ -117,7 +116,6 @@ namespace kai
 
 		msg = "confidence=" + f2str(m_confidence);
 		pC->addMsg(msg, 1);
-#endif
 	}
 
 }

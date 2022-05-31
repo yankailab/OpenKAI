@@ -7,123 +7,121 @@
 
 #include "_Morphology.h"
 
-#ifdef USE_OPENCV
-
 namespace kai
 {
 
-_Morphology::_Morphology()
-{
-	m_type = vision_morphology;
-	m_pV = NULL;
-}
-
-_Morphology::~_Morphology()
-{
-	close();
-}
-
-bool _Morphology::init(void* pKiss)
-{
-	IF_F(!_VisionBase::init(pKiss));
-	Kiss* pK = (Kiss*) pKiss;
-
-	int i = 0;
-	while (1)
+	_Morphology::_Morphology()
 	{
-		Kiss* pM = pK->child(i++);
-		if(pM->empty())break;
-
-		IMG_MORPH m;
-		m.init();
-		pM->v("morphOp", &m.m_morphOp);
-		pM->v("nItr", &m.m_nItr);
-		pM->v("kShape", &m.m_kShape);
-		pM->v("kW", &m.m_kW);
-		pM->v("kH", &m.m_kH);
-		pM->v("aX", &m.m_aX);
-		pM->v("aY", &m.m_aY);
-		m.updateKernel();
-
-		m_vFilter.push_back(m);
+		m_type = vision_morphology;
+		m_pV = NULL;
 	}
 
-	string n;
-	n = "";
-	pK->v("_VisionBase", &n);
-	m_pV = (_VisionBase*) (pK->getInst(n));
-	IF_Fl(!m_pV, n + ": not found");
-
-	return true;
-}
-
-bool _Morphology::open(void)
-{
-	NULL_F(m_pV);
-	m_bOpen = m_pV->isOpened();
-
-	return m_bOpen;
-}
-
-void _Morphology::close(void)
-{
-	this->_VisionBase::close();
-}
-
-bool _Morphology::start(void)
-{
-    NULL_F(m_pT);
-	return m_pT->start(getUpdate, this);
-}
-
-void _Morphology::update(void)
-{
-	while(m_pT->bRun())
+	_Morphology::~_Morphology()
 	{
-		if (!m_bOpen)
-			open();
+		close();
+	}
 
-		m_pT->autoFPSfrom();
+	bool _Morphology::init(void *pKiss)
+	{
+		IF_F(!_VisionBase::init(pKiss));
+		Kiss *pK = (Kiss *)pKiss;
 
-		if(m_bOpen)
+		int i = 0;
+		while (1)
 		{
-			if(m_fIn.tStamp() < m_pV->BGR()->tStamp())
-			{
-				filter();
-			}
+			Kiss *pM = pK->child(i++);
+			if (pM->empty())
+				break;
+
+			IMG_MORPH m;
+			m.init();
+			pM->v("morphOp", &m.m_morphOp);
+			pM->v("nItr", &m.m_nItr);
+			pM->v("kShape", &m.m_kShape);
+			pM->v("kW", &m.m_kW);
+			pM->v("kH", &m.m_kH);
+			pM->v("aX", &m.m_aX);
+			pM->v("aY", &m.m_aY);
+			m.updateKernel();
+
+			m_vFilter.push_back(m);
 		}
 
-		m_pT->autoFPSto();
+		string n;
+		n = "";
+		pK->v("_VisionBase", &n);
+		m_pV = (_VisionBase *)(pK->getInst(n));
+		IF_Fl(!m_pV, n + ": not found");
+
+		return true;
 	}
-}
 
-void _Morphology::filter(void)
-{
-	IF_(m_pV->BGR()->bEmpty());
-
-	m_fIn.copy(*m_pV->BGR());
-
-	Mat m1 = *m_fIn.m();
-	Mat m2;
-	Mat* pM1 = &m1;
-	Mat* pM2 = &m2;
-	Mat* pT;
-
-	for(int i=0;i<m_vFilter.size();i++)
+	bool _Morphology::open(void)
 	{
-		IMG_MORPH* pM = &m_vFilter[i];
+		NULL_F(m_pV);
+		m_bOpen = m_pV->isOpened();
 
-		cv::morphologyEx(*pM1, *pM2,
-				pM->m_morphOp,
-				pM->m_kernel,
-				cv::Point(pM->m_aX, pM->m_aY),
-				pM->m_nItr);
-
-		SWAP(pM1,pM2,pT);
+		return m_bOpen;
 	}
 
-	m_fBGR.copy(*pM1);
-}
+	void _Morphology::close(void)
+	{
+		this->_VisionBase::close();
+	}
+
+	bool _Morphology::start(void)
+	{
+		NULL_F(m_pT);
+		return m_pT->start(getUpdate, this);
+	}
+
+	void _Morphology::update(void)
+	{
+		while (m_pT->bRun())
+		{
+			if (!m_bOpen)
+				open();
+
+			m_pT->autoFPSfrom();
+
+			if (m_bOpen)
+			{
+				if (m_fIn.tStamp() < m_pV->BGR()->tStamp())
+				{
+					filter();
+				}
+			}
+
+			m_pT->autoFPSto();
+		}
+	}
+
+	void _Morphology::filter(void)
+	{
+		IF_(m_pV->BGR()->bEmpty());
+
+		m_fIn.copy(*m_pV->BGR());
+
+		Mat m1 = *m_fIn.m();
+		Mat m2;
+		Mat *pM1 = &m1;
+		Mat *pM2 = &m2;
+		Mat *pT;
+
+		for (int i = 0; i < m_vFilter.size(); i++)
+		{
+			IMG_MORPH *pM = &m_vFilter[i];
+
+			cv::morphologyEx(*pM1, *pM2,
+							 pM->m_morphOp,
+							 pM->m_kernel,
+							 cv::Point(pM->m_aX, pM->m_aY),
+							 pM->m_nItr);
+
+			SWAP(pM1, pM2, pT);
+		}
+
+		m_fBGR.copy(*pM1);
+	}
 
 }
-#endif

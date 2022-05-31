@@ -2,7 +2,6 @@
  *  Created on: Mar 11, 2021
  *      Author: yankai
  */
-#ifdef USE_OPENCV
 #include "_HandKey.h"
 
 namespace kai
@@ -152,4 +151,3 @@ namespace kai
 	}
 
 }
-#endif

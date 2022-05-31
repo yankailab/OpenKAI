@@ -23,6 +23,7 @@ namespace kai
 		IF_N(!pK);
 
 		ADD_MODULE(Destimator);
+		ADD_MODULE(_Console);
 
 #ifdef WITH_ACTUATOR
 		ADD_MODULE(_ArduServo);
@@ -316,10 +317,9 @@ namespace kai
 #endif
 
 #ifdef WITH_UI
-		ADD_MODULE(_Console);
-		ADD_MODULE(_FrameBuffer);
 #ifdef USE_OPENCV
 		ADD_MODULE(_WindowCV);
+		ADD_MODULE(_FrameBuffer);
 #endif
 #ifdef USE_GUI
 		ADD_MODULE(_WindowGUI);

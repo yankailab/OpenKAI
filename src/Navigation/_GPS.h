@@ -15,48 +15,47 @@
 namespace kai
 {
 
-class _GPS: public _ModuleBase
-{
-public:
-	_GPS(void);
-	virtual ~_GPS();
-
-	bool init(void* pKiss);
-	bool start(void);
-	void console(void* pConsole);
-
-	LL_POS getLLpos(void);
-	UTM_POS getUTMpos(void);
-
-private:
-	bool readNMEA(void);
-	void decodeNMEA(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _GPS : public _ModuleBase
 	{
-		((_GPS *) This)->update();
-		return NULL;
-	}
+	public:
+		_GPS(void);
+		virtual ~_GPS();
 
-private:
-	_IOBase* m_pIO;
-	uint8_t m_rBuf[N_IO_BUF];
-	int m_nRead;
-	int m_iRead;
-	string m_msg;
+		bool init(void *pKiss);
+		bool start(void);
+		void console(void *pConsole);
 
-	minmea_sentence_rmc m_rmc;
-	minmea_sentence_gga m_gga;
-	minmea_sentence_gst m_gst;
-	minmea_sentence_gsv m_gsv;
-	minmea_sentence_vtg m_vtg;
-	minmea_sentence_zda m_zda;
+		LL_POS getLLpos(void);
+		UTM_POS getUTMpos(void);
 
-	LL_POS m_LL;
-	UTM_POS m_UTM;
-	Coordinate	m_coord;
+	private:
+		bool readNMEA(void);
+		void decodeNMEA(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_GPS *)This)->update();
+			return NULL;
+		}
 
-};
+	private:
+		_IOBase *m_pIO;
+		uint8_t m_rBuf[N_IO_BUF];
+		int m_nRead;
+		int m_iRead;
+		string m_msg;
+
+		minmea_sentence_rmc m_rmc;
+		minmea_sentence_gga m_gga;
+		minmea_sentence_gst m_gst;
+		minmea_sentence_gsv m_gsv;
+		minmea_sentence_vtg m_vtg;
+		minmea_sentence_zda m_zda;
+
+		LL_POS m_LL;
+		UTM_POS m_UTM;
+		Coordinate m_coord;
+	};
 
 }
 #endif

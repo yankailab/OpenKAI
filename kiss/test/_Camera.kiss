@@ -9,7 +9,7 @@
 {
 	"name":"OKconsole",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
@@ -20,7 +20,7 @@
 {
 	"name":"OKview",
 	"class":"_WindowCV",
-	"bInst":1,
+	"bON":1,
 	"bFullScreen":0,
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",	
@@ -34,7 +34,7 @@
 {
 	"name":"camera",
 	"class":"_Camera",
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"_Console":"OKconsole",
 	"deviceID":0,
@@ -48,7 +48,7 @@
 {
 	"name":"gst",
 	"class":"_GStreamer",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -76,7 +76,7 @@
 	"name":"videoFile",
 	"class":"_VideoFile",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"videoFile":"/home/kai/Videos/sz.ts",
 	"vSize":[1280,720],
 }
@@ -85,7 +85,7 @@
 	"name":"imgFile",
 	"class":"_ImgFile",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"file":"/home/kai/Pictures/test.jpg",
 	"vSize":[1280,720],
 }
@@ -93,7 +93,7 @@
 {
 	"name":"resize",
 	"class":"_Resize",
-	"bInst":0,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,

@@ -80,13 +80,11 @@ namespace kai
 
 	void BASE::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("____________________________________", COLOR_PAIR(_Console_COL_NAME) | A_BOLD, _Console_X_NAME, 1);
 		pC->addMsg(*this->getName(), COLOR_PAIR(_Console_COL_NAME) | A_BOLD, _Console_X_NAME, 1);
-#endif
 	}
 
 	void BASE::context(void* pContext)

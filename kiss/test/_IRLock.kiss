@@ -12,13 +12,13 @@
 {
 	"name":"OpenKAI",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 	"bFullScreen":0,
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.2 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.2 port=5678 auto-multicast=false",
@@ -27,7 +27,7 @@
 {
 	"name":"serial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -39,7 +39,7 @@
 {
 	"name":"IRLock",
 	"class":"_IRLock",
-	"bInst":1,
+	"bON":1,
 	"bDraw":1,
 	"bLog":1,
 	"FPS":100,

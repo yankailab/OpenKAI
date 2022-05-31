@@ -209,7 +209,6 @@ namespace kai
 
 	void _Canbus::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
@@ -220,7 +219,6 @@ namespace kai
 			msg += ": Not connected";
 
 		((_Console *)pConsole)->addMsg(msg);
-#endif
 	}
 
 }

@@ -10,7 +10,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bInst":0,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -21,7 +21,7 @@
 {
 	"name":"UI",
 	"class":"_WindowCV",
-	"bInst":1,
+	"bON":1,
 	"bFullScreen":0,
     {
 		"name":"thread",
@@ -74,7 +74,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -86,7 +86,7 @@
 {
 	"name":"remap",
 	"class":"_Remap",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -100,7 +100,7 @@
 {
 	"name":"calibCam",
 	"class":"_3DScanCalibCam",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,

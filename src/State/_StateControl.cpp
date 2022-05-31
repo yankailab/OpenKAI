@@ -167,7 +167,6 @@ namespace kai
 
 	void _StateControl::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
@@ -185,7 +184,6 @@ namespace kai
 			((Waypoint *)pMB)->console(pConsole);
 		else
 			pMB->console(pConsole);
-#endif
 	}
 
 }

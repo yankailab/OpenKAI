@@ -12,20 +12,20 @@
 {
 	"name":"OpenKAI",
 	"class":"_Console",
-	"bInst":0,
+	"bON":0,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 	"bFullScreen":0,
 }
 
 {
 	"name":"depthView",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 	"bFullScreen":0,
 }
 
@@ -33,7 +33,7 @@
 	"name":"Mynteye",
 	"class":"_Mynteye",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"Window":"OKview",
 	"depthWindow":"depthView",

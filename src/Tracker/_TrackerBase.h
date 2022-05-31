@@ -16,46 +16,44 @@
 namespace kai
 {
 
-enum TRACK_STATE
-{
-	track_init,
-	track_update,
-	track_stop
-};
+	enum TRACK_STATE
+	{
+		track_init,
+		track_update,
+		track_stop
+	};
 
-class _TrackerBase: public _ModuleBase
-{
-public:
-	_TrackerBase();
-	virtual
-	~_TrackerBase();
+	class _TrackerBase : public _ModuleBase
+	{
+	public:
+		_TrackerBase();
+		virtual ~_TrackerBase();
 
-	virtual bool init(void* pKiss);
-	virtual void update(void);
-	virtual int check(void);
-	virtual void draw(void* pFrame);
-	virtual void console(void* pConsole);
+		virtual bool init(void *pKiss);
+		virtual void update(void);
+		virtual int check(void);
+		virtual void draw(void *pFrame);
+		virtual void console(void *pConsole);
 
-	virtual void createTracker(void);
-	virtual bool startTrack(vFloat4& bb);
-	virtual void stopTrack(void);
-	TRACK_STATE trackState(void);
-	vFloat4* getBB(void);
+		virtual void createTracker(void);
+		virtual bool startTrack(vFloat4 &bb);
+		virtual void stopTrack(void);
+		TRACK_STATE trackState(void);
+		vFloat4 *getBB(void);
 
-public:
-	_VisionBase* m_pV;
-	Rect2d m_rBB;
-	vFloat4 m_bb;
-	float m_margin;
+	public:
+		_VisionBase *m_pV;
+		Rect2d m_rBB;
+		vFloat4 m_bb;
+		float m_margin;
 
-	Rect2d	m_newBB;
-	uint64_t	m_iSet;
-	uint64_t	m_iInit;
+		Rect2d m_newBB;
+		uint64_t m_iSet;
+		uint64_t m_iInit;
 
-	string m_trackerType;
-	TRACK_STATE	m_trackState;
-
-};
+		string m_trackerType;
+		TRACK_STATE m_trackState;
+	};
 
 }
 #endif

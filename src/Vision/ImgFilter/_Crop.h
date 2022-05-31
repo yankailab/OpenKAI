@@ -8,40 +8,37 @@
 #ifndef OpenKAI_src_Vision__Crop_H_
 #define OpenKAI_src_Vision__Crop_H_
 
-#ifdef USE_OPENCV
 #include "../_VisionBase.h"
 
 namespace kai
 {
 
-class _Crop: public _VisionBase
-{
-public:
-	_Crop();
-	virtual ~_Crop();
-
-	bool init(void* pKiss);
-	bool start(void);
-	bool open(void);
-	void close(void);
-
-private:
-	void filter(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _Crop : public _VisionBase
 	{
-		((_Crop*) This)->update();
-		return NULL;
-	}
+	public:
+		_Crop();
+		virtual ~_Crop();
 
-public:
-	_VisionBase* m_pV;
-	Frame m_fIn;
+		bool init(void *pKiss);
+		bool start(void);
+		bool open(void);
+		void close(void);
 
-	vFloat4 m_roi;
+	private:
+		void filter(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_Crop *)This)->update();
+			return NULL;
+		}
 
-};
+	public:
+		_VisionBase *m_pV;
+		Frame m_fIn;
+
+		vFloat4 m_roi;
+	};
 
 }
-#endif
 #endif

@@ -13,36 +13,36 @@
 namespace kai
 {
 
-class RTH: public State
-{
-public:
-	RTH();
-	virtual ~RTH();
+	class RTH : public State
+	{
+	public:
+		RTH();
+		virtual ~RTH();
 
-	bool init(void* pKiss);
-	bool update(void);
-	void console(void* pConsole);
+		bool init(void *pKiss);
+		bool update(void);
+		void console(void *pConsole);
 
-	void reset(void);
-	void setHome(vDouble3& p);
-	void setPos(vDouble3& p);
-	vDouble3 getHome(void);
-	double getHdg(void);
+		void reset(void);
+		void setHome(vDouble3 &p);
+		void setPos(vDouble3 &p);
+		vDouble3 getHome(void);
+		double getHdg(void);
 
-private:
-	bool	m_bSetHome;
+	private:
+		bool m_bSetHome;
 
-	vDouble3 m_vHome;	//lat, lon, alt
-	vDouble3 m_vPos;
-	double	 m_eH;
-	double	 m_eV;
-	bool	 m_bAlt;
+		vDouble3 m_vHome; //lat, lon, alt
+		vDouble3 m_vPos;
+		double m_eH;
+		double m_eV;
+		bool m_bAlt;
 
-	double	 m_speedV;
-	double	 m_speedH;
-	double	 m_hdg;
-	double	 m_r;		//radius(m)
-};
+		double m_speedV;
+		double m_speedH;
+		double m_hdg;
+		double m_r; //radius(m)
+	};
 
 }
 #endif

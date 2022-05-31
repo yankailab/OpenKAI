@@ -7,9 +7,6 @@
 
 #include "_Chilitags.h"
 
-#ifdef USE_OPENCV
-#ifdef USE_CHILITAGS
-
 namespace kai
 {
 
@@ -156,9 +153,7 @@ namespace kai
         this->_DetectorBase::draw(pFrame);
         IF_(check() < 0);
 
-        _WindowCV *pWin = (_WindowCV *)pFrame;
-        Frame *pF = pWin->getNextFrame();
-        NULL_(pF);
+        Frame *pF = (Frame*)pFrame;
         Mat *pM = pF->m();
         IF_(pM->empty());
 
@@ -182,5 +177,3 @@ namespace kai
     }
 
 }
-#endif
-#endif

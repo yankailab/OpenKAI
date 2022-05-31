@@ -16,58 +16,57 @@
 namespace kai
 {
 
-class _LeddarVu: public _DistSensorBase
-{
-public:
-	_LeddarVu();
-	~_LeddarVu();
-
-	bool init(void* pKiss);
-	bool start(void);
-	void draw(void* pFrame);
-	void console(void* pConsole);
-
-	DIST_SENSOR_TYPE type(void);
-
-private:
-	bool open(void);
-	bool updateLidar(void);
-	bool updateLidarFast(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _LeddarVu : public _DistSensorBase
 	{
-		((_LeddarVu*) This)->update();
-		return NULL;
-	}
+	public:
+		_LeddarVu();
+		~_LeddarVu();
 
-public:
-	modbus_t *m_pMb;
-	string	m_port;
-	int		m_baud;
-	// Current slave address being used (because modbus_send_raw_request() doesn't use the address set
-	// by modbus_set_slave()):
-	int m_slaveAddr;
-	// True to use command 0x41 to fetch data; otherwise, we use the standard Modbus registers:
-	bool m_bUse0x41;
-	float m_showOriginOffsetX;
-	float m_showOriginOffsetY;
+		bool init(void *pKiss);
+		bool start(void);
+		void draw(void *pFrame);
+		void console(void *pConsole);
 
-	uint16_t m_nDetection;
+		DIST_SENSOR_TYPE type(void);
 
-	//configurations
-	uint16_t	m_nAccumulationsExpo;
-	uint16_t	m_nOversamplingsExpo;
-	uint16_t	m_lightSrcPwr;
-	uint16_t	m_nPoint;
-	uint16_t	m_oprMode;
-	bool		m_bAutoLightSrcPwr;
-	bool		m_bDemergeObj;
-	bool		m_bStaticNoiseRemoval;
-	bool		m_bPrecision;
-	bool		m_bSaturationCompensation;
-	bool		m_bOvershootManagement;
+	private:
+		bool open(void);
+		bool updateLidar(void);
+		bool updateLidarFast(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_LeddarVu *)This)->update();
+			return NULL;
+		}
 
-};
+	public:
+		modbus_t *m_pMb;
+		string m_port;
+		int m_baud;
+		// Current slave address being used (because modbus_send_raw_request() doesn't use the address set
+		// by modbus_set_slave()):
+		int m_slaveAddr;
+		// True to use command 0x41 to fetch data; otherwise, we use the standard Modbus registers:
+		bool m_bUse0x41;
+		float m_showOriginOffsetX;
+		float m_showOriginOffsetY;
+
+		uint16_t m_nDetection;
+
+		//configurations
+		uint16_t m_nAccumulationsExpo;
+		uint16_t m_nOversamplingsExpo;
+		uint16_t m_lightSrcPwr;
+		uint16_t m_nPoint;
+		uint16_t m_oprMode;
+		bool m_bAutoLightSrcPwr;
+		bool m_bDemergeObj;
+		bool m_bStaticNoiseRemoval;
+		bool m_bPrecision;
+		bool m_bSaturationCompensation;
+		bool m_bOvershootManagement;
+	};
 
 }
 #endif

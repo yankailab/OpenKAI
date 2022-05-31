@@ -12,13 +12,13 @@
 {
 	"name":"ap_Console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 	"bDrawMsg":1,
 	"bFullScreen":0,
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.201 port=5678 auto-multicast=false",
@@ -28,7 +28,7 @@
 {
 	"name":"apSerial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -43,7 +43,7 @@
 {
 	"name":"apMavlink",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -56,7 +56,7 @@
 	"tTimeout":10000000,
 
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"apMavID",
 	}	
 }
@@ -64,7 +64,7 @@
 {
 	"name":"apUDP",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -76,14 +76,14 @@
 {
 	"name":"apMavID",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":1,
 	"_Console":"ap_Console",
 	"_IOBase":"apUDP",
 	
 	{
-		"bInst":1,
+		"bON":1,
 		"_Mavlink":"apMavlink",
 	}	
 }
@@ -92,7 +92,7 @@
 	"name":"apMavInfo",
 	"class":"_AP_base",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"ap_Console",
 	"_Mavlink":"apMavlink",

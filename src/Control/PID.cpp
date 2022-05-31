@@ -83,12 +83,10 @@ namespace kai
 
 	void PID::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->BASE::console(pConsole);
 
 		((_Console *)pConsole)->addMsg("v=" + f2str(m_v) + ", vT=" + f2str(m_vT) + ", vO=" + f2str(m_vOut), 1);
-#endif
 	}
 
 }

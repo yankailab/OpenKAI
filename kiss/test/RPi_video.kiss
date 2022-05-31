@@ -10,7 +10,7 @@
 {
 	"name":"FB",
 	"class":"_FrameBuffer",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -23,7 +23,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -39,7 +39,7 @@
 {
 	"name":"apVideo",
 	"class":"_AP_video",
-	"bInst":0,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,

@@ -16,48 +16,47 @@ using namespace Eigen;
 namespace kai
 {
 
-class _NavBase: public _ModuleBase
-{
-public:
-	_NavBase();
-	virtual ~_NavBase();
+	class _NavBase : public _ModuleBase
+	{
+	public:
+		_NavBase();
+		virtual ~_NavBase();
 
-	virtual bool init(void* pKiss);
-	virtual void console(void* pConsole);
+		virtual bool init(void *pKiss);
+		virtual void console(void *pConsole);
 
-	virtual bool bOpen(void);
-	virtual bool bReady(void);
+		virtual bool bOpen(void);
+		virtual bool bReady(void);
 
-	virtual void reset(void);
-	virtual float confidence(void);
+		virtual void reset(void);
+		virtual float confidence(void);
 
-	virtual vFloat3 t(void);
-	virtual vFloat3 v(void);
-	virtual vFloat3 r(void);
-	virtual vFloat4 q(void);
+		virtual vFloat3 t(void);
+		virtual vFloat3 v(void);
+		virtual vFloat3 r(void);
+		virtual vFloat4 q(void);
 
-	virtual const Matrix4f& mT(void);
-	virtual const Matrix3f& mR(void);
+		virtual const Matrix4f &mT(void);
+		virtual const Matrix3f &mR(void);
 
-protected:
-	virtual void resetAll(void);
+	protected:
+		virtual void resetAll(void);
 
-protected:
-	BIT_FLAG m_flag;
+	protected:
+		BIT_FLAG m_flag;
 
-	vInt3 m_vAxisIdx; //idx of yaw, pitch, roll
-	vFloat3	m_vT;	//translation
-	vFloat3	m_vV;	//velocity
-	vFloat3 m_vR;	//rotation
-	vFloat4 m_vQ;	//quaternion
-	float	m_confidence;
+		vInt3 m_vAxisIdx; //idx of yaw, pitch, roll
+		vFloat3 m_vT;	  //translation
+		vFloat3 m_vV;	  //velocity
+		vFloat3 m_vR;	  //rotation
+		vFloat4 m_vQ;	  //quaternion
+		float m_confidence;
 
-	vFloat3 m_vRoffset;	//rotation offset
+		vFloat3 m_vRoffset; //rotation offset
 
-	Matrix4f m_mT;
-	Matrix3f m_mR;
-
-};
+		Matrix4f m_mT;
+		Matrix3f m_mR;
+	};
 
 }
 #endif

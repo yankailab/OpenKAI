@@ -13,31 +13,30 @@
 namespace kai
 {
 
-class _RSdepth: public _VisionBase
-{
-public:
-	_RSdepth();
-	virtual ~_RSdepth();
-
-	bool init(void* pKiss);
-	bool start(void);
-	bool open(void);
-	void close(void);
-
-private:
-	void filter(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _RSdepth : public _VisionBase
 	{
-		((_RSdepth*) This)->update();
-		return NULL;
-	}
+	public:
+		_RSdepth();
+		virtual ~_RSdepth();
 
-public:
-	_RealSense* m_pV;
-	Frame m_fIn;
+		bool init(void *pKiss);
+		bool start(void);
+		bool open(void);
+		void close(void);
 
-};
+	private:
+		void filter(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_RSdepth *)This)->update();
+			return NULL;
+		}
+
+	public:
+		_RealSense *m_pV;
+		Frame m_fIn;
+	};
 
 }
 #endif

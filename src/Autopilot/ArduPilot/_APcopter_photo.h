@@ -7,64 +7,60 @@
 #include "_AP_base.h"
 #include "_AP_posCtrl.h"
 
-#ifdef USE_OPENCV
-
 namespace kai
 {
 
-class _APcopter_photo: public _StateBase
-{
-public:
-	_APcopter_photo();
-	~_APcopter_photo();
-
-	bool init(void* pKiss);
-	bool start(void);
-	void update(void);
-	int check(void);
-	void console(void* pConsole);
-
-private:
-	void autoMode(void);
-	void manualMode(void);
-	void shutter(void);
-	static void* getUpdate(void* This)
+	class _APcopter_photo : public _StateBase
 	{
-		((_APcopter_photo *) This)->update();
-		return NULL;
-	}
+	public:
+		_APcopter_photo();
+		~_APcopter_photo();
 
-private:
-	_AP_base* m_pAP;
-	_AP_posCtrl* m_pPC;
-	_DistSensorBase* m_pDS;
-	int m_iDiv;
-	float m_speed;
+		bool init(void *pKiss);
+		bool start(void);
+		void update(void);
+		int check(void);
+		void console(void *pConsole);
 
-	_VisionBase* m_pV;
-	_DepthVisionBase* m_pDV;
-	_GPhoto* m_pG;
+	private:
+		void autoMode(void);
+		void manualMode(void);
+		void shutter(void);
+		static void *getUpdate(void *This)
+		{
+			((_APcopter_photo *)This)->update();
+			return NULL;
+		}
 
-	int		m_iRCshutter;
-	STATE_CHANGE m_scShutter;
+	private:
+		_AP_base *m_pAP;
+		_AP_posCtrl *m_pPC;
+		_DistSensorBase *m_pDS;
+		int m_iDiv;
+		float m_speed;
 
-	float	m_alt;
-	float	m_dAlt;
-	float	m_lastAlt;
-	int		m_iRelayShutter;
+		_VisionBase *m_pV;
+		_DepthVisionBase *m_pDV;
+		_GPhoto *m_pG;
 
-	int m_iTake;
-	uint64_t m_tDelay;
+		int m_iRCshutter;
+		STATE_CHANGE m_scShutter;
 
-	string m_dir;
-	string m_subDir;
-	bool m_bFlipRGB;
-	bool m_bFlipD;
-	vector<int> m_compress;
-	int m_quality;
+		float m_alt;
+		float m_dAlt;
+		float m_lastAlt;
+		int m_iRelayShutter;
 
-};
+		int m_iTake;
+		uint64_t m_tDelay;
+
+		string m_dir;
+		string m_subDir;
+		bool m_bFlipRGB;
+		bool m_bFlipD;
+		vector<int> m_compress;
+		int m_quality;
+	};
 
 }
-#endif
 #endif

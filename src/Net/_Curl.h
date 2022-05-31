@@ -8,8 +8,8 @@
 #ifndef OpenKAI_src_Net__Curl_H_
 #define OpenKAI_src_Net__Curl_H_
 
-#include "../../Base/_ModuleBase.h"
-#include "../../Script/JSON.h"
+#include "../Base/_ModuleBase.h"
+#include "../Script/JSON.h"
 
 namespace kai
 {
@@ -20,10 +20,10 @@ namespace kai
 		_Curl(void);
 		virtual ~_Curl();
 
-		bool init(void *pKiss);
-		bool start(void);
-		void draw(void *pFrame);
-		int check(void);
+		virtual bool init(void *pKiss);
+		virtual bool start(void);
+		virtual int check(void);
+		virtual void console(void *pConsole);
 
 	private:
 		void updateCurl(void);
@@ -35,7 +35,7 @@ namespace kai
 		}
 
 	private:
-		string m_dir;
+		string m_cmd;
 	};
 
 }

@@ -82,7 +82,6 @@ namespace kai
 
 	void _StateBase::msgActive(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
@@ -90,7 +89,6 @@ namespace kai
 			pC->addMsg("[Inactive]", 0);
 		else
 			pC->addMsg("[ACTIVE]", 0);
-#endif
 	}
 
 	void _StateBase::console(void *pConsole)

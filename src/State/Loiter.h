@@ -13,23 +13,23 @@
 namespace kai
 {
 
-class Loiter: public State
-{
-public:
-	Loiter();
-	virtual ~Loiter();
+	class Loiter : public State
+	{
+	public:
+		Loiter();
+		virtual ~Loiter();
 
-	bool init(void* pKiss);
-	bool update(void);
-	void reset(void);
-	void console(void* pConsole);
+		bool init(void *pKiss);
+		bool update(void);
+		void reset(void);
+		void console(void *pConsole);
 
-	void setPos(vDouble3& p);
+		void setPos(vDouble3 &p);
 
-private:
-	vDouble3 m_vPos;	//lat, lon, alt
-	double	 m_hdg;
-};
+	private:
+		vDouble3 m_vPos; //lat, lon, alt
+		double m_hdg;
+	};
 
 }
 #endif

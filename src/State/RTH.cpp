@@ -96,7 +96,6 @@ namespace kai
 
 	void RTH::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->State::console(pConsole);
 
@@ -108,7 +107,6 @@ namespace kai
 		pC->addMsg("eH = " + f2str(m_eH, 7) +
 					   ", eV = " + f2str(m_eV, 7),
 				   1);
-#endif
 	}
 
 }

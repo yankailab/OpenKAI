@@ -8,38 +8,34 @@
 #ifndef OpenKAI_src_Vision__VideoFile_H_
 #define OpenKAI_src_Vision__VideoFile_H_
 
-#include "../Base/common.h"
-
-#ifdef USE_OPENCV
 #include "_VisionBase.h"
 
 namespace kai
 {
 
-class _VideoFile: public _VisionBase
-{
-public:
-	_VideoFile();
-	virtual ~_VideoFile();
-
-	bool init(void* pKiss);
-	bool start(void);
-    void close(void);
-
-private:
-	bool open(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _VideoFile : public _VisionBase
 	{
-		((_VideoFile*) This)->update();
-		return NULL;
-	}
+	public:
+		_VideoFile();
+		virtual ~_VideoFile();
 
-public:
-	VideoCapture m_vc;
-	string m_videoFile;
-};
+		bool init(void *pKiss);
+		bool start(void);
+		void close(void);
+
+	private:
+		bool open(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_VideoFile *)This)->update();
+			return NULL;
+		}
+
+	public:
+		VideoCapture m_vc;
+		string m_videoFile;
+	};
 
 }
-#endif
 #endif

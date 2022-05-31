@@ -7,8 +7,6 @@
 
 #include "_Raspivid.h"
 
-#ifdef USE_OPENCV
-
 namespace kai
 {
 
@@ -138,4 +136,3 @@ namespace kai
 	}
 
 }
-#endif

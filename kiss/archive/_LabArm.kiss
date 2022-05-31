@@ -12,20 +12,20 @@
 {
 	"name":"OpenKAI",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":0,
+	"bON":0,
 	"bFullScreen":0,
 }
 
 {
 	"name":"labArm",
 	"class":"_LabArm",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -51,7 +51,7 @@
 {
 	"name":"sequencer",
 	"class":"_Sequencer",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",

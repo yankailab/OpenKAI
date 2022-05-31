@@ -19,37 +19,36 @@
 namespace kai
 {
 
-class _TCPserver: public _ModuleBase
-{
-public:
-	_TCPserver();
-	virtual ~_TCPserver();
-
-	bool init(void* pKiss);
-	bool start(void);
-	void console(void* pConsole);
-	_TCPclient* getFirstSocket(void);
-
-	bool setup(void);
-	void cleanupClient(void);
-	bool handler(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _TCPserver : public _ModuleBase
 	{
-		((_TCPserver*) This)->update();
-		return NULL;
-	}
+	public:
+		_TCPserver();
+		virtual ~_TCPserver();
 
-public:
-	uint16_t	m_listenPort;
-	int			m_nListen;
+		bool init(void *pKiss);
+		bool start(void);
+		void console(void *pConsole);
+		_TCPclient *getFirstSocket(void);
 
-	int m_socket;
-	struct sockaddr_in m_serverAddr;
-	list<_TCPclient*> m_lSocket;
-	unsigned int	  m_nSocket;
+		bool setup(void);
+		void cleanupClient(void);
+		bool handler(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_TCPserver *)This)->update();
+			return NULL;
+		}
 
-};
+	public:
+		uint16_t m_listenPort;
+		int m_nListen;
+
+		int m_socket;
+		struct sockaddr_in m_serverAddr;
+		list<_TCPclient *> m_lSocket;
+		unsigned int m_nSocket;
+	};
 
 }
 #endif

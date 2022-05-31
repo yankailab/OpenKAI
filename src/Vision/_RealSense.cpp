@@ -7,9 +7,6 @@
 
 #include "_RealSense.h"
 
-#ifdef USE_OPENCV
-#ifdef USE_REALSENSE
-
 namespace kai
 {
 
@@ -321,5 +318,3 @@ namespace kai
     }
 
 }
-#endif
-#endif

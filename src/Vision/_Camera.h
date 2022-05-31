@@ -8,7 +8,6 @@
 #ifndef OpenKAI_src_Vision__Camera_H_
 #define OpenKAI_src_Vision__Camera_H_
 
-#include "../Base/common.h"
 #include "_VisionBase.h"
 
 namespace kai

@@ -43,7 +43,7 @@ namespace kai
 			DEL(m_pTr);
 			return false;
 		}
-        pKt->m_pInst = m_pTr;
+		pKt->m_pInst = m_pTr;
 
 		return true;
 	}
@@ -151,7 +151,6 @@ namespace kai
 
 	void _UDP::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_IOBase::console(pConsole);
 
@@ -159,7 +158,6 @@ namespace kai
 		m_pTr->console(pConsole);
 
 		((_Console *)pConsole)->addMsg("Port:" + i2str(m_port));
-#endif
 	}
 
 }

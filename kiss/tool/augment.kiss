@@ -13,7 +13,7 @@
 {
 	"name":"ImageFilters",
 	"class":"_Augment",
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"dirIn":"/media/kai/ssd/img/wood",
 	"extIn":[".jpg",".jpeg",".png",".bmp"],
@@ -26,7 +26,7 @@
 	
 	{
 		"name":"rotate",
-		"bInst":0,
+		"bON":0,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
@@ -37,7 +37,7 @@
 	
 	{
 		"name":"flip",
-		"bInst":0,
+		"bON":0,
 		"nProduce":1,
 		"extOut":".jpg",
 		"compression":90,
@@ -45,7 +45,7 @@
 	
 	{
 		"name":"crop",
-		"bInst":1,
+		"bON":1,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
@@ -57,7 +57,7 @@
 	
 	{
 		"name":"shrink",
-		"bInst":0,
+		"bON":0,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
@@ -69,7 +69,7 @@
 
 	{
 		"name":"lowResolution",
-		"bInst":0,
+		"bON":0,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
@@ -82,7 +82,7 @@
 
 	{
 		"name":"histEqualize",
-		"bInst":0,
+		"bON":0,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
@@ -92,7 +92,7 @@
 	
 	{
 		"name":"contrast",
-		"bInst":1,
+		"bON":1,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
@@ -104,7 +104,7 @@
 
 	{
 		"name":"brightness",
-		"bInst":1,
+		"bON":1,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
@@ -116,7 +116,7 @@
 
 	{
 		"name":"blur",
-		"bInst":1,
+		"bON":1,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
@@ -128,7 +128,7 @@
 
 	{
 		"name":"noise",
-		"bInst":0,
+		"bON":0,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
@@ -140,7 +140,7 @@
 
 	{
 		"name":"gaussianBlur",
-		"bInst":0,
+		"bON":0,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
@@ -152,7 +152,7 @@
 
 	{
 		"name":"medianBlur",
-		"bInst":0,
+		"bON":0,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
@@ -164,7 +164,7 @@
 
 	{
 		"name":"bilateralBlur",
-		"bInst":0,
+		"bON":0,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
@@ -176,7 +176,7 @@
 
 	{
 		"name":"saturation",
-		"bInst":0,
+		"bON":0,
 		"nProduce":1,
 		"dRand":2.0,
 		"dSaturation":100,
@@ -186,7 +186,7 @@
 
 	{
 		"name":"tone",
-		"bInst":1,
+		"bON":1,
 		"nProduce":1,
 		"dRand":1.0,
 		"extOut":".jpg",

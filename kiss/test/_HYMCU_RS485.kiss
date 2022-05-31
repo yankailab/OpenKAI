@@ -9,7 +9,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -20,7 +20,7 @@
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -34,7 +34,7 @@
 {
 	"name":"stepper",
 	"class":"_HYMCU_RS485",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":5,
@@ -79,7 +79,7 @@
 {
 	"name":"stepper",
 	"class":"_HYMCU_RS485",
-	"bInst":0,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":5,
@@ -110,7 +110,7 @@
 {
 	"name":"gripper",
 	"class":"_StepperGripper",
-	"bInst":0,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":5,

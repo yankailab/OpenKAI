@@ -141,7 +141,6 @@ namespace kai
 
 	void Waypoint::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->State::console(pConsole);
 
@@ -158,7 +157,6 @@ namespace kai
 		pC->addMsg("Pos = (" + f2str(m_vPos.x, 7) + ", " + f2str(m_vPos.y, 7) + ", " + f2str(m_vPos.z, 7) + ", " + f2str(m_vPos.w, 7) + ")", 1);
 
 		pC->addMsg("Err = (" + f2str(m_vErr.x, 7) + ", " + f2str(m_vErr.y, 7) + ", " + f2str(m_vErr.z, 7) + ", " + f2str(m_vErr.w, 7) + ")", 1);
-#endif
 	}
 
 }

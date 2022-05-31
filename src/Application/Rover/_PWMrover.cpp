@@ -148,7 +148,6 @@ namespace kai
 
 	void _PWMrover::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
@@ -156,20 +155,17 @@ namespace kai
 		pC->addMsg("d: " + f2str(m_d));
 		pC->addMsg("pwmL: " + i2str(m_pwmL));
 		pC->addMsg("pwmR: " + i2str(m_pwmR));
-#endif
 	}
 
 	void _PWMrover::draw(void *pFrame)
 	{
-#ifdef WITH_UI
 #ifdef USE_OPENCV
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
 		IF_(check() < 0);
 
-		_WindowCV *pWin = (_WindowCV *)pFrame;
-		Frame *pF = pWin->getNextFrame();
-		NULL_(pF);
+		Frame *pF = (Frame*)pFrame;
+
 		Mat *pM = pF->m();
 		IF_(pM->empty());
 
@@ -178,7 +174,6 @@ namespace kai
 			 Point((int)tX, 0),
 			 Point((int)tX, pM->rows),
 			 Scalar(0, 0, 255), 2);
-#endif
 #endif
 	}
 

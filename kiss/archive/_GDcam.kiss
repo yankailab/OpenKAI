@@ -13,14 +13,14 @@
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"deviceID":0,
 	"w":640,
@@ -31,7 +31,7 @@
 	"name":"cam",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"pipeline":"rtspsrc location=rtsp://admin:12345@10.0.0.100:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
 }
@@ -40,7 +40,7 @@
 	"name":"camCont",
 	"class":"_Contrast",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"filterView",
 	"_VisionBase":"cam",
 	"alpha":1.5,
@@ -50,7 +50,7 @@
 {
 	"name":"Yolo",
 	"class":"_DNNdetect",
-	"bInst":1,
+	"bON":1,
 	"bDraw":1,
 	"bLog":0,
 	"FPS":30,
@@ -72,7 +72,7 @@
 	"name":"gdCam",
 	"class":"_GDcam",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"bDraw":1,
 	"Window":"OKview",

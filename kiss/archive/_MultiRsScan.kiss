@@ -12,13 +12,13 @@
 {
 	"name":"OK_Console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"pcf",
 	"class":"_PCfile",
-	"bInst":0,
+	"bON":0,
 	"bLog":1,
 	"_Console":"OK_Console",
 	"/_PCviewer":"pcv",
@@ -32,7 +32,7 @@
 {
 	"name":"pcv",
 	"class":"_PCviewer",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"vWinSize":[1920,1080],
 	"fov":100,
@@ -47,7 +47,7 @@
 {
 	"name":"rs1",
 	"class":"_PCrs",
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"_Console":"OK_Console",
 	"vPreset":"Short Range",
@@ -73,7 +73,7 @@
 {
 	"name":"crop1",
 	"class":"_PCcrop",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"/_PCviewer":"pcv",
 	"_PCbase":"rs1",
@@ -96,7 +96,7 @@
 {
 	"name":"rm1",
 	"class":"_PCremove",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"_PCviewer":"pcv",
 	"_PCbase":"crop1",
@@ -111,7 +111,7 @@
 {
 	"name":"ds1",
 	"class":"_PCdownSample",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"/_PCviewer":"pcv",
 	"_PCbase":"rm1",
@@ -126,7 +126,7 @@
 	"name":"rs2",
 	"class":"_PCrs",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"_Console":"OK_Console",
 	"vPreset":"Short Range",
@@ -151,7 +151,7 @@
 {
 	"name":"crop2",
 	"class":"_PCcrop",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"/_PCviewer":"pcv",
 	"_PCbase":"rs2",
@@ -174,7 +174,7 @@
 {
 	"name":"rm2",
 	"class":"_PCremove",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"/_PCviewer":"pcv",
 	"_PCbase":"crop2",
@@ -189,7 +189,7 @@
 {
 	"name":"ds2",
 	"class":"_PCdownSample",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"/_PCviewer":"pcv",
 	"_PCbase":"rm2",
@@ -203,7 +203,7 @@
 {
 	"name":"tfGlobal12",
 	"class":"_PCtransform",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"/_PCviewer":"pcv",
 	"_PCbase":"rm2",
@@ -221,7 +221,7 @@
 {
 	"name":"dsG12",
 	"class":"_PCdownSample",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"/_PCviewer":"pcv",
 	"_PCbase":"tfGlobal12",
@@ -235,7 +235,7 @@
 {
 	"name":"rgGlobal12",
 	"class":"_PCregistGlobal",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"_PCbaseSrc":"ds2",
 	"_PCbaseTgt":"ds1",
@@ -256,7 +256,7 @@
 {
 	"name":"tfICP12",
 	"class":"_PCtransform",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"_PCbase":"tfGlobal12",
 	"/_PCviewer":"pcv",
@@ -274,7 +274,7 @@
 {
 	"name":"rgICP12",
 	"class":"_PCregistCol",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"_PCbaseSrc":"dsG12",
 	"_PCbaseTgt":"ds1",
@@ -291,7 +291,7 @@
 {
 	"name":"merge",
 	"class":"_PCmerge",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"vPCbase":["rm1","tfICP12"],
 	"_PCviewer":"pcv",
@@ -318,7 +318,7 @@
 {
 	"name":"rs3",
 	"class":"_PCrs",
-	"bInst":0,
+	"bON":0,
 	"bLog":1,
 	"_Console":"OK_Console",
 	"vPreset":"Short Range",
@@ -343,7 +343,7 @@
 {
 	"name":"tf3",
 	"class":"_PCtransform",
-	"bInst":0,
+	"bON":0,
 	"_PCbase":"rs3",
 	"_PCviewer":"pcv",
 	"vT":[0, 0, 0],
@@ -356,7 +356,7 @@
 {
 	"name":"ws",
 	"class":"_WebSocket",
-	"bInst":0,
+	"bON":0,
 	"bLog":0,
 	"Window":"OKview",
 	"_wakeUp":"ui",
@@ -373,7 +373,7 @@
 {
 	"name":"ui",
 	"class":"_PCui",
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"_IOBase":"ws",
@@ -390,7 +390,7 @@
 {
 	"name":"UDPsend",
 	"class":"_UDP",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -403,7 +403,7 @@
 {
 	"name":"PCsend",
 	"class":"_PCsend",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -417,7 +417,7 @@
 {
 	"name":"UDPrecv",
 	"class":"_UDP",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"Window":"OKview",
 	"_Console":"OpenKAI",
@@ -430,7 +430,7 @@
 {
 	"name":"PCrecv",
 	"class":"_PCrecv",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"Window":"OKview",
 	"_Console":"OpenKAI",

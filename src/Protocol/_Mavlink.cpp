@@ -747,7 +747,6 @@ namespace kai
 
 	void _Mavlink::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
@@ -760,7 +759,6 @@ namespace kai
 		pC->addMsg("Connected", 0);
 		pC->addMsg("mySysID=" + i2str(m_mySystemID) + " myComID=" + i2str(m_myComponentID) + " myType=" + i2str(m_myType));
 		pC->addMsg("devSysID=" + i2str(m_devSystemID) + " devComID=" + i2str(m_devComponentID) + " devType=" + i2str(m_devType));
-#endif
 	}
 
 }

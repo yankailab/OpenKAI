@@ -71,7 +71,7 @@ namespace kai
         {
             m_pT->autoFPSfrom();
 
-            if(m_nSpd < 0.0)
+            if (m_nSpd < 0.0)
                 m_nStr *= -1.0;
 
             for (int i = 0; i < m_vM.size(); i++)
@@ -123,7 +123,6 @@ namespace kai
 
     void _Drive::console(void *pConsole)
     {
-#ifdef WITH_UI
         NULL_(pConsole);
         this->_StateBase::console(pConsole);
 
@@ -134,7 +133,6 @@ namespace kai
             DRIVE_MOTOR *pM = &m_vM[i];
             pC->addMsg("iMotor" + i2str(i) + ": spd=" + f2str(pM->m_spd));
         }
-#endif
     }
 
 }

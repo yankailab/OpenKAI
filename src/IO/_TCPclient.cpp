@@ -162,7 +162,6 @@ namespace kai
 
 	void _TCPclient::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_IOBase::console(pConsole);
 
@@ -171,7 +170,6 @@ namespace kai
 
 		string msg = "Peer IP: " + m_strAddr + ":" + i2str(m_port) + ((m_bClient) ? "; Client" : "; Server");
 		((_Console *)pConsole)->addMsg(msg);
-#endif
 	}
 
 }

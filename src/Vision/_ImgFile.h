@@ -8,36 +8,32 @@
 #ifndef OpenKAI_src_Vision__ImgFile_H_
 #define OpenKAI_src_Vision__ImgFile_H_
 
-#include "../Base/common.h"
-
-#ifdef USE_OPENCV
 #include "_VisionBase.h"
 
 namespace kai
 {
 
-class _ImgFile: public _VisionBase
-{
-public:
-	_ImgFile();
-	virtual ~_ImgFile();
-
-	bool init(void* pKiss);
-	bool start(void);
-
-private:
-	bool open(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _ImgFile : public _VisionBase
 	{
-		((_ImgFile*) This)->update();
-		return NULL;
-	}
+	public:
+		_ImgFile();
+		virtual ~_ImgFile();
 
-public:
-	string m_file;
-};
+		bool init(void *pKiss);
+		bool start(void);
+
+	private:
+		bool open(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_ImgFile *)This)->update();
+			return NULL;
+		}
+
+	public:
+		string m_file;
+	};
 
 }
-#endif
 #endif

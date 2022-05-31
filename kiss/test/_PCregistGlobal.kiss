@@ -12,13 +12,13 @@
 {
 	"name":"OK_Console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":0,
+	"bON":0,
 	"bFullScreen":0,
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",	
@@ -27,7 +27,7 @@
 {
 	"name":"camera",
 	"class":"_Camera",
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"deviceID":0,
@@ -41,7 +41,7 @@
 {
 	"name":"pcv",
 	"class":"_PCviewer",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"vWinSize":[1920,1080],
 	"fov":100,
@@ -54,7 +54,7 @@
 {
 	"name":"pcf",
 	"class":"_PCfile",
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"_Console":"OK_Console",
 	"/_PCviewer":"pcv",
@@ -68,7 +68,7 @@
 {
 	"name":"tfPcf",
 	"class":"_PCtransform",
-	"bInst":1,
+	"bON":1,
 	"_PCbase":"pcf",
 	"_PCviewer":"pcv",
 	"vT":[1, 0.8, 0.9],
@@ -85,7 +85,7 @@
 {
 	"name":"pcDS",
 	"class":"_PCdownSample",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"/_PCviewer":"pcv",
 	"_PCbase":"pcf",
@@ -99,7 +99,7 @@
 {
 	"name":"pcDS2",
 	"class":"_PCdownSample",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"/_PCviewer":"pcv",
 	"_PCbase":"tfPcf",
@@ -113,7 +113,7 @@
 {
 	"name":"tfRRglobal",
 	"class":"_PCtransform",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"_PCbase":"pcf",
 	"/_PCviewer":"pcv",
@@ -130,7 +130,7 @@
 {
 	"name":"pcRegistGlobal",
 	"class":"_PCregistGlobal",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"_PCbaseSrc":"pcf",
 	"_PCbaseTgt":"tfPcf",
@@ -153,7 +153,7 @@
 {
 	"name":"tfRRicp",
 	"class":"_PCtransform",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"_PCbase":"tfRRglobal",
 	"_PCviewer":"pcv",
@@ -171,7 +171,7 @@
 {
 	"name":"pcRegistICP",
 	"class":"_PCregistGlobal",
-	"bInst":1,
+	"bON":1,
 	"_Console":"OK_Console",
 	"_PCbaseSrc":"tfRRglobal",
 	"_PCbaseTgt":"tfPcf",
@@ -191,7 +191,7 @@
 {
 	"name":"rs1",
 	"class":"_PCrs",
-	"bInst":0,
+	"bON":0,
 	"bLog":1,
 	"_Console":"OK_Console",
 	"vPreset":"Short Range",
@@ -216,7 +216,7 @@
 {
 	"name":"tf1",
 	"class":"_PCtransform",
-	"bInst":0,
+	"bON":0,
 	"_PCbase":"rs1",
 	"_PCviewer":"pcv",
 	"vT":[0, 0, 0],
@@ -233,7 +233,7 @@
 	"name":"rs2",
 	"class":"_PCrs",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"bLog":1,
 	"_Console":"OK_Console",
 	"vPreset":"Short Range",
@@ -258,7 +258,7 @@
 {
 	"name":"tf2",
 	"class":"_PCtransform",
-	"bInst":0,
+	"bON":0,
 	"_PCbase":"rs2",
 	"_PCviewer":"pcv",
 	"vT":[0, 0, 0],
@@ -270,7 +270,7 @@
 {
 	"name":"rs3",
 	"class":"_PCrs",
-	"bInst":0,
+	"bON":0,
 	"bLog":1,
 	"_Console":"OK_Console",
 	"vPreset":"Short Range",
@@ -295,7 +295,7 @@
 {
 	"name":"tf3",
 	"class":"_PCtransform",
-	"bInst":0,
+	"bON":0,
 	"_PCbase":"rs3",
 	"_PCviewer":"pcv",
 	"vT":[0, 0, 0],
@@ -308,7 +308,7 @@
 {
 	"name":"ws",
 	"class":"_WebSocket",
-	"bInst":0,
+	"bON":0,
 	"bLog":0,
 	"Window":"OKview",
 	"_wakeUp":"ui",
@@ -325,7 +325,7 @@
 {
 	"name":"ui",
 	"class":"_PCui",
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"_IOBase":"ws",
@@ -342,7 +342,7 @@
 {
 	"name":"UDPsend",
 	"class":"_UDP",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -355,7 +355,7 @@
 {
 	"name":"PCsend",
 	"class":"_PCsend",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -369,7 +369,7 @@
 {
 	"name":"UDPrecv",
 	"class":"_UDP",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"Window":"OKview",
 	"_Console":"OpenKAI",
@@ -382,7 +382,7 @@
 {
 	"name":"PCrecv",
 	"class":"_PCrecv",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"Window":"OKview",
 	"_Console":"OpenKAI",

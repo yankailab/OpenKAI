@@ -13,43 +13,43 @@
 namespace kai
 {
 
-class _TCPclient: public _IOBase
-{
-public:
-	_TCPclient();
-	virtual ~_TCPclient();
-
-	bool init(void* pKiss);
-	bool start(void);
-	bool open(void);
-	void close(void);
-	void console(void* pConsole);
-	bool bComplete(void);
-
-public:
-	void updateW(void);
-	static void* getUpdateW(void* This)
+	class _TCPclient : public _IOBase
 	{
-		((_TCPclient*) This)->updateW();
-		return NULL;
-	}
+	public:
+		_TCPclient();
+		virtual ~_TCPclient();
 
-	void updateR(void);
-	static void* getUpdateR(void* This)
-	{
-		((_TCPclient*) This)->updateR();
-		return NULL;
-	}
+		bool init(void *pKiss);
+		bool start(void);
+		bool open(void);
+		void close(void);
+		void console(void *pConsole);
+		bool bComplete(void);
 
-public:
-    struct sockaddr_in m_serverAddr;
-	string	m_strAddr;
-	uint16_t m_port;
+	public:
+		void updateW(void);
+		static void *getUpdateW(void *This)
+		{
+			((_TCPclient *)This)->updateW();
+			return NULL;
+		}
 
-	bool m_bClient;
-	int m_socket;
-	bool m_bComplete;
-};
+		void updateR(void);
+		static void *getUpdateR(void *This)
+		{
+			((_TCPclient *)This)->updateR();
+			return NULL;
+		}
+
+	public:
+		struct sockaddr_in m_serverAddr;
+		string m_strAddr;
+		uint16_t m_port;
+
+		bool m_bClient;
+		int m_socket;
+		bool m_bComplete;
+	};
 
 }
 #endif

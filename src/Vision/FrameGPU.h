@@ -13,51 +13,50 @@ using namespace cv::cuda;
 
 namespace kai
 {
+	class FrameGPU
+	{
+	public:
+		FrameGPU();
+		virtual ~FrameGPU();
 
-class FrameGPU
-{
-public:
-	FrameGPU();
-	virtual ~FrameGPU();
+		virtual void operator=(const Mat &m);
+		virtual void allocate(int w, int h);
+		virtual void copy(const FrameGPU &f);
+		virtual void copy(const Mat &m);
 
-	virtual void operator=(const Mat& m);
-	virtual void allocate(int w, int h);
-	virtual void copy(const FrameGPU& f);
-	virtual void copy(const Mat& m);
+		virtual FrameGPU warpAffine(Mat &mWA);
+		virtual FrameGPU flip(int iOpt);
+		virtual FrameGPU remap(const Mat &mX, const Mat &mY);
+		virtual FrameGPU crop(Rect bb);
+		virtual FrameGPU resize(int w, int h);
+		virtual FrameGPU resize(double scaleW, double scaleH);
+		virtual FrameGPU cvtTo(int rType);
+		virtual FrameGPU cvtColor(int code);
 
-	virtual FrameGPU warpAffine(Mat& mWA);
-	virtual FrameGPU flip(int iOpt);
-	virtual FrameGPU remap(const Mat& mX, const Mat& mY);
-	virtual FrameGPU crop(Rect bb);
-	virtual FrameGPU resize(int w, int h);
-	virtual FrameGPU resize(double scaleW, double scaleH);
-	virtual FrameGPU cvtTo(int rType);
-	virtual FrameGPU cvtColor(int code);
+		virtual Mat *m(void);
+		virtual Size size(void);
+		virtual bool bEmpty(void);
 
-	virtual Mat* m(void);
-	virtual Size size(void);
-	virtual bool bEmpty(void);
+		virtual void operator=(const GpuMat &m);
+		virtual void copy(const GpuMat &m);
+		virtual GpuMat *gm(void);
+		virtual uint64_t tStamp(void);
 
-	virtual void operator=(const GpuMat& m);
-	virtual void copy(const GpuMat& m);
-	virtual GpuMat* gm(void);
-	virtual uint64_t tStamp(void);
+	private:
+		void sync(void);
+		void updateG(void);
+		void update(void);
 
-private:
-	void sync(void);
-	void updateG(void);
-	void update(void);
+		void updateTstamp(uint64_t t);
+		void updateTstampG(uint64_t t);
 
-	void updateTstamp(uint64_t t);
-	void updateTstampG(uint64_t t);
+	public:
+		uint64_t m_tStamp;
+		Mat m_mat;
 
-public:
-	uint64_t m_tStamp;
-	Mat m_mat;
-
-	uint64_t m_tStampG;
-	GpuMat m_matG;
-};
+		uint64_t m_tStampG;
+		GpuMat m_matG;
+	};
 
 }
 #endif

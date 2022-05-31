@@ -98,10 +98,10 @@ namespace kai
 
 		m_json.v("name", &m_name);
 		m_json.v("class", &m_class);
-		bool bInst = true;
-		m_json.v("bInst", &bInst);
+		bool bON = true;
+		m_json.v("bON", &bON);
 
-		return bInst;
+		return bON;
 	}
 
 	JSON *Kiss::json(void)

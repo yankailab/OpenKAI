@@ -22,9 +22,10 @@ namespace kai
 
 		vector<int> vPWM;
 		pK->a("vPWM", &vPWM);
-		for(int i=0; i<vPWM.size(); i++)
+		for (int i = 0; i < vPWM.size(); i++)
 		{
-			if(i >= m_nCw)break;
+			if (i >= m_nCw)
+				break;
 			m_pCw[i].set(vPWM[i]);
 		}
 
@@ -56,12 +57,12 @@ namespace kai
 		IF_(check() < 0);
 
 		uint8_t pB[256];
-		pB[0] = PB_BEGIN;	// start mark	
-		pB[1] = 0;			// cmd
-		pB[2] = m_nCr * 2;			// payload len
+		pB[0] = PB_BEGIN;  // start mark
+		pB[1] = 0;		   // cmd
+		pB[2] = m_nCr * 2; // payload len
 
-		int j=3;
-		for(int i=0; i<m_nCw; i++)
+		int j = 3;
+		for (int i = 0; i < m_nCw; i++)
 		{
 			uint16_t v = m_pCw[i].raw();
 			pB[j++] = ((uint8_t)(v & 0xFF));
@@ -105,13 +106,13 @@ namespace kai
 		switch (m_recvMsg.m_pB[1])
 		{
 		case ARDU_CMD_HB:
-			for(int i=0; i<m_nCr; i++)
+			for (int i = 0; i < m_nCr; i++)
 			{
-				int iB = i*2;
-				if(iB >= m_recvMsg.m_nPayload)
-				break;
+				int iB = i * 2;
+				if (iB >= m_recvMsg.m_nPayload)
+					break;
 
-				uint16_t v = *((uint16_t *)(&m_recvMsg.m_pB[PB_N_HDR+iB]));
+				uint16_t v = *((uint16_t *)(&m_recvMsg.m_pB[PB_N_HDR + iB]));
 				m_pCr[i].set(v);
 			}
 			break;
@@ -134,7 +135,6 @@ namespace kai
 
 	void _PWMio::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_ProtocolBase::console(pConsole);
 
@@ -146,17 +146,16 @@ namespace kai
 		}
 
 		string m = "ChanR: ";
-		for(int i=0;i<m_nCr;i++)
+		for (int i = 0; i < m_nCr; i++)
 			m += i2str(m_pCr[i].raw()) + " | ";
 
 		m += "ChanW: ";
-		for(int i=0;i<m_nCw;i++)
+		for (int i = 0; i < m_nCw; i++)
 			m += i2str(m_pCw[i].raw()) + " | ";
 
 		m += " nCMD=" + i2str(m_nCMDrecv);
 
 		pC->addMsg(m, 1);
-#endif
 	}
 
 }

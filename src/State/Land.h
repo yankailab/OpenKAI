@@ -13,35 +13,34 @@
 namespace kai
 {
 
-struct LAND_TAG
-{
-	int m_iTag;
-	float m_angle;
-
-	void init(void)
+	struct LAND_TAG
 	{
-		m_iTag = 0;
-		m_angle = 0.0;
-	}
-};
+		int m_iTag;
+		float m_angle;
 
-class Land: public State
-{
-public:
-	Land();
-	virtual ~Land();
+		void init(void)
+		{
+			m_iTag = 0;
+			m_angle = 0.0;
+		}
+	};
 
-	bool init(void* pKiss);
-	bool update(void);
+	class Land : public State
+	{
+	public:
+		Land();
+		virtual ~Land();
 
-public:
-	int m_tag;
-	float m_hdg;
-	float m_speed;
+		bool init(void *pKiss);
+		bool update(void);
 
-	vector<LAND_TAG> m_vTag;
+	public:
+		int m_tag;
+		float m_hdg;
+		float m_speed;
 
-};
+		vector<LAND_TAG> m_vTag;
+	};
 
 }
 #endif

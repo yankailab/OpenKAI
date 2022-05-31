@@ -12,20 +12,20 @@
 {
 	"name":"_Console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":0,
+	"bON":0,
 	"bFullScreen":0,
 }
 
 {
 	"name":"Gluon",
 	"class":"_InnfosGluon",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",

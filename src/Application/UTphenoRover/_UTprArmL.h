@@ -9,54 +9,54 @@
 namespace kai
 {
 
-class _UTprArmL: public _StateBase
-{
-public:
-	_UTprArmL(void);
-	virtual ~_UTprArmL();
-
-	bool init(void* pKiss);
-	bool start(void);
-	void draw(void* pFrame);
-	void console(void* pConsole);
-	int check(void);
-
-	void stop(void);
-
-private:
-	bool extract(void);
-	bool follow(void);
-	bool ascend(void);
-	bool recover(void);
-
-	_Object* findTarget(void);
-	void updateArm(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _UTprArmL : public _StateBase
 	{
-		((_UTprArmL *) This)->update();
-		return NULL;
-	}
+	public:
+		_UTprArmL(void);
+		virtual ~_UTprArmL();
 
-public:
-	_ActuatorBase* m_pAx;
-	_ActuatorBase* m_pAy;
-	_ActuatorBase* m_pAz;
-	_Universe* m_pU;
-    PID* m_pXpid;
-	PID* m_pYpid;
+		bool init(void *pKiss);
+		bool start(void);
+		void draw(void *pFrame);
+		void console(void *pConsole);
+		int check(void);
 
-	vFloat3 m_vP;		//x,y:variable, screen coordinate of the object being followed, z:variable in mm unit
-	vFloat3 m_vPtarget;	//x,y:constant, screen coordinate where the followed object should get to, z:variable in mm unit
+		void stop(void);
 
-	vFloat3 m_vPextract;
-	float m_zSpeed;
-	float m_zrK;
-	vFloat2 m_vZgoal;
-	vFloat3 m_vPrecover;//arm stock pos
+	private:
+		bool extract(void);
+		bool follow(void);
+		bool ascend(void);
+		bool recover(void);
 
-	UTPR_MISSIOIN m_iState;
-};
+		_Object *findTarget(void);
+		void updateArm(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_UTprArmL *)This)->update();
+			return NULL;
+		}
+
+	public:
+		_ActuatorBase *m_pAx;
+		_ActuatorBase *m_pAy;
+		_ActuatorBase *m_pAz;
+		_Universe *m_pU;
+		PID *m_pXpid;
+		PID *m_pYpid;
+
+		vFloat3 m_vP;		//x,y:variable, screen coordinate of the object being followed, z:variable in mm unit
+		vFloat3 m_vPtarget; //x,y:constant, screen coordinate where the followed object should get to, z:variable in mm unit
+
+		vFloat3 m_vPextract;
+		float m_zSpeed;
+		float m_zrK;
+		vFloat2 m_vZgoal;
+		vFloat3 m_vPrecover; //arm stock pos
+
+		UTPR_MISSIOIN m_iState;
+	};
 
 }
 #endif

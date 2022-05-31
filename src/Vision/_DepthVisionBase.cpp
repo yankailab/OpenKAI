@@ -104,15 +104,11 @@ namespace kai
 
 	void _DepthVisionBase::draw(void *pFrame)
 	{
-#ifdef WITH_UI
-#ifdef USE_OPENCV
 		NULL_(pFrame);
 		this->_VisionBase::draw(pFrame);
 		IF_(check() < 0);
 
-		_WindowCV *pWin = (_WindowCV *)pFrame;
-		Frame *pF = pWin->getNextFrame();
-		NULL_(pF);
+		Frame *pF = (Frame*)pFrame;
 
 		if (m_bDebug)
 		{
@@ -133,8 +129,6 @@ namespace kai
 					Point(r.x + 15, r.y + 25),
 					FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0, 255, 0), 1);
 		}
-#endif
-#endif
 	}
 
 }

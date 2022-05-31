@@ -7,45 +7,45 @@
 namespace kai
 {
 
-class _DroneBoxJSON : public _JSONbase
-{
-public:
-	_DroneBoxJSON();
-	~_DroneBoxJSON();
-
-	virtual bool init(void* pKiss);
-	virtual bool start(void);
-	virtual int check(void);
-	virtual	void console(void* pConsole);
-
-protected:
-	void send(void);
-
-    //msg handlers
-	void handleMsg(string& str);
-    void heartbeat(picojson::object& o);
-    void stat (picojson::object& o);
-    void req (picojson::object& o);
-    
-private:
-	void updateW(void);
-	static void* getUpdateW(void* This)
+	class _DroneBoxJSON : public _JSONbase
 	{
-		((_DroneBoxJSON*) This)->updateW();
-		return NULL;
-	}
+	public:
+		_DroneBoxJSON();
+		~_DroneBoxJSON();
 
-	void updateR(void);
-	static void* getUpdateR(void* This)
-	{
-		((_DroneBoxJSON*) This)->updateR();
-		return NULL;
-	}
+		virtual bool init(void *pKiss);
+		virtual bool start(void);
+		virtual int check(void);
+		virtual void console(void *pConsole);
 
-public:
-    _Thread* m_Tr;
-    _DroneBox* m_pDB;
-};
+	protected:
+		void send(void);
+
+		//msg handlers
+		void handleMsg(string &str);
+		void heartbeat(picojson::object &o);
+		void stat(picojson::object &o);
+		void req(picojson::object &o);
+
+	private:
+		void updateW(void);
+		static void *getUpdateW(void *This)
+		{
+			((_DroneBoxJSON *)This)->updateW();
+			return NULL;
+		}
+
+		void updateR(void);
+		static void *getUpdateR(void *This)
+		{
+			((_DroneBoxJSON *)This)->updateR();
+			return NULL;
+		}
+
+	public:
+		_Thread *m_Tr;
+		_DroneBox *m_pDB;
+	};
 
 }
 #endif

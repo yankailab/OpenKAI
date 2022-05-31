@@ -109,25 +109,20 @@ namespace kai
 
 	void _Universe::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
 		((_Console *)pConsole)->addMsg("nObj=" + i2str(m_sO.get()->size()), 1);
-#endif
 	}
 
 	void _Universe::draw(void* pFrame)
 	{
-#ifdef WITH_UI
 #ifdef USE_OPENCV
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
 		IF_(check() < 0);
 
-		_WindowCV *pWin = (_WindowCV *)pFrame;
-		Frame *pF = pWin->getNextFrame();
-		NULL_(pF);
+		Frame *pF = (Frame*)pFrame;
 		Mat *pM = pF->m();
 		IF_(pM->empty());
 
@@ -172,8 +167,6 @@ namespace kai
 		//roi
 		Rect roi = bb2Rect(bbScale(m_vRoi, pM->cols, pM->rows));
 		rectangle(*pM, roi, Scalar(0, 255, 255), 1);
-
-#endif
 #endif
 	}
 

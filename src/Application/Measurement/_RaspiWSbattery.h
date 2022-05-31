@@ -9,7 +9,7 @@
 #define OpenKAI_src_Application_Measurement__RaspiWSbattery_H_
 
 #include "../../Base/_ModuleBase.h"
-#include "../../UI/_WindowCV.h"
+#include "../../Vision/_Frame.h"
 
 namespace kai
 {

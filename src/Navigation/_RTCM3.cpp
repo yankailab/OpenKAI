@@ -60,7 +60,6 @@ namespace kai
 
 	void _RTCM3::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
@@ -69,7 +68,6 @@ namespace kai
 			((_Console *)pConsole)->addMsg("Not connected");
 			return;
 		}
-#endif
 	}
 
 }

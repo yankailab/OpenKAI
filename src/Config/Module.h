@@ -13,6 +13,7 @@
 #include "../Script/Kiss.h"
 
 #include "../Arithmetic/Destimator.h"
+#include "../UI/_Console.h"
 
 #ifdef WITH_ACTUATOR
 #include "../Actuator/_ArduServo.h"
@@ -301,9 +302,8 @@
 #endif
 
 #ifdef WITH_UI
-#include "../UI/_Console.h"
-#include "../UI/_FrameBuffer.h"
 #ifdef USE_OPENCV
+#include "../UI/_FrameBuffer.h"
 #include "../UI/_WindowCV.h"
 #endif
 #ifdef USE_GUI

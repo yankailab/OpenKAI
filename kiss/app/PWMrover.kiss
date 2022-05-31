@@ -9,7 +9,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -20,7 +20,7 @@
 {
 	"name":"RGBview",
 	"class":"_WindowCV",
-	"bInst":1,
+	"bON":1,
 	"bFullScreen":0,
     {
 		"name":"thread",
@@ -43,7 +43,7 @@
 		"name":"threadPP",
 		"FPS":30,
 	}
-	"bInst":1,
+	"bON":1,
 	"bLog":0,
 	"bDraw":1,
 	"depthWindow":"depthView",
@@ -65,7 +65,7 @@
 {
 	"name":"univ",
 	"class":"_Universe",
-	"bInst":1,
+	"bON":1,
 
     {
         "name":"thread",
@@ -76,7 +76,7 @@
 {
 	"name":"DetectNet",
 	"class":"_DetectNet",
-	"bInst":0,
+	"bON":0,
 	"bDraw":1,
 	"bLog":1,
 	{
@@ -97,7 +97,7 @@
 {
 	"name":"arUco",
 	"class":"_ArUco",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -111,7 +111,7 @@
 {
 	"name":"serial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -128,7 +128,7 @@
 {
 	"name":"PWMio",
 	"class":"_PWMio",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":20,
@@ -146,7 +146,7 @@
 {
 	"name":"PWMrover",
 	"class":"_PWMrover",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,

@@ -12,19 +12,19 @@
 {
 	"name":"_ConsoleDrive",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"_ConsoleMotor",
 	"class":"_Console",
-	"bInst":0,
+	"bON":0,
 }
 
 {
 	"name":"viewDrive",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 	"gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.8.189 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.139 port=5678 auto-multicast=false",
 }
@@ -33,7 +33,7 @@
 	"name":"cam",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"bDebug":0,
 	"Window":"viewDrive",
@@ -58,7 +58,7 @@
 {
 	"name":"univ",
 	"class":"_Universe",
-	"bInst":1,
+	"bON":1,
 	"Window":"viewDrive",
 	"_Console":"_ConsoleDrive",
 }
@@ -67,7 +67,7 @@
 	"name":"Chilitags",
 	"class":"_Chilitags",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bDraw":1,
 	"Window":"viewDrive",
 	"_Console":"_ConsoleDrive",
@@ -81,7 +81,7 @@
 {
 	"name":"apSerial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewDrive",
@@ -95,7 +95,7 @@
 {
 	"name":"apMavlink",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"viewDrive",
@@ -112,7 +112,7 @@
 	"name":"mission",
 	"class":"_MissionControl",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"viewDrive",
 	"_Console":"_ConsoleDrive",
 	"start":"MANUAL",
@@ -120,17 +120,17 @@
 	{
 		"name":"mission",
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"MANUAL",
 			"class":"Mission",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"FORWARD",
 			"class":"Mission",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"BACKWARD",
 			"class":"Mission",
 		}
@@ -141,7 +141,7 @@
 	"name":"apBase",
 	"class":"_AP_base",
 	"FPS":20,
-	"bInst":1,
+	"bON":1,
 	"_MissionControl":"mission",
 	"Window":"viewDrive",
 	"_Console":"_ConsoleDrive",
@@ -194,7 +194,7 @@
 	"name":"apBR",
 	"class":"_AProver_BR",
 	"FPS":10,
-	"bInst":1,
+	"bON":1,
 	"Window":"viewDrive",
 	"_Console":"_ConsoleDrive",
 	"_MissionControl":"mission",
@@ -211,7 +211,7 @@
 	"name":"drive",
 	"class":"_Drive",
 	"FPS":10,
-	"bInst":1,
+	"bON":1,
 	"Window":"viewDrive",
 	"_Console":"_ConsoleDrive",
 	"nSpd":0.0,
@@ -254,7 +254,7 @@
 {
 	"name":"PIDtagX",
 	"class":"PID",
-	"bInst":1,
+	"bON":1,
 	"Window":"viewDrive",
 	"_Console":"_ConsoleDrive",
 	"P":-0.1,
@@ -267,7 +267,7 @@
 {
 	"name":"PIDtagHdg",
 	"class":"PID",
-	"bInst":1,
+	"bON":1,
 	"Window":"viewDrive",
 	"_Console":"_ConsoleDrive",
 	"P":-0.01,
@@ -281,7 +281,7 @@
 	"name":"apBRfollow",
 	"class":"_AProver_BRfollow",
 	"FPS":10,
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"Window":"viewDrive",
 	"_Console":"_ConsoleDrive",
@@ -303,7 +303,7 @@
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"_Console":"_ConsoleDrive",
@@ -315,7 +315,7 @@
 {
 	"name":"motorLF",
 	"class":"_ZLAC8015",
-	"bInst":1,
+	"bON":1,
 	"FPS":10,
 	"bLog":0,
 	"_Console":"_ConsoleDrive",
@@ -346,7 +346,7 @@
 {
 	"name":"motorLB",
 	"class":"_ZLAC8015",
-	"bInst":1,
+	"bON":1,
 	"FPS":10,
 	"bLog":0,
 	"_Console":"_ConsoleDrive",
@@ -377,7 +377,7 @@
 {
 	"name":"motorRF",
 	"class":"_ZLAC8015",
-	"bInst":1,
+	"bON":1,
 	"FPS":10,
 	"bLog":0,
 	"_Console":"_ConsoleDrive",
@@ -408,7 +408,7 @@
 {
 	"name":"motorRB",
 	"class":"_ZLAC8015",
-	"bInst":1,
+	"bON":1,
 	"FPS":10,
 	"bLog":0,
 	"_Console":"_ConsoleDrive",

@@ -10,7 +10,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bInst":0,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -21,7 +21,7 @@
 {
 	"name":"RGBview",
 	"class":"_WindowCV",
-	"bInst":1,
+	"bON":1,
 	"bFullScreen":0,
     {
 		"name":"thread",
@@ -33,7 +33,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -45,7 +45,7 @@
 {
 	"name":"remap",
 	"class":"_Remap",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -59,7 +59,7 @@
 {
 	"name":"pcScan",
 	"class":"_PCscan",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
@@ -106,7 +106,7 @@
 {
 	"name":"LivoxLidar",
 	"class":"LivoxLidar",
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"/vBroadcastCode":[""],
 	"bEnableFan":1,
@@ -119,7 +119,7 @@
 {
 	"name":"pcLivox",
 	"class":"_Livox",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
@@ -149,6 +149,6 @@
 		"name":"thread",
 		"FPS":200,
 	}
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 }

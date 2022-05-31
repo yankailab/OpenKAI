@@ -12,13 +12,13 @@
 {
 	"name":"OK_Console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"_Console":"OK_Console",
@@ -30,7 +30,7 @@
 {
 	"name":"zlac8015_LF",
 	"class":"_ZLAC8015",
-	"bInst":1,
+	"bON":1,
 	"FPS":5,
 	"bLog":1,
 	"_Console":"OK_Console",
@@ -56,7 +56,7 @@
 {
 	"name":"zlac8015_LB",
 	"class":"_ZLAC8015",
-	"bInst":1,
+	"bON":1,
 	"FPS":5,
 	"bLog":1,
 	"_Console":"OK_Console",
@@ -82,7 +82,7 @@
 {
 	"name":"zlac8015_RF",
 	"class":"_ZLAC8015",
-	"bInst":1,
+	"bON":1,
 	"FPS":5,
 	"bLog":1,
 	"_Console":"OK_Console",
@@ -108,7 +108,7 @@
 {
 	"name":"zlac8015_RB",
 	"class":"_ZLAC8015",
-	"bInst":1,
+	"bON":1,
 	"FPS":5,
 	"bLog":1,
 	"_Console":"OK_Console",

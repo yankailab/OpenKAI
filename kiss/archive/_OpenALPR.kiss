@@ -13,14 +13,14 @@
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"OKview",
 	"deviceID":3,
 	"w":1920,
@@ -31,7 +31,7 @@
 	"name":"cam",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bLog":0,
 	"Window":"OKview",
 	"depthWindow":"depthView",
@@ -53,7 +53,7 @@
 {
 	"name":"oalpr",
 	"class":"_OpenALPR",
-	"bInst":1,
+	"bON":1,
 	"bDraw":1,
 	"bLog":1,
 	"FPS":30,

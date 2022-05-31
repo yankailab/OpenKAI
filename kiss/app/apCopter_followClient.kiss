@@ -13,7 +13,7 @@
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 	"bFullScreen":0,
 	"bDrawMsg":0,
 	"bMouse":1,
@@ -24,7 +24,7 @@
 	"name":"cam",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"pipeline":"udpsrc port=5678 ! application/x-rtp, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
 }
@@ -32,7 +32,7 @@
 {
 	"name":"okUDP",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"bDraw":0,
@@ -45,7 +45,7 @@
 {
 	"name":"apLink",
 	"class":"_AP_link",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":1,
 	"bDraw":0,
@@ -56,7 +56,7 @@
 {
 	"name":"apFollow",
 	"class":"_AP_followClient",
-	"bInst":1,
+	"bON":1,
 	"FPS":15,
 	"bDraw":1,
 	"bLog":1,

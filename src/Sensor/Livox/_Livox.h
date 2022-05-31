@@ -14,50 +14,50 @@
 namespace kai
 {
 
-class _Livox: public _PCstream
-{
-public:
-    _Livox();
-    ~_Livox();
-
-    virtual bool init ( void* pKiss );
-    virtual int check ( void );
-    virtual bool start ( void );
-
-    virtual void startStream(void);
-    virtual void stopStream(void);
-
-    void setLidarMode(LidarMode m);
-    void setScanPattern(LidarScanPattern p);
-
-protected:
-    static void CbRecvData(LivoxEthPacket* pData, void* pLivox);
-    
-    void addP(LivoxRawPoint* pLp, uint64_t& tStamp);
-    void addP(LivoxExtendRawPoint* pLp, uint64_t& tStamp);
-    void addDualP(LivoxDualExtendRawPoint* pLp, uint64_t& tStamp);
-    void addTripleP(LivoxTripleExtendRawPoint* pLp, uint64_t& tStamp);
-    void updateIMU(LivoxImuPoint* pLd);
-    
-    bool open ( void );
-    void close ( void );
-    bool updateLidar ( void );
-    void update ( void );
-    static void* getUpdate ( void* This )
+    class _Livox : public _PCstream
     {
-        ( ( _Livox* ) This )->update();
-        return NULL;
-    }
-    
-public:
-    bool m_bOpen;
-    string m_broadcastCode;
-    LivoxLidar* m_pL;
-    uint32_t m_iTransformed;
-    const float m_ovRef = 1.0/255.0;
-    int m_lidarMode;
-    int m_scanPattern;
-};
+    public:
+        _Livox();
+        ~_Livox();
+
+        virtual bool init(void *pKiss);
+        virtual int check(void);
+        virtual bool start(void);
+
+        virtual void startStream(void);
+        virtual void stopStream(void);
+
+        void setLidarMode(LidarMode m);
+        void setScanPattern(LidarScanPattern p);
+
+    protected:
+        static void CbRecvData(LivoxEthPacket *pData, void *pLivox);
+
+        void addP(LivoxRawPoint *pLp, uint64_t &tStamp);
+        void addP(LivoxExtendRawPoint *pLp, uint64_t &tStamp);
+        void addDualP(LivoxDualExtendRawPoint *pLp, uint64_t &tStamp);
+        void addTripleP(LivoxTripleExtendRawPoint *pLp, uint64_t &tStamp);
+        void updateIMU(LivoxImuPoint *pLd);
+
+        bool open(void);
+        void close(void);
+        bool updateLidar(void);
+        void update(void);
+        static void *getUpdate(void *This)
+        {
+            ((_Livox *)This)->update();
+            return NULL;
+        }
+
+    public:
+        bool m_bOpen;
+        string m_broadcastCode;
+        LivoxLidar *m_pL;
+        uint32_t m_iTransformed;
+        const float m_ovRef = 1.0 / 255.0;
+        int m_lidarMode;
+        int m_scanPattern;
+    };
 
 }
 #endif

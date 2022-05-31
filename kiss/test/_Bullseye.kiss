@@ -13,14 +13,14 @@
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"camera",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"deviceID":0,
 	"w":1280,
@@ -32,7 +32,7 @@
 {
 	"name":"det",
 	"class":"_Bullseye",
-	"bInst":0,
+	"bON":0,
 	"bDraw":1,
 	"bLog":0,
 	"FPS":30,

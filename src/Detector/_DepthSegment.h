@@ -13,34 +13,33 @@
 namespace kai
 {
 
-class _DepthSegment : public _DetectorBase
-{
-public:
-	_DepthSegment();
-	virtual ~_DepthSegment();
-
-	bool init(void* pKiss);
-	bool start(void);
-	int check(void);
-	void draw(void* pFrame);
-
-private:
-	void detect(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _DepthSegment : public _DetectorBase
 	{
-		((_DepthSegment*) This)->update();
-		return NULL;
-	}
+	public:
+		_DepthSegment();
+		virtual ~_DepthSegment();
 
-public:
-	Mat		m_mR;
-	float	m_rL;
-	float	m_rH;
-	float	m_rD;
-	float	m_rArea;
+		bool init(void *pKiss);
+		bool start(void);
+		int check(void);
+		void draw(void *pFrame);
 
-};
+	private:
+		void detect(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_DepthSegment *)This)->update();
+			return NULL;
+		}
+
+	public:
+		Mat m_mR;
+		float m_rL;
+		float m_rH;
+		float m_rD;
+		float m_rArea;
+	};
 
 }
 #endif

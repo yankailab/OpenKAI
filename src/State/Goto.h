@@ -13,23 +13,23 @@
 namespace kai
 {
 
-class Goto: public State
-{
-public:
-	Goto();
-	virtual ~Goto();
+	class Goto : public State
+	{
+	public:
+		Goto();
+		virtual ~Goto();
 
-	bool init(void* pKiss);
-	bool update(void);
-	void reset(void);
-	void console(void* pConsole);
+		bool init(void *pKiss);
+		bool update(void);
+		void reset(void);
+		void console(void *pConsole);
 
-	void setPos(vDouble3& p);
+		void setPos(vDouble3 &p);
 
-private:
-	vDouble3 m_vPos;	//lat, lon, alt
-	double	 m_hdg;
-};
+	private:
+		vDouble3 m_vPos; //lat, lon, alt
+		double m_hdg;
+	};
 
 }
 #endif

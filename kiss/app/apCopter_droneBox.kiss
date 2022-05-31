@@ -3,25 +3,25 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog":1,
-	"bStdErr":1,
+	"bStdErr":0,
 	"/rc":"sudo mkdir /home/pi/ssd\nsudo mount /dev/nvme0p1 /home/pi/ssd/\nsudo chown pi /home/pi/ssd\n",
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["cam","apBase","apVideo"],
+	"vBASE":["cam","apBase","TOFsense","serialTelem","/apVideo"],
 }
 
 {
 	"name":"RGBview",
 	"class":"_WindowCV",
-	"bInst":0,
+	"bON":0,
 	"bFullScreen":0,
     {
 		"name":"thread",
@@ -35,13 +35,13 @@
 {
 	"name":"FB",
 	"class":"_FrameBuffer",
-	"bInst":1,
+	"bON":0,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":3,
 	}
 	"vBASE":["cam"],
-	"gstOutput":"appsrc ! videoconvert ! fbdevsink",
+	"gstOutput":"appsrc ! v4l2convert ! fbdevsink",
 	"vSize":[1280,720],
 }
 
@@ -52,49 +52,49 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"bInst":1,
+	"bON":1,
 	"start":"STANDBY",
 	"/start":"LANDING",
 
 	{
 		"name":"state",
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"STANDBY",
 			"class":"State",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"TAKEOFF_REQUEST",
 			"class":"State",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"TAKEOFF_READY",
 			"class":"State",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"AIRBORNE",
 			"class":"State",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"LANDING_REQUEST",
 			"class":"State",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"LANDING",
 			"class":"State",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"TOUCHDOWN",
 			"class":"State",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"LANDED",
 			"class":"State",
 		}
@@ -104,7 +104,7 @@
 {
 	"name":"serialAP",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -113,7 +113,6 @@
 		"name":"threadR",
 		"FPS":1,
 	}
-	"bLog":0,
 	"port":"/dev/ttyACM0",
 	"baud":115200,
 }
@@ -121,7 +120,7 @@
 {
 	"name":"apMavlink",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -136,7 +135,7 @@
 {
 	"name":"apBase",
 	"class":"_AP_base",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
@@ -190,7 +189,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bInst":0,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -202,7 +201,7 @@
 {
 	"name":"cam",
 	"class":"_Camera",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -214,7 +213,7 @@
 {
 	"name":"apVideo",
 	"class":"_AP_video",
-	"bInst":0,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -226,13 +225,25 @@
 	"_VisionBase":"cam",
 	"dir":"/home/pi/ssd/video/",
 	"fCalib":"/home/pi/ok/calibCam.kiss",
-	"gstOutput":"appsrc ! tee name=t t. ! queue ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! matroskamux ! filesink location=[fName].mka t. ! queue ! v4l2convert ! fbdevsink",
+	"/gstOutput":"appsrc ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! matroskamux ! filesink location=[fName].mka",
+	"gstOutput":"appsrc ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! tee name=t t. ! queue ! matroskamux ! filesink location=[fName].mka t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.245 port=5678 auto-multicast=false",
+}
+
+{
+	"name":"cURL",
+	"class":"_Curl",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"cmd":"curl -T FourierToy.swf ftp://193.112.75.123/pub/ --user anonymous",
 }
 
 {
 	"name":"univTag",
 	"class":"_Universe",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -242,7 +253,7 @@
 {
 	"name":"arUco",
 	"class":"_ArUco",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -255,33 +266,34 @@
 {
 	"name":"serialTOF",
 	"class":"_SerialPort",
-	"bInst":1,
-	"FPS":30,
-	"bLog":0,
-	"port":"/dev/ttyACM1",
+	"bON":1,
+    {
+        "name":"thread",
+        "FPS":30,
+    }
+    {
+        "name":"threadR",
+        "FPS":30,
+    }
+	"port":"/dev/ttyAMA1",
 	"baud":921600,
 }
 
 {
 	"name":"TOFsense",
 	"class":"_TOFsense",
-	"bInst":1,
+	"bON":1,
     {
-		"name":"thread",
-		"FPS":30,
-	}
-    {
-		"name":"threadR",
-		"FPS":30,
-	}
-	"bLog":1,
+        "name":"thread",
+        "FPS":30,
+    }
 	"_IOBase":"serialTOF",
 }
 
 {
 	"name":"PIDroll",
 	"class":"PID",
-	"bInst":1,
+	"bON":1,
 	"P":-1.0,
 	"I":0.0,
 	"Imax":0.0,
@@ -293,7 +305,7 @@
 {
 	"name":"PIDpitch",
 	"class":"PID",
-	"bInst":1,
+	"bON":1,
 	"P":1.0,
 	"I":0.0,
 	"Imax":0.0,
@@ -305,7 +317,7 @@
 {
 	"name":"PIDyaw",
 	"class":"PID",
-	"bInst":1,
+	"bON":1,
 	"P":-0.5,
 	"I":0.0,
 	"Imax":0.0,
@@ -321,7 +333,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"_StateControl":"state",
 	"vActiveState":["LANDING"],
@@ -357,7 +369,7 @@
 {
 	"name":"apGCS",
 	"class":"_AP_gcs",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
@@ -371,9 +383,9 @@
 }
 
 {
-	"name":"telem",
+	"name":"serialTelem",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -391,7 +403,7 @@
 {
 	"name":"dbjTelem",
 	"class":"_AP_droneBoxJSON",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":1,
@@ -402,13 +414,13 @@
 	}
 	"bLog":1,
 	"_AP_gcs":"apGCS",
-	"_IOBase":"telem",
+	"_IOBase":"serialTelem",
 }
 
 {
 	"name":"udp",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -426,7 +438,7 @@
 {
 	"name":"dbjUDP",
 	"class":"_AP_droneBoxJSON",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":1,

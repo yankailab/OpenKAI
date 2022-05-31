@@ -86,7 +86,6 @@ namespace kai
 
 	void _MOAB::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
@@ -97,7 +96,6 @@ namespace kai
 			pC->addMsg("Connected");
 
 		pC->addMsg("vSpeed=(" + f2str(m_vSpeed.x) + ", " + f2str(m_vSpeed.y) + ")");
-#endif
 	}
 
 }

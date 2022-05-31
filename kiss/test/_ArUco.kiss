@@ -12,20 +12,20 @@
 {
 	"name":"OK_Console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"deviceID":0,
@@ -36,7 +36,7 @@
 {
 	"name":"universe",
 	"class":"_Universe",
-	"bInst":1,
+	"bON":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 }
@@ -45,7 +45,7 @@
 	"name":"arUco",
 	"class":"_ArUco",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bDraw":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",

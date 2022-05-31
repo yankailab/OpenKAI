@@ -12,39 +12,39 @@
 {
 	"name":"_ConsoleDrive",
 	"class":"_Console",
-	"bInst":0,
+	"bON":0,
 }
 
 {
 	"name":"_ConsoleArmL",
 	"class":"_Console",
-	"bInst":0,
+	"bON":0,
 }
 
 {
 	"name":"_ConsoleGluon",
 	"class":"_Console",
-	"bInst":0,
+	"bON":0,
 }
 
 {
 	"name":"viewDrive",
 	"class":"Window",
-	"bInst":0,
+	"bON":0,
 	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.189 port=5678 auto-multicast=false",
 }
 
 {
 	"name":"viewArmL",
 	"class":"Window",
-	"bInst":0,
+	"bON":0,
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 }
 
 {
 	"name":"viewDev",
 	"class":"Window",
-	"bInst":0,
+	"bON":0,
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.0.19 port=5678 auto-multicast=false",
 }
 
@@ -52,7 +52,7 @@
 	"name":"camDrive",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"viewDrive",
 	"_Console":"_ConsoleDrive",
 	"deviceID":0,
@@ -64,7 +64,7 @@
 	"name":"camDrive",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"viewDrive",
 	"_Console":"_ConsoleDrive",
 	"pipeline":"rtspsrc location=rtsp://admin:12345@192.168.1.120:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
@@ -75,7 +75,7 @@
 	"name":"gsL",
 	"class":"_Grayscale",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"/viewDev",
 	"_Console":"_ConsoleDrive",
 	"_VisionBase":"camDrive",
@@ -85,7 +85,7 @@
 	"name":"contL",
 	"class":"_Contrast",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"/viewDev",
 	"_VisionBase":"gsL",
 	"_Console":"_ConsoleDrive",
@@ -97,7 +97,7 @@
 	"name":"irL",
 	"class":"_InRange",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"/viewDev",
 	"_Console":"_ConsoleDrive",
 	"_VisionBase":"contL",
@@ -109,7 +109,7 @@
 	"name":"morphL",
 	"class":"_Morphology",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"/viewDev",
 	"_Console":"_ConsoleDrive",
 	"_VisionBase":"irL",
@@ -133,7 +133,7 @@
 	"name":"invL",
 	"class":"_Invert",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"/viewDev",
 	"_Console":"_ConsoleDrive",
 	"_VisionBase":"morphL",
@@ -143,7 +143,7 @@
 	"name":"cropL",
 	"class":"_Crop",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"/viewDev",
 	"_VisionBase":"invL",
 	"_Console":"_ConsoleDrive",
@@ -154,7 +154,7 @@
 	"name":"rotL",
 	"class":"_Rotate",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"viewDev",
 	"_Console":"_ConsoleDrive",
 	"_VisionBase":"cropL",
@@ -165,7 +165,7 @@
 	"name":"detSide",
 	"class":"_Line",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"viewDrive",
 	"_Console":"_ConsoleDrive",
 	"_VisionBase":"rotL",
@@ -178,7 +178,7 @@
 	"name":"cropM",
 	"class":"_Crop",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"Window":"/viewDev",
 	"_Console":"_ConsoleDrive",
 	"_VisionBase":"morphL",
@@ -189,7 +189,7 @@
 	"name":"detDivider",
 	"class":"_Line",
 	"FPS":30,
-	"bInst":0,
+	"bON":0,
 	"Window":"/viewDev",
 	"_Console":"_ConsoleDrive",
 	"_VisionBase":"cropM",
@@ -201,7 +201,7 @@
 {
 	"name":"univSide",
 	"class":"_Universe",
-	"bInst":1,
+	"bON":1,
 	"Window":"viewDrive",
 	"_Console":"_ConsoleDrive",
 }
@@ -209,7 +209,7 @@
 {
 	"name":"univDivider",
 	"class":"_Universe",
-	"bInst":1,
+	"bON":1,
 	"Window":"viewDrive",
 	"_Console":"_ConsoleDrive",
 }
@@ -218,7 +218,7 @@
 	"name":"D435",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"bDebug":0,
 	"Window":"viewArmL",
@@ -244,7 +244,7 @@
 {
 	"name":"univTagL",
 	"class":"_Universe",
-	"bInst":1,
+	"bON":1,
 	"Window":"viewArmL",
 	"_Console":"_ConsoleArmL",
 }
@@ -253,7 +253,7 @@
 	"name":"ChilitagsL",
 	"class":"_Chilitags",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bDraw":1,
 	"Window":"viewArmL",
 	"_Console":"_ConsoleArmL",
@@ -267,7 +267,7 @@
 {
 	"name":"univTagArm",
 	"class":"_Universe",
-	"bInst":1,
+	"bON":1,
 	"Window":"viewArmL",
 	"_Console":"_ConsoleArmL",
 }
@@ -276,7 +276,7 @@
 	"name":"ChilitagsArm",
 	"class":"_Chilitags",
 	"FPS":30,
-	"bInst":1,
+	"bON":1,
 	"bDraw":1,
 	"Window":"viewArmL",
 	"_Console":"_ConsoleArmL",
@@ -290,7 +290,7 @@
 {
 	"name":"apSerial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewDrive",
@@ -305,7 +305,7 @@
 {
 	"name":"apMavlink",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewDrive",
@@ -322,7 +322,7 @@
 	"name":"missionDrive",
 	"class":"_MissionControl",
 	"FPS":10,
-	"bInst":1,
+	"bON":1,
 	"Window":"viewDrive",
 	"_Console":"_ConsoleDrive",
 	"start":"MANUAL",
@@ -330,19 +330,19 @@
 	{
 		"name":"mission",
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"MANUAL",
 			"class":"Mission",
 			"next":"MANUAL",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"FORWARD",
 			"class":"Mission",
 			"next":"FORWARD",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"BACKWARD",
 			"class":"Mission",
 			"next":"BACKWARD",
@@ -354,7 +354,7 @@
 	"name":"missionArm",
 	"class":"_MissionControl",
 	"FPS":10,
-	"bInst":1,
+	"bON":1,
 	"Window":"viewArmL",
 	"_Console":"_ConsoleArmL",
 	"start":"DRIVE",
@@ -362,40 +362,40 @@
 	{
 		"name":"mission",
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"DRIVE",
 			"class":"Mission",
 			"next":"DRIVE",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"DIVIDER",
 			"class":"Mission",
 			"tTimeout":3,
 			"next":"DRIVE",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"EXTRACT",
 			"class":"Mission",
 			"next":"FOLLOW",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"FOLLOW",
 			"class":"Mission",
 			"tTimeout":60,
 			"next":"PAUSE",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"PAUSE",
 			"class":"Mission",
 			"tTimeout":5,
 			"next":"RECOVER",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"RECOVER",
 			"class":"Mission",
 			"next":"DRIVE",
@@ -407,7 +407,7 @@
 	"name":"apBase",
 	"class":"_AP_base",
 	"FPS":10,
-	"bInst":1,
+	"bON":1,
 	"_MissionControl":"missionDrive",
 	"Window":"viewDrive",
 	"_Console":"_ConsoleDrive",
@@ -460,7 +460,7 @@
 	"name":"apUT",
 	"class":"_AProver_UT",
 	"FPS":10,
-	"bInst":1,
+	"bON":1,
 	"Window":"viewDrive",
 	"_Console":"_ConsoleDrive",
 	"_MissionControl":"missionDrive",
@@ -473,7 +473,7 @@
 {
 	"name":"drive",
 	"class":"Drive",
-	"bInst":1,
+	"bON":1,
 	"Window":"viewDrive",
 	"_Console":"_ConsoleMain",
 	"nSpd":0.0,
@@ -496,7 +496,7 @@
 	"name":"apDrive",
 	"class":"_AProver_drive",
 	"FPS":10,
-	"bInst":1,
+	"bON":1,
 	"Window":"viewDrive",
 	"_Console":"_ConsoleDrive",
 	"_MissionControl":"missionDrive",
@@ -511,7 +511,7 @@
 {
 	"name":"PIDside", /*change x 0.0 to 0.5 to yaw */
 	"class":"PIDctrl",
-	"bInst":1,
+	"bON":1,
 	"Window":"viewDrive",
 	"_Console":"_ConsoleDrive",
 	"P":-0.5,
@@ -525,7 +525,7 @@
 	"name":"apFollowTag",
 	"class":"_AProver_UTfollowTag",
 	"FPS":20,
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"Window":"viewArmL",
 	"_Console":"_ConsoleArmL",
@@ -548,7 +548,7 @@
 {
 	"name":"PIDarmX",
 	"class":"PIDctrl",
-	"bInst":1,
+	"bON":1,
 	"Window":"viewArmL",
 	"_Console":"_ConsoleArmL",
 	"P":20000,
@@ -561,7 +561,7 @@
 {
 	"name":"PIDarmY",
 	"class":"PIDctrl",
-	"bInst":1,
+	"bON":1,
 	"Window":"viewArmL",
 	"_Console":"_ConsoleArmL",
 	"P":1000,
@@ -575,7 +575,7 @@
 	"name":"armL",
 	"class":"_UTprArmL",
 	"FPS":5,
-	"bInst":1,
+	"bON":1,
 	"bLog":1,
 	"Window":"viewArmL",
 	"_Console":"_ConsoleArmL",
@@ -600,7 +600,7 @@
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"viewArmL",
@@ -612,7 +612,7 @@
 {
 	"name":"omRot",
 	"class":"_OrientalMotor",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewArmL",
@@ -647,7 +647,7 @@
 {
 	"name":"omWX",
 	"class":"_OrientalMotor",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewArmL",
@@ -681,7 +681,7 @@
 {
 	"name":"omWY",
 	"class":"_OrientalMotor",
-	"bInst":1,
+	"bON":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewArmL",
@@ -717,7 +717,7 @@
 {
 	"name":"omR",
 	"class":"_OrientalMotor",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewArmL",
@@ -751,7 +751,7 @@
 {
 	"name":"omL",
 	"class":"_OrientalMotor",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewArmL",
@@ -785,7 +785,7 @@
 {
 	"name":"omV",
 	"class":"_ActuatorSync",
-	"bInst":0,
+	"bON":0,
 	"FPS":10,
 	"bLog":0,
 	"Window":"viewArmL",
@@ -797,7 +797,7 @@
 {
 	"name":"omM",
 	"class":"_OrientalMotor",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewArmL",
@@ -833,7 +833,7 @@
 {
 	"name":"gluon",
 	"class":"_InnfosGluon",
-	"bInst":0,
+	"bON":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"viewGluon",
@@ -904,7 +904,7 @@
 	"name":"apActuator",
 	"class":"_AP_actuator",
 	"FPS":10,
-	"bInst":0,
+	"bON":0,
 	"Window":"viewGluon",
 	"_Console":"_ConsoleGluon",
 	"_AP_base":"apBase",

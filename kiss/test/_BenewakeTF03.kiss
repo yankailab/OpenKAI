@@ -9,7 +9,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -20,7 +20,7 @@
 {
 	"name":"serial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -37,7 +37,7 @@
 {
 	"name":"TF03",
 	"class":"_BenewakeTF",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,

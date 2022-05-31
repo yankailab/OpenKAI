@@ -73,17 +73,12 @@ namespace kai
 
 	void _VisionBase::draw(void* pFrame)
 	{
-#ifdef WITH_UI
-#ifdef USE_OPENCV
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
 		IF_(check() < 0);
-
-		_WindowCV *pWin = (_WindowCV *)pFrame;
-		Frame *pF = pWin->getNextFrame();
-		NULL_(pF);
-
 		IF_(m_fBGR.bEmpty());
+
+		Frame *pF = (Frame*)pFrame;
 
 		if (m_bbDraw.x < 0.0)
 		{
@@ -99,8 +94,6 @@ namespace kai
 
 			m.copyTo((*pM)(r));
 		}
-#endif
-#endif
 	}
 
 }

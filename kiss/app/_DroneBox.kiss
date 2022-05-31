@@ -12,13 +12,13 @@
 {
 	"name":"OK_Console",
 	"class":"_Console",
-	"bInst":1,
+	"bON":1,
 }
 
 {
 	"name":"state",
 	"class":"_StateControl",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -29,42 +29,42 @@
 	{
 		"name":"state",
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"STANDBY",
 			"class":"State",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"TAKEOFF_REQUEST",
 			"class":"State",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"TAKEOFF_READY",
 			"class":"State",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"AIRBORNE",
 			"class":"State",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"LANDING_REQUEST",
 			"class":"State",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"LANDING",
 			"class":"State",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"TOUCHDOWN",
 			"class":"State",
 		}
 		{
-			"bInst":1,
+			"bON":1,
 			"name":"LANDED",
 			"class":"State",
 		}
@@ -74,7 +74,7 @@
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -90,7 +90,7 @@
 {
 	"name":"droneBox",
 	"class":"_DroneBox",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
@@ -106,7 +106,7 @@
 {
 	"name":"telem",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -124,7 +124,7 @@
 {
 	"name":"dbjTelem",
 	"class":"_DroneBoxJSON",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":1,
@@ -142,7 +142,7 @@
 {
 	"name":"udp",
 	"class":"_UDP",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -159,7 +159,7 @@
 {
 	"name":"dbjUDP",
 	"class":"_DroneBoxJSON",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":1,

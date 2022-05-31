@@ -9,7 +9,7 @@
 {
 	"name":"Fourier",
 	"class":"_FourierSeries",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,

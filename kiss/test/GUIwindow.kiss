@@ -12,7 +12,7 @@
 {
 	"name":"GUI",
 	"class":"GUIwindow",
-	"bInst":1,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
