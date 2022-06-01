@@ -15,7 +15,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["cam","apBase","TOFsense","serialTelem","/apVideo"],
+	"vBASE":["cam","arUco","apBase","apLand","serialTelem","apVideo"],
 }
 
 {
@@ -113,7 +113,7 @@
 		"name":"threadR",
 		"FPS":1,
 	}
-	"port":"/dev/ttyACM0",
+	"port":"/dev/ttyAMA0",
 	"baud":115200,
 }
 
@@ -187,9 +187,35 @@
 }
 
 {
+	"name":"apServo",
+	"class":"_AP_servo",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"_StateControl":"state",
+	"vActiveState":["STANDBY","TAKEOFF_REQUEST"],
+	"_AP_base":"apBase",
+
+	{
+		"name":"channels",
+		
+		{
+			"iChan":8,
+			"pwm":1500,
+		}
+		{
+			"iChan":9,
+			"pwm":1500,
+		}
+	}
+}
+
+{
 	"name":"cam",
 	"class":"_GStreamer",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -201,7 +227,7 @@
 {
 	"name":"cam",
 	"class":"_Camera",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -237,7 +263,7 @@
 		"name":"thread",
 		"FPS":1,
 	}
-	"cmd":"curl -T FourierToy.swf ftp://193.112.75.123/pub/ --user anonymous",
+	"cmd":"curl -T [fName] ftp://193.112.75.123/pub/ --user anonymous",
 }
 
 {
@@ -339,6 +365,7 @@
 	"vActiveState":["LANDING"],
 	"_AP_base":"apBase",
 	"_Universe":"univTag",
+	"_DistSensorBase":"TOFsense",
 	"PIDroll":"PIDroll",
 	"PIDpitch":"PIDpitch",
 	"PIDyaw":"PIDyaw",

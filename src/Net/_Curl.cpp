@@ -55,20 +55,46 @@ namespace kai
 
 	void _Curl::updateCurl(void)
 	{
-		// FILE *fp;
-		// char path[1035];
-		// string alpr = "curl -X POST -F image=@" + m_tempDir + fName + ".jpeg '" + m_alprAPI + m_alprKey + "'";
-		// fp = popen(alpr.c_str(), "r");
-		// IF_l(!fp, "Failed to run command:" + alpr);
+		while (!m_vFiles.empty())
+		{
+			string fName = m_vFiles.back();
+			string cmd = replace(m_cmd, "[fName]", fName);
 
-		// while (fgets(path, sizeof(path) - 1, fp));
-		// pclose(fp);
-		// string strR = string(path);
+			FILE *fp;
+			fp = popen(cmd.c_str(), "r");
+			if (!fp)
+			{
+				LOG_E("Failed to run command: " + cmd);
+				continue;
+			}
+
+			char pResult[1024];
+			while (fgets(pResult, sizeof(pResult) - 1, fp))
+				;
+			pclose(fp);
+			string strR = string(pResult);
+
+			if (strR.empty())
+			{
+				//upload success
+				cmd = "rm " + fName;
+				system(cmd.c_str());
+				m_vFiles.pop_back();
+			}
+		}
 	}
 
-    void _Curl::console(void *pConsole)
-    {
-        this->_ModuleBase::console(pConsole);
-    }
+	bool _Curl::addFile(const string &fName)
+	{
+		IF_F(fName.empty());
+
+		m_vFiles.push_back(fName);
+		return true;
+	}
+
+	void _Curl::console(void *pConsole)
+	{
+		this->_ModuleBase::console(pConsole);
+	}
 
 }

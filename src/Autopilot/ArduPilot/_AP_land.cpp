@@ -5,6 +5,7 @@ namespace kai
 
 	_AP_land::_AP_land()
 	{
+		m_pDS = NULL;
 		m_zrK = 1.0;
 		m_dTarget = -1.0;
 		m_dTargetComplete = 1.0;
@@ -24,6 +25,13 @@ namespace kai
 		pK->v("dTargetComplete", &m_dTargetComplete);
 		pK->v("altComplete", &m_altComplete);
 
+		string n;
+
+		n = "";
+		pK->v("_DistSensorBase", &n);
+		m_pDS = (_DistSensorBase *)(pK->getInst(n));
+		NULL_Fl(m_pDS, n + ": not found");
+
 		return true;
 	}
 
@@ -35,6 +43,8 @@ namespace kai
 
 	int _AP_land::check(void)
 	{
+		NULL__(m_pDS, -1);
+
 		return this->_AP_follow::check();
 	}
 
@@ -66,32 +76,25 @@ namespace kai
 		m_bTarget = findTarget();
 
 		m_vKpid.set(1.0);
-		if(m_bTarget)
+		if (m_bTarget)
 		{
-			float kD = 1.0 - (m_vKpidIn.constrain(m_dTarget) - m_vKpidIn.x)/m_vKpidIn.len();
+			float kD = (m_vKpidIn.constrain(m_dTarget) - m_vKpidIn.x) / m_vKpidIn.len();
 			kD = m_vKpidOut.constrain(kD);
 			m_vKpid.x = kD;
 			m_vKpid.y = kD;
 		}
-
-		if (alt > m_altComplete)
-		{
-			// descending
-			if (!m_bTarget)
-				m_vP = m_vTargetP;
-		}
 		else
 		{
-			if(m_bTarget && m_dTarget < m_dTargetComplete)
-			{
-				// not yet close enough to the target marker, keep descending
-			}
-			else
-			{
-				// going to touch down
-				m_pSC->transit("TOUCHDOWN");
-				m_vP = m_vTargetP;
-			}
+			m_vP = m_vTargetP;
+		}
+
+		if (alt < m_altComplete && m_dTarget < m_dTargetComplete)
+		{
+			// going to touch down
+			m_pSC->transit("TOUCHDOWN");
+			m_vP = m_vTargetP;
+			releaseCtrl();
+			return true;
 		}
 
 		setPosLocal();
@@ -105,20 +108,15 @@ namespace kai
 		//target
 		_Object *tO = NULL;
 		_Object *pO;
-		float minW = FLT_MAX;
+		int IDmax = -1;
 		int i = 0;
 		while ((pO = m_pU->get(i++)) != NULL)
 		{
-			if (m_iClass >= 0)
-			{
-				IF_CONT(pO->getTopClass() != m_iClass);
-			}
+			int id = pO->getTopClass();
+			IF_CONT(id < IDmax);
 
-			float w = pO->getWidth();
-			IF_CONT(w > minW);
-
+			IDmax = id;
 			tO = pO;
-			minW = w;
 		}
 
 		float *pX, *pY, *pR, *pH;
@@ -158,7 +156,7 @@ namespace kai
 		m_vP.w = *pH;
 
 		//distance
-		m_dTarget = *pR; //temporal
+		m_dTarget = m_pDS->d(0);
 
 		return true;
 	}
@@ -182,14 +180,14 @@ namespace kai
 		pC->addMsg("Size=(" + f2str(m_vTargetBB.width()) + ", " + f2str(m_vTargetBB.height()) + ")", 1);
 	}
 
-	void _AP_land::draw(void* pFrame)
+	void _AP_land::draw(void *pFrame)
 	{
 #ifdef USE_OPENCV
 		NULL_(pFrame);
 		this->_AP_follow::draw(pFrame);
 		IF_(check() < 0);
 
-		Frame *pF = (Frame*)pFrame;
+		Frame *pF = (Frame *)pFrame;
 
 		Mat *pM = pF->m();
 		IF_(pM->empty());

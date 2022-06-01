@@ -17,10 +17,18 @@ namespace kai
 		IF_F(!this->_StateBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
+		string n;
+		n = "";
+		F_ERROR_F(pK->v("_AP_base", &n));
+		m_pAP = (_AP_base *)(pK->getInst(n));
+
+		Kiss *pKc = pK->child("channels");
+		NULL_T(pKc);
+
 		int i = 0;
 		while (1)
 		{
-			Kiss *pS = pK->child(i++);
+			Kiss *pS = pKc->child(i++);
 			if (pS->empty())
 				break;
 
@@ -30,11 +38,6 @@ namespace kai
 			pS->v("pwm", &s.m_pwm);
 			m_vServo.push_back(s);
 		}
-
-		string n;
-		n = "";
-		F_ERROR_F(pK->v("_AP_base", &n));
-		m_pAP = (_AP_base *)(pK->getInst(n));
 
 		return true;
 	}

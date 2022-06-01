@@ -12,70 +12,70 @@
 namespace kai
 {
 
-struct FOLLOW_TARGET_FILT
-{
-	Median<float> m_med;
-	Predict<float> m_pred;
-	Hold<float> m_hold;
-
-	bool init(int nWmed, int nWpred, float dThold)
+	struct FOLLOW_TARGET_FILT
 	{
-		IF_F(!m_med.init(nWmed));
-		IF_F(!m_pred.init(nWpred));
-		IF_F(!m_hold.init(dThold));
+		Median<float> m_med;
+		Predict<float> m_pred;
+		Hold<float> m_hold;
 
-		return true;
-	}
+		bool init(int nWmed, int nWpred, float dThold)
+		{
+			IF_F(!m_med.init(nWmed));
+			IF_F(!m_pred.init(nWpred));
+			IF_F(!m_hold.init(dThold));
 
-	void reset(void)
+			return true;
+		}
+
+		void reset(void)
+		{
+			m_med.reset();
+			m_pred.reset();
+			m_hold.reset();
+		}
+
+		float *update(float *pV, float dT)
+		{
+			return m_pred.update(m_med.update(m_hold.update(pV, dT)), dT);
+		}
+	};
+
+	class _AP_follow : public _AP_posCtrl
 	{
-		m_med.reset();
-		m_pred.reset();
-		m_hold.reset();
-	}
+	public:
+		_AP_follow();
+		~_AP_follow();
 
-	float* update(float* pV, float dT)
-	{
-		return m_pred.update(m_med.update(m_hold.update(pV, dT) ), dT);
-	}
-};
+		virtual bool init(void *pKiss);
+		virtual int check(void);
+		virtual bool start(void);
+		virtual void update(void);
 
-class _AP_follow: public _AP_posCtrl
-{
-public:
-	_AP_follow();
-	~_AP_follow();
+	protected:
+		virtual bool updateTarget(void);
+		virtual bool findTarget(void);
+		static void *getUpdate(void *This)
+		{
+			((_AP_follow *)This)->update();
+			return NULL;
+		}
 
-	virtual	bool init(void* pKiss);
-	virtual int check(void);
-	virtual bool start(void);
-	virtual void update(void);
+	public:
+		_Universe *m_pU;
+		_TrackerBase *m_pTracker;
+		int m_iClass;
+		bool m_bTarget;
+		vFloat4 m_vTargetBB;
 
-protected:
-	bool updateTarget(void);
-	virtual bool findTarget(void);
-	static void* getUpdate(void* This)
-	{
-		((_AP_follow *) This)->update();
-		return NULL;
-	}
+		FOLLOW_TARGET_FILT m_fX;
+		FOLLOW_TARGET_FILT m_fY;
+		FOLLOW_TARGET_FILT m_fR;
+		FOLLOW_TARGET_FILT m_fH;
 
-public:
-	_Universe*     	m_pU;
-	_TrackerBase*	m_pTracker;
-	int				m_iClass;
-	bool			m_bTarget;
-	vFloat4			m_vTargetBB;
+		AP_MOUNT m_apMount;
 
-	FOLLOW_TARGET_FILT m_fX;
-	FOLLOW_TARGET_FILT m_fY;
-	FOLLOW_TARGET_FILT m_fR;
-	FOLLOW_TARGET_FILT m_fH;
-
-	AP_MOUNT		m_apMount;
-
-//	INTERVAL_EVENT m_ieSend;
-};
+		//	INTERVAL_EVENT m_ieSend;
+	};
 
 }
 #endif

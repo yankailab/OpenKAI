@@ -25,6 +25,8 @@ namespace kai
 		virtual int check(void);
 		virtual void console(void *pConsole);
 
+		bool addFile(const string& fName);
+
 	private:
 		void updateCurl(void);
 		void update(void);
@@ -36,6 +38,7 @@ namespace kai
 
 	private:
 		string m_cmd;
+		vector<string> m_vFiles;
 	};
 
 }

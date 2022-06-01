@@ -2,6 +2,7 @@
 #define OpenKAI_src_Autopilot_AP__AP_land_H_
 
 #include "../../Detector/_DetectorBase.h"
+#include "../../Sensor/_DistSensorBase.h"
 #include "_AP_follow.h"
 
 namespace kai
@@ -21,7 +22,7 @@ namespace kai
 		void console(void *pConsole);
 
 	protected:
-		bool updateTarget(void);
+		virtual bool updateTarget(void);
 		virtual bool findTarget(void);
 		static void *getUpdate(void *This)
 		{
@@ -30,6 +31,8 @@ namespace kai
 		}
 
 	public:
+		_DistSensorBase* m_pDS;
+
 		float m_zrK;
 		float m_dTarget; //dist to target
 		float m_dTargetComplete;

@@ -46,9 +46,11 @@ namespace kai
 		PID *m_pPitch;
 		PID *m_pAlt;
 		PID *m_pYaw;
+		
+		//extra factor for distance effected PID aggresiveness adjustment
 		vFloat2 m_vKpidIn;
 		vFloat2 m_vKpidOut;
-		vFloat4 m_vKpid; //extra factor for distance effected PID aggresiveness adjustment
+		vFloat4 m_vKpid;
 	};
 
 }
