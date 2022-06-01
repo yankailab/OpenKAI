@@ -47,6 +47,7 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
+			addFile("/home/kai/Videos/test.mka");
 			updateCurl();
 
 			m_pT->autoFPSto();
@@ -68,17 +69,21 @@ namespace kai
 				continue;
 			}
 
-			char pResult[1024];
-			while (fgets(pResult, sizeof(pResult) - 1, fp))
-				;
+			string strR = "";
+			char pResult[1035];
+			while (fgets(pResult, sizeof(pResult), fp))
+			{
+				strR += string(pResult);
+			}
 			pclose(fp);
-			string strR = string(pResult);
+
+			LOG_I(strR);
 
 			if (strR.empty())
 			{
 				//upload success
 				cmd = "rm " + fName;
-				system(cmd.c_str());
+//				system(cmd.c_str());
 				m_vFiles.pop_back();
 			}
 		}

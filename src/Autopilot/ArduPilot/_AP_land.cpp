@@ -75,6 +75,10 @@ namespace kai
 		float alt = m_pAP->getGlobalPos().w; //relative altitude
 		m_bTarget = findTarget();
 
+		//sensor blocked or not detecting ground
+		if(m_dTarget < 0.01)
+			m_dTarget = m_vKpidIn.y;
+
 		m_vKpid.set(1.0);
 		if (m_bTarget)
 		{

@@ -111,7 +111,7 @@ namespace kai
 		if (!m_gst.open(gst,
 						CAP_GSTREAMER,
 						0,
-						30,
+						m_pT->getTargetFPS(),
 						cv::Size(m_vSize.x, m_vSize.y),
 						true))
 		{

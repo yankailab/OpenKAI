@@ -15,7 +15,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["cam","arUco","apBase","apLand","serialTelem","apVideo"],
+	"vBASE":["cam","state","arUco","TOFsense","apBase","apLand","serialTelem","apVideo"],
 }
 
 {
@@ -111,7 +111,7 @@
 	}
     {
 		"name":"threadR",
-		"FPS":1,
+		"FPS":30,
 	}
 	"port":"/dev/ttyAMA0",
 	"baud":115200,
@@ -151,12 +151,12 @@
 		{
 			"name":"heartbeat",
 			"id":0,
-			"tInt":0.5,
+			"tInt":0.4,
 		}
 		{
 			"name":"attitude",
 			"id":30,
-			"tInt":0.2,
+			"tInt":0.3,
 		}
 		{
 			"name":"rcChannels",
@@ -166,12 +166,12 @@
 		{
 			"name":"localPosition",
 			"id":32,
-			"tInt":1.0,
+			"tInt":0.3,
 		}
 		{
 			"name":"globalPosition",
 			"id":33,
-			"tInt":0.2,
+			"tInt":0.3,
 		}
 		{
 			"name":"homePosition",
@@ -202,10 +202,12 @@
 		"name":"channels",
 		
 		{
-			"iChan":8,
+			"name":"pitch",
+			"iChan":10,
 			"pwm":1500,
 		}
 		{
+			"name":"roll",
 			"iChan":9,
 			"pwm":1500,
 		}
@@ -239,10 +241,10 @@
 {
 	"name":"apVideo",
 	"class":"_AP_video",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":25,
 	}
 	"bLog":0,
 	"_StateControl":"state",
@@ -258,12 +260,13 @@
 {
 	"name":"cURL",
 	"class":"_Curl",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":1,
 	}
-	"cmd":"curl -T [fName] ftp://193.112.75.123/pub/ --user anonymous",
+	"cmd":"curl 2>&1 -T [fName] ftp://193.112.75.125/pub/ -u anonymous: --connect-timeout 60 --no-progress-meter",
+	"/cmd":"echo Hello [fName]",
 }
 
 {
@@ -377,7 +380,7 @@
 	"zrK":10.0,
 	"altComplete":1.25,
 	"dTargetComplete":0.3,
-	"vKpidIn":[0.2, 0.3],
+	"vKpidIn":[0.1, 23.0],
 	"vKpidOut":[0.3, 1.0],
 	
 	{
@@ -404,8 +407,8 @@
 	"bLog":1,
 	"_AP_base":"apBase",
 	"_StateControl":"state",
-	"altAirborne":15.0,
-	"dLanded":5,
+	"altAirborne":10.0,
+	"dLanded":2,
 	"bAutoArm":0,
 }
 
