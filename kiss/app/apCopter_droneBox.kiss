@@ -4,7 +4,7 @@
 	"appName":"OpenKAI",
 	"bLog":1,
 	"bStdErr":0,
-	"/rc":"sudo mkdir /home/pi/ssd\nsudo mount /dev/nvme0p1 /home/pi/ssd/\nsudo chown pi /home/pi/ssd\n",
+	"/rc":"sudo mkdir /home/pi/ssd\nsudo mount /dev/nvme0n1 /home/pi/ssd/\nsudo chown pi /home/pi/ssd\n",
 }
 
 {
