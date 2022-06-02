@@ -13,7 +13,6 @@ namespace kai
 		m_vSize.set(1280, 720);
 		m_fCalib = "";
 		m_dir = "/home/lab/";
-		m_saveDir = "";
 		m_fName = "";
 		m_bRecording = false;
 	}
@@ -101,13 +100,7 @@ namespace kai
 		IF_F(m_bRecording);
 
 		string strT = tFormat();
-		m_saveDir = m_dir + strT + "/";
-
-		string cmd;
-		cmd = "mkdir " + m_saveDir;
-		system(cmd.c_str());
-
-		m_fName = m_saveDir + strT;
+		m_fName = m_dir + strT;
 
 		// open video stream
 		string gst = replace(m_gstOutput, "[fName]", m_fName + ".mka");
@@ -198,7 +191,7 @@ namespace kai
 		msgActive(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		pC->addMsg("saveDir = " + m_saveDir);
+		pC->addMsg("fName = " + m_fName);
 		pC->addMsg("iFrame = " + i2str(m_iFrame));
 	}
 

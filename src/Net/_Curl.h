@@ -10,6 +10,7 @@
 
 #include "../Base/_ModuleBase.h"
 #include "../Script/JSON.h"
+#include "../UI/_Console.h"
 
 namespace kai
 {
@@ -39,6 +40,7 @@ namespace kai
 	private:
 		string m_cmd;
 		vector<string> m_vFiles;
+		string m_fName;
 	};
 
 }

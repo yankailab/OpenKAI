@@ -3,7 +3,7 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog":1,
-	"bStdErr":1,
+	"bStdErr":0,
 	"/rc":"sudo mkdir /home/pi/ssd\nsudo mount /dev/nvme0p1 /home/pi/ssd/\nsudo chown pi /home/pi/ssd\n",
 }
 
@@ -15,7 +15,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["/cam","state","arUco","TOFsense","apBase","apLand","/serialTelem","apVideo"],
+	"vBASE":["/cam","state","arUco","TOFsense","apBase","apLand","/serialTelem","apVideo","cURL"],
 }
 
 {
@@ -49,7 +49,7 @@
 	"class":"_StateControl",
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":20,
 	}
 	"bON":1,
 	"start":"STANDBY",
@@ -62,14 +62,14 @@
 			"name":"STANDBY",
 			"class":"State",
 			"next":"TAKEOFF_REQUEST",
-			"tTimeout":5,
+			"tTimeout":3,
 		}
 		{
 			"bON":1,
 			"name":"TAKEOFF_REQUEST",
 			"class":"State",
 			"next":"STANDBY",
-			"tTimeout":5,
+			"tTimeout":10,
 		}
 		{
 			"bON":1,
@@ -198,7 +198,7 @@
 		"FPS":1,
 	}
 	"_StateControl":"state",
-	"vActiveState":["TAKEOFF_REQUEST","TAKEOFF_READY","AIRBORNE","LANDING_REQUEST","LANDING","TOUCHDOWN"],
+	"vActiveState":["STANDBY","TAKEOFF_REQUEST"],
 	"_AP_base":"apBase",
 
 	{
@@ -251,7 +251,7 @@
 	}
 	"bLog":0,
 	"_StateControl":"state",
-	"vActiveState":["STANDBY"],
+	"vActiveState":["TAKEOFF_REQUEST","TAKEOFF_READY","AIRBORNE","LANDING_REQUEST","LANDING","TOUCHDOWN"],
 	"_AP_base":"apBase",
 	"_VisionBase":"cam",
 	"_Curl":"cURL",
@@ -271,7 +271,6 @@
 	}
 	"bLog":1,
 	"cmd":"curl 2>&1 -T [fName] ftp://193.112.75.123/pub/ -u anonymous: --connect-timeout 60 --no-progress-meter",
-	"/cmd":"echo Hello [fName]",
 }
 
 {

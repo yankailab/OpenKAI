@@ -50,7 +50,6 @@ namespace kai
 		Mat m_mC;
 		Mat m_mD;
 		string m_dir;
-		string m_saveDir;
 		string m_fName;
 		bool m_bRecording;
 	};

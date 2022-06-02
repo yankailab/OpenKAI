@@ -47,7 +47,6 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			addFile("/home/kai/Videos/test.mka");
 			updateCurl();
 
 			m_pT->autoFPSto();
@@ -58,8 +57,8 @@ namespace kai
 	{
 		while (!m_vFiles.empty())
 		{
-			string fName = m_vFiles.back();
-			string cmd = replace(m_cmd, "[fName]", fName);
+			m_fName = m_vFiles.back();
+			string cmd = replace(m_cmd, "[fName]", m_fName);
 
 			FILE *fp;
 			fp = popen(cmd.c_str(), "r");
@@ -81,10 +80,13 @@ namespace kai
 			if (strR.empty())
 			{
 				//upload success
-				cmd = "rm " + fName;
+				LOG_I("Uploaded: " + m_fName);
+				cmd = "rm " + m_fName;
 				system(cmd.c_str());
 				m_vFiles.pop_back();
 			}
+
+			m_fName = "";
 		}
 	}
 
@@ -98,7 +100,12 @@ namespace kai
 
 	void _Curl::console(void *pConsole)
 	{
+		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
+		IF_(check() < 0);
+
+		_Console *pC = (_Console *)pConsole;
+		pC->addMsg("Uploading: " + m_fName);
 	}
 
 }
