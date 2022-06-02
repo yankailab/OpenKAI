@@ -7,12 +7,14 @@ namespace kai
 	{
 		m_pAP = NULL;
 		m_pV = NULL;
+		m_pCurl = NULL;
 		m_pF = new _File();
 
 		m_vSize.set(1280, 720);
 		m_fCalib = "";
 		m_dir = "/home/lab/";
 		m_saveDir = "";
+		m_fName = "";
 		m_bRecording = false;
 	}
 
@@ -27,6 +29,7 @@ namespace kai
 
 		pK->v("dir", &m_dir);
 		pK->v("gstOutput", &m_gstOutput);
+		pK->v("fName", &m_fName);
 
 		string n;
 
@@ -38,6 +41,10 @@ namespace kai
 		n = "";
 		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->getInst(n));
+
+		n = "";
+		pK->v("_Curl", &n);
+		m_pCurl = (_Curl *)(pK->getInst(n));
 
 		Kiss* pKv = pK->find(n);
 		if(pKv)
@@ -97,17 +104,13 @@ namespace kai
 		m_saveDir = m_dir + strT + "/";
 
 		string cmd;
-		// cmd = "mkdir /media/usb";
-		// system(cmd.c_str());
-		// cmd = "mount /dev/sda1 /media/usb";
-		// system(cmd.c_str());
 		cmd = "mkdir " + m_saveDir;
 		system(cmd.c_str());
 
-		string fName = m_saveDir + strT;
+		m_fName = m_saveDir + strT;
 
 		// open video stream
-		string gst = replace(m_gstOutput, "[fName]", fName);
+		string gst = replace(m_gstOutput, "[fName]", m_fName + ".mka");
 		if (!m_gst.open(gst,
 						CAP_GSTREAMER,
 						0,
@@ -120,7 +123,7 @@ namespace kai
 		}
 
 		// open meta file
-		IF_F(!m_pF->open(fName + ".json"));
+		IF_F(!m_pF->open(m_fName + ".json"));
         object jo;
         JO(jo, "name", "calib");
         JO(jo, "Fx", m_mC.at<double>(0, 0));
@@ -146,12 +149,17 @@ namespace kai
 	{
 		IF_(!m_bRecording);
 
+		m_bRecording = false;
 		m_iFrame = 0;
 		m_tRecStart = 0;
-		m_pF->close();
 		m_gst.release();
+		m_pF->close();
 
-		m_bRecording = false;
+		if(m_pCurl)
+		{
+			m_pCurl->addFile(m_fName + ".json");
+			m_pCurl->addFile(m_fName + ".mka");
+		}
 	}
 
 	void _AP_video::writeStream(void)

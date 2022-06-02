@@ -3,6 +3,7 @@
 
 #include "../../Vision/_VisionBase.h"
 #include "../../IO/_File.h"
+#include "../../Net/_Curl.h"
 #include "_AP_base.h"
 
 using namespace picojson;
@@ -36,6 +37,7 @@ namespace kai
 		_AP_base *m_pAP;
 		_VisionBase *m_pV;
 		_File* m_pF;
+		_Curl* m_pCurl;
 
 		string m_gstOutput;
 		VideoWriter m_gst;
@@ -49,6 +51,7 @@ namespace kai
 		Mat m_mD;
 		string m_dir;
 		string m_saveDir;
+		string m_fName;
 		bool m_bRecording;
 	};
 

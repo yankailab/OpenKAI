@@ -78,12 +78,11 @@ namespace kai
 			pclose(fp);
 
 			LOG_I(strR);
-
 			if (strR.empty())
 			{
 				//upload success
 				cmd = "rm " + fName;
-//				system(cmd.c_str());
+				system(cmd.c_str());
 				m_vFiles.pop_back();
 			}
 		}

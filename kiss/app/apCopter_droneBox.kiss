@@ -3,7 +3,7 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog":1,
-	"bStdErr":0,
+	"bStdErr":1,
 	"/rc":"sudo mkdir /home/pi/ssd\nsudo mount /dev/nvme0p1 /home/pi/ssd/\nsudo chown pi /home/pi/ssd\n",
 }
 
@@ -13,9 +13,9 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
-	"vBASE":["cam","state","arUco","TOFsense","apBase","apLand","serialTelem","apVideo"],
+	"vBASE":["/cam","state","arUco","TOFsense","apBase","apLand","/serialTelem","apVideo"],
 }
 
 {
@@ -29,7 +29,6 @@
 	}
 	"vBASE":["cam"],
 	"bShow":1,
-	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5679 auto-multicast=false",
 }
 
 {
@@ -62,11 +61,15 @@
 			"bON":1,
 			"name":"STANDBY",
 			"class":"State",
+			"next":"TAKEOFF_REQUEST",
+			"tTimeout":5,
 		}
 		{
 			"bON":1,
 			"name":"TAKEOFF_REQUEST",
 			"class":"State",
+			"next":"STANDBY",
+			"tTimeout":5,
 		}
 		{
 			"bON":1,
@@ -195,7 +198,7 @@
 		"FPS":1,
 	}
 	"_StateControl":"state",
-	"vActiveState":["STANDBY","TAKEOFF_REQUEST"],
+	"vActiveState":["TAKEOFF_REQUEST","TAKEOFF_READY","AIRBORNE","LANDING_REQUEST","LANDING","TOUCHDOWN"],
 	"_AP_base":"apBase",
 
 	{
@@ -251,10 +254,11 @@
 	"vActiveState":["STANDBY"],
 	"_AP_base":"apBase",
 	"_VisionBase":"cam",
+	"_Curl":"cURL",
 	"dir":"/home/pi/ssd/video/",
 	"fCalib":"/home/pi/ok/calibCam.kiss",
-	"/gstOutput":"appsrc ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! matroskamux ! filesink location=[fName].mka",
-	"gstOutput":"appsrc ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! tee name=t t. ! queue ! matroskamux ! filesink location=[fName].mka t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.245 port=5678 auto-multicast=false",
+	"/gstOutput":"appsrc ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! matroskamux ! filesink location=[fName]",
+	"gstOutput":"appsrc ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! tee name=t t. ! queue ! matroskamux ! filesink location=[fName] t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.245 port=5678 auto-multicast=false",
 }
 
 {
@@ -265,7 +269,8 @@
 		"name":"thread",
 		"FPS":1,
 	}
-	"cmd":"curl 2>&1 -T [fName] ftp://193.112.75.125/pub/ -u anonymous: --connect-timeout 60 --no-progress-meter",
+	"bLog":1,
+	"cmd":"curl 2>&1 -T [fName] ftp://193.112.75.123/pub/ -u anonymous: --connect-timeout 60 --no-progress-meter",
 	"/cmd":"echo Hello [fName]",
 }
 
@@ -381,7 +386,7 @@
 	"altComplete":1.25,
 	"dTargetComplete":0.3,
 	"vKpidIn":[0.1, 23.0],
-	"vKpidOut":[0.3, 1.0],
+	"vKpidOut":[0.2, 1.0],
 	
 	{
 		"name":"mount",

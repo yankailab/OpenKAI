@@ -84,7 +84,6 @@ namespace kai
             IF_(apMode != AP_COPTER_GUIDED);
 
             m_pSC->transit(m_state.TAKEOFF_REQUEST);
-            //          m_pSC->transit(m_state.LANDING); // for quick manual test
             return;
         }
 
