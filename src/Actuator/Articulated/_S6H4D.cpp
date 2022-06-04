@@ -10,12 +10,12 @@ namespace kai
 
 		m_bOrder = true;
 		m_mode = 1;
-		m_vSpeedRange.init(0.0, 5000);
+		m_vSpeedRange.set(0.0, 5000);
 		m_speed = 2000;
-		m_vOriginTarget.init(0.0);
-		m_vOrigin.init(FLT_MAX);
-		m_vLastValidP.init(0.0);
-		m_vPgoing.init(0.0);
+		m_vOriginTarget.init();
+		m_vOrigin.set(FLT_MAX);
+		m_vLastValidP.init();
+		m_vPgoing.init();
 		m_pErr = 0.1;
 
 		m_nMinAxis = 6;
@@ -418,6 +418,7 @@ namespace kai
 	{
 		IF_(m_state.m_pB[8] != S6H4D_STAT_END);
 
+		vFloat2 vW;
 		switch (m_state.m_pB[7])
 		{
 		case 0:
@@ -443,7 +444,6 @@ namespace kai
 		case 4:
 			break;
 		case 5:
-			vFloat2 vW;
 			vW.x = (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
 			vW.y = (float)unpack_int16(&m_state.m_pB[3], m_bOrder);
 			break;
@@ -454,7 +454,6 @@ namespace kai
 
 	void _S6H4D::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
@@ -463,7 +462,6 @@ namespace kai
 		pC->addMsg("vLastValidP = (" + f2str(m_vLastValidP.x) + ", " + f2str(m_vLastValidP.y) + ", " + f2str(m_vLastValidP.z) + ")", 1);
 
 		this->_ActuatorBase::console(pConsole);
-#endif
 	}
 
 }

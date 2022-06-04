@@ -1,7 +1,5 @@
 #include "LabArm.h"
 
-#ifdef USE_DYNAMIXEL
-
 LabArm::LabArm()
 {
 	a1 = 0.0;
@@ -49,17 +47,25 @@ LabArm::LabArm()
 	Home2[5] = M6_HOME_2;
 }
 
-bool LabArm::init(const char* portName, int baudRate)
+bool LabArm::init(const char *portName, int baudRate)
 {
-	if(!portName)return false;
+	if (!portName)
+		return false;
 
-	if(!motor1.init(DXL1_ID, M1_MODE, M1_CURRENT_LIMIT, M1_GOAL_CURRENT, portName, baudRate))return false;
-	if(!motor2.init(DXL2_ID, M2_MODE, M2_CURRENT_LIMIT, M2_GOAL_CURRENT, portName, baudRate))return false;
-	if(!motor3.init(DXL3_ID, M3_MODE, M3_CURRENT_LIMIT, M3_GOAL_CURRENT, portName, baudRate))return false;
-	if(!motor4.init(DXL4_ID, M4_MODE, M4_CURRENT_LIMIT, M4_GOAL_CURRENT, portName, baudRate))return false;
-	if(!motor5.init(DXL5_ID, M5_MODE, M5_CURRENT_LIMIT, M5_GOAL_CURRENT, portName, baudRate))return false;
-	if(!motor6.init(DXL6_ID, M6_MODE, M6_CURRENT_LIMIT, M6_GOAL_CURRENT, portName, baudRate))return false;
-	if(!gripper.init(DXL7_ID, GRIPPER_MODE, GRIPPER_CURRENT_LIMIT, GRIPPER_GOAL_CURRENT, portName, baudRate))return false;
+	if (!motor1.init(DXL1_ID, M1_MODE, M1_CURRENT_LIMIT, M1_GOAL_CURRENT, portName, baudRate))
+		return false;
+	if (!motor2.init(DXL2_ID, M2_MODE, M2_CURRENT_LIMIT, M2_GOAL_CURRENT, portName, baudRate))
+		return false;
+	if (!motor3.init(DXL3_ID, M3_MODE, M3_CURRENT_LIMIT, M3_GOAL_CURRENT, portName, baudRate))
+		return false;
+	if (!motor4.init(DXL4_ID, M4_MODE, M4_CURRENT_LIMIT, M4_GOAL_CURRENT, portName, baudRate))
+		return false;
+	if (!motor5.init(DXL5_ID, M5_MODE, M5_CURRENT_LIMIT, M5_GOAL_CURRENT, portName, baudRate))
+		return false;
+	if (!motor6.init(DXL6_ID, M6_MODE, M6_CURRENT_LIMIT, M6_GOAL_CURRENT, portName, baudRate))
+		return false;
+	if (!gripper.init(DXL7_ID, GRIPPER_MODE, GRIPPER_CURRENT_LIMIT, GRIPPER_GOAL_CURRENT, portName, baudRate))
+		return false;
 
 	return true;
 }
@@ -92,7 +98,7 @@ void LabArm::printMatrix3(double matrix[][3], int size)
 }
 
 void LabArm::multiplyMatrix(double m1[][4], double m2[][4], double m12[][4],
-		int size)
+							int size)
 {
 	for (int l = 0; l < size; l++)
 	{
@@ -110,7 +116,7 @@ void LabArm::multiplyMatrix(double m1[][4], double m2[][4], double m12[][4],
 }
 
 void LabArm::multiplyMatrix3(double m1[][3], double m2[][3], double m12[][3],
-		int size)
+							 int size)
 {
 	for (int l = 0; l < size; l++)
 	{
@@ -147,46 +153,46 @@ void LabArm::RobotArmFWD(float motorAngle[], float positionGripper[]) //motorang
 
 	//Matrix creation:
 	double T01[4][4] =
-	{
-	{ cos(q1), 0, sin(q1), a1 * cos(q1) },
-	{ sin(q1), 0, -cos(q1), a1 * cos(q1) },
-	{ 0, 1, 0, 0 },
-	{ 0, 0, 0, 1 } };
+		{
+			{cos(q1), 0, sin(q1), a1 * cos(q1)},
+			{sin(q1), 0, -cos(q1), a1 * cos(q1)},
+			{0, 1, 0, 0},
+			{0, 0, 0, 1}};
 
 	double T12[4][4] =
-	{
-	{ cos(q2), -sin(q2), 0, a2 * cos(q2) },
-	{ sin(q2), cos(q2), 0, a2 * sin(q2) },
-	{ 0, 0, 1, 0 },
-	{ 0, 0, 0, 1 } };
+		{
+			{cos(q2), -sin(q2), 0, a2 * cos(q2)},
+			{sin(q2), cos(q2), 0, a2 * sin(q2)},
+			{0, 0, 1, 0},
+			{0, 0, 0, 1}};
 
 	double T23[4][4] =
-	{
-	{ cos(q3), 0, sin(q3), a3 * cos(q3) },
-	{ sin(q3), 0, -cos(q3), a3 * sin(q3) },
-	{ 0, 1, 0, 0 },
-	{ 0, 0, 0, 1 } };
+		{
+			{cos(q3), 0, sin(q3), a3 * cos(q3)},
+			{sin(q3), 0, -cos(q3), a3 * sin(q3)},
+			{0, 1, 0, 0},
+			{0, 0, 0, 1}};
 
 	double T34[4][4] =
-	{
-	{ cos(q4), 0, -sin(q4), 0 },
-	{ sin(q4), 0, cos(q4), 0 },
-	{ 0, -1, 0, d4 },
-	{ 0, 0, 0, 1 } };
+		{
+			{cos(q4), 0, -sin(q4), 0},
+			{sin(q4), 0, cos(q4), 0},
+			{0, -1, 0, d4},
+			{0, 0, 0, 1}};
 
 	double T45[4][4] =
-	{
-	{ cos(q5), 0, sin(q5), 0 },
-	{ sin(q5), 0, -cos(q5), 0 },
-	{ 0, 1, 0, 0 },
-	{ 0, 0, 0, 1 } };
+		{
+			{cos(q5), 0, sin(q5), 0},
+			{sin(q5), 0, -cos(q5), 0},
+			{0, 1, 0, 0},
+			{0, 0, 0, 1}};
 
 	double T56[4][4] =
-	{
-	{ cos(q6), -sin(q6), 0, 0 },
-	{ sin(q6), cos(q6), 0, 0 },
-	{ 0, 0, 1, d6 },
-	{ 0, 0, 0, 1 } };
+		{
+			{cos(q6), -sin(q6), 0, 0},
+			{sin(q6), cos(q6), 0, 0},
+			{0, 0, 1, d6},
+			{0, 0, 0, 1}};
 
 	double T02[4][4];
 	double T03[4][4];
@@ -206,26 +212,26 @@ void LabArm::RobotArmFWD(float motorAngle[], float positionGripper[]) //motorang
 
 	//Extract rotation:
 	double R06[3][3] =
-	{
-	{ T06[0][0], T06[0][1], T06[0][2] },
-	{ T06[1][0], T06[1][1], T06[1][2] },
-	{ T06[2][0], T06[2][1], T06[2][2] } };
+		{
+			{T06[0][0], T06[0][1], T06[0][2]},
+			{T06[1][0], T06[1][1], T06[1][2]},
+			{T06[2][0], T06[2][1], T06[2][2]}};
 	//printMatrix3(R06,3);
 
 	// Calculate the inverse of RPY constant
 	double INV_RPY_const[3][3] =
-	{
-	{ 0, 0, 1 },
-	{ 1, 0, 0 },
-	{ 0, 1, 0 } };
+		{
+			{0, 0, 1},
+			{1, 0, 0},
+			{0, 1, 0}};
 	double TCP[3][3];
 	multiplyMatrix3(INV_RPY_const, R06, TCP, 3);
 
 	double x6_rot = atan2(TCP[2][1], TCP[2][2]) * RAD2DEG;
 	double z6_rot = atan2(TCP[1][0], TCP[0][0]) * RAD2DEG;
 	double y6_rot = atan2(-TCP[2][0],
-			((cos(z6_rot * DEG2RAD) * TCP[0][0])
-					+ (sin(z6_rot * DEG2RAD) * TCP[1][0]))) * RAD2DEG;
+						  ((cos(z6_rot * DEG2RAD) * TCP[0][0]) + (sin(z6_rot * DEG2RAD) * TCP[1][0]))) *
+					RAD2DEG;
 
 	//Output:
 	positionGripper[0] = qX;
@@ -251,24 +257,18 @@ void LabArm::armINV(float wantedXYZ[], float outputMotorAngle[]) //Output in deg
 	double yy = z6_rot * DEG2RAD;
 
 	double TCP[3][3] =
-	{
-	{ cos(yy) * cos(pp), sin(pp) * sin(rr) - cos(rr) * sin(yy), sin(rr)
-			* sin(yy) + cos(yy) * sin(pp) },
-	{ cos(pp) * sin(yy), cos(rr) * cos(yy) + sin(rr) * sin(yy) * sin(pp), cos(
-			rr) * sin(yy) * sin(pp) - cos(yy) * sin(rr) },
-	{ -sin(pp), cos(pp) * sin(rr), cos(rr) * cos(pp) } };
+		{
+			{cos(yy) * cos(pp), sin(pp) * sin(rr) - cos(rr) * sin(yy), sin(rr) * sin(yy) + cos(yy) * sin(pp)},
+			{cos(pp) * sin(yy), cos(rr) * cos(yy) + sin(rr) * sin(yy) * sin(pp), cos(rr) * sin(yy) * sin(pp) - cos(yy) * sin(rr)},
+			{-sin(pp), cos(pp) * sin(rr), cos(rr) * cos(pp)}};
 	double psi = 90 * DEG2RAD;
 	double theta = -90 * DEG2RAD;
 	double phi = 180 * DEG2RAD;
 	double RPY[3][3] =
-	{
-	{ cos(psi) * cos(theta), cos(psi) * sin(phi) * sin(theta)
-			- cos(phi) * sin(psi), sin(phi) * sin(psi)
-			+ cos(phi) * cos(psi) * sin(theta) },
-	{ cos(theta) * sin(psi), cos(phi) * cos(psi)
-			+ sin(phi) * sin(psi) * sin(theta), cos(phi) * sin(psi) * sin(theta)
-			- cos(psi) * sin(phi) },
-	{ -sin(theta), cos(theta) * sin(phi), cos(phi) * cos(theta) } };
+		{
+			{cos(psi) * cos(theta), cos(psi) * sin(phi) * sin(theta) - cos(phi) * sin(psi), sin(phi) * sin(psi) + cos(phi) * cos(psi) * sin(theta)},
+			{cos(theta) * sin(psi), cos(phi) * cos(psi) + sin(phi) * sin(psi) * sin(theta), cos(phi) * sin(psi) * sin(theta) - cos(psi) * sin(phi)},
+			{-sin(theta), cos(theta) * sin(phi), cos(phi) * cos(theta)}};
 
 	double RPY_TCP[3][3];
 	multiplyMatrix3(RPY, TCP, RPY_TCP, 3);
@@ -302,18 +302,15 @@ void LabArm::armINV(float wantedXYZ[], float outputMotorAngle[]) //Output in deg
 		q1 = q1 + M_PI;
 	}
 	double deg1[2] =
-	{ q1_1 * RAD2DEG, q1_2 * RAD2DEG };
+		{q1_1 * RAD2DEG, q1_2 * RAD2DEG};
 	//Find q3:
 	double k1 = 2 * a2 * d4;
 	double k2 = 2 * a2 * a3;
-	double k3 = px * px + py * py + pz * pz - 2 * pz * a1 * cos(q1)
-			- 2 * py * a1 * sin(q1) + a1 * a1 - a2 * a2 - a3 * a3 - d4 * d4;
-	double q3_1 = 2
-			* atan((k1 + sqrt(k1 * k1 + k2 * k2 - k3 * k3)) / (k3 + k2));
-	double q3_2 = 2
-			* atan((k1 - sqrt(k1 * k1 + k2 * k2 - k3 * k3)) / (k3 + k2));
+	double k3 = px * px + py * py + pz * pz - 2 * pz * a1 * cos(q1) - 2 * py * a1 * sin(q1) + a1 * a1 - a2 * a2 - a3 * a3 - d4 * d4;
+	double q3_1 = 2 * atan((k1 + sqrt(k1 * k1 + k2 * k2 - k3 * k3)) / (k3 + k2));
+	double q3_2 = 2 * atan((k1 - sqrt(k1 * k1 + k2 * k2 - k3 * k3)) / (k3 + k2));
 	double deg3[2] =
-	{ q3_1 * RAD2DEG, q3_2 * RAD2DEG };
+		{q3_1 * RAD2DEG, q3_2 * RAD2DEG};
 	//Find q2:
 	double uu1_0 = a2 + a3 * cos(q3_1) + d4 * sin(q3_1);
 	double vv1_0 = -a3 * sin(q3_1) + d4 * cos(q3_1);
@@ -330,48 +327,42 @@ void LabArm::armINV(float wantedXYZ[], float outputMotorAngle[]) //Output in deg
 	double yy2_1 = pz;
 
 	double A0[2][2] =
-	{
-	{ uu1_0, vv1_0 },
-	{ uu2_0, vv2_0 } };
+		{
+			{uu1_0, vv1_0},
+			{uu2_0, vv2_0}};
 	double B[2] =
-	{ yy1_0, yy2_0 };
+		{yy1_0, yy2_0};
 	double A1[2][2] =
-	{
-	{ uu1_1, vv1_1 },
-	{ uu2_1, vv2_1 } };
+		{
+			{uu1_1, vv1_1},
+			{uu2_1, vv2_1}};
 	double B1[2] =
-	{ yy1_1, yy2_1 };
-	//Resolution: 
+		{yy1_1, yy2_1};
+	//Resolution:
 	double X0[2] =
-	{ 0, 0 };
+		{0, 0};
 	double X1[2] =
-	{ 0, 0 };
+		{0, 0};
 	Solve(A0, B, X0);
 	Solve(A1, B1, X1);
 	double q2_1 = atan2(X0[1], X0[0]);
 	double q2_2 = atan2(X1[1], X1[0]);
 	double deg2[2] =
-	{ q2_1 * RAD2DEG, q2_2 * RAD2DEG };
+		{q2_1 * RAD2DEG, q2_2 * RAD2DEG};
 	//Find q5:
 	double r33[2] =
-	{ (wx * cos(q1) * sin(q2_1 + q3_1) + wy * sin(q1) * sin(q2_1 + q3_1)
-			- wz * cos(q2_1 + q3_1)), (wx * cos(q1) * sin(q2_2 + q3_2)
-			+ wy * sin(q1) * sin(q2_2 + q3_2) - wz * cos(q2_2 + q3_2)) };
+		{(wx * cos(q1) * sin(q2_1 + q3_1) + wy * sin(q1) * sin(q2_1 + q3_1) - wz * cos(q2_1 + q3_1)), (wx * cos(q1) * sin(q2_2 + q3_2) + wy * sin(q1) * sin(q2_2 + q3_2) - wz * cos(q2_2 + q3_2))};
 	double q5_1 = acos(r33[0]);
 	double q5_2 = acos(r33[1]);
 	double deg5[2] =
-	{ q5_1 * RAD2DEG, q5_2 * RAD2DEG };
+		{q5_1 * RAD2DEG, q5_2 * RAD2DEG};
 	//Find q4:
 	double q4_1 = 0;
 	double q4_2 = 0;
 	if (abs(r33[1]) < 1)
 	{
-		double cq4_1 = (wx * cos(q1) * cos(q2_1 + q3_1)
-				+ wy * sin(q1) * cos(q2_1 + q3_1) + wz * sin(q2_1 + q3_1))
-				/ sin(q5_1);
-		double cq4_2 = (wx * cos(q1) * cos(q2_2 + q3_2)
-				+ wy * sin(q1) * cos(q2_2 + q3_2) + wz * sin(q2_2 + q3_2))
-				/ sin(q5_2);
+		double cq4_1 = (wx * cos(q1) * cos(q2_1 + q3_1) + wy * sin(q1) * cos(q2_1 + q3_1) + wz * sin(q2_1 + q3_1)) / sin(q5_1);
+		double cq4_2 = (wx * cos(q1) * cos(q2_2 + q3_2) + wy * sin(q1) * cos(q2_2 + q3_2) + wz * sin(q2_2 + q3_2)) / sin(q5_2);
 		double sq4_1 = (wx * sin(q1) - wy * cos(q1)) / sin(q5_1);
 		double sq4_2 = (wx * sin(q1) - wy * cos(q1)) / sin(q5_2);
 		q4_1 = atan2(sq4_1, cq4_1);
@@ -387,24 +378,16 @@ void LabArm::armINV(float wantedXYZ[], float outputMotorAngle[]) //Output in deg
 		printf("R33 Configuration physically imposible -> software error\n");
 	}
 	double deg4[2] =
-	{ q4_1 * RAD2DEG, q4_2 * RAD2DEG };
+		{q4_1 * RAD2DEG, q4_2 * RAD2DEG};
 	//Find q6:
 	double q6_1 = 0;
 	double q6_2 = 0;
 	if (abs(r33[1]) < 1)
 	{
-		double cq6_1 = -(ux * cos(q1) * sin(q2_1 + q3_1)
-				+ uy * sin(q1) * sin(q2_1 + q3_1) - uz * cos(q2_1 + q3_1))
-				/ sin(q5_1);
-		double cq6_2 = -(ux * cos(q1) * sin(q2_2 + q3_2)
-				+ uy * sin(q1) * sin(q2_2 + q3_2) - uz * cos(q2_2 + q3_2))
-				/ sin(q5_2);
-		double sq6_1 = (vx * cos(q1) * sin(q2_1 + q3_1)
-				+ vy * sin(q1) * sin(q2_1 + q3_1) - vz * cos(q2_1 + q3_1))
-				/ sin(q5_1);
-		double sq6_2 = (vx * cos(q1) * sin(q2_2 + q3_2)
-				+ vy * sin(q1) * sin(q2_2 + q3_2) - vz * cos(q2_2 + q3_2))
-				/ sin(q5_2);
+		double cq6_1 = -(ux * cos(q1) * sin(q2_1 + q3_1) + uy * sin(q1) * sin(q2_1 + q3_1) - uz * cos(q2_1 + q3_1)) / sin(q5_1);
+		double cq6_2 = -(ux * cos(q1) * sin(q2_2 + q3_2) + uy * sin(q1) * sin(q2_2 + q3_2) - uz * cos(q2_2 + q3_2)) / sin(q5_2);
+		double sq6_1 = (vx * cos(q1) * sin(q2_1 + q3_1) + vy * sin(q1) * sin(q2_1 + q3_1) - vz * cos(q2_1 + q3_1)) / sin(q5_1);
+		double sq6_2 = (vx * cos(q1) * sin(q2_2 + q3_2) + vy * sin(q1) * sin(q2_2 + q3_2) - vz * cos(q2_2 + q3_2)) / sin(q5_2);
 		q6_1 = atan2(sq6_1, cq6_1);
 		q6_2 = atan2(sq6_2, cq6_2);
 	}
@@ -416,10 +399,10 @@ void LabArm::armINV(float wantedXYZ[], float outputMotorAngle[]) //Output in deg
 	else
 	{
 		printf(
-				"abs(R33) Configuration physically imposible -> software error\n");
+			"abs(R33) Configuration physically imposible -> software error\n");
 	}
 	double deg6[2] =
-	{ q6_1 * RAD2DEG, q6_2 * RAD2DEG };
+		{q6_1 * RAD2DEG, q6_2 * RAD2DEG};
 
 	outputMotorAngle[0] = deg1[0] + 90;
 	outputMotorAngle[1] = deg2[1] + 90;
@@ -470,7 +453,7 @@ void LabArm::MotorsInit(int mode)
 	default:
 		printf("Mode unknown recognized, PID are not set.\n");
 		//Gripper initialization
-		gripper.SetPID( GRIPPER_PID_P, GRIPPER_PID_I, GRIPPER_PID_D);
+		gripper.SetPID(GRIPPER_PID_P, GRIPPER_PID_I, GRIPPER_PID_D);
 		gripper.SetProfile(GRIPPER_VSTD, GRIPPER_ASTD);
 		printf("Lab ARM ready to operate\n");
 	}
@@ -525,10 +508,10 @@ void LabArm::ReadAngle(float outputAngle[])
 	outputAngle[3] = motor4.ReadAngle();
 	outputAngle[4] = motor5.ReadAngle();
 	outputAngle[5] = motor6.ReadAngle();
-	//Uncomment for debugging 
+	//Uncomment for debugging
 	for (int a = 0; a < 6; a++)
 	{
-		//printf("Angle motor %d = %f (degrees)\n",a+1, outputAngle[a]); 
+		//printf("Angle motor %d = %f (degrees)\n",a+1, outputAngle[a]);
 	}
 }
 void LabArm::RunArm(float inputAngle[])
@@ -544,8 +527,7 @@ void LabArm::RunArm(float inputAngle[])
 	usleep(100000);
 	while (MovingFlag != 0)
 	{
-		MovingFlag = motor1.IsMoving() + motor2.IsMoving() + motor3.IsMoving()
-				+ motor4.IsMoving() + motor5.IsMoving() + motor6.IsMoving();
+		MovingFlag = motor1.IsMoving() + motor2.IsMoving() + motor3.IsMoving() + motor4.IsMoving() + motor5.IsMoving() + motor6.IsMoving();
 	}
 }
 
@@ -582,17 +564,16 @@ void LabArm::StandBy()
 {
 	Awake();
 	float StandbyPos[6] =
-	{ 180, 180, 180, 180, 180, 180 };
+		{180, 180, 180, 180, 180, 180};
 	TimeProfileGeneration(StandbyPos, DEFAULT_TIMEACC, DEFAULT_TIMESPAN);
 	RunArm(StandbyPos);
 	a_state = 2;
 }
 
 float LabArm::MAP(uint32_t angle, long in_min, long in_max, long out_min,
-		long out_max)
+				  long out_max)
 {
-	return (((float) angle - in_min) * (out_max - out_min) / (in_max - in_min)
-			+ out_min);
+	return (((float)angle - in_min) * (out_max - out_min) / (in_max - in_min) + out_min);
 }
 
 float LabArm::DeltaPosition(float prePosition, float goalPosition) //Return the delta angle as motors angle difference
@@ -604,10 +585,9 @@ float LabArm::DeltaPosition(float prePosition, float goalPosition) //Return the 
 	}
 	else
 	{
-		return ((int) abs(
-				MAP(prePosition, 0, 360, MIN_MOTOR_ANGLE, MAX_MOTOR_ANGLE)
-						- MAP(goalPosition, 0, 360, MIN_MOTOR_ANGLE,
-						MAX_MOTOR_ANGLE)));
+		return ((int)abs(
+			MAP(prePosition, 0, 360, MIN_MOTOR_ANGLE, MAX_MOTOR_ANGLE) - MAP(goalPosition, 0, 360, MIN_MOTOR_ANGLE,
+																			 MAX_MOTOR_ANGLE)));
 	}
 }
 
@@ -625,7 +605,7 @@ int LabArm::FindMaxDelta(int deltaPosition[])
 }
 
 void LabArm::TimeProfileGeneration(float goalPosition[], uint32_t stdTa,
-		uint32_t stdTf)
+								   uint32_t stdTf)
 {
 	float angleMotor[7];
 	ReadAngle(angleMotor);
@@ -635,7 +615,7 @@ void LabArm::TimeProfileGeneration(float goalPosition[], uint32_t stdTa,
 	for (int motor = 0; motor < 6; motor++)
 	{
 		deltaPosition[motor] = DeltaPosition(angleMotor[motor],
-				goalPosition[motor]);
+											 goalPosition[motor]);
 	}
 
 	//Find the bigger delta position and set as reference:
@@ -665,14 +645,11 @@ int LabArm::WorkSpaceLimitation(float X, float Y, float Z)
 	float Sy = (RMAX - d6 - d4) * cos(150.0 * DEG2RAD);
 	float Sz = (RMAX - d6 - d4) * sin(150.0 * DEG2RAD);
 
-	if (((X * X + Y * Y + Z * Z) <= RMAX * RMAX)
-			&& ((X * X + Y * Y + Z * Z) >= R2MAX))
+	if (((X * X + Y * Y + Z * Z) <= RMAX * RMAX) && ((X * X + Y * Y + Z * Z) >= R2MAX))
 	{
 		if ((Y < 0) && (Z > 0))
 		{
-			if (((X * X + (Y - Qy) * (Y - Qy) + (Z - Qz) * (Z - Qz)) > (d6 * d6))
-					&& ((X * X + (Y - Sy) * (Y - Sy) + (Z - Sz) * (Z - Sz))
-							> (d6 * d6 + d4 * d4)))
+			if (((X * X + (Y - Qy) * (Y - Qy) + (Z - Qz) * (Z - Qz)) > (d6 * d6)) && ((X * X + (Y - Sy) * (Y - Sy) + (Z - Sz) * (Z - Sz)) > (d6 * d6 + d4 * d4)))
 			{
 				return (0);
 			}
@@ -711,7 +688,7 @@ int LabArm::WorkSpaceHorizontalLimitation(float X, float Y, float Z)
 {
 	float m3 = (HL_ZMIN_INNER - HL_ZMIN_OUTER) / (HL_YMIN - HL_YMAX);
 	float c3 = HL_ZMIN_OUTER - m3 * HL_YMAX;
-	float m4 = ( HL_ZMAX_INNER - HL_MAX_OUTER) / ( HL_YMIN - HL_YMAX);
+	float m4 = (HL_ZMAX_INNER - HL_MAX_OUTER) / (HL_YMIN - HL_YMAX);
 	float c4 = HL_ZMAX_INNER - m4 * HL_YMIN;
 
 	if ((Y >= 0) && (Z >= 0))
@@ -748,12 +725,12 @@ void LabArm::GetXYZ(float gripperPosition[])
 	RobotArmFWD(motorAngle, gripperPosition);
 
 	//printout:
-//	printf("position Gripper X: %f\n", gripperPosition[0]);
-//	printf("position Gripper Y: %f\n", gripperPosition[1]);
-//	printf("position Gripper Z: %f\n", gripperPosition[2]);
-//	printf("position Gripper rot X: %f\n", gripperPosition[3]);
-//	printf("position Gripper rot Y: %f\n", gripperPosition[4]);
-//	printf("position Gripper rot Z: %f\n", gripperPosition[5]);
+	//	printf("position Gripper X: %f\n", gripperPosition[0]);
+	//	printf("position Gripper Y: %f\n", gripperPosition[1]);
+	//	printf("position Gripper Z: %f\n", gripperPosition[2]);
+	//	printf("position Gripper rot X: %f\n", gripperPosition[3]);
+	//	printf("position Gripper rot Y: %f\n", gripperPosition[4]);
+	//	printf("position Gripper rot Z: %f\n", gripperPosition[5]);
 }
 
 void LabArm::GotoXYZ(float wantedXYZ[])
@@ -844,8 +821,7 @@ float LabArm::GetSize()
 	{
 		float angle = gripper.ReadAngle();
 		//printf("Measured angle : %f\n",angle);
-		float distance = -3.5364e-7 * pow(angle, 4) + 2.4396e-4 * pow(angle, 3)
-				- 0.05430 * pow(angle, 2) + 4.8772 * angle - 154.0552;
+		float distance = -3.5364e-7 * pow(angle, 4) + 2.4396e-4 * pow(angle, 3) - 0.05430 * pow(angle, 2) + 4.8772 * angle - 154.0552;
 		return (distance);
 	}
 	else
@@ -896,7 +872,7 @@ float LabArm::Weight()
 
 	//Weight position
 	float WeightPosition5[6] =
-	{ 180, 90, 180, 90, 270, 180 };
+		{180, 90, 180, 90, 270, 180};
 	float current = 0, currentAmp = 0;
 	float torque = 0;
 	float weight = 0;
@@ -927,7 +903,7 @@ int LabArm::ObjectDetection()
 {
 	//Suppose the gripper is already close on the object with a goal current set at 90mA
 
-	//Go though the trained SVM... predict(size1, abs(size1-size2))	
+	//Go though the trained SVM... predict(size1, abs(size1-size2))
 	return (-1);
 }
 
@@ -953,9 +929,9 @@ int LabArm::JoystickControl()
 	bool finish = false;
 	int mode = 0;
 	uint8_t buttonstate[10] =
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	float axistate[10] =
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	int selectedmotor = -1;
 	float motorAngles[6];
 	float angleIncrement = 12.0;
@@ -972,7 +948,7 @@ int LabArm::JoystickControl()
 	if (!joystick.isFound())
 	{
 		printf(
-				"No joystick found. Please check the connection or the path /dev/input/js0\n");
+			"No joystick found. Please check the connection or the path /dev/input/js0\n");
 		return (1);
 	}
 	else
@@ -1018,11 +994,11 @@ int LabArm::JoystickControl()
 					motor6.SetProfile(40, 15);
 				}
 				printf(
-						"\n\n#####  How to Use  #####\nHold on the axis button, and use the analog left joystick (right-left).\n");
+					"\n\n#####  How to Use  #####\nHold on the axis button, and use the analog left joystick (right-left).\n");
 				printf(
-						"Joint 1	-->	A\nJoint 2	-->	B\nJoint 3	-->	X\nJoint 4	-->	Y\nJoint 5	-->	LB\nJoint 6	-->	RB\n");
+					"Joint 1	-->	A\nJoint 2	-->	B\nJoint 3	-->	X\nJoint 4	-->	Y\nJoint 5	-->	LB\nJoint 6	-->	RB\n");
 				printf(
-						"Press the left analog joystick to use the gripper.\n\nYou can press the BACK button at anytime to stop the arm.\n\n");
+					"Press the left analog joystick to use the gripper.\n\nYou can press the BACK button at anytime to stop the arm.\n\n");
 				axistate[0] = 0;
 				selectedmotor = -1;
 			}
@@ -1036,7 +1012,7 @@ int LabArm::JoystickControl()
 				mode = 2;
 				printf("The selected joint is %d\n", selectedmotor + 1);
 				printf(
-						"Move the left analog joystick in the right-left direction to move the joint.\nWhen finished just release the axis button.\n");
+					"Move the left analog joystick in the right-left direction to move the joint.\nWhen finished just release the axis button.\n");
 			}
 			if (buttonstate[9] == 1)
 			{
@@ -1124,5 +1100,3 @@ int LabArm::JoystickControl()
 	TorqueOFF();
 	return (0);
 }
-
-#endif

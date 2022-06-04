@@ -90,11 +90,11 @@ struct S6H4D_VOL
 	{
 		m_type = vol_ball;
 		m_bInside = false;
-		m_vX.init(0.0);
-		m_vY.init(0.0);
-		m_vZ.init(0.0);
-		m_vC.init(0.0);
-		m_vR.init(0.0);
+		m_vX.init();
+		m_vY.init();
+		m_vZ.init();
+		m_vC.init();
+		m_vR.init();
 	}
 
 	bool bValid(vFloat3& vP)

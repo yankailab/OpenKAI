@@ -2,34 +2,30 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
-	"bDraw":1,
 	"bLog":1,
 	"bStdErr":0,
-	"waitKey":30,
 }
 
 {
-	"name":"OpenKAI",
+	"name":"console",
 	"class":"_Console",
 	"bON":1,
-}
-
-{
-	"name":"OKview",
-	"class":"Window",
-	"bON":0,
-	"bFullScreen":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["labArm"],
 }
 
 {
 	"name":"labArm",
 	"class":"_LabArm",
 	"bON":1,
-	"FPS":30,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"bLog":1,
-	"Window":"OKview",
-	"_Console":"OpenKAI",
 	"port":"/dev/ttyUSB0",
 	"baudRate":57600,
 	"oprMode":3,
@@ -52,10 +48,11 @@
 	"name":"sequencer",
 	"class":"_Sequencer",
 	"bON":1,
-	"FPS":30,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"bLog":1,
-	"Window":"OKview",
-	"_Console":"OpenKAI",
 	
 	{
 		"name":"action",

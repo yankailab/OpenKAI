@@ -14,7 +14,7 @@ namespace kai
 	{
 		m_flag.clearAll();
 		m_vAxisIdx.init(0, 1, 2);
-		m_vRoffset.init(0.0);
+		m_vRoffset.init();
 		resetAll();
 	}
 
