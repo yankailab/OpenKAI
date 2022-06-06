@@ -18,42 +18,6 @@
 }
 
 {
-	"name":"cam",
-	"class":"_Camera",
-	"bON":0,
-	"deviceID":0,
-	"vSize":[640, 480],
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-}
-
-{
-	"name":"remap",
-	"class":"_Remap",
-	"bON":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"_VisionBase":"cam",
-	"fCalib":"/home/kai/ARmeasure/calibCam.kiss",
-	"/fCalib":"/home/pi/ARmeasure/calibCam.kiss",
-	"vSize":[640, 480],
-}
-
-{
-	"name":"T265",
-	"class":"_RStracking",
-    {
-		"name":"thread",
-		"FPS":200,
-	}
-	"bON":0,
-}
-
-{
 	"name":"state",
 	"class":"_StateControl",
     {
@@ -110,7 +74,7 @@
 	"bSend":0,
 	"_IOBase":"sSBus",
 	"vRawRC":[200,1002,1947],
-	"bRawSbus":1,
+	"bRawSbus":0,
 }
 
 {
