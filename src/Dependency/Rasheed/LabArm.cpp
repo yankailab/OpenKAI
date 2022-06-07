@@ -62,10 +62,10 @@ bool LabArm::init(const char *portName, int baudRate)
 		return false;
 	if (!motor5.init(DXL5_ID, M5_MODE, M5_CURRENT_LIMIT, M5_GOAL_CURRENT, portName, baudRate))
 		return false;
-	if (!motor6.init(DXL6_ID, M6_MODE, M6_CURRENT_LIMIT, M6_GOAL_CURRENT, portName, baudRate))
-		return false;
-	if (!gripper.init(DXL7_ID, GRIPPER_MODE, GRIPPER_CURRENT_LIMIT, GRIPPER_GOAL_CURRENT, portName, baudRate))
-		return false;
+//	if (!motor6.init(DXL6_ID, M6_MODE, M6_CURRENT_LIMIT, M6_GOAL_CURRENT, portName, baudRate))
+//		return false;
+//	if (!gripper.init(DXL7_ID, GRIPPER_MODE, GRIPPER_CURRENT_LIMIT, GRIPPER_GOAL_CURRENT, portName, baudRate))
+//		return false;
 
 	return true;
 }
@@ -431,8 +431,8 @@ void LabArm::MotorsInit(int mode)
 		motor4.SetFFGain(FFGAIN_MODE3_1st, FFGAIN_MODE3_2nd);
 		motor5.SetPID(PID_MODE3_P, PID_MODE3_I, PID_MODE3_D);
 		motor5.SetFFGain(FFGAIN_MODE3_1st, FFGAIN_MODE3_2nd);
-		motor6.SetPID(PID_MODE3_P, PID_MODE3_I, PID_MODE3_D);
-		motor6.SetFFGain(FFGAIN_MODE3_1st, FFGAIN_MODE3_2nd);
+//		motor6.SetPID(PID_MODE3_P, PID_MODE3_I, PID_MODE3_D);
+//		motor6.SetFFGain(FFGAIN_MODE3_1st, FFGAIN_MODE3_2nd);
 		break;
 	case 5:
 		//Set specific PID for each motors
@@ -447,14 +447,14 @@ void LabArm::MotorsInit(int mode)
 		motor4.SetFFGain(FFGAIN_MODE5_1st, FFGAIN_MODE5_2nd);
 		motor5.SetPID(M5_PID_MODE5_P, M5_PID_MODE5_I, M5_PID_MODE5_D);
 		motor5.SetFFGain(FFGAIN_MODE5_1st, FFGAIN_MODE5_2nd);
-		motor6.SetPID(M6_PID_MODE5_P, M6_PID_MODE5_I, M6_PID_MODE5_D);
-		motor6.SetFFGain(FFGAIN_MODE5_1st, FFGAIN_MODE5_2nd);
+//		motor6.SetPID(M6_PID_MODE5_P, M6_PID_MODE5_I, M6_PID_MODE5_D);
+//		motor6.SetFFGain(FFGAIN_MODE5_1st, FFGAIN_MODE5_2nd);
 		break;
 	default:
 		printf("Mode unknown recognized, PID are not set.\n");
 		//Gripper initialization
-		gripper.SetPID(GRIPPER_PID_P, GRIPPER_PID_I, GRIPPER_PID_D);
-		gripper.SetProfile(GRIPPER_VSTD, GRIPPER_ASTD);
+//		gripper.SetPID(GRIPPER_PID_P, GRIPPER_PID_I, GRIPPER_PID_D);
+//		gripper.SetProfile(GRIPPER_VSTD, GRIPPER_ASTD);
 		printf("Lab ARM ready to operate\n");
 	}
 }
@@ -468,7 +468,7 @@ void LabArm::TorqueON()
 		motor3.TorqueON();
 		motor4.TorqueON();
 		motor5.TorqueON();
-		motor6.TorqueON();
+//		motor6.TorqueON();
 		printf("ARM TORQUE ON\n");
 		a_torque = 1;
 	}
@@ -483,7 +483,7 @@ void LabArm::TorqueOFF()
 		motor3.TorqueOFF();
 		motor4.TorqueOFF();
 		motor5.TorqueOFF();
-		motor6.TorqueOFF();
+//		motor6.TorqueOFF();
 		//gripper.TorqueOFF();
 		printf("ARM TORQUE OFF\n");
 		a_torque = 0;
@@ -497,7 +497,7 @@ void LabArm::ReadArmCurrent(int motorCurrent[])
 	motorCurrent[2] = motor3.ReadCurrent();
 	motorCurrent[3] = motor4.ReadCurrent();
 	motorCurrent[4] = motor5.ReadCurrent();
-	motorCurrent[5] = motor6.ReadCurrent();
+//	motorCurrent[5] = motor6.ReadCurrent();
 }
 
 void LabArm::ReadAngle(float outputAngle[])
@@ -507,7 +507,7 @@ void LabArm::ReadAngle(float outputAngle[])
 	outputAngle[2] = motor3.ReadAngle();
 	outputAngle[3] = motor4.ReadAngle();
 	outputAngle[4] = motor5.ReadAngle();
-	outputAngle[5] = motor6.ReadAngle();
+//	outputAngle[5] = motor6.ReadAngle();
 	//Uncomment for debugging
 	for (int a = 0; a < 6; a++)
 	{
@@ -516,7 +516,7 @@ void LabArm::ReadAngle(float outputAngle[])
 }
 void LabArm::RunArm(float inputAngle[])
 {
-	motor6.Goto(inputAngle[5]);
+//	motor6.Goto(inputAngle[5]);
 	motor5.Goto(inputAngle[4]);
 	motor4.Goto(inputAngle[3]);
 	motor3.Goto(inputAngle[2]);
@@ -527,7 +527,7 @@ void LabArm::RunArm(float inputAngle[])
 	usleep(100000);
 	while (MovingFlag != 0)
 	{
-		MovingFlag = motor1.IsMoving() + motor2.IsMoving() + motor3.IsMoving() + motor4.IsMoving() + motor5.IsMoving() + motor6.IsMoving();
+		MovingFlag = motor1.IsMoving() + motor2.IsMoving() + motor3.IsMoving() + motor4.IsMoving() + motor5.IsMoving();// + motor6.IsMoving();
 	}
 }
 
@@ -627,7 +627,7 @@ void LabArm::TimeProfileGeneration(float goalPosition[], uint32_t stdTa,
 	motor3.SetTimeProfile(stdTa, stdTf);
 	motor4.SetTimeProfile(stdTa, stdTf);
 	motor5.SetTimeProfile(stdTa, stdTf);
-	motor6.SetTimeProfile(stdTa, stdTf);
+//	motor6.SetTimeProfile(stdTa, stdTf);
 }
 
 void LabArm::Goto(float goalPosition[], uint32_t stdTa, uint32_t stdTf)
@@ -758,77 +758,77 @@ void LabArm::GotoXYZ(float wantedXYZ[])
 //GRIPPER FUNCTIONS
 void LabArm::GripperON()
 {
-	gripper.TorqueON();
+//	gripper.TorqueON();
 }
 
 void LabArm::GripperOFF()
 {
-	gripper.TorqueOFF();
+//	gripper.TorqueOFF();
 }
 
 void LabArm::GripperOpen()
 {
-	if (a_gripper != 1)
-	{
-		printf("Opening the gripper\n");
-		gripper.Goto(GRIPPER_OPEN);
-		//Wait until all the motors finished to get to goal position (Ismoving return 1 if moving)
-		int MovingFlag = -1;
-		usleep(200000);
-		while (MovingFlag != 0)
-		{
-			MovingFlag = gripper.IsMoving();
-		}
-		a_gripper = 1;
-	}
-	else
-	{
-		printf("Gripper already opened\n");
-	}
+	// if (a_gripper != 1)
+	// {
+	// 	printf("Opening the gripper\n");
+	// 	gripper.Goto(GRIPPER_OPEN);
+	// 	//Wait until all the motors finished to get to goal position (Ismoving return 1 if moving)
+	// 	int MovingFlag = -1;
+	// 	usleep(200000);
+	// 	while (MovingFlag != 0)
+	// 	{
+	// 		MovingFlag = gripper.IsMoving();
+	// 	}
+	// 	a_gripper = 1;
+	// }
+	// else
+	// {
+	// 	printf("Gripper already opened\n");
+	// }
 }
 
 void LabArm::GripperClose()
 {
-	if (a_gripper != 0)
-	{
-		printf("Closing the gripper\n");
-		gripper.Goto(GRIPPER_CLOSE);
-		//Wait until all the motors finished to get to goal position (Ismoving return 1 if moving)
-		int MovingFlag = -1;
-		usleep(200000);
-		while (MovingFlag != 0)
-		{
-			MovingFlag = gripper.IsMoving();
-		}
-		a_gripper = 0;
-	}
-	else
-	{
-		printf("Gripper already closed\n");
-	}
+	// if (a_gripper != 0)
+	// {
+	// 	printf("Closing the gripper\n");
+	// 	gripper.Goto(GRIPPER_CLOSE);
+	// 	//Wait until all the motors finished to get to goal position (Ismoving return 1 if moving)
+	// 	int MovingFlag = -1;
+	// 	usleep(200000);
+	// 	while (MovingFlag != 0)
+	// 	{
+	// 		MovingFlag = gripper.IsMoving();
+	// 	}
+	// 	a_gripper = 0;
+	// }
+	// else
+	// {
+	// 	printf("Gripper already closed\n");
+	// }
 }
 
 int LabArm::GripperGetCurrent()
 {
-	return (gripper.ReadCurrent());
+//	return (gripper.ReadCurrent());
 }
 
 float LabArm::GetSize()
 {
 
 	//Equation obtained by experimentation
-	if (a_gripper == 0)
-	{
-		float angle = gripper.ReadAngle();
-		//printf("Measured angle : %f\n",angle);
-		float distance = -3.5364e-7 * pow(angle, 4) + 2.4396e-4 * pow(angle, 3) - 0.05430 * pow(angle, 2) + 4.8772 * angle - 154.0552;
-		return (distance);
-	}
-	else
-	{
-		printf("The gripper didn't closed");
-		return (-1);
-	}
+	// if (a_gripper == 0)
+	// {
+	// 	float angle = gripper.ReadAngle();
+	// 	//printf("Measured angle : %f\n",angle);
+	// 	float distance = -3.5364e-7 * pow(angle, 4) + 2.4396e-4 * pow(angle, 3) - 0.05430 * pow(angle, 2) + 4.8772 * angle - 154.0552;
+	// 	return (distance);
+	// }
+	// else
+	// {
+	// 	printf("The gripper didn't closed");
+	// 	return (-1);
+	// }
 }
 
 float LabArm::AverageCurrent(int n)
@@ -850,10 +850,10 @@ float LabArm::Thoughness()
 		sleep(0.5);
 		size1 = GetSize();
 		sleep(0.5);
-		gripper.SetGoalCurrent(400);
+//		gripper.SetGoalCurrent(400);
 		sleep(1);
 		size2 = GetSize();
-		gripper.SetGoalCurrent(90);
+//		gripper.SetGoalCurrent(90);
 		deformation = abs(size1 - size2);
 		aveDeformation = aveDeformation + deformation;
 	}
@@ -943,7 +943,7 @@ int LabArm::JoystickControl()
 	motor3.SetProfile(40, 15);
 	motor4.SetProfile(40, 15);
 	motor5.SetProfile(40, 15);
-	motor6.SetProfile(40, 15);
+//	motor6.SetProfile(40, 15);
 
 	if (!joystick.isFound())
 	{
@@ -991,7 +991,7 @@ int LabArm::JoystickControl()
 					motor3.SetProfile(40, 15);
 					motor4.SetProfile(40, 15);
 					motor5.SetProfile(40, 15);
-					motor6.SetProfile(40, 15);
+//					motor6.SetProfile(40, 15);
 				}
 				printf(
 					"\n\n#####  How to Use  #####\nHold on the axis button, and use the analog left joystick (right-left).\n");
@@ -1087,7 +1087,7 @@ int LabArm::JoystickControl()
 				motor5.Goto(motorAngles[4]);
 				break;
 			case 5:
-				motor6.Goto(motorAngles[5]);
+//				motor6.Goto(motorAngles[5]);
 				break;
 			}
 

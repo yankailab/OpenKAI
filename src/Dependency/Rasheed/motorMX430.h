@@ -1,8 +1,6 @@
 #ifndef MOTORMX430_H
 #define MOTORMX430_H
 
-#ifdef USE_DYNAMIXEL
-
 #include <fcntl.h>
 #include <termios.h>
 #define STDIN_FILENO 0
@@ -170,5 +168,4 @@ public:
 	void PrintTimeProfile();
 };
 
-#endif
 #endif

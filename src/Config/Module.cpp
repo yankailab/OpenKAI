@@ -38,6 +38,7 @@ namespace kai
 		ADD_MODULE(_InnfosGluon);
 #endif
 #ifdef USE_DYNAMIXEL
+		ADD_MODULE(_LabArm);
 #endif
 #ifdef USE_XARM
 		ADD_MODULE(_xArm);

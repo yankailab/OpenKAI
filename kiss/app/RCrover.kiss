@@ -53,8 +53,8 @@
 		"name":"threadR",
 		"vTwakeup":["sbus.threadR"],
 	}
-	"port":"/dev/ttyACM0",
-	"/port":"/dev/ttyAMA0",
+	"/port":"/dev/ttyACM0",
+	"port":"/dev/ttyAMA0",
 	"baud":115200,
 }
 
@@ -139,7 +139,8 @@
 		"FPS":1,
 	}
 	"bLog":0,
-	"port":"/dev/ttyUSB0",
+	"/port":"/dev/ttyUSB0",
+	"port":"/dev/ttyAMA1",
 	"baud":115200,
 	"/baud":9800,
 	"parity":"N",
@@ -192,9 +193,49 @@
 }
 
 {
+	"name":"labArm",
+	"class":"_LabArm",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":1,
+	"port":"/dev/ttyUSB0",
+	"baudRate":57600,
+	"oprMode":3,
+	"bGripper":0,
+	
+	{
+		"name":"axis",
+		
+		{
+			"name":"X",
+			"vPrange":[-100,100],
+			"nPtarget":0.5,
+			"nPorigin":0.5,
+			"nPerr":0.1,
+			"vSrange":[0,1000],
+			"nStarget":0.5,
+		}
+	}
+
+	"vRotRangeX":[0, 180],
+	"vRotRangeY":[0, 180],
+	"vRotRangeZ":[0, 0],
+	"vNormTargetRot":[0.0, 0.0, 0.0, 0.0],
+	"vPosRangeX":[-100, 100],
+	"vPosRangeY":[200, 400],
+	"vPosRangeZ":[100, 350],
+	"vNormTargetPos":[0.5, 0.0, 1.0, 0.0],
+	"vNormTargetSpeed":[0.0, 0.0, 0.0, 0.0],
+	"vNormPosErr":[1.0, 1.0, 1.0],
+}
+
+{
 	"name":"stepper",
 	"class":"_HYMCU_RS485",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,

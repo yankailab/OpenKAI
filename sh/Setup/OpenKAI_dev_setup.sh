@@ -328,7 +328,7 @@ git clone --depth 1 https://github.com/ROBOTIS-GIT/DynamixelSDK.git
 cd DynamixelSDK/c++/build/linux64
 make -j$(nproc)
 sudo make install
-# For Jetson Nano
+# For Jetson and Raspberry Pi
 # remove "-m64" in "FORMAT" line of the Makefile in linux64 directory
 
 #----------------------------------------------------

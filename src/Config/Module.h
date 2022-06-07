@@ -28,6 +28,7 @@
 #include "../Actuator/_InnfosGluon.h"
 #endif
 #ifdef USE_DYNAMIXEL
+#include "../Actuator/Articulated/_LabArm.h"
 #endif
 #ifdef USE_XARM
 #include "../Actuator/Articulated/_xArm.h"

@@ -49,7 +49,7 @@ namespace kai
 		n = "";
 		pK->v("_ActuatorBase", &n);
 		m_pA = (_ActuatorBase *)(pK->getInst(n));
-		IF_Fl(!m_pA, n + ": not found");
+//		IF_Fl(!m_pA, n + ": not found");
 
 		return true;
 	}

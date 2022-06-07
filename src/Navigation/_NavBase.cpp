@@ -13,7 +13,7 @@ namespace kai
 	_NavBase::_NavBase()
 	{
 		m_flag.clearAll();
-		m_vAxisIdx.init(0, 1, 2);
+		m_vAxisIdx.set(0, 1, 2);
 		m_vRoffset.init();
 		resetAll();
 	}

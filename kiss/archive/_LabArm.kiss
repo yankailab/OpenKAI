@@ -3,13 +3,13 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog":1,
-	"bStdErr":0,
+	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -29,8 +29,22 @@
 	"port":"/dev/ttyUSB0",
 	"baudRate":57600,
 	"oprMode":3,
-	"bGripper":1,
+	"bGripper":0,
 	
+	{
+		"name":"axis",
+		
+		{
+			"name":"X",
+			"vPrange":[-150,150],
+			"nPtarget":0.5,
+			"nPorigin":0.5,
+			"nPerr":0.1,
+			"vSrange":[0,1000],
+			"nStarget":0.5,
+		}
+	}
+
 	"vRotRangeX":[0, 180],
 	"vRotRangeY":[0, 180],
 	"vRotRangeZ":[0, 0],
@@ -47,7 +61,7 @@
 {
 	"name":"sequencer",
 	"class":"_Sequencer",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,

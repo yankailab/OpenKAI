@@ -1,7 +1,5 @@
 #include "motorMX430.h"
 
-#ifdef USE_DYNAMIXEL
-
 //Specify to initialize members in the member initialiser list:
 MotorXM430::MotorXM430()
 {
@@ -425,5 +423,3 @@ void MotorXM430::PrintCurrentLimit()
 	printf("Motor %d, Current limit: %d (input motor), %f (amp)\n", m_ID,
 			current_limit, current_limit_amp);
 }
-
-#endif
