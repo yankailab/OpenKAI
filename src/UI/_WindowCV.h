@@ -13,9 +13,8 @@
 #endif
 
 #include <opencv2/highgui.hpp>
-#include "../Base/_ModuleBase.h"
+#include "_UIbase.h"
 #include "../Vision/Frame.h"
-#include "../Primitive/tSwap.h"
 #include "../Utility/utilCV.h"
 
 namespace kai
@@ -189,7 +188,7 @@ namespace kai
 		}
 	};
 
-	class _WindowCV : public _ModuleBase
+	class _WindowCV : public _UIbase
 	{
 	public:
 		_WindowCV();
@@ -198,8 +197,6 @@ namespace kai
 		bool init(void *pKiss);
 		bool start(void);
 
-		Frame *getFrame(void);
-		Frame *getNextFrame(void);
 #ifdef USE_FREETYPE
 		cv::Ptr<freetype::FreeType2> getFont(void);
 #endif
@@ -223,17 +220,11 @@ namespace kai
 		void onMouse(int event, int x, int y, int flags);
 
 	private:
-		vector<BASE *> m_vpB;
-		int m_waitKey;
-
-		bool m_bShow;
-		bool m_bFullScreen;
-
-		tSwap<Frame> m_sF;
+		Frame m_F;
 		vInt2 m_vSize;
 
-		string m_gstOutput;
-		VideoWriter m_gst;
+		int m_waitKey;
+		bool m_bFullScreen;
 
 		// UI
 		vector<WindowCV_Btn> m_vBtn;

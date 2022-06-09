@@ -123,26 +123,26 @@ namespace kai
 			tO = pO;
 		}
 
-		float *pX, *pY, *pR, *pH;
+		float *pX, *pY, /**pR,*/ *pH;
 		float dTs = m_pT->getDt() * USEC_2_SEC;
 
 		if (tO)
 		{
 			float x = tO->getX();
 			float y = tO->getY();
-			float r = tO->getRadius();
-			float h = tO->getRoll();
+//			float r = tO->getRadius();
+			float h = tO->getYaw(); //TODO
 
 			pX = m_fX.update(&x, dTs);
 			pY = m_fY.update(&y, dTs);
-			pR = m_fR.update(&r, dTs);
+//			pR = m_fR.update(&r, dTs);
 			pH = m_fH.update(&h, dTs);
 		}
 		else
 		{
 			pX = m_fX.update(NULL, dTs);
 			pY = m_fY.update(NULL, dTs);
-			pR = m_fR.update(NULL, dTs);
+//			pR = m_fR.update(NULL, dTs);
 			pH = m_fH.update(NULL, dTs);
 		}
 

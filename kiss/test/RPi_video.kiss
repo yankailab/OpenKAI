@@ -9,7 +9,7 @@
 
 {
 	"name":"FB",
-	"class":"_FrameBuffer",
+	"class":"_GstOutput",
 	"bON":1,
     {
 		"name":"thread",

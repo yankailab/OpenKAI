@@ -320,7 +320,7 @@ namespace kai
 #ifdef WITH_UI
 #ifdef USE_OPENCV
 		ADD_MODULE(_WindowCV);
-		ADD_MODULE(_FrameBuffer);
+		ADD_MODULE(_GstOutput);
 #endif
 #ifdef USE_GUI
 		ADD_MODULE(_WindowGUI);

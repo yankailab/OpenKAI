@@ -3,14 +3,14 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog":1,
-	"bStdErr":0,
+	"bStdErr":1,
 	"/rc":"sudo mkdir /home/pi/ssd\nsudo mount /dev/nvme0n1 /home/pi/ssd/\nsudo chown pi /home/pi/ssd\n",
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -33,14 +33,15 @@
 
 {
 	"name":"FB",
-	"class":"_FrameBuffer",
-	"bON":0,
+	"class":"_GstOutput",
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":3,
 	}
 	"vBASE":["cam"],
-	"gstOutput":"appsrc ! v4l2convert ! fbdevsink",
+	"/gstOutput":"appsrc ! v4l2convert ! fbdevsink",
+	"gstOutput":"appsrc ! videoconvert ! fakesink",
 	"vSize":[1280,720],
 }
 
@@ -220,7 +221,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -232,7 +233,7 @@
 {
 	"name":"cam",
 	"class":"_Camera",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -244,7 +245,7 @@
 {
 	"name":"apVideo",
 	"class":"_AP_video",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":25,

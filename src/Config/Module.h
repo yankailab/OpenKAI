@@ -304,7 +304,7 @@
 
 #ifdef WITH_UI
 #ifdef USE_OPENCV
-#include "../UI/_FrameBuffer.h"
+#include "../UI/_GstOutput.h"
 #include "../UI/_WindowCV.h"
 #endif
 #ifdef USE_GUI

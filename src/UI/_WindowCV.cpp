@@ -6,7 +6,6 @@
  */
 
 #include "_WindowCV.h"
-#include "../Script/Kiss.h"
 
 namespace kai
 {
@@ -15,9 +14,7 @@ namespace kai
 	{
 		m_waitKey = 30;
 		m_bFullScreen = false;
-		m_gstOutput = "";
 		m_vSize.set(1280, 720);
-		m_bShow = true;
 	}
 
 	_WindowCV::~_WindowCV()
@@ -26,20 +23,9 @@ namespace kai
 
 	bool _WindowCV::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		IF_F(!this->_UIbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		vector<string> vB;
-		pK->a("vBASE", &vB);
-		for (string p : vB)
-		{
-			BASE *pB = (BASE *)(pK->getInst(p));
-			IF_CONT(!pB);
-
-			m_vpB.push_back(pB);
-		}
-
-		pK->v("bShow", &m_bShow);
 		pK->v("bFullScreen", &m_bFullScreen);
 		pK->v("vSize", &m_vSize);
 		m_waitKey = 1000.0f / m_pT->getTargetFPS();
@@ -50,28 +36,9 @@ namespace kai
 			return false;
 		}
 
-		pK->v("gstOutput", &m_gstOutput);
-		if (!m_gstOutput.empty())
-		{
-			if (!m_gst.open(m_gstOutput,
-							CAP_GSTREAMER,
-							0,
-							30,
-							cv::Size(m_vSize.x, m_vSize.y),
-							true))
-			{
-				LOG_E("Cannot open GStreamer output");
-				return false;
-			}
-		}
-
-		m_sF.get()->allocate(m_vSize.x, m_vSize.y);
-		m_sF.next()->allocate(m_vSize.x, m_vSize.y);
-
-		IF_T(!m_bShow);
+		m_F.allocate(m_vSize.x, m_vSize.y);
 
 		string wn = *this->getName();
-
 		if (m_bFullScreen)
 		{
 			namedWindow(wn, WINDOW_NORMAL);
@@ -116,9 +83,9 @@ namespace kai
 			pKb->v("colFont", &wb.m_colFont);
 			pKb->v("hFont", &wb.m_hFont);
 #ifdef USE_FREETYPE
-			wb.init(m_sF.get()->size(), &m_pFT);
+			wb.init(m_F.size(), &m_pFT);
 #else
-			wb.init(m_sF.get()->size());
+			wb.init(m_F.size());
 #endif
 			m_vBtn.push_back(wb);
 		}
@@ -149,63 +116,24 @@ namespace kai
 		// draw contents
 		for (BASE *pB : m_vpB)
 		{
-			pB->draw(this);
+			pB->draw((void *)&m_F);
 		}
-
-		IF_(m_sF.next()->bEmpty());
+		IF_(m_F.bEmpty());
 
 		// draw UI
 		for (WindowCV_Btn wb : m_vBtn)
 		{
 #ifdef USE_FREETYPE
-			wb.draw(m_sF.next()->m(), &m_pFT);
+			wb.draw(m_F.m(), &m_pFT);
 #else
-			wb.draw(m_sF.next()->m());
+			wb.draw(m_F.m());
 #endif
 		}
 
-		m_sF.swap();
-		*m_sF.next()->m() = Scalar(0, 0, 0);
-
 		// show window
-		if (m_bShow)
-		{
-			imshow(*this->getName(), *m_sF.get()->m());
-		}
-
-		Frame F,F2;
-		if (m_gst.isOpened())
-		{
-			F.copy(*m_sF.get());
-			Size fs = F.size();
-
-			if (fs.width != m_vSize.x || fs.height != m_vSize.y)
-			{
-				F2 = F.resize(m_vSize.x, m_vSize.y);
-				F = F2;
-			}
-
-			// cuda convert crash on Jetson?
-			// if (F.m()->type() != CV_8UC3)
-			// {
-			// 	F2 = F.cvtColor(COLOR_GRAY2BGR);
-			// 	F = F2;
-			// }
-
-			m_gst << *F.m();
-		}
+		imshow(*this->getName(), *m_F.m());
 
 		int key = waitKey(m_waitKey);
-	}
-
-	Frame *_WindowCV::getFrame(void)
-	{
-		return m_sF.get();
-	}
-
-	Frame *_WindowCV::getNextFrame(void)
-	{
-		return m_sF.next();
 	}
 
 #ifdef USE_FREETYPE
@@ -215,7 +143,7 @@ namespace kai
 	}
 #endif
 
-	WindowCV_Btn* _WindowCV::findBtn(const string& btnName)
+	WindowCV_Btn *_WindowCV::findBtn(const string &btnName)
 	{
 		for (int i = 0; i < m_vBtn.size(); i++)
 		{
@@ -229,7 +157,7 @@ namespace kai
 
 	bool _WindowCV::setBtnLabel(const string &btnName, const string &btnLabel)
 	{
-		WindowCV_Btn* pB = findBtn(btnName);
+		WindowCV_Btn *pB = findBtn(btnName);
 		NULL_F(pB);
 
 #ifdef USE_FREETYPE
@@ -242,7 +170,7 @@ namespace kai
 
 	bool _WindowCV::setBtnVisible(const string &btnName, bool bShow)
 	{
-		WindowCV_Btn* pB = findBtn(btnName);
+		WindowCV_Btn *pB = findBtn(btnName);
 		NULL_F(pB);
 
 		pB->setVisible(bShow);
@@ -262,7 +190,7 @@ namespace kai
 	{
 		NULL_F(pInst);
 
-		WindowCV_Btn* pB = findBtn(btnName);
+		WindowCV_Btn *pB = findBtn(btnName);
 		NULL_F(pB);
 
 		pB->setCallback(pCb, pInst);

@@ -1,39 +1,38 @@
 /*
- * _FrameBuffer.h
+ * _GstOutput.h
  *
  *  Created on: May 24, 2022
  *      Author: Kai Yan
  */
 
-#ifndef OpenKAI_src_UI_FrameBuffer_H_
-#define OpenKAI_src_UI_FrameBuffer_H_
+#ifndef OpenKAI_src_UI_GstOutput_H_
+#define OpenKAI_src_UI_GstOutput_H_
 
 #include "_UIbase.h"
 #include "../Vision/Frame.h"
-#include "../Primitive/tSwap.h"
 
 namespace kai
 {
-	class _FrameBuffer : public _UIbase
+	class _GstOutput : public _UIbase
 	{
 	public:
-		_FrameBuffer();
-		virtual ~_FrameBuffer();
+		_GstOutput();
+		virtual ~_GstOutput();
 
 		virtual bool init(void *pKiss);
 		virtual bool start(void);
 
 	protected:
-		void updateFB(void);
+		void updateGst(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_FrameBuffer *)This)->update();
+			((_GstOutput *)This)->update();
 			return NULL;
 		}
 
 	private:
-		tSwap<Frame> m_sF;
+		Frame m_F;
 		vInt2 m_vSize;
 
 		string m_gstOutput;
