@@ -12,8 +12,8 @@ namespace kai
 		m_bYaw = false;
 		m_iRelayLED = 0;
 
-		m_vAxisIdx.init(0, 1, 2);
-		m_vAxisK.init(1, 1, 1);
+		m_vAxisIdx.set(0, 1, 2);
+		m_vAxisK.set(1, 1, 1);
 		m_utmPos.init();
 
 		m_bUseApOrigin = false;

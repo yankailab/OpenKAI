@@ -70,8 +70,6 @@ namespace kai
 
 		//depth filter processing thread
 		_Thread *m_pTPP;
-
-		bool m_bDepthShow;
 	};
 
 }

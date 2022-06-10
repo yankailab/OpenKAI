@@ -69,8 +69,10 @@ namespace kai
 #ifdef WITH_APP_ROBOTARM
 		ADD_MODULE(_AProver_picking);
 #endif
+#ifdef WITH_NAVIGATION
 #ifdef USE_REALSENSE
 		ADD_MODULE(_AP_GPS);
+#endif
 #endif
 #endif
 #endif

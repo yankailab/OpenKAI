@@ -59,8 +59,10 @@
 #ifdef WITH_APP_ROBOTARM
 #include "../Autopilot/ArduPilot/_AProver_picking.h"
 #endif
+#ifdef WITH_NAVIGATION
 #ifdef USE_REALSENSE
 #include "../Autopilot/ArduPilot/_AP_GPS.h"
+#endif
 #endif
 #endif
 #endif

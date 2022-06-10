@@ -2,38 +2,40 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
-	"bDraw":1,
 	"bLog":1,
 	"bStdErr":1,
-	"waitKey":30,
 }
 
 {
-	"name":"OK_Console",
+	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["cam"],
 }
 
 {
 	"name":"OKview",
-	"class":"Window",
+	"class":"_WindowCV",
 	"bON":1,
-	"bFullScreen":0,
-}
-
-{
-	"name":"FilterView",
-	"class":"Window",
-	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["/cam","/RSdepth","/d2g","/thr","/inRange","mask"],
 }
 
 {
 	"name":"cam",
 	"class":"_Camera",
-	"FPS":30,
 	"bON":0,
-	"Window":"OKview",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"deviceID":0,
 	"w":1280,
 	"h":720,
@@ -42,9 +44,11 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"FPS":30,
 	"bON":0,
-	"Window":"OKview",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"/pipeline":"nvcamerasrc fpsRange='60.0 60.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)60/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
 	"/pipeline":"udpsrc port=5678 ! application/x-rtp, media=video, encoding-name=h264, payload=96, clock-rate=90000 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
 	"/pipeline":"rpicamsrc bitrate=1000000 preview=0 rotation=180 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! omxh264enc ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
@@ -55,9 +59,11 @@
 {
 	"name":"cam",
 	"class":"_VideoFile",
-	"FPS":30,
 	"bON":0,
-	"Window":"OKview",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"videoFile":"/home/kai/Videos/sz.ts",
 	"w":1280,
 	"h":720,
@@ -66,100 +72,143 @@
 {
 	"name":"cam",
 	"class":"_RealSense",
-	"FPS":30,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadPP",
+		"FPS":30,
+	}
 	"bON":1,
 	"bLog":1,
-	"Window":"OKview",
-	"_Console":"OK_Console",
-	"depthWindow":"depthView",
-	"vPreset":"High Density",
-	"rsRGB":1,
-	"w":1920,
-	"h":1080,
+	"vPreset":"Short Range",
+	"bRsRGB":1,
+	"vSize":[1280,720],
 	"rsFPS":30,
-	"wD":1024,
-	"hD":768,
 	"rsDFPS":30,
+	"vDsize":[640,480],
+	"dOfs":0,
 	"fDec":0,
 	"fSpat":0,
-	"vRange":[0.1,15.0],
 	"bAlign":1,
+	"bDepthShow":1,
+	"vRange":[0.0,5.0],
+	"/rsSN":"f0211594",
+}
+
+{
+	"name":"RSdepth",
+	"class":"_RSdepth",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_RealSense":"cam",
+}
+
+{
+	"name":"d2g",
+	"class":"_Depth2Gray",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_DepthVisionBase":"cam",
+}
+
+{
+	"name":"inRange",
+	"class":"_InRange",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"d2g",
+	"rFrom":0,
+	"rTo":30,
+}
+
+{
+	"name":"mask",
+	"class":"_Mask",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"cam",
+	"_VisionBaseMask":"inRange",
+}
+
+{
+	"name":"thr",
+	"class":"_Threshold",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"d2g",
+	"/_VisionBase":"cam",
+
+	{
+		"type":0,
+		"bAutoThr":0,
+		"vMax":200,
+		"thr":0.0,
+		"thrType":0,
+	}
 }
 
 {
 	"name":"histEqualize",
 	"class":"_HistEqualize",
-	"FPS":30,
 	"bON":0,
-	"Window":"FilterView",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"_VisionBase":"cam",
 }
 
 {
 	"name":"contrast",
 	"class":"_Contrast",
-	"FPS":30,
 	"bON":0,
-	"Window":"FilterView",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"_VisionBase":"cam",
 	"alpha":1.5,
 	"beta":0.0,
 }
 
 {
-	"name":"d2g",
-	"class":"_Depth2Gray",
-	"FPS":30,
-	"bON":1,
-	"/Window":"FilterView",
-	"_DepthVisionBase":"cam",
-}
-
-{
 	"name":"resize",
 	"class":"_Resize",
-	"FPS":30,
-	"bON":1,
-	"/Window":"FilterView",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"_VisionBase":"d2g",
 	"w":1920,
 	"h":1080,
 }
 
 {
-	"name":"inRange",
-	"class":"_InRange",
-	"FPS":30,
-	"bON":1,
-	"Window":"/FilterView",
-	"_VisionBase":"resize",
-	"rFrom":10,
-	"rTo":30,
-}
-
-{
-	"name":"thr",
-	"class":"_Threshold",
-	"FPS":30,
-	"bON":0,
-	"Window":"FilterView",
-	"_VisionBase":"contrast",
-
-	{
-		"type":0,
-		"bAutoThr":1,
-		"vMax":255.0,
-		"thr":150.0,
-		"thrType":0,
-	}
-}
-
-{
 	"name":"morph",
 	"class":"_Morphology",
-	"FPS":30,
 	"bON":0,
-	"Window":"FilterView",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"_VisionBase":"cam",
 
 	{
@@ -182,9 +231,11 @@
 {
 	"name":"erode",
 	"class":"_Erode",
-	"FPS":30,
-	"bON":1,
-	"Window":"/FilterView",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"_VisionBase":"inRange",
 
 	{
@@ -193,14 +244,3 @@
 		"kH":3,
 	}
 }
-
-{
-	"name":"mask",
-	"class":"_Mask",
-	"FPS":30,
-	"bON":1,
-	"Window":"FilterView",
-	"_VisionBase":"cam",
-	"_VisionBaseMask":"erode",
-}
-

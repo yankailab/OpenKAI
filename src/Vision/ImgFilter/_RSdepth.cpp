@@ -30,7 +30,7 @@ namespace kai
 		n = "";
 		pK->v("_RealSense", &n);
 		m_pV = (_RealSense *)(pK->getInst(n));
-		IF_Fl(!m_pV, n + ": not found");
+		IF_Fl(!m_pV, "_RealSense not found: " + n);
 
 		return true;
 	}

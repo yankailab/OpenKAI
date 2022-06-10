@@ -31,15 +31,17 @@ namespace kai
 	public:
 		vInt2 m_vDsize;
 		Frame m_fDepth;
+		
+		vFloat2 m_vRange;
+		float m_dScale;
+		float m_dOfs;
+
 		int m_nHistLev;
 		int m_iHistFrom;
-		float m_dScale;
-		vInt4 m_vDroi;
-
-		vFloat2 m_vRange;
 		float m_minHistD;
 
 		Frame m_fDepthShow;
+		bool m_bDepthShow;
 	};
 
 }

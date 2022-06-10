@@ -26,8 +26,6 @@ namespace kai
         m_rspAlign = NULL;
         m_fEmitter = 1.0;
         m_fLaserPower = 1.0;
-        m_iHistFrom = 0;
-        m_bDepthShow = false;
     }
 
     _RealSense::~_RealSense()
@@ -51,7 +49,6 @@ namespace kai
         pK->v("bAlign", &m_bAlign);
         pK->v("fEmitter", &m_fEmitter);
         pK->v("fLaserPower", &m_fLaserPower);
-        pK->v("bDepthShow", &m_bDepthShow);
 
         Kiss *pKt = pK->child("threadPP");
         IF_F(pKt->empty());
@@ -301,9 +298,10 @@ namespace kai
                 m_rsDepth = m_rsfSpat.process(m_rsDepth);
 
             Mat mZ = Mat(Size(m_vDsize.x, m_vDsize.y), CV_16UC1, (void *)m_rsDepth.get_data(), Mat::AUTO_STEP);
-            Mat mD;
+            Mat mD, mDs;
             mZ.convertTo(mD, CV_32FC1);
-            m_fDepth = mD * m_dScale;
+            mDs = mD * m_dScale;
+            m_fDepth.copy(mDs + m_dOfs);
 
             if (m_bDepthShow)
             {
@@ -312,7 +310,7 @@ namespace kai
                 rs2::frame dColor = rsColorMap.process(m_rsDepth);
                 Mat mDColor(Size(m_vDsize.x, m_vDsize.y), CV_8UC3, (void *)dColor.get_data(),
                             Mat::AUTO_STEP);
-                m_fDepthShow = mDColor;
+                m_fDepthShow.copy(mDColor);
             }
         }
     }

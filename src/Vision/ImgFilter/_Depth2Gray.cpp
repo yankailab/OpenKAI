@@ -79,7 +79,7 @@ namespace kai
 
 		Mat mD = *m_pV->Depth()->m();
 		Mat mGray;
-		float scale = 255.0 / (m_pV->m_vRange.y - m_pV->m_vRange.x);
+		float scale = 255.0 / m_pV->m_vRange.len();
 		mD.convertTo(mGray,
 					 CV_8UC1,
 					 scale,

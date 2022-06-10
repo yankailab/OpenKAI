@@ -27,9 +27,6 @@
 		"FPS":30,
 	}
 	"vBASE":["rs","gst"],
-	"bShow":0,
-	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
-	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",	
 }
 
 {
@@ -57,8 +54,6 @@
 	}
 	"bON":1,
 	"bLog":1,
-	"bDraw":1,
-	"/depthWindow":"depthView",
 	"vPreset":"Short Range",
 	"bRsRGB":1,
 	"vSize":[1280,720],
