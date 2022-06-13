@@ -34,11 +34,10 @@ namespace kai
 		pK->v("gstOutput", &m_gstOutput);
 		if (!m_gstOutput.empty())
 		{
-			int fps = (int)m_pT->getTargetFPS();
 			if (!m_gst.open(m_gstOutput,
 							CAP_GSTREAMER,
 							0,
-							fps,
+							m_pT->getTargetFPS(),
 							cv::Size(m_vSize.x, m_vSize.y),
 							true))
 			{
@@ -86,6 +85,12 @@ namespace kai
 			m_F = F.resize(m_vSize.x, m_vSize.y);
 		}
 
-		m_gst << *m_F.m();
+		Mat m = *m_F.m();
+		if(m.type() != CV_8UC3)
+		{
+			cv::cvtColor(*m_F.m(), m, COLOR_GRAY2BGR);
+		}
+
+		m_gst << m;
 	}
 }

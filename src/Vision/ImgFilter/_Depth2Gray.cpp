@@ -86,5 +86,4 @@ namespace kai
 					 -m_pV->m_vRange.x * scale);
 		m_fBGR.copy(mGray);
 	}
-
 }

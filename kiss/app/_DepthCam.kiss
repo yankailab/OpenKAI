@@ -7,37 +7,21 @@
 }
 
 {
-	"name":"RGBview",
-	"class":"_WindowCV",
+	"name":"GstOutput",
+	"class":"_GstOutput",
 	"bON":1,
-	"bFullScreen":0,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["rs"],
-	"bShow":0,
-	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5679 auto-multicast=false",
-	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",	
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
+	"vSize":[1280,720],
+	"vBASE":["/cam","/RSdepth","d2g","/inRange","/mask"],
 }
 
 {
-	"name":"depthView",
-	"class":"_WindowCV",
-	"bON":1,
-	"bFullScreen":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"bShow":0,
-	"vBASE":["RSdepth"],
-	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5680 auto-multicast=false",
-	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",	
-}
-
-{
-	"name":"rs",
+	"name":"cam",
 	"class":"_RealSense",
     {
 		"name":"thread",
@@ -49,7 +33,6 @@
 	}
 	"bON":1,
 	"bLog":1,
-	"bDraw":1,
 	"vPreset":"Short Range",
 	"bRsRGB":1,
 	"vSize":[1280,720],
@@ -58,24 +41,60 @@
 	"vDsize":[640,480],
 	"fDec":0,
 	"fSpat":0,
-	"bAlign":0,
-	"bDebug":0,
+	"bAlign":1,
 	"nHistLevel":128,
 	"minHistD":0.5,
-	"vRange":[0.1,15.0],
+	"dOfs":0,
+	"vRange":[0.0,5.0],
+	"bDebug":0,
 	"bDepthShow":1,
 }
 
 {
 	"name":"RSdepth",
 	"class":"_RSdepth",
-	"FPS":30,
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_RealSense":"cam",
+}
+
+{
+	"name":"d2g",
+	"class":"_Depth2Gray",
 	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"_RealSense":"rs",
+	"_DepthVisionBase":"cam",
+}
+
+{
+	"name":"inRange",
+	"class":"_InRange",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"d2g",
+	"rFrom":0,
+	"rTo":30,
+}
+
+{
+	"name":"mask",
+	"class":"_Mask",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"cam",
+	"_VisionBaseMask":"inRange",
 }
 
 {
@@ -109,7 +128,7 @@
 		"FPS":30,
 	}
 	"_IOBase":"udp",
-	"_DepthVisionBase":"rs",
+	"_DepthVisionBase":"cam",
 	"vBBhb":[0.4, 0.4, 0.6, 0.6],
 	"bHeartbeat":0,
 }
