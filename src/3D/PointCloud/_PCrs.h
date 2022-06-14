@@ -45,8 +45,8 @@ namespace kai
 		rs2::align *m_rspAlign;
 		rs2::spatial_filter m_rsfSpat;
 		rs2::decimation_filter m_rsfDec;
-		float m_fDec;
-		float m_fSpat;
+		float m_fFilterManitude;
+		float m_fHolesFill;
 		bool m_bAlign;
 		float m_fEmitter;
 		float m_fLaserPower;

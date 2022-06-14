@@ -42,6 +42,7 @@ namespace kai
 		vision_gphoto,
 		vision_remap,
 		vision_RSdepth,
+		vision_DepthProj,
 	};
 
 	class _VisionBase : public _ModuleBase

@@ -17,8 +17,8 @@ namespace kai
 		m_bRsRGB = true;
 		m_rsFPS = 30;
 		m_rsDFPS = 30;
-		m_fDec = 0.0;
-		m_fSpat = 0.0;
+		m_fFilterManitude = 0.0;
+		m_fHolesFill = 0.0;
 		m_bAlign = false;
 		m_rspAlign = NULL;
 		m_fEmitter = 1.0;
@@ -45,8 +45,8 @@ namespace kai
 		pK->v("rsDFPS", &m_rsDFPS);
 		pK->v("vPreset", &m_vPreset);
 		pK->v("bRsRGB", &m_bRsRGB);
-		pK->v("fDec", &m_fDec);
-		pK->v("fSpat", &m_fSpat);
+		pK->v("fDec", &m_fFilterManitude);
+		pK->v("fSpat", &m_fHolesFill);
 		pK->v("bAlign", &m_bAlign);
 		pK->v("fEmitter", &m_fEmitter);
 		pK->v("fLaserPower", &m_fLaserPower);
@@ -87,10 +87,10 @@ namespace kai
 				break;
 			}
 
-			if (m_fDec > 0.0)
-				m_rsfDec.set_option(RS2_OPTION_FILTER_MAGNITUDE, m_fDec);
-			if (m_fSpat > 0.0)
-				m_rsfSpat.set_option(RS2_OPTION_HOLES_FILL, m_fSpat);
+			if (m_fFilterManitude > 0.0)
+				m_rsfDec.set_option(RS2_OPTION_FILTER_MAGNITUDE, m_fFilterManitude);
+			if (m_fHolesFill > 0.0)
+				m_rsfSpat.set_option(RS2_OPTION_HOLES_FILL, m_fHolesFill);
 
 			if (sensor.supports(RS2_OPTION_EMITTER_ENABLED))
 				sensor.set_option(RS2_OPTION_EMITTER_ENABLED, m_fEmitter);
@@ -126,9 +126,9 @@ namespace kai
 				m_rsDepth = rsFrameset.get_depth_frame();
 			}
 
-			if (m_fDec > 0.0)
+			if (m_fFilterManitude > 0.0)
 				m_rsDepth = m_rsfDec.process(m_rsDepth);
-			if (m_fSpat > 0.0)
+			if (m_fHolesFill > 0.0)
 				m_rsDepth = m_rsfSpat.process(m_rsDepth);
 
 			m_vWHd.x = m_rsDepth.as<rs2::video_frame>().get_width();

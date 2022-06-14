@@ -35,7 +35,6 @@ namespace kai
 
 	public:
 		_VisionBase *m_pV;
-		Frame m_fIn;
 		double m_rFrom;
 		double m_rTo;
 	};

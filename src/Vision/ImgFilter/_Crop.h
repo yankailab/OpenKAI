@@ -35,7 +35,6 @@ namespace kai
 
 	public:
 		_VisionBase *m_pV;
-		Frame m_fIn;
 
 		vFloat4 m_roi;
 	};

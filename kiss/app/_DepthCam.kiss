@@ -17,7 +17,7 @@
 	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
 	"vSize":[1280,720],
-	"vBASE":["cam","/RSdepth","/d2g","/inRange","/mask"],
+	"vBASE":["/cam","RSdepth","/d2g","/colOfs","/inRange","/mask"],
 }
 
 {
@@ -33,21 +33,26 @@
 	}
 	"bON":1,
 	"bLog":1,
+	"bDebug":0,
+	"bDepthShow":1,
 	"vPreset":"Short Range",
 	"bRsRGB":1,
 	"vSize":[1280,720],
 	"rsFPS":30,
 	"rsDFPS":30,
 	"vDsize":[640,480],
-	"fDec":0,
-	"fSpat":0,
 	"bAlign":1,
 	"nHistLevel":128,
 	"minHistD":0.5,
 	"dOfs":0,
 	"vRange":[0.0,1.0],
-	"bDebug":0,
-	"bDepthShow":1,
+	"fConfidenceThreshold":10000000,
+	"fDigitalGain":10000000,
+	"fPostProcessingSharpening":10000000,
+	"fFilterMagnitude":10000000,
+	"fHolesFill":10000000,
+	"fEmitter":10000000,
+	"fLaserPower":10000000,
 	"fBrightness":10000000,
 	"fContrast":10000000,
 	"fGain":10000000,
@@ -78,6 +83,17 @@
 		"FPS":30,
 	}
 	"_DepthVisionBase":"cam",
+}
+
+{
+	"name":"colOfs",
+	"class":"_DepthProj",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"d2g",
 }
 
 {

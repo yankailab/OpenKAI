@@ -1,40 +1,46 @@
 /*
- * _Depth2Gray.h
+ * _DepthProj.h
  *
- *  Created on: April 23, 2019
+ *  Created on: June 15, 2022
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Vision__Depth2Gray_H_
-#define OpenKAI_src_Vision__Depth2Gray_H_
+#ifndef OpenKAI_src_Vision__DepthProj_H_
+#define OpenKAI_src_Vision__DepthProj_H_
 
 #include "../_DepthVisionBase.h"
 
 namespace kai
 {
 
-	class _Depth2Gray : public _VisionBase
+	class _DepthProj : public _VisionBase
 	{
 	public:
-		_Depth2Gray();
-		virtual ~_Depth2Gray();
+		_DepthProj();
+		virtual ~_DepthProj();
 
 		bool init(void *pKiss);
 		bool start(void);
 		bool open(void);
 		void close(void);
 
+		void createFilterMat(void);
+
 	private:
 		void filter(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_Depth2Gray *)This)->update();
+			((_DepthProj *)This)->update();
 			return NULL;
 		}
 
 	public:
 		_DepthVisionBase *m_pV;
+		Mat m_mF;
+
+		float m_fFov;
+		vFloat2 m_vCenter;
 	};
 
 }

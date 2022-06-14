@@ -70,8 +70,7 @@ namespace kai
 
 			if (m_bOpen)
 			{
-				if (m_fIn.tStamp() < m_pV->BGR()->tStamp())
-					filter();
+				filter();
 			}
 
 			m_pT->autoFPSto();

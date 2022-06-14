@@ -20,15 +20,20 @@ namespace kai
         m_bRsRGB = true;
         m_rsFPS = 30;
         m_rsDFPS = 30;
-        m_fDec = 0.0;
-        m_fSpat = 0.0;
         m_bAlign = false;
         m_rspAlign = NULL;
-        m_fEmitter = 1.0;
-        m_fLaserPower = 1.0;
 
-        m_fDefault = 10e6;
-        m_fBrightness = m_fDefault; //set to default value
+        m_fDefault = 10e6; //set to default value
+
+        m_fConfidenceThreshold = m_fDefault;
+        m_fDigitalGain = m_fDefault;
+        m_fPostProcessingSharpening = m_fDefault;
+        m_fFilterManitude = m_fDefault;
+        m_fHolesFill = m_fDefault;
+        m_fEmitter = m_fDefault;
+        m_fLaserPower = m_fDefault;
+
+        m_fBrightness = m_fDefault;
         m_fContrast = m_fDefault;
         m_fGain = m_fDefault;
         m_fExposure = m_fDefault;
@@ -54,9 +59,13 @@ namespace kai
         pK->v("rsDFPS", &m_rsDFPS);
         pK->v("vPreset", &m_vPreset);
         pK->v("bRsRGB", &m_bRsRGB);
-        pK->v("fDec", &m_fDec);
-        pK->v("fSpat", &m_fSpat);
         pK->v("bAlign", &m_bAlign);
+
+        pK->v("fConfidenceThreshold", &m_fConfidenceThreshold);
+        pK->v("fDigitalGain", &m_fDigitalGain);
+        pK->v("fPostProcessingSharpening", &m_fPostProcessingSharpening);
+        pK->v("fFilterMagnitude", &m_fFilterManitude);
+        pK->v("fHolesFill", &m_fHolesFill);
         pK->v("fEmitter", &m_fEmitter);
         pK->v("fLaserPower", &m_fLaserPower);
 
@@ -120,19 +129,13 @@ namespace kai
                 break;
             }
 
-            if (m_fDec > 0.0)
-                m_rsfDec.set_option(RS2_OPTION_FILTER_MAGNITUDE, m_fDec);
-            if (m_fSpat > 0.0)
-                m_rsfSpat.set_option(RS2_OPTION_HOLES_FILL, m_fSpat);
-
-            if (dSensor.supports(RS2_OPTION_EMITTER_ENABLED))
-                dSensor.set_option(RS2_OPTION_EMITTER_ENABLED, m_fEmitter);
-
-            if (dSensor.supports(RS2_OPTION_LASER_POWER))
-            {
-                auto range = dSensor.get_option_range(RS2_OPTION_LASER_POWER);
-                dSensor.set_option(RS2_OPTION_LASER_POWER, range.max * m_fLaserPower);
-            }
+            setSensorOption(dSensor, RS2_OPTION_CONFIDENCE_THRESHOLD, m_fConfidenceThreshold);
+            setSensorOption(dSensor, RS2_OPTION_DIGITAL_GAIN, m_fDigitalGain);
+            setSensorOption(dSensor, RS2_OPTION_PRE_PROCESSING_SHARPENING, m_fPostProcessingSharpening);
+            setSensorOption(dSensor, RS2_OPTION_FILTER_MAGNITUDE, m_fFilterManitude);
+            setSensorOption(dSensor, RS2_OPTION_HOLES_FILL, m_fHolesFill);
+            setSensorOption(dSensor, RS2_OPTION_EMITTER_ENABLED, m_fEmitter);
+            setSensorOption(dSensor, RS2_OPTION_LASER_POWER, m_fLaserPower);
 
             // RGB sensor config
             auto cSensor = m_rsProfile.get_device().first<rs2::color_sensor>();
@@ -171,9 +174,9 @@ namespace kai
                 m_rsDepth = rsFrameset.get_depth_frame();
             }
 
-            if (m_fDec > 0.0)
+            if (m_fFilterManitude < m_fDefault)
                 m_rsDepth = m_rsfDec.process(m_rsDepth);
-            if (m_fSpat > 0.0)
+            if (m_fHolesFill < m_fDefault)
                 m_rsDepth = m_rsfSpat.process(m_rsDepth);
 
             m_vDsize.x = m_rsDepth.as<rs2::video_frame>().get_width();
@@ -245,7 +248,7 @@ namespace kai
 
     void _RealSense::close(void)
     {
-        this->_VisionBase::close();
+        this->_DepthVisionBase::close();
         m_rsPipe.stop();
     }
 
@@ -356,9 +359,9 @@ namespace kai
         {
             m_pTPP->sleepT(0);
 
-            if (m_fDec > 0.0)
+            if (m_fFilterManitude < m_fDefault)
                 m_rsDepth = m_rsfDec.process(m_rsDepth);
-            if (m_fSpat > 0.0)
+            if (m_fHolesFill < m_fDefault)
                 m_rsDepth = m_rsfSpat.process(m_rsDepth);
 
             Mat mZ = Mat(Size(m_vDsize.x, m_vDsize.y), CV_16UC1, (void *)m_rsDepth.get_data(), Mat::AUTO_STEP);
