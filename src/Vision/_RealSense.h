@@ -27,6 +27,8 @@ namespace kai
 		bool open(void);
 		void close(void);
 
+		bool setSensorOption(const rs2::sensor& sensor, rs2_option option_type, float v);
+
 	private:
 		void sensorReset(void);
 		void update(void);
@@ -59,6 +61,16 @@ namespace kai
 		bool m_bAlign;
 		float m_fEmitter;
 		float m_fLaserPower;
+
+		float m_fDefault;
+		float m_fBrightness;
+		float m_fContrast;
+		float m_fGain;
+		float m_fExposure;
+		float m_fHue;
+		float m_fSaturation;
+		float m_fSharpness;
+		float m_fWhiteBalance;
 
 		int m_rsFPS;
 		int m_rsDFPS;

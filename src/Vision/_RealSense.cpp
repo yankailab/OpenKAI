@@ -26,6 +26,16 @@ namespace kai
         m_rspAlign = NULL;
         m_fEmitter = 1.0;
         m_fLaserPower = 1.0;
+
+        m_fDefault = 10e6;
+        m_fBrightness = m_fDefault; //set to default value
+        m_fContrast = m_fDefault;
+        m_fGain = m_fDefault;
+        m_fExposure = m_fDefault;
+        m_fHue = m_fDefault;
+        m_fSaturation = m_fDefault;
+        m_fSharpness = m_fDefault;
+        m_fWhiteBalance = m_fDefault;
     }
 
     _RealSense::~_RealSense()
@@ -49,6 +59,15 @@ namespace kai
         pK->v("bAlign", &m_bAlign);
         pK->v("fEmitter", &m_fEmitter);
         pK->v("fLaserPower", &m_fLaserPower);
+
+        pK->v("fBrightness", &m_fBrightness);
+        pK->v("fContrast", &m_fContrast);
+        pK->v("fGain", &m_fGain);
+        pK->v("fExposure", &m_fExposure);
+        pK->v("fHue", &m_fHue);
+        pK->v("fSaturation", &m_fSaturation);
+        pK->v("fSharpness", &m_fSharpness);
+        pK->v("fWhiteBalance", &m_fWhiteBalance);
 
         Kiss *pKt = pK->child("threadPP");
         IF_F(pKt->empty());
@@ -88,15 +107,16 @@ namespace kai
             auto dStream = m_rsProfile.get_stream(RS2_STREAM_DEPTH).as<rs2::video_stream_profile>();
             m_dIntrinsics = dStream.get_intrinsics();
 
-            auto sensor = m_rsProfile.get_device().first<rs2::depth_sensor>();
-            m_dScale = sensor.get_depth_scale();
+            // Depth sensor config
+            auto dSensor = m_rsProfile.get_device().first<rs2::depth_sensor>();
+            m_dScale = dSensor.get_depth_scale();
 
-            auto range = sensor.get_option_range(RS2_OPTION_VISUAL_PRESET);
+            auto range = dSensor.get_option_range(RS2_OPTION_VISUAL_PRESET);
             for (auto i = range.min; i <= range.max; i += range.step)
             {
-                string preset = std::string(sensor.get_option_value_description(RS2_OPTION_VISUAL_PRESET, i));
+                string preset = std::string(dSensor.get_option_value_description(RS2_OPTION_VISUAL_PRESET, i));
                 IF_CONT(preset != m_vPreset);
-                sensor.set_option(RS2_OPTION_VISUAL_PRESET, i);
+                dSensor.set_option(RS2_OPTION_VISUAL_PRESET, i);
                 break;
             }
 
@@ -105,15 +125,27 @@ namespace kai
             if (m_fSpat > 0.0)
                 m_rsfSpat.set_option(RS2_OPTION_HOLES_FILL, m_fSpat);
 
-            if (sensor.supports(RS2_OPTION_EMITTER_ENABLED))
-                sensor.set_option(RS2_OPTION_EMITTER_ENABLED, m_fEmitter);
+            if (dSensor.supports(RS2_OPTION_EMITTER_ENABLED))
+                dSensor.set_option(RS2_OPTION_EMITTER_ENABLED, m_fEmitter);
 
-            if (sensor.supports(RS2_OPTION_LASER_POWER))
+            if (dSensor.supports(RS2_OPTION_LASER_POWER))
             {
-                auto range = sensor.get_option_range(RS2_OPTION_LASER_POWER);
-                sensor.set_option(RS2_OPTION_LASER_POWER, range.max * m_fLaserPower);
+                auto range = dSensor.get_option_range(RS2_OPTION_LASER_POWER);
+                dSensor.set_option(RS2_OPTION_LASER_POWER, range.max * m_fLaserPower);
             }
 
+            // RGB sensor config
+            auto cSensor = m_rsProfile.get_device().first<rs2::color_sensor>();
+            setSensorOption(cSensor, RS2_OPTION_BRIGHTNESS, m_fBrightness);
+            setSensorOption(cSensor, RS2_OPTION_CONTRAST, m_fContrast);
+            setSensorOption(cSensor, RS2_OPTION_GAIN, m_fGain);
+            setSensorOption(cSensor, RS2_OPTION_BRIGHTNESS, m_fExposure);
+            setSensorOption(cSensor, RS2_OPTION_HUE, m_fHue);
+            setSensorOption(cSensor, RS2_OPTION_SATURATION, m_fSaturation);
+            setSensorOption(cSensor, RS2_OPTION_SHARPNESS, m_fSharpness);
+            setSensorOption(cSensor, RS2_OPTION_WHITE_BALANCE, m_fWhiteBalance);
+
+            // Confirm the frame is received
             rs2::frameset rsFrameset = m_rsPipe.wait_for_frames();
 
             if (m_bRsRGB)
@@ -169,6 +201,38 @@ namespace kai
         }
 
         m_bOpen = true;
+        return true;
+    }
+
+    bool _RealSense::setSensorOption(const rs2::sensor &sensor, rs2_option option_type, float v)
+    {
+        if (!sensor.supports(option_type))
+        {
+            LOG_E("This option is not supported by this sensor");
+            return true;
+        }
+
+        rs2::option_range range = sensor.get_option_range(option_type);
+        if (v >= m_fDefault)
+        {
+            v = range.def;
+        }
+        else
+        {
+            vFloat2 vRange(range.min, range.max);
+            v = vRange.constrain(v);
+        }
+
+        try
+        {
+            sensor.set_option(option_type, v);
+        }
+        catch (const rs2::error &e)
+        {
+            LOG_E("Failed to set option: " + i2str(option_type) + ": " + string(e.what()));
+            return false;
+        }
+
         return true;
     }
 

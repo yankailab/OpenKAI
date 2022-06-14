@@ -17,7 +17,7 @@
 	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
 	"vSize":[1280,720],
-	"vBASE":["/cam","/RSdepth","d2g","/inRange","/mask"],
+	"vBASE":["cam","/RSdepth","/d2g","/inRange","/mask"],
 }
 
 {
@@ -45,9 +45,17 @@
 	"nHistLevel":128,
 	"minHistD":0.5,
 	"dOfs":0,
-	"vRange":[0.0,5.0],
+	"vRange":[0.0,1.0],
 	"bDebug":0,
 	"bDepthShow":1,
+	"fBrightness":10000000,
+	"fContrast":10000000,
+	"fGain":10000000,
+	"fExposure":10000000,
+	"fHue":10000000,
+	"fSaturation":10000000,
+	"fSharpness":10000000,
+	"fWhiteBalance":10000000,
 }
 
 {
@@ -82,7 +90,7 @@
 	}
 	"_VisionBase":"d2g",
 	"rFrom":0,
-	"rTo":30,
+	"rTo":172,
 }
 
 {
