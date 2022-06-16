@@ -1,3 +1,5 @@
+
+
 {
 	"name":"APP",
 	"class":"Startup",
@@ -15,7 +17,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["/cam","state","arUco","TOFsense","apBase","apLand","/serialTelem","apVideo","cURL"],
+	"vBASE":["cam","FB","state","arUco","TOFsense","apBase","apLand","/serialTelem","apVideo","cURL"],
 }
 
 {
@@ -33,15 +35,14 @@
 
 {
 	"name":"FB",
-	"class":"_GstOutput",
+	"class":"_FrameBuffer",
 	"bON":1,
     {
 		"name":"thread",
 		"FPS":3,
 	}
 	"vBASE":["cam"],
-	"/gstOutput":"appsrc ! v4l2convert ! fbdevsink",
-	"gstOutput":"appsrc ! videoconvert ! fakesink",
+	"gstOutput":"appsrc ! v4l2convert ! fbdevsink",
 	"vSize":[1280,720],
 }
 
@@ -50,11 +51,11 @@
 	"class":"_StateControl",
     {
 		"name":"thread",
-		"FPS":20,
+		"FPS":10,
 	}
 	"bON":1,
-	"start":"STANDBY",
-	"/start":"LANDING",
+	"/start":"STANDBY",
+	"start":"LANDING",
 
 	{
 		"name":"state",
@@ -62,15 +63,11 @@
 			"bON":1,
 			"name":"STANDBY",
 			"class":"State",
-			"next":"TAKEOFF_REQUEST",
-			"tTimeout":3,
 		}
 		{
 			"bON":1,
 			"name":"TAKEOFF_REQUEST",
 			"class":"State",
-			"next":"STANDBY",
-			"tTimeout":10,
 		}
 		{
 			"bON":1,
@@ -196,10 +193,10 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":1,
+		"FPS":2,
 	}
 	"_StateControl":"state",
-	"vActiveState":["STANDBY","TAKEOFF_REQUEST"],
+	"vActiveState":["STANDBY","TAKEOFF_REQUEST","LANDING"],
 	"_AP_base":"apBase",
 
 	{
@@ -208,12 +205,12 @@
 		{
 			"name":"pitch",
 			"iChan":10,
-			"pwm":1500,
+			"pwm":1560,
 		}
 		{
 			"name":"roll",
 			"iChan":9,
-			"pwm":1500,
+			"pwm":1450,
 		}
 	}
 }
@@ -221,7 +218,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -233,7 +230,7 @@
 {
 	"name":"cam",
 	"class":"_Camera",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -245,7 +242,7 @@
 {
 	"name":"apVideo",
 	"class":"_AP_video",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":25,
@@ -259,7 +256,7 @@
 	"dir":"/home/pi/ssd/video/",
 	"fCalib":"/home/pi/ok/calibCam.kiss",
 	"/gstOutput":"appsrc ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! matroskamux ! filesink location=[fName]",
-	"gstOutput":"appsrc ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! tee name=t t. ! queue ! matroskamux ! filesink location=[fName] t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.245 port=5678 auto-multicast=false",
+	"gstOutput":"appsrc ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! tee name=t t. ! queue ! matroskamux ! filesink location=[fName] t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.16.131 port=5678 auto-multicast=false",
 }
 
 {
@@ -328,7 +325,7 @@
 	"name":"PIDroll",
 	"class":"PID",
 	"bON":1,
-	"P":-1.0,
+	"P":3.0,
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
@@ -340,7 +337,7 @@
 	"name":"PIDpitch",
 	"class":"PID",
 	"bON":1,
-	"P":1.0,
+	"P":-3.0,
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
@@ -377,16 +374,17 @@
 	"PIDroll":"PIDroll",
 	"PIDpitch":"PIDpitch",
 	"PIDyaw":"PIDyaw",
-	"vTargetP":[0.56, 0.5, 0.3, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
+	"vTargetP":[0.48, 0.56, 0.3, 180.0], /*xTarget, yTarget, zSpeed, yawTarget */
 	"nWmed":0,
 	"nWpred":0,
 	"dThold":0.5,
 	"iClass":-1,
 	"zrK":10.0,
-	"altComplete":1.25,
-	"dTargetComplete":0.3,
-	"vKpidIn":[0.1, 23.0],
-	"vKpidOut":[0.2, 1.0],
+	"altComplete":1.5,
+	"rTargetComplete":0.1,
+	"dTargetComplete":0.4,
+	"vKpidIn":[0.4, 15.0],
+	"vKpidOut":[0.3, 1.0],
 	
 	{
 		"name":"mount",

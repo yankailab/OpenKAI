@@ -1,7 +1,7 @@
 #pragma once
 // MESSAGE ASL_OBCTRL PACKING
 
-#define MAVLINK_MSG_ID_ASL_OBCTRL 207
+#define MAVLINK_MSG_ID_ASL_OBCTRL 8008
 
 
 typedef struct __mavlink_asl_obctrl_t {
@@ -17,17 +17,17 @@ typedef struct __mavlink_asl_obctrl_t {
 
 #define MAVLINK_MSG_ID_ASL_OBCTRL_LEN 33
 #define MAVLINK_MSG_ID_ASL_OBCTRL_MIN_LEN 33
-#define MAVLINK_MSG_ID_207_LEN 33
-#define MAVLINK_MSG_ID_207_MIN_LEN 33
+#define MAVLINK_MSG_ID_8008_LEN 33
+#define MAVLINK_MSG_ID_8008_MIN_LEN 33
 
 #define MAVLINK_MSG_ID_ASL_OBCTRL_CRC 234
-#define MAVLINK_MSG_ID_207_CRC 234
+#define MAVLINK_MSG_ID_8008_CRC 234
 
 
 
 #if MAVLINK_COMMAND_24BIT
 #define MAVLINK_MESSAGE_INFO_ASL_OBCTRL { \
-    207, \
+    8008, \
     "ASL_OBCTRL", \
     8, \
     {  { "timestamp", NULL, MAVLINK_TYPE_UINT64_T, 0, 0, offsetof(mavlink_asl_obctrl_t, timestamp) }, \
@@ -242,7 +242,7 @@ static inline void mavlink_msg_asl_obctrl_send_struct(mavlink_channel_t chan, co
 
 #if MAVLINK_MSG_ID_ASL_OBCTRL_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This varient of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by re-using
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an

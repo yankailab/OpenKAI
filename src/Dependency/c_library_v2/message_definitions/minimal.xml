@@ -64,6 +64,9 @@
       <entry value="19" name="MAV_AUTOPILOT_AIRRAILS">
         <description>AirRails - http://uaventure.com</description>
       </entry>
+      <entry value="20" name="MAV_AUTOPILOT_REFLEX">
+        <description>Fusion Reflex - https://fusion.engineering</description>
+      </entry>
     </enum>
     <enum name="MAV_TYPE">
       <description>MAVLINK component type reported in HEARTBEAT message. Flight controllers must report the type of the vehicle on which they are mounted (e.g. MAV_TYPE_OCTOROTOR). All other components must report a value appropriate for their type (e.g. a camera must use MAV_TYPE_CAMERA).</description>
@@ -124,22 +127,22 @@
       <entry value="18" name="MAV_TYPE_ONBOARD_CONTROLLER">
         <description>Onboard companion controller</description>
       </entry>
-      <entry value="19" name="MAV_TYPE_VTOL_DUOROTOR">
-        <description>Two-rotor VTOL using control surfaces in vertical operation in addition. Tailsitter.</description>
+      <entry value="19" name="MAV_TYPE_VTOL_TAILSITTER_DUOROTOR">
+        <description>Two-rotor Tailsitter VTOL that additionally uses control surfaces in vertical operation. Note, value previously named MAV_TYPE_VTOL_DUOROTOR.</description>
       </entry>
-      <entry value="20" name="MAV_TYPE_VTOL_QUADROTOR">
-        <description>Quad-rotor VTOL using a V-shaped quad config in vertical operation. Tailsitter.</description>
+      <entry value="20" name="MAV_TYPE_VTOL_TAILSITTER_QUADROTOR">
+        <description>Quad-rotor Tailsitter VTOL using a V-shaped quad config in vertical operation. Note: value previously named MAV_TYPE_VTOL_QUADROTOR.</description>
       </entry>
       <entry value="21" name="MAV_TYPE_VTOL_TILTROTOR">
-        <description>Tiltrotor VTOL</description>
+        <description>Tiltrotor VTOL. Fuselage and wings stay (nominally) horizontal in all flight phases. It able to tilt (some) rotors to provide thrust in cruise flight.</description>
       </entry>
-      <!-- Entries up to 25 reserved for other VTOL airframes -->
-      <entry value="22" name="MAV_TYPE_VTOL_RESERVED2">
-        <description>VTOL reserved 2</description>
+      <entry value="22" name="MAV_TYPE_VTOL_FIXEDROTOR">
+        <description>VTOL with separate fixed rotors for hover and cruise flight. Fuselage and wings stay (nominally) horizontal in all flight phases.</description>
       </entry>
-      <entry value="23" name="MAV_TYPE_VTOL_RESERVED3">
-        <description>VTOL reserved 3</description>
+      <entry value="23" name="MAV_TYPE_VTOL_TAILSITTER">
+        <description>Tailsitter VTOL. Fuselage and wings orientation changes depending on flight phase: vertical for hover, horizontal for cruise. Use more specific VTOL MAV_TYPE_VTOL_DUOROTOR or MAV_TYPE_VTOL_QUADROTOR if appropriate.</description>
       </entry>
+      <!-- Entries 24/25 reserved for other VTOL airframe -->
       <entry value="24" name="MAV_TYPE_VTOL_RESERVED4">
         <description>VTOL reserved 4</description>
       </entry>
@@ -175,6 +178,27 @@
       </entry>
       <entry value="35" name="MAV_TYPE_DECAROTOR">
         <description>Decarotor</description>
+      </entry>
+      <entry value="36" name="MAV_TYPE_BATTERY">
+        <description>Battery</description>
+      </entry>
+      <entry value="37" name="MAV_TYPE_PARACHUTE">
+        <description>Parachute</description>
+      </entry>
+      <entry value="38" name="MAV_TYPE_LOG">
+        <description>Log</description>
+      </entry>
+      <entry value="39" name="MAV_TYPE_OSD">
+        <description>OSD</description>
+      </entry>
+      <entry value="40" name="MAV_TYPE_IMU">
+        <description>IMU</description>
+      </entry>
+      <entry value="41" name="MAV_TYPE_GPS">
+        <description>GPS</description>
+      </entry>
+      <entry value="42" name="MAV_TYPE_WINCH">
+        <description>Winch</description>
       </entry>
     </enum>
     <enum name="MAV_MODE_FLAG" bitmask="true">
@@ -235,28 +259,28 @@
       <entry value="0" name="MAV_STATE_UNINIT">
         <description>Uninitialized system, state is unknown.</description>
       </entry>
-      <entry name="MAV_STATE_BOOT">
+      <entry value="1" name="MAV_STATE_BOOT">
         <description>System is booting up.</description>
       </entry>
-      <entry name="MAV_STATE_CALIBRATING">
+      <entry value="2" name="MAV_STATE_CALIBRATING">
         <description>System is calibrating and not flight-ready.</description>
       </entry>
-      <entry name="MAV_STATE_STANDBY">
+      <entry value="3" name="MAV_STATE_STANDBY">
         <description>System is grounded and on standby. It can be launched any time.</description>
       </entry>
-      <entry name="MAV_STATE_ACTIVE">
+      <entry value="4" name="MAV_STATE_ACTIVE">
         <description>System is active and might be already airborne. Motors are engaged.</description>
       </entry>
-      <entry name="MAV_STATE_CRITICAL">
+      <entry value="5" name="MAV_STATE_CRITICAL">
         <description>System is in a non-normal flight mode. It can however still navigate.</description>
       </entry>
-      <entry name="MAV_STATE_EMERGENCY">
+      <entry value="6" name="MAV_STATE_EMERGENCY">
         <description>System is in a non-normal flight mode. It lost control over parts or over the whole airframe. It is in mayday and going down.</description>
       </entry>
-      <entry name="MAV_STATE_POWEROFF">
+      <entry value="7" name="MAV_STATE_POWEROFF">
         <description>System just initialized its power-down sequence, will shut down now.</description>
       </entry>
-      <entry name="MAV_STATE_FLIGHT_TERMINATION">
+      <entry value="8" name="MAV_STATE_FLIGHT_TERMINATION">
         <description>System is terminating itself.</description>
       </entry>
     </enum>
@@ -578,6 +602,9 @@
       <entry value="160" name="MAV_COMP_ID_FLARM">
         <description>FLARM collision alert component.</description>
       </entry>
+      <entry value="161" name="MAV_COMP_ID_PARACHUTE">
+        <description>Parachute component.</description>
+      </entry>
       <entry value="171" name="MAV_COMP_ID_GIMBAL2">
         <description>Gimbal #2.</description>
       </entry>
@@ -593,13 +620,30 @@
       <entry value="175" name="MAV_COMP_ID_GIMBAL6">
         <description>Gimbal #6.</description>
       </entry>
+      <entry value="180" name="MAV_COMP_ID_BATTERY">
+        <description>Battery #1.</description>
+      </entry>
+      <entry value="181" name="MAV_COMP_ID_BATTERY2">
+        <description>Battery #2.</description>
+      </entry>
+      <entry value="189" name="MAV_COMP_ID_MAVCAN">
+        <description>CAN over MAVLink client.</description>
+      </entry>
       <entry value="190" name="MAV_COMP_ID_MISSIONPLANNER">
         <description>Component that can generate/supply a mission flight plan (e.g. GCS or developer API).</description>
       </entry>
       <entry value="191" name="MAV_COMP_ID_ONBOARD_COMPUTER">
         <description>Component that lives on the onboard computer (companion computer) and has some generic functionalities, such as settings system parameters and monitoring the status of some processes that don't directly speak mavlink and so on.</description>
       </entry>
-      <!-- Component ids from 192-194 are reserved for any future mavlink components related to the mission computer. -->
+      <entry value="192" name="MAV_COMP_ID_ONBOARD_COMPUTER2">
+        <description>Component that lives on the onboard computer (companion computer) and has some generic functionalities, such as settings system parameters and monitoring the status of some processes that don't directly speak mavlink and so on.</description>
+      </entry>
+      <entry value="193" name="MAV_COMP_ID_ONBOARD_COMPUTER3">
+        <description>Component that lives on the onboard computer (companion computer) and has some generic functionalities, such as settings system parameters and monitoring the status of some processes that don't directly speak mavlink and so on.</description>
+      </entry>
+      <entry value="194" name="MAV_COMP_ID_ONBOARD_COMPUTER4">
+        <description>Component that lives on the onboard computer (companion computer) and has some generic functionalities, such as settings system parameters and monitoring the status of some processes that don't directly speak mavlink and so on.</description>
+      </entry>
       <entry value="195" name="MAV_COMP_ID_PATHPLANNER">
         <description>Component that finds an optimal path between points based on a certain constraint (e.g. minimum snap, shortest path, cost, etc.).</description>
       </entry>

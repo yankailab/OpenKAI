@@ -1,7 +1,7 @@
 #pragma once
 // MESSAGE ASLUAV_STATUS PACKING
 
-#define MAVLINK_MSG_ID_ASLUAV_STATUS 205
+#define MAVLINK_MSG_ID_ASLUAV_STATUS 8006
 
 
 typedef struct __mavlink_asluav_status_t {
@@ -13,17 +13,17 @@ typedef struct __mavlink_asluav_status_t {
 
 #define MAVLINK_MSG_ID_ASLUAV_STATUS_LEN 14
 #define MAVLINK_MSG_ID_ASLUAV_STATUS_MIN_LEN 14
-#define MAVLINK_MSG_ID_205_LEN 14
-#define MAVLINK_MSG_ID_205_MIN_LEN 14
+#define MAVLINK_MSG_ID_8006_LEN 14
+#define MAVLINK_MSG_ID_8006_MIN_LEN 14
 
 #define MAVLINK_MSG_ID_ASLUAV_STATUS_CRC 97
-#define MAVLINK_MSG_ID_205_CRC 97
+#define MAVLINK_MSG_ID_8006_CRC 97
 
 #define MAVLINK_MSG_ASLUAV_STATUS_FIELD_SERVO_STATUS_LEN 8
 
 #if MAVLINK_COMMAND_24BIT
 #define MAVLINK_MESSAGE_INFO_ASLUAV_STATUS { \
-    205, \
+    8006, \
     "ASLUAV_STATUS", \
     4, \
     {  { "LED_status", NULL, MAVLINK_TYPE_UINT8_T, 0, 4, offsetof(mavlink_asluav_status_t, LED_status) }, \
@@ -188,7 +188,7 @@ static inline void mavlink_msg_asluav_status_send_struct(mavlink_channel_t chan,
 
 #if MAVLINK_MSG_ID_ASLUAV_STATUS_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This varient of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by re-using
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an

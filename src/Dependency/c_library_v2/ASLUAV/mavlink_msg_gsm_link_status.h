@@ -1,7 +1,7 @@
 #pragma once
 // MESSAGE GSM_LINK_STATUS PACKING
 
-#define MAVLINK_MSG_ID_GSM_LINK_STATUS 213
+#define MAVLINK_MSG_ID_GSM_LINK_STATUS 8014
 
 
 typedef struct __mavlink_gsm_link_status_t {
@@ -16,17 +16,17 @@ typedef struct __mavlink_gsm_link_status_t {
 
 #define MAVLINK_MSG_ID_GSM_LINK_STATUS_LEN 14
 #define MAVLINK_MSG_ID_GSM_LINK_STATUS_MIN_LEN 14
-#define MAVLINK_MSG_ID_213_LEN 14
-#define MAVLINK_MSG_ID_213_MIN_LEN 14
+#define MAVLINK_MSG_ID_8014_LEN 14
+#define MAVLINK_MSG_ID_8014_MIN_LEN 14
 
 #define MAVLINK_MSG_ID_GSM_LINK_STATUS_CRC 200
-#define MAVLINK_MSG_ID_213_CRC 200
+#define MAVLINK_MSG_ID_8014_CRC 200
 
 
 
 #if MAVLINK_COMMAND_24BIT
 #define MAVLINK_MESSAGE_INFO_GSM_LINK_STATUS { \
-    213, \
+    8014, \
     "GSM_LINK_STATUS", \
     7, \
     {  { "timestamp", NULL, MAVLINK_TYPE_UINT64_T, 0, 0, offsetof(mavlink_gsm_link_status_t, timestamp) }, \
@@ -230,7 +230,7 @@ static inline void mavlink_msg_gsm_link_status_send_struct(mavlink_channel_t cha
 
 #if MAVLINK_MSG_ID_GSM_LINK_STATUS_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This varient of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by re-using
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an

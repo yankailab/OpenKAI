@@ -1,7 +1,7 @@
 #pragma once
 // MESSAGE SENSORPOD_STATUS PACKING
 
-#define MAVLINK_MSG_ID_SENSORPOD_STATUS 211
+#define MAVLINK_MSG_ID_SENSORPOD_STATUS 8012
 
 
 typedef struct __mavlink_sensorpod_status_t {
@@ -17,17 +17,17 @@ typedef struct __mavlink_sensorpod_status_t {
 
 #define MAVLINK_MSG_ID_SENSORPOD_STATUS_LEN 16
 #define MAVLINK_MSG_ID_SENSORPOD_STATUS_MIN_LEN 16
-#define MAVLINK_MSG_ID_211_LEN 16
-#define MAVLINK_MSG_ID_211_MIN_LEN 16
+#define MAVLINK_MSG_ID_8012_LEN 16
+#define MAVLINK_MSG_ID_8012_MIN_LEN 16
 
 #define MAVLINK_MSG_ID_SENSORPOD_STATUS_CRC 54
-#define MAVLINK_MSG_ID_211_CRC 54
+#define MAVLINK_MSG_ID_8012_CRC 54
 
 
 
 #if MAVLINK_COMMAND_24BIT
 #define MAVLINK_MESSAGE_INFO_SENSORPOD_STATUS { \
-    211, \
+    8012, \
     "SENSORPOD_STATUS", \
     8, \
     {  { "timestamp", NULL, MAVLINK_TYPE_UINT64_T, 0, 0, offsetof(mavlink_sensorpod_status_t, timestamp) }, \
@@ -242,7 +242,7 @@ static inline void mavlink_msg_sensorpod_status_send_struct(mavlink_channel_t ch
 
 #if MAVLINK_MSG_ID_SENSORPOD_STATUS_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This varient of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by re-using
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an

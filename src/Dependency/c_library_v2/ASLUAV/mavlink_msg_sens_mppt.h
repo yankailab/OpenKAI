@@ -1,7 +1,7 @@
 #pragma once
 // MESSAGE SENS_MPPT PACKING
 
-#define MAVLINK_MSG_ID_SENS_MPPT 202
+#define MAVLINK_MSG_ID_SENS_MPPT 8003
 
 
 typedef struct __mavlink_sens_mppt_t {
@@ -22,17 +22,17 @@ typedef struct __mavlink_sens_mppt_t {
 
 #define MAVLINK_MSG_ID_SENS_MPPT_LEN 41
 #define MAVLINK_MSG_ID_SENS_MPPT_MIN_LEN 41
-#define MAVLINK_MSG_ID_202_LEN 41
-#define MAVLINK_MSG_ID_202_MIN_LEN 41
+#define MAVLINK_MSG_ID_8003_LEN 41
+#define MAVLINK_MSG_ID_8003_MIN_LEN 41
 
 #define MAVLINK_MSG_ID_SENS_MPPT_CRC 231
-#define MAVLINK_MSG_ID_202_CRC 231
+#define MAVLINK_MSG_ID_8003_CRC 231
 
 
 
 #if MAVLINK_COMMAND_24BIT
 #define MAVLINK_MESSAGE_INFO_SENS_MPPT { \
-    202, \
+    8003, \
     "SENS_MPPT", \
     13, \
     {  { "mppt_timestamp", NULL, MAVLINK_TYPE_UINT64_T, 0, 0, offsetof(mavlink_sens_mppt_t, mppt_timestamp) }, \
@@ -302,7 +302,7 @@ static inline void mavlink_msg_sens_mppt_send_struct(mavlink_channel_t chan, con
 
 #if MAVLINK_MSG_ID_SENS_MPPT_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This varient of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by re-using
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an

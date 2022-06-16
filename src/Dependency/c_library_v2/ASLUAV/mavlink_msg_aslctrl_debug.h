@@ -1,7 +1,7 @@
 #pragma once
 // MESSAGE ASLCTRL_DEBUG PACKING
 
-#define MAVLINK_MSG_ID_ASLCTRL_DEBUG 204
+#define MAVLINK_MSG_ID_ASLCTRL_DEBUG 8005
 
 
 typedef struct __mavlink_aslctrl_debug_t {
@@ -20,17 +20,17 @@ typedef struct __mavlink_aslctrl_debug_t {
 
 #define MAVLINK_MSG_ID_ASLCTRL_DEBUG_LEN 38
 #define MAVLINK_MSG_ID_ASLCTRL_DEBUG_MIN_LEN 38
-#define MAVLINK_MSG_ID_204_LEN 38
-#define MAVLINK_MSG_ID_204_MIN_LEN 38
+#define MAVLINK_MSG_ID_8005_LEN 38
+#define MAVLINK_MSG_ID_8005_MIN_LEN 38
 
 #define MAVLINK_MSG_ID_ASLCTRL_DEBUG_CRC 251
-#define MAVLINK_MSG_ID_204_CRC 251
+#define MAVLINK_MSG_ID_8005_CRC 251
 
 
 
 #if MAVLINK_COMMAND_24BIT
 #define MAVLINK_MESSAGE_INFO_ASLCTRL_DEBUG { \
-    204, \
+    8005, \
     "ASLCTRL_DEBUG", \
     11, \
     {  { "i32_1", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_aslctrl_debug_t, i32_1) }, \
@@ -278,7 +278,7 @@ static inline void mavlink_msg_aslctrl_debug_send_struct(mavlink_channel_t chan,
 
 #if MAVLINK_MSG_ID_ASLCTRL_DEBUG_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This varient of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by re-using
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an

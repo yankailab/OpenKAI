@@ -1,7 +1,7 @@
 #pragma once
 // MESSAGE SENS_BATMON PACKING
 
-#define MAVLINK_MSG_ID_SENS_BATMON 209
+#define MAVLINK_MSG_ID_SENS_BATMON 8010
 
 
 typedef struct __mavlink_sens_batmon_t {
@@ -24,17 +24,17 @@ typedef struct __mavlink_sens_batmon_t {
 
 #define MAVLINK_MSG_ID_SENS_BATMON_LEN 41
 #define MAVLINK_MSG_ID_SENS_BATMON_MIN_LEN 41
-#define MAVLINK_MSG_ID_209_LEN 41
-#define MAVLINK_MSG_ID_209_MIN_LEN 41
+#define MAVLINK_MSG_ID_8010_LEN 41
+#define MAVLINK_MSG_ID_8010_MIN_LEN 41
 
 #define MAVLINK_MSG_ID_SENS_BATMON_CRC 155
-#define MAVLINK_MSG_ID_209_CRC 155
+#define MAVLINK_MSG_ID_8010_CRC 155
 
 
 
 #if MAVLINK_COMMAND_24BIT
 #define MAVLINK_MESSAGE_INFO_SENS_BATMON { \
-    209, \
+    8010, \
     "SENS_BATMON", \
     15, \
     {  { "batmon_timestamp", NULL, MAVLINK_TYPE_UINT64_T, 0, 0, offsetof(mavlink_sens_batmon_t, batmon_timestamp) }, \
@@ -326,7 +326,7 @@ static inline void mavlink_msg_sens_batmon_send_struct(mavlink_channel_t chan, c
 
 #if MAVLINK_MSG_ID_SENS_BATMON_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This varient of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by re-using
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an

@@ -37,6 +37,8 @@ namespace kai
 		float m_dTarget; //dist to target
 		float m_dTargetComplete;
 		float m_altComplete;
+		float m_rTargetComplete;
+		bool m_bRtargetComplete;
 	};
 }
 #endif

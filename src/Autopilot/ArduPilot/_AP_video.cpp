@@ -45,10 +45,9 @@ namespace kai
 		pK->v("_Curl", &n);
 		m_pCurl = (_Curl *)(pK->getInst(n));
 
-		Kiss* pKv = pK->find(n);
-		if(pKv)
+		Kiss *pKv = pK->find(n);
+		if (pKv)
 			pKv->v("vSize", &m_vSize);
-
 
 		pK->v("fCalib", &m_fCalib);
 		readCamMatrices(m_fCalib, &m_mC, &m_mD);
@@ -117,19 +116,19 @@ namespace kai
 
 		// open meta file
 		IF_F(!m_pF->open(m_fName + ".json"));
-        object jo;
-        JO(jo, "name", "calib");
-        JO(jo, "Fx", m_mC.at<double>(0, 0));
-        JO(jo, "Fy", m_mC.at<double>(1, 1));
-        JO(jo, "Cx", m_mC.at<double>(0, 2));
-        JO(jo, "Cy", m_mC.at<double>(1, 2));
-        JO(jo, "k1", m_mD.at<double>(0, 0));
-        JO(jo, "k2", m_mD.at<double>(0, 1));
-        JO(jo, "p1", m_mD.at<double>(0, 2));
-        JO(jo, "p2", m_mD.at<double>(0, 3));
-        JO(jo, "k3", m_mD.at<double>(0, 4));
-        string m = picojson::value(jo).serialize();
-		m_pF->writeLine((uint8_t*)m.c_str(), m.length());
+		object jo;
+		JO(jo, "name", "calib");
+		JO(jo, "Fx", m_mC.at<double>(0, 0));
+		JO(jo, "Fy", m_mC.at<double>(1, 1));
+		JO(jo, "Cx", m_mC.at<double>(0, 2));
+		JO(jo, "Cy", m_mC.at<double>(1, 2));
+		JO(jo, "k1", m_mD.at<double>(0, 0));
+		JO(jo, "k2", m_mD.at<double>(0, 1));
+		JO(jo, "p1", m_mD.at<double>(0, 2));
+		JO(jo, "p2", m_mD.at<double>(0, 3));
+		JO(jo, "k3", m_mD.at<double>(0, 4));
+		string m = picojson::value(jo).serialize();
+		m_pF->writeLine((uint8_t *)m.c_str(), m.length());
 
 		m_iFrame = 0;
 		m_tRecStart = getTbootMs();
@@ -148,7 +147,7 @@ namespace kai
 		m_gst.release();
 		m_pF->close();
 
-		if(m_pCurl)
+		if (m_pCurl)
 		{
 			m_pCurl->addFile(m_fName + ".json");
 			m_pCurl->addFile(m_fName + ".mka");
@@ -170,17 +169,19 @@ namespace kai
 		vDouble4 vP = m_pAP->getGlobalPos();
 		vFloat3 vA = m_pAP->getApAttitude();
 
-        object jo;
-        JO(jo, "iFrame", (double)m_iFrame);
-        JO(jo, "tFrame", (double)tFrame);
-        JO(jo, "lat", lf2str(vP.x, 7));
-        JO(jo, "lon", lf2str(vP.y, 7));
-        JO(jo, "alt", (double)vP.z);
-        JO(jo, "yaw", (double)vA.x);
-        JO(jo, "pitch", (double)vA.y);
-        JO(jo, "roll", (double)vA.z);
-        string m = picojson::value(jo).serialize();
-		m_pF->writeLine((uint8_t*)m.c_str(), m.length());
+		object jo;
+		JO(jo, "iFrame", (double)m_iFrame);
+		JO(jo, "tFrame", (double)tFrame);
+		JO(jo, "lat", lf2str(vP.x, 8));
+		JO(jo, "lon", lf2str(vP.y, 8));
+		JO(jo, "alt", lf2str(vP.z, 5));
+		JO(jo, "rAlt", lf2str(vP.w, 5));
+		JO(jo, "hdg", lf2str(m_pAP->getApHdg(), 5));
+		JO(jo, "yaw", lf2str(vA.x, 5));
+		JO(jo, "pitch", lf2str(vA.y, 5));
+		JO(jo, "roll", lf2str(vA.z, 5));
+		string m = picojson::value(jo).serialize();
+		m_pF->writeLine((uint8_t *)m.c_str(), m.length());
 	}
 
 	void _AP_video::console(void *pConsole)

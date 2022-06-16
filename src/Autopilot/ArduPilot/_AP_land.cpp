@@ -10,6 +10,8 @@ namespace kai
 		m_dTarget = -1.0;
 		m_dTargetComplete = 1.0;
 		m_altComplete = 1.0;
+		m_rTargetComplete = 0.1;
+		m_bRtargetComplete = false;
 	}
 
 	_AP_land::~_AP_land()
@@ -24,6 +26,7 @@ namespace kai
 		pK->v("zrK", &m_zrK);
 		pK->v("dTargetComplete", &m_dTargetComplete);
 		pK->v("altComplete", &m_altComplete);
+		pK->v("rTargetComplete", &m_rTargetComplete);
 
 		string n;
 
@@ -90,9 +93,10 @@ namespace kai
 		else
 		{
 			m_vP = m_vTargetP;
+			m_bRtargetComplete = true; // false will block to touchdown in noisy image situation?
 		}
 
-		if (alt < m_altComplete && m_dTarget < m_dTargetComplete)
+		if (alt < m_altComplete && m_dTarget < m_dTargetComplete && m_bRtargetComplete)
 		{
 			// going to touch down
 			m_pSC->transit("TOUCHDOWN");
@@ -123,26 +127,23 @@ namespace kai
 			tO = pO;
 		}
 
-		float *pX, *pY, /**pR,*/ *pH;
+		float *pX, *pY, *pH;
 		float dTs = m_pT->getDt() * USEC_2_SEC;
 
 		if (tO)
 		{
 			float x = tO->getX();
 			float y = tO->getY();
-//			float r = tO->getRadius();
-			float h = tO->getYaw(); //TODO
+			float h = tO->getYaw();
 
 			pX = m_fX.update(&x, dTs);
 			pY = m_fY.update(&y, dTs);
-//			pR = m_fR.update(&r, dTs);
 			pH = m_fH.update(&h, dTs);
 		}
 		else
 		{
 			pX = m_fX.update(NULL, dTs);
 			pY = m_fY.update(NULL, dTs);
-//			pR = m_fR.update(NULL, dTs);
 			pH = m_fH.update(NULL, dTs);
 		}
 
@@ -155,6 +156,9 @@ namespace kai
 		float dY = m_vP.y - m_vTargetP.y;
 		float r = sqrt(dX * dX + dY * dY);
 		m_vP.z = m_vTargetP.z * constrain(1.0 - r * m_zrK, 0.0, 1.0);
+
+		//r to target
+		m_bRtargetComplete = (r < m_rTargetComplete)?true:false;		
 
 		//heading
 		m_vP.w = *pH;

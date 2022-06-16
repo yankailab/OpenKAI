@@ -1,7 +1,7 @@
 #pragma once
 // MESSAGE COMMAND_INT_STAMPED PACKING
 
-#define MAVLINK_MSG_ID_COMMAND_INT_STAMPED 78
+#define MAVLINK_MSG_ID_COMMAND_INT_STAMPED 223
 
 
 typedef struct __mavlink_command_int_stamped_t {
@@ -24,17 +24,17 @@ typedef struct __mavlink_command_int_stamped_t {
 
 #define MAVLINK_MSG_ID_COMMAND_INT_STAMPED_LEN 47
 #define MAVLINK_MSG_ID_COMMAND_INT_STAMPED_MIN_LEN 47
-#define MAVLINK_MSG_ID_78_LEN 47
-#define MAVLINK_MSG_ID_78_MIN_LEN 47
+#define MAVLINK_MSG_ID_223_LEN 47
+#define MAVLINK_MSG_ID_223_MIN_LEN 47
 
 #define MAVLINK_MSG_ID_COMMAND_INT_STAMPED_CRC 119
-#define MAVLINK_MSG_ID_78_CRC 119
+#define MAVLINK_MSG_ID_223_CRC 119
 
 
 
 #if MAVLINK_COMMAND_24BIT
 #define MAVLINK_MESSAGE_INFO_COMMAND_INT_STAMPED { \
-    78, \
+    223, \
     "COMMAND_INT_STAMPED", \
     15, \
     {  { "utc_time", NULL, MAVLINK_TYPE_UINT32_T, 0, 8, offsetof(mavlink_command_int_stamped_t, utc_time) }, \
@@ -326,7 +326,7 @@ static inline void mavlink_msg_command_int_stamped_send_struct(mavlink_channel_t
 
 #if MAVLINK_MSG_ID_COMMAND_INT_STAMPED_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This varient of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by re-using
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
