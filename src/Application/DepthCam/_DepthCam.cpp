@@ -7,8 +7,9 @@ namespace kai
     {
         m_bHeartbeat = false;
         m_Tr = NULL;
-        m_pDV = NULL;
+        m_pRS = NULL;
         m_vBBhb.set(0.4, 0.4, 0.6, 0.6);
+        m_pIR = NULL;
     }
 
     _DepthCam::~_DepthCam()
@@ -26,9 +27,14 @@ namespace kai
 
         string n;
         n = "";
-        pK->v("_DepthVisionBase", &n);
-        m_pDV = (_DepthVisionBase *)(pK->getInst(n));
-        IF_Fl(!m_pDV, n + ": not found");
+        pK->v("_RealSense", &n);
+        m_pRS = (_RealSense *)(pK->getInst(n));
+        IF_Fl(!m_pRS, n + ": not found");
+
+        n = "";
+        pK->v("_InRange", &n);
+        m_pIR = (_InRange *)(pK->getInst(n));
+        IF_Fl(!m_pIR, n + ": not found");
 
         Kiss *pKt = pK->child("threadR");
         IF_F(pKt->empty());
@@ -53,7 +59,7 @@ namespace kai
 
     int _DepthCam::check(void)
     {
-        NULL__(m_pDV, -1);
+        NULL__(m_pRS, -1);
 
         return this->_JSONbase::check();
     }
@@ -89,7 +95,7 @@ namespace kai
     {
         IF_(check() < 0);
 
-        if(m_bHeartbeat)
+        if (m_bHeartbeat)
             heartbeat();
     }
 
@@ -97,7 +103,7 @@ namespace kai
     {
         IF_(check() < 0);
 
-        double d = m_pDV->d(m_vBBhb);
+        double d = m_pRS->d(m_vBBhb);
 
         object jo;
         JO(jo, "cmd", "heartBeat");
@@ -138,6 +144,10 @@ namespace kai
 
         if (cmd == "detectPos")
             detectPos(jo);
+        else if (cmd == "setSensorOption")
+            setSensorOption(jo);
+        else if (cmd == "setRangeFilter")
+            setRangeFilter(jo);
     }
 
     void _DepthCam::detectPos(picojson::object &o)
@@ -156,7 +166,7 @@ namespace kai
         vBB.z = o["z"].get<double>();
         vBB.w = o["w"].get<double>();
 
-        double d = m_pDV->d(vBB);
+        double d = m_pRS->d(vBB);
 
         object jo;
         JO(jo, "cmd", "detectPos");
@@ -168,6 +178,62 @@ namespace kai
         JO(jo, "d", (double)d);
 
         sendMsg(jo);
+    }
+
+    void _DepthCam::setSensorOption(picojson::object &o)
+    {
+        IF_(check() < 0);
+        IF_(!o["sensorType"].is<string>());
+        IF_(!o["optionID"].is<double>());
+        IF_(!o["v"].is<double>());
+
+        string sType = o["sensorType"].get<string>();
+        int oID = o["optionID"].get<double>();
+        float v = o["v"].get<double>();
+
+        if (sType == "color")
+        {
+            m_pRS->setCsensorOption((rs2_option)oID, v);
+        }
+        else if (sType == "depth")
+        {
+            m_pRS->setDsensorOption((rs2_option)oID, v);
+        }
+    }
+
+    void _DepthCam::setRangeFilter(picojson::object &o)
+    {
+        IF_(check() < 0);
+
+        if (o["nHistLevel"].is<double>())
+        {
+            m_pRS->m_nHistLev = o["nHistLevel"].get<double>();
+        }
+
+        if (o["minHistD"].is<double>())
+        {
+            m_pRS->m_minHistD = o["minHistD"].get<double>();
+        }
+
+        if (o["rangeFrom"].is<double>())
+        {
+            m_pRS->m_vRange.x = o["rangeFrom"].get<double>();
+        }
+
+        if (o["rangeTo"].is<double>())
+        {
+            m_pRS->m_vRange.y = o["rangeTo"].get<double>();
+        }
+
+        if (o["filterFrom"].is<double>())
+        {
+            m_pIR->m_rFrom = o["filterFrom"].get<double>();
+        }
+
+        if (o["filterTo"].is<double>())
+        {
+            m_pIR->m_rTo = o["filterTo"].get<double>();
+        }
     }
 
     void _DepthCam::console(void *pConsole)

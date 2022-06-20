@@ -20,7 +20,7 @@ namespace kai
 
 	bool _Curl::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		IF_F(!this->_DataBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("cmd", &m_cmd);
@@ -47,9 +47,20 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
+			updateFileList();
 			updateCurl();
 
 			m_pT->autoFPSto();
+		}
+	}
+
+	void _Curl::updateFileList(void)
+	{
+		IF_(getDirFileList() <= 0);
+
+		for (string f : m_vFileIn)
+		{
+			addFile(f);
 		}
 	}
 
@@ -93,15 +104,26 @@ namespace kai
 	bool _Curl::addFile(const string &fName)
 	{
 		IF_F(fName.empty());
+		IF_T(bFileInList(fName));
 
 		m_vFiles.push_back(fName);
 		return true;
 	}
 
+	bool _Curl::bFileInList(const string &fName)
+	{
+		for (string f : m_vFiles)
+		{
+			IF_T(f == fName);
+		}
+
+		return false;
+	}
+
 	void _Curl::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_ModuleBase::console(pConsole);
+		this->_DataBase::console(pConsole);
 		IF_(check() < 0);
 
 		_Console *pC = (_Console *)pConsole;

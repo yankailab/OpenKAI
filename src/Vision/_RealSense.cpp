@@ -130,7 +130,7 @@ namespace kai
             }
 
             setSensorOption(dSensor, RS2_OPTION_CONFIDENCE_THRESHOLD, m_fConfidenceThreshold);
-            setSensorOption(dSensor, RS2_OPTION_DIGITAL_GAIN, m_fDigitalGain);
+//            setSensorOption(dSensor, RS2_OPTION_DIGITAL_GAIN, m_fDigitalGain);
             setSensorOption(dSensor, RS2_OPTION_PRE_PROCESSING_SHARPENING, m_fPostProcessingSharpening);
             setSensorOption(dSensor, RS2_OPTION_FILTER_MAGNITUDE, m_fFilterManitude);
             setSensorOption(dSensor, RS2_OPTION_HOLES_FILL, m_fHolesFill);
@@ -237,6 +237,20 @@ namespace kai
         }
 
         return true;
+    }
+
+    bool _RealSense::setCsensorOption(rs2_option option_type, float v)
+    {
+        auto cSensor = m_rsProfile.get_device().first<rs2::color_sensor>();
+        setSensorOption(cSensor, option_type, v);
+    }
+
+    bool _RealSense::setDsensorOption(rs2_option option_type, float v)
+    {
+        auto dSensor = m_rsProfile.get_device().first<rs2::depth_sensor>();
+        m_dScale = dSensor.get_depth_scale();
+
+        setSensorOption(dSensor, option_type, v);
     }
 
     void _RealSense::sensorReset(void)

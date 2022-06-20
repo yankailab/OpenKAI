@@ -11,35 +11,32 @@
 #include "../_DataBase.h"
 #include "../../Vision/Frame.h"
 
-#ifdef USE_OPENCV
-
 namespace kai
 {
 
-class _FrameCutOut: public _DataBase
-{
-public:
-	_FrameCutOut();
-	~_FrameCutOut();
-
-	bool init(void* pKiss);
-	bool start(void);
-
-private:
-	void update(void);
-	static void* getUpdate(void* This)
+	class _FrameCutOut : public _DataBase
 	{
-		((_FrameCutOut*) This)->update();
-		return NULL;
-	}
+	public:
+		_FrameCutOut();
+		~_FrameCutOut();
 
-public:
-	double m_progress;
+		bool init(void *pKiss);
+		bool start(void);
 
-	Frame m_frameIn;
-	Frame m_frameOut;
-};
+	private:
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_FrameCutOut *)This)->update();
+			return NULL;
+		}
+
+	public:
+		double m_progress;
+
+		Frame m_frameIn;
+		Frame m_frameOut;
+	};
 
 }
-#endif
 #endif

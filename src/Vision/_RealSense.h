@@ -28,6 +28,8 @@ namespace kai
 		void close(void);
 
 		bool setSensorOption(const rs2::sensor& sensor, rs2_option option_type, float v);
+		bool setCsensorOption(rs2_option option_type, float v);
+		bool setDsensorOption(rs2_option option_type, float v);
 
 	private:
 		void sensorReset(void);

@@ -134,7 +134,7 @@ namespace kai
 		{
 			float x = tO->getX();
 			float y = tO->getY();
-			float h = tO->getYaw();
+			float h = tO->getRoll(); //use Roll for Aruco!
 
 			pX = m_fX.update(&x, dTs);
 			pY = m_fY.update(&y, dTs);

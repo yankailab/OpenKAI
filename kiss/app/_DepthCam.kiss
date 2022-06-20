@@ -17,7 +17,7 @@
 	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
 	"vSize":[1280,720],
-	"vBASE":["/cam","RSdepth","/d2g","/colOfs","/inRange","/mask"],
+	"vBASE":["cam","/RSdepth","/d2g","/colOfs","/inRange","/mask"],
 }
 
 {
@@ -86,14 +86,14 @@
 }
 
 {
-	"name":"colOfs",
+	"name":"depthProj",
 	"class":"_DepthProj",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"_VisionBase":"d2g",
+	"_DepthVisionBase":"d2g",
 }
 
 {
@@ -152,7 +152,8 @@
 		"FPS":30,
 	}
 	"_IOBase":"udp",
-	"_DepthVisionBase":"cam",
+	"_RealSense":"cam",
 	"vBBhb":[0.4, 0.4, 0.6, 0.6],
 	"bHeartbeat":0,
+	"_InRange":"inRange",
 }

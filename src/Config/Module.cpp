@@ -166,10 +166,12 @@ namespace kai
 #endif
 
 #ifdef WITH_DATA
+#ifdef USE_OPENCV
 		ADD_MODULE(_GDimgUploader);
 		ADD_MODULE(_BBoxCutOut);
 		ADD_MODULE(_CutOut);
 		ADD_MODULE(_FrameCutOut);
+#endif
 #endif
 
 #ifdef WITH_DETECTOR

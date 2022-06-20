@@ -8,14 +8,14 @@
 #ifndef OpenKAI_src_Net__Curl_H_
 #define OpenKAI_src_Net__Curl_H_
 
-#include "../Base/_ModuleBase.h"
+#include "../Data/_DataBase.h"
 #include "../Script/JSON.h"
 #include "../UI/_Console.h"
 
 namespace kai
 {
 
-	class _Curl : public _ModuleBase
+	class _Curl : public _DataBase
 	{
 	public:
 		_Curl(void);
@@ -29,6 +29,8 @@ namespace kai
 		bool addFile(const string& fName);
 
 	private:
+		bool bFileInList(const string& fName);
+		void updateFileList(void);
 		void updateCurl(void);
 		void update(void);
 		static void *getUpdate(void *This)

@@ -92,6 +92,8 @@ file(GLOB_RECURSE Startup_cpp src/Startup/*.cpp src/Startup/*.cc src/Startup/*.c
 set(OpenKAI_cpp ${OpenKAI_cpp} ${Startup_cpp})
 
 set(OpenKAI_cpp ${OpenKAI_cpp} src/UI/_Console.cpp)
+set(OpenKAI_cpp ${OpenKAI_cpp} src/Data/_DataBase.cpp)
+
 
 # Optional modules
 if(WITH_ACTUATOR)
@@ -246,8 +248,12 @@ endif()
 
 if(WITH_DATA)
 add_definitions(-DWITH_DATA)
-file(GLOB_RECURSE Data_cpp src/Data/*.cpp src/Data/*.cc src/Data/*.c)
-set(OpenKAI_cpp ${OpenKAI_cpp} ${Data_cpp})
+if(USE_OPENCV)
+set(OpenKAI_cpp ${OpenKAI_cpp} src/Data/Image/_BBoxCutOut.cpp)
+set(OpenKAI_cpp ${OpenKAI_cpp} src/Data/Image/_CutOut.cpp)
+set(OpenKAI_cpp ${OpenKAI_cpp} src/Data/Image/_GDimgUploader.cpp)
+set(OpenKAI_cpp ${OpenKAI_cpp} src/Data/Video/_FrameCutOut.cpp)
+endif()
 endif()
 
 if(WITH_DETECTOR)

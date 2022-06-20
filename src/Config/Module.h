@@ -150,10 +150,12 @@
 #endif
 
 #ifdef WITH_DATA
+#ifdef USE_OPENCV
 #include "../Data/Image/_GDimgUploader.h"
 #include "../Data/Image/_BBoxCutOut.h"
 #include "../Data/Image/_CutOut.h"
 #include "../Data/Video/_FrameCutOut.h"
+#endif
 #endif
 
 #ifdef WITH_DETECTOR

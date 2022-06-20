@@ -89,8 +89,9 @@ sudo reboot now
 
 #----------------------------------------------------
 # Eigen
-git clone --depth 1 https://gitlab.com/libeigen/eigen.git
-cd eigen
+wget https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
+tar xvf eigen-3.4.0.tar.gz
+cd eigen-3.4.0.tar.gz
 mkdir build
 cd build
 cmake ../
