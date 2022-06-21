@@ -27,6 +27,7 @@ namespace kai
 		void handleMsg(string &str);
 		void detectPos(picojson::object &o);
 		void setSensorOption(picojson::object &o);
+		void getSensorOption(picojson::object &o);
 		void setRangeFilter(picojson::object &o);
 
 	private:

@@ -130,7 +130,7 @@ namespace kai
             }
 
             setSensorOption(dSensor, RS2_OPTION_CONFIDENCE_THRESHOLD, m_fConfidenceThreshold);
-//            setSensorOption(dSensor, RS2_OPTION_DIGITAL_GAIN, m_fDigitalGain);
+            //            setSensorOption(dSensor, RS2_OPTION_DIGITAL_GAIN, m_fDigitalGain);
             setSensorOption(dSensor, RS2_OPTION_PRE_PROCESSING_SHARPENING, m_fPostProcessingSharpening);
             setSensorOption(dSensor, RS2_OPTION_FILTER_MAGNITUDE, m_fFilterManitude);
             setSensorOption(dSensor, RS2_OPTION_HOLES_FILL, m_fHolesFill);
@@ -212,7 +212,7 @@ namespace kai
         if (!sensor.supports(option_type))
         {
             LOG_E("This option is not supported by this sensor");
-            return true;
+            return false;
         }
 
         rs2::option_range range = sensor.get_option_range(option_type);
@@ -251,6 +251,37 @@ namespace kai
         m_dScale = dSensor.get_depth_scale();
 
         setSensorOption(dSensor, option_type, v);
+    }
+
+    bool _RealSense::getSensorOption(const rs2::sensor &sensor, rs2_option option_type, rs2::option_range *pR)
+    {
+        NULL_F(pR);
+
+        if (!sensor.supports(option_type))
+        {
+            LOG_E("This option is not supported by this sensor");
+            return false;
+        }
+
+        *pR = sensor.get_option_range(option_type);
+
+        return true;
+    }
+
+    bool _RealSense::getCsensorOption(rs2_option option_type, rs2::option_range *pR)
+    {
+        auto cSensor = m_rsProfile.get_device().first<rs2::color_sensor>();
+        IF_F(!getSensorOption(cSensor, option_type, pR));
+
+        return true;
+    }
+
+    bool _RealSense::getDsensorOption(rs2_option option_type, rs2::option_range *pR)
+    {
+        auto dSensor = m_rsProfile.get_device().first<rs2::depth_sensor>();
+        IF_F(!getSensorOption(dSensor, option_type, pR));
+
+        return true;
     }
 
     void _RealSense::sensorReset(void)

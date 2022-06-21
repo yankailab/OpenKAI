@@ -146,6 +146,8 @@ namespace kai
             detectPos(jo);
         else if (cmd == "setSensorOption")
             setSensorOption(jo);
+        else if (cmd == "getSensorOption")
+            getSensorOption(jo);
         else if (cmd == "setRangeFilter")
             setRangeFilter(jo);
     }
@@ -199,6 +201,48 @@ namespace kai
         {
             m_pRS->setDsensorOption((rs2_option)oID, v);
         }
+    }
+
+    void _DepthCam::getSensorOption(picojson::object &o)
+    {
+        IF_(check() < 0);
+        IF_(!o["sensorType"].is<string>());
+        IF_(!o["optionID"].is<double>());
+
+        string sType = o["sensorType"].get<string>();
+        int oID = o["optionID"].get<double>();
+
+        rs2::option_range r;
+        bool b;
+
+        if (sType == "color")
+        {
+            b = m_pRS->getCsensorOption((rs2_option)oID, &r);
+        }
+        else if (sType == "depth")
+        {
+            b = m_pRS->getDsensorOption((rs2_option)oID, &r);
+        }
+
+        object jo;
+        JO(jo, "cmd", "getSensorOption");
+        JO(jo, "sensorType", sType);
+        JO(jo, "optionID", (double)oID);
+
+        if(b)
+        {
+           JO(jo, "result", "OK");
+           JO(jo, "min", (double)r.min);
+           JO(jo, "max", (double)r.max);
+           JO(jo, "default", (double)r.def);
+           JO(jo, "step", (double)r.step);
+        }
+        else
+        {
+           JO(jo, "result", "failed");
+        }
+
+        sendMsg(jo);
     }
 
     void _DepthCam::setRangeFilter(picojson::object &o)

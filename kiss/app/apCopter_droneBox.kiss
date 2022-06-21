@@ -103,6 +103,42 @@
 }
 
 {
+	"name":"udpMavServer",
+	"class":"_UDP",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"vTwakeUp":["udpMavlink"],
+	}
+	"bLog":0,
+	"/addr":"192.168.16.100",
+	"port":20001,
+}
+
+{
+	"name":"udpMavlink",
+	"class":"_Mavlink",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"_IOBase":"udpMavServer",	
+    {
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"apMavlink",
+		}
+	}
+}
+
+{
 	"name":"serialAP",
 	"class":"_SerialPort",
 	"bON":1,
@@ -112,7 +148,7 @@
 	}
     {
 		"name":"threadR",
-		"FPS":30,
+		"vTwakeUp":["apMavlink"],
 	}
 	"port":"/dev/ttyAMA0",
 	"baud":115200,
@@ -130,6 +166,10 @@
 	"_IOBase":"serialAP",	
     {
 		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"udpMavlink",
+		}
 	}
 }
 
