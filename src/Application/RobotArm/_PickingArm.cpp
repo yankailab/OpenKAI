@@ -18,9 +18,9 @@ namespace kai
 		m_pU = NULL;
 
 		m_baseAngle = 0.0;
-		m_vP.init(0.5, 0.5, 0.0);
-		m_vPtarget.init(0.5, 0.5, 0.0);
-		m_vZrange.init(0.0, 0.06, 0.15, 30.0);
+		m_vP.set(0.5, 0.5, 0.0);
+		m_vPtarget.set(0.5, 0.5, 0.0);
+		m_vZrange.set(0.0, 0.06, 0.15, 30.0);
 		m_zSpeed = 0.2;
 		m_zrK = 1.0;
 
@@ -28,12 +28,12 @@ namespace kai
 		m_pYpid = NULL;
 		m_pZpid = NULL;
 
-		m_vS.init(0.5);
-		m_vR.init(0.5);
+		m_vS.set(0.5);
+		m_vR.set(0.5);
 
-		m_vPrecover.init(0.0, 0.0, 0.0);
-		m_vPdeliver.init(-200, 300.0, 0.0);
-		m_vPdescend.init(-200, 300.0, -100.0);
+		m_vPrecover.init();
+		m_vPdeliver.set(-200, 300.0, 0.0);
+		m_vPdescend.set(-200, 300.0, -100.0);
 
 		m_oTstamp = 0;
 		m_oTimeout = SEC_2_USEC;

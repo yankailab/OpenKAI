@@ -32,9 +32,9 @@
 }
 
 {
-	"name":"stepper",
+	"name":"stepperX",
 	"class":"_HYMCU_RS485",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":5,
@@ -44,7 +44,7 @@
 	"iSlave":1,
 	"dpr":1,
 	"bFeedback":1,
-	"dInit":1,
+	"dInit":-20,
 
 	{
 		"name":"addr",
@@ -65,10 +65,10 @@
 		{
 			"name":"X",
 			"pOrigin":0.0,
-			"pTarget":0.0,
+			"pTarget":-60.0,
 			"pErr":0.01,
 			"pRange":[0,15],
-			"sTarget":20.0,
+			"sTarget":100.0,
 			"sRange":[0,300],
 			"aTarget":10.0,
 			"aRange":[10,300],
@@ -77,66 +77,46 @@
 }
 
 {
-	"name":"stepper",
+	"name":"stepperY",
 	"class":"_HYMCU_RS485",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":5,
 	}
 	"bLog":1,
 	"_Modbus":"modbus",
-	"iSlave":1,
+	"iSlave":2,
 	"dpr":1,
 	"bFeedback":1,
-	"dInit":-20,
+	"dInit":80,
+
+	{
+		"name":"addr",
+		"setDPR":4,
+		"setDist":9,
+		"setDir":11,
+		"setSpd":8,
+		"setAcc":2,
+		"bComplete":12,
+		"readStat":22,
+		"run":7,
+		"stop":3,
+		"resPos":10,
+	}
 
 	{
 		"name":"axis",
 		{
-			"name":"X",
+			"name":"Y",
 			"pOrigin":0.0,
-			"pTarget":0.0,
+			"pTarget":80.0,
 			"pErr":0.01,
-			"pRawRange":[0,15],
-			"sTarget":1.0,
-			"sRawRange":[0,300],
-			"aTarget":0.0,
-			"aRawRange":[10,300],
-		}
-	}
-}
-
-{
-	"name":"gripper",
-	"class":"_StepperGripper",
-	"bON":0,
-    {
-		"name":"thread",
-		"FPS":5,
-	}
-	"bLog":1,
-	"_Modbus":"modbus",
-	"iSlave":1,
-	"dpr":1,
-	"bFeedback":1,
-	"dInit":-20,
-	"pOpen":0,
-	"pClose":1,
-	"bOpen":1,
-
-	{
-		"name":"axis",
-		{
-			"name":"X",
-			"pOrigin":0.0,
-			"pTarget":0.0,
-			"pErr":0.01,
-			"pRawRange":[0,15],
-			"sTarget":1.0,
-			"sRawRange":[0,300],
-			"aTarget":0.0,
-			"aRawRange":[10,300],
+			"pRange":[0,15],
+			"sTarget":300.0,
+			"sRange":[0,300],
+			"aTarget":10.0,
+			"aRange":[10,300],
 		}
 	}
 }

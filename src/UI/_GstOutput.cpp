@@ -72,6 +72,7 @@ namespace kai
 		IF_(!m_gst.isOpened());
 
 		// draw contents
+		*m_F.m() = Scalar(0);
 		for (BASE *pB : m_vpB)
 		{
 			pB->draw((void*)&m_F);

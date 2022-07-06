@@ -14,96 +14,96 @@
 namespace kai
 {
 
-struct SEQ_ACTUATOR
-{
-	_ActuatorBase* m_pA;
-	vFloat4 m_vPos;
-	vFloat4 m_vSpeed;
-
-	void init(void)
+	struct SEQ_ACTUATOR
 	{
-		m_pA = NULL;
-		m_vPos.init(-1.0);
-		m_vSpeed.init(1.0);
-	}
+		_ActuatorBase *m_pA;
+		vFloat4 m_vPos;
+		vFloat4 m_vSpeed;
 
-	bool move(void)
-	{
-		NULL_F(m_pA);
-//		m_pA->pos(m_vPos);
-//		m_pA->speed(m_vSpeed);
-
-		return m_pA->bComplete();
-	}
-
-	void setTarget(vFloat4& p, vFloat4& s)
-	{
-		m_vPos = p;
-		m_vSpeed = s;
-	}
-};
-
-struct SEQ_ACTION
-{
-	string	m_name;
-	vector<SEQ_ACTUATOR> m_vActuator;
-	int		m_dT;	// <0:pause, =0:no delay, >0:delay time
-
-	void init(void)
-	{
-		m_name = "";
-		m_dT = 0;
-	}
-
-	SEQ_ACTUATOR* getActuator(const string& name)
-	{
-		for(unsigned int i=0; i<m_vActuator.size(); i++)
+		void init(void)
 		{
-			IF_CONT(*m_vActuator[i].m_pA->getName() != name);
-			return &m_vActuator[i];
+			m_pA = NULL;
+			m_vPos.set(-1.0);
+			m_vSpeed.set(1.0);
 		}
 
-		return NULL;
-	}
-};
+		bool move(void)
+		{
+			NULL_F(m_pA);
+			//		m_pA->pos(m_vPos);
+			//		m_pA->speed(m_vSpeed);
 
-class _Sequencer: public _ModuleBase
-{
-public:
-	_Sequencer(void);
-	virtual ~_Sequencer();
+			return m_pA->bComplete();
+		}
 
-	bool init(void* pKiss);
-	bool start(void);
-	int check(void);
+		void setTarget(vFloat4 &p, vFloat4 &s)
+		{
+			m_vPos = p;
+			m_vSpeed = s;
+		}
+	};
 
-	void on(void);
-	void off(void);
-	string getCurrentActionName(void);
-	SEQ_ACTION* getCurrentAction(void);
-	SEQ_ACTION* getAction(int iAction);
-	SEQ_ACTION* getAction(const string& name);
-	int getActionIdx(const string& name);
-	void gotoAction(const string& name);
-	void updateAction(void);
-
-private:
-	void update(void);
-	static void* getUpdate(void* This)
+	struct SEQ_ACTION
 	{
-		((_Sequencer *) This)->update();
-		return NULL;
-	}
+		string m_name;
+		vector<SEQ_ACTUATOR> m_vActuator;
+		int m_dT; // <0:pause, =0:no delay, >0:delay time
 
-public:
-	bool m_bON;
-	vector<SEQ_ACTION> m_vAction;
-	int m_iAction;
-	uint64_t m_tResume;
+		void init(void)
+		{
+			m_name = "";
+			m_dT = 0;
+		}
 
-	bool m_bComplete;
-	int m_iGoAction;
-};
+		SEQ_ACTUATOR *getActuator(const string &name)
+		{
+			for (unsigned int i = 0; i < m_vActuator.size(); i++)
+			{
+				IF_CONT(*m_vActuator[i].m_pA->getName() != name);
+				return &m_vActuator[i];
+			}
+
+			return NULL;
+		}
+	};
+
+	class _Sequencer : public _ModuleBase
+	{
+	public:
+		_Sequencer(void);
+		virtual ~_Sequencer();
+
+		bool init(void *pKiss);
+		bool start(void);
+		int check(void);
+
+		void on(void);
+		void off(void);
+		string getCurrentActionName(void);
+		SEQ_ACTION *getCurrentAction(void);
+		SEQ_ACTION *getAction(int iAction);
+		SEQ_ACTION *getAction(const string &name);
+		int getActionIdx(const string &name);
+		void gotoAction(const string &name);
+		void updateAction(void);
+
+	private:
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_Sequencer *)This)->update();
+			return NULL;
+		}
+
+	public:
+		bool m_bON;
+		vector<SEQ_ACTION> m_vAction;
+		int m_iAction;
+		uint64_t m_tResume;
+
+		bool m_bComplete;
+		int m_iGoAction;
+	};
 
 }
 #endif

@@ -219,7 +219,6 @@ namespace kai
 
 	void _ActuatorBase::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
@@ -262,7 +261,6 @@ namespace kai
 						   ", cE=" + f2str(pA->m_c.m_vErr),
 					   1);
 		}
-#endif
 	}
 
 }

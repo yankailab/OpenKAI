@@ -33,7 +33,6 @@ namespace kai
 		n = "";
 		pK->v("_DistSensorBase", &n);
 		m_pDS = (_DistSensorBase *)(pK->getInst(n));
-		NULL_Fl(m_pDS, n + ": not found");
 
 		return true;
 	}
@@ -46,8 +45,6 @@ namespace kai
 
 	int _AP_land::check(void)
 	{
-		NULL__(m_pDS, -1);
-
 		return this->_AP_follow::check();
 	}
 
@@ -58,10 +55,7 @@ namespace kai
 			m_pT->autoFPSfrom();
 			this->_StateBase::update();
 
-			if (!updateTarget())
-			{
-				m_dTarget = -1.0;
-			}
+			updateTarget();
 
 			m_pT->autoFPSto();
 		}
@@ -79,13 +73,14 @@ namespace kai
 		m_bTarget = findTarget();
 
 		//sensor blocked or not detecting ground
+		float dTgt = m_dTarget;
 		if(m_dTarget < 0.01)
-			m_dTarget = m_vKpidIn.y;
+			dTgt = m_vKpidIn.y;
 
 		m_vKpid.set(1.0);
 		if (m_bTarget)
 		{
-			float kD = (m_vKpidIn.constrain(m_dTarget) - m_vKpidIn.x) / m_vKpidIn.len();
+			float kD = (m_vKpidIn.constrain(dTgt) - m_vKpidIn.x) / m_vKpidIn.len();
 			kD = m_vKpidOut.constrain(kD);
 			m_vKpid.x = kD;
 			m_vKpid.y = kD;
@@ -96,7 +91,10 @@ namespace kai
 			m_bRtargetComplete = true; // false will block to touchdown in noisy image situation?
 		}
 
-		if (alt < m_altComplete && m_dTarget < m_dTargetComplete && m_bRtargetComplete)
+		if (alt < m_altComplete &&
+			m_bRtargetComplete &&
+			m_dTarget < m_dTargetComplete
+			)
 		{
 			// going to touch down
 			m_pSC->transit("TOUCHDOWN");
@@ -164,7 +162,10 @@ namespace kai
 		m_vP.w = *pH;
 
 		//distance
-		m_dTarget = m_pDS->d(0);
+		if(m_pDS)
+			m_dTarget = m_pDS->d(0);
+		else
+			m_dTarget = 0;
 
 		return true;
 	}
