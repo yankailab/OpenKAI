@@ -61,6 +61,19 @@ namespace kai
 		}
 	}
 
+	bool _AP_land::bComplete(void)
+	{
+		IF_F(check() < 0);
+
+		float alt = m_pAP->getGlobalPos().w; //relative altitude
+
+		IF_F(alt > m_altComplete);
+		IF_F(!m_bRtargetComplete);
+		IF_F(m_dTarget > m_dTargetComplete);
+
+		return true;
+	}
+
 	bool _AP_land::updateTarget(void)
 	{
 		IF_F(check() < 0);
@@ -69,14 +82,24 @@ namespace kai
 		if (m_apMount.m_bEnable)
 			m_pAP->setMount(m_apMount);
 
+		// update target
 		float alt = m_pAP->getGlobalPos().w; //relative altitude
 		m_bTarget = findTarget();
 
-		//sensor blocked or not detecting ground
+		// verify if complete
+		if(bComplete())
+		{
+			m_vP = m_vTargetP;
+			releaseCtrl();
+			return true;
+		}
+
+		// sensor blocked or not detecting ground
 		float dTgt = m_dTarget;
 		if(m_dTarget < 0.01)
 			dTgt = m_vKpidIn.y;
 
+		// adjust PID according to altitude
 		m_vKpid.set(1.0);
 		if (m_bTarget)
 		{
@@ -88,21 +111,9 @@ namespace kai
 		else
 		{
 			m_vP = m_vTargetP;
-			m_bRtargetComplete = true; // false will block to touchdown in noisy image situation?
 		}
 
-		if (alt < m_altComplete &&
-			m_bRtargetComplete &&
-			m_dTarget < m_dTargetComplete
-			)
-		{
-			// going to touch down
-			m_pSC->transit("TOUCHDOWN");
-			m_vP = m_vTargetP;
-			releaseCtrl();
-			return true;
-		}
-
+		// handling the navigation
 		setPosLocal();
 		return true;
 	}

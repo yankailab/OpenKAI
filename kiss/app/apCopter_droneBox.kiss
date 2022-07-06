@@ -373,13 +373,13 @@
 	"vTargetP":[0.5, 0.5, 0.3, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
 	"nWmed":0,
 	"nWpred":0,
-	"dThold":0.5,
+	"dThold":0.25,
 	"iClass":-1,
 	"zrK":10.0,
-	"altComplete":1.5,
+	"altComplete":1.25,
 	"rTargetComplete":0.1,
 	"dTargetComplete":0.5,
-	"vKpidIn":[0.5, 15.0],
+	"vKpidIn":[0.5, 20.0],
 	"vKpidOut":[0.3, 1.0],
 	
 	{

@@ -2,6 +2,7 @@
 #define OpenKAI_src_Application_Autopilot_ArduPilot__AP_gcs_H_
 
 #include "_AP_base.h"
+#include "_AP_land.h"
 #include "../../GCS/_GCSbase.h"
 
 namespace kai
@@ -31,6 +32,7 @@ namespace kai
 
 	public:
 		_AP_base *m_pAP;
+		_AP_land *m_pAPland;
 
 		bool m_bAutoArm;
 		float m_altAirborne;

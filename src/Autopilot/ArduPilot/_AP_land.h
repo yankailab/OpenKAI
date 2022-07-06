@@ -21,6 +21,8 @@ namespace kai
 		void draw(void *pFrame);
 		void console(void *pConsole);
 
+		bool bComplete(void);
+
 	protected:
 		virtual bool updateTarget(void);
 		virtual bool findTarget(void);

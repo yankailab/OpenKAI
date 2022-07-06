@@ -6,6 +6,7 @@ namespace kai
     _AP_gcs::_AP_gcs()
     {
         m_pAP = NULL;
+        m_pAPland = NULL;
         m_bAutoArm = false;
         m_altAirborne = 20.0;
         m_dLanded = 5;
@@ -31,6 +32,11 @@ namespace kai
         m_pAP = (_AP_base *)(pK->getInst(n));
         IF_Fl(!m_pAP, n + ": not found");
 
+        n = "";
+        pK->v("_AP_land", &n);
+        m_pAPland = (_AP_land *)(pK->getInst(n));
+        IF_Fl(!m_pAPland, n + ": not found");
+
         return true;
     }
 
@@ -44,6 +50,7 @@ namespace kai
     {
         NULL__(m_pAP, -1);
         NULL__(m_pAP->m_pMav, -1);
+        NULL__(m_pAPland, -1);
         NULL__(m_pSC, -1);
 
         return this->_GCSbase::check();
@@ -75,7 +82,7 @@ namespace kai
         if (apMode == AP_COPTER_STABILIZE)
         {
             m_pSC->transit(m_state.STANDBY);
-            return;
+            m_state.update(m_pSC);
         }
 
         // Standby
@@ -84,7 +91,7 @@ namespace kai
             IF_(apMode != AP_COPTER_GUIDED);
 
             m_pSC->transit(m_state.TAKEOFF_REQUEST);
-            return;
+            m_state.update(m_pSC);
         }
 
         // Takeoff procedure
@@ -104,13 +111,11 @@ namespace kai
 
             m_pAP->m_pMav->clNavTakeoff(m_altAirborne + 1.0);
 
-            if (alt > m_altAirborne)
-            {
-                m_pT->sleepT(SEC_2_USEC * 5); //wait to send droneBox to close
-                m_pSC->transit(m_state.AIRBORNE);
-            }
+            IF_(alt < m_altAirborne);
 
-            return;
+            m_pT->sleepT(SEC_2_USEC * 5); //wait to send droneBox to close
+            m_pSC->transit(m_state.AIRBORNE);
+            m_state.update(m_pSC);
         }
 
         if (m_state.bAIRBORNE())
@@ -123,7 +128,7 @@ namespace kai
             IF_(alt > m_altAirborne);
 
             m_pSC->transit(m_state.LANDING_REQUEST);
-            return;
+            m_state.update(m_pSC);
         }
 
         // landing procedure
@@ -142,7 +147,11 @@ namespace kai
             if (apMode == AP_COPTER_AUTO || apMode == AP_COPTER_RTL)
                 m_pAP->setApMode(AP_COPTER_GUIDED);
 
-            return;
+            IF_(!m_pAPland->bComplete());
+            IF_(apMode != AP_COPTER_GUIDED);    // for test and debug
+
+            m_pSC->transit(m_state.TOUCHDOWN);
+            m_state.update(m_pSC);
         }
 
         if (m_state.bTOUCHDOWN())
@@ -155,14 +164,14 @@ namespace kai
             IF_(bApArmed);
 
             m_pSC->transit(m_state.LANDED);
-            return;
+            m_state.update(m_pSC);
         }
 
         if (m_state.bLANDED())
         {
             m_pT->sleepT(SEC_2_USEC * m_dLanded);
             m_pSC->transit(m_state.STANDBY);
-            return;
+            m_state.update(m_pSC);
         }
     }
 
