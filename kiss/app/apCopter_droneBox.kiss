@@ -1,12 +1,9 @@
-
-
 {
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog":1,
 	"bStdErr":1,
-	"/rc":"sudo mkdir /home/pi/ssd\nsudo mount /dev/nvme0n1 /home/pi/ssd/\nsudo chown pi /home/pi/ssd\n",
 }
 
 {
@@ -21,7 +18,7 @@
 }
 
 {
-	"name":"RGBview",
+	"name":"CVwindow",
 	"class":"_WindowCV",
 	"bON":0,
 	"bFullScreen":0,
@@ -103,42 +100,6 @@
 }
 
 {
-	"name":"udpMavServer",
-	"class":"_UDP",
-	"bON":1,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-    {
-		"name":"threadR",
-		"vTwakeUp":["udpMavlink"],
-	}
-	"bLog":0,
-	"/addr":"192.168.16.100",
-	"port":20001,
-}
-
-{
-	"name":"udpMavlink",
-	"class":"_Mavlink",
-	"bON":1,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"bLog":0,
-	"_IOBase":"udpMavServer",	
-    {
-		"name":"routing",
-		{
-			"bON":1,
-			"_Mavlink":"apMavlink",
-		}
-	}
-}
-
-{
 	"name":"serialAP",
 	"class":"_SerialPort",
 	"bON":1,
@@ -163,14 +124,7 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"_IOBase":"serialAP",	
-    {
-		"name":"routing",
-		{
-			"bON":1,
-			"_Mavlink":"udpMavlink",
-		}
-	}
+	"_IOBase":"serialAP",
 }
 
 {
@@ -245,12 +199,12 @@
 		{
 			"name":"pitch",
 			"iChan":10,
-			"pwm":1560,
+			"pwm":1500,
 		}
 		{
 			"name":"roll",
 			"iChan":9,
-			"pwm":1450,
+			"pwm":1500,
 		}
 	}
 }
@@ -309,6 +263,8 @@
 	}
 	"bLog":1,
 	"cmd":"curl 2>&1 -T [fName] ftp://193.112.75.123/pub/ -u anonymous: --connect-timeout 60 --no-progress-meter",
+	"dirIn":"/home/pi/ssd/video/",
+	"extIn":[".mka",".json"],
 }
 
 {
@@ -365,7 +321,7 @@
 	"name":"PIDroll",
 	"class":"PID",
 	"bON":1,
-	"P":3.0,
+	"P":-3.0,
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
@@ -377,7 +333,7 @@
 	"name":"PIDpitch",
 	"class":"PID",
 	"bON":1,
-	"P":-3.0,
+	"P":3.0,
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
@@ -414,7 +370,7 @@
 	"PIDroll":"PIDroll",
 	"PIDpitch":"PIDpitch",
 	"PIDyaw":"PIDyaw",
-	"vTargetP":[0.48, 0.56, 0.3, 180.0], /*xTarget, yTarget, zSpeed, yawTarget */
+	"vTargetP":[0.5, 0.5, 0.3, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
 	"nWmed":0,
 	"nWpred":0,
 	"dThold":0.5,
@@ -422,8 +378,8 @@
 	"zrK":10.0,
 	"altComplete":1.5,
 	"rTargetComplete":0.1,
-	"dTargetComplete":0.4,
-	"vKpidIn":[0.4, 15.0],
+	"dTargetComplete":0.5,
+	"vKpidIn":[0.5, 15.0],
 	"vKpidOut":[0.3, 1.0],
 	
 	{

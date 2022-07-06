@@ -102,7 +102,7 @@ namespace kai
 		m_fName = m_dir + strT;
 
 		// open video stream
-		string gst = replace(m_gstOutput, "[fName]", m_fName + ".mka");
+		string gst = replace(m_gstOutput, "[fName]", m_fName + ".mka_t");
 		if (!m_gst.open(gst,
 						CAP_GSTREAMER,
 						0,
@@ -115,7 +115,7 @@ namespace kai
 		}
 
 		// open meta file
-		IF_F(!m_pF->open(m_fName + ".json"));
+		IF_F(!m_pF->open(m_fName + ".json_t"));
 		object jo;
 		JO(jo, "name", "calib");
 		JO(jo, "Fx", m_mC.at<double>(0, 0));
@@ -146,6 +146,12 @@ namespace kai
 		m_tRecStart = 0;
 		m_gst.release();
 		m_pF->close();
+
+		string cmd;
+		cmd = "mv " + m_fName + ".mka_t " + m_fName + ".mka";
+		system(cmd.c_str());
+		cmd = "mv " + m_fName + ".json_t " + m_fName + ".json";
+		system(cmd.c_str());
 
 		if (m_pCurl)
 		{
