@@ -363,7 +363,7 @@
 	"bON":1,
 	"bLog":1,
 	"_StateControl":"state",
-	"vActiveState":["LANDING"],
+	"vActiveState":["LANDING","TOUCHDOWN"],
 	"_AP_base":"apBase",
 	"_Universe":"univTag",
 	"_DistSensorBase":"TOFsense",
