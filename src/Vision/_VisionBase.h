@@ -43,6 +43,7 @@ namespace kai
 		vision_remap,
 		vision_RSdepth,
 		vision_DepthProj,
+		vision_Vzense,
 	};
 
 	class _VisionBase : public _ModuleBase

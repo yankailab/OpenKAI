@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #----------------------------------------------------
+# TODO: update
 # (Optional) Update kernel if needed
 uname -r
 wget https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.12/amd64/linux-headers-5.12.0-051200_5.12.0-051200.202104252130_all.deb
@@ -18,13 +19,8 @@ systemctl start sshd
 #----------------------------------------------------
 # System setup
 sudo apt-get update
-#sudo apt-get upgrade
+sudo apt-get upgrade
 #sudo apt-get dist-upgrade
-
-# GCC
-sudo apt-get -y install g++-10 gcc-10
-sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10 --slave /usr/bin/g++ g++ /usr/bin/g++-10
-sudo update-alternatives --config gcc
 
 # Basic
 sudo apt-get -y install build-essential clang libc++-dev libc++abi-dev cmake cmake-curses-gui ninja-build git autoconf automake libtool pkg-config libssl-dev libboost-all-dev libgflags-dev libgoogle-glog-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev libssl-dev libprotobuf-dev protobuf-compiler libcurl4 curl libusb-1.0-0-dev libusb-dev libudev-dev libc++-dev libc++abi-dev libfmt-dev
@@ -57,6 +53,13 @@ sudo apt autoremove
 sudo apt clean
 
 #----------------------------------------------------
+# If needed specific GCC version
+# sudo apt-get -y install g++-10 gcc-10
+# sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10 --slave /usr/bin/g++ g++ /usr/bin/g++-10
+# sudo update-alternatives --config gcc
+
+#----------------------------------------------------
+# TODO: update
 # (Optional) CUDA
 # Update the video driver first with Software and Update
 sudo apt -y install gcc-8 g++-8
@@ -79,9 +82,9 @@ sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/us
 
 #----------------------------------------------------
 # CMake
-wget https://github.com/Kitware/CMake/releases/download/v3.23.1/cmake-3.23.1.tar.gz
-tar xvf cmake-3.23.1.tar.gz
-cd cmake-3.23.1
+wget https://github.com/Kitware/CMake/releases/download/v3.24.2/cmake-3.24.2.tar.gz
+tar xvf cmake-3.24.2.tar.gz
+cd cmake-3.24.2
 ./bootstrap
 make -j$(nproc)
 sudo make install
@@ -91,7 +94,7 @@ sudo reboot now
 # Eigen
 wget https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
 tar xvf eigen-3.4.0.tar.gz
-cd eigen-3.4.0.tar.gz
+cd eigen-3.4.0
 mkdir build
 cd build
 cmake ../
@@ -101,7 +104,7 @@ sudo make install
 # (Optional) RealSense
 git clone --depth 1 https://github.com/IntelRealSense/librealsense.git
 cd librealsense
-./scripts/setup_udev_rules.sh
+sudo ./scripts/setup_udev_rules.sh
 mkdir build
 cd build
 #cmake -DCMAKE_BUILD_TYPE=Release ../
@@ -113,7 +116,7 @@ sudo make install
 # (Optional) gphoto2
 sudo apt-get install -y build-essential libltdl-dev libusb-1.0-0-dev libexif-dev udev libpopt-dev libudev-dev pkg-config git automake autoconf autopoint gettext libtool wget
 
-git clone --branch libgphoto2-2_5_28-release --depth 1 https://github.com/gphoto/libgphoto2.git
+git clone --branch libgphoto2-2_5_30-release --depth 1 https://github.com/gphoto/libgphoto2.git
 cd libgphoto2
 autoreconf --install --symlink
 ./configure
@@ -156,22 +159,155 @@ gphoto2 --version
 gphoto2 --abilities
 # gphoto2 --capture-image-and-download --filename /tmp/hoge.jpg
 
-# (Optional) v4l2loopback
-git clone https://github.com/umlaeute/v4l2loopback.git
-cd v4l2loopback
-make -j$(nproc)
-sudo make install
-sudo depmod -a
-sudo modprobe v4l2loopback
-gphoto2 --stdout --capture-movie | ffmpeg -i - -vcodec rawvideo -pix_fmt yuv420p -threads 0 -f v4l2 /dev/video0
-
 #----------------------------------------------------
 # (Optional) OpenCV
-git clone --branch 4.5.5 --depth 1 https://github.com/opencv/opencv.git
-git clone --branch 4.5.5 --depth 1 https://github.com/opencv/opencv_contrib.git
+git clone --branch 4.6.0 --depth 1 https://github.com/opencv/opencv.git
+git clone --branch 4.6.0 --depth 1 https://github.com/opencv/opencv_contrib.git
 cd opencv
 mkdir build
 cd build
+
+# common
+cmake -DBUILD_CUDA_STUBS=OFF \
+      -DBUILD_DOCS=OFF \
+      -DBUILD_EXAMPLES=OFF \
+      -DBUILD_IPP_IW=ON \
+      -DBUILD_ITT=ON \
+      -DBUILD_JASPER=OFF \
+      -DBUILD_JAVA=OFF \
+      -DBUILD_JPEG=OFF \
+      -DBUILD_OPENEXR=OFF \
+      -DBUILD_PACKAGE=ON \
+      -DBUILD_PERF_TESTS=OFF \
+      -DBUILD_PNG=OFF \
+      -DBUILD_PROTOBUF=ON \
+      -DBUILD_SHARED_LIBS=ON \
+      -DBUILD_TBB=OFF \
+      -DBUILD_TESTS=OFF \
+      -DBUILD_TIFF=OFF \
+      -DBUILD_WEBP=OFF \
+      -DBUILD_WITH_DEBUG_INFO=OFF \
+      -DBUILD_WITH_DYNAMIC_IPP=OFF \
+      -DBUILD_ZLIB=OFF \
+      -DBUILD_opencv_alphamat=ON \
+      -DBUILD_opencv_apps=ON \
+      -DBUILD_opencv_aruco=ON \
+      -DBUILD_opencv_barcode=ON \
+      -DBUILD_opencv_bgsegm=ON \
+      -DBUILD_opencv_bioinspired=ON \
+      -DBUILD_opencv_calib3d=ON \
+      -DBUILD_opencv_ccalib=ON \
+      -DBUILD_opencv_core=ON \
+      -DBUILD_opencv_cudev=ON \
+      -DBUILD_opencv_datasets=ON \
+      -DBUILD_opencv_dnn=ON \
+      -DBUILD_opencv_dnn_objdetect=ON \
+      -DBUILD_opencv_dpm=ON \
+      -DBUILD_opencv_face=ON \
+      -DBUILD_opencv_features2d=ON \
+      -DBUILD_opencv_flann=ON \
+      -DBUILD_opencv_fuzzy=OFF \
+      -DBUILD_opencv_hdf=OFF \
+      -DBUILD_opencv_hfs=ON \
+      -DBUILD_opencv_highgui=ON \
+      -DBUILD_opencv_img_hash=ON \
+      -DBUILD_opencv_imgcodecs=ON \
+      -DBUILD_opencv_imgproc=ON \
+      -DBUILD_opencv_java_bindings_generator=OFF \
+      -DBUILD_opencv_js=OFF \
+      -DBUILD_opencv_js_bindings_generator=OFF \
+      -DBUILD_opencv_line_descriptor=ON \
+      -DBUILD_opencv_ml=ON \
+      -DBUILD_opencv_objc_bindings_generator=OFF \
+      -DBUILD_opencv_objdetect=ON \
+      -DBUILD_opencv_optflow=ON \
+      -DBUILD_opencv_phase_unwrapping=ON \
+      -DBUILD_opencv_photo=ON \
+      -DBUILD_opencv_plot=ON \
+      -DBUILD_opencv_python_bindings_generator=ON \
+      -DBUILD_opencv_python_tests=OFF \
+      -DBUILD_opencv_reg=ON \
+      -DBUILD_opencv_rgbd=ON \
+      -DBUILD_opencv_saliency=OFF \
+      -DBUILD_opencv_sfm=ON \
+      -DBUILD_opencv_shape=ON \
+      -DBUILD_opencv_stereo=ON \
+      -DBUILD_opencv_stitching=ON \
+      -DBUILD_opencv_structured_light=ON \
+      -DBUILD_opencv_superres=ON \
+      -DBUILD_opencv_surface_matching=ON \
+      -DBUILD_opencv_text=ON \
+      -DBUILD_opencv_tracking=ON \
+      -DBUILD_opencv_ts=ON \
+      -DBUILD_opencv_video=ON \
+      -DBUILD_opencv_videoio=ON \
+      -DBUILD_opencv_videostab=ON \
+      -DBUILD_opencv_world=ON \
+      -DBUILD_opencv_xfeatures2d=ON \
+      -DBUILD_opencv_ximgproc=ON \
+      -DBUILD_opencv_xobjdetect=ON \
+      -DBUILD_opencv_xphoto=ON \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_CONFIGURATION_TYPES=Release \
+      -DCMAKE_INSTALL_PREFIX=/usr/local \
+      -DENABLE_BUILD_HARDENING=OFF \
+      -DENABLE_FAST_MATH=ON \
+      -DENABLE_PRECOMPILED_HEADERS=OFF \
+      -DOPENCV_ENABLE_NONFREE=OFF \
+      -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules \
+      -DOPENCV_DNN_OPENVINO=OFF \
+      -DOPENCV_GAPI_WITH_OPENVINO=OFF \
+      -DOPJ_USE_THREAD=ON \
+      -DWITH_1394=OFF \
+      -DWITH_ARAVIS=OFF \
+      -DWITH_CAROTENE=ON \
+      -DWITH_CLP=OFF \
+      -DWITH_CUDA=OFF \
+      -DWITH_EIGEN=ON \
+      -DWITH_FFMPEG=ON \
+      -DWITH_FREETYPE=ON \
+      -DWITH_GDAL=OFF \
+      -DWITH_GDCM=OFF \
+      -DWITH_GPHOTO2=ON \
+      -DWITH_GSTREAMER=ON \
+      -DWITH_GTK=ON \
+      -DWITH_GTK_2_X=OFF \
+      -DWITH_HALIDE=OFF \
+      -DWITH_HPX=OFF \
+      -DWITH_INF_ENGINE=ON \
+      -DWITH_IPP=ON \
+      -DWITH_ITT=ON \
+      -DWITH_JASPER=ON \
+      -DWITH_JPEG=ON \
+      -DWITH_LAPACK=ON \
+      -DWITH_LIBREALSENSE=OFF \
+      -DWITH_MATLAB=OFF \
+      -DWITH_MFX=OFF \
+      -DWITH_OPENCL=ON \
+      -DWITH_OPENCLAMDBLAS=ON \
+      -DWITH_OPENCLAMDFFT=ON \
+      -DWITH_OPENCL_SVM=OFF \
+      -DWITH_OPENEXR=ON \
+      -DWITH_OPENGL=ON \
+      -DWITH_OPENMP=OFF \
+      -DWITH_OPENNI=OFF \
+      -DWITH_OPENNI2=OFF \
+      -DWITH_OPENVINO=OFF \
+      -DWITH_OPENVX=OFF \
+      -DWITH_PNG=ON \
+      -DWITH_PROTOBUF=ON \
+      -DWITH_PTHREADS_PF=ON \
+      -DWITH_PVAPI=OFF \
+      -DWITH_QT=OFF \
+      -DWITH_TBB=ON \
+      -DWITH_TIFF=ON \
+      -DWITH_V4L=ON \
+      -DWITH_VA=OFF \
+      -DWITH_VA_INTEL=OFF \
+      -DWITH_VTK=ON \
+      -DWITH_WEBP=ON \
+      -DWITH_XIMEA=OFF \
+      -DWITH_XINE=OFF ../
 
 # OpenCV with CUDA
 cmake -DBUILD_CUDA_STUBS=OFF -DBUILD_DOCS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_JASPER=OFF -DBUILD_JAVA=OFF -DBUILD_JPEG=OFF -DBUILD_OPENEXR=OFF -DBUILD_PACKAGE=ON -DBUILD_PERF_TESTS=OFF -DBUILD_PNG=OFF -DBUILD_PROTOBUF=ON -DBUILD_SHARED_LIBS=ON -DBUILD_TBB=OFF -DBUILD_TESTS=OFF -DBUILD_TIFF=OFF -DBUILD_WITH_DEBUG_INFO=OFF -DBUILD_WITH_DYNAMIC_IPP=OFF -DBUILD_ZLIB=OFF -DBUILD_opencv_apps=ON -DBUILD_opencv_aruco=ON -DBUILD_opencv_bgsegm=ON -DBUILD_opencv_bioinspired=ON -DBUILD_opencv_calib3d=ON -DBUILD_opencv_ccalib=ON -DBUILD_opencv_core=ON -DBUILD_opencv_cudaarithm=ON -DBUILD_opencv_cudabgsegm=ON -DBUILD_opencv_cudacodec=OFF -DBUILD_opencv_cudafeatures2d=ON -DBUILD_opencv_cudafilters=ON -DBUILD_opencv_cudaimgproc=ON -DBUILD_opencv_cudalegacy=OFF -DBUILD_opencv_cudaobjdetect=ON -DBUILD_opencv_cudaoptflow=ON -DBUILD_opencv_cudastereo=ON -DBUILD_opencv_cudawarping=ON -DBUILD_opencv_cudev=ON -DBUILD_opencv_datasets=ON -DBUILD_opencv_dnn=ON -DBUILD_opencv_dnn_objdetect=ON -DBUILD_opencv_dpm=ON -DBUILD_opencv_face=ON -DBUILD_opencv_features2d=ON -DBUILD_opencv_flann=ON -DBUILD_opencv_freetype=ON -DBUILD_opencv_fuzzy=OFF -DBUILD_opencv_highgui=ON -DBUILD_opencv_img_hash=ON -DBUILD_opencv_imgcodecs=ON -DBUILD_opencv_imgproc=ON -DBUILD_opencv_java_bindings_generator=OFF -DBUILD_opencv_js=OFF -DBUILD_opencv_js_bindings_generator=OFF -DBUILD_opencv_line_descriptor=ON -DBUILD_opencv_ml=ON -DBUILD_opencv_objdetect=ON -DBUILD_opencv_optflow=ON -DBUILD_opencv_phase_unwrapping=ON -DBUILD_opencv_photo=ON -DBUILD_opencv_plot=ON -DBUILD_opencv_python_bindings_generator=ON -DBUILD_opencv_python_tests=OFF -DBUILD_opencv_reg=ON -DBUILD_opencv_rgbd=ON -DBUILD_opencv_saliency=OFF -DBUILD_opencv_sfm=ON -DBUILD_opencv_shape=ON -DBUILD_opencv_stereo=ON -DBUILD_opencv_stitching=ON -DBUILD_opencv_structured_light=ON -DBUILD_opencv_superres=ON -DBUILD_opencv_surface_matching=ON -DBUILD_opencv_text=ON -DBUILD_opencv_tracking=ON -DBUILD_opencv_ts=ON -DBUILD_opencv_video=ON -DBUILD_opencv_videoio=ON -DBUILD_opencv_videostab=ON -DBUILD_opencv_world=OFF -DBUILD_opencv_xfeatures2d=OFF -DBUILD_opencv_ximgproc=ON -DBUILD_opencv_xobjdetect=ON -DBUILD_opencv_xphoto=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONFIGURATION_TYPES=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DCUDA_ARCH_BIN=7.5 -DCUDA_ARCH_PTX="" -DCUDA_FAST_MATH=ON -DENABLE_BUILD_HARDENING=OFF -DENABLE_FAST_MATH=ON -DENABLE_PRECOMPILED_HEADERS=OFF -DOPENCV_ENABLE_NONFREE=OFF -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules -DWITH_1394=OFF -DWITH_ARAVIS=OFF -DWITH_CAROTENE=ON -DWITH_CLP=OFF -DWITH_CUBLAS=ON -DWITH_CUDA=ON -DWITH_CUFFT=ON -DWITH_EIGEN=ON -DWITH_FFMPEG=ON -DWITH_GDAL=OFF -DWITH_GDCM=OFF -DWITH_GIGEAPI=OFF -DWITH_GPHOTO2=ON -DWITH_GSTREAMER=ON -DWITH_GSTREAMER_0_10=OFF -DWITH_GTK=ON -DWITH_GTK_2_X=OFF -DWITH_HALIDE=OFF -DWITH_HPX=OFF -DWITH_INF_ENGINE=ON -DWITH_IPP=ON -DWITH_ITT=ON -DWITH_JASPER=ON -DWITH_JPEG=ON -DWITH_LAPACK=ON -DWITH_LIBREALSENSE=OFF -DWITH_MATLAB=OFF -DWITH_MFX=OFF -DWITH_NVCUVID=ON -DWITH_OPENCL=ON -DWITH_OPENCLAMDBLAS=ON -DWITH_OPENCLAMDFFT=ON -DWITH_OPENCL_SVM=OFF -DWITH_OPENEXR=ON -DWITH_OPENGL=ON -DWITH_OPENMP=OFF -DWITH_OPENNI=OFF -DWITH_OPENNI2=OFF -DWITH_OPENVX=OFF -DWITH_PNG=ON -DWITH_PROTOBUF=ON -DWITH_PTHREADS_PF=ON -DWITH_PVAPI=OFF -DWITH_QT=OFF -DWITH_TBB=ON -DWITH_TIFF=ON -DWITH_V4L=ON -DWITH_VA=OFF -DWITH_VA_INTEL=OFF -DWITH_VTK=ON -DWITH_WEBP=ON -DWITH_XIMEA=OFF -DWITH_XINE=OFF -DBUILD_opencv_hdf=OFF ../
@@ -213,6 +349,7 @@ make -j$(nproc)
 sudo make install
 
 #----------------------------------------------------
+# TODO: update
 # (Optional) Open3D
 # GCC
 sudo apt-get -y install g++-9 gcc-9
@@ -296,6 +433,10 @@ autoreconf -fiv
 make -j$(nproc)
 
 #----------------------------------------------------
+# (Optional) Vzense Nebular
+git clone --depth 1 https://github.com/Vzense/NebulaSDK.git
+
+#----------------------------------------------------
 # (Optional) Livox
 git clone --depth 1 https://github.com/yankailab/Livox-SDK.git
 cd Livox-SDK/build
@@ -355,6 +496,7 @@ sudo chmod a+x $HOME/ok.sh
 sleep 5
 ./OK [kiss]
 
+
 #----------------------------------------------------
 # Misc.
 
@@ -389,6 +531,8 @@ sudo dd if=/dev/sda of=~/sd.img bs=6M
 sudo fdisk -l
 sudo umount /dev/sdb
 sudo dd if=~/sd.img of=/dev/sdb bs=6M
+
+
 
 
 # Outdated

@@ -270,13 +270,13 @@
 #include "../Protocol/_SBus.h"
 #endif
 
-// #ifdef WITH_SCIENCE
-// #include "../Science/_Solver.h"
-// #include "../Science/_SolverBase.h"
-// #ifdef USE_MATHGL
-// #include "../Science/_FourierSeries.h"
-// #endif
-// #endif
+#ifdef WITH_SCIENCE
+#ifdef USE_MATHGL
+//#include "../Science/_Solver.h"
+#include "../Science/_SolverBase.h"
+#include "../Science/_FourierSeries.h"
+#endif
+#endif
 
 #ifdef WITH_SENSOR
 #include "../Sensor/_LeddarVu.h"
@@ -350,6 +350,9 @@
 #endif
 #ifdef USE_PYLON
 #include "../Vision/_Pylon.h"
+#endif
+#ifdef USE_VZENSE
+#include "../Vision/_Vzense.h"
 #endif
 #endif
 #endif

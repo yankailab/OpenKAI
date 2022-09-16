@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/OpenKAI",
-            "args": ["${workspaceFolder}/kiss/test/_HYMCU_RS485.kiss"],
+            "args": ["${workspaceFolder}/kiss/app/Solver.kiss"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

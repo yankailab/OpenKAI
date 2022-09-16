@@ -285,13 +285,13 @@ namespace kai
 		ADD_MODULE(_ProtocolBase);
 #endif
 
-		// #ifdef WITH_SCIENCE
-		// //		ADD_MODULE(_Solver);
-		// 		ADD_MODULE(_SolverBase);
-		// #ifdef USE_MATHGL
-		// 		ADD_MODULE(_FourierSeries);
-		// #endif
-		// #endif
+#ifdef WITH_SCIENCE
+#ifdef USE_MATHGL
+		//		ADD_MODULE(_Solver);
+		ADD_MODULE(_SolverBase);
+		ADD_MODULE(_FourierSeries);
+#endif
+#endif
 
 #ifdef WITH_SENSOR
 		ADD_MODULE(_BenewakeTF);
@@ -365,6 +365,9 @@ namespace kai
 #endif
 #ifdef USE_PYLON
 		ADD_MODULE(_Pylon);
+#endif
+#ifdef USE_VZENSE
+		ADD_MODULE(_Vzense);
 #endif
 #endif
 #endif

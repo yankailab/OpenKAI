@@ -72,7 +72,7 @@ namespace kai
         //Takeoff procedure
         if (m_state.bTAKEOFF_REQUEST())
         {
-            boxTakeoffPrepare();
+            IF_(!boxTakeoffPrepare());
 
             if (bBoxTakeoffReady())
                 m_pSC->transit(m_state.TAKEOFF_READY);
@@ -94,7 +94,7 @@ namespace kai
         //Landing procedure
         if (m_state.bLANDING_REQUEST())
         {
-            boxLandingPrepare();
+            IF_(!boxLandingPrepare());
 
             if (bBoxLandingReady())
                 m_pSC->transit(m_state.LANDING);
