@@ -1,5 +1,5 @@
 /*
- * _RSdepth.h
+ * _DepthShow.h
  *
  *  Created on: April 23, 2019
  *      Author: yankai
@@ -8,16 +8,16 @@
 #ifndef OpenKAI_src_Vision__RSdepth_H_
 #define OpenKAI_src_Vision__RSdepth_H_
 
-#include "../_RealSense.h"
+#include "../_DepthVisionBase.h"
 
 namespace kai
 {
 
-	class _RSdepth : public _VisionBase
+	class _DepthShow : public _VisionBase
 	{
 	public:
-		_RSdepth();
-		virtual ~_RSdepth();
+		_DepthShow();
+		virtual ~_DepthShow();
 
 		bool init(void *pKiss);
 		bool start(void);
@@ -29,12 +29,12 @@ namespace kai
 		void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_RSdepth *)This)->update();
+			((_DepthShow *)This)->update();
 			return NULL;
 		}
 
 	public:
-		_RealSense *m_pV;
+		_DepthVisionBase *m_pV;
 	};
 
 }

@@ -1,41 +1,41 @@
 /*
- * _RSdepth.cpp
+ * _DepthShow.cpp
  *
  *  Created on: April 23, 2019
  *      Author: yankai
  */
 
-#include "_RSdepth.h"
+#include "_DepthShow.h"
 
 namespace kai
 {
 
-	_RSdepth::_RSdepth()
+	_DepthShow::_DepthShow()
 	{
 		m_type = vision_RSdepth;
 		m_pV = NULL;
 	}
 
-	_RSdepth::~_RSdepth()
+	_DepthShow::~_DepthShow()
 	{
 		close();
 	}
 
-	bool _RSdepth::init(void *pKiss)
+	bool _DepthShow::init(void *pKiss)
 	{
 		IF_F(!_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		string n;
 		n = "";
-		pK->v("_RealSense", &n);
-		m_pV = (_RealSense *)(pK->getInst(n));
-		IF_Fl(!m_pV, "_RealSense not found: " + n);
+		pK->v("_DepthVisionBase", &n);
+		m_pV = (_DepthVisionBase *)(pK->getInst(n));
+		IF_Fl(!m_pV, "_DepthVisionBase not found: " + n);
 
 		return true;
 	}
 
-	bool _RSdepth::open(void)
+	bool _DepthShow::open(void)
 	{
 		NULL_F(m_pV);
 		m_bOpen = m_pV->isOpened();
@@ -43,18 +43,18 @@ namespace kai
 		return m_bOpen;
 	}
 
-	void _RSdepth::close(void)
+	void _DepthShow::close(void)
 	{
 		this->_VisionBase::close();
 	}
 
-	bool _RSdepth::start(void)
+	bool _DepthShow::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	void _RSdepth::update(void)
+	void _DepthShow::update(void)
 	{
 		while (m_pT->bRun())
 		{
@@ -72,7 +72,7 @@ namespace kai
 		}
 	}
 
-	void _RSdepth::filter(void)
+	void _DepthShow::filter(void)
 	{
 		IF_(m_pV->DepthShow()->bEmpty());
 

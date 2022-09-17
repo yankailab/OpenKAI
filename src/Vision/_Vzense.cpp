@@ -15,14 +15,20 @@ namespace kai
         m_type = vision_Vzense;
         m_pDeviceListInfo = NULL;
         m_deviceHandle = 0;
+        m_slope = 7495;
+
+        m_vzfDepth = {0};
+        m_vzfIR = {0};
+        m_vzfRGB = {0};
+        m_vzfTransformedDepth = {0};
+        m_vzfTransformedRGB = {0};
 
         m_pTPP = NULL;
 
-        m_vPreset = "High Density";
+
         m_bRsRGB = true;
         m_rsFPS = 30;
         m_rsDFPS = 30;
-        m_bAlign = false;
     }
 
     _Vzense::~_Vzense()
@@ -35,12 +41,12 @@ namespace kai
         IF_F(!_DepthVisionBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
+        pK->v("slope", &m_slope);
+
         pK->v("rsSN", &m_rsSN);
         pK->v("rsFPS", &m_rsFPS);
         pK->v("rsDFPS", &m_rsDFPS);
-        pK->v("vPreset", &m_vPreset);
         pK->v("bRsRGB", &m_bRsRGB);
-        pK->v("bAlign", &m_bAlign);
 
         pK->v("fConfidenceThreshold", &m_fConfidenceThreshold);
         pK->v("fDigitalGain", &m_fDigitalGain);
@@ -98,16 +104,26 @@ namespace kai
         //        VZ_SetHotPlugStatusCallback(HotPlugStateCallback, nullptr);
 
         m_pDeviceListInfo = new VzDeviceInfo[m_nDevice];
-        VzReturnStatus status = VZ_GetDeviceInfoList(m_nDevice, m_pDeviceListInfo);
+        status = VZ_GetDeviceInfoList(m_nDevice, m_pDeviceListInfo);
         m_deviceHandle = 0;
-        VzReturnStatus status = VZ_OpenDeviceByUri(m_pDeviceListInfo[0].uri, &m_deviceHandle);
+        status = VZ_OpenDeviceByUri(m_pDeviceListInfo[0].uri, &m_deviceHandle);
         if (status != VzReturnStatus::VzRetOK)
         {
             LOG_E("OpenDevice failed");
             return false;
         }
 
-        LOG_I("sn  ==  " + string(m_pDeviceListInfo[0].serialNumber));
+        VZ_SetColorResolution(m_deviceHandle, 1600, 1200);
+
+        static bool isTransformColorImgToDepthSensorEnabled = true;
+        VZ_SetTransformColorImgToDepthSensorEnabled(m_deviceHandle, isTransformColorImgToDepthSensorEnabled);
+        cout << "SetTransformColorImgToDepthSensorEnabled " << ((true == isTransformColorImgToDepthSensorEnabled) ? "enable" : "disable") << endl;
+        isTransformColorImgToDepthSensorEnabled = !isTransformColorImgToDepthSensorEnabled;
+
+        static bool isTransformDepthImgToColorSensorEnabled = true;
+        VZ_SetTransformDepthImgToColorSensorEnabled(m_deviceHandle, isTransformDepthImgToColorSensorEnabled);
+        cout << "SetTransformDepthImgToColorSensorEnabled " << ((true == isTransformDepthImgToColorSensorEnabled) ? "enable" : "disable") << endl;
+        isTransformDepthImgToColorSensorEnabled = !isTransformDepthImgToColorSensorEnabled;
 
         status = VZ_GetSensorIntrinsicParameters(m_deviceHandle, VzToFSensor, &m_cameraParameters);
         cout << "Get VZ_GetSensorIntrinsicParameters status: " << status << endl;
@@ -125,10 +141,12 @@ namespace kai
         cout << "K4: " << m_cameraParameters.k4 << endl;
         cout << "K5: " << m_cameraParameters.k5 << endl;
         cout << "K6: " << m_cameraParameters.k6 << endl;
+
         const int BufLen = 64;
         char fw[BufLen] = {0};
         VZ_GetFirmwareVersion(m_deviceHandle, fw, BufLen);
-        cout << "fw  ==  " << fw << endl;
+        LOG_I("fw  ==  " + string(fw));
+        LOG_I("sn  ==  " + string(m_pDeviceListInfo[0].serialNumber));
 
         m_bOpen = true;
         return true;
@@ -140,8 +158,6 @@ namespace kai
         cout << "CloseDevice status: " << status << endl;
 
         status = VZ_Shutdown();
-        cout << "Shutdown status: " << status << endl;
-        cv::destroyAllWindows();
 
         delete[] m_pDeviceListInfo;
         m_pDeviceListInfo = NULL;
@@ -199,253 +215,58 @@ namespace kai
     {
         IF_T(check() < 0);
 
-        VzFrame depthFrame = {0};
-        VzFrame irFrame = {0};
-        VzFrame rgbFrame = {0};
-        VzFrame transformedDepthFrame = {0};
-        VzFrame transformedRgbFrame = {0};
-
         // Read one frame before call VzGetFrame
         VzFrameReady frameReady = {0};
         VzReturnStatus status = VZ_GetFrameReady(m_deviceHandle, 2 * 1000 / 25, &frameReady);
 
-        //Get depth frame, depth frame only output in following data mode
-        if (1 == frameReady.depth)
+        cv::Mat imageMat;
+
+        if (frameReady.depth == 1)
         {
-            status = VZ_GetFrame(m_deviceHandle, VzDepthFrame, &depthFrame);
-
-            if (depthFrame.pFrameData != NULL)
+            status = VZ_GetFrame(m_deviceHandle, VzDepthFrame, &m_vzfDepth);
+            if (m_vzfDepth.pFrameData)
             {
-                if (true == g_IsSavePointCloud)
-                {
-                    g_IsSavePointCloud = (1 == frameReady.transformedDepth) ? true : false;
-                    SavePointCloud("pointCloud.txt", depthFrame);
-                }
-
-                static int index = 0;
-                static float fps = 0;
-                static int64 start = cv::getTickCount();
-
-                int64 current = cv::getTickCount();
-                int64 diff = current - start;
-                index++;
-                if (diff > cv::getTickFrequency())
-                {
-                    fps = index * cv::getTickFrequency() / diff;
-                    index = 0;
-                    start = current;
-                }
-
-                //Display the Depth Image
-                Opencv_Depth(g_Slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
-                char text[30] = "";
-                sprintf(text, "%.2f", fps);
-                putText(imageMat, text, Point(0, 15), FONT_HERSHEY_PLAIN, 1, Scalar(255, 255, 255));
-                cv::imshow(depthImageWindow, imageMat);
-            }
-            else
-            {
-                cout << "VZ_GetFrame VzDepthFrame status:" << status << " pFrameData is NULL " << endl;
-            }
-        }
-        if (1 == frameReady.transformedDepth)
-        {
-            status = VZ_GetFrame(m_deviceHandle, VzTransformDepthImgToColorSensorFrame, &transformedDepthFrame);
-
-            if (transformedDepthFrame.pFrameData != NULL)
-            {
-                if (true == g_IsSavePointCloud)
-                {
-                    g_IsSavePointCloud = false;
-                    SavePointCloud("transformedPointCloud.txt", transformedDepthFrame);
-                }
-
-                static int index = 0;
-                static float fps = 0;
-                static int64 start = cv::getTickCount();
-
-                int64 current = cv::getTickCount();
-                int64 diff = current - start;
-                index++;
-                if (diff > cv::getTickFrequency())
-                {
-                    fps = index * cv::getTickFrequency() / diff;
-                    index = 0;
-                    start = current;
-                }
-
-                //Display the Depth Image
-                Opencv_Depth(g_Slope, transformedDepthFrame.height, transformedDepthFrame.width, transformedDepthFrame.pFrameData, imageMat);
-                char text[30] = "";
-                sprintf(text, "%.2f", fps);
-                putText(imageMat, text, Point(0, 15), FONT_HERSHEY_PLAIN, 1, Scalar(255, 255, 255));
-                cv::imshow("TransformedDepth", imageMat);
-            }
-            else
-            {
-                cout << "VZ_GetFrame VzDepthFrame status:" << status << " pFrameData is NULL " << endl;
+                imageMat = cv::Mat(m_vzfDepth.height, m_vzfDepth.width, CV_16UC1, m_vzfDepth.pFrameData);
             }
         }
 
-        //Get IR frame, IR frame only output in following data mode
-        if (1 == frameReady.ir)
+        if (frameReady.transformedDepth == 1)
         {
-            status = VZ_GetFrame(m_deviceHandle, VzIRFrame, &irFrame);
-
-            if (irFrame.pFrameData != NULL)
+            status = VZ_GetFrame(m_deviceHandle, VzTransformDepthImgToColorSensorFrame, &m_vzfTransformedDepth);
+            if (m_vzfTransformedDepth.pFrameData)
             {
-                //Display the IR Image
-                char text[30] = "";
-                imageMat = cv::Mat(irFrame.height, irFrame.width, CV_8UC1, irFrame.pFrameData);
-                sprintf(text, "%d", imageMat.at<uint8_t>(g_Pos));
-
-                Scalar color = Scalar(0, 0, 0);
-                if (imageMat.at<uint8_t>(g_Pos) > 128)
-                {
-                    color = Scalar(0, 0, 0);
-                }
-                else
-                {
-                    color = Scalar(255, 255, 255);
-                }
-
-                circle(imageMat, g_Pos, 4, color, -1, 8, 0);
-                putText(imageMat, text, g_Pos, FONT_HERSHEY_DUPLEX, 2, color);
-                cv::imshow(irImageWindow, imageMat);
-            }
-            else
-            {
-                cout << "VZ_GetFrame VzIRFrame status:" << status << " pFrameData is NULL " << endl;
+                imageMat = cv::Mat(m_vzfTransformedDepth.height, m_vzfTransformedDepth.width, CV_16UC1, m_vzfTransformedDepth.pFrameData);
             }
         }
 
-        //Get RGB frame, RGB frame only output in following data mode
-        if (1 == frameReady.color)
+        if (frameReady.color == 1)
         {
-            status = VZ_GetFrame(m_deviceHandle, VzColorFrame, &rgbFrame);
-
-            if (rgbFrame.pFrameData != NULL)
+            status = VZ_GetFrame(m_deviceHandle, VzColorFrame, &m_vzfRGB);
+            if (m_vzfRGB.pFrameData)
             {
-
-                static int index = 0;
-                static float fps = 0;
-                static int64 start = cv::getTickCount();
-
-                int64 current = cv::getTickCount();
-                int64 diff = current - start;
-                index++;
-                if (diff > cv::getTickFrequency())
-                {
-                    fps = index * cv::getTickFrequency() / diff;
-                    index = 0;
-                    start = current;
-                }
-
-                //Display the RGB Image
-                imageMat = cv::Mat(rgbFrame.height, rgbFrame.width, CV_8UC3, rgbFrame.pFrameData);
-
-                char text[30] = "";
-                sprintf(text, "%.2f", fps);
-                putText(imageMat, text, Point(0, 15), FONT_HERSHEY_PLAIN, 1, Scalar(255, 255, 255));
-
-                cv::imshow(rgbImageWindow, imageMat);
-            }
-            else
-            {
-                cout << "VZ_GetFrame VzRGBFrame status:" << status << " pFrameData is NULL " << endl;
-            }
-        }
-        if (1 == frameReady.transformedColor)
-        {
-            status = VZ_GetFrame(m_deviceHandle, VzTransformColorImgToDepthSensorFrame, &transformedRgbFrame);
-
-            if (transformedRgbFrame.pFrameData != NULL)
-            {
-
-                static int index = 0;
-                static float fps = 0;
-                static int64 start = cv::getTickCount();
-
-                int64 current = cv::getTickCount();
-                int64 diff = current - start;
-                index++;
-                if (diff > cv::getTickFrequency())
-                {
-                    fps = index * cv::getTickFrequency() / diff;
-                    index = 0;
-                    start = current;
-                }
-
-                //Display the RGB Image
-                imageMat = cv::Mat(transformedRgbFrame.height, transformedRgbFrame.width, CV_8UC3, transformedRgbFrame.pFrameData);
-
-                char text[30] = "";
-                sprintf(text, "%.2f", fps);
-                putText(imageMat, text, Point(0, 15), FONT_HERSHEY_PLAIN, 1, Scalar(255, 255, 255));
-
-                cv::imshow("TransformedColor", imageMat);
-            }
-            else
-            {
-                cout << "VZ_GetFrame VzRGBFrame status:" << status << " pFrameData is NULL " << endl;
+                //imageMat = cv::Mat(m_vzfRGB.height, m_vzfRGB.width, CV_8UC3, m_vzfRGB.pFrameData);
+                //m_fBGR.copy(Mat(Size(m_vSize.x, m_vSize.y), CV_8UC3, (void *)m_rsColor.get_data(), Mat::AUTO_STEP));
+                m_fBGR.copy(Mat(m_vzfRGB.height, m_vzfRGB.width, CV_8UC3, m_vzfRGB.pFrameData));
             }
         }
 
-        unsigned char key = waitKey(1);
-        if (key == 'R' || key == 'r')
+        if (frameReady.transformedColor == 1)
         {
-            cout << "please select RGB resolution to set: 0:640*480; 1:800*600; 2:1600*1200" << endl;
-            int index = 0;
-            cin >> index;
-            if (cin.fail())
+            status = VZ_GetFrame(m_deviceHandle, VzTransformColorImgToDepthSensorFrame, &m_vzfTransformedRGB);
+            if (m_vzfTransformedRGB.pFrameData != NULL)
             {
-                std::cout << "Unexpected input" << endl;
-                cin.clear();
-                cin.ignore(1024, '\n');
-                continue;
+                imageMat = cv::Mat(m_vzfTransformedRGB.height, m_vzfTransformedRGB.width, CV_8UC3, m_vzfTransformedRGB.pFrameData);
             }
-            else
-            {
-                cin.clear();
-                cin.ignore(1024, '\n');
-            }
-
-            switch (index)
-            {
-            case 0:
-                VZ_SetColorResolution(m_deviceHandle, 640, 480);
-                break;
-            case 1:
-                VZ_SetColorResolution(m_deviceHandle, 800, 600);
-                break;
-            case 2:
-                VZ_SetColorResolution(m_deviceHandle, 1600, 1200);
-                break;
-            default:
-                cout << "input is invalid." << endl;
-                break;
-            }
-        }
-        else if (key == 'P' || key == 'p')
-        {
-            g_IsSavePointCloud = true;
-        }
-        else if (key == 'Q' || key == 'q')
-        {
-            static bool isTransformColorImgToDepthSensorEnabled = true;
-            VZ_SetTransformColorImgToDepthSensorEnabled(m_deviceHandle, isTransformColorImgToDepthSensorEnabled);
-            cout << "SetTransformColorImgToDepthSensorEnabled " << ((true == isTransformColorImgToDepthSensorEnabled) ? "enable" : "disable") << endl;
-            isTransformColorImgToDepthSensorEnabled = !isTransformColorImgToDepthSensorEnabled;
-        }
-        else if (key == 'L' || key == 'l')
-        {
-            static bool isTransformDepthImgToColorSensorEnabled = true;
-            VZ_SetTransformDepthImgToColorSensorEnabled(m_deviceHandle, isTransformDepthImgToColorSensorEnabled);
-            cout << "SetTransformDepthImgToColorSensorEnabled " << ((true == isTransformDepthImgToColorSensorEnabled) ? "enable" : "disable") << endl;
-            isTransformDepthImgToColorSensorEnabled = !isTransformDepthImgToColorSensorEnabled;
         }
 
-        //        m_fBGR.copy(Mat(Size(m_vSize.x, m_vSize.y), CV_8UC3, (void *)m_rsColor.get_data(), Mat::AUTO_STEP));
+        if (frameReady.ir == 1)
+        {
+            status = VZ_GetFrame(m_deviceHandle, VzIRFrame, &m_vzfIR);
+            if (m_vzfIR.pFrameData)
+            {
+                imageMat = cv::Mat(m_vzfIR.height, m_vzfIR.width, CV_8UC1, m_vzfIR.pFrameData);
+            }
+        }
 
         return true;
     }
@@ -462,22 +283,10 @@ namespace kai
             {
                 IF_(m_fDepth.bEmpty());
 
-                dispImg = cv::Mat(height, width, CV_16UC1, pData);
-                Point2d pointxy = g_Pos;
-                int val = dispImg.at<ushort>(pointxy);
-                char text[20];
-                snprintf(text, sizeof(text), "%d", val);
+                // dispImg = cv::Mat(height, width, CV_16UC1, pData);
 
-                dispImg.convertTo(dispImg, CV_8U, 255.0 / slope);
-                applyColorMap(dispImg, dispImg, cv::COLORMAP_RAINBOW);
-                int color;
-                if (val > 2500)
-                    color = 0;
-                else
-                    color = 4096;
-                circle(dispImg, pointxy, 4, Scalar(color, color, color), -1, 8, 0);
-                putText(dispImg, text, pointxy, FONT_HERSHEY_DUPLEX, 2, Scalar(color, color, color));
-
+                // dispImg.convertTo(dispImg, CV_8U, 255.0 / slope);
+                // applyColorMap(dispImg, dispImg, cv::COLORMAP_RAINBOW);
 
                 // Mat mDColor(Size(m_vDsize.x, m_vDsize.y), CV_8UC3, (void *)dColor.get_data(),
                 //             Mat::AUTO_STEP);

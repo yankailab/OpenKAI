@@ -1,0 +1,77 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["Vzense"],
+}
+
+{
+	"name":"RGBview",
+	"class":"_WindowCV",
+	"bON":1,
+	"bFullScreen":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["Vzense"],
+}
+
+{
+	"name":"depthView",
+	"class":"_WindowCV",
+	"bON":0,
+	"bFullScreen":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["DepthShow"],
+}
+
+{
+	"name":"Vzense",
+	"class":"_Vzense",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadPP",
+		"FPS":30,
+	}
+	"bON":1,
+	"bLog":1,
+	"bRsRGB":1,
+	"vSize":[1280,720],
+	"rsFPS":30,
+	"rsDFPS":30,
+	"vDsize":[640,480],
+	"fDec":0,
+	"fSpat":0,
+	"vRange":[0.1,15.0],
+	"/rsSN":"f0211594",
+}
+
+{
+	"name":"DepthShow",
+	"class":"_DepthShow",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_DepthVisionBase":"Vzense",
+}

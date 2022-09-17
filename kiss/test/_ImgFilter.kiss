@@ -98,14 +98,14 @@
 }
 
 {
-	"name":"RSdepth",
-	"class":"_RSdepth",
+	"name":"DepthShow",
+	"class":"_DepthShow",
 	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"_RealSense":"cam",
+	"_DepthVisionBase":"cam",
 }
 
 {

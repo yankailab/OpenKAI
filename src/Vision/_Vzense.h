@@ -30,6 +30,7 @@ namespace kai
 	private:
 		void update(void);
 		bool updateVzense(void);
+		void getDepthMat(int height, int width, uint8_t*pData, cv::Mat& dispImg);
 		static void *getUpdate(void *This)
 		{
 			((_Vzense *)This)->update();
@@ -48,10 +49,17 @@ namespace kai
 		VzDeviceHandle m_deviceHandle;
 		uint32_t m_nDevice;
         VzSensorIntrinsicParameters m_cameraParameters;
+		uint32_t m_slope;
+
+        VzFrame m_vzfDepth;
+        VzFrame m_vzfIR;
+        VzFrame m_vzfRGB;
+        VzFrame m_vzfTransformedDepth;
+        VzFrame m_vzfTransformedRGB;
+
 
 
 		string m_rsSN;
-		bool m_bAlign;
 
 		float m_fConfidenceThreshold;
 		float m_fDigitalGain;
@@ -74,7 +82,6 @@ namespace kai
 		int m_rsFPS;
 		int m_rsDFPS;
 		bool m_bRsRGB;
-		string m_vPreset;
 
 		//depth filter processing thread
 		_Thread *m_pTPP;

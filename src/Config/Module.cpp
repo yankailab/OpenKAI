@@ -361,7 +361,7 @@ namespace kai
 #endif
 #ifdef USE_REALSENSE
 		ADD_MODULE(_RealSense);
-		ADD_MODULE(_RSdepth);
+		ADD_MODULE(_DepthShow);
 #endif
 #ifdef USE_PYLON
 		ADD_MODULE(_Pylon);
