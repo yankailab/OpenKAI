@@ -13,6 +13,7 @@
 #include "../Script/Kiss.h"
 
 #include "../Arithmetic/Destimator.h"
+#include "../IPC/_SharedMem.h"
 #include "../UI/_Console.h"
 
 #ifdef WITH_ACTUATOR
@@ -351,11 +352,11 @@
 #ifdef USE_PYLON
 #include "../Vision/_Pylon.h"
 #endif
+#endif	//opencv
 #ifdef USE_VZENSE
 #include "../Vision/_Vzense.h"
 #endif
-#endif
-#endif
+#endif	//vision
 
 
 #define ADD_MODULE(x)             \

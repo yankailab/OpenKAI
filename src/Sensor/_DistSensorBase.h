@@ -10,9 +10,11 @@
 
 #include "../Base/_ModuleBase.h"
 #include "../UI/_Console.h"
-#include "../Vision/Frame.h""
 #include "../Filter/Median.h"
 #include "../Filter/Average.h"
+#ifdef USE_OPENCV
+#include "../Vision/Frame.h"
+#endif
 
 #define MAX_DIST_SENSOR_DIV 720
 

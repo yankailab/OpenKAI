@@ -1,10 +1,11 @@
 #include "Startup.h"
 
-Startup* g_pStartup;
+Startup *g_pStartup;
 
 void signalHandler(int signal)
 {
-	if (signal != SIGINT)return;
+	if (signal != SIGINT)
+		return;
 	printf("\nSIGINT: OpenKAI Shutdown\n");
 	g_pStartup->m_bRun = false;
 }
@@ -12,142 +13,143 @@ void signalHandler(int signal)
 namespace kai
 {
 
-Startup::Startup()
-{
-	m_appName = "";
-	m_bRun = true;
-	m_bStdErr = true;
-	m_bLog = false;
-	m_rc = "";
-	m_vInst.clear();
-}
-
-Startup::~Startup()
-{
-	m_vInst.clear();
-}
-
-string* Startup::getName(void)
-{
-	return &m_appName;
-}
-
-bool Startup::start(Kiss* pKiss)
-{
-	g_pStartup = this;
-	signal(SIGINT, signalHandler);
-
-	NULL_F(pKiss);
-	Kiss* pApp = pKiss->root()->child("APP");
-	IF_F(pApp->empty());
-	pApp->m_pInst = (BASE*)this;
-
-	pApp->v("appName", &m_appName);
-	pApp->v("bStdErr", &m_bStdErr);
-	pApp->v("bLog", &m_bLog);
-	pApp->v("rc", &m_rc);
-
-	if(!m_rc.empty())
+	Startup::Startup()
 	{
-		system(m_rc.c_str());
+		m_appName = "";
+		m_bRun = true;
+		m_bStdErr = true;
+		m_bLog = false;
+		m_rc = "";
+		m_vInst.clear();
 	}
 
-	if(!m_bStdErr)
+	Startup::~Startup()
 	{
-		freopen("/dev/null", "w", stderr);
+		m_vInst.clear();
 	}
+
+	string *Startup::getName(void)
+	{
+		return &m_appName;
+	}
+
+	bool Startup::start(Kiss *pKiss)
+	{
+		g_pStartup = this;
+		signal(SIGINT, signalHandler);
+
+		NULL_F(pKiss);
+		Kiss *pApp = pKiss->root()->child("APP");
+		IF_F(pApp->empty());
+		pApp->m_pInst = (BASE *)this;
+
+		pApp->v("appName", &m_appName);
+		pApp->v("bStdErr", &m_bStdErr);
+		pApp->v("bLog", &m_bLog);
+		pApp->v("rc", &m_rc);
+
+		if (!m_rc.empty())
+		{
+			system(m_rc.c_str());
+		}
+
+		if (!m_bStdErr)
+		{
+			freopen("/dev/null", "w", stderr);
+		}
 
 #ifdef USE_GLOG
-	FLAGS_logtostderr = 1;
-	google::InitGoogleLogging("OpenKAI");
+		FLAGS_logtostderr = 1;
+		google::InitGoogleLogging("OpenKAI");
 #endif
-	printEnvironment();
+		printEnvironment();
 
-	F_ERROR_F(createAllInst(pKiss));
-	unsigned int i;
+		F_ERROR_F(createAllInst(pKiss));
+		unsigned int i;
 
-	for (i = 0; i < m_vInst.size(); i++)
-	{
-		F_ERROR_F(m_vInst[i].m_pInst->init(m_vInst[i].m_pKiss));
-	}
-
-	for (i = 0; i < m_vInst.size(); i++)
-	{
-		F_ERROR_F(m_vInst[i].m_pInst->link());
-	}
-
-	for (i = 0; i < m_vInst.size(); i++)
-	{
-		m_vInst[i].m_pInst->start();
-	}
-
-	//UI thread
-	m_bRun = true;
-	while (m_bRun)
-	{
-		sleep(1);
-	}
-
-	for (i = 0; i < m_vInst.size(); i++)
-	{
-		DEL(m_vInst[i].m_pInst);
-	}
-
-	return 0;
-}
-
-bool Startup::createAllInst(Kiss* pKiss)
-{
-	NULL_F(pKiss);
-
-	OK_INST o;
-	int i = 0;
-	while (1)
-	{
-		Kiss* pK = pKiss->root()->child(i++);
-		if(pK->empty())break;
-
-		IF_CONT(pK->m_class == "Startup");
-
-		o.m_pInst = m_module.createInstance(pK);
-		if(!o.m_pInst)
+		for (i = 0; i < m_vInst.size(); i++)
 		{
-			LOG_E("Failed to create instance: " + pK->m_name);
-			return false;
+			F_ERROR_F(m_vInst[i].m_pInst->init(m_vInst[i].m_pKiss));
 		}
 
-		o.m_pKiss = pK;
-		m_vInst.push_back(o);
+		for (i = 0; i < m_vInst.size(); i++)
+		{
+			F_ERROR_F(m_vInst[i].m_pInst->link());
+		}
 
-		pK->m_pInst = o.m_pInst;
+		for (i = 0; i < m_vInst.size(); i++)
+		{
+			m_vInst[i].m_pInst->start();
+		}
+
+		//UI thread
+		m_bRun = true;
+		while (m_bRun)
+		{
+			sleep(1);
+		}
+
+		for (i = 0; i < m_vInst.size(); i++)
+		{
+			DEL(m_vInst[i].m_pInst);
+		}
+
+		return 0;
 	}
 
-	return true;
-}
+	bool Startup::createAllInst(Kiss *pKiss)
+	{
+		NULL_F(pKiss);
 
-void Startup::printEnvironment(void)
-{
+		OK_INST o;
+		int i = 0;
+		while (1)
+		{
+			Kiss *pK = pKiss->root()->child(i++);
+			if (pK->empty())
+				break;
+
+			IF_CONT(pK->m_class == "Startup");
+
+			o.m_pInst = m_module.createInstance(pK);
+			if (!o.m_pInst)
+			{
+				LOG_E("Failed to create instance: " + pK->m_name);
+				return false;
+			}
+
+			o.m_pKiss = pK;
+			m_vInst.push_back(o);
+
+			pK->m_pInst = o.m_pInst;
+		}
+
+		return true;
+	}
+
+	void Startup::printEnvironment(void)
+	{
 #ifdef USE_OPENCV
-	LOG_I("OpenCV optimized code:" + i2str(useOptimized()));
+		LOG_I("OpenCV optimized code:" + i2str(useOptimized()));
 
 #ifdef USE_CUDA
-	LOG_I("CUDA devices:" + i2str(cuda::getCudaEnabledDeviceCount()));
-	LOG_I("Using CUDA device:" + i2str(cuda::getDevice()));
+		LOG_I("CUDA devices:" + i2str(cuda::getCudaEnabledDeviceCount()));
+		LOG_I("Using CUDA device:" + i2str(cuda::getDevice()));
 #endif
-	if (ocl::haveOpenCL())
-	{
-		LOG_I("OpenCL is found");
-		ocl::setUseOpenCL(true);
-		if (ocl::useOpenCL())
+		if (ocl::haveOpenCL())
 		{
-			LOG_I("Using OpenCL");
+			LOG_I("OpenCL is found");
+			ocl::setUseOpenCL(true);
+			if (ocl::useOpenCL())
+			{
+				LOG_I("Using OpenCL");
+			}
 		}
-	}
-	else
-	{
-		LOG_I("OpenCL not found");
-	}
+		else
+		{
+			LOG_I("OpenCL not found");
+		}
 #endif
-}
+	}
 
 }

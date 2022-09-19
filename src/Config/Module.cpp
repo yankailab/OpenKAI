@@ -22,6 +22,7 @@ namespace kai
 	{
 		IF_N(!pK);
 
+		ADD_MODULE(_SharedMem);
 		ADD_MODULE(Destimator);
 		ADD_MODULE(_Console);
 
@@ -366,11 +367,11 @@ namespace kai
 #ifdef USE_PYLON
 		ADD_MODULE(_Pylon);
 #endif
+#endif	//opencv
 #ifdef USE_VZENSE
 		ADD_MODULE(_Vzense);
 #endif
-#endif
-#endif
+#endif	//vision
 
 		return NULL;
 	}

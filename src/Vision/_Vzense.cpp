@@ -12,7 +12,6 @@ namespace kai
 
     _Vzense::_Vzense()
     {
-        m_type = vision_Vzense;
         m_pDeviceListInfo = NULL;
         m_deviceHandle = 0;
         m_slope = 7495;
@@ -24,7 +23,6 @@ namespace kai
         m_vzfTransformedRGB = {0};
 
         m_pTPP = NULL;
-
 
         m_bRsRGB = true;
         m_rsFPS = 30;
@@ -38,7 +36,7 @@ namespace kai
 
     bool _Vzense::init(void *pKiss)
     {
-        IF_F(!_DepthVisionBase::init(pKiss));
+        IF_F(!_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("slope", &m_slope);
@@ -75,14 +73,6 @@ namespace kai
             return false;
         }
 
-        // Vzense init
-        VzReturnStatus status = VZ_Initialize();
-        if (status != VzReturnStatus::VzRetOK)
-        {
-            LOG_E("VzInitialize failed");
-            return false;
-        }
-
         return true;
     }
 
@@ -101,7 +91,7 @@ namespace kai
         LOG_I("Get device count: " + i2str(m_nDevice));
         IF_F(m_nDevice == 0);
 
-        //        VZ_SetHotPlugStatusCallback(HotPlugStateCallback, nullptr);
+//        VZ_SetHotPlugStatusCallback(HotPlugStateCallback, nullptr);
 
         m_pDeviceListInfo = new VzDeviceInfo[m_nDevice];
         status = VZ_GetDeviceInfoList(m_nDevice, m_pDeviceListInfo);
@@ -112,18 +102,6 @@ namespace kai
             LOG_E("OpenDevice failed");
             return false;
         }
-
-        VZ_SetColorResolution(m_deviceHandle, 1600, 1200);
-
-        static bool isTransformColorImgToDepthSensorEnabled = true;
-        VZ_SetTransformColorImgToDepthSensorEnabled(m_deviceHandle, isTransformColorImgToDepthSensorEnabled);
-        cout << "SetTransformColorImgToDepthSensorEnabled " << ((true == isTransformColorImgToDepthSensorEnabled) ? "enable" : "disable") << endl;
-        isTransformColorImgToDepthSensorEnabled = !isTransformColorImgToDepthSensorEnabled;
-
-        static bool isTransformDepthImgToColorSensorEnabled = true;
-        VZ_SetTransformDepthImgToColorSensorEnabled(m_deviceHandle, isTransformDepthImgToColorSensorEnabled);
-        cout << "SetTransformDepthImgToColorSensorEnabled " << ((true == isTransformDepthImgToColorSensorEnabled) ? "enable" : "disable") << endl;
-        isTransformDepthImgToColorSensorEnabled = !isTransformDepthImgToColorSensorEnabled;
 
         status = VZ_GetSensorIntrinsicParameters(m_deviceHandle, VzToFSensor, &m_cameraParameters);
         cout << "Get VZ_GetSensorIntrinsicParameters status: " << status << endl;
@@ -148,13 +126,21 @@ namespace kai
         LOG_I("fw  ==  " + string(fw));
         LOG_I("sn  ==  " + string(m_pDeviceListInfo[0].serialNumber));
 
+        status = VZ_StartStream(m_deviceHandle);
+
+        VZ_SetColorResolution(m_deviceHandle, 1600, 1200);
+        // VZ_SetTransformColorImgToDepthSensorEnabled(m_deviceHandle, false);
+        // VZ_SetTransformDepthImgToColorSensorEnabled(m_deviceHandle, false);
+        VZ_SetColorPixelFormat(m_deviceHandle, VzPixelFormatBGR888);
+
         m_bOpen = true;
         return true;
     }
 
     void _Vzense::close(void)
     {
-        VzReturnStatus status = VZ_CloseDevice(&m_deviceHandle);
+        VzReturnStatus status = VZ_StopStream(m_deviceHandle);
+        status = VZ_CloseDevice(&m_deviceHandle);
         cout << "CloseDevice status: " << status << endl;
 
         status = VZ_Shutdown();
@@ -162,7 +148,7 @@ namespace kai
         delete[] m_pDeviceListInfo;
         m_pDeviceListInfo = NULL;
 
-        this->_DepthVisionBase::close();
+//        this->_DepthVisionBase::close();
     }
 
     bool _Vzense::start(void)
@@ -178,11 +164,21 @@ namespace kai
         NULL__(m_pT, -1);
         NULL__(m_pTPP, -1);
 
-        return _DepthVisionBase::check();
+//        return _DepthVisionBase::check();
+        return _ModuleBase::check();
     }
 
     void _Vzense::update(void)
     {
+        // Vzense init
+        VzReturnStatus status = VZ_Initialize();
+        if (status != VzReturnStatus::VzRetOK)
+        {
+            LOG_E("VzInitialize failed");
+//            return false;
+        }
+
+
         while (m_pT->bRun())
         {
             if (!m_bOpen)
@@ -217,16 +213,19 @@ namespace kai
 
         // Read one frame before call VzGetFrame
         VzFrameReady frameReady = {0};
-        VzReturnStatus status = VZ_GetFrameReady(m_deviceHandle, 2 * 1000 / 25, &frameReady);
+        VzReturnStatus status = VZ_GetFrameReady(m_deviceHandle, 5000, &frameReady);
 
-        cv::Mat imageMat;
+//        cv::Mat imageMat;
 
         if (frameReady.depth == 1)
         {
             status = VZ_GetFrame(m_deviceHandle, VzDepthFrame, &m_vzfDepth);
             if (m_vzfDepth.pFrameData)
             {
-                imageMat = cv::Mat(m_vzfDepth.height, m_vzfDepth.width, CV_16UC1, m_vzfDepth.pFrameData);
+                // imageMat = cv::Mat(m_vzfDepth.height, m_vzfDepth.width, CV_16UC1, m_vzfDepth.pFrameData);
+                // imageMat.convertTo(imageMat, CV_8U, 255.0 / m_slope);
+                // applyColorMap(imageMat, imageMat, cv::COLORMAP_RAINBOW);
+                //    m_fBGR.copy(imageMat);
             }
         }
 
@@ -235,7 +234,7 @@ namespace kai
             status = VZ_GetFrame(m_deviceHandle, VzTransformDepthImgToColorSensorFrame, &m_vzfTransformedDepth);
             if (m_vzfTransformedDepth.pFrameData)
             {
-                imageMat = cv::Mat(m_vzfTransformedDepth.height, m_vzfTransformedDepth.width, CV_16UC1, m_vzfTransformedDepth.pFrameData);
+                // imageMat = cv::Mat(m_vzfTransformedDepth.height, m_vzfTransformedDepth.width, CV_16UC1, m_vzfTransformedDepth.pFrameData);
             }
         }
 
@@ -244,18 +243,30 @@ namespace kai
             status = VZ_GetFrame(m_deviceHandle, VzColorFrame, &m_vzfRGB);
             if (m_vzfRGB.pFrameData)
             {
-                //imageMat = cv::Mat(m_vzfRGB.height, m_vzfRGB.width, CV_8UC3, m_vzfRGB.pFrameData);
-                //m_fBGR.copy(Mat(Size(m_vSize.x, m_vSize.y), CV_8UC3, (void *)m_rsColor.get_data(), Mat::AUTO_STEP));
-                m_fBGR.copy(Mat(m_vzfRGB.height, m_vzfRGB.width, CV_8UC3, m_vzfRGB.pFrameData));
+                for(int i = 0; i<100; i++)
+                    printf("%i ", m_vzfRGB.pFrameData[i]);
+                printf("\n");
+
+                // m_fBGR.copy(Mat(m_vzfRGB.height,
+                //                 m_vzfRGB.width,
+                //                 CV_8UC3,
+                //                 m_vzfRGB.pFrameData));
             }
         }
 
         if (frameReady.transformedColor == 1)
         {
             status = VZ_GetFrame(m_deviceHandle, VzTransformColorImgToDepthSensorFrame, &m_vzfTransformedRGB);
-            if (m_vzfTransformedRGB.pFrameData != NULL)
+            if (m_vzfTransformedRGB.pFrameData)
             {
-                imageMat = cv::Mat(m_vzfTransformedRGB.height, m_vzfTransformedRGB.width, CV_8UC3, m_vzfTransformedRGB.pFrameData);
+                for(int i = 0; i<100; i++)
+                    printf("%i ", m_vzfTransformedRGB.pFrameData[i]);
+                printf("\n");
+
+                // m_fBGR.copy(Mat(m_vzfTransformedRGB.height,
+                //                 m_vzfTransformedRGB.width,
+                //                 CV_8UC3,
+                //                 m_vzfTransformedRGB.pFrameData));
             }
         }
 
@@ -264,7 +275,8 @@ namespace kai
             status = VZ_GetFrame(m_deviceHandle, VzIRFrame, &m_vzfIR);
             if (m_vzfIR.pFrameData)
             {
-                imageMat = cv::Mat(m_vzfIR.height, m_vzfIR.width, CV_8UC1, m_vzfIR.pFrameData);
+                //                imageMat = cv::Mat(m_vzfIR.height, m_vzfIR.width, CV_8UC1, m_vzfIR.pFrameData);
+                //                m_fBGR.copy(Mat(m_vzfIR.height, m_vzfIR.width, CV_8UC1, m_vzfIR.pFrameData));
             }
         }
 
@@ -279,19 +291,19 @@ namespace kai
 
             //            m_fDepth.copy(mDs + m_dOfs);
 
-            if (m_bDepthShow)
-            {
-                IF_(m_fDepth.bEmpty());
+            // if (m_bDepthShow)
+            // {
+            //     IF_(m_fDepth.bEmpty());
 
-                // dispImg = cv::Mat(height, width, CV_16UC1, pData);
+            //     dispImg = cv::Mat(height, width, CV_16UC1, pData);
 
-                // dispImg.convertTo(dispImg, CV_8U, 255.0 / slope);
-                // applyColorMap(dispImg, dispImg, cv::COLORMAP_RAINBOW);
+            //     dispImg.convertTo(dispImg, CV_8U, 255.0 / slope);
+            //     applyColorMap(dispImg, dispImg, cv::COLORMAP_RAINBOW);
 
-                // Mat mDColor(Size(m_vDsize.x, m_vDsize.y), CV_8UC3, (void *)dColor.get_data(),
-                //             Mat::AUTO_STEP);
-                // m_fDepthShow.copy(mDColor);
-            }
+            //     Mat mDColor(Size(m_vDsize.x, m_vDsize.y), CV_8UC3, (void *)dColor.get_data(),
+            //                 Mat::AUTO_STEP);
+            //     m_fDepthShow.copy(mDColor);
+            // }
         }
     }
 

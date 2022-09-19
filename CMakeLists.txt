@@ -71,7 +71,7 @@ find_package(Eigen3 3.1.0 REQUIRED)
 set(OpenKAI_definitions "-w -Wall -c -fmessage-length=0 -MMD -MP -std=c++17")
 set(OpenKAI_libDir /usr/lib /usr/local/lib)
 set(OpenKAI_include /usr/local/include /usr/include ${EIGEN3_INCLUDE_DIR})
-set(OpenKAI_lib pthread boost_system uuid ${EIGEN3_LIBS} gsl gslcblas ncurses ssl crypto)
+set(OpenKAI_lib pthread boost_system uuid ${EIGEN3_LIBS} gsl gslcblas ncurses ssl crypto rt)
 
 # File
 #file(GLOB_RECURSE OpenKAI_cpp CONFIGURE_DEPENDS src/*.cpp src/*.cc src/*.c)
@@ -82,6 +82,9 @@ set(OpenKAI_cpp ${OpenKAI_cpp} ${Arithmetic_cpp})
 
 file(GLOB_RECURSE Config_cpp src/Config/*.cpp src/Config/*.cc src/Config/*.c)
 set(OpenKAI_cpp ${OpenKAI_cpp} ${Config_cpp})
+
+file(GLOB_RECURSE IPC_cpp src/IPC/*.cpp src/IPC/*.cc src/IPC/*.c)
+set(OpenKAI_cpp ${OpenKAI_cpp} ${IPC_cpp})
 
 file(GLOB_RECURSE Primitive_cpp src/Primitive/*.cpp src/Primitive/*.cc src/Primitive/*.c)
 set(OpenKAI_cpp ${OpenKAI_cpp} ${Primitive_cpp})
@@ -331,6 +334,8 @@ endif()
 
 if(WITH_NAVIGATION)
 add_definitions(-DWITH_NAVIGATION)
+file(GLOB_RECURSE Dependency_nav src/Dependency/minmea.c)
+set(OpenKAI_cpp ${OpenKAI_cpp} ${Dependency_nav})
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Navigation/_NavBase.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Navigation/Coordinate.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Navigation/_GPS.cpp)

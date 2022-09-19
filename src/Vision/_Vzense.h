@@ -8,14 +8,15 @@
 #ifndef OpenKAI_src_Vision_Vzense_H_
 #define OpenKAI_src_Vision_Vzense_H_
 
-#include "_DepthVisionBase.h"
+#include "../Base/_ModuleBase.h"
 #include "../Utility/util.h"
+#include "../IPC/_SharedMem.h"
 #include <VzenseDS_api.h>
 
 namespace kai
 {
 
-	class _Vzense : public _DepthVisionBase
+	class _Vzense : public _ModuleBase
 	{
 	public:
 		_Vzense();
@@ -30,7 +31,6 @@ namespace kai
 	private:
 		void update(void);
 		bool updateVzense(void);
-		void getDepthMat(int height, int width, uint8_t*pData, cv::Mat& dispImg);
 		static void *getUpdate(void *This)
 		{
 			((_Vzense *)This)->update();
@@ -56,6 +56,14 @@ namespace kai
         VzFrame m_vzfRGB;
         VzFrame m_vzfTransformedDepth;
         VzFrame m_vzfTransformedRGB;
+
+		_SharedMem* m_psmDepth;
+		_SharedMem* m_psmIR;
+		_SharedMem* m_psmRGB;
+		_SharedMem* m_psmTransformedDepth;
+		_SharedMem* m_psmTransformedRGB;
+
+		bool m_bOpen;
 
 
 

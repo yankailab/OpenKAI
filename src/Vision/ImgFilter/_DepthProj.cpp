@@ -12,7 +12,7 @@ namespace kai
 
 	_DepthProj::_DepthProj()
 	{
-		m_type = vision_DepthProj;
+		m_type = vision_depthProj;
 		m_pV = NULL;
 		m_fFov = 70;
 		m_vCenter.set(0.5,0.5);
