@@ -25,6 +25,7 @@
 #include "../Actuator/_StepperGripper.h"
 #include "../Actuator/Motor/_ZLAC8015.h"
 #include "../Actuator/Motor/_ZLAC8015D.h"
+#include "../Actuator/Motor/_ZDmotor.h"
 #ifdef USE_XARM
 #include "../Actuator/Articulated/_xArm.h"
 #endif

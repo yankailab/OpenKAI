@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["zlac8015_LF","zlac8015_LB","zlac8015_RF","zlac8015_RB"],
+	"vBASE":["ZDmotor_LF","ZDmotor_LB","ZDmotor_RF","ZDmotor_RB"],
 }
 
 {
@@ -28,11 +28,11 @@
 	"bLog":0,
 	"port":"/dev/ttyUSB0",
 	"baud":115200,
-	"parity":"N",	
+	"parity":"N",
 }
 
 {
-	"name":"zlac8015_LF",
+	"name":"ZDmotor_LF",
 	"class":"_ZLAC8015",
 	"bON":1,
     {
@@ -60,7 +60,7 @@
 }
 
 {
-	"name":"zlac8015_LB",
+	"name":"ZDmotor_LB",
 	"class":"_ZLAC8015",
 	"bON":1,
     {
@@ -88,7 +88,7 @@
 }
 
 {
-	"name":"zlac8015_RF",
+	"name":"ZDmotor_RF",
 	"class":"_ZLAC8015",
 	"bON":1,
     {
@@ -116,7 +116,7 @@
 }
 
 {
-	"name":"zlac8015_RB",
+	"name":"ZDmotor_RB",
 	"class":"_ZLAC8015",
 	"bON":1,
     {

@@ -35,6 +35,7 @@ namespace kai
 		ADD_MODULE(_StepperGripper);
 		ADD_MODULE(_ZLAC8015);
 		ADD_MODULE(_ZLAC8015D);
+		ADD_MODULE(_ZDmotor);
 #ifdef USE_XARM
 		ADD_MODULE(_xArm);
 #endif
