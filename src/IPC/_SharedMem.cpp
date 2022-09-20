@@ -22,6 +22,7 @@ namespace kai
 
 	_SharedMem::~_SharedMem()
 	{
+		close();
 	}
 
 	bool _SharedMem::init(void *pKiss)
@@ -32,6 +33,8 @@ namespace kai
 		pK->v("shmName", &m_shmName);
 		pK->v("nB", &m_nB);
 		pK->v("bWriter", &m_bWriter);
+
+		IF_F(!open());
 
 		return true;
 	}

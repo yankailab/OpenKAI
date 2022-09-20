@@ -352,6 +352,7 @@ namespace kai
 		ADD_MODULE(_Resize);
 		ADD_MODULE(_Remap);
 		ADD_MODULE(_Rotate);
+		ADD_MODULE(_SharedMemImg);
 		ADD_MODULE(_Threshold);
 		ADD_MODULE(_VideoFile);
 #ifdef USE_CUDA

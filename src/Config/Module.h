@@ -323,6 +323,7 @@
 #include "../Vision/_ImgFile.h"
 #include "../Vision/_GStreamer.h"
 #include "../Vision/_Raspivid.h"
+#include "../Vision/_SharedMemImg.h"
 #include "../Vision/_GPhoto.h"
 #include "../Vision/ImgFilter/_DepthProj.h"
 #include "../Vision/ImgFilter/_Morphology.h"

@@ -15,7 +15,7 @@
 namespace kai
 {
 
-	class _SharedMemImg : public _DepthVisionBase
+	class _SharedMemImg : public _VisionBase
 	{
 	public:
 		_SharedMemImg();

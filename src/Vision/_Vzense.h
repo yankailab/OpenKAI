@@ -22,11 +22,12 @@ namespace kai
 		_Vzense();
 		virtual ~_Vzense();
 
-		bool init(void *pKiss);
-		bool start(void);
-		int check(void);
-		bool open(void);
-		void close(void);
+		virtual bool init(void *pKiss);
+		virtual bool link(void);
+		virtual bool start(void);
+		virtual int check(void);
+		virtual bool open(void);
+		virtual void close(void);
 
 	private:
 		void update(void);
@@ -45,51 +46,36 @@ namespace kai
 		}
 
 	public:
-		VzDeviceInfo *m_pDeviceListInfo;
-		VzDeviceHandle m_deviceHandle;
 		uint32_t m_nDevice;
+		VzDeviceInfo *m_pDeviceListInfo;
+		string m_deviceURI;
+		VzDeviceHandle m_deviceHandle;
         VzSensorIntrinsicParameters m_cameraParameters;
-		uint32_t m_slope;
-
-        VzFrame m_vzfDepth;
-        VzFrame m_vzfIR;
-        VzFrame m_vzfRGB;
-        VzFrame m_vzfTransformedDepth;
-        VzFrame m_vzfTransformedRGB;
-
-		_SharedMem* m_psmDepth;
-		_SharedMem* m_psmIR;
-		_SharedMem* m_psmRGB;
-		_SharedMem* m_psmTransformedDepth;
-		_SharedMem* m_psmTransformedRGB;
 
 		bool m_bOpen;
+		vInt2 m_vSize;
+		uint16_t m_tWait;
 
+		bool m_bDepth;
+		bool m_bIR;
+		bool m_bRGB;
+		bool m_btDepth;
+		bool m_btRGB;
 
+        VzFrame m_vzfRGB;
+        VzFrame m_vzfDepth;
+        VzFrame m_vzfTransformedDepth;
+        VzFrame m_vzfTransformedRGB;
+        VzFrame m_vzfIR;
 
-		string m_rsSN;
+		_SharedMem* m_psmRGB;
+		_SharedMem* m_psmDepth;
+		_SharedMem* m_psmTransformedDepth;
+		_SharedMem* m_psmTransformedRGB;
+		_SharedMem* m_psmIR;
+
 
 		float m_fConfidenceThreshold;
-		float m_fDigitalGain;
-		float m_fPostProcessingSharpening;
-		float m_fFilterManitude;
-		float m_fHolesFill;
-		float m_fEmitter;
-		float m_fLaserPower;
-
-		float m_fDefault;
-		float m_fBrightness;
-		float m_fContrast;
-		float m_fGain;
-		float m_fExposure;
-		float m_fHue;
-		float m_fSaturation;
-		float m_fSharpness;
-		float m_fWhiteBalance;
-
-		int m_rsFPS;
-		int m_rsDFPS;
-		bool m_bRsRGB;
 
 		//depth filter processing thread
 		_Thread *m_pTPP;
