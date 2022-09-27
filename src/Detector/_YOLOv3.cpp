@@ -9,11 +9,9 @@ namespace kai
 
 	_YOLOv3::_YOLOv3()
 	{
-		m_dnnType = dnn_yolo;
 		m_thr = 0.5;
 		m_nms = 0.4;
-		m_nW = 416;
-		m_nH = 416;
+		m_vBlobSize.set(416,416);
 		m_bSwapRB = true;
 		m_vMean.init();
 		m_scale = 1.0 / 255.0;
@@ -34,8 +32,7 @@ namespace kai
 
 		pK->v("thr", &m_thr);
 		pK->v("nms", &m_nms);
-		pK->v("nW", &m_nW);
-		pK->v("nH", &m_nH);
+		pK->v("vBlobSize", &m_vBlobSize);
 		pK->v("iBackend", &m_iBackend);
 		pK->v("iTarget", &m_iTarget);
 		pK->v("bSwapRB", &m_bSwapRB);
@@ -43,27 +40,7 @@ namespace kai
 		pK->v("iClassDraw", &m_iClassDraw);
 		pK->v("vMean", &m_vMean);
 
-		string n;
-		pK->v("dnnType", &n);
-		if (n == "caffe")
-			m_dnnType = dnn_caffe;
-		else if (n == "yolo")
-			m_dnnType = dnn_yolo;
-		else if (n == "tf")
-			m_dnnType = dnn_tf;
-
-		if (m_dnnType == dnn_yolo)
-		{
-			m_net = readNetFromDarknet(m_fModel, m_fWeight);
-		}
-		else if (m_dnnType == dnn_caffe)
-		{
-			m_net = readNetFromCaffe(m_fModel, m_fWeight);
-		}
-		else if (m_dnnType == dnn_tf)
-		{
-			m_net = readNetFromTensorflow(m_fWeight, m_fModel);
-		}
+		m_net = readNetFromDarknet(m_fModel, m_fWeight);
 
 		IF_Fl(m_net.empty(), "read Net failed");
 
@@ -94,10 +71,7 @@ namespace kai
 
 			if (check() >= 0)
 			{
-				if (m_dnnType == dnn_yolo)
 					detectYolo();
-				else if (m_dnnType == dnn_tf || m_dnnType == dnn_caffe)
-					detect();
 
 				if (m_pT->bGoSleep())
 					m_pU->clear();
@@ -125,15 +99,13 @@ namespace kai
 		m_fBGR.copy(*pBGR);
 		Mat mIn = *m_fBGR.m();
 
-		m_blob = blobFromImage(mIn, m_scale, Size(m_nW, m_nH),
+		m_blob = blobFromImage(mIn, m_scale, Size(m_vBlobSize.x, m_vBlobSize.y),
 							   Scalar(m_vMean.x, m_vMean.y, m_vMean.z), m_bSwapRB, false);
 		m_net.setInput(m_blob);
 
 		// Runs the forward pass to get output of the output layers
 		vector<Mat> vO;
-#if CV_VERSION_MAJOR > 3
 		m_net.forward(vO, m_vLayerName);
-#endif
 
 		// Remove the bounding boxes with low confidence
 		vector<int> vClassID;
@@ -199,7 +171,7 @@ namespace kai
 		m_fBGR.copy(*pBGR);
 		Mat mIn = *m_fBGR.m();
 
-		m_blob = blobFromImage(mIn, m_scale, Size(m_nW, m_nH),
+		m_blob = blobFromImage(mIn, m_scale, Size(m_vBlobSize.x, m_vBlobSize.y),
 							   Scalar(m_vMean.x, m_vMean.y, m_vMean.z), m_bSwapRB, false);
 
 		m_net.setInput(m_blob, "data");

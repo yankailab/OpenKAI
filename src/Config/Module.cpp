@@ -185,6 +185,7 @@ namespace kai
 		ADD_MODULE(_Lane);
 		ADD_MODULE(_Line);
 		ADD_MODULE(_SlideWindow);
+		ADD_MODULE(_SSD);
 		ADD_MODULE(_Thermal);
 #ifdef USE_OPENCV_CONTRIB
 		ADD_MODULE(_ArUco);

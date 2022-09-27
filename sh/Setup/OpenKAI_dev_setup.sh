@@ -329,6 +329,13 @@ make all -j$(nproc)
 sudo make install
 
 #----------------------------------------------------
+# (Optional) TensorFlow Lite
+git clone --branch v2.10.0 --depth 1 https://github.com/tensorflow/tensorflow.git
+cd tensorflow
+mkdir build
+cd build
+
+#----------------------------------------------------
 # (Optional) Jetson inference
 # Jetson Nano/Xavier
 sudo apt-get -y install libpython3-dev python3-numpy

@@ -11,8 +11,7 @@ namespace kai
 	{
 		m_thr = 0.5;
 		m_nms = 0.4;
-		m_nW = 320;
-		m_nH = 320;
+		m_vBlobSize.set(320,320);
 		m_vMean.x = 123.68;
 		m_vMean.y = 116.78;
 		m_vMean.z = 103.94;
@@ -37,8 +36,7 @@ namespace kai
 
 		pK->v("thr", &m_thr);
 		pK->v("nms", &m_nms);
-		pK->v("nW", &m_nW);
-		pK->v("nH", &m_nH);
+		pK->v("vBlobSize", &m_vBlobSize);
 		pK->v("iBackend", &m_iBackend);
 		pK->v("iTarget", &m_iTarget);
 		pK->v("bSwapRB", &m_bSwapRB);
@@ -119,7 +117,7 @@ namespace kai
 			m_fBGR.copy(m_fBGR.cvtColor(8));
 
 		Mat mIn = *m_fBGR.m();
-		m_blob = blobFromImage(mIn, m_scale, Size(m_nW, m_nH),
+		m_blob = blobFromImage(mIn, m_scale, Size(m_vBlobSize.x, m_vBlobSize.y),
 							   Scalar(m_vMean.x, m_vMean.y, m_vMean.z), m_bSwapRB, false);
 		m_net.setInput(m_blob);
 
@@ -140,8 +138,8 @@ namespace kai
 		cs.x = mIn.cols;
 		cs.y = mIn.rows;
 
-		float kx = (float)mIn.cols / (float)m_nW;
-		float ky = (float)mIn.rows / (float)m_nH;
+		float kx = (float)mIn.cols / (float)m_vBlobSize.x;
+		float ky = (float)mIn.rows / (float)m_vBlobSize.y;
 
 		for (size_t i = 0; i < vIndices.size(); i++)
 		{

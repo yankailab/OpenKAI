@@ -30,8 +30,6 @@ bool _DetectorBase::init(void* pKiss)
 	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	//general
-
 	//model
 	pK->v("fModel", &m_fModel);
 	pK->v("fWeight", &m_fWeight);

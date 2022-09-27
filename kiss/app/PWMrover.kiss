@@ -95,6 +95,54 @@
 }
 
 {
+	"name":"YOLO",
+	"class":"_YOLOv3",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bDraw":1,
+	"bLog":1,
+	"_VisionBase":"rs",
+	"_Universe":"univ",
+	"threadMode":0,
+	"dnnType":"yolo",
+	"fModel":"/home/kai/dev/models/YOLOv3/yolov3.cfg",
+	"fWeight":"/home/kai/dev/models/YOLOv3/yolov3.weights",
+	"fClass":"coco.names",
+	"bSwapRB":1,
+	"scale":0.00392,
+	"thr":0.1,
+	"iClassDraw":-1,
+}
+
+{
+	"name":"SSD",
+	"class":"_SSD",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bDraw":1,
+	"bLog":1,
+	"_VisionBase":"cam",
+	"_Universe":"rs",
+	"threadMode":0,
+	"dnnType":"yolo",
+	"fModel":"/home/kai/dev/models/SSDmobileNet/ssd_mobilenet_v2_coco_2018_03_29.pbtxt.txt",
+	"fWeight":"/home/kai/dev/models/SSDmobileNet/frozen_inference_graph.pb",
+	"fClass":"/home/kai/dev/models/SSDmobileNet/object_detection_classes_coco.txt",
+	"vBlobSize":[300,300],
+	"bSwapRB":1,
+	"scale":1.0,
+	"vMean":[127.5, 127.5, 127.5],
+	"thr":0.1,
+	"iClassDraw":-1,
+}
+
+{
 	"name":"arUco",
 	"class":"_ArUco",
 	"bON":1,

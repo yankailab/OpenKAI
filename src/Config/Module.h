@@ -169,6 +169,7 @@
 #include "../Detector/_OpenPose.h"
 #include "../Detector/_HandKey.h"
 #include "../Detector/_SlideWindow.h"
+#include "../Detector/_SSD.h"
 #include "../Detector/_Thermal.h"
 #ifdef USE_OPENCV_CONTRIB
 #include "../Detector/_ArUco.h"
