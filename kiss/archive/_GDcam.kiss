@@ -49,7 +49,7 @@
 
 {
 	"name":"Yolo",
-	"class":"_DNNdetect",
+	"class":"_YOLOv3",
 	"bON":1,
 	"bDraw":1,
 	"bLog":0,

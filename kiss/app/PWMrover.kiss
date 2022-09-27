@@ -3,7 +3,7 @@
 	"class":"Startup",
 	"appName":"PWMrover",
 	"bStdErr":0,
-	"/rc":"sudo modprobe bcm2835-v4l2\nv4l2-ctl -d /dev/video0 --set-ctrl=rotate=0\n",
+	"bLog":0,
 }
 
 {

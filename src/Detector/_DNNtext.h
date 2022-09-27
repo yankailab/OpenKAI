@@ -8,13 +8,13 @@
 #ifndef OpenKAI_src_DNN_Darknet__DNNtext_H_
 #define OpenKAI_src_DNN_Darknet__DNNtext_H_
 
-#include "_DNNdetect.h"
+#include "_YOLOv3.h"
 #include "OCR.h"
 
 namespace kai
 {
 
-	class _DNNtext : public _DNNdetect
+	class _DNNtext : public _YOLOv3
 	{
 	public:
 		_DNNtext();

@@ -68,8 +68,8 @@ namespace kai
 			}
 			else
 			{
-				readStatus();
-				clearAlarm();
+//				readStatus();
+//				clearAlarm();
 				updateMove();
 			}
 
@@ -79,10 +79,10 @@ namespace kai
 
 	void _ZDmotor::setup(void)
 	{
-		IF_(!setMode());
-		IF_(!setAccel());
-		IF_(!setBrake());
-		IF_(!power(true));
+		// IF_(!setMode());
+		// IF_(!setAccel());
+		// IF_(!setBrake());
+		// IF_(!power(true));
 
 		m_bReady = true;
 	}
@@ -147,7 +147,9 @@ namespace kai
 		IF_F(check() < 0);
 
 		int16_t v = m_pA->m_s.m_vTarget;
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x203A, v) != 1);
+		IF_F(m_pMB->writeRegister(m_iSlave, 0x2001, v) != 1);
+
+		IF_F(m_pMB->writeRegister(m_iSlave, 0x2000, 1) != 1);
 
 		return true;
 	}

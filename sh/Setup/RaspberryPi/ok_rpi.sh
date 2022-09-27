@@ -66,6 +66,14 @@ blacklist brcmutil
 EOF
 sudo reboot now
 
+# Switch to external antenna.
+sudo nano /boot/config.txt
+dtparam=ant2
+Params:
+ant1                    Select antenna 1 (default). CM4 only.
+ant2                    Select antenna 2. CM4 only.
+noant                   Disable both antennas. CM4 only.
+
 #Plug USB wifi and run
 sudo sh -c 'wpa_passphrase (ssid) (passphrase) | grep -v "#psk=" >> /etc/wpa_supplicant/wpa_supplicant.conf'
 sudo reboot now

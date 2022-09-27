@@ -2,12 +2,12 @@
  *  Created on: Jan 11, 2019
  *      Author: yankai
  */
-#include "_DNNdetect.h"
+#include "_YOLOv3.h"
 
 namespace kai
 {
 
-	_DNNdetect::_DNNdetect()
+	_YOLOv3::_YOLOv3()
 	{
 		m_dnnType = dnn_yolo;
 		m_thr = 0.5;
@@ -23,11 +23,11 @@ namespace kai
 		m_iTarget = cv::dnn::DNN_TARGET_CPU;
 	}
 
-	_DNNdetect::~_DNNdetect()
+	_YOLOv3::~_YOLOv3()
 	{
 	}
 
-	bool _DNNdetect::init(void *pKiss)
+	bool _YOLOv3::init(void *pKiss)
 	{
 		IF_F(!this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
@@ -80,13 +80,13 @@ namespace kai
 		return true;
 	}
 
-	bool _DNNdetect::start(void)
+	bool _YOLOv3::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	void _DNNdetect::update(void)
+	void _YOLOv3::update(void)
 	{
 		while (m_pT->bRun())
 		{
@@ -94,7 +94,6 @@ namespace kai
 
 			if (check() >= 0)
 			{
-
 				if (m_dnnType == dnn_yolo)
 					detectYolo();
 				else if (m_dnnType == dnn_tf || m_dnnType == dnn_caffe)
@@ -108,7 +107,7 @@ namespace kai
 		}
 	}
 
-	int _DNNdetect::check(void)
+	int _YOLOv3::check(void)
 	{
 		NULL__(m_pU, -1);
 		NULL__(m_pV, -1);
@@ -120,7 +119,7 @@ namespace kai
 		return this->_DetectorBase::check();
 	}
 
-	void _DNNdetect::detectYolo(void)
+	void _YOLOv3::detectYolo(void)
 	{
 		Frame *pBGR = m_pV->BGR();
 		m_fBGR.copy(*pBGR);
@@ -194,7 +193,7 @@ namespace kai
 		m_pU->swap();
 	}
 
-	void _DNNdetect::detect(void)
+	void _YOLOv3::detect(void)
 	{
 		Frame *pBGR = m_pV->BGR();
 		m_fBGR.copy(*pBGR);
@@ -232,7 +231,7 @@ namespace kai
 		m_pU->swap();
 	}
 
-	void _DNNdetect::draw(void* pFrame)
+	void _YOLOv3::draw(void* pFrame)
 	{
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);

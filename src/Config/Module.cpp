@@ -176,7 +176,7 @@ namespace kai
 #ifdef WITH_DETECTOR
 #ifdef USE_OPENCV
 		ADD_MODULE(_DNNclassifier);
-		ADD_MODULE(_DNNdetect);
+		ADD_MODULE(_YOLOv3);
 		ADD_MODULE(_DNNtext);
 		ADD_MODULE(_DepthSegment);
 		ADD_MODULE(_IRLock);

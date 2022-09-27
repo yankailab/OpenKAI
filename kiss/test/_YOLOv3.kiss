@@ -2,45 +2,58 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
-	"bDraw":1,
 	"bLog":0,
 	"bStdErr":1,
 	"waitKey":30,
 }
 
 {
-	"name":"OKview",
-	"class":"Window",
+	"name":"console",
+	"class":"_Console",
 	"bON":1,
-	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["cam","univ","Yolo"],
 }
 
 {
-	"name":"OK_Console",
-	"class":"_Console",
-	"bON":0,
+	"name":"RGBview",
+	"class":"_WindowCV",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bFullScreen":0,
+	"vBASE":["cam","univ"],
+	"bShow":1,
+	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.4 port=5678 auto-multicast=false",
 }
 
 {
 	"name":"cam",
 	"class":"_Camera",
-	"FPS":30,
-	"bON":0,
-	"Window":"OKview",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"deviceID":0,
-	"w":640,
-	"h":480,
+	"vSize":[640,480],
 }
 
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"FPS":30,
-	"bON":1,
-	"Window":"OKview",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, width=(int)1280, height=(int)720, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.1.253 port=5678 auto-multicast=false",
-
 	"/pipeline":"nvcamerasrc fpsRange='60.0 60.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)60/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
 	"/pipeline":"v4l2src device=/dev/video2 ! videoflip method=2 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
 	"/pipeline":"udpsrc port=5678 ! application/x-rtp, media=video, encoding-name=h264, payload=96, clock-rate=90000 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
@@ -50,14 +63,13 @@
 {
 	"name":"cam",
 	"class":"_VideoFile",
-	"FPS":30,
 	"bON":0,
-	"Window":"OKview",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"videoFile":"/home/kai/Videos/sz.ts",
-	"w":1280,
-	"h":720,
-	"fovW":60,
-	"fovH":60,
+	"vSize":[1280,720],
 }
 
 {
@@ -65,41 +77,45 @@
 	"class":"_RealSense",
 	"FPS":30,
 	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"bLog":1,
-	"Window":"OKview",
 	"vPreset":"High Density",
 	"rsRGB":1,
-	"w":1280,
-	"h":720,
+	"vSize":[1280,720],
 	"rsFPS":30,
 	"bAlign":0,
 }
 
 {
-	"name":"universe",
+	"name":"univ",
 	"class":"_Universe",
 	"bON":1,
-	"Window":"OKview",
-	"_Console":"OK_Console",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 }
 
 {
 	"name":"Yolo",
-	"class":"_DNNdetect",
-	"bON":0,
+	"class":"_YOLOv3",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"bDraw":1,
 	"bLog":1,
-	"FPS":30,
-	"Window":"OKview",
 	"_VisionBase":"cam",
-	"_Console":"OK_Console",
-	"_Universe":"universe",
+	"_Universe":"univ",
 	"threadMode":0,
 	"dnnType":"yolo",
-	"modelDir":"/home/kai/dev/model/yolov3/",
-	"fModel":"yolov3.cfg",
-	"fWeight":"yolov3.weights",
-	"fClass":"class.names",
+	"fModel":"/home/kai/dev/models/YOLOv3/yolov3.cfg",
+	"fWeight":"/home/kai/dev/models/YOLOv3/yolov3.weights",
+	"fClass":"coco.names",
 	"bSwapRB":1,
 	"scale":0.00392,
 	"thr":0.1,
@@ -108,15 +124,16 @@
 
 {
 	"name":"TF",
-	"class":"_DNNdetect",
+	"class":"_YOLOv3",
 	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"bDraw":1,
 	"bLog":1,
-	"FPS":30,
-	"Window":"OKview",
 	"_VisionBase":"cam",
-	"_Console":"OK_Console",
-	"_Universe":"universe",
+	"_Universe":"univ",
 	"threadMode":0,
 	"dnnType":"tf",
 	"modelDir":"/home/kai/dev/model/face/",
@@ -133,15 +150,16 @@
 
 {
 	"name":"Caffe",
-	"class":"_DNNdetect",
+	"class":"_YOLOv3",
 	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"bDraw":1,
 	"bLog":1,
-	"FPS":30,
-	"Window":"OKview",
 	"_VisionBase":"cam",
-	"_Console":"OK_Console",
-	"_Universe":"universe",
+	"_Universe":"univ",
 	"threadMode":0,
 	"dnnType":"caffe",
 	"modelDir":"/home/kai/dev/model/face/",
@@ -159,14 +177,15 @@
 {
 	"name":"DetectNet",
 	"class":"_DetectNet",
-	"bON":1,
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"bDraw":1,
 	"bLog":1,
-	"FPS":30,
-	"Window":"OKview",
-	"_Console":"OK_Console",
 	"_VisionBase":"cam",
-	"_Universe":"universe",
+	"_Universe":"univ",
 	"fModel":"/home/lab/dev/jetson-inference/data/networks/SSD-Inception-v2/ssd_inception_v2_coco.uff",
 	"fClass":"/home/lab/dev/jetson-inference/data/networks/SSD-Inception-v2/ssd_coco_labels.txt",
 	"bSwapRB":0,

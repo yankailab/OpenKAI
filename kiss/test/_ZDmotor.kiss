@@ -27,17 +27,17 @@
 	}
 	"bLog":0,
 	"port":"/dev/ttyUSB0",
-	"baud":115200,
+	"baud":19200,
 	"parity":"N",
 }
 
 {
 	"name":"ZDmotor_LF",
-	"class":"_ZLAC8015",
+	"class":"_ZDmotor",
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":5,
+		"FPS":10,
 	}
 	"bLog":1,
 	"_Modbus":"modbus",
@@ -51,8 +51,8 @@
 			"pTarget":0.0,
 			"pErr":0.01,
 			"pRange":[0,15],
-			"sTarget":160.0,
-			"sRange":[0,300],
+			"sTarget":3000.0,
+			"sRange":[0,3000],
 			"aTarget":0.0,
 			"aRange":[10,300],
 		}
@@ -61,8 +61,8 @@
 
 {
 	"name":"ZDmotor_LB",
-	"class":"_ZLAC8015",
-	"bON":1,
+	"class":"_ZDmotor",
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":5,
@@ -89,8 +89,8 @@
 
 {
 	"name":"ZDmotor_RF",
-	"class":"_ZLAC8015",
-	"bON":1,
+	"class":"_ZDmotor",
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":5,
@@ -117,8 +117,8 @@
 
 {
 	"name":"ZDmotor_RB",
-	"class":"_ZLAC8015",
-	"bON":1,
+	"class":"_ZDmotor",
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":5,

@@ -1,12 +1,12 @@
 /*
- * _DNNdetect.h
+ * _YOLOv3.h
  *
  *  Created on: Jan 11, 2019
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_DNN_Darknet__DNNdetect_H_
-#define OpenKAI_src_DNN_Darknet__DNNdetect_H_
+#ifndef OpenKAI_src_DNN_Darknet__YOLOv3_H_
+#define OpenKAI_src_DNN_Darknet__YOLOv3_H_
 
 #include "_DetectorBase.h"
 
@@ -21,11 +21,11 @@ namespace kai
 		dnn_tf,
 	};
 
-	class _DNNdetect : public _DetectorBase
+	class _YOLOv3 : public _DetectorBase
 	{
 	public:
-		_DNNdetect();
-		~_DNNdetect();
+		_YOLOv3();
+		~_YOLOv3();
 
 		bool init(void *pKiss);
 		bool start(void);
@@ -38,7 +38,7 @@ namespace kai
 		void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_DNNdetect *)This)->update();
+			((_YOLOv3 *)This)->update();
 			return NULL;
 		}
 
