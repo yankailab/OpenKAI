@@ -43,7 +43,6 @@ namespace kai
 
 #ifdef WITH_ARDUPILOT
 		ADD_MODULE(_AP_base);
-		ADD_MODULE(_AP_distLidar);
 		ADD_MODULE(_AP_actuator);
 		ADD_MODULE(_AP_mission);
 		ADD_MODULE(_AP_posCtrl);
@@ -55,6 +54,9 @@ namespace kai
 		ADD_MODULE(_AP_gcs);
 		ADD_MODULE(_AP_link);
 		ADD_MODULE(_AProver_drive);
+#ifdef WITH_SENSOR
+		ADD_MODULE(_AP_distLidar);
+#endif
 #ifdef USE_OPENCV
 		ADD_MODULE(_AP_avoid);
 		ADD_MODULE(_AP_depthVision);
@@ -80,11 +82,6 @@ namespace kai
 #ifdef WITH_APP_MULTI3DSCAN
 #endif
 
-#ifdef WITH_APP_BENCHROVER
-		ADD_MODULE(_AProver_BR);
-		ADD_MODULE(_AProver_BRfollow);
-#endif
-
 #ifdef WITH_APP_CAMCALIB
 		ADD_MODULE(_CamCalib);
 #endif
@@ -97,11 +94,6 @@ namespace kai
 		ADD_MODULE(_DroneBox);
 		ADD_MODULE(_DroneBoxJSON);
 		ADD_MODULE(_AP_droneBoxJSON);
-#endif
-
-#ifdef WITH_APP_KUPHENOROVER
-		ADD_MODULE(_AProver_KU);
-		ADD_MODULE(_AProver_KUfollowTag);
 #endif
 
 #ifdef WITH_APP_MEASUREMENT
@@ -132,6 +124,15 @@ namespace kai
 #ifdef WITH_APP_ROVER
 		ADD_MODULE(_PWMrover);
 		ADD_MODULE(_RCrover);
+		ADD_MODULE(_AProver_BR);
+		ADD_MODULE(_AProver_BRfollow);
+		ADD_MODULE(_AProver_KU);
+		ADD_MODULE(_AProver_KUfollowTag);
+		ADD_MODULE(_AProver_followTag);
+		ADD_MODULE(_AProver_tag);
+		ADD_MODULE(_AProver_WB);
+		ADD_MODULE(_AProver_WBnav);
+		ADD_MODULE(_UTprArmL);
 #ifdef USE_OPENCV
 #endif
 #endif
@@ -141,17 +142,6 @@ namespace kai
 		ADD_MODULE(_ANR);
 		ADD_MODULE(_GDcam);
 #endif
-#endif
-
-#ifdef WITH_APP_TAGROVER
-		ADD_MODULE(_AProver_followTag);
-		ADD_MODULE(_AProver_tag);
-#endif
-
-#ifdef WITH_APP_UTPHENOROVER
-		ADD_MODULE(_AProver_UT);
-		ADD_MODULE(_AProver_UTfollowTag);
-		ADD_MODULE(_UTprArmL);
 #endif
 
 #ifdef WITH_COMPUTE

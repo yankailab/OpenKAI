@@ -8,10 +8,10 @@ _AProver_BR::_AProver_BR()
     m_pAP = NULL;
     m_pD = NULL;
 
-    m_rcMode.init();
+    m_rcMode.set(1500);
     m_rcMode.m_iChan = 8;
-    m_rcStickV.init();
-    m_rcStickH.init();
+    m_rcStickV.set(1500);
+    m_rcStickH.set(1500);
 }
 
 _AProver_BR::~_AProver_BR()

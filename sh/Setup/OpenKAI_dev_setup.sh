@@ -336,6 +336,14 @@ mkdir build
 cd build
 
 #----------------------------------------------------
+# (Optional) NCNN
+sudo apt install libprotobuf-dev protobuf-compiler libvulkan-dev vulkan-utils
+git clone --branch 20220729 --depth 1 https://github.com/Tencent/ncnn.git
+cd ncnn
+mkdir build
+cd build
+
+#----------------------------------------------------
 # (Optional) Jetson inference
 # Jetson Nano/Xavier
 sudo apt-get -y install libpython3-dev python3-numpy

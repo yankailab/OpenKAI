@@ -68,8 +68,8 @@ namespace kai
 			}
 			else
 			{
-//				readStatus();
-//				clearAlarm();
+				//				readStatus();
+				//				clearAlarm();
 				updateMove();
 			}
 
@@ -147,9 +147,9 @@ namespace kai
 		IF_F(check() < 0);
 
 		int16_t v = m_pA->m_s.m_vTarget;
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2001, v) != 1);
-
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2000, 1) != 1);
+		int16_t d = (v >= 0) ? 1 : 2;
+		IF_F(m_pMB->writeRegister(m_iSlave, 0x2000, d) != 1);
+		IF_F(m_pMB->writeRegister(m_iSlave, 0x2001, abs(v)) != 1);
 
 		return true;
 	}

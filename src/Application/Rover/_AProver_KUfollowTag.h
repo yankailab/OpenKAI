@@ -1,21 +1,21 @@
 
-#ifndef OpenKAI_src_Application_KUphenoRover__AProver_followTag_H_
-#define OpenKAI_src_Application_KUphenoRover__AProver_followTag_H_
+#ifndef OpenKAI_src_Application_KUphenoRover__AProver_KUfollowTag_H_
+#define OpenKAI_src_Application_KUphenoRover__AProver_KUfollowTag_H_
 
-#include "../Autopilot/ArduPilot/_AP_base.h"
+#include "../../Autopilot/ArduPilot/_AP_base.h"
 #include "../../Universe/_Universe.h"
 #include "../../Control/PID.h"
-#include "../../Control/_Drive.h"
+#include "../../Autopilot/Drive/_Drive.h"
 #include "../../Utility/util.h"
 
 namespace kai
 {
 
-class _AProver_followTag: public _StateBase
+class _AProver_KUfollowTag: public _StateBase
 {
 public:
-	_AProver_followTag();
-	~_AProver_followTag();
+	_AProver_KUfollowTag();
+	~_AProver_KUfollowTag();
 
 	bool init(void* pKiss);
 	bool start(void);
@@ -28,7 +28,7 @@ private:
     _Object* findTarget(void);
 	static void* getUpdate(void* This)
 	{
-		(( _AProver_followTag *) This)->update();
+		(( _AProver_KUfollowTag *) This)->update();
 		return NULL;
 	}
 
@@ -47,8 +47,6 @@ private:
 	float   m_tagTargetX;    
    	int     m_iTagStop;
     
-    float   m_nSpdTurn;     //the slight speed when rover makes turn only
-    float   m_errHdgStop;   //error threshold the rover make turn only
 };
 
 }

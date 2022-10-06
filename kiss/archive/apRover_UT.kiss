@@ -458,7 +458,7 @@
 
 {
 	"name":"apUT",
-	"class":"_AProver_UT",
+	"class":"_AProver_WB",
 	"FPS":10,
 	"bON":1,
 	"Window":"viewDrive",
@@ -523,7 +523,7 @@
 
 {
 	"name":"apFollowTag",
-	"class":"_AProver_UTfollowTag",
+	"class":"_AProver_WBnav",
 	"FPS":20,
 	"bON":1,
 	"bLog":1,

@@ -34,7 +34,6 @@
 #ifdef WITH_ARDUPILOT
 #include "../Autopilot/ArduPilot/_AP_base.h"
 #include "../Autopilot/ArduPilot/_AP_actuator.h"
-#include "../Autopilot/ArduPilot/_AP_distLidar.h"
 #include "../Autopilot/ArduPilot/_AP_goto.h"
 #include "../Autopilot/ArduPilot/_AP_gcs.h"
 #include "../Autopilot/ArduPilot/_AP_mission.h"
@@ -45,6 +44,9 @@
 #include "../Autopilot/ArduPilot/_AP_takeoff.h"
 #include "../Autopilot/ArduPilot/_AP_link.h"
 #include "../Autopilot/ArduPilot/_AProver_drive.h"
+#ifdef WITH_SENSOR
+#include "../Autopilot/ArduPilot/_AP_distLidar.h"
+#endif
 #ifdef USE_OPENCV
 #include "../Autopilot/ArduPilot/_AP_avoid.h"
 #include "../Autopilot/ArduPilot/_AP_depthVision.h"
@@ -70,11 +72,6 @@
 #ifdef WITH_APP_MULTI3DSCAN
 #endif
 
-#ifdef WITH_APP_BENCHROVER
-#include "../Application/BenchRover/_AProver_BR.h"
-#include "../Application/BenchRover/_AProver_BRfollow.h"
-#endif
-
 #ifdef WITH_APP_CAMCALIB
 #include "../Application/CamCalib/_CamCalib.h"
 #endif
@@ -87,11 +84,6 @@
 #include "../Application/DroneBox/_DroneBox.h"
 #include "../Application/DroneBox/_DroneBoxJSON.h"
 #include "../Application/DroneBox/_AP_droneBoxJSON.h"
-#endif
-
-#ifdef WITH_APP_KUPHENOROVER
-#include "../Application/KUphenoRover/_AProver_KU.h"
-#include "../Application/KUphenoRover/_AProver_KUfollowTag.h"
 #endif
 
 #ifdef WITH_APP_MEASUREMENT && USE_OPENCV
@@ -120,22 +112,20 @@
 #ifdef WITH_APP_ROVER
 #include "../Application/Rover/_PWMrover.h"
 #include "../Application/Rover/_RCrover.h"
+#include "../Application/Rover/_AProver_BR.h"
+#include "../Application/Rover/_AProver_BRfollow.h"
+#include "../Application/Rover/_AProver_KU.h"
+#include "../Application/Rover/_AProver_KUfollowTag.h"
+#include "../Application/Rover/_AProver_tag.h"
+#include "../Application/Rover/_AProver_followTag.h"
+#include "../Application/Rover/_AProver_WB.h"
+#include "../Application/Rover/_UTprArmL.h"
+#include "../Application/Rover/_AProver_WBnav.h"
 #endif
 
 #ifdef WITH_APP_SURVEILLANCE && USE_OPENCV
 #include "../Application/Surveillance/_ANR.h"
 #include "../Application/Surveillance/_GDcam.h"
-#endif
-
-#ifdef WITH_APP_TAGROVER
-#include "../Application/TagRover/_AProver_tag.h"
-#include "../Application/TagRover/_AProver_followTag.h"
-#endif
-
-#ifdef WITH_APP_UTPHENOROVER
-#include "../Application/UTphenoRover/_AProver_UT.h"
-#include "../Application/UTphenoRover/_UTprArmL.h"
-#include "../Application/UTphenoRover/_AProver_UTfollowTag.h"
 #endif
 
 #ifdef WITH_COMPUTE

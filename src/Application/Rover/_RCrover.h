@@ -7,40 +7,39 @@
 namespace kai
 {
 
-class _RCrover: public _StateBase
-{
-public:
-	_RCrover();
-	~_RCrover();
-
-	virtual	bool init(void* pKiss);
-	virtual bool start(void);
-	virtual int check(void);
-	virtual void update(void);
-	virtual void console(void* pConsole);
-
-protected:
-	bool updateDrive(void);
-	static void* getUpdate(void* This)
+	class _RCrover : public _StateBase
 	{
-		((_RCrover *) This)->update();
-		return NULL;
-	}
+	public:
+		_RCrover();
+		~_RCrover();
 
-public:
-	_SBus* 	m_pS;
-    _Drive* m_pD;
-    _ActuatorBase* m_pA;
+		virtual bool init(void *pKiss);
+		virtual bool start(void);
+		virtual int check(void);
+		virtual void update(void);
+		virtual void console(void *pConsole);
 
-	uint8_t m_iSpd;		// channel index
-	uint8_t m_iSteer;
-	uint8_t m_iElev;	// elevation bar
+	protected:
+		bool updateDrive(void);
+		static void *getUpdate(void *This)
+		{
+			((_RCrover *)This)->update();
+			return NULL;
+		}
 
-	float m_nSpd;
-	float m_nSteer;
-	float m_nElev;
+	public:
+		_SBus *m_pS;
+		_Drive *m_pD;
+		_ActuatorBase *m_pA;
 
-};
+		uint8_t m_iSpd; // channel index
+		uint8_t m_iSteer;
+		uint8_t m_iElev; // elevation bar
+
+		float m_nSpd;
+		float m_nSteer;
+		float m_nElev;
+	};
 
 }
 #endif

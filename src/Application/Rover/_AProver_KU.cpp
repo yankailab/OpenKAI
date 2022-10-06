@@ -8,8 +8,8 @@ _AProver_KU::_AProver_KU()
 	m_pAP = NULL;
     m_pD = NULL;
     
-    m_rcMode.init();
-    m_rcDir.init();
+    m_rcMode.set(0);
+    m_rcDir.set(0);
 }
 
 _AProver_KU::~_AProver_KU()

@@ -1,8 +1,8 @@
 #ifndef OpenKAI_src_Autopilot_AP__AProver_KU_H_
 #define OpenKAI_src_Autopilot_AP__AProver_KU_H_
 
-#include "../Autopilot/ArduPilot/_AP_base.h"
-#include "../../Control/_Drive.h"
+#include "../../Autopilot/ArduPilot/_AP_base.h"
+#include "../../Autopilot/Drive/_Drive.h"
 #include "../../Utility/RC.h"
 
 namespace kai

@@ -12,6 +12,7 @@ namespace kai
 		m_parity = 'E';
 		m_baud = 115200;
 		m_bOpen = false;
+		m_tIntervalUsec = 10000;
 		m_tOutSec = 1;
 		m_tOutUSec = 0;
 	}
@@ -34,6 +35,7 @@ namespace kai
 		pK->v("port", &m_port);
 		pK->v("parity", &m_parity);
 		pK->v("baud", &m_baud);
+		pK->v("tIntervalUsec", &m_tIntervalUsec);
 		pK->v("tOutSec", &m_tOutSec);
 		pK->v("tOutUSec", &m_tOutUSec);
 
@@ -166,6 +168,9 @@ namespace kai
 		}
 
 		modbus_flush(m_pMb);
+
+		usleep(m_tIntervalUsec);
+
 		pthread_mutex_unlock(&m_mutex);
 
 		return r;

@@ -1,0 +1,303 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"RCrover",
+	"bStdErr":1,
+	"bLog":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["/sSBus","sbus","RCrover","drive","motLF"],
+}
+
+{
+	"name":"state",
+	"class":"_StateControl",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bON":1,
+	"start":"standby",
+	{
+		"name":"state",
+		{
+			"bON":1,
+			"name":"standby",
+			"class":"State",
+		}
+		{
+			"bON":1,
+			"name":"rc",
+			"class":"State",
+		}
+	}
+}
+
+{
+	"name":"sSBus",
+	"class":"_SerialPort",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadR",
+		"vTwakeup":["sbus.threadR"],
+	}
+	"port":"/dev/ttyUSB1",
+	"baud":115200,
+}
+
+{
+	"name":"sbus",
+	"class":"_SBus",
+	"bON":1,
+    {
+		"name":"thread", 
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":100,
+	}
+	"bLog":1,
+	"bSend":0,
+	"_IOBase":"sSBus",
+	"vRawRC":[353,995,1637],
+	"bRawSbus":1,
+}
+
+{
+	"name":"RCrover",
+	"class":"_RCrover",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"iSpd":2,
+	"iSteer":0,
+	"iElev":8,
+	"nSpd":0.5,
+	"nSteer":0.5,
+	"_SBus":"sbus",
+	"_Drive":"drive",
+	"_ActuatorBase":"stepper",
+}
+
+{
+	"name":"drive",
+	"class":"_Drive",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bON":1,
+	"nSpd":0.0,
+	"nDir":1.0,
+	"nStr":0.0,
+	"vSpdRange":[-1.0, 1.0],
+	"vStrRange":[-1.0, 1.0],
+	
+	{
+		"name":"motor",
+		
+		{
+			"name":"mLF",
+			"kSpd":3000.0,
+			"kStr":3000.0,
+			"_ActuatorBase":"motLF",
+			"iAxis":0,
+		}
+		{
+			"name":"mRF",
+			"kSpd":3000.0,
+			"kStr":-3000.0,
+			"_ActuatorBase":"motRF",
+			"iAxis":0,
+		}
+		{
+			"name":"mLR",
+			"kSpd":3000.0,
+			"kStr":3000.0,
+			"_ActuatorBase":"motLR",
+			"iAxis":0,
+		}
+		{
+			"name":"mRR",
+			"kSpd":3000.0,
+			"kStr":-3000.0,
+			"_ActuatorBase":"motRR",
+			"iAxis":0,
+		}
+	}
+}
+
+{
+	"name":"modbus",
+	"class":"_Modbus",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"bLog":0,
+	"port":"/dev/ttyUSB2",
+	"baud":57600,
+	"parity":"N",
+	"tIntervalUsec":10000,
+}
+
+{
+	"name":"motLF",
+	"class":"_ZDmotor",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":5,
+	}
+	"bLog":1,
+	"_Modbus":"modbus",
+	"iSlave":1,
+
+	{
+		"name":"axis",
+		{
+			"name":"m",
+			"pOrigin":0.0,
+			"pTarget":0.0,
+			"pErr":0.01,
+			"pRange":[0,15],
+			"sTarget":0.0,
+			"sRange":[-3000,3000],
+			"aTarget":0.0,
+			"aRange":[10,300],
+		}
+	}
+}
+
+{
+	"name":"motRF",
+	"class":"_ZDmotor",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":5,
+	}
+	"bLog":1,
+	"_Modbus":"modbus",
+	"iSlave":2,
+
+	{
+		"name":"axis",
+		{
+			"name":"m",
+			"pOrigin":0.0,
+			"pTarget":0.0,
+			"pErr":0.01,
+			"pRange":[0,15],
+			"sTarget":0.0,
+			"sRange":[-3000,3000],
+			"aTarget":0.0,
+			"aRange":[10,300],
+		}
+	}
+}
+
+{
+	"name":"motLR",
+	"class":"_ZDmotor",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":5,
+	}
+	"bLog":1,
+	"_Modbus":"modbus",
+	"iSlave":3,
+
+	{
+		"name":"axis",
+		{
+			"name":"m",
+			"pOrigin":0.0,
+			"pTarget":0.0,
+			"pErr":0.01,
+			"pRange":[0,15],
+			"sTarget":0.0,
+			"sRange":[-3000,3000],
+			"aTarget":0.0,
+			"aRange":[10,300],
+		}
+	}
+}
+
+{
+	"name":"motRR",
+	"class":"_ZDmotor",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":5,
+	}
+	"bLog":1,
+	"_Modbus":"modbus",
+	"iSlave":4,
+
+	{
+		"name":"axis",
+		{
+			"name":"m",
+			"pOrigin":0.0,
+			"pTarget":0.0,
+			"pErr":0.01,
+			"pRange":[0,15],
+			"sTarget":0.0,
+			"sRange":[-3000,3000],
+			"aTarget":0.0,
+			"aRange":[10,300],
+		}
+	}
+}
+
+
+{
+	"name":"stepper",
+	"class":"_HYMCU_RS485",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"bLog":1,
+	"_Modbus":"modbus",
+	"iSlave":2,
+	"dpr":1,
+	"bFeedback":1,
+	"dInit":-100,
+
+	{
+		"name":"axis",
+		{
+			"name":"X",
+			"pOrigin":0.0,
+			"pTarget":0.0,
+			"pErr":0.01,
+			"pRange":[-50,50],
+			"sTarget":1500.0,
+			"sRange":[0,1500],
+			"aTarget":10.0,
+			"aRange":[10,300],
+		}
+	}
+}

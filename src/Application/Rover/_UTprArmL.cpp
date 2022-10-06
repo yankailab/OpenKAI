@@ -10,17 +10,17 @@ namespace kai
 		m_pAz = NULL;
 		m_pU = NULL;
 
-		m_vP.init(0.5, 0.5, 0.0);
-		m_vPtarget.init(0.5, 0.5, 0.0);
+		m_vP.set(0.5, 0.5, 0.0);
+		m_vPtarget.set(0.5, 0.5, 0.0);
 
 		m_pXpid = NULL;
 		m_pYpid = NULL;
 
-		m_vPextract.init(39000, -9000, 0); //x,rot,y
+		m_vPextract.set(39000, -9000, 0); //x,rot,y
 		m_zSpeed = 1000;
 		m_zrK = 1.0;
-		m_vZgoal.init(15000, 20000);
-		m_vPrecover.init(25000, 0, 0); //x,rot,y
+		m_vZgoal.set(15000, 20000);
+		m_vPrecover.set(25000, 0, 0); //x,rot,y
 	}
 
 	_UTprArmL::~_UTprArmL()

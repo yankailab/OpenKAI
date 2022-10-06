@@ -49,7 +49,7 @@ namespace kai
 		n = "";
 		pK->v("_ActuatorBase", &n);
 		m_pA = (_ActuatorBase *)(pK->getInst(n));
-//		IF_Fl(!m_pA, n + ": not found");
+		//		IF_Fl(!m_pA, n + ": not found");
 
 		return true;
 	}
@@ -91,16 +91,16 @@ namespace kai
 		m_nSpd = m_pS->v(m_iSpd);
 		m_nSteer = m_pS->v(m_iSteer);
 
-		m_pD->setSpeed(m_nSpd - 0.5);
-		m_pD->setSteering(m_nSteer - 0.5);
-//		m_pD->setDirection();
+		m_pD->setSpeed((m_nSpd - 0.5)*2);
+		m_pD->setSteering((m_nSteer - 0.5)*2);
+		//		m_pD->setDirection();
 
-		if(m_pA)
+		if (m_pA)
 		{
 			m_nElev = m_pS->v(m_iElev);
-			if(m_nElev < 0.4)
+			if (m_nElev < 0.4)
 				m_pA->setPtarget(0, -100);
-			else if(m_nElev > 0.6)
+			else if (m_nElev > 0.6)
 				m_pA->setPtarget(0, 100);
 			else
 				m_pA->setStop();
@@ -116,7 +116,7 @@ namespace kai
 		msgActive(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		pC->addMsg("nSpd: "	+ f2str(m_nSpd));
+		pC->addMsg("nSpd: " + f2str(m_nSpd));
 		pC->addMsg("nSteer: " + f2str(m_nSteer));
 		pC->addMsg("nElev: " + f2str(m_nElev));
 	}
