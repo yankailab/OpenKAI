@@ -11,7 +11,7 @@
 #include "../Base/_ModuleBase.h"
 #include "../Utility/util.h"
 #include "../IPC/_SharedMem.h"
-#include <VzenseDS_api.h>
+#include <VzenseNebula_api.h>
 
 namespace kai
 {

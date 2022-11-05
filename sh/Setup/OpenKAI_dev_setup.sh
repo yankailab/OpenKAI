@@ -82,9 +82,9 @@ sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/us
 
 #----------------------------------------------------
 # CMake
-wget https://github.com/Kitware/CMake/releases/download/v3.24.2/cmake-3.24.2.tar.gz
-tar xvf cmake-3.24.2.tar.gz
-cd cmake-3.24.2
+wget https://github.com/Kitware/CMake/releases/download/v3.24.3/cmake-3.24.3.tar.gz
+tar xvf cmake-3.24.3.tar.gz
+cd cmake-3.24.3
 ./bootstrap
 make -j$(nproc)
 sudo make install
@@ -519,6 +519,9 @@ sleep 5
 #----------------------------------------------------
 # Misc.
 
+# When using multiple USB-Serial converter
+sudo apt remove brltty
+
 # Upload to FTP
 curl -T FourierToy.swf ftp://193.112.75.123/pub/ --user anonymous
 
@@ -550,8 +553,6 @@ sudo dd if=/dev/sda of=~/sd.img bs=6M
 sudo fdisk -l
 sudo umount /dev/sdb
 sudo dd if=~/sd.img of=/dev/sdb bs=6M
-
-
 
 
 # Outdated
