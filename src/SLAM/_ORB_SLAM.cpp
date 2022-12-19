@@ -116,7 +116,7 @@ namespace kai
 
 		double t = ((double)(tNow - m_tStartup)) * usecBase;
 
-		m_pose = m_pOS->TrackMonocular(mGray, t);
+//		m_pose = m_pOS->TrackMonocular(mGray, t);
 		if (m_pose.empty())
 		{
 			m_bTracking = false;

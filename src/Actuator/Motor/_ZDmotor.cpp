@@ -69,7 +69,7 @@ namespace kai
 			else
 			{
 				//				readStatus();
-				//				clearAlarm();
+				clearAlarm();
 				updateMove();
 			}
 
@@ -192,10 +192,9 @@ namespace kai
 	bool _ZDmotor::clearAlarm(void)
 	{
 		IF_F(check() < 0);
-		IF_T(!m_ieReadStatus.update(m_pT->getTfrom()));
+//		IF_T(!m_ieReadStatus.update(m_pT->getTfrom()));
 
-		int r = m_pMB->writeRegister(m_iSlave, 0x2031, 0x06); //clear alarm
-		IF_F(r != 1);
+		IF_F(m_pMB->writeRegister(m_iSlave, 0x2000, 0x07) != 1);
 
 		return true;
 	}

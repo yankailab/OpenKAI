@@ -53,7 +53,7 @@
 		"name":"threadR",
 		"vTwakeup":["sbus.threadR"],
 	}
-	"port":"/dev/ttyUSB1",
+	"port":"/dev/ttyUSB0",
 	"baud":115200,
 }
 
@@ -152,7 +152,7 @@
 		"FPS":1,
 	}
 	"bLog":0,
-	"port":"/dev/ttyUSB2",
+	"port":"/dev/ttyS0",
 	"baud":57600,
 	"parity":"N",
 	"tIntervalUsec":10000,
@@ -265,38 +265,6 @@
 			"sTarget":0.0,
 			"sRange":[-3000,3000],
 			"aTarget":0.0,
-			"aRange":[10,300],
-		}
-	}
-}
-
-
-{
-	"name":"stepper",
-	"class":"_HYMCU_RS485",
-	"bON":0,
-    {
-		"name":"thread",
-		"FPS":10,
-	}
-	"bLog":1,
-	"_Modbus":"modbus",
-	"iSlave":2,
-	"dpr":1,
-	"bFeedback":1,
-	"dInit":-100,
-
-	{
-		"name":"axis",
-		{
-			"name":"X",
-			"pOrigin":0.0,
-			"pTarget":0.0,
-			"pErr":0.01,
-			"pRange":[-50,50],
-			"sTarget":1500.0,
-			"sRange":[0,1500],
-			"aTarget":10.0,
 			"aRange":[10,300],
 		}
 	}

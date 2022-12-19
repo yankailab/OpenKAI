@@ -18,14 +18,21 @@ systemctl start sshd
 
 #----------------------------------------------------
 # System setup
+# Install Ubuntu without Download updates during install checked
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get --with-new-pkgs upgrade
+sudo aptitude full-upgrade
 sudo apt-get update
 sudo apt-get upgrade
 #sudo apt-get dist-upgrade
 
+
 # Basic
-sudo apt-get -y install build-essential clang libc++-dev libc++abi-dev cmake cmake-curses-gui ninja-build git autoconf automake libtool pkg-config libssl-dev libboost-all-dev libgflags-dev libgoogle-glog-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev libssl-dev libprotobuf-dev protobuf-compiler libcurl4 curl libusb-1.0-0-dev libusb-dev libudev-dev libc++-dev libc++abi-dev libfmt-dev
+sudo apt-get -y install build-essential clang libc++-dev libc++abi-dev cmake cmake-curses-gui ninja-build git autoconf automake libtool pkg-config libssl-dev libboost-all-dev libgflags-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev libssl-dev libprotobuf-dev protobuf-compiler libcurl4 curl libusb-1.0-0-dev libusb-dev libudev-dev libc++-dev libc++abi-dev libfmt-dev
 
 # Image, codecs, gstreamer
+# sudo apt-get install libunwind-dev
 sudo apt-get -y install gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-alsa gstreamer1.0-gl libv4l-dev v4l-utils libjpeg-dev libpng-dev libtiff-dev libavcodec-dev libavformat-dev libxvidcore-dev x264
 
 # OpenGL
@@ -469,7 +476,7 @@ sudo make install
 
 #----------------------------------------------------
 # (Optional) Pangolin & Orb_Slam3
-git clone --depth 1 https://github.com/stevenlovegrove/Pangolin.git
+git clone --branch v0.8 --depth 1 https://github.com/stevenlovegrove/Pangolin.git
 cd Pangolin
 mkdir build
 cd build
@@ -477,8 +484,10 @@ cmake -DCMAKE_BUILD_TYPE=Release ../
 make all -j$(nproc)
 sudo make install
 
-git clone --depth 1 https://github.com/yankailab/ORB_SLAM3.git
+#git clone --depth 1 https://github.com/yankailab/ORB_SLAM3.git
+git clone --branch v1.0-release --depth 1 https://github.com/UZ-SLAMLab/ORB_SLAM3.git
 cd ORB_SLAM3
+sed -i 's/++11/++14/g' CMakeLists.txt
 chmod +x build.sh
 ./build.sh
 # sudo make install
@@ -501,6 +510,7 @@ sudo make install
 
 #----------------------------------------------------
 # OpenKAI
+sudo apt-get install libgoogle-glog-dev
 git clone --depth 1 https://github.com/yankailab/OpenKAI.git
 cd OpenKAI
 mkdir build
@@ -515,6 +525,12 @@ sudo chmod a+x $HOME/ok.sh
 sleep 5
 ./OK [kiss]
 
+# Auto start up on boot
+sudo rm /etc/rc.local
+set +H
+sudo sh -c "echo '#!/bin/sh\n/home/lab/ok.sh\nexit 0\n' >> /etc/rc.local"
+set -H
+sudo chmod a+x /etc/rc.local
 
 #----------------------------------------------------
 # Misc.
