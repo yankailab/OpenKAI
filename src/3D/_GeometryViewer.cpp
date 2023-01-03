@@ -12,12 +12,12 @@ namespace kai
 
 	_GeometryViewer::_GeometryViewer()
 	{
-		m_vWinSize.init(1280, 720);
+		m_vWinSize.set(1280, 720);
 
 		m_pTui = NULL;
 		m_pathRes = "";
 		m_device = "CPU:0";
-		m_vCoR.init(0, 0, 0);
+		m_vCoR.set(0, 0, 0);
 
 		m_pWin = NULL;
 		m_pUIstate = NULL;
@@ -28,7 +28,7 @@ namespace kai
 		m_bSceneCache = false;
 		m_wPanel = 15;
 		m_mouseMode = 0;
-		m_vDmove.init(0.5, 5.0);
+		m_vDmove.set(0.5, 5.0);
 		m_rDummyDome = 1000.0;
 	}
 
@@ -141,7 +141,7 @@ namespace kai
 
 		m_pWin->AddPointCloud(m_modelName,
 							   make_shared<t::geometry::PointCloud>(
-								   t::geometry::PointCloud::FromLegacyPointCloud(
+								   t::geometry::PointCloud::FromLegacy(
 									   pc,
 									   core::Dtype::Float32)));
 	}
@@ -152,7 +152,7 @@ namespace kai
 
 		m_pWin->UpdatePointCloud(m_modelName,
 								  make_shared<t::geometry::PointCloud>(
-									  t::geometry::PointCloud::FromLegacyPointCloud(
+									  t::geometry::PointCloud::FromLegacy(
 										  pc,
 										  core::Dtype::Float32)));
 	}
@@ -260,7 +260,7 @@ namespace kai
 		m_pUIstate->m_sMove = m_vDmove.x;
 		m_pUIstate->m_dirSave = m_dirSave;
 		m_pWin->UpdateUIstate();
-		m_pWin->SetFullScreen(m_bFullScreen);
+//		m_pWin->SetFullScreen(m_bFullScreen);
 
 		m_pT->wakeUp();
 		app.Run();

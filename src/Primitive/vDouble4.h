@@ -38,7 +38,7 @@ struct vDouble4
 		w = d;
 	}
 
-	void init(void)
+	void clear(void)
 	{
 		x = 0.0;
 		y = 0.0;

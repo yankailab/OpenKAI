@@ -32,7 +32,7 @@ sudo apt-get upgrade
 sudo apt-get -y install build-essential clang libc++-dev libc++abi-dev cmake cmake-curses-gui ninja-build git autoconf automake libtool pkg-config libssl-dev libboost-all-dev libgflags-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev libssl-dev libprotobuf-dev protobuf-compiler libcurl4 curl libusb-1.0-0-dev libusb-dev libudev-dev libc++-dev libc++abi-dev libfmt-dev
 
 # Image, codecs, gstreamer
-# sudo apt-get install libunwind-dev
+sudo apt-get install libunwind-dev
 sudo apt-get -y install gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-alsa gstreamer1.0-gl libv4l-dev v4l-utils libjpeg-dev libpng-dev libtiff-dev libavcodec-dev libavformat-dev libxvidcore-dev x264
 
 # OpenGL
@@ -89,9 +89,9 @@ sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/us
 
 #----------------------------------------------------
 # CMake
-wget https://github.com/Kitware/CMake/releases/download/v3.24.3/cmake-3.24.3.tar.gz
-tar xvf cmake-3.24.3.tar.gz
-cd cmake-3.24.3
+wget https://github.com/Kitware/CMake/releases/download/v3.25.1/cmake-3.25.1.tar.gz
+tar xvf cmake-3.25.1.tar.gz
+cd cmake-3.25.1
 ./bootstrap
 make -j$(nproc)
 sudo make install
@@ -375,8 +375,11 @@ make -j$(nproc)
 sudo make install
 
 #----------------------------------------------------
-# TODO: update
 # (Optional) Open3D
+
+sudo apt-get install libjsoncpp-dev
+
+# TODO: update
 # GCC
 sudo apt-get -y install g++-9 gcc-9
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 9 --slave /usr/bin/g++ g++ /usr/bin/g++-9

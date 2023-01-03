@@ -69,15 +69,8 @@
 #include "../Autopilot/Drive/_Drive.h"
 #endif
 
-#ifdef WITH_APP_MULTI3DSCAN
-#endif
-
 #ifdef WITH_APP_CAMCALIB
 #include "../Application/CamCalib/_CamCalib.h"
-#endif
-
-#ifdef WITH_APP_DEPTHCAM
-#include "../Application/DepthCam/_DepthCam.h"
 #endif
 
 #ifdef WITH_APP_DRONEBOX
@@ -123,11 +116,6 @@
 #include "../Application/Rover/_AProver_WBnav.h"
 #endif
 
-#ifdef WITH_APP_SURVEILLANCE && USE_OPENCV
-#include "../Application/Surveillance/_ANR.h"
-#include "../Application/Surveillance/_GDcam.h"
-#endif
-
 #ifdef WITH_COMPUTE
 #ifdef USE_OPENCL
 #include "../Compute/OpenCL/clBase.h"
@@ -158,7 +146,6 @@
 #include "../Detector/_Line.h"
 #include "../Detector/_OpenPose.h"
 #include "../Detector/_HandKey.h"
-#include "../Detector/_SlideWindow.h"
 #include "../Detector/_SSD.h"
 #include "../Detector/_Thermal.h"
 #ifdef USE_OPENCV_CONTRIB
@@ -169,12 +156,6 @@
 #ifdef USE_CUDA
 #include "../Detector/_Bullseye.h"
 #include "../Detector/_Cascade.h"
-#endif
-#ifdef USE_OCR
-#include "../Detector/OCR.h"
-#endif
-#ifdef USE_OPENALPR
-#include "../Detector/_OpenALPR.h"
 #endif
 #ifdef USE_CHILITAGS
 #include "../Detector/_Chilitags.h"
@@ -247,16 +228,12 @@
 #ifdef USE_REALSENSE
 #include "../3D/PointCloud/_PCrs.h"
 #endif
-#ifdef USE_HPS3D
-#include "../3D/PointCloud/_HPS3D.h"
-#endif
 #endif
 #endif
 
 #ifdef WITH_PROTOCOL
 #include "../Protocol/_Canbus.h"
 #include "../Protocol/_Mavlink.h"
-#include "../Protocol/_MOAB.h"
 #include "../Protocol/_PWMio.h"
 #include "../Protocol/_ProtocolBase.h"
 #include "../Protocol/_Modbus.h"
@@ -299,7 +276,6 @@
 #include "../UI/_WindowCV.h"
 #endif
 #ifdef USE_GUI
-#include "../UI/_WindowGUI.h"
 #endif
 #endif
 
@@ -314,7 +290,6 @@
 #include "../Vision/_VideoFile.h"
 #include "../Vision/_ImgFile.h"
 #include "../Vision/_GStreamer.h"
-#include "../Vision/_Raspivid.h"
 #include "../Vision/_SharedMemImg.h"
 #include "../Vision/_GPhoto.h"
 #include "../Vision/ImgFilter/_DepthProj.h"
@@ -335,15 +310,9 @@
 #ifdef USE_CUDA
 #include "../Vision/_DenseFlow.h"
 #endif
-#ifdef USE_MYNTEYE
-#include "../Vision/_Mynteye.h"
-#endif
 #ifdef USE_REALSENSE
 #include "../Vision/_RealSense.h"
 #include "../Vision/ImgFilter/_DepthShow.h"
-#endif
-#ifdef USE_PYLON
-#include "../Vision/_Pylon.h"
 #endif
 #endif	//opencv
 #ifdef USE_VZENSE

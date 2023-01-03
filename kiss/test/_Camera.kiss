@@ -32,7 +32,7 @@
 {
 	"name":"cam",
 	"class":"_Camera",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -44,7 +44,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,

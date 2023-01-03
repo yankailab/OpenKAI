@@ -100,17 +100,17 @@ namespace kai
         Feature spFpfhSrc = *preprocess(pcSrc);
         Feature spFpfhTgt = *preprocess(pcTgt);
 
-        m_RR = FastGlobalRegistration(
-            pcSrc,
-            pcTgt,
-            spFpfhSrc,
-            spFpfhTgt,
-            FastGlobalRegistrationOption());
+        // m_RR = FastGlobalRegistration(
+        //     pcSrc,
+        //     pcTgt,
+        //     spFpfhSrc,
+        //     spFpfhTgt,
+        //     FastGlobalRegistrationOption());
 
-        IF_(m_RR.fitness_ < m_lastFit);
-        m_lastFit = m_RR.fitness_;
+        // IF_(m_RR.fitness_ < m_lastFit);
+        // m_lastFit = m_RR.fitness_;
 
-        m_pTf->setTranslationMatrix(m_RR.transformation_);
+        // m_pTf->setTranslationMatrix(m_RR.transformation_);
     }
 
     std::shared_ptr<Feature> _PCregistGlobal::preprocess(PointCloud &pc)

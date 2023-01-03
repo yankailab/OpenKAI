@@ -30,7 +30,7 @@ namespace kai
 		IF_T(m_paramKiss.empty());
 
 		_File *pFile = new _File();
-		IF_T(!pFile->open(&m_paramKiss));
+		IF_T(!pFile->open(m_paramKiss));
 
 		string fn;
 		pFile->readAll(&fn);
@@ -110,7 +110,7 @@ namespace kai
 		string k = picojson::value(o).serialize();
 
 		_File *pFile = new _File();
-		IF_(!pFile->open(&m_paramKiss, ios::out));
+		IF_(!pFile->open(m_paramKiss, ios::out));
 		pFile->write((uint8_t *)k.c_str(), k.length());
 		pFile->close();
 	}

@@ -79,15 +79,8 @@ namespace kai
 		ADD_MODULE(_Drive);
 #endif
 
-#ifdef WITH_APP_MULTI3DSCAN
-#endif
-
 #ifdef WITH_APP_CAMCALIB
 		ADD_MODULE(_CamCalib);
-#endif
-
-#ifdef WITH_APP_DEPTHCAM
-		ADD_MODULE(_DepthCam);
 #endif
 
 #ifdef WITH_APP_DRONEBOX
@@ -137,13 +130,6 @@ namespace kai
 #endif
 #endif
 
-#ifdef WITH_APP_SURVEILLANCE
-#ifdef USE_OPENCV
-		ADD_MODULE(_ANR);
-		ADD_MODULE(_GDcam);
-#endif
-#endif
-
 #ifdef WITH_COMPUTE
 #ifdef USE_OPENCL
 		ADD_MODULE(clBase);
@@ -174,7 +160,6 @@ namespace kai
 		ADD_MODULE(_HandKey);
 		ADD_MODULE(_Lane);
 		ADD_MODULE(_Line);
-		ADD_MODULE(_SlideWindow);
 		ADD_MODULE(_SSD);
 		ADD_MODULE(_Thermal);
 #ifdef USE_OPENCV_CONTRIB
@@ -185,12 +170,6 @@ namespace kai
 #ifdef USE_CUDA
 		ADD_MODULE(_Bullseye);
 		ADD_MODULE(_Cascade);
-#endif
-#ifdef USE_OCR
-		ADD_MODULE(OCR);
-#endif
-#ifdef USE_OPENALPR
-		ADD_MODULE(_OpenALPR);
 #endif
 #ifdef USE_CHILITAGS
 		ADD_MODULE(_Chilitags);
@@ -262,15 +241,11 @@ namespace kai
 #ifdef USE_REALSENSE
 		ADD_MODULE(_PCrs);
 #endif
-#ifdef USE_HPS3D
-		ADD_MODULE(_HPS3D);
-#endif
 #endif
 #endif
 
 #ifdef WITH_PROTOCOL
 		ADD_MODULE(_Canbus);
-		ADD_MODULE(_MOAB);
 		ADD_MODULE(_Mavlink);
 		ADD_MODULE(_Modbus);
 		ADD_MODULE(_SBus);
@@ -310,11 +285,10 @@ namespace kai
 
 #ifdef WITH_UI
 #ifdef USE_OPENCV
-		ADD_MODULE(_WindowCV);
 		ADD_MODULE(_GstOutput);
+		ADD_MODULE(_WindowCV);
 #endif
 #ifdef USE_GUI
-		ADD_MODULE(_WindowGUI);
 #endif
 #endif
 
@@ -340,7 +314,6 @@ namespace kai
 		ADD_MODULE(_ImgFile);
 		ADD_MODULE(_Mask);
 		ADD_MODULE(_Morphology);
-		ADD_MODULE(_Raspivid);
 		ADD_MODULE(_Resize);
 		ADD_MODULE(_Remap);
 		ADD_MODULE(_Rotate);
@@ -350,15 +323,9 @@ namespace kai
 #ifdef USE_CUDA
 		ADD_MODULE(_DenseFlow);
 #endif
-#ifdef USE_MYNTEYE
-		ADD_MODULE(_Mynteye);
-#endif
 #ifdef USE_REALSENSE
 		ADD_MODULE(_RealSense);
 		ADD_MODULE(_DepthShow);
-#endif
-#ifdef USE_PYLON
-		ADD_MODULE(_Pylon);
 #endif
 #endif	//opencv
 #ifdef USE_VZENSE

@@ -71,10 +71,10 @@ namespace kai
         IF_(!bRange(vPnav));
 
         Vector3f vCrgb = vC;
-        if(m_pR)
-        {
-            IF_(!getColor(vP, &vCrgb));
-        }
+        // if(m_pR)
+        // {
+        //     IF_(!getColor(vP, &vCrgb));
+        // }
 
         PC_POINT *pP = &m_pP[m_iP];
         pP->m_vP = m_A * vPnav;   // m_A incorporates the offset in Nav coordinate
@@ -125,11 +125,11 @@ namespace kai
     void _PCstream::refreshCol(void)
     {
         NULL_(m_pP);
-        NULL_(m_pR);
+//        NULL_(m_pR);
 
         vDouble3 vTr, vRr;
-        vTr.init(-m_vToffset.x, -m_vToffset.y, -m_vToffset.z);
-        vRr.init(-m_vRoffset.x, -m_vRoffset.y, -m_vRoffset.z);
+        vTr.set(-m_vToffset.x, -m_vToffset.y, -m_vToffset.z);
+        vRr.set(-m_vRoffset.x, -m_vRoffset.y, -m_vRoffset.z);
         Eigen::Affine3d aRev;
         aRev = getTranslationMatrix(vTr, vRr);
 

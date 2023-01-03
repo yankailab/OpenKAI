@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_3D_PointCloud__GeometryBase_H_
 #define OpenKAI_src_3D_PointCloud__GeometryBase_H_
 
-#include "../Vision/ImgFilter/_Remap.h"
+//#include "../Vision/ImgFilter/_Remap.h"
 #include "../IO/_File.h"
 using namespace open3d;
 using namespace open3d::geometry;
@@ -161,13 +161,13 @@ namespace kai
         Eigen::Affine3d m_A;
 
         // RGB offset in Lidar coordinate
-        _Remap* m_pR;
-        vDouble3 m_vToffsetRGB;
-        vDouble3 m_vRoffsetRGB;
-    	Matrix4d m_mToffsetRGB;
-    	Eigen::Affine3d m_AoffsetRGB;
-        vInt3 m_vAxisIdxRGB;
-        vFloat3 m_vAxisKrgb;
+        // _Remap* m_pR;
+        // vDouble3 m_vToffsetRGB;
+        // vDouble3 m_vRoffsetRGB;
+    	// Matrix4d m_mToffsetRGB;
+    	// Eigen::Affine3d m_AoffsetRGB;
+        // vInt3 m_vAxisIdxRGB;
+        // vFloat3 m_vAxisKrgb;
 
         // filter
         vDouble2 m_vRange;
