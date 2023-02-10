@@ -68,12 +68,12 @@ namespace open3d
                         has_colors = true; // always want base_color as white
                     }
 
-                    mat.base_color = {1.0f, 1.0f, 1.0f, 1.0f};
-                    mat.shader = "defaultUnlit";
+                    mat.SetBaseColor({1.0f, 1.0f, 1.0f, 1.0f});
+                    mat.SetMaterialName("defaultUnlit");
                     if (lines)
                     {
-                        mat.shader = "unlitLine";
-                        mat.line_width = m_uiState.m_wLine * GetScaling();
+                        mat.SetMaterialName("unlitLine");
+                        mat.SetLineWidth(m_uiState.m_wLine * GetScaling());
                     }
                     is_default_color = true;
                     if (has_colors)
@@ -82,16 +82,18 @@ namespace open3d
                     }
                     if (has_normals)
                     {
-                        mat.shader = "defaultLit";
+                        mat.SetMaterialName("defaultLit");
                         is_default_color = false;
                     }
-                    mat.point_size = ConvertToScaledPixels(m_uiState.m_sPoint);
+                    mat.SetPointSize(ConvertToScaledPixels(m_uiState.m_sPoint));
                 }
 
                 m_vObject.push_back({name, spG, nullptr, mat, bVisible});
 
                 auto scene = m_pScene->GetScene();
-                scene->AddGeometry(name, spG.get(), mat);
+                MaterialRecord mr;
+                mat.ToMaterialRecord(mr);
+                scene->AddGeometry(name, spG.get(), mr);
                 scene->GetScene()->GeometryShadows(name, false, false);
                 scene->ShowGeometry(name, bVisible);
 
@@ -122,14 +124,15 @@ namespace open3d
                     has_colors = true; // always want base_color as white
                 }
 
-                mat.base_color = {1.0f, 1.0f, 1.0f, 1.0f};
-                mat.shader = "defaultUnlit";
-                mat.point_size = ConvertToScaledPixels(m_uiState.m_sPoint);
+                mat.SetBaseColor({1.0f, 1.0f, 1.0f, 1.0f});
+                mat.SetMaterialName("defaultUnlit");
+                mat.SetPointSize(ConvertToScaledPixels(m_uiState.m_sPoint));
 
                 m_vObject.push_back({name, nullptr, sTg, mat, bVisible});
                 auto scene = m_pScene->GetScene();
-
-                scene->AddGeometry(name, sTg.get(), mat, false);
+                MaterialRecord mr;
+                mat.ToMaterialRecord(mr);
+                scene->AddGeometry(name, sTg.get(), mr, false);
                 scene->GetScene()->GeometryShadows(name, false, false);
                 scene->ShowGeometry(name, bVisible);
 
@@ -257,8 +260,10 @@ namespace open3d
                 px = int(ConvertToScaledPixels(px));
                 for (auto &o : m_vObject)
                 {
-                    o.m_material.point_size = float(px);
-                    m_pScene->GetScene()->GetScene()->OverrideMaterial(o.m_name, o.m_material);
+                    o.m_material.SetPointSize(float(px));
+                    MaterialRecord mr;
+                    o.m_material.ToMaterialRecord(mr);
+                    m_pScene->GetScene()->GetScene()->OverrideMaterial(o.m_name, mr);
                 }
                 m_pScene->SetPickablePointSize(px);
 
@@ -272,8 +277,10 @@ namespace open3d
                 px = int(ConvertToScaledPixels(px));
                 for (auto &o : m_vObject)
                 {
-                    o.m_material.line_width = float(px);
-                    m_pScene->GetScene()->GetScene()->OverrideMaterial(o.m_name, o.m_material);
+                    o.m_material.SetLineWidth(float(px));
+                    MaterialRecord mr;
+                    o.m_material.ToMaterialRecord(mr);
+                    m_pScene->GetScene()->GetScene()->OverrideMaterial(o.m_name, mr);
                 }
                 m_pScene->ForceRedraw();
             }

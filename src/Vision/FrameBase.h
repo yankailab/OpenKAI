@@ -27,14 +27,14 @@ namespace kai
 		virtual FrameBase warpAffine(Mat &mWA);
 		virtual FrameBase flip(int iOpt);
 		virtual FrameBase remap(const Mat &mX, const Mat &mY);
-		virtual FrameBase crop(Rect bb);
+		virtual FrameBase crop(cv::Rect bb);
 		virtual FrameBase resize(int w, int h);
 		virtual FrameBase resize(double scaleW, double scaleH);
 		virtual FrameBase cvtTo(int rType);
 		virtual FrameBase cvtColor(int code);
 
 		virtual Mat *m(void);
-		virtual Size size(void);
+		virtual cv::Size size(void);
 		virtual bool bEmpty(void);
 
 		uint64_t tStamp(void);

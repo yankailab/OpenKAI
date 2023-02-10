@@ -24,7 +24,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"bON":1,
+	"bON":0,
 	"start":"standby",
 	{
 		"name":"state",
@@ -79,7 +79,7 @@
 {
 	"name":"RCrover",
 	"class":"_RCrover",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -102,7 +102,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"bON":1,
+	"bON":0,
 	"nSpd":0.0,
 	"nDir":1.0,
 	"nStr":0.0,
@@ -146,7 +146,7 @@
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":1,
@@ -161,7 +161,7 @@
 {
 	"name":"motLF",
 	"class":"_ZDmotor",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":5,
@@ -189,7 +189,7 @@
 {
 	"name":"motRF",
 	"class":"_ZDmotor",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":5,
@@ -217,7 +217,7 @@
 {
 	"name":"motLR",
 	"class":"_ZDmotor",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":5,
@@ -245,7 +245,7 @@
 {
 	"name":"motRR",
 	"class":"_ZDmotor",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":5,

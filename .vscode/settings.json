@@ -91,5 +91,6 @@
         "filesystem": "cpp",
         "cerrno": "cpp",
         "regex": "cpp"
-    }
+    },
+    "cmake.configureOnOpen": true
 }

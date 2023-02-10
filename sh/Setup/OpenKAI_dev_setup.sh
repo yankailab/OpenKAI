@@ -31,6 +31,11 @@ sudo apt-get upgrade
 # Basic
 sudo apt-get -y install build-essential clang libc++-dev libc++abi-dev cmake cmake-curses-gui ninja-build git autoconf automake libtool pkg-config libssl-dev libboost-all-dev libgflags-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev libssl-dev libprotobuf-dev protobuf-compiler libcurl4 curl libusb-1.0-0-dev libusb-dev libudev-dev libc++-dev libc++abi-dev libfmt-dev
 
+# (Optional) Update GCC
+sudo apt-get -y install g++-11 gcc-11
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 9 --slave /usr/bin/g++ g++ /usr/bin/g++-9
+sudo update-alternatives --config gcc
+
 # Image, codecs, gstreamer
 sudo apt-get install libunwind-dev
 sudo apt-get -y install gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-alsa gstreamer1.0-gl libv4l-dev v4l-utils libjpeg-dev libpng-dev libtiff-dev libavcodec-dev libavformat-dev libxvidcore-dev x264
@@ -60,32 +65,15 @@ sudo apt autoremove
 sudo apt clean
 
 #----------------------------------------------------
-# If needed specific GCC version
-# sudo apt-get -y install g++-10 gcc-10
-# sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10 --slave /usr/bin/g++ g++ /usr/bin/g++-10
-# sudo update-alternatives --config gcc
-
-#----------------------------------------------------
-# TODO: update
 # (Optional) CUDA
 # Update the video driver first with Software and Update
-sudo apt -y install gcc-8 g++-8
-sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 8 --slave /usr/bin/g++ g++ /usr/bin/g++-8
-# Select gcc 8 for CUDA compatibility
-sudo update-alternatives --config gcc
-wget http://developer.download.nvidia.com/compute/cuda/10.2/Prod/local_installers/cuda_10.2.89_440.33.01_linux.run
-sudo sh cuda_10.2.89_440.33.01_linux.run
+wget https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run
+sudo sh cuda_11.8.0_520.61.05_linux.run
 sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda/lib64:\$LD_LIBRARY_PATH\nexport LC_ALL=en_US.UTF-8" >> ~/.bashrc
-# Switch back gcc to auto mode
-sudo update-alternatives --config gcc
-# CuDNN, download the latest .deb from NVIDIA site
-sudo dpkg -i libcudnn7_7.6.5.32-1+cuda10.2_amd64.deb
-sudo dpkg -i libcudnn7-dev_7.6.5.32-1+cuda10.2_amd64.deb
 
-# CUDA 11
-wget https://developer.download.nvidia.com/compute/cuda/11.2.2/local_installers/cuda_11.2.2_460.32.03_linux.run
-sudo sh cuda_11.2.2_460.32.03_linux.run
-sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda/lib64:\$LD_LIBRARY_PATH\nexport LC_ALL=en_US.UTF-8" >> ~/.bashrc
+# CuDNN, download the latest .deb from NVIDIA site
+sudo dpkg -i cudnn-local-repo-ubuntu2204-8.8.0.121_1.0-1_amd64.deb
+sudo dpkg -i libcudnn7-dev_7.6.5.32-1+cuda10.2_amd64.deb
 
 #----------------------------------------------------
 # CMake
@@ -376,25 +364,20 @@ sudo make install
 
 #----------------------------------------------------
 # (Optional) Open3D
-
 sudo apt-get install libjsoncpp-dev
-
-# TODO: update
-# GCC
-sudo apt-get -y install g++-9 gcc-9
-sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 9 --slave /usr/bin/g++ g++ /usr/bin/g++-9
-sudo update-alternatives --config gcc
-
-git clone --branch v0.13.0 --depth 1 --recursive https://github.com/intel-isl/Open3D
+git clone --branch v0.16.1 --depth 1 --recursive https://github.com/intel-isl/Open3D
 cd Open3D
 git submodule update --init --recursive
+util/install_deps_ubuntu.sh
 mkdir build
 cd build
 
 #PC
-cmake -DCMAKE_BUILD_TYPE=Release -DGLIBCXX_USE_CXX11_ABI=ON -DBUILD_CUDA_MODULE=ON -DBUILD_EXAMPLES=OFF -DBUILD_FILAMENT_FROM_SOURCE=ON -DBUILD_GUI=ON -DBUILD_PYTHON_MODULE=OFF -DBUILD_SHARED_LIBS=ON -DBUILD_WEBRTC=OFF -DDEVELOPER_BUILD=OFF -DWITH_SIMD=ON ../
+cmake -DCMAKE_BUILD_TYPE=Release -DGLIBCXX_USE_CXX11_ABI=ON -DBUILD_CUDA_MODULE=OFF -DBUILD_EXAMPLES=OFF -DBUILD_FILAMENT_FROM_SOURCE=ON -DBUILD_GUI=ON -DBUILD_PYTHON_MODULE=OFF -DBUILD_SHARED_LIBS=ON -DBUILD_WEBRTC=OFF -DDEVELOPER_BUILD=OFF -DWITH_SIMD=ON ../
+make -j$(nproc)
+sudo make install
 
-# Jetson
+#TODO: Jetson
 sudo apt-get install -y apt-utils build-essential git cmake
 sudo apt-get install -y python3 python3-dev python3-pip
 sudo apt-get install -y xorg-dev libglu1-mesa-dev
@@ -435,23 +418,6 @@ sudo make install
 Open3D/cpp/open3d/core/linalg/BlasWrapper.h
 #include "/usr/include/aarch64-linux-gnu/cblas-netlib.h" <-- add this
 #include "open3d/core/linalg/LinalgHeadersCPU.h"
-
-#----------------------------------------------------
-# (Optional, use Open3D included version if possible) Filament
-git clone --branch v1.9.9 --depth 1 https://github.com/google/filament.git
-cd filament
-mkdir out
-mkdir out/release
-cd out/release
-CC=/usr/bin/clang CXX=/usr/bin/clang++ CXXFLAGS=-stdlib=libc++ cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../release/filament ../..
-ninja -j6
-ninja install
-# need clang >= 7 for jetson!
-
-# If error, try this
-mkdir filament-binaries/lib/x86_64
-cp filament-binaries/lib/*.a filament-binaries/lib/x86_64
-make -j$(nproc)
 
 #----------------------------------------------------
 # (Optional) gwsocket
@@ -535,6 +501,9 @@ sudo sh -c "echo '#!/bin/sh\n/home/lab/ok.sh\nexit 0\n' >> /etc/rc.local"
 set -H
 sudo chmod a+x /etc/rc.local
 
+
+
+
 #----------------------------------------------------
 # Misc.
 
@@ -574,7 +543,29 @@ sudo umount /dev/sdb
 sudo dd if=~/sd.img of=/dev/sdb bs=6M
 
 
+
+
+
+
+
 # Outdated
+#----------------------------------------------------
+# (Optional, use Open3D included version if possible) Filament
+git clone --branch v1.9.9 --depth 1 https://github.com/google/filament.git
+cd filament
+mkdir out
+mkdir out/release
+cd out/release
+CC=/usr/bin/clang CXX=/usr/bin/clang++ CXXFLAGS=-stdlib=libc++ cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../release/filament ../..
+ninja -j6
+ninja install
+# need clang >= 7 for jetson!
+
+# If error, try this
+mkdir filament-binaries/lib/x86_64
+cp filament-binaries/lib/*.a filament-binaries/lib/x86_64
+make -j$(nproc)
+
 #----------------------------------------------------
 # (Optional) Hypersen HPS3D
 git clone --depth 1 https://github.com/hypersen/HPS3D_SDK.git

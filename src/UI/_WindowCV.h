@@ -152,7 +152,7 @@ namespace kai
 		{
 			IF_(!m_bShow);
 
-			Rect r = bb2Rect(m_vR);
+			cv::Rect r = bb2Rect(m_vR);
 			Scalar colBg;
 			if (m_bDown)
 				colBg = {m_colDown.x, m_colDown.y, m_colDown.z};
@@ -179,7 +179,7 @@ namespace kai
 #endif
 
 			putText(*pM, m_label,
-					Point(m_vR.x, m_vR.y + 25),
+					cv::Point(m_vR.x, m_vR.y + 25),
 					FONT_HERSHEY_SIMPLEX,
 					1.0,
 					Scalar(m_colFont.x, m_colFont.y, m_colFont.z),

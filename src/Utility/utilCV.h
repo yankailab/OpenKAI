@@ -43,17 +43,17 @@ namespace kai
 		return true;
 	}
 
-	inline bool scaleCamMatrices(const cv::Size& s, const Mat& mC, const Mat& mD, Mat* pCs)
+	inline bool scaleCamMatrices(const cv::Size &s, const Mat &mC, const Mat &mD, Mat *pCs)
 	{
 		NULL_F(pCs);
 		IF_F(mC.empty() || mD.empty());
 
 		Mat mCs;
 		mC.copyTo(mCs);
-		mCs.at<double>(0, 0) *= (double)s.width;  //Fx
-		mCs.at<double>(1, 1) *= (double)s.height; //Fy
-		mCs.at<double>(0, 2) *= (double)s.width;  //Cx
-		mCs.at<double>(1, 2) *= (double)s.height; //Cy
+		mCs.at<double>(0, 0) *= (double)s.width;  // Fx
+		mCs.at<double>(1, 1) *= (double)s.height; // Fy
+		mCs.at<double>(0, 2) *= (double)s.width;  // Cx
+		mCs.at<double>(1, 2) *= (double)s.height; // Cy
 
 		*pCs = getOptimalNewCameraMatrix(mCs, mD, s, 1, s, 0);
 		return true;
@@ -71,7 +71,7 @@ namespace kai
 		Mat mHist;
 		cv::calcHist(vRoi, vChannel, Mat(),
 					 mHist, vHistLev, vRange,
-					 true //accumulate
+					 true // accumulate
 		);
 
 		int nMinHist = nMin * m.cols * m.rows;
@@ -86,7 +86,7 @@ namespace kai
 	}
 
 	template <typename T>
-	inline T rect2BB(Rect r)
+	inline T rect2BB(cv::Rect r)
 	{
 		T v;
 		v.x = r.x;
@@ -98,9 +98,9 @@ namespace kai
 	}
 
 	template <typename T>
-	inline Rect bb2Rect(T v)
+	inline cv::Rect bb2Rect(T v)
 	{
-		Rect r;
+		cv::Rect r;
 		r.x = v.x;
 		r.y = v.y;
 		r.width = v.z - v.x;

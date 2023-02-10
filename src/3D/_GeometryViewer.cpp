@@ -100,7 +100,7 @@ namespace kai
 	{
 		NULL_F(m_pT);
 		IF_F(!m_pT->start(getUpdate, this));
-		
+
 		NULL_F(m_pTui);
 		IF_F(!m_pTui->start(getUpdateUI, this));
 
@@ -114,10 +114,11 @@ namespace kai
 
 	void _GeometryViewer::update(void)
 	{
-		//wait for the UI thread to get window ready
+		// wait for the UI thread to get window ready
+		// TODO: move to start()?
 		m_pT->sleepT(0);
 
-		while(m_nPread <= 0)
+		while (m_nPread <= 0)
 			readAllPC();
 
 		removeUIpc();
@@ -126,7 +127,7 @@ namespace kai
 
 		resetCamPose();
 		updateCamPose();
-		
+
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPSfrom();
@@ -140,10 +141,10 @@ namespace kai
 		IF_(pc.IsEmpty());
 
 		m_pWin->AddPointCloud(m_modelName,
-							   make_shared<t::geometry::PointCloud>(
-								   t::geometry::PointCloud::FromLegacy(
-									   pc,
-									   core::Dtype::Float32)));
+							  make_shared<t::geometry::PointCloud>(
+								  t::geometry::PointCloud::FromLegacy(
+									  pc,
+									  core::Dtype::Float32)));
 	}
 
 	void _GeometryViewer::updateUIpc(const PointCloud &pc)
@@ -151,10 +152,10 @@ namespace kai
 		IF_(pc.IsEmpty());
 
 		m_pWin->UpdatePointCloud(m_modelName,
-								  make_shared<t::geometry::PointCloud>(
-									  t::geometry::PointCloud::FromLegacy(
-										  pc,
-										  core::Dtype::Float32)));
+								 make_shared<t::geometry::PointCloud>(
+									 t::geometry::PointCloud::FromLegacy(
+										 pc,
+										 core::Dtype::Float32)));
 	}
 
 	void _GeometryViewer::removeUIpc(void)
@@ -173,7 +174,7 @@ namespace kai
 		updatePC();
 	}
 
-	void _GeometryViewer::addDummyDome(PointCloud* pPC, int n, float r, Vector3d vCol)
+	void _GeometryViewer::addDummyDome(PointCloud *pPC, int n, float r, Vector3d vCol)
 	{
 		NULL_(pPC);
 
@@ -184,24 +185,22 @@ namespace kai
 		float dH = (OK_PI * 2.0) / nH;
 
 		int k = 0;
-		for(int i=0; i<nH; i++)
+		for (int i = 0; i < nH; i++)
 		{
 			float h = dH * i;
 			float sinH = sin(h);
 			float cosH = cos(h);
 
-			for(int j=0; j<nV; j++)
+			for (int j = 0; j < nV; j++)
 			{
 				float v = dV * j;
 				float sinV = sin(v);
 				float cosV = cos(v);
 
-				Vector3d vP
-				(
+				Vector3d vP(
 					r * sinV * sinH,
 					r * sinV * cosH,
-					r * cosV
-				);
+					r * cosV);
 
 				pPC->points_.push_back(vP);
 				pPC->colors_.push_back(vCol);
@@ -217,9 +216,9 @@ namespace kai
 		IF_(!m_pWin);
 
 		m_pWin->CamSetProj(m_camProj.m_fov,
-							m_camProj.m_vNF.x,
-							m_camProj.m_vNF.y,
-							m_camProj.m_fovType);
+						   m_camProj.m_vNF.x,
+						   m_camProj.m_vNF.y,
+						   m_camProj.m_fovType);
 	}
 
 	void _GeometryViewer::updateCamPose(void)
@@ -228,8 +227,8 @@ namespace kai
 		IF_(!m_pWin);
 
 		m_pWin->CamSetPose(m_cam.m_vLookAt.v3f(),
-							m_cam.m_vEye.v3f(),
-							m_cam.m_vUp.v3f());
+						   m_cam.m_vEye.v3f(),
+						   m_cam.m_vUp.v3f());
 	}
 
 	void _GeometryViewer::camBound(const AxisAlignedBoundingBox &aabb)
@@ -251,6 +250,7 @@ namespace kai
 		app.Initialize(m_pathRes.c_str());
 
 		m_pWin = new O3DUI(*this->getName(), 2000, 1000);
+		m_pWin->Init();
 		app.AddWindow(shared_ptr<O3DUI>(m_pWin));
 
 		m_pUIstate = m_pWin->getUIState();
@@ -260,7 +260,7 @@ namespace kai
 		m_pUIstate->m_sMove = m_vDmove.x;
 		m_pUIstate->m_dirSave = m_dirSave;
 		m_pWin->UpdateUIstate();
-//		m_pWin->SetFullScreen(m_bFullScreen);
+		//		m_pWin->SetFullScreen(m_bFullScreen);
 
 		m_pT->wakeUp();
 		app.Run();

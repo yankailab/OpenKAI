@@ -48,7 +48,7 @@
 #include <open3d/visualization/visualizer/GuiSettingsModel.h>
 #include <open3d/visualization/visualizer/GuiSettingsView.h>
 #include <open3d/visualization/visualizer/GuiWidgets.h>
-#include <open3d/visualization/visualizer/Receiver.h>
+//#include <open3d/visualization/visualizer/Receiver.h>
 #include <open3d/visualization/visualizer/GuiVisualizer.h>
 #include <open3d/visualization/visualizer/O3DVisualizer.h>
 #include <open3d/visualization/visualizer/O3DVisualizerSelections.h>
