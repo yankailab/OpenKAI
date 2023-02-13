@@ -60,13 +60,13 @@ namespace kai
 
 	private:
 		_VisionBase *m_pV;
-		_WindowCV *m_pW;
+//		_WindowCV *m_pW;
 
 		float m_step;
 
 		// draw
 		Scalar m_drawCol;
-		cv::Ptr<freetype::FreeType2> m_pFt;
+//		cv::Ptr<freetype::FreeType2> m_pFt;
 	};
 
 }

@@ -684,7 +684,7 @@ namespace open3d
                     par.compressed = io::WritePointCloudOption::Compressed::Uncompressed;
 
                     shared_ptr<t::geometry::PointCloud> spTpc = GetGeometry(m_modelName).m_sTgeometry;
-                    io::WritePointCloudToPLY(path, spTpc->ToLegacyPointCloud(), par);
+                    io::WritePointCloudToPLY(path, spTpc->ToLegacy(), par);
                     CloseMsg();
                 });
                 ShowDialog(dlg);

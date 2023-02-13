@@ -95,6 +95,10 @@
 #include "../Application/3Dscan/_PCcalib.h"
 #endif
 
+#ifdef WITH_APP_3DSCAN && USE_VZENSE
+#include "../Application/3DscanVzense/_PCscanVzense.h"
+#endif
+
 #ifdef WITH_APP_ROBOTARM
 #include "../Application/RobotArm/_Sequencer.h"
 #ifdef USE_OPENCV
@@ -195,6 +199,16 @@
 #include "../IO/_WebSocket.h"
 #endif
 
+#ifdef WITH_LIDAR
+#ifdef USE_LIVOX
+#include "../LIDAR/Livox/_Livox.h"
+#include "../LIDAR/Livox/LivoxLidar.h"
+#endif
+#ifdef USE_VZENSE
+#include "../LIDAR/_VzensePC.h"
+#endif
+#endif
+
 #ifdef WITH_NAVIGATION
 #include "../Navigation/_GPS.h"
 #include "../Navigation/_RTCM3.h"
@@ -249,13 +263,9 @@
 #endif
 
 #ifdef WITH_SENSOR
-#include "../Sensor/_LeddarVu.h"
-#include "../Sensor/_TOFsense.h"
-#include "../Sensor/_BenewakeTF.h"
-#ifdef USE_LIVOX
-#include "../Sensor/Livox/_Livox.h"
-#include "../Sensor/Livox/LivoxLidar.h"
-#endif
+#include "../Sensor/Distance/_LeddarVu.h"
+#include "../Sensor/Distance/_TOFsense.h"
+#include "../Sensor/Distance/_BenewakeTF.h"
 #endif
 
 #ifdef WITH_SLAM

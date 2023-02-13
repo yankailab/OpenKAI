@@ -49,7 +49,7 @@ namespace kai
 
 	private:
 		_Remap *m_pR;
-		_WindowCV *m_pW;
+//		_WindowCV *m_pW;
 
 		// camera
 		vector<Point3f> m_vPo;			// world coordinates for 3D points
@@ -68,7 +68,7 @@ namespace kai
 		// draw
 		MSG_SHOW m_msg;
 		Scalar m_drawCol;
-		cv::Ptr<freetype::FreeType2> m_pFt;
+//		cv::Ptr<freetype::FreeType2> m_pFt;
 	};
 
 }

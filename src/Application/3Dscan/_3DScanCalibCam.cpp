@@ -13,16 +13,16 @@ namespace kai
 	_3DScanCalibCam::_3DScanCalibCam()
 	{
 		m_pR = NULL;
-		m_pW = NULL;
+//		m_pW = NULL;
 
 		m_iPreview = 0;
 		m_tPreview = 3;
-		m_vChessBoardSize.init(9, 6);
+		m_vChessBoardSize.set(9, 6);
 		m_squareSize = 1.0;
 		m_fCalib = "";
 
 		m_drawCol = Scalar(0, 255, 0);
-		m_pFt = NULL;
+//		m_pFt = NULL;
 	}
 
 	_3DScanCalibCam::~_3DScanCalibCam()
@@ -52,14 +52,14 @@ namespace kai
 		m_pR = (_Remap *)(pK->getInst(n));
 		IF_Fl(!m_pR, n + " not found");
 
-		n = "";
-		pK->v("_WindowCV", &n);
-		m_pW = (_WindowCV *)(pK->getInst(n));
-		IF_Fl(!m_pW, n + " not found");
+		// n = "";
+		// pK->v("_WindowCV", &n);
+		// m_pW = (_WindowCV *)(pK->getInst(n));
+		// IF_Fl(!m_pW, n + " not found");
 
-		m_pW->setCbBtn("Action", sOnBtnAction, this);
-		m_pW->setCbBtn("Save", sOnBtnSave, this);
-		m_pW->setCbBtn("Clear", sOnBtnClear, this);
+		// m_pW->setCbBtn("Action", sOnBtnAction, this);
+		// m_pW->setCbBtn("Save", sOnBtnSave, this);
+		// m_pW->setCbBtn("Clear", sOnBtnClear, this);
 
 		return true;
 	}
@@ -72,7 +72,7 @@ namespace kai
 
 	int _3DScanCalibCam::check(void)
 	{
-		NULL__(m_pW, -1);
+//		NULL__(m_pW, -1);
 		NULL__(m_pR, -1);
 		IF__(m_pR->BGR()->bEmpty(), -1);
 
@@ -102,11 +102,11 @@ namespace kai
 		Mat mR, mT;
 		cv::Size s = m_pR->BGR()->size();
 		calibrateCamera(m_vvPpo, m_vvPimg, s, m_mC, m_mD, mR, mT);
-		m_mC.at<double>(0, 0) /= (double)s.width;  //Fx
-		m_mC.at<double>(1, 1) /= (double)s.height; //Fy
-		m_mC.at<double>(0, 2) /= (double)s.width;  //Cx
-		m_mC.at<double>(1, 2) /= (double)s.height; //Cy
-		m_pR->setCamMatrices(m_mC, m_mD);
+		m_mC.at<double>(0, 0) /= (double)s.width;  // Fx
+		m_mC.at<double>(1, 1) /= (double)s.height; // Fy
+		m_mC.at<double>(0, 2) /= (double)s.width;  // Cx
+		m_mC.at<double>(1, 2) /= (double)s.height; // Cy
+//		m_pR->setCamMatrices(m_mC, m_mD);
 
 		clear();
 		return true;
@@ -140,11 +140,11 @@ namespace kai
 
 		string f = picojson::value(o).serialize();
 
-		_File *pF = new _File();
-		IF_F(!pF->open(&m_fCalib, ios::out));
-		pF->write((uint8_t *)f.c_str(), f.length());
-		pF->close();
-		DEL(pF);
+		// _File *pF = new _File();
+		// IF_F(!pF->open(&m_fCalib, ios::out));
+		// pF->write((uint8_t *)f.c_str(), f.length());
+		// pF->close();
+		// DEL(pF);
 
 		m_msg.set("Calibration saved");
 
@@ -168,7 +168,7 @@ namespace kai
 	{
 		NULL_(pInst);
 		((_3DScanCalibCam *)pInst)->save(f);
-	}\
+	}
 
 	// UI handler
 	void _3DScanCalibCam::action(void)
@@ -208,7 +208,7 @@ namespace kai
 
 	void _3DScanCalibCam::save(uint32_t f)
 	{
-		if (f & 1) //long push
+		if (f & 1) // long push
 		{
 			saveCalib();
 		}
@@ -222,7 +222,7 @@ namespace kai
 	void _3DScanCalibCam::drawCalibData(Mat *pM)
 	{
 		NULL_(pM);
-		NULL_(m_pFt);
+		//		NULL_(m_pFt);
 
 		int x = 100;
 		int y = 50;
@@ -246,43 +246,39 @@ namespace kai
 
 		for (int i = 0; i < n; i++)
 		{
-			m_pFt->putText(*pM, c[i],
-						   Point(x, y + s * i),
-						   20,
-						   Scalar(0, 255, 0),
-						   -1,
-						   cv::LINE_AA,
-						   false);
+			putText(*pM, c[i],
+					Point(x, y + s * i),
+					FONT_HERSHEY_SIMPLEX,
+					20,
+					Scalar(0, 255, 0));
 		}
 	}
 
 	void _3DScanCalibCam::drawMsg(Mat *pM)
 	{
 		NULL_(pM);
-		NULL_(m_pFt);
+		//		NULL_(m_pFt);
 
 		IF_(!m_msg.update());
 
-		int baseline = 0;
-		Size ts = m_pFt->getTextSize(m_msg.get(),
-									 40,
-									 -1,
-									 &baseline);
+		// int baseline = 0;
+		// Size ts = m_pFt->getTextSize(m_msg.get(),
+		// 							 40,
+		// 							 -1,
+		// 							 &baseline);
 
-		Point pt;
-		pt.x = constrain(320 - ts.width / 2, 0, pM->cols);
-		pt.y = constrain(pM->rows / 2 - ts.height, 0, pM->rows);
-		Scalar c = Scalar(0, 255, 0);
-		if (m_msg.m_type == 1)
-			c = Scalar(0, 0, 255);
+		// Point pt;
+		// pt.x = constrain(320 - ts.width / 2, 0, pM->cols);
+		// pt.y = constrain(pM->rows / 2 - ts.height, 0, pM->rows);
+		// Scalar c = Scalar(0, 255, 0);
+		// if (m_msg.m_type == 1)
+		// 	c = Scalar(0, 0, 255);
 
-		m_pFt->putText(*pM, m_msg.get(),
-					   pt,
-					   40,
-					   c,
-					   -1,
-					   cv::LINE_AA,
-					   false);
+		putText(*pM, m_msg.get(),
+				Point(10,10),
+				FONT_HERSHEY_SIMPLEX,
+				40,
+				Scalar(0, 255, 0));
 	}
 
 	void _3DScanCalibCam::draw(void *pFrame)
@@ -291,10 +287,10 @@ namespace kai
 		this->_ModuleBase::draw(pFrame);
 		IF_(check() < 0);
 
-		Frame *pF = (Frame*)pFrame;
+		Frame *pF = (Frame *)pFrame;
 		Mat *pMw = pF->m();
 		IF_(pMw->empty());
-		m_pFt = pWin->getFont();
+		//		m_pFt = pWin->getFont();
 
 		if (m_iPreview == 2)
 		{

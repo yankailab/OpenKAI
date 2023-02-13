@@ -69,7 +69,7 @@
 			"pTarget":5.0,
 			"pErr":0.01,
 			"pRange":[0,15],
-			"sTarget":10.0,
+			"sTarget":20.0,
 			"sRange":[0,300],
 			"aTarget":1.0,
 			"aRange":[1,300],

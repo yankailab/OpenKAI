@@ -98,13 +98,15 @@ namespace kai
 		ADD_MODULE(_RaspiWSbattery);
 #endif
 
-#ifdef WITH_APP_3DSCAN
-#ifdef USE_OPEN3D
+#ifdef WITH_APP_3DSCAN && USE_OPEN3D
 		ADD_MODULE(_3DScanCalibCam);
 		ADD_MODULE(_3DScanCalibOfs);
 		ADD_MODULE(_PCscan);
 		ADD_MODULE(_PCcalib);
 #endif
+
+#ifdef WITH_APP_3DSCAN && USE_VZENSE
+		ADD_MODULE(_PCscanVzense);
 #endif
 
 #ifdef WITH_APP_ROBOTARM
@@ -216,6 +218,16 @@ namespace kai
 #endif
 #endif
 
+#ifdef WITH_LIDAR
+#ifdef USE_LIVOX
+		ADD_MODULE(_Livox);
+		ADD_MODULE(LivoxLidar);
+#endif
+#ifdef USE_VZENSE
+		ADD_MODULE(_VzensePC);
+#endif
+#endif
+
 #ifdef WITH_NET
 		ADD_MODULE(_Curl);
 #endif
@@ -265,10 +277,6 @@ namespace kai
 		ADD_MODULE(_BenewakeTF);
 		ADD_MODULE(_TOFsense);
 		ADD_MODULE(_LeddarVu);
-#ifdef USE_LIVOX
-		ADD_MODULE(_Livox);
-		ADD_MODULE(LivoxLidar);
-#endif
 #endif
 
 #ifdef WITH_SLAM

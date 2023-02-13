@@ -17,7 +17,7 @@ namespace kai
 		m_speedH = 1.0;
 		m_hdg = 0.0;
 		m_r = 3.0;
-		m_vHome.init();
+		m_vHome.clear();
 		m_vHome.z = 20.0;
 		m_bAlt = true;
 
@@ -66,8 +66,8 @@ namespace kai
 	{
 		m_eH = 0.0;
 		m_eV = 0.0;
-		m_vHome.init();
-		m_vPos.init();
+		m_vHome.clear();
+		m_vPos.clear();
 		m_bSetHome = false;
 		this->State::reset();
 	}

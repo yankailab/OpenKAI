@@ -1,17 +1,16 @@
 /*
- * _PCscan.cpp
+ * _PCscanVzense.cpp
  *
  *  Created on: May 28, 2020
  *      Author: yankai
  */
 
-#include "_PCscan.h"
+#include "_PCscanVzense.h"
 
 namespace kai
 {
-	_PCscan::_PCscan()
+	_PCscanVzense::_PCscanVzense()
 	{
-//		m_pPS = NULL;
 		m_pNav = NULL;
 		m_pTk = NULL;
 
@@ -20,12 +19,12 @@ namespace kai
 		m_fProcess.clearAll();
 	}
 
-	_PCscan::~_PCscan()
+	_PCscanVzense::~_PCscanVzense()
 	{
 		DEL(m_pTk);
 	}
 
-	bool _PCscan::init(void *pKiss)
+	bool _PCscanVzense::init(void *pKiss)
 	{
 		IF_F(!this->_GeometryViewer::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
@@ -36,10 +35,6 @@ namespace kai
 		string n = "";
 		pK->v("_NavBase", &n);
 		m_pNav = (_NavBase *)(pK->getInst(n));
-
-		// n = "";
-		// pK->v("_PCstream", &n);
-		// m_pPS = (_PCstream *)(pK->getInst(n));
 
 		Kiss *pKk = pK->child("threadK");
 		IF_F(pKk->empty());
@@ -53,7 +48,7 @@ namespace kai
 		return true;
 	}
 
-	bool _PCscan::start(void)
+	bool _PCscanVzense::start(void)
 	{
 		NULL_F(m_pT);
 		IF_F(!m_pT->start(getUpdate, this));
@@ -67,9 +62,8 @@ namespace kai
 		return true;
 	}
 
-	int _PCscan::check(void)
+	int _PCscanVzense::check(void)
 	{
-//		NULL__(m_pPS, -1);
 		NULL__(m_pNav, -1);
 		NULL__(m_pWin, -1);
 		IF__(m_vpGB.empty(),-1);
@@ -77,7 +71,7 @@ namespace kai
 		return this->_GeometryViewer::check();
 	}
 
-	void _PCscan::update(void)
+	void _PCscanVzense::update(void)
 	{
 		m_pT->sleepT(0);
 
@@ -111,7 +105,7 @@ namespace kai
 		}
 	}
 
-	void _PCscan::startScan(void)
+	void _PCscanVzense::startScan(void)
 	{
 		IF_(check() < 0);
 
@@ -137,7 +131,7 @@ namespace kai
 		m_pWin->CloseDialog();
 	}
 
-	void _PCscan::stopScan(void)
+	void _PCscanVzense::stopScan(void)
 	{
 		IF_(check() < 0);
 
@@ -155,7 +149,7 @@ namespace kai
 		m_pWin->CloseDialog();
 	}
 
-	void _PCscan::updateScan(void)
+	void _PCscanVzense::updateScan(void)
 	{
 		IF_(check() < 0);
 
@@ -186,11 +180,11 @@ namespace kai
 		}
 
 		updateUIpc(pc);
-		PCscanUI* pW = (PCscanUI*)m_pWin;
+		PCscanUIVzense* pW = (PCscanUIVzense*)m_pWin;
 		pW->SetProgressBar((float)pPS->iP() / (float)pPS->nP());
 	}
 
-	void _PCscan::updateCamAuto(void)
+	void _PCscanVzense::updateCamAuto(void)
 	{
 		IF_(check() < 0);
 
@@ -202,7 +196,7 @@ namespace kai
 		updateCamPose();
 	}
 
-	void _PCscan::updateProcess(void)
+	void _PCscanVzense::updateProcess(void)
 	{
 		IF_(check() < 0);
 
@@ -246,7 +240,7 @@ namespace kai
 		}
 	}
 
-	void _PCscan::updateKinematics(void)
+	void _PCscanVzense::updateKinematics(void)
 	{
 		while (m_pTk->bRun())
 		{
@@ -258,7 +252,7 @@ namespace kai
 		}
 	}
 
-	void _PCscan::updateSlam(void)
+	void _PCscanVzense::updateSlam(void)
 	{
 		IF_(check() < 0);
 		IF_(!m_fProcess.b(pc_Scanning));
@@ -272,12 +266,12 @@ namespace kai
 		}
 	}
 
-	void _PCscan::updateUI(void)
+	void _PCscanVzense::updateUI(void)
 	{
 		auto &app = gui::Application::GetInstance();
 		app.Initialize(m_pathRes.c_str());
 
-		m_pWin = new PCscanUI(*this->getName(), 2000, 1000);
+		m_pWin = new PCscanUIVzense(*this->getName(), 2000, 1000);
 		m_pUIstate = m_pWin->getUIState();
 		m_pUIstate->m_bSceneCache = m_bSceneCache;
 		m_pUIstate->m_mouseMode = (visualization::gui::SceneWidget::Controls)m_mouseMode;
@@ -287,8 +281,8 @@ namespace kai
 		m_pUIstate->m_btnPaddingV = m_vBtnPadding.y;
 		m_pUIstate->m_dirSave = m_dirSave;
 		m_pWin->Init();
-		PCscanUI* pW = (PCscanUI*)m_pWin;
-		app.AddWindow(shared_ptr<PCscanUI>(pW));
+		PCscanUIVzense* pW = (PCscanUIVzense*)m_pWin;
+		app.AddWindow(shared_ptr<PCscanUIVzense>(pW));
 
 		pW->SetCbScan(OnScan, (void *)this);
 		pW->SetCbOpenPC(OnOpenPC, (void *)this);
@@ -309,11 +303,11 @@ namespace kai
 		exit(0);
 	}
 
-	void _PCscan::OnScan(void *pPCV, void *pD)
+	void _PCscanVzense::OnScan(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		NULL_(pD);
-		_PCscan *pV = (_PCscan *)pPCV;
+		_PCscanVzense *pV = (_PCscanVzense *)pPCV;
 
 		if (*((bool *)pD))
 			pV->m_fProcess.set(pc_ScanStart);
@@ -321,11 +315,11 @@ namespace kai
 			pV->m_fProcess.set(pc_ScanStop);
 	}
 
-	void _PCscan::OnOpenPC(void *pPCV, void *pD)
+	void _PCscanVzense::OnOpenPC(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		NULL_(pD);
-		_PCscan *pV = (_PCscan *)pPCV;
+		_PCscanVzense *pV = (_PCscanVzense *)pPCV;
 
 		if (io::ReadPointCloud((const char *)pD, *pV->m_sPC.next()))
 			pV->updatePC();
@@ -333,11 +327,11 @@ namespace kai
 		pV->m_fProcess.set(pc_ResetPC);
 	}
 
-	void _PCscan::OnCamSet(void *pPCV, void *pD)
+	void _PCscanVzense::OnCamSet(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		NULL_(pD);
-		_PCscan *pV = (_PCscan *)pPCV;
+		_PCscanVzense *pV = (_PCscanVzense *)pPCV;
 		int camMode = *(int *)pD;
 
 		if(camMode == 0)	//auto off
@@ -359,24 +353,24 @@ namespace kai
 		}
 	}
 
-	void _PCscan::OnHiddenRemove(void *pPCV, void *pD)
+	void _PCscanVzense::OnHiddenRemove(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
-		_PCscan *pV = (_PCscan *)pPCV;
+		_PCscanVzense *pV = (_PCscanVzense *)pPCV;
 		pV->m_fProcess.set(pc_HiddenRemove);
 	}
 
-	void _PCscan::OnVoxelDown(void *pPCV, void *pD)
+	void _PCscanVzense::OnVoxelDown(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
-		_PCscan *pV = (_PCscan *)pPCV;
+		_PCscanVzense *pV = (_PCscanVzense *)pPCV;
 		pV->m_fProcess.set(pc_VoxelDown);
 	}
 
-	void _PCscan::OnResetPC(void *pPCV, void *pD)
+	void _PCscanVzense::OnResetPC(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
-		_PCscan *pV = (_PCscan *)pPCV;
+		_PCscanVzense *pV = (_PCscanVzense *)pPCV;
 		pV->m_fProcess.set(pc_ResetPC);
 	}
 

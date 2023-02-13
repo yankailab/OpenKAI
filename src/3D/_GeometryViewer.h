@@ -69,6 +69,7 @@ namespace kai
 		void updateCamProj(void);
 		void updateCamPose(void);
 		void camBound(const AxisAlignedBoundingBox& aabb);
+		AxisAlignedBoundingBox createDefaultAABB(void);
 		virtual void updateUI(void);
 		static void *getUpdateUI(void *This)
 		{
@@ -101,6 +102,7 @@ namespace kai
 		PC_CAM m_camDefault;
 		PC_CAM m_camAuto;
 		vFloat3 m_vCoR;
+		AxisAlignedBoundingBox m_aabb;
 
 		vector<_GeometryBase *> m_vpGB;
 	};

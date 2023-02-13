@@ -25,9 +25,9 @@ namespace kai
 		m_fLaserPower = 1.0;
 
 		m_bOpen = false;
-		m_vWHc.init(1280, 720);
-		m_vWHd.init(640, 480);
-		m_vRz.init(0.0, FLT_MAX);
+		m_vWHc.set(1280, 720);
+		m_vWHd.set(640, 480);
+		m_vRz.set(0.0, FLT_MAX);
 	}
 
 	_PCrs::~_PCrs()

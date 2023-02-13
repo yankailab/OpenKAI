@@ -22,8 +22,8 @@ namespace kai
 
 		void init(void)
 		{
-			m_vP.init();
-			m_vV.init();
+			m_vP.clear();
+			m_vV.clear();
 			m_vErr.set(1e-5); //deg, roughtly ~1m
 		}
 

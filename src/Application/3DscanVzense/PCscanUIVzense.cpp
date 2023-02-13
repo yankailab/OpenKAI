@@ -1,5 +1,5 @@
 #ifdef USE_OPEN3D
-#include "PCscanUI.h"
+#include "PCscanUIVzense.h"
 
 namespace open3d
 {
@@ -16,15 +16,15 @@ namespace open3d
                 }
             }
 
-            PCscanUI::PCscanUI(const string &title, int width, int height)
+            PCscanUIVzense::PCscanUIVzense(const string &title, int width, int height)
                 : O3DUI(title, width, height)
             {
                 //                Init();
             }
 
-            PCscanUI::~PCscanUI() {}
+            PCscanUIVzense::~PCscanUIVzense() {}
 
-            void PCscanUI::Init(void)
+            void PCscanUIVzense::Init(void)
             {
                 this->O3DUI::Init();
 
@@ -40,7 +40,7 @@ namespace open3d
                 Application::GetInstance().SetMenubar(NULL);
             }
 
-            void PCscanUI::camMove(Vector3f vM)
+            void PCscanUIVzense::camMove(Vector3f vM)
             {
                 auto pC = m_pScene->GetScene()->GetCamera();
                 auto mm = pC->GetModelMatrix();
@@ -53,7 +53,7 @@ namespace open3d
                 m_pScene->ForceRedraw();
             }
 
-            void PCscanUI::UpdateUIstate(void)
+            void PCscanUIVzense::UpdateUIstate(void)
             {
                 m_panelCtrl->SetVisible(m_uiState.m_bShowPanel);
                 UpdateBtnState();
@@ -61,7 +61,7 @@ namespace open3d
                 this->O3DUI::UpdateUIstate();
             }
 
-            void PCscanUI::UpdateBtnState(void)
+            void PCscanUIVzense::UpdateBtnState(void)
             {
                 m_btnScan->SetOn(m_bScanning);
                 m_btnCamAuto->SetOn(m_bCamAuto);
@@ -95,7 +95,7 @@ namespace open3d
                 m_pScene->ForceRedraw();
             }
 
-            void PCscanUI::SetMouseCameraMode(void)
+            void PCscanUIVzense::SetMouseCameraMode(void)
             {
                 if (m_sVertex->IsActive() && m_sVertex->GetNumberOfSets() > 0)
                     m_sVertex->MakeInactive();
@@ -104,44 +104,44 @@ namespace open3d
                 m_uiMode = uiMode_cam;
             }
 
-            void PCscanUI::SetProgressBar(float v)
+            void PCscanUIVzense::SetProgressBar(float v)
             {
                 m_progScan->SetValue(v);
                 string s = "Memory used: " + i2str((int)(v * 100)) + "%";
                 m_labelProg->SetText(s.c_str());
             }
 
-            void PCscanUI::SetCbScan(OnCbO3DUI pCb, void *pPCV)
+            void PCscanUIVzense::SetCbScan(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbScan.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbOpenPC(OnCbO3DUI pCb, void *pPCV)
+            void PCscanUIVzense::SetCbOpenPC(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbOpenPC.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbCamSet(OnCbO3DUI pCb, void *pPCV)
+            void PCscanUIVzense::SetCbCamSet(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbCamSet.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbVoxelDown(OnCbO3DUI pCb, void *pPCV)
+            void PCscanUIVzense::SetCbVoxelDown(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbVoxelDown.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbHiddenRemove(OnCbO3DUI pCb, void *pPCV)
+            void PCscanUIVzense::SetCbHiddenRemove(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbHiddenRemove.add(pCb, pPCV);
             }
 
-            void PCscanUI::SetCbResetPC(OnCbO3DUI pCb, void *pPCV)
+            void PCscanUIVzense::SetCbResetPC(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbResetPC.add(pCb, pPCV);
             }
 
-            void PCscanUI::Layout(const gui::LayoutContext &context)
+            void PCscanUIVzense::Layout(const gui::LayoutContext &context)
             {
                 int settings_width = m_uiState.m_wPanel * context.theme.font_size;
 
@@ -159,7 +159,7 @@ namespace open3d
                 gui::Window::Layout(context);
             }
 
-            void PCscanUI::InitCtrlPanel(void)
+            void PCscanUIVzense::InitCtrlPanel(void)
             {
                 auto em = GetTheme().font_size;
                 auto half_em = int(round(0.5f * float(em)));
@@ -360,7 +360,7 @@ namespace open3d
                 panelScan->AddChild(GiveOwnership(pH));
             }
 
-            void PCscanUI::UpdateSelectableGeometry(void)
+            void PCscanUIVzense::UpdateSelectableGeometry(void)
             {
                 vector<SceneWidget::PickableGeometry> pickable;
                 for (auto &o : m_vObject)
@@ -373,7 +373,7 @@ namespace open3d
                 m_sVertex->SetSelectableGeometry(pickable);
             }
 
-            void PCscanUI::OnSaveRGB(void)
+            void PCscanUIVzense::OnSaveRGB(void)
             {
                 string fName = getBaseDirSave();
                 if (fName.empty())
@@ -398,7 +398,7 @@ namespace open3d
                 // ShowDialog(dlg);
             }
 
-            void PCscanUI::OnSavePLY(void)
+            void PCscanUIVzense::OnSavePLY(void)
             {
                 string fName = getBaseDirSave();
                 if (fName.empty())
@@ -442,7 +442,7 @@ namespace open3d
                 // ShowDialog(dlg);
             }
 
-            void PCscanUI::OnOpenPLY(void)
+            void PCscanUIVzense::OnOpenPLY(void)
             {
                 auto dlg = make_shared<gui::FileDialog>(
                     gui::FileDialog::Mode::OPEN, "Save File", this->GetTheme());

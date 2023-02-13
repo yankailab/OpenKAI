@@ -4,6 +4,7 @@
 	"appName":"PCscan",
 	"bLog":1,
 	"bStdErr":1,
+	"/rc":"umount /dev/mmcblk0p1",
 }
 
 {
@@ -14,40 +15,20 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["cam","RGBview","pcScan"],
+	"vBASE":["pcScan"],
 }
 
 {
-	"name":"RGBview",
-	"class":"_WindowCV",
-	"bON":0,
-	"bFullScreen":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"vBASE":["cam"],
-}
-
-{
-	"name":"cam",
-	"class":"_GStreamer",
-	"bON":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! appsink",
-	"/pipeline":"nvarguscamerasrc sensor-id=0 ! video/x-raw(memory:NVMM), width=1920, height=1080, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)1920, height=(int)1080, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink",
-}
-
-{
-	"name":"GViewer",
-	"class":"_GeometryViewer",
+	"name":"pcScanVzense",
+	"class":"_PCscanVzense",
 	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
+	}
+    {
+		"name":"threadK",
+		"FPS":200,
 	}
     {
 		"name":"threadUI",
@@ -56,13 +37,11 @@
 	"vWinSize":[1920,1080],
 	"pathRes":"/usr/local/bin/Open3D/resources",
 	"device":"CPU:0",
+	"_NavBase":"T265",
 	"vGeometryBase":["pcFile"],
 	"vCamLookAt":[0,0,0],
 	"vCamEye":[0,0,2],
 	"vCamUp":[0,1,0],
-	"/vCamAutoLookAt":[0,0,0],
-	"/vCamAutoEye":[0,-2,0],
-	"/vCamAutoUp":[0,1,0],
 	"vCamAutoLookAt":[0,0,0],
 	"vCamAutoEye":[0,2,0],
 	"vCamAutoUp":[0,1,0],
@@ -77,7 +56,7 @@
 	"vDmove":[0.5, 5.0],
 	"rDummyDome":1000.0,
 	"dHiddenRemove":100.0,
-	"dirSave":"/home/kai/Documents/",
+	"dirSave":"/media/kai/",
 	"/dirSave":"/media/lab/",
 }
 
@@ -90,4 +69,41 @@
 		"FPS":30,
 	}
 	"fName":"/home/kai/Documents/test_data/fragment.pcd",
+}
+
+{
+	"name":"pcLivox",
+	"class":"_Livox",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"bLog":0,
+	"LivoxLidar":"LivoxLidar",
+	"/broadcastCode":"",
+	"nP":500000,
+	"vRange":[0.5, 500],
+	"vAxisIdx":[1, 0, 2],
+	"vAxisK":[1, -1, 1],
+	"/vAxisK":[-1, 1, 1],
+	"unitK":0.001,
+	"_Remap":"remap",
+	"vAxisIdxRGB":[1, 2, 0],
+	"vAxisKrgb":[-1, -1, 1],
+	"lidarMode":2,
+	"fCalib":"/home/kai/3Dscan/calibOfs.kiss",
+	"/fCalib":"/home/lab/3Dscan/calibOfs.kiss",
+	"scanPattern":0,
+}
+
+{
+	"name":"T265",
+	"class":"_RStracking",
+    {
+		"name":"thread",
+		"FPS":200,
+	}
+	"bON":1,
+	"bLog":1,
 }

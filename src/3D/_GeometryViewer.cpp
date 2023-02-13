@@ -122,6 +122,7 @@ namespace kai
 			readAllPC();
 
 		removeUIpc();
+//		addDummyDome(m_sPC.next(), m_nPread, m_rDummyDome, {1,1,1});
 		updatePC();
 		addUIpc(*m_sPC.get());
 
@@ -170,8 +171,6 @@ namespace kai
 		{
 			readPC(pGB);
 		}
-
-		updatePC();
 	}
 
 	void _GeometryViewer::addDummyDome(PointCloud *pPC, int n, float r, Vector3d vCol)
@@ -250,21 +249,38 @@ namespace kai
 		app.Initialize(m_pathRes.c_str());
 
 		m_pWin = new O3DUI(*this->getName(), 2000, 1000);
-		m_pWin->Init();
-		app.AddWindow(shared_ptr<O3DUI>(m_pWin));
-
 		m_pUIstate = m_pWin->getUIState();
 		m_pUIstate->m_bSceneCache = m_bSceneCache;
 		m_pUIstate->m_mouseMode = (visualization::gui::SceneWidget::Controls)m_mouseMode;
 		m_pUIstate->m_wPanel = m_wPanel;
 		m_pUIstate->m_sMove = m_vDmove.x;
 		m_pUIstate->m_dirSave = m_dirSave;
+		m_pWin->Init();
+		app.AddWindow(shared_ptr<O3DUI>(m_pWin));
+
 		m_pWin->UpdateUIstate();
 		//		m_pWin->SetFullScreen(m_bFullScreen);
+		m_aabb = createDefaultAABB();
+		camBound(m_aabb);
+		updateCamProj();
+		updateCamPose();
 
 		m_pT->wakeUp();
 		app.Run();
 		exit(0);
 	}
+
+	AxisAlignedBoundingBox _GeometryViewer::createDefaultAABB(void)
+	{
+		PointCloud pc;
+		pc.points_.push_back(Vector3d(0,0,1));
+		pc.points_.push_back(Vector3d(0,0,-1));
+		pc.points_.push_back(Vector3d(0,1,0));
+		pc.points_.push_back(Vector3d(0,-1,0));
+		pc.points_.push_back(Vector3d(1,0,0));
+		pc.points_.push_back(Vector3d(-1,0,0));
+		return pc.GetAxisAlignedBoundingBox();
+	}
+
 
 }

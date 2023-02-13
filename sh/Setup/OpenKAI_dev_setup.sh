@@ -73,13 +73,13 @@ sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/us
 
 # CuDNN, download the latest .deb from NVIDIA site
 sudo dpkg -i cudnn-local-repo-ubuntu2204-8.8.0.121_1.0-1_amd64.deb
-sudo dpkg -i libcudnn7-dev_7.6.5.32-1+cuda10.2_amd64.deb
+#sudo dpkg -i libcudnn7-dev_7.6.5.32-1+cuda10.2_amd64.deb
 
 #----------------------------------------------------
 # CMake
-wget https://github.com/Kitware/CMake/releases/download/v3.25.1/cmake-3.25.1.tar.gz
-tar xvf cmake-3.25.1.tar.gz
-cd cmake-3.25.1
+wget https://github.com/Kitware/CMake/releases/download/v3.25.2/cmake-3.25.2.tar.gz
+tar xvf cmake-3.25.2.tar.gz
+cd cmake-3.25.2
 ./bootstrap
 make -j$(nproc)
 sudo make install

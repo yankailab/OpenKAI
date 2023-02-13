@@ -38,7 +38,7 @@ namespace kai
 
 	void Loiter::reset(void)
 	{
-		m_vPos.init();
+		m_vPos.clear();
 		this->State::reset();
 	}
 
