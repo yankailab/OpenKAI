@@ -1,7 +1,7 @@
 {
 	"name":"APP",
 	"class":"Startup",
-	"appName":"PCscan",
+	"appName":"Open3D",
 	"bLog":1,
 	"bStdErr":1,
 }
@@ -56,7 +56,7 @@
 	"vWinSize":[1920,1080],
 	"pathRes":"/usr/local/bin/Open3D/resources",
 	"device":"CPU:0",
-	"vGeometryBase":["pcFile"],
+	"vGeometryBase":["pcFile","VzensePC"],
 	"vCamLookAt":[0,0,0],
 	"vCamEye":[0,0,2],
 	"vCamUp":[0,1,0],
@@ -82,9 +82,27 @@
 }
 
 {
+	"name":"VzensePC",
+	"class":"_VzensePC",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":25,
+	}
+	"URI":"",
+	"vSize":[800,600],
+	"bRGB":0,
+	"bDepth":0,
+	"btRGB":0,
+	"btDepth":1,
+	"nPCreserve":480000,
+}
+
+{
 	"name":"pcFile",
 	"class":"_PCfile",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,

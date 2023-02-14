@@ -61,6 +61,23 @@
 }
 
 {
+	"name":"VzensePC",
+	"class":"_VzensePC",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":25,
+	}
+	"URI":"",
+	"vSize":[1600,1200],
+	"bRGB":1,
+	"bDepth":0,
+	"btRGB":0,
+	"btDepth":0,
+}
+
+{
 	"name":"pcFile",
 	"class":"_PCfile",
 	"bON":1,

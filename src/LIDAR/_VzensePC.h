@@ -9,6 +9,9 @@
 #define OpenKAI_src_LIDAR_VzensePC_H_
 
 #include "../3D/PointCloud/_PCframe.h"
+#include "../Utility/util.h"
+#include "../IPC/_SharedMem.h"
+#include <VzenseNebula_api.h>
 
 namespace kai
 {
@@ -19,14 +22,14 @@ namespace kai
 		_VzensePC();
 		virtual ~_VzensePC();
 
-		bool init(void *pKiss);
-		bool open(void);
-		bool start(void);
-		int check(void);
+		virtual bool init(void *pKiss);
+		virtual bool start(void);
+		virtual int check(void);
+		virtual bool open(void);
+		virtual void close(void);
 
 	private:
-		void sensorReset(void);
-		bool updateRS(void);
+		bool updateVzense(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -35,22 +38,31 @@ namespace kai
 		}
 
 	public:
-		string m_rsSN;
-		float m_fFilterManitude;
-		float m_fHolesFill;
-		bool m_bAlign;
-		float m_fEmitter;
-		float m_fLaserPower;
-
-		int m_rsFPS;
-		int m_rsDFPS;
-		bool m_bRsRGB;
-		string m_vPreset;
+		uint32_t m_nDevice;
+		VzDeviceInfo *m_pDeviceListInfo;
+		string m_deviceURI;
+		VzDeviceHandle m_deviceHandle;
+        VzSensorIntrinsicParameters m_cameraParameters;
 
 		bool m_bOpen;
-		vInt2 m_vWHc;
-		vInt2 m_vWHd;
-		shared_ptr<Image> m_spImg;
+		vInt2 m_vSize;
+		uint16_t m_tWait;
+
+		bool m_bDepth;
+		bool m_bIR;
+		bool m_bRGB;
+		bool m_btDepth;
+		bool m_btRGB;
+
+        VzFrame m_vzfRGB;
+        VzFrame m_vzfDepth;
+        VzFrame m_vzfTransformedDepth;
+        VzFrame m_vzfTransformedRGB;
+        VzFrame m_vzfIR;
+
+//		_SharedMem* m_psmTransformedDepth;
+
+		VzVector3f* m_pVzVw; // world vector
 		vFloat2 m_vRz; //z region
 	};
 
