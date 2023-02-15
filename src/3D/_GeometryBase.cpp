@@ -81,20 +81,20 @@ namespace kai
         // pK->v("_Remap", &n);
         // m_pR = (_Remap *)(pK->getInst(n));
 
-        // n = "";
-        // pK->v("fCalib", &n);
-        // Kiss *pKf = new Kiss();
-        // if (parseKiss(n, pKf))
-        // {
-        //     pK = pKf->child("calib");
-        //     IF_d_T(pK->empty(), DEL(pKf));
+        n = "";
+        pK->v("fCalib", &n);
+        Kiss *pKf = new Kiss();
+        if (parseKiss(n, pKf))
+        {
+            pK = pKf->child("calib");
+            IF_d_T(pK->empty(), DEL(pKf));
 
-        //     pK->v("vOffsetPt", &m_vToffset);
-        //     pK->v("vOffsetPr", &m_vRoffset);
-        //     pK->v("vOffsetCt", &m_vToffsetRGB);
-        //     pK->v("vOffsetCr", &m_vRoffsetRGB);
-        // }
-        // DEL(pKf);
+            pK->v("vOffsetPt", &m_vToffset);
+            pK->v("vOffsetPr", &m_vRoffset);
+//            pK->v("vOffsetCt", &m_vToffsetRGB);
+//            pK->v("vOffsetCr", &m_vRoffsetRGB);
+        }
+        DEL(pKf);
 
         setOffset(m_vToffset, m_vRoffset);
 //        setRGBoffset(m_vToffsetRGB, m_vRoffsetRGB);

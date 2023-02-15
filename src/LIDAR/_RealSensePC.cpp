@@ -1,16 +1,16 @@
 /*
- * _PCrs.cpp
+ * _RealSensePC.cpp
  *
  *  Created on: May 24, 2020
  *      Author: yankai
  */
 
-#include "_PCrs.h"
+#include "_RealSensePC.h"
 
 namespace kai
 {
 
-	_PCrs::_PCrs()
+	_RealSensePC::_RealSensePC()
 	{
 		m_rsSN = "";
 		m_vPreset = "Short Range";
@@ -30,12 +30,12 @@ namespace kai
 		m_vRz.set(0.0, FLT_MAX);
 	}
 
-	_PCrs::~_PCrs()
+	_RealSensePC::~_RealSensePC()
 	{
 		DEL(m_rspAlign);
 	}
 
-	bool _PCrs::init(void *pKiss)
+	bool _RealSensePC::init(void *pKiss)
 	{
 		IF_F(!_PCframe::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
@@ -58,7 +58,7 @@ namespace kai
 		return true;
 	}
 
-	bool _PCrs::open(void)
+	bool _RealSensePC::open(void)
 	{
 		IF_T(m_bOpen);
 
@@ -162,7 +162,7 @@ namespace kai
 		return true;
 	}
 
-	void _PCrs::sensorReset(void)
+	void _RealSensePC::sensorReset(void)
 	{
 		//    m_rsConfig.resolve(m_rsPipe).get_device().hardware_reset();
 
@@ -170,18 +170,18 @@ namespace kai
 		dev.hardware_reset();
 	}
 
-	bool _PCrs::start(void)
+	bool _RealSensePC::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _PCrs::check(void)
+	int _RealSensePC::check(void)
 	{
 		return this->_PCframe::check();
 	}
 
-	void _PCrs::update(void)
+	void _RealSensePC::update(void)
 	{
 		while (m_pT->bRun())
 		{
@@ -213,7 +213,7 @@ namespace kai
 		}
 	}
 
-	bool _PCrs::updateRS(void)
+	bool _RealSensePC::updateRS(void)
 	{
 		IF_T(check() < 0);
 

@@ -1,26 +1,26 @@
 /*
- * _PCscanVzense.h
+ * _VzScan.h
  *
  *  Created on: May 28, 2020
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Application_PCscanVzense__PCscanVzense_H_
-#define OpenKAI_src_Application_PCscanVzense__PCscanVzense_H_
+#ifndef OpenKAI_src_Application_VzScan__VzScan_H_
+#define OpenKAI_src_Application_VzScan__VzScan_H_
 
 #include "../../3D/PointCloud/_PCstream.h"
 #include "../../3D/_GeometryViewer.h"
 #include "../../Navigation/_NavBase.h"
 #include "../../Utility/BitFlag.h"
-#include "PCscanUIVzense.h"
+#include "VzScanUI.h"
 
 namespace kai
 {
-	class _PCscanVzense : public _GeometryViewer
+	class _VzScan : public _GeometryViewer
 	{
 	public:
-		_PCscanVzense();
-		virtual ~_PCscanVzense();
+		_VzScan();
+		virtual ~_VzScan();
 
 		virtual bool init(void *pKiss);
 		virtual bool start(void);
@@ -36,7 +36,7 @@ namespace kai
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_PCscanVzense *)This)->update();
+			((_VzScan *)This)->update();
 			return NULL;
 		}
 
@@ -45,7 +45,7 @@ namespace kai
 		virtual void updateKinematics(void);
 		static void *getUpdateKinematics(void *This)
 		{
-			((_PCscanVzense *)This)->updateKinematics();
+			((_VzScan *)This)->updateKinematics();
 			return NULL;
 		}
 
@@ -53,7 +53,7 @@ namespace kai
 		virtual void updateUI(void);
 		static void *getUpdateUI(void *This)
 		{
-			((_PCscanVzense *)This)->updateUI();
+			((_VzScan *)This)->updateUI();
 			return NULL;
 		}
 

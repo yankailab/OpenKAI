@@ -56,13 +56,11 @@
 	"vWinSize":[1920,1080],
 	"pathRes":"/usr/local/bin/Open3D/resources",
 	"device":"CPU:0",
+	"nPreserve":480000,
 	"vGeometryBase":["pcFile","VzensePC"],
 	"vCamLookAt":[0,0,0],
 	"vCamEye":[0,0,2],
 	"vCamUp":[0,1,0],
-	"/vCamAutoLookAt":[0,0,0],
-	"/vCamAutoEye":[0,-2,0],
-	"/vCamAutoUp":[0,1,0],
 	"vCamAutoLookAt":[0,0,0],
 	"vCamAutoEye":[0,2,0],
 	"vCamAutoUp":[0,1,0],
@@ -92,11 +90,12 @@
 	}
 	"URI":"",
 	"vSize":[800,600],
-	"bRGB":0,
-	"bDepth":0,
-	"btRGB":0,
-	"btDepth":1,
-	"nPCreserve":480000,
+	"btRGB":1,
+	"btDepth":0,
+	"nPreserve":480000,
+	"vAxisIdx":[0, 1, 2],
+	"vAxisK":[-1, -1, 1],
+	"fCalib":"/home/kai/3Dscan/calibOfs.kiss",
 }
 
 {

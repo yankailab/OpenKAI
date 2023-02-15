@@ -26,7 +26,7 @@
 
 {
 	"name":"pcRS",
-	"class":"_PCrs",
+	"class":"_RealSensePC",
 	"bON":1,
     {
 		"name":"thread",

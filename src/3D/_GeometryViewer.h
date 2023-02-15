@@ -58,6 +58,7 @@ namespace kai
 		void removeUIpc(void);
 		void readAllPC(void);
 		void addDummyDome(PointCloud* pPC, int n, float r, Vector3d vCol = {0,0,0});
+		virtual void updateGeometry(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{

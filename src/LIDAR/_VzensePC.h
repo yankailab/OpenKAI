@@ -48,16 +48,12 @@ namespace kai
 		vInt2 m_vSize;
 		uint16_t m_tWait;
 
-		bool m_bDepth;
-		bool m_bIR;
-		bool m_bRGB;
 		bool m_btDepth;
 		bool m_btRGB;
+		bool m_bIR;
 
         VzFrame m_vzfRGB;
         VzFrame m_vzfDepth;
-        VzFrame m_vzfTransformedDepth;
-        VzFrame m_vzfTransformedRGB;
         VzFrame m_vzfIR;
 
 //		_SharedMem* m_psmTransformedDepth;

@@ -15,7 +15,7 @@ namespace kai
     _PCframe::_PCframe()
     {
         m_type = pc_frame;
-
+        m_nP = 0;
         pthread_mutex_init(&m_mutexPC, NULL);
     }
 
@@ -30,14 +30,13 @@ namespace kai
         Kiss *pK = (Kiss *)pKiss;
 
         //frame buf
-        int nPCreserve = 0;
-        pK->v("nPCreserve", &nPCreserve);
-        if (nPCreserve > 0)
+        pK->v("nPreserve", &m_nP);
+        if (m_nP > 0)
         {
-            m_sPC.get()->points_.reserve(nPCreserve);
-            m_sPC.get()->colors_.reserve(nPCreserve);
-            m_sPC.next()->points_.reserve(nPCreserve);
-            m_sPC.next()->colors_.reserve(nPCreserve);
+            m_sPC.get()->points_.reserve(m_nP);
+            m_sPC.get()->colors_.reserve(m_nP);
+            m_sPC.next()->points_.reserve(m_nP);
+            m_sPC.next()->colors_.reserve(m_nP);
         }
 
         return true;
@@ -111,4 +110,8 @@ namespace kai
         return m_sPC.get()->points_.size();
     }
 
+    int _PCframe::nP(void)
+    {
+        return m_nP;
+    }
 }

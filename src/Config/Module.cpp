@@ -106,7 +106,7 @@ namespace kai
 #endif
 
 #ifdef WITH_APP_3DSCAN && USE_VZENSE
-		ADD_MODULE(_PCscanVzense);
+		ADD_MODULE(_VzScan);
 #endif
 
 #ifdef WITH_APP_ROBOTARM
@@ -226,6 +226,9 @@ namespace kai
 #ifdef USE_VZENSE
 		ADD_MODULE(_VzensePC);
 #endif
+#ifdef USE_REALSENSE
+		ADD_MODULE(_RealSensePC);
+#endif
 #endif
 
 #ifdef WITH_NET
@@ -250,9 +253,6 @@ namespace kai
 		ADD_MODULE(_PCregistCol);
 		ADD_MODULE(_PCregistICP);
 		ADD_MODULE(_PCregistGlobal);
-#ifdef USE_REALSENSE
-		ADD_MODULE(_PCrs);
-#endif
 #endif
 #endif
 

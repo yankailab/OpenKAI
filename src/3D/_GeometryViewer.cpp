@@ -121,9 +121,13 @@ namespace kai
 		while (m_nPread <= 0)
 			readAllPC();
 
-		removeUIpc();
-//		addDummyDome(m_sPC.next(), m_nPread, m_rDummyDome, {1,1,1});
+		if (m_nPread < m_nP)
+		{
+			addDummyDome(m_sPC.next(), m_nP - m_nPread, m_rDummyDome, {0, 0, 0});
+		}
+
 		updatePC();
+		removeUIpc();
 		addUIpc(*m_sPC.get());
 
 		resetCamPose();
@@ -133,8 +137,40 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
+			updateGeometry();
+			
 			m_pT->autoFPSto();
 		}
+	}
+
+	void _GeometryViewer::updateGeometry(void)
+	{
+		IF_(check() < 0);
+
+		readAllPC();
+		updatePC();
+		PointCloud *pPC = m_sPC.get();
+		pPC->normals_.clear();
+		int n = pPC->points_.size();
+		IF_(n <= 0);
+		
+		m_aabb = pPC->GetAxisAlignedBoundingBox();
+		if(m_pUIstate)
+			m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
+
+		PointCloud pc = *pPC;
+		if (n < m_nP)
+		{
+			addDummyDome(&pc, m_nP - n, m_rDummyDome);
+		}
+		else if (n > m_nP)
+		{
+			int d = n - m_nP;
+			pc.points_.erase(pc.points_.end() - d, pc.points_.end());
+			pc.colors_.erase(pc.colors_.end() - d, pc.colors_.end());
+		}
+
+		updateUIpc(pc);
 	}
 
 	void _GeometryViewer::addUIpc(const PointCloud &pc)
@@ -273,14 +309,13 @@ namespace kai
 	AxisAlignedBoundingBox _GeometryViewer::createDefaultAABB(void)
 	{
 		PointCloud pc;
-		pc.points_.push_back(Vector3d(0,0,1));
-		pc.points_.push_back(Vector3d(0,0,-1));
-		pc.points_.push_back(Vector3d(0,1,0));
-		pc.points_.push_back(Vector3d(0,-1,0));
-		pc.points_.push_back(Vector3d(1,0,0));
-		pc.points_.push_back(Vector3d(-1,0,0));
+		pc.points_.push_back(Vector3d(0, 0, 1));
+		pc.points_.push_back(Vector3d(0, 0, -1));
+		pc.points_.push_back(Vector3d(0, 1, 0));
+		pc.points_.push_back(Vector3d(0, -1, 0));
+		pc.points_.push_back(Vector3d(1, 0, 0));
+		pc.points_.push_back(Vector3d(-1, 0, 0));
 		return pc.GetAxisAlignedBoundingBox();
 	}
-
 
 }

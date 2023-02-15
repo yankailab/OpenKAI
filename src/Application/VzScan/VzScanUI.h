@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Application_3Dscan__PCscanUIVzense_H_
-#define OpenKAI_src_Application_3Dscan__PCscanUIVzense_H_
+#ifndef OpenKAI_src_Application_VzScan_VzScanUI_H_
+#define OpenKAI_src_Application_Vzscan_VzScanUI_H_
 
 #include "../../UI/O3DUI.h"
 
@@ -9,11 +9,11 @@ namespace open3d
 	{
 		namespace visualizer
 		{
-			class PCscanUIVzense : public O3DUI
+			class _VzScanUI : public O3DUI
 			{
 			public:
-				PCscanUIVzense(const string &title, int width, int height);
-				virtual ~PCscanUIVzense();
+				_VzScanUI(const string &title, int width, int height);
+				virtual ~_VzScanUI();
 
 				//overloaded
 				virtual void Init(void);

@@ -1,15 +1,15 @@
 /*
- * _PCscanVzense.cpp
+ * _VzScan.cpp
  *
  *  Created on: May 28, 2020
  *      Author: yankai
  */
 
-#include "_PCscanVzense.h"
+#include "_VzScan.h"
 
 namespace kai
 {
-	_PCscanVzense::_PCscanVzense()
+	_VzScan::_VzScan()
 	{
 		m_pNav = NULL;
 		m_pTk = NULL;
@@ -19,12 +19,12 @@ namespace kai
 		m_fProcess.clearAll();
 	}
 
-	_PCscanVzense::~_PCscanVzense()
+	_VzScan::~_VzScan()
 	{
 		DEL(m_pTk);
 	}
 
-	bool _PCscanVzense::init(void *pKiss)
+	bool _VzScan::init(void *pKiss)
 	{
 		IF_F(!this->_GeometryViewer::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
@@ -48,7 +48,7 @@ namespace kai
 		return true;
 	}
 
-	bool _PCscanVzense::start(void)
+	bool _VzScan::start(void)
 	{
 		NULL_F(m_pT);
 		IF_F(!m_pT->start(getUpdate, this));
@@ -62,7 +62,7 @@ namespace kai
 		return true;
 	}
 
-	int _PCscanVzense::check(void)
+	int _VzScan::check(void)
 	{
 		NULL__(m_pNav, -1);
 		NULL__(m_pWin, -1);
@@ -71,7 +71,7 @@ namespace kai
 		return this->_GeometryViewer::check();
 	}
 
-	void _PCscanVzense::update(void)
+	void _VzScan::update(void)
 	{
 		m_pT->sleepT(0);
 
@@ -105,7 +105,7 @@ namespace kai
 		}
 	}
 
-	void _PCscanVzense::startScan(void)
+	void _VzScan::startScan(void)
 	{
 		IF_(check() < 0);
 
@@ -115,12 +115,12 @@ namespace kai
 		while(!m_pNav->bReady())
 			m_pT->sleepT(100000);
 
-		_PCstream* pPS = (_PCstream*)m_vpGB[0];
-		pPS->clear();
-		pPS->startStream();
+		_PCframe* pPsrc = (_PCframe*)m_vpGB[0];
+//		pPsrc->clear();
+//		pPsrc->startStream();
 
 		removeUIpc();
-		addDummyDome(m_sPC.next(), pPS->nP(), m_rDummyDome);
+		addDummyDome(m_sPC.next(), pPsrc->nP(), m_rDummyDome);
 		updatePC();
 		addUIpc(*m_sPC.get());
 		m_fProcess.set(pc_Scanning);
@@ -131,13 +131,13 @@ namespace kai
 		m_pWin->CloseDialog();
 	}
 
-	void _PCscanVzense::stopScan(void)
+	void _VzScan::stopScan(void)
 	{
 		IF_(check() < 0);
 
 		m_pWin->ShowMsg("Scan", "Processing");
-		_PCstream* pPS = (_PCstream*)m_vpGB[0];
-		pPS->stopStream();
+		_PCframe* pPsrc = (_PCframe*)m_vpGB[0];
+//		pPsrc->stopStream();
 
 		removeUIpc();
 		addUIpc(*m_sPC.get());
@@ -149,7 +149,7 @@ namespace kai
 		m_pWin->CloseDialog();
 	}
 
-	void _PCscanVzense::updateScan(void)
+	void _VzScan::updateScan(void)
 	{
 		IF_(check() < 0);
 
@@ -160,8 +160,8 @@ namespace kai
 		int n = pPC->points_.size();
 		IF_(n <= 0);
 		
-		_PCstream* pPS = (_PCstream*)m_vpGB[0];
-		int nP = pPS->nP();
+		_PCframe* pPsrc = (_PCframe*)m_vpGB[0];
+		int nP = pPsrc->nP();
 
 		m_aabb = pPC->GetAxisAlignedBoundingBox();
 		if(m_pUIstate)
@@ -180,11 +180,11 @@ namespace kai
 		}
 
 		updateUIpc(pc);
-		PCscanUIVzense* pW = (PCscanUIVzense*)m_pWin;
-		pW->SetProgressBar((float)pPS->iP() / (float)pPS->nP());
+//		_VzScanUI* pW = (_VzScanUI*)m_pWin;
+//		pW->SetProgressBar((float)pPsrc->iP() / (float)pPsrc->nP());
 	}
 
-	void _PCscanVzense::updateCamAuto(void)
+	void _VzScan::updateCamAuto(void)
 	{
 		IF_(check() < 0);
 
@@ -196,7 +196,7 @@ namespace kai
 		updateCamPose();
 	}
 
-	void _PCscanVzense::updateProcess(void)
+	void _VzScan::updateProcess(void)
 	{
 		IF_(check() < 0);
 
@@ -240,7 +240,7 @@ namespace kai
 		}
 	}
 
-	void _PCscanVzense::updateKinematics(void)
+	void _VzScan::updateKinematics(void)
 	{
 		while (m_pTk->bRun())
 		{
@@ -252,7 +252,7 @@ namespace kai
 		}
 	}
 
-	void _PCscanVzense::updateSlam(void)
+	void _VzScan::updateSlam(void)
 	{
 		IF_(check() < 0);
 		IF_(!m_fProcess.b(pc_Scanning));
@@ -266,12 +266,12 @@ namespace kai
 		}
 	}
 
-	void _PCscanVzense::updateUI(void)
+	void _VzScan::updateUI(void)
 	{
 		auto &app = gui::Application::GetInstance();
 		app.Initialize(m_pathRes.c_str());
 
-		m_pWin = new PCscanUIVzense(*this->getName(), 2000, 1000);
+		m_pWin = new _VzScanUI(*this->getName(), 2000, 1000);
 		m_pUIstate = m_pWin->getUIState();
 		m_pUIstate->m_bSceneCache = m_bSceneCache;
 		m_pUIstate->m_mouseMode = (visualization::gui::SceneWidget::Controls)m_mouseMode;
@@ -281,8 +281,8 @@ namespace kai
 		m_pUIstate->m_btnPaddingV = m_vBtnPadding.y;
 		m_pUIstate->m_dirSave = m_dirSave;
 		m_pWin->Init();
-		PCscanUIVzense* pW = (PCscanUIVzense*)m_pWin;
-		app.AddWindow(shared_ptr<PCscanUIVzense>(pW));
+		_VzScanUI* pW = (_VzScanUI*)m_pWin;
+		app.AddWindow(shared_ptr<_VzScanUI>(pW));
 
 		pW->SetCbScan(OnScan, (void *)this);
 		pW->SetCbOpenPC(OnOpenPC, (void *)this);
@@ -303,11 +303,11 @@ namespace kai
 		exit(0);
 	}
 
-	void _PCscanVzense::OnScan(void *pPCV, void *pD)
+	void _VzScan::OnScan(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		NULL_(pD);
-		_PCscanVzense *pV = (_PCscanVzense *)pPCV;
+		_VzScan *pV = (_VzScan *)pPCV;
 
 		if (*((bool *)pD))
 			pV->m_fProcess.set(pc_ScanStart);
@@ -315,11 +315,11 @@ namespace kai
 			pV->m_fProcess.set(pc_ScanStop);
 	}
 
-	void _PCscanVzense::OnOpenPC(void *pPCV, void *pD)
+	void _VzScan::OnOpenPC(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		NULL_(pD);
-		_PCscanVzense *pV = (_PCscanVzense *)pPCV;
+		_VzScan *pV = (_VzScan *)pPCV;
 
 		if (io::ReadPointCloud((const char *)pD, *pV->m_sPC.next()))
 			pV->updatePC();
@@ -327,11 +327,11 @@ namespace kai
 		pV->m_fProcess.set(pc_ResetPC);
 	}
 
-	void _PCscanVzense::OnCamSet(void *pPCV, void *pD)
+	void _VzScan::OnCamSet(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		NULL_(pD);
-		_PCscanVzense *pV = (_PCscanVzense *)pPCV;
+		_VzScan *pV = (_VzScan *)pPCV;
 		int camMode = *(int *)pD;
 
 		if(camMode == 0)	//auto off
@@ -353,24 +353,24 @@ namespace kai
 		}
 	}
 
-	void _PCscanVzense::OnHiddenRemove(void *pPCV, void *pD)
+	void _VzScan::OnHiddenRemove(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
-		_PCscanVzense *pV = (_PCscanVzense *)pPCV;
+		_VzScan *pV = (_VzScan *)pPCV;
 		pV->m_fProcess.set(pc_HiddenRemove);
 	}
 
-	void _PCscanVzense::OnVoxelDown(void *pPCV, void *pD)
+	void _VzScan::OnVoxelDown(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
-		_PCscanVzense *pV = (_PCscanVzense *)pPCV;
+		_VzScan *pV = (_VzScan *)pPCV;
 		pV->m_fProcess.set(pc_VoxelDown);
 	}
 
-	void _PCscanVzense::OnResetPC(void *pPCV, void *pD)
+	void _VzScan::OnResetPC(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
-		_PCscanVzense *pV = (_PCscanVzense *)pPCV;
+		_VzScan *pV = (_VzScan *)pPCV;
 		pV->m_fProcess.set(pc_ResetPC);
 	}
 

@@ -29,6 +29,7 @@ namespace kai
 		//frame
 		virtual void getPC(PointCloud *pPC);
 		virtual void updatePC(void);
+        virtual int nP(void);
 
 	protected:
 		virtual void getStream(void *p);
@@ -37,6 +38,7 @@ namespace kai
 
 	protected:
 		//frame buf
+		int m_nP; // reserved point
 		tSwap<PointCloud> m_sPC;
 		pthread_mutex_t m_mutexPC;
 	};

@@ -190,7 +190,7 @@
 
 {
 	"name":"rs1",
-	"class":"_PCrs",
+	"class":"_RealSensePC",
 	"bON":0,
 	"bLog":1,
 	"_Console":"OK_Console",
@@ -231,7 +231,7 @@
 
 {
 	"name":"rs2",
-	"class":"_PCrs",
+	"class":"_RealSensePC",
 	"FPS":30,
 	"bON":0,
 	"bLog":1,
@@ -269,7 +269,7 @@
 
 {
 	"name":"rs3",
-	"class":"_PCrs",
+	"class":"_RealSensePC",
 	"bON":0,
 	"bLog":1,
 	"_Console":"OK_Console",

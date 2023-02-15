@@ -96,7 +96,7 @@
 #endif
 
 #ifdef WITH_APP_3DSCAN && USE_VZENSE
-#include "../Application/3DscanVzense/_PCscanVzense.h"
+#include "../Application/VzScan/_VzScan.h"
 #endif
 
 #ifdef WITH_APP_ROBOTARM
@@ -207,6 +207,9 @@
 #ifdef USE_VZENSE
 #include "../LIDAR/_VzensePC.h"
 #endif
+#ifdef USE_REALSENSE
+#include "../LIDAR/_RealSensePC.h"
+#endif
 #endif
 
 #ifdef WITH_NAVIGATION
@@ -239,9 +242,6 @@
 #include "../3D/PointCloud/PCregistration/_PCregistCol.h"
 #include "../3D/PointCloud/PCregistration/_PCregistICP.h"
 #include "../3D/PointCloud/PCregistration/_PCregistGlobal.h"
-#ifdef USE_REALSENSE
-#include "../3D/PointCloud/_PCrs.h"
-#endif
 #endif
 #endif
 

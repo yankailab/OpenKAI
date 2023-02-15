@@ -20,16 +20,12 @@ namespace kai
 		m_bOpen = false;
 		m_vSize.set(1600, 1200);
 
-		m_bRGB = true;
-		m_bDepth = true;
 		m_btRGB = false;
 		m_btDepth = false;
 		m_bIR = false;
 
 		m_vzfRGB = {0};
 		m_vzfDepth = {0};
-		m_vzfTransformedRGB = {0};
-		m_vzfTransformedDepth = {0};
 		m_vzfIR = {0};
 
 		//		m_psmTransformedDepth = NULL;
@@ -50,8 +46,6 @@ namespace kai
 		pK->v("URI", &m_deviceURI);
 		pK->v("vSize", &m_vSize);
 
-		pK->v("bRGB", &m_bRGB);
-		pK->v("bDepth", &m_bDepth);
 		pK->v("btRGB", &m_btRGB);
 		pK->v("btDepth", &m_btDepth);
 		pK->v("bIR", &m_bIR);
@@ -197,36 +191,33 @@ namespace kai
 		VzReturnStatus status = VZ_GetFrameReady(m_deviceHandle,
 												 m_tWait,
 												 &frameReady);
+		Eigen::Affine3d mA = m_A;
 		IF_F(status != VzReturnStatus::VzRetOK);
-		IF_F(frameReady.transformedDepth != 1);
-		IF_F(frameReady.color != 1);
+		IF_F(frameReady.transformedColor != 1);
+		IF_F(frameReady.depth != 1);
 
-		status = VZ_GetFrame(m_deviceHandle, VzTransformDepthImgToColorSensorFrame, &m_vzfTransformedDepth);
+		status = VZ_GetFrame(m_deviceHandle, VzDepthFrame, &m_vzfDepth);
 		IF_F(status != VzReturnStatus::VzRetOK);
-		IF_F(!m_vzfTransformedDepth.pFrameData);
+		IF_F(!m_vzfDepth.pFrameData);
 
-		status = VZ_GetFrame(m_deviceHandle, VzColorFrame, &m_vzfRGB);
+		status = VZ_GetFrame(m_deviceHandle, VzTransformColorImgToDepthSensorFrame, &m_vzfRGB);
 		IF_F(status != VzReturnStatus::VzRetOK);
 		IF_F(!m_vzfRGB.pFrameData);
-
-		// memcpy(m_psmTransformedDepth->p(),
-		// 	   m_vzfTransformedDepth.pFrameData,
-		// 	   m_vzfTransformedDepth.dataLen);
 
 		PointCloud *pPC = m_sPC.next();
 		const static float s_b = 1.0 / 1000.0;
 		const static float c_b = 1.0 / 255.0;
 
-		VZ_ConvertDepthFrameToPointCloudVector(m_deviceHandle,
-											   &m_vzfTransformedDepth,
-											   m_pVzVw);
 		// Convert Depth frame to World vectors.
+		VZ_ConvertDepthFrameToPointCloudVector(m_deviceHandle,
+											   &m_vzfDepth,
+											   m_pVzVw);
 
-		for (int i = 0; i < m_vzfTransformedDepth.height; i++)
+		for (int i = 0; i < m_vzfDepth.height; i++)
 		{
-			for (int j = 0; j < m_vzfTransformedDepth.width; j++)
+			for (int j = 0; j < m_vzfDepth.width; j++)
 			{
-				int k = i * m_vzfTransformedDepth.width + j;
+				int k = i * m_vzfDepth.width + j;
 
 				VzVector3f *pV = &m_pVzVw[k];
 				IF_CONT(pV->z < m_vRz.x);
@@ -234,10 +225,15 @@ namespace kai
 
 				Eigen::Vector3d vP(pV->x, pV->y, pV->z);
 				vP *= s_b;
+				Eigen::Vector3d vPik = Vector3d(
+					vP[m_vAxisIdx.x] * m_vAxisK.x,
+					vP[m_vAxisIdx.y] * m_vAxisK.y,
+					vP[m_vAxisIdx.z] * m_vAxisK.z);
+				vP = mA * vPik;
 				pPC->points_.push_back(vP);
 
 				// texture color
-				uint8_t* pC = &m_vzfRGB.pFrameData[k * sizeof(uint8_t) * 3];
+				uint8_t *pC = &m_vzfRGB.pFrameData[k * sizeof(uint8_t) * 3];
 				Eigen::Vector3d vC(pC[2], pC[1], pC[0]);
 				vC *= c_b;
 				pPC->colors_.push_back(vC);

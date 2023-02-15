@@ -1,24 +1,24 @@
 /*
- * _PCrs.h
+ * _RealSensePC.h
  *
  *  Created on: May 24, 2020
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_3D_PointCloud_PCrs_H_
-#define OpenKAI_src_3D_PointCloud_PCrs_H_
+#ifndef OpenKAI_src_LIDAR_RealSensePC_H_
+#define OpenKAI_src_LIDAR_RealSensePC_H_
 
-#include "_PCframe.h"
+#include "../3D/PointCloud/_PCframe.h"
 #include <librealsense2/rs.hpp>
 
 namespace kai
 {
 
-	class _PCrs : public _PCframe
+	class _RealSensePC : public _PCframe
 	{
 	public:
-		_PCrs();
-		virtual ~_PCrs();
+		_RealSensePC();
+		virtual ~_RealSensePC();
 
 		bool init(void *pKiss);
 		bool open(void);
@@ -31,7 +31,7 @@ namespace kai
 		void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_PCrs *)This)->update();
+			((_RealSensePC *)This)->update();
 			return NULL;
 		}
 
