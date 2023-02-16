@@ -24,7 +24,7 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":10,
+		"FPS":1,
 	}
     {
 		"name":"threadK",
@@ -37,7 +37,7 @@
 	"vWinSize":[1920,1080],
 	"pathRes":"/usr/local/bin/Open3D/resources",
 	"device":"CPU:0",
-	"nPreserve":480000,
+	"nPreserve":1000000,
 	"_NavBase":"T265",
 	"vGeometryBase":["pcFile","VzensePC"],
 	"vCamLookAt":[0,0,0],
@@ -79,6 +79,7 @@
 	"vAxisK":[1, -1, -1],
 	"fCalib":"/home/kai/3Dscan/calibOfs.kiss",
 	"nPreserve":480000,
+	"tWait":10,
 }
 
 {

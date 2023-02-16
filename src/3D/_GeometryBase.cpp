@@ -13,6 +13,7 @@ namespace kai
     _GeometryBase::_GeometryBase()
     {
         m_type = geometry_unknown;
+		m_nPread = 0;
 
         m_vToffset.clear();
         m_vRoffset.clear();

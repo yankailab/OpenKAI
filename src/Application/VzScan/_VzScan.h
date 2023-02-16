@@ -70,6 +70,8 @@ namespace kai
 		_NavBase *m_pNav;
 		_Thread *m_pTk;
 
+		int m_nPw;
+		int m_nPdummy;
 		bool m_bSlam;
 		float m_dHiddenRemove;
 

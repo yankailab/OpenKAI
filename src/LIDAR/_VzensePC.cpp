@@ -19,6 +19,7 @@ namespace kai
 
 		m_bOpen = false;
 		m_vSize.set(1600, 1200);
+		m_tWait = 80;
 
 		m_btRGB = false;
 		m_btDepth = false;
@@ -45,6 +46,7 @@ namespace kai
 
 		pK->v("URI", &m_deviceURI);
 		pK->v("vSize", &m_vSize);
+		pK->v("tWait", &m_tWait);
 
 		pK->v("btRGB", &m_btRGB);
 		pK->v("btDepth", &m_btDepth);
@@ -121,7 +123,7 @@ namespace kai
 
 		m_pVzVw = new VzVector3f[m_vSize.x * m_vSize.y];
 
-		m_tWait = 2 * 1000 / this->m_pT->getTargetFPS();
+//		m_tWait = 2 * 1000 / this->m_pT->getTargetFPS();
 		m_bOpen = true;
 		return true;
 	}

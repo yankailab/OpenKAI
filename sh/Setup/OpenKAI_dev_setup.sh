@@ -517,8 +517,13 @@ curl -T FourierToy.swf ftp://193.112.75.123/pub/ --user anonymous
 sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=20/1 ! x264enc ! matroskamux ! filesink location=/home/pi/ssd/test.mkv
 sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
 
+# Disable wayland in Ubuntu 22.04
+sudo nano /etc/gdm3/custom/config
+#WaylandEnable=false
+
 # Screen and touch screen input rotate
 xrandr -o left
+xinput list
 xinput set-prop 'GXTP7386:00 27C6:0113' 'Coordinate Transformation Matrix' 0 -1 1 1 0 0 0 0 1
 
 # Block unity touch gestures

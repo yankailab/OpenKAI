@@ -14,6 +14,8 @@ namespace kai
 		m_pNav = NULL;
 		m_pTk = NULL;
 
+		m_nPw = 0;
+		m_nPdummy = 0;
 		m_bSlam = true;
 		m_dHiddenRemove = 100.0;
 		m_fProcess.clearAll();
@@ -115,13 +117,12 @@ namespace kai
 		while(!m_pNav->bReady())
 			m_pT->sleepT(100000);
 
-		_PCframe* pPsrc = (_PCframe*)m_vpGB[0];
-//		pPsrc->clear();
-//		pPsrc->startStream();
+		m_nPw = 0;
+		m_nPdummy = m_nP;
+		m_sPC.get()->Clear();
+		addDummyDome(m_sPC.get(), m_nPdummy, m_rDummyDome);
 
 		removeUIpc();
-		addDummyDome(m_sPC.next(), pPsrc->nP(), m_rDummyDome);
-		updatePC();
 		addUIpc(*m_sPC.get());
 		m_fProcess.set(pc_Scanning);
 
@@ -136,12 +137,18 @@ namespace kai
 		IF_(check() < 0);
 
 		m_pWin->ShowMsg("Scan", "Processing");
-		_PCframe* pPsrc = (_PCframe*)m_vpGB[0];
-//		pPsrc->stopStream();
+
+		PointCloud* pP = m_sPC.get();
+
+		if (m_nPdummy > 0)
+		{
+			pP->points_.erase(pP->points_.end() - m_nPdummy, pP->points_.end());
+			pP->colors_.erase(pP->colors_.end() - m_nPdummy, pP->colors_.end());
+		}
 
 		removeUIpc();
-		addUIpc(*m_sPC.get());
-		m_aabb = m_sPC.get()->GetAxisAlignedBoundingBox();
+		addUIpc(*pP);
+		m_aabb = pP->GetAxisAlignedBoundingBox();
 		camBound(m_aabb);
 		updateCamPose();
 
@@ -153,33 +160,29 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		readAllPC();
-		updatePC();
-		PointCloud *pPC = m_sPC.get();
-		pPC->normals_.clear();
-		int n = pPC->points_.size();
-		IF_(n <= 0);
-		
 		_PCframe* pPsrc = (_PCframe*)m_vpGB[0];
-		int nP = pPsrc->nP();
+        PointCloud pc;
+        pPsrc->getPC(&pc);
 
-		m_aabb = pPC->GetAxisAlignedBoundingBox();
+		int nNew = pc.points_.size();
+		IF_(nNew <= 0);
+        PointCloud* pP = m_sPC.get();
+
+		for(int i=0; i<nNew; i++)
+		{
+			pP->points_[m_nPw] = pc.points_[i];
+			pP->colors_[m_nPw] = pc.colors_[i];
+
+			m_nPw++;
+			if(m_nPw >= m_nP)m_nPw = 0;
+			if(m_nPdummy > 0)m_nPdummy--;
+		}
+
+		m_aabb = pc.GetAxisAlignedBoundingBox();
 		if(m_pUIstate)
 			m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
 
-		PointCloud pc = *pPC;
-		if (n < nP)
-		{
-			addDummyDome(&pc, nP - n, m_rDummyDome);
-		}
-		else if (n > nP)
-		{
-			int d = n - nP;
-			pc.points_.erase(pc.points_.end() - d, pc.points_.end());
-			pc.colors_.erase(pc.colors_.end() - d, pc.colors_.end());
-		}
-
-		updateUIpc(pc);
+		updateUIpc(*pP);
 //		_VzScanUI* pW = (_VzScanUI*)m_pWin;
 //		pW->SetProgressBar((float)pPsrc->iP() / (float)pPsrc->nP());
 	}
