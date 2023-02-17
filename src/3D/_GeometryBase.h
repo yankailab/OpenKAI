@@ -161,6 +161,12 @@ namespace kai
     	Matrix4d m_mT;
         Eigen::Affine3d m_A;
 
+        // filter
+        vDouble2 m_vRange;
+
+        // pipeline input
+        PC_PIPIN_CTX m_pInCtx;
+
         // RGB offset in Lidar coordinate
         // _Remap* m_pR;
         // vDouble3 m_vToffsetRGB;
@@ -169,13 +175,6 @@ namespace kai
     	// Eigen::Affine3d m_AoffsetRGB;
         // vInt3 m_vAxisIdxRGB;
         // vFloat3 m_vAxisKrgb;
-
-        // filter
-        vDouble2 m_vRange;
-
-        // pipeline input
-        PC_PIPIN_CTX m_pInCtx;
-
     };
 
 }

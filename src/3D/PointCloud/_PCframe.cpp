@@ -29,15 +29,29 @@ namespace kai
         IF_F(!this->_GeometryBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        //frame buf
+        // frame buf
         pK->v("nPreserve", &m_nP);
         if (m_nP > 0)
         {
             m_sPC.get()->points_.reserve(m_nP);
             m_sPC.get()->colors_.reserve(m_nP);
-            m_sPC.next()->points_.reserve(m_nP);
-            m_sPC.next()->colors_.reserve(m_nP);
+
+            int nPrNext = m_nP;
+            pK->v("nPreserveNext", &nPrNext);
+            if (nPrNext > 0)
+            {
+                m_sPC.next()->points_.reserve(nPrNext);
+                m_sPC.next()->colors_.reserve(nPrNext);
+            }
         }
+
+        return true;
+    }
+
+    bool _PCframe::link(void)
+    {
+        IF_F(!this->_GeometryBase::link());
+        Kiss *pK = (Kiss *)m_pKiss;
 
         return true;
     }
@@ -58,7 +72,7 @@ namespace kai
 
     void _PCframe::updatePC(void)
     {
-        m_sPC.next()->Transform(m_mT);
+//        m_sPC.next()->Transform(m_mT);
 
         pthread_mutex_lock(&m_mutexPC);
         m_sPC.swap();

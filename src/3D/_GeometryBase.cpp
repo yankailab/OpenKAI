@@ -25,16 +25,15 @@ namespace kai
         m_mT = Matrix4d::Identity();
         m_A = Matrix4d::Identity();
 
-        // m_pR = NULL;
-        // m_vToffsetRGB.init(0);
-        // m_vRoffsetRGB.init(0);
-        // m_mToffsetRGB = Matrix4d::Identity();
-
         m_vAxisIdx.set(0, 1, 2);
         m_vAxisK.set(1.0);
         m_unitK = 1.0;
         m_vRange.set(0.0, 1000.0);
 
+        // m_pR = NULL;
+        // m_vToffsetRGB.init(0);
+        // m_vRoffsetRGB.init(0);
+        // m_mToffsetRGB = Matrix4d::Identity();
         //m_vAxisIdxRGB.init(0, 1, 2);
         //m_vAxisKrgb.init(1.0);
 

@@ -123,7 +123,7 @@ namespace kai
 
 		m_pVzVw = new VzVector3f[m_vSize.x * m_vSize.y];
 
-//		m_tWait = 2 * 1000 / this->m_pT->getTargetFPS();
+		//		m_tWait = 2 * 1000 / this->m_pT->getTargetFPS();
 		m_bOpen = true;
 		return true;
 	}
@@ -215,6 +215,7 @@ namespace kai
 											   &m_vzfDepth,
 											   m_pVzVw);
 
+		int nPi = 0;
 		for (int i = 0; i < m_vzfDepth.height; i++)
 		{
 			for (int j = 0; j < m_vzfDepth.width; j++)
@@ -239,7 +240,14 @@ namespace kai
 				Eigen::Vector3d vC(pC[2], pC[1], pC[0]);
 				vC *= c_b;
 				pPC->colors_.push_back(vC);
+
+				nPi++;
+				if (nPi >= m_nP)
+					break;
 			}
+
+			if (nPi >= m_nP)
+				break;
 		}
 
 		return true;

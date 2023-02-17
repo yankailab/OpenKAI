@@ -123,12 +123,11 @@ namespace kai
         m_pTf->setTranslationMatrix(m_RR.transformation_);
     }
 
-    void _PCregistICP::console(void* pConsole)
+    void _PCregistICP::console(void *pConsole)
     {
         NULL_(pConsole);
         this->_ModuleBase::console(pConsole);
-        ((_Console*)pConsole)->addMsg("Fitness = " + f2str((float)m_RR.fitness_) +
-               ", Inliner_rmse = " + f2str((float)m_RR.inlier_rmse_));
+        ((_Console *)pConsole)->addMsg("Fitness = " + f2str((float)m_RR.fitness_) + ", Inliner_rmse = " + f2str((float)m_RR.inlier_rmse_));
     }
 
 }

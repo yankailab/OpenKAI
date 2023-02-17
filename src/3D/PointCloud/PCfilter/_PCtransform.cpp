@@ -25,7 +25,7 @@ namespace kai
 		IF_F(!_PCframe::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		//read from external kiss file if there is one
+		// read from external kiss file if there is one
 		pK->v("paramKiss", &m_paramKiss);
 		IF_T(m_paramKiss.empty());
 

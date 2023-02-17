@@ -37,9 +37,10 @@
 	"vWinSize":[1920,1080],
 	"pathRes":"/usr/local/bin/Open3D/resources",
 	"device":"CPU:0",
-	"nPreserve":1000000,
+	"nPreserve":3000000,
+	"nPreserveNext":0,
 	"_NavBase":"T265",
-	"vGeometryBase":["pcFile","VzensePC"],
+	"vGeometryBase":["pcRegistCol","/VzensePC","/pcFile"],
 	"vCamLookAt":[0,0,0],
 	"vCamEye":[0,0,2],
 	"vCamUp":[0,1,0],
@@ -74,12 +75,31 @@
 	"vSize":[800,600],
 	"btRGB":1,
 	"btDepth":0,
-	"nPreserve":480000,
 	"vAxisIdx":[0, 1, 2],
 	"vAxisK":[1, -1, -1],
-	"fCalib":"/home/kai/3Dscan/calibOfs.kiss",
-	"nPreserve":480000,
-	"tWait":10,
+	"fCalib":"/home/kai/dev/VzScan/calibOfs.kiss",
+	"nPreserve":400000,
+	"tWait":60,
+}
+
+{
+	"name":"pcRegistCol",
+	"class":"_PCregistCol",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":25,
+	}
+	"nPreserve":400000,
+	"_PCframe":"VzensePC",
+	"maxDistantce":0.5,
+	"rVoxel":0.1,
+	"rNormal":0.2,
+	"maxNNnormal":30,
+	"rFitness":0.000001,
+	"rRMSE":0.000001,
+	"maxIter":10,
+	"minFit":0.0,
 }
 
 {

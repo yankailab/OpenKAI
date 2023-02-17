@@ -53,9 +53,6 @@ namespace kai
         int m_iP;
         uint64_t m_tLastUpdate;
         bool m_bAccept;
-
-        //pipeline input src
-
     };
 
 }

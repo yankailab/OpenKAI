@@ -9,46 +9,55 @@
 #define OpenKAI_src_3D_PointCloud_PCregistCol_H_
 
 #include "../PCfilter/_PCtransform.h"
+#include "../_PCframe.h"
 #include <open3d/pipelines/registration/ColoredICP.h>
 using namespace open3d::pipelines::registration;
 
 namespace kai
 {
 
-class _PCregistCol: public _ModuleBase
-{
-public:
-	_PCregistCol();
-	virtual ~_PCregistCol();
-
-	bool init(void* pKiss);
-	bool start(void);
-	int check(void);
-	void console(void* pConsole);
-
-private:
-    void updateRegistration(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _PCregistCol : public _PCframe
 	{
-		(( _PCregistCol *) This)->update();
-		return NULL;
-	}
+	public:
+		_PCregistCol();
+		virtual ~_PCregistCol();
 
-public:
-	double m_rVoxel;
-    double m_rNormal;
-	int m_maxNNnormal;
-    double m_rFitness;
-    double m_rRMSE;
-    int m_maxIter;
+		virtual bool init(void *pKiss);
+		virtual bool link(void);
+		virtual bool start(void);
+		virtual int check(void);
+		virtual void console(void *pConsole);
 
-	_PCframe* m_pSrc;
-	_PCframe* m_pTgt;
-    RegistrationResult m_RR;
-	_PCtransform* m_pTf;
-    double m_lastFit;
-};
+		virtual void updatePC(void);
+
+		double updateRegistration(PointCloud* pSrc, PointCloud* pTgt, Matrix4d_u* pTresult = NULL);
+
+	private:
+		bool updateRegistration(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_PCregistCol *)This)->update();
+			return NULL;
+		}
+
+	public:
+		double m_maxDistance;
+		double m_rNormal;
+		int m_maxNNnormal;
+		double m_rFitness;
+		double m_rRMSE;
+		int m_maxIter;
+
+		// voxel down frame buf
+		double m_rVoxel;
+		tSwap<PointCloud> m_sPCvd; //voxel down
+
+		_PCframe *m_pPCf;
+		RegistrationResult m_RR;
+		double m_minFit;
+		_PCtransform *m_pTf;
+	};
 
 }
 #endif

@@ -15,7 +15,6 @@ using namespace open3d::visualization;
 
 namespace kai
 {
-
 	class _PCframe : public _GeometryBase
 	{
 	public:
@@ -23,6 +22,7 @@ namespace kai
 		virtual ~_PCframe();
 
 		virtual bool init(void *pKiss);
+		virtual bool link(void);
 		virtual int size(void);
 		virtual int check(void);
 
@@ -37,8 +37,9 @@ namespace kai
 		virtual void getLattice(void *p);
 
 	protected:
-		//frame buf
-		int m_nP; // reserved point
+		// frame buf
+		int m_nP; // max number of reserved point but
+		uint64_t m_tStamp;
 		tSwap<PointCloud> m_sPC;
 		pthread_mutex_t m_mutexPC;
 	};
