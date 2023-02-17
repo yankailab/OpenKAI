@@ -24,7 +24,7 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":1,
+		"FPS":10,
 	}
     {
 		"name":"threadK",
@@ -40,7 +40,7 @@
 	"nPreserve":3000000,
 	"nPreserveNext":0,
 	"_NavBase":"T265",
-	"vGeometryBase":["pcRegistCol","/VzensePC","/pcFile"],
+	"vGeometryBase":["/pcRegistCol","VzensePC","/pcFile"],
 	"vCamLookAt":[0,0,0],
 	"vCamEye":[0,0,2],
 	"vCamUp":[0,1,0],
@@ -85,7 +85,7 @@
 {
 	"name":"pcRegistCol",
 	"class":"_PCregistCol",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":25,

@@ -23,7 +23,9 @@ namespace open3d
 	            void SetMouseCameraMode(void);
 				void SetProgressBar(float v);
 	            void SetLabelArea(const string &s);
-				void SetCbScan(OnCbO3DUI pCb, void *pPCV);
+//				void SetCbScan(OnCbO3DUI pCb, void *pPCV);
+				void SetCbScanReset(OnCbO3DUI pCb, void *pPCV);
+				void SetCbScanTake(OnCbO3DUI pCb, void *pPCV);
 				void SetCbOpenPC(OnCbO3DUI pCb, void *pPCV);
 				void SetCbCamSet(OnCbO3DUI pCb, void *pPCV);
 				void SetCbVoxelDown(OnCbO3DUI pCb, void *pPCV);
@@ -68,12 +70,16 @@ namespace open3d
 				Button* m_btnFilterReset;
 				// Slider* m_sliderORemovN;
 				// Slider* m_sliderORemovD;
-				Button *m_btnScan;
+//				Button *m_btnScan;
+				Button *m_btnScanReset;
+				Button *m_btnScanTake;
 				ProgressBar *m_progScan;
 				Label *m_labelProg;
 
 				//UI handler
-				O3D_UI_Cb m_cbScan;
+//				O3D_UI_Cb m_cbScan;
+				O3D_UI_Cb m_cbScanReset;
+				O3D_UI_Cb m_cbScanTake;
 				O3D_UI_Cb m_cbOpenPC;
 				O3D_UI_Cb m_cbCamSet;
 				O3D_UI_Cb m_cbVoxelDown;

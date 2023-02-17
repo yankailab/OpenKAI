@@ -15,14 +15,16 @@ namespace kai
 {
     enum PC_THREAD_ACTION
 	{
-		pc_Scanning = 0,
-		pc_ScanStart = 1,
-		pc_ScanStop = 2,
-		pc_VoxelDown = 3,
-		pc_HiddenRemove = 4,
-		pc_ResetPC = 5,
-		pc_CamAuto = 6,
-		pc_RefreshCol = 7,
+		pc_ScanReset,
+		pc_ScanTake,
+		pc_Scanning,
+		pc_ScanStart,
+		pc_ScanStop,
+		pc_VoxelDown,
+		pc_HiddenRemove,
+		pc_ResetPC,
+		pc_CamAuto,
+		pc_RefreshCol,
 	};
 
 	struct CAM_PROJ
@@ -57,7 +59,7 @@ namespace kai
 		void updateUIpc(const PointCloud& pc);
 		void removeUIpc(void);
 		void readAllPC(void);
-		void addDummyDome(PointCloud* pPC, int n, float r, Vector3d vCol = {0,0,0});
+		void addDummyPoints(PointCloud* pPC, int n, float r, Vector3d vCol = {0,0,0});
 		virtual void updateGeometry(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)

@@ -123,7 +123,7 @@ namespace kai
 
 		if (m_nPread < m_nP)
 		{
-			addDummyDome(m_sPC.next(), m_nP - m_nPread, m_rDummyDome, {0, 0, 0});
+			addDummyPoints(m_sPC.next(), m_nP - m_nPread, m_rDummyDome, {0, 0, 0});
 		}
 
 		updatePC();
@@ -138,7 +138,7 @@ namespace kai
 			m_pT->autoFPSfrom();
 
 			updateGeometry();
-			
+
 			m_pT->autoFPSto();
 		}
 	}
@@ -153,15 +153,15 @@ namespace kai
 		pPC->normals_.clear();
 		int n = pPC->points_.size();
 		IF_(n <= 0);
-		
+
 		m_aabb = pPC->GetAxisAlignedBoundingBox();
-		if(m_pUIstate)
+		if (m_pUIstate)
 			m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
 
 		PointCloud pc = *pPC;
 		if (n < m_nP)
 		{
-			addDummyDome(&pc, m_nP - n, m_rDummyDome);
+			addDummyPoints(&pc, m_nP - n, m_rDummyDome);
 		}
 		else if (n > m_nP)
 		{
@@ -209,40 +209,46 @@ namespace kai
 		}
 	}
 
-	void _GeometryViewer::addDummyDome(PointCloud *pPC, int n, float r, Vector3d vCol)
+	void _GeometryViewer::addDummyPoints(PointCloud *pPC, int n, float r, Vector3d vCol)
 	{
 		NULL_(pPC);
 
-		float nV = floor(sqrt((float)n));
-		float nH = ceil(n / nV);
-
-		float dV = OK_PI / nV;
-		float dH = (OK_PI * 2.0) / nH;
-
-		int k = 0;
-		for (int i = 0; i < nH; i++)
+		for (int i = 0; i < n; i++)
 		{
-			float h = dH * i;
-			float sinH = sin(h);
-			float cosH = cos(h);
-
-			for (int j = 0; j < nV; j++)
-			{
-				float v = dV * j;
-				float sinV = sin(v);
-				float cosV = cos(v);
-
-				Vector3d vP(
-					r * sinV * sinH,
-					r * sinV * cosH,
-					r * cosV);
-
-				pPC->points_.push_back(vP);
-				pPC->colors_.push_back(vCol);
-
-				IF_(++k >= n);
-			}
+			pPC->points_.push_back({0,0,0});
+			pPC->colors_.push_back({0,0,0});
 		}
+
+		// float nV = floor(sqrt((float)n));
+		// float nH = ceil(n / nV);
+
+		// float dV = OK_PI / nV;
+		// float dH = (OK_PI * 2.0) / nH;
+
+		// int k = 0;
+		// for (int i = 0; i < nH; i++)
+		// {
+		// 	float h = dH * i;
+		// 	float sinH = sin(h);
+		// 	float cosH = cos(h);
+
+		// 	for (int j = 0; j < nV; j++)
+		// 	{
+		// 		float v = dV * j;
+		// 		float sinV = sin(v);
+		// 		float cosV = cos(v);
+
+		// 		Vector3d vP(
+		// 			r * sinV * sinH,
+		// 			r * sinV * cosH,
+		// 			r * cosV);
+
+		// 		pPC->points_.push_back(vP);
+		// 		pPC->colors_.push_back(vCol);
+
+		// 		IF_(++k >= n);
+		// 	}
+		// }
 	}
 
 	void _GeometryViewer::updateCamProj(void)

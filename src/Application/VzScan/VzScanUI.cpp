@@ -28,7 +28,7 @@ namespace open3d
             {
                 this->O3DUI::Init();
 
-                m_bScanning = false;
+                m_bScanning = true;
                 m_bCamAuto = false;
                 m_areaName = "PCAREA";
 
@@ -63,7 +63,9 @@ namespace open3d
 
             void _VzScanUI::UpdateBtnState(void)
             {
-                m_btnScan->SetOn(m_bScanning);
+//                m_btnScan->SetOn(m_bScanning);
+                m_btnScanReset->SetOn(m_bScanning);
+                m_btnScanTake->SetOn(m_bScanning);
                 m_btnCamAuto->SetOn(m_bCamAuto);
                 m_btnCamAuto->SetEnabled(m_bScanning);
                 m_btnCamAll->SetEnabled(!m_bCamAuto);
@@ -82,15 +84,15 @@ namespace open3d
                 m_btnHiddenRemove->SetEnabled(!m_bScanning);
                 m_btnFilterReset->SetEnabled(!m_bScanning);
 
-                if (m_bScanning)
-                {
-                    m_btnScan->SetText("        Stop        ");
-                    SetMouseCameraMode();
-                }
-                else
-                {
-                    m_btnScan->SetText("        Start        ");
-                }
+                // if (m_bScanning)
+                // {
+                //     m_btnScan->SetText("        Stop        ");
+                //     SetMouseCameraMode();
+                // }
+                // else
+                // {
+                //     m_btnScan->SetText("        Start        ");
+                // }
 
                 m_pScene->ForceRedraw();
             }
@@ -111,9 +113,19 @@ namespace open3d
                 m_labelProg->SetText(s.c_str());
             }
 
-            void _VzScanUI::SetCbScan(OnCbO3DUI pCb, void *pPCV)
+            // void _VzScanUI::SetCbScan(OnCbO3DUI pCb, void *pPCV)
+            // {
+            //     m_cbScan.add(pCb, pPCV);
+            // }
+
+            void _VzScanUI::SetCbScanReset(OnCbO3DUI pCb, void *pPCV)
             {
-                m_cbScan.add(pCb, pPCV);
+                m_cbScanReset.add(pCb, pPCV);
+            }
+
+            void _VzScanUI::SetCbScanTake(OnCbO3DUI pCb, void *pPCV)
+            {
+                m_cbScanTake.add(pCb, pPCV);
             }
 
             void _VzScanUI::SetCbOpenPC(OnCbO3DUI pCb, void *pPCV)
@@ -329,23 +341,50 @@ namespace open3d
                 auto panelScan = new CollapsableVert("SCAN", v_spacing, margins);
                 m_panelCtrl->AddChild(GiveOwnership(panelScan));
 
-                m_btnScan = new Button("        Start        ");
-                m_btnScan->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
-                m_btnScan->SetToggleable(true);
-                m_btnScan->SetOnClicked([this]()
+                // m_btnScan = new Button("        Start        ");
+                // m_btnScan->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                // m_btnScan->SetToggleable(true);
+                // m_btnScan->SetOnClicked([this]()
+                //                         {
+                //                             m_bScanning = !m_bScanning;
+                //                             m_cbScan.call(&m_bScanning);
+                //                             m_bCamAuto = m_bScanning;
+                //                             int m = m_bCamAuto ? 1 : 0;
+                //                             m_cbCamSet.call(&m);
+                //                             UpdateBtnState();
+                //                             PostRedraw();
+                //                         });
+                // pH = new Horiz(v_spacing);
+                // pH->AddChild(GiveOwnership(m_btnScan));
+                // pH->AddStretch();
+                // panelScan->AddChild(GiveOwnership(pH));
+
+
+                m_btnScanReset = new Button("        Reset        ");
+                m_btnScanReset->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                m_btnScanReset->SetOnClicked([this]()
                                         {
-                                            m_bScanning = !m_bScanning;
-                                            m_cbScan.call(&m_bScanning);
+                                            m_cbScanReset.call();
                                             m_bCamAuto = m_bScanning;
                                             int m = m_bCamAuto ? 1 : 0;
                                             m_cbCamSet.call(&m);
                                             UpdateBtnState();
                                             PostRedraw();
                                         });
-                pH = new Horiz(v_spacing);
-                pH->AddChild(GiveOwnership(m_btnScan));
-                pH->AddStretch();
-                panelScan->AddChild(GiveOwnership(pH));
+
+                m_btnScanTake = new Button("        Take        ");
+                m_btnScanTake->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                m_btnScanTake->SetOnClicked([this]()
+                                        {
+                                            m_cbScanTake.call();
+//                                            PostRedraw();
+//                                            m_pScene->ForceRedraw();
+                                        });
+
+                pG = new VGrid(2, v_spacing);
+                pG->AddChild(GiveOwnership(m_btnScanReset));
+                pG->AddChild(GiveOwnership(m_btnScanTake));
+                panelScan->AddChild(GiveOwnership(pG));
 
                 m_labelProg = new Label("Memory used: 0%");
                 pH = new Horiz(v_spacing);

@@ -15,8 +15,6 @@ namespace kai
 		m_pTk = NULL;
 
 		m_nPw = 0;
-		m_nPdummy = 0;
-		m_bSlam = true;
 		m_dHiddenRemove = 100.0;
 		m_fProcess.clearAll();
 	}
@@ -31,7 +29,6 @@ namespace kai
 		IF_F(!this->_GeometryViewer::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("bSlam", &m_bSlam);
 		pK->v("dHiddenRemove", &m_dHiddenRemove);
 
 		string n = "";
@@ -77,28 +74,41 @@ namespace kai
 	{
 		m_pT->sleepT(0);
 
+		// init
+//		m_fProcess.set(pc_ScanReset);
+
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPSfrom();
 
-			if (m_fProcess.b(pc_ScanStart, true))
+			if (m_fProcess.b(pc_ScanReset, true))
 			{
-				startScan();
+				scanReset();
 			}
 
-			if (m_fProcess.b(pc_ScanStop, true))
+			if (m_fProcess.b(pc_ScanTake, true))
 			{
-				stopScan();
+				scanTake();
 			}
 
 			if (m_fProcess.b(pc_Scanning))
 			{
 				updateScan();
 			}
-			else
-			{
-				updateProcess();
-			}
+			// else
+			// {
+			// 	updateProcess();
+			// }
+
+			// if (m_fProcess.b(pc_ScanStart, true))
+			// {
+			// 	startScan();
+			// }
+
+			// if (m_fProcess.b(pc_ScanStop, true))
+			// {
+			// 	stopScan();
+			// }
 
 			if (m_fProcess.b(pc_CamAuto))
 				updateCamAuto();
@@ -107,7 +117,7 @@ namespace kai
 		}
 	}
 
-	void _VzScan::startScan(void)
+	void _VzScan::scanReset(void)
 	{
 		IF_(check() < 0);
 
@@ -118,9 +128,8 @@ namespace kai
 			m_pT->sleepT(100000);
 
 		m_nPw = 0;
-		m_nPdummy = m_nP;
 		m_sPC.get()->Clear();
-		addDummyDome(m_sPC.get(), m_nPdummy, m_rDummyDome);
+		addDummyPoints(m_sPC.get(), m_nP, m_rDummyDome);
 
 		removeUIpc();
 		addUIpc(*m_sPC.get());
@@ -132,31 +141,56 @@ namespace kai
 		m_pWin->CloseDialog();
 	}
 
-	void _VzScan::stopScan(void)
-	{
-		IF_(check() < 0);
+// 	void _VzScan::startScan(void)
+// 	{
+// 		IF_(check() < 0);
 
-		m_pWin->ShowMsg("Scan", "Processing");
+// 		m_pWin->ShowMsg("Scan", "Initializing");
 
-		PointCloud* pP = m_sPC.get();
+// //		m_pNav->reset();
+// 		while(!m_pNav->bReady())
+// 			m_pT->sleepT(100000);
 
-		if (m_nPdummy > 0)
-		{
-			pP->points_.erase(pP->points_.end() - m_nPdummy, pP->points_.end());
-			pP->colors_.erase(pP->colors_.end() - m_nPdummy, pP->colors_.end());
-		}
+// 		m_nPw = 0;
+// 		m_nPdummy = m_nP;
+// 		m_sPC.get()->Clear();
+// 		addDummyPoints(m_sPC.get(), m_nPdummy, m_rDummyDome);
 
-		removeUIpc();
-		addUIpc(*pP);
-		m_aabb = pP->GetAxisAlignedBoundingBox();
-		camBound(m_aabb);
-		updateCamPose();
+// 		removeUIpc();
+// 		addUIpc(*m_sPC.get());
+// 		m_fProcess.set(pc_Scanning);
 
-		m_fProcess.clear(pc_Scanning);
-		m_pWin->CloseDialog();
-	}
+// 		resetCamPose();
+// 		updateCamPose();
+		
+// 		m_pWin->CloseDialog();
+// 	}
 
-	void _VzScan::updateScan(void)
+	// void _VzScan::stopScan(void)
+	// {
+	// 	IF_(check() < 0);
+
+	// 	m_pWin->ShowMsg("Scan", "Processing");
+
+	// 	PointCloud* pP = m_sPC.get();
+
+	// 	if (m_nPdummy > 0)
+	// 	{
+	// 		pP->points_.erase(pP->points_.end() - m_nPdummy, pP->points_.end());
+	// 		pP->colors_.erase(pP->colors_.end() - m_nPdummy, pP->colors_.end());
+	// 	}
+
+	// 	removeUIpc();
+	// 	addUIpc(*pP);
+	// 	m_aabb = pP->GetAxisAlignedBoundingBox();
+	// 	camBound(m_aabb);
+	// 	updateCamPose();
+
+	// 	m_fProcess.clear(pc_Scanning);
+	// 	m_pWin->CloseDialog();
+	// }
+
+	void _VzScan::scanTake(void)
 	{
 		IF_(check() < 0);
 
@@ -174,8 +208,13 @@ namespace kai
 			pP->colors_[m_nPw] = pc.colors_[i];
 
 			m_nPw++;
-			if(m_nPw >= m_nP)m_nPw = 0;
-			if(m_nPdummy > 0)m_nPdummy--;
+			if(m_nPw >= m_nP)break;
+		}
+
+		for(int i=m_nPw; i < m_nP; i++)
+		{
+			pP->points_[i] = {0,0,0};
+			pP->colors_[i] = {0,0,0};
 		}
 
 		m_aabb = pc.GetAxisAlignedBoundingBox();
@@ -183,8 +222,43 @@ namespace kai
 			m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
 
 		updateUIpc(*pP);
-//		_VzScanUI* pW = (_VzScanUI*)m_pWin;
-//		pW->SetProgressBar((float)pPsrc->iP() / (float)pPsrc->nP());
+		_VzScanUI* pW = (_VzScanUI*)m_pWin;
+		pW->SetProgressBar((float)m_nPw / (float)m_nP);
+	}
+
+	void _VzScan::updateScan(void)
+	{
+		IF_(check() < 0);
+
+		_PCframe* pPsrc = (_PCframe*)m_vpGB[0];
+        PointCloud pc;
+        pPsrc->getPC(&pc);
+
+		int nNew = pc.points_.size();
+		IF_(nNew <= 0);
+        PointCloud* pP = m_sPC.get();
+
+		int iPw = m_nPw;
+		for(int i=0; i<nNew; i++)
+		{
+			pP->points_[iPw] = pc.points_[i];
+			pP->colors_[iPw] = pc.colors_[i];
+
+			iPw++;
+			if(iPw >= m_nP)break;
+		}
+
+		while(iPw < m_nP)
+		{
+			pP->points_[iPw] = {0,0,0};
+			pP->colors_[iPw] = {0,0,0};
+		}
+
+		m_aabb = pc.GetAxisAlignedBoundingBox();
+		if(m_pUIstate)
+			m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
+
+		updateUIpc(*pP);
 	}
 
 	void _VzScan::updateCamAuto(void)
@@ -259,7 +333,6 @@ namespace kai
 	{
 		IF_(check() < 0);
 		IF_(!m_fProcess.b(pc_Scanning));
-		IF_(!m_bSlam);
 
 		auto mT = m_pNav->mT();
 		for (int i = 0; i < m_vpGB.size(); i++)
@@ -287,7 +360,9 @@ namespace kai
 		_VzScanUI* pW = (_VzScanUI*)m_pWin;
 		app.AddWindow(shared_ptr<_VzScanUI>(pW));
 
-		pW->SetCbScan(OnScan, (void *)this);
+//		pW->SetCbScan(OnScan, (void *)this);
+		pW->SetCbScanReset(OnScanReset, (void *)this);
+		pW->SetCbScanTake(OnScanTake, (void *)this);
 		pW->SetCbOpenPC(OnOpenPC, (void *)this);
 		pW->SetCbCamSet(OnCamSet, (void *)this);
 		pW->SetCbHiddenRemove(OnHiddenRemove, (void *)this);
@@ -306,16 +381,32 @@ namespace kai
 		exit(0);
 	}
 
-	void _VzScan::OnScan(void *pPCV, void *pD)
+	// void _VzScan::OnScan(void *pPCV, void *pD)
+	// {
+	// 	NULL_(pPCV);
+	// 	NULL_(pD);
+	// 	_VzScan *pV = (_VzScan *)pPCV;
+
+	// 	if (*((bool *)pD))
+	// 		pV->m_fProcess.set(pc_ScanStart);
+	// 	else
+	// 		pV->m_fProcess.set(pc_ScanStop);
+	// }
+
+	void _VzScan::OnScanReset(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
-		NULL_(pD);
 		_VzScan *pV = (_VzScan *)pPCV;
 
-		if (*((bool *)pD))
-			pV->m_fProcess.set(pc_ScanStart);
-		else
-			pV->m_fProcess.set(pc_ScanStop);
+		pV->m_fProcess.set(pc_ScanReset);
+	}
+
+	void _VzScan::OnScanTake(void *pPCV, void *pD)
+	{
+		NULL_(pPCV);
+		_VzScan *pV = (_VzScan *)pPCV;
+
+		pV->m_fProcess.set(pc_ScanTake);
 	}
 
 	void _VzScan::OnOpenPC(void *pPCV, void *pD)

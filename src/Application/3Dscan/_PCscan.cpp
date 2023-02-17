@@ -126,7 +126,7 @@ namespace kai
 		pPS->startStream();
 
 		removeUIpc();
-		addDummyDome(m_sPC.next(), pPS->nP(), m_rDummyDome);
+		addDummyPoints(m_sPC.next(), pPS->nP(), m_rDummyDome);
 		updatePC();
 		addUIpc(*m_sPC.get());
 		m_fProcess.set(pc_Scanning);
@@ -176,7 +176,7 @@ namespace kai
 		PointCloud pc = *pPC;
 		if (n < nP)
 		{
-			addDummyDome(&pc, nP - n, m_rDummyDome);
+			addDummyPoints(&pc, nP - n, m_rDummyDome);
 		}
 		else if (n > nP)
 		{

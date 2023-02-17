@@ -29,8 +29,11 @@ namespace kai
 	protected:
 		//point cloud
 		virtual void updateProcess(void);
-		virtual void startScan(void);
-		virtual void stopScan(void);
+		virtual void scanReset(void);
+		virtual void scanTake(void);
+
+//		virtual void startScan(void);
+//		virtual void stopScan(void);
 		virtual void updateCamAuto(void);
 		virtual void updateScan(void);
 		virtual void update(void);
@@ -58,7 +61,9 @@ namespace kai
 		}
 
 		// handlers
-		static void OnScan(void *pPCV, void* pD);
+//		static void OnScan(void *pPCV, void* pD);
+		static void OnScanReset(void *pPCV, void* pD);
+		static void OnScanTake(void *pPCV, void* pD);
 		static void OnOpenPC(void *pPCV, void* pD);
 		static void OnCamSet(void *pPCV, void* pD);
 		static void OnVoxelDown(void *pPCV, void* pD);
@@ -71,8 +76,6 @@ namespace kai
 		_Thread *m_pTk;
 
 		int m_nPw;
-		int m_nPdummy;
-		bool m_bSlam;
 		float m_dHiddenRemove;
 
 		//filter flags
