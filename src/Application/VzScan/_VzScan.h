@@ -75,7 +75,11 @@ namespace kai
 		_NavBase *m_pNav;
 		_Thread *m_pTk;
 
-		int m_nPw;
+		PointCloud* m_pPCprv;
+		PointCloud* m_pPCorig;
+		int m_nPwPrv;
+		int m_nPwOrig;
+		float m_rVoxel;
 		float m_dHiddenRemove;
 
 		//filter flags

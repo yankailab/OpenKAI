@@ -242,11 +242,11 @@ namespace kai
 				pPC->colors_.push_back(vC);
 
 				nPi++;
-				if (nPi >= m_nP)
+				if (nPi >= m_nPresv)
 					break;
 			}
 
-			if (nPi >= m_nP)
+			if (nPi >= m_nPresv)
 				break;
 		}
 

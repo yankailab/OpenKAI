@@ -37,8 +37,8 @@
 	"vWinSize":[1920,1080],
 	"pathRes":"/usr/local/bin/Open3D/resources",
 	"device":"CPU:0",
-	"nPreserve":3000000,
-	"nPreserveNext":0,
+	"nPresv":400000,
+	"nPresvNext":1000000,
 	"_NavBase":"T265",
 	"vGeometryBase":["/pcRegistCol","VzensePC","/pcFile"],
 	"vCamLookAt":[0,0,0],
@@ -60,6 +60,7 @@
 	"dHiddenRemove":100.0,
 	"dirSave":"/media/kai/",
 	"/dirSave":"/media/lab/",
+	"rVoxel":0.1,
 }
 
 {
@@ -78,7 +79,7 @@
 	"vAxisIdx":[0, 1, 2],
 	"vAxisK":[1, -1, -1],
 	"fCalib":"/home/kai/dev/VzScan/calibOfs.kiss",
-	"nPreserve":400000,
+	"nPresv":400000,
 	"tWait":60,
 }
 
@@ -90,7 +91,7 @@
 		"name":"thread",
 		"FPS":25,
 	}
-	"nPreserve":400000,
+	"nPresv":400000,
 	"_PCframe":"VzensePC",
 	"maxDistantce":0.5,
 	"rVoxel":0.1,

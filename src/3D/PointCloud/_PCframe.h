@@ -29,7 +29,6 @@ namespace kai
 		//frame
 		virtual void getPC(PointCloud *pPC);
 		virtual void updatePC(void);
-        virtual int nP(void);
 
 	protected:
 		virtual void getStream(void *p);
@@ -38,7 +37,8 @@ namespace kai
 
 	protected:
 		// frame buf
-		int m_nP; // max number of reserved point but
+		int m_nPresv;		// max number of reserved point buf
+		int m_nPresvNext;
 		uint64_t m_tStamp;
 		tSwap<PointCloud> m_sPC;
 		pthread_mutex_t m_mutexPC;
