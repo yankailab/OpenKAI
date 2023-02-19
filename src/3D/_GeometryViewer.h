@@ -17,6 +17,7 @@ namespace kai
 	{
 		pc_ScanReset,
 		pc_ScanTake,
+		pc_SavePC,
 		pc_Scanning,
 		pc_ScanStart,
 		pc_ScanStop,

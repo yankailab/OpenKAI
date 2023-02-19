@@ -21,6 +21,8 @@ namespace kai
 		m_rVoxel = 0.1;
 		m_dHiddenRemove = 100.0;
 		m_fProcess.clearAll();
+		
+		m_fNameSavePC = "";
 	}
 
 	_VzScan::~_VzScan()
@@ -90,14 +92,13 @@ namespace kai
 			m_pT->autoFPSfrom();
 
 			if (m_fProcess.b(pc_ScanReset, true))
-			{
 				scanReset();
-			}
 
 			if (m_fProcess.b(pc_ScanTake, true))
-			{
 				scanTake();
-			}
+
+			if (m_fProcess.b(pc_SavePC, true))
+				savePC();
 
 			//			if (m_fProcess.b(pc_Scanning))
 			//			{
@@ -131,9 +132,9 @@ namespace kai
 
 		m_pWin->ShowMsg("Scan", "Initializing");
 
-//		m_pNav->reset();
-		while (!m_pNav->bReady())
-			m_pT->sleepT(100000);
+		//		m_pNav->reset();
+		//		while (!m_pNav->bReady())
+		//			m_pT->sleepT(100000);
 
 		// original point cloud
 		m_nPwOrig = 0;
@@ -153,30 +154,6 @@ namespace kai
 
 		m_pWin->CloseDialog();
 	}
-
-	// void _VzScan::stopScan(void)
-	// {
-	// 	IF_(check() < 0);
-
-	// 	m_pWin->ShowMsg("Scan", "Processing");
-
-	// 	PointCloud* pP = m_sPC.get();
-
-	// 	if (m_nPdummy > 0)
-	// 	{
-	// 		pP->points_.erase(pP->points_.end() - m_nPdummy, pP->points_.end());
-	// 		pP->colors_.erase(pP->colors_.end() - m_nPdummy, pP->colors_.end());
-	// 	}
-
-	// 	removeUIpc();
-	// 	addUIpc(*pP);
-	// 	m_aabb = pP->GetAxisAlignedBoundingBox();
-	// 	camBound(m_aabb);
-	// 	updateCamPose();
-
-	// 	m_fProcess.clear(pc_Scanning);
-	// 	m_pWin->CloseDialog();
-	// }
 
 	void _VzScan::scanTake(void)
 	{
@@ -259,8 +236,10 @@ namespace kai
 		int nDummy = m_nPresv - iPw;
 		if (nDummy > 0)
 		{
-			m_pPCprv->points_.erase(m_pPCprv->points_.end() - nDummy, m_pPCprv->points_.end());
-			m_pPCprv->colors_.erase(m_pPCprv->colors_.end() - nDummy, m_pPCprv->colors_.end());
+			m_pPCprv->points_.erase(m_pPCprv->points_.end() - nDummy,
+									m_pPCprv->points_.end());
+			m_pPCprv->colors_.erase(m_pPCprv->colors_.end() - nDummy,
+									m_pPCprv->colors_.end());
 			addDummyPoints(m_pPCprv, nDummy, m_rDummyDome);
 		}
 
@@ -269,6 +248,24 @@ namespace kai
 			m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
 
 		updateUIpc(*m_pPCprv);
+	}
+
+	void _VzScan::savePC(void)
+	{
+		IF_(check() < 0);
+
+		m_pWin->ShowMsg("FILE", "Saving .PLY file");
+
+		io::WritePointCloudOption par;
+		par.write_ascii = io::WritePointCloudOption::IsAscii::Binary;
+		par.compressed = io::WritePointCloudOption::Compressed::Uncompressed;
+
+		io::WritePointCloudToPLY(m_fNameSavePC.c_str(),
+								 *m_pPCorig,
+								 par);
+
+		m_pWin->CloseDialog();
+        m_pWin->ShowMsg("FILE", "Saved .PLY file to USB memory", true);
 	}
 
 	void _VzScan::updateCamAuto(void)
@@ -373,6 +370,7 @@ namespace kai
 		//		pW->SetCbScan(OnScan, (void *)this);
 		pW->SetCbScanReset(OnScanReset, (void *)this);
 		pW->SetCbScanTake(OnScanTake, (void *)this);
+		pW->SetCbSavePC(OnSavePC, (void *)this);
 		pW->SetCbOpenPC(OnOpenPC, (void *)this);
 		pW->SetCbCamSet(OnCamSet, (void *)this);
 		pW->SetCbHiddenRemove(OnHiddenRemove, (void *)this);
@@ -405,6 +403,15 @@ namespace kai
 		_VzScan *pV = (_VzScan *)pPCV;
 
 		pV->m_fProcess.set(pc_ScanTake);
+	}
+
+	void _VzScan::OnSavePC(void *pPCV, void *pD)
+	{
+		NULL_(pPCV);
+		_VzScan *pV = (_VzScan *)pPCV;
+
+		pV->m_fNameSavePC = *(string *)pD;
+		pV->m_fProcess.set(pc_SavePC);
 	}
 
 	void _VzScan::OnOpenPC(void *pPCV, void *pD)

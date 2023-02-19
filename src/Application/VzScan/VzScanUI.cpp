@@ -19,7 +19,6 @@ namespace open3d
             _VzScanUI::_VzScanUI(const string &title, int width, int height)
                 : O3DUI(title, width, height)
             {
-                //                Init();
             }
 
             _VzScanUI::~_VzScanUI() {}
@@ -30,7 +29,6 @@ namespace open3d
 
                 m_bScanning = true;
                 m_bCamAuto = false;
-                m_areaName = "PCAREA";
 
                 m_sVertex = make_shared<O3DVisualizerSelections>(*m_pScene);
                 InitCtrlPanel();
@@ -63,9 +61,11 @@ namespace open3d
 
             void _VzScanUI::UpdateBtnState(void)
             {
-//                m_btnScan->SetOn(m_bScanning);
+                //                m_btnScan->SetOn(m_bScanning);
                 m_btnScanReset->SetOn(m_bScanning);
                 m_btnScanTake->SetOn(m_bScanning);
+                m_btnSavePC->SetEnabled(m_bScanning);
+
                 m_btnCamAuto->SetOn(m_bCamAuto);
                 m_btnCamAuto->SetEnabled(m_bScanning);
                 m_btnCamAll->SetEnabled(!m_bCamAuto);
@@ -78,7 +78,6 @@ namespace open3d
                 m_btnCamD->SetEnabled(!m_bCamAuto);
 
                 m_btnOpenPC->SetEnabled(!m_bScanning);
-                m_btnSavePC->SetEnabled(!m_bScanning);
                 m_btnSaveRGB->SetEnabled(!m_bScanning);
                 m_sliderVsize->SetEnabled(!m_bScanning);
                 m_btnHiddenRemove->SetEnabled(!m_bScanning);
@@ -113,11 +112,6 @@ namespace open3d
                 m_labelProg->SetText(s.c_str());
             }
 
-            // void _VzScanUI::SetCbScan(OnCbO3DUI pCb, void *pPCV)
-            // {
-            //     m_cbScan.add(pCb, pPCV);
-            // }
-
             void _VzScanUI::SetCbScanReset(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbScanReset.add(pCb, pPCV);
@@ -126,6 +120,11 @@ namespace open3d
             void _VzScanUI::SetCbScanTake(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbScanTake.add(pCb, pPCV);
+            }
+
+            void _VzScanUI::SetCbSavePC(OnCbO3DUI pCb, void *pPCV)
+            {
+                m_cbSavePC.add(pCb, pPCV);
             }
 
             void _VzScanUI::SetCbOpenPC(OnCbO3DUI pCb, void *pPCV)
@@ -191,11 +190,6 @@ namespace open3d
                 m_btnOpenPC->SetOnClicked([this]()
                                           { OnOpenPLY(); });
 
-                m_btnSavePC = new Button(" Save ");
-                m_btnSavePC->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
-                m_btnSavePC->SetOnClicked([this]()
-                                          { OnSavePLY(); });
-
                 m_btnSaveRGB = new Button("Screen");
                 m_btnSaveRGB->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnSaveRGB->SetOnClicked([this]()
@@ -203,7 +197,6 @@ namespace open3d
 
                 auto pH = new Horiz(v_spacing);
                 pH->AddChild(GiveOwnership(m_btnOpenPC));
-                pH->AddChild(GiveOwnership(m_btnSavePC));
                 pH->AddChild(GiveOwnership(m_btnSaveRGB));
                 pH->AddStretch();
                 panelFile->AddChild(GiveOwnership(pH));
@@ -220,8 +213,7 @@ namespace open3d
                                                int m = m_bCamAuto ? 1 : 0;
                                                m_cbCamSet.call(&m);
                                                UpdateBtnState();
-                                               m_pScene->ForceRedraw();
-                                           });
+                                               m_pScene->ForceRedraw(); });
 
                 m_btnCamAll = new Button("    All    ");
                 m_btnCamAll->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
@@ -231,8 +223,7 @@ namespace open3d
                                               m_cbCamSet.call(&m);
                                               if (m_uiMode == uiMode_pointPick)
                                                   UpdateSelectableGeometry();
-                                              m_pScene->ForceRedraw();
-                                          });
+                                              m_pScene->ForceRedraw(); });
 
                 m_btnCamOrigin = new Button(" Origin ");
                 m_btnCamOrigin->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
@@ -242,8 +233,7 @@ namespace open3d
                                                  m_cbCamSet.call(&m);
                                                  if (m_uiMode == uiMode_pointPick)
                                                      UpdateSelectableGeometry();
-                                                 m_pScene->ForceRedraw();
-                                             });
+                                                 m_pScene->ForceRedraw(); });
 
                 m_btnCamL = new Button(" < ");
                 m_btnCamL->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
@@ -305,8 +295,7 @@ namespace open3d
                                                  {
                                                      m_uiState.m_sVoxel = v;
                                                      m_cbVoxelDown.call(&m_uiState);
-                                                     m_pScene->ForceRedraw();
-                                                 });
+                                                     m_pScene->ForceRedraw(); });
 
                 auto *pG = new VGrid(2, v_spacing);
                 pG->AddChild(make_shared<Label>("PointSize"));
@@ -321,16 +310,14 @@ namespace open3d
                                                 {
                                                     m_uiState.m_vCamPos = m_pScene->GetScene()->GetCamera()->GetPosition();
                                                     m_cbHiddenRemove.call(&m_uiState);
-                                                    m_pScene->ForceRedraw();
-                                                });
+                                                    m_pScene->ForceRedraw(); });
 
                 m_btnFilterReset = new Button(" Reset ");
                 m_btnFilterReset->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnFilterReset->SetOnClicked([this]()
                                                {
                                                    m_cbResetPC.call();
-                                                   m_pScene->ForceRedraw();
-                                               });
+                                                   m_pScene->ForceRedraw(); });
 
                 pG = new VGrid(2, v_spacing);
                 pG->AddChild(GiveOwnership(m_btnHiddenRemove));
@@ -359,30 +346,34 @@ namespace open3d
                 // pH->AddStretch();
                 // panelScan->AddChild(GiveOwnership(pH));
 
-
-                m_btnScanReset = new Button("        Reset        ");
+                m_btnScanReset = new Button(" Reset ");
                 m_btnScanReset->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnScanReset->SetOnClicked([this]()
-                                        {
+                                             {
                                             m_cbScanReset.call();
                                             m_bCamAuto = m_bScanning;
                                             int m = m_bCamAuto ? 1 : 0;
                                             m_cbCamSet.call(&m);
                                             UpdateBtnState();
-                                            PostRedraw();
-                                        });
+                                            PostRedraw(); });
 
-                m_btnScanTake = new Button("        Take        ");
+                m_btnSavePC = new Button("  Save  ");
+                m_btnSavePC->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                m_btnSavePC->SetOnClicked([this]()
+                                          { OnSavePLY(); });
+
+                m_btnScanTake = new Button("  Take  ");
                 m_btnScanTake->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnScanTake->SetOnClicked([this]()
-                                        {
-                                            m_cbScanTake.call();
+                                            {
+                                                m_cbScanTake.call();
 //                                            PostRedraw();
 //                                            m_pScene->ForceRedraw();
-                                        });
+                                            });
 
-                pG = new VGrid(2, v_spacing);
+                pG = new VGrid(3, v_spacing);
                 pG->AddChild(GiveOwnership(m_btnScanReset));
+                pG->AddChild(GiveOwnership(m_btnSavePC));
                 pG->AddChild(GiveOwnership(m_btnScanTake));
                 panelScan->AddChild(GiveOwnership(pG));
 
@@ -452,14 +443,7 @@ namespace open3d
 
                 this->ExportCurrentImage(imgName.c_str());
 
-                io::WritePointCloudOption par;
-                par.write_ascii = io::WritePointCloudOption::IsAscii::Binary;
-                par.compressed = io::WritePointCloudOption::Compressed::Uncompressed;
-
-                shared_ptr<t::geometry::PointCloud> spTpc = GetGeometry(m_modelName).m_sTgeometry;
-                io::WritePointCloudToPLY(plyName.c_str(), spTpc->ToLegacy(), par);
-
-                ShowMsg("File Save", "Saved model to USB memory", true);
+                m_cbSavePC.call(&plyName);
 
                 // auto dlg = make_shared<gui::FileDialog>(
                 //     gui::FileDialog::Mode::SAVE, "Save File", this->GetTheme());
@@ -492,8 +476,7 @@ namespace open3d
                 dlg->SetOnDone([this](const char *path)
                                {
                                    this->CloseDialog();
-                                   this->m_cbOpenPC.call((void *)path);
-                               });
+                                   this->m_cbOpenPC.call((void *)path); });
                 ShowDialog(dlg);
             }
 

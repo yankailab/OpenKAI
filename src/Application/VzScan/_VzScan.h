@@ -31,6 +31,7 @@ namespace kai
 		virtual void updateProcess(void);
 		virtual void scanReset(void);
 		virtual void scanTake(void);
+		virtual void savePC(void);
 
 //		virtual void startScan(void);
 //		virtual void stopScan(void);
@@ -64,6 +65,7 @@ namespace kai
 //		static void OnScan(void *pPCV, void* pD);
 		static void OnScanReset(void *pPCV, void* pD);
 		static void OnScanTake(void *pPCV, void* pD);
+		static void OnSavePC(void *pPCV, void* pD);
 		static void OnOpenPC(void *pPCV, void* pD);
 		static void OnCamSet(void *pPCV, void* pD);
 		static void OnVoxelDown(void *pPCV, void* pD);
@@ -81,6 +83,7 @@ namespace kai
 		int m_nPwOrig;
 		float m_rVoxel;
 		float m_dHiddenRemove;
+		string m_fNameSavePC;
 
 		//filter flags
 		BIT_FLAG m_fProcess;
