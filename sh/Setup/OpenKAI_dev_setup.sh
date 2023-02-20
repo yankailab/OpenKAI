@@ -368,12 +368,13 @@ sudo apt-get install libjsoncpp-dev
 git clone --branch v0.16.1 --depth 1 --recursive https://github.com/intel-isl/Open3D
 cd Open3D
 git submodule update --init --recursive
+# run this again if met error in re-compile
 util/install_deps_ubuntu.sh
 mkdir build
 cd build
 
 #PC
-cmake -DCMAKE_BUILD_TYPE=Release -DGLIBCXX_USE_CXX11_ABI=ON -DBUILD_CUDA_MODULE=OFF -DBUILD_EXAMPLES=OFF -DBUILD_FILAMENT_FROM_SOURCE=ON -DBUILD_GUI=ON -DBUILD_PYTHON_MODULE=OFF -DBUILD_SHARED_LIBS=ON -DBUILD_WEBRTC=OFF -DDEVELOPER_BUILD=OFF -DWITH_SIMD=ON ../
+cmake -DCMAKE_BUILD_TYPE=Release -DGLIBCXX_USE_CXX11_ABI=ON -DBUILD_CUDA_MODULE=OFF -DBUILD_EXAMPLES=OFF -DBUILD_FILAMENT_FROM_SOURCE=OFF -DBUILD_GUI=ON -DBUILD_PYTHON_MODULE=OFF -DBUILD_SHARED_LIBS=ON -DBUILD_WEBRTC=OFF -DDEVELOPER_BUILD=OFF -DWITH_SIMD=ON ../
 make -j$(nproc)
 sudo make install
 
@@ -479,6 +480,7 @@ sudo make install
 
 #----------------------------------------------------
 # OpenKAI
+sudo apt-get install libunwind-dev
 sudo apt-get install libgoogle-glog-dev
 git clone --depth 1 https://github.com/yankailab/OpenKAI.git
 cd OpenKAI

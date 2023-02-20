@@ -21,7 +21,7 @@ namespace kai
 		m_rVoxel = 0.1;
 		m_dHiddenRemove = 100.0;
 		m_fProcess.clearAll();
-		
+
 		m_fNameSavePC = "";
 	}
 
@@ -162,18 +162,15 @@ namespace kai
 		_PCframe *pPsrc = (_PCframe *)m_vpGB[0];
 		PointCloud pc;
 		pPsrc->getPC(&pc);
-
 		int nPnew = pc.points_.size();
 		IF_(nPnew <= 0);
-
 		int i;
 
 		// Add original
 		for (i = 0; i < nPnew; i++)
 		{
-			m_pPCorig->points_[m_nPwOrig] = pc.points_[i];
-			m_pPCorig->colors_[m_nPwOrig] = pc.colors_[i];
-
+			m_pPCorig->points_.push_back(pc.points_[i]);
+			m_pPCorig->colors_.push_back(pc.colors_[i]);
 			m_nPwOrig++;
 			if (m_nPwOrig >= m_nPresvNext)
 				break;
@@ -186,7 +183,6 @@ namespace kai
 		{
 			m_pPCprv->points_[m_nPwPrv] = pcVd.points_[i];
 			m_pPCprv->colors_[m_nPwPrv] = pcVd.colors_[i];
-
 			m_nPwPrv++;
 			if (m_nPwPrv >= m_nPresv)
 				break;
@@ -253,19 +249,33 @@ namespace kai
 	void _VzScan::savePC(void)
 	{
 		IF_(check() < 0);
+		if (m_pPCorig->IsEmpty())
+		{
+			m_pWin->ShowMsg("FILE", "Model is empty", true);
+			return;
+		}
 
 		m_pWin->ShowMsg("FILE", "Saving .PLY file");
 
 		io::WritePointCloudOption par;
 		par.write_ascii = io::WritePointCloudOption::IsAscii::Binary;
 		par.compressed = io::WritePointCloudOption::Compressed::Uncompressed;
-
-		io::WritePointCloudToPLY(m_fNameSavePC.c_str(),
-								 *m_pPCorig,
-								 par);
+		bool bSave = io::WritePointCloudToPLY(m_fNameSavePC,
+											  *m_pPCorig,
+											  par);
 
 		m_pWin->CloseDialog();
-        m_pWin->ShowMsg("FILE", "Saved .PLY file to USB memory", true);
+		string msg;
+		if (bSave)
+		{
+			msg = "Saved to: " + m_fNameSavePC;
+			m_pWin->ShowMsg("FILE", msg.c_str(), true);
+		}
+		else
+		{
+			msg = "Failed to save: " + m_fNameSavePC;
+			m_pWin->ShowMsg("FILE", msg.c_str(), true);
+		}
 	}
 
 	void _VzScan::updateCamAuto(void)
@@ -339,6 +349,7 @@ namespace kai
 	void _VzScan::updateSlam(void)
 	{
 		IF_(check() < 0);
+		IF_(!m_pNav->bReady())
 		//		IF_(!m_fProcess.b(pc_Scanning));
 
 		auto mT = m_pNav->mT();
@@ -367,7 +378,6 @@ namespace kai
 		_VzScanUI *pW = (_VzScanUI *)m_pWin;
 		app.AddWindow(shared_ptr<_VzScanUI>(pW));
 
-		//		pW->SetCbScan(OnScan, (void *)this);
 		pW->SetCbScanReset(OnScanReset, (void *)this);
 		pW->SetCbScanTake(OnScanTake, (void *)this);
 		pW->SetCbSavePC(OnSavePC, (void *)this);
@@ -378,7 +388,7 @@ namespace kai
 		pW->SetCbVoxelDown(OnVoxelDown, (void *)this);
 
 		m_pWin->UpdateUIstate();
-		//		m_pWin->SetFullScreen(m_bFullScreen);
+		m_pWin->SetFullScreen(m_bFullScreen);
 		m_aabb = createDefaultAABB();
 		camBound(m_aabb);
 		updateCamProj();

@@ -367,8 +367,8 @@ namespace open3d
                 m_btnScanTake->SetOnClicked([this]()
                                             {
                                                 m_cbScanTake.call();
-//                                            PostRedraw();
-//                                            m_pScene->ForceRedraw();
+                                                //                                            PostRedraw();
+                                                //                                            m_pScene->ForceRedraw();
                                             });
 
                 pG = new VGrid(3, v_spacing);
@@ -433,16 +433,14 @@ namespace open3d
                 string fName = getBaseDirSave();
                 if (fName.empty())
                 {
-                    ShowMsg("File Save", "Insert USB memory", true);
+                    ShowMsg("FILE", "Insert USB memory", true);
                     return;
                 }
 
                 fName += tFormat();
                 string imgName = fName + ".png";
-                string plyName = fName + ".ply";
-
                 this->ExportCurrentImage(imgName.c_str());
-
+                string plyName = fName + ".ply";
                 m_cbSavePC.call(&plyName);
 
                 // auto dlg = make_shared<gui::FileDialog>(

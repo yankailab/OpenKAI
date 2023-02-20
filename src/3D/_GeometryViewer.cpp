@@ -213,12 +213,6 @@ namespace kai
 	{
 		NULL_(pPC);
 
-		// for (int i = 0; i < n; i++)
-		// {
-		// 	pPC->points_.push_back({0,0,0});
-		// 	pPC->colors_.push_back({0,0,0});
-		// }
-
 		float nV = floor(sqrt((float)n));
 		float nH = ceil(n / nV);
 

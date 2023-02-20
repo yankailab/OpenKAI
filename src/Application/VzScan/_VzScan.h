@@ -33,8 +33,6 @@ namespace kai
 		virtual void scanTake(void);
 		virtual void savePC(void);
 
-//		virtual void startScan(void);
-//		virtual void stopScan(void);
 		virtual void updateCamAuto(void);
 		virtual void updateScan(void);
 		virtual void update(void);
@@ -62,7 +60,6 @@ namespace kai
 		}
 
 		// handlers
-//		static void OnScan(void *pPCV, void* pD);
 		static void OnScanReset(void *pPCV, void* pD);
 		static void OnScanTake(void *pPCV, void* pD);
 		static void OnSavePC(void *pPCV, void* pD);
@@ -71,7 +68,6 @@ namespace kai
 		static void OnVoxelDown(void *pPCV, void* pD);
 		static void OnHiddenRemove(void *pPCV, void* pD);
 		static void OnResetPC(void *pPCV, void* pD);
-
 
 	protected:
 		_NavBase *m_pNav;
