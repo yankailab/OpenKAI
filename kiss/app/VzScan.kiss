@@ -51,7 +51,7 @@
 	"camFov":75,
 	"vCamNF":[0, 500],
 	"camFovType":1,
-	"bFullScreen":1,
+	"bFullScreen":0,
 	"wPanel":20,
 	"vBtnPadding":[1.6, 2.0],
 	"mouseMode":0,

@@ -9,6 +9,18 @@ namespace open3d
 	{
 		namespace visualizer
 		{
+			struct VzCamCtrl
+			{
+				int m_filTime = 0;
+				int m_filConfidence = 0;
+				int m_filFlyingPix = 0;
+				int m_tExposure = 0;
+
+				bool m_bFillHole = false;
+				bool m_bSpatialFilter = false;
+				bool m_bHDR = false;
+			};
+
 			class _VzScanUI : public O3DUI
 			{
 			public:
@@ -23,15 +35,11 @@ namespace open3d
 	            void SetMouseCameraMode(void);
 				void SetProgressBar(float v);
 	            void SetLabelArea(const string &s);
-//				void SetCbScan(OnCbO3DUI pCb, void *pPCV);
 				void SetCbScanReset(OnCbO3DUI pCb, void *pPCV);
 				void SetCbScanTake(OnCbO3DUI pCb, void *pPCV);
 				void SetCbSavePC(OnCbO3DUI pCb, void *pPCV);
-				void SetCbOpenPC(OnCbO3DUI pCb, void *pPCV);
 				void SetCbCamSet(OnCbO3DUI pCb, void *pPCV);
-				void SetCbVoxelDown(OnCbO3DUI pCb, void *pPCV);
-				void SetCbHiddenRemove(OnCbO3DUI pCb, void *pPCV);
-				void SetCbResetPC(OnCbO3DUI pCb, void *pPCV);
+				void SetCbCamCtrl(OnCbO3DUI pCb, void *pPCV);
 
 			protected:
 				virtual void Layout(const gui::LayoutContext &context);
@@ -46,14 +54,12 @@ namespace open3d
 			private:
 				shared_ptr<O3DVisualizerSelections> m_sVertex;
 				UImode m_uiMode = uiMode_cam;
-				bool m_bScanning;
 				bool m_bCamAuto;
+				VzCamCtrl m_camCtrl;
 
 				//UI components
 				Vert *m_panelCtrl;
-				Button* m_btnOpenPC;
 				Button* m_btnSavePC;
-				Button* m_btnSaveRGB;
 
 				Button* m_btnCamAuto;
 				Button* m_btnCamAll;
@@ -65,23 +71,21 @@ namespace open3d
 				Button* m_btnCamU;
 				Button* m_btnCamD;
 
-				Slider* m_sliderVsize;
-				Button* m_btnHiddenRemove;
-				Button* m_btnFilterReset;
 				Button *m_btnScanReset;
 				Button *m_btnScanTake;
 				ProgressBar *m_progScan;
 				Label *m_labelProg;
 
+				Button* m_btnFillHole;
+				Button* m_btnFilSpatial;
+				Button* m_btnHDR;
+				
 				//UI handler
 				O3D_UI_Cb m_cbScanReset;
 				O3D_UI_Cb m_cbScanTake;
 				O3D_UI_Cb m_cbSavePC;
-				O3D_UI_Cb m_cbOpenPC;
 				O3D_UI_Cb m_cbCamSet;
-				O3D_UI_Cb m_cbVoxelDown;
-				O3D_UI_Cb m_cbHiddenRemove;
-				O3D_UI_Cb m_cbResetPC;
+				O3D_UI_Cb m_cbCamCtrl;
 			};
 
 		} // namespace visualizer

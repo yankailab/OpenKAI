@@ -253,4 +253,71 @@ namespace kai
 		return true;
 	}
 
+	bool _VzensePC::setExposureControlMode(bool bAuto)
+	{
+		VzReturnStatus vzR = VZ_SetExposureControlMode(m_deviceHandle,
+													   VzToFSensor,
+													   bAuto ? VzExposureControlMode_Auto
+															 : VzExposureControlMode_Manual);
+		return (vzR == VzRetOK) ? true : false;
+	}
+
+	bool _VzensePC::setExposureTime(bool bAuto, int tExposure)
+	{
+		VzExposureTimeParams p;
+		p.mode = bAuto ? VzExposureControlMode_Auto
+					   : VzExposureControlMode_Manual;
+		p.exposureTime = tExposure;
+		VzReturnStatus vzR = VZ_SetExposureTime(m_deviceHandle,
+												VzToFSensor,
+												p);
+
+		return (vzR == VzRetOK) ? true : false;
+	}
+
+	bool _VzensePC::setTimeFilter(bool bON, int thr)
+	{
+		VzTimeFilterParams p;
+		p.enable = bON;
+		p.threshold = thr;
+		VzReturnStatus vzR = VZ_SetTimeFilterParams(m_deviceHandle, p);
+		return (vzR == VzRetOK) ? true : false;
+	}
+
+	bool _VzensePC::setConfidenceFilter(bool bON, int thr)
+	{
+		VzConfidenceFilterParams p;
+		p.enable = bON;
+		p.threshold = thr;
+		VzReturnStatus vzR = VZ_SetConfidenceFilterParams(m_deviceHandle, p);
+		return (vzR == VzRetOK) ? true : false;
+	}
+
+	bool _VzensePC::setFlyingPixelFilter(bool bON, int thr)
+	{
+		VzFlyingPixelFilterParams p;
+		p.enable = bON;
+		p.threshold;
+		VzReturnStatus vzR = VZ_SetFlyingPixelFilterParams(m_deviceHandle, p);
+		return (vzR == VzRetOK) ? true : false;
+	}
+
+	bool _VzensePC::setFillHole(bool bON)
+	{
+		VzReturnStatus vzR = VZ_SetFillHoleFilterEnabled(m_deviceHandle, bON);
+		return (vzR == VzRetOK) ? true : false;
+	}
+
+	bool _VzensePC::setSpatialFilter(bool bON)
+	{
+		VzReturnStatus vzR = VZ_SetSpatialFilterEnabled(m_deviceHandle, bON);
+		return (vzR == VzRetOK) ? true : false;
+	}
+
+	bool _VzensePC::setHDR(bool bON)
+	{
+		VzReturnStatus vzR = VZ_SetHDRModeEnabled(m_deviceHandle, bON);
+		return (vzR == VzRetOK) ? true : false;
+	}
+
 }

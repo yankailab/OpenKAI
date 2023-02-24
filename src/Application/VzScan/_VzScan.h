@@ -12,6 +12,7 @@
 #include "../../3D/_GeometryViewer.h"
 #include "../../Navigation/_NavBase.h"
 #include "../../Utility/BitFlag.h"
+#include "../../LIDAR/_VzensePC.h"
 #include "VzScanUI.h"
 
 namespace kai
@@ -28,11 +29,11 @@ namespace kai
 
 	protected:
 		//point cloud
-		virtual void updateProcess(void);
 		virtual void scanReset(void);
 		virtual void scanTake(void);
 		virtual void savePC(void);
 
+		virtual void updateCamCtrl(void);
 		virtual void updateCamAuto(void);
 		virtual void updateScan(void);
 		virtual void update(void);
@@ -65,9 +66,7 @@ namespace kai
 		static void OnSavePC(void *pPCV, void* pD);
 		static void OnOpenPC(void *pPCV, void* pD);
 		static void OnCamSet(void *pPCV, void* pD);
-		static void OnVoxelDown(void *pPCV, void* pD);
-		static void OnHiddenRemove(void *pPCV, void* pD);
-		static void OnResetPC(void *pPCV, void* pD);
+		static void OnCamCtrl(void *pPCV, void* pD);
 
 	protected:
 		_NavBase *m_pNav;
@@ -78,9 +77,11 @@ namespace kai
 		int m_nPwPrv;
 		int m_nPwOrig;
 		float m_rVoxel;
-		float m_dHiddenRemove;
 		string m_fNameSavePC;
 
+		VzCamCtrl m_camCtrl;
+		VzCamCtrl m_camCtrlNew;
+		
 		//filter flags
 		BIT_FLAG m_fProcess;
 	};

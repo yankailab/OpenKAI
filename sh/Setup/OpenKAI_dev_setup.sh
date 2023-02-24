@@ -156,8 +156,8 @@ gphoto2 --abilities
 
 #----------------------------------------------------
 # (Optional) OpenCV
-git clone --branch 4.6.0 --depth 1 https://github.com/opencv/opencv.git
-git clone --branch 4.6.0 --depth 1 https://github.com/opencv/opencv_contrib.git
+git clone --branch 4.7.0 --depth 1 https://github.com/opencv/opencv.git
+git clone --branch 4.7.0 --depth 1 https://github.com/opencv/opencv_contrib.git
 cd opencv
 mkdir build
 cd build

@@ -27,9 +27,7 @@ namespace open3d
             {
                 this->O3DUI::Init();
 
-                m_bScanning = true;
                 m_bCamAuto = false;
-
                 m_sVertex = make_shared<O3DVisualizerSelections>(*m_pScene);
                 InitCtrlPanel();
                 UpdateUIstate();
@@ -61,13 +59,12 @@ namespace open3d
 
             void _VzScanUI::UpdateBtnState(void)
             {
-                //                m_btnScan->SetOn(m_bScanning);
-                m_btnScanReset->SetOn(m_bScanning);
-                m_btnScanTake->SetOn(m_bScanning);
-                m_btnSavePC->SetEnabled(m_bScanning);
+                m_btnScanReset->SetEnabled(true);
+                m_btnScanTake->SetEnabled(true);
+                m_btnSavePC->SetEnabled(true);
 
                 m_btnCamAuto->SetOn(m_bCamAuto);
-                m_btnCamAuto->SetEnabled(m_bScanning);
+                m_btnCamAuto->SetEnabled(true);
                 m_btnCamAll->SetEnabled(!m_bCamAuto);
                 m_btnCamOrigin->SetEnabled(!m_bCamAuto);
                 m_btnCamL->SetEnabled(!m_bCamAuto);
@@ -77,21 +74,12 @@ namespace open3d
                 m_btnCamU->SetEnabled(!m_bCamAuto);
                 m_btnCamD->SetEnabled(!m_bCamAuto);
 
-                m_btnOpenPC->SetEnabled(!m_bScanning);
-                m_btnSaveRGB->SetEnabled(!m_bScanning);
-                m_sliderVsize->SetEnabled(!m_bScanning);
-                m_btnHiddenRemove->SetEnabled(!m_bScanning);
-                m_btnFilterReset->SetEnabled(!m_bScanning);
-
-                // if (m_bScanning)
-                // {
-                //     m_btnScan->SetText("        Stop        ");
-                //     SetMouseCameraMode();
-                // }
-                // else
-                // {
-                //     m_btnScan->SetText("        Start        ");
-                // }
+                m_btnFillHole->SetEnabled(true);
+                m_btnFilSpatial->SetEnabled(true);
+                m_btnHDR->SetEnabled(true);
+                m_btnFillHole->SetText(m_camCtrl.m_bFillHole?"Fill hole ON":"Fill hole OFF");
+                m_btnFilSpatial->SetText(m_camCtrl.m_bSpatialFilter?"Spatial ON":"Spatial OFF");
+                m_btnHDR->SetText(m_camCtrl.m_bHDR?"HDR ON":"HDR OFF");
 
                 m_pScene->ForceRedraw();
             }
@@ -127,29 +115,14 @@ namespace open3d
                 m_cbSavePC.add(pCb, pPCV);
             }
 
-            void _VzScanUI::SetCbOpenPC(OnCbO3DUI pCb, void *pPCV)
-            {
-                m_cbOpenPC.add(pCb, pPCV);
-            }
-
             void _VzScanUI::SetCbCamSet(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbCamSet.add(pCb, pPCV);
             }
 
-            void _VzScanUI::SetCbVoxelDown(OnCbO3DUI pCb, void *pPCV)
+            void _VzScanUI::SetCbCamCtrl(OnCbO3DUI pCb, void *pPCV)
             {
-                m_cbVoxelDown.add(pCb, pPCV);
-            }
-
-            void _VzScanUI::SetCbHiddenRemove(OnCbO3DUI pCb, void *pPCV)
-            {
-                m_cbHiddenRemove.add(pCb, pPCV);
-            }
-
-            void _VzScanUI::SetCbResetPC(OnCbO3DUI pCb, void *pPCV)
-            {
-                m_cbResetPC.add(pCb, pPCV);
+                m_cbCamCtrl.add(pCb, pPCV);
             }
 
             void _VzScanUI::Layout(const gui::LayoutContext &context)
@@ -180,26 +153,6 @@ namespace open3d
                 AddChild(GiveOwnership(m_panelCtrl));
 
                 Margins margins(em, 0, half_em, 0);
-
-                // File
-                auto panelFile = new CollapsableVert("FILE", v_spacing, margins);
-                m_panelCtrl->AddChild(GiveOwnership(panelFile));
-
-                m_btnOpenPC = new Button(" Open ");
-                m_btnOpenPC->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
-                m_btnOpenPC->SetOnClicked([this]()
-                                          { OnOpenPLY(); });
-
-                m_btnSaveRGB = new Button("Screen");
-                m_btnSaveRGB->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
-                m_btnSaveRGB->SetOnClicked([this]()
-                                           { OnSaveRGB(); });
-
-                auto pH = new Horiz(v_spacing);
-                pH->AddChild(GiveOwnership(m_btnOpenPC));
-                pH->AddChild(GiveOwnership(m_btnSaveRGB));
-                pH->AddStretch();
-                panelFile->AddChild(GiveOwnership(pH));
 
                 // Camera
                 auto panelCam = new CollapsableVert("CAM", v_spacing, margins);
@@ -277,81 +230,15 @@ namespace open3d
                 pN->AddChild(GiveOwnership(m_btnCamR));
                 panelCam->AddChild(GiveOwnership(pN));
 
-                // View
-                auto panelView = new CollapsableVert("VIEW", v_spacing, margins);
-                panelView->SetIsOpen(true);
-                m_panelCtrl->AddChild(GiveOwnership(panelView));
-
-                auto sliderPointSize = new Slider(Slider::INT);
-                sliderPointSize->SetLimits(1, 10);
-                sliderPointSize->SetValue(m_uiState.m_sPoint);
-                sliderPointSize->SetOnValueChanged([this](const double v)
-                                                   { SetPointSize(int(v)); });
-
-                m_sliderVsize = new Slider(Slider::DOUBLE);
-                m_sliderVsize->SetLimits(0.0, 1.0);
-                m_sliderVsize->SetValue(m_uiState.m_sVoxel);
-                m_sliderVsize->SetOnValueChanged([this](const double v)
-                                                 {
-                                                     m_uiState.m_sVoxel = v;
-                                                     m_cbVoxelDown.call(&m_uiState);
-                                                     m_pScene->ForceRedraw(); });
-
-                auto *pG = new VGrid(2, v_spacing);
-                pG->AddChild(make_shared<Label>("PointSize"));
-                pG->AddChild(GiveOwnership(sliderPointSize));
-                pG->AddChild(make_shared<Label>("VoxelSize"));
-                pG->AddChild(GiveOwnership(m_sliderVsize));
-                panelView->AddChild(GiveOwnership(pG));
-
-                m_btnHiddenRemove = new Button(" Z-Cull ");
-                m_btnHiddenRemove->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
-                m_btnHiddenRemove->SetOnClicked([this]()
-                                                {
-                                                    m_uiState.m_vCamPos = m_pScene->GetScene()->GetCamera()->GetPosition();
-                                                    m_cbHiddenRemove.call(&m_uiState);
-                                                    m_pScene->ForceRedraw(); });
-
-                m_btnFilterReset = new Button(" Reset ");
-                m_btnFilterReset->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
-                m_btnFilterReset->SetOnClicked([this]()
-                                               {
-                                                   m_cbResetPC.call();
-                                                   m_pScene->ForceRedraw(); });
-
-                pG = new VGrid(2, v_spacing);
-                pG->AddChild(GiveOwnership(m_btnHiddenRemove));
-                pG->AddChild(GiveOwnership(m_btnFilterReset));
-                panelView->AddChild(GiveOwnership(pG));
-
                 // Scan
                 auto panelScan = new CollapsableVert("SCAN", v_spacing, margins);
                 m_panelCtrl->AddChild(GiveOwnership(panelScan));
-
-                // m_btnScan = new Button("        Start        ");
-                // m_btnScan->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
-                // m_btnScan->SetToggleable(true);
-                // m_btnScan->SetOnClicked([this]()
-                //                         {
-                //                             m_bScanning = !m_bScanning;
-                //                             m_cbScan.call(&m_bScanning);
-                //                             m_bCamAuto = m_bScanning;
-                //                             int m = m_bCamAuto ? 1 : 0;
-                //                             m_cbCamSet.call(&m);
-                //                             UpdateBtnState();
-                //                             PostRedraw();
-                //                         });
-                // pH = new Horiz(v_spacing);
-                // pH->AddChild(GiveOwnership(m_btnScan));
-                // pH->AddStretch();
-                // panelScan->AddChild(GiveOwnership(pH));
 
                 m_btnScanReset = new Button(" Reset ");
                 m_btnScanReset->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnScanReset->SetOnClicked([this]()
                                              {
                                             m_cbScanReset.call();
-                                            m_bCamAuto = m_bScanning;
                                             int m = m_bCamAuto ? 1 : 0;
                                             m_cbCamSet.call(&m);
                                             UpdateBtnState();
@@ -365,20 +252,16 @@ namespace open3d
                 m_btnScanTake = new Button("  Take  ");
                 m_btnScanTake->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_btnScanTake->SetOnClicked([this]()
-                                            {
-                                                m_cbScanTake.call();
-                                                //                                            PostRedraw();
-                                                //                                            m_pScene->ForceRedraw();
-                                            });
+                                            { m_cbScanTake.call(); });
 
-                pG = new VGrid(3, v_spacing);
+                auto *pG = new VGrid(3, v_spacing);
                 pG->AddChild(GiveOwnership(m_btnScanReset));
                 pG->AddChild(GiveOwnership(m_btnSavePC));
                 pG->AddChild(GiveOwnership(m_btnScanTake));
                 panelScan->AddChild(GiveOwnership(pG));
 
                 m_labelProg = new Label("Memory used: 0%");
-                pH = new Horiz(v_spacing);
+                auto pH = new Horiz(v_spacing);
                 pH->AddChild(GiveOwnership(m_labelProg));
                 pH->AddStretch();
                 panelScan->AddChild(GiveOwnership(pH));
@@ -388,6 +271,95 @@ namespace open3d
                 pH = new Horiz(v_spacing);
                 pH->AddChild(GiveOwnership(m_progScan));
                 panelScan->AddChild(GiveOwnership(pH));
+
+                // Control
+                auto panelCtrl = new CollapsableVert("CONTROL", v_spacing, margins);
+                panelCtrl->SetIsOpen(true);
+                m_panelCtrl->AddChild(GiveOwnership(panelCtrl));
+
+                auto sldPointSize = new Slider(Slider::INT);
+                sldPointSize->SetLimits(1, 10);
+                sldPointSize->SetValue(m_uiState.m_sPoint);
+                sldPointSize->SetOnValueChanged([this](const double v)
+                                                { SetPointSize(int(v)); });
+
+                auto sldTexposure = new Slider(Slider::INT);
+                sldTexposure->SetLimits(0, 5);
+                sldTexposure->SetValue(m_camCtrl.m_tExposure);
+                sldTexposure->SetOnValueChanged([this](const double v)
+                                                {
+                                                    m_camCtrl.m_tExposure = v;
+                                                    m_cbCamCtrl.call(&m_camCtrl); });
+
+                auto sldFilTime = new Slider(Slider::INT);
+                sldFilTime->SetLimits(0, 3);
+                sldFilTime->SetValue(m_camCtrl.m_filTime);
+                sldFilTime->SetOnValueChanged([this](const double v)
+                                              {
+                                                    m_camCtrl.m_filTime = v;
+                                                    m_cbCamCtrl.call(&m_camCtrl); });
+
+                auto sldFilConfidence = new Slider(Slider::INT);
+                sldFilConfidence->SetLimits(0, 100);
+                sldFilConfidence->SetValue(m_camCtrl.m_filTime);
+                sldFilConfidence->SetOnValueChanged([this](const double v)
+                                                    {
+                                                    m_camCtrl.m_filConfidence = v;
+                                                    m_cbCamCtrl.call(&m_camCtrl); });
+
+                auto sldFilFlyingPix = new Slider(Slider::INT);
+                sldFilFlyingPix->SetLimits(0, 49);
+                sldFilFlyingPix->SetValue(m_camCtrl.m_filTime);
+                sldFilFlyingPix->SetOnValueChanged([this](const double v)
+                                                   {
+                                                    m_camCtrl.m_filFlyingPix = v;
+                                                    m_cbCamCtrl.call(&m_camCtrl); });
+
+                pG = new VGrid(2, v_spacing);
+                pG->AddChild(make_shared<Label>("PointSize"));
+                pG->AddChild(GiveOwnership(sldPointSize));
+                pG->AddChild(make_shared<Label>("Exposure"));
+                pG->AddChild(GiveOwnership(sldTexposure));
+                pG->AddChild(make_shared<Label>("Time filter"));
+                pG->AddChild(GiveOwnership(sldFilTime));
+                pG->AddChild(make_shared<Label>("Confidence filter"));
+                pG->AddChild(GiveOwnership(sldFilConfidence));
+                pG->AddChild(make_shared<Label>("Flying pixel filter"));
+                pG->AddChild(GiveOwnership(sldFilFlyingPix));
+                panelCtrl->AddChild(GiveOwnership(pG));
+
+                m_btnFillHole = new Button("Fill hole");
+                m_btnFillHole->SetPaddingEm(m_uiState.m_btnPaddingH/2, m_uiState.m_btnPaddingV);
+                m_btnFillHole->SetOnClicked([this]()
+                                    {
+                                        m_camCtrl.m_bFillHole = !m_camCtrl.m_bFillHole;
+                                        m_cbCamCtrl.call(&m_camCtrl);
+                                        UpdateBtnState();
+                                        m_pScene->ForceRedraw(); });
+
+                m_btnFilSpatial = new Button("Spatial filter");
+                m_btnFilSpatial->SetPaddingEm(m_uiState.m_btnPaddingH/2, m_uiState.m_btnPaddingV);
+                m_btnFilSpatial->SetOnClicked([this]()
+                                    {
+                                        m_camCtrl.m_bSpatialFilter = !m_camCtrl.m_bSpatialFilter;
+                                        m_cbCamCtrl.call(&m_camCtrl);
+                                        UpdateBtnState();
+                                        m_pScene->ForceRedraw(); });
+
+                m_btnHDR = new Button(" HDR ");
+                m_btnHDR->SetPaddingEm(m_uiState.m_btnPaddingH/2, m_uiState.m_btnPaddingV);
+                m_btnHDR->SetOnClicked([this]()
+                                    {
+                                        m_camCtrl.m_bHDR = !m_camCtrl.m_bHDR;
+                                        m_cbCamCtrl.call(&m_camCtrl);
+                                        UpdateBtnState();
+                                        m_pScene->ForceRedraw(); });
+
+                pG = new VGrid(3, v_spacing);
+                pG->AddChild(GiveOwnership(m_btnFillHole));
+                pG->AddChild(GiveOwnership(m_btnFilSpatial));
+                pG->AddChild(GiveOwnership(m_btnHDR));
+                panelCtrl->AddChild(GiveOwnership(pG));
             }
 
             void _VzScanUI::UpdateSelectableGeometry(void)
@@ -474,7 +446,8 @@ namespace open3d
                 dlg->SetOnDone([this](const char *path)
                                {
                                    this->CloseDialog();
-                                   this->m_cbOpenPC.call((void *)path); });
+                                   // this->m_cbOpenPC.call((void *)path);
+                               });
                 ShowDialog(dlg);
             }
 

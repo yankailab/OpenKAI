@@ -19,7 +19,6 @@ namespace kai
 		m_nPwPrv = 0;
 		m_nPwOrig = 0;
 		m_rVoxel = 0.1;
-		m_dHiddenRemove = 100.0;
 		m_fProcess.clearAll();
 
 		m_fNameSavePC = "";
@@ -39,7 +38,6 @@ namespace kai
 		m_pPCorig = m_sPC.next();
 
 		pK->v("rVoxel", &m_rVoxel);
-		pK->v("dHiddenRemove", &m_dHiddenRemove);
 
 		string n = "";
 		pK->v("_NavBase", &n);
@@ -100,27 +98,13 @@ namespace kai
 			if (m_fProcess.b(pc_SavePC, true))
 				savePC();
 
-			//			if (m_fProcess.b(pc_Scanning))
-			//			{
 			updateScan();
-			//			}
-			// else
-			// {
-			// 	updateProcess();
-			// }
-
-			// if (m_fProcess.b(pc_ScanStart, true))
-			// {
-			// 	startScan();
-			// }
-
-			// if (m_fProcess.b(pc_ScanStop, true))
-			// {
-			// 	stopScan();
-			// }
 
 			if (m_fProcess.b(pc_CamAuto))
 				updateCamAuto();
+
+			if (m_fProcess.b(pc_CamCtrl), true)
+				updateCamCtrl();
 
 			m_pT->autoFPSto();
 		}
@@ -133,8 +117,6 @@ namespace kai
 		m_pWin->ShowMsg("Scan", "Initializing");
 
 		//		m_pNav->reset();
-		//		while (!m_pNav->bReady())
-		//			m_pT->sleepT(100000);
 
 		// original point cloud
 		m_nPwOrig = 0;
@@ -290,47 +272,50 @@ namespace kai
 		updateCamPose();
 	}
 
-	void _VzScan::updateProcess(void)
+	void _VzScan::updateCamCtrl(void)
 	{
 		IF_(check() < 0);
 
-		if (m_fProcess.b(pc_ResetPC, true))
+		_VzensePC *pVz = (_VzensePC *)m_vpGB[0];
+		NULL_(pVz);
+
+		if (m_camCtrl.m_filTime != m_camCtrlNew.m_filTime)
 		{
-			removeUIpc();
-			addUIpc(*m_sPC.get());
-			m_aabb = m_sPC.get()->GetAxisAlignedBoundingBox();
-			camBound(m_aabb);
+			pVz->setTimeFilter((m_camCtrlNew.m_filTime > 0) ? true : false,
+							   m_camCtrlNew.m_filTime);
 		}
 
-		if (m_fProcess.b(pc_VoxelDown, true) && m_pUIstate)
+		if (m_camCtrl.m_filConfidence != m_camCtrlNew.m_filConfidence)
 		{
-			m_pWin->ShowMsg("Voxel Down Sampling", "Processing");
-
-			removeUIpc();
-			PointCloud pc;
-			float s = m_pUIstate->m_sVoxel;
-			if (s > 0.0)
-				pc = *m_sPC.get()->VoxelDownSample(s);
-			else
-				pc = *m_sPC.get();
-
-			m_aabb = pc.GetAxisAlignedBoundingBox();
-			addUIpc(pc);
-			m_pWin->CloseDialog();
+			pVz->setConfidenceFilter((m_camCtrlNew.m_filConfidence > 0) ? true : false,
+									 m_camCtrlNew.m_filConfidence);
 		}
 
-		if (m_fProcess.b(pc_HiddenRemove, true) && m_pUIstate)
+		if (m_camCtrl.m_filFlyingPix != m_camCtrlNew.m_filFlyingPix)
 		{
-			m_pWin->ShowMsg("Hidden Point Removal", "Processing");
+			pVz->setFlyingPixelFilter((m_camCtrlNew.m_filFlyingPix > 0) ? true : false,
+									  m_camCtrlNew.m_filFlyingPix);
+		}
 
-			removeUIpc();
+		if (m_camCtrl.m_tExposure != m_camCtrlNew.m_tExposure)
+		{
+			pVz->setExposureTime((m_camCtrlNew.m_tExposure == 0) ? true : false,
+								 (m_camCtrlNew.m_tExposure == 0) ? 4000 : m_camCtrlNew.m_tExposure);
+		}
 
-			PointCloud pc = *m_sPC.get();
-			auto pcR = pc.HiddenPointRemoval(m_pUIstate->m_vCamPos.cast<double>(), m_dHiddenRemove);
-			pc = *pc.SelectByIndex(std::get<1>(pcR));
+		if (m_camCtrl.m_bFillHole != m_camCtrlNew.m_bFillHole)
+		{
+			pVz->setFillHole(m_camCtrlNew.m_bFillHole);
+		}
 
-			addUIpc(pc);
-			m_pWin->CloseDialog();
+		if (m_camCtrl.m_bSpatialFilter != m_camCtrlNew.m_bSpatialFilter)
+		{
+			pVz->setSpatialFilter(m_camCtrlNew.m_bSpatialFilter);
+		}
+
+		if (m_camCtrl.m_bHDR != m_camCtrlNew.m_bHDR)
+		{
+			pVz->setHDR(m_camCtrlNew.m_bHDR);
 		}
 	}
 
@@ -381,11 +366,8 @@ namespace kai
 		pW->SetCbScanReset(OnScanReset, (void *)this);
 		pW->SetCbScanTake(OnScanTake, (void *)this);
 		pW->SetCbSavePC(OnSavePC, (void *)this);
-		pW->SetCbOpenPC(OnOpenPC, (void *)this);
 		pW->SetCbCamSet(OnCamSet, (void *)this);
-		pW->SetCbHiddenRemove(OnHiddenRemove, (void *)this);
-		pW->SetCbResetPC(OnResetPC, (void *)this);
-		pW->SetCbVoxelDown(OnVoxelDown, (void *)this);
+		pW->SetCbCamCtrl(OnCamCtrl, (void *)this);
 
 		m_pWin->UpdateUIstate();
 		m_pWin->SetFullScreen(m_bFullScreen);
@@ -462,25 +444,13 @@ namespace kai
 		}
 	}
 
-	void _VzScan::OnHiddenRemove(void *pPCV, void *pD)
+	void _VzScan::OnCamCtrl(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
+		NULL_(pD);
 		_VzScan *pV = (_VzScan *)pPCV;
-		pV->m_fProcess.set(pc_HiddenRemove);
-	}
 
-	void _VzScan::OnVoxelDown(void *pPCV, void *pD)
-	{
-		NULL_(pPCV);
-		_VzScan *pV = (_VzScan *)pPCV;
-		pV->m_fProcess.set(pc_VoxelDown);
+		pV->m_camCtrlNew = *(VzCamCtrl *)pD;
+		pV->m_fProcess.set(pc_CamAuto);
 	}
-
-	void _VzScan::OnResetPC(void *pPCV, void *pD)
-	{
-		NULL_(pPCV);
-		_VzScan *pV = (_VzScan *)pPCV;
-		pV->m_fProcess.set(pc_ResetPC);
-	}
-
 }

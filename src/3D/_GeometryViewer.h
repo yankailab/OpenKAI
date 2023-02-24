@@ -25,6 +25,7 @@ namespace kai
 		pc_HiddenRemove,
 		pc_ResetPC,
 		pc_CamAuto,
+		pc_CamCtrl,
 		pc_RefreshCol,
 	};
 

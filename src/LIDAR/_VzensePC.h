@@ -28,6 +28,15 @@ namespace kai
 		virtual bool open(void);
 		virtual void close(void);
 
+		bool setExposureControlMode(bool bAuto);
+		bool setExposureTime(bool bAuto, int tExposure);
+		bool setTimeFilter(bool bON, int thr);
+		bool setConfidenceFilter(bool bON, int thr);
+		bool setFlyingPixelFilter(bool bON, int thr);
+		bool setFillHole(bool bON);
+		bool setSpatialFilter(bool bON);
+		bool setHDR(bool bON);
+
 	private:
 		bool updateVzense(void);
 		void update(void);
@@ -42,7 +51,7 @@ namespace kai
 		VzDeviceInfo *m_pDeviceListInfo;
 		string m_deviceURI;
 		VzDeviceHandle m_deviceHandle;
-        VzSensorIntrinsicParameters m_cameraParameters;
+		VzSensorIntrinsicParameters m_cameraParameters;
 
 		bool m_bOpen;
 		vInt2 m_vSize;
@@ -52,14 +61,14 @@ namespace kai
 		bool m_btRGB;
 		bool m_bIR;
 
-        VzFrame m_vzfRGB;
-        VzFrame m_vzfDepth;
-        VzFrame m_vzfIR;
+		VzFrame m_vzfRGB;
+		VzFrame m_vzfDepth;
+		VzFrame m_vzfIR;
 
-//		_SharedMem* m_psmTransformedDepth;
+		//		_SharedMem* m_psmTransformedDepth;
 
-		VzVector3f* m_pVzVw; // world vector
-		vFloat2 m_vRz; //z region
+		VzVector3f *m_pVzVw; // world vector
+		vFloat2 m_vRz;		 // z region
 	};
 
 }
