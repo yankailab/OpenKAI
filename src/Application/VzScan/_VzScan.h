@@ -12,7 +12,6 @@
 #include "../../3D/_GeometryViewer.h"
 #include "../../Navigation/_NavBase.h"
 #include "../../Utility/BitFlag.h"
-#include "../../LIDAR/_VzensePC.h"
 #include "VzScanUI.h"
 
 namespace kai
@@ -80,7 +79,6 @@ namespace kai
 		string m_fNameSavePC;
 
 		VzCamCtrl m_camCtrl;
-		VzCamCtrl m_camCtrlNew;
 		
 		//filter flags
 		BIT_FLAG m_fProcess;

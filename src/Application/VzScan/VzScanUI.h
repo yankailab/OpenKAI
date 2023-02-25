@@ -1,6 +1,7 @@
 #ifndef OpenKAI_src_Application_VzScan_VzScanUI_H_
 #define OpenKAI_src_Application_Vzscan_VzScanUI_H_
 
+#include "../../LIDAR/_VzensePC.h"
 #include "../../UI/O3DUI.h"
 
 namespace open3d
@@ -9,18 +10,6 @@ namespace open3d
 	{
 		namespace visualizer
 		{
-			struct VzCamCtrl
-			{
-				int m_filTime = 0;
-				int m_filConfidence = 0;
-				int m_filFlyingPix = 0;
-				int m_tExposure = 0;
-
-				bool m_bFillHole = false;
-				bool m_bSpatialFilter = false;
-				bool m_bHDR = false;
-			};
-
 			class _VzScanUI : public O3DUI
 			{
 			public:

@@ -118,7 +118,16 @@ namespace kai
 		VZ_SetColorPixelFormat(m_deviceHandle, VzPixelFormatBGR888);
 		VZ_SetTransformColorImgToDepthSensorEnabled(m_deviceHandle, m_btRGB);
 		VZ_SetTransformDepthImgToColorSensorEnabled(m_deviceHandle, m_btDepth);
-		// TODO: set exposure time etc.
+		setToFexposureTime(m_camCtrl.m_bAutoExposureToF, m_camCtrl.m_tExposureToF);
+		setToFexposureControlMode(m_camCtrl.m_bAutoExposureToF);
+		setRGBexposureTime(m_camCtrl.m_bAutoExposureRGB, m_camCtrl.m_tExposureToF);
+		setRGBexposureControlMode(m_camCtrl.m_bAutoExposureRGB);
+		setTimeFilter(m_camCtrl.m_bFilTime, m_camCtrl.m_filTime);
+		setConfidenceFilter(m_camCtrl.m_bFilConfidence, m_camCtrl.m_filConfidence);
+		setFlyingPixelFilter(m_camCtrl.m_bFilFlyingPix, m_camCtrl.m_filFlyingPix);
+		setFillHole(m_camCtrl.m_bFillHole);
+		setSpatialFilter(m_camCtrl.m_bSpatialFilter);
+		setHDR(m_camCtrl.m_bHDR);
 		status = VZ_StartStream(m_deviceHandle);
 
 		m_pVzVw = new VzVector3f[m_vSize.x * m_vSize.y];
@@ -253,7 +262,7 @@ namespace kai
 		return true;
 	}
 
-	bool _VzensePC::setExposureControlMode(bool bAuto)
+	bool _VzensePC::setToFexposureControlMode(bool bAuto)
 	{
 		VzReturnStatus vzR = VZ_SetExposureControlMode(m_deviceHandle,
 													   VzToFSensor,
@@ -262,7 +271,7 @@ namespace kai
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _VzensePC::setExposureTime(bool bAuto, int tExposure)
+	bool _VzensePC::setToFexposureTime(bool bAuto, int tExposure)
 	{
 		VzExposureTimeParams p;
 		p.mode = bAuto ? VzExposureControlMode_Auto
@@ -270,6 +279,28 @@ namespace kai
 		p.exposureTime = tExposure;
 		VzReturnStatus vzR = VZ_SetExposureTime(m_deviceHandle,
 												VzToFSensor,
+												p);
+
+		return (vzR == VzRetOK) ? true : false;
+	}
+
+	bool _VzensePC::setRGBexposureControlMode(bool bAuto)
+	{
+		VzReturnStatus vzR = VZ_SetExposureControlMode(m_deviceHandle,
+													   VzColorSensor,
+													   bAuto ? VzExposureControlMode_Auto
+															 : VzExposureControlMode_Manual);
+		return (vzR == VzRetOK) ? true : false;
+	}
+
+	bool _VzensePC::setRGBexposureTime(bool bAuto, int tExposure)
+	{
+		VzExposureTimeParams p;
+		p.mode = bAuto ? VzExposureControlMode_Auto
+					   : VzExposureControlMode_Manual;
+		p.exposureTime = tExposure;
+		VzReturnStatus vzR = VZ_SetExposureTime(m_deviceHandle,
+												VzColorSensor,
 												p);
 
 		return (vzR == VzRetOK) ? true : false;
@@ -318,6 +349,79 @@ namespace kai
 	{
 		VzReturnStatus vzR = VZ_SetHDRModeEnabled(m_deviceHandle, bON);
 		return (vzR == VzRetOK) ? true : false;
+	}
+
+	bool _VzensePC::setCamCtrl(const VzCamCtrl &camCtrl)
+	{
+		if ((m_camCtrl.m_tExposureToF != camCtrl.m_tExposureToF) || (m_camCtrl.m_bAutoExposureToF != camCtrl.m_bAutoExposureToF))
+		{
+			IF_F(!setToFexposureTime(camCtrl.m_bAutoExposureToF,
+									 camCtrl.m_tExposureToF));
+			IF_F(!setToFexposureControlMode(camCtrl.m_bAutoExposureToF));
+
+			m_camCtrl.m_bAutoExposureToF = camCtrl.m_bAutoExposureToF;
+			m_camCtrl.m_tExposureToF = camCtrl.m_tExposureToF;
+		}
+
+		if ((m_camCtrl.m_tExposureRGB != camCtrl.m_tExposureRGB) || (m_camCtrl.m_bAutoExposureRGB != camCtrl.m_bAutoExposureRGB))
+		{
+			IF_F(!setRGBexposureTime(camCtrl.m_bAutoExposureRGB,
+									 camCtrl.m_tExposureRGB));
+			IF_F(!setRGBexposureControlMode(camCtrl.m_bAutoExposureRGB));
+
+			m_camCtrl.m_bAutoExposureRGB = camCtrl.m_bAutoExposureRGB;
+			m_camCtrl.m_tExposureRGB = camCtrl.m_tExposureRGB;
+		}
+
+		if ((m_camCtrl.m_filTime != camCtrl.m_filTime) || (m_camCtrl.m_bFilTime != camCtrl.m_bFilTime))
+		{
+			IF_F(!setTimeFilter(camCtrl.m_bFilTime,
+								camCtrl.m_filTime));
+
+			m_camCtrl.m_bFilTime = camCtrl.m_bFilTime;
+			m_camCtrl.m_filTime = camCtrl.m_filTime;
+		}
+
+		if ((m_camCtrl.m_filConfidence != camCtrl.m_filConfidence) || (camCtrl.m_bFilConfidence != camCtrl.m_bFilConfidence))
+		{
+			IF_F(!setConfidenceFilter(camCtrl.m_bFilConfidence,
+									  camCtrl.m_filConfidence));
+
+			m_camCtrl.m_bFilConfidence = camCtrl.m_bFilConfidence;
+			m_camCtrl.m_filConfidence = camCtrl.m_filConfidence;
+		}
+
+		if ((m_camCtrl.m_filFlyingPix != camCtrl.m_filFlyingPix) || (m_camCtrl.m_bFilFlyingPix != camCtrl.m_bFilFlyingPix))
+		{
+			IF_F(!setFlyingPixelFilter(camCtrl.m_bFilFlyingPix,
+									   camCtrl.m_filFlyingPix));
+
+			m_camCtrl.m_bFilFlyingPix = camCtrl.m_bFilFlyingPix;
+			m_camCtrl.m_filFlyingPix = camCtrl.m_filFlyingPix;
+		}
+
+		if (m_camCtrl.m_bFillHole != camCtrl.m_bFillHole)
+		{
+			IF_F(!setFillHole(camCtrl.m_bFillHole));
+
+			m_camCtrl.m_bFillHole = camCtrl.m_bFillHole;
+		}
+
+		if (m_camCtrl.m_bSpatialFilter != camCtrl.m_bSpatialFilter)
+		{
+			IF_F(!setSpatialFilter(camCtrl.m_bSpatialFilter));
+
+			m_camCtrl.m_bSpatialFilter = camCtrl.m_bSpatialFilter;
+		}
+
+		if (m_camCtrl.m_bHDR != camCtrl.m_bHDR)
+		{
+			IF_F(!setHDR(camCtrl.m_bHDR));
+
+			m_camCtrl.m_bHDR = camCtrl.m_bHDR;
+		}
+
+		return true;
 	}
 
 }

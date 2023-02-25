@@ -10,11 +10,32 @@
 
 #include "../3D/PointCloud/_PCframe.h"
 #include "../Utility/util.h"
-#include "../IPC/_SharedMem.h"
+//#include "../IPC/_SharedMem.h"
 #include <VzenseNebula_api.h>
 
 namespace kai
 {
+	struct VzCamCtrl
+	{
+		bool m_bAutoExposureToF = true;
+		int m_tExposureToF = 4000;
+
+		bool m_bAutoExposureRGB = true;
+		int m_tExposureRGB = 4000;
+
+		bool m_bFilTime = false;
+		int m_filTime = 0;
+
+		bool m_bFilConfidence = true;
+		int m_filConfidence = 1;
+
+		bool m_bFilFlyingPix = false;
+		int m_filFlyingPix = 0;
+		
+		bool m_bFillHole = false;
+		bool m_bSpatialFilter = false;
+		bool m_bHDR = false;
+	};
 
 	class _VzensePC : public _PCframe
 	{
@@ -28,8 +49,11 @@ namespace kai
 		virtual bool open(void);
 		virtual void close(void);
 
-		bool setExposureControlMode(bool bAuto);
-		bool setExposureTime(bool bAuto, int tExposure);
+		bool setCamCtrl(const VzCamCtrl& camCtrl);
+		bool setToFexposureControlMode(bool bAuto);
+		bool setToFexposureTime(bool bAuto, int tExposure);
+		bool setRGBexposureControlMode(bool bAuto);
+		bool setRGBexposureTime(bool bAuto, int tExposure);
 		bool setTimeFilter(bool bON, int thr);
 		bool setConfidenceFilter(bool bON, int thr);
 		bool setFlyingPixelFilter(bool bON, int thr);
@@ -56,6 +80,7 @@ namespace kai
 		bool m_bOpen;
 		vInt2 m_vSize;
 		uint16_t m_tWait;
+		VzCamCtrl m_camCtrl;
 
 		bool m_btDepth;
 		bool m_btRGB;

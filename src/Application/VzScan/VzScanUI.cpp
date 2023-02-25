@@ -77,9 +77,9 @@ namespace open3d
                 m_btnFillHole->SetEnabled(true);
                 m_btnFilSpatial->SetEnabled(true);
                 m_btnHDR->SetEnabled(true);
-                m_btnFillHole->SetText(m_camCtrl.m_bFillHole?"Fill hole ON":"Fill hole OFF");
-                m_btnFilSpatial->SetText(m_camCtrl.m_bSpatialFilter?"Spatial ON":"Spatial OFF");
-                m_btnHDR->SetText(m_camCtrl.m_bHDR?"HDR ON":"HDR OFF");
+                m_btnFillHole->SetText(m_camCtrl.m_bFillHole ? "Fill hole ON" : "Fill hole OFF");
+                m_btnFilSpatial->SetText(m_camCtrl.m_bSpatialFilter ? "Spatial ON" : "Spatial OFF");
+                m_btnHDR->SetText(m_camCtrl.m_bHDR ? "HDR ON" : "HDR OFF");
 
                 m_pScene->ForceRedraw();
             }
@@ -132,8 +132,8 @@ namespace open3d
                 auto f = GetContentRect();
                 if (m_panelCtrl->IsVisible())
                 {
-                    m_pScene->SetFrame(Rect(f.x, f.y, f.width - settings_width, f.height));
-                    m_panelCtrl->SetFrame(Rect(f.GetRight() - settings_width, f.y, settings_width, f.height));
+                    m_pScene->SetFrame(gui::Rect(f.x, f.y, f.width - settings_width, f.height));
+                    m_panelCtrl->SetFrame(gui::Rect(f.GetRight() - settings_width, f.y, settings_width, f.height));
                 }
                 else
                 {
@@ -283,12 +283,22 @@ namespace open3d
                 sldPointSize->SetOnValueChanged([this](const double v)
                                                 { SetPointSize(int(v)); });
 
-                auto sldTexposure = new Slider(Slider::INT);
-                sldTexposure->SetLimits(0, 5);
-                sldTexposure->SetValue(m_camCtrl.m_tExposure);
-                sldTexposure->SetOnValueChanged([this](const double v)
+                auto sldTexposureToF = new Slider(Slider::INT);
+                sldTexposureToF->SetLimits(0, 4);
+                sldTexposureToF->SetValue(m_camCtrl.m_tExposureToF);
+                sldTexposureToF->SetOnValueChanged([this](const double v)
                                                 {
-                                                    m_camCtrl.m_tExposure = v;
+                                                    m_camCtrl.m_tExposureToF = v * 1000;
+                                                    m_camCtrl.m_bAutoExposureToF = (m_camCtrl.m_tExposureToF>0)?false:true;
+                                                    m_cbCamCtrl.call(&m_camCtrl); });
+
+                auto sldTexposureRGB = new Slider(Slider::INT);
+                sldTexposureRGB->SetLimits(0, 4);
+                sldTexposureRGB->SetValue(m_camCtrl.m_tExposureRGB);
+                sldTexposureRGB->SetOnValueChanged([this](const double v)
+                                                {
+                                                    m_camCtrl.m_tExposureRGB = v * 1000;
+                                                    m_camCtrl.m_bAutoExposureRGB = (m_camCtrl.m_tExposureRGB>0)?false:true;
                                                     m_cbCamCtrl.call(&m_camCtrl); });
 
                 auto sldFilTime = new Slider(Slider::INT);
@@ -297,6 +307,7 @@ namespace open3d
                 sldFilTime->SetOnValueChanged([this](const double v)
                                               {
                                                     m_camCtrl.m_filTime = v;
+                                                    m_camCtrl.m_bFilTime = (m_camCtrl.m_filTime>0)?true:false;
                                                     m_cbCamCtrl.call(&m_camCtrl); });
 
                 auto sldFilConfidence = new Slider(Slider::INT);
@@ -305,6 +316,7 @@ namespace open3d
                 sldFilConfidence->SetOnValueChanged([this](const double v)
                                                     {
                                                     m_camCtrl.m_filConfidence = v;
+                                                    m_camCtrl.m_bFilConfidence = (m_camCtrl.m_filConfidence>0)?true:false;
                                                     m_cbCamCtrl.call(&m_camCtrl); });
 
                 auto sldFilFlyingPix = new Slider(Slider::INT);
@@ -313,13 +325,16 @@ namespace open3d
                 sldFilFlyingPix->SetOnValueChanged([this](const double v)
                                                    {
                                                     m_camCtrl.m_filFlyingPix = v;
+                                                    m_camCtrl.m_bFilFlyingPix = (m_camCtrl.m_filFlyingPix>0)?true:false;
                                                     m_cbCamCtrl.call(&m_camCtrl); });
 
                 pG = new VGrid(2, v_spacing);
                 pG->AddChild(make_shared<Label>("PointSize"));
                 pG->AddChild(GiveOwnership(sldPointSize));
-                pG->AddChild(make_shared<Label>("Exposure"));
-                pG->AddChild(GiveOwnership(sldTexposure));
+                pG->AddChild(make_shared<Label>("ToF exposure"));
+                pG->AddChild(GiveOwnership(sldTexposureToF));
+                pG->AddChild(make_shared<Label>("RGBexposure"));
+                pG->AddChild(GiveOwnership(sldTexposureRGB));
                 pG->AddChild(make_shared<Label>("Time filter"));
                 pG->AddChild(GiveOwnership(sldFilTime));
                 pG->AddChild(make_shared<Label>("Confidence filter"));
@@ -329,27 +344,27 @@ namespace open3d
                 panelCtrl->AddChild(GiveOwnership(pG));
 
                 m_btnFillHole = new Button("Fill hole");
-                m_btnFillHole->SetPaddingEm(m_uiState.m_btnPaddingH/2, m_uiState.m_btnPaddingV);
+                m_btnFillHole->SetPaddingEm(m_uiState.m_btnPaddingH / 2, m_uiState.m_btnPaddingV);
                 m_btnFillHole->SetOnClicked([this]()
-                                    {
+                                            {
                                         m_camCtrl.m_bFillHole = !m_camCtrl.m_bFillHole;
                                         m_cbCamCtrl.call(&m_camCtrl);
                                         UpdateBtnState();
                                         m_pScene->ForceRedraw(); });
 
                 m_btnFilSpatial = new Button("Spatial filter");
-                m_btnFilSpatial->SetPaddingEm(m_uiState.m_btnPaddingH/2, m_uiState.m_btnPaddingV);
+                m_btnFilSpatial->SetPaddingEm(m_uiState.m_btnPaddingH / 2, m_uiState.m_btnPaddingV);
                 m_btnFilSpatial->SetOnClicked([this]()
-                                    {
+                                              {
                                         m_camCtrl.m_bSpatialFilter = !m_camCtrl.m_bSpatialFilter;
                                         m_cbCamCtrl.call(&m_camCtrl);
                                         UpdateBtnState();
                                         m_pScene->ForceRedraw(); });
 
                 m_btnHDR = new Button(" HDR ");
-                m_btnHDR->SetPaddingEm(m_uiState.m_btnPaddingH/2, m_uiState.m_btnPaddingV);
+                m_btnHDR->SetPaddingEm(m_uiState.m_btnPaddingH / 2, m_uiState.m_btnPaddingV);
                 m_btnHDR->SetOnClicked([this]()
-                                    {
+                                       {
                                         m_camCtrl.m_bHDR = !m_camCtrl.m_bHDR;
                                         m_cbCamCtrl.call(&m_camCtrl);
                                         UpdateBtnState();

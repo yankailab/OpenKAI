@@ -103,7 +103,7 @@ namespace kai
 			if (m_fProcess.b(pc_CamAuto))
 				updateCamAuto();
 
-			if (m_fProcess.b(pc_CamCtrl), true)
+			if (m_fProcess.b(pc_CamCtrl, true))
 				updateCamCtrl();
 
 			m_pT->autoFPSto();
@@ -186,7 +186,9 @@ namespace kai
 
 		updateUIpc(*m_pPCprv);
 		_VzScanUI *pW = (_VzScanUI *)m_pWin;
-		pW->SetProgressBar((float)m_nPwOrig / (float)m_nPresvNext);
+		float rPorig = (float)m_nPwOrig / (float)m_nPresvNext;
+		float rPprv = (float)m_nPwPrv / (float)m_nPresv;
+		pW->SetProgressBar(max(rPprv, rPorig));
 	}
 
 	void _VzScan::updateScan(void)
@@ -279,44 +281,7 @@ namespace kai
 		_VzensePC *pVz = (_VzensePC *)m_vpGB[0];
 		NULL_(pVz);
 
-		if (m_camCtrl.m_filTime != m_camCtrlNew.m_filTime)
-		{
-			pVz->setTimeFilter((m_camCtrlNew.m_filTime > 0) ? true : false,
-							   m_camCtrlNew.m_filTime);
-		}
-
-		if (m_camCtrl.m_filConfidence != m_camCtrlNew.m_filConfidence)
-		{
-			pVz->setConfidenceFilter((m_camCtrlNew.m_filConfidence > 0) ? true : false,
-									 m_camCtrlNew.m_filConfidence);
-		}
-
-		if (m_camCtrl.m_filFlyingPix != m_camCtrlNew.m_filFlyingPix)
-		{
-			pVz->setFlyingPixelFilter((m_camCtrlNew.m_filFlyingPix > 0) ? true : false,
-									  m_camCtrlNew.m_filFlyingPix);
-		}
-
-		if (m_camCtrl.m_tExposure != m_camCtrlNew.m_tExposure)
-		{
-			pVz->setExposureTime((m_camCtrlNew.m_tExposure == 0) ? true : false,
-								 (m_camCtrlNew.m_tExposure == 0) ? 4000 : m_camCtrlNew.m_tExposure);
-		}
-
-		if (m_camCtrl.m_bFillHole != m_camCtrlNew.m_bFillHole)
-		{
-			pVz->setFillHole(m_camCtrlNew.m_bFillHole);
-		}
-
-		if (m_camCtrl.m_bSpatialFilter != m_camCtrlNew.m_bSpatialFilter)
-		{
-			pVz->setSpatialFilter(m_camCtrlNew.m_bSpatialFilter);
-		}
-
-		if (m_camCtrl.m_bHDR != m_camCtrlNew.m_bHDR)
-		{
-			pVz->setHDR(m_camCtrlNew.m_bHDR);
-		}
+		pVz->setCamCtrl(m_camCtrl);
 	}
 
 	void _VzScan::updateKinematics(void)
@@ -450,7 +415,7 @@ namespace kai
 		NULL_(pD);
 		_VzScan *pV = (_VzScan *)pPCV;
 
-		pV->m_camCtrlNew = *(VzCamCtrl *)pD;
-		pV->m_fProcess.set(pc_CamAuto);
+		pV->m_camCtrl = *(VzCamCtrl *)pD;
+		pV->m_fProcess.set(pc_CamCtrl);
 	}
 }
