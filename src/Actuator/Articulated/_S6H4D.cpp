@@ -12,10 +12,10 @@ namespace kai
 		m_mode = 1;
 		m_vSpeedRange.set(0.0, 5000);
 		m_speed = 2000;
-		m_vOriginTarget.init();
+		m_vOriginTarget.clear();
 		m_vOrigin.set(FLT_MAX);
-		m_vLastValidP.init();
-		m_vPgoing.init();
+		m_vLastValidP.clear();
+		m_vPgoing.clear();
 		m_pErr = 0.1;
 
 		m_nMinAxis = 6;

@@ -148,7 +148,7 @@ namespace kai
 
 			if (iClass < m_nClass)
 			{
-				string oName = m_vClass[iClass].m_name;
+				string oName = m_vClass[iClass-1].m_name;
 				if (oName.length() > 0)
 				{
 					putText(*pM, oName, Point(r.x + 15, r.y + 25),

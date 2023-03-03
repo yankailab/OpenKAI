@@ -10,11 +10,11 @@ namespace kai
 		m_iClass = -1;
 
 		m_bTarget = false;
-		m_vTargetBB.init();
-		m_vP.init();
+		m_vTargetBB.clear();
+		m_vP.clear();
 		m_vP.x = 0.5;
 		m_vP.y = 0.5;
-		m_vTargetP.init();
+		m_vTargetP.clear();
 		m_vTargetP.x = 0.5;
 		m_vTargetP.y = 0.5;
 

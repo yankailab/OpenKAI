@@ -37,12 +37,10 @@ bool _DetectorBase::init(void* pKiss)
 	pK->v("fClass", &m_fClass);
 
 	//statistics
-	string s;
-	pK->v("classFile", &s);
-	if(!s.empty())
+	if(!m_fClass.empty())
 	{
-		ifstream ifs(s.c_str());
-	    IF_Fl(!ifs.is_open(),"File " + s + " not found");
+		ifstream ifs(m_fClass.c_str());
+	    IF_Fl(!ifs.is_open(),"File " + m_fClass + " not found");
 
 	    string line;
 		while (std::getline(ifs, line))

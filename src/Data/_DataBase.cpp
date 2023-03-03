@@ -48,6 +48,29 @@ namespace kai
 	{
 	}
 
+	string _DataBase::getBaseDirSave(void)
+	{
+		//TODO: dirIn?
+		DIR *pDir = opendir(m_dirIn.c_str());
+		if (!pDir)
+			return "";
+
+		struct dirent *dir;
+		string d = "";
+		while ((dir = readdir(pDir)) != NULL)
+		{
+			IF_CONT(dir->d_name[0] == '.');
+			IF_CONT(dir->d_type != D_TYPE_FOLDER);
+
+			d = m_dirIn + string(dir->d_name);
+			d = checkDirName(d);
+			break;
+		}
+
+		closedir(pDir);
+		return d;
+	}
+
 	void _DataBase::setFileList(vector<string> vFileIn)
 	{
 		m_vFileIn.clear();

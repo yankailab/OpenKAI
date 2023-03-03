@@ -31,7 +31,7 @@ namespace kai
 
 		void init(void)
 		{
-			m_pClahe = cv::createCLAHE(m_clipLim, Size(m_nTile, m_nTile));
+			m_pClahe = cv::createCLAHE(m_clipLim, cv::Size(m_nTile, m_nTile));
 		}
 
 		Mat filter(Mat mIn)
@@ -69,7 +69,7 @@ namespace kai
 		{
 			m_n = n;
 			m_deviation = 0.0;
-			m_ROI.init();
+			m_ROI.clear();
 			m_ROI.z = 1.0;
 			m_ROI.w = 1.0;
 			m_pMed = new Median<float>[n];
@@ -120,16 +120,16 @@ namespace kai
 		void findLane(Mat &mBin)
 		{
 			double vMax;
-			Point iMax;
+			cv::Point iMax;
 
-			Rect r;
+			cv::Rect r;
 			r.x = m_ROI.x * mBin.cols;
 			r.y = m_ROI.y * mBin.rows;
 			r.width = m_ROI.z * mBin.cols - r.x;
 			r.height = m_ROI.w * mBin.rows - r.y;
 			Mat mROI = mBin(r);
 
-			Rect rX;
+			cv::Rect rX;
 			rX.x = 0;
 			rX.width = r.width;
 			rX.height = 1;
@@ -236,7 +236,7 @@ namespace kai
 		int m_nLane;
 		LANE m_pLane[N_LANE];
 
-		Point **m_ppPoint;
+		cv::Point **m_ppPoint;
 		int *m_pNp;
 		bool m_bDrawOverhead;
 		bool m_bDrawFilter;

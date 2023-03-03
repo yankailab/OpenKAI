@@ -28,7 +28,7 @@ namespace kai
         m_vAxisIdx.set(0, 1, 2);
         m_vAxisK.set(1.0);
         m_unitK = 1.0;
-        m_vRange.set(0.0, 1000.0);
+        m_vRange.set(0.0, FLT_MAX);
 
         // m_pR = NULL;
         // m_vToffsetRGB.init(0);

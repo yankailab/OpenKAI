@@ -13,7 +13,7 @@
 #include "../../Control/PID.h"
 #include "../../Actuator/_ActuatorBase.h"
 #include "../../Actuator/_StepperGripper.h"
-#include "../../Sensor/_DistSensorBase.h"
+#include "../../Sensor/Distance/_DistSensorBase.h"
 
 namespace kai
 {

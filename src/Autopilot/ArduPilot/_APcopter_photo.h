@@ -3,7 +3,7 @@
 
 #include "../../Vision/_DepthVisionBase.h"
 #include "../../Vision/_GPhoto.h"
-#include "../../Sensor/_DistSensorBase.h"
+#include "../../Sensor/Distance/_DistSensorBase.h"
 #include "_AP_base.h"
 #include "_AP_posCtrl.h"
 

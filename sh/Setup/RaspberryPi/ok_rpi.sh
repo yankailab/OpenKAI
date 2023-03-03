@@ -140,6 +140,28 @@ sudo nano /etc/xdg/lxsession/LXDE-pi/autostart
 
 # auto start GUI app with systemd
 # disable ncurses (Console)
+[Unit]
+Description=OpenKAI
+After=graphical.target
+
+[Service]
+Environment=DISPLAY=:0.0
+Environment=XAUTHORITY=/home/pi/.Xauthority
+ExecStart=/home/pi/ok.sh
+Restart=always
+RestartSec=2s
+KillMode=process
+TimeoutSec=infinity
+
+[Install]
+WantedBy=graphical.target
+
+
+#!/bin/bash
+/home/pi/dev/OpenKAI/build/OpenKAI /home/pi/ARmeasure/ARmeasure.kiss
+exit 0
+
+
 sudo nano /lib/systemd/system/ok.service
 sudo systemctl daemon-reload
 sudo systemctl enable ok.service

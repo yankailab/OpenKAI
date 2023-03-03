@@ -17,9 +17,9 @@ namespace kai
 		m_bHomeSet = false;
 		m_vHomePos.set(-1.0);
 		m_vGlobalPos.set(-1.0);
-		m_vLocalPos.init();
-		m_vSpeed.init();
-		m_vAtti.init();
+		m_vLocalPos.clear();
+		m_vSpeed.clear();
+		m_vAtti.clear();
 		m_apHdg = -1.0;
 	}
 

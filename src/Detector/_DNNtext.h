@@ -9,7 +9,9 @@
 #define OpenKAI_src_DNN_Darknet__DNNtext_H_
 
 #include "_YOLOv3.h"
+#ifdef USE_OCR
 #include "OCR.h"
+#endif
 
 namespace kai
 {

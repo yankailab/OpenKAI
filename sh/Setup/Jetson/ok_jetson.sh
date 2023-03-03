@@ -1,8 +1,5 @@
 #!/bin/bash
 
-sudo apt-get -y update
-sudo apt-get -y install nano
-
 # Rotate screen
 # DISPLAY=:0 xrandr -o right
 echo -e '#!/bin/sh\nDISPLAY=:0 xrandr -o right\n' > ~/xrandr.sh
@@ -111,8 +108,7 @@ sudo systemctl disable ssh.service
 
 # show no taskbar
 
-# auto start GUI app with systemd
-# disable ncurses (Console)
+
 sudo nano /lib/systemd/system/ok.service
 sudo systemctl daemon-reload
 sudo systemctl enable ok.service

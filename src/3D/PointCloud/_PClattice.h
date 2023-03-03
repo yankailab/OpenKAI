@@ -16,7 +16,7 @@ struct PCLATTICE_CELL
 
 	void init(void)
 	{
-        m_vColor.init();
+        m_vColor.clear();
         m_nP = 0;
         
         m_pSub = NULL;

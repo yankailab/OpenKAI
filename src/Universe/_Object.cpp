@@ -26,11 +26,11 @@ namespace kai
 
 	void _Object::init(void)
 	{
-		m_vPos.init();
-		m_vAtti.init();
-		m_vDim.init();
-		m_vSpeed.init();
-		m_vAccel.init();
+		m_vPos.clear();
+		m_vAtti.clear();
+		m_vDim.clear();
+		m_vSpeed.clear();
+		m_vAccel.clear();
 		m_mFlag = 0;
 		m_pTracker = NULL;
 		m_tStamp = 0;

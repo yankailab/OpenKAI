@@ -79,7 +79,7 @@
 
 {
 	"name":"RCrover",
-	"class":"_RCrover",
+	"class":"_SbusRover",
 	"bON":1,
     {
 		"name":"thread",

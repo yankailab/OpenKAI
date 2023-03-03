@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_RTH_H_
 #define OpenKAI_src_Autopilot_AP__AP_RTH_H_
 
-#include "../../Sensor/_DistSensorBase.h"
+#include "../../Sensor/Distance/_DistSensorBase.h"
 #include "../../State/RTH.h"
 #include "_AP_base.h"
 

@@ -27,7 +27,7 @@ namespace kai
 
 		m_sizeOverhead.x = 400;
 		m_sizeOverhead.y = 300;
-		m_vSize.init();
+		m_vSize.clear();
 		m_binMed = 3;
 
 		m_nFilter = 0;

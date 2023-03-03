@@ -2,7 +2,7 @@
 #define OpenKAI_src_Autopilot_AP__AP_land_H_
 
 #include "../../Detector/_DetectorBase.h"
-#include "../../Sensor/_DistSensorBase.h"
+#include "../../Sensor/Distance/_DistSensorBase.h"
 #include "_AP_follow.h"
 
 namespace kai

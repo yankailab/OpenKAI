@@ -11,7 +11,7 @@
 #include "../../State/_StateBase.h"
 #include "../../Vision/ImgFilter/_Remap.h"
 #include "../../Navigation/_NavBase.h"
-#include "../../Sensor/_DistSensorBase.h"
+#include "../../Sensor/Distance/_DistSensorBase.h"
 #include "../../Utility/utilFile.h"
 #include "../../Utility/utilEvent.h"
 

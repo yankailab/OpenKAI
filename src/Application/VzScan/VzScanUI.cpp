@@ -283,6 +283,22 @@ namespace open3d
                 sldPointSize->SetOnValueChanged([this](const double v)
                                                 { SetPointSize(int(v)); });
 
+                auto sldMinRange = new Slider(Slider::DOUBLE);
+                sldMinRange->SetLimits(0, 20);
+                sldMinRange->SetValue(m_camCtrl.m_vRz.x);
+                sldMinRange->SetOnValueChanged([this](const double v)
+                                                {
+                                                    m_camCtrl.m_vRz.x;
+                                                    m_cbCamCtrl.call(&m_camCtrl); });
+
+                auto sldMaxRange = new Slider(Slider::DOUBLE);
+                sldMaxRange->SetLimits(0, 20);
+                sldMaxRange->SetValue(m_camCtrl.m_vRz.y);
+                sldMaxRange->SetOnValueChanged([this](const double v)
+                                                {
+                                                    m_camCtrl.m_vRz.y;
+                                                    m_cbCamCtrl.call(&m_camCtrl); });
+
                 auto sldTexposureToF = new Slider(Slider::INT);
                 sldTexposureToF->SetLimits(0, 4);
                 sldTexposureToF->SetValue(m_camCtrl.m_tExposureToF);
@@ -331,6 +347,10 @@ namespace open3d
                 pG = new VGrid(2, v_spacing);
                 pG->AddChild(make_shared<Label>("PointSize"));
                 pG->AddChild(GiveOwnership(sldPointSize));
+                pG->AddChild(make_shared<Label>("Min distance"));
+                pG->AddChild(GiveOwnership(sldMinRange));
+                pG->AddChild(make_shared<Label>("Max distance"));
+                pG->AddChild(GiveOwnership(sldMaxRange));
                 pG->AddChild(make_shared<Label>("ToF exposure"));
                 pG->AddChild(GiveOwnership(sldTexposureToF));
                 pG->AddChild(make_shared<Label>("RGBexposure"));

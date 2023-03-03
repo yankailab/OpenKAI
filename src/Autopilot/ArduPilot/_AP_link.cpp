@@ -6,9 +6,9 @@ namespace kai
 	{
 		m_iState = 0;
 		m_tState = 0;
-		m_vBB.init();
+		m_vBB.clear();
 		m_tBB = 0;
-		m_vTargetBB.init();
+		m_vTargetBB.clear();
 		m_tTargetBB = 0;
 		m_alt = 0.0;
 		m_tAlt = 0;

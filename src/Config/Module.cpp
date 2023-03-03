@@ -118,7 +118,7 @@ namespace kai
 
 #ifdef WITH_APP_ROVER
 		ADD_MODULE(_PWMrover);
-		ADD_MODULE(_RCrover);
+		ADD_MODULE(_SbusRover);
 		ADD_MODULE(_AProver_BR);
 		ADD_MODULE(_AProver_BRfollow);
 		ADD_MODULE(_AProver_KU);
@@ -144,6 +144,8 @@ namespace kai
 
 #ifdef WITH_DATA
 #ifdef USE_OPENCV
+		ADD_MODULE(_PhotoTake);
+		ADD_MODULE(_GPhotoTake);
 		ADD_MODULE(_GDimgUploader);
 		ADD_MODULE(_BBoxCutOut);
 		ADD_MODULE(_CutOut);

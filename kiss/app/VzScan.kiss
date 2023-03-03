@@ -40,7 +40,7 @@
 	"nPresv":1000000,
 	"nPresvNext":100000000,
 	"_NavBase":"T265",
-	"vGeometryBase":["/pcRegistCol","VzensePC","/pcFile"],
+	"vGeometryBase":["/pcRegistCol","/VzensePC","pcFile"],
 	"vCamLookAt":[0,0,0],
 	"vCamEye":[0,0,2],
 	"vCamUp":[0,1,0],
@@ -66,7 +66,7 @@
 {
 	"name":"VzensePC",
 	"class":"_VzensePC",
-	"bON":1,
+	"bON":0,
 	"bLog":1,
     {
 		"name":"thread",
@@ -81,6 +81,7 @@
 	"fCalib":"/home/kai/dev/VzScan/calibOfs.kiss",
 	"nPresv":400000,
 	"tWait":60,
+	"vRange":[0.0, 1000],
 }
 
 {
@@ -106,7 +107,7 @@
 {
 	"name":"pcFile",
 	"class":"_PCfile",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,

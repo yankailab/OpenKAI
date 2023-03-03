@@ -49,7 +49,7 @@ namespace kai
 				if (pR->empty())
 					break;
 
-				r.init();
+				r.clear();
 				pR->v("x", &r.x);
 				pR->v("y", &r.y);
 				pR->v("z", &r.z);
@@ -60,7 +60,7 @@ namespace kai
 
 		if (m_vROI.empty())
 		{
-			r.init();
+			r.clear();
 			r.z = 1.0;
 			r.w = 1.0;
 			m_vROI.push_back(r);

@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Sensor__DistSensorBase_H_
 #define OpenKAI_src_Sensor__DistSensorBase_H_
 
-#include "../Base/_ModuleBase.h"
-#include "../UI/_Console.h"
-#include "../Filter/Median.h"
-#include "../Filter/Average.h"
+#include "../../Base/_ModuleBase.h"
+#include "../../UI/_Console.h"
+#include "../../Filter/Median.h"
+#include "../../Filter/Average.h"
 #ifdef USE_OPENCV
-#include "../Vision/Frame.h"
+#include "../../Vision/Frame.h"
 #endif
 
 #define MAX_DIST_SENSOR_DIV 720

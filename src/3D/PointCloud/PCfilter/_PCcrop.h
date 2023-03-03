@@ -36,11 +36,11 @@ namespace kai
 		{
 			m_type = pc_vol_ball;
 			m_bInside = false;
-			m_vX.init();
-			m_vY.init();
-			m_vZ.init();
-			m_vC.init();
-			m_vR.init();
+			m_vX.clear();
+			m_vY.clear();
+			m_vZ.clear();
+			m_vC.clear();
+			m_vR.clear();
 		}
 
 		bool bValid(vFloat3 &vP)

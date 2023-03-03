@@ -32,7 +32,7 @@ namespace kai
 		//		m_psmTransformedDepth = NULL;
 
 		m_pVzVw = NULL;
-		m_vRz.set(0.0, FLT_MAX);
+		m_camCtrl.m_vRz.set(0.0, FLT_MAX);
 	}
 
 	_VzensePC::~_VzensePC()
@@ -51,6 +51,8 @@ namespace kai
 		pK->v("btRGB", &m_btRGB);
 		pK->v("btDepth", &m_btDepth);
 		pK->v("bIR", &m_bIR);
+
+		m_camCtrl.m_vRz = {m_vRange.x, m_vRange.y};
 
 		return true;
 	}
@@ -232,8 +234,8 @@ namespace kai
 				int k = i * m_vzfDepth.width + j;
 
 				VzVector3f *pV = &m_pVzVw[k];
-				IF_CONT(pV->z < m_vRz.x);
-				IF_CONT(pV->z > m_vRz.y);
+				IF_CONT(pV->z < m_camCtrl.m_vRz.x);
+				IF_CONT(pV->z > m_camCtrl.m_vRz.y);
 
 				Eigen::Vector3d vP(pV->x, pV->y, pV->z);
 				vP *= s_b;
@@ -353,6 +355,8 @@ namespace kai
 
 	bool _VzensePC::setCamCtrl(const VzCamCtrl &camCtrl)
 	{
+		m_camCtrl.m_vRz = camCtrl.m_vRz;
+
 		if ((m_camCtrl.m_tExposureToF != camCtrl.m_tExposureToF) || (m_camCtrl.m_bAutoExposureToF != camCtrl.m_bAutoExposureToF))
 		{
 			IF_F(!setToFexposureTime(camCtrl.m_bAutoExposureToF,

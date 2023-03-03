@@ -15,7 +15,7 @@ namespace kai
 		m_pV = NULL;
 		m_trackerType = "";
 		m_trackState = track_stop;
-		m_bb.init();
+		m_bb.clear();
 		m_iSet = 0;
 		m_iInit = 0;
 		m_margin = 0.0;

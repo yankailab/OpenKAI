@@ -15,7 +15,7 @@ namespace kai
 		m_type = vision_crop;
 		m_pV = NULL;
 
-		m_roi.init();
+		m_roi.clear();
 		m_roi.z = 1.0;
 		m_roi.w = 1.0;
 	}

@@ -20,7 +20,7 @@ namespace kai
 		{
 			m_minD = 0.0;
 			m_orientation = 0;
-			m_roi.init();
+			m_roi.clear();
 		}
 	};
 

@@ -35,6 +35,8 @@ namespace kai
 		bool m_bFillHole = false;
 		bool m_bSpatialFilter = false;
 		bool m_bHDR = false;
+
+		vFloat2 m_vRz = {0.0, FLT_MAX};		 // z region
 	};
 
 	class _VzensePC : public _PCframe
@@ -48,6 +50,8 @@ namespace kai
 		virtual int check(void);
 		virtual bool open(void);
 		virtual void close(void);
+
+		VzCamCtrl getCamCtrl(void);
 
 		bool setCamCtrl(const VzCamCtrl& camCtrl);
 		bool setToFexposureControlMode(bool bAuto);
@@ -93,7 +97,7 @@ namespace kai
 		//		_SharedMem* m_psmTransformedDepth;
 
 		VzVector3f *m_pVzVw; // world vector
-		vFloat2 m_vRz;		 // z region
+//		vFloat2 m_vRz;		 // z region
 	};
 
 }

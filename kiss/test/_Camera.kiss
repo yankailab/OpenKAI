@@ -9,7 +9,7 @@
 {
 	"name":"OKconsole",
 	"class":"_Console",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -20,7 +20,7 @@
 {
 	"name":"OKview",
 	"class":"_WindowCV",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,

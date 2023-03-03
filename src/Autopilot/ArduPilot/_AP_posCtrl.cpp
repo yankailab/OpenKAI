@@ -7,11 +7,11 @@ namespace kai
 	{
 		m_pAP = NULL;
 
-		m_vP.init();
-		m_vTargetP.init();
+		m_vP.clear();
+		m_vTargetP.clear();
 		m_vTargetP.x = 0.5;
 		m_vTargetP.y = 0.5;
-		m_vTargetGlobal.init();
+		m_vTargetGlobal.clear();
 		m_vTargetGlobal.z = 10.0;
 
 		m_pRoll = NULL;

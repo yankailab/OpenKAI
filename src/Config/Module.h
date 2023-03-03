@@ -108,7 +108,7 @@
 
 #ifdef WITH_APP_ROVER
 #include "../Application/Rover/_PWMrover.h"
-#include "../Application/Rover/_RCrover.h"
+#include "../Application/Rover/_SbusRover.h"
 #include "../Application/Rover/_AProver_BR.h"
 #include "../Application/Rover/_AProver_BRfollow.h"
 #include "../Application/Rover/_AProver_KU.h"
@@ -132,6 +132,8 @@
 
 #ifdef WITH_DATA
 #ifdef USE_OPENCV
+#include "../Data/Image/_PhotoTake.h"
+#include "../Data/Image/_GPhotoTake.h"
 #include "../Data/Image/_GDimgUploader.h"
 #include "../Data/Image/_BBoxCutOut.h"
 #include "../Data/Image/_CutOut.h"

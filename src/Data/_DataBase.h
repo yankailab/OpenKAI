@@ -25,6 +25,8 @@ namespace kai
 		bool init(void *pKiss);
 		bool start(void);
 
+		string getBaseDirSave(void);
+
 		int getDirFileList(void);
 		string getExtension(string &fName);
 		bool verifyExtension(string &fName);

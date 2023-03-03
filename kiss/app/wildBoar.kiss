@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"RCrover",
-	"bStdErr":1,
+	"bStdErr":0,
 	"bLog":1,
 }
 
@@ -14,7 +14,126 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["/sSBus","sbus","RCrover","drive","motLF"],
+	"vBASE":["rs","/sSBus","sbus","RCrover","drive","motLF"],
+}
+
+{
+	"name":"viewRGB",
+	"class":"_WindowCV",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["rs","SSD","/univ"],
+}
+
+{
+	"name":"viewDepth",
+	"class":"_WindowCV",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["dShow","d2g","/thr","/inRange","mask"],
+}
+
+{
+	"name":"FB",
+	"class":"_GstOutput",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["rs","SSD","/univ"],
+	"/gstOutput":"appsrc ! v4l2convert ! fbdevsink",
+	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.201 port=5678 auto-multicast=false",
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+	"vSize":[1280,720],
+}
+
+{
+	"name":"rs",
+	"class":"_RealSense",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadPP",
+		"FPS":30,
+	}
+	"bON":1,
+	"bLog":1,
+	"vPreset":"Max Range",
+	"bRsRGB":1,
+	"vSize":[1280,720],
+	"rsFPS":30,
+	"rsDFPS":30,
+	"vDsize":[640,480],
+	"fDec":0,
+	"fSpat":0,
+	"vRange":[0.1,10.0],
+	"bAlign":0,
+	"bDepthShow":0,
+	"bDebug":1,
+}
+
+{
+	"name":"dShow",
+	"class":"_DepthShow",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_DepthVisionBase":"rs",
+}
+
+{
+	"name":"d2g",
+	"class":"_Depth2Gray",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_DepthVisionBase":"rs",
+}
+
+{
+	"name":"univ",
+	"class":"_Universe",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+}
+
+{
+	"name":"SSD",
+	"class":"_SSD",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bDraw":1,
+	"bLog":0,
+	"_VisionBase":"rs",
+	"_Universe":"univ",
+	"fModel":"/home/kai/dev/models/SSDmobileNet/ssd_mobilenet_v2_coco_2018_03_29.pbtxt.txt",
+	"fWeight":"/home/kai/dev/models/SSDmobileNet/frozen_inference_graph.pb",
+	"fClass":"/home/kai/dev/models/SSDmobileNet/object_detection_classes_coco.txt",
+	"vBlobSize":[300,300],
+	"bSwapRB":1,
+	"scale":1.0,
+	"vMean":[127.5, 127.5, 127.5],
+	"thr":0.1,
+	"iClassDraw":-1,
 }
 
 {
@@ -44,7 +163,7 @@
 {
 	"name":"sSBus",
 	"class":"_SerialPort",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":1,
@@ -60,7 +179,7 @@
 {
 	"name":"sbus",
 	"class":"_SBus",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread", 
 		"FPS":30,
@@ -78,7 +197,7 @@
 
 {
 	"name":"RCrover",
-	"class":"_RCrover",
+	"class":"_SbusRover",
 	"bON":0,
     {
 		"name":"thread",

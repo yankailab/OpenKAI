@@ -186,7 +186,7 @@ namespace kai
 		system(cmd.c_str());
 
 		vDouble4 vP;
-		vP.init();
+		vP.clear();
 		vP = m_pAP->getGlobalPos();
 		string lat = lf2str(vP.x, 7);
 		string lon = lf2str(vP.y, 7);
