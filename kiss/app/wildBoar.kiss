@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["rs","/sSBus","sbus","RCrover","drive","motLF"],
+	"vBASE":["/rs","/sSBus","sbus","SbusRover","/drive","/motLF"],
 }
 
 {
@@ -25,7 +25,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["rs","SSD","/univ"],
+	"vBASE":["rs","/SSD","univ","SbusRover"],
 }
 
 {
@@ -69,16 +69,17 @@
 	"bLog":1,
 	"vPreset":"Max Range",
 	"bRsRGB":1,
-	"vSize":[1280,720],
+	"vSize":[1920,1080],
 	"rsFPS":30,
 	"rsDFPS":30,
 	"vDsize":[640,480],
 	"fDec":0,
 	"fSpat":0,
-	"vRange":[0.1,10.0],
 	"bAlign":0,
 	"bDepthShow":0,
 	"bDebug":1,
+	"vRange":[0.1,5.0],
+	"minHistD":0.25,
 }
 
 {
@@ -163,7 +164,7 @@
 {
 	"name":"sSBus",
 	"class":"_SerialPort",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":1,
@@ -179,7 +180,7 @@
 {
 	"name":"sbus",
 	"class":"_SBus",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread", 
 		"FPS":30,
@@ -196,9 +197,9 @@
 }
 
 {
-	"name":"RCrover",
+	"name":"SbusRover",
 	"class":"_SbusRover",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -209,9 +210,22 @@
 	"iElev":8,
 	"nSpd":0.5,
 	"nSteer":0.5,
+	"_DepthVisionBase":"rs",
+	"_Universe":"univ",
 	"_SBus":"sbus",
 	"_Drive":"drive",
 	"_ActuatorBase":"stepper",
+
+	"iMode":5,
+	"vModeR":[0.0,1.0],
+	"iClass":1,
+	"minTarea":0.1,
+	"targetX":0.5,
+	"Kstr":0.5,
+	"spdFollow":0.1,
+	"tAreaStop":0.6,
+	"vTbb":[0.1, 0.1, 0.9, 0.6],
+	"dTargetStop":1.0,
 }
 
 {
@@ -221,7 +235,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"bON":0,
+	"bON":1,
 	"nSpd":0.0,
 	"nDir":1.0,
 	"nStr":0.0,
@@ -265,7 +279,7 @@
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":1,
@@ -280,7 +294,7 @@
 {
 	"name":"motLF",
 	"class":"_ZDmotor",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":5,
@@ -308,7 +322,7 @@
 {
 	"name":"motRF",
 	"class":"_ZDmotor",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":5,
@@ -336,7 +350,7 @@
 {
 	"name":"motLR",
 	"class":"_ZDmotor",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":5,
@@ -364,7 +378,7 @@
 {
 	"name":"motRR",
 	"class":"_ZDmotor",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":5,

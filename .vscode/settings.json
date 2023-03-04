@@ -90,7 +90,8 @@
         "__atomic_generated": "cpp",
         "filesystem": "cpp",
         "cerrno": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "*.inc": "cpp"
     },
     "cmake.configureOnOpen": true
 }

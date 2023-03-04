@@ -14,6 +14,7 @@ namespace kai
 		m_iSteer = 0;
 		m_iElev = 8;
 
+		m_nMode = 0.5;
 		m_vModeR.set(0.75, 1.0);
 		m_nSpd = 0.5;
 		m_nSteer = 0.5;
@@ -24,6 +25,8 @@ namespace kai
 
 		m_iClass = 0;
 		m_minTarea = 0.1;
+		m_tArea = 0;
+		m_tX = 0.5;
 		m_targetX = 0.5;
 		m_Kstr = 0.1;
 		m_spdFollow = 0.1;
@@ -58,7 +61,6 @@ namespace kai
 		pK->v("spdFollow", &m_spdFollow);
 		pK->v("tAreaStop", &m_tAreaStop);
 		pK->v("vTbb", &m_vTbb);
-		pK->v("dTarget", &m_dTarget);
 		pK->v("dTargetStop", &m_dTargetStop);
 
 		return true;
@@ -134,10 +136,10 @@ namespace kai
 		// Sbus input
 		m_nSpd = m_pSbus->v(m_iSpd);
 		m_nSteer = m_pSbus->v(m_iSteer);
-		int nMode = m_pSbus->v(m_iMode);
+		m_nMode = m_pSbus->v(m_iMode);
 
 		// target following mode
-		if (nMode > m_vModeR.x && nMode < m_vModeR.y)
+		if (m_nMode > m_vModeR.x && m_nMode < m_vModeR.y)
 		{
 			m_nSpd = 0.5;
 			m_nSteer = 0.5;
@@ -145,9 +147,11 @@ namespace kai
 			_Object tO;
 			if (findTarget(&tO))
 			{
-				if (tO.area() < m_tAreaStop)
+				m_tArea = tO.area();
+				if (m_tArea < m_tAreaStop)
 				{
-					m_nSteer += m_Kstr * (tO.getX() - m_targetX);
+					m_tX = tO.getX();
+					m_nSteer += m_Kstr * (m_tX - m_targetX);
 					m_nSpd += m_spdFollow;
 				}
 			}
@@ -156,6 +160,13 @@ namespace kai
 		// collision avoid
 		m_dTarget = m_pDV->d(m_vTbb);
 		if (m_dTarget < m_dTargetStop)
+		{
+			m_nSpd = 0.5;
+			m_nSteer = 0.5;
+		}
+
+		// receiver failsafe
+		if(m_pSbus->bFailSafe())
 		{
 			m_nSpd = 0.5;
 			m_nSteer = 0.5;
@@ -226,8 +237,11 @@ namespace kai
 		pC->addMsg("nSpd: " + f2str(m_nSpd));
 		pC->addMsg("nSteer: " + f2str(m_nSteer));
 		pC->addMsg("nElev: " + f2str(m_nElev));
+		pC->addMsg("tArea: " + f2str(m_tArea));
+		pC->addMsg("tX: " + f2str(m_tX));
 		pC->addMsg("targetX: " + f2str(m_targetX));
 		pC->addMsg("dTarget: " + f2str(m_dTarget));
+		pC->addMsg("nMode: " + f2str(m_nMode));
 	}
 
 	void _SbusRover::draw(void *pFrame)
@@ -238,7 +252,6 @@ namespace kai
 		IF_(check() < 0);
 
 		Frame *pF = (Frame *)pFrame;
-
 		Mat *pM = pF->m();
 		IF_(pM->empty());
 
@@ -247,6 +260,15 @@ namespace kai
 			 Point((int)tX, 0),
 			 Point((int)tX, pM->rows),
 			 Scalar(0, 0, 255), 2);
+		tX = pM->cols * m_tX;
+		line(*pM,
+			 Point((int)tX, 0),
+			 Point((int)tX, pM->rows),
+			 Scalar(0, 255, 255), 2);
+
+		Rect rTbb = bb2Rect(bbScale(m_vTbb, pM->cols, pM->rows));
+		rectangle(*pM, rTbb, Scalar(0, 255, 255), 1);
+
 #endif
 	}
 

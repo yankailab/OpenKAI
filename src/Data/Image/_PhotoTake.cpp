@@ -6,6 +6,7 @@ namespace kai
 	_PhotoTake::_PhotoTake()
 	{
 		m_pV = NULL;
+		m_fProcess.clearAll();
 
 		m_dir = "/home/";
 		m_subDir = "";
@@ -14,8 +15,7 @@ namespace kai
 		m_tDelay = 0;
 
 		m_quality = 100;
-		m_bFlipRGB = false;
-		m_bFlipD = false;
+		m_bFlip = false;
 	}
 
 	_PhotoTake::~_PhotoTake()
@@ -30,8 +30,7 @@ namespace kai
 		pK->v("quality", &m_quality);
 		pK->v("dir", &m_dir);
 		pK->v("subDir", &m_subDir);
-		pK->v("bFlipRGB", &m_bFlipRGB);
-		pK->v("bFlipD", &m_bFlipD);
+		pK->v("bFlip", &m_bFlip);
 		pK->v("tDelay", &m_tDelay);
 
 		if (m_subDir.empty())
@@ -79,12 +78,23 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
+			// if (m_fProcess.b(pc_ScanReset, true))
+			// 	scanReset();
+
+			// if (m_fProcess.b(pc_CamAuto))
+			// 	updateCamAuto();
+
 			m_pT->autoFPSto();
 		}
 	}
 
 	void _PhotoTake::updateTake(void)
 	{
+	}
+
+	void _PhotoTake::setPos(const vDouble3 &vPos)
+	{
+		m_vPos = vPos;
 	}
 
 	bool _PhotoTake::startAutoMode(int nTake, int tInterval)
@@ -110,18 +120,15 @@ namespace kai
 		cmd = "mkdir " + m_subDir;
 		system(cmd.c_str());
 
-		vDouble4 vP;
-		vP.clear();
-		//		vP = m_pAP->getGlobalPos();
-		string lat = lf2str(vP.x, 7);
-		string lon = lf2str(vP.y, 7);
-		string alt = lf2str(vP.z, 3);
+		string lat = lf2str(m_vPos.x, 7);
+		string lon = lf2str(m_vPos.y, 7);
+		string alt = lf2str(m_vPos.z, 3);
 
 		string fName;
 
 		// rgb
 		Frame fBGR = *m_pV->BGR();
-		if (m_bFlipRGB)
+		if (m_bFlip)
 			fBGR = fBGR.flip(-1);
 		Mat mBGR;
 		fBGR.m()->copyTo(mBGR);
@@ -133,24 +140,17 @@ namespace kai
 		system(cmd.c_str());
 
 		LOG_I("RGB: " + fName);
-
 		LOG_I("Take: " + i2str(m_iTake));
 		m_iTake++;
 
+		fName = getBaseDirSave();
+		if (fName.empty())
+		{
+			return false;
+		}
 
-
-
-
-
-                fName = getBaseDirSave();
-                if (fName.empty())
-                {
-                    return false;
-                }
-
-                fName += tFormat();
-                string imgName = fName + ".png";
-
+		fName += tFormat();
+		string imgName = fName + ".png";
 
 		return true;
 	}

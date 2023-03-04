@@ -43,6 +43,7 @@ namespace kai
 		uint8_t m_iSteer;
 		uint8_t m_iElev; // elevation bar
 		vInt2 m_vModeR;	 // raw pwm range for mode
+		float m_nMode;
 		float m_nSpd;
 		float m_nSteer;
 		float m_nElev;
@@ -52,6 +53,8 @@ namespace kai
 
 		int m_iClass;
 		float m_minTarea;
+		float m_tArea;
+		float m_tX;
 		float m_targetX;
 		float m_Kstr;
 		float m_spdFollow;
