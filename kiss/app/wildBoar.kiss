@@ -138,6 +138,35 @@
 }
 
 {
+	"name":"PhotoTake",
+	"class":"_PhotoTake",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"bLog":1,
+	"_VisionBase":"rs",
+	"bAuto":0,
+	"dir":"/home/kai/Documents",
+	"subDir":"photoTake",
+}
+
+{
+	"name":"cURL",
+	"class":"_Curl",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"bLog":1,
+	"cmd":"curl 2>&1 -T [fName] ftp://193.112.75.123/pub/ -u anonymous: --connect-timeout 60 --no-progress-meter",
+	"dirIn":"/home/pi/ssd/video/",
+	"extIn":[".mka",".json"],
+}
+
+{
 	"name":"state",
 	"class":"_StateControl",
     {

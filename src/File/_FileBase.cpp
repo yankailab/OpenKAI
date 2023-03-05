@@ -1,26 +1,26 @@
 /*
- * _DataBase.cpp
+ * _FileBase.cpp
  *
  *  Created on: Oct 16, 2017
  *      Author: yankai
  */
 
-#include "_DataBase.h"
+#include "_FileBase.h"
 
 namespace kai
 {
 
-	_DataBase::_DataBase()
+	_FileBase::_FileBase()
 	{
 		m_dirIn = "";
 	}
 
-	_DataBase::~_DataBase()
+	_FileBase::~_FileBase()
 	{
 		m_vExtIn.clear();
 	}
 
-	bool _DataBase::init(void *pKiss)
+	bool _FileBase::init(void *pKiss)
 	{
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
@@ -38,20 +38,30 @@ namespace kai
 		return true;
 	}
 
-	bool _DataBase::start(void)
+	bool _FileBase::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	void _DataBase::update(void)
+	void _FileBase::update(void)
 	{
 	}
 
-	string _DataBase::getBaseDirSave(void)
+	bool _FileBase::createDir(const string &dir)
 	{
-		//TODO: dirIn?
-		DIR *pDir = opendir(m_dirIn.c_str());
+		string cmd;
+		// cmd = "mkdir /media/usb";
+		// system(cmd.c_str());
+		// cmd = "mount /dev/sda1 /media/usb";
+		// system(cmd.c_str());
+		cmd = "mkdir " + dir;
+		system(cmd.c_str());
+	}
+
+	string _FileBase::getFirstSubDir(const string &baseDir)
+	{
+		DIR *pDir = opendir(baseDir.c_str());
 		if (!pDir)
 			return "";
 
@@ -62,7 +72,7 @@ namespace kai
 			IF_CONT(dir->d_name[0] == '.');
 			IF_CONT(dir->d_type != D_TYPE_FOLDER);
 
-			d = m_dirIn + string(dir->d_name);
+			d = baseDir + string(dir->d_name);
 			d = checkDirName(d);
 			break;
 		}
@@ -71,46 +81,28 @@ namespace kai
 		return d;
 	}
 
-	void _DataBase::setFileList(vector<string> vFileIn)
+	void _FileBase::getDirFileList(const string &dir)
 	{
-		m_vFileIn.clear();
-		m_vFileIn = vFileIn;
-	}
-
-	int _DataBase::getDirFileList(void)
-	{
-		m_vFileIn.clear();
-
-		m_dirIn = checkDirName(m_dirIn);
-		getDirFileList(&m_dirIn);
-
-		return m_vFileIn.size();
-	}
-
-	void _DataBase::getDirFileList(string *pStrDir)
-	{
-		NULL_(pStrDir);
-
-		DIR *pDirIn = opendir(pStrDir->c_str());
+		DIR *pDirIn = opendir(dir.c_str());
 		if (!pDirIn)
 		{
-			LOG_E("Directory not found: " + *pStrDir);
+			LOG_E("Directory not found: " + dir);
 			return;
 		}
 
-		struct dirent *dir;
+		struct dirent *dirE;
 		ifstream ifs;
 
-		while ((dir = readdir(pDirIn)) != NULL)
+		while ((dirE = readdir(pDirIn)) != NULL)
 		{
-			IF_CONT(dir->d_name[0] == '.');
+			IF_CONT(dirE->d_name[0] == '.');
 
-			string dirIn = *pStrDir + dir->d_name;
+			string dirIn = dir + dirE->d_name;
 
-			if (dir->d_type == D_TYPE_FOLDER)
+			if (dirE->d_type == D_TYPE_FOLDER)
 			{
 				dirIn = checkDirName(dirIn);
-				getDirFileList(&dirIn);
+				getDirFileList(dirIn);
 				continue;
 			}
 
@@ -125,7 +117,7 @@ namespace kai
 		closedir(pDirIn);
 	}
 
-	string _DataBase::getExtension(string &fName)
+	string _FileBase::getExtension(const string &fName)
 	{
 		size_t extPos = fName.find_last_of('.');
 		if (extPos == std::string::npos)
@@ -137,7 +129,25 @@ namespace kai
 		return ext;
 	}
 
-	bool _DataBase::verifyExtension(string &fName)
+
+	void _FileBase::setFileList(vector<string> vFileIn)
+	{
+		m_vFileIn.clear();
+		m_vFileIn = vFileIn;
+	}
+
+	// int _FileBase::getDirFileList(void)
+	// {
+	// 	m_vFileIn.clear();
+
+	// 	m_dirIn = checkDirName(m_dirIn);
+	// 	getDirFileList(&m_dirIn);
+
+	// 	return m_vFileIn.size();
+	// }
+
+
+	bool _FileBase::verifyExtension(const string &fName)
 	{
 		for (int i = 0; i < m_vExtIn.size(); i++)
 		{

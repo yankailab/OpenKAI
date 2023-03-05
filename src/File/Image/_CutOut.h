@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Data_Image__CutOut_H_
-#define OpenKAI_src_Data_Image__CutOut_H_
+#ifndef OpenKAI_src_File_Image__CutOut_H_
+#define OpenKAI_src_File_Image__CutOut_H_
 
 #include "../../Base/_ModuleBase.h"
 #include "../../Utility/utilCV.h"

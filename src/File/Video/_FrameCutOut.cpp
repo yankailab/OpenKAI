@@ -21,7 +21,7 @@ namespace kai
 
 	bool _FrameCutOut::init(void *pKiss)
 	{
-		IF_F(!this->_DataBase::init(pKiss));
+		IF_F(!this->_FileBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		return true;

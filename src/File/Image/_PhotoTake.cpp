@@ -6,16 +6,17 @@ namespace kai
 	_PhotoTake::_PhotoTake()
 	{
 		m_pV = NULL;
-		m_fProcess.clearAll();
-
-		m_dir = "/home/";
-		m_subDir = "";
+		m_vPos.clear();
+		m_bfProcess.clearAll();
 
 		m_iTake = 0;
 		m_tDelay = 0;
+		m_bAuto = false;
 
-		m_quality = 100;
+		m_dir = "/home/";
+		m_subDir = "";
 		m_bFlip = false;
+		m_quality = 100;
 	}
 
 	_PhotoTake::~_PhotoTake()
@@ -24,14 +25,15 @@ namespace kai
 
 	bool _PhotoTake::init(void *pKiss)
 	{
-		IF_F(!this->_DataBase::init(pKiss));
+		IF_F(!this->_FileBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("quality", &m_quality);
-		pK->v("dir", &m_dir);
-		pK->v("subDir", &m_subDir);
 		pK->v("bFlip", &m_bFlip);
 		pK->v("tDelay", &m_tDelay);
+		pK->v("bAuto", &m_bAuto);
+		pK->v("dir", &m_dir);
+		pK->v("subDir", &m_subDir);
 
 		if (m_subDir.empty())
 			m_subDir = m_dir + tFormat() + "/";
@@ -46,12 +48,10 @@ namespace kai
 
 	bool _PhotoTake::link(void)
 	{
-		IF_F(!this->_DataBase::link());
-		IF_F(!m_pT->link());
+		IF_F(!this->_FileBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
 		string n;
-
 		n = "";
 		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->getInst(n));
@@ -69,7 +69,7 @@ namespace kai
 	{
 		NULL__(m_pV, -1);
 
-		return this->_DataBase::check();
+		return this->_FileBase::check();
 	}
 
 	void _PhotoTake::update(void)
@@ -78,11 +78,7 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			// if (m_fProcess.b(pc_ScanReset, true))
-			// 	scanReset();
-
-			// if (m_fProcess.b(pc_CamAuto))
-			// 	updateCamAuto();
+			updateTake();
 
 			m_pT->autoFPSto();
 		}
@@ -90,6 +86,16 @@ namespace kai
 
 	void _PhotoTake::updateTake(void)
 	{
+		IF_(check() < 0);
+
+		if (m_bfProcess.b(pt_shutter, true))
+			take();
+
+		IF_(!m_bAuto);
+
+		if (m_ieShutter.update(getApproxTbootUs()))
+			take();
+
 	}
 
 	void _PhotoTake::setPos(const vDouble3 &vPos)
@@ -97,60 +103,60 @@ namespace kai
 		m_vPos = vPos;
 	}
 
-	bool _PhotoTake::startAutoMode(int nTake, int tInterval)
+	void _PhotoTake::setDelay(const uint64_t &tDelay)
 	{
-		IF_F(check() < 0);
-	}
-	void _PhotoTake::stopAutoMode(void)
-	{
+		m_tDelay = tDelay;
 	}
 
 	bool _PhotoTake::shutter(void)
+	{
+		m_bfProcess.set(pt_shutter);
+		return true;
+	}
+
+	bool _PhotoTake::startAutoMode(int nTake, int tInterval)
+	{
+		m_nTake = nTake;
+		m_ieShutter.init(tInterval);
+		m_bAuto = true;
+		return true;
+	}
+
+	void _PhotoTake::stopAutoMode(void)
+	{
+		m_bAuto = false;
+	}
+
+	bool _PhotoTake::take(void)
 	{
 		IF_F(check() < 0);
 
 		if (m_tDelay > 0)
 			m_pT->sleepT(m_tDelay);
 
-		string cmd;
-		cmd = "mkdir /media/usb";
-		system(cmd.c_str());
-		cmd = "mount /dev/sda1 /media/usb";
-		system(cmd.c_str());
-		cmd = "mkdir " + m_subDir;
-		system(cmd.c_str());
-
 		string lat = lf2str(m_vPos.x, 7);
 		string lon = lf2str(m_vPos.y, 7);
 		string alt = lf2str(m_vPos.z, 3);
 
-		string fName;
-
 		// rgb
 		Frame fBGR = *m_pV->BGR();
+		IF_F(fBGR.bEmpty());
 		if (m_bFlip)
 			fBGR = fBGR.flip(-1);
 		Mat mBGR;
 		fBGR.m()->copyTo(mBGR);
-		IF_F(mBGR.empty());
 
-		fName = m_subDir + i2str(m_iTake) + "_rgb.jpg";
+		string fName = m_subDir + tFormat() + ".jpg";
 		cv::imwrite(fName, mBGR, m_compress);
-		cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
-		system(cmd.c_str());
 
-		LOG_I("RGB: " + fName);
-		LOG_I("Take: " + i2str(m_iTake));
-		m_iTake++;
-
-		fName = getBaseDirSave();
-		if (fName.empty())
+		if (m_vPos.x != 0)
 		{
-			return false;
+			string cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
+			system(cmd.c_str());
 		}
 
-		fName += tFormat();
-		string imgName = fName + ".png";
+		LOG_I("Take: " + fName);
+		m_iTake++;
 
 		return true;
 	}
@@ -158,7 +164,7 @@ namespace kai
 	void _PhotoTake::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_DataBase::console(pConsole);
+		this->_FileBase::console(pConsole);
 		IF_(check() < 0);
 
 		_Console *pC = (_Console *)pConsole;

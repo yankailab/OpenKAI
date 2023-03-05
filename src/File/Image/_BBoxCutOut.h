@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Data_Image__BBoxCutOut_H_
-#define OpenKAI_src_Data_Image__BBoxCutOut_H_
+#ifndef OpenKAI_src_File_Image__BBoxCutOut_H_
+#define OpenKAI_src_File_Image__BBoxCutOut_H_
 
 #include "../../Base/_ModuleBase.h"
 

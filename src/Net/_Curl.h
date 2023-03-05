@@ -8,14 +8,14 @@
 #ifndef OpenKAI_src_Net__Curl_H_
 #define OpenKAI_src_Net__Curl_H_
 
-#include "../Data/_DataBase.h"
+#include "../File/_FileBase.h"
 #include "../Script/JSON.h"
 #include "../UI/_Console.h"
 
 namespace kai
 {
 
-	class _Curl : public _DataBase
+	class _Curl : public _FileBase
 	{
 	public:
 		_Curl(void);

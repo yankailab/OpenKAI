@@ -1,12 +1,12 @@
 /*
- * _DataBase.h
+ * _FileBase.h
  *
  *  Created on: Oct 16, 2017
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Data__DataBase_H_
-#define OpenKAI_src_Data__DataBase_H_
+#ifndef OpenKAI_src_File__FileBase_H_
+#define OpenKAI_src_File__FileBase_H_
 
 #include "../Base/_ModuleBase.h"
 
@@ -16,28 +16,29 @@
 namespace kai
 {
 
-	class _DataBase : public _ModuleBase
+	class _FileBase : public _ModuleBase
 	{
 	public:
-		_DataBase();
-		~_DataBase();
+		_FileBase();
+		~_FileBase();
 
 		bool init(void *pKiss);
 		bool start(void);
 
-		string getBaseDirSave(void);
+		bool createDir(const string &dir);
+		string getFirstSubDir(const string &baseDir);
+		void getDirFileList(const string &dir);
+		string getExtension(const string &fName);
 
-		int getDirFileList(void);
-		string getExtension(string &fName);
-		bool verifyExtension(string &fName);
+
+		bool verifyExtension(const string &fName);
 		void setFileList(vector<string> vFileIn);
 
 	private:
-		void getDirFileList(string *pStrDir);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_DataBase *)This)->update();
+			((_FileBase *)This)->update();
 			return NULL;
 		}
 

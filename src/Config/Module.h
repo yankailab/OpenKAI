@@ -130,14 +130,14 @@
 #include "../Control/PID.h"
 #endif
 
-#ifdef WITH_DATA
+#ifdef WITH_FILE
 #ifdef USE_OPENCV
-#include "../Data/Image/_PhotoTake.h"
-#include "../Data/Image/_GPhotoTake.h"
-#include "../Data/Image/_GDimgUploader.h"
-#include "../Data/Image/_BBoxCutOut.h"
-#include "../Data/Image/_CutOut.h"
-#include "../Data/Video/_FrameCutOut.h"
+#include "../File/Image/_PhotoTake.h"
+#include "../File/Image/_GPhotoTake.h"
+#include "../File/Image/_GDimgUploader.h"
+#include "../File/Image/_BBoxCutOut.h"
+#include "../File/Image/_CutOut.h"
+#include "../File/Video/_FrameCutOut.h"
 #endif
 #endif
 

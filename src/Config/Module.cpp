@@ -142,7 +142,7 @@ namespace kai
 		ADD_MODULE(PID);
 #endif
 
-#ifdef WITH_DATA
+#ifdef WITH_FILE
 #ifdef USE_OPENCV
 		ADD_MODULE(_PhotoTake);
 		ADD_MODULE(_GPhotoTake);

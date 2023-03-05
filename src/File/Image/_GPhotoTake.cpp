@@ -24,7 +24,7 @@ namespace kai
 
 	bool _GPhotoTake::init(void *pKiss)
 	{
-		IF_F(!this->_DataBase::init(pKiss));
+		IF_F(!this->_FileBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("quality", &m_quality);
@@ -47,7 +47,7 @@ namespace kai
 
 	bool _GPhotoTake::link(void)
 	{
-		IF_F(!this->_DataBase::link());
+		IF_F(!this->_FileBase::link());
 		IF_F(!m_pT->link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
@@ -70,7 +70,7 @@ namespace kai
 	{
 		NULL__(m_pG, -1);
 
-		return this->_DataBase::check();
+		return this->_FileBase::check();
 	}
 
 	void _GPhotoTake::update(void)
@@ -139,7 +139,7 @@ namespace kai
 	void _GPhotoTake::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_DataBase::console(pConsole);
+		this->_FileBase::console(pConsole);
 		IF_(check() < 0);
 
 		_Console *pC = (_Console *)pConsole;

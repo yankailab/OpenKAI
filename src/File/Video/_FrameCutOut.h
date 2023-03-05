@@ -5,16 +5,16 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Data_Video__FrameCutOut_H_
-#define OpenKAI_src_Data_Video__FrameCutOut_H_
+#ifndef OpenKAI_src_File_Video__FrameCutOut_H_
+#define OpenKAI_src_File_Video__FrameCutOut_H_
 
-#include "../_DataBase.h"
+#include "../_FileBase.h"
 #include "../../Vision/Frame.h"
 
 namespace kai
 {
 
-	class _FrameCutOut : public _DataBase
+	class _FrameCutOut : public _FileBase
 	{
 	public:
 		_FrameCutOut();

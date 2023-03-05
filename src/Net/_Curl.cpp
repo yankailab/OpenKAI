@@ -20,7 +20,7 @@ namespace kai
 
 	bool _Curl::init(void *pKiss)
 	{
-		IF_F(!this->_DataBase::init(pKiss));
+		IF_F(!this->_FileBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("cmd", &m_cmd);
@@ -56,7 +56,8 @@ namespace kai
 
 	void _Curl::updateFileList(void)
 	{
-		IF_(getDirFileList() <= 0);
+//TODO:
+//		IF_(getDirFileList() <= 0);
 
 		for (string f : m_vFileIn)
 		{
@@ -123,7 +124,7 @@ namespace kai
 	void _Curl::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_DataBase::console(pConsole);
+		this->_FileBase::console(pConsole);
 		IF_(check() < 0);
 
 		_Console *pC = (_Console *)pConsole;
