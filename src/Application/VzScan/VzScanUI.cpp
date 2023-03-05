@@ -447,8 +447,8 @@ namespace open3d
                 fName += tFormat();
                 string imgName = fName + ".png";
                 this->ExportCurrentImage(imgName.c_str());
-                string plyName = fName + ".ply";
-                m_cbSavePC.call(&plyName);
+//                string plyName = fName + ".ply";
+                m_cbSavePC.call(&fName);
 
                 // auto dlg = make_shared<gui::FileDialog>(
                 //     gui::FileDialog::Mode::SAVE, "Save File", this->GetTheme());

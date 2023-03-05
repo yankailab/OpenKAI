@@ -97,7 +97,6 @@ namespace kai
 		//		_SharedMem* m_psmTransformedDepth;
 
 		VzVector3f *m_pVzVw; // world vector
-//		vFloat2 m_vRz;		 // z region
 	};
 
 }

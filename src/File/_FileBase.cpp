@@ -12,12 +12,11 @@ namespace kai
 
 	_FileBase::_FileBase()
 	{
-		m_dirIn = "";
 	}
 
 	_FileBase::~_FileBase()
 	{
-		m_vExtIn.clear();
+		m_vExt.clear();
 	}
 
 	bool _FileBase::init(void *pKiss)
@@ -25,15 +24,8 @@ namespace kai
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("dirIn", &m_dirIn);
-
-		m_vExtIn.clear();
-		vector<string> vExtIn;
-		pK->a("extIn", &vExtIn);
-		for (int i = 0; i < vExtIn.size(); i++)
-		{
-			m_vExtIn.push_back(vExtIn[i]);
-		}
+		m_vExt.clear();
+		pK->a("vExt", &m_vExt);
 
 		return true;
 	}
@@ -51,12 +43,24 @@ namespace kai
 	bool _FileBase::createDir(const string &dir)
 	{
 		string cmd;
+		cmd = "mkdir " + dir;
+		system(cmd.c_str());
+
+		return true;
+
 		// cmd = "mkdir /media/usb";
 		// system(cmd.c_str());
 		// cmd = "mount /dev/sda1 /media/usb";
 		// system(cmd.c_str());
-		cmd = "mkdir " + dir;
+	}
+
+	bool _FileBase::removeDir(const string &dir)
+	{
+		string cmd;
+		cmd = "rm -r " + dir;
 		system(cmd.c_str());
+
+		return true;
 	}
 
 	string _FileBase::getFirstSubDir(const string &baseDir)
@@ -81,40 +85,45 @@ namespace kai
 		return d;
 	}
 
-	void _FileBase::getDirFileList(const string &dir)
+	bool _FileBase::getDirFileList(const string &dir, vector<string> *pvFile, vector<string> *pvExt)
 	{
-		DIR *pDirIn = opendir(dir.c_str());
-		if (!pDirIn)
-		{
-			LOG_E("Directory not found: " + dir);
-			return;
-		}
+		NULL_F(pvFile);
+		DIR *pDir = opendir(dir.c_str());
+		NULL_F(!pDir);
 
 		struct dirent *dirE;
 		ifstream ifs;
-
-		while ((dirE = readdir(pDirIn)) != NULL)
+		while ((dirE = readdir(pDir)) != NULL)
 		{
 			IF_CONT(dirE->d_name[0] == '.');
 
-			string dirIn = dir + dirE->d_name;
-
+			string s = dir + dirE->d_name;
 			if (dirE->d_type == D_TYPE_FOLDER)
 			{
-				dirIn = checkDirName(dirIn);
-				getDirFileList(dirIn);
+				s = checkDirName(s);
+				getDirFileList(s, pvFile, pvExt);
 				continue;
 			}
 
-			IF_CONT(!verifyExtension(dirIn));
-			ifs.open(dirIn.c_str(), std::ios::in);
+			// filter extension
+			if (pvExt)
+			{
+				if (!pvExt->empty())
+				{
+					IF_CONT(!bExtension(s, *pvExt));
+				}
+			}
+
+			// verify can be opened
+			ifs.open(s.c_str(), std::ios::in);
 			IF_CONT(!ifs);
 			ifs.close();
 
-			m_vFileIn.push_back(dirIn);
+			pvFile->push_back(s);
 		}
 
-		closedir(pDirIn);
+		closedir(pDir);
+		return true;
 	}
 
 	string _FileBase::getExtension(const string &fName)
@@ -129,29 +138,12 @@ namespace kai
 		return ext;
 	}
 
-
-	void _FileBase::setFileList(vector<string> vFileIn)
+	bool _FileBase::bExtension(const string &fName, const vector<string> &vExt)
 	{
-		m_vFileIn.clear();
-		m_vFileIn = vFileIn;
-	}
-
-	// int _FileBase::getDirFileList(void)
-	// {
-	// 	m_vFileIn.clear();
-
-	// 	m_dirIn = checkDirName(m_dirIn);
-	// 	getDirFileList(&m_dirIn);
-
-	// 	return m_vFileIn.size();
-	// }
-
-
-	bool _FileBase::verifyExtension(const string &fName)
-	{
-		for (int i = 0; i < m_vExtIn.size(); i++)
+		string ext = getExtension(fName);
+		for (int i = 0; i < vExt.size(); i++)
 		{
-			IF_T(m_vExtIn[i] == getExtension(fName));
+			IF_T(vExt[i] == ext);
 		}
 
 		return false;

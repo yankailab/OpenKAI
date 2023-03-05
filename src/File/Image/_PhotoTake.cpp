@@ -40,6 +40,13 @@ namespace kai
 		else
 			m_subDir = m_dir + m_subDir;
 
+		int bClearDir;
+		pK->v("bClearDir", &bClearDir);
+		if (bClearDir)
+			removeDir(m_subDir);
+
+		createDir(m_subDir);
+
 		m_compress.push_back(IMWRITE_JPEG_QUALITY);
 		m_compress.push_back(m_quality);
 
@@ -95,7 +102,6 @@ namespace kai
 
 		if (m_ieShutter.update(getApproxTbootUs()))
 			take();
-
 	}
 
 	void _PhotoTake::setPos(const vDouble3 &vPos)

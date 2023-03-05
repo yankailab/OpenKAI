@@ -12,6 +12,7 @@ namespace kai
 	_Curl::_Curl()
 	{
 		m_cmd = "";
+		m_dir = "";
 	}
 
 	_Curl::~_Curl()
@@ -24,8 +25,8 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("cmd", &m_cmd);
-
-		string n;
+		pK->v("dir", &m_dir);
+		m_dir = checkDirName(m_dir);
 
 		return true;
 	}
@@ -56,10 +57,10 @@ namespace kai
 
 	void _Curl::updateFileList(void)
 	{
-//TODO:
-//		IF_(getDirFileList() <= 0);
+		vector<string> vFile;
+		IF_(!getDirFileList(m_dir, &vFile, &m_vExt));
 
-		for (string f : m_vFileIn)
+		for (string f : vFile)
 		{
 			addFile(f);
 		}

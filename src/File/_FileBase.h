@@ -22,17 +22,15 @@ namespace kai
 		_FileBase();
 		~_FileBase();
 
-		bool init(void *pKiss);
-		bool start(void);
+		virtual bool init(void *pKiss);
+		virtual bool start(void);
 
 		bool createDir(const string &dir);
+		bool removeDir(const string &dir);
 		string getFirstSubDir(const string &baseDir);
-		void getDirFileList(const string &dir);
+		bool getDirFileList(const string &dir, vector<string>* pvFile, vector<string>* pvExt = NULL);
 		string getExtension(const string &fName);
-
-
-		bool verifyExtension(const string &fName);
-		void setFileList(vector<string> vFileIn);
+		bool bExtension(const string &fName, const vector<string>& vExt);
 
 	private:
 		void update(void);
@@ -43,9 +41,7 @@ namespace kai
 		}
 
 	public:
-		string m_dirIn;
-		vector<string> m_vExtIn;
-		vector<string> m_vFileIn;
+		vector<string> m_vExt;
 	};
 }
 #endif

@@ -10,51 +10,53 @@ using namespace std;
 namespace kai
 {
 
-class Kiss
-{
-public:
-	Kiss(void);
-	~Kiss(void);
-
-	bool parse(string* pStr);
-	JSON* json(void);
-
-	Kiss* child(const string& name);
-	Kiss* child(int i);
-	Kiss* root(void);
-	Kiss* parent(void);
-	bool empty(void);
-
-	Kiss* find(const string& name);
-	void* getInst(const string& name);
-
-	template <typename T> bool v(const string& name, T* pVal)
+	class Kiss
 	{
-		return m_json.v(name, pVal);
-	}
+	public:
+		Kiss(void);
+		~Kiss(void);
 
-	template <typename T> int a(const string& name, vector<T>* pVal)
-	{
-		return m_json.a(name, pVal);
-	}
+		bool parse(string *pStr);
+		JSON *json(void);
 
-private:
-	void trim(string* pStr);
-	void delComment(string* pStr);
-	bool addChild(string* pStr);
+		Kiss *child(const string &name);
+		Kiss *child(int i);
+		Kiss *root(void);
+		Kiss *parent(void);
+		bool empty(void);
 
-public:
-	string m_class;
-	string m_name;
-	JSON m_json;
-	BASE* m_pInst;
+		Kiss *find(const string &name);
+		void *getInst(const string &name);
 
-	Kiss* m_pParent;
-	vector<Kiss*> m_vChild;
+		template <typename T>
+		bool v(const string &name, T *pVal)
+		{
+			return m_json.v(name, pVal);
+		}
 
-	Kiss* m_pNULL;
-	bool m_bNULL;
-};
+		template <typename T>
+		int a(const string &name, vector<T> *pVal)
+		{
+			return m_json.a(name, pVal);
+		}
+
+	private:
+		void trim(string *pStr);
+		void delComment(string *pStr);
+		bool addChild(string *pStr);
+
+	public:
+		string m_class;
+		string m_name;
+		JSON m_json;
+		BASE *m_pInst;
+
+		Kiss *m_pParent;
+		vector<Kiss *> m_vChild;
+
+		Kiss *m_pNULL;
+		bool m_bNULL;
+	};
 
 }
 #endif

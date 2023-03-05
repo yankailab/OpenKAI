@@ -71,16 +71,15 @@ namespace kai
 		_NavBase *m_pNav;
 		_Thread *m_pTk;
 
+		vector<PointCloud> m_vPC;	// original point cloud data frames
+		int m_nP;
+		int m_nPmax;
 		PointCloud* m_pPCprv;
-		PointCloud* m_pPCorig;
-		int m_nPwPrv;
-		int m_nPwOrig;
+		int m_nPprv;
 		float m_rVoxel;
 		string m_fNameSavePC;
 
 		VzCamCtrl m_camCtrl;
-		
-		//filter flags
 		BIT_FLAG m_fProcess;
 	};
 

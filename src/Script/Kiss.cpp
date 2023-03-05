@@ -33,7 +33,7 @@ namespace kai
 	{
 		IF_F(m_bNULL);
 
-		//Create NULL instance
+		// Create NULL instance
 		if (m_pParent)
 		{
 			m_pNULL = this->m_pParent->m_pNULL;
@@ -53,12 +53,12 @@ namespace kai
 
 		do
 		{
-			//find the object start
+			// find the object start
 			from = pStr->find('{');
 			if (from == std::string::npos)
 				break;
 
-			//find the paired bracket
+			// find the paired bracket
 			to = from + 1;
 			k = 0;
 			while (to < pStr->length())
@@ -76,14 +76,14 @@ namespace kai
 				to++;
 			}
 
-			//the pair bracket not found
+			// the pair bracket not found
 			if (to == pStr->length())
 				return false;
 
-			//check if it is a null object
+			// check if it is a null object
 			if (to > from + 1)
 			{
-				//create new obj
+				// create new obj
 				string subStr = pStr->substr(from + 1, to - from - 1);
 				addChild(&subStr);
 			}
@@ -113,7 +113,7 @@ namespace kai
 	{
 		std::string::size_type k;
 
-		//do NOT delete white spaces as gst pipeline use it for parameter separations
+		// do NOT delete white spaces as gst pipeline use it for parameter separations
 
 		k = pStr->find('\r');
 		while (k != std::string::npos)
@@ -220,7 +220,7 @@ namespace kai
 
 	void *Kiss::getInst(const string &name)
 	{
-		Kiss* pK = find(name);
+		Kiss *pK = find(name);
 		NULL_N(pK);
 		return pK->m_pInst;
 
