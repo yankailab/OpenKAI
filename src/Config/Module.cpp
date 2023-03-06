@@ -26,6 +26,25 @@ namespace kai
 		ADD_MODULE(Destimator);
 		ADD_MODULE(_Console);
 
+#ifdef WITH_3D && USE_OPEN3D
+		ADD_MODULE(_GeometryViewer);
+		ADD_MODULE(_MeshStream);
+		ADD_MODULE(_PCstream);
+		ADD_MODULE(_PCframe);
+		ADD_MODULE(_PClattice);
+		ADD_MODULE(_PCfile);
+		ADD_MODULE(_PCmerge);
+		ADD_MODULE(_PCsend);
+		ADD_MODULE(_PCrecv);
+		ADD_MODULE(_PCtransform);
+		ADD_MODULE(_PCcrop);
+		ADD_MODULE(_PCremove);
+		ADD_MODULE(_PCdownSample);
+		ADD_MODULE(_PCregistCol);
+		ADD_MODULE(_PCregistICP);
+		ADD_MODULE(_PCregistGlobal);
+#endif
+
 #ifdef WITH_ACTUATOR
 		ADD_MODULE(_ArduServo);
 		ADD_MODULE(_ActuatorSync);
@@ -98,15 +117,21 @@ namespace kai
 		ADD_MODULE(_RaspiWSbattery);
 #endif
 
-#ifdef WITH_APP_3DSCAN && USE_OPEN3D
+#ifdef WITH_APP_3DSCAN && WITH_3D && USE_OPEN3D
 		ADD_MODULE(_3DScanCalibCam);
 		ADD_MODULE(_3DScanCalibOfs);
 		ADD_MODULE(_PCscan);
 		ADD_MODULE(_PCcalib);
 #endif
 
-#ifdef WITH_APP_3DSCAN && USE_VZENSE
+#ifdef WITH_APP_VZSCAN && USE_VZENSE && WITH_3D && USE_OPEN3D
 		ADD_MODULE(_VzScan);
+		ADD_MODULE(_VzScanCalib);
+#endif
+
+#ifdef WITH_APP_LIVOXSCAN && USE_LIVOX && WITH_3D && USE_OPEN3D
+		ADD_MODULE(_LivoxScan);
+		ADD_MODULE(_LivoxScanCalib);
 #endif
 
 #ifdef WITH_APP_ROBOTARM
@@ -235,27 +260,6 @@ namespace kai
 
 #ifdef WITH_NET
 		ADD_MODULE(_Curl);
-#endif
-
-#ifdef WITH_3D
-#ifdef USE_OPEN3D
-		ADD_MODULE(_GeometryViewer);
-		ADD_MODULE(_MeshStream);
-		ADD_MODULE(_PCstream);
-		ADD_MODULE(_PCframe);
-		ADD_MODULE(_PClattice);
-		ADD_MODULE(_PCfile);
-		ADD_MODULE(_PCmerge);
-		ADD_MODULE(_PCsend);
-		ADD_MODULE(_PCrecv);
-		ADD_MODULE(_PCtransform);
-		ADD_MODULE(_PCcrop);
-		ADD_MODULE(_PCremove);
-		ADD_MODULE(_PCdownSample);
-		ADD_MODULE(_PCregistCol);
-		ADD_MODULE(_PCregistICP);
-		ADD_MODULE(_PCregistGlobal);
-#endif
 #endif
 
 #ifdef WITH_PROTOCOL

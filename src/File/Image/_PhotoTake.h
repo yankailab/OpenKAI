@@ -29,7 +29,8 @@ namespace kai
 		void setPos(const vDouble3& vPos);
 		void setDelay(const uint64_t& tDelay);
 		bool shutter(void);
-		bool startAutoMode(int nTake = 0, int tInterval = 1000);
+		void setInterval(const uint64_t& tInterval);
+		bool startAutoMode(int nTake = 0);
 		void stopAutoMode(void);
 
 	private:

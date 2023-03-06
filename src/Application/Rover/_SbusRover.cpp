@@ -15,7 +15,7 @@ namespace kai
 		m_iElev = 8;
 
 		m_nMode = 0.5;
-		m_vModeR.set(0.75, 1.0);
+		m_vModeR.set(0.4, 0.6);
 		m_nSpd = 0.5;
 		m_nSteer = 0.5;
 		m_nElev = 0.5;
@@ -161,11 +161,11 @@ namespace kai
 		m_dTarget = m_pDV->d(m_vTbb);
 		if (m_dTarget < m_dTargetStop)
 		{
-			m_nSpd = 0.5;
-			m_nSteer = 0.5;
+			// allow steering and backward only
+			m_nSpd = constrain<float>(m_nSpd, 0.0, 0.5);
 		}
 
-		// receiver failsafe
+		// SBus failsafe
 		if(m_pSbus->bFailSafe())
 		{
 			m_nSpd = 0.5;
@@ -242,6 +242,7 @@ namespace kai
 		pC->addMsg("targetX: " + f2str(m_targetX));
 		pC->addMsg("dTarget: " + f2str(m_dTarget));
 		pC->addMsg("nMode: " + f2str(m_nMode));
+		pC->addMsg("vModeR: " + f2str(m_vModeR.x) + " ," + f2str(m_vModeR.y));
 	}
 
 	void _SbusRover::draw(void *pFrame)

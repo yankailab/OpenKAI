@@ -1,4 +1,4 @@
-#include "VzScanUI.h"
+#include "VzScanCalibUI.h"
 
 namespace open3d
 {
@@ -15,14 +15,14 @@ namespace open3d
                 }
             }
 
-            _VzScanUI::_VzScanUI(const string &title, int width, int height)
+            _VzScanCalibUI::_VzScanCalibUI(const string &title, int width, int height)
                 : O3DUI(title, width, height)
             {
             }
 
-            _VzScanUI::~_VzScanUI() {}
+            _VzScanCalibUI::~_VzScanCalibUI() {}
 
-            void _VzScanUI::Init(void)
+            void _VzScanCalibUI::Init(void)
             {
                 this->O3DUI::Init();
 
@@ -35,7 +35,7 @@ namespace open3d
                 Application::GetInstance().SetMenubar(NULL);
             }
 
-            void _VzScanUI::camMove(Vector3f vM)
+            void _VzScanCalibUI::camMove(Vector3f vM)
             {
                 auto pC = m_pScene->GetScene()->GetCamera();
                 auto mm = pC->GetModelMatrix();
@@ -48,7 +48,7 @@ namespace open3d
                 m_pScene->ForceRedraw();
             }
 
-            void _VzScanUI::UpdateUIstate(void)
+            void _VzScanCalibUI::UpdateUIstate(void)
             {
                 m_panelCtrl->SetVisible(m_uiState.m_bShowPanel);
                 UpdateBtnState();
@@ -56,7 +56,7 @@ namespace open3d
                 this->O3DUI::UpdateUIstate();
             }
 
-            void _VzScanUI::UpdateBtnState(void)
+            void _VzScanCalibUI::UpdateBtnState(void)
             {
                 m_btnScanReset->SetEnabled(true);
                 m_btnScanTake->SetEnabled(true);
@@ -83,7 +83,7 @@ namespace open3d
                 m_pScene->ForceRedraw();
             }
 
-            void _VzScanUI::SetMouseCameraMode(void)
+            void _VzScanCalibUI::SetMouseCameraMode(void)
             {
                 if (m_sVertex->IsActive() && m_sVertex->GetNumberOfSets() > 0)
                     m_sVertex->MakeInactive();
@@ -92,39 +92,39 @@ namespace open3d
                 m_uiMode = uiMode_cam;
             }
 
-            void _VzScanUI::SetProgressBar(float v)
+            void _VzScanCalibUI::SetProgressBar(float v)
             {
                 m_progScan->SetValue(v);
                 string s = "Memory used: " + i2str((int)(v * 100)) + "%";
                 m_labelProg->SetText(s.c_str());
             }
 
-            void _VzScanUI::SetCbScanReset(OnCbO3DUI pCb, void *pPCV)
+            void _VzScanCalibUI::SetCbScanReset(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbScanReset.add(pCb, pPCV);
             }
 
-            void _VzScanUI::SetCbScanTake(OnCbO3DUI pCb, void *pPCV)
+            void _VzScanCalibUI::SetCbScanTake(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbScanTake.add(pCb, pPCV);
             }
 
-            void _VzScanUI::SetCbSavePC(OnCbO3DUI pCb, void *pPCV)
+            void _VzScanCalibUI::SetCbSavePC(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbSavePC.add(pCb, pPCV);
             }
 
-            void _VzScanUI::SetCbCamSet(OnCbO3DUI pCb, void *pPCV)
+            void _VzScanCalibUI::SetCbCamSet(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbCamSet.add(pCb, pPCV);
             }
 
-            void _VzScanUI::SetCbCamCtrl(OnCbO3DUI pCb, void *pPCV)
+            void _VzScanCalibUI::SetCbCamCtrl(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbCamCtrl.add(pCb, pPCV);
             }
 
-            void _VzScanUI::Layout(const gui::LayoutContext &context)
+            void _VzScanCalibUI::Layout(const gui::LayoutContext &context)
             {
                 int settings_width = m_uiState.m_wPanel * context.theme.font_size;
 
@@ -142,7 +142,7 @@ namespace open3d
                 gui::Window::Layout(context);
             }
 
-            void _VzScanUI::InitCtrlPanel(void)
+            void _VzScanCalibUI::InitCtrlPanel(void)
             {
                 auto em = GetTheme().font_size;
                 auto half_em = int(round(0.5f * float(em)));
@@ -396,7 +396,7 @@ namespace open3d
                 panelCtrl->AddChild(GiveOwnership(pG));
             }
 
-            void _VzScanUI::UpdateSelectableGeometry(void)
+            void _VzScanCalibUI::UpdateSelectableGeometry(void)
             {
                 vector<SceneWidget::PickableGeometry> pickable;
                 for (auto &o : m_vObject)
@@ -409,7 +409,7 @@ namespace open3d
                 m_sVertex->SetSelectableGeometry(pickable);
             }
 
-            void _VzScanUI::OnSaveRGB(void)
+            void _VzScanCalibUI::OnSaveRGB(void)
             {
                 string fName = getBaseDirSave();
                 if (fName.empty())
@@ -434,7 +434,7 @@ namespace open3d
                 // ShowDialog(dlg);
             }
 
-            void _VzScanUI::OnSavePLY(void)
+            void _VzScanCalibUI::OnSavePLY(void)
             {
                 string fName = getBaseDirSave();
                 if (fName.empty())
@@ -469,7 +469,7 @@ namespace open3d
                 // ShowDialog(dlg);
             }
 
-            void _VzScanUI::OnOpenPLY(void)
+            void _VzScanCalibUI::OnOpenPLY(void)
             {
                 auto dlg = make_shared<gui::FileDialog>(
                     gui::FileDialog::Mode::OPEN, "Save File", this->GetTheme());

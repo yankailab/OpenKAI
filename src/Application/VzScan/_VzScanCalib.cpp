@@ -1,43 +1,41 @@
 /*
- * _VzScan.cpp
+ * _VzScanCalib.cpp
  *
  *  Created on: May 28, 2020
  *      Author: yankai
  */
 
-#include "_VzScan.h"
+#include "_VzScanCalib.h"
 
 namespace kai
 {
-	_VzScan::_VzScan()
+	_VzScanCalib::_VzScanCalib()
 	{
 		m_pNav = NULL;
 		m_pTk = NULL;
 
-		m_nP = 0;
-		m_nPmax = INT_MAX;
-		m_pPCprv = NULL;
+		m_nPC = 0;
 		m_iPprv = 0;
+		m_nPprv = 10000000;
 		m_rVoxel = 0.1;
 		m_fProcess.clearAll();
 
-		m_fNameSavePC = "";
+		m_fNameCalib = "";
 	}
 
-	_VzScan::~_VzScan()
+	_VzScanCalib::~_VzScanCalib()
 	{
 		DEL(m_pTk);
 	}
 
-	bool _VzScan::init(void *pKiss)
+	bool _VzScanCalib::init(void *pKiss)
 	{
 		IF_F(!this->_GeometryViewer::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		m_pPCprv = m_sPC.get();
-
+		pK->v("nPprv", &m_nPprv);
 		pK->v("rVoxel", &m_rVoxel);
-		pK->v("nPmax", &m_nPmax);
+		pK->v("fNameCalib", &m_fNameCalib);
 
 		string n = "";
 		pK->v("_NavBase", &n);
@@ -55,7 +53,7 @@ namespace kai
 		return true;
 	}
 
-	bool _VzScan::start(void)
+	bool _VzScanCalib::start(void)
 	{
 		NULL_F(m_pT);
 		IF_F(!m_pT->start(getUpdate, this));
@@ -69,7 +67,7 @@ namespace kai
 		return true;
 	}
 
-	int _VzScan::check(void)
+	int _VzScanCalib::check(void)
 	{
 		NULL__(m_pNav, -1);
 		NULL__(m_pWin, -1);
@@ -78,7 +76,7 @@ namespace kai
 		return this->_GeometryViewer::check();
 	}
 
-	void _VzScan::update(void)
+	void _VzScanCalib::update(void)
 	{
 		m_pT->sleepT(0);
 
@@ -110,7 +108,7 @@ namespace kai
 		}
 	}
 
-	void _VzScan::scanReset(void)
+	void _VzScanCalib::scanReset(void)
 	{
 		IF_(check() < 0);
 
@@ -118,21 +116,17 @@ namespace kai
 
 		//		m_pNav->reset();
 
-		m_nP = 0;
-		for (int i = 0; i < m_vPC.size(); i++)
-		{
-			PointCloud *pP = &m_vPC[i];
-			pP->Clear();
-		}
-		m_vPC.clear();
+		m_nPC = 0;
+		m_sPC.get()->Clear();
+		m_sPC.next()->Clear();
 
-		// voxel down point cloud for preview
+		// point cloud for preview
 		m_iPprv = 0;
-		m_pPCprv->Clear();
-		addDummyPoints(m_pPCprv, m_nPresv, m_rDummyDome);
+		m_PCprv.Clear();
+		addDummyPoints(&m_PCprv, m_nPprv, m_rDummyDome);
 
 		removeUIpc();
-		addUIpc(*m_pPCprv);
+		addUIpc(m_PCprv);
 		m_fProcess.set(pc_Scanning);
 
 		resetCamPose();
@@ -141,149 +135,113 @@ namespace kai
 		m_pWin->CloseDialog();
 	}
 
-	void _VzScan::scanTake(void)
+	void _VzScanCalib::scanTake(void)
 	{
 		IF_(check() < 0);
 
 		_PCframe *pPsrc = (_PCframe *)m_vpGB[0];
 		PointCloud pc;
 		pPsrc->getPC(&pc);
-		int nPnew = pc.points_.size();
-		IF_(nPnew <= 0);
+		IF_(pc.IsEmpty());
 		int i;
 
 		// Add original
-		m_vPC.push_back(pc);
-		m_nP += pc.points_.size();
-		// TODO: check point number
+		*m_sPC.next() = pc;
+		m_sPC.swap();
+		m_nPC++;
 
-		// for (i = 0; i < nPnew; i++)
-		// {
-		// 	m_pPCorig->points_.push_back(pc.points_[i]);
-		// 	m_pPCorig->colors_.push_back(pc.colors_[i]);
-		// 	m_nPwOrig++;
-		// 	if (m_nPwOrig >= m_nPresvNext)
-		// 		break;
-		// }
+		// Merge for preview
+		m_PCprv = *m_sPC.get();
+		if (m_nPC >= 2)
+			m_PCprv += *m_sPC.next();
 
-		// Add voxel down for preview
-		PointCloud pcVd = *pc.VoxelDownSample(m_rVoxel);
-		int nPvd = pcVd.points_.size();
-		for (i = 0; i < nPvd; i++)
-		{
-			m_pPCprv->points_[m_iPprv] = pcVd.points_[i];
-			m_pPCprv->colors_[m_iPprv] = pcVd.colors_[i];
-			m_iPprv++;
-			if (m_iPprv >= m_nPresv)
-				break;
-		}
-
-		int nDummy = m_nPresv - m_iPprv;
+		int nDummy = m_nPprv - m_iPprv;
 		if (nDummy > 0)
 		{
-			m_pPCprv->points_.erase(m_pPCprv->points_.end() - nDummy,
-									m_pPCprv->points_.end());
-			m_pPCprv->colors_.erase(m_pPCprv->colors_.end() - nDummy,
-									m_pPCprv->colors_.end());
-			addDummyPoints(m_pPCprv, nDummy, m_rDummyDome);
+			addDummyPoints(&m_PCprv, nDummy, m_rDummyDome);
+		}
+		else
+		{
+			m_PCprv.points_.erase(m_PCprv.points_.end() - nDummy,
+								  m_PCprv.points_.end());
+			m_PCprv.colors_.erase(m_PCprv.colors_.end() - nDummy,
+								  m_PCprv.colors_.end());
 		}
 
 		m_aabb = pc.GetAxisAlignedBoundingBox();
 		if (m_pUIstate)
 			m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
 
-		updateUIpc(*m_pPCprv);
-		_VzScanUI *pW = (_VzScanUI *)m_pWin;
-		float rPorig = (float)m_nP / (float)m_nPmax;
-		float rPprv = (float)m_iPprv / (float)m_nPresv;
-		pW->SetProgressBar(max(rPprv, rPorig));
+		updateUIpc(m_PCprv);
+
+		// TODO: calib
 	}
 
-	void _VzScan::updateScan(void)
+	void _VzScanCalib::updateScan(void)
 	{
 		IF_(check() < 0);
 
 		_PCframe *pPsrc = (_PCframe *)m_vpGB[0];
 		PointCloud pc;
 		pPsrc->getPC(&pc);
-
 		int nPnew = pc.points_.size();
 		IF_(nPnew <= 0);
 
 		int iPw = m_iPprv;
 		for (int i = 0; i < nPnew; i++)
 		{
-			m_pPCprv->points_[iPw] = pc.points_[i];
-			m_pPCprv->colors_[iPw] = pc.colors_[i];
+			m_PCprv.points_[iPw] = pc.points_[i];
+			m_PCprv.colors_[iPw] = pc.colors_[i];
 
 			iPw++;
-			if (iPw >= m_nPresv)
+			if (iPw >= m_nPprv)
 				break;
 		}
 
-		int nDummy = m_nPresv - iPw;
+		int nDummy = m_nPprv - iPw;
 		if (nDummy > 0)
 		{
-			m_pPCprv->points_.erase(m_pPCprv->points_.end() - nDummy,
-									m_pPCprv->points_.end());
-			m_pPCprv->colors_.erase(m_pPCprv->colors_.end() - nDummy,
-									m_pPCprv->colors_.end());
-			addDummyPoints(m_pPCprv, nDummy, m_rDummyDome);
+			m_PCprv.points_.erase(m_PCprv.points_.end() - nDummy,
+								  m_PCprv.points_.end());
+			m_PCprv.colors_.erase(m_PCprv.colors_.end() - nDummy,
+								  m_PCprv.colors_.end());
+			addDummyPoints(&m_PCprv, nDummy, m_rDummyDome);
 		}
 
 		m_aabb = pc.GetAxisAlignedBoundingBox();
 		if (m_pUIstate)
 			m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
 
-		updateUIpc(*m_pPCprv);
+		updateUIpc(m_PCprv);
 	}
 
-	void _VzScan::savePC(void)
+	void _VzScanCalib::savePC(void)
 	{
 		IF_(check() < 0);
-		if (m_nP <= 0)
-		{
-			m_pWin->ShowMsg("FILE", "Model is empty", true);
-			return;
-		}
+		// if (m_nP <= 0)
+		// {
+		// 	m_pWin->ShowMsg("FILE", "Model is empty", true);
+		// 	return;
+		// }
 
-		m_pWin->ShowMsg("FILE", "Saving .PLY file");
+		// m_pWin->ShowMsg("FILE", "Saving .PLY file");
 
-		io::WritePointCloudOption par;
-		par.write_ascii = io::WritePointCloudOption::IsAscii::Binary;
-		par.compressed = io::WritePointCloudOption::Compressed::Uncompressed;
 
-		PointCloud pcMerge;
-		int nSave = 0;
-		for (int i = 0; i < m_vPC.size(); i++)
-		{
-			PointCloud* pP = &m_vPC[i];
-			nSave += (io::WritePointCloudToPLY(m_fNameSavePC + i2str(i) + ".ply",
-											 *pP,
-											 par))?1:0;
-
-			pcMerge += *pP;
-		}
-
-		nSave += (io::WritePointCloudToPLY(m_fNameSavePC + "_merged.ply",
-										 pcMerge,
-										 par))?1:0;
-
-		m_pWin->CloseDialog();
-		string msg;
-		if (nSave > m_vPC.size())
-		{
-			msg = "Saved to: " + m_fNameSavePC;
-			m_pWin->ShowMsg("FILE", msg.c_str(), true);
-		}
-		else
-		{
-			msg = "Failed to save: " + m_fNameSavePC;
-			m_pWin->ShowMsg("FILE", msg.c_str(), true);
-		}
+		// m_pWin->CloseDialog();
+		// string msg;
+		// if (nSave > m_vPC.size())
+		// {
+		// 	msg = "Saved to: " + m_fNameCalib;
+		// 	m_pWin->ShowMsg("FILE", msg.c_str(), true);
+		// }
+		// else
+		// {
+		// 	msg = "Failed to save: " + m_fNameCalib;
+		// 	m_pWin->ShowMsg("FILE", msg.c_str(), true);
+		// }
 	}
 
-	void _VzScan::updateCamAuto(void)
+	void _VzScanCalib::updateCamAuto(void)
 	{
 		IF_(check() < 0);
 
@@ -295,7 +253,7 @@ namespace kai
 		updateCamPose();
 	}
 
-	void _VzScan::updateCamCtrl(void)
+	void _VzScanCalib::updateCamCtrl(void)
 	{
 		IF_(check() < 0);
 
@@ -305,7 +263,7 @@ namespace kai
 		pVz->setCamCtrl(m_camCtrl);
 	}
 
-	void _VzScan::updateKinematics(void)
+	void _VzScanCalib::updateKinematics(void)
 	{
 		while (m_pTk->bRun())
 		{
@@ -317,7 +275,7 @@ namespace kai
 		}
 	}
 
-	void _VzScan::updateSlam(void)
+	void _VzScanCalib::updateSlam(void)
 	{
 		IF_(check() < 0);
 		IF_(!m_pNav->bReady())
@@ -331,12 +289,12 @@ namespace kai
 		}
 	}
 
-	void _VzScan::updateUI(void)
+	void _VzScanCalib::updateUI(void)
 	{
 		auto &app = gui::Application::GetInstance();
 		app.Initialize(m_pathRes.c_str());
 
-		m_pWin = new _VzScanUI(*this->getName(), 2000, 1000);
+		m_pWin = new _VzScanCalibUI(*this->getName(), 2000, 1000);
 		m_pUIstate = m_pWin->getUIState();
 		m_pUIstate->m_bSceneCache = m_bSceneCache;
 		m_pUIstate->m_mouseMode = (visualization::gui::SceneWidget::Controls)m_mouseMode;
@@ -346,8 +304,8 @@ namespace kai
 		m_pUIstate->m_btnPaddingV = m_vBtnPadding.y;
 		m_pUIstate->m_dirSave = m_dirSave;
 		m_pWin->Init();
-		_VzScanUI *pW = (_VzScanUI *)m_pWin;
-		app.AddWindow(shared_ptr<_VzScanUI>(pW));
+		_VzScanCalibUI *pW = (_VzScanCalibUI *)m_pWin;
+		app.AddWindow(shared_ptr<_VzScanCalibUI>(pW));
 
 		pW->SetCbScanReset(OnScanReset, (void *)this);
 		pW->SetCbScanTake(OnScanTake, (void *)this);
@@ -367,36 +325,36 @@ namespace kai
 		exit(0);
 	}
 
-	void _VzScan::OnScanReset(void *pPCV, void *pD)
+	void _VzScanCalib::OnScanReset(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
-		_VzScan *pV = (_VzScan *)pPCV;
+		_VzScanCalib *pV = (_VzScanCalib *)pPCV;
 
 		pV->m_fProcess.set(pc_ScanReset);
 	}
 
-	void _VzScan::OnScanTake(void *pPCV, void *pD)
+	void _VzScanCalib::OnScanTake(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
-		_VzScan *pV = (_VzScan *)pPCV;
+		_VzScanCalib *pV = (_VzScanCalib *)pPCV;
 
 		pV->m_fProcess.set(pc_ScanTake);
 	}
 
-	void _VzScan::OnSavePC(void *pPCV, void *pD)
+	void _VzScanCalib::OnSavePC(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
-		_VzScan *pV = (_VzScan *)pPCV;
+		_VzScanCalib *pV = (_VzScanCalib *)pPCV;
 
-		pV->m_fNameSavePC = *(string *)pD;
+		pV->m_fNameCalib = *(string *)pD;
 		pV->m_fProcess.set(pc_SavePC);
 	}
 
-	void _VzScan::OnOpenPC(void *pPCV, void *pD)
+	void _VzScanCalib::OnOpenPC(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		NULL_(pD);
-		_VzScan *pV = (_VzScan *)pPCV;
+		_VzScanCalib *pV = (_VzScanCalib *)pPCV;
 
 		if (io::ReadPointCloud((const char *)pD, *pV->m_sPC.next()))
 			pV->updatePC();
@@ -404,11 +362,11 @@ namespace kai
 		pV->m_fProcess.set(pc_ResetPC);
 	}
 
-	void _VzScan::OnCamSet(void *pPCV, void *pD)
+	void _VzScanCalib::OnCamSet(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		NULL_(pD);
-		_VzScan *pV = (_VzScan *)pPCV;
+		_VzScanCalib *pV = (_VzScanCalib *)pPCV;
 		int camMode = *(int *)pD;
 
 		if (camMode == 0) // auto off
@@ -430,11 +388,11 @@ namespace kai
 		}
 	}
 
-	void _VzScan::OnCamCtrl(void *pPCV, void *pD)
+	void _VzScanCalib::OnCamCtrl(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		NULL_(pD);
-		_VzScan *pV = (_VzScan *)pPCV;
+		_VzScanCalib *pV = (_VzScanCalib *)pPCV;
 
 		pV->m_camCtrl = *(VzCamCtrl *)pD;
 		pV->m_fProcess.set(pc_CamCtrl);

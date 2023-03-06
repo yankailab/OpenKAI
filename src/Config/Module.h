@@ -16,6 +16,25 @@
 #include "../IPC/_SharedMem.h"
 #include "../UI/_Console.h"
 
+#ifdef WITH_3D && USE_OPEN3D
+#include "../3D/_GeometryViewer.h"
+#include "../3D/Mesh/_MeshStream.h"
+#include "../3D/PointCloud/_PCstream.h"
+#include "../3D/PointCloud/_PCframe.h"
+#include "../3D/PointCloud/_PClattice.h"
+#include "../3D/PointCloud/_PCfile.h"
+#include "../3D/PointCloud/_PCmerge.h"
+#include "../3D/PointCloud/_PCsend.h"
+#include "../3D/PointCloud/_PCrecv.h"
+#include "../3D/PointCloud/PCfilter/_PCtransform.h"
+#include "../3D/PointCloud/PCfilter/_PCcrop.h"
+#include "../3D/PointCloud/PCfilter/_PCremove.h"
+#include "../3D/PointCloud/PCfilter/_PCdownSample.h"
+#include "../3D/PointCloud/PCregistration/_PCregistCol.h"
+#include "../3D/PointCloud/PCregistration/_PCregistICP.h"
+#include "../3D/PointCloud/PCregistration/_PCregistGlobal.h"
+#endif
+
 #ifdef WITH_ACTUATOR
 #include "../Actuator/_ArduServo.h"
 #include "../Actuator/_ActuatorSync.h"
@@ -88,15 +107,21 @@
 #include "../Application/Measurement/_RaspiWSbattery.h"
 #endif
 
-#ifdef WITH_APP_3DSCAN && USE_OPEN3D
+#ifdef WITH_APP_3DSCAN && WITH_3D && USE_OPEN3D
 #include "../Application/3Dscan/_3DScanCalibCam.h"
 #include "../Application/3Dscan/_3DScanCalibOfs.h"
 #include "../Application/3Dscan/_PCscan.h"
 #include "../Application/3Dscan/_PCcalib.h"
 #endif
 
-#ifdef WITH_APP_3DSCAN && USE_VZENSE
+#ifdef WITH_APP_VZSCAN && USE_VZENSE && WITH_3D && USE_OPEN3D
 #include "../Application/VzScan/_VzScan.h"
+#include "../Application/VzScan/_VzScanCalib.h"
+#endif
+
+#ifdef WITH_APP_LIVOXSCAN && USE_LIVOX && WITH_3D && USE_OPEN3D
+#include "../Application/LivoxScan/_LivoxScan.h"
+#include "../Application/LivoxScan/_LivoxScanCalib.h"
 #endif
 
 #ifdef WITH_APP_ROBOTARM
@@ -224,27 +249,6 @@
 
 #ifdef WITH_NET
 #include "../Net/_Curl.h"
-#endif
-
-#ifdef WITH_3D
-#ifdef USE_OPEN3D
-#include "../3D/_GeometryViewer.h"
-#include "../3D/Mesh/_MeshStream.h"
-#include "../3D/PointCloud/_PCstream.h"
-#include "../3D/PointCloud/_PCframe.h"
-#include "../3D/PointCloud/_PClattice.h"
-#include "../3D/PointCloud/_PCfile.h"
-#include "../3D/PointCloud/_PCmerge.h"
-#include "../3D/PointCloud/_PCsend.h"
-#include "../3D/PointCloud/_PCrecv.h"
-#include "../3D/PointCloud/PCfilter/_PCtransform.h"
-#include "../3D/PointCloud/PCfilter/_PCcrop.h"
-#include "../3D/PointCloud/PCfilter/_PCremove.h"
-#include "../3D/PointCloud/PCfilter/_PCdownSample.h"
-#include "../3D/PointCloud/PCregistration/_PCregistCol.h"
-#include "../3D/PointCloud/PCregistration/_PCregistICP.h"
-#include "../3D/PointCloud/PCregistration/_PCregistGlobal.h"
-#endif
 #endif
 
 #ifdef WITH_PROTOCOL

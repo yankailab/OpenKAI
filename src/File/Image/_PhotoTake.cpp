@@ -10,8 +10,10 @@ namespace kai
 		m_bfProcess.clearAll();
 
 		m_iTake = 0;
+		m_nTake = 0;
 		m_tDelay = 0;
 		m_bAuto = false;
+		m_ieShutter.init(USEC_1SEC);
 
 		m_dir = "/home/";
 		m_subDir = "";
@@ -34,6 +36,11 @@ namespace kai
 		pK->v("bAuto", &m_bAuto);
 		pK->v("dir", &m_dir);
 		pK->v("subDir", &m_subDir);
+		pK->v("nTake", &m_nTake);
+
+		int tInt = USEC_1SEC;
+		pK->v("tInterval", &tInt);
+		m_ieShutter.init(tInt);
 
 		if (m_subDir.empty())
 			m_subDir = m_dir + tFormat() + "/";
@@ -120,10 +127,14 @@ namespace kai
 		return true;
 	}
 
-	bool _PhotoTake::startAutoMode(int nTake, int tInterval)
+	void _PhotoTake::setInterval(const uint64_t &tInterval)
+	{
+		m_ieShutter.init(tInterval);
+	}
+
+	bool _PhotoTake::startAutoMode(int nTake)
 	{
 		m_nTake = nTake;
-		m_ieShutter.init(tInterval);
 		m_bAuto = true;
 		return true;
 	}
@@ -139,6 +150,16 @@ namespace kai
 
 		if (m_tDelay > 0)
 			m_pT->sleepT(m_tDelay);
+
+		if(m_nTake > 0)
+		{
+			if(m_iTake >= m_nTake)
+			{
+				m_iTake = 0;
+				m_bAuto = false;
+				return false;
+			}
+		}
 
 		string lat = lf2str(m_vPos.x, 7);
 		string lon = lf2str(m_vPos.y, 7);

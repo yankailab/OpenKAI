@@ -14,7 +14,7 @@ namespace kai
 	{
 		m_flag.clearAll();
 		m_vAxisIdx.set(0, 1, 2);
-		m_vRoffset.init();
+		m_vRoffset.clear();
 		resetAll();
 	}
 
@@ -57,10 +57,10 @@ namespace kai
 	void _NavBase::resetAll(void)
 	{
 		m_flag.clear(F_READY);
-		m_vT.init();
-		m_vV.init();
-		m_vR.init();
-		m_vQ.init();
+		m_vT.clear();
+		m_vV.clear();
+		m_vR.clear();
+		m_vQ.clear();
 		m_mT = Matrix4f::Identity();
 		m_confidence = 0.0;
 	}

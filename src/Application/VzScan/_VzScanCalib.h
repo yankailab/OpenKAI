@@ -1,26 +1,26 @@
 /*
- * _VzScan.h
+ * _VzScanCalib.h
  *
  *  Created on: May 28, 2020
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Application_VzScan__VzScan_H_
-#define OpenKAI_src_Application_VzScan__VzScan_H_
+#ifndef OpenKAI_src_Application_VzScanCalib__VzScanCalib_H_
+#define OpenKAI_src_Application_VzScanCalib__VzScanCalib_H_
 
 #include "../../3D/PointCloud/_PCstream.h"
 #include "../../3D/_GeometryViewer.h"
 #include "../../Navigation/_NavBase.h"
 #include "../../Utility/BitFlag.h"
-#include "VzScanUI.h"
+#include "VzScanCalibUI.h"
 
 namespace kai
 {
-	class _VzScan : public _GeometryViewer
+	class _VzScanCalib : public _GeometryViewer
 	{
 	public:
-		_VzScan();
-		virtual ~_VzScan();
+		_VzScanCalib();
+		virtual ~_VzScanCalib();
 
 		virtual bool init(void *pKiss);
 		virtual bool start(void);
@@ -38,7 +38,7 @@ namespace kai
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_VzScan *)This)->update();
+			((_VzScanCalib *)This)->update();
 			return NULL;
 		}
 
@@ -47,7 +47,7 @@ namespace kai
 		virtual void updateKinematics(void);
 		static void *getUpdateKinematics(void *This)
 		{
-			((_VzScan *)This)->updateKinematics();
+			((_VzScanCalib *)This)->updateKinematics();
 			return NULL;
 		}
 
@@ -55,7 +55,7 @@ namespace kai
 		virtual void updateUI(void);
 		static void *getUpdateUI(void *This)
 		{
-			((_VzScan *)This)->updateUI();
+			((_VzScanCalib *)This)->updateUI();
 			return NULL;
 		}
 
@@ -71,13 +71,12 @@ namespace kai
 		_NavBase *m_pNav;
 		_Thread *m_pTk;
 
-		vector<PointCloud> m_vPC;	// original point cloud data frames
-		int m_nP;
-		int m_nPmax;
-		PointCloud* m_pPCprv;
+		int m_nPC;
+		PointCloud m_PCprv;
 		int m_iPprv;
+		int m_nPprv;
 		float m_rVoxel;
-		string m_fNameSavePC;
+		string m_fNameCalib;
 
 		VzCamCtrl m_camCtrl;
 		BIT_FLAG m_fProcess;

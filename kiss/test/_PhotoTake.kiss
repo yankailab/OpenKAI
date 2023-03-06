@@ -1,0 +1,76 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"RCrover",
+	"bStdErr":1,
+	"bLog":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["photoTake"],
+}
+
+{
+	"name":"view",
+	"class":"_WindowCV",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["cam"],
+}
+
+{
+	"name":"cam",
+	"class":"_RealSense",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadPP",
+		"FPS":30,
+	}
+	"bON":1,
+	"bLog":1,
+	"vPreset":"Max Range",
+	"bRsRGB":1,
+	"vSize":[1920,1080],
+	"rsFPS":30,
+	"rsDFPS":30,
+	"vDsize":[640,480],
+	"fDec":0,
+	"fSpat":0,
+	"bAlign":0,
+	"bDepthShow":0,
+	"bDebug":1,
+	"vRange":[0.1,5.0],
+	"minHistD":0.25,
+}
+
+{
+	"name":"photoTake",
+	"class":"_PhotoTake",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"bLog":1,
+	"_VisionBase":"cam",
+	"bAuto":1,
+	"dir":"/home/kai/Documents/",
+	"subDir":"photoTake/",
+	"bClearDir":1,
+	"nTake":0,
+	"tInterval":2000000,
+}
+

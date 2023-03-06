@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"RCrover",
-	"bStdErr":0,
+	"bStdErr":1,
 	"bLog":1,
 }
 
@@ -14,13 +14,13 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["/rs","/sSBus","sbus","SbusRover","/drive","/motLF"],
+	"vBASE":["/rs","/sSBus","sbus","SbusRover","photoTake","/drive","/motLF"],
 }
 
 {
 	"name":"viewRGB",
 	"class":"_WindowCV",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -40,9 +40,9 @@
 }
 
 {
-	"name":"FB",
+	"name":"gst",
 	"class":"_GstOutput",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -50,7 +50,7 @@
 	"vBASE":["rs","SSD","/univ"],
 	"/gstOutput":"appsrc ! v4l2convert ! fbdevsink",
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.201 port=5678 auto-multicast=false",
-	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.10.3 port=5678 auto-multicast=false",
 	"vSize":[1280,720],
 }
 
@@ -126,9 +126,9 @@
 	"bLog":0,
 	"_VisionBase":"rs",
 	"_Universe":"univ",
-	"fModel":"/home/kai/dev/models/SSDmobileNet/ssd_mobilenet_v2_coco_2018_03_29.pbtxt.txt",
-	"fWeight":"/home/kai/dev/models/SSDmobileNet/frozen_inference_graph.pb",
-	"fClass":"/home/kai/dev/models/SSDmobileNet/object_detection_classes_coco.txt",
+	"fModel":"/home/lab/dev/models/SSDmobileNet/ssd_mobilenet_v2_coco_2018_03_29.pbtxt.txt",
+	"fWeight":"/home/lab/dev/models/SSDmobileNet/frozen_inference_graph.pb",
+	"fClass":"/home/lab/dev/models/SSDmobileNet/object_detection_classes_coco.txt",
 	"vBlobSize":[300,300],
 	"bSwapRB":1,
 	"scale":1.0,
@@ -138,18 +138,21 @@
 }
 
 {
-	"name":"PhotoTake",
+	"name":"photoTake",
 	"class":"_PhotoTake",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
 	}
 	"bLog":1,
-	"_VisionBase":"rs",
-	"bAuto":0,
-	"dir":"/home/kai/Documents",
-	"subDir":"photoTake",
+	"_VisionBase":"cam",
+	"bAuto":1,
+	"dir":"/home/lab/Documents/",
+	"subDir":"photo/",
+	"bClearDir":1,
+	"nTake":0,
+	"tInterval":2000000,
 }
 
 {
@@ -330,7 +333,7 @@
 	}
 	"bLog":1,
 	"_Modbus":"modbus",
-	"iSlave":1,
+	"iSlave":5,
 
 	{
 		"name":"axis",
@@ -358,7 +361,7 @@
 	}
 	"bLog":1,
 	"_Modbus":"modbus",
-	"iSlave":2,
+	"iSlave":4,
 
 	{
 		"name":"axis",
@@ -386,7 +389,7 @@
 	}
 	"bLog":1,
 	"_Modbus":"modbus",
-	"iSlave":3,
+	"iSlave":2,
 
 	{
 		"name":"axis",
@@ -414,7 +417,7 @@
 	}
 	"bLog":1,
 	"_Modbus":"modbus",
-	"iSlave":4,
+	"iSlave":3,
 
 	{
 		"name":"axis",
