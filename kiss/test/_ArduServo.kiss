@@ -2,28 +2,30 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
-	"bDraw":0,
 	"bLog":1,
-	"b_Console":0,
 	"bStdErr":1,
-	"waitKey":30,
 }
 
 {
-	"name":"OKview",
-	"class":"Window",
+	"name":"OKconsole",
+	"class":"_Console",
 	"bON":0,
-	"bFullScreen":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["cam"],
 }
 
 {
 	"name":"arduIO",
 	"class":"_SerialPort",
-	"bON":0,
-	"FPS":30,
+	"bON":1,
 	"bLog":0,
-	"Window":"OKview",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"bStream":1,
 	"port":"/dev/ttyUSB0",
 	"baud":115200,
@@ -33,10 +35,12 @@
 {
 	"name":"arduIO",
 	"class":"_UDP",
-	"bON":1,
-	"FPS":30,
+	"bON":0,
 	"bLog":1,
-	"Window":"OKview",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"addr":"192.168.1.100",
 	"port":8888,
 	"_wakeUp":"arduServo",
@@ -46,9 +50,11 @@
 	"name":"arduServo",
 	"class":"_ArduServo",
 	"bON":1,
-	"FPS":30,
 	"bLog":1,
-	"Window":"OKview",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"_IOBase":"arduIO",
 	
 	"vNormTargetPos":[1.0],

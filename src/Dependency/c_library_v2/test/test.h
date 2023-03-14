@@ -10,8 +10,7 @@
     #error Wrong include order: MAVLINK_TEST.H MUST NOT BE DIRECTLY USED. Include mavlink.h from the same directory instead or set ALL AND EVERY defines from MAVLINK.H manually accordingly, including the #define MAVLINK_H call.
 #endif
 
-#undef MAVLINK_THIS_XML_HASH
-#define MAVLINK_THIS_XML_HASH 252491498142999243
+#define MAVLINK_TEST_XML_HASH -1240416095011831185
 
 #ifdef __cplusplus
 extern "C" {
@@ -52,10 +51,8 @@ extern "C" {
 // base include
 
 
-#undef MAVLINK_THIS_XML_HASH
-#define MAVLINK_THIS_XML_HASH 252491498142999243
 
-#if MAVLINK_THIS_XML_HASH == MAVLINK_PRIMARY_XML_HASH
+#if MAVLINK_TEST_XML_HASH == MAVLINK_PRIMARY_XML_HASH
 # define MAVLINK_MESSAGE_INFO {MAVLINK_MESSAGE_INFO_TEST_TYPES}
 # define MAVLINK_MESSAGE_NAMES {{ "TEST_TYPES", 17000 }}
 # if MAVLINK_COMMAND_24BIT

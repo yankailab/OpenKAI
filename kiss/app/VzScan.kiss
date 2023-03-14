@@ -59,7 +59,7 @@
 	"vDmove":[0.5, 5.0],
 	"rDummyDome":1000.0,
 	"dHiddenRemove":100.0,
-	"dirSave":"/media/kai/",
+	"dirSave":"/home/kai/Documents/VzScan/",
 	"/dirSave":"/media/lab/",
 	"rVoxel":0.05,
 }
@@ -67,7 +67,7 @@
 {
 	"name":"VzensePC",
 	"class":"_VzensePC",
-	"bON":0,
+	"bON":1,
 	"bLog":1,
     {
 		"name":"thread",
@@ -108,7 +108,7 @@
 {
 	"name":"pcFile",
 	"class":"_PCfile",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,

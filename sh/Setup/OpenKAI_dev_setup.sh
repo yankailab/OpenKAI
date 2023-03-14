@@ -435,7 +435,9 @@ git clone --depth 1 https://github.com/Vzense/NebulaSDK.git
 #----------------------------------------------------
 # (Optional) Livox
 git clone --depth 1 https://github.com/yankailab/Livox-SDK.git
-cd Livox-SDK/build
+cd Livox-SDK
+mkdir build
+cd build
 cmake -DCMAKE_BUILD_TYPE=Release ../
 make -j$(nproc)
 sudo make install

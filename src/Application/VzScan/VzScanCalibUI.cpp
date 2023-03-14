@@ -422,16 +422,6 @@ namespace open3d
                 this->ExportCurrentImage(fName.c_str());
                 ShowMsg("File Save", "Saved image to USB memory", true);
 
-                // auto dlg = make_shared<gui::FileDialog>(
-                //     gui::FileDialog::Mode::SAVE, "Save File", this->GetTheme());
-                // dlg->AddFilter(".png", "PNG images (.png)");
-                // dlg->AddFilter("", "All files");
-                // dlg->SetOnCancel([this]() { this->CloseDialog(); });
-                // dlg->SetOnDone([this](const char *path) {
-                //     this->CloseDialog();
-                //     this->ExportCurrentImage(path);
-                // });
-                // ShowDialog(dlg);
             }
 
             void _VzScanCalibUI::OnSavePLY(void)
@@ -449,24 +439,6 @@ namespace open3d
 //                string plyName = fName + ".ply";
                 m_cbSavePC.call(&fName);
 
-                // auto dlg = make_shared<gui::FileDialog>(
-                //     gui::FileDialog::Mode::SAVE, "Save File", this->GetTheme());
-                // dlg->AddFilter(".ply", "Point Cloud Files (.ply)");
-                // dlg->AddFilter("", "All files");
-                // dlg->SetOnCancel([this]() { this->CloseDialog(); });
-                // dlg->SetOnDone([this](const char *path) {
-                //     this->CloseDialog();
-
-                //     ShowMsg("Save", "Saving .Ply file");
-                //     io::WritePointCloudOption par;
-                //     par.write_ascii = io::WritePointCloudOption::IsAscii::Binary;
-                //     par.compressed = io::WritePointCloudOption::Compressed::Uncompressed;
-
-                //     shared_ptr<t::geometry::PointCloud> spTpc = GetGeometry(m_modelName).m_sTgeometry;
-                //     io::WritePointCloudToPLY(path, spTpc->ToLegacyPointCloud(), par);
-                //     CloseMsg();
-                // });
-                // ShowDialog(dlg);
             }
 
             void _VzScanCalibUI::OnOpenPLY(void)

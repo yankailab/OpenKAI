@@ -40,7 +40,7 @@
 	"nPresv":1000000,
 	"nPresvNext":0,
 	"_NavBase":"T265",
-	"vGeometryBase":["/pcRegistCol","/VzensePC","pcFile"],
+	"vGeometryBase":["/pcRegistCol","VzensePC","/pcFile"],
 	"vCamLookAt":[0,0,0],
 	"vCamEye":[0,0,2],
 	"vCamUp":[0,1,0],
@@ -58,7 +58,7 @@
 	"vDmove":[0.5, 5.0],
 	"rDummyDome":1000.0,
 	"dHiddenRemove":100.0,
-	"dirSave":"/media/kai/",
+	"dirSave":"/home/kai/Documents/VzScan/",
 	"/dirSave":"/media/lab/",
 	"rVoxel":0.05,
 }
@@ -66,7 +66,7 @@
 {
 	"name":"VzensePC",
 	"class":"_VzensePC",
-	"bON":0,
+	"bON":1,
 	"bLog":1,
     {
 		"name":"thread",

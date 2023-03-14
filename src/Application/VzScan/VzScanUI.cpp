@@ -27,6 +27,7 @@ namespace open3d
                 this->O3DUI::Init();
 
                 m_bCamAuto = false;
+                m_pointSize = 2;
                 m_sVertex = make_shared<O3DVisualizerSelections>(*m_pScene);
                 InitCtrlPanel();
                 UpdateUIstate();
@@ -276,90 +277,192 @@ namespace open3d
                 panelCtrl->SetIsOpen(true);
                 m_panelCtrl->AddChild(GiveOwnership(panelCtrl));
 
-                auto sldPointSize = new Slider(Slider::INT);
-                sldPointSize->SetLimits(1, 10);
-                sldPointSize->SetValue(m_uiState.m_sPoint);
-                sldPointSize->SetOnValueChanged([this](const double v)
-                                                { SetPointSize(int(v)); });
+                pG = new VGrid(3, v_spacing);
+                Button *pBtn;
 
-                auto sldMinRange = new Slider(Slider::DOUBLE);
-                sldMinRange->SetLimits(0, 20);
-                sldMinRange->SetValue(m_camCtrl.m_vRz.x);
-                sldMinRange->SetOnValueChanged([this](const double v)
-                                                {
-                                                    m_camCtrl.m_vRz.x;
-                                                    m_cbCamCtrl.call(&m_camCtrl); });
+                m_pLbPointSize = new Label("Point Size: ");
+                pG->AddChild(GiveOwnership(m_pLbPointSize));
+                pBtn = new Button("+");
+                pBtn->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                pBtn->SetOnClicked([this]()
+                                   {
+                                        m_pointSize = constrain(m_pointSize+1, 1, 10);
+                                        SetPointSize(m_pointSize);
+                                        m_pLbPointSize->SetText(string("Point Size: " + i2str(m_pointSize)).c_str());
+                                        m_pScene->ForceRedraw(); });
+                pG->AddChild(GiveOwnership(pBtn));
+                pBtn = new Button("-");
+                pBtn->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                pBtn->SetOnClicked([this]()
+                                   {
+                                        m_pointSize = constrain(m_pointSize-1, 1, 10);
+                                        SetPointSize(m_pointSize);
+                                        m_pLbPointSize->SetText(string("Point Size: " + i2str(m_pointSize)).c_str());
+                                        m_pScene->ForceRedraw(); });
+                pG->AddChild(GiveOwnership(pBtn));
 
-                auto sldMaxRange = new Slider(Slider::DOUBLE);
-                sldMaxRange->SetLimits(0, 20);
-                sldMaxRange->SetValue(m_camCtrl.m_vRz.y);
-                sldMaxRange->SetOnValueChanged([this](const double v)
-                                                {
-                                                    m_camCtrl.m_vRz.y;
-                                                    m_cbCamCtrl.call(&m_camCtrl); });
+                m_pLbMinD = new Label("Min distance: ");
+                pG->AddChild(GiveOwnership(m_pLbMinD));
+                pBtn = new Button("+");
+                pBtn->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                pBtn->SetOnClicked([this]()
+                                   {
+                                        m_camCtrl.m_vRz.x = constrain<float>(m_camCtrl.m_vRz.x + 0.1, 1, m_camCtrl.m_vRz.y);
+                                        m_cbCamCtrl.call(&m_camCtrl);
+                                        m_pLbMinD->SetText(string("Min distance: " + f2str(m_camCtrl.m_vRz.x)).c_str());
+                                        m_pScene->ForceRedraw(); });
+                pG->AddChild(GiveOwnership(pBtn));
+                pBtn = new Button("-");
+                pBtn->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                pBtn->SetOnClicked([this]()
+                                   {
+                                        m_camCtrl.m_vRz.x = constrain<float>(m_camCtrl.m_vRz.x - 0.1, 1, 10);
+                                        m_cbCamCtrl.call(&m_camCtrl);
+                                        m_pLbMinD->SetText(string("Min distance: " + f2str(m_camCtrl.m_vRz.x)).c_str());
+                                        m_pScene->ForceRedraw(); });
+                pG->AddChild(GiveOwnership(pBtn));
 
-                auto sldTexposureToF = new Slider(Slider::INT);
-                sldTexposureToF->SetLimits(0, 4);
-                sldTexposureToF->SetValue(m_camCtrl.m_tExposureToF);
-                sldTexposureToF->SetOnValueChanged([this](const double v)
-                                                {
-                                                    m_camCtrl.m_tExposureToF = v * 1000;
-                                                    m_camCtrl.m_bAutoExposureToF = (m_camCtrl.m_tExposureToF>0)?false:true;
-                                                    m_cbCamCtrl.call(&m_camCtrl); });
+                m_pLbMaxD = new Label("Max distance: ");
+                pG->AddChild(GiveOwnership(m_pLbMaxD));
+                pBtn = new Button("+");
+                pBtn->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                pBtn->SetOnClicked([this]()
+                                   {
+                                        m_camCtrl.m_vRz.y = constrain<float>(m_camCtrl.m_vRz.y + 0.1, 0.0, 10);
+                                        m_cbCamCtrl.call(&m_camCtrl);
+                                        m_pLbMaxD->SetText(string("Min distance: " + f2str(m_camCtrl.m_vRz.y)).c_str());
+                                        m_pScene->ForceRedraw(); });
+                pG->AddChild(GiveOwnership(pBtn));
+                pBtn = new Button("-");
+                pBtn->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                pBtn->SetOnClicked([this]()
+                                   {
+                                        m_camCtrl.m_vRz.y = constrain<float>(m_camCtrl.m_vRz.y - 0.1, m_camCtrl.m_vRz.x, 10);
+                                        m_cbCamCtrl.call(&m_camCtrl);
+                                        m_pLbMaxD->SetText(string("Min distance: " + f2str(m_camCtrl.m_vRz.y)).c_str());
+                                        m_pScene->ForceRedraw(); });
+                pG->AddChild(GiveOwnership(pBtn));
 
-                auto sldTexposureRGB = new Slider(Slider::INT);
-                sldTexposureRGB->SetLimits(0, 4);
-                sldTexposureRGB->SetValue(m_camCtrl.m_tExposureRGB);
-                sldTexposureRGB->SetOnValueChanged([this](const double v)
-                                                {
-                                                    m_camCtrl.m_tExposureRGB = v * 1000;
-                                                    m_camCtrl.m_bAutoExposureRGB = (m_camCtrl.m_tExposureRGB>0)?false:true;
-                                                    m_cbCamCtrl.call(&m_camCtrl); });
+                m_pLbToFexp = new Label("ToF exposure: ");
+                pG->AddChild(GiveOwnership(m_pLbToFexp));
+                pBtn = new Button("+");
+                pBtn->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                pBtn->SetOnClicked([this]()
+                                   {
+                                        m_camCtrl.m_tExposureToF = constrain<int>(m_camCtrl.m_tExposureToF += 1000, 0, 4000);
+                                        m_camCtrl.m_bAutoExposureToF = (m_camCtrl.m_tExposureToF>0)?false:true;
+                                        m_cbCamCtrl.call(&m_camCtrl);
+                                        m_pLbToFexp->SetText(string("ToF exposure: " + i2str(m_camCtrl.m_tExposureToF)).c_str());
+                                        m_pScene->ForceRedraw(); });
+                pG->AddChild(GiveOwnership(pBtn));
+                pBtn = new Button("-");
+                pBtn->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                pBtn->SetOnClicked([this]()
+                                   {
+                                        m_camCtrl.m_tExposureToF = constrain<int>(m_camCtrl.m_tExposureToF -= 1000, 0, 4000);
+                                        m_camCtrl.m_bAutoExposureToF = (m_camCtrl.m_tExposureToF>0)?false:true;
+                                        m_cbCamCtrl.call(&m_camCtrl);
+                                        m_pLbToFexp->SetText(string("ToF exposure: " + i2str(m_camCtrl.m_tExposureToF)).c_str());
+                                        m_pScene->ForceRedraw(); });
+                pG->AddChild(GiveOwnership(pBtn));
 
-                auto sldFilTime = new Slider(Slider::INT);
-                sldFilTime->SetLimits(0, 3);
-                sldFilTime->SetValue(m_camCtrl.m_filTime);
-                sldFilTime->SetOnValueChanged([this](const double v)
-                                              {
-                                                    m_camCtrl.m_filTime = v;
-                                                    m_camCtrl.m_bFilTime = (m_camCtrl.m_filTime>0)?true:false;
-                                                    m_cbCamCtrl.call(&m_camCtrl); });
 
-                auto sldFilConfidence = new Slider(Slider::INT);
-                sldFilConfidence->SetLimits(0, 100);
-                sldFilConfidence->SetValue(m_camCtrl.m_filTime);
-                sldFilConfidence->SetOnValueChanged([this](const double v)
-                                                    {
-                                                    m_camCtrl.m_filConfidence = v;
-                                                    m_camCtrl.m_bFilConfidence = (m_camCtrl.m_filConfidence>0)?true:false;
-                                                    m_cbCamCtrl.call(&m_camCtrl); });
+                m_pLbRGBexp = new Label("RGB exposure: ");
+                pG->AddChild(GiveOwnership(m_pLbRGBexp));
+                pBtn = new Button("+");
+                pBtn->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                pBtn->SetOnClicked([this]()
+                                   {
+                                        m_camCtrl.m_tExposureRGB = constrain<int>(m_camCtrl.m_tExposureRGB += 1000, 0, 4000);
+                                        m_camCtrl.m_bAutoExposureRGB = (m_camCtrl.m_tExposureRGB>0)?false:true;
+                                        m_cbCamCtrl.call(&m_camCtrl);
+                                        m_pLbRGBexp->SetText(string("RGB exposure: " + i2str(m_camCtrl.m_tExposureRGB)).c_str());
+                                        m_pScene->ForceRedraw(); });
+                pG->AddChild(GiveOwnership(pBtn));
+                pBtn = new Button("-");
+                pBtn->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                pBtn->SetOnClicked([this]()
+                                   {
+                                        m_camCtrl.m_tExposureRGB = constrain<int>(m_camCtrl.m_tExposureRGB -= 1000, 0, 4000);
+                                        m_camCtrl.m_bAutoExposureRGB = (m_camCtrl.m_tExposureRGB>0)?false:true;
+                                        m_cbCamCtrl.call(&m_camCtrl);
+                                        m_pLbRGBexp->SetText(string("RGB exposure: " + i2str(m_camCtrl.m_tExposureRGB)).c_str());
+                                        m_pScene->ForceRedraw(); });
+                pG->AddChild(GiveOwnership(pBtn));
 
-                auto sldFilFlyingPix = new Slider(Slider::INT);
-                sldFilFlyingPix->SetLimits(0, 49);
-                sldFilFlyingPix->SetValue(m_camCtrl.m_filTime);
-                sldFilFlyingPix->SetOnValueChanged([this](const double v)
-                                                   {
-                                                    m_camCtrl.m_filFlyingPix = v;
-                                                    m_camCtrl.m_bFilFlyingPix = (m_camCtrl.m_filFlyingPix>0)?true:false;
-                                                    m_cbCamCtrl.call(&m_camCtrl); });
 
-                pG = new VGrid(2, v_spacing);
-                pG->AddChild(make_shared<Label>("PointSize"));
-                pG->AddChild(GiveOwnership(sldPointSize));
-                pG->AddChild(make_shared<Label>("Min distance"));
-                pG->AddChild(GiveOwnership(sldMinRange));
-                pG->AddChild(make_shared<Label>("Max distance"));
-                pG->AddChild(GiveOwnership(sldMaxRange));
-                pG->AddChild(make_shared<Label>("ToF exposure"));
-                pG->AddChild(GiveOwnership(sldTexposureToF));
-                pG->AddChild(make_shared<Label>("RGBexposure"));
-                pG->AddChild(GiveOwnership(sldTexposureRGB));
-                pG->AddChild(make_shared<Label>("Time filter"));
-                pG->AddChild(GiveOwnership(sldFilTime));
-                pG->AddChild(make_shared<Label>("Confidence filter"));
-                pG->AddChild(GiveOwnership(sldFilConfidence));
-                pG->AddChild(make_shared<Label>("Flying pixel filter"));
-                pG->AddChild(GiveOwnership(sldFilFlyingPix));
+                m_pLbTfilter = new Label("Time filter: ");
+                pG->AddChild(GiveOwnership(m_pLbTfilter));
+                pBtn = new Button("+");
+                pBtn->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                pBtn->SetOnClicked([this]()
+                                   {
+                                        m_camCtrl.m_filTime = constrain<int>(m_camCtrl.m_filTime += 1, 0, 3);
+                                        m_camCtrl.m_bFilTime = (m_camCtrl.m_filTime>0)?false:true;
+                                        m_cbCamCtrl.call(&m_camCtrl);
+                                        m_pLbTfilter->SetText(string("Time filter: " + i2str(m_camCtrl.m_filTime)).c_str());
+                                        m_pScene->ForceRedraw(); });
+                pG->AddChild(GiveOwnership(pBtn));
+                pBtn = new Button("-");
+                pBtn->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                pBtn->SetOnClicked([this]()
+                                   {
+                                        m_camCtrl.m_filTime = constrain<int>(m_camCtrl.m_filTime -= 1, 0, 3);
+                                        m_camCtrl.m_bFilTime = (m_camCtrl.m_filTime>0)?false:true;
+                                        m_cbCamCtrl.call(&m_camCtrl);
+                                        m_pLbTfilter->SetText(string("Time filter: " + i2str(m_camCtrl.m_filTime)).c_str());
+                                        m_pScene->ForceRedraw(); });
+                pG->AddChild(GiveOwnership(pBtn));
+
+
+                m_pLbCfilter = new Label("Confidence filter: ");
+                pG->AddChild(GiveOwnership(m_pLbCfilter));
+                pBtn = new Button("+");
+                pBtn->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                pBtn->SetOnClicked([this]()
+                                   {
+                                        m_camCtrl.m_filConfidence = constrain<int>(m_camCtrl.m_filConfidence += 1, 0, 100);
+                                        m_camCtrl.m_bFilConfidence = (m_camCtrl.m_filConfidence>0)?false:true;
+                                        m_cbCamCtrl.call(&m_camCtrl);
+                                        m_pLbCfilter->SetText(string("Confidence filter: " + i2str(m_camCtrl.m_filConfidence)).c_str());
+                                        m_pScene->ForceRedraw(); });
+                pG->AddChild(GiveOwnership(pBtn));
+                pBtn = new Button("-");
+                pBtn->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                pBtn->SetOnClicked([this]()
+                                   {
+                                        m_camCtrl.m_filConfidence = constrain<int>(m_camCtrl.m_filConfidence -= 1, 0, 100);
+                                        m_camCtrl.m_bFilConfidence = (m_camCtrl.m_filConfidence>0)?false:true;
+                                        m_cbCamCtrl.call(&m_camCtrl);
+                                        m_pLbCfilter->SetText(string("Confidence filter: " + i2str(m_camCtrl.m_filConfidence)).c_str());
+                                        m_pScene->ForceRedraw(); });
+                pG->AddChild(GiveOwnership(pBtn));
+
+
+                m_pLbFpFilter = new Label("Flying pixel filter: ");
+                pG->AddChild(GiveOwnership(m_pLbFpFilter));
+                pBtn = new Button("+");
+                pBtn->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                pBtn->SetOnClicked([this]()
+                                   {
+                                        m_camCtrl.m_filFlyingPix = constrain<int>(m_camCtrl.m_filFlyingPix += 1, 0, 49);
+                                        m_camCtrl.m_bFilFlyingPix = (m_camCtrl.m_filFlyingPix>0)?false:true;
+                                        m_cbCamCtrl.call(&m_camCtrl);
+                                        m_pLbFpFilter->SetText(string("Flying pixel filter: " + i2str(m_camCtrl.m_filFlyingPix)).c_str());
+                                        m_pScene->ForceRedraw(); });
+                pG->AddChild(GiveOwnership(pBtn));
+                pBtn = new Button("-");
+                pBtn->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
+                pBtn->SetOnClicked([this]()
+                                   {
+                                        m_camCtrl.m_filFlyingPix = constrain<int>(m_camCtrl.m_filFlyingPix -= 1, 0, 49);
+                                        m_camCtrl.m_bFilFlyingPix = (m_camCtrl.m_filFlyingPix>0)?false:true;
+                                        m_cbCamCtrl.call(&m_camCtrl);
+                                        m_pLbFpFilter->SetText(string("Flying pixel filter: " + i2str(m_camCtrl.m_filFlyingPix)).c_str());
+                                        m_pScene->ForceRedraw(); });
+                pG->AddChild(GiveOwnership(pBtn));
+
+
                 panelCtrl->AddChild(GiveOwnership(pG));
 
                 m_btnFillHole = new Button("Fill hole");
@@ -446,7 +549,7 @@ namespace open3d
                 fName += tFormat();
                 string imgName = fName + ".png";
                 this->ExportCurrentImage(imgName.c_str());
-//                string plyName = fName + ".ply";
+                //                string plyName = fName + ".ply";
                 m_cbSavePC.call(&fName);
 
                 // auto dlg = make_shared<gui::FileDialog>(

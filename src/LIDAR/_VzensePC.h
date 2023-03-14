@@ -36,7 +36,7 @@ namespace kai
 		bool m_bSpatialFilter = false;
 		bool m_bHDR = false;
 
-		vFloat2 m_vRz = {0.0, FLT_MAX};		 // z region
+		vFloat2 m_vRz = {0.0, 10.0};		 // z region
 	};
 
 	class _VzensePC : public _PCframe

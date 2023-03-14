@@ -45,6 +45,7 @@ namespace open3d
 				UImode m_uiMode = uiMode_cam;
 				bool m_bCamAuto;
 				VzCamCtrl m_camCtrl;
+				int m_pointSize;
 
 				//UI components
 				Vert *m_panelCtrl;
@@ -64,6 +65,16 @@ namespace open3d
 				Button *m_btnScanTake;
 				ProgressBar *m_progScan;
 				Label *m_labelProg;
+
+
+				Label *m_pLbPointSize;
+				Label *m_pLbMinD;
+				Label *m_pLbMaxD;
+				Label *m_pLbToFexp;
+				Label *m_pLbRGBexp;
+				Label *m_pLbTfilter;
+				Label *m_pLbCfilter;
+				Label *m_pLbFpFilter;
 
 				Button* m_btnFillHole;
 				Button* m_btnFilSpatial;

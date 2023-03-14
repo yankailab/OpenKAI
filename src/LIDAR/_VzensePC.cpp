@@ -234,11 +234,11 @@ namespace kai
 				int k = i * m_vzfDepth.width + j;
 
 				VzVector3f *pV = &m_pVzVw[k];
-				IF_CONT(pV->z < m_camCtrl.m_vRz.x);
-				IF_CONT(pV->z > m_camCtrl.m_vRz.y);
-
 				Eigen::Vector3d vP(pV->x, pV->y, pV->z);
 				vP *= s_b;
+				IF_CONT(vP.z() < m_camCtrl.m_vRz.x);
+				IF_CONT(vP.z() > m_camCtrl.m_vRz.y);
+
 				Eigen::Vector3d vPik = Vector3d(
 					vP[m_vAxisIdx.x] * m_vAxisK.x,
 					vP[m_vAxisIdx.y] * m_vAxisK.y,
