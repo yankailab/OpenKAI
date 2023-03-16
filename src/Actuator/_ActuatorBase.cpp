@@ -135,27 +135,63 @@ namespace kai
 		pthread_mutex_unlock(&m_mutex);
 	}
 
-	void _ActuatorBase::setPtarget(int i, float p)
+	void _ActuatorBase::setPtarget(int i, float p, bool bNormalized)
 	{
 		IF_(i < 0);
 		IF_(i >= m_vAxis.size());
 
 		ACTUATOR_AXIS *pA = &m_vAxis[i];
-		pA->m_p.setTarget(p);
+		if (!bNormalized)
+			pA->m_p.setTarget(p);
+		else
+			pA->m_p.setNormalizedTarget(p);
 
 		m_lastCmdType = actCmd_pos;
 		m_tLastCmd = m_pT->getTfrom();
 	}
 
-	void _ActuatorBase::setStarget(int i, float s)
+	void _ActuatorBase::setStarget(int i, float s, bool bNormalized)
 	{
 		IF_(i < 0);
 		IF_(i >= m_vAxis.size());
 
 		ACTUATOR_AXIS *pA = &m_vAxis[i];
-		pA->m_s.setTarget(s);
+		if (!bNormalized)
+			pA->m_s.setTarget(s);
+		else
+			pA->m_p.setNormalizedTarget(s);
 
 		m_lastCmdType = actCmd_spd;
+		m_tLastCmd = m_pT->getTfrom();
+	}
+
+	void _ActuatorBase::setAtarget(int i, float a, bool bNormalized)
+	{
+		IF_(i < 0);
+		IF_(i >= m_vAxis.size());
+
+		ACTUATOR_AXIS *pA = &m_vAxis[i];
+		if (!bNormalized)
+			pA->m_a.setTarget(a);
+		else
+			pA->m_p.setNormalizedTarget(a);
+
+		m_lastCmdType = actCmd_accel;
+		m_tLastCmd = m_pT->getTfrom();
+	}
+
+	void _ActuatorBase::setBtarget(int i, float b, bool bNormalized)
+	{
+		IF_(i < 0);
+		IF_(i >= m_vAxis.size());
+
+		ACTUATOR_AXIS *pA = &m_vAxis[i];
+		if (!bNormalized)
+			pA->m_b.setTarget(b);
+		else
+			pA->m_p.setNormalizedTarget(b);
+
+		m_lastCmdType = actCmd_brake;
 		m_tLastCmd = m_pT->getTfrom();
 	}
 

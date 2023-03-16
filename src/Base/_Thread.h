@@ -61,7 +61,7 @@ protected:
     bool m_bWakeUp;
 
 	// linked
-    vector<_Thread*> m_vTwakeup;
+    vector<_Thread*> m_vTwakeUp;
 };
 
 }

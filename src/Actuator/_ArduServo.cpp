@@ -18,21 +18,6 @@ namespace kai
 		IF_F(!this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		ARDUSERVO_CHAN c;
-		int i = 0;
-		while (1)
-		{
-			Kiss *pC = pK->child(i++);
-			if (pC->empty())
-				break;
-
-			c.init();
-			pC->v("pwmL", &c.m_pwmL);
-			pC->v("pwmH", &c.m_pwmH);
-			pC->v("dir", &c.m_dir);
-			m_vServo.push_back(c);
-		}
-
 		string n;
 		n = "";
 		F_ERROR_F(pK->v("_IOBase", &n));
@@ -66,6 +51,11 @@ namespace kai
 
 			m_pT->autoFPSfrom();
 
+
+			this->setPtarget(0, 0.5, true);
+			this->setPtarget(1, 0.5, true);
+			
+
 			updatePWM();
 
 			while (readCMD())
@@ -78,6 +68,38 @@ namespace kai
 		}
 	}
 
+	void _ArduServo::updatePWM(void)
+	{
+		NULL_(m_pIO);
+		IF_(!m_pIO->isOpen());
+
+		int i;
+		uint16_t pChan[16];
+		int nC = m_vAxis.size();
+		for (i = 0; i < nC; i++)
+		{
+			ACTUATOR_AXIS *pA = &m_vAxis[i];
+			pChan[i] = 1500;
+			if (pA->m_p.bInRange(pA->m_p.m_vTarget))
+				pChan[i] = pA->m_p.m_vTarget;
+
+			pA->m_p.m_v = pA->m_p.m_vTarget;
+		}
+
+		m_pB[0] = ARDUSV_BEGIN;
+		m_pB[1] = ARDU_CMD_PWM;
+		m_pB[2] = nC * 2;
+		int j = 3;
+		for (int i = 0; i < nC; i++)
+		{
+			uint16_t v = pChan[i];
+			m_pB[j++] = ((uint8_t)(v & 0xFF));
+			m_pB[j++] = ((uint8_t)((v >> 8) & 0xFF));
+		}
+
+		m_pIO->write(m_pB, ARDUSV_N_HEADER + nC * 2);
+	}
+
 	bool _ArduServo::readCMD(void)
 	{
 		uint8_t inByte;
@@ -87,22 +109,22 @@ namespace kai
 		{
 			if (m_recvMsg.m_cmd != 0)
 			{
-				m_recvMsg.m_pBuf[m_recvMsg.m_iByte] = inByte;
+				m_recvMsg.m_pB[m_recvMsg.m_iByte] = inByte;
 				m_recvMsg.m_iByte++;
 
 				if (m_recvMsg.m_iByte == 3)
 				{
 					m_recvMsg.m_nPayload = inByte;
 				}
-				else if (m_recvMsg.m_iByte == m_recvMsg.m_nPayload + OKLINK_N_HEADER)
+				else if (m_recvMsg.m_iByte == m_recvMsg.m_nPayload + ARDUSV_N_HEADER)
 				{
 					return true;
 				}
 			}
-			else if (inByte == OKLINK_BEGIN)
+			else if (inByte == ARDUSV_BEGIN)
 			{
 				m_recvMsg.m_cmd = inByte;
-				m_recvMsg.m_pBuf[0] = inByte;
+				m_recvMsg.m_pB[0] = inByte;
 				m_recvMsg.m_iByte = 1;
 				m_recvMsg.m_nPayload = 0;
 			}
@@ -116,11 +138,11 @@ namespace kai
 		uint16_t pwm1;
 		uint16_t pwm2;
 
-		switch (m_recvMsg.m_pBuf[1])
+		switch (m_recvMsg.m_pB[1])
 		{
 		case ARDU_CMD_STATUS:
-			pwm1 = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[3], false);
-			pwm2 = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[5], false);
+			pwm1 = (uint16_t)unpack_int16(&m_recvMsg.m_pB[3], false);
+			pwm2 = (uint16_t)unpack_int16(&m_recvMsg.m_pB[5], false);
 
 			LOG_I("pwm1=" + i2str(pwm1) + ", pwm2=" + i2str(pwm2));
 			break;
@@ -129,40 +151,6 @@ namespace kai
 		}
 
 		m_recvMsg.init();
-	}
-
-	void _ArduServo::updatePWM(void)
-	{
-		NULL_(m_pIO);
-		IF_(!m_pIO->isOpen());
-
-		ACTUATOR_AXIS *pA = &m_vAxis[0];
-		IF_(pA->m_p.m_vTarget < 0.0);
-
-		int nChan = m_vServo.size();
-		uint16_t pChan[8];
-		int i;
-		for (i = 0; i < nChan; i++)
-		{
-			ARDUSERVO_CHAN *pC = &m_vServo[i];
-			uint16_t dPwm = pC->m_pwmH - pC->m_pwmL;
-
-			pChan[i] = (pA->m_p.m_vTarget * pC->m_dir + 0.5 * (1 - pC->m_dir)) * dPwm + pC->m_pwmL;
-		}
-
-		m_pBuf[0] = OKLINK_BEGIN;
-		m_pBuf[1] = ARDU_CMD_PWM;
-		m_pBuf[2] = nChan * 2;
-
-		for (int i = 0; i < nChan; i++)
-		{
-			m_pBuf[OKLINK_N_HEADER + i * 2] = (uint8_t)(pChan[i] & 0xFF);
-			m_pBuf[OKLINK_N_HEADER + i * 2 + 1] = (uint8_t)((pChan[i] >> 8) & 0xFF);
-		}
-
-		m_pIO->write(m_pBuf, OKLINK_N_HEADER + nChan * 2);
-
-		pA->m_p.m_v = pA->m_p.m_vTarget;
 	}
 
 	void _ArduServo::console(void *pConsole)

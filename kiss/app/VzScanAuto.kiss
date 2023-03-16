@@ -1,0 +1,109 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"VzScan",
+	"bLog":1,
+	"bStdErr":1,
+	"/rc":"umount /dev/mmcblk0p1",
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["VzScan"],
+}
+
+{
+	"name":"VzScan",
+	"class":"_VzScanAuto",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+    {
+		"name":"threadK",
+		"FPS":200,
+	}
+    {
+		"name":"threadUI",
+		"FPS":30,
+	}
+	"vWinSize":[1920,1080],
+	"pathRes":"/usr/local/bin/Open3D/resources",
+	"device":"CPU:0",
+	"nPmax":1000000000,
+	"nPresv":1000000,
+	"nPresvNext":0,
+	"_NavBase":"T265",
+	"vGeometryBase":["VzensePC","/pcFile"],
+	"vCamLookAt":[0,0,0],
+	"vCamEye":[0,0,2],
+	"vCamUp":[0,1,0],
+	"vCamAutoLookAt":[0,0,0],
+	"vCamAutoEye":[0,0,2],
+	"vCamAutoUp":[0,1,0],
+	"vCoR":[0,0,0],
+	"camFov":75,
+	"vCamNF":[0, 500],
+	"camFovType":1,
+	"bFullScreen":0,
+	"wPanel":20,
+	"vBtnPadding":[1.6, 2.0],
+	"mouseMode":0,
+	"vDmove":[0.5, 5.0],
+	"rDummyDome":1000.0,
+	"dHiddenRemove":100.0,
+	"dirSave":"/home/kai/Documents/VzScan/",
+	"/dirSave":"/media/lab/",
+	"rVoxel":0.05,
+}
+
+{
+	"name":"VzensePC",
+	"class":"_VzensePC",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":25,
+	}
+	"URI":"",
+	"vSize":[800,600],
+	"btRGB":1,
+	"btDepth":0,
+	"vAxisIdx":[0, 1, 2],
+	"vAxisK":[1, -1, -1],
+	"fCalib":"/home/kai/dev/VzScan/calibOfs.kiss",
+	"nPresv":400000,
+	"tWait":60,
+	"vRange":[0.0, 1000],
+}
+
+{
+	"name":"pcFile",
+	"class":"_PCfile",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"fName":"/home/kai/Documents/test_data/fragment.pcd",
+	"nPreserve":480000,
+}
+
+{
+	"name":"T265",
+	"class":"_RStracking",
+    {
+		"name":"thread",
+		"FPS":200,
+	}
+	"bON":1,
+	"bLog":1,
+}

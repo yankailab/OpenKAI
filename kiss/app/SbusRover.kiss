@@ -51,7 +51,7 @@
 	}
     {
 		"name":"threadR",
-		"vTwakeup":["sbus.threadR"],
+		"vTwakeUp":["sbus.threadR"],
 	}
 	"/port":"/dev/ttyACM0",
 	"port":"/dev/ttyAMA0",

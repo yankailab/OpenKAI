@@ -116,6 +116,7 @@
 
 #ifdef WITH_APP_VZSCAN && USE_VZENSE && WITH_3D && USE_OPEN3D
 #include "../Application/VzScan/_VzScan.h"
+#include "../Application/VzScan/_VzScanAuto.h"
 #include "../Application/VzScan/_VzScanCalib.h"
 #endif
 

@@ -36,14 +36,23 @@ namespace kai
 		}
 		pKt->m_pInst = m_pTr;
 
+		return true;
+	}
+
+    bool _ProtocolBase::link(void)
+    {
+        IF_F(!this->_ModuleBase::link());
+        IF_F(!m_pTr->link());
+
+		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 		n = "";
 		F_ERROR_F(pK->v("_IOBase", &n));
 		m_pIO = (_IOBase *)(pK->getInst(n));
 		NULL_Fl(m_pIO, n + ": not found");
 
-		return true;
-	}
+        return true;
+    }
 
 	bool _ProtocolBase::start(void)
 	{

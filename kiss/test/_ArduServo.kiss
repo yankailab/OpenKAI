@@ -7,14 +7,14 @@
 }
 
 {
-	"name":"OKconsole",
+	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["cam"],
+	"vBASE":["arduIO","PWMio","arduServo"],
 }
 
 {
@@ -26,10 +26,14 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"bStream":1,
-	"port":"/dev/ttyUSB0",
+    {
+		"name":"threadR",
+		"FPS":30,
+		"/vTwakeUp":["arduServo.threadR"],
+	}
+	"/port":"/dev/ttyUSB0",
+	"port":"/dev/ttyACM0",
 	"baud":115200,
-	"_wakeUp":"arduServo",
 }
 
 {
@@ -47,26 +51,49 @@
 }
 
 {
+	"name":"PWMio",
+	"class":"_PWMio",
+	"bON":0,
+	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"_IOBase":"arduIO",
+	"nCr":5,
+	"nCw":2,
+	"vPWM":[1500,1500],
+}
+
+{
 	"name":"arduServo",
 	"class":"_ArduServo",
 	"bON":1,
-	"bLog":1,
+	"bLog":0,
     {
 		"name":"thread",
 		"FPS":30,
 	}
 	"_IOBase":"arduIO",
-	
-	"vNormTargetPos":[1.0],
-	
 	{
-		"pwmL":1600,
-		"pwmH":2200,
-		"dir":-1,
-	}
-	{
-		"pwmL":800,
-		"pwmH":1500,
-		"dir":1,
+		"name":"axis",
+		{
+			"name":"H",
+			"pOrigin":1500.0,
+			"pTarget":500.0,
+			"pRange":[500,2500],
+			"pErr":1,
+		}
+		{
+			"name":"V",
+			"pOrigin":1500.0,
+			"pTarget":500.0,
+			"pRange":[500,2500],
+			"pErr":1,
+		}
 	}
 }

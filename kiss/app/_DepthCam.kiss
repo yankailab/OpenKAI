@@ -132,7 +132,7 @@
     {
 		"name":"threadR",
 		"FPS":1,
-		"/vTwakeup":["DC.threadR"],
+		"/vTwakeUp":["DC.threadR"],
 	}
 	"port":20000,
 	"nFIFO":128000,

@@ -35,7 +35,7 @@ namespace kai
 		pK->v("hardwareControl", &m_hardwareControl);
 
 		Kiss *pKt = pK->child("threadR");
-		IF_F(pKt->empty());
+		IF_d_F(pKt->empty(), LOG_E("threadR not found"));
 
 		m_pTr = new _Thread();
 		if (!m_pTr->init(pKt))
@@ -47,6 +47,13 @@ namespace kai
 
 		return true;
 	}
+
+    bool _SerialPort::link(void)
+    {
+        IF_F(!this->_IOBase::link());
+
+        return true;
+    }
 
 	bool _SerialPort::open(void)
 	{

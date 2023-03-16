@@ -57,13 +57,13 @@ namespace kai
         IF_F(!this->BASE::link());
 
         Kiss *pK = (Kiss *)m_pKiss;
-		vector<string> vWakeup;
-		pK->a("vTwakeup", &vWakeup);
-		for (string s : vWakeup)
+		vector<string> vWakeUp;
+		pK->a("vTwakeUp", &vWakeUp);
+		for (string s : vWakeUp)
 		{
 			_Thread *pT = (_Thread *)(pK->getInst(s));
-            NULL_d_F(pT, LOG_E("instance not found: " + s));
-			m_vTwakeup.push_back(pT);
+            NULL_d_F(pT, LOG_E("Instance not found: " + s));
+			m_vTwakeUp.push_back(pT);
 		}
 
         return true;
@@ -146,7 +146,7 @@ namespace kai
 
 	void _Thread::wakeUpAll(void)
 	{
-		for(_Thread* pT : m_vTwakeup)
+		for(_Thread* pT : m_vTwakeUp)
 			pT->wakeUp();
 	}
 

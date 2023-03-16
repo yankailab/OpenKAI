@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Application_VzScan_VzScanUI_H_
-#define OpenKAI_src_Application_Vzscan_VzScanUI_H_
+#ifndef OpenKAI_src_Application_VzScan_VzScanAutoUI_H_
+#define OpenKAI_src_Application_Vzscan_VzScanAutoUI_H_
 
 #include "../../LIDAR/_VzensePC.h"
 #include "../../UI/O3DUI.h"
@@ -10,11 +10,20 @@ namespace open3d
 	{
 		namespace visualizer
 		{
-			class _VzScanUI : public O3DUI
+			struct VzScanSet
+			{
+				vFloat2 m_vSvRangeH = {0.0, 1.0};
+				vFloat2 m_vSvRangeV = {0.0, 1.0};
+
+				int m_nH = 10;
+				int m_nV = 10;
+			};
+
+			class _VzScanAutoUI : public O3DUI
 			{
 			public:
-				_VzScanUI(const string &title, int width, int height);
-				virtual ~_VzScanUI();
+				_VzScanAutoUI(const string &title, int width, int height);
+				virtual ~_VzScanAutoUI();
 
 				// overloaded
 				virtual void Init(void);
@@ -24,8 +33,12 @@ namespace open3d
 				void SetMouseCameraMode(void);
 				void SetProgressBar(float v);
 				void SetLabelArea(const string &s);
+
 				void SetCbScanReset(OnCbO3DUI pCb, void *pPCV);
-				void SetCbScanTake(OnCbO3DUI pCb, void *pPCV);
+				void SetCbScanSet(OnCbO3DUI pCb, void *pPCV);
+				void SetCbScanStart(OnCbO3DUI pCb, void *pPCV);
+				void SetCbScanStop(OnCbO3DUI pCb, void *pPCV);
+
 				void SetCbSavePC(OnCbO3DUI pCb, void *pPCV);
 				void SetCbCamSet(OnCbO3DUI pCb, void *pPCV);
 				void SetCbCamCtrl(OnCbO3DUI pCb, void *pPCV);
@@ -35,21 +48,19 @@ namespace open3d
 
 				void InitCtrlPanel(void);
 				void UpdateBtnState(void);
-				void UpdateSelectableGeometry(void);
-				void OnSaveRGB(void);
 				void OnSavePLY(void);
-				void OnOpenPLY(void);
 
 			private:
-				shared_ptr<O3DVisualizerSelections> m_sVertex;
 				UImode m_uiMode = uiMode_cam;
 				bool m_bCamAuto;
 				VzCamCtrl m_camCtrl;
 				int m_pointSize;
 
+				VzScanSet m_scanSet;
+				bool m_bScanning;
+
 				// UI components
 				Vert *m_panelCtrl;
-				Button *m_pBtnSavePC;
 
 				Button *m_pBtnCamAuto;
 				Button *m_pBtnCamAll;
@@ -61,10 +72,19 @@ namespace open3d
 				Button *m_pBtnCamU;
 				Button *m_pBtnCamD;
 
+				Button *m_pBtnSavePC;
 				Button *m_pBtnScanReset;
-				Button *m_pBtnScanTake;
+				Button *m_pBtnScanStart;
 				ProgressBar *m_progScan;
 				Label *m_labelProg;
+
+				Button *m_pBtnAutoScan;
+				Button *m_pBtnNH;
+				Button *m_pBtnAHL;
+				Button *m_pBtnAHR;
+				Button *m_pBtnNV;
+				Button *m_pBtnAVT;
+				Button *m_pBtnAVB;
 
 				Button *m_pBtnPointSize;
 				Button *m_pBtnMinD;
@@ -81,7 +101,10 @@ namespace open3d
 
 				// UI handler
 				O3D_UI_Cb m_cbScanReset;
-				O3D_UI_Cb m_cbScanTake;
+				O3D_UI_Cb m_cbScanSet;
+				O3D_UI_Cb m_cbScanStart;
+				O3D_UI_Cb m_cbScanStop;
+
 				O3D_UI_Cb m_cbSavePC;
 				O3D_UI_Cb m_cbCamSet;
 				O3D_UI_Cb m_cbCamCtrl;

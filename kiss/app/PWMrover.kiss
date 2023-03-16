@@ -166,7 +166,7 @@
 	}
     {
 		"name":"threadR",
-		"vTwakeup":["PWMio.threadR"],
+		"vTwakeUp":["PWMio.threadR"],
 	}
 	"port":"/dev/ttyACM0",
 	"/port":"/dev/ttyTHS1",

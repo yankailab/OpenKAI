@@ -26,13 +26,13 @@ namespace kai
         Kiss *pK = (Kiss *)pKiss;
 
         Kiss *pKt = pK->child("thread");
-        IF_d_T(pKt->empty(), LOG_E("thread not found"));
+        IF_d_T(pKt->empty(), LOG_E("Thread not found"));
 
         m_pT = new _Thread();
         if (!m_pT->init(pKt))
         {
             DEL(m_pT);
-            LOG_E("thread init failed");
+            LOG_E("Thread init failed");
             return false;
         }
 

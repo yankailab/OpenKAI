@@ -16,11 +16,12 @@ namespace kai
     enum PC_THREAD_ACTION
 	{
 		pc_ScanReset,
+		pc_ScanSet,
+		pc_ScanStart,
+		pc_ScanStop,
 		pc_ScanTake,
 		pc_SavePC,
 		pc_Scanning,
-		pc_ScanStart,
-		pc_ScanStop,
 		pc_VoxelDown,
 		pc_HiddenRemove,
 		pc_ResetPC,

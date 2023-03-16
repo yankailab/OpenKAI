@@ -223,16 +223,6 @@ namespace kai
 		Kiss *pK = find(name);
 		NULL_N(pK);
 		return pK->m_pInst;
-
-		// vector<string> vName = splitBy(name, '.');
-		// IF_N(vName.empty());
-
-		// Kiss *pK = root();
-		// for (string n : vName)
-		// 	pK = pK->child(n);
-
-		// IF_N(pK->empty());
-		// return pK->m_pInst;
 	}
 
 	bool Kiss::empty(void)

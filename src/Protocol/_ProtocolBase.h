@@ -48,6 +48,7 @@ namespace kai
 		~_ProtocolBase();
 
 		virtual bool init(void *pKiss);
+		virtual bool link(void);
 		virtual bool start(void);
 		virtual int check(void);
 		virtual void console(void *pConsole);

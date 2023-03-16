@@ -37,7 +37,7 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 9 --slave /us
 sudo update-alternatives --config gcc
 
 # Image, codecs, gstreamer
-sudo apt-get install libunwind-dev
+sudo apt-get -y install libunwind-dev
 sudo apt-get -y install gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-alsa gstreamer1.0-gl libv4l-dev v4l-utils libjpeg-dev libpng-dev libtiff-dev libavcodec-dev libavformat-dev libxvidcore-dev x264
 
 # OpenGL
@@ -365,7 +365,8 @@ sudo make install
 #----------------------------------------------------
 # (Optional) Open3D
 sudo apt-get install libjsoncpp-dev
-git clone --branch v0.16.1 --depth 1 --recursive https://github.com/intel-isl/Open3D
+#git clone --branch v0.16.1 --depth 1 --recursive https://github.com/intel-isl/Open3D
+git clone --branch GuiWinSetFullScr --depth 1 --recursive https://github.com/yankailab/Open3D
 cd Open3D
 git submodule update --init --recursive
 # run this again if met error in re-compile

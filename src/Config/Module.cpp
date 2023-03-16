@@ -126,6 +126,7 @@ namespace kai
 
 #ifdef WITH_APP_VZSCAN && USE_VZENSE && WITH_3D && USE_OPEN3D
 		ADD_MODULE(_VzScan);
+		ADD_MODULE(_VzScanAuto);
 		ADD_MODULE(_VzScanCalib);
 #endif
 
