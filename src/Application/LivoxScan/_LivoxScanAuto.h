@@ -1,23 +1,23 @@
 /*
- * _VzScanAuto.h
+ * _LivoxScanAuto.h
  *
  *  Created on: May 28, 2020
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Application_VzScanAuto__VzScanAuto_H_
-#define OpenKAI_src_Application_VzScanAuto__VzScanAuto_H_
+#ifndef OpenKAI_src_Application_LivoxScan__LivoxScanAuto_H_
+#define OpenKAI_src_Application_LivoxScan__LivoxScanAuto_H_
 
 #include "../../3D/PointCloud/_PCstream.h"
 #include "../../3D/_GeometryViewer.h"
 #include "../../Navigation/_NavBase.h"
 #include "../../Utility/BitFlag.h"
 #include "../../Actuator/_ActuatorBase.h"
-#include "VzScanAutoUI.h"
+#include "LivoxScanAutoUI.h"
 
 namespace kai
 {
-	struct VZSCAN_ACTUATOR
+	struct LIVOXSCAN_ACTUATOR
 	{
 		float m_vTarget = 0.5;
 		float m_v = 0.5;
@@ -54,11 +54,11 @@ namespace kai
 		}
 	};
 
-	class _VzScanAuto : public _GeometryViewer
+	class _LivoxScanAuto : public _GeometryViewer
 	{
 	public:
-		_VzScanAuto();
-		virtual ~_VzScanAuto();
+		_LivoxScanAuto();
+		virtual ~_LivoxScanAuto();
 
 		virtual bool init(void *pKiss);
 		virtual bool link(void);
@@ -82,7 +82,7 @@ namespace kai
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_VzScanAuto *)This)->update();
+			((_LivoxScanAuto *)This)->update();
 			return NULL;
 		}
 
@@ -91,7 +91,7 @@ namespace kai
 		virtual void updateKinematics(void);
 		static void *getUpdateKinematics(void *This)
 		{
-			((_VzScanAuto *)This)->updateKinematics();
+			((_LivoxScanAuto *)This)->updateKinematics();
 			return NULL;
 		}
 
@@ -99,7 +99,7 @@ namespace kai
 		virtual void updateUI(void);
 		static void *getUpdateUI(void *This)
 		{
-			((_VzScanAuto *)This)->updateUI();
+			((_LivoxScanAuto *)This)->updateUI();
 			return NULL;
 		}
 
@@ -137,9 +137,9 @@ namespace kai
 		float m_npV;
 		float m_ndV;
 		_ActuatorBase* m_pAct;
-		VZSCAN_ACTUATOR m_actH;
-		VZSCAN_ACTUATOR m_actV;
-		VzScanSet m_scanSet;
+		LIVOXSCAN_ACTUATOR m_actH;
+		LIVOXSCAN_ACTUATOR m_actV;
+		LivoxScanSet m_scanSet;
 	};
 
 }

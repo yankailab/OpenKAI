@@ -123,29 +123,40 @@
 	"rDummyDome":1000.0,
 	"dHiddenRemove":100.0,
 	"rVoxel":0.05,
-	"baseDir":"/home/kai/Documents/VzScan/",
+	"baseDir":"/home/kai/Documents/LivoxScan/",
 	"/baseDir":"/home/lab/Documents/",
 }
 
 {
-	"name":"VzensePC",
-	"class":"_VzensePC",
-	"bON":1,
+	"name":"LivoxLidar",
+	"class":"LivoxLidar",
+	"bON":0,
 	"bLog":1,
+	"/vBroadcastCode":["3JEDHC900100791"],
+	"vBroadcastCode":["3JEDHC900100791"],
+	"bEnableFan":1,
+	"returnMode":1,
+	"coordinate":0,
+	"imuRate":1,
+	"scanPattern":0,
+}
+
+{
+	"name":"Livox",
+	"class":"_Livox",
+	"bON":0,
     {
 		"name":"thread",
-		"FPS":25,
+		"FPS":30,
 	}
-	"URI":"",
-	"vSize":[800,600],
-	"btRGB":1,
-	"btDepth":0,
-	"vAxisIdx":[0, 1, 2],
-	"vAxisK":[1, -1, -1],
-	"fCalib":"/home/kai/dev/VzScan/calibOfs.kiss",
-	"nPresv":400000,
-	"tWait":60,
-	"vRange":[0.0, 1000],
+	"bLog":1,
+	"LivoxLidar":"LivoxLidar",
+	"/broadcastCode":"3JEDHC900100791",
+	"broadcastCode":"3JEDHC900100791",
+	"nP":256000,
+	"vToffset":[0,0,0],
+	"vRoffset":[0,0,0],
+	"bTransform":1,
 }
 
 {

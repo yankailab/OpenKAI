@@ -506,7 +506,10 @@ sudo sh -c "echo '#!/bin/sh\n/home/lab/ok.sh\nexit 0\n' >> /etc/rc.local"
 set -H
 sudo chmod a+x /etc/rc.local
 
-
+# GDB
+gdb --args executablename arg1 arg2 arg3
+run
+bt
 
 
 #----------------------------------------------------

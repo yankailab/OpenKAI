@@ -1,15 +1,15 @@
 /*
- * _VzScanAuto.cpp
+ * _LivoxScanAuto.cpp
  *
  *  Created on: May 28, 2020
  *      Author: yankai
  */
 
-#include "_VzScanAuto.h"
+#include "_LivoxScanAuto.h"
 
 namespace kai
 {
-	_VzScanAuto::_VzScanAuto()
+	_LivoxScanAuto::_LivoxScanAuto()
 	{
 		m_pNav = NULL;
 		m_pTk = NULL;
@@ -27,12 +27,12 @@ namespace kai
 		m_pAct = NULL;
 	}
 
-	_VzScanAuto::~_VzScanAuto()
+	_LivoxScanAuto::~_LivoxScanAuto()
 	{
 		DEL(m_pTk);
 	}
 
-	bool _VzScanAuto::init(void *pKiss)
+	bool _LivoxScanAuto::init(void *pKiss)
 	{
 		IF_F(!this->_GeometryViewer::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
@@ -77,7 +77,7 @@ namespace kai
 		return true;
 	}
 
-	bool _VzScanAuto::link(void)
+	bool _LivoxScanAuto::link(void)
 	{
 		IF_F(!this->_GeometryViewer::link());
 		IF_F(!m_pTk->link());
@@ -97,7 +97,7 @@ namespace kai
 		return true;
 	}
 
-	bool _VzScanAuto::start(void)
+	bool _LivoxScanAuto::start(void)
 	{
 		NULL_F(m_pT);
 		IF_F(!m_pT->start(getUpdate, this));
@@ -111,7 +111,7 @@ namespace kai
 		return true;
 	}
 
-	int _VzScanAuto::check(void)
+	int _LivoxScanAuto::check(void)
 	{
 		NULL__(m_pNav, -1);
 		NULL__(m_pWin, -1);
@@ -121,7 +121,7 @@ namespace kai
 		return this->_GeometryViewer::check();
 	}
 
-	void _VzScanAuto::update(void)
+	void _LivoxScanAuto::update(void)
 	{
 		m_pT->sleepT(0);
 
@@ -161,7 +161,7 @@ namespace kai
 		}
 	}
 
-	void _VzScanAuto::scanReset(void)
+	void _LivoxScanAuto::scanReset(void)
 	{
 		IF_(check() < 0);
 
@@ -190,39 +190,39 @@ namespace kai
 		m_pWin->CloseDialog();
 	}
 
-	void _VzScanAuto::scanSet(void)
+	void _LivoxScanAuto::scanSet(void)
 	{
 		IF_(check() < 0);
 		IF_(m_bScanning);
 
-		_VzScanAutoUI *pW = (_VzScanAutoUI *)m_pWin;
+		_LivoxScanAutoUI *pW = (_LivoxScanAutoUI *)m_pWin;
 		m_scanSet = pW->GetScanSet();
 
 		switch (m_scanSet.m_lastSet)
 		{
-		case vzc_HL:
+		case lvc_HL:
 			m_actH.setTarget(m_scanSet.m_vSvRangeH.x);
 			break;
-		case vzc_HR:
+		case lvc_HR:
 			m_actH.setTarget(m_scanSet.m_vSvRangeH.y);
 			break;
-		case vzc_VT:
+		case lvc_VT:
 			m_actV.setTarget(m_scanSet.m_vSvRangeV.x);
 			break;
-		case vzc_VB:
+		case lvc_VB:
 			m_actV.setTarget(m_scanSet.m_vSvRangeV.y);
 			break;
-		case vzc_Rst:
+		case lvc_Rst:
 			m_actH.setTarget(m_scanSet.m_vSvRangeH.mid());
 			m_actV.setTarget(m_scanSet.m_vSvRangeV.mid());
 			break;
 		}
 	}
 
-	void _VzScanAuto::scanStart(void)
+	void _LivoxScanAuto::scanStart(void)
 	{
 		IF_(check() < 0);
-		_VzScanAutoUI *pW = (_VzScanAutoUI *)m_pWin;
+		_LivoxScanAutoUI *pW = (_LivoxScanAutoUI *)m_pWin;
 		m_scanSet = pW->GetScanSet();
 
 		m_nTake = m_scanSet.m_nH * m_scanSet.m_nV;
@@ -236,11 +236,11 @@ namespace kai
 		m_bScanning = true;
 	}
 
-	void _VzScanAuto::scanUpdate(void)
+	void _LivoxScanAuto::scanUpdate(void)
 	{
 		IF_(check() < 0);
 
-		_VzScanAutoUI *pW = (_VzScanAutoUI *)m_pWin;
+		_LivoxScanAutoUI *pW = (_LivoxScanAutoUI *)m_pWin;
 		m_scanSet = pW->GetScanSet();
 
 		IF_(!m_actH.bComplete());
@@ -272,7 +272,7 @@ namespace kai
 		m_actH.setTarget(m_npH);
 	}
 
-	void _VzScanAuto::scanTake(void)
+	void _LivoxScanAuto::scanTake(void)
 	{
 		IF_(check() < 0);
 
@@ -314,13 +314,13 @@ namespace kai
 			m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
 
 		updateUIpc(*m_pPCprv);
-		_VzScanAutoUI *pW = (_VzScanAutoUI *)m_pWin;
+		_LivoxScanAutoUI *pW = (_LivoxScanAutoUI *)m_pWin;
 		float rPorig = (float)m_nP / (float)m_nPmax;
 		float rPprv = (float)m_iPprv / (float)m_nPresv;
 		pW->SetProgressBar(max(rPprv, rPorig));
 	}
 
-	void _VzScanAuto::scanStop(void)
+	void _LivoxScanAuto::scanStop(void)
 	{
 		IF_(check() < 0);
 
@@ -329,7 +329,7 @@ namespace kai
 		m_actV.setTarget(m_scanSet.m_vSvRangeV.mid());
 	}
 
-	void _VzScanAuto::updatePreview(void)
+	void _LivoxScanAuto::updatePreview(void)
 	{
 		IF_(check() < 0);
 
@@ -368,7 +368,7 @@ namespace kai
 		updateUIpc(*m_pPCprv);
 	}
 
-	void _VzScanAuto::savePC(void)
+	void _LivoxScanAuto::savePC(void)
 	{
 		IF_(check() < 0);
 		if (m_nP <= 0)
@@ -418,7 +418,7 @@ namespace kai
 		}
 	}
 
-	void _VzScanAuto::updateCamAuto(void)
+	void _LivoxScanAuto::updateCamAuto(void)
 	{
 		IF_(check() < 0);
 
@@ -430,7 +430,7 @@ namespace kai
 		updateCamPose();
 	}
 
-	void _VzScanAuto::updateCamCtrl(void)
+	void _LivoxScanAuto::updateCamCtrl(void)
 	{
 		IF_(check() < 0);
 
@@ -440,7 +440,7 @@ namespace kai
 		pVz->setCamCtrl(m_camCtrl);
 	}
 
-	void _VzScanAuto::updateKinematics(void)
+	void _LivoxScanAuto::updateKinematics(void)
 	{
 		while (m_pTk->bRun())
 		{
@@ -455,7 +455,7 @@ namespace kai
 		}
 	}
 
-	void _VzScanAuto::updateSlam(void)
+	void _LivoxScanAuto::updateSlam(void)
 	{
 		IF_(check() < 0);
 		IF_(!m_pNav->bReady())
@@ -468,12 +468,12 @@ namespace kai
 		}
 	}
 
-	void _VzScanAuto::updateUI(void)
+	void _LivoxScanAuto::updateUI(void)
 	{
 		auto &app = gui::Application::GetInstance();
 		app.Initialize(m_pathRes.c_str());
 
-		m_pWin = new _VzScanAutoUI(*this->getName(), 2000, 1000);
+		m_pWin = new _LivoxScanAutoUI(*this->getName(), 2000, 1000);
 		m_pUIstate = m_pWin->getUIState();
 		m_pUIstate->m_bSceneCache = m_bSceneCache;
 		m_pUIstate->m_mouseMode = (visualization::gui::SceneWidget::Controls)m_mouseMode;
@@ -484,8 +484,8 @@ namespace kai
 		m_pUIstate->m_dirSave = m_dirSave;
 		m_pWin->Init();
 
-		_VzScanAutoUI *pW = (_VzScanAutoUI *)m_pWin;
-		app.AddWindow(shared_ptr<_VzScanAutoUI>(pW));
+		_LivoxScanAutoUI *pW = (_LivoxScanAutoUI *)m_pWin;
+		app.AddWindow(shared_ptr<_LivoxScanAutoUI>(pW));
 
 		pW->SetCbScanReset(OnScanReset, (void *)this);
 		pW->SetCbScanSet(OnScanSet, (void *)this);
@@ -510,46 +510,46 @@ namespace kai
 		exit(0);
 	}
 
-	void _VzScanAuto::OnScanReset(void *pPCV, void *pD)
+	void _LivoxScanAuto::OnScanReset(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
-		_VzScanAuto *pV = (_VzScanAuto *)pPCV;
+		_LivoxScanAuto *pV = (_LivoxScanAuto *)pPCV;
 		pV->m_fProcess.set(pc_ScanReset);
 	}
 
-	void _VzScanAuto::OnScanSet(void *pPCV, void *pD)
+	void _LivoxScanAuto::OnScanSet(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
-		_VzScanAuto *pV = (_VzScanAuto *)pPCV;
+		_LivoxScanAuto *pV = (_LivoxScanAuto *)pPCV;
 		pV->m_fProcess.set(pc_ScanSet);
 	}
 
-	void _VzScanAuto::OnScanStart(void *pPCV, void *pD)
+	void _LivoxScanAuto::OnScanStart(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
-		_VzScanAuto *pV = (_VzScanAuto *)pPCV;
+		_LivoxScanAuto *pV = (_LivoxScanAuto *)pPCV;
 		pV->m_fProcess.set(pc_ScanStart);
 	}
 
-	void _VzScanAuto::OnScanStop(void *pPCV, void *pD)
+	void _LivoxScanAuto::OnScanStop(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
-		_VzScanAuto *pV = (_VzScanAuto *)pPCV;
+		_LivoxScanAuto *pV = (_LivoxScanAuto *)pPCV;
 		pV->m_fProcess.set(pc_ScanStop);
 	}
 
-	void _VzScanAuto::OnSavePC(void *pPCV, void *pD)
+	void _LivoxScanAuto::OnSavePC(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
-		_VzScanAuto *pV = (_VzScanAuto *)pPCV;
+		_LivoxScanAuto *pV = (_LivoxScanAuto *)pPCV;
 		pV->m_fProcess.set(pc_SavePC);
 	}
 
-	void _VzScanAuto::OnCamSet(void *pPCV, void *pD)
+	void _LivoxScanAuto::OnCamSet(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		NULL_(pD);
-		_VzScanAuto *pV = (_VzScanAuto *)pPCV;
+		_LivoxScanAuto *pV = (_LivoxScanAuto *)pPCV;
 		int camMode = *(int *)pD;
 
 		if (camMode == 0) // auto off
@@ -571,11 +571,11 @@ namespace kai
 		}
 	}
 
-	void _VzScanAuto::OnCamCtrl(void *pPCV, void *pD)
+	void _LivoxScanAuto::OnCamCtrl(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		NULL_(pD);
-		_VzScanAuto *pV = (_VzScanAuto *)pPCV;
+		_LivoxScanAuto *pV = (_LivoxScanAuto *)pPCV;
 
 		pV->m_camCtrl = *(VzCamCtrl *)pD;
 		pV->m_fProcess.set(pc_CamCtrl);

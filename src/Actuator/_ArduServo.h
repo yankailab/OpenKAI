@@ -17,13 +17,13 @@ namespace kai
 	{
 		int m_cmd;
 		int m_nPayload;
-		int m_iByte;
+		int m_iB;
 		char m_pB[ARDUSV_N_BUF];
 
 		void init(void)
 		{
 			m_cmd = 0;
-			m_iByte = 0;
+			m_iB = 0;
 			m_nPayload = 0;
 		}
 	};
@@ -35,6 +35,7 @@ namespace kai
 		~_ArduServo();
 
 		virtual bool init(void *pKiss);
+		virtual bool link(void);
 		virtual bool start(void);
 		virtual void console(void *pConsole);
 
@@ -42,7 +43,7 @@ namespace kai
 		virtual void handleCMD(void);
 
 	private:
-		void updatePWM(void);
+		void sendCMD(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -50,7 +51,15 @@ namespace kai
 			return NULL;
 		}
 
+		void updateR(void);
+		static void *getUpdateR(void *This)
+		{
+			((_ArduServo *)This)->updateR();
+			return NULL;
+		}
+
 	public:
+		_Thread *m_pTr;
 		_IOBase *m_pIO;
 		uint8_t m_pB[ARDUSV_N_BUF];
 		ARDUSERVO_CMD m_recvMsg;

@@ -121,8 +121,8 @@
 #endif
 
 #ifdef WITH_APP_LIVOXSCAN && USE_LIVOX && WITH_3D && USE_OPEN3D
-#include "../Application/LivoxScan/_LivoxScan.h"
-#include "../Application/LivoxScan/_LivoxScanCalib.h"
+#include "../Application/LivoxScan/_LivoxScanAuto.h"
+//#include "../Application/LivoxScan/_LivoxScanCalib.h"
 #endif
 
 #ifdef WITH_APP_ROBOTARM

@@ -4,6 +4,7 @@ namespace kai
 {
 	_ArduServo::_ArduServo()
 	{
+        m_pTr = NULL;
 		m_pIO = NULL;
 		m_recvMsg.init();
 		m_nCMDrecv = 0;
@@ -11,6 +12,7 @@ namespace kai
 
 	_ArduServo::~_ArduServo()
 	{
+        DEL(m_pTr);
 	}
 
 	bool _ArduServo::init(void *pKiss)
@@ -18,52 +20,55 @@ namespace kai
 		IF_F(!this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
+		Kiss *pKt = pK->child("threadR");
+		IF_d_F(pKt->empty(), LOG_E("threadR not found"));
+		m_pTr = new _Thread();
+		if (!m_pTr->init(pKt))
+		{
+			DEL(m_pTr);
+			return false;
+		}
+		pKt->m_pInst = m_pTr;
+
+		return true;
+	}
+
+    bool _ArduServo::link(void)
+    {
+        IF_F(!this->_ActuatorBase::link());
+        IF_F(!m_pTr->link());
+
+		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 		n = "";
 		F_ERROR_F(pK->v("_IOBase", &n));
 		m_pIO = (_IOBase *)(pK->getInst(n));
 		NULL_Fl(m_pIO, n + ": not found");
 
-		return true;
-	}
+        return true;
+    }
 
 	bool _ArduServo::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		NULL_F(m_pTr);
+		IF_F(!m_pT->start(getUpdate, this));
+		return m_pTr->start(getUpdateR, this);
 	}
 
 	void _ArduServo::update(void)
 	{
 		while (m_pT->bRun())
 		{
-			if (!m_pIO)
-			{
-				m_pT->sleepT(SEC_2_USEC);
-				continue;
-			}
+			m_pT->autoFPSfrom();
 
-			if (!m_pIO->isOpen())
-			{
-				m_pT->sleepT(SEC_2_USEC);
-				continue;
-			}
-
-			m_pT->autoFPSfrom();			
-
-			updatePWM();
-
-			while (readCMD())
-			{
-				handleCMD();
-				m_nCMDrecv++;
-			}
+			sendCMD();
 
 			m_pT->autoFPSto();
 		}
 	}
 
-	void _ArduServo::updatePWM(void)
+	void _ArduServo::sendCMD(void)
 	{
 		NULL_(m_pIO);
 		IF_(!m_pIO->isOpen());
@@ -95,8 +100,28 @@ namespace kai
 		m_pIO->write(m_pB, ARDUSV_N_HEADER + nC * 2);
 	}
 
+	void _ArduServo::updateR(void)
+	{
+		while (m_pT->bRun())
+		{
+			m_pT->autoFPSfrom();
+
+			while (readCMD())
+			{
+				handleCMD();
+				m_recvMsg.init();
+				m_nCMDrecv++;
+			}
+
+			m_pT->autoFPSto();
+		}
+	}
+
 	bool _ArduServo::readCMD(void)
 	{
+		NULL_F(m_pIO);
+		IF_F(!m_pIO->isOpen());
+
 		uint8_t inByte;
 		int byteRead;
 
@@ -104,14 +129,14 @@ namespace kai
 		{
 			if (m_recvMsg.m_cmd != 0)
 			{
-				m_recvMsg.m_pB[m_recvMsg.m_iByte] = inByte;
-				m_recvMsg.m_iByte++;
+				m_recvMsg.m_pB[m_recvMsg.m_iB] = inByte;
+				m_recvMsg.m_iB++;
 
-				if (m_recvMsg.m_iByte == 3)
+				if (m_recvMsg.m_iB == 3)
 				{
 					m_recvMsg.m_nPayload = inByte;
 				}
-				else if (m_recvMsg.m_iByte == m_recvMsg.m_nPayload + ARDUSV_N_HEADER)
+				else if (m_recvMsg.m_iB == m_recvMsg.m_nPayload + ARDUSV_N_HEADER)
 				{
 					return true;
 				}
@@ -120,7 +145,7 @@ namespace kai
 			{
 				m_recvMsg.m_cmd = inByte;
 				m_recvMsg.m_pB[0] = inByte;
-				m_recvMsg.m_iByte = 1;
+				m_recvMsg.m_iB = 1;
 				m_recvMsg.m_nPayload = 0;
 			}
 		}

@@ -131,8 +131,8 @@ namespace kai
 #endif
 
 #ifdef WITH_APP_LIVOXSCAN && USE_LIVOX && WITH_3D && USE_OPEN3D
-		ADD_MODULE(_LivoxScan);
-		ADD_MODULE(_LivoxScanCalib);
+		ADD_MODULE(_LivoxScanAuto);
+//		ADD_MODULE(_LivoxScanCalib);
 #endif
 
 #ifdef WITH_APP_ROBOTARM

@@ -188,6 +188,7 @@ namespace kai
 	{
 		IF_(pc.IsEmpty());
 
+		//TODO: atomic
 		m_pWin->UpdatePointCloud(m_modelName,
 								 make_shared<t::geometry::PointCloud>(
 									 t::geometry::PointCloud::FromLegacy(

@@ -1,4 +1,4 @@
-#include "VzScanAutoUI.h"
+#include "LivoxScanAutoUI.h"
 
 namespace open3d
 {
@@ -15,14 +15,14 @@ namespace open3d
                 }
             }
 
-            _VzScanAutoUI::_VzScanAutoUI(const string &title, int width, int height)
+            _LivoxScanAutoUI::_LivoxScanAutoUI(const string &title, int width, int height)
                 : O3DUI(title, width, height)
             {
             }
 
-            _VzScanAutoUI::~_VzScanAutoUI() {}
+            _LivoxScanAutoUI::~_LivoxScanAutoUI() {}
 
-            void _VzScanAutoUI::Init(void)
+            void _LivoxScanAutoUI::Init(void)
             {
                 this->O3DUI::Init();
 
@@ -36,7 +36,7 @@ namespace open3d
                 Application::GetInstance().SetMenubar(NULL);
             }
 
-            void _VzScanAutoUI::camMove(Vector3f vM)
+            void _LivoxScanAutoUI::camMove(Vector3f vM)
             {
                 auto pC = m_pScene->GetScene()->GetCamera();
                 auto mm = pC->GetModelMatrix();
@@ -47,7 +47,7 @@ namespace open3d
                 m_pScene->ForceRedraw();
             }
 
-            void _VzScanAutoUI::UpdateUIstate(void)
+            void _LivoxScanAutoUI::UpdateUIstate(void)
             {
                 m_panelCtrl->SetVisible(m_uiState.m_bShowPanel);
                 UpdateBtnState();
@@ -55,7 +55,7 @@ namespace open3d
                 this->O3DUI::UpdateUIstate();
             }
 
-            void _VzScanAutoUI::UpdateBtnState(void)
+            void _LivoxScanAutoUI::UpdateBtnState(void)
             {
                 m_pBtnScanReset->SetEnabled(!m_bScanning);
                 m_pBtnScanStart->SetEnabled(true);
@@ -145,70 +145,70 @@ namespace open3d
                 PostRedraw();
             }
 
-            void _VzScanAutoUI::SetMouseCameraMode(void)
+            void _LivoxScanAutoUI::SetMouseCameraMode(void)
             {
                 m_pScene->SetViewControls(m_uiState.m_mouseMode);
                 m_uiMode = uiMode_cam;
             }
 
-            void _VzScanAutoUI::SetProgressBar(float v)
+            void _LivoxScanAutoUI::SetProgressBar(float v)
             {
                 m_progScan->SetValue(v);
                 string s = "Memory used: " + i2str((int)(v * 100)) + "%";
                 m_labelProg->SetText(s.c_str());
             }
 
-			void _VzScanAutoUI::SetIsScanning(bool b)
+			void _LivoxScanAutoUI::SetIsScanning(bool b)
             {
                 m_bScanning = b;
             }
 
-			void _VzScanAutoUI::SetScanSet(const VzScanSet& s)
+			void _LivoxScanAutoUI::SetScanSet(const LivoxScanSet& s)
             {
                 m_scanSet = s;
             }
 
-			VzScanSet _VzScanAutoUI::GetScanSet(void)
+			LivoxScanSet _LivoxScanAutoUI::GetScanSet(void)
             {
                 return m_scanSet;
             }
 
-            void _VzScanAutoUI::SetCbScanSet(OnCbO3DUI pCb, void *pPCV)
+            void _LivoxScanAutoUI::SetCbScanSet(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbScanSet.add(pCb, pPCV);
             }
 
-            void _VzScanAutoUI::SetCbScanReset(OnCbO3DUI pCb, void *pPCV)
+            void _LivoxScanAutoUI::SetCbScanReset(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbScanReset.add(pCb, pPCV);
             }
 
-            void _VzScanAutoUI::SetCbScanStart(OnCbO3DUI pCb, void *pPCV)
+            void _LivoxScanAutoUI::SetCbScanStart(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbScanStart.add(pCb, pPCV);
             }
 
-            void _VzScanAutoUI::SetCbScanStop(OnCbO3DUI pCb, void *pPCV)
+            void _LivoxScanAutoUI::SetCbScanStop(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbScanStop.add(pCb, pPCV);
             }
 
-            void _VzScanAutoUI::SetCbSavePC(OnCbO3DUI pCb, void *pPCV)
+            void _LivoxScanAutoUI::SetCbSavePC(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbSavePC.add(pCb, pPCV);
             }
 
-            void _VzScanAutoUI::SetCbCamSet(OnCbO3DUI pCb, void *pPCV)
+            void _LivoxScanAutoUI::SetCbCamSet(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbCamSet.add(pCb, pPCV);
             }
 
-            void _VzScanAutoUI::SetCbCamCtrl(OnCbO3DUI pCb, void *pPCV)
+            void _LivoxScanAutoUI::SetCbCamCtrl(OnCbO3DUI pCb, void *pPCV)
             {
                 m_cbCamCtrl.add(pCb, pPCV);
             }
 
-            void _VzScanAutoUI::Layout(const gui::LayoutContext &context)
+            void _LivoxScanAutoUI::Layout(const gui::LayoutContext &context)
             {
                 int settings_width = m_uiState.m_wPanel * context.theme.font_size;
 
@@ -226,7 +226,7 @@ namespace open3d
                 gui::Window::Layout(context);
             }
 
-            void _VzScanAutoUI::InitCtrlPanel(void)
+            void _LivoxScanAutoUI::InitCtrlPanel(void)
             {
                 auto em = GetTheme().font_size;
                 auto half_em = int(round(0.5f * float(em)));
@@ -402,21 +402,21 @@ namespace open3d
                 m_pBtnAHL = new Button("Horizontal Left:");
                 m_pBtnAHL->SetOnClicked([this]()
                                         {
-                                            m_scanSet.m_lastSet = vzc_HL;
+                                            m_scanSet.m_lastSet = lvc_HL;
                                             m_cbScanSet.call();
                                             UpdateBtnState(); });
                 m_pBtnAHLinc = new Button(" + ");
                 m_pBtnAHLinc->SetOnClicked([this]()
                                          {
                                             m_scanSet.m_vSvRangeH.x = constrain<float>(m_scanSet.m_vSvRangeH.x + 0.05, 0,1);
-                                            m_scanSet.m_lastSet = vzc_HL;
+                                            m_scanSet.m_lastSet = lvc_HL;
                                             m_cbScanSet.call();
                                             UpdateBtnState(); });
                 m_pBtnAHLdec = new Button(" - ");
                 m_pBtnAHLdec->SetOnClicked([this]()
                                          {
                                             m_scanSet.m_vSvRangeH.x = constrain<float>(m_scanSet.m_vSvRangeH.x - 0.05, 0,1);
-                                            m_scanSet.m_lastSet = vzc_HL;
+                                            m_scanSet.m_lastSet = lvc_HL;
                                             m_cbScanSet.call();
                                             UpdateBtnState(); });
                 m_pBtnAHL->SetPaddingEm(btnPadH, btnPadV);
@@ -430,21 +430,21 @@ namespace open3d
                 m_pBtnAHR = new Button("Horizontal Right:");
                 m_pBtnAHR->SetOnClicked([this]()
                                         {
-                                            m_scanSet.m_lastSet = vzc_HR;
+                                            m_scanSet.m_lastSet = lvc_HR;
                                             m_cbScanSet.call();
                                             UpdateBtnState(); });
                 m_pBtnAHRinc = new Button(" + ");
                 m_pBtnAHRinc->SetOnClicked([this]()
                                          {
                                             m_scanSet.m_vSvRangeH.y = constrain<float>(m_scanSet.m_vSvRangeH.y + 0.05, 0,1);
-                                            m_scanSet.m_lastSet = vzc_HR;
+                                            m_scanSet.m_lastSet = lvc_HR;
                                             m_cbScanSet.call();
                                             UpdateBtnState(); });
                 m_pBtnAHRdec = new Button(" - ");
                 m_pBtnAHRdec->SetOnClicked([this]()
                                          {
                                             m_scanSet.m_vSvRangeH.y = constrain<float>(m_scanSet.m_vSvRangeH.y - 0.05, 0,1);
-                                            m_scanSet.m_lastSet = vzc_HR;
+                                            m_scanSet.m_lastSet = lvc_HR;
                                             m_cbScanSet.call();
                                             UpdateBtnState(); });
                 m_pBtnAHR->SetPaddingEm(btnPadH, btnPadV);
@@ -479,21 +479,21 @@ namespace open3d
                 m_pBtnAVT = new Button("Vertical Top:");
                 m_pBtnAVT->SetOnClicked([this]()
                                         {
-                                            m_scanSet.m_lastSet = vzc_VT;
+                                            m_scanSet.m_lastSet = lvc_VT;
                                             m_cbScanSet.call();
                                             UpdateBtnState(); });
                 m_pBtnAVTinc = new Button(" + ");
                 m_pBtnAVTinc->SetOnClicked([this]()
                                          {
                                             m_scanSet.m_vSvRangeV.x = constrain<float>(m_scanSet.m_vSvRangeV.x + 0.05, 0,1);
-                                            m_scanSet.m_lastSet = vzc_VT;
+                                            m_scanSet.m_lastSet = lvc_VT;
                                             m_cbScanSet.call();
                                             UpdateBtnState(); });
                 m_pBtnAVTdec = new Button(" - ");
                 m_pBtnAVTdec->SetOnClicked([this]()
                                          {
                                             m_scanSet.m_vSvRangeV.x = constrain<float>(m_scanSet.m_vSvRangeV.x - 0.05, 0,1);
-                                            m_scanSet.m_lastSet = vzc_VT;
+                                            m_scanSet.m_lastSet = lvc_VT;
                                             m_cbScanSet.call();
                                             UpdateBtnState(); });
                 m_pBtnAVT->SetPaddingEm(btnPadH, btnPadV);
@@ -507,21 +507,21 @@ namespace open3d
                 m_pBtnAVB = new Button("Vertical Bottom:");
                 m_pBtnAVB->SetOnClicked([this]()
                                         {
-                                            m_scanSet.m_lastSet = vzc_VB;
+                                            m_scanSet.m_lastSet = lvc_VB;
                                             m_cbScanSet.call();
                                             UpdateBtnState(); });
                 m_pBtnAVBinc = new Button(" + ");
                 m_pBtnAVBinc->SetOnClicked([this]()
                                          {
                                             m_scanSet.m_vSvRangeV.y = constrain<float>(m_scanSet.m_vSvRangeV.y + 0.05, 0,1);
-                                            m_scanSet.m_lastSet = vzc_VB;
+                                            m_scanSet.m_lastSet = lvc_VB;
                                             m_cbScanSet.call();
                                             UpdateBtnState(); });
                 m_pBtnAVBdec = new Button(" - ");
                 m_pBtnAVBdec->SetOnClicked([this]()
                                          {
                                             m_scanSet.m_vSvRangeV.y = constrain<float>(m_scanSet.m_vSvRangeV.y - 0.05, 0,1);
-                                            m_scanSet.m_lastSet = vzc_VB;
+                                            m_scanSet.m_lastSet = lvc_VB;
                                             m_cbScanSet.call();
                                             UpdateBtnState(); });
                 m_pBtnAVB->SetPaddingEm(btnPadH, btnPadV);
@@ -774,7 +774,7 @@ namespace open3d
                 panelFilter->AddChild(GiveOwnership(pGo));
             }
 
-            void _VzScanAutoUI::OnSavePLY(void)
+            void _LivoxScanAutoUI::OnSavePLY(void)
             {
                 // string fName = getBaseDirSave();
                 // if (fName.empty())
