@@ -10,6 +10,15 @@ namespace open3d
 	{
 		namespace visualizer
 		{
+			enum VzScanSetCmd
+			{
+				vzc_HL,
+				vzc_HR,
+				vzc_VT,
+				vzc_VB,
+				vzc_Rst,
+			};
+
 			struct VzScanSet
 			{
 				vFloat2 m_vSvRangeH = {0.0, 1.0};
@@ -17,6 +26,8 @@ namespace open3d
 
 				int m_nH = 10;
 				int m_nV = 10;
+
+				VzScanSetCmd m_lastSet = vzc_Rst;
 			};
 
 			class _VzScanAutoUI : public O3DUI
@@ -32,7 +43,9 @@ namespace open3d
 
 				void SetMouseCameraMode(void);
 				void SetProgressBar(float v);
-				void SetLabelArea(const string &s);
+				void SetIsScanning(bool b);
+				void SetScanSet(const VzScanSet& s);
+				VzScanSet GetScanSet(void);
 
 				void SetCbScanReset(OnCbO3DUI pCb, void *pPCV);
 				void SetCbScanSet(OnCbO3DUI pCb, void *pPCV);
@@ -78,13 +91,25 @@ namespace open3d
 				ProgressBar *m_progScan;
 				Label *m_labelProg;
 
-				Button *m_pBtnAutoScan;
 				Button *m_pBtnNH;
 				Button *m_pBtnAHL;
 				Button *m_pBtnAHR;
 				Button *m_pBtnNV;
 				Button *m_pBtnAVT;
 				Button *m_pBtnAVB;
+				Button *m_pBtnNHinc;
+				Button *m_pBtnNHdec;
+				Button *m_pBtnAHLinc;
+				Button *m_pBtnAHLdec;
+				Button *m_pBtnAHRinc;
+				Button *m_pBtnAHRdec;
+				Button *m_pBtnNVinc;
+				Button *m_pBtnNVdec;
+				Button *m_pBtnAVTinc;
+				Button *m_pBtnAVTdec;
+				Button *m_pBtnAVBinc;
+				Button *m_pBtnAVBdec;
+
 
 				Button *m_pBtnPointSize;
 				Button *m_pBtnMinD;

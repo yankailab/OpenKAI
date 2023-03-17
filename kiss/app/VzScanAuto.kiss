@@ -19,6 +19,56 @@
 }
 
 {
+	"name":"serial",
+	"class":"_SerialPort",
+	"bON":1,
+	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+		"/vTwakeUp":["arduServo.threadR"],
+	}
+	"/port":"/dev/ttyUSB0",
+	"port":"/dev/ttyACM0",
+	"baud":115200,
+}
+
+{
+	"name":"arduServo",
+	"class":"_ArduServo",
+	"bON":1,
+	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"_IOBase":"serial",
+	{
+		"name":"axis",
+		{
+			"name":"H",
+			"pOrigin":1500.0,
+			"pTarget":1500.0,
+			"pRange":[500,2500],
+		}
+		{
+			"name":"V",
+			"pOrigin":1500.0,
+			"pTarget":1500.0,
+			"pRange":[500,2500],
+		}
+	}
+}
+
+{
 	"name":"VzScan",
 	"class":"_VzScanAuto",
 	"bON":1,
@@ -42,6 +92,19 @@
 	"nPresvNext":0,
 	"_NavBase":"T265",
 	"vGeometryBase":["VzensePC","/pcFile"],
+	"_ActuatorBase":"arduServo",
+    {
+		"name":"actuatorH",
+		"vTarget":0.5,
+		"dV":0.01,
+		"iAxis":0,
+	}
+    {
+		"name":"actuatorV",
+		"vTarget":0.5,
+		"dV":0.01,
+		"iAxis":1,
+	}
 	"vCamLookAt":[0,0,0],
 	"vCamEye":[0,0,2],
 	"vCamUp":[0,1,0],

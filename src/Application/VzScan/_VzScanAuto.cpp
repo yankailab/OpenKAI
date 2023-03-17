@@ -42,15 +42,24 @@ namespace kai
 
 		Kiss *pKa = pK->child("actuatorH");
 		IF_F(pKa->empty());
-		pKa->v("m_vTarget", &m_actH.m_vTarget);
+		pKa->v("vTarget", &m_actH.m_vTarget);
 		pKa->v("dV", &m_actH.m_dV);
 		pKa->v("iAxis", &m_actH.m_iAxis);
 
 		pKa = pK->child("actuatorV");
 		IF_F(pKa->empty());
-		pKa->v("m_vTarget", &m_actV.m_vTarget);
+		pKa->v("vTarget", &m_actV.m_vTarget);
 		pKa->v("dV", &m_actV.m_dV);
 		pKa->v("iAxis", &m_actV.m_iAxis);
+
+		pKa = pK->child("scanSet");
+		if (!pKa->empty())
+		{
+			pKa->v("vRangeH", &m_scanSet.m_vSvRangeH);
+			pKa->v("vRangeV", &m_scanSet.m_vSvRangeV);
+			pKa->v("nH", &m_scanSet.m_nH);
+			pKa->v("nV", &m_scanSet.m_nV);
+		}
 
 		Kiss *pKk = pK->child("threadK");
 		IF_F(pKk->empty());
@@ -64,10 +73,10 @@ namespace kai
 		return true;
 	}
 
-    bool _VzScanAuto::link(void)
-    {
-        IF_F(!this->_GeometryViewer::link());
-        IF_F(!m_pTk->link());
+	bool _VzScanAuto::link(void)
+	{
+		IF_F(!this->_GeometryViewer::link());
+		IF_F(!m_pTk->link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 
@@ -81,8 +90,8 @@ namespace kai
 		m_pAct = (_ActuatorBase *)(pK->getInst(n));
 		NULL_Fl(m_pAct, n + ": not found");
 
-        return true;
-    }
+		return true;
+	}
 
 	bool _VzScanAuto::start(void)
 	{
@@ -128,7 +137,12 @@ namespace kai
 			if (m_fProcess.b(pc_ScanStart, true))
 				scanStart();
 
-			updateScan();
+			if (m_fProcess.b(pc_ScanStop, true))
+				scanStop();
+
+			scanUpdate();
+
+			updatePreview();
 
 			if (m_fProcess.b(pc_SavePC, true))
 				savePC();
@@ -175,33 +189,86 @@ namespace kai
 	void _VzScanAuto::scanSet(void)
 	{
 		IF_(check() < 0);
+		IF_(m_bScanning);
 
-		// m_pWin->ShowMsg("Scan", "Initializing");
+		_VzScanAutoUI *pW = (_VzScanAutoUI *)m_pWin;
+		m_scanSet = pW->GetScanSet();
 
-		// m_nP = 0;
-		// for (int i = 0; i < m_vPC.size(); i++)
-		// {
-		// 	PointCloud *pP = &m_vPC[i];
-		// 	pP->Clear();
-		// }
-		// m_vPC.clear();
-
-		// // voxel down point cloud for preview
-		// m_iPprv = 0;
-		// m_pPCprv->Clear();
-		// addDummyPoints(m_pPCprv, m_nPresv, m_rDummyDome);
-
-		// removeUIpc();
-		// addUIpc(*m_pPCprv);
-		// m_fProcess.set(pc_Scanning);
-
-		// resetCamPose();
-		// updateCamPose();
-
-		// m_pWin->CloseDialog();
+		switch (m_scanSet.m_lastSet)
+		{
+		case vzc_HL:
+			m_actH.setTarget(m_scanSet.m_vSvRangeH.x);
+			break;
+		case vzc_HR:
+			m_actH.setTarget(m_scanSet.m_vSvRangeH.y);
+			break;
+		case vzc_VT:
+			m_actV.setTarget(m_scanSet.m_vSvRangeV.x);
+			break;
+		case vzc_VB:
+			m_actV.setTarget(m_scanSet.m_vSvRangeV.y);
+			break;
+		case vzc_Rst:
+			m_actH.setTarget(m_scanSet.m_vSvRangeH.mid());
+			m_actV.setTarget(m_scanSet.m_vSvRangeV.mid());
+			break;
+		}
 	}
 
 	void _VzScanAuto::scanStart(void)
+	{
+		IF_(check() < 0);
+		_VzScanAutoUI *pW = (_VzScanAutoUI *)m_pWin;
+		m_scanSet = pW->GetScanSet();
+
+		m_iTake = 0;
+		m_nTake = m_scanSet.m_nH * m_scanSet.m_nV;
+		m_npH = m_scanSet.m_vSvRangeH.x;
+		m_ndH = m_scanSet.m_vSvRangeH.d() / m_scanSet.m_nH;
+		m_npV = m_scanSet.m_vSvRangeV.x;
+		m_ndV = m_scanSet.m_vSvRangeV.d() / m_scanSet.m_nV;
+
+		m_actH.setTarget(m_npH);
+		m_actV.setTarget(m_npV);
+		m_bScanning = true;
+	}
+
+	void _VzScanAuto::scanUpdate(void)
+	{
+		IF_(check() < 0);
+
+		_VzScanAutoUI *pW = (_VzScanAutoUI *)m_pWin;
+		m_scanSet = pW->GetScanSet();
+
+		IF_(!m_actH.bComplete());
+		IF_(!m_actV.bComplete());
+		IF_(!m_bScanning);
+
+		// Scanning
+		sleep(1);
+		scanTake();
+
+		m_npV += m_ndV;
+		if (m_npV > m_scanSet.m_vSvRangeV.y)
+		{
+			m_npV = m_scanSet.m_vSvRangeV.x;
+
+			m_npH += m_ndH;
+			if (m_npH > m_scanSet.m_vSvRangeH.y)
+			{
+				m_bScanning = false;
+				m_actH.setTarget(m_scanSet.m_vSvRangeH.mid());
+				m_actV.setTarget(m_scanSet.m_vSvRangeV.mid());
+				pW->SetIsScanning(false);
+				return;
+			}
+		}
+
+		m_actV.setTarget(m_npV);
+		m_actH.setTarget(m_npH);
+	}
+
+	void _VzScanAuto::scanTake(void)
 	{
 		IF_(check() < 0);
 
@@ -215,16 +282,6 @@ namespace kai
 		// Add original
 		m_vPC.push_back(pc);
 		m_nP += pc.points_.size();
-		// TODO: check point number
-
-		// for (i = 0; i < nPnew; i++)
-		// {
-		// 	m_pPCorig->points_.push_back(pc.points_[i]);
-		// 	m_pPCorig->colors_.push_back(pc.colors_[i]);
-		// 	m_nPwOrig++;
-		// 	if (m_nPwOrig >= m_nPresvNext)
-		// 		break;
-		// }
 
 		// Add voxel down for preview
 		PointCloud pcVd = *pc.VoxelDownSample(m_rVoxel);
@@ -259,14 +316,16 @@ namespace kai
 		pW->SetProgressBar(max(rPprv, rPorig));
 	}
 
-
 	void _VzScanAuto::scanStop(void)
 	{
 		IF_(check() < 0);
 
+		m_bScanning = false;
+		m_actH.setTarget(m_scanSet.m_vSvRangeH.mid());
+		m_actV.setTarget(m_scanSet.m_vSvRangeV.mid());
 	}
 
-	void _VzScanAuto::updateScan(void)
+	void _VzScanAuto::updatePreview(void)
 	{
 		IF_(check() < 0);
 
@@ -324,17 +383,21 @@ namespace kai
 		int nSave = 0;
 		for (int i = 0; i < m_vPC.size(); i++)
 		{
-			PointCloud* pP = &m_vPC[i];
+			PointCloud *pP = &m_vPC[i];
 			nSave += (io::WritePointCloudToPLY(m_fNameSavePC + i2str(i) + ".ply",
-											 *pP,
-											 par))?1:0;
+											   *pP,
+											   par))
+						 ? 1
+						 : 0;
 
 			pcMerge += *pP;
 		}
 
 		nSave += (io::WritePointCloudToPLY(m_fNameSavePC + "_merged.ply",
-										 pcMerge,
-										 par))?1:0;
+										   pcMerge,
+										   par))
+					 ? 1
+					 : 0;
 
 		m_pWin->CloseDialog();
 		string msg;
@@ -380,6 +443,9 @@ namespace kai
 
 			updateSlam();
 
+			m_pAct->setPtarget(m_actH.m_iAxis, m_actH.update(), true);
+			m_pAct->setPtarget(m_actV.m_iAxis, m_actV.update(), true);
+
 			m_pTk->autoFPSto();
 		}
 	}
@@ -412,6 +478,7 @@ namespace kai
 		m_pUIstate->m_btnPaddingV = m_vBtnPadding.y;
 		m_pUIstate->m_dirSave = m_dirSave;
 		m_pWin->Init();
+
 		_VzScanAutoUI *pW = (_VzScanAutoUI *)m_pWin;
 		app.AddWindow(shared_ptr<_VzScanAutoUI>(pW));
 
@@ -423,6 +490,8 @@ namespace kai
 		pW->SetCbSavePC(OnSavePC, (void *)this);
 		pW->SetCbCamSet(OnCamSet, (void *)this);
 		pW->SetCbCamCtrl(OnCamCtrl, (void *)this);
+
+		pW->SetScanSet(m_scanSet);
 
 		m_pWin->UpdateUIstate();
 		m_pWin->SetFullScreen(m_bFullScreen);
@@ -440,7 +509,6 @@ namespace kai
 	{
 		NULL_(pPCV);
 		_VzScanAuto *pV = (_VzScanAuto *)pPCV;
-
 		pV->m_fProcess.set(pc_ScanReset);
 	}
 
@@ -448,27 +516,21 @@ namespace kai
 	{
 		NULL_(pPCV);
 		_VzScanAuto *pV = (_VzScanAuto *)pPCV;
-
-		pV->m_scanSet = *(VzScanSet *)pD;
-		pV->m_fProcess.set(pc_ScanTake);
+		pV->m_fProcess.set(pc_ScanSet);
 	}
 
 	void _VzScanAuto::OnScanStart(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		_VzScanAuto *pV = (_VzScanAuto *)pPCV;
-
-		pV->m_scanSet = *(VzScanSet *)pD;
-		pV->m_fProcess.set(pc_ScanTake);
+		pV->m_fProcess.set(pc_ScanStart);
 	}
 
 	void _VzScanAuto::OnScanStop(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
 		_VzScanAuto *pV = (_VzScanAuto *)pPCV;
-
-		pV->m_scanSet = *(VzScanSet *)pD;
-		pV->m_fProcess.set(pc_ScanTake);
+		pV->m_fProcess.set(pc_ScanStop);
 	}
 
 	void _VzScanAuto::OnSavePC(void *pPCV, void *pD)

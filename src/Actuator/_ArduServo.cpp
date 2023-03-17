@@ -49,12 +49,7 @@ namespace kai
 				continue;
 			}
 
-			m_pT->autoFPSfrom();
-
-
-			this->setPtarget(0, 0.5, true);
-			this->setPtarget(1, 0.5, true);
-			
+			m_pT->autoFPSfrom();			
 
 			updatePWM();
 

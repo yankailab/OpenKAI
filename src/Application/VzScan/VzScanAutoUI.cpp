@@ -57,9 +57,10 @@ namespace open3d
 
             void _VzScanAutoUI::UpdateBtnState(void)
             {
-                m_pBtnScanReset->SetEnabled(true);
+                m_pBtnScanReset->SetEnabled(!m_bScanning);
                 m_pBtnScanStart->SetEnabled(true);
-                m_pBtnSavePC->SetEnabled(true);
+                m_pBtnScanStart->SetText(m_bScanning ? "Stop" : "Start");
+                m_pBtnSavePC->SetEnabled(!m_bScanning);
 
                 m_pBtnCamAuto->SetOn(m_bCamAuto);
                 m_pBtnCamAuto->SetEnabled(true);
@@ -72,7 +73,25 @@ namespace open3d
                 m_pBtnCamU->SetEnabled(!m_bCamAuto);
                 m_pBtnCamD->SetEnabled(!m_bCamAuto);
 
-                m_pBtnAutoScan->SetText(m_bScanning ? "Stop Auto" : "Start Auto");
+                m_pBtnNH->SetEnabled(!m_bScanning);
+                m_pBtnNHinc->SetEnabled(!m_bScanning);
+                m_pBtnNHdec->SetEnabled(!m_bScanning);
+                m_pBtnAHL->SetEnabled(!m_bScanning);
+                m_pBtnAHLinc->SetEnabled(!m_bScanning);
+                m_pBtnAHLdec->SetEnabled(!m_bScanning);
+                m_pBtnAHR->SetEnabled(!m_bScanning);
+                m_pBtnAHRinc->SetEnabled(!m_bScanning);
+                m_pBtnAHRdec->SetEnabled(!m_bScanning);
+                m_pBtnNV->SetEnabled(!m_bScanning);
+                m_pBtnNVinc->SetEnabled(!m_bScanning);
+                m_pBtnNVdec->SetEnabled(!m_bScanning);
+                m_pBtnAVT->SetEnabled(!m_bScanning);
+                m_pBtnAVTinc->SetEnabled(!m_bScanning);
+                m_pBtnAVTdec->SetEnabled(!m_bScanning);
+                m_pBtnAVB->SetEnabled(!m_bScanning);
+                m_pBtnAVBinc->SetEnabled(!m_bScanning);
+                m_pBtnAVBdec->SetEnabled(!m_bScanning);
+
                 m_pBtnNH->SetText(string("Horizontal Number: " + i2str(m_scanSet.m_nH)).c_str());
                 m_pBtnAHL->SetText(string("Horizontal Left: " + f2str(m_scanSet.m_vSvRangeH.x)).c_str());
                 m_pBtnAHR->SetText(string("Horizontal Right: " + f2str(m_scanSet.m_vSvRangeH.y)).c_str());
@@ -122,7 +141,8 @@ namespace open3d
                 m_pBtnFilSpatial->SetText(m_camCtrl.m_bSpatialFilter ? "Spatial ON" : "Spatial OFF");
                 m_pBtnHDR->SetText(m_camCtrl.m_bHDR ? "HDR ON" : "HDR OFF");
 
-                m_pScene->ForceRedraw();
+//                m_pScene->ForceRedraw();
+                PostRedraw();
             }
 
             void _VzScanAutoUI::SetMouseCameraMode(void)
@@ -136,6 +156,21 @@ namespace open3d
                 m_progScan->SetValue(v);
                 string s = "Memory used: " + i2str((int)(v * 100)) + "%";
                 m_labelProg->SetText(s.c_str());
+            }
+
+			void _VzScanAutoUI::SetIsScanning(bool b)
+            {
+                m_bScanning = b;
+            }
+
+			void _VzScanAutoUI::SetScanSet(const VzScanSet& s)
+            {
+                m_scanSet = s;
+            }
+
+			VzScanSet _VzScanAutoUI::GetScanSet(void)
+            {
+                return m_scanSet;
             }
 
             void _VzScanAutoUI::SetCbScanSet(OnCbO3DUI pCb, void *pPCV)
@@ -202,7 +237,9 @@ namespace open3d
 
                 Margins margins(em, 0, half_em, 0);
 
+                //
                 // Camera
+                //
                 auto panelCam = new CollapsableVert("CAM", v_spacing, margins);
                 m_panelCtrl->AddChild(GiveOwnership(panelCam));
 
@@ -262,19 +299,21 @@ namespace open3d
                 m_pBtnCamD->SetOnClicked([this]()
                                          { camMove(Vector3f(0, -1, 0)); });
 
-                auto *pN = new VGrid(3, v_spacing);
-                pN->AddChild(GiveOwnership(m_pBtnCamAuto));
-                pN->AddChild(GiveOwnership(m_pBtnCamAll));
-                pN->AddChild(GiveOwnership(m_pBtnCamOrigin));
-                pN->AddChild(GiveOwnership(m_pBtnCamD));
-                pN->AddChild(GiveOwnership(m_pBtnCamF));
-                pN->AddChild(GiveOwnership(m_pBtnCamU));
-                pN->AddChild(GiveOwnership(m_pBtnCamL));
-                pN->AddChild(GiveOwnership(m_pBtnCamB));
-                pN->AddChild(GiveOwnership(m_pBtnCamR));
-                panelCam->AddChild(GiveOwnership(pN));
+                auto *pGcam = new VGrid(3, v_spacing);
+                pGcam->AddChild(GiveOwnership(m_pBtnCamAuto));
+                pGcam->AddChild(GiveOwnership(m_pBtnCamAll));
+                pGcam->AddChild(GiveOwnership(m_pBtnCamOrigin));
+                pGcam->AddChild(GiveOwnership(m_pBtnCamD));
+                pGcam->AddChild(GiveOwnership(m_pBtnCamF));
+                pGcam->AddChild(GiveOwnership(m_pBtnCamU));
+                pGcam->AddChild(GiveOwnership(m_pBtnCamL));
+                pGcam->AddChild(GiveOwnership(m_pBtnCamB));
+                pGcam->AddChild(GiveOwnership(m_pBtnCamR));
+                panelCam->AddChild(GiveOwnership(pGcam));
 
+                //
                 // Scan
+                //
                 auto panelScan = new CollapsableVert("SCAN", v_spacing, margins);
                 m_panelCtrl->AddChild(GiveOwnership(panelScan));
 
@@ -282,11 +321,10 @@ namespace open3d
                 m_pBtnScanReset->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
                 m_pBtnScanReset->SetOnClicked([this]()
                                               {
-                                            m_cbScanReset.call();
-                                            int m = m_bCamAuto ? 1 : 0;
-                                            m_cbCamSet.call(&m);
-                                            UpdateBtnState();
-                                            PostRedraw(); });
+                                                m_cbScanReset.call();
+                                                int m = m_bCamAuto ? 1 : 0;
+                                                m_cbCamSet.call(&m);
+                                                UpdateBtnState(); });
 
                 m_pBtnSavePC = new Button("  Save  ");
                 m_pBtnSavePC->SetPaddingEm(m_uiState.m_btnPaddingH, m_uiState.m_btnPaddingV);
@@ -298,16 +336,23 @@ namespace open3d
                 m_pBtnScanStart->SetOnClicked([this]()
                                               {
                                                   if (m_bScanning)
-                                                      m_cbScanStop.call();
+                                                  {
+                                                    m_cbScanStop.call();
+                                                    m_bScanning = false;
+                                                    UpdateBtnState();
+                                                  }
                                                   else
-                                                      m_cbScanStart.call(&m_scanSet);
-                                              });
+                                                  {
+                                                    m_cbScanStart.call();
+                                                    m_bScanning = true;
+                                                    UpdateBtnState();
+                                                  } });
 
-                auto *pG = new VGrid(3, v_spacing);
-                pG->AddChild(GiveOwnership(m_pBtnScanReset));
-                pG->AddChild(GiveOwnership(m_pBtnSavePC));
-                pG->AddChild(GiveOwnership(m_pBtnScanStart));
-                panelScan->AddChild(GiveOwnership(pG));
+                auto *pGscan = new VGrid(3, v_spacing);
+                pGscan->AddChild(GiveOwnership(m_pBtnScanReset));
+                pGscan->AddChild(GiveOwnership(m_pBtnSavePC));
+                pGscan->AddChild(GiveOwnership(m_pBtnScanStart));
+                panelScan->AddChild(GiveOwnership(pGscan));
 
                 m_labelProg = new Label("Memory used: 0%");
                 auto pH = new Horiz(v_spacing);
@@ -321,173 +366,176 @@ namespace open3d
                 pH->AddChild(GiveOwnership(m_progScan));
                 panelScan->AddChild(GiveOwnership(pH));
 
+                //
+                // Scan settings
+                //
+                auto panelSetting = new CollapsableVert("SETTINGS", v_spacing, margins);
+                m_panelCtrl->AddChild(GiveOwnership(panelSetting));
 
                 int btnPadH = m_uiState.m_btnPaddingH * 1.2;
                 int btnPadV = m_uiState.m_btnPaddingV / 2;
 
-                VGrid *pGa = new VGrid(3, v_spacing);
+                VGrid *pGs = new VGrid(3, v_spacing);
 
                 // Horizontal number
                 m_pBtnNH = new Button("Horizontal Number:");
-                Button *pBtnNHinc = new Button(" + ");
-                pBtnNHinc->SetOnClicked([this]()
+                m_pBtnNHinc = new Button(" + ");
+                m_pBtnNHinc->SetOnClicked([this]()
                                         {
                                             m_scanSet.m_nH = constrain(m_scanSet.m_nH+1, 1,100);
-                                            m_cbScanSet.call(&m_scanSet);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
-                Button *pBtnNHdec = new Button(" - ");
-                pBtnNHdec->SetOnClicked([this]()
+                                            m_cbScanSet.call();
+                                            UpdateBtnState(); });
+                m_pBtnNHdec = new Button(" - ");
+                m_pBtnNHdec->SetOnClicked([this]()
                                         {
                                             m_scanSet.m_nH = constrain(m_scanSet.m_nH-1, 1,100);
-                                            m_cbScanSet.call(&m_scanSet);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            m_cbScanSet.call();
+                                            UpdateBtnState(); });
                 m_pBtnNH->SetPaddingEm(btnPadH, btnPadV);
-                pBtnNHinc->SetPaddingEm(btnPadH, btnPadV);
-                pBtnNHdec->SetPaddingEm(btnPadH, btnPadV);
-                pGa->AddChild(GiveOwnership(m_pBtnNH));
-                pGa->AddChild(GiveOwnership(pBtnNHinc));
-                pGa->AddChild(GiveOwnership(pBtnNHdec));
+                m_pBtnNHinc->SetPaddingEm(btnPadH, btnPadV);
+                m_pBtnNHdec->SetPaddingEm(btnPadH, btnPadV);
+                pGs->AddChild(GiveOwnership(m_pBtnNH));
+                pGs->AddChild(GiveOwnership(m_pBtnNHinc));
+                pGs->AddChild(GiveOwnership(m_pBtnNHdec));
 
                 // Horizontal left
                 m_pBtnAHL = new Button("Horizontal Left:");
                 m_pBtnAHL->SetOnClicked([this]()
                                         {
-                                                m_cbScanSet.call(&m_scanSet);
-                                                UpdateBtnState();
-                                                m_pScene->ForceRedraw(); });
-                Button *pBtnAHLinc = new Button(" + ");
-                pBtnAHLinc->SetOnClicked([this]()
+                                            m_scanSet.m_lastSet = vzc_HL;
+                                            m_cbScanSet.call();
+                                            UpdateBtnState(); });
+                m_pBtnAHLinc = new Button(" + ");
+                m_pBtnAHLinc->SetOnClicked([this]()
                                          {
                                             m_scanSet.m_vSvRangeH.x = constrain<float>(m_scanSet.m_vSvRangeH.x + 0.05, 0,1);
-                                            m_cbScanSet.call(&m_scanSet);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
-                Button *pBtnAHLdec = new Button(" - ");
-                pBtnAHLdec->SetOnClicked([this]()
+                                            m_scanSet.m_lastSet = vzc_HL;
+                                            m_cbScanSet.call();
+                                            UpdateBtnState(); });
+                m_pBtnAHLdec = new Button(" - ");
+                m_pBtnAHLdec->SetOnClicked([this]()
                                          {
                                             m_scanSet.m_vSvRangeH.x = constrain<float>(m_scanSet.m_vSvRangeH.x - 0.05, 0,1);
-                                            m_cbScanSet.call(&m_scanSet);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            m_scanSet.m_lastSet = vzc_HL;
+                                            m_cbScanSet.call();
+                                            UpdateBtnState(); });
                 m_pBtnAHL->SetPaddingEm(btnPadH, btnPadV);
-                pBtnAHLinc->SetPaddingEm(btnPadH, btnPadV);
-                pBtnAHLdec->SetPaddingEm(btnPadH, btnPadV);
-                pGa->AddChild(GiveOwnership(m_pBtnAHL));
-                pGa->AddChild(GiveOwnership(pBtnAHLinc));
-                pGa->AddChild(GiveOwnership(pBtnAHLdec));
+                m_pBtnAHLinc->SetPaddingEm(btnPadH, btnPadV);
+                m_pBtnAHLdec->SetPaddingEm(btnPadH, btnPadV);
+                pGs->AddChild(GiveOwnership(m_pBtnAHL));
+                pGs->AddChild(GiveOwnership(m_pBtnAHLinc));
+                pGs->AddChild(GiveOwnership(m_pBtnAHLdec));
 
                 // Horizontal right
                 m_pBtnAHR = new Button("Horizontal Right:");
                 m_pBtnAHR->SetOnClicked([this]()
                                         {
-                                                m_cbScanSet.call(&m_scanSet);
-                                                UpdateBtnState();
-                                                m_pScene->ForceRedraw(); });
-                Button *pBtnAHRinc = new Button(" + ");
-                pBtnAHRinc->SetOnClicked([this]()
+                                            m_scanSet.m_lastSet = vzc_HR;
+                                            m_cbScanSet.call();
+                                            UpdateBtnState(); });
+                m_pBtnAHRinc = new Button(" + ");
+                m_pBtnAHRinc->SetOnClicked([this]()
                                          {
                                             m_scanSet.m_vSvRangeH.y = constrain<float>(m_scanSet.m_vSvRangeH.y + 0.05, 0,1);
-                                            m_cbScanSet.call(&m_scanSet);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
-                Button *pBtnAHRdec = new Button(" - ");
-                pBtnAHRdec->SetOnClicked([this]()
+                                            m_scanSet.m_lastSet = vzc_HR;
+                                            m_cbScanSet.call();
+                                            UpdateBtnState(); });
+                m_pBtnAHRdec = new Button(" - ");
+                m_pBtnAHRdec->SetOnClicked([this]()
                                          {
                                             m_scanSet.m_vSvRangeH.y = constrain<float>(m_scanSet.m_vSvRangeH.y - 0.05, 0,1);
-                                            m_cbScanSet.call(&m_scanSet);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            m_scanSet.m_lastSet = vzc_HR;
+                                            m_cbScanSet.call();
+                                            UpdateBtnState(); });
                 m_pBtnAHR->SetPaddingEm(btnPadH, btnPadV);
-                pBtnAHRinc->SetPaddingEm(btnPadH, btnPadV);
-                pBtnAHRdec->SetPaddingEm(btnPadH, btnPadV);
-                pGa->AddChild(GiveOwnership(m_pBtnAHR));
-                pGa->AddChild(GiveOwnership(pBtnAHRinc));
-                pGa->AddChild(GiveOwnership(pBtnAHRdec));
+                m_pBtnAHRinc->SetPaddingEm(btnPadH, btnPadV);
+                m_pBtnAHRdec->SetPaddingEm(btnPadH, btnPadV);
+                pGs->AddChild(GiveOwnership(m_pBtnAHR));
+                pGs->AddChild(GiveOwnership(m_pBtnAHRinc));
+                pGs->AddChild(GiveOwnership(m_pBtnAHRdec));
 
                 // Vertical number
                 m_pBtnNV = new Button("Vertical Number:");
-                Button *pBtnNVinc = new Button(" + ");
-                pBtnNVinc->SetOnClicked([this]()
+                m_pBtnNVinc = new Button(" + ");
+                m_pBtnNVinc->SetOnClicked([this]()
                                         {
                                             m_scanSet.m_nV = constrain<float>(m_scanSet.m_nV+1, 1,100);
-                                            m_cbScanSet.call(&m_scanSet);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
-                Button *pBtnNVdec = new Button(" - ");
-                pBtnNVdec->SetOnClicked([this]()
+                                            m_cbScanSet.call();
+                                            UpdateBtnState(); });
+                m_pBtnNVdec = new Button(" - ");
+                m_pBtnNVdec->SetOnClicked([this]()
                                         {
                                             m_scanSet.m_nV = constrain<float>(m_scanSet.m_nV-1, 1,100);
-                                            m_cbScanSet.call(&m_scanSet);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            m_cbScanSet.call();
+                                            UpdateBtnState(); });
                 m_pBtnNV->SetPaddingEm(btnPadH, btnPadV);
-                pBtnNVinc->SetPaddingEm(btnPadH, btnPadV);
-                pBtnNVdec->SetPaddingEm(btnPadH, btnPadV);
-                pGa->AddChild(GiveOwnership(m_pBtnNV));
-                pGa->AddChild(GiveOwnership(pBtnNVinc));
-                pGa->AddChild(GiveOwnership(pBtnNVdec));
+                m_pBtnNVinc->SetPaddingEm(btnPadH, btnPadV);
+                m_pBtnNVdec->SetPaddingEm(btnPadH, btnPadV);
+                pGs->AddChild(GiveOwnership(m_pBtnNV));
+                pGs->AddChild(GiveOwnership(m_pBtnNVinc));
+                pGs->AddChild(GiveOwnership(m_pBtnNVdec));
 
                 // Vertical top
                 m_pBtnAVT = new Button("Vertical Top:");
                 m_pBtnAVT->SetOnClicked([this]()
                                         {
-                                                m_cbScanSet.call(&m_scanSet);
-                                                UpdateBtnState();
-                                                m_pScene->ForceRedraw(); });
-                Button *pBtnAVTinc = new Button(" + ");
-                pBtnAVTinc->SetOnClicked([this]()
+                                            m_scanSet.m_lastSet = vzc_VT;
+                                            m_cbScanSet.call();
+                                            UpdateBtnState(); });
+                m_pBtnAVTinc = new Button(" + ");
+                m_pBtnAVTinc->SetOnClicked([this]()
                                          {
                                             m_scanSet.m_vSvRangeV.x = constrain<float>(m_scanSet.m_vSvRangeV.x + 0.05, 0,1);
-                                            m_cbScanSet.call(&m_scanSet);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
-                Button *pBtnAVTdec = new Button(" - ");
-                pBtnAVTdec->SetOnClicked([this]()
+                                            m_scanSet.m_lastSet = vzc_VT;
+                                            m_cbScanSet.call();
+                                            UpdateBtnState(); });
+                m_pBtnAVTdec = new Button(" - ");
+                m_pBtnAVTdec->SetOnClicked([this]()
                                          {
                                             m_scanSet.m_vSvRangeV.x = constrain<float>(m_scanSet.m_vSvRangeV.x - 0.05, 0,1);
-                                            m_cbScanSet.call(&m_scanSet);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            m_scanSet.m_lastSet = vzc_VT;
+                                            m_cbScanSet.call();
+                                            UpdateBtnState(); });
                 m_pBtnAVT->SetPaddingEm(btnPadH, btnPadV);
-                pBtnAVTinc->SetPaddingEm(btnPadH, btnPadV);
-                pBtnAVTdec->SetPaddingEm(btnPadH, btnPadV);
-                pGa->AddChild(GiveOwnership(m_pBtnAVT));
-                pGa->AddChild(GiveOwnership(pBtnAVTinc));
-                pGa->AddChild(GiveOwnership(pBtnAVTdec));
+                m_pBtnAVTinc->SetPaddingEm(btnPadH, btnPadV);
+                m_pBtnAVTdec->SetPaddingEm(btnPadH, btnPadV);
+                pGs->AddChild(GiveOwnership(m_pBtnAVT));
+                pGs->AddChild(GiveOwnership(m_pBtnAVTinc));
+                pGs->AddChild(GiveOwnership(m_pBtnAVTdec));
 
                 // Vertical bottom
                 m_pBtnAVB = new Button("Vertical Bottom:");
                 m_pBtnAVB->SetOnClicked([this]()
                                         {
-                                                m_cbScanSet.call(&m_scanSet);
-                                                UpdateBtnState();
-                                                m_pScene->ForceRedraw(); });
-                Button *pBtnAVBinc = new Button(" + ");
-                pBtnAVBinc->SetOnClicked([this]()
+                                            m_scanSet.m_lastSet = vzc_VB;
+                                            m_cbScanSet.call();
+                                            UpdateBtnState(); });
+                m_pBtnAVBinc = new Button(" + ");
+                m_pBtnAVBinc->SetOnClicked([this]()
                                          {
                                             m_scanSet.m_vSvRangeV.y = constrain<float>(m_scanSet.m_vSvRangeV.y + 0.05, 0,1);
-                                            m_cbScanSet.call(&m_scanSet);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
-                Button *pBtnAVBdec = new Button(" - ");
-                pBtnAVBdec->SetOnClicked([this]()
+                                            m_scanSet.m_lastSet = vzc_VB;
+                                            m_cbScanSet.call();
+                                            UpdateBtnState(); });
+                m_pBtnAVBdec = new Button(" - ");
+                m_pBtnAVBdec->SetOnClicked([this]()
                                          {
                                             m_scanSet.m_vSvRangeV.y = constrain<float>(m_scanSet.m_vSvRangeV.y - 0.05, 0,1);
-                                            m_cbScanSet.call(&m_scanSet);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            m_scanSet.m_lastSet = vzc_VB;
+                                            m_cbScanSet.call();
+                                            UpdateBtnState(); });
                 m_pBtnAVB->SetPaddingEm(btnPadH, btnPadV);
-                pBtnAVBinc->SetPaddingEm(btnPadH, btnPadV);
-                pBtnAVBdec->SetPaddingEm(btnPadH, btnPadV);
-                pGa->AddChild(GiveOwnership(m_pBtnAVB));
-                pGa->AddChild(GiveOwnership(pBtnAVBinc));
-                pGa->AddChild(GiveOwnership(pBtnAVBdec));
+                m_pBtnAVBinc->SetPaddingEm(btnPadH, btnPadV);
+                m_pBtnAVBdec->SetPaddingEm(btnPadH, btnPadV);
+                pGs->AddChild(GiveOwnership(m_pBtnAVB));
+                pGs->AddChild(GiveOwnership(m_pBtnAVBinc));
+                pGs->AddChild(GiveOwnership(m_pBtnAVBdec));
 
-                panelScan->AddChild(GiveOwnership(pGa));
+                panelSetting->AddChild(GiveOwnership(pGs));
 
+                //
                 // Filter
+                //
                 auto panelFilter = new CollapsableVert("FILTER", v_spacing, margins);
                 panelFilter->SetIsOpen(false);
                 m_panelCtrl->AddChild(GiveOwnership(panelFilter));
@@ -504,15 +552,13 @@ namespace open3d
                                         {
                                         m_pointSize = constrain(m_pointSize+1, 1, 10);
                                         SetPointSize(m_pointSize);
-                                        UpdateBtnState();
-                                        m_pScene->ForceRedraw(); });
+                                        UpdateBtnState(); });
                 Button *pBtnPSdec = new Button(" - ");
                 pBtnPSdec->SetOnClicked([this]()
                                         {
                                         m_pointSize = constrain(m_pointSize-1, 1, 10);
                                         SetPointSize(m_pointSize);
-                                        UpdateBtnState();
-                                        m_pScene->ForceRedraw(); });
+                                        UpdateBtnState(); });
                 m_pBtnPointSize->SetPaddingEm(btnPadH, btnPadV);
                 pBtnPSinc->SetPaddingEm(btnPadH, btnPadV);
                 pBtnPSdec->SetPaddingEm(btnPadH, btnPadV);
@@ -527,15 +573,13 @@ namespace open3d
                                           {
                                             m_camCtrl.m_vRz.x = constrain<float>(m_camCtrl.m_vRz.x + 0.1, 0, m_camCtrl.m_vRz.y);
                                             m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            UpdateBtnState(); });
                 Button *pBtnMinDdec = new Button(" - ");
                 pBtnMinDdec->SetOnClicked([this]()
                                           {
                                             m_camCtrl.m_vRz.x = constrain<float>(m_camCtrl.m_vRz.x - 0.1, 0, m_camCtrl.m_vRz.y);
                                             m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            UpdateBtnState(); });
                 m_pBtnMinD->SetPaddingEm(btnPadH, btnPadV);
                 pBtnMinDinc->SetPaddingEm(btnPadH, btnPadV);
                 pBtnMinDdec->SetPaddingEm(btnPadH, btnPadV);
@@ -550,15 +594,13 @@ namespace open3d
                                           {
                                             m_camCtrl.m_vRz.y = constrain<float>(m_camCtrl.m_vRz.y + 0.1, m_camCtrl.m_vRz.x, 10);
                                             m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            UpdateBtnState(); });
                 Button *pBtnMaxDdec = new Button(" - ");
                 pBtnMaxDdec->SetOnClicked([this]()
                                           {
                                             m_camCtrl.m_vRz.y = constrain<float>(m_camCtrl.m_vRz.y - 0.1, m_camCtrl.m_vRz.x, 10);
                                             m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            UpdateBtnState(); });
                 m_pBtnMaxD->SetPaddingEm(btnPadH, btnPadV);
                 pBtnMaxDinc->SetPaddingEm(btnPadH, btnPadV);
                 pBtnMaxDdec->SetPaddingEm(btnPadH, btnPadV);
@@ -572,22 +614,19 @@ namespace open3d
                                            {
                                                 m_camCtrl.m_bAutoExposureToF = !m_camCtrl.m_bAutoExposureToF;
                                                 m_cbCamCtrl.call(&m_camCtrl);
-                                                UpdateBtnState();
-                                                m_pScene->ForceRedraw(); });
+                                                UpdateBtnState(); });
                 Button *pBtnTEinc = new Button(" + ");
                 pBtnTEinc->SetOnClicked([this]()
                                         {
                                             m_camCtrl.m_tExposureToF = constrain<int>(m_camCtrl.m_tExposureToF + 1000, 1000, 4000);
                                             m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            UpdateBtnState(); });
                 Button *pBtnTEdec = new Button(" - ");
                 pBtnTEdec->SetOnClicked([this]()
                                         {
                                             m_camCtrl.m_tExposureToF = constrain<int>(m_camCtrl.m_tExposureToF - 1000, 1000, 4000);
                                             m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            UpdateBtnState(); });
                 m_pBtnToFexp->SetPaddingEm(btnPadH, btnPadV);
                 pBtnTEinc->SetPaddingEm(btnPadH, btnPadV);
                 pBtnTEdec->SetPaddingEm(btnPadH, btnPadV);
@@ -601,22 +640,19 @@ namespace open3d
                                            {
                                                 m_camCtrl.m_bAutoExposureRGB = !m_camCtrl.m_bAutoExposureRGB;
                                                 m_cbCamCtrl.call(&m_camCtrl);
-                                                UpdateBtnState();
-                                                m_pScene->ForceRedraw(); });
+                                                UpdateBtnState(); });
                 Button *pBtnREinc = new Button(" + ");
                 pBtnREinc->SetOnClicked([this]()
                                         {
                                             m_camCtrl.m_tExposureRGB = constrain<int>(m_camCtrl.m_tExposureRGB + 1000, 1000, 4000);
                                             m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            UpdateBtnState(); });
                 Button *pBtnREdec = new Button(" - ");
                 pBtnREdec->SetOnClicked([this]()
                                         {
                                             m_camCtrl.m_tExposureRGB = constrain<int>(m_camCtrl.m_tExposureRGB - 1000, 1000, 4000);
                                             m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            UpdateBtnState(); });
                 m_pBtnRGBexp->SetPaddingEm(btnPadH, btnPadV);
                 pBtnREinc->SetPaddingEm(btnPadH, btnPadV);
                 pBtnREdec->SetPaddingEm(btnPadH, btnPadV);
@@ -630,22 +666,19 @@ namespace open3d
                                             {
                                                 m_camCtrl.m_bFilTime = !m_camCtrl.m_bFilTime;
                                                 m_cbCamCtrl.call(&m_camCtrl);
-                                                UpdateBtnState();
-                                                m_pScene->ForceRedraw(); });
+                                                UpdateBtnState(); });
                 Button *pBtnTFinc = new Button(" + ");
                 pBtnTFinc->SetOnClicked([this]()
                                         {
                                             m_camCtrl.m_filTime = constrain<int>(m_camCtrl.m_filTime + 1, 0, 3);
                                             m_cbCamCtrl.call(&m_camCtrl);
-                                             UpdateBtnState();
-                                           m_pScene->ForceRedraw(); });
+                                             UpdateBtnState(); });
                 Button *pBtnTFdec = new Button(" - ");
                 pBtnTFdec->SetOnClicked([this]()
                                         {
                                             m_camCtrl.m_filTime = constrain<int>(m_camCtrl.m_filTime - 1, 0, 3);
                                             m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            UpdateBtnState(); });
                 m_pBtnTfilter->SetPaddingEm(btnPadH, btnPadV);
                 pBtnTFinc->SetPaddingEm(btnPadH, btnPadV);
                 pBtnTFdec->SetPaddingEm(btnPadH, btnPadV);
@@ -659,22 +692,19 @@ namespace open3d
                                             {
                                                 m_camCtrl.m_bFilConfidence = !m_camCtrl.m_bFilConfidence;
                                                 m_cbCamCtrl.call(&m_camCtrl);
-                                                UpdateBtnState();
-                                                m_pScene->ForceRedraw(); });
+                                                UpdateBtnState(); });
                 Button *pBtnCFinc = new Button(" + ");
                 pBtnCFinc->SetOnClicked([this]()
                                         {
                                             m_camCtrl.m_filConfidence = constrain<int>(m_camCtrl.m_filConfidence + 1, 0, 100);
                                             m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            UpdateBtnState(); });
                 Button *pBtnCFdec = new Button(" - ");
                 pBtnCFdec->SetOnClicked([this]()
                                         {
                                             m_camCtrl.m_filConfidence = constrain<int>(m_camCtrl.m_filConfidence - 1, 0, 100);
                                             m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            UpdateBtnState(); });
                 m_pBtnCfilter->SetPaddingEm(btnPadH, btnPadV);
                 pBtnCFinc->SetPaddingEm(btnPadH, btnPadV);
                 pBtnCFdec->SetPaddingEm(btnPadH, btnPadV);
@@ -688,22 +718,19 @@ namespace open3d
                                              {
                                                 m_camCtrl.m_bFilFlyingPix = !m_camCtrl.m_bFilFlyingPix;
                                                 m_cbCamCtrl.call(&m_camCtrl);
-                                                UpdateBtnState();
-                                                m_pScene->ForceRedraw(); });
+                                                UpdateBtnState(); });
                 Button *pBtnFPinc = new Button(" + ");
                 pBtnFPinc->SetOnClicked([this]()
                                         {
                                             m_camCtrl.m_filFlyingPix = constrain<int>(m_camCtrl.m_filFlyingPix + 1, 0, 49);
                                             m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            UpdateBtnState(); });
                 Button *pBtnFPdec = new Button(" - ");
                 pBtnFPdec->SetOnClicked([this]()
                                         {
                                             m_camCtrl.m_filFlyingPix = constrain<int>(m_camCtrl.m_filFlyingPix - 1, 0, 49);
                                             m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            UpdateBtnState(); });
                 m_pBtnFpFilter->SetPaddingEm(btnPadH, btnPadV);
                 pBtnFPinc->SetPaddingEm(btnPadH, btnPadV);
                 pBtnFPdec->SetPaddingEm(btnPadH, btnPadV);
@@ -722,8 +749,7 @@ namespace open3d
                                              {
                                                 m_camCtrl.m_bFillHole = !m_camCtrl.m_bFillHole;
                                                 m_cbCamCtrl.call(&m_camCtrl);
-                                                UpdateBtnState();
-                                                m_pScene->ForceRedraw(); });
+                                                UpdateBtnState(); });
 
                 m_pBtnFilSpatial = new Button("Spatial filter");
                 m_pBtnFilSpatial->SetPaddingEm(btnPadH, btnPadV);
@@ -731,8 +757,7 @@ namespace open3d
                                                {
                                                 m_camCtrl.m_bSpatialFilter = !m_camCtrl.m_bSpatialFilter;
                                                 m_cbCamCtrl.call(&m_camCtrl);
-                                                UpdateBtnState();
-                                                m_pScene->ForceRedraw(); });
+                                                UpdateBtnState(); });
 
                 m_pBtnHDR = new Button(" HDR ");
                 m_pBtnHDR->SetPaddingEm(btnPadH, btnPadV);
@@ -740,8 +765,7 @@ namespace open3d
                                         {
                                             m_camCtrl.m_bHDR = !m_camCtrl.m_bHDR;
                                             m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState();
-                                            m_pScene->ForceRedraw(); });
+                                            UpdateBtnState(); });
 
                 VGrid *pGo = new VGrid(3, v_spacing);
                 pGo->AddChild(GiveOwnership(m_pBtnFillHole));

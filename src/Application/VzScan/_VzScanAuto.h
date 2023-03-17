@@ -33,7 +33,7 @@ namespace kai
 		{
 			float d = m_vTarget - m_v;
 
-			if(d <= m_dV)
+			if(abs(d) <= m_dV)
 				m_v = m_vTarget;
 			else if(d > 0)
 				m_v += m_dV;
@@ -41,6 +41,11 @@ namespace kai
 				m_v -= m_dV;
 
 			return m_v;
+		}
+
+		void stop(void)
+		{
+			m_vTarget = m_v;
 		}
 
 		bool bComplete(void)
@@ -65,13 +70,15 @@ namespace kai
 		virtual void scanReset(void);
 		virtual void scanSet(void);
 		virtual void scanStart(void);
+		virtual void scanUpdate(void);
+		virtual void scanTake(void);
 		virtual void scanStop(void);
 
 		virtual void savePC(void);
 
 		virtual void updateCamCtrl(void);
 		virtual void updateCamAuto(void);
-		virtual void updateScan(void);
+		virtual void updatePreview(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -121,7 +128,13 @@ namespace kai
 		VzCamCtrl m_camCtrl;
 		BIT_FLAG m_fProcess;
 
+		bool m_bScanning;
 		int m_iTake;
+		int m_nTake;
+		float m_npH;
+		float m_ndH;
+		float m_npV;
+		float m_ndV;
 		_ActuatorBase* m_pAct;
 		VZSCAN_ACTUATOR m_actH;
 		VZSCAN_ACTUATOR m_actV;
