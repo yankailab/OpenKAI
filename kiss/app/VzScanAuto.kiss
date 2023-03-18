@@ -4,7 +4,6 @@
 	"appName":"VzScan",
 	"bLog":1,
 	"bStdErr":1,
-	"/rc":"umount /dev/mmcblk0p1",
 }
 
 {
@@ -33,7 +32,7 @@
 		"/vTwakeUp":["arduServo.threadR"],
 	}
 	"/port":"/dev/ttyUSB0",
-	"port":"/dev/ttyACM1",
+	"port":"/dev/ttyACM0",
 	"baud":115200,
 }
 
@@ -63,7 +62,7 @@
 			"name":"V",
 			"pOrigin":1500.0,
 			"pTarget":1500.0,
-			"pRange":[500,2500],
+			"pRange":[1100,2000],
 		}
 	}
 }
@@ -91,18 +90,18 @@
 	"nPresv":1000000,
 	"nPresvNext":0,
 	"_NavBase":"T265",
-	"vGeometryBase":["/VzensePC","pcFile"],
+	"vGeometryBase":["VzensePC","/pcFile"],
 	"_ActuatorBase":"arduServo",
     {
 		"name":"actuatorH",
 		"vTarget":0.5,
-		"dV":0.001,
+		"dV":0.0005,
 		"iAxis":0,
 	}
     {
 		"name":"actuatorV",
 		"vTarget":0.5,
-		"dV":0.001,
+		"dV":0.0005,
 		"iAxis":1,
 	}
 	"vCamLookAt":[0,0,0],
@@ -142,6 +141,7 @@
 	"btDepth":0,
 	"vAxisIdx":[0, 1, 2],
 	"vAxisK":[1, -1, -1],
+	"/vAxisK":[-1, 1, -1],
 	"fCalib":"/home/kai/dev/VzScan/calibOfs.kiss",
 	"nPresv":400000,
 	"tWait":60,

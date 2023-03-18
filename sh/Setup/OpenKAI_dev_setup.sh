@@ -432,6 +432,10 @@ make -j$(nproc)
 #----------------------------------------------------
 # (Optional) Vzense Nebular
 git clone --depth 1 https://github.com/Vzense/NebulaSDK.git
+# In direct connection mode configure the host ip to be 
+# IP: 192.168.1.100
+# Netmask: 255.255.255.0
+# Gateway: 192.168.100.1
 
 #----------------------------------------------------
 # (Optional) Livox
@@ -526,10 +530,11 @@ sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=48
 sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
 
 # Disable wayland in Ubuntu 22.04
-sudo nano /etc/gdm3/custom/config
+sudo nano /etc/gdm3/custom.conf
 #WaylandEnable=false
 
 # Screen and touch screen input rotate
+export DISPLAY=:0.0
 xrandr -o left
 xinput list
 xinput set-prop 'GXTP7386:00 27C6:0113' 'Coordinate Transformation Matrix' 0 -1 1 1 0 0 0 0 1

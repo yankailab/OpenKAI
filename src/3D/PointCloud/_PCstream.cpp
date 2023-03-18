@@ -85,6 +85,26 @@ namespace kai
         m_nPread++;
     }
 
+    void _PCstream::getPC(PointCloud *pPC)
+    {
+        NULL_(pPC);
+
+        pPC->Clear();
+
+        int nP = m_nPread;
+        if(nP > m_nP)
+            nP = m_nP;
+
+		for (int i = 0; i < nP; i++)
+		{
+			pPC->points_[i] = m_pP[i].m_vP;
+			pPC->colors_[i] = m_pP[i].m_vC.cast<double>();
+		}
+
+        return;        
+    }
+
+
     void _PCstream::getStream(void* p)
     {
         NULL_(p);
@@ -120,6 +140,7 @@ namespace kai
             m_pP[i].init();
 
         m_iP = 0;
+        m_nPread = 0;
     }
 
     void _PCstream::refreshCol(void)

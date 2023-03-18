@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Application_LivoxScan_LivoxScanAutoUI_H_
 #define OpenKAI_src_Application_LivoxScan_LivoxScanAutoUI_H_
 
-#include "../../LIDAR/_VzensePC.h"
+#include "../../LIDAR/Livox/_Livox.h"
 #include "../../UI/O3DUI.h"
 
 namespace open3d
@@ -66,7 +66,7 @@ namespace open3d
 			private:
 				UImode m_uiMode = uiMode_cam;
 				bool m_bCamAuto;
-				VzCamCtrl m_camCtrl;
+				LivoxCtrl m_livoxCtrl;
 				int m_pointSize;
 
 				LivoxScanSet m_scanSet;
@@ -110,19 +110,9 @@ namespace open3d
 				Button *m_pBtnAVBinc;
 				Button *m_pBtnAVBdec;
 
-
 				Button *m_pBtnPointSize;
 				Button *m_pBtnMinD;
 				Button *m_pBtnMaxD;
-				Button *m_pBtnToFexp;
-				Button *m_pBtnRGBexp;
-				Button *m_pBtnTfilter;
-				Button *m_pBtnCfilter;
-				Button *m_pBtnFpFilter;
-
-				Button *m_pBtnFillHole;
-				Button *m_pBtnFilSpatial;
-				Button *m_pBtnHDR;
 
 				// UI handler
 				O3D_UI_Cb m_cbScanReset;

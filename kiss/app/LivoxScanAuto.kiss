@@ -4,7 +4,6 @@
 	"appName":"VzScan",
 	"bLog":1,
 	"bStdErr":1,
-	"/rc":"umount /dev/mmcblk0p1",
 }
 
 {
@@ -15,7 +14,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["VzScan"],
+	"vBASE":["LivoxScan"],
 }
 
 {
@@ -33,7 +32,7 @@
 		"/vTwakeUp":["arduServo.threadR"],
 	}
 	"/port":"/dev/ttyUSB0",
-	"port":"/dev/ttyACM1",
+	"port":"/dev/ttyACM0",
 	"baud":115200,
 }
 
@@ -63,14 +62,14 @@
 			"name":"V",
 			"pOrigin":1500.0,
 			"pTarget":1500.0,
-			"pRange":[500,2500],
+			"pRange":[900,2100],
 		}
 	}
 }
 
 {
-	"name":"VzScan",
-	"class":"_VzScanAuto",
+	"name":"LivoxScanAuto",
+	"class":"_LivoxScanAuto",
 	"bON":1,
     {
 		"name":"thread",
@@ -91,18 +90,18 @@
 	"nPresv":1000000,
 	"nPresvNext":0,
 	"_NavBase":"T265",
-	"vGeometryBase":["/VzensePC","pcFile"],
+	"vGeometryBase":["Livox","pcFile"],
 	"_ActuatorBase":"arduServo",
     {
 		"name":"actuatorH",
 		"vTarget":0.5,
-		"dV":0.001,
+		"dV":0.0005,
 		"iAxis":0,
 	}
     {
 		"name":"actuatorV",
 		"vTarget":0.5,
-		"dV":0.001,
+		"dV":0.0005,
 		"iAxis":1,
 	}
 	"vCamLookAt":[0,0,0],
@@ -130,10 +129,9 @@
 {
 	"name":"LivoxLidar",
 	"class":"LivoxLidar",
-	"bON":0,
+	"bON":1,
 	"bLog":1,
 	"/vBroadcastCode":["3JEDHC900100791"],
-	"vBroadcastCode":["3JEDHC900100791"],
 	"bEnableFan":1,
 	"returnMode":1,
 	"coordinate":0,
@@ -144,19 +142,19 @@
 {
 	"name":"Livox",
 	"class":"_Livox",
-	"bON":0,
+	"bON":1,
+	"bLog":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"bLog":1,
 	"LivoxLidar":"LivoxLidar",
 	"/broadcastCode":"3JEDHC900100791",
-	"broadcastCode":"3JEDHC900100791",
 	"nP":256000,
-	"vToffset":[0,0,0],
-	"vRoffset":[0,0,0],
-	"bTransform":1,
+	"fCalib":"/home/kai/dev/VzScan/calibOfs.kiss",
+	"lidarMode":2,
+	"vAxisIdx":[0, 1, 2],
+	"vAxisK":[1, -1, -1],
 }
 
 {

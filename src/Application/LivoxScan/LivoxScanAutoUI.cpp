@@ -100,46 +100,8 @@ namespace open3d
                 m_pBtnAVB->SetText(string("Vertical Bottom: " + f2str(m_scanSet.m_vSvRangeV.y)).c_str());
 
                 m_pBtnPointSize->SetText(string("Point Size: " + i2str(m_pointSize)).c_str());
-                m_pBtnMinD->SetText(string("Min distance: " + f2str(m_camCtrl.m_vRz.x)).c_str());
-                m_pBtnMaxD->SetText(string("Max distance: " + f2str(m_camCtrl.m_vRz.y)).c_str());
-
-                if (m_camCtrl.m_bAutoExposureToF)
-                {
-                    m_pBtnToFexp->SetText("ToF exposure: AUTO");
-                    m_pBtnToFexp->SetOn(true);
-                }
-                else
-                {
-                    m_pBtnToFexp->SetText(string("ToF exposure: " + i2str(m_camCtrl.m_tExposureToF)).c_str());
-                    m_pBtnToFexp->SetOn(false);
-                }
-
-                if (m_camCtrl.m_bAutoExposureRGB)
-                    m_pBtnRGBexp->SetText("RGB exposure: AUTO");
-                else
-                    m_pBtnRGBexp->SetText(string("RGB exposure: " + i2str(m_camCtrl.m_tExposureRGB)).c_str());
-
-                if (m_camCtrl.m_bFilTime)
-                    m_pBtnTfilter->SetText(string("Time filter: " + i2str(m_camCtrl.m_filTime)).c_str());
-                else
-                    m_pBtnTfilter->SetText("Time filter: OFF");
-
-                if (m_camCtrl.m_bFilConfidence)
-                    m_pBtnCfilter->SetText(string("Confidence: " + i2str(m_camCtrl.m_filConfidence)).c_str());
-                else
-                    m_pBtnCfilter->SetText("Confidence: OFF");
-
-                if (m_camCtrl.m_bFilFlyingPix)
-                    m_pBtnFpFilter->SetText(string("FlyingPixel: " + i2str(m_camCtrl.m_filFlyingPix)).c_str());
-                else
-                    m_pBtnFpFilter->SetText("FlyingPixel: OFF");
-
-                m_pBtnFillHole->SetEnabled(true);
-                m_pBtnFilSpatial->SetEnabled(true);
-                m_pBtnHDR->SetEnabled(true);
-                m_pBtnFillHole->SetText(m_camCtrl.m_bFillHole ? "Fill hole ON" : "Fill hole OFF");
-                m_pBtnFilSpatial->SetText(m_camCtrl.m_bSpatialFilter ? "Spatial ON" : "Spatial OFF");
-                m_pBtnHDR->SetText(m_camCtrl.m_bHDR ? "HDR ON" : "HDR OFF");
+                m_pBtnMinD->SetText(string("Min distance: " + f2str(m_livoxCtrl.m_vRz.x)).c_str());
+                m_pBtnMaxD->SetText(string("Max distance: " + f2str(m_livoxCtrl.m_vRz.y)).c_str());
 
                 m_pScene->ForceRedraw();
                 PostRedraw();
@@ -571,14 +533,14 @@ namespace open3d
                 Button *pBtnMinDinc = new Button(" + ");
                 pBtnMinDinc->SetOnClicked([this]()
                                           {
-                                            m_camCtrl.m_vRz.x = constrain<float>(m_camCtrl.m_vRz.x + 0.1, 0, m_camCtrl.m_vRz.y);
-                                            m_cbCamCtrl.call(&m_camCtrl);
+                                            m_livoxCtrl.m_vRz.x = constrain<float>(m_livoxCtrl.m_vRz.x + 0.1, 0, m_livoxCtrl.m_vRz.y);
+                                            m_cbCamCtrl.call(&m_livoxCtrl);
                                             UpdateBtnState(); });
                 Button *pBtnMinDdec = new Button(" - ");
                 pBtnMinDdec->SetOnClicked([this]()
                                           {
-                                            m_camCtrl.m_vRz.x = constrain<float>(m_camCtrl.m_vRz.x - 0.1, 0, m_camCtrl.m_vRz.y);
-                                            m_cbCamCtrl.call(&m_camCtrl);
+                                            m_livoxCtrl.m_vRz.x = constrain<float>(m_livoxCtrl.m_vRz.x - 0.1, 0, m_livoxCtrl.m_vRz.y);
+                                            m_cbCamCtrl.call(&m_livoxCtrl);
                                             UpdateBtnState(); });
                 m_pBtnMinD->SetPaddingEm(btnPadH, btnPadV);
                 pBtnMinDinc->SetPaddingEm(btnPadH, btnPadV);
@@ -592,14 +554,14 @@ namespace open3d
                 Button *pBtnMaxDinc = new Button(" + ");
                 pBtnMaxDinc->SetOnClicked([this]()
                                           {
-                                            m_camCtrl.m_vRz.y = constrain<float>(m_camCtrl.m_vRz.y + 0.1, m_camCtrl.m_vRz.x, 10);
-                                            m_cbCamCtrl.call(&m_camCtrl);
+                                            m_livoxCtrl.m_vRz.y = constrain<float>(m_livoxCtrl.m_vRz.y + 0.1, m_livoxCtrl.m_vRz.x, 10);
+                                            m_cbCamCtrl.call(&m_livoxCtrl);
                                             UpdateBtnState(); });
                 Button *pBtnMaxDdec = new Button(" - ");
                 pBtnMaxDdec->SetOnClicked([this]()
                                           {
-                                            m_camCtrl.m_vRz.y = constrain<float>(m_camCtrl.m_vRz.y - 0.1, m_camCtrl.m_vRz.x, 10);
-                                            m_cbCamCtrl.call(&m_camCtrl);
+                                            m_livoxCtrl.m_vRz.y = constrain<float>(m_livoxCtrl.m_vRz.y - 0.1, m_livoxCtrl.m_vRz.x, 10);
+                                            m_cbCamCtrl.call(&m_livoxCtrl);
                                             UpdateBtnState(); });
                 m_pBtnMaxD->SetPaddingEm(btnPadH, btnPadV);
                 pBtnMaxDinc->SetPaddingEm(btnPadH, btnPadV);
@@ -608,170 +570,8 @@ namespace open3d
                 pGc->AddChild(GiveOwnership(pBtnMaxDinc));
                 pGc->AddChild(GiveOwnership(pBtnMaxDdec));
 
-                // ToF exposure
-                m_pBtnToFexp = new Button("ToF exposure: ");
-                m_pBtnToFexp->SetOnClicked([this]()
-                                           {
-                                                m_camCtrl.m_bAutoExposureToF = !m_camCtrl.m_bAutoExposureToF;
-                                                m_cbCamCtrl.call(&m_camCtrl);
-                                                UpdateBtnState(); });
-                Button *pBtnTEinc = new Button(" + ");
-                pBtnTEinc->SetOnClicked([this]()
-                                        {
-                                            m_camCtrl.m_tExposureToF = constrain<int>(m_camCtrl.m_tExposureToF + 1000, 1000, 4000);
-                                            m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState(); });
-                Button *pBtnTEdec = new Button(" - ");
-                pBtnTEdec->SetOnClicked([this]()
-                                        {
-                                            m_camCtrl.m_tExposureToF = constrain<int>(m_camCtrl.m_tExposureToF - 1000, 1000, 4000);
-                                            m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState(); });
-                m_pBtnToFexp->SetPaddingEm(btnPadH, btnPadV);
-                pBtnTEinc->SetPaddingEm(btnPadH, btnPadV);
-                pBtnTEdec->SetPaddingEm(btnPadH, btnPadV);
-                pGc->AddChild(GiveOwnership(m_pBtnToFexp));
-                pGc->AddChild(GiveOwnership(pBtnTEinc));
-                pGc->AddChild(GiveOwnership(pBtnTEdec));
-
-                // RGB exposure
-                m_pBtnRGBexp = new Button("RGB exposure: ");
-                m_pBtnRGBexp->SetOnClicked([this]()
-                                           {
-                                                m_camCtrl.m_bAutoExposureRGB = !m_camCtrl.m_bAutoExposureRGB;
-                                                m_cbCamCtrl.call(&m_camCtrl);
-                                                UpdateBtnState(); });
-                Button *pBtnREinc = new Button(" + ");
-                pBtnREinc->SetOnClicked([this]()
-                                        {
-                                            m_camCtrl.m_tExposureRGB = constrain<int>(m_camCtrl.m_tExposureRGB + 1000, 1000, 4000);
-                                            m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState(); });
-                Button *pBtnREdec = new Button(" - ");
-                pBtnREdec->SetOnClicked([this]()
-                                        {
-                                            m_camCtrl.m_tExposureRGB = constrain<int>(m_camCtrl.m_tExposureRGB - 1000, 1000, 4000);
-                                            m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState(); });
-                m_pBtnRGBexp->SetPaddingEm(btnPadH, btnPadV);
-                pBtnREinc->SetPaddingEm(btnPadH, btnPadV);
-                pBtnREdec->SetPaddingEm(btnPadH, btnPadV);
-                pGc->AddChild(GiveOwnership(m_pBtnRGBexp));
-                pGc->AddChild(GiveOwnership(pBtnREinc));
-                pGc->AddChild(GiveOwnership(pBtnREdec));
-
-                // Time filter
-                m_pBtnTfilter = new Button("Time filter: ");
-                m_pBtnTfilter->SetOnClicked([this]()
-                                            {
-                                                m_camCtrl.m_bFilTime = !m_camCtrl.m_bFilTime;
-                                                m_cbCamCtrl.call(&m_camCtrl);
-                                                UpdateBtnState(); });
-                Button *pBtnTFinc = new Button(" + ");
-                pBtnTFinc->SetOnClicked([this]()
-                                        {
-                                            m_camCtrl.m_filTime = constrain<int>(m_camCtrl.m_filTime + 1, 0, 3);
-                                            m_cbCamCtrl.call(&m_camCtrl);
-                                             UpdateBtnState(); });
-                Button *pBtnTFdec = new Button(" - ");
-                pBtnTFdec->SetOnClicked([this]()
-                                        {
-                                            m_camCtrl.m_filTime = constrain<int>(m_camCtrl.m_filTime - 1, 0, 3);
-                                            m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState(); });
-                m_pBtnTfilter->SetPaddingEm(btnPadH, btnPadV);
-                pBtnTFinc->SetPaddingEm(btnPadH, btnPadV);
-                pBtnTFdec->SetPaddingEm(btnPadH, btnPadV);
-                pGc->AddChild(GiveOwnership(m_pBtnTfilter));
-                pGc->AddChild(GiveOwnership(pBtnTFinc));
-                pGc->AddChild(GiveOwnership(pBtnTFdec));
-
-                // Confidence filter
-                m_pBtnCfilter = new Button("Confidence filter: ");
-                m_pBtnCfilter->SetOnClicked([this]()
-                                            {
-                                                m_camCtrl.m_bFilConfidence = !m_camCtrl.m_bFilConfidence;
-                                                m_cbCamCtrl.call(&m_camCtrl);
-                                                UpdateBtnState(); });
-                Button *pBtnCFinc = new Button(" + ");
-                pBtnCFinc->SetOnClicked([this]()
-                                        {
-                                            m_camCtrl.m_filConfidence = constrain<int>(m_camCtrl.m_filConfidence + 1, 0, 100);
-                                            m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState(); });
-                Button *pBtnCFdec = new Button(" - ");
-                pBtnCFdec->SetOnClicked([this]()
-                                        {
-                                            m_camCtrl.m_filConfidence = constrain<int>(m_camCtrl.m_filConfidence - 1, 0, 100);
-                                            m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState(); });
-                m_pBtnCfilter->SetPaddingEm(btnPadH, btnPadV);
-                pBtnCFinc->SetPaddingEm(btnPadH, btnPadV);
-                pBtnCFdec->SetPaddingEm(btnPadH, btnPadV);
-                pGc->AddChild(GiveOwnership(m_pBtnCfilter));
-                pGc->AddChild(GiveOwnership(pBtnCFinc));
-                pGc->AddChild(GiveOwnership(pBtnCFdec));
-
-                // Flying Pixel
-                m_pBtnFpFilter = new Button("FlyingPixel: ");
-                m_pBtnFpFilter->SetOnClicked([this]()
-                                             {
-                                                m_camCtrl.m_bFilFlyingPix = !m_camCtrl.m_bFilFlyingPix;
-                                                m_cbCamCtrl.call(&m_camCtrl);
-                                                UpdateBtnState(); });
-                Button *pBtnFPinc = new Button(" + ");
-                pBtnFPinc->SetOnClicked([this]()
-                                        {
-                                            m_camCtrl.m_filFlyingPix = constrain<int>(m_camCtrl.m_filFlyingPix + 1, 0, 49);
-                                            m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState(); });
-                Button *pBtnFPdec = new Button(" - ");
-                pBtnFPdec->SetOnClicked([this]()
-                                        {
-                                            m_camCtrl.m_filFlyingPix = constrain<int>(m_camCtrl.m_filFlyingPix - 1, 0, 49);
-                                            m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState(); });
-                m_pBtnFpFilter->SetPaddingEm(btnPadH, btnPadV);
-                pBtnFPinc->SetPaddingEm(btnPadH, btnPadV);
-                pBtnFPdec->SetPaddingEm(btnPadH, btnPadV);
-                pGc->AddChild(GiveOwnership(m_pBtnFpFilter));
-                pGc->AddChild(GiveOwnership(pBtnFPinc));
-                pGc->AddChild(GiveOwnership(pBtnFPdec));
-
                 panelFilter->AddChild(GiveOwnership(pGc));
 
-                // Options
-                btnPadH = m_uiState.m_btnPaddingH * 0.8;
-                btnPadV = m_uiState.m_btnPaddingV;
-                m_pBtnFillHole = new Button("Fill hole");
-                m_pBtnFillHole->SetPaddingEm(btnPadH, btnPadV);
-                m_pBtnFillHole->SetOnClicked([this]()
-                                             {
-                                                m_camCtrl.m_bFillHole = !m_camCtrl.m_bFillHole;
-                                                m_cbCamCtrl.call(&m_camCtrl);
-                                                UpdateBtnState(); });
-
-                m_pBtnFilSpatial = new Button("Spatial filter");
-                m_pBtnFilSpatial->SetPaddingEm(btnPadH, btnPadV);
-                m_pBtnFilSpatial->SetOnClicked([this]()
-                                               {
-                                                m_camCtrl.m_bSpatialFilter = !m_camCtrl.m_bSpatialFilter;
-                                                m_cbCamCtrl.call(&m_camCtrl);
-                                                UpdateBtnState(); });
-
-                m_pBtnHDR = new Button(" HDR ");
-                m_pBtnHDR->SetPaddingEm(btnPadH, btnPadV);
-                m_pBtnHDR->SetOnClicked([this]()
-                                        {
-                                            m_camCtrl.m_bHDR = !m_camCtrl.m_bHDR;
-                                            m_cbCamCtrl.call(&m_camCtrl);
-                                            UpdateBtnState(); });
-
-                VGrid *pGo = new VGrid(3, v_spacing);
-                pGo->AddChild(GiveOwnership(m_pBtnFillHole));
-                pGo->AddChild(GiveOwnership(m_pBtnFilSpatial));
-                pGo->AddChild(GiveOwnership(m_pBtnHDR));
-                panelFilter->AddChild(GiveOwnership(pGo));
             }
 
             void _LivoxScanAutoUI::OnSavePLY(void)

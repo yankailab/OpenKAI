@@ -35,6 +35,9 @@ namespace kai
         virtual int nP(void);
         virtual int iP(void);
 
+   		virtual void getPC(PointCloud *pPC);
+
+
         virtual void clear(void);
         virtual void refreshCol(void);
 

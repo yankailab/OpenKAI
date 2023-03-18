@@ -234,6 +234,9 @@ namespace kai
 		m_actH.setTarget(m_npH);
 		m_actV.setTarget(m_npV);
 		m_bScanning = true;
+
+		_Livox *pPsrc = (_Livox *)m_vpGB[0];
+//		pPsrc->startStream();
 	}
 
 	void _LivoxScanAuto::scanUpdate(void)
@@ -248,6 +251,10 @@ namespace kai
 		IF_(!m_bScanning);
 
 		// Scanning
+		_Livox *pPsrc = (_Livox *)m_vpGB[0];
+		pPsrc->clear();	
+
+		//TODO: change to point number	
 		sleep(m_tWaitSec);
 		scanTake();
 
@@ -259,9 +266,11 @@ namespace kai
 			m_npH += m_ndH;
 			if (m_npH > m_scanSet.m_vSvRangeH.y)
 			{
-				m_bScanning = false;
-				m_actH.setTarget(m_scanSet.m_vSvRangeH.mid());
-				m_actV.setTarget(m_scanSet.m_vSvRangeV.mid());
+				// m_bScanning = false;
+				// m_actH.setTarget(m_scanSet.m_vSvRangeH.mid());
+				// m_actV.setTarget(m_scanSet.m_vSvRangeV.mid());
+				scanStop();
+
 				// pW->SetIsScanning(false);
 				// pW->UpdateUIstate();
 				return;
@@ -276,7 +285,7 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		_PCframe *pPsrc = (_PCframe *)m_vpGB[0];
+		_PCstream *pPsrc = (_PCstream *)m_vpGB[0];
 		PointCloud pc;
 		pPsrc->getPC(&pc);
 		int nPnew = pc.points_.size();
@@ -327,13 +336,16 @@ namespace kai
 		m_bScanning = false;
 		m_actH.setTarget(m_scanSet.m_vSvRangeH.mid());
 		m_actV.setTarget(m_scanSet.m_vSvRangeV.mid());
+
+		_Livox *pPsrc = (_Livox *)m_vpGB[0];
+//		pPsrc->stopStream();
 	}
 
 	void _LivoxScanAuto::updatePreview(void)
 	{
 		IF_(check() < 0);
 
-		_PCframe *pPsrc = (_PCframe *)m_vpGB[0];
+		_PCstream *pPsrc = (_PCstream *)m_vpGB[0];
 		PointCloud pc;
 		pPsrc->getPC(&pc);
 
@@ -434,10 +446,10 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		_VzensePC *pVz = (_VzensePC *)m_vpGB[0];
-		NULL_(pVz);
+		_Livox *pLv = (_Livox *)m_vpGB[0];
+		NULL_(pLv);
 
-		pVz->setCamCtrl(m_camCtrl);
+//		pVz->setCamCtrl(m_camCtrl);
 	}
 
 	void _LivoxScanAuto::updateKinematics(void)
@@ -577,7 +589,7 @@ namespace kai
 		NULL_(pD);
 		_LivoxScanAuto *pV = (_LivoxScanAuto *)pPCV;
 
-		pV->m_camCtrl = *(VzCamCtrl *)pD;
-		pV->m_fProcess.set(pc_CamCtrl);
+//		pV->m_camCtrl = *(VzCamCtrl *)pD;
+//		pV->m_fProcess.set(pc_CamCtrl);
 	}
 }

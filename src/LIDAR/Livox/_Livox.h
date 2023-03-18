@@ -13,6 +13,10 @@
 
 namespace kai
 {
+	struct LivoxCtrl
+	{
+		vFloat2 m_vRz = {0.0, 500.0};		 // z region
+	};
 
     class _Livox : public _PCstream
     {

@@ -126,7 +126,7 @@ namespace kai
 		string m_baseDir;
 		string m_dir;
 
-		VzCamCtrl m_camCtrl;
+		LivoxCtrl m_livoxCtrl;
 		BIT_FLAG m_fProcess;
 
 		bool m_bScanning;
