@@ -93,11 +93,11 @@ namespace open3d
                 m_pBtnAVBdec->SetEnabled(!m_bScanning);
 
                 m_pBtnNH->SetText(string("Horizontal Number: " + i2str(m_scanSet.m_nH)).c_str());
-                m_pBtnAHL->SetText(string("Horizontal Left: " + f2str(m_scanSet.m_vSvRangeH.x)).c_str());
-                m_pBtnAHR->SetText(string("Horizontal Right: " + f2str(m_scanSet.m_vSvRangeH.y)).c_str());
+                m_pBtnAHL->SetText(string("Horizontal From: " + f2str(m_scanSet.m_vSvRangeH.x)).c_str());
+                m_pBtnAHR->SetText(string("Horizontal To: " + f2str(m_scanSet.m_vSvRangeH.y)).c_str());
                 m_pBtnNV->SetText(string("Vertical Number: " + i2str(m_scanSet.m_nV)).c_str());
-                m_pBtnAVT->SetText(string("Vertical Top: " + f2str(m_scanSet.m_vSvRangeV.x)).c_str());
-                m_pBtnAVB->SetText(string("Vertical Bottom: " + f2str(m_scanSet.m_vSvRangeV.y)).c_str());
+                m_pBtnAVT->SetText(string("Vertical From: " + f2str(m_scanSet.m_vSvRangeV.x)).c_str());
+                m_pBtnAVB->SetText(string("Vertical To: " + f2str(m_scanSet.m_vSvRangeV.y)).c_str());
 
                 m_pBtnPointSize->SetText(string("Point Size: " + i2str(m_pointSize)).c_str());
                 m_pBtnMinD->SetText(string("Min distance: " + f2str(m_livoxCtrl.m_vRz.x)).c_str());
@@ -360,8 +360,8 @@ namespace open3d
                 pGs->AddChild(GiveOwnership(m_pBtnNHinc));
                 pGs->AddChild(GiveOwnership(m_pBtnNHdec));
 
-                // Horizontal left
-                m_pBtnAHL = new Button("Horizontal Left:");
+                // Horizontal From
+                m_pBtnAHL = new Button("Horizontal From:");
                 m_pBtnAHL->SetOnClicked([this]()
                                         {
                                             m_scanSet.m_lastSet = lvc_HL;
@@ -388,8 +388,8 @@ namespace open3d
                 pGs->AddChild(GiveOwnership(m_pBtnAHLinc));
                 pGs->AddChild(GiveOwnership(m_pBtnAHLdec));
 
-                // Horizontal right
-                m_pBtnAHR = new Button("Horizontal Right:");
+                // Horizontal To
+                m_pBtnAHR = new Button("Horizontal To:");
                 m_pBtnAHR->SetOnClicked([this]()
                                         {
                                             m_scanSet.m_lastSet = lvc_HR;
@@ -437,8 +437,8 @@ namespace open3d
                 pGs->AddChild(GiveOwnership(m_pBtnNVinc));
                 pGs->AddChild(GiveOwnership(m_pBtnNVdec));
 
-                // Vertical top
-                m_pBtnAVT = new Button("Vertical Top:");
+                // Vertical From
+                m_pBtnAVT = new Button("Vertical From:");
                 m_pBtnAVT->SetOnClicked([this]()
                                         {
                                             m_scanSet.m_lastSet = lvc_VT;
@@ -465,8 +465,8 @@ namespace open3d
                 pGs->AddChild(GiveOwnership(m_pBtnAVTinc));
                 pGs->AddChild(GiveOwnership(m_pBtnAVTdec));
 
-                // Vertical bottom
-                m_pBtnAVB = new Button("Vertical Bottom:");
+                // Vertical To
+                m_pBtnAVB = new Button("Vertical To:");
                 m_pBtnAVB->SetOnClicked([this]()
                                         {
                                             m_scanSet.m_lastSet = lvc_VB;

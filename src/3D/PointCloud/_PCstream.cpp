@@ -62,12 +62,15 @@ namespace kai
         NULL_(m_pP);
         IF_(!m_bAccept);
 
+		const static float s_b = 1.0 / 1000.0;
+		const static float c_b = 1.0 / 255.0;
+
         // lidar to Nav coordinate
         Vector3d vPnav = Vector3d(
                             vP[m_vAxisIdx.x] * m_vAxisK.x,
                             vP[m_vAxisIdx.y] * m_vAxisK.y,
                             vP[m_vAxisIdx.z] * m_vAxisK.z
-                            );
+                            ) * s_b;
         IF_(!bRange(vPnav));
 
         Vector3f vCrgb = vC;
@@ -90,6 +93,8 @@ namespace kai
         NULL_(pPC);
 
         pPC->Clear();
+        pPC->points_.clear();
+        pPC->colors_.clear();
 
         int nP = m_nPread;
         if(nP > m_nP)
@@ -97,11 +102,9 @@ namespace kai
 
 		for (int i = 0; i < nP; i++)
 		{
-			pPC->points_[i] = m_pP[i].m_vP;
-			pPC->colors_[i] = m_pP[i].m_vC.cast<double>();
+			pPC->points_.push_back(m_pP[i].m_vP);
+			pPC->colors_.push_back(m_pP[i].m_vC.cast<double>());
 		}
-
-        return;        
     }
 
 

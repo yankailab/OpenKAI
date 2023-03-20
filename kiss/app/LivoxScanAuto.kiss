@@ -62,7 +62,7 @@
 			"name":"V",
 			"pOrigin":1500.0,
 			"pTarget":1500.0,
-			"pRange":[900,2100],
+			"pRange":[1000,2100],
 		}
 	}
 }
@@ -90,7 +90,7 @@
 	"nPresv":1000000,
 	"nPresvNext":0,
 	"_NavBase":"T265",
-	"vGeometryBase":["Livox","pcFile"],
+	"vGeometryBase":["Livox"],
 	"_ActuatorBase":"arduServo",
     {
 		"name":"actuatorH",
@@ -101,7 +101,7 @@
     {
 		"name":"actuatorV",
 		"vTarget":0.5,
-		"dV":0.0005,
+		"dV":0.01,
 		"iAxis":1,
 	}
 	"vCamLookAt":[0,0,0],
@@ -124,6 +124,7 @@
 	"rVoxel":0.05,
 	"baseDir":"/home/kai/Documents/LivoxScan/",
 	"/baseDir":"/home/lab/Documents/",
+	"tWaitSec":10,
 }
 
 {
@@ -146,27 +147,15 @@
 	"bLog":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
 	"LivoxLidar":"LivoxLidar",
 	"/broadcastCode":"3JEDHC900100791",
 	"nP":256000,
 	"fCalib":"/home/kai/dev/VzScan/calibOfs.kiss",
-	"lidarMode":2,
-	"vAxisIdx":[0, 1, 2],
-	"vAxisK":[1, -1, -1],
-}
-
-{
-	"name":"pcFile",
-	"class":"_PCfile",
-	"bON":1,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"fName":"/home/kai/Documents/test_data/fragment.pcd",
-	"nPreserve":480000,
+	"lidarMode":1,
+	"vAxisIdx":[1, 2, 0],
+	"vAxisK":[-1, 1, -1],
 }
 
 {

@@ -236,7 +236,7 @@ namespace kai
 		m_bScanning = true;
 
 		_Livox *pPsrc = (_Livox *)m_vpGB[0];
-//		pPsrc->startStream();
+		pPsrc->startStream();
 	}
 
 	void _LivoxScanAuto::scanUpdate(void)
@@ -266,9 +266,6 @@ namespace kai
 			m_npH += m_ndH;
 			if (m_npH > m_scanSet.m_vSvRangeH.y)
 			{
-				// m_bScanning = false;
-				// m_actH.setTarget(m_scanSet.m_vSvRangeH.mid());
-				// m_actV.setTarget(m_scanSet.m_vSvRangeV.mid());
 				scanStop();
 
 				// pW->SetIsScanning(false);
@@ -338,7 +335,7 @@ namespace kai
 		m_actV.setTarget(m_scanSet.m_vSvRangeV.mid());
 
 		_Livox *pPsrc = (_Livox *)m_vpGB[0];
-//		pPsrc->stopStream();
+		pPsrc->stopStream();
 	}
 
 	void _LivoxScanAuto::updatePreview(void)

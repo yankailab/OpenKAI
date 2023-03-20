@@ -29,6 +29,8 @@ namespace kai
         pK->v("lidarMode", &m_lidarMode);
         pK->v("scanPattern", &m_scanPattern);
 
+//		m_livoxCtrl.m_vRz = {m_vRange.x, m_vRange.y};
+
         string n;
         n = "";
         pK->v("LivoxLidar", &n);
@@ -89,8 +91,7 @@ namespace kai
 
     bool _Livox::updateLidar(void)
     {
-        m_pL->setLidarMode(m_broadcastCode, (LidarMode)m_lidarMode);
-        
+        m_pL->setLidarMode(m_broadcastCode, (LidarMode)m_lidarMode);        
         // if(m_lidarMode != kLidarModePowerSaving)
         // {
         //     m_pL->setScanPattern(m_broadcastCode, (LidarScanPattern)m_scanPattern);            

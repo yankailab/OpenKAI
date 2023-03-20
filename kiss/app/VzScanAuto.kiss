@@ -101,7 +101,7 @@
     {
 		"name":"actuatorV",
 		"vTarget":0.5,
-		"dV":0.0005,
+		"dV":0.001,
 		"iAxis":1,
 	}
 	"vCamLookAt":[0,0,0],
