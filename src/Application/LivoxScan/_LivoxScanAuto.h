@@ -130,7 +130,6 @@ namespace kai
 		BIT_FLAG m_fProcess;
 
 		bool m_bScanning;
-		int m_tWaitSec;
 		int m_nTake;
 		float m_npH;
 		float m_ndH;

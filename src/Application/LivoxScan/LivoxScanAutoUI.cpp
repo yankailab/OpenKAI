@@ -92,6 +92,7 @@ namespace open3d
                 m_pBtnAVBinc->SetEnabled(!m_bScanning);
                 m_pBtnAVBdec->SetEnabled(!m_bScanning);
 
+                m_pBtnTwaitSec->SetText(string("Scan wait (sec): " + i2str(m_scanSet.m_tWaitSec)).c_str());
                 m_pBtnNH->SetText(string("Horizontal Number: " + i2str(m_scanSet.m_nH)).c_str());
                 m_pBtnAHL->SetText(string("Horizontal From: " + f2str(m_scanSet.m_vSvRangeH.x)).c_str());
                 m_pBtnAHR->SetText(string("Horizontal To: " + f2str(m_scanSet.m_vSvRangeH.y)).c_str());
@@ -338,6 +339,27 @@ namespace open3d
                 int btnPadV = m_uiState.m_btnPaddingV / 2;
 
                 VGrid *pGs = new VGrid(3, v_spacing);
+
+                // take wait time
+                m_pBtnTwaitSec = new Button("Wait time:");
+                m_pBtnTSinc = new Button(" + ");
+                m_pBtnTSinc->SetOnClicked([this]()
+                                        {
+                                            m_scanSet.m_tWaitSec = constrain(m_scanSet.m_tWaitSec+1, 1,200);
+                                            m_cbScanSet.call();
+                                            UpdateBtnState(); });
+                m_pBtnTSdec = new Button(" - ");
+                m_pBtnTSdec->SetOnClicked([this]()
+                                        {
+                                            m_scanSet.m_tWaitSec = constrain(m_scanSet.m_tWaitSec-1, 1,200);
+                                            m_cbScanSet.call();
+                                            UpdateBtnState(); });
+                m_pBtnTwaitSec->SetPaddingEm(btnPadH, btnPadV);
+                m_pBtnTSinc->SetPaddingEm(btnPadH, btnPadV);
+                m_pBtnTSdec->SetPaddingEm(btnPadH, btnPadV);
+                pGs->AddChild(GiveOwnership(m_pBtnTwaitSec));
+                pGs->AddChild(GiveOwnership(m_pBtnTSinc));
+                pGs->AddChild(GiveOwnership(m_pBtnTSdec));
 
                 // Horizontal number
                 m_pBtnNH = new Button("Horizontal Number:");

@@ -104,6 +104,12 @@
 		"dV":0.001,
 		"iAxis":1,
 	}
+    {
+		"name":"scanSet",
+		"tWaitSec":3,
+		"nH":10,
+		"nV":10,
+	}
 	"vCamLookAt":[0,0,0],
 	"vCamEye":[0,0,2],
 	"vCamUp":[0,1,0],
@@ -145,7 +151,7 @@
 	"fCalib":"/home/kai/dev/VzScan/calibOfs.kiss",
 	"nPresv":400000,
 	"tWait":60,
-	"vRange":[0.0, 1000],
+	"vRange":[0.0, 10.0],
 }
 
 {

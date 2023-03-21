@@ -21,6 +21,7 @@ namespace open3d
 
 			struct VzScanSet
 			{
+				int m_tWaitSec = 3;
 				vFloat2 m_vSvRangeH = {0.0, 1.0};
 				vFloat2 m_vSvRangeV = {0.0, 1.0};
 

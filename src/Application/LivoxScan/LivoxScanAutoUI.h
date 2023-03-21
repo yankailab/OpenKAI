@@ -21,6 +21,7 @@ namespace open3d
 
 			struct LivoxScanSet
 			{
+				int m_tWaitSec = 10;
 				vFloat2 m_vSvRangeH = {0.0, 1.0};
 				vFloat2 m_vSvRangeV = {0.0, 1.0};
 
@@ -90,6 +91,10 @@ namespace open3d
 				Button *m_pBtnScanStart;
 				ProgressBar *m_progScan;
 				Label *m_labelProg;
+
+				Button *m_pBtnTwaitSec;
+				Button *m_pBtnTSinc;
+				Button *m_pBtnTSdec;
 
 				Button *m_pBtnNH;
 				Button *m_pBtnAHL;

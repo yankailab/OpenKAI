@@ -22,7 +22,6 @@ namespace kai
 		m_fProcess.clearAll();
 		m_baseDir = "";
 		m_dir = "";
-		m_tWaitSec = 2;
 
 		m_pAct = NULL;
 	}
@@ -42,7 +41,6 @@ namespace kai
 		pK->v("rVoxel", &m_rVoxel);
 		pK->v("nPmax", &m_nPmax);
 		pK->v("baseDir", &m_baseDir);
-		pK->v("tWaitSec", &m_tWaitSec);
 
 		Kiss *pKa = pK->child("actuatorH");
 		IF_F(pKa->empty());
@@ -59,6 +57,7 @@ namespace kai
 		pKa = pK->child("scanSet");
 		if (!pKa->empty())
 		{
+			pKa->v("tWaitSec", &m_scanSet.m_tWaitSec);
 			pKa->v("vRangeH", &m_scanSet.m_vSvRangeH);
 			pKa->v("vRangeV", &m_scanSet.m_vSvRangeV);
 			pKa->v("nH", &m_scanSet.m_nH);
@@ -254,8 +253,8 @@ namespace kai
 		_Livox *pPsrc = (_Livox *)m_vpGB[0];
 		pPsrc->clear();	
 
-		//TODO: change to point number	
-		sleep(m_tWaitSec);
+		//TODO: change to point number
+		sleep(m_scanSet.m_tWaitSec);
 		scanTake();
 
 		m_npV += m_ndV;

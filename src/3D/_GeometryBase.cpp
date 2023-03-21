@@ -53,13 +53,10 @@ namespace kai
         pK->v("vAxisIdx", &m_vAxisIdx);
         pK->v("vAxisK", &m_vAxisK);
         m_vAxisK *= m_unitK;
+        pK->v("vRange", &m_vRange);
 //        pK->v("vAxisIdxRGB", &m_vAxisIdxRGB);
 //        pK->v("vAxisKrgb", &m_vAxisKrgb);
 //        m_vAxisKrgb *= m_unitK;
-
-        pK->v("vRange", &m_vRange);
-        m_vRange.x *= m_vRange.x;
-        m_vRange.y *= m_vRange.y;
 
         //transform
         pK->v("vT", &m_vT);

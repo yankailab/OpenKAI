@@ -104,6 +104,12 @@
 		"dV":0.01,
 		"iAxis":1,
 	}
+    {
+		"name":"scanSet",
+		"tWaitSec":10,
+		"nH":10,
+		"nV":10,
+	}
 	"vCamLookAt":[0,0,0],
 	"vCamEye":[0,0,2],
 	"vCamUp":[0,1,0],
@@ -156,6 +162,7 @@
 	"lidarMode":1,
 	"vAxisIdx":[1, 2, 0],
 	"vAxisK":[-1, 1, -1],
+	"vRange":[0.0, 1000],
 }
 
 {
