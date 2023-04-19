@@ -37,7 +37,7 @@ namespace kai
 		m_bClient = true;
 
 		Kiss *pKt = pK->child("threadR");
-		IF_F(pKt->empty());
+		IF_d_F(pKt->empty(), LOG_E("threadR not found"));
 
 		m_pTr = new _Thread();
 		if (!m_pTr->init(pKt))

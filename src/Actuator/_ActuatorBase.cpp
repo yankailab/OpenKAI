@@ -79,7 +79,7 @@ namespace kai
 			m_vAxis.push_back(a);
 		}
 
-		IF_F(m_vAxis.size() < m_nMinAxis);
+		IF_d_F(m_vAxis.size() < m_nMinAxis, LOG_E("axis number < nMinAxis"));
 
 		string n;
 

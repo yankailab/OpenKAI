@@ -148,7 +148,7 @@
 	"vAxisIdx":[0, 1, 2],
 	"vAxisK":[1, -1, -1],
 	"/vAxisK":[-1, 1, -1],
-	"fCalib":"/home/kai/dev/VzScan/calibOfs.kiss",
+	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calibVz.kiss",
 	"nPresv":400000,
 	"tWait":60,
 	"vRange":[0.0, 10.0],

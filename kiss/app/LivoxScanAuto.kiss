@@ -158,7 +158,7 @@
 	"LivoxLidar":"LivoxLidar",
 	"/broadcastCode":"3JEDHC900100791",
 	"nP":256000,
-	"fCalib":"/home/kai/dev/VzScan/calibOfs.kiss",
+	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calibLivox.kiss",
 	"lidarMode":1,
 	"vAxisIdx":[1, 2, 0],
 	"vAxisK":[-1, 1, -1],

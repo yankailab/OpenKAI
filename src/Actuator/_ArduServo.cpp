@@ -175,7 +175,6 @@ namespace kai
 
 	void _ArduServo::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_ActuatorBase::console(pConsole);
 
@@ -187,7 +186,6 @@ namespace kai
 		}
 
 		pC->addMsg("nCMD = " + i2str(m_nCMDrecv), 1);
-#endif
 	}
 
 }

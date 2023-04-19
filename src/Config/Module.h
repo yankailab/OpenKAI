@@ -42,6 +42,7 @@
 #include "../Actuator/_HYMCU_RS485.h"
 #include "../Actuator/Articulated/_S6H4D.h"
 #include "../Actuator/_StepperGripper.h"
+#include "../Actuator/_SkydroidGimbal.h"
 #include "../Actuator/Motor/_ZLAC8015.h"
 #include "../Actuator/Motor/_ZLAC8015D.h"
 #include "../Actuator/Motor/_ZDmotor.h"
