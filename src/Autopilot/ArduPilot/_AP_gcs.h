@@ -15,9 +15,13 @@ namespace kai
 		~_AP_gcs();
 
 		virtual bool init(void *pKiss);
+		virtual bool link(void);
 		virtual bool start(void);
 		virtual int check(void);
 		virtual void update(void);
+
+		void addTargetDroneBox(int id, vDouble2 vPdb);
+		int getTargetDroneBoxID(void);
 
 		void landingReady(bool bReady);
 		void takeoffReady(bool bReady);
@@ -37,6 +41,9 @@ namespace kai
 		bool m_bAutoArm;
 		float m_altAirborne;
 		int m_dLanded;
+
+		int m_targetDroneBoxID;
+		vDouble2 m_vTargetDroneBoxPos;
 	};
 
 }

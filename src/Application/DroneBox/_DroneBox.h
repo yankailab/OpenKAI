@@ -26,9 +26,14 @@ namespace kai
         ~_DroneBox();
 
         virtual bool init(void *pKiss);
+		virtual bool link(void);
         virtual bool start(void);
         virtual int check(void);
         virtual void update(void);
+
+        // general
+        int getID(void);
+        vDouble2 getPos(void);
 
         //Drone Box mechanical control
         bool boxLandingPrepare(void);
@@ -52,6 +57,9 @@ namespace kai
         int m_iSlave;
 
         DRONEBOX_LAST_CMD m_lastCMD;
+
+        int m_ID;
+        vDouble2 m_vPos;
     };
 
 }

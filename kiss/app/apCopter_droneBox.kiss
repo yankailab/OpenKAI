@@ -109,9 +109,11 @@
 	}
     {
 		"name":"threadR",
-		"vTwakeUp":["apMavlink"],
+		"FPS":10,
+		"vTwakeUp":["apMavlink.thread"],
 	}
 	"port":"/dev/ttyAMA0",
+	"/port":"/dev/ttyACM0",
 	"baud":115200,
 }
 
@@ -221,10 +223,10 @@
     {
 		"name":"threadR",
 		"FPS":1,
+		"vTwakeUp":["skydroidGimbal.threadR"],
 	}
 	"addr":"192.168.144.108",
 	"port":5000,
-	"_wakeUp":"skydroidGimbal.threadR",
 }
 
 {
@@ -234,7 +236,7 @@
 	"bLog":0,
     {
 		"name":"thread",
-		"FPS":5,
+		"FPS":1,
 	}
     {
 		"name":"threadR",
@@ -471,12 +473,12 @@
 	}
     {
 		"name":"threadR",
-		"FPS":1,
+		"FPS":30,
+		"vTwakeUp":["dbjTelem.threadR"],
 	}
 	"bLog":0,
 	"port":"/dev/ttyUSB0",
 	"baud":57600,
-	"_wakeUp":"dbjTelem",
 }
 
 {
@@ -506,12 +508,12 @@
 	}
     {
 		"name":"threadR",
-		"FPS":1,
+		"FPS":30,
+		"vTwakeUp":["dbjUDP.threadR"],
 	}
 	"bLog":0,
 	"addr":"192.168.16.100",
 	"port":20000,
-	"_wakeUp":"dbjUDP",
 }
 
 {
@@ -529,4 +531,40 @@
 	"bLog":1,
 	"_AP_gcs":"apGCS",
 	"_IOBase":"udp",
+}
+
+
+{
+	"name":"serialTelem2",
+	"class":"_SerialPort",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+		"vTwakeUp":["dbjTelem2.threadR"],
+	}
+	"bLog":0,
+	"port":"/dev/ttyUSB1",
+	"baud":57600,
+}
+
+{
+	"name":"dbjTelem2",
+	"class":"_AP_droneBoxJSON",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"bLog":1,
+	"_AP_gcs":"apGCS",
+	"_IOBase":"serialTelem2",
 }

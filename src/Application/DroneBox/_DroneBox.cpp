@@ -8,6 +8,9 @@ namespace kai
         m_pMB = NULL;
         m_iSlave = 1;
         m_lastCMD = dbx_unknown;
+
+        m_ID = -1;
+        m_vPos.clear();
     }
 
     _DroneBox::~_DroneBox()
@@ -19,17 +22,26 @@ namespace kai
         IF_F(!this->_GCSbase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
+        pK->v("ID", &m_ID);
+        pK->v("vPos", &m_vPos);
         pK->v("iSlave", &m_iSlave);
 
-        string n;
+        return true;
+    }
 
+	bool _DroneBox::link(void)
+	{
+		IF_F(!this->_GCSbase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+
+        string n;
         n = "";
         pK->v("_Modbus", &n);
         m_pMB = (_Modbus *)(pK->getInst(n));
         IF_Fl(!m_pMB, n + ": not found");
 
-        return true;
-    }
+		return true;
+	}
 
     bool _DroneBox::start(void)
     {
@@ -219,6 +231,16 @@ namespace kai
 
         m_lastCMD = dbx_boxRecover;
         return true;
+    }
+
+    int _DroneBox::getID(void)
+    {
+        return m_ID;
+    }
+
+    vDouble2 _DroneBox::getPos(void)
+    {
+        return m_vPos;
     }
 
 }

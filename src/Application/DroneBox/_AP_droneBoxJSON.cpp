@@ -7,6 +7,9 @@ namespace kai
     {
         m_Tr = NULL;
         m_pAPgcs = NULL;
+
+        m_ID = -1;
+        m_vPos.clear();
     }
 
     _AP_droneBoxJSON::~_AP_droneBoxJSON()
@@ -19,12 +22,6 @@ namespace kai
         IF_F(!this->_JSONbase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        string n;
-        n = "";
-        pK->v("_AP_gcs", &n);
-        m_pAPgcs = (_AP_gcs *)(pK->getInst(n));
-        IF_Fl(!m_pAPgcs, n + ": not found");
-
         Kiss *pKt = pK->child("threadR");
         IF_F(pKt->empty());
 
@@ -35,8 +32,26 @@ namespace kai
             return false;
         }
 
+        pKt->m_pInst = m_pTr;
+
         return true;
     }
+
+	bool _AP_droneBoxJSON::link(void)
+	{
+		IF_F(!this->_JSONbase::link());
+		IF_F(!m_pTr->link());
+
+		Kiss *pK = (Kiss *)m_pKiss;
+
+        string n;
+        n = "";
+        pK->v("_AP_gcs", &n);
+        m_pAPgcs = (_AP_gcs *)(pK->getInst(n));
+        IF_Fl(!m_pAPgcs, n + ": not found");
+
+		return true;
+	}
 
     bool _AP_droneBoxJSON::start(void)
     {
@@ -116,6 +131,9 @@ namespace kai
             return;
         }
 
+
+        IF_(m_pAPgcs->getTargetDroneBoxID() != m_ID);
+
         if (pState->bLANDING_REQUEST())
         {
             JO(o, "cmd", "req");
@@ -168,6 +186,13 @@ namespace kai
     void _AP_droneBoxJSON::heartbeat(picojson::object &o)
     {
         IF_(check() < 0);
+        IF_(!o["id"].is<double>());
+        IF_(!o["lat"].is<double>());
+        IF_(!o["lng"].is<double>());
+
+        m_ID = o["id"].get<double>();
+        m_vPos.x = o["lat"].get<double>();
+        m_vPos.y = o["lng"].get<double>();
     }
 
     void _AP_droneBoxJSON::ack(picojson::object &o)

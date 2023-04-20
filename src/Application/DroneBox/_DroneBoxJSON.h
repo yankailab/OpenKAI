@@ -14,12 +14,14 @@ namespace kai
 		~_DroneBoxJSON();
 
 		virtual bool init(void *pKiss);
+		virtual bool link(void);
 		virtual bool start(void);
 		virtual int check(void);
 		virtual void console(void *pConsole);
 
 	protected:
 		void send(void);
+	    virtual bool sendHeartbeat(void);
 
 		//msg handlers
 		void handleMsg(string &str);

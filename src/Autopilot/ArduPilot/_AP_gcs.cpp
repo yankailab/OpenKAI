@@ -10,6 +10,9 @@ namespace kai
         m_bAutoArm = false;
         m_altAirborne = 20.0;
         m_dLanded = 5;
+
+        m_targetDroneBoxID = -1;
+        m_vTargetDroneBoxPos.clear();
     }
 
     _AP_gcs::~_AP_gcs()
@@ -25,6 +28,17 @@ namespace kai
         pK->v("altAirborne", &m_altAirborne);
         pK->v("dLanded", &m_dLanded);
 
+        pK->v("targetDroneBoxID", &m_targetDroneBoxID);
+        pK->v("vTargetDroneBoxPos", &m_vTargetDroneBoxPos);
+
+        return true;
+    }
+
+	bool _AP_gcs::link(void)
+	{
+		IF_F(!this->_GCSbase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+
         string n;
 
         n = "";
@@ -37,8 +51,8 @@ namespace kai
         m_pAPland = (_AP_land *)(pK->getInst(n));
         IF_Fl(!m_pAPland, n + ": not found");
 
-        return true;
-    }
+		return true;
+	}
 
     bool _AP_gcs::start(void)
     {
@@ -189,6 +203,27 @@ namespace kai
 
         if (m_state.bTAKEOFF_REQUEST())
             m_pSC->transit(m_state.TAKEOFF_READY);
+    }
+
+	void _AP_gcs::addTargetDroneBox(int id, vDouble2 vPdb)
+    {
+        return; // use fixed id for test first
+
+        vDouble4 v = m_pAP->getGlobalPos();
+        vDouble2 vPap;
+        vPap.set(v.x, v.y);
+
+        double d = (vPap - m_vTargetDroneBoxPos).len();
+        double dNew = (vPap - vPdb).len();
+        IF_(d < dNew);
+
+        m_targetDroneBoxID = id;
+        m_vTargetDroneBoxPos = vPdb;   
+    }
+
+	int _AP_gcs::getTargetDroneBoxID(void)
+    {
+        return m_targetDroneBoxID;
     }
 
 }
