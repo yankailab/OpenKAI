@@ -9,7 +9,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
@@ -20,7 +20,7 @@
 {
 	"name":"CVwindow",
 	"class":"_WindowCV",
-	"bON":0,
+	"bON":1,
 	"bFullScreen":0,
     {
 		"name":"thread",
@@ -33,7 +33,7 @@
 {
 	"name":"FB",
 	"class":"_GstOutput",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":3,
@@ -184,7 +184,7 @@
 {
 	"name":"apServo",
 	"class":"_AP_servo",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":2,
@@ -205,6 +205,52 @@
 			"name":"roll",
 			"iChan":9,
 			"pwm":1500,
+		}
+	}
+}
+
+{
+	"name":"tcpG",
+	"class":"_TCPclient",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":1,
+	}
+	"addr":"192.168.144.108",
+	"port":5000,
+	"_wakeUp":"skydroidGimbal.threadR",
+}
+
+{
+	"name":"skydroidGimbal",
+	"class":"_SkydroidGimbal",
+	"bON":1,
+	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":5,
+	}
+    {
+		"name":"threadR",
+		"FPS":1,
+	}
+	"_IOBase":"tcpG",
+	"cmd":"#TPUG2wPTZ02",
+	"/cmd":"#TPUG2wPTZ07",
+	{
+		"name":"axis",
+		{
+			"name":"H",
+			"pOrigin":0.0,
+			"pTarget":0.0,
+			"pRange":[0,360],
+			"pErr":1,
 		}
 	}
 }
@@ -253,7 +299,7 @@
 	"dir":"/home/pi/ssd/video/",
 	"fCalib":"/home/pi/ok/calibCam.kiss",
 	"/gstOutput":"appsrc ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! matroskamux ! filesink location=[fName]",
-	"gstOutput":"appsrc ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! tee name=t t. ! queue ! matroskamux ! filesink location=[fName] t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.16.131 port=5678 auto-multicast=false",
+	"gstOutput":"appsrc ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! tee name=t t. ! queue ! matroskamux ! filesink location=[fName] t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.3 port=5678 auto-multicast=false",
 }
 
 {
@@ -266,8 +312,8 @@
 	}
 	"bLog":1,
 	"cmd":"curl 2>&1 -T [fName] ftp://193.112.75.123/pub/ -u anonymous: --connect-timeout 60 --no-progress-meter",
-	"dirIn":"/home/pi/ssd/video/",
-	"extIn":[".mka",".json"],
+	"dir":"/home/pi/ssd/video/",
+	"vExt":[".mka",".json"],
 }
 
 {

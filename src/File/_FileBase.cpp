@@ -89,7 +89,7 @@ namespace kai
 	{
 		NULL_F(pvFile);
 		DIR *pDir = opendir(dir.c_str());
-		NULL_F(!pDir);
+		NULL_F(pDir);
 
 		struct dirent *dirE;
 		ifstream ifs;

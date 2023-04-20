@@ -9,7 +9,7 @@
 #define OpenKAI_src_Sensor__TOFsense_H_
 
 #include "_DistSensorBase.h"
-#include "../IO/_IOBase.h"
+#include "../../IO/_IOBase.h"
 
 #define NLINK_BEGIN 0x57
 

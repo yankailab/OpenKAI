@@ -42,14 +42,15 @@
 	"bLog":0,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":5,
 	}
     {
 		"name":"threadR",
 		"FPS":1,
 	}
 	"_IOBase":"tcpG",
-	"cmd":"#TPUG2wPTZ02",
+	"/cmd":"#TPUG2wPTZ02",
+	"cmd":"#TPUG2wPTZ07",
 	{
 		"name":"axis",
 		{
