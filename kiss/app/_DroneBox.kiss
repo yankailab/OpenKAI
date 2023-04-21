@@ -9,7 +9,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -81,7 +81,7 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"port":"/dev/ttyUSB0",
+	"port":"/dev/ttyS0",
 	"baud":9600,
 	"parity":"N",
 	"tOutSec":2,
@@ -97,9 +97,10 @@
 	}
 	"bLog":1,
 	"_StateControl":"state",
-	"gcsID":1,
 	"_Modbus":"modbus",
 	"iSlave":1,
+	"ID":1,
+	"vPos":[0,0],
 }
 
 {
@@ -115,7 +116,7 @@
 		"FPS":1,
 	}
 	"bLog":0,
-	"port":"/dev/ttyUSB1",
+	"port":"/dev/ttyUSB0",
 	"baud":57600,
 }
 
