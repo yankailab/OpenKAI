@@ -27,7 +27,8 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v<uint8_t>("dict", &m_dict);
-		m_pDict = aruco::getPredefinedDictionary(m_dict);
+		*m_pDict = aruco::getPredefinedDictionary(m_dict);
+//		m_pDict = aruco::getPredefinedDictionary(m_dict);
 		pK->v("realSize", &m_realSize);
 
 		pK->v("bPose", &m_bPose);
