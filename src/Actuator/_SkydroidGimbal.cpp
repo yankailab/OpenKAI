@@ -72,6 +72,7 @@ namespace kai
 	{
 		NULL_(m_pIO);
 		IF_(!m_pIO->isOpen());
+		IF_(m_cmd.empty());
 
 		string cmd = m_cmd;
 		char crc = calcCRC(cmd.c_str(), (int)cmd.length());

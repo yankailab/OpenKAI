@@ -20,13 +20,13 @@
 {
 	"name":"CVwindow",
 	"class":"_WindowCV",
-	"bON":1,
+	"bON":0,
 	"bFullScreen":0,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["cam"],
+	"vBASE":["cam","/univTag","/arUco"],
 	"bShow":1,
 }
 
@@ -51,8 +51,8 @@
 		"FPS":10,
 	}
 	"bON":1,
-	"/start":"STANDBY",
-	"start":"LANDING",
+	"start":"STANDBY",
+	"/start":"LANDING",
 
 	{
 		"name":"state",
@@ -243,8 +243,7 @@
 		"FPS":1,
 	}
 	"_IOBase":"tcpG",
-	"cmd":"#TPUG2wPTZ02",
-	"/cmd":"#TPUG2wPTZ07",
+	"/cmd":"#TPUG2wPTZ02", /* Downward */
 	{
 		"name":"axis",
 		{
