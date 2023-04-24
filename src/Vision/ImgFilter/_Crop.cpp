@@ -15,9 +15,7 @@ namespace kai
 		m_type = vision_crop;
 		m_pV = NULL;
 
-		m_roi.clear();
-		m_roi.z = 1.0;
-		m_roi.w = 1.0;
+		m_vRoi.clear();
 	}
 
 	_Crop::~_Crop()
@@ -30,7 +28,15 @@ namespace kai
 		IF_F(!_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("roi", &m_roi);
+		pK->v("vRoi", &m_vRoi);
+
+		return true;
+	}
+
+	bool _Crop::link(void)
+	{
+		IF_F(!this->_VisionBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
 
 		string n;
 		n = "";
@@ -83,10 +89,11 @@ namespace kai
 		IF_(m_pV->BGR()->bEmpty());
 
 		Mat mIn = *m_pV->BGR()->m();
-		Rect r(m_roi.x * mIn.cols,
-			   m_roi.y * mIn.rows,
-			   m_roi.width() * mIn.cols,
-			   m_roi.height() * mIn.rows);
+		Rect r;
+		r.x = constrain(m_vRoi.x, 0, mIn.cols);
+		r.y = constrain(m_vRoi.y, 0, mIn.rows);
+		r.width = m_vRoi.z - r.x;
+		r.height = m_vRoi.w - r.y;
 
 		m_vSize.x = r.width;
 		m_vSize.y = r.height;

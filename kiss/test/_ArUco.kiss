@@ -2,54 +2,88 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
-	"bDraw":1,
-	"bLog":0,
+	"bLog":1,
 	"bStdErr":1,
-	"waitKey":30,
 }
 
 {
-	"name":"OK_Console",
+	"name":"console",
 	"class":"_Console",
 	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["cam","arUco"],
 }
 
 {
-	"name":"OKview",
-	"class":"Window",
+	"name":"view",
+	"class":"_WindowCV",
 	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bFullScreen":0,
+	"vBASE":["/cam","crop","arUco"],
 }
 
 {
 	"name":"cam",
 	"class":"_Camera",
-	"FPS":30,
-	"bON":1,
-	"Window":"OKview",
-	"_Console":"OK_Console",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"deviceID":0,
-	"w":640,
-	"h":480,
+	"vSize":[640,480],
 }
 
 {
-	"name":"universe",
+	"name":"cam",
+	"class":"_GStreamer",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! queue ! videoconvert ! appsink", /* C10 mini: set host PC IP to 192.168.144.100 */
+	"pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! appsink", /* C10 mini, using YUV, Y chan only */
+}
+
+{
+	"name":"crop",
+	"class":"_Crop",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"cam",
+	"vRoi":[0,0,1280,720],
+}
+
+{
+	"name":"univTag",
 	"class":"_Universe",
 	"bON":1,
-	"Window":"OKview",
-	"_Console":"OK_Console",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 }
 
 {
 	"name":"arUco",
 	"class":"_ArUco",
-	"FPS":30,
 	"bON":1,
-	"bDraw":1,
-	"Window":"OKview",
-	"_Console":"OK_Console",
-	"_VisionBase":"cam",
-	"_Universe":"universe",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"crop",
+	"_Universe":"univTag",
 	"dict":17,
 }

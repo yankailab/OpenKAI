@@ -19,10 +19,11 @@ namespace kai
 		_Crop();
 		virtual ~_Crop();
 
-		bool init(void *pKiss);
-		bool start(void);
-		bool open(void);
-		void close(void);
+		virtual bool init(void *pKiss);
+		virtual bool link(void);
+		virtual bool start(void);
+		virtual bool open(void);
+		virtual void close(void);
 
 	private:
 		void filter(void);
@@ -35,8 +36,7 @@ namespace kai
 
 	public:
 		_VisionBase *m_pV;
-
-		vFloat4 m_roi;
+		vInt4 m_vRoi;
 	};
 
 }
