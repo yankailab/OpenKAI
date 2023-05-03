@@ -336,6 +336,9 @@ namespace kai
 		ADD_MODULE(_SharedMemImg);
 		ADD_MODULE(_Threshold);
 		ADD_MODULE(_VideoFile);
+#ifdef USE_INFIRAY
+		ADD_MODULE(_InfiRay);
+#endif
 #ifdef USE_CUDA
 		ADD_MODULE(_DenseFlow);
 #endif

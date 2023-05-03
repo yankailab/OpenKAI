@@ -26,7 +26,7 @@
 		"FPS":30,
 	}
 	"bFullScreen":0,
-	"vBASE":["/cam","crop"],
+	"vBASE":["/cam","/crop","iRay","/contrast"],
 }
 
 {
@@ -42,9 +42,34 @@
 }
 
 {
+	"name":"iRay",
+	"class":"_InfiRay",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"deviceID":4,
+	"vSize":[256,196],
+}
+
+{
+	"name":"contrast",
+	"class":"_Contrast",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"iRay",
+	"alpha":2.5,
+	"beta":0.0,
+}
+
+{
 	"name":"cam",
 	"class":"_GStreamer",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -82,7 +107,7 @@
 {
 	"name":"crop",
 	"class":"_Crop",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,

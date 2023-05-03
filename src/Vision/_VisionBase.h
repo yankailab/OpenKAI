@@ -44,6 +44,7 @@ namespace kai
 		vision_RSdepth,
 		vision_depthProj,
 		vision_sharedMemImg,
+		vision_infiRay,
 	};
 
 	class _VisionBase : public _ModuleBase

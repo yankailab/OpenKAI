@@ -325,6 +325,9 @@
 #include "../Vision/ImgFilter/_Resize.h"
 #include "../Vision/ImgFilter/_Remap.h"
 #include "../Vision/ImgFilter/_Rotate.h"
+#ifdef USE_INFIRAY
+#include "../Vision/_InfiRay.h"
+#endif
 #ifdef USE_CUDA
 #include "../Vision/_DenseFlow.h"
 #endif
