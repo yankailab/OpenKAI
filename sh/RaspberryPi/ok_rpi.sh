@@ -3,11 +3,11 @@
 # Enable SSH, disable OS use of UART, enable UART hardware
 sudo raspi-config
 
-Start the SSH service with systemctl
+# Start the SSH service with systemctl
 sudo systemctl enable ssh
 sudo systemctl start ssh
 
-For headless setup
+# For headless setup
 nano /media/kai/boot/ssh
 Placing a file named ssh, without any extension, onto the boot partition of the SD card. When the Pi boots, it looks for the ssh file. If it is found, SSH is enabled, and the file is deleted.
 
@@ -41,12 +41,11 @@ sudo chown pi ssd/
 sudo mount /dev/nvme0n1 /home/pi/ssd
 
 # Raspberry camera
-sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=20/1 ! x264enc ! matroskamux ! filesink location=/home/pi/ssd/test.mkv
-sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! omxh264enc ! video/x-h264, control-rate=2,bitrate=16650000,insert-sps-pps=true,profile=high ! h264parse ! matroskamux ! filesink location=/home/pi/ssd/test1.mkv
-sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! v4l2h264enc ! h264parse ! matroskamux ! filesink location=/home/pi/ssd/test1.mkv
-sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
-sudo gst-launch-1.0 libcamerasrc ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
-sudo gst-launch-1.0 libcamerasrc ! video/x-raw,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! v4l2h264enc ! 'video/x-h264,level=(string)4' ! h264parse ! matroskamux ! filesink location="/home/pi/ssd/video/test.mka"
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=20/1 ! x264enc ! matroskamux ! filesink location=/home/pi/ssd/test.mkv
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! v4l2h264enc ! h264parse ! matroskamux ! filesink location=/home/pi/ssd/test1.mkv
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
+gst-launch-1.0 libcamerasrc ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
+gst-launch-1.0 libcamerasrc ! video/x-raw,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! v4l2h264enc ! 'video/x-h264,level=(string)4' ! h264parse ! matroskamux ! filesink location="/home/pi/ssd/video/test.mka"
 
 # USB reset for Realsense
 sudo apt-get install libusb-1.0-0-dev
@@ -109,15 +108,6 @@ network={
 sudo sh -c 'wpa_passphrase (ssid) (passphrase) | grep -v "#psk=" >> /etc/wpa_supplicant/wpa_supplicant.conf'
 sudo reboot now
 
-# Auto start on bootup
-sudo rm /etc/rc.local
-set +H
-sudo sh -c "echo '#!/bin/sh\n/home/pi/usbReset.sh\n/home/pi/ok.sh &\nexit 0\n' >> /etc/rc.local"
-set -H
-sudo chmod a+x /etc/rc.local
-
-# speed up
-
 # overlays
 sudo bash -c 'printf "enable_uart=1\ndisable_splash=1\ndtoverlay=disable-bt\ndtoverlay=disable-wifi\nboot_delay=0\n" >> /boot/config.txt'
 # optional
@@ -141,25 +131,9 @@ console=tty1 root=PARTUUID=0157fd94-02 rootfstype=ext4 elevator=deadline fsck.re
 sudo cp ~/my_splash.png /usr/share/plymouth/themes/pix/splash.png
 
 # stop services
-sudo systemctl disable apt-daily.service
-sudo systemctl disable apt-daily.timer
-sudo systemctl disable apt-daily-upgrade.timer
-sudo systemctl disable apt-daily-upgrade.service
-sudo systemctl disable man-db.service
 sudo systemctl disable rpi-eeprom-update.service
-sudo systemctl disable wpa_supplicant.service
-sudo systemctl disable wifi-country.service
-sudo systemctl disable avahi-daemon.service
-sudo systemctl disable rsyslog.servic
-sudo systemctl disable hciuart.service
-sudo systemctl disable triggerhappy.service
-
 sudo systemctl disable raspi-config.service
 sudo systemctl disable keyboard-setup.service
-sudo systemctl disable ntp.service
-sudo systemctl disable dhcpcd.service
-sudo systemctl disable networking.service
-sudo systemctl disable ssh.service
 
 # show no cursor
 sudo nano /etc/lightdm/lightdm.conf
@@ -196,15 +170,3 @@ exit 0
 sudo nano /lib/systemd/system/ok.service
 sudo systemctl daemon-reload
 sudo systemctl enable ok.service
-
-# clear bash history
-history -c
-
-# outdated
-# Raspberry camera
-sudo apt-get -y install gstreamer1.0-omx libraspberrypi-dev
-git clone --depth 1 https://github.com/thaytan/gst-rpicamsrc.git
-cd gst-rpicamsrc
-./autogen.sh --prefix=/usr --libdir=/usr/lib/arm-linux-gnueabihf/
-make
-sudo make install

@@ -40,15 +40,9 @@ sudo systemctl set-default multi-user.target
 #sudo systemctl set-default graphical.target
 
 # Delete unused modules that conflicts the serial comm
-sudo systemctl stop ModemManager
-sudo apt-get -y purge whoopsie modemmanager
 sudo systemctl stop nvgetty
 sudo systemctl disable nvgetty
 udevadm trigger
-sudo apt -y remove --purge libreoffice* yelp thunderbird rhythmbox
-
-sudo apt autoremove
-sudo reboot now
 
 # set CSI camera interface
 # if crashed run it from eMMC boot then copy the dtb file to SD card
@@ -63,7 +57,6 @@ gst-launch-1.0 nvarguscamerasrc sensor-id=0 ! "video/x-raw(memory:NVMM),width=19
 sudo dd if=/dev/sdb of=~/Jetson.img
 
 # install CUDA etc. with Nvidia SDK Manager
-
 
 # USB reset for Realsense
 sudo apt-get install libusb-1.0-0-dev
@@ -85,33 +78,7 @@ sudo sh -c "echo '#!/bin/sh\n/home/pi/usbReset.sh\n/home/pi/ok.sh &\nexit 0\n' >
 set -H
 sudo chmod a+x /etc/rc.local
 
-# stop services
-sudo systemctl disable apt-daily.service
-sudo systemctl disable apt-daily.timer
-sudo systemctl disable apt-daily-upgrade.timer
-sudo systemctl disable apt-daily-upgrade.service
-sudo systemctl disable man-db.service
-sudo systemctl disable wpa_supplicant.service
-sudo systemctl disable wifi-country.service
-sudo systemctl disable avahi-daemon.service
-sudo systemctl disable rsyslog.servic
-sudo systemctl disable hciuart.service
-sudo systemctl disable triggerhappy.service
-
-sudo systemctl disable keyboard-setup.service
-sudo systemctl disable ntp.service
-sudo systemctl disable dhcpcd.service
-sudo systemctl disable networking.service
-sudo systemctl disable ssh.service
-
-# show no cursor
-
-# show no taskbar
-
 
 sudo nano /lib/systemd/system/ok.service
 sudo systemctl daemon-reload
 sudo systemctl enable ok.service
-
-# clear bash history
-history -c
