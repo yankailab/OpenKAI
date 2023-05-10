@@ -31,10 +31,7 @@ sudo systemctl mask systemd-journald.service
 sudo truncate /var/log/*.log --size 0
 
 # clear bash history
-history -c
-
-sudo apt autoremove
-sudo reboot now
+history -c && history -w
 
 #----------------------------------------------------
 # Config
@@ -66,12 +63,6 @@ sudo chmod a+x /etc/rc.local
 gdb --args executablename arg1 arg2 arg3
 run
 bt
-
-# opc
-sudo apt-get install openconnect
-#sudo apt install network-manager-openconnect-gnome
-sudo openconnect -u username -b server.com
-ip a
 
 # Upload to FTP
 curl -T FourierToy.swf ftp://193.112.75.123/pub/ --user anonymous

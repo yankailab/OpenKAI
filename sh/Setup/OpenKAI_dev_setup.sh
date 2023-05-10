@@ -16,6 +16,12 @@ sudo reboot now
 sudo apt-get install ssh
 systemctl start sshd
 
+# (Optional) opc
+sudo apt-get install openconnect
+#sudo apt install network-manager-openconnect-gnome
+sudo openconnect -u username -b server.com
+ip a
+
 #----------------------------------------------------
 # System setup
 # Install Ubuntu without Download updates during install checked

@@ -139,7 +139,7 @@ namespace kai
 		m_nMode = m_pSbus->v(m_iMode);
 
 		// target following mode
-		if (m_nMode > m_vModeR.x && m_nMode < m_vModeR.y)
+		if (m_nMode > m_vModeR.x && m_nMode <= m_vModeR.y)
 		{
 			m_nSpd = 0.5;
 			m_nSteer = 0.5;

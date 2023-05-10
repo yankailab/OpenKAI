@@ -24,11 +24,19 @@ set -H
 sudo reboot now
 #sudo sh -c "echo 'dtoverlay=disable-bt\ndtoverlay=disable-wifi\n' >> /boot/config.txt"
 
+# Enable multiple UART
+dtoverlay=uart3        # without flow control pins
+dtoverlay=uart3,ctsrts # with flow control pins
+
 sudo systemctl disable hciuart
 sudo systemctl stop serial-getty@ttyAMA0.service
 sudo systemctl disable serial-getty@ttyAMA0.service
 sudo systemctl stop serial-getty@ttyS0.service
 sudo systemctl disable serial-getty@ttyS0.service
+sudo systemctl stop getty@ttyAMA0.service
+sudo systemctl disable getty@ttyAMA0.service
+sudo systemctl stop getty@ttyS0.service
+sudo systemctl disable getty@ttyS0.service
 sudo reboot now
 
 # Mount ssd
@@ -170,3 +178,7 @@ exit 0
 sudo nano /lib/systemd/system/ok.service
 sudo systemctl daemon-reload
 sudo systemctl enable ok.service
+
+# clone SD image
+sudo fdisk -l
+sudo dd if=/dev/sdb of=~/RPi.img bs=128M

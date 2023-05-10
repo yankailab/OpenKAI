@@ -139,3 +139,31 @@
 		
 	}
 }
+
+{
+	"name":"apServo",
+	"class":"_AP_servo",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":2,
+	}
+	"_StateControl":"state",
+	"vActiveState":["STANDBY","TAKEOFF_REQUEST","LANDING"],
+	"_AP_base":"apBase",
+
+	{
+		"name":"channels",
+		
+		{
+			"name":"pitch",
+			"iChan":10,
+			"pwm":1500,
+		}
+		{
+			"name":"roll",
+			"iChan":9,
+			"pwm":1500,
+		}
+	}
+}
