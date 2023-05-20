@@ -55,8 +55,6 @@
 #include "../Autopilot/ArduPilot/_AP_base.h"
 #include "../Autopilot/ArduPilot/_AP_actuator.h"
 #include "../Autopilot/ArduPilot/_AP_goto.h"
-#include "../Autopilot/ArduPilot/_AP_gcs.h"
-#include "../Autopilot/ArduPilot/_AP_mission.h"
 #include "../Autopilot/ArduPilot/_AP_posCtrl.h"
 #include "../Autopilot/ArduPilot/_AP_RTH.h"
 #include "../Autopilot/ArduPilot/_AP_relay.h"
@@ -68,23 +66,25 @@
 #include "../Autopilot/ArduPilot/_AP_distLidar.h"
 #endif
 #ifdef USE_OPENCV
+#include "../Autopilot/ArduPilot/_AP_gcs.h"
 #include "../Autopilot/ArduPilot/_AP_avoid.h"
 #include "../Autopilot/ArduPilot/_AP_depthVision.h"
 #include "../Autopilot/ArduPilot/_AP_land.h"
+#include "../Autopilot/ArduPilot/_AP_mission.h"
 #include "../Autopilot/ArduPilot/_AP_follow.h"
 #include "../Autopilot/ArduPilot/_AP_video.h"
 #include "../Autopilot/ArduPilot/_APcopter_photo.h"
 #ifdef WITH_APP_ROBOTARM
 #include "../Autopilot/ArduPilot/_AProver_picking.h"
 #endif
+#endif // opencv
 #ifdef WITH_NAVIGATION
 #ifdef USE_REALSENSE
 #include "../Autopilot/ArduPilot/_AP_GPS.h"
 #include "../Autopilot/ArduPilot/_AP_visionEstimate.h"
 #endif
 #endif
-#endif
-#endif
+#endif //ardupilot
 
 #ifdef WITH_AUTOPILOT_DRIVE
 #include "../Autopilot/Drive/_Drive.h"

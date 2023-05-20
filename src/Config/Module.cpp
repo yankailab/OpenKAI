@@ -64,14 +64,12 @@ namespace kai
 #ifdef WITH_ARDUPILOT
 		ADD_MODULE(_AP_base);
 		ADD_MODULE(_AP_actuator);
-		ADD_MODULE(_AP_mission);
 		ADD_MODULE(_AP_posCtrl);
 		ADD_MODULE(_AP_RTH);
 		ADD_MODULE(_AP_relay);
 		ADD_MODULE(_AP_servo);
 		ADD_MODULE(_AP_takeoff);
 		ADD_MODULE(_AP_goto);
-		ADD_MODULE(_AP_gcs);
 		ADD_MODULE(_AP_link);
 		ADD_MODULE(_AProver_drive);
 #ifdef WITH_SENSOR
@@ -80,18 +78,20 @@ namespace kai
 #ifdef USE_OPENCV
 		ADD_MODULE(_AP_avoid);
 		ADD_MODULE(_AP_depthVision);
+		ADD_MODULE(_AP_gcs);
 		ADD_MODULE(_AP_land);
+		ADD_MODULE(_AP_mission);
 		ADD_MODULE(_AP_follow);
 		ADD_MODULE(_AP_video);
 		ADD_MODULE(_APcopter_photo);
 #ifdef WITH_APP_ROBOTARM
 		ADD_MODULE(_AProver_picking);
 #endif
+#endif // opencv
 #ifdef WITH_NAVIGATION
 #ifdef USE_REALSENSE
 		ADD_MODULE(_AP_GPS);
 		ADD_MODULE(_AP_visionEstimate);
-#endif
 #endif
 #endif
 #endif
