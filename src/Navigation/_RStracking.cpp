@@ -165,11 +165,11 @@ namespace kai
 			auto frames = m_rsPipe.wait_for_frames();
 			auto f = frames.first_or_default(RS2_STREAM_POSE);
 			auto pose = f.as<rs2::pose_frame>().get_pose_data();
-			m_confidence = (float)pose.tracker_confidence * 0.333;
+			m_confidence = (float)pose.tracker_confidence * (100.0 / 3);
 
-			*m_vT.v(m_vAxisIdx.x) = pose.translation.x;
-			*m_vT.v(m_vAxisIdx.y) = pose.translation.y;
-			*m_vT.v(m_vAxisIdx.z) = pose.translation.z;
+			*m_vT.v(m_vAxisIdx.x) = pose.translation.x * m_scale;
+			*m_vT.v(m_vAxisIdx.y) = pose.translation.y * m_scale;
+			*m_vT.v(m_vAxisIdx.z) = pose.translation.z * m_scale;
 
 			m_vQ.x = pose.rotation.x;
 			m_vQ.y = pose.rotation.y;
@@ -189,6 +189,10 @@ namespace kai
 			mT(1, 3) = m_vT.y;
 			mT(2, 3) = m_vT.z;
 			m_mT = mT;
+
+			m_vV.x = pose.velocity.x;
+			m_vV.y = pose.velocity.y;
+			m_vV.z = pose.velocity.z;
 
 			//TODO: calc with mR
 			// float w = m_vQ.w;

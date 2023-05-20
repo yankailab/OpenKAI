@@ -80,6 +80,7 @@
 #ifdef WITH_NAVIGATION
 #ifdef USE_REALSENSE
 #include "../Autopilot/ArduPilot/_AP_GPS.h"
+#include "../Autopilot/ArduPilot/_AP_visionEstimate.h"
 #endif
 #endif
 #endif

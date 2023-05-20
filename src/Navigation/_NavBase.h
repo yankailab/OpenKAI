@@ -44,6 +44,7 @@ namespace kai
 
 	protected:
 		BIT_FLAG m_flag;
+		float m_scale;
 
 		vInt3 m_vAxisIdx; //idx of yaw, pitch, roll
 		vFloat3 m_vT;	  //translation

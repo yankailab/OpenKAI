@@ -522,6 +522,7 @@ namespace kai
 		void setPositionTargetLocalNED(mavlink_set_position_target_local_ned_t &D);
 		void setPositionTargetGlobalINT(mavlink_set_position_target_global_int_t &D);
 		void visionPositionEstimate(mavlink_vision_position_estimate_t &D);
+		void visionSpeedEstimate(mavlink_vision_speed_estimate_t &D);
 
 		//Cmd long
 		void clComponentArmDisarm(bool bArm);

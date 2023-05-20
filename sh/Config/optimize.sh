@@ -33,6 +33,11 @@ sudo truncate /var/log/*.log --size 0
 # clear bash history
 history -c && history -w
 
+# ubuntu power mode
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+
 #----------------------------------------------------
 # Config
 

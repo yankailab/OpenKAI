@@ -90,6 +90,7 @@ namespace kai
 #ifdef WITH_NAVIGATION
 #ifdef USE_REALSENSE
 		ADD_MODULE(_AP_GPS);
+		ADD_MODULE(_AP_visionEstimate);
 #endif
 #endif
 #endif

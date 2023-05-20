@@ -488,16 +488,6 @@ namespace kai
 
 	void _Mavlink::visionPositionEstimate(mavlink_vision_position_estimate_t &D)
 	{
-		/*
-	 uint64_t usec; // Timestamp (microseconds, synced to UNIX time or since system boot)
-	 float x; // Global X position
-	 float y; // Global Y position
-	 float z; // Global Z position
-	 float roll; // Roll angle in rad
-	 float pitch; // Pitch angle in rad
-	 float yaw; // Yaw angle in rad
-	 */
-
 		mavlink_message_t msg;
 		D.usec = getTbootMs();
 
@@ -507,6 +497,19 @@ namespace kai
 		writeMessage(msg);
 		LOG_I(
 			"<- VISION_POSITION_ESTIMATE T=" + i2str(D.usec) + ", x=" + f2str(D.x) + ", y=" + f2str(D.y) + ", z=" + f2str(D.z) + "; roll=" + f2str(D.roll) + ", pitch=" + f2str(D.pitch) + ", yaw=" + f2str(D.yaw));
+	}
+
+	void _Mavlink::visionSpeedEstimate(mavlink_vision_speed_estimate_t &D)
+	{
+		mavlink_message_t msg;
+		D.usec = getTbootMs();
+
+		mavlink_msg_vision_speed_estimate_encode(m_mySystemID, m_myComponentID,
+													&msg, &D);
+
+		writeMessage(msg);
+		LOG_I(
+			"<- VISION_SPEED_ESTIMATE T=" + i2str(D.usec) + ", x=" + f2str(D.x) + ", y=" + f2str(D.y) + ", z=" + f2str(D.z));
 	}
 
 	//CMD_LONG
