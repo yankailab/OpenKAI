@@ -49,6 +49,18 @@ sudo chown pi ssd/
 sudo mount /dev/nvme0n1 /home/pi/ssd
 
 # Raspberry camera
+# ref: https://www.waveshare.net/wiki/CM4-NANO-A
+sudo apt-get install p7zip-full -y
+wget https://www.waveshare.net/w/upload/4/41/CM4_dt_blob.7z
+7z x CM4_dt_blob.7z -O./CM4_dt_blob
+sudo chmod 777 -R CM4_dt_blob
+cd CM4_dt_blob/
+#To use both cams and DSI1, no HDMI available when DSI1 is ON
+sudo  dtc -I dts -O dtb -o /boot/dt-blob.bin dt-blob-disp1-double_cam.dts
+# remove the blob to recover the original config
+sudo rm -rf /boot/dt-blob.bin
+sudo reboot now
+
 gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=20/1 ! x264enc ! matroskamux ! filesink location=/home/pi/ssd/test.mkv
 gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! v4l2h264enc ! h264parse ! matroskamux ! filesink location=/home/pi/ssd/test1.mkv
 gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
@@ -56,6 +68,12 @@ gst-launch-1.0 libcamerasrc ! video/x-raw,width=1280,height=720,framerate=30/1 !
 gst-launch-1.0 libcamerasrc ! video/x-raw,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! v4l2h264enc ! 'video/x-h264,level=(string)4' ! h264parse ! matroskamux ! filesink location="/home/pi/ssd/video/test.mka"
 
 # USB reset for Realsense
+sudo nano /boot/config.txt
+-----------------------
+#otg_mode=1
+dtoverlay=dwc2,dr_mode=host
+-----------------------
+
 sudo apt-get install libusb-1.0-0-dev
 git clone --depth 1 https://github.com/mvp/uhubctl.git
 cd uhubctl
@@ -123,7 +141,7 @@ sudo bash -c 'printf "enable_uart=1\ndisable_splash=1\ndtoverlay=disable-bt\ndto
 #dtoverlay=sdtweak,overclock_50=100
 
 # remove the msg under splash image
-sudo vi /usr/share/plymouth/themes/pix/pix.script
+sudo nano /usr/share/plymouth/themes/pix/pix.script
 remove (or comment out) four lines below:
 message_sprite = Sprite();
 message_sprite.SetPosition(screen_width * 0.1, screen_height * 0.9, 10000);
@@ -132,7 +150,7 @@ message_sprite.SetPosition(screen_width * 0.1, screen_height * 0.9, 10000);
        message_sprite.SetImage(my_image);
 
 # boot command line
-sudo vi /bool/cmdline.txt
+sudo nano /bool/cmdline.txt
 console=tty1 root=PARTUUID=0157fd94-02 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait quiet splash plymouth.ignore-serial-consoles fastboot
 
 # replace splash image

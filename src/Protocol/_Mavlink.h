@@ -490,9 +490,10 @@ namespace kai
 		_Mavlink();
 		~_Mavlink();
 
-		bool init(void *pKiss);
-		bool start(void);
-		void console(void *pConsole);
+		virtual bool init(void *pKiss);
+		virtual bool link(void);
+		virtual bool start(void);
+		virtual void console(void *pConsole);
 
 		//Receive
 		void handleMessages();

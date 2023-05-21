@@ -2,114 +2,104 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
-	"bDraw":1,
-	"bLog":0,
+	"bLog":1,
 	"bStdErr":1,
-	"waitKey":30,
 }
 
 {
-	"name":"OK_Console",
+	"name":"console",
 	"class":"_Console",
 	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["serial","mavAP","udp","mavUDP"],
 }
 
 {
-	"name":"apSerial",
+	"name":"serial",
 	"class":"_SerialPort",
 	"bON":1,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"_Console":"OK_Console",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+		"vTwakeUp":["mavAP.thread"],
+	}
+	"/port":"/dev/ttyUSB0",
 	"port":"/dev/ttyACM0",
-	"baud":115200,
-	"/port":"/dev/ttyTHS1",
 	"/port":"/dev/ttyAMA0",
+	"/port":"/dev/ttyTHS1",
+	"baud":115200,
 	"/baud":921600,
-	"_wakeUp":"mavAP",
 }
 
 {
 	"name":"mavAP",
 	"class":"_Mavlink",
 	"bON":1,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"_Console":"OK_Console",
-	"_IOBase":"apSerial",
-	
-	{
-		"bON":1,
-		"_Mavlink":"mavGCS",
+    {
+		"name":"thread",
+		"FPS":30,
 	}
+	"bLog":0,
+	"_IOBase":"serial",
+
+	"/noRouteCmd":[],
 	{
-		"bON":0,
-		"_Mavlink":"mavWS",
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavUDP",
+		}
+		{
+			"bON":0,
+			"_Mavlink":"mavWS",
+		}
 	}
 }
 
 {
-	"name":"apUDP",
+	"name":"udp",
 	"class":"_UDP",
 	"bON":1,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"_Console":"OK_Console",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+		"vTwakeUp":["mavUDP.thread"],
+	}
 	"port":19840,
-	"_wakeUp":"mavGCS",
 }
 
 {
-	"name":"mavGCS",
+	"name":"mavUDP",
 	"class":"_Mavlink",
 	"bON":1,
-	"FPS":30,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"bLog":0,
-	"Window":"OKview",
-	"_Console":"OK_Console",
-	"_IOBase":"apUDP",
-	
-	{
-		"bON":1,
-		"_Mavlink":"mavAP",
-	}
-	
-	{
-		"bON":0,
-		"_Mavlink":"mavWS",
-	}
-}
+	"_IOBase":"udp",
 
-{
-	"name":"apWS",
-	"class":"_WebSocket",
-	"bON":0,
-	"FPS":30,
-	"Window":"OKview",
-	"_Console":"OK_Console",
-}
-
-{
-	"name":"mavWS",
-	"class":"_Mavlink",
-	"bON":0,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"_Console":"OK_Console",
-	"_IOBase":"apWS",
-	
+	"/noRouteCmd":[],
 	{
-		"bON":1,
-		"_Mavlink":"mavGCS",
-	}
-	
-	{
-		"bON":1,
-		"_Mavlink":"mavAP",
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavAP",
+		}
+		{
+			"bON":0,
+			"_Mavlink":"mavWS",
+		}
 	}
 }

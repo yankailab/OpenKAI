@@ -18,7 +18,7 @@
 }
 
 {
-	"name":"serialAP",
+	"name":"serial",
 	"class":"_SerialPort",
 	"bON":1,
     {
@@ -28,27 +28,17 @@
     {
 		"name":"threadR",
 		"FPS":30,
-		"vTwakeUp":["apMavlink.thread"],
+		"vTwakeUp":["mavAP.thread"],
 	}
-	"port":"/dev/ttyAMA0",
-	"baud":921600,
+	"port":"/dev/ttyACM0",
+	"/port":"/dev/ttyAMA0",
+	"/port":"/dev/ttyTHS1",
+	"baud":115200,
+	"/baud":921600,
 }
 
 {
-	"name":"T265",
-	"class":"_RStracking",
-	"bON":1,
-    {
-		"name":"thread",
-		"FPS":200,
-	}
-	"bLog":0,
-	"scale":1.0,
-	"vAxisIdx":[0,1,2],
-}
-
-{
-	"name":"apMavlink",
+	"name":"mavAP",
 	"class":"_Mavlink",
 	"bON":1,
     {
@@ -56,7 +46,53 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"_IOBase":"serialAP",
+	"_IOBase":"serial",
+
+	"/noRouteCmd":[],
+	{
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavUDP",
+		}
+	}
+}
+
+{
+	"name":"udp",
+	"class":"_UDP",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+		"vTwakeUp":["mavUDP.thread"],
+	}
+	"port":19840,
+}
+
+{
+	"name":"mavUDP",
+	"class":"_Mavlink",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"_IOBase":"udp",
+
+	"/noRouteCmd":[],
+	{
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavAP",
+		}
+	}
 }
 
 {
@@ -68,7 +104,7 @@
 		"FPS":10,
 	}
 	"_StateControl":"state",
-	"_Mavlink":"apMavlink",
+	"_Mavlink":"mavAP",
 	"freqSendHeartbeat":1,
 	"apType":0,
 	
@@ -114,12 +150,25 @@
 }
 
 {
+	"name":"T265",
+	"class":"_RStracking",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":200,
+	}
+	"bLog":0,
+	"scale":1.0,
+	"vAxisIdx":[0,1,2],
+}
+
+{
 	"name":"apVision",
 	"class":"_AP_visionEstimate",
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":10,
+		"FPS":30,
 	}
 	"bLog":0,
 	"_AP_base":"apBase",

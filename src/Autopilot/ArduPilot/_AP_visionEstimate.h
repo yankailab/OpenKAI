@@ -5,6 +5,8 @@
 #include "_AP_base.h"
 using namespace Eigen;
 
+// https://ardupilot.org/copter/docs/common-vio-tracking-camera.html
+
 namespace kai
 {
 
@@ -25,6 +27,7 @@ namespace kai
 		void sendPosEstimate(void);
 		void sendSpeedEstimate(void);
 		void updateResetCounter(void);
+		bool bNaN(void);
 		void updateVisionEstimate(void);
 		static void *getUpdate(void *This)
 		{
@@ -50,6 +53,7 @@ namespace kai
 		int m_iReset;
 		vInt3 m_vAxisRPY;
 
+		bool m_bNaN;
 		bool m_bPos;
 		bool m_bSpd;
 		mavlink_vision_position_estimate_t m_Dpos;

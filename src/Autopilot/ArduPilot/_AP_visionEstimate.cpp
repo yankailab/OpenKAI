@@ -23,6 +23,7 @@ namespace kai
 
 		m_vAxisRPY.set(0,1,2);
 
+		m_bNaN = false;
 		m_bPos = true;
 		m_bSpd = true;
 	}
@@ -98,6 +99,16 @@ namespace kai
 	{
 		IF_(check() < 0);
 
+		m_bNaN = bNaN();
+		if(m_bNaN)
+		{
+			LOG_E("Nav returned NaN");
+
+			// Land for emergency?
+
+			return;
+		}
+
 		m_conf = m_pNav->confidence();
 		m_covPose = m_linearAccelCov * pow(10, 3 - int(m_conf));
 		m_covTwist = m_angularVelCov * pow(10, 1 - int(m_conf));
@@ -105,6 +116,23 @@ namespace kai
 
 		sendPosEstimate();
 		sendSpeedEstimate();
+	}
+
+	bool _AP_visionEstimate::bNaN(void)
+	{
+		IF_F(check() < 0);
+
+		vFloat3 v = m_pNav->t();
+		IF_T(isnan(v.x));
+		IF_T(isnan(v.y));
+		IF_T(isnan(v.z));
+		
+		v = m_pNav->v();
+		IF_T(isnan(v.x));
+		IF_T(isnan(v.y));
+		IF_T(isnan(v.z));
+
+		return false;
 	}
 
 	void _AP_visionEstimate::updateResetCounter(void)
@@ -195,6 +223,8 @@ namespace kai
 		msg = "iReset = " + i2str(m_iReset);
 		pC->addMsg(msg, 1);
 
+		msg = "bNaN = " + i2str(m_bNaN);
+		pC->addMsg(msg, 1);
 	}
 
 }

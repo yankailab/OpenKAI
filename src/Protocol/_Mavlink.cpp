@@ -66,6 +66,14 @@ namespace kai
 
 		m_status.packet_rx_drop_count = 0;
 
+		return true;
+	}
+
+	bool _Mavlink::link(void)
+	{
+		IF_F(!this->_ModuleBase::link());
+
+		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
 		n = "";
