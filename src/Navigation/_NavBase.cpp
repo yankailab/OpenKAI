@@ -40,14 +40,13 @@ namespace kai
 		return m_flag.b(F_OPEN);
 	}
 
-	bool _NavBase::bReady(void)
+	bool _NavBase::bError(void)
 	{
-		return m_flag.b(F_READY);
+		return m_flag.b(F_ERROR);
 	}
 
 	void _NavBase::reset(void)
 	{
-		m_flag.clear(F_READY);
 		m_flag.set(F_RESET);
 	}
 
@@ -58,7 +57,6 @@ namespace kai
 
 	void _NavBase::resetAll(void)
 	{
-		m_flag.clear(F_READY);
 		m_vT.clear();
 		m_vV.clear();
 		m_vR.clear();

@@ -28,7 +28,7 @@ namespace kai
 		void sendSpeedEstimate(void);
 		void updateResetCounter(void);
 		bool bNaN(void);
-		void updateVisionEstimate(void);
+		bool updateVisionEstimate(void);
 		static void *getUpdate(void *This)
 		{
 			((_AP_visionEstimate *)This)->update();
@@ -53,6 +53,7 @@ namespace kai
 		int m_iReset;
 		vInt3 m_vAxisRPY;
 
+		int m_apModeInError;
 		bool m_bNaN;
 		bool m_bPos;
 		bool m_bSpd;

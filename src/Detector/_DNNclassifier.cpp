@@ -12,7 +12,7 @@ namespace kai
 		m_nW = 224;
 		m_nH = 224;
 		m_bSwapRB = true;
-		m_vMean.init();
+		m_vMean.clear();
 		m_scale = 1.0;
 
 		m_iBackend = cv::dnn::DNN_BACKEND_OPENCV;

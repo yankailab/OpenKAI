@@ -12,7 +12,7 @@ namespace kai
 		m_nW = 654;
 		m_nH = 368;
 		m_bSwapRB = false;
-		m_vMean.init();
+		m_vMean.clear();
 		m_scale = 1.0 / 255.0;
 		m_thr = 0.01;
 

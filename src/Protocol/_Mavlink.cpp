@@ -739,7 +739,7 @@ namespace kai
 			//Routing
 			for (MAVLINK_PEER &p : m_vPeer)
 			{
-				IF_CONT(!p.bCmdRoute(msg.msgid));
+//				IF_CONT(!p.bCmdRoute(msg.msgid));
 
 				_Mavlink *pM = (_Mavlink *)p.m_pPeer;
 				IF_CONT(!pM);

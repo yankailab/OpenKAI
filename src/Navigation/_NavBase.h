@@ -26,7 +26,7 @@ namespace kai
 		virtual void console(void *pConsole);
 
 		virtual bool bOpen(void);
-		virtual bool bReady(void);
+		virtual bool bError(void);
 
 		virtual void reset(void);
 		virtual float confidence(void);
@@ -44,8 +44,8 @@ namespace kai
 
 	protected:
 		BIT_FLAG m_flag;
-		float m_scale;
 
+		float m_scale;
 		vInt3 m_vAxisIdx; //idx of yaw, pitch, roll
 		vFloat3 m_vT;	  //translation
 		vFloat3 m_vV;	  //velocity

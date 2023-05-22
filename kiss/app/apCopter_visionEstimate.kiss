@@ -179,4 +179,5 @@
 	"thrJumpPos":0.1,
 	"thrJumpSpd":20.0,
 	"vAxisRPY":[2,1,0],
+	"apModeInError":9, /* AP_COPTER_LAND */
 }

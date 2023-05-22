@@ -20,9 +20,9 @@ namespace kai
 		m_thrJumpPos = 0.1;	 // m
 		m_thrJumpSpd = 20.0; // m/s
 		m_iReset = 0;
-
 		m_vAxisRPY.set(0,1,2);
 
+		m_apModeInError = -1;
 		m_bNaN = false;
 		m_bPos = true;
 		m_bSpd = true;
@@ -42,6 +42,7 @@ namespace kai
 		pK->v("thrJumpPos", &m_thrJumpPos);
 		pK->v("thrJumpSpd", &m_thrJumpSpd);
 		pK->v("vAxisRPY", &m_vAxisRPY);
+		pK->v("apModeInError", &m_apModeInError);
 
 		return true;
 	}
@@ -51,7 +52,6 @@ namespace kai
 		IF_F(!this->_StateBase::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
-
 		string n;
 
 		n = "";
@@ -89,25 +89,31 @@ namespace kai
 			m_pT->autoFPSfrom();
 			this->_StateBase::update();
 
-			updateVisionEstimate();
+			if(!updateVisionEstimate())
+			{
+				if(m_apModeInError >= 0)
+				{
+					int apMode = m_pAP->getApMode();
+					if((apMode == AP_COPTER_AUTO) ||
+					   (apMode == AP_COPTER_LOITER) ||
+					   (apMode == AP_COPTER_GUIDED))
+					{
+						m_pAP->setApMode(m_apModeInError);
+					}
+				}
+			}
 
 			m_pT->autoFPSto();
 		}
 	}
 
-	void _AP_visionEstimate::updateVisionEstimate(void)
+	bool _AP_visionEstimate::updateVisionEstimate(void)
 	{
-		IF_(check() < 0);
+		IF_T(check() < 0);
 
 		m_bNaN = bNaN();
-		if(m_bNaN)
-		{
-			LOG_E("Nav returned NaN");
-
-			// Land for emergency?
-
-			return;
-		}
+		IF_Fl(m_bNaN, "Nav returned NaN");
+		IF_F(m_pNav->bError());
 
 		m_conf = m_pNav->confidence();
 		m_covPose = m_linearAccelCov * pow(10, 3 - int(m_conf));
@@ -116,6 +122,8 @@ namespace kai
 
 		sendPosEstimate();
 		sendSpeedEstimate();
+
+		return true;
 	}
 
 	bool _AP_visionEstimate::bNaN(void)

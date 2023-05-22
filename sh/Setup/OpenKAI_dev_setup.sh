@@ -106,6 +106,7 @@ sudo ./scripts/setup_udev_rules.sh
 mkdir build
 cd build
 #cmake -DCMAKE_BUILD_TYPE=Release ../
+# -DFORCE_RSUSB_BACKEND=ON for Raspberry pi and Jetson?
 cmake -DFORCE_LIBUVC=true -DFORCE_RSUSB_BACKEND=ON -DBUILD_WITH_TM2=true -DBUILD_WITH_CUDA=ON -DCMAKE_BUILD_TYPE=Release -DIMPORT_DEPTH_CAM_FW=ON ../
 make -j$(nproc)
 sudo make install

@@ -36,5 +36,6 @@
 #define F_OPEN 0
 #define F_READY 1
 #define F_RESET 2
+#define F_ERROR 3
 
 #endif

@@ -13,7 +13,7 @@ namespace kai
 		m_nms = 0.4;
 		m_vBlobSize.set(416,416);
 		m_bSwapRB = true;
-		m_vMean.init();
+		m_vMean.clear();
 		m_scale = 1.0 / 255.0;
 		m_iClassDraw = -1;
 

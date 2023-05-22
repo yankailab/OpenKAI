@@ -74,11 +74,10 @@ namespace kai
 	void _RStracking::close(void)
 	{
 		IF_(!m_flag.b(F_OPEN));
+		m_flag.clear(F_OPEN);
 
 		try
 		{
-			m_flag.clear(F_READY);
-			m_flag.clear(F_OPEN);
 			m_rsPipe.stop();
 		}
 		catch (const rs2::camera_disconnected_error &e)
@@ -99,10 +98,11 @@ namespace kai
 	{
 		IF_(!m_flag.b(F_OPEN));
 
+		m_flag.clear(F_RESET);
+		m_flag.clear(F_OPEN);
+
 		try
 		{
-			m_flag.clear(F_READY);
-			m_flag.clear(F_OPEN);
 			rs2::device dev = m_rsProfile.get_device();
 			dev.hardware_reset();
 			m_pT->sleepT(SEC_2_USEC);
@@ -152,7 +152,13 @@ namespace kai
 			m_pT->autoFPSfrom();
 
 			if (updateRS())
-				m_flag.set(F_READY);
+			{
+				m_flag.clear(F_ERROR);
+			}
+			else
+			{
+				m_flag.set(F_ERROR);
+			}
 
 			m_pT->autoFPSto();
 		}
