@@ -94,6 +94,10 @@
 #include "../Application/CamCalib/_CamCalib.h"
 #endif
 
+#ifdef WITH_APP_DRONEFLEET
+#include "../Application/DroneFleet/_AP_fleet.h"
+#endif
+
 #ifdef WITH_APP_DRONEBOX
 #include "../Application/DroneBox/_DroneBox.h"
 #include "../Application/DroneBox/_DroneBoxJSON.h"

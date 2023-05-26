@@ -104,6 +104,10 @@ namespace kai
 		ADD_MODULE(_CamCalib);
 #endif
 
+#ifdef WITH_APP_DRONEFLEET
+		ADD_MODULE(_AP_fleet);
+#endif
+
 #ifdef WITH_APP_DRONEBOX
 		ADD_MODULE(_DroneBox);
 		ADD_MODULE(_DroneBoxJSON);
