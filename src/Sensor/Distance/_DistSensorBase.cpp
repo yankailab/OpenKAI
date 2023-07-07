@@ -18,8 +18,7 @@ namespace kai
 		m_fovV = 0.1;
 		m_dDeg = 0;
 		m_dDegInv = 0;
-		m_rMin = 0.0;
-		m_rMax = DBL_MAX;
+		m_vRange.set(0, DBL_MAX);
 		m_hdg = 0.0;
 		m_calibScale = 1.0;
 		m_calibOffset = 0.0;
@@ -51,8 +50,7 @@ namespace kai
 
 		pK->v("showScale", &m_showScale);
 		pK->v("showDegOffset", &m_showDegOffset);
-		pK->v("rMin", &m_rMin);
-		pK->v("rMax", &m_rMax);
+		pK->v("vRange", &m_vRange);
 		pK->v("calibScale", &m_calibScale);
 		pK->v("calibOffset", &m_calibOffset);
 
@@ -88,12 +86,12 @@ namespace kai
 
 	float _DistSensorBase::rMin(void)
 	{
-		return m_rMin;
+		return m_vRange.x;
 	}
 
 	float _DistSensorBase::rMax(void)
 	{
-		return m_rMax;
+		return m_vRange.y;
 	}
 
 	void _DistSensorBase::input(float deg, float d, float a)
@@ -114,9 +112,7 @@ namespace kai
 		IF_(!m_bReady);
 		IF_(iDiv < 0 || iDiv >= m_nDiv);
 
-		if (d < m_rMin)
-			d = -1;
-		if (d > m_rMax)
+		if (!m_vRange.bInside(d))
 			d = -1;
 
 		m_pDiv[iDiv].input(d, a);
@@ -155,7 +151,7 @@ namespace kai
 			return -1.0;
 
 		float degMid = 0.5 * m_fovH;
-		float dist = m_rMax;
+		float dist = m_vRange.y;
 		int iMin = -1;
 
 		for (int i = 0; i < m_nDiv; i++)
@@ -236,7 +232,7 @@ namespace kai
 		int iFrom = (int)(degFrom * m_dDegInv);
 		int iTo = (int)(degTo * m_dDegInv);
 
-		float dist = m_rMax;
+		float dist = m_vRange.y;
 		int iMin = -1;
 
 		for (int i = iFrom; i < iTo; i++)
@@ -366,8 +362,7 @@ namespace kai
 		for (int i = 0; i < m_nDiv; i++)
 		{
 			float dist = m_pDiv[i].dAvr();
-			IF_CONT(dist <= m_rMin);
-			IF_CONT(dist > m_rMax);
+			IF_CONT(!m_vRange.bInside(dist));
 			dist *= m_showScale;
 
 			rad += dRad;

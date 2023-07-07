@@ -47,6 +47,7 @@ namespace kai
 		~_AP_follow();
 
 		virtual bool init(void *pKiss);
+		virtual bool link(void);
 		virtual int check(void);
 		virtual bool start(void);
 		virtual void update(void);

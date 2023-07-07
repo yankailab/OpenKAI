@@ -16,7 +16,7 @@
 #include "../IPC/_SharedMem.h"
 #include "../UI/_Console.h"
 
-#ifdef WITH_3D && USE_OPEN3D
+#ifdef WITH_3D &&USE_OPEN3D
 #include "../3D/_GeometryViewer.h"
 #include "../3D/Mesh/_MeshStream.h"
 #include "../3D/PointCloud/_PCstream.h"
@@ -84,7 +84,7 @@
 #include "../Autopilot/ArduPilot/_AP_visionEstimate.h"
 #endif
 #endif
-#endif //ardupilot
+#endif // ardupilot
 
 #ifdef WITH_AUTOPILOT_DRIVE
 #include "../Autopilot/Drive/_Drive.h"
@@ -104,7 +104,7 @@
 #include "../Application/DroneBox/_AP_droneBoxJSON.h"
 #endif
 
-#ifdef WITH_APP_MEASUREMENT && USE_OPENCV
+#ifdef WITH_APP_MEASUREMENT &&USE_OPENCV
 #include "../Application/Measurement/_ARmeasure.h"
 #include "../Application/Measurement/_ARmeasureVertex.h"
 #include "../Application/Measurement/_ARmeasureFree.h"
@@ -113,22 +113,22 @@
 #include "../Application/Measurement/_RaspiWSbattery.h"
 #endif
 
-#ifdef WITH_APP_3DSCAN && WITH_3D && USE_OPEN3D
+#ifdef WITH_APP_3DSCAN &&WITH_3D &&USE_OPEN3D
 #include "../Application/3Dscan/_3DScanCalibCam.h"
 #include "../Application/3Dscan/_3DScanCalibOfs.h"
 #include "../Application/3Dscan/_PCscan.h"
 #include "../Application/3Dscan/_PCcalib.h"
 #endif
 
-#ifdef WITH_APP_VZSCAN && USE_VZENSE && WITH_3D && USE_OPEN3D
+#ifdef WITH_APP_VZSCAN &&USE_VZENSE &&WITH_3D &&USE_OPEN3D
 #include "../Application/VzScan/_VzScan.h"
 #include "../Application/VzScan/_VzScanAuto.h"
 #include "../Application/VzScan/_VzScanCalib.h"
 #endif
 
-#ifdef WITH_APP_LIVOXSCAN && USE_LIVOX && WITH_3D && USE_OPEN3D
+#ifdef WITH_APP_LIVOXSCAN &&USE_LIVOX &&WITH_3D &&USE_OPEN3D
 #include "../Application/LivoxScan/_LivoxScanAuto.h"
-//#include "../Application/LivoxScan/_LivoxScanCalib.h"
+// #include "../Application/LivoxScan/_LivoxScanCalib.h"
 #endif
 
 #ifdef WITH_APP_ROBOTARM
@@ -269,7 +269,7 @@
 
 #ifdef WITH_SCIENCE
 #ifdef USE_MATHGL
-//#include "../Science/_Solver.h"
+// #include "../Science/_Solver.h"
 #include "../Science/_SolverBase.h"
 #include "../Science/_FourierSeries.h"
 #endif
@@ -291,6 +291,10 @@
 
 #ifdef WITH_STATE
 #include "../State/_StateControl.h"
+#endif
+
+#ifdef WITH_SWARM
+#include "../Swarm/_SwarmBase.h"
 #endif
 
 #ifdef WITH_UI
@@ -340,12 +344,11 @@
 #include "../Vision/_RealSense.h"
 #include "../Vision/ImgFilter/_DepthShow.h"
 #endif
-#endif	//opencv
+#endif // opencv
 #ifdef USE_VZENSE
 #include "../Vision/_Vzense.h"
 #endif
-#endif	//vision
-
+#endif // vision
 
 #define ADD_MODULE(x)             \
 	if (pK->m_class == #x)        \

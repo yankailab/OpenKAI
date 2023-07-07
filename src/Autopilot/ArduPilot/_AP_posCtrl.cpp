@@ -55,6 +55,14 @@ namespace kai
 		pK->v("vKpidIn", &m_vKpidIn);
 		pK->v("vKpidOut", &m_vKpidOut);
 
+		return true;
+	}
+
+	bool _AP_posCtrl::link(void)
+	{
+		IF_F(!this->_StateBase::link());
+
+		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
 		n = "";

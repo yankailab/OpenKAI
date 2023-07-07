@@ -14,12 +14,13 @@ namespace kai
 		_AP_land();
 		~_AP_land();
 
-		bool init(void *pKiss);
-		bool start(void);
-		int check(void);
-		void update(void);
-		void draw(void *pFrame);
-		void console(void *pConsole);
+		virtual bool init(void *pKiss);
+		virtual bool link(void);
+		virtual bool start(void);
+		virtual int check(void);
+		virtual void update(void);
+		virtual void console(void *pConsole);
+		virtual void draw(void *pFrame);
 
 		bool bComplete(void);
 
@@ -36,9 +37,10 @@ namespace kai
 		_DistSensorBase* m_pDS;
 
 		float m_zrK;
+		float m_rAlt;
+		float m_rAltComplete;
 		float m_dTarget; //dist to target
 		float m_dTargetComplete;
-		float m_altComplete;
 		float m_rTargetComplete;
 		bool m_bRtargetComplete;
 	};

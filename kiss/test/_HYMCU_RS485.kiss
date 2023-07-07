@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["modbus","stepper"],
+	"vBASE":["modbus","stepperX","stepperY"],
 }
 
 {
@@ -69,9 +69,9 @@
 			"pTarget":5.0,
 			"pErr":0.01,
 			"pRange":[0,15],
-			"sTarget":20.0,
+			"sTarget":300.0,
 			"sRange":[0,300],
-			"aTarget":1.0,
+			"aTarget":100.0,
 			"aRange":[1,300],
 		}
 	}
@@ -80,17 +80,17 @@
 {
 	"name":"stepperY",
 	"class":"_HYMCU_RS485",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":5,
 	}
 	"bLog":1,
 	"_Modbus":"modbus",
-	"iSlave":2,
+	"iSlave":3,
 	"dpr":1,
 	"bFeedback":1,
-	"dInit":80,
+	"dInit":5,
 
 	{
 		"name":"addr",
@@ -111,13 +111,13 @@
 		{
 			"name":"Y",
 			"pOrigin":0.0,
-			"pTarget":80.0,
+			"pTarget":5.0,
 			"pErr":0.01,
 			"pRange":[0,15],
 			"sTarget":300.0,
 			"sRange":[0,300],
-			"aTarget":10.0,
-			"aRange":[10,300],
+			"aTarget":100.0,
+			"aRange":[1,300],
 		}
 	}
 }

@@ -304,6 +304,10 @@ namespace kai
 		ADD_MODULE(_StateControl);
 #endif
 
+#ifdef WITH_SWARM
+		ADD_MODULE(_SwarmBase);
+#endif
+
 #ifdef WITH_UI
 #ifdef USE_OPENCV
 		ADD_MODULE(_GstOutput);

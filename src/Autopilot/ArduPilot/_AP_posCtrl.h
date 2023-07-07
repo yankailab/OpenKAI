@@ -14,6 +14,7 @@ namespace kai
 		~_AP_posCtrl();
 
 		virtual bool init(void *pKiss);
+		virtual bool link(void);
 		virtual bool start(void);
 		virtual void update(void);
 		virtual void console(void *pConsole);

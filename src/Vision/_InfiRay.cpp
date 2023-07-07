@@ -102,13 +102,14 @@ namespace kai
 			while (!m_InfiRay.read(mCam))
 				;
 
-        	Mat mRGB;
+        	Mat mG, mRGB;
 
 			//Mat mYUV = cv::Mat(m_vSize.y, m_vSize.x, CV_8UC2, mCam.data, Mat::AUTO_STEP);
 			//cv::cvtColor(mYUV, mRGB, COLOR_YUV2RGB_YUY2);
 			int length = mCam.dataend - mCam.datastart;
 			Mat mThermal = cv::Mat(m_vSize.y, m_vSize.x, CV_16UC1, mCam.data, Mat::AUTO_STEP);
-			mThermal.convertTo(mRGB, CV_8UC1, 1.0/257);
+			mThermal.convertTo(mG, CV_8UC1, 1.0/257);
+			cv::cvtColor(mG, mRGB, COLOR_GRAY2BGR);
 
 //			normalize(mThermal, mRGB);
 

@@ -114,15 +114,14 @@ public:
 	virtual float dMax(float degFrom, float degTo);
 	virtual float dAvr(float degFrom, float degTo);
 
-public:
+protected:
 	DIST_SENSOR_DIV* m_pDiv;
 	int		m_nDiv;
 	float	m_fovH;
 	float	m_fovV;
 	float	m_dDeg;
 	float	m_dDegInv;
-	float	m_rMin;
-	float	m_rMax;
+	vFloat2 m_vRange;
 	float	m_hdg;	//given by external sensor e.g. compass
 	float  m_calibScale;
 	float  m_calibOffset;

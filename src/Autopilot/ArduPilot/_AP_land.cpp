@@ -9,7 +9,7 @@ namespace kai
 		m_zrK = 1.0;
 		m_dTarget = -1.0;
 		m_dTargetComplete = 1.0;
-		m_altComplete = 1.0;
+		m_rAltComplete = 1.0;
 		m_rTargetComplete = 0.1;
 		m_bRtargetComplete = false;
 	}
@@ -25,9 +25,17 @@ namespace kai
 
 		pK->v("zrK", &m_zrK);
 		pK->v("dTargetComplete", &m_dTargetComplete);
-		pK->v("altComplete", &m_altComplete);
+		pK->v("rAltComplete", &m_rAltComplete);
 		pK->v("rTargetComplete", &m_rTargetComplete);
 
+		return true;
+	}
+
+	bool _AP_land::link(void)
+	{
+		IF_F(!this->_AP_follow::link());
+
+		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
 		n = "";
@@ -65,9 +73,7 @@ namespace kai
 	{
 		IF_F(check() < 0);
 
-		float alt = m_pAP->getGlobalPos().w; //relative altitude
-
-		IF_F(alt > m_altComplete);
+		IF_F(m_rAlt > m_rAltComplete);
 		IF_F(!m_bRtargetComplete);
 		IF_F(m_dTarget > m_dTargetComplete);
 
@@ -82,11 +88,20 @@ namespace kai
 		if (m_apMount.m_bEnable)
 			m_pAP->setMount(m_apMount);
 
-		// update target
-		float alt = m_pAP->getGlobalPos().w; //relative altitude
-		m_bTarget = findTarget();
 
-		// verify if complete
+		// update distances
+		m_bTarget = findTarget();
+		m_rAlt = m_dTarget;
+		float rTgt = m_dTarget;
+
+		// sensor blocked or not detecting ground
+		if(m_dTarget < 0.0)
+		{
+			m_rAlt = m_pAP->getGlobalPos().w; //relative altitude from AP
+			rTgt = m_vKpidIn.y;
+		}
+
+		// verify if the relative alt is lower than the threshold for touch down
 		if(bComplete())
 		{
 			m_vP = m_vTargetP;
@@ -94,16 +109,11 @@ namespace kai
 			return true;
 		}
 
-		// sensor blocked or not detecting ground
-		float dTgt = m_dTarget;
-		if(m_dTarget < 0.01)
-			dTgt = m_vKpidIn.y;
-
 		// adjust PID according to altitude
 		m_vKpid.set(1.0);
 		if (m_bTarget)
 		{
-			float kD = (m_vKpidIn.constrain(dTgt) - m_vKpidIn.x) / m_vKpidIn.len();
+			float kD = (m_vKpidIn.constrain(rTgt) - m_vKpidIn.x) / m_vKpidIn.len();
 			kD = m_vKpidOut.constrain(kD);
 			m_vKpid.x = kD;
 			m_vKpid.y = kD;
@@ -176,7 +186,7 @@ namespace kai
 		if(m_pDS)
 			m_dTarget = m_pDS->d(0);
 		else
-			m_dTarget = 0;
+			m_dTarget = -1.0;
 
 		return true;
 	}
@@ -196,8 +206,10 @@ namespace kai
 
 		pC->addMsg("Target");
 		vFloat2 c = m_vTargetBB.center();
-		pC->addMsg("Pos=(" + f2str(c.x) + ", " + f2str(c.y) + "), d=" + f2str(m_dTarget), 1);
-		pC->addMsg("Size=(" + f2str(m_vTargetBB.width()) + ", " + f2str(m_vTargetBB.height()) + ")", 1);
+		pC->addMsg("Pos = (" + f2str(c.x) + ", " + f2str(c.y), 1);
+		pC->addMsg("Size = (" + f2str(m_vTargetBB.width()) + ", " + f2str(m_vTargetBB.height()) + ")", 1);
+		pC->addMsg("rAlt = " + f2str(m_rAlt), 1);
+		pC->addMsg("dTarget = " + f2str(m_dTarget), 1);
 	}
 
 	void _AP_land::draw(void *pFrame)

@@ -83,9 +83,9 @@ namespace kai
 
 	void _HYMCU_RS485::update(void)
 	{
-//		setSlaveID(2);
-//		setBaudrate(115200);
-//		saveData();
+		// setSlaveID(3);
+		//  setBaudrate(115200);
+		//  saveData();
 
 		while (!initPos())
 			;

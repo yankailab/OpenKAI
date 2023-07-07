@@ -67,6 +67,14 @@ namespace kai
 			pG->v("mountMode", &m_apMount.m_config.mount_mode);
 		}
 
+		return true;
+	}
+
+	bool _AP_follow::link(void)
+	{
+		IF_F(!this->_AP_posCtrl::link());
+
+		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
 		n = "";
