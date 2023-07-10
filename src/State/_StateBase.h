@@ -13,6 +13,7 @@ namespace kai
 		~_StateBase();
 
 		virtual bool init(void *pKiss);
+		virtual bool link(void);
 		virtual void update(void);
 		virtual bool bActive(void);
 		virtual bool bStateChanged(void);

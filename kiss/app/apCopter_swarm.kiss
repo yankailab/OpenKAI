@@ -1,0 +1,197 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["state","/serialTelem","apVideo","cURL"],
+}
+
+{
+	"name":"state",
+	"class":"_StateControl",
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"bON":1,
+	"start":"STANDBY",
+
+	{
+		"name":"state",
+		{
+			"bON":1,
+			"name":"STANDBY",
+			"class":"State",
+		}
+		{
+			"bON":1,
+			"name":"TAKEOFF",
+			"class":"State",
+		}
+		{
+			"bON":1,
+			"name":"AIRBORNE",
+			"class":"State",
+		}
+		{
+			"bON":1,
+			"name":"RTL",
+			"class":"State",
+		}
+	}
+}
+
+
+
+{
+	"name":"serial",
+	"class":"_SerialPort",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+		"vTwakeUp":["mavAP.thread"],
+	}
+	"port":"/dev/ttyACM0",
+	"/port":"/dev/ttyUSB0",
+	"baud":57600,
+}
+
+{
+	"name":"mavAP",
+	"class":"_Mavlink",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"_IOBase":"serial",
+	"/noRouteCmd":[],
+	{
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavUDP",
+		}
+	}
+}
+
+{
+	"name":"udp",
+	"class":"_UDP",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+		"vTwakeUp":["mavUDP.thread"],
+	}
+	"port":19840,
+}
+
+{
+	"name":"mavUDP",
+	"class":"_Mavlink",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"_IOBase":"udp",
+	"/noRouteCmd":[],
+	{
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavAP",
+		}
+	}
+}
+
+{
+	"name":"apBase",
+	"class":"_AP_base",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"_StateControl":"state",
+	"_Mavlink":"mavAP",
+	"freqSendHeartbeat":1,
+	"apType":0,
+	
+	{
+		"name":"mavMsgInt",
+		
+		{
+			"name":"heartbeat",
+			"id":0,
+			"tInt":0.4,
+		}
+		{
+			"name":"attitude",
+			"id":30,
+			"tInt":0.3,
+		}
+		{
+			"name":"rcChannels",
+			"id":65,
+			"tInt":1.0,
+		}
+		{
+			"name":"localPosition",
+			"id":32,
+			"tInt":0.3,
+		}
+		{
+			"name":"globalPosition",
+			"id":33,
+			"tInt":0.3,
+		}
+		{
+			"name":"homePosition",
+			"id":242,
+			"tInt":10,
+		}
+		{
+			"name":"batteryStatus",
+			"id":147,
+			"tInt":10,
+		}
+	}
+}
+
+{
+	"name":"apSwarm",
+	"class":"_AP_swarm",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"_AP_base":"apBase",
+	"_StateControl":"state",
+	"apModeInError":9,
+}

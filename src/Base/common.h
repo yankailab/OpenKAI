@@ -37,5 +37,9 @@
 #include "../Utility/utilEvent.h"
 #include "../Utility/utilStr.h"
 
+#ifdef USE_WEBUI
+#include "webui.hpp"
+#endif
+
 #endif
 

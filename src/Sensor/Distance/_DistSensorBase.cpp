@@ -22,8 +22,8 @@ namespace kai
 		m_hdg = 0.0;
 		m_calibScale = 1.0;
 		m_calibOffset = 0.0;
-		m_showScale = 1.0;
-		m_showDegOffset = 0.0;
+		// m_showScale = 1.0;
+		// m_showDegOffset = 0.0;
 		m_bReady = false;
 	}
 
@@ -48,8 +48,8 @@ namespace kai
 		m_dDeg = m_fovH / m_nDiv;
 		m_dDegInv = 1.0 / m_dDeg;
 
-		pK->v("showScale", &m_showScale);
-		pK->v("showDegOffset", &m_showDegOffset);
+		// pK->v("showScale", &m_showScale);
+		// pK->v("showDegOffset", &m_showDegOffset);
 		pK->v("vRange", &m_vRange);
 		pK->v("calibScale", &m_calibScale);
 		pK->v("calibOffset", &m_calibOffset);
@@ -363,7 +363,7 @@ namespace kai
 		{
 			float dist = m_pDiv[i].dAvr();
 			IF_CONT(!m_vRange.bInside(dist));
-			dist *= m_showScale;
+//			dist *= m_showScale;
 
 			rad += dRad;
 			int pX = dist * sin(rad);

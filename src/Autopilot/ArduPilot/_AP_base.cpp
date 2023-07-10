@@ -43,7 +43,16 @@ namespace kai
 		m_lastHeartbeat = 0;
 		m_iHeartbeat = 0;
 
+		return true;
+	}
+
+	bool _AP_base::link(void)
+	{
+		IF_F(!this->_StateBase::link());
+
+		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
+
 		n = "";
 		pK->v("_Mavlink", &n);
 		m_pMav = (_Mavlink *)(pK->getInst(n));

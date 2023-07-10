@@ -1,0 +1,32 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["cam"],
+}
+
+{
+	"name":"webUI",
+	"class":"_WebUIbase",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["/cam"],
+	"rootDir":"/home/kai/dev/OpenKAI/html/webui/simple",
+	"fHtml":"swarm.html",
+}

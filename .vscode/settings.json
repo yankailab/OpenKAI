@@ -91,7 +91,8 @@
         "filesystem": "cpp",
         "cerrno": "cpp",
         "regex": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "dense": "cpp"
     },
     "cmake.configureOnOpen": true
 }

@@ -61,6 +61,7 @@
 #include "../Autopilot/ArduPilot/_AP_servo.h"
 #include "../Autopilot/ArduPilot/_AP_takeoff.h"
 #include "../Autopilot/ArduPilot/_AP_link.h"
+#include "../Autopilot/ArduPilot/_AP_swarm.h"
 #include "../Autopilot/ArduPilot/_AProver_drive.h"
 #ifdef WITH_SENSOR
 #include "../Autopilot/ArduPilot/_AP_distLidar.h"
@@ -94,8 +95,8 @@
 #include "../Application/CamCalib/_CamCalib.h"
 #endif
 
-#ifdef WITH_APP_DRONEFLEET
-#include "../Application/DroneFleet/_AP_fleet.h"
+#ifdef WITH_APP_DRONESWARM
+#include "../Application/DroneSwarm/_AP_fleet.h"
 #endif
 
 #ifdef WITH_APP_DRONEBOX
@@ -303,6 +304,10 @@
 #include "../UI/_WindowCV.h"
 #endif
 #ifdef USE_GUI
+#endif
+#ifdef USE_WEBUI
+#include "../UI/_WebUIbase.h"
+#include "../UI/_WebUIswarm.h"
 #endif
 #endif
 

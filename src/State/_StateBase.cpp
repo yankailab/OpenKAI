@@ -19,11 +19,6 @@ namespace kai
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		string n = "";
-		pK->v("_StateControl", &n);
-		m_pSC = (_StateControl *)(pK->getInst(n));
-		NULL_T(m_pSC);
-
 		vector<string> vAS;
 		pK->a("vActiveState", &vAS);
 		for (int i = 0; i < vAS.size(); i++)
@@ -36,6 +31,19 @@ namespace kai
 		}
 
 		m_iLastState = -1;
+
+		return true;
+	}
+
+	bool _StateBase::link(void)
+	{
+		IF_F(!this->_ModuleBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+		string n;
+
+		n = "";
+		pK->v("_StateControl", &n);
+		m_pSC = (_StateControl *)(pK->getInst(n));
 
 		return true;
 	}

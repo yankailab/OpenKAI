@@ -112,28 +112,28 @@ namespace kai
 		Mat *pM = pF->m();
 		IF_(pM->empty());
 
-		Point pCenter(pM->cols / 2, pM->rows / 2);
-		Scalar col = Scalar(0, 255, 0);
-		double rMax = m_pDS->rMax() * m_pDS->m_showScale;
+		// Point pCenter(pM->cols / 2, pM->rows / 2);
+		// Scalar col = Scalar(0, 255, 0);
+		// double rMax = m_pDS->rMax() * m_pDS->m_showScale;
 
-		for (int i = 0; i < m_nSection; i++)
-		{
-			DIST_LIDAR_SECTION *pS = &m_pSection[i];
+		// for (int i = 0; i < m_nSection; i++)
+		// {
+		// 	DIST_LIDAR_SECTION *pS = &m_pSection[i];
 
-			double radFrom = pS->m_degFrom * DEG_2_RAD;
-			double radTo = pS->m_degTo * DEG_2_RAD;
-			double d = pS->m_minD * m_pDS->m_showScale / cos(0.5 * (radFrom + radTo) - radFrom);
+		// 	double radFrom = pS->m_degFrom * DEG_2_RAD;
+		// 	double radTo = pS->m_degTo * DEG_2_RAD;
+		// 	double d = pS->m_minD * m_pDS->m_showScale / cos(0.5 * (radFrom + radTo) - radFrom);
 
-			vDouble2 pFrom, pTo;
-			pFrom.x = sin(radFrom);
-			pFrom.y = -cos(radFrom);
-			pTo.x = sin(radTo);
-			pTo.y = -cos(radTo);
+		// 	vDouble2 pFrom, pTo;
+		// 	pFrom.x = sin(radFrom);
+		// 	pFrom.y = -cos(radFrom);
+		// 	pTo.x = sin(radTo);
+		// 	pTo.y = -cos(radTo);
 
-			line(*pM, pCenter + Point(pFrom.x * d, pFrom.y * d), pCenter + Point(pTo.x * d, pTo.y * d), col, 2);
-			line(*pM, pCenter + Point(pFrom.x * rMax, pFrom.y * rMax), pCenter, col, 1);
-			line(*pM, pCenter, pCenter + Point(pTo.x * rMax, pTo.y * rMax), col, 1);
-		}
+		// 	line(*pM, pCenter + Point(pFrom.x * d, pFrom.y * d), pCenter + Point(pTo.x * d, pTo.y * d), col, 2);
+		// 	line(*pM, pCenter + Point(pFrom.x * rMax, pFrom.y * rMax), pCenter, col, 1);
+		// 	line(*pM, pCenter, pCenter + Point(pTo.x * rMax, pTo.y * rMax), col, 1);
+		// }
 #endif
 	}
 

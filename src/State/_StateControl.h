@@ -46,9 +46,10 @@ namespace kai
 		_StateControl();
 		virtual ~_StateControl();
 
-		bool init(void *pKiss);
-		bool start(void);
-		void console(void *pConsole);
+		virtual bool init(void *pKiss);
+		virtual bool link(void);
+		virtual bool start(void);
+		virtual void console(void *pConsole);
 
 		State *getState(void);
 		string getStateName(void);

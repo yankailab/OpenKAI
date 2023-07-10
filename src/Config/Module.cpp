@@ -72,6 +72,7 @@ namespace kai
 		ADD_MODULE(_AP_goto);
 		ADD_MODULE(_AP_link);
 		ADD_MODULE(_AProver_drive);
+		ADD_MODULE(_AP_swarm);
 #ifdef WITH_SENSOR
 		ADD_MODULE(_AP_distLidar);
 #endif
@@ -104,7 +105,7 @@ namespace kai
 		ADD_MODULE(_CamCalib);
 #endif
 
-#ifdef WITH_APP_DRONEFLEET
+#ifdef WITH_APP_DRONESWARM
 		ADD_MODULE(_AP_fleet);
 #endif
 
@@ -314,6 +315,10 @@ namespace kai
 		ADD_MODULE(_WindowCV);
 #endif
 #ifdef USE_GUI
+#endif
+#ifdef USE_WEBUI
+		ADD_MODULE(_WebUIbase);
+		ADD_MODULE(_WebUIswarm);
 #endif
 #endif
 

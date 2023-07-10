@@ -78,6 +78,16 @@ namespace kai
 		return true;
 	}
 
+	bool _StateControl::link(void)
+	{
+		IF_F(!this->_ModuleBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+
+		string n;
+
+		return true;
+	}
+
 	bool _StateControl::start(void)
 	{
 		NULL_F(m_pT);

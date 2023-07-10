@@ -142,6 +142,21 @@
         </description>
       </entry>
     </enum>
+    <enum name="MAV_MODE_PROPERTY" bitmask="true">
+      <description>Mode properties.
+      </description>
+      <entry value="1" name="MAV_MODE_PROPERTY_ADVANCED">
+        <description>If set, this mode is an advanced mode.
+          For example a rate-controlled manual mode might be advanced, whereas a position-controlled manual mode is not.
+          A GCS can optionally use this flag to configure the UI for its intended users.
+        </description>
+      </entry>
+      <entry value="2" name="MAV_MODE_PROPERTY_NOT_USER_SELECTABLE">
+        <description>If set, this mode should not be added to the list of selectable modes.
+          The mode might still be selected by the FC directly (for example as part of a failsafe).
+        </description>
+      </entry>
+    </enum>
     <!-- The MAV_CMD enum entries describe either: -->
     <!--  * the data payload of mission items (as used in the MISSION_ITEM_INT message) -->
     <!--  * the data payload of mavlink commands (as used in the COMMAND_INT and COMMAND_LONG messages) -->
@@ -348,6 +363,29 @@
         <param index="7" reserved="true"/>
       </entry>
     </enum>
+    <enum name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_FLAGS" bitmask="true">
+      <description>These flags indicate the sensor reporting capabilities for TARGET_ABSOLUTE.</description>
+      <entry value="1" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_POSITION"/>
+      <entry value="2" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_VELOCITY"/>
+      <entry value="4" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_ACCELERATION"/>
+      <entry value="8" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_ATTITUDE"/>
+      <entry value="16" name="TARGET_ABSOLUTE_SENSOR_CAPABILITY_RATES"/>
+    </enum>
+    <enum name="TARGET_OBS_FRAME">
+      <description>The frame of a target observation from an onboard sensor.</description>
+      <entry value="0" name="TARGET_OBS_FRAME_LOCAL_NED">
+        <description>NED local tangent frame (x: North, y: East, z: Down) with origin fixed relative to earth.</description>
+      </entry>
+      <entry value="1" name="TARGET_OBS_FRAME_BODY_FRD">
+        <description>FRD local frame aligned to the vehicle's attitude (x: Forward, y: Right, z: Down) with an origin that travels with vehicle.</description>
+      </entry>
+      <entry value="2" name="TARGET_OBS_FRAME_LOCAL_OFFSET_NED">
+        <description>NED local tangent frame (x: North, y: East, z: Down) with an origin that travels with vehicle.</description>
+      </entry>
+      <entry value="3" name="TARGET_OBS_FRAME_OTHER">
+        <description>Other sensor frame for target observations neither in local NED nor in body FRD.</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <!-- Transactions for parameter protocol -->
@@ -457,9 +495,9 @@
       <field type="uint8_t" name="number_modes">The total number of available modes for the current vehicle type.</field>
       <field type="uint8_t" name="mode_index">The current mode index within number_modes, indexed from 1.</field>
       <field type="uint8_t" name="standard_mode" enum="MAV_STANDARD_MODE">Standard mode.</field>
-      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitmap.</field>
       <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
-      <field type="char[50]" name="mode_name">Name of custom mode, with null termination character. Should be omitted for standard modes.</field>
+      <field type="uint32_t" name="properties" enum="MAV_MODE_PROPERTY">Mode properties.</field>
+      <field type="char[35]" name="mode_name">Name of custom mode, with null termination character. Should be omitted for standard modes.</field>
     </message>
     <message id="436" name="CURRENT_MODE">
       <description>Get the current mode.
@@ -467,8 +505,47 @@
         It may be requested using MAV_CMD_REQUEST_MESSAGE.
       </description>
       <field type="uint8_t" name="standard_mode" enum="MAV_STANDARD_MODE">Standard mode.</field>
-      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitmap.</field>
       <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
+      <field type="uint32_t" name="intended_custom_mode" invalid="0">The custom_mode of the mode that was last commanded by the user (for example, with MAV_CMD_DO_SET_STANDARD_MODE, MAV_CMD_DO_SET_MODE or via RC). This should usually be the same as custom_mode. It will be different if the vehicle is unable to enter the intended mode, or has left that mode due to a failsafe condition. 0 indicates the intended custom mode is unknown/not supplied</field>
+    </message>
+    <message id="437" name="AVAILABLE_MODES_MONITOR">
+      <description>A change to the sequence number indicates that the set of AVAILABLE_MODES has changed.
+        A receiver must re-request all available modes whenever the sequence number changes.
+        This is only emitted after the first change and should then be broadcast at low rate (nominally 0.3 Hz) and on change.
+      </description>
+      <field type="uint8_t" name="seq">Sequence number. The value iterates sequentially whenever AVAILABLE_MODES changes (e.g. support for a new mode is added/removed dynamically).</field>
+    </message>
+    <!-- Target info from a sensor on the target -->
+    <message id="510" name="TARGET_ABSOLUTE">
+      <description>Current motion information from sensors on a target</description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX epoch time).</field>
+      <field type="uint8_t" name="id">The ID of the target if multiple targets are present</field>
+      <field type="uint8_t" name="sensor_capabilities" enum="TARGET_ABSOLUTE_SENSOR_CAPABILITY_FLAGS" display="bitmask">Bitmap to indicate the sensor's reporting capabilities</field>
+      <field type="int32_t" name="lat" units="degE7">Target's latitude (WGS84)</field>
+      <field type="int32_t" name="lon" units="degE7">Target's longitude (WGS84)</field>
+      <field type="float" name="alt" units="m">Target's altitude (AMSL)</field>
+      <field type="float[3]" name="vel" units="m/s" invalid="[0]">Target's velocity in its body frame</field>
+      <field type="float[3]" name="acc" units="m/s/s" invalid="[0]">Linear target's acceleration in its body frame</field>
+      <field type="float[4]" name="q_target" invalid="[0]">Quaternion of the target's orientation from its body frame to the vehicle's NED frame.</field>
+      <field type="float[3]" name="rates" units="rad/s" invalid="[0]">Target's roll, pitch and yaw rates</field>
+      <field type="float[2]" name="position_std" units="m">Standard deviation of horizontal (eph) and vertical (epv) position errors</field>
+      <field type="float[3]" name="vel_std" units="m/s">Standard deviation of the target's velocity in its body frame</field>
+      <field type="float[3]" name="acc_std" units="m/s/s">Standard deviation of the target's acceleration in its body frame</field>
+    </message>
+    <!-- Target info measured by MAV's onboard sensors -->
+    <message id="511" name="TARGET_RELATIVE">
+      <description>The location of a target measured by MAV's onboard sensors. </description>
+      <field type="uint64_t" name="timestamp" units="us">Timestamp (UNIX epoch time)</field>
+      <field type="uint8_t" name="id" instance="true">The ID of the target if multiple targets are present</field>
+      <field type="uint8_t" name="frame" enum="TARGET_OBS_FRAME">Coordinate frame used for following fields.</field>
+      <field type="float" name="x" units="m">X Position of the target in TARGET_OBS_FRAME</field>
+      <field type="float" name="y" units="m">Y Position of the target in TARGET_OBS_FRAME</field>
+      <field type="float" name="z" units="m">Z Position of the target in TARGET_OBS_FRAME</field>
+      <field type="float[3]" name="pos_std" units="m">Standard deviation of the target's position in TARGET_OBS_FRAME</field>
+      <field type="float" name="yaw_std" units="rad">Standard deviation of the target's orientation in TARGET_OBS_FRAME</field>
+      <field type="float[4]" name="q_target">Quaternion of the target's orientation from the target's frame to the TARGET_OBS_FRAME (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
+      <field type="float[4]" name="q_sensor">Quaternion of the sensor's orientation from TARGET_OBS_FRAME to vehicle-carried NED. (Ignored if set to (0,0,0,0)) (w, x, y, z order, zero-rotation is 1, 0, 0, 0)</field>
+      <field type="uint8_t" name="type" enum="LANDING_TARGET_TYPE">Type of target</field>
     </message>
   </messages>
 </mavlink>
