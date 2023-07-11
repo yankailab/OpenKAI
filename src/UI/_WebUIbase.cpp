@@ -12,6 +12,7 @@ namespace kai
 
 	_WebUIbase::_WebUIbase()
 	{
+		m_pTui = NULL;
 		m_rootDir = "";
 		m_fHtml = "<html>Hello World!</html>";
 		m_wd = 0;
@@ -19,6 +20,7 @@ namespace kai
 
 	_WebUIbase::~_WebUIbase()
 	{
+		DEL(m_pTui);
 	}
 
 	bool _WebUIbase::init(void *pKiss)
@@ -29,6 +31,16 @@ namespace kai
 		pK->v("rootDir", &m_rootDir);
 		pK->v("fHtml", &m_fHtml);
 
+		Kiss *pKt = pK->child("threadUI");
+		IF_F(pKt->empty());
+		m_pTui = new _Thread();
+		if (!m_pTui->init(pKt))
+		{
+			DEL(m_pTui);
+			return false;
+		}
+		pKt->m_pInst = m_pTui;
+
 		return true;
 	}
 
@@ -36,6 +48,8 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
+
+		IF_F(!m_pTui->link());
 
 		vector<string> vB;
 		pK->a("vBASE", &vB);

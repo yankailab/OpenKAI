@@ -7,7 +7,7 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <title>Material Design for Bootstrap</title>
+    <title>DAL debug console</title>
     <!-- MDB icon -->
     <link rel="icon" href="img/mdb-favicon.ico" type="image/x-icon" />
     <!-- Font Awesome -->
@@ -28,39 +28,40 @@
   <body>
     
     <!-- Start your project here-->
+    <section>
+      <div class="text-center">
+        <h4><strong id="state">State: </strong></h4>
+        <a id="btnStandby" class="btn btn-primary mb-5 ripple-surface" role="button">Standby</a>
+        <a id="btnTakeoff" class="btn btn-primary mb-5 ripple-surface" role="button">Takeoff</a>
+        <a id="btnAuto" class="btn btn-primary mb-5 ripple-surface" role="button">Auto</a>
+        <a id="btnRTL" class="btn btn-primary mb-5 ripple-surface" role="button">RTL</a>
+      </div>
+    </section>
 
     <section>
       <div class="text-center">
-        <h4><strong>Tables</strong></h4>
-        <a class="btn btn-primary mb-5 ripple-surface" id="myID" role="button">Test</a>
+        <h4><strong>Vehicles</strong></h4>
       </div>
 
       <table class="table table-striped">
         <thead>
           <tr>
-            <th scope="col">#</th>
-            <th scope="col">First</th>
-            <th scope="col">Last</th>
-            <th scope="col">Handle</th>
+            <th scope="col">ID</th>
+            <th scope="col">Mode</th>
+            <th scope="col">Att</th>
+            <th scope="col">Hdg</th>
+            <th scope="col">Alt</th>
+            <th scope="col">Batt</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="tbVehicles">
           <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-          </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td colspan="2">Larry the Bird</td>
-            <td>@twitter</td>
+            <th scope="row">0</th>
+            <td>Unknown</td>
+            <td>r,p,y</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
           </tr>
         </tbody>
       </table>
@@ -73,5 +74,6 @@
     <!-- Custom scripts -->
     <script type="text/javascript"></script>
     <script src="/webui.js"></script>
+    <script src="js/ui.js"></script>
   </body>
 </html>

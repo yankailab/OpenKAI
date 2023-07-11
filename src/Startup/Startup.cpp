@@ -69,17 +69,23 @@ namespace kai
 
 		for (i = 0; i < m_vInst.size(); i++)
 		{
-			F_ERROR_F(m_vInst[i].m_pInst->init(m_vInst[i].m_pKiss));
+			IF_CONT(m_vInst[i].m_pInst->init(m_vInst[i].m_pKiss));
+			LOG_E(m_vInst[i].m_pKiss->m_name + ".init()");
+			return false;
 		}
 
 		for (i = 0; i < m_vInst.size(); i++)
 		{
-			F_ERROR_F(m_vInst[i].m_pInst->link());
+			IF_CONT(m_vInst[i].m_pInst->link());
+			LOG_E(m_vInst[i].m_pKiss->m_name + ".link()");
+			return false;
 		}
 
 		for (i = 0; i < m_vInst.size(); i++)
 		{
-			m_vInst[i].m_pInst->start();
+			IF_CONT(m_vInst[i].m_pInst->start());
+			LOG_E(m_vInst[i].m_pKiss->m_name + ".start()");
+			return false;
 		}
 
 		//UI thread

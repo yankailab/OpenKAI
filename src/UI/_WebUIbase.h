@@ -23,8 +23,8 @@ namespace kai
 		virtual bool start(void);
 
 	protected:
-		void show(void);
-		void update(void);
+		virtual void show(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_WebUIbase *)This)->update();
@@ -33,10 +33,12 @@ namespace kai
 
 		static void cbEvent(webui_event_t* e)
 		{
-			LOG(INFO)<<"Hello WebUI bind!";
+		    webui_run(e->window, "setHTML(id,'')");
 		}
 
 	protected:
+		_Thread *m_pTui;
+
 		vector<BASE *> m_vpB;
 
 		string m_rootDir;

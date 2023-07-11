@@ -26,16 +26,6 @@ namespace kai
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		vector<string> vB;
-		pK->a("vBASE", &vB);
-		for (string p : vB)
-		{
-			BASE *pB = (BASE *)(pK->getInst(p));
-			IF_CONT(!pB);
-
-			m_vpB.push_back(pB);
-		}
-
 		initscr();
 		noecho();
 		cbreak();
@@ -46,6 +36,24 @@ namespace kai
 		init_pair(_Console_COL_FPS, COLOR_YELLOW, -1);
 		init_pair(_Console_COL_MSG, COLOR_WHITE, -1);
 		init_pair(_Console_COL_ERROR, COLOR_RED, -1);
+
+		return true;
+	}
+
+	bool _Console::link(void)
+	{
+		IF_F(!this->_ModuleBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+
+		vector<string> vB;
+		pK->a("vBASE", &vB);
+		for (string p : vB)
+		{
+			BASE *pB = (BASE *)(pK->getInst(p));
+			IF_CONT(!pB);
+
+			m_vpB.push_back(pB);
+		}
 
 		return true;
 	}

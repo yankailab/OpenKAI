@@ -116,8 +116,9 @@ namespace kai
 		float getApHdg(void);
 		vFloat3 getApSpeed(void);
 		vFloat3 getApAttitude(void);
+		float getBattery(void);
 
-	private:
+	protected:
 		void updateBase(void);
 		static void *getUpdate(void *This)
 		{
@@ -142,6 +143,7 @@ namespace kai
 		vFloat3 m_vSpeed;
 		vFloat3 m_vAtti; //yaw, pitch, roll
 		float m_apHdg;	 //heading in degree
+		float m_battery; //remaining percentage
 	};
 
 }

@@ -21,6 +21,7 @@ namespace kai
 		m_vSpeed.clear();
 		m_vAtti.clear();
 		m_apHdg = -1.0;
+		m_battery = 0.0;
 	}
 
 	_AP_base::~_AP_base()
@@ -161,6 +162,12 @@ namespace kai
 			m_vSpeed.z = m_pMav->m_localPositionNED.m_msg.vz;
 		}
 
+		// Battery status
+		if (m_pMav->m_batteryStatus.bReceiving(tNow))
+		{
+			m_battery = (float)(m_pMav->m_batteryStatus.m_msg.battery_remaining) * 0.01;
+		}
+
 		//Send Heartbeat
 		if (m_freqSendHeartbeat > 0 && tNow - m_lastHeartbeat >= m_freqSendHeartbeat)
 		{
@@ -232,6 +239,11 @@ namespace kai
 	float _AP_base::getApHdg(void)
 	{
 		return m_apHdg;
+	}
+
+	float _AP_base::getBattery(void)
+	{
+		return m_battery;
 	}
 
 	void _AP_base::setMount(AP_MOUNT &m)
@@ -309,6 +321,9 @@ namespace kai
 
 		pC->addMsg("System-----------------------------", 1);
 		pC->addMsg("status=" + i2str(m_pMav->m_heartbeat.m_msg.system_status));
+
+		pC->addMsg("Battery-----------------------------", 1);
+		pC->addMsg("batt=" + f2str(m_battery));
 
 		if (m_bDebug)
 		{

@@ -11,7 +11,7 @@ namespace kai
         int8_t m_iState;
         int8_t STANDBY;
         int8_t TAKEOFF;
-        int8_t AIRBORNE;
+        int8_t AUTO;
         int8_t RTL;
 
         bool assign(_StateControl *pSC)
@@ -21,7 +21,7 @@ namespace kai
             m_iState = -1;
             STANDBY = pSC->getStateIdxByName("STANDBY");
             TAKEOFF = pSC->getStateIdxByName("TAKEOFF");
-            AIRBORNE = pSC->getStateIdxByName("AIRBORNE");
+            AUTO = pSC->getStateIdxByName("AUTO");
             RTL = pSC->getStateIdxByName("RTL");
 
             return bValid();
@@ -31,7 +31,7 @@ namespace kai
         {
             IF_F(STANDBY < 0);
             IF_F(TAKEOFF < 0);
-            IF_F(AIRBORNE < 0);
+            IF_F(AUTO < 0);
             IF_F(RTL < 0);
 
             return true;
@@ -53,9 +53,9 @@ namespace kai
             return (m_iState == TAKEOFF);
         }
 
-        bool bAIRBORNE(void)
+        bool bAUTO(void)
         {
-            return (m_iState == AIRBORNE);
+            return (m_iState == AUTO);
         }
 
         bool bRTL(void)
@@ -89,10 +89,7 @@ namespace kai
 		AP_SWARM_STATE m_state;
 
 		bool m_bAutoArm;
-		float m_altAirborne;
-		int m_dLanded;
-
-
+		float m_altTakeoff;
 	};
 
 }

@@ -19,8 +19,9 @@ namespace kai
 		_Console();
 		virtual ~_Console();
 
-		bool init(void *pKiss);
-		bool start(void);
+		virtual bool init(void *pKiss);
+		virtual bool link(void);
+		virtual bool start(void);
 
 		void addMsg(const string &msg, int iLine = 1);
 		void addMsg(const string &msg, int iCol, int iX, int iLine = 0);

@@ -6,9 +6,8 @@ namespace kai
 	_AP_swarm::_AP_swarm()
 	{
 		m_pAP = NULL;
-		m_bAutoArm = false;
-		m_altAirborne = 20.0;
-		m_dLanded = 5;
+		m_bAutoArm = true;
+		m_altTakeoff = 5.0;
 	}
 
 	_AP_swarm::~_AP_swarm()
@@ -21,8 +20,7 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("bAutoArm", &m_bAutoArm);
-		pK->v("altAirborne", &m_altAirborne);
-		pK->v("dLanded", &m_dLanded);
+		pK->v("altTakeoff", &m_altTakeoff);
 
 		return true;
 	}
@@ -82,20 +80,10 @@ namespace kai
 		bool bApArmed = m_pAP->bApArmed();
 		float alt = m_pAP->getGlobalPos().w; // relative altitude
 
-		// For manual reset
-		if (apMode == AP_COPTER_STABILIZE)
-		{
-			m_pSC->transit(m_state.STANDBY);
-			m_state.update(m_pSC);
-		}
-
 		// Standby
 		if (m_state.bSTANDBY())
 		{
 			IF_(apMode != AP_COPTER_GUIDED);
-
-			//            m_pSC->transit(m_state.TAKEOFF_REQUEST);
-			//            m_state.update(m_pSC);
 		}
 
 		// Takeoff
@@ -113,25 +101,12 @@ namespace kai
 				return;
 			}
 
-			m_pAP->m_pMav->clNavTakeoff(m_altAirborne + 1.0);
-
-			IF_(alt < m_altAirborne);
-
-			//			m_pSC->transit(m_state.AIRBORNE);
-			//			m_state.update(m_pSC);
+			m_pAP->m_pMav->clNavTakeoff(m_altTakeoff);
 		}
 
-		if (m_state.bAIRBORNE())
+		if (m_state.bAUTO())
 		{
-			if (apMode == AP_COPTER_GUIDED)
-				m_pAP->setApMode(AP_COPTER_AUTO);
-
-			IF_(apMode != AP_COPTER_AUTO);
-
-			IF_(alt > m_altAirborne);
-
-//			m_pSC->transit(m_state.RTL);
-//			m_state.update(m_pSC);
+			IF_(apMode != AP_COPTER_GUIDED);
 		}
 
 		// RTL
@@ -142,9 +117,6 @@ namespace kai
 
 			// check if touched down
 			IF_(bApArmed);
-
-			m_pSC->transit(m_state.STANDBY);
-			m_state.update(m_pSC);
 		}
 	}
 

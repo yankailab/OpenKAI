@@ -9,12 +9,12 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["state","/serialTelem","apVideo","cURL"],
+	"vBASE":["state","/serialTelem"],
 }
 
 {
@@ -41,7 +41,7 @@
 		}
 		{
 			"bON":1,
-			"name":"AIRBORNE",
+			"name":"AUTO",
 			"class":"State",
 		}
 		{
@@ -50,6 +50,24 @@
 			"class":"State",
 		}
 	}
+}
+
+{
+	"name":"webUI",
+	"class":"_WebUIswarm",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":5,
+	}
+    {
+		"name":"threadUI",
+		"FPS":1,
+	}
+	"_StateControl":"state",
+	"vAPbase":["apBase"],
+	"rootDir":"/home/kai/dev/OpenKAI/html/webui/simple",
+	"fHtml":"swarm.html",
 }
 
 
@@ -82,7 +100,6 @@
 	}
 	"bLog":0,
 	"_IOBase":"serial",
-	"/noRouteCmd":[],
 	{
 		"name":"routing",
 		{
@@ -118,7 +135,6 @@
 	}
 	"bLog":0,
 	"_IOBase":"udp",
-	"/noRouteCmd":[],
 	{
 		"name":"routing",
 		{
@@ -193,5 +209,4 @@
 	"bLog":0,
 	"_AP_base":"apBase",
 	"_StateControl":"state",
-	"apModeInError":9,
 }
