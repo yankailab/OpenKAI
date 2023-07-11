@@ -89,7 +89,8 @@ namespace kai
 		// Takeoff
 		if (m_state.bTAKEOFF())
 		{
-			IF_(apMode != AP_COPTER_GUIDED);
+			m_pAP->setApMode(AP_COPTER_GUIDED);
+//			IF_(apMode != AP_COPTER_GUIDED);
 
 			if (!bApArmed)
 			{

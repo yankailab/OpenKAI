@@ -9,12 +9,12 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["state","/serialTelem"],
+	"vBASE":["state","apBase1"],
 }
 
 {
@@ -65,7 +65,7 @@
 		"FPS":1,
 	}
 	"_StateControl":"state",
-	"vAPbase":["apBase"],
+	"vAPbase":["apBase1"],
 	"rootDir":"/home/kai/dev/OpenKAI/html/webui/simple",
 	"fHtml":"swarm.html",
 }
@@ -73,7 +73,7 @@
 
 
 {
-	"name":"serial",
+	"name":"serial1",
 	"class":"_SerialPort",
 	"bON":1,
     {
@@ -83,15 +83,15 @@
     {
 		"name":"threadR",
 		"FPS":30,
-		"vTwakeUp":["mavAP.thread"],
+		"vTwakeUp":["mavAP1.thread"],
 	}
 	"port":"/dev/ttyACM0",
-	"/port":"/dev/ttyUSB0",
-	"baud":57600,
+	"baud":115200,
+	"/baud":57600,
 }
 
 {
-	"name":"mavAP",
+	"name":"mavAP1",
 	"class":"_Mavlink",
 	"bON":1,
     {
@@ -99,18 +99,18 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"_IOBase":"serial",
+	"_IOBase":"serial1",
 	{
 		"name":"routing",
 		{
 			"bON":1,
-			"_Mavlink":"mavUDP",
+			"_Mavlink":"mavUDP1",
 		}
 	}
 }
 
 {
-	"name":"udp",
+	"name":"udp1",
 	"class":"_UDP",
 	"bON":1,
     {
@@ -120,13 +120,13 @@
     {
 		"name":"threadR",
 		"FPS":30,
-		"vTwakeUp":["mavUDP.thread"],
+		"vTwakeUp":["mavUDP1.thread"],
 	}
 	"port":19840,
 }
 
 {
-	"name":"mavUDP",
+	"name":"mavUDP1",
 	"class":"_Mavlink",
 	"bON":1,
     {
@@ -134,18 +134,18 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"_IOBase":"udp",
+	"_IOBase":"udp1",
 	{
 		"name":"routing",
 		{
 			"bON":1,
-			"_Mavlink":"mavAP",
+			"_Mavlink":"mavAP1",
 		}
 	}
 }
 
 {
-	"name":"apBase",
+	"name":"apBase1",
 	"class":"_AP_base",
 	"bON":1,
     {
@@ -153,7 +153,7 @@
 		"FPS":10,
 	}
 	"_StateControl":"state",
-	"_Mavlink":"mavAP",
+	"_Mavlink":"mavAP1",
 	"freqSendHeartbeat":1,
 	"apType":0,
 	
@@ -169,11 +169,6 @@
 			"name":"attitude",
 			"id":30,
 			"tInt":0.3,
-		}
-		{
-			"name":"rcChannels",
-			"id":65,
-			"tInt":1.0,
 		}
 		{
 			"name":"localPosition",
@@ -199,7 +194,7 @@
 }
 
 {
-	"name":"apSwarm",
+	"name":"apSwarm1",
 	"class":"_AP_swarm",
 	"bON":1,
     {
@@ -207,6 +202,8 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"_AP_base":"apBase",
+	"_AP_base":"apBase1",
 	"_StateControl":"state",
+	"bAutoArm":1,
+	"altTakeoff":10.0,
 }

@@ -104,7 +104,7 @@ namespace kai
 			vDouble4 vGpos = pAP->getGlobalPos();
             h += "<td>"+ f2str(vGpos.w) +"</td>";
 
-			float batt = pAP->getApHdg();
+			float batt = pAP->getBattery();
             h += "<td>"+ f2str(batt) +"</td>";
 
 			h += "</tr>";
