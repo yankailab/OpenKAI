@@ -16,6 +16,7 @@ namespace kai
 		m_rootDir = "";
 		m_fHtml = "<html>Hello World!</html>";
 		m_wd = 0;
+		m_bMultiAccess = false;
 	}
 
 	_WebUIbase::~_WebUIbase()
@@ -30,6 +31,7 @@ namespace kai
 
 		pK->v("rootDir", &m_rootDir);
 		pK->v("fHtml", &m_fHtml);
+		pK->v("bMultiAccess", &m_bMultiAccess);
 
 		Kiss *pKt = pK->child("threadUI");
 		IF_F(pKt->empty());
@@ -87,6 +89,7 @@ namespace kai
 		m_wd = webui_new_window();
 		webui_set_root_folder(m_wd, m_rootDir.c_str());
 		webui_bind(m_wd, "myID", cbEvent);
+		webui_set_multi_access(m_wd, m_bMultiAccess);
 		webui_show(m_wd, m_fHtml.c_str());
 		webui_wait();
 //		webui_destroy(m_wd);

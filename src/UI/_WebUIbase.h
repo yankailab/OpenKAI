@@ -37,13 +37,14 @@ namespace kai
 		}
 
 	protected:
-		_Thread *m_pTui;
-
 		vector<BASE *> m_vpB;
+		_Thread *m_pTui;
 
 		string m_rootDir;
 		string m_fHtml;
 		size_t m_wd;
+
+		bool m_bMultiAccess;
 
 	};
 }

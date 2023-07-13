@@ -633,6 +633,12 @@ make all -j$(nproc)
 sudo make install
 
 #----------------------------------------------------
+# WebUI
+git clone https://github.com/webui-dev/webui.git
+cd webui/build
+./linux_build.sh
+
+#----------------------------------------------------
 # OpenKAI
 sudo apt-get install libunwind-dev
 sudo apt-get install libgoogle-glog-dev

@@ -277,6 +277,7 @@ namespace kai
 		ADD_MODULE(_SBus);
 		ADD_MODULE(_PWMio);
 		ADD_MODULE(_ProtocolBase);
+		ADD_MODULE(_Xbee);
 #endif
 
 #ifdef WITH_SCIENCE

@@ -129,6 +129,7 @@ namespace kai
 		webui_bind(m_wd, "btnTakeoff", cbBtn);
 		webui_bind(m_wd, "btnAuto", cbBtn);
 		webui_bind(m_wd, "btnRTL", cbBtn);
+		webui_set_multi_access(m_wd, m_bMultiAccess);
 		webui_show(m_wd, m_fHtml.c_str());
 		webui_wait();
 		m_wd = 0;

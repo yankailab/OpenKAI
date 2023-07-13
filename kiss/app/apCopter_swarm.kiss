@@ -68,6 +68,7 @@
 	"vAPbase":["apBase1"],
 	"rootDir":"/home/kai/dev/OpenKAI/html/webui/simple",
 	"fHtml":"swarm.html",
+	"bMultiAccess":1,
 }
 
 

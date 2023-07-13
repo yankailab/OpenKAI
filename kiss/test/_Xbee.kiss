@@ -1,0 +1,53 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["xb1"],
+}
+
+{
+	"name":"serial1",
+	"class":"_SerialPort",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+		"vTwakeUp":["xb1.threadR"],
+	}
+	"port":"/dev/ttyUSB0",
+	"baud":57600,
+}
+
+{
+	"name":"xb1",
+	"class":"_Xbee",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"_IOBase":"serial1",
+	"/destAddr":"000000000000FFFF",
+	"destAddr":"0013A200421D6C8F",
+}

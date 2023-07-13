@@ -266,6 +266,7 @@
 #include "../Protocol/_ProtocolBase.h"
 #include "../Protocol/_Modbus.h"
 #include "../Protocol/_SBus.h"
+#include "../Protocol/_Xbee.h"
 #endif
 
 #ifdef WITH_SCIENCE
