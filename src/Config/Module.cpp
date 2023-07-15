@@ -228,6 +228,9 @@ namespace kai
 #ifdef USE_DARKNET
 		ADD_MODULE(_YOLO);
 #endif
+#ifdef USE_TF-LITE
+		ADD_MODULE(_TFmobileNet);
+#endif
 #endif
 #endif
 

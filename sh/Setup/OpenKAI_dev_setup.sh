@@ -472,10 +472,23 @@ sudo make install
 
 #----------------------------------------------------
 # (Optional) TensorFlow Lite
-git clone --branch v2.10.0 --depth 1 https://github.com/tensorflow/tensorflow.git
+sudo apt-get install cmake curl
+git clone --branch v2.6.0 --depth 1 https://github.com/tensorflow/tensorflow.git
 cd tensorflow
+./tensorflow/lite/tools/make/download_dependencies.sh
+#./tensorflow/lite/tools/make/build_aarch64_lib.sh
+./tensorflow/lite/tools/make/build_lib.sh
+# update flatbuffers
+cd tensorflow/lite/tools/make/downloads
+rm -rf flatbuffers
+git clone -b v2.0.0 --depth=1 --recursive https://github.com/google/flatbuffers.git
+cd flatbuffers
 mkdir build
 cd build
+cmake ..
+make -j4
+sudo make install
+sudo ldconfig
 
 #----------------------------------------------------
 # (Optional) NCNN

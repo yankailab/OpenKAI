@@ -92,7 +92,11 @@
         "cerrno": "cpp",
         "regex": "cpp",
         "*.inc": "cpp",
-        "dense": "cpp"
+        "dense": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp",
+        "shared_mutex": "cpp",
+        "cfenv": "cpp"
     },
     "cmake.configureOnOpen": true
 }

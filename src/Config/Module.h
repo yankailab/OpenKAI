@@ -216,6 +216,9 @@
 #ifdef USE_DARKNET
 #include "../DNN/Darknet/_YOLO.h"
 #endif
+#ifdef USE_TF-LITE
+#include "../DNN/TensorFlowLite/_TFmobileNet.h"
+#endif
 #endif
 #endif
 
