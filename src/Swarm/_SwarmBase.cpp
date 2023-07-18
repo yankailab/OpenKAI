@@ -25,7 +25,7 @@ namespace kai
 
 		//		pK->v("shmName", &m_shmName);
 
-		IF_F(!open());
+//		IF_F(!open());
 
 		return true;
 	}
@@ -39,7 +39,7 @@ namespace kai
 
 	int _SwarmBase::check(void)
 	{
-		return this->_StateBase::check();
+		return this->_ModuleBase::check();
 	}
 
 	void _SwarmBase::console(void *pConsole)

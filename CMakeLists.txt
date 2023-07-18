@@ -418,7 +418,7 @@ file(GLOB_RECURSE State_cpp src/State/*.cpp src/State/*.cc src/State/*.c)
 set(OpenKAI_cpp ${OpenKAI_cpp} ${State_cpp})
 endif()
 
-if(WITH_SWAMR)
+if(WITH_SWARM)
 add_definitions(-DWITH_SWARM)
 file(GLOB_RECURSE Swarm_cpp src/Swarm/*.cpp src/Swarm/*.cc src/Swarm/*.c)
 set(OpenKAI_cpp ${OpenKAI_cpp} ${Swarm_cpp})

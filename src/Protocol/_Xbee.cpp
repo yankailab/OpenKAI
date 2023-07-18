@@ -7,8 +7,7 @@ namespace kai
     {
         m_pTr = NULL;
         m_pIO = NULL;
-
-        m_destAddr = "000000000000FFFF";
+        m_fRecv.reset();
     }
 
     _Xbee::~_Xbee()
@@ -21,7 +20,7 @@ namespace kai
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        pK->v("destAddr", &m_destAddr);
+        //        pK->v("destAddr", &m_destAddr);
 
         Kiss *pKt = pK->child("threadR");
         IF_F(pKt->empty());
@@ -37,20 +36,20 @@ namespace kai
         return true;
     }
 
-	bool _Xbee::link(void)
-	{
-		IF_F(!this->_ModuleBase::link());
+    bool _Xbee::link(void)
+    {
+        IF_F(!this->_ModuleBase::link());
 
-		Kiss *pK = (Kiss *)m_pKiss;
-		string n;
+        Kiss *pK = (Kiss *)m_pKiss;
+        string n;
         n = "";
 
         F_ERROR_F(pK->v("_IOBase", &n));
         m_pIO = (_IOBase *)(pK->getInst(n));
         NULL_Fl(m_pIO, n + ": not found");
 
-		return true;
-	}
+        return true;
+    }
 
     bool _Xbee::start(void)
     {
@@ -90,28 +89,26 @@ namespace kai
 
             m_pT->autoFPSfrom();
 
-            send();
+            updateMesh();
 
             m_pT->autoFPSto();
         }
     }
 
-    void _Xbee::send(void)
+    void _Xbee::updateMesh(void)
     {
         IF_(check() < 0);
+    }
 
-        uint8_t d[6];
-        d[0] = 'H';
-        d[1] = 'e';
-        d[2] = 'l';
-        d[3] = 'l';
-        d[4] = 'o';
-        d[5] = '!';
+    void _Xbee::send(const string &dest, uint8_t *pB, int nB)
+    {
+        IF_(check() < 0);
+        NULL_(pB);
+        IF_(nB == 0);
 
         XBframe_transitRequest f;
-        f.m_destAddr = strtol(m_destAddr.c_str(), NULL, 16); ;
-        f.setData(6, d);
-        f.encode();
+        f.m_destAddr = getAddr(dest);
+        f.encode(pB, nB);
 
         m_pIO->write(f.m_pF, f.m_nF);
     }
@@ -124,7 +121,8 @@ namespace kai
 
             if (recv())
             {
-//                handleFrame();
+                handleFrame();
+                m_fRecv.reset();
             }
             //        m_pT->sleepT ( 0 ); //wait for the IObase to wake me up when received data
 
@@ -136,22 +134,96 @@ namespace kai
     {
         IF_F(check() < 0);
 
-        uint8_t B;
-
-        while (m_pIO->read(&B, 1) > 0)
+        uint8_t b;
+        int nB;
+        while ((nB = m_pIO->read(&b, 1)) > 0)
         {
-            return true;
+            if (m_fRecv.m_iB > 0)
+            {
+                m_fRecv.m_pB[m_fRecv.m_iB] = b;
+                m_fRecv.m_iB++;
+
+                if (m_fRecv.m_iB == 3)
+                {
+                    m_fRecv.m_length = (m_fRecv.m_pB[1] << 8) | m_fRecv.m_pB[2];
+                }
+
+                IF_T(m_fRecv.m_iB == m_fRecv.m_length + 4);
+            }
+            else if (b == XB_DELIM)
+            {
+                m_fRecv.m_pB[0] = b;
+                m_fRecv.m_iB = 1;
+                m_fRecv.m_length = 0;
+            }
         }
 
         return false;
     }
 
-    void _Xbee::decFrame(uint8_t* pB)
+    void _Xbee::handleFrame(void)
     {
-        NULL_(pB);
+        uint8_t fType = m_fRecv.m_pB[3];
 
+        if (fType == 0x90)
+        {
+            // Receive Packet
+    		XBframe_receivePacket rP;
+            IF_(!rP.decode(m_fRecv.m_pB, m_fRecv.m_iB));
+
+            m_cbReceivePacket.call(rP);
+        }
+        else if (fType == 0x88)
+        {
+            // AT command Response
+        }
+        else if (fType == 0x8A)
+        {
+            // Modem Status
+        }
+        else if (fType == 0x8B)
+        {
+            // Transmit Status
+        }
+        else if (fType == 0x8D)
+        {
+            // Route information packet
+        }
+        else if (fType == 0x8E)
+        {
+            // Aggregate addressing update
+        }
+        else if (fType == 0x91)
+        {
+            // Explicit Rx Indicator
+        }
+        else if (fType == 0x92)
+        {
+            // IO Data Sample Rx Indicator
+        }
+        else if (fType == 0x95)
+        {
+            // Node Identification Indicator
+        }
+        else if (fType == 0x97)
+        {
+            // Remote AT Command Response
+        }
 
     }
+
+    uint64_t _Xbee::getAddr(const string &sAddr)
+    {
+        return strtol(sAddr.c_str(), NULL, 16);
+    }
+
+	bool _Xbee::setCbReceivePacket(CbXBeeReceivePacket pCb, void *pInst)
+	{
+		NULL_F(pInst);
+
+		m_cbReceivePacket.set(pCb, pInst);
+		return true;
+	}
 
     void _Xbee::console(void *pConsole)
     {

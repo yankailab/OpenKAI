@@ -333,5 +333,20 @@ namespace kai
 		return (val << 32) | (val >> 32);
 	}
 
+    inline uint8_t checksum(uint8_t *pB, int N)
+    {
+        NULL_F(pB);
+
+        uint32_t s = 0;
+        for (int i = 0; i < N; i++)
+        {
+            s += pB[i];
+        }
+        s &= 0xFF;
+        s = 0xFF - s;
+        return s;
+    }
+
+
 }
 #endif

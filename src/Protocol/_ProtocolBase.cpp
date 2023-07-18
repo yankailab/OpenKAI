@@ -121,6 +121,8 @@ namespace kai
 
 	bool _ProtocolBase::readCMD(void)
 	{
+		IF_F(check() < 0);
+
 		uint8_t b;
 		int nB;
 
