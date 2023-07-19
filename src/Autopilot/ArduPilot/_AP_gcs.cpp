@@ -8,7 +8,8 @@ namespace kai
         m_pAP = NULL;
         m_pAPland = NULL;
         m_bAutoArm = false;
-        m_altAirborne = 20.0;
+        m_altTakeoff = 20.0;
+        m_altLand = 20.0;
         m_dLanded = 5;
 
         m_targetDroneBoxID = -1;
@@ -25,7 +26,8 @@ namespace kai
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("bAutoArm", &m_bAutoArm);
-        pK->v("altAirborne", &m_altAirborne);
+        pK->v("altTakeoff", &m_altTakeoff);
+        pK->v("altLand", &m_altLand);
         pK->v("dLanded", &m_dLanded);
 
         pK->v("targetDroneBoxID", &m_targetDroneBoxID);
@@ -123,9 +125,9 @@ namespace kai
 
             IF_(!bApArmed);
 
-            m_pAP->m_pMav->clNavTakeoff(m_altAirborne + 1.0);
+            m_pAP->m_pMav->clNavTakeoff(m_altTakeoff + 1.0);
 
-            IF_(alt < m_altAirborne);
+            IF_(alt < m_altTakeoff);
 
             m_pT->sleepT(SEC_2_USEC * 5); //wait to send droneBox to close
             m_pSC->transit(m_state.AIRBORNE);
@@ -139,7 +141,7 @@ namespace kai
 
             IF_(apMode != AP_COPTER_AUTO);
 
-            IF_(alt > m_altAirborne);
+            IF_(alt > m_altLand);
 
             m_pSC->transit(m_state.LANDING_REQUEST);
             m_state.update(m_pSC);

@@ -15,32 +15,32 @@ using namespace std;
 namespace kai
 {
 
-class BASE
-{
-public:
-	BASE();
-	virtual ~BASE();
+	class BASE
+	{
+	public:
+		BASE();
+		virtual ~BASE();
 
-	virtual bool init(void* pKiss);
-	virtual bool link(void);
-	virtual bool start(void);
-	virtual int check(void);
+		virtual bool init(void *pKiss);
+		virtual bool link(void);
+		virtual bool start(void);
+		virtual int check(void);
 
-	virtual void draw(void* pFrame);
-	virtual void console(void* pConsole);
-	virtual void context(void* pContext);
+		virtual void draw(void *pFrame);
+		virtual void console(void *pConsole);
+		virtual void context(void *pContext);
 
-	virtual int serialize(uint8_t* pB, int nB);
-	virtual int deSerialize(uint8_t* pB, int nB);
+		virtual int serialize(uint8_t *pB, int nB);
+		virtual int deSerialize(uint8_t *pB, int nB);
 
-	string* getName(void);
-	string* getClass(void);
+		string *getName(void);
+		string *getClass(void);
 
-public:
-	void*	m_pKiss;
-	bool	m_bLog;
-	bool	m_bDebug;
-};
+	public:
+		void *m_pKiss;
+		bool m_bLog;
+		bool m_bDebug;
+	};
 
 }
 

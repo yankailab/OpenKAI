@@ -39,7 +39,8 @@ namespace kai
 		_AP_land *m_pAPland;
 
 		bool m_bAutoArm;
-		float m_altAirborne;
+		float m_altTakeoff;
+		float m_altLand;
 		int m_dLanded;
 
 		int m_targetDroneBoxID;

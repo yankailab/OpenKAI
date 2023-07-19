@@ -251,6 +251,7 @@ namespace kai
 #ifdef WITH_NAVIGATION
 		ADD_MODULE(_RTCM3);
 		ADD_MODULE(_GPS);
+		ADD_MODULE(GeoGrid);
 #ifdef USE_REALSENSE
 		ADD_MODULE(_RStracking);
 #endif

@@ -14,33 +14,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["cam","FB","state","arUco","TOFsense","apBase","apLand","/serialTelem","apVideo","cURL"],
-}
-
-{
-	"name":"CVwindow",
-	"class":"_WindowCV",
-	"bON":1,
-	"bFullScreen":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"vBASE":["/cam","camCrop","/univTag","arUco"],
-	"bShow":1,
-}
-
-{
-	"name":"FB",
-	"class":"_GstOutput",
-	"bON":0,
-    {
-		"name":"thread",
-		"FPS":2,
-	}
-	"vBASE":["camCrop"],
-	"gstOutput":"appsrc ! v4l2convert ! fbdevsink",
-	"vSize":[1280,720],
+	"vBASE":["state","apBase1"],
 }
 
 {
@@ -52,7 +26,6 @@
 	}
 	"bON":1,
 	"start":"STANDBY",
-	"/start":"LANDING",
 
 	{
 		"name":"state",
@@ -63,125 +36,42 @@
 		}
 		{
 			"bON":1,
-			"name":"TAKEOFF_REQUEST",
+			"name":"TAKEOFF",
 			"class":"State",
 		}
 		{
 			"bON":1,
-			"name":"TAKEOFF_READY",
+			"name":"AUTO",
 			"class":"State",
 		}
 		{
 			"bON":1,
-			"name":"AIRBORNE",
-			"class":"State",
-		}
-		{
-			"bON":1,
-			"name":"LANDING_REQUEST",
-			"class":"State",
-		}
-		{
-			"bON":1,
-			"name":"LANDING",
-			"class":"State",
-		}
-		{
-			"bON":1,
-			"name":"TOUCHDOWN",
-			"class":"State",
-		}
-		{
-			"bON":1,
-			"name":"LANDED",
+			"name":"RTL",
 			"class":"State",
 		}
 	}
 }
 
 {
-	"name":"serialAP",
-	"class":"_SerialPort",
+	"name":"webUI",
+	"class":"_WebUIswarm",
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":5,
 	}
     {
-		"name":"threadR",
-		"FPS":10,
-		"vTwakeUp":["apMavlink.thread"],
-	}
-	"port":"/dev/ttyAMA0",
-	"/port":"/dev/ttyACM0",
-	"baud":115200,
-}
-
-{
-	"name":"apMavlink",
-	"class":"_Mavlink",
-	"bON":1,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"bLog":0,
-	"_IOBase":"serialAP",
-}
-
-{
-	"name":"apBase",
-	"class":"_AP_base",
-	"bON":1,
-    {
-		"name":"thread",
-		"FPS":10,
+		"name":"threadUI",
+		"FPS":1,
 	}
 	"_StateControl":"state",
-	"_Mavlink":"apMavlink",
-	"freqSendHeartbeat":1,
-	"apType":0,
-	
-	{
-		"name":"mavMsgInt",
-		
-		{
-			"name":"heartbeat",
-			"id":0,
-			"tInt":0.4,
-		}
-		{
-			"name":"attitude",
-			"id":30,
-			"tInt":0.3,
-		}
-		{
-			"name":"rcChannels",
-			"id":65,
-			"tInt":1.0,
-		}
-		{
-			"name":"localPosition",
-			"id":32,
-			"tInt":0.3,
-		}
-		{
-			"name":"globalPosition",
-			"id":33,
-			"tInt":0.3,
-		}
-		{
-			"name":"homePosition",
-			"id":242,
-			"tInt":10,
-		}
-		{
-			"name":"batteryStatus",
-			"id":147,
-			"tInt":10,
-		}
-	}
+	"vAPbase":["apBase1"],
+	"rootDir":"/home/kai/dev/OpenKAI/html/webui/simple",
+	"fHtml":"swarm.html",
+	"bMultiAccess":1,
 }
+
+
 
 {
 	"name":"tcpG",
@@ -316,131 +206,12 @@
 	"dict":17,
 }
 
-{
-	"name":"serialTOF",
-	"class":"_SerialPort",
-	"bON":1,
-    {
-        "name":"thread",
-        "FPS":30,
-    }
-    {
-        "name":"threadR",
-        "FPS":30,
-    }
-	"port":"/dev/ttyAMA1",
-	"baud":921600,
-}
+
+
+
 
 {
-	"name":"TOFsense",
-	"class":"_TOFsense",
-	"bON":1,
-    {
-        "name":"thread",
-        "FPS":30,
-    }
-	"_IOBase":"serialTOF",
-}
-
-{
-	"name":"PIDroll",
-	"class":"PID",
-	"bON":1,
-	"P":-3.0,
-	"I":0.0,
-	"Imax":0.0,
-	"D":0.0,
-	"oMin":-0.5,
-	"oMax":0.5,
-}
-
-{
-	"name":"PIDpitch",
-	"class":"PID",
-	"bON":1,
-	"P":3.0,
-	"I":0.0,
-	"Imax":0.0,
-	"D":0.0,
-	"oMin":-0.5,
-	"oMax":0.5,
-}
-
-{
-	"name":"PIDyaw",
-	"class":"PID",
-	"bON":1,
-	"P":-0.1, /* 0.5 */
-	"I":0.0,
-	"Imax":0.0,
-	"D":0.0,
-	"oMin":-90.0,
-	"oMax":90.0,
-}
-
-{
-	"name":"apLand",
-	"class":"_AP_land",
-    {
-		"name":"thread",
-		"FPS":10,
-	}
-	"bON":1,
-	"bLog":1,
-	"_StateControl":"state",
-	"vActiveState":["LANDING","TOUCHDOWN"],
-	"_AP_base":"apBase",
-	"_Universe":"univTag",
-	"_DistSensorBase":"TOFsense",
-	"PIDroll":"PIDroll",
-	"PIDpitch":"PIDpitch",
-	"PIDyaw":"PIDyaw",
-	"vTargetP":[0.5, 0.5, 0.3, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
-	"nWmed":0,
-	"nWpred":0,
-	"dThold":0.25,
-	"iClass":-1,
-	"zrK":10.0,
-	"altComplete":1.25,
-	"rTargetComplete":0.1,
-	"dTargetComplete":0.5,
-	"vKpidIn":[0.5, 20.0],
-	"vKpidOut":[0.3, 1.0],
-	
-	{
-		"name":"mount",
-		"bEnable":0,
-		"pitch":0,
-		"roll":0,
-		"yaw":0,
-		"stabPitch":1,
-		"stabRoll":1,
-		"stabYaw":0,
-		"mountMode":2,
-	}
-}
-
-{
-	"name":"apGCS",
-	"class":"_AP_gcs",
-	"bON":1,
-    {
-		"name":"thread",
-		"FPS":10,
-	}
-	"bLog":1,
-	"_AP_base":"apBase",
-	"_StateControl":"state",
-	"_AP_land":"apLand",
-	"altTakeoff":10.0,
-	"altLand":10.0,
-	"dLanded":2,
-	"bAutoArm":0,
-}
-
-{
-	"name":"serialTelem",
+	"name":"serial1",
 	"class":"_SerialPort",
 	"bON":1,
     {
@@ -450,32 +221,34 @@
     {
 		"name":"threadR",
 		"FPS":30,
-		"vTwakeUp":["dbjTelem.threadR"],
+		"vTwakeUp":["mavAP1.thread"],
+	}
+	"port":"/dev/ttyACM0",
+	"baud":115200,
+	"/baud":57600,
+}
+
+{
+	"name":"mavAP1",
+	"class":"_Mavlink",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
 	}
 	"bLog":0,
-	"port":"/dev/ttyUSB0",
-	"baud":57600,
+	"_IOBase":"serial1",
+	{
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavUDP1",
+		}
+	}
 }
 
 {
-	"name":"dbjTelem",
-	"class":"_AP_droneBoxJSON",
-	"bON":1,
-    {
-		"name":"thread",
-		"FPS":1,
-	}
-    {
-		"name":"threadR",
-		"FPS":30,
-	}
-	"bLog":1,
-	"_AP_gcs":"apGCS",
-	"_IOBase":"serialTelem",
-}
-
-{
-	"name":"udp",
+	"name":"udp1",
 	"class":"_UDP",
 	"bON":1,
     {
@@ -485,62 +258,90 @@
     {
 		"name":"threadR",
 		"FPS":30,
-		"vTwakeUp":["dbjUDP.threadR"],
+		"vTwakeUp":["mavUDP1.thread"],
+	}
+	"port":19840,
+}
+
+{
+	"name":"mavUDP1",
+	"class":"_Mavlink",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
 	}
 	"bLog":0,
-	"addr":"192.168.16.100",
-	"port":20000,
+	"_IOBase":"udp1",
+	{
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavAP1",
+		}
+	}
 }
 
 {
-	"name":"dbjUDP",
-	"class":"_AP_droneBoxJSON",
+	"name":"apBase1",
+	"class":"_AP_base",
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":1,
+		"FPS":10,
 	}
-    {
-		"name":"threadR",
-		"FPS":30,
+	"_StateControl":"state",
+	"_Mavlink":"mavAP1",
+	"freqSendHeartbeat":1,
+	"apType":0,
+	
+	{
+		"name":"mavMsgInt",
+		
+		{
+			"name":"heartbeat",
+			"id":0,
+			"tInt":0.4,
+		}
+		{
+			"name":"attitude",
+			"id":30,
+			"tInt":0.3,
+		}
+		{
+			"name":"localPosition",
+			"id":32,
+			"tInt":0.3,
+		}
+		{
+			"name":"globalPosition",
+			"id":33,
+			"tInt":0.3,
+		}
+		{
+			"name":"homePosition",
+			"id":242,
+			"tInt":10,
+		}
+		{
+			"name":"batteryStatus",
+			"id":147,
+			"tInt":10,
+		}
 	}
-	"bLog":1,
-	"_AP_gcs":"apGCS",
-	"_IOBase":"udp",
 }
 
-
 {
-	"name":"serialTelem2",
-	"class":"_SerialPort",
+	"name":"apSwarm1",
+	"class":"_AP_swarm",
 	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
-	}
-    {
-		"name":"threadR",
-		"FPS":30,
-		"vTwakeUp":["dbjTelem2.threadR"],
 	}
 	"bLog":0,
-	"port":"/dev/ttyUSB1",
-	"baud":57600,
-}
-
-{
-	"name":"dbjTelem2",
-	"class":"_AP_droneBoxJSON",
-	"bON":1,
-    {
-		"name":"thread",
-		"FPS":1,
-	}
-    {
-		"name":"threadR",
-		"FPS":30,
-	}
-	"bLog":1,
-	"_AP_gcs":"apGCS",
-	"_IOBase":"serialTelem2",
+	"_AP_base":"apBase1",
+	"_StateControl":"state",
+	"bAutoArm":1,
+	"altTakeoff":10.0,
 }
