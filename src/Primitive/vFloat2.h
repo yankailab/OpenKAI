@@ -148,7 +148,7 @@ struct vFloat2
 	bool bInside(float v)
     {
         IF_F(v < x);
-        IF_F(v > y);
+        IF_F(v >= y);
         return true;
     }
 };

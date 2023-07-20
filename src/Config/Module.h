@@ -55,7 +55,7 @@
 #include "../Autopilot/ArduPilot/_AP_base.h"
 #include "../Autopilot/ArduPilot/_AP_actuator.h"
 #include "../Autopilot/ArduPilot/_AP_goto.h"
-#include "../Autopilot/ArduPilot/_AP_posCtrl.h"
+#include "../Autopilot/ArduPilot/_AP_move.h"
 #include "../Autopilot/ArduPilot/_AP_RTH.h"
 #include "../Autopilot/ArduPilot/_AP_relay.h"
 #include "../Autopilot/ArduPilot/_AP_servo.h"
@@ -312,7 +312,8 @@
 #endif
 #ifdef USE_WEBUI
 #include "../UI/_WebUIbase.h"
-#include "../UI/_WebUIswarm.h"
+#include "../UI/_WebUIswarmList.h"
+#include "../UI/_WebUIswarmMap.h"
 #endif
 #endif
 

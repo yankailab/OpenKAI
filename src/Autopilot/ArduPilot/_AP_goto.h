@@ -1,12 +1,12 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_goto_H_
 #define OpenKAI_src_Autopilot_AP__AP_goto_H_
 
-#include "_AP_posCtrl.h"
+#include "_AP_move.h"
 
 namespace kai
 {
 
-	class _AP_goto : public _AP_posCtrl
+	class _AP_goto : public _AP_move
 	{
 	public:
 		_AP_goto();

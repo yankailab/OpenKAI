@@ -47,8 +47,8 @@ namespace kai
 
 	void PID::reset(void)
 	{
-		m_v = 0.0;
-		m_vT = 0.0;
+		m_vVar = 0.0;
+		m_vSetPoint = 0.0;
 		m_e = 0.0;
 		m_eOld = 0.0;
 		m_eI = 0.0;
@@ -56,20 +56,20 @@ namespace kai
 		m_vOut = 0.0;
 	}
 
-	float PID::update(float v, float vT, float dT)
+	float PID::update(float v, float sp, float dT)
 	{
 		float ovdT = 0.0;
 		if (dT != 0.0)
 			ovdT = 1.0 / dT;
 
-		m_v = constrain(v, m_vMin, m_vMax);
-		m_vT = vT;
+		m_vVar = constrain(v, m_vMin, m_vMax);
+		m_vSetPoint = sp;
 
 		m_eOld = m_e;
-		m_e = m_vT - m_v;
+		m_e = m_vSetPoint - m_vVar;
 		m_eI += m_e * dT;
 
-		//P,I,D should be of the same symbol
+		// P,I,D should be of the same symbol
 		float o = m_P * m_e + m_D * (m_e - m_eOld) * ovdT + constrain(m_I * m_eI, -m_Imax, m_Imax);
 
 		m_vOut = constrain(o, m_oMin, m_oMax);
@@ -86,7 +86,7 @@ namespace kai
 		NULL_(pConsole);
 		this->BASE::console(pConsole);
 
-		((_Console *)pConsole)->addMsg("v=" + f2str(m_v) + ", vT=" + f2str(m_vT) + ", vO=" + f2str(m_vOut), 1);
+		((_Console *)pConsole)->addMsg("v=" + f2str(m_vVar) + ", sp=" + f2str(m_vSetPoint) + ", vO=" + f2str(m_vOut), 1);
 	}
 
 }

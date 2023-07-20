@@ -69,8 +69,8 @@ namespace kai
 		NULL_Fl(m_pAP, n + ": not found");
 
 		n = "";
-		pK->v("_AP_posCtrl", &n);
-		m_pPC = (_AP_posCtrl *)(pK->getInst(n));
+		pK->v("_AP_move", &n);
+		m_pPC = (_AP_move *)(pK->getInst(n));
 		NULL_Fl(m_pPC, n + ": not found");
 
 		n = "";
@@ -139,19 +139,19 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		m_alt = m_pDS->d(m_iDiv);
-		IF_(m_alt < 0.0);
+		// m_alt = m_pDS->d(m_iDiv);
+		// IF_(m_alt < 0.0);
 
-		if (m_alt - m_lastAlt <= m_dAlt)
-		{
-			m_pPC->m_vP.z = m_speed;
-			return;
-		}
+		// if (m_alt - m_lastAlt <= m_dAlt)
+		// {
+		// 	m_pPC->m_vPvar.z = m_speed;
+		// 	return;
+		// }
 
-		m_lastAlt = floorf(m_alt);
-		if (m_lastAlt < 0.0)
-			m_lastAlt = 0.0;
-		m_pPC->m_vP.z = 0.0;
+		// m_lastAlt = floorf(m_alt);
+		// if (m_lastAlt < 0.0)
+		// 	m_lastAlt = 0.0;
+		// m_pPC->m_vPvar.z = 0.0;
 
 		shutter();
 	}

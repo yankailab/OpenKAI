@@ -19,7 +19,7 @@ namespace kai
 
 	bool _AP_goto::init(void *pKiss)
 	{
-		IF_F(!this->_AP_posCtrl::init(pKiss));
+		IF_F(!this->_AP_move::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("iRelayLED", &m_iRelayLED);
@@ -70,7 +70,7 @@ namespace kai
 		NULL__(m_pAPtarget, -1);
 		NULL__(m_pAPtarget->m_pMav, -1);
 
-		return this->_AP_posCtrl::check();
+		return this->_AP_move::check();
 	}
 
 	void _AP_goto::update(void)
@@ -79,7 +79,7 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			this->_AP_posCtrl::update();
+			this->_AP_move::update();
 			updateGoto();
 
 			m_pT->autoFPSto();
@@ -100,7 +100,7 @@ namespace kai
 
 		if (!m_bTarget)
 		{
-			releaseCtrl();
+			stop();
 			return false;
 		}
 
@@ -118,8 +118,8 @@ namespace kai
 		IF_F(vAPpos.x <= 0.0);
 		IF_F(vAPpos.y <= 0.0);
 
-		m_vTargetGlobal.x = vAPpos.x;
-		m_vTargetGlobal.y = vAPpos.y;
+		m_vPspGlobal.x = vAPpos.x;
+		m_vPspGlobal.y = vAPpos.y;
 
 		return true;
 	}

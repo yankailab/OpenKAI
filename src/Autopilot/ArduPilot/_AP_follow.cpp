@@ -11,12 +11,12 @@ namespace kai
 
 		m_bTarget = false;
 		m_vTargetBB.clear();
-		m_vP.clear();
-		m_vP.x = 0.5;
-		m_vP.y = 0.5;
-		m_vTargetP.clear();
-		m_vTargetP.x = 0.5;
-		m_vTargetP.y = 0.5;
+		m_vPvar.clear();
+		m_vPvar.x = 0.5;
+		m_vPvar.y = 0.5;
+		m_vPsp.clear();
+		m_vPsp.x = 0.5;
+		m_vPsp.y = 0.5;
 
 		//	m_ieSend.init(100000);
 		m_apMount.init();
@@ -28,7 +28,7 @@ namespace kai
 
 	bool _AP_follow::init(void *pKiss)
 	{
-		IF_F(!this->_AP_posCtrl::init(pKiss));
+		IF_F(!this->_AP_move::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		int nWmed = 0;
@@ -72,7 +72,7 @@ namespace kai
 
 	bool _AP_follow::link(void)
 	{
-		IF_F(!this->_AP_posCtrl::link());
+		IF_F(!this->_AP_move::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
@@ -98,7 +98,7 @@ namespace kai
 	{
 		NULL__(m_pU, -1);
 
-		return this->_AP_posCtrl::check();
+		return this->_AP_move::check();
 	}
 
 	void _AP_follow::update(void)
@@ -107,14 +107,14 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			this->_AP_posCtrl::update();
+			this->_AP_move::update();
 			if (updateTarget())
 			{
 				setPosLocal();
 			}
 			else
 			{
-				releaseCtrl();
+				stop();
 			}
 
 			m_pT->autoFPSto();
@@ -124,6 +124,7 @@ namespace kai
 	bool _AP_follow::updateTarget(void)
 	{
 		IF_F(check() < 0);
+
 		if (!bActive())
 		{
 			m_bTarget = false;
@@ -137,6 +138,8 @@ namespace kai
 			m_pAP->setMount(m_apMount);
 
 		m_bTarget = findTarget();
+
+		// use tracker if available
 		if (m_pTracker)
 		{
 			if (m_bTarget)
@@ -149,12 +152,14 @@ namespace kai
 			}
 		}
 
+		// both detection and tracking failed
 		IF_F(!m_bTarget);
 
-		m_vP.x = m_vTargetBB.midX();
-		m_vP.y = m_vTargetBB.midY();
-		m_vP.z = m_vTargetP.z;
-		m_vP.w = m_vTargetP.w;
+		// NEDH (PRAH) order
+		m_vPvar.x = m_vTargetBB.midY();
+		m_vPvar.y = m_vTargetBB.midX();
+		m_vPvar.z = m_vPsp.z;
+		m_vPvar.w = m_vPsp.w;
 
 		return true;
 	}

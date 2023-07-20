@@ -123,6 +123,13 @@ struct vDouble2
 	{
 		return ((x+y)==0);
 	}
+
+	bool bInside(double v)
+    {
+        IF_F(v < x);
+        IF_F(v >= y);
+        return true;
+    }
 };
 
 }

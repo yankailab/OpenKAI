@@ -1,0 +1,73 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["cam"],
+}
+
+{
+	"name":"state",
+	"class":"_StateControl",
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"bON":1,
+	"start":"STANDBY",
+
+	{
+		"name":"state",
+		{
+			"bON":1,
+			"name":"STANDBY",
+			"class":"State",
+		}
+		{
+			"bON":1,
+			"name":"TAKEOFF",
+			"class":"State",
+		}
+		{
+			"bON":1,
+			"name":"AUTO",
+			"class":"State",
+		}
+		{
+			"bON":1,
+			"name":"RTL",
+			"class":"State",
+		}
+	}
+}
+
+{
+	"name":"uiMap",
+	"class":"_WebUIswarmMap",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadUI",
+		"FPS":1,
+	}
+	"vBASE":["/cam"],
+	"_StateControl":"state",
+	"rootDir":"/home/kai/dev/OpenKAI/html/webui/swarmSearch",
+	"fHtml":"map.html",
+	"bMultiAccess":1,
+}

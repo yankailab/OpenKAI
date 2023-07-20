@@ -64,7 +64,7 @@ namespace kai
 #ifdef WITH_ARDUPILOT
 		ADD_MODULE(_AP_base);
 		ADD_MODULE(_AP_actuator);
-		ADD_MODULE(_AP_posCtrl);
+		ADD_MODULE(_AP_move);
 		ADD_MODULE(_AP_RTH);
 		ADD_MODULE(_AP_relay);
 		ADD_MODULE(_AP_servo);
@@ -323,7 +323,8 @@ namespace kai
 #endif
 #ifdef USE_WEBUI
 		ADD_MODULE(_WebUIbase);
-		ADD_MODULE(_WebUIswarm);
+		ADD_MODULE(_WebUIswarmList);
+		ADD_MODULE(_WebUIswarmMap);
 #endif
 #endif
 

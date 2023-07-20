@@ -5,13 +5,12 @@ namespace kai
 
 	_AP_land::_AP_land()
 	{
-		m_pDS = NULL;
 		m_zrK = 1.0;
-		m_dTarget = -1.0;
-		m_dTargetComplete = 1.0;
 		m_rAltComplete = 1.0;
 		m_rTargetComplete = 0.1;
 		m_bRtargetComplete = false;
+
+		m_pTag = NULL;
 	}
 
 	_AP_land::~_AP_land()
@@ -24,9 +23,26 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("zrK", &m_zrK);
-		pK->v("dTargetComplete", &m_dTargetComplete);
 		pK->v("rAltComplete", &m_rAltComplete);
 		pK->v("rTargetComplete", &m_rTargetComplete);
+
+		int ieHdg = USEC_1SEC;
+		pK->v("ieHdgUsec", &ieHdg);
+		m_ieHdgCmd.init(ieHdg);
+
+		Kiss *pKt = pK->child("tags");
+		NULL_T(pKt);
+		Kiss *pT;
+		int i = 0;
+		while (!(pT = pKt->child(i++))->empty())
+		{
+			AP_LAND_TAG t;
+			pT->v("id", &t.m_id);
+			pT->v("priority", &t.m_priority);
+			pT->v("vSize", &t.m_vSize);
+
+			m_vTags.push_back(t);
+		}
 
 		return true;
 	}
@@ -37,10 +53,6 @@ namespace kai
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
-
-		n = "";
-		pK->v("_DistSensorBase", &n);
-		m_pDS = (_DistSensorBase *)(pK->getInst(n));
 
 		return true;
 	}
@@ -75,7 +87,6 @@ namespace kai
 
 		IF_F(m_rAlt > m_rAltComplete);
 		IF_F(!m_bRtargetComplete);
-		IF_F(m_dTarget > m_dTargetComplete);
 
 		return true;
 	}
@@ -88,72 +99,65 @@ namespace kai
 		if (m_apMount.m_bEnable)
 			m_pAP->setMount(m_apMount);
 
+		m_pTag = findTag();
+		m_rAlt = m_pAP->getGlobalPos().w; // relative altitude from AP
 
-		// update distances
-		m_bTarget = findTarget();
-		m_rAlt = m_dTarget;
-		float rTgt = m_dTarget;
-
-		// sensor blocked or not detecting ground
-		if(m_dTarget < 0.0)
+		if(m_ieHdgCmd.update(m_pT->getTfrom()))
 		{
-			m_rAlt = m_pAP->getGlobalPos().w; //relative altitude from AP
-			rTgt = m_vKpidIn.y;
+			//TODO: set global Yaw heading;
 		}
 
-		// verify if the relative alt is lower than the threshold for touch down
-		if(bComplete())
+		// verify the completion of descent procedure
+		if (bComplete())
 		{
-			m_vP = m_vTargetP;
-			releaseCtrl();
+			m_vPvar = m_vPsp;
+			stop();
 			return true;
 		}
 
 		// adjust PID according to altitude
 		m_vKpid.set(1.0);
-		if (m_bTarget)
+		if (m_pTag)
 		{
-			float kD = (m_vKpidIn.constrain(rTgt) - m_vKpidIn.x) / m_vKpidIn.len();
+			float kD = (m_vKpidIn.constrain(1.0 - m_pTag->m_K) - m_vKpidIn.x) / m_vKpidIn.len();
 			kD = m_vKpidOut.constrain(kD);
 			m_vKpid.x = kD;
 			m_vKpid.y = kD;
 		}
-		else
-		{
-			m_vP = m_vTargetP;
-		}
 
-		// handling the navigation
+		// handling the move command
 		setPosLocal();
 		return true;
 	}
 
-	bool _AP_land::findTarget(void)
+	AP_LAND_TAG *_AP_land::findTag(void)
 	{
-		IF_F(check() < 0);
+		IF_N(check() < 0);
 
-		//target
+		// target
 		_Object *tO = NULL;
 		_Object *pO;
-		int IDmax = -1;
+		AP_LAND_TAG* pTag;
 		int i = 0;
+		int priority = INT_MAX;
 		while ((pO = m_pU->get(i++)) != NULL)
 		{
 			int id = pO->getTopClass();
-			IF_CONT(id < IDmax);
+			pTag = getTag(id);
+			IF_CONT(!pTag);
+			IF_CONT(pTag->m_priority > priority);
 
-			IDmax = id;
 			tO = pO;
+			priority = pTag->m_priority;
 		}
 
 		float *pX, *pY, *pH;
 		float dTs = m_pT->getDt() * USEC_2_SEC;
-
 		if (tO)
 		{
 			float x = tO->getX();
 			float y = tO->getY();
-			float h = tO->getRoll(); //use Roll for Aruco!
+			float h = tO->getRoll(); // use Roll for Aruco!
 
 			pX = m_fX.update(&x, dTs);
 			pY = m_fY.update(&y, dTs);
@@ -166,29 +170,34 @@ namespace kai
 			pH = m_fH.update(NULL, dTs);
 		}
 
-		NULL_F(pX);
+		NULL_N(pX);
 
-		//position
-		m_vP.x = *pX;
-		m_vP.y = *pY;
-		float dX = m_vP.x - m_vTargetP.x;
-		float dY = m_vP.y - m_vTargetP.y;
+		// position
+		m_vPvar.x = *pX;
+		m_vPvar.y = *pY;
+		float dX = m_vPvar.x - m_vPsp.x;
+		float dY = m_vPvar.y - m_vPsp.y;
 		float r = sqrt(dX * dX + dY * dY);
-		m_vP.z = m_vTargetP.z * constrain(1.0 - r * m_zrK, 0.0, 1.0);
+		m_vPvar.z = m_vPsp.z * constrain(1.0 - r * m_zrK, 0.0, 1.0);
 
-		//r to target
-		m_bRtargetComplete = (r < m_rTargetComplete)?true:false;		
+		// r to target
+		m_bRtargetComplete = (r < m_rTargetComplete) ? true : false;
 
-		//heading
-		m_vP.w = *pH;
+		// heading
+		m_vPvar.w = *pH;
 
-		//distance
-		if(m_pDS)
-			m_dTarget = m_pDS->d(0);
-		else
-			m_dTarget = -1.0;
+		return pTag;
+	}
 
-		return true;
+	AP_LAND_TAG *_AP_land::getTag(int id)
+	{
+		for(int i=0; i<m_vTags.size(); i++)
+		{
+			IF_CONT(m_vTags[i].m_id != id);
+			return &m_vTags[i];
+		}
+
+		return NULL;
 	}
 
 	void _AP_land::console(void *pConsole)
@@ -209,7 +218,6 @@ namespace kai
 		pC->addMsg("Pos = (" + f2str(c.x) + ", " + f2str(c.y), 1);
 		pC->addMsg("Size = (" + f2str(m_vTargetBB.width()) + ", " + f2str(m_vTargetBB.height()) + ")", 1);
 		pC->addMsg("rAlt = " + f2str(m_rAlt), 1);
-		pC->addMsg("dTarget = " + f2str(m_dTarget), 1);
 	}
 
 	void _AP_land::draw(void *pFrame)

@@ -5,7 +5,7 @@
 #include "../../Vision/_GPhoto.h"
 #include "../../Sensor/Distance/_DistSensorBase.h"
 #include "_AP_base.h"
-#include "_AP_posCtrl.h"
+#include "_AP_move.h"
 
 namespace kai
 {
@@ -34,7 +34,7 @@ namespace kai
 
 	private:
 		_AP_base *m_pAP;
-		_AP_posCtrl *m_pPC;
+		_AP_move *m_pPC;
 		_DistSensorBase *m_pDS;
 		int m_iDiv;
 		float m_speed;

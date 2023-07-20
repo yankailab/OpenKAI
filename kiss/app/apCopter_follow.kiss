@@ -171,7 +171,7 @@
 	"activeMission":["FOLLOW"],
 	"_AP_base":"apBase",
 	"_AP_link":"apLink",
-	"_AP_posCtrl":"apPosCtrl",
+	"_AP_move":"apPosCtrl",
 	"_TrackerBase":"tracker",
 	"/_DetectorBase":"apDet",
 	"vTargetOrigin":[0.5, 0.5, 0.0, 0.0],
@@ -195,7 +195,7 @@
 
 {
 	"name":"apPosCtrl",
-	"class":"_AP_posCtrl",
+	"class":"_AP_move",
 	"bON":1,
 	"FPS":30,
 	"bLog":0,

@@ -49,7 +49,7 @@ namespace kai
 			DEL(m_pTr);
 			return false;
 		}
-        pKt->m_pInst = m_pTr;
+		pKt->m_pInst = m_pTr;
 
 		return true;
 	}
@@ -199,7 +199,7 @@ namespace kai
 		static uint8_t pMB[WS_N_BUF];
 		int i;
 
-		//move data to front
+		// move data to front
 		if (m_iB > 0)
 		{
 			if (m_nB > m_iB)
@@ -222,12 +222,12 @@ namespace kai
 			m_nB += iR;
 		IF_(m_nB <= 0);
 
-		//decode new msg
+		// decode new msg
 		if (m_iMsg >= m_nMsg)
 		{
 			IF_(m_nB - m_iB < WS_N_HEADER);
 
-			//decode header
+			// decode header
 			uint32_t id = unpack_uint32(&pMB[m_iB]);
 			m_pC = findClientById(id);
 			if (!m_pC)
@@ -240,7 +240,7 @@ namespace kai
 				LOG_I("Created new client id: " + i2str(id));
 			}
 
-			//decode payload
+			// decode payload
 			m_nMsg = WS_N_HEADER + unpack_uint32(&pMB[m_iB + 8]);
 			m_iMsg = WS_N_HEADER;
 			m_iB += WS_N_HEADER;
@@ -254,7 +254,7 @@ namespace kai
 			LOG_I("Received from: " + i2str(id) + ", size: " + i2str(m_nMsg));
 		}
 
-		//payload decoding
+		// payload decoding
 		while (m_iMsg < m_nMsg)
 		{
 			IF_(m_iB >= m_nB);

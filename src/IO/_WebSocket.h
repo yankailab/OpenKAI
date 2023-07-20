@@ -20,82 +20,81 @@
 namespace kai
 {
 
-struct WS_CLIENT
-{
-	uint32_t m_id;
-	IO_FIFO m_fifo;
-	uint64_t m_tStamp;
-
-	bool init(uint32_t id, int nB)
+	struct WS_CLIENT
 	{
-		m_id = id;
-		m_tStamp = getApproxTbootUs();
-		IF_F(!m_fifo.init(nB));
-		reset();
+		uint32_t m_id;
+		IO_FIFO m_fifo;
+		uint64_t m_tStamp;
 
-		return true;
-	}
+		bool init(uint32_t id, int nB)
+		{
+			m_id = id;
+			m_tStamp = getApproxTbootUs();
+			IF_F(!m_fifo.init(nB));
+			reset();
 
-	void reset(void)
+			return true;
+		}
+
+		void reset(void)
+		{
+			m_fifo.clear();
+		}
+	};
+
+	class _WebSocket : public _IOBase
 	{
-		m_fifo.clear();
-	}
-};
+	public:
+		_WebSocket();
+		virtual ~_WebSocket();
 
-class _WebSocket: public _IOBase
-{
-public:
-	_WebSocket();
-	virtual ~_WebSocket();
+		bool init(void *pKiss);
+		bool start(void);
+		bool open(void);
+		void close(void);
+		void console(void *pConsole);
 
-	bool init(void* pKiss);
-	bool start(void);
-	bool open(void);
-	void close(void);
-	void console(void* pConsole);
+		bool write(uint8_t *pBuf, int nB, uint32_t mode = WS_MODE_BIN);
+		bool writeTo(uint32_t id, uint8_t *pBuf, int nB, uint32_t mode = WS_MODE_BIN);
+		int read(uint8_t *pBuf, int nB);
+		int readFrom(uint32_t id, uint8_t *pBuf, int nB);
 
-	bool write(uint8_t* pBuf, int nB, uint32_t mode = WS_MODE_BIN);
-	bool writeTo(uint32_t id, uint8_t* pBuf, int nB, uint32_t mode = WS_MODE_BIN);
-	int  read(uint8_t* pBuf, int nB);
-	int  readFrom(uint32_t id, uint8_t* pBuf, int nB);
+		int nClient(void);
 
-	int nClient(void);
+	private:
+		void resetDecodeMsg(void);
+		void decodeMsg(void);
+		WS_CLIENT *findClientById(uint32_t id);
 
-private:
-	void resetDecodeMsg(void);
-	void decodeMsg(void);
-	WS_CLIENT* findClientById(uint32_t id);
+		void updateW(void);
+		static void *getUpdateW(void *This)
+		{
+			((_WebSocket *)This)->updateW();
+			return NULL;
+		}
 
-	void updateW(void);
-	static void* getUpdateW(void* This)
-	{
-		((_WebSocket*) This)->updateW();
-		return NULL;
-	}
+		void updateR(void);
+		static void *getUpdateR(void *This)
+		{
+			((_WebSocket *)This)->updateR();
+			return NULL;
+		}
 
-	void updateR(void);
-	static void* getUpdateR(void* This)
-	{
-		((_WebSocket*) This)->updateR();
-		return NULL;
-	}
+	public:
+		string m_fifoIn;
+		string m_fifoOut;
+		int m_fdW;
+		int m_fdR;
+		pthread_mutex_t m_mutexW;
 
-public:
-	string	m_fifoIn;
-	string	m_fifoOut;
-	int		m_fdW;
-	int		m_fdR;
-	pthread_mutex_t m_mutexW;
+		vector<WS_CLIENT> m_vClient;
 
-	vector<WS_CLIENT> m_vClient;
-
-	int m_iMsg;
-	int m_nMsg;
-	int m_nB;
-	int m_iB;
-	WS_CLIENT* m_pC;
-
-};
+		int m_iMsg;
+		int m_nMsg;
+		int m_nB;
+		int m_iB;
+		WS_CLIENT *m_pC;
+	};
 
 }
 #endif

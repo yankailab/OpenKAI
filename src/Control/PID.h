@@ -22,7 +22,7 @@ namespace kai
 		virtual ~PID();
 
 		virtual bool init(void *pKiss);
-		virtual float update(float v, float vT, float dT);
+		virtual float update(float v, float sp, float dT);
 		virtual double o(void);
 		virtual void console(void *pConsole);
 		virtual void reset(void);
@@ -33,8 +33,8 @@ namespace kai
 		float m_Imax;
 		float m_D;
 
-		float m_v;	//input v
-		float m_vT; //target v
+		float m_vVar;
+		float m_vSetPoint;
 		float m_vMin;
 		float m_vMax;
 

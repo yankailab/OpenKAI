@@ -15,7 +15,8 @@ namespace kai
 {
 	struct GCELL_SEARCH
 	{
-		int m_countCovered = 0;
+		int m_iCovered = 0;
+		float m_w = 0;
 
 	};
 

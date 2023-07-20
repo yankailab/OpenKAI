@@ -246,7 +246,7 @@
 
 {
 	"name":"apPosCtrl",
-	"class":"_AP_posCtrl",
+	"class":"_AP_move",
 	"FPS":5,
 	"bON":1,
 	"Window":"OKview",
@@ -265,7 +265,7 @@
 	"_Console":"OK_Console",
 	"_MissionControl":"mission",
 	"_AP_base":"apBase",
-	"_AP_posCtrl":"apPosCtrl",
+	"_AP_move":"apPosCtrl",
 	"_DistSensorBase":"leddarVu",
 	"_GPhoto":"gphoto",
 	"dir":"/media/usb/",

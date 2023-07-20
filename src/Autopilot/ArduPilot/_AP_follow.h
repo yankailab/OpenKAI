@@ -7,7 +7,7 @@
 #include "../../Filter/Average.h"
 #include "../../Filter/Predict.h"
 #include "../../Filter/Hold.h"
-#include "_AP_posCtrl.h"
+#include "_AP_move.h"
 
 namespace kai
 {
@@ -40,7 +40,7 @@ namespace kai
 		}
 	};
 
-	class _AP_follow : public _AP_posCtrl
+	class _AP_follow : public _AP_move
 	{
 	public:
 		_AP_follow();
