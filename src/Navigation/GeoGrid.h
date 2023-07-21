@@ -96,6 +96,7 @@ namespace kai
 		int gen(const GEOGRID_AXIS &lat, const GEOGRID_AXIS &lng, const GEOGRID_AXIS &alt);
 		uint32_t getCellIdx(const vDouble3 &p); // lat, lng, alt
 		GEOGRID_CELL getCell(uint32_t cIdx);
+		int getNcell(void);
 
 		void getCoverage(const vDouble4 &pCover, int *pCidx, float *pCoverage);
 

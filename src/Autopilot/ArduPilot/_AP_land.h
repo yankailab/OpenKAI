@@ -11,20 +11,12 @@ namespace kai
 	{
 		int m_id = -1;
 		int m_priority = 0;
-		vFloat2 m_vSize = {0, FLT_MAX}; // complete once bigger than .y
+		vFloat2 m_vSize = {0, FLT_MAX}; // effective size range
+		vFloat2 m_vKdist; // translate size into distance
 
-		float m_s = 0.0;
-		float m_K = 1.0;
-
-		void updateK(float s)
+		float getDist(float s)
 		{
-			m_s = s;
-			m_K = (m_vSize.constrain(s) - m_vSize.x) / m_vSize.len();
-		}
-
-		bool b(void)
-		{
-			return (m_s > m_vSize.y);
+			return ((s - m_vSize.x) / m_vSize.len()) * m_vKdist.len() + m_vKdist.x;
 		}
 	};
 
@@ -45,27 +37,26 @@ namespace kai
 		bool bComplete(void);
 
 	protected:
+		virtual void updatePID(void);
 		virtual AP_LAND_TAG* getTag(int id);
-		virtual bool updateTarget(void);
-		virtual AP_LAND_TAG* findTag(void);
+		virtual bool findTag(void);
+		virtual void updateMove(void);
 		static void *getUpdate(void *This)
 		{
 			((_AP_land *)This)->update();
 			return NULL;
 		}
 
-	public:
-		float m_zrK;
-		float m_rAlt;
-		float m_rAltComplete;
-		float m_rTargetComplete;
-		bool m_bRtargetComplete;
-
-		INTERVAL_EVENT m_ieHdgCmd;
-
+	protected:
 		vector<AP_LAND_TAG> m_vTags;
 		AP_LAND_TAG* m_pTag;
+		vFloat2 m_vFov; // cam FOV horiz/vert
 
+		vFloat4 m_vComplete; // complete condition for vPtarget
+		float m_zrK;
+
+		INTERVAL_EVENT m_ieHdgCmd;
+		uint64_t m_tKyaw;
 	};
 }
 #endif

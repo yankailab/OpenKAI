@@ -106,7 +106,7 @@ namespace kai
 #endif
 
 #ifdef WITH_APP_DRONESWARM
-		ADD_MODULE(_AP_fleet);
+//		ADD_MODULE(_AP_fleet);
 #endif
 
 #ifdef WITH_APP_DRONEBOX

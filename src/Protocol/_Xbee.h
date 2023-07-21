@@ -157,6 +157,7 @@ namespace kai
 		virtual int check(void);
 		virtual void console(void *pConsole);
 
+		virtual uint64_t getMyAddr(void);
 		virtual uint64_t getAddr(const string &sAddr);
 		virtual bool setCbReceivePacket(CbXBeeReceivePacket pCb, void *pInst);
 
@@ -185,6 +186,8 @@ namespace kai
 	protected:
 		_Thread *m_pTr;
 		_IOBase *m_pIO;
+
+		uint64_t m_myAddr;
 
 		XBframe_buf m_fRecv;
 		XBcb_receivePacket m_cbReceivePacket;

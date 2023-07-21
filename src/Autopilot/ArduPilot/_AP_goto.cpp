@@ -104,7 +104,7 @@ namespace kai
 			return false;
 		}
 
-		setPosGlobal();
+//		setPosGlobal();
 		return true;
 	}
 
@@ -118,8 +118,8 @@ namespace kai
 		IF_F(vAPpos.x <= 0.0);
 		IF_F(vAPpos.y <= 0.0);
 
-		m_vPspGlobal.x = vAPpos.x;
-		m_vPspGlobal.y = vAPpos.y;
+		// m_vPspGlobal.x = vAPpos.x;
+		// m_vPspGlobal.y = vAPpos.y;
 
 		return true;
 	}

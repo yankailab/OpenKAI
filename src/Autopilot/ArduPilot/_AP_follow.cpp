@@ -8,17 +8,22 @@ namespace kai
 		m_pU = NULL;
 		m_pTracker = NULL;
 		m_iClass = -1;
-
 		m_bTarget = false;
 		m_vTargetBB.clear();
+
 		m_vPvar.clear();
 		m_vPvar.x = 0.5;
 		m_vPvar.y = 0.5;
+
 		m_vPsp.clear();
 		m_vPsp.x = 0.5;
 		m_vPsp.y = 0.5;
 
-		//	m_ieSend.init(100000);
+		m_pPitch = NULL;
+		m_pRoll = NULL;
+		m_pAlt = NULL;
+		m_pYaw = NULL;
+
 		m_apMount.init();
 	}
 
@@ -31,6 +36,8 @@ namespace kai
 		IF_F(!this->_AP_move::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
+		pK->v("vPsp", &m_vPsp);
+
 		int nWmed = 0;
 		int nWpred = 0;
 		uint64_t dThold = 0.0;
@@ -40,11 +47,10 @@ namespace kai
 
 		IF_F(!m_fX.init(nWmed, nWpred, dThold));
 		IF_F(!m_fY.init(nWmed, nWpred, dThold));
-		IF_F(!m_fR.init(nWmed, nWpred, dThold));
+		IF_F(!m_fZ.init(nWmed, nWpred, dThold));
 		IF_F(!m_fH.init(nWmed, nWpred, dThold));
 
 		pK->v("iClass", &m_iClass);
-		//	pK->v("tIntSend",&m_ieSend.m_tInterval);
 
 		Kiss *pG = pK->child("mount");
 		if (!pG->empty())
@@ -56,9 +62,9 @@ namespace kai
 			pG->v("roll", &r);
 			pG->v("yaw", &y);
 
-			m_apMount.m_control.input_a = p * 100; //pitch
-			m_apMount.m_control.input_b = r * 100; //roll
-			m_apMount.m_control.input_c = y * 100; //yaw
+			m_apMount.m_control.input_a = p * 100; // pitch
+			m_apMount.m_control.input_b = r * 100; // roll
+			m_apMount.m_control.input_c = y * 100; // yaw
 			m_apMount.m_control.save_position = 0;
 
 			pG->v("stabPitch", &m_apMount.m_config.stab_pitch);
@@ -76,6 +82,22 @@ namespace kai
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
+
+		n = "";
+		pK->v("PIDpitch", &n);
+		m_pPitch = (PID *)(pK->getInst(n));
+
+		n = "";
+		pK->v("PIDroll", &n);
+		m_pRoll = (PID *)(pK->getInst(n));
+
+		n = "";
+		pK->v("PIDalt", &n);
+		m_pAlt = (PID *)(pK->getInst(n));
+
+		n = "";
+		pK->v("PIDyaw", &n);
+		m_pYaw = (PID *)(pK->getInst(n));
 
 		n = "";
 		pK->v("_TrackerBase", &n);
@@ -110,11 +132,13 @@ namespace kai
 			this->_AP_move::update();
 			if (updateTarget())
 			{
-				setPosLocal();
+				updatePID();
+				setVlocal(m_vSpd);
 			}
 			else
 			{
 				stop();
+				m_tLastPIDupdate = 0;
 			}
 
 			m_pT->autoFPSto();
@@ -124,7 +148,6 @@ namespace kai
 	bool _AP_follow::updateTarget(void)
 	{
 		IF_F(check() < 0);
-
 		if (!bActive())
 		{
 			m_bTarget = false;
@@ -185,6 +208,30 @@ namespace kai
 		m_vTargetBB = tO->getBB2D();
 
 		return true;
+	}
+
+	void _AP_follow::updatePID(void)
+	{
+		uint64_t tNow = getApproxTbootUs();
+		float dTs = (!m_tLastPIDupdate) ? 0 : (tNow - m_tLastPIDupdate) * USEC_2_SEC;
+		m_tLastPIDupdate = tNow;
+
+		m_vSpd.x = (m_pPitch) ? m_pPitch->update(m_vPvar.x, m_vPsp.x, dTs) : 0;
+		m_vSpd.y = (m_pRoll) ? m_pRoll->update(m_vPvar.y, m_vPsp.y, dTs) : 0;
+		m_vSpd.z = (m_pAlt) ? m_pAlt->update(m_vPvar.z, m_vPsp.z, dTs) : 0;
+		m_vSpd.w = (m_pYaw) ? m_pYaw->update(dHdg<float>(m_vPsp.w, m_vPvar.w), 0.0, dTs) : 0;
+	}
+
+	void _AP_follow::clearPID(void)
+	{
+		if (m_pPitch)
+			m_pPitch->reset();
+		if (m_pRoll)
+			m_pRoll->reset();
+		if (m_pAlt)
+			m_pAlt->reset();
+		if (m_pYaw)
+			m_pYaw->reset();
 	}
 
 }

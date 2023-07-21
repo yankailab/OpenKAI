@@ -5,6 +5,7 @@ namespace kai
 
     _Xbee::_Xbee()
     {
+        m_myAddr = 0;
         m_pTr = NULL;
         m_pIO = NULL;
         m_fRecv.reset();
@@ -20,7 +21,9 @@ namespace kai
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        //        pK->v("destAddr", &m_destAddr);
+        string addr = "";
+        pK->v("myAddr", &addr);
+        m_myAddr = getAddr(addr);
 
         Kiss *pKt = pK->child("threadR");
         IF_F(pKt->empty());
@@ -210,6 +213,11 @@ namespace kai
             // Remote AT Command Response
         }
 
+    }
+
+    uint64_t _Xbee::getMyAddr(void)
+    {
+        return m_myAddr;       
     }
 
     uint64_t _Xbee::getAddr(const string &sAddr)

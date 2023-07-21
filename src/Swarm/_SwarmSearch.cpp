@@ -12,10 +12,14 @@ namespace kai
 
 	_SwarmSearch::_SwarmSearch()
 	{
+        m_pGG = NULL;
+        m_pGcell = NULL;
+        m_nGcell = 0;
 	}
 
 	_SwarmSearch::~_SwarmSearch()
 	{
+        DEL(m_pGcell);
 	}
 
 	bool _SwarmSearch::init(void *pKiss)
@@ -23,7 +27,9 @@ namespace kai
 		IF_F(!this->_SwarmBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-//		pK->v("tExpire", &m_tExpire);
+		int ie = USEC_1SEC;
+		pK->v("ieOptRoute", &ie);
+		m_ieOptRoute.init(ie);
 
 		return true;
 	}
@@ -31,6 +37,13 @@ namespace kai
 	bool _SwarmSearch::link(void)
 	{
 		IF_F(!this->_SwarmBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+
+		string n;
+		n = "";
+		pK->v("GeoGrid", &n);
+		m_pGG = (GeoGrid *)(pK->getInst(n));
+		IF_Fl(!m_pGG, n + ": not found");
 
 		return true;
 	}
@@ -43,7 +56,7 @@ namespace kai
 
 	int _SwarmSearch::check(void)
 	{
-//        NULL__(m_pIO, -1);
+        NULL__(m_pGG, -1);
 
 		return this->_SwarmBase::check();
 	}
@@ -52,24 +65,14 @@ namespace kai
     {
         while (m_pT->bRun())
         {
-            // if (!m_pIO)
-            // {
-            //     m_pT->sleepT(SEC_2_USEC);
-            //     continue;
-            // }
-
-            // if (!m_pIO->isOpen())
-            // {
-            //     if (!m_pIO->open())
-            //     {
-            //         m_pT->sleepT(SEC_2_USEC);
-            //         continue;
-            //     }
-            // }
-
             m_pT->autoFPSfrom();
 
+            if(!m_pGcell)
+                genGridCells();
+
             updateNodes();
+
+            optimizeRoute();
 
             m_pT->autoFPSto();
         }
@@ -78,6 +81,30 @@ namespace kai
     void _SwarmSearch::updateNodes(void)
     {
         IF_(check() < 0);
+    }
+
+	bool _SwarmSearch::genGridCells(void)
+    {
+        IF_F(check() < 0);
+
+        m_nGcell = m_pGG->getNcell();
+        DEL(m_pGcell);
+        m_pGcell = new GCELL_SEARCH[m_nGcell];
+        NULL_F(m_pGcell);
+
+
+
+
+    }
+
+    void _SwarmSearch::optimizeRoute(void)
+    {
+        IF_(check() < 0);
+    }
+
+	void _SwarmSearch::handleMsgGCupdate(const SWMSG_GC_UPDATE& m)
+    {
+
     }
 
 	void _SwarmSearch::console(void *pConsole)

@@ -13,6 +13,7 @@
 
 namespace kai
 {
+
 	struct GCELL_SEARCH
 	{
 		int m_iCovered = 0;
@@ -32,7 +33,18 @@ namespace kai
 		virtual int check(void);
 		virtual void console(void *pConsole);
 
+		// swarm msg handlers
+		void handleMsgGCupdate(const SWMSG_GC_UPDATE& m);
+
+		// my node
+//		void updateMyNode();
+
+		// grid cell
+//		void updateMyNode();
+
 	protected:
+		bool genGridCells(void);
+		void optimizeRoute(void);
 		void updateNodes(void);
 		void update(void);
 		static void *getUpdate(void *This)
@@ -45,6 +57,10 @@ namespace kai
 		GeoGrid* m_pGG;
 		GCELL_SEARCH* m_pGcell;
 		int m_nGcell;
+
+		SWARM_NODE m_myNode;
+
+		INTERVAL_EVENT m_ieOptRoute;
 
 	};
 

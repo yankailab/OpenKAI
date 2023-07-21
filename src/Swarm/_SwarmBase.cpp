@@ -41,6 +41,11 @@ namespace kai
 		return this->_ModuleBase::check();
 	}
 
+	void _SwarmBase::handleMsgHB(const SWMSG_HB& m)
+	{
+
+	}
+
 	int _SwarmBase::getNodeIdx(const uint64_t &ID)
 	{
 		int n = m_vNodes.size();
@@ -48,7 +53,7 @@ namespace kai
 
 		for (int i = 0; i < n; i++)
 		{
-			IF_CONT(m_vNodes[i].m_ID != ID);
+			IF_CONT(m_vNodes[i].m_id != ID);
 			return i;
 		}
 
@@ -65,7 +70,7 @@ namespace kai
 
 	bool _SwarmBase::addNode(const SWARM_NODE &n)
 	{
-		int i = getNodeIdx(n.m_ID);
+		int i = getNodeIdx(n.m_id);
 		IF_F(i >= 0);
 
 		m_vNodes.push_back(n);
@@ -74,7 +79,7 @@ namespace kai
 
 	bool _SwarmBase::updateNode(const SWARM_NODE &n)
 	{
-		int i = getNodeIdx(n.m_ID);
+		int i = getNodeIdx(n.m_id);
 		IF_F(i < 0);
 
 		m_vNodes[i] = n;

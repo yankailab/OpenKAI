@@ -96,7 +96,7 @@
 #endif
 
 #ifdef WITH_APP_DRONESWARM
-#include "../Application/DroneSwarm/_AP_fleet.h"
+//#include "../Application/DroneSwarm/_AP_fleet.h"
 #endif
 
 #ifdef WITH_APP_DRONEBOX

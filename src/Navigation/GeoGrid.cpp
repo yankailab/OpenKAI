@@ -85,6 +85,11 @@ namespace kai
 		return gC;
 	}
 
+	int GeoGrid::getNcell(void)
+	{
+		return m_nCell;
+	}
+
 	void GeoGrid::getCoverage(const vDouble4 &pCover, int *pCidx, float *pCoverage)
 	{
 	}

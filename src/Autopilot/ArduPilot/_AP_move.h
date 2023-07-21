@@ -20,22 +20,23 @@ namespace kai
 		virtual void console(void *pConsole);
 		virtual int check(void);
 
-		void clearPID(void);
 		void stop(void);
 
-		void setPosLocal(uint8_t frame = MAV_FRAME_BODY_OFFSET_NED,
-						 bool bP = false,	// disable
-						 bool bV = true,	// enable
-						 bool bA = false,
-						 bool bYaw = false,
-						 bool bYawRate = true);
+		void setHdg(float y = 0,
+					float r = 0,
+					bool bYaw = false,
+					bool bYawRate = true,
+					uint8_t frame = MAV_FRAME_BODY_OFFSET_NED);
 
-		void setPosGlobal(uint8_t frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT,
-						 bool bP = true,
-						 bool bV = false,
-						 bool bA = false,
-						 bool bYaw = true,
-						 bool bYawRate = false);
+		void setVlocal(const vFloat4 &vSpd,
+					   bool bYaw = false,
+					   bool bYawRate = true,
+					   uint8_t frame = MAV_FRAME_BODY_OFFSET_NED);
+
+		void setPglobal(const vFloat4 &vP,
+						bool bYaw = true,
+						bool bYawRate = false,
+						uint8_t frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT);
 
 	private:
 		static void *getUpdate(void *This)
@@ -46,25 +47,6 @@ namespace kai
 
 	protected:
 		_AP_base *m_pAP;
-
-		mavlink_set_position_target_local_ned_t m_sptLocal;
-		mavlink_set_position_target_global_int_t m_sptGlobal;
-
-		// pitch, roll, alt, yaw (NEDH)
-		// make sure var and sp are in the same coordinate unit
-		vFloat4 m_vPvar; //variable
-		vFloat4 m_vPsp;	 //correspondent set point
-		vDouble4 m_vPspGlobal; //lat, lon, alt, hdg
-
-		PID *m_pPitch;
-		PID *m_pRoll;
-		PID *m_pAlt;
-		PID *m_pYaw;
-		
-		//extra factor for distance effected PID aggresiveness adjustment
-		vFloat2 m_vKpidIn;
-		vFloat2 m_vKpidOut;
-		vFloat4 m_vKpid;
 	};
 
 }
