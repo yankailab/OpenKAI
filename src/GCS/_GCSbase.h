@@ -103,6 +103,7 @@ namespace kai
         ~_GCSbase();
 
         virtual bool init(void *pKiss);
+		virtual bool link(void);
         virtual int check(void);
 
         virtual int getID(void);

@@ -26,10 +26,10 @@ namespace kai
 		virtual int check(void);
 		virtual void console(void *pConsole);
 
-		bool addFile(const string& fName);
+		bool addFile(const string &fName);
 
 	private:
-		bool bFileInList(const string& fName);
+		bool bFileInList(const string &fName);
 		void updateFileList(void);
 		void updateCurl(void);
 		void update(void);

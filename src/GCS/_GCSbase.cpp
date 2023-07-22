@@ -19,13 +19,21 @@ namespace kai
 
         pK->v("gcsID", &m_gcsID);
 
+        return true;
+    }
+
+	bool _GCSbase::link(void)
+	{
+		IF_F(!this->_StateBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+
         IF_F(!m_pSC);
         IF_F(!m_state.assign(m_pSC));
 
         string n;
 
-        return true;
-    }
+		return true;
+	}
 
     int _GCSbase::check(void)
     {

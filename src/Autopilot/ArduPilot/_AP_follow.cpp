@@ -234,4 +234,46 @@ namespace kai
 			m_pYaw->reset();
 	}
 
+	void _AP_follow::console(void *pConsole)
+	{
+		NULL_(pConsole);
+		this->_AP_move::console(pConsole);
+
+		_Console *pC = (_Console *)pConsole;
+		if (!m_bTarget)
+		{
+			pC->addMsg("Target not found", 1);
+			return;
+		}
+
+		pC->addMsg("vPsp  = (" + f2str(m_vPsp.x) + ", " + f2str(m_vPsp.y) + ", " + f2str(m_vPsp.z) + ", " + f2str(m_vPsp.w) + ")", 1);
+		pC->addMsg("vPvar = (" + f2str(m_vPvar.x) + ", " + f2str(m_vPvar.y) + ", " + f2str(m_vPvar.z) + ", " + f2str(m_vPvar.w) + ")", 1);
+		pC->addMsg("vSpd  = (" + f2str(m_vSpd.x) + ", " + f2str(m_vSpd.y) + ", " + f2str(m_vSpd.z) + ", " + f2str(m_vSpd.w) + ")", 1);
+
+		pC->addMsg("", 1);
+
+		pC->addMsg("vTbb  = (" + f2str(m_vTargetBB.x) + ", " + f2str(m_vTargetBB.y) + ", " + f2str(m_vTargetBB.z) + ", " + f2str(m_vTargetBB.w) + ")", 1);
+		vFloat2 c = m_vTargetBB.center();
+		pC->addMsg("vTc   = (" + f2str(c.x) + ", " + f2str(c.y) + ")", 1);
+		pC->addMsg("vTs   = (" + f2str(m_vTargetBB.width()) + ", " + f2str(m_vTargetBB.height()) + ")", 1);
+
+	}
+
+	void _AP_follow::draw(void *pFrame)
+	{
+#ifdef USE_OPENCV
+		NULL_(pFrame);
+		this->_AP_move::draw(pFrame);
+		IF_(check() < 0);
+
+		Frame *pF = (Frame *)pFrame;
+		Mat *pM = pF->m();
+		IF_(pM->empty());
+
+		Rect r = bb2Rect(bbScale(m_vTargetBB, pM->cols, pM->rows));
+		rectangle(*pM, r, Scalar(0, 0, 255), 2);
+#endif
+	}
+
+
 }

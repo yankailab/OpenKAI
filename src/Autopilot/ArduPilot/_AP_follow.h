@@ -51,6 +51,8 @@ namespace kai
 		virtual int check(void);
 		virtual bool start(void);
 		virtual void update(void);
+		virtual void console(void *pConsole);
+		virtual void draw(void *pFrame);
 
 	protected:
 		virtual void clearPID(void);

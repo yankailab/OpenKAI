@@ -31,8 +31,6 @@ namespace kai
 		virtual bool start(void);
 		virtual int check(void);
 		virtual void update(void);
-		virtual void console(void *pConsole);
-		virtual void draw(void *pFrame);
 
 		bool bComplete(void);
 

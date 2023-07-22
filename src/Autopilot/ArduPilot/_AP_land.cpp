@@ -94,12 +94,13 @@ namespace kai
 	{
 		IF_F(check() < 0);
 
-		vFloat4 vD = m_vPsp - m_vPvar;
+		IF_F(!m_bTarget);
 
-		IF_F(vD.x > m_vComplete.x);
-		IF_F(vD.y > m_vComplete.y);
-		IF_F(vD.z > m_vComplete.z);
-		IF_F(vD.w > m_vComplete.w);
+		// NEDH
+		IF_F(abs(m_vPvar.x - m_vPsp.x) > m_vComplete.x);
+		IF_F(abs(m_vPvar.y - m_vPsp.y) > m_vComplete.y);
+		IF_F(abs(m_vPvar.z) > m_vComplete.z);
+		IF_F(abs(dHdg(m_vPvar.w, m_vPsp.w)) > m_vComplete.z);
 
 		return true;
 	}
@@ -114,18 +115,27 @@ namespace kai
 
 		m_bTarget = findTag();
 
-		if (m_ieHdgCmd.update(m_pT->getTfrom()))
+		if (!m_bTarget)
 		{
-			if (m_bTarget)
-			{
-				setHdg(m_vPvar.w, 0, true, false);
-				m_pT->sleepT(m_vPvar.w * m_tKyaw);
-				return;
-			}
+			m_vSpd.x = 0;
+			m_vSpd.y = 0;
+			m_vSpd.z = m_vPsp.z;
+			m_vSpd.w = 0;
+			setVlocal(m_vSpd, false, false);
+			return;
 		}
 
-		// handling the move command
-		setVlocal(m_vPvar, false, false);
+		// move command
+		updatePID();
+		setVlocal(m_vSpd, false, false);
+
+		// change yaw command
+		IF_(!m_ieHdgCmd.update(m_pT->getTfrom()));
+		IF_(abs(m_vSpd.w) < m_vComplete.w);
+
+		stop();
+		setHdg(m_vSpd.w * DEG_2_RAD, 0, true, false);
+		sleep(1);
 	}
 
 	bool _AP_land::findTag(void)
@@ -163,6 +173,8 @@ namespace kai
 			pY = m_fY.update(&y, dTs);
 			pA = m_fZ.update(&a, dTs);
 			pH = m_fH.update(&h, dTs);
+
+			m_vTargetBB = tO->getBB2D();
 		}
 		else
 		{
@@ -179,7 +191,7 @@ namespace kai
 		}
 
 		// convert position from screen to world relative
-		m_vPvar.z = pTag->getDist(*pA);
+		m_vPvar.z = pTag->getDist(1.0 - *pA);
 		m_vPvar.x = m_vPvar.z * tan((*pY - 0.5) * m_vFov.y * DEG_2_RAD);
 		m_vPvar.y = m_vPvar.z * tan((*pX - 0.5) * m_vFov.x * DEG_2_RAD);
 		m_vPvar.w = *pH;
@@ -206,7 +218,9 @@ namespace kai
 
 		m_vSpd.x = (m_pPitch) ? m_pPitch->update(m_vPvar.x, m_vPsp.x, dTs) : 0;
 		m_vSpd.y = (m_pRoll) ? m_pRoll->update(m_vPvar.y, m_vPsp.y, dTs) : 0;
-		m_vSpd.w = (m_pYaw) ? m_pYaw->update(dHdg<float>(m_vPsp.w, m_vPvar.w), 0.0, dTs) : 0;
+
+		float dH = dHdg<float>(m_vPsp.w, m_vPvar.w);
+		m_vSpd.w = (m_pYaw) ? m_pYaw->update(dH, 0.0, dTs) : dH;
 
 		if (m_pAlt)
 		{
@@ -219,42 +233,6 @@ namespace kai
 			float r = sqrt(dX * dX + dY * dY);
 			m_vSpd.z = m_vPsp.z * constrain(1.0 - r * m_zrK, 0.0, 1.0);
 		}
-	}
-
-	void _AP_land::console(void *pConsole)
-	{
-		NULL_(pConsole);
-		this->_AP_follow::console(pConsole);
-		IF_(check() < 0);
-
-		_Console *pC = (_Console *)pConsole;
-		if (!m_bTarget)
-		{
-			pC->addMsg("Target not found", 1);
-			return;
-		}
-
-		pC->addMsg("Target");
-		vFloat2 c = m_vTargetBB.center();
-		pC->addMsg("Pos = (" + f2str(c.x) + ", " + f2str(c.y), 1);
-		pC->addMsg("Size = (" + f2str(m_vTargetBB.width()) + ", " + f2str(m_vTargetBB.height()) + ")", 1);
-	}
-
-	void _AP_land::draw(void *pFrame)
-	{
-#ifdef USE_OPENCV
-		NULL_(pFrame);
-		this->_AP_follow::draw(pFrame);
-		IF_(check() < 0);
-
-		Frame *pF = (Frame *)pFrame;
-
-		Mat *pM = pF->m();
-		IF_(pM->empty());
-
-		Rect r = bb2Rect(bbScale(m_vTargetBB, pM->cols, pM->rows));
-		rectangle(*pM, r, Scalar(0, 0, 255), 2);
-#endif
 	}
 
 }
