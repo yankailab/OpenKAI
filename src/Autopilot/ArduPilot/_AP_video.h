@@ -36,18 +36,19 @@ namespace kai
 
 	private:
 		_AP_base *m_pAP;
+		_Curl* m_pCurl;
+		string m_fName;
 
 		string m_process;
 		FILE* m_pFvid;
-		_File* m_pFmeta;
 		uint64_t m_tRecStart;
-		_Curl* m_pCurl;
 
+		bool m_bMeta;
+		_File* m_pFmeta;
 		string m_fCalib;
 		Mat m_mC;
 		Mat m_mD;
 		string m_dir;
-		string m_fName;
 	};
 
 }

@@ -6,15 +6,17 @@ namespace kai
 	_AP_video::_AP_video()
 	{
 		m_pAP = NULL;
-		m_pFmeta = new _File();
 		m_pCurl = NULL;
-		m_pFvid = NULL;
+		m_fName = "";
+
 		m_process = "";
+		m_pFvid = NULL;
 		m_tRecStart = 0;
 
+		m_bMeta = false;
+		m_pFmeta = new _File();
 		m_fCalib = "";
-		m_dir = "/home/lab/";
-		m_fName = "";
+		m_dir = "";
 	}
 
 	_AP_video::~_AP_video()
@@ -26,9 +28,10 @@ namespace kai
 		IF_F(!this->_StateBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("dir", &m_dir);
 		pK->v("process", &m_process);
 		pK->v("fName", &m_fName);
+		pK->v("dir", &m_dir);
+		pK->v("bMeta", &m_bMeta);
 
 		return true;
 	}
@@ -112,6 +115,7 @@ namespace kai
 		m_tRecStart = getTbootMs();
 
 		// open meta file
+		IF_T(!m_bMeta);
 		IF_T(!m_pFmeta->open(m_fName + ".json_t"));
 		IF_T(m_mC.empty());
 		IF_T(m_mD.empty());
@@ -140,23 +144,25 @@ namespace kai
 		pclose(m_pFvid);
 		m_pFvid = NULL;
 		m_tRecStart = 0;
-		m_pFmeta->close();
 
 		string cmd;
 		cmd = "mv " + m_fName + ".mka_t " + m_fName + ".mka";
 		system(cmd.c_str());
+		if (m_pCurl)
+			m_pCurl->addFile(m_fName + ".mka");
+
+		IF_(!m_bMeta);
+		IF_(!m_pFmeta->isOpen());
+		m_pFmeta->close();
 		cmd = "mv " + m_fName + ".json_t " + m_fName + ".json";
 		system(cmd.c_str());
-
 		if (m_pCurl)
-		{
 			m_pCurl->addFile(m_fName + ".json");
-			m_pCurl->addFile(m_fName + ".mka");
-		}
 	}
 
 	void _AP_video::writeStream(void)
 	{
+		IF_(!m_bMeta);
 		IF_(!m_pFvid);
 		IF_(!m_pFmeta->isOpen());
 

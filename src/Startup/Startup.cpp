@@ -88,7 +88,7 @@ namespace kai
 			return false;
 		}
 
-		//UI thread
+		// UI thread
 		m_bRun = true;
 		while (m_bRun)
 		{

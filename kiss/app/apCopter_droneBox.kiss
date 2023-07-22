@@ -275,6 +275,7 @@
 	"dir":"/home/kai/Videos/",
 	"/process":"gst-launch-1.0 rtspsrc location=rtsp://192.168.144.108:554/stream=0 latency=0 ! queue ! rtph264depay ! h264parse ! tee name=t t. ! queue ! matroskamux ! filesink location=[fName] t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"process":"gst-launch-1.0 rtspsrc location=rtsp://192.168.144.108:554/stream=0 latency=0 ! queue ! rtph264depay ! h264parse ! queue ! matroskamux ! filesink location=[fName]",
+	"bMeta":1,
 
 	"/gstOutput":"appsrc ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! matroskamux ! filesink location=[fName]",
 }
@@ -364,7 +365,7 @@
 	"PIDpitch":"PIDpitch",
 
 	"vFov":[70,60],
-	"vComplete":[0.1, 0.1, 1.0, 3],
+	"vComplete":[0.1, 0.1, 4.9, 3],
 	"zrK":10.0,
 	"tKyaw":10000,
 	"ieHdgUsec":3000000,
@@ -374,6 +375,20 @@
 		{
 			"name":"tags",
 			"id":0,
+			"priority":2,
+			"vSize":[0.0, 0.2],
+			"vKdist":[0.0, 1.0],
+		}
+		{
+			"name":"tags",
+			"id":1,
+			"priority":1,
+			"vSize":[0.0, 0.2],
+			"vKdist":[0.0, 1.0],
+		}
+		{
+			"name":"tags",
+			"id":2,
 			"priority":0,
 			"vSize":[0.0, 0.2],
 			"vKdist":[0.0, 1.0],
