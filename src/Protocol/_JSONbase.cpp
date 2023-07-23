@@ -28,12 +28,6 @@ namespace kai
         pK->v("tIntHeartbeat", &v);
         m_tIntHeartbeat.init(v);
 
-        string n;
-        n = "";
-        F_ERROR_F(pK->v("_IOBase", &n));
-        m_pIO = (_IOBase *)(pK->getInst(n));
-        NULL_Fl(m_pIO, "_IOBase not found");
-
         Kiss *pKt = pK->child("threadR");
         IF_F(pKt->empty());
 
@@ -46,6 +40,21 @@ namespace kai
 
         return true;
     }
+
+	bool _JSONbase::link(void)
+	{
+		IF_F(!this->_ModuleBase::link());
+	
+		Kiss *pK = (Kiss *)m_pKiss;
+
+        string n;
+        n = "";
+        F_ERROR_F(pK->v("_IOBase", &n));
+        m_pIO = (_IOBase *)(pK->getInst(n));
+        NULL_Fl(m_pIO, "_IOBase not found");
+
+		return true;
+	}
 
     bool _JSONbase::start(void)
     {
@@ -74,15 +83,6 @@ namespace kai
                 continue;
             }
 
-            if (!m_pIO->isOpen())
-            {
-                if (!m_pIO->open())
-                {
-                    m_pT->sleepT(SEC_2_USEC);
-                    continue;
-                }
-            }
-
             m_pT->autoFPSfrom();
 
             send();
@@ -97,7 +97,7 @@ namespace kai
 
         if (m_tIntHeartbeat.update(m_pT->getTfrom()))
         {
-            sendHeartbeat();
+//            sendHeartbeat();
         }
     }
 

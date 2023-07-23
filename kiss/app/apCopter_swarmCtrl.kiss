@@ -9,12 +9,12 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["cam"],
+	"vBASE":["ws"],
 }
 
 {
@@ -55,15 +55,19 @@
 {
 	"name":"ws",
 	"class":"_WebSocket",
+	"bON":1,
     {
 		"name":"thread",
-		"FPS":10,
+		"FPS":30,
 	}
-	"bON":1,
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
 }
 
 {
-	"name":"ctrlUI",
+	"name":"swarmCtrlUI",
 	"class":"_SwarmSearchCtrlUI",
 	"bON":1,
 	"bLog":1,
@@ -72,30 +76,27 @@
 		"FPS":1,
 	}
     {
-		"name":"threadUI",
-		"FPS":1,
+		"name":"threadR",
+		"FPS":30,
 	}
-	"vBASE":["/cam"],
-	"_StateControl":"state",
+	"_IOBase":"ws",
+	"_SwarmSearchCtrl":"swarmCtrl",
+	"msgFinishSend":"",
+	"msgFinishRecv":"EOJ",
 }
 
 {
-	"name":"ctrl",
+	"name":"swarmCtrl",
 	"class":"_SwarmSearchCtrl",
-	"bON":1,
+	"bON":0,
 	"bLog":1,
     {
 		"name":"thread",
 		"FPS":1,
 	}
-    {
-		"name":"threadUI",
-		"FPS":1,
-	}
 	"vBASE":["/cam"],
 	"_StateControl":"state",
-	"rootDir":"/home/kai/dev/OpenKAI/html/webui/swarmSearch",
-	"fHtml":"map.html",
-	"bMultiAccess":1,
+	"_SwarmSearch":"swarmSearch",
+	"_Xbee":"xbee",
 }
 

@@ -6,21 +6,18 @@ function wsInit()
 
   wsSocket.onopen = function(event)
   {
-      $('#msg').innerHTML = 'Connected';
+      $('#state').innerHTML = 'Connected';
   };
 
   wsSocket.onmessage = function(event)
   {
-      $('#msg').innerHTML = 'Received';
-      $('#msgRecv').innerHTML = event.data;
-
       jc = JSON.parse(event.data);
       cmdHandler(jc);
   };
 
   wsSocket.onclose = function(event)
   {
-//      $('#msg').innerHTML = 'Disconnected: ' + event.reason;
+      $('#state').innerHTML = 'Disconnected: ' + event.reason;
   };
 
 //   $('#submit').onclick = function(e)
@@ -28,8 +25,6 @@ function wsInit()
 //       socket.send($('#message').value);
 //       $('#msgSend').innerHTML = 'Sent:<br>' + $('input').value + '<br>';
 //   };
-
-  $('#state').innerHTML = 'Hello WebSocket!';
 
 };
 

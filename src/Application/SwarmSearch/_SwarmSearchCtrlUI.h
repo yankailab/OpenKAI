@@ -20,14 +20,15 @@ namespace kai
 		virtual void console(void *pConsole);
 
 	protected:
-		void send(void);
+		virtual void send(void);
+		virtual bool sendNodeUpdate(void);
+
 		virtual bool sendHeartbeat(void);
 
 		// msg handlers
 		void handleMsg(string &str);
 		void heartbeat(picojson::object &o);
-		void stat(picojson::object &o);
-		void req(picojson::object &o);
+		void setState(picojson::object &o);
 
 	private:
 		void updateW(void);
@@ -46,7 +47,7 @@ namespace kai
 
 	public:
 		_Thread *m_Tr;
-		_SwarmSearchCtrl* m_pSSC;
+		_SwarmSearchCtrl* m_pCtrl;
 	};
 
 }

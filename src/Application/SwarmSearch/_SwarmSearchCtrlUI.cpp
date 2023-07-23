@@ -6,7 +6,7 @@ namespace kai
     _SwarmSearchCtrlUI::_SwarmSearchCtrlUI()
     {
         m_Tr = NULL;
-		m_pSSC = NULL;
+		m_pCtrl = NULL;
     }
 
     _SwarmSearchCtrlUI::~_SwarmSearchCtrlUI()
@@ -42,8 +42,8 @@ namespace kai
         string n;
         n = "";
         pK->v("_SwarmSearchCtrl", &n);
-        m_pSSC = (_SwarmSearchCtrl *)(pK->getInst(n));
-        IF_Fl(!m_pSSC, n + ": not found");
+        m_pCtrl = (_SwarmSearchCtrl *)(pK->getInst(n));
+//        IF_Fl(!m_pCtrl, n + ": not found");
 
 		return true;
 	}
@@ -58,7 +58,7 @@ namespace kai
 
     int _SwarmSearchCtrlUI::check(void)
     {
-        NULL__(m_pSSC, -1);
+//        NULL__(m_pCtrl, -1);
 
         return this->_JSONbase::check();
     }
@@ -71,15 +71,6 @@ namespace kai
             {
                 m_pT->sleepT(SEC_2_USEC);
                 continue;
-            }
-
-            if (!m_pIO->isOpen())
-            {
-                if (!m_pIO->open())
-                {
-                    m_pT->sleepT(SEC_2_USEC);
-                    continue;
-                }
             }
 
             m_pT->autoFPSfrom();
@@ -96,8 +87,24 @@ namespace kai
 
         if (m_tIntHeartbeat.update(m_pT->getTfrom()))
         {
-            sendHeartbeat();
+            sendNodeUpdate();
         }
+    }
+
+    bool _SwarmSearchCtrlUI::sendNodeUpdate(void)
+    {
+//        vDouble2 vP = m_pDB->getPos();
+        static vDouble2 vPtest = {36.7795232705419, 138.52919832429615};
+
+        vPtest.x += 1e-6;
+
+        object o;
+        JO(o, "cmd", "ndUpdate");
+        JO(o, "id", (double)1);
+        JO(o, "lat", lf2str(vPtest.x,10));
+        JO(o, "lng", lf2str(vPtest.y,10));
+
+        return sendMsg(o);
     }
 
     bool _SwarmSearchCtrlUI::sendHeartbeat(void)
@@ -142,10 +149,8 @@ namespace kai
 
         if (cmd == "heartbeat")
             heartbeat(jo);
-        else if (cmd == "stat")
-            stat(jo);
-        else if (cmd == "req")
-            req(jo);
+        else if (cmd == "setState")
+            setState(jo);
     }
 
     void _SwarmSearchCtrlUI::heartbeat(picojson::object &o)
@@ -153,55 +158,15 @@ namespace kai
         IF_(check() < 0);
     }
 
-    void _SwarmSearchCtrlUI::stat(picojson::object &o)
+    void _SwarmSearchCtrlUI::setState(picojson::object &o)
     {
         IF_(check() < 0);
-        IF_(!o["id"].is<double>());
-        IF_(!o["stat"].is<string>());
+//        IF_(!o["id"].is<double>());
+        IF_(!o["s"].is<string>());
 
-        int vID = o["id"].get<double>();
-        string stat = o["stat"].get<string>();
+//        int vID = o["id"].get<double>();
+        string state = o["s"].get<string>();
 
-    }
-
-    void _SwarmSearchCtrlUI::req(picojson::object &o)
-    {
-        // IF_(check() < 0);
-        // IF_(!o["id"].is<double>());
-        // IF_(!o["do"].is<string>());
-
-        // int vID = o["id"].get<double>();
-        // string d = o["do"].get<string>();
-
-        // object jo;
-        // JO(jo, "id", (double)m_pDB->getID());
-        // JO(jo, "cmd", "ack");
-        // JO(jo, "do", d);
-
-        // if (d == "takeoff")
-        // {
-        //     if (m_pDB->takeoffRequest(vID))
-        //     {
-        //         JO(jo, "r", "ok");
-        //     }
-        //     else
-        //     {
-        //         JO(jo, "r", "denied");
-        //     }
-        // }
-        // else if (d == "landing")
-        // {
-        //     if (m_pDB->landingRequest(vID))
-        //     {
-        //         JO(jo, "r", "ok");
-        //     }
-        //     else
-        //     {
-        //         JO(jo, "r", "denied");
-        //     }
-        // }
-
-        // sendMsg(jo);
     }
 
 	// void _SwarmSearchCtrlUI::updateVehicles(void)
