@@ -96,11 +96,11 @@ namespace kai
 			m_srcAddr = swap_uint64(*((uint64_t *)(&pB[4])));
 			m_srcAddr16 = swap_uint16(*((uint16_t *)(&pB[12])));
 			m_options = pB[14];
-			m_nD = m_length - 15;
+			m_nD = m_length - 12;
 			memcpy(m_pD, &pB[15], m_nD);
 
 			uint8_t s = checksum(&pB[3], m_length);
-			IF_F(pB[m_length + 4] != s);
+			IF_F(pB[m_length + 3] != s);
 
 			return true;
 		}

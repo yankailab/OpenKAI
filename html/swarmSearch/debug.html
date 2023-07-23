@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+pre {
+    background: #EEE;
+    border: 1px solid #CCC;
+    padding: 10px;
+}
+#page-wrapper {
+    border-top: 5px solid #69c773;
+    margin: 1em auto;
+    width: 600px;
+}
+</style>
+
+<div id="page-wrapper">
+    msg
+    <pre id="msg">Connecting...</pre>
+    </br>
+    msgSend
+    <pre id="msgSend"></pre>
+    </br>
+    msgRecv
+    <pre id="msgRecv"></pre>
+    </br>
+    
+    <button id="heartbeat" style="WIDTH: 150px; HEIGHT: 50px">Heartbeat</button>
+    </br>
+    <button id="landingRequest" style="WIDTH: 150px; HEIGHT: 50px">Landing Request</button>
+    </br>
+    <button id="landingStatus" style="WIDTH: 150px; HEIGHT: 50px">Landing Complete</button>
+    </br>
+    <button id="takeoffRequest" style="WIDTH: 150px; HEIGHT: 50px">Takeoff Request</button>
+    </br>
+    <button id="takeoffStatus" style="WIDTH: 150px; HEIGHT: 50px">Takeoff Complete</button>
+    </br>
+    </br>
+
+    <button id="ackLandingRequest" style="WIDTH: 150px; HEIGHT: 50px">ackLandingRequest</button>
+    </br>
+    <button id="ackTakeoffRequest" style="WIDTH: 150px; HEIGHT: 50px">ackTakeoffRequest</button>
+    </br>
+    </br>
+    
+    <input id="message" required>
+    <button id="submit">Send Message</button>
+</div>
+
+
+<script src="js/ui.js"></script>
+</html>
+
+

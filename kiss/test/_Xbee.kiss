@@ -48,6 +48,6 @@
 		"FPS":30,
 	}
 	"_IOBase":"serial1",
-	"/destAddr":"000000000000FFFF",
+	"/destAddr":"000000000000FFFF",	/* Broadcast address*/
 	"destAddr":"0013A200421D6C8F",
 }

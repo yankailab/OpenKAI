@@ -95,10 +95,6 @@
 #include "../Application/CamCalib/_CamCalib.h"
 #endif
 
-#ifdef WITH_APP_DRONESWARM
-//#include "../Application/DroneSwarm/_AP_fleet.h"
-#endif
-
 #ifdef WITH_APP_DRONEBOX
 #include "../Application/DroneBox/_DroneBox.h"
 #include "../Application/DroneBox/_DroneBoxJSON.h"
@@ -151,6 +147,10 @@
 #include "../Application/Rover/_AProver_WB.h"
 #include "../Application/Rover/_UTprArmL.h"
 #include "../Application/Rover/_AProver_WBnav.h"
+#endif
+
+#ifdef WITH_APP_SWARMSEARCH
+#include "../Application/SwarmSearch/_SwarmSearchCtrlUI.h"
 #endif
 
 #ifdef WITH_COMPUTE
@@ -312,8 +312,6 @@
 #endif
 #ifdef USE_WEBUI
 #include "../UI/_WebUIbase.h"
-#include "../UI/_WebUIswarmList.h"
-#include "../UI/_WebUIswarmMap.h"
 #endif
 #endif
 

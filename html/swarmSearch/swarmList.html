@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>DAL debug console</title>
+    <!-- MDB icon -->
+    <link rel="icon" href="img/mdb-favicon.ico" type="image/x-icon" />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"
+    />
+    <!-- Google Fonts Roboto -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+    />
+    <!-- Dark MDB theme -->
+    <link rel="stylesheet" href="css/mdb.dark.min.css" />
+    <!-- Regular MDB theme -->
+    <!-- <link rel="stylesheet" href="css/mdb.min.css" /> -->
+  </head>
+
+  <body>
+    
+    <!-- Start your project here-->
+    <div id="page-wrapper">
+      msg
+      <pre id="msg">Connecting...</pre>
+      </br>
+      msgSend
+      <pre id="msgSend"></pre>
+      </br>
+      msgRecv
+      <pre id="msgRecv"></pre>
+      </br>
+      
+      <button id="heartbeat" style="WIDTH: 150px; HEIGHT: 50px">Heartbeat</button>
+      </br>
+      <button id="landingRequest" style="WIDTH: 150px; HEIGHT: 50px">Landing Request</button>
+      </br>
+      <button id="landingStatus" style="WIDTH: 150px; HEIGHT: 50px">Landing Complete</button>
+      </br>
+      <button id="takeoffRequest" style="WIDTH: 150px; HEIGHT: 50px">Takeoff Request</button>
+      </br>
+      <button id="takeoffStatus" style="WIDTH: 150px; HEIGHT: 50px">Takeoff Complete</button>
+      </br>
+      </br>
+  
+      <button id="ackLandingRequest" style="WIDTH: 150px; HEIGHT: 50px">ackLandingRequest</button>
+      </br>
+      <button id="ackTakeoffRequest" style="WIDTH: 150px; HEIGHT: 50px">ackTakeoffRequest</button>
+      </br>
+      </br>
+      
+      <input id="message" required>
+      <button id="submit">Send Message</button>
+  </div>
+
+
+    <section>
+      <div class="text-center">
+        <h4><strong id="state">State: </strong></h4>
+        <a id="btnStandby" class="btn btn-primary mb-5 ripple-surface" role="button">Standby</a>
+        <a id="btnTakeoff" class="btn btn-primary mb-5 ripple-surface" role="button">Takeoff</a>
+        <a id="btnAuto" class="btn btn-primary mb-5 ripple-surface" role="button">Auto</a>
+        <a id="btnRTL" class="btn btn-primary mb-5 ripple-surface" role="button">RTL</a>
+      </div>
+    </section>
+
+    <section>
+      <div class="text-center">
+        <h4><strong>Vehicles</strong></h4>
+      </div>
+
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Mode</th>
+            <th scope="col">Att</th>
+            <th scope="col">Hdg</th>
+            <th scope="col">Alt</th>
+            <th scope="col">Batt</th>
+          </tr>
+        </thead>
+        <tbody id="tbVehicles">
+          <tr>
+            <th scope="row">0</th>
+            <td>Unknown</td>
+            <td>r,p,y</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- End your project here-->
+
+    <!-- MDB -->
+    <script type="text/javascript" src="js/mdb.min.js"></script>
+    <!-- Custom scripts -->
+    <script type="text/javascript"></script>
+    <script src="js/wsUI.js"></script>
+  </body>
+</html>

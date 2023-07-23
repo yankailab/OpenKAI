@@ -143,7 +143,7 @@ namespace kai
 		IF_N(check() < 0);
 
 		// find target
-		AP_LAND_TAG *pTag;
+		AP_LAND_TAG *pTag = NULL;
 		int priority = INT_MAX;
 		_Object *tO = NULL;
 		int i = 0;
@@ -191,7 +191,7 @@ namespace kai
 		}
 
 		// convert position from screen to world relative
-		m_vPvar.z = pTag->getDist(1.0 - *pA);
+		m_vPvar.z = (pTag) ? pTag->getDist(*pA) : 1.0;
 		m_vPvar.x = m_vPvar.z * tan((*pY - 0.5) * m_vFov.y * DEG_2_RAD);
 		m_vPvar.y = m_vPvar.z * tan((*pX - 0.5) * m_vFov.x * DEG_2_RAD);
 		m_vPvar.w = *pH;

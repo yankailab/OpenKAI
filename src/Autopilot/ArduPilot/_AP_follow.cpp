@@ -256,7 +256,7 @@ namespace kai
 		vFloat2 c = m_vTargetBB.center();
 		pC->addMsg("vTc   = (" + f2str(c.x) + ", " + f2str(c.y) + ")", 1);
 		pC->addMsg("vTs   = (" + f2str(m_vTargetBB.width()) + ", " + f2str(m_vTargetBB.height()) + ")", 1);
-
+		pC->addMsg("vTa   = " + f2str(m_vTargetBB.area()), 1);
 	}
 
 	void _AP_follow::draw(void *pFrame)

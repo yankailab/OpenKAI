@@ -105,10 +105,6 @@ namespace kai
 		ADD_MODULE(_CamCalib);
 #endif
 
-#ifdef WITH_APP_DRONESWARM
-//		ADD_MODULE(_AP_fleet);
-#endif
-
 #ifdef WITH_APP_DRONEBOX
 		ADD_MODULE(_DroneBox);
 		ADD_MODULE(_DroneBoxJSON);
@@ -163,6 +159,10 @@ namespace kai
 		ADD_MODULE(_UTprArmL);
 #ifdef USE_OPENCV
 #endif
+#endif
+
+#ifdef WITH_APP_SWARMSEARCH
+		ADD_MODULE(_SwarmSearchCtrlUI);
 #endif
 
 #ifdef WITH_COMPUTE
@@ -323,8 +323,6 @@ namespace kai
 #endif
 #ifdef USE_WEBUI
 		ADD_MODULE(_WebUIbase);
-		ADD_MODULE(_WebUIswarmList);
-		ADD_MODULE(_WebUIswarmMap);
 #endif
 #endif
 

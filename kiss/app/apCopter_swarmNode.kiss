@@ -14,8 +14,10 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["state","apBase1"],
+	"vBASE":["state","apBase"],
 }
+
+/* State */
 
 {
 	"name":"state",
@@ -51,26 +53,6 @@
 		}
 	}
 }
-
-{
-	"name":"webUI",
-	"class":"_WebUIswarm",
-	"bON":1,
-    {
-		"name":"thread",
-		"FPS":5,
-	}
-    {
-		"name":"threadUI",
-		"FPS":1,
-	}
-	"_StateControl":"state",
-	"vAPbase":["apBase1"],
-	"rootDir":"/home/kai/dev/OpenKAI/html/webui/simple",
-	"fHtml":"swarm.html",
-	"bMultiAccess":1,
-}
-
 
 /* Camera */
 
@@ -148,40 +130,7 @@
 	"vRoi":[0,0,1280,720],
 }
 
-{
-	"name":"apVideo",
-	"class":"_AP_video",
-	"bON":0,
-    {
-		"name":"thread",
-		"FPS":25,
-	}
-	"bLog":0,
-	"_StateControl":"state",
-	"vActiveState":["TAKEOFF_REQUEST","TAKEOFF_READY","AIRBORNE","LANDING_REQUEST","LANDING","TOUCHDOWN"],
-	"_AP_base":"apBase",
-	"_VisionBase":"cam",
-	"_Curl":"cURL",
-	"dir":"/home/pi/ssd/video/",
-	"fCalib":"/home/pi/ok/calibCam.kiss",
-	"//gstOutput":"appsrc ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! matroskamux ! filesink location=[fName]",
-	"/gstOutput":"appsrc ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! tee name=t t. ! queue ! matroskamux ! filesink location=[fName] t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.3 port=5678 auto-multicast=false",
-	"gstOutput":"appsrc ! video/x-raw, width=1280, height=720, format=I420 ! v4l2convert ! v4l2h264enc ! video/x-h264, level=(string)4 ! h264parse ! tee name=t t. ! queue ! matroskamux ! filesink location=[fName] t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.3 port=5678 auto-multicast=false",
-}
-
-{
-	"name":"cURL",
-	"class":"_Curl",
-	"bON":0,
-    {
-		"name":"thread",
-		"FPS":1,
-	}
-	"bLog":1,
-	"cmd":"curl 2>&1 -T [fName] ftp://193.112.75.123/pub/ -u anonymous: --connect-timeout 60 --no-progress-meter",
-	"dir":"/home/pi/ssd/video/",
-	"vExt":[".mka",".json"],
-}
+/* Landing tag */
 
 {
 	"name":"univTag",
@@ -207,6 +156,34 @@
 	"dict":17,
 }
 
+/* DNN target */
+
+{
+	"name":"univTarget",
+	"class":"_Universe",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+}
+
+{
+	"name":"tfMN",
+	"class":"_TFmobileNet",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bDraw":1,
+	"bLog":1,
+	"_VisionBase":"cam",
+	"_Universe":"univ",
+	"fModel":"/home/kai/dev/models/TFliteMobileNet/detect.tflite",
+	"fClass":"/home/kai/dev/models/TFliteMobileNet/COCO_labels.txt",
+	"iClassDraw":-1,
+}
 
 /* Mavlink */
 
@@ -282,6 +259,8 @@
 	}
 }
 
+/* AP */
+
 {
 	"name":"apBase",
 	"class":"_AP_base",
@@ -341,6 +320,22 @@
 	}
 	"bLog":0,
 	"_AP_base":"apBase",
+	"_StateControl":"state",
+	"bAutoArm":1,
+	"altTakeoff":10.0,
+}
+
+/* Swarm optimizer*/
+
+{
+	"name":"swarmSearch",
+	"class":"_SwarmSearch",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
 	"_StateControl":"state",
 	"bAutoArm":1,
 	"altTakeoff":10.0,

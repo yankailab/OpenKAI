@@ -16,7 +16,8 @@ namespace kai
 
 		float getDist(float s)
 		{
-			return ((s - m_vSize.x) / m_vSize.len()) * m_vKdist.len() + m_vKdist.x;
+			float c = m_vSize.constrain(s);
+			return ((m_vSize.y - c) / m_vSize.len()) * m_vKdist.len() + m_vKdist.x;
 		}
 	};
 
