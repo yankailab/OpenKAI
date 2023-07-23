@@ -6,6 +6,7 @@ namespace kai
     _SwarmSearchCtrlUI::_SwarmSearchCtrlUI()
     {
         m_Tr = NULL;
+		m_pSSC = NULL;
     }
 
     _SwarmSearchCtrlUI::~_SwarmSearchCtrlUI()
@@ -40,9 +41,9 @@ namespace kai
 
         string n;
         n = "";
-        // pK->v("_DroneBox", &n);
-        // m_pDB = (_DroneBox *)(pK->getInst(n));
-        // IF_Fl(!m_pDB, n + ": not found");
+        pK->v("_SwarmSearchCtrl", &n);
+        m_pSSC = (_SwarmSearchCtrl *)(pK->getInst(n));
+        IF_Fl(!m_pSSC, n + ": not found");
 
 		return true;
 	}
@@ -57,7 +58,7 @@ namespace kai
 
     int _SwarmSearchCtrlUI::check(void)
     {
-//        NULL__(m_pDB, -1);
+        NULL__(m_pSSC, -1);
 
         return this->_JSONbase::check();
     }
@@ -234,59 +235,6 @@ namespace kai
 	// 		h += "</tr>";
 	// 	}
 	// }
-
-
-	void _SwarmSearchCtrlUI::onRecvMsg(const XBframe_receivePacket &d)
-	{
-		uint8_t mType = d.m_pD[0];
-
-		// switch (mType)
-		// {
-		// case swMsg_hB:
-		// 	SWMSG_HB mHb;
-		// 	if (mHb.decode(d.m_pD, d.m_nD))
-		// 		m_pSwarm->handleMsgHB(mHb);
-		// 	break;
-		// case swMsg_cmd_setState:
-		// 	SWMSG_CMD_SETSTATE mSS;
-		// 	if (mSS.decode(d.m_pD, d.m_nD))
-		// 		handleMsgSetState(mSS);
-		// 	break;
-		// case swMsg_gc_update:
-		// 	SWMSG_GC_UPDATE mGU;
-		// 	if (mGU.decode(d.m_pD, d.m_nD))
-		// 		m_pSwarm->handleMsgGCupdate(mGU);
-		// 	break;
-		// }
-	}
-
-	void _SwarmSearchCtrlUI::handleMsgSetState(const SWMSG_CMD_SETSTATE &m)
-	{
-		IF_(check() < 0);
-		// IF_((m.m_dstID != 0) && (m.m_dstID != m_pXb->getMyAddr()));
-
-		// //TODO: enable iMsg counter
-
-		// switch (m.m_state)
-		// {
-		// case swMsg_state_standBy:
-		// 	m_pSC->transit(m_state.STANDBY);
-		// 	break;
-		// case swMsg_state_takeOff:
-		// 	m_pSC->transit(m_state.TAKEOFF);
-		// 	break;
-		// case swMsg_state_auto:
-		// 	m_pSC->transit(m_state.AUTO);
-		// 	break;
-		// case swMsg_state_RTL:
-		// 	m_pSC->transit(m_state.RTL);
-		// 	break;
-		// case swMsg_state_land:
-		// 	m_pSC->transit(m_state.RTL);
-		// 	break;
-		// }
-	}
-
 
     void _SwarmSearchCtrlUI::console(void *pConsole)
     {

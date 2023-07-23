@@ -9,6 +9,8 @@
 #define XB_N_FRAME 128
 #define XB_N_PAYLOAD 49
 
+#define XB_BRDCAST_ADDR 0x000000000000FFFF
+
 namespace kai
 {
 	struct XBframe_transitRequest
@@ -23,7 +25,7 @@ namespace kai
 		// API ID
 		uint8_t m_fType = 0x10;
 		uint8_t m_fID = 1;
-		uint64_t m_destAddr = 0x000000000000FFFF; // Broadcast address
+		uint64_t m_destAddr = XB_BRDCAST_ADDR; // Broadcast address
 		uint16_t m_destAddr16 = 0xFFFE;
 		uint8_t m_brRadius = 0;
 		uint8_t m_options = 0;
@@ -160,11 +162,11 @@ namespace kai
 		virtual uint64_t getMyAddr(void);
 		virtual uint64_t getAddr(const string &sAddr);
 		virtual bool setCbReceivePacket(CbXBeeReceivePacket pCb, void *pInst);
+		virtual void send(const string &dest, uint8_t *pB, int nB);
+		virtual void send(uint64_t dest, uint8_t *pB, int nB);
 
 	protected:
-		virtual void send(const string &dest, uint8_t *pB, int nB);
 		virtual void updateMesh(void);
-
 		virtual bool recv(void);
 		virtual void handleFrame(void);
 

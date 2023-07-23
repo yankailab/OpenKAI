@@ -30,18 +30,19 @@ namespace kai
 
 	struct SWMSG_HB
 	{
-		const static uint8_t m_nB = 34;
+		const static uint8_t m_nB = 28;
+		uint64_t m_srcNetAddr = 0;
 
 		const static uint8_t m_mType = swMsg_hB; // 0
-		uint64_t m_srcID;	// 1
-		uint64_t m_lat; // 9
-		uint64_t m_lng; // 17
-		uint16_t m_alt; // 25
-		uint16_t m_hdg; // 27
-		uint16_t m_spd; // 29
-		uint8_t m_batt; // 31
-		uint8_t m_iMsg; // 32
-		uint8_t m_checksum; //33
+		uint16_t m_srcID;	// 1
+		uint64_t m_lat; // 3		1e7
+		uint64_t m_lng; // 11		1e7
+		uint16_t m_alt; // 19		1e2
+		uint16_t m_hdg; // 21		1e2
+		uint16_t m_spd; // 23		1e2
+		uint8_t m_batt; // 25		1~100
+		uint8_t m_iMsg; // 26
+		uint8_t m_checksum; //27
 
 		bool decode(const uint8_t* pB, int nB)
 		{
@@ -49,47 +50,50 @@ namespace kai
 			NULL_F(pB);
 			IF_F(pB[0] != m_mType);
 
-			m_srcID = *((uint64_t*)&pB[1]);
-			m_lat = *((uint64_t*)&pB[9]);
-			m_lng = *((uint64_t*)&pB[17]);
-			m_alt = *((uint16_t*)&pB[25]);
-			m_hdg = *((uint16_t*)&pB[27]);
-			m_spd = *((uint16_t*)&pB[29]);
-			m_batt = *((uint8_t*)&pB[31]);
-			m_iMsg = *((uint8_t*)&pB[32]);
-			m_checksum = *((uint8_t*)&pB[33]);
+			m_srcID = *((uint16_t*)&pB[1]);
+			m_lat = *((uint64_t*)&pB[3]);
+			m_lng = *((uint64_t*)&pB[11]);
+			m_alt = *((uint16_t*)&pB[19]);
+			m_hdg = *((uint16_t*)&pB[21]);
+			m_spd = *((uint16_t*)&pB[23]);
+			m_batt = *((uint8_t*)&pB[25]);
+			m_iMsg = *((uint8_t*)&pB[26]);
+			m_checksum = *((uint8_t*)&pB[27]);
 
 			return true;
 		}
 
 		int encode(uint8_t* pB, int nB)
 		{
-			IF_F(nB < m_nB);
-			NULL_F(pB);
+			IF__(nB < m_nB, -1);
+			NULL__(pB, -1);
 
 			*((uint8_t*)&pB[0]) = m_mType;
-			*((uint64_t*)&pB[1]) = m_srcID;
-			*((uint64_t*)&pB[9]) = m_lat;
-			*((uint64_t*)&pB[17]) = m_lng;
-			*((uint16_t*)&pB[25]) = m_alt;
-			*((uint16_t*)&pB[27]) = m_hdg;
-			*((uint16_t*)&pB[29]) = m_spd;
-			*((uint8_t*)&pB[31]) = m_batt;
-			*((uint8_t*)&pB[32]) = m_iMsg;
-			*((uint8_t*)&pB[33]) = m_checksum;
+			*((uint16_t*)&pB[1]) = m_srcID;
+			*((uint64_t*)&pB[3]) = m_lat;
+			*((uint64_t*)&pB[11]) = m_lng;
+			*((uint16_t*)&pB[19]) = m_alt;
+			*((uint16_t*)&pB[21]) = m_hdg;
+			*((uint16_t*)&pB[23]) = m_spd;
+			*((uint8_t*)&pB[25]) = m_batt;
+			*((uint8_t*)&pB[26]) = m_iMsg;
+			*((uint8_t*)&pB[27]) = m_checksum;
+
+			return m_nB;
 		}
 	};
 
 	struct SWMSG_CMD_SETSTATE
 	{
-		const static uint8_t m_nB = 20;
+		const static uint8_t m_nB = 8;
+		uint64_t m_srcNetAddr = 0;
 
 		const static uint8_t m_mType = swMsg_cmd_setState; // 0
-		uint64_t m_srcID;	// 1
-		uint64_t m_dstID;	// 9
-		uint8_t m_state;	// 17
-		uint8_t m_iMsg;		// 18
-		uint8_t m_checksum; // 19
+		uint16_t m_srcID;	// 1
+		uint16_t m_dstID;	// 3
+		uint8_t m_state;	// 5
+		uint8_t m_iMsg;		// 6
+		uint8_t m_checksum; // 7
 
 		bool decode(const uint8_t* pB, int nB)
 		{
@@ -97,40 +101,43 @@ namespace kai
 			NULL_F(pB);
 			IF_F(pB[0] != m_mType);
 
-			m_srcID = *((uint64_t*)&pB[1]);
-			m_dstID = *((uint64_t*)&pB[9]);
-			m_state = *((uint64_t*)&pB[17]);
-			m_iMsg = *((uint8_t*)&pB[18]);
-			m_checksum = *((uint8_t*)&pB[19]);
+			m_srcID = *((uint16_t*)&pB[1]);
+			m_dstID = *((uint16_t*)&pB[3]);
+			m_state = *((uint8_t*)&pB[5]);
+			m_iMsg = *((uint8_t*)&pB[6]);
+			m_checksum = *((uint8_t*)&pB[7]);
 
 			return true;
 		}
 
 		int encode(uint8_t* pB, int nB)
 		{
-			IF_F(nB < m_nB);
-			NULL_F(pB);
+			IF__(nB < m_nB, -1);
+			NULL__(pB, -1);
 
 			*((uint8_t*)&pB[0]) = m_mType;
-			*((uint64_t*)&pB[1]) = m_srcID;
-			*((uint64_t*)&pB[9]) = m_dstID;
-			*((uint64_t*)&pB[17]) = m_state;
-			*((uint16_t*)&pB[18]) = m_iMsg;
-			*((uint8_t*)&pB[19]) = m_checksum;
+			*((uint16_t*)&pB[1]) = m_srcID;
+			*((uint16_t*)&pB[3]) = m_dstID;
+			*((uint8_t*)&pB[5]) = m_state;
+			*((uint8_t*)&pB[6]) = m_iMsg;
+			*((uint8_t*)&pB[7]) = m_checksum;
+
+			return m_nB;
 		}
 	};
 
 	struct SWMSG_GC_UPDATE
 	{
-		const static uint8_t m_nB = 29;
+		const static uint8_t m_nB = 13;
+		uint64_t m_srcNetAddr = 0;
 
 		const static uint8_t m_mType = swMsg_gc_update; // 0
-		uint64_t m_srcID;	// 1
-		uint64_t m_dstID;	// 9
-		uint64_t m_iGC;		// 17
-		uint16_t m_w;		// 25
-		uint8_t m_iMsg;		// 27
-		uint8_t m_checksum; // 28
+		uint16_t m_srcID;	// 1
+		uint16_t m_dstID;	// 3
+		uint32_t m_iGC;		// 5
+		uint16_t m_w;		// 9
+		uint8_t m_iMsg;		// 11
+		uint8_t m_checksum; // 12
 
 		bool decode(const uint8_t* pB, int nB)
 		{
@@ -138,34 +145,37 @@ namespace kai
 			NULL_F(pB);
 			IF_F(pB[0] != m_mType);
 
-			m_srcID = *((uint64_t*)&pB[1]);
-			m_dstID = *((uint64_t*)&pB[9]);
-			m_iGC = *((uint64_t*)&pB[17]);
-			m_w = *((uint16_t*)&pB[25]);
-			m_iMsg = *((uint8_t*)&pB[27]);
-			m_checksum = *((uint8_t*)&pB[28]);
+			m_srcID = *((uint16_t*)&pB[1]);
+			m_dstID = *((uint16_t*)&pB[3]);
+			m_iGC = *((uint32_t*)&pB[5]);
+			m_w = *((uint16_t*)&pB[9]);
+			m_iMsg = *((uint8_t*)&pB[11]);
+			m_checksum = *((uint8_t*)&pB[12]);
 
 			return true;
 		}
 
 		int encode(uint8_t* pB, int nB)
 		{
-			IF_F(nB < m_nB);
-			NULL_F(pB);
+			IF__(nB < m_nB, -1);
+			NULL__(pB, -1);
 
 			*((uint8_t*)&pB[0]) = m_mType;
-			*((uint64_t*)&pB[1]) = m_srcID;
-			*((uint64_t*)&pB[9]) = m_dstID;
-			*((uint64_t*)&pB[17]) = m_iGC;
-			*((uint64_t*)&pB[25]) = m_w;
-			*((uint16_t*)&pB[27]) = m_iMsg;
-			*((uint8_t*)&pB[28]) = m_checksum;
+			*((uint16_t*)&pB[1]) = m_srcID;
+			*((uint16_t*)&pB[3]) = m_dstID;
+			*((uint32_t*)&pB[5]) = m_iGC;
+			*((uint16_t*)&pB[9]) = m_w;
+			*((uint8_t*)&pB[11]) = m_iMsg;
+			*((uint8_t*)&pB[12]) = m_checksum;
+
+			return m_nB;
 		}
 	};
 
 	struct SWARM_NODE
 	{
-		uint64_t m_id;
+		uint64_t m_srcNetAddr = 0;
+		uint16_t m_id = 0;
 		vDouble2 m_vPos = {0,0};
 		float	m_alt = 0;
 		float	m_spd = 0;
@@ -189,9 +199,10 @@ namespace kai
 		void handleMsgHB(const SWMSG_HB& m);
 
 	protected:
+		// node control
 		int getNodeIdx(const uint64_t& ID);
 		SWARM_NODE* getNode(const uint64_t& ID);
-		bool addNode(const SWARM_NODE& n);
+		SWARM_NODE* addNode(const SWARM_NODE& n);
 		bool updateNode(const SWARM_NODE& n);
 		void deleteNode(const uint64_t& ID);
 		void deleteNode(int i);

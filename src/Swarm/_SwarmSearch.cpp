@@ -92,9 +92,7 @@ namespace kai
         m_pGcell = new GCELL_SEARCH[m_nGcell];
         NULL_F(m_pGcell);
 
-
-
-
+		clearAllGridCells();
     }
 
     void _SwarmSearch::optimizeRoute(void)
@@ -104,8 +102,24 @@ namespace kai
 
 	void _SwarmSearch::handleMsgGCupdate(const SWMSG_GC_UPDATE& m)
     {
+		NULL_(m_pGcell);
+		if(m.m_iGC == 0xFFFFFFFF)
+		{
+			clearAllGridCells();
+			return;
+		}
+		IF_(m.m_iGC >= m_nGcell);
 
+		m_pGcell[m.m_iGC].m_w += m.m_w;
     }
+
+	void _SwarmSearch::clearAllGridCells(void)
+	{
+		NULL_(m_pGcell);
+
+		for(int i =0; i<m_nGcell; i++)
+			m_pGcell[i].clear();
+	}
 
 	void _SwarmSearch::console(void *pConsole)
 	{

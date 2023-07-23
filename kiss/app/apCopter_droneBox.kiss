@@ -365,7 +365,7 @@
 	"PIDpitch":"PIDpitch",
 
 	"vFov":[70,60],
-	"vComplete":[0.1, 0.1, 4.9, 3],
+	"vComplete":[0.1, 0.1, 0.5, 3],
 	"zrK":10.0,
 	"tKyaw":10000,
 	"ieHdgUsec":5000000,

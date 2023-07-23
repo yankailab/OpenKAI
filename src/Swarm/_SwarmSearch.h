@@ -13,12 +13,58 @@
 
 namespace kai
 {
+    struct SWARM_SEARCH_STATE_NODE
+    {
+        int8_t m_iState;
+        int8_t STANDBY;
+        int8_t TAKEOFF;
+        int8_t AUTO;
+        int8_t RTL;
+
+        bool bValid(void)
+        {
+            IF_F(STANDBY < 0);
+            IF_F(TAKEOFF < 0);
+            IF_F(AUTO < 0);
+            IF_F(RTL < 0);
+
+            return true;
+        }
+
+        void update(int8_t iState)
+        {
+            m_iState = iState;
+        }
+
+        bool bSTANDBY(void)
+        {
+            return (m_iState == STANDBY);
+        }
+
+        bool bTAKEOFF(void)
+        {
+            return (m_iState == TAKEOFF);
+        }
+
+        bool bAUTO(void)
+        {
+            return (m_iState == AUTO);
+        }
+
+        bool bRTL(void)
+        {
+            return (m_iState == RTL);
+        }
+    };
 
 	struct GCELL_SEARCH
 	{
-		int m_iCovered = 0;
 		float m_w = 0;
 
+		void clear(void)
+		{
+			m_w = 0;
+		}
 	};
 
 	class _SwarmSearch : public _SwarmBase
@@ -36,11 +82,8 @@ namespace kai
 		// swarm msg handlers
 		void handleMsgGCupdate(const SWMSG_GC_UPDATE& m);
 
-		// my node
-//		void updateMyNode();
-
 		// grid cell
-//		void updateMyNode();
+		void clearAllGridCells(void);
 
 	protected:
 		bool genGridCells(void);
@@ -59,9 +102,7 @@ namespace kai
 		int m_nGcell;
 
 		SWARM_NODE m_myNode;
-
 		INTERVAL_EVENT m_ieOptRoute;
-
 	};
 
 }

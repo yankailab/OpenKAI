@@ -1,9 +1,8 @@
-#ifndef OpenKAI_src_UI__SwarmSearchCtrlUI_H_
-#define OpenKAI_src_UI__SwarmSearchCtrlUI_H_
+#ifndef OpenKAI_src_App_SwarmSearch__SwarmSearchCtrlUI_H_
+#define OpenKAI_src_App_SwarmSearch__SwarmSearchCtrlUI_H_
 
 #include "../../Protocol/_JSONbase.h"
-#include "../../Protocol/_Xbee.h"
-#include "../../Swarm/_SwarmSearch.h"
+#include "_SwarmSearchCtrl.h"
 
 namespace kai
 {
@@ -19,17 +18,6 @@ namespace kai
 		virtual bool start(void);
 		virtual int check(void);
 		virtual void console(void *pConsole);
-
-		// callback for Xbee recv
-		void onRecvMsg(const XBframe_receivePacket &d);
-		static void sOnRecvMsg(void *pInst, XBframe_receivePacket d)
-		{
-			NULL_(pInst);
-			((_SwarmSearchCtrlUI *)pInst)->onRecvMsg(d);
-		}
-
-		// swarm msg handlers
-		void handleMsgSetState(const SWMSG_CMD_SETSTATE &m);
 
 	protected:
 		void send(void);
@@ -58,6 +46,7 @@ namespace kai
 
 	public:
 		_Thread *m_Tr;
+		_SwarmSearchCtrl* m_pSSC;
 	};
 
 }

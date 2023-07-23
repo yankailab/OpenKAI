@@ -150,6 +150,7 @@
 #endif
 
 #ifdef WITH_APP_SWARMSEARCH
+#include "../Application/SwarmSearch/_SwarmSearchCtrl.h"
 #include "../Application/SwarmSearch/_SwarmSearchCtrlUI.h"
 #endif
 

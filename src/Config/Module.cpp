@@ -162,6 +162,7 @@ namespace kai
 #endif
 
 #ifdef WITH_APP_SWARMSEARCH
+		ADD_MODULE(_SwarmSearchCtrl);
 		ADD_MODULE(_SwarmSearchCtrlUI);
 #endif
 

@@ -53,8 +53,35 @@
 }
 
 {
-	"name":"uiMap",
-	"class":"_WebUIswarmMap",
+	"name":"ws",
+	"class":"_WebSocket",
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"bON":1,
+}
+
+{
+	"name":"ctrlUI",
+	"class":"_SwarmSearchCtrlUI",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadUI",
+		"FPS":1,
+	}
+	"vBASE":["/cam"],
+	"_StateControl":"state",
+}
+
+{
+	"name":"ctrl",
+	"class":"_SwarmSearchCtrl",
 	"bON":1,
 	"bLog":1,
     {
@@ -71,3 +98,4 @@
 	"fHtml":"map.html",
 	"bMultiAccess":1,
 }
+

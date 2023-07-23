@@ -105,12 +105,17 @@ namespace kai
 
     void _Xbee::send(const string &dest, uint8_t *pB, int nB)
     {
+        send(getAddr(dest), pB, nB);
+    }
+
+    void _Xbee::send(uint64_t dest, uint8_t *pB, int nB)
+    {
         IF_(check() < 0);
         NULL_(pB);
         IF_(nB == 0);
 
         XBframe_transitRequest f;
-        f.m_destAddr = getAddr(dest);
+        f.m_destAddr = dest;
         f.encode(pB, nB);
 
         m_pIO->write(f.m_pF, f.m_nF);

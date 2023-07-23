@@ -43,7 +43,22 @@ namespace kai
 
 	void _SwarmBase::handleMsgHB(const SWMSG_HB& m)
 	{
+		SWARM_NODE* pN = getNode(m.m_srcID);
+		if(!pN)
+		{
+			SWARM_NODE n;
+			pN = addNode(n);
+		}
 
+		pN->m_srcNetAddr = m.m_srcNetAddr;
+		pN->m_id = m.m_srcID;
+		pN->m_vPos.x = ((double)m.m_lat) * 1e-7;
+		pN->m_vPos.y = ((double)m.m_lng) * 1e-7;
+		pN->m_alt = ((float)m.m_alt) * 1e-2;
+		pN->m_spd = ((float)m.m_spd) * 1e-2;
+		pN->m_batt = ((float)m.m_batt);
+		pN->m_iMsg = m.m_iMsg;
+		pN->m_tLastUpdate = getApproxTbootUs();
 	}
 
 	int _SwarmBase::getNodeIdx(const uint64_t &ID)
@@ -68,13 +83,14 @@ namespace kai
 		return &m_vNodes[i];
 	}
 
-	bool _SwarmBase::addNode(const SWARM_NODE &n)
+	SWARM_NODE* _SwarmBase::addNode(const SWARM_NODE &n)
 	{
 		int i = getNodeIdx(n.m_id);
-		IF_F(i >= 0);
+		if(i >= 0)
+			return &m_vNodes[i];
 
 		m_vNodes.push_back(n);
-		return true;
+		return &m_vNodes[m_vNodes.size()];
 	}
 
 	bool _SwarmBase::updateNode(const SWARM_NODE &n)
