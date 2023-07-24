@@ -9,7 +9,7 @@ namespace kai
 {
 	struct SWARM_SEARCH_CTRL_NODE
 	{
-		uint64_t m_ID = 0;
+		uint16_t m_id = 0;
 		vDouble2 m_pos = {0,0};
 		float	 m_alt = 0;
 	};
@@ -37,9 +37,9 @@ namespace kai
 
 		// UI
 		bool setState(const string& state);
+
 		bool updateGridCells();
 		bool clearGridCells(void);
-
 		void getGridCells();
 
 	protected:
@@ -48,7 +48,6 @@ namespace kai
 		void sendHB(void);
 		void sendSetState(void);
 		void sendGCupdate(void);
-
 		void handleMsgSetState(const SWMSG_CMD_SETSTATE &m);
 
 		// UI
@@ -68,6 +67,8 @@ namespace kai
 		SWARM_SEARCH_CTRL_NODE m_node;
 
 		INTERVAL_EVENT m_ieSendHB;
+		INTERVAL_EVENT m_ieSendSetState;
+		INTERVAL_EVENT m_ieSendGCupdate;
 	};
 
 }

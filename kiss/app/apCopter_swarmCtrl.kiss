@@ -3,7 +3,7 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog":1,
-	"bStdErr":1,
+	"bStdErr":0,
 }
 
 {
@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["ws"],
+	"vBASE":["state", "swarmCtrl", "state2","/ws","/gGrid", "/swarmCtrlUI"],
 }
 
 {
@@ -53,6 +53,78 @@
 }
 
 {
+	"name":"serial",
+	"class":"_SerialPort",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"port":"/dev/ttyUSB0",
+	"baud":57600,
+}
+
+{
+	"name":"xbee",
+	"class":"_Xbee",
+	"bON":1,
+	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"_IOBase":"serial",
+	"/myAddr":"000000000000FFFF",	/* Broadcast address*/
+}
+
+{
+	"name":"swarmCtrl",
+	"class":"_SwarmSearchCtrl",
+	"bON":1,
+	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"myID":1,
+	"_StateControl":"state",
+	"_SwarmSearch":"swarmSearch",
+	"_Xbee":"xbee",
+	"ieSendHB":1000000,
+	"ieSendSetState":1000000,
+	"ieSendGCupdate":1000000,
+}
+
+{
+	"name":"gGrid",
+	"class":"GeoGrid",
+	"bON":1,
+	"bLog":0,
+}
+
+{
+	"name":"swarmSearch",
+	"class":"_SwarmSearch",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"/tExpire":100000000,
+	"/ieOptRoute":100000000,
+	"GeoGrid":"gGrid",
+}
+
+{
 	"name":"ws",
 	"class":"_WebSocket",
 	"bON":1,
@@ -70,7 +142,7 @@
 	"name":"swarmCtrlUI",
 	"class":"_SwarmSearchCtrlUI",
 	"bON":1,
-	"bLog":1,
+	"bLog":0,
     {
 		"name":"thread",
 		"FPS":1,
@@ -79,24 +151,207 @@
 		"name":"threadR",
 		"FPS":30,
 	}
-	"_IOBase":"ws",
-	"_SwarmSearchCtrl":"swarmCtrl",
 	"msgFinishSend":"",
 	"msgFinishRecv":"EOJ",
+	"_IOBase":"ws",
+	"_SwarmSearch":"swarmSearch",
+	"_SwarmSearchCtrl":"swarmCtrl",
+	"ieSendHB":1000000,
+	"ieSendNodeUpdate":1000000,
+	"ieSendNodeClearAll":10000000,
+}
+
+
+
+
+
+
+
+/* AP side test */
+
+{
+	"name":"state2",
+	"class":"_StateControl",
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"bON":1,
+	"start":"STANDBY",
+
+	{
+		"name":"state",
+		{
+			"bON":1,
+			"name":"STANDBY",
+			"class":"State",
+		}
+		{
+			"bON":1,
+			"name":"TAKEOFF",
+			"class":"State",
+		}
+		{
+			"bON":1,
+			"name":"AUTO",
+			"class":"State",
+		}
+		{
+			"bON":1,
+			"name":"RTL",
+			"class":"State",
+		}
+	}
 }
 
 {
-	"name":"swarmCtrl",
-	"class":"_SwarmSearchCtrl",
-	"bON":0,
-	"bLog":1,
+	"name":"serial2",
+	"class":"_SerialPort",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"port":"/dev/ttyUSB1",
+	"baud":57600,
+}
+
+{
+	"name":"xbee2",
+	"class":"_Xbee",
+	"bON":1,
+	"bLog":0,
     {
 		"name":"thread",
 		"FPS":1,
 	}
-	"vBASE":["/cam"],
-	"_StateControl":"state",
-	"_SwarmSearch":"swarmSearch",
-	"_Xbee":"xbee",
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"_IOBase":"serial2",
 }
 
+{
+	"name":"serialAP",
+	"class":"_SerialPort",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"port":"/dev/ttyACM0",
+	"baud":115200,
+	"/baud":57600,
+}
+
+{
+	"name":"mavAP",
+	"class":"_Mavlink",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"_IOBase":"serialAP",
+}
+
+{
+	"name":"apBase",
+	"class":"_AP_base",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"_StateControl":"state2",
+	"_Mavlink":"mavAP",
+	"freqSendHeartbeat":1,
+	"apType":0,
+	
+	{
+		"name":"mavMsgInt",
+		
+		{
+			"name":"heartbeat",
+			"id":0,
+			"tInt":0.4,
+		}
+		{
+			"name":"attitude",
+			"id":30,
+			"tInt":0.3,
+		}
+		{
+			"name":"localPosition",
+			"id":32,
+			"tInt":0.3,
+		}
+		{
+			"name":"globalPosition",
+			"id":33,
+			"tInt":0.3,
+		}
+		{
+			"name":"homePosition",
+			"id":242,
+			"tInt":10,
+		}
+		{
+			"name":"batteryStatus",
+			"id":147,
+			"tInt":10,
+		}
+	}
+}
+
+{
+	"name":"apSwarm",
+	"class":"_AP_swarm",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"_AP_base":"apBase",
+	"_StateControl":"state2",
+	"_SwarmSearch":"swarmSearch2",
+	"_Xbee":"xbee2",
+	"myID":100,
+	"bAutoArm":1,
+	"altTakeoff":10.0,
+	"ieSendHB":1000000,
+	"ieSendSetState":1000000,
+	"ieSendGCupdate":1000000,
+}
+
+{
+	"name":"gGrid2",
+	"class":"GeoGrid",
+	"bON":1,
+	"bLog":0,
+}
+
+{
+	"name":"swarmSearch2",
+	"class":"_SwarmSearch",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"/tExpire":100000000,
+	"/ieOptRoute":100000000,
+	"GeoGrid":"gGrid2",
+}

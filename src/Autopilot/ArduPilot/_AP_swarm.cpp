@@ -12,6 +12,9 @@ namespace kai
 		m_bAutoArm = true;
 		m_altTakeoff = 5.0;
 		m_myID = 0;
+
+        m_ieSendHB.init(USEC_1SEC);
+        m_ieSendGCupdate.init(USEC_1SEC);
 	}
 
 	_AP_swarm::~_AP_swarm()
@@ -27,6 +30,9 @@ namespace kai
 		pK->v("altTakeoff", &m_altTakeoff);
 		pK->v("myID", &m_myID);
 
+        pK->v("ieSendHB", &m_ieSendHB.m_tInterval);
+        pK->v("ieSendGCupdate", &m_ieSendGCupdate.m_tInterval);
+
 		return true;
 	}
 
@@ -39,6 +45,7 @@ namespace kai
 		m_state.AUTO = m_pSC->getStateIdxByName("AUTO");
 		m_state.RTL = m_pSC->getStateIdxByName("RTL");
 		IF_F(!m_state.bValid());
+        m_state.update(m_pSC->getStateIdx());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
@@ -87,8 +94,9 @@ namespace kai
 			m_pT->autoFPSfrom();
 			this->_StateBase::update();
 
-			updateState();
-			updateSwarm();
+//			updateState();
+//			updateSwarm();
+//			send();
 
 			m_pT->autoFPSto();
 		}
@@ -152,6 +160,18 @@ namespace kai
 		bool bApArmed = m_pAP->bApArmed();
 		float alt = m_pAP->getGlobalPos().w; // relative altitude
 
+	}
+
+	void _AP_swarm::send(void)
+	{
+        IF_(check() < 0);
+
+        uint64_t t = m_pT->getTfrom();
+
+        if (m_ieSendHB.update(t))
+            sendHB();
+        if (m_ieSendGCupdate.update(t))
+            sendGCupdate();
 	}
 
 	void _AP_swarm::sendHB(void)
@@ -248,6 +268,8 @@ namespace kai
 			m_pSC->transit(m_state.RTL);
 			break;
 		}
+
+        m_state.update(m_pSC->getStateIdx());
 	}
 
 }

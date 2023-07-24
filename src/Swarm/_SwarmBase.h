@@ -197,6 +197,7 @@ namespace kai
 
 		// swarm msg handlers
 		void handleMsgHB(const SWMSG_HB& m);
+	    vector<SWARM_NODE>* getSwarmNode(void);
 
 	protected:
 		// node control

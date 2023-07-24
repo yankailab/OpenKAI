@@ -6,7 +6,8 @@ namespace kai
     _SwarmSearchCtrlUI::_SwarmSearchCtrlUI()
     {
         m_Tr = NULL;
-		m_pCtrl = NULL;
+        m_pCtrl = NULL;
+        m_pSwarm = NULL;
     }
 
     _SwarmSearchCtrlUI::~_SwarmSearchCtrlUI()
@@ -18,6 +19,19 @@ namespace kai
     {
         IF_F(!this->_JSONbase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
+
+        int v;
+        v = SEC_2_USEC;
+        pK->v("ieSendHB", &v);
+        m_ieSendHB.init(v);
+
+        v = SEC_2_USEC;
+        pK->v("ieSendNodeUpdate", &v);
+        m_ieSendNodeUpdate.init(v);
+
+        v = SEC_2_USEC;
+        pK->v("ieSendNodeClearAll", &v);
+        m_ieSendNodeClearAll.init(v);
 
         Kiss *pKt = pK->child("threadR");
         IF_F(pKt->empty());
@@ -32,21 +46,26 @@ namespace kai
         return true;
     }
 
-	bool _SwarmSearchCtrlUI::link(void)
-	{
-		IF_F(!this->_JSONbase::link());
-		IF_F(!m_pTr->link());
+    bool _SwarmSearchCtrlUI::link(void)
+    {
+        IF_F(!this->_JSONbase::link());
+        IF_F(!m_pTr->link());
 
-		Kiss *pK = (Kiss *)m_pKiss;
+        Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
         n = "";
         pK->v("_SwarmSearchCtrl", &n);
         m_pCtrl = (_SwarmSearchCtrl *)(pK->getInst(n));
-//        IF_Fl(!m_pCtrl, n + ": not found");
+        IF_Fl(!m_pCtrl, n + ": not found");
 
-		return true;
-	}
+        n = "";
+        pK->v("_SwarmSearch", &n);
+        m_pSwarm = (_SwarmSearch *)(pK->getInst(n));
+        IF_Fl(!m_pSwarm, n + ": not found");
+
+        return true;
+    }
 
     bool _SwarmSearchCtrlUI::start(void)
     {
@@ -58,7 +77,8 @@ namespace kai
 
     int _SwarmSearchCtrlUI::check(void)
     {
-//        NULL__(m_pCtrl, -1);
+        NULL__(m_pCtrl, -1);
+        NULL__(m_pSwarm, -1);
 
         return this->_JSONbase::check();
     }
@@ -85,41 +105,58 @@ namespace kai
     {
         IF_(check() < 0);
 
-        if (m_tIntHeartbeat.update(m_pT->getTfrom()))
-        {
+        uint64_t t = getApproxTbootUs();
+
+        if (m_ieSendHB.update(t))
+            sendHeartbeat();
+
+        if (m_ieSendNodeUpdate.update(t))
             sendNodeUpdate();
+
+        if (m_ieSendNodeClearAll.update(t))
+            sendNodeClearAll();
+    }
+
+    void _SwarmSearchCtrlUI::sendHeartbeat(void)
+    {
+        IF_(check() < 0);
+
+        object o;
+        JO(o, "cmd", "hb");
+        JO(o, "id", (double)m_pCtrl->m_node.m_id);
+        JO(o, "s", m_pCtrl->m_state.getState());
+
+        sendMsg(o);
+    }
+
+    void _SwarmSearchCtrlUI::sendNodeUpdate(void)
+    {
+        IF_(check() < 0);
+
+        vector<SWARM_NODE> *pvNodes = m_pSwarm->getSwarmNode();
+        for (SWARM_NODE n : *pvNodes)
+        {
+            object o;
+            JO(o, "cmd", "ndUpdate");
+            JO(o, "id", (double)n.m_id);
+            JO(o, "lat", lf2str(n.m_vPos.x,10));
+            JO(o, "lng", lf2str(n.m_vPos.y,10));
+            JO(o, "alt", (double)n.m_alt);
+            JO(o, "batt", (double)n.m_batt);
+
+            sendMsg(o);
         }
     }
 
-    bool _SwarmSearchCtrlUI::sendNodeUpdate(void)
+    void _SwarmSearchCtrlUI::sendNodeClearAll(void)
     {
-//        vDouble2 vP = m_pDB->getPos();
-        static vDouble2 vPtest = {36.7795232705419, 138.52919832429615};
-
-        vPtest.x += 1e-6;
+        IF_(check() < 0);
 
         object o;
-        JO(o, "cmd", "ndUpdate");
-        JO(o, "id", (double)1);
-        JO(o, "lat", lf2str(vPtest.x,10));
-        JO(o, "lng", lf2str(vPtest.y,10));
+        JO(o, "cmd", "ndClearAll");
+        JO(o, "id", (double)m_pCtrl->m_node.m_id);
 
-        return sendMsg(o);
-    }
-
-    bool _SwarmSearchCtrlUI::sendHeartbeat(void)
-    {
-        // vDouble2 vP = m_pDB->getPos();
-
-        // object o;
-        // JO(o, "id", i2str(m_pDB->getID()));
-        // JO(o, "cmd", "heartbeat");
-        // JO(o, "t", li2str(m_pT->getTfrom()));
-        // JO(o, "lat", lf2str(vP.x,10));
-        // JO(o, "lng", lf2str(vP.y,10));
-
-        // return sendMsg(o);
-        return true;
+        sendMsg(o);
     }
 
     void _SwarmSearchCtrlUI::updateR(void)
@@ -147,59 +184,22 @@ namespace kai
         IF_(!jo["cmd"].is<string>());
         string cmd = jo["cmd"].get<string>();
 
-        if (cmd == "heartbeat")
-            heartbeat(jo);
-        else if (cmd == "setState")
+        if (cmd == "setState")
             setState(jo);
-    }
-
-    void _SwarmSearchCtrlUI::heartbeat(picojson::object &o)
-    {
-        IF_(check() < 0);
     }
 
     void _SwarmSearchCtrlUI::setState(picojson::object &o)
     {
         IF_(check() < 0);
-//        IF_(!o["id"].is<double>());
+
+        IF_(!o["id"].is<double>());
         IF_(!o["s"].is<string>());
 
-//        int vID = o["id"].get<double>();
+        int vID = o["id"].get<double>();
         string state = o["s"].get<string>();
 
+        m_pCtrl->setState(state);
     }
-
-	// void _SwarmSearchCtrlUI::updateVehicles(void)
-	// {
-	// 	string h = "";
-
-	// 	for(int i=0; i<m_vpAP.size(); i++)
-	// 	{
-	// 		_AP_base* pAP = m_vpAP[i];
-			
-	// 		h += "<tr>";
-    //         h += "<th scope=\"row\">"+ i2str(i) +"</th>";
-    //         h += "<td>"+ pAP->getApModeName() +"</td>";
-
-	// 		vFloat3 vAtt = pAP->getApAttitude();
-    //         h += "<td>";
-	// 		h += f2str(vAtt.x) + ", ";
-	// 		h += f2str(vAtt.y) + ", ";
-	// 		h += f2str(vAtt.z);
-	// 		h += "</td>";
-
-	// 		float hdg = pAP->getApHdg();
-    //         h += "<td>"+ f2str(hdg) +"</td>";
-
-	// 		vDouble4 vGpos = pAP->getGlobalPos();
-    //         h += "<td>"+ f2str(vGpos.w) +"</td>";
-
-	// 		float batt = pAP->getBattery();
-    //         h += "<td>"+ f2str(batt) +"</td>";
-
-	// 		h += "</tr>";
-	// 	}
-	// }
 
     void _SwarmSearchCtrlUI::console(void *pConsole)
     {

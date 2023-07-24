@@ -71,9 +71,11 @@ namespace kai
 
 		string start = "";
 		pK->v("start", &start);
-		m_iS = getStateIdxByName(start);
-		if (m_iS < 0)
+		i = getStateIdxByName(start);
+		if (i < 0)
 			m_iS = 0;
+		else
+			m_iS = i;
 
 		return true;
 	}

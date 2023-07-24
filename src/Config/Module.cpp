@@ -313,6 +313,7 @@ namespace kai
 
 #ifdef WITH_SWARM
 		ADD_MODULE(_SwarmBase);
+		ADD_MODULE(_SwarmSearch);
 #endif
 
 #ifdef WITH_UI

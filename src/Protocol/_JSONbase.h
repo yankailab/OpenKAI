@@ -26,7 +26,7 @@ namespace kai
 	protected:
 		virtual void send(void);
 		virtual bool sendMsg(picojson::object &o);
-		virtual bool sendHeartbeat(void);
+		virtual void sendHeartbeat(void);
 
 		virtual bool recv(void);
 		virtual void handleMsg(string &str);
@@ -56,7 +56,7 @@ namespace kai
 		string m_msgFinishRecv;
 		string m_strB;
 
-		INTERVAL_EVENT m_tIntHeartbeat;
+		INTERVAL_EVENT m_ieSendHB;
 	};
 
 }

@@ -25,8 +25,8 @@ namespace kai
         pK->v("msgFinishRecv", &m_msgFinishRecv);
 
         int v = SEC_2_USEC;
-        pK->v("tIntHeartbeat", &v);
-        m_tIntHeartbeat.init(v);
+        pK->v("ieSendHB", &v);
+        m_ieSendHB.init(v);
 
         Kiss *pKt = pK->child("threadR");
         IF_F(pKt->empty());
@@ -95,7 +95,7 @@ namespace kai
     {
         IF_(check() < 0);
 
-        if (m_tIntHeartbeat.update(m_pT->getTfrom()))
+        if (m_ieSendHB.update(m_pT->getTfrom()))
         {
 //            sendHeartbeat();
         }
@@ -114,14 +114,14 @@ namespace kai
         return m_pIO->write((unsigned char *)msg.c_str(), msg.size());
     }
 
-    bool _JSONbase::sendHeartbeat(void)
+    void _JSONbase::sendHeartbeat(void)
     {
         object o;
         JO(o, "id", i2str(1));
         JO(o, "cmd", "heartbeat");
         JO(o, "t", li2str(m_pT->getTfrom()));
 
-        return sendMsg(o);
+        sendMsg(o);
     }
 
     void _JSONbase::updateR(void)

@@ -1,7 +1,7 @@
+function $(selector) { return document.querySelector(selector);}
+
 window.onload = function()
 {
-    function $(selector) { return document.querySelector(selector);}
-
     wsInit();
 
   var strEOJ = "EOJ";
@@ -58,9 +58,9 @@ window.onload = function()
 
 function cmdHandler(jCmd)
 {
-    if(jCmd.cmd == "setState")
+    if(jCmd.cmd == "hb")
     {
-      $('#state').innerHTML = JSON.stringify(jCmd.s);
+      $('#state').innerHTML = jCmd.s.toUpperCase();
     }
     else if(jCmd.cmd == "ndUpdate")
     {
@@ -72,6 +72,13 @@ function cmdHandler(jCmd)
     }
     else if(jCmd.cmd == "ndClearAll")
     {
+        for(i=0; i<gvNodeMarkers.length; i++)
+        {
+            map.removeLayer(gvNodeMarkers[nIdx].marker);
+            gvNodeMarkers[nIdx].marker = null;
+        }
+
+        gvNodeMarkers.splice(0);
     }
     else if(jCmd.cmd == "gcSet")
     {
@@ -94,7 +101,7 @@ function ndUpdate(jCmd)
         nIdx = ndAdd(jCmd);
 
     gvNodeMarkers[nIdx].mk.setLatLng([JSON.parse(jCmd.lat), JSON.parse(jCmd.lng)]).update();
-    gvNodeMarkers[nIdx].mk.getPopup().setContent("123");
+    gvNodeMarkers[nIdx].mk.getPopup().setContent("ID:"+JSON.stringify(jCmd.id) + "</br>" + "LatLng: " + JSON.stringify(jCmd.lat) + ", " + JSON.stringify(jCmd.lng) );
     gvNodeMarkers[nIdx].mk.getPopup().update();
 }
 

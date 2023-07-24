@@ -94,13 +94,13 @@ namespace kai
     {
         IF_(check() < 0);
 
-        if (m_tIntHeartbeat.update(m_pT->getTfrom()))
+        if (m_ieSendHB.update(m_pT->getTfrom()))
         {
             sendHeartbeat();
         }
     }
 
-    bool _DroneBoxJSON::sendHeartbeat(void)
+    void _DroneBoxJSON::sendHeartbeat(void)
     {
         vDouble2 vP = m_pDB->getPos();
 
@@ -111,7 +111,7 @@ namespace kai
         JO(o, "lat", lf2str(vP.x,10));
         JO(o, "lng", lf2str(vP.y,10));
 
-        return sendMsg(o);
+        sendMsg(o);
     }
 
     void _DroneBoxJSON::updateR(void)

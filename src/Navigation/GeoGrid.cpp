@@ -26,6 +26,8 @@ namespace kai
 		IF_F(!this->BASE::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
+		pK->m_pInst = this;
+
 		return true;
 	}
 
@@ -56,8 +58,10 @@ namespace kai
 		return m_nCell;
 	}
 
-	uint32_t GeoGrid::getCellIdx(const vDouble3 &p)
+	int32_t GeoGrid::getCellIdx(const vDouble3 &p)
 	{
+		IF__(m_nCell < 0, -1);
+
 		int iAlt = m_alt.getIdx(p.z);
 		IF__(iAlt < 0, -1);
 
@@ -70,13 +74,16 @@ namespace kai
 		return iAlt * m_nLL + iLat * m_lng.m_nDiv + iLng;
 	}
 
-	GEOGRID_CELL GeoGrid::getCell(uint32_t cIdx)
+	GEOGRID_CELL GeoGrid::getCell(int32_t cIdx)
 	{
+		GEOGRID_CELL gC;
+		IF__(m_nCell < 0, gC);
+		IF__(cIdx < 0, gC);
+
 		int iAlt = cIdx / m_nLL;
 		int iLat = (cIdx - iAlt * m_nLL) / m_lng.m_nDiv;
 		int iLng = (cIdx - iAlt * m_nLL - iLat * m_lng.m_nDiv);
 
-		GEOGRID_CELL gC;
 		gC.m_vAlt = m_alt.getCell(iAlt);
 		gC.m_vLat = m_lat.getCell(iLat);
 		gC.m_vLng = m_lng.getCell(iLng);

@@ -55,6 +55,16 @@ namespace kai
         {
             return (m_iState == RTL);
         }
+
+		string getState(void)
+		{
+			IF__(m_iState == STANDBY, "standby");
+			IF__(m_iState == TAKEOFF, "takeoff");
+			IF__(m_iState == AUTO, "auto");
+			IF__(m_iState == RTL, "rtl");
+
+			return "unknown";
+		}
     };
 
 	struct GCELL_SEARCH

@@ -9,6 +9,8 @@ namespace kai
         m_pSwarm = NULL;
 
         m_ieSendHB.init(USEC_1SEC);
+        m_ieSendSetState.init(USEC_1SEC);
+        m_ieSendGCupdate.init(USEC_1SEC);
     }
 
     _SwarmSearchCtrl::~_SwarmSearchCtrl()
@@ -20,8 +22,10 @@ namespace kai
         IF_F(!this->_StateBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        pK->v("myID", &m_node.m_ID);
-        pK->v("tIntSendHB", &m_ieSendHB.m_tInterval);
+        pK->v("myID", &m_node.m_id);
+        pK->v("ieSendHB", &m_ieSendHB.m_tInterval);
+        pK->v("ieSendSetState", &m_ieSendSetState.m_tInterval);
+        pK->v("ieSendGCupdate", &m_ieSendGCupdate.m_tInterval);
 
         return true;
     }
@@ -35,6 +39,7 @@ namespace kai
         m_state.AUTO = m_pSC->getStateIdxByName("AUTO");
         m_state.RTL = m_pSC->getStateIdxByName("RTL");
         IF_F(!m_state.bValid());
+        m_state.update(m_pSC->getStateIdx());
 
         Kiss *pK = (Kiss *)m_pKiss;
         string n;
@@ -90,12 +95,16 @@ namespace kai
 
         if (m_ieSendHB.update(t))
             sendHB();
+        if (m_ieSendSetState.update(t))
+            sendSetState();
+        // if (m_ieSendGCupdate.update(t))
+        //     sendGCupdate();
     }
 
     void _SwarmSearchCtrl::sendHB(void)
     {
         SWMSG_HB m;
-        m.m_srcID = m_node.m_ID;
+        m.m_srcID = m_node.m_id;
         m.m_lat = m_node.m_pos.x * 1e7;
         m.m_lng = m_node.m_pos.y * 1e7;
         m.m_alt = m_node.m_alt * 1e2;
@@ -110,7 +119,7 @@ namespace kai
     void _SwarmSearchCtrl::sendSetState(void)
     {
         SWMSG_CMD_SETSTATE m;
-        m.m_srcID = m_node.m_ID;
+        m.m_srcID = m_node.m_id;
         m.m_dstID = 0;
         m.m_state = m_state.m_iState;
 
@@ -124,7 +133,7 @@ namespace kai
     void _SwarmSearchCtrl::sendGCupdate(void)
     {
         SWMSG_GC_UPDATE m;
-        m.m_srcID = m_node.m_ID;
+        m.m_srcID = m_node.m_id;
         m.m_dstID = 0;
         m.m_iGC = 0;
         m.m_w = 1;
@@ -134,6 +143,21 @@ namespace kai
         IF_(nB <= 0);
 
         m_pXb->send(XB_BRDCAST_ADDR, pB, nB);
+    }
+
+	bool _SwarmSearchCtrl::setState(const string& state)
+    {
+        if(state == "standby")
+            m_pSC->transit(m_state.STANDBY);
+        else if(state == "takeoff")
+            m_pSC->transit(m_state.TAKEOFF);
+        else if(state == "auto")
+            m_pSC->transit(m_state.AUTO);
+        else if(state == "rtl")
+            m_pSC->transit(m_state.RTL);
+
+        m_state.update(m_pSC->getStateIdx());
+        return true;
     }
 
     void _SwarmSearchCtrl::onRecvMsg(const XBframe_receivePacket &d)
@@ -150,14 +174,6 @@ namespace kai
                 m_pSwarm->handleMsgHB(mHb);
         }
         break;
-        case swMsg_cmd_setState:
-        {
-            SWMSG_CMD_SETSTATE mSS;
-            mSS.m_srcNetAddr = d.m_srcAddr;
-            if (mSS.decode(d.m_pD, d.m_nD))
-                handleMsgSetState(mSS);
-        }
-        break;
         case swMsg_gc_update:
         {
             SWMSG_GC_UPDATE mGU;
@@ -167,6 +183,17 @@ namespace kai
         }
         break;
         }
+
+        // The ctrl does not accept state change from nodes?
+        // case swMsg_cmd_setState:
+        // {
+        //     SWMSG_CMD_SETSTATE mSS;
+        //     mSS.m_srcNetAddr = d.m_srcAddr;
+        //     if (mSS.decode(d.m_pD, d.m_nD))
+        //         handleMsgSetState(mSS);
+        // }
+        // break;
+
     }
 
     void _SwarmSearchCtrl::handleMsgSetState(const SWMSG_CMD_SETSTATE &m)
@@ -194,6 +221,8 @@ namespace kai
             m_pSC->transit(m_state.RTL);
             break;
         }
+
+        m_state.update(m_pSC->getStateIdx());
     }
 
     void _SwarmSearchCtrl::console(void *pConsole)

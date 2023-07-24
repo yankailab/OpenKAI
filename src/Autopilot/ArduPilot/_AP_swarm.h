@@ -53,6 +53,10 @@ namespace kai
 		bool m_bAutoArm;
 		float m_altTakeoff;
 		uint64_t m_myID;
+
+		INTERVAL_EVENT m_ieSendHB;
+		INTERVAL_EVENT m_ieSendSetState;
+		INTERVAL_EVENT m_ieSendGCupdate;
 	};
 
 }

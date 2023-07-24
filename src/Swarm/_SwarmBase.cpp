@@ -61,6 +61,11 @@ namespace kai
 		pN->m_tLastUpdate = getApproxTbootUs();
 	}
 
+    vector<SWARM_NODE>* _SwarmBase::getSwarmNode(void)
+    {
+        return &m_vNodes;
+    }
+
 	int _SwarmBase::getNodeIdx(const uint64_t &ID)
 	{
 		int n = m_vNodes.size();

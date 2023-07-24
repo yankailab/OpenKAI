@@ -302,6 +302,7 @@
 
 #ifdef WITH_SWARM
 #include "../Swarm/_SwarmBase.h"
+#include "../Swarm/_SwarmSearch.h"
 #endif
 
 #ifdef WITH_UI

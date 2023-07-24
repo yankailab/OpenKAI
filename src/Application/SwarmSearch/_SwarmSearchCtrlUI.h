@@ -21,13 +21,12 @@ namespace kai
 
 	protected:
 		virtual void send(void);
-		virtual bool sendNodeUpdate(void);
-
-		virtual bool sendHeartbeat(void);
+		virtual void sendHeartbeat(void);
+		virtual void sendNodeUpdate(void);
+		virtual void sendNodeClearAll(void);
 
 		// msg handlers
 		void handleMsg(string &str);
-		void heartbeat(picojson::object &o);
 		void setState(picojson::object &o);
 
 	private:
@@ -48,6 +47,11 @@ namespace kai
 	public:
 		_Thread *m_Tr;
 		_SwarmSearchCtrl* m_pCtrl;
+		_SwarmSearch *m_pSwarm;
+		
+		INTERVAL_EVENT m_ieSendNodeUpdate;
+		INTERVAL_EVENT m_ieSendNodeClearAll;
+
 	};
 
 }

@@ -51,7 +51,7 @@ namespace kai
     bool _SwarmSearch::start(void)
     {
         NULL_F(m_pT);
-        IF_F(!m_pT->start(getUpdate, this));
+        return m_pT->start(getUpdate, this);
     }
 
 	int _SwarmSearch::check(void)
@@ -88,6 +88,8 @@ namespace kai
         IF_F(check() < 0);
 
         m_nGcell = m_pGG->getNcell();
+		IF_F(m_nGcell <= 0);
+
         DEL(m_pGcell);
         m_pGcell = new GCELL_SEARCH[m_nGcell];
         NULL_F(m_pGcell);
