@@ -59,7 +59,7 @@
 {
 	"name":"tcpG",
 	"class":"_TCPclient",
-	"bON":1,
+	"bON":0,
 	"bLog":1,
     {
 		"name":"thread",
@@ -77,7 +77,7 @@
 {
 	"name":"skydroidGimbal",
 	"class":"_SkydroidGimbal",
-	"bON":1,
+	"bON":0,
 	"bLog":0,
     {
 		"name":"thread",
@@ -104,7 +104,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -121,7 +121,7 @@
 {
 	"name":"camCrop",
 	"class":"_Crop",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -135,7 +135,7 @@
 {
 	"name":"univTag",
 	"class":"_Universe",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -145,7 +145,7 @@
 {
 	"name":"arUco",
 	"class":"_ArUco",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -161,7 +161,7 @@
 {
 	"name":"univTarget",
 	"class":"_Universe",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -171,7 +171,7 @@
 {
 	"name":"tfMN",
 	"class":"_TFmobileNet",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -280,22 +280,22 @@
 		{
 			"name":"heartbeat",
 			"id":0,
-			"tInt":0.4,
+			"tInt":0.5,
 		}
 		{
 			"name":"attitude",
 			"id":30,
-			"tInt":0.3,
+			"tInt":0.5,
 		}
 		{
 			"name":"localPosition",
 			"id":32,
-			"tInt":0.3,
+			"tInt":0.5,
 		}
 		{
 			"name":"globalPosition",
 			"id":33,
-			"tInt":0.3,
+			"tInt":0.5,
 		}
 		{
 			"name":"homePosition",
@@ -305,15 +305,47 @@
 		{
 			"name":"batteryStatus",
 			"id":147,
-			"tInt":10,
+			"tInt":5,
 		}
 	}
 }
 
 {
+	"name":"serialXB",
+	"class":"_SerialPort",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"port":"/dev/ttyUSB1",
+	"baud":57600,
+}
+
+{
+	"name":"xbee",
+	"class":"_Xbee",
+	"bON":0,
+	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"_IOBase":"serialXB",
+}
+
+{
 	"name":"apSwarm",
 	"class":"_AP_swarm",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -321,22 +353,33 @@
 	"bLog":0,
 	"_AP_base":"apBase",
 	"_StateControl":"state",
+	"_SwarmSearch":"swarmSearch",
+	"_Xbee":"xbee",
+	"myID":100,
 	"bAutoArm":1,
 	"altTakeoff":10.0,
+	"ieSendHB":1000000,
+	"ieSendSetState":1000000,
+	"ieSendGCupdate":1000000,
 }
 
-/* Swarm optimizer*/
+{
+	"name":"gGrid",
+	"class":"GeoGrid",
+	"bON":0,
+	"bLog":0,
+}
 
 {
 	"name":"swarmSearch",
 	"class":"_SwarmSearch",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
 	}
 	"bLog":0,
-	"_StateControl":"state",
-	"bAutoArm":1,
-	"altTakeoff":10.0,
+	"/tExpire":100000000,
+	"/ieOptRoute":100000000,
+	"GeoGrid":"gGrid",
 }
