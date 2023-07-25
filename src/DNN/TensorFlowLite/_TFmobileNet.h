@@ -45,6 +45,8 @@ namespace kai
 		std::unique_ptr<tflite::Interpreter> m_interpreter;
 		std::unique_ptr<tflite::FlatBufferModel> m_model;
 
+		int m_nThreads;
+
 	};
 
 }

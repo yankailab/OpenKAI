@@ -96,7 +96,7 @@ namespace kai
 			return &m_vNodes[i];
 
 		m_vNodes.push_back(n);
-		return &m_vNodes[m_vNodes.size()];
+		return &m_vNodes[m_vNodes.size()-1];
 	}
 
 	bool _SwarmBase::updateNode(const SWARM_NODE &n)

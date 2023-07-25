@@ -13,6 +13,7 @@ namespace kai
 		m_pDB = NULL;
 		m_pU = NULL;
 
+		m_confidence = 0.5;
 		m_fModel = "";
 		m_fWeight = "";
 		m_fMean = "";
@@ -34,6 +35,7 @@ namespace kai
 		pK->v("fWeight", &m_fWeight);
 		pK->v("fMean", &m_fMean);
 		pK->v("fClass", &m_fClass);
+		pK->v("confidence", &m_confidence);
 
 		// statistics
 		if (!m_fClass.empty())

@@ -37,6 +37,7 @@ namespace kai
 		_Universe *m_pU;
 
 		// model
+		float m_confidence;
 		string m_fModel;
 		string m_fWeight;
 		string m_fMean;

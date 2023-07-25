@@ -58,6 +58,13 @@ struct vInt2
 
 		return v;
 	}
+
+	bool bInside(int v)
+    {
+        IF_F(v < x);
+        IF_F(v >= y);
+        return true;
+    }
 };
 
 }

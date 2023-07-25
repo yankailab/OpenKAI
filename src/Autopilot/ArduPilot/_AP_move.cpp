@@ -114,7 +114,7 @@ namespace kai
 		m_pAP->m_pMav->setPositionTargetLocalNED(spt);
 	}
 
-	void _AP_move::setPglobal(const vFloat4 &vP, bool bYaw, bool bYawRate, uint8_t frame)
+	void _AP_move::setPglobal(const vDouble4 &vP, bool bYaw, bool bYawRate, uint8_t frame)
 	{
 		IF_(check() < 0);
 

@@ -65,6 +65,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
+	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! videoconvert ! appsink max-buffers=1 sync=false drop=true", /* C10 mini, using YUV, Y chan only */
 	"pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! appsink max-buffers=1 sync=false drop=true", /* C10 mini, using YUV, Y chan only */
 }
 
@@ -102,6 +103,8 @@
 	"bLog":1,
 	"_VisionBase":"cam",
 	"_Universe":"univ",
+	"nThreads":4,
+	"confidence":0.5,
 	"/fModel":"/home/kai/dev/models/TFliteMobileNet/detect.tflite",
 	"fModel":"/home/lab/dev/models/TFliteMobileNet/detect.tflite",
 	"/fClass":"/home/kai/dev/models/TFliteMobileNet/COCO_labels.txt",

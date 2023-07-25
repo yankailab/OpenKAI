@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Application_Autopilot_ArduPilot__AP_swarm_H_
 #define OpenKAI_src_Application_Autopilot_ArduPilot__AP_swarm_H_
 
-#include "_AP_base.h"
+#include "_AP_follow.h"
 #include "../../Protocol/_Xbee.h"
 #include "../../Swarm/_SwarmSearch.h"
 
@@ -32,11 +32,15 @@ namespace kai
 
 	protected:
 		// swarm nodes
-		void send(void);
-		void sendHB(void);
-		void sendGCupdate(void);
+		virtual void send(void);
+		virtual void sendHB(void);
+		virtual void sendGCupdate(void);
 
-		virtual void updateSwarm(void);
+		// search actions
+		virtual void findTarget(void);
+		virtual SWARM_NODE* findNodeByIDrange(vInt2 vID);
+
+		// update routine
 		virtual void updateState(void);
 		static void *getUpdate(void *This)
 		{
@@ -46,13 +50,18 @@ namespace kai
 
 	protected:
 		_AP_base *m_pAP;
+		_AP_follow *m_pAfollow;
 		SWARM_SEARCH_STATE_NODE m_state;
         _Xbee* m_pXb;
         _SwarmSearch* m_pSwarm;
 
 		bool m_bAutoArm;
 		float m_altTakeoff;
+		float m_altAuto;
+		float m_altLand;
 		uint64_t m_myID;
+
+		vInt2 m_vTargetID;
 
 		INTERVAL_EVENT m_ieSendHB;
 		INTERVAL_EVENT m_ieSendSetState;

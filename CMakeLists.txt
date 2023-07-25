@@ -631,6 +631,7 @@ if(USE_TF-LITE)
     ${OpenKAI_lib}
     tensorflow-lite
     flatbuffers
+    dl
   )
 endif()
 

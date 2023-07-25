@@ -171,17 +171,19 @@
 {
 	"name":"tfMN",
 	"class":"_TFmobileNet",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
 	"bDraw":1,
 	"bLog":1,
-	"_VisionBase":"cam",
+	"_VisionBase":"camCrop",
 	"_Universe":"univ",
-	"fModel":"/home/kai/dev/models/TFliteMobileNet/detect.tflite",
-	"fClass":"/home/kai/dev/models/TFliteMobileNet/COCO_labels.txt",
+	"nThreads":4,
+	"confidence":0.5,
+	"fModel":"/home/lab/dev/models/TFliteMobileNet/detect.tflite",
+	"fClass":"/home/lab/dev/models/TFliteMobileNet/COCO_labels.txt",
 	"iClassDraw":-1,
 }
 
@@ -383,3 +385,38 @@
 	"/ieOptRoute":100000000,
 	"GeoGrid":"gGrid",
 }
+
+{
+	"name":"apVideo",
+	"class":"_AP_video",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":2,
+	}
+	"bLog":0,
+	"_StateControl":"state",
+	"vActiveState":["AUTO",],
+	"_AP_base":"apBase",
+	"_Curl":"cURL",
+	"dir":"/home/lab/Videos/",
+	"/process":"gst-launch-1.0 rtspsrc location=rtsp://192.168.144.108:554/stream=0 latency=0 ! queue ! rtph264depay ! h264parse ! tee name=t t. ! queue ! matroskamux ! filesink location=[fName] t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+	"process":"gst-launch-1.0 rtspsrc location=rtsp://192.168.144.108:554/stream=0 latency=0 ! queue ! rtph264depay ! h264parse ! queue ! matroskamux ! filesink location=[fName]",
+	"bMeta":0,
+}
+
+{
+	"name":"cURL",
+	"class":"_Curl",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"bLog":1,
+	"cmd":"curl 2>&1 -T [fName] ftp://193.112.75.123/pub/ -u anonymous: --connect-timeout 60 --no-progress-meter",
+	"dir":"/home/lab/Video/",
+	"vExt":[".mka",".json"],
+}
+
+

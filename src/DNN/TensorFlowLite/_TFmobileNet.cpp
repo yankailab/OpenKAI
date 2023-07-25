@@ -10,6 +10,7 @@ namespace kai
 	_TFmobileNet::_TFmobileNet()
 	{
 		m_vSize.set(300, 300);
+		m_nThreads = 4;
 	}
 
 	_TFmobileNet::~_TFmobileNet()
@@ -21,7 +22,7 @@ namespace kai
 		IF_F(!this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		// pK->v("thr", &m_thr);
+		pK->v("nThreads", &m_nThreads);
 
 		return true;
 	}
@@ -77,13 +78,15 @@ namespace kai
 		IF_(check() < 0);
 
 		m_fBGR.copy(*m_pV->BGR());
-		Mat image;
-		cv::resize(*m_fBGR.m(), image, Size(m_vSize.x, m_vSize.y));
-		memcpy(m_interpreter->typed_input_tensor<uchar>(0), image.data, image.total() * image.elemSize());
+		Mat m;
+		cv::resize(*m_fBGR.m(), m, Size(m_vSize.x, m_vSize.y));
+		if (m.channels() < 3)
+			cv::cvtColor(m, m, COLOR_GRAY2RGB);
+		memcpy(m_interpreter->typed_input_tensor<uchar>(0), m.data, m.total() * m.elemSize());
 
 		m_interpreter->SetAllowFp16PrecisionForFp32(true);
-		m_interpreter->SetNumThreads(4); // quad core
-		m_interpreter->Invoke();		 // run your model
+		m_interpreter->SetNumThreads(m_nThreads);
+		m_interpreter->Invoke();
 
 		const float *detection_locations = m_interpreter->tensor(m_interpreter->outputs()[0])->data.f;
 		const float *detection_classes = m_interpreter->tensor(m_interpreter->outputs()[1])->data.f;
@@ -93,10 +96,9 @@ namespace kai
 		// there are ALWAYS 10 detections no matter how many objects are detectable
 		//        cout << "number of detections: " << num_detections << "\n";
 
-		const float confidence_threshold = 0.5;
 		for (int i = 0; i < num_detections; i++)
 		{
-			IF_CONT(detection_scores[i] < confidence_threshold);
+			IF_CONT(detection_scores[i] < m_confidence);
 			int det_index = (int)detection_classes[i] + 1;
 			float y1 = detection_locations[4 * i];
 			float x1 = detection_locations[4 * i + 1];
@@ -114,10 +116,6 @@ namespace kai
 
 			m_pU->add(o);
 			LOG_I("BBox: " << o.getText() << " Prob: " << f2str(o.getTopClassProb()));
-
-			// Rect rec((int)x1, (int)y1, (int)(x2 - x1), (int)(y2 - y1));
-			// rectangle(src, rec, Scalar(0, 0, 255), 1, 8, 0);
-			// putText(src, format("%s", Labels[det_index].c_str()), Point(x1, y1 - 5), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255), 1, 8, 0);
 		}
 	}
 

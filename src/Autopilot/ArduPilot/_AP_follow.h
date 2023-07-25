@@ -7,6 +7,7 @@
 #include "../../Filter/Average.h"
 #include "../../Filter/Predict.h"
 #include "../../Filter/Hold.h"
+#include "../../Control/PID.h"
 #include "_AP_move.h"
 
 namespace kai
