@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["state", "swarmCtrl", "state2","/ws","/gGrid", "/swarmCtrlUI"],
+	"vBASE":["state", "swarmCtrl", "state2","tcpSim","apBase","/ws","/gGrid", "/swarmCtrlUI"],
 }
 
 {
@@ -163,10 +163,6 @@
 
 
 
-
-
-
-
 /* AP side test */
 
 {
@@ -239,7 +235,7 @@
 {
 	"name":"serialAP",
 	"class":"_SerialPort",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -247,10 +243,29 @@
     {
 		"name":"threadR",
 		"FPS":30,
+		"vTwakeUp":["mavAP.thread"],
 	}
 	"port":"/dev/ttyACM0",
 	"baud":115200,
 	"/baud":57600,
+}
+
+{
+	"name":"tcpSim",
+	"class":"_TCPclient",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+		"vTwakeUp":["mavAP.thread"],
+	}
+	"addr":"127.0.0.1",
+	"port":5762,
 }
 
 {
@@ -262,7 +277,8 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"_IOBase":"serialAP",
+	"/_IOBase":"serialAP",
+	"_IOBase":"tcpSim",
 }
 
 {
@@ -284,22 +300,22 @@
 		{
 			"name":"heartbeat",
 			"id":0,
-			"tInt":0.4,
+			"tInt":0.5,
 		}
 		{
 			"name":"attitude",
 			"id":30,
-			"tInt":0.3,
+			"tInt":0.5,
 		}
 		{
 			"name":"localPosition",
 			"id":32,
-			"tInt":0.3,
+			"tInt":0.5,
 		}
 		{
 			"name":"globalPosition",
 			"id":33,
-			"tInt":0.3,
+			"tInt":0.5,
 		}
 		{
 			"name":"homePosition",
@@ -309,7 +325,7 @@
 		{
 			"name":"batteryStatus",
 			"id":147,
-			"tInt":10,
+			"tInt":5,
 		}
 	}
 }

@@ -94,9 +94,9 @@ namespace kai
 			m_pT->autoFPSfrom();
 			this->_StateBase::update();
 
-//			updateState();
+			updateState();
 //			updateSwarm();
-//			send();
+			send();
 
 			m_pT->autoFPSto();
 		}
@@ -136,6 +136,7 @@ namespace kai
 			m_pAP->m_pMav->clNavTakeoff(m_altTakeoff);
 		}
 
+		// Auto
 		if (m_state.bAUTO())
 		{
 			IF_(apMode != AP_COPTER_GUIDED);
@@ -156,10 +157,6 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		int apMode = m_pAP->getApMode();
-		bool bApArmed = m_pAP->bApArmed();
-		float alt = m_pAP->getGlobalPos().w; // relative altitude
-
 	}
 
 	void _AP_swarm::send(void)
@@ -170,8 +167,8 @@ namespace kai
 
         if (m_ieSendHB.update(t))
             sendHB();
-        if (m_ieSendGCupdate.update(t))
-            sendGCupdate();
+        // if (m_ieSendGCupdate.update(t))
+        //     sendGCupdate();
 	}
 
 	void _AP_swarm::sendHB(void)
@@ -183,10 +180,10 @@ namespace kai
         m.m_srcID = m_myID;
         m.m_lat = vP.x * 1e7;
         m.m_lng = vP.y * 1e7;
-        m.m_alt = vP.z * 1e2;
-		m.m_hdg = m_pAP->getApHdg() * 1e2;
+        m.m_alt = vP.w * 1e2;
+		m.m_hdg = m_pAP->getApHdg() * 1e1;
 		m.m_spd = m_pAP->getApSpeed().len() * 1e2;
-		m.m_batt = m_pAP->getBattery();
+		m.m_batt = m_pAP->getBattery() * 1e2;
 
         uint8_t pB[XB_N_PAYLOAD];
         int nB = m.encode(pB, XB_N_PAYLOAD);

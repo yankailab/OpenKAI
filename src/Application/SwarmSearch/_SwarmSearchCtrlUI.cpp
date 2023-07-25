@@ -113,8 +113,8 @@ namespace kai
         if (m_ieSendNodeUpdate.update(t))
             sendNodeUpdate();
 
-        if (m_ieSendNodeClearAll.update(t))
-            sendNodeClearAll();
+        // if (m_ieSendNodeClearAll.update(t))
+        //     sendNodeClearAll();
     }
 
     void _SwarmSearchCtrlUI::sendHeartbeat(void)
@@ -141,8 +141,10 @@ namespace kai
             JO(o, "id", (double)n.m_id);
             JO(o, "lat", lf2str(n.m_vPos.x,10));
             JO(o, "lng", lf2str(n.m_vPos.y,10));
-            JO(o, "alt", (double)n.m_alt);
-            JO(o, "batt", (double)n.m_batt);
+            JO(o, "alt", f2str((double)n.m_alt,2));
+            JO(o, "hdg", f2str((double)n.m_hdg,2));
+            JO(o, "spd", f2str((double)n.m_spd,2));
+            JO(o, "batt", f2str((double)n.m_batt,2));
 
             sendMsg(o);
         }

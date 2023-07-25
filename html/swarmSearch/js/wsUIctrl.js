@@ -74,8 +74,8 @@ function cmdHandler(jCmd)
     {
         for(i=0; i<gvNodeMarkers.length; i++)
         {
-            map.removeLayer(gvNodeMarkers[nIdx].marker);
-            gvNodeMarkers[nIdx].marker = null;
+            map.removeLayer(gvNodeMarkers[i].mk);
+            gvNodeMarkers[i].mk = null;
         }
 
         gvNodeMarkers.splice(0);
@@ -95,14 +95,19 @@ gvNodeMarkers = [];
 
 function ndUpdate(jCmd)
 {
-    nIdx = getNodeIdx(jCmd.id);
+    var i = getNodeIdx(jCmd.id);
+    if(i < 0)
+        i = ndAdd(jCmd);
 
-    if(nIdx < 0)
-        nIdx = ndAdd(jCmd);
-
-    gvNodeMarkers[nIdx].mk.setLatLng([JSON.parse(jCmd.lat), JSON.parse(jCmd.lng)]).update();
-    gvNodeMarkers[nIdx].mk.getPopup().setContent("ID:"+JSON.stringify(jCmd.id) + "</br>" + "LatLng: " + JSON.stringify(jCmd.lat) + ", " + JSON.stringify(jCmd.lng) );
-    gvNodeMarkers[nIdx].mk.getPopup().update();
+    gvNodeMarkers[i].mk.setLatLng([JSON.parse(jCmd.lat), JSON.parse(jCmd.lng)]).update();
+    gvNodeMarkers[i].mk.getPopup().setContent("ID:"+JSON.stringify(jCmd.id)
+                                            + "</br>" + "LatLng: " + jCmd.lat + ", " + jCmd.lng
+                                            + "</br>" + "Alt: " + jCmd.alt
+                                            + "</br>" + "Hdg: " + jCmd.hdg
+                                            + "</br>" + "Spd: " + jCmd.spd
+                                            + "</br>" + "Batt: " + jCmd.batt + "%"
+                                             );
+    gvNodeMarkers[i].mk.getPopup().update();
 }
 
 function ndAdd(jCmd)
@@ -119,13 +124,13 @@ function ndAdd(jCmd)
 
 function ndDelete(jCmd)
 {
-    nIdx = getNodeIdx(jCmd.id);
-    if(nIdx < 0)
+    var i = getNodeIdx(jCmd.id);
+    if(i < 0)
         return;
 
-    map.removeLayer(gvNodeMarkers[nIdx].marker);
-    gvNodeMarkers[nIdx].marker = null;
-    gvNodeMarkers.splice(nIdx, 1);
+    map.removeLayer(gvNodeMarkers[i].mk);
+    gvNodeMarkers[i].mk = null;
+    gvNodeMarkers.splice(i, 1);
 }
 
 function getNodeIdx(id)

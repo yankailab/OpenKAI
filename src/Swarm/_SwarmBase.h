@@ -35,11 +35,11 @@ namespace kai
 
 		const static uint8_t m_mType = swMsg_hB; // 0
 		uint16_t m_srcID;	// 1
-		uint64_t m_lat; // 3		1e7
-		uint64_t m_lng; // 11		1e7
-		uint16_t m_alt; // 19		1e2
-		uint16_t m_hdg; // 21		1e2
-		uint16_t m_spd; // 23		1e2
+		int64_t m_lat; // 3			1e7
+		int64_t m_lng; // 11		1e7
+		int16_t m_alt; // 19		1e2
+		int16_t m_hdg; // 21		1e1
+		int16_t m_spd; // 23		1e2
 		uint8_t m_batt; // 25		1~100
 		uint8_t m_iMsg; // 26
 		uint8_t m_checksum; //27
@@ -51,11 +51,11 @@ namespace kai
 			IF_F(pB[0] != m_mType);
 
 			m_srcID = *((uint16_t*)&pB[1]);
-			m_lat = *((uint64_t*)&pB[3]);
-			m_lng = *((uint64_t*)&pB[11]);
-			m_alt = *((uint16_t*)&pB[19]);
-			m_hdg = *((uint16_t*)&pB[21]);
-			m_spd = *((uint16_t*)&pB[23]);
+			m_lat = *((int64_t*)&pB[3]);
+			m_lng = *((int64_t*)&pB[11]);
+			m_alt = *((int16_t*)&pB[19]);
+			m_hdg = *((int16_t*)&pB[21]);
+			m_spd = *((int16_t*)&pB[23]);
 			m_batt = *((uint8_t*)&pB[25]);
 			m_iMsg = *((uint8_t*)&pB[26]);
 			m_checksum = *((uint8_t*)&pB[27]);
@@ -70,11 +70,11 @@ namespace kai
 
 			*((uint8_t*)&pB[0]) = m_mType;
 			*((uint16_t*)&pB[1]) = m_srcID;
-			*((uint64_t*)&pB[3]) = m_lat;
-			*((uint64_t*)&pB[11]) = m_lng;
-			*((uint16_t*)&pB[19]) = m_alt;
-			*((uint16_t*)&pB[21]) = m_hdg;
-			*((uint16_t*)&pB[23]) = m_spd;
+			*((int64_t*)&pB[3]) = m_lat;
+			*((int64_t*)&pB[11]) = m_lng;
+			*((int16_t*)&pB[19]) = m_alt;
+			*((int16_t*)&pB[21]) = m_hdg;
+			*((int16_t*)&pB[23]) = m_spd;
 			*((uint8_t*)&pB[25]) = m_batt;
 			*((uint8_t*)&pB[26]) = m_iMsg;
 			*((uint8_t*)&pB[27]) = m_checksum;
@@ -178,6 +178,7 @@ namespace kai
 		uint16_t m_id = 0;
 		vDouble2 m_vPos = {0,0};
 		float	m_alt = 0;
+		float	m_hdg = 0;
 		float	m_spd = 0;
 		float	m_batt = 0;
 		uint8_t	m_iMsg = 0;

@@ -93,8 +93,8 @@ namespace kai
 
         uint64_t t = m_pT->getTfrom();
 
-        if (m_ieSendHB.update(t))
-            sendHB();
+        // if (m_ieSendHB.update(t))
+        //     sendHB();
         if (m_ieSendSetState.update(t))
             sendSetState();
         // if (m_ieSendGCupdate.update(t))

@@ -15,12 +15,12 @@ namespace kai
 		m_freqSendHeartbeat = 1;
 
 		m_bHomeSet = false;
-		m_vHomePos.set(-1.0);
-		m_vGlobalPos.set(-1.0);
+		m_vHomePos.set(0.0);
+		m_vGlobalPos.set(0.0);
 		m_vLocalPos.clear();
 		m_vSpeed.clear();
 		m_vAtti.clear();
-		m_apHdg = -1.0;
+		m_apHdg = 0.0;
 		m_battery = 0.0;
 	}
 

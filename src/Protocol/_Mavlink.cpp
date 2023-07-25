@@ -528,7 +528,14 @@ namespace kai
 		D.target_system = m_devSystemID;
 		D.target_component = m_devComponentID;
 		D.command = MAV_CMD_COMPONENT_ARM_DISARM;
+		D.confirmation = 0;
 		D.param1 = (bArm) ? 1 : 0;
+		D.param2 = 0;
+		D.param3 = 0;
+		D.param4 = 0;
+		D.param5 = 0;
+		D.param6 = 0;
+		D.param7 = 0;
 
 		mavlink_message_t msg;
 		mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
@@ -543,7 +550,14 @@ namespace kai
 		D.target_system = m_mySystemID;
 		D.target_component = m_devComponentID;
 		D.command = MAV_CMD_DO_SET_MODE;
+		D.confirmation = 0;
 		D.param1 = mode;
+		D.param2 = 0;
+		D.param3 = 0;
+		D.param4 = 0;
+		D.param5 = 0;
+		D.param6 = 0;
+		D.param7 = 0;
 
 		mavlink_message_t msg;
 		mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
@@ -562,6 +576,10 @@ namespace kai
 		D.param1 = yaw;
 		D.param2 = speed;
 		D.param3 = yawMode;
+		D.param4 = 0;
+		D.param5 = 0;
+		D.param6 = 0;
+		D.param7 = 0;
 
 		mavlink_message_t msg;
 		mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
@@ -576,8 +594,14 @@ namespace kai
 		D.target_system = m_devSystemID;
 		D.target_component = m_devComponentID;
 		D.command = MAV_CMD_DO_SET_SERVO;
+		D.confirmation = 0;
 		D.param1 = iServo;
 		D.param2 = (float)PWM;
+		D.param3 = 0;
+		D.param4 = 0;
+		D.param5 = 0;
+		D.param6 = 0;
+		D.param7 = 0;
 
 		mavlink_message_t msg;
 		mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
@@ -593,8 +617,14 @@ namespace kai
 		D.target_system = m_devSystemID;
 		D.target_component = m_devComponentID;
 		D.command = MAV_CMD_DO_SET_RELAY;
+		D.confirmation = 0;
 		D.param1 = iRelay;
 		D.param2 = (bRelay) ? 1.0 : 0.0;
+		D.param3 = 0;
+		D.param4 = 0;
+		D.param5 = 0;
+		D.param6 = 0;
+		D.param7 = 0;
 
 		mavlink_message_t msg;
 		mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
@@ -610,6 +640,14 @@ namespace kai
 		D.target_system = m_devSystemID;
 		D.target_component = m_devComponentID;
 		D.command = MAV_CMD_GET_HOME_POSITION;
+		D.confirmation = 0;
+		D.param1 = 0;
+		D.param2 = 0;
+		D.param3 = 0;
+		D.param4 = 0;
+		D.param5 = 0;
+		D.param6 = 0;
+		D.param7 = 0;
 
 		mavlink_message_t msg;
 		mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
@@ -624,6 +662,13 @@ namespace kai
 		D.target_system = m_devSystemID;
 		D.target_component = m_devComponentID;
 		D.command = MAV_CMD_NAV_TAKEOFF;
+		D.confirmation = 0;
+		D.param1 = 0;
+		D.param2 = 0;
+		D.param3 = 0;
+		D.param4 = 0;
+		D.param5 = 0;
+		D.param6 = 0;
 		D.param7 = alt;
 
 		mavlink_message_t msg;
@@ -639,8 +684,13 @@ namespace kai
 		D.target_system = m_devSystemID;
 		D.target_component = m_devComponentID;
 		D.command = MAV_CMD_SET_MESSAGE_INTERVAL;
+		D.confirmation = 0;
 		D.param1 = id;
 		D.param2 = interval;
+		D.param3 = 0;
+		D.param4 = 0;
+		D.param5 = 0;
+		D.param6 = 0;
 		D.param7 = responseTarget;
 
 		mavlink_message_t msg;

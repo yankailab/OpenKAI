@@ -47,14 +47,15 @@ namespace kai
 		if(!pN)
 		{
 			SWARM_NODE n;
+			n.m_id = m.m_srcID;
 			pN = addNode(n);
 		}
 
 		pN->m_srcNetAddr = m.m_srcNetAddr;
-		pN->m_id = m.m_srcID;
 		pN->m_vPos.x = ((double)m.m_lat) * 1e-7;
 		pN->m_vPos.y = ((double)m.m_lng) * 1e-7;
 		pN->m_alt = ((float)m.m_alt) * 1e-2;
+		pN->m_hdg = ((float)m.m_hdg) * 1e-1;
 		pN->m_spd = ((float)m.m_spd) * 1e-2;
 		pN->m_batt = ((float)m.m_batt);
 		pN->m_iMsg = m.m_iMsg;
