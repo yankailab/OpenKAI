@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["state", "swarmCtrl", "state2","tcpSim","apBase","/ws","/gGrid", "/swarmCtrlUI"],
+	"vBASE":["state", "swarmCtrl", "state1","apBase1", "state2","apBase2"],
 }
 
 {
@@ -163,7 +163,217 @@
 
 
 
-/* AP side test */
+/* AP1 */
+
+{
+	"name":"state1",
+	"class":"_StateControl",
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"bON":1,
+	"start":"STANDBY",
+
+	{
+		"name":"state",
+		{
+			"bON":1,
+			"name":"STANDBY",
+			"class":"State",
+		}
+		{
+			"bON":1,
+			"name":"TAKEOFF",
+			"class":"State",
+		}
+		{
+			"bON":1,
+			"name":"AUTO",
+			"class":"State",
+		}
+		{
+			"bON":1,
+			"name":"RTL",
+			"class":"State",
+		}
+	}
+}
+
+{
+	"name":"serial1",
+	"class":"_SerialPort",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"port":"/dev/ttyUSB1",
+	"baud":57600,
+}
+
+{
+	"name":"xbee1",
+	"class":"_Xbee",
+	"bON":1,
+	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"_IOBase":"serial1",
+}
+
+{
+	"name":"serialAP1",
+	"class":"_SerialPort",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+		"vTwakeUp":["mavAP1.thread"],
+	}
+	"port":"/dev/ttyACM0",
+	"baud":115200,
+	"/baud":57600,
+}
+
+{
+	"name":"udpSITL1",
+	"class":"_UDP",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+		"vTwakeUp":["mavAP1.thread"],
+	}
+	"/addr":"127.0.0.1",
+	"port":14560,
+}
+
+{
+	"name":"mavAP1",
+	"class":"_Mavlink",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"/_IOBase":"serialAP",
+	"_IOBase":"udpSITL1",
+}
+
+{
+	"name":"apBase1",
+	"class":"_AP_base",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"_StateControl":"state1",
+	"_Mavlink":"mavAP1",
+	"freqSendHeartbeat":1,
+	"apType":0,
+	
+	{
+		"name":"mavMsgInt",
+		
+		{
+			"name":"heartbeat",
+			"id":0,
+			"tInt":0.5,
+		}
+		{
+			"name":"attitude",
+			"id":30,
+			"tInt":0.5,
+		}
+		{
+			"name":"localPosition",
+			"id":32,
+			"tInt":0.5,
+		}
+		{
+			"name":"globalPosition",
+			"id":33,
+			"tInt":0.5,
+		}
+		{
+			"name":"homePosition",
+			"id":242,
+			"tInt":10,
+		}
+		{
+			"name":"batteryStatus",
+			"id":147,
+			"tInt":5,
+		}
+	}
+}
+
+{
+	"name":"apSwarm1",
+	"class":"_AP_swarm",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"_AP_base":"apBase1",
+	"_StateControl":"state1",
+	"_SwarmSearch":"swarmSearch1",
+	"_Xbee":"xbee1",
+	"myID":101,
+	"bAutoArm":1,
+	"altTakeoff":10.0,
+	"ieSendHB":1000000,
+	"ieSendSetState":1000000,
+	"ieSendGCupdate":1000000,
+}
+
+{
+	"name":"gGrid1",
+	"class":"GeoGrid",
+	"bON":1,
+	"bLog":0,
+}
+
+{
+	"name":"swarmSearch1",
+	"class":"_SwarmSearch",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"/tExpire":100000000,
+	"/ieOptRoute":100000000,
+	"GeoGrid":"gGrid1",
+}
+
+
+/* AP2 */
 
 {
 	"name":"state2",
@@ -212,7 +422,7 @@
 		"name":"threadR",
 		"FPS":30,
 	}
-	"port":"/dev/ttyUSB1",
+	"port":"/dev/ttyUSB2",
 	"baud":57600,
 }
 
@@ -233,26 +443,8 @@
 }
 
 {
-	"name":"serialAP",
-	"class":"_SerialPort",
-	"bON":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-    {
-		"name":"threadR",
-		"FPS":30,
-		"vTwakeUp":["mavAP.thread"],
-	}
-	"port":"/dev/ttyACM0",
-	"baud":115200,
-	"/baud":57600,
-}
-
-{
-	"name":"tcpSim",
-	"class":"_TCPclient",
+	"name":"udpSITL2",
+	"class":"_UDP",
 	"bON":1,
 	"bLog":1,
     {
@@ -262,14 +454,14 @@
     {
 		"name":"threadR",
 		"FPS":30,
-		"vTwakeUp":["mavAP.thread"],
+		"vTwakeUp":["mavAP2.thread"],
 	}
-	"addr":"127.0.0.1",
-	"port":5762,
+	"/addr":"127.0.0.1",
+	"port":14570,
 }
 
 {
-	"name":"mavAP",
+	"name":"mavAP2",
 	"class":"_Mavlink",
 	"bON":1,
     {
@@ -278,11 +470,11 @@
 	}
 	"bLog":0,
 	"/_IOBase":"serialAP",
-	"_IOBase":"tcpSim",
+	"_IOBase":"udpSITL2",
 }
 
 {
-	"name":"apBase",
+	"name":"apBase2",
 	"class":"_AP_base",
 	"bON":1,
     {
@@ -290,7 +482,7 @@
 		"FPS":10,
 	}
 	"_StateControl":"state2",
-	"_Mavlink":"mavAP",
+	"_Mavlink":"mavAP2",
 	"freqSendHeartbeat":1,
 	"apType":0,
 	
@@ -331,7 +523,7 @@
 }
 
 {
-	"name":"apSwarm",
+	"name":"apSwarm2",
 	"class":"_AP_swarm",
 	"bON":1,
     {
@@ -339,13 +531,13 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"_AP_base":"apBase",
+	"_AP_base":"apBase2",
 	"_StateControl":"state2",
 	"_SwarmSearch":"swarmSearch2",
 	"_Xbee":"xbee2",
-	"myID":100,
+	"myID":102,
 	"bAutoArm":1,
-	"altTakeoff":10.0,
+	"altTakeoff":20.0,
 	"ieSendHB":1000000,
 	"ieSendSetState":1000000,
 	"ieSendGCupdate":1000000,
@@ -371,3 +563,4 @@
 	"/ieOptRoute":100000000,
 	"GeoGrid":"gGrid2",
 }
+

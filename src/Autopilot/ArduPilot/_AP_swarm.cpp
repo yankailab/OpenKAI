@@ -115,20 +115,23 @@ namespace kai
 		if (m_state.bSTANDBY())
 		{
 			IF_(apMode != AP_COPTER_GUIDED);
+
+			return;
 		}
 
 		// Takeoff
 		if (m_state.bTAKEOFF())
 		{
-			m_pAP->setApMode(AP_COPTER_GUIDED);
-			//			IF_(apMode != AP_COPTER_GUIDED);
+			if(apMode != AP_COPTER_GUIDED)
+			{
+				m_pAP->setApMode(AP_COPTER_GUIDED);
+				return;
+			}
 
 			if (!bApArmed)
 			{
 				if (m_bAutoArm)
-				{
 					m_pAP->setApArm(true);
-				}
 
 				return;
 			}

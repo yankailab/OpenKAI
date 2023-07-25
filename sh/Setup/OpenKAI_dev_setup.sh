@@ -476,6 +476,7 @@ sudo apt-get install cmake curl
 git clone --branch v2.6.0 --depth 1 https://github.com/tensorflow/tensorflow.git
 cd tensorflow
 ./tensorflow/lite/tools/make/download_dependencies.sh
+# Raspberry pi Bullseye 64bit
 #./tensorflow/lite/tools/make/build_aarch64_lib.sh
 ./tensorflow/lite/tools/make/build_lib.sh
 # update flatbuffers

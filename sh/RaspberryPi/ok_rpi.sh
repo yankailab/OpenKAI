@@ -200,3 +200,6 @@ sudo systemctl enable ok.service
 # clone SD image
 sudo fdisk -l
 sudo dd if=/dev/sdb of=~/RPi.img bs=128M
+
+wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
+sudo bash pishrink.sh CM4.img
