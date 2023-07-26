@@ -37,8 +37,7 @@ namespace kai
 		virtual void sendGCupdate(void);
 
 		// search actions
-		virtual void findTarget(void);
-		virtual SWARM_NODE* findNodeByIDrange(vInt2 vID);
+		virtual void followTarget(void);
 
 		// update routine
 		virtual void updateState(void);

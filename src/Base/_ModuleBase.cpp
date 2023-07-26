@@ -65,6 +65,18 @@ namespace kai
     {
     }
 
+    void _ModuleBase::goSleep(void)
+    {
+        IF_(check() < 0);
+        m_pT->goSleep();
+    }
+
+    void _ModuleBase::wakeUp(void)
+    {
+        IF_(check() < 0);
+        m_pT->wakeUp();
+    }
+
     void _ModuleBase::console(void *pConsole)
     {
         this->BASE::console(pConsole);

@@ -32,6 +32,8 @@ namespace kai
 
 		pK->v("bAutoArm", &m_bAutoArm);
 		pK->v("altTakeoff", &m_altTakeoff);
+		pK->v("altAuto", &m_altAuto);
+		pK->v("altLand", &m_altLand);
 		pK->v("myID", &m_myID);
 		pK->v("vTargetID", &m_vTargetID);
 
@@ -125,7 +127,7 @@ namespace kai
 		// Standby
 		if (m_state.bSTANDBY())
 		{
-			//stop move etc.
+			// stop move etc.
 			return;
 		}
 
@@ -161,7 +163,8 @@ namespace kai
 		if (m_state.bAUTO())
 		{
 			IF_(apMode != AP_COPTER_GUIDED);
-			findTarget();
+			IF_(!bApArmed);
+			followTarget();
 			return;
 		}
 
@@ -177,46 +180,41 @@ namespace kai
 			}
 
 			// check if touched down
-			IF_(bApArmed);
+			IF_(!bApArmed);
+
+			// temporarily set to RTL
+			if (apMode == AP_COPTER_GUIDED)
+				m_pAP->setApMode(AP_COPTER_RTL);
 
 			// TODO:enable vision navigated landing
-			
-
 		}
 	}
 
-	void _AP_swarm::findTarget(void)
+	void _AP_swarm::followTarget(void)
 	{
 		IF_(check() < 0);
 
-		SWARM_NODE *pN = findNodeByIDrange(m_vTargetID);
-		if (pN)
+		SWARM_NODE *pN = m_pSwarm->getNodeByIDrange(m_vTargetID);
+		if (!pN)
 		{
-			vDouble4 vP;
-			vP.x = pN->m_vPos.x;
-			vP.y = pN->m_vPos.y;
-			vP.z = m_altAuto;
-			vP.w = 0;
-			m_pAfollow->setPglobal(vP, false, false);
-		}
-	}
-
-	SWARM_NODE *_AP_swarm::findNodeByIDrange(vInt2 vID)
-	{
-		IF_N(check() < 0);
-
-		vector<SWARM_NODE> *vpS = m_pSwarm->getSwarmNode();
-		NULL_N(vpS);
-
-		for (int i = 0; i < vpS->size(); i++)
-		{
-			SWARM_NODE *pN = &((*vpS)[i]);
-			IF_CONT(!vID.bInside((int)pN->m_id));
-
-			return pN;
+			m_pAfollow->wakeUp();
+			return;
 		}
 
-		return NULL;
+		if (!pN->m_bPosValid)
+		{
+			m_pAfollow->wakeUp();
+			return;
+		}
+
+		m_pAfollow->goSleep();
+
+		vDouble4 vP;
+		vP.x = pN->m_vPos.x;
+		vP.y = pN->m_vPos.y;
+		vP.z = m_altAuto;
+		vP.w = 0;
+		m_pAfollow->setPglobal(vP, false, false);
 	}
 
 	void _AP_swarm::send(void)

@@ -179,11 +179,13 @@ namespace kai
 	{
 		uint64_t m_srcNetAddr = 0;
 		uint16_t m_id = 0;
+		bool m_bPosValid = false;
 		vDouble2 m_vPos = {0,0};
 		float	m_alt = 0;
 		float	m_hdg = 0;
 		float	m_spd = 0;
 		float	m_batt = 0;
+		uint8_t	m_mode = 0;
 		uint8_t	m_iMsg = 0;
 		uint64_t m_tLastUpdate = 0;
 	};
@@ -201,7 +203,9 @@ namespace kai
 
 		// swarm msg handlers
 		void handleMsgHB(const SWMSG_HB& m);
-	    vector<SWARM_NODE>* getSwarmNode(void);
+	    SWARM_NODE* getNodeByID(uint16_t id);
+	    SWARM_NODE* getNodeByIDrange(vInt2 vID);
+	    SWARM_NODE* getNode(int i);
 
 	protected:
 		// node control

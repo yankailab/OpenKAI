@@ -58,15 +58,6 @@ namespace kai
 			memcpy(&m_pF[17], m_pD, m_nD);
 			m_pF[17 + m_nD] = checksum(&m_pF[3], m_length);
 
-			// uint32_t s = 0;
-			// int nS = m_length + 3;
-			// for (int i=3; i < nS; i++)
-			// {
-			// 	s += m_pF[i];
-			// }
-			// s &= 0xFF;
-			// s = 0xFF - s;
-
 			return true;
 		}
 	};

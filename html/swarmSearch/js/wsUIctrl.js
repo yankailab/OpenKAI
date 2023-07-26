@@ -105,6 +105,7 @@ function ndUpdate(jCmd)
                                             + "</br>" + "Alt: " + jCmd.alt
                                             + "</br>" + "Hdg: " + jCmd.hdg
                                             + "</br>" + "Spd: " + jCmd.spd
+                                            + "</br>" + "Mode: " + jCmd.mode
                                             + "</br>" + "Batt: " + jCmd.batt + "%"
                                              );
     gvNodeMarkers[i].mk.getPopup().update();
@@ -112,12 +113,24 @@ function ndUpdate(jCmd)
 
 function ndAdd(jCmd)
 {
-    gvNodeMarkers.push(
-        {
-            id: jCmd.id,
-            mk: new L.marker([JSON.parse(jCmd.lat), JSON.parse(jCmd.lng)]).addTo(map).bindPopup('ID:'+JSON.stringify(jCmd.id))
-        }
-    );
+    if(jCmd.id >= 300)
+    {
+        gvNodeMarkers.push(
+            {
+                id: jCmd.id,
+                mk: new L.marker([JSON.parse(jCmd.lat), JSON.parse(jCmd.lng)], {icon: L.spriteIcon('red')}).addTo(map).bindPopup('ID:'+JSON.stringify(jCmd.id))
+            }
+        );    
+    }
+    else
+    {
+        gvNodeMarkers.push(
+            {
+                id: jCmd.id,
+                mk: new L.marker([JSON.parse(jCmd.lat), JSON.parse(jCmd.lng)]).addTo(map).bindPopup('ID:'+JSON.stringify(jCmd.id))
+            }
+        );    
+    }
 
     return gvNodeMarkers.length-1;
 }

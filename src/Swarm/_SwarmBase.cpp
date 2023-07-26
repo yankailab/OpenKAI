@@ -41,10 +41,10 @@ namespace kai
 		return this->_ModuleBase::check();
 	}
 
-	void _SwarmBase::handleMsgHB(const SWMSG_HB& m)
+	void _SwarmBase::handleMsgHB(const SWMSG_HB &m)
 	{
-		SWARM_NODE* pN = getNode(m.m_srcID);
-		if(!pN)
+		SWARM_NODE *pN = getNodeByID(m.m_srcID);
+		if (!pN)
 		{
 			SWARM_NODE n;
 			n.m_id = m.m_srcID;
@@ -52,20 +52,50 @@ namespace kai
 		}
 
 		pN->m_srcNetAddr = m.m_srcNetAddr;
+		pN->m_bPosValid = (m.m_lat != 0);
 		pN->m_vPos.x = ((double)m.m_lat) * 1e-7;
 		pN->m_vPos.y = ((double)m.m_lng) * 1e-7;
 		pN->m_alt = ((float)m.m_alt) * 1e-2;
 		pN->m_hdg = ((float)m.m_hdg) * 1e-1;
 		pN->m_spd = ((float)m.m_spd) * 1e-2;
 		pN->m_batt = ((float)m.m_batt);
+		pN->m_mode = m.m_mode;
 		pN->m_iMsg = m.m_iMsg;
 		pN->m_tLastUpdate = getApproxTbootUs();
 	}
 
-    vector<SWARM_NODE>* _SwarmBase::getSwarmNode(void)
-    {
-        return &m_vNodes;
-    }
+	SWARM_NODE *_SwarmBase::getNodeByID(uint16_t id)
+	{
+		for (int i = 0; i < m_vNodes.size(); i++)
+		{
+			SWARM_NODE *pN = &(m_vNodes[i]);
+			IF_CONT(pN->m_id != id);
+
+			return pN;
+		}
+
+		return NULL;
+	}
+
+	SWARM_NODE *_SwarmBase::getNodeByIDrange(vInt2 vID)
+	{
+		for (int i = 0; i < m_vNodes.size(); i++)
+		{
+			SWARM_NODE *pN = &(m_vNodes[i]);
+			IF_CONT(!vID.bInside((int)pN->m_id));
+
+			return pN;
+		}
+
+		return NULL;
+	}
+
+	SWARM_NODE* _SwarmBase::getNode(int i)
+	{
+		IF_N(i >= m_vNodes.size());
+
+		return &m_vNodes[i];
+	}
 
 	int _SwarmBase::getNodeIdx(const uint64_t &ID)
 	{
@@ -89,14 +119,14 @@ namespace kai
 		return &m_vNodes[i];
 	}
 
-	SWARM_NODE* _SwarmBase::addNode(const SWARM_NODE &n)
+	SWARM_NODE *_SwarmBase::addNode(const SWARM_NODE &n)
 	{
 		int i = getNodeIdx(n.m_id);
-		if(i >= 0)
+		if (i >= 0)
 			return &m_vNodes[i];
 
 		m_vNodes.push_back(n);
-		return &m_vNodes[m_vNodes.size()-1];
+		return &m_vNodes[m_vNodes.size() - 1];
 	}
 
 	bool _SwarmBase::updateNode(const SWARM_NODE &n)

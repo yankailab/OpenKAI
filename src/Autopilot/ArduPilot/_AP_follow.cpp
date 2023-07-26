@@ -40,7 +40,7 @@ namespace kai
 
 		int nWmed = 0;
 		int nWpred = 0;
-		uint64_t dThold = 0.0;
+		float dThold = 0.0;
 		pK->v("nWmed", &nWmed);
 		pK->v("nWpred", &nWpred);
 		pK->v("dThold", &dThold);
@@ -128,8 +128,8 @@ namespace kai
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPSfrom();
+			this->_StateBase::update();
 
-			this->_AP_move::update();
 			if (updateTarget())
 			{
 				updatePID();
@@ -138,7 +138,7 @@ namespace kai
 			else
 			{
 				stop();
-				m_tLastPIDupdate = 0;
+				clearPID();
 			}
 
 			m_pT->autoFPSto();
@@ -213,7 +213,7 @@ namespace kai
 	void _AP_follow::updatePID(void)
 	{
 		uint64_t tNow = getApproxTbootUs();
-		float dTs = (!m_tLastPIDupdate) ? 0 : (tNow - m_tLastPIDupdate) * USEC_2_SEC;
+		float dTs = (!m_tLastPIDupdate) ? 0 : ((float)(tNow - m_tLastPIDupdate)) * USEC_2_SEC;
 		m_tLastPIDupdate = tNow;
 
 		m_vSpd.x = (m_pPitch) ? m_pPitch->update(m_vPvar.x, m_vPsp.x, dTs) : 0;
@@ -224,6 +224,8 @@ namespace kai
 
 	void _AP_follow::clearPID(void)
 	{
+		m_tLastPIDupdate = 0;
+
 		if (m_pPitch)
 			m_pPitch->reset();
 		if (m_pRoll)

@@ -104,10 +104,10 @@ void setup()
 
 int tLastBroadcast = 0;
 static const int tInterval = 1000;
-uint32_t beaconID = 100;
-uint8_t msgType = 200;
+uint32_t beaconID = 300;
+uint8_t msgType = 0;
 XBframe_transitRequest xbTR;
-#define MSG_N 21
+#define MSG_N 29
 
 void loop()
 {
@@ -121,23 +121,31 @@ void loop()
   int tNow = millis();
   if (tNow - tLastBroadcast > tInterval)
   {
-    if (gps.location.isValid())
-    {
-      uint64_t lat = gps.location.lat() * 10e7;
-      uint64_t lng = gps.location.lng() * 10e7;
+      int64_t lat = 0;
+      int64_t lng = 0;
+      if (gps.location.isValid())
+      {
+        lat = gps.location.lat() * 1e7;
+        lng = gps.location.lng() * 1e7;
+      }
 
-      // msgType, srcIDx4, latx8, lngx8,
       uint8_t pB[MSG_N];
       pB[0] = msgType;
-      *((uint32_t *)&pB[1]) = beaconID;
-      *((uint64_t *)&pB[5]) = lat;
-      *((uint64_t *)&pB[13]) = lat;
+			*((uint16_t*)&pB[1]) = beaconID;
+			*((int64_t*)&pB[3]) = lat;
+			*((int64_t*)&pB[11]) = lng;
+			*((int16_t*)&pB[19]) = 0;
+			*((int16_t*)&pB[21]) = 0;
+			*((int16_t*)&pB[23]) = 0;
+			*((uint8_t*)&pB[25]) = 0;
+			*((uint8_t*)&pB[26]) = 0;
+			*((uint8_t*)&pB[27]) = 0;
+			*((uint8_t*)&pB[28]) = 0;
 
-      xbTR.encode(pB, MSG_N);
-      Serial1.write(pB, MSG_N);
+      xbTR.encode(pB, 29);
+      Serial1.write(xbTR.m_pF, xbTR.m_nF);
 
       tLastBroadcast = tNow;
-    }
   }
 
   if (tNow > 5000 && gps.charsProcessed() < 10)

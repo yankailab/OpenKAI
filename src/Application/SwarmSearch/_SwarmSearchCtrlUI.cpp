@@ -133,18 +133,20 @@ namespace kai
     {
         IF_(check() < 0);
 
-        vector<SWARM_NODE> *pvNodes = m_pSwarm->getSwarmNode();
-        for (SWARM_NODE n : *pvNodes)
+        SWARM_NODE* pN = NULL;
+        int i = 0;
+        while((pN = m_pSwarm->getNode(i++)))
         {
             object o;
             JO(o, "cmd", "ndUpdate");
-            JO(o, "id", (double)n.m_id);
-            JO(o, "lat", lf2str(n.m_vPos.x,10));
-            JO(o, "lng", lf2str(n.m_vPos.y,10));
-            JO(o, "alt", f2str((double)n.m_alt,2));
-            JO(o, "hdg", f2str((double)n.m_hdg,2));
-            JO(o, "spd", f2str((double)n.m_spd,2));
-            JO(o, "batt", f2str((double)n.m_batt,2));
+            JO(o, "id", (double)pN->m_id);
+            JO(o, "lat", lf2str(pN->m_vPos.x,10));
+            JO(o, "lng", lf2str(pN->m_vPos.y,10));
+            JO(o, "alt", f2str((double)pN->m_alt,2));
+            JO(o, "hdg", f2str((double)pN->m_hdg,2));
+            JO(o, "spd", f2str((double)pN->m_spd,2));
+            JO(o, "mode", (double)pN->m_mode);
+            JO(o, "batt", f2str((double)pN->m_batt,2));
 
             sendMsg(o);
         }

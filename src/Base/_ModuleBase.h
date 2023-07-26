@@ -25,6 +25,9 @@ namespace kai
 		virtual int check(void);
 		virtual void console(void *pConsole);
 
+		virtual void goSleep(void);
+		virtual void wakeUp(void);
+
 	private:
 		void update(void);
 		static void *getUpdate(void *This)

@@ -24,9 +24,9 @@ tlGoogleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}
 
 tlGoogleHybrid.addTo(map);
 
-L.marker([36.7795232705419, 138.52919832429615]).addTo(map)
-    .bindPopup('Home')
-    .openPopup();
+// L.marker([36.7795232705419, 138.52919832429615]).addTo(map)
+//     .bindPopup('Home')
+//     .openPopup();
 
 
 

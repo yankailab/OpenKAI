@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["state", "swarmCtrl", "state1","apBase1", "state2","apBase2"],
+	"vBASE":["/state", "swarmCtrl", "/state1", "/apBase1", "apFollow1", "apSwarm1", "state2", "apBase2"],
 }
 
 {
@@ -233,24 +233,6 @@
 }
 
 {
-	"name":"serialAP1",
-	"class":"_SerialPort",
-	"bON":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-    {
-		"name":"threadR",
-		"FPS":30,
-		"vTwakeUp":["mavAP1.thread"],
-	}
-	"port":"/dev/ttyACM0",
-	"baud":115200,
-	"/baud":57600,
-}
-
-{
 	"name":"udpSITL1",
 	"class":"_UDP",
 	"bON":1,
@@ -277,7 +259,6 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"/_IOBase":"serialAP",
 	"_IOBase":"udpSITL1",
 }
 
@@ -331,27 +312,6 @@
 }
 
 {
-	"name":"apSwarm1",
-	"class":"_AP_swarm",
-	"bON":1,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"bLog":0,
-	"_AP_base":"apBase1",
-	"_StateControl":"state1",
-	"_SwarmSearch":"swarmSearch1",
-	"_Xbee":"xbee1",
-	"myID":101,
-	"bAutoArm":1,
-	"altTakeoff":10.0,
-	"ieSendHB":1000000,
-	"ieSendSetState":1000000,
-	"ieSendGCupdate":1000000,
-}
-
-{
 	"name":"gGrid1",
 	"class":"GeoGrid",
 	"bON":1,
@@ -372,6 +332,85 @@
 	"GeoGrid":"gGrid1",
 }
 
+{
+	"name":"apSwarm1",
+	"class":"_AP_swarm",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"_StateControl":"state1",
+	"_AP_base":"apBase1",
+	"_AP_follow":"apFollow1",
+	"_SwarmSearch":"swarmSearch1",
+	"_Xbee":"xbee1",
+	"myID":100,
+	"bAutoArm":1,
+	"altTakeoff":10.0,
+	"altAuto":10.0,
+	"altLand":8.0,
+	"vTargetID":[300,400],
+	"ieSendHB":1000000,
+	"ieSendSetState":1000000,
+	"ieSendGCupdate":1000000,
+}
+
+{
+	"name":"univTarget",
+	"class":"_Universe",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+}
+
+{
+	"name":"PIDroll",
+	"class":"PID",
+	"bON":0,
+	"P":-3.0,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.0,
+	"oMin":-0.5,
+	"oMax":0.5,
+}
+
+{
+	"name":"PIDpitch",
+	"class":"PID",
+	"bON":0,
+	"P":3.0,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.0,
+	"oMin":-0.5,
+	"oMax":0.5,
+}
+
+{
+	"name":"apFollow1",
+	"class":"_AP_follow",
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"bON":1,
+	"_StateControl":"state1",
+	"vActiveState":["AUTO"],
+	"_AP_base":"apBase1",
+	"_Universe":"univTarget",
+	"vPsp":[0, 0, 0.3, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
+	"nWmed":0,
+	"nWpred":0,
+	"dThold":0.25,
+	"iClass":-1,
+	"PIDroll":"PIDroll",
+	"PIDpitch":"PIDpitch",	
+}
 
 /* AP2 */
 
@@ -382,7 +421,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"bON":1,
+	"bON":0,
 	"start":"STANDBY",
 
 	{
@@ -413,7 +452,7 @@
 {
 	"name":"serial2",
 	"class":"_SerialPort",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -429,7 +468,7 @@
 {
 	"name":"xbee2",
 	"class":"_Xbee",
-	"bON":1,
+	"bON":0,
 	"bLog":0,
     {
 		"name":"thread",
@@ -445,7 +484,7 @@
 {
 	"name":"udpSITL2",
 	"class":"_UDP",
-	"bON":1,
+	"bON":0,
 	"bLog":1,
     {
 		"name":"thread",
@@ -463,7 +502,7 @@
 {
 	"name":"mavAP2",
 	"class":"_Mavlink",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -476,7 +515,7 @@
 {
 	"name":"apBase2",
 	"class":"_AP_base",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -525,7 +564,7 @@
 {
 	"name":"apSwarm2",
 	"class":"_AP_swarm",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -546,14 +585,14 @@
 {
 	"name":"gGrid2",
 	"class":"GeoGrid",
-	"bON":1,
+	"bON":0,
 	"bLog":0,
 }
 
 {
 	"name":"swarmSearch2",
 	"class":"_SwarmSearch",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -563,4 +602,3 @@
 	"/ieOptRoute":100000000,
 	"GeoGrid":"gGrid2",
 }
-
