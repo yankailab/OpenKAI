@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Application_Autopilot_ArduPilot__AP_swarm_H_
 #define OpenKAI_src_Application_Autopilot_ArduPilot__AP_swarm_H_
 
-#include "_AP_follow.h"
+#include "_AP_land.h"
 #include "../../Protocol/_Xbee.h"
 #include "../../Swarm/_SwarmSearch.h"
 
@@ -50,6 +50,7 @@ namespace kai
 	protected:
 		_AP_base *m_pAP;
 		_AP_follow *m_pAfollow;
+		_AP_land *m_pAland;
 		SWARM_SEARCH_STATE_NODE m_state;
         _Xbee* m_pXb;
         _SwarmSearch* m_pSwarm;

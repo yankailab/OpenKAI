@@ -9,7 +9,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -201,25 +201,27 @@
 }
 
 {
-	"name":"serial1",
-	"class":"_SerialPort",
-	"bON":1,
+	"name":"tcpG",
+	"class":"_TCPclient",
+	"bON":0,
+	"bLog":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
     {
 		"name":"threadR",
-		"FPS":30,
+		"FPS":1,
+		"vTwakeUp":["skydroidGimbal.threadR"],
 	}
-	"port":"/dev/ttyUSB1",
-	"baud":57600,
+	"addr":"192.168.144.108",
+	"port":5000,
 }
 
 {
-	"name":"xbee1",
-	"class":"_Xbee",
-	"bON":1,
+	"name":"skydroidGimbal",
+	"class":"_SkydroidGimbal",
+	"bON":0,
 	"bLog":0,
     {
 		"name":"thread",
@@ -227,10 +229,65 @@
 	}
     {
 		"name":"threadR",
+		"FPS":1,
+	}
+	"_IOBase":"tcpG",
+	"/cmd":"#TPUG2wPTZ02", /* Downward */
+	{
+		"name":"axis",
+		{
+			"name":"H",
+			"pOrigin":0.0,
+			"pTarget":0.0,
+			"pRange":[0,360],
+			"pErr":1,
+		}
+	}
+}
+
+{
+	"name":"CVwindow",
+	"class":"_WindowCV",
+	"bON":1,
+	"bFullScreen":0,
+    {
+		"name":"thread",
 		"FPS":30,
 	}
-	"_IOBase":"serial1",
+	"vBASE":["/cam","camCrop","/univTag","/arUco","/apLand"],
+	"bShow":1,
 }
+
+{
+	"name":"cam",
+	"class":"_GStreamer",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vSize":[1280,720],
+	"/pipeline":"libcamerasrc ! video/x-raw,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! appsink",
+	"/pipeline":"libcamerasrc camera-name=/base/soc/i2c0mux/i2c@1/imx219@10 ! video/x-raw,camera=0,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! appsink",
+	"/pipeline":"libcamerasrc camera-name=/base/soc/i2c0mux/i2c@0/imx477@1a ! video/x-raw,camera=0,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! appsink",
+	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! queue ! videoconvert ! appsink max-buffers=1 drop=true", /* C10 mini: set host PC IP to 192.168.144.100 */
+	"pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! appsink max-buffers=1 sync=false drop=true", /* C10 mini, using YUV, Y chan only */
+	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! tee name=t t. ! queue ! appsink sync=false drop=true t. ! videoconvert ! fbdevsink",
+}
+
+{
+	"name":"camCrop",
+	"class":"_Crop",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"cam",
+	"vRoi":[0,0,1280,720],
+}
+
+/* Mavlink */
 
 {
 	"name":"udpSITL1",
@@ -261,6 +318,8 @@
 	"bLog":0,
 	"_IOBase":"udpSITL1",
 }
+
+/* AP */
 
 {
 	"name":"apBase1",
@@ -312,6 +371,38 @@
 }
 
 {
+	"name":"serial1",
+	"class":"_SerialPort",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"port":"/dev/ttyUSB1",
+	"baud":57600,
+}
+
+{
+	"name":"xbee1",
+	"class":"_Xbee",
+	"bON":1,
+	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"_IOBase":"serial1",
+}
+
+{
 	"name":"gGrid1",
 	"class":"GeoGrid",
 	"bON":1,
@@ -344,6 +435,7 @@
 	"_StateControl":"state1",
 	"_AP_base":"apBase1",
 	"_AP_follow":"apFollow1",
+	"_AP_land":"apLand1",
 	"_SwarmSearch":"swarmSearch1",
 	"_Xbee":"xbee1",
 	"myID":100,
@@ -351,11 +443,13 @@
 	"altTakeoff":10.0,
 	"altAuto":10.0,
 	"altLand":8.0,
-	"vTargetID":[300,400],
+	"vTargetID":[400,500],
 	"ieSendHB":1000000,
 	"ieSendSetState":1000000,
 	"ieSendGCupdate":1000000,
 }
+
+/* DNN target */
 
 {
 	"name":"univTarget",
@@ -366,6 +460,26 @@
 		"FPS":10,
 	}
 }
+
+{
+	"name":"tfMN",
+	"class":"_TFmobileNet",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bDraw":1,
+	"bLog":1,
+	"_VisionBase":"camCrop",
+	"_Universe":"univ",
+	"nThreads":4,
+	"confidence":0.5,
+	"fModel":"/home/lab/dev/models/TFliteMobileNet/detect.tflite",
+	"fClass":"/home/lab/dev/models/TFliteMobileNet/COCO_labels.txt",
+	"iClassDraw":-1,
+}
+
 
 {
 	"name":"PIDroll",
@@ -411,6 +525,108 @@
 	"PIDroll":"PIDroll",
 	"PIDpitch":"PIDpitch",	
 }
+
+/* Landing tag */
+
+{
+	"name":"univTag",
+	"class":"_Universe",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+}
+
+{
+	"name":"arUco",
+	"class":"_ArUco",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"/_VisionBase":"cam",
+	"_VisionBase":"camCrop",
+	"_Universe":"univTag",
+	"dict":17,
+}
+
+{
+	"name":"PIDrollLand",
+	"class":"PID",
+	"bON":1,
+	"P":-3.0,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.0,
+	"oMin":-0.5,
+	"oMax":0.5,
+}
+
+{
+	"name":"PIDpitchLand",
+	"class":"PID",
+	"bON":1,
+	"P":3.0,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.0,
+	"oMin":-0.5,
+	"oMax":0.5,
+}
+
+{
+	"name":"apLand1",
+	"class":"_AP_land",
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"bON":1,
+	"_StateControl":"state1",
+	"vActiveState":["RTL"],
+	"_AP_base":"apBase1",
+	"_Universe":"univTag",
+
+	"/vPsp":[0, 0, 0.3, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
+	"vPsp":[0, 0, 0.0, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
+	"nWmed":0,
+	"nWpred":0,
+	"dThold":0.25,
+	"iClass":-1,
+	"PIDroll":"PIDrollLand",
+	"PIDpitch":"PIDpitchLand",
+
+	"vFov":[70,60],
+	"vComplete":[0.1, 0.1, 0.5, 3],
+	"zrK":10.0,
+	"tKyaw":10000,
+	"ieHdgUsec":5000000,
+
+	{
+		"name":"tags",
+		{
+			"name":"tags",
+			"id":0,
+			"priority":1,
+			"vSize":[0.002, 0.2],
+			"vKdist":[0.2, 3.0],
+		}
+		{
+			"name":"tags",
+			"id":1,
+			"priority":0,
+			"vSize":[0.001, 0.02],
+			"vKdist":[0.2, 2.0],
+		}
+	}	
+}
+
+
+
+
+
 
 /* AP2 */
 

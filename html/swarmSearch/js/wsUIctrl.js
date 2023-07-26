@@ -113,7 +113,16 @@ function ndUpdate(jCmd)
 
 function ndAdd(jCmd)
 {
-    if(jCmd.id >= 300)
+    if(jCmd.id >= 400)
+    {
+        gvNodeMarkers.push(
+            {
+                id: jCmd.id,
+                mk: new L.marker([JSON.parse(jCmd.lat), JSON.parse(jCmd.lng)], {icon: L.spriteIcon('yello')}).addTo(map).bindPopup('ID:'+JSON.stringify(jCmd.id))
+            }
+        );    
+    }
+    else if(jCmd.id >= 300)
     {
         gvNodeMarkers.push(
             {

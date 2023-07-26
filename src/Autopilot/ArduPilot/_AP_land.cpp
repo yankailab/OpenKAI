@@ -78,12 +78,18 @@ namespace kai
 			m_pT->autoFPSfrom();
 			this->_StateBase::update();
 
-			updateMove();
-
-			// verify the completion of descent procedure
-			if (bComplete())
+			if (bActive())
 			{
-				stop();
+				updateMove();
+
+				if (bComplete())
+				{
+					stop();
+				}
+			}
+			else
+			{
+				clearPID();
 			}
 
 			m_pT->autoFPSto();
@@ -93,7 +99,6 @@ namespace kai
 	bool _AP_land::bComplete(void)
 	{
 		IF_F(check() < 0);
-
 		IF_F(!m_bTarget);
 
 		// NEDH
@@ -108,7 +113,6 @@ namespace kai
 	void _AP_land::updateMove(void)
 	{
 		IF_(check() < 0);
-		IF_(!bActive());
 
 		if (m_apMount.m_bEnable)
 			m_pAP->setMount(m_apMount);
@@ -134,7 +138,7 @@ namespace kai
 		IF_(abs(m_vSpd.w) < m_vComplete.w);
 
 		stop();
-		setHdg(m_vSpd.w * DEG_2_RAD, 0, true, false);
+//		setHdg(m_vSpd.w * DEG_2_RAD, 0, true, false);
 		sleep(1);
 	}
 

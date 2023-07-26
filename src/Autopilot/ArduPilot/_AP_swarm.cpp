@@ -7,6 +7,7 @@ namespace kai
 	{
 		m_pAP = NULL;
 		m_pAfollow = NULL;
+		m_pAland = NULL;
 		m_pXb = NULL;
 		m_pSwarm = NULL;
 
@@ -67,6 +68,11 @@ namespace kai
 		IF_Fl(!m_pAfollow, n + ": not found");
 
 		n = "";
+		pK->v("_AP_land", &n);
+		m_pAland = (_AP_land *)(pK->getInst(n));
+		IF_Fl(!m_pAland, n + ": not found");
+
+		n = "";
 		pK->v("_SwarmSearch", &n);
 		m_pSwarm = (_SwarmSearch *)(pK->getInst(n));
 		IF_Fl(!m_pSwarm, n + ": not found");
@@ -92,6 +98,7 @@ namespace kai
 		NULL__(m_pAP, -1);
 		NULL__(m_pAP->m_pMav, -1);
 		NULL__(m_pAfollow, -1);
+		NULL__(m_pAland, -1);
 		NULL__(m_pSC, -1);
 		NULL__(m_pXb, -1);
 		NULL__(m_pSwarm, -1);
@@ -171,22 +178,30 @@ namespace kai
 		// RTL
 		if (m_state.bRTL())
 		{
+			IF_(!bApArmed);
+
 			if (alt > m_altLand)
 			{
 				if (apMode == AP_COPTER_GUIDED)
 					m_pAP->setApMode(AP_COPTER_RTL);
 
+				m_pAland->goSleep();
 				return;
 			}
 
-			// check if touched down
-			IF_(!bApArmed);
+			if (apMode != AP_COPTER_STABILIZE &&
+				apMode != AP_COPTER_ALT_HOLD &&
+				apMode != AP_COPTER_LOITER &&
+				apMode != AP_COPTER_GUIDED)
+			{
+				m_pAP->setApMode(AP_COPTER_GUIDED);
+			}
 
-			// temporarily set to RTL
-			if (apMode == AP_COPTER_GUIDED)
-				m_pAP->setApMode(AP_COPTER_RTL);
+			m_pAland->wakeUp();
 
-			// TODO:enable vision navigated landing
+			IF_(!m_pAland->bComplete());
+
+			m_pAP->setApMode(AP_COPTER_LAND);
 		}
 	}
 
@@ -304,6 +319,8 @@ namespace kai
 		IF_(check() < 0);
 		IF_((m.m_dstID != XB_BRDCAST_ADDR) && (m.m_dstID != m_pXb->getMyAddr()));
 
+		m_state.update(m_pSC->getStateIdx());
+
 		// TODO: enable iMsg counter
 
 		switch (m.m_state)
@@ -312,7 +329,10 @@ namespace kai
 			m_pSC->transit(m_state.STANDBY);
 			break;
 		case swMsg_state_takeOff:
-			m_pSC->transit(m_state.TAKEOFF);
+			if (m_state.bSTANDBY())
+			{
+				m_pSC->transit(m_state.TAKEOFF);
+			}
 			break;
 		case swMsg_state_auto:
 			m_pSC->transit(m_state.AUTO);

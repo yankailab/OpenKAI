@@ -130,15 +130,25 @@ namespace kai
 			m_pT->autoFPSfrom();
 			this->_StateBase::update();
 
-			if (updateTarget())
+			if (bActive())
 			{
-				updatePID();
-				setVlocal(m_vSpd);
+				if (updateTarget())
+				{
+					updatePID();
+					setVlocal(m_vSpd);
+				}
+				else
+				{
+					stop();
+					clearPID();
+				}
 			}
 			else
 			{
-				stop();
 				clearPID();
+				m_bTarget = false;
+				if (m_pTracker)
+					m_pTracker->stopTrack();
 			}
 
 			m_pT->autoFPSto();
@@ -148,14 +158,6 @@ namespace kai
 	bool _AP_follow::updateTarget(void)
 	{
 		IF_F(check() < 0);
-		if (!bActive())
-		{
-			m_bTarget = false;
-			if (m_pTracker)
-				m_pTracker->stopTrack();
-
-			return false;
-		}
 
 		if (m_apMount.m_bEnable)
 			m_pAP->setMount(m_apMount);
@@ -276,6 +278,5 @@ namespace kai
 		rectangle(*pM, r, Scalar(0, 0, 255), 2);
 #endif
 	}
-
 
 }
