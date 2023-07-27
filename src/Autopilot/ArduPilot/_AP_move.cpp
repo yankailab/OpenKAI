@@ -114,6 +114,26 @@ namespace kai
 		m_pAP->m_pMav->setPositionTargetLocalNED(spt);
 	}
 
+	void _AP_move::setPlocal(const vDouble4 &vP, bool bYaw, bool bYawRate, uint8_t frame)
+	{
+		IF_(check() < 0);
+
+		mavlink_set_position_target_local_ned_t spt;
+		spt.coordinate_frame = frame;
+		spt.x = vP.x; // forward
+		spt.y = vP.y; // right
+		spt.z = vP.z; // down
+		spt.yaw = 0.0;
+		spt.yaw_rate = vP.w;
+		spt.type_mask = 0b0000000111111000; // AVP
+		if (!bYaw)
+			spt.type_mask |= (1 << 11);
+		if (!bYawRate)
+			spt.type_mask |= (1 << 12);
+
+		m_pAP->m_pMav->setPositionTargetLocalNED(spt);
+	}
+
 	void _AP_move::setPglobal(const vDouble4 &vP, bool bYaw, bool bYawRate, uint8_t frame)
 	{
 		IF_(check() < 0);

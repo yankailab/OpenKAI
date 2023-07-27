@@ -34,16 +34,16 @@ namespace kai
 		uint64_t m_srcNetAddr = 0;
 
 		const static uint8_t m_mType = swMsg_hB; // 0
-		uint16_t m_srcID;	// 1
-		int64_t m_lat; // 3			1e7
-		int64_t m_lng; // 11		1e7
-		int16_t m_alt; // 19		1e2
-		int16_t m_hdg; // 21		1e1
-		int16_t m_spd; // 23		1e2
-		uint8_t m_batt; // 25		1~100
-		uint8_t m_mode; // 26
-		uint8_t m_iMsg; // 27
-		uint8_t m_checksum; //28
+		uint16_t m_srcID = 0;	// 1
+		int64_t m_lat = 0; // 3			1e7
+		int64_t m_lng = 0; // 11		1e7
+		int16_t m_alt = 0; // 19		1e2
+		int16_t m_hdg = 0; // 21		1e1
+		int16_t m_spd = 0; // 23		1e2
+		uint8_t m_batt = 0; // 25		1~100
+		uint8_t m_mode = 0; // 26
+		uint8_t m_iMsg = 0; // 27
+		uint8_t m_checksum = 0; //28
 
 		bool decode(const uint8_t* pB, int nB)
 		{

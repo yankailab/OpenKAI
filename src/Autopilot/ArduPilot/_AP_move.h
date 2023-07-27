@@ -32,6 +32,11 @@ namespace kai
 					   bool bYawRate = true,
 					   uint8_t frame = MAV_FRAME_BODY_OFFSET_NED);
 
+		void setPlocal(const vDouble4 &vP,
+					   bool bYaw = false,
+					   bool bYawRate = true,
+					   uint8_t frame = MAV_FRAME_BODY_OFFSET_NED);
+
 		void setPglobal(const vDouble4 &vP,
 						bool bYaw = true,
 						bool bYawRate = false,

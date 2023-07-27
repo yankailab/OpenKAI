@@ -118,7 +118,7 @@ function ndAdd(jCmd)
         gvNodeMarkers.push(
             {
                 id: jCmd.id,
-                mk: new L.marker([JSON.parse(jCmd.lat), JSON.parse(jCmd.lng)], {icon: L.spriteIcon('yello')}).addTo(map).bindPopup('ID:'+JSON.stringify(jCmd.id))
+                mk: new L.marker([JSON.parse(jCmd.lat), JSON.parse(jCmd.lng)], {icon: L.spriteIcon('yellow')}).addTo(map).bindPopup('ID:'+JSON.stringify(jCmd.id))
             }
         );    
     }

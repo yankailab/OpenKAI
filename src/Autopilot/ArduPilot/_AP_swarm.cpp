@@ -6,17 +6,25 @@ namespace kai
 	_AP_swarm::_AP_swarm()
 	{
 		m_pAP = NULL;
-		m_pAfollow = NULL;
-		m_pAland = NULL;
 		m_pXb = NULL;
 		m_pSwarm = NULL;
+		m_pGio = NULL;
+		m_pU = NULL;
 
 		m_bAutoArm = true;
 		m_altTakeoff = 10.0;
 		m_altAuto = 10.0;
 		m_altLand = 8.0;
 		m_myID = 0;
+
 		m_vTargetID.clear();
+		m_iClass = 1;
+		m_dRdet = 1e-6;
+
+		m_ieNextWP.init(USEC_10SEC);
+		m_vWP.set(0, 0);
+		m_vWPd.set(5, 5);
+		m_vWPrange.set(10, 10);
 
 		m_ieSendHB.init(USEC_1SEC);
 		m_ieSendGCupdate.init(USEC_1SEC);
@@ -28,7 +36,7 @@ namespace kai
 
 	bool _AP_swarm::init(void *pKiss)
 	{
-		IF_F(!this->_StateBase::init(pKiss));
+		IF_F(!this->_AP_move::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("bAutoArm", &m_bAutoArm);
@@ -36,7 +44,14 @@ namespace kai
 		pK->v("altAuto", &m_altAuto);
 		pK->v("altLand", &m_altLand);
 		pK->v("myID", &m_myID);
+
 		pK->v("vTargetID", &m_vTargetID);
+		pK->v("iClass", &m_iClass);
+		pK->v("dRdet", &m_dRdet);
+
+		pK->v("vWPd", &m_vWPd);
+		pK->v("vWPrange", &m_vWPrange);
+		pK->v("ieNextWP", &m_ieNextWP.m_tInterval);
 
 		pK->v("ieSendHB", &m_ieSendHB.m_tInterval);
 		pK->v("ieSendGCupdate", &m_ieSendGCupdate.m_tInterval);
@@ -46,7 +61,7 @@ namespace kai
 
 	bool _AP_swarm::link(void)
 	{
-		IF_F(!this->_StateBase::link());
+		IF_F(!this->_AP_move::link());
 		IF_F(!m_pSC);
 		m_state.STANDBY = m_pSC->getStateIdxByName("STANDBY");
 		m_state.TAKEOFF = m_pSC->getStateIdxByName("TAKEOFF");
@@ -63,16 +78,6 @@ namespace kai
 		IF_Fl(!m_pAP, n + ": not found");
 
 		n = "";
-		pK->v("_AP_follow", &n);
-		m_pAfollow = (_AP_follow *)(pK->getInst(n));
-		IF_Fl(!m_pAfollow, n + ": not found");
-
-		n = "";
-		pK->v("_AP_land", &n);
-		m_pAland = (_AP_land *)(pK->getInst(n));
-		IF_Fl(!m_pAland, n + ": not found");
-
-		n = "";
 		pK->v("_SwarmSearch", &n);
 		m_pSwarm = (_SwarmSearch *)(pK->getInst(n));
 		IF_Fl(!m_pSwarm, n + ": not found");
@@ -81,6 +86,16 @@ namespace kai
 		pK->v("_Xbee", &n);
 		m_pXb = (_Xbee *)(pK->getInst(n));
 		IF_Fl(!m_pXb, n + ": not found");
+
+		n = "";
+		pK->v("_IOBase", &n);
+		m_pGio = (_IOBase *)(pK->getInst(n));
+		IF_Fl(!m_pGio, n + ": not found");
+
+		n = "";
+		pK->v("_Universe", &n);
+		m_pU = (_Universe *)(pK->getInst(n));
+		IF_Fl(!m_pU, n + ": not found");
 
 		IF_F(!m_pXb->setCbReceivePacket(sOnRecvMsg, this));
 
@@ -97,13 +112,12 @@ namespace kai
 	{
 		NULL__(m_pAP, -1);
 		NULL__(m_pAP->m_pMav, -1);
-		NULL__(m_pAfollow, -1);
-		NULL__(m_pAland, -1);
 		NULL__(m_pSC, -1);
 		NULL__(m_pXb, -1);
 		NULL__(m_pSwarm, -1);
+		NULL__(m_pU, -1);
 
-		return this->_StateBase::check();
+		return this->_AP_move::check();
 	}
 
 	void _AP_swarm::update(void)
@@ -134,7 +148,7 @@ namespace kai
 		// Standby
 		if (m_state.bSTANDBY())
 		{
-			// stop move etc.
+			stop();
 			return;
 		}
 
@@ -170,66 +184,173 @@ namespace kai
 		if (m_state.bAUTO())
 		{
 			IF_(apMode != AP_COPTER_GUIDED);
-			IF_(!bApArmed);
-			followTarget();
+
+			IF_(findBeacon());
+			if (!findVisual())
+			{
+				calcMove();
+				return;
+			}
+
 			return;
 		}
 
 		// RTL
 		if (m_state.bRTL())
 		{
-			IF_(!bApArmed);
-
-			if (alt > m_altLand)
-			{
-				if (apMode == AP_COPTER_GUIDED)
-					m_pAP->setApMode(AP_COPTER_RTL);
-
-				m_pAland->goSleep();
-				return;
-			}
-
-			if (apMode != AP_COPTER_STABILIZE &&
-				apMode != AP_COPTER_ALT_HOLD &&
-				apMode != AP_COPTER_LOITER &&
-				apMode != AP_COPTER_GUIDED)
-			{
-				m_pAP->setApMode(AP_COPTER_GUIDED);
-			}
-
-			m_pAland->wakeUp();
-
-			IF_(!m_pAland->bComplete());
-
-			m_pAP->setApMode(AP_COPTER_LAND);
+			if (apMode == AP_COPTER_GUIDED)
+				m_pAP->setApMode(AP_COPTER_RTL);
 		}
 	}
 
-	void _AP_swarm::followTarget(void)
+	bool _AP_swarm::findBeacon(void)
 	{
-		IF_(check() < 0);
+		IF_F(check() < 0);
 
 		SWARM_NODE *pN = m_pSwarm->getNodeByIDrange(m_vTargetID);
-		if (!pN)
-		{
-			m_pAfollow->wakeUp();
-			return;
-		}
-
-		if (!pN->m_bPosValid)
-		{
-			m_pAfollow->wakeUp();
-			return;
-		}
-
-		m_pAfollow->goSleep();
+		NULL_F(pN);
+		IF_F(!pN->m_bPosValid);
 
 		vDouble4 vP;
 		vP.x = pN->m_vPos.x;
 		vP.y = pN->m_vPos.y;
 		vP.z = m_altAuto;
 		vP.w = 0;
-		m_pAfollow->setPglobal(vP, false, false);
+		setPglobal(vP, false, false);
+
+		// SWARM_DETECTION *pD = getDetByDist(pN->m_vPos, m_dRdet);
+		// IF_T(pD);
+
+		// SWARM_DETECTION d;
+		// d.m_id = pN->m_id;
+		// d.m_vPos = pN->m_vPos;
+		// m_vDetections.push_back(d);
+
+		return true;
+	}
+
+	bool _AP_swarm::findVisual(void)
+	{
+		IF_F(check() < 0);
+
+		gimbalDownward();
+
+		IF_F(!findVisualTarget());
+
+		vDouble4 vPos = m_pAP->getGlobalPos();
+		vDouble2 vP;
+		vP.x = vPos.x;
+		vP.y = vPos.y;
+		SWARM_DETECTION *pD = getDetByDist(vP, m_dRdet);
+		IF_T(pD);
+
+		pD = getDetByID(m_myID + 200);
+		if (pD)
+		{
+			pD->m_vPos = vP;
+			return true;
+		}
+
+		SWARM_DETECTION d;
+		d.m_id = m_myID + 200;
+		d.m_vPos = vP;
+		m_vDetections.push_back(d);
+
+		return true;
+	}
+
+	bool _AP_swarm::findVisualTarget(void)
+	{
+		IF_F(check() < 0);
+
+		_Object *pO;
+		int i = 0;
+		while ((pO = m_pU->get(i++)) != NULL)
+		{
+			IF_CONT(pO->getTopClass() != m_iClass);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	void _AP_swarm::calcMove(void)
+	{
+		uint64_t t = getApproxTbootUs();
+		IF_(!m_ieSendHB.update(t));
+
+		m_vWP += m_vWPd;
+
+		vDouble4 vWP;
+		vWP.x = m_vWP.x;
+		vWP.y = m_vWP.y;
+		vWP.z = 0;
+		vWP.w = 0;
+		setPlocal(vWP);
+
+		if (m_vWP.x >= m_vWPrange.x)
+			m_vWPd.x = -abs(m_vWPd.x);
+		else if (m_vWP.x <= -m_vWPrange.x)
+			m_vWPd.x = abs(m_vWPd.x);
+
+		if (m_vWP.y >= m_vWPrange.y)
+			m_vWPd.y = -abs(m_vWPd.y);
+		else if (m_vWP.y <= -m_vWPrange.y)
+			m_vWPd.y = abs(m_vWPd.y);
+	}
+
+	SWARM_DETECTION *_AP_swarm::getDetByID(uint16_t id)
+	{
+		for (int i = 0; i < m_vDetections.size(); i++)
+		{
+			SWARM_DETECTION *pD = &m_vDetections[i];
+			IF_CONT(pD->m_id != id);
+
+			return pD;
+		}
+
+		return NULL;
+	}
+
+	SWARM_DETECTION *_AP_swarm::getDetByDist(vDouble2 vP, double r)
+	{
+		for (int i = 0; i < m_vDetections.size(); i++)
+		{
+			SWARM_DETECTION *pD = &m_vDetections[i];
+
+			vDouble2 vD = pD->m_vPos - vP;
+			IF_CONT(vD.len() > r);
+
+			return pD;
+		}
+
+		return NULL;
+	}
+
+	void _AP_swarm::gimbalDownward(void)
+	{
+		NULL_(m_pGio);
+		IF_(!m_pGio->isOpen());
+
+		string cmd = "#TPUG2wPTZ02";
+		char crc = calcCRC(cmd.c_str(), (int)cmd.length());
+
+		char buf[3];
+		snprintf(buf, 3, "%X", crc);
+		cmd += string(buf);
+
+		m_pGio->write((uint8_t *)cmd.c_str(), (int)cmd.length());
+	}
+
+	char _AP_swarm::calcCRC(const char *cmd, uint8_t len)
+	{
+		char crc = 0;
+		for (int i = 0; i < len; i++)
+		{
+			crc += cmd[i];
+		}
+		return crc;
 	}
 
 	void _AP_swarm::send(void)
@@ -239,7 +360,11 @@ namespace kai
 		uint64_t t = m_pT->getTfrom();
 
 		if (m_ieSendHB.update(t))
+		{
 			sendHB();
+			sendDetectionHB();
+		}
+
 		// if (m_ieSendGCupdate.update(t))
 		//     sendGCupdate();
 	}
@@ -264,6 +389,26 @@ namespace kai
 		IF_(nB <= 0);
 
 		m_pXb->send(XB_BRDCAST_ADDR, pB, nB);
+	}
+
+	void _AP_swarm::sendDetectionHB(void)
+	{
+		IF_(check() < 0);
+
+		for (int i = 0; i < m_vDetections.size(); i++)
+		{
+			SWARM_DETECTION *pD = &m_vDetections[i];
+
+			SWMSG_HB m;
+			m.m_srcID = pD->m_id;
+			m.m_lat = pD->m_vPos.x * 1e7;
+			m.m_lng = pD->m_vPos.y * 1e7;
+			uint8_t pB[XB_N_PAYLOAD];
+			int nB = m.encode(pB, XB_N_PAYLOAD);
+			IF_CONT(nB <= 0);
+
+			m_pXb->send(XB_BRDCAST_ADDR, pB, nB);
+		}
 	}
 
 	void _AP_swarm::sendGCupdate(void)
@@ -327,6 +472,7 @@ namespace kai
 		{
 		case swMsg_state_standBy:
 			m_pSC->transit(m_state.STANDBY);
+			m_vWP.set(0, 0);
 			break;
 		case swMsg_state_takeOff:
 			if (m_state.bSTANDBY())
@@ -335,7 +481,10 @@ namespace kai
 			}
 			break;
 		case swMsg_state_auto:
-			m_pSC->transit(m_state.AUTO);
+			if (!m_state.bRTL())
+			{
+				m_pSC->transit(m_state.AUTO);
+			}
 			break;
 		case swMsg_state_RTL:
 			m_pSC->transit(m_state.RTL);

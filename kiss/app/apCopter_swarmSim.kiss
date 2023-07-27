@@ -203,46 +203,18 @@
 {
 	"name":"tcpG",
 	"class":"_TCPclient",
-	"bON":0,
+	"bON":1,
 	"bLog":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":2,
 	}
     {
 		"name":"threadR",
 		"FPS":1,
-		"vTwakeUp":["skydroidGimbal.threadR"],
 	}
 	"addr":"192.168.144.108",
 	"port":5000,
-}
-
-{
-	"name":"skydroidGimbal",
-	"class":"_SkydroidGimbal",
-	"bON":0,
-	"bLog":0,
-    {
-		"name":"thread",
-		"FPS":1,
-	}
-    {
-		"name":"threadR",
-		"FPS":1,
-	}
-	"_IOBase":"tcpG",
-	"/cmd":"#TPUG2wPTZ02", /* Downward */
-	{
-		"name":"axis",
-		{
-			"name":"H",
-			"pOrigin":0.0,
-			"pTarget":0.0,
-			"pRange":[0,360],
-			"pErr":1,
-		}
-	}
 }
 
 {
@@ -254,7 +226,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["/cam","camCrop","/univTag","/arUco","/apLand"],
+	"vBASE":["/cam","camCrop","univTarget","/univTag","/arUco","/apLand"],
 	"bShow":1,
 }
 
@@ -415,7 +387,7 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":5,
 	}
 	"bLog":0,
 	"/tExpire":100000000,
@@ -434,18 +406,27 @@
 	"bLog":0,
 	"_StateControl":"state1",
 	"_AP_base":"apBase1",
-	"_AP_follow":"apFollow1",
-	"_AP_land":"apLand1",
 	"_SwarmSearch":"swarmSearch1",
 	"_Xbee":"xbee1",
-	"myID":100,
+	"_IOBase":"tcpG",
+	"_Universe":"univTarget",
+
 	"bAutoArm":1,
 	"altTakeoff":10.0,
 	"altAuto":10.0,
 	"altLand":8.0,
+	"myID":200,
+
+	"/vTargetID":[300,400],
 	"vTargetID":[400,500],
+	"iClass":1,
+	"dRdet":0.000001,
+
+	"vWPd":[5,5],
+	"vWPrange":[20,5],
+	"ieNextWP":10000000,
+
 	"ieSendHB":1000000,
-	"ieSendSetState":1000000,
 	"ieSendGCupdate":1000000,
 }
 
@@ -464,168 +445,20 @@
 {
 	"name":"tfMN",
 	"class":"_TFmobileNet",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"bDraw":1,
 	"bLog":1,
 	"_VisionBase":"camCrop",
-	"_Universe":"univ",
+	"_Universe":"univTarget",
 	"nThreads":4,
 	"confidence":0.5,
-	"fModel":"/home/lab/dev/models/TFliteMobileNet/detect.tflite",
-	"fClass":"/home/lab/dev/models/TFliteMobileNet/COCO_labels.txt",
+	"fModel":"/home/kai/dev/models/TFliteMobileNet/detect.tflite",
+	"fClass":"/home/kai/dev/models/TFliteMobileNet/COCO_labels.txt",
 	"iClassDraw":-1,
 }
-
-
-{
-	"name":"PIDroll",
-	"class":"PID",
-	"bON":0,
-	"P":-3.0,
-	"I":0.0,
-	"Imax":0.0,
-	"D":0.0,
-	"oMin":-0.5,
-	"oMax":0.5,
-}
-
-{
-	"name":"PIDpitch",
-	"class":"PID",
-	"bON":0,
-	"P":3.0,
-	"I":0.0,
-	"Imax":0.0,
-	"D":0.0,
-	"oMin":-0.5,
-	"oMax":0.5,
-}
-
-{
-	"name":"apFollow1",
-	"class":"_AP_follow",
-    {
-		"name":"thread",
-		"FPS":10,
-	}
-	"bON":1,
-	"_StateControl":"state1",
-	"vActiveState":["AUTO"],
-	"_AP_base":"apBase1",
-	"_Universe":"univTarget",
-	"vPsp":[0, 0, 0.3, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
-	"nWmed":0,
-	"nWpred":0,
-	"dThold":0.25,
-	"iClass":-1,
-	"PIDroll":"PIDroll",
-	"PIDpitch":"PIDpitch",	
-}
-
-/* Landing tag */
-
-{
-	"name":"univTag",
-	"class":"_Universe",
-	"bON":1,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-}
-
-{
-	"name":"arUco",
-	"class":"_ArUco",
-	"bON":1,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"/_VisionBase":"cam",
-	"_VisionBase":"camCrop",
-	"_Universe":"univTag",
-	"dict":17,
-}
-
-{
-	"name":"PIDrollLand",
-	"class":"PID",
-	"bON":1,
-	"P":-3.0,
-	"I":0.0,
-	"Imax":0.0,
-	"D":0.0,
-	"oMin":-0.5,
-	"oMax":0.5,
-}
-
-{
-	"name":"PIDpitchLand",
-	"class":"PID",
-	"bON":1,
-	"P":3.0,
-	"I":0.0,
-	"Imax":0.0,
-	"D":0.0,
-	"oMin":-0.5,
-	"oMax":0.5,
-}
-
-{
-	"name":"apLand1",
-	"class":"_AP_land",
-    {
-		"name":"thread",
-		"FPS":10,
-	}
-	"bON":1,
-	"_StateControl":"state1",
-	"vActiveState":["RTL"],
-	"_AP_base":"apBase1",
-	"_Universe":"univTag",
-
-	"/vPsp":[0, 0, 0.3, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
-	"vPsp":[0, 0, 0.0, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
-	"nWmed":0,
-	"nWpred":0,
-	"dThold":0.25,
-	"iClass":-1,
-	"PIDroll":"PIDrollLand",
-	"PIDpitch":"PIDpitchLand",
-
-	"vFov":[70,60],
-	"vComplete":[0.1, 0.1, 0.5, 3],
-	"zrK":10.0,
-	"tKyaw":10000,
-	"ieHdgUsec":5000000,
-
-	{
-		"name":"tags",
-		{
-			"name":"tags",
-			"id":0,
-			"priority":1,
-			"vSize":[0.002, 0.2],
-			"vKdist":[0.2, 3.0],
-		}
-		{
-			"name":"tags",
-			"id":1,
-			"priority":0,
-			"vSize":[0.001, 0.02],
-			"vKdist":[0.2, 2.0],
-		}
-	}	
-}
-
-
-
-
 
 
 /* AP2 */

@@ -611,7 +611,7 @@ if(USE_TF-LITE)
   set(TFlite_src "/tensorflow" CACHE STRING "")
   set(TFlite_flatbuffersInclude "/tensorflow/tensorflow/lite/tools/make/downloads/flatbuffers/include" CACHE STRING "")
   set(TFlite_abslInclude "/tensorflow/tensorflow/lite/tools/make/downloads/absl" CACHE STRING "")
-  set(TFlite_lib "/tensorflow/tensorflow/lite/tools/make/gen/linux_x86_64/lib" CACHE STRING "")
+  set(TFlite_lib "/tensorflow/tensorflow/lite/tools/make/gen/linux_aarch64/lib" CACHE STRING "")
   set(TFlite_flatbuffersLib "/tensorflow/tensorflow/lite/tools/make/downloads/flatbuffers/build" CACHE STRING "")
 #  set(TFlite_build "/tensorflow/build" CACHE STRING "")
   set(OpenKAI_include
