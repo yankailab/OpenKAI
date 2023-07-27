@@ -192,6 +192,8 @@ namespace kai
 				return;
 			}
 
+			stop();
+
 			return;
 		}
 
