@@ -14,57 +14,56 @@
 namespace kai
 {
 
-struct OM_STATE
-{
-	int32_t	m_step;		//position
-	int32_t	m_speed;	//Hz
-	int32_t	m_accel;	//0.001kHz/s
-	int32_t	m_brake;	//0.001kHz/s
-	int32_t	m_current;	//0.1%
-
-	void init(void)
+	struct OM_STATE
 	{
-		m_step = 0;
-		m_speed = 1e3;
-		m_accel = 1e6;
-		m_brake = 1e6;
-		m_current = 1e3;
-	}
-};
+		int32_t m_step;	   // position
+		int32_t m_speed;   // Hz
+		int32_t m_accel;   // 0.001kHz/s
+		int32_t m_brake;   // 0.001kHz/s
+		int32_t m_current; // 0.1%
 
-class _OrientalMotor: public _ActuatorBase
-{
-public:
-	_OrientalMotor();
-	~_OrientalMotor();
+		void init(void)
+		{
+			m_step = 0;
+			m_speed = 1e3;
+			m_accel = 1e6;
+			m_brake = 1e6;
+			m_current = 1e3;
+		}
+	};
 
-	bool init(void* pKiss);
-	bool start(void);
-	int check(void);
-
-private:
-	void checkAlarm(void);
-	void updatePos (void);
-	void updateSpeed (void);
-	void readStatus(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _OrientalMotor : public _ActuatorBase
 	{
-		((_OrientalMotor*) This)->update();
-		return NULL;
-	}
+	public:
+		_OrientalMotor();
+		~_OrientalMotor();
 
-public:
-	ACTUATOR_AXIS* m_pA;
-	_Modbus* m_pMB;
-	int		m_iSlave;
-	int		m_iData;
+		bool init(void *pKiss);
+		bool start(void);
+		int check(void);
 
-	INTERVAL_EVENT m_ieCheckAlarm;
-	INTERVAL_EVENT m_ieSendCMD;
-	INTERVAL_EVENT m_ieReadStatus;
+	private:
+		void checkAlarm(void);
+		void updatePos(void);
+		void updateSpeed(void);
+		void readStatus(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_OrientalMotor *)This)->update();
+			return NULL;
+		}
 
-};
+	public:
+		ACTUATOR_AXIS *m_pA;
+		_Modbus *m_pMB;
+		int m_iSlave;
+		int m_iData;
+
+		INTERVAL_EVENT m_ieCheckAlarm;
+		INTERVAL_EVENT m_ieSendCMD;
+		INTERVAL_EVENT m_ieReadStatus;
+	};
 
 }
 #endif

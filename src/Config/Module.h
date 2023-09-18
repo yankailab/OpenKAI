@@ -11,6 +11,7 @@
 #include "../Base/common.h"
 #include "../Base/BASE.h"
 #include "../Script/Kiss.h"
+#include "../Base/_ThreadCtrl.h"
 
 #include "../Arithmetic/Destimator.h"
 #include "../IPC/_SharedMem.h"
@@ -46,6 +47,7 @@
 #include "../Actuator/Motor/_ZLAC8015.h"
 #include "../Actuator/Motor/_ZLAC8015D.h"
 #include "../Actuator/Motor/_ZDmotor.h"
+#include "../Actuator/Motor/_DDSM.h"
 #ifdef USE_XARM
 #include "../Actuator/Articulated/_xArm.h"
 #endif

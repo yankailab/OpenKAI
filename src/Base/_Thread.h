@@ -40,7 +40,6 @@ namespace kai
 		virtual void autoFPSfrom(void);
 		virtual void autoFPSto(void);
 		virtual float getDt(void);
-
 		virtual uint64_t getTfrom(void);
 		virtual uint64_t getTto(void);
 

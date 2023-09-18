@@ -102,9 +102,9 @@ namespace kai
 
 	void _ArduServo::updateR(void)
 	{
-		while (m_pT->bRun())
+		while (m_pTr->bRun())
 		{
-			m_pT->autoFPSfrom();
+			m_pTr->autoFPSfrom();
 
 			while (readCMD())
 			{
@@ -113,7 +113,7 @@ namespace kai
 				m_nCMDrecv++;
 			}
 
-			m_pT->autoFPSto();
+			m_pTr->autoFPSto();
 		}
 	}
 

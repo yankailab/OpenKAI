@@ -13,37 +13,36 @@
 namespace kai
 {
 
-class _StepperGripper: public _HYMCU_RS485
-{
-public:
-	_StepperGripper();
-	~_StepperGripper();
-
-	bool init(void* pKiss);
-	bool start(void);
-	void console(void* pConsole);
-
-	void grip(bool bOpen);
-	bool bGrip(void);
-
-private:
-	bool setMove(bool bOpen);
-	void updateMove(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _StepperGripper : public _HYMCU_RS485
 	{
-		((_StepperGripper*) This)->update();
-		return NULL;
-	}
+	public:
+		_StepperGripper();
+		~_StepperGripper();
 
-public:
-	bool m_bState;	//true:open false:close
-	bool m_bOpen;
+		bool init(void *pKiss);
+		bool start(void);
+		void console(void *pConsole);
 
-	float m_pOpen;
-	float m_pClose;
+		void grip(bool bOpen);
+		bool bGrip(void);
 
-};
+	private:
+		bool setMove(bool bOpen);
+		void updateMove(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_StepperGripper *)This)->update();
+			return NULL;
+		}
+
+	public:
+		bool m_bState; // true:open false:close
+		bool m_bOpen;
+
+		float m_pOpen;
+		float m_pClose;
+	};
 
 }
 #endif

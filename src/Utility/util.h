@@ -29,24 +29,6 @@ namespace kai
 		return 12742000.0 * asin(sqrt(a)); // 2 * R; R = 6371000 m
 	}
 
-	inline uint64_t getTbootMs(void)
-	{
-		// get number of milliseconds since boot
-		struct timespec tFromBoot;
-		clock_gettime(CLOCK_BOOTTIME, &tFromBoot);
-
-		return tFromBoot.tv_sec * 1000 + tFromBoot.tv_nsec / 1000000;
-	}
-
-	inline uint64_t getApproxTbootUs(void)
-	{
-		// get number of micro since boot
-		struct timespec tFromBoot;
-		clock_gettime(CLOCK_BOOTTIME, &tFromBoot);
-
-		return tFromBoot.tv_sec * SEC_2_USEC + (tFromBoot.tv_nsec >> 10); // / 1000;
-	}
-
 	inline double NormRand(void)
 	{
 		return ((double)rand()) / ((double)RAND_MAX);
@@ -333,20 +315,61 @@ namespace kai
 		return (val << 32) | (val >> 32);
 	}
 
-    inline uint8_t checksum(uint8_t *pB, int N)
-    {
-        NULL_F(pB);
+	inline uint8_t checksum(uint8_t *pB, int N)
+	{
+		NULL_F(pB);
 
-        uint32_t s = 0;
-        for (int i = 0; i < N; i++)
-        {
-            s += pB[i];
-        }
-        s &= 0xFF;
-        s = 0xFF - s;
-        return s;
-    }
+		uint32_t s = 0;
+		for (int i = 0; i < N; i++)
+		{
+			s += pB[i];
+		}
+		s &= 0xFF;
+		s = 0xFF - s;
+		return s;
+	}
 
+	inline uint8_t CRC8(const uint8_t *pD, int nB)
+	{
+		char crc = 0x00;
+		char extract;
+		char sum;
+		for (int i = 0; i < nB; i++)
+		{
+			extract = pD[i];
+			for (char tempI = 8; tempI; tempI--)
+			{
+				sum = (crc ^ extract) & 0x01;
+				crc >>= 1;
+				if (sum)
+					crc ^= 0x8C;
+				extract >>= 1;
+			}
+		}
+
+		return crc;
+	}
+
+	inline uint8_t crc8_MAXIM(uint8_t *pD, uint8_t nB)
+	{
+		uint8_t crc = 0x00;
+
+		while (nB--)
+		{
+			crc ^= *pD++;
+			for (int i = 0; i < 8; i++)
+			{
+				if (crc & 0x01)
+				{
+					crc = (crc >> 1) ^ 0x8c;
+				}
+				else
+					crc >>= 1;
+			}
+		}
+
+		return crc;
+	}
 
 }
 #endif

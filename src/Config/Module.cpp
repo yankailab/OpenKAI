@@ -22,6 +22,7 @@ namespace kai
 	{
 		IF_N(!pK);
 
+		ADD_MODULE(_ThreadCtrl);
 		ADD_MODULE(_SharedMem);
 		ADD_MODULE(Destimator);
 		ADD_MODULE(_Console);
@@ -56,6 +57,7 @@ namespace kai
 		ADD_MODULE(_ZLAC8015);
 		ADD_MODULE(_ZLAC8015D);
 		ADD_MODULE(_ZDmotor);
+		ADD_MODULE(_DDSM);
 #ifdef USE_XARM
 		ADD_MODULE(_xArm);
 #endif
