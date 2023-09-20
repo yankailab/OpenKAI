@@ -38,6 +38,8 @@ namespace kai
 		virtual void take(void);
 		virtual void save(void);
 
+		float getBufferCap(void);
+
 	protected:
 		// point cloud
 		virtual void scanReset(void);

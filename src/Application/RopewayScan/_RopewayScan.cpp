@@ -17,6 +17,7 @@ namespace kai
 		m_iAct = 0;
 		m_pLivox = NULL;
 		m_pVz = NULL;
+		m_msg = "";
 
 		m_fProcess.clearAll();
 	}
@@ -138,6 +139,12 @@ namespace kai
 	void _RopewayScan::scanUpdate(void)
 	{
 		IF_(check() < 0);
+
+		vFloat3 vT = m_pNav->t();
+
+		m_msg = "POS = (" + f2str(vT.x) + ", " + f2str(vT.y) + ", " +f2str(vT.z) + ")</br>";
+		m_msg += "MEM Vzense =" + f2str(m_pVz->getBufferCap()) + "</br>";
+		m_msg += "MEM Livox =" + f2str(m_pLivox->getBufferCap()) + "</br>";
 	}
 
 	void _RopewayScan::reset(void)
@@ -303,8 +310,8 @@ namespace kai
 
 		object o;
 		JO(o, "cmd", "hb");
-		//        JO(o, "id", (double)m_pCtrl->m_node.m_id);
-		//        JO(o, "s", m_pCtrl->m_state.getState());
+        JO(o, "s", "");
+        JO(o, "msg", m_msg);
 
 		sendMsg(o);
 	}

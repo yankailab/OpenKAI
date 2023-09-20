@@ -231,6 +231,11 @@ namespace kai
 		m_fProcess.set(rws_lv_save);
 	}
 
+	float _RopewayScanLivox::getBufferCap(void)
+	{
+		return m_rB;
+	}
+
 	void _RopewayScanLivox::updateK(void)
 	{
 		while (m_pTk->bRun())

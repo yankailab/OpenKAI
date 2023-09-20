@@ -9,7 +9,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -105,7 +105,7 @@
 	"dist":1,
 	"spd":0,
 	"direction":1,
-	"ieSendHB":1000000,
+	"ieSendHB":500000,
 }
 
 {
@@ -137,7 +137,7 @@
 	"nPresv":1000000,
 	"nPresvNext":0,
 	"/baseDir":"/home/kai/Documents/RWS/vzense/",
-	"baseDir":"/home/lab/usbmem/vzense/",
+	"baseDir":"/home/lab/usbmem/data/vzense/",
 	"rVoxel":0.05,
 }
 
@@ -145,7 +145,7 @@
 	"name":"VzensePC",
 	"class":"_VzensePC",
 	"bON":1,
-	"bLog":1,
+	"bLog":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -184,14 +184,14 @@
 	"vGeometryBase":["LivoxPC"],
 	"rVoxel":0.05,
 	"/baseDir":"/home/kai/Documents/RWS/livox/",
-	"baseDir":"/home/lab/usbmem/dev/livox/",
+	"baseDir":"/home/lab/usbmem/data/livox/",
 }
 
 {
 	"name":"LivoxPC",
 	"class":"_Livox",
 	"bON":1,
-	"bLog":1,
+	"bLog":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -211,7 +211,7 @@
 	"name":"LivoxLidar",
 	"class":"LivoxLidar",
 	"bON":1,
-	"bLog":1,
+	"bLog":0,
 	"/vBroadcastCode":["3JEDHC900100791"],
 	"bEnableFan":1,
 	"returnMode":1,

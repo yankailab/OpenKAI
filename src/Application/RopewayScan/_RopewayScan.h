@@ -91,6 +91,8 @@ namespace kai
 		float m_spd;		// unit speed
 		float m_direction;
 
+		string m_msg;
+
 		BIT_FLAG m_fProcess;
 		INTERVAL_EVENT m_ieSendHB;
 	};

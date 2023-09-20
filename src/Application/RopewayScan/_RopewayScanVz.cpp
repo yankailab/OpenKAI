@@ -195,6 +195,11 @@ namespace kai
 		m_fProcess.set(rws_vz_save);
 	}
 
+	float _RopewayScanVz::getBufferCap(void)
+	{
+		return m_rB;
+	}
+
 	void _RopewayScanVz::updateK(void)
 	{
 		while (m_pTk->bRun())
