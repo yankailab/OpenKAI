@@ -15,6 +15,15 @@
 
 namespace kai
 {
+    enum ROPEWAYSCAN_LV_THREAD_BIT
+	{
+		rws_lv_reset,
+		rws_lv_take,
+		rws_lv_start,
+		rws_lv_stop,
+		rws_lv_save,
+	};
+
 	class _RopewayScanLivox : public _PCstream
 	{
 	public:
@@ -26,16 +35,20 @@ namespace kai
 		virtual bool start(void);
 		virtual int check(void);
 
+		virtual bool bBusy(void);
+		virtual void resetScan(void);
+		virtual void startScan(void);
+		virtual void stopScan(void);
+		virtual void takeScan(void);
+		virtual void save(void);
+
 	protected:
 		//point cloud
 		virtual void scanReset(void);
-		virtual void scanStart(void);
-		virtual void scanUpdate(void);
 		virtual void scanTake(void);
+		virtual void scanStart(void);
 		virtual void scanStop(void);
-
 		virtual void savePC(void);
-
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -44,30 +57,31 @@ namespace kai
 		}
 
 		//attitude
-		virtual void updateSlam(void);
-		virtual void updateKinematics(void);
-		static void *getUpdateKinematics(void *This)
+		virtual void updateAttitude(void);
+		virtual void updateK(void);
+		static void *getUpdateK(void *This)
 		{
-			((_RopewayScanLivox *)This)->updateKinematics();
+			((_RopewayScanLivox *)This)->updateK();
 			return NULL;
 		}
 
 	protected:
 		_NavBase *m_pNav;
 		_Thread *m_pTk;
+		vector<_GeometryBase *> m_vpGB;
 
-		vector<PointCloud> m_vPC;	// original point cloud data frames
+		vector<PointCloud> m_vPC;
 		int m_nP;
 		int m_nPmax;
 		float m_rVoxel;
 		string m_baseDir;
 		string m_dir;
+		int m_tWait;
+		float m_rB;			// used buffer ratio
 
 		LivoxCtrl m_livoxCtrl;
 		BIT_FLAG m_fProcess;
 
-		bool m_bScanning;
-		int m_nTake;
 	};
 
 }

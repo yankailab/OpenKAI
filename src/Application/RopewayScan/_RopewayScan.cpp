@@ -72,10 +72,10 @@ namespace kai
 		m_pAct = (_ActuatorBase *)(pK->getInst(n));
 		NULL_Fl(m_pAct, n + ": not found");
 
-		// n = "";
-		// F_ERROR_F(pK->v("_RopewayScanLivox", &n));
-		// m_pLivox = (_RopewayScanLivox *)(pK->getInst(n));
-		// NULL_Fl(m_pLivox, n + ": not found");
+		n = "";
+		F_ERROR_F(pK->v("_RopewayScanLivox", &n));
+		m_pLivox = (_RopewayScanLivox *)(pK->getInst(n));
+		NULL_Fl(m_pLivox, n + ": not found");
 
 		n = "";
 		F_ERROR_F(pK->v("_RopewayScanVz", &n));
@@ -102,7 +102,7 @@ namespace kai
 	{
 		NULL__(m_pNav, -1);
 		NULL__(m_pAct, -1);
-		// NULL__(m_pLivox, -1);
+		NULL__(m_pLivox, -1);
 		NULL__(m_pVz, -1);
 
 		return this->_JSONbase::check();
@@ -145,6 +145,8 @@ namespace kai
 		IF_(check() < 0);
 
 		stop();
+		m_pVz->reset();
+		m_pLivox->resetScan();
 	}
 
 	void _RopewayScan::move(void)
@@ -166,6 +168,7 @@ namespace kai
 		IF_(check() < 0);
 
 		m_pVz->take();
+		m_pLivox->takeScan();
 	}
 
 	void _RopewayScan::save(void)
@@ -173,6 +176,7 @@ namespace kai
 		IF_(check() < 0);
 
 		m_pVz->save();
+		m_pLivox->save();
 	}
 
 	void _RopewayScan::updateR(void)

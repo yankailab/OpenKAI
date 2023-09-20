@@ -20,6 +20,8 @@ namespace kai
 		m_fProcess.clearAll();
 		m_baseDir = "";
 		m_dir = "";
+		
+		m_tWait = 5;
 	}
 
 	_RopewayScanLivox::~_RopewayScanLivox()
@@ -35,6 +37,7 @@ namespace kai
 		pK->v("rVoxel", &m_rVoxel);
 		pK->v("nPmax", &m_nPmax);
 		pK->v("baseDir", &m_baseDir);
+		pK->v("tWait", &m_tWait);
 
 		Kiss *pKk = pK->child("threadK");
 		IF_F(pKk->empty());
@@ -44,6 +47,8 @@ namespace kai
 			DEL(m_pTk);
 			return false;
 		}
+
+		m_fProcess.set(rws_lv_reset);
 
 		return true;
 	}
@@ -60,6 +65,16 @@ namespace kai
 		m_pNav = (_NavBase *)(pK->getInst(n));
 		NULL_Fl(m_pNav, n + ": not found");
 
+		vector<string> vGB;
+		pK->a("vGeometryBase", &vGB);
+		for (string p : vGB)
+		{
+			_GeometryBase *pGB = (_GeometryBase *)(pK->getInst(p));
+			IF_CONT(!pGB);
+
+			m_vpGB.push_back(pGB);
+		}
+
 		return true;
 	}
 
@@ -69,7 +84,7 @@ namespace kai
 		IF_F(!m_pT->start(getUpdate, this));
 
 		NULL_F(m_pTk);
-		IF_F(!m_pTk->start(getUpdateKinematics, this));
+		IF_F(!m_pTk->start(getUpdateK, this));
 
 		return true;
 	}
@@ -77,38 +92,25 @@ namespace kai
 	int _RopewayScanLivox::check(void)
 	{
 		NULL__(m_pNav, -1);
-//		IF__(m_vpGB.empty(), -1);
+		IF__(m_vpGB.empty(), -1);
 
 		return this->_PCstream::check();
 	}
 
 	void _RopewayScanLivox::update(void)
 	{
-		m_pT->sleepT(0);
-
-		// init
-//		m_fProcess.set(pc_ScanReset);
-
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPSfrom();
 
-			// if (m_fProcess.b(pc_ScanReset, true))
-			// 	scanReset();
+			if (m_fProcess.b(rws_lv_reset, true))
+				scanReset();
 
-			// if (m_fProcess.b(pc_ScanSet, true))
-			// 	scanSet();
+			if (m_fProcess.b(rws_lv_take, true))
+				scanTake();
 
-			// if (m_fProcess.b(pc_ScanStart, true))
-			// 	scanStart();
-
-			// if (m_fProcess.b(pc_ScanStop, true))
-			// 	scanStop();
-
-			// scanUpdate();
-
-			// if (m_fProcess.b(pc_SavePC, true))
-			// 	savePC();
+			if (m_fProcess.b(rws_lv_save, true))
+				savePC();
 
 			m_pT->autoFPSto();
 		}
@@ -118,6 +120,9 @@ namespace kai
 	{
 		IF_(check() < 0);
 
+		_Livox *pPsrc = (_Livox *)m_vpGB[0];
+		pPsrc->clear();
+
 		m_nP = 0;
 		for (int i = 0; i < m_vPC.size(); i++)
 		{
@@ -125,80 +130,50 @@ namespace kai
 			pP->Clear();
 		}
 		m_vPC.clear();
+
+		m_rB = 0.0;
 	}
 
 	void _RopewayScanLivox::scanStart(void)
 	{
 		IF_(check() < 0);
-		m_bScanning = true;
 
-//		_Livox *pPsrc = (_Livox *)m_vpGB[0];
-//		pPsrc->startStream();
-	}
-
-	void _RopewayScanLivox::scanUpdate(void)
-	{
-		IF_(check() < 0);
-
-
-		// Scanning
-//		_Livox *pPsrc = (_Livox *)m_vpGB[0];
-//		pPsrc->clear();
-
-		//TODO: change to point number
-//		sleep(m_scanSet.m_tWaitSec);
-		scanTake();
-
-	}
-
-	void _RopewayScanLivox::scanTake(void)
-	{
-		IF_(check() < 0);
-
-		// _PCstream *pPsrc = (_PCstream *)m_vpGB[0];
-		// PointCloud pc;
-		// pPsrc->getPC(&pc);
-		// int nPnew = pc.points_.size();
-		// IF_(nPnew <= 0);
-		// int i;
-
-		// // Add original
-		// m_vPC.push_back(pc);
-		// m_nP += pc.points_.size();
-
-		// // Add voxel down for preview
-		// PointCloud pcVd = *pc.VoxelDownSample(m_rVoxel);
-		// int nPvd = pcVd.points_.size();
-		// for (i = 0; i < nPvd; i++)
-		// {
-		// 	m_pPCprv->points_[m_iPprv] = pcVd.points_[i];
-		// 	m_pPCprv->colors_[m_iPprv] = pcVd.colors_[i];
-		// 	m_iPprv++;
-		// 	if (m_iPprv >= m_nPresv)
-		// 		break;
-		// }
-
-//		float rPorig = (float)m_nP / (float)m_nPmax;
-//		float rPprv = (float)m_iPprv / (float)m_nPresv;
+		_Livox *pPsrc = (_Livox *)m_vpGB[0];
+		pPsrc->startStream();
 	}
 
 	void _RopewayScanLivox::scanStop(void)
 	{
 		IF_(check() < 0);
 
-		m_bScanning = false;
+		_Livox *pPsrc = (_Livox *)m_vpGB[0];
+		pPsrc->stopStream();
+	}
 
-		// _Livox *pPsrc = (_Livox *)m_vpGB[0];
-		// pPsrc->stopStream();
+	void _RopewayScanLivox::scanTake(void)
+	{
+		IF_(check() < 0);
+
+		_Livox *pPsrc = (_Livox *)m_vpGB[0];
+		pPsrc->clear();
+		sleep(m_tWait);
+
+		PointCloud pc;
+		pPsrc->getPC(&pc);
+		int nPnew = pc.points_.size();
+		IF_(nPnew <= 0);
+
+		// Add original
+		m_vPC.push_back(pc);
+		m_nP += nPnew;
+
+		m_rB = (float)m_nP / (float)m_nPmax;
 	}
 
 	void _RopewayScanLivox::savePC(void)
 	{
 		IF_(check() < 0);
-		if (m_nP <= 0)
-		{
-			return;
-		}
+		IF_(m_nP <= 0);
 
 		// Make new folder
 		m_dir = m_baseDir + tFormat() + "/";
@@ -224,41 +199,61 @@ namespace kai
 		nSave += (io::WritePointCloudToPLY(m_dir + "_merged.ply",
 										   pcMerge,
 										   par)) ? 1 : 0;
-
-		string msg;
-		if (nSave > m_vPC.size())
-		{
-			msg = "Saved to: " + m_dir;
-		}
-		else
-		{
-			msg = "Failed to save: " + m_dir;
-		}
 	}
 
-	void _RopewayScanLivox::updateKinematics(void)
+	bool _RopewayScanLivox::bBusy(void)
+	{
+		return m_fProcess.bClear();
+	}
+
+	void _RopewayScanLivox::resetScan(void)
+	{
+		m_fProcess.set(rws_lv_reset);
+	}
+
+	void _RopewayScanLivox::startScan(void)
+	{
+		m_fProcess.set(rws_lv_start);
+	}
+
+	void _RopewayScanLivox::stopScan(void)
+	{
+		m_fProcess.set(rws_lv_stop);
+	}
+
+	void _RopewayScanLivox::takeScan(void)
+	{
+		m_fProcess.set(rws_lv_take);
+	}
+
+	void _RopewayScanLivox::save(void)
+	{
+		m_fProcess.set(rws_lv_save);
+	}
+
+	void _RopewayScanLivox::updateK(void)
 	{
 		while (m_pTk->bRun())
 		{
 			m_pTk->autoFPSfrom();
 
-			updateSlam();
+			updateAttitude();
 
 			m_pTk->autoFPSto();
 		}
 	}
 
-	void _RopewayScanLivox::updateSlam(void)
+	void _RopewayScanLivox::updateAttitude(void)
 	{
 		IF_(check() < 0);
 		IF_(!m_pNav->bOpen());
 
 		auto mT = m_pNav->mT();
-		// for (int i = 0; i < m_vpGB.size(); i++)
-		// {
-		// 	_GeometryBase *pP = m_vpGB[i];
-		// 	pP->setTranslation(mT.cast<double>());
-		// }
+		for (int i = 0; i < m_vpGB.size(); i++)
+		{
+			_GeometryBase *pP = m_vpGB[i];
+			pP->setTranslation(mT.cast<double>());
+		}
 	}
 
 
