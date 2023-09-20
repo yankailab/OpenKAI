@@ -19,10 +19,8 @@ namespace kai
 		m_device = "CPU:0";
 		m_vCoR.set(0, 0, 0);
 
-#ifdef USE_GUI
 		m_pWin = NULL;
 		m_pUIstate = NULL;
-#endif
 		m_modelName = "PCMODEL";
 		m_dirSave = "/home/lab/";
 
@@ -36,9 +34,7 @@ namespace kai
 
 	_GeometryViewer::~_GeometryViewer()
 	{
-#ifdef USE_GUI
 		DEL(m_pWin);
-#endif
 	}
 
 	bool _GeometryViewer::init(void *pKiss)
@@ -159,10 +155,8 @@ namespace kai
 		IF_(n <= 0);
 
 		m_aabb = pPC->GetAxisAlignedBoundingBox();
-#ifdef USE_GUI
 		if (m_pUIstate)
 			m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
-#endif
 
 		PointCloud pc = *pPC;
 		if (n < m_nPresv)
@@ -183,34 +177,28 @@ namespace kai
 	{
 		IF_(pc.IsEmpty());
 
-#ifdef USE_GUI
 		m_pWin->AddPointCloud(m_modelName,
 							  make_shared<t::geometry::PointCloud>(
 								  t::geometry::PointCloud::FromLegacy(
 									  pc,
 									  core::Dtype::Float32)));
-#endif
 	}
 
 	void _GeometryViewer::updateUIpc(const PointCloud &pc)
 	{
 		IF_(pc.IsEmpty());
 
-#ifdef USE_GUI
 		//TODO: atomic
 		m_pWin->UpdatePointCloud(m_modelName,
 								 make_shared<t::geometry::PointCloud>(
 									 t::geometry::PointCloud::FromLegacy(
 										 pc,
 										 core::Dtype::Float32)));
-#endif
 	}
 
 	void _GeometryViewer::removeUIpc(void)
 	{
-#ifdef USE_GUI
 		m_pWin->RemoveGeometry(m_modelName);
-#endif
 	}
 
 	void _GeometryViewer::readAllPC(void)
@@ -260,7 +248,6 @@ namespace kai
 
 	void _GeometryViewer::updateCamProj(void)
 	{
-#ifdef USE_GUI
 		IF_(check() < 0);
 		IF_(!m_pWin);
 
@@ -268,29 +255,24 @@ namespace kai
 						   m_camProj.m_vNF.x,
 						   m_camProj.m_vNF.y,
 						   m_camProj.m_fovType);
-#endif
 	}
 
 	void _GeometryViewer::updateCamPose(void)
 	{
-#ifdef USE_GUI
 		IF_(check() < 0);
 		IF_(!m_pWin);
 
 		m_pWin->CamSetPose(m_cam.m_vLookAt.v3f(),
 						   m_cam.m_vEye.v3f(),
 						   m_cam.m_vUp.v3f());
-#endif
 	}
 
 	void _GeometryViewer::camBound(const AxisAlignedBoundingBox &aabb)
 	{
-#ifdef USE_GUI
 		IF_(check() < 0);
 		IF_(!m_pWin);
 
 		m_pWin->CamAutoBound(aabb, m_vCoR.v3f());
-#endif
 	}
 
 	void _GeometryViewer::resetCamPose(void)
@@ -300,7 +282,6 @@ namespace kai
 
 	void _GeometryViewer::updateUI(void)
 	{
-#ifdef USE_GUI
 		auto &app = gui::Application::GetInstance();
 		app.Initialize(m_pathRes.c_str());
 
@@ -324,7 +305,6 @@ namespace kai
 		m_pT->wakeUp();
 		app.Run();
 		exit(0);
-#endif
 	}
 
 	AxisAlignedBoundingBox _GeometryViewer::createDefaultAABB(void)

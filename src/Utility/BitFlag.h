@@ -10,6 +10,11 @@ struct BIT_FLAG
 {
 	uint64_t m_flag = 0;
 
+	bool bClear(void)
+	{
+		return (m_flag == 0);
+	}
+
 	void clearAll(void)
 	{
 		m_flag = 0;

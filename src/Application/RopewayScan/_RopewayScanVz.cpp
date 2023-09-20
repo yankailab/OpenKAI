@@ -16,8 +16,6 @@ namespace kai
 
 		m_nP = 0;
 		m_nPmax = INT_MAX;
-		m_pPCprv = NULL;
-		m_iPprv = 0;
 		m_rVoxel = 0.1;
 		m_fProcess.clearAll();
 		m_baseDir = "";
@@ -31,10 +29,8 @@ namespace kai
 
 	bool _RopewayScanVz::init(void *pKiss)
 	{
-		IF_F(!this->_GeometryViewer::init(pKiss));
+		IF_F(!this->_PCframe::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-
-		m_pPCprv = m_sPC.get();
 
 		pK->v("rVoxel", &m_rVoxel);
 		pK->v("nPmax", &m_nPmax);
@@ -49,12 +45,14 @@ namespace kai
 			return false;
 		}
 
+		m_fProcess.set(rws_vz_reset);
+
 		return true;
 	}
 
 	bool _RopewayScanVz::link(void)
 	{
-		IF_F(!this->_GeometryViewer::link());
+		IF_F(!this->_PCframe::link());
 		IF_F(!m_pTk->link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
@@ -63,6 +61,16 @@ namespace kai
 		F_ERROR_F(pK->v("_NavBase", &n));
 		m_pNav = (_NavBase *)(pK->getInst(n));
 		NULL_Fl(m_pNav, n + ": not found");
+
+		vector<string> vGB;
+		pK->a("vGeometryBase", &vGB);
+		for (string p : vGB)
+		{
+			_GeometryBase *pGB = (_GeometryBase *)(pK->getInst(p));
+			IF_CONT(!pGB);
+
+			m_vpGB.push_back(pGB);
+		}
 
 		return true;
 	}
@@ -73,7 +81,7 @@ namespace kai
 		IF_F(!m_pT->start(getUpdate, this));
 
 		NULL_F(m_pTk);
-		IF_F(!m_pTk->start(getUpdateKinematics, this));
+		IF_F(!m_pTk->start(getUpdateK, this));
 
 		return true;
 	}
@@ -83,36 +91,23 @@ namespace kai
 		NULL__(m_pNav, -1);
 		IF__(m_vpGB.empty(), -1);
 
-		return this->_GeometryViewer::check();
+		return this->_PCframe::check();
 	}
 
 	void _RopewayScanVz::update(void)
 	{
-		m_pT->sleepT(0);
-
-		// init
-		m_fProcess.set(pc_ScanReset);
-
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPSfrom();
 
-			// if (m_fProcess.b(pc_ScanReset, true))
-			// 	scanReset();
+			if (m_fProcess.b(rws_vz_reset, true))
+				scanReset();
 
-			// if (m_fProcess.b(pc_ScanSet, true))
-			// 	scanSet();
+			if (m_fProcess.b(rws_vz_take, true))
+				scanTake();
 
-			// if (m_fProcess.b(pc_ScanStart, true))
-			// 	scanStart();
-
-			// if (m_fProcess.b(pc_ScanStop, true))
-			// 	scanStop();
-
-			// scanUpdate();
-
-			// if (m_fProcess.b(pc_SavePC, true))
-			// 	savePC();
+			if (m_fProcess.b(rws_vz_save, true))
+				savePC();
 
 			m_pT->autoFPSto();
 		}
@@ -120,8 +115,6 @@ namespace kai
 
 	void _RopewayScanVz::scanReset(void)
 	{
-		IF_(check() < 0);
-
 		m_nP = 0;
 		for (int i = 0; i < m_vPC.size(); i++)
 		{
@@ -130,31 +123,7 @@ namespace kai
 		}
 		m_vPC.clear();
 
-		// voxel down point cloud for preview
-		m_iPprv = 0;
-		m_pPCprv->Clear();
-		addDummyPoints(m_pPCprv, m_nPresv, m_rDummyDome);
-
-		removeUIpc();
-		addUIpc(*m_pPCprv);
-		m_fProcess.set(pc_Scanning);
-	}
-
-	void _RopewayScanVz::scanStart(void)
-	{
-		IF_(check() < 0);
-
-		m_bScanning = true;
-	}
-
-	void _RopewayScanVz::scanUpdate(void)
-	{
-		IF_(check() < 0);
-
-		// Scanning
-//		sleep(m_scanSet.m_tWaitSec);
-		scanTake();
-
+		m_rB = 0.0;
 	}
 
 	void _RopewayScanVz::scanTake(void)
@@ -166,42 +135,18 @@ namespace kai
 		pPsrc->getPC(&pc);
 		int nPnew = pc.points_.size();
 		IF_(nPnew <= 0);
-		int i;
 
 		// Add original
 		m_vPC.push_back(pc);
-		m_nP += pc.points_.size();
+		m_nP += nPnew;
 
-		// Add voxel down for preview
-		PointCloud pcVd = *pc.VoxelDownSample(m_rVoxel);
-		int nPvd = pcVd.points_.size();
-		for (i = 0; i < nPvd; i++)
-		{
-			m_pPCprv->points_[m_iPprv] = pcVd.points_[i];
-			m_pPCprv->colors_[m_iPprv] = pcVd.colors_[i];
-			m_iPprv++;
-			if (m_iPprv >= m_nPresv)
-				break;
-		}
-
-//		float rPorig = (float)m_nP / (float)m_nPmax;
-//		float rPprv = (float)m_iPprv / (float)m_nPresv;
-	}
-
-	void _RopewayScanVz::scanStop(void)
-	{
-		IF_(check() < 0);
-
-		m_bScanning = false;
+		m_rB = (float)m_nP / (float)m_nPmax;
 	}
 
 	void _RopewayScanVz::savePC(void)
 	{
 		IF_(check() < 0);
-		if (m_nP <= 0)
-		{
-			return;
-		}
+		IF_(m_nP <= 0);
 
 		// Make new folder
 		m_dir = m_baseDir + tFormat() + "/";
@@ -227,31 +172,42 @@ namespace kai
 		nSave += (io::WritePointCloudToPLY(m_dir + "_merged.ply",
 										   pcMerge,
 										   par)) ? 1 : 0;
-
-		string msg;
-		if (nSave > m_vPC.size())
-		{
-			msg = "Saved to: " + m_dir;
-		}
-		else
-		{
-			msg = "Failed to save: " + m_dir;
-		}
 	}
 
-	void _RopewayScanVz::updateKinematics(void)
+
+	bool _RopewayScanVz::bBusy(void)
+	{
+		return m_fProcess.bClear();
+	}
+
+	void _RopewayScanVz::reset(void)
+	{
+		m_fProcess.set(rws_vz_reset);
+	}
+
+	void _RopewayScanVz::take(void)
+	{
+		m_fProcess.set(rws_vz_take);
+	}
+
+	void _RopewayScanVz::save(void)
+	{
+		m_fProcess.set(rws_vz_save);
+	}
+
+	void _RopewayScanVz::updateK(void)
 	{
 		while (m_pTk->bRun())
 		{
 			m_pTk->autoFPSfrom();
 
-			updateSlam();
+			updateAttitude();
 
 			m_pTk->autoFPSto();
 		}
 	}
 
-	void _RopewayScanVz::updateSlam(void)
+	void _RopewayScanVz::updateAttitude(void)
 	{
 		IF_(check() < 0);
 		IF_(!m_pNav->bOpen());
@@ -263,4 +219,5 @@ namespace kai
 			pP->setTranslation(mT.cast<double>());
 		}
 	}
+
 }

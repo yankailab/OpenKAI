@@ -9,15 +9,13 @@
 #define OpenKAI_src_Application_RopewayScan__RopewayScanLivox_H_
 
 #include "../../3D/PointCloud/_PCstream.h"
-#include "../../3D/_GeometryViewer.h"
+#include "../../LIDAR/Livox/_Livox.h"
 #include "../../Navigation/_NavBase.h"
 #include "../../Utility/BitFlag.h"
-#include "../../Actuator/_ActuatorBase.h"
-#include "../../LIDAR/Livox/_Livox.h"
 
 namespace kai
 {
-	class _RopewayScanLivox : public _GeometryViewer
+	class _RopewayScanLivox : public _PCstream
 	{
 	public:
 		_RopewayScanLivox();
@@ -54,14 +52,6 @@ namespace kai
 			return NULL;
 		}
 
-		// handlers
-		static void OnScanReset(void *pPCV, void* pD);
-		static void OnScanSet(void *pPCV, void* pD);
-		static void OnScanStart(void *pPCV, void* pD);
-		static void OnScanStop(void *pPCV, void* pD);
-
-		static void OnSavePC(void *pPCV, void* pD);
-
 	protected:
 		_NavBase *m_pNav;
 		_Thread *m_pTk;
@@ -69,8 +59,6 @@ namespace kai
 		vector<PointCloud> m_vPC;	// original point cloud data frames
 		int m_nP;
 		int m_nPmax;
-		PointCloud* m_pPCprv;
-		int m_iPprv;
 		float m_rVoxel;
 		string m_baseDir;
 		string m_dir;

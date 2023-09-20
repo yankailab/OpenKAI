@@ -2,8 +2,8 @@ function wsInit()
 {
 //    function $(selector) { return document.querySelector(selector);}
   
-//  wsSocket = new WebSocket('ws://127.0.0.1:7890');
-  wsSocket = new WebSocket('ws://192.168.1.10:7890');
+  wsSocket = new WebSocket('ws://127.0.0.1:7890');
+//  wsSocket = new WebSocket('ws://192.168.1.10:7890');
 
   wsSocket.onopen = function(event)
   {

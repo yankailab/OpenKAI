@@ -137,7 +137,6 @@ namespace kai
                 handleMsg(m_strB);
                 m_strB.clear();
             }
-            //        m_pT->sleepT ( 0 ); //wait for the IObase to wake me up when received data
 
             m_pTr->autoFPSto();
         }

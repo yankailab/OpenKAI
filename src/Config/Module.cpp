@@ -28,7 +28,6 @@ namespace kai
 		ADD_MODULE(_Console);
 
 #ifdef WITH_3D && USE_OPEN3D
-		ADD_MODULE(_GeometryViewer);
 		ADD_MODULE(_MeshStream);
 		ADD_MODULE(_PCstream);
 		ADD_MODULE(_PCframe);
@@ -44,6 +43,9 @@ namespace kai
 		ADD_MODULE(_PCregistCol);
 		ADD_MODULE(_PCregistICP);
 		ADD_MODULE(_PCregistGlobal);
+#ifdef USE_GUI
+		ADD_MODULE(_GeometryViewer);
+#endif
 #endif
 
 #ifdef WITH_ACTUATOR
@@ -129,13 +131,13 @@ namespace kai
 		ADD_MODULE(_PCcalib);
 #endif
 
-#ifdef WITH_APP_VZSCAN && USE_VZENSE && WITH_3D && USE_OPEN3D
+#ifdef WITH_APP_VZSCAN && USE_VZENSE && WITH_3D && USE_OPEN3D &&USE_GUI
 		ADD_MODULE(_VzScan);
 		ADD_MODULE(_VzScanAuto);
 		ADD_MODULE(_VzScanCalib);
 #endif
 
-#ifdef WITH_APP_LIVOXSCAN && USE_LIVOX && WITH_3D && USE_OPEN3D
+#ifdef WITH_APP_LIVOXSCAN && USE_LIVOX && WITH_3D && USE_OPEN3D &&USE_GUI
 		ADD_MODULE(_LivoxScanAuto);
 //		ADD_MODULE(_LivoxScanCalib);
 #endif

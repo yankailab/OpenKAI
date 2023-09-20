@@ -9,9 +9,7 @@
 #define OpenKAI_src_3D__GeometryViewer_H_
 
 #include "PointCloud/_PCframe.h"
-#ifdef USE_GUI
 #include "../UI/O3DUI.h"
-#endif
 
 namespace kai
 {
@@ -86,10 +84,8 @@ namespace kai
 		}
 
 	protected:
-#ifdef USE_GUI
 		O3DUI* m_pWin;
 		UIState* m_pUIstate;
-#endif
 		_Thread *m_pTui;
 		string m_modelName;
 		string m_dirSave;

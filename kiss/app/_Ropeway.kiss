@@ -98,7 +98,7 @@
 	"_NavBase":"rs",
 	"_ActuatorBase":"DDSM",
 	"_RopewayScanLivox":"livox",
-	"_RopewayScanVzVz":"vz",
+	"_RopewayScanVz":"vz",
 
 	"msgFinishSend":"",
 	"msgFinishRecv":"EOJ",
@@ -111,9 +111,31 @@
 }
 
 {
+	"name":"vz",
+	"class":"_RopewayScanVz",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+    {
+		"name":"threadK",
+		"FPS":200,
+	}
+	"_NavBase":"rs",
+	"vGeometryBase":["VzensePC"],
+	"nPmax":1000000000,
+	"nPresv":1000000,
+	"nPresvNext":0,
+	"/baseDir":"/home/kai/Documents/RWS/",
+	"baseDir":"/home/lab/usbmem/data/",
+	"rVoxel":0.05,
+}
+
+{
 	"name":"VzensePC",
 	"class":"_VzensePC",
-	"bON":0,
+	"bON":1,
 	"bLog":1,
     {
 		"name":"thread",
@@ -126,7 +148,8 @@
 	"vAxisIdx":[0, 1, 2],
 	"vAxisK":[1, -1, -1],
 	"/vAxisK":[-1, 1, -1],
-	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calibVz.kiss",
+	"/fCalib":"/home/kai/dev/OpenKAI/kiss/app/calibVz.kiss",
+	"fCalib":"/home/lab/usbmem/dev/OpenKAI/kiss/app/calibVz.kiss",
 	"nPresv":400000,
 	"tWait":200,
 	"vRange":[0.0, 10.0],
@@ -139,6 +162,6 @@
 	"bLog":1,
     {
 		"name":"thread",
-		"FPS":200,
+		"FPS":30,
 	}
 }

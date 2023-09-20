@@ -18,7 +18,6 @@
 #include "../UI/_Console.h"
 
 #ifdef WITH_3D &&USE_OPEN3D
-#include "../3D/_GeometryViewer.h"
 #include "../3D/Mesh/_MeshStream.h"
 #include "../3D/PointCloud/_PCstream.h"
 #include "../3D/PointCloud/_PCframe.h"
@@ -34,6 +33,9 @@
 #include "../3D/PointCloud/PCregistration/_PCregistCol.h"
 #include "../3D/PointCloud/PCregistration/_PCregistICP.h"
 #include "../3D/PointCloud/PCregistration/_PCregistGlobal.h"
+#ifdef USE_GUI
+#include "../3D/_GeometryViewer.h"
+#endif
 #endif
 
 #ifdef WITH_ACTUATOR
@@ -112,20 +114,20 @@
 #include "../Application/Measurement/_RaspiWSbattery.h"
 #endif
 
-#ifdef WITH_APP_3DSCAN &&WITH_3D &&USE_OPEN3D
+#ifdef WITH_APP_3DSCAN &&WITH_3D &&USE_OPEN3D &&USE_GUI
 #include "../Application/3Dscan/_3DScanCalibCam.h"
 #include "../Application/3Dscan/_3DScanCalibOfs.h"
 #include "../Application/3Dscan/_PCscan.h"
 #include "../Application/3Dscan/_PCcalib.h"
 #endif
 
-#ifdef WITH_APP_VZSCAN &&USE_VZENSE &&WITH_3D &&USE_OPEN3D
+#ifdef WITH_APP_VZSCAN &&USE_VZENSE &&WITH_3D &&USE_OPEN3D &&USE_GUI
 #include "../Application/VzScan/_VzScan.h"
 #include "../Application/VzScan/_VzScanAuto.h"
 #include "../Application/VzScan/_VzScanCalib.h"
 #endif
 
-#ifdef WITH_APP_LIVOXSCAN &&USE_LIVOX &&WITH_3D &&USE_OPEN3D
+#ifdef WITH_APP_LIVOXSCAN &&USE_LIVOX &&WITH_3D &&USE_OPEN3D &&USE_GUI
 #include "../Application/LivoxScan/_LivoxScanAuto.h"
 // #include "../Application/LivoxScan/_LivoxScanCalib.h"
 #endif

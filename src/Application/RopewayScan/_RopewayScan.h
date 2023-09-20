@@ -38,7 +38,7 @@ namespace kai
 		virtual int check(void);
 		virtual void console(void *pConsole);
 
-	protected:
+	private:
 		// main thread
 		void reset(void);
 		void move(void);

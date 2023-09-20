@@ -25,12 +25,6 @@
     <!-- Regular MDB theme -->
     <!-- <link rel="stylesheet" href="css/mdb.min.css" /> -->
 
-    <!-- Leaflet -->
-    <link rel="stylesheet" href="css/map.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <!-- Make sure you put this AFTER Leaflet's CSS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="js/leaflet.sprite.js"></script>
   </head>
 
   <body>
@@ -39,9 +33,9 @@
     <section>
       <div class="text-center">
         <h5><strong id="state">State: </strong></h5>
-        <a id="btnReset" class="btn btn-primary mb-5 ripple-surface" role="button">Reset</a>
-        <a id="btnMove" class="btn btn-primary mb-5 ripple-surface" role="button">Move</a>
-        <a id="btnStop" class="btn btn-primary mb-5 ripple-surface" role="button">Stop</a>
+        <a id="btnReset" class="btn btn-primary mb-5 ripple-surface" role="button" type="button" class="btn btn-warning">Reset</a>
+        <a id="btnMove" class="btn btn-primary mb-5 ripple-surface" role="button" type="button" class="btn btn-success">Move</a>
+        <a id="btnStop" class="btn btn-primary mb-5 ripple-surface" role="button" type="button" class="btn btn-danger">Stop</a>
         <a id="btnTake" class="btn btn-primary mb-5 ripple-surface" role="button">Take</a>
         <a id="btnSave" class="btn btn-primary mb-5 ripple-surface" role="button">Save</a>
       </div>
@@ -55,28 +49,28 @@
 
     <section>
       <div class="text-center">
-        Speed:
-        <input id="spd" style="WIDTH: 100px; HEIGHT: 50px" value=0>
-        <button id="spdInc" style="WIDTH: 50px; HEIGHT: 50px">+</button>
-        <button id="spdDec" style="WIDTH: 50px; HEIGHT: 50px">-</button>    
-        </br>
-    
         Direction:
-        <input id="direction" style="WIDTH: 100px; HEIGHT: 50px" value=0>
-        <button id="dirL" style="WIDTH: 50px; HEIGHT: 50px">L</button>
-        <button id="dirR" style="WIDTH: 50px; HEIGHT: 50px">R</button>    
+        <input id="direction" style="WIDTH: 100px; HEIGHT: 50px" value=1>
+        <button id="dirL" style="WIDTH: 50px; HEIGHT: 50px" type="button" class="btn btn-primary">L</button>
+        <button id="dirR" style="WIDTH: 50px; HEIGHT: 50px" type="button" class="btn btn-secondary">R</button>    
         </br>
 
+        Speed:
+        <input id="spd" style="WIDTH: 100px; HEIGHT: 50px" value=10>
+        <button id="spdInc" style="WIDTH: 50px; HEIGHT: 50px" type="button" class="btn btn-primary">+</button>
+        <button id="spdDec" style="WIDTH: 50px; HEIGHT: 50px" type="button" class="btn btn-secondary">-</button>
+        </br>
+    
         Distance:
-        <input id="dist" style="WIDTH: 100px; HEIGHT: 50px" value=0>
-        <button id="distInc" style="WIDTH: 50px; HEIGHT: 50px">+</button>
-        <button id="distDec" style="WIDTH: 50px; HEIGHT: 50px">-</button>    
+        <input id="dist" style="WIDTH: 100px; HEIGHT: 50px" value=5>
+        <button id="distInc" style="WIDTH: 50px; HEIGHT: 50px" type="button" class="btn btn-primary">+</button>
+        <button id="distDec" style="WIDTH: 50px; HEIGHT: 50px" type="button" class="btn btn-secondary">-</button>
         </br>
 
         Interval:
-        <input id="dInt" style="WIDTH: 100px; HEIGHT: 50px" value=0>
-        <button id="dIntInc" style="WIDTH: 50px; HEIGHT: 50px">+</button>
-        <button id="dIntDec" style="WIDTH: 50px; HEIGHT: 50px">-</button>    
+        <input id="dInt" style="WIDTH: 100px; HEIGHT: 50px" value=1>
+        <button id="dIntInc" style="WIDTH: 50px; HEIGHT: 50px" type="button" class="btn btn-primary">+</button>
+        <button id="dIntDec" style="WIDTH: 50px; HEIGHT: 50px" type="button" class="btn btn-secondary">-</button>
         </br>
 
       </div>
@@ -94,6 +88,5 @@
     <script type="text/javascript"></script>
     <script src="js/wsUIbase.js"></script>
     <script src="js/wsUIctrl.js"></script>
-    <script src="js/mapUI.js"></script>
   </body>
 </html>

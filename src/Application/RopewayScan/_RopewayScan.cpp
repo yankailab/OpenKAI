@@ -50,15 +50,6 @@ namespace kai
 			return false;
 		}
 
-		pKt = pK->child("threadR");
-		IF_F(pKt->empty());
-		m_pTr = new _Thread();
-		if (!m_pTr->init(pKt))
-		{
-			DEL(m_pTr);
-			return false;
-		}
-
 		reset();
 
 		return true;
@@ -86,10 +77,10 @@ namespace kai
 		// m_pLivox = (_RopewayScanLivox *)(pK->getInst(n));
 		// NULL_Fl(m_pLivox, n + ": not found");
 
-		// n = "";
-		// F_ERROR_F(pK->v("_RopewayScanVz", &n));
-		// m_pVz = (_RopewayScanVz *)(pK->getInst(n));
-		// NULL_Fl(m_pVz, n + ": not found");
+		n = "";
+		F_ERROR_F(pK->v("_RopewayScanVz", &n));
+		m_pVz = (_RopewayScanVz *)(pK->getInst(n));
+		NULL_Fl(m_pVz, n + ": not found");
 
 		return true;
 	}
@@ -112,7 +103,7 @@ namespace kai
 		NULL__(m_pNav, -1);
 		NULL__(m_pAct, -1);
 		// NULL__(m_pLivox, -1);
-		// NULL__(m_pVz, -1);
+		NULL__(m_pVz, -1);
 
 		return this->_JSONbase::check();
 	}
@@ -173,11 +164,15 @@ namespace kai
 	void _RopewayScan::take(void)
 	{
 		IF_(check() < 0);
+
+		m_pVz->take();
 	}
 
 	void _RopewayScan::save(void)
 	{
 		IF_(check() < 0);
+
+		m_pVz->save();
 	}
 
 	void _RopewayScan::updateR(void)
@@ -276,15 +271,15 @@ namespace kai
 		{
 			if (!m_pIO)
 			{
-				m_pT->sleepT(SEC_2_USEC);
+				m_pTw->sleepT(SEC_2_USEC);
 				continue;
 			}
 
-			m_pT->autoFPSfrom();
+			m_pTw->autoFPSfrom();
 
 			send();
 
-			m_pT->autoFPSto();
+			m_pTw->autoFPSto();
 		}
 	}
 
