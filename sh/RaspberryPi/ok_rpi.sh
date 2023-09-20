@@ -107,7 +107,7 @@ sudo nano /etc/dhcpcd.conf
 -----------------------
 interface wlan0/eth0
 static ip_address=192.168.144.100/24
-#static_routers=192.168.7.1
+#static routers=192.168.7.1
 #static domain_name_servers=192.168.1.1
 -----------------------
 sudo reboot now

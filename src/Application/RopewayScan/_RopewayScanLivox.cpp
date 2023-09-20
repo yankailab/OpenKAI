@@ -122,8 +122,6 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		m_pWin->ShowMsg("Scan", "Initializing");
-
 		m_nP = 0;
 		for (int i = 0; i < m_vPC.size(); i++)
 		{
@@ -144,7 +142,6 @@ namespace kai
 		resetCamPose();
 		updateCamPose();
 
-		m_pWin->CloseDialog();
 	}
 
 	void _RopewayScanLivox::scanStart(void)
@@ -217,11 +214,8 @@ namespace kai
 		IF_(check() < 0);
 		if (m_nP <= 0)
 		{
-			m_pWin->ShowMsg("FILE", "Model is empty", true);
 			return;
 		}
-
-		m_pWin->ShowMsg("FILE", "Saving .PLY file");
 
 		// Make new folder
 		m_dir = m_baseDir + tFormat() + "/";
@@ -248,17 +242,14 @@ namespace kai
 										   pcMerge,
 										   par)) ? 1 : 0;
 
-		m_pWin->CloseDialog();
 		string msg;
 		if (nSave > m_vPC.size())
 		{
 			msg = "Saved to: " + m_dir;
-			m_pWin->ShowMsg("FILE", msg.c_str(), true);
 		}
 		else
 		{
 			msg = "Failed to save: " + m_dir;
-			m_pWin->ShowMsg("FILE", msg.c_str(), true);
 		}
 	}
 
