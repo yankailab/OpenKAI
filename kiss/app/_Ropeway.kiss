@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["serial","DDSM"],
+	"vBASE":["/serial","ws","DDSM","rwsCtrl"],
 }
 
 {
@@ -31,8 +31,8 @@
 		"FPS":10,
 		"/vTwakeUp":["DDSM.threadR"],
 	}
-	"port":"/dev/ttyUSB0",
-	"/port":"/dev/ttyAMA0",
+	"/port":"/dev/ttyUSB0",
+	"port":"/dev/ttyAMA1",
 	"baud":115200,
 }
 
@@ -60,5 +60,85 @@
 			"sRange":[-100,100],
 			"sErr":1,
 		}
+	}
+}
+
+{
+	"name":"ws",
+	"class":"_WebSocket",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+}
+
+{
+	"name":"rwsCtrl",
+	"class":"_RopewayScan",
+	"bON":1,
+	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+    {
+		"name":"threadW",
+		"FPS":5,
+	}
+	"_IOBase":"ws",
+	"_NavBase":"rs",
+	"_ActuatorBase":"DDSM",
+	"_RopewayScanLivox":"livox",
+	"_RopewayScanVzVz":"vz",
+
+	"msgFinishSend":"",
+	"msgFinishRecv":"EOJ",
+	"iAct":0,
+	"dist":1,
+	"spd":0,
+	"direction":1,
+
+	"ieSendHB":1000000,
+}
+
+{
+	"name":"VzensePC",
+	"class":"_VzensePC",
+	"bON":0,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"URI":"",
+	"vSize":[800,600],
+	"btRGB":1,
+	"btDepth":0,
+	"vAxisIdx":[0, 1, 2],
+	"vAxisK":[1, -1, -1],
+	"/vAxisK":[-1, 1, -1],
+	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calibVz.kiss",
+	"nPresv":400000,
+	"tWait":200,
+	"vRange":[0.0, 10.0],
+}
+
+{
+	"name":"rs",
+	"class":"_RStracking",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":200,
 	}
 }

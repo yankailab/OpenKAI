@@ -130,6 +130,12 @@
 // #include "../Application/LivoxScan/_LivoxScanCalib.h"
 #endif
 
+#ifdef WITH_APP_ROPEWAYSCAN &&USE_VZENSE &&USE_LIVOX &&WITH_3D &&USE_OPEN3D
+#include "../Application/RopewayScan/_RopewayScan.h"
+#include "../Application/RopewayScan/_RopewayScanVz.h"
+#include "../Application/RopewayScan/_RopewayScanLivox.h"
+#endif
+
 #ifdef WITH_APP_ROBOTARM
 #include "../Application/RobotArm/_Sequencer.h"
 #ifdef USE_OPENCV
@@ -219,7 +225,7 @@
 #ifdef USE_DARKNET
 #include "../DNN/Darknet/_YOLO.h"
 #endif
-#ifdef USE_TF-LITE
+#ifdef USE_TF - LITE
 #include "../DNN/TensorFlowLite/_TFmobileNet.h"
 #endif
 #endif

@@ -101,13 +101,16 @@ sudo make install
 #----------------------------------------------------
 # (Optional) RealSense
 git clone --depth 1 https://github.com/IntelRealSense/librealsense.git
+# git clone --depth 1 --branch v2.53.1 https://github.com/IntelRealSense/librealsense.git # for T265, L535
 cd librealsense
 sudo ./scripts/setup_udev_rules.sh
 mkdir build
 cd build
-#cmake -DCMAKE_BUILD_TYPE=Release ../
-# -DFORCE_RSUSB_BACKEND=ON for Raspberry pi and Jetson?
+# for Raspberry pi
+cmake -DFORCE_LIBUVC=true -DFORCE_RSUSB_BACKEND=ON -DBUILD_WITH_TM2=true -DBUILD_WITH_CUDA=OFF -DCMAKE_BUILD_TYPE=Release -DIMPORT_DEPTH_CAM_FW=ON ../
+# for Jetson
 cmake -DFORCE_LIBUVC=true -DFORCE_RSUSB_BACKEND=ON -DBUILD_WITH_TM2=true -DBUILD_WITH_CUDA=ON -DCMAKE_BUILD_TYPE=Release -DIMPORT_DEPTH_CAM_FW=ON ../
+
 make -j$(nproc)
 sudo make install
 
@@ -537,6 +540,32 @@ cd build
 
 #PC
 cmake -DCMAKE_BUILD_TYPE=Release -DGLIBCXX_USE_CXX11_ABI=ON -DBUILD_CUDA_MODULE=OFF -DBUILD_EXAMPLES=OFF -DBUILD_FILAMENT_FROM_SOURCE=OFF -DBUILD_GUI=ON -DBUILD_PYTHON_MODULE=OFF -DBUILD_SHARED_LIBS=ON -DBUILD_WEBRTC=OFF -DDEVELOPER_BUILD=OFF -DWITH_SIMD=ON ../
+make -j$(nproc)
+sudo make install
+
+# Raspberry pi
+util/install_deps_ubuntu.sh
+sudo apt-get install -y xorg-dev libglu1-mesa-dev
+sudo apt-get install libglew-dev
+
+cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=ON \
+    -DGLIBCXX_USE_CXX11_ABI=ON \
+    -DBUILD_CUDA_MODULE=OFF \
+    -DBUILD_EXAMPLES=OFF \
+    -DBUILD_FILAMENT_FROM_SOURCE=ON \
+    -DBUILD_GUI=OFF \
+    -DBUILD_PYTHON_MODULE=OFF \
+    -DBUILD_SHARED_LIBS=ON \
+    -DBUILD_TENSORFLOW_OPS=OFF \
+    -DBUILD_UNIT_TESTS=OFF \
+    -DDEVELOPER_BUILD=OFF \
+    -DUSE_BLAS=ON \
+    -DWITH_FAISS=OFF \
+    -DWITH_IPPICV=OFF \
+    -DWITH_SIMD=OFF \
+    ..
 make -j$(nproc)
 sudo make install
 

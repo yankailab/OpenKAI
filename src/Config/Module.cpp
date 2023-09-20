@@ -140,6 +140,12 @@ namespace kai
 //		ADD_MODULE(_LivoxScanCalib);
 #endif
 
+#ifdef WITH_APP_ROPEWAYSCAN && USE_VZENSE && USE_LIVOX && WITH_3D && USE_OPEN3D
+		ADD_MODULE(_RopewayScan);
+		ADD_MODULE(_RopewayScanVz);
+		ADD_MODULE(_RopewayScanLivox);
+#endif
+
 #ifdef WITH_APP_ROBOTARM
 		ADD_MODULE(_Sequencer);
 #ifdef USE_OPENCV

@@ -159,7 +159,7 @@ namespace kai
 		if (!bNormalized)
 			pA->m_s.setTarget(s);
 		else
-			pA->m_p.setNormalizedTarget(s);
+			pA->m_s.setNormalizedTarget(s);
 
 		m_lastCmdType = actCmd_spd;
 		m_tLastCmd = m_pT->getTfrom();
@@ -174,7 +174,7 @@ namespace kai
 		if (!bNormalized)
 			pA->m_a.setTarget(a);
 		else
-			pA->m_p.setNormalizedTarget(a);
+			pA->m_a.setNormalizedTarget(a);
 
 		m_lastCmdType = actCmd_accel;
 		m_tLastCmd = m_pT->getTfrom();
@@ -189,7 +189,7 @@ namespace kai
 		if (!bNormalized)
 			pA->m_b.setTarget(b);
 		else
-			pA->m_p.setNormalizedTarget(b);
+			pA->m_b.setNormalizedTarget(b);
 
 		m_lastCmdType = actCmd_brake;
 		m_tLastCmd = m_pT->getTfrom();

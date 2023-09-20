@@ -90,7 +90,7 @@ namespace kai
 
 			pB[0] = i + 1;
 			pB[1] = 0x64;
-			int16_t s = pA->m_s.m_vRange.constrain(pA->m_s.m_vTarget);
+			int16_t s = pA->m_s.m_vTarget;
 			pB[2] = s >> 8;
 			pB[3] = s & 0x00FF;
 			pB[4] = 0;
