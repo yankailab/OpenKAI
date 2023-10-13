@@ -118,6 +118,9 @@ namespace kai
 		vFloat3 getApAttitude(void);
 		float getBattery(void);
 
+		int getWPseq(void);
+		int getWPtotal(void);
+
 	protected:
 		void updateBase(void);
 		static void *getUpdate(void *This)

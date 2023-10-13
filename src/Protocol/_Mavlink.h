@@ -219,6 +219,7 @@ namespace kai
 			m_id = MAVLINK_MSG_ID_MISSION_CURRENT;
 
 			m_msg.seq = 0;
+			m_msg.total = 0;
 		}
 
 		void decode(mavlink_message_t *pM)

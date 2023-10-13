@@ -76,7 +76,9 @@ namespace kai
 		ADD_MODULE(_AP_goto);
 		ADD_MODULE(_AP_link);
 		ADD_MODULE(_AProver_drive);
+#ifdef WITH_SWARM
 		ADD_MODULE(_AP_swarm);
+#endif
 #ifdef WITH_SENSOR
 		ADD_MODULE(_AP_distLidar);
 #endif
@@ -87,6 +89,7 @@ namespace kai
 		ADD_MODULE(_AP_land);
 		ADD_MODULE(_AP_mission);
 		ADD_MODULE(_AP_follow);
+		ADD_MODULE(_AP_videoStream);
 		ADD_MODULE(_AP_video);
 		ADD_MODULE(_APcopter_photo);
 #ifdef WITH_APP_ROBOTARM

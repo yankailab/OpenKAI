@@ -60,7 +60,7 @@ sudo apt-get -y install libmgl-dev
 
 # (Optional)
 sudo apt-get -y install libimage-exiftool-perl
-sudo apt-get -y install python python-pip
+sudo apt-get -y install python python3-pip
 pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
 snap install cloudcompare
 

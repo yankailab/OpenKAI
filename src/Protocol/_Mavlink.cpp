@@ -18,7 +18,7 @@ namespace kai
 		m_nRead = 0;
 		m_iRead = 0;
 
-		//msg register
+		// msg register
 		m_vpMsg.push_back(&m_attitude);
 		m_vpMsg.push_back(&m_batteryStatus);
 		m_vpMsg.push_back(&m_commandAck);
@@ -107,7 +107,7 @@ namespace kai
 			m_vPeer.push_back(mP);
 		}
 
-		//cmd routing
+		// cmd routing
 		vector<int> vNoRouteCmd;
 		pK->a("noRouteCmd", &vNoRouteCmd);
 		for (int i = 0; i < vNoRouteCmd.size(); i++)
@@ -513,14 +513,14 @@ namespace kai
 		D.usec = getTbootMs();
 
 		mavlink_msg_vision_speed_estimate_encode(m_mySystemID, m_myComponentID,
-													&msg, &D);
+												 &msg, &D);
 
 		writeMessage(msg);
 		LOG_I(
 			"<- VISION_SPEED_ESTIMATE T=" + i2str(D.usec) + ", x=" + f2str(D.x) + ", y=" + f2str(D.y) + ", z=" + f2str(D.z));
 	}
 
-	//CMD_LONG
+	// CMD_LONG
 
 	void _Mavlink::clComponentArmDisarm(bool bArm)
 	{
@@ -741,13 +741,13 @@ namespace kai
 
 			if (result == 1)
 			{
-				//Good message decoded
+				// Good message decoded
 				m_status = status;
 				return true;
 			}
 			else if (result == 2)
 			{
-				//Bad CRC
+				// Bad CRC
 				LOG_I(" -> DROPPED PACKETS:" + i2str(status.packet_rx_drop_count));
 			}
 		}
@@ -771,7 +771,7 @@ namespace kai
 			IF_CONT(msg.sysid != m_devSystemID);
 			IF_CONT(msg.compid != m_devComponentID);
 
-			//Decode
+			// Decode
 			bool bDecoded = false;
 			for (MavMsgBase *pM : m_vpMsg)
 			{
@@ -786,10 +786,10 @@ namespace kai
 			if (!bDecoded)
 				LOG_I(" -> Unknown MSG_ID:" + i2str(msg.msgid));
 
-			//Routing
+			// Routing
 			for (MAVLINK_PEER &p : m_vPeer)
 			{
-//				IF_CONT(!p.bCmdRoute(msg.msgid));
+				//				IF_CONT(!p.bCmdRoute(msg.msgid));
 
 				_Mavlink *pM = (_Mavlink *)p.m_pPeer;
 				IF_CONT(!pM);
@@ -818,8 +818,10 @@ namespace kai
 		}
 
 		pC->addMsg("Connected", 0);
-		pC->addMsg("mySysID=" + i2str(m_mySystemID) + " myComID=" + i2str(m_myComponentID) + " myType=" + i2str(m_myType));
-		pC->addMsg("devSysID=" + i2str(m_devSystemID) + " devComID=" + i2str(m_devComponentID) + " devType=" + i2str(m_devType));
+		pC->addMsg("mySysID = " + i2str(m_mySystemID) + " myComID = " + i2str(m_myComponentID) + " myType = " + i2str(m_myType));
+		pC->addMsg("devSysID = " + i2str(m_devSystemID) + " devComID = " + i2str(m_devComponentID) + " devType = " + i2str(m_devType));
+
+		pC->addMsg("Mission seq=" + i2str(m_missionCurrent.m_msg.seq) + " tot=" + i2str(m_missionCurrent.m_msg.total) + " mode = " + i2str(m_missionCurrent.m_msg.mission_mode) + " state = " + i2str(m_missionCurrent.m_msg.mission_state));
 	}
 
 }

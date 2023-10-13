@@ -126,7 +126,7 @@ namespace kai
 
         if (m_state.bLANDED())
         {
-            //        IF_(!boxLandingComplete());
+            IF_(!boxLandingComplete());
 
             m_pSC->transit(m_state.STANDBY);
             return;

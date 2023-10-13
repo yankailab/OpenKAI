@@ -114,14 +114,14 @@ namespace kai
 
 		uint64_t tNow = m_pT->getTfrom();
 
-		//update Ardupilot
+		// update Ardupilot
 		if (m_pMav->m_heartbeat.bReceiving(tNow))
 		{
 			m_apMode = m_pMav->m_heartbeat.m_msg.custom_mode;
 			m_bApArmed = m_pMav->m_heartbeat.m_msg.base_mode & 0b10000000;
 		}
 
-		//Attitude
+		// Attitude
 		if (m_pMav->m_attitude.bReceiving(tNow))
 		{
 			m_vAtti.x = m_pMav->m_attitude.m_msg.yaw;
@@ -129,7 +129,7 @@ namespace kai
 			m_vAtti.z = m_pMav->m_attitude.m_msg.roll;
 		}
 
-		//get home position
+		// get home position
 		if (!m_pMav->m_homePosition.bReceiving(tNow))
 		{
 			m_pMav->clGetHomePosition();
@@ -142,7 +142,7 @@ namespace kai
 			m_bHomeSet = true;
 		}
 
-		//get position
+		// get position
 		if (m_pMav->m_globalPositionINT.bReceiving(tNow))
 		{
 			m_vGlobalPos.x = ((double)(m_pMav->m_globalPositionINT.m_msg.lat)) * 1e-7;
@@ -168,7 +168,7 @@ namespace kai
 			m_battery = (float)(m_pMav->m_batteryStatus.m_msg.battery_remaining) * 0.01;
 		}
 
-		//Send Heartbeat
+		// Send Heartbeat
 		if (m_freqSendHeartbeat > 0 && tNow - m_lastHeartbeat >= m_freqSendHeartbeat)
 		{
 			m_pMav->heartbeat();
@@ -244,6 +244,20 @@ namespace kai
 	float _AP_base::getBattery(void)
 	{
 		return m_battery;
+	}
+
+	int _AP_base::getWPseq(void)
+	{
+		IF__(!m_pMav, -1);
+
+		return m_pMav->m_missionCurrent.m_msg.seq;
+	}
+
+	int _AP_base::getWPtotal(void)
+	{
+		IF__(!m_pMav, -1);
+
+		return m_pMav->m_missionCurrent.m_msg.total;
 	}
 
 	void _AP_base::setMount(AP_MOUNT &m)

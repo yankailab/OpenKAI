@@ -65,8 +65,10 @@
 #include "../Autopilot/ArduPilot/_AP_servo.h"
 #include "../Autopilot/ArduPilot/_AP_takeoff.h"
 #include "../Autopilot/ArduPilot/_AP_link.h"
-#include "../Autopilot/ArduPilot/_AP_swarm.h"
 #include "../Autopilot/ArduPilot/_AProver_drive.h"
+#ifdef WITH_SWARM
+#include "../Autopilot/ArduPilot/_AP_swarm.h"
+#endif
 #ifdef WITH_SENSOR
 #include "../Autopilot/ArduPilot/_AP_distLidar.h"
 #endif
@@ -77,6 +79,7 @@
 #include "../Autopilot/ArduPilot/_AP_land.h"
 #include "../Autopilot/ArduPilot/_AP_mission.h"
 #include "../Autopilot/ArduPilot/_AP_follow.h"
+#include "../Autopilot/ArduPilot/_AP_videoStream.h"
 #include "../Autopilot/ArduPilot/_AP_video.h"
 #include "../Autopilot/ArduPilot/_APcopter_photo.h"
 #ifdef WITH_APP_ROBOTARM

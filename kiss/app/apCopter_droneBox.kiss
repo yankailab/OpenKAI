@@ -180,6 +180,11 @@
 			"id":147,
 			"tInt":10,
 		}
+		{
+			"name":"missionCurrent",
+			"id":42,
+			"tInt":1,
+		}
 	}
 }
 
