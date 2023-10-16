@@ -9,10 +9,13 @@ namespace kai
 		m_pCurl = NULL;
 		m_fName = "";
 		m_process = "";
-		m_pFvid = NULL;
 		m_dir = "";
 
 		m_iWP = INT_MAX;
+
+		m_gstPID = 0;
+		m_tVidInt = 10;
+		m_tRecStart = 0;
 	}
 
 	_AP_videoStream::~_AP_videoStream()
@@ -28,6 +31,7 @@ namespace kai
 		pK->v("fName", &m_fName);
 		pK->v("dir", &m_dir);
 		pK->a("vWP", &m_vWP);
+		pK->v("tVidInt", &m_tVidInt);
 
 		return true;
 	}
@@ -80,8 +84,14 @@ namespace kai
 	{
 		IF_(check() < 0);
 
+		uint64_t tNow = getApproxTbootUs();
+
 		int iSeq = m_pAP->getWPseq();
-		IF_(iSeq == m_iWP);
+		if (iSeq == m_iWP)
+		{
+			uint64_t tRec = tNow - m_tRecStart;
+			IF_(tRec < m_tVidInt * USEC_1SEC);
+		}
 
 		closeStream();
 
@@ -91,24 +101,27 @@ namespace kai
 			return;
 		}
 
-		if(openStream())
+		if (openStream())
 		{
 			m_iWP = iSeq;
+			m_tRecStart = tNow;
 		}
 	}
 
 	bool _AP_videoStream::openStream(void)
 	{
 		IF_F(check() < 0);
-		IF_F(m_pFvid);
+		// IF_F(m_pFvid);
+		IF_F(m_gstPID);
 
 		string strT = tFormat();
 		m_fName = m_dir + strT;
 
 		// open video stream
-		string p = replace(m_process, "[fName]", m_fName + ".mka_t");
-		m_pFvid = popen(p.c_str(), "r");
-		if (!m_pFvid)
+		string p = replace(m_process, "[fName]", m_fName + ".mkv_t");
+		int infp, outfp;
+		m_gstPID = popen2(p.c_str(), &infp, &outfp);
+		if (m_gstPID <= 0)
 		{
 			LOG_E("Failed to run command: " + p);
 			return false;
@@ -119,16 +132,16 @@ namespace kai
 
 	void _AP_videoStream::closeStream(void)
 	{
-		IF_(!m_pFvid);
+		IF_(!m_gstPID);
 
-		pclose(m_pFvid);
-		m_pFvid = NULL;
+		kill(m_gstPID, SIGKILL);
+		m_gstPID = 0;
 
 		string cmd;
-		cmd = "mv " + m_fName + ".mka_t " + m_fName + ".mka";
+		cmd = "mv " + m_fName + ".mkv_t " + m_fName + ".mkv";
 		system(cmd.c_str());
 		if (m_pCurl)
-			m_pCurl->addFile(m_fName + ".mka");
+			m_pCurl->addFile(m_fName + ".mkv");
 	}
 
 	void _AP_videoStream::console(void *pConsole)

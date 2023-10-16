@@ -4,6 +4,7 @@
 #include "../../IO/_File.h"
 #include "../../Net/_Curl.h"
 #include "_AP_base.h"
+#include "../../Utility/util.h"
 
 using namespace picojson;
 
@@ -38,11 +39,14 @@ namespace kai
 		_Curl* m_pCurl;
 		string m_fName;
 		string m_process;
-		FILE* m_pFvid;
 		string m_dir;
 
 		int m_iWP;
 		vector<int> m_vWP;
+
+		int m_gstPID;
+		uint64_t m_tVidInt;
+		uint64_t m_tRecStart;
 	};
 
 }

@@ -174,11 +174,12 @@
 	"bLog":0,
 	"_AP_base":"apBase",
 	"_Curl":"cURL",
-	"dir":"/home/lab/video/",
-	"/dir":"/home/kai/Videos/",
+	"/dir":"/home/lab/video/",
+	"dir":"/home/kai/Videos/",
 	"/process":"gst-launch-1.0 rtspsrc location=rtsp://192.168.144.108:554/stream=0 latency=0 ! queue ! rtph264depay ! h264parse ! tee name=t t. ! queue ! matroskamux ! filesink location=[fName] t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"process":"gst-launch-1.0 rtspsrc location=rtsp://192.168.144.108:554/stream=0 latency=0 ! queue ! rtph264depay ! h264parse ! queue ! matroskamux ! filesink location=[fName]",
-	"vWP":[1,2,3,4,5,6],
+	"vWP":[0,1,2,3,4,5,6],
+	"tVidInt":10,
 }
 
 {

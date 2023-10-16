@@ -371,5 +371,46 @@ namespace kai
 		return crc;
 	}
 
+#define POP2_READ 0
+#define POP2_WRITE 1
+
+	inline pid_t popen2(const char *command, int *infp, int *outfp)
+	{
+		int p_stdin[2], p_stdout[2];
+		pid_t pid;
+
+		if (pipe(p_stdin) != 0 || pipe(p_stdout) != 0)
+			return -1;
+
+		pid = fork();
+
+		if (pid < 0)
+			return pid;
+		else if (pid == 0)
+		{
+			close(p_stdin[POP2_WRITE]);
+			dup2(p_stdin[POP2_READ], POP2_READ);
+			close(p_stdout[POP2_READ]);
+			dup2(p_stdout[POP2_WRITE], POP2_WRITE);
+
+			execl("/bin/sh", "sh", "-c", command, NULL);
+			perror("execl");
+			exit(1);
+		}
+
+		if (infp == NULL)
+			close(p_stdin[POP2_WRITE]);
+		else
+			*infp = p_stdin[POP2_WRITE];
+
+		if (outfp == NULL)
+			close(p_stdout[POP2_READ]);
+		else
+			*outfp = p_stdout[POP2_READ];
+
+		return pid;
+	}
+
+
 }
 #endif
