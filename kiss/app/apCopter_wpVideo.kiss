@@ -3,13 +3,13 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog":1,
-	"bStdErr":0,
+	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -20,13 +20,13 @@
 {
 	"name":"CVwindow",
 	"class":"_WindowCV",
-	"bON":1,
+	"bON":0,
 	"bFullScreen":0,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["/cam"],
+	"vBASE":["cam"],
 	"bShow":1,
 }
 
@@ -78,7 +78,7 @@
 		{
 			"name":"heartbeat",
 			"id":0,
-			"tInt":0.4,
+			"tInt":1.0,
 		}
 		{
 			"name":"attitude",
@@ -113,7 +113,7 @@
 		{
 			"name":"missionCurrent",
 			"id":42,
-			"tInt":1,
+			"tInt":0.3,
 		}
 	}
 }
@@ -164,20 +164,6 @@
 }
 
 {
-	"name":"cam",
-	"class":"_GStreamer",
-	"bON":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"vSize":[1280,720],
-	"pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! queue ! videoconvert ! appsink max-buffers=1 drop=true", /* C10 mini: set host PC IP to 192.168.144.100 */
-	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! appsink max-buffers=1 sync=false drop=true", /* C10 mini, using YUV, Y chan only */
-	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! tee name=t t. appsink max-buffers=1 sync=false drop=true t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
-}
-
-{
 	"name":"apStream",
 	"class":"_AP_videoStream",
 	"bON":1,
@@ -188,10 +174,11 @@
 	"bLog":0,
 	"_AP_base":"apBase",
 	"_Curl":"cURL",
-	"/dir":"/home/lab/video/",
-	"dir":"/home/kai/Videos/",
+	"dir":"/home/lab/video/",
+	"/dir":"/home/kai/Videos/",
 	"/process":"gst-launch-1.0 rtspsrc location=rtsp://192.168.144.108:554/stream=0 latency=0 ! queue ! rtph264depay ! h264parse ! tee name=t t. ! queue ! matroskamux ! filesink location=[fName] t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"process":"gst-launch-1.0 rtspsrc location=rtsp://192.168.144.108:554/stream=0 latency=0 ! queue ! rtph264depay ! h264parse ! queue ! matroskamux ! filesink location=[fName]",
+	"vWP":[1,2,3,4,5,6],
 }
 
 {
@@ -208,3 +195,16 @@
 	"vExt":[".mka",".json"],
 }
 
+{
+	"name":"cam",
+	"class":"_GStreamer",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vSize":[1280,720],
+	"pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! queue ! videoconvert ! appsink max-buffers=1 drop=true", /* C10 mini: set host PC IP to 192.168.144.100 */
+	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! appsink max-buffers=1 sync=false drop=true", /* C10 mini, using YUV, Y chan only */
+	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! tee name=t t. appsink max-buffers=1 sync=false drop=true t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+}

@@ -69,7 +69,6 @@ namespace kai
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPSfrom();
-			this->_StateBase::update();
 
 			updateStream();
 
@@ -83,9 +82,11 @@ namespace kai
 
 		int iSeq = m_pAP->getWPseq();
 		IF_(iSeq == m_iWP);
+
+		closeStream();
+
 		if (!count(m_vWP.begin(), m_vWP.end(), iSeq))
 		{
-			closeStream();
 			m_iWP = INT_MAX;
 			return;
 		}
