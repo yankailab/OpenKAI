@@ -259,15 +259,15 @@
 {
 	"name":"cURL",
 	"class":"_Curl",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":1,
 	}
 	"bLog":1,
-	"cmd":"curl 2>&1 -T [fName] ftp://193.112.75.123/pub/ -u anonymous: --connect-timeout 60 --no-progress-meter",
+	"cmd":"rclone copy --local-no-check-updated [fName] remote:rescue_data",
 	"dir":"/home/lab/video/",
-	"vExt":[".mka",".json"],
+	"vExt":[".mkv",".json"],
 }
 
 {
