@@ -58,6 +58,48 @@
 	}
 	"bLog":0,
 	"_IOBase":"serialAP",
+	{
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavUDP",
+		}
+	}
+}
+
+{
+	"name":"udp",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":30,
+	}
+	{
+		"name":"threadR",
+		"FPS":30,
+		"vTwakeUp":["mavUDP.thread"],
+	}
+	"port":19840,
+}
+
+{
+	"name":"mavUDP",
+	"class":"_Mavlink",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"_IOBase":"udp",
+	{
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavAP",
+		}
+	}
 }
 
 {
@@ -116,6 +158,38 @@
 			"tInt":0.3,
 		}
 	}
+}
+
+{
+	"name":"serialXB",
+	"class":"_SerialPort",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"port":"/dev/ttyAMA1",
+	"baud":57600,
+}
+
+{
+	"name":"xbee",
+	"class":"_Xbee",
+	"bON":1,
+	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+	"_IOBase":"serialXB",
 }
 
 {
@@ -185,15 +259,15 @@
 {
 	"name":"cURL",
 	"class":"_Curl",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":1,
 	}
 	"bLog":1,
-	"cmd":"curl 2>&1 -T [fName] ftp://193.112.75.123/pub/ -u anonymous: --connect-timeout 60 --no-progress-meter",
+	"cmd":"rclone copy --local-no-check-updated [fName] remote:rescue_data",
 	"dir":"/home/lab/video/",
-	"vExt":[".mka",".json"],
+	"vExt":[".mkv",".json"],
 }
 
 {
