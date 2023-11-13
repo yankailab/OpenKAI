@@ -134,7 +134,7 @@ namespace kai
 	{
 		IF_(!m_gstPID);
 
-		kill(m_gstPID, SIGKILL);
+		kill(m_gstPID+1, SIGKILL);
 		m_gstPID = 0;
 
 		string cmd;
