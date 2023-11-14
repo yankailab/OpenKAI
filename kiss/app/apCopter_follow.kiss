@@ -2,187 +2,285 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
-	"bDraw":0,
-	"bLog":0,
-	"b_Console":1,
+	"bLog":1,
 	"bStdErr":1,
-	"waitKey":20,
 }
 
 {
-	"name":"OKview",
-	"class":"Window",
-	"bON":0,
-	"bFullScreen":0,
-}
-
-{
-	"name":"cam",
-	"class":"_GStreamer",
-	"FPS":63,
+	"name":"console",
+	"class":"_Console",
 	"bON":1,
-	"Window":"OKview",
-	"/pipeline":"v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
-	"pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=640, height=480, format=(string)NV12, framerate=(fraction)60/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)480, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.1.253 port=5678 auto-multicast=false",
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["/cam","mavAP","/arUco","apBase","apFollow"],
 }
 
 {
-	"name":"apSerial",
+	"name":"CVwindow",
+	"class":"_WindowCV",
+	"bON":1,
+	"bFullScreen":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["cam","univ","arUco","apFollow"],
+	"bShow":1,
+}
+
+{
+	"name":"serialAP",
 	"class":"_SerialPort",
 	"bON":1,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"port":"/dev/ttyTHS1",
-	"baud":921600,
-	"_wakeUp":"mavAP",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":10,
+		"vTwakeUp":["mavAP.thread"],
+	}
+	"/port":"/dev/ttyAMA0",
+	"port":"/dev/ttyACM0",
+	"baud":115200,
 }
 
 {
 	"name":"mavAP",
 	"class":"_Mavlink",
 	"bON":1,
-	"FPS":30,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"bLog":0,
-	"Window":"OKview",
-	"_IOBase":"apSerial",
-	
+	"mySystemID":255,
+	"myComponentID":190,
+	"myType":6,
+	"devSystemID":-1,
+	"devComponentID":-1,
+	"devType":0,
+
+	"_IOBase":"serialAP",
 	{
-		"bON":0,
-		"_Mavlink":"mavGCS",
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavUDP",
+		}
 	}
 }
 
 {
-	"name":"apUDP",
+	"name":"udp",
 	"class":"_UDP",
-	"bON":0,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"port":19840,
-	"_wakeUp":"mavGCS",
-}
-
-{
-	"name":"mavGCS",
-	"class":"_Mavlink",
-	"bON":0,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"_IOBase":"apUDP",
-	
+	"bON":1,
 	{
-		"bON":1,
-		"_Mavlink":"mavAP",
-	}	
+		"name":"thread",
+		"FPS":30,
+	}
+	{
+		"name":"threadR",
+		"FPS":30,
+		"vTwakeUp":["mavUDP.thread"],
+	}
+	"port":19840,
 }
 
 {
-	"name":"okUDP",
-	"class":"_UDP",
+	"name":"mavUDP",
+	"class":"_Mavlink",
 	"bON":1,
-	"FPS":30,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"bLog":0,
-	"Window":"OKview",
-	"port":19841,
-	"_wakeUp":"apLink",
-}
-
-{
-	"name":"apLink",
-	"class":"_AP_link",
-	"bON":1,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"_IOBase":"okUDP",	
-}
-
-{
-	"name":"PIDroll",
-	"class":"PIDctrl",
-	"bON":1,
-	"Window":"OKview",
-	"P":-20.0,
-	"I":0.0,
-	"Imax":0.0,
-	"D":0.0,
-	"dT":0.0,
-	"oMin":-10.0,
-	"oMax":10.0,
-}
-
-{
-	"name":"PIDpitch",
-	"class":"PIDctrl",
-	"bON":1,
-	"Window":"OKview",
-	"P":20.0,
-	"I":0.0,
-	"Imax":0.0,
-	"D":0.0,
-	"dT":0.0,
-	"oMin":-10.0,
-	"oMax":10.0,
+	"_IOBase":"udp",
+	{
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavAP",
+		}
+	}
 }
 
 {
 	"name":"apBase",
 	"class":"_AP_base",
 	"bON":1,
-	"FPS":30,
-	"bDraw":1,
-	"_MissionControl":"apMission",
-	"Window":"OKview",
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"/_StateControl":"state",
 	"_Mavlink":"mavAP",
 	"freqSendHeartbeat":1,
-	"freqRawSensors":0,
-	"freqExtStat":0,
-	"freqRC":0,
-	"freqPos":10,
-	"freqExtra1":10,
+	"apType":0,
+	
+	{
+		"name":"mavMsgInt",
+		
+		{
+			"name":"heartbeat",
+			"id":0,
+			"tInt":0.4,
+		}
+		{
+			"name":"attitude",
+			"id":30,
+			"tInt":0.3,
+		}
+		{
+			"name":"rcChannels",
+			"id":65,
+			"tInt":1.0,
+		}
+		{
+			"name":"localPosition",
+			"id":32,
+			"tInt":0.3,
+		}
+		{
+			"name":"globalPosition",
+			"id":33,
+			"tInt":0.3,
+		}
+		{
+			"name":"homePosition",
+			"id":242,
+			"tInt":10,
+		}
+		{
+			"name":"batteryStatus",
+			"id":147,
+			"tInt":10,
+		}
+		{
+			"name":"missionCurrent",
+			"id":42,
+			"tInt":1,
+		}
+	}
 }
 
 {
-	"name":"tracker",
-	"class":"_SingleTracker",
+	"name":"cam",
+	"class":"_GStreamer",
 	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vSize":[1280,720],
+	"/pipeline":"v4l2src device=/dev/video0 ! video/x-raw,width=640,height=360,framerate=30/1 ! queue ! videoconvert ! appsink",
+	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! tee name=t t. appsink max-buffers=1 sync=false drop=true t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.10.1:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! tee name=t t. videoconvert ! appsink max-buffers=1 sync=false drop=true t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.10.1:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! videoconvert ! appsink max-buffers=1 sync=false drop=true",
+	"pipeline":"rtspsrc latency=0 location=rtsp://10.42.0.160:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! videoconvert ! appsink max-buffers=1 sync=false drop=true",
+}
+
+{
+	"name":"univ",
+	"class":"_Universe",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+}
+
+{
+	"name":"arUco",
+	"class":"_ArUco",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"cam",
+	"_Universe":"univ",
+	"dict":17,
+}
+
+{
+	"name":"YOLO",
+	"class":"_YOLOv3",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"bDraw":1,
 	"bLog":0,
-	"FPS":30,
-	"Window":"OKview",
 	"_VisionBase":"cam",
-	"trackerType":"KCF",
-	"margin":0.0,
+	"_Universe":"univ",
+	"/fModel":"/home/kai/dev/models/YOLOv3/yolov3.cfg",
+	"/fWeight":"/home/kai/dev/models/YOLOv3/yolov3.weights",
+	"/fClass":"/home/kai/dev/models/YOLOv3/coco.names",
+	"fModel":"/home/nvidia/dev/models/YOLOv3/yolov3.cfg",
+	"fWeight":"/home/nvidia/dev/models/YOLOv3/yolov3.weights",
+	"fClass":"/home/nvidia/dev/models/YOLOv3/coco.names",
+	"bSwapRB":1,
+	"scale":0.00392,
+	"thr":0.1,
+	"iClassDraw":-1,
+}
+
+{
+	"name":"PIDroll",
+	"class":"PID",
+	"bON":1,
+	"P":-3.0,
+	"/P":3.0,		/* flip when using webcam on your laptop*/
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.0,
+	"oMin":-0.1,
+	"oMax":0.1,
+}
+
+{
+	"name":"PIDpitch",
+	"class":"PID",
+	"bON":1,
+	"P":3.0,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.0,
+	"oMin":-0.1,
+	"oMax":0.1,
 }
 
 {
 	"name":"apFollow",
 	"class":"_AP_follow",
+    {
+		"name":"thread",
+		"FPS":10,
+	}
 	"bON":1,
-	"FPS":30,
-	"bLog":0,
-	"bDraw":1,
-	"Window":"OKview",
-	"_MissionControl":"apMission",
-	"activeMission":["FOLLOW"],
+	"bLog":1,
+	"/_StateControl":"state",
+	"/vActiveState":["LANDING","TOUCHDOWN"],
 	"_AP_base":"apBase",
-	"_AP_link":"apLink",
-	"_AP_move":"apPosCtrl",
-	"_TrackerBase":"tracker",
-	"/_DetectorBase":"apDet",
-	"vTargetOrigin":[0.5, 0.5, 0.0, 0.0],
-	"vKtarget":[-0.01,0.01],
-	"vTarget":[0.2,0.8],
-	"iClass":0,
-	"timeOut":200000,
-	"tIntSend":200000,
+	"_Universe":"univ",
 
+	"vPsp":[0.5, 0.5, 0.0, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
+	"nWmed":0,
+	"nWpred":0,
+	"dThold":0,
+	"iClass":0,
+	"PIDpitch":"PIDpitch",
+	"PIDroll":"PIDroll",
+	
 	{
 		"name":"mount",
+		"bEnable":0,
 		"pitch":0,
 		"roll":0,
 		"yaw":0,
@@ -190,23 +288,5 @@
 		"stabRoll":1,
 		"stabYaw":0,
 		"mountMode":2,
-	}			
-}
-
-{
-	"name":"apPosCtrl",
-	"class":"_AP_move",
-	"bON":1,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"_MissionControl":"apMission",
-	"activeMission":["FOLLOW"],
-	"_AP_base":"apBase",
-	"vYaw":180,
-	"mode":0,
-	"bFixeYaw":0,
-	"PIDroll":"PIDroll",
-	"PIDpitch":"PIDpitch",
-	
+	}
 }

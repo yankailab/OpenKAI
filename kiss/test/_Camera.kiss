@@ -94,7 +94,8 @@
 	"/pipeline":"rtspsrc location=rtsp://admin:admin@192.168.100.2/webcam latency=0 ! decodebin ! videoconvert ! appsink",
 	"/pipeline":"rtspsrc location=rtsp://192.168.144.108:554/stream=0 latency=0 ! decodebin ! videoconvert ! appsink", /* C10 mini: set host PC IP to 192.168.144.100 */
 	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! queue ! videoconvert ! appsink", /* C10 mini: set host PC IP to 192.168.144.100 */
-	"pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! appsink", /* C10 mini, using YUV, Y chan only */
+	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! appsink", /* C10 mini, using YUV, Y chan only */
+	"pipeline":"rtspsrc location=rtsp://192.168.10.1:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! appsink",
 
 	"/pipeline":"videotestsrc ! x264enc ! rtph264pay ! queue ! rtph264depay ! queue ! avdec_h264 ! videoconvert ! video/x-raw, format=BGR ! appsink", /* test */
 	"/pipeline":"videotestsrc ! x264enc ! rtph264pay ! queue ! rtph264depay ! queue ! avdec_h264 ! videoconvert ! video/x-raw, format=RGBA ! appsink", /* test */

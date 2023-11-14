@@ -156,6 +156,27 @@ namespace kai
 		m_pAP->m_pMav->setPositionTargetGlobalINT(spt);
 	}
 
+	void _AP_move::doReposition(const vDouble4 &vP,
+								float speed,
+								float radius,
+								uint8_t frame)
+	{
+		IF_(check() < 0);
+
+		mavlink_command_int_t D;
+		D.frame = frame;
+		D.command = MAV_CMD_DO_REPOSITION;
+		D.param1 = speed;
+		D.param2 = 0;
+		D.param3 = radius;
+		D.param4 = vP.w;
+		D.x = (int32_t)(vP.x * 1e7);
+		D.y = (int32_t)(vP.y * 1e7);
+		D.z = vP.z;
+
+		m_pAP->m_pMav->cmdInt(D);
+	}
+
 	void _AP_move::console(void *pConsole)
 	{
 		NULL_(pConsole);

@@ -4,6 +4,7 @@
 #include "_AP_follow.h"
 #include "../../Detector/_DetectorBase.h"
 #include "../../Utility/utilEvent.h"
+#include "../../Sensor/Distance/_DistSensorBase.h"
 
 namespace kai
 {
@@ -47,15 +48,15 @@ namespace kai
 		}
 
 	protected:
+		_DistSensorBase* m_pDS;
+		vFloat2 m_vDSrange;
+		
 		vector<AP_LAND_TAG> m_vTags;
 		AP_LAND_TAG* m_pTag;
 		vFloat2 m_vFov; // cam FOV horiz/vert
 
 		vFloat4 m_vComplete; // complete condition for vPtarget
 		float m_zrK;
-
-		INTERVAL_EVENT m_ieHdgCmd;
-		uint64_t m_tKyaw;
 	};
 }
 #endif

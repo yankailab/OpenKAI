@@ -18,122 +18,6 @@
 }
 
 {
-	"name":"serial",
-	"class":"_SerialPort",
-	"bON":1,
-	"bLog":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-    {
-		"name":"threadR",
-		"FPS":30,
-		"/vTwakeUp":["arduServo.threadR"],
-	}
-	"/port":"/dev/ttyUSB0",
-	"port":"/dev/ttyACM0",
-	"baud":115200,
-}
-
-{
-	"name":"arduServo",
-	"class":"_ArduServo",
-	"bON":1,
-	"bLog":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-    {
-		"name":"threadR",
-		"FPS":30,
-	}
-	"_IOBase":"serial",
-	{
-		"name":"axis",
-		{
-			"name":"H",
-			"pOrigin":1500.0,
-			"pTarget":1500.0,
-			"pRange":[500,2500],
-		}
-		{
-			"name":"V",
-			"pOrigin":1500.0,
-			"pTarget":1500.0,
-			"pRange":[1000,2100],
-		}
-	}
-}
-
-{
-	"name":"LivoxScanAuto",
-	"class":"_LivoxScanAuto",
-	"bON":1,
-    {
-		"name":"thread",
-		"FPS":10,
-	}
-    {
-		"name":"threadK",
-		"FPS":200,
-	}
-    {
-		"name":"threadUI",
-		"FPS":30,
-	}
-	"vWinSize":[1920,1080],
-	"pathRes":"/usr/local/bin/Open3D/resources",
-	"device":"CPU:0",
-	"nPmax":1000000000,
-	"nPresv":1000000,
-	"nPresvNext":0,
-	"_NavBase":"T265",
-	"vGeometryBase":["Livox"],
-	"_ActuatorBase":"arduServo",
-    {
-		"name":"actuatorH",
-		"vTarget":0.5,
-		"dV":0.0005,
-		"iAxis":0,
-	}
-    {
-		"name":"actuatorV",
-		"vTarget":0.5,
-		"dV":0.01,
-		"iAxis":1,
-	}
-    {
-		"name":"scanSet",
-		"tWaitSec":10,
-		"nH":10,
-		"nV":10,
-	}
-	"vCamLookAt":[0,0,0],
-	"vCamEye":[0,0,2],
-	"vCamUp":[0,1,0],
-	"vCamAutoLookAt":[0,0,0],
-	"vCamAutoEye":[0,0,2],
-	"vCamAutoUp":[0,1,0],
-	"vCoR":[0,0,0],
-	"camFov":75,
-	"vCamNF":[0, 500],
-	"camFovType":1,
-	"bFullScreen":0,
-	"wPanel":20,
-	"vBtnPadding":[1.6, 2.0],
-	"mouseMode":0,
-	"vDmove":[0.5, 5.0],
-	"rDummyDome":1000.0,
-	"dHiddenRemove":100.0,
-	"rVoxel":0.05,
-	"baseDir":"/home/kai/Documents/LivoxScan/",
-	"/baseDir":"/home/lab/Documents/",
-	"tWaitSec":10,
-}
-
-{
 	"name":"LivoxLidar",
 	"class":"LivoxLidar",
 	"bON":1,
@@ -166,12 +50,106 @@
 }
 
 {
-	"name":"T265",
-	"class":"_RStracking",
+	"name":"modbus",
+	"class":"_Modbus",
+	"bON":1,
     {
 		"name":"thread",
-		"FPS":200,
+		"FPS":30,
 	}
+	"bLog":0,
+	"port":"/dev/ttyUSB0",
+	"/baud":9600,
+	"baud":115200,
+	"parity":"N",	
+}
+
+{
+	"name":"stepperX",
+	"class":"_HYMCU_RS485",
 	"bON":1,
+    {
+		"name":"thread",
+		"FPS":5,
+	}
 	"bLog":1,
+	"_Modbus":"modbus",
+	"iSlave":2,
+	"dpr":1,
+	"bFeedback":1,
+	"dInit":5,
+
+	{
+		"name":"addr",
+		"setDPR":4,
+		"setDist":9,
+		"setDir":11,
+		"setSpd":8,
+		"setAcc":2,
+		"bComplete":12,
+		"readStat":22,
+		"run":7,
+		"stop":3,
+		"resPos":10,
+	}
+
+	{
+		"name":"axis",
+		{
+			"name":"X",
+			"pOrigin":0.0,
+			"pTarget":5.0,
+			"pErr":0.01,
+			"pRange":[0,15],
+			"sTarget":300.0,
+			"sRange":[0,300],
+			"aTarget":100.0,
+			"aRange":[1,300],
+		}
+	}
+}
+
+{
+	"name":"stepperY",
+	"class":"_HYMCU_RS485",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":5,
+	}
+	"bLog":1,
+	"_Modbus":"modbus",
+	"iSlave":3,
+	"dpr":1,
+	"bFeedback":1,
+	"dInit":5,
+
+	{
+		"name":"addr",
+		"setDPR":4,
+		"setDist":9,
+		"setDir":11,
+		"setSpd":8,
+		"setAcc":2,
+		"bComplete":12,
+		"readStat":22,
+		"run":7,
+		"stop":3,
+		"resPos":10,
+	}
+
+	{
+		"name":"axis",
+		{
+			"name":"Y",
+			"pOrigin":0.0,
+			"pTarget":5.0,
+			"pErr":0.01,
+			"pRange":[0,15],
+			"sTarget":300.0,
+			"sRange":[0,300],
+			"aTarget":100.0,
+			"aRange":[1,300],
+		}
+	}
 }

@@ -42,6 +42,11 @@ namespace kai
 						bool bYawRate = false,
 						uint8_t frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT);
 
+		void doReposition(const vDouble4 &vP,	//Lat, Lon, Alt, Yaw
+						float speed = -1,
+						float radius = 0,
+						uint8_t frame = MAV_FRAME_GLOBAL);
+
 	private:
 		static void *getUpdate(void *This)
 		{

@@ -5,13 +5,14 @@ namespace kai
 
 	_AP_land::_AP_land()
 	{
+		m_pDS = NULL;
+		m_vDSrange.clear();
+
 		m_pTag = NULL;
 		m_vFov.set(60, 60);
 
 		m_vComplete.set(0.1, 0.1, 0.3, 3.0);
 		m_zrK = 1.0;
-
-		m_tKyaw = USEC_1SEC / 180;
 	}
 
 	_AP_land::~_AP_land()
@@ -23,14 +24,14 @@ namespace kai
 		IF_F(!this->_AP_follow::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
+		pK->v("vDSrange", &m_vDSrange);
 		pK->v("vFov", &m_vFov);
 		pK->v("vComplete", &m_vComplete);
 		pK->v("zrK", &m_zrK);
-		pK->v("tKyaw", &m_tKyaw);
 
-		int ieHdg = USEC_1SEC;
-		pK->v("ieHdgUsec", &ieHdg);
-		m_ieHdgCmd.init(ieHdg);
+		// int ieHdg = USEC_1SEC;
+		// pK->v("ieHdgUsec", &ieHdg);
+		// m_ieHdgCmd.init(ieHdg);
 
 		Kiss *pKt = pK->child("tags");
 		NULL_T(pKt);
@@ -57,6 +58,10 @@ namespace kai
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
+		n = "";
+		pK->v("_DistSensorBase", &n);
+		m_pDS = (_DistSensorBase *)pK->getInst(n);
+
 		return true;
 	}
 
@@ -68,6 +73,8 @@ namespace kai
 
 	int _AP_land::check(void)
 	{
+		NULL__(m_pDS, -1);
+
 		return this->_AP_follow::check();
 	}
 
@@ -134,8 +141,8 @@ namespace kai
 		setVlocal(m_vSpd, false, false);
 
 		// change yaw command
-		IF_(!m_ieHdgCmd.update(m_pT->getTfrom()));
-		IF_(abs(m_vSpd.w) < m_vComplete.w);
+		// IF_(!m_ieHdgCmd.update(m_pT->getTfrom()));
+		// IF_(abs(m_vSpd.w) < m_vComplete.w);
 
 		stop();
 //		setHdg(m_vSpd.w * DEG_2_RAD, 0, true, false);
