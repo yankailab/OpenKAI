@@ -140,9 +140,9 @@ namespace kai
 		ADD_MODULE(_VzScanCalib);
 #endif
 
-#ifdef WITH_APP_LIVOXSCAN && USE_LIVOX && WITH_3D && USE_OPEN3D &&USE_GUI
-		ADD_MODULE(_LivoxScanAuto);
-//		ADD_MODULE(_LivoxScanCalib);
+#ifdef WITH_APP_LIVOXSCANNER && USE_LIVOX && WITH_3D && USE_OPEN3D
+		ADD_MODULE(_LivoxAutoScan);
+		ADD_MODULE(_LivoxScanner);
 #endif
 
 #ifdef WITH_APP_ROPEWAYSCAN && USE_VZENSE && USE_LIVOX && WITH_3D && USE_OPEN3D

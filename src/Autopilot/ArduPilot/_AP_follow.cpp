@@ -130,6 +130,15 @@ namespace kai
 			m_pT->autoFPSfrom();
 			this->_StateBase::update();
 
+
+		mavlink_command_int_t D;
+		D.command = 44001;
+		D.param1 = 3;
+		D.param2 = 1;
+		m_pAP->m_pMav->cmdInt(D);
+
+
+
 			if (bActive())
 			{
 				if (updateTarget())
@@ -146,11 +155,12 @@ namespace kai
 						float c = cos(apHdg * DEG_2_RAD);
 
 						vDouble4 vP;
-						vP.x = vPg.x + m_vSpd.x * c + m_vSpd.y * s;
-						vP.y = vPg.y + m_vSpd.x * s + m_vSpd.y * c;
+						vP.x = 35.7936444;//vPg.x + m_vSpd.x * c - m_vSpd.y * s;
+						vP.y = 140.2113273;//vPg.y + m_vSpd.x * s + m_vSpd.y * c;
 						vP.z = vPg.z;
 						vP.w = apHdg;
-						doReposition(vP, sqrt(m_vSpd.x * m_vSpd.x + m_vSpd.y * m_vSpd.y));
+//						doReposition(vP, sqrt(m_vSpd.x * m_vSpd.x + m_vSpd.y * m_vSpd.y), 0.1);
+						doReposition(vP, 5.0, 0.1);
 					}
 				}
 				else

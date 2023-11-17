@@ -1,7 +1,7 @@
 {
 	"name":"APP",
 	"class":"Startup",
-	"appName":"VzScan",
+	"appName":"LivoxScanner",
 	"bLog":1,
 	"bStdErr":1,
 }
@@ -9,12 +9,12 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["LivoxScan"],
+	"vBASE":["LivoxAutoScan"],
 }
 
 {
@@ -47,6 +47,59 @@
 	"vAxisIdx":[1, 2, 0],
 	"vAxisK":[-1, 1, -1],
 	"vRange":[0.0, 1000],
+}
+
+{
+	"name":"LivoxAutoScan",
+	"class":"_LivoxAutoScan",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"rVoxel":1.0,
+	"nPmax":1000000,
+	"baseDir":"/home/kai/Documents/",
+	"tWait":5,
+	"vGeometryBase":["Livox"],
+	"vRangeH":[0.0, 10.0],
+	"nDivH":10,
+	"_ActuatorBaseH":"stepperX",
+	"vRangeV":[0.0, 10.0],
+	"nDivV":10,
+	"_ActuatorBaseV":"stepperY",
+}
+
+{
+	"name":"ws",
+	"class":"_WebSocket",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
+}
+
+{
+	"name":"LivoxScanner",
+	"class":"_LivoxScanner",
+	"bON":0,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"_IOBase":"ws",
+	"rVoxel":1.0,
+	"nPmax":1000000,
+	"msgFinishSend":"",
+	"msgFinishRecv":"EOJ",
+	"ieSendHB":500000,
 }
 
 {

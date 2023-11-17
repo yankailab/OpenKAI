@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["/cam","mavAP","/arUco","apBase","apFollow"],
+	"vBASE":["/cam","/mavAP","/arUco","apBase","apFollow"],
 }
 
 {
@@ -177,11 +177,11 @@
 		"FPS":30,
 	}
 	"vSize":[1280,720],
-	"/pipeline":"v4l2src device=/dev/video0 ! video/x-raw,width=640,height=360,framerate=30/1 ! queue ! videoconvert ! appsink",
+	"pipeline":"v4l2src device=/dev/video0 ! video/x-raw,width=640,height=360,framerate=30/1 ! queue ! videoconvert ! appsink",
 	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! tee name=t t. appsink max-buffers=1 sync=false drop=true t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.10.1:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! tee name=t t. videoconvert ! appsink max-buffers=1 sync=false drop=true t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.10.1:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! videoconvert ! appsink max-buffers=1 sync=false drop=true",
-	"pipeline":"rtspsrc latency=0 location=rtsp://10.42.0.160:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! videoconvert ! appsink max-buffers=1 sync=false drop=true",
+	"/pipeline":"rtspsrc latency=0 location=rtsp://10.42.0.160:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! videoconvert ! appsink max-buffers=1 sync=false drop=true",
 }
 
 {
@@ -235,25 +235,25 @@
 	"name":"PIDroll",
 	"class":"PID",
 	"bON":1,
-	"P":-3.0,
-	"/P":3.0,		/* flip when using webcam on your laptop*/
+	"/P":-3.0,
+	"P":5.0,		/* flip when using webcam on your laptop*/
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
-	"oMin":-0.1,
-	"oMax":0.1,
+	"oMin":-1.3,
+	"oMax":1.3,
 }
 
 {
 	"name":"PIDpitch",
 	"class":"PID",
 	"bON":1,
-	"P":3.0,
+	"P":5.0,
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
-	"oMin":-0.1,
-	"oMax":0.1,
+	"oMin":-1.3,
+	"oMax":1.3,
 }
 
 {
@@ -261,7 +261,7 @@
 	"class":"_AP_follow",
     {
 		"name":"thread",
-		"FPS":10,
+		"FPS":1,
 	}
 	"bON":1,
 	"bLog":1,

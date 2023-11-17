@@ -17,7 +17,7 @@
 #include "../IPC/_SharedMem.h"
 #include "../UI/_Console.h"
 
-#ifdef WITH_3D &&USE_OPEN3D
+#ifdef WITH_3D && USE_OPEN3D
 #include "../3D/Mesh/_MeshStream.h"
 #include "../3D/PointCloud/_PCstream.h"
 #include "../3D/PointCloud/_PCframe.h"
@@ -130,9 +130,9 @@
 #include "../Application/VzScan/_VzScanCalib.h"
 #endif
 
-#ifdef WITH_APP_LIVOXSCAN &&USE_LIVOX &&WITH_3D &&USE_OPEN3D &&USE_GUI
-#include "../Application/LivoxScan/_LivoxScanAuto.h"
-// #include "../Application/LivoxScan/_LivoxScanCalib.h"
+#ifdef WITH_APP_LIVOXSCANNER &&USE_LIVOX &&WITH_3D &&USE_OPEN3D
+#include "../Application/LivoxScanner/_LivoxAutoScan.h"
+#include "../Application/LivoxScanner/_LivoxScanner.h"
 #endif
 
 #ifdef WITH_APP_ROPEWAYSCAN &&USE_VZENSE &&USE_LIVOX &&WITH_3D &&USE_OPEN3D
