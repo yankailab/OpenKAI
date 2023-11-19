@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["LivoxAutoScan"],
+	"vBASE":["LivoxAutoScan","LivoxScanner","stepperX","stepperY"],
 }
 
 {
@@ -44,8 +44,8 @@
 	"nP":256000,
 	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calibLivox.kiss",
 	"lidarMode":1,
-	"vAxisIdx":[1, 2, 0],
-	"vAxisK":[-1, 1, -1],
+	"vAxisIdx":[0, 1, 2],
+	"vAxisK":[1, 1, 1],
 	"vRange":[0.0, 1000],
 }
 
@@ -58,23 +58,23 @@
 		"name":"thread",
 		"FPS":10,
 	}
+	"vGeometryBase":["Livox"],
 	"rVoxel":1.0,
 	"nPmax":1000000,
-	"baseDir":"/home/kai/Documents/",
-	"tWait":5,
-	"vGeometryBase":["Livox"],
-	"vRangeH":[0.0, 10.0],
-	"nDivH":10,
+	"baseDir":"/home/kai/Documents/LivoxScanner/",
+	"tWaitSec":5,
+	"vRangeH":[-160.0, 160.0],
+	"nH":90,
 	"_ActuatorBaseH":"stepperX",
-	"vRangeV":[0.0, 10.0],
-	"nDivV":10,
+	"vRangeV":[-10.0, 10.0],
+	"nV":10,
 	"_ActuatorBaseV":"stepperY",
 }
 
 {
 	"name":"ws",
 	"class":"_WebSocket",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -88,13 +88,18 @@
 {
 	"name":"LivoxScanner",
 	"class":"_LivoxScanner",
-	"bON":0,
+	"bON":1,
 	"bLog":1,
     {
 		"name":"thread",
 		"FPS":10,
 	}
+    {
+		"name":"threadR",
+		"FPS":10,
+	}
 	"_IOBase":"ws",
+	"_LivoxAutoScan":"LivoxAutoScan",
 	"rVoxel":1.0,
 	"nPmax":1000000,
 	"msgFinishSend":"",
@@ -128,9 +133,9 @@
 	"bLog":1,
 	"_Modbus":"modbus",
 	"iSlave":2,
-	"dpr":1,
+	"dpr":9,
 	"bFeedback":1,
-	"dInit":5,
+	"dInit":30,
 
 	{
 		"name":"addr",
@@ -151,9 +156,9 @@
 		{
 			"name":"X",
 			"pOrigin":0.0,
-			"pTarget":5.0,
+			"pTarget":0.0,
 			"pErr":0.01,
-			"pRange":[0,15],
+			"pRange":[-180,180],
 			"sTarget":300.0,
 			"sRange":[0,300],
 			"aTarget":100.0,
@@ -173,9 +178,9 @@
 	"bLog":1,
 	"_Modbus":"modbus",
 	"iSlave":3,
-	"dpr":1,
+	"dpr":9,
 	"bFeedback":1,
-	"dInit":5,
+	"dInit":30,
 
 	{
 		"name":"addr",
@@ -196,9 +201,9 @@
 		{
 			"name":"Y",
 			"pOrigin":0.0,
-			"pTarget":5.0,
+			"pTarget":0.0,
 			"pErr":0.01,
-			"pRange":[0,15],
+			"pRange":[-30,30],
 			"sTarget":300.0,
 			"sRange":[0,300],
 			"aTarget":100.0,

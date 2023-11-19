@@ -19,16 +19,11 @@ namespace kai
 	{
 		// config
 		vFloat2 m_vRange;
-		float m_dV = 0.01;
-		int m_nD;
+		float m_dV = 10;
 		_ActuatorBase* m_pAct = NULL;
-		// dynamic
-		float m_v = 0.5;
 
-		void updateConfig(void)
-		{
-			m_dV = m_vRange.d() / m_nD;
-		}
+		// dynamic
+		float m_v = 0.0;
 
 		void reset(void)
 		{
@@ -37,18 +32,28 @@ namespace kai
 
 		bool bComplete(void)
 		{
-			IF_T(m_v >= m_vRange.y);
+			IF_T(m_v > m_vRange.y);
 
 			return false;
 		}
 
 		float update(void)
 		{
-			if(m_v < m_vRange.y)
+			if(m_v <= m_vRange.y)
 				m_v += m_dV;
 
 			return m_v;
 		}
+	};
+
+	struct LivoxAutoScanConfig
+	{
+		vFloat2 m_vRangeH;
+		float m_dH;
+		vFloat2 m_vRangeV;
+		float m_dV;
+
+		vDouble3 m_vOffset;
 	};
 
     enum LidarAutoScan_threadBit
@@ -70,10 +75,13 @@ namespace kai
 		virtual bool start(void);
 		virtual int check(void);
 
-		virtual void resetScan(void);
-		virtual void startScan(void);
-		virtual void stopScan(void);
+		virtual void center(void);
+		virtual void reset(void);
+		virtual void startAuto(void);
+		virtual void stop(void);
 		virtual void save(void);
+		virtual void setConfig(const LivoxAutoScanConfig& c);
+		virtual LivoxAutoScanConfig getConfig(void);
 
 		float getBufferCap(void);
 
@@ -100,7 +108,7 @@ namespace kai
 		float m_rVoxel;
 		string m_baseDir;
 		string m_dir;
-		int m_tWait;
+		int m_tWaitSec;
 
 		LivoxCtrl m_livoxCtrl;
 		BIT_FLAG m_fProcess;
@@ -108,9 +116,10 @@ namespace kai
 
 		bool m_bScanning;
 		int m_nTake;
-		_ActuatorBase* m_pAct;
 		LivoxAutoScanActuator m_actH;
 		LivoxAutoScanActuator m_actV;
+		vDouble3 m_vOffset;
+
 
 	};
 

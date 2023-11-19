@@ -17,10 +17,11 @@ namespace kai
 		m_fProcess.clearAll();
 		m_baseDir = "";
 		m_dir = "";
+		m_tWaitSec = 5;
+
 		m_rB = 0.0;
-		
-		m_tWait = 5;
-		m_pAct = NULL;
+		m_bScanning = false;
+		m_nTake = 0;
 	}
 
 	_LivoxAutoScan::~_LivoxAutoScan()
@@ -35,12 +36,12 @@ namespace kai
 		pK->v("rVoxel", &m_rVoxel);
 		pK->v("nPmax", &m_nPmax);
 		pK->v("baseDir", &m_baseDir);
-		pK->v("tWait", &m_tWait);
+		pK->v("tWaitSec", &m_tWaitSec);
 
 		pK->v("vRangeH", &m_actH.m_vRange);
-		pK->v("nDivH", &m_actH.m_nD);
+		pK->v("dH", &m_actH.m_dV);
 		pK->v("vRangeV", &m_actV.m_vRange);
-		pK->v("nDivV", &m_actV.m_nD);
+		pK->v("dV", &m_actV.m_dV);
 
 		m_fProcess.set(lvScanner_reset);
 
@@ -87,8 +88,7 @@ namespace kai
 
 	int _LivoxAutoScan::check(void)
 	{
-		IF__(m_vpGB.empty(), -1);
-		NULL__(m_pAct, -1);
+		//		IF__(m_vpGB.empty(), -1);
 
 		return this->_PCstream::check();
 	}
@@ -117,9 +117,19 @@ namespace kai
 		}
 	}
 
+	void _LivoxAutoScan::center(void)
+	{
+		IF_(check() < 0);
+
+		m_actH.m_pAct->setPtarget(0, 0);
+		m_actV.m_pAct->setPtarget(0, 0);
+	}
+
 	void _LivoxAutoScan::scanReset(void)
 	{
 		IF_(check() < 0);
+
+		center();
 
 		_Livox *pPsrc = (_Livox *)m_vpGB[0];
 		pPsrc->clear();
@@ -137,18 +147,16 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		m_actH.updateConfig();
-		m_actV.updateConfig();
 		m_actH.reset();
 		m_actV.reset();
 
 		// Actuator reset pos
 		// todo
 
-
-		m_bScanning = true;
 		_Livox *pPsrc = (_Livox *)m_vpGB[0];
 		pPsrc->startStream();
+
+		m_bScanning = true;
 	}
 
 	void _LivoxAutoScan::scanStop(void)
@@ -158,7 +166,7 @@ namespace kai
 		_Livox *pPsrc = (_Livox *)m_vpGB[0];
 		pPsrc->stopStream();
 
-	 	m_bScanning = false;
+		m_bScanning = false;
 	}
 
 	void _LivoxAutoScan::scanUpdate(void)
@@ -166,37 +174,41 @@ namespace kai
 		IF_(check() < 0);
 		IF_(!m_bScanning);
 
-		m_actV.update();
-		if(m_actV.bComplete())
-		{
-			m_actV.reset();
-			m_actH.update();
-		}
-
-		if(m_actH.bComplete())
-		{
-			scanStop();
-			return;
-		}
-
-		m_actH.m_pAct->setPtarget(0, m_actH.m_v, true);
-		m_actV.m_pAct->setPtarget(0, m_actV.m_v, true);
-		sleep(m_tWait);
+		m_actH.m_pAct->setPtarget(0, m_actH.m_v);
+		m_actV.m_pAct->setPtarget(0, m_actV.m_v);
+		while (!m_actH.m_pAct->bComplete())
+			;
+		while (!m_actV.m_pAct->bComplete())
+			;
 
 		_Livox *pPsrc = (_Livox *)m_vpGB[0];
-//		pPsrc->setTranslation();
-		pPsrc->clear();	
-		sleep(m_tWait);		//TODO: change to point number
+		//	TODO:
+		//		pPsrc->setTranslation();
+		pPsrc->clear();
+		sleep(m_tWaitSec); // TODO: change to point number
 
 		PointCloud pc;
 		pPsrc->getPC(&pc);
 		int nPnew = pc.points_.size();
-		IF_(nPnew <= 0);
+		if (nPnew > 0)
+		{
+			m_vPC.push_back(pc);
+			m_nP += nPnew;
+			m_rB = (float)m_nP / (float)m_nPmax;
+		}
 
-		// Add original
-		m_vPC.push_back(pc);
-		m_nP += nPnew;
-		m_rB = (float)m_nP / (float)m_nPmax;
+		// update to next pos
+		m_actV.update();
+		if (m_actV.bComplete())
+		{
+			m_actV.reset();
+			m_actH.update();
+			if (m_actH.bComplete())
+			{
+				scanStop();
+				center();
+			}
+		}
 	}
 
 	void _LivoxAutoScan::savePC(void)
@@ -220,27 +232,31 @@ namespace kai
 			PointCloud *pP = &m_vPC[i];
 			nSave += (io::WritePointCloudToPLY(m_dir + i2str(i) + ".ply",
 											   *pP,
-											   par)) ? 1 : 0;
+											   par))
+						 ? 1
+						 : 0;
 
 			pcMerge += *pP;
 		}
 
 		nSave += (io::WritePointCloudToPLY(m_dir + "_merged.ply",
 										   pcMerge,
-										   par)) ? 1 : 0;
+										   par))
+					 ? 1
+					 : 0;
 	}
 
-	void _LivoxAutoScan::resetScan(void)
+	void _LivoxAutoScan::reset(void)
 	{
 		m_fProcess.set(lvScanner_reset);
 	}
 
-	void _LivoxAutoScan::startScan(void)
+	void _LivoxAutoScan::startAuto(void)
 	{
 		m_fProcess.set(lvScanner_start);
 	}
 
-	void _LivoxAutoScan::stopScan(void)
+	void _LivoxAutoScan::stop(void)
 	{
 		m_fProcess.set(lvScanner_stop);
 	}
@@ -248,6 +264,27 @@ namespace kai
 	void _LivoxAutoScan::save(void)
 	{
 		m_fProcess.set(lvScanner_save);
+	}
+
+	void _LivoxAutoScan::setConfig(const LivoxAutoScanConfig &c)
+	{
+		m_actH.m_vRange = c.m_vRangeH;
+		m_actH.m_dV = c.m_dH;
+		m_actV.m_vRange = c.m_vRangeV;
+		m_actV.m_dV = c.m_dV;
+		m_vOffset = c.m_vOffset;
+	}
+
+	LivoxAutoScanConfig _LivoxAutoScan::getConfig(void)
+	{
+		LivoxAutoScanConfig c;
+		c.m_vRangeH = m_actH.m_vRange;
+		c.m_dH = m_actH.m_dV;
+		c.m_vRangeV = m_actV.m_vRange;
+		c.m_dV = m_actV.m_dV;
+		c.m_vOffset = m_vOffset;
+
+		return c;
 	}
 
 	float _LivoxAutoScan::getBufferCap(void)

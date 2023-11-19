@@ -30,11 +30,7 @@ namespace kai
 		// main thread
 		void send(void);
 		void sendHeartbeat(void);
-
-		void reset(void);
-		void startScan(void);
-		void stop(void);
-		void save(void);
+		void sendConfig(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -47,6 +43,8 @@ namespace kai
 		void start(picojson::object &o);
 		void stop(picojson::object &o);
 		void save(picojson::object &o);
+		void setConfig(picojson::object &o);
+		void getConfig(picojson::object &o);
 		void handleMsg(string &str);
 		void updateR(void);
 		static void *getUpdateR(void *This)

@@ -94,7 +94,15 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			readStatus();
+			if (m_bf.b(ACT_BF_STOP, true))
+			{
+				while(!stop());
+				while(!readStatus());
+				m_pA->m_p.m_vTarget = m_pA->m_p.m_v;
+			}
+
+			//		m_pA->m_p.m_vTarget = -m_pA->m_p.m_vTarget;
+
 			updateMove();
 
 			m_pT->autoFPSto();
@@ -105,16 +113,8 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		if (m_bf.b(ACT_BF_STOP, true))
-		{
-			stop();
-			return;
-		}
-
-		IF_(!bComplete()); //Moving
-
-		m_pA->m_p.m_vTarget = -m_pA->m_p.m_vTarget;
-
+		IF_(!bComplete()); // Moving
+		IF_(!readStatus());
 		IF_(!setPos());
 		IF_(!setSpeed());
 		IF_(!setAccel());
@@ -138,8 +138,8 @@ namespace kai
 	{
 		IF_F(check() < 0);
 
-		//	int32_t step = m_pA->m_p.m_vTarget - m_pA->m_p.m_v;
-		int32_t step = m_pA->m_p.m_vTarget;
+		int32_t step = m_pA->m_p.m_vTarget - m_pA->m_p.m_v;
+		//		int32_t step = m_pA->m_p.m_vTarget;
 		IF_F(step == 0);
 		int32_t ds = abs(step);
 
@@ -242,6 +242,8 @@ namespace kai
 
 		IF_F(m_pMB->writeBit(m_iSlave, m_addr.m_resPos, true) != 1);
 		m_pT->sleepT(m_cmdInt);
+
+		m_pA->m_p.m_v = 0;
 		return true;
 	}
 
@@ -250,23 +252,36 @@ namespace kai
 		IF_F(check() < 0);
 		IF_F(!setDistPerRound(m_dpr));
 
-		uint16_t pB[2];
-		int32_t ds = abs(m_dInit);
-		pB[0] = HIGH16(ds);
-		pB[1] = LOW16(ds);
-		IF_F(m_pMB->writeRegisters(m_iSlave, m_addr.m_setDist, 2, pB) != 2);
-		m_pT->sleepT(m_cmdInt);
+		if (m_dInit != 0)
+		{
+			uint16_t pB[2];
+			int32_t ds = abs(m_dInit);
+			pB[0] = HIGH16(ds);
+			pB[1] = LOW16(ds);
+			IF_F(m_pMB->writeRegisters(m_iSlave, m_addr.m_setDist, 2, pB) != 2);
+			m_pT->sleepT(m_cmdInt);
 
-		pB[0] = (m_dInit > 0) ? 0 : 1;
-		IF_F(m_pMB->writeRegisters(m_iSlave, m_addr.m_setDir, 1, pB) != 1);
-		m_pT->sleepT(m_cmdInt);
+			pB[0] = (m_dInit > 0) ? 0 : 1;
+			IF_F(m_pMB->writeRegisters(m_iSlave, m_addr.m_setDir, 1, pB) != 1);
+			m_pT->sleepT(m_cmdInt);
 
-		IF_F(!setSpeed());
-		IF_F(!setAccel());
-		IF_F(!run());
+			IF_F(!setSpeed());
+			IF_F(!setAccel());
+			IF_F(!run());
 
-		while (!bComplete())
-			;
+			while (!bComplete())
+				;
+
+			pB[0] = (m_dInit > 0) ? 1 : 0;
+			IF_F(m_pMB->writeRegisters(m_iSlave, m_addr.m_setDir, 1, pB) != 1);
+			m_pT->sleepT(m_cmdInt);
+
+			IF_F(!run());
+
+			while (!bComplete())
+				;
+		}
+
 		while (!resetPos())
 			;
 

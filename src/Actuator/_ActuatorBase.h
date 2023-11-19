@@ -34,9 +34,7 @@ namespace kai
 
 		bool bComplete(void)
 		{
-			IF_F(!EQUAL(m_v, m_vTarget, m_vErr));
-
-			return true;
+			return EQUAL(m_v, m_vTarget, m_vErr);
 		}
 
 		bool bInRange(float v)
@@ -134,7 +132,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		vector<ACTUATOR_AXIS> m_vAxis;
 		int m_nMinAxis;
 

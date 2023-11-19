@@ -26,13 +26,6 @@ namespace kai
 
 //		pK->v("iAct", &m_iAct);
 
-		int v;
-		v = SEC_2_USEC;
-		pK->v("ieSendHB", &v);
-		m_ieSendHB.init(v);
-
-		reset();
-
 		return true;
 	}
 
@@ -44,7 +37,7 @@ namespace kai
 
 		string n;
 		n = "";
-		F_ERROR_F(pK->v("_LivoxAutoScann", &n));
+		F_ERROR_F(pK->v("_LivoxAutoScan", &n));
 		m_pLivox = (_LivoxAutoScan *)(pK->getInst(n));
 		NULL_Fl(m_pLivox, n + ": not found");
 
@@ -80,32 +73,6 @@ namespace kai
 		}
 	}
 
-	void _LivoxScanner::reset(void)
-	{
-		IF_(check() < 0);
-
-		stop();
-		m_pLivox->resetScan();
-	}
-
-	void _LivoxScanner::startScan(void)
-	{
-		IF_(check() < 0);
-		m_pLivox->startScan();
-	}
-
-	void _LivoxScanner::stop(void)
-	{
-		IF_(check() < 0);
-	}
-
-	void _LivoxScanner::save(void)
-	{
-		IF_(check() < 0);
-
-		m_pLivox->save();
-	}
-
 	void _LivoxScanner::updateR(void)
 	{
 		while (m_pTr->bRun())
@@ -139,37 +106,71 @@ namespace kai
 			stop(jo);
 		else if (cmd == "save")
 			save(jo);
+		else if (cmd == "setConfig")
+			setConfig(jo);
+		else if (cmd == "getConfig")
+			getConfig(jo);
 	}
 
 	void _LivoxScanner::reset(picojson::object &o)
 	{
 		IF_(check() < 0);
-		IF_(!o["id"].is<double>());
-
-		int vID = o["id"].get<double>();
+		m_pLivox->reset();
 	}
 
 	void _LivoxScanner::start(picojson::object &o)
 	{
 		IF_(check() < 0);
-		IF_(!o["id"].is<double>());
-		int vID = o["id"].get<double>();
-
+		m_pLivox->startAuto();
 	}
 
 	void _LivoxScanner::stop(picojson::object &o)
 	{
 		IF_(check() < 0);
-		IF_(!o["id"].is<double>());
-		int vID = o["id"].get<double>();
-
+		m_pLivox->stop();
 	}
 
 	void _LivoxScanner::save(picojson::object &o)
 	{
 		IF_(check() < 0);
-		IF_(!o["id"].is<double>());
-		int vID = o["id"].get<double>();
+		m_pLivox->save();
+	}
+
+	void _LivoxScanner::setConfig(picojson::object &o)
+	{
+		IF_(check() < 0);
+
+		IF_(!o["vFrom"].is<double>());
+		IF_(!o["vStep"].is<double>());
+		IF_(!o["vTo"].is<double>());
+		IF_(!o["hFrom"].is<double>());
+		IF_(!o["hStep"].is<double>());
+		IF_(!o["hTo"].is<double>());
+		IF_(!o["Xoffset"].is<double>());
+		IF_(!o["Yoffset"].is<double>());
+		IF_(!o["Zoffset"].is<double>());
+
+		LivoxAutoScanConfig c;
+		c.m_vRangeV.x = o["vFrom"].get<double>();
+		c.m_vRangeV.y = o["vTo"].get<double>();
+		c.m_dV = o["vStep"].get<double>();
+		c.m_vRangeH.x = o["hFrom"].get<double>();
+		c.m_vRangeH.y = o["hTo"].get<double>();
+		c.m_dH = o["hStep"].get<double>();
+		c.m_vOffset.x = o["Xoffset"].get<double>();
+		c.m_vOffset.y = o["Yoffset"].get<double>();
+		c.m_vOffset.z = o["Zoffset"].get<double>();
+
+		m_pLivox->setConfig(c);
+
+		sendConfig();
+	}
+
+	void _LivoxScanner::getConfig(picojson::object &o)
+	{
+		IF_(check() < 0);
+
+		sendConfig();
 	}
 
 	void _LivoxScanner::send(void)
@@ -190,6 +191,29 @@ namespace kai
 		JO(o, "cmd", "hb");
         JO(o, "s", "");
         JO(o, "msg", m_msg);
+
+		sendMsg(o);
+	}
+
+	void _LivoxScanner::sendConfig(void)
+	{
+		IF_(check() < 0);
+
+		LivoxAutoScanConfig c = m_pLivox->getConfig();
+
+		object o;
+		JO(o, "cmd", "getConfig");
+        JO(o, "msg", m_msg);
+        JO(o, "s", "");
+        JO(o, "vFrom", c.m_vRangeV.x);
+        JO(o, "vTo", c.m_vRangeV.y);
+        JO(o, "vStep", c.m_dV);
+        JO(o, "hFrom", c.m_vRangeH.x);
+        JO(o, "hTo", c.m_vRangeH.y);
+        JO(o, "hStep", c.m_dH);
+        JO(o, "Xoffset", c.m_vOffset.x);
+        JO(o, "Yoffset", c.m_vOffset.y);
+        JO(o, "Zoffset", c.m_vOffset.z);
 
 		sendMsg(o);
 	}
