@@ -110,4 +110,5 @@ sudo fdisk -l
 sudo umount /dev/sdb
 sudo dd if=~/sd.img of=/dev/sdb bs=6M
 
-
+# add user to dialout
+sudo adduser [username] dialout

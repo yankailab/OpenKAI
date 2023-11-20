@@ -59,15 +59,15 @@
 		"FPS":10,
 	}
 	"vGeometryBase":["Livox"],
-	"rVoxel":0.01,
+	"rVoxel":0.015,
 	"nPmax":1000000,
 	"baseDir":"/home/kai/Documents/LivoxScanner/",
 	"tWaitSec":5,
-	"vRangeH":[-10.0, 10.0],
-	"dH":5,
+	"vRangeH":[-20.0, 20.0],
+	"dH":10,
 	"_ActuatorBaseH":"stepperX",
-	"vRangeV":[-10.0, 15.0],
-	"dV":5,
+	"vRangeV":[-10.0, 20.0],
+	"dV":10,
 	"_ActuatorBaseV":"stepperY",
 }
 

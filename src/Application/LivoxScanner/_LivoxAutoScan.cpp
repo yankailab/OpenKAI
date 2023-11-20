@@ -141,6 +141,8 @@ namespace kai
 			pP->Clear();
 		}
 		m_vPC.clear();
+
+		m_rB = (float)m_nP / (float)m_nPmax;
 	}
 
 	void _LivoxAutoScan::scanStart(void)
@@ -180,6 +182,11 @@ namespace kai
 			;
 		while (!m_actV.m_pAct->bComplete())
 			;
+
+		if(m_nP <= 0)
+		{
+			sleep(m_tWaitSec);
+		}
 
 		_Livox *pPsrc = (_Livox *)m_vpGB[0];
 		vDouble3 vT;

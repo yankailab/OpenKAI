@@ -107,7 +107,6 @@ namespace kai
 		}
     }
 
-
     void _PCstream::getStream(void* p)
     {
         NULL_(p);
