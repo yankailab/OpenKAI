@@ -24,7 +24,7 @@ namespace kai
 		IF_F(!this->_JSONbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-//		pK->v("iAct", &m_iAct);
+		//		pK->v("iAct", &m_iAct);
 
 		return true;
 	}
@@ -68,6 +68,7 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
+			send();
 
 			m_pT->autoFPSto();
 		}
@@ -116,24 +117,32 @@ namespace kai
 	{
 		IF_(check() < 0);
 		m_pLivox->reset();
+
+		m_msg = "Memory cleared";
 	}
 
 	void _LivoxScanner::start(picojson::object &o)
 	{
 		IF_(check() < 0);
 		m_pLivox->startAuto();
+
+		m_msg = "Scan started";
 	}
 
 	void _LivoxScanner::stop(picojson::object &o)
 	{
 		IF_(check() < 0);
 		m_pLivox->stop();
+
+		m_msg = "Scan stopped";
 	}
 
 	void _LivoxScanner::save(picojson::object &o)
 	{
 		IF_(check() < 0);
 		m_pLivox->save();
+
+		m_msg = "Point cloud files saved";
 	}
 
 	void _LivoxScanner::setConfig(picojson::object &o)
@@ -187,10 +196,21 @@ namespace kai
 	{
 		IF_(check() < 0);
 
+		if (m_msg.empty())
+		{
+			m_msg = "Standby: ";
+			if (m_pLivox->bScanning())
+				m_msg = "Scanning: ";
+
+			m_msg += i2str(m_pLivox->getBufferCap() * 100) + "% memory used";
+		}
+
 		object o;
 		JO(o, "cmd", "hb");
-        JO(o, "s", "");
-        JO(o, "msg", m_msg);
+		JO(o, "s", "");
+		JO(o, "msg", m_msg);
+
+		m_msg = "";
 
 		sendMsg(o);
 	}
@@ -199,21 +219,22 @@ namespace kai
 	{
 		IF_(check() < 0);
 
+		m_msg = "Config updated";
 		LivoxAutoScanConfig c = m_pLivox->getConfig();
 
 		object o;
 		JO(o, "cmd", "getConfig");
-        JO(o, "msg", m_msg);
-        JO(o, "s", "");
-        JO(o, "vFrom", c.m_vRangeV.x);
-        JO(o, "vTo", c.m_vRangeV.y);
-        JO(o, "vStep", c.m_dV);
-        JO(o, "hFrom", c.m_vRangeH.x);
-        JO(o, "hTo", c.m_vRangeH.y);
-        JO(o, "hStep", c.m_dH);
-        JO(o, "Xoffset", c.m_vOffset.x);
-        JO(o, "Yoffset", c.m_vOffset.y);
-        JO(o, "Zoffset", c.m_vOffset.z);
+		JO(o, "msg", m_msg);
+		JO(o, "s", "");
+		JO(o, "vFrom", c.m_vRangeV.x);
+		JO(o, "vTo", c.m_vRangeV.y);
+		JO(o, "vStep", c.m_dV);
+		JO(o, "hFrom", c.m_vRangeH.x);
+		JO(o, "hTo", c.m_vRangeH.y);
+		JO(o, "hStep", c.m_dH);
+		JO(o, "Xoffset", c.m_vOffset.x);
+		JO(o, "Yoffset", c.m_vOffset.y);
+		JO(o, "Zoffset", c.m_vOffset.z);
 
 		sendMsg(o);
 	}

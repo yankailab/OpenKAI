@@ -13,7 +13,7 @@ namespace kai
 	{
 		m_nP = 0;
 		m_nPmax = INT_MAX;
-		m_rVoxel = 0.1;
+		m_rVoxel = 0.05;
 		m_fProcess.clearAll();
 		m_baseDir = "";
 		m_dir = "";
@@ -154,7 +154,7 @@ namespace kai
 		// todo
 
 		_Livox *pPsrc = (_Livox *)m_vpGB[0];
-		pPsrc->startStream();
+		//		pPsrc->startStream();
 
 		m_bScanning = true;
 	}
@@ -164,7 +164,7 @@ namespace kai
 		IF_(check() < 0);
 
 		_Livox *pPsrc = (_Livox *)m_vpGB[0];
-		pPsrc->stopStream();
+		//		pPsrc->stopStream();
 
 		m_bScanning = false;
 	}
@@ -182,8 +182,15 @@ namespace kai
 			;
 
 		_Livox *pPsrc = (_Livox *)m_vpGB[0];
-		//	TODO:
-		//		pPsrc->setTranslation();
+		vDouble3 vT;
+		vT.clear();
+		pPsrc->setOffset(m_vOffset, vT);
+		vDouble3 vR;
+		vR.x = m_actV.m_v * DEG_2_RAD;	// pitch
+		vR.y = -m_actH.m_v * DEG_2_RAD; // yaw
+		vR.z = 0.0;						// roll
+		pPsrc->setTranslation(vT, vR);
+
 		pPsrc->clear();
 		sleep(m_tWaitSec); // TODO: change to point number
 
@@ -192,6 +199,12 @@ namespace kai
 		int nPnew = pc.points_.size();
 		if (nPnew > 0)
 		{
+			if (m_nP + nPnew >= m_nPmax)
+			{
+				scanStop();
+				center();
+			}
+
 			m_vPC.push_back(pc);
 			m_nP += nPnew;
 			m_rB = (float)m_nP / (float)m_nPmax;
@@ -239,8 +252,16 @@ namespace kai
 			pcMerge += *pP;
 		}
 
-		nSave += (io::WritePointCloudToPLY(m_dir + "_merged.ply",
+		nSave += (io::WritePointCloudToPLY(m_dir + "_merged_raw.ply",
 										   pcMerge,
+										   par))
+					 ? 1
+					 : 0;
+
+		PointCloud pcVD;
+		pcVD = *pcMerge.VoxelDownSample(m_rVoxel);
+		nSave += (io::WritePointCloudToPLY(m_dir + "_merged.ply",
+										   pcVD,
 										   par))
 					 ? 1
 					 : 0;
@@ -285,6 +306,11 @@ namespace kai
 		c.m_vOffset = m_vOffset;
 
 		return c;
+	}
+
+	bool _LivoxAutoScan::bScanning(void)
+	{
+		return m_bScanning;
 	}
 
 	float _LivoxAutoScan::getBufferCap(void)

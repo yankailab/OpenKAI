@@ -83,6 +83,8 @@ namespace kai
 		virtual void setConfig(const LivoxAutoScanConfig& c);
 		virtual LivoxAutoScanConfig getConfig(void);
 
+		virtual bool bScanning(void);
+
 		float getBufferCap(void);
 
 	protected:

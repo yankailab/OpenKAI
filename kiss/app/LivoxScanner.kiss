@@ -3,13 +3,13 @@
 	"class":"Startup",
 	"appName":"LivoxScanner",
 	"bLog":1,
-	"bStdErr":1,
+	"bStdErr":0,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -21,7 +21,7 @@
 	"name":"LivoxLidar",
 	"class":"LivoxLidar",
 	"bON":1,
-	"bLog":1,
+	"bLog":0,
 	"/vBroadcastCode":["3JEDHC900100791"],
 	"bEnableFan":1,
 	"returnMode":1,
@@ -34,7 +34,7 @@
 	"name":"Livox",
 	"class":"_Livox",
 	"bON":1,
-	"bLog":1,
+	"bLog":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -44,8 +44,8 @@
 	"nP":256000,
 	"fCalib":"/home/kai/dev/OpenKAI/kiss/app/calibLivox.kiss",
 	"lidarMode":1,
-	"vAxisIdx":[0, 1, 2],
-	"vAxisK":[1, 1, 1],
+	"vAxisIdx":[2, 1, 0],
+	"vAxisK":[-1, -1, -1],
 	"vRange":[0.0, 1000],
 }
 
@@ -53,21 +53,21 @@
 	"name":"LivoxAutoScan",
 	"class":"_LivoxAutoScan",
 	"bON":1,
-	"bLog":1,
+	"bLog":0,
     {
 		"name":"thread",
 		"FPS":10,
 	}
 	"vGeometryBase":["Livox"],
-	"rVoxel":1.0,
+	"rVoxel":0.01,
 	"nPmax":1000000,
 	"baseDir":"/home/kai/Documents/LivoxScanner/",
 	"tWaitSec":5,
-	"vRangeH":[-160.0, 160.0],
-	"nH":90,
+	"vRangeH":[-10.0, 10.0],
+	"dH":5,
 	"_ActuatorBaseH":"stepperX",
-	"vRangeV":[-10.0, 10.0],
-	"nV":10,
+	"vRangeV":[-10.0, 15.0],
+	"dV":5,
 	"_ActuatorBaseV":"stepperY",
 }
 

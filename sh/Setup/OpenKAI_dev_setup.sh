@@ -118,7 +118,7 @@ sudo make install
 # (Optional) gphoto2
 sudo apt-get install -y build-essential libltdl-dev libusb-1.0-0-dev libexif-dev udev libpopt-dev libudev-dev pkg-config git automake autoconf autopoint gettext libtool wget
 
-git clone --branch libgphoto2-2_5_30-release --depth 1 https://github.com/gphoto/libgphoto2.git
+git clone --branch libgphoto2-2_5_31-release --depth 1 https://github.com/gphoto/libgphoto2.git
 cd libgphoto2
 autoreconf --install --symlink
 ./configure
