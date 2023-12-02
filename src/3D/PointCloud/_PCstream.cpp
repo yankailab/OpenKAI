@@ -138,11 +138,15 @@ namespace kai
 
     void _PCstream::clear(void)
     {
+        AcceptAdd(false);
+
         for(int i=0; i<m_nP; i++)
             m_pP[i].init();
 
         m_iP = 0;
         m_nPread = 0;
+
+        AcceptAdd(true);
     }
 
     void _PCstream::refreshCol(void)

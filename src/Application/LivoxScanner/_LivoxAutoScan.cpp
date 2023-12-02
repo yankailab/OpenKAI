@@ -183,10 +183,10 @@ namespace kai
 		while (!m_actV.m_pAct->bComplete())
 			;
 
-		if(m_nP <= 0)
-		{
+		// if(m_nP <= 0)
+		// {
 			sleep(m_tWaitSec);
-		}
+		// }
 
 		_Livox *pPsrc = (_Livox *)m_vpGB[0];
 		vDouble3 vT;

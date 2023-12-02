@@ -11,12 +11,12 @@ namespace kai
 {
 	_RopewayScan::_RopewayScan()
 	{
-		m_pNav = NULL;
+//		m_pNav = NULL;
 		m_pTw = NULL;
 		m_pAct = NULL;
 		m_iAct = 0;
-		m_pLivox = NULL;
-		m_pVz = NULL;
+//		m_pLivox = NULL;
+//		m_pVz = NULL;
 		m_msg = "";
 
 		m_fProcess.clearAll();
@@ -64,24 +64,24 @@ namespace kai
 		Kiss *pK = (Kiss *)m_pKiss;
 
 		string n = "";
-		F_ERROR_F(pK->v("_NavBase", &n));
-		m_pNav = (_NavBase *)(pK->getInst(n));
-		NULL_Fl(m_pNav, n + ": not found");
+		// F_ERROR_F(pK->v("_NavBase", &n));
+		// m_pNav = (_NavBase *)(pK->getInst(n));
+		// NULL_Fl(m_pNav, n + ": not found");
 
 		n = "";
 		F_ERROR_F(pK->v("_ActuatorBase", &n));
 		m_pAct = (_ActuatorBase *)(pK->getInst(n));
 		NULL_Fl(m_pAct, n + ": not found");
 
-		n = "";
-		F_ERROR_F(pK->v("_RopewayScanLivox", &n));
-		m_pLivox = (_RopewayScanLivox *)(pK->getInst(n));
-		NULL_Fl(m_pLivox, n + ": not found");
+		// n = "";
+		// F_ERROR_F(pK->v("_RopewayScanLivox", &n));
+		// m_pLivox = (_RopewayScanLivox *)(pK->getInst(n));
+		// NULL_Fl(m_pLivox, n + ": not found");
 
-		n = "";
-		F_ERROR_F(pK->v("_RopewayScanVz", &n));
-		m_pVz = (_RopewayScanVz *)(pK->getInst(n));
-		NULL_Fl(m_pVz, n + ": not found");
+		// n = "";
+		// F_ERROR_F(pK->v("_RopewayScanVz", &n));
+		// m_pVz = (_RopewayScanVz *)(pK->getInst(n));
+		// NULL_Fl(m_pVz, n + ": not found");
 
 		return true;
 	}
@@ -101,10 +101,10 @@ namespace kai
 
 	int _RopewayScan::check(void)
 	{
-		NULL__(m_pNav, -1);
+//		NULL__(m_pNav, -1);
 		NULL__(m_pAct, -1);
-		NULL__(m_pLivox, -1);
-		NULL__(m_pVz, -1);
+//		NULL__(m_pLivox, -1);
+//		NULL__(m_pVz, -1);
 
 		return this->_JSONbase::check();
 	}
@@ -140,11 +140,11 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		vFloat3 vT = m_pNav->t();
+		// vFloat3 vT = m_pNav->t();
 
-		m_msg = "POS = (" + f2str(vT.x) + ", " + f2str(vT.y) + ", " +f2str(vT.z) + ")</br>";
-		m_msg += "MEM Vzense =" + f2str(m_pVz->getBufferCap()) + "</br>";
-		m_msg += "MEM Livox =" + f2str(m_pLivox->getBufferCap()) + "</br>";
+		// m_msg = "POS = (" + f2str(vT.x) + ", " + f2str(vT.y) + ", " +f2str(vT.z) + ")</br>";
+		// m_msg += "MEM Vzense =" + f2str(m_pVz->getBufferCap()) + "</br>";
+		// m_msg += "MEM Livox =" + f2str(m_pLivox->getBufferCap()) + "</br>";
 	}
 
 	void _RopewayScan::reset(void)
@@ -152,8 +152,8 @@ namespace kai
 		IF_(check() < 0);
 
 		stop();
-		m_pVz->reset();
-		m_pLivox->resetScan();
+		// m_pVz->reset();
+		// m_pLivox->resetScan();
 	}
 
 	void _RopewayScan::move(void)
@@ -174,16 +174,16 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		m_pVz->take();
-		m_pLivox->takeScan();
+		// m_pVz->take();
+		// m_pLivox->takeScan();
 	}
 
 	void _RopewayScan::save(void)
 	{
 		IF_(check() < 0);
 
-		m_pVz->save();
-		m_pLivox->save();
+		// m_pVz->save();
+		// m_pLivox->save();
 	}
 
 	void _RopewayScan::updateR(void)

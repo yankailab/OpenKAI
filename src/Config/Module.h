@@ -135,10 +135,11 @@
 #include "../Application/LivoxScanner/_LivoxScanner.h"
 #endif
 
-#ifdef WITH_APP_ROPEWAYSCAN &&USE_VZENSE &&USE_LIVOX &&WITH_3D &&USE_OPEN3D
+//#ifdef WITH_APP_ROPEWAYSCAN &&USE_VZENSE &&USE_LIVOX &&WITH_3D &&USE_OPEN3D
+#ifdef WITH_APP_ROPEWAYSCAN
 #include "../Application/RopewayScan/_RopewayScan.h"
-#include "../Application/RopewayScan/_RopewayScanVz.h"
-#include "../Application/RopewayScan/_RopewayScanLivox.h"
+//#include "../Application/RopewayScan/_RopewayScanVz.h"
+//#include "../Application/RopewayScan/_RopewayScanLivox.h"
 #endif
 
 #ifdef WITH_APP_ROBOTARM

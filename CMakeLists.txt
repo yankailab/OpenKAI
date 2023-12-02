@@ -230,9 +230,11 @@ file(GLOB_RECURSE AppLivoxScanner_cpp src/Application/LivoxScanner/*.cpp src/App
 set(OpenKAI_cpp ${OpenKAI_cpp} ${AppLivoxScanner_cpp})
 endif()
 
-if(WITH_APP_ROPEWAYSCAN AND USE_VZENSE AND USE_LIVOX AND WITH_3D AND USE_OPEN3D)
+#if(WITH_APP_ROPEWAYSCAN AND USE_VZENSE AND USE_LIVOX AND WITH_3D AND USE_OPEN3D)
+if(WITH_APP_ROPEWAYSCAN)
 add_definitions(-DWITH_APP_ROPEWAYSCAN)
-file(GLOB_RECURSE AppRopewayScan_cpp src/Application/RopewayScan/*.cpp src/Application/RopewayScan/*.cc src/Application/RopewayScan/*.c)
+#file(GLOB_RECURSE AppRopewayScan_cpp src/Application/RopewayScan/*.cpp src/Application/RopewayScan/*.cc src/Application/RopewayScan/*.c)
+file(GLOB_RECURSE AppRopewayScan_cpp src/Application/RopewayScan/_RopewayScan.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} ${AppRopewayScan_cpp})
 endif()
 

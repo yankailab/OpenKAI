@@ -95,10 +95,10 @@
 		"FPS":5,
 	}
 	"_IOBase":"ws",
-	"_NavBase":"rs",
+	"/_NavBase":"rs",
 	"_ActuatorBase":"DDSM",
-	"_RopewayScanLivox":"livox",
-	"_RopewayScanVz":"vz",
+	"/_RopewayScanLivox":"livox",
+	"/_RopewayScanVz":"vz",
 	"msgFinishSend":"",
 	"msgFinishRecv":"EOJ",
 	"iAct":0,
@@ -111,7 +111,7 @@
 {
 	"name":"rs",
 	"class":"_RStracking",
-	"bON":1,
+	"bON":0,
 	"bLog":1,
     {
 		"name":"thread",
@@ -122,7 +122,7 @@
 {
 	"name":"vz",
 	"class":"_RopewayScanVz",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -144,7 +144,7 @@
 {
 	"name":"VzensePC",
 	"class":"_VzensePC",
-	"bON":1,
+	"bON":0,
 	"bLog":0,
     {
 		"name":"thread",
@@ -167,7 +167,7 @@
 {
 	"name":"livox",
 	"class":"_RopewayScanLivox",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -190,7 +190,7 @@
 {
 	"name":"LivoxPC",
 	"class":"_Livox",
-	"bON":1,
+	"bON":0,
 	"bLog":0,
     {
 		"name":"thread",
@@ -210,7 +210,7 @@
 {
 	"name":"LivoxLidar",
 	"class":"LivoxLidar",
-	"bON":1,
+	"bON":0,
 	"bLog":0,
 	"/vBroadcastCode":["3JEDHC900100791"],
 	"bEnableFan":1,

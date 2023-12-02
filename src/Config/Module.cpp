@@ -145,10 +145,11 @@ namespace kai
 		ADD_MODULE(_LivoxScanner);
 #endif
 
-#ifdef WITH_APP_ROPEWAYSCAN && USE_VZENSE && USE_LIVOX && WITH_3D && USE_OPEN3D
+//#ifdef WITH_APP_ROPEWAYSCAN && USE_VZENSE && USE_LIVOX && WITH_3D && USE_OPEN3D
+#ifdef WITH_APP_ROPEWAYSCAN
 		ADD_MODULE(_RopewayScan);
-		ADD_MODULE(_RopewayScanVz);
-		ADD_MODULE(_RopewayScanLivox);
+//		ADD_MODULE(_RopewayScanVz);
+//		ADD_MODULE(_RopewayScanLivox);
 #endif
 
 #ifdef WITH_APP_ROBOTARM

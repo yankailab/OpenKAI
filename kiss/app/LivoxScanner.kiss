@@ -63,11 +63,11 @@
 	"nPmax":1000000,
 	"baseDir":"/home/kai/Documents/LivoxScanner/",
 	"tWaitSec":5,
-	"vRangeH":[-20.0, 20.0],
-	"dH":10,
+	"vRangeH":[-30.0, 30.0],
+	"dH":5,
 	"_ActuatorBaseH":"stepperX",
-	"vRangeV":[-10.0, 20.0],
-	"dV":10,
+	"vRangeV":[0.0, 30.0],
+	"dV":5,
 	"_ActuatorBaseV":"stepperY",
 }
 

@@ -12,8 +12,8 @@
 #include "../../Navigation/_NavBase.h"
 #include "../../Actuator/_ActuatorBase.h"
 #include "../../Utility/BitFlag.h"
-#include "_RopewayScanLivox.h"
-#include "_RopewayScanVz.h"
+//#include "_RopewayScanLivox.h"
+//#include "_RopewayScanVz.h"
 
 namespace kai
 {
@@ -78,12 +78,12 @@ namespace kai
 		}
 
 	protected:
-		_NavBase *m_pNav;
+//		_NavBase *m_pNav;
 		_Thread *m_pTw;
 		_ActuatorBase* m_pAct;
 		uint8_t m_iAct;
-		_RopewayScanLivox* m_pLivox;
-		_RopewayScanVz* m_pVz;
+//		_RopewayScanLivox* m_pLivox;
+//		_RopewayScanVz* m_pVz;
 
 		float m_p;			// pos along the axis
 		float m_v;			// vector = spd * direction

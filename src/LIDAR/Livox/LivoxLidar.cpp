@@ -57,6 +57,8 @@ namespace kai
 
     int LivoxLidar::InitLdsLidar(std::vector<std::string> &broadcast_code_strs)
     {
+        DisableConsoleLogger();
+
         if (is_initialized_)
         {
             printf("LiDAR data source is already inited!\n");
@@ -423,7 +425,7 @@ namespace kai
             }
             else
             {
-                printf("Lidar start sample success\n");
+//                printf("Lidar start sample success\n");
             }
         }
         else if (status == kStatusTimeout)
