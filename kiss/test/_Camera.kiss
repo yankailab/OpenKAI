@@ -9,7 +9,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
@@ -26,13 +26,13 @@
 		"FPS":30,
 	}
 	"bFullScreen":0,
-	"vBASE":["/cam","/crop","iRay","/contrast"],
+	"vBASE":["cam","/crop","iRay","/contrast"],
 }
 
 {
 	"name":"cam",
 	"class":"_Camera",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -44,7 +44,7 @@
 {
 	"name":"iRay",
 	"class":"_InfiRay",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,

@@ -326,9 +326,6 @@
 #endif
 #ifdef USE_GUI
 #endif
-#ifdef USE_WEBUI
-#include "../UI/_WebUIbase.h"
-#endif
 #endif
 
 #ifdef WITH_UNIVERSE

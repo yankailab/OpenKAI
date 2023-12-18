@@ -79,7 +79,6 @@ set(OpenKAI_include /usr/local/include /usr/include ${EIGEN3_INCLUDE_DIR})
 set(OpenKAI_lib pthread boost_system uuid ${EIGEN3_LIBS} gsl gslcblas ncurses ssl crypto rt)
 
 # File
-#file(GLOB_RECURSE OpenKAI_cpp CONFIGURE_DEPENDS src/*.cpp src/*.cc src/*.c)
 file(GLOB_RECURSE OpenKAI_cpp src/main.cpp src/Base/*.cpp src/Base/*.cc src/Base/*.c)
 
 file(GLOB_RECURSE Arithmetic_cpp src/Arithmetic/*.cpp src/Arithmetic/*.cc src/Arithmetic/*.c)

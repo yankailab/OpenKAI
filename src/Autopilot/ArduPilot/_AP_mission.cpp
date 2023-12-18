@@ -1,4 +1,4 @@
-#include "../ArduPilot/_AP_mission.h"
+#include "_AP_mission.h"
 
 namespace kai
 {
@@ -6,7 +6,6 @@ namespace kai
 	_AP_mission::_AP_mission()
 	{
 		m_pAP = NULL;
-		//	m_pAPdescent = NULL;
 	}
 
 	_AP_mission::~_AP_mission()
@@ -18,16 +17,20 @@ namespace kai
 		IF_F(!this->_StateBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
+		return true;
+	}
+
+	bool _AP_mission::link(void)
+	{
+		IF_F(!this->_StateBase::link());
+
+		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
+
 		n = "";
 		pK->v("_AP_base", &n);
 		m_pAP = (_AP_base *)(pK->getInst(n));
 		IF_Fl(!m_pAP, n + ": not found");
-
-		//	n = "";
-		//	pK->v("_AP_descent", &n);
-		//	m_pAPdescent = (_AP_descent*) (pK->getInst(n));
-		//	IF_Fl(!m_pAPdescent, n + ": not found");
 
 		return true;
 	}
@@ -42,7 +45,6 @@ namespace kai
 	{
 		NULL__(m_pAP, -1);
 		NULL__(m_pAP->m_pMav, -1);
-		//	NULL__(m_pAPdescent, -1);
 
 		return this->_StateBase::check();
 	}
@@ -53,8 +55,8 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			this->_StateBase::update();
-			updateMission();
+			// this->_StateBase::update();
+			// updateMission();
 
 			m_pT->autoFPSto();
 		}
@@ -67,17 +69,17 @@ namespace kai
 		int apMode = m_pAP->getApMode();
 		string mission = m_pSC->getStateName();
 
-		if (apMode != AP_COPTER_GUIDED)
-		{
-			m_pSC->transit("STANDBY");
-			return;
-		}
+		// if (apMode != AP_COPTER_GUIDED)
+		// {
+		// 	m_pSC->transit("STANDBY");
+		// 	return;
+		// }
 
-		if (mission == "STANDBY")
-		{
-			m_pSC->transit("TAKEOFF");
-			return;
-		}
+		// if (mission == "STANDBY")
+		// {
+		// 	m_pSC->transit("TAKEOFF");
+		// 	return;
+		// }
 
 		//	if(mission == "FOLLOW")
 		//	{
@@ -93,13 +95,24 @@ namespace kai
 		//		return;
 		//	}
 
-		if (mission == "RTH")
-		{
-			IF_(apMode != AP_COPTER_GUIDED);
+		// if (mission == "RTH")
+		// {
+		// 	IF_(apMode != AP_COPTER_GUIDED);
 
-			m_pAP->setApMode(AP_COPTER_RTL);
-			return;
-		}
+		// 	m_pAP->setApMode(AP_COPTER_RTL);
+		// 	return;
+		// }
+	}
+
+	void _AP_mission::console(void *pConsole)
+	{
+		NULL_(pConsole);
+		this->_StateBase::console(pConsole);
+
+		_Console *pC = (_Console *)pConsole;
+		
+		pC->addMsg("Test", 1);
+
 	}
 
 }

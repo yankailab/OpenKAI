@@ -337,9 +337,6 @@ namespace kai
 #endif
 #ifdef USE_GUI
 #endif
-#ifdef USE_WEBUI
-		ADD_MODULE(_WebUIbase);
-#endif
 #endif
 
 #ifdef WITH_UNIVERSE

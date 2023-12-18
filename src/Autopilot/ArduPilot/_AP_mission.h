@@ -2,7 +2,6 @@
 #define OpenKAI_src_Autopilot_AP__AP_mission_H_
 
 #include "_AP_base.h"
-#include "_AP_land.h"
 
 namespace kai
 {
@@ -13,22 +12,23 @@ namespace kai
 		_AP_mission();
 		~_AP_mission();
 
-		bool init(void *pKiss);
-		bool start(void);
-		int check(void);
-		void update(void);
+		virtual bool init(void *pKiss);
+		virtual bool link(void);
+		virtual bool start(void);
+		virtual int check(void);
+		virtual void console(void *pConsole);
 
-	private:
+	protected:
 		void updateMission(void);
+		void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_AP_mission *)This)->update();
 			return NULL;
 		}
 
-	public:
+	protected:
 		_AP_base *m_pAP;
-		//	_AP_descent* m_pAPdescent;
 	};
 
 }
