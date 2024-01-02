@@ -223,14 +223,6 @@
 #include "../DNN/JetsonInference/_ImageNet.h"
 #include "../DNN/JetsonInference/_DetectNet.h"
 #endif
-#ifdef USE_CAFFE
-#include "../DNN/Caffe/_Caffe.h"
-#include "../Regression/_CaffeRegressionTrain.h"
-#include "../Regression/_CaffeRegressionInf.h"
-#endif
-#ifdef USE_DARKNET
-#include "../DNN/Darknet/_YOLO.h"
-#endif
 #ifdef USE_TF - LITE
 #include "../DNN/TensorFlowLite/_TFmobileNet.h"
 #endif
@@ -263,6 +255,9 @@
 #ifdef USE_REALSENSE
 #include "../LIDAR/_RealSensePC.h"
 #endif
+#ifdef USE_XDYNAMICS
+#include "../LIDAR/_XDynamics.h"
+#endif
 #endif
 
 #ifdef WITH_NAVIGATION
@@ -286,6 +281,10 @@
 #include "../Protocol/_Modbus.h"
 #include "../Protocol/_SBus.h"
 #include "../Protocol/_Xbee.h"
+#endif
+
+#ifdef WITH_ROS
+#include "../ROS/_ROSbase.h"
 #endif
 
 #ifdef WITH_SCIENCE

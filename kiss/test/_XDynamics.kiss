@@ -1,0 +1,54 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["XDynamics"],
+}
+
+{
+	"name":"SHMvzRGB",
+	"class":"_SharedMem",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"shmName":"SHMvzRGB",
+	"nB":5760000,
+	"bWriter":1,
+}
+
+{
+	"name":"XDynamics",
+	"class":"_XDynamics",
+    {
+		"name":"thread",
+		"FPS":25,
+	}
+    {
+		"name":"threadPP",
+		"FPS":25,
+	}
+	"bON":1,
+	"bLog":1,
+	"URI":"",
+	"vSize":[1600,1200],
+	"bRGB":1,
+	"bDepth":0,
+	"btRGB":0,
+	"btDepth":0,
+	"bIR":0,
+	"_SHMrgb":"SHMvzRGB",
+}

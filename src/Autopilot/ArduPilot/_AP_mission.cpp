@@ -110,8 +110,60 @@ namespace kai
 		this->_StateBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		
-		pC->addMsg("Test", 1);
+
+/*		
+		pC->addMsg("-----------", 1);
+		pC->addMsg("GPS (RTK enabled)", 1);
+		pC->addMsg("Sattelite number = 23", 1);
+		pC->addMsg("Difference avg. = 0.0045 m", 1);
+		pC->addMsg("Difference min. = 0.002 m", 1);
+		pC->addMsg("Difference max. = 0.0049 m", 1);
+		pC->addMsg("-----------", 1);
+		pC->addMsg("LiDAR SLAM", 1);
+		pC->addMsg("Difference avg. = 0.07 m", 1);
+		pC->addMsg("Difference min. = 0.015 m", 1);
+		pC->addMsg("Difference max. = 0.098 m", 1);
+		pC->addMsg("-----------", 1);
+		pC->addMsg("Windy condition", 1);
+		pC->addMsg("Estimated wind speed = 3.5m/s", 1);
+		pC->addMsg("Difference avg. = 0.07 m", 1);
+		pC->addMsg("Difference min. = 0.05 m", 1);
+		pC->addMsg("Difference max. = 0.09 m", 1);
+		pC->addMsg("Estimated wind speed = 15m/s", 1);
+		pC->addMsg("Difference avg. = 0.12 m", 1);
+		pC->addMsg("Difference min. = 0.06 m", 1);
+		pC->addMsg("Difference max. = 0.19 m", 1);
+		pC->addMsg("-----------", 1);
+		pC->addMsg("Target navigation", 1);
+		pC->addMsg("Difference avg. = 0.06 m", 1);
+		pC->addMsg("Difference min. = 0.05 m", 1);
+		pC->addMsg("Difference max. = 0.08 m", 1);
+		pC->addMsg("", 1);
+*/
+
+		// pC->addMsg("-----------", 1);
+		// pC->addMsg("Vision detection", 1);
+		// pC->addMsg("Platform: ARM NEON(Jetson)", 1);
+		// pC->addMsg("Success prob. = 0.998", 1);
+		// pC->addMsg("Detection FPS = 64", 1);
+		// pC->addMsg("Tracking FPS = 129", 1);
+		// pC->addMsg("Resolution = 1280x720", 1);
+		// pC->addMsg("Inf. time (Latency) = 8ms", 1);
+		// pC->addMsg("-----------", 1);
+		// pC->addMsg("Vision detection", 1);
+		// pC->addMsg("Platform: x86 (Intel SSE)", 1);
+		// pC->addMsg("Success prob. = 0.998", 1);
+		// pC->addMsg("Detection FPS = 109", 1);
+		// pC->addMsg("Tracking FPS = 228", 1);
+		// pC->addMsg("Resolution = 1280x720", 1);
+		// pC->addMsg("Inf. time (Latency) = 4ms", 1);
+
+		// pC->addMsg("-----------", 1);
+		// pC->addMsg("Robotic arm", 1);
+		// pC->addMsg("Torque = 850 N cm (85 Kg cm)", 1);
+		// pC->addMsg("Rotational speed = 225 deg/s", 1);
+		// pC->addMsg("Position difference = 0.0005 mm", 1);
+		// pC->addMsg("Payload = 20Kg", 1);
 
 	}
 

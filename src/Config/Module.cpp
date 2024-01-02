@@ -235,14 +235,6 @@ namespace kai
 		//	ADD_MODULE(_ImageNet);
 		ADD_MODULE(_DetectNet);
 #endif
-#ifdef USE_CAFFE
-		ADD_MODULE(_Caffe);
-		ADD_MODULE(_CaffeRegressionTrain);
-		ADD_MODULE(_CaffeRegressionInf);
-#endif
-#ifdef USE_DARKNET
-		ADD_MODULE(_YOLO);
-#endif
 #ifdef USE_TF-LITE
 		ADD_MODULE(_TFmobileNet);
 #endif
@@ -282,6 +274,9 @@ namespace kai
 #endif
 #ifdef USE_REALSENSE
 		ADD_MODULE(_RealSensePC);
+#endif
+#ifdef USE_XDYNAMICS
+		ADD_MODULE(_XDynamics);
 #endif
 #endif
 
