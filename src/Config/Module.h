@@ -244,22 +244,6 @@
 #include "../IO/_WebSocket.h"
 #endif
 
-#ifdef WITH_LIDAR
-#ifdef USE_LIVOX
-#include "../LIDAR/Livox/_Livox.h"
-#include "../LIDAR/Livox/LivoxLidar.h"
-#endif
-#ifdef USE_VZENSE
-#include "../LIDAR/_VzensePC.h"
-#endif
-#ifdef USE_REALSENSE
-#include "../LIDAR/_RealSensePC.h"
-#endif
-#ifdef USE_XDYNAMICS
-#include "../LIDAR/_XDynamics.h"
-#endif
-#endif
-
 #ifdef WITH_NAVIGATION
 #include "../Navigation/_GPS.h"
 #include "../Navigation/_RTCM3.h"
@@ -299,6 +283,19 @@
 #include "../Sensor/Distance/_LeddarVu.h"
 #include "../Sensor/Distance/_TOFsense.h"
 #include "../Sensor/Distance/_BenewakeTF.h"
+#ifdef USE_LIVOX
+#include "../LIDAR/Livox/_Livox.h"
+#include "../LIDAR/Livox/LivoxLidar.h"
+#endif
+#ifdef USE_REALSENSE
+#include "../Sensor/RGBD/_RealSense.h"
+#endif
+#ifdef USE_VZENSE
+#include "../Sensor/RGBD/_Vzense.h"
+#endif
+#ifdef USE_XDYNAMICS
+#include "../Sensor/RGBD/_XDynamics.h"
+#endif
 #endif
 
 #ifdef WITH_SLAM
@@ -347,6 +344,7 @@
 #include "../Vision/ImgFilter/_Contrast.h"
 #include "../Vision/ImgFilter/_Crop.h"
 #include "../Vision/ImgFilter/_Depth2Gray.h"
+#include "../Vision/ImgFilter/_DepthShow.h"
 #include "../Vision/ImgFilter/_Erode.h"
 #include "../Vision/ImgFilter/_Grayscale.h"
 #include "../Vision/ImgFilter/_HistEqualize.h"
@@ -361,14 +359,7 @@
 #ifdef USE_CUDA
 #include "../Vision/_DenseFlow.h"
 #endif
-#ifdef USE_REALSENSE
-#include "../Vision/_RealSense.h"
-#include "../Vision/ImgFilter/_DepthShow.h"
-#endif
 #endif // opencv
-#ifdef USE_VZENSE
-#include "../Vision/_Vzense.h"
-#endif
 #endif // vision
 
 #define ADD_MODULE(x)             \

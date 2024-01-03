@@ -264,22 +264,6 @@ namespace kai
 #endif
 #endif
 
-#ifdef WITH_LIDAR
-#ifdef USE_LIVOX
-		ADD_MODULE(_Livox);
-		ADD_MODULE(LivoxLidar);
-#endif
-#ifdef USE_VZENSE
-		ADD_MODULE(_VzensePC);
-#endif
-#ifdef USE_REALSENSE
-		ADD_MODULE(_RealSensePC);
-#endif
-#ifdef USE_XDYNAMICS
-		ADD_MODULE(_XDynamics);
-#endif
-#endif
-
 #ifdef WITH_NET
 		ADD_MODULE(_Curl);
 #endif
@@ -306,6 +290,19 @@ namespace kai
 		ADD_MODULE(_BenewakeTF);
 		ADD_MODULE(_TOFsense);
 		ADD_MODULE(_LeddarVu);
+#ifdef USE_LIVOX
+		ADD_MODULE(_Livox);
+		ADD_MODULE(LivoxLidar);
+#endif
+#ifdef USE_REALSENSE
+		ADD_MODULE(_RealSense);
+#endif
+#ifdef USE_VZENSE
+		ADD_MODULE(_Vzense);
+#endif
+#ifdef USE_XDYNAMICS
+		ADD_MODULE(_XDynamics);
+#endif
 #endif
 
 #ifdef WITH_SLAM
@@ -346,6 +343,7 @@ namespace kai
 		ADD_MODULE(_DepthProj);
 		ADD_MODULE(_Crop);
 		ADD_MODULE(_Depth2Gray);
+		ADD_MODULE(_DepthShow);
 		ADD_MODULE(_Erode);
 		ADD_MODULE(_GPhoto);
 		ADD_MODULE(_GStreamer);
@@ -368,14 +366,7 @@ namespace kai
 #ifdef USE_CUDA
 		ADD_MODULE(_DenseFlow);
 #endif
-#ifdef USE_REALSENSE
-		ADD_MODULE(_RealSense);
-		ADD_MODULE(_DepthShow);
-#endif
 #endif	//opencv
-#ifdef USE_VZENSE
-		ADD_MODULE(_Vzense);
-#endif
 #endif	//vision
 
 		return NULL;

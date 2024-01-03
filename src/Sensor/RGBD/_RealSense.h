@@ -5,27 +5,27 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Vision_RealSense_H_
-#define OpenKAI_src_Vision_RealSense_H_
+#ifndef OpenKAI_src_RGBD_RealSense_H_
+#define OpenKAI_src_RGBD_RealSense_H_
 
-#include "_DepthVisionBase.h"
-#include "../Utility/util.h"
+#include "_RGBDbase.h"
 #include <librealsense2/rs.hpp>
 
 namespace kai
 {
 
-	class _RealSense : public _DepthVisionBase
+	class _RealSense : public _RGBDbase
 	{
 	public:
 		_RealSense();
 		virtual ~_RealSense();
 
-		bool init(void *pKiss);
-		bool start(void);
-		int check(void);
-		bool open(void);
-		void close(void);
+		virtual bool init(void *pKiss);
+		virtual bool start(void);
+		virtual int check(void);
+
+		virtual bool open(void);
+		virtual void close(void);
 
 		bool setSensorOption(const rs2::sensor& sensor, rs2_option option_type, float v);
 		bool setCsensorOption(rs2_option option_type, float v);
@@ -35,10 +35,11 @@ namespace kai
 		bool getCsensorOption(rs2_option option_type, rs2::option_range* pR);
 		bool getDsensorOption(rs2_option option_type, rs2::option_range* pR);
 
-	private:
+	protected:
 		void sensorReset(void);
-		void update(void);
+		bool updatePointCloud(void);
 		bool updateRS(void);
+		void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_RealSense *)This)->update();
@@ -67,7 +68,7 @@ namespace kai
 		float m_fConfidenceThreshold;
 		float m_fDigitalGain;
 		float m_fPostProcessingSharpening;
-		float m_fFilterManitude;
+		float m_fFilterMagnitude;
 		float m_fHolesFill;
 		float m_fEmitter;
 		float m_fLaserPower;
@@ -89,6 +90,17 @@ namespace kai
 
 		rs2_intrinsics m_cIntrinsics;
 		rs2_intrinsics m_dIntrinsics;
+
+		float m_dScale;
+
+		// point cloud
+		rs2::pointcloud m_rsPC;
+		rs2::points m_rsPoints;
+		vInt2 m_vWHc;
+		vInt2 m_vWHd;
+//		shared_ptr<Image> m_spImg;
+		vFloat2 m_vRz; //z region
+
 
 		//depth filter processing thread
 		_Thread *m_pTPP;

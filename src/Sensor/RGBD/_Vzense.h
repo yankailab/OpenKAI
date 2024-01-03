@@ -1,16 +1,14 @@
 /*
- * _VzensePC.h
+ * _Vzense.h
  *
  *  Created on: Feb 13, 2023
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_LIDAR_VzensePC_H_
-#define OpenKAI_src_LIDAR_VzensePC_H_
+#ifndef OpenKAI_src_RGBD_Vzense_H_
+#define OpenKAI_src_RGBD_Vzense_H_
 
-#include "../3D/PointCloud/_PCframe.h"
-#include "../Utility/util.h"
-//#include "../IPC/_SharedMem.h"
+#include "_RGBDbase.h"
 #include <VzenseNebula_api.h>
 
 namespace kai
@@ -36,23 +34,24 @@ namespace kai
 		bool m_bSpatialFilter = false;
 		bool m_bHDR = false;
 
-		vFloat2 m_vRz = {0.0, 10.0};		 // z region
+//		vFloat2 m_vRz = {0.0, 10.0};		 // z region
 	};
 
-	class _VzensePC : public _PCframe
+	class _Vzense : public _RGBDbase
 	{
 	public:
-		_VzensePC();
-		virtual ~_VzensePC();
+		_Vzense();
+		virtual ~_Vzense();
 
 		virtual bool init(void *pKiss);
+		virtual bool link(void);
 		virtual bool start(void);
 		virtual int check(void);
+
 		virtual bool open(void);
 		virtual void close(void);
 
 		VzCamCtrl getCamCtrl(void);
-
 		bool setCamCtrl(const VzCamCtrl& camCtrl);
 		bool setToFexposureControlMode(bool bAuto);
 		bool setToFexposureTime(bool bAuto, int tExposure);
@@ -66,35 +65,35 @@ namespace kai
 		bool setHDR(bool bON);
 
 	private:
+		bool updatePointCloud(const VzFrameReady& vfr);
+		bool updateRGBD(const VzFrameReady& vfr);
 		bool updateVzense(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_VzensePC *)This)->update();
+			((_Vzense *)This)->update();
 			return NULL;
 		}
 
-	public:
+		void updateTPP(void);
+		static void *getTPP(void *This)
+		{
+			((_Vzense *)This)->updateTPP();
+			return NULL;
+		}
+
+	private:
 		uint32_t m_nDevice;
 		VzDeviceInfo *m_pDeviceListInfo;
-		string m_deviceURI;
 		VzDeviceHandle m_deviceHandle;
 		VzSensorIntrinsicParameters m_cameraParameters;
-
-		bool m_bOpen;
-		vInt2 m_vSize;
-		uint16_t m_tWait;
 		VzCamCtrl m_camCtrl;
-
-		bool m_btDepth;
-		bool m_btRGB;
-		bool m_bIR;
 
 		VzFrame m_vzfRGB;
 		VzFrame m_vzfDepth;
+        VzFrame m_vzfTransformedDepth;
+        VzFrame m_vzfTransformedRGB;
 		VzFrame m_vzfIR;
-
-		//		_SharedMem* m_psmTransformedDepth;
 
 		VzVector3f *m_pVzVw; // world vector
 	};

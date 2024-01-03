@@ -1,63 +1,65 @@
 /*
- * _VzensePC.cpp
+ * _Vzense.cpp
  *
  *  Created on: Feb 13, 2023
  *      Author: yankai
  */
 
-#include "_VzensePC.h"
+#include "_Vzense.h"
 
 namespace kai
 {
 
-	_VzensePC::_VzensePC()
+	_Vzense::_Vzense()
 	{
 		m_nDevice = 0;
-		m_deviceURI = "";
 		m_pDeviceListInfo = NULL;
 		m_deviceHandle = 0;
 
-		m_bOpen = false;
-		m_vSize.set(1600, 1200);
-		m_tWait = 80;
-
-		m_btRGB = false;
-		m_btDepth = false;
-		m_bIR = false;
-
 		m_vzfRGB = {0};
 		m_vzfDepth = {0};
+		m_vzfTransformedRGB = {0};
+		m_vzfTransformedDepth = {0};
 		m_vzfIR = {0};
 
-		//		m_psmTransformedDepth = NULL;
-
 		m_pVzVw = NULL;
-		m_camCtrl.m_vRz.set(0.0, FLT_MAX);
+		//		m_camCtrl.m_vRz.set(0.0, FLT_MAX);
 	}
 
-	_VzensePC::~_VzensePC()
+	_Vzense::~_Vzense()
 	{
 	}
 
-	bool _VzensePC::init(void *pKiss)
+	bool _Vzense::init(void *pKiss)
 	{
-		IF_F(!_PCframe::init(pKiss));
+		IF_F(!_RGBDbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("URI", &m_deviceURI);
-		pK->v("vSize", &m_vSize);
-		pK->v("tWait", &m_tWait);
+		//		m_camCtrl.m_vRz = {m_vRange.x, m_vRange.y};
 
-		pK->v("btRGB", &m_btRGB);
-		pK->v("btDepth", &m_btDepth);
-		pK->v("bIR", &m_bIR);
+		Kiss *pKt = pK->child("threadPP");
+		IF_F(pKt->empty());
 
-		m_camCtrl.m_vRz = {m_vRange.x, m_vRange.y};
+		m_pTPP = new _Thread();
+		if (!m_pTPP->init(pKt))
+		{
+			DEL(m_pTPP);
+			return false;
+		}
 
 		return true;
 	}
 
-	bool _VzensePC::open(void)
+	bool _Vzense::link(void)
+	{
+		IF_F(!this->_RGBDbase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+		string n;
+
+		return true;
+	}
+
+	bool _Vzense::open(void)
 	{
 		IF_T(m_bOpen);
 
@@ -85,6 +87,7 @@ namespace kai
 		m_deviceHandle = 0;
 		if (m_deviceURI.empty())
 			m_deviceURI = string(m_pDeviceListInfo[0].uri);
+
 		status = VZ_OpenDeviceByUri(m_deviceURI.c_str(), &m_deviceHandle);
 		if (status != VzReturnStatus::VzRetOK)
 		{
@@ -134,12 +137,12 @@ namespace kai
 
 		m_pVzVw = new VzVector3f[m_vSize.x * m_vSize.y];
 
-		//		m_tWait = 2 * 1000 / this->m_pT->getTargetFPS();
+		m_tWait = 2 * 1000 / this->m_pT->getTargetFPS();
 		m_bOpen = true;
 		return true;
 	}
 
-	void _VzensePC::close(void)
+	void _Vzense::close(void)
 	{
 		VzReturnStatus status = VZ_StopStream(m_deviceHandle);
 		status = VZ_CloseDevice(&m_deviceHandle);
@@ -152,19 +155,22 @@ namespace kai
 		DEL(m_pVzVw);
 	}
 
-	bool _VzensePC::start(void)
+	bool _Vzense::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		NULL_F(m_pTPP);
+		IF_F(!m_pT->start(getUpdate, this));
+		return m_pTPP->start(getTPP, this);
 	}
 
-	int _VzensePC::check(void)
+	int _Vzense::check(void)
 	{
-		NULL__(m_pT, -1);
-		return this->_PCframe::check();
+		NULL__(m_pTPP, -1);
+
+		return this->_RGBDbase::check();
 	}
 
-	void _VzensePC::update(void)
+	void _Vzense::update(void)
 	{
 		VzReturnStatus status = VZ_Initialize();
 		if (status != VzReturnStatus::VzRetOK)
@@ -189,14 +195,20 @@ namespace kai
 
 			if (updateVzense())
 			{
-				updatePC();
+				m_pTPP->wakeUp();
+				//				updatePC();
+			}
+			else
+			{
+				m_pT->sleepT(SEC_2_USEC);
+				m_bOpen = false;
 			}
 
 			m_pT->autoFPSto();
 		}
 	}
 
-	bool _VzensePC::updateVzense(void)
+	bool _Vzense::updateVzense(void)
 	{
 		IF_T(check() < 0);
 
@@ -204,67 +216,147 @@ namespace kai
 		VzReturnStatus status = VZ_GetFrameReady(m_deviceHandle,
 												 m_tWait,
 												 &frameReady);
-		Eigen::Affine3d mA = m_A;
-		IF_F(status != VzReturnStatus::VzRetOK);
-		IF_F(frameReady.transformedColor != 1);
-		IF_F(frameReady.depth != 1);
 
-		status = VZ_GetFrame(m_deviceHandle, VzDepthFrame, &m_vzfDepth);
-		IF_F(status != VzReturnStatus::VzRetOK);
-		IF_F(!m_vzfDepth.pFrameData);
+		updateRGBD(frameReady);
+		updatePointCloud(frameReady);
 
-		status = VZ_GetFrame(m_deviceHandle, VzTransformColorImgToDepthSensorFrame, &m_vzfRGB);
-		IF_F(status != VzReturnStatus::VzRetOK);
-		IF_F(!m_vzfRGB.pFrameData);
+		return true;
+	}
 
-		PointCloud *pPC = m_sPC.next();
-		const static float s_b = 1.0 / 1000.0;
-		const static float c_b = 1.0 / 255.0;
+	bool _Vzense::updateRGBD(const VzFrameReady &vfr)
+	{
+		VzReturnStatus status;
 
-		// Convert Depth frame to World vectors.
-		VZ_ConvertDepthFrameToPointCloudVector(m_deviceHandle,
-											   &m_vzfDepth,
-											   m_pVzVw);
-
-		int nPi = 0;
-		for (int i = 0; i < m_vzfDepth.height; i++)
+		if (m_bRGB && vfr.color == 1)
 		{
-			for (int j = 0; j < m_vzfDepth.width; j++)
-			{
-				int k = i * m_vzfDepth.width + j;
+			status = VZ_GetFrame(m_deviceHandle, VzColorFrame, &m_vzfRGB);
+			if (m_vzfRGB.pFrameData)
+				memcpy(m_psmRGB->p(), m_vzfRGB.pFrameData, m_vzfRGB.dataLen);
+		}
 
-				VzVector3f *pV = &m_pVzVw[k];
-				Eigen::Vector3d vP(pV->x, pV->y, pV->z);
-				vP *= s_b;
-				IF_CONT(vP.z() < m_camCtrl.m_vRz.x);
-				IF_CONT(vP.z() > m_camCtrl.m_vRz.y);
+		if (m_btRGB && vfr.transformedColor == 1)
+		{
+			status = VZ_GetFrame(m_deviceHandle, VzTransformColorImgToDepthSensorFrame, &m_vzfTransformedRGB);
+			if (m_vzfTransformedRGB.pFrameData)
+				memcpy(m_psmTransformedRGB->p(),
+					   m_vzfTransformedRGB.pFrameData,
+					   m_vzfTransformedRGB.dataLen);
+		}
 
-				Eigen::Vector3d vPik = Vector3d(
-					vP[m_vAxisIdx.x] * m_vAxisK.x,
-					vP[m_vAxisIdx.y] * m_vAxisK.y,
-					vP[m_vAxisIdx.z] * m_vAxisK.z);
-				vP = mA * vPik;
-				pPC->points_.push_back(vP);
+		if (m_bDepth && vfr.depth == 1)
+		{
+			status = VZ_GetFrame(m_deviceHandle, VzDepthFrame, &m_vzfDepth);
+			if (m_vzfDepth.pFrameData)
+				memcpy(m_psmDepth->p(), m_vzfDepth.pFrameData, m_vzfDepth.dataLen);
+		}
 
-				// texture color
-				uint8_t *pC = &m_vzfRGB.pFrameData[k * sizeof(uint8_t) * 3];
-				Eigen::Vector3d vC(pC[2], pC[1], pC[0]);
-				vC *= c_b;
-				pPC->colors_.push_back(vC);
+		if (m_btDepth && vfr.transformedDepth == 1)
+		{
+			status = VZ_GetFrame(m_deviceHandle, VzTransformDepthImgToColorSensorFrame, &m_vzfTransformedDepth);
+			if (m_vzfTransformedDepth.pFrameData)
+				memcpy(m_psmTransformedDepth->p(),
+					   m_vzfTransformedDepth.pFrameData,
+					   m_vzfTransformedDepth.dataLen);
+		}
 
-				nPi++;
-				if (nPi >= m_nPresv)
-					break;
-			}
-
-			if (nPi >= m_nPresv)
-				break;
+		if (m_bIR && vfr.ir == 1)
+		{
+			status = VZ_GetFrame(m_deviceHandle, VzIRFrame, &m_vzfIR);
+			if (m_vzfIR.pFrameData)
+				memcpy(m_psmIR->p(), m_vzfIR.pFrameData, m_vzfIR.dataLen);
 		}
 
 		return true;
 	}
 
-	bool _VzensePC::setToFexposureControlMode(bool bAuto)
+	bool _Vzense::updatePointCloud(const VzFrameReady &vfr)
+	{
+		VzReturnStatus status;
+
+		// Eigen::Affine3d mA = m_A;
+		// IF_F(status != VzReturnStatus::VzRetOK);
+		// IF_F(vfr.transformedColor != 1);
+		// IF_F(vfr.depth != 1);
+
+		// status = VZ_GetFrame(m_deviceHandle, VzDepthFrame, &m_vzfDepth);
+		// IF_F(status != VzReturnStatus::VzRetOK);
+		// IF_F(!m_vzfDepth.pFrameData);
+
+		// status = VZ_GetFrame(m_deviceHandle, VzTransformColorImgToDepthSensorFrame, &m_vzfRGB);
+		// IF_F(status != VzReturnStatus::VzRetOK);
+		// IF_F(!m_vzfRGB.pFrameData);
+
+		// PointCloud *pPC = m_sPC.next();
+		// const static float s_b = 1.0 / 1000.0;
+		// const static float c_b = 1.0 / 255.0;
+
+		// // Convert Depth frame to World vectors.
+		// VZ_ConvertDepthFrameToPointCloudVector(m_deviceHandle,
+		// 									   &m_vzfDepth,
+		// 									   m_pVzVw);
+
+		// int nPi = 0;
+		// for (int i = 0; i < m_vzfDepth.height; i++)
+		// {
+		// 	for (int j = 0; j < m_vzfDepth.width; j++)
+		// 	{
+		// 		int k = i * m_vzfDepth.width + j;
+
+		// 		VzVector3f *pV = &m_pVzVw[k];
+		// 		Eigen::Vector3d vP(pV->x, pV->y, pV->z);
+		// 		vP *= s_b;
+		// 		IF_CONT(vP.z() < m_camCtrl.m_vRz.x);
+		// 		IF_CONT(vP.z() > m_camCtrl.m_vRz.y);
+
+		// 		Eigen::Vector3d vPik = Vector3d(
+		// 			vP[m_vAxisIdx.x] * m_vAxisK.x,
+		// 			vP[m_vAxisIdx.y] * m_vAxisK.y,
+		// 			vP[m_vAxisIdx.z] * m_vAxisK.z);
+		// 		vP = mA * vPik;
+		// 		pPC->points_.push_back(vP);
+
+		// 		// texture color
+		// 		uint8_t *pC = &m_vzfRGB.pFrameData[k * sizeof(uint8_t) * 3];
+		// 		Eigen::Vector3d vC(pC[2], pC[1], pC[0]);
+		// 		vC *= c_b;
+		// 		pPC->colors_.push_back(vC);
+
+		// 		nPi++;
+		// 		if (nPi >= m_nPresv)
+		// 			break;
+		// 	}
+
+		// 	if (nPi >= m_nPresv)
+		// 		break;
+		// }
+
+		return true;
+	}
+
+	void _Vzense::updateTPP(void)
+	{
+		while (m_pTPP->bRun())
+		{
+			m_pTPP->sleepT(0);
+
+			//            m_fDepth.copy(mDs + m_dOfs);
+			// if (m_bDepthShow)
+			// {
+			//     IF_(m_fDepth.bEmpty());
+
+			//     dispImg = cv::Mat(height, width, CV_16UC1, pData);
+
+			//     dispImg.convertTo(dispImg, CV_8U, 255.0 / slope);
+			//     applyColorMap(dispImg, dispImg, cv::COLORMAP_RAINBOW);
+
+			//     Mat mDColor(Size(m_vDsize.x, m_vDsize.y), CV_8UC3, (void *)dColor.get_data(),
+			//                 Mat::AUTO_STEP);
+			//     m_fDepthShow.copy(mDColor);
+			// }
+		}
+	}
+
+	bool _Vzense::setToFexposureControlMode(bool bAuto)
 	{
 		VzReturnStatus vzR = VZ_SetExposureControlMode(m_deviceHandle,
 													   VzToFSensor,
@@ -273,7 +365,7 @@ namespace kai
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _VzensePC::setToFexposureTime(bool bAuto, int tExposure)
+	bool _Vzense::setToFexposureTime(bool bAuto, int tExposure)
 	{
 		VzExposureTimeParams p;
 		p.mode = bAuto ? VzExposureControlMode_Auto
@@ -286,7 +378,7 @@ namespace kai
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _VzensePC::setRGBexposureControlMode(bool bAuto)
+	bool _Vzense::setRGBexposureControlMode(bool bAuto)
 	{
 		VzReturnStatus vzR = VZ_SetExposureControlMode(m_deviceHandle,
 													   VzColorSensor,
@@ -295,7 +387,7 @@ namespace kai
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _VzensePC::setRGBexposureTime(bool bAuto, int tExposure)
+	bool _Vzense::setRGBexposureTime(bool bAuto, int tExposure)
 	{
 		VzExposureTimeParams p;
 		p.mode = bAuto ? VzExposureControlMode_Auto
@@ -308,7 +400,7 @@ namespace kai
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _VzensePC::setTimeFilter(bool bON, int thr)
+	bool _Vzense::setTimeFilter(bool bON, int thr)
 	{
 		VzTimeFilterParams p;
 		p.enable = bON;
@@ -317,7 +409,7 @@ namespace kai
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _VzensePC::setConfidenceFilter(bool bON, int thr)
+	bool _Vzense::setConfidenceFilter(bool bON, int thr)
 	{
 		VzConfidenceFilterParams p;
 		p.enable = bON;
@@ -326,7 +418,7 @@ namespace kai
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _VzensePC::setFlyingPixelFilter(bool bON, int thr)
+	bool _Vzense::setFlyingPixelFilter(bool bON, int thr)
 	{
 		VzFlyingPixelFilterParams p;
 		p.enable = bON;
@@ -335,27 +427,27 @@ namespace kai
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _VzensePC::setFillHole(bool bON)
+	bool _Vzense::setFillHole(bool bON)
 	{
 		VzReturnStatus vzR = VZ_SetFillHoleFilterEnabled(m_deviceHandle, bON);
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _VzensePC::setSpatialFilter(bool bON)
+	bool _Vzense::setSpatialFilter(bool bON)
 	{
 		VzReturnStatus vzR = VZ_SetSpatialFilterEnabled(m_deviceHandle, bON);
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _VzensePC::setHDR(bool bON)
+	bool _Vzense::setHDR(bool bON)
 	{
 		VzReturnStatus vzR = VZ_SetHDRModeEnabled(m_deviceHandle, bON);
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _VzensePC::setCamCtrl(const VzCamCtrl &camCtrl)
+	bool _Vzense::setCamCtrl(const VzCamCtrl &camCtrl)
 	{
-		m_camCtrl.m_vRz = camCtrl.m_vRz;
+		//		m_camCtrl.m_vRz = camCtrl.m_vRz;
 
 		if ((m_camCtrl.m_tExposureToF != camCtrl.m_tExposureToF) || (m_camCtrl.m_bAutoExposureToF != camCtrl.m_bAutoExposureToF))
 		{
