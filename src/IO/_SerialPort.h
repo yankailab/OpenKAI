@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_IO__SerialPort_H_
 #define OpenKAI_src_IO__SerialPort_H_
 
-#include "_IOBase.h"
+#include "_IObase.h"
 
 // The following two non-standard baudrates should have been defined by the system
 // If not, just fallback to number
@@ -18,7 +18,7 @@ using namespace std;
 namespace kai
 {
 
-	class _SerialPort : public _IOBase
+	class _SerialPort : public _IObase
 	{
 	public:
 		_SerialPort();

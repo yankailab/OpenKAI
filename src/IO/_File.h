@@ -1,14 +1,14 @@
 #ifndef OpenKAI_src_IO__File_H_
 #define OpenKAI_src_IO__File_H_
 
-#include "_IOBase.h"
+#include "_IObase.h"
 
 using namespace std;
 
 namespace kai
 {
 
-	class _File : public _IOBase
+	class _File : public _IObase
 	{
 	public:
 		_File(void);

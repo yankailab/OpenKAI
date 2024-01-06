@@ -49,7 +49,7 @@
 		"name":"threadR",
 		"FPS":1,
 	}
-	"_IOBase":"serial",
+	"_IObase":"serial",
 	"iMode":2,
 	{
 		"name":"axis",
@@ -94,7 +94,7 @@
 		"name":"threadW",
 		"FPS":5,
 	}
-	"_IOBase":"ws",
+	"_IObase":"ws",
 	"/_NavBase":"rs",
 	"_ActuatorBase":"DDSM",
 	"/_RopewayScanLivox":"livox",

@@ -48,7 +48,7 @@
 		"name":"threadR",
 		"FPS":1,
 	}
-	"_IOBase":"tcpG",
+	"_IObase":"tcpG",
 	"/cmd":"#TPUG2wPTZ02",
 	"cmd":"#TPUG2wPTZ07",
 	{

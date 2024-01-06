@@ -2,7 +2,7 @@
 #define OpenKAI_src_Protocol__Xbee_H_
 
 #include "../Base/_ModuleBase.h"
-#include "../IO/_IOBase.h"
+#include "../IO/_IObase.h"
 #include "../Utility/util.h"
 
 #define XB_DELIM 0x7E
@@ -178,7 +178,7 @@ namespace kai
 
 	protected:
 		_Thread *m_pTr;
-		_IOBase *m_pIO;
+		_IObase *m_pIO;
 
 		uint64_t m_myAddr;
 

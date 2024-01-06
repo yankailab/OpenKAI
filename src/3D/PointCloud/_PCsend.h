@@ -9,7 +9,7 @@
 #define OpenKAI_src_3D_PointCloud_PCsend_H_
 
 #include "../../Base/common.h"
-#include "../../IO/_IOBase.h"
+#include "../../IO/_IObase.h"
 #include "../../Protocol/_ProtocolBase.h"
 #include "../_GeometryBase.h"
 
@@ -40,7 +40,7 @@ private:
 	}
 
 public:
-	_IOBase* m_pIO;
+	_IObase* m_pIO;
 
 	int m_iPsent;
 

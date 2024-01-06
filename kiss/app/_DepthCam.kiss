@@ -151,7 +151,7 @@
 		"name":"threadR",
 		"FPS":30,
 	}
-	"_IOBase":"udp",
+	"_IObase":"udp",
 	"_RealSense":"cam",
 	"vBBhb":[0.4, 0.4, 0.6, 0.6],
 	"bHeartbeat":0,

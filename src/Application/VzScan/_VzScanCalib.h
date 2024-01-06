@@ -78,7 +78,7 @@ namespace kai
 		float m_rVoxel;
 		string m_fNameCalib;
 
-		VzCamCtrl m_camCtrl;
+		VzCtrl m_camCtrl;
 		BIT_FLAG m_fProcess;
 	};
 

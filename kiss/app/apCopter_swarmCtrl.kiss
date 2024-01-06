@@ -81,7 +81,7 @@
 		"name":"threadR",
 		"FPS":30,
 	}
-	"_IOBase":"serial",
+	"_IObase":"serial",
 	"/myAddr":"000000000000FFFF",	/* Broadcast address*/
 }
 
@@ -153,7 +153,7 @@
 	}
 	"msgFinishSend":"",
 	"msgFinishRecv":"EOJ",
-	"_IOBase":"ws",
+	"_IObase":"ws",
 	"_SwarmSearch":"swarmSearch",
 	"_SwarmSearchCtrl":"swarmCtrl",
 	"ieSendHB":1000000,

@@ -8,15 +8,14 @@
 #ifndef OpenKAI_src_IO__UDP_H_
 #define OpenKAI_src_IO__UDP_H_
 
-#include "../Script/Kiss.h"
-#include "_IOBase.h"
+#include "_IObase.h"
 
 #define DEFAULT_UDP_PORT 19840
 
 namespace kai
 {
 
-	class _UDP : public _IOBase
+	class _UDP : public _IObase
 	{
 	public:
 		_UDP();

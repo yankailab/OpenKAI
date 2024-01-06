@@ -50,7 +50,7 @@ namespace kai
 
 	public:
 		_Thread *m_pTr;
-		_IOBase *m_pIO;
+		_IObase *m_pIO;
 
 		string m_msgFinishSend;
 		string m_msgFinishRecv;

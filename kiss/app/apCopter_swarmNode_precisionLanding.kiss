@@ -87,7 +87,7 @@
 		"name":"threadR",
 		"FPS":1,
 	}
-	"_IOBase":"tcpG",
+	"_IObase":"tcpG",
 	"/cmd":"#TPUG2wPTZ02", /* Downward */
 	{
 		"name":"axis",
@@ -156,7 +156,7 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"_IOBase":"serialAP",
+	"_IObase":"serialAP",
 	{
 		"name":"routing",
 		{
@@ -191,7 +191,7 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"_IOBase":"udp",
+	"_IObase":"udp",
 	{
 		"name":"routing",
 		{
@@ -281,7 +281,7 @@
 		"name":"threadR",
 		"FPS":30,
 	}
-	"_IOBase":"serialXB",
+	"_IObase":"serialXB",
 }
 
 {

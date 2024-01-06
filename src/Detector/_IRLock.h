@@ -9,7 +9,7 @@
 #define OpenKAI_src_Detector__IRLock_H_
 
 #include "../Detector/_DetectorBase.h"
-#include "../IO/_IOBase.h"
+#include "../IO/_IObase.h"
 
 #ifdef USE_OPENCV
 
@@ -56,7 +56,7 @@ private:
 	}
 
 public:
-	_IOBase*	m_pIO;
+	_IObase*	m_pIO;
 	uint8_t		m_pBuf[IRLOCK_N_BUF];
 	int			m_iBuf;
 	vFloat2		m_vOvCamSize;

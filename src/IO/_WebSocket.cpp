@@ -32,7 +32,7 @@ namespace kai
 
 	bool _WebSocket::init(void *pKiss)
 	{
-		IF_F(!this->_IOBase::init(pKiss));
+		IF_F(!this->_IObase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("fifoIn", &m_fifoIn);
@@ -74,7 +74,7 @@ namespace kai
 		::close(m_fdR);
 		m_fdW = 0;
 		m_fdR = 0;
-		this->_IOBase::close();
+		this->_IObase::close();
 	}
 
 	bool _WebSocket::start(void)
@@ -89,7 +89,7 @@ namespace kai
 	{
 		while (m_pT->bRun())
 		{
-			if (!isOpen())
+			if (!bOpen())
 			{
 				if (!open())
 				{
@@ -121,7 +121,7 @@ namespace kai
 	{
 		while (m_pTr->bRun())
 		{
-			if (!isOpen())
+			if (!bOpen())
 			{
 				::sleep(1);
 				continue;
@@ -171,8 +171,8 @@ namespace kai
 		pack_uint32(&pHeader[8], nB);
 
 		pthread_mutex_lock(&m_mutexW);
-		this->_IOBase::write(pHeader, WS_N_HEADER);
-		this->_IOBase::write(pBuf, nB);
+		this->_IObase::write(pHeader, WS_N_HEADER);
+		this->_IObase::write(pBuf, nB);
 		pthread_mutex_unlock(&m_mutexW);
 
 		return true;
@@ -217,7 +217,7 @@ namespace kai
 			m_iB = 0;
 		}
 
-		int iR = this->_IOBase::read(&pMB[m_nB], N_IO_BUF);
+		int iR = this->_IObase::read(&pMB[m_nB], N_IO_BUF);
 		if (iR > 0)
 			m_nB += iR;
 		IF_(m_nB <= 0);
@@ -301,7 +301,7 @@ namespace kai
 	{
 #ifdef WITH_UI
 		NULL_(pConsole);
-		this->_IOBase::console(pConsole);
+		this->_IObase::console(pConsole);
 
 		NULL_(m_pTr);
 		m_pTr->console(pConsole);

@@ -47,8 +47,8 @@ namespace kai
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 		n = "";
-		F_ERROR_F(pK->v("_IOBase", &n));
-		m_pIO = (_IOBase *)(pK->getInst(n));
+		F_ERROR_F(pK->v("_IObase", &n));
+		m_pIO = (_IObase *)(pK->getInst(n));
 		NULL_Fl(m_pIO, n + ": not found");
 
         return true;
@@ -65,7 +65,7 @@ namespace kai
 	int _ProtocolBase::check(void)
 	{
 		NULL__(m_pIO, -1);
-		IF__(!m_pIO->isOpen(), -1);
+		IF__(!m_pIO->bOpen(), -1);
 		NULL_F(m_pBuf);
 
 		return this->_ModuleBase::check();
@@ -100,7 +100,7 @@ namespace kai
 				continue;
 			}
 
-			if (!m_pIO->isOpen())
+			if (!m_pIO->bOpen())
 			{
 				m_pTr->sleepT(SEC_2_USEC);
 				continue;
@@ -162,7 +162,7 @@ namespace kai
 		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		if (!m_pIO->isOpen())
+		if (!m_pIO->bOpen())
 		{
 			pC->addMsg("Not Connected", 1);
 			return;

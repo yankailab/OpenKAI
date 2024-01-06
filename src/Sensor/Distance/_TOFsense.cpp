@@ -25,8 +25,8 @@ namespace kai
 		string n;
 
 		n = "";
-		F_ERROR_F(pK->v("_IOBase", &n));
-		m_pIO = (_IOBase *)(pK->getInst(n));
+		F_ERROR_F(pK->v("_IObase", &n));
+		m_pIO = (_IObase *)(pK->getInst(n));
 		IF_Fl(!m_pIO, n + " not found");
 
 		m_frame.init(16);
@@ -51,7 +51,7 @@ namespace kai
 				continue;
 			}
 
-			if (!m_pIO->isOpen())
+			if (!m_pIO->bOpen())
 			{
 				m_pT->sleepT(SEC_2_USEC);
 				continue;

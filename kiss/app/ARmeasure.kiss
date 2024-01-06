@@ -238,7 +238,7 @@
 		"name":"thread",
 		"FPS":100,
 	}
-	"_IOBase":"serial",
+	"_IObase":"serial",
 }
 
 {

@@ -82,7 +82,7 @@ namespace kai
 				continue;
 			}
 
-			if (!m_pIO->isOpen())
+			if (!m_pIO->bOpen())
 			{
 				m_pT->sleepT(SEC_2_USEC);
 				continue;
@@ -139,7 +139,7 @@ namespace kai
 		this->_ProtocolBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		if (!m_pIO->isOpen())
+		if (!m_pIO->bOpen())
 		{
 			pC->addMsg("Not Connected", 1);
 			return;

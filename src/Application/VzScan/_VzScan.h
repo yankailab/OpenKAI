@@ -79,7 +79,7 @@ namespace kai
 		float m_rVoxel;
 		string m_fNameSavePC;
 
-		VzCamCtrl m_camCtrl;
+		VzCtrl m_camCtrl;
 		BIT_FLAG m_fProcess;
 	};
 

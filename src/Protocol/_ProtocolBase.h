@@ -2,7 +2,7 @@
 #define OpenKAI_src_Protocol__ProtocolBase_H_
 
 #include "../Base/_ModuleBase.h"
-#include "../IO/_IOBase.h"
+#include "../IO/_IObase.h"
 
 //0 PROTOCOL_BEGIN
 //1 COMMAND
@@ -74,7 +74,7 @@ namespace kai
 
 	public:
 		_Thread *m_pTr;
-		_IOBase *m_pIO;
+		_IObase *m_pIO;
 		uint8_t *m_pBuf;
 		int m_nBuf;
 		PROTOCOL_CMD m_recvMsg;

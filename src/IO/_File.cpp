@@ -20,7 +20,7 @@ namespace kai
 
 	bool _File::init(void *pKiss)
 	{
-		IF_F(!this->_IOBase::init(pKiss));
+		IF_F(!this->_IObase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		return true;

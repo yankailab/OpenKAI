@@ -88,8 +88,8 @@ namespace kai
 		IF_Fl(!m_pXb, n + ": not found");
 
 		n = "";
-		pK->v("_IOBase", &n);
-		m_pGio = (_IOBase *)(pK->getInst(n));
+		pK->v("_IObase", &n);
+		m_pGio = (_IObase *)(pK->getInst(n));
 		IF_Fl(!m_pGio, n + ": not found");
 
 		n = "";
@@ -333,7 +333,7 @@ namespace kai
 	void _AP_swarm::gimbalDownward(void)
 	{
 		NULL_(m_pGio);
-		IF_(!m_pGio->isOpen());
+		IF_(!m_pGio->bOpen());
 
 		string cmd = "#TPUG2wPTZ02";
 		char crc = calcCRC(cmd.c_str(), (int)cmd.length());

@@ -64,7 +64,7 @@
 	"devComponentID":-1,
 	"devType":0,
 
-	"_IOBase":"serialAP",
+	"_IObase":"serialAP",
 	{
 		"name":"routing",
 		{
@@ -99,7 +99,7 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"_IOBase":"udp",
+	"_IObase":"udp",
 	{
 		"name":"routing",
 		{

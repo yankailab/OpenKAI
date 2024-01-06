@@ -49,7 +49,7 @@ namespace kai
 				continue;
 			}
 
-			if (!m_pIO->isOpen())
+			if (!m_pIO->bOpen())
 			{
 				m_pT->sleepT(SEC_2_USEC);
 				continue;

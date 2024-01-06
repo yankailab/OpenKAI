@@ -12,41 +12,16 @@ namespace kai
 
     _RealSense::_RealSense()
     {
-//        m_type = vision_realsense;
-        m_pTPP = NULL;
-
         m_rsSN = "";
-        m_vPreset = "High Density";
-        m_bRsRGB = true;
         m_rsFPS = 30;
         m_rsDFPS = 30;
         m_bAlign = false;
+        m_vPreset = "High Density";
         m_rspAlign = NULL;
+        m_rsCtrl.clear();
 
-        m_fDefault = 10e6; //set to default value
-
-        m_fConfidenceThreshold = m_fDefault;
-        m_fDigitalGain = m_fDefault;
-        m_fPostProcessingSharpening = m_fDefault;
-        m_fFilterMagnitude = m_fDefault;
-        m_fHolesFill = m_fDefault;
-        m_fEmitter = m_fDefault;
-        m_fLaserPower = m_fDefault;
-
-        m_fBrightness = m_fDefault;
-        m_fContrast = m_fDefault;
-        m_fGain = m_fDefault;
-        m_fExposure = m_fDefault;
-        m_fHue = m_fDefault;
-        m_fSaturation = m_fDefault;
-        m_fSharpness = m_fDefault;
-        m_fWhiteBalance = m_fDefault;
-
-		m_vWHc.set(1280, 720);
-		m_vWHd.set(640, 480);
-		m_vRz.set(0.0, FLT_MAX);
-
-        m_dScale = 1.0;
+        m_vSizeRGB.set(1280, 720);
+		m_vSizeD.set(640, 480);
     }
 
     _RealSense::~_RealSense()
@@ -63,30 +38,25 @@ namespace kai
         pK->v("rsSN", &m_rsSN);
         pK->v("rsFPS", &m_rsFPS);
         pK->v("rsDFPS", &m_rsDFPS);
-        pK->v("vPreset", &m_vPreset);
-        pK->v("bRsRGB", &m_bRsRGB);
         pK->v("bAlign", &m_bAlign);
+        pK->v("vPreset", &m_vPreset);
 
-        pK->v("fConfidenceThreshold", &m_fConfidenceThreshold);
-        pK->v("fDigitalGain", &m_fDigitalGain);
-        pK->v("fPostProcessingSharpening", &m_fPostProcessingSharpening);
-        pK->v("fFilterMagnitude", &m_fFilterMagnitude);
-        pK->v("fHolesFill", &m_fHolesFill);
-        pK->v("fEmitter", &m_fEmitter);
-        pK->v("fLaserPower", &m_fLaserPower);
+        pK->v("fConfidenceThreshold", &m_rsCtrl.m_fConfidenceThreshold);
+        pK->v("fDigitalGain", &m_rsCtrl.m_fDigitalGain);
+        pK->v("fPostProcessingSharpening", &m_rsCtrl.m_fPostProcessingSharpening);
+        pK->v("fFilterMagnitude", &m_rsCtrl.m_fFilterMagnitude);
+        pK->v("fHolesFill", &m_rsCtrl.m_fHolesFill);
+        pK->v("fEmitter", &m_rsCtrl.m_fEmitter);
+        pK->v("fLaserPower", &m_rsCtrl.m_fLaserPower);
 
-        pK->v("fBrightness", &m_fBrightness);
-        pK->v("fContrast", &m_fContrast);
-        pK->v("fGain", &m_fGain);
-        pK->v("fExposure", &m_fExposure);
-        pK->v("fHue", &m_fHue);
-        pK->v("fSaturation", &m_fSaturation);
-        pK->v("fSharpness", &m_fSharpness);
-        pK->v("fWhiteBalance", &m_fWhiteBalance);
-
-		pK->v("vRz", &m_vRz);
-		pK->v("vWHcol", &m_vWHc);
-		pK->v("vWHd", &m_vWHd);
+        pK->v("fBrightness", &m_rsCtrl.m_fBrightness);
+        pK->v("fContrast", &m_rsCtrl.m_fContrast);
+        pK->v("fGain", &m_rsCtrl.m_fGain);
+        pK->v("fExposure", &m_rsCtrl.m_fExposure);
+        pK->v("fHue", &m_rsCtrl.m_fHue);
+        pK->v("fSaturation", &m_rsCtrl.m_fSaturation);
+        pK->v("fSharpness", &m_rsCtrl.m_fSharpness);
+        pK->v("fWhiteBalance", &m_rsCtrl.m_fWhiteBalance);
 
         Kiss *pKt = pK->child("threadPP");
         IF_F(pKt->empty());
@@ -110,9 +80,9 @@ namespace kai
             if (!m_rsSN.empty())
                 m_rsConfig.enable_device(m_rsSN);
 
-			m_rsConfig.enable_stream(RS2_STREAM_DEPTH, m_vWHd.x, m_vWHd.y, RS2_FORMAT_Z16, m_rsDFPS);
-			if (m_bRsRGB)
-				m_rsConfig.enable_stream(RS2_STREAM_COLOR, m_vWHc.x, m_vWHc.y, RS2_FORMAT_BGR8, m_rsFPS);
+			m_rsConfig.enable_stream(RS2_STREAM_DEPTH, m_vSizeD.x, m_vSizeD.y, RS2_FORMAT_Z16, m_rsDFPS);
+			if (m_bRGB)
+				m_rsConfig.enable_stream(RS2_STREAM_COLOR, m_vSizeRGB.x, m_vSizeRGB.y, RS2_FORMAT_BGR8, m_rsFPS);
 
 
             m_rsProfile = m_rsPipe.start(m_rsConfig);
@@ -140,29 +110,29 @@ namespace kai
                 break;
             }
 
-            setSensorOption(dSensor, RS2_OPTION_CONFIDENCE_THRESHOLD, m_fConfidenceThreshold);
-            //            setSensorOption(dSensor, RS2_OPTION_DIGITAL_GAIN, m_fDigitalGain);
-            setSensorOption(dSensor, RS2_OPTION_PRE_PROCESSING_SHARPENING, m_fPostProcessingSharpening);
-            setSensorOption(dSensor, RS2_OPTION_FILTER_MAGNITUDE, m_fFilterMagnitude);
-            setSensorOption(dSensor, RS2_OPTION_HOLES_FILL, m_fHolesFill);
-            setSensorOption(dSensor, RS2_OPTION_EMITTER_ENABLED, m_fEmitter);
-            setSensorOption(dSensor, RS2_OPTION_LASER_POWER, m_fLaserPower);
+            setSensorOption(dSensor, RS2_OPTION_CONFIDENCE_THRESHOLD, m_rsCtrl.m_fConfidenceThreshold);
+            //            setSensorOption(dSensor, RS2_OPTION_DIGITAL_GAIN, m_rsCtrl.m_fDigitalGain);
+            setSensorOption(dSensor, RS2_OPTION_PRE_PROCESSING_SHARPENING, m_rsCtrl.m_fPostProcessingSharpening);
+            setSensorOption(dSensor, RS2_OPTION_FILTER_MAGNITUDE, m_rsCtrl.m_fFilterMagnitude);
+            setSensorOption(dSensor, RS2_OPTION_HOLES_FILL, m_rsCtrl.m_fHolesFill);
+            setSensorOption(dSensor, RS2_OPTION_EMITTER_ENABLED, m_rsCtrl.m_fEmitter);
+            setSensorOption(dSensor, RS2_OPTION_LASER_POWER, m_rsCtrl.m_fLaserPower);
 
             // RGB sensor config
             auto cSensor = m_rsProfile.get_device().first<rs2::color_sensor>();
-            setSensorOption(cSensor, RS2_OPTION_BRIGHTNESS, m_fBrightness);
-            setSensorOption(cSensor, RS2_OPTION_CONTRAST, m_fContrast);
-            setSensorOption(cSensor, RS2_OPTION_GAIN, m_fGain);
-            setSensorOption(cSensor, RS2_OPTION_BRIGHTNESS, m_fExposure);
-            setSensorOption(cSensor, RS2_OPTION_HUE, m_fHue);
-            setSensorOption(cSensor, RS2_OPTION_SATURATION, m_fSaturation);
-            setSensorOption(cSensor, RS2_OPTION_SHARPNESS, m_fSharpness);
-            setSensorOption(cSensor, RS2_OPTION_WHITE_BALANCE, m_fWhiteBalance);
+            setSensorOption(cSensor, RS2_OPTION_BRIGHTNESS, m_rsCtrl.m_fBrightness);
+            setSensorOption(cSensor, RS2_OPTION_CONTRAST, m_rsCtrl.m_fContrast);
+            setSensorOption(cSensor, RS2_OPTION_GAIN, m_rsCtrl.m_fGain);
+            setSensorOption(cSensor, RS2_OPTION_BRIGHTNESS, m_rsCtrl.m_fExposure);
+            setSensorOption(cSensor, RS2_OPTION_HUE, m_rsCtrl.m_fHue);
+            setSensorOption(cSensor, RS2_OPTION_SATURATION, m_rsCtrl.m_fSaturation);
+            setSensorOption(cSensor, RS2_OPTION_SHARPNESS, m_rsCtrl.m_fSharpness);
+            setSensorOption(cSensor, RS2_OPTION_WHITE_BALANCE, m_rsCtrl.m_fWhiteBalance);
 
             // Confirm the frame is received
             rs2::frameset rsFrameset = m_rsPipe.wait_for_frames();
 
-            if (m_bRsRGB)
+            if (m_bRGB)
             {
                 if (m_bAlign)
                 {
@@ -177,21 +147,21 @@ namespace kai
                     m_rsDepth = rsFrameset.get_depth_frame();
                 }
 
-				m_vWHc.x = m_rsColor.as<rs2::video_frame>().get_width();
-				m_vWHc.y = m_rsColor.as<rs2::video_frame>().get_height();
+				m_vSizeRGB.x = m_rsColor.as<rs2::video_frame>().get_width();
+				m_vSizeRGB.y = m_rsColor.as<rs2::video_frame>().get_height();
             }
             else
             {
                 m_rsDepth = rsFrameset.get_depth_frame();
             }
 
-            if (m_fFilterMagnitude < m_fDefault)
+            if (m_rsCtrl.m_fFilterMagnitude < m_rsCtrl.m_fDefault)
                 m_rsDepth = m_rsfDec.process(m_rsDepth);
-            if (m_fHolesFill < m_fDefault)
+            if (m_rsCtrl.m_fHolesFill < m_rsCtrl.m_fDefault)
                 m_rsDepth = m_rsfSpat.process(m_rsDepth);
 
-			m_vWHd.x = m_rsDepth.as<rs2::video_frame>().get_width();
-			m_vWHd.y = m_rsDepth.as<rs2::video_frame>().get_height();
+			m_vSizeD.x = m_rsDepth.as<rs2::video_frame>().get_width();
+			m_vSizeD.y = m_rsDepth.as<rs2::video_frame>().get_height();
         }
         catch (const rs2::camera_disconnected_error &e)
         {
@@ -215,7 +185,7 @@ namespace kai
         }
 
 		// m_spImg = std::make_shared<geometry::Image>();
-		// m_spImg->Prepare(m_vWHc.x, m_vWHc.y, 3, 1);
+		// m_spImg->Prepare(m_vSizeRGB.x, m_vSizeRGB.y, 3, 1);
 
 
         m_bOpen = true;
@@ -231,7 +201,7 @@ namespace kai
         }
 
         rs2::option_range range = sensor.get_option_range(option_type);
-        if (v >= m_fDefault)
+        if (v >= m_rsCtrl.m_fDefault)
         {
             v = range.def;
         }
@@ -368,7 +338,7 @@ namespace kai
         {
             rs2::frameset rsFrameset = m_rsPipe.wait_for_frames();
 
-            if (m_bRsRGB)
+            if (m_bRGB)
             {
                 if (m_bAlign)
                 {
@@ -382,7 +352,9 @@ namespace kai
                     m_rsDepth = rsFrameset.get_depth_frame();
                 }
 
-//                m_fBGR.copy(Mat(Size(m_vSize.x, m_vSize.y), CV_8UC3, (void *)m_rsColor.get_data(), Mat::AUTO_STEP));
+#ifdef USE_OPENCV
+                m_fRGB.copy(Mat(Size(m_vSizeRGB.x, m_vSizeRGB.y), CV_8UC3, (void *)m_rsColor.get_data(), Mat::AUTO_STEP));
+#endif
             }
             else
             {
@@ -419,16 +391,17 @@ namespace kai
         {
             m_pTPP->sleepT(0);
 
-            if (m_fFilterMagnitude < m_fDefault)
+            if (m_rsCtrl.m_fFilterMagnitude < m_rsCtrl.m_fDefault)
                 m_rsDepth = m_rsfDec.process(m_rsDepth);
-            if (m_fHolesFill < m_fDefault)
+            if (m_rsCtrl.m_fHolesFill < m_rsCtrl.m_fDefault)
                 m_rsDepth = m_rsfSpat.process(m_rsDepth);
 
-            // Mat mZ = Mat(Size(m_vDsize.x, m_vDsize.y), CV_16UC1, (void *)m_rsDepth.get_data(), Mat::AUTO_STEP);
-            // Mat mD, mDs;
-            // mZ.convertTo(mD, CV_32FC1);
-            // mDs = mD * m_dScale;
-            // m_fDepth.copy(mDs + m_dOfs);
+#ifdef USE_OPENCV
+            Mat mZ = Mat(Size(m_vSizeD.x, m_vSizeD.y), CV_16UC1, (void *)m_rsDepth.get_data(), Mat::AUTO_STEP);
+            Mat mD, mDs;
+            mZ.convertTo(mD, CV_32FC1);
+            mDs = mD * m_dScale;
+            m_fDepth.copy(mDs + m_dOfs);
 
             // if (m_bDepthShow)
             // {
@@ -439,9 +412,9 @@ namespace kai
             //                 Mat::AUTO_STEP);
             //     m_fDepthShow.copy(mDColor);
             // }
+#endif
 
-//				updatePC();
-
+			updatePointCloud();
         }
     }
 
@@ -452,7 +425,7 @@ namespace kai
 
 		// memcpy(m_spImg->data_.data(),
 		// 	   m_rsColor.get_data(),
-		// 	   m_vWHc.area() * 3);
+		// 	   m_vSizeRGB.area() * 3);
 
 		// auto rspVertex = m_rsPoints.get_vertices();
 		// auto rspTexCoord = m_rsPoints.get_texture_coordinates();
@@ -472,8 +445,8 @@ namespace kai
 		// 	pPC->points_.push_back(ve);
 
 		// 	rs2::texture_coordinate tc = rspTexCoord[i];
-		// 	int tx = constrain<int>(tc.u * m_vWHc.x, 0, m_vWHc.x - 1);
-		// 	int ty = constrain<int>(tc.v * m_vWHc.y, 0, m_vWHc.y - 1);
+		// 	int tx = constrain<int>(tc.u * m_vSizeRGB.x, 0, m_vSizeRGB.x - 1);
+		// 	int ty = constrain<int>(tc.v * m_vSizeRGB.y, 0, m_vSizeRGB.y - 1);
 		// 	Eigen::Vector3d te((double)*m_spImg->PointerAt<uint8_t>(tx, ty, 2),
 		// 					   (double)*m_spImg->PointerAt<uint8_t>(tx, ty, 1),
 		// 					   (double)*m_spImg->PointerAt<uint8_t>(tx, ty, 0));

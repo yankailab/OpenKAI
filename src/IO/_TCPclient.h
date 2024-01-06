@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_IO__TCPclient_H_
 #define OpenKAI_src_IO__TCPclient_H_
 
-#include "_IOBase.h"
+#include "_IObase.h"
 
 namespace kai
 {
 
-	class _TCPclient : public _IOBase
+	class _TCPclient : public _IObase
 	{
 	public:
 		_TCPclient();

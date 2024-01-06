@@ -13,6 +13,49 @@
 
 namespace kai
 {
+	struct RS_CTRL
+	{
+		float m_fDefault;
+
+		float m_fConfidenceThreshold;
+		float m_fDigitalGain;
+		float m_fPostProcessingSharpening;
+		float m_fFilterMagnitude;
+		float m_fHolesFill;
+		float m_fEmitter;
+		float m_fLaserPower;
+
+		float m_fBrightness;
+		float m_fContrast;
+		float m_fGain;
+		float m_fExposure;
+		float m_fHue;
+		float m_fSaturation;
+		float m_fSharpness;
+		float m_fWhiteBalance;
+
+		void clear(void)
+		{
+			m_fDefault = 10e6;
+
+			m_fConfidenceThreshold = m_fDefault;
+			m_fDigitalGain = m_fDefault;
+			m_fPostProcessingSharpening = m_fDefault;
+			m_fFilterMagnitude = m_fDefault;
+			m_fHolesFill = m_fDefault;
+			m_fEmitter = m_fDefault;
+			m_fLaserPower = m_fDefault;
+
+			m_fBrightness = m_fDefault;
+			m_fContrast = m_fDefault;
+			m_fGain = m_fDefault;
+			m_fExposure = m_fDefault;
+			m_fHue = m_fDefault;
+			m_fSaturation = m_fDefault;
+			m_fSharpness = m_fDefault;
+			m_fWhiteBalance = m_fDefault;
+		}
+	};
 
 	class _RealSense : public _RGBDbase
 	{
@@ -27,13 +70,13 @@ namespace kai
 		virtual bool open(void);
 		virtual void close(void);
 
-		bool setSensorOption(const rs2::sensor& sensor, rs2_option option_type, float v);
+		bool setSensorOption(const rs2::sensor &sensor, rs2_option option_type, float v);
 		bool setCsensorOption(rs2_option option_type, float v);
 		bool setDsensorOption(rs2_option option_type, float v);
 
-		bool getSensorOption(const rs2::sensor& sensor, rs2_option option_type, rs2::option_range* pR);
-		bool getCsensorOption(rs2_option option_type, rs2::option_range* pR);
-		bool getDsensorOption(rs2_option option_type, rs2::option_range* pR);
+		bool getSensorOption(const rs2::sensor &sensor, rs2_option option_type, rs2::option_range *pR);
+		bool getCsensorOption(rs2_option option_type, rs2::option_range *pR);
+		bool getDsensorOption(rs2_option option_type, rs2::option_range *pR);
 
 	protected:
 		void sensorReset(void);
@@ -63,47 +106,20 @@ namespace kai
 		rs2::align *m_rspAlign;
 		rs2::spatial_filter m_rsfSpat;
 		rs2::decimation_filter m_rsfDec;
-		bool m_bAlign;
-
-		float m_fConfidenceThreshold;
-		float m_fDigitalGain;
-		float m_fPostProcessingSharpening;
-		float m_fFilterMagnitude;
-		float m_fHolesFill;
-		float m_fEmitter;
-		float m_fLaserPower;
-
-		float m_fDefault;
-		float m_fBrightness;
-		float m_fContrast;
-		float m_fGain;
-		float m_fExposure;
-		float m_fHue;
-		float m_fSaturation;
-		float m_fSharpness;
-		float m_fWhiteBalance;
+		RS_CTRL m_rsCtrl;
 
 		int m_rsFPS;
 		int m_rsDFPS;
-		bool m_bRsRGB;
+		bool m_bAlign;
 		string m_vPreset;
 
 		rs2_intrinsics m_cIntrinsics;
 		rs2_intrinsics m_dIntrinsics;
 
-		float m_dScale;
-
 		// point cloud
 		rs2::pointcloud m_rsPC;
 		rs2::points m_rsPoints;
-		vInt2 m_vWHc;
-		vInt2 m_vWHd;
-//		shared_ptr<Image> m_spImg;
-		vFloat2 m_vRz; //z region
-
-
-		//depth filter processing thread
-		_Thread *m_pTPP;
+		//		shared_ptr<Image> m_spImg;
 	};
 
 }

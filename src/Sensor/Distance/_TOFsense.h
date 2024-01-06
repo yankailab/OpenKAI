@@ -9,7 +9,7 @@
 #define OpenKAI_src_Sensor__TOFsense_H_
 
 #include "_DistSensorBase.h"
-#include "../../IO/_IOBase.h"
+#include "../../IO/_IObase.h"
 
 #define NLINK_BEGIN 0x57
 
@@ -81,7 +81,7 @@ namespace kai
 		}
 
 	public:
-		_IOBase *m_pIO;
+		_IObase *m_pIO;
 		NLINK_FRAME m_frame;
 	};
 

@@ -126,7 +126,7 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"_IOBase":"serialAP",
+	"_IObase":"serialAP",
 }
 
 {
@@ -219,7 +219,7 @@
 		"name":"threadR",
 		"FPS":1,
 	}
-	"_IOBase":"tcpG",
+	"_IObase":"tcpG",
 	"/cmd":"#TPUG2wPTZ02", /* Downward */
 	{
 		"name":"axis",
@@ -463,7 +463,7 @@
 	}
 	"bLog":1,
 	"_AP_gcs":"apGCS",
-	"_IOBase":"serialTelem",
+	"_IObase":"serialTelem",
 }
 
 {
@@ -498,7 +498,7 @@
 	}
 	"bLog":1,
 	"_AP_gcs":"apGCS",
-	"_IOBase":"serialTelem2",
+	"_IObase":"serialTelem2",
 }
 
 {
@@ -533,5 +533,5 @@
 	}
 	"bLog":1,
 	"_AP_gcs":"apGCS",
-	"_IOBase":"udp",
+	"_IObase":"udp",
 }

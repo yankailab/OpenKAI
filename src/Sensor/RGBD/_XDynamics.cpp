@@ -12,6 +12,8 @@ namespace kai
 
     _XDynamics::_XDynamics()
     {
+        m_deviceURI = "192.168.31.3";
+        m_xdType = XDYN_PRODUCT_TYPE_XD_400;
         m_pXDstream = NULL;
         m_bXDrgbdInit = false;
         m_pXDrgbd = NULL;
@@ -30,15 +32,7 @@ namespace kai
         IF_F(!_RGBDbase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        // Kiss *pKt = pK->child("threadPP");
-        // IF_F(pKt->empty());
-
-        // m_pTPP = new _Thread();
-        // if (!m_pTPP->init(pKt))
-        // {
-        //     DEL(m_pTPP);
-        //     return false;
-        // }
+		pK->v("xdType", &m_xdType);
 
         return true;
     }
@@ -78,7 +72,7 @@ namespace kai
         //                prtList[i].type, prtList[i].warelfID, prtList[i].inter1, prtList[i].inter2);
         // }
 
-        XDYN_Streamer *pStream = CreateStreamerNet(XDYN_PRODUCT_TYPE_XD_1000, CbEvent, this, "192.168.31.3");
+        XDYN_Streamer *pStream = CreateStreamerNet((XDYN_PRODUCT_TYPE_e)m_xdType, CbEvent, this, m_deviceURI);
         // XDYN_Streamer *stream = CreateStreamer((XDYN_PRODUCT_TYPE_e)prtList[0].type, prtList[0].inter1, EventCB, &userHdl, prtList[0].prtIP);
         NULL_Fl(pStream, "CreateStreamerNet failed");
 
@@ -245,7 +239,7 @@ namespace kai
             m_bXDrgbdInit = false;
         }
 
-        char cDllVerion[RP_ARITH_VERSION_LEN_MAX] = {0}; // 算法版本号字符串
+        char cDllVerion[RP_ARITH_VERSION_LEN_MAX] = {0}; // algorithm version string
         sitrpGetVersion(cDllVerion);
         LOG_I("Get rgbd hdl version: " + string(cDllVerion));
 
@@ -373,14 +367,6 @@ namespace kai
             }
         }
     }
-
-    // void _XDynamics::updateTPP(void)
-    // {
-    //     while (m_pTPP->bRun())
-    //     {
-    //         m_pTPP->sleepT(0);
-    //     }
-    // }
 
     void _XDynamics::console(void *pConsole)
     {

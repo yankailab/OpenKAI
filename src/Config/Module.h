@@ -41,6 +41,7 @@
 #ifdef WITH_ACTUATOR
 #include "../Actuator/_ArduServo.h"
 #include "../Actuator/_ActuatorSync.h"
+#include "../Actuator/_FeeTech.h"
 #include "../Actuator/_OrientalMotor.h"
 #include "../Actuator/_HYMCU_RS485.h"
 #include "../Actuator/Articulated/_S6H4D.h"
@@ -236,6 +237,7 @@
 #endif
 
 #ifdef WITH_IO
+#include "../IO/_ADIO_EBYTE.h"
 #include "../IO/_File.h"
 #include "../IO/_TCPserver.h"
 #include "../IO/_TCPclient.h"

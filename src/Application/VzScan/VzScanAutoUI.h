@@ -67,7 +67,7 @@ namespace open3d
 			private:
 				UImode m_uiMode = uiMode_cam;
 				bool m_bCamAuto;
-				VzCamCtrl m_camCtrl;
+				VzCtrl m_camCtrl;
 				int m_pointSize;
 
 				VzScanSet m_scanSet;

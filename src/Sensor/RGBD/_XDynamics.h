@@ -27,8 +27,8 @@ namespace kai
 
 		virtual bool init(void *pKiss);
 		virtual bool link(void);
-		virtual bool start(void);
 		virtual int check(void);
+		virtual bool start(void);
 		virtual void console(void *pConsole);
 
 		virtual bool open(void);
@@ -50,6 +50,7 @@ namespace kai
 		}
 
 	private:
+		int m_xdType;
 		XDYN_Streamer *m_pXDstream;
 		bool m_bXDrgbdInit;
 		void *m_pXDrgbd;

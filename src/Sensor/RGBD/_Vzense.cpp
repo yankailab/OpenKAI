@@ -23,7 +23,6 @@ namespace kai
 		m_vzfIR = {0};
 
 		m_pVzVw = NULL;
-		//		m_camCtrl.m_vRz.set(0.0, FLT_MAX);
 	}
 
 	_Vzense::~_Vzense()
@@ -34,8 +33,6 @@ namespace kai
 	{
 		IF_F(!_RGBDbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-
-		//		m_camCtrl.m_vRz = {m_vRange.x, m_vRange.y};
 
 		Kiss *pKt = pK->child("threadPP");
 		IF_F(pKt->empty());
@@ -119,25 +116,25 @@ namespace kai
 		LOG_I("sn  ==  " + string(m_pDeviceListInfo[0].serialNumber));
 
 		VZ_SetFrameRate(m_deviceHandle, (int)this->m_pT->getTargetFPS());
-		VZ_SetColorResolution(m_deviceHandle, m_vSize.x, m_vSize.y);
+		VZ_SetColorResolution(m_deviceHandle, m_vSizeRGB.x, m_vSizeRGB.y);
 		VZ_SetColorPixelFormat(m_deviceHandle, VzPixelFormatBGR888);
 		VZ_SetTransformColorImgToDepthSensorEnabled(m_deviceHandle, m_btRGB);
 		VZ_SetTransformDepthImgToColorSensorEnabled(m_deviceHandle, m_btDepth);
-		setToFexposureTime(m_camCtrl.m_bAutoExposureToF, m_camCtrl.m_tExposureToF);
-		setToFexposureControlMode(m_camCtrl.m_bAutoExposureToF);
-		setRGBexposureTime(m_camCtrl.m_bAutoExposureRGB, m_camCtrl.m_tExposureToF);
-		setRGBexposureControlMode(m_camCtrl.m_bAutoExposureRGB);
-		setTimeFilter(m_camCtrl.m_bFilTime, m_camCtrl.m_filTime);
-		setConfidenceFilter(m_camCtrl.m_bFilConfidence, m_camCtrl.m_filConfidence);
-		setFlyingPixelFilter(m_camCtrl.m_bFilFlyingPix, m_camCtrl.m_filFlyingPix);
-		setFillHole(m_camCtrl.m_bFillHole);
-		setSpatialFilter(m_camCtrl.m_bSpatialFilter);
-		setHDR(m_camCtrl.m_bHDR);
+		setToFexposureTime(m_vzCtrl.m_bAutoExposureToF, m_vzCtrl.m_tExposureToF);
+		setToFexposureControlMode(m_vzCtrl.m_bAutoExposureToF);
+		setRGBexposureTime(m_vzCtrl.m_bAutoExposureRGB, m_vzCtrl.m_tExposureToF);
+		setRGBexposureControlMode(m_vzCtrl.m_bAutoExposureRGB);
+		setTimeFilter(m_vzCtrl.m_bFilTime, m_vzCtrl.m_filTime);
+		setConfidenceFilter(m_vzCtrl.m_bFilConfidence, m_vzCtrl.m_filConfidence);
+		setFlyingPixelFilter(m_vzCtrl.m_bFilFlyingPix, m_vzCtrl.m_filFlyingPix);
+		setFillHole(m_vzCtrl.m_bFillHole);
+		setSpatialFilter(m_vzCtrl.m_bSpatialFilter);
+		setHDR(m_vzCtrl.m_bHDR);
 		status = VZ_StartStream(m_deviceHandle);
 
-		m_pVzVw = new VzVector3f[m_vSize.x * m_vSize.y];
+		m_pVzVw = new VzVector3f[m_vSizeRGB.x * m_vSizeRGB.y];
 
-		m_tWait = 2 * 1000 / this->m_pT->getTargetFPS();
+		m_tFrameInterval = 2 * 1000 / this->m_pT->getTargetFPS();
 		m_bOpen = true;
 		return true;
 	}
@@ -214,7 +211,7 @@ namespace kai
 
 		VzFrameReady frameReady = {0};
 		VzReturnStatus status = VZ_GetFrameReady(m_deviceHandle,
-												 m_tWait,
+												 m_tFrameInterval,
 												 &frameReady);
 
 		updateRGBD(frameReady);
@@ -305,8 +302,8 @@ namespace kai
 		// 		VzVector3f *pV = &m_pVzVw[k];
 		// 		Eigen::Vector3d vP(pV->x, pV->y, pV->z);
 		// 		vP *= s_b;
-		// 		IF_CONT(vP.z() < m_camCtrl.m_vRz.x);
-		// 		IF_CONT(vP.z() > m_camCtrl.m_vRz.y);
+		// 		IF_CONT(vP.z() < m_vzCtrl.m_vRz.x);
+		// 		IF_CONT(vP.z() > m_vzCtrl.m_vRz.y);
 
 		// 		Eigen::Vector3d vPik = Vector3d(
 		// 			vP[m_vAxisIdx.x] * m_vAxisK.x,
@@ -358,6 +355,8 @@ namespace kai
 
 	bool _Vzense::setToFexposureControlMode(bool bAuto)
 	{
+		m_vzCtrl.m_bAutoExposureToF = bAuto;
+
 		VzReturnStatus vzR = VZ_SetExposureControlMode(m_deviceHandle,
 													   VzToFSensor,
 													   bAuto ? VzExposureControlMode_Auto
@@ -367,6 +366,9 @@ namespace kai
 
 	bool _Vzense::setToFexposureTime(bool bAuto, int tExposure)
 	{
+		m_vzCtrl.m_bAutoExposureToF = bAuto;
+		m_vzCtrl.m_tExposureToF = tExposure;
+
 		VzExposureTimeParams p;
 		p.mode = bAuto ? VzExposureControlMode_Auto
 					   : VzExposureControlMode_Manual;
@@ -380,6 +382,8 @@ namespace kai
 
 	bool _Vzense::setRGBexposureControlMode(bool bAuto)
 	{
+		m_vzCtrl.m_bAutoExposureRGB = bAuto;
+
 		VzReturnStatus vzR = VZ_SetExposureControlMode(m_deviceHandle,
 													   VzColorSensor,
 													   bAuto ? VzExposureControlMode_Auto
@@ -389,6 +393,9 @@ namespace kai
 
 	bool _Vzense::setRGBexposureTime(bool bAuto, int tExposure)
 	{
+		m_vzCtrl.m_bAutoExposureRGB = bAuto;
+		m_vzCtrl.m_tExposureRGB = tExposure;
+
 		VzExposureTimeParams p;
 		p.mode = bAuto ? VzExposureControlMode_Auto
 					   : VzExposureControlMode_Manual;
@@ -402,6 +409,9 @@ namespace kai
 
 	bool _Vzense::setTimeFilter(bool bON, int thr)
 	{
+		m_vzCtrl.m_bFilTime = bON;
+		m_vzCtrl.m_filTime = thr;
+
 		VzTimeFilterParams p;
 		p.enable = bON;
 		p.threshold = thr;
@@ -411,6 +421,9 @@ namespace kai
 
 	bool _Vzense::setConfidenceFilter(bool bON, int thr)
 	{
+		m_vzCtrl.m_bFilConfidence = bON;
+		m_vzCtrl.m_filConfidence = thr;
+
 		VzConfidenceFilterParams p;
 		p.enable = bON;
 		p.threshold = thr;
@@ -420,6 +433,9 @@ namespace kai
 
 	bool _Vzense::setFlyingPixelFilter(bool bON, int thr)
 	{
+		m_vzCtrl.m_bFilFlyingPix = bON;
+		m_vzCtrl.m_filFlyingPix = thr;
+
 		VzFlyingPixelFilterParams p;
 		p.enable = bON;
 		p.threshold;
@@ -429,95 +445,26 @@ namespace kai
 
 	bool _Vzense::setFillHole(bool bON)
 	{
+		m_vzCtrl.m_bFillHole = bON;
+
 		VzReturnStatus vzR = VZ_SetFillHoleFilterEnabled(m_deviceHandle, bON);
 		return (vzR == VzRetOK) ? true : false;
 	}
 
 	bool _Vzense::setSpatialFilter(bool bON)
 	{
+		m_vzCtrl.m_bSpatialFilter = bON;
+
 		VzReturnStatus vzR = VZ_SetSpatialFilterEnabled(m_deviceHandle, bON);
 		return (vzR == VzRetOK) ? true : false;
 	}
 
 	bool _Vzense::setHDR(bool bON)
 	{
+		m_vzCtrl.m_bHDR = bON;
+
 		VzReturnStatus vzR = VZ_SetHDRModeEnabled(m_deviceHandle, bON);
 		return (vzR == VzRetOK) ? true : false;
-	}
-
-	bool _Vzense::setCamCtrl(const VzCamCtrl &camCtrl)
-	{
-		//		m_camCtrl.m_vRz = camCtrl.m_vRz;
-
-		if ((m_camCtrl.m_tExposureToF != camCtrl.m_tExposureToF) || (m_camCtrl.m_bAutoExposureToF != camCtrl.m_bAutoExposureToF))
-		{
-			IF_F(!setToFexposureTime(camCtrl.m_bAutoExposureToF,
-									 camCtrl.m_tExposureToF));
-			IF_F(!setToFexposureControlMode(camCtrl.m_bAutoExposureToF));
-
-			m_camCtrl.m_bAutoExposureToF = camCtrl.m_bAutoExposureToF;
-			m_camCtrl.m_tExposureToF = camCtrl.m_tExposureToF;
-		}
-
-		if ((m_camCtrl.m_tExposureRGB != camCtrl.m_tExposureRGB) || (m_camCtrl.m_bAutoExposureRGB != camCtrl.m_bAutoExposureRGB))
-		{
-			IF_F(!setRGBexposureTime(camCtrl.m_bAutoExposureRGB,
-									 camCtrl.m_tExposureRGB));
-			IF_F(!setRGBexposureControlMode(camCtrl.m_bAutoExposureRGB));
-
-			m_camCtrl.m_bAutoExposureRGB = camCtrl.m_bAutoExposureRGB;
-			m_camCtrl.m_tExposureRGB = camCtrl.m_tExposureRGB;
-		}
-
-		if ((m_camCtrl.m_filTime != camCtrl.m_filTime) || (m_camCtrl.m_bFilTime != camCtrl.m_bFilTime))
-		{
-			IF_F(!setTimeFilter(camCtrl.m_bFilTime,
-								camCtrl.m_filTime));
-
-			m_camCtrl.m_bFilTime = camCtrl.m_bFilTime;
-			m_camCtrl.m_filTime = camCtrl.m_filTime;
-		}
-
-		if ((m_camCtrl.m_filConfidence != camCtrl.m_filConfidence) || (camCtrl.m_bFilConfidence != camCtrl.m_bFilConfidence))
-		{
-			IF_F(!setConfidenceFilter(camCtrl.m_bFilConfidence,
-									  camCtrl.m_filConfidence));
-
-			m_camCtrl.m_bFilConfidence = camCtrl.m_bFilConfidence;
-			m_camCtrl.m_filConfidence = camCtrl.m_filConfidence;
-		}
-
-		if ((m_camCtrl.m_filFlyingPix != camCtrl.m_filFlyingPix) || (m_camCtrl.m_bFilFlyingPix != camCtrl.m_bFilFlyingPix))
-		{
-			IF_F(!setFlyingPixelFilter(camCtrl.m_bFilFlyingPix,
-									   camCtrl.m_filFlyingPix));
-
-			m_camCtrl.m_bFilFlyingPix = camCtrl.m_bFilFlyingPix;
-			m_camCtrl.m_filFlyingPix = camCtrl.m_filFlyingPix;
-		}
-
-		if (m_camCtrl.m_bFillHole != camCtrl.m_bFillHole)
-		{
-			IF_F(!setFillHole(camCtrl.m_bFillHole));
-
-			m_camCtrl.m_bFillHole = camCtrl.m_bFillHole;
-		}
-
-		if (m_camCtrl.m_bSpatialFilter != camCtrl.m_bSpatialFilter)
-		{
-			IF_F(!setSpatialFilter(camCtrl.m_bSpatialFilter));
-
-			m_camCtrl.m_bSpatialFilter = camCtrl.m_bSpatialFilter;
-		}
-
-		if (m_camCtrl.m_bHDR != camCtrl.m_bHDR)
-		{
-			IF_F(!setHDR(camCtrl.m_bHDR));
-
-			m_camCtrl.m_bHDR = camCtrl.m_bHDR;
-		}
-
-		return true;
 	}
 
 }

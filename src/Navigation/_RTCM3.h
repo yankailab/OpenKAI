@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Navigation__RTCM3_H_
 #define OpenKAI_src_Navigation__RTCM3_H_
 
-#include "../IO/_IOBase.h"
+#include "../IO/_IObase.h"
 
 namespace kai
 {
@@ -33,7 +33,7 @@ namespace kai
 		}
 
 	private:
-		_IOBase *m_pIO;
+		_IObase *m_pIO;
 		uint8_t m_rBuf[N_IO_BUF];
 		int m_nRead;
 		int m_iRead;

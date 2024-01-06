@@ -43,5 +43,5 @@
         "FPS":30,
     }
 	"bLog":1,
-	"_IOBase":"serial",
+	"_IObase":"serial",
 }

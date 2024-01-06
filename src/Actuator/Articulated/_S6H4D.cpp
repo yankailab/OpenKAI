@@ -62,8 +62,8 @@ namespace kai
 		}
 
 		string n = "";
-		F_ERROR_F(pK->v("_IOBase", &n));
-		m_pIO = (_IOBase *)(pK->getInst(n));
+		F_ERROR_F(pK->v("_IObase", &n));
+		m_pIO = (_IObase *)(pK->getInst(n));
 		IF_Fl(!m_pIO, n + " not found");
 
 		return true;
@@ -78,7 +78,7 @@ namespace kai
 	int _S6H4D::check(void)
 	{
 		NULL__(m_pIO, -1);
-		IF__(!m_pIO->isOpen(), -1);
+		IF__(!m_pIO->bOpen(), -1);
 
 		return this->_ActuatorBase::check();
 	}

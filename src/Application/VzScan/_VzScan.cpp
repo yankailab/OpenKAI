@@ -436,7 +436,7 @@ namespace kai
 		NULL_(pD);
 		_VzScan *pV = (_VzScan *)pPCV;
 
-		pV->m_camCtrl = *(VzCamCtrl *)pD;
+		pV->m_camCtrl = *(VzCtrl *)pD;
 		pV->m_fProcess.set(pc_CamCtrl);
 	}
 }

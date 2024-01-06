@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Actuator__RS485_H_
-#define OpenKAI_src_Actuator__RS485_H_
+#ifndef OpenKAI_src_Actuator__HYMCU_RS485_H_
+#define OpenKAI_src_Actuator__HYMCU_RS485_H_
 
 #include "../Protocol/_Modbus.h"
 #include "_ActuatorBase.h"
@@ -74,7 +74,6 @@ namespace kai
 	public:
 		_Modbus *m_pMB;
 		int m_iSlave;
-		int m_iData;
 		int32_t m_dpr; //distance per round
 		ACTUATOR_AXIS *m_pA;
 

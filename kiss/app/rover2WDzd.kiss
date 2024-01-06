@@ -223,7 +223,7 @@
 	}
 	"bLog":1,
 	"bSend":0,
-	"_IOBase":"sSBus",
+	"_IObase":"sSBus",
 	"vRawRC":[353,1003,1637],
 	"bRawSbus":1,
 }

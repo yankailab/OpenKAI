@@ -47,7 +47,7 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"_IOBase":"serial",
+	"_IObase":"serial",
 
 	"/noRouteCmd":[],
 	{
@@ -88,7 +88,7 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"_IOBase":"udp",
+	"_IObase":"udp",
 
 	"/noRouteCmd":[],
 	{

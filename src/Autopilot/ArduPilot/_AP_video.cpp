@@ -152,7 +152,7 @@ namespace kai
 			m_pCurl->addFile(m_fName + ".mka");
 
 		IF_(!m_bMeta);
-		IF_(!m_pFmeta->isOpen());
+		IF_(!m_pFmeta->bOpen());
 		m_pFmeta->close();
 		cmd = "mv " + m_fName + ".json_t " + m_fName + ".json";
 		system(cmd.c_str());
@@ -164,7 +164,7 @@ namespace kai
 	{
 		IF_(!m_bMeta);
 		IF_(!m_pFvid);
-		IF_(!m_pFmeta->isOpen());
+		IF_(!m_pFmeta->bOpen());
 
 		uint64_t tFrame = getTbootMs() - m_tRecStart;
 		vDouble4 vP = m_pAP->getGlobalPos();

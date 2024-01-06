@@ -10,7 +10,7 @@
 
 #include "_PCsend.h"
 #include "_PCstream.h"
-#include "../../IO/_IOBase.h"
+#include "../../IO/_IObase.h"
 #include "../../Protocol/_ProtocolBase.h"
 
 namespace kai
@@ -38,7 +38,7 @@ private:
 	}
 
 public:
-	_IOBase* m_pIO;
+	_IObase* m_pIO;
 	PROTOCOL_CMD m_recvMsg;
 	uint64_t	m_nCMDrecv;
 };

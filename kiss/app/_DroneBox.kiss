@@ -134,7 +134,7 @@
 	}
 	"bLog":1,
 	"_DroneBox":"droneBox",
-	"_IOBase":"telem",
+	"_IObase":"telem",
 }
 
 {
@@ -167,5 +167,5 @@
 	}
 	"bLog":1,
 	"_DroneBox":"droneBox",
-	"_IOBase":"udp",
+	"_IObase":"udp",
 }

@@ -26,6 +26,6 @@
 	"FPS":30,
 	"bON":1,
 	"bLog":0,
-	"_IOBase":"serial",
+	"_IObase":"serial",
 }
 

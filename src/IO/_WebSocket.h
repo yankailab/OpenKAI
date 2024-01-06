@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_IO__WebSocket_H_
 #define OpenKAI_src_IO__WebSocket_H_
 
-#include "_IOBase.h"
+#include "_IObase.h"
 
 #define WS_N_HEADER 12
 #define WS_N_BUF 1024
@@ -42,7 +42,7 @@ namespace kai
 		}
 	};
 
-	class _WebSocket : public _IOBase
+	class _WebSocket : public _IObase
 	{
 	public:
 		_WebSocket();

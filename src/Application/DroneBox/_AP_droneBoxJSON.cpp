@@ -78,7 +78,7 @@ namespace kai
                 continue;
             }
 
-            if (!m_pIO->isOpen())
+            if (!m_pIO->bOpen())
             {
                 if (!m_pIO->open())
                 {

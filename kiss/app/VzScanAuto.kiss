@@ -49,7 +49,7 @@
 		"name":"threadR",
 		"FPS":30,
 	}
-	"_IOBase":"serial",
+	"_IObase":"serial",
 	{
 		"name":"axis",
 		{

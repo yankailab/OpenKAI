@@ -39,8 +39,8 @@ bool _IRLock::init(void *pKiss)
 
 	string n;
 	n = "";
-	F_ERROR_F(pK->v("_IOBase", &n));
-	m_pIO = (_IOBase*) (pK->getInst(n));
+	F_ERROR_F(pK->v("_IObase", &n));
+	m_pIO = (_IObase*) (pK->getInst(n));
 	NULL_Fl(m_pIO, n + ": not found");
 
 	return true;

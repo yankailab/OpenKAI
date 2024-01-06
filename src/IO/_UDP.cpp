@@ -28,7 +28,7 @@ namespace kai
 
 	bool _UDP::init(void *pKiss)
 	{
-		IF_F(!this->_IOBase::init(pKiss));
+		IF_F(!this->_IObase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("addr", &m_addr);
@@ -79,7 +79,7 @@ namespace kai
 		IF_(m_ioStatus != io_opened);
 
 		::close(m_socket);
-		this->_IOBase::close();
+		this->_IObase::close();
 	}
 
 	bool _UDP::start(void)
@@ -94,7 +94,7 @@ namespace kai
 	{
 		while (m_pT->bRun())
 		{
-			if (!isOpen())
+			if (!bOpen())
 			{
 				if (!open())
 				{
@@ -128,7 +128,7 @@ namespace kai
 	{
 		while (m_pTr->bRun())
 		{
-			while (!isOpen())
+			while (!bOpen())
 			{
 				::sleep(1);
 			}
@@ -152,7 +152,7 @@ namespace kai
 	void _UDP::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_IOBase::console(pConsole);
+		this->_IObase::console(pConsole);
 
 		NULL_(m_pTr);
 		m_pTr->console(pConsole);

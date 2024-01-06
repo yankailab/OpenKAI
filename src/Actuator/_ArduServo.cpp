@@ -41,8 +41,8 @@ namespace kai
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 		n = "";
-		F_ERROR_F(pK->v("_IOBase", &n));
-		m_pIO = (_IOBase *)(pK->getInst(n));
+		F_ERROR_F(pK->v("_IObase", &n));
+		m_pIO = (_IObase *)(pK->getInst(n));
 		NULL_Fl(m_pIO, n + ": not found");
 
         return true;
@@ -71,7 +71,7 @@ namespace kai
 	void _ArduServo::sendCMD(void)
 	{
 		NULL_(m_pIO);
-		IF_(!m_pIO->isOpen());
+		IF_(!m_pIO->bOpen());
 
 		int i;
 		uint16_t pChan[16];
@@ -120,7 +120,7 @@ namespace kai
 	bool _ArduServo::readCMD(void)
 	{
 		NULL_F(m_pIO);
-		IF_F(!m_pIO->isOpen());
+		IF_F(!m_pIO->bOpen());
 
 		uint8_t inByte;
 		int byteRead;
@@ -179,7 +179,7 @@ namespace kai
 		this->_ActuatorBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		if (!m_pIO->isOpen())
+		if (!m_pIO->bOpen())
 		{
 			pC->addMsg("Not Connected", 1);
 			return;

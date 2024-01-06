@@ -328,7 +328,7 @@
 	"bON":0,
 	"Window":"OKview",
 	"_Console":"OK_Console",
-	"_IOBase":"ws",
+	"_IObase":"ws",
 	"PCT":["tf1","tf2","tf3"],
     {
 		"name":"thread",
@@ -360,7 +360,7 @@
 	"bLog":1,
 	"Window":"OKview",
 	"_Console":"OpenKAI",
-	"_IOBase":"UDPsend",	
+	"_IObase":"UDPsend",	
 	"_PCbase":"rs1",
 	"nB":256,
 	"tInt":100000,
@@ -386,7 +386,7 @@
 	"FPS":30,
 	"Window":"OKview",
 	"_Console":"OpenKAI",
-	"_IOBase":"UDPrecv",
+	"_IObase":"UDPrecv",
 	"/_PCviewer":"pcv",
 	"nB":1280,
 }

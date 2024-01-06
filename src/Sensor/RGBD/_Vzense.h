@@ -13,7 +13,7 @@
 
 namespace kai
 {
-	struct VzCamCtrl
+	struct VzCtrl
 	{
 		bool m_bAutoExposureToF = true;
 		int m_tExposureToF = 4000;
@@ -33,8 +33,6 @@ namespace kai
 		bool m_bFillHole = false;
 		bool m_bSpatialFilter = false;
 		bool m_bHDR = false;
-
-//		vFloat2 m_vRz = {0.0, 10.0};		 // z region
 	};
 
 	class _Vzense : public _RGBDbase
@@ -51,8 +49,8 @@ namespace kai
 		virtual bool open(void);
 		virtual void close(void);
 
-		VzCamCtrl getCamCtrl(void);
-		bool setCamCtrl(const VzCamCtrl& camCtrl);
+		VzCtrl getCamCtrl(void);
+		bool setCamCtrl(const VzCtrl& camCtrl);
 		bool setToFexposureControlMode(bool bAuto);
 		bool setToFexposureTime(bool bAuto, int tExposure);
 		bool setRGBexposureControlMode(bool bAuto);
@@ -87,7 +85,7 @@ namespace kai
 		VzDeviceInfo *m_pDeviceListInfo;
 		VzDeviceHandle m_deviceHandle;
 		VzSensorIntrinsicParameters m_cameraParameters;
-		VzCamCtrl m_camCtrl;
+		VzCtrl m_vzCtrl;
 
 		VzFrame m_vzfRGB;
 		VzFrame m_vzfDepth;

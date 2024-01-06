@@ -1,16 +1,16 @@
 /*
- * _IOBase.cpp
+ * _IObase.cpp
  *
  *  Created on: June 16, 2016
  *      Author: yankai
  */
 
-#include "_IOBase.h"
+#include "_IObase.h"
 
 namespace kai
 {
 
-	_IOBase::_IOBase()
+	_IObase::_IObase()
 	{
 		m_pTr = NULL;
 
@@ -19,7 +19,7 @@ namespace kai
 		m_nFIFO = 1280000;
 	}
 
-	_IOBase::~_IOBase()
+	_IObase::~_IObase()
 	{
 		DEL(m_pTr);
 
@@ -27,7 +27,7 @@ namespace kai
 		m_fifoR.release();
 	}
 
-	bool _IOBase::init(void *pKiss)
+	bool _IObase::init(void *pKiss)
 	{
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
@@ -39,7 +39,7 @@ namespace kai
 		return true;
 	}
 
-	bool _IOBase::link(void)
+	bool _IObase::link(void)
 	{
 		IF_F(!this->_ModuleBase::link());
 
@@ -51,22 +51,22 @@ namespace kai
 		return true;
 	}
 
-	bool _IOBase::open(void)
+	bool _IObase::open(void)
 	{
 		return false;
 	}
 
-	bool _IOBase::isOpen(void)
+	bool _IObase::bOpen(void)
 	{
 		return (m_ioStatus == io_opened);
 	}
 
-	IO_TYPE _IOBase::ioType(void)
+	IO_TYPE _IObase::ioType(void)
 	{
 		return m_ioType;
 	}
 
-	void _IOBase::close(void)
+	void _IObase::close(void)
 	{
 		m_fifoW.clear();
 		m_fifoR.clear();
@@ -74,7 +74,7 @@ namespace kai
 		m_ioStatus = io_closed;
 	}
 
-	bool _IOBase::write(uint8_t *pBuf, int nB)
+	bool _IObase::write(uint8_t *pBuf, int nB)
 	{
 		IF_F(m_ioStatus != io_opened);
 
@@ -85,7 +85,7 @@ namespace kai
 		return true;
 	}
 
-	bool _IOBase::writeLine(uint8_t *pBuf, int nB)
+	bool _IObase::writeLine(uint8_t *pBuf, int nB)
 	{
 		const char pCRLF[] = "\x0d\x0a";
 
@@ -93,7 +93,7 @@ namespace kai
 		return write((unsigned char *)pCRLF, 2);
 	}
 
-	int _IOBase::read(uint8_t *pBuf, int nB)
+	int _IObase::read(uint8_t *pBuf, int nB)
 	{
 		if (m_ioStatus != io_opened)
 			return -1;
@@ -101,7 +101,7 @@ namespace kai
 		return m_fifoR.output(pBuf, nB);
 	}
 
-	void _IOBase::console(void *pConsole)
+	void _IObase::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);

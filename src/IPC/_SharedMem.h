@@ -25,7 +25,7 @@ namespace kai
 		virtual bool init(void *pKiss);
 		virtual bool link(void);
 		virtual bool open(void);
-		virtual bool isOpen(void);
+		virtual bool bOpen(void);
 		virtual void close(void);
 		
 		virtual void* p(void);

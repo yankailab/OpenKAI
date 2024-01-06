@@ -98,7 +98,7 @@
 		"name":"threadR",
 		"FPS":10,
 	}
-	"_IOBase":"ws",
+	"_IObase":"ws",
 	"_LivoxAutoScan":"LivoxAutoScan",
 	"rVoxel":1.0,
 	"nPmax":1000000,

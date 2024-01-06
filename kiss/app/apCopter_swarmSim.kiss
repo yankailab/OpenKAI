@@ -81,7 +81,7 @@
 		"name":"threadR",
 		"FPS":30,
 	}
-	"_IOBase":"serial",
+	"_IObase":"serial",
 	"/myAddr":"000000000000FFFF",	/* Broadcast address*/
 }
 
@@ -153,7 +153,7 @@
 	}
 	"msgFinishSend":"",
 	"msgFinishRecv":"EOJ",
-	"_IOBase":"ws",
+	"_IObase":"ws",
 	"_SwarmSearch":"swarmSearch",
 	"_SwarmSearchCtrl":"swarmCtrl",
 	"ieSendHB":1000000,
@@ -288,7 +288,7 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"_IOBase":"udpSITL1",
+	"_IObase":"udpSITL1",
 }
 
 /* AP */
@@ -371,7 +371,7 @@
 		"name":"threadR",
 		"FPS":30,
 	}
-	"_IOBase":"serial1",
+	"_IObase":"serial1",
 }
 
 {
@@ -408,7 +408,7 @@
 	"_AP_base":"apBase1",
 	"_SwarmSearch":"swarmSearch1",
 	"_Xbee":"xbee1",
-	"_IOBase":"tcpG",
+	"_IObase":"tcpG",
 	"_Universe":"univTarget",
 
 	"bAutoArm":1,
@@ -527,7 +527,7 @@
 		"name":"threadR",
 		"FPS":30,
 	}
-	"_IOBase":"serial2",
+	"_IObase":"serial2",
 }
 
 {
@@ -557,8 +557,8 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"/_IOBase":"serialAP",
-	"_IOBase":"udpSITL2",
+	"/_IObase":"serialAP",
+	"_IObase":"udpSITL2",
 }
 
 {

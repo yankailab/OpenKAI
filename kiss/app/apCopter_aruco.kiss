@@ -97,7 +97,7 @@
 	"bLog":1,
 	"FPS":100,
 	"Window":"OKview",
-	"_IOBase":"apSerial",	
+	"_IObase":"apSerial",	
 }
 
 {

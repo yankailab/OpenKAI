@@ -44,7 +44,7 @@ namespace open3d
 				shared_ptr<O3DVisualizerSelections> m_sVertex;
 				UImode m_uiMode = uiMode_cam;
 				bool m_bCamAuto;
-				VzCamCtrl m_camCtrl;
+				VzCtrl m_camCtrl;
 				int m_pointSize;
 
 				// UI components

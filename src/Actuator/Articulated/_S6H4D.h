@@ -2,7 +2,7 @@
 #define OpenKAI_src_Actuator_Articulated__S6H4D_H_
 
 #include "../_ActuatorBase.h"
-#include "../../IO/_IOBase.h"
+#include "../../IO/_IObase.h"
 
 #define S6H4D_CMD_N 48
 #define S6H4D_MOV_BEGIN 0xee
@@ -178,7 +178,7 @@ protected:
 	}
 
 public:
-	_IOBase *m_pIO;
+	_IObase *m_pIO;
 	S6H4D_CMD_STATE m_state;
 
 	bool m_bOrder;

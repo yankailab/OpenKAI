@@ -3,7 +3,7 @@
 
 #include "../Dependency/c_library_v2/ardupilotmega/mavlink.h"
 #include "../Dependency/c_library_v2/mavlink_conversions.h"
-#include "../IO/_IOBase.h"
+#include "../IO/_IObase.h"
 #include "../IO/_WebSocket.h"
 
 #define MAV_N_PEER 16
@@ -577,7 +577,7 @@ namespace kai
 		vector<MavMsgBase *> m_vpMsg;
 
 	private:
-		_IOBase *m_pIO;
+		_IObase *m_pIO;
 		int m_mySystemID;
 		int m_myComponentID;
 		int m_myType;

@@ -2,7 +2,7 @@
 #define OpenKAI_src_Actuator__DDSM_H_
 
 #include "../_ActuatorBase.h"
-#include "../../IO/_IOBase.h"
+#include "../../IO/_IObase.h"
 #include "../../Utility/util.h"
 
 #define DDSM_CMD_NB 10
@@ -44,7 +44,7 @@ namespace kai
 
 	public:
 		_Thread *m_pTr;
-		_IOBase *m_pIO;
+		_IObase *m_pIO;
 		uint8_t m_iMode;
 	};
 

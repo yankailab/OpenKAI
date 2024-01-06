@@ -71,7 +71,7 @@ namespace kai
         _Xbee* m_pXb;
         _SwarmSearch* m_pSwarm;
 		_Universe *m_pU;
-		_IOBase *m_pGio;
+		_IObase *m_pGio;
 
 		bool m_bAutoArm;
 		float m_altTakeoff;

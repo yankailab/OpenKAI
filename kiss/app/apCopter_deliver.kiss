@@ -119,7 +119,7 @@
 	"bLog":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",
-	"_IOBase":"apSerial",
+	"_IObase":"apSerial",
 	"mySystemID":255,
 	"myComponentID":190,
 	"devSystemID":-1,
@@ -151,7 +151,7 @@
 	"FPS":30,
 	"bLog":1,
 	"_Console":"OK_Console",
-	"_IOBase":"apUDP",
+	"_IObase":"apUDP",
 	
 	{
 		"bON":1,
@@ -180,7 +180,7 @@
 	"bLog":0,
 	"Window":"OKview",
 	"_Console":"OK_Console",
-	"_IOBase":"remoteSerial",
+	"_IObase":"remoteSerial",
 	"mySystemID":255,
 	"myComponentID":190,
 	"devSystemID":-1,

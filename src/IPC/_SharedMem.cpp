@@ -70,7 +70,7 @@ namespace kai
 		return true;
 	}
 
-	bool _SharedMem::isOpen(void)
+	bool _SharedMem::bOpen(void)
 	{
 		return m_bOpen;
 	}

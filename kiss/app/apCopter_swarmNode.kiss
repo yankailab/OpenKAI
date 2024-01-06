@@ -128,7 +128,7 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"_IOBase":"serialAP",
+	"_IObase":"serialAP",
 	{
 		"name":"routing",
 		{
@@ -163,7 +163,7 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"_IOBase":"udp",
+	"_IObase":"udp",
 	{
 		"name":"routing",
 		{
@@ -253,7 +253,7 @@
 		"name":"threadR",
 		"FPS":30,
 	}
-	"_IOBase":"serialXB",
+	"_IObase":"serialXB",
 }
 
 {
@@ -290,7 +290,7 @@
 	"_AP_base":"apBase",
 	"_SwarmSearch":"swarmSearch",
 	"_Xbee":"xbee",
-	"_IOBase":"tcpG",
+	"_IObase":"tcpG",
 	"_Universe":"univTarget",
 
 	"bAutoArm":1,

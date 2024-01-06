@@ -1,12 +1,12 @@
 /*
- * _IOBase.h
+ * _IObase.h
  *
  *  Created on: June 16, 2016
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_IO_IOBase_H_
-#define OpenKAI_src_IO_IOBase_H_
+#ifndef OpenKAI_src_IO_IObase_H_
+#define OpenKAI_src_IO_IObase_H_
 
 #include "../Base/_ModuleBase.h"
 #include "../UI/_Console.h"
@@ -131,19 +131,20 @@ namespace kai
 		}
 	};
 
-	class _IOBase : public _ModuleBase
+	class _IObase : public _ModuleBase
 	{
 	public:
-		_IOBase();
-		virtual ~_IOBase();
+		_IObase();
+		virtual ~_IObase();
 
 		virtual bool init(void *pKiss);
 		virtual bool link(void);
-		virtual bool open(void);
-		virtual bool isOpen(void);
-		virtual void close(void);
 		virtual void console(void *pConsole);
+
 		virtual IO_TYPE ioType(void);
+		virtual bool open(void);
+		virtual bool bOpen(void);
+		virtual void close(void);
 
 		virtual int read(uint8_t *pBuf, int nB);
 		virtual bool write(uint8_t *pBuf, int nB);

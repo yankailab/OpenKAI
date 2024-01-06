@@ -63,7 +63,7 @@
 		"name":"threadR",
 		"FPS":30,
 	}
-	"_IOBase":"arduIO",
+	"_IObase":"arduIO",
 	"nCr":5,
 	"nCw":2,
 	"vPWM":[1500,1500],
@@ -78,7 +78,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"_IOBase":"arduIO",
+	"_IObase":"arduIO",
 	{
 		"name":"axis",
 		{

@@ -24,7 +24,7 @@ namespace kai
 
 	bool _SerialPort::init(void *pKiss)
 	{
-		IF_F(!this->_IOBase::init(pKiss));
+		IF_F(!this->_IObase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("port", &m_port);
@@ -50,7 +50,7 @@ namespace kai
 
     bool _SerialPort::link(void)
     {
-        IF_F(!this->_IOBase::link());
+        IF_F(!this->_IObase::link());
 
         return true;
     }
@@ -72,7 +72,7 @@ namespace kai
 		IF_(m_ioStatus != io_opened);
 
 		::close(m_fd);
-		this->_IOBase::close();
+		this->_IObase::close();
 	}
 
 	bool _SerialPort::start(void)
@@ -87,7 +87,7 @@ namespace kai
 	{
 		while (m_pT->bRun())
 		{
-			if (!isOpen())
+			if (!bOpen())
 			{
 				if (!open())
 				{
@@ -116,7 +116,7 @@ namespace kai
 	{
 		while (m_pTr->bRun())
 		{
-			if (!isOpen())
+			if (!bOpen())
 			{
 				::sleep(1);
 				continue;
@@ -284,7 +284,7 @@ namespace kai
 	void _SerialPort::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_IOBase::console(pConsole);
+		this->_IObase::console(pConsole);
 
 		NULL_(m_pTr);
 		m_pTr->console(pConsole);

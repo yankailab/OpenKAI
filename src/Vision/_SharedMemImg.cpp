@@ -62,7 +62,7 @@ namespace kai
     {
         while (m_pT->bRun())
         {
-            if (!m_pSHM->isOpen())
+            if (!m_pSHM->bOpen())
             {
                 LOG_E("Cannot open shared memory");
                 m_pT->sleepT(SEC_2_USEC);

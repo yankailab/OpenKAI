@@ -9,6 +9,8 @@
 #define OpenKAI_src_Vision_FrameGPU_H_
 
 #include "../Base/common.h"
+#include "../Base/cv.h"
+
 using namespace cv::cuda;
 
 namespace kai

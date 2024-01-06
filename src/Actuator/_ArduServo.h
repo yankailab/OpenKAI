@@ -2,7 +2,7 @@
 #define OpenKAI_src_Actuator__ArduServo_H_
 
 #include "_ActuatorBase.h"
-#include "../IO/_IOBase.h"
+#include "../IO/_IObase.h"
 
 #define ARDUSV_N_BUF 256
 #define ARDUSV_BEGIN 0xFE
@@ -60,7 +60,7 @@ namespace kai
 
 	public:
 		_Thread *m_pTr;
-		_IOBase *m_pIO;
+		_IObase *m_pIO;
 		uint8_t m_pB[ARDUSV_N_BUF];
 		ARDUSERVO_CMD m_recvMsg;
 		uint64_t m_nCMDrecv;

@@ -9,7 +9,7 @@
 #define OpenKAI_src_Sensor__BenewakeTF_H_
 
 #include "_DistSensorBase.h"
-#include "../../IO/_IOBase.h"
+#include "../../IO/_IObase.h"
 
 #define BENEWAKE_BEGIN 0x59
 
@@ -62,7 +62,7 @@ namespace kai
 		}
 
 	public:
-		_IOBase *m_pIO;
+		_IObase *m_pIO;
 		BENEWAKE_FRAME m_frame;
 	};
 

@@ -36,6 +36,6 @@
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
-	"_IOBase":"apSerial",
+	"_IObase":"apSerial",
 }
 

@@ -11,7 +11,6 @@ namespace kai
 	{
 		m_pMB = NULL;
 		m_iSlave = 1;
-		m_iData = 0;
 		m_dpr = 1;
 		m_pA = NULL;
 		m_dInit = 20;
@@ -30,7 +29,6 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("iSlave", &m_iSlave);
-		pK->v("iData", &m_iData);
 		pK->v("dpr", &m_dpr);
 		pK->v("dInit", &m_dInit);
 		pK->v("cmdInt", &m_cmdInt);
