@@ -146,7 +146,7 @@
 			"Window":"OKview",
 			"APcopter_base":"apBase",
 			"_ArUco":"arUco",
-			"_DepthVisionBase":"rs",
+			"_RGBDbase":"rs",
 			"_MissionControl":"apMission",
 			"orientationX":1,
 			"orientationY":1,

@@ -82,7 +82,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"_DepthVisionBase":"cam",
+	"_RGBDbase":"cam",
 }
 
 {
@@ -93,7 +93,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"_DepthVisionBase":"d2g",
+	"_RGBDbase":"d2g",
 }
 
 {

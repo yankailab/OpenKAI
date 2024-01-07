@@ -62,7 +62,7 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		Frame *pFrame = m_pV->BGR();
+		Frame *pFrame = m_pV->getFrameRGB();
 		IF_(pFrame->bEmpty());
 		Mat m = *pFrame->m();
 

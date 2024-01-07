@@ -83,8 +83,8 @@ namespace kai
 		m_pV = (_VisionBase *)(pK->getInst(n));
 
 		n = "";
-		pK->v("_DepthVisionBase", &n);
-		m_pDV = (_DepthVisionBase *)(pK->getInst(n));
+		pK->v("_RGBDbase", &n);
+		m_pDV = (_RGBDbase *)(pK->getInst(n));
 
 		n = "";
 		pK->v("_GPhoto", &n);
@@ -197,7 +197,7 @@ namespace kai
 		if (m_pV)
 		{
 			//rgb
-			Frame fBGR = *m_pV->BGR();
+			Frame fBGR = *m_pV->getFrameRGB();
 			if (m_bFlipRGB)
 				fBGR = fBGR.flip(-1);
 			Mat mBGR;

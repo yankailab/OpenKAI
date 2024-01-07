@@ -166,7 +166,7 @@ namespace kai
 		string alt = lf2str(m_vPos.z, 3);
 
 		// rgb
-		Frame fBGR = *m_pV->BGR();
+		Frame fBGR = *m_pV->getFrameRGB();
 		IF_F(fBGR.bEmpty());
 		if (m_bFlip)
 			fBGR = fBGR.flip(-1);

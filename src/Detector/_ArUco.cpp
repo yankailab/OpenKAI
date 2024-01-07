@@ -77,7 +77,7 @@ namespace kai
 
 	void _ArUco::detect(void)
 	{
-		Mat m = *m_pV->BGR()->m();
+		Mat m = *m_pV->getFrameRGB()->m();
 		IF_(m.empty());
 
 		vector<int> vID;

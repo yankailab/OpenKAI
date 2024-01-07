@@ -67,14 +67,14 @@ int _Bullseye::check(void)
 {
 	NULL__(m_pU,-1);
 	NULL__(m_pV,-1);
-	IF__(m_pV->BGR()->bEmpty(),-1);
+	IF__(m_pV->getFrameRGB()->bEmpty(),-1);
 
 	return this->_DetectorBase::check();
 }
 
 void _Bullseye::detect(void)
 {
-	GpuMat mBGR = *(m_pV->BGR()->gm());
+	GpuMat mBGR = *(m_pV->getFrameRGB()->gm());
 	GpuMat mHSV;
 	cuda::cvtColor(mBGR, mHSV, COLOR_BGR2HSV);
 

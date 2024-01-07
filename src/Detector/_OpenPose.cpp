@@ -73,19 +73,19 @@ namespace kai
 	int _OpenPose::check(void)
 	{
 		NULL__(m_pV, -1);
-		Frame *pBGR = m_pV->BGR();
+		Frame *pBGR = m_pV->getFrameRGB();
 		NULL__(pBGR, -1);
 		IF__(pBGR->bEmpty(), -1);
-		IF__(pBGR->tStamp() <= m_fBGR.tStamp(), -1);
+		IF__(pBGR->tStamp() <= m_fRGB.tStamp(), -1);
 
 		return this->_DetectorBase::check();
 	}
 
 	void _OpenPose::detect(void)
 	{
-		Frame *pBGR = m_pV->BGR();
-		m_fBGR.copy(*pBGR);
-		Mat mIn = *m_fBGR.m();
+		Frame *pBGR = m_pV->getFrameRGB();
+		m_fRGB.copy(*pBGR);
+		Mat mIn = *m_fRGB.m();
 
 		m_blob = blobFromImage(mIn, m_scale, Size(m_nW, m_nH),
 							   Scalar(m_vMean.x, m_vMean.y, m_vMean.z), m_bSwapRB, false);

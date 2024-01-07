@@ -84,7 +84,7 @@ namespace kai
 	{
 		NULL__(m_pU, -1);
 		NULL__(m_pV, -1);
-		IF__(m_pV->BGR()->bEmpty(), -1);
+		IF__(m_pV->getFrameRGB()->bEmpty(), -1);
 
 		return this->_DetectorBase::check();
 	}

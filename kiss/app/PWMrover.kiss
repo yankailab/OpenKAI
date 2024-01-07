@@ -200,7 +200,7 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"_DepthVisionBase":"rs",
+	"_RGBDbase":"rs",
 	"_Universe":"univ",
 	"_PWMio":"PWMio",
 	"iClass":1,

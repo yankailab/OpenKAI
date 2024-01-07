@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_RGBD_Vzense_H_
-#define OpenKAI_src_RGBD_Vzense_H_
+#ifndef OpenKAI_src_Vision_RGBD__Vzense_H_
+#define OpenKAI_src_Vision_RGBD__Vzense_H_
 
 #include "_RGBDbase.h"
 #include <VzenseNebula_api.h>

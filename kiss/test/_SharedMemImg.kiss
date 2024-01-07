@@ -75,5 +75,5 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"_DepthVisionBase":"Vzense",
+	"_RGBDbase":"Vzense",
 }

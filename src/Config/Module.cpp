@@ -296,15 +296,6 @@ namespace kai
 		ADD_MODULE(_Livox);
 		ADD_MODULE(LivoxLidar);
 #endif
-#ifdef USE_REALSENSE
-		ADD_MODULE(_RealSense);
-#endif
-#ifdef USE_VZENSE
-		ADD_MODULE(_Vzense);
-#endif
-#ifdef USE_XDYNAMICS
-		ADD_MODULE(_XDynamics);
-#endif
 #endif
 
 #ifdef WITH_SLAM
@@ -339,6 +330,15 @@ namespace kai
 #endif
 
 #ifdef WITH_VISION
+#ifdef USE_REALSENSE
+		ADD_MODULE(_RealSense);
+#endif
+#ifdef USE_VZENSE
+		ADD_MODULE(_Vzense);
+#endif
+#ifdef USE_XDYNAMICS
+		ADD_MODULE(_XDynamics);
+#endif
 #ifdef USE_OPENCV
 		ADD_MODULE(_Camera);
 		ADD_MODULE(_Contrast);

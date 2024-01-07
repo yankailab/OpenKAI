@@ -86,7 +86,7 @@ namespace kai
 
 			if (m_bOpen)
 			{
-				if (m_fIn.tStamp() < m_pV->BGR()->tStamp())
+				if (m_fIn.tStamp() < m_pV->getFrameRGB()->tStamp())
 				{
 					filter();
 				}
@@ -98,9 +98,9 @@ namespace kai
 
 	void _Morphology::filter(void)
 	{
-		IF_(m_pV->BGR()->bEmpty());
+		IF_(m_pV->getFrameRGB()->bEmpty());
 
-		m_fIn.copy(*m_pV->BGR());
+		m_fIn.copy(*m_pV->getFrameRGB());
 
 		Mat m1 = *m_fIn.m();
 		Mat m2;
@@ -121,7 +121,7 @@ namespace kai
 			SWAP(pM1, pM2, pT);
 		}
 
-		m_fBGR.copy(*pM1);
+		m_fRGB.copy(*pM1);
 	}
 
 }

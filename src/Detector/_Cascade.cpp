@@ -78,7 +78,7 @@ void _Cascade::update(void)
 
 void _Cascade::detectGPU(void)
 {
-	Frame *pGray = m_pV->BGR();
+	Frame *pGray = m_pV->getFrameRGB();
 	NULL_(pGray);
 	IF_(pGray->bEmpty());
 	GpuMat m;
@@ -119,7 +119,7 @@ void _Cascade::detectGPU(void)
 
 void _Cascade::detectCPU(void)
 {
-	Frame *pGray = m_pV->BGR();
+	Frame *pGray = m_pV->getFrameRGB();
 	NULL_(pGray);
 	IF_(pGray->bEmpty());
 	Mat m;

@@ -27,8 +27,8 @@ namespace kai
 		m_pAP = (_AP_base *)(pK->getInst(n));
 
 		n = "";
-		F_INFO(pK->v("_DepthVisionBase", &n));
-		m_pDV = (_DepthVisionBase *)(pK->getInst(n));
+		F_INFO(pK->v("_RGBDbase", &n));
+		m_pDV = (_RGBDbase *)(pK->getInst(n));
 		IF_Fl(!m_pDV, n + " not found");
 
 		m_nROI = 0;

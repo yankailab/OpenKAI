@@ -54,7 +54,7 @@ namespace kai
 	{
 //		NULL__(m_pW, -1);
 		NULL__(m_pV, -1);
-		IF__(m_pV->BGR()->bEmpty(), -1);
+		IF__(m_pV->getFrameRGB()->bEmpty(), -1);
 
 		return 0;
 	}
@@ -264,7 +264,7 @@ namespace kai
 //		m_pFt = pWin->getFont();
 
 		Mat mV;
-		m_pV->BGR()->m()->copyTo(mV);
+		m_pV->getFrameRGB()->m()->copyTo(mV);
 
 		Rect r;
 		r.x = 0;

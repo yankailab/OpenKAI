@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot_Rover__SbusRover_H_
 #define OpenKAI_src_Autopilot_Rover__SbusRover_H_
 
-#include "../../Vision/_DepthVisionBase.h"
+#include "../../Vision/_RGBDbase.h"
 #include "../../Universe/_Universe.h"
 #include "../../Protocol/_SBus.h"
 #include "../../Autopilot/Drive/_Drive.h"
@@ -48,7 +48,7 @@ namespace kai
 		float m_nSteer;
 		float m_nElev;
 
-		_DepthVisionBase *m_pDV;
+		_RGBDbase *m_pDV;
 		_Universe *m_pU;
 
 		int m_iClass;

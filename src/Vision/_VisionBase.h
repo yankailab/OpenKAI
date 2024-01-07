@@ -8,10 +8,13 @@
 #ifndef OpenKAI_src_Vision__VisionBase_H_
 #define OpenKAI_src_Vision__VisionBase_H_
 
-#include "../Base/_ModuleBase.h"
+#include "../IPC/_SharedMem.h"
 #include "../UI/_Console.h"
+
+#ifdef USE_OPENCV
 #include "../Utility/utilCV.h"
 #include "Frame.h"
+#endif
 
 namespace kai
 {
@@ -54,6 +57,9 @@ namespace kai
 		virtual ~_VisionBase();
 
 		virtual bool init(void *pKiss);
+		virtual bool link(void);
+		virtual int check(void);
+		virtual void console(void *pConsole);
 		virtual void draw(void *pFrame);
 
 		virtual bool open(void);
@@ -62,15 +68,25 @@ namespace kai
 
 		virtual vInt2 getSize(void);
 		virtual VISION_TYPE getType(void);
-		virtual Frame *BGR(void);
+
+#ifdef USE_OPENCV
+		virtual Frame *getFrameRGB(void);
+#endif
 
 	protected:
-		bool m_bOpen;
 		VISION_TYPE m_type;
-		vInt2 m_vSize;
+		string m_deviceURI;
+		bool m_bOpen;
+		uint64_t m_tFrameInterval;	// minimal interval between frame reading
 
-		Frame m_fBGR;
-		vFloat4 m_bbDraw;
+		bool m_bRGB;
+		vInt2 m_vSizeRGB;
+
+		_SharedMem *m_psmRGB;
+
+#ifdef USE_OPENCV
+		Frame m_fRGB;
+#endif
 	};
 
 }

@@ -79,11 +79,11 @@ namespace kai
 
 	void _InRange::filter(void)
 	{
-		IF_(m_pV->BGR()->bEmpty());
+		IF_(m_pV->getFrameRGB()->bEmpty());
 
 		Mat m;
-		cv::inRange(*m_pV->BGR()->m(), m_rFrom, m_rTo, m);
-		m_fBGR.copy(m);
+		cv::inRange(*m_pV->getFrameRGB()->m(), m_rFrom, m_rTo, m);
+		m_fRGB.copy(m);
 	}
 
 }

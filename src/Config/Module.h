@@ -286,17 +286,8 @@
 #include "../Sensor/Distance/_TOFsense.h"
 #include "../Sensor/Distance/_BenewakeTF.h"
 #ifdef USE_LIVOX
-#include "../LIDAR/Livox/_Livox.h"
-#include "../LIDAR/Livox/LivoxLidar.h"
-#endif
-#ifdef USE_REALSENSE
-#include "../Sensor/RGBD/_RealSense.h"
-#endif
-#ifdef USE_VZENSE
-#include "../Sensor/RGBD/_Vzense.h"
-#endif
-#ifdef USE_XDYNAMICS
-#include "../Sensor/RGBD/_XDynamics.h"
+#include "../Sensor/LiDAR/Livox/_Livox.h"
+#include "../Sensor/LiDAR/Livox/LivoxLidar.h"
 #endif
 #endif
 
@@ -332,6 +323,15 @@
 #endif
 
 #ifdef WITH_VISION
+#ifdef USE_REALSENSE
+#include "../Vision/RGBD/_RealSense.h"
+#endif
+#ifdef USE_VZENSE
+#include "../Vision/RGBD/_Vzense.h"
+#endif
+#ifdef USE_XDYNAMICS
+#include "../Vision/RGBD/_XDynamics.h"
+#endif
 #ifdef USE_OPENCV
 #include "../Vision/_Camera.h"
 #include "../Vision/_VideoFile.h"

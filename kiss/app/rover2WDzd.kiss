@@ -90,7 +90,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"_DepthVisionBase":"rs",
+	"_RGBDbase":"rs",
 }
 
 {
@@ -101,7 +101,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"_DepthVisionBase":"rs",
+	"_RGBDbase":"rs",
 }
 
 {
@@ -242,7 +242,7 @@
 	"iElev":8,
 	"nSpd":0.5,
 	"nSteer":0.5,
-	"_DepthVisionBase":"rs",
+	"_RGBDbase":"rs",
 	"_Universe":"univ",
 	"_SBus":"sbus",
 	"_Drive":"drive",

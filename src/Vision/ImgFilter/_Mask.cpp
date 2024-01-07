@@ -76,7 +76,7 @@ namespace kai
 
 			if (m_bOpen)
 			{
-				if (m_fIn.tStamp() < m_pV->BGR()->tStamp())
+				if (m_fIn.tStamp() < m_pV->getFrameRGB()->tStamp())
 				{
 					filter();
 				}
@@ -88,11 +88,11 @@ namespace kai
 
 	void _Mask::filter(void)
 	{
-		IF_(m_pV->BGR()->bEmpty());
-		IF_(m_pVmask->BGR()->bEmpty());
+		IF_(m_pV->getFrameRGB()->bEmpty());
+		IF_(m_pVmask->getFrameRGB()->bEmpty());
 
-		m_fIn.copy(*m_pV->BGR());
-		m_fMask.copy(*m_pVmask->BGR());
+		m_fIn.copy(*m_pV->getFrameRGB());
+		m_fMask.copy(*m_pVmask->getFrameRGB());
 
 		Mat mV = *m_fIn.m();
 		Mat mM = *m_fMask.m();
@@ -100,7 +100,7 @@ namespace kai
 		mBg.zeros(mV.rows, mV.cols, mV.type());
 
 		mV.copyTo(mBg, mM);
-		m_fBGR.copy(mBg);
+		m_fRGB.copy(mBg);
 	}
 
 }

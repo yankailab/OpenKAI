@@ -14,28 +14,21 @@ namespace kai
     {
         m_pTPP = NULL;
 
-		m_deviceURI = "";
-        m_bOpen = false;
-        m_vSizeRGB.set(1600, 1200);
 		m_vSizeD.set(1280, 720);
-		m_vRz.set(0.0, FLT_MAX);
-		m_tFrameInterval = 0;
+		m_vRangeD.set(0, FLT_MAX);
 
-        m_bRGB = true;
         m_bDepth = true;
         m_bIR = false;
         m_btRGB = false;
         m_btDepth = false;
         m_fConfidenceThreshold = 0.0;
 
-        m_psmRGB = NULL;
         m_psmDepth = NULL;
         m_psmTransformedRGB = NULL;
         m_psmTransformedDepth = NULL;
         m_psmIR = NULL;
 
 #ifdef USE_OPENCV
-		m_vRange.set(0.8,16.0);
 		m_dScale = 1.0;
 		m_dOfs = 0.0;
 		m_nHistLev = 128;
@@ -51,16 +44,12 @@ namespace kai
 
     bool _RGBDbase::init(void *pKiss)
     {
-        IF_F(!_ModuleBase::init(pKiss));
+        IF_F(!_VisionBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("URI", &m_deviceURI);
-        pK->v("vSizeRGB", &m_vSizeRGB);
         pK->v("vSizeD", &m_vSizeD);
-		pK->v("vRz", &m_vRz);
-		pK->v("tFrameInterval", &m_tFrameInterval);
+		pK->v("vRangeD", &m_vRangeD);
 
-        pK->v("bRGB", &m_bRGB);
         pK->v("bDepth", &m_bDepth);
         pK->v("bIR", &m_bIR);
         pK->v("btRGB", &m_btRGB);
@@ -68,7 +57,6 @@ namespace kai
         pK->v("fConfidenceThreshold", &m_fConfidenceThreshold);
 
 #ifdef USE_OPENCV
-		pK->v("vRange", &m_vRange);
 		pK->v("dScale", &m_dScale);
 		pK->v("dOfs", &m_dOfs);
 		pK->v("nHistLev", &m_nHistLev);
@@ -81,14 +69,10 @@ namespace kai
 
     bool _RGBDbase::link(void)
     {
-        IF_F(!this->_ModuleBase::link());
+        IF_F(!this->_VisionBase::link());
         Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
-
-        n = "";
-        pK->v("_SHMrgb", &n);
-        m_psmRGB = (_SharedMem *)(pK->getInst(n));
 
         n = "";
         pK->v("_SHMtransformedRGB", &n);
@@ -120,59 +104,27 @@ namespace kai
 
     int _RGBDbase::check(void)
     {
-        NULL__(m_pT, -1);
-
-        if (m_bRGB)
-        {
-            NULL__(m_psmRGB, -1);
-            IF__(!m_psmRGB->open(), -1);
-        }
-
-        if (m_bDepth)
-        {
-            NULL__(m_psmDepth, -1);
-            IF__(!m_psmDepth->open(), -1);
-        }
-
-        if (m_btRGB)
-        {
-            NULL__(m_psmTransformedRGB, -1);
-            IF__(!m_psmTransformedRGB->open(), -1);
-        }
-
-        if (m_btDepth)
-        {
-            NULL__(m_psmTransformedDepth, -1);
-            IF__(!m_psmTransformedDepth->open(), -1);
-        }
-
-        if (m_bIR)
-        {
-            NULL__(m_psmIR, -1);
-            IF__(!m_psmIR->open(), -1);
-        }
-
-        return _ModuleBase::check();
+        return _VisionBase::check();
     }
 
 	void _RGBDbase::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_ModuleBase::console(pConsole);
+		this->_VisionBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-//		pC->addMsg("nState: " + i2str(m_vStates.size()), 0);
+//		pC->addMsg("", 0);
 	}
 
 #ifdef USE_OPENCV
-	Frame *_RGBDbase::RGB(void)
-	{
-		return &m_fRGB;
-	}
-
-	Frame *_RGBDbase::Depth(void)
+	Frame *_RGBDbase::getFrameD(void)
 	{
 		return &m_fDepth;
+	}
+
+	vFloat2 _RGBDbase::getRangeD(void)
+	{
+		return m_vRangeD;
 	}
 
 	float _RGBDbase::d(const vFloat4& bb)
@@ -203,7 +155,7 @@ namespace kai
 		IF__(m_fDepth.bEmpty(), -1.0);
 
 		vector<int> vHistLev = {m_nHistLev};
-		vector<float> vRange = {m_vRange.x, m_vRange.y};
+		vector<float> vRange = {m_vRangeD.x, m_vRangeD.y};
 		vector<int> vChannel = {0};
 
 		Rect r = bb2Rect(bb);
@@ -225,27 +177,39 @@ namespace kai
 				break;
 		}
 
-		return (m_vRange.x + (((float)i) / (float)m_nHistLev) * m_vRange.len());
+		return (m_vRangeD.x + (((float)i) / (float)m_nHistLev) * m_vRangeD.len());
 	}
 
     void _RGBDbase::draw(void* pFrame)
 	{
 		NULL_(pFrame);
-		this->_ModuleBase::draw(pFrame);
+		this->_VisionBase::draw(pFrame);
 		IF_(check() < 0);
 		IF_(m_fRGB.bEmpty());
 
 		Frame *pF = (Frame*)pFrame;
-
 		pF->copy(m_fRGB);
 
-			// Mat *pM = pF->m();
-			// IF_(pM->empty());
-			// Rect r = bb2Rect(bbScale(m_bbDraw, pM->cols, pM->rows));
-			// Mat m;
-			// cv::resize(*m_fBGR.m(), m, Size(r.width, r.height));
+		// if (m_bDebug)
+		// {
+		// 	Mat *pM = pF->m();
+		// 	IF_(pM->empty());
 
-			// m.copyTo((*pM)(r));
+		// 	vFloat4 vRoi(0.4, 0.4, 0.6, 0.6);
+
+		// 	vFloat4 bb;
+		// 	bb.x = vRoi.x * pM->cols;
+		// 	bb.y = vRoi.y * pM->rows;
+		// 	bb.z = vRoi.z * pM->cols;
+		// 	bb.w = vRoi.w * pM->rows;
+		// 	Rect r = bb2Rect(bb);
+		// 	rectangle(*pM, r, Scalar(0, 255, 0), 1);
+
+		// 	putText(*pM, f2str(d(vRoi)),
+		// 			Point(r.x + 15, r.y + 25),
+		// 			FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0, 255, 0), 1);
+		// }
+
 	}
 #endif
 

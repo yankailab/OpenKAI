@@ -68,7 +68,7 @@ int _Line::check(void)
 {
 	NULL__(m_pU, -1);
 	NULL__(m_pV, -1);
-	IF__(m_pV->BGR()->bEmpty(), -1);
+	IF__(m_pV->getFrameRGB()->bEmpty(), -1);
 
 	return this->_DetectorBase::check();
 }
@@ -77,7 +77,7 @@ void _Line::detect(void)
 {
     IF_(check()<0);
     
-	m_pV->BGR()->m()->copyTo(m_mIn);
+	m_pV->getFrameRGB()->m()->copyTo(m_mIn);
 	float nP = m_mIn.rows * m_mIn.cols;
 
 	Mat mR;

@@ -68,7 +68,7 @@ namespace kai
 
 			if (m_bOpen)
 			{
-				if (m_fBGR.tStamp() < m_pV->BGR()->tStamp())
+				if (m_fRGB.tStamp() < m_pV->getFrameRGB()->tStamp())
 					filter();
 			}
 
@@ -78,11 +78,11 @@ namespace kai
 
 	void _Rotate::filter(void)
 	{
-		IF_(m_pV->BGR()->bEmpty());
+		IF_(m_pV->getFrameRGB()->bEmpty());
 
 		Mat m;
-		cv::rotate(*m_pV->BGR()->m(), m, m_code);
-		m_fBGR.copy(m);
+		cv::rotate(*m_pV->getFrameRGB()->m(), m, m_code);
+		m_fRGB.copy(m);
 	}
 
 }

@@ -90,7 +90,7 @@
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"_VisionBase":"cam",
-	"_DepthVisionBase":"cam",
+	"_RGBDbase":"cam",
 	"dict":17,
 	"bDrawPos":1,
 	"/bbScale":1.25,

@@ -33,7 +33,7 @@ namespace kai
 		_DetectorBase *m_pDB;
 
 		// data
-		Frame m_fBGR;
+		Frame m_fRGB;
 		_Universe *m_pU;
 
 		// model

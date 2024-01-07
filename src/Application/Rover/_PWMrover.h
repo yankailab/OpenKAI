@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot_Rover__PWMrover_H_
 #define OpenKAI_src_Autopilot_Rover__PWMrover_H_
 
-#include "../../Vision/_DepthVisionBase.h"
+#include "../../Vision/_RGBDbase.h"
 #include "../../Universe/_Universe.h"
 #include "../../Protocol/_PWMio.h"
 
@@ -30,7 +30,7 @@ namespace kai
 		}
 
 	public:
-		_DepthVisionBase *m_pDV;
+		_RGBDbase *m_pDV;
 		_Universe *m_pU;
 		_PWMio *m_pPWM;
 

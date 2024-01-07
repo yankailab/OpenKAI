@@ -60,14 +60,14 @@ namespace kai
 	{
 		NULL__(m_pU, -1);
 		NULL__(m_pV, -1);
-		IF__(m_pV->BGR()->bEmpty(), -1);
+		IF__(m_pV->getFrameRGB()->bEmpty(), -1);
 
 		return this->_DetectorBase::check();
 	}
 
 	void _Thermal::detect(void)
 	{
-		Mat mBGR = *(m_pV->BGR()->m());
+		Mat mBGR = *(m_pV->getFrameRGB()->m());
 		Mat mGray;
 		cv::cvtColor(mBGR, mGray, COLOR_BGR2GRAY);
 		cv::inRange(mGray, m_rL, m_rU, m_mR);

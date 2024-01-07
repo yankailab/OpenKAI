@@ -71,7 +71,7 @@ namespace kai
 	int _ORB_SLAM::check(void)
 	{
 		NULL__(m_pV, -1);
-		NULL__(m_pV->BGR(), -1);
+		NULL__(m_pV->getFrameRGB(), -1);
 		NULL__(m_pOS, -1);
 
 		return this->_ModuleBase::check();
@@ -107,7 +107,7 @@ namespace kai
 		static const double usecBase = 1.0 / ((double)SEC_2_USEC);
 
 		Mat mGray;
-		m_pV->BGR()->m()->copyTo(mGray);
+		m_pV->getFrameRGB()->m()->copyTo(mGray);
 		IF_(mGray.empty());
 
 		uint64_t tNow = getApproxTbootUs();

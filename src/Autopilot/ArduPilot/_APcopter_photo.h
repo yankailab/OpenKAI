@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot_AP__APcopter_photo_H_
 #define OpenKAI_src_Autopilot_AP__APcopter_photo_H_
 
-#include "../../Vision/_DepthVisionBase.h"
+#include "../../Vision/_RGBDbase.h"
 #include "../../Vision/_GPhoto.h"
 #include "../../Sensor/Distance/_DistSensorBase.h"
 #include "_AP_base.h"
@@ -40,7 +40,7 @@ namespace kai
 		float m_speed;
 
 		_VisionBase *m_pV;
-		_DepthVisionBase *m_pDV;
+		_RGBDbase *m_pDV;
 		_GPhoto *m_pG;
 
 		int m_iRCshutter;

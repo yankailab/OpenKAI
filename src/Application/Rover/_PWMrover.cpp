@@ -51,8 +51,8 @@ namespace kai
 		string n;
 
 		n = "";
-		pK->v("_DepthVisionBase", &n);
-		m_pDV = (_DepthVisionBase *)(pK->getInst(n));
+		pK->v("_RGBDbase", &n);
+		m_pDV = (_RGBDbase *)(pK->getInst(n));
 		IF_Fl(!m_pDV, n + ": not found");
 
 		n = "";

@@ -69,7 +69,7 @@ namespace kai
 
     void _Chilitags::detect(void)
     {
-        Mat m = *m_pV->BGR()->m();
+        Mat m = *m_pV->getFrameRGB()->m();
         IF_(m.empty());
 
         // The resulting map associates tag ids (between 0 and 1023)

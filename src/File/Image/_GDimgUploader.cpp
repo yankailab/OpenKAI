@@ -76,7 +76,7 @@ namespace kai
 	int _GDimgUploader::check(void)
 	{
 		NULL__(m_pV, -1);
-		IF__(m_pV->BGR()->bEmpty(), -1);
+		IF__(m_pV->getFrameRGB()->bEmpty(), -1);
 
 		return 0;
 	}
@@ -86,7 +86,7 @@ namespace kai
 		IF_(check() < 0);
 
 		Mat m;
-		m_pV->BGR()->m()->copyTo(m);
+		m_pV->getFrameRGB()->m()->copyTo(m);
 
 		//save img
 		string fImg = tFormat();

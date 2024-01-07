@@ -81,20 +81,20 @@ namespace kai
     {
         IF_T(check() < 0);
 
-        m_fBGR.copy(Mat(m_vSize.y,
-                        m_vSize.x,
+        m_fRGB.copy(Mat(m_vSizeRGB.y,
+                        m_vSizeRGB.x,
                         m_matType,
                         m_pSHM->p()));
 
         // imageMat = cv::Mat(m_vzfDepth.height, m_vzfDepth.width, CV_16UC1, m_vzfDepth.pFrameData);
         // imageMat.convertTo(imageMat, CV_8U, 255.0 / m_slope);
         // applyColorMap(imageMat, imageMat, cv::COLORMAP_RAINBOW);
-        //    m_fBGR.copy(imageMat);
+        //    m_fRGB.copy(imageMat);
 
         // imageMat = cv::Mat(m_vzfTransformedDepth.height, m_vzfTransformedDepth.width, CV_16UC1, m_vzfTransformedDepth.pFrameData);
 
         //                imageMat = cv::Mat(m_vzfIR.height, m_vzfIR.width, CV_8UC1, m_vzfIR.pFrameData);
-        //                m_fBGR.copy(Mat(m_vzfIR.height, m_vzfIR.width, CV_8UC1, m_vzfIR.pFrameData));
+        //                m_fRGB.copy(Mat(m_vzfIR.height, m_vzfIR.width, CV_8UC1, m_vzfIR.pFrameData));
 
         return true;
     }

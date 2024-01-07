@@ -62,7 +62,7 @@ namespace kai
 			while (!m_InfiRay.read(mCam))
 				;
 		}
-//		m_fBGR.copy(mCam);
+//		m_fRGB.copy(mCam);
 
 		m_vSize.x = mCam.cols;
 		m_vSize.y = mCam.rows;
@@ -113,9 +113,9 @@ namespace kai
 
 //			normalize(mThermal, mRGB);
 
-//			m_fBGR.copy(mThermal);
-			m_fBGR.copy(mRGB);
-//			m_fBGR.copy(mCam);
+//			m_fRGB.copy(mThermal);
+			m_fRGB.copy(mRGB);
+//			m_fRGB.copy(mCam);
 
 			if (m_bResetCam)
 			{

@@ -47,8 +47,8 @@ namespace kai
 			return false;
 		}
 
-		m_camera.set(CAP_PROP_FRAME_WIDTH, m_vSize.x);
-		m_camera.set(CAP_PROP_FRAME_HEIGHT, m_vSize.y);
+		m_camera.set(CAP_PROP_FRAME_WIDTH, m_vSizeRGB.x);
+		m_camera.set(CAP_PROP_FRAME_HEIGHT, m_vSizeRGB.y);
 		m_camera.set(CAP_PROP_FPS, m_pT->getTargetFPS());
 
 		Mat mCam;
@@ -57,10 +57,10 @@ namespace kai
 			while (!m_camera.read(mCam))
 				;
 		}
-		m_fBGR.copy(mCam);
+		m_fRGB.copy(mCam);
 
-		m_vSize.x = mCam.cols;
-		m_vSize.y = mCam.rows;
+		m_vSizeRGB.x = mCam.cols;
+		m_vSizeRGB.y = mCam.rows;
 
 		m_bOpen = true;
 		return true;
@@ -96,7 +96,7 @@ namespace kai
 			Mat mCam;
 			while (!m_camera.read(mCam))
 				;
-			m_fBGR.copy(mCam);
+			m_fRGB.copy(mCam);
 
 			if (m_bResetCam)
 			{

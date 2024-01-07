@@ -123,7 +123,7 @@ namespace kai
 
 	bool _Remap::scaleCamMat(void)
 	{
-		cv::Size s(m_vSize.x, m_vSize.y);
+		cv::Size s(m_vSizeRGB.x, m_vSizeRGB.y);
 		IF_F(!scaleCamMatrices(s,
 							  m_mC,
 							  m_mD,
@@ -206,21 +206,21 @@ namespace kai
 
 	void _Remap::filter(void)
 	{
-		Frame *pF = m_pV->BGR();
+		Frame *pF = m_pV->getFrameRGB();
 		IF_(pF->bEmpty());
-		IF_(m_fBGR.tStamp() >= pF->tStamp())
+		IF_(m_fRGB.tStamp() >= pF->tStamp())
 
-		if(!m_bReady || pF->size() != cv::Size(m_vSize.x, m_vSize.y))
+		if(!m_bReady || pF->size() != cv::Size(m_vSizeRGB.x, m_vSizeRGB.y))
 		{
 			cv::Size s = pF->size();
-			m_vSize.x = s.width;
-			m_vSize.y = s.height;
+			m_vSizeRGB.x = s.width;
+			m_vSizeRGB.y = s.height;
 			m_bReady = scaleCamMat();
 		}
 
 		if(m_bReady)
-			m_fBGR.copy(pF->remap(m_m1, m_m2));
+			m_fRGB.copy(pF->remap(m_m1, m_m2));
 		else
-			m_fBGR.copy(*pF);
+			m_fRGB.copy(*pF);
 	}
 }

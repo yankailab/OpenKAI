@@ -115,7 +115,7 @@
 			"Window":"OKview",
 			"_MissionControl":"apMission",
 			"APcopter_base":"apBase",
-			"_DepthVisionBase":"rs",
+			"_RGBDbase":"rs",
 
 			{
 				"orientation":0,

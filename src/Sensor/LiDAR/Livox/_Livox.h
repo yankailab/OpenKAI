@@ -5,10 +5,10 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_LIDAR__Livox_H_
-#define OpenKAI_src_LIDAR__Livox_H_
+#ifndef OpenKAI_src_Sensor_LiDAR__Livox_H_
+#define OpenKAI_src_Sensor_LiDAR__Livox_H_
 
-#include "../../3D/PointCloud/_PCstream.h"
+#include "../../../3D/PointCloud/_PCstream.h"
 #include "LivoxLidar.h"
 
 namespace kai

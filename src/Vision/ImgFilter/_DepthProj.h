@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Vision__DepthProj_H_
 #define OpenKAI_src_Vision__DepthProj_H_
 
-#include "../_DepthVisionBase.h"
+#include "../RGBD/_RGBDbase.h"
 
 namespace kai
 {
@@ -36,7 +36,7 @@ namespace kai
 		}
 
 	public:
-		_DepthVisionBase *m_pV;
+		_RGBDbase *m_pV;
 		Mat m_mF;
 
 		float m_fFov;

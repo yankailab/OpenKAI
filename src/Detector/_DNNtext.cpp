@@ -102,21 +102,21 @@ namespace kai
 	{
 		NULL__(m_pU, -1);
 		NULL__(m_pV, -1);
-		Frame *pBGR = m_pV->BGR();
+		Frame *pBGR = m_pV->getFrameRGB();
 		NULL__(pBGR, -1);
 		IF__(pBGR->bEmpty(), -1);
-		IF__(pBGR->tStamp() <= m_fBGR.tStamp(), -1);
+		IF__(pBGR->tStamp() <= m_fRGB.tStamp(), -1);
 
 		return this->_DetectorBase::check();
 	}
 
 	void _DNNtext::detect(void)
 	{
-		m_fBGR.copy(*m_pV->BGR());
-		if (m_fBGR.m()->channels() < 3)
-			m_fBGR.copy(m_fBGR.cvtColor(8));
+		m_fRGB.copy(*m_pV->getFrameRGB());
+		if (m_fRGB.m()->channels() < 3)
+			m_fRGB.copy(m_fRGB.cvtColor(8));
 
-		Mat mIn = *m_fBGR.m();
+		Mat mIn = *m_fRGB.m();
 		m_blob = blobFromImage(mIn, m_scale, Size(m_vBlobSize.x, m_vBlobSize.y),
 							   Scalar(m_vMean.x, m_vMean.y, m_vMean.z), m_bSwapRB, false);
 		m_net.setInput(m_blob);
@@ -224,7 +224,7 @@ namespace kai
 #ifdef USE_OCR
 		NULL_(m_pOCR);
 
-		Mat mIn = *m_pV->BGR()->m();
+		Mat mIn = *m_pV->getFrameRGB()->m();
 
 		if (!m_bWarp)
 		{

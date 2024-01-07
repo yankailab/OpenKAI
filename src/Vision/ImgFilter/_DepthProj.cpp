@@ -33,8 +33,8 @@ namespace kai
 
 		string n;
 		n = "";
-		pK->v("_DepthVisionBase", &n);
-		m_pV = (_DepthVisionBase *)(pK->getInst(n));
+		pK->v("_RGBDbase", &n);
+		m_pV = (_RGBDbase *)(pK->getInst(n));
 		IF_Fl(!m_pV, n + ": not found");
 
 		return true;
@@ -79,9 +79,9 @@ namespace kai
 
 	void _DepthProj::filter(void)
 	{
-		IF_(m_pV->Depth()->bEmpty());
+		IF_(m_pV->getFrameD()->bEmpty());
 
-		Mat mD = *m_pV->Depth()->m();
+		Mat mD = *m_pV->getFrameD()->m();
 
 		if ((m_mF.cols != mD.cols) || (m_mF.rows != mD.rows))
 		{
@@ -90,7 +90,7 @@ namespace kai
 		}
 
 		mD = mD.mul(m_mF);
-		m_fBGR.copy(mD);
+		m_fRGB.copy(mD);
 	}
 
 	void _DepthProj::createFilterMat(void)

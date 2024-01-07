@@ -5,11 +5,10 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_RGBD_RGBDbase_H_
-#define OpenKAI_src_RGBD_RGBDbase_H_
+#ifndef OpenKAI_src_Vision_RGBD__RGBDbase_H_
+#define OpenKAI_src_Vision_RGBD__RGBDbase_H_
 
-// #include "../3D/PointCloud/_PCframe.h"
-//#include "../../Utility/util.h"
+#include "../_VisionBase.h"
 #include "../../IPC/_SharedMem.h"
 #include "../../UI/_Console.h"
 
@@ -20,7 +19,7 @@
 
 namespace kai
 {
-	class _RGBDbase : public _ModuleBase
+	class _RGBDbase : public _VisionBase
 	{
 	public:
 		_RGBDbase();
@@ -36,8 +35,8 @@ namespace kai
 		virtual void close(void);
 
 #ifdef USE_OPENCV
-		virtual Frame *RGB(void);
-		virtual Frame *Depth(void);
+		virtual Frame *getFrameD(void);
+		virtual vFloat2 getRangeD(void);
 		virtual float d(const vInt4 &bb);
 		virtual float d(const vFloat4 &bb);
 #endif
@@ -46,14 +45,9 @@ namespace kai
 		// post processing thread
 		_Thread *m_pTPP;
 
-		string m_deviceURI;
-		bool m_bOpen;
-		vInt2 m_vSizeRGB;
 		vInt2 m_vSizeD;
-		vFloat2 m_vRz; //z region crop
-		uint16_t m_tFrameInterval;	// minimal interval between frame reading
+		vFloat2 m_vRangeD;
 
-		bool m_bRGB;
 		bool m_bDepth;
 		bool m_bIR;
 		bool m_btRGB;
@@ -61,16 +55,13 @@ namespace kai
 		float m_fConfidenceThreshold;
 
 		// frames
-		_SharedMem *m_psmRGB;
 		_SharedMem *m_psmDepth;
 		_SharedMem *m_psmTransformedDepth;
 		_SharedMem *m_psmTransformedRGB;
 		_SharedMem *m_psmIR;
 		
 #ifdef USE_OPENCV
-		Frame m_fRGB;
 		Frame m_fDepth;
-		vFloat2 m_vRange;
 		float m_dScale;
 		float m_dOfs;
 		int m_nHistLev;

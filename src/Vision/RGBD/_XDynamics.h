@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_RGBD_XDynamics_H_
-#define OpenKAI_src_RGBD_XDynamics_H_
+#ifndef OpenKAI_src_Vision_RGBD__XDynamics_H_
+#define OpenKAI_src_Vision_RGBD__XDynamics_H_
 
 #include "_RGBDbase.h"
 #include <xdyn_strm/xdyn_streamer.h>

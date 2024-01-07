@@ -74,11 +74,11 @@ namespace kai
 
 	void _Invert::filter(void)
 	{
-		IF_(m_pV->BGR()->bEmpty());
+		IF_(m_pV->getFrameRGB()->bEmpty());
 
 		Mat m;
-		cv::bitwise_not(*m_pV->BGR()->m(), m);
-		m_fBGR.copy(m);
+		cv::bitwise_not(*m_pV->getFrameRGB()->m(), m);
+		m_fRGB.copy(m);
 	}
 
 }

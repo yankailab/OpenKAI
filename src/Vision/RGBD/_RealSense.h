@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_RGBD_RealSense_H_
-#define OpenKAI_src_RGBD_RealSense_H_
+#ifndef OpenKAI_src_Vision_RGBD__RealSense_H_
+#define OpenKAI_src_Vision_RGBD__RealSense_H_
 
 #include "_RGBDbase.h"
 #include <librealsense2/rs.hpp>

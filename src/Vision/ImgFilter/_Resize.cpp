@@ -65,7 +65,7 @@ namespace kai
 
 			if (m_bOpen)
 			{
-				if (m_fBGR.tStamp() < m_pV->BGR()->tStamp())
+				if (m_fRGB.tStamp() < m_pV->getFrameRGB()->tStamp())
 					filter();
 			}
 
@@ -75,9 +75,9 @@ namespace kai
 
 	void _Resize::filter(void)
 	{
-		IF_(m_pV->BGR()->bEmpty());
+		IF_(m_pV->getFrameRGB()->bEmpty());
 
-		m_fBGR.copy(m_pV->BGR()->resize(m_vSize.x, m_vSize.y));
+		m_fRGB.copy(m_pV->getFrameRGB()->resize(m_vSizeRGB.x, m_vSizeRGB.y));
 	}
 
 }

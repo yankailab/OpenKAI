@@ -12,10 +12,15 @@ namespace kai
 
 	_VisionBase::_VisionBase()
 	{
-		m_bOpen = false;
 		m_type = vision_unknown;
-		m_vSize.set(1280, 720);
-		m_bbDraw.x = -1.0;
+		m_bOpen = false;
+
+		m_deviceURI = "";
+		m_vSizeRGB.set(1280, 720);
+		m_tFrameInterval = 0;
+
+		m_bRGB = true;
+		m_psmRGB = NULL;
 	}
 
 	_VisionBase::~_VisionBase()
@@ -27,32 +32,32 @@ namespace kai
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("vSize", &m_vSize);
-		pK->v("bbDraw", &m_bbDraw);
+		pK->v("URI", &m_deviceURI);
+		pK->v("vSizeRGB", &m_vSizeRGB);
+		pK->v("tFrameInterval", &m_tFrameInterval);
 
-		m_bOpen = false;
+		pK->v("bRGB", &m_bRGB);
 
 		return true;
 	}
 
-	Frame *_VisionBase::BGR(void)
+	bool _VisionBase::link(void)
 	{
-		return &m_fBGR;
-	}
+		IF_F(!this->_ModuleBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
 
-	vInt2 _VisionBase::getSize(void)
-	{
-		return m_vSize;
-	}
+		string n;
 
-	VISION_TYPE _VisionBase::getType(void)
-	{
-		return m_type;
+		n = "";
+		pK->v("_SHMrgb", &n);
+		m_psmRGB = (_SharedMem *)(pK->getInst(n));
+
+		return true;
 	}
 
 	bool _VisionBase::open(void)
 	{
-		return true;
+		return false;
 	}
 
 	bool _VisionBase::isOpened(void)
@@ -71,29 +76,54 @@ namespace kai
 		m_bOpen = false;
 	}
 
-	void _VisionBase::draw(void* pFrame)
+	int _VisionBase::check(void)
+	{
+		return _ModuleBase::check();
+	}
+
+	Frame *_VisionBase::getFrameRGB(void)
+	{
+		return &m_fRGB;
+	}
+
+	vInt2 _VisionBase::getSize(void)
+	{
+		return m_vSizeRGB;
+	}
+
+	VISION_TYPE _VisionBase::getType(void)
+	{
+		return m_type;
+	}
+
+	void _VisionBase::console(void *pConsole)
+	{
+		NULL_(pConsole);
+		this->_ModuleBase::console(pConsole);
+
+		_Console *pC = (_Console *)pConsole;
+		//		pC->addMsg("""), 0);
+	}
+
+#ifdef USE_OPENCV
+	void _VisionBase::draw(void *pFrame)
 	{
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
 		IF_(check() < 0);
-		IF_(m_fBGR.bEmpty());
+		IF_(m_fRGB.bEmpty());
 
-		Frame *pF = (Frame*)pFrame;
+		Frame *pF = (Frame *)pFrame;
 
-		if (m_bbDraw.x < 0.0)
-		{
-			pF->copy(m_fBGR);
-		}
-		else
-		{
-			Mat *pM = pF->m();
-			IF_(pM->empty());
-			Rect r = bb2Rect(bbScale(m_bbDraw, pM->cols, pM->rows));
-			Mat m;
-			cv::resize(*m_fBGR.m(), m, Size(r.width, r.height));
+		pF->copy(m_fRGB);
 
-			m.copyTo((*pM)(r));
-		}
+		// Mat *pM = pF->m();
+		// IF_(pM->empty());
+		// Rect r = bb2Rect(bbScale(m_bbDraw, pM->cols, pM->rows));
+		// Mat m;
+		// cv::resize(*m_fRGB.m(), m, Size(r.width, r.height));
+		// m.copyTo((*pM)(r));
 	}
+#endif
 
 }

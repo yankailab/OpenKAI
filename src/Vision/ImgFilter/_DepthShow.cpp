@@ -28,9 +28,9 @@ namespace kai
 
 		string n;
 		n = "";
-		pK->v("_DepthVisionBase", &n);
-		m_pV = (_DepthVisionBase *)(pK->getInst(n));
-		IF_Fl(!m_pV, "_DepthVisionBase not found: " + n);
+		pK->v("_RGBDbase", &n);
+		m_pV = (_RGBDbase *)(pK->getInst(n));
+		IF_Fl(!m_pV, "_RGBDbase not found: " + n);
 
 		return true;
 	}
@@ -74,10 +74,10 @@ namespace kai
 
 	void _DepthShow::filter(void)
 	{
-		IF_(m_pV->DepthShow()->bEmpty());
+//		IF_(m_pV->DepthShow()->bEmpty());
 
-		Mat mD = *m_pV->DepthShow()->m();
-		m_fBGR.copy(mD);
+//		Mat mD = *m_pV->DepthShow()->m();
+//		m_fRGB.copy(mD);
 	}
 
 }

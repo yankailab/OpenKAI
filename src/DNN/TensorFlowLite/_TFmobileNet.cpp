@@ -37,7 +37,7 @@ namespace kai
 	{
 		NULL__(m_pU, -1);
 		NULL__(m_pV, -1);
-		Frame *pBGR = m_pV->BGR();
+		Frame *pBGR = m_pV->getFrameRGB();
 		NULL__(pBGR, -1);
 		IF__(pBGR->bEmpty(), -1);
 
@@ -77,9 +77,9 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		m_fBGR.copy(*m_pV->BGR());
+		m_fRGB.copy(*m_pV->getFrameRGB());
 		Mat m;
-		cv::resize(*m_fBGR.m(), m, Size(m_vSize.x, m_vSize.y));
+		cv::resize(*m_fRGB.m(), m, Size(m_vSize.x, m_vSize.y));
 		if (m.channels() < 3)
 			cv::cvtColor(m, m, COLOR_GRAY2RGB);
 		memcpy(m_interpreter->typed_input_tensor<uchar>(0), m.data, m.total() * m.elemSize());

@@ -152,7 +152,7 @@ namespace kai
 	int _Lane::check(void)
 	{
 		NULL__(m_pV, -1);
-		IF__(m_pV->BGR()->m()->empty(), -1);
+		IF__(m_pV->getFrameRGB()->m()->empty(), -1);
 
 		return this->_ModuleBase::check();
 	}
@@ -160,7 +160,7 @@ namespace kai
 	void _Lane::detect(void)
 	{
 		IF_(check() < 0);
-		Mat *pM = m_pV->BGR()->m();
+		Mat *pM = m_pV->getFrameRGB()->m();
 
 		//Warp transform to get overhead view
 		if (m_vSize.x != pM->cols || m_vSize.y != pM->rows)

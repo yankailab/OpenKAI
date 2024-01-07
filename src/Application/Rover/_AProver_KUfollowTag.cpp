@@ -181,7 +181,7 @@ void _AProver_KUfollowTag::console ( void* pConsole )
 	if(m_pV)
 	{
 		//rgb
-		Frame fBGR = *m_pV->BGR();
+		Frame fBGR = *m_pV->getFrameRGB();
 		if(m_bFlipRGB)fBGR = fBGR.flip(-1);
 		Mat mBGR;
 		fBGR.m()->copyTo(mBGR);

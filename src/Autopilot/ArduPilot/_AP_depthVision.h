@@ -2,7 +2,7 @@
 #ifndef OpenKAI_src_Autopilot__AP_depthVision_H_
 #define OpenKAI_src_Autopilot__AP_depthVision_H_
 
-#include "../../Vision/_DepthVisionBase.h"
+#include "../../Vision/_RGBDbase.h"
 #include "_AP_base.h"
 
 #define N_DEPTH_ROI 16
@@ -36,7 +36,7 @@ namespace kai
 
 	private:
 		_AP_base *m_pAP;
-		_DepthVisionBase *m_pDV;
+		_RGBDbase *m_pDV;
 
 		int m_nROI;
 		DEPTH_ROI m_pROI[N_DEPTH_ROI];
