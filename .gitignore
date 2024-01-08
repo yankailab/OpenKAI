@@ -10,4 +10,5 @@
 /.kdev4/
 null.d
 !.gitignore
+*.log
 
