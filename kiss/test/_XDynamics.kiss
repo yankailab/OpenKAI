@@ -14,13 +14,13 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["XDynamics"],
+	"vBASE":["XD"],
 }
 
 {
 	"name":"SHMvzRGB",
 	"class":"_SharedMem",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -31,24 +31,22 @@
 }
 
 {
-	"name":"XDynamics",
+	"name":"XD",
 	"class":"_XDynamics",
     {
 		"name":"thread",
-		"FPS":25,
-	}
-    {
-		"name":"threadPP",
-		"FPS":25,
+		"FPS":5,
 	}
 	"bON":1,
 	"bLog":1,
-	"URI":"",
-	"vSize":[1600,1200],
+	"/xdType":0,
+	"URI":"192.168.31.3",
+	"vSizeRGB":[320,240],
+	"vSizeD":[320,240],
 	"bRGB":1,
 	"bDepth":0,
 	"btRGB":0,
 	"btDepth":0,
 	"bIR":0,
-	"_SHMrgb":"SHMvzRGB",
+	"/_SHMrgb":"SHMvzRGB",
 }

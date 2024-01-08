@@ -12,15 +12,13 @@ namespace kai
 
     _XDynamics::_XDynamics()
     {
+        m_vSizeRGB.set(320, 240);
+        m_vSizeD.set(320, 240);
+
         m_deviceURI = "192.168.31.3";
         m_xdType = XDYN_PRODUCT_TYPE_XD_400;
         m_pXDstream = NULL;
-        m_bXDrgbdInit = false;
-        m_pXDrgbd = NULL;
-        memset(&m_XDrgbdRPRes, 0, sizeof(CALIPARAS_RP));
-        memset(&m_XDrgbddynParas, 0, sizeof(RP_DYNPARA));
-        memset(&m_XDrgbdInData, 0, sizeof(RP_INPARAS));
-        memset(&m_XDrgbdOutData, 0, sizeof(RP_OUTPARAS));
+        m_xdRGBD.clear();
     }
 
     _XDynamics::~_XDynamics()
@@ -32,7 +30,7 @@ namespace kai
         IF_F(!_RGBDbase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("xdType", &m_xdType);
+        pK->v("xdType", &m_xdType);
 
         return true;
     }
@@ -59,21 +57,7 @@ namespace kai
         // init context
         XdynContextInit();
 
-        // std::vector<XdynProductDesc_t> prtList;
-        // ScanProductFromNet(prtList, "192.168.100.2");
-        // if(prtList.empty()){
-        //     printf("not found product connect, return\n");
-        //     return -1;
-        // }
-
-        // printf("scan product list :\n");
-        // for(auto i = 0; i < prtList.size(); i ++){
-        //     printf("    type = %d, werlfID = 0x%08x, inter1 = %d, inter2 = %d\n",
-        //                prtList[i].type, prtList[i].warelfID, prtList[i].inter1, prtList[i].inter2);
-        // }
-
         XDYN_Streamer *pStream = CreateStreamerNet((XDYN_PRODUCT_TYPE_e)m_xdType, CbEvent, this, m_deviceURI);
-        // XDYN_Streamer *stream = CreateStreamer((XDYN_PRODUCT_TYPE_e)prtList[0].type, prtList[0].inter1, EventCB, &userHdl, prtList[0].prtIP);
         NULL_Fl(pStream, "CreateStreamerNet failed");
 
         res = pStream->OpenCamera(XDYN_DEV_TYPE_TOF_RGB);
@@ -110,13 +94,15 @@ namespace kai
         // init rgbd interface
         XdynRegParams_t regParams;
         pStream->GetCaliRegParams(regParams);
+
+        pStream->GetCamInfo(&m_xdCamInfo);
+
         bool r = initRGBD(&regParams, 320, 240, 320, 240);
         IF_Fl(!r, "initRGBD failed");
 
         res = pStream->StartStreaming();
         IF_Fl(res != XD_SUCCESS, "start streaming failed: " + i2str(res));
 
-        //        m_tWait = 2 * 1000 / this->m_pT->getTargetFPS();
         m_pXDstream = pStream;
         m_bOpen = true;
         return true;
@@ -124,9 +110,12 @@ namespace kai
 
     void _XDynamics::close(void)
     {
-        m_pXDstream->StopStreaming();
-        m_pXDstream->CloseCamera();
-        DestroyStreamer(m_pXDstream);
+        if (m_pXDstream)
+        {
+            m_pXDstream->StopStreaming();
+            m_pXDstream->CloseCamera();
+            DestroyStreamer(m_pXDstream);
+        }
         XdynContextUninit();
     }
 
@@ -178,53 +167,6 @@ namespace kai
     {
         IF_T(check() < 0);
 
-        // if (m_bRGB && frameReady.color == 1)
-        // {
-        //     status = VZ_GetFrame(m_deviceHandle, VzColorFrame, &m_vzfRGB);
-        //     if (m_vzfRGB.pFrameData)
-        //     {
-        //         memcpy(m_psmRGB->p(), m_vzfRGB.pFrameData, m_vzfRGB.dataLen);
-
-        //         // for (int i = 0; i < 100; i++)
-        //         //     printf("%i ", m_vzfRGB.pFrameData[i]);
-        //         // printf("\n");
-        //     }
-        // }
-
-        // if (m_btRGB && frameReady.transformedColor == 1)
-        // {
-        //     status = VZ_GetFrame(m_deviceHandle, VzTransformColorImgToDepthSensorFrame, &m_vzfTransformedRGB);
-        //     if (m_vzfTransformedRGB.pFrameData)
-        //     {
-        //         memcpy(m_psmTransformedRGB->p(),
-        //                m_vzfTransformedRGB.pFrameData,
-        //                m_vzfTransformedRGB.dataLen);
-        //     }
-        // }
-
-        // if (m_bDepth && frameReady.depth == 1)
-        // {
-        //     status = VZ_GetFrame(m_deviceHandle, VzDepthFrame, &m_vzfDepth);
-        //     if (m_vzfDepth.pFrameData)
-        //         memcpy(m_psmDepth->p(), m_vzfDepth.pFrameData, m_vzfDepth.dataLen);
-        // }
-
-        // if (m_btDepth && frameReady.transformedDepth == 1)
-        // {
-        //     status = VZ_GetFrame(m_deviceHandle, VzTransformDepthImgToColorSensorFrame, &m_vzfTransformedDepth);
-        //     if (m_vzfTransformedDepth.pFrameData)
-        //         memcpy(m_psmTransformedDepth->p(),
-        //                m_vzfTransformedDepth.pFrameData,
-        //                m_vzfTransformedDepth.dataLen);
-        // }
-
-        // if (m_bIR && frameReady.ir == 1)
-        // {
-        //     status = VZ_GetFrame(m_deviceHandle, VzIRFrame, &m_vzfIR);
-        //     if (m_vzfIR.pFrameData)
-        //         memcpy(m_psmIR->p(), m_vzfIR.pFrameData, m_vzfIR.dataLen);
-        // }
-
         return true;
     }
 
@@ -232,74 +174,76 @@ namespace kai
     {
         uint32_t puiInitSuccFlag = RP_INIT_SUCCESS;
 
-        if (m_bXDrgbdInit && m_pXDrgbd)
+        if (m_xdRGBD.m_bInit && m_xdRGBD.m_pD)
         {
-            sitrpRelease(&m_pXDrgbd, FALSE);
-            m_pXDrgbd = nullptr;
-            m_bXDrgbdInit = false;
+            sitrpRelease(&m_xdRGBD.m_pD, FALSE);
+            m_xdRGBD.m_pD = nullptr;
+            m_xdRGBD.m_bInit = false;
         }
 
         char cDllVerion[RP_ARITH_VERSION_LEN_MAX] = {0}; // algorithm version string
         sitrpGetVersion(cDllVerion);
         LOG_I("Get rgbd hdl version: " + string(cDllVerion));
 
-        sitrpSetTofIntrinsicMat(m_XDrgbdRPRes.fTofIntrinsicMatrix, regParams->fTofIntrinsicMatrix, RP_INTRINSIC_MATRIX_LEN, &puiInitSuccFlag, TRUE);
-        sitrpSetRgbIntrinsicMat(m_XDrgbdRPRes.fRgbIntrinsicMatrix, regParams->fRgbIntrinsicMatrix, RP_INTRINSIC_MATRIX_LEN, &puiInitSuccFlag, TRUE);
-        sitrpSetTranslationMat(m_XDrgbdRPRes.fTranslationMatrix, regParams->fTranslationMatrix, RP_TRANSLATION_MATRIX_LEN, &puiInitSuccFlag, TRUE);
-        sitrpSetRotationMat(m_XDrgbdRPRes.fRotationMatrix, regParams->fRotationMatrix, RP_ROTATION_MATRIX_LEN, &puiInitSuccFlag, TRUE);
-        sitrpSetRgbPos(&(m_XDrgbdRPRes.bIsRgbCameraLeft), regParams->bIsRgbCameraLeft, &puiInitSuccFlag, TRUE);
+        sitrpSetTofIntrinsicMat(m_xdRGBD.m_RP.fTofIntrinsicMatrix, regParams->fTofIntrinsicMatrix, RP_INTRINSIC_MATRIX_LEN, &puiInitSuccFlag, TRUE);
+        sitrpSetRgbIntrinsicMat(m_xdRGBD.m_RP.fRgbIntrinsicMatrix, regParams->fRgbIntrinsicMatrix, RP_INTRINSIC_MATRIX_LEN, &puiInitSuccFlag, TRUE);
+        sitrpSetTranslationMat(m_xdRGBD.m_RP.fTranslationMatrix, regParams->fTranslationMatrix, RP_TRANSLATION_MATRIX_LEN, &puiInitSuccFlag, TRUE);
+        sitrpSetRotationMat(m_xdRGBD.m_RP.fRotationMatrix, regParams->fRotationMatrix, RP_ROTATION_MATRIX_LEN, &puiInitSuccFlag, TRUE);
+        sitrpSetRgbPos(&(m_xdRGBD.m_RP.bIsRgbCameraLeft), regParams->bIsRgbCameraLeft, &puiInitSuccFlag, TRUE);
 
-        m_XDrgbddynParas.usInDepthWidth = tofW;
-        m_XDrgbddynParas.usInDepthHeight = tofH;
-        m_XDrgbddynParas.usInYuvWidth = rgbW;
-        m_XDrgbddynParas.usInYuvHeight = rgbH;
+        m_xdRGBD.m_dyn.usInDepthWidth = tofW;
+        m_xdRGBD.m_dyn.usInDepthHeight = tofH;
+        m_xdRGBD.m_dyn.usInYuvWidth = rgbW;
+        m_xdRGBD.m_dyn.usInYuvHeight = rgbH;
 
-        m_XDrgbddynParas.usOutR2DWidth = tofW;
-        m_XDrgbddynParas.usOutR2DHeight = tofH;
+        m_xdRGBD.m_dyn.usOutR2DWidth = tofW;
+        m_xdRGBD.m_dyn.usOutR2DHeight = tofH;
+        m_xdRGBD.m_dyn.usOutD2RWidth = tofW;
+        m_xdRGBD.m_dyn.usOutD2RHeight = tofH;
 
-        m_XDrgbddynParas.usOutD2RWidth = tofW;
-        m_XDrgbddynParas.usOutD2RHeight = tofH;
+        m_xdRGBD.m_dyn.uiOutRGBDLen = 0;
+        m_xdRGBD.m_dyn.ucEnableOutR2D = 0;
+        m_xdRGBD.m_dyn.ucEnableOutD2R = 0;
+        m_xdRGBD.m_dyn.ucEnableRGBDPCL = 1;
+        m_xdRGBD.m_dyn.ucThConfidence = 25;
 
-        m_XDrgbddynParas.uiOutRGBDLen = 0;
-        m_XDrgbddynParas.ucEnableOutR2D = 0;
-        m_XDrgbddynParas.ucEnableOutD2R = 0;
-        m_XDrgbddynParas.ucEnableRGBDPCL = 1;
-        m_XDrgbddynParas.ucThConfidence = 25;
-
-        m_pXDrgbd = sitrpInit(&puiInitSuccFlag, &m_XDrgbdRPRes, &m_XDrgbddynParas, FALSE, FALSE);
+        m_xdRGBD.m_pD = sitrpInit(&puiInitSuccFlag, &m_xdRGBD.m_RP, &m_xdRGBD.m_dyn, FALSE, FALSE);
         IF_Fl(puiInitSuccFlag > RP_ARITH_SUCCESS, "Algorithm initialize fail, puiInitSuccFlag: " + i2str(puiInitSuccFlag));
 
         // init in out buffer
-        m_XDrgbdInData.pThisGlbBuffer = m_pXDrgbd;
-        m_XDrgbdInData.pucYuvImg = nullptr;
-        m_XDrgbdInData.usYuvWidth = rgbW;
-        m_XDrgbdInData.usYuvHeight = rgbH;
-        m_XDrgbdInData.pusDepth = nullptr;
-        m_XDrgbdInData.usDepthWidth = tofW;
-        m_XDrgbdInData.usDepthHeight = tofH;
-        m_XDrgbdInData.pucConfidence = nullptr;
-        m_XDrgbdInData.usConfWidth = tofW;
-        m_XDrgbdInData.usConfHeight = tofH;
+        m_xdRGBD.m_in.pThisGlbBuffer = m_xdRGBD.m_pD;
 
-        m_XDrgbdOutData.ucEnableOutR2D = 0;
-        m_XDrgbdOutData.ucEnableOutD2R = 0;
-        m_XDrgbdOutData.pstrRGBD = (RGBD_POINT_CLOUD *)malloc(tofW * tofH * sizeof(RGBD_POINT_CLOUD));
-        m_XDrgbdOutData.ucEnableRGBDPCL = 1;
+        m_xdRGBD.m_in.pucYuvImg = nullptr;
+        m_xdRGBD.m_in.usYuvWidth = rgbW;
+        m_xdRGBD.m_in.usYuvHeight = rgbH;
 
-        m_bXDrgbdInit = true;
+        m_xdRGBD.m_in.pusDepth = nullptr;
+        m_xdRGBD.m_in.usDepthWidth = tofW;
+        m_xdRGBD.m_in.usDepthHeight = tofH;
+
+        m_xdRGBD.m_in.pucConfidence = nullptr;
+        m_xdRGBD.m_in.usConfWidth = tofW;
+        m_xdRGBD.m_in.usConfHeight = tofH;
+
+        m_xdRGBD.m_out.ucEnableOutR2D = 0;
+        m_xdRGBD.m_out.ucEnableOutD2R = 0;
+        m_xdRGBD.m_out.pstrRGBD = (RGBD_POINT_CLOUD *)malloc(tofW * tofH * sizeof(RGBD_POINT_CLOUD));
+        m_xdRGBD.m_out.ucEnableRGBDPCL = 1;
+
+        m_xdRGBD.m_bInit = true;
 
         return true;
     }
 
     void _XDynamics::releaseRGBD(void)
     {
-        IF_(!m_bXDrgbdInit);
+        IF_(!m_xdRGBD.m_bInit);
 
-        m_bXDrgbdInit = false;
-        sitrpRelease(&m_pXDrgbd, FALSE);
-        m_pXDrgbd = NULL;
+        m_xdRGBD.m_bInit = false;
+        sitrpRelease(&m_xdRGBD.m_pD, FALSE);
+        m_xdRGBD.m_pD = NULL;
 
-        free(m_XDrgbdOutData.pstrRGBD);
+        free(m_xdRGBD.m_out.pstrRGBD);
     }
 
     void _XDynamics::CbEvent(void *handle, int event, void *data)
@@ -318,54 +262,76 @@ namespace kai
     {
         NULL_(handle);
         _XDynamics *pXD = (_XDynamics *)handle;
-        pXD->streamIn(cfg,data);
+        pXD->streamIn(cfg, data);
     }
 
     void _XDynamics::streamIn(MemSinkCfg *cfg, XdynFrame_t *data)
     {
+        IF_(!m_xdRGBD.m_bInit);
+
+        XdynFrame_t *pD = NULL;
+        XdynFrame_t *pRGB = NULL;
+        XdynFrame_t *pConf = NULL;
+
+        if (cfg->isUsed[MEM_AGENT_SINK_DEPTH])
+        {
+            pD = &data[MEM_AGENT_SINK_DEPTH];
+            if (pD->ex)
+            {
+                XdynDepthFrameInfo_t *depthInfo = (XdynDepthFrameInfo_t *)pD->ex;
+
+                Mat depthMat(depthInfo->frameInfo.height, depthInfo->frameInfo.width, CV_16U, Scalar(0));
+                ushort *D16 = &depthMat.ptr<ushort>(0)[0];
+                uint16_t *depethLsb = (uint16_t *)pD->addr;
+                for (int j = 0; j < pD->size / 2; j++)
+                {
+                    D16[j] = depethLsb[j];
+                }
+
+                cv::imshow("depth", depthMat);
+                cv::waitKey(100);
+            }
+        }
+
+        if (cfg->isUsed[MEM_AGENT_SINK_RGB])
+        {
+            pRGB = &data[MEM_AGENT_SINK_RGB];
+
+            cv::Mat yuvImg;
+            cv::Mat rgbImg;
+            yuvImg.create(m_xdCamInfo.info.rgbH * 3 / 2, m_xdCamInfo.info.rgbW, CV_8UC1);
+            memcpy(yuvImg.data, pRGB->addr, pRGB->size);
+
+            cvtColor(yuvImg, rgbImg, COLOR_YUV2BGR_NV12);
+
+            cv::imshow("yuv", rgbImg);
+            cv::waitKey(100);
+        }
+
         unsigned int puiSuccFlag = 0;
         unsigned int puiAbnormalFlag = 0;
         static int num = 0;
 
-        // wo can do some user handler
-        // warnning : 这个回调函数内部不适合做耗时很大的操作，请注意
+        // if (cfg->isUsed[MEM_AGENT_SINK_DEPTH] &&
+        //     cfg->isUsed[MEM_AGENT_SINK_CONFID] &&
+        //     cfg->isUsed[MEM_AGENT_SINK_RGB])
+        // {
+        //     m_xdRGBD.m_in.pusDepth = (unsigned short *)data[MEM_AGENT_SINK_DEPTH].addr;
+        //     m_xdRGBD.m_in.pucYuvImg = (unsigned char *)data[MEM_AGENT_SINK_RGB].addr;
+        //     m_xdRGBD.m_in.pucConfidence = (unsigned char *)data[MEM_AGENT_SINK_CONFID].addr;
 
-        printf("get stream data: ");
-        for (int i = 0; i < MEM_AGENT_SINK_MAX; i++)
-        {
-            printf("[%d:%d] ", i, cfg->isUsed[i]);
-        }
-        printf("\n");
-
-        IF_(!m_bXDrgbdInit);
-
-        if (cfg->isUsed[MEM_AGENT_SINK_DEPTH] &&
-            cfg->isUsed[MEM_AGENT_SINK_CONFID] &&
-            cfg->isUsed[MEM_AGENT_SINK_RGB])
-        {
-
-            // SaveImageData_rgb(data[MEM_AGENT_SINK_RGB].addr, data[MEM_AGENT_SINK_RGB].size);
-            // SaveImageData_depth(data[MEM_AGENT_SINK_DEPTH].addr, data[MEM_AGENT_SINK_DEPTH].size);
-            // SaveImageData_conf(data[MEM_AGENT_SINK_CONFID].addr, data[MEM_AGENT_SINK_CONFID].size);
-
-            m_XDrgbdInData.pusDepth = (unsigned short *)data[MEM_AGENT_SINK_DEPTH].addr;
-            m_XDrgbdInData.pucYuvImg = (unsigned char *)data[MEM_AGENT_SINK_RGB].addr;
-            m_XDrgbdInData.pucConfidence = (unsigned char *)data[MEM_AGENT_SINK_CONFID].addr;
-
-            sitrpRunRGBProcess(m_pXDrgbd, &m_XDrgbdInData, &m_XDrgbdOutData, &puiSuccFlag, &puiAbnormalFlag, FALSE);
-            if (puiSuccFlag == RP_ARITH_SUCCESS)
-            {
-//                printf("get pc num : %d\n", user->rgbdOutDatas.uiOutRGBDLen);
-
-                // save file
-//                std::string fileName = std::string("pt_") + std::to_string(num++) + std::string(".ply");
-//                RP_SavePLY_File(fileName.c_str(), user->rgbdOutDatas.pstrRGBD, 320 * 240);
-            }
-            else
-            {
-                printf("alg cal failed, %d\n", puiSuccFlag);
-            }
-        }
+        //     sitrpRunRGBProcess(m_xdRGBD.m_pD, &m_xdRGBD.m_in, &m_xdRGBD.m_out, &puiSuccFlag, &puiAbnormalFlag, FALSE);
+        //     if (puiSuccFlag == RP_ARITH_SUCCESS)
+        //     {
+        //         //                printf("get pc num : %d\n", user->rgbdOutDatas.uiOutRGBDLen);
+        //         //                std::string fileName = std::string("pt_") + std::to_string(num++) + std::string(".ply");
+        //         //                RP_SavePLY_File(fileName.c_str(), user->rgbdOutDatas.pstrRGBD, 320 * 240);
+        //     }
+        //     else
+        //     {
+        //         printf("alg cal failed, %d\n", puiSuccFlag);
+        //     }
+        // }
     }
 
     void _XDynamics::console(void *pConsole)

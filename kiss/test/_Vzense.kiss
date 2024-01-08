@@ -20,7 +20,7 @@
 {
 	"name":"SHMvzRGB",
 	"class":"_SharedMem",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -44,11 +44,11 @@
 	"bON":1,
 	"bLog":1,
 	"URI":"",
-	"vSize":[1600,1200],
+	"vSizeRGB":[1600,1200],
 	"bRGB":1,
 	"bDepth":0,
 	"btRGB":0,
 	"btDepth":0,
 	"bIR":0,
-	"_SHMrgb":"SHMvzRGB",
+	"/_SHMrgb":"SHMvzRGB",
 }
