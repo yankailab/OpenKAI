@@ -51,7 +51,7 @@ namespace kai
 #ifdef WITH_ACTUATOR
 		ADD_MODULE(_ArduServo);
 		ADD_MODULE(_ActuatorSync);
-		ADD_MODULE(_FeeTech);
+		ADD_MODULE(_Feetech);
 		ADD_MODULE(_OrientalMotor);
 		ADD_MODULE(_HYMCU_RS485);
 		ADD_MODULE(_S6H4D);

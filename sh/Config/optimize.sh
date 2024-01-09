@@ -112,3 +112,4 @@ sudo dd if=~/sd.img of=/dev/sdb bs=6M
 
 # add user to dialout
 sudo adduser [username] dialout
+#sudo chmod 666 /dev/ttyUSB0

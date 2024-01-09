@@ -41,7 +41,7 @@
 #ifdef WITH_ACTUATOR
 #include "../Actuator/_ArduServo.h"
 #include "../Actuator/_ActuatorSync.h"
-#include "../Actuator/_FeeTech.h"
+#include "../Actuator/_Feetech.h"
 #include "../Actuator/_OrientalMotor.h"
 #include "../Actuator/_HYMCU_RS485.h"
 #include "../Actuator/Articulated/_S6H4D.h"

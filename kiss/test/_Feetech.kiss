@@ -1,0 +1,49 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["ft"],
+}
+
+{
+	"name":"ft",
+	"class":"_Feetech",
+	"bON":1,
+	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"port":"/dev/ttyUSB0",
+	"/port":"/dev/ttyACM0",
+	"baud":115200,
+
+	{
+		"name":"axis",
+		{
+			"name":"X",
+			"pOrigin":0.0,
+			"pTarget":5.0,
+			"pErr":0.01,
+			"pRange":[0,15],
+			"sTarget":300.0,
+			"sRange":[0,300],
+			"aTarget":100.0,
+			"aRange":[1,300],
+		}
+	}
+
+}
+
