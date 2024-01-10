@@ -40,6 +40,7 @@ namespace kai
 			ADIO_PORT port;
 			port.clear();
 			pP->v("bDigital", &port.m_bDigital);
+			pP->v("addr", &port.m_addr);
 			pP->v("vW", &port.m_vW);
 			pP->v("vR", &port.m_vR);
 
@@ -119,7 +120,7 @@ namespace kai
 		{
 			ADIO_PORT *pP = &m_vPort[i];
 
-			if (pP->m_bDigital)
+			if (pP->bDigital())
 				str += i2str(pP->readD() ? 1 : 0);
 			else
 				str += f2str(pP->readA());

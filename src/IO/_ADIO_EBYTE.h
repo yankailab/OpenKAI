@@ -41,7 +41,8 @@ namespace kai
 		}
 
 	private:
-		_Modbus* m_pMB;	
+		_Modbus* m_pMB;
+		int m_iID;
 
 	};
 

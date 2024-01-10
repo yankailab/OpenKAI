@@ -12,6 +12,7 @@ namespace kai
 	_ADIO_EBYTE::_ADIO_EBYTE()
 	{
 		m_pMB = NULL;
+		m_iID = 32;
 	}
 
 	_ADIO_EBYTE::~_ADIO_EBYTE()
@@ -24,7 +25,7 @@ namespace kai
 		IF_F(!this->_ADIObase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		//		pK->v("addr", &m_addr);
+		pK->v("iID", &m_iID);
 
 		return true;
 	}
@@ -54,6 +55,7 @@ namespace kai
 	int _ADIO_EBYTE::check(void)
 	{
 		NULL__(m_pMB, -1);
+		IF__(!m_pMB->bOpen(), -1);
 
 		return this->_ADIObase::check();
 	}
@@ -88,6 +90,21 @@ namespace kai
 
 	void _ADIO_EBYTE::updateW(void)
 	{
+		IF_(check() < 0);
+
+		for (int i = 0; i < m_vPort.size(); i++)
+		{
+			ADIO_PORT *pP = &m_vPort[i];
+
+			if (pP->bDigital())
+			{
+				m_pMB->writeBit(m_iID, pP->m_addr, pP->writeD());
+			}
+			else
+			{
+//				m_pMB->writeBit(m_iID, pP->m_addr, pP->readD());
+			}
+		}
 	}
 
 	void _ADIO_EBYTE::updateR(void)

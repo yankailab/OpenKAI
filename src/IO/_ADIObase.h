@@ -26,15 +26,21 @@ namespace kai
 	struct ADIO_PORT
 	{
 		bool m_bDigital;
-
+		uint16_t m_addr;
 		float m_vW; // value to be written
 		float m_vR; // value read
 
 		void clear(void)
 		{
 			m_bDigital = true;
+			m_addr = 0;
 			m_vW = 0;
 			m_vR = 0;
+		}
+
+		bool bDigital(void)
+		{
+			return m_bDigital;
 		}
 
 		bool writeA(float v)
@@ -47,8 +53,13 @@ namespace kai
 
 		bool writeD(bool v)
 		{
-			m_vW = (v > 0)?1:0;
+			m_vW = (v)?1:0;
 			return true;
+		}
+
+		bool writeD(void)
+		{
+			return (m_vW > 0.5);
 		}
 
 		float readA(void)
@@ -58,7 +69,7 @@ namespace kai
 
 		bool readD(void)
 		{
-			return (m_vR > 0);
+			return (m_vR > 0.5);
 		}
 	};
 
