@@ -109,6 +109,13 @@ namespace kai
 		ADD_MODULE(_Drive);
 #endif
 
+#ifdef WITH_APP_3DSCAN && WITH_3D && USE_OPEN3D
+		ADD_MODULE(_3DScanCalibCam);
+		ADD_MODULE(_3DScanCalibOfs);
+		ADD_MODULE(_PCscan);
+		ADD_MODULE(_PCcalib);
+#endif
+
 #ifdef WITH_APP_CAMCALIB
 		ADD_MODULE(_CamCalib);
 #endif
@@ -119,6 +126,15 @@ namespace kai
 		ADD_MODULE(_AP_droneBoxJSON);
 #endif
 
+#ifdef WITH_APP_GSV
+		ADD_MODULE(_GSVcollisionAvoid);
+#endif
+
+#ifdef WITH_APP_LIVOXSCANNER && USE_LIVOX && WITH_3D && USE_OPEN3D
+		ADD_MODULE(_LivoxAutoScan);
+		ADD_MODULE(_LivoxScanner);
+#endif
+
 #ifdef WITH_APP_MEASUREMENT
 		ADD_MODULE(_ARmeasure);
 		ADD_MODULE(_ARmeasureVertex);
@@ -126,24 +142,6 @@ namespace kai
 		ADD_MODULE(_ARmeasureCalibCam);
 		ADD_MODULE(_ARmeasureCalibDofs);
 		ADD_MODULE(_RaspiWSbattery);
-#endif
-
-#ifdef WITH_APP_3DSCAN && WITH_3D && USE_OPEN3D
-		ADD_MODULE(_3DScanCalibCam);
-		ADD_MODULE(_3DScanCalibOfs);
-		ADD_MODULE(_PCscan);
-		ADD_MODULE(_PCcalib);
-#endif
-
-#ifdef WITH_APP_VZSCAN && USE_VZENSE && WITH_3D && USE_OPEN3D &&USE_GUI
-		ADD_MODULE(_VzScan);
-		ADD_MODULE(_VzScanAuto);
-		ADD_MODULE(_VzScanCalib);
-#endif
-
-#ifdef WITH_APP_LIVOXSCANNER && USE_LIVOX && WITH_3D && USE_OPEN3D
-		ADD_MODULE(_LivoxAutoScan);
-		ADD_MODULE(_LivoxScanner);
 #endif
 
 //#ifdef WITH_APP_ROPEWAYSCAN && USE_VZENSE && USE_LIVOX && WITH_3D && USE_OPEN3D
@@ -179,6 +177,12 @@ namespace kai
 #ifdef WITH_APP_SWARMSEARCH
 		ADD_MODULE(_SwarmSearchCtrl);
 		ADD_MODULE(_SwarmSearchCtrlUI);
+#endif
+
+#ifdef WITH_APP_VZSCAN && USE_VZENSE && WITH_3D && USE_OPEN3D &&USE_GUI
+		ADD_MODULE(_VzScan);
+		ADD_MODULE(_VzScanAuto);
+		ADD_MODULE(_VzScanCalib);
 #endif
 
 #ifdef WITH_COMPUTE

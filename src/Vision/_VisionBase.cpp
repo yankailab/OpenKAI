@@ -13,13 +13,14 @@ namespace kai
 	_VisionBase::_VisionBase()
 	{
 		m_type = vision_unknown;
+		m_devURI = "";
+		m_devFPS = 30;
+		m_tFrameInterval = 0;
+		m_bRGB = true;
+		m_vSizeRGB.set(1280, 720);
+
 		m_bOpen = false;
 
-		m_deviceURI = "";
-		m_vSizeRGB.set(1280, 720);
-		m_tFrameInterval = 0;
-
-		m_bRGB = true;
 		m_psmRGB = NULL;
 	}
 
@@ -32,11 +33,11 @@ namespace kai
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("URI", &m_deviceURI);
-		pK->v("vSizeRGB", &m_vSizeRGB);
+		pK->v("devURI", &m_devURI);
+		pK->v("devFPS", &m_devFPS);
 		pK->v("tFrameInterval", &m_tFrameInterval);
-
 		pK->v("bRGB", &m_bRGB);
+		pK->v("vSizeRGB", &m_vSizeRGB);
 
 		return true;
 	}

@@ -45,6 +45,7 @@ namespace kai
 		// post processing thread
 		_Thread *m_pTPP;
 
+		int m_devFPSd;
 		vInt2 m_vSizeD;
 		vFloat2 m_vRangeD;
 

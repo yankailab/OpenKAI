@@ -21,6 +21,16 @@ namespace kai
 {
 	struct XDctrl
 	{
+		vInt4 m_vPhaseInt;
+		vInt4 m_vSpaceInt;
+		vInt2 m_vFreq;
+
+		int m_binning;
+		int m_phaseMode;
+
+		int m_rgbStride;
+		int m_rgbFmt;
+
 		bool m_bAutoExposureToF = true;
 		int m_tExposureToF = 4000;
 
@@ -39,6 +49,19 @@ namespace kai
 		bool m_bFillHole = false;
 		bool m_bSpatialFilter = false;
 		bool m_bHDR = false;
+
+		void init(void)
+		{
+			m_vPhaseInt.set(1000000, 1000000, 0, 0);
+			m_vSpaceInt.set(1000000, 1000000, 0, 0);
+			m_vFreq.set(62, 25);
+
+			m_binning = XDYN_BINNING_MODE_2x2;
+			m_phaseMode = XDYN_PHASE_MODE_1;
+
+			m_rgbStride = 0;
+			m_rgbFmt = 4;
+		}
 	};
 
 	struct XDdata
@@ -96,7 +119,7 @@ namespace kai
 		int m_xdType;
 		XdynCamInfo_t m_xdCamInfo;
 		XDYN_Streamer *m_pXDstream;
-		XDctrl m_XDctrl;
+		XDctrl m_xdCtrl;
 
 		XDdata m_xdRGBD;
 	};

@@ -99,6 +99,13 @@
 #include "../Autopilot/Drive/_Drive.h"
 #endif
 
+#ifdef WITH_APP_3DSCAN &&WITH_3D &&USE_OPEN3D &&USE_GUI
+#include "../Application/3Dscan/_3DScanCalibCam.h"
+#include "../Application/3Dscan/_3DScanCalibOfs.h"
+#include "../Application/3Dscan/_PCscan.h"
+#include "../Application/3Dscan/_PCcalib.h"
+#endif
+
 #ifdef WITH_APP_CAMCALIB
 #include "../Application/CamCalib/_CamCalib.h"
 #endif
@@ -109,6 +116,15 @@
 #include "../Application/DroneBox/_AP_droneBoxJSON.h"
 #endif
 
+#ifdef WITH_APP_GSV
+#include "../Application/GSV/_GSVcollisionAvoid.h"
+#endif
+
+#ifdef WITH_APP_LIVOXSCANNER &&USE_LIVOX &&WITH_3D &&USE_OPEN3D
+#include "../Application/LivoxScanner/_LivoxAutoScan.h"
+#include "../Application/LivoxScanner/_LivoxScanner.h"
+#endif
+
 #ifdef WITH_APP_MEASUREMENT &&USE_OPENCV
 #include "../Application/Measurement/_ARmeasure.h"
 #include "../Application/Measurement/_ARmeasureVertex.h"
@@ -116,24 +132,6 @@
 #include "../Application/Measurement/_ARmeasureCalibCam.h"
 #include "../Application/Measurement/_ARmeasureCalibDofs.h"
 #include "../Application/Measurement/_RaspiWSbattery.h"
-#endif
-
-#ifdef WITH_APP_3DSCAN &&WITH_3D &&USE_OPEN3D &&USE_GUI
-#include "../Application/3Dscan/_3DScanCalibCam.h"
-#include "../Application/3Dscan/_3DScanCalibOfs.h"
-#include "../Application/3Dscan/_PCscan.h"
-#include "../Application/3Dscan/_PCcalib.h"
-#endif
-
-#ifdef WITH_APP_VZSCAN &&USE_VZENSE &&WITH_3D &&USE_OPEN3D &&USE_GUI
-#include "../Application/VzScan/_VzScan.h"
-#include "../Application/VzScan/_VzScanAuto.h"
-#include "../Application/VzScan/_VzScanCalib.h"
-#endif
-
-#ifdef WITH_APP_LIVOXSCANNER &&USE_LIVOX &&WITH_3D &&USE_OPEN3D
-#include "../Application/LivoxScanner/_LivoxAutoScan.h"
-#include "../Application/LivoxScanner/_LivoxScanner.h"
 #endif
 
 //#ifdef WITH_APP_ROPEWAYSCAN &&USE_VZENSE &&USE_LIVOX &&WITH_3D &&USE_OPEN3D
@@ -167,6 +165,12 @@
 #ifdef WITH_APP_SWARMSEARCH
 #include "../Application/SwarmSearch/_SwarmSearchCtrl.h"
 #include "../Application/SwarmSearch/_SwarmSearchCtrlUI.h"
+#endif
+
+#ifdef WITH_APP_VZSCAN &&USE_VZENSE &&WITH_3D &&USE_OPEN3D &&USE_GUI
+#include "../Application/VzScan/_VzScan.h"
+#include "../Application/VzScan/_VzScanAuto.h"
+#include "../Application/VzScan/_VzScanCalib.h"
 #endif
 
 #ifdef WITH_COMPUTE

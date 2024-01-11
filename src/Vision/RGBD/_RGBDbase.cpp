@@ -14,6 +14,7 @@ namespace kai
     {
         m_pTPP = NULL;
 
+		m_devFPSd = 30;
 		m_vSizeD.set(1280, 720);
 		m_vRangeD.set(0, FLT_MAX);
 
@@ -47,6 +48,7 @@ namespace kai
         IF_F(!_VisionBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
+		pK->v("devFPSd", &m_devFPSd);
         pK->v("vSizeD", &m_vSizeD);
 		pK->v("vRangeD", &m_vRangeD);
 
@@ -188,7 +190,7 @@ namespace kai
 		IF_(m_fRGB.bEmpty());
 
 		Frame *pF = (Frame*)pFrame;
-		pF->copy(m_fRGB);
+		pF->copy(m_fDepth);
 
 		// if (m_bDebug)
 		// {

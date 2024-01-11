@@ -48,13 +48,13 @@
 		{
 			"bDigital":1,
 			"addr":0,
-			"vW":0,
+			"vW":1,
 			"vR":0,
 		}
 		{
 			"bDigital":1,
 			"addr":1,
-			"vW":0,
+			"vW":1,
 			"vR":0,
 		}
 	}

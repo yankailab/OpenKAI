@@ -75,12 +75,13 @@ namespace kai
 
 	protected:
 		VISION_TYPE m_type;
-		string m_deviceURI;
-		bool m_bOpen;
+		string m_devURI;
+		int m_devFPS;	// device native FPS
 		uint64_t m_tFrameInterval;	// minimal interval between frame reading
-
 		bool m_bRGB;
 		vInt2 m_vSizeRGB;
+
+		bool m_bOpen;
 
 		_SharedMem *m_psmRGB;
 

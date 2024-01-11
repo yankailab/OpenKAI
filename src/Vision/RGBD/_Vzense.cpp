@@ -82,10 +82,10 @@ namespace kai
 		}
 
 		m_deviceHandle = 0;
-		if (m_deviceURI.empty())
-			m_deviceURI = string(m_pDeviceListInfo[0].uri);
+		if (m_devURI.empty())
+			m_devURI = string(m_pDeviceListInfo[0].uri);
 
-		status = VZ_OpenDeviceByUri(m_deviceURI.c_str(), &m_deviceHandle);
+		status = VZ_OpenDeviceByUri(m_devURI.c_str(), &m_deviceHandle);
 		if (status != VzReturnStatus::VzRetOK)
 		{
 			LOG_E("OpenDevice failed");
