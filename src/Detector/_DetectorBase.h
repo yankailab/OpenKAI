@@ -24,13 +24,13 @@ namespace kai
 		virtual bool init(void *pKiss);
 		virtual bool link(void);
 		virtual int check(void);
+
 		virtual int getClassIdx(string &className);
 		virtual string getClassName(int iClass);
 
-	public:
+	protected:
 		// input
 		_VisionBase *m_pV;
-		_DetectorBase *m_pDB;
 
 		// data
 		Frame m_fRGB;

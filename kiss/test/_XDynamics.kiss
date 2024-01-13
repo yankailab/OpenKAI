@@ -18,14 +18,26 @@
 }
 
 {
-	"name":"SHMvzRGB",
+	"name":"view",
+	"class":"_WindowCV",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bFullScreen":0,
+	"vBASE":["XD", "d2g"],
+}
+
+{
+	"name":"SHMxdRGB",
 	"class":"_SharedMem",
 	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"shmName":"SHMvzRGB",
+	"shmName":"SHMxdRGB",
 	"nB":5760000,
 	"bWriter":1,
 }
@@ -35,18 +47,34 @@
 	"class":"_XDynamics",
     {
 		"name":"thread",
-		"FPS":5,
+		"FPS":1,
 	}
 	"bON":1,
 	"bLog":1,
 	"/xdType":0,
 	"URI":"192.168.31.3",
+	"mirrorMode":1,
+	"vRangeD":[0,3],
+	"devFPS":10,
+	"devFPSd":10,
 	"vSizeRGB":[320,240],
 	"vSizeD":[320,240],
 	"bRGB":1,
-	"bDepth":0,
+	"bDepth":1,
+	"bConfidence":1,
 	"btRGB":0,
 	"btDepth":0,
 	"bIR":0,
-	"/_SHMrgb":"SHMvzRGB",
+	"/_SHMrgb":"SHMxdRGB",
+}
+
+{
+	"name":"d2g",
+	"class":"_Depth2Gray",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_RGBDbase":"XD",
 }

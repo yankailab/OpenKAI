@@ -91,7 +91,7 @@ namespace kai
 
 	void _MotionDetector::detect(void)
 	{
-		Mat m = *m_pVision->BGR()->m();
+		Mat m = *m_pVision->getFrameRGB()->m();
 
 		m_pBS->apply(m, m_mFG, m_learningRate);
 

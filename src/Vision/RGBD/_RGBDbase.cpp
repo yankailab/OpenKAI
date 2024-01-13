@@ -22,6 +22,7 @@ namespace kai
         m_bIR = false;
         m_btRGB = false;
         m_btDepth = false;
+		m_bConfidence = true;
         m_fConfidenceThreshold = 0.0;
 
         m_psmDepth = NULL;
@@ -56,6 +57,7 @@ namespace kai
         pK->v("bIR", &m_bIR);
         pK->v("btRGB", &m_btRGB);
         pK->v("btDepth", &m_btDepth);
+        pK->v("bConfidence", &m_bConfidence);
         pK->v("fConfidenceThreshold", &m_fConfidenceThreshold);
 
 #ifdef USE_OPENCV
@@ -189,8 +191,8 @@ namespace kai
 		IF_(check() < 0);
 		IF_(m_fRGB.bEmpty());
 
-		Frame *pF = (Frame*)pFrame;
-		pF->copy(m_fDepth);
+		// Frame *pF = (Frame*)pFrame;
+		// pF->copy(m_fDepth);
 
 		// if (m_bDebug)
 		// {

@@ -26,11 +26,19 @@ namespace kai
 		IF_F(!_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		string n;
+		return true;
+	}
 
+	bool _Mask::link(void)
+	{
+		IF_F(!this->_VisionBase::link());
+
+		Kiss *pK = (Kiss *)m_pKiss;
+
+		string n;
 		n = "";
 		pK->v("_VisionBase", &n);
-		m_pV = (_VisionBase *)(pK->parent()->getInst(n));
+		m_pV = (_VisionBase *)(pK->getInst(n));
 		IF_Fl(!m_pV, n + ": not found");
 
 		n = "";

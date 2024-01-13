@@ -38,8 +38,12 @@ namespace kai
         pK->v("vFreq", &m_xdCtrl.m_vFreq);
         pK->v("binning", &m_xdCtrl.m_binning);
         pK->v("phaseMode", &m_xdCtrl.m_phaseMode);
+        pK->v("mirrorMode", &m_xdCtrl.m_mirrorMode);
         pK->v("rgbStride", &m_xdCtrl.m_rgbStride);
         pK->v("rgbFmt", &m_xdCtrl.m_rgbFmt);
+
+        m_mXDyuv.create(m_vSizeRGB.y * 3 / 2, m_vSizeRGB.x, CV_8UC1);
+        m_mXDd.create(m_vSizeD.y, m_vSizeD.x, CV_16U);
 
         return true;
     }
@@ -69,33 +73,32 @@ namespace kai
         IF_Fl(res != XD_SUCCESS, "OpenCamera failed: " + i2str(res));
 
         MemSinkCfg memCfg;
-        memCfg.isUsed[MEM_AGENT_SINK_DEPTH] = true;
-        memCfg.isUsed[MEM_AGENT_SINK_CONFID] = true;
-        memCfg.isUsed[MEM_AGENT_SINK_RGB] = true;
+        memCfg.isUsed[MEM_AGENT_SINK_DEPTH] = m_bDepth;
+        memCfg.isUsed[MEM_AGENT_SINK_CONFID] = m_bConfidence;
+        memCfg.isUsed[MEM_AGENT_SINK_RGB] = m_bRGB;
         res = pStream->ConfigSinkType(XDYN_SINK_TYPE_CB, memCfg, CbStream, this);
         IF_Fl(res != XD_SUCCESS, "ConfigSinkType failed: " + i2str(res));
 
         res = pStream->ConfigAlgMode(XDYN_ALG_MODE_EMB_ALG_IPC_PASS);
         IF_Fl(res != XD_SUCCESS, "ConfigAlgMode failed: " + i2str(res));
 
+        // config Depth
+        unsigned int phaseInt[4] = {m_xdCtrl.m_vPhaseInt.x,
+                                    m_xdCtrl.m_vPhaseInt.y,
+                                    m_xdCtrl.m_vPhaseInt.z,
+                                    m_xdCtrl.m_vPhaseInt.w};
 
-        unsigned int phaseInt[4] = { m_xdCtrl.m_vPhaseInt.x,
-                                     m_xdCtrl.m_vPhaseInt.y,
-                                     m_xdCtrl.m_vPhaseInt.z,
-                                     m_xdCtrl.m_vPhaseInt.w
-                                     };
-
-        unsigned int spaceInt[4] = { m_xdCtrl.m_vSpaceInt.x,
-                                     m_xdCtrl.m_vSpaceInt.y,
-                                     m_xdCtrl.m_vSpaceInt.z,
-                                     m_xdCtrl.m_vSpaceInt.w
-                                     };
+        unsigned int spaceInt[4] = {m_xdCtrl.m_vSpaceInt.x,
+                                    m_xdCtrl.m_vSpaceInt.y,
+                                    m_xdCtrl.m_vSpaceInt.z,
+                                    m_xdCtrl.m_vSpaceInt.w};
 
         pStream->SetFps(m_devFPSd);
         pStream->SetCamInt(phaseInt, spaceInt);
         pStream->SetCamFreq(m_xdCtrl.m_vFreq.x, m_xdCtrl.m_vFreq.y);
         pStream->SetCamBinning((XDYN_BINNING_MODE_e)m_xdCtrl.m_binning); // 使用binning 2x2的方法，分辨率为320 * 240
         pStream->SetPhaseMode((XDYN_PHASE_MODE_e)m_xdCtrl.m_phaseMode);
+        pStream->SetCamMirror((XDYN_MIRROR_MODE_e)m_xdCtrl.m_mirrorMode);
         res = pStream->ConfigCamParams();
         IF_Fl(res != XD_SUCCESS, "conifg cam params failed: " + i2str(res));
 
@@ -110,7 +113,7 @@ namespace kai
         res = pStream->CfgRgbParams();
         IF_Fl(res != XD_SUCCESS, "config rgb failed: " + i2str(res));
 
-        // init rgbd interface
+        // init RGBD interface
         XdynRegParams_t regParams;
         pStream->GetCaliRegParams(regParams);
 
@@ -148,7 +151,6 @@ namespace kai
     int _XDynamics::check(void)
     {
         NULL__(m_pT, -1);
-        NULL__(m_pTPP, -1);
 
         return _RGBDbase::check();
     }
@@ -169,25 +171,96 @@ namespace kai
 
             m_pT->autoFPSfrom();
 
-            if (updateXDynamics())
-            {
-                // m_pTPP->wakeUp();
-            }
-            else
-            {
-                m_pT->sleepT(SEC_2_USEC);
-                m_bOpen = false;
-            }
+            updateXDynamics();
 
             m_pT->autoFPSto();
         }
     }
 
-    bool _XDynamics::updateXDynamics(void)
+    void _XDynamics::updateXDynamics(void)
     {
-        IF_T(check() < 0);
+        IF_(check() < 0);
 
-        return true;
+        Mat mD, mDs;
+        m_mXDd.convertTo(mD, CV_32FC1);
+        mDs = mD * m_dScale;
+        m_fDepth.copy(mDs + m_dOfs);
+
+        cv::Mat mRGB;
+        cvtColor(m_mXDyuv, mRGB, COLOR_YUV2BGR_NV12);
+        m_fRGB.copy(mRGB);
+    }
+
+    void _XDynamics::streamIn(MemSinkCfg *pCfg, XdynFrame_t *pData)
+    {
+        IF_(!m_xdRGBD.m_bInit);
+
+        XdynFrame_t *pD = NULL;
+        XdynFrame_t *pRGB = NULL;
+        XdynFrame_t *pConf = NULL;
+
+        if (pCfg->isUsed[MEM_AGENT_SINK_DEPTH])
+        {
+            pD = &pData[MEM_AGENT_SINK_DEPTH];
+            if (pD->ex)
+            {
+                XdynDepthFrameInfo_t *pDepthInfo = (XdynDepthFrameInfo_t *)pD->ex;
+                m_dScale = pDepthInfo->fUnitOfDepth * 0.001;
+                memcpy(m_mXDd.data, pD->addr, pD->size);
+            }
+        }
+
+        if (pCfg->isUsed[MEM_AGENT_SINK_RGB])
+        {
+            pRGB = &pData[MEM_AGENT_SINK_RGB];
+            memcpy(m_mXDyuv.data, pRGB->addr, pRGB->size);
+        }
+
+        // if (pCfg->isUsed[MEM_AGENT_SINK_DEPTH] &&
+        //     pCfg->isUsed[MEM_AGENT_SINK_CONFID] &&
+        //     pCfg->isUsed[MEM_AGENT_SINK_RGB])
+        // {
+        //     m_xdRGBD.m_in.pusDepth = (unsigned short *)pData[MEM_AGENT_SINK_DEPTH].addr;
+        //     m_xdRGBD.m_in.pucYuvImg = (unsigned char *)pData[MEM_AGENT_SINK_RGB].addr;
+        //     m_xdRGBD.m_in.pucConfidence = (unsigned char *)pData[MEM_AGENT_SINK_CONFID].addr;
+
+        //     unsigned int puiSuccFlag = 0;
+        //     unsigned int puiAbnormalFlag = 0;
+        //     static int num = 0;
+
+        //     sitrpRunRGBProcess(m_xdRGBD.m_pD, &m_xdRGBD.m_in, &m_xdRGBD.m_out, &puiSuccFlag, &puiAbnormalFlag, FALSE);
+        //     if (puiSuccFlag == RP_ARITH_SUCCESS)
+        //     {
+        //         //                printf("get pc num : %d\n", user->rgbdOutDatas.uiOutRGBDLen);
+        //         //                std::string fileName = std::string("pt_") + std::to_string(num++) + std::string(".ply");
+        //         //                RP_SavePLY_File(fileName.c_str(), user->rgbdOutDatas.pstrRGBD, 320 * 240);
+        //     }
+        //     else
+        //     {
+        //         printf("alg cal failed, %d\n", puiSuccFlag);
+        //     }
+        // }
+
+        m_pT->wakeUp();
+    }
+
+    void _XDynamics::CbStream(void *pHandle, MemSinkCfg *pCfg, XdynFrame_t *pData)
+    {
+        NULL_(pHandle);
+        _XDynamics *pXD = (_XDynamics *)pHandle;
+        pXD->streamIn(pCfg, pData);
+    }
+
+    void _XDynamics::CbEvent(void *handle, int event, void *data)
+    {
+        _XDynamics *pXD = (_XDynamics *)handle;
+
+        if (event == XDYN_CB_EVENT_DEVICE_DISCONNECT)
+        {
+            LOG(INFO) << *pXD->getName() << ": "
+                      << "Device disconnected";
+            pXD->close();
+        }
     }
 
     bool _XDynamics::initRGBD(XdynRegParams_t *regParams, uint16_t tofW, uint16_t tofH, uint16_t rgbW, uint16_t rgbH)
@@ -264,95 +337,6 @@ namespace kai
         m_xdRGBD.m_pD = NULL;
 
         free(m_xdRGBD.m_out.pstrRGBD);
-    }
-
-    void _XDynamics::CbEvent(void *handle, int event, void *data)
-    {
-        _XDynamics *pXD = (_XDynamics *)handle;
-
-        if (event == XDYN_CB_EVENT_DEVICE_DISCONNECT)
-        {
-            LOG(INFO) << *pXD->getName() << ": "
-                      << "Device disconnected";
-            pXD->close();
-        }
-    }
-
-    void _XDynamics::CbStream(void *handle, MemSinkCfg *cfg, XdynFrame_t *data)
-    {
-        NULL_(handle);
-        _XDynamics *pXD = (_XDynamics *)handle;
-        pXD->streamIn(cfg, data);
-    }
-
-    void _XDynamics::streamIn(MemSinkCfg *cfg, XdynFrame_t *data)
-    {
-        IF_(!m_xdRGBD.m_bInit);
-
-        XdynFrame_t *pD = NULL;
-        XdynFrame_t *pRGB = NULL;
-        XdynFrame_t *pConf = NULL;
-
-        if (cfg->isUsed[MEM_AGENT_SINK_DEPTH])
-        {
-            pD = &data[MEM_AGENT_SINK_DEPTH];
-            if (pD->ex)
-            {
-                XdynDepthFrameInfo_t *depthInfo = (XdynDepthFrameInfo_t *)pD->ex;
-
-                Mat depthMat(depthInfo->frameInfo.height, depthInfo->frameInfo.width, CV_16U, Scalar(0));
-                ushort *D16 = &depthMat.ptr<ushort>(0)[0];
-                uint16_t *depethLsb = (uint16_t *)pD->addr;
-                for (int i = 0; i < pD->size / 2; i++)
-                {
-                    D16[i] = depethLsb[i];
-                }
-
-                m_fDepth.copy(depthMat);
-                // cv::imshow("depth", depthMat);
-                // cv::waitKey(100);
-            }
-        }
-
-        if (cfg->isUsed[MEM_AGENT_SINK_RGB])
-        {
-            pRGB = &data[MEM_AGENT_SINK_RGB];
-
-            cv::Mat yuvImg;
-            cv::Mat rgbImg;
-            yuvImg.create(m_xdCamInfo.info.rgbH * 3 / 2, m_xdCamInfo.info.rgbW, CV_8UC1);
-            memcpy(yuvImg.data, pRGB->addr, pRGB->size);
-            cvtColor(yuvImg, rgbImg, COLOR_YUV2BGR_NV12);
-
-            m_fRGB.copy(rgbImg);
-            // cv::imshow("yuv", rgbImg);
-            // cv::waitKey(100);
-        }
-
-        unsigned int puiSuccFlag = 0;
-        unsigned int puiAbnormalFlag = 0;
-        static int num = 0;
-
-        // if (cfg->isUsed[MEM_AGENT_SINK_DEPTH] &&
-        //     cfg->isUsed[MEM_AGENT_SINK_CONFID] &&
-        //     cfg->isUsed[MEM_AGENT_SINK_RGB])
-        // {
-        //     m_xdRGBD.m_in.pusDepth = (unsigned short *)data[MEM_AGENT_SINK_DEPTH].addr;
-        //     m_xdRGBD.m_in.pucYuvImg = (unsigned char *)data[MEM_AGENT_SINK_RGB].addr;
-        //     m_xdRGBD.m_in.pucConfidence = (unsigned char *)data[MEM_AGENT_SINK_CONFID].addr;
-
-        //     sitrpRunRGBProcess(m_xdRGBD.m_pD, &m_xdRGBD.m_in, &m_xdRGBD.m_out, &puiSuccFlag, &puiAbnormalFlag, FALSE);
-        //     if (puiSuccFlag == RP_ARITH_SUCCESS)
-        //     {
-        //         //                printf("get pc num : %d\n", user->rgbdOutDatas.uiOutRGBDLen);
-        //         //                std::string fileName = std::string("pt_") + std::to_string(num++) + std::string(".ply");
-        //         //                RP_SavePLY_File(fileName.c_str(), user->rgbdOutDatas.pstrRGBD, 320 * 240);
-        //     }
-        //     else
-        //     {
-        //         printf("alg cal failed, %d\n", puiSuccFlag);
-        //     }
-        // }
     }
 
     void _XDynamics::console(void *pConsole)

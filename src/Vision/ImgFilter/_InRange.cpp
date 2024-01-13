@@ -14,8 +14,7 @@ namespace kai
 	{
 		m_type = vision_inRange;
 		m_pV = NULL;
-		m_rFrom = 0.0;
-		m_rTo = 15.0;
+		m_vRange.set(0.0, FLT_MAX);
 	}
 
 	_InRange::~_InRange()
@@ -28,8 +27,16 @@ namespace kai
 		IF_F(!_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("rFrom", &m_rFrom);
-		pK->v("rTo", &m_rTo);
+		pK->v("vRange", &m_vRange);
+
+		return true;
+	}
+
+	bool _InRange::link(void)
+	{
+		IF_F(!this->_VisionBase::link());
+
+		Kiss *pK = (Kiss *)m_pKiss;
 
 		string n;
 		n = "";
@@ -82,7 +89,7 @@ namespace kai
 		IF_(m_pV->getFrameRGB()->bEmpty());
 
 		Mat m;
-		cv::inRange(*m_pV->getFrameRGB()->m(), m_rFrom, m_rTo, m);
+		cv::inRange(*m_pV->getFrameRGB()->m(), m_vRange.x, m_vRange.y, m);
 		m_fRGB.copy(m);
 	}
 

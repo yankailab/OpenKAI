@@ -27,6 +27,7 @@ namespace kai
 
 		int m_binning;
 		int m_phaseMode;
+		int m_mirrorMode;
 
 		int m_rgbStride;
 		int m_rgbFmt;
@@ -58,6 +59,7 @@ namespace kai
 
 			m_binning = XDYN_BINNING_MODE_2x2;
 			m_phaseMode = XDYN_PHASE_MODE_1;
+			m_mirrorMode = XDYN_MIRROR_MODE_NONE;
 
 			m_rgbStride = 0;
 			m_rgbFmt = 4;
@@ -101,13 +103,13 @@ namespace kai
 		virtual void close(void);
 
 	protected:
-		static void CbEvent(void *handle, int event, void *data);
-		static void CbStream(void *handle, MemSinkCfg *cfg, XdynFrame_t *data);
-		void streamIn(MemSinkCfg *cfg, XdynFrame_t *data);
-		bool initRGBD(XdynRegParams_t *regParams, uint16_t tofW, uint16_t tofH, uint16_t rgbW, uint16_t rgbH);
+		static void CbEvent(void *pHandle, int event, void *pData);
+		static void CbStream(void *pHandle, MemSinkCfg *pCfg, XdynFrame_t *pData);
+		void streamIn(MemSinkCfg *pCfg, XdynFrame_t *pData);
+		bool initRGBD(XdynRegParams_t *pRegParams, uint16_t tofW, uint16_t tofH, uint16_t rgbW, uint16_t rgbH);
 		void releaseRGBD(void);
 
-		bool updateXDynamics(void);
+		void updateXDynamics(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -122,6 +124,9 @@ namespace kai
 		XDctrl m_xdCtrl;
 
 		XDdata m_xdRGBD;
+
+		Mat m_mXDyuv;
+		Mat m_mXDd;
 	};
 
 }

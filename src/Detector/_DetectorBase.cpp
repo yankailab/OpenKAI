@@ -10,7 +10,6 @@ namespace kai
 	_DetectorBase::_DetectorBase()
 	{
 		m_pV = NULL;
-		m_pDB = NULL;
 		m_pU = NULL;
 
 		m_confidence = 0.5;
@@ -80,10 +79,6 @@ namespace kai
 		string n = "";
 		F_INFO(pK->v("_VisionBase", &n));
 		m_pV = (_VisionBase *)(pK->getInst(n));
-
-		n = "";
-		pK->v("_DetectorBase", &n);
-		m_pDB = (_DetectorBase *)(pK->getInst(n));
 
 		n = "";
 		pK->v("_Universe", &n);

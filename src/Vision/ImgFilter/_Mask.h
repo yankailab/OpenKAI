@@ -20,6 +20,7 @@ namespace kai
 		virtual ~_Mask();
 
 		bool init(void *pKiss);
+		bool link(void);
 		bool start(void);
 		bool open(void);
 		void close(void);

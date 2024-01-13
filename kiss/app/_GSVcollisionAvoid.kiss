@@ -7,9 +7,20 @@
 }
 
 {
+	"name":"console",
+	"class":"_Console",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["XD","univ","GSVdetect"],
+}
+
+{
 	"name":"GstOutput",
 	"class":"_GstOutput",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -21,57 +32,41 @@
 }
 
 {
-	"name":"cam",
-	"class":"_RealSense",
+	"name":"view",
+	"class":"_WindowCV",
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-    {
-		"name":"threadPP",
-		"FPS":30,
-	}
-	"bON":1,
-	"bLog":1,
-	"bDebug":0,
-	"bDepthShow":1,
-	"vPreset":"Short Range",
-	"bRsRGB":1,
-	"vSize":[1280,720],
-	"rsFPS":30,
-	"rsDFPS":30,
-	"vDsize":[640,480],
-	"bAlign":1,
-	"nHistLevel":128,
-	"minHistD":0.5,
-	"dOfs":0,
-	"vRange":[0.0,1.0],
-	"fConfidenceThreshold":10000000,
-	"fDigitalGain":10000000,
-	"fPostProcessingSharpening":10000000,
-	"fFilterMagnitude":10000000,
-	"fHolesFill":10000000,
-	"fEmitter":10000000,
-	"fLaserPower":10000000,
-	"fBrightness":10000000,
-	"fContrast":10000000,
-	"fGain":10000000,
-	"fExposure":10000000,
-	"fHue":10000000,
-	"fSaturation":10000000,
-	"fSharpness":10000000,
-	"fWhiteBalance":10000000,
+	"bFullScreen":0,
+	"vBASE":["XD", "/d2g","/inRange","/mask","univ"],
 }
 
 {
-	"name":"RSdepth",
-	"class":"_RSdepth",
-	"bON":0,
+	"name":"XD",
+	"class":"_XDynamics",
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":1,
 	}
-	"_RealSense":"cam",
+	"bON":1,
+	"bLog":1,
+	"/xdType":0,
+	"URI":"192.168.31.3",
+	"mirrorMode":0,
+	"vRangeD":[0,3],
+	"devFPS":10,
+	"devFPSd":10,
+	"vSizeRGB":[320,240],
+	"vSizeD":[320,240],
+	"bRGB":1,
+	"bDepth":1,
+	"bConfidence":1,
+	"btRGB":0,
+	"btDepth":0,
+	"bIR":0,
+	"/_SHMrgb":"SHMxdRGB",
 }
 
 {
@@ -82,18 +77,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"_RGBDbase":"cam",
-}
-
-{
-	"name":"depthProj",
-	"class":"_DepthProj",
-	"bON":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"_RGBDbase":"d2g",
+	"_RGBDbase":"XD",
 }
 
 {
@@ -105,8 +89,7 @@
 		"FPS":30,
 	}
 	"_VisionBase":"d2g",
-	"rFrom":0,
-	"rTo":172,
+	"vRange":[1, 80],
 }
 
 {
@@ -117,43 +100,116 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"_VisionBase":"cam",
+	"_VisionBase":"XD",
 	"_VisionBaseMask":"inRange",
 }
 
 {
-	"name":"udp",
-	"class":"_UDP",
+	"name":"GSVdetect",
+	"class":"_GSVdetect",
 	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-    {
-		"name":"threadR",
-		"FPS":1,
-		"/vTwakeUp":["DC.threadR"],
-	}
-	"port":20000,
-	"nFIFO":128000,
+	"_VisionBase":"inRange",
+	"_Universe":"univ",
 }
 
 {
-	"name":"DC",
-	"class":"_DepthCam",
+	"name":"univ",
+	"class":"_Universe",
 	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+}
+
+{
+	"name":"GSValarm",
+	"class":"_GSValarm",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_Universe":"univ",
+	"_ADIObase":"ebyte",
+	"_Feetech":"ft",
+}
+
+{
+	"name":"ft",
+	"class":"_Feetech",
+	"bON":0,
 	"bLog":0,
     {
 		"name":"thread",
-		"FPS":1,
+		"FPS":10,
 	}
+	"port":"/dev/ttyUSB0",
+	"/port":"/dev/ttyACM0",
+	"baud":115200,
+
+	{
+		"name":"axis",
+		{
+			"name":"X",
+			"pOrigin":0.0,
+			"pTarget":5.0,
+			"pErr":0.01,
+			"pRange":[0,15],
+			"sTarget":300.0,
+			"sRange":[0,300],
+			"aTarget":100.0,
+			"aRange":[1,300],
+		}
+	}
+
+}
+
+{
+	"name":"modbus",
+	"class":"_Modbus",
+	"bON":0,
+	"bLog":1,
     {
-		"name":"threadR",
+		"name":"thread",
 		"FPS":30,
 	}
-	"_IObase":"udp",
-	"_RealSense":"cam",
-	"vBBhb":[0.4, 0.4, 0.6, 0.6],
-	"bHeartbeat":0,
-	"_InRange":"inRange",
+	"port":"/dev/ttyUSB0",
+	"baud":115200,
+	"parity":"N",
 }
+
+{
+	"name":"ebyte",
+	"class":"_ADIO_EBYTE",
+	"bON":0,
+	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"_Modbus":"modbus",
+	"iID":32,
+
+	{
+		"name":"port",
+		{
+			"bDigital":1,
+			"addr":0,
+			"vW":1,
+			"vR":0,
+		}
+		{
+			"bDigital":1,
+			"addr":1,
+			"vW":1,
+			"vR":0,
+		}
+	}
+
+}
+

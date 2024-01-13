@@ -53,6 +53,7 @@ namespace kai
 		bool m_bIR;
 		bool m_btRGB;
 		bool m_btDepth;
+		bool m_bConfidence;
 		float m_fConfidenceThreshold;
 
 		// frames
