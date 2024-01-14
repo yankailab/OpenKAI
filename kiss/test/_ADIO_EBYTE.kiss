@@ -9,12 +9,12 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["ft"],
+	"vBASE":["ebyte"],
 }
 
 {
@@ -47,17 +47,18 @@
 		"name":"port",
 		{
 			"bDigital":1,
+			"type":2, /* Dout */
 			"addr":0,
 			"vW":1,
 			"vR":0,
 		}
 		{
 			"bDigital":1,
-			"addr":1,
-			"vW":1,
+			"type":0, /* Din */
+			"addr":0,
+			"vW":0,
 			"vR":0,
 		}
 	}
-
 }
 

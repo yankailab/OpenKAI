@@ -37,10 +37,18 @@ namespace kai
         }
 
     protected:
+        bool m_bAlarm;
+        bool m_bEnable;
         vector<_Universe*> m_vpU;
 
         _ADIObase* m_pDio;
+        int m_iDout;
+        int m_iDin;
+
         _Feetech* m_pS;
+        int m_iSaxis;
+        int m_spON;
+        int m_spOFF;
 
         int m_nObj;
 

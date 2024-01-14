@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["XD"],
+	"vBASE":["XD400","XD500","XD1000"],
 }
 
 {
@@ -26,7 +26,7 @@
 		"FPS":30,
 	}
 	"bFullScreen":0,
-	"vBASE":["XD", "d2g"],
+	"vBASE":["XD400","XD500","XD1000","d2g"],
 }
 
 {
@@ -43,17 +43,18 @@
 }
 
 {
-	"name":"XD",
+	"name":"XD400",
 	"class":"_XDynamics",
     {
 		"name":"thread",
 		"FPS":1,
 	}
-	"bON":1,
+	"bON":0,
 	"bLog":1,
-	"/xdType":0,
 	"URI":"192.168.31.3",
-	"mirrorMode":1,
+	"xdType":2048,
+	"binning":3,
+	"mirrorMode":0,
 	"vRangeD":[0,3],
 	"devFPS":10,
 	"devFPSd":10,
@@ -61,7 +62,61 @@
 	"vSizeD":[320,240],
 	"bRGB":1,
 	"bDepth":1,
-	"bConfidence":1,
+	"bConfidence":0,
+	"btRGB":0,
+	"btDepth":0,
+	"bIR":0,
+	"/_SHMrgb":"SHMxdRGB",
+}
+
+{
+	"name":"XD500",
+	"class":"_XDynamics",
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"bON":0,
+	"bLog":1,
+	"URI":"192.168.31.3",
+	"xdType":0,
+	"binning":3,
+	"mirrorMode":0,
+	"vRangeD":[0,6],
+	"devFPS":10,
+	"devFPSd":10,
+	"vSizeRGB":[320,240],
+	"vSizeD":[320,240],
+	"bRGB":1,
+	"bDepth":1,
+	"bConfidence":0,
+	"btRGB":0,
+	"btDepth":0,
+	"bIR":0,
+	"/_SHMrgb":"SHMxdRGB",
+}
+
+{
+	"name":"XD1000",
+	"class":"_XDynamics",
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"bON":1,
+	"bLog":0,
+	"URI":"192.168.31.3",
+	"xdType":1,
+	"binning":3,
+	"mirrorMode":0,
+	"vRangeD":[0,10],
+	"devFPS":25,
+	"devFPSd":25,
+	"vSizeRGB":[320,240],
+	"vSizeD":[320,240],
+	"bRGB":1,
+	"bDepth":1,
+	"bConfidence":0,
 	"btRGB":0,
 	"btDepth":0,
 	"bIR":0,
@@ -76,5 +131,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"_RGBDbase":"XD",
+	"/_RGBDbase":"XD400",
+	"/_RGBDbase":"XD500",
+	"_RGBDbase":"XD1000",
 }

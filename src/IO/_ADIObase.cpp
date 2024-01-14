@@ -40,6 +40,7 @@ namespace kai
 			ADIO_PORT port;
 			port.clear();
 			pP->v("bDigital", &port.m_bDigital);
+			pP->v("type", (int*)&port.m_type);
 			pP->v("addr", &port.m_addr);
 			pP->v("vW", &port.m_vW);
 			pP->v("vR", &port.m_vR);
@@ -114,21 +115,29 @@ namespace kai
 		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = ((_Console *)pConsole);
-		string str = "| ";
+		string str;
 
 		for (int i = 0; i < m_vPort.size(); i++)
 		{
 			ADIO_PORT *pP = &m_vPort[i];
 
+			str = "addr = " + i2str(pP->m_addr);
+			str += " | type = " + i2str(pP->m_type);
+
 			if (pP->bDigital())
-				str += i2str(pP->readD() ? 1 : 0);
+			{
+				str += " | D | vW = " + i2str(pP->writeD() ? 1 : 0);
+				str += " | vR = " + i2str(pP->readD() ? 1 : 0);
+			}
 			else
-				str += f2str(pP->readA());
+			{
+				str += " | A | vW = " + f2str(pP->m_vW);
+				str += " | vR = " + f2str(pP->readA());
+			}
 
-			str += " | ";
+			str += " |";
+			pC->addMsg(str);
 		}
-
-		pC->addMsg(str);
 	}
 
 }

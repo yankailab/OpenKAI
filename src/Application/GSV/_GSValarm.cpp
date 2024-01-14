@@ -5,9 +5,17 @@ namespace kai
 
     _GSValarm::_GSValarm()
     {
-        m_pDio = NULL;
-        m_pS = NULL;
+        m_bAlarm = false;
+        m_bEnable = true;
         m_nObj = 0;
+        m_pDio = NULL;
+        m_iDout = 0;
+        m_iDin = 1;
+
+        m_pS = NULL;
+        m_iSaxis = 0;
+        m_spON = 1600;
+        m_spOFF = 600;
     }
 
     _GSValarm::~_GSValarm()
@@ -19,7 +27,11 @@ namespace kai
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        //        pK->v("ID", &m_ID);
+        pK->v("iDout", &m_iDout);
+        pK->v("iDin", &m_iDin);
+        pK->v("iSaxis", &m_iSaxis);
+        pK->v("spON", &m_spON);
+        pK->v("spOFF", &m_spOFF);
 
         return true;
     }
@@ -44,7 +56,7 @@ namespace kai
         for (string u : vN)
         {
             _Universe *pU = (_Universe *)(pK->getInst(u));
-            IF_CONT(pU);
+            IF_CONT(!pU);
 
             m_vpU.push_back(pU);
         }
@@ -91,24 +103,31 @@ namespace kai
                 n++;
             }
         }
-
         m_nObj = n;
 
-        if (m_nObj > 0)
+        if (m_pDio)
+            m_bEnable = m_pDio->readD(m_iDin);
+
+        if (m_nObj > 0 && m_bEnable)
+            m_bAlarm = true;
+        else
+            m_bAlarm = false;
+
+        if (m_bAlarm)
         {
             if (m_pDio)
-                m_pDio->writeD(0, true);
+                m_pDio->writeD(m_iDout, true);
 
             if (m_pS)
-                m_pS->setPtarget(0, 1600);
+                m_pS->setPtarget(m_iSaxis, m_spON);
         }
         else
         {
             if (m_pDio)
-                m_pDio->writeD(0, true);
+                m_pDio->writeD(m_iDout, false);
 
             if (m_pS)
-                m_pS->setPtarget(0, 1600);
+                m_pS->setPtarget(m_iSaxis, m_spOFF);
         }
     }
 
@@ -118,7 +137,18 @@ namespace kai
         this->_ModuleBase::console(pConsole);
 
         _Console *pC = (_Console *)pConsole;
-        //		pC->addMsg("""), 0);
+        if (m_bEnable)
+        {
+            if (m_bAlarm)
+                pC->addMsg("Enabled: ALARM!");
+            else
+                pC->addMsg("Enabled: SAFE");
+        }
+        else
+        {
+            pC->addMsg("Disabled");
+        }
+
     }
 
 }

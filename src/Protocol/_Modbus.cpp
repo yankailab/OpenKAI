@@ -112,6 +112,27 @@ namespace kai
 		return r;
 	}
 
+	//Function code: 2
+	int _Modbus::readInputBits(int iSlave, int addr, int nB, uint8_t *pB)
+	{
+		IF__(!m_pMb, -1);
+		NULL__(pB, -1);
+
+		int r = -1;
+
+		pthread_mutex_lock(&m_mutex);
+
+		if (modbus_set_slave(m_pMb, iSlave) == 0)
+		{
+			r = modbus_read_input_bits(m_pMb, addr, nB, pB);
+		}
+
+		modbus_flush(m_pMb);
+		pthread_mutex_unlock(&m_mutex);
+
+		return r;
+	}
+
 	//Function code: 3
 	int _Modbus::readRegisters(int iSlave, int addr, int nRegister, uint16_t *pB)
 	{

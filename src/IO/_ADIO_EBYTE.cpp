@@ -95,6 +95,7 @@ namespace kai
 		for (int i = 0; i < m_vPort.size(); i++)
 		{
 			ADIO_PORT *pP = &m_vPort[i];
+			IF_CONT(pP->m_type < adio_inout);
 
 			if (pP->bDigital())
 			{
@@ -109,6 +110,25 @@ namespace kai
 
 	void _ADIO_EBYTE::updateR(void)
 	{
+		IF_(check() < 0);
+
+		for (int i = 0; i < m_vPort.size(); i++)
+		{
+			ADIO_PORT *pP = &m_vPort[i];
+			IF_CONT(pP->m_type > adio_inout);
+
+			if (pP->bDigital())
+			{
+				uint8_t b = 0;
+				m_pMB->readInputBits(m_iID, pP->m_addr, 1, &b);
+				pP->m_vR = (b)?1:0;
+			}
+			else
+			{
+//				m_pMB->writeBit(m_iID, pP->m_addr, pP->readD());
+			}
+		}
+
 	}
 
 	void _ADIO_EBYTE::console(void *pConsole)

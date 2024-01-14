@@ -50,6 +50,8 @@ namespace kai
 		IF_T(m_bOpen);
 		IF_F(!m_servo.begin(m_baud, m_port.c_str()));
 
+		m_servo.EnableTorque(1, 1);
+
 		m_bOpen = true;
 		return true;
 	}
@@ -81,24 +83,15 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-            if (!m_bOpen)
-            {
-                if (!open())
-                {
-                    LOG_E("Cannot open");
-                    m_pT->sleepT(SEC_2_USEC);
-                    continue;
-                }
-            }
-
-
-			// if (m_bf.b(ACT_BF_STOP, true))
-			// {
-			// 	while (!readStatus())
-			// 		;
-			// 	m_pA->m_p.m_vTarget = m_pA->m_p.m_v;
-			// }
-
+			if (!m_bOpen)
+			{
+				if (!open())
+				{
+					LOG_E("Cannot open");
+					m_pT->sleepT(SEC_2_USEC);
+					continue;
+				}
+			}
 
 			updateMove();
 
@@ -110,17 +103,19 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		// IF_(!readStatus());
 		IF_(!setPos());
 		// IF_(!setSpeed());
 		// IF_(!setAccel());
 
+		// if (m_bf.b(ACT_BF_STOP, true))
+		// {
+		// 	readStatus()
+		// }
 	}
 
 	bool _Feetech::setID(uint16_t iSlave)
 	{
 		IF_F(check() < 0);
-
 
 		return true;
 	}
@@ -128,7 +123,6 @@ namespace kai
 	bool _Feetech::setBaudrate(uint32_t baudrate)
 	{
 		IF_F(check() < 0);
-
 
 		return true;
 	}
@@ -144,15 +138,11 @@ namespace kai
 	{
 		IF_F(check() < 0);
 
-		m_servo.EnableTorque(1, 1);
-
-		m_servo.WritePosEx(1, 4095, 2400, 50); // 舵机(ID1)以最高速度V=2400(步/秒)，加速度A=50(50*100步/秒^2)，运行至P1=4095位置
-		std::cout << "pos = " << 4095 << std::endl;
-		usleep(2187 * 1000); //[(P1-P0)/V]*1000+[V/(A*100)]*1000
-
-		m_servo.WritePosEx(1, 0, 2400, 50); // 舵机(ID1)以最高速度V=2400(步/秒)，加速度A=50(50*100步/秒^2)，运行至P0=0位置
-		std::cout << "pos = " << 0 << std::endl;
-		usleep(2187 * 1000); //[(P1-P0)/V]*1000+[V/(A*100)]*1000
+		m_pA->m_p.m_vTarget = m_pA->m_p.m_v;
+		m_servo.WritePosEx(m_ID,
+						   m_pA->m_p.m_vTarget,
+						   m_pA->m_s.m_vTarget,
+						   m_pA->m_a.m_vTarget);
 
 		return true;
 	}
@@ -195,7 +185,7 @@ namespace kai
 	void _Feetech::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_ModuleBase::console(pConsole);
+		this->_ActuatorBase::console(pConsole);
 
 		_Console *pC = ((_Console *)pConsole);
 		string str = "";

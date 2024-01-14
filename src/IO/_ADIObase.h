@@ -23,9 +23,17 @@ namespace kai
 		adio_opened
 	};
 
+	enum ADIO_PORT_TYPE
+	{
+		adio_in = 0,
+		adio_inout = 1,
+		adio_out = 2
+	};
+
 	struct ADIO_PORT
 	{
 		bool m_bDigital;
+		ADIO_PORT_TYPE m_type;
 		uint16_t m_addr;
 		float m_vW; // value to be written
 		float m_vR; // value read
@@ -33,6 +41,7 @@ namespace kai
 		void clear(void)
 		{
 			m_bDigital = true;
+			m_type = adio_out;
 			m_addr = 0;
 			m_vW = 0;
 			m_vR = 0;

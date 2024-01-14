@@ -101,6 +101,7 @@ namespace kai
 		~_ActuatorBase();
 
 		virtual bool init(void *pKiss);
+		virtual bool link(void);
 		virtual bool start(void);
 		virtual void console(void *pConsole);
 

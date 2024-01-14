@@ -12,9 +12,9 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
-	"vBASE":["XD","univ","GSVdetect"],
+	"vBASE":["XD400","GSValarm","GSVdetect","univ","ft","ebyte"],
 }
 
 {
@@ -28,7 +28,7 @@
 	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
 	"vSize":[1280,720],
-	"vBASE":["cam","/RSdepth","/d2g","/colOfs","/inRange","/mask"],
+	"vBASE":["XD400","/d2g","/inRange","/mask"],
 }
 
 {
@@ -40,11 +40,11 @@
 		"FPS":30,
 	}
 	"bFullScreen":0,
-	"vBASE":["XD", "/d2g","/inRange","/mask","univ"],
+	"vBASE":["XD400", "/d2g","/inRange","/mask","univ"],
 }
 
 {
-	"name":"XD",
+	"name":"XD400",
 	"class":"_XDynamics",
     {
 		"name":"thread",
@@ -77,7 +77,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"_RGBDbase":"XD",
+	"_RGBDbase":"XD400",
 }
 
 {
@@ -95,7 +95,7 @@
 {
 	"name":"mask",
 	"class":"_Mask",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -122,7 +122,7 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
 }
 
@@ -134,7 +134,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"_Universe":"univ",
+	"_Universe":["univ"],
 	"_ADIObase":"ebyte",
 	"_Feetech":"ft",
 }
@@ -142,37 +142,37 @@
 {
 	"name":"ft",
 	"class":"_Feetech",
-	"bON":0,
+	"bON":1,
 	"bLog":0,
     {
 		"name":"thread",
 		"FPS":10,
 	}
-	"port":"/dev/ttyUSB0",
+	"/port":"/dev/ttyUSB0",
 	"/port":"/dev/ttyACM0",
 	"baud":115200,
+	"iID":1,
 
 	{
 		"name":"axis",
 		{
 			"name":"X",
 			"pOrigin":0.0,
-			"pTarget":5.0,
-			"pErr":0.01,
-			"pRange":[0,15],
-			"sTarget":300.0,
-			"sRange":[0,300],
+			"pErr":1,
+			"pTarget":600,
+			"pRange":[600,1600],
+			"sTarget":1000.0,
+			"sRange":[0,1000],
 			"aTarget":100.0,
 			"aRange":[1,300],
 		}
 	}
-
 }
 
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bON":0,
+	"bON":1,
 	"bLog":1,
     {
 		"name":"thread",
@@ -186,7 +186,7 @@
 {
 	"name":"ebyte",
 	"class":"_ADIO_EBYTE",
-	"bON":0,
+	"bON":1,
 	"bLog":0,
     {
 		"name":"thread",
@@ -199,17 +199,18 @@
 		"name":"port",
 		{
 			"bDigital":1,
+			"type":2, /* Dout */
 			"addr":0,
 			"vW":1,
 			"vR":0,
 		}
 		{
 			"bDigital":1,
-			"addr":1,
-			"vW":1,
-			"vR":0,
+			"type":0, /* Din */
+			"addr":0,
+			"vW":0,
+			"vR":1,
 		}
 	}
-
 }
 

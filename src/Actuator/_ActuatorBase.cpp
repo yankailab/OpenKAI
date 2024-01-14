@@ -81,6 +81,14 @@ namespace kai
 
 		IF_d_F(m_vAxis.size() < m_nMinAxis, LOG_E("axis number < nMinAxis"));
 
+		return true;
+	}
+
+	bool _ActuatorBase::link(void)
+	{
+		IF_F(!this->_ModuleBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+
 		string n;
 
 		n = "";
