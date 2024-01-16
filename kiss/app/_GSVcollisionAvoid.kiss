@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["XD400","GSValarm","GSVdetect","univ","ft","ebyte"],
+	"vBASE":["XD","GSValarm","GSVdetect","univ","ft","ebyte"],
 }
 
 {
@@ -28,7 +28,7 @@
 	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
 	"vSize":[1280,720],
-	"vBASE":["XD400","/d2g","/inRange","/mask"],
+	"vBASE":["XD","/d2g","/inRange","/mask"],
 }
 
 {
@@ -40,20 +40,21 @@
 		"FPS":30,
 	}
 	"bFullScreen":0,
-	"vBASE":["XD400", "/d2g","/inRange","/mask","univ"],
+	"vBASE":["XD", "d2g","/inRange","/mask","univ"],
 }
 
 {
-	"name":"XD400",
+	"name":"XD",  /*XD-400*/
 	"class":"_XDynamics",
     {
 		"name":"thread",
 		"FPS":1,
 	}
-	"bON":1,
+	"bON":0,
 	"bLog":1,
-	"/xdType":0,
 	"URI":"192.168.31.3",
+	"xdType":2048,
+	"binning":3,
 	"mirrorMode":0,
 	"vRangeD":[0,3],
 	"devFPS":10,
@@ -62,7 +63,61 @@
 	"vSizeD":[320,240],
 	"bRGB":1,
 	"bDepth":1,
-	"bConfidence":1,
+	"bConfidence":0,
+	"btRGB":0,
+	"btDepth":0,
+	"bIR":0,
+	"/_SHMrgb":"SHMxdRGB",
+}
+
+{
+	"name":"XD",  /*XD-500*/
+	"class":"_XDynamics",
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"bON":0,
+	"bLog":1,
+	"URI":"192.168.31.3",
+	"xdType":0,
+	"binning":3,
+	"mirrorMode":0,
+	"vRangeD":[0,6],
+	"devFPS":10,
+	"devFPSd":10,
+	"vSizeRGB":[320,240],
+	"vSizeD":[320,240],
+	"bRGB":1,
+	"bDepth":1,
+	"bConfidence":0,
+	"btRGB":0,
+	"btDepth":0,
+	"bIR":0,
+	"/_SHMrgb":"SHMxdRGB",
+}
+
+{
+	"name":"XD", /*XD-1000*/
+	"class":"_XDynamics",
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"bON":1,
+	"bLog":0,
+	"URI":"192.168.31.3",
+	"xdType":1027,
+	"binning":3,
+	"mirrorMode":0,
+	"vRangeD":[0,10],
+	"devFPS":10,
+	"devFPSd":10,
+	"vSizeRGB":[320,240],
+	"vSizeD":[320,240],
+	"bRGB":0,
+	"bDepth":1,
+	"bConfidence":0,
 	"btRGB":0,
 	"btDepth":0,
 	"bIR":0,
@@ -77,7 +132,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"_RGBDbase":"XD400",
+	"_RGBDbase":"XD",
 }
 
 {
@@ -89,7 +144,7 @@
 		"FPS":30,
 	}
 	"_VisionBase":"d2g",
-	"vRange":[1, 80],
+	"vRange":[2, 40],
 }
 
 {
@@ -148,7 +203,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"/port":"/dev/ttyUSB0",
+	"port":"/dev/ttyUSB0",
 	"/port":"/dev/ttyACM0",
 	"baud":115200,
 	"iID":1,
@@ -161,8 +216,8 @@
 			"pErr":1,
 			"pTarget":600,
 			"pRange":[600,1600],
-			"sTarget":1000.0,
-			"sRange":[0,1000],
+			"sTarget":10000.0,
+			"sRange":[0,10000],
 			"aTarget":100.0,
 			"aRange":[1,300],
 		}
@@ -178,7 +233,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"port":"/dev/ttyUSB0",
+	"port":"/dev/ttyUSB1",
 	"baud":115200,
 	"parity":"N",
 }

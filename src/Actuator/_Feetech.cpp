@@ -138,7 +138,6 @@ namespace kai
 	{
 		IF_F(check() < 0);
 
-		m_pA->m_p.m_vTarget = m_pA->m_p.m_v;
 		m_servo.WritePosEx(m_ID,
 						   m_pA->m_p.m_vTarget,
 						   m_pA->m_s.m_vTarget,

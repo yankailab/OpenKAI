@@ -289,6 +289,10 @@ make all -j$(nproc)
 sudo make install
 
 #----------------------------------------------------
+# (Optional) OpenKAI extra modules
+git clone --depth 1 https://github.com/yankailab/OpenKAI_exm.git
+
+#----------------------------------------------------
 # OpenKAI
 sudo apt-get install libunwind-dev
 sudo apt-get install libgoogle-glog-dev

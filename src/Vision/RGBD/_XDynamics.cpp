@@ -69,7 +69,7 @@ namespace kai
         XDYN_Streamer *pStream = CreateStreamerNet((XDYN_PRODUCT_TYPE_e)m_xdType, CbEvent, this, m_devURI);
         NULL_Fl(pStream, "CreateStreamerNet failed");
 
-        res = pStream->OpenCamera(XDYN_DEV_TYPE_TOF_RGB);
+        res = pStream->OpenCamera(XDYN_DEV_TYPE_TOF);//XDYN_DEV_TYPE_TOF_RGB);
         IF_Fl(res != XD_SUCCESS, "OpenCamera failed: " + i2str(res));
 
         MemSinkCfg memCfg;
