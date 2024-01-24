@@ -294,6 +294,10 @@
 #include "../Sensor/LiDAR/Livox/_Livox.h"
 #include "../Sensor/LiDAR/Livox/LivoxLidar.h"
 #endif
+#ifdef USE_LIVOX2
+#include "../Sensor/LiDAR/Livox2/_Livox2.h"
+#include "../Sensor/LiDAR/Livox2/LivoxLidar2.h"
+#endif
 #endif
 
 #ifdef WITH_SLAM

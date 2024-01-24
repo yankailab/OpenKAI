@@ -3,8 +3,8 @@
 #ifndef LDS_LIDAR_H_
 #define LDS_LIDAR_H_
 
-#include "../../Base/BASE.h"
-#include "../../Script/Kiss.h"
+#include "../../../Base/BASE.h"
+#include "../../../Script/Kiss.h"
 
 #include "livox_def.h"
 #include "livox_sdk.h"
@@ -61,7 +61,7 @@ namespace kai
         void *pLivox;
     } LidarDevice;
 
-    /**
+ /**
  * LiDAR data source, data from dependent lidar.
  */
     class LivoxLidar : public BASE

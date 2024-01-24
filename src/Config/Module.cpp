@@ -301,6 +301,10 @@ namespace kai
 		ADD_MODULE(_Livox);
 		ADD_MODULE(LivoxLidar);
 #endif
+#ifdef USE_LIVOX2
+		ADD_MODULE(_Livox2);
+		ADD_MODULE(LivoxLidar2);
+#endif
 #endif
 
 #ifdef WITH_SLAM

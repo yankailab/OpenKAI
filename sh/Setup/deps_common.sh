@@ -68,8 +68,11 @@ sudo apt clean
 #----------------------------------------------------
 # (Optional) CUDA
 # Update the video driver first with Software and Update
-wget https://developer.download.nvidia.com/compute/cuda/12.3.1/local_installers/cuda_12.3.1_545.23.08_linux.run
-sudo sh cuda_12.3.1_545.23.08_linux.run
+# wget https://developer.download.nvidia.com/compute/cuda/12.3.1/local_installers/cuda_12.3.1_545.23.08_linux.run
+# sudo sh cuda_12.3.1_545.23.08_linux.run
+wget https://developer.download.nvidia.com/compute/cuda/12.3.2/local_installers/cuda_12.3.2_545.23.08_linux.run
+sudo chmod a+x cuda_12.3.2_545.23.08_linux.run
+sudo sh cuda_12.3.2_545.23.08_linux.run
 sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda/lib64:\$LD_LIBRARY_PATH\nexport LC_ALL=en_US.UTF-8" >> ~/.bashrc
 
 # CuDNN, download the latest .deb from NVIDIA site
@@ -161,7 +164,7 @@ gphoto2 --abilities
 
 #----------------------------------------------------
 # (Optional) OpenCV
-# Refer to Platform_openCV.sh
+# Refer to openCV_platform.sh
 
 #----------------------------------------------------
 # (Optional) TensorFlow Lite
@@ -218,7 +221,7 @@ sudo make install
 
 #----------------------------------------------------
 # (Optional) Open3D
-# Refer to platform_open3D.sh
+# Refer to open3D_platform.sh
 
 #----------------------------------------------------
 # (Optional) gwsocket
@@ -252,7 +255,17 @@ sudo make install
 
 #----------------------------------------------------
 # (Optional) Livox SDK2
-
+git clone --depth 1 https://github.com/Livox-SDK/Livox-SDK2.git
+cd Livox-SDK2
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ../
+make -j$(nproc)
+sudo make install
+# In direct connection mode configure the host ip to be 
+# IP: 192.168.1.50
+# Netmask: 255.255.255.0
+# Gateway: 192.168.1.1
 
 #----------------------------------------------------
 # (Optional) Pangolin & Orb_Slam3
@@ -271,15 +284,6 @@ sed -i 's/++11/++14/g' CMakeLists.txt
 chmod +x build.sh
 ./build.sh
 # sudo make install
-
-#----------------------------------------------------
-# (Optional) Dynamixel
-git clone --depth 1 https://github.com/ROBOTIS-GIT/DynamixelSDK.git
-cd DynamixelSDK/c++/build/linux64
-make -j$(nproc)
-sudo make install
-# For Jetson and Raspberry Pi
-# remove "-m64" in "FORMAT" line of the Makefile in linux64 directory
 
 #----------------------------------------------------
 # (Optional) xArm
@@ -302,3 +306,16 @@ mkdir build
 cd build
 ccmake ../
 make all -j$(nproc)
+
+
+
+
+
+#----------------------------------------------------
+# (Optional) Dynamixel
+git clone --depth 1 https://github.com/ROBOTIS-GIT/DynamixelSDK.git
+cd DynamixelSDK/c++/build/linux64
+make -j$(nproc)
+sudo make install
+# For Jetson and Raspberry Pi
+# remove "-m64" in "FORMAT" line of the Makefile in linux64 directory
