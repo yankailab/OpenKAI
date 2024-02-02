@@ -215,7 +215,7 @@ namespace kai
 		if (m_pDV)
 		{
 			//depth
-			Frame fD = *m_pDV->Depth();
+			Frame fD = *m_pDV->getFrameD();
 			if (m_bFlipD)
 				fD = fD.flip(-1);
 			Mat mD;

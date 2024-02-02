@@ -44,8 +44,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
-		_Thread *m_Tr;
+	protected:
 		_DroneBox *m_pDB;
 	};
 

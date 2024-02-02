@@ -1,30 +1,42 @@
 #----------------------------------------------------
 # (Optional) Open3D
 sudo apt-get install libjsoncpp-dev
-#git clone --branch v0.18.0 --depth 1 --recursive https://github.com/intel-isl/Open3D
-git clone --branch GuiWinSetFullScr --depth 1 --recursive https://github.com/yankailab/Open3D
+git clone --branch v0.18.0 --depth 1 --recursive https://github.com/intel-isl/Open3D
+#git clone --branch GuiWinSetFullScr --depth 1 --recursive https://github.com/yankailab/Open3D
 cd Open3D
 git submodule update --init --recursive
+
+# PC
 # run this again if met error in re-compile
 util/install_deps_ubuntu.sh
 mkdir build
 cd build
 
-#PC
-cmake -DCMAKE_BUILD_TYPE=Release -DGLIBCXX_USE_CXX11_ABI=ON -DBUILD_CUDA_MODULE=OFF -DBUILD_WEBRTC=ON -DBUILD_EXAMPLES=OFF -DBUILD_FILAMENT_FROM_SOURCE=OFF -DBUILD_GUI=ON -DBUILD_PYTHON_MODULE=OFF -DBUILD_SHARED_LIBS=ON -DBUILD_WEBRTC=OFF -DDEVELOPER_BUILD=OFF -DWITH_SIMD=ON ../
+cmake -DCMAKE_BUILD_TYPE=Release \
+      -DGLIBCXX_USE_CXX11_ABI=ON \
+      -DBUILD_CUDA_MODULE=OFF \
+      -DBUILD_EXAMPLES=OFF \
+      -DBUILD_FILAMENT_FROM_SOURCE=OFF \
+      -DBUILD_GUI=ON \
+      -DBUILD_PYTHON_MODULE=OFF \
+      -DBUILD_SHARED_LIBS=ON \
+      -DBUILD_TENSORFLOW_OPS=OFF \
+      -DBUILD_WEBRTC=ON \
+      -DBUILD_UNIT_TESTS=OFF \
+      -DDEVELOPER_BUILD=OFF \
+      -DWITH_SIMD=ON ../
 make -j$(nproc)
 sudo make install
 
-
-
-# TODO: Raspberry pi
+# Raspberry pi
 util/install_deps_ubuntu.sh
 sudo apt-get install -y xorg-dev libglu1-mesa-dev
 sudo apt-get install libglew-dev
+mkdir build
+cd build
 
 cmake \
     -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=ON \
     -DGLIBCXX_USE_CXX11_ABI=ON \
     -DBUILD_CUDA_MODULE=OFF \
     -DBUILD_EXAMPLES=OFF \
@@ -33,6 +45,7 @@ cmake \
     -DBUILD_PYTHON_MODULE=OFF \
     -DBUILD_SHARED_LIBS=ON \
     -DBUILD_TENSORFLOW_OPS=OFF \
+    -DBUILD_WEBRTC=ON \
     -DBUILD_UNIT_TESTS=OFF \
     -DDEVELOPER_BUILD=OFF \
     -DUSE_BLAS=ON \

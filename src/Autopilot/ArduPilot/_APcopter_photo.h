@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot_AP__APcopter_photo_H_
 #define OpenKAI_src_Autopilot_AP__APcopter_photo_H_
 
-#include "../../Vision/_RGBDbase.h"
+#include "../../Vision/RGBD/_RGBDbase.h"
 #include "../../Vision/_GPhoto.h"
 #include "../../Sensor/Distance/_DistSensorBase.h"
 #include "_AP_base.h"

@@ -113,4 +113,10 @@ namespace kai
 		return m_vClass[iClass].m_name;
 	}
 
+	_Universe* _DetectorBase::getU(void)
+	{
+		return m_pU;
+	}
+
+
 }

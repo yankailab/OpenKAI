@@ -68,16 +68,10 @@ sudo apt clean
 #----------------------------------------------------
 # (Optional) CUDA
 # Update the video driver first with Software and Update
-# wget https://developer.download.nvidia.com/compute/cuda/12.3.1/local_installers/cuda_12.3.1_545.23.08_linux.run
-# sudo sh cuda_12.3.1_545.23.08_linux.run
 wget https://developer.download.nvidia.com/compute/cuda/12.3.2/local_installers/cuda_12.3.2_545.23.08_linux.run
 sudo chmod a+x cuda_12.3.2_545.23.08_linux.run
 sudo sh cuda_12.3.2_545.23.08_linux.run
-sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda/lib64:\$LD_LIBRARY_PATH\nexport LC_ALL=en_US.UTF-8" >> ~/.bashrc
-
-# CuDNN, download the latest .deb from NVIDIA site
-sudo dpkg -i cudnn-local-repo-ubuntu2204-8.8.0.121_1.0-1_amd64.deb
-#sudo dpkg -i libcudnn7-dev_7.6.5.32-1+cuda10.2_amd64.deb
+sudo echo -e "export PATH=/usr/local/cuda-12.3/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda-12.3/lib64:\$LD_LIBRARY_PATH\nexport LC_ALL=en_US.UTF-8" >> ~/.bashrc
 
 #----------------------------------------------------
 # CMake
@@ -197,6 +191,11 @@ cd build
 
 #----------------------------------------------------
 # (Optional) Jetson inference
+# CuDNN, download the latest .deb from NVIDIA site
+# sudo dpkg -i cudnn-local-repo-ubuntu2204-8.8.0.121_1.0-1_amd64.deb
+
+# TensorRT
+
 # Jetson Nano/Xavier
 sudo apt-get -y install libpython3-dev python3-numpy
 git clone --recursive --depth 1 https://github.com/dusty-nv/jetson-inference.git

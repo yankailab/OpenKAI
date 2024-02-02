@@ -43,7 +43,7 @@
 }
 
 {
-	"name":"XD400",
+	"name":"XD",  /*XD-400*/
 	"class":"_XDynamics",
     {
 		"name":"thread",
@@ -52,7 +52,8 @@
 	"bON":0,
 	"bLog":1,
 	"URI":"192.168.31.3",
-	"xdType":2048,
+	"xdDevType":0,
+	"xdProductType":2048,
 	"binning":3,
 	"mirrorMode":0,
 	"vRangeD":[0,3],
@@ -70,7 +71,7 @@
 }
 
 {
-	"name":"XD500",
+	"name":"XD",  /*XD-500*/
 	"class":"_XDynamics",
     {
 		"name":"thread",
@@ -79,7 +80,8 @@
 	"bON":0,
 	"bLog":1,
 	"URI":"192.168.31.3",
-	"xdType":0,
+	"xdDevType":0,
+	"xdProductType":0,
 	"binning":3,
 	"mirrorMode":0,
 	"vRangeD":[0,6],
@@ -97,7 +99,7 @@
 }
 
 {
-	"name":"XD1000",
+	"name":"XD", /*XD-1000*/
 	"class":"_XDynamics",
     {
 		"name":"thread",
@@ -106,7 +108,8 @@
 	"bON":1,
 	"bLog":0,
 	"URI":"192.168.31.3",
-	"xdType":1,
+	"xdDevType":0,
+	"xdProductType":1027,
 	"binning":3,
 	"mirrorMode":0,
 	"vRangeD":[0,10],
@@ -114,7 +117,7 @@
 	"devFPSd":10,
 	"vSizeRGB":[320,240],
 	"vSizeD":[320,240],
-	"bRGB":1,
+	"bRGB":0,
 	"bDepth":1,
 	"bConfidence":0,
 	"btRGB":0,

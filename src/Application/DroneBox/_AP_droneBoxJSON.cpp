@@ -5,7 +5,6 @@ namespace kai
 
     _AP_droneBoxJSON::_AP_droneBoxJSON()
     {
-        m_Tr = NULL;
         m_pAPgcs = NULL;
 
         m_ID = -1;
@@ -21,18 +20,6 @@ namespace kai
     {
         IF_F(!this->_JSONbase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
-
-        Kiss *pKt = pK->child("threadR");
-        IF_F(pKt->empty());
-
-        m_pTr = new _Thread();
-        if (!m_pTr->init(pKt))
-        {
-            DEL(m_pTr);
-            return false;
-        }
-
-        pKt->m_pInst = m_pTr;
 
         return true;
     }

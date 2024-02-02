@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["cam","/serialAP","apBase","apMission","/cURL"],
+	"vBASE":["/cam","serialAP","apBase","apMission","/cURL"],
 }
 
 {
@@ -43,8 +43,9 @@
 		"FPS":10,
 		"vTwakeUp":["apMavlink.thread"],
 	}
-	"port":"/dev/ttyAMA0",
+	"/port":"/dev/ttyAMA0",
 	"/port":"/dev/ttyACM0",
+	"port":"/dev/ttyUSB0",
 	"baud":115200,
 }
 
@@ -56,7 +57,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"bLog":0,
+	"bLog":1,
 	"_IObase":"serialAP",
 	{
 		"name":"routing",
@@ -163,7 +164,7 @@
 {
 	"name":"apMission",
 	"class":"_AP_mission",
-	"bON":1,
+	"bON":0,
 	"bLog":1,
     {
 		"name":"thread",
@@ -218,3 +219,10 @@
 	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! appsink max-buffers=1 sync=false drop=true", /* C10 mini, using YUV, Y chan only */
 	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! tee name=t t. appsink max-buffers=1 sync=false drop=true t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 }
+
+/*
+// Mode values for pf2
+// setApMode(100925440); // landing
+// setApMode(50593792); // Guided
+// setApMode(84148224); // RTL
+*/

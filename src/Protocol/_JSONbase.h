@@ -48,7 +48,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		_Thread *m_pTr;
 		_IObase *m_pIO;
 

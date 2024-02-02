@@ -16,7 +16,8 @@ namespace kai
         m_vSizeD.set(320, 240);
 
         m_devURI = "192.168.31.3";
-        m_xdType = XDYN_PRODUCT_TYPE_XD_400;
+        m_xdDevType = XDYN_DEV_TYPE_TOF;//XDYN_DEV_TYPE_TOF_RGB;
+        m_xdProductType = XDYN_PRODUCT_TYPE_XD_400;
         m_pXDstream = NULL;
         m_xdRGBD.clear();
 
@@ -32,7 +33,8 @@ namespace kai
         IF_F(!_RGBDbase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        pK->v("xdType", &m_xdType);
+        pK->v("xdDevType", &m_xdDevType);
+        pK->v("xdProductType", &m_xdProductType);
         pK->v("vPhaseInt", &m_xdCtrl.m_vPhaseInt);
         pK->v("vSpaceInt", &m_xdCtrl.m_vSpaceInt);
         pK->v("vFreq", &m_xdCtrl.m_vFreq);
@@ -66,10 +68,10 @@ namespace kai
         // init context
         XdynContextInit();
 
-        XDYN_Streamer *pStream = CreateStreamerNet((XDYN_PRODUCT_TYPE_e)m_xdType, CbEvent, this, m_devURI);
+        XDYN_Streamer *pStream = CreateStreamerNet((XDYN_PRODUCT_TYPE_e)m_xdProductType, CbEvent, this, m_devURI);
         NULL_Fl(pStream, "CreateStreamerNet failed");
 
-        res = pStream->OpenCamera(XDYN_DEV_TYPE_TOF);//XDYN_DEV_TYPE_TOF_RGB);
+        res = pStream->OpenCamera((XDYN_DEV_TYPE_e)m_xdDevType);
         IF_Fl(res != XD_SUCCESS, "OpenCamera failed: " + i2str(res));
 
         MemSinkCfg memCfg;

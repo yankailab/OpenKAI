@@ -73,7 +73,7 @@ namespace kai
 		o.init();
 		_Object *pO;
 		int i = 0;
-		while ((pO = m_pDet->m_pU->get(i++)) != NULL)
+		while ((pO = m_pDet->getU()->get(i++)) != NULL)
 		{
 			o = *pO;
 			o.setTopClass(0);
@@ -104,7 +104,7 @@ namespace kai
 		this->_StateBase::console(pConsole);
 		IF_(check() < 0);
 
-		string msg = "nTarget=" + i2str(m_pDet->m_pU->size());
+		string msg = "nTarget=" + i2str(m_pDet->getU()->size());
 		((_Console *)pConsole)->addMsg(msg);
 	}
 

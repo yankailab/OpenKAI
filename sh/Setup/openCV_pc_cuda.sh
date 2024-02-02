@@ -1,7 +1,7 @@
 #----------------------------------------------------
 # (Optional) OpenCV
-git clone --branch 4.8.1 --depth 1 https://github.com/opencv/opencv.git
-git clone --branch 4.8.1 --depth 1 https://github.com/opencv/opencv_contrib.git
+git clone --branch 4.9.0 --depth 1 https://github.com/opencv/opencv.git
+git clone --branch 4.9.0 --depth 1 https://github.com/opencv/opencv_contrib.git
 cd opencv
 mkdir build
 cd build
@@ -104,7 +104,7 @@ cmake -DBUILD_CUDA_STUBS=OFF \
       -DWITH_ARAVIS=OFF \
       -DWITH_CAROTENE=ON \
       -DWITH_CLP=OFF \
-      -DWITH_CUDA=OFF \
+      -DWITH_CUDA=ON \
       -DWITH_EIGEN=ON \
       -DWITH_FFMPEG=ON \
       -DWITH_FREETYPE=ON \

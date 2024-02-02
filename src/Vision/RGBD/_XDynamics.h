@@ -118,7 +118,8 @@ namespace kai
 		}
 
 	private:
-		int m_xdType;
+		int m_xdDevType;
+		int m_xdProductType;
 		XdynCamInfo_t m_xdCamInfo;
 		XDYN_Streamer *m_pXDstream;
 		XDctrl m_xdCtrl;

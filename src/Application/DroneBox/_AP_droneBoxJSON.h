@@ -43,7 +43,6 @@ namespace kai
 		}
 
 	public:
-		_Thread *m_Tr;
 		_AP_gcs *m_pAPgcs;
 
 		int m_ID;

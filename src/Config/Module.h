@@ -279,6 +279,7 @@
 #endif
 
 #ifdef WITH_SCIENCE
+#include "../Science/_IsingSolver.h"
 #ifdef USE_MATHGL
 // #include "../Science/_Solver.h"
 #include "../Science/_SolverBase.h"

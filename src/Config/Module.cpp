@@ -286,6 +286,7 @@ namespace kai
 #endif
 
 #ifdef WITH_SCIENCE
+		ADD_MODULE(_IsingSolver);
 #ifdef USE_MATHGL
 		//		ADD_MODULE(_Solver);
 		ADD_MODULE(_SolverBase);

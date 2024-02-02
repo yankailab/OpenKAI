@@ -28,6 +28,8 @@ namespace kai
 		virtual int getClassIdx(string &className);
 		virtual string getClassName(int iClass);
 
+		virtual _Universe* getU(void);
+
 	protected:
 		// input
 		_VisionBase *m_pV;

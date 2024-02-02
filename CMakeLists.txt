@@ -395,6 +395,7 @@ endif()
 
 if(WITH_SCIENCE)
 add_definitions(-DWITH_SCIENCE)
+set(OpenKAI_cpp ${OpenKAI_cpp} src/Science/_IsingSolver.cpp)
 if(USE_QC)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Science/_QCbase.cpp)
 endif()

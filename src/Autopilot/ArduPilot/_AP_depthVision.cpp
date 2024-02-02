@@ -62,7 +62,7 @@ namespace kai
 		_Mavlink *pMavlink = m_pAP->m_pMav;
 		NULL_(m_pDV);
 
-		vFloat2 range = m_pDV->m_vRange;
+		vFloat2 range = m_pDV->getRangeD();
 		mavlink_distance_sensor_t D;
 
 		for (int i = 0; i < m_nROI; i++)
