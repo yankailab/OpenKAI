@@ -185,10 +185,10 @@ namespace kai
 		NULL_(pO);
 
 		int iClass = pO->getTopClass();
-		IF_(iClass >= m_nClass);
+		IF_(iClass >= m_vClass.size());
 		IF_(iClass < 0);
 
-		string oName = m_vClass[iClass].m_name;
+		string oName = m_vClass[iClass];
 		if (oName.length() > 0)
 		{
 			putText(*pM, oName, Point(25, 100), FONT_HERSHEY_SIMPLEX, 2.0,

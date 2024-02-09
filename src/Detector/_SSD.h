@@ -22,7 +22,6 @@ namespace kai
 
 		bool init(void *pKiss);
 		bool start(void);
-		void draw(void *pFrame);
 		int check(void);
 
 	private:

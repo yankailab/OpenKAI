@@ -32,8 +32,6 @@ bool _Line::init(void *pKiss)
 	pK->v("minPixLine", &m_minPixLine);
 	pK->v("wSlide", &m_wSlide);
 
-	m_nClass = 1;
-
 	string n;
 	n = "";
 	pK->v("_VisionBase", &n );

@@ -199,6 +199,7 @@
 #ifdef USE_OPENCV
 #include "../Detector/_Lane.h"
 #include "../Detector/_YOLOv3.h"
+#include "../Detector/_YOLOv8.h"
 #include "../Detector/_DNNclassifier.h"
 #include "../Detector/_DNNtext.h"
 #include "../Detector/_DepthSegment.h"

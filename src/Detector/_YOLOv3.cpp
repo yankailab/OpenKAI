@@ -11,7 +11,7 @@ namespace kai
 	{
 		m_thr = 0.5;
 		m_nms = 0.4;
-		m_vBlobSize.set(416,416);
+		m_vBlobSize.set(416, 416);
 		m_bSwapRB = true;
 		m_vMean.clear();
 		m_scale = 1.0 / 255.0;
@@ -71,7 +71,7 @@ namespace kai
 
 			if (check() >= 0)
 			{
-					detectYolo();
+				detectYolo();
 
 				if (m_pT->bGoSleep())
 					m_pU->clear();
@@ -202,40 +202,4 @@ namespace kai
 
 		m_pU->swap();
 	}
-
-	void _YOLOv3::draw(void* pFrame)
-	{
-		NULL_(pFrame);
-		this->_ModuleBase::draw(pFrame);
-		IF_(check() < 0);
-
-		Frame *pF = (Frame*)pFrame;
-		Mat *pM = pF->m();
-		IF_(pM->empty());
-
-		Scalar col = Scalar(0, 0, 255);
-
-		_Object *pO;
-		int i = 0;
-		while ((pO = m_pU->get(i++)) != NULL)
-		{
-			int iClass = pO->getTopClass();
-			IF_CONT(m_iClassDraw >= 0 && iClass != m_iClassDraw);
-			IF_CONT(iClass < 0);
-
-			Rect r = bb2Rect(pO->getBB2Dscaled(pM->cols, pM->rows));
-			rectangle(*pM, r, col, 1);
-
-			if (iClass < m_nClass)
-			{
-				string oName = m_vClass[iClass].m_name;
-				if (oName.length() > 0)
-				{
-					putText(*pM, oName, Point(r.x + 15, r.y + 25),
-							FONT_HERSHEY_SIMPLEX, 1.0, col, 2);
-				}
-			}
-		}
-	}
-
 }

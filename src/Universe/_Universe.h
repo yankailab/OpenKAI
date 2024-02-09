@@ -10,25 +10,13 @@
 
 #include "_ObjectArray.h"
 #include "../Primitive/tSwap.h"
+
 #ifdef USE_OPENCV
 #include "../Vision/Frame.h"
 #endif
 
 namespace kai
 {
-
-	struct OBJ_CLASS
-	{
-		string m_name;
-		int m_n;
-
-		void init(void)
-		{
-			m_n = 0;
-			m_name = "";
-		}
-	};
-
 	class _Universe : public _ModuleBase
 	{
 	public:

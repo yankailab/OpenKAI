@@ -28,7 +28,6 @@ namespace kai
 		pK->v<double>("rL", &m_rL);
 		pK->v<double>("rU", &m_rU);
 
-		m_nClass = 1;
 		return true;
 	}
 

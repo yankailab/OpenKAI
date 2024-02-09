@@ -32,8 +32,6 @@ namespace kai
 		pK->v<float>("rD", &m_rD);
 		pK->v<float>("rArea", &m_rArea);
 
-		m_nClass = 1;
-
 		return true;
 	}
 

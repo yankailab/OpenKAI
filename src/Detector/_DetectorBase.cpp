@@ -12,12 +12,10 @@ namespace kai
 		m_pV = NULL;
 		m_pU = NULL;
 
-		m_confidence = 0.5;
 		m_fModel = "";
 		m_fWeight = "";
 		m_fMean = "";
 		m_fClass = "";
-		m_nClass = 0;
 	}
 
 	_DetectorBase::~_DetectorBase()
@@ -34,7 +32,6 @@ namespace kai
 		pK->v("fWeight", &m_fWeight);
 		pK->v("fMean", &m_fMean);
 		pK->v("fClass", &m_fClass);
-		pK->v("confidence", &m_confidence);
 
 		// statistics
 		if (!m_fClass.empty())
@@ -45,27 +42,14 @@ namespace kai
 			string line;
 			while (std::getline(ifs, line))
 			{
-				OBJ_CLASS oc;
-				oc.init();
-				oc.m_name = line;
-				m_vClass.push_back(oc);
+				m_vClass.push_back(line);
 			}
 
-			m_nClass = m_vClass.size();
 			ifs.close();
 		}
 		else
 		{
-			vector<string> vClassList;
-			m_nClass = pK->a("classList", &vClassList);
-
-			for (int i = 0; i < m_nClass; i++)
-			{
-				OBJ_CLASS oc;
-				oc.init();
-				oc.m_name = vClassList[i];
-				m_vClass.push_back(oc);
-			}
+			pK->a("vClass", &m_vClass);
 		}
 
 		return true;
@@ -87,6 +71,11 @@ namespace kai
 		return true;
 	}
 
+	bool _DetectorBase::loadModel(void)
+	{
+		return true;
+	}
+
 	int _DetectorBase::check(void)
 	{
 		return this->_ModuleBase::check();
@@ -94,9 +83,9 @@ namespace kai
 
 	int _DetectorBase::getClassIdx(string &className)
 	{
-		for (int i = 0; i < m_nClass; i++)
+		for (int i = 0; i < m_vClass.size(); i++)
 		{
-			if (m_vClass[i].m_name == className)
+			if (m_vClass[i] == className)
 				return i;
 		}
 
@@ -107,10 +96,10 @@ namespace kai
 	{
 		if (iClass < 0)
 			return "";
-		if (iClass >= m_nClass)
+		if (iClass >= m_vClass.size())
 			return "";
 
-		return m_vClass[iClass].m_name;
+		return m_vClass[iClass];
 	}
 
 	_Universe* _DetectorBase::getU(void)
@@ -118,5 +107,13 @@ namespace kai
 		return m_pU;
 	}
 
+	void _DetectorBase::console(void *pConsole)
+	{
+		NULL_(pConsole);
+		this->_ModuleBase::console(pConsole);
+
+		_Console *pC = (_Console *)pConsole;
+//		pC->addMsg("nState: " + i2str(m_vStates.size()), 0);
+	}
 
 }

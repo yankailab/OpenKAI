@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Base__DetectorBase_H_
-#define OpenKAI_src_Base__DetectorBase_H_
+#ifndef OpenKAI_src_Detector__DetectorBase_H_
+#define OpenKAI_src_Detector__DetectorBase_H_
 
 #include "../Universe/_Universe.h"
 #include "../Vision/_VisionBase.h"
@@ -24,10 +24,11 @@ namespace kai
 		virtual bool init(void *pKiss);
 		virtual bool link(void);
 		virtual int check(void);
+		virtual void console(void *pConsole);
 
+		virtual bool loadModel(void);
 		virtual int getClassIdx(string &className);
 		virtual string getClassName(int iClass);
-
 		virtual _Universe* getU(void);
 
 	protected:
@@ -39,13 +40,11 @@ namespace kai
 		_Universe *m_pU;
 
 		// model
-		float m_confidence;
 		string m_fModel;
 		string m_fWeight;
 		string m_fMean;
 		string m_fClass;
-		int m_nClass;
-		vector<OBJ_CLASS> m_vClass;
+		vector<string> m_vClass;
 	};
 
 }
