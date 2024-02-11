@@ -25,6 +25,7 @@ namespace kai
         ~_Livox2();
 
         virtual bool init(void *pKiss);
+		virtual bool link(void);
         virtual int check(void);
         virtual bool start(void);
         virtual void console(void *pConsole);
@@ -91,7 +92,8 @@ namespace kai
             return NULL;
         }
 
-    public:
+    protected:
+        LivoxLidar2* m_pLv;
         string m_SN;
         int m_handle;
         bool m_bOpen;

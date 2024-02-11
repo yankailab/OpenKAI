@@ -2,17 +2,19 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
-	"bDraw":1,
 	"bLog":1,
-	"bStdErr":1,
-	"waitKey":30,
+	"bStdErr":0,
 }
 
 {
-	"name":"OK_Console",
+	"name":"console",
 	"class":"_Console",
 	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["Livox2","LivoxLidar2"],
 }
 
 {
@@ -20,7 +22,6 @@
 	"class":"LivoxLidar",
 	"bON":0,
 	"bLog":1,
-	"_Console":"OK_Console",
 	"/vBroadcastCode":["3JEDHC900100791"],
 	"vBroadcastCode":["3JEDHC900100791"],
 	"bEnableFan":1,
@@ -39,13 +40,44 @@
 		"FPS":30,
 	}
 	"bLog":1,
-	"_Console":"OK_Console",
 	"LivoxLidar":"LivoxLidar",
 	"/broadcastCode":"3JEDHC900100791",
 	"broadcastCode":"3JEDHC900100791",
 	"nP":256000,
 	"vToffset":[0,0,0],
 	"vRoffset":[0,0,0],
+}
+
+{
+	"name":"LivoxLidar2",
+	"class":"LivoxLidar2",
+	"bON":1,
+	"bLog":1,
+	"fCondig":"/home/kai/dev/",
+}
+
+{
+	"name":"Livox2",
+	"class":"_Livox2",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":1,
+	"LivoxLidar2":"LivoxLidar2",
+	"SN":"",
+	"lidarMode":1,
+	"nP":256000,
+	"vToffset":[0,0,0],
+	"vRoffset":[0,0,0],
+
+
+	"bEnableFan":1,
+	"returnMode":1,
+	"coordinate":0,
+	"imuRate":1,
+	"scanPattern":0,
 }
 
 {
@@ -56,32 +88,8 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"Window":"OKview",
-	"_Console":"OK_Console",
 	"vWinSize":[1920,1080],
 	"fov":100,
 	"/ctxdT":0,
 	"vPCbase":["Livox"],
 }
-
-{
-	"name":"T265",
-	"class":"_RStracking",
-	"FPS":30,
-	"bON":0,
-	"bLog":1,
-	"Window":"OKview",
-	"_Console":"OK_Console",
-	"vAxisIdx":[0,1,2],
-}
-
-{
-	"name":"GUI",
-	"class":"GUIwindow",
-	"bON":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-}
-

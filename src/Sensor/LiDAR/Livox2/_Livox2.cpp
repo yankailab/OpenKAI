@@ -9,7 +9,9 @@ namespace kai
 
     _Livox2::_Livox2()
     {
+        m_pLv = NULL;
         m_SN = "";
+        m_handle = -1;
         m_bOpen = false;
         m_lidarMode = kLivoxLidarNormal;
     }
@@ -24,16 +26,34 @@ namespace kai
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("SN", &m_SN);
-        pK->v("lidarMode", (int*)&m_lidarMode);
+        pK->v("lidarMode", (int *)&m_lidarMode);
+
+        return true;
+    }
+
+    bool _Livox2::link(void)
+    {
+        IF_F(!this->_PCstream::link());
+
+        Kiss *pK = (Kiss *)m_pKiss;
+        string n = "";
+
+        pK->v("LivoxLidar2", &n);
+        m_pLv = (LivoxLidar2 *)(pK->getInst(n));
 
         return true;
     }
 
     bool _Livox2::open(void)
     {
+        NULL_F(m_pLv);
+
+        m_handle = m_pLv->getDeviceHandle(m_SN);
+        IF_F(m_handle < 0);
+
+        IF_F(!m_pLv->setCbData(m_handle, sCbPointCloud, (void *)this));
 
         m_bOpen = true;
-
         LOG_I("open() success");
         return true;
     }
@@ -77,7 +97,7 @@ namespace kai
 
     bool _Livox2::updateLidar(void)
     {
-//        m_pL->setLidarMode(m_broadcastCode, (LidarMode)m_lidarMode);
+        //        m_pL->setLidarMode(m_broadcastCode, (LidarMode)m_lidarMode);
         // if(m_lidarMode != kLidarModePowerSaving)
         // {
         //     m_pL->setScanPattern(m_broadcastCode, (LidarScanPattern)m_scanPattern);
@@ -124,11 +144,11 @@ namespace kai
         NULL_(pI);
 
         LOG_I("LidarInfoChangeCallback Lidar IP: " + string(pI->lidar_ip) + " SN: " + string(pI->sn));
-        //SetLivoxLidarWorkMode(handle, kLivoxLidarNormal, sCbWorkMode, this);
-        // LivoxLidarStartLogger(handle, kLivoxLidarRealTimeLog, sCbLoggerStart, this);
-        //  SetLivoxLidarDebugPointCloud(handle, true, sCbDebugPointCloud, this);
-        //  sleep(10);
-        //  SetLivoxLidarDebugPointCloud(handle, false, DebugPointCloudCallback, nullptr);
+        // SetLivoxLidarWorkMode(handle, kLivoxLidarNormal, sCbWorkMode, this);
+        //  LivoxLidarStartLogger(handle, kLivoxLidarRealTimeLog, sCbLoggerStart, this);
+        //   SetLivoxLidarDebugPointCloud(handle, true, sCbDebugPointCloud, this);
+        //   sleep(10);
+        //   SetLivoxLidarDebugPointCloud(handle, false, DebugPointCloudCallback, nullptr);
     }
 
     // void _Livox2::CbRecvData(LivoxEthPacket *pData, void *pLivox)
