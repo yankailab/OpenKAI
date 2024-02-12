@@ -110,7 +110,7 @@ namespace kai
 			Rect r = boundingRect(Mat(vContourPoly));
 			vContourPoly.clear();
 
-			o.init();
+			o.clear();
 			o.setTopClass(-1, 0);
 			//		o.m_tStamp = m_pT->getTfrom();
 			o.setBB2D(rect2BB<vFloat4>(r));

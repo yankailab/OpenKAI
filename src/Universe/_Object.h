@@ -26,7 +26,7 @@ namespace kai
 
 		//general
 		virtual bool init(void *pKiss);
-		virtual void init(void);
+		virtual void clear(void);
 		virtual bool start(void);
 		virtual void update(void);
 

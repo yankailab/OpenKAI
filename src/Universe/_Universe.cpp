@@ -17,7 +17,6 @@ namespace kai
 		m_vRoi.set(0.0, 0.0, 1.0, 1.0);
 		m_vClassRange.set(-INT_MAX, INT_MAX);
 
-		m_bDrawClass = false;
 		m_bDrawText = false;
 		m_bDrawPos = false;
 
@@ -42,7 +41,6 @@ namespace kai
 		pK->v("vClassRange", &m_vClassRange);
 
 		//draw
-		pK->v("bDrawClass", &m_bDrawClass);
 		pK->v("bDrawText", &m_bDrawText);
 		pK->v("bDrawPos", &m_bDrawPos);
 

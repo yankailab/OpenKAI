@@ -130,7 +130,7 @@ namespace kai
 			detectNet::Detection *pB = &pBox[i];
 
 			_Object o;
-			o.init();
+			o.clear();
 			o.setTstamp(m_pT->getTfrom());
 			o.setTopClass(pB->ClassID, pB->Confidence);
 			string txt(m_pDN->GetClassDesc(pB->ClassID));

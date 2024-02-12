@@ -9,7 +9,7 @@ namespace kai
 
 	_Object::_Object()
 	{
-		init();
+		clear();
 	}
 
 	_Object::~_Object()
@@ -24,7 +24,7 @@ namespace kai
 		return true;
 	}
 
-	void _Object::init(void)
+	void _Object::clear(void)
 	{
 		m_vPos.clear();
 		m_vAtti.clear();

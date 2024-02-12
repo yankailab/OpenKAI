@@ -110,7 +110,7 @@ namespace kai
 
 		for (unsigned int i = 0; i < vID.size(); i++)
 		{
-			o.init();
+			o.clear();
 			o.setTopClass(vID[i], 1.0);
 
 			if (m_bPose)

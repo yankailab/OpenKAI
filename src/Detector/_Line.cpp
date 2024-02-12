@@ -121,7 +121,7 @@ void _Line::detect(void)
 	rBB.height = iTo - iFrom;
 
 	_Object o;
-	o.init();
+	o.clear();
 //	o.m_tStamp = m_pT->getTfrom();
 	o.setBB2D(rect2BB <vFloat4> (rBB));
 	o.scale(kx,ky);

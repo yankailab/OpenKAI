@@ -32,12 +32,12 @@ namespace kai
 
 		virtual bool initBuffer(void);
         virtual void clear(void);
-
         virtual void getStream(void* p, const uint64_t& tExpire);
 //        virtual void getFrame(void* p);
 //        virtual void getGrid(void* p);
 
         virtual void add(const Vector3d &vP, const Vector3f &vC, const uint64_t& tStamp);
+        virtual GEOMETRY_POINT* get(int i);
    		virtual void copyTo(PointCloud *pPC, const uint64_t& tExpire);
         virtual int nP(void);
         virtual int iP(void);

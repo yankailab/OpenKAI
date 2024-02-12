@@ -103,7 +103,7 @@ namespace kai
 		if (m_bLetterBoxForSquare && m_vModelInputSize.x == m_vModelInputSize.y)
 			mIn = formatToSquare(mIn);
 
-		cv::Mat mBlob;
+		Mat mBlob;
 		cv::dnn::blobFromImage(mIn,
 							   mBlob,
 							   m_scale,
@@ -119,22 +119,18 @@ namespace kai
 		int rows = vMout[0].size[1];
 		int dimensions = vMout[0].size[2];
 
-		bool yolov8 = false;
 		// yolov5 has an output of shape (batchSize, 25200, 85) (Num classes + box[x,y,w,h] + confidence[c])
 		// yolov8 has an output of shape (batchSize, 84,  8400) (Num classes + box[x,y,w,h])
-		if (dimensions > rows) // Check if the shape[2] is more than shape[1] (yolov8)
-		{
-			yolov8 = true;
-			rows = vMout[0].size[2];
-			dimensions = vMout[0].size[1];
+		IF_(dimensions <= rows); // Check if the shape[2] is more than shape[1] (yolov8)
 
-			vMout[0] = vMout[0].reshape(1, dimensions);
-			cv::transpose(vMout[0], vMout[0]);
-		}
+		rows = vMout[0].size[2];
+		dimensions = vMout[0].size[1];
+		vMout[0] = vMout[0].reshape(1, dimensions);
+		cv::transpose(vMout[0], vMout[0]);
+
 		float *pData = (float *)vMout[0].data;
-
-		float x_factor = mIn.cols / m_vModelInputSize.x;
-		float y_factor = mIn.rows / m_vModelInputSize.y;
+		float kx = (float)mIn.cols / (float)m_vModelInputSize.x;
+		float ky = (float)mIn.rows / (float)m_vModelInputSize.y;
 
 		vector<int> vClassID;
 		vector<float> vConfidence;
@@ -142,68 +138,30 @@ namespace kai
 
 		for (int i = 0; i < rows; i++)
 		{
-			if (yolov8)
+			float *pClassScores = pData + 4;
+
+			cv::Mat scores(1, m_vClass.size(), CV_32FC1, pClassScores);
+			cv::Point class_id;
+			double maxClassScore;
+
+			minMaxLoc(scores, 0, &maxClassScore, 0, &class_id);
+
+			if (maxClassScore > m_score)
 			{
-				float *pClassScores = pData + 4;
+				vConfidence.push_back(maxClassScore);
+				vClassID.push_back(class_id.x);
 
-				cv::Mat scores(1, m_vClass.size(), CV_32FC1, pClassScores);
-				cv::Point class_id;
-				double maxClassScore;
+				float x = pData[0];
+				float y = pData[1];
+				float w = pData[2];
+				float h = pData[3];
 
-				minMaxLoc(scores, 0, &maxClassScore, 0, &class_id);
+				int left = int((x - 0.5 * w) * kx);
+				int top = int((y - 0.5 * h) * ky);
+				int width = int(w * kx);
+				int height = int(h * ky);
 
-				if (maxClassScore > m_score)
-				{
-					vConfidence.push_back(maxClassScore);
-					vClassID.push_back(class_id.x);
-
-					float x = pData[0];
-					float y = pData[1];
-					float w = pData[2];
-					float h = pData[3];
-
-					int left = int((x - 0.5 * w) * x_factor);
-					int top = int((y - 0.5 * h) * y_factor);
-
-					int width = int(w * x_factor);
-					int height = int(h * y_factor);
-
-					vBox.push_back(cv::Rect(left, top, width, height));
-				}
-			}
-			else // yolov5
-			{
-				float confidence = pData[4];
-
-				if (confidence >= m_confidence)
-				{
-					float *pClassScores = pData + 5;
-
-					cv::Mat scores(1, m_vClass.size(), CV_32FC1, pClassScores);
-					cv::Point class_id;
-					double max_class_score;
-
-					minMaxLoc(scores, 0, &max_class_score, 0, &class_id);
-
-					if (max_class_score > m_score)
-					{
-						vConfidence.push_back(confidence);
-						vClassID.push_back(class_id.x);
-
-						float x = pData[0];
-						float y = pData[1];
-						float w = pData[2];
-						float h = pData[3];
-
-						int left = int((x - 0.5 * w) * x_factor);
-						int top = int((y - 0.5 * h) * y_factor);
-
-						int width = int(w * x_factor);
-						int height = int(h * y_factor);
-
-						vBox.push_back(cv::Rect(left, top, width, height));
-					}
-				}
+				vBox.push_back(cv::Rect(left, top, width, height));
 			}
 
 			pData += dimensions;
@@ -212,18 +170,19 @@ namespace kai
 		vector<int> nms_result;
 		cv::dnn::NMSBoxes(vBox, vConfidence, m_score, m_nms, nms_result);
 
-		float kx = 1.0 / mIn.cols;
-		float ky = 1.0 / mIn.rows;
-		for (unsigned long i = 0; i < nms_result.size(); ++i)
+		kx = 1.0 / (float)mIn.cols;
+		ky = 1.0 / (float)mIn.rows;
+		for (unsigned long i = 0; i < nms_result.size(); i++)
 		{
 			int idx = nms_result[i];
 
 			_Object o;
-			o.init();
+			o.clear();
 			o.setTstamp(m_pT->getTfrom());
 			o.setTopClass(vClassID[idx], vConfidence[idx]);
 			o.setBB2D(rect2BB<vFloat4>(vBox[idx]));
 			o.scale(kx, ky);
+			o.setText(m_vClass[vClassID[idx]]);
 
 			m_pU->add(o);
 			LOG_I("Class: " + i2str(o.getTopClass()));

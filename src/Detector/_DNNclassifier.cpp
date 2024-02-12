@@ -139,7 +139,7 @@ namespace kai
 			cv::minMaxLoc(mProb.reshape(1, 1), 0, &conf, 0, &pClassID);
 
 			_Object o;
-			o.init();
+			o.clear();
 			//		o.m_tStamp = m_pT->getTfrom();
 			o.setTopClass(pClassID.x, conf);
 			o.setBB2D(nBB);

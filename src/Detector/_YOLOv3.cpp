@@ -152,7 +152,7 @@ namespace kai
 			int idx = vIndex[i];
 
 			_Object o;
-			o.init();
+			o.clear();
 			//		o.m_tStamp = m_pT->getTfrom();
 			o.setTopClass(vClassID[idx], (float)vConfidence[idx]);
 			o.setBB2D(rect2BB<vFloat4>(vRect[idx]));
@@ -191,7 +191,7 @@ namespace kai
 			bb.constrain(0.0, 1.0);
 
 			_Object o;
-			o.init();
+			o.clear();
 			//		o.m_tStamp = m_pT->getTfrom();
 			o.setTopClass(0.0, 1.0);
 			o.setBB2D(bb);

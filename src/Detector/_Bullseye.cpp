@@ -111,7 +111,7 @@ void _Bullseye::detect(void)
 		approxPolyDP( vvContours[i], vPoly, 3, true );
 		Rect r = boundingRect(vPoly);
 
-		o.init();
+		o.clear();
 		o.setTstamp(m_pT->getTfrom());
 		o.setBB2D(rect2BB<vFloat4>(r));
 		o.scale(kx,ky);

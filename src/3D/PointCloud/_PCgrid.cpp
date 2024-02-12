@@ -33,6 +33,8 @@ namespace kai
 
 	bool _PCgrid::initBuffer(void)
 	{
+        mutexLock();
+
 		int nCell = m_vDim.x * m_vDim.y * m_vDim.z;
 		IF_F(nCell <= 0);
 
@@ -44,18 +46,43 @@ namespace kai
 		NULL_F(m_pCell);
 		m_nCell = nCell;
 
+        mutexUnlock();
+
 		return true;
 	}
 
-	void _PCgrid::getStream(void* p)
-	{
-		NULL_(p);
+    void _PCgrid::clear(void)
+    {
+        mutexLock();
 
-		_PCstream* pS = (_PCstream*)p;
+        for (int i = 0; i < m_nCell; i++)
+            m_pCell[i].clear();
 
-		
+        mutexUnlock();
+    }
 
-	}
+    void _PCgrid::getStream(void *p, const uint64_t& tExpire)
+    {
+        IF_(check() < 0);
+        NULL_(p);
+        _PCstream *pS = (_PCstream *)p;
+
+        mutexLock();
+
+        uint64_t tNow = getApproxTbootUs();
+		int nP = pS->nP();
+
+        for (int i = 0; i < nP; i++)
+        {
+            GEOMETRY_POINT* pP = pS->get(i);
+            IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
+
+// TODO
+
+        }
+
+        mutexUnlock();
+    }
 
 	int _PCgrid::check(void)
 	{

@@ -60,7 +60,6 @@ namespace kai
 		vInt2 m_vClassRange;
 
 		//show
-		bool m_bDrawClass;
 		bool m_bDrawText;
 		bool m_bDrawPos;
 	};

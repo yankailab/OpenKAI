@@ -82,7 +82,7 @@ namespace kai
 			approxPolyDP(vvContours[i], vPoly, 3, true);
 			Rect r = boundingRect(vPoly);
 
-			o.init();
+			o.clear();
 			//		o.m_tStamp = m_pT->getTfrom();
 			o.setBB2D(rect2BB<vFloat4>(r));
 			o.scale(m_mR.cols, m_mR.rows);

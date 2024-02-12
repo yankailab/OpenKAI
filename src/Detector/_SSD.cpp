@@ -111,7 +111,7 @@ namespace kai
 			bb.constrain(0.0, 1.0);
 
 			_Object o;
-			o.init();
+			o.clear();
 			//	o.m_tStamp = m_pT->getTfrom();
 			o.setTopClass(dMat.at<float>(i, 1), 1.0);
 			o.setBB2D(bb);

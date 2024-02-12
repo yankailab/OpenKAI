@@ -24,12 +24,9 @@ namespace kai
 		virtual bool init(void *pKiss);
 		virtual int check(void);
 
-
-        virtual void getStream(void* p);
-
-	protected:
 		virtual bool initBuffer(void);
-
+        virtual void clear(void);
+        virtual void getStream(void* p, const uint64_t& tExpire);
 
 	protected:
 		PC_GRID_CELL *m_pCell;

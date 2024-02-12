@@ -144,7 +144,7 @@ namespace kai
 		for (size_t i = 0; i < vIndices.size(); i++)
 		{
 			_Object o;
-			o.init();
+			o.clear();
 			//		o.m_tStamp = m_pT->getTfrom();
 			o.setTopClass(0, 1.0);
 

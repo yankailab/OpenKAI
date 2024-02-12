@@ -106,7 +106,7 @@ namespace kai
 			float x2 = detection_locations[4 * i + 3];
 
 			_Object o;
-			o.init();
+			o.clear();
 			o.setTstamp(m_pT->getTfrom());
 			o.setTopClass(det_index, detection_scores[i]);
 			string txt(getClassName(det_index)); // -1??

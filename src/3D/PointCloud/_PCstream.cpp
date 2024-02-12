@@ -96,14 +96,19 @@ namespace kai
 
     void _PCstream::add(const Vector3d &vP, const Vector3f &vC, const uint64_t& tStamp)
     {
-        IF_(check() < 0);
-
         GEOMETRY_POINT *pP = &m_pP[m_iP];
         pP->m_vP = vP;
         pP->m_vC = vC;
         pP->m_tStamp = tStamp;
 
         m_iP = iInc(m_iP, m_nP);
+    }
+
+    GEOMETRY_POINT* _PCstream::get(int i)
+    {
+        IF_N(i >= m_nP);
+
+        return &m_pP[i];
     }
 
     void _PCstream::copyTo(PointCloud *pPC, const uint64_t& tExpire)

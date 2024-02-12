@@ -70,7 +70,7 @@ namespace kai
 		IF_(check() < 0);
 
 		_Object o;
-		o.init();
+		o.clear();
 		_Object *pO;
 		int i = 0;
 		while ((pO = m_pDet->getU()->get(i++)) != NULL)
@@ -81,7 +81,7 @@ namespace kai
 
 		if (o.getTopClass() < 0)
 		{
-			m_obs.init();
+			m_obs.clear();
 			LOG_I("Target not found");
 			return;
 		}
