@@ -36,8 +36,7 @@ namespace kai
         // m_mToffsetRGB = Matrix4d::Identity();
         //m_vAxisIdxRGB.init(0, 1, 2);
         //m_vAxisKrgb.init(1.0);
-
-        m_pInCtx.init();
+        //m_pInCtx.init();
     }
 
     _GeometryBase::~_GeometryBase()
@@ -63,21 +62,9 @@ namespace kai
         pK->v("vR", &m_vR);
         setTranslation(m_vT, m_vR);
 
-        //pipeline ctx
-        pK->v("ctxdT", &m_pInCtx.m_dT);
-
-        string n;
-        n = "";
-        pK->v("_GeometryBase", &n);
-        m_pInCtx.m_pPCB = (_GeometryBase *)(pK->getInst(n));
-
         m_nPread = 0;
 
-        //RGB
-        // n = "";
-        // pK->v("_Remap", &n);
-        // m_pR = (_Remap *)(pK->getInst(n));
-
+        string n;
         n = "";
         pK->v("fCalib", &n);
         Kiss *pKf = new Kiss();
@@ -98,6 +85,19 @@ namespace kai
 
         return true;
     }
+
+	bool _GeometryBase::link(void)
+	{
+		IF_F(!this->_ModuleBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+
+        //RGB
+        // n = "";
+        // pK->v("_Remap", &n);
+        // m_pR = (_Remap *)(pK->getInst(n));
+
+		return true;
+	}
 
     int _GeometryBase::check(void)
     {
@@ -160,9 +160,9 @@ namespace kai
         if (t == pc_stream)
             getStream(pPC);
         else if (t == pc_frame)
-            getNextFrame(pPC);
-        else if (t == pc_lattice)
-            getLattice(pPC);
+            getFrame(pPC);
+        else if (t == pc_grid)
+            getGrid(pPC);
     }
 
     int _GeometryBase::nPread(void)
@@ -178,46 +178,12 @@ namespace kai
     {
     }
 
-    void _GeometryBase::getNextFrame(void *p)
+    void _GeometryBase::getFrame(void *p)
     {
     }
 
-    void _GeometryBase::getLattice(void *p)
+    void _GeometryBase::getGrid(void *p)
     {
-    }
-
-    bool _GeometryBase::getColor(const Vector3d &vP, Vector3f *pvC)
-    {
-        // NULL_F(m_pR);
-        // NULL_F(m_pR->BGR());
-        // IF_F(m_pR->BGR()->bEmpty());
-        // IF_F(m_pR->getType() != vision_remap);
-
-        // Vector3d vPrgb = m_AoffsetRGB * vP; //vP raw lidar coordinate
-        // Vector3d vPa = Vector3d(            //transform to RGB coordinate
-        //     vPrgb[m_vAxisIdxRGB.x] * m_vAxisKrgb.x,
-        //     vPrgb[m_vAxisIdxRGB.y] * m_vAxisKrgb.y,
-        //     vPrgb[m_vAxisIdxRGB.z] * m_vAxisKrgb.z);
-
-        // Mat *pM = m_pR->BGR()->m();
-        // vDouble2 vFrgb = m_pR->getF();
-        // vDouble2 vCrgb = m_pR->getC();
-
-        // float ovZ = 1.0 / vPa[2];
-        // float x = vFrgb.x * vPa[0] * ovZ + vCrgb.x;
-        // float y = vFrgb.y * vPa[1] * ovZ + vCrgb.y;
-
-        // IF_F(x < 0);
-        // IF_F(x > pM->cols - 1);
-        // IF_F(y < 0);
-        // IF_F(y > pM->rows - 1);
-
-        // Vec3b vC = pM->at<Vec3b>((int)y, (int)x);
-        // Vector3f vCf(vC[2], vC[1], vC[0]);
-        // vCf *= 1.0 / 255.0;
-        // *pvC = vCf;
-
-        return true;
     }
 
     bool _GeometryBase::bRange(const Vector3d &vP)
@@ -228,5 +194,39 @@ namespace kai
 
         return true;
     }
+
+    // bool _GeometryBase::getColor(const Vector3d &vP, Vector3f *pvC)
+    // {
+    //     NULL_F(m_pR);
+    //     NULL_F(m_pR->BGR());
+    //     IF_F(m_pR->BGR()->bEmpty());
+    //     IF_F(m_pR->getType() != vision_remap);
+
+    //     Vector3d vPrgb = m_AoffsetRGB * vP; //vP raw lidar coordinate
+    //     Vector3d vPa = Vector3d(            //transform to RGB coordinate
+    //         vPrgb[m_vAxisIdxRGB.x] * m_vAxisKrgb.x,
+    //         vPrgb[m_vAxisIdxRGB.y] * m_vAxisKrgb.y,
+    //         vPrgb[m_vAxisIdxRGB.z] * m_vAxisKrgb.z);
+
+    //     Mat *pM = m_pR->BGR()->m();
+    //     vDouble2 vFrgb = m_pR->getF();
+    //     vDouble2 vCrgb = m_pR->getC();
+
+    //     float ovZ = 1.0 / vPa[2];
+    //     float x = vFrgb.x * vPa[0] * ovZ + vCrgb.x;
+    //     float y = vFrgb.y * vPa[1] * ovZ + vCrgb.y;
+
+    //     IF_F(x < 0);
+    //     IF_F(x > pM->cols - 1);
+    //     IF_F(y < 0);
+    //     IF_F(y > pM->rows - 1);
+
+    //     Vec3b vC = pM->at<Vec3b>((int)y, (int)x);
+    //     Vector3f vCf(vC[2], vC[1], vC[0]);
+    //     vCf *= 1.0 / 255.0;
+    //     *pvC = vCf;
+
+    //     return true;
+    // }
 
 }

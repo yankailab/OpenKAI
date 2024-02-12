@@ -21,7 +21,7 @@ namespace kai
         virtual bool init(void *pKiss);
         virtual int check(void);
 
-        virtual void AcceptAdd(bool b);
+        virtual void setAccept(bool b);
         virtual int nP(void);
         virtual int iP(void);
 

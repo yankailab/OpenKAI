@@ -20,7 +20,7 @@ namespace kai
 
 	bool _GSVdetect::init(void *pKiss)
 	{
-		IF_F(!this->_DetectorBase::init(pKiss));
+		IF_F(!this->_PCgrid::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		return true;
@@ -28,9 +28,18 @@ namespace kai
 
 	bool _GSVdetect::link(void)
 	{
-		IF_F(!this->_DetectorBase::link());
-
+		IF_F(!this->_PCgrid::link());
 		Kiss *pK = (Kiss *)m_pKiss;
+
+        vector<string> vN;
+        pK->a("vPCstream", &vN);
+		for(string n : vN)
+		{
+	        _PCstream* pS = (_PCstream *)(pK->getInst(n));
+			IF_CONT(pS);
+
+			m_vpS.push_back(pS);
+		}
 
 		return true;
 	}
@@ -43,11 +52,9 @@ namespace kai
 
 	int _GSVdetect::check(void)
 	{
-        NULL__(m_pV, -1);
-        IF__(m_pV->getFrameRGB()->bEmpty(), -1);
-        NULL__(m_pU, -1);
+//        NULL__(m_pV, -1);
 
-		return this->_DetectorBase::check();
+		return this->_PCgrid::check();
 	}
 
 	void _GSVdetect::update(void)
@@ -58,9 +65,6 @@ namespace kai
 
 			detect();
 
-			if (m_pT->bGoSleep())
-				m_pU->clear();
-
 			m_pT->autoFPSto();
 		}
 	}
@@ -69,6 +73,13 @@ namespace kai
 	{
 		IF_(check() < 0);
 
+		for(_PCstream* pS : m_vpS)
+		{
+
+		}
+
+
+/*
 		Mat mR = *(m_pV->getFrameRGB()->m());
 
 		vector<vector<Point>> vvContours;
@@ -97,17 +108,7 @@ namespace kai
 		}
 
 		m_pU->swap();
-	}
-
-	void _GSVdetect::draw(void *pFrame)
-	{
-		NULL_(pFrame);
-		this->_DetectorBase::draw(pFrame);
-		IF_(check() < 0);
-
-		Frame *pF = (Frame*)pFrame;
-//		pF->copy(m_fDepth);
-
+*/
 	}
 
 }

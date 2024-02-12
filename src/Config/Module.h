@@ -21,7 +21,7 @@
 #include "../3D/Mesh/_MeshStream.h"
 #include "../3D/PointCloud/_PCstream.h"
 #include "../3D/PointCloud/_PCframe.h"
-#include "../3D/PointCloud/_PClattice.h"
+#include "../3D/PointCloud/_PCgrid.h"
 #include "../3D/PointCloud/_PCfile.h"
 #include "../3D/PointCloud/_PCmerge.h"
 #include "../3D/PointCloud/_PCsend.h"

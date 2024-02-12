@@ -41,7 +41,7 @@ namespace kai
         m_tLastUpdate = 0;
 
         for (int i = 0; i < m_nP; i++)
-            m_pP[i].init();
+            m_pP[i].clear();
 
         return true;
     }
@@ -51,7 +51,7 @@ namespace kai
         return this->_GeometryBase::check();
     }
 
-    void _MeshStream::AcceptAdd(bool b)
+    void _MeshStream::setAccept(bool b)
     {
         m_bAccept = b;
     }
@@ -132,7 +132,7 @@ namespace kai
     void _MeshStream::clear(void)
     {
         for(int i=0; i<m_nP; i++)
-            m_pP[i].init();
+            m_pP[i].clear();
 
         m_iP = 0;
     }

@@ -5,17 +5,13 @@ namespace kai
 
     _GSValarm::_GSValarm()
     {
+        m_pDio = NULL;
+        m_iDin = 1;
+        m_iDout = 0;
+        m_iDout2 = 1;
+
         m_bAlarm = false;
         m_bEnable = true;
-        m_nObj = 0;
-        m_pDio = NULL;
-        m_iDout = 0;
-        m_iDin = 1;
-
-        m_pS = NULL;
-        m_iSaxis = 0;
-        m_spON = 1600;
-        m_spOFF = 600;
     }
 
     _GSValarm::~_GSValarm()
@@ -27,11 +23,9 @@ namespace kai
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        pK->v("iDout", &m_iDout);
         pK->v("iDin", &m_iDin);
-        pK->v("iSaxis", &m_iSaxis);
-        pK->v("spON", &m_spON);
-        pK->v("spOFF", &m_spOFF);
+        pK->v("iDout", &m_iDout);
+        pK->v("iDout2", &m_iDout2);
 
         return true;
     }
@@ -42,24 +36,9 @@ namespace kai
         Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
-
         n = "";
         pK->v("_ADIObase", &n);
         m_pDio = (_ADIObase *)(pK->getInst(n));
-
-        n = "";
-        pK->v("_Feetech", &n);
-        m_pS = (_Feetech *)(pK->getInst(n));
-
-        vector<string> vN;
-        pK->a("_Universe", &vN);
-        for (string u : vN)
-        {
-            _Universe *pU = (_Universe *)(pK->getInst(u));
-            IF_CONT(!pU);
-
-            m_vpU.push_back(pU);
-        }
 
         return true;
     }
@@ -72,7 +51,7 @@ namespace kai
 
     int _GSValarm::check(void)
     {
-        IF__(m_vpU.empty(), -1);
+        NULL__(m_pDio, -1);
 
         return this->_ModuleBase::check();
     }
@@ -83,52 +62,25 @@ namespace kai
         {
             m_pT->autoFPSfrom();
 
-            updateGSV();
+            updateAlarm();
 
             m_pT->autoFPSto();
         }
     }
 
-    void _GSValarm::updateGSV(void)
+    void _GSValarm::updateAlarm(void)
     {
         IF_(check() < 0);
 
-        int n = 0;
-        for (_Universe *pU : m_vpU)
-        {
-            int i = 0;
-            _Object *pO = NULL;
-            while ((pO = pU->get(i++)))
-            {
-                n++;
-            }
-        }
-        m_nObj = n;
+        m_bEnable = m_pDio->readD(m_iDin);
 
-        if (m_pDio)
-            m_bEnable = m_pDio->readD(m_iDin);
+        m_pDio->writeD(m_iDout, m_bAlarm);
+        m_pDio->writeD(m_iDout2, m_bAlarm);
+    }
 
-        if (m_nObj > 0 && m_bEnable)
-            m_bAlarm = true;
-        else
-            m_bAlarm = false;
-
-        if (m_bAlarm)
-        {
-            if (m_pDio)
-                m_pDio->writeD(m_iDout, true);
-
-            if (m_pS)
-                m_pS->setPtarget(m_iSaxis, m_spON);
-        }
-        else
-        {
-            if (m_pDio)
-                m_pDio->writeD(m_iDout, false);
-
-            if (m_pS)
-                m_pS->setPtarget(m_iSaxis, m_spOFF);
-        }
+    void _GSValarm::setAlarm(bool bAlarm)
+    {
+        m_bAlarm = bAlarm;
     }
 
     void _GSValarm::console(void *pConsole)

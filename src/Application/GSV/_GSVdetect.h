@@ -8,12 +8,13 @@
 #ifndef OpenKAI_src_App_GSV__GSVdetect_H_
 #define OpenKAI_src_App_GSV__GSVdetect_H_
 
-#include "../../Detector/_DetectorBase.h"
+#include "../../3D/PointCloud/_PCgrid.h"
+#include "../../3D/PointCloud/_PCstream.h"
 
 namespace kai
 {
 
-	class _GSVdetect : public _DetectorBase
+	class _GSVdetect : public _PCgrid
 	{
 	public:
 		_GSVdetect();
@@ -23,7 +24,6 @@ namespace kai
 		virtual bool link(void);
 		virtual bool start(void);
 		virtual int check(void);
-		virtual void draw(void *pFrame);
 
 	protected:
 		void detect(void);
@@ -35,6 +35,8 @@ namespace kai
 		}
 
 	protected:
+		vector<_PCstream*> m_vpS;
+
 	};
 
 }

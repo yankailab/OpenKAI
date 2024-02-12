@@ -23,6 +23,7 @@ namespace kai
 
     _PCstream::~_PCstream()
     {
+        m_iP = 0;
         m_nP = 0;
         DEL(m_pP);
     }
@@ -42,7 +43,7 @@ namespace kai
         m_tLastUpdate = 0;
 
         for (int i = 0; i < m_nP; i++)
-            m_pP[i].init();
+            m_pP[i].clear();
 
         return true;
     }
@@ -52,9 +53,19 @@ namespace kai
         return this->_GeometryBase::check();
     }
 
-    void _PCstream::AcceptAdd(bool b)
+    void _PCstream::setAccept(bool b)
     {
         m_bAccept = b;
+    }
+
+    int _PCstream::nP(void)
+    {
+        return m_nP;
+    }
+
+    int _PCstream::iP(void)
+    {
+        return m_iP;
     }
 
     void _PCstream::add(const Vector3d &vP, const Vector3f &vC, uint64_t tStamp)
@@ -88,6 +99,50 @@ namespace kai
         m_nPread++;
     }
 
+    void _PCstream::clear(void)
+    {
+        setAccept(false);
+
+        for(int i=0; i<m_nP; i++)
+            m_pP[i].clear();
+
+        m_iP = 0;
+        m_nPread = 0;
+
+        setAccept(true);
+    }
+
+//     void _PCstream::refreshCol(void)
+//     {
+//         NULL_(m_pP);
+// //        NULL_(m_pR);
+
+//         vDouble3 vTr, vRr;
+//         vTr.set(-m_vToffset.x, -m_vToffset.y, -m_vToffset.z);
+//         vRr.set(-m_vRoffset.x, -m_vRoffset.y, -m_vRoffset.z);
+//         Eigen::Affine3d aRev;
+//         aRev = getTranslationMatrix(vTr, vRr);
+
+//         for (int i = 0; i < m_nP; i++)
+//         {
+//             PC_POINT *pP = &m_pP[i];
+//             IF_CONT(pP->m_tStamp <= 0);
+
+//             Vector3d vPr = aRev * pP->m_vP;
+//             Vector3d vP;
+//             vP[m_vAxisIdx.x] = vPr[0] / m_vAxisK.x;
+//             vP[m_vAxisIdx.y] = vPr[1] / m_vAxisK.y;
+//             vP[m_vAxisIdx.z] = vPr[2] / m_vAxisK.z;            
+
+//             Vector3f vC;
+//             if(getColor(vP, &vC))
+//                 pP->m_vC = vC;
+//             else
+//                 pP->m_vC = Vector3f(0,0,0);
+//         }
+//     }
+
+
     void _PCstream::getPC(PointCloud *pPC)
     {
         NULL_(pPC);
@@ -113,6 +168,7 @@ namespace kai
 
         _PCstream* pS = (_PCstream*)p;
         PC_POINT* pP = pS->m_pP;
+
         uint64_t tFrom = m_pT->getTfrom() - m_pInCtx.m_dT;
         while (m_pInCtx.m_iPr != pS->m_iP)
         {
@@ -126,75 +182,6 @@ namespace kai
 
             m_pInCtx.m_iPr = iInc(m_pInCtx.m_iPr, pS->m_nP);
         }
-    }
-
-    void _PCstream::getNextFrame(void* p)
-    {
-    }
-
-    void _PCstream::getLattice(void* p)
-    {
-    }
-
-    void _PCstream::clear(void)
-    {
-        AcceptAdd(false);
-
-        for(int i=0; i<m_nP; i++)
-            m_pP[i].init();
-
-        m_iP = 0;
-        m_nPread = 0;
-
-        AcceptAdd(true);
-    }
-
-    void _PCstream::refreshCol(void)
-    {
-        NULL_(m_pP);
-//        NULL_(m_pR);
-
-        vDouble3 vTr, vRr;
-        vTr.set(-m_vToffset.x, -m_vToffset.y, -m_vToffset.z);
-        vRr.set(-m_vRoffset.x, -m_vRoffset.y, -m_vRoffset.z);
-        Eigen::Affine3d aRev;
-        aRev = getTranslationMatrix(vTr, vRr);
-
-        for (int i = 0; i < m_nP; i++)
-        {
-            PC_POINT *pP = &m_pP[i];
-            IF_CONT(pP->m_tStamp <= 0);
-
-            Vector3d vPr = aRev * pP->m_vP;
-            Vector3d vP;
-            vP[m_vAxisIdx.x] = vPr[0] / m_vAxisK.x;
-            vP[m_vAxisIdx.y] = vPr[1] / m_vAxisK.y;
-            vP[m_vAxisIdx.z] = vPr[2] / m_vAxisK.z;            
-
-            Vector3f vC;
-            if(getColor(vP, &vC))
-                pP->m_vC = vC;
-            else
-                pP->m_vC = Vector3f(0,0,0);
-        }
-    }
-
-    int _PCstream::nP(void)
-    {
-        return m_nP;
-    }
-
-    int _PCstream::iP(void)
-    {
-        return m_iP;
-    }
-
-    void _PCstream::startStream(void)
-    {
-    }
-
-    void _PCstream::stopStream(void)
-    {
     }
 
 }

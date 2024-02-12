@@ -7,7 +7,7 @@
 
 #include "_PCframe.h"
 #include "_PCstream.h"
-#include "_PClattice.h"
+#include "_PCgrid.h"
 
 namespace kai
 {

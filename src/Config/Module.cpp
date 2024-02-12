@@ -31,7 +31,7 @@ namespace kai
 		ADD_MODULE(_MeshStream);
 		ADD_MODULE(_PCstream);
 		ADD_MODULE(_PCframe);
-		ADD_MODULE(_PClattice);
+		ADD_MODULE(_PCgrid);
 		ADD_MODULE(_PCfile);
 		ADD_MODULE(_PCmerge);
 		ADD_MODULE(_PCsend);

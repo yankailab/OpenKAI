@@ -30,24 +30,17 @@ namespace kai
         virtual bool init(void *pKiss);
         virtual int check(void);
 
-        virtual void AcceptAdd(bool b);
-        virtual void add(const Vector3d &vP, const Vector3f &vC, uint64_t tStamp = UINT64_MAX);
+        virtual void setAccept(bool b);
         virtual int nP(void);
         virtual int iP(void);
+        virtual void add(const Vector3d &vP, const Vector3f &vC, uint64_t tStamp = UINT64_MAX);
+        virtual void clear(void);
+//        virtual void refreshCol(void);
 
    		virtual void getPC(PointCloud *pPC);
 
-
-        virtual void clear(void);
-        virtual void refreshCol(void);
-
-        virtual void startStream(void);
-        virtual void stopStream(void);
-
     protected:
         virtual void getStream(void *p);
-        virtual void getNextFrame(void *p);
-        virtual void getLattice(void *p);
 
     public:
         //ring buf

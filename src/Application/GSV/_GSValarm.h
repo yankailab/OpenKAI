@@ -8,9 +8,7 @@
 #ifndef OpenKAI_src_App_GSV__GSValarm_H_
 #define OpenKAI_src_App_GSV__GSValarm_H_
 
-#include "../../Universe/_Universe.h"
 #include "../../IO/_ADIObase.h"
-#include "../../Actuator/_Feetech.h"
 
 namespace kai
 {
@@ -27,8 +25,10 @@ namespace kai
         virtual int check(void);
 		virtual void console(void *pConsole);
 
+        void setAlarm(bool bAlarm);
+
     protected:
-        virtual void updateGSV(void);
+        virtual void updateAlarm(void);
         virtual void update(void);
         static void *getUpdate(void *This)
         {
@@ -37,20 +37,14 @@ namespace kai
         }
 
     protected:
+        _ADIObase* m_pDio;
+        int m_iDin;
+        int m_iDout;
+        int m_iDout2;
+
         bool m_bAlarm;
         bool m_bEnable;
-        vector<_Universe*> m_vpU;
 
-        _ADIObase* m_pDio;
-        int m_iDout;
-        int m_iDin;
-
-        _Feetech* m_pS;
-        int m_iSaxis;
-        int m_spON;
-        int m_spOFF;
-
-        int m_nObj;
 
     };
 

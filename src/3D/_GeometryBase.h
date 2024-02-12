@@ -23,7 +23,7 @@ namespace kai
         geometry_unknown = -1,
         pc_stream = 0,
         pc_frame = 1,
-        pc_lattice = 2,
+        pc_grid = 2,
         mesh_stream = 3,
     };
 
@@ -40,29 +40,11 @@ namespace kai
         Vector3f m_vC; //color
         uint64_t m_tStamp;
 
-        void init(void)
+        void clear(void)
         {
             m_vP = Vector3d(0,0,0);
             m_vC = Vector3f(0,0,0);
             m_tStamp = 0;
-        }
-    };
-
-    struct PC_PIPIN_CTX
-    {
-        void *m_pPCB;
-
-        //stream 2 stream
-        int m_iPr;
-
-        //stream 2 frame
-        uint64_t m_dT;
-
-        void init(void)
-        {
-            m_pPCB = NULL;
-            m_dT = UINT64_MAX;
-            m_iPr = 0;
         }
     };
 
@@ -94,25 +76,6 @@ namespace kai
         }
     };
 
-    struct MESH_PIPIN_CTX
-    {
-        void *m_pPCB;
-
-        //stream 2 stream
-        int m_iPr;
-
-        //stream 2 frame
-        uint64_t m_dT;
-
-        void init(void)
-        {
-            m_pPCB = NULL;
-            m_dT = UINT64_MAX;
-            m_iPr = 0;
-        }
-    };
-
-
     class _GeometryBase : public _ModuleBase
     {
     public:
@@ -120,6 +83,7 @@ namespace kai
         virtual ~_GeometryBase();
 
         virtual bool init(void *pKiss);
+		virtual bool link(void);
         virtual int check(void);
 
         virtual PC_TYPE getType(void);
@@ -134,11 +98,11 @@ namespace kai
     protected:
         virtual Matrix4d getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR);
         virtual void getStream(void* p);
-        virtual void getNextFrame(void* p);
-        virtual void getLattice(void* p);
+        virtual void getFrame(void* p);
+        virtual void getGrid(void* p);
         virtual bool bRange(const Vector3d& vP);
 
-        virtual bool getColor(const Vector3d &vP, Vector3f* pvC);
+//        virtual bool getColor(const Vector3d &vP, Vector3f* pvC);
 
     protected:
         PC_TYPE m_type;
@@ -163,9 +127,6 @@ namespace kai
 
         // filter
         vDouble2 m_vRange;
-
-        // pipeline input
-        PC_PIPIN_CTX m_pInCtx;
 
         // RGB offset in Lidar coordinate
         // _Remap* m_pR;
