@@ -28,10 +28,10 @@ namespace kai
 		pK->v("vCellSize", &m_vCellSize);
 		pK->v("vPorigin", &m_vPorigin);
 
-		return generate();
+		return initBuffer();
 	}
 
-	bool _PCgrid::generate(void)
+	bool _PCgrid::initBuffer(void)
 	{
 		int nCell = m_vDim.x * m_vDim.y * m_vDim.z;
 		IF_F(nCell <= 0);

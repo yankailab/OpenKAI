@@ -39,7 +39,7 @@ bool _PCremove::start(void)
 
 int _PCremove::check(void)
 {
-	NULL__(m_pInCtx.m_pPCB, -1);
+//	NULL__(m_pInCtx.m_pPCB, -1);
 
 	return _GeometryBase::check();
 }

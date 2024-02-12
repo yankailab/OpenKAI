@@ -50,7 +50,6 @@ bool _PCsend::start(void)
 
 int _PCsend::check(void)
 {
-	NULL__(m_pInCtx.m_pPCB, -1);
 	NULL__(m_pIO, -1);
 	IF__(!m_pIO->bOpen(),-1);
 

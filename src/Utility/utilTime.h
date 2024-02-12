@@ -26,6 +26,11 @@ namespace kai
 		return tFromBoot.tv_sec * SEC_2_USEC + (tFromBoot.tv_nsec >> 10); // / 1000;
 	}
 
+	inline bool bExpired(uint64_t t, uint64_t tExpire, uint64_t t2)
+	{
+		return (t + tExpire < t2);
+	}
+
 	template <typename T>
 	inline T usec2sec(uint64_t usec)
 	{

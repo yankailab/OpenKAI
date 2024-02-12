@@ -57,7 +57,7 @@ namespace kai
 
 	int _PCtransform::check(void)
 	{
-		NULL__(m_pInCtx.m_pPCB, -1);
+//		NULL__(m_pInCtx.m_pPCB, -1);
 
 		return this->_PCframe::check();
 	}
@@ -78,7 +78,7 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		readPC(m_pInCtx.m_pPCB);
+//		readPC(m_pInCtx.m_pPCB);
 		m_sPC.next()->Transform(m_mTt);
 		updatePC();
 	}

@@ -24,9 +24,11 @@ namespace kai
 		virtual bool init(void *pKiss);
 		virtual int check(void);
 
-	protected:
-		virtual bool generate(void);
+
         virtual void getStream(void* p);
+
+	protected:
+		virtual bool initBuffer(void);
 
 
 	protected:

@@ -87,24 +87,19 @@ namespace kai
     {
         NULL_(p);
 
-        _PCstream *pS = (_PCstream *)p;
-        PointCloud *pPC = m_sPC.next();
-        uint64_t tFrom = m_pT->getTfrom() - m_pInCtx.m_dT;
-        if (m_pInCtx.m_dT >= UINT64_MAX)
-            tFrom = 0;
+        // _PCstream *pS = (_PCstream *)p;
+        // PointCloud *pPC = m_sPC.next();
 
-        for (int i = 0; i < pS->m_nP; i++)
-        {
-            PC_POINT *pP = &pS->m_pP[i];
-            IF_CONT(pP->m_tStamp <= tFrom);
+        // for (int i = 0; i < pS->m_nP; i++)
+        // {
+        //     GEOMETRY_POINT *pP = &pS->m_pP[i];
 
-            pPC->points_.push_back(pP->m_vP);
-            pPC->colors_.push_back(pP->m_vC.cast<double>());
-            m_nPread++;
-        }
+        //     pPC->points_.push_back(pP->m_vP);
+        //     pPC->colors_.push_back(pP->m_vC.cast<double>());
+        // }
     }
 
-    void _PCframe::getNextFrame(void *p)
+    void _PCframe::getFrame(void *p)
     {
         NULL_(p);
 
@@ -113,10 +108,9 @@ namespace kai
         pF->getPC(&pc);
 
         *m_sPC.next() += pc;
-        m_nPread += pc.points_.size();
     }
 
-    void _PCframe::getLattice(void *p)
+    void _PCframe::getGrid(void *p)
     {
     }
 

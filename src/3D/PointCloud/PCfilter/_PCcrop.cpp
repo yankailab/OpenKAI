@@ -54,7 +54,7 @@ namespace kai
 
 	int _PCcrop::check(void)
 	{
-		NULL__(m_pInCtx.m_pPCB, -1);
+//		NULL__(m_pInCtx.m_pPCB, -1);
 
 		return _GeometryBase::check();
 	}

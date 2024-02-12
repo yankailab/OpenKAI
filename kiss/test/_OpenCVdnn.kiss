@@ -96,6 +96,16 @@
 	"confidence":0.25,
 }
 
+/*
+YOLOv8 model convert:
+
+pip install ultralytics
+
+from ultralytics import YOLO
+model = YOLO('yolov8x.pt')
+model.export(format='onnx')
+*/
+
 {
 	"name":"YOLO",
 	"class":"_YOLOv3",

@@ -17,8 +17,6 @@ namespace kai
         m_pP = NULL;
         m_nP = 256;
         m_iP = 0;
-        m_tLastUpdate = 0;
-        m_bAccept = true;
     }
 
     _PCstream::~_PCstream()
@@ -33,29 +31,100 @@ namespace kai
         IF_F(!this->_GeometryBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        pK->v("bAccept", &m_bAccept);
         pK->v("nP", &m_nP);
         IF_F(m_nP <= 0);
 
-        m_pP = new PC_POINT[m_nP];
+        return initBuffer();
+    }
+
+    bool _PCstream::initBuffer(void)
+    {
+        mutexLock();
+
+        m_pP = new GEOMETRY_POINT[m_nP];
         NULL_F(m_pP);
         m_iP = 0;
-        m_tLastUpdate = 0;
 
         for (int i = 0; i < m_nP; i++)
             m_pP[i].clear();
+
+        mutexUnlock();
 
         return true;
     }
 
     int _PCstream::check(void)
     {
+        NULL__(m_pP, -1);
+
         return this->_GeometryBase::check();
     }
 
-    void _PCstream::setAccept(bool b)
+    void _PCstream::clear(void)
     {
-        m_bAccept = b;
+        mutexLock();
+
+        for (int i = 0; i < m_nP; i++)
+            m_pP[i].clear();
+
+        m_iP = 0;
+
+        mutexUnlock();
+    }
+
+    void _PCstream::getStream(void *p, const uint64_t& tExpire)
+    {
+        IF_(check() < 0);
+        NULL_(p);
+        _PCstream *pS = (_PCstream *)p;
+
+        mutexLock();
+
+        uint64_t tNow = getApproxTbootUs();
+
+        for (int i = 0; i < pS->m_nP; i++)
+        {
+            GEOMETRY_POINT* pP = &pS->m_pP[i];
+            IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
+
+            m_pP[m_iP] = *pP;
+            m_iP = iInc(m_iP, m_nP);
+        }
+
+        mutexUnlock();
+    }
+
+    void _PCstream::add(const Vector3d &vP, const Vector3f &vC, const uint64_t& tStamp)
+    {
+        IF_(check() < 0);
+
+        GEOMETRY_POINT *pP = &m_pP[m_iP];
+        pP->m_vP = vP;
+        pP->m_vC = vC;
+        pP->m_tStamp = tStamp;
+
+        m_iP = iInc(m_iP, m_nP);
+    }
+
+    void _PCstream::copyTo(PointCloud *pPC, const uint64_t& tExpire)
+    {
+        IF_(check() < 0);
+        NULL_(pPC);
+
+        pPC->Clear();
+        pPC->points_.clear();
+        pPC->colors_.clear();
+
+        uint64_t tNow = getApproxTbootUs();
+
+        for (int i = 0; i < m_nP; i++)
+        {
+            GEOMETRY_POINT* pP = &m_pP[i];
+            IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
+
+        	pPC->points_.push_back(pP->m_vP);
+        	pPC->colors_.push_back(pP->m_vC.cast<double>());
+        }
     }
 
     int _PCstream::nP(void)
@@ -67,121 +136,4 @@ namespace kai
     {
         return m_iP;
     }
-
-    void _PCstream::add(const Vector3d &vP, const Vector3f &vC, uint64_t tStamp)
-    {
-        NULL_(m_pP);
-        IF_(!m_bAccept);
-
-		const static float s_b = 1.0 / 1000.0;
-		const static float c_b = 1.0 / 255.0;
-
-        // lidar to Nav coordinate
-        Vector3d vPnav = Vector3d(
-                            vP[m_vAxisIdx.x] * m_vAxisK.x,
-                            vP[m_vAxisIdx.y] * m_vAxisK.y,
-                            vP[m_vAxisIdx.z] * m_vAxisK.z
-                            ) * s_b;
-        IF_(!bRange(vPnav));
-
-        Vector3f vCrgb = vC;
-        // if(m_pR)
-        // {
-        //     IF_(!getColor(vP, &vCrgb));
-        // }
-
-        PC_POINT *pP = &m_pP[m_iP];
-        pP->m_vP = m_A * vPnav;   // m_A incorporates the offset in Nav coordinate
-        pP->m_vC = vCrgb;
-        pP->m_tStamp = tStamp;
-
-        m_iP = iInc(m_iP, m_nP);
-        m_nPread++;
-    }
-
-    void _PCstream::clear(void)
-    {
-        setAccept(false);
-
-        for(int i=0; i<m_nP; i++)
-            m_pP[i].clear();
-
-        m_iP = 0;
-        m_nPread = 0;
-
-        setAccept(true);
-    }
-
-//     void _PCstream::refreshCol(void)
-//     {
-//         NULL_(m_pP);
-// //        NULL_(m_pR);
-
-//         vDouble3 vTr, vRr;
-//         vTr.set(-m_vToffset.x, -m_vToffset.y, -m_vToffset.z);
-//         vRr.set(-m_vRoffset.x, -m_vRoffset.y, -m_vRoffset.z);
-//         Eigen::Affine3d aRev;
-//         aRev = getTranslationMatrix(vTr, vRr);
-
-//         for (int i = 0; i < m_nP; i++)
-//         {
-//             PC_POINT *pP = &m_pP[i];
-//             IF_CONT(pP->m_tStamp <= 0);
-
-//             Vector3d vPr = aRev * pP->m_vP;
-//             Vector3d vP;
-//             vP[m_vAxisIdx.x] = vPr[0] / m_vAxisK.x;
-//             vP[m_vAxisIdx.y] = vPr[1] / m_vAxisK.y;
-//             vP[m_vAxisIdx.z] = vPr[2] / m_vAxisK.z;            
-
-//             Vector3f vC;
-//             if(getColor(vP, &vC))
-//                 pP->m_vC = vC;
-//             else
-//                 pP->m_vC = Vector3f(0,0,0);
-//         }
-//     }
-
-
-    void _PCstream::getPC(PointCloud *pPC)
-    {
-        NULL_(pPC);
-
-        pPC->Clear();
-        pPC->points_.clear();
-        pPC->colors_.clear();
-
-        int nP = m_nPread;
-        if(nP > m_nP)
-            nP = m_nP;
-
-		for (int i = 0; i < nP; i++)
-		{
-			pPC->points_.push_back(m_pP[i].m_vP);
-			pPC->colors_.push_back(m_pP[i].m_vC.cast<double>());
-		}
-    }
-
-    void _PCstream::getStream(void* p)
-    {
-        NULL_(p);
-
-        _PCstream* pS = (_PCstream*)p;
-        PC_POINT* pP = pS->m_pP;
-
-        uint64_t tFrom = m_pT->getTfrom() - m_pInCtx.m_dT;
-        while (m_pInCtx.m_iPr != pS->m_iP)
-        {
-            PC_POINT po = pP[m_pInCtx.m_iPr];
-
-            if (po.m_tStamp >= tFrom)
-            {
-                m_pP[m_iP] = po;
-                m_iP = iInc(m_iP, m_nP);
-            }
-
-            m_pInCtx.m_iPr = iInc(m_pInCtx.m_iPr, pS->m_nP);
-        }
-    }
-
 }

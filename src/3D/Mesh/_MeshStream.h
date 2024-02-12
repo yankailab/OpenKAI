@@ -38,7 +38,7 @@ namespace kai
         virtual void getLattice(void *p);
 
     public:
-        PC_POINT *m_pP;
+        GEOMETRY_POINT *m_pP;
         int m_nP;
         int m_iP;
         uint64_t m_tLastUpdate;
