@@ -48,8 +48,9 @@ namespace kai
     {
         NULL_F(m_pLv);
 
-        m_handle = m_pLv->getDeviceHandle(m_SN);
-        IF_F(m_handle < 0);
+        LivoxLidar2device* pD = m_pLv->getDevice(m_SN);
+        NULL_F(pD);
+        m_handle = pD->m_handle;
 
         IF_F(!m_pLv->setCbData(m_handle, sCbPointCloud, (void *)this));
 
@@ -60,7 +61,6 @@ namespace kai
 
     void _Livox2::close(void)
     {
-        LivoxLidarSdkUninit();
     }
 
     int _Livox2::check(void)

@@ -34,8 +34,8 @@ namespace kai
         // uint32_t scan_pattern;
 
 
-        CbLivoxLidar2data m_pCbData;
-        CbLivoxLidar2imu m_pCbIMU;
+        CbLivoxLidar2data m_pCbData = NULL;
+        CbLivoxLidar2imu m_pCbIMU = NULL;
         void *m_pLivox2 = NULL;
     };
 
@@ -55,7 +55,7 @@ namespace kai
         void stopStream(void);
 
 
-        int getDeviceHandle(const string& SN);
+        uint32_t getDeviceHandle(const string& SN);
         LivoxLidar2device* getDevice(const string& SN);
         LivoxLidar2device* getDevice(uint32_t handle);
 
@@ -68,49 +68,37 @@ namespace kai
         // Callbacks
         static void sCbPointCloud(uint32_t handle, const uint8_t dev_type, LivoxLidarEthernetPacket *data, void *client_data)
         {
-            NULL_(data);
             NULL_(client_data);
-
             ((LivoxLidar2 *)client_data)->CbPointCloud(handle, dev_type, data);
         }
 
         static void sCbImuData(uint32_t handle, const uint8_t dev_type, LivoxLidarEthernetPacket *data, void *client_data)
         {
-            NULL_(data);
             NULL_(client_data);
-
             ((LivoxLidar2 *)client_data)->CbImuData(handle, dev_type, data);
         }
 
         static void sCbWorkMode(livox_status status, uint32_t handle, LivoxLidarAsyncControlResponse *response, void *client_data)
         {
-            NULL_(response);
             NULL_(client_data);
-
             ((LivoxLidar2 *)client_data)->CbWorkMode(status, handle, response);
         }
 
         static void sCbLoggerStart(livox_status status, uint32_t handle, LivoxLidarLoggerResponse *response, void *client_data)
         {
-            NULL_(response);
             NULL_(client_data);
-
             ((LivoxLidar2 *)client_data)->CbLoggerStart(status, handle, response);
         }
 
         static void sCbDebugPointCloud(livox_status status, uint32_t handle, LivoxLidarLoggerResponse *response, void *client_data)
         {
-            NULL_(response);
             NULL_(client_data);
-
             ((LivoxLidar2 *)client_data)->CbDebugPointCloud(status, handle, response);
         }
 
         static void sCbLidarInfoChange(const uint32_t handle, const LivoxLidarInfo *info, void *client_data)
         {
-            NULL_(info);
             NULL_(client_data);
-
             ((LivoxLidar2 *)client_data)->CbLidarInfoChange(handle, info);
         }
 

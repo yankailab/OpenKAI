@@ -25,7 +25,7 @@ namespace kai
         pK->v("fConfig", &m_fConfig);
         //        pK->v("lidarMode", (int*)&m_lidarMode);
 
-        return true;
+        return open();
     }
 
     bool LivoxLidar2::open(void)
@@ -63,13 +63,13 @@ namespace kai
         //        m_lidarMode = kLivoxLidarSleep;
     }
 
-    int LivoxLidar2::getDeviceHandle(const string &SN)
+    uint32_t LivoxLidar2::getDeviceHandle(const string &SN)
     {
         LivoxLidar2device *pD = getDevice(SN);
-        if(pD)
+        if (pD)
             return pD->m_handle;
 
-        return -1;
+        return 0;
     }
 
     LivoxLidar2device *LivoxLidar2::getDevice(const string &SN)
@@ -116,7 +116,7 @@ namespace kai
         LivoxLidar2device *pD = getDevice(handle);
         NULL_F(pD);
 
-        // TODO
+        SetLivoxLidarWorkMode(pD->m_handle, pD->m_mode, sCbWorkMode, this);
     }
 
     bool LivoxLidar2::setScanPattern(uint32_t handle, LivoxLidarScanPattern p)
@@ -127,6 +127,29 @@ namespace kai
         // TODO
     }
 
+    void LivoxLidar2::CbLidarInfoChange(const uint32_t handle, const LivoxLidarInfo *pI)
+    {
+        NULL_(pI);
+        LOG_I("LidarInfoChangeCallback Lidar handle: " + i2str(handle) + " SN: " + string(pI->sn));
+
+        LivoxLidar2device* pD = getDevice(handle);
+        if(pD)
+        {
+            pD->m_SN = pI->sn;
+            return;
+        }
+
+        LivoxLidar2device D;
+        D.m_SN = pI->sn;
+        D.m_handle = handle;
+        m_vDevice.push_back(D);
+
+        // LivoxLidarStartLogger(handle, kLivoxLidarRealTimeLog, sCbLoggerStart, this);
+        //  SetLivoxLidarDebugPointCloud(handle, true, sCbDebugPointCloud, this);
+        //  sleep(10);
+        //  SetLivoxLidarDebugPointCloud(handle, false, DebugPointCloudCallback, nullptr);
+    }
+
     void LivoxLidar2::CbPointCloud(uint32_t handle, const uint8_t dev_type, LivoxLidarEthernetPacket *pD)
     {
         NULL_(pD);
@@ -134,6 +157,7 @@ namespace kai
 
         LivoxLidar2device *pDev = getDevice(handle);
         NULL_(pDev);
+        NULL_(pDev->m_pCbData);
         pDev->m_pCbData(pD, pDev->m_pLivox2);
     }
 
@@ -144,6 +168,7 @@ namespace kai
 
         LivoxLidar2device *pDev = getDevice(handle);
         NULL_(pDev);
+        NULL_(pDev->m_pCbIMU);
         pDev->m_pCbIMU(pD, pDev->m_pLivox2);
     }
 
@@ -186,18 +211,6 @@ namespace kai
         NULL_(pR);
 
         LOG_I("livox_status = " + i2str(status) + ", Lidar: " + i2str(handle) + " response: " + i2str(pR->ret_code));
-    }
-
-    void LivoxLidar2::CbLidarInfoChange(const uint32_t handle, const LivoxLidarInfo *pI)
-    {
-        NULL_(pI);
-
-        LOG_I("LidarInfoChangeCallback Lidar handle: " + i2str(handle) + " SN: " + string(pI->sn));
-        SetLivoxLidarWorkMode(handle, kLivoxLidarNormal, sCbWorkMode, this);
-        // LivoxLidarStartLogger(handle, kLivoxLidarRealTimeLog, sCbLoggerStart, this);
-        //  SetLivoxLidarDebugPointCloud(handle, true, sCbDebugPointCloud, this);
-        //  sleep(10);
-        //  SetLivoxLidarDebugPointCloud(handle, false, DebugPointCloudCallback, nullptr);
     }
 
     void LivoxLidar2::console(void *pConsole)

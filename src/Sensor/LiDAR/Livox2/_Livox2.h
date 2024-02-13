@@ -13,7 +13,7 @@
 
 namespace kai
 {
-    struct LivoxCtrl
+    struct Livox2Ctrl
     {
         vFloat2 m_vRz = {0.0, 500.0}; // z region
     };
@@ -39,33 +39,25 @@ namespace kai
         // Callbacks
         static void sCbPointCloud(LivoxLidarEthernetPacket *data, void *client_data)
         {
-            NULL_(data);
             NULL_(client_data);
-
             ((_Livox2 *)client_data)->CbPointCloud(data);
         }
 
         static void sCbImuData(LivoxLidarEthernetPacket *data, void *client_data)
         {
-            NULL_(data);
             NULL_(client_data);
-
             ((_Livox2 *)client_data)->CbImuData(data);
         }
 
         static void sCbWorkMode(livox_status status, LivoxLidarAsyncControlResponse *response, void *client_data)
         {
-            NULL_(response);
             NULL_(client_data);
-
             ((_Livox2 *)client_data)->CbWorkMode(status, response);
         }
 
         static void sCbLidarInfoChange(const LivoxLidarInfo *info, void *client_data)
         {
-            NULL_(info);
             NULL_(client_data);
-
             ((_Livox2 *)client_data)->CbLidarInfoChange(info);
         }
 
@@ -95,7 +87,7 @@ namespace kai
     protected:
         LivoxLidar2* m_pLv;
         string m_SN;
-        int m_handle;
+        uint32_t m_handle;
         bool m_bOpen;
         LivoxLidarWorkMode m_lidarMode;
     };
