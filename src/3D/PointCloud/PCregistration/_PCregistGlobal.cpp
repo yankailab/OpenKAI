@@ -90,9 +90,9 @@ namespace kai
         IF_(check() < 0);
 
         PointCloud pcSrc;
-        m_pSrc->getPC(&pcSrc);
+        m_pSrc->copyTo(&pcSrc);
         PointCloud pcTgt;
-        m_pTgt->getPC(&pcTgt);
+        m_pTgt->copyTo(&pcTgt);
 
         IF_(pcSrc.IsEmpty());
         IF_(pcTgt.IsEmpty());

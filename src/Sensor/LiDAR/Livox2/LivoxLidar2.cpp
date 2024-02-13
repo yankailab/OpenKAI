@@ -23,7 +23,7 @@ namespace kai
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("fConfig", &m_fConfig);
-        //        pK->v("lidarMode", (int*)&m_lidarMode);
+        //        pK->v("lidarMode", (int*)&m_workMode);
 
         return open();
     }
@@ -55,12 +55,12 @@ namespace kai
 
     void LivoxLidar2::startStream(void)
     {
-        //        m_lidarMode = kLivoxLidarNormal;
+        //        m_workMode = kLivoxLidarNormal;
     }
 
     void LivoxLidar2::stopStream(void)
     {
-        //        m_lidarMode = kLivoxLidarSleep;
+        //        m_workMode = kLivoxLidarSleep;
     }
 
     uint32_t LivoxLidar2::getDeviceHandle(const string &SN)
@@ -111,11 +111,25 @@ namespace kai
         return true;
     }
 
-    bool LivoxLidar2::setLidarMode(uint32_t handle, LivoxLidarWorkMode m)
+    bool LivoxLidar2::setCbIMU(uint32_t handle, CbLivoxLidar2imu pCb, void *pLivox2)
+    {
+        NULL_F(pLivox2);
+        NULL_F(pCb);
+
+        LivoxLidar2device *pD = getDevice(handle);
+        NULL_F(pD);
+
+        pD->m_pCbIMU = pCb;
+        pD->m_pLivox2 = pLivox2;
+        return true;
+    }
+
+    bool LivoxLidar2::setWorkMode(uint32_t handle, LivoxLidarWorkMode m)
     {
         LivoxLidar2device *pD = getDevice(handle);
         NULL_F(pD);
 
+        pD->m_mode = m;
         SetLivoxLidarWorkMode(pD->m_handle, pD->m_mode, sCbWorkMode, this);
     }
 
@@ -161,10 +175,10 @@ namespace kai
         pDev->m_pCbData(pD, pDev->m_pLivox2);
     }
 
-    void LivoxLidar2::CbImuData(uint32_t handle, const uint8_t dev_type, LivoxLidarEthernetPacket *pD)
+    void LivoxLidar2::CbIMU(uint32_t handle, const uint8_t dev_type, LivoxLidarEthernetPacket *pD)
     {
         NULL_(pD);
-        LOG_I("CbImuData, handle:" + i2str(handle) + ", data_num:" + i2str(pD->dot_num) + ", data_type:" + i2str(pD->data_type) + ", length:" + i2str(pD->length) + ", frame_counter:" + i2str(pD->frame_cnt));
+        LOG_I("CbIMU, handle:" + i2str(handle) + ", data_num:" + i2str(pD->dot_num) + ", data_type:" + i2str(pD->data_type) + ", length:" + i2str(pD->length) + ", frame_counter:" + i2str(pD->frame_cnt));
 
         LivoxLidar2device *pDev = getDevice(handle);
         NULL_(pDev);

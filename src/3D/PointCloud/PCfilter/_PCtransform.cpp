@@ -80,7 +80,7 @@ namespace kai
 
 //		readPC(m_pInCtx.m_pPCB);
 		m_sPC.next()->Transform(m_mTt);
-		updatePC();
+		swapBuffer();
 	}
 
 	void _PCtransform::setTranslationMatrix(Matrix4d_u &mTt)

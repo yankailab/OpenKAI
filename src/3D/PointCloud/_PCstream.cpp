@@ -37,6 +37,13 @@ namespace kai
         return initBuffer();
     }
 
+    int _PCstream::check(void)
+    {
+        NULL__(m_pP, -1);
+
+        return this->_GeometryBase::check();
+    }
+
     bool _PCstream::initBuffer(void)
     {
         mutexLock();
@@ -51,13 +58,6 @@ namespace kai
         mutexUnlock();
 
         return true;
-    }
-
-    int _PCstream::check(void)
-    {
-        NULL__(m_pP, -1);
-
-        return this->_GeometryBase::check();
     }
 
     void _PCstream::clear(void)
@@ -94,23 +94,6 @@ namespace kai
         mutexUnlock();
     }
 
-    void _PCstream::add(const Vector3d &vP, const Vector3f &vC, const uint64_t& tStamp)
-    {
-        GEOMETRY_POINT *pP = &m_pP[m_iP];
-        pP->m_vP = vP;
-        pP->m_vC = vC;
-        pP->m_tStamp = tStamp;
-
-        m_iP = iInc(m_iP, m_nP);
-    }
-
-    GEOMETRY_POINT* _PCstream::get(int i)
-    {
-        IF_N(i >= m_nP);
-
-        return &m_pP[i];
-    }
-
     void _PCstream::copyTo(PointCloud *pPC, const uint64_t& tExpire)
     {
         IF_(check() < 0);
@@ -130,6 +113,23 @@ namespace kai
         	pPC->points_.push_back(pP->m_vP);
         	pPC->colors_.push_back(pP->m_vC.cast<double>());
         }
+    }
+
+    void _PCstream::add(const Vector3d &vP, const Vector3f &vC, const uint64_t& tStamp)
+    {
+        GEOMETRY_POINT *pP = &m_pP[m_iP];
+        pP->m_vP = vP;
+        pP->m_vC = vC;
+        pP->m_tStamp = tStamp;
+
+        m_iP = iInc(m_iP, m_nP);
+    }
+
+    GEOMETRY_POINT* _PCstream::get(int i)
+    {
+        IF_N(i >= m_nP);
+
+        return &m_pP[i];
     }
 
     int _PCstream::nP(void)

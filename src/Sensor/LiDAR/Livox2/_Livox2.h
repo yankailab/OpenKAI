@@ -43,10 +43,10 @@ namespace kai
             ((_Livox2 *)client_data)->CbPointCloud(data);
         }
 
-        static void sCbImuData(LivoxLidarEthernetPacket *data, void *client_data)
+        static void sCbIMU(LivoxLidarEthernetPacket *data, void *client_data)
         {
             NULL_(client_data);
-            ((_Livox2 *)client_data)->CbImuData(data);
+            ((_Livox2 *)client_data)->CbIMU(data);
         }
 
         static void sCbWorkMode(livox_status status, LivoxLidarAsyncControlResponse *response, void *client_data)
@@ -63,20 +63,13 @@ namespace kai
 
     protected:
         void CbPointCloud(LivoxLidarEthernetPacket *pD);
-        void CbImuData(LivoxLidarEthernetPacket *pD);
+        void CbIMU(LivoxLidarEthernetPacket *pD);
         void CbWorkMode(livox_status status, LivoxLidarAsyncControlResponse *pR);
         void CbLidarInfoChange(const LivoxLidarInfo *pI);
 
-        // void CbRecvData(LivoxEthPacket *pData, void *pLivox);
-        // void addP(LivoxRawPoint *pLp, uint64_t &tStamp);
-        // void addP(LivoxExtendRawPoint *pLp, uint64_t &tStamp);
-        // void addDualP(LivoxDualExtendRawPoint *pLp, uint64_t &tStamp);
-        // void addTripleP(LivoxTripleExtendRawPoint *pLp, uint64_t &tStamp);
-        // void updateIMU(LivoxImuPoint *pLd);
-
         bool open(void);
         void close(void);
-        bool updateLidar(void);
+        void updateLidar(void);
         void update(void);
         static void *getUpdate(void *This)
         {
@@ -89,7 +82,7 @@ namespace kai
         string m_SN;
         uint32_t m_handle;
         bool m_bOpen;
-        LivoxLidarWorkMode m_lidarMode;
+        LivoxLidarWorkMode m_workMode;
     };
 
 }

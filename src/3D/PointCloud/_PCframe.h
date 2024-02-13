@@ -9,9 +9,6 @@
 #define OpenKAI_src_3D_PointCloud__PCframe_H_
 
 #include "../_GeometryBase.h"
-using namespace open3d;
-using namespace open3d::geometry;
-using namespace open3d::visualization;
 
 namespace kai
 {
@@ -22,26 +19,25 @@ namespace kai
 		virtual ~_PCframe();
 
 		virtual bool init(void *pKiss);
-		virtual bool link(void);
-		virtual int size(void);
 		virtual int check(void);
 
-		//frame
-		virtual void getPC(PointCloud *pPC);
-		virtual void updatePC(void);
+		virtual bool initBuffer(void);
+		virtual void swapBuffer(void);
+        virtual void clear(void);
 
-	protected:
-		virtual void getStream(void *p);
-		virtual void getFrame(void *p);
-		virtual void getGrid(void *p);
+        virtual void getStream(void* p, const uint64_t& tExpire);
+        virtual void getFrame(void* p);
+        virtual void getGrid(void* p);
+
+   		virtual void copyTo(PointCloud *pPC);
+        virtual int nP(void);
 
 	protected:
 		// frame buf
 		int m_nPresv;		// max number of reserved point buf
 		int m_nPresvNext;
-		uint64_t m_tStamp;
 		tSwap<PointCloud> m_sPC;
-		pthread_mutex_t m_mutexPC;
+		uint64_t m_tStamp;
 	};
 
 }

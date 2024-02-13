@@ -90,7 +90,7 @@ namespace kai
 
     void _PCregistCol::updatePC(void)
     {
-        pthread_mutex_lock(&m_mutexPC);
+        mutexLock();
         m_sPC.swap();
         m_sPC.next()->points_.clear();
         m_sPC.next()->colors_.clear();
@@ -100,7 +100,7 @@ namespace kai
         m_sPCvd.next()->points_.clear();
         m_sPCvd.next()->colors_.clear();
         m_sPCvd.next()->normals_.clear();
-        pthread_mutex_unlock(&m_mutexPC);
+        mutexUnlock();
     }
 
     bool _PCregistCol::updateRegistration(void)
@@ -108,7 +108,7 @@ namespace kai
         NULL_F(m_pPCf);
 
         PointCloud* pPC = m_sPC.next();
-        m_pPCf->getPC(pPC);
+        m_pPCf->copyTo(pPC);
         IF_F(pPC->IsEmpty());
 		*m_sPCvd.next() = *pPC->VoxelDownSample(m_rVoxel);
 

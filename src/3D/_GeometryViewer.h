@@ -61,7 +61,7 @@ namespace kai
 		void addUIpc(const PointCloud& pc);
 		void updateUIpc(const PointCloud& pc);
 		void removeUIpc(void);
-		void readAllPC(void);
+		void readAllGeometry(void);
 		void addDummyPoints(PointCloud* pPC, int n, float r, Vector3d vCol = {0,0,0});
 		virtual void updateGeometry(void);
 		virtual void update(void);

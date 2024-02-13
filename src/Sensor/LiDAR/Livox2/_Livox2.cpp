@@ -13,7 +13,7 @@ namespace kai
         m_SN = "";
         m_handle = -1;
         m_bOpen = false;
-        m_lidarMode = kLivoxLidarNormal;
+        m_workMode = kLivoxLidarNormal;
     }
 
     _Livox2::~_Livox2()
@@ -26,7 +26,7 @@ namespace kai
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("SN", &m_SN);
-        pK->v("lidarMode", (int *)&m_lidarMode);
+        pK->v("lidarMode", (int *)&m_workMode);
 
         return true;
     }
@@ -48,11 +48,12 @@ namespace kai
     {
         NULL_F(m_pLv);
 
-        LivoxLidar2device* pD = m_pLv->getDevice(m_SN);
+        LivoxLidar2device *pD = m_pLv->getDevice(m_SN);
         NULL_F(pD);
         m_handle = pD->m_handle;
 
         IF_F(!m_pLv->setCbData(m_handle, sCbPointCloud, (void *)this));
+        IF_F(!m_pLv->setCbIMU(m_handle, sCbIMU, (void *)this));
 
         m_bOpen = true;
         LOG_I("open() success");
@@ -65,6 +66,8 @@ namespace kai
 
     int _Livox2::check(void)
     {
+        NULL__(m_pLv, -1);
+
         return this->_PCstream::check();
     }
 
@@ -95,42 +98,63 @@ namespace kai
         }
     }
 
-    bool _Livox2::updateLidar(void)
+    void _Livox2::updateLidar(void)
     {
-        //        m_pL->setLidarMode(m_broadcastCode, (LidarMode)m_lidarMode);
-        // if(m_lidarMode != kLidarModePowerSaving)
-        // {
-        //     m_pL->setScanPattern(m_broadcastCode, (LidarScanPattern)m_scanPattern);
-        // }
+        IF_(check() < 0);
 
-        return true;
+        m_pLv->setWorkMode(m_handle, m_workMode);
+
+        // if(m_workMode == kLivoxLidarNormal)
+        //     m_pLv->setScanPattern(m_handle, m_scanPattern);
+
     }
 
     void _Livox2::setLidarMode(LivoxLidarWorkMode m)
     {
-        m_lidarMode = m;
+        m_workMode = m;
     }
 
     void _Livox2::startStream(void)
     {
-        m_lidarMode = kLivoxLidarNormal;
+        m_workMode = kLivoxLidarNormal;
     }
 
     void _Livox2::stopStream(void)
     {
-        m_lidarMode = kLivoxLidarSleep;
+        m_workMode = kLivoxLidarSleep;
     }
 
     void _Livox2::CbPointCloud(LivoxLidarEthernetPacket *pD)
     {
         NULL_(pD);
         LOG_I("CbPointCloud data_num: " + i2str(pD->dot_num) + ", data_type: " + i2str(pD->data_type) + ", length: " + i2str(pD->length) + ", frame_counter: " + i2str(pD->frame_cnt));
+
+        uint8_t tStampType = pD->time_type;
+        uint64_t tStamp = *((uint64_t *)(pD->timestamp));
+
+        if (pD->data_type == kLivoxLidarCartesianCoordinateHighData)
+        {
+            for (uint32_t i = 0; i < pD->dot_num; i++)
+            {
+                LivoxLidarCartesianHighRawPoint *pP = (LivoxLidarCartesianHighRawPoint *)&pD->data[i];
+                Vector3d vP(pP->x, pP->y, pP->z);
+                add(vP, Vector3f{0, 0, 0}, tStamp);
+            }
+        }
+        else if (pD->data_type == kLivoxLidarCartesianCoordinateLowData)
+        {
+            LivoxLidarCartesianLowRawPoint *pP = (LivoxLidarCartesianLowRawPoint *)pD->data;
+        }
+        else if (pD->data_type == kLivoxLidarSphericalCoordinateData)
+        {
+            LivoxLidarSpherPoint *pP = (LivoxLidarSpherPoint *)pD->data;
+        }
     }
 
-    void _Livox2::CbImuData(LivoxLidarEthernetPacket *pD)
+    void _Livox2::CbIMU(LivoxLidarEthernetPacket *pD)
     {
         NULL_(pD);
-        LOG_I("CbImuData, data_num:" + i2str(pD->dot_num) + ", data_type:" + i2str(pD->data_type) + ", length:" + i2str(pD->length) + ", frame_counter:" + i2str(pD->frame_cnt));
+        LOG_I("CbIMU, data_num:" + i2str(pD->dot_num) + ", data_type:" + i2str(pD->data_type) + ", length:" + i2str(pD->length) + ", frame_counter:" + i2str(pD->frame_cnt));
     }
 
     void _Livox2::CbWorkMode(livox_status status, LivoxLidarAsyncControlResponse *pR)
@@ -144,96 +168,7 @@ namespace kai
         NULL_(pI);
 
         LOG_I("LidarInfoChangeCallback Lidar IP: " + string(pI->lidar_ip) + " SN: " + string(pI->sn));
-        // SetLivoxLidarWorkMode(handle, kLivoxLidarNormal, sCbWorkMode, this);
-        //  LivoxLidarStartLogger(handle, kLivoxLidarRealTimeLog, sCbLoggerStart, this);
-        //   SetLivoxLidarDebugPointCloud(handle, true, sCbDebugPointCloud, this);
-        //   sleep(10);
-        //   SetLivoxLidarDebugPointCloud(handle, false, DebugPointCloudCallback, nullptr);
     }
-
-    // void _Livox2::CbRecvData(LivoxEthPacket *pData, void *pLivox)
-    // {
-    //     NULL_(pData);
-    //     NULL_(pLivox);
-
-    //     _Livox2 *pL = (_Livox2 *)pLivox;
-    //     uint8_t tStampType = pData->timestamp_type;
-    //     uint64_t tStamp = *((uint64_t *)(pData->timestamp));
-    //     // uint64_t tNow = getTbootMs();//pL->m_pT->getTfrom();
-
-    //     if (pData->data_type == kCartesian)
-    //     {
-    //         pL->addP((LivoxRawPoint *)pData->data, tStamp);
-    //     }
-    //     else if (pData->data_type == kExtendCartesian)
-    //     {
-    //         pL->addP((LivoxExtendRawPoint *)pData->data, tStamp);
-    //     }
-    //     else if (pData->data_type == kDualExtendCartesian)
-    //     {
-    //         pL->addDualP((LivoxDualExtendRawPoint *)pData->data, tStamp);
-    //     }
-    //     else if (pData->data_type == kTripleExtendCartesian)
-    //     {
-    //         pL->addTripleP((LivoxTripleExtendRawPoint *)pData->data, tStamp);
-    //     }
-    //     else if (pData->data_type == kImu)
-    //     {
-    //         pL->updateIMU((LivoxImuPoint *)pData->data);
-    //     }
-    // }
-
-    // void _Livox2::addP(LivoxRawPoint *pP, uint64_t &tStamp)
-    // {
-    //     Vector3d vP(pP->x, pP->y, pP->z);
-    //     Vector3f vC(1, 1, 1);
-    //     vC[0] = float(pP->reflectivity) * m_ovRef;
-    //     add(vP, vC, tStamp);
-    // }
-
-    // void _Livox2::addP(LivoxExtendRawPoint *pP, uint64_t &tStamp)
-    // {
-    //     Vector3d vP(pP->x, pP->y, pP->z);
-    //     Vector3f vC(1, 1, 1);
-    //     vC[0] = float(pP->reflectivity) * m_ovRef;
-    //     add(vP, vC, tStamp);
-    // }
-
-    // void _Livox2::addDualP(LivoxDualExtendRawPoint *pP, uint64_t &tStamp)
-    // {
-    //     Vector3d vP1(pP->x1, pP->y1, pP->z1);
-    //     Vector3d vP2(pP->x2, pP->y2, pP->z2);
-    //     Vector3f vC(1, 1, 1);
-    //     vC[0] = float(pP->reflectivity1) * m_ovRef;
-    //     add(vP1, vC, tStamp);
-    //     vC[0] = float(pP->reflectivity2) * m_ovRef;
-    //     add(vP2, vC, tStamp);
-    // }
-
-    // void _Livox2::addTripleP(LivoxTripleExtendRawPoint *pP, uint64_t &tStamp)
-    // {
-    //     Vector3d vP1(pP->x1, pP->y1, pP->z1);
-    //     Vector3d vP2(pP->x2, pP->y2, pP->z2);
-    //     Vector3d vP3(pP->x3, pP->y3, pP->z3);
-    //     Vector3f vC(1, 1, 1);
-    //     vC[0] = float(pP->reflectivity1) * m_ovRef;
-    //     add(vP1, vC, tStamp);
-    //     vC[0] = float(pP->reflectivity2) * m_ovRef;
-    //     add(vP2, vC, tStamp);
-    //     vC[0] = float(pP->reflectivity3) * m_ovRef;
-    //     add(vP3, vC, tStamp);
-    // }
-
-    // void _Livox2::updateIMU(LivoxImuPoint *pD)
-    // {
-    //     // printf("gxyz=(%f, %f, %f) axyz=(%f, %f, %f)\n",
-    //     //        pD->gyro_x,
-    //     //        pD->gyro_y,
-    //     //        pD->gyro_z,
-    //     //        pD->acc_x,
-    //     //        pD->acc_y,
-    //     //        pD->acc_z);
-    // }
 
     void _Livox2::console(void *pConsole)
     {

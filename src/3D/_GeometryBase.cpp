@@ -66,6 +66,19 @@ namespace kai
     {
     }
 
+    void _GeometryBase::getGeometry(void *p, const uint64_t& tExpire)
+    {
+        NULL_(p);
+
+        GEOMETRY_TYPE gt = ((_GeometryBase*)p)->getType();
+        if(gt == pc_stream)
+            getStream(p, tExpire);
+        else if(gt == pc_frame)
+            getFrame(p);
+        else if(gt == pc_grid)
+            getGrid(p);
+    }
+
     void _GeometryBase::getStream(void *p, const uint64_t& tExpire)
     {
     }

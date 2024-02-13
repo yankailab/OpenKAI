@@ -118,15 +118,15 @@ namespace kai
 		// TODO: move to start()?
 		m_pT->sleepT(0);
 
-		while (m_nPread <= 0)
-			readAllPC();
+		while (nP() <= 0)
+			readAllGeometry();
 
-		if (m_nPread < m_nPresv)
+		if (nP() < m_nPresv)
 		{
-			addDummyPoints(m_sPC.next(), m_nPresv - m_nPread, m_rDummyDome, {0, 0, 0});
+			addDummyPoints(m_sPC.next(), m_nPresv - nP(), m_rDummyDome, {0, 0, 0});
 		}
 
-		updatePC();
+		swapBuffer();
 		removeUIpc();
 		addUIpc(*m_sPC.get());
 
@@ -147,8 +147,9 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		readAllPC();
-		updatePC();
+		readAllGeometry();
+		swapBuffer();
+		
 		PointCloud *pPC = m_sPC.get();
 		pPC->normals_.clear();
 		int n = pPC->points_.size();
@@ -201,12 +202,11 @@ namespace kai
 		m_pWin->RemoveGeometry(m_modelName);
 	}
 
-	void _GeometryViewer::readAllPC(void)
+	void _GeometryViewer::readAllGeometry(void)
 	{
-		m_nPread = 0;
 		for (_GeometryBase *pGB : m_vpGB)
 		{
-			readPC(pGB);
+			getGeometry(pGB);
 		}
 	}
 

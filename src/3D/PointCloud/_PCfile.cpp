@@ -36,7 +36,7 @@ namespace kai
 		//	io::ReadPointCloudOption ro;
 		IF_F(!io::ReadPointCloud(m_fName, m_pc));
 		*m_sPC.next() = m_pc;
-		updatePC();
+		swapBuffer();
 //		m_nPread = m_pc.points_.size();
 
 		return true;
@@ -55,7 +55,7 @@ namespace kai
 			m_pT->autoFPSfrom();
 
 			*m_sPC.next() = m_pc;
-			updatePC();
+			swapBuffer();
 
 			m_pT->autoFPSto();
 		}
