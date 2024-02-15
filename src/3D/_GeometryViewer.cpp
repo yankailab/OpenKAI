@@ -118,15 +118,17 @@ namespace kai
 		// TODO: move to start()?
 		m_pT->sleepT(0);
 
-		while (nP() <= 0)
+		swapBuffer();
+		while (nPnext() <= 0)
 			readAllGeometry();
 
-		if (nP() < m_nPresv)
+		if (nPnext() < m_nPresv)
 		{
-			addDummyPoints(m_sPC.next(), m_nPresv - nP(), m_rDummyDome, {0, 0, 0});
+			addDummyPoints(m_sPC.next(), m_nPresv - nPnext(), m_rDummyDome, {0, 0, 0});
 		}
-
 		swapBuffer();
+
+
 		removeUIpc();
 		addUIpc(*m_sPC.get());
 
@@ -147,6 +149,7 @@ namespace kai
 	{
 		IF_(check() < 0);
 
+		swapBuffer();
 		readAllGeometry();
 		swapBuffer();
 		

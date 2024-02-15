@@ -31,6 +31,7 @@ namespace kai
 
    		virtual void copyTo(PointCloud *pPC);
         virtual int nP(void);
+        virtual int nPnext(void);
 
 	protected:
 		// frame buf

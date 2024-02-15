@@ -37,7 +37,7 @@ namespace kai
 		IF_F(!io::ReadPointCloud(m_fName, m_pc));
 		*m_sPC.next() = m_pc;
 		swapBuffer();
-//		m_nPread = m_pc.points_.size();
+		//		m_nPread = m_pc.points_.size();
 
 		return true;
 	}

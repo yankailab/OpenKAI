@@ -142,4 +142,9 @@ namespace kai
     {
         return m_sPC.get()->points_.size();
     }
+
+    int _PCframe::nPnext(void)
+    {
+        return m_sPC.next()->points_.size();
+    }
 }

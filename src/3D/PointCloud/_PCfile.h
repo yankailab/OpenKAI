@@ -13,29 +13,28 @@
 namespace kai
 {
 
-class _PCfile: public _PCframe
-{
-public:
-	_PCfile();
-	virtual ~_PCfile();
-
-	bool init(void* pKiss);
-	bool start(void);
-	bool open(void);
-
-private:
-	void update(void);
-	static void* getUpdate(void* This)
+	class _PCfile : public _PCframe
 	{
-		((_PCfile *) This)->update();
-		return NULL;
-	}
+	public:
+		_PCfile();
+		virtual ~_PCfile();
 
-public:
-	string m_fName;
-	PointCloud m_pc;
+		bool init(void *pKiss);
+		bool start(void);
+		bool open(void);
 
-};
+	private:
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_PCfile *)This)->update();
+			return NULL;
+		}
+
+	public:
+		string m_fName;
+		PointCloud m_pc;
+	};
 
 }
 #endif

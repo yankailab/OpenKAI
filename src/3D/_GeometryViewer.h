@@ -76,6 +76,7 @@ namespace kai
 		void updateCamPose(void);
 		void camBound(const AxisAlignedBoundingBox& aabb);
 		AxisAlignedBoundingBox createDefaultAABB(void);
+		
 		virtual void updateUI(void);
 		static void *getUpdateUI(void *This)
 		{
