@@ -14,6 +14,8 @@ namespace kai
     {
         m_type = geometry_unknown;
 
+        m_vDefaultColor.set(1.0);
+
         m_vT.clear();
         m_vR.clear();
         m_mT = Matrix4d::Identity();
@@ -31,6 +33,8 @@ namespace kai
     {
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
+
+        pK->v("vDefaultColor", &m_vDefaultColor);
 
         pK->v("vT", &m_vT);
         pK->v("vR", &m_vR);

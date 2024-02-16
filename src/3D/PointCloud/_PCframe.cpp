@@ -88,7 +88,7 @@ namespace kai
         mutexUnlock();
     }
 
-    void _PCframe::getStream(void *p, const uint64_t& tExpire)
+    void _PCframe::getStream(void *p, const uint64_t &tExpire)
     {
         IF_(check() < 0);
         NULL_(p);
@@ -101,8 +101,11 @@ namespace kai
 
         for (int i = 0; i < pS->nP(); i++)
         {
-            GEOMETRY_POINT* pP = pS->get(i);
-            IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
+            GEOMETRY_POINT *pP = pS->get(i);
+            if (tExpire)
+            {
+                IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
+            }
 
             pPC->points_.push_back(pP->m_vP);
             pPC->colors_.push_back(pP->m_vC.cast<double>());

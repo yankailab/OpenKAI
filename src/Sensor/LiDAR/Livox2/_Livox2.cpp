@@ -130,15 +130,18 @@ namespace kai
         LOG_I("CbPointCloud data_num: " + i2str(pD->dot_num) + ", data_type: " + i2str(pD->data_type) + ", length: " + i2str(pD->length) + ", frame_counter: " + i2str(pD->frame_cnt));
 
         uint8_t tStampType = pD->time_type;
-        uint64_t tStamp = *((uint64_t *)(pD->timestamp));
+//        uint64_t tStamp = *((uint64_t *)(pD->timestamp));
+        uint64_t tStamp = getApproxTbootUs();
 
         if (pD->data_type == kLivoxLidarCartesianCoordinateHighData)
         {
+            LivoxLidarCartesianHighRawPoint *pPd = (LivoxLidarCartesianHighRawPoint *)pD->data;
             for (uint32_t i = 0; i < pD->dot_num; i++)
             {
-                LivoxLidarCartesianHighRawPoint *pP = (LivoxLidarCartesianHighRawPoint *)&pD->data[i];
+                LivoxLidarCartesianHighRawPoint *pP = &pPd[i];
                 Vector3d vP(pP->x, pP->y, pP->z);
-                add(vP, Vector3f{0, 0, 0}, tStamp);
+                vP *= 0.001;
+                add(vP, Vector3f{m_vDefaultColor.x, m_vDefaultColor.y, m_vDefaultColor.z}, tStamp);
             }
         }
         else if (pD->data_type == kLivoxLidarCartesianCoordinateLowData)

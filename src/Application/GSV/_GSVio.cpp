@@ -1,9 +1,9 @@
-#include "_GSValarm.h"
+#include "_GSVio.h"
 
 namespace kai
 {
 
-    _GSValarm::_GSValarm()
+    _GSVio::_GSVio()
     {
         m_pDio = NULL;
         m_iDin = 1;
@@ -14,11 +14,11 @@ namespace kai
         m_bEnable = true;
     }
 
-    _GSValarm::~_GSValarm()
+    _GSVio::~_GSVio()
     {
     }
 
-    bool _GSValarm::init(void *pKiss)
+    bool _GSVio::init(void *pKiss)
     {
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
@@ -30,7 +30,7 @@ namespace kai
         return true;
     }
 
-    bool _GSValarm::link(void)
+    bool _GSVio::link(void)
     {
         IF_F(!this->_ModuleBase::link());
         Kiss *pK = (Kiss *)m_pKiss;
@@ -43,20 +43,20 @@ namespace kai
         return true;
     }
 
-    bool _GSValarm::start(void)
+    bool _GSVio::start(void)
     {
         NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
-    int _GSValarm::check(void)
+    int _GSVio::check(void)
     {
         NULL__(m_pDio, -1);
 
         return this->_ModuleBase::check();
     }
 
-    void _GSValarm::update(void)
+    void _GSVio::update(void)
     {
         while (m_pT->bRun())
         {
@@ -68,7 +68,7 @@ namespace kai
         }
     }
 
-    void _GSValarm::updateAlarm(void)
+    void _GSVio::updateAlarm(void)
     {
         IF_(check() < 0);
 
@@ -78,12 +78,12 @@ namespace kai
         m_pDio->writeD(m_iDout2, m_bAlarm);
     }
 
-    void _GSValarm::setAlarm(bool bAlarm)
+    void _GSVio::setAlarm(bool bAlarm)
     {
         m_bAlarm = bAlarm;
     }
 
-    void _GSValarm::console(void *pConsole)
+    void _GSVio::console(void *pConsole)
     {
         NULL_(pConsole);
         this->_ModuleBase::console(pConsole);

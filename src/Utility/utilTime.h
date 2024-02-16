@@ -19,7 +19,7 @@ namespace kai
 
 	inline uint64_t getApproxTbootUs(void)
 	{
-		// get number of micro since boot
+		// get number of micro sec since boot
 		struct timespec tFromBoot;
 		clock_gettime(CLOCK_BOOTTIME, &tFromBoot);
 

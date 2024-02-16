@@ -127,8 +127,10 @@ namespace kai
 #endif
 
 #ifdef WITH_APP_GSV
+		ADD_MODULE(_GSVctrl);
 		ADD_MODULE(_GSVdetect);
-		ADD_MODULE(_GSValarm);
+		ADD_MODULE(_GSVio);
+		ADD_MODULE(_GSVview);
 #endif
 
 #ifdef WITH_APP_LIVOXSCANNER && USE_LIVOX && WITH_3D && USE_OPEN3D

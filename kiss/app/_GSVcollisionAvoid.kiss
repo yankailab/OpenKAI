@@ -183,7 +183,7 @@
 
 {
 	"name":"GSValarm",
-	"class":"_GSValarm",
+	"class":"_GSVio",
 	"bON":1,
     {
 		"name":"thread",

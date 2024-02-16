@@ -5,19 +5,19 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_App_GSV__GSValarm_H_
-#define OpenKAI_src_App_GSV__GSValarm_H_
+#ifndef OpenKAI_src_App_GSV__GSVio_H_
+#define OpenKAI_src_App_GSV__GSVio_H_
 
 #include "../../IO/_ADIObase.h"
 
 namespace kai
 {
 
-    class _GSValarm : public _ModuleBase
+    class _GSVio : public _ModuleBase
     {
     public:
-        _GSValarm();
-        ~_GSValarm();
+        _GSVio();
+        ~_GSVio();
 
         virtual bool init(void *pKiss);
 		virtual bool link(void);
@@ -32,7 +32,7 @@ namespace kai
         virtual void update(void);
         static void *getUpdate(void *This)
         {
-            ((_GSValarm *)This)->update();
+            ((_GSVio *)This)->update();
             return NULL;
         }
 

@@ -117,8 +117,10 @@
 #endif
 
 #ifdef WITH_APP_GSV
+#include "../Application/GSV/_GSVctrl.h"
 #include "../Application/GSV/_GSVdetect.h"
-#include "../Application/GSV/_GSValarm.h"
+#include "../Application/GSV/_GSVio.h"
+#include "../Application/GSV/_GSVview.h"
 #endif
 
 #ifdef WITH_APP_LIVOXSCANNER &&USE_LIVOX &&WITH_3D &&USE_OPEN3D

@@ -55,7 +55,7 @@ namespace kai
 		virtual bool initBuffer(void);
         virtual void clear(void);
 
-        virtual void getGeometry(void* p, const uint64_t& tExpire = UINT64_MAX);
+        virtual void getGeometry(void* p, const uint64_t& tExpire = 0);
         virtual void getStream(void* p, const uint64_t& tExpire);
         virtual void getFrame(void* p);
         virtual void getGrid(void* p);
@@ -70,6 +70,8 @@ namespace kai
 
     protected:
         GEOMETRY_TYPE m_type;
+
+        vFloat3 m_vDefaultColor;
 
         // transform
         vDouble3 m_vT;
