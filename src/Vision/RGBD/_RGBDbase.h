@@ -9,8 +9,8 @@
 #define OpenKAI_src_Vision_RGBD__RGBDbase_H_
 
 #include "../_VisionBase.h"
+#include "../../3D/PointCloud/_PCframe.h"
 #include "../../IPC/_SharedMem.h"
-#include "../../UI/_Console.h"
 
 #ifdef USE_OPENCV
 #include "../../Utility/utilCV.h"
@@ -49,18 +49,21 @@ namespace kai
 		vInt2 m_vSizeD;
 		vFloat2 m_vRangeD;
 
+		// switchs
 		bool m_bDepth;
 		bool m_bIR;
 		bool m_btRGB;
 		bool m_btDepth;
 		bool m_bConfidence;
 		float m_fConfidenceThreshold;
+		bool m_bPointCloud;
 
 		// frames
 		_SharedMem *m_psmDepth;
 		_SharedMem *m_psmTransformedDepth;
 		_SharedMem *m_psmTransformedRGB;
 		_SharedMem *m_psmIR;
+		_PCframe* m_pPC;
 		
 #ifdef USE_OPENCV
 		Frame m_fDepth;

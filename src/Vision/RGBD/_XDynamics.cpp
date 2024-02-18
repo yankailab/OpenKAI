@@ -16,12 +16,10 @@ namespace kai
         m_vSizeD.set(320, 240);
 
         m_devURI = "192.168.31.3";
-        m_xdDevType = XDYN_DEV_TYPE_TOF;//XDYN_DEV_TYPE_TOF_RGB;
+        m_xdDevType = XDYN_DEV_TYPE_TOF; // XDYN_DEV_TYPE_TOF_RGB;
         m_xdProductType = XDYN_PRODUCT_TYPE_XD_400;
         m_pXDstream = NULL;
-        m_xdRGBD.clear();
-
-        m_xdCtrl.init();
+        m_xdHDL.init();
     }
 
     _XDynamics::~_XDynamics()
@@ -43,6 +41,20 @@ namespace kai
         pK->v("mirrorMode", &m_xdCtrl.m_mirrorMode);
         pK->v("rgbStride", &m_xdCtrl.m_rgbStride);
         pK->v("rgbFmt", &m_xdCtrl.m_rgbFmt);
+        pK->v("bAE", &m_xdCtrl.m_bAE);
+        pK->v("preDist", &m_xdCtrl.m_preDist);
+
+        pK->v("DtdnMethod", &m_xdCtrl.m_DtdnMethod);
+        pK->v("DtdnLev", &m_xdCtrl.m_DtdnLev);
+        pK->v("DsdnMethod", &m_xdCtrl.m_DsdnMethod);
+        pK->v("DsdnLev", &m_xdCtrl.m_DsdnLev);
+
+        pK->v("GtdnMethod", &m_xdCtrl.m_GtdnMethod);
+        pK->v("GtdnLev", &m_xdCtrl.m_GtdnLev);
+        pK->v("GsdnMethod", &m_xdCtrl.m_GsdnMethod);
+        pK->v("GsdnLev", &m_xdCtrl.m_GsdnLev);
+
+        pK->v("dFlyPixLev", &m_xdCtrl.m_dFlyPixLev);
 
         m_mXDyuv.create(m_vSizeRGB.y * 3 / 2, m_vSizeRGB.x, CV_8UC1);
         m_mXDd.create(m_vSizeD.y, m_vSizeD.x, CV_16U);
@@ -62,13 +74,12 @@ namespace kai
     bool _XDynamics::open(void)
     {
         IF_T(m_bOpen);
-
         int res = XD_SUCCESS;
 
         // init context
         XdynContextInit();
 
-        XDYN_Streamer *pStream = CreateStreamerNet((XDYN_PRODUCT_TYPE_e)m_xdProductType, CbEvent, this, m_devURI);
+        XDYN_Streamer *pStream = CreateStreamerNet((XDYN_PRODUCT_TYPE_e)m_xdProductType, sCbEvent, this, m_devURI);
         NULL_Fl(pStream, "CreateStreamerNet failed");
 
         res = pStream->OpenCamera((XDYN_DEV_TYPE_e)m_xdDevType);
@@ -78,7 +89,7 @@ namespace kai
         memCfg.isUsed[MEM_AGENT_SINK_DEPTH] = m_bDepth;
         memCfg.isUsed[MEM_AGENT_SINK_CONFID] = m_bConfidence;
         memCfg.isUsed[MEM_AGENT_SINK_RGB] = m_bRGB;
-        res = pStream->ConfigSinkType(XDYN_SINK_TYPE_CB, memCfg, CbStream, this);
+        res = pStream->ConfigSinkType(XDYN_SINK_TYPE_CB, memCfg, sCbStream, this);
         IF_Fl(res != XD_SUCCESS, "ConfigSinkType failed: " + i2str(res));
 
         res = pStream->ConfigAlgMode(XDYN_ALG_MODE_EMB_ALG_IPC_PASS);
@@ -95,6 +106,7 @@ namespace kai
                                     m_xdCtrl.m_vSpaceInt.z,
                                     m_xdCtrl.m_vSpaceInt.w};
 
+        // pStream->SetWorkMode();
         pStream->SetFps(m_devFPSd);
         pStream->SetCamInt(phaseInt, spaceInt);
         pStream->SetCamFreq(m_xdCtrl.m_vFreq.x, m_xdCtrl.m_vFreq.y);
@@ -103,6 +115,9 @@ namespace kai
         pStream->SetCamMirror((XDYN_MIRROR_MODE_e)m_xdCtrl.m_mirrorMode);
         res = pStream->ConfigCamParams();
         IF_Fl(res != XD_SUCCESS, "conifg cam params failed: " + i2str(res));
+
+        XdynCamInfo_t camInfo;
+        pStream->GetCamInfo(&m_xdCamInfo);
 
         // config RGB
         XdynRes_t rgbRes;
@@ -115,16 +130,40 @@ namespace kai
         res = pStream->CfgRgbParams();
         IF_Fl(res != XD_SUCCESS, "config rgb failed: " + i2str(res));
 
-        // init RGBD interface
+        MemSinkInfo sinkInfo;
+        pStream->GetResolution(sinkInfo);
+
+        // post processes
+
+        // correction params
+        pStream->Corr_SetAE(m_xdCtrl.m_bAE);
+        pStream->Corr_SetPreDist(m_xdCtrl.m_preDist);
+        res = pStream->ConfigCorrParam();
+        IF_Fl(res != XD_SUCCESS, "config corr param failed: " + i2str(res));
+
+        // denoise
+        pStream->PP_SetDepthDenoise((XDYN_PP_TDENOISE_METHOD)m_xdCtrl.m_DtdnMethod,
+                                    (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DtdnLev,
+                                    (XDYN_PP_SDENOISE_METHOD)m_xdCtrl.m_DsdnMethod,
+                                    (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DsdnLev);
+        pStream->PP_SetGrayDenoise((XDYN_PP_TDENOISE_METHOD)m_xdCtrl.m_DtdnMethod,
+                                   (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DtdnLev,
+                                   (XDYN_PP_SDENOISE_METHOD)m_xdCtrl.m_DsdnMethod,
+                                   (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DsdnLev);
+        pStream->PP_SetDeFlyPixel(m_xdCtrl.m_dFlyPixLev);
+        pStream->ConfigPPParam();
+        IF_Fl(res != XD_SUCCESS, "config PP param failed: " + i2str(res));
+
+        // init RGBD HDL interface
         XdynRegParams_t regParams;
         pStream->GetCaliRegParams(regParams);
+        XdynLensParams_t lensParams;
+        pStream->GetRgbLensParams(lensParams);
 
-        XdynCamInfo_t camInfo;
-        pStream->GetCamInfo(&m_xdCamInfo);
+        bool r = initHDL(&regParams, m_vSizeD.x, m_vSizeD.y, m_vSizeRGB.x, m_vSizeRGB.y);
+        IF_Fl(!r, "initHDL failed");
 
-        bool r = initRGBD(&regParams, m_vSizeD.x, m_vSizeD.y, m_vSizeRGB.x, m_vSizeRGB.y);
-        IF_Fl(!r, "initRGBD failed");
-
+        // start streaming
         res = pStream->StartStreaming();
         IF_Fl(res != XD_SUCCESS, "start streaming failed: " + i2str(res));
 
@@ -193,15 +232,19 @@ namespace kai
         m_fRGB.copy(mRGB);
     }
 
-    void _XDynamics::streamIn(MemSinkCfg *pCfg, XdynFrame_t *pData)
+    void _XDynamics::cbStream(MemSinkCfg *pCfg, XdynFrame_t *pData)
     {
-        IF_(!m_xdRGBD.m_bInit);
+        IF_(!m_xdHDL.m_bInit);
 
         XdynFrame_t *pD = NULL;
         XdynFrame_t *pRGB = NULL;
         XdynFrame_t *pConf = NULL;
 
-        if (pCfg->isUsed[MEM_AGENT_SINK_DEPTH])
+        bool bD = pCfg->isUsed[MEM_AGENT_SINK_DEPTH];
+        bool bRGB = pCfg->isUsed[MEM_AGENT_SINK_RGB];
+        bool bC = pCfg->isUsed[MEM_AGENT_SINK_CONFID];
+
+        if (bD)
         {
             pD = &pData[MEM_AGENT_SINK_DEPTH];
             if (pD->ex)
@@ -212,133 +255,113 @@ namespace kai
             }
         }
 
-        if (pCfg->isUsed[MEM_AGENT_SINK_RGB])
+        if (bRGB)
         {
             pRGB = &pData[MEM_AGENT_SINK_RGB];
             memcpy(m_mXDyuv.data, pRGB->addr, pRGB->size);
         }
 
-        // if (pCfg->isUsed[MEM_AGENT_SINK_DEPTH] &&
-        //     pCfg->isUsed[MEM_AGENT_SINK_CONFID] &&
-        //     pCfg->isUsed[MEM_AGENT_SINK_RGB])
-        // {
-        //     m_xdRGBD.m_in.pusDepth = (unsigned short *)pData[MEM_AGENT_SINK_DEPTH].addr;
-        //     m_xdRGBD.m_in.pucYuvImg = (unsigned char *)pData[MEM_AGENT_SINK_RGB].addr;
-        //     m_xdRGBD.m_in.pucConfidence = (unsigned char *)pData[MEM_AGENT_SINK_CONFID].addr;
-
-        //     unsigned int puiSuccFlag = 0;
-        //     unsigned int puiAbnormalFlag = 0;
-        //     static int num = 0;
-
-        //     sitrpRunRGBProcess(m_xdRGBD.m_pD, &m_xdRGBD.m_in, &m_xdRGBD.m_out, &puiSuccFlag, &puiAbnormalFlag, FALSE);
-        //     if (puiSuccFlag == RP_ARITH_SUCCESS)
-        //     {
-        //         //                printf("get pc num : %d\n", user->rgbdOutDatas.uiOutRGBDLen);
-        //         //                std::string fileName = std::string("pt_") + std::to_string(num++) + std::string(".ply");
-        //         //                RP_SavePLY_File(fileName.c_str(), user->rgbdOutDatas.pstrRGBD, 320 * 240);
-        //     }
-        //     else
-        //     {
-        //         printf("alg cal failed, %d\n", puiSuccFlag);
-        //     }
-        // }
+        if (bD && bRGB && bC)
+        {
+            runHDL((unsigned short *)pData[MEM_AGENT_SINK_DEPTH].addr,
+                   (unsigned char *)pData[MEM_AGENT_SINK_RGB].addr,
+                   (unsigned char *)pData[MEM_AGENT_SINK_CONFID].addr);
+        }
 
         m_pT->wakeUp();
     }
 
-    void _XDynamics::CbStream(void *pHandle, MemSinkCfg *pCfg, XdynFrame_t *pData)
+    void _XDynamics::runHDL(unsigned short *pD,
+                            unsigned char *pRGB,
+                            unsigned char *pC)
     {
-        NULL_(pHandle);
-        _XDynamics *pXD = (_XDynamics *)pHandle;
-        pXD->streamIn(pCfg, pData);
-    }
+        m_xdHDL.m_in.pusDepth = pD;
+        m_xdHDL.m_in.pucYuvImg = pRGB;
+        m_xdHDL.m_in.pucConfidence = pC;
 
-    void _XDynamics::CbEvent(void *handle, int event, void *data)
-    {
-        _XDynamics *pXD = (_XDynamics *)handle;
+        unsigned int puiSuccFlag = 0;
+        unsigned int puiAbnormalFlag = 0;
 
-        if (event == XDYN_CB_EVENT_DEVICE_DISCONNECT)
+        sitrpRunRGBProcess(m_xdHDL.m_pD, &m_xdHDL.m_in, &m_xdHDL.m_out, &puiSuccFlag, &puiAbnormalFlag, FALSE);
+        IF_(puiSuccFlag != RP_ARITH_SUCCESS);
+
+        LOG_I("nP:" + i2str(m_xdHDL.m_out.uiOutRGBDLen));
+
+        for (int i = 0; i < m_xdHDL.m_out.uiOutRGBDLen; i++)
         {
-            LOG(INFO) << *pXD->getName() << ": "
-                      << "Device disconnected";
-            pXD->close();
+            RGBD_POINT_CLOUD *pP = &m_xdHDL.m_out.pstrRGBD[i];
+            pP->fX;
+            pP->fY;
+            pP->fZ;
+            pP->r;
+            pP->g;
+            pP->b;
         }
     }
 
-    bool _XDynamics::initRGBD(XdynRegParams_t *regParams, uint16_t tofW, uint16_t tofH, uint16_t rgbW, uint16_t rgbH)
+    bool _XDynamics::initHDL(XdynRegParams_t *regParams, uint16_t tofW, uint16_t tofH, uint16_t rgbW, uint16_t rgbH)
     {
+        releaseHDL();
+
         uint32_t puiInitSuccFlag = RP_INIT_SUCCESS;
-
-        if (m_xdRGBD.m_bInit && m_xdRGBD.m_pD)
-        {
-            sitrpRelease(&m_xdRGBD.m_pD, FALSE);
-            m_xdRGBD.m_pD = nullptr;
-            m_xdRGBD.m_bInit = false;
-        }
 
         char cDllVerion[RP_ARITH_VERSION_LEN_MAX] = {0}; // algorithm version string
         sitrpGetVersion(cDllVerion);
         LOG_I("Get rgbd hdl version: " + string(cDllVerion));
 
-        sitrpSetTofIntrinsicMat(m_xdRGBD.m_RP.fTofIntrinsicMatrix, regParams->fTofIntrinsicMatrix, RP_INTRINSIC_MATRIX_LEN, &puiInitSuccFlag, TRUE);
-        sitrpSetRgbIntrinsicMat(m_xdRGBD.m_RP.fRgbIntrinsicMatrix, regParams->fRgbIntrinsicMatrix, RP_INTRINSIC_MATRIX_LEN, &puiInitSuccFlag, TRUE);
-        sitrpSetTranslationMat(m_xdRGBD.m_RP.fTranslationMatrix, regParams->fTranslationMatrix, RP_TRANSLATION_MATRIX_LEN, &puiInitSuccFlag, TRUE);
-        sitrpSetRotationMat(m_xdRGBD.m_RP.fRotationMatrix, regParams->fRotationMatrix, RP_ROTATION_MATRIX_LEN, &puiInitSuccFlag, TRUE);
-        sitrpSetRgbPos(&(m_xdRGBD.m_RP.bIsRgbCameraLeft), regParams->bIsRgbCameraLeft, &puiInitSuccFlag, TRUE);
+        sitrpSetTofIntrinsicMat(m_xdHDL.m_RP.fTofIntrinsicMatrix, regParams->fTofIntrinsicMatrix, RP_INTRINSIC_MATRIX_LEN, &puiInitSuccFlag, TRUE);
+        sitrpSetRgbIntrinsicMat(m_xdHDL.m_RP.fRgbIntrinsicMatrix, regParams->fRgbIntrinsicMatrix, RP_INTRINSIC_MATRIX_LEN, &puiInitSuccFlag, TRUE);
+        sitrpSetTranslationMat(m_xdHDL.m_RP.fTranslationMatrix, regParams->fTranslationMatrix, RP_TRANSLATION_MATRIX_LEN, &puiInitSuccFlag, TRUE);
+        sitrpSetRotationMat(m_xdHDL.m_RP.fRotationMatrix, regParams->fRotationMatrix, RP_ROTATION_MATRIX_LEN, &puiInitSuccFlag, TRUE);
+        sitrpSetRgbPos(&(m_xdHDL.m_RP.bIsRgbCameraLeft), regParams->bIsRgbCameraLeft, &puiInitSuccFlag, TRUE);
 
-        m_xdRGBD.m_dyn.usInDepthWidth = tofW;
-        m_xdRGBD.m_dyn.usInDepthHeight = tofH;
-        m_xdRGBD.m_dyn.usInYuvWidth = rgbW;
-        m_xdRGBD.m_dyn.usInYuvHeight = rgbH;
+        m_xdHDL.m_dyn.usInDepthWidth = tofW;
+        m_xdHDL.m_dyn.usInDepthHeight = tofH;
+        m_xdHDL.m_dyn.usInYuvWidth = rgbW;
+        m_xdHDL.m_dyn.usInYuvHeight = rgbH;
 
-        m_xdRGBD.m_dyn.usOutR2DWidth = tofW;
-        m_xdRGBD.m_dyn.usOutR2DHeight = tofH;
-        m_xdRGBD.m_dyn.usOutD2RWidth = tofW;
-        m_xdRGBD.m_dyn.usOutD2RHeight = tofH;
+        m_xdHDL.m_dyn.usOutR2DWidth = tofW;
+        m_xdHDL.m_dyn.usOutR2DHeight = tofH;
+        m_xdHDL.m_dyn.usOutD2RWidth = tofW;
+        m_xdHDL.m_dyn.usOutD2RHeight = tofH;
 
-        m_xdRGBD.m_dyn.uiOutRGBDLen = 0;
-        m_xdRGBD.m_dyn.ucEnableOutR2D = 0;
-        m_xdRGBD.m_dyn.ucEnableOutD2R = 0;
-        m_xdRGBD.m_dyn.ucEnableRGBDPCL = 1;
-        m_xdRGBD.m_dyn.ucThConfidence = 25;
+        m_xdHDL.m_dyn.uiOutRGBDLen = 0;
+        m_xdHDL.m_dyn.ucEnableOutR2D = 0;
+        m_xdHDL.m_dyn.ucEnableOutD2R = 0;
+        m_xdHDL.m_dyn.ucEnableRGBDPCL = 1;
+        m_xdHDL.m_dyn.ucThConfidence = 25;
 
-        m_xdRGBD.m_pD = sitrpInit(&puiInitSuccFlag, &m_xdRGBD.m_RP, &m_xdRGBD.m_dyn, FALSE, FALSE);
+        m_xdHDL.m_pD = sitrpInit(&puiInitSuccFlag, &m_xdHDL.m_RP, &m_xdHDL.m_dyn, FALSE, FALSE);
         IF_Fl(puiInitSuccFlag > RP_ARITH_SUCCESS, "Algorithm initialize fail, puiInitSuccFlag: " + i2str(puiInitSuccFlag));
 
         // init in out buffer
-        m_xdRGBD.m_in.pThisGlbBuffer = m_xdRGBD.m_pD;
+        m_xdHDL.m_in.pThisGlbBuffer = m_xdHDL.m_pD;
 
-        m_xdRGBD.m_in.pucYuvImg = nullptr;
-        m_xdRGBD.m_in.usYuvWidth = rgbW;
-        m_xdRGBD.m_in.usYuvHeight = rgbH;
+        m_xdHDL.m_in.pucYuvImg = nullptr;
+        m_xdHDL.m_in.usYuvWidth = rgbW;
+        m_xdHDL.m_in.usYuvHeight = rgbH;
 
-        m_xdRGBD.m_in.pusDepth = nullptr;
-        m_xdRGBD.m_in.usDepthWidth = tofW;
-        m_xdRGBD.m_in.usDepthHeight = tofH;
+        m_xdHDL.m_in.pusDepth = nullptr;
+        m_xdHDL.m_in.usDepthWidth = tofW;
+        m_xdHDL.m_in.usDepthHeight = tofH;
 
-        m_xdRGBD.m_in.pucConfidence = nullptr;
-        m_xdRGBD.m_in.usConfWidth = tofW;
-        m_xdRGBD.m_in.usConfHeight = tofH;
+        m_xdHDL.m_in.pucConfidence = nullptr;
+        m_xdHDL.m_in.usConfWidth = tofW;
+        m_xdHDL.m_in.usConfHeight = tofH;
 
-        m_xdRGBD.m_out.ucEnableOutR2D = 0;
-        m_xdRGBD.m_out.ucEnableOutD2R = 0;
-        m_xdRGBD.m_out.pstrRGBD = (RGBD_POINT_CLOUD *)malloc(tofW * tofH * sizeof(RGBD_POINT_CLOUD));
-        m_xdRGBD.m_out.ucEnableRGBDPCL = 1;
+        m_xdHDL.m_out.ucEnableOutR2D = 0;
+        m_xdHDL.m_out.ucEnableOutD2R = 0;
+        m_xdHDL.m_out.pstrRGBD = (RGBD_POINT_CLOUD *)malloc(tofW * tofH * sizeof(RGBD_POINT_CLOUD));
+        m_xdHDL.m_out.ucEnableRGBDPCL = 1;
 
-        m_xdRGBD.m_bInit = true;
+        m_xdHDL.m_bInit = true;
 
         return true;
     }
 
-    void _XDynamics::releaseRGBD(void)
+    void _XDynamics::releaseHDL(void)
     {
-        IF_(!m_xdRGBD.m_bInit);
-
-        m_xdRGBD.m_bInit = false;
-        sitrpRelease(&m_xdRGBD.m_pD, FALSE);
-        m_xdRGBD.m_pD = NULL;
-
-        free(m_xdRGBD.m_out.pstrRGBD);
+        m_xdHDL.release();
     }
 
     void _XDynamics::console(void *pConsole)

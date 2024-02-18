@@ -21,52 +21,34 @@ namespace kai
 {
 	struct XDctrl
 	{
-		vInt4 m_vPhaseInt;
-		vInt4 m_vSpaceInt;
-		vInt2 m_vFreq;
+		vInt4 m_vPhaseInt = {1000000, 1000000, 0, 0};
+		vInt4 m_vSpaceInt = {1000000, 1000000, 0, 0};
+		vInt2 m_vFreq = {62, 25};
 
-		int m_binning;
-		int m_phaseMode;
-		int m_mirrorMode;
+		int m_binning = XDYN_BINNING_MODE_2x2;
+		int m_phaseMode = XDYN_PHASE_MODE_1;
+		int m_mirrorMode = XDYN_MIRROR_MODE_NONE;
 
-		int m_rgbStride;
-		int m_rgbFmt;
+		int m_rgbStride = 0;
+		int m_rgbFmt = 4;
 
-		bool m_bAutoExposureToF = true;
-		int m_tExposureToF = 4000;
+		uint8_t m_bAE = 1;
+		uint16_t m_preDist = 4000;
 
-		bool m_bAutoExposureRGB = true;
-		int m_tExposureRGB = 4000;
+		uint8_t m_DtdnMethod = 0;
+		uint8_t m_DtdnLev = 0;
+		uint8_t m_DsdnMethod = 0;
+		uint8_t m_DsdnLev = 0;
 
-		bool m_bFilTime = false;
-		int m_filTime = 0;
+		uint8_t m_GtdnMethod = 0;
+		uint8_t m_GtdnLev = 0;
+		uint8_t m_GsdnMethod = 0;
+		uint8_t m_GsdnLev = 0;
 
-		bool m_bFilConfidence = true;
-		int m_filConfidence = 1;
-
-		bool m_bFilFlyingPix = false;
-		int m_filFlyingPix = 0;
-
-		bool m_bFillHole = false;
-		bool m_bSpatialFilter = false;
-		bool m_bHDR = false;
-
-		void init(void)
-		{
-			m_vPhaseInt.set(1000000, 1000000, 0, 0);
-			m_vSpaceInt.set(1000000, 1000000, 0, 0);
-			m_vFreq.set(62, 25);
-
-			m_binning = XDYN_BINNING_MODE_2x2;
-			m_phaseMode = XDYN_PHASE_MODE_1;
-			m_mirrorMode = XDYN_MIRROR_MODE_NONE;
-
-			m_rgbStride = 0;
-			m_rgbFmt = 4;
-		}
+		uint8_t m_dFlyPixLev = 0;
 	};
 
-	struct XDdata
+	struct XDhdl
 	{
 		bool m_bInit;
 		void *m_pD;
@@ -76,7 +58,7 @@ namespace kai
 		RP_INPARAS m_in;
 		RP_OUTPARAS m_out;
 
-		void clear(void)
+		void init(void)
 		{
 			m_bInit = false;
 			m_pD = NULL;
@@ -84,6 +66,19 @@ namespace kai
 			memset(&m_dyn, 0, sizeof(RP_DYNPARA));
 			memset(&m_in, 0, sizeof(RP_INPARAS));
 			memset(&m_out, 0, sizeof(RP_OUTPARAS));
+		}
+
+		void release(void)
+		{
+			IF_(!m_bInit);
+			NULL_(m_pD);
+
+			sitrpRelease(&m_pD, FALSE);
+			m_pD = NULL;
+			m_bInit = false;
+
+			if(m_out.pstrRGBD)
+				free(m_out.pstrRGBD);
 		}
 	};
 
@@ -102,12 +97,34 @@ namespace kai
 		virtual bool open(void);
 		virtual void close(void);
 
+		static void sCbEvent(void *pHandle, int event, void *pData)
+		{
+			_XDynamics *pXD = (_XDynamics *)pHandle;
+
+			if (event == XDYN_CB_EVENT_DEVICE_DISCONNECT)
+			{
+				LOG(INFO) << *pXD->getName() << ": "
+						  << "Device disconnected";
+				pXD->close();
+			}
+		}
+
+		static void sCbStream(void *pHandle, MemSinkCfg *pCfg, XdynFrame_t *pData)
+		{
+			NULL_(pHandle);
+			_XDynamics *pXD = (_XDynamics *)pHandle;
+			pXD->cbStream(pCfg, pData);
+		}
+
 	protected:
-		static void CbEvent(void *pHandle, int event, void *pData);
-		static void CbStream(void *pHandle, MemSinkCfg *pCfg, XdynFrame_t *pData);
-		void streamIn(MemSinkCfg *pCfg, XdynFrame_t *pData);
-		bool initRGBD(XdynRegParams_t *pRegParams, uint16_t tofW, uint16_t tofH, uint16_t rgbW, uint16_t rgbH);
-		void releaseRGBD(void);
+		void cbStream(MemSinkCfg *pCfg, XdynFrame_t *pData);
+		void runHDL(
+			unsigned short* pD,
+			unsigned char* pRGB,
+			unsigned char* pC
+		);
+		bool initHDL(XdynRegParams_t *pRegParams, uint16_t tofW, uint16_t tofH, uint16_t rgbW, uint16_t rgbH);
+		void releaseHDL(void);
 
 		void updateXDynamics(void);
 		void update(void);
@@ -123,8 +140,7 @@ namespace kai
 		XdynCamInfo_t m_xdCamInfo;
 		XDYN_Streamer *m_pXDstream;
 		XDctrl m_xdCtrl;
-
-		XDdata m_xdRGBD;
+		XDhdl m_xdHDL;
 
 		Mat m_mXDyuv;
 		Mat m_mXDd;

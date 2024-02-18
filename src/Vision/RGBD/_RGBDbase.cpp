@@ -24,11 +24,13 @@ namespace kai
         m_btDepth = false;
 		m_bConfidence = true;
         m_fConfidenceThreshold = 0.0;
+		m_bPointCloud = false;
 
         m_psmDepth = NULL;
         m_psmTransformedRGB = NULL;
         m_psmTransformedDepth = NULL;
         m_psmIR = NULL;
+		m_pPC = NULL;
 
 #ifdef USE_OPENCV
 		m_dScale = 1.0;
@@ -59,6 +61,7 @@ namespace kai
         pK->v("btDepth", &m_btDepth);
         pK->v("bConfidence", &m_bConfidence);
         pK->v("fConfidenceThreshold", &m_fConfidenceThreshold);
+        pK->v("bPointCloud", &m_bPointCloud);
 
 #ifdef USE_OPENCV
 		pK->v("dScale", &m_dScale);
@@ -93,6 +96,10 @@ namespace kai
         n = "";
         pK->v("_SHMir", &n);
         m_psmIR = (_SharedMem *)(pK->getInst(n));
+
+        n = "";
+        pK->v("_PCframe", &n);
+        m_pPC = (_PCframe *)(pK->getInst(n));
 
         return true;
     }
