@@ -23,6 +23,8 @@ namespace kai
 
 		virtual bool initBuffer(void);
 		virtual void swapBuffer(void);
+		virtual PointCloud* getBuffer(void);
+		virtual PointCloud* getNextBuffer(void);
         virtual void clear(void);
 
         virtual void getStream(void* p, const uint64_t& tExpire);

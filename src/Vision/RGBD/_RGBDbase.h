@@ -9,8 +9,11 @@
 #define OpenKAI_src_Vision_RGBD__RGBDbase_H_
 
 #include "../_VisionBase.h"
-#include "../../3D/PointCloud/_PCframe.h"
 #include "../../IPC/_SharedMem.h"
+
+#ifdef WITH_3D
+#include "../../3D/PointCloud/_PCframe.h"
+#endif
 
 #ifdef USE_OPENCV
 #include "../../Utility/utilCV.h"
@@ -63,7 +66,10 @@ namespace kai
 		_SharedMem *m_psmTransformedDepth;
 		_SharedMem *m_psmTransformedRGB;
 		_SharedMem *m_psmIR;
-		_PCframe* m_pPC;
+
+#ifdef WITH_3D
+		_PCframe* m_pPCframe;
+#endif
 		
 #ifdef USE_OPENCV
 		Frame m_fDepth;

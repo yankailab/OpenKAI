@@ -30,7 +30,10 @@ namespace kai
         m_psmTransformedRGB = NULL;
         m_psmTransformedDepth = NULL;
         m_psmIR = NULL;
-		m_pPC = NULL;
+
+#ifdef WITH_3D
+		m_pPCframe = NULL;
+#endif
 
 #ifdef USE_OPENCV
 		m_dScale = 1.0;
@@ -99,7 +102,7 @@ namespace kai
 
         n = "";
         pK->v("_PCframe", &n);
-        m_pPC = (_PCframe *)(pK->getInst(n));
+        m_pPCframe = (_PCframe *)(pK->getInst(n));
 
         return true;
     }
@@ -115,6 +118,13 @@ namespace kai
 
     int _RGBDbase::check(void)
     {
+#ifdef WITH_3D
+		if(m_bPointCloud)
+		{
+			NULL__(m_pPCframe, -1);
+		}
+#endif
+
         return _VisionBase::check();
     }
 

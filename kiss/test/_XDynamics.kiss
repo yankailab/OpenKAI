@@ -9,7 +9,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -49,10 +49,10 @@
 		"name":"thread",
 		"FPS":1,
 	}
-	"bON":0,
+	"bON":1,
 	"bLog":1,
 	"URI":"192.168.31.3",
-	"xdDevType":0,
+	"xdDevType":2,
 	"xdProductType":2048,
 	"binning":3,
 	"mirrorMode":0,
@@ -63,11 +63,12 @@
 	"vSizeD":[320,240],
 	"bRGB":1,
 	"bDepth":1,
-	"bConfidence":0,
+	"bConfidence":1,
 	"btRGB":0,
 	"btDepth":0,
 	"bIR":0,
-	"/_SHMrgb":"SHMxdRGB",
+	"bPointCloud":1,
+	"_PCframe":"pcRGBD",
 }
 
 {
@@ -106,7 +107,7 @@
 		"name":"thread",
 		"FPS":1,
 	}
-	"bON":1,
+	"bON":0,
 	"bLog":0,
 	"URI":"192.168.31.3",
 	"xdDevType":0,
@@ -136,7 +137,57 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"/_RGBDbase":"XD400",
-	"/_RGBDbase":"XD500",
-	"_RGBDbase":"XD1000",
+	"_RGBDbase":"XD",
+}
+
+{
+	"name":"pcRGBD",
+	"class":"_PCframe",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"nPresv":76800,
+	"nPresvNext":76800,
+}
+
+{
+	"name":"gv",
+	"class":"_GeometryViewer",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+    {
+		"name":"threadUI",
+		"FPS":30,
+	}
+	"vWinSize":[1920,1080],
+	"pathRes":"/usr/local/bin/Open3D/resources",
+	"device":"CPU:0",
+	"nPresv":76800,
+	"nPresvNext":0,
+	"vGeometryBase":["pcRGBD"],
+	"vCamLookAt":[0,0,0],
+	"vCamEye":[0,0,2],
+	"vCamUp":[0,1,0],
+	"vCamAutoLookAt":[0,0,0],
+	"vCamAutoEye":[0,0,2],
+	"vCamAutoUp":[0,1,0],
+	"vCoR":[0,0,0],
+	"camFov":75,
+	"vCamNF":[0, 500],
+	"camFovType":1,
+	"bFullScreen":0,
+	"wPanel":20,
+	"vBtnPadding":[1.6, 2.0],
+	"mouseMode":0,
+	"vDmove":[0.5, 5.0],
+	"rDummyDome":1000.0,
+	"dHiddenRemove":100.0,
+	"dirSave":"/home/kai/Documents/",
+	"/dirSave":"/media/lab/",
+	"rVoxel":0.05,
 }

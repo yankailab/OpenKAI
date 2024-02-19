@@ -73,6 +73,16 @@ namespace kai
         mutexUnlock();
     }
 
+    PointCloud* _PCframe::getBuffer(void)
+    {
+        return m_sPC.get();
+    }
+
+    PointCloud* _PCframe::getNextBuffer(void)
+    {
+        return m_sPC.next();
+    }
+
     void _PCframe::clear(void)
     {
         mutexLock();

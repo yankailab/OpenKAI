@@ -16,7 +16,7 @@ namespace kai
         m_vSizeD.set(320, 240);
 
         m_devURI = "192.168.31.3";
-        m_xdDevType = XDYN_DEV_TYPE_TOF; // XDYN_DEV_TYPE_TOF_RGB;
+        m_xdDevType = XDYN_DEV_TYPE_TOF_RGB;
         m_xdProductType = XDYN_PRODUCT_TYPE_XD_400;
         m_pXDstream = NULL;
         m_xdHDL.init();
@@ -93,6 +93,7 @@ namespace kai
         IF_Fl(res != XD_SUCCESS, "ConfigSinkType failed: " + i2str(res));
 
         res = pStream->ConfigAlgMode(XDYN_ALG_MODE_EMB_ALG_IPC_PASS);
+//        res = pStream->ConfigAlgMode(XDYN_ALG_MODE_EMB_PASS_IPC_ALG);
         IF_Fl(res != XD_SUCCESS, "ConfigAlgMode failed: " + i2str(res));
 
         // config Depth
@@ -136,29 +137,30 @@ namespace kai
         // post processes
 
         // correction params
-        pStream->Corr_SetAE(m_xdCtrl.m_bAE);
-        pStream->Corr_SetPreDist(m_xdCtrl.m_preDist);
-        res = pStream->ConfigCorrParam();
-        IF_Fl(res != XD_SUCCESS, "config corr param failed: " + i2str(res));
+        // pStream->Corr_SetAE(m_xdCtrl.m_bAE);
+        // pStream->Corr_SetPreDist(m_xdCtrl.m_preDist);
+        // res = pStream->ConfigCorrParam();
+        // IF_Fl(res != XD_SUCCESS, "config corr param failed: " + i2str(res));
 
         // denoise
-        pStream->PP_SetDepthDenoise((XDYN_PP_TDENOISE_METHOD)m_xdCtrl.m_DtdnMethod,
-                                    (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DtdnLev,
-                                    (XDYN_PP_SDENOISE_METHOD)m_xdCtrl.m_DsdnMethod,
-                                    (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DsdnLev);
-        pStream->PP_SetGrayDenoise((XDYN_PP_TDENOISE_METHOD)m_xdCtrl.m_DtdnMethod,
-                                   (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DtdnLev,
-                                   (XDYN_PP_SDENOISE_METHOD)m_xdCtrl.m_DsdnMethod,
-                                   (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DsdnLev);
-        pStream->PP_SetDeFlyPixel(m_xdCtrl.m_dFlyPixLev);
-        pStream->ConfigPPParam();
-        IF_Fl(res != XD_SUCCESS, "config PP param failed: " + i2str(res));
+        // pStream->PP_SetDepthDenoise((XDYN_PP_TDENOISE_METHOD)m_xdCtrl.m_DtdnMethod,
+        //                             (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DtdnLev,
+        //                             (XDYN_PP_SDENOISE_METHOD)m_xdCtrl.m_DsdnMethod,
+        //                             (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DsdnLev);
+        // pStream->PP_SetGrayDenoise((XDYN_PP_TDENOISE_METHOD)m_xdCtrl.m_DtdnMethod,
+        //                            (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DtdnLev,
+        //                            (XDYN_PP_SDENOISE_METHOD)m_xdCtrl.m_DsdnMethod,
+        //                            (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DsdnLev);
+        // pStream->PP_SetDeFlyPixel(m_xdCtrl.m_dFlyPixLev);
+        // pStream->ConfigPPParam();
+        // IF_Fl(res != XD_SUCCESS, "config PP param failed: " + i2str(res));
 
         // init RGBD HDL interface
-        XdynRegParams_t regParams;
-        pStream->GetCaliRegParams(regParams);
         XdynLensParams_t lensParams;
         pStream->GetRgbLensParams(lensParams);
+
+        XdynRegParams_t regParams;
+        pStream->GetCaliRegParams(regParams);
 
         bool r = initHDL(&regParams, m_vSizeD.x, m_vSizeD.y, m_vSizeRGB.x, m_vSizeRGB.y);
         IF_Fl(!r, "initHDL failed");
@@ -234,6 +236,7 @@ namespace kai
 
     void _XDynamics::cbStream(MemSinkCfg *pCfg, XdynFrame_t *pData)
     {
+        IF_(check() < 0);
         IF_(!m_xdHDL.m_bInit);
 
         XdynFrame_t *pD = NULL;
@@ -287,16 +290,17 @@ namespace kai
 
         LOG_I("nP:" + i2str(m_xdHDL.m_out.uiOutRGBDLen));
 
+        PointCloud *m_pPC = m_pPCframe->getNextBuffer();
         for (int i = 0; i < m_xdHDL.m_out.uiOutRGBDLen; i++)
         {
-            RGBD_POINT_CLOUD *pP = &m_xdHDL.m_out.pstrRGBD[i];
-            pP->fX;
-            pP->fY;
-            pP->fZ;
-            pP->r;
-            pP->g;
-            pP->b;
+            RGBD_POINT_CLOUD pP = m_xdHDL.m_out.pstrRGBD[i];
+            m_pPC->points_.push_back(Vector3d(pP.fX, pP.fY, pP.fZ));
+
+            Vector3d vC(pP.r, pP.g, pP.b);
+            m_pPC->colors_.push_back(vC * (1.0/255.0));
         }
+
+        m_pPCframe->swapBuffer();
     }
 
     bool _XDynamics::initHDL(XdynRegParams_t *regParams, uint16_t tofW, uint16_t tofH, uint16_t rgbW, uint16_t rgbH)
@@ -309,11 +313,11 @@ namespace kai
         sitrpGetVersion(cDllVerion);
         LOG_I("Get rgbd hdl version: " + string(cDllVerion));
 
-        sitrpSetTofIntrinsicMat(m_xdHDL.m_RP.fTofIntrinsicMatrix, regParams->fTofIntrinsicMatrix, RP_INTRINSIC_MATRIX_LEN, &puiInitSuccFlag, TRUE);
-        sitrpSetRgbIntrinsicMat(m_xdHDL.m_RP.fRgbIntrinsicMatrix, regParams->fRgbIntrinsicMatrix, RP_INTRINSIC_MATRIX_LEN, &puiInitSuccFlag, TRUE);
-        sitrpSetTranslationMat(m_xdHDL.m_RP.fTranslationMatrix, regParams->fTranslationMatrix, RP_TRANSLATION_MATRIX_LEN, &puiInitSuccFlag, TRUE);
-        sitrpSetRotationMat(m_xdHDL.m_RP.fRotationMatrix, regParams->fRotationMatrix, RP_ROTATION_MATRIX_LEN, &puiInitSuccFlag, TRUE);
-        sitrpSetRgbPos(&(m_xdHDL.m_RP.bIsRgbCameraLeft), regParams->bIsRgbCameraLeft, &puiInitSuccFlag, TRUE);
+        sitrpSetTofIntrinsicMat(m_xdHDL.m_RP.fTofIntrinsicMatrix, regParams->fTofIntrinsicMatrix, RP_INTRINSIC_MATRIX_LEN, &puiInitSuccFlag, FALSE);
+        sitrpSetRgbIntrinsicMat(m_xdHDL.m_RP.fRgbIntrinsicMatrix, regParams->fRgbIntrinsicMatrix, RP_INTRINSIC_MATRIX_LEN, &puiInitSuccFlag, FALSE);
+        sitrpSetTranslationMat(m_xdHDL.m_RP.fTranslationMatrix, regParams->fTranslationMatrix, RP_TRANSLATION_MATRIX_LEN, &puiInitSuccFlag, FALSE);
+        sitrpSetRotationMat(m_xdHDL.m_RP.fRotationMatrix, regParams->fRotationMatrix, RP_ROTATION_MATRIX_LEN, &puiInitSuccFlag, FALSE);
+        sitrpSetRgbPos(&(m_xdHDL.m_RP.bIsRgbCameraLeft), regParams->bIsRgbCameraLeft, &puiInitSuccFlag, FALSE);
 
         m_xdHDL.m_dyn.usInDepthWidth = tofW;
         m_xdHDL.m_dyn.usInDepthHeight = tofH;
