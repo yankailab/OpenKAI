@@ -689,6 +689,16 @@ else()
 add_executable(OpenKAI ${OpenKAI_cpp})
 endif()
 
+# for ROS2
+if(USE_ROS)
+  find_package(ament_cmake REQUIRED)
+  find_package(rclcpp REQUIRED)
+  find_package(std_msgs REQUIRED)
+
+  ament_target_dependencies(OpenKAI rclcpp std_msgs)
+  ament_package()
+endif()
+
 # C/C++ settings
 include_directories(${OpenKAI_include})
 target_link_libraries(OpenKAI ${OpenKAI_lib})

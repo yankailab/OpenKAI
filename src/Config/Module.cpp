@@ -288,6 +288,10 @@ namespace kai
 		ADD_MODULE(_Xbee);
 #endif
 
+#ifdef WITH_ROS
+		ADD_MODULE(_ROSbase);
+#endif
+
 #ifdef WITH_SCIENCE
 		ADD_MODULE(_IsingSolver);
 #ifdef USE_MATHGL

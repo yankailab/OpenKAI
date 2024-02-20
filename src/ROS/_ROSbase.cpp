@@ -12,13 +12,10 @@ namespace kai
 
     _ROSbase::_ROSbase()
     {
-        m_pTPP = NULL;
-
     }
 
     _ROSbase::~_ROSbase()
     {
-        DEL(m_pTPP);
     }
 
     bool _ROSbase::init(void *pKiss)
@@ -26,7 +23,7 @@ namespace kai
         IF_F(!_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-//		pK->v("URI", &m_devURI);
+        //		pK->v("URI", &m_devURI);
 
         return true;
     }
@@ -36,38 +33,45 @@ namespace kai
         IF_F(!this->_ModuleBase::link());
         Kiss *pK = (Kiss *)m_pKiss;
 
-        string n;
-
-        n = "";
-        pK->v("_SHMrgb", &n);
-        m_psmRGB = (_SharedMem *)(pK->getInst(n));
-
         return true;
     }
 
-    bool _ROSbase::open(void)
+    bool _ROSbase::start(void)
     {
-        return false;
-    }
-
-    void _ROSbase::close(void)
-    {
+        NULL_F(m_pT);
+        return m_pT->start(getUpdate, this);
     }
 
     int _ROSbase::check(void)
     {
-//        NULL__(m_pT, -1);
-
         return _ModuleBase::check();
     }
 
-	void _ROSbase::console(void *pConsole)
-	{
-		NULL_(pConsole);
-		this->_ModuleBase::console(pConsole);
+    void _ROSbase::update(void)
+    {
+        // while (m_pT->bRun())
+        // {
+        //     m_pT->autoFPSfrom();
+        //     m_pT->autoFPSto();
+        // }
 
-		_Console *pC = (_Console *)pConsole;
-//		pC->addMsg("nState: " + i2str(m_vStates.size()), 0);
-	}
+        rclcpp::init(0, NULL);
+        rclcpp::spin(std::make_shared<ROSsubscriber>());
+        rclcpp::shutdown();
+    }
+
+    void _ROSbase::updateROS(void)
+    {
+        IF_(check() < 0);
+    }
+
+    void _ROSbase::console(void *pConsole)
+    {
+        NULL_(pConsole);
+        this->_ModuleBase::console(pConsole);
+
+        _Console *pC = (_Console *)pConsole;
+        //		pC->addMsg("nState: " + i2str(m_vStates.size()), 0);
+    }
 
 }

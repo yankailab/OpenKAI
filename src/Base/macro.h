@@ -9,10 +9,12 @@
 #define OpenKAI_src_Base_macro_H_
 
 #ifdef USE_GLOG
+#define LOG_(x) {LOG(INFO)<<x;}
 #define LOG_I(x) if(m_bLog){LOG(INFO)<<*this->getName()<<": "<<x;}
 #define LOG_E(x) {LOG(ERROR)<<*this->getName()<<": "<<x;}
 #define LOG_F(x) {LOG(FATAL)<<*this->getName()<<": "<<x;}
 #else
+#define LOG_(x) {string s = x; printf("%s\n",s.c_str());}
 #define LOG_I(x) if(m_bLog){string s = *this->getName() + ": " + x; printf("%s\n",s.c_str());}
 #define LOG_E(x) {string s = *this->getName() + ": " + x; printf("%s\n",s.c_str());}
 #define LOG_F(x) {string s = *this->getName() + ": " + x; printf("%s\n",s.c_str());}
