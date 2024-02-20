@@ -28,6 +28,7 @@ namespace kai
 		int m_binning = XDYN_BINNING_MODE_2x2;
 		int m_phaseMode = XDYN_PHASE_MODE_1;
 		int m_mirrorMode = XDYN_MIRROR_MODE_NONE;
+		int m_algMode = XDYN_ALG_MODE_EMB_ALG_IPC_PASS;
 
 		int m_rgbStride = 0;
 		int m_rgbFmt = 4;
@@ -51,7 +52,7 @@ namespace kai
 	struct XDhdl
 	{
 		bool m_bInit;
-		void *m_pD;
+		void *m_pHDL;
 
 		CALIPARAS_RP m_RP;
 		RP_DYNPARA m_dyn;
@@ -61,7 +62,7 @@ namespace kai
 		void init(void)
 		{
 			m_bInit = false;
-			m_pD = NULL;
+			m_pHDL = NULL;
 			memset(&m_RP, 0, sizeof(CALIPARAS_RP));
 			memset(&m_dyn, 0, sizeof(RP_DYNPARA));
 			memset(&m_in, 0, sizeof(RP_INPARAS));
@@ -71,10 +72,10 @@ namespace kai
 		void release(void)
 		{
 			IF_(!m_bInit);
-			NULL_(m_pD);
+			NULL_(m_pHDL);
 
-			sitrpRelease(&m_pD, FALSE);
-			m_pD = NULL;
+			sitrpRelease(&m_pHDL, FALSE);
+			m_pHDL = NULL;
 			m_bInit = false;
 
 			if(m_out.pstrRGBD)

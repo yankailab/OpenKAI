@@ -19,7 +19,6 @@ namespace kai
         m_xdDevType = XDYN_DEV_TYPE_TOF_RGB;
         m_xdProductType = XDYN_PRODUCT_TYPE_XD_400;
         m_pXDstream = NULL;
-        m_xdHDL.init();
     }
 
     _XDynamics::~_XDynamics()
@@ -39,6 +38,7 @@ namespace kai
         pK->v("binning", &m_xdCtrl.m_binning);
         pK->v("phaseMode", &m_xdCtrl.m_phaseMode);
         pK->v("mirrorMode", &m_xdCtrl.m_mirrorMode);
+        pK->v("algMode", &m_xdCtrl.m_algMode);
         pK->v("rgbStride", &m_xdCtrl.m_rgbStride);
         pK->v("rgbFmt", &m_xdCtrl.m_rgbFmt);
         pK->v("bAE", &m_xdCtrl.m_bAE);
@@ -76,6 +76,8 @@ namespace kai
         IF_T(m_bOpen);
         int res = XD_SUCCESS;
 
+        m_xdHDL.init();
+
         // init context
         XdynContextInit();
 
@@ -92,8 +94,7 @@ namespace kai
         res = pStream->ConfigSinkType(XDYN_SINK_TYPE_CB, memCfg, sCbStream, this);
         IF_Fl(res != XD_SUCCESS, "ConfigSinkType failed: " + i2str(res));
 
-        res = pStream->ConfigAlgMode(XDYN_ALG_MODE_EMB_ALG_IPC_PASS);
-//        res = pStream->ConfigAlgMode(XDYN_ALG_MODE_EMB_PASS_IPC_ALG);
+        res = pStream->ConfigAlgMode((XDYN_ALG_MODE_E)m_xdCtrl.m_algMode);
         IF_Fl(res != XD_SUCCESS, "ConfigAlgMode failed: " + i2str(res));
 
         // config Depth
@@ -137,23 +138,23 @@ namespace kai
         // post processes
 
         // correction params
-        // pStream->Corr_SetAE(m_xdCtrl.m_bAE);
-        // pStream->Corr_SetPreDist(m_xdCtrl.m_preDist);
-        // res = pStream->ConfigCorrParam();
-        // IF_Fl(res != XD_SUCCESS, "config corr param failed: " + i2str(res));
+        pStream->Corr_SetAE(m_xdCtrl.m_bAE);
+        pStream->Corr_SetPreDist(m_xdCtrl.m_preDist);
+        res = pStream->ConfigCorrParam();
+        IF_Fl(res != XD_SUCCESS, "config corr param failed: " + i2str(res));
 
         // denoise
-        // pStream->PP_SetDepthDenoise((XDYN_PP_TDENOISE_METHOD)m_xdCtrl.m_DtdnMethod,
-        //                             (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DtdnLev,
-        //                             (XDYN_PP_SDENOISE_METHOD)m_xdCtrl.m_DsdnMethod,
-        //                             (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DsdnLev);
-        // pStream->PP_SetGrayDenoise((XDYN_PP_TDENOISE_METHOD)m_xdCtrl.m_DtdnMethod,
-        //                            (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DtdnLev,
-        //                            (XDYN_PP_SDENOISE_METHOD)m_xdCtrl.m_DsdnMethod,
-        //                            (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DsdnLev);
-        // pStream->PP_SetDeFlyPixel(m_xdCtrl.m_dFlyPixLev);
-        // pStream->ConfigPPParam();
-        // IF_Fl(res != XD_SUCCESS, "config PP param failed: " + i2str(res));
+        pStream->PP_SetDepthDenoise((XDYN_PP_TDENOISE_METHOD)m_xdCtrl.m_DtdnMethod,
+                                    (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DtdnLev,
+                                    (XDYN_PP_SDENOISE_METHOD)m_xdCtrl.m_DsdnMethod,
+                                    (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DsdnLev);
+        pStream->PP_SetGrayDenoise((XDYN_PP_TDENOISE_METHOD)m_xdCtrl.m_DtdnMethod,
+                                   (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DtdnLev,
+                                   (XDYN_PP_SDENOISE_METHOD)m_xdCtrl.m_DsdnMethod,
+                                   (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DsdnLev);
+        pStream->PP_SetDeFlyPixel(m_xdCtrl.m_dFlyPixLev);
+        pStream->ConfigPPParam();
+        IF_Fl(res != XD_SUCCESS, "config PP param failed: " + i2str(res));
 
         // init RGBD HDL interface
         XdynLensParams_t lensParams;
@@ -245,7 +246,7 @@ namespace kai
 
         bool bD = pCfg->isUsed[MEM_AGENT_SINK_DEPTH];
         bool bRGB = pCfg->isUsed[MEM_AGENT_SINK_RGB];
-        bool bC = pCfg->isUsed[MEM_AGENT_SINK_CONFID];
+        bool bConf = pCfg->isUsed[MEM_AGENT_SINK_CONFID];
 
         if (bD)
         {
@@ -264,11 +265,17 @@ namespace kai
             memcpy(m_mXDyuv.data, pRGB->addr, pRGB->size);
         }
 
-        if (bD && bRGB && bC)
+        if (bConf)
         {
-            runHDL((unsigned short *)pData[MEM_AGENT_SINK_DEPTH].addr,
-                   (unsigned char *)pData[MEM_AGENT_SINK_RGB].addr,
-                   (unsigned char *)pData[MEM_AGENT_SINK_CONFID].addr);
+            pConf = &pData[MEM_AGENT_SINK_CONFID];
+//            memcpy(m_mXDyuv.data, pRGB->addr, pRGB->size);
+        }
+
+        if (bD && bRGB && bConf)
+        {
+            runHDL((unsigned short *)pD->addr,
+                   (unsigned char *)pRGB->addr,
+                   (unsigned char *)pConf->addr);
         }
 
         m_pT->wakeUp();
@@ -276,16 +283,16 @@ namespace kai
 
     void _XDynamics::runHDL(unsigned short *pD,
                             unsigned char *pRGB,
-                            unsigned char *pC)
+                            unsigned char *pConf)
     {
         m_xdHDL.m_in.pusDepth = pD;
         m_xdHDL.m_in.pucYuvImg = pRGB;
-        m_xdHDL.m_in.pucConfidence = pC;
+        m_xdHDL.m_in.pucConfidence = pConf;
 
         unsigned int puiSuccFlag = 0;
         unsigned int puiAbnormalFlag = 0;
 
-        sitrpRunRGBProcess(m_xdHDL.m_pD, &m_xdHDL.m_in, &m_xdHDL.m_out, &puiSuccFlag, &puiAbnormalFlag, FALSE);
+        sitrpRunRGBProcess(m_xdHDL.m_pHDL, &m_xdHDL.m_in, &m_xdHDL.m_out, &puiSuccFlag, &puiAbnormalFlag, FALSE);
         IF_(puiSuccFlag != RP_ARITH_SUCCESS);
 
         LOG_I("nP:" + i2str(m_xdHDL.m_out.uiOutRGBDLen));
@@ -293,10 +300,11 @@ namespace kai
         PointCloud *m_pPC = m_pPCframe->getNextBuffer();
         for (int i = 0; i < m_xdHDL.m_out.uiOutRGBDLen; i++)
         {
-            RGBD_POINT_CLOUD pP = m_xdHDL.m_out.pstrRGBD[i];
-            m_pPC->points_.push_back(Vector3d(pP.fX, pP.fY, pP.fZ));
+            RGBD_POINT_CLOUD* pP = &m_xdHDL.m_out.pstrRGBD[i];
+            Vector3d vP(pP->fX, pP->fY, pP->fZ);
+            m_pPC->points_.push_back(vP * 0.001);
 
-            Vector3d vC(pP.r, pP.g, pP.b);
+            Vector3d vC(pP->r, pP->g, pP->b);
             m_pPC->colors_.push_back(vC * (1.0/255.0));
         }
 
@@ -335,11 +343,11 @@ namespace kai
         m_xdHDL.m_dyn.ucEnableRGBDPCL = 1;
         m_xdHDL.m_dyn.ucThConfidence = 25;
 
-        m_xdHDL.m_pD = sitrpInit(&puiInitSuccFlag, &m_xdHDL.m_RP, &m_xdHDL.m_dyn, FALSE, FALSE);
+        m_xdHDL.m_pHDL = sitrpInit(&puiInitSuccFlag, &m_xdHDL.m_RP, &m_xdHDL.m_dyn, FALSE, FALSE);
         IF_Fl(puiInitSuccFlag > RP_ARITH_SUCCESS, "Algorithm initialize fail, puiInitSuccFlag: " + i2str(puiInitSuccFlag));
 
         // init in out buffer
-        m_xdHDL.m_in.pThisGlbBuffer = m_xdHDL.m_pD;
+        m_xdHDL.m_in.pThisGlbBuffer = m_xdHDL.m_pHDL;
 
         m_xdHDL.m_in.pucYuvImg = nullptr;
         m_xdHDL.m_in.usYuvWidth = rgbW;

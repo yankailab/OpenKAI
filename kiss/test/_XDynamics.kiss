@@ -50,15 +50,16 @@
 		"FPS":1,
 	}
 	"bON":1,
-	"bLog":1,
+	"bLog":0,
 	"URI":"192.168.31.3",
 	"xdDevType":2,
 	"xdProductType":2048,
 	"binning":3,
 	"mirrorMode":0,
+	"algMode":0,
 	"vRangeD":[0,3],
-	"devFPS":10,
-	"devFPSd":10,
+	"devFPS":15,
+	"devFPSd":15,
 	"vSizeRGB":[320,240],
 	"vSizeD":[320,240],
 	"bRGB":1,
@@ -132,7 +133,7 @@
 {
 	"name":"d2g",
 	"class":"_Depth2Gray",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
