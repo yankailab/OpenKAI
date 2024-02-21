@@ -56,8 +56,9 @@ namespace kai
         // }
 
         rclcpp::init(0, NULL);
-        rclcpp::spin(std::make_shared<ROSsubscriber>());
+        rclcpp::spin(std::make_shared<ROSnode>());
         rclcpp::shutdown();
+
     }
 
     void _ROSbase::updateROS(void)

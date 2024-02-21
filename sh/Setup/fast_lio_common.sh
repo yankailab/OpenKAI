@@ -36,22 +36,25 @@ docker run --gpus all --privileged -it \
  --env="DISPLAY=$DISPLAY" \
  "$IMAGE_NAME" /bin/bash
 
-
+# run the docker container
 xhost +local:docker
  ./container_run.sh fast-lio-ros2 fast-lio-ros2:latest
 
-
+# build FAST_LIO
 sudo apt-get install nano
 nano src/livox_ros_driver2 /build.sh
 -    colcon build --cmake-args -DROS_EDITION=${VERSION_ROS2} -DHUMBLE_ROS=${ROS_HUMBLE}
 +    colcon build  --symlink-install --cmake-args -DROS_EDITION=${VERSION_ROS2} -DHUMBLE_ROS=${ROS_HUMBLE}
 
+# build Livox ros2 driver
 cd ~/ros2_ws/src/livox_ros_driver2
 ./build.sh humble
 
 # configure the host and Mid360 ip
 nano livox_ros_driver2/config/MID360_config.json
 
+# restart container
+docker container restart fast-lio-ros2
 
 # run livox_ros_driver2
 xhost +local:docker

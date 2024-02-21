@@ -5,40 +5,15 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_ROS_ROSbase_H_
-#define OpenKAI_src_ROS_ROSbase_H_
+#ifndef OpenKAI_src_ROS__ROSbase_H_
+#define OpenKAI_src_ROS__ROSbase_H_
 
 #include "../Base/_ModuleBase.h"
 #include "../UI/_Console.h"
-
-#include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
-using std::placeholders::_1;
+#include "ROSnode.h"
 
 namespace kai
 {
-	class ROSsubscriber : public rclcpp::Node
-	{
-	public:
-		ROSsubscriber() : Node("openkai_subscriber")
-		{
-			subscription_ = this->create_subscription<std_msgs::msg::String>(
-				"topic",
-				10,
-				std::bind(&ROSsubscriber::cbTopic,
-				this,
-				_1));
-		}
-
-	private:
-		void cbTopic(const std_msgs::msg::String &msg) const
-		{
-			LOG_(msg.data.c_str());
-		}
-
-		rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
-	};
-
 	class _ROSbase : public _ModuleBase
 	{
 	public:
@@ -61,7 +36,6 @@ namespace kai
 		}
 
 	protected:
-
 	};
 
 }
