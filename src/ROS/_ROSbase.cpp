@@ -12,6 +12,7 @@ namespace kai
 
     _ROSbase::_ROSbase()
     {
+        m_topic = "";
     }
 
     _ROSbase::~_ROSbase()
@@ -23,7 +24,7 @@ namespace kai
         IF_F(!_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        //		pK->v("URI", &m_devURI);
+        pK->v("topic", &m_topic);
 
         return true;
     }
@@ -49,16 +50,13 @@ namespace kai
 
     void _ROSbase::update(void)
     {
-        // while (m_pT->bRun())
-        // {
-        //     m_pT->autoFPSfrom();
-        //     m_pT->autoFPSto();
-        // }
-
         rclcpp::init(0, NULL);
-        rclcpp::spin(std::make_shared<ROSnode>());
-        rclcpp::shutdown();
 
+        m_pROSnode = std::make_shared<ROSnode>();
+        m_pROSnode->createSubscriptions();
+
+        rclcpp::spin(m_pROSnode);
+        rclcpp::shutdown();
     }
 
     void _ROSbase::updateROS(void)

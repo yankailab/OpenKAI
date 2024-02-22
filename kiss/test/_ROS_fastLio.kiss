@@ -1,0 +1,94 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["fastLio"],
+}
+
+{
+	"name":"view",
+	"class":"_WindowCV",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["fastLio"],
+}
+
+{
+	"name":"fastLio",
+	"class":"_ROS_fastLio",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"_PCframe":"pcFrame",
+	"topic":"/Laser_map",
+}
+
+{
+	"name":"pcFrame",
+	"class":"_PCframe",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"nPresv":76800,
+	"nPresvNext":76800,
+}
+
+{
+	"name":"gv",
+	"class":"_GeometryViewer",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+    {
+		"name":"threadUI",
+		"FPS":30,
+	}
+	"vWinSize":[1920,1080],
+	"pathRes":"/usr/local/bin/Open3D/resources",
+	"device":"CPU:0",
+	"nPresv":76800,
+	"nPresvNext":0,
+	"vGeometryBase":["pcFrame"],
+	"vCamLookAt":[0,0,0],
+	"vCamEye":[0,0,2],
+	"vCamUp":[0,1,0],
+	"vCamAutoLookAt":[0,0,0],
+	"vCamAutoEye":[0,0,2],
+	"vCamAutoUp":[0,1,0],
+	"vCoR":[0,0,0],
+	"camFov":75,
+	"vCamNF":[0, 500],
+	"camFovType":1,
+	"bFullScreen":0,
+	"wPanel":20,
+	"vBtnPadding":[1.6, 2.0],
+	"mouseMode":0,
+	"vDmove":[0.5, 5.0],
+	"rDummyDome":1000.0,
+	"dHiddenRemove":100.0,
+	"dirSave":"/home/kai/Documents/",
+	"/dirSave":"/media/lab/",
+	"rVoxel":0.05,
+}
+

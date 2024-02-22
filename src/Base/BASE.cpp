@@ -32,6 +32,8 @@ namespace kai
 		pK->v("bLog", &m_bLog);
 		pK->v("bDebug", &m_bDebug);
 
+        pK->m_pInst = this;
+
 		return true;
 	}
 

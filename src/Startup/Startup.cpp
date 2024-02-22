@@ -127,7 +127,7 @@ namespace kai
 			o.m_pKiss = pK;
 			m_vInst.push_back(o);
 
-			pK->m_pInst = o.m_pInst;
+//			pK->m_pInst = o.m_pInst;
 		}
 
 		return true;

@@ -100,9 +100,11 @@ namespace kai
         pK->v("_SHMir", &n);
         m_psmIR = (_SharedMem *)(pK->getInst(n));
 
+#ifdef WITH_3D
         n = "";
         pK->v("_PCframe", &n);
         m_pPCframe = (_PCframe *)(pK->getInst(n));
+#endif
 
         return true;
     }

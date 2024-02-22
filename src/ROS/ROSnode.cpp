@@ -9,13 +9,19 @@
 
 namespace kai
 {
+    bool ROSnode::createSubscriptions(void)
+    {
+        m_pScTopic = this->create_subscription<std_msgs::msg::String>(
+            "topic",
+            10,
+            std::bind(&ROSnode::cbTopic, this, _1));
 
-    // ROSnode::ROSnode()
-    // {
-    // }
+        return true;
+    }
 
-    // ROSnode::~ROSnode()
-    // {
-    // }
+    void ROSnode::cbTopic(const std_msgs::msg::String &msg)
+    {
+        LOG_(msg.data.c_str());
+    }
 
 }

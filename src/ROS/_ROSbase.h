@@ -26,7 +26,7 @@ namespace kai
 		virtual bool start(void);
 		virtual void console(void *pConsole);
 
-	protected:
+	private:
 		void updateROS(void);
 		void update(void);
 		static void *getUpdate(void *This)
@@ -36,6 +36,9 @@ namespace kai
 		}
 
 	protected:
+		shared_ptr<ROSnode> m_pROSnode;
+		string m_topic;
+
 	};
 
 }

@@ -36,7 +36,7 @@ namespace kai
             return false;
         }
 
-        pKt->m_pInst = m_pT;
+//        pKt->m_pInst = m_pT;
         return true;
     }
 

@@ -289,7 +289,7 @@ namespace kai
 #endif
 
 #ifdef WITH_ROS
-		ADD_MODULE(_ROSbase);
+		ADD_MODULE(_ROS_fastLio);
 #endif
 
 #ifdef WITH_SCIENCE

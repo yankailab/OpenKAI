@@ -278,7 +278,7 @@
 #endif
 
 #ifdef WITH_ROS
-#include "../ROS/_ROSbase.h"
+#include "../ROS/_ROS_fastLio.h"
 #endif
 
 #ifdef WITH_SCIENCE

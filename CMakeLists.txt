@@ -695,8 +695,9 @@ if(USE_ROS)
   find_package(rclcpp REQUIRED)
   find_package(std_msgs REQUIRED)
   find_package(sensor_msgs REQUIRED)
+  find_package(nav_msgs REQUIRED)
 
-  ament_target_dependencies(OpenKAI rclcpp std_msgs sensor_msgs)
+  ament_target_dependencies(OpenKAI rclcpp std_msgs sensor_msgs nav_msgs)
   ament_package()
 endif()
 

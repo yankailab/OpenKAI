@@ -9,11 +9,10 @@
 #define OpenKAI_src_ROS_ROSnode_H_
 
 #include "../Base/common.h"
-using namespace std;
-
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
-#include "sensor_msgs/msg/point_cloud2.hpp"
+
+using namespace std;
 using std::placeholders::_1;
 
 namespace kai
@@ -23,31 +22,16 @@ namespace kai
 	public:
 		ROSnode() : Node("openkai_node")
 		{
-			m_subTopic = this->create_subscription<std_msgs::msg::String>(
-				"topic",
-				10,
-				std::bind(&ROSnode::sCbTopic, this, _1));
-
-			m_subPC2 = this->create_subscription<sensor_msgs::msg::PointCloud2>(
-				"/livox/lidar",
-				20,
-				std::bind(&ROSnode::sCbPointCloud2, this, _1));
 		}
 
-	public:
-		void sCbTopic(const std_msgs::msg::String &msg) const
-		{
-			LOG_(msg.data.c_str());
-		}
+		bool createSubscriptions(void);
 
-		void sCbPointCloud2(const sensor_msgs::msg::PointCloud2::UniquePtr msg) const
-		{
-			LOG_("received PointCloud msg");
-		}
+	protected:
+		void cbTopic(const std_msgs::msg::String &msg);
 
-	private:
-		rclcpp::Subscription<std_msgs::msg::String>::SharedPtr m_subTopic;
-		rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr m_subPC2;
+	protected:
+		rclcpp::Subscription<std_msgs::msg::String>::SharedPtr m_pScTopic;
+
 	};
 
 }
