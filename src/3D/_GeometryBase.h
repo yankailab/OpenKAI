@@ -9,6 +9,7 @@
 #define OpenKAI_src_3D_PointCloud__GeometryBase_H_
 
 #include "../Base/_ModuleBase.h"
+#include "../UI/_Console.h"
 #include "../Utility/utilTime.h"
 
 using namespace open3d;
@@ -50,6 +51,7 @@ namespace kai
         virtual bool init(void *pKiss);
 		virtual bool link(void);
         virtual int check(void);
+        virtual void console(void *pConsole);
 
         virtual GEOMETRY_TYPE getType(void);
 		virtual bool initBuffer(void);
@@ -60,8 +62,10 @@ namespace kai
         virtual void getFrame(void* p);
         virtual void getGrid(void* p);
 
-        virtual void setTranslation(const vDouble3 &vT, const vDouble3 &vR);
-        virtual void setTranslation(const Matrix4d &mT);
+        virtual void setTranslation(const vDouble3 &vT);
+        virtual void setRotation(const vDouble3 &vR);
+        virtual void updateTranslationMatrix(void);
+        virtual void setTranslationMatrix(const Matrix4d &mT);
         virtual Matrix4d getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR);
 
     protected:

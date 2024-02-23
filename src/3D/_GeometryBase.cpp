@@ -38,7 +38,9 @@ namespace kai
 
         pK->v("vT", &m_vT);
         pK->v("vR", &m_vR);
-        setTranslation(m_vT, m_vR);
+        setTranslation(m_vT);
+        setRotation(m_vR);
+        updateTranslationMatrix();
 
         return true;
     }
@@ -95,15 +97,23 @@ namespace kai
     {
     }
 
-    void _GeometryBase::setTranslation(const vDouble3 &vT, const vDouble3 &vR)
+    void _GeometryBase::setTranslation(const vDouble3 &vT)
     {
         m_vT = vT;
+    }
+
+    void _GeometryBase::setRotation(const vDouble3 &vR)
+    {
         m_vR = vR;
+    }
+
+    void _GeometryBase::updateTranslationMatrix(void)
+    {
         m_mT = getTranslationMatrix(m_vT, m_vR);
         m_A = m_mT;
     }
 
-    void _GeometryBase::setTranslation(const Matrix4d &mT)
+    void _GeometryBase::setTranslationMatrix(const Matrix4d &mT)
     {
         m_mT = mT;
         m_A = m_mT;
@@ -130,5 +140,16 @@ namespace kai
     {
 		pthread_mutex_unlock(&m_mutex);
     }
+
+    void _GeometryBase::console(void *pConsole)
+    {
+        NULL_(pConsole);
+        this->_ModuleBase::console(pConsole);
+
+        _Console *pC = (_Console *)pConsole;
+        pC->addMsg("vT = (" + f2str(m_vT.x) + "," + f2str(m_vT.y) + ", " + f2str(m_vT.z) +")");
+        pC->addMsg("vR = (" + f2str(m_vR.x) + "," + f2str(m_vR.y) + ", " + f2str(m_vR.z) +")");
+    }
+
 
 }

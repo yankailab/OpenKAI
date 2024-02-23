@@ -14,6 +14,8 @@ namespace kai
         m_handle = -1;
         m_bOpen = false;
         m_workMode = kLivoxLidarNormal;
+
+        m_tIMU = 0;
     }
 
     _Livox2::~_Livox2()
@@ -27,6 +29,8 @@ namespace kai
 
         pK->v("SN", &m_SN);
         pK->v("lidarMode", (int *)&m_workMode);
+
+        //        FusionAhrsInitialise(&m_ahrs);
 
         return true;
     }
@@ -106,7 +110,6 @@ namespace kai
 
         // if(m_workMode == kLivoxLidarNormal)
         //     m_pLv->setScanPattern(m_handle, m_scanPattern);
-
     }
 
     void _Livox2::setLidarMode(LivoxLidarWorkMode m)
@@ -130,7 +133,7 @@ namespace kai
         LOG_I("CbPointCloud data_num: " + i2str(pD->dot_num) + ", data_type: " + i2str(pD->data_type) + ", length: " + i2str(pD->length) + ", frame_counter: " + i2str(pD->frame_cnt));
 
         uint8_t tStampType = pD->time_type;
-//        uint64_t tStamp = *((uint64_t *)(pD->timestamp));
+        //        uint64_t tStamp = *((uint64_t *)(pD->timestamp));
         uint64_t tStamp = getApproxTbootUs();
 
         if (pD->data_type == kLivoxLidarCartesianCoordinateHighData)
@@ -141,6 +144,7 @@ namespace kai
                 LivoxLidarCartesianHighRawPoint *pP = &pPd[i];
                 Vector3d vP(pP->x, pP->y, pP->z);
                 vP *= 0.001;
+                vP = m_A * vP;
                 add(vP, Vector3f{m_vDefaultColor.x, m_vDefaultColor.y, m_vDefaultColor.z}, tStamp);
             }
         }
@@ -158,6 +162,30 @@ namespace kai
     {
         NULL_(pD);
         LOG_I("CbIMU, data_num:" + i2str(pD->dot_num) + ", data_type:" + i2str(pD->data_type) + ", length:" + i2str(pD->length) + ", frame_counter:" + i2str(pD->frame_cnt));
+
+        uint64_t tStamp = *((uint64_t *)pD->timestamp);
+        uint64_t dT = tStamp - m_tIMU;
+        m_tIMU = tStamp;
+        if (dT > USEC_1SEC * 1000)
+            dT = 0;
+
+        LivoxLidarImuRawPoint *pIMU = (LivoxLidarImuRawPoint *)pD->data;
+
+        m_SF.MahonyUpdate(
+        // m_SF.MadgwickUpdate(
+                          pIMU->gyro_x,
+                          pIMU->gyro_y,
+                          pIMU->gyro_z,
+                          pIMU->acc_x,
+                          pIMU->acc_y,
+                          pIMU->acc_z,
+                          ((float)dT)*1e-9);
+
+        vDouble3 vR;
+        vR.set(m_SF.getRoll(), m_SF.getPitch(), 0);//m_SF.getYaw());
+        vR *= DEG_2_RAD;
+        setRotation(vR);
+        updateTranslationMatrix();
     }
 
     void _Livox2::CbWorkMode(livox_status status, LivoxLidarAsyncControlResponse *pR)
@@ -176,7 +204,7 @@ namespace kai
     void _Livox2::console(void *pConsole)
     {
         NULL_(pConsole);
-        this->_ModuleBase::console(pConsole);
+        this->_PCstream::console(pConsole);
 
         _Console *pC = (_Console *)pConsole;
         //		pC->addMsg("nState: " + i2str(m_vStates.size()), 0);

@@ -9,6 +9,8 @@
 #define OpenKAI_src_Sensor_LiDAR__Livox2_H_
 
 #include "../../../3D/PointCloud/_PCstream.h"
+//#include "../../../Dependency/Fusion/Fusion.h"
+#include "../../../Dependency/Fusion/SensorFusion.h"
 #include "LivoxLidar2.h"
 
 namespace kai
@@ -83,6 +85,10 @@ namespace kai
         uint32_t m_handle;
         bool m_bOpen;
         LivoxLidarWorkMode m_workMode;
+
+        SF m_SF;
+        uint64_t m_tIMU;
+
     };
 
 }

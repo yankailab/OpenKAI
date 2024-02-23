@@ -30,6 +30,9 @@ namespace kai
 
     bool LivoxLidar2::open(void)
     {
+
+        DisableLivoxSdkConsoleLogger();
+
         if (!LivoxLidarSdkInit(m_fConfig.c_str()))
         {
             LOG_I("Livox2 Init Failed");

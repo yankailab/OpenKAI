@@ -9,12 +9,12 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
-		"FPS":10,
+		"FPS":30,
 	}
-	"vBASE":["Livox2","LivoxLidar2"],
+	"vBASE":["Livox2","/LivoxLidar2"],
 }
 
 {
@@ -64,7 +64,7 @@
 		"name":"thread",
 		"FPS":1,
 	}
-	"bLog":1,
+	"bLog":0,
 	"LivoxLidar2":"LivoxLidar2",
 	"SN":"47MDL9T0020177",
 	"lidarMode":1,

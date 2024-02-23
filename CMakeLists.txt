@@ -410,6 +410,8 @@ endif()
 
 if(WITH_SENSOR)
 add_definitions(-DWITH_SENSOR)
+file(GLOB_RECURSE Dependency_sensor src/Dependency/Fusion/*.cpp src/Dependency/Fusion/*.c)
+set(OpenKAI_cpp ${OpenKAI_cpp} ${Dependency_sensor})
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/Distance/_DistSensorBase.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/Distance/_LeddarVu.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/Distance/_TOFsense.cpp)
