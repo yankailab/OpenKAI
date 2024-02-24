@@ -79,7 +79,7 @@ namespace kai
 
 	void _LeddarVu::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			if (!m_pMb)
 			{

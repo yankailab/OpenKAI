@@ -8,7 +8,7 @@
 namespace kai
 {
 
-	class _AP_avoid : public _StateBase
+	class _AP_avoid : public _ModuleBase
 	{
 	public:
 		_AP_avoid();

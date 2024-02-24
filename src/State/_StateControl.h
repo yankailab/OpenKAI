@@ -10,35 +10,23 @@
 
 #include "../Base/_ModuleBase.h"
 #include "../UI/_Console.h"
-#include "../State/Goto.h"
-#include "../State/Waypoint.h"
-#include "../State/Land.h"
-#include "../State/Loiter.h"
-#include "../State/State.h"
-#include "../State/RTH.h"
-#include "../State/Takeoff.h"
+#include "StateBase.h"
 
 #define ADD_STATE(x)         \
 	if (pKs->m_class == #x)  \
 	{                        \
-		S.m_pInst = new x(); \
-		S.m_pKiss = pKs;     \
-	}
+		x* pI = new x();     \
+		if(!pI->init(pKs))   \
+		{					 \
+			DEL(pI); 		 \
+			LOG_E(pKs->m_name + ": init failed"); \
+		}	\
+		m_vpState.push_back(pI); \
+		continue; \
+	} \
 
 namespace kai
 {
-
-	struct STATE_INST
-	{
-		State *m_pInst;
-		Kiss *m_pKiss;
-
-		void init(void)
-		{
-			m_pInst = NULL;
-			m_pKiss = NULL;
-		}
-	};
 
 	class _StateControl : public _ModuleBase
 	{
@@ -51,10 +39,11 @@ namespace kai
 		virtual bool start(void);
 		virtual void console(void *pConsole);
 
-		State *getState(void);
-		string getStateName(void);
-		int getStateIdx(void);
-		STATE_TYPE getStateType(void);
+		StateBase *getCurrentState(void);
+		string* getCurrentStateName(void);
+		int getCurrentStateIdx(void);
+		STATE_TYPE getCurrentStateType(void);
+
 		int getStateIdxByName(const string &n);
 		void transit(void);
 		void transit(const string &n);
@@ -68,8 +57,8 @@ namespace kai
 			return NULL;
 		}
 
-		vector<STATE_INST> m_vState;
-		int m_iS; //current state
+		vector<StateBase *> m_vpState;
+		int m_iS; // current state
 	};
 
 }

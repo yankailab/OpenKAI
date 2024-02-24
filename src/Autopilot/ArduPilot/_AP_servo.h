@@ -19,7 +19,7 @@ namespace kai
 		}
 	};
 
-	class _AP_servo : public _StateBase
+	class _AP_servo : public _ModuleBase
 	{
 	public:
 		_AP_servo();

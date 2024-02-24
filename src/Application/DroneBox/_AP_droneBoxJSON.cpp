@@ -33,8 +33,8 @@ namespace kai
 
         string n;
         n = "";
-        pK->v("_AP_gcs", &n);
-        m_pAPgcs = (_AP_gcs *)(pK->getInst(n));
+        pK->v("_AP_droneBox", &n);
+        m_pAPgcs = (_AP_droneBox *)(pK->getInst(n));
         IF_Fl(!m_pAPgcs, n + ": not found");
 
 		return true;
@@ -57,7 +57,7 @@ namespace kai
 
     void _AP_droneBoxJSON::updateW(void)
     {
-        while (m_pT->bRun())
+        while (m_pT->bThread())
         {
             if (!m_pIO)
             {

@@ -19,7 +19,7 @@ namespace kai
 		}
 	};
 
-	class _AP_relay : public _StateBase
+	class _AP_relay : public _ModuleBase
 	{
 	public:
 		_AP_relay();

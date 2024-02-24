@@ -34,7 +34,7 @@ namespace kai
 
 	bool _AP_visionEstimate::init(void *pKiss)
 	{
-		IF_F(!this->_StateBase::init(pKiss));
+		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("bPos", &m_bPos);
@@ -49,7 +49,7 @@ namespace kai
 
 	bool _AP_visionEstimate::link(void)
 	{
-		IF_F(!this->_StateBase::link());
+		IF_F(!this->_ModuleBase::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
@@ -79,15 +79,15 @@ namespace kai
 		NULL__(m_pAP->m_pMav, -1);
 		NULL__(m_pNav, -1);
 
-		return this->_StateBase::check();
+		return this->_ModuleBase::check();
 	}
 
 	void _AP_visionEstimate::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
-			this->_StateBase::update();
+			this->_ModuleBase::update();
 
 			if(!updateVisionEstimate())
 			{
@@ -215,7 +215,7 @@ namespace kai
 	void _AP_visionEstimate::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_StateBase::console(pConsole);
+		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
 		string msg;

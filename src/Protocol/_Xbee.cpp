@@ -73,7 +73,7 @@ namespace kai
 
     void _Xbee::updateW(void)
     {
-        while (m_pT->bRun())
+        while (m_pT->bThread())
         {
             if (!m_pIO)
             {

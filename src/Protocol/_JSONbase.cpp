@@ -78,7 +78,7 @@ namespace kai
 
     void _JSONbase::updateW(void)
     {
-        while (m_pT->bRun())
+        while (m_pT->bThread())
         {
             if (!m_pIO)
             {

@@ -16,7 +16,7 @@ namespace kai
 
 	bool _AP_depthVision::init(void *pKiss)
 	{
-		IF_F(!this->_StateBase::init(pKiss));
+		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		//link
@@ -55,8 +55,6 @@ namespace kai
 
 	void _AP_depthVision::update(void)
 	{
-		this->_StateBase::update();
-
 		NULL_(m_pAP);
 		NULL_(m_pAP->m_pMav);
 		_Mavlink *pMavlink = m_pAP->m_pMav;
@@ -91,7 +89,7 @@ namespace kai
 	void _AP_depthVision::draw(void *pFrame)
 	{
 		NULL_(pFrame);
-		this->_StateBase::draw(pFrame);
+		this->_ModuleBase::draw(pFrame);
 		IF_(check() < 0);
 
 		Frame *pF = (Frame *)pFrame;

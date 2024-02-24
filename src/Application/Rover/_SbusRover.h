@@ -9,7 +9,7 @@
 namespace kai
 {
 
-	class _SbusRover : public _StateBase
+	class _SbusRover : public _ModuleBase
 	{
 	public:
 		_SbusRover();

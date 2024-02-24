@@ -2,7 +2,7 @@
 #define OpenKAI_src_Autopilot_AP__AP_base_H_
 
 #include "../../Protocol/_Mavlink.h"
-#include "../../State/_StateBase.h"
+#include "../../State/_StateControl.h"
 
 #define AP_N_CUSTOM_MODE 28
 
@@ -90,7 +90,7 @@ namespace kai
 		}
 	};
 
-	class _AP_base : public _StateBase
+	class _AP_base : public _ModuleBase
 	{
 	public:
 		_AP_base();

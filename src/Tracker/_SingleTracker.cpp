@@ -48,7 +48,7 @@ namespace kai
 
 	void _SingleTracker::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
 

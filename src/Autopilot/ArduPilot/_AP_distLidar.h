@@ -28,7 +28,7 @@ namespace kai
 		}
 	};
 
-	class _AP_distLidar : public _StateBase
+	class _AP_distLidar : public _ModuleBase
 	{
 	public:
 		_AP_distLidar();

@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Application_Measurement__ARmeasure_H_
 #define OpenKAI_src_Application_Measurement__ARmeasure_H_
 
-#include "../../State/_StateBase.h"
+#include "../../Base/_ModuleBase.h"
 #include "../../Vision/ImgFilter/_Remap.h"
 #include "../../Navigation/_NavBase.h"
 #include "../../Sensor/Distance/_DistSensorBase.h"
@@ -24,7 +24,7 @@ namespace kai
 		bool m_bZ;		   //if inside the projection plane
 	};
 
-	class _ARmeasure : public _StateBase
+	class _ARmeasure : public _ModuleBase
 	{
 	public:
 		_ARmeasure(void);

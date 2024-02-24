@@ -59,11 +59,9 @@ namespace kai
 
     void _DroneBox::update(void)
     {
-        while (m_pT->bRun())
+        while (m_pT->bThread())
         {
             m_pT->autoFPSfrom();
-            this->_GCSbase::update();
-            this->_GCSbase::updateGCS();
 
             updateGCS();
 
@@ -73,6 +71,8 @@ namespace kai
 
     void _DroneBox::updateGCS(void)
     {
+        this->_GCSbase::updateGCS();
+
         IF_(check() < 0);
 
         if (m_state.bSTANDBY())

@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_App_SwarmSearch__SwarmSearchCtrl_H_
 #define OpenKAI_src_App_SwarmSearch__SwarmSearchCtrl_H_
 
-#include "../../State/_StateBase.h"
+#include "../../Base/_ModuleBase.h"
 #include "../../Protocol/_Xbee.h"
 #include "../../Swarm/_SwarmSearch.h"
 
@@ -14,7 +14,7 @@ namespace kai
 		float	 m_alt = 0;
 	};
 
-	class _SwarmSearchCtrl : public _StateBase
+	class _SwarmSearchCtrl : public _ModuleBase
 	{
 	public:
 		_SwarmSearchCtrl();

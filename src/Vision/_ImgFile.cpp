@@ -55,7 +55,7 @@ namespace kai
 
 	void _ImgFile::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			if (!m_bOpen)
 			{

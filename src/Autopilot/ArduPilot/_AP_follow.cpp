@@ -125,19 +125,15 @@ namespace kai
 
 	void _AP_follow::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
-			this->_StateBase::update();
 
-
-		mavlink_command_int_t D;
-		D.command = 44001;
-		D.param1 = 3;
-		D.param2 = 1;
-		m_pAP->m_pMav->cmdInt(D);
-
-
+		// mavlink_command_int_t D;
+		// D.command = 44001;
+		// D.param1 = 3;
+		// D.param2 = 1;
+		// m_pAP->m_pMav->cmdInt(D);
 
 			if (bActive())
 			{

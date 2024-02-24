@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_RobotArm__PickingArm_H_
 #define OpenKAI_src_RobotArm__PickingArm_H_
 
-#include "../../State/_StateBase.h"
+#include "../../Base/_ModuleBase.h"
 #include "../../Universe/_Universe.h"
 #include "../../Control/PID.h"
 #include "../../Actuator/_ActuatorBase.h"
@@ -52,7 +52,7 @@ namespace kai
 		}
 	};
 
-	class _PickingArm : public _StateBase
+	class _PickingArm : public _ModuleBase
 	{
 	public:
 		_PickingArm(void);

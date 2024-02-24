@@ -30,7 +30,7 @@ namespace kai
 
 	bool _AP_base::init(void *pKiss)
 	{
-		IF_F(!this->_StateBase::init(pKiss));
+		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("apType", (int *)&m_apType);
@@ -49,7 +49,7 @@ namespace kai
 
 	bool _AP_base::link(void)
 	{
-		IF_F(!this->_StateBase::link());
+		IF_F(!this->_ModuleBase::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
@@ -92,16 +92,15 @@ namespace kai
 	{
 		NULL__(m_pMav, -1);
 
-		return this->_StateBase::check();
+		return this->_ModuleBase::check();
 	}
 
 	void _AP_base::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
 
-			this->_StateBase::update();
 			updateBase();
 
 			m_pT->autoFPSto();
@@ -295,7 +294,7 @@ namespace kai
 	void _AP_base::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_StateBase::console(pConsole);
+		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("State-----------------------------", 1);

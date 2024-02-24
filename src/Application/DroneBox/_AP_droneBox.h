@@ -1,18 +1,18 @@
-#ifndef OpenKAI_src_Application_Autopilot_ArduPilot__AP_gcs_H_
-#define OpenKAI_src_Application_Autopilot_ArduPilot__AP_gcs_H_
+#ifndef OpenKAI_src_Application_DroneBox__AP_droneBox_H_
+#define OpenKAI_src_Application_DroneBox__AP_droneBox_H_
 
-#include "_AP_base.h"
-#include "_AP_land.h"
+#include "../../Autopilot/ArduPilot/_AP_land.h"
+#include "../../State/_StateControl.h"
 #include "../../GCS/_GCSbase.h"
 
 namespace kai
 {
 
-	class _AP_gcs : public _GCSbase
+	class _AP_droneBox : public _GCSbase
 	{
 	public:
-		_AP_gcs();
-		~_AP_gcs();
+		_AP_droneBox();
+		~_AP_droneBox();
 
 		virtual bool init(void *pKiss);
 		virtual bool link(void);
@@ -30,7 +30,7 @@ namespace kai
 		virtual void updateGCS(void);
 		static void *getUpdate(void *This)
 		{
-			((_AP_gcs *)This)->update();
+			((_AP_droneBox *)This)->update();
 			return NULL;
 		}
 

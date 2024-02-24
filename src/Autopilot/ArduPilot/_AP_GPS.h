@@ -9,7 +9,7 @@
 namespace kai
 {
 
-	class _AP_GPS : public _StateBase
+	class _AP_GPS : public _ModuleBase
 	{
 	public:
 		_AP_GPS();

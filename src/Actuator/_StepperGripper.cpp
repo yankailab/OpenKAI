@@ -44,7 +44,7 @@ namespace kai
 			;
 		m_bState = true;
 
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
 

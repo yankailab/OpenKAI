@@ -1,12 +1,13 @@
-#include "_AP_gcs.h"
+#include "_AP_droneBox.h"
 
 namespace kai
 {
 
-    _AP_gcs::_AP_gcs()
+    _AP_droneBox::_AP_droneBox()
     {
         m_pAP = NULL;
         m_pAPland = NULL;
+
         m_bAutoArm = false;
         m_altTakeoff = 20.0;
         m_altLand = 20.0;
@@ -16,11 +17,11 @@ namespace kai
         m_vTargetDroneBoxPos.clear();
     }
 
-    _AP_gcs::~_AP_gcs()
+    _AP_droneBox::~_AP_droneBox()
     {
     }
 
-    bool _AP_gcs::init(void *pKiss)
+    bool _AP_droneBox::init(void *pKiss)
     {
         IF_F(!this->_GCSbase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
@@ -36,7 +37,7 @@ namespace kai
         return true;
     }
 
-	bool _AP_gcs::link(void)
+	bool _AP_droneBox::link(void)
 	{
 		IF_F(!this->_GCSbase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
@@ -56,28 +57,26 @@ namespace kai
 		return true;
 	}
 
-    bool _AP_gcs::start(void)
+    bool _AP_droneBox::start(void)
     {
         NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
-    int _AP_gcs::check(void)
+    int _AP_droneBox::check(void)
     {
         NULL__(m_pAP, -1);
         NULL__(m_pAP->m_pMav, -1);
         NULL__(m_pAPland, -1);
-        NULL__(m_pSC, -1);
 
         return this->_GCSbase::check();
     }
 
-    void _AP_gcs::update(void)
+    void _AP_droneBox::update(void)
     {
-        while (m_pT->bRun())
+        while (m_pT->bThread())
         {
             m_pT->autoFPSfrom();
-            this->_GCSbase::update();
 
             updateGCS();
 
@@ -85,7 +84,7 @@ namespace kai
         }
     }
 
-    void _AP_gcs::updateGCS(void)
+    void _AP_droneBox::updateGCS(void)
     {
         this->_GCSbase::updateGCS();
         IF_(check() < 0);
@@ -191,7 +190,7 @@ namespace kai
         }
     }
 
-    void _AP_gcs::landingReady(bool bReady)
+    void _AP_droneBox::landingReady(bool bReady)
     {
         IF_(!bReady);
 
@@ -199,7 +198,7 @@ namespace kai
             m_pSC->transit(m_state.LANDING);
     }
 
-    void _AP_gcs::takeoffReady(bool bReady)
+    void _AP_droneBox::takeoffReady(bool bReady)
     {
         IF_(!bReady);
 
@@ -207,7 +206,7 @@ namespace kai
             m_pSC->transit(m_state.TAKEOFF_READY);
     }
 
-	void _AP_gcs::addTargetDroneBox(int id, vDouble2 vPdb)
+	void _AP_droneBox::addTargetDroneBox(int id, vDouble2 vPdb)
     {
         return; // use fixed id for test first
 
@@ -223,7 +222,7 @@ namespace kai
         m_vTargetDroneBoxPos = vPdb;   
     }
 
-	int _AP_gcs::getTargetDroneBoxID(void)
+	int _AP_droneBox::getTargetDroneBoxID(void)
     {
         return m_targetDroneBoxID;
     }

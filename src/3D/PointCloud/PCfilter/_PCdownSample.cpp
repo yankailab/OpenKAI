@@ -44,7 +44,7 @@ int _PCdownSample::check(void)
 
 void _PCdownSample::update(void)
 {
-	while(m_pT->bRun())
+	while(m_pT->bThread())
 	{
 		m_pT->autoFPSfrom();
 

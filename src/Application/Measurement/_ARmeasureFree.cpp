@@ -31,7 +31,7 @@ namespace kai
 
 	bool _ARmeasureFree::init(void *pKiss)
 	{
-		IF_F(!this->_StateBase::init(pKiss));
+		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		string n;
@@ -72,11 +72,11 @@ namespace kai
 
 	void _ARmeasureFree::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
 
-			this->_StateBase::update();
+			this->_ModuleBase::update();
 			updateFree();
 
 			m_pT->autoFPSto();
@@ -276,7 +276,7 @@ namespace kai
 		NULL_(pFrame);
 		IF_(!bActive());
 
-		this->_StateBase::draw(pFrame);
+		this->_ModuleBase::draw(pFrame);
 		IF_(check() < 0);
 
 		Frame *pF = (Frame*)pFrame;

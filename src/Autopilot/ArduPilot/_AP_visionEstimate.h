@@ -10,7 +10,7 @@ using namespace Eigen;
 namespace kai
 {
 
-	class _AP_visionEstimate : public _StateBase
+	class _AP_visionEstimate : public _ModuleBase
 	{
 	public:
 		_AP_visionEstimate();

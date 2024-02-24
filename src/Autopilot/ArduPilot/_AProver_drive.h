@@ -7,7 +7,7 @@
 namespace kai
 {
 
-	class _AProver_drive : public _StateBase
+	class _AProver_drive : public _ModuleBase
 	{
 	public:
 		_AProver_drive();

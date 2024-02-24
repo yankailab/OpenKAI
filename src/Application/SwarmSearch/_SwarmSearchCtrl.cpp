@@ -19,7 +19,7 @@ namespace kai
 
     bool _SwarmSearchCtrl::init(void *pKiss)
     {
-        IF_F(!this->_StateBase::init(pKiss));
+        IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("myID", &m_node.m_id);
@@ -32,7 +32,7 @@ namespace kai
 
     bool _SwarmSearchCtrl::link(void)
     {
-        IF_F(!this->_StateBase::link());
+        IF_F(!this->_ModuleBase::link());
         IF_F(!m_pSC);
         m_state.STANDBY = m_pSC->getStateIdxByName("STANDBY");
         m_state.TAKEOFF = m_pSC->getStateIdxByName("TAKEOFF");
@@ -71,15 +71,15 @@ namespace kai
         NULL__(m_pXb, -1);
         NULL__(m_pSwarm, -1);
 
-        return this->_StateBase::check();
+        return this->_ModuleBase::check();
     }
 
     void _SwarmSearchCtrl::update(void)
     {
-        while (m_pT->bRun())
+        while (m_pT->bThread())
         {
             m_pT->autoFPSfrom();
-            this->_StateBase::update();
+            this->_ModuleBase::update();
 
             send();
 
@@ -228,7 +228,7 @@ namespace kai
     void _SwarmSearchCtrl::console(void *pConsole)
     {
         NULL_(pConsole);
-        this->_StateBase::console(pConsole);
+        this->_ModuleBase::console(pConsole);
     }
 
 }

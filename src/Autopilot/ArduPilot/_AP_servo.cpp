@@ -14,7 +14,7 @@ namespace kai
 
 	bool _AP_servo::init(void *pKiss)
 	{
-		IF_F(!this->_StateBase::init(pKiss));
+		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		string n;
@@ -53,16 +53,15 @@ namespace kai
 		NULL__(m_pAP, -1);
 		NULL__(m_pAP->m_pMav, -1);
 
-		return this->_StateBase::check();
+		return this->_ModuleBase::check();
 	}
 
 	void _AP_servo::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
 
-			this->_StateBase::update();
 			updateServo();
 
 			m_pT->autoFPSto();
@@ -85,9 +84,8 @@ namespace kai
 	void _AP_servo::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_StateBase::console(pConsole);
+		this->_ModuleBase::console(pConsole);
 		IF_(check() < 0);
-		msgActive(pConsole);
 
 		for (AP_SERVO s : m_vServo)
 		{

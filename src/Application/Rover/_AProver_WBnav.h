@@ -43,7 +43,7 @@ namespace kai
 		}
 	};
 
-	class _AProver_WBnav : public _StateBase
+	class _AProver_WBnav : public _ModuleBase
 	{
 	public:
 		_AProver_WBnav();

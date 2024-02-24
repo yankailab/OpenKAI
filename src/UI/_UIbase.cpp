@@ -44,7 +44,7 @@ namespace kai
 
 	void _UIbase::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
 

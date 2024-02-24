@@ -36,7 +36,7 @@ namespace kai
 		string *getName(void);
 		string *getClass(void);
 
-	public:
+	protected:
 		void *m_pKiss;
 		bool m_bLog;
 		bool m_bDebug;

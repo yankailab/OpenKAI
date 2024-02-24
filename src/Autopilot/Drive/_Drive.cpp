@@ -19,7 +19,7 @@ namespace kai
 
     bool _Drive::init(void *pKiss)
     {
-        IF_F(!this->_StateBase::init(pKiss));
+        IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("nSpd", &m_nSpd);
@@ -62,12 +62,12 @@ namespace kai
 
     int _Drive::check(void)
     {
-        return this->_StateBase::check();
+        return this->_ModuleBase::check();
     }
 
     void _Drive::update(void)
     {
-        while (m_pT->bRun())
+        while (m_pT->bThread())
         {
             m_pT->autoFPSfrom();
 
@@ -124,7 +124,7 @@ namespace kai
     void _Drive::console(void *pConsole)
     {
         NULL_(pConsole);
-        this->_StateBase::console(pConsole);
+        this->_ModuleBase::console(pConsole);
 
         _Console *pC = (_Console *)pConsole;
         pC->addMsg("nSpd = " + f2str(m_nSpd) + ", nDir = " + f2str(m_nDir) + ", nStr = " + f2str(m_nStr));

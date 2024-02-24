@@ -17,12 +17,12 @@ namespace kai
 
 	_StateControl::~_StateControl()
 	{
-		for (unsigned int i = 0; i < m_vState.size(); i++)
+		for (unsigned int i = 0; i < m_vpState.size(); i++)
 		{
-			DEL(m_vState[i].m_pInst);
+			DEL(m_vpState[i]);
 		}
 
-		m_vState.clear();
+		m_vpState.clear();
 	}
 
 	bool _StateControl::init(void *pKiss)
@@ -30,44 +30,27 @@ namespace kai
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		Kiss *pCC = pK->child("state");
-		IF_T(pCC->empty());
+		Kiss *pKstate = pK->child("state");
+		IF_T(pKstate->empty());
 
-		STATE_INST S;
 		int i = 0;
 		while (1)
 		{
-			Kiss *pKs = pCC->child(i++);
+			Kiss *pKs = pKstate->child(i++);
 			if (pKs->empty())
 				break;
 
-			S.init();
+			//Add state below
 
-			//Add action modules below
+			ADD_STATE(StateBase);
 
-			ADD_STATE(State);
-			ADD_STATE(Takeoff);
-			ADD_STATE(Loiter);
-			ADD_STATE(Waypoint);
-			ADD_STATE(Goto);
-			ADD_STATE(RTH);
-			ADD_STATE(Land);
+			//Add state above
 
-			//Add action modules above
-
-			IF_Fl(!S.m_pInst, "Unknown state class: " + pKs->m_class);
-
-			pKs->m_pInst = S.m_pInst;
-			m_vState.push_back(S);
+			LOG_E("Unknown state class: " + pKs->m_class);
+			return false;
 		}
 
-		IF_F(m_vState.empty());
-
-		for (i = 0; i < m_vState.size(); i++)
-		{
-			STATE_INST *pM = &m_vState[i];
-			IF_Fl(!pM->m_pInst->init(pM->m_pKiss), pM->m_pKiss->m_name + ": init failed");
-		}
+		IF_F(m_vpState.empty());
 
 		string start = "";
 		pK->v("start", &start);
@@ -85,7 +68,10 @@ namespace kai
 		IF_F(!this->_ModuleBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
-		string n;
+		for (int i = 0; i < m_vpState.size(); i++)
+		{
+			IF_F(m_vpState[i]->link());
+		}
 
 		return true;
 	}
@@ -98,16 +84,18 @@ namespace kai
 
 	void _StateControl::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
 
-			IF_CONT(m_iS >= m_vState.size());
+			IF_CONT(m_iS >= m_vpState.size());
 			IF_CONT(m_iS < 0);
-			State *pState = m_vState[m_iS].m_pInst;
-			if (pState->update())
+
+			StateBase *pS = m_vpState[m_iS];
+			pS->update();
+			if (pS->bComplete())
 			{
-				transit(pState->m_next);
+				transit(pS->getNext());
 			}
 
 			m_pT->autoFPSto();
@@ -116,10 +104,10 @@ namespace kai
 
 	void _StateControl::transit(void)
 	{
-		State *pS = m_vState[m_iS].m_pInst;
+		StateBase *pS = m_vpState[m_iS];
 		NULL_(pS);
 
-		transit(pS->m_next);
+		transit(pS->getNext());
 	}
 
 	void _StateControl::transit(const string &mName)
@@ -131,50 +119,47 @@ namespace kai
 	void _StateControl::transit(int iS)
 	{
 		IF_(iS < 0);
-		IF_(iS >= m_vState.size());
+		IF_(iS >= m_vpState.size());
 		IF_(iS == m_iS);
 
-		State *pState = m_vState[m_iS].m_pInst;
-		pState->reset();
+		StateBase *pS = m_vpState[m_iS];
+		pS->reset();
 
 		m_iS = iS;
 	}
 
 	int _StateControl::getStateIdxByName(const string &n)
 	{
-		for (unsigned int i = 0; i < m_vState.size(); i++)
+		for (int i = 0; i < m_vpState.size(); i++)
 		{
-			if (((Kiss *)m_vState[i].m_pInst->m_pKiss)->m_name == n)
+			if (*m_vpState[i]->getName() == n)
 				return i;
 		}
 
 		return -1;
 	}
 
-	State *_StateControl::getState(void)
+	StateBase *_StateControl::getCurrentState(void)
 	{
-		return m_vState[m_iS].m_pInst;
+		return m_vpState[m_iS];
 	}
 
-	int _StateControl::getStateIdx(void)
+	int _StateControl::getCurrentStateIdx(void)
 	{
 		return m_iS;
 	}
 
-	string _StateControl::getStateName(void)
+	string* _StateControl::getCurrentStateName(void)
 	{
-		string name = ((Kiss *)m_vState[m_iS].m_pInst->m_pKiss)->m_name;
-		return name;
+		return m_vpState[m_iS]->getName();
 	}
 
-	STATE_TYPE _StateControl::getStateType(void)
+	STATE_TYPE _StateControl::getCurrentStateType(void)
 	{
-		State *pMB = getState();
+		StateBase *pS = getCurrentState();
+		IF__(!pS, state_unknown);
 
-		if (!pMB)
-			return state_unknown;
-
-		return pMB->m_type;
+		return pS->getType();
 	}
 
 	void _StateControl::console(void *pConsole)
@@ -183,19 +168,15 @@ namespace kai
 		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		pC->addMsg("nState: " + i2str(m_vState.size()), 0);
-		IF_(m_vState.size() <= 0);
+		pC->addMsg("nState: " + i2str(m_vpState.size()), 0);
+		IF_(m_vpState.size() <= 0);
 
 		pC->addMsg("iState: " + i2str(m_iS), 1);
 		IF_(m_iS < 0);
 
-		State *pMB = m_vState[m_iS].m_pInst;
-		pC->addMsg("Current state: " + ((Kiss *)pMB->m_pKiss)->m_name, 1);
-
-		if (pMB->type() == state_wp)
-			((Waypoint *)pMB)->console(pConsole);
-		else
-			pMB->console(pConsole);
+		StateBase *pS = getCurrentState();
+		pC->addMsg("Current state: " + *getCurrentStateName(), 1);
+		pS->console(pConsole);
 	}
 
 }

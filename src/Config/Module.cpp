@@ -22,7 +22,6 @@ namespace kai
 	{
 		IF_N(!pK);
 
-		ADD_MODULE(_ThreadCtrl);
 		ADD_MODULE(_SharedMem);
 		ADD_MODULE(Destimator);
 		ADD_MODULE(_Console);
@@ -67,15 +66,12 @@ namespace kai
 #endif
 
 #ifdef WITH_ARDUPILOT
-		ADD_MODULE(_AP_base);
 		ADD_MODULE(_AP_actuator);
+		ADD_MODULE(_AP_base);
+		ADD_MODULE(_AP_mission);
 		ADD_MODULE(_AP_move);
-		ADD_MODULE(_AP_RTH);
 		ADD_MODULE(_AP_relay);
 		ADD_MODULE(_AP_servo);
-		ADD_MODULE(_AP_takeoff);
-		ADD_MODULE(_AP_goto);
-		ADD_MODULE(_AP_link);
 		ADD_MODULE(_AProver_drive);
 #ifdef WITH_SWARM
 		ADD_MODULE(_AP_swarm);
@@ -86,16 +82,11 @@ namespace kai
 #ifdef USE_OPENCV
 		ADD_MODULE(_AP_avoid);
 		ADD_MODULE(_AP_depthVision);
-		ADD_MODULE(_AP_gcs);
-		ADD_MODULE(_AP_land);
-		ADD_MODULE(_AP_mission);
 		ADD_MODULE(_AP_follow);
-		ADD_MODULE(_AP_videoStream);
+		ADD_MODULE(_AP_land);
 		ADD_MODULE(_AP_video);
+		ADD_MODULE(_AP_videoStream);
 		ADD_MODULE(_APcopter_photo);
-#ifdef WITH_APP_ROBOTARM
-		ADD_MODULE(_AProver_picking);
-#endif
 #endif // opencv
 #ifdef WITH_NAVIGATION
 #ifdef USE_REALSENSE
@@ -123,6 +114,7 @@ namespace kai
 #ifdef WITH_APP_DRONEBOX
 		ADD_MODULE(_DroneBox);
 		ADD_MODULE(_DroneBoxJSON);
+		ADD_MODULE(_AP_droneBox);
 		ADD_MODULE(_AP_droneBoxJSON);
 #endif
 
@@ -162,17 +154,11 @@ namespace kai
 #endif
 
 #ifdef WITH_APP_ROVER
-		ADD_MODULE(_PWMrover);
-		ADD_MODULE(_SbusRover);
-		ADD_MODULE(_AProver_BR);
-		ADD_MODULE(_AProver_BRfollow);
-		ADD_MODULE(_AProver_KU);
-		ADD_MODULE(_AProver_KUfollowTag);
-		ADD_MODULE(_AProver_followTag);
 		ADD_MODULE(_AProver_tag);
 		ADD_MODULE(_AProver_WB);
 		ADD_MODULE(_AProver_WBnav);
-		ADD_MODULE(_UTprArmL);
+		ADD_MODULE(_PWMrover);
+		ADD_MODULE(_SbusRover);
 #ifdef USE_OPENCV
 #endif
 #endif

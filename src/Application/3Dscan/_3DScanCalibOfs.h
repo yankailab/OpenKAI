@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Application_3Dscan__3DScanCalibOfs_H_
 #define OpenKAI_src_Application_3Dscan__3DScanCalibOfs_H_
 
-#include "../../State/_StateBase.h"
+#include "../../Base/_ModuleBase.h"
 #include "../../Vision/_VisionBase.h"
 
 namespace kai
 {
-	class _3DScanCalibOfs : public _StateBase
+	class _3DScanCalibOfs : public _ModuleBase
 	{
 	public:
 		_3DScanCalibOfs(void);

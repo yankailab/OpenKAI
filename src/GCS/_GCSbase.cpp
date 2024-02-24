@@ -5,6 +5,7 @@ namespace kai
 
     _GCSbase::_GCSbase()
     {
+        m_pSC = NULL;
         m_gcsID = -1;
     }
 
@@ -14,7 +15,7 @@ namespace kai
 
     bool _GCSbase::init(void *pKiss)
     {
-        IF_F(!this->_StateBase::init(pKiss));
+        IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("gcsID", &m_gcsID);
@@ -24,20 +25,25 @@ namespace kai
 
 	bool _GCSbase::link(void)
 	{
-		IF_F(!this->_StateBase::link());
+		IF_F(!this->_ModuleBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
-        IF_F(!m_pSC);
-        IF_F(!m_state.assign(m_pSC));
-
         string n;
+        n = "";
+        pK->v("_StateControl", &n);
+        m_pSC = (_StateControl *)(pK->getInst(n));
+        IF_Fl(!m_pSC, n + ": not found");
+
+        IF_F(!m_state.assign(m_pSC));
 
 		return true;
 	}
 
     int _GCSbase::check(void)
     {
-        return this->_StateBase::check();
+        NULL__(m_pSC, -1);
+
+        return this->_ModuleBase::check();
     }
 
     void _GCSbase::updateGCS(void)

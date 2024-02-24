@@ -75,7 +75,7 @@ namespace kai
 
 	void _GPhotoTake::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
 

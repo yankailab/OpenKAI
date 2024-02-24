@@ -13,7 +13,7 @@
 
 namespace kai
 {
-	class _ARmeasureCalibCam : public _StateBase
+	class _ARmeasureCalibCam : public _ModuleBase
 	{
 	public:
 		_ARmeasureCalibCam(void);

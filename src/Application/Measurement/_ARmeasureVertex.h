@@ -12,7 +12,7 @@
 
 namespace kai
 {
-	class _ARmeasureVertex : public _StateBase
+	class _ARmeasureVertex : public _ModuleBase
 	{
 	public:
 		_ARmeasureVertex(void);

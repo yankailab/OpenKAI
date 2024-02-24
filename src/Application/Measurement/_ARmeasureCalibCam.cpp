@@ -32,7 +32,7 @@ namespace kai
 
 	bool _ARmeasureCalibCam::init(void *pKiss)
 	{
-		IF_F(!this->_StateBase::init(pKiss));
+		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("fCalib", &m_fCalib);
@@ -84,11 +84,11 @@ namespace kai
 
 	void _ARmeasureCalibCam::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
 
-			this->_StateBase::update();
+			this->_ModuleBase::update();
 			updateCalib();
 
 			m_pT->autoFPSto();
@@ -294,7 +294,7 @@ namespace kai
 		NULL_(pFrame);
 		IF_(!bActive());
 
-		this->_StateBase::draw(pFrame);
+		this->_ModuleBase::draw(pFrame);
 		IF_(check() < 0);
 
 		Frame *pF = (Frame*)pFrame;

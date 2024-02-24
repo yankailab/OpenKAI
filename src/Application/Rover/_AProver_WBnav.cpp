@@ -32,7 +32,7 @@ namespace kai
 
     bool _AProver_WBnav::init(void *pKiss)
     {
-        IF_F(!this->_StateBase::init(pKiss));
+        IF_F(!this->_ModuleBase::init(pKiss));
 
         Kiss *pK = (Kiss *)pKiss;
         pK->v("targetSide", &m_targetSide);
@@ -95,15 +95,15 @@ namespace kai
         NULL__(m_pUdivider, -1);
         NULL__(m_pUtag, -1);
 
-        return this->_StateBase::check();
+        return this->_ModuleBase::check();
     }
 
     void _AProver_WBnav::update(void)
     {
-        while (m_pT->bRun())
+        while (m_pT->bThread())
         {
             m_pT->autoFPSfrom();
-            this->_StateBase::update();
+            this->_ModuleBase::update();
 
             updateFollow();
 
@@ -170,7 +170,7 @@ namespace kai
     void _AProver_WBnav::console(void *pConsole)
     {
         NULL_(pConsole);
-        this->_StateBase::console(pConsole);
+        this->_ModuleBase::console(pConsole);
         msgActive(pConsole);
 
         _Console *pC = (_Console *)pConsole;

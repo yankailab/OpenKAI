@@ -11,7 +11,6 @@
 #include "../Base/common.h"
 #include "../Base/BASE.h"
 #include "../Script/Kiss.h"
-#include "../Base/_ThreadCtrl.h"
 
 #include "../Arithmetic/Destimator.h"
 #include "../IPC/_SharedMem.h"
@@ -57,15 +56,12 @@
 #endif
 
 #ifdef WITH_ARDUPILOT
-#include "../Autopilot/ArduPilot/_AP_base.h"
 #include "../Autopilot/ArduPilot/_AP_actuator.h"
-#include "../Autopilot/ArduPilot/_AP_goto.h"
+#include "../Autopilot/ArduPilot/_AP_base.h"
+#include "../Autopilot/ArduPilot/_AP_mission.h"
 #include "../Autopilot/ArduPilot/_AP_move.h"
-#include "../Autopilot/ArduPilot/_AP_RTH.h"
 #include "../Autopilot/ArduPilot/_AP_relay.h"
 #include "../Autopilot/ArduPilot/_AP_servo.h"
-#include "../Autopilot/ArduPilot/_AP_takeoff.h"
-#include "../Autopilot/ArduPilot/_AP_link.h"
 #include "../Autopilot/ArduPilot/_AProver_drive.h"
 #ifdef WITH_SWARM
 #include "../Autopilot/ArduPilot/_AP_swarm.h"
@@ -74,18 +70,13 @@
 #include "../Autopilot/ArduPilot/_AP_distLidar.h"
 #endif
 #ifdef USE_OPENCV
-#include "../Autopilot/ArduPilot/_AP_gcs.h"
 #include "../Autopilot/ArduPilot/_AP_avoid.h"
 #include "../Autopilot/ArduPilot/_AP_depthVision.h"
-#include "../Autopilot/ArduPilot/_AP_land.h"
-#include "../Autopilot/ArduPilot/_AP_mission.h"
 #include "../Autopilot/ArduPilot/_AP_follow.h"
-#include "../Autopilot/ArduPilot/_AP_videoStream.h"
+#include "../Autopilot/ArduPilot/_AP_land.h"
 #include "../Autopilot/ArduPilot/_AP_video.h"
+#include "../Autopilot/ArduPilot/_AP_videoStream.h"
 #include "../Autopilot/ArduPilot/_APcopter_photo.h"
-#ifdef WITH_APP_ROBOTARM
-#include "../Autopilot/ArduPilot/_AProver_picking.h"
-#endif
 #endif // opencv
 #ifdef WITH_NAVIGATION
 #ifdef USE_REALSENSE
@@ -113,6 +104,7 @@
 #ifdef WITH_APP_DRONEBOX
 #include "../Application/DroneBox/_DroneBox.h"
 #include "../Application/DroneBox/_DroneBoxJSON.h"
+#include "../Application/DroneBox/_AP_droneBox.h"
 #include "../Application/DroneBox/_AP_droneBoxJSON.h"
 #endif
 
@@ -152,17 +144,11 @@
 #endif
 
 #ifdef WITH_APP_ROVER
+#include "../Application/Rover/_AProver_tag.h"
+#include "../Application/Rover/_AProver_WB.h"
+#include "../Application/Rover/_AProver_WBnav.h"
 #include "../Application/Rover/_PWMrover.h"
 #include "../Application/Rover/_SbusRover.h"
-#include "../Application/Rover/_AProver_BR.h"
-#include "../Application/Rover/_AProver_BRfollow.h"
-#include "../Application/Rover/_AProver_KU.h"
-#include "../Application/Rover/_AProver_KUfollowTag.h"
-#include "../Application/Rover/_AProver_tag.h"
-#include "../Application/Rover/_AProver_followTag.h"
-#include "../Application/Rover/_AProver_WB.h"
-#include "../Application/Rover/_UTprArmL.h"
-#include "../Application/Rover/_AProver_WBnav.h"
 #endif
 
 #ifdef WITH_APP_SWARMSEARCH

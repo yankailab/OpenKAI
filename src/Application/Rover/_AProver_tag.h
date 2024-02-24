@@ -23,7 +23,7 @@ struct APROVER_TAG_MODE
 	}
 };
 
-class _AProver_tag: public _StateBase
+class _AProver_tag: public _ModuleBase
 {
 public:
 	_AProver_tag();

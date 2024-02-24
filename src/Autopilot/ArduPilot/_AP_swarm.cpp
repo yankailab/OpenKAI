@@ -122,10 +122,10 @@ namespace kai
 
 	void _AP_swarm::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
-			this->_StateBase::update();
+			this->_ModuleBase::update();
 
 			updateState();
 

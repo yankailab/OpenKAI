@@ -6,7 +6,7 @@
 namespace kai
 {
 
-	class _AP_move : public _StateBase
+	class _AP_move : public _ModuleBase
 	{
 	public:
 		_AP_move();

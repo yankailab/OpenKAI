@@ -11,7 +11,7 @@ using namespace picojson;
 namespace kai
 {
 
-	class _AP_videoStream : public _StateBase
+	class _AP_videoStream : public _ModuleBase
 	{
 	public:
 		_AP_videoStream();

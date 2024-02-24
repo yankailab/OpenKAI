@@ -24,7 +24,7 @@ namespace kai
 
 	bool _AP_videoStream::init(void *pKiss)
 	{
-		IF_F(!this->_StateBase::init(pKiss));
+		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("process", &m_process);
@@ -38,7 +38,7 @@ namespace kai
 
 	bool _AP_videoStream::link(void)
 	{
-		IF_F(!this->_StateBase::link());
+		IF_F(!this->_ModuleBase::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
@@ -65,12 +65,12 @@ namespace kai
 	{
 		NULL__(m_pAP, -1);
 
-		return this->_StateBase::check();
+		return this->_ModuleBase::check();
 	}
 
 	void _AP_videoStream::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
 
@@ -147,9 +147,8 @@ namespace kai
 	void _AP_videoStream::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_StateBase::console(pConsole);
+		this->_ModuleBase::console(pConsole);
 		IF_(check() < 0);
-		msgActive(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("fName = " + m_fName);

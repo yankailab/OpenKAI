@@ -26,7 +26,7 @@ namespace kai
 		}
 	};
 
-	class _AProver_WB : public _StateBase
+	class _AProver_WB : public _ModuleBase
 	{
 	public:
 		_AProver_WB();

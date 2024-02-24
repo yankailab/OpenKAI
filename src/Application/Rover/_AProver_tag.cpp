@@ -18,7 +18,7 @@ _AProver_tag::~_AProver_tag()
 
 bool _AProver_tag::init(void* pKiss)
 {
-	IF_F(!this->_StateBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
    	NULL_F(m_pSC);
 
 	Kiss* pK = (Kiss*) pKiss;
@@ -58,15 +58,15 @@ int _AProver_tag::check(void)
 	NULL__(m_pAP->m_pMav, -1);
 	NULL__(m_pSC, -1);
 
-	return this->_StateBase::check();
+	return this->_ModuleBase::check();
 }
 
 void _AProver_tag::update(void)
 {
-	while(m_pT->bRun())
+	while(m_pT->bThread())
 	{
 		m_pT->autoFPSfrom();
-		this->_StateBase::update();
+		this->_ModuleBase::update();
 
 		updateMode();
 
@@ -115,7 +115,7 @@ void _AProver_tag::updateMode(void)
 void _AProver_tag::console(void* pConsole)
 {
     NULL_(pConsole);
-	this->_StateBase::console(pConsole);
+	this->_ModuleBase::console(pConsole);
     msgActive(pConsole);
 
    	((_Console*)pConsole)->addMsg("rcMode pwm=" + i2str(m_rcMode.m_raw) + ", i=" + i2str(m_rcMode.i()));

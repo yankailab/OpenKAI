@@ -43,7 +43,7 @@ namespace kai
 
 	bool _ARmeasure::init(void *pKiss)
 	{
-		IF_F(!this->_StateBase::init(pKiss));
+		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("minPoseConfidence", &m_minPoseConfidence);
@@ -109,16 +109,16 @@ namespace kai
 		NULL__(m_pN, -1);
 		NULL__(m_pW, -1);
 
-		return this->_StateBase::check();
+		return this->_ModuleBase::check();
 	}
 
 	void _ARmeasure::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
 
-			this->_StateBase::update();
+			this->_ModuleBase::update();
 			updateSensor();
 
 			m_pT->autoFPSto();

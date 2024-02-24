@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_GCS__GCSbase_H_
 #define OpenKAI_src_GCS__GCSbase_H_
 
-#include "../State/_StateBase.h"
+#include "../State/_StateControl.h"
 
 namespace kai
 {
@@ -52,7 +52,7 @@ namespace kai
         void update(_StateControl *pSC)
         {
             NULL_(pSC);
-            m_iState = pSC->getStateIdx();
+            m_iState = pSC->getCurrentStateIdx();
         }
 
         bool bSTANDBY(void)
@@ -96,7 +96,7 @@ namespace kai
         }
     };
 
-    class _GCSbase : public _StateBase
+    class _GCSbase : public _ModuleBase
     {
     public:
         _GCSbase();
@@ -117,8 +117,9 @@ namespace kai
         virtual void updateGCS(void);
 
     public:
-        int m_gcsID;
+		_StateControl* m_pSC;
 
+        int m_gcsID;
         GCS_STATE m_state;
     };
 

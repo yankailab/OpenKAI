@@ -36,7 +36,6 @@ namespace kai
             return false;
         }
 
-//        pKt->m_pInst = m_pT;
         return true;
     }
 
@@ -65,16 +64,26 @@ namespace kai
     {
     }
 
-    void _ModuleBase::goSleep(void)
+    void _ModuleBase::sleep(void)
     {
         IF_(check() < 0);
-        m_pT->goSleep();
+        m_pT->sleep();
     }
 
-    void _ModuleBase::wakeUp(void)
+    void _ModuleBase::run(void)
     {
         IF_(check() < 0);
-        m_pT->wakeUp();
+        m_pT->run();
+    }
+
+	void _ModuleBase::onGoSleep(void)
+    {
+        IF_(!m_pT->bOnGoSleep());
+    }
+
+	void _ModuleBase::onWakeUp(void)
+    {
+        IF_(!m_pT->bOnWakeUp());
     }
 
     void _ModuleBase::console(void *pConsole)

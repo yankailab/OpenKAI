@@ -17,7 +17,7 @@ namespace kai
 
     bool _AProver_WB::init(void *pKiss)
     {
-        IF_F(!this->_StateBase::init(pKiss));
+        IF_F(!this->_ModuleBase::init(pKiss));
         NULL_F(m_pSC);
 
         Kiss *pK = (Kiss *)pKiss;
@@ -57,15 +57,15 @@ namespace kai
         NULL__(m_pAP->m_pMav, -1);
         NULL__(m_pSC, -1);
 
-        return this->_StateBase::check();
+        return this->_ModuleBase::check();
     }
 
     void _AProver_WB::update(void)
     {
-        while (m_pT->bRun())
+        while (m_pT->bThread())
         {
             m_pT->autoFPSfrom();
-            this->_StateBase::update();
+            this->_ModuleBase::update();
 
             updateMode();
 
@@ -114,7 +114,7 @@ namespace kai
     void _AProver_WB::console(void *pConsole)
     {
         NULL_(pConsole);
-        this->_StateBase::console(pConsole);
+        this->_ModuleBase::console(pConsole);
         msgActive(pConsole);
 
         ((_Console *)pConsole)->addMsg("rcMode pwm=" + i2str(m_rcMode.m_raw) + ", i=" + i2str(m_rcMode.i()));

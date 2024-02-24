@@ -92,7 +92,7 @@ namespace kai
 
 	void _TCPclient::updateW(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			if (!bOpen())
 			{

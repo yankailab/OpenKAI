@@ -38,7 +38,7 @@ namespace kai
 
 	bool _APcopter_photo::init(void *pKiss)
 	{
-		IF_F(!this->_StateBase::init(pKiss));
+		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("quality", &m_quality);
@@ -105,15 +105,14 @@ namespace kai
 		NULL__(m_pPC, -1);
 		NULL__(m_pDS, -1);
 
-		return this->_StateBase::check();
+		return this->_ModuleBase::check();
 	}
 
 	void _APcopter_photo::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
-			this->_StateBase::update();
 
 			if (check() >= 0)
 			{
@@ -256,9 +255,8 @@ namespace kai
 	void _APcopter_photo::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_StateBase::console(pConsole);
+		this->_ModuleBase::console(pConsole);
 		IF_(check() < 0);
-		msgActive(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("alt = " + f2str(m_alt) + ", lastAlt = " + f2str(m_lastAlt) + ", dAlt = " + f2str(m_dAlt));

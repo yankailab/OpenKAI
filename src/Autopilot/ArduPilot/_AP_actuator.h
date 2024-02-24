@@ -8,7 +8,7 @@
 namespace kai
 {
 
-	class _AP_actuator : public _StateBase
+	class _AP_actuator : public _ModuleBase
 	{
 	public:
 		_AP_actuator();

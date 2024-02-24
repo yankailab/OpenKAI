@@ -81,7 +81,7 @@ namespace kai
 		IF_F(!m_fifoW.input(pBuf, nB));
 
 		NULL_T(m_pT);
-		m_pT->wakeUp();
+		m_pT->run();
 		return true;
 	}
 

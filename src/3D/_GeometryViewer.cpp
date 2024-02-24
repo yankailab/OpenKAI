@@ -135,7 +135,7 @@ namespace kai
 		resetCamPose();
 		updateCamPose();
 
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
 
@@ -305,7 +305,7 @@ namespace kai
 		updateCamProj();
 		updateCamPose();
 
-		m_pT->wakeUp();
+		m_pT->run();
 		app.Run();
 		exit(0);
 	}

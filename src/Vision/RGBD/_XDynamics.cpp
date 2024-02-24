@@ -201,7 +201,7 @@ namespace kai
 
     void _XDynamics::update(void)
     {
-        while (m_pT->bRun())
+        while (m_pT->bThread())
         {
             if (!m_bOpen)
             {
@@ -278,7 +278,7 @@ namespace kai
                    (unsigned char *)pConf->addr);
         }
 
-        m_pT->wakeUp();
+        m_pT->run();
     }
 
     void _XDynamics::runHDL(unsigned short *pD,

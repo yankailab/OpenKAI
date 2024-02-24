@@ -20,7 +20,7 @@ namespace kai
 
 	bool _AP_actuator::init(void *pKiss)
 	{
-		IF_F(!this->_StateBase::init(pKiss));
+		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("iRCmodeChan", &m_rcMode.m_iChan);
@@ -65,16 +65,15 @@ namespace kai
 		NULL__(m_pAB1, -1);
 		NULL__(m_pAB2, -1);
 
-		return this->_StateBase::check();
+		return this->_ModuleBase::check();
 	}
 
 	void _AP_actuator::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
 
-			this->_StateBase::update();
 			updateActuator();
 
 			m_pT->autoFPSto();
@@ -130,8 +129,7 @@ namespace kai
 	{
 		NULL_(pConsole);
 		IF_(check() < 0);
-		this->_StateBase::console(pConsole);
-		msgActive(pConsole);
+		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("iMode: " + i2str(m_rcMode.i()), 1);

@@ -12,7 +12,7 @@
 
 namespace kai
 {
-	class _ARmeasureCalibDofs : public _StateBase
+	class _ARmeasureCalibDofs : public _ModuleBase
 	{
 	public:
 		_ARmeasureCalibDofs(void);

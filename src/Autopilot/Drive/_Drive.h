@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot_Drive__Drive_H_
 #define OpenKAI_src_Autopilot_Drive__Drive_H_
 
-#include "../../State/_StateBase.h"
+#include "../../Base/_ModuleBase.h"
 #include "../../Actuator/_ActuatorBase.h"
 
 namespace kai
@@ -34,7 +34,7 @@ namespace kai
         }
     };
 
-    class _Drive : public _StateBase
+    class _Drive : public _ModuleBase
     {
     public:
         _Drive();

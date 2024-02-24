@@ -33,7 +33,7 @@ namespace kai
 
 	bool _AP_GPS::init(void *pKiss)
 	{
-		IF_F(!this->_StateBase::init(pKiss));
+		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("yaw", &m_yaw);
@@ -80,15 +80,15 @@ namespace kai
 		NULL__(m_pAP->m_pMav, -1);
 		NULL__(m_pSB, -1);
 
-		return this->_StateBase::check();
+		return this->_ModuleBase::check();
 	}
 
 	void _AP_GPS::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
-			this->_StateBase::update();
+			this->_ModuleBase::update();
 
 			updateGPS();
 
@@ -165,7 +165,7 @@ namespace kai
 	void _AP_GPS::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_StateBase::console(pConsole);
+		this->_ModuleBase::console(pConsole);
 
 		((_Console *)pConsole)->addMsg("lat=" + lf2str(m_llPos.m_lat, 7) + ", lon=" + lf2str(m_llPos.m_lng, 7) + ", yaw=" + f2str(m_yaw));
 	}

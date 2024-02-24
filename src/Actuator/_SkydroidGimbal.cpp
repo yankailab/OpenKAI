@@ -58,7 +58,7 @@ namespace kai
 
 	void _SkydroidGimbal::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
 
@@ -109,7 +109,7 @@ namespace kai
 
 	void _SkydroidGimbal::updateR(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
 

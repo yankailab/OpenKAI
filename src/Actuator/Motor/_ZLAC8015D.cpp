@@ -61,7 +61,7 @@ namespace kai
 
 	void _ZLAC8015D::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
 

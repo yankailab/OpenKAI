@@ -12,7 +12,7 @@
 
 namespace kai
 {
-	class _ARmeasureFree : public _StateBase
+	class _ARmeasureFree : public _ModuleBase
 	{
 	public:
 		_ARmeasureFree(void);

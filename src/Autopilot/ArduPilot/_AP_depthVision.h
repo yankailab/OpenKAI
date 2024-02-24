@@ -24,7 +24,7 @@ namespace kai
 		}
 	};
 
-	class _AP_depthVision : public _StateBase
+	class _AP_depthVision : public _ModuleBase
 	{
 	public:
 		_AP_depthVision();

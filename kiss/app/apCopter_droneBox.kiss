@@ -415,7 +415,7 @@
 
 {
 	"name":"apGCS",
-	"class":"_AP_gcs",
+	"class":"_AP_droneBox",
 	"bON":1,
     {
 		"name":"thread",
@@ -462,7 +462,7 @@
 		"FPS":30,
 	}
 	"bLog":1,
-	"_AP_gcs":"apGCS",
+	"_AP_droneBox":"apGCS",
 	"_IObase":"serialTelem",
 }
 
@@ -497,7 +497,7 @@
 		"FPS":30,
 	}
 	"bLog":1,
-	"_AP_gcs":"apGCS",
+	"_AP_droneBox":"apGCS",
 	"_IObase":"serialTelem2",
 }
 
@@ -532,6 +532,6 @@
 		"FPS":30,
 	}
 	"bLog":1,
-	"_AP_gcs":"apGCS",
+	"_AP_droneBox":"apGCS",
 	"_IObase":"udp",
 }

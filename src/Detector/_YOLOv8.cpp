@@ -79,7 +79,7 @@ namespace kai
 
 	void _YOLOv8::update(void)
 	{
-		while (m_pT->bRun())
+		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
 
