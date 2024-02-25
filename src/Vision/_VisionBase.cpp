@@ -68,12 +68,6 @@ namespace kai
 
 	void _VisionBase::close(void)
 	{
-		IF_(check() < 0);
-
-		m_pT->goSleep();
-		while (!m_pT->bSleeping())
-			;
-
 		m_bOpen = false;
 	}
 

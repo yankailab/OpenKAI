@@ -1,10 +1,11 @@
-#ifndef OpenKAI_src_Application_Autopilot_ArduPilot__AP_swarm_H_
-#define OpenKAI_src_Application_Autopilot_ArduPilot__AP_swarm_H_
+#ifndef OpenKAI_src_App_Swarm__AP_swarm_H_
+#define OpenKAI_src_App_Swarm__AP_swarm_H_
 
-#include "_AP_move.h"
+#include "../../Autopilot/ArduPilot/_AP_move.h"
 #include "../../Protocol/_Xbee.h"
-#include "../../Swarm/_SwarmSearch.h"
 #include "../../Universe/_Universe.h"
+#include "../../State/_StateControl.h"
+#include "_SwarmSearch.h"
 
 namespace kai
 {
@@ -66,6 +67,7 @@ namespace kai
 		}
 
 	protected:
+		_StateControl* m_pSC;
 		_AP_base *m_pAP;
 		SWARM_SEARCH_STATE_NODE m_state;
         _Xbee* m_pXb;

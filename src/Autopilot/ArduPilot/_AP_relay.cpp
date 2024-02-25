@@ -68,7 +68,6 @@ namespace kai
 	void _AP_relay::updateRelay(void)
 	{
 		IF_(check() < 0);
-		IF_(!bActive());
 
 		_Mavlink *pMav = m_pAP->m_pMav;
 

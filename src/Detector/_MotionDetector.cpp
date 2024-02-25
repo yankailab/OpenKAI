@@ -64,22 +64,6 @@ namespace kai
 		return m_pT->start(getUpdate, this);
 	}
 
-	void _MotionDetector::update(void)
-	{
-		while (m_pT->bThread())
-		{
-			m_pT->autoFPSfrom();
-
-			if (check() >= 0)
-			{
-				m_pU->swap();
-				detect();
-			}
-
-			m_pT->autoFPSto();
-		}
-	}
-
 	int _MotionDetector::check(void)
 	{
 		NULL__(m_pU, -1);
@@ -89,8 +73,24 @@ namespace kai
 		return this->_DetectorBase::check();
 	}
 
+	void _MotionDetector::update(void)
+	{
+		while (m_pT->bThread())
+		{
+			m_pT->autoFPSfrom();
+
+			m_pU->swap();
+			detect();
+
+			ON_SLEEP;
+			m_pT->autoFPSto();
+		}
+	}
+
 	void _MotionDetector::detect(void)
 	{
+		IF_(check() < 0);
+
 		Mat m = *m_pVision->getFrameRGB()->m();
 
 		m_pBS->apply(m, m_mFG, m_learningRate);
@@ -120,7 +120,7 @@ namespace kai
 		}
 	}
 
-	void _MotionDetector::draw(void* pFrame)
+	void _MotionDetector::draw(void *pFrame)
 	{
 		NULL_(pFrame);
 		this->_DetectorBase::draw(pFrame);

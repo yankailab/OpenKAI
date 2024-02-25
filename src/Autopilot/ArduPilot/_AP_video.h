@@ -25,6 +25,9 @@ namespace kai
 		void console(void *pConsole);
 
 	private:
+		void onWakeUp(void);
+		void onGoSleep(void);
+
 		bool openStream(void);
 		void closeStream(void);
 		void writeStream(void);

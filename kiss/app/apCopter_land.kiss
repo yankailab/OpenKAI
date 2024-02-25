@@ -292,8 +292,8 @@
 }
 
 {
-	"name":"swarmSearch",
-	"class":"_SwarmSearch",
+	"name":"Swarm",
+	"class":"_Swarm",
 	"bON":1,
     {
 		"name":"thread",
@@ -317,7 +317,7 @@
 	"_StateControl":"state",
 	"_AP_base":"apBase",
 	"_AP_follow":"apFollow",
-	"_SwarmSearch":"swarmSearch",
+	"_Swarm":"Swarm",
 	"_Xbee":"xbee",
 	"myID":100,
 	"bAutoArm":1,

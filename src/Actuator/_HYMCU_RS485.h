@@ -58,7 +58,7 @@ namespace kai
 		bool resetPos(void);
 		bool bComplete(void);
 
-		bool run(void);
+		bool move(void);
 		bool stop(void);
 		bool initPos(void);
 

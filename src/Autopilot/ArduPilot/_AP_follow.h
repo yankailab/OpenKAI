@@ -56,6 +56,8 @@ namespace kai
 		virtual void draw(void *pFrame);
 
 	protected:
+		virtual void onGoSleep(void);
+
 		virtual void clearPID(void);
 		virtual void updatePID(void);
 		virtual bool updateTarget(void);

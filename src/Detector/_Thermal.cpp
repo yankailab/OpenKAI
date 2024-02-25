@@ -37,24 +37,6 @@ namespace kai
 		return m_pT->start(getUpdate, this);
 	}
 
-	void _Thermal::update(void)
-	{
-		while (m_pT->bThread())
-		{
-			m_pT->autoFPSfrom();
-
-			if (check() >= 0)
-			{
-				detect();
-
-				if (m_pT->bGoSleep())
-					m_pU->clear();
-			}
-
-			m_pT->autoFPSto();
-		}
-	}
-
 	int _Thermal::check(void)
 	{
 		NULL__(m_pU, -1);
@@ -64,8 +46,23 @@ namespace kai
 		return this->_DetectorBase::check();
 	}
 
+	void _Thermal::update(void)
+	{
+		while (m_pT->bThread())
+		{
+			m_pT->autoFPSfrom();
+
+			detect();
+
+			ON_SLEEP;
+			m_pT->autoFPSto();
+		}
+	}
+
 	void _Thermal::detect(void)
 	{
+		IF_(check() < 0);
+
 		Mat mBGR = *(m_pV->getFrameRGB()->m());
 		Mat mGray;
 		cv::cvtColor(mBGR, mGray, COLOR_BGR2GRAY);
@@ -95,7 +92,7 @@ namespace kai
 		m_pU->swap();
 	}
 
-	void _Thermal::draw(void* pFrame)
+	void _Thermal::draw(void *pFrame)
 	{
 		NULL_(pFrame);
 		this->_DetectorBase::draw(pFrame);

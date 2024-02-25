@@ -20,33 +20,33 @@ using namespace chilitags;
 namespace kai
 {
 
-class _Chilitags : public _DetectorBase
-{
-public:
-	_Chilitags();
-	virtual ~_Chilitags();
-
-	bool init(void* pKiss);
-	bool start(void);
-	void draw(void* pFrame);
-	void console(void* pConsole);
-	int check(void);
-
-private:
-	void detect(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _Chilitags : public _DetectorBase
 	{
-		((_Chilitags*) This)->update();
-		return NULL;
-	}
+	public:
+		_Chilitags();
+		virtual ~_Chilitags();
 
-public:
-    Chilitags m_chilitags;
-    int m_persistence;
-    float m_gain;
-    float m_angleOffset;
-};
+		bool init(void *pKiss);
+		bool start(void);
+		void draw(void *pFrame);
+		void console(void *pConsole);
+		int check(void);
+
+	private:
+		void detect(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_Chilitags *)This)->update();
+			return NULL;
+		}
+
+	protected:
+		Chilitags m_chilitags;
+		int m_persistence;
+		float m_gain;
+		float m_angleOffset;
+	};
 
 }
 #endif

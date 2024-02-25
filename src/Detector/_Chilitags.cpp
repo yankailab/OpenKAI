@@ -55,14 +55,9 @@ namespace kai
         {
             m_pT->autoFPSfrom();
 
-            if (check() >= 0)
-            {
-                detect();
+            detect();
 
-                if (m_pT->bGoSleep())
-                    m_pU->clear();
-            }
-
+            ON_SLEEP;
             m_pT->autoFPSto();
         }
     }
@@ -84,7 +79,7 @@ namespace kai
 
         for (const std::pair<int, chilitags::Quad> &tag : tags)
         {
-            o.init();
+            o.clear();
             //        o.m_tStamp = m_pT->getTfrom();
             o.setTopClass(tag.first, 1.0);
 
@@ -102,11 +97,11 @@ namespace kai
             o.scale(kx, ky);
 
             // distance
-            if (m_pDV)
-            {
-                vFloat4 bb = o.getBB2D();
-                o.setZ(m_pDV->d(&bb));
-            }
+            // if (m_pDV)
+            // {
+            //     vFloat4 bb = o.getBB2D();
+            //     o.setZ(m_pDV->d(&bb));
+            // }
 
             // center position
             dx = (float)(pV[0].x + pV[1].x + pV[2].x + pV[3].x) * 0.25;
@@ -153,13 +148,14 @@ namespace kai
         this->_DetectorBase::draw(pFrame);
         IF_(check() < 0);
 
-        Frame *pF = (Frame*)pFrame;
+        Frame *pF = (Frame *)pFrame;
         Mat *pM = pF->m();
         IF_(pM->empty());
 
         IF_(m_pU->size() <= 0);
 
         int i = 0;
+        _Object* pO;
         while ((pO = m_pU->get(i++)) != NULL)
         {
             Point pCenter = Point(pO->getX() * pM->cols,

@@ -41,24 +41,6 @@ namespace kai
 		return m_pT->start(getUpdate, this);
 	}
 
-	void _DepthSegment::update(void)
-	{
-		while (m_pT->bThread())
-		{
-			m_pT->autoFPSfrom();
-
-			if (check() >= 0)
-			{
-				detect();
-
-				if (m_pT->bGoSleep())
-					m_pU->clear();
-			}
-
-			m_pT->autoFPSto();
-		}
-	}
-
 	int _DepthSegment::check(void)
 	{
 		NULL__(m_pV, -1);
@@ -68,8 +50,23 @@ namespace kai
 		return this->_DetectorBase::check();
 	}
 
+	void _DepthSegment::update(void)
+	{
+		while (m_pT->bThread())
+		{
+			m_pT->autoFPSfrom();
+
+			detect();
+
+			ON_SLEEP;
+			m_pT->autoFPSto();
+		}
+	}
+
 	void _DepthSegment::detect(void)
 	{
+		IF_(check() < 0);
+
 		Mat m;
 		m_pV->getFrameRGB()->m()->copyTo(m);
 
@@ -98,7 +95,7 @@ namespace kai
 				o.setZ(r);
 				o.setTopClass(0, o.area());
 
-				//TODO: classify
+				// TODO: classify
 
 				m_pU->add(o);
 				rArea += o.area();
@@ -111,7 +108,7 @@ namespace kai
 		m_pU->swap();
 	}
 
-	void _DepthSegment::draw(void* pFrame)
+	void _DepthSegment::draw(void *pFrame)
 	{
 		NULL_(pFrame);
 		this->_DetectorBase::draw(pFrame);

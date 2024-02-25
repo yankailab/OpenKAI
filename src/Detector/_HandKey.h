@@ -58,7 +58,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		cv::dnn::Net m_net;
 		int m_nW;
 		int m_nH;

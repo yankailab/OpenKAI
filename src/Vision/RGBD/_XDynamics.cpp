@@ -231,7 +231,7 @@ namespace kai
         m_fDepth.copy(mDs + m_dOfs);
 
         cv::Mat mRGB;
-        cvtColor(m_mXDyuv, mRGB, COLOR_YUV2BGR_NV12);
+        cv::cvtColor(m_mXDyuv, mRGB, COLOR_YUV2BGR_NV12);
         m_fRGB.copy(mRGB);
     }
 

@@ -1,9 +1,9 @@
-#include "_SwarmSearchCtrl.h"
+#include "_SwarmCtrl.h"
 
 namespace kai
 {
 
-    _SwarmSearchCtrl::_SwarmSearchCtrl()
+    _SwarmCtrl::_SwarmCtrl()
     {
         m_pXb = NULL;
         m_pSwarm = NULL;
@@ -13,11 +13,11 @@ namespace kai
         m_ieSendGCupdate.init(USEC_1SEC);
     }
 
-    _SwarmSearchCtrl::~_SwarmSearchCtrl()
+    _SwarmCtrl::~_SwarmCtrl()
     {
     }
 
-    bool _SwarmSearchCtrl::init(void *pKiss)
+    bool _SwarmCtrl::init(void *pKiss)
     {
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
@@ -30,19 +30,24 @@ namespace kai
         return true;
     }
 
-    bool _SwarmSearchCtrl::link(void)
+    bool _SwarmCtrl::link(void)
     {
         IF_F(!this->_ModuleBase::link());
-        IF_F(!m_pSC);
+
+		Kiss *pK = (Kiss *)m_pKiss;
+		string n;
+
+        n = "";
+        pK->v("_StateControl", &n);
+        m_pSC = (_StateControl *)(pK->getInst(n));
+        IF_Fl(!m_pSC, n + ": not found");
+
         m_state.STANDBY = m_pSC->getStateIdxByName("STANDBY");
         m_state.TAKEOFF = m_pSC->getStateIdxByName("TAKEOFF");
         m_state.AUTO = m_pSC->getStateIdxByName("AUTO");
         m_state.RTL = m_pSC->getStateIdxByName("RTL");
         IF_F(!m_state.bValid());
-        m_state.update(m_pSC->getStateIdx());
-
-        Kiss *pK = (Kiss *)m_pKiss;
-        string n;
+        m_state.update(m_pSC->getCurrentStateIdx());
 
         n = "";
         pK->v("_SwarmSearch", &n);
@@ -59,13 +64,13 @@ namespace kai
         return true;
     }
 
-    bool _SwarmSearchCtrl::start(void)
+    bool _SwarmCtrl::start(void)
     {
         NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
-    int _SwarmSearchCtrl::check(void)
+    int _SwarmCtrl::check(void)
     {
         NULL__(m_pSC, -1);
         NULL__(m_pXb, -1);
@@ -74,12 +79,11 @@ namespace kai
         return this->_ModuleBase::check();
     }
 
-    void _SwarmSearchCtrl::update(void)
+    void _SwarmCtrl::update(void)
     {
         while (m_pT->bThread())
         {
             m_pT->autoFPSfrom();
-            this->_ModuleBase::update();
 
             send();
 
@@ -87,7 +91,7 @@ namespace kai
         }
     }
 
-    void _SwarmSearchCtrl::send(void)
+    void _SwarmCtrl::send(void)
     {
         IF_(check() < 0);
 
@@ -101,7 +105,7 @@ namespace kai
         //     sendGCupdate();
     }
 
-    void _SwarmSearchCtrl::sendHB(void)
+    void _SwarmCtrl::sendHB(void)
     {
         SWMSG_HB m;
         m.m_srcID = m_node.m_id;
@@ -116,7 +120,7 @@ namespace kai
         m_pXb->send(XB_BRDCAST_ADDR, pB, nB);
     }
 
-    void _SwarmSearchCtrl::sendSetState(void)
+    void _SwarmCtrl::sendSetState(void)
     {
         SWMSG_CMD_SETSTATE m;
         m.m_srcID = m_node.m_id;
@@ -130,7 +134,7 @@ namespace kai
         m_pXb->send(XB_BRDCAST_ADDR, pB, nB);
     }
 
-    void _SwarmSearchCtrl::sendGCupdate(void)
+    void _SwarmCtrl::sendGCupdate(void)
     {
         SWMSG_GC_UPDATE m;
         m.m_srcID = m_node.m_id;
@@ -145,7 +149,7 @@ namespace kai
         m_pXb->send(XB_BRDCAST_ADDR, pB, nB);
     }
 
-	bool _SwarmSearchCtrl::setState(const string& state)
+	bool _SwarmCtrl::setState(const string& state)
     {
         if(state == "standby")
             m_pSC->transit(m_state.STANDBY);
@@ -156,11 +160,11 @@ namespace kai
         else if(state == "rtl")
             m_pSC->transit(m_state.RTL);
 
-        m_state.update(m_pSC->getStateIdx());
+        m_state.update(m_pSC->getCurrentStateIdx());
         return true;
     }
 
-    void _SwarmSearchCtrl::onRecvMsg(const XBframe_receivePacket &d)
+    void _SwarmCtrl::onRecvMsg(const XBframe_receivePacket &d)
     {
         uint8_t mType = d.m_pD[0];
 
@@ -196,7 +200,7 @@ namespace kai
 
     }
 
-    void _SwarmSearchCtrl::handleMsgSetState(const SWMSG_CMD_SETSTATE &m)
+    void _SwarmCtrl::handleMsgSetState(const SWMSG_CMD_SETSTATE &m)
     {
         IF_(check() < 0);
         IF_((m.m_dstID != XB_BRDCAST_ADDR) && (m.m_dstID != m_pXb->getMyAddr()));
@@ -222,10 +226,10 @@ namespace kai
             break;
         }
 
-        m_state.update(m_pSC->getStateIdx());
+        m_state.update(m_pSC->getCurrentStateIdx());
     }
 
-    void _SwarmSearchCtrl::console(void *pConsole)
+    void _SwarmCtrl::console(void *pConsole)
     {
         NULL_(pConsole);
         this->_ModuleBase::console(pConsole);

@@ -87,7 +87,7 @@
 
 {
 	"name":"swarmCtrl",
-	"class":"_SwarmSearchCtrl",
+	"class":"_SwarmCtrl",
 	"bON":1,
 	"bLog":0,
     {
@@ -96,7 +96,7 @@
 	}
 	"myID":1,
 	"_StateControl":"state",
-	"_SwarmSearch":"swarmSearch",
+	"_Swarm":"Swarm",
 	"_Xbee":"xbee",
 	"ieSendHB":1000000,
 	"ieSendSetState":1000000,
@@ -111,8 +111,8 @@
 }
 
 {
-	"name":"swarmSearch",
-	"class":"_SwarmSearch",
+	"name":"Swarm",
+	"class":"_Swarm",
 	"bON":1,
     {
 		"name":"thread",
@@ -140,7 +140,7 @@
 
 {
 	"name":"swarmCtrlUI",
-	"class":"_SwarmSearchCtrlUI",
+	"class":"_SwarmCtrlUI",
 	"bON":1,
 	"bLog":0,
     {
@@ -154,8 +154,8 @@
 	"msgFinishSend":"",
 	"msgFinishRecv":"EOJ",
 	"_IObase":"ws",
-	"_SwarmSearch":"swarmSearch",
-	"_SwarmSearchCtrl":"swarmCtrl",
+	"_Swarm":"Swarm",
+	"_SwarmCtrl":"swarmCtrl",
 	"ieSendHB":1000000,
 	"ieSendNodeUpdate":1000000,
 	"ieSendNodeClearAll":10000000,
@@ -383,7 +383,7 @@
 
 {
 	"name":"swarmSearch1",
-	"class":"_SwarmSearch",
+	"class":"_Swarm",
 	"bON":1,
     {
 		"name":"thread",
@@ -406,7 +406,7 @@
 	"bLog":0,
 	"_StateControl":"state1",
 	"_AP_base":"apBase1",
-	"_SwarmSearch":"swarmSearch1",
+	"_Swarm":"swarmSearch1",
 	"_Xbee":"xbee1",
 	"_IObase":"tcpG",
 	"_Universe":"univTarget",
@@ -621,7 +621,7 @@
 	"bLog":0,
 	"_AP_base":"apBase2",
 	"_StateControl":"state2",
-	"_SwarmSearch":"swarmSearch2",
+	"_Swarm":"swarmSearch2",
 	"_Xbee":"xbee2",
 	"myID":102,
 	"bAutoArm":1,
@@ -640,7 +640,7 @@
 
 {
 	"name":"swarmSearch2",
-	"class":"_SwarmSearch",
+	"class":"_Swarm",
 	"bON":0,
     {
 		"name":"thread",

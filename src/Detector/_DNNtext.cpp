@@ -11,7 +11,7 @@ namespace kai
 	{
 		m_thr = 0.5;
 		m_nms = 0.4;
-		m_vBlobSize.set(320,320);
+		m_vBlobSize.set(320, 320);
 		m_vMean.x = 123.68;
 		m_vMean.y = 116.78;
 		m_vMean.z = 103.94;
@@ -77,27 +77,6 @@ namespace kai
 		return m_pT->start(getUpdate, this);
 	}
 
-	void _DNNtext::update(void)
-	{
-		while (m_pT->bThread())
-		{
-			m_pT->autoFPSfrom();
-
-			if (check() >= 0)
-			{
-				if (m_bDetect)
-					detect();
-
-				ocr();
-
-				if (m_pT->bGoSleep())
-					m_pU->clear();
-			}
-
-			m_pT->autoFPSto();
-		}
-	}
-
 	int _DNNtext::check(void)
 	{
 		NULL__(m_pU, -1);
@@ -110,8 +89,26 @@ namespace kai
 		return this->_DetectorBase::check();
 	}
 
+	void _DNNtext::update(void)
+	{
+		while (m_pT->bThread())
+		{
+			m_pT->autoFPSfrom();
+
+			if (m_bDetect)
+				detect();
+
+			ocr();
+
+			ON_SLEEP;
+			m_pT->autoFPSto();
+		}
+	}
+
 	void _DNNtext::detect(void)
 	{
+		IF_(check() < 0);
+
 		m_fRGB.copy(*m_pV->getFrameRGB());
 		if (m_fRGB.m()->channels() < 3)
 			m_fRGB.copy(m_fRGB.cvtColor(8));
@@ -148,7 +145,7 @@ namespace kai
 			//		o.m_tStamp = m_pT->getTfrom();
 			o.setTopClass(0, 1.0);
 
-			Point2f pP[4]; //in pixel unit
+			Point2f pP[4]; // in pixel unit
 			RotatedRect &box = vBoxes[vIndices[i]];
 			box.points(pP);
 
@@ -292,7 +289,7 @@ namespace kai
 		Point2f RT = Point2f((float)(p.x * mImg.cols),
 							 (float)(p.y * mImg.rows));
 
-		//LT, LB, RB, RT
+		// LT, LB, RB, RT
 		Point2f ptsFrom[] = {LT, LB, RB, RT};
 		Point2f ptsTo[] =
 			{cv::Point2f(0, 0),
@@ -304,13 +301,13 @@ namespace kai
 		return mP;
 	}
 
-	void _DNNtext::draw(void* pFrame)
+	void _DNNtext::draw(void *pFrame)
 	{
 		NULL_(pFrame);
 		this->_DetectorBase::draw(pFrame);
 		IF_(check() < 0);
 
-		Frame *pF = (Frame*)pFrame;
+		Frame *pF = (Frame *)pFrame;
 
 		Mat *pM = pF->m();
 		IF_(pM->empty());

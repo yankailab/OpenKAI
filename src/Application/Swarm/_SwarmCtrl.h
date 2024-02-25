@@ -1,9 +1,10 @@
-#ifndef OpenKAI_src_App_SwarmSearch__SwarmSearchCtrl_H_
-#define OpenKAI_src_App_SwarmSearch__SwarmSearchCtrl_H_
+#ifndef OpenKAI_src_App_Swarm__SwarmCtrl_H_
+#define OpenKAI_src_App_Swarm__SwarmCtrl_H_
 
 #include "../../Base/_ModuleBase.h"
 #include "../../Protocol/_Xbee.h"
-#include "../../Swarm/_SwarmSearch.h"
+#include "../../State/_StateControl.h"
+#include "_SwarmSearch.h"
 
 namespace kai
 {
@@ -14,11 +15,11 @@ namespace kai
 		float	 m_alt = 0;
 	};
 
-	class _SwarmSearchCtrl : public _ModuleBase
+	class _SwarmCtrl : public _ModuleBase
 	{
 	public:
-		_SwarmSearchCtrl();
-		~_SwarmSearchCtrl();
+		_SwarmCtrl();
+		~_SwarmCtrl();
 
 		virtual bool init(void *pKiss);
 		virtual bool link(void);
@@ -31,7 +32,7 @@ namespace kai
 		static void sOnRecvMsg(void *pInst, XBframe_receivePacket d)
 		{
 			NULL_(pInst);
-			((_SwarmSearchCtrl *)pInst)->onRecvMsg(d);
+			((_SwarmCtrl *)pInst)->onRecvMsg(d);
 		}
 		void onRecvMsg(const XBframe_receivePacket &d);
 
@@ -56,11 +57,12 @@ namespace kai
 		void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_SwarmSearchCtrl *)This)->update();
+			((_SwarmCtrl *)This)->update();
 			return NULL;
 		}
 
 	public:
+		_StateControl* m_pSC;
 		_Xbee *m_pXb;
 		_SwarmSearch *m_pSwarm;
 		SWARM_SEARCH_STATE_NODE m_state;

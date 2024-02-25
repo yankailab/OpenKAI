@@ -81,25 +81,6 @@ namespace kai
 		return m_pT->start(getUpdate, this);
 	}
 
-	void _DNNclassifier::update(void)
-	{
-		while (m_pT->bThread())
-		{
-			m_pT->autoFPSfrom();
-
-			if (check() >= 0)
-			{
-
-				classify();
-
-				if (m_pT->bGoSleep())
-					m_pU->clear();
-			}
-
-			m_pT->autoFPSto();
-		}
-	}
-
 	int _DNNclassifier::check(void)
 	{
 		NULL__(m_pU, -1);
@@ -112,8 +93,23 @@ namespace kai
 		return this->_DetectorBase::check();
 	}
 
+	void _DNNclassifier::update(void)
+	{
+		while (m_pT->bThread())
+		{
+			m_pT->autoFPSfrom();
+
+			classify();
+
+			ON_SLEEP;
+			m_pT->autoFPSto();
+		}
+	}
+
 	void _DNNclassifier::classify(void)
 	{
+		IF_(check() < 0);
+
 		Frame *pBGR = m_pV->getFrameRGB();
 		m_fRGB.copy(*pBGR);
 		Mat m = *m_fRGB.m();
@@ -171,13 +167,13 @@ namespace kai
 		return true;
 	}
 
-	void _DNNclassifier::draw(void* pFrame)
+	void _DNNclassifier::draw(void *pFrame)
 	{
 		NULL_(pFrame);
 		this->_DetectorBase::draw(pFrame);
 		IF_(check() < 0);
 
-		Frame *pF = (Frame*)pFrame;
+		Frame *pF = (Frame *)pFrame;
 		Mat *pM = pF->m();
 		IF_(pM->empty());
 

@@ -10,40 +10,37 @@
 
 #include "_DetectorBase.h"
 
-#ifdef USE_OPENCV
-
 namespace kai
 {
 
-class _Line : public _DetectorBase
-{
-public:
-	_Line();
-	virtual ~_Line();
-
-	bool init(void* pKiss);
-	bool start(void);
-	int check(void);
-	void console(void* pConsole);
-
-private:
-	void detect(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _Line : public _DetectorBase
 	{
-		((_Line*) This)->update();
-		return NULL;
-	}
+	public:
+		_Line();
+		virtual ~_Line();
 
-public:
-	_VisionBase* m_pV;
-	float	m_wSlide;
-	float	m_minPixLine;
-	float	m_line;
-	Mat		m_mIn;
+		virtual bool init(void *pKiss);
+		virtual bool link(void);
+		virtual bool start(void);
+		virtual int check(void);
+		virtual void console(void *pConsole);
 
-};
+	private:
+		void detect(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_Line *)This)->update();
+			return NULL;
+		}
+
+	public:
+		_VisionBase *m_pV;
+		float m_wSlide;
+		float m_minPixLine;
+		float m_line;
+		Mat m_mIn;
+	};
 
 }
-#endif
 #endif

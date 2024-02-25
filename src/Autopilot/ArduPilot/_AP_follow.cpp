@@ -129,52 +129,54 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-		// mavlink_command_int_t D;
-		// D.command = 44001;
-		// D.param1 = 3;
-		// D.param2 = 1;
-		// m_pAP->m_pMav->cmdInt(D);
+			// mavlink_command_int_t D;
+			// D.command = 44001;
+			// D.param1 = 3;
+			// D.param2 = 1;
+			// m_pAP->m_pMav->cmdInt(D);
 
-			if (bActive())
+			if (updateTarget())
 			{
-				if (updateTarget())
-				{
-					updatePID();
-					//setVlocal(m_vSpd);
+				updatePID();
+				// setVlocal(m_vSpd);
 
-					// temporal
-					vDouble4 vPg = m_pAP->getGlobalPos();
-					if (vPg.x + vPg.y > 0)
-					{
-						float apHdg = m_pAP->getApHdg();
-						float s = sin(apHdg * DEG_2_RAD);
-						float c = cos(apHdg * DEG_2_RAD);
-
-						vDouble4 vP;
-						vP.x = 35.7936444;//vPg.x + m_vSpd.x * c - m_vSpd.y * s;
-						vP.y = 140.2113273;//vPg.y + m_vSpd.x * s + m_vSpd.y * c;
-						vP.z = vPg.z;
-						vP.w = apHdg;
-//						doReposition(vP, sqrt(m_vSpd.x * m_vSpd.x + m_vSpd.y * m_vSpd.y), 0.1);
-						doReposition(vP, 5.0, 0.1);
-					}
-				}
-				else
+				// temporal
+				vDouble4 vPg = m_pAP->getGlobalPos();
+				if (vPg.x + vPg.y > 0)
 				{
-					stop();
-					clearPID();
+					float apHdg = m_pAP->getApHdg();
+					float s = sin(apHdg * DEG_2_RAD);
+					float c = cos(apHdg * DEG_2_RAD);
+
+					vDouble4 vP;
+					vP.x = 35.7936444;	// vPg.x + m_vSpd.x * c - m_vSpd.y * s;
+					vP.y = 140.2113273; // vPg.y + m_vSpd.x * s + m_vSpd.y * c;
+					vP.z = vPg.z;
+					vP.w = apHdg;
+					//						doReposition(vP, sqrt(m_vSpd.x * m_vSpd.x + m_vSpd.y * m_vSpd.y), 0.1);
+					doReposition(vP, 5.0, 0.1);
 				}
 			}
 			else
 			{
+				stop();
 				clearPID();
-				m_bTarget = false;
-				if (m_pTracker)
-					m_pTracker->stopTrack();
 			}
 
+
+			ON_SLEEP;
 			m_pT->autoFPSto();
 		}
+	}
+
+	void _AP_follow::onGoSleep(void)
+	{
+		this->_ModuleBase::onGoSleep();
+
+		clearPID();
+		m_bTarget = false;
+		if (m_pTracker)
+			m_pTracker->stopTrack();
 	}
 
 	bool _AP_follow::updateTarget(void)

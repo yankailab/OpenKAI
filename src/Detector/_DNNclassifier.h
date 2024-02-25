@@ -34,7 +34,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		cv::dnn::Net m_net;
 		vector<vFloat4> m_vROI;
 		int m_nW;

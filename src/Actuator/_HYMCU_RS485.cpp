@@ -116,7 +116,7 @@ namespace kai
 		IF_(!setPos());
 		IF_(!setSpeed());
 		IF_(!setAccel());
-		run();
+		move();
 	}
 
 	bool _HYMCU_RS485::setDistPerRound(int32_t dpr)
@@ -216,7 +216,7 @@ namespace kai
 		return true;
 	}
 
-	bool _HYMCU_RS485::run(void)
+	bool _HYMCU_RS485::move(void)
 	{
 		IF_F(check() < 0);
 
@@ -265,7 +265,7 @@ namespace kai
 
 			IF_F(!setSpeed());
 			IF_F(!setAccel());
-			IF_F(!run());
+			IF_F(!move());
 
 			while (!bComplete())
 				;
@@ -274,7 +274,7 @@ namespace kai
 			IF_F(m_pMB->writeRegisters(m_iSlave, m_addr.m_setDir, 1, pB) != 1);
 			m_pT->sleepT(m_cmdInt);
 
-			IF_F(!run());
+			IF_F(!move());
 
 			while (!bComplete())
 				;

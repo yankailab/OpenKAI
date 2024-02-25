@@ -264,8 +264,8 @@
 }
 
 {
-	"name":"swarmSearch",
-	"class":"_SwarmSearch",
+	"name":"Swarm",
+	"class":"_Swarm",
 	"bON":1,
     {
 		"name":"thread",
@@ -288,7 +288,7 @@
 	"bLog":0,
 	"_StateControl":"state",
 	"_AP_base":"apBase",
-	"_SwarmSearch":"swarmSearch",
+	"_Swarm":"Swarm",
 	"_Xbee":"xbee",
 	"_IObase":"tcpG",
 	"_Universe":"univTarget",

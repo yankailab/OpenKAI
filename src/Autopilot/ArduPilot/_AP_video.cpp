@@ -76,22 +76,28 @@ namespace kai
 		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
-
-			if (bStateChanged())
-			{
-				if (this->bActive())
-					openStream();
-				else
-					closeStream();
-			}
+			ON_WAKEUP;
 
 			if (m_pFvid)
 			{
 				writeStream();
 			}
 
+			ON_SLEEP;
 			m_pT->autoFPSto();
 		}
+	}
+
+	void _AP_video::onWakeUp(void)
+	{
+		openStream();
+	}
+
+	void _AP_video::onGoSleep(void)
+	{
+		this->_ModuleBase::onGoSleep();
+
+		closeStream();
 	}
 
 	bool _AP_video::openStream(void)

@@ -137,6 +137,14 @@ namespace kai
 		return m_pT->start(getUpdate, this);
 	}
 
+	int _Lane::check(void)
+	{
+		NULL__(m_pV, -1);
+		IF__(m_pV->getFrameRGB()->m()->empty(), -1);
+
+		return this->_ModuleBase::check();
+	}
+
 	void _Lane::update(void)
 	{
 		while (m_pT->bThread())
@@ -147,14 +155,6 @@ namespace kai
 
 			m_pT->autoFPSto();
 		}
-	}
-
-	int _Lane::check(void)
-	{
-		NULL__(m_pV, -1);
-		IF__(m_pV->getFrameRGB()->m()->empty(), -1);
-
-		return this->_ModuleBase::check();
 	}
 
 	void _Lane::detect(void)

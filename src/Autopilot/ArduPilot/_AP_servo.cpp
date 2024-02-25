@@ -71,7 +71,6 @@ namespace kai
 	void _AP_servo::updateServo(void)
 	{
 		IF_(check() < 0);
-		IF_(!bActive());
 
 		_Mavlink *pMav = m_pAP->m_pMav;
 

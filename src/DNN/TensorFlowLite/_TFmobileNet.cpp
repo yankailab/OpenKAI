@@ -11,6 +11,7 @@ namespace kai
 	{
 		m_vSize.set(300, 300);
 		m_nThreads = 4;
+		m_confidence = 0.25;
 	}
 
 	_TFmobileNet::~_TFmobileNet()
@@ -23,6 +24,7 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("nThreads", &m_nThreads);
+		pK->v("confidence", &m_confidence);
 
 		return true;
 	}
@@ -69,6 +71,7 @@ namespace kai
 			detect();
 			m_pU->swap();
 
+			ON_SLEEP;
 			m_pT->autoFPSto();
 		}
 	}

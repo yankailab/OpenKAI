@@ -68,7 +68,7 @@ namespace kai
 	void _DenseFlow::detect(void)
 	{
 		NULL_(m_pVision);
-		Frame *pGray = m_pVision->BGR();
+		Frame *pGray = m_pVision->getFrameRGB();
 		NULL_(pGray);
 		IF_(pGray->bEmpty());
 
@@ -96,7 +96,7 @@ namespace kai
 	vDouble2 _DenseFlow::vFlow(vDouble4 *pROI)
 	{
 		vDouble2 vF;
-		vF.init();
+		vF.clear();
 		if (!pROI)
 			return vF;
 
@@ -127,7 +127,7 @@ namespace kai
 	vDouble2 _DenseFlow::vFlow(vInt4 *pROI)
 	{
 		vDouble2 vF;
-		vF.init();
+		vF.clear();
 
 		IF__(!pROI, vF);
 		IF__(m_pFlow[0].empty(), vF);

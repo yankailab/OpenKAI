@@ -1,21 +1,21 @@
-#include "_SwarmSearchCtrlUI.h"
+#include "_SwarmCtrlUI.h"
 
 namespace kai
 {
 
-    _SwarmSearchCtrlUI::_SwarmSearchCtrlUI()
+    _SwarmCtrlUI::_SwarmCtrlUI()
     {
         m_Tr = NULL;
         m_pCtrl = NULL;
         m_pSwarm = NULL;
     }
 
-    _SwarmSearchCtrlUI::~_SwarmSearchCtrlUI()
+    _SwarmCtrlUI::~_SwarmCtrlUI()
     {
         DEL(m_pTr);
     }
 
-    bool _SwarmSearchCtrlUI::init(void *pKiss)
+    bool _SwarmCtrlUI::init(void *pKiss)
     {
         IF_F(!this->_JSONbase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
@@ -46,7 +46,7 @@ namespace kai
         return true;
     }
 
-    bool _SwarmSearchCtrlUI::link(void)
+    bool _SwarmCtrlUI::link(void)
     {
         IF_F(!this->_JSONbase::link());
         IF_F(!m_pTr->link());
@@ -55,8 +55,8 @@ namespace kai
 
         string n;
         n = "";
-        pK->v("_SwarmSearchCtrl", &n);
-        m_pCtrl = (_SwarmSearchCtrl *)(pK->getInst(n));
+        pK->v("_SwarmCtrl", &n);
+        m_pCtrl = (_SwarmCtrl *)(pK->getInst(n));
         IF_Fl(!m_pCtrl, n + ": not found");
 
         n = "";
@@ -67,7 +67,7 @@ namespace kai
         return true;
     }
 
-    bool _SwarmSearchCtrlUI::start(void)
+    bool _SwarmCtrlUI::start(void)
     {
         NULL_F(m_pT);
         NULL_F(m_pTr);
@@ -75,7 +75,7 @@ namespace kai
         return m_pTr->start(getUpdateR, this);
     }
 
-    int _SwarmSearchCtrlUI::check(void)
+    int _SwarmCtrlUI::check(void)
     {
         NULL__(m_pCtrl, -1);
         NULL__(m_pSwarm, -1);
@@ -83,7 +83,7 @@ namespace kai
         return this->_JSONbase::check();
     }
 
-    void _SwarmSearchCtrlUI::updateW(void)
+    void _SwarmCtrlUI::updateW(void)
     {
         while (m_pT->bThread())
         {
@@ -101,7 +101,7 @@ namespace kai
         }
     }
 
-    void _SwarmSearchCtrlUI::send(void)
+    void _SwarmCtrlUI::send(void)
     {
         IF_(check() < 0);
 
@@ -117,7 +117,7 @@ namespace kai
         //     sendNodeClearAll();
     }
 
-    void _SwarmSearchCtrlUI::sendHeartbeat(void)
+    void _SwarmCtrlUI::sendHeartbeat(void)
     {
         IF_(check() < 0);
 
@@ -129,7 +129,7 @@ namespace kai
         sendMsg(o);
     }
 
-    void _SwarmSearchCtrlUI::sendNodeUpdate(void)
+    void _SwarmCtrlUI::sendNodeUpdate(void)
     {
         IF_(check() < 0);
 
@@ -152,7 +152,7 @@ namespace kai
         }
     }
 
-    void _SwarmSearchCtrlUI::sendNodeClearAll(void)
+    void _SwarmCtrlUI::sendNodeClearAll(void)
     {
         IF_(check() < 0);
 
@@ -163,7 +163,7 @@ namespace kai
         sendMsg(o);
     }
 
-    void _SwarmSearchCtrlUI::updateR(void)
+    void _SwarmCtrlUI::updateR(void)
     {
         while (m_pTr->bRun())
         {
@@ -179,7 +179,7 @@ namespace kai
         }
     }
 
-    void _SwarmSearchCtrlUI::handleMsg(string &str)
+    void _SwarmCtrlUI::handleMsg(string &str)
     {
         value json;
         IF_(!str2JSON(str, &json));
@@ -192,7 +192,7 @@ namespace kai
             setState(jo);
     }
 
-    void _SwarmSearchCtrlUI::setState(picojson::object &o)
+    void _SwarmCtrlUI::setState(picojson::object &o)
     {
         IF_(check() < 0);
 
@@ -205,7 +205,7 @@ namespace kai
         m_pCtrl->setState(state);
     }
 
-    void _SwarmSearchCtrlUI::console(void *pConsole)
+    void _SwarmCtrlUI::console(void *pConsole)
     {
         NULL_(pConsole);
         this->_JSONbase::console(pConsole);

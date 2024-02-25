@@ -19,11 +19,11 @@ namespace kai
 		_ArUco();
 		virtual ~_ArUco();
 
-		bool init(void *pKiss);
-		bool start(void);
-		void draw(void *pFrame);
-		void console(void *pConsole);
-		int check(void);
+		virtual bool init(void *pKiss);
+		virtual bool start(void);
+		virtual int check(void);
+		virtual void draw(void *pFrame);
+		virtual void console(void *pConsole);
 
 	private:
 		void detect(void);

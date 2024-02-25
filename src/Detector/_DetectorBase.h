@@ -32,6 +32,9 @@ namespace kai
 		virtual _Universe* getU(void);
 
 	protected:
+		virtual void onGoSleep(void);
+
+	protected:
 		// input
 		_VisionBase *m_pV;
 

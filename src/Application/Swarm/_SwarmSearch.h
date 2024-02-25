@@ -5,11 +5,11 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Swarm_SwarmSearch_H_
-#define OpenKAI_src_Swarm_SwarmSearch_H_
+#ifndef OpenKAI_src_App_SwarmSearch_SwarmSearchSearch_H_
+#define OpenKAI_src_App_SwarmSearch_SwarmSearchSearch_H_
 
-#include "_SwarmBase.h"
-#include "../Navigation/GeoGrid.h"
+#include "../../Swarm/_SwarmBase.h"
+#include "../../Navigation/GeoGrid.h"
 
 namespace kai
 {

@@ -52,24 +52,6 @@ namespace kai
 		return m_pT->start(getUpdate, this);
 	}
 
-	void _OpenPose::update(void)
-	{
-		while (m_pT->bThread())
-		{
-			m_pT->autoFPSfrom();
-
-			if (check() >= 0)
-			{
-				detect();
-
-				if (m_pT->bGoSleep())
-					m_pU->clear();
-			}
-
-			m_pT->autoFPSto();
-		}
-	}
-
 	int _OpenPose::check(void)
 	{
 		NULL__(m_pV, -1);
@@ -81,8 +63,23 @@ namespace kai
 		return this->_DetectorBase::check();
 	}
 
+	void _OpenPose::update(void)
+	{
+		while (m_pT->bThread())
+		{
+			m_pT->autoFPSfrom();
+
+			detect();
+
+			ON_SLEEP;
+			m_pT->autoFPSto();
+		}
+	}
+
 	void _OpenPose::detect(void)
 	{
+		IF_(check() < 0);
+
 		Frame *pBGR = m_pV->getFrameRGB();
 		m_fRGB.copy(*pBGR);
 		Mat mIn = *m_fRGB.m();

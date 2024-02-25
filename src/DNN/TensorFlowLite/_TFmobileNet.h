@@ -46,7 +46,7 @@ namespace kai
 		std::unique_ptr<tflite::FlatBufferModel> m_model;
 
 		int m_nThreads;
-
+		float m_confidence;
 	};
 
 }

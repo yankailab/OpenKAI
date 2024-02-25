@@ -20,9 +20,9 @@ namespace kai
 		_YOLOv3();
 		~_YOLOv3();
 
-		bool init(void *pKiss);
-		bool start(void);
-		int check(void);
+		virtual bool init(void *pKiss);
+		virtual bool start(void);
+		virtual int check(void);
 
 	private:
 		void detectYolo(void);
@@ -34,7 +34,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		cv::dnn::Net m_net;
 		double m_thr;
 		double m_nms;

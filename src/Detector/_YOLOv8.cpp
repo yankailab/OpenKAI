@@ -85,9 +85,7 @@ namespace kai
 
 			detect();
 
-			if (m_pT->bGoSleep())
-				m_pU->clear();
-
+			ON_SLEEP;
 			m_pT->autoFPSto();
 		}
 	}
@@ -144,7 +142,7 @@ namespace kai
 			cv::Point class_id;
 			double maxClassScore;
 
-			minMaxLoc(scores, 0, &maxClassScore, 0, &class_id);
+			cv::minMaxLoc(scores, 0, &maxClassScore, 0, &class_id);
 
 			if (maxClassScore > m_score)
 			{

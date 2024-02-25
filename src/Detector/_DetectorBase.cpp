@@ -81,6 +81,12 @@ namespace kai
 		return this->_ModuleBase::check();
 	}
 
+	void _DetectorBase::onGoSleep(void)
+	{
+		this->_ModuleBase::onGoSleep();
+		m_pU->clear();
+	}
+
 	int _DetectorBase::getClassIdx(string &className)
 	{
 		for (int i = 0; i < m_vClass.size(); i++)

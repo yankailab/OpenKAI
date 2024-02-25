@@ -1,17 +1,17 @@
-#ifndef OpenKAI_src_App_SwarmSearch__SwarmSearchCtrlUI_H_
-#define OpenKAI_src_App_SwarmSearch__SwarmSearchCtrlUI_H_
+#ifndef OpenKAI_src_App_Swarm__SwarmCtrlUI_H_
+#define OpenKAI_src_App_Swarm__SwarmCtrlUI_H_
 
 #include "../../Protocol/_JSONbase.h"
-#include "_SwarmSearchCtrl.h"
+#include "_SwarmCtrl.h"
 
 namespace kai
 {
 
-	class _SwarmSearchCtrlUI : public _JSONbase
+	class _SwarmCtrlUI : public _JSONbase
 	{
 	public:
-		_SwarmSearchCtrlUI();
-		~_SwarmSearchCtrlUI();
+		_SwarmCtrlUI();
+		~_SwarmCtrlUI();
 
 		virtual bool init(void *pKiss);
 		virtual bool link(void);
@@ -33,20 +33,20 @@ namespace kai
 		void updateW(void);
 		static void *getUpdateW(void *This)
 		{
-			((_SwarmSearchCtrlUI *)This)->updateW();
+			((_SwarmCtrlUI *)This)->updateW();
 			return NULL;
 		}
 
 		void updateR(void);
 		static void *getUpdateR(void *This)
 		{
-			((_SwarmSearchCtrlUI *)This)->updateR();
+			((_SwarmCtrlUI *)This)->updateR();
 			return NULL;
 		}
 
 	public:
 		_Thread *m_Tr;
-		_SwarmSearchCtrl* m_pCtrl;
+		_SwarmCtrl* m_pCtrl;
 		_SwarmSearch *m_pSwarm;
 		
 		INTERVAL_EVENT m_ieSendNodeUpdate;

@@ -84,22 +84,23 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			if (bActive())
-			{
-				updateMove();
+			updateMove();
 
-				if (bComplete())
-				{
-					stop();
-				}
-			}
-			else
+			if (bComplete())
 			{
-				clearPID();
+				stop();
 			}
 
+			ON_SLEEP;
 			m_pT->autoFPSto();
 		}
+	}
+
+	void _AP_land::onGoSleep(void)
+	{
+		this->_ModuleBase::onGoSleep();
+
+		clearPID();
 	}
 
 	bool _AP_land::bComplete(void)
@@ -144,8 +145,8 @@ namespace kai
 		// IF_(abs(m_vSpd.w) < m_vComplete.w);
 
 		stop();
-//		setHdg(m_vSpd.w * DEG_2_RAD, 0, true, false);
-		sleep(1);
+		//		setHdg(m_vSpd.w * DEG_2_RAD, 0, true, false);
+		m_pT->sleepT(USEC_1SEC);
 	}
 
 	bool _AP_land::findTag(void)

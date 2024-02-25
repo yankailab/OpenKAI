@@ -19,10 +19,10 @@ namespace kai
 		_Thermal();
 		virtual ~_Thermal();
 
-		bool init(void *pKiss);
-		bool start(void);
-		int check(void);
-		void draw(void *pFrame);
+		virtual bool init(void *pKiss);
+		virtual bool start(void);
+		virtual int check(void);
+		virtual void draw(void *pFrame);
 
 	private:
 		void detect(void);
@@ -33,7 +33,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		Mat m_mR;
 		double m_rL;
 		double m_rU;

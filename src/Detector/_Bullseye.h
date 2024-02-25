@@ -13,33 +13,32 @@
 namespace kai
 {
 
-class _Bullseye : public _DetectorBase
-{
-public:
-	_Bullseye();
-	virtual ~_Bullseye();
-
-	bool init(void* pKiss);
-	bool start(void);
-	int check(void);
-
-private:
-	void detect(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _Bullseye : public _DetectorBase
 	{
-		((_Bullseye*) This)->update();
-		return NULL;
-	}
+	public:
+		_Bullseye();
+		virtual ~_Bullseye();
 
-public:
-	double	m_abs;
-	double	m_scale1;
-	double	m_scale2;
-	double	m_thr1;
-	double	m_thr2;
+		bool init(void *pKiss);
+		bool start(void);
+		int check(void);
 
-};
+	private:
+		void detect(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_Bullseye *)This)->update();
+			return NULL;
+		}
+
+	protected:
+		double m_abs;
+		double m_scale1;
+		double m_scale2;
+		double m_thr1;
+		double m_thr2;
+	};
 
 }
 #endif

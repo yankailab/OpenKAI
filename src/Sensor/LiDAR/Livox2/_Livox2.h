@@ -9,7 +9,7 @@
 #define OpenKAI_src_Sensor_LiDAR__Livox2_H_
 
 #include "../../../3D/PointCloud/_PCstream.h"
-#include "../../../Dependency/Fusion/SensorFusion.h"
+#include "../../../Dependency/SensorFusion/SensorFusion.h"
 #include "LivoxLidar2.h"
 
 namespace kai

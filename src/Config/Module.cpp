@@ -73,9 +73,6 @@ namespace kai
 		ADD_MODULE(_AP_relay);
 		ADD_MODULE(_AP_servo);
 		ADD_MODULE(_AProver_drive);
-#ifdef WITH_SWARM
-		ADD_MODULE(_AP_swarm);
-#endif
 #ifdef WITH_SENSOR
 		ADD_MODULE(_AP_distLidar);
 #endif
@@ -116,6 +113,10 @@ namespace kai
 		ADD_MODULE(_DroneBoxJSON);
 		ADD_MODULE(_AP_droneBox);
 		ADD_MODULE(_AP_droneBoxJSON);
+#endif
+
+#ifdef WITH_APP_DRONESR
+		ADD_MODULE(_AP_SR);
 #endif
 
 #ifdef WITH_APP_GSV
@@ -163,9 +164,11 @@ namespace kai
 #endif
 #endif
 
-#ifdef WITH_APP_SWARMSEARCH
-		ADD_MODULE(_SwarmSearchCtrl);
-		ADD_MODULE(_SwarmSearchCtrlUI);
+#ifdef WITH_APP_SWARM
+		ADD_MODULE(_SwarmCtrl);
+		ADD_MODULE(_SwarmCtrlUI);
+		ADD_MODULE(_AP_swarm);
+		ADD_MODULE(_SwarmSearch);
 #endif
 
 #ifdef WITH_APP_VZSCAN && USE_VZENSE && WITH_3D && USE_OPEN3D &&USE_GUI
@@ -315,7 +318,6 @@ namespace kai
 
 #ifdef WITH_SWARM
 		ADD_MODULE(_SwarmBase);
-		ADD_MODULE(_SwarmSearch);
 #endif
 
 #ifdef WITH_UI

@@ -60,7 +60,7 @@ namespace kai
 
 		IF_(m_bState == m_bOpen);
 		IF_(!setMove(!m_bState));
-		IF_(!run());
+		IF_(!move());
 		while (!bComplete())
 			;
 		m_bState = !m_bState;

@@ -12,7 +12,7 @@ namespace kai
 
 	_ArUco::_ArUco()
 	{
-		m_dict = aruco::DICT_4X4_50; //aruco::DICT_APRILTAG_16h5;
+		m_dict = aruco::DICT_4X4_50; // aruco::DICT_APRILTAG_16h5;
 		m_realSize = 0.05;
 		m_bPose = false;
 	}
@@ -29,7 +29,6 @@ namespace kai
 		pK->v<uint8_t>("dict", &m_dict);
 		m_pDict = cv::Ptr<cv::aruco::Dictionary>(new cv::aruco::Dictionary());
 		*m_pDict = aruco::getPredefinedDictionary(m_dict);
-//		m_pDict = aruco::getPredefinedDictionary(m_dict);
 		pK->v("realSize", &m_realSize);
 
 		pK->v("bPose", &m_bPose);
@@ -63,20 +62,17 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			if (check() >= 0)
-			{
-				detect();
+			detect();
 
-				if (m_pT->bGoSleep())
-					m_pU->clear();
-			}
-
+			ON_SLEEP;
 			m_pT->autoFPSto();
 		}
 	}
 
 	void _ArUco::detect(void)
 	{
+		IF_(check() < 0);
+
 		Mat m = *m_pV->getFrameRGB()->m();
 		IF_(m.empty());
 
@@ -182,14 +178,14 @@ namespace kai
 		}
 	}
 
-	void _ArUco::draw(void* pFrame)
+	void _ArUco::draw(void *pFrame)
 	{
 #ifdef USE_OPENCV
 		NULL_(pFrame);
 		this->_DetectorBase::draw(pFrame);
 		IF_(check() < 0);
 
-		Frame *pF = (Frame*)pFrame;
+		Frame *pF = (Frame *)pFrame;
 
 		Mat *pM = pF->m();
 		IF_(pM->empty());

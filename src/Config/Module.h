@@ -63,9 +63,6 @@
 #include "../Autopilot/ArduPilot/_AP_relay.h"
 #include "../Autopilot/ArduPilot/_AP_servo.h"
 #include "../Autopilot/ArduPilot/_AProver_drive.h"
-#ifdef WITH_SWARM
-#include "../Autopilot/ArduPilot/_AP_swarm.h"
-#endif
 #ifdef WITH_SENSOR
 #include "../Autopilot/ArduPilot/_AP_distLidar.h"
 #endif
@@ -106,6 +103,10 @@
 #include "../Application/DroneBox/_DroneBoxJSON.h"
 #include "../Application/DroneBox/_AP_droneBox.h"
 #include "../Application/DroneBox/_AP_droneBoxJSON.h"
+#endif
+
+#ifdef WITH_APP_DRONESR
+#include "../Application/DroneSR/_AP_SR.h"
 #endif
 
 #ifdef WITH_APP_GSV
@@ -151,9 +152,11 @@
 #include "../Application/Rover/_SbusRover.h"
 #endif
 
-#ifdef WITH_APP_SWARMSEARCH
-#include "../Application/SwarmSearch/_SwarmSearchCtrl.h"
-#include "../Application/SwarmSearch/_SwarmSearchCtrlUI.h"
+#ifdef WITH_APP_SWARM
+#include "../Application/Swarm/_SwarmCtrl.h"
+#include "../Application/Swarm/_SwarmCtrlUI.h"
+#include "../Application/Swarm/_AP_swarm.h"
+#include "../Application/Swarm/_SwarmSearch.h"
 #endif
 
 #ifdef WITH_APP_VZSCAN &&USE_VZENSE &&WITH_3D &&USE_OPEN3D &&USE_GUI
@@ -304,7 +307,6 @@
 
 #ifdef WITH_SWARM
 #include "../Swarm/_SwarmBase.h"
-#include "../Swarm/_SwarmSearch.h"
 #endif
 
 #ifdef WITH_UI

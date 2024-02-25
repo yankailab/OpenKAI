@@ -8,7 +8,8 @@
 #ifndef OpenKAI_src_Science_IsingSolver_H_
 #define OpenKAI_src_Science_IsingSolver_H_
 
-#include "../../BASE/_ModuleBase.h"
+#include "../Base/_ModuleBase.h"
+#include "../UI/_Console.h"
 
 namespace kai
 {

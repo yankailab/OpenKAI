@@ -33,7 +33,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		Mat m_mR;
 		float m_rL;
 		float m_rH;

@@ -62,15 +62,20 @@ namespace kai
 	bool _AP_swarm::link(void)
 	{
 		IF_F(!this->_AP_move::link());
-		IF_F(!m_pSC);
+
+		Kiss *pK = (Kiss *)m_pKiss;
+		string n;
+
+        n = "";
+        pK->v("_StateControl", &n);
+        m_pSC = (_StateControl *)(pK->getInst(n));
+        IF_Fl(!m_pSC, n + ": not found");
+
 		m_state.STANDBY = m_pSC->getStateIdxByName("STANDBY");
 		m_state.TAKEOFF = m_pSC->getStateIdxByName("TAKEOFF");
 		m_state.AUTO = m_pSC->getStateIdxByName("AUTO");
 		m_state.RTL = m_pSC->getStateIdxByName("RTL");
 		IF_F(!m_state.bValid());
-
-		Kiss *pK = (Kiss *)m_pKiss;
-		string n;
 
 		n = "";
 		pK->v("_AP_base", &n);
@@ -78,7 +83,7 @@ namespace kai
 		IF_Fl(!m_pAP, n + ": not found");
 
 		n = "";
-		pK->v("_SwarmSearch", &n);
+		pK->v("_Swarm", &n);
 		m_pSwarm = (_SwarmSearch *)(pK->getInst(n));
 		IF_Fl(!m_pSwarm, n + ": not found");
 
@@ -112,9 +117,9 @@ namespace kai
 	{
 		NULL__(m_pAP, -1);
 		NULL__(m_pAP->m_pMav, -1);
-		NULL__(m_pSC, -1);
 		NULL__(m_pXb, -1);
 		NULL__(m_pSwarm, -1);
+		NULL__(m_pSC, -1);
 		NULL__(m_pU, -1);
 
 		return this->_AP_move::check();
@@ -125,7 +130,6 @@ namespace kai
 		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
-			this->_ModuleBase::update();
 
 			updateState();
 
@@ -143,7 +147,7 @@ namespace kai
 		bool bApArmed = m_pAP->bApArmed();
 		float alt = m_pAP->getGlobalPos().w; // relative altitude
 
-		m_state.update(m_pSC->getStateIdx());
+		m_state.update(m_pSC->getCurrentStateIdx());
 
 		// Standby
 		if (m_state.bSTANDBY())
@@ -384,7 +388,7 @@ namespace kai
 		m.m_hdg = m_pAP->getApHdg() * 1e1;
 		m.m_spd = m_pAP->getApSpeed().len() * 1e2;
 		m.m_batt = m_pAP->getBattery() * 1e2;
-		m.m_mode = m_pSC->getStateIdx();
+		m.m_mode = m_pSC->getCurrentStateIdx();
 
 		uint8_t pB[XB_N_PAYLOAD];
 		int nB = m.encode(pB, XB_N_PAYLOAD);
@@ -466,7 +470,7 @@ namespace kai
 		IF_(check() < 0);
 		IF_((m.m_dstID != XB_BRDCAST_ADDR) && (m.m_dstID != m_pXb->getMyAddr()));
 
-		m_state.update(m_pSC->getStateIdx());
+		m_state.update(m_pSC->getCurrentStateIdx());
 
 		// TODO: enable iMsg counter
 

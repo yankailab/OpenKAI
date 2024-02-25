@@ -52,21 +52,6 @@ namespace kai
 		return m_pT->start(getUpdate, this);
 	}
 
-	void _HandKey::update(void)
-	{
-		while (m_pT->bThread())
-		{
-			m_pT->autoFPSfrom();
-
-			detect();
-
-			if (m_pT->bGoSleep())
-				m_pU->clear();
-
-			m_pT->autoFPSto();
-		}
-	}
-
 	int _HandKey::check(void)
 	{
 		NULL__(m_pV, -1);
@@ -76,6 +61,19 @@ namespace kai
 		IF__(pBGR->tStamp() <= m_fRGB.tStamp(), -1);
 
 		return this->_DetectorBase::check();
+	}
+
+	void _HandKey::update(void)
+	{
+		while (m_pT->bThread())
+		{
+			m_pT->autoFPSfrom();
+
+			detect();
+
+			ON_SLEEP;
+			m_pT->autoFPSto();
+		}
 	}
 
 	void _HandKey::detect(void)

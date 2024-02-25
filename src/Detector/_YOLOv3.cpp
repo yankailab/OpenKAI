@@ -63,24 +63,6 @@ namespace kai
 		return m_pT->start(getUpdate, this);
 	}
 
-	void _YOLOv3::update(void)
-	{
-		while (m_pT->bThread())
-		{
-			m_pT->autoFPSfrom();
-
-			if (check() >= 0)
-			{
-				detectYolo();
-
-				if (m_pT->bGoSleep())
-					m_pU->clear();
-			}
-
-			m_pT->autoFPSto();
-		}
-	}
-
 	int _YOLOv3::check(void)
 	{
 		NULL__(m_pU, -1);
@@ -93,8 +75,23 @@ namespace kai
 		return this->_DetectorBase::check();
 	}
 
+	void _YOLOv3::update(void)
+	{
+		while (m_pT->bThread())
+		{
+			m_pT->autoFPSfrom();
+
+			detectYolo();
+
+			ON_SLEEP;
+			m_pT->autoFPSto();
+		}
+	}
+
 	void _YOLOv3::detectYolo(void)
 	{
+		IF_(check() < 0);
+
 		Frame *pBGR = m_pV->getFrameRGB();
 		m_fRGB.copy(*pBGR);
 		Mat mIn = *m_fRGB.m();

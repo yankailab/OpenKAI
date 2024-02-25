@@ -10,6 +10,18 @@
 
 #include "_Thread.h"
 
+#define ON_SLEEP            \
+	if (m_pT->bOnGoSleep()) \
+	{                       \
+		onGoSleep();        \
+	}
+	
+#define ON_WAKEUP          \
+	if (m_pT->bOnWakeUp()) \
+	{                      \
+		onWakeUp();        \
+	}
+
 namespace kai
 {
 
@@ -28,8 +40,9 @@ namespace kai
 		virtual void sleep(void);
 		virtual void run(void);
 
-		virtual void onGoSleep(void);
+	protected:
 		virtual void onWakeUp(void);
+		virtual void onGoSleep(void);
 
 	private:
 		void update(void);

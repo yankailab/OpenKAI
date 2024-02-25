@@ -105,21 +105,24 @@ namespace kai
 
 			updateDrive();
 
+			ON_SLEEP;
 			m_pT->autoFPSto();
 		}
+	}
+
+	void _AProver_drive::onGoSleep(void)
+	{
+		this->_ModuleBase::onGoSleep();
+
+		IF_(!m_bRcChanOverride);
+		*m_pRcYaw = 0;
+		*m_pRcThrottle = 0;
+		m_pAP->m_pMav->rcChannelsOverride(m_rcOverride);
 	}
 
 	bool _AProver_drive::updateDrive(void)
 	{
 		IF_F(check() < 0);
-		if (!bActive())
-		{
-			IF_F(!m_bRcChanOverride);
-			*m_pRcYaw = 0;
-			*m_pRcThrottle = 0;
-			m_pAP->m_pMav->rcChannelsOverride(m_rcOverride);
-			return false;
-		}
 
 		float nSpd = m_pD->getSpeed() * m_pD->getDirection();
 		float nStr = m_pD->getSteering();

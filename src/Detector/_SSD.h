@@ -20,9 +20,9 @@ namespace kai
 		_SSD();
 		~_SSD();
 
-		bool init(void *pKiss);
-		bool start(void);
-		int check(void);
+		virtual bool init(void *pKiss);
+		virtual bool start(void);
+		virtual int check(void);
 
 	private:
 		void detect(void);
@@ -33,7 +33,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		cv::dnn::Net m_net;
 		double m_thr;
 		double m_nms;
