@@ -38,15 +38,17 @@ namespace kai
 		_VisionBase *m_pV;
 		_Universe *m_pU;
 		_AP_base *m_pAP;
-		_Curl* m_pCurl;
-
-		string m_fName;
-		string m_dir;
+		_Curl *m_pCurl;
 
 		int m_iWP;
 		vInt2 m_vWPrange;
-
 		vector<int> m_vClass;
+		bool m_bRTL;
+		int m_modeRTL;
+
+		string m_dir;
+		vector<int> m_compress;
+		int m_quality;
 	};
 
 }

@@ -10,13 +10,20 @@ namespace kai
 		m_pAP = NULL;
 		m_pCurl = NULL;
 
-		m_fName = "";
-		m_dir = "";
-
 		m_iWP = INT_MAX;
-		m_vWPrange.set(1,INT_MAX);
-
+		m_vWPrange.set(1, INT_MAX);
 		m_vClass.clear();
+		m_bRTL = false;
+		m_modeRTL = 84148224;
+/*
+// Mode values for pf2
+// setApMode(100925440); // landing
+// setApMode(50593792); // Guided
+// setApMode(84148224); // RTL
+*/
+
+		m_dir = "/home/";
+		m_quality = 100;
 	}
 
 	_AP_SR::~_AP_SR()
@@ -28,10 +35,14 @@ namespace kai
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("fName", &m_fName);
-		pK->v("dir", &m_dir);
 		pK->v("vWPrange", &m_vWPrange);
 		pK->a("vClass", &m_vClass);
+		pK->v("dir", &m_dir);
+		pK->v("bRTL", &m_bRTL);
+		pK->v("modeRTL", &m_modeRTL);
+
+		m_compress.push_back(IMWRITE_JPEG_QUALITY);
+		m_compress.push_back(m_quality);
 
 		return true;
 	}
@@ -97,25 +108,51 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-
+		// find target
 		_Object *pO;
 		_Object *tO = NULL;
 		float topProb = 0.0;
 		int i = 0;
 		while ((pO = m_pU->get(i++)) != NULL)
 		{
-			IF_CONT(pO->getTopClass() != m_vClass);
+			IF_CONT(std::find(m_vClass.begin(), m_vClass.end(), pO->getTopClass()) == m_vClass.end());
 			IF_CONT(pO->getTopClassProb() < topProb);
 
 			tO = pO;
 			topProb = pO->getTopClassProb();
 		}
 
-		NULL_F(tO);
+		NULL_(tO);
 		vFloat4 vTbb = tO->getBB2D();
 
-		Frame* pRGB = m_pV->getFrameRGB();
+		// record current pos
+		vDouble4 vP;
+		vP.clear();
+		vP = m_pAP->getGlobalPos();
+		string lat = lf2str(vP.x, 7);
+		string lon = lf2str(vP.y, 7);
+		string alt = lf2str(vP.z, 3);
 
+		// save file
+		Frame fBGR = *m_pV->getFrameRGB();
+		Mat mBGR;
+		fBGR.m()->copyTo(mBGR);
+		IF_(mBGR.empty());
+
+		string fName = m_dir + tFormat() + ".jpg";
+		cv::imwrite(fName, mBGR, m_compress);
+		string cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
+		system(cmd.c_str());
+
+		LOG_I("File saved: " + fName);
+
+		// send to cloud
+		if (m_pCurl)
+			m_pCurl->addFile(fName);
+
+		// RTL
+		IF_(!m_bRTL);
+		m_pAP->setApMode(m_modeRTL);
 	}
 
 	void _AP_SR::console(void *pConsole)
@@ -125,7 +162,7 @@ namespace kai
 		IF_(check() < 0);
 
 		_Console *pC = (_Console *)pConsole;
-		pC->addMsg("fName = " + m_fName);
+		//		pC->addMsg("fName = " + m_fName);
 	}
 
 }

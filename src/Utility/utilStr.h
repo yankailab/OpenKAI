@@ -44,20 +44,6 @@ inline string replace(string str, const string &strF, const string &strR)
 	return str.replace(str.find(strF), strF.length(), strR);
 }
 
-inline string tFormat(void)
-{
-	time_t timer;
-	char buffer[26];
-	struct tm *tm_info;
-	time(&timer);
-	tm_info = localtime(&timer);
-	strftime(buffer, 26, "%Y-%m-%d_%H-%M-%S", tm_info);
-	puts(buffer);
-
-	string str = buffer;
-	return str;
-}
-
 inline string getFileDir(string file)
 {
 	return file.erase(file.find_last_of('/') + 1, string::npos);

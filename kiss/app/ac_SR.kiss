@@ -31,41 +31,16 @@
 }
 
 {
-	"name":"serialAP",
-	"class":"_SerialPort",
-	"bON":1,
+	"name":"cam",
+	"class":"_GStreamer",
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-    {
-		"name":"threadR",
-		"FPS":10,
-		"vTwakeUp":["apMavlink.thread"],
-	}
-	"/port":"/dev/ttyAMA0",
-	"/port":"/dev/ttyACM0",
-	"port":"/dev/ttyUSB0",
-	"baud":115200,
-}
-
-{
-	"name":"apMavlink",
-	"class":"_Mavlink",
-	"bON":1,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"bLog":1,
-	"_IObase":"serialAP",
-	{
-		"name":"routing",
-		{
-			"bON":1,
-			"_Mavlink":"mavUDP",
-		}
-	}
+	"vSize":[1280,720],
+	"pipeline":"rtspsrc latency=0 location=rtsp://192.168.10.1:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! queue ! videoconvert ! appsink max-buffers=1 drop=true", 
+	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.10.1:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! tee name=t t. ! queue ! videoconvert ! appsink max-buffers=1 sync=false drop=true t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 }
 
 {
@@ -94,13 +69,6 @@
 	}
 	"bLog":0,
 	"_IObase":"udp",
-	{
-		"name":"routing",
-		{
-			"bON":1,
-			"_Mavlink":"mavAP",
-		}
-	}
 }
 
 {
@@ -156,40 +124,57 @@
 		{
 			"name":"missionCurrent",
 			"id":42,
-			"tInt":0.3,
+			"tInt":0.5,
 		}
 	}
 }
 
 {
-	"name":"apMission",
-	"class":"_AP_mission",
+	"name":"univ",
+	"class":"_Universe",
 	"bON":0,
-	"bLog":1,
     {
 		"name":"thread",
-		"FPS":10,
+		"FPS":30,
 	}
-	"_AP_base":"apBase",
+	"bDrawText":1,
 }
 
 {
-	"name":"apStream",
-	"class":"_AP_videoStream",
+	"name":"YOLO",
+	"class":"_YOLOv8",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":1,
+	"_VisionBase":"cam",
+	"_Universe":"univ",
+	"fModel":"/home/kai/dev/models/yolov8n.onnx",
+	"confidence":0.25,
+	"bLetterBoxForSquare":0,
+}
+
+{
+	"name":"apSR",
+	"class":"_AP_SR",
 	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
 	}
 	"bLog":0,
+	"_VisionBase":"cam",
+	"_Universe":"univ",
 	"_AP_base":"apBase",
 	"_Curl":"cURL",
+	"vWPrange":[2,100],
+	"vClass":[0],
 	"/dir":"/home/lab/video/",
 	"dir":"/home/kai/Videos/",
-	"/process":"gst-launch-1.0 rtspsrc location=rtsp://192.168.144.108:554/stream=0 latency=0 ! queue ! rtph264depay ! h264parse ! tee name=t t. ! queue ! matroskamux ! filesink location=[fName] t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
-	"process":"gst-launch-1.0 rtspsrc location=rtsp://192.168.144.108:554/stream=0 latency=0 ! queue ! rtph264depay ! h264parse ! queue ! matroskamux ! filesink location=[fName]",
-	"vWP":[0,1,2,3,4,5,6],
-	"tVidInt":10,
+	"bRTL":1,
+	"modeRTL":84148224,
 }
 
 {
@@ -201,23 +186,10 @@
 		"FPS":1,
 	}
 	"bLog":1,
-	"cmd":"rclone copy --local-no-check-updated [fName] remote:rescue_data",
+	"/cmd":"rclone copy --local-no-check-updated [fName] remote:rescue_data",
+	"/cmd":"curl 2>&1 -T [fName] ftp://193.112.75.123/pub/ -u anonymous: --connect-timeout 60 --no-progress-meter",
 	"dir":"/home/lab/video/",
-	"vExt":[".mkv",".json"],
-}
-
-{
-	"name":"cam",
-	"class":"_GStreamer",
-	"bON":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"vSize":[1280,720],
-	"pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! queue ! videoconvert ! appsink max-buffers=1 drop=true", /* C10 mini: set host PC IP to 192.168.144.100 */
-	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! appsink max-buffers=1 sync=false drop=true", /* C10 mini, using YUV, Y chan only */
-	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! tee name=t t. appsink max-buffers=1 sync=false drop=true t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+	"vExt":[".jpg"],
 }
 
 /*

@@ -32,12 +32,26 @@ namespace kai
 		struct timespec tFromBoot;
 		clock_gettime(CLOCK_BOOTTIME, &tFromBoot);
 
-		return tFromBoot.tv_sec * SEC_2_USEC + (tFromBoot.tv_nsec  / 1000);
+		return tFromBoot.tv_sec * SEC_2_USEC + (tFromBoot.tv_nsec / 1000);
 	}
 
 	inline bool bExpired(uint64_t t, uint64_t tExpire, uint64_t t2)
 	{
 		return (t + tExpire < t2);
+	}
+
+	inline string tFormat(void)
+	{
+		time_t timer;
+		char buffer[26];
+		struct tm *tm_info;
+		time(&timer);
+		tm_info = localtime(&timer);
+		strftime(buffer, 26, "%Y-%m-%d_%H-%M-%S", tm_info);
+		puts(buffer);
+
+		string str = buffer;
+		return str;
 	}
 
 	template <typename T>
