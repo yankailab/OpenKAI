@@ -27,12 +27,11 @@ namespace kai
 	{
 		NULL_F(pKiss);
 		Kiss *pK = (Kiss *)pKiss;
-		m_pKiss = pKiss;
+        pK->m_pInst = this;
 
+		m_pKiss = pKiss;
 		pK->v("bLog", &m_bLog);
 		pK->v("bDebug", &m_bDebug);
-
-        pK->m_pInst = this;
 
 		return true;
 	}

@@ -19,6 +19,7 @@ namespace kai
 		virtual ~_UIbase();
 
 		virtual bool init(void *pKiss);
+		virtual bool link(void);
 		virtual bool start(void);
 
 	protected:

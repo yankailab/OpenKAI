@@ -16,6 +16,7 @@ namespace kai
 	{
 		IF_F(!this->_ProtocolBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+    	pK->m_pInst = this;
 
 		pK->v("nCr", &m_nCr);
 		pK->v("nCw", &m_nCw);

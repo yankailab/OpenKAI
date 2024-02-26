@@ -31,6 +31,7 @@ namespace kai
 	{
 		IF_F(!this->BASE::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		pK->v("vMin", &m_vMin);
 		pK->v("vMax", &m_vMax);

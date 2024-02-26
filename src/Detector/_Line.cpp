@@ -26,6 +26,7 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		pK->v("minPixLine", &m_minPixLine);
 		pK->v("wSlide", &m_wSlide);

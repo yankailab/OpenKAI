@@ -24,7 +24,8 @@ namespace kai
     bool _Chilitags::init(void *pKiss)
     {
         IF_F(!this->_DetectorBase::init(pKiss));
-        Kiss *pK = (Kiss *)pKiss;
+		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
         pK->v("persistence", &m_persistence);
         pK->v("gain", &m_gain);

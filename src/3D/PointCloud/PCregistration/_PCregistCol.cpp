@@ -33,7 +33,8 @@ namespace kai
     bool _PCregistCol::init(void *pKiss)
     {
         IF_F(!_PCframe::init(pKiss));
-        Kiss *pK = (Kiss *)pKiss;
+		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
         pK->v("rVoxel", &m_rVoxel);
         pK->v("maxDistance", &m_maxDistance);

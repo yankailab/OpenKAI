@@ -33,7 +33,8 @@ namespace kai
     bool _RealSense::init(void *pKiss)
     {
         IF_F(!_RGBDbase::init(pKiss));
-        Kiss *pK = (Kiss *)pKiss;
+		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
         pK->v("rsSN", &m_rsSN);
         pK->v("rsFPS", &m_rsFPS);

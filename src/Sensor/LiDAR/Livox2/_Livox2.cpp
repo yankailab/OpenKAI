@@ -25,7 +25,8 @@ namespace kai
     bool _Livox2::init(void *pKiss)
     {
         IF_F(!this->_PCstream::init(pKiss));
-        Kiss *pK = (Kiss *)pKiss;
+		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
         pK->v("SN", &m_SN);
         pK->v("lidarMode", (int *)&m_workMode);

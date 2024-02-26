@@ -31,8 +31,9 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
-		//general
+		// general
 		pK->v("minConfidence", &m_minConfidence);
 		pK->v("rArea", &m_rArea);
 		pK->v("rW", &m_rW);
@@ -40,12 +41,15 @@ namespace kai
 		pK->v("vRoi", &m_vRoi);
 		pK->v("vClassRange", &m_vClassRange);
 
-		//draw
+		// draw
 		pK->v("bDrawText", &m_bDrawText);
 		pK->v("bDrawPos", &m_bDrawPos);
 
-		m_sO.get()->init(pKiss);
-		m_sO.next()->init(pKiss);
+		// buffer
+		int nB;
+		pK->v("nBuf", &nB);
+		m_sO.get()->init(nB);
+		m_sO.next()->init(nB);
 		clear();
 
 		return true;
@@ -113,14 +117,14 @@ namespace kai
 		((_Console *)pConsole)->addMsg("nObj=" + i2str(m_sO.get()->size()), 1);
 	}
 
-	void _Universe::draw(void* pFrame)
+	void _Universe::draw(void *pFrame)
 	{
 #ifdef USE_OPENCV
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
 		IF_(check() < 0);
 
-		Frame *pF = (Frame*)pFrame;
+		Frame *pF = (Frame *)pFrame;
 		Mat *pM = pF->m();
 		IF_(pM->empty());
 
@@ -137,11 +141,11 @@ namespace kai
 			col = colStep * iClass;
 			oCol = Scalar((col + 85) % 255, (col + 170) % 255, col) + bCol;
 
-			//bb
+			// bb
 			Rect r = bb2Rect<vFloat4>(pO->getBB2Dscaled(pM->cols, pM->rows));
 			rectangle(*pM, r, oCol, 1);
 
-			//position
+			// position
 			if (m_bDrawPos)
 			{
 				putText(*pM, f2str(pO->getPos().z),
@@ -149,7 +153,7 @@ namespace kai
 						FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
 			}
 
-			//text
+			// text
 			if (m_bDrawText)
 			{
 				string oName = string(pO->getText());
@@ -162,7 +166,7 @@ namespace kai
 			}
 		}
 
-		//roi
+		// roi
 		Rect roi = bb2Rect(bbScale(m_vRoi, pM->cols, pM->rows));
 		rectangle(*pM, roi, Scalar(0, 255, 255), 1);
 #endif

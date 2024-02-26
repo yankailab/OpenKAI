@@ -19,9 +19,10 @@ _AProver_tag::~_AProver_tag()
 bool _AProver_tag::init(void* pKiss)
 {
 	IF_F(!this->_ModuleBase::init(pKiss));
-   	NULL_F(m_pSC);
-
 	Kiss* pK = (Kiss*) pKiss;
+	pK->m_pInst = this;
+
+   	NULL_F(m_pSC);
 
     pK->v ( "iRCmodeChan", &m_rcMode.m_iChan );
     pK->a ( "vRCmodeDiv", &m_rcMode.m_vDiv );

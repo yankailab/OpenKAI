@@ -26,6 +26,7 @@ namespace kai
 	{
 		IF_F(!this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		pK->v("port", &m_port);
 		pK->v("baud", &m_baud);

@@ -20,7 +20,8 @@ namespace kai
     bool LivoxLidar2::init(void *pKiss)
     {
         IF_F(!this->BASE::init(pKiss));
-        Kiss *pK = (Kiss *)pKiss;
+		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
         pK->v("fConfig", &m_fConfig);
         //        pK->v("lidarMode", (int*)&m_workMode);

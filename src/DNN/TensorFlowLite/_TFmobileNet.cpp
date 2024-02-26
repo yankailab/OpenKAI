@@ -22,6 +22,7 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		pK->v("nThreads", &m_nThreads);
 		pK->v("confidence", &m_confidence);

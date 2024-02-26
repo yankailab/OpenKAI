@@ -19,6 +19,7 @@ namespace kai
 	{
 		IF_F(!this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		Kiss *pKt = pK->child("threadR");
 		IF_d_F(pKt->empty(), LOG_E("threadR not found"));

@@ -40,6 +40,7 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		pK->v("thr", &m_thr);
 		pK->v("bSwapRB", &m_bSwapRB);

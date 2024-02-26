@@ -23,6 +23,8 @@ namespace kai
 		virtual bool start(void);
 		virtual void update(void);
 
+		virtual bool init(int n);
+
 		//io
 		virtual _Object *add(_Object &o);
 		virtual _Object *get(int i);

@@ -30,6 +30,7 @@ namespace kai
 	{
 		IF_F(!this->_IObase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		pK->v("addr", &m_addr);
 		pK->v("port", &m_port);

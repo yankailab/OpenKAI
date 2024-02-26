@@ -27,6 +27,7 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		vFloat2 vCamSize;
 		if (pK->v("vCamSize", &vCamSize))

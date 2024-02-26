@@ -23,6 +23,7 @@ namespace kai
 	{
 		IF_F(!this->_NavBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		return true;
 	}

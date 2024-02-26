@@ -29,7 +29,8 @@ namespace kai
     bool _MeshStream::init(void *pKiss)
     {
         IF_F(!this->_GeometryBase::init(pKiss));
-        Kiss *pK = (Kiss *)pKiss;
+		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
         pK->v("bAccept", &m_bAccept);
         pK->v("nP", &m_nP);

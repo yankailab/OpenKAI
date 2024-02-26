@@ -27,7 +27,8 @@ namespace kai
     bool _PCframe::init(void *pKiss)
     {
         IF_F(!this->_GeometryBase::init(pKiss));
-        Kiss *pK = (Kiss *)pKiss;
+		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
         pK->v("nPresv", &m_nPresv);
         m_nPresvNext = m_nPresv;

@@ -22,6 +22,15 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
+
+		return true;
+	}
+
+	bool _UIbase::link(void)
+	{
+		IF_F(!this->_ModuleBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
 
 		vector<string> vB;
 		pK->a("vBASE", &vB);

@@ -28,6 +28,7 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		pK->v("vPorigin", &m_vPorigin);
 		pK->v("vX", &m_vX);

@@ -34,6 +34,7 @@ bool _ImageNet::init(void* pKiss)
 {
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
+  	pK->m_pInst = this;
 
 	KISSm(pK,maxPix);
 	KISSm(pK,nBatch);

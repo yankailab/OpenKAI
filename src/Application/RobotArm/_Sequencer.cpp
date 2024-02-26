@@ -27,6 +27,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		Kiss *pAction = pK->child("action");
 		NULL_Fl(pAction, "action not found");

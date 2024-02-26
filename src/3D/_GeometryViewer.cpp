@@ -41,6 +41,7 @@ namespace kai
 	{
 		IF_F(!this->_PCframe::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		pK->v("vWinSize", &m_vWinSize);
 		pK->v("pathRes", &m_pathRes);

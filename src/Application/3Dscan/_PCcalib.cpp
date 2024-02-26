@@ -28,6 +28,7 @@ namespace kai
 	{
 		IF_F(!this->_PCscan::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		string n;
 		n = "";

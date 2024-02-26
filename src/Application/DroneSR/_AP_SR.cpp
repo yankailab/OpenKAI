@@ -34,6 +34,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		pK->v("vWPrange", &m_vWPrange);
 		pK->a("vClass", &m_vClass);
@@ -87,7 +88,6 @@ namespace kai
 		NULL__(m_pV, -1);
 		NULL__(m_pU, -1);
 		NULL__(m_pAP, -1);
-		NULL__(m_pCurl, -1);
 
 		return this->_ModuleBase::check();
 	}

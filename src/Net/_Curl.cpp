@@ -23,6 +23,7 @@ namespace kai
 	{
 		IF_F(!this->_FileBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		pK->v("cmd", &m_cmd);
 		pK->v("dir", &m_dir);

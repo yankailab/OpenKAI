@@ -22,6 +22,7 @@ namespace kai
 	{
 		IF_F(!_GeometryBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		Kiss *pF = pK->child("vFilter");
 		int i = 0;

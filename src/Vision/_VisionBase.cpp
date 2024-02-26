@@ -32,6 +32,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		pK->v("devURI", &m_devURI);
 		pK->v("devFPS", &m_devFPS);

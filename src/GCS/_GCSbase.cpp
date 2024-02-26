@@ -27,6 +27,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
+    	pK->m_pInst = this;
 
         string n;
         n = "";

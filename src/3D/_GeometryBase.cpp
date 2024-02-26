@@ -32,7 +32,8 @@ namespace kai
     bool _GeometryBase::init(void *pKiss)
     {
         IF_F(!this->_ModuleBase::init(pKiss));
-        Kiss *pK = (Kiss *)pKiss;
+		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
         pK->v("vDefaultColor", &m_vDefaultColor);
 

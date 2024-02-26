@@ -43,6 +43,7 @@ namespace kai
 	{
 		IF_F(!this->BASE::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		float FPS = DEFAULT_FPS;
 		pK->v("FPS", &FPS);

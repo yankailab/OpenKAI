@@ -3,7 +3,7 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog":1,
-	"bStdErr":0,
+	"bStdErr":1,
 }
 
 {
@@ -14,33 +14,33 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["/cam","serialAP","apBase","apMission","/cURL"],
+	"vBASE":["cam","udp","apBase","apSR","cURL"],
 }
 
 {
 	"name":"CVwindow",
 	"class":"_WindowCV",
-	"bON":0,
+	"bON":1,
 	"bFullScreen":0,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["cam"],
-	"bShow":1,
+	"vBASE":["cam","univ"],
 }
 
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
 	"vSize":[1280,720],
-	"pipeline":"rtspsrc latency=0 location=rtsp://192.168.10.1:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! queue ! videoconvert ! appsink max-buffers=1 drop=true", 
+	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.10.1:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! queue ! videoconvert ! appsink max-buffers=1 drop=true", 
 	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.10.1:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! tee name=t t. ! queue ! videoconvert ! appsink max-buffers=1 sync=false drop=true t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+	"pipeline":"v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! appsink",
 }
 
 {
@@ -79,7 +79,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"_Mavlink":"apMavlink",
+	"_Mavlink":"mavUDP",
 	"freqSendHeartbeat":1,
 	"apType":0,
 	
@@ -132,7 +132,7 @@
 {
 	"name":"univ",
 	"class":"_Universe",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -143,7 +143,7 @@
 {
 	"name":"YOLO",
 	"class":"_YOLOv8",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -159,7 +159,7 @@
 {
 	"name":"apSR",
 	"class":"_AP_SR",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
@@ -172,7 +172,7 @@
 	"vWPrange":[2,100],
 	"vClass":[0],
 	"/dir":"/home/lab/video/",
-	"dir":"/home/kai/Videos/",
+	"dir":"/home/kai/Pictures/",
 	"bRTL":1,
 	"modeRTL":84148224,
 }

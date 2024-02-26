@@ -32,6 +32,7 @@ namespace kai
 	{
 		IF_F(!this->_PCstream::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		pK->v("rVoxel", &m_rVoxel);
 		pK->v("nPmax", &m_nPmax);

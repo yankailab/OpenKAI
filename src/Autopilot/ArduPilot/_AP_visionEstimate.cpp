@@ -36,6 +36,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+    	pK->m_pInst = this;
 
 		pK->v("bPos", &m_bPos);
 		pK->v("bSpd", &m_bSpd);

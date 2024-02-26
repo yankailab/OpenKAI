@@ -38,6 +38,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		pK->v("fovH", &m_fovH);
 		IF_Fl(m_fovH <= 0, "angleTo > 0");

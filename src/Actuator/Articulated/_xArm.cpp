@@ -20,6 +20,7 @@ namespace kai
 	{
 		IF_F(!this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
 
 		pK->v("ip", &m_ip);
 		pK->v("mode", &m_mode);

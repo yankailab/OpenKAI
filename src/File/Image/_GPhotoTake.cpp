@@ -26,6 +26,7 @@ namespace kai
 	{
 		IF_F(!this->_FileBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+    	pK->m_pInst = this;
 
 		pK->v("quality", &m_quality);
 		pK->v("dir", &m_dir);
