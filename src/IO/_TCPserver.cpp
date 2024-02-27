@@ -35,7 +35,6 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		pK->v<uint16_t>("port", &m_listenPort);
 		pK->v<int>("nListen", &m_nListen);

@@ -56,7 +56,8 @@
 		"FPS":30,
 		"vTwakeUp":["mavUDP.thread"],
 	}
-	"port":19840,
+	"addr":"192.168.10.1",	
+	"port":300,
 }
 
 {
@@ -152,6 +153,7 @@
 	"_VisionBase":"cam",
 	"_Universe":"univ",
 	"fModel":"/home/kai/dev/models/yolov8n.onnx",
+	"/fModel":"/home/nvidia/dev/models/yolov8n.onnx",
 	"confidence":0.25,
 	"bLetterBoxForSquare":0,
 }
@@ -171,8 +173,8 @@
 	"_Curl":"cURL",
 	"vWPrange":[2,100],
 	"vClass":[0],
-	"/dir":"/home/lab/video/",
-	"dir":"/home/kai/Pictures/",
+	"dir":"/home/kai/pics/",
+	"/dir":"/home/nvidia/pics/",
 	"bRTL":1,
 	"modeRTL":84148224,
 }
@@ -180,15 +182,17 @@
 {
 	"name":"cURL",
 	"class":"_Curl",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":1,
 	}
 	"bLog":1,
+	"cmd":"cmd [fName]",
 	"/cmd":"rclone copy --local-no-check-updated [fName] remote:rescue_data",
 	"/cmd":"curl 2>&1 -T [fName] ftp://193.112.75.123/pub/ -u anonymous: --connect-timeout 60 --no-progress-meter",
-	"dir":"/home/lab/video/",
+	"dir":"/home/kai/pics/",
+	"/dir":"/home/nvidia/pics/",
 	"vExt":[".jpg"],
 }
 

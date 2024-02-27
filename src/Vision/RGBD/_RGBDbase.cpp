@@ -53,7 +53,6 @@ namespace kai
     {
         IF_F(!_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		pK->v("devFPSd", &m_devFPSd);
         pK->v("vSizeD", &m_vSizeD);

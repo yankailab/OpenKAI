@@ -23,7 +23,7 @@ namespace kai
 	{
 		IF_F(!this->_AP_follow::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	pK->m_pInst = this;
+    	
 
 		pK->v("vDSrange", &m_vDSrange);
 		pK->v("vFov", &m_vFov);

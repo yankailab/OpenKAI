@@ -26,7 +26,6 @@ namespace kai
 	{
 		IF_F(!this->_SwarmBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		int ie = USEC_1SEC;
 		pK->v("ieOptRoute", &ie);

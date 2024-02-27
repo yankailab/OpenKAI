@@ -38,7 +38,7 @@ namespace kai
 	{
 		IF_F(!this->_AP_move::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
+		
 
 		pK->v("bAutoArm", &m_bAutoArm);
 		pK->v("altTakeoff", &m_altTakeoff);

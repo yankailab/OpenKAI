@@ -24,7 +24,6 @@ namespace kai
 	{
 		IF_F(!this->_ADIObase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		pK->v("iID", &m_iID);
 

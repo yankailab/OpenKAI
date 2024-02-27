@@ -24,7 +24,6 @@ namespace kai
 	{
 		IF_F(!this->_UIbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		pK->v("vSize", &m_vSize);
 		IF_F(m_vSize.area() <= 0);

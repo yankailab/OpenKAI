@@ -25,7 +25,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	pK->m_pInst = this;
+    	
 
 		pK->v("bSetYawSpeed", &m_bSetYawSpeed);
 		pK->v("yawMode", &m_yawMode);

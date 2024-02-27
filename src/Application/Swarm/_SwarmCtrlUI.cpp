@@ -19,7 +19,7 @@ namespace kai
     {
         IF_F(!this->_JSONbase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
-    	pK->m_pInst = this;
+    	
 
         int v;
         v = SEC_2_USEC;

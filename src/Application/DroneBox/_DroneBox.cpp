@@ -21,7 +21,7 @@ namespace kai
     {
         IF_F(!this->_GCSbase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
+		
 
         pK->v("ID", &m_ID);
         pK->v("vPos", &m_vPos);

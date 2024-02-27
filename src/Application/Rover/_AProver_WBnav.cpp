@@ -34,7 +34,7 @@ namespace kai
     {
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
-    	pK->m_pInst = this;
+    	
 
         pK->v("targetSide", &m_targetSide);
         pK->v("nSpd", &m_nSpd);

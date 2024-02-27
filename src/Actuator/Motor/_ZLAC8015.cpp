@@ -25,7 +25,6 @@ namespace kai
 	{
 		IF_F(!this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		pK->v("iSlave", &m_iSlave);
 		pK->v("iMode", &m_iMode);

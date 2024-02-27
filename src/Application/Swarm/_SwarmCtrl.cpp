@@ -21,7 +21,7 @@ namespace kai
     {
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
-    	pK->m_pInst = this;
+    	
 
         pK->v("myID", &m_node.m_id);
         pK->v("ieSendHB", &m_ieSendHB.m_tInterval);

@@ -26,10 +26,11 @@ namespace kai
 	bool BASE::init(void *pKiss)
 	{
 		NULL_F(pKiss);
-		Kiss *pK = (Kiss *)pKiss;
-        pK->m_pInst = this;
 
 		m_pKiss = pKiss;
+		Kiss *pK = (Kiss *)pKiss;
+		pK->m_pInst = this;
+
 		pK->v("bLog", &m_bLog);
 		pK->v("bDebug", &m_bDebug);
 

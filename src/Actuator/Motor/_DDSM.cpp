@@ -18,7 +18,7 @@ namespace kai
 	{
 		IF_F(!this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
+		
 
 		pK->v("iMode", &m_iMode);
 
@@ -30,7 +30,6 @@ namespace kai
 			DEL(m_pTr);
 			return false;
 		}
-		pKt->m_pInst = m_pTr;
 
 		return true;
 	}

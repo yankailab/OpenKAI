@@ -33,7 +33,6 @@ namespace kai
 	{
 		IF_F(!this->_GeometryViewer::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		m_pPCprv = m_sPC.get();
 

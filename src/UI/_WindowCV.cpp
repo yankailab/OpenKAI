@@ -25,7 +25,6 @@ namespace kai
 	{
 		IF_F(!this->_UIbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		pK->v("bFullScreen", &m_bFullScreen);
 		pK->v("vSize", &m_vSize);

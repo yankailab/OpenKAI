@@ -29,7 +29,6 @@ namespace kai
 	{
 		IF_F(!this->_GeometryViewer::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		pK->v("bSlam", &m_bSlam);
 		pK->v("dHiddenRemove", &m_dHiddenRemove);

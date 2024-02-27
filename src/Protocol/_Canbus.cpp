@@ -18,7 +18,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	pK->m_pInst = this;
+    	
 
 		m_nCanData = 0;
 		while (1)

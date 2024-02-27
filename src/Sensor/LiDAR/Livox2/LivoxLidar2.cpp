@@ -21,7 +21,6 @@ namespace kai
     {
         IF_F(!this->BASE::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
         pK->v("fConfig", &m_fConfig);
         //        pK->v("lidarMode", (int*)&m_workMode);

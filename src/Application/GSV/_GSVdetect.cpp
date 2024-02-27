@@ -22,7 +22,6 @@ namespace kai
 	{
 		IF_F(!this->_PCgrid::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		return true;
 	}

@@ -24,7 +24,6 @@ namespace kai
 	{
 		IF_F(!_PCstream::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		int nB = 256;
 		pK->v("nB", &nB);

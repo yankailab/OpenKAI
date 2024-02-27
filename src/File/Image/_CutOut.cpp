@@ -25,7 +25,6 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		pK->v("extImgIn", &m_extImgIn);
 		pK->v("extImgOut", &m_extImgOut);

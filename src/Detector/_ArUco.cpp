@@ -25,7 +25,6 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		pK->v<uint8_t>("dict", &m_dict);
 		m_pDict = cv::Ptr<cv::aruco::Dictionary>(new cv::aruco::Dictionary());

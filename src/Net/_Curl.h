@@ -41,8 +41,9 @@ namespace kai
 
 	private:
 		string m_cmd;
-		string m_dir;
+		bool m_bConfirmCmdResult;
 
+		string m_dir;
 		vector<string> m_vFiles;
 		string m_fName;
 	};

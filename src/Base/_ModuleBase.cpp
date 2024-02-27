@@ -24,8 +24,7 @@ namespace kai
     {
         IF_F(!this->BASE::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-        pK->m_pInst = this;
-
+        
         Kiss *pKt = pK->child("thread");
         IF_d_T(pKt->empty(), LOG_E("Thread not found"));
 

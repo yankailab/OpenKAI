@@ -21,7 +21,7 @@ namespace kai
     {
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
-    	pK->m_pInst = this;
+    	
 
         pK->v("msgFinishSend", &m_msgFinishSend);
         pK->v("msgFinishRecv", &m_msgFinishRecv);
@@ -39,7 +39,6 @@ namespace kai
             DEL(m_pTr);
             return false;
         }
-        pKt->m_pInst = m_pTr;
 
         return true;
     }

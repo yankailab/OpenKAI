@@ -24,7 +24,6 @@ namespace kai
 	{
 		IF_F(!this->_TrackerBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		return true;
 	}

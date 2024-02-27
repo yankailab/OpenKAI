@@ -25,7 +25,6 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		pK->v<string>("algorithm", &m_algorithm);
 		pK->v<double>("learningRate", &m_learningRate);

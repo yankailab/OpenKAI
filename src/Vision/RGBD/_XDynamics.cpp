@@ -29,7 +29,6 @@ namespace kai
     {
         IF_F(!_RGBDbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
         pK->v("xdDevType", &m_xdDevType);
         pK->v("xdProductType", &m_xdProductType);

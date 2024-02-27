@@ -30,7 +30,6 @@ namespace kai
     {
         IF_F(!this->_GeometryBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
         pK->v("nP", &m_nP);
         IF_F(m_nP <= 0);

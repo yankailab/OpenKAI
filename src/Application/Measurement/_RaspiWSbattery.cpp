@@ -28,7 +28,6 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		pK->v("cmdBatt", &m_cmdBatt);
 		pK->v("battShutdown", &m_battShutdown);

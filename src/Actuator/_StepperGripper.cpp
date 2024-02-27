@@ -24,7 +24,6 @@ namespace kai
 	{
 		IF_F(!this->_HYMCU_RS485::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		pK->v("pOpen", &m_pOpen);
 		pK->v("pClose", &m_pClose);

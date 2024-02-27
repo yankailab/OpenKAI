@@ -22,7 +22,6 @@ namespace kai
 	{
 		IF_F(!_PCframe::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		pK->v("fName", &m_fName);
 		open();

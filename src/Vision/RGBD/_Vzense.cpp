@@ -33,7 +33,6 @@ namespace kai
 	{
 		IF_F(!_RGBDbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		Kiss *pKt = pK->child("threadPP");
 		IF_F(pKt->empty());

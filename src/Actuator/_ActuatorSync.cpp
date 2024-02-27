@@ -21,7 +21,6 @@ namespace kai
 	{
 		IF_F(!this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		vector<string> vName;
 		pK->a("_ActuatorList", &vName);

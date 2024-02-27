@@ -35,7 +35,7 @@ namespace kai
 	{
 		IF_F(!this->_AP_move::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	pK->m_pInst = this;
+    	
 
 		pK->v("vPsp", &m_vPsp);
 

@@ -28,7 +28,6 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		pK->v("alpha", &m_alpha);
 		pK->v("beta", &m_beta);

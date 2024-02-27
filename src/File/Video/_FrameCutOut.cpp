@@ -23,7 +23,6 @@ namespace kai
 	{
 		IF_F(!this->_FileBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		return true;
 	}

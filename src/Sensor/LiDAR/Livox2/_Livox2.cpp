@@ -26,7 +26,6 @@ namespace kai
     {
         IF_F(!this->_PCstream::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
         pK->v("SN", &m_SN);
         pK->v("lidarMode", (int *)&m_workMode);

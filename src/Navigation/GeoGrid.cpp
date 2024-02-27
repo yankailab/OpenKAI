@@ -25,9 +25,7 @@ namespace kai
 	{
 		IF_F(!this->BASE::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
-		pK->m_pInst = this;
 
 		return true;
 	}

@@ -25,7 +25,6 @@ namespace kai
     {
         IF_F(!_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 //		pK->v("URI", &m_devURI);
 

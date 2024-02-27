@@ -26,8 +26,7 @@ namespace kai
 	{
 		IF_F(!this->_IObase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	pK->m_pInst = this;
-
+    	
 		pK->v("port", &m_port);
 		pK->v("baud", &m_baud);
 		pK->v("dataBits", &m_dataBits);
@@ -44,7 +43,6 @@ namespace kai
 			DEL(m_pTr);
 			return false;
 		}
-        pKt->m_pInst = m_pTr;
 
 		return true;
 	}

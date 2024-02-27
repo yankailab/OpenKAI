@@ -24,7 +24,6 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		pK->v<double>("rL", &m_rL);
 		pK->v<double>("rU", &m_rU);

@@ -12,6 +12,8 @@ namespace kai
 	_Curl::_Curl()
 	{
 		m_cmd = "";
+		m_bConfirmCmdResult = false;
+
 		m_dir = "";
 	}
 
@@ -23,9 +25,9 @@ namespace kai
 	{
 		IF_F(!this->_FileBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
 
 		pK->v("cmd", &m_cmd);
+		pK->v("bConfirmCmdResult", &m_bConfirmCmdResult);
 		pK->v("dir", &m_dir);
 		m_dir = checkDirName(m_dir);
 
@@ -40,7 +42,9 @@ namespace kai
 
 	int _Curl::check(void)
 	{
-		return 0;
+		IF__(m_cmd.empty(), -1);
+
+		return this->_FileBase::check();
 	}
 
 	void _Curl::update(void)
@@ -69,6 +73,8 @@ namespace kai
 
 	void _Curl::updateCurl(void)
 	{
+		IF_(check() < 0);
+
 		while (!m_vFiles.empty())
 		{
 			m_fName = m_vFiles.back();
@@ -89,9 +95,15 @@ namespace kai
 				strR += string(pResult);
 			}
 			pclose(fp);
-
 			LOG_I(strR);
-			if (strR.empty())
+
+			bool bR = true;
+			if(m_bConfirmCmdResult)
+			{
+				bR = strR.empty();
+			}
+
+			if (bR)
 			{
 				//upload success
 				LOG_I("Uploaded: " + m_fName);
