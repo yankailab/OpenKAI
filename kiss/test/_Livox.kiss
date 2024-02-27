@@ -66,7 +66,7 @@
 	}
 	"bLog":0,
 	"LivoxLidar2":"LivoxLidar2",
-	"SN":"47MDL9T0020177",
+	"SN":"/47MDL9T0020177",
 	"lidarMode":1,
 	"nP":256000,
 	"vToffset":[0,0,0],

@@ -8,7 +8,9 @@
 #ifndef OpenKAI_src_3D__GeometryViewer_H_
 #define OpenKAI_src_3D__GeometryViewer_H_
 
+#include "PointCloud/_PCstream.h"
 #include "PointCloud/_PCframe.h"
+#include "PointCloud/_PCgrid.h"
 #include "../UI/O3DUI.h"
 
 namespace kai
@@ -44,17 +46,22 @@ namespace kai
 		vFloat3 m_vUp = {0,1,0};
 	};
 
-	class _GeometryViewer : public _PCframe
+	class _GeometryViewer : public _GeometryBase
 	{
 	public:
 		_GeometryViewer();
 		virtual ~_GeometryViewer();
 
 		virtual bool init(void *pKiss);
+		virtual bool link(void);
 		virtual bool start(void);
 		virtual int check(void);
 
 		virtual void resetCamPose(void);
+
+        virtual void getStream(void* p, const uint64_t& tExpire);
+        virtual void getFrame(void* p);
+        virtual void getGrid(void* p);
 
 	protected:
 		//data
@@ -62,6 +69,7 @@ namespace kai
 		void updateUIpc(const PointCloud& pc);
 		void removeUIpc(void);
 		void readAllGeometry(void);
+		void adjustNpoints(PointCloud* pPC, int nP, int nPbuf);
 		void addDummyPoints(PointCloud* pPC, int n, float r, Vector3d vCol = {0,0,0});
 		virtual void updateGeometry(void);
 		virtual void update(void);
@@ -85,6 +93,13 @@ namespace kai
 		}
 
 	protected:
+		// point cloud
+		int m_nPbuf;
+		int m_nP;
+		PointCloud m_PC;
+
+
+
 		O3DUI* m_pWin;
 		UIState* m_pUIstate;
 		_Thread *m_pTui;

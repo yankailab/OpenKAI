@@ -56,7 +56,7 @@ namespace kai
 
 
         uint32_t getDeviceHandle(const string& SN);
-        LivoxLidar2device* getDevice(const string& SN);
+        LivoxLidar2device* getDevice(const string& SN, bool bFirst = true);
         LivoxLidar2device* getDevice(uint32_t handle);
 
         bool setCbData(uint32_t handle, CbLivoxLidar2data pCb, void *pLivox2);

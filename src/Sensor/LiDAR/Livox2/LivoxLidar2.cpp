@@ -75,7 +75,7 @@ namespace kai
         return 0;
     }
 
-    LivoxLidar2device *LivoxLidar2::getDevice(const string &SN)
+    LivoxLidar2device *LivoxLidar2::getDevice(const string &SN, bool bFirst)
     {
         for (int i = 0; i < m_vDevice.size(); i++)
         {
@@ -85,7 +85,9 @@ namespace kai
             return pD;
         }
 
-        return NULL;
+        IF_N(!bFirst);
+        IF_N(m_vDevice.empty());
+        return &m_vDevice[0];
     }
 
     LivoxLidar2device *LivoxLidar2::getDevice(uint32_t handle)

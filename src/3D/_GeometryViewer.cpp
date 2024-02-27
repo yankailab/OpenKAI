@@ -12,6 +12,9 @@ namespace kai
 
 	_GeometryViewer::_GeometryViewer()
 	{
+		m_nPbuf = 0;
+		m_nP = 0;
+
 		m_vWinSize.set(1280, 720);
 
 		m_pTui = NULL;
@@ -39,8 +42,10 @@ namespace kai
 
 	bool _GeometryViewer::init(void *pKiss)
 	{
-		IF_F(!this->_PCframe::init(pKiss));
+		IF_F(!this->_GeometryBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+
+		pK->v("nPbuf", &m_nPbuf);
 
 		pK->v("vWinSize", &m_vWinSize);
 		pK->v("pathRes", &m_pathRes);
@@ -72,6 +77,29 @@ namespace kai
 
 		utility::SetVerbosityLevel(utility::VerbosityLevel::Error);
 
+		Kiss *pKt = pK->child("threadUI");
+		IF_F(pKt->empty());
+		m_pTui = new _Thread();
+		if (!m_pTui->init(pKt))
+		{
+			DEL(m_pTui);
+			return false;
+		}
+
+		if (m_nPbuf > 0)
+		{
+			m_PC.points_.reserve(m_nPbuf);
+			m_PC.colors_.reserve(m_nPbuf);
+		}
+
+		return true;
+	}
+
+	bool _GeometryViewer::link(void)
+	{
+		IF_F(!this->_GeometryBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+
 		string n;
 		vector<string> vGB;
 		pK->a("vGeometryBase", &vGB);
@@ -82,15 +110,6 @@ namespace kai
 			IF_CONT(!pGB);
 
 			m_vpGB.push_back(pGB);
-		}
-
-		Kiss *pKt = pK->child("threadUI");
-		IF_F(pKt->empty());
-		m_pTui = new _Thread();
-		if (!m_pTui->init(pKt))
-		{
-			DEL(m_pTui);
-			return false;
 		}
 
 		return true;
@@ -115,22 +134,13 @@ namespace kai
 	void _GeometryViewer::update(void)
 	{
 		// wait for the UI thread to get window ready
-		// TODO: move to start()?
 		m_pT->sleepT(0);
 
-		swapBuffer();
-		while (nPnext() <= 0)
-			readAllGeometry();
-
-		if (nPnext() < m_nPresv)
-		{
-			addDummyPoints(m_sPC.next(), m_nPresv - nPnext(), m_rDummyDome, {0, 0, 0});
-		}
-		swapBuffer();
-
+		readAllGeometry();
+		adjustNpoints(&m_PC, m_nP, m_nPbuf);
 
 		removeUIpc();
-		addUIpc(*m_sPC.get());
+		addUIpc(m_PC);
 
 		resetCamPose();
 		updateCamPose();
@@ -149,32 +159,13 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		swapBuffer();
 		readAllGeometry();
-		swapBuffer();
-		
-		PointCloud *pPC = m_sPC.get();
-		pPC->normals_.clear();
-		int n = pPC->points_.size();
-		IF_(n <= 0);
-
-		m_aabb = pPC->GetAxisAlignedBoundingBox();
+		m_aabb = m_PC.GetAxisAlignedBoundingBox();
 		if (m_pUIstate)
 			m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
 
-		PointCloud pc = *pPC;
-		if (n < m_nPresv)
-		{
-			addDummyPoints(&pc, m_nPresv - n, m_rDummyDome);
-		}
-		else if (n > m_nPresv)
-		{
-			int d = n - m_nPresv;
-			pc.points_.erase(pc.points_.end() - d, pc.points_.end());
-			pc.colors_.erase(pc.colors_.end() - d, pc.colors_.end());
-		}
-
-		updateUIpc(pc);
+		adjustNpoints(&m_PC, m_nP, m_nPbuf);
+		updateUIpc(m_PC);
 	}
 
 	void _GeometryViewer::addUIpc(const PointCloud &pc)
@@ -192,7 +183,7 @@ namespace kai
 	{
 		IF_(pc.IsEmpty());
 
-		//TODO: atomic
+		// TODO: atomic
 		m_pWin->UpdatePointCloud(m_modelName,
 								 make_shared<t::geometry::PointCloud>(
 									 t::geometry::PointCloud::FromLegacy(
@@ -210,6 +201,57 @@ namespace kai
 		for (_GeometryBase *pGB : m_vpGB)
 		{
 			getGeometry(pGB);
+		}
+	}
+
+	void _GeometryViewer::getStream(void *p, const uint64_t &tExpire)
+	{
+		NULL_(p);
+		_PCstream *pS = (_PCstream *)p;
+
+		mutexLock();
+
+		uint64_t tNow = getApproxTbootUs();
+		for (int i = 0; i < pS->nP(); i++)
+		{
+			GEOMETRY_POINT *pP = pS->get(i);
+			if (tExpire)
+			{
+				IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
+			}
+
+			m_PC.points_.push_back(pP->m_vP);
+			m_PC.colors_.push_back(pP->m_vC.cast<double>());
+		}
+
+		mutexUnlock();
+	}
+
+	void _GeometryViewer::getFrame(void *p)
+	{
+		NULL_(p);
+		_PCframe *pF = (_PCframe *)p;
+
+		m_PC += *pF->getBuffer();
+	}
+
+	void _GeometryViewer::getGrid(void *p)
+	{
+	}
+
+	void _GeometryViewer::adjustNpoints(PointCloud *pPC, int nP, int nPbuf)
+	{
+		NULL_(pPC);
+
+		if (nP < nPbuf)
+		{
+			addDummyPoints(pPC, nPbuf - nP, m_rDummyDome);
+		}
+		else if (nP > nPbuf)
+		{
+			int d = nP - nPbuf;
+			pPC->points_.erase(pPC->points_.end() - d, pPC->points_.end());
+			pPC->colors_.erase(pPC->colors_.end() - d, pPC->colors_.end());
 		}
 	}
 
