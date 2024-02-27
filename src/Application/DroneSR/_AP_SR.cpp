@@ -10,7 +10,7 @@ namespace kai
 		m_pAP = NULL;
 		m_pCurl = NULL;
 
-		m_iWP = INT_MAX;
+		m_iWP = 0;
 		m_vWPrange.set(1, INT_MAX);
 		m_vClass.clear();
 		m_bRTL = false;
@@ -106,6 +106,10 @@ namespace kai
 	void _AP_SR::updateSR(void)
 	{
 		IF_(check() < 0);
+
+		// verify WP range
+		m_iWP = m_pAP->getWPseq();
+		IF_(!m_vWPrange.bContain(m_iWP));
 
 		// find target
 		_Object *pO;

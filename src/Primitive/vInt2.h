@@ -65,6 +65,14 @@ struct vInt2
         IF_F(v >= y);
         return true;
     }
+
+	bool bContain(int v)
+    {
+        IF_F(v < x);
+        IF_F(v > y);
+        return true;
+    }
+
 };
 
 }
