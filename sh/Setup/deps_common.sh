@@ -307,7 +307,8 @@ ccmake ../
 make all -j$(nproc)
 
 # To build with ROS2
-echo "source /home/kai/dev/ros2_humble/install/local_setup.bash" >> ~/.bashrc
+echo "source source /opt/ros/humble/setup.bash" >> ~/.bashrc
+#echo "source /home/kai/dev/ros2_humble/install/local_setup.bash" >> ~/.bashrc
 
 
 #----------------------------------------------------

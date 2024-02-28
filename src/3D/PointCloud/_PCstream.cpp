@@ -72,7 +72,7 @@ namespace kai
         mutexUnlock();
     }
 
-    void _PCstream::getStream(void *p, const uint64_t& tExpire)
+    void _PCstream::getPCstream(void *p, const uint64_t& tExpire)
     {
         IF_(check() < 0);
         NULL_(p);

@@ -21,7 +21,6 @@ namespace kai
 	{
 		IF_F(!this->BASE::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
 
 		pK->v("next", &m_next);
 
@@ -32,7 +31,24 @@ namespace kai
 	{
 		IF_F(!this->BASE::link());
 		Kiss *pK = (Kiss *)m_pKiss;
-		string n;
+
+		vector<string> vS;
+
+		pK->a("vModuleActive", &vS);
+		for (string s : vS)
+		{
+			_ModuleBase* pM = (_ModuleBase *)(pK->getInst(s));
+			IF_CONT(!pM);
+			m_vpModuleActive.push_back(pM);
+		}
+
+		pK->a("vModuleSleep", &vS);
+		for (string s : vS)
+		{
+			_ModuleBase* pM = (_ModuleBase *)(pK->getInst(s));
+			IF_CONT(!pM);
+			m_vpModuleSleep.push_back(pM);
+		}
 
 		return true;
 	}
@@ -54,6 +70,20 @@ namespace kai
 		IF_(m_tTimeout <= 0);
 		IF_(m_tStamp < m_tStart + m_tTimeout);
 	}
+
+	void StateBase::updateModules(void)
+	{
+		for(_ModuleBase* pM : m_vpModuleActive)
+		{
+			pM->run();
+		}
+
+		for(_ModuleBase* pM : m_vpModuleSleep)
+		{
+			pM->sleep();
+		}
+	}
+
 
 	bool StateBase::bComplete(void)
 	{
@@ -80,7 +110,6 @@ namespace kai
 		// 	pC->addMsg("[Inactive]", 0);
 		// else
 		// 	pC->addMsg("[ACTIVE]", 0);
-
 	}
 
 }

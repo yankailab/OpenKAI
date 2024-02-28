@@ -91,8 +91,10 @@ namespace kai
 			IF_CONT(m_iS >= m_vpState.size());
 			IF_CONT(m_iS < 0);
 
-			StateBase *pS = m_vpState[m_iS];
+			StateBase *pS = getCurrentState();
 			pS->update();
+			pS->updateModules();
+			
 			if (pS->bComplete())
 			{
 				transit(pS->getNext());

@@ -80,7 +80,7 @@ namespace kai
 			m_pCell[i].clear();
 	}
 
-	void _PCgrid::getStream(void *p, const uint64_t &tExpire)
+	void _PCgrid::getPCstream(void *p, const uint64_t &tExpire)
 	{
 		IF_(check() < 0);
 		NULL_(p);

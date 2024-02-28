@@ -679,6 +679,28 @@ namespace kai
 		LOG_I("<- cmdNavTakeoff");
 	}
 
+	void _Mavlink::clNavRTL(void)
+	{
+		mavlink_command_long_t D;
+		D.target_system = m_devSystemID;
+		D.target_component = m_devComponentID;
+		D.command = MAV_CMD_NAV_RETURN_TO_LAUNCH;
+		D.confirmation = 0;
+		D.param1 = 0;
+		D.param2 = 0;
+		D.param3 = 0;
+		D.param4 = 0;
+		D.param5 = 0;
+		D.param6 = 0;
+		D.param7 = 0;
+
+		mavlink_message_t msg;
+		mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+		writeMessage(msg);
+		LOG_I("<- cmdNavRTL");
+	}
+
 	void _Mavlink::clSetMessageInterval(float id, float interval, float responseTarget)
 	{
 		mavlink_command_long_t D;

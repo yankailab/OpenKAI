@@ -58,45 +58,6 @@ namespace kai
         return this->_ModuleBase::check();
     }
 
-    GEOMETRY_TYPE _GeometryBase::getType(void)
-    {
-        return m_type;
-    }
-
-	bool _GeometryBase::initBuffer(void)
-	{
-		return false;
-	}
-
-    void _GeometryBase::clear(void)
-    {
-    }
-
-    void _GeometryBase::getGeometry(void *p, const uint64_t& tExpire)
-    {
-        NULL_(p);
-
-        GEOMETRY_TYPE gt = ((_GeometryBase*)p)->getType();
-        if(gt == pc_stream)
-            getStream(p, tExpire);
-        else if(gt == pc_frame)
-            getFrame(p);
-        else if(gt == pc_grid)
-            getGrid(p);
-    }
-
-    void _GeometryBase::getStream(void *p, const uint64_t& tExpire)
-    {
-    }
-
-    void _GeometryBase::getFrame(void *p)
-    {
-    }
-
-    void _GeometryBase::getGrid(void *p)
-    {
-    }
-
     void _GeometryBase::setTranslation(const vDouble3 &vT)
     {
         m_vT = vT;
@@ -131,6 +92,52 @@ namespace kai
         return mT;
     }
 
+
+    GEOMETRY_TYPE _GeometryBase::getType(void)
+    {
+        return m_type;
+    }
+
+	bool _GeometryBase::initBuffer(void)
+	{
+		return false;
+	}
+
+    void _GeometryBase::clear(void)
+    {
+    }
+
+    void _GeometryBase::getGeometry(void *p, const uint64_t& tExpire)
+    {
+        NULL_(p);
+
+        GEOMETRY_TYPE gt = ((_GeometryBase*)p)->getType();
+        if(gt == pc_stream)
+            getPCstream(p, tExpire);
+        else if(gt == pc_frame)
+            getPCframe(p);
+        else if(gt == pc_grid)
+            getPCgrid(p);
+        else if(gt == line_set)
+            getLineSet(p);
+    }
+
+    void _GeometryBase::getPCstream(void *p, const uint64_t& tExpire)
+    {
+    }
+
+    void _GeometryBase::getPCframe(void *p)
+    {
+    }
+
+    void _GeometryBase::getPCgrid(void *p)
+    {
+    }
+
+    void _GeometryBase::getLineSet(void *p)
+    {
+    }
+
     void _GeometryBase::mutexLock(void)
     {
 		pthread_mutex_lock(&m_mutex);
@@ -150,6 +157,5 @@ namespace kai
         pC->addMsg("vT = (" + f2str(m_vT.x) + "," + f2str(m_vT.y) + ", " + f2str(m_vT.z) +")");
         pC->addMsg("vR = (" + f2str(m_vR.x) + "," + f2str(m_vR.y) + ", " + f2str(m_vR.z) +")");
     }
-
 
 }

@@ -25,7 +25,23 @@ sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
 
 # install common packages
-sudo apt update && sudo apt install -y \
+sudo apt update
+sudo apt upgrade
+
+# Install prebuilt binary -----------------
+
+sudo apt install ros-humble-desktop
+#sudo apt install ros-humble-ros-base
+sudo apt install ros-dev-tools
+
+sudo apt-get install ros-humble-pcl-conversions
+sudo apt-get install ros-humble-pcl-ros
+
+source /opt/ros/humble/setup.bash
+
+# Build from source -----------------
+
+sudo apt install -y \
   python3-flake8-docstrings \
   python3-pip \
   python3-pytest-cov \
@@ -63,10 +79,15 @@ rosdep install --from-paths src --ignore-src -y --skip-keys "fastcdr rti-connext
 cd ~/dev/ros2_humble/
 
 sudo apt-get install -y libtinyxml2-dev libasio-dev
+sudo apt-get install -y libelf-dev libdwarf-dev
 sudo pip install numpy
 
-#colcon build --symlink-install
-colcon build --symlink-install --packages-ignore qt_gui_app rviz_rendering rviz_rendering_tests qt_gui_cpp rqt_gui_cpp turtlesim rviz_common rviz_visual_testing_framework rviz_default_plugins rviz2
+# rm -r build install log
+colcon build --symlink-install
+# if qtbase5-dev unmet, using aptitude to solve dependencies
+sudo apt-get install aptitude
+sudo aptitude install qtbase5-dev
+#colcon build --symlink-install --packages-ignore qt_gui_app rviz_rendering rviz_rendering_tests qt_gui_cpp rqt_gui_cpp turtlesim rviz_common rviz_visual_testing_framework rviz_default_plugins rviz2
 # rosidl_generator_py rclpy
 
 # if you are having trouble compiling all examples and this is preventing you from completing a successful build,

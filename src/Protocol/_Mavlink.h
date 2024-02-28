@@ -534,6 +534,7 @@ namespace kai
 		void clGetHomePosition(void);
 		void clNavSetYawSpeed(float yaw, float speed, float yawMode);
 		void clNavTakeoff(float alt);
+		void clNavRTL(void);
 		void clSetMessageInterval(float id, float interval, float responseTarget);
 
 		//Msg routing

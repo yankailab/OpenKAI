@@ -34,6 +34,8 @@ namespace kai
 		virtual string getNext(void);
 		virtual STATE_TYPE getType(void);
 
+		virtual void updateModules(void);
+
 	protected:
 		STATE_TYPE m_type;
 		string m_next;

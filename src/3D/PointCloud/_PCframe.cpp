@@ -98,7 +98,7 @@ namespace kai
         mutexUnlock();
     }
 
-    void _PCframe::getStream(void *p, const uint64_t &tExpire)
+    void _PCframe::getPCstream(void *p, const uint64_t &tExpire)
     {
         IF_(check() < 0);
         NULL_(p);
@@ -124,7 +124,7 @@ namespace kai
         mutexUnlock();
     }
 
-    void _PCframe::getFrame(void *p)
+    void _PCframe::getPCframe(void *p)
     {
         NULL_(p);
 
@@ -135,7 +135,7 @@ namespace kai
         *m_sPC.next() += pc;
     }
 
-    void _PCframe::getGrid(void *p)
+    void _PCframe::getPCgrid(void *p)
     {
     }
 

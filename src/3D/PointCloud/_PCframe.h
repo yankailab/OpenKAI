@@ -27,9 +27,9 @@ namespace kai
 		virtual PointCloud* getNextBuffer(void);
         virtual void clear(void);
 
-        virtual void getStream(void* p, const uint64_t& tExpire);
-        virtual void getFrame(void* p);
-        virtual void getGrid(void* p);
+        virtual void getPCstream(void* p, const uint64_t& tExpire);
+        virtual void getPCframe(void* p);
+        virtual void getPCgrid(void* p);
 
    		virtual void copyTo(PointCloud *pPC);
         virtual int nP(void);

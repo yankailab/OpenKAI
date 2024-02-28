@@ -156,6 +156,7 @@ namespace kai
 		// RTL
 		IF_(!m_bRTL);
 		m_pAP->setApMode(m_modeRTL);
+		m_pAP->m_pMav->clNavRTL();
 	}
 
 	void _AP_SR::console(void *pConsole)

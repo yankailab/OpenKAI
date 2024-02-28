@@ -25,7 +25,8 @@ namespace kai
         pc_stream = 0,
         pc_frame = 1,
         pc_grid = 2,
-        mesh_stream = 3,
+        line_set = 3,
+        mesh_stream = 4,
     };
 
     struct GEOMETRY_POINT
@@ -53,20 +54,21 @@ namespace kai
         virtual int check(void);
         virtual void console(void *pConsole);
 
-        virtual GEOMETRY_TYPE getType(void);
-		virtual bool initBuffer(void);
-        virtual void clear(void);
-
-        virtual void getGeometry(void* p, const uint64_t& tExpire = 0);
-        virtual void getStream(void* p, const uint64_t& tExpire);
-        virtual void getFrame(void* p);
-        virtual void getGrid(void* p);
-
         virtual void setTranslation(const vDouble3 &vT);
         virtual void setRotation(const vDouble3 &vR);
         virtual void updateTranslationMatrix(void);
         virtual void setTranslationMatrix(const Matrix4d &mT);
         virtual Matrix4d getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR);
+
+        virtual GEOMETRY_TYPE getType(void);
+		virtual bool initBuffer(void);
+        virtual void clear(void);
+
+        virtual void getGeometry(void* p, const uint64_t& tExpire = 0);
+        virtual void getPCstream(void* p, const uint64_t& tExpire);
+        virtual void getPCframe(void* p);
+        virtual void getPCgrid(void* p);
+        virtual void getLineSet(void* p);
 
     protected:
         void mutexLock(void);

@@ -13,7 +13,6 @@ namespace kai
 	_GeometryViewer::_GeometryViewer()
 	{
 		m_nPbuf = 0;
-		m_nP = 0;
 
 		m_vWinSize.set(1280, 720);
 
@@ -137,7 +136,7 @@ namespace kai
 		m_pT->sleepT(0);
 
 		readAllGeometry();
-		adjustNpoints(&m_PC, m_nP, m_nPbuf);
+		adjustNpoints(&m_PC, m_PC.points_.size(), m_nPbuf);
 
 		removeUIpc();
 		addUIpc(m_PC);
@@ -164,7 +163,7 @@ namespace kai
 		if (m_pUIstate)
 			m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
 
-		adjustNpoints(&m_PC, m_nP, m_nPbuf);
+		adjustNpoints(&m_PC, m_PC.points_.size(), m_nPbuf);
 		updateUIpc(m_PC);
 	}
 
@@ -204,12 +203,14 @@ namespace kai
 		}
 	}
 
-	void _GeometryViewer::getStream(void *p, const uint64_t &tExpire)
+	void _GeometryViewer::getPCstream(void *p, const uint64_t &tExpire)
 	{
 		NULL_(p);
 		_PCstream *pS = (_PCstream *)p;
 
 		mutexLock();
+
+		m_PC.Clear();
 
 		uint64_t tNow = getApproxTbootUs();
 		for (int i = 0; i < pS->nP(); i++)
@@ -222,12 +223,15 @@ namespace kai
 
 			m_PC.points_.push_back(pP->m_vP);
 			m_PC.colors_.push_back(pP->m_vC.cast<double>());
+
+			if (m_PC.points_.size() >= m_nPbuf)
+				break;
 		}
 
 		mutexUnlock();
 	}
 
-	void _GeometryViewer::getFrame(void *p)
+	void _GeometryViewer::getPCframe(void *p)
 	{
 		NULL_(p);
 		_PCframe *pF = (_PCframe *)p;
@@ -235,7 +239,11 @@ namespace kai
 		m_PC += *pF->getBuffer();
 	}
 
-	void _GeometryViewer::getGrid(void *p)
+	void _GeometryViewer::getPCgrid(void *p)
+	{
+	}
+
+	void _GeometryViewer::getLineSet(void *p)
 	{
 	}
 

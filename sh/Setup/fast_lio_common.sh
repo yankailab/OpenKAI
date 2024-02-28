@@ -1,5 +1,33 @@
 #----------------------------------------------------
 # (Optional) Fast_lio ros2
+sudo apt-get install libpcl-dev
+
+# install Livox-SDK2 following deps_common.sh
+
+# install ros2 following the ros2_common.sh
+
+# inside ros workspace/src
+mkdir -p ~/dev/rosWS/src
+cd ~/dev/rosWS/src
+git clone https://github.com/Livox-SDK/livox_ros_driver2.git
+cd livox_ros_driver2
+./build.sh humble
+
+echo "source /home/kai/dev/rosWS/install/setup.bash" >> ~/.bashrc
+
+# build Fast_lio
+cd ~/dev/rosWS/src
+git clone https://github.com/Ericsii/FAST_LIO_ROS2.git --recursive
+cd ..
+rosdep install --from-paths src --ignore-src -y
+colcon build --symlink-install
+./install/setup.bash # use setup.zsh if use zsh
+
+
+
+
+#----------------------------------------------------
+# Fast_lio ros2 on docker
 
 #docker rm -f $(docker ps -a -q)
 

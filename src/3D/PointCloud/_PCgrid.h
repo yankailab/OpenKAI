@@ -31,7 +31,7 @@ namespace kai
 
 		virtual bool initBuffer(void);
         virtual void clear(void);
-        virtual void getStream(void* p, const uint64_t& tExpire);
+        virtual void getPCstream(void* p, const uint64_t& tExpire);
 
 		virtual PC_GRID_CELL* getCell(const vFloat3& vP);
 

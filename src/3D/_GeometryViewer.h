@@ -59,18 +59,23 @@ namespace kai
 
 		virtual void resetCamPose(void);
 
-        virtual void getStream(void* p, const uint64_t& tExpire);
-        virtual void getFrame(void* p);
-        virtual void getGrid(void* p);
+        virtual void getPCstream(void* p, const uint64_t& tExpire);
+        virtual void getPCframe(void* p);
+        virtual void getPCgrid(void* p);
+        virtual void getLineSet(void* p);
 
 	protected:
-		//data
+		// point cloud
 		void addUIpc(const PointCloud& pc);
 		void updateUIpc(const PointCloud& pc);
 		void removeUIpc(void);
 		void readAllGeometry(void);
 		void adjustNpoints(PointCloud* pPC, int nP, int nPbuf);
 		void addDummyPoints(PointCloud* pPC, int n, float r, Vector3d vCol = {0,0,0});
+
+		// line set
+
+		// update thread
 		virtual void updateGeometry(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
@@ -79,7 +84,7 @@ namespace kai
 			return NULL;
 		}
 
-		//UI
+		// UI
 		void updateCamProj(void);
 		void updateCamPose(void);
 		void camBound(const AxisAlignedBoundingBox& aabb);
@@ -95,8 +100,9 @@ namespace kai
 	protected:
 		// point cloud
 		int m_nPbuf;
-		int m_nP;
 		PointCloud m_PC;
+
+		// line set
 
 
 

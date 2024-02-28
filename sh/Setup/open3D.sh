@@ -1,6 +1,6 @@
 #----------------------------------------------------
 # (Optional) Open3D
-sudo apt-get install libjsoncpp-dev
+sudo apt-get -y install libjsoncpp-dev libc++1
 git clone --branch v0.18.0 --depth 1 --recursive https://github.com/intel-isl/Open3D
 #git clone --branch GuiWinSetFullScr --depth 1 --recursive https://github.com/yankailab/Open3D
 cd Open3D
