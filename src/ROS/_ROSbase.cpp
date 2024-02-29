@@ -21,7 +21,7 @@ namespace kai
 
     bool _ROSbase::init(void *pKiss)
     {
-        IF_F(!_ModuleBase::init(pKiss));
+        IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
         pK->v("topic", &m_topic);

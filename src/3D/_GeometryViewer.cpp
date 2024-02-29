@@ -137,10 +137,10 @@ namespace kai
 
 		readAllGeometry();
 		adjustNpoints(&m_PC, m_PC.points_.size(), m_nPbuf);
-		removeUIpc();
-		addUIpc(m_PC);
+		removeUIpc(m_modelName);
+		addUIpc(m_PC, m_modelName);
 
-		addUIlineSet(m_lineSet);
+		addUIlineSet(m_lineSet, m_modelName + "LS");
 
 		resetCamPose();
 		updateCamPose();
@@ -160,12 +160,12 @@ namespace kai
 		IF_(check() < 0);
 
 		readAllGeometry();
-		m_aabb = m_PC.GetAxisAlignedBoundingBox();
-		if (m_pUIstate)
-			m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
+		// m_aabb = m_PC.GetAxisAlignedBoundingBox();
+		// if (m_pUIstate)
+		// 	m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
 
 		adjustNpoints(&m_PC, m_PC.points_.size(), m_nPbuf);
-		updateUIpc(m_PC);
+		updateUIpc(m_PC, m_modelName);
 	}
 
 	void _GeometryViewer::readAllGeometry(void)
@@ -176,32 +176,32 @@ namespace kai
 		}
 	}
 
-	void _GeometryViewer::addUIpc(const PointCloud &pc)
+	void _GeometryViewer::addUIpc(const PointCloud &pc, const string& name)
 	{
 		IF_(pc.IsEmpty());
 
-		m_pWin->AddPointCloud(m_modelName,
+		m_pWin->AddPointCloud(name,
 							  make_shared<t::geometry::PointCloud>(
 								  t::geometry::PointCloud::FromLegacy(
 									  pc,
 									  core::Dtype::Float32)));
 	}
 
-	void _GeometryViewer::updateUIpc(const PointCloud &pc)
+	void _GeometryViewer::updateUIpc(const PointCloud &pc, const string& name)
 	{
 		IF_(pc.IsEmpty());
 
 		// TODO: atomic
-		m_pWin->UpdatePointCloud(m_modelName,
+		m_pWin->UpdatePointCloud(name,
 								 make_shared<t::geometry::PointCloud>(
 									 t::geometry::PointCloud::FromLegacy(
 										 pc,
 										 core::Dtype::Float32)));
 	}
 
-	void _GeometryViewer::removeUIpc(void)
+	void _GeometryViewer::removeUIpc(const string& name)
 	{
-		m_pWin->RemoveGeometry(m_modelName);
+		m_pWin->RemoveGeometry(name);
 	}
 
 	void _GeometryViewer::adjustNpoints(PointCloud *pPC, int nP, int nPbuf)
@@ -256,11 +256,11 @@ namespace kai
 		}
 	}
 
-	void _GeometryViewer::addUIlineSet(const LineSet &ls)
+	void _GeometryViewer::addUIlineSet(const LineSet &ls, const string& name)
 	{
 		IF_(ls.IsEmpty());
 
-		m_pWin->AddGeometry(m_modelName + "LS",
+		m_pWin->AddGeometry(name,
 							make_shared<geometry::LineSet>(ls));
 	}
 
@@ -297,7 +297,7 @@ namespace kai
 		NULL_(p);
 		_PCframe *pF = (_PCframe *)p;
 
-		m_PC += *pF->getBuffer();
+		m_PC = *pF->getBuffer();
 	}
 
 	void _GeometryViewer::getPCgrid(void *p)

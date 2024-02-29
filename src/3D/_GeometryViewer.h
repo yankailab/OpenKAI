@@ -67,14 +67,14 @@ namespace kai
 		void readAllGeometry(void);
 
 		// point cloud
-		void addUIpc(const PointCloud& pc);
-		void updateUIpc(const PointCloud& pc);
-		void removeUIpc(void);
+		void addUIpc(const PointCloud& pc, const string& name);
+		void updateUIpc(const PointCloud& pc, const string& name);
+		void removeUIpc(const string& name);
 		void adjustNpoints(PointCloud* pPC, int nP, int nPbuf);
 		void addDummyPoints(PointCloud* pPC, int n, float r, Vector3d vCol = {0,0,0});
 
 		// line set
-		void addUIlineSet(const LineSet &ls);
+		void addUIlineSet(const LineSet &ls, const string& name);
 
 		// update thread
 		virtual void updateGeometry(void);

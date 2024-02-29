@@ -24,7 +24,7 @@ namespace kai
 
     bool _ROS_fastLio::init(void *pKiss)
     {
-        IF_F(!_ROSbase::init(pKiss));
+        IF_F(!this->_ROSbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
         //		pK->v("URI", &m_devURI);
@@ -56,7 +56,7 @@ namespace kai
 
     int _ROS_fastLio::check(void)
     {
-        return _ROSbase::check();
+        return this->_ROSbase::check();
     }
 
     void _ROS_fastLio::update(void)

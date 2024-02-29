@@ -23,7 +23,17 @@ rosdep install --from-paths src --ignore-src -y
 colcon build --symlink-install
 ./install/setup.bash # use setup.zsh if use zsh
 
+# edit livox config
+nano ~/dev/rosWS/install/livox_ros_driver2/share/livox_ros_driver2/config/MID360_config.json
 
+# verify the point cloud output
+ros2 launch livox_ros_driver2 rviz_MID360_launch.py
+
+# launch msg for fast_lio
+ros2 launch livox_ros_driver2 msg_MID360_launch.py
+
+nano ~/dev/rosWS/install/fast_lio/share/fast_lio/config/mid360.yaml
+ros2 launch fast_lio mapping.launch.py config_file:=mid360.yaml
 
 
 #----------------------------------------------------
