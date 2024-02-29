@@ -133,13 +133,14 @@ namespace kai
 	void _GeometryViewer::update(void)
 	{
 		// wait for the UI thread to get window ready
-		m_pT->sleepT(0);
+		m_pT->sleepT(USEC_1SEC);
 
 		readAllGeometry();
 		adjustNpoints(&m_PC, m_PC.points_.size(), m_nPbuf);
-
 		removeUIpc();
 		addUIpc(m_PC);
+
+		addUIlineSet(m_lineSet);
 
 		resetCamPose();
 		updateCamPose();
@@ -165,6 +166,14 @@ namespace kai
 
 		adjustNpoints(&m_PC, m_PC.points_.size(), m_nPbuf);
 		updateUIpc(m_PC);
+	}
+
+	void _GeometryViewer::readAllGeometry(void)
+	{
+		for (_GeometryBase *pGB : m_vpGB)
+		{
+			getGeometry(pGB);
+		}
 	}
 
 	void _GeometryViewer::addUIpc(const PointCloud &pc)
@@ -193,58 +202,6 @@ namespace kai
 	void _GeometryViewer::removeUIpc(void)
 	{
 		m_pWin->RemoveGeometry(m_modelName);
-	}
-
-	void _GeometryViewer::readAllGeometry(void)
-	{
-		for (_GeometryBase *pGB : m_vpGB)
-		{
-			getGeometry(pGB);
-		}
-	}
-
-	void _GeometryViewer::getPCstream(void *p, const uint64_t &tExpire)
-	{
-		NULL_(p);
-		_PCstream *pS = (_PCstream *)p;
-
-		mutexLock();
-
-		m_PC.Clear();
-
-		uint64_t tNow = getApproxTbootUs();
-		for (int i = 0; i < pS->nP(); i++)
-		{
-			GEOMETRY_POINT *pP = pS->get(i);
-			if (tExpire)
-			{
-				IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
-			}
-
-			m_PC.points_.push_back(pP->m_vP);
-			m_PC.colors_.push_back(pP->m_vC.cast<double>());
-
-			if (m_PC.points_.size() >= m_nPbuf)
-				break;
-		}
-
-		mutexUnlock();
-	}
-
-	void _GeometryViewer::getPCframe(void *p)
-	{
-		NULL_(p);
-		_PCframe *pF = (_PCframe *)p;
-
-		m_PC += *pF->getBuffer();
-	}
-
-	void _GeometryViewer::getPCgrid(void *p)
-	{
-	}
-
-	void _GeometryViewer::getLineSet(void *p)
-	{
 	}
 
 	void _GeometryViewer::adjustNpoints(PointCloud *pPC, int nP, int nPbuf)
@@ -297,6 +254,58 @@ namespace kai
 				IF_(++k >= n);
 			}
 		}
+	}
+
+	void _GeometryViewer::addUIlineSet(const LineSet &ls)
+	{
+		IF_(ls.IsEmpty());
+
+		m_pWin->AddGeometry(m_modelName + "LS",
+							make_shared<geometry::LineSet>(ls));
+	}
+
+	void _GeometryViewer::getPCstream(void *p, const uint64_t &tExpire)
+	{
+		NULL_(p);
+		_PCstream *pS = (_PCstream *)p;
+
+		mutexLock();
+
+		m_PC.Clear();
+
+		uint64_t tNow = getApproxTbootUs();
+		for (int i = 0; i < pS->nP(); i++)
+		{
+			GEOMETRY_POINT *pP = pS->get(i);
+			if (tExpire)
+			{
+				IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
+			}
+
+			m_PC.points_.push_back(pP->m_vP);
+			m_PC.colors_.push_back(pP->m_vC.cast<double>());
+
+			if (m_PC.points_.size() >= m_nPbuf)
+				break;
+		}
+
+		mutexUnlock();
+	}
+
+	void _GeometryViewer::getPCframe(void *p)
+	{
+		NULL_(p);
+		_PCframe *pF = (_PCframe *)p;
+
+		m_PC += *pF->getBuffer();
+	}
+
+	void _GeometryViewer::getPCgrid(void *p)
+	{
+		NULL_(p);
+		_PCgrid *pG = (_PCgrid *)p;
+
+		m_lineSet = *pG->getGridLines();
 	}
 
 	void _GeometryViewer::updateCamProj(void)

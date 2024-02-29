@@ -32,8 +32,8 @@
 	"vWinSize":[1920,1080],
 	"pathRes":"/usr/local/bin/Open3D/resources",
 	"device":"CPU:0",
-	"nPbuf":10000000,
-	"vGeometryBase":["pcFile"],
+	"nPbuf":1000000,
+	"vGeometryBase":["pcFile","pcGrid"],
 	"vCamLookAt":[0,0,0],
 	"vCamEye":[0,0,2],
 	"vCamUp":[0,1,0],
@@ -66,4 +66,20 @@
 	}
 	"fName":"/home/kai/Downloads/office1.pcd",
 	"nPresv":480000,
+}
+
+{
+	"name":"pcGrid",
+	"class":"_PCgrid",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vPorigin":[0,0,0],
+	"vX":[-10,10],
+	"vY":[-10,10],
+	"vZ":[-10,10],
+	"vCellSize":[1,1,1],
+	"bVisual":1,
 }

@@ -93,7 +93,7 @@ namespace open3d
 				// render
 				int m_wPanel = 15;
 				int m_sPoint = 2;
-				int m_wLine = 15;
+				int m_wLine = 1;
 				float m_btnPaddingV = 0.5;
 				float m_btnPaddingH = 0.5;
 				Vector4f m_vBgCol = {0.0f, 0.0f, 0.0f, 0.0f};

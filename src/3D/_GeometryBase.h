@@ -25,7 +25,6 @@ namespace kai
         pc_stream = 0,
         pc_frame = 1,
         pc_grid = 2,
-        line_set = 3,
         mesh_stream = 4,
     };
 
@@ -68,7 +67,6 @@ namespace kai
         virtual void getPCstream(void* p, const uint64_t& tExpire);
         virtual void getPCframe(void* p);
         virtual void getPCgrid(void* p);
-        virtual void getLineSet(void* p);
 
     protected:
         void mutexLock(void);

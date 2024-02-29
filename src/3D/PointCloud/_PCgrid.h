@@ -30,19 +30,35 @@ namespace kai
 		virtual int check(void);
 
 		virtual bool initBuffer(void);
-        virtual void clear(void);
-        virtual void getPCstream(void* p, const uint64_t& tExpire);
-
-		virtual PC_GRID_CELL* getCell(const vFloat3& vP);
+		virtual void clear(void);
+		virtual PC_GRID_CELL *getCell(const vFloat3 &vP);
+		virtual LineSet *getGridLines(void);
+		virtual void getPCstream(void *p, const uint64_t &tExpire);
 
 	protected:
-		virtual PC_GRID_CELL* getCell(const vInt3& vPi);
+		virtual PC_GRID_CELL *getCell(const vInt3 &vPi);
+		virtual void generateGridLines(void);
+		void addGridLine(int nDa,
+						 const vFloat2 &vRa,
+						 float csA,
+						 int nDb,
+						 const vFloat2 &vRb,
+						 float csB,
+						 const vFloat2 &vRc,
+						 const vInt3 &vAxis,
+						 const vFloat3 &vCol
+
+		);
 
 	protected:
 		PC_GRID_CELL *m_pCell;
 		int m_nCell;
+
+		// cell number of each axis
 		vInt3 m_vDim;
 		int m_dYZ;
+
+		// grid positions and regions
 		vFloat3 m_vPmin;
 		vFloat2 m_vRx;
 		vFloat2 m_vRy;
@@ -51,10 +67,19 @@ namespace kai
 
 		// grid generating params
 		vFloat3 m_vPorigin;
+
+		// cell number around the origin for each direction of each axis
 		vInt2 m_vX;
 		vInt2 m_vY;
 		vInt2 m_vZ;
+
+		// dimension for each cell
 		vFloat3 m_vCellSize;
+
+		// visualization
+		bool m_bVisual;
+		LineSet m_gridLine;
+		vFloat3 m_vGridCol;
 	};
 
 }

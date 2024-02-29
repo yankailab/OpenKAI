@@ -62,18 +62,19 @@ namespace kai
         virtual void getPCstream(void* p, const uint64_t& tExpire);
         virtual void getPCframe(void* p);
         virtual void getPCgrid(void* p);
-        virtual void getLineSet(void* p);
 
 	protected:
+		void readAllGeometry(void);
+
 		// point cloud
 		void addUIpc(const PointCloud& pc);
 		void updateUIpc(const PointCloud& pc);
 		void removeUIpc(void);
-		void readAllGeometry(void);
 		void adjustNpoints(PointCloud* pPC, int nP, int nPbuf);
 		void addDummyPoints(PointCloud* pPC, int n, float r, Vector3d vCol = {0,0,0});
 
 		// line set
+		void addUIlineSet(const LineSet &ls);
 
 		// update thread
 		virtual void updateGeometry(void);
@@ -103,7 +104,7 @@ namespace kai
 		PointCloud m_PC;
 
 		// line set
-
+		LineSet m_lineSet;
 
 
 		O3DUI* m_pWin;

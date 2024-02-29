@@ -17,6 +17,10 @@ namespace kai
 		m_vY.clear();
 		m_vZ.clear();
 		m_vCellSize.clear();
+
+		m_bVisual = false;
+		m_gridLine.Clear();
+		m_vGridCol.set(1,1,1);
 	}
 
 	_PCgrid::~_PCgrid()
@@ -34,6 +38,8 @@ namespace kai
 		pK->v("vY", &m_vY);
 		pK->v("vZ", &m_vZ);
 		pK->v("vCellSize", &m_vCellSize);
+		pK->v("bVisual", &m_bVisual);
+		pK->v("vGridCol", &m_vGridCol);
 
 		return initBuffer();
 	}
@@ -54,13 +60,13 @@ namespace kai
 		NULL_F(m_pCell);
 		m_nCell = nCell;
 
-		m_vRx.set(m_vPorigin.x - m_vX.x * m_vCellSize.x,
+		m_vRx.set(m_vPorigin.x + m_vX.x * m_vCellSize.x,
 				  m_vPorigin.x + m_vX.y * m_vCellSize.x);
 
-		m_vRy.set(m_vPorigin.y - m_vY.x * m_vCellSize.y,
+		m_vRy.set(m_vPorigin.y + m_vY.x * m_vCellSize.y,
 				  m_vPorigin.y + m_vY.y * m_vCellSize.y);
 
-		m_vRz.set(m_vPorigin.z - m_vZ.x * m_vCellSize.z,
+		m_vRz.set(m_vPorigin.z + m_vZ.x * m_vCellSize.z,
 				  m_vPorigin.z + m_vZ.y * m_vCellSize.z);
 
 		m_vPmin.set(m_vRx.x, m_vRy.x, m_vRz.x);
@@ -71,6 +77,10 @@ namespace kai
 
 		m_dYZ = m_vDim.y * m_vDim.z;
 
+		// generate line set for grid visualization
+		if (m_bVisual)
+			generateGridLines();
+
 		return true;
 	}
 
@@ -78,6 +88,32 @@ namespace kai
 	{
 		for (int i = 0; i < m_nCell; i++)
 			m_pCell[i].clear();
+	}
+
+	PC_GRID_CELL *_PCgrid::getCell(const vFloat3 &vP)
+	{
+		IF_N(!m_vRx.bInside(vP.x));
+		IF_N(!m_vRy.bInside(vP.y));
+		IF_N(!m_vRz.bInside(vP.z));
+
+		vInt3 vPi;
+		vPi.x = (vP.x - m_vPmin.x) * m_vOvCellSize.x;
+		vPi.y = (vP.y - m_vPmin.y) * m_vOvCellSize.y;
+		vPi.z = (vP.z - m_vPmin.z) * m_vOvCellSize.z;
+
+		return getCell(vPi);
+	}
+
+	PC_GRID_CELL *_PCgrid::getCell(const vInt3 &vPi)
+	{
+		int i = vPi.x * m_dYZ + vPi.y * m_vDim.z + vPi.z;
+
+		return &m_pCell[i];
+	}
+
+	LineSet *_PCgrid::getGridLines(void)
+	{
+		return &m_gridLine;
 	}
 
 	void _PCgrid::getPCstream(void *p, const uint64_t &tExpire)
@@ -101,25 +137,85 @@ namespace kai
 		}
 	}
 
-	PC_GRID_CELL *_PCgrid::getCell(const vFloat3 &vP)
+	void _PCgrid::generateGridLines(void)
 	{
-		IF_N(!m_vRx.bInside(vP.x));
-		IF_N(!m_vRy.bInside(vP.y));
-		IF_N(!m_vRz.bInside(vP.z));
+		m_gridLine.Clear();
 
-		vInt3 vPi;
-		vPi.x = (vP.x - m_vPmin.x) * m_vOvCellSize.x;
-		vPi.y = (vP.y - m_vPmin.y) * m_vOvCellSize.y;
-		vPi.z = (vP.z - m_vPmin.z) * m_vOvCellSize.z;
+		addGridLine(m_vDim.x,
+					m_vRx,
+					m_vCellSize.x,
+					m_vDim.y,
+					m_vRy,
+					m_vCellSize.y,
+					m_vRz,
+					vInt3(0,1,2),
+					vFloat3(1,0,0)
+					);
 
-		return getCell(vPi);
+		addGridLine(m_vDim.x,
+					m_vRx,
+					m_vCellSize.x,
+					m_vDim.z,
+					m_vRz,
+					m_vCellSize.z,
+					m_vRy,
+					vInt3(0,2,1),
+					vFloat3(0,1,0)
+					);
+
+		addGridLine(m_vDim.y,
+					m_vRy,
+					m_vCellSize.y,
+					m_vDim.z,
+					m_vRz,
+					m_vCellSize.z,
+					m_vRx,
+					vInt3(1,2,0),
+					vFloat3(0,0,1)
+					);
+
 	}
 
-	PC_GRID_CELL *_PCgrid::getCell(const vInt3 &vPi)
+	void _PCgrid::addGridLine(int nDa,
+							  const vFloat2 &vRa,
+							  float csA,
+							  int nDb,
+							  const vFloat2 &vRb,
+							  float csB,
+							  const vFloat2 &vRc,
+							  const vInt3& vAxis,
+							  const vFloat3 &vCol
+							  )
 	{
-		int i = vPi.x * m_dYZ + vPi.y * m_vDim.z + vPi.z;
+		int iA, iB;
+		Vector3f pA, pB;
+		float *pAx = &pA[vAxis.x];
+		float *pAy = &pA[vAxis.y];
+		float *pAz = &pA[vAxis.z];
+		float *pBx = &pB[vAxis.x];
+		float *pBy = &pB[vAxis.y];
+		float *pBz = &pB[vAxis.z];
 
-		return &m_pCell[i];
+		for (iA = 0; iA < nDa; iA++)
+		{
+			*pAx = vRa.x + csA * iA;
+			*pAz = vRc.x;
+
+			for (iB = 0; iB < nDb; iB++)
+			{
+				*pAy = vRb.x + csB * iB;
+
+				*pBx = *pAx;
+				*pBy = *pAy;
+				*pBz = vRc.y;
+
+				int nP = m_gridLine.points_.size();
+				m_gridLine.points_.push_back(pA.cast<double>());
+				m_gridLine.points_.push_back(pB.cast<double>());
+				m_gridLine.lines_.push_back(Vector2i{nP, nP + 1});
+				m_gridLine.colors_.push_back(Vector3d{vCol.x, vCol.y, vCol.z});
+			}
+		}
 	}
 
 	int _PCgrid::check(void)

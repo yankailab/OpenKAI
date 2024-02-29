@@ -137,6 +137,7 @@ namespace open3d
                 scene->ShowGeometry(name, bVisible);
 
                 SetPointSize(m_uiState.m_sPoint);
+                SetLineWidth(m_uiState.m_wLine);
                 m_pScene->ForceRedraw();
             }
 

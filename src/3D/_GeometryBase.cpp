@@ -118,8 +118,6 @@ namespace kai
             getPCframe(p);
         else if(gt == pc_grid)
             getPCgrid(p);
-        else if(gt == line_set)
-            getLineSet(p);
     }
 
     void _GeometryBase::getPCstream(void *p, const uint64_t& tExpire)
@@ -131,10 +129,6 @@ namespace kai
     }
 
     void _GeometryBase::getPCgrid(void *p)
-    {
-    }
-
-    void _GeometryBase::getLineSet(void *p)
     {
     }
 
