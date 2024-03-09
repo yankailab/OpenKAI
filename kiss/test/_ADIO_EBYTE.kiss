@@ -54,8 +54,51 @@
 		}
 		{
 			"bDigital":1,
+			"type":2, /* Dout */
+			"addr":1,
+			"vW":1,
+			"vR":0,
+		}
+		{
+			"bDigital":1,
+			"type":2, /* Dout */
+			"addr":2,
+			"vW":1,
+			"vR":0,
+		}
+		{
+			"bDigital":1,
+			"type":2, /* Dout */
+			"addr":3,
+			"vW":1,
+			"vR":0,
+		}
+
+		{
+			"bDigital":1,
 			"type":0, /* Din */
 			"addr":0,
+			"vW":0,
+			"vR":0,
+		}
+		{
+			"bDigital":1,
+			"type":0, /* Din */
+			"addr":1,
+			"vW":0,
+			"vR":0,
+		}
+		{
+			"bDigital":1,
+			"type":0, /* Din */
+			"addr":2,
+			"vW":0,
+			"vR":0,
+		}
+		{
+			"bDigital":1,
+			"type":0, /* Din */
+			"addr":3,
 			"vW":0,
 			"vR":0,
 		}

@@ -30,8 +30,8 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"/port":"/dev/ttyACM0",
-	"port":"/dev/ttyUSB0",
+	"port":"/dev/ttyACM0",
+	"/port":"/dev/ttyUSB0",
 	"baud":115200,
 }
 

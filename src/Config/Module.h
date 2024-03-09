@@ -16,7 +16,7 @@
 #include "../IPC/_SharedMem.h"
 #include "../UI/_Console.h"
 
-#ifdef WITH_3D && USE_OPEN3D
+#ifdef WITH_3D &&USE_OPEN3D
 #include "../3D/Mesh/_MeshStream.h"
 #include "../3D/PointCloud/_PCstream.h"
 #include "../3D/PointCloud/_PCframe.h"
@@ -130,11 +130,11 @@
 #include "../Application/Measurement/_RaspiWSbattery.h"
 #endif
 
-//#ifdef WITH_APP_ROPEWAYSCAN &&USE_VZENSE &&USE_LIVOX &&WITH_3D &&USE_OPEN3D
+// #ifdef WITH_APP_ROPEWAYSCAN &&USE_VZENSE &&USE_LIVOX &&WITH_3D &&USE_OPEN3D
 #ifdef WITH_APP_ROPEWAYSCAN
 #include "../Application/RopewayScan/_RopewayScan.h"
-//#include "../Application/RopewayScan/_RopewayScanVz.h"
-//#include "../Application/RopewayScan/_RopewayScanLivox.h"
+// #include "../Application/RopewayScan/_RopewayScanVz.h"
+// #include "../Application/RopewayScan/_RopewayScanLivox.h"
 #endif
 
 #ifdef WITH_APP_ROBOTARM
@@ -159,7 +159,7 @@
 #include "../Application/Swarm/_SwarmSearch.h"
 #endif
 
-#ifdef WITH_APP_VZSCAN &&USE_VZENSE &&WITH_3D &&USE_OPEN3D &&USE_GUI
+#ifdef WITH_APP_VZSCAN && USE_VZENSE && WITH_3D && USE_OPEN3D && USE_GUI
 #include "../Application/VzScan/_VzScan.h"
 #include "../Application/VzScan/_VzScanAuto.h"
 #include "../Application/VzScan/_VzScanCalib.h"
@@ -288,10 +288,12 @@
 #include "../Sensor/LiDAR/Livox/LivoxLidar.h"
 #endif
 #ifdef USE_LIVOX2
-#include "../Sensor/LiDAR/Livox2/_Livox2.h"
 #include "../Sensor/LiDAR/Livox2/LivoxLidar2.h"
-#endif
-#endif
+#ifdef WITH_3D && USE_OPEN3D
+#include "../Sensor/LiDAR/Livox2/_Livox2.h"
+#endif // 3D
+#endif // Livox2
+#endif // sensor
 
 #ifdef WITH_SLAM
 #ifdef USE_OPENCV

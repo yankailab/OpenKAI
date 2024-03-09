@@ -33,7 +33,6 @@ namespace kai
         // uint32_t imu_rate;
         // uint32_t scan_pattern;
 
-
         CbLivoxLidar2data m_pCbData = NULL;
         CbLivoxLidar2imu m_pCbIMU = NULL;
         void *m_pLivox2 = NULL;
@@ -54,17 +53,14 @@ namespace kai
         void startStream(void);
         void stopStream(void);
 
-
-        uint32_t getDeviceHandle(const string& SN);
-        LivoxLidar2device* getDevice(const string& SN, bool bFirst = true);
-        LivoxLidar2device* getDevice(uint32_t handle);
+        uint32_t getDeviceHandle(const string &SN);
+        LivoxLidar2device *getDevice(const string &SN, bool bFirst = true);
+        LivoxLidar2device *getDevice(uint32_t handle);
 
         bool setCbData(uint32_t handle, CbLivoxLidar2data pCb, void *pLivox2);
         bool setCbIMU(uint32_t handle, CbLivoxLidar2imu pCb, void *pLivox2);
         bool setWorkMode(uint32_t handle, LivoxLidarWorkMode m);
         bool setScanPattern(uint32_t handle, LivoxLidarScanPattern p);
-
-
 
         // Callbacks
         static void sCbPointCloud(uint32_t handle, const uint8_t dev_type, LivoxLidarEthernetPacket *data, void *client_data)
@@ -103,6 +99,25 @@ namespace kai
             ((LivoxLidar2 *)client_data)->CbLidarInfoChange(handle, info);
         }
 
+        static void sCbLidarInfo(const uint32_t handle, const uint8_t dev_type, const char *info, void *client_data)
+        {
+            NULL_(client_data);
+            ((LivoxLidar2 *)client_data)->CbLidarInfo(handle, dev_type, info);
+        }
+
+        static void sCbQueryInternalInfo(livox_status status,
+                                         uint32_t handle,
+                                         LivoxLidarDiagInternalInfoResponse *response,
+                                         void *client_data)
+        {
+            if (response == nullptr)
+            {
+                return;
+            }
+
+            printf("QueryInternalInfoCallback, status:%u, handle:%i, ret_code:%u.\n",
+                   status, handle, response->ret_code);
+        }
 
     protected:
         void CbPointCloud(uint32_t handle, const uint8_t dev_type, LivoxLidarEthernetPacket *pD);
@@ -111,6 +126,7 @@ namespace kai
         void CbLoggerStart(livox_status status, uint32_t handle, LivoxLidarLoggerResponse *pR);
         void CbDebugPointCloud(livox_status status, uint32_t handle, LivoxLidarLoggerResponse *pR);
         void CbLidarInfoChange(const uint32_t handle, const LivoxLidarInfo *pI);
+        void CbLidarInfo(const uint32_t handle, const uint8_t dev_type, const char *pI);
 
     private:
         string m_fConfig;

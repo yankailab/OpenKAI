@@ -417,10 +417,12 @@ set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/LiDAR/Livox/_Livox.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/LiDAR/Livox/LivoxLidar.cpp)
 endif()
 if(USE_LIVOX2)
-set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/LiDAR/Livox2/_Livox2.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/LiDAR/Livox2/LivoxLidar2.cpp)
-endif()
-endif()
+if(WITH_3D AND USE_OPEN3D)
+set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/LiDAR/Livox2/_Livox2.cpp)
+endif() # 3D
+endif() # Livox2
+endif() # sensor
 
 if(WITH_SLAM)
 add_definitions(-DWITH_SLAM)

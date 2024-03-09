@@ -42,7 +42,7 @@ namespace kai
 
         SetLivoxLidarPointCloudCallBack(sCbPointCloud, this);
         SetLivoxLidarImuDataCallback(sCbImuData, this);
-        //        SetLivoxLidarInfoCallback(LivoxLidarPushMsgCallback, this);
+        SetLivoxLidarInfoCallback(sCbLidarInfo, this);
         SetLivoxLidarInfoChangeCallback(sCbLidarInfoChange, this);
 
         m_bOpen = true;
@@ -169,10 +169,20 @@ namespace kai
         //  SetLivoxLidarDebugPointCloud(handle, false, DebugPointCloudCallback, nullptr);
     }
 
+    void LivoxLidar2::CbLidarInfo(const uint32_t handle, const uint8_t dev_type, const char* pI)
+    {
+        NULL_(pI);
+        LOG_I("LidarInfoCallback Lidar handle: " + i2str(handle));
+
+    }
+
     void LivoxLidar2::CbPointCloud(uint32_t handle, const uint8_t dev_type, LivoxLidarEthernetPacket *pD)
     {
         NULL_(pD);
         LOG_I("CbPointCloud handle: " + i2str(handle) + ", data_num: " + i2str(pD->dot_num) + ", data_type: " + i2str(pD->data_type) + ", length: " + i2str(pD->length) + ", frame_counter: " + i2str(pD->frame_cnt));
+
+//        QueryLivoxLidarInternalInfo(handle, sCbQueryInternalInfo, this);
+
 
         LivoxLidar2device *pDev = getDevice(handle);
         NULL_(pDev);
@@ -183,7 +193,7 @@ namespace kai
     void LivoxLidar2::CbIMU(uint32_t handle, const uint8_t dev_type, LivoxLidarEthernetPacket *pD)
     {
         NULL_(pD);
-        LOG_I("CbIMU, handle:" + i2str(handle) + ", data_num:" + i2str(pD->dot_num) + ", data_type:" + i2str(pD->data_type) + ", length:" + i2str(pD->length) + ", frame_counter:" + i2str(pD->frame_cnt));
+//        LOG_I("CbIMU, handle:" + i2str(handle) + ", data_num:" + i2str(pD->dot_num) + ", data_type:" + i2str(pD->data_type) + ", length:" + i2str(pD->length) + ", frame_counter:" + i2str(pD->frame_cnt));
 
         LivoxLidar2device *pDev = getDevice(handle);
         NULL_(pDev);

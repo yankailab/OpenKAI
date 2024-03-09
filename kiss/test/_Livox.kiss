@@ -9,7 +9,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -52,14 +52,14 @@
 	"name":"LivoxLidar2",
 	"class":"LivoxLidar2",
 	"bON":1,
-	"bLog":0,
+	"bLog":1,
 	"fConfig":"/home/kai/dev/OpenKAI/data/Livox/mid360_config.json",
 }
 
 {
 	"name":"Livox2",
 	"class":"_Livox2",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":1,
@@ -83,7 +83,7 @@
 {
 	"name":"gv",
 	"class":"_GeometryViewer",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
