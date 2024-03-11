@@ -22,7 +22,7 @@ namespace kai
 	{
 		IF_N(!pK);
 
-		ADD_MODULE(_SharedMem);
+		ADD_MODULE(SharedMem);
 		ADD_MODULE(Destimator);
 		ADD_MODULE(_Console);
 
@@ -194,7 +194,6 @@ namespace kai
 		ADD_MODULE(_GDimgUploader);
 		ADD_MODULE(_BBoxCutOut);
 		ADD_MODULE(_CutOut);
-		ADD_MODULE(_FrameCutOut);
 #endif
 #endif
 

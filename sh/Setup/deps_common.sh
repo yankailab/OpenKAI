@@ -182,14 +182,6 @@ sudo make install
 sudo ldconfig
 
 #----------------------------------------------------
-# (Optional) NCNN
-sudo apt install libprotobuf-dev protobuf-compiler libvulkan-dev vulkan-utils
-git clone --branch 20220729 --depth 1 https://github.com/Tencent/ncnn.git
-cd ncnn
-mkdir build
-cd build
-
-#----------------------------------------------------
 # (Optional) Jetson inference
 # CuDNN, download the latest .deb from NVIDIA site
 # sudo dpkg -i cudnn-local-repo-ubuntu2204-8.8.0.121_1.0-1_amd64.deb
@@ -267,24 +259,6 @@ sudo make install
 # Gateway: 192.168.1.1
 
 #----------------------------------------------------
-# (Optional) Pangolin & Orb_Slam3
-git clone --branch v0.8 --depth 1 https://github.com/stevenlovegrove/Pangolin.git
-cd Pangolin
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ../
-make all -j$(nproc)
-sudo make install
-
-#git clone --depth 1 https://github.com/yankailab/ORB_SLAM3.git
-git clone --branch v1.0-release --depth 1 https://github.com/UZ-SLAMLab/ORB_SLAM3.git
-cd ORB_SLAM3
-sed -i 's/++11/++14/g' CMakeLists.txt
-chmod +x build.sh
-./build.sh
-# sudo make install
-
-#----------------------------------------------------
 # (Optional) xArm
 git clone --depth 1 https://github.com/xArm-Developer/xArm-CPLUS-SDK.git
 cd xArm-CPLUS-SDK/
@@ -307,10 +281,28 @@ ccmake ../
 make all -j$(nproc)
 
 # To build with ROS2
-echo "source source /opt/ros/humble/setup.bash" >> ~/.bashrc
+echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 echo "source /home/kai/dev/rosWS/install/setup.bash" >> ~/.bashrc
 #echo "source /home/kai/dev/ros2_humble/install/local_setup.bash" >> ~/.bashrc
 
+
+#----------------------------------------------------
+# (Optional) Pangolin & Orb_Slam3
+git clone --branch v0.8 --depth 1 https://github.com/stevenlovegrove/Pangolin.git
+cd Pangolin
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ../
+make all -j$(nproc)
+sudo make install
+
+#git clone --depth 1 https://github.com/yankailab/ORB_SLAM3.git
+git clone --branch v1.0-release --depth 1 https://github.com/UZ-SLAMLab/ORB_SLAM3.git
+cd ORB_SLAM3
+sed -i 's/++11/++14/g' CMakeLists.txt
+chmod +x build.sh
+./build.sh
+# sudo make install
 
 #----------------------------------------------------
 # (Optional) Dynamixel

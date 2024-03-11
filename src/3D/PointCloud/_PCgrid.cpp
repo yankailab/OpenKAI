@@ -47,7 +47,6 @@ namespace kai
 		pK->v("vAxisColX", &m_vAxisColX);
 		pK->v("vAxisColY", &m_vAxisColY);
 		pK->v("vAxisColZ", &m_vAxisColZ);
-		pK->v("hlcLine", &m_hlcLine);
 		pK->v("hlcLineWidth", &m_hlcLineWidth);
 		pK->v("vHLClineCol", &m_vHLClineCol);
 

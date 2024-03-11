@@ -68,6 +68,9 @@ namespace kai
         virtual void getPCframe(void* p);
         virtual void getPCgrid(void* p);
 
+        virtual void writeToSharedMem(void);
+        virtual void readFromSharedMem(void);
+
     protected:
         void mutexLock(void);
         void mutexUnlock(void);
@@ -85,6 +88,11 @@ namespace kai
 
         // buffer writing protection
 		pthread_mutex_t m_mutex;
+
+        // shared mem for data
+        SharedMem* m_psmG;
+        bool m_bWriteSharedMem;
+        bool m_bReadSharedMem;
     };
 
 }

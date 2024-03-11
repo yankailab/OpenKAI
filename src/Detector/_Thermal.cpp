@@ -12,8 +12,7 @@ namespace kai
 
 	_Thermal::_Thermal()
 	{
-		m_rL = 200;
-		m_rU = 255;
+		m_vDetRange.set(200,255);
 	}
 
 	_Thermal::~_Thermal()
@@ -25,8 +24,7 @@ namespace kai
 		IF_F(!this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v<double>("rL", &m_rL);
-		pK->v<double>("rU", &m_rU);
+		pK->v("vDetRange", &m_vDetRange);
 
 		return true;
 	}
@@ -66,7 +64,7 @@ namespace kai
 		Mat mBGR = *(m_pV->getFrameRGB()->m());
 		Mat mGray;
 		cv::cvtColor(mBGR, mGray, COLOR_BGR2GRAY);
-		cv::inRange(mGray, m_rL, m_rU, m_mR);
+		cv::inRange(mGray, m_vDetRange.x, m_vDetRange.y, m_mR);
 
 		vector<vector<Point>> vvContours;
 		findContours(m_mR, vvContours, RETR_EXTERNAL, CHAIN_APPROX_NONE);
@@ -80,7 +78,7 @@ namespace kai
 			Rect r = boundingRect(vPoly);
 
 			o.clear();
-			//		o.m_tStamp = m_pT->getTfrom();
+			o.setTstamp(m_pT->getTfrom());
 			o.setBB2D(rect2BB<vFloat4>(r));
 			o.scale(m_mR.cols, m_mR.rows);
 			o.setTopClass(0, o.area());
@@ -98,11 +96,10 @@ namespace kai
 		this->_DetectorBase::draw(pFrame);
 		IF_(check() < 0);
 
+		IF_(m_mR.empty());
 		IF_(!m_bDebug);
-		if (!m_mR.empty())
-		{
-			imshow(*this->getName() + ":Thr", m_mR);
-		}
-	}
 
+		Frame *pF = (Frame *)pFrame;
+		pF->copy(m_mR);
+	}
 }

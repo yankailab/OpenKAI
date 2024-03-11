@@ -86,19 +86,19 @@ namespace kai
 
         n = "";
         pK->v("_SHMtransformedRGB", &n);
-        m_psmTransformedRGB = (_SharedMem *)(pK->getInst(n));
+        m_psmTransformedRGB = (SharedMem *)(pK->getInst(n));
 
         n = "";
         pK->v("_SHMdepth", &n);
-        m_psmDepth = (_SharedMem *)(pK->getInst(n));
+        m_psmDepth = (SharedMem *)(pK->getInst(n));
 
         n = "";
         pK->v("_SHMtransformedDepth", &n);
-        m_psmTransformedDepth = (_SharedMem *)(pK->getInst(n));
+        m_psmTransformedDepth = (SharedMem *)(pK->getInst(n));
 
         n = "";
         pK->v("_SHMir", &n);
-        m_psmIR = (_SharedMem *)(pK->getInst(n));
+        m_psmIR = (SharedMem *)(pK->getInst(n));
 
 #ifdef WITH_3D
         n = "";

@@ -72,12 +72,43 @@
 	"vToffset":[0,0,0],
 	"vRoffset":[0,0,0],
 
+	"bWriteSharedMem":0,
+	"bReadSharedMem":0,
+	"sharedMemG":"shmW",
+}
 
-	"bEnableFan":1,
-	"returnMode":1,
-	"coordinate":0,
-	"imuRate":1,
-	"scanPattern":0,
+{
+	"name":"shmW",
+	"class":"SharedMem",
+	"bON":0,
+	"shmName":"livox",
+	"nB":256000,
+	"bWriter":1,
+}
+
+{
+	"name":"shmR",
+	"class":"SharedMem",
+	"bON":0,
+	"shmName":"livox",
+	"nB":256000,
+	"bWriter":0,
+}
+
+{
+	"name":"livoxStream",
+	"class":"_PCstream",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"nP":256000,
+
+	"bWriteSharedMem":0,
+	"bReadSharedMem":0,
+	"sharedMemG":"shmR",
 }
 
 {

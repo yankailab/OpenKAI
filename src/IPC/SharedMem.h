@@ -1,14 +1,14 @@
 /*
- * _SharedMem.h
+ * SharedMem.h
  *
  *  Created on: Sept 20, 2022
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_IPC_SharedMemBase_H_
-#define OpenKAI_src_IPC_SharedMemBase_H_
+#ifndef OpenKAI_src_IPCSharedMemBase_H_
+#define OpenKAI_src_IPCSharedMemBase_H_
 
-#include "../Base/_ModuleBase.h"
+#include "../Base/BASE.h"
 #include <sys/shm.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
@@ -16,11 +16,11 @@
 namespace kai
 {
 
-	class _SharedMem : public _ModuleBase
+	class SharedMem : public BASE
 	{
 	public:
-		_SharedMem();
-		virtual ~_SharedMem();
+		SharedMem();
+		virtual ~SharedMem();
 
 		virtual bool init(void *pKiss);
 		virtual bool link(void);

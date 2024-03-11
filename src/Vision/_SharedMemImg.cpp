@@ -12,7 +12,7 @@ namespace kai
 
     _SharedMemImg::_SharedMemImg()
     {
-        m_type = vision_sharedMemImg;
+        m_type = vision_SharedMemImg;
         m_matType = CV_8UC3;
     }
 
@@ -36,9 +36,9 @@ namespace kai
 
         string n;
         n = "";
-        F_ERROR_F(pK->v("_SharedMem", &n));
-        m_pSHM = (_SharedMem *)(pK->getInst(n));
-        NULL_Fl(m_pSHM, "_SharedMem not found");
+        F_ERROR_F(pK->v("SharedMem", &n));
+        m_pSHM = (SharedMem *)(pK->getInst(n));
+        NULL_Fl(m_pSHM, "SharedMem not found");
 
         return true;
     }
@@ -71,13 +71,13 @@ namespace kai
 
             m_pT->autoFPSfrom();
 
-            updateSharedMemImg();
+            update_SharedMemImg();
 
             m_pT->autoFPSto();
         }
     }
 
-    bool _SharedMemImg::updateSharedMemImg(void)
+    bool _SharedMemImg::update_SharedMemImg(void)
     {
         IF_T(check() < 0);
 

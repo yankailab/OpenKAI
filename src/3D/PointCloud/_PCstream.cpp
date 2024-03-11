@@ -37,11 +37,37 @@ namespace kai
         return initBuffer();
     }
 
+    bool _PCstream::start(void)
+    {
+        NULL_F(m_pT);
+        return m_pT->start(getUpdate, this);
+    }
+
+    void _PCstream::update(void)
+    {
+        while (m_pT->bThread())
+        {
+            m_pT->autoFPSfrom();
+
+            updatePCstream();
+
+            m_pT->autoFPSto();
+        }
+    }
+
     int _PCstream::check(void)
     {
         NULL__(m_pP, -1);
 
         return this->_GeometryBase::check();
+    }
+
+    void _PCstream::updatePCstream(void)
+    {
+        IF_(check() < 0);
+
+        readFromSharedMem();
+        writeToSharedMem();
     }
 
     bool _PCstream::initBuffer(void)
@@ -141,4 +167,23 @@ namespace kai
     {
         return m_iP;
     }
+
+    void _PCstream::writeToSharedMem(void)
+    {
+        IF_(!m_bWriteSharedMem);
+        NULL_(m_psmG);
+        IF_(!m_psmG->bOpen());
+
+		memcpy(m_psmG->p(), m_pP, m_nP * sizeof(GEOMETRY_POINT));
+    }
+
+    void _PCstream::readFromSharedMem(void)
+    {
+        IF_(!m_bReadSharedMem);
+        NULL_(m_psmG);
+        IF_(!m_psmG->bOpen());
+
+		memcpy(m_pP, m_psmG->p(), m_nP * sizeof(GEOMETRY_POINT));
+    }
+
 }

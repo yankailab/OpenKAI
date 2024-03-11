@@ -21,20 +21,26 @@ namespace kai
         m_mT = Matrix4d::Identity();
         m_A = Matrix4d::Identity();
 
-   		pthread_mutex_init(&m_mutex, NULL);
+        pthread_mutex_init(&m_mutex, NULL);
+
+        m_psmG = NULL;
+        m_bWriteSharedMem = false;
+        m_bReadSharedMem = false;
     }
 
     _GeometryBase::~_GeometryBase()
     {
-		pthread_mutex_destroy(&m_mutex);
+        pthread_mutex_destroy(&m_mutex);
     }
 
     bool _GeometryBase::init(void *pKiss)
     {
         IF_F(!this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+        Kiss *pK = (Kiss *)pKiss;
 
         pK->v("vDefaultColor", &m_vDefaultColor);
+        pK->v("bWriteSharedMem", &m_bWriteSharedMem);
+        pK->v("bReadSharedMem", &m_bReadSharedMem);
 
         pK->v("vT", &m_vT);
         pK->v("vR", &m_vR);
@@ -45,13 +51,18 @@ namespace kai
         return true;
     }
 
-	bool _GeometryBase::link(void)
-	{
-		IF_F(!this->_ModuleBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+    bool _GeometryBase::link(void)
+    {
+        IF_F(!this->_ModuleBase::link());
+        Kiss *pK = (Kiss *)m_pKiss;
 
-		return true;
-	}
+        string n;
+        n = "";
+        pK->v("SharedMemG", &n);
+        m_psmG = (SharedMem *)(pK->getInst(n));
+
+        return true;
+    }
 
     int _GeometryBase::check(void)
     {
@@ -92,35 +103,34 @@ namespace kai
         return mT;
     }
 
-
     GEOMETRY_TYPE _GeometryBase::getType(void)
     {
         return m_type;
     }
 
-	bool _GeometryBase::initBuffer(void)
-	{
-		return false;
-	}
+    bool _GeometryBase::initBuffer(void)
+    {
+        return false;
+    }
 
     void _GeometryBase::clear(void)
     {
     }
 
-    void _GeometryBase::getGeometry(void *p, const uint64_t& tExpire)
+    void _GeometryBase::getGeometry(void *p, const uint64_t &tExpire)
     {
         NULL_(p);
 
-        GEOMETRY_TYPE gt = ((_GeometryBase*)p)->getType();
-        if(gt == pc_stream)
+        GEOMETRY_TYPE gt = ((_GeometryBase *)p)->getType();
+        if (gt == pc_stream)
             getPCstream(p, tExpire);
-        else if(gt == pc_frame)
+        else if (gt == pc_frame)
             getPCframe(p);
-        else if(gt == pc_grid)
+        else if (gt == pc_grid)
             getPCgrid(p);
     }
 
-    void _GeometryBase::getPCstream(void *p, const uint64_t& tExpire)
+    void _GeometryBase::getPCstream(void *p, const uint64_t &tExpire)
     {
     }
 
@@ -132,14 +142,22 @@ namespace kai
     {
     }
 
+    void _GeometryBase::writeToSharedMem(void)
+    {
+    }
+
+    void _GeometryBase::readFromSharedMem(void)
+    {
+    }
+
     void _GeometryBase::mutexLock(void)
     {
-		pthread_mutex_lock(&m_mutex);
+        pthread_mutex_lock(&m_mutex);
     }
 
     void _GeometryBase::mutexUnlock(void)
     {
-		pthread_mutex_unlock(&m_mutex);
+        pthread_mutex_unlock(&m_mutex);
     }
 
     void _GeometryBase::console(void *pConsole)
@@ -148,8 +166,8 @@ namespace kai
         this->_ModuleBase::console(pConsole);
 
         _Console *pC = (_Console *)pConsole;
-        pC->addMsg("vT = (" + f2str(m_vT.x) + "," + f2str(m_vT.y) + ", " + f2str(m_vT.z) +")");
-        pC->addMsg("vR = (" + f2str(m_vR.x) + "," + f2str(m_vR.y) + ", " + f2str(m_vR.z) +")");
+        pC->addMsg("vT = (" + f2str(m_vT.x) + "," + f2str(m_vT.y) + ", " + f2str(m_vT.z) + ")");
+        pC->addMsg("vR = (" + f2str(m_vR.x) + "," + f2str(m_vR.y) + ", " + f2str(m_vR.z) + ")");
     }
 
 }

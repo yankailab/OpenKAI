@@ -35,8 +35,7 @@ namespace kai
 
 	protected:
 		Mat m_mR;
-		double m_rL;
-		double m_rU;
+		vFloat2 m_vDetRange;
 	};
 
 }

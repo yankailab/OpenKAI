@@ -2,45 +2,70 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
-	"bDraw":1,
 	"bLog":1,
-	"b_Console":0,
 	"bStdErr":1,
-	"waitKey":30,
 }
 
 {
-	"name":"OKview",
-	"class":"Window",
+	"name":"console",
+	"class":"_Console",
 	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["cam","univ"],
 }
 
 {
-	"name":"camera",
-	"class":"_Camera",
-	"FPS":30,
+	"name":"CVwindow",
+	"class":"_WindowCV",
 	"bON":1,
-	"Window":"OKview",
-	"deviceID":1,
-	"w":1920,
-	"h":1080,
-	"fovW":60,
-	"fovH":60,
+	"bFullScreen":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["cam","univ"],
 }
 
 {
-	"name":"det",
+	"name":"cam",
+	"class":"_GStreamer",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vSize":[1280,720],
+	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.10.1:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! queue ! videoconvert ! appsink max-buffers=1 drop=true",
+	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.10.1:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! tee name=t t. ! queue ! videoconvert ! appsink max-buffers=1 sync=false drop=true t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+	"pipeline":"v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! appsink",
+}
+
+{
+	"name":"univ",
+	"class":"_Universe",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bDrawText":0,
+	"vArea":[0.0005, 0.9],
+	"vW":[0.0, 1.0],
+	"vH":[0.0, 1.0],
+}
+
+{
+	"name":"thermal",
 	"class":"_Thermal",
-	"bON":1,
-	"bDraw":1,
 	"bLog":0,
-	"FPS":30,
-	"Window":"OKview",
-	"_VisionBase":"camera",
-	"rL":200,
-	"rU":255,
-	"minArea":0.0005,
-	"maxArea":0.9,
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"cam",
+	"vDetRange":[200,255],
 }
-

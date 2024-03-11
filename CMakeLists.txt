@@ -333,7 +333,6 @@ set(OpenKAI_cpp ${OpenKAI_cpp} src/File/Image/_GPhotoTake.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/File/Image/_BBoxCutOut.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/File/Image/_CutOut.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/File/Image/_GDimgUploader.cpp)
-set(OpenKAI_cpp ${OpenKAI_cpp} src/File/Video/_FrameCutOut.cpp)
 endif()
 endif()
 

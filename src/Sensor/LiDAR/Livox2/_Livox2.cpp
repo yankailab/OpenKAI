@@ -68,13 +68,6 @@ namespace kai
     {
     }
 
-    int _Livox2::check(void)
-    {
-        NULL__(m_pLv, -1);
-
-        return this->_PCstream::check();
-    }
-
     bool _Livox2::start(void)
     {
         NULL_F(m_pT);
@@ -100,6 +93,13 @@ namespace kai
 
             m_pT->autoFPSto();
         }
+    }
+
+    int _Livox2::check(void)
+    {
+        NULL__(m_pLv, -1);
+
+        return this->_PCstream::check();
     }
 
     void _Livox2::updateLidar(void)

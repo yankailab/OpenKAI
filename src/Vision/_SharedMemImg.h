@@ -10,7 +10,7 @@
 
 #include "_VisionBase.h"
 #include "../Utility/util.h"
-#include "../IPC/_SharedMem.h"
+#include "../IPC/SharedMem.h"
 
 namespace kai
 {
@@ -28,7 +28,7 @@ namespace kai
 
 	private:
 		void update(void);
-		bool updateSharedMemImg(void);
+		bool update_SharedMemImg(void);
 		static void *getUpdate(void *This)
 		{
 			((_SharedMemImg *)This)->update();
@@ -36,7 +36,7 @@ namespace kai
 		}
 
 	public:
-		_SharedMem* m_pSHM;
+		SharedMem* m_pSHM;
 		int m_matType;
 
 	};

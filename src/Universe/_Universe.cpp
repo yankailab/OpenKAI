@@ -10,9 +10,9 @@ namespace kai
 	_Universe::_Universe()
 	{
 		m_minConfidence = 0.0;
-		m_rArea.set(-FLT_MAX, FLT_MAX);
-		m_rW.set(-FLT_MAX, FLT_MAX);
-		m_rH.set(-FLT_MAX, FLT_MAX);
+		m_vArea.set(-FLT_MAX, FLT_MAX);
+		m_vW.set(-FLT_MAX, FLT_MAX);
+		m_vH.set(-FLT_MAX, FLT_MAX);
 
 		m_vRoi.set(0.0, 0.0, 1.0, 1.0);
 		m_vClassRange.set(-INT_MAX, INT_MAX);
@@ -34,9 +34,9 @@ namespace kai
 
 		// general
 		pK->v("minConfidence", &m_minConfidence);
-		pK->v("rArea", &m_rArea);
-		pK->v("rW", &m_rW);
-		pK->v("rH", &m_rH);
+		pK->v("vArea", &m_vArea);
+		pK->v("vW", &m_vW);
+		pK->v("vH", &m_vH);
 		pK->v("vRoi", &m_vRoi);
 		pK->v("vClassRange", &m_vClassRange);
 
@@ -84,10 +84,10 @@ namespace kai
 
 	_Object *_Universe::add(_Object &o)
 	{
-		IF_N(o.area() < m_rArea.x || o.area() > m_rArea.y);
-		IF_N(o.getWidth() < m_rW.x || o.getWidth() > m_rW.y);
-		IF_N(o.getHeight() < m_rH.x || o.getHeight() > m_rH.y);
-		IF_N(o.getTopClass() < m_vClassRange.x || o.getTopClass() > m_vClassRange.y);
+		IF_N(!m_vArea.bInside(o.area()));
+		IF_N(!m_vW.bInside(o.getWidth()));
+		IF_N(!m_vH.bInside(o.getHeight()));
+		IF_N(!m_vClassRange.bInside(o.getTopClass()));
 
 		vFloat3 p = o.getPos();
 		IF_N(p.x < m_vRoi.x);

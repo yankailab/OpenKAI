@@ -1,16 +1,18 @@
 /*
- * _SharedMem.cpp
+ * SharedMem.cpp
  *
  *  Created on: Sept 20, 2022
  *      Author: yankai
  */
 
-#include "_SharedMem.h"
+#include "SharedMem.h"
+#include "../Script/Kiss.h"
+#include "../UI/_Console.h"
 
 namespace kai
 {
 
-	_SharedMem::_SharedMem()
+	SharedMem::SharedMem()
 	{
 		m_shmName = "";
 		m_nB = 0;
@@ -20,14 +22,14 @@ namespace kai
 		m_bOpen = false;
 	}
 
-	_SharedMem::~_SharedMem()
+	SharedMem::~SharedMem()
 	{
 		close();
 	}
 
-	bool _SharedMem::init(void *pKiss)
+	bool SharedMem::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		IF_F(!this->BASE::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("shmName", &m_shmName);
@@ -39,14 +41,14 @@ namespace kai
 		return true;
 	}
 
-	bool _SharedMem::link(void)
+	bool SharedMem::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
+		IF_F(!this->BASE::link());
 
 		return true;
 	}
 
-	bool _SharedMem::open(void)
+	bool SharedMem::open(void)
 	{
 		IF_T(m_bOpen);
 
@@ -70,12 +72,12 @@ namespace kai
 		return true;
 	}
 
-	bool _SharedMem::bOpen(void)
+	bool SharedMem::bOpen(void)
 	{
 		return m_bOpen;
 	}
 
-	void _SharedMem::close(void)
+	void SharedMem::close(void)
 	{
 		IF_(!m_bOpen);
 
@@ -88,14 +90,14 @@ namespace kai
 		}
 	}
 
-	void *_SharedMem::p(void)
+	void *SharedMem::p(void)
 	{
 		IF_N(!m_bOpen);
 
 		return m_pB;
 	}
 
-	bool _SharedMem::bWriter(void)
+	bool SharedMem::bWriter(void)
 	{
 		return m_bWriter;
 	}

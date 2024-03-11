@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Vision__VisionBase_H_
 #define OpenKAI_src_Vision__VisionBase_H_
 
-#include "../IPC/_SharedMem.h"
+#include "../IPC/SharedMem.h"
 #include "../UI/_Console.h"
 
 #ifdef USE_OPENCV
@@ -46,7 +46,7 @@ namespace kai
 		vision_remap,
 		vision_RSdepth,
 		vision_depthProj,
-		vision_sharedMemImg,
+		vision_SharedMemImg,
 		vision_infiRay,
 	};
 
@@ -83,7 +83,7 @@ namespace kai
 
 		bool m_bOpen;
 
-		_SharedMem *m_psmRGB;
+		SharedMem *m_psmRGB;
 
 #ifdef USE_OPENCV
 		Frame m_fRGB;

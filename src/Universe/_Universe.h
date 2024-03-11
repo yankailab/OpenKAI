@@ -53,9 +53,9 @@ namespace kai
 
 		//config
 		float m_minConfidence;
-		vFloat2 m_rArea;
-		vFloat2 m_rW;
-		vFloat2 m_rH;
+		vFloat2 m_vArea;
+		vFloat2 m_vW;
+		vFloat2 m_vH;
 		vFloat4 m_vRoi;
 		vInt2 m_vClassRange;
 

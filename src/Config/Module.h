@@ -13,7 +13,7 @@
 #include "../Script/Kiss.h"
 
 #include "../Arithmetic/Destimator.h"
-#include "../IPC/_SharedMem.h"
+#include "../IPC/SharedMem.h"
 #include "../UI/_Console.h"
 
 #ifdef WITH_3D &&USE_OPEN3D
@@ -182,7 +182,6 @@
 #include "../File/Image/_GDimgUploader.h"
 #include "../File/Image/_BBoxCutOut.h"
 #include "../File/Image/_CutOut.h"
-#include "../File/Video/_FrameCutOut.h"
 #endif
 #endif
 

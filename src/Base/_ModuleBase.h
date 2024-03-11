@@ -9,6 +9,7 @@
 #define OpenKAI_src_Base__ModuleBase_H_
 
 #include "_Thread.h"
+#include "../IPC/SharedMem.h"
 
 #define ON_SLEEP            \
 	if (m_pT->bOnGoSleep()) \

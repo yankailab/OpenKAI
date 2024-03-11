@@ -28,6 +28,7 @@ namespace kai
         virtual ~_PCstream();
 
         virtual bool init(void *pKiss);
+        virtual bool start(void);
         virtual int check(void);
 
 		virtual bool initBuffer(void);
@@ -42,6 +43,18 @@ namespace kai
         virtual GEOMETRY_POINT* get(int i);
         virtual int nP(void);
         virtual int iP(void);
+
+        virtual void writeToSharedMem(void);
+        virtual void readFromSharedMem(void);
+
+    protected:
+        void updatePCstream(void);
+        void update(void);
+        static void *getUpdate(void *This)
+        {
+            ((_PCstream *)This)->update();
+            return NULL;
+        }
 
     protected:
         //ring buf

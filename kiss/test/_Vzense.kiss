@@ -19,7 +19,7 @@
 
 {
 	"name":"SHMvzRGB",
-	"class":"_SharedMem",
+	"class":"SharedMem",
 	"bON":0,
     {
 		"name":"thread",
