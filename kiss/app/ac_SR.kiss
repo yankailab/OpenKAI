@@ -9,7 +9,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -20,13 +20,13 @@
 {
 	"name":"CVwindow",
 	"class":"_WindowCV",
-	"bON":1,
+	"bON":0,
 	"bFullScreen":0,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["cam","univ"],
+	"vBASE":["cam","/inv","univ"],
 }
 
 {
@@ -38,9 +38,27 @@
 		"FPS":30,
 	}
 	"vSize":[1280,720],
-	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.10.1:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! queue ! videoconvert ! appsink max-buffers=1 drop=true", 
+	"pipeline":"rtspsrc latency=0 location=rtsp://192.168.10.1:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! queue ! videoconvert ! appsink max-buffers=1 drop=true", 
 	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.10.1:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! tee name=t t. ! queue ! videoconvert ! appsink max-buffers=1 sync=false drop=true t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
-	"pipeline":"v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! appsink",
+	"/pipeline":"v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! appsink",
+}
+
+
+{
+	"name":"udp",
+	"class":"_SerialPort",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":10,
+		"vTwakeUp":["mavUDP.thread"],
+	}
+	"port":"/dev/ttyTHS1",
+	"baud":115200,
 }
 
 {
@@ -136,15 +154,97 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
 	"bDrawText":1,
+	"vArea":[0.0001, 0.5],
+	"vW":[0.0, 0.25],
+	"vH":[0.0, 0.25],
 }
+
+{
+	"name":"inv",
+	"class":"_Invert",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"cam",
+}
+
+{
+	"name":"hsv",
+	"class":"_ColorConvert",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"inv",
+	"code":40,
+}
+
+{
+	"name":"inRange",
+	"class":"_InRange",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"hsv",
+	"vL":[80, 30, 150],
+	"vH":[100, 255, 255],
+	"/vL":[80, 30, 150],
+	"/vH":[100, 255, 255],
+}
+
+{
+	"name":"morph",
+	"class":"_Morphology",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"inRange",
+
+	{
+		"bON":1,	
+		"morphOp":2, /*open*/
+		"nItr":1,
+		"kW":2,
+		"kH":2,
+		"aX":1,
+		"aY":1,
+	}
+	
+	{
+		"bON":0,
+		"morphOp":3, /*close*/
+		"nItr":2,
+	}
+}
+
+{
+	"name":"CR",
+	"class":"_Contour",
+	"bON":1,
+	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"morph",
+	"_Universe":"univ",
+}
+
 
 {
 	"name":"YOLO",
 	"class":"_YOLOv8",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -152,8 +252,8 @@
 	"bLog":1,
 	"_VisionBase":"cam",
 	"_Universe":"univ",
-	"fModel":"/home/kai/dev/models/yolov8n.onnx",
-	"/fModel":"/home/nvidia/dev/models/yolov8n.onnx",
+	"/fModel":"/home/kai/dev/models/yolov8n.onnx",
+	"fModel":"/home/nvidia/dev/models/yolov8n.onnx",
 	"confidence":0.25,
 	"bLetterBoxForSquare":0,
 }
@@ -173,8 +273,8 @@
 	"_Curl":"cURL",
 	"vWPrange":[2,100],
 	"vClass":[0],
-	"dir":"/home/kai/pics/",
-	"/dir":"/home/nvidia/pics/",
+	"/dir":"/home/kai/pics/",
+	"dir":"/home/nvidia/pics/",
 	"bRTL":1,
 	"modeRTL":84148224,
 }
@@ -191,8 +291,8 @@
 	"cmd":"cmd [fName]",
 	"/cmd":"rclone copy --local-no-check-updated [fName] remote:rescue_data",
 	"/cmd":"curl 2>&1 -T [fName] ftp://193.112.75.123/pub/ -u anonymous: --connect-timeout 60 --no-progress-meter",
-	"dir":"/home/kai/pics/",
-	"/dir":"/home/nvidia/pics/",
+	"/dir":"/home/kai/pics/",
+	"dir":"/home/nvidia/pics/",
 	"vExt":[".jpg"],
 }
 

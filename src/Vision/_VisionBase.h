@@ -40,7 +40,7 @@ namespace kai
 		vision_resize,
 		vision_rotate,
 		vision_inRange,
-		vision_grayscale,
+		vision_ColorConvert,
 		vision_crop,
 		vision_gphoto,
 		vision_remap,
@@ -48,6 +48,7 @@ namespace kai
 		vision_depthProj,
 		vision_SharedMemImg,
 		vision_infiRay,
+		vision_BGR2HSV,
 	};
 
 	class _VisionBase : public _ModuleBase

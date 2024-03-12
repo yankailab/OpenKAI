@@ -9,19 +9,28 @@ sudo apt-get install libpcl-dev
 # inside ros workspace/src
 mkdir -p ~/dev/rosWS/src
 cd ~/dev/rosWS/src
-git clone https://github.com/Livox-SDK/livox_ros_driver2.git
+git clone --depth 1 https://github.com/Livox-SDK/livox_ros_driver2.git
 cd livox_ros_driver2
 ./build.sh humble
 
-echo "source /home/kai/dev/rosWS/install/setup.bash" >> ~/.bashrc
+echo "source /home/lab/dev/rosWS/install/setup.bash" >> ~/.bashrc
+#echo "source /home/kai/dev/rosWS/install/setup.bash" >> ~/.bashrc
 
 # build Fast_lio
 cd ~/dev/rosWS/src
-git clone https://github.com/Ericsii/FAST_LIO_ROS2.git --recursive
+git clone --depth 1 https://github.com/Ericsii/FAST_LIO_ROS2.git --recursive
 cd ..
+#cd FAST_LIO_ROS2
+#git submodule update --init --recursive
+#cd ../..
 rosdep install --from-paths src --ignore-src -y
+
 colcon build --symlink-install
-./install/setup.bash # use setup.zsh if use zsh
+#cd src/livox_ros_driver2
+#./build.sh humble
+
+sudo chmod a+x install/setup.bash
+./install/setup.bash
 
 # edit livox config
 nano ~/dev/rosWS/install/livox_ros_driver2/share/livox_ros_driver2/config/MID360_config.json

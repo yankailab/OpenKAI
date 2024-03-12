@@ -3690,7 +3690,7 @@
       <entry value="1" name="VIDEO_STREAM_STATUS_FLAGS_RUNNING">
         <description>Stream is active (running)</description>
       </entry>
-      <entry value="2" name="VIDEO_STREAM_STATUS_FLAGS_THERMAL">
+      <entry value="2" name="VIDEO_STREAM_STATUS_FLAGS_Contour">
         <description>Stream is thermal imaging</description>
       </entry>
     </enum>

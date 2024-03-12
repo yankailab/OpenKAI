@@ -706,7 +706,7 @@ static inline float mavlink_msg_fw_soaring_data_get_z2_exp(const mavlink_message
  *
  * @return [m/s] Thermal drift (from estimator prediction step only)
  */
-static inline float mavlink_msg_fw_soaring_data_get_ThermalGSNorth(const mavlink_message_t* msg)
+static inline float mavlink_msg_fw_soaring_data_get_ContourGSNorth(const mavlink_message_t* msg)
 {
     return _MAV_RETURN_float(msg,  80);
 }
@@ -716,7 +716,7 @@ static inline float mavlink_msg_fw_soaring_data_get_ThermalGSNorth(const mavlink
  *
  * @return [m/s] Thermal drift (from estimator prediction step only)
  */
-static inline float mavlink_msg_fw_soaring_data_get_ThermalGSEast(const mavlink_message_t* msg)
+static inline float mavlink_msg_fw_soaring_data_get_ContourGSEast(const mavlink_message_t* msg)
 {
     return _MAV_RETURN_float(msg,  84);
 }
@@ -798,8 +798,8 @@ static inline void mavlink_msg_fw_soaring_data_decode(const mavlink_message_t* m
     fw_soaring_data->z2_DeltaRoll = mavlink_msg_fw_soaring_data_get_z2_DeltaRoll(msg);
     fw_soaring_data->z1_exp = mavlink_msg_fw_soaring_data_get_z1_exp(msg);
     fw_soaring_data->z2_exp = mavlink_msg_fw_soaring_data_get_z2_exp(msg);
-    fw_soaring_data->ThermalGSNorth = mavlink_msg_fw_soaring_data_get_ThermalGSNorth(msg);
-    fw_soaring_data->ThermalGSEast = mavlink_msg_fw_soaring_data_get_ThermalGSEast(msg);
+    fw_soaring_data->ThermalGSNorth = mavlink_msg_fw_soaring_data_get_ContourGSNorth(msg);
+    fw_soaring_data->ThermalGSEast = mavlink_msg_fw_soaring_data_get_ContourGSEast(msg);
     fw_soaring_data->TSE_dot = mavlink_msg_fw_soaring_data_get_TSE_dot(msg);
     fw_soaring_data->DebugVar1 = mavlink_msg_fw_soaring_data_get_DebugVar1(msg);
     fw_soaring_data->DebugVar2 = mavlink_msg_fw_soaring_data_get_DebugVar2(msg);

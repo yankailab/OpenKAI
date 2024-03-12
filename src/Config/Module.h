@@ -198,14 +198,13 @@
 #include "../Detector/_OpenPose.h"
 #include "../Detector/_HandKey.h"
 #include "../Detector/_SSD.h"
-#include "../Detector/_Thermal.h"
+#include "../Detector/_Contour.h"
 #ifdef USE_OPENCV_CONTRIB
 #include "../Detector/_ArUco.h"
 #include "../Detector/_MotionDetector.h"
 #include "../Tracker/_SingleTracker.h"
 #endif
 #ifdef USE_CUDA
-#include "../Detector/_Bullseye.h"
 #include "../Detector/_Cascade.h"
 #endif
 #ifdef USE_CHILITAGS
@@ -350,7 +349,7 @@
 #include "../Vision/ImgFilter/_Depth2Gray.h"
 #include "../Vision/ImgFilter/_DepthShow.h"
 #include "../Vision/ImgFilter/_Erode.h"
-#include "../Vision/ImgFilter/_Grayscale.h"
+#include "../Vision/ImgFilter/_ColorConvert.h"
 #include "../Vision/ImgFilter/_HistEqualize.h"
 #include "../Vision/ImgFilter/_Invert.h"
 #include "../Vision/ImgFilter/_InRange.h"

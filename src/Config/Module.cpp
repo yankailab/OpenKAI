@@ -210,14 +210,13 @@ namespace kai
 		ADD_MODULE(_Lane);
 		ADD_MODULE(_Line);
 		ADD_MODULE(_SSD);
-		ADD_MODULE(_Thermal);
+		ADD_MODULE(_Contour);
 #ifdef USE_OPENCV_CONTRIB
 		ADD_MODULE(_ArUco);
 		ADD_MODULE(_MotionDetector);
 		ADD_MODULE(_SingleTracker);
 #endif
 #ifdef USE_CUDA
-		ADD_MODULE(_Bullseye);
 		ADD_MODULE(_Cascade);
 #endif
 #ifdef USE_CHILITAGS
@@ -355,7 +354,7 @@ namespace kai
 		ADD_MODULE(_Erode);
 		ADD_MODULE(_GPhoto);
 		ADD_MODULE(_GStreamer);
-		ADD_MODULE(_Grayscale);
+		ADD_MODULE(_ColorConvert);
 		ADD_MODULE(_HistEqualize);
 		ADD_MODULE(_Invert);
 		ADD_MODULE(_InRange);

@@ -49,7 +49,7 @@
 
 {
 	"name":"gray",
-	"class":"_Grayscale",
+	"class":"_ColorConvert",
     {
 		"name":"thread",
 		"FPS":30,

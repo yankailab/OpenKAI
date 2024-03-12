@@ -45,7 +45,7 @@ namespace kai
 		pK->v("bDrawPos", &m_bDrawPos);
 
 		// buffer
-		int nB;
+		int nB = 16;
 		pK->v("nBuf", &nB);
 		m_sO.get()->init(nB);
 		m_sO.next()->init(nB);

@@ -25,7 +25,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["/cam","/RSdepth","/d2g","/thr","/inRange","mask"],
+	"vBASE":["cam","/RSdepth","/d2g","/thr","/inRange","mask"],
 }
 
 {
@@ -111,7 +111,7 @@
 {
 	"name":"d2g",
 	"class":"_Depth2Gray",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -122,7 +122,7 @@
 {
 	"name":"inRange",
 	"class":"_InRange",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,

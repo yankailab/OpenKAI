@@ -58,7 +58,7 @@ sudo apt-get -y install libmgl-dev
 
 # (Optional)
 sudo apt-get -y install libimage-exiftool-perl
-sudo apt-get -y install python python3-pip
+sudo apt-get -y install python3 python3-pip
 pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
 snap install cloudcompare
 
@@ -92,6 +92,10 @@ mkdir build
 cd build
 cmake ../
 sudo make install
+
+#----------------------------------------------------
+# git setting
+git config --global http.postBuffer 5M
 
 #----------------------------------------------------
 # (Optional) RealSense

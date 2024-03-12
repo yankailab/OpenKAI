@@ -32,7 +32,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -44,6 +44,18 @@
 }
 
 {
+	"name":"cam",
+	"class":"_VideoFile",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"videoFile":"/home/kai/Documents/100XACTI/XACT0002.MOV",
+	"vSize":[1280,720],
+}
+
+{
 	"name":"univ",
 	"class":"_Universe",
 	"bON":1,
@@ -52,14 +64,14 @@
 		"FPS":30,
 	}
 	"bDrawText":0,
-	"vArea":[0.0005, 0.9],
+	"vArea":[0.0001, 0.9],
 	"vW":[0.0, 1.0],
 	"vH":[0.0, 1.0],
 }
 
 {
 	"name":"thermal",
-	"class":"_Thermal",
+	"class":"_Contour",
 	"bLog":0,
 	"bON":1,
     {
@@ -67,5 +79,6 @@
 		"FPS":30,
 	}
 	"_VisionBase":"cam",
+	"_Universe":"univ",
 	"vDetRange":[200,255],
 }

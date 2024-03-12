@@ -1,23 +1,23 @@
 /*
- * _Thermal.h
+ * _Contour.h
  *
  *  Created on: Jan 18, 2019
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Detector__Thermal_H_
-#define OpenKAI_src_Detector__Thermal_H_
+#ifndef OpenKAI_src_Detector__Contour_H_
+#define OpenKAI_src_Detector__Contour_H_
 
 #include "_DetectorBase.h"
 
 namespace kai
 {
 
-	class _Thermal : public _DetectorBase
+	class _Contour : public _DetectorBase
 	{
 	public:
-		_Thermal();
-		virtual ~_Thermal();
+		_Contour();
+		virtual ~_Contour();
 
 		virtual bool init(void *pKiss);
 		virtual bool start(void);
@@ -29,13 +29,11 @@ namespace kai
 		void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_Thermal *)This)->update();
+			((_Contour *)This)->update();
 			return NULL;
 		}
 
 	protected:
-		Mat m_mR;
-		vFloat2 m_vDetRange;
 	};
 
 }

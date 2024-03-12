@@ -1,26 +1,27 @@
 /*
- * _InRange.h
+ * _ColorConvert.h
  *
- *  Created on: April 23, 2019
+ *  Created on: March 12, 2019
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Vision__InRange_H_
-#define OpenKAI_src_Vision__InRange_H_
+#ifndef OpenKAI_src_Vision__ColorConvert_H_
+#define OpenKAI_src_Vision__ColorConvert_H_
 
 #include "../_VisionBase.h"
 
 namespace kai
 {
 
-	class _InRange : public _VisionBase
+	class _ColorConvert : public _VisionBase
 	{
 	public:
-		_InRange();
-		virtual ~_InRange();
+		_ColorConvert();
+		virtual ~_ColorConvert();
 
 		bool init(void *pKiss);
 		bool link(void);
+		int check(void);
 		bool start(void);
 		bool open(void);
 		void close(void);
@@ -30,14 +31,13 @@ namespace kai
 		void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_InRange *)This)->update();
+			((_ColorConvert *)This)->update();
 			return NULL;
 		}
 
 	public:
 		_VisionBase *m_pV;
-		vInt3 m_vL;
-		vInt3 m_vH;
+		int m_code;
 	};
 
 }

@@ -39,6 +39,11 @@ sudo apt-get install ros-humble-pcl-ros
 
 source /opt/ros/humble/setup.bash
 
+sudo apt upgrade
+sudo rosdep init
+rosdep update
+
+
 # Build from source -----------------
 
 sudo apt install -y \

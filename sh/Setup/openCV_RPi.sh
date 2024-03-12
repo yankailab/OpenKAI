@@ -1,7 +1,7 @@
 #----------------------------------------------------
 # (Optional) OpenCV
-git clone --branch 4.8.1 --depth 1 https://github.com/opencv/opencv.git
-git clone --branch 4.8.1 --depth 1 https://github.com/opencv/opencv_contrib.git
+git clone --branch 4.9.0 --depth 1 https://github.com/opencv/opencv.git
+git clone --branch 4.9.0 --depth 1 https://github.com/opencv/opencv_contrib.git
 cd opencv
 mkdir build
 cd build
@@ -107,7 +107,7 @@ cmake -DBUILD_CUDA_STUBS=OFF \
       -DWITH_CUDA=OFF \
       -DWITH_EIGEN=ON \
       -DWITH_FFMPEG=ON \
-      -DWITH_FREETYPE=ON \
+      -DWITH_FREETYPE=OFF \
       -DWITH_GDAL=OFF \
       -DWITH_GDCM=OFF \
       -DWITH_GPHOTO2=ON \
@@ -126,8 +126,8 @@ cmake -DBUILD_CUDA_STUBS=OFF \
       -DWITH_MATLAB=OFF \
       -DWITH_MFX=OFF \
       -DWITH_OPENCL=ON \
-      -DWITH_OPENCLAMDBLAS=OFF \
-      -DWITH_OPENCLAMDFFT=OFF \
+      -DWITH_OPENCLAMDBLAS=ON \
+      -DWITH_OPENCLAMDFFT=ON \
       -DWITH_OPENCL_SVM=OFF \
       -DWITH_OPENEXR=ON \
       -DWITH_OPENGL=ON \
@@ -141,7 +141,7 @@ cmake -DBUILD_CUDA_STUBS=OFF \
       -DWITH_PTHREADS_PF=ON \
       -DWITH_PVAPI=OFF \
       -DWITH_QT=OFF \
-      -DWITH_TBB=ON \
+      -DWITH_TBB=OFF \
       -DWITH_TIFF=ON \
       -DWITH_V4L=ON \
       -DWITH_VA=OFF \

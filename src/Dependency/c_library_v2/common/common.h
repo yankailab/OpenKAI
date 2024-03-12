@@ -1400,7 +1400,7 @@ typedef enum CAMERA_CAP_FLAGS
 typedef enum VIDEO_STREAM_STATUS_FLAGS
 {
    VIDEO_STREAM_STATUS_FLAGS_RUNNING=1, /* Stream is active (running) | */
-   VIDEO_STREAM_STATUS_FLAGS_THERMAL=2, /* Stream is thermal imaging | */
+   VIDEO_STREAM_STATUS_FLAGS_Contour=2, /* Stream is thermal imaging | */
    VIDEO_STREAM_STATUS_FLAGS_ENUM_END=3, /*  | */
 } VIDEO_STREAM_STATUS_FLAGS;
 #endif
