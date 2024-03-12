@@ -26,8 +26,7 @@ cd ..
 rosdep install --from-paths src --ignore-src -y
 
 colcon build --symlink-install
-#cd src/livox_ros_driver2
-#./build.sh humble
+#./src/livox_ros_driver2/build.sh humble
 
 sudo chmod a+x install/setup.bash
 ./install/setup.bash
@@ -41,8 +40,12 @@ ros2 launch livox_ros_driver2 rviz_MID360_launch.py
 # launch msg for fast_lio
 ros2 launch livox_ros_driver2 msg_MID360_launch.py
 
+# config and launch fast_lio with map_file_path, dense_publish_en: true
 nano ~/dev/rosWS/install/fast_lio/share/fast_lio/config/mid360.yaml
 ros2 launch fast_lio mapping.launch.py config_file:=mid360.yaml
+
+# take snapshot of pcd
+ros2 service call /map_save std_srvs/srv/Trigger {}
 
 
 #----------------------------------------------------

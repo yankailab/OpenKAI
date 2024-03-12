@@ -163,6 +163,19 @@
 }
 
 {
+	"name":"contrast",
+	"class":"_Contrast",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"cam",
+	"alpha":2.0,
+	"beta":0.0,
+}
+
+{
 	"name":"inv",
 	"class":"_Invert",
 	"bON":1,
@@ -170,7 +183,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"_VisionBase":"cam",
+	"_VisionBase":"contrast",
 }
 
 {
@@ -194,7 +207,7 @@
 		"FPS":30,
 	}
 	"_VisionBase":"hsv",
-	"vL":[80, 30, 150],
+	"vL":[80, 20, 125],
 	"vH":[100, 255, 255],
 	"/vL":[80, 30, 150],
 	"/vH":[100, 255, 255],
@@ -271,7 +284,7 @@
 	"_Universe":"univ",
 	"_AP_base":"apBase",
 	"_Curl":"cURL",
-	"vWPrange":[2,100],
+	"vWPrange":[-100,100],
 	"vClass":[0],
 	"/dir":"/home/kai/pics/",
 	"dir":"/home/nvidia/pics/",

@@ -13,7 +13,7 @@ sudo echo -e "export LC_ALL=en_US.UTF-8" >> ~/.bashrc
 # verify settings
 locale
 
-# add the ROS 2 apt repository
+# add the ROS 2 apt repository
 sudo apt install software-properties-common
 sudo add-apt-repository universe
 

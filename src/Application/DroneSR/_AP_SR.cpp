@@ -15,12 +15,12 @@ namespace kai
 		m_vClass.clear();
 		m_bRTL = false;
 		m_modeRTL = 84148224;
-/*
-// Mode values for pf2
-// setApMode(100925440); // landing
-// setApMode(50593792); // Guided
-// setApMode(84148224); // RTL
-*/
+		/*
+		// Mode values for pf2
+		// setApMode(100925440); // landing
+		// setApMode(50593792); // Guided
+		// setApMode(84148224); // RTL
+		*/
 
 		m_dir = "/home/";
 		m_quality = 100;
@@ -126,7 +126,6 @@ namespace kai
 		}
 
 		NULL_(tO);
-		vFloat4 vTbb = tO->getBB2D();
 
 		// record current pos
 		vDouble4 vP;
@@ -136,12 +135,16 @@ namespace kai
 		string lon = lf2str(vP.y, 7);
 		string alt = lf2str(vP.z, 3);
 
-		// save file
 		Frame fBGR = *m_pV->getFrameRGB();
 		Mat mBGR;
 		fBGR.m()->copyTo(mBGR);
 		IF_(mBGR.empty());
 
+		// bb
+		Rect r = bb2Rect<vFloat4>(tO->getBB2Dscaled(mBGR.cols, mBGR.rows));
+		rectangle(mBGR, r, Scalar(255, 200, 200), 1);
+
+		// save file
 		string fName = m_dir + tFormat() + ".jpg";
 		cv::imwrite(fName, mBGR, m_compress);
 		string cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
