@@ -169,7 +169,7 @@ namespace kai
 		float dV = dvV.len();
 
 		IF_((dT < m_thrJumpPos) && (dV < m_thrJumpSpd));
-
+		
 		m_iReset++;
 		if (m_iReset > 255)
 			m_iReset = 1;
