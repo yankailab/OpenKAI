@@ -14,6 +14,9 @@
 #include "nav_msgs/msg/odometry.hpp"
 #include "nav_msgs/msg/path.hpp"
 
+#include "../Script/Kiss.h"
+#include "../UI/_Console.h"
+
 #ifdef WITH_3D
 #include "../3D/PointCloud/_PCframe.h"
 #endif
@@ -25,9 +28,21 @@ namespace kai
 	public:
 		ROS_fastLio() : Node("openkai_node")
 		{
-			m_topic = "";
+			m_topicPC2 = "Laser_map";
+			m_topicOdom = "Odometry";
+			m_topicPath = "path";
+
+			m_vAxisIdx.set(0, 1, 2);
+			m_vP.set(0);
+			m_vA.set(0);
+			m_vQ.set(0);
+			
 		}
 
+		bool init(Kiss *pKiss);
+		bool link(void);
+		void console(void *pConsole);
+		
 		bool createSubscriptions(void);
 
 	protected:
@@ -41,13 +56,23 @@ namespace kai
 		rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr m_pScPath;
 
 	public:
-		string m_topic;
+		string m_topicPC2;
+		string m_topicOdom;
+		string m_topicPath;
+
+		vInt3 m_vAxisIdx;
+		vFloat3 m_vP;
+		vFloat3 m_vA;
+		vFloat4 m_vQ;
+
+	protected:
+		Kiss* m_pKiss;
+
 
 #ifdef WITH_3D
 	public:
-		_PCframe* m_pPCframe = NULL;
+		_PCframe *m_pPCframe = NULL;
 #endif
-
 	};
 
 }

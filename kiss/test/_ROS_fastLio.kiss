@@ -9,7 +9,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -36,14 +36,19 @@
 		"name":"thread",
 		"FPS":10,
 	}
+    {
+		"name":"node",
+		"topicPC2":"Laser_map",
+		"topicOdom":"Odometry",
+		"topicPath":"path",
+	}
 	"_PCframe":"pcFrame",
-	"topic":"Laser_map",
 }
 
 {
 	"name":"pcFrame",
 	"class":"_PCframe",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -55,7 +60,7 @@
 {
 	"name":"gv",
 	"class":"_GeometryViewer",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,

@@ -12,6 +12,7 @@ namespace kai
 
     _ROS_fastLio::_ROS_fastLio()
     {
+
 #ifdef WITH_3D
 		m_pPCframe = NULL;
 #endif
@@ -27,9 +28,12 @@ namespace kai
         IF_F(!this->_ROSbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-        //		pK->v("URI", &m_devURI);
 
-        return true;
+        rclcpp::init(0, NULL);
+        m_pROSnode = std::make_shared<ROS_fastLio>();
+
+        Kiss* pKn = pK->child("node");
+        return m_pROSnode->init(pKn);
     }
 
     bool _ROS_fastLio::link(void)
@@ -43,6 +47,8 @@ namespace kai
         n = "";
         pK->v("_PCframe", &n);
         m_pPCframe = (_PCframe *)(pK->getInst(n));
+
+        m_pROSnode->m_pPCframe = m_pPCframe;
 #endif
 
         return true;
@@ -61,15 +67,6 @@ namespace kai
 
     void _ROS_fastLio::update(void)
     {
-        rclcpp::init(0, NULL);
-
-        m_pROSnode = std::make_shared<ROS_fastLio>();
-
-        m_pROSnode->m_topic = m_topic;
-#ifdef WITH_3D
-        m_pROSnode->m_pPCframe = m_pPCframe;
-#endif
-
         m_pROSnode->createSubscriptions();
 
         rclcpp::spin(m_pROSnode);
@@ -83,6 +80,9 @@ namespace kai
 
         _Console *pC = (_Console *)pConsole;
         //		pC->addMsg("nState: " + i2str(m_vStates.size()), 0);
+
+        m_pROSnode->console(pConsole);
+
     }
 
 }

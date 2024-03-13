@@ -52,6 +52,11 @@ struct vFloat3
 		z = c;
 	}
 
+	inline float& operator[](int i)
+	{
+		return (&x)[i];
+	}
+
 	inline vFloat3 operator+(vFloat3 r)
     {
 		vFloat3 v;

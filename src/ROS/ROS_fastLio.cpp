@@ -9,13 +9,39 @@
 
 namespace kai
 {
+    bool ROS_fastLio::init(Kiss *pKiss)
+    {
+        NULL_F(pKiss);
+        m_pKiss = pKiss;
+
+        pKiss->v("topicPC2", &m_topicPC2);
+        pKiss->v("topicOdom", &m_topicOdom);
+        pKiss->v("topicPath", &m_topicPath);
+
+        return true;
+    }
+
+    bool ROS_fastLio::link(void)
+    {
+        return true;
+    }
+
     bool ROS_fastLio::createSubscriptions(void)
     {
         m_pScPC2 = this->create_subscription<sensor_msgs::msg::PointCloud2>(
-//            "/livox/lidar",
-            m_topic,//"/cloud_registered",
+            m_topicPC2,
             40,
             std::bind(&ROS_fastLio::cbPointCloud2, this, _1));
+
+        m_pScOdometry = this->create_subscription<nav_msgs::msg::Odometry>(
+            m_topicOdom,
+            40,
+            std::bind(&ROS_fastLio::cbOdometry, this, _1));
+
+        m_pScPath = this->create_subscription<nav_msgs::msg::Path>(
+            m_topicPath,
+            40,
+            std::bind(&ROS_fastLio::cbPath, this, _1));
     }
 
     void ROS_fastLio::cbPointCloud2(const sensor_msgs::msg::PointCloud2::UniquePtr pMsg)
@@ -48,10 +74,33 @@ namespace kai
 
     void ROS_fastLio::cbOdometry(const nav_msgs::msg::Odometry::UniquePtr pMsg)
     {
+        m_vP.x = pMsg->pose.pose.position.x;
+        m_vP.y = pMsg->pose.pose.position.y;
+        m_vP.z = pMsg->pose.pose.position.z;
+
+        m_vQ.x = pMsg->pose.pose.orientation.x;
+        m_vQ.y = pMsg->pose.pose.orientation.y;
+        m_vQ.z = pMsg->pose.pose.orientation.z;
+        m_vQ.w = pMsg->pose.pose.orientation.w;
+
+        m_vA.x = 0;
+        m_vA.y = 0;
+        m_vA.z = 0;
+       
+
     }
 
     void ROS_fastLio::cbPath(const nav_msgs::msg::Path::UniquePtr pMsg)
     {
     }
 
+    void ROS_fastLio::console(void *pConsole)
+    {
+        NULL_(pConsole);
+
+        _Console *pC = (_Console *)pConsole;
+		pC->addMsg("vP = (" + f2str(m_vP.x) + ", " + f2str(m_vP.y) + ", " + f2str(m_vP.z) + ")");
+		pC->addMsg("vA = (" + f2str(m_vA.x) + ", " + f2str(m_vA.y) + ", " + f2str(m_vA.z) + ")");
+		pC->addMsg("vQ = (" + f2str(m_vQ.x) + ", " + f2str(m_vQ.y) + ", " + f2str(m_vQ.z) + ", " + f2str(m_vQ.w) + ")");
+    }
 }
