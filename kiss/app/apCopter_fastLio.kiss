@@ -1,0 +1,194 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["serialAP","apBase","apVision","fastLio"],
+}
+
+{
+	"name":"serial",
+	"class":"_SerialPort",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+		"vTwakeUp":["mavAP.thread"],
+	}
+	"port":"/dev/ttyACM0",
+	"/port":"/dev/ttyAMA0",
+	"/port":"/dev/ttyTHS1",
+	"baud":115200,
+	"/baud":921600,
+}
+
+{
+	"name":"mavAP",
+	"class":"_Mavlink",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"_IObase":"serial",
+
+	"/noRouteCmd":[],
+	{
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavUDP",
+		}
+	}
+}
+
+{
+	"name":"udp",
+	"class":"_UDP",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+		"vTwakeUp":["mavUDP.thread"],
+	}
+	"port":19840,
+}
+
+{
+	"name":"mavUDP",
+	"class":"_Mavlink",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"_IObase":"udp",
+
+	"/noRouteCmd":[],
+	{
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavAP",
+		}
+	}
+}
+
+{
+	"name":"apBase",
+	"class":"_AP_base",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"_StateControl":"state",
+	"_Mavlink":"mavAP",
+	"freqSendHeartbeat":1,
+	"apType":0,
+	
+	{
+		"name":"mavMsgInt",
+		
+		{
+			"name":"heartbeat",
+			"id":0,
+			"tInt":0.4,
+		}
+		{
+			"name":"attitude",
+			"id":30,
+			"tInt":0.3,
+		}
+		{
+			"name":"rcChannels",
+			"id":65,
+			"tInt":1.0,
+		}
+		{
+			"name":"localPosition",
+			"id":32,
+			"tInt":0.3,
+		}
+		{
+			"name":"globalPosition",
+			"id":33,
+			"tInt":0.3,
+		}
+		{
+			"name":"homePosition",
+			"id":242,
+			"tInt":10,
+		}
+		{
+			"name":"batteryStatus",
+			"id":147,
+			"tInt":10,
+		}
+	}
+}
+
+{
+	"name":"fastLio",
+	"class":"_ROS_fastLio",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadROS",
+		"FPS":1,
+	}
+    {
+		"name":"node",
+		"/topicPC2":"Laser_map",
+		"topicOdom":"Odometry",
+		"/topicPath":"path",
+	}
+
+	"/_PCframe":"pcFrame",
+	"scale":1.0,
+	"vAxisIdx":[0,1,2],
+}
+
+{
+	"name":"apVision",
+	"class":"_AP_visionEstimate",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"_AP_base":"apBase",
+	"_NavBase":"fastLio",
+	"mTsensor2aero":[1,0,0,0, 0,-1,0,0, 0,0,-1,0, 0,0,0,1],
+	"vAxisRPY":[2,1,0],
+	"bPos":1,
+	"bSpd":0,
+	"thrJumpPos":0.1,
+	"thrJumpSpd":20.0,
+	"apModeInError":9, /* AP_COPTER_LAND */
+}

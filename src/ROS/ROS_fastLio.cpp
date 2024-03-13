@@ -28,25 +28,34 @@ namespace kai
 
     bool ROS_fastLio::createSubscriptions(void)
     {
-        m_pScPC2 = this->create_subscription<sensor_msgs::msg::PointCloud2>(
-            m_topicPC2,
-            40,
-            std::bind(&ROS_fastLio::cbPointCloud2, this, _1));
+        if (!m_topicPC2.empty())
+        {
+            m_pScPC2 = this->create_subscription<sensor_msgs::msg::PointCloud2>(
+                m_topicPC2,
+                40,
+                std::bind(&ROS_fastLio::cbPointCloud2, this, _1));
+        }
 
-        m_pScOdometry = this->create_subscription<nav_msgs::msg::Odometry>(
-            m_topicOdom,
-            40,
-            std::bind(&ROS_fastLio::cbOdometry, this, _1));
+        if (!m_topicOdom.empty())
+        {
+            m_pScOdometry = this->create_subscription<nav_msgs::msg::Odometry>(
+                m_topicOdom,
+                40,
+                std::bind(&ROS_fastLio::cbOdometry, this, _1));
+        }
 
-        m_pScPath = this->create_subscription<nav_msgs::msg::Path>(
-            m_topicPath,
-            40,
-            std::bind(&ROS_fastLio::cbPath, this, _1));
+        if (!m_topicPath.empty())
+        {
+            m_pScPath = this->create_subscription<nav_msgs::msg::Path>(
+                m_topicPath,
+                40,
+                std::bind(&ROS_fastLio::cbPath, this, _1));
+        }
     }
 
     void ROS_fastLio::cbPointCloud2(const sensor_msgs::msg::PointCloud2::UniquePtr pMsg)
     {
-        LOG_("received PointCloud2 ");
+        //        LOG_("received PointCloud2 ");
 
 #ifdef WITH_3D
         NULL_(m_pPCframe);
@@ -86,8 +95,21 @@ namespace kai
         m_vA.x = 0;
         m_vA.y = 0;
         m_vA.z = 0;
-       
 
+        Matrix3f mR;
+        mR = Eigen::Quaternionf(
+                 m_vQ.w,
+                 m_vQ.x,
+                 m_vQ.y,
+                 m_vQ.z)
+                 .toRotationMatrix();
+
+        Matrix4f mT = Matrix4f::Identity();
+        mT.block(0, 0, 3, 3) = mR;
+        mT(0, 3) = m_vP.x;
+        mT(1, 3) = m_vP.y;
+        mT(2, 3) = m_vP.z;
+        m_mT = mT;
     }
 
     void ROS_fastLio::cbPath(const nav_msgs::msg::Path::UniquePtr pMsg)
@@ -99,8 +121,8 @@ namespace kai
         NULL_(pConsole);
 
         _Console *pC = (_Console *)pConsole;
-		pC->addMsg("vP = (" + f2str(m_vP.x) + ", " + f2str(m_vP.y) + ", " + f2str(m_vP.z) + ")");
-		pC->addMsg("vA = (" + f2str(m_vA.x) + ", " + f2str(m_vA.y) + ", " + f2str(m_vA.z) + ")");
-		pC->addMsg("vQ = (" + f2str(m_vQ.x) + ", " + f2str(m_vQ.y) + ", " + f2str(m_vQ.z) + ", " + f2str(m_vQ.w) + ")");
+        pC->addMsg("vP = (" + f2str(m_vP.x) + ", " + f2str(m_vP.y) + ", " + f2str(m_vP.z) + ")");
+        pC->addMsg("vA = (" + f2str(m_vA.x) + ", " + f2str(m_vA.y) + ", " + f2str(m_vA.z) + ")");
+        pC->addMsg("vQ = (" + f2str(m_vQ.x) + ", " + f2str(m_vQ.y) + ", " + f2str(m_vQ.z) + ", " + f2str(m_vQ.w) + ")");
     }
 }

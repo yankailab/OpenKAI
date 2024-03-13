@@ -34,7 +34,11 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":10,
+		"FPS":30,
+	}
+    {
+		"name":"threadROS",
+		"FPS":1,
 	}
     {
 		"name":"node",

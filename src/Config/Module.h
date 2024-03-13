@@ -76,9 +76,9 @@
 #include "../Autopilot/ArduPilot/_APcopter_photo.h"
 #endif // opencv
 #ifdef WITH_NAVIGATION
+#include "../Autopilot/ArduPilot/_AP_visionEstimate.h"
 #ifdef USE_REALSENSE
 #include "../Autopilot/ArduPilot/_AP_GPS.h"
-#include "../Autopilot/ArduPilot/_AP_visionEstimate.h"
 #endif
 #endif
 #endif // ardupilot

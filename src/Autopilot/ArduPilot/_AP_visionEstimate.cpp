@@ -10,17 +10,16 @@ namespace kai
 
 		m_linearAccelCov = 0.01;
 		m_angularVelCov = 0.01;
-		m_H_aeroRef_T265ref = Matrix4f{{0, 0, -1, 0},
-									   {1, 0, 0, 0},
-									   {0, -1, 0, 0},
-									   {0, 0, 0, 1}};
-
-		m_H_T265body_aeroBody = m_H_aeroRef_T265ref.inverse();
+		m_mTsensor2aero = Matrix4f{{0, 0, -1, 0},
+								   {1, 0, 0, 0},
+								   {0, -1, 0, 0},
+								   {0, 0, 0, 1}}; // default for T265
+		m_mTaero2sensor = m_mTsensor2aero.inverse();
 
 		m_thrJumpPos = 0.1;	 // m
 		m_thrJumpSpd = 20.0; // m/s
 		m_iReset = 0;
-		m_vAxisRPY.set(0,1,2);
+		m_vAxisRPY.set(0, 1, 2);
 
 		m_apModeInError = -1;
 		m_bNaN = false;
@@ -36,7 +35,6 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
 
 		pK->v("bPos", &m_bPos);
 		pK->v("bSpd", &m_bSpd);
@@ -44,6 +42,17 @@ namespace kai
 		pK->v("thrJumpSpd", &m_thrJumpSpd);
 		pK->v("vAxisRPY", &m_vAxisRPY);
 		pK->v("apModeInError", &m_apModeInError);
+
+		vector<float> vT;
+		pK->a("mTsensor2aero", &vT);
+		if (vT.size() == 16)
+		{
+			m_mTsensor2aero = Matrix4f{{vT[0], vT[1], vT[2], vT[3]},
+									   {vT[4], vT[5], vT[6], vT[7]},
+									   {vT[8], vT[9], vT[10], vT[11]},
+									   {vT[12], vT[13], vT[14], vT[15]}};
+			m_mTaero2sensor = m_mTsensor2aero.inverse();
+		}
 
 		return true;
 	}
@@ -88,16 +97,15 @@ namespace kai
 		while (m_pT->bThread())
 		{
 			m_pT->autoFPSfrom();
-			this->_ModuleBase::update();
 
-			if(!updateVisionEstimate())
+			if (!updateVisionEstimate())
 			{
-				if(m_apModeInError >= 0)
+				if (m_apModeInError >= 0)
 				{
 					int apMode = m_pAP->getApMode();
-					if((apMode == AP_COPTER_AUTO) ||
-					   (apMode == AP_COPTER_LOITER) ||
-					   (apMode == AP_COPTER_GUIDED))
+					if ((apMode == AP_COPTER_AUTO) ||
+						(apMode == AP_COPTER_LOITER) ||
+						(apMode == AP_COPTER_GUIDED))
 					{
 						m_pAP->setApMode(m_apModeInError);
 					}
@@ -121,8 +129,11 @@ namespace kai
 		m_covTwist = m_angularVelCov * pow(10, 1 - int(m_conf));
 		updateResetCounter();
 
-		sendPosEstimate();
-		sendSpeedEstimate();
+		if (m_bPos)
+			sendPosEstimate();
+
+		if (m_bSpd)
+			sendSpeedEstimate();
 
 		return true;
 	}
@@ -135,7 +146,7 @@ namespace kai
 		IF_T(isnan(v.x));
 		IF_T(isnan(v.y));
 		IF_T(isnan(v.z));
-		
+
 		v = m_pNav->v();
 		IF_T(isnan(v.x));
 		IF_T(isnan(v.y));
@@ -166,9 +177,9 @@ namespace kai
 
 	void _AP_visionEstimate::sendPosEstimate(void)
 	{
-		Matrix4f H_T265ref_T265body = m_pNav->mT();
-		Matrix4f H_aeroRef_aeroBody = m_H_aeroRef_T265ref * (H_T265ref_T265body * m_H_T265body_aeroBody);
-		Matrix3f mRot = H_aeroRef_aeroBody.block(0, 0, 3, 3);
+		Matrix4f mTsensorPoseSensorRef = m_pNav->mT();
+		Matrix4f mTaeroPoseAeroRef = m_mTsensor2aero * (mTsensorPoseSensorRef * m_mTaero2sensor);
+		Matrix3f mRot = mTaeroPoseAeroRef.block(0, 0, 3, 3);
 		Vector3f vRPY = mRot.eulerAngles(m_vAxisRPY.x,
 										 m_vAxisRPY.y,
 										 m_vAxisRPY.z);
@@ -180,9 +191,9 @@ namespace kai
 						  m_covTwist, 0,
 						  m_covTwist};
 
-		m_Dpos.x = H_aeroRef_aeroBody(0, 3);
-		m_Dpos.y = H_aeroRef_aeroBody(1, 3);
-		m_Dpos.z = H_aeroRef_aeroBody(2, 3);
+		m_Dpos.x = mTaeroPoseAeroRef(0, 3);
+		m_Dpos.y = mTaeroPoseAeroRef(1, 3);
+		m_Dpos.z = mTaeroPoseAeroRef(2, 3);
 		m_Dpos.roll = vRPY(0);
 		m_Dpos.pitch = vRPY(1);
 		m_Dpos.yaw = vRPY(2);
@@ -199,11 +210,11 @@ namespace kai
 		V_aeroRef_aeroBody(0, 3) = vV.x;
 		V_aeroRef_aeroBody(1, 3) = vV.y;
 		V_aeroRef_aeroBody(2, 3) = vV.z;
-		V_aeroRef_aeroBody = m_H_aeroRef_T265ref * V_aeroRef_aeroBody;
+		V_aeroRef_aeroBody = m_mTsensor2aero * V_aeroRef_aeroBody;
 
 		float vCov2[9] = {m_covPose, 0, 0,
-						   0, m_covPose, 0,
-						   0, 0, m_covPose};
+						  0, m_covPose, 0,
+						  0, 0, m_covPose};
 
 		m_Dspd.x = V_aeroRef_aeroBody(0, 3);
 		m_Dspd.y = V_aeroRef_aeroBody(1, 3);

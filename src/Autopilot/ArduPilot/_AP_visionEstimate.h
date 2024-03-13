@@ -44,8 +44,8 @@ namespace kai
 		float m_conf;
 		float m_covPose;
 		float m_covTwist;
-		Matrix4f m_H_aeroRef_T265ref;
-		Matrix4f m_H_T265body_aeroBody;
+		Matrix4f m_mTsensor2aero;
+		Matrix4f m_mTaero2sensor;
 		float m_thrJumpPos;
 		float m_thrJumpSpd;
 		vFloat3 m_vTprev;

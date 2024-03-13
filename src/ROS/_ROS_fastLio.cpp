@@ -12,11 +12,11 @@ namespace kai
 
     _ROS_fastLio::_ROS_fastLio()
     {
+        m_pTros = NULL;
 
 #ifdef WITH_3D
-		m_pPCframe = NULL;
+        m_pPCframe = NULL;
 #endif
-
     }
 
     _ROS_fastLio::~_ROS_fastLio()
@@ -25,20 +25,27 @@ namespace kai
 
     bool _ROS_fastLio::init(void *pKiss)
     {
-        IF_F(!this->_ROSbase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+        IF_F(!this->_NavBase::init(pKiss));
+        Kiss *pK = (Kiss *)pKiss;
 
+        Kiss *pKr = pK->child("threadROS");
+        IF_F(pKr->empty());
+        m_pTros = new _Thread();
+        if (!m_pTros->init(pKr))
+        {
+            DEL(m_pTros);
+            return false;
+        }
 
         rclcpp::init(0, NULL);
         m_pROSnode = std::make_shared<ROS_fastLio>();
-
-        Kiss* pKn = pK->child("node");
+        Kiss *pKn = pK->child("node");
         return m_pROSnode->init(pKn);
     }
 
     bool _ROS_fastLio::link(void)
     {
-        IF_F(!this->_ROSbase::link());
+        IF_F(!this->_NavBase::link());
         Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
@@ -47,7 +54,6 @@ namespace kai
         n = "";
         pK->v("_PCframe", &n);
         m_pPCframe = (_PCframe *)(pK->getInst(n));
-
         m_pROSnode->m_pPCframe = m_pPCframe;
 #endif
 
@@ -57,15 +63,42 @@ namespace kai
     bool _ROS_fastLio::start(void)
     {
         NULL_F(m_pT);
-        return m_pT->start(getUpdate, this);
+        IF_F(!m_pT->start(getUpdate, this));
+
+        NULL_F(m_pTros);
+        IF_F(!m_pTros->start(getUpdateROS, this));
+
+        return true;
     }
 
     int _ROS_fastLio::check(void)
     {
-        return this->_ROSbase::check();
+        return this->_NavBase::check();
     }
 
     void _ROS_fastLio::update(void)
+    {
+        while (m_pT->bThread())
+        {
+            m_pT->autoFPSfrom();
+
+            updateNav();
+
+            m_pT->autoFPSto();
+        }
+    }
+
+    void _ROS_fastLio::updateNav(void)
+    {
+        IF_(check() < 0);
+
+        m_mT = m_pROSnode->m_mT;
+        m_vT = m_pROSnode->m_vP;
+        m_vQ = m_pROSnode->m_vQ;
+
+    }
+
+    void _ROS_fastLio::updateROS(void)
     {
         m_pROSnode->createSubscriptions();
 
@@ -76,13 +109,10 @@ namespace kai
     void _ROS_fastLio::console(void *pConsole)
     {
         NULL_(pConsole);
-        this->_ROSbase::console(pConsole);
+        this->_NavBase::console(pConsole);
 
-        _Console *pC = (_Console *)pConsole;
-        //		pC->addMsg("nState: " + i2str(m_vStates.size()), 0);
-
-        m_pROSnode->console(pConsole);
-
+        // _Console *pC = (_Console *)pConsole;
+        // m_pROSnode->console(pConsole);
     }
 
 }

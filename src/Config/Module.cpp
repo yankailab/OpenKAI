@@ -86,9 +86,9 @@ namespace kai
 		ADD_MODULE(_APcopter_photo);
 #endif // opencv
 #ifdef WITH_NAVIGATION
+		ADD_MODULE(_AP_visionEstimate);
 #ifdef USE_REALSENSE
 		ADD_MODULE(_AP_GPS);
-		ADD_MODULE(_AP_visionEstimate);
 #endif
 #endif
 #endif

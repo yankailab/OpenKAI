@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/OpenKAI",
-            "args": ["${workspaceFolder}/kiss/test/_ROS_fastLio.kiss"],
+            "args": ["${workspaceFolder}/kiss/app/apCopter_fastLio.kiss"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

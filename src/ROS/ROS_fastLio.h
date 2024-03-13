@@ -8,7 +8,11 @@
 #ifndef OpenKAI_src_ROS_ROS_fastLio_H_
 #define OpenKAI_src_ROS_ROS_fastLio_H_
 
-#include "ROSnode.h"
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
+using namespace std;
+using std::placeholders::_1;
+
 #include "sensor_msgs/msg/point_cloud2.hpp"
 #include "sensor_msgs/point_cloud2_iterator.hpp"
 #include "nav_msgs/msg/odometry.hpp"
@@ -16,7 +20,6 @@
 
 #include "../Script/Kiss.h"
 #include "../UI/_Console.h"
-
 #ifdef WITH_3D
 #include "../3D/PointCloud/_PCframe.h"
 #endif
@@ -28,21 +31,22 @@ namespace kai
 	public:
 		ROS_fastLio() : Node("openkai_node")
 		{
-			m_topicPC2 = "Laser_map";
-			m_topicOdom = "Odometry";
-			m_topicPath = "path";
+			m_topicPC2 = "";  //"Laser_map";
+			m_topicOdom = ""; //"Odometry";
+			m_topicPath = ""; //"path";
 
 			m_vAxisIdx.set(0, 1, 2);
 			m_vP.set(0);
 			m_vA.set(0);
 			m_vQ.set(0);
-			
+
+			m_mT = Matrix4f::Identity();
 		}
 
 		bool init(Kiss *pKiss);
 		bool link(void);
 		void console(void *pConsole);
-		
+
 		bool createSubscriptions(void);
 
 	protected:
@@ -64,10 +68,10 @@ namespace kai
 		vFloat3 m_vP;
 		vFloat3 m_vA;
 		vFloat4 m_vQ;
+		Matrix4f m_mT;
 
 	protected:
-		Kiss* m_pKiss;
-
+		Kiss *m_pKiss;
 
 #ifdef WITH_3D
 	public:
