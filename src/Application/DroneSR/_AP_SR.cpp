@@ -125,7 +125,15 @@ namespace kai
 			topProb = pO->getTopClassProb();
 		}
 
+		//		NULL_(tO);
+
+	static uint64_t tLast = 0;
+	uint64_t tNow = getApproxTbootUs();
+	if (tNow - tLast < USEC_1SEC)
+	{
 		NULL_(tO);
+	}
+	tLast = getApproxTbootUs();
 
 		// record current pos
 		vDouble4 vP;
@@ -141,8 +149,13 @@ namespace kai
 		IF_(mBGR.empty());
 
 		// bb
+		// Rect r = bb2Rect<vFloat4>(tO->getBB2Dscaled(mBGR.cols, mBGR.rows));
+		// rectangle(mBGR, r, Scalar(255, 200, 200), 1);
+	if (tO)
+	{
 		Rect r = bb2Rect<vFloat4>(tO->getBB2Dscaled(mBGR.cols, mBGR.rows));
 		rectangle(mBGR, r, Scalar(255, 200, 200), 1);
+	}
 
 		// save file
 		string fName = m_dir + tFormat() + ".jpg";
@@ -158,8 +171,8 @@ namespace kai
 
 		// RTL
 		IF_(!m_bRTL);
-		m_pAP->setApMode(m_modeRTL);
-		m_pAP->m_pMav->clNavRTL();
+//		m_pAP->setApMode(m_modeRTL);
+//		m_pAP->m_pMav->clNavRTL();
 	}
 
 	void _AP_SR::console(void *pConsole)
