@@ -2,6 +2,7 @@
 # Clean-up
 sudo apt -y remove --purge libreoffice* yelp thunderbird rhythmbox
 sudo systemctl stop ModemManager
+sudo systemctl disable ModemManager
 sudo apt-get -y purge whoopsie modemmanager
 
 sudo systemctl disable apt-daily.service

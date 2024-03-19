@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Expanding root partition
+sudo raspi-config
+-> Advanced Options
+-> Expand Filesystem
+
 # Enable SSH, disable OS use of UART, enable UART hardware
 sudo raspi-config
 
@@ -19,7 +24,7 @@ sudo apt-get dist-upgrade
 
 # Disable OS use of UART and Enable UART hardware
 set +H
-sudo sh -c "echo 'dtoverlay=disable-bt\n' >> /boot/config.txt"
+sudo sh -c "echo 'dtoverlay=disable-bt\n' >> /boot/firmware/config.txt"
 set -H
 sudo reboot now
 #sudo sh -c "echo 'dtoverlay=disable-bt\ndtoverlay=disable-wifi\n' >> /boot/config.txt"

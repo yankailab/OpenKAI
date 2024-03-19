@@ -45,16 +45,17 @@ cmake \
     -DBUILD_PYTHON_MODULE=OFF \
     -DBUILD_SHARED_LIBS=ON \
     -DBUILD_TENSORFLOW_OPS=OFF \
-    -DBUILD_WEBRTC=ON \
+    -DBUILD_WEBRTC=OFF \
     -DBUILD_UNIT_TESTS=OFF \
     -DDEVELOPER_BUILD=OFF \
     -DUSE_BLAS=ON \
-    -DWITH_FAISS=OFF \
     -DWITH_IPPICV=OFF \
     -DWITH_SIMD=OFF \
     ..
 make -j$(nproc)
 sudo make install
+
+
 
 #TODO: Jetson
 sudo apt-get install -y apt-utils build-essential git cmake

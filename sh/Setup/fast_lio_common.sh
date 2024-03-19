@@ -8,28 +8,37 @@ sudo apt-get install libpcl-dev
 
 # inside ros workspace/src
 mkdir -p ~/dev/rosWS/src
+
+# install PCL ros
+# Ubuntu, install from apt
+sudo apt-get install ros-humble-pcl-conversions
+sudo apt-get install ros-humble-pcl-ros
+# Raspberry pi, build from course
 cd ~/dev/rosWS/src
+git clone --branch ros2 --depth 1 https://github.com/ros-perception/pcl_msgs.git
+git clone --branch ros2 --depth 1 https://github.com/ros-perception/perception_pcl.git
+
 git clone --depth 1 https://github.com/Livox-SDK/livox_ros_driver2.git
-cd livox_ros_driver2
-./build.sh humble
+nano livox_ros_driver2/build.sh
+# comment out this line
+# colcon build --cmake-args -DROS_EDITION=${VERSION_ROS2} -DHUMBLE_ROS=${ROS_HUMBLE}
+nano livox_ros_driver2/package_ROS2.xml
+# delete rosbag2
+./livox_ros_driver2/build.sh humble
 
-echo "source /home/lab/dev/rosWS/install/setup.bash" >> ~/.bashrc
-#echo "source /home/kai/dev/rosWS/install/setup.bash" >> ~/.bashrc
-
-# build Fast_lio
-cd ~/dev/rosWS/src
 git clone --depth 1 https://github.com/Ericsii/FAST_LIO_ROS2.git --recursive
-cd ..
-#cd FAST_LIO_ROS2
-#git submodule update --init --recursive
-#cd ../..
+nano FAST_LIO_ROS2/CMakeLists.txt
+# modify all c++14 to c++17
+
+cd ~/dev/rosWS
 rosdep install --from-paths src --ignore-src -y
 
-colcon build --symlink-install
-#./src/livox_ros_driver2/build.sh humble
+export MAKEFLAGS="-j2"
+colcon build --symlink-install --parallel-workers 1 --cmake-clean-cache --cmake-args -DCMAKE_BUILD_TYPE=Release -DROS_EDITION=ROS2 -DHUMBLE_ROS=humble --event-handlers console_cohesion+
 
 sudo chmod a+x install/setup.bash
 ./install/setup.bash
+echo "source /home/lab/dev/rosWS/install/setup.bash" >> ~/.bashrc
 
 # edit livox config
 nano ~/dev/rosWS/install/livox_ros_driver2/share/livox_ros_driver2/config/MID360_config.json
@@ -42,6 +51,9 @@ ros2 launch livox_ros_driver2 msg_MID360_launch.py
 
 # config and launch fast_lio with map_file_path, dense_publish_en: true
 nano ~/dev/rosWS/install/fast_lio/share/fast_lio/config/mid360.yaml
+# config launch
+nano dev/rosWS/install/fast_lio/share/fast_lio/launch/mapping.launch.py 
+
 ros2 launch fast_lio mapping.launch.py config_file:=mid360.yaml
 
 # take snapshot of pcd
