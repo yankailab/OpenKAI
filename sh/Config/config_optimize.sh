@@ -39,6 +39,12 @@ cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
 cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 
+# add user to dialout
+sudo adduser [username] dialout
+#sudo gpasswd --add ${USER} dialout
+sudo reboot now
+#sudo chmod 666 /dev/ttyUSB0
+
 #----------------------------------------------------
 # Config
 
@@ -110,9 +116,3 @@ sudo dd if=/dev/sda of=~/sd.img bs=6M
 sudo fdisk -l
 sudo umount /dev/sdb
 sudo dd if=~/sd.img of=/dev/sdb bs=6M
-
-# add user to dialout
-sudo adduser [username] dialout
-#sudo gpasswd --add ${USER} dialout
-sudo reboot now
-#sudo chmod 666 /dev/ttyUSB0

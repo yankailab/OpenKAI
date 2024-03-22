@@ -1,20 +1,10 @@
 #!/bin/bash
 
+# Enable SSH, disable OS use of UART, enable UART hardware
 # Expanding root partition
 sudo raspi-config
 -> Advanced Options
 -> Expand Filesystem
-
-# Enable SSH, disable OS use of UART, enable UART hardware
-sudo raspi-config
-
-# Start the SSH service with systemctl
-sudo systemctl enable ssh
-sudo systemctl start ssh
-
-# For headless setup
-nano /media/kai/boot/ssh
-Placing a file named ssh, without any extension, onto the boot partition of the SD card. When the Pi boots, it looks for the ssh file. If it is found, SSH is enabled, and the file is deleted.
 
 # Setup
 sudo apt-get update
@@ -22,17 +12,65 @@ sudo apt-get upgrade
 sudo apt-get dist-upgrade
 # sudo rpi-update
 
+# Connect to wifi
+# https://www.raspberrypi.com/documentation/computers/configuration.html
+sudo nmcli dev wifi connect <example_ssid>
+
+# Assign static IP to eth0
+sudo nano /etc/NetworkManager/system-connections/Wired\ connection\ 1.nmconnection
+address1=192.168.1.5/24,192.168.1.1
+#dns=192.168.1.1;
+method=manual
+
+# Set different subnet e.g. 192.168.8.xxx when using Wifi ssh and Livox on eth0 in the same time
+# Unplug Livox when connection to internet is needed
+#sudo nano /etc/NetworkManager/system-connections/<SSID>
+#address1=192.168.8.10/24,192.168.8.1
+#dns=192.168.8.1;
+#method=manual
+method=auto
+
+# Alternatively using nmcli
+#sudo nmcli -p connection show
+#sudo nmcli con mod "Wired connection 1" ipv4.addresses 192.168.1.5/24 ipv4.gateway 192.168.1.1 ipv4.dns 192.168.1.1 ipv4.method manual
+sudo nmcli c down "Wired connection 1" && sudo nmcli c up "Wired connection 1"
+
+# Auto start using crontab
+crontab -e
+@reboot /home/lab/start.sh
+
+start.sh--------------
+#!/bin/bash
+source /home/lab/dev/ros2_humble/install/local_setup.bash
+source /home/lab/dev/rosWS/install/setup.bash
+
+/home/lab/lv.sh
+#ros2 launch livox_ros_driver2 msg_MID360_launch.py &
+sleep 5
+/home/lab/fl.sh
+#ros2 launch fast_lio mapping.launch.py config_file:=mid360.yaml &
+sleep 5
+/home/lab/ok.sh
+#/home/lab/dev/OpenKAI/build/OpenKAI /home/lab/dev/OpenKAI/kiss/app/apCopter_fastLio.kiss &
+
+exit 0
+--------------
+
+
+
+
 # Disable OS use of UART and Enable UART hardware
 set +H
 sudo sh -c "echo 'dtoverlay=disable-bt\n' >> /boot/firmware/config.txt"
 set -H
 sudo reboot now
-#sudo sh -c "echo 'dtoverlay=disable-bt\ndtoverlay=disable-wifi\n' >> /boot/config.txt"
+#sudo sh -c "echo 'dtoverlay=disable-bt\ndtoverlay=disable-wifi\n' >> /boot/firmware/config.txt"
 
 # Enable multiple UART
 dtoverlay=uart3        # without flow control pins
 dtoverlay=uart3,ctsrts # with flow control pins
 
+# Disable unused services
 sudo systemctl disable hciuart
 sudo systemctl stop serial-getty@ttyAMA0.service
 sudo systemctl disable serial-getty@ttyAMA0.service

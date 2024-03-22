@@ -23,6 +23,7 @@ using std::placeholders::_1;
 #ifdef WITH_3D
 #include "../3D/PointCloud/_PCframe.h"
 #endif
+using namespace Eigen;
 
 namespace kai
 {

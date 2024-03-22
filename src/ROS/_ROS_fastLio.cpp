@@ -95,6 +95,7 @@ namespace kai
         m_mT = m_pROSnode->m_mT;
         m_vT = m_pROSnode->m_vP;
         m_vQ = m_pROSnode->m_vQ;
+		m_confidence = 30.0;
 
     }
 
