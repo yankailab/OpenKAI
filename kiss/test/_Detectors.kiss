@@ -59,7 +59,7 @@
 {
 	"name":"cam",
 	"class":"_VideoFile",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":60,
@@ -71,12 +71,12 @@
 {
 	"name":"cam",
 	"class":"_ImgFile",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":60,
 	}
-	"file":"/home/kai/Documents/soten.png",
+	"file":"/home/kai/Documents/soten_20240313/soten.png",
 	"vSize":[1280,720],
 }
 
@@ -89,7 +89,7 @@
 		"FPS":30,
 	}
 	"_VisionBase":"cam",
-	"alpha":2.0,
+	"alpha":1.0,
 	"beta":0.0,
 }
 

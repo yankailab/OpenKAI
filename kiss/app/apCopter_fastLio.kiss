@@ -30,11 +30,11 @@
 		"FPS":30,
 		"vTwakeUp":["mavAP.thread"],
 	}
-	"port":"/dev/ttyACM2",
-	"/port":"/dev/ttyAMA0",
+	"/port":"/dev/ttyACM2",
+	"port":"/dev/ttyAMA0",
 	"/port":"/dev/ttyTHS1",
-	"baud":115200,
-	"/baud":921600,
+	"/baud":115200,
+	"baud":921600,
 }
 
 {
@@ -185,7 +185,7 @@
 	"_AP_base":"apBase",
 	"_NavBase":"fastLio",
 	"mTsensor2aero":[1,0,0,0, 0,-1,0,0, 0,0,-1,0, 0,0,0,1],
-	"vAxisRPY":[2,1,0],
+	"vAxisRPY":[0,1,2],
 	"bPos":1,
 	"bSpd":0,
 	"thrJumpPos":0.1,
