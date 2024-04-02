@@ -11,21 +11,20 @@
 namespace kai
 {
 
-class clBase: public BASE
-{
-public:
-	clBase();
-	virtual ~clBase();
+	class clBase : public BASE
+	{
+	public:
+		clBase();
+		virtual ~clBase();
 
-	virtual bool init(void* pKiss);
-   
-protected:
-    virtual void update(void);
+		virtual bool init(void *pKiss);
 
-public:
-	uint64_t m_tLastUpdate;
+	protected:
+		virtual void update(void);
 
-};
+	public:
+		uint64_t m_tLastUpdate;
+	};
 
 }
 #endif

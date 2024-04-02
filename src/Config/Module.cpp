@@ -26,7 +26,7 @@ namespace kai
 		ADD_MODULE(Destimator);
 		ADD_MODULE(_Console);
 
-#ifdef WITH_3D && USE_OPEN3D
+#ifdef WITH_3D
 		ADD_MODULE(_MeshStream);
 		ADD_MODULE(_PCstream);
 		ADD_MODULE(_PCframe);
@@ -97,7 +97,7 @@ namespace kai
 		ADD_MODULE(_Drive);
 #endif
 
-#ifdef WITH_APP_3DSCAN && WITH_3D && USE_OPEN3D
+#ifdef WITH_APP_3DSCAN
 		ADD_MODULE(_3DScanCalibCam);
 		ADD_MODULE(_3DScanCalibOfs);
 		ADD_MODULE(_PCscan);
@@ -126,7 +126,7 @@ namespace kai
 		ADD_MODULE(_GSVview);
 #endif
 
-#ifdef WITH_APP_LIVOXSCANNER && USE_LIVOX && WITH_3D && USE_OPEN3D
+#ifdef WITH_APP_LIVOXSCANNER
 		ADD_MODULE(_LivoxAutoScan);
 		ADD_MODULE(_LivoxScanner);
 #endif
@@ -140,11 +140,8 @@ namespace kai
 		ADD_MODULE(_RaspiWSbattery);
 #endif
 
-//#ifdef WITH_APP_ROPEWAYSCAN && USE_VZENSE && USE_LIVOX && WITH_3D && USE_OPEN3D
 #ifdef WITH_APP_ROPEWAYSCAN
 		ADD_MODULE(_RopewayScan);
-//		ADD_MODULE(_RopewayScanVz);
-//		ADD_MODULE(_RopewayScanLivox);
 #endif
 
 #ifdef WITH_APP_ROBOTARM
@@ -171,7 +168,7 @@ namespace kai
 		ADD_MODULE(_SwarmSearch);
 #endif
 
-#ifdef WITH_APP_VZSCAN && USE_VZENSE && WITH_3D && USE_OPEN3D &&USE_GUI
+#ifdef WITH_APP_VZSCAN
 		ADD_MODULE(_VzScan);
 		ADD_MODULE(_VzScanAuto);
 		ADD_MODULE(_VzScanCalib);

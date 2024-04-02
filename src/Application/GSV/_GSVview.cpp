@@ -11,10 +11,6 @@ namespace kai
 {
 	_GSVview::_GSVview()
 	{
-		m_nP = 0;
-		m_nPmax = INT_MAX;
-		m_pPCprv = NULL;
-		m_iPprv = 0;
 		m_rVoxel = 0.1;
 		m_fProcess.clearAll();
 
@@ -30,10 +26,7 @@ namespace kai
 		IF_F(!this->_GeometryViewer::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		m_pPCprv = m_sPC.get();
-
 		pK->v("rVoxel", &m_rVoxel);
-		pK->v("nPmax", &m_nPmax);
 
 		return true;
 	}
@@ -108,169 +101,127 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		m_pWin->ShowMsg("Scan", "Initializing");
-
-		//		m_pNav->reset();
-
-		m_nP = 0;
-		for (int i = 0; i < m_vPC.size(); i++)
-		{
-			PointCloud *pP = &m_vPC[i];
-			pP->Clear();
-		}
-		m_vPC.clear();
-
-		// voxel down point cloud for preview
-		m_iPprv = 0;
-		m_pPCprv->Clear();
-		addDummyPoints(m_pPCprv, m_nPresv, m_rDummyDome);
-
-		removeUIpc();
-		addUIpc(*m_pPCprv);
 		m_fProcess.set(pc_Scanning);
 
 		resetCamPose();
 		updateCamPose();
-
-		m_pWin->CloseDialog();
 	}
 
 	void _GSVview::scanTake(void)
 	{
 		IF_(check() < 0);
 
-		_PCframe *pPsrc = (_PCframe *)m_vpGB[0];
-		PointCloud pc;
-		pPsrc->copyTo(&pc);
-		int nPnew = pc.points_.size();
-		IF_(nPnew <= 0);
-		int i;
-
-		// Add original
-		m_vPC.push_back(pc);
-		m_nP += pc.points_.size();
-		// TODO: check point number
-
-		// for (i = 0; i < nPnew; i++)
+		// // Add voxel down for preview
+		// PointCloud pcVd = *pc.VoxelDownSample(m_rVoxel);
+		// int nPvd = pcVd.points_.size();
+		// for (i = 0; i < nPvd; i++)
 		// {
-		// 	m_pPCorig->points_.push_back(pc.points_[i]);
-		// 	m_pPCorig->colors_.push_back(pc.colors_[i]);
-		// 	m_nPwOrig++;
-		// 	if (m_nPwOrig >= m_nPresvNext)
+		// 	m_pPCprv->points_[m_iPprv] = pcVd.points_[i];
+		// 	m_pPCprv->colors_[m_iPprv] = pcVd.colors_[i];
+		// 	m_iPprv++;
+		// 	if (m_iPprv >= m_nPresv)
 		// 		break;
 		// }
 
-		// Add voxel down for preview
-		PointCloud pcVd = *pc.VoxelDownSample(m_rVoxel);
-		int nPvd = pcVd.points_.size();
-		for (i = 0; i < nPvd; i++)
-		{
-			m_pPCprv->points_[m_iPprv] = pcVd.points_[i];
-			m_pPCprv->colors_[m_iPprv] = pcVd.colors_[i];
-			m_iPprv++;
-			if (m_iPprv >= m_nPresv)
-				break;
-		}
+		// int nDummy = m_nPresv - m_iPprv;
+		// if (nDummy > 0)
+		// {
+		// 	m_pPCprv->points_.erase(m_pPCprv->points_.end() - nDummy,
+		// 							m_pPCprv->points_.end());
+		// 	m_pPCprv->colors_.erase(m_pPCprv->colors_.end() - nDummy,
+		// 							m_pPCprv->colors_.end());
+		// 	addDummyPoints(m_pPCprv, nDummy, m_rDummyDome);
+		// }
 
-		int nDummy = m_nPresv - m_iPprv;
-		if (nDummy > 0)
-		{
-			m_pPCprv->points_.erase(m_pPCprv->points_.end() - nDummy,
-									m_pPCprv->points_.end());
-			m_pPCprv->colors_.erase(m_pPCprv->colors_.end() - nDummy,
-									m_pPCprv->colors_.end());
-			addDummyPoints(m_pPCprv, nDummy, m_rDummyDome);
-		}
+		// m_aabb = pc.GetAxisAlignedBoundingBox();
+		// if (m_pUIstate)
+		// 	m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
 
-		m_aabb = pc.GetAxisAlignedBoundingBox();
-		if (m_pUIstate)
-			m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
-
-		updateUIpc(*m_pPCprv);
+		// updateUIpc(*m_pPCprv);
 	}
 
 	void _GSVview::updateScan(void)
 	{
 		IF_(check() < 0);
 
-		_PCframe *pPsrc = (_PCframe *)m_vpGB[0];
-		PointCloud pc;
-		pPsrc->copyTo(&pc);
+		// _PCframe *pPsrc = (_PCframe *)m_vpGB[0];
+		// PointCloud pc;
+		// pPsrc->copyTo(&pc);
 
-		int nPnew = pc.points_.size();
-		IF_(nPnew <= 0);
+		// int nPnew = pc.points_.size();
+		// IF_(nPnew <= 0);
 
-		int iPw = m_iPprv;
-		for (int i = 0; i < nPnew; i++)
-		{
-			m_pPCprv->points_[iPw] = pc.points_[i];
-			m_pPCprv->colors_[iPw] = pc.colors_[i];
+		// int iPw = m_iPprv;
+		// for (int i = 0; i < nPnew; i++)
+		// {
+		// 	m_pPCprv->points_[iPw] = pc.points_[i];
+		// 	m_pPCprv->colors_[iPw] = pc.colors_[i];
 
-			iPw++;
-			if (iPw >= m_nPresv)
-				break;
-		}
+		// 	iPw++;
+		// 	if (iPw >= m_nPresv)
+		// 		break;
+		// }
 
-		int nDummy = m_nPresv - iPw;
-		if (nDummy > 0)
-		{
-			m_pPCprv->points_.erase(m_pPCprv->points_.end() - nDummy,
-									m_pPCprv->points_.end());
-			m_pPCprv->colors_.erase(m_pPCprv->colors_.end() - nDummy,
-									m_pPCprv->colors_.end());
-			addDummyPoints(m_pPCprv, nDummy, m_rDummyDome);
-		}
+		// int nDummy = m_nPresv - iPw;
+		// if (nDummy > 0)
+		// {
+		// 	m_pPCprv->points_.erase(m_pPCprv->points_.end() - nDummy,
+		// 							m_pPCprv->points_.end());
+		// 	m_pPCprv->colors_.erase(m_pPCprv->colors_.end() - nDummy,
+		// 							m_pPCprv->colors_.end());
+		// 	addDummyPoints(m_pPCprv, nDummy, m_rDummyDome);
+		// }
 
-		m_aabb = pc.GetAxisAlignedBoundingBox();
-		if (m_pUIstate)
-			m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
+		// m_aabb = pc.GetAxisAlignedBoundingBox();
+		// if (m_pUIstate)
+		// 	m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
 
-		updateUIpc(*m_pPCprv);
+		// updateUIpc(*m_pPCprv);
 	}
 
 	void _GSVview::savePC(void)
 	{
 		IF_(check() < 0);
-		if (m_nP <= 0)
-		{
-			m_pWin->ShowMsg("FILE", "Model is empty", true);
-			return;
-		}
+		// if (m_nP <= 0)
+		// {
+		// 	m_pWin->ShowMsg("FILE", "Model is empty", true);
+		// 	return;
+		// }
 
-		m_pWin->ShowMsg("FILE", "Saving .PLY file");
+		// m_pWin->ShowMsg("FILE", "Saving .PLY file");
 
-		io::WritePointCloudOption par;
-		par.write_ascii = io::WritePointCloudOption::IsAscii::Binary;
-		par.compressed = io::WritePointCloudOption::Compressed::Uncompressed;
+		// io::WritePointCloudOption par;
+		// par.write_ascii = io::WritePointCloudOption::IsAscii::Binary;
+		// par.compressed = io::WritePointCloudOption::Compressed::Uncompressed;
 
-		PointCloud pcMerge;
-		int nSave = 0;
-		for (int i = 0; i < m_vPC.size(); i++)
-		{
-			PointCloud* pP = &m_vPC[i];
-			nSave += (io::WritePointCloudToPLY(m_fNameSavePC + i2str(i) + ".ply",
-											 *pP,
-											 par))?1:0;
+		// PointCloud pcMerge;
+		// int nSave = 0;
+		// for (int i = 0; i < m_vPC.size(); i++)
+		// {
+		// 	PointCloud* pP = &m_vPC[i];
+		// 	nSave += (io::WritePointCloudToPLY(m_fNameSavePC + i2str(i) + ".ply",
+		// 									 *pP,
+		// 									 par))?1:0;
 
-			pcMerge += *pP;
-		}
+		// 	pcMerge += *pP;
+		// }
 
-		nSave += (io::WritePointCloudToPLY(m_fNameSavePC + "_merged.ply",
-										 pcMerge,
-										 par))?1:0;
+		// nSave += (io::WritePointCloudToPLY(m_fNameSavePC + "_merged.ply",
+		// 								 pcMerge,
+		// 								 par))?1:0;
 
-		m_pWin->CloseDialog();
-		string msg;
-		if (nSave > m_vPC.size())
-		{
-			msg = "Saved to: " + m_fNameSavePC;
-			m_pWin->ShowMsg("FILE", msg.c_str(), true);
-		}
-		else
-		{
-			msg = "Failed to save: " + m_fNameSavePC;
-			m_pWin->ShowMsg("FILE", msg.c_str(), true);
-		}
+		// m_pWin->CloseDialog();
+		// string msg;
+		// if (nSave > m_vPC.size())
+		// {
+		// 	msg = "Saved to: " + m_fNameSavePC;
+		// 	m_pWin->ShowMsg("FILE", msg.c_str(), true);
+		// }
+		// else
+		// {
+		// 	msg = "Failed to save: " + m_fNameSavePC;
+		// 	m_pWin->ShowMsg("FILE", msg.c_str(), true);
+		// }
 	}
 
 	void _GSVview::updateCamAuto(void)
@@ -371,7 +322,7 @@ namespace kai
 		{
 			pV->m_fProcess.set(pc_CamAuto);
 		}
-		else if (camMode == 3 || pV->m_sPC.get()->points_.empty()) // origin or no point data
+		else if (camMode == 3) // origin or no point data
 		{
 			pV->resetCamPose();
 			pV->updateCamPose();

@@ -17,7 +17,7 @@ namespace kai
     {
         IF_F(!this->BASE::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
-    	
+
         cl_uint platformNumber = 0;
         cl_platform_id platformIds[8];
         clGetPlatformIDs(8, platformIds, &platformNumber);

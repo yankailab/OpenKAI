@@ -57,11 +57,7 @@ namespace kai
 		static void OnCamCtrl(void *pPCV, void* pD);
 
 	protected:
-		vector<PointCloud> m_vPC;	// original point cloud data frames
-		int m_nP;
-		int m_nPmax;
-		PointCloud* m_pPCprv;
-		int m_iPprv;
+		
 		float m_rVoxel;
 		string m_fNameSavePC;
 

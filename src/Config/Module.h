@@ -16,7 +16,7 @@
 #include "../IPC/SharedMem.h"
 #include "../UI/_Console.h"
 
-#ifdef WITH_3D &&USE_OPEN3D
+#ifdef WITH_3D
 #include "../3D/Mesh/_MeshStream.h"
 #include "../3D/PointCloud/_PCstream.h"
 #include "../3D/PointCloud/_PCframe.h"
@@ -87,7 +87,7 @@
 #include "../Autopilot/Drive/_Drive.h"
 #endif
 
-#ifdef WITH_APP_3DSCAN &&WITH_3D &&USE_OPEN3D &&USE_GUI
+#ifdef WITH_APP_3DSCAN
 #include "../Application/3Dscan/_3DScanCalibCam.h"
 #include "../Application/3Dscan/_3DScanCalibOfs.h"
 #include "../Application/3Dscan/_PCscan.h"
@@ -116,12 +116,12 @@
 #include "../Application/GSV/_GSVview.h"
 #endif
 
-#ifdef WITH_APP_LIVOXSCANNER &&USE_LIVOX &&WITH_3D &&USE_OPEN3D
+#ifdef WITH_APP_LIVOXSCANNER
 #include "../Application/LivoxScanner/_LivoxAutoScan.h"
 #include "../Application/LivoxScanner/_LivoxScanner.h"
 #endif
 
-#ifdef WITH_APP_MEASUREMENT &&USE_OPENCV
+#ifdef WITH_APP_MEASUREMENT
 #include "../Application/Measurement/_ARmeasure.h"
 #include "../Application/Measurement/_ARmeasureVertex.h"
 #include "../Application/Measurement/_ARmeasureFree.h"
@@ -130,11 +130,8 @@
 #include "../Application/Measurement/_RaspiWSbattery.h"
 #endif
 
-// #ifdef WITH_APP_ROPEWAYSCAN &&USE_VZENSE &&USE_LIVOX &&WITH_3D &&USE_OPEN3D
 #ifdef WITH_APP_ROPEWAYSCAN
 #include "../Application/RopewayScan/_RopewayScan.h"
-// #include "../Application/RopewayScan/_RopewayScanVz.h"
-// #include "../Application/RopewayScan/_RopewayScanLivox.h"
 #endif
 
 #ifdef WITH_APP_ROBOTARM
@@ -159,7 +156,7 @@
 #include "../Application/Swarm/_SwarmSearch.h"
 #endif
 
-#ifdef WITH_APP_VZSCAN && USE_VZENSE && WITH_3D && USE_OPEN3D && USE_GUI
+#ifdef WITH_APP_VZSCAN
 #include "../Application/VzScan/_VzScan.h"
 #include "../Application/VzScan/_VzScanAuto.h"
 #include "../Application/VzScan/_VzScanCalib.h"
