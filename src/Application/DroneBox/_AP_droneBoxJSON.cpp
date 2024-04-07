@@ -5,7 +5,7 @@ namespace kai
 
     _AP_droneBoxJSON::_AP_droneBoxJSON()
     {
-        m_pAPgcs = NULL;
+        m_pAPdroneBox = NULL;
 
         m_ID = -1;
         m_vPos.clear();
@@ -34,8 +34,8 @@ namespace kai
         string n;
         n = "";
         pK->v("_AP_droneBox", &n);
-        m_pAPgcs = (_AP_droneBox *)(pK->getInst(n));
-        IF_Fl(!m_pAPgcs, n + ": not found");
+        m_pAPdroneBox = (_AP_droneBox *)(pK->getInst(n));
+        IF_Fl(!m_pAPdroneBox, n + ": not found");
 
 		return true;
 	}
@@ -50,7 +50,7 @@ namespace kai
 
     int _AP_droneBoxJSON::check(void)
     {
-        NULL__(m_pAPgcs, -1);
+        NULL__(m_pAPdroneBox, -1);
 
         return this->_JSONbase::check();
     }
@@ -88,7 +88,7 @@ namespace kai
 
         this->_JSONbase::send();
 
-        GCS_STATE *pState = m_pAPgcs->getState();
+        DRONEBOX_STATE *pState = m_pAPdroneBox->getState();
 
         object o;
         JO(o, "id", (double)1);
@@ -119,7 +119,7 @@ namespace kai
         }
 
 
-        IF_(m_pAPgcs->getTargetDroneBoxID() != m_ID);
+        IF_(m_pAPdroneBox->getTargetDroneBoxID() != m_ID);
 
         if (pState->bLANDING_REQUEST())
         {
@@ -195,11 +195,11 @@ namespace kai
         string d = o["do"].get<string>();
         if (d == "takeoff")
         {
-            m_pAPgcs->takeoffReady(bReady);
+            m_pAPdroneBox->takeoffReady(bReady);
         }
         else if (d == "landing")
         {
-            m_pAPgcs->landingReady(bReady);
+            m_pAPdroneBox->landingReady(bReady);
         }
     }
 

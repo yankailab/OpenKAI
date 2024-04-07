@@ -23,7 +23,7 @@ namespace kai
 
     bool _AP_droneBox::init(void *pKiss)
     {
-        IF_F(!this->_GCSbase::init(pKiss));
+        IF_F(!this->_DroneBoxState::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("bAutoArm", &m_bAutoArm);
@@ -39,7 +39,7 @@ namespace kai
 
 	bool _AP_droneBox::link(void)
 	{
-		IF_F(!this->_GCSbase::link());
+		IF_F(!this->_DroneBoxState::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
@@ -69,7 +69,7 @@ namespace kai
         NULL__(m_pAP->m_pMav, -1);
         NULL__(m_pAPland, -1);
 
-        return this->_GCSbase::check();
+        return this->_DroneBoxState::check();
     }
 
     void _AP_droneBox::update(void)
@@ -78,20 +78,21 @@ namespace kai
         {
             m_pT->autoFPSfrom();
 
-            updateGCS();
+            updateDroneBox();
 
             m_pT->autoFPSto();
         }
     }
 
-    void _AP_droneBox::updateGCS(void)
+    void _AP_droneBox::updateDroneBox(void)
     {
-        this->_GCSbase::updateGCS();
+        this->_DroneBoxState::updateDroneBox();
         IF_(check() < 0);
 
         int apMode = m_pAP->getApMode();
         bool bApArmed = m_pAP->bApArmed();
         float alt = m_pAP->getGlobalPos().w; //relative altitude
+
 
         // For manual reset
         if (apMode == AP_COPTER_STABILIZE)
@@ -115,6 +116,7 @@ namespace kai
             return;
         }
 
+        // Takeoff!
         if (m_state.bTAKEOFF_READY())
         {
             IF_(apMode != AP_COPTER_GUIDED);
@@ -139,6 +141,10 @@ namespace kai
                 m_pAP->setApMode(AP_COPTER_AUTO);
 
             IF_(apMode != AP_COPTER_AUTO);
+
+
+
+// TODO:
 
             IF_(alt > m_altLand);
 

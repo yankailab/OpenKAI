@@ -17,14 +17,15 @@
 	"vBASE":["state","droneBox"],
 }
 
+
 {
 	"name":"state",
 	"class":"_StateControl",
-	"bON":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
+	"bON":1,
 	"start":"STANDBY",
 
 	{
@@ -32,45 +33,46 @@
 		{
 			"bON":1,
 			"name":"STANDBY",
-			"class":"State",
+			"class":"StateBase",
 		}
 		{
 			"bON":1,
 			"name":"TAKEOFF_REQUEST",
-			"class":"State",
+			"class":"StateBase",
 		}
 		{
 			"bON":1,
 			"name":"TAKEOFF_READY",
-			"class":"State",
+			"class":"StateBase",
 		}
 		{
 			"bON":1,
 			"name":"AIRBORNE",
-			"class":"State",
+			"class":"StateBase",
 		}
 		{
 			"bON":1,
 			"name":"LANDING_REQUEST",
-			"class":"State",
+			"class":"StateBase",
 		}
 		{
 			"bON":1,
 			"name":"LANDING",
-			"class":"State",
+			"class":"StateBase",
 		}
 		{
 			"bON":1,
 			"name":"TOUCHDOWN",
-			"class":"State",
+			"class":"StateBase",
 		}
 		{
 			"bON":1,
 			"name":"LANDED",
-			"class":"State",
+			"class":"StateBase",
 		}
 	}
 }
+
 
 {
 	"name":"modbus",
@@ -104,40 +106,6 @@
 }
 
 {
-	"name":"telem",
-	"class":"_SerialPort",
-	"bON":1,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-    {
-		"name":"threadR",
-		"FPS":1,
-	}
-	"bLog":0,
-	"port":"/dev/ttyUSB0",
-	"baud":57600,
-}
-
-{
-	"name":"dbjTelem",
-	"class":"_DroneBoxJSON",
-	"bON":1,
-    {
-		"name":"thread",
-		"FPS":1,
-	}
-    {
-		"name":"threadR",
-		"FPS":30,
-	}
-	"bLog":1,
-	"_DroneBox":"droneBox",
-	"_IObase":"telem",
-}
-
-{
 	"name":"udp",
 	"class":"_UDP",
 	"bON":1,
@@ -148,13 +116,14 @@
     {
 		"name":"threadR",
 		"FPS":1,
+		"vTwakeUp":["dronBoxJson.threadR"],
 	}
 	"port":20000,
 	"nFIFO":12800,
 }
 
 {
-	"name":"dbjUDP",
+	"name":"dronBoxJson",
 	"class":"_DroneBoxJSON",
 	"bON":1,
     {

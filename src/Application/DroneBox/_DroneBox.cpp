@@ -19,7 +19,7 @@ namespace kai
 
     bool _DroneBox::init(void *pKiss)
     {
-        IF_F(!this->_GCSbase::init(pKiss));
+        IF_F(!this->_DroneBoxState::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 		
 
@@ -32,7 +32,7 @@ namespace kai
 
 	bool _DroneBox::link(void)
 	{
-		IF_F(!this->_GCSbase::link());
+		IF_F(!this->_DroneBoxState::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
@@ -55,7 +55,7 @@ namespace kai
         NULL__(m_pMB, -1);
         IF__(!m_pMB->bOpen(), -1);
 
-        return this->_GCSbase::check();
+        return this->_DroneBoxState::check();
     }
 
     void _DroneBox::update(void)
@@ -64,17 +64,17 @@ namespace kai
         {
             m_pT->autoFPSfrom();
 
-            updateGCS();
+            updateDroneBox();
 
             m_pT->autoFPSto();
         }
     }
 
-    void _DroneBox::updateGCS(void)
+    void _DroneBox::updateDroneBox(void)
     {
-        this->_GCSbase::updateGCS();
-
+        this->_DroneBoxState::updateDroneBox();
         IF_(check() < 0);
+
 
         if (m_state.bSTANDBY())
         {

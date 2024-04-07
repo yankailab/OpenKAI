@@ -151,7 +151,7 @@ namespace kai
         int vID = o["id"].get<double>();
         string stat = o["stat"].get<string>();
 
-        m_pDB->status(vID, stat);
+        m_pDB->setState(vID, stat);
     }
 
     void _DroneBoxJSON::req(picojson::object &o)

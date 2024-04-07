@@ -16,6 +16,77 @@
 #include "../IPC/SharedMem.h"
 #include "../UI/_Console.h"
 
+
+// Apps
+
+#ifdef WITH_APP_3DSCAN
+#include "../Application/3Dscan/_3DScanCalibCam.h"
+#include "../Application/3Dscan/_3DScanCalibOfs.h"
+#include "../Application/3Dscan/_PCscan.h"
+#include "../Application/3Dscan/_PCcalib.h"
+#endif
+
+#ifdef WITH_APP_CAMCALIB
+#include "../Application/CamCalib/_CamCalib.h"
+#endif
+
+#ifdef WITH_APP_DRONEBOX
+#include "../Application/DroneBox/_DroneBoxState.h"
+#include "../Application/DroneBox/_DroneBox.h"
+#include "../Application/DroneBox/_DroneBoxJSON.h"
+#include "../Application/DroneBox/_AP_droneBox.h"
+#include "../Application/DroneBox/_AP_droneBoxJSON.h"
+#endif
+
+#ifdef WITH_APP_DRONESR
+#include "../Application/DroneSR/_AP_SR.h"
+#endif
+
+#ifdef WITH_APP_GSV
+#include "../Application/GSV/_GSVctrl.h"
+#include "../Application/GSV/_GSVdetect.h"
+#include "../Application/GSV/_GSVio.h"
+#include "../Application/GSV/_GSVview.h"
+#endif
+
+#ifdef WITH_APP_LIVOXSCANNER
+#include "../Application/LivoxScanner/_LivoxAutoScan.h"
+#include "../Application/LivoxScanner/_LivoxScanner.h"
+#endif
+
+#ifdef WITH_APP_MEASUREMENT
+#include "../Application/Measurement/_ARmeasure.h"
+#include "../Application/Measurement/_ARmeasureVertex.h"
+#include "../Application/Measurement/_ARmeasureFree.h"
+#include "../Application/Measurement/_ARmeasureCalibCam.h"
+#include "../Application/Measurement/_ARmeasureCalibDofs.h"
+#include "../Application/Measurement/_RaspiWSbattery.h"
+#endif
+
+#ifdef WITH_APP_ROPEWAYSCAN
+#include "../Application/RopewayScan/_RopewayScan.h"
+#endif
+
+#ifdef WITH_APP_ROBOTARM
+#include "../Application/RobotArm/_Sequencer.h"
+#ifdef USE_OPENCV
+#include "../Application/RobotArm/_PickingArm.h"
+#endif
+#endif
+
+#ifdef WITH_APP_ROVER
+#endif
+
+#ifdef WITH_APP_SWARM
+#include "../Application/Swarm/_SwarmCtrl.h"
+#include "../Application/Swarm/_SwarmCtrlUI.h"
+#include "../Application/Swarm/_AP_swarm.h"
+#include "../Application/Swarm/_SwarmSearch.h"
+#endif
+
+
+// modules
+
 #ifdef WITH_3D
 #include "../3D/Mesh/_MeshStream.h"
 #include "../3D/PointCloud/_PCstream.h"
@@ -87,81 +158,6 @@
 #include "../Autopilot/Drive/_Drive.h"
 #endif
 
-#ifdef WITH_APP_3DSCAN
-#include "../Application/3Dscan/_3DScanCalibCam.h"
-#include "../Application/3Dscan/_3DScanCalibOfs.h"
-#include "../Application/3Dscan/_PCscan.h"
-#include "../Application/3Dscan/_PCcalib.h"
-#endif
-
-#ifdef WITH_APP_CAMCALIB
-#include "../Application/CamCalib/_CamCalib.h"
-#endif
-
-#ifdef WITH_APP_DRONEBOX
-#include "../Application/DroneBox/_DroneBox.h"
-#include "../Application/DroneBox/_DroneBoxJSON.h"
-#include "../Application/DroneBox/_AP_droneBox.h"
-#include "../Application/DroneBox/_AP_droneBoxJSON.h"
-#endif
-
-#ifdef WITH_APP_DRONESR
-#include "../Application/DroneSR/_AP_SR.h"
-#endif
-
-#ifdef WITH_APP_GSV
-#include "../Application/GSV/_GSVctrl.h"
-#include "../Application/GSV/_GSVdetect.h"
-#include "../Application/GSV/_GSVio.h"
-#include "../Application/GSV/_GSVview.h"
-#endif
-
-#ifdef WITH_APP_LIVOXSCANNER
-#include "../Application/LivoxScanner/_LivoxAutoScan.h"
-#include "../Application/LivoxScanner/_LivoxScanner.h"
-#endif
-
-#ifdef WITH_APP_MEASUREMENT
-#include "../Application/Measurement/_ARmeasure.h"
-#include "../Application/Measurement/_ARmeasureVertex.h"
-#include "../Application/Measurement/_ARmeasureFree.h"
-#include "../Application/Measurement/_ARmeasureCalibCam.h"
-#include "../Application/Measurement/_ARmeasureCalibDofs.h"
-#include "../Application/Measurement/_RaspiWSbattery.h"
-#endif
-
-#ifdef WITH_APP_ROPEWAYSCAN
-#include "../Application/RopewayScan/_RopewayScan.h"
-#endif
-
-#ifdef WITH_APP_ROBOTARM
-#include "../Application/RobotArm/_Sequencer.h"
-#ifdef USE_OPENCV
-#include "../Application/RobotArm/_PickingArm.h"
-#endif
-#endif
-
-#ifdef WITH_APP_ROVER
-#include "../Application/Rover/_AProver_tag.h"
-#include "../Application/Rover/_AProver_WB.h"
-#include "../Application/Rover/_AProver_WBnav.h"
-#include "../Application/Rover/_PWMrover.h"
-#include "../Application/Rover/_SbusRover.h"
-#endif
-
-#ifdef WITH_APP_SWARM
-#include "../Application/Swarm/_SwarmCtrl.h"
-#include "../Application/Swarm/_SwarmCtrlUI.h"
-#include "../Application/Swarm/_AP_swarm.h"
-#include "../Application/Swarm/_SwarmSearch.h"
-#endif
-
-#ifdef WITH_APP_VZSCAN
-#include "../Application/VzScan/_VzScan.h"
-#include "../Application/VzScan/_VzScanAuto.h"
-#include "../Application/VzScan/_VzScanCalib.h"
-#endif
-
 #ifdef WITH_COMPUTE
 #ifdef USE_OPENCL
 #include "../Compute/OpenCL/clBase.h"
@@ -223,9 +219,6 @@
 #endif
 
 #ifdef WITH_FILTER
-#endif
-
-#ifdef WITH_GCS
 #endif
 
 #ifdef WITH_IO

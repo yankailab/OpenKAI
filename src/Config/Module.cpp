@@ -26,6 +26,78 @@ namespace kai
 		ADD_MODULE(Destimator);
 		ADD_MODULE(_Console);
 
+
+// Apps
+
+#ifdef WITH_APP_3DSCAN
+		ADD_MODULE(_3DScanCalibCam);
+		ADD_MODULE(_3DScanCalibOfs);
+		ADD_MODULE(_PCscan);
+		ADD_MODULE(_PCcalib);
+#endif
+
+#ifdef WITH_APP_CAMCALIB
+		ADD_MODULE(_CamCalib);
+#endif
+
+#ifdef WITH_APP_DRONEBOX
+		ADD_MODULE(_DroneBox);
+		ADD_MODULE(_DroneBoxJSON);
+		ADD_MODULE(_AP_droneBox);
+		ADD_MODULE(_AP_droneBoxJSON);
+#endif
+
+#ifdef WITH_APP_DRONESR
+		ADD_MODULE(_AP_SR);
+#endif
+
+#ifdef WITH_APP_GSV
+		ADD_MODULE(_GSVctrl);
+		ADD_MODULE(_GSVdetect);
+		ADD_MODULE(_GSVio);
+		ADD_MODULE(_GSVview);
+#endif
+
+#ifdef WITH_APP_LIVOXSCANNER
+		ADD_MODULE(_LivoxAutoScan);
+		ADD_MODULE(_LivoxScanner);
+#endif
+
+#ifdef WITH_APP_MEASUREMENT
+		ADD_MODULE(_ARmeasure);
+		ADD_MODULE(_ARmeasureVertex);
+		ADD_MODULE(_ARmeasureFree);
+		ADD_MODULE(_ARmeasureCalibCam);
+		ADD_MODULE(_ARmeasureCalibDofs);
+		ADD_MODULE(_RaspiWSbattery);
+#endif
+
+#ifdef WITH_APP_ROPEWAYSCAN
+		ADD_MODULE(_RopewayScan);
+#endif
+
+#ifdef WITH_APP_ROBOTARM
+		ADD_MODULE(_Sequencer);
+#ifdef USE_OPENCV
+		ADD_MODULE(_PickingArm);
+#endif
+#endif
+
+#ifdef WITH_APP_ROVER
+#ifdef USE_OPENCV
+#endif
+#endif
+
+#ifdef WITH_APP_SWARM
+		ADD_MODULE(_SwarmCtrl);
+		ADD_MODULE(_SwarmCtrlUI);
+		ADD_MODULE(_AP_swarm);
+		ADD_MODULE(_SwarmSearch);
+#endif
+
+
+// modules
+
 #ifdef WITH_3D
 		ADD_MODULE(_MeshStream);
 		ADD_MODULE(_PCstream);
@@ -97,83 +169,6 @@ namespace kai
 		ADD_MODULE(_Drive);
 #endif
 
-#ifdef WITH_APP_3DSCAN
-		ADD_MODULE(_3DScanCalibCam);
-		ADD_MODULE(_3DScanCalibOfs);
-		ADD_MODULE(_PCscan);
-		ADD_MODULE(_PCcalib);
-#endif
-
-#ifdef WITH_APP_CAMCALIB
-		ADD_MODULE(_CamCalib);
-#endif
-
-#ifdef WITH_APP_DRONEBOX
-		ADD_MODULE(_DroneBox);
-		ADD_MODULE(_DroneBoxJSON);
-		ADD_MODULE(_AP_droneBox);
-		ADD_MODULE(_AP_droneBoxJSON);
-#endif
-
-#ifdef WITH_APP_DRONESR
-		ADD_MODULE(_AP_SR);
-#endif
-
-#ifdef WITH_APP_GSV
-		ADD_MODULE(_GSVctrl);
-		ADD_MODULE(_GSVdetect);
-		ADD_MODULE(_GSVio);
-		ADD_MODULE(_GSVview);
-#endif
-
-#ifdef WITH_APP_LIVOXSCANNER
-		ADD_MODULE(_LivoxAutoScan);
-		ADD_MODULE(_LivoxScanner);
-#endif
-
-#ifdef WITH_APP_MEASUREMENT
-		ADD_MODULE(_ARmeasure);
-		ADD_MODULE(_ARmeasureVertex);
-		ADD_MODULE(_ARmeasureFree);
-		ADD_MODULE(_ARmeasureCalibCam);
-		ADD_MODULE(_ARmeasureCalibDofs);
-		ADD_MODULE(_RaspiWSbattery);
-#endif
-
-#ifdef WITH_APP_ROPEWAYSCAN
-		ADD_MODULE(_RopewayScan);
-#endif
-
-#ifdef WITH_APP_ROBOTARM
-		ADD_MODULE(_Sequencer);
-#ifdef USE_OPENCV
-		ADD_MODULE(_PickingArm);
-#endif
-#endif
-
-#ifdef WITH_APP_ROVER
-		ADD_MODULE(_AProver_tag);
-		ADD_MODULE(_AProver_WB);
-		ADD_MODULE(_AProver_WBnav);
-		ADD_MODULE(_PWMrover);
-		ADD_MODULE(_SbusRover);
-#ifdef USE_OPENCV
-#endif
-#endif
-
-#ifdef WITH_APP_SWARM
-		ADD_MODULE(_SwarmCtrl);
-		ADD_MODULE(_SwarmCtrlUI);
-		ADD_MODULE(_AP_swarm);
-		ADD_MODULE(_SwarmSearch);
-#endif
-
-#ifdef WITH_APP_VZSCAN
-		ADD_MODULE(_VzScan);
-		ADD_MODULE(_VzScanAuto);
-		ADD_MODULE(_VzScanCalib);
-#endif
-
 #ifdef WITH_COMPUTE
 #ifdef USE_OPENCL
 		ADD_MODULE(clBase);
@@ -235,9 +230,6 @@ namespace kai
 #endif
 
 #ifdef WITH_FILTER
-#endif
-
-#ifdef WITH_GCS
 #endif
 
 #ifdef WITH_IO

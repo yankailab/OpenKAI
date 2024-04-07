@@ -1,12 +1,12 @@
-#ifndef OpenKAI_src_GCS__GCSbase_H_
-#define OpenKAI_src_GCS__GCSbase_H_
+#ifndef OpenKAI_src_GCS__DroneBoxState_H_
+#define OpenKAI_src_GCS__DroneBoxState_H_
 
-#include "../State/_StateControl.h"
+#include "../../State/_StateControl.h"
 
 namespace kai
 {
 
-    struct GCS_STATE
+    struct DRONEBOX_STATE
     {
         int8_t m_iState;
         int8_t STANDBY;
@@ -96,31 +96,31 @@ namespace kai
         }
     };
 
-    class _GCSbase : public _ModuleBase
+    class _DroneBoxState : public _ModuleBase
     {
     public:
-        _GCSbase();
-        ~_GCSbase();
+        _DroneBoxState();
+        ~_DroneBoxState();
 
         virtual bool init(void *pKiss);
 		virtual bool link(void);
         virtual int check(void);
 
         virtual int getID(void);
-        virtual GCS_STATE *getState(void);
+        virtual DRONEBOX_STATE *getState(void);
 
-        virtual void status(int vID, const string &stat);
+        virtual void setState(int vID, const string &stat);
         virtual bool takeoffRequest(int vID);
         virtual bool landingRequest(int vID);
 
     protected:
-        virtual void updateGCS(void);
+        virtual void updateDroneBox(void);
 
     public:
 		_StateControl* m_pSC;
 
         int m_gcsID;
-        GCS_STATE m_state;
+        DRONEBOX_STATE m_state;
     };
 
 }

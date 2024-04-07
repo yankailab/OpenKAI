@@ -3,12 +3,12 @@
 
 #include "../../Autopilot/ArduPilot/_AP_land.h"
 #include "../../State/_StateControl.h"
-#include "../../GCS/_GCSbase.h"
+#include "_DroneBoxState.h"
 
 namespace kai
 {
 
-	class _AP_droneBox : public _GCSbase
+	class _AP_droneBox : public _DroneBoxState
 	{
 	public:
 		_AP_droneBox();
@@ -27,7 +27,7 @@ namespace kai
 		void takeoffReady(bool bReady);
 
 	protected:
-		virtual void updateGCS(void);
+		virtual void updateDroneBox(void);
 		static void *getUpdate(void *This)
 		{
 			((_AP_droneBox *)This)->update();

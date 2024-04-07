@@ -43,7 +43,7 @@ namespace kai
 		}
 
 	public:
-		_AP_droneBox *m_pAPgcs;
+		_AP_droneBox *m_pAPdroneBox;
 
 		int m_ID;
 		vDouble2 m_vPos;

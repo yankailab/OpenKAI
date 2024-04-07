@@ -1,8 +1,8 @@
 #ifndef OpenKAI_src_Application_DroneBox__DroneBox_H_
 #define OpenKAI_src_Application_DroneBox__DroneBox_H_
 
-#include "../../GCS/_GCSbase.h"
 #include "../../Protocol/_Modbus.h"
+#include "_DroneBoxState.h"
 
 namespace kai
 {
@@ -19,7 +19,7 @@ namespace kai
         dbx_boxRecover = 6,
     };
 
-    class _DroneBox : public _GCSbase
+    class _DroneBox : public _DroneBoxState
     {
     public:
         _DroneBox();
@@ -45,7 +45,7 @@ namespace kai
         bool boxRecover(void);
 
     protected:
-        virtual void updateGCS(void);
+        virtual void updateDroneBox(void);
         static void *getUpdate(void *This)
         {
             ((_DroneBox *)This)->update();

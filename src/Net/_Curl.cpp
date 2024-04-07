@@ -108,7 +108,7 @@ namespace kai
 				//upload success
 				LOG_I("Uploaded: " + m_fName);
 				cmd = "rm " + m_fName;
-//				system(cmd.c_str());
+				system(cmd.c_str());
 				m_vFiles.pop_back();
 			}
 

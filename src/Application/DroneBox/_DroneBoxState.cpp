@@ -1,19 +1,19 @@
-#include "_GCSbase.h"
+#include "_DroneBoxState.h"
 
 namespace kai
 {
 
-    _GCSbase::_GCSbase()
+    _DroneBoxState::_DroneBoxState()
     {
         m_pSC = NULL;
         m_gcsID = -1;
     }
 
-    _GCSbase::~_GCSbase()
+    _DroneBoxState::~_DroneBoxState()
     {
     }
 
-    bool _GCSbase::init(void *pKiss)
+    bool _DroneBoxState::init(void *pKiss)
     {
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
@@ -23,12 +23,11 @@ namespace kai
         return true;
     }
 
-	bool _GCSbase::link(void)
+	bool _DroneBoxState::link(void)
 	{
 		IF_F(!this->_ModuleBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
     	
-
         string n;
         n = "";
         pK->v("_StateControl", &n);
@@ -40,31 +39,31 @@ namespace kai
 		return true;
 	}
 
-    int _GCSbase::check(void)
+    int _DroneBoxState::check(void)
     {
         NULL__(m_pSC, -1);
 
         return this->_ModuleBase::check();
     }
 
-    void _GCSbase::updateGCS(void)
+    void _DroneBoxState::updateDroneBox(void)
     {
         IF_(check() < 0);
 
         m_state.update(m_pSC);
     }
 
-    int _GCSbase::getID(void)
+    int _DroneBoxState::getID(void)
     {
         return m_gcsID;
     }
 
-    GCS_STATE *_GCSbase::getState(void)
+    DRONEBOX_STATE *_DroneBoxState::getState(void)
     {
         return &m_state;
     }
 
-    void _GCSbase::status(int vID, const string &stat)
+    void _DroneBoxState::setState(int vID, const string &stat)
     {
         IF_(check() < 0);
 
@@ -76,7 +75,7 @@ namespace kai
             m_pSC->transit(m_state.LANDED);
     }
 
-    bool _GCSbase::takeoffRequest(int vID)
+    bool _DroneBoxState::takeoffRequest(int vID)
     {
         IF_F(check() < 0);
         IF_T(m_state.bTAKEOFF_READY());
@@ -85,7 +84,7 @@ namespace kai
         return false;
     }
 
-    bool _GCSbase::landingRequest(int vID)
+    bool _DroneBoxState::landingRequest(int vID)
     {
         IF_F(check() < 0);
         IF_T(m_state.bLANDING());
