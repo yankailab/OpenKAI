@@ -12,11 +12,19 @@ sudo apt-get upgrade
 sudo apt-get dist-upgrade
 # sudo rpi-update
 
+
+--------------
 # Connect to wifi
 # https://www.raspberrypi.com/documentation/computers/configuration.html
 sudo nmcli dev wifi connect <example_ssid>
 
 # Assign static IP to eth0
+# using nmcli
+sudo nmcli -p connection show
+sudo nmcli con mod "Wired connection 1" ipv4.addresses 192.168.1.5/24 ipv4.gateway 192.168.1.1 ipv4.dns 192.168.1.1 ipv4.method manual
+sudo nmcli c down "Wired connection 1" && sudo nmcli c up "Wired connection 1"
+
+# Alternatively
 sudo nano /etc/NetworkManager/system-connections/Wired\ connection\ 1.nmconnection
 address1=192.168.1.5/24,192.168.1.1
 #dns=192.168.1.1;
@@ -30,16 +38,13 @@ method=manual
 #method=manual
 method=auto
 
-# Alternatively using nmcli
-#sudo nmcli -p connection show
-#sudo nmcli con mod "Wired connection 1" ipv4.addresses 192.168.1.5/24 ipv4.gateway 192.168.1.1 ipv4.dns 192.168.1.1 ipv4.method manual
-sudo nmcli c down "Wired connection 1" && sudo nmcli c up "Wired connection 1"
 
+--------------
 # Auto start using crontab
 crontab -e
 @reboot /home/lab/start.sh
 
-start.sh--------------
+start.sh--
 #!/bin/bash
 source /home/lab/dev/ros2_humble/install/local_setup.bash
 source /home/lab/dev/rosWS/install/setup.bash
@@ -54,11 +59,10 @@ sleep 5
 #/home/lab/dev/OpenKAI/build/OpenKAI /home/lab/dev/OpenKAI/kiss/app/apCopter_fastLio.kiss &
 
 exit 0
+--
+
+
 --------------
-
-
-
-
 # Disable OS use of UART and Enable UART hardware
 set +H
 sudo sh -c "echo 'dtoverlay=disable-bt\n' >> /boot/firmware/config.txt"
@@ -82,6 +86,44 @@ sudo systemctl stop getty@ttyS0.service
 sudo systemctl disable getty@ttyS0.service
 sudo reboot now
 
+
+--------------
+# Raspberry camera
+sudo nano /boot/firmware/config.txt
+#camera_auto_detect=1
+dtoverlay=imx219
+#dtoverlay=imx219,cam0
+# old ref: https://www.waveshare.net/wiki/CM4-NANO-A
+
+# verify
+libcamera-hello
+
+sudo apt install gstreamer1.0-libcamera
+gst-launch-1.0 libcamerasrc ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! videoflip method=0 ! queue ! videoconvert ! v4l2h264enc ! 'video/x-h264,level=(string)5' ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.235 port=5678 auto-multicast=false
+
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=20/1 ! x264enc ! matroskamux ! filesink location=/home/pi/ssd/test.mkv
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! v4l2h264enc ! h264parse ! matroskamux ! filesink location=/home/pi/ssd/test1.mkv
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
+gst-launch-1.0 libcamerasrc ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
+gst-launch-1.0 libcamerasrc ! video/x-raw,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! v4l2h264enc ! 'video/x-h264,level=(string)4' ! h264parse ! matroskamux ! filesink location="/home/pi/ssd/video/test.mka"
+gst-launch-1.0 libcamerasrc ! video/x-raw,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! v4l2h264enc ! 'video/x-h264,level=(string)4' ! h264parse ! matroskamux ! filesink location="/home/pi/ssd/video/test.mka"
+
+--------------
+# Enable NvMe SSD
+sudo nano /boot/firmware/config.txt
+dtparam=nvme
+
+# Optional, if needed to enable rrprom update on CM4
+Add these the following entries to /etc/default/rpi-eeprom-update
+RPI_EEPROM_USE_FLASHROM=1
+CM4_ENABLE_RPI_EEPROM_UPDATE=1
+and these entries to config.txt and reboot
+[cm4]
+dtparam=spi=on
+dtoverlay=audremap
+dtoverlay=spi-gpio40-45
+
+
 # Mount ssd
 lsblk -f
 sudo mkfs -t ext4 /dev/nvme0n1
@@ -92,24 +134,13 @@ sudo mount -t auto /dev/nvme0n1 /home/pi/ssd
 sudo chown pi ssd/
 sudo mount /dev/nvme0n1 /home/pi/ssd
 
-# Raspberry camera
-# ref: https://www.waveshare.net/wiki/CM4-NANO-A
-sudo apt-get install p7zip-full -y
-wget https://www.waveshare.net/w/upload/4/41/CM4_dt_blob.7z
-7z x CM4_dt_blob.7z -O./CM4_dt_blob
-sudo chmod 777 -R CM4_dt_blob
-cd CM4_dt_blob/
-#To use both cams and DSI1, no HDMI available when DSI1 is ON
-sudo  dtc -I dts -O dtb -o /boot/dt-blob.bin dt-blob-disp1-double_cam.dts
-# remove the blob to recover the original config
-sudo rm -rf /boot/dt-blob.bin
-sudo reboot now
 
-gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=20/1 ! x264enc ! matroskamux ! filesink location=/home/pi/ssd/test.mkv
-gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! v4l2h264enc ! h264parse ! matroskamux ! filesink location=/home/pi/ssd/test1.mkv
-gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
-gst-launch-1.0 libcamerasrc ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
-gst-launch-1.0 libcamerasrc ! video/x-raw,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! v4l2h264enc ! 'video/x-h264,level=(string)4' ! h264parse ! matroskamux ! filesink location="/home/pi/ssd/video/test.mka"
+
+
+
+
+
+
 
 # USB reset for Realsense
 sudo nano /boot/config.txt
