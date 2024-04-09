@@ -94,9 +94,9 @@ namespace kai
 		openStream();
 	}
 
-	void _AP_video::onGoSleep(void)
+	void _AP_video::onSleep(void)
 	{
-		this->_ModuleBase::onGoSleep();
+		this->_ModuleBase::onSleep();
 
 		closeStream();
 	}

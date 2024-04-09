@@ -126,7 +126,7 @@ namespace kai
 		return m_bf.b(thread_onWakeup, true);
 	}
 
-	bool _Thread::bOnGoSleep(void)
+	bool _Thread::bonSleep(void)
 	{
 		return (m_setState == thread_sleep);	
 	}

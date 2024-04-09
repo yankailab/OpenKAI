@@ -32,7 +32,7 @@ namespace kai
 		virtual _Universe* getU(void);
 
 	protected:
-		virtual void onGoSleep(void);
+		virtual void onSleep(void);
 
 	protected:
 		// input

@@ -153,6 +153,7 @@ namespace kai
 		ADD_MODULE(_AP_depthVision);
 		ADD_MODULE(_AP_follow);
 		ADD_MODULE(_AP_land);
+		ADD_MODULE(_AP_landingTarget);
 		ADD_MODULE(_AP_video);
 		ADD_MODULE(_AP_videoStream);
 		ADD_MODULE(_APcopter_photo);

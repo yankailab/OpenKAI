@@ -97,9 +97,9 @@ namespace kai
 		}
 	}
 
-	void _AP_land::onGoSleep(void)
+	void _AP_land::onSleep(void)
 	{
-		this->_ModuleBase::onGoSleep();
+		this->_ModuleBase::onSleep();
 
 		clearPID();
 	}

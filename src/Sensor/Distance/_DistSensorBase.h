@@ -24,7 +24,6 @@ namespace kai
 	enum DIST_SENSOR_TYPE
 	{
 		ds_Unknown,
-		ds_YDLIDAR,
 		ds_LeddarVu,
 		ds_TOFsense,
 		ds_BenewakeTF,
@@ -124,11 +123,9 @@ namespace kai
 		float m_dDeg;
 		float m_dDegInv;
 		vFloat2 m_vRange;
-		float m_hdg; // given by external sensor e.g. compass
+//		float m_hdg; // given by external sensor e.g. compass
 		float m_calibScale;
 		float m_calibOffset;
-//		float m_showScale;
-//		float m_showDegOffset;
 		uint16_t m_bReady;
 	};
 

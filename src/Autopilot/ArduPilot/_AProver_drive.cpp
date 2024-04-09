@@ -111,9 +111,9 @@ namespace kai
 		}
 	}
 
-	void _AProver_drive::onGoSleep(void)
+	void _AProver_drive::onSleep(void)
 	{
-		this->_ModuleBase::onGoSleep();
+		this->_ModuleBase::onSleep();
 
 		IF_(!m_bRcChanOverride);
 		*m_pRcYaw = 0;

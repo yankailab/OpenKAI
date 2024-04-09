@@ -37,7 +37,7 @@ namespace kai
 		bool bComplete(void);
 
 	protected:
-		virtual void onGoSleep(void);
+		virtual void onSleep(void);
 
 		virtual void updatePID(void);
 		virtual AP_LAND_TAG* getTag(int id);

@@ -76,9 +76,9 @@ namespace kai
         m_pT->run();
     }
 
-	void _ModuleBase::onGoSleep(void)
+	void _ModuleBase::onSleep(void)
     {
-        IF_(!m_pT->bOnGoSleep());
+        IF_(!m_pT->bonSleep());
     }
 
 	void _ModuleBase::onWakeUp(void)

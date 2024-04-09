@@ -19,11 +19,8 @@ namespace kai
 		m_dDeg = 0;
 		m_dDegInv = 0;
 		m_vRange.set(0, DBL_MAX);
-		m_hdg = 0.0;
 		m_calibScale = 1.0;
 		m_calibOffset = 0.0;
-		// m_showScale = 1.0;
-		// m_showDegOffset = 0.0;
 		m_bReady = false;
 	}
 
@@ -48,8 +45,6 @@ namespace kai
 		m_dDeg = m_fovH / m_nDiv;
 		m_dDegInv = 1.0 / m_dDeg;
 
-		// pK->v("showScale", &m_showScale);
-		// pK->v("showDegOffset", &m_showDegOffset);
 		pK->v("vRange", &m_vRange);
 		pK->v("calibScale", &m_calibScale);
 		pK->v("calibOffset", &m_calibOffset);
@@ -99,7 +94,6 @@ namespace kai
 		IF_(!m_bReady);
 		IF_(deg < 0);
 
-		deg += m_hdg;
 		int iDiv = (int)(deg * m_dDegInv);
 		while (iDiv >= m_nDiv)
 			iDiv -= m_nDiv;
@@ -134,7 +128,6 @@ namespace kai
 		if (!m_bReady)
 			return -1.0;
 
-		deg += m_hdg;
 		while (deg >= DEG_AROUND)
 			deg -= DEG_AROUND;
 
@@ -226,8 +219,6 @@ namespace kai
 		if (!m_bReady)
 			return -1.0;
 
-		degFrom += m_hdg;
-		degTo += m_hdg;
 		float degMid = 0.5 * (degFrom + degTo);
 		int iFrom = (int)(degFrom * m_dDegInv);
 		int iTo = (int)(degTo * m_dDegInv);
@@ -261,8 +252,6 @@ namespace kai
 		if (!m_bReady)
 			return -1.0;
 
-		degFrom += m_hdg;
-		degTo += m_hdg;
 		float degMid = 0.5 * (degFrom + degTo);
 		int iFrom = (int)(degFrom * m_dDegInv);
 		int iTo = (int)(degTo * m_dDegInv);
@@ -295,9 +284,6 @@ namespace kai
 	{
 		if (!m_bReady)
 			return -1.0;
-
-		degFrom += m_hdg;
-		degTo += m_hdg;
 
 		int iFrom = (int)(degFrom * m_dDegInv);
 		int iTo = (int)(degTo * m_dDegInv);

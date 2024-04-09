@@ -12,9 +12,9 @@
 #include "../IPC/SharedMem.h"
 
 #define ON_SLEEP            \
-	if (m_pT->bOnGoSleep()) \
+	if (m_pT->bonSleep()) \
 	{                       \
-		onGoSleep();        \
+		onSleep();        \
 	}
 	
 #define ON_WAKEUP          \
@@ -43,7 +43,7 @@ namespace kai
 
 	protected:
 		virtual void onWakeUp(void);
-		virtual void onGoSleep(void);
+		virtual void onSleep(void);
 
 	private:
 		void update(void);

@@ -63,7 +63,6 @@ namespace kai
 
 		bool init(void *pKiss);
 		bool start(void);
-		void draw(void *pFrame);
 		void console(void *pConsole);
 
 		DIST_SENSOR_TYPE type(void);

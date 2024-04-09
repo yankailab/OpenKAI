@@ -170,9 +170,9 @@ namespace kai
 		}
 	}
 
-	void _AP_follow::onGoSleep(void)
+	void _AP_follow::onSleep(void)
 	{
-		this->_ModuleBase::onGoSleep();
+		this->_ModuleBase::onSleep();
 
 		clearPID();
 		m_bTarget = false;

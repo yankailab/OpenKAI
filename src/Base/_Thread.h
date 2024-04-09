@@ -17,7 +17,7 @@ namespace kai
 	enum THREAD_BF
 	{
 		thread_onWakeup = 0,
-		thread_onGoSleep = 1,
+		thread_onSleep = 1,
 	};
 
 	enum THREAD_STATE
@@ -48,7 +48,7 @@ namespace kai
 		virtual bool bStop(void);
 
 		virtual bool bOnWakeUp(void);
-		virtual bool bOnGoSleep(void);
+		virtual bool bonSleep(void);
 		virtual void setOnWakeUp(void);
 
 		virtual void sleepT(int64_t usec);

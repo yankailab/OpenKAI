@@ -26,7 +26,7 @@ namespace kai
 
 	private:
 		void onWakeUp(void);
-		void onGoSleep(void);
+		void onSleep(void);
 
 		bool openStream(void);
 		void closeStream(void);
