@@ -1,7 +1,5 @@
 #include "clBase.h"
 
-#ifdef USE_OPENCL
-
 namespace kai
 {
 
@@ -109,4 +107,3 @@ namespace kai
     }
 
 }
-#endif

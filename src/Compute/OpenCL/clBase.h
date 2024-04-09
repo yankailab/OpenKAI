@@ -4,8 +4,7 @@
 #include "../../Base/BASE.h"
 #include "../../Script/Kiss.h"
 
-#ifdef USE_OPENCL
-#define CL_TARGET_OPENCL_VERSION 220
+#define CL_TARGET_OPENCL_VERSION 300
 #include <CL/cl.h>
 
 namespace kai
@@ -27,5 +26,4 @@ namespace kai
 	};
 
 }
-#endif
 #endif

@@ -22,8 +22,3 @@ using namespace cv::cuda;
 
 using namespace cv;
 using namespace dnn;
-
-#define KEY_ARROW_UP 82
-#define KEY_ARROW_DOWN 84
-#define KEY_ARROW_LEFT 81
-#define KEY_ARROW_RIGHT 83
