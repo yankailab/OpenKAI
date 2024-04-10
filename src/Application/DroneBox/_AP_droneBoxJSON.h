@@ -25,6 +25,7 @@ namespace kai
 		//msg handlers
 		void handleMsg(string &str);
 		void heartbeat(picojson::object &o);
+		void stat(picojson::object &o);
 		void ack(picojson::object &o);
 
 	private:

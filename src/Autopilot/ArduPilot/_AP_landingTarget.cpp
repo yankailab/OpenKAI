@@ -5,10 +5,15 @@ namespace kai
 
 	_AP_landingTarget::_AP_landingTarget()
 	{
-		m_pAP = NULL;
+		m_pDS = NULL;
 		m_pU = NULL;
-		m_vFov.set(60, 60);
+		m_vFov = 60 * DEG_2_RAD;
+		m_vPsp.set(0.5, 0.5);
 
+		m_bHdg = false;
+		m_bHdgMoving = false;
+		m_hdgSp = 0.0;
+		m_hdgDz = 2.0;
 	}
 
 	_AP_landingTarget::~_AP_landingTarget()
@@ -17,10 +22,17 @@ namespace kai
 
 	bool _AP_landingTarget::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		IF_F(!this->_AP_move::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
-		pK->v("vFov", &m_vFov);
+
+		pK->v("vPsp", &m_vPsp);
+		pK->v("bHdg", &m_bHdg);
+		pK->v("bHdgMoving", &m_bHdgMoving);
+		pK->v("bHdgDz", &m_hdgDz);
+
+		vFloat2 vFovDeg;
+		if (pK->v("vFov", &vFovDeg))
+			m_vFov = vFovDeg * DEG_2_RAD;
 
 		Kiss *pKt = pK->child("tags");
 		NULL_T(pKt);
@@ -40,14 +52,14 @@ namespace kai
 
 	bool _AP_landingTarget::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
+		IF_F(!this->_AP_move::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
 		n = "";
-		pK->v("_AP_base", &n);
-		m_pAP = (_AP_base *)pK->getInst(n);
+		pK->v("_DistSensorBase", &n);
+		m_pDS = (_DistSensorBase *)pK->getInst(n);
 
 		n = "";
 		pK->v("_Universe", &n);
@@ -64,9 +76,10 @@ namespace kai
 
 	int _AP_landingTarget::check(void)
 	{
+		NULL__(m_pDS, -1);
 		NULL__(m_pU, -1);
 
-		return this->_ModuleBase::check();
+		return this->_AP_move::check();
 	}
 
 	void _AP_landingTarget::update(void)
@@ -87,27 +100,30 @@ namespace kai
 
 		IF_(!findTag());
 
-		// convert position from screen to world relative
-		// m_vPvar.z = (pTag) ? pTag->getDist(*pA) : 1.0;
-		// m_vPvar.x = m_vPvar.z * tan((*pY - 0.5) * m_vFov.y * DEG_2_RAD);
-		// m_vPvar.y = m_vPvar.z * tan((*pX - 0.5) * m_vFov.x * DEG_2_RAD);
-		// m_vPvar.w = *pH;
+		// adjust heading if needed
+		if (m_bHdg)
+		{
+			float dH = dHdg(m_hdgSp, m_oTarget.getRoll());	// TODO
+			if (dH > m_hdgDz)
+			{
+				IF_d_(m_pAP->getApMode() != AP_COPTER_GUIDED, m_pAP->setApMode(AP_COPTER_GUIDED));
+
+				setHdg(0, dH * DEG_2_RAD * 0.1);	//TODO
+				return;
+			}
+
+			IF_d_(m_pAP->getApMode() != AP_COPTER_LAND, m_pAP->setApMode(AP_COPTER_LAND));
+		}
 
 		vFloat3 vP = m_oTarget.getPos();
-		
-		mavlink_landing_target_t lt;
-		lt.angle_x = vP.x;
-		lt.angle_y = vP.y;
-//		lt.distance = m_pDS;
-		lt.size_x = m_oTarget.getWidth();
-		lt.size_y = m_oTarget.getHeight();
-		lt.position_valid = 0;
-		m_pAP->m_pMav->landingTarget(lt);
+		m_lt.angle_x = (vP.x - m_vPsp.x) * m_vFov.x;
+		m_lt.angle_y = (vP.y - m_vPsp.y) * m_vFov.y;
+		m_lt.distance = m_pDS->d(0);
+		m_lt.size_x = m_oTarget.getWidth() * m_vFov.x;
+		m_lt.size_y = m_oTarget.getHeight() * m_vFov.y;
+		m_lt.position_valid = 0;
 
-		// change yaw command
-		// IF_(!m_ieHdgCmd.update(m_pT->getTfrom()));
-		// IF_(abs(m_vSpd.w) < m_vComplete.w);
-		//		setHdg(m_vSpd.w * DEG_2_RAD, 0, true, false);
+		m_pAP->m_pMav->landingTarget(m_lt);
 	}
 
 	bool _AP_landingTarget::findTag(void)
@@ -145,6 +161,18 @@ namespace kai
 		}
 
 		return NULL;
+	}
+
+	void _AP_landingTarget::console(void *pConsole)
+	{
+		NULL_(pConsole);
+		this->_AP_move::console(pConsole);
+
+		_Console *pC = (_Console *)pConsole;
+
+		pC->addMsg("vAngle = (" + f2str(m_lt.angle_x) + ", " + f2str(m_lt.angle_y) + ")");
+		pC->addMsg("Dist = " + f2str(m_lt.distance));
+		pC->addMsg("vSize = (" + f2str(m_lt.size_x) + ", " + f2str(m_lt.size_y) + ")");
 	}
 
 }

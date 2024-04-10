@@ -2,7 +2,9 @@
 #define OpenKAI_src_Autopilot_AP__AP_landingTarget_H_
 
 #include "../../Universe/_Universe.h"
-#include "_AP_base.h"
+#include "../../Sensor/Distance/_DistSensorBase.h"
+#include "../../Utility/util.h"
+#include "_AP_move.h"
 
 namespace kai
 {
@@ -12,7 +14,7 @@ namespace kai
 		int m_priority = 0;
 	};
 
-	class _AP_landingTarget : public _ModuleBase
+	class _AP_landingTarget : public _AP_move
 	{
 	public:
 		_AP_landingTarget();
@@ -23,6 +25,7 @@ namespace kai
 		virtual bool start(void);
 		virtual int check(void);
 		virtual void update(void);
+		virtual void console(void *pConsole);
 
 	protected:
 		virtual AP_LANDING_TARGET_TAG* getTag(int id);
@@ -35,12 +38,20 @@ namespace kai
 		}
 
 	protected:
-		_AP_base* m_pAP;
+		_DistSensorBase* m_pDS;
 		_Universe *m_pU;
 		_Object m_oTarget;
 
 		vector<AP_LANDING_TARGET_TAG> m_vTags;
 		vFloat2 m_vFov; // cam FOV horiz/vert
+		vFloat2 m_vPsp; // target set point on screen coord
+		mavlink_landing_target_t m_lt;
+
+		// heading adjustment
+		bool m_bHdg;
+		bool m_bHdgMoving;
+		float m_hdgSp;
+		float m_hdgDz;
 	};
 }
 #endif

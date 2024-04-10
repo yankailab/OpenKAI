@@ -2,17 +2,26 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
-	"bDraw":1,
 	"bLog":1,
 	"bStdErr":1,
-	"waitKey":30,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["cl"],
 }
 
 {
 	"name":"cl",
 	"class":"clBase",
 	"bON":1,
-	"FPS":30,
 	"bLog":1,
+	"fKernel":"",
+	"buildOpt":"",
 }

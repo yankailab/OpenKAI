@@ -5,10 +5,24 @@ namespace kai
 
     clBase::clBase()
     {
+        m_iTargetPlatformIdx = 0;
+        m_iTargetDevIdx = 0;
+        m_targetPlatformName = "";
+        m_targetDevName = "";
+
+        m_pCLcontextProps = NULL;
+        m_pCLqProp = NULL;
+
+        m_fKernel = "";
+        m_buildOpt = "";
     }
 
     clBase::~clBase()
     {
+        clReleaseKernel(m_clKernel);
+        clReleaseCommandQueue(m_clCmdQ);
+        clReleaseProgram(m_clProgram);
+        clReleaseContext(m_clContext);
     }
 
     bool clBase::init(void *pKiss)
@@ -16,6 +30,98 @@ namespace kai
         IF_F(!this->BASE::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
+        pK->v("fKernel", &m_fKernel);
+        pK->v("buildOpt", &m_buildOpt);
+
+        IF_F(!setupCL());
+        IF_F(!setupKernel());
+
+        return true;
+    }
+
+	bool clBase::link(void)
+    {
+		IF_F(!this->BASE::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+
+        // string n;
+        // n = "";
+        // pK->v("", &n);
+        // m_p = ( *)(pK->getInst(n));
+        // IF_Fl(!m_p, n + ": not found");
+
+		return true;
+    }
+
+	int clBase::check(void)
+    {
+
+    }
+
+    bool clBase::setupCL(void)
+    {
+        cl_platform_id platform;
+        cl_int r;
+
+        r = clGetPlatformIDs(1, &platform, NULL);
+        IF_F(r != CL_SUCCESS);
+
+        r = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &m_clDev, nullptr);
+        IF_F(r != CL_SUCCESS);
+
+        m_clContext = clCreateContext(m_pCLcontextProps, 1, &m_clDev, NULL, NULL, &r);
+        IF_F(r != CL_SUCCESS);
+
+        m_clCmdQ = clCreateCommandQueueWithProperties(m_clContext, m_clDev, m_pCLqProp, &r);
+        IF_F(r != CL_SUCCESS);
+
+        return true;
+    }
+
+    bool clBase::setupKernel(void)
+    {
+        FILE *fp = fopen(m_fKernel.c_str(), "r");
+        IF_F(!fp);
+
+        cl_int r;
+
+        char* pSrc = (char*)malloc(CLBASE_SRC_NB);
+        size_t nSrc = fread(pSrc, 1, CLBASE_SRC_NB, fp);
+        fclose(fp);
+
+        m_clProgram = clCreateProgramWithSource(m_clContext, 1, (const char **)&pSrc, (const size_t *)&nSrc, &r);
+        free(pSrc);
+        IF_F(r != CL_SUCCESS);
+
+        r = clBuildProgram(m_clProgram, 1, &m_clDev, m_buildOpt.c_str(), NULL, NULL);
+        if (r == CL_SUCCESS)
+        {
+            m_clKernel = clCreateKernel(m_clProgram, m_kName.c_str(), &r);
+            IF_F(r != CL_SUCCESS);
+
+            return true;
+        }
+
+        LOG_E("clBuildProgram: " + i2str(r));
+
+        size_t nLog;
+        r = clGetProgramBuildInfo(m_clProgram, m_clDev, CL_PROGRAM_BUILD_LOG, 0, NULL, &nLog);
+        IF_F(r != CL_SUCCESS);
+
+        char *pLog = (char *)malloc(nLog);
+        NULL_F(pLog);
+
+        r = clGetProgramBuildInfo(m_clProgram, m_clDev, CL_PROGRAM_BUILD_LOG, nLog, pLog, NULL);
+        IF_F(r != CL_SUCCESS);
+
+        fprintf(stderr, "clProgramBuild:\n%s\n", pLog);
+        free(pLog);
+
+        return false;
+    }
+
+    void clBase::getPlatformInfo(void)
+    {
         cl_uint platformNumber = 0;
         cl_platform_id platformIds[8];
         clGetPlatformIDs(8, platformIds, &platformNumber);
@@ -98,12 +204,6 @@ namespace kai
                 LOG_I(str);
             }
         }
-
-        return true;
-    }
-
-    void clBase::update(void)
-    {
     }
 
 }

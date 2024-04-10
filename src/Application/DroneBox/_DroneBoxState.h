@@ -108,6 +108,7 @@ namespace kai
 
         virtual int getID(void);
         virtual DRONEBOX_STATE *getState(void);
+        virtual _StateControl* getStateControl(void);
 
         virtual void setState(int vID, const string &stat);
         virtual bool takeoffRequest(int vID);

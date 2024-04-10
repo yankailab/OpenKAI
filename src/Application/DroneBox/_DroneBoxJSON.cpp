@@ -17,17 +17,16 @@ namespace kai
     {
         IF_F(!this->_JSONbase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
-		
 
         return true;
     }
 
-	bool _DroneBoxJSON::link(void)
-	{
-		IF_F(!this->_JSONbase::link());
-		IF_F(!m_pTr->link());
+    bool _DroneBoxJSON::link(void)
+    {
+        IF_F(!this->_JSONbase::link());
+        IF_F(!m_pTr->link());
 
-		Kiss *pK = (Kiss *)m_pKiss;
+        Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
         n = "";
@@ -35,8 +34,8 @@ namespace kai
         m_pDB = (_DroneBox *)(pK->getInst(n));
         IF_Fl(!m_pDB, n + ": not found");
 
-		return true;
-	}
+        return true;
+    }
 
     bool _DroneBoxJSON::start(void)
     {
@@ -88,6 +87,15 @@ namespace kai
         {
             sendHeartbeat();
         }
+
+        _StateControl *pSC = m_pDB->getStateControl();
+        if (pSC)
+        {
+            object o;
+            JO(o, "cmd", "stat");
+            JO(o, "stat", *pSC->getCurrentStateName());
+            sendMsg(o);
+        }
     }
 
     void _DroneBoxJSON::sendHeartbeat(void)
@@ -98,8 +106,8 @@ namespace kai
         JO(o, "id", i2str(m_pDB->getID()));
         JO(o, "cmd", "heartbeat");
         JO(o, "t", li2str(m_pT->getTfrom()));
-        JO(o, "lat", lf2str(vP.x,10));
-        JO(o, "lng", lf2str(vP.y,10));
+        JO(o, "lat", lf2str(vP.x, 10));
+        JO(o, "lng", lf2str(vP.y, 10));
 
         sendMsg(o);
     }

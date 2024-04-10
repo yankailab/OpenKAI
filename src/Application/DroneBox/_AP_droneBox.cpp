@@ -130,21 +130,20 @@ namespace kai
 
             IF_(alt < m_altTakeoff);
 
-            m_pT->sleepT(SEC_2_USEC * 5); //wait to send droneBox to close
+            //TODO: record the home pos
+
             m_pSC->transit(m_state.AIRBORNE);
             m_state.update(m_pSC);
         }
 
         if (m_state.bAIRBORNE())
         {
+            IF_(m_boxState != "AIRBORNE"); // waiting box to close
+
             if (apMode == AP_COPTER_GUIDED)
                 m_pAP->setApMode(AP_COPTER_AUTO);
 
             IF_(apMode != AP_COPTER_AUTO);
-
-
-
-// TODO:
 
             IF_(alt > m_altLand);
 

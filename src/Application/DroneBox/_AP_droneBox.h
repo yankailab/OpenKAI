@@ -45,6 +45,7 @@ namespace kai
 
 		int m_targetDroneBoxID;
 		vDouble2 m_vTargetDroneBoxPos;
+		string m_boxState;
 	};
 
 }

@@ -7,6 +7,8 @@
 #define CL_TARGET_OPENCL_VERSION 300
 #include <CL/cl.h>
 
+#define CLBASE_SRC_NB 102400
+
 namespace kai
 {
 
@@ -17,12 +19,35 @@ namespace kai
 		virtual ~clBase();
 
 		virtual bool init(void *pKiss);
+		virtual bool link(void);
+		virtual int check(void);
 
 	protected:
-		virtual void update(void);
+		virtual void getPlatformInfo(void);
 
-	public:
-		uint64_t m_tLastUpdate;
+		virtual bool setupCL(void);
+		virtual bool setupKernel(void);
+
+	protected:
+		int m_iTargetPlatformIdx;
+		int m_iTargetDevIdx;
+
+		string m_targetPlatformName;
+		string m_targetDevName;
+
+		cl_device_id m_clDev;
+
+		cl_context m_clContext;
+		cl_context_properties* m_pCLcontextProps;
+  		cl_queue_properties* m_pCLqProp;
+
+		cl_command_queue m_clCmdQ;
+
+		string m_fKernel;
+		string m_buildOpt;
+		string m_kName;
+		cl_program m_clProgram;
+		cl_kernel m_clKernel;
 	};
 
 }

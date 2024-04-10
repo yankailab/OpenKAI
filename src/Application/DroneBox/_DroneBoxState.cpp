@@ -63,15 +63,21 @@ namespace kai
         return &m_state;
     }
 
+
+    _StateControl* _DroneBoxState::getStateControl(void)
+    {
+        return m_pSC;
+    }
+
     void _DroneBoxState::setState(int vID, const string &stat)
     {
         IF_(check() < 0);
 
-        if (stat == "standby")
+        if (stat == "STANDBY")
             m_pSC->transit(m_state.STANDBY);
-        if (stat == "airborne")
+        if (stat == "AIRBORNE")
             m_pSC->transit(m_state.AIRBORNE);
-        if (stat == "landed")
+        if (stat == "LANDED")
             m_pSC->transit(m_state.LANDED);
     }
 

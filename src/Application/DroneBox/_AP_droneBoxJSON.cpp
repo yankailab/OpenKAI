@@ -97,7 +97,7 @@ namespace kai
         if (pState->bSTANDBY())
         {
             JO(o, "cmd", "stat");
-            JO(o, "stat", "standby");
+            JO(o, "stat", "STANDBY");
             sendMsg(o);
             return;
         }
@@ -113,13 +113,13 @@ namespace kai
         if (pState->bAIRBORNE())
         {
             JO(o, "cmd", "stat");
-            JO(o, "stat", "airborne");
+            JO(o, "stat", "AIRBORNE");
             sendMsg(o);
             return;
         }
 
 
-        IF_(m_pAPdroneBox->getTargetDroneBoxID() != m_ID);
+//        IF_(m_pAPdroneBox->getTargetDroneBoxID() != m_ID);
 
         if (pState->bLANDING_REQUEST())
         {
@@ -132,7 +132,7 @@ namespace kai
         if (pState->bLANDED())
         {
             JO(o, "cmd", "stat");
-            JO(o, "stat", "landed");
+            JO(o, "stat", "LANDED");
             sendMsg(o);
             return;
         }
@@ -166,6 +166,8 @@ namespace kai
 
         if (cmd == "heartbeat")
             heartbeat(jo);
+        else if (cmd == "stat")
+            stat(jo);
         else if (cmd == "ack")
             ack(jo);
     }
@@ -180,6 +182,18 @@ namespace kai
         m_ID = o["id"].get<double>();
         m_vPos.x = o["lat"].get<double>();
         m_vPos.y = o["lng"].get<double>();
+    }
+
+    void _AP_droneBoxJSON::stat(picojson::object &o)
+    {
+        IF_(check() < 0);
+        IF_(!o["id"].is<double>());
+        IF_(!o["stat"].is<string>());
+
+        int vID = o["id"].get<double>();
+        string stat = o["stat"].get<string>();
+
+        m_pAPdroneBox->m_boxState = stat;
     }
 
     void _AP_droneBoxJSON::ack(picojson::object &o)
