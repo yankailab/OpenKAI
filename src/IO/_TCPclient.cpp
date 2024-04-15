@@ -91,7 +91,7 @@ namespace kai
 
 	void _TCPclient::updateW(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			if (!bOpen())
 			{
@@ -129,7 +129,7 @@ namespace kai
 
 	void _TCPclient::updateR(void)
 	{
-		while (m_pTr->bRun())
+		while (m_pTr->bAlive())
 		{
 			if (!bOpen())
 			{
@@ -148,7 +148,7 @@ namespace kai
 			}
 
 			m_fifoR.input(pB, nR);
-			m_pTr->wakeUpAll();
+			m_pTr->runAll();
 
 			LOG_I("received: " + i2str(nR) + " bytes");
 		}

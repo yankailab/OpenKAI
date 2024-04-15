@@ -82,7 +82,7 @@ namespace kai
 
     void _SwarmCtrl::update(void)
     {
-        while (m_pT->bThread())
+        while (m_pT->bAlive())
         {
             m_pT->autoFPSfrom();
 

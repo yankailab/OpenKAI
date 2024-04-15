@@ -59,7 +59,7 @@ namespace kai
 
 	void _GSVdetect::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
 

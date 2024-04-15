@@ -91,7 +91,7 @@ namespace kai
 
 	void _UDP::updateW(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			if (!bOpen())
 			{
@@ -125,7 +125,7 @@ namespace kai
 
 	void _UDP::updateR(void)
 	{
-		while (m_pTr->bRun())
+		while (m_pTr->bAlive())
 		{
 			while (!bOpen())
 			{
@@ -142,7 +142,7 @@ namespace kai
 			}
 
 			m_fifoR.input(pB, nR);
-			m_pTr->wakeUpAll();
+			m_pTr->runAll();
 
 			LOG_I("Received " + i2str(nR) + " bytes from ip:" + string(inet_ntoa(m_sAddr.sin_addr)) + ", port:" + i2str(ntohs(m_sAddr.sin_port)));
 		}

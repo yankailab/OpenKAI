@@ -81,7 +81,7 @@ namespace kai
 
 	void _AP_land::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
 
@@ -92,14 +92,14 @@ namespace kai
 				stop();
 			}
 
-			ON_SLEEP;
+			ON_PAUSE;
 			m_pT->autoFPSto();
 		}
 	}
 
-	void _AP_land::onSleep(void)
+	void _AP_land::onPause(void)
 	{
-		this->_ModuleBase::onSleep();
+		this->_ModuleBase::onPause();
 
 		clearPID();
 	}

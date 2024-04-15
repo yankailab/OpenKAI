@@ -300,7 +300,7 @@ namespace kai
 
     void _RealSense::update(void)
     {
-        while (m_pT->bThread())
+        while (m_pT->bAlive())
         {
             if (!m_bOpen)
             {
@@ -387,7 +387,7 @@ namespace kai
 
     void _RealSense::updateTPP(void)
     {
-        while (m_pTPP->bRun())
+        while (m_pTPP->bAlive())
         {
             m_pTPP->sleepT(0);
 

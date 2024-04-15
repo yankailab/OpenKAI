@@ -60,7 +60,7 @@ namespace kai
 
 	void _Cascade::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
 
@@ -69,7 +69,7 @@ namespace kai
 			else
 				detectCPU();
 
-			ON_SLEEP;
+			ON_PAUSE;
 			m_pT->autoFPSto();
 		}
 	}

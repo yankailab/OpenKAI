@@ -68,7 +68,7 @@ namespace kai
 
 	void _ADIO_EBYTE::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			if (!bOpen())
 			{

@@ -68,7 +68,7 @@ namespace kai
 
 	void _Crop::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			if (!m_bOpen)
 				open();

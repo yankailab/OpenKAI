@@ -81,7 +81,7 @@ namespace kai
 
 	void _Modbus::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			if (!m_pMb)
 			{

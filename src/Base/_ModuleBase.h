@@ -9,23 +9,21 @@
 #define OpenKAI_src_Base__ModuleBase_H_
 
 #include "_Thread.h"
-#include "../IPC/SharedMem.h"
 
-#define ON_SLEEP            \
-	if (m_pT->bonSleep()) \
-	{                       \
-		onSleep();        \
+#define ON_PAUSE          \
+	if (m_pT->bOnPause()) \
+	{                     \
+		onPause();        \
 	}
-	
-#define ON_WAKEUP          \
-	if (m_pT->bOnWakeUp()) \
+
+#define ON_RESUME          \
+	if (m_pT->bOnResume()) \
 	{                      \
-		onWakeUp();        \
+		onResume();        \
 	}
 
 namespace kai
 {
-
 	class _ModuleBase : public BASE
 	{
 	public:
@@ -38,12 +36,12 @@ namespace kai
 		virtual int check(void);
 		virtual void console(void *pConsole);
 
-		virtual void sleep(void);
-		virtual void run(void);
+		virtual void pause(void);
+		virtual void resume(void);
 
 	protected:
-		virtual void onWakeUp(void);
-		virtual void onSleep(void);
+		virtual void onPause(void);
+		virtual void onResume(void);
 
 	private:
 		void update(void);

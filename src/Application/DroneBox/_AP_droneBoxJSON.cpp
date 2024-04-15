@@ -57,7 +57,7 @@ namespace kai
 
     void _AP_droneBoxJSON::updateW(void)
     {
-        while (m_pT->bThread())
+        while (m_pT->bAlive())
         {
             if (!m_pIO)
             {
@@ -140,7 +140,7 @@ namespace kai
 
     void _AP_droneBoxJSON::updateR(void)
     {
-        while (m_pTr->bRun())
+        while (m_pTr->bAlive())
         {
             m_pTr->autoFPSfrom();
 

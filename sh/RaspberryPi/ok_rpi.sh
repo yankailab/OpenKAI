@@ -99,7 +99,7 @@ dtoverlay=imx219
 libcamera-hello
 
 sudo apt install gstreamer1.0-libcamera
-gst-launch-1.0 libcamerasrc ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! videoflip method=0 ! queue ! videoconvert ! v4l2h264enc ! 'video/x-h264,level=(string)5' ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.235 port=5678 auto-multicast=false
+gst-launch-1.0 libcamerasrc ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! videoflip method=0 ! queue ! videoconvert ! v4l2h264enc ! 'video/x-h264,level=(string)5' ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.192 port=5678 auto-multicast=false
 
 gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=20/1 ! x264enc ! matroskamux ! filesink location=/home/pi/ssd/test.mkv
 gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! v4l2h264enc ! h264parse ! matroskamux ! filesink location=/home/pi/ssd/test1.mkv
@@ -107,6 +107,7 @@ gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,fr
 gst-launch-1.0 libcamerasrc ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
 gst-launch-1.0 libcamerasrc ! video/x-raw,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! v4l2h264enc ! 'video/x-h264,level=(string)4' ! h264parse ! matroskamux ! filesink location="/home/pi/ssd/video/test.mka"
 gst-launch-1.0 libcamerasrc ! video/x-raw,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! v4l2h264enc ! 'video/x-h264,level=(string)4' ! h264parse ! matroskamux ! filesink location="/home/pi/ssd/video/test.mka"
+
 
 --------------
 # Enable NvMe SSD
@@ -133,6 +134,17 @@ sudo mkdir -p /home/pi/ssd
 sudo mount -t auto /dev/nvme0n1 /home/pi/ssd
 sudo chown pi ssd/
 sudo mount /dev/nvme0n1 /home/pi/ssd
+
+
+--------------
+# clone SD image
+sudo fdisk -l
+sudo umount /dev/sdb1 /dev/sdb2
+sudo dd if=/dev/sdb of=~/RPi.img bs=8M status=progress
+
+#wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
+#sudo bash pishrink.sh CM4.img
+
 
 
 
@@ -271,10 +283,3 @@ exit 0
 sudo nano /lib/systemd/system/ok.service
 sudo systemctl daemon-reload
 sudo systemctl enable ok.service
-
-# clone SD image
-sudo fdisk -l
-sudo dd if=/dev/sdb of=~/RPi.img bs=128M
-
-wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
-sudo bash pishrink.sh CM4.img

@@ -74,29 +74,29 @@ namespace kai
 
 	void _AP_video::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
-			ON_WAKEUP;
+			ON_RESUME;
 
 			if (m_pFvid)
 			{
 				writeStream();
 			}
 
-			ON_SLEEP;
+			ON_PAUSE;
 			m_pT->autoFPSto();
 		}
 	}
 
-	void _AP_video::onWakeUp(void)
+	void _AP_video::onResume(void)
 	{
 		openStream();
 	}
 
-	void _AP_video::onSleep(void)
+	void _AP_video::onPause(void)
 	{
-		this->_ModuleBase::onSleep();
+		this->_ModuleBase::onPause();
 
 		closeStream();
 	}

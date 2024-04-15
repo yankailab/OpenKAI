@@ -129,7 +129,7 @@ namespace kai
 
 	void _RStracking::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			if (!m_flag.b(F_OPEN))
 			{

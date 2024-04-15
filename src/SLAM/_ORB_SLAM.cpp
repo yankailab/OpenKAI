@@ -90,7 +90,7 @@ namespace kai
 
 	void _ORB_SLAM::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
 

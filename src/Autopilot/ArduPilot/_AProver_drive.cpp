@@ -100,20 +100,20 @@ namespace kai
 
 	void _AProver_drive::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
 
 			updateDrive();
 
-			ON_SLEEP;
+			ON_PAUSE;
 			m_pT->autoFPSto();
 		}
 	}
 
-	void _AProver_drive::onSleep(void)
+	void _AProver_drive::onPause(void)
 	{
-		this->_ModuleBase::onSleep();
+		this->_ModuleBase::onPause();
 
 		IF_(!m_bRcChanOverride);
 		*m_pRcYaw = 0;

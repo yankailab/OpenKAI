@@ -44,8 +44,8 @@ namespace kai
 		uint64_t m_tTimeout;
 		bool m_bComplete;
 
-		vector<_ModuleBase *> m_vpModuleActive;
-		vector<_ModuleBase *> m_vpModuleSleep;
+		vector<_ModuleBase *> m_vpModulePause;
+		vector<_ModuleBase *> m_vpModuleResume;
 
 	};
 

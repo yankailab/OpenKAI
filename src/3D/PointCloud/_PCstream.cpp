@@ -45,7 +45,7 @@ namespace kai
 
     void _PCstream::update(void)
     {
-        while (m_pT->bThread())
+        while (m_pT->bAlive())
         {
             m_pT->autoFPSfrom();
 

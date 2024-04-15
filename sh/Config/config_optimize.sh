@@ -116,3 +116,16 @@ sudo dd if=/dev/sda of=~/sd.img bs=6M
 sudo fdisk -l
 sudo umount /dev/sdb
 sudo dd if=~/sd.img of=/dev/sdb bs=6M
+
+#----------------------------------------------------
+# Sunlogin auto startup
+Statup applications
+/usr/local/sunlogin/bin/sunloginclient --cmd=autorun
+# Disable wayland
+sudo nano /etc/gdm3/custom.conf
+#WaylandEnable=false
+
+
+#----------------------------------------------------
+# serial test
+sudo apt-get install cutecom

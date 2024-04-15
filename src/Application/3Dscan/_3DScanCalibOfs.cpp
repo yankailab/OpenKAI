@@ -61,7 +61,7 @@ namespace kai
 
 	void _3DScanCalibOfs::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
 

@@ -77,13 +77,13 @@ namespace kai
 
 	void _YOLOv3::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
 
 			detectYolo();
 
-			ON_SLEEP;
+			ON_PAUSE;
 			m_pT->autoFPSto();
 		}
 	}

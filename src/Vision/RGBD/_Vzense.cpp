@@ -176,7 +176,7 @@ namespace kai
 			return;
 		}
 
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			if (!m_bOpen)
 			{
@@ -332,7 +332,7 @@ namespace kai
 
 	void _Vzense::updateTPP(void)
 	{
-		while (m_pTPP->bRun())
+		while (m_pTPP->bAlive())
 		{
 			m_pTPP->sleepT(0);
 

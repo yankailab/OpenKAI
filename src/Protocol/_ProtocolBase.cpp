@@ -73,7 +73,7 @@ namespace kai
 
 	void _ProtocolBase::updateW(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
 
@@ -92,7 +92,7 @@ namespace kai
 
 	void _ProtocolBase::updateR(void)
 	{
-		while (m_pTr->bRun())
+		while (m_pTr->bAlive())
 		{
 			if (!m_pIO)
 			{

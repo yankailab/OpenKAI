@@ -84,7 +84,7 @@ namespace kai
 
 	void _SerialPort::updateW(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			if (!bOpen())
 			{
@@ -113,7 +113,7 @@ namespace kai
 
 	void _SerialPort::updateR(void)
 	{
-		while (m_pTr->bRun())
+		while (m_pTr->bAlive())
 		{
 			if (!bOpen())
 			{
@@ -126,7 +126,7 @@ namespace kai
 			IF_CONT(nR <= 0);
 
 			m_fifoR.input(pB, nR);
-			m_pTr->wakeUpAll();
+			m_pTr->runAll();
 
 			LOG_I("read: " + i2str(nR) + " bytes");
 		}

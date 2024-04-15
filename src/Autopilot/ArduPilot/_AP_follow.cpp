@@ -126,7 +126,7 @@ namespace kai
 
 	void _AP_follow::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
 
@@ -165,14 +165,14 @@ namespace kai
 			}
 
 
-			ON_SLEEP;
+			ON_PAUSE;
 			m_pT->autoFPSto();
 		}
 	}
 
-	void _AP_follow::onSleep(void)
+	void _AP_follow::onPause(void)
 	{
-		this->_ModuleBase::onSleep();
+		this->_ModuleBase::onPause();
 
 		clearPID();
 		m_bTarget = false;

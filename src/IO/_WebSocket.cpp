@@ -86,7 +86,7 @@ namespace kai
 
 	void _WebSocket::updateW(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			if (!bOpen())
 			{
@@ -118,7 +118,7 @@ namespace kai
 
 	void _WebSocket::updateR(void)
 	{
-		while (m_pTr->bRun())
+		while (m_pTr->bAlive())
 		{
 			if (!bOpen())
 			{
@@ -136,7 +136,7 @@ namespace kai
 
 			m_fifoR.input(pB, nR);
 			decodeMsg();
-			m_pTr->wakeUpAll();
+			m_pTr->runAll();
 		}
 	}
 

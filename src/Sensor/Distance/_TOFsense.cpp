@@ -43,7 +43,7 @@ namespace kai
 
 	void _TOFsense::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			if (!m_pIO)
 			{

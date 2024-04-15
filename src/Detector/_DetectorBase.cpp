@@ -81,9 +81,9 @@ namespace kai
 		return this->_ModuleBase::check();
 	}
 
-	void _DetectorBase::onSleep(void)
+	void _DetectorBase::onPause(void)
 	{
-		this->_ModuleBase::onSleep();
+		this->_ModuleBase::onPause();
 		m_pU->clear();
 	}
 

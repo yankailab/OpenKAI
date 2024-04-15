@@ -81,7 +81,7 @@ namespace kai
 	{
 		m_pT->sleepT(0);
 
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
 
@@ -248,7 +248,7 @@ namespace kai
 
 	void _PCscan::updateKinematics(void)
 	{
-		while (m_pTk->bRun())
+		while (m_pTk->bAlive())
 		{
 			m_pTk->autoFPSfrom();
 

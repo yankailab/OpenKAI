@@ -64,7 +64,7 @@ namespace kai
 
 	void _LivoxScanner::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
 
@@ -76,7 +76,7 @@ namespace kai
 
 	void _LivoxScanner::updateR(void)
 	{
-		while (m_pTr->bRun())
+		while (m_pTr->bAlive())
 		{
 			m_pTr->autoFPSfrom();
 

@@ -111,7 +111,7 @@ namespace kai
 
 	void _RopewayScan::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
 
@@ -188,7 +188,7 @@ namespace kai
 
 	void _RopewayScan::updateR(void)
 	{
-		while (m_pTr->bRun())
+		while (m_pTr->bAlive())
 		{
 			m_pTr->autoFPSfrom();
 
@@ -278,7 +278,7 @@ namespace kai
 
 	void _RopewayScan::updateW(void)
 	{
-		while (m_pTw->bRun())
+		while (m_pTw->bAlive())
 		{
 			if (!m_pIO)
 			{

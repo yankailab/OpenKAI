@@ -58,7 +58,7 @@ namespace kai
 
 	void _ArduServo::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
 
@@ -102,7 +102,7 @@ namespace kai
 
 	void _ArduServo::updateR(void)
 	{
-		while (m_pTr->bRun())
+		while (m_pTr->bAlive())
 		{
 			m_pTr->autoFPSfrom();
 

@@ -74,7 +74,7 @@ void _ImageNet::update(void)
 
 	IF_(m_mode == noThread);
 
-	while(m_pT->bThread())
+	while(m_pT->bAlive())
 	{
 		m_pT->autoFPSfrom();
 

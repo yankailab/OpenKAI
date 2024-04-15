@@ -43,7 +43,7 @@ namespace kai
 
 	void _PWMio::updateW(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
 
@@ -75,7 +75,7 @@ namespace kai
 
 	void _PWMio::updateR(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			if (!m_pIO)
 			{

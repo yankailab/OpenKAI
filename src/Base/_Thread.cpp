@@ -22,7 +22,7 @@ namespace kai
 
 		m_state = thread_stop;
 		m_setState = thread_stop;
-		m_bf.clearAll();
+		m_bPaused = false;
 
 		pthread_mutex_init(&m_wakeupMutex, NULL);
 		pthread_cond_init(&m_wakeupSignal, NULL);
@@ -51,22 +51,22 @@ namespace kai
 		return true;
 	}
 
-    bool _Thread::link(void)
-    {
-        IF_F(!this->BASE::link());
+	bool _Thread::link(void)
+	{
+		IF_F(!this->BASE::link());
 
-        Kiss *pK = (Kiss *)m_pKiss;
-		vector<string> vWakeUp;
-		pK->a("vTwakeUp", &vWakeUp);
-		for (string s : vWakeUp)
+		Kiss *pK = (Kiss *)m_pKiss;
+		vector<string> vRunT;
+		pK->a("vRunThread", &vRunT);
+		for (string s : vRunT)
 		{
 			_Thread *pT = (_Thread *)(pK->getInst(s));
-            NULL_d_F(pT, LOG_E("Instance not found: " + s));
-			m_vTwakeUp.push_back(pT);
+			NULL_d_F(pT, LOG_E("Instance not found: " + s));
+			m_vRunThread.push_back(pT);
 		}
 
-        return true;
-    }
+		return true;
+	}
 
 	bool _Thread::start(void *(*__start_routine)(void *),
 						void *__restrict __arg)
@@ -83,7 +83,7 @@ namespace kai
 		return true;
 	}
 
-	bool _Thread::bThread(void)
+	bool _Thread::bAlive(void)
 	{
 		return (m_setState != thread_stop);
 	}
@@ -91,11 +91,6 @@ namespace kai
 	bool _Thread::bRun(void)
 	{
 		return (m_state == thread_run);
-	}
-
-	bool _Thread::bSleep(void)
-	{
-		return (m_state == thread_sleep);
 	}
 
 	bool _Thread::bStop(void)
@@ -106,14 +101,12 @@ namespace kai
 	void _Thread::run(void)
 	{
 		m_setState = thread_run;
-		IF_(m_state == m_setState);
-
 		pthread_cond_signal(&m_wakeupSignal);
 	}
 
-	void _Thread::sleep(void)
+	void _Thread::pause(void)
 	{
-		m_setState = thread_sleep;
+		m_setState = thread_pause;
 	}
 
 	void _Thread::stop(void)
@@ -121,19 +114,27 @@ namespace kai
 		m_setState = thread_stop;
 	}
 
-	bool _Thread::bOnWakeUp(void)
+	bool _Thread::bOnPause(void)
 	{
-		return m_bf.b(thread_onWakeup, true);
+		IF_F(m_bPaused);
+		IF_F(m_setState != thread_pause);
+
+		m_bPaused = true;
+		return true;
 	}
 
-	bool _Thread::bonSleep(void)
+	bool _Thread::bOnResume(void)
 	{
-		return (m_setState == thread_sleep);	
+		IF_F(!m_bPaused);
+
+		m_bPaused = false;
+		return true;
 	}
 
-	void _Thread::setOnWakeUp(void)
+	void _Thread::runAll(void)
 	{
-		m_bf.set(thread_onWakeup);
+		for (_Thread *pT : m_vRunThread)
+			pT->run();
 	}
 
 	void _Thread::sleepT(int64_t usec)
@@ -166,12 +167,6 @@ namespace kai
 		m_state = thread_run;
 	}
 
-	void _Thread::wakeUpAll(void)
-	{
-		for(_Thread* pT : m_vTwakeUp)
-			pT->run();
-	}
-
 	void _Thread::autoFPSfrom(void)
 	{
 		uint64_t tNow = getApproxTbootUs();
@@ -190,7 +185,7 @@ namespace kai
 			sleepT(uSleep);
 		}
 
-		if (m_setState == thread_sleep)
+		if (m_setState == thread_pause)
 		{
 			m_FPS = 0;
 			sleepT(0);

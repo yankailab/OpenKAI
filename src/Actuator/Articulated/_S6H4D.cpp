@@ -99,7 +99,7 @@ namespace kai
 		stickRelease();
 		updatePos();
 
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
 

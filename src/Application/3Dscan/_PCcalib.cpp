@@ -63,7 +63,7 @@ namespace kai
 	{
 		m_pT->sleepT(0);
 
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
 

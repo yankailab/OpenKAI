@@ -64,26 +64,26 @@ namespace kai
     {
     }
 
-    void _ModuleBase::sleep(void)
+    void _ModuleBase::pause(void)
     {
         IF_(check() < 0);
-        m_pT->sleep();
+
+        m_pT->pause();
     }
 
-    void _ModuleBase::run(void)
+    void _ModuleBase::resume(void)
     {
         IF_(check() < 0);
+
         m_pT->run();
     }
 
-	void _ModuleBase::onSleep(void)
+	void _ModuleBase::onPause(void)
     {
-        IF_(!m_pT->bonSleep());
     }
 
-	void _ModuleBase::onWakeUp(void)
+	void _ModuleBase::onResume(void)
     {
-        IF_(!m_pT->bOnWakeUp());
     }
 
     void _ModuleBase::console(void *pConsole)

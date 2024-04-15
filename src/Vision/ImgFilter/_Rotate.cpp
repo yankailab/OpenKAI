@@ -59,7 +59,7 @@ namespace kai
 
 	void _Rotate::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			if (!m_bOpen)
 				open();

@@ -3,7 +3,7 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog":1,
-	"bStdErr":0,
+	"bStdErr":1,
 }
 
 {
@@ -20,7 +20,7 @@
 {
 	"name":"CVwindow",
 	"class":"_WindowCV",
-	"bON":1,
+	"bON":0,
 	"bFullScreen":0,
     {
 		"name":"thread",
@@ -115,7 +115,7 @@
 {
 	"name":"apDroneBox",
 	"class":"_AP_droneBox",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -134,7 +134,7 @@
 {
 	"name":"udp",
 	"class":"_UDP",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -152,7 +152,7 @@
 {
 	"name":"dronBoxJson",
 	"class":"_AP_droneBoxJSON",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":1,
@@ -170,7 +170,7 @@
 {
 	"name":"serialAP",
 	"class":"_SerialPort",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -180,15 +180,15 @@
 		"FPS":10,
 		"vTwakeUp":["apMavlink.thread"],
 	}
-	"port":"/dev/ttyAMA0",
-	"/port":"/dev/ttyACM0",
+	"/port":"/dev/ttyAMA0",
+	"port":"/dev/ttyS0",
 	"baud":115200,
 }
 
 {
 	"name":"apMavlink",
 	"class":"_Mavlink",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -200,7 +200,7 @@
 {
 	"name":"apBase",
 	"class":"_AP_base",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -296,7 +296,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -310,7 +310,7 @@
 {
 	"name":"arUco",
 	"class":"_ArUco",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -324,7 +324,7 @@
 {
 	"name":"univTag",
 	"class":"_Universe",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -334,7 +334,7 @@
 {
 	"name":"serialTOF",
 	"class":"_SerialPort",
-	"bON":1,
+	"bON":0,
     {
         "name":"thread",
         "FPS":30,
@@ -351,7 +351,7 @@
 {
 	"name":"TOFsense",
 	"class":"_TOFsense",
-	"bON":1,
+	"bON":0,
     {
         "name":"thread",
         "FPS":30,
@@ -367,7 +367,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"bON":1,
+	"bON":0,
 	"bLog":1,
 	"_StateControl":"state",
 	"_AP_base":"apBase",

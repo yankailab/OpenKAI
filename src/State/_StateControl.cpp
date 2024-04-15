@@ -40,11 +40,11 @@ namespace kai
 			if (pKs->empty())
 				break;
 
-			//Add state below
+			// Add state below
 
 			ADD_STATE(StateBase);
 
-			//Add state above
+			// Add state above
 
 			LOG_E("Unknown state class: " + pKs->m_class);
 			return false;
@@ -70,7 +70,7 @@ namespace kai
 
 		for (int i = 0; i < m_vpState.size(); i++)
 		{
-			IF_F(m_vpState[i]->link());
+			IF_F(!m_vpState[i]->link());
 		}
 
 		return true;
@@ -84,7 +84,7 @@ namespace kai
 
 	void _StateControl::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
 
@@ -92,12 +92,13 @@ namespace kai
 			IF_CONT(m_iS < 0);
 
 			StateBase *pS = getCurrentState();
-			pS->update();
-			pS->updateModules();
-			
-			if (pS->bComplete())
+			if (pS)
 			{
-				transit(pS->getNext());
+				pS->update();
+				pS->updateModules();
+
+				if (pS->bComplete())
+					transit(pS->getNext());
 			}
 
 			m_pT->autoFPSto();
@@ -151,7 +152,7 @@ namespace kai
 		return m_iS;
 	}
 
-	string* _StateControl::getCurrentStateName(void)
+	string *_StateControl::getCurrentStateName(void)
 	{
 		return m_vpState[m_iS]->getName();
 	}

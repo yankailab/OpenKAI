@@ -62,7 +62,7 @@ namespace kai
 
 	void _Contrast::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			if (!m_bOpen)
 				open();

@@ -34,20 +34,20 @@ namespace kai
 
 		vector<string> vS;
 
-		pK->a("vModuleActive", &vS);
+		pK->a("vModuleResume", &vS);
 		for (string s : vS)
 		{
-			_ModuleBase* pM = (_ModuleBase *)(pK->getInst(s));
+			_ModuleBase *pM = (_ModuleBase *)(pK->getInst(s));
 			IF_CONT(!pM);
-			m_vpModuleActive.push_back(pM);
+			m_vpModuleResume.push_back(pM);
 		}
 
-		pK->a("vModuleSleep", &vS);
+		pK->a("vModulePause", &vS);
 		for (string s : vS)
 		{
-			_ModuleBase* pM = (_ModuleBase *)(pK->getInst(s));
+			_ModuleBase *pM = (_ModuleBase *)(pK->getInst(s));
 			IF_CONT(!pM);
-			m_vpModuleSleep.push_back(pM);
+			m_vpModulePause.push_back(pM);
 		}
 
 		return true;
@@ -73,17 +73,16 @@ namespace kai
 
 	void StateBase::updateModules(void)
 	{
-		for(_ModuleBase* pM : m_vpModuleActive)
+		for (_ModuleBase *pM : m_vpModulePause)
 		{
-			pM->run();
+			pM->pause();
 		}
 
-		for(_ModuleBase* pM : m_vpModuleSleep)
+		for (_ModuleBase *pM : m_vpModuleResume)
 		{
-			pM->sleep();
+			pM->resume();
 		}
 	}
-
 
 	bool StateBase::bComplete(void)
 	{

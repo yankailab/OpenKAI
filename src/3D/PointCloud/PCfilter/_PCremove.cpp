@@ -46,7 +46,7 @@ int _PCremove::check(void)
 
 void _PCremove::update(void)
 {
-	while(m_pT->bThread())
+	while(m_pT->bAlive())
 	{
 		m_pT->autoFPSfrom();
 

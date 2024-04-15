@@ -10,21 +10,16 @@
 
 #include "BASE.h"
 #include "../Script/Kiss.h"
-#include "../Utility/BitFlag.h"
 
 namespace kai
 {
-	enum THREAD_BF
-	{
-		thread_onWakeup = 0,
-		thread_onSleep = 1,
-	};
-
 	enum THREAD_STATE
 	{
 		thread_stop = 0,
 		thread_run = 1,
 		thread_sleep = 2,
+		thread_pause = 3,
+		thread_resume = 4
 	};
 
 	class _Thread : public BASE
@@ -38,38 +33,36 @@ namespace kai
 		virtual bool start(void *(*__start_routine)(void *), void *__restrict __arg);
 		virtual void console(void *pConsole);
 
-		virtual void run(void);
-		virtual void sleep(void);
-		virtual void stop(void);
+		bool bAlive(void);
+		bool bRun(void);
+		bool bStop(void);
 
-		virtual bool bThread(void);
-		virtual bool bRun(void);
-		virtual bool bSleep(void);
-		virtual bool bStop(void);
+		void run(void);
+		void pause(void);
+		void stop(void);
 
-		virtual bool bOnWakeUp(void);
-		virtual bool bonSleep(void);
-		virtual void setOnWakeUp(void);
+		bool bOnPause(void);
+		bool bOnResume(void);
+		void runAll(void);	   // wake up all the other instances
 
-		virtual void sleepT(int64_t usec);
-		void wakeUpAll(void);	   // wake up all the other instances
-
-		virtual void autoFPSfrom(void);
-		virtual void autoFPSto(void);
-		virtual float getFPS(void);
-		virtual void setTargetFPS(float fps);
-		virtual float getTargetFPS(void);
-		virtual float getDt(void);
-		virtual uint64_t getTfrom(void);
-		virtual uint64_t getTto(void);
+		void sleepT(int64_t usec);
+		void autoFPSfrom(void);
+		void autoFPSto(void);
+		float getFPS(void);
+		void setTargetFPS(float fps);
+		float getTargetFPS(void);
+		float getDt(void);
+		uint64_t getTfrom(void);
+		uint64_t getTto(void);
 
 	protected:
 		pthread_t m_threadID;
 		pthread_mutex_t m_wakeupMutex;
 		pthread_cond_t m_wakeupSignal;
+
 		THREAD_STATE m_setState;
 		THREAD_STATE m_state;
-		BIT_FLAG m_bf;
+		bool m_bPaused;
 
 		uint64_t m_tFrom;
 		uint64_t m_tTo;
@@ -79,7 +72,7 @@ namespace kai
 		float m_FPS;
 
 		// linked
-		vector<_Thread *> m_vTwakeUp;
+		vector<_Thread *> m_vRunThread;
 	};
 
 }

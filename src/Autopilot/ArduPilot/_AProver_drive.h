@@ -22,7 +22,7 @@ namespace kai
 		virtual void setYawMode(bool bRelative);
 
 	protected:
-		virtual void onSleep(void);
+		virtual void onPause(void);
 
 		bool updateDrive(void);
 		static void *getUpdate(void *This)

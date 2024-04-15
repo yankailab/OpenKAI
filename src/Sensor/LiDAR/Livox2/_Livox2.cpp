@@ -76,7 +76,7 @@ namespace kai
 
     void _Livox2::update(void)
     {
-        while (m_pT->bThread())
+        while (m_pT->bAlive())
         {
             if (!m_bOpen)
             {

@@ -51,7 +51,7 @@ namespace kai
 
 	void _TCPserver::update(void)
 	{
-		while (m_pT->bThread())
+		while (m_pT->bAlive())
 		{
 			if (!handler())
 			{

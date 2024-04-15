@@ -57,7 +57,7 @@ int _PCmerge::check(void)
 
 void _PCmerge::update(void)
 {
-	while(m_pT->bThread())
+	while(m_pT->bAlive())
 	{
 		m_pT->autoFPSfrom();
 
