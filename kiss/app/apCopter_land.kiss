@@ -267,7 +267,7 @@
 	"bLog":0,
 	"_StateControl":"state",
 	"_AP_base":"apBase",
-	"_Curl":"cURL",
+	"_Uploader":"cURL",
 	"/fCalib":"/home/pi/ok/calibCam.kiss",
 	"/dir":"/home/pi/ssd/video/",
 	"dir":"/home/kai/Videos/",
@@ -278,7 +278,7 @@
 
 {
 	"name":"cURL",
-	"class":"_Curl",
+	"class":"_Uploader",
 	"bON":0,
     {
 		"name":"thread",

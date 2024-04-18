@@ -2,7 +2,7 @@
 #define OpenKAI_src_Application_DroneSR__AP_SR_H_
 
 #include "../../IO/_File.h"
-#include "../../Net/_Curl.h"
+#include "../../Net/_Uploader.h"
 #include "../../Utility/util.h"
 #include "../../Autopilot/ArduPilot/_AP_base.h"
 #include "../../Vision/_VisionBase.h"
@@ -38,7 +38,7 @@ namespace kai
 		_VisionBase *m_pV;
 		_Universe *m_pU;
 		_AP_base *m_pAP;
-		_Curl *m_pCurl;
+		_Uploader *m_pCurl;
 
 		int m_iWP;
 		vInt2 m_vWPrange;

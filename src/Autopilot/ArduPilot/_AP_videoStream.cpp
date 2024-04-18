@@ -50,8 +50,8 @@ namespace kai
 		NULL_Fl(m_pAP, n + ": not found");
 
 		n = "";
-		pK->v("_Curl", &n);
-		m_pCurl = (_Curl *)(pK->getInst(n));
+		pK->v("_Uploader", &n);
+		m_pCurl = (_Uploader *)(pK->getInst(n));
 
 		return true;
 	}

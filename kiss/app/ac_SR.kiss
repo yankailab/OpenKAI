@@ -283,7 +283,7 @@
 	"_VisionBase":"cam",
 	"_Universe":"univ",
 	"_AP_base":"apBase",
-	"_Curl":"cURL",
+	"_Uploader":"cURL",
 	"vWPrange":[-100,100],
 	"vClass":[0],
 	"/dir":"/home/kai/pics/",
@@ -294,7 +294,7 @@
 
 {
 	"name":"cURL",
-	"class":"_Curl",
+	"class":"_Uploader",
 	"bON":1,
     {
 		"name":"thread",

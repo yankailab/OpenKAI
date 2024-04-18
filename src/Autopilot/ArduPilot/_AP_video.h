@@ -2,7 +2,7 @@
 #define OpenKAI_src_Autopilot_AP__AP_video_H_
 
 #include "../../IO/_File.h"
-#include "../../Net/_Curl.h"
+#include "../../Net/_Uploader.h"
 #include "_AP_base.h"
 #include "../../Utility/utilCV.h"
 
@@ -39,7 +39,7 @@ namespace kai
 
 	private:
 		_AP_base *m_pAP;
-		_Curl* m_pCurl;
+		_Uploader* m_pCurl;
 		string m_fName;
 
 		string m_process;

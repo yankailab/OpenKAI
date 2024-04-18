@@ -129,6 +129,7 @@
 #ifdef WITH_ARDUPILOT
 #include "../Autopilot/ArduPilot/_AP_actuator.h"
 #include "../Autopilot/ArduPilot/_AP_base.h"
+#include "../Autopilot/ArduPilot/_AP_httpJson.h"
 #include "../Autopilot/ArduPilot/_AP_mission.h"
 #include "../Autopilot/ArduPilot/_AP_move.h"
 #include "../Autopilot/ArduPilot/_AP_relay.h"
@@ -242,7 +243,7 @@
 #endif
 
 #ifdef WITH_NET
-#include "../Net/_Curl.h"
+#include "../Net/_Uploader.h"
 #endif
 
 #ifdef WITH_PROTOCOL

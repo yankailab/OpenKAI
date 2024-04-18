@@ -140,6 +140,7 @@ namespace kai
 #ifdef WITH_ARDUPILOT
 		ADD_MODULE(_AP_actuator);
 		ADD_MODULE(_AP_base);
+		ADD_MODULE(_AP_httpJson);
 		ADD_MODULE(_AP_mission);
 		ADD_MODULE(_AP_move);
 		ADD_MODULE(_AP_relay);
@@ -252,7 +253,7 @@ namespace kai
 #endif
 
 #ifdef WITH_NET
-		ADD_MODULE(_Curl);
+		ADD_MODULE(_Uploader);
 #endif
 
 #ifdef WITH_PROTOCOL

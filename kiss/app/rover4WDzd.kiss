@@ -157,7 +157,7 @@
 
 {
 	"name":"cURL",
-	"class":"_Curl",
+	"class":"_Uploader",
 	"bON":0,
     {
 		"name":"thread",

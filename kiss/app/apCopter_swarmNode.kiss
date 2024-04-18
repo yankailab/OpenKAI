@@ -354,7 +354,7 @@
 	"_StateControl":"state",
 	"vActiveState":["AUTO",],
 	"_AP_base":"apBase",
-	"_Curl":"cURL",
+	"_Uploader":"cURL",
 	"dir":"/home/lab/Videos/",
 	"/process":"gst-launch-1.0 rtspsrc location=rtsp://192.168.144.108:554/stream=0 latency=0 ! queue ! rtph264depay ! h264parse ! tee name=t t. ! queue ! matroskamux ! filesink location=[fName] t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"process":"gst-launch-1.0 rtspsrc location=rtsp://192.168.144.108:554/stream=0 latency=0 ! queue ! rtph264depay ! h264parse ! queue ! matroskamux ! filesink location=[fName]",
@@ -363,7 +363,7 @@
 
 {
 	"name":"cURL",
-	"class":"_Curl",
+	"class":"_Uploader",
 	"bON":0,
     {
 		"name":"thread",
