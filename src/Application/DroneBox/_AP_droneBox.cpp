@@ -116,7 +116,7 @@ namespace kai
             return;
         }
 
-        // Takeoff!
+        // Takeoff
         if (m_state.bTAKEOFF_READY())
         {
             IF_(apMode != AP_COPTER_GUIDED);
@@ -156,7 +156,10 @@ namespace kai
         {
             // hold pos until landing ready
             if (apMode == AP_COPTER_AUTO || apMode == AP_COPTER_RTL)
-                m_pAP->setApMode(AP_COPTER_GUIDED);
+            {
+                // m_pAP->setApMode(AP_COPTER_GUIDED);
+                m_pAP->setApMode(AP_COPTER_LOITER);
+            }
 
             return;
         }
@@ -164,11 +167,13 @@ namespace kai
         // vision navigated descend
         if (m_state.bLANDING())
         {
-            if (apMode == AP_COPTER_AUTO || apMode == AP_COPTER_RTL)
-                m_pAP->setApMode(AP_COPTER_GUIDED);
+            // if (apMode == AP_COPTER_AUTO || apMode == AP_COPTER_RTL)
+            //     m_pAP->setApMode(AP_COPTER_GUIDED);
+            m_pAP->setApMode(AP_COPTER_LAND);
 
-            IF_(!m_pAPland->bComplete());
-            IF_(apMode != AP_COPTER_GUIDED);    // for test and debug
+            // IF_(!m_pAPland->bComplete());
+            // IF_(apMode != AP_COPTER_GUIDED);  // for test and debug
+            IF_(bApArmed);
 
             m_pSC->transit(m_state.TOUCHDOWN);
             m_state.update(m_pSC);
@@ -177,8 +182,8 @@ namespace kai
         if (m_state.bTOUCHDOWN())
         {
             //switch to AP controlled landing
-            if (apMode == AP_COPTER_GUIDED)
-                m_pAP->setApMode(AP_COPTER_LAND);
+            // if (apMode == AP_COPTER_GUIDED)
+            //     m_pAP->setApMode(AP_COPTER_LAND);
 
             //check if touched down
             IF_(bApArmed);

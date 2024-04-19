@@ -22,7 +22,6 @@ namespace kai
         IF_F(!this->_DroneBoxState::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 		
-
         pK->v("ID", &m_ID);
         pK->v("vPos", &m_vPos);
         pK->v("iSlave", &m_iSlave);

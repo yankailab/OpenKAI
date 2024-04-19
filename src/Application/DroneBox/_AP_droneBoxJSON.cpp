@@ -118,7 +118,6 @@ namespace kai
             return;
         }
 
-
 //        IF_(m_pAPdroneBox->getTargetDroneBoxID() != m_ID);
 
         if (pState->bLANDING_REQUEST())

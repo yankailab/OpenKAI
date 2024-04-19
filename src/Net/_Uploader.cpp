@@ -105,7 +105,7 @@ namespace kai
 				break;
 			}
 
-			if (bR)
+			if (bR && m_bRemoveAfterUpload)
 			{
 				// upload success
 				LOG_I("Uploaded: " + m_fName);

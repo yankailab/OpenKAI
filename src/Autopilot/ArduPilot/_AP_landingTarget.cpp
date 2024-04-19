@@ -11,7 +11,6 @@ namespace kai
 		m_vPsp.set(0.5, 0.5);
 
 		m_bHdg = false;
-		m_bHdgMoving = false;
 		m_hdgSp = 0.0;
 		m_hdgDz = 2.0;
 	}
@@ -27,8 +26,7 @@ namespace kai
 
 		pK->v("vPsp", &m_vPsp);
 		pK->v("bHdg", &m_bHdg);
-		pK->v("bHdgMoving", &m_bHdgMoving);
-		pK->v("bHdgDz", &m_hdgDz);
+		pK->v("hdgDz", &m_hdgDz);
 
 		vFloat2 vFovDeg;
 		if (pK->v("vFov", &vFovDeg))
@@ -104,12 +102,16 @@ namespace kai
 		if (m_bHdg)
 		{
 			float dH = dHdg(m_hdgSp, m_oTarget.getRoll());	// TODO
-			if (dH > m_hdgDz)
+			if (abs(dH) > m_hdgDz)
 			{
 				IF_d_(m_pAP->getApMode() != AP_COPTER_GUIDED, m_pAP->setApMode(AP_COPTER_GUIDED));
 
 				setHdg(0, dH * DEG_2_RAD * 0.1);	//TODO
 				return;
+			}
+			else
+			{
+				setHdg(0, 0);
 			}
 
 			IF_d_(m_pAP->getApMode() != AP_COPTER_LAND, m_pAP->setApMode(AP_COPTER_LAND));

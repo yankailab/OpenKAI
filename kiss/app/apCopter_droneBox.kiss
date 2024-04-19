@@ -3,7 +3,7 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog":1,
-	"bStdErr":1,
+	"bStdErr":0,
 }
 
 {
@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["cam","FB","state","arUco","TOFsense","/apBase","apLand","apVideo","cURL"],
+	"vBASE":["cam","state","arUco","TOFsense","apBase","apLand","apVideo","uploader"],
 }
 
 {
@@ -31,20 +31,6 @@
 }
 
 {
-	"name":"FB",
-	"class":"_GstOutput",
-	"bON":0,
-    {
-		"name":"thread",
-		"FPS":2,
-	}
-	"vBASE":["camCrop"],
-	"gstOutput":"appsrc ! v4l2convert ! fbdevsink",
-	"vSize":[1280,720],
-}
-
-
-{
 	"name":"state",
 	"class":"_StateControl",
     {
@@ -52,8 +38,8 @@
 		"FPS":10,
 	}
 	"bON":1,
-	"/start":"STANDBY",
-	"start":"LANDING",
+	"start":"STANDBY",
+	"/start":"LANDING",
 
 	{
 		"name":"state",
@@ -115,7 +101,7 @@
 {
 	"name":"apDroneBox",
 	"class":"_AP_droneBox",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
@@ -134,7 +120,7 @@
 {
 	"name":"udp",
 	"class":"_UDP",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -145,14 +131,14 @@
 		"vTwakeUp":["dronBoxJson.threadR"],
 	}
 	"bLog":0,
-	"addr":"192.168.16.100",
+	"addr":"192.168.1.100",
 	"port":20000,
 }
 
 {
 	"name":"dronBoxJson",
 	"class":"_AP_droneBoxJSON",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":1,
@@ -170,7 +156,7 @@
 {
 	"name":"serialAP",
 	"class":"_SerialPort",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -181,14 +167,15 @@
 		"vTwakeUp":["apMavlink.thread"],
 	}
 	"/port":"/dev/ttyAMA0",
-	"port":"/dev/ttyS0",
+	"/port":"/dev/ttyS0",
+	"port":"/dev/ttyUSB0",
 	"baud":115200,
 }
 
 {
 	"name":"apMavlink",
 	"class":"_Mavlink",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -200,7 +187,7 @@
 {
 	"name":"apBase",
 	"class":"_AP_base",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
@@ -257,6 +244,19 @@
 }
 
 {
+	"name":"apHttpJson",
+	"class":"_AP_httpJson",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":2,
+	}
+	"bLog":1,
+	"_AP_base":"apBase",
+	"url":"",
+}
+
+{
 	"name":"apVideo",
 	"class":"_AP_video",
 	"bON":0,
@@ -267,27 +267,31 @@
 	"bLog":0,
 	"_StateControl":"state",
 	"_AP_base":"apBase",
-	"_Uploader":"cURL",
+	"_Uploader":"uploader",
 	"/fCalib":"/home/pi/ok/calibCam.kiss",
-	"/dir":"/home/pi/ssd/video/",
-	"dir":"/home/kai/Videos/",
-	"/process":"gst-launch-1.0 rtspsrc location=rtsp://192.168.144.108:554/stream=0 latency=0 ! queue ! rtph264depay ! h264parse ! tee name=t t. ! queue ! matroskamux ! filesink location=[fName] t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
-	"process":"gst-launch-1.0 rtspsrc location=rtsp://192.168.144.108:554/stream=0 latency=0 ! queue ! rtph264depay ! h264parse ! queue ! matroskamux ! filesink location=[fName]",
-	"bMeta":1,
+	"dir":"/home/pi/ssd/video/",
+	"/dir":"/home/kai/Videos/",
+	"/process":"gst-launch-1.0 rtspsrc location=rtsp://192.168.1.108:554/stream=0 latency=0 ! queue ! rtph264depay ! h264parse ! tee name=t t. ! queue ! matroskamux ! filesink location=[fName] t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+	"process":"gst-launch-1.0 rtspsrc location=rtsp://192.168.1.108:554/stream=0 latency=0 ! queue ! rtph264depay ! h264parse ! queue ! matroskamux ! filesink location=[fName]",
+	"bMeta":0,
 }
 
 {
-	"name":"cURL",
+	"name":"uploader",
 	"class":"_Uploader",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":1,
 	}
 	"bLog":1,
-	"cmd":"curl 2>&1 -T [fName] ftp://193.112.75.123/pub/ -u anonymous: --connect-timeout 60 --no-progress-meter",
-	"dir":"/home/pi/ssd/video/",
-	"vExt":[".mka",".json"],
+	"dir":"/home/kai/Downloads/test/",
+	"vExt":[".mka",".json",".png"],
+	"bRemoveAfterUpload":0,
+	"method":0,
+	"url":"http://183.6.39.6:9055/api/test/UavImageData",
+
+	"cmd":"uploader 2>&1 -T [fName] ftp://193.112.75.123/pub/ -u anonymous: --connect-timeout 60 --no-progress-meter",
 	"bConfirmCmdResult":0,
 }
 
@@ -296,13 +300,13 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
 	"vSize":[1280,720],
-	"/pipeline":"libcamerasrc ! video/x-raw,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! appsink",
+	"pipeline":"libcamerasrc ! video/x-raw,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! appsink",
 	"/pipeline":"libcamerasrc camera-name=/base/soc/i2c0mux/i2c@1/imx219@10 ! video/x-raw,camera=0,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! appsink",
 	"/pipeline":"libcamerasrc camera-name=/base/soc/i2c0mux/i2c@0/imx477@1a ! video/x-raw,camera=0,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! appsink",
 }
@@ -310,7 +314,7 @@
 {
 	"name":"arUco",
 	"class":"_ArUco",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -324,7 +328,7 @@
 {
 	"name":"univTag",
 	"class":"_Universe",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -334,7 +338,7 @@
 {
 	"name":"serialTOF",
 	"class":"_SerialPort",
-	"bON":0,
+	"bON":1,
     {
         "name":"thread",
         "FPS":30,
@@ -351,7 +355,7 @@
 {
 	"name":"TOFsense",
 	"class":"_TOFsense",
-	"bON":0,
+	"bON":1,
     {
         "name":"thread",
         "FPS":30,
@@ -367,14 +371,17 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"bON":0,
+	"bON":1,
 	"bLog":1,
 	"_StateControl":"state",
 	"_AP_base":"apBase",
 	"_Universe":"univTag",
-
+	"_DistSensorBase":"TOFsense",
 	"vFov":[70,60],
-
+	"vPsp":[0.5, 0.5],
+	"bHdg":0,
+	"hdgDz":1.0,
+	
 	{
 		"name":"tags",
 		{

@@ -23,7 +23,6 @@ namespace kai
 
 		IF_F(m_httpC.init());
    	
-
 		return true;
 	}
 
@@ -75,10 +74,13 @@ namespace kai
         // JO(o, "lat", lf2str(vP.x, 10));
         // JO(o, "lng", lf2str(vP.y, 10));
 
+		JO(o, "id", i2str(0));
+        JO(o, "lat", lf2str(123.4567));
+        JO(o, "lng", lf2str(765.4321));
+
         string jsonMsg = picojson::value(o).serialize();
 
 		m_httpC.post_imageinfo(m_url.c_str(), jsonMsg.c_str());
-
 
 	}
 

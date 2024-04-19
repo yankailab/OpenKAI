@@ -30,6 +30,19 @@
 }
 
 {
+	"name":"FB",
+	"class":"_GstOutput",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":2,
+	}
+	"vBASE":["camCrop"],
+	"gstOutput":"appsrc ! v4l2convert ! fbdevsink",
+	"vSize":[1280,720],
+}
+
+{
 	"name":"cam",
 	"class":"_Camera",
 	"bON":1,
