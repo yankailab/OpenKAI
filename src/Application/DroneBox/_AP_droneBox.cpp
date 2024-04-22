@@ -6,7 +6,7 @@ namespace kai
     _AP_droneBox::_AP_droneBox()
     {
         m_pAP = NULL;
-        m_pAPland = NULL;
+        // m_pAPland = NULL;
 
         m_bAutoArm = false;
         m_altTakeoff = 20.0;
@@ -49,10 +49,10 @@ namespace kai
         m_pAP = (_AP_base *)(pK->getInst(n));
         IF_Fl(!m_pAP, n + ": not found");
 
-        n = "";
-        pK->v("_AP_land", &n);
-        m_pAPland = (_AP_land *)(pK->getInst(n));
-        IF_Fl(!m_pAPland, n + ": not found");
+        // n = "";
+        // pK->v("_AP_land", &n);
+        // m_pAPland = (_AP_land *)(pK->getInst(n));
+        // IF_Fl(!m_pAPland, n + ": not found");
 
 		return true;
 	}
@@ -67,7 +67,7 @@ namespace kai
     {
         NULL__(m_pAP, -1);
         NULL__(m_pAP->m_pMav, -1);
-        NULL__(m_pAPland, -1);
+        // NULL__(m_pAPland, -1);
 
         return this->_DroneBoxState::check();
     }
@@ -157,8 +157,7 @@ namespace kai
             // hold pos until landing ready
             if (apMode == AP_COPTER_AUTO || apMode == AP_COPTER_RTL)
             {
-                // m_pAP->setApMode(AP_COPTER_GUIDED);
-                m_pAP->setApMode(AP_COPTER_LOITER);
+                m_pAP->setApMode(AP_COPTER_GUIDED);
             }
 
             return;
@@ -167,9 +166,9 @@ namespace kai
         // vision navigated descend
         if (m_state.bLANDING())
         {
-            // if (apMode == AP_COPTER_AUTO || apMode == AP_COPTER_RTL)
+            if (apMode == AP_COPTER_AUTO || apMode == AP_COPTER_RTL || apMode == AP_COPTER_GUIDED)
+                m_pAP->setApMode(AP_COPTER_LAND);
             //     m_pAP->setApMode(AP_COPTER_GUIDED);
-            m_pAP->setApMode(AP_COPTER_LAND);
 
             // IF_(!m_pAPland->bComplete());
             // IF_(apMode != AP_COPTER_GUIDED);  // for test and debug

@@ -13,6 +13,12 @@ namespace kai
 		m_bHdg = false;
 		m_hdgSp = 0.0;
 		m_hdgDz = 2.0;
+
+		m_lt.angle_x = 0;
+		m_lt.angle_y = 0;
+		m_lt.distance = 0;
+		m_lt.size_x = 0;
+		m_lt.size_y = 0;
 	}
 
 	_AP_landingTarget::~_AP_landingTarget()

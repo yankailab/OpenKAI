@@ -9,7 +9,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
@@ -27,6 +27,7 @@
 	}
 	"bON":1,
 	"start":"STANDBY",
+	"/start":"AIRBORNE",
 
 	{
 		"name":"state",

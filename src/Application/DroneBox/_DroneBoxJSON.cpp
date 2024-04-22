@@ -91,9 +91,11 @@ namespace kai
         _StateControl *pSC = m_pDB->getStateControl();
         if (pSC)
         {
+            string s = *pSC->getCurrentStateName();
             object o;
+            JO(o, "id", (double)m_pDB->getID());
             JO(o, "cmd", "stat");
-            JO(o, "stat", *pSC->getCurrentStateName());
+            JO(o, "stat", s);
             sendMsg(o);
         }
     }
@@ -103,7 +105,7 @@ namespace kai
         vDouble2 vP = m_pDB->getPos();
 
         object o;
-        JO(o, "id", i2str(m_pDB->getID()));
+        JO(o, "id", (double)m_pDB->getID());
         JO(o, "cmd", "heartbeat");
         JO(o, "t", li2str(m_pT->getTfrom()));
         JO(o, "lat", lf2str(vP.x, 10));

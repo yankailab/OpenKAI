@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git clone https://github.com/yankailab/ardupilot
+git clone --depth 1 https://github.com/ArduPilot/ardupilot.git
 cd ardupilot
 git submodule update --init --recursive
 
@@ -9,7 +9,7 @@ Tools/environment_install/install-prereqs-ubuntu.sh -y
 
 ./waf configure --board sitl
 ./waf copter
-cd ~/ardupilot/ArduCopter
+cd ArduCopter
 
 ../Tools/autotest/sim_vehicle.py --map --console
 nano ardupilot/Tools/autotest/locations.txt

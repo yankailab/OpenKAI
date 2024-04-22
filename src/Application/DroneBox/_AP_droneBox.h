@@ -1,7 +1,8 @@
 #ifndef OpenKAI_src_Application_DroneBox__AP_droneBox_H_
 #define OpenKAI_src_Application_DroneBox__AP_droneBox_H_
 
-#include "../../Autopilot/ArduPilot/_AP_land.h"
+//#include "../../Autopilot/ArduPilot/_AP_land.h"
+#include "../../Autopilot/ArduPilot/_AP_landingTarget.h"
 #include "../../State/_StateControl.h"
 #include "_DroneBoxState.h"
 
@@ -36,7 +37,7 @@ namespace kai
 
 	public:
 		_AP_base *m_pAP;
-		_AP_land *m_pAPland;
+		// _AP_land *m_pAPland;
 
 		bool m_bAutoArm;
 		float m_altTakeoff;

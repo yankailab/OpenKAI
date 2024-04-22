@@ -71,7 +71,7 @@ namespace kai
 
     void _DroneBoxState::setState(int vID, const string &stat)
     {
-        IF_(check() < 0);
+        IF_(this->_DroneBoxState::check() < 0);
 
         if (stat == "STANDBY")
             m_pSC->transit(m_state.STANDBY);
