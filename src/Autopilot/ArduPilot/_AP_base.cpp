@@ -6,13 +6,12 @@ namespace kai
 	_AP_base::_AP_base()
 	{
 		m_pMav = NULL;
-		m_lastHeartbeat = 0;
-		m_iHeartbeat = 0;
-
 		m_apType = ardupilot_copter;
 		m_apMode = -1;
 		m_bApArmed = false;
-		m_freqSendHeartbeat = 1;
+
+		m_ieSendHB.init(USEC_1SEC);
+		m_ieSendMsgInt.init(USEC_1SEC);
 
 		m_bHomeSet = false;
 		m_vHomePos.set(0.0);
@@ -32,18 +31,16 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
 
 		pK->v("apType", (int *)&m_apType);
-		pK->v("freqSendHeartbeat", &m_freqSendHeartbeat);
 
-		if (m_freqSendHeartbeat > 0)
-			m_freqSendHeartbeat = SEC_2_USEC / m_freqSendHeartbeat;
-		else
-			m_freqSendHeartbeat = 0;
+		float t;
 
-		m_lastHeartbeat = 0;
-		m_iHeartbeat = 0;
+		if (pK->v("ieSendHB", &t))
+			m_ieSendHB.init(t * SEC_2_USEC);
+
+		if (pK->v("ieSendMsgInt", &t))
+			m_ieSendMsgInt.init(t * SEC_2_USEC);
 
 		return true;
 	}
@@ -71,12 +68,11 @@ namespace kai
 				break;
 
 			int id;
-			float tInt;
 			pMI->v("id", &id);
+			float tInt = 1;
 			pMI->v("tInt", &tInt);
-			tInt *= SEC_2_USEC;
 
-			if (!m_pMav->setMsgInterval(id, tInt))
+			if (!m_pMav->setMsgInterval(id, tInt * SEC_2_USEC))
 				LOG_E("Inteval msg id = " + i2str(id) + " not found");
 		}
 
@@ -169,13 +165,15 @@ namespace kai
 		}
 
 		// Send Heartbeat
-		if (m_freqSendHeartbeat > 0 && tNow - m_lastHeartbeat >= m_freqSendHeartbeat)
+		if (m_ieSendHB.update(tNow))
 		{
 			m_pMav->heartbeat();
-			m_lastHeartbeat = tNow;
 		}
 
-		m_pMav->sendSetMsgInterval();
+		if (m_ieSendMsgInt.update(tNow))
+		{
+			m_pMav->sendSetMsgInterval();
+		}
 	}
 
 	void _AP_base::setApMode(uint32_t iMode)

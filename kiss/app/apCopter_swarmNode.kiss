@@ -112,7 +112,7 @@
     {
 		"name":"threadR",
 		"FPS":30,
-		"vTwakeUp":["mavAP.thread"],
+		"vRunThread":["mavAP.thread"],
 	}
 	"port":"/dev/ttyAMA0",
 	"baud":115200,
@@ -149,7 +149,7 @@
     {
 		"name":"threadR",
 		"FPS":30,
-		"vTwakeUp":["mavUDP.thread"],
+		"vRunThread":["mavUDP.thread"],
 	}
 	"port":19840,
 }

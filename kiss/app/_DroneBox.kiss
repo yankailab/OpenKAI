@@ -117,7 +117,7 @@
     {
 		"name":"threadR",
 		"FPS":1,
-		"vTwakeUp":["dronBoxJson.threadR"],
+		"vRunThread":["dronBoxJson.threadR"],
 	}
 	"port":20000,
 	"nFIFO":12800,
@@ -129,7 +129,7 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":1,
+		"FPS":2,
 	}
     {
 		"name":"threadR",

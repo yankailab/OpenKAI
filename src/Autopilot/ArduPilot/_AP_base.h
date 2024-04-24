@@ -3,6 +3,7 @@
 
 #include "../../Protocol/_Mavlink.h"
 #include "../../State/_StateControl.h"
+#include "../../Utility/utilEvent.h"
 
 #define AP_N_CUSTOM_MODE 28
 
@@ -131,10 +132,6 @@ namespace kai
 
 	public:
 		_Mavlink *m_pMav;
-		uint64_t m_lastHeartbeat;
-		uint64_t m_iHeartbeat;
-		int m_freqSendHeartbeat;
-
 		AP_TYPE m_apType;
 		int m_apMode;
 		bool m_bApArmed;
@@ -147,6 +144,9 @@ namespace kai
 		vFloat3 m_vAtti; //yaw, pitch, roll
 		float m_apHdg;	 //heading in degree
 		float m_battery; //remaining percentage
+
+		INTERVAL_EVENT m_ieSendHB;
+		INTERVAL_EVENT m_ieSendMsgInt;
 	};
 
 }

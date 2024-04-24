@@ -21,12 +21,11 @@ namespace kai
 			m_id = 0x7fffffff;
 			m_tStamp = 0;
 			m_tInterval = -1;
-			m_tTimeout = SEC_2_USEC * 10;
 		};
 
 		virtual ~MavMsgBase(void){};
 
-		void setRecvRate(int64_t tInterval)
+		void setRecvRate(uint64_t tInterval)
 		{
 			m_tInterval = tInterval;
 		}
@@ -34,7 +33,7 @@ namespace kai
 		bool bReceiving(uint64_t tNow)
 		{
 			IF_T(m_tStamp >= tNow);
-			IF_T(tNow - m_tStamp < m_tTimeout);
+			IF_T(tNow - m_tStamp < m_tInterval * 2);
 
 			return false;
 		}
@@ -46,8 +45,7 @@ namespace kai
 
 		uint32_t m_id;
 		uint64_t m_tStamp;
-		int64_t m_tInterval;
-		uint64_t m_tTimeout;
+		uint64_t m_tInterval;
 	};
 
 	class MavAttitude : public MavMsgBase
@@ -542,7 +540,7 @@ namespace kai
 
 		//Utility
 		void sendSetMsgInterval(void);
-		bool setMsgInterval(int id, int tInt);
+		bool setMsgInterval(int id, uint64_t tInt);
 
 	private:
 		void update(void);
@@ -575,6 +573,7 @@ namespace kai
 		MavRcChannelsOverride m_rcChannelsOverride;
 		MavSysStatus m_sysStatus;
 		MavScaledIMU m_scaledIMU;
+
 		vector<MavMsgBase *> m_vpMsg;
 
 	private:

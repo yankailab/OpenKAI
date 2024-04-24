@@ -409,6 +409,7 @@ endif()
 
 if(WITH_NET)
 add_definitions(-DWITH_NET)
+set(OpenKAI_cpp ${OpenKAI_cpp} src/Net/base64.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Net/_Uploader.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Net/HttpClient.cpp)
 set(OpenKAI_lib ${OpenKAI_lib} event event_core)

@@ -273,7 +273,7 @@
     {
 		"name":"threadR",
 		"FPS":30,
-		"vTwakeUp":["mavAP1.thread"],
+		"vRunThread":["mavAP1.thread"],
 	}
 	"/addr":"127.0.0.1",
 	"port":14560,
@@ -542,7 +542,7 @@
     {
 		"name":"threadR",
 		"FPS":30,
-		"vTwakeUp":["mavAP2.thread"],
+		"vRunThread":["mavAP2.thread"],
 	}
 	"/addr":"127.0.0.1",
 	"port":14570,

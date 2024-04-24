@@ -29,7 +29,7 @@
     {
 		"name":"threadR",
 		"FPS":10,
-		"/vTwakeUp":["DDSM.threadR"],
+		"/vRunThread":["DDSM.threadR"],
 	}
 	"/port":"/dev/ttyUSB0",
 	"port":"/dev/ttyAMA1",

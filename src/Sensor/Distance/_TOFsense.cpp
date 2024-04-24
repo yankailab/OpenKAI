@@ -82,7 +82,7 @@ namespace kai
 
 				if (m_frame.m_iB == 2)
 				{
-					//				m_frame.m_nPayload = ;
+					//m_frame.m_nPayload = ;
 				}
 				else if (m_frame.m_iB >= 16)
 				{

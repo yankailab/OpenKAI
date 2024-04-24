@@ -55,7 +55,7 @@
     {
 		"name":"threadR",
 		"FPS":10,
-		"vTwakeUp":["mavUDP.thread"],
+		"vRunThread":["mavUDP.thread"],
 	}
 	"port":"/dev/ttyTHS1",
 	"baud":115200,
@@ -72,7 +72,7 @@
 	{
 		"name":"threadR",
 		"FPS":30,
-		"vTwakeUp":["mavUDP.thread"],
+		"vRunThread":["mavUDP.thread"],
 	}
 	"addr":"192.168.10.1",	
 	"port":300,

@@ -203,7 +203,7 @@
 	}
     {
 		"name":"threadR",
-		"vTwakeUp":["sbus.threadR"],
+		"vRunThread":["sbus.threadR"],
 	}
 	"port":"/dev/ttyUSB0",
 	"baud":115200,

@@ -2,7 +2,7 @@
 #define OpenKAI_src_Application_DroneBox__DroneBox_H_
 
 #include "../../Protocol/_Modbus.h"
-#include "_DroneBoxState.h"
+#include "../../State/_StateControl.h"
 
 namespace kai
 {
@@ -19,7 +19,7 @@ namespace kai
         dbx_boxRecover = 6,
     };
 
-    class _DroneBox : public _DroneBoxState
+    class _DroneBox : public _ModuleBase
     {
     public:
         _DroneBox();
@@ -34,6 +34,11 @@ namespace kai
         // general
         int getID(void);
         vDouble2 getPos(void);
+
+    	string getState(void);
+    	void setState(const string& s);
+        virtual bool takeoffRequest(void);
+        virtual bool landingRequest(void);
 
         //Drone Box mechanical control
         bool boxLandingPrepare(void);
@@ -53,9 +58,9 @@ namespace kai
         }
 
     public:
+		_StateControl* m_pSC;
         _Modbus *m_pMB;
         int m_iSlave;
-
         DRONEBOX_LAST_CMD m_lastCMD;
 
         int m_ID;

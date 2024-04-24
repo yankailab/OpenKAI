@@ -11,10 +11,10 @@ Tools/environment_install/install-prereqs-ubuntu.sh -y
 ./waf copter
 cd ArduCopter
 
-../Tools/autotest/sim_vehicle.py --map --console
+./Tools/autotest/sim_vehicle.py -v ArduCopter -f quad --map --console
 nano ardupilot/Tools/autotest/locations.txt
 Okushiga=36.779180,138.527999,1500,0
-/home/kai/dev/ardupilot/Tools/autotest/sim_vehicle.py -v ArduCopter -f quad -L Okushiga --map --console --instance 1
+/home/kai/dev/ardupilot/Tools/autotest/sim_vehicle.py -v ArduCopter -f quad -L Okushiga --map --console --count=1 --add-param-file=/home/kai/ap_sitl_copter.parm
 
 ./waf configure --board CubeBlack
 ./waf copter

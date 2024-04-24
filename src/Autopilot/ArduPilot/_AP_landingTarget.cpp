@@ -10,6 +10,10 @@ namespace kai
 		m_vFov = 60 * DEG_2_RAD;
 		m_vPsp.set(0.5, 0.5);
 
+		m_yawRate = 30 * DEG_2_RAD;
+		m_kP = 1.0;
+		m_defaultDtgt = 2.0;
+
 		m_bHdg = false;
 		m_hdgSp = 0.0;
 		m_hdgDz = 2.0;
@@ -33,10 +37,14 @@ namespace kai
 		pK->v("vPsp", &m_vPsp);
 		pK->v("bHdg", &m_bHdg);
 		pK->v("hdgDz", &m_hdgDz);
+		pK->v("kP", &m_kP);
+		pK->v("defaultDtgt", &m_defaultDtgt);
 
-		vFloat2 vFovDeg;
-		if (pK->v("vFov", &vFovDeg))
-			m_vFov = vFovDeg * DEG_2_RAD;
+		if (pK->v("vFov", &m_vFov))
+			m_vFov *= DEG_2_RAD;
+
+		if (pK->v("yawRate", &m_yawRate))
+			m_yawRate *= DEG_2_RAD;
 
 		Kiss *pKt = pK->child("tags");
 		NULL_T(pKt);
@@ -102,34 +110,40 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		IF_(!findTag());
+		if(!findTag())
+		{
+			stop();
+			return;
+		}
 
 		// adjust heading if needed
 		if (m_bHdg)
 		{
-			float dH = dHdg(m_hdgSp, m_oTarget.getRoll());	// TODO
+			float dH = dHdg(m_hdgSp, m_oTarget.getRoll()); // TODO
 			if (abs(dH) > m_hdgDz)
 			{
-				IF_d_(m_pAP->getApMode() != AP_COPTER_GUIDED, m_pAP->setApMode(AP_COPTER_GUIDED));
+				if(m_pAP->getApMode() == AP_COPTER_LAND)
+					m_pAP->setApMode(AP_COPTER_GUIDED);
 
-				setHdg(0, dH * DEG_2_RAD * 0.1);	//TODO
+				setHdg(0, (dH > 0) ? m_yawRate : (-m_yawRate));
 				return;
 			}
-			else
-			{
-				setHdg(0, 0);
-			}
 
-			IF_d_(m_pAP->getApMode() != AP_COPTER_LAND, m_pAP->setApMode(AP_COPTER_LAND));
+			stop();
 		}
 
+		if(m_pAP->getApMode() == AP_COPTER_GUIDED)
+			m_pAP->setApMode(AP_COPTER_LAND);
+
 		vFloat3 vP = m_oTarget.getPos();
-		m_lt.angle_x = (vP.x - m_vPsp.x) * m_vFov.x;
-		m_lt.angle_y = (vP.y - m_vPsp.y) * m_vFov.y;
-		m_lt.distance = m_pDS->d(0);
+		m_lt.angle_x = (vP.x - m_vPsp.x) * m_vFov.x * m_kP;
+		m_lt.angle_y = (vP.y - m_vPsp.y) * m_vFov.y * m_kP;
 		m_lt.size_x = m_oTarget.getWidth() * m_vFov.x;
 		m_lt.size_y = m_oTarget.getHeight() * m_vFov.y;
 		m_lt.position_valid = 0;
+
+		float h = m_pDS->d(0);
+		m_lt.distance = (h > 0) ? h : m_defaultDtgt;
 
 		m_pAP->m_pMav->landingTarget(m_lt);
 	}

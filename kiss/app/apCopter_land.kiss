@@ -142,7 +142,7 @@
     {
 		"name":"threadR",
 		"FPS":30,
-		"vTwakeUp":["dronBoxJson.threadR"],
+		"vRunThread":["dronBoxJson.threadR"],
 	}
 	"bLog":0,
 	"addr":"192.168.16.100",
@@ -178,7 +178,7 @@
     {
 		"name":"threadR",
 		"FPS":10,
-		"vTwakeUp":["apMavlink.thread"],
+		"vRunThread":["apMavlink.thread"],
 	}
 	"port":"/dev/ttyAMA0",
 	"/port":"/dev/ttyACM0",

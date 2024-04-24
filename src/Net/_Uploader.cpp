@@ -152,15 +152,20 @@ namespace kai
 		size_t nB = fread(m_pBuf, 1, UPLOADER_NB, fp);
 		fclose(fp);
 
-		size_t nBenc;
-		char* pEncoded = base64_encode(m_pBuf, nB, &nBenc);
-		NULL_F(pEncoded);
-		string strEnc = string(pEncoded);
-		free(pEncoded);
+		string strEnc = base64_encode(m_pBuf, nB, false);
+
+		// string strDec = base64_decode(strEnc, false);
+		// int len = strDec.length();
+		// string fOut = fName + ".png";
+		// fp = fopen(fOut.c_str(), "w");
+		// fwrite(strDec.c_str(), len, 1,fp);
+		// fflush(fp);
+		// fclose(fp);
+
 
         object o;
-        // JO(o, "lat", lf2str(vP.x, 10));
-        // JO(o, "lng", lf2str(vP.y, 10));
+        JO(o, "lat", lf2str(123.456, 10));
+        JO(o, "lng", lf2str(654.321, 10));
         JO(o, "img", strEnc);
         string jsonStr = picojson::value(o).serialize();
 

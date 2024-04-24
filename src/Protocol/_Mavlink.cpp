@@ -58,13 +58,6 @@ namespace kai
 		pK->v("devComponentID", &m_devComponentID);
 		pK->v("devType", &m_devType);
 
-		uint64_t tTimeout = SEC_2_USEC * 10;
-		pK->v("tTimeout", &tTimeout);
-		for (MavMsgBase *pM : m_vpMsg)
-		{
-			pM->m_tTimeout = tTimeout;
-		}
-
 		m_status.packet_rx_drop_count = 0;
 
 		return true;
@@ -733,7 +726,7 @@ namespace kai
 		}
 	}
 
-	bool _Mavlink::setMsgInterval(int id, int tInt)
+	bool _Mavlink::setMsgInterval(int id, uint64_t tInt)
 	{
 		for (MavMsgBase *pM : m_vpMsg)
 		{

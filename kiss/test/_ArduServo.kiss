@@ -29,7 +29,7 @@
     {
 		"name":"threadR",
 		"FPS":30,
-		"/vTwakeUp":["arduServo.threadR"],
+		"/vRunThread":["arduServo.threadR"],
 	}
 	"/port":"/dev/ttyUSB0",
 	"port":"/dev/ttyACM0",

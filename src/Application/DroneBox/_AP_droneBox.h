@@ -4,12 +4,11 @@
 //#include "../../Autopilot/ArduPilot/_AP_land.h"
 #include "../../Autopilot/ArduPilot/_AP_landingTarget.h"
 #include "../../State/_StateControl.h"
-#include "_DroneBoxState.h"
 
 namespace kai
 {
 
-	class _AP_droneBox : public _DroneBoxState
+	class _AP_droneBox : public _ModuleBase
 	{
 	public:
 		_AP_droneBox();
@@ -21,31 +20,28 @@ namespace kai
 		virtual int check(void);
 		virtual void update(void);
 
-		void addTargetDroneBox(int id, vDouble2 vPdb);
-		int getTargetDroneBoxID(void);
-
+		string getState(void);
 		void landingReady(bool bReady);
 		void takeoffReady(bool bReady);
+		void setBoxState(const string& s);
 
 	protected:
-		virtual void updateDroneBox(void);
+		virtual void updateAPdroneBox(void);
 		static void *getUpdate(void *This)
 		{
 			((_AP_droneBox *)This)->update();
 			return NULL;
 		}
 
-	public:
+	protected:
+		_StateControl* m_pSC;
 		_AP_base *m_pAP;
-		// _AP_land *m_pAPland;
+		_AP_landingTarget *m_pAPlt;
 
 		bool m_bAutoArm;
 		float m_altTakeoff;
 		float m_altLand;
-		int m_dLanded;
 
-		int m_targetDroneBoxID;
-		vDouble2 m_vTargetDroneBoxPos;
 		string m_boxState;
 	};
 

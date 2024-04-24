@@ -5,16 +5,13 @@ namespace kai
 
     _AP_droneBox::_AP_droneBox()
     {
+        m_pSC =NULL;
         m_pAP = NULL;
-        // m_pAPland = NULL;
+        m_pAPlt = NULL;
 
         m_bAutoArm = false;
         m_altTakeoff = 20.0;
         m_altLand = 20.0;
-        m_dLanded = 5;
-
-        m_targetDroneBoxID = -1;
-        m_vTargetDroneBoxPos.clear();
     }
 
     _AP_droneBox::~_AP_droneBox()
@@ -23,23 +20,19 @@ namespace kai
 
     bool _AP_droneBox::init(void *pKiss)
     {
-        IF_F(!this->_DroneBoxState::init(pKiss));
+        IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("bAutoArm", &m_bAutoArm);
         pK->v("altTakeoff", &m_altTakeoff);
         pK->v("altLand", &m_altLand);
-        pK->v("dLanded", &m_dLanded);
-
-        pK->v("targetDroneBoxID", &m_targetDroneBoxID);
-        pK->v("vTargetDroneBoxPos", &m_vTargetDroneBoxPos);
 
         return true;
     }
 
 	bool _AP_droneBox::link(void)
 	{
-		IF_F(!this->_DroneBoxState::link());
+		IF_F(!this->_ModuleBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
@@ -49,10 +42,15 @@ namespace kai
         m_pAP = (_AP_base *)(pK->getInst(n));
         IF_Fl(!m_pAP, n + ": not found");
 
-        // n = "";
-        // pK->v("_AP_land", &n);
-        // m_pAPland = (_AP_land *)(pK->getInst(n));
-        // IF_Fl(!m_pAPland, n + ": not found");
+        n = "";
+        pK->v("_StateControl", &n);
+        m_pSC = (_StateControl *)(pK->getInst(n));
+        IF_Fl(!m_pSC, n + ": not found");
+
+        n = "";
+        pK->v("_AP_landingTarget", &n);
+        m_pAPlt = (_AP_landingTarget *)(pK->getInst(n));
+        IF_Fl(!m_pAPlt, n + ": not found");
 
 		return true;
 	}
@@ -65,11 +63,12 @@ namespace kai
 
     int _AP_droneBox::check(void)
     {
+        NULL__(m_pSC, -1);
         NULL__(m_pAP, -1);
         NULL__(m_pAP->m_pMav, -1);
-        // NULL__(m_pAPland, -1);
+        NULL__(m_pAPlt, -1);
 
-        return this->_DroneBoxState::check();
+        return this->_ModuleBase::check();
     }
 
     void _AP_droneBox::update(void)
@@ -78,46 +77,51 @@ namespace kai
         {
             m_pT->autoFPSfrom();
 
-            updateDroneBox();
+            updateAPdroneBox();
 
             m_pT->autoFPSto();
         }
     }
 
-    void _AP_droneBox::updateDroneBox(void)
+	string _AP_droneBox::getState(void)
     {
-        this->_DroneBoxState::updateDroneBox();
+        return *m_pSC->getCurrentStateName();
+    }
+
+    void _AP_droneBox::updateAPdroneBox(void)
+    {
         IF_(check() < 0);
 
         int apMode = m_pAP->getApMode();
         bool bApArmed = m_pAP->bApArmed();
         float alt = m_pAP->getGlobalPos().w; //relative altitude
 
+        string state = getState();
 
         // For manual reset
         if (apMode == AP_COPTER_STABILIZE)
         {
-            m_pSC->transit(m_state.STANDBY);
-            m_state.update(m_pSC);
+            m_pSC->transit("STANDBY");
+            return;
         }
 
         // Standby
-        if (m_state.bSTANDBY())
+        if (state == "STANDBY")
         {
             IF_(apMode != AP_COPTER_GUIDED);
 
-            m_pSC->transit(m_state.TAKEOFF_REQUEST);
-            m_state.update(m_pSC);
+            m_pSC->transit("TAKEOFF_REQUEST");
+            return;
         }
 
         // Takeoff procedure
-        if (m_state.bTAKEOFF_REQUEST())
+        if (state == "TAKEOFF_REQUEST")
         {
             return;
         }
 
         // Takeoff
-        if (m_state.bTAKEOFF_READY())
+        if (state == "TAKEOFF_READY")
         {
             IF_(apMode != AP_COPTER_GUIDED);
 
@@ -132,11 +136,11 @@ namespace kai
 
             //TODO: record the home pos
 
-            m_pSC->transit(m_state.AIRBORNE);
-            m_state.update(m_pSC);
+            m_pSC->transit("AIRBORNE");
+            return;
         }
 
-        if (m_state.bAIRBORNE())
+        if (state == "AIRBORNE")
         {
             IF_(m_boxState != "AIRBORNE"); // waiting box to close
 
@@ -147,12 +151,12 @@ namespace kai
 
             IF_(alt > m_altLand);
 
-            m_pSC->transit(m_state.LANDING_REQUEST);
-            m_state.update(m_pSC);
+            m_pSC->transit("LANDING_REQUEST");
+            return;
         }
 
         // landing procedure
-        if (m_state.bLANDING_REQUEST())
+        if (state == "LANDING_REQUEST")
         {
             // hold pos until landing ready
             if (apMode == AP_COPTER_AUTO || apMode == AP_COPTER_RTL)
@@ -164,76 +168,62 @@ namespace kai
         }
 
         // vision navigated descend
-        if (m_state.bLANDING())
+        if (state == "LANDING")
         {
-            if (apMode == AP_COPTER_AUTO || apMode == AP_COPTER_RTL || apMode == AP_COPTER_GUIDED)
-                m_pAP->setApMode(AP_COPTER_LAND);
+//            if (apMode == AP_COPTER_AUTO || apMode == AP_COPTER_RTL || apMode == AP_COPTER_GUIDED)
+//                m_pAP->setApMode(AP_COPTER_LAND);
             //     m_pAP->setApMode(AP_COPTER_GUIDED);
 
             // IF_(!m_pAPland->bComplete());
-            // IF_(apMode != AP_COPTER_GUIDED);  // for test and debug
             IF_(bApArmed);
 
-            m_pSC->transit(m_state.TOUCHDOWN);
-            m_state.update(m_pSC);
+            m_pSC->transit("TOUCHDOWN");
+            return;
         }
 
-        if (m_state.bTOUCHDOWN())
+        if (state == "TOUCHDOWN")
         {
             //switch to AP controlled landing
-            // if (apMode == AP_COPTER_GUIDED)
-            //     m_pAP->setApMode(AP_COPTER_LAND);
+//            if (apMode == AP_COPTER_GUIDED)
+//                m_pAP->setApMode(AP_COPTER_LAND);
 
             //check if touched down
             IF_(bApArmed);
 
-            m_pSC->transit(m_state.LANDED);
-            m_state.update(m_pSC);
+            m_pSC->transit("LANDED");
+            return;
         }
 
-        if (m_state.bLANDED())
+        if (state == "LANDED")
         {
-            m_pT->sleepT(SEC_2_USEC * m_dLanded);
-            m_pSC->transit(m_state.STANDBY);
-            m_state.update(m_pSC);
+            IF_(m_boxState != "LANDED"); // waiting box to close
+
+            m_pSC->transit("STANDBY");
+            return;
         }
     }
 
     void _AP_droneBox::landingReady(bool bReady)
     {
+        IF_(check() < 0);
         IF_(!bReady);
 
-        if (m_state.bLANDING_REQUEST())
-            m_pSC->transit(m_state.LANDING);
+        if (getState() == "LANDING_REQUEST")
+            m_pSC->transit("LANDING");
     }
 
     void _AP_droneBox::takeoffReady(bool bReady)
     {
+        IF_(check() < 0);
         IF_(!bReady);
 
-        if (m_state.bTAKEOFF_REQUEST())
-            m_pSC->transit(m_state.TAKEOFF_READY);
+        if (getState() == "TAKEOFF_REQUEST")
+            m_pSC->transit("TAKEOFF_READY");
     }
 
-	void _AP_droneBox::addTargetDroneBox(int id, vDouble2 vPdb)
+	void _AP_droneBox::setBoxState(const string& s)
     {
-        return; // use fixed id for test first
-
-        vDouble4 v = m_pAP->getGlobalPos();
-        vDouble2 vPap;
-        vPap.set(v.x, v.y);
-
-        double d = (vPap - m_vTargetDroneBoxPos).len();
-        double dNew = (vPap - vPdb).len();
-        IF_(d < dNew);
-
-        m_targetDroneBoxID = id;
-        m_vTargetDroneBoxPos = vPdb;   
-    }
-
-	int _AP_droneBox::getTargetDroneBoxID(void)
-    {
-        return m_targetDroneBoxID;
+        m_boxState = s;
     }
 
 }

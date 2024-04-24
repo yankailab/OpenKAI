@@ -18,7 +18,7 @@ namespace kai
 		m_fovV = 0.1;
 		m_dDeg = 0;
 		m_dDegInv = 0;
-		m_vRange.set(0, DBL_MAX);
+		m_vRange.set(0, FLT_MAX);
 		m_calibScale = 1.0;
 		m_calibOffset = 0.0;
 		m_bReady = false;

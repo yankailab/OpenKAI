@@ -88,16 +88,7 @@ namespace kai
             sendHeartbeat();
         }
 
-        _StateControl *pSC = m_pDB->getStateControl();
-        if (pSC)
-        {
-            string s = *pSC->getCurrentStateName();
-            object o;
-            JO(o, "id", (double)m_pDB->getID());
-            JO(o, "cmd", "stat");
-            JO(o, "stat", s);
-            sendMsg(o);
-        }
+        sendStat();
     }
 
     void _DroneBoxJSON::sendHeartbeat(void)
@@ -111,6 +102,15 @@ namespace kai
         JO(o, "lat", lf2str(vP.x, 10));
         JO(o, "lng", lf2str(vP.y, 10));
 
+        sendMsg(o);
+    }
+
+    void _DroneBoxJSON::sendStat(void)
+    {
+        object o;
+        JO(o, "id", (double)m_pDB->getID());
+        JO(o, "cmd", "stat");
+        JO(o, "stat", m_pDB->getState());
         sendMsg(o);
     }
 
@@ -161,7 +161,13 @@ namespace kai
         int vID = o["id"].get<double>();
         string stat = o["stat"].get<string>();
 
-        m_pDB->setState(vID, stat);
+        if (stat == "STANDBY" ||
+            stat == "AIRBORNE" ||
+            stat == "LANDED"
+        )
+        {
+            m_pDB->setState(stat);
+        }
     }
 
     void _DroneBoxJSON::req(picojson::object &o)
@@ -180,7 +186,7 @@ namespace kai
 
         if (d == "takeoff")
         {
-            if (m_pDB->takeoffRequest(vID))
+            if (m_pDB->takeoffRequest())
             {
                 JO(jo, "r", "ok");
             }
@@ -191,7 +197,7 @@ namespace kai
         }
         else if (d == "landing")
         {
-            if (m_pDB->landingRequest(vID))
+            if (m_pDB->landingRequest())
             {
                 JO(jo, "r", "ok");
             }

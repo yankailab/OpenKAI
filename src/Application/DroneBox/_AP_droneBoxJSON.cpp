@@ -88,13 +88,13 @@ namespace kai
 
         this->_JSONbase::send();
 
-        DRONEBOX_STATE *pState = m_pAPdroneBox->getState();
+        string state = m_pAPdroneBox->getState();
 
         object o;
         JO(o, "id", (double)1);
         JO(o, "t", (double)m_pT->getTfrom());
 
-        if (pState->bSTANDBY())
+        if (state == "STANDBY")
         {
             JO(o, "cmd", "stat");
             JO(o, "stat", "STANDBY");
@@ -102,7 +102,7 @@ namespace kai
             return;
         }
 
-        if (pState->bTAKEOFF_REQUEST())
+        if (state == "TAKEOFF_REQUEST")
         {
             JO(o, "cmd", "req");
             JO(o, "do", "takeoff");
@@ -110,7 +110,7 @@ namespace kai
             return;
         }
 
-        if (pState->bAIRBORNE())
+        if (state == "AIRBORNE")
         {
             JO(o, "cmd", "stat");
             JO(o, "stat", "AIRBORNE");
@@ -118,9 +118,7 @@ namespace kai
             return;
         }
 
-//        IF_(m_pAPdroneBox->getTargetDroneBoxID() != m_ID);
-
-        if (pState->bLANDING_REQUEST())
+        if (state == "LANDING_REQUEST")
         {
             JO(o, "cmd", "req");
             JO(o, "do", "landing");
@@ -128,7 +126,7 @@ namespace kai
             return;
         }
 
-        if (pState->bLANDED())
+        if (state == "LANDED")
         {
             JO(o, "cmd", "stat");
             JO(o, "stat", "LANDED");
@@ -192,7 +190,7 @@ namespace kai
         int vID = o["id"].get<double>();
         string stat = o["stat"].get<string>();
 
-        m_pAPdroneBox->m_boxState = stat;
+        m_pAPdroneBox->setBoxState(stat);
     }
 
     void _AP_droneBoxJSON::ack(picojson::object &o)

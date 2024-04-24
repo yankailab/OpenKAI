@@ -28,7 +28,7 @@
     {
 		"name":"threadR",
 		"FPS":30,
-		"vTwakeUp":["xb1.threadR"],
+		"vRunThread":["xb1.threadR"],
 	}
 	"port":"/dev/ttyUSB0",
 	"baud":57600,

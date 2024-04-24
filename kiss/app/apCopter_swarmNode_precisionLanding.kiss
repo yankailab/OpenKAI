@@ -68,7 +68,7 @@
     {
 		"name":"threadR",
 		"FPS":1,
-		"vTwakeUp":["skydroidGimbal.threadR"],
+		"vRunThread":["skydroidGimbal.threadR"],
 	}
 	"addr":"192.168.144.108",
 	"port":5000,
@@ -140,7 +140,7 @@
     {
 		"name":"threadR",
 		"FPS":30,
-		"vTwakeUp":["mavAP.thread"],
+		"vRunThread":["mavAP.thread"],
 	}
 	"port":"/dev/ttyAMA0",
 	"baud":115200,
@@ -177,7 +177,7 @@
     {
 		"name":"threadR",
 		"FPS":30,
-		"vTwakeUp":["mavUDP.thread"],
+		"vRunThread":["mavUDP.thread"],
 	}
 	"port":19840,
 }

@@ -31,7 +31,6 @@
 #endif
 
 #ifdef WITH_APP_DRONEBOX
-#include "../Application/DroneBox/_DroneBoxState.h"
 #include "../Application/DroneBox/_DroneBox.h"
 #include "../Application/DroneBox/_DroneBoxJSON.h"
 #include "../Application/DroneBox/_AP_droneBox.h"

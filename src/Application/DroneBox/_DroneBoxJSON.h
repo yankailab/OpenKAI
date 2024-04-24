@@ -22,6 +22,7 @@ namespace kai
 	protected:
 		void send(void);
 	    virtual void sendHeartbeat(void);
+	    virtual void sendStat(void);
 
 		//msg handlers
 		void handleMsg(string &str);

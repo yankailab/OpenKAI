@@ -3,7 +3,7 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog":1,
-	"bStdErr":0,
+	"bStdErr":1,
 }
 
 {
@@ -14,19 +14,19 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["cam","state","arUco","TOFsense","apBase","apLT","apVideo","uploader"],
+	"vBASE":["cam","state","arUco","TOFsense","/serialAP","apBase","apLT","/apVideo","/uploader"],
 }
 
 {
 	"name":"CVwindow",
 	"class":"_WindowCV",
-	"bON":0,
+	"bON":1,
 	"bFullScreen":0,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["/cam","camCrop","/univTag","arUco","apLT"],
+	"vBASE":["cam","/univTag","arUco","apLT"],
 	"bShow":1,
 }
 
@@ -39,8 +39,9 @@
 	}
 	"bON":1,
 	"start":"STANDBY",
-	"/start":"LANDING",
 	"/start":"AIRBORNE",
+	"/start":"LANDING",
+	"/start":"LANDED",
 
 	{
 		"name":"state",
@@ -68,7 +69,7 @@
 			"name":"AIRBORNE",
 			"class":"StateBase",
 			"vModuleResume":["apVideo"],
-			"vModulePause":["arUco","apLT"],
+			"vModulePause":["/arUco","/apLT"],
 		}
 		{
 			"bON":1,
@@ -129,7 +130,7 @@
     {
 		"name":"threadR",
 		"FPS":30,
-		"vTwakeUp":["dronBoxJson.threadR"],
+		"vRunThread":["dronBoxJson.threadR"],
 	}
 	"bLog":0,
 	"/addr":"192.168.1.100",
@@ -143,7 +144,7 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":1,
+		"FPS":2,
 	}
     {
 		"name":"threadR",
@@ -154,11 +155,28 @@
 	"_IObase":"udp",
 }
 
+{
+	"name":"serialAP",
+	"class":"_UDP",
+	"bON":1,
+	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+		"vRunThread":["apMavlink.thread"],
+	}
+	"/addr":"127.0.0.1",
+	"port":14550,
+}
 
 {
 	"name":"serialAP",
 	"class":"_SerialPort",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -166,7 +184,7 @@
     {
 		"name":"threadR",
 		"FPS":10,
-		"vTwakeUp":["apMavlink.thread"],
+		"vRunThread":["apMavlink.thread"],
 	}
 	"/port":"/dev/ttyAMA0",
 	"/port":"/dev/ttyS0",
@@ -196,7 +214,8 @@
 	}
 	"_StateControl":"state",
 	"_Mavlink":"apMavlink",
-	"freqSendHeartbeat":1,
+	"ieSendHB":1,
+	"ieSendMsgInt":1,
 	"apType":0,
 	
 	{
@@ -298,7 +317,6 @@
 }
 
 
-
 {
 	"name":"cam",
 	"class":"_GStreamer",
@@ -308,9 +326,8 @@
 		"FPS":30,
 	}
 	"vSize":[1280,720],
-	"pipeline":"libcamerasrc ! video/x-raw,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! appsink",
-	"/pipeline":"libcamerasrc camera-name=/base/soc/i2c0mux/i2c@1/imx219@10 ! video/x-raw,camera=0,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! appsink",
-	"/pipeline":"libcamerasrc camera-name=/base/soc/i2c0mux/i2c@0/imx477@1a ! video/x-raw,camera=0,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! appsink",
+	"/pipeline":"libcamerasrc ! video/x-raw,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! appsink",
+	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=1280,height=720,framerate=10/1 ! queue ! videoconvert ! appsink",
 }
 
 {
@@ -364,6 +381,7 @@
     }
 	"bLog":1,
 	"_IObase":"serialTOF",
+	"vRange":[0.1, 10.0],
 }
 
 {
@@ -383,6 +401,9 @@
 	"vPsp":[0.5, 0.5],
 	"bHdg":0,
 	"hdgDz":1.0,
+	"yawRate":30,
+	"kP":1.0,
+	"defaultDtgt":2.0,
 	
 	{
 		"name":"tags",

@@ -42,6 +42,9 @@ namespace kai
 		_Universe *m_pU;
 		_Object m_oTarget;
 
+		float m_yawRate;
+		float m_kP;
+		float m_defaultDtgt;
 		vector<AP_LANDING_TARGET_TAG> m_vTags;
 		vFloat2 m_vFov; // cam FOV horiz/vert
 		vFloat2 m_vPsp; // target set point on screen coord

@@ -5,6 +5,7 @@ namespace kai
 
     _DroneBox::_DroneBox()
     {
+        m_pSC = NULL;
         m_pMB = NULL;
         m_iSlave = 1;
         m_lastCMD = dbx_unknown;
@@ -19,7 +20,7 @@ namespace kai
 
     bool _DroneBox::init(void *pKiss)
     {
-        IF_F(!this->_DroneBoxState::init(pKiss));
+        IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 		
         pK->v("ID", &m_ID);
@@ -31,10 +32,15 @@ namespace kai
 
 	bool _DroneBox::link(void)
 	{
-		IF_F(!this->_DroneBoxState::link());
+		IF_F(!this->_ModuleBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
+        n = "";
+        pK->v("_StateControl", &n);
+        m_pSC = (_StateControl *)(pK->getInst(n));
+        IF_Fl(!m_pSC, n + ": not found");
+
         n = "";
         pK->v("_Modbus", &n);
         m_pMB = (_Modbus *)(pK->getInst(n));
@@ -54,7 +60,7 @@ namespace kai
         NULL__(m_pMB, -1);
         IF__(!m_pMB->bOpen(), -1);
 
-        return this->_DroneBoxState::check();
+        return this->_ModuleBase::check();
     }
 
     void _DroneBox::update(void)
@@ -71,66 +77,94 @@ namespace kai
 
     void _DroneBox::updateDroneBox(void)
     {
-        this->_DroneBoxState::updateDroneBox();
         IF_(check() < 0);
 
+        string state = getState();
 
-        if (m_state.bSTANDBY())
+        if (state == "STANDBY")
         {
             boxRecover();
             return;
         }
 
         //Takeoff procedure
-        if (m_state.bTAKEOFF_REQUEST())
+        if (state == "TAKEOFF_REQUEST")
         {
             IF_(!boxTakeoffPrepare());
 
             if (bBoxTakeoffReady())
-                m_pSC->transit(m_state.TAKEOFF_READY);
+                m_pSC->transit("TAKEOFF_READY");
 
             return;
         }
 
-        if (m_state.bTAKEOFF_READY())
+        if (state == "TAKEOFF_READY")
         {
             return;
         }
 
-        if (m_state.bAIRBORNE())
+        if (state == "AIRBORNE")
         {
             boxTakeoffComplete();
             return;
         }
 
         //Landing procedure
-        if (m_state.bLANDING_REQUEST())
+        if (state == "LANDING_REQUEST")
         {
             IF_(!boxLandingPrepare());
 
             if (bBoxLandingReady())
-                m_pSC->transit(m_state.LANDING);
+                m_pSC->transit("LANDING");
 
             return;
         }
 
-        if (m_state.bLANDING())
+        if (state == "LANDING")
         {
             return;
         }
 
-        if (m_state.bTOUCHDOWN())
+        if (state == "TOUCHDOWN")
         {
             return;
         }
 
-        if (m_state.bLANDED())
+        if (state == "LANDED")
         {
             IF_(!boxLandingComplete());
 
-            m_pSC->transit(m_state.STANDBY);
+            m_pSC->transit("STANDBY");
             return;
         }
+    }
+
+	string _DroneBox::getState(void)
+    {
+        return *m_pSC->getCurrentStateName();
+    }
+
+	void _DroneBox::setState(const string& s)
+    {
+        return m_pSC->transit(s);
+    }
+
+    bool _DroneBox::takeoffRequest(void)
+    {
+        IF_F(check() < 0);
+
+        IF_T(getState() == "TAKEOFF_READY");
+        m_pSC->transit("TAKEOFF_REQUEST");
+        return false;
+    }
+
+    bool _DroneBox::landingRequest(void)
+    {
+        IF_F(check() < 0);
+
+        IF_T(getState() == "LANDING");
+        m_pSC->transit("LANDING_REQUEST");
+        return false;
     }
 
     bool _DroneBox::boxTakeoffPrepare(void)

@@ -17,6 +17,7 @@ namespace kai
 
 		bool update(uint64_t tNow)
 		{
+			IF_F(m_tInterval <= 0);
 			IF_F(tNow - m_tLastEvent < m_tInterval);
 
 			m_tLastEvent = tNow;
