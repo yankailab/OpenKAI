@@ -170,12 +170,9 @@ namespace kai
         // vision navigated descend
         if (state == "LANDING")
         {
-//            if (apMode == AP_COPTER_AUTO || apMode == AP_COPTER_RTL || apMode == AP_COPTER_GUIDED)
-//                m_pAP->setApMode(AP_COPTER_LAND);
-            //     m_pAP->setApMode(AP_COPTER_GUIDED);
-
             // IF_(!m_pAPland->bComplete());
-            IF_(bApArmed);
+//            IF_(bApArmed);
+            return;
 
             m_pSC->transit("TOUCHDOWN");
             return;
@@ -183,10 +180,6 @@ namespace kai
 
         if (state == "TOUCHDOWN")
         {
-            //switch to AP controlled landing
-//            if (apMode == AP_COPTER_GUIDED)
-//                m_pAP->setApMode(AP_COPTER_LAND);
-
             //check if touched down
             IF_(bApArmed);
 

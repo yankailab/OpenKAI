@@ -17,6 +17,7 @@ namespace kai
 		m_bHdg = false;
 		m_hdgSp = 0.0;
 		m_hdgDz = 2.0;
+		m_dHdg = 0.0;
 
 		m_lt.angle_x = 0;
 		m_lt.angle_y = 0;
@@ -110,29 +111,33 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		if(!findTag())
+		if (!findTag())
 		{
-			stop();
+			if (m_pAP->getApMode() == AP_COPTER_GUIDED)
+			{
+				stop();
+				m_pAP->setApMode(AP_COPTER_LAND);
+			}
+
 			return;
 		}
 
-		// adjust heading if needed
+		m_dHdg = dHdg(m_hdgSp, m_oTarget.getRoll());
 		if (m_bHdg)
 		{
-			float dH = dHdg(m_hdgSp, m_oTarget.getRoll()); // TODO
-			if (abs(dH) > m_hdgDz)
+			if (abs(m_dHdg) > m_hdgDz)
 			{
-				if(m_pAP->getApMode() == AP_COPTER_LAND)
+				if (m_pAP->getApMode() == AP_COPTER_LAND)
 					m_pAP->setApMode(AP_COPTER_GUIDED);
 
-				setHdg(0, (dH > 0) ? m_yawRate : (-m_yawRate));
+				setHdg(0, (m_dHdg > 0) ? m_yawRate : (-m_yawRate));
 				return;
 			}
 
 			stop();
 		}
 
-		if(m_pAP->getApMode() == AP_COPTER_GUIDED)
+		if (m_pAP->getApMode() == AP_COPTER_GUIDED)
 			m_pAP->setApMode(AP_COPTER_LAND);
 
 		vFloat3 vP = m_oTarget.getPos();
@@ -193,6 +198,7 @@ namespace kai
 		_Console *pC = (_Console *)pConsole;
 
 		pC->addMsg("vAngle = (" + f2str(m_lt.angle_x) + ", " + f2str(m_lt.angle_y) + ")");
+		pC->addMsg("dHdg = " + f2str(m_dHdg));
 		pC->addMsg("Dist = " + f2str(m_lt.distance));
 		pC->addMsg("vSize = (" + f2str(m_lt.size_x) + ", " + f2str(m_lt.size_y) + ")");
 	}

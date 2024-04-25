@@ -38,9 +38,9 @@
 		"FPS":10,
 	}
 	"bON":1,
-	"start":"STANDBY",
+	"/start":"STANDBY",
 	"/start":"AIRBORNE",
-	"/start":"LANDING",
+	"start":"LANDING",
 	"/start":"LANDED",
 
 	{
@@ -400,9 +400,9 @@
 	"vFov":[70,60],
 	"vPsp":[0.5, 0.5],
 	"bHdg":0,
-	"hdgDz":1.0,
+	"hdgDz":4.0,
 	"yawRate":30,
-	"kP":1.0,
+	"kP":0.5,
 	"defaultDtgt":2.0,
 	
 	{
