@@ -56,6 +56,7 @@ namespace kai
 		float m_hdgSp;
 		float m_hdgDz;
 		float m_dHdg;
+		float m_hTouchdown;
 	};
 }
 #endif

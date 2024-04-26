@@ -171,8 +171,7 @@ namespace kai
         if (state == "LANDING")
         {
             // IF_(!m_pAPland->bComplete());
-//            IF_(bApArmed);
-            return;
+            IF_(bApArmed);
 
             m_pSC->transit("TOUCHDOWN");
             return;

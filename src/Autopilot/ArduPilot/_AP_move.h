@@ -3,6 +3,9 @@
 
 #include "_AP_base.h"
 
+#define IGN_YAW (1 << 10)
+#define IGN_YAW_RATE (1 << 11)
+
 namespace kai
 {
 

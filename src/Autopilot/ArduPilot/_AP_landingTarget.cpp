@@ -18,6 +18,7 @@ namespace kai
 		m_hdgSp = 0.0;
 		m_hdgDz = 2.0;
 		m_dHdg = 0.0;
+		m_hTouchdown = 0.0;
 
 		m_lt.angle_x = 0;
 		m_lt.angle_y = 0;
@@ -38,6 +39,7 @@ namespace kai
 		pK->v("vPsp", &m_vPsp);
 		pK->v("bHdg", &m_bHdg);
 		pK->v("hdgDz", &m_hdgDz);
+		pK->v("hTouchdown", &m_hTouchdown);
 		pK->v("kP", &m_kP);
 		pK->v("defaultDtgt", &m_defaultDtgt);
 
@@ -148,7 +150,15 @@ namespace kai
 		m_lt.position_valid = 0;
 
 		float h = m_pDS->d(0);
-		m_lt.distance = (h > 0) ? h : m_defaultDtgt;
+		if(h > 0)
+		{
+			IF_(h < m_hTouchdown);
+			m_lt.distance = h;
+		}
+		else
+		{
+			m_lt.distance = m_defaultDtgt;
+		}
 
 		m_pAP->m_pMav->landingTarget(m_lt);
 	}
@@ -201,6 +211,7 @@ namespace kai
 		pC->addMsg("dHdg = " + f2str(m_dHdg));
 		pC->addMsg("Dist = " + f2str(m_lt.distance));
 		pC->addMsg("vSize = (" + f2str(m_lt.size_x) + ", " + f2str(m_lt.size_y) + ")");
+		pC->addMsg("iTag = " + i2str(m_oTarget.getTopClass()));
 	}
 
 }

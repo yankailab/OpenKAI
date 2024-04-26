@@ -72,6 +72,7 @@ namespace kai
 		spt.vx = 0;
 		spt.vy = 0;
 		spt.vz = 0;
+		spt.yaw = 0.0;
 		spt.yaw_rate = 0.0;
 		spt.type_mask = 0b0000010111000111;
 		m_pAP->m_pMav->setPositionTargetLocalNED(spt);
@@ -83,20 +84,19 @@ namespace kai
 
 		mavlink_set_position_target_local_ned_t spt;
 		spt.coordinate_frame = frame;
-		// spt.x = 0.0;
-		// spt.y = 0.0;
-		// spt.z = 0.0;
-		// spt.vx = 0;
-		// spt.vy = 0;
-		// spt.vz = 0;
+		spt.x = 0.0;
+		spt.y = 0.0;
+		spt.z = 0.0;
+		spt.vx = 0;
+		spt.vy = 0;
+		spt.vz = 0;
 		spt.yaw = y;
 		spt.yaw_rate = r;
-		spt.type_mask = 0b0000000111111111; // AVP
-//		spt.type_mask = 0b0000010111000111;
+		spt.type_mask = 0b0000000111000111; // AVP
 		if (!bYaw)
-			spt.type_mask |= (1 << 11);
+			spt.type_mask |= IGN_YAW;
 		if (!bYawRate)
-			spt.type_mask |= (1 << 12);
+			spt.type_mask |= IGN_YAW_RATE;
 
 		m_pAP->m_pMav->setPositionTargetLocalNED(spt);
 	}
@@ -114,9 +114,9 @@ namespace kai
 		spt.yaw_rate = vSpd.w;
 		spt.type_mask = 0b0000000111000111; // AVP
 		if (!bYaw)
-			spt.type_mask |= (1 << 11);
+			spt.type_mask |= IGN_YAW;
 		if (!bYawRate)
-			spt.type_mask |= (1 << 12);
+			spt.type_mask |= IGN_YAW_RATE;
 
 		m_pAP->m_pMav->setPositionTargetLocalNED(spt);
 	}
@@ -134,9 +134,9 @@ namespace kai
 		spt.yaw_rate = vP.w;
 		spt.type_mask = 0b0000000111111000; // AVP
 		if (!bYaw)
-			spt.type_mask |= (1 << 11);
+			spt.type_mask |= IGN_YAW;
 		if (!bYawRate)
-			spt.type_mask |= (1 << 12);
+			spt.type_mask |= IGN_YAW_RATE;
 
 		m_pAP->m_pMav->setPositionTargetLocalNED(spt);
 	}
@@ -156,9 +156,9 @@ namespace kai
 		spt.yaw = vP.w;
 		spt.type_mask = 0b0000000111111000; // AVP
 		if (!bYaw)
-			spt.type_mask |= (1 << 11);
+			spt.type_mask |= IGN_YAW;
 		if (!bYawRate)
-			spt.type_mask |= (1 << 12);
+			spt.type_mask |= IGN_YAW_RATE;
 
 		m_pAP->m_pMav->setPositionTargetGlobalINT(spt);
 	}

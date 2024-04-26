@@ -114,7 +114,6 @@
 	"_AP_landingTarget":"apLT",
 	"altTakeoff":22.0,
 	"altLand":20.0,
-	"dLanded":2,
 	"bAutoArm":0,
 }
 
@@ -133,7 +132,7 @@
 		"vRunThread":["dronBoxJson.threadR"],
 	}
 	"bLog":0,
-	"/addr":"192.168.1.100",
+	"/addr":"192.168.1.250",
 	"addr":"127.0.0.1",
 	"port":20000,
 }
@@ -398,11 +397,12 @@
 	"_Universe":"univTag",
 	"_DistSensorBase":"TOFsense",
 	"vFov":[70,60],
-	"vPsp":[0.5, 0.5],
-	"bHdg":0,
+	"vPsp":[0.5, 0.55],
+	"bHdg":1,
 	"hdgDz":4.0,
-	"yawRate":30,
-	"kP":0.5,
+	"yawRate":5,
+	"hTouchdown":1.0,
+	"kP":0.1,
 	"defaultDtgt":2.0,
 	
 	{
@@ -410,23 +410,22 @@
 		{
 			"name":"tags",
 			"id":0,
-			"priority":2,
-			"vSize":[0.002, 0.2],
-			"vKdist":[0.2, 3.0],
+			"priority":3,
 		}
 		{
 			"name":"tags",
 			"id":1,
-			"priority":1,
-			"vSize":[0.001, 0.02],
-			"vKdist":[0.2, 2.0],
+			"priority":2,
 		}
 		{
 			"name":"tags",
 			"id":2,
+			"priority":1,
+		}
+		{
+			"name":"tags",
+			"id":3,
 			"priority":0,
-			"vSize":[0.001, 0.02],
-			"vKdist":[0.2, 2.0],
 		}
 	}	
 }
