@@ -1,4 +1,3 @@
-
 #ifndef OpenKAI_src_Script_JSON_H_
 #define OpenKAI_src_Script_JSON_H_
 

@@ -5,3 +5,4 @@
 https://github.com/intel/compute-runtime/releases
 
 sudo apt-get install clinfo
+

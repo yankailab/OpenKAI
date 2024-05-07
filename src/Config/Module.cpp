@@ -54,6 +54,7 @@ namespace kai
 #ifdef WITH_APP_GSV
 		ADD_MODULE(_GSVctrl);
 		ADD_MODULE(_GSVdetect);
+		ADD_MODULE(_GSVgrid);
 		ADD_MODULE(_GSVio);
 		ADD_MODULE(_GSVview);
 #endif

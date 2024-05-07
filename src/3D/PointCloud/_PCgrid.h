@@ -2,6 +2,7 @@
 #define OpenKAI_src_3D_PointCloud__PCgrid_H_
 
 #include "../_GeometryBase.h"
+#include "_PCstream.h"
 
 namespace kai
 {
@@ -27,6 +28,7 @@ namespace kai
 		virtual ~_PCgrid();
 
 		virtual bool init(void *pKiss);
+		virtual bool link(void);
 		virtual int check(void);
 
 		virtual bool initBuffer(void);
@@ -52,9 +54,14 @@ namespace kai
 						const vFloat3& pB,
 						const vFloat3& vCol);
 
+		void updatePCstream(void);
+
 	protected:
 		PC_GRID_CELL *m_pCell;
 		int m_nCell;
+
+		// PCstream
+		_PCstream* m_pS;
 
 		// cell number of each axis
 		vInt3 m_vDim;

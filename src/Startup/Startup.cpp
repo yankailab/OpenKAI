@@ -1,7 +1,5 @@
 #include "Startup.h"
 
-Startup *g_pStartup;
-
 void signalHandler(int signal)
 {
 	if (signal != SIGINT)
@@ -33,12 +31,22 @@ namespace kai
 		return &m_appName;
 	}
 
-	bool Startup::start(Kiss *pKiss)
+	//	bool Startup::start(Kiss *pKiss)
+	bool Startup::start(const string &fName)
 	{
+		IF_F(fName.empty());
+
+		Kiss *pKiss = new Kiss();
+		if (!parseKiss(fName, pKiss))
+		{
+			printf("Kiss file not found or parsing failed\n");
+			delete pKiss;
+			return false;
+		}
+
 		g_pStartup = this;
 		signal(SIGINT, signalHandler);
 
-		NULL_F(pKiss);
 		Kiss *pApp = pKiss->root()->child("APP");
 		IF_F(pApp->empty());
 		pApp->m_pInst = (BASE *)this;
@@ -48,6 +56,15 @@ namespace kai
 		pApp->v("bLog", &m_bLog);
 		pApp->v("rc", &m_rc);
 
+		// parse & attach included kiss files
+		vector<string> vInclude;
+		pApp->a("vInclude", &vInclude);
+		for (string s : vInclude)
+		{
+			IF_Fl(!parseKiss(s, pKiss), "Kiss parse failed: " + s);
+		}
+
+		// run cmd
 		if (!m_rc.empty())
 		{
 			system(m_rc.c_str());

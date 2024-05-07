@@ -1,6 +1,4 @@
 #include "main.h"
-#include "Script/Kiss.h"
-#include "Utility/utilFile.h"
 
 int main(int argc, char* argv[])
 {
@@ -18,18 +16,10 @@ int main(int argc, char* argv[])
 	}
 
 	printf("Kiss file: %s\n", argStr.c_str());
-
-	g_pKiss = new Kiss();
-	if(!parseKiss(argStr, g_pKiss))
-	{
-		printf("Kiss file not found or parsing failed\n");
-		delete g_pKiss;
-		return 1;
-	}
     
-	g_pStart = new Startup();
-	g_pStart->start(g_pKiss);
+	g_pStartup = new Startup();
+	g_pStartup->start(argStr);
 
-	delete g_pKiss;
+	delete g_pStartup;
 	return 0;
 }

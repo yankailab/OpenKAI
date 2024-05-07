@@ -10,6 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Config/Module.h"
+#include "../Utility/utilFile.h"
 
 using namespace kai;
 
@@ -28,7 +29,7 @@ namespace kai
 		Startup();
 		~Startup();
 
-		bool start(Kiss *pKiss);
+		bool start(const string& fName);
 		bool createAllInst(Kiss *pKiss);
 		void printEnvironment(void);
 
@@ -45,6 +46,8 @@ namespace kai
 		bool m_bLog;
 		string m_rc;
 	};
+
+	static Startup *g_pStartup;
 
 }
 #endif

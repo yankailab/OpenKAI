@@ -9,11 +9,9 @@
 #define OpenKAI_src_main_H_
 
 #include "Startup/Startup.h"
-#include "IO/_File.h"
+#include "Script/Kiss.h"
+#include "Utility/utilFile.h"
 
 using namespace kai;
-
-Startup* g_pStart;
-Kiss* g_pKiss;
 
 #endif

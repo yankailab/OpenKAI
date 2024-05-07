@@ -1,11 +1,12 @@
 #include "_PCgrid.h"
-#include "_PCstream.h"
 
 namespace kai
 {
 
 	_PCgrid::_PCgrid()
 	{
+		m_pS = NULL;
+
 		m_type = pc_grid;
 		m_pCell = NULL;
 		m_nCell = 0;
@@ -53,6 +54,21 @@ namespace kai
 		return initBuffer();
 	}
 
+	bool _PCgrid::link(void)
+	{
+		IF_F(!this->_GeometryBase::link());
+
+		Kiss *pK = (Kiss *)m_pKiss;
+
+		string n;
+		n = "";
+		F_ERROR_F(pK->v("_PCstream", &n));
+		m_pS = (_PCstream *)(pK->getInst(n));
+		NULL_Fl(m_pS, n + ": not found");
+
+		return true;
+	}
+
 	bool _PCgrid::initBuffer(void)
 	{
 		float cVol = m_vCellSize.x * m_vCellSize.y * m_vCellSize.z;
@@ -91,7 +107,7 @@ namespace kai
 		{
 			generateGridLines();
 
-			vInt3 vC = {0,0,0};
+			vInt3 vC = {0, 0, 0};
 			m_vHLCidx.push_back(vC);
 			generateHLClines();
 		}
@@ -271,7 +287,30 @@ namespace kai
 
 	int _PCgrid::check(void)
 	{
+		NULL__(m_pS, -1);
+
 		return this->_GeometryBase::check();
+	}
+
+	void _PCgrid::updatePCstream(void)
+	{
+		IF_(check() < 0);
+
+		uint64_t tNow = getApproxTbootUs();
+		for (int i = 0; i < pS->nP(); i++)
+		{
+			GEOMETRY_POINT *pP = pS->get(i);
+			if (tExpire)
+			{
+				IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
+			}
+
+			m_PC.points_.push_back(pP->m_vP);
+			m_PC.colors_.push_back(pP->m_vC.cast<double>());
+
+			if (m_PC.points_.size() >= m_nPbuf)
+				break;
+		}
 	}
 
 }

@@ -9,38 +9,38 @@
 namespace kai
 {
 
-inline bool readFile(const string& fName, string* pStr, string delim = "")
-{
-	NULL_F(pStr);
-
-    fstream f;
-    f.open(fName.c_str(), ios::in);
-    IF_F(!f.is_open());
-	f.seekg(0, ios_base::beg);
-
-	*pStr = "";
-	while (f && !f.eof())
+	inline bool readFile(const string &fName, string *pStr, string delim = "")
 	{
-        string s;
-        getline(f, s);
-		*pStr += s + delim;
+		NULL_F(pStr);
+
+		fstream f;
+		f.open(fName.c_str(), ios::in);
+		IF_F(!f.is_open());
+		f.seekg(0, ios_base::beg);
+
+		*pStr = "";
+		while (f && !f.eof())
+		{
+			string s;
+			getline(f, s);
+			*pStr += s + delim;
+		}
+
+		f.close();
+
+		return true;
 	}
 
-	f.close();
+	inline bool parseKiss(const string &fName, Kiss *pK)
+	{
+		NULL_F(pK);
 
-	return true;
-}
+		string s;
+		IF_F(!readFile(fName, &s));
+		IF_F(s.empty());
 
-inline bool parseKiss(const string& fName, Kiss* pK)
-{
-	NULL_F(pK);
-
-	string s;
-	IF_F(!readFile(fName, &s));
-	IF_F(s.empty());
-	
-	return pK->parse(&s);
-}
+		return pK->parse(&s);
+	}
 
 }
 #endif

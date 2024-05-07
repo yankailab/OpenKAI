@@ -9,6 +9,7 @@
 #define OpenKAI_src_3D_PointCloud__GeometryBase_H_
 
 #include "../Base/_ModuleBase.h"
+#include "../IPC/SharedMem.h"
 #include "../UI/_Console.h"
 #include "../Utility/utilTime.h"
 
