@@ -74,7 +74,7 @@ namespace kai
 		void addDummyPoints(PointCloud* pPC, int n, float r, Vector3d vCol = {0,0,0});
 
 		// line set
-		void addUIlineSet(const LineSet &ls, const string& name);
+		void updateDynamicLineSet(const LineSet &ls, const string& name);
 
 		// update thread
 		virtual void updateGeometry(void);
@@ -104,8 +104,8 @@ namespace kai
 		PointCloud m_PC;
 
 		// line set
-		LineSet m_lineSet;
-
+		LineSet m_staticLineSet;
+		LineSet m_dynamicLineSet;
 
 		O3DUI* m_pWin;
 		UIState* m_pUIstate;

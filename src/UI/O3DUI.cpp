@@ -38,6 +38,7 @@ namespace open3d
                 bool is_default_color;
                 bool no_shadows = false;
                 Material mat;
+
                 if (material)
                 {
                     mat = *material;
@@ -70,11 +71,13 @@ namespace open3d
 
                     mat.SetBaseColor({1.0f, 1.0f, 1.0f, 1.0f});
                     mat.SetMaterialName("defaultUnlit");
+
                     if (lines)
                     {
                         mat.SetMaterialName("unlitLine");
                         mat.SetLineWidth(m_uiState.m_wLine * GetScaling());
                     }
+
                     is_default_color = true;
                     if (has_colors)
                     {
@@ -85,6 +88,7 @@ namespace open3d
                         mat.SetMaterialName("defaultLit");
                         is_default_color = false;
                     }
+
                     mat.SetPointSize(ConvertToScaledPixels(m_uiState.m_sPoint));
                 }
 

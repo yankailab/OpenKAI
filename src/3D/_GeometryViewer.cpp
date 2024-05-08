@@ -140,7 +140,7 @@ namespace kai
 		removeUIpc(m_modelName);
 		addUIpc(m_PC, m_modelName);
 
-		addUIlineSet(m_lineSet, m_modelName + "LS");
+		m_pWin->AddGeometry(m_modelName + "staticLS", make_shared<geometry::LineSet>(m_staticLineSet));
 
 		resetCamPose();
 		updateCamPose();
@@ -150,6 +150,7 @@ namespace kai
 			m_pT->autoFPSfrom();
 
 			updateGeometry();
+			updateDynamicLineSet(m_dynamicLineSet, m_modelName + "dynamicLS");
 
 			m_pT->autoFPSto();
 		}
@@ -176,7 +177,7 @@ namespace kai
 		}
 	}
 
-	void _GeometryViewer::addUIpc(const PointCloud &pc, const string& name)
+	void _GeometryViewer::addUIpc(const PointCloud &pc, const string &name)
 	{
 		IF_(pc.IsEmpty());
 
@@ -187,7 +188,7 @@ namespace kai
 									  core::Dtype::Float32)));
 	}
 
-	void _GeometryViewer::updateUIpc(const PointCloud &pc, const string& name)
+	void _GeometryViewer::updateUIpc(const PointCloud &pc, const string &name)
 	{
 		IF_(pc.IsEmpty());
 
@@ -199,7 +200,7 @@ namespace kai
 										 core::Dtype::Float32)));
 	}
 
-	void _GeometryViewer::removeUIpc(const string& name)
+	void _GeometryViewer::removeUIpc(const string &name)
 	{
 		m_pWin->RemoveGeometry(name);
 	}
@@ -256,12 +257,21 @@ namespace kai
 		}
 	}
 
-	void _GeometryViewer::addUIlineSet(const LineSet &ls, const string& name)
+	void _GeometryViewer::updateDynamicLineSet(const LineSet &ls, const string &name)
 	{
 		IF_(ls.IsEmpty());
 
+		m_pWin->RemoveGeometry(name);
+
+		Material mat;
+		mat.SetBaseColor({1.0f, 1.0f, 1.0f, 1.0f});
+		mat.SetMaterialName("defaultUnlit");
+		mat.SetMaterialName("unlitLine");
+		mat.SetLineWidth(10);
+
 		m_pWin->AddGeometry(name,
-							make_shared<geometry::LineSet>(ls));
+							make_shared<geometry::LineSet>(ls),
+							&mat);
 	}
 
 	void _GeometryViewer::getPCstream(void *p, const uint64_t &tExpire)
@@ -305,7 +315,8 @@ namespace kai
 		NULL_(p);
 		_PCgrid *pG = (_PCgrid *)p;
 
-		m_lineSet = *pG->getGridLines();
+		m_staticLineSet = *pG->getGridLines();
+		m_dynamicLineSet = *pG->getHLCLines();
 	}
 
 	void _GeometryViewer::updateCamProj(void)

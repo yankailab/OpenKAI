@@ -82,6 +82,12 @@
 	"vZ":[-10,10],
 	"vCellSize":[1,1,1],
 	"bVisual":1,
+	"gLineWidth":1,
+	"vAxisColX":[1,0,0],
+	"vAxisColY":[0,1,0],
+	"vAxisColZ":[0,0,1],
+	"hlcLineWidth":5,
+	"vHLClineCol":[1,1,1],
 }
 
 

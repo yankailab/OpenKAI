@@ -35,10 +35,14 @@ namespace kai
 		virtual void clear(void);
 		virtual PC_GRID_CELL *getCell(const vFloat3 &vP);
 		virtual LineSet *getGridLines(void);
+		virtual LineSet *getHLCLines(void);
+
+
 		virtual void getPCstream(void *p, const uint64_t &tExpire);
 
 	protected:
 		virtual PC_GRID_CELL *getCell(const vInt3 &vPi);
+
 		virtual void generateGridLines(void);
 		void addGridAxisLine(int nDa,
 						 const vFloat2 &vRa,
@@ -49,12 +53,12 @@ namespace kai
 						 const vFloat2 &vRc,
 						 const vInt3 &vAxis,
 						 const vFloat3 &vCol);
+
+		void updateHLClines(void);
 		void generateHLClines(void);
 		void addHLCline(const vFloat3& pA,
 						const vFloat3& pB,
 						const vFloat3& vCol);
-
-		void updatePCstream(void);
 
 	protected:
 		PC_GRID_CELL *m_pCell;
@@ -87,12 +91,14 @@ namespace kai
 
 		// visualization
 		bool m_bVisual;
+
 		// static grid
 		LineSet m_gridLine;
 		int		m_gLineWidth;
 		vFloat3 m_vAxisColX;
 		vFloat3 m_vAxisColY;
 		vFloat3 m_vAxisColZ;
+		
 		// high lighten cells
 		LineSet m_hlcLine; // lines for high lighten cell
 		int		m_hlcLineWidth;
