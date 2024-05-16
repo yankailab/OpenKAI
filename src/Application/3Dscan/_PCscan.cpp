@@ -159,7 +159,7 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		readAllGeometry();
+		readAllPC();
 		updatePC();
 		PointCloud *pPC = m_sPC.get();
 		pPC->normals_.clear();

@@ -121,9 +121,23 @@
 }
 
 {
+	"name":"modbus",
+	"class":"_Modbus",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"port":"/dev/ttyUSB0",
+	"baud":115200,
+	"parity":"N",
+}
+
+{
 	"name":"ebyte",
 	"class":"_ADIO_EBYTE",
-	"bON":0,
+	"bON":1,
 	"bLog":0,
     {
 		"name":"thread",
@@ -143,11 +157,53 @@
 		}
 		{
 			"bDigital":1,
+			"type":2, /* Dout */
+			"addr":1,
+			"vW":1,
+			"vR":0,
+		}
+		{
+			"bDigital":1,
+			"type":2, /* Dout */
+			"addr":2,
+			"vW":1,
+			"vR":0,
+		}
+		{
+			"bDigital":1,
+			"type":2, /* Dout */
+			"addr":3,
+			"vW":1,
+			"vR":0,
+		}
+
+		{
+			"bDigital":1,
 			"type":0, /* Din */
 			"addr":0,
 			"vW":0,
-			"vR":1,
+			"vR":0,
+		}
+		{
+			"bDigital":1,
+			"type":0, /* Din */
+			"addr":1,
+			"vW":0,
+			"vR":0,
+		}
+		{
+			"bDigital":1,
+			"type":0, /* Din */
+			"addr":2,
+			"vW":0,
+			"vR":0,
+		}
+		{
+			"bDigital":1,
+			"type":0, /* Din */
+			"addr":3,
+			"vW":0,
+			"vR":0,
 		}
 	}
 }
-

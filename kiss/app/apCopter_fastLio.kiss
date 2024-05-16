@@ -12,15 +12,15 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":10,
+		"FPS":30,
 	}
 	"vBASE":["serialAP","apBase","apVision","fastLio"],
 }
 
 {
-	"name":"serial",
+	"name":"/serial",
 	"class":"_SerialPort",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -38,12 +38,29 @@
 }
 
 {
+	"name":"serial",
+	"class":"_UDP",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":100,
+	}
+    {
+		"name":"threadR",
+		"FPS":100,
+		"vRunThread":["mavAP.thread"],
+	}
+	"/addr":"192.168.1.14",
+	"port":2024,
+}
+
+{
 	"name":"mavAP",
 	"class":"_Mavlink",
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":100,
 	}
 	"bLog":0,
 	"_IObase":"serial",
@@ -101,7 +118,7 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":10,
+		"FPS":100,
 	}
 	"_StateControl":"state",
 	"_Mavlink":"mavAP",
@@ -119,7 +136,8 @@
 		{
 			"name":"attitude",
 			"id":30,
-			"tInt":0.3,
+			"/tInt":0.3,
+			"tInt":0.02,
 		}
 		{
 			"name":"rcChannels",

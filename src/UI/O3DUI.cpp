@@ -30,168 +30,150 @@ namespace open3d
                 AddChild(GiveOwnership(m_pScene));
             }
 
-            void O3DUI::AddGeometry(const string &name,
-                                    shared_ptr<geometry::Geometry3D> spG,
-                                    rendering::Material *material,
-                                    bool bVisible)
+            void O3DUI::AddPointCloud(const string &name,
+                                      t::geometry::PointCloud *pTpc,
+                                      rendering::Material *pMaterial,
+                                      bool bVisible)
             {
-                bool is_default_color;
-                bool no_shadows = false;
                 Material mat;
-
-                if (material)
+                if (pMaterial)
                 {
-                    mat = *material;
-                    is_default_color = false;
+                    mat = *pMaterial;
                 }
                 else
                 {
-                    bool has_colors = false;
-                    bool has_normals = false;
-
-                    auto cloud = dynamic_pointer_cast<geometry::PointCloud>(spG);
-                    auto lines = dynamic_pointer_cast<geometry::LineSet>(spG);
-                    auto mesh = dynamic_pointer_cast<geometry::MeshBase>(spG);
-
-                    if (cloud)
-                    {
-                        has_colors = !cloud->colors_.empty();
-                        has_normals = !cloud->normals_.empty();
-                    }
-                    else if (lines)
-                    {
-                        has_colors = !lines->colors_.empty();
-                        no_shadows = true;
-                    }
-                    else if (mesh)
-                    {
-                        has_normals = !mesh->vertex_normals_.empty();
-                        has_colors = true; // always want base_color as white
-                    }
-
                     mat.SetBaseColor({1.0f, 1.0f, 1.0f, 1.0f});
                     mat.SetMaterialName("defaultUnlit");
-
-                    if (lines)
-                    {
-                        mat.SetMaterialName("unlitLine");
-                        mat.SetLineWidth(m_uiState.m_wLine * GetScaling());
-                    }
-
-                    is_default_color = true;
-                    if (has_colors)
-                    {
-                        is_default_color = false;
-                    }
-                    if (has_normals)
-                    {
-                        mat.SetMaterialName("defaultLit");
-                        is_default_color = false;
-                    }
-
                     mat.SetPointSize(ConvertToScaledPixels(m_uiState.m_sPoint));
                 }
-
-                m_vObject.push_back({name, spG, nullptr, mat, bVisible});
-
-                auto scene = m_pScene->GetScene();
                 MaterialRecord mr;
                 mat.ToMaterialRecord(mr);
-                scene->AddGeometry(name, spG.get(), mr);
+
+                auto scene = m_pScene->GetScene();
+                scene->AddGeometry(name, pTpc, mr, false);
                 scene->GetScene()->GeometryShadows(name, false, false);
                 scene->ShowGeometry(name, bVisible);
 
-                SetPointSize(m_uiState.m_sPoint);
-                m_pScene->ForceRedraw();
-            }
-
-            void O3DUI::AddPointCloud(const string &name,
-                                      shared_ptr<t::geometry::PointCloud> sTg,
-                                      rendering::Material *material,
-                                      bool bVisible)
-            {
-                bool no_shadows = false;
-                Material mat;
-                bool has_colors = false;
-                bool has_normals = false;
-
-                auto t_cloud = dynamic_pointer_cast<t::geometry::PointCloud>(sTg);
-                auto t_mesh = dynamic_pointer_cast<t::geometry::TriangleMesh>(sTg);
-                if (t_cloud)
-                {
-                    has_colors = t_cloud->HasPointColors();
-                    has_normals = t_cloud->HasPointNormals();
-                }
-                else if (t_mesh)
-                {
-                    has_normals = !t_mesh->HasVertexNormals();
-                    has_colors = true; // always want base_color as white
-                }
-
-                mat.SetBaseColor({1.0f, 1.0f, 1.0f, 1.0f});
-                mat.SetMaterialName("defaultUnlit");
-                mat.SetPointSize(ConvertToScaledPixels(m_uiState.m_sPoint));
-
-                m_vObject.push_back({name, nullptr, sTg, mat, bVisible});
-                auto scene = m_pScene->GetScene();
-                MaterialRecord mr;
-                mat.ToMaterialRecord(mr);
-                scene->AddGeometry(name, sTg.get(), mr, false);
-                scene->GetScene()->GeometryShadows(name, false, false);
-                scene->ShowGeometry(name, bVisible);
-
-                SetPointSize(m_uiState.m_sPoint);
-                SetLineWidth(m_uiState.m_wLine);
+                // SetPointSize(m_uiState.m_sPoint);
+                // SetLineWidth(m_uiState.m_wLine);
                 m_pScene->ForceRedraw();
             }
 
             void O3DUI::UpdatePointCloud(const string &name,
-                                         shared_ptr<t::geometry::PointCloud> sTg)
+                                         t::geometry::PointCloud *pTpc)
             {
-                UpdateTgeometry(name, sTg);
-
                 gui::Application::GetInstance().PostToMainThread(
-                    this, [this, name]()
+                    this, [this, name, pTpc]()
                     {
                         m_pScene->GetScene()->GetScene()->UpdateGeometry(
                             name,
-                            *GetGeometry(name).m_sTgeometry,
+                            *pTpc,
                             open3d::visualization::rendering::Scene::kUpdatePointsFlag |
                                 open3d::visualization::rendering::Scene::kUpdateColorsFlag);
 
-                        m_pScene->ForceRedraw();
-                    });
+                        m_pScene->ForceRedraw(); });
+            }
+
+            void O3DUI::AddMesh(const string &name,
+                                t::geometry::TriangleMesh *pTmesh,
+                                rendering::Material *pMaterial,
+                                bool bVisible)
+            {
+                Material mat;
+                if (pMaterial)
+                {
+                    mat = *pMaterial;
+                }
+                else
+                {
+                    mat.SetBaseColor({1.0f, 1.0f, 1.0f, 1.0f});
+                    mat.SetMaterialName("defaultUnlit");
+                    mat.SetPointSize(ConvertToScaledPixels(m_uiState.m_sPoint));
+                }
+                MaterialRecord mr;
+                mat.ToMaterialRecord(mr);
+
+                auto scene = m_pScene->GetScene();
+                scene->AddGeometry(name, pTmesh, mr, false);
+                scene->GetScene()->GeometryShadows(name, false, false);
+                scene->ShowGeometry(name, bVisible);
+
+                // SetPointSize(m_uiState.m_sPoint);
+                // SetLineWidth(m_uiState.m_wLine);
+                m_pScene->ForceRedraw();
+            }
+
+            void O3DUI::UpdateMesh(const string &name,
+                                   t::geometry::TriangleMesh *pTmesh)
+            {
+                // gui::Application::GetInstance().PostToMainThread(
+                //     this, [this, name, pTmesh]()
+                //     {
+                //         m_pScene->GetScene()->GetScene()->UpdateGeometry(
+                //             name,
+                //             *pTmesh,
+                //             open3d::visualization::rendering::Scene::kUpdatePointsFlag |
+                //                 open3d::visualization::rendering::Scene::kUpdateColorsFlag);
+
+                //         m_pScene->ForceRedraw();
+                //     });
+            }
+
+            void O3DUI::AddLineSet(const string &name,
+                                   geometry::LineSet *pG,
+                                   rendering::Material *pMaterial,
+                                   bool bVisible)
+            {
+                Material mat;
+                if (pMaterial)
+                {
+                    mat = *pMaterial;
+                }
+                else
+                {
+                    mat.SetBaseColor({1.0f, 1.0f, 1.0f, 1.0f});
+                    mat.SetMaterialName("unlitLine");
+                    mat.SetLineWidth(m_uiState.m_wLine * GetScaling());
+                }
+                MaterialRecord mr;
+                mat.ToMaterialRecord(mr);
+
+                auto scene = m_pScene->GetScene();
+                scene->AddGeometry(name, pG, mr);
+                scene->GetScene()->GeometryShadows(name, false, false);
+                scene->ShowGeometry(name, bVisible);
+
+                m_pScene->ForceRedraw();
+            }
+
+            void O3DUI::UpdateLineSet(const string &name,
+                                      geometry::LineSet *pG)
+            {
+                gui::Application::GetInstance().PostToMainThread(
+                    this, [this, name, pG]()
+                    {
+                        auto pS = m_pScene->GetScene();
+                        pS->GetScene()->RemoveGeometry(name);
+
+                        Material mat;
+                        mat.SetBaseColor({1.0f, 1.0f, 1.0f, 1.0f});
+                        mat.SetMaterialName("unlitLine");
+                        mat.SetLineWidth(10);
+
+                        MaterialRecord mr;
+                        mat.ToMaterialRecord(mr);
+
+                        pS->AddGeometry(name, pG, mr);
+                        pS->GetScene()->GeometryShadows(name, false, false);
+                        pS->ShowGeometry(name, true);
+
+                        m_pScene->ForceRedraw(); });
             }
 
             void O3DUI::RemoveGeometry(const string &name)
             {
                 m_pScene->GetScene()->RemoveGeometry(name);
-
-                for (size_t i = 0; i < m_vObject.size(); i++)
-                {
-                    DrawObject *pO = &m_vObject[i];
-                    if (pO->m_name != name)
-                        continue;
-
-                    m_vObject.erase(m_vObject.begin() + i);
-                    break;
-                }
-
-                // Bounds have changed, so update the selection point size, since they
-                // depend on the bounds.
-                SetPointSize(m_uiState.m_sPoint);
-
                 m_pScene->ForceRedraw();
-            }
-
-            DrawObject O3DUI::GetGeometry(const string &name) const
-            {
-                for (auto &o : m_vObject)
-                {
-                    if (o.m_name == name)
-                        return o;
-                }
-                return DrawObject();
             }
 
             void O3DUI::CamSetProj(
@@ -252,41 +234,41 @@ namespace open3d
                 pO3DScene->ShowAxes(m_uiState.m_bShowAxes);
                 pO3DScene->SetBackground(m_uiState.m_vBgCol, nullptr);
                 pO3DScene->SetLighting(Open3DScene::LightingProfile::NO_SHADOWS, m_uiState.m_vSunDir);
-                SetPointSize(m_uiState.m_sPoint);
-                SetLineWidth(m_uiState.m_wLine);
+                // SetPointSize(m_uiState.m_sPoint);
+                // SetLineWidth(m_uiState.m_wLine);
 
                 SetNeedsLayout();
                 m_pScene->ForceRedraw();
             }
 
-            void O3DUI::SetPointSize(int px)
+            void O3DUI::SetPointSize(const string &name, int px)
             {
                 m_uiState.m_sPoint = px;
                 px = int(ConvertToScaledPixels(px));
-                for (auto &o : m_vObject)
-                {
-                    o.m_material.SetPointSize(float(px));
-                    MaterialRecord mr;
-                    o.m_material.ToMaterialRecord(mr);
-                    m_pScene->GetScene()->GetScene()->OverrideMaterial(o.m_name, mr);
-                }
+                // for (auto &o : m_vObject)
+                // {
+                //     o.m_material.SetPointSize(float(px));
+                //     MaterialRecord mr;
+                //     o.m_material.ToMaterialRecord(mr);
+                //     m_pScene->GetScene()->GetScene()->OverrideMaterial(o.m_name, mr);
+                // }
                 m_pScene->SetPickablePointSize(px);
 
                 m_pScene->ForceRedraw();
             }
 
-            void O3DUI::SetLineWidth(int px)
+            void O3DUI::SetLineWidth(const string &name, int px)
             {
                 m_uiState.m_wLine = px;
 
                 px = int(ConvertToScaledPixels(px));
-                for (auto &o : m_vObject)
-                {
-                    o.m_material.SetLineWidth(float(px));
-                    MaterialRecord mr;
-                    o.m_material.ToMaterialRecord(mr);
-                    m_pScene->GetScene()->GetScene()->OverrideMaterial(o.m_name, mr);
-                }
+                // for (auto &o : m_vObject)
+                // {
+                //     o.m_material.SetLineWidth(float(px));
+                //     MaterialRecord mr;
+                //     o.m_material.ToMaterialRecord(mr);
+                //     m_pScene->GetScene()->GetScene()->OverrideMaterial(o.m_name, mr);
+                // }
                 m_pScene->ForceRedraw();
             }
 
@@ -335,14 +317,15 @@ namespace open3d
             string O3DUI::getBaseDirSave(void)
             {
                 DIR *pDir = opendir(m_uiState.m_dirSave.c_str());
-                if(!pDir)return "";
+                if (!pDir)
+                    return "";
 
                 struct dirent *dir;
                 string d = "";
                 while ((dir = readdir(pDir)) != NULL)
                 {
                     IF_CONT(dir->d_name[0] == '.');
-                    IF_CONT(dir->d_type != 0x4); //0x4: folder
+                    IF_CONT(dir->d_type != 0x4); // 0x4: folder
 
                     d = m_uiState.m_dirSave + string(dir->d_name);
                     d = checkDirName(d);
@@ -359,24 +342,11 @@ namespace open3d
                 gui::Window::Layout(context);
             }
 
-            void O3DUI::UpdateTgeometry(const string &name, shared_ptr<t::geometry::PointCloud> sTg)
-            {
-                for (size_t i = 0; i < m_vObject.size(); i++)
-                {
-                    DrawObject *pO = &m_vObject[i];
-                    if (pO->m_name != name)
-                        continue;
-
-                    m_vObject[i].m_sTgeometry = sTg;
-                    break;
-                }
-            }
-
             float O3DUI::ConvertToScaledPixels(int px)
             {
                 return round(px * GetScaling());
             }
 
         } // namespace visualizer
-    }     // namespace visualization
+    } // namespace visualization
 } // namespace open3d

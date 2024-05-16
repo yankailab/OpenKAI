@@ -135,12 +135,21 @@ namespace kai
 		// wait for the UI thread to get window ready
 		m_pT->sleepT(USEC_1SEC);
 
-		readAllGeometry();
+		readAllPC();
 		adjustNpoints(&m_PC, m_PC.points_.size(), m_nPbuf);
 		removeUIpc(m_modelName);
 		addUIpc(m_PC, m_modelName);
 
-		m_pWin->AddGeometry(m_modelName + "staticLS", make_shared<geometry::LineSet>(m_staticLineSet));
+		m_pWin->AddLineSet(m_modelName + "staticLS",
+						   &m_staticLineSet);
+
+		Material mat;
+		mat.SetBaseColor({1.0f, 1.0f, 1.0f, 1.0f});
+		mat.SetMaterialName("unlitLine");
+		mat.SetLineWidth(10);
+		m_pWin->AddLineSet(m_modelName + "dynamicsLS",
+						   &m_dynamicLineSet,
+						   &mat);
 
 		resetCamPose();
 		updateCamPose();
@@ -150,7 +159,6 @@ namespace kai
 			m_pT->autoFPSfrom();
 
 			updateGeometry();
-			updateDynamicLineSet(m_dynamicLineSet, m_modelName + "dynamicLS");
 
 			m_pT->autoFPSto();
 		}
@@ -160,16 +168,24 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		readAllGeometry();
+		// point cloud
+/*		readAllPC();
+
 		// m_aabb = m_PC.GetAxisAlignedBoundingBox();
 		// if (m_pUIstate)
 		// 	m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
 
 		adjustNpoints(&m_PC, m_PC.points_.size(), m_nPbuf);
 		updateUIpc(m_PC, m_modelName);
+*/
+
+//		m_dynamicLineSet.points_.at(0).x() += 0.1;
+
+		// line sets
+		m_pWin->UpdateLineSet(m_modelName + "dynamicLS", &m_dynamicLineSet);
 	}
 
-	void _GeometryViewer::readAllGeometry(void)
+	void _GeometryViewer::readAllPC(void)
 	{
 		for (_GeometryBase *pGB : m_vpGB)
 		{
@@ -181,23 +197,19 @@ namespace kai
 	{
 		IF_(pc.IsEmpty());
 
-		m_pWin->AddPointCloud(name,
-							  make_shared<t::geometry::PointCloud>(
-								  t::geometry::PointCloud::FromLegacy(
-									  pc,
-									  core::Dtype::Float32)));
+		m_Tpc = t::geometry::PointCloud::FromLegacy(pc, core::Dtype::Float32);
+
+		m_pWin->AddPointCloud(name, &m_Tpc);
 	}
 
 	void _GeometryViewer::updateUIpc(const PointCloud &pc, const string &name)
 	{
 		IF_(pc.IsEmpty());
 
-		// TODO: atomic
-		m_pWin->UpdatePointCloud(name,
-								 make_shared<t::geometry::PointCloud>(
-									 t::geometry::PointCloud::FromLegacy(
-										 pc,
-										 core::Dtype::Float32)));
+		m_Tpc = t::geometry::PointCloud::FromLegacy(pc, core::Dtype::Float32);
+
+		// TODO: atomic?
+		m_pWin->UpdatePointCloud(name, &m_Tpc);
 	}
 
 	void _GeometryViewer::removeUIpc(const string &name)
@@ -255,23 +267,6 @@ namespace kai
 				IF_(++k >= n);
 			}
 		}
-	}
-
-	void _GeometryViewer::updateDynamicLineSet(const LineSet &ls, const string &name)
-	{
-		IF_(ls.IsEmpty());
-
-		m_pWin->RemoveGeometry(name);
-
-		Material mat;
-		mat.SetBaseColor({1.0f, 1.0f, 1.0f, 1.0f});
-		mat.SetMaterialName("defaultUnlit");
-		mat.SetMaterialName("unlitLine");
-		mat.SetLineWidth(10);
-
-		m_pWin->AddGeometry(name,
-							make_shared<geometry::LineSet>(ls),
-							&mat);
 	}
 
 	void _GeometryViewer::getPCstream(void *p, const uint64_t &tExpire)

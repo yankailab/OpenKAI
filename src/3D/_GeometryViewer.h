@@ -64,17 +64,14 @@ namespace kai
         virtual void getPCgrid(void* p);
 
 	protected:
-		void readAllGeometry(void);
 
 		// point cloud
+		void readAllPC(void);
 		void addUIpc(const PointCloud& pc, const string& name);
 		void updateUIpc(const PointCloud& pc, const string& name);
 		void removeUIpc(const string& name);
 		void adjustNpoints(PointCloud* pPC, int nP, int nPbuf);
 		void addDummyPoints(PointCloud* pPC, int n, float r, Vector3d vCol = {0,0,0});
-
-		// line set
-		void updateDynamicLineSet(const LineSet &ls, const string& name);
 
 		// update thread
 		virtual void updateGeometry(void);
@@ -102,6 +99,7 @@ namespace kai
 		// point cloud
 		int m_nPbuf;
 		PointCloud m_PC;
+		t::geometry::PointCloud m_Tpc;
 
 		// line set
 		LineSet m_staticLineSet;

@@ -67,15 +67,6 @@ namespace open3d
 
 		namespace visualizer
 		{
-			struct DrawObject
-			{
-				string m_name;
-				shared_ptr<geometry::Geometry3D> m_sGeometry;
-				shared_ptr<t::geometry::PointCloud> m_sTgeometry;
-				rendering::Material m_material;
-				bool m_bVisible = true;
-			};
-
 			enum UImode
 			{
 				uiMode_cam = 0,
@@ -119,18 +110,31 @@ namespace open3d
 
 				virtual void Init(void);
 
-				virtual void AddGeometry(const string &name,
-										 shared_ptr<geometry::Geometry3D> spG,
-										 rendering::Material *material = nullptr,
-										 bool bVisible = true);
+				// point cloud
 				virtual void AddPointCloud(const string &name,
-										   shared_ptr<t::geometry::PointCloud> sTg,
-										   rendering::Material *material = nullptr,
+										   t::geometry::PointCloud *pTpc,
+										   rendering::Material *pMaterial = NULL,
 										   bool bVisible = true);
 				virtual void UpdatePointCloud(const string &name,
-											  shared_ptr<t::geometry::PointCloud> sTg);
+											  t::geometry::PointCloud *pTpc);
+
+				// mesh
+				virtual void AddMesh(const string &name,
+									 t::geometry::TriangleMesh *pTmesh,
+									 rendering::Material *pMaterial = NULL,
+									 bool bVisible = true);
+				virtual void UpdateMesh(const string &name,
+										t::geometry::TriangleMesh *pTmesh);
+
+				// line set
+				virtual void AddLineSet(const string &name,
+										geometry::LineSet *pG,
+										rendering::Material *pMaterial = NULL,
+										bool bVisible = true);
+				virtual void UpdateLineSet(const string &name,
+										   geometry::LineSet *pG);
+
 				virtual void RemoveGeometry(const string &name);
-				virtual DrawObject GetGeometry(const string &name) const;
 
 				virtual void CamSetProj(
 					double fov,
@@ -150,8 +154,8 @@ namespace open3d
 
 				virtual UIState *getUIState(void);
 				virtual void UpdateUIstate(void);
-				virtual void SetPointSize(int px);
-				virtual void SetLineWidth(int px);
+				virtual void SetPointSize(const string &name, int px);
+				virtual void SetLineWidth(const string &name, int px);
 
 				virtual void ShowMsg(const char *pTitle, const char *pMsg, bool bOK = false);
 				virtual void CloseMsg(void);
@@ -160,18 +164,16 @@ namespace open3d
 
 			protected:
 				virtual void Layout(const gui::LayoutContext &context);
-				virtual void UpdateTgeometry(const string &name, shared_ptr<t::geometry::PointCloud> sTg);
 				virtual float ConvertToScaledPixels(int px);
 
 			protected:
-				vector<DrawObject> m_vObject;
-				SceneWidget *m_pScene = nullptr;
+				SceneWidget *m_pScene = NULL;
 				UIState m_uiState;
 				string m_modelName;
 			};
 
 		} // namespace visualizer
-	}	  // namespace visualization
+	} // namespace visualization
 } // namespace open3d
 
 #endif
