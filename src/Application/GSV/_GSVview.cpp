@@ -60,7 +60,6 @@ namespace kai
 	int _GSVview::check(void)
 	{
 		NULL__(m_pWin, -1);
-		IF__(m_vpGB.empty(), -1);
 
 		return this->_GeometryViewer::check();
 	}
@@ -70,27 +69,27 @@ namespace kai
 		m_pT->sleepT(0);
 
 		// init
-		m_fProcess.set(pc_ScanReset);
+		m_fProcess.set(gv_ScanReset);
 
 		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
 
-			if (m_fProcess.b(pc_ScanReset, true))
+			if (m_fProcess.b(gv_ScanReset, true))
 				scanReset();
 
-			if (m_fProcess.b(pc_ScanTake, true))
+			if (m_fProcess.b(gv_ScanTake, true))
 				scanTake();
 
-			if (m_fProcess.b(pc_SavePC, true))
+			if (m_fProcess.b(gv_SavePC, true))
 				savePC();
 
 			updateScan();
 
-			if (m_fProcess.b(pc_CamAuto))
+			if (m_fProcess.b(gv_CamAuto))
 				updateCamAuto();
 
-			if (m_fProcess.b(pc_CamCtrl, true))
+			if (m_fProcess.b(gv_CamCtrl, true))
 				updateCamCtrl();
 
 			m_pT->autoFPSto();
@@ -101,7 +100,7 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		m_fProcess.set(pc_Scanning);
+		m_fProcess.set(gv_Scanning);
 
 		resetCamPose();
 		updateCamPose();
@@ -287,7 +286,7 @@ namespace kai
 		NULL_(pPCV);
 		_GSVview *pV = (_GSVview *)pPCV;
 
-		pV->m_fProcess.set(pc_ScanReset);
+		pV->m_fProcess.set(gv_ScanReset);
 	}
 
 	void _GSVview::OnScanTake(void *pPCV, void *pD)
@@ -295,7 +294,7 @@ namespace kai
 		NULL_(pPCV);
 		_GSVview *pV = (_GSVview *)pPCV;
 
-		pV->m_fProcess.set(pc_ScanTake);
+		pV->m_fProcess.set(gv_ScanTake);
 	}
 
 	void _GSVview::OnSavePC(void *pPCV, void *pD)
@@ -304,7 +303,7 @@ namespace kai
 		_GSVview *pV = (_GSVview *)pPCV;
 
 		pV->m_fNameSavePC = *(string *)pD;
-		pV->m_fProcess.set(pc_SavePC);
+		pV->m_fProcess.set(gv_SavePC);
 	}
 
 	void _GSVview::OnCamSet(void *pPCV, void *pD)
@@ -316,11 +315,11 @@ namespace kai
 
 		if (camMode == 0) // auto off
 		{
-			pV->m_fProcess.clear(pc_CamAuto);
+			pV->m_fProcess.clear(gv_CamAuto);
 		}
 		else if (camMode == 1) // auto on
 		{
-			pV->m_fProcess.set(pc_CamAuto);
+			pV->m_fProcess.set(gv_CamAuto);
 		}
 		else if (camMode == 3) // origin or no point data
 		{

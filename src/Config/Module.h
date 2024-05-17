@@ -30,11 +30,14 @@
 #include "../Application/CamCalib/_CamCalib.h"
 #endif
 
-#ifdef WITH_APP_DRONEBOX
-#include "../Application/DroneBox/_DroneBox.h"
-#include "../Application/DroneBox/_DroneBoxJSON.h"
+#ifdef WITH_APP_DRONEBOX_AIR
 #include "../Application/DroneBox/_AP_droneBox.h"
 #include "../Application/DroneBox/_AP_droneBoxJSON.h"
+#endif
+
+#ifdef WITH_APP_DRONEBOX_GND
+#include "../Application/DroneBox/_DroneBox.h"
+#include "../Application/DroneBox/_DroneBoxJSON.h"
 #endif
 
 #ifdef WITH_APP_DRONESR

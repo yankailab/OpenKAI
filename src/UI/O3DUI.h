@@ -113,7 +113,7 @@ namespace open3d
 				// point cloud
 				virtual void AddPointCloud(const string &name,
 										   t::geometry::PointCloud *pTpc,
-										   rendering::Material *pMaterial = NULL,
+										   rendering::Material *pMaterial,
 										   bool bVisible = true);
 				virtual void UpdatePointCloud(const string &name,
 											  t::geometry::PointCloud *pTpc);
@@ -121,18 +121,20 @@ namespace open3d
 				// mesh
 				virtual void AddMesh(const string &name,
 									 t::geometry::TriangleMesh *pTmesh,
-									 rendering::Material *pMaterial = NULL,
+									 rendering::Material *pMaterial,
 									 bool bVisible = true);
 				virtual void UpdateMesh(const string &name,
-										t::geometry::TriangleMesh *pTmesh);
+										t::geometry::TriangleMesh *pTmesh,
+										rendering::Material *pMaterial);
 
 				// line set
 				virtual void AddLineSet(const string &name,
-										geometry::LineSet *pG,
-										rendering::Material *pMaterial = NULL,
+										geometry::LineSet *pLS,
+										rendering::Material *pMaterial,
 										bool bVisible = true);
 				virtual void UpdateLineSet(const string &name,
-										   geometry::LineSet *pG);
+										   geometry::LineSet *pLS,
+										   rendering::Material *pMaterial);
 
 				virtual void RemoveGeometry(const string &name);
 
@@ -169,7 +171,6 @@ namespace open3d
 			protected:
 				SceneWidget *m_pScene = NULL;
 				UIState m_uiState;
-				string m_modelName;
 			};
 
 		} // namespace visualizer

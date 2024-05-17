@@ -20,7 +20,7 @@
 {
 	"name":"CVwindow",
 	"class":"_WindowCV",
-	"bON":1,
+	"bON":0,
 	"bFullScreen":0,
     {
 		"name":"thread",
@@ -38,10 +38,7 @@
 		"FPS":10,
 	}
 	"bON":1,
-	"/start":"STANDBY",
-	"/start":"AIRBORNE",
-	"start":"LANDING",
-	"/start":"LANDED",
+	"start":"STANDBY",
 
 	{
 		"name":"state",
@@ -117,7 +114,6 @@
 	"bAutoArm":0,
 }
 
-
 {
 	"name":"udp",
 	"class":"_UDP",
@@ -132,8 +128,8 @@
 		"vRunThread":["dronBoxJson.threadR"],
 	}
 	"bLog":0,
-	"/addr":"192.168.1.250",
-	"addr":"127.0.0.1",
+	"addr":"192.168.1.250",
+	"/addr":"127.0.0.1",
 	"port":20000,
 }
 
@@ -157,7 +153,7 @@
 {
 	"name":"serialAP",
 	"class":"_UDP",
-	"bON":1,
+	"bON":0,
 	"bLog":0,
     {
 		"name":"thread",
@@ -175,7 +171,7 @@
 {
 	"name":"serialAP",
 	"class":"_SerialPort",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -186,8 +182,8 @@
 		"vRunThread":["apMavlink.thread"],
 	}
 	"/port":"/dev/ttyAMA0",
-	"/port":"/dev/ttyS0",
-	"port":"/dev/ttyUSB0",
+	"port":"/dev/ttyS0",
+	"/port":"/dev/ttyUSB0",
 	"baud":115200,
 }
 
@@ -325,8 +321,8 @@
 		"FPS":30,
 	}
 	"vSize":[1280,720],
-	"/pipeline":"libcamerasrc ! video/x-raw,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! appsink",
-	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=1280,height=720,framerate=10/1 ! queue ! videoconvert ! appsink",
+	"pipeline":"libcamerasrc ! video/x-raw,format=RGB,width=1280,height=720,framerate=30/1 ! v4l2convert ! appsink",
+	"/pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=1280,height=720,framerate=10/1 ! queue ! videoconvert ! appsink",
 }
 
 {
@@ -365,7 +361,6 @@
         "FPS":30,
     }
 	"bLog":1,
-	"/port":"/dev/ttyAMA1",
 	"port":"/dev/ttyAMA4",
 	"baud":921600,
 }
@@ -402,7 +397,7 @@
 	"hdgDz":4.0,
 	"yawRate":5,
 	"hTouchdown":1.0,
-	"kP":0.1,
+	"kP":0.125,
 	"defaultDtgt":2.0,
 	
 	{

@@ -24,7 +24,6 @@ namespace open3d
 
             void O3DUI::Init(void)
             {
-                m_modelName = "PCMODEL";
                 m_pScene = new SceneWidget();
                 m_pScene->SetScene(make_shared<Open3DScene>(GetRenderer()));
                 AddChild(GiveOwnership(m_pScene));
@@ -35,19 +34,12 @@ namespace open3d
                                       rendering::Material *pMaterial,
                                       bool bVisible)
             {
-                Material mat;
-                if (pMaterial)
-                {
-                    mat = *pMaterial;
-                }
-                else
-                {
-                    mat.SetBaseColor({1.0f, 1.0f, 1.0f, 1.0f});
-                    mat.SetMaterialName("defaultUnlit");
-                    mat.SetPointSize(ConvertToScaledPixels(m_uiState.m_sPoint));
-                }
+                NULL_(pTpc);
+                NULL_(pMaterial);
+
+                // mat.SetPointSize(ConvertToScaledPixels(m_uiState.m_sPoint));
                 MaterialRecord mr;
-                mat.ToMaterialRecord(mr);
+                pMaterial->ToMaterialRecord(mr);
 
                 auto scene = m_pScene->GetScene();
                 scene->AddGeometry(name, pTpc, mr, false);
@@ -62,6 +54,8 @@ namespace open3d
             void O3DUI::UpdatePointCloud(const string &name,
                                          t::geometry::PointCloud *pTpc)
             {
+                NULL_(pTpc);
+
                 gui::Application::GetInstance().PostToMainThread(
                     this, [this, name, pTpc]()
                     {
@@ -79,19 +73,12 @@ namespace open3d
                                 rendering::Material *pMaterial,
                                 bool bVisible)
             {
-                Material mat;
-                if (pMaterial)
-                {
-                    mat = *pMaterial;
-                }
-                else
-                {
-                    mat.SetBaseColor({1.0f, 1.0f, 1.0f, 1.0f});
-                    mat.SetMaterialName("defaultUnlit");
-                    mat.SetPointSize(ConvertToScaledPixels(m_uiState.m_sPoint));
-                }
+                NULL_(pTmesh);
+                NULL_(pMaterial);
+
+                // mat.SetPointSize(ConvertToScaledPixels(m_uiState.m_sPoint));
                 MaterialRecord mr;
-                mat.ToMaterialRecord(mr);
+                pMaterial->ToMaterialRecord(mr);
 
                 auto scene = m_pScene->GetScene();
                 scene->AddGeometry(name, pTmesh, mr, false);
@@ -104,8 +91,12 @@ namespace open3d
             }
 
             void O3DUI::UpdateMesh(const string &name,
-                                   t::geometry::TriangleMesh *pTmesh)
+                                   t::geometry::TriangleMesh *pTmesh,
+                                   rendering::Material *pMaterial)
             {
+                NULL_(pTmesh);
+                NULL_(pMaterial);
+
                 // gui::Application::GetInstance().PostToMainThread(
                 //     this, [this, name, pTmesh]()
                 //     {
@@ -120,26 +111,20 @@ namespace open3d
             }
 
             void O3DUI::AddLineSet(const string &name,
-                                   geometry::LineSet *pG,
+                                   geometry::LineSet *pLS,
                                    rendering::Material *pMaterial,
                                    bool bVisible)
             {
-                Material mat;
-                if (pMaterial)
-                {
-                    mat = *pMaterial;
-                }
-                else
-                {
-                    mat.SetBaseColor({1.0f, 1.0f, 1.0f, 1.0f});
-                    mat.SetMaterialName("unlitLine");
-                    mat.SetLineWidth(m_uiState.m_wLine * GetScaling());
-                }
-                MaterialRecord mr;
-                mat.ToMaterialRecord(mr);
+                NULL_(pLS);
+                NULL_(pMaterial);
 
+                // mat.SetLineWidth(m_uiState.m_wLine * GetScaling());
+                MaterialRecord mr;
+                pMaterial->ToMaterialRecord(mr);
+
+                // TODO: atomic?
                 auto scene = m_pScene->GetScene();
-                scene->AddGeometry(name, pG, mr);
+                scene->AddGeometry(name, pLS, mr);
                 scene->GetScene()->GeometryShadows(name, false, false);
                 scene->ShowGeometry(name, bVisible);
 
@@ -147,23 +132,22 @@ namespace open3d
             }
 
             void O3DUI::UpdateLineSet(const string &name,
-                                      geometry::LineSet *pG)
+                                      geometry::LineSet *pLS,
+                                      rendering::Material *pMaterial)
             {
+                NULL_(pLS);
+                NULL_(pMaterial);
+
                 gui::Application::GetInstance().PostToMainThread(
-                    this, [this, name, pG]()
+                    this, [this, name, pLS, pMaterial]()
                     {
                         auto pS = m_pScene->GetScene();
                         pS->GetScene()->RemoveGeometry(name);
 
-                        Material mat;
-                        mat.SetBaseColor({1.0f, 1.0f, 1.0f, 1.0f});
-                        mat.SetMaterialName("unlitLine");
-                        mat.SetLineWidth(10);
-
                         MaterialRecord mr;
-                        mat.ToMaterialRecord(mr);
+                        pMaterial->ToMaterialRecord(mr);
+                        pS->AddGeometry(name, pLS, mr);
 
-                        pS->AddGeometry(name, pG, mr);
                         pS->GetScene()->GeometryShadows(name, false, false);
                         pS->ShowGeometry(name, true);
 

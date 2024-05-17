@@ -33,7 +33,6 @@
 	"pathRes":"/usr/local/bin/Open3D/resources",
 	"device":"CPU:0",
 	"nPbuf":1000000,
-	"vGeometryBase":["pcFile","pcGrid"],
 	"vCamLookAt":[0,0,0],
 	"vCamEye":[0,0,2],
 	"vCamUp":[0,1,0],
@@ -54,6 +53,34 @@
 	"dirSave":"/home/kai/Documents/",
 	"/dirSave":"/media/lab/",
 	"rVoxel":0.05,
+
+	"vGeometryBase":["pcFile","pcGrid"],
+
+	{
+		"name":"geometry",
+		{
+			"_GeometryBase":"pcFile",
+			"bStatic":0,
+			"nP":10000,
+			"rDummyDome":1000.0,
+			"matName":"default",
+			"matCol":[1,1,1,1],
+			"matPointSize":1,
+			"matLineWidth":1,
+		}
+		{
+			"_GeometryBase":"/pcGrid",
+			"bStatic":1,
+			"matName":"default",
+			"matLineWidth":10,
+		}
+		{
+			"_GeometryBase":"pcGrid",
+			"bStatic":0,
+			"matName":"default",
+			"matLineWidth":10,
+		}
+	}
 }
 
 {

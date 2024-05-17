@@ -12,8 +12,6 @@ namespace kai
 
 	_GeometryViewer::_GeometryViewer()
 	{
-		m_nPbuf = 0;
-
 		m_vWinSize.set(1280, 720);
 
 		m_pTui = NULL;
@@ -23,7 +21,6 @@ namespace kai
 
 		m_pWin = NULL;
 		m_pUIstate = NULL;
-		m_modelName = "PCMODEL";
 		m_dirSave = "/home/lab/";
 
 		m_bFullScreen = false;
@@ -31,7 +28,6 @@ namespace kai
 		m_wPanel = 15;
 		m_mouseMode = 0;
 		m_vDmove.set(0.5, 5.0);
-		m_rDummyDome = 1000.0;
 	}
 
 	_GeometryViewer::~_GeometryViewer()
@@ -44,8 +40,6 @@ namespace kai
 		IF_F(!this->_GeometryBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("nPbuf", &m_nPbuf);
-
 		pK->v("vWinSize", &m_vWinSize);
 		pK->v("pathRes", &m_pathRes);
 		pK->v("device", &m_device);
@@ -57,7 +51,6 @@ namespace kai
 		pK->v("vBtnPadding", &m_vBtnPadding);
 		pK->v("mouseMode", &m_mouseMode);
 		pK->v("vDmove", &m_vDmove);
-		pK->v("rDummyDome", &m_rDummyDome);
 
 		pK->v("camFov", &m_camProj.m_fov);
 		pK->v("vCamNF", &m_camProj.m_vNF);
@@ -85,12 +78,6 @@ namespace kai
 			return false;
 		}
 
-		if (m_nPbuf > 0)
-		{
-			m_PC.points_.reserve(m_nPbuf);
-			m_PC.colors_.reserve(m_nPbuf);
-		}
-
 		return true;
 	}
 
@@ -99,16 +86,36 @@ namespace kai
 		IF_F(!this->_GeometryBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
-		string n;
-		vector<string> vGB;
-		pK->a("vGeometryBase", &vGB);
+		Kiss *pKg = pK->child("geometry");
+		IF_T(pKg->empty());
 
-		for (string p : vGB)
+		int i = 0;
+		while (1)
 		{
-			_GeometryBase *pGB = (_GeometryBase *)(pK->getInst(p));
+			Kiss *pG = pKg->child(i++);
+			if (pG->empty())
+				break;
+
+			string n;
+			pG->v("_GeometryBase", &n);
+			_GeometryBase *pGB = (_GeometryBase *)(pK->getInst(n));
 			IF_CONT(!pGB);
 
-			m_vpGB.push_back(pGB);
+			GVIEWER_OBJ g;
+			g.m_pGB = pGB;
+			g.m_name = n;
+			pG->v("bStatic", &g.m_bStatic);
+			pG->v("nP", &g.m_nPbuf);
+			pG->v("rDummyDome", &g.m_rDummyDome);
+			pG->v("matName", &g.m_matName);
+			pG->v("matCol", &g.m_matCol);
+			pG->v("matPointSize", &g.m_matPointSize);
+			pG->v("matLineWidth", &g.m_matLineWidth);
+
+			g.init();
+			g.updateMaterial();
+
+			m_vGO.push_back(g);
 		}
 
 		return true;
@@ -135,22 +142,7 @@ namespace kai
 		// wait for the UI thread to get window ready
 		m_pT->sleepT(USEC_1SEC);
 
-		readAllPC();
-		adjustNpoints(&m_PC, m_PC.points_.size(), m_nPbuf);
-		removeUIpc(m_modelName);
-		addUIpc(m_PC, m_modelName);
-
-		m_pWin->AddLineSet(m_modelName + "staticLS",
-						   &m_staticLineSet);
-
-		Material mat;
-		mat.SetBaseColor({1.0f, 1.0f, 1.0f, 1.0f});
-		mat.SetMaterialName("unlitLine");
-		mat.SetLineWidth(10);
-		m_pWin->AddLineSet(m_modelName + "dynamicsLS",
-						   &m_dynamicLineSet,
-						   &mat);
-
+		addAllGeometries();
 		resetCamPose();
 		updateCamPose();
 
@@ -158,160 +150,67 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			updateGeometry();
+			updateAllGeometries();
+
+			// m_aabb = m_PC.GetAxisAlignedBoundingBox();
+			// if (m_pUIstate)
+			// 	m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
 
 			m_pT->autoFPSto();
 		}
 	}
 
-	void _GeometryViewer::updateGeometry(void)
+	void _GeometryViewer::addAllGeometries(void)
 	{
-		IF_(check() < 0);
-
-		// point cloud
-/*		readAllPC();
-
-		// m_aabb = m_PC.GetAxisAlignedBoundingBox();
-		// if (m_pUIstate)
-		// 	m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
-
-		adjustNpoints(&m_PC, m_PC.points_.size(), m_nPbuf);
-		updateUIpc(m_PC, m_modelName);
-*/
-
-//		m_dynamicLineSet.points_.at(0).x() += 0.1;
-
-		// line sets
-		m_pWin->UpdateLineSet(m_modelName + "dynamicLS", &m_dynamicLineSet);
-	}
-
-	void _GeometryViewer::readAllPC(void)
-	{
-		for (_GeometryBase *pGB : m_vpGB)
+		for (int i = 0; i < m_vGO.size(); i++)
 		{
-			getGeometry(pGB);
-		}
-	}
+			GVIEWER_OBJ *pG = &m_vGO[i];
+			pG->updateGeometry();
 
-	void _GeometryViewer::addUIpc(const PointCloud &pc, const string &name)
-	{
-		IF_(pc.IsEmpty());
-
-		m_Tpc = t::geometry::PointCloud::FromLegacy(pc, core::Dtype::Float32);
-
-		m_pWin->AddPointCloud(name, &m_Tpc);
-	}
-
-	void _GeometryViewer::updateUIpc(const PointCloud &pc, const string &name)
-	{
-		IF_(pc.IsEmpty());
-
-		m_Tpc = t::geometry::PointCloud::FromLegacy(pc, core::Dtype::Float32);
-
-		// TODO: atomic?
-		m_pWin->UpdatePointCloud(name, &m_Tpc);
-	}
-
-	void _GeometryViewer::removeUIpc(const string &name)
-	{
-		m_pWin->RemoveGeometry(name);
-	}
-
-	void _GeometryViewer::adjustNpoints(PointCloud *pPC, int nP, int nPbuf)
-	{
-		NULL_(pPC);
-
-		if (nP < nPbuf)
-		{
-			addDummyPoints(pPC, nPbuf - nP, m_rDummyDome);
-		}
-		else if (nP > nPbuf)
-		{
-			int d = nP - nPbuf;
-			pPC->points_.erase(pPC->points_.end() - d, pPC->points_.end());
-			pPC->colors_.erase(pPC->colors_.end() - d, pPC->colors_.end());
-		}
-	}
-
-	void _GeometryViewer::addDummyPoints(PointCloud *pPC, int n, float r, Vector3d vCol)
-	{
-		NULL_(pPC);
-
-		float nV = floor(sqrt((float)n));
-		float nH = ceil(n / nV);
-
-		float dV = OK_PI / nV;
-		float dH = (OK_PI * 2.0) / nH;
-
-		int k = 0;
-		for (int i = 0; i < nH; i++)
-		{
-			float h = dH * i;
-			float sinH = sin(h);
-			float cosH = cos(h);
-
-			for (int j = 0; j < nV; j++)
+			GEOMETRY_TYPE gt = pG->m_pGB->getType();
+			switch (gt)
 			{
-				float v = dV * j;
-				float sinV = sin(v);
-				float cosV = cos(v);
-
-				Vector3d vP(
-					r * sinV * sinH,
-					r * sinV * cosH,
-					r * cosV);
-
-				pPC->points_.push_back(vP);
-				pPC->colors_.push_back(vCol);
-
-				IF_(++k >= n);
-			}
-		}
-	}
-
-	void _GeometryViewer::getPCstream(void *p, const uint64_t &tExpire)
-	{
-		NULL_(p);
-		_PCstream *pS = (_PCstream *)p;
-
-		mutexLock();
-
-		m_PC.Clear();
-
-		uint64_t tNow = getApproxTbootUs();
-		for (int i = 0; i < pS->nP(); i++)
-		{
-			GEOMETRY_POINT *pP = pS->get(i);
-			if (tExpire)
-			{
-				IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
-			}
-
-			m_PC.points_.push_back(pP->m_vP);
-			m_PC.colors_.push_back(pP->m_vC.cast<double>());
-
-			if (m_PC.points_.size() >= m_nPbuf)
+			case pc_stream:
+				m_pWin->RemoveGeometry(pG->m_name);
+				m_pWin->AddPointCloud(pG->m_name, &pG->m_tPC, &pG->m_mat);
 				break;
+			case pc_frame:
+				m_pWin->RemoveGeometry(pG->m_name);
+				m_pWin->AddPointCloud(pG->m_name, &pG->m_tPC, &pG->m_mat);
+				break;
+			case pc_grid:
+				string n = (pG->m_bStatic) ? ("static" + pG->m_name) : ("dynamic" + pG->m_name);
+				m_pWin->RemoveGeometry(n);
+				m_pWin->AddLineSet(n, &pG->m_ls, &pG->m_mat);
+				break;
+			}
 		}
-
-		mutexUnlock();
 	}
 
-	void _GeometryViewer::getPCframe(void *p)
+	void _GeometryViewer::updateAllGeometries(void)
 	{
-		NULL_(p);
-		_PCframe *pF = (_PCframe *)p;
+		for (int i = 0; i < m_vGO.size(); i++)
+		{
+			GVIEWER_OBJ *pG = &m_vGO[i];
+			pG->updateGeometry();
 
-		m_PC = *pF->getBuffer();
-	}
+			GEOMETRY_TYPE gt = pG->m_pGB->getType();
+			switch (gt)
+			{
+			case pc_stream:
+				m_pWin->UpdatePointCloud(pG->m_name, &pG->m_tPC);
+				break;
+			case pc_frame:
+				m_pWin->UpdatePointCloud(pG->m_name, &pG->m_tPC);
+				break;
+			case pc_grid:
+				if (pG->m_bStatic)
+					break;
 
-	void _GeometryViewer::getPCgrid(void *p)
-	{
-		NULL_(p);
-		_PCgrid *pG = (_PCgrid *)p;
-
-		m_staticLineSet = *pG->getGridLines();
-		m_dynamicLineSet = *pG->getHLCLines();
+				m_pWin->UpdateLineSet("dynamic" + pG->m_name, &pG->m_ls, &pG->m_mat);
+				break;
+			}
+		}
 	}
 
 	void _GeometryViewer::updateCamProj(void)
@@ -386,5 +285,4 @@ namespace kai
 		pc.points_.push_back(Vector3d(-1, 0, 0));
 		return pc.GetAxisAlignedBoundingBox();
 	}
-
 }
