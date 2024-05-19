@@ -7,6 +7,8 @@
 #include <set>
 #include <unordered_map>
 #include <unordered_set>
+
+using namespace open3d::geometry;
 using namespace open3d::visualization::visualizer;
 using namespace open3d::visualization::gui;
 using namespace open3d::visualization::rendering;
@@ -112,7 +114,7 @@ namespace open3d
 
 				// point cloud
 				virtual void AddPointCloud(const string &name,
-										   t::geometry::PointCloud *pTpc,
+										   t::geometry::PointCloud* pTpc,
 										   rendering::Material *pMaterial,
 										   bool bVisible = true);
 				virtual void UpdatePointCloud(const string &name,

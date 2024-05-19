@@ -1,0 +1,63 @@
+
+{
+	"name":"LivoxLidar2",
+	"class":"LivoxLidar2",
+	"bON":1,
+	"bLog":1,
+	"fConfig":"/home/kai/dev/OpenKAI/data/Livox/mid360_config.json",
+}
+
+{
+	"name":"Livox2",
+	"class":"_Livox2",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"bLog":0,
+	"LivoxLidar2":"LivoxLidar2",
+	"SN":"/47MDL9T0020177",
+	"lidarMode":1,
+	"nP":256000,
+	"vToffset":[0,0,0],
+	"vRoffset":[0,0,0],
+
+	"bWriteSharedMem":0,
+	"bReadSharedMem":0,
+	"sharedMemG":"shmW",
+}
+
+{
+	"name":"shmW",
+	"class":"SharedMem",
+	"bON":0,
+	"shmName":"livox",
+	"nB":256000,
+	"bWriter":1,
+}
+
+{
+	"name":"shmR",
+	"class":"SharedMem",
+	"bON":0,
+	"shmName":"livox",
+	"nB":256000,
+	"bWriter":0,
+}
+
+{
+	"name":"livoxStream",
+	"class":"_PCstream",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"nP":256000,
+
+	"bWriteSharedMem":0,
+	"bReadSharedMem":0,
+	"sharedMemG":"shmR",
+}

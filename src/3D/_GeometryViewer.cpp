@@ -142,7 +142,7 @@ namespace kai
 		// wait for the UI thread to get window ready
 		m_pT->sleepT(USEC_1SEC);
 
-		addAllGeometries();
+		addAllGeometries();		
 		resetCamPose();
 		updateCamPose();
 
@@ -201,6 +201,9 @@ namespace kai
 				m_pWin->UpdatePointCloud(pG->m_name, &pG->m_tPC);
 				break;
 			case pc_frame:
+				if (pG->m_bStatic)
+					break;
+
 				m_pWin->UpdatePointCloud(pG->m_name, &pG->m_tPC);
 				break;
 			case pc_grid:

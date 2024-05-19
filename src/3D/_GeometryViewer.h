@@ -93,11 +93,19 @@ namespace kai
 			}
 			else if (gt == pc_frame)
 			{
-				getPCframe();
+				_PCframe *p = (_PCframe *)m_pGB;
+				m_PC = *p->getBuffer();
+				adjustNpoints(&m_PC, m_PC.points_.size(), m_nPbuf);
+				m_tPC = t::geometry::PointCloud::FromLegacy(m_PC, core::Dtype::Float32);
 			}
 			else if (gt == pc_grid)
 			{
-				getPCgrid();
+				_PCgrid *p = (_PCgrid *)m_pGB;
+
+				if (m_bStatic)
+					m_ls = *p->getGridLines();
+				else
+					m_ls = *p->getHLCLines();
 			}
 		}
 
@@ -138,7 +146,7 @@ namespace kai
 			}
 		}
 
-		void addDummyPoints(PointCloud *pPC, int n, float r, Vector3d vCol = {0,0,0})
+		void addDummyPoints(PointCloud *pPC, int n, float r, Vector3d vCol = {0, 0, 0})
 		{
 			NULL_(pPC);
 
@@ -172,22 +180,6 @@ namespace kai
 					IF_(++k >= n);
 				}
 			}
-		}
-
-		void getPCframe(void)
-		{
-			_PCframe *p = (_PCframe *)m_pGB;
-			m_PC = *p->getBuffer();
-		}
-
-		void getPCgrid(void)
-		{
-			_PCgrid *p = (_PCgrid *)m_pGB;
-
-			if (m_bStatic)
-				m_ls = *p->getGridLines();
-			else
-				m_ls = *p->getHLCLines();
 		}
 	};
 

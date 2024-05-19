@@ -30,19 +30,19 @@ namespace open3d
             }
 
             void O3DUI::AddPointCloud(const string &name,
-                                      t::geometry::PointCloud *pTpc,
+                                      t::geometry::PointCloud* pTpc,
                                       rendering::Material *pMaterial,
                                       bool bVisible)
             {
                 NULL_(pTpc);
                 NULL_(pMaterial);
 
-                // mat.SetPointSize(ConvertToScaledPixels(m_uiState.m_sPoint));
                 MaterialRecord mr;
                 pMaterial->ToMaterialRecord(mr);
 
                 auto scene = m_pScene->GetScene();
-                scene->AddGeometry(name, pTpc, mr, false);
+                scene->AddGeometry(name, pTpc, mr);
+
                 scene->GetScene()->GeometryShadows(name, false, false);
                 scene->ShowGeometry(name, bVisible);
 

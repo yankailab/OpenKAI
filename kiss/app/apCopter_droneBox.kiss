@@ -151,7 +151,7 @@
 }
 
 {
-	"name":"serialAP",
+	"name":"/serialAP",
 	"class":"_UDP",
 	"bON":0,
 	"bLog":0,
@@ -360,7 +360,7 @@
         "name":"threadR",
         "FPS":30,
     }
-	"bLog":1,
+	"bLog":0,
 	"port":"/dev/ttyAMA4",
 	"baud":921600,
 }
@@ -392,7 +392,7 @@
 	"_Universe":"univTag",
 	"_DistSensorBase":"TOFsense",
 	"vFov":[70,60],
-	"vPsp":[0.5, 0.55],
+	"vPsp":[0.5, 0.5],
 	"bHdg":1,
 	"hdgDz":4.0,
 	"yawRate":5,

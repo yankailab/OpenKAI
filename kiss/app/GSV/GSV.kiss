@@ -4,12 +4,13 @@
 	"appName":"OpenKAI",
 	"bLog":1,
 	"bStdErr":1,
+	"/vInclude":["/home/kai/dev/OpenKAI/kiss/app/GSV/Lidars.kiss"],
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -60,8 +61,8 @@
 		"name":"geometry",
 		{
 			"_GeometryBase":"pcFile",
-			"bStatic":0,
-			"nP":10000,
+			"bStatic":1,
+			"nP":500000,
 			"rDummyDome":1000.0,
 			"matName":"default",
 			"matCol":[1,1,1,1],
@@ -69,15 +70,15 @@
 			"matLineWidth":1,
 		}
 		{
-			"_GeometryBase":"/pcGrid",
+			"_GeometryBase":"pcGrid",
 			"bStatic":1,
-			"matName":"default",
-			"matLineWidth":10,
+			"matName":"unlitLine",
+			"matLineWidth":1,
 		}
 		{
 			"_GeometryBase":"pcGrid",
 			"bStatic":0,
-			"matName":"default",
+			"matName":"unlitLine",
 			"matLineWidth":10,
 		}
 	}
@@ -91,6 +92,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
+	"bLog":1,
 	"fName":"/home/kai/Downloads/office1.pcd",
 	"nPresv":480000,
 }
@@ -150,7 +152,7 @@
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bON":1,
+	"bON":0,
 	"bLog":1,
     {
 		"name":"thread",
@@ -164,7 +166,7 @@
 {
 	"name":"ebyte",
 	"class":"_ADIO_EBYTE",
-	"bON":1,
+	"bON":0,
 	"bLog":0,
     {
 		"name":"thread",
