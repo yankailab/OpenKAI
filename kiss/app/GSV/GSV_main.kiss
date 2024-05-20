@@ -1,0 +1,117 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+	"vInclude":[
+		"/home/kai/dev/OpenKAI/kiss/app/GSV/GSV_lidars.kiss",
+		"/home/kai/dev/OpenKAI/kiss/app/GSV/GSV_alarm.kiss",
+	],
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["GSValarm","GSVdetect","univ","ft","ebyte"],
+}
+
+{
+	"name":"gv",
+	"class":"_GeometryViewer",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+    {
+		"name":"threadUI",
+		"FPS":30,
+	}
+	"vWinSize":[1920,1080],
+	"pathRes":"/usr/local/bin/Open3D/resources",
+	"device":"CPU:0",
+	"vCamLookAt":[0,0,0],
+	"vCamEye":[0,2,0],
+	"vCamUp":[0,0,1],
+	"vCamAutoLookAt":[0,0,0],
+	"vCamAutoEye":[0,2,0],
+	"vCamAutoUp":[0,0,1],
+	"vCoR":[0,0,0],
+	"camFov":75,
+	"vCamNF":[0, 500],
+	"camFovType":1,
+	"bFullScreen":0,
+	"wPanel":20,
+	"vBtnPadding":[1.6, 2.0],
+	"mouseMode":0,
+	"vDmove":[0.5, 5.0],
+	"dHiddenRemove":100.0,
+	"dirSave":"/home/kai/Documents/",
+	"/dirSave":"/media/lab/",
+	"rVoxel":0.05,
+
+	{
+		"name":"geometry",
+		{
+			"_GeometryBase":"ps1",
+			"bStatic":0,
+			"nP":200000,
+			"rDummyDome":1000.0,
+			"matName":"defaultUnlit",
+			"matCol":[1,1,1,1],
+			"matPointSize":1,
+			"matLineWidth":1,
+		}
+		{
+			"_GeometryBase":"ps2",
+			"bStatic":0,
+			"nP":200000,
+			"rDummyDome":1000.0,
+			"matName":"defaultUnlit",
+			"matCol":[1,1,1,1],
+			"matPointSize":1,
+			"matLineWidth":1,
+		}
+		{
+			"_GeometryBase":"pcGrid",
+			"bStatic":1,
+			"matName":"unlitLine",
+			"matLineWidth":1,
+		}
+		{
+			"_GeometryBase":"pcGrid",
+			"bStatic":0,
+			"matName":"unlitLine",
+			"matLineWidth":10,
+		}
+	}
+}
+
+{
+	"name":"pcGrid",
+	"class":"_PCgrid",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vPorigin":[0,0,0],
+	"vX":[-10,10],
+	"vY":[-10,10],
+	"vZ":[-10,10],
+	"vCellSize":[1,1,1],
+	"bVisual":1,
+	"gLineWidth":1,
+	"vAxisColX":[1,0,0],
+	"vAxisColY":[0,1,0],
+	"vAxisColZ":[0,0,1],
+	"hlcLineWidth":5,
+	"vHLClineCol":[1,1,1],
+}
+

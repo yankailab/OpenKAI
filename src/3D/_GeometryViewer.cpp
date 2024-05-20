@@ -192,6 +192,8 @@ namespace kai
 		for (int i = 0; i < m_vGO.size(); i++)
 		{
 			GVIEWER_OBJ *pG = &m_vGO[i];
+			IF_CONT(pG->m_bStatic);
+
 			pG->updateGeometry();
 
 			GEOMETRY_TYPE gt = pG->m_pGB->getType();
@@ -201,15 +203,9 @@ namespace kai
 				m_pWin->UpdatePointCloud(pG->m_name, &pG->m_tPC);
 				break;
 			case pc_frame:
-				if (pG->m_bStatic)
-					break;
-
 				m_pWin->UpdatePointCloud(pG->m_name, &pG->m_tPC);
 				break;
 			case pc_grid:
-				if (pG->m_bStatic)
-					break;
-
 				m_pWin->UpdateLineSet("dynamic" + pG->m_name, &pG->m_ls, &pG->m_mat);
 				break;
 			}

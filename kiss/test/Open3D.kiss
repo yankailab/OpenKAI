@@ -56,8 +56,6 @@
 	"vWinSize":[1920,1080],
 	"pathRes":"/usr/local/bin/Open3D/resources",
 	"device":"CPU:0",
-	"nPreserve":480000,
-	"vGeometryBase":["pcFile","VzensePC"],
 	"vCamLookAt":[0,0,0],
 	"vCamEye":[0,0,2],
 	"vCamUp":[0,1,0],
@@ -73,10 +71,56 @@
 	"vBtnPadding":[1.6, 2.0],
 	"mouseMode":0,
 	"vDmove":[0.5, 5.0],
-	"rDummyDome":1000.0,
 	"dHiddenRemove":100.0,
 	"dirSave":"/home/kai/Documents/",
 	"/dirSave":"/media/lab/",
+	"rVoxel":0.05,
+
+	{
+		"name":"geometry",
+		{
+			"_GeometryBase":"pcStream",
+			"bStatic":0,
+			"nP":200000,
+			"rDummyDome":1000.0,
+			"matName":"default",
+			"matCol":[1,1,1,1],
+			"matPointSize":1,
+			"matLineWidth":1,
+		}
+		{
+			"_GeometryBase":"pcFile",
+			"bStatic":0,
+			"nP":250000,
+			"rDummyDome":1000.0,
+			"matName":"default",
+			"matCol":[1,1,1,1],
+			"matPointSize":1,
+			"matLineWidth":1,
+		}
+		{
+			"_GeometryBase":"VzensePC",
+			"bStatic":0,
+			"nP":250000,
+			"rDummyDome":1000.0,
+			"matName":"default",
+			"matCol":[1,1,1,1],
+			"matPointSize":1,
+			"matLineWidth":1,
+		}
+		{
+			"_GeometryBase":"pcGrid",
+			"bStatic":1,
+			"matName":"unlitLine",
+			"matLineWidth":1,
+		}
+		{
+			"_GeometryBase":"pcGrid",
+			"bStatic":0,
+			"matName":"unlitLine",
+			"matLineWidth":10,
+		}
+	}
 }
 
 {
@@ -98,6 +142,25 @@
 	"fCalib":"/home/kai/3Dscan/calibOfs.kiss",
 }
 
+
+{
+	"name":"shmFileW",
+	"class":"SharedMem",
+	"bON":1,
+	"shmName":"smFile",
+	"nB":6400000,
+	"bWriter":1,
+}
+
+{
+	"name":"shmFileR",
+	"class":"SharedMem",
+	"bON":1,
+	"shmName":"smFile",
+	"nB":6400000,
+	"bWriter":0,
+}
+
 {
 	"name":"pcFile",
 	"class":"_PCfile",
@@ -106,5 +169,60 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"fName":"/home/kai/Documents/test_data/fragment.pcd",
+	"bLog":1,
+	"fName":"/home/kai/Downloads/office1.pcd",
+	"nPresv":500000,
+	"nGpSM":500000,
+	"SharedMem":"shmFileW",
 }
+
+{
+	"name":"pcFrame",
+	"class":"_PCframe",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":1,
+	"nPresv":500000,
+	"nPresvNext":500000,
+	"nGpSM":300000,
+	"SharedMem":"shmFileR",
+}
+
+{
+	"name":"pcStream",
+	"class":"_PCstream",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":1,
+	"nP":200000,
+	"SharedMem":"shmFileR",
+}
+
+{
+	"name":"pcGrid",
+	"class":"_PCgrid",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vPorigin":[0,0,0],
+	"vX":[-10,10],
+	"vY":[-10,10],
+	"vZ":[-10,10],
+	"vCellSize":[1,1,1],
+	"bVisual":1,
+	"gLineWidth":1,
+	"vAxisColX":[1,0,0],
+	"vAxisColY":[0,1,0],
+	"vAxisColZ":[0,0,1],
+	"hlcLineWidth":5,
+	"vHLClineCol":[1,1,1],
+}
+

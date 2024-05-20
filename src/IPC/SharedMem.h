@@ -28,6 +28,7 @@ namespace kai
 		virtual bool bOpen(void);
 		virtual void close(void);
 		
+		virtual int nB(void);
 		virtual void* p(void);
 		virtual bool bWriter(void);
 

@@ -90,6 +90,11 @@ namespace kai
 		}
 	}
 
+	int SharedMem::nB(void)
+	{
+		return m_nB;
+	}
+
 	void *SharedMem::p(void)
 	{
 		IF_N(!m_bOpen);

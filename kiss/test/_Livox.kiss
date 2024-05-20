@@ -71,9 +71,6 @@
 	"nP":256000,
 	"vToffset":[0,0,0],
 	"vRoffset":[0,0,0],
-
-	"bWriteSharedMem":0,
-	"bReadSharedMem":0,
 	"sharedMemG":"shmW",
 }
 

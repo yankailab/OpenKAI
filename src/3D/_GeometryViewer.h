@@ -93,8 +93,8 @@ namespace kai
 			}
 			else if (gt == pc_frame)
 			{
-				_PCframe *p = (_PCframe *)m_pGB;
-				m_PC = *p->getBuffer();
+				_PCframe *pF = (_PCframe *)m_pGB;
+				pF->copyTo(&m_PC);
 				adjustNpoints(&m_PC, m_PC.points_.size(), m_nPbuf);
 				m_tPC = t::geometry::PointCloud::FromLegacy(m_PC, core::Dtype::Float32);
 			}

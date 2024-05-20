@@ -17,8 +17,8 @@
     "host_net_info" :
     [
       {
-        "lidar_ip"       : ["192.168.177.177"],
-        "host_ip"        : "192.168.177.10",
+        "lidar_ip"       : ["192.168.1.139"],
+        "host_ip"        : "192.168.1.10",
         "multicast_ip"   : "224.1.1.5",
         "cmd_data_port"  : 56101,
         "push_msg_port"  : 56201,
@@ -26,18 +26,6 @@
         "imu_data_port"  : 56401,
         "log_data_port"  : 56501
       }
-      ,
-      {
-        "lidar_ip"       : ["192.168.173.173"],
-        "host_ip"        : "192.168.173.10",
-        "multicast_ip"   : "224.1.1.5",
-        "cmd_data_port"  : 56101,
-        "push_msg_port"  : 56201,
-        "point_data_port": 56301,
-        "imu_data_port"  : 56401,
-        "log_data_port"  : 56501
-      }
-
     ]
   }
 }

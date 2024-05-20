@@ -107,8 +107,6 @@ namespace kai
 
     void _PCframe::update(void)
     {
-        sleep(5);
-
         while (m_pT->bAlive())
         {
             m_pT->autoFPSfrom();
@@ -170,8 +168,8 @@ namespace kai
 
         PointCloud *pPC = m_sPC.get();
         int nPw = pPC->points_.size();
-        if (nPw > m_nGpSM)
-            nPw = m_nGpSM;
+        nPw = small<int>(nPw, m_nGpSM);
+        nPw = small<int>(nPw, m_pSM->nB()/sizeof(GEOMETRY_POINT) );
 
         uint64_t tNow = getTbootUs();
 

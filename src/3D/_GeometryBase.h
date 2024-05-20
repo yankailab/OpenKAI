@@ -10,8 +10,9 @@
 
 #include "../Base/_ModuleBase.h"
 #include "../IPC/SharedMem.h"
-#include "../UI/_Console.h"
+#include "../Utility/util.h"
 #include "../Utility/utilTime.h"
+#include "../UI/_Console.h"
 
 using namespace open3d;
 using namespace open3d::geometry;

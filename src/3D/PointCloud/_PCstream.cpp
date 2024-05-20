@@ -80,6 +80,8 @@ namespace kai
 
     void _PCstream::update(void)
     {
+        sleep(1); // temporal, waiting for the data to be written into shared memory
+
         while (m_pT->bAlive())
         {
             m_pT->autoFPSfrom();
@@ -126,7 +128,9 @@ namespace kai
         IF_(!m_pSM->bOpen());
         IF_(!m_pSM->bWriter());
 
-		memcpy(m_pSM->p(), m_pP, m_nP * sizeof(GEOMETRY_POINT));
+        int nPw = small<int>(m_nP, m_pSM->nB()/sizeof(GEOMETRY_POINT) );
+
+		memcpy(m_pSM->p(), m_pP, nPw * sizeof(GEOMETRY_POINT));
     }
 
     void _PCstream::readSharedMem(void)
