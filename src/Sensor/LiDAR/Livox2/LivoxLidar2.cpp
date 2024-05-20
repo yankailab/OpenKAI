@@ -133,6 +133,7 @@ namespace kai
     {
         LivoxLidar2device *pD = getDevice(handle);
         NULL_F(pD);
+        IF_T(pD->m_mode == m);
 
         pD->m_mode = m;
         SetLivoxLidarWorkMode(pD->m_handle, pD->m_mode, sCbWorkMode, this);

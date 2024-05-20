@@ -41,7 +41,7 @@ namespace open3d
                 pMaterial->ToMaterialRecord(mr);
 
                 auto scene = m_pScene->GetScene();
-                scene->AddGeometry(name, pTpc, mr);
+                scene->AddGeometry(name, pTpc, mr, false);
 
                 scene->GetScene()->GeometryShadows(name, false, false);
                 scene->ShowGeometry(name, bVisible);

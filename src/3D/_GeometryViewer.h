@@ -123,8 +123,8 @@ namespace kai
 					IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
 				}
 
-				m_PC.points_.push_back(pP->m_vP);
-				m_PC.colors_.push_back(pP->m_vC.cast<double>());
+				m_PC.points_.push_back(v2e(pP->m_vP).cast<double>());
+				m_PC.colors_.push_back(v2e(pP->m_vC).cast<double>());
 
 				IF_(m_PC.points_.size() >= m_nPbuf);
 			}

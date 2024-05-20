@@ -232,9 +232,9 @@ namespace kai
 		IF_(check() < 0);
 		IF_(!m_pWin);
 
-		m_pWin->CamSetPose(m_cam.m_vLookAt.v3f(),
-						   m_cam.m_vEye.v3f(),
-						   m_cam.m_vUp.v3f());
+		m_pWin->CamSetPose(v2e(m_cam.m_vLookAt),
+						   v2e(m_cam.m_vEye),
+						   v2e(m_cam.m_vUp));
 	}
 
 	void _GeometryViewer::camBound(const AxisAlignedBoundingBox &aabb)
@@ -242,7 +242,7 @@ namespace kai
 		IF_(check() < 0);
 		IF_(!m_pWin);
 
-		m_pWin->CamAutoBound(aabb, m_vCoR.v3f());
+		m_pWin->CamAutoBound(aabb, v2e(m_vCoR));
 	}
 
 	void _GeometryViewer::resetCamPose(void)

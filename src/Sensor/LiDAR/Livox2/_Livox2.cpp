@@ -30,8 +30,6 @@ namespace kai
         pK->v("SN", &m_SN);
         pK->v("lidarMode", (int *)&m_workMode);
 
-        //        FusionAhrsInitialise(&m_ahrs);
-
         return true;
     }
 
@@ -74,6 +72,12 @@ namespace kai
         return m_pT->start(getUpdate, this);
     }
 
+    int _Livox2::check(void)
+    {
+        NULL__(m_pLv, -1);
+        return this->_PCstream::check();
+    }
+
     void _Livox2::update(void)
     {
         while (m_pT->bAlive())
@@ -95,16 +99,11 @@ namespace kai
         }
     }
 
-    int _Livox2::check(void)
-    {
-        NULL__(m_pLv, -1);
-
-        return this->_PCstream::check();
-    }
-
     void _Livox2::updateLidar(void)
     {
         IF_(check() < 0);
+
+        writeSharedMem();
 
         m_pLv->setWorkMode(m_handle, m_workMode);
 

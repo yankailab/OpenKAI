@@ -55,14 +55,22 @@
 	"/dirSave":"/media/lab/",
 	"rVoxel":0.05,
 
-	"vGeometryBase":["pcFile","pcGrid"],
-
 	{
 		"name":"geometry",
 		{
-			"_GeometryBase":"pcFile",
-			"bStatic":1,
+			"_GeometryBase":"pcFrame",
+			"bStatic":0,
 			"nP":500000,
+			"rDummyDome":1000.0,
+			"matName":"default",
+			"matCol":[1,1,1,1],
+			"matPointSize":1,
+			"matLineWidth":1,
+		}
+		{
+			"_GeometryBase":"lidarAll",
+			"bStatic":0,
+			"nP":250000,
 			"rDummyDome":1000.0,
 			"matName":"default",
 			"matCol":[1,1,1,1],
@@ -85,6 +93,24 @@
 }
 
 {
+	"name":"shmFileW",
+	"class":"SharedMem",
+	"bON":1,
+	"shmName":"smFile",
+	"nB":16000000,
+	"bWriter":1,
+}
+
+{
+	"name":"shmFileR",
+	"class":"SharedMem",
+	"bON":1,
+	"shmName":"smFile",
+	"nB":16000000,
+	"bWriter":0,
+}
+
+{
 	"name":"pcFile",
 	"class":"_PCfile",
 	"bON":1,
@@ -94,8 +120,28 @@
 	}
 	"bLog":1,
 	"fName":"/home/kai/Downloads/office1.pcd",
-	"nPresv":480000,
+	"nPresv":500000,
+	"nGpSM":500000,
+	"SharedMem":"shmFileW",
 }
+
+{
+	"name":"pcFrame",
+	"class":"_PCframe",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":1,
+	"nPresv":500000,
+	"nGpSM":500000,
+	"SharedMem":"shmFileR",
+}
+
+
+
+
 
 {
 	"name":"pcGrid",

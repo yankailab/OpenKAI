@@ -31,7 +31,6 @@ namespace kai
 		return &m_appName;
 	}
 
-	//	bool Startup::start(Kiss *pKiss)
 	bool Startup::start(const string &fName)
 	{
 		IF_F(fName.empty());

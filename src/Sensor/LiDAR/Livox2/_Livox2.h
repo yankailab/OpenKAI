@@ -70,6 +70,8 @@ namespace kai
 
         bool open(void);
         void close(void);
+
+    private:
         void updateLidar(void);
         void update(void);
         static void *getUpdate(void *This)

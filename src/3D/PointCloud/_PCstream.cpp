@@ -37,39 +37,6 @@ namespace kai
         return initBuffer();
     }
 
-    bool _PCstream::start(void)
-    {
-        NULL_F(m_pT);
-        return m_pT->start(getUpdate, this);
-    }
-
-    void _PCstream::update(void)
-    {
-        while (m_pT->bAlive())
-        {
-            m_pT->autoFPSfrom();
-
-            updatePCstream();
-
-            m_pT->autoFPSto();
-        }
-    }
-
-    int _PCstream::check(void)
-    {
-        NULL__(m_pP, -1);
-
-        return this->_GeometryBase::check();
-    }
-
-    void _PCstream::updatePCstream(void)
-    {
-        IF_(check() < 0);
-
-        readFromSharedMem();
-        writeToSharedMem();
-    }
-
     bool _PCstream::initBuffer(void)
     {
         mutexLock();
@@ -98,6 +65,39 @@ namespace kai
         mutexUnlock();
     }
 
+    bool _PCstream::start(void)
+    {
+        NULL_F(m_pT);
+        return m_pT->start(getUpdate, this);
+    }
+
+    int _PCstream::check(void)
+    {
+        NULL__(m_pP, -1);
+
+        return this->_GeometryBase::check();
+    }
+
+    void _PCstream::update(void)
+    {
+        while (m_pT->bAlive())
+        {
+            m_pT->autoFPSfrom();
+
+            updatePCstream();
+
+            m_pT->autoFPSto();
+        }
+    }
+
+    void _PCstream::updatePCstream(void)
+    {
+        IF_(check() < 0);
+
+        readSharedMem();
+        writeSharedMem();
+    }
+
     void _PCstream::getPCstream(void *p, const uint64_t& tExpire)
     {
         IF_(check() < 0);
@@ -120,14 +120,28 @@ namespace kai
         mutexUnlock();
     }
 
+    void _PCstream::writeSharedMem(void)
+    {
+        NULL_(m_pSM);
+        IF_(!m_pSM->bOpen());
+        IF_(!m_pSM->bWriter());
+
+		memcpy(m_pSM->p(), m_pP, m_nP * sizeof(GEOMETRY_POINT));
+    }
+
+    void _PCstream::readSharedMem(void)
+    {
+        NULL_(m_pSM);
+        IF_(!m_pSM->bOpen());
+        IF_(m_pSM->bWriter());
+
+		memcpy(m_pP, m_pSM->p(), m_nP * sizeof(GEOMETRY_POINT));
+    }
+
     void _PCstream::copyTo(PointCloud *pPC, const uint64_t& tExpire)
     {
         IF_(check() < 0);
         NULL_(pPC);
-
-        pPC->Clear();
-        pPC->points_.clear();
-        pPC->colors_.clear();
 
         uint64_t tNow = getApproxTbootUs();
 
@@ -136,16 +150,16 @@ namespace kai
             GEOMETRY_POINT* pP = &m_pP[i];
             IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
 
-        	pPC->points_.push_back(pP->m_vP);
-        	pPC->colors_.push_back(pP->m_vC.cast<double>());
+        	pPC->points_.push_back(v2e(pP->m_vP).cast<double>());
+        	pPC->colors_.push_back(v2e(pP->m_vC).cast<double>());
         }
     }
 
     void _PCstream::add(const Vector3d &vP, const Vector3f &vC, const uint64_t& tStamp)
     {
         GEOMETRY_POINT *pP = &m_pP[m_iP];
-        pP->m_vP = vP;
-        pP->m_vC = vC;
+        pP->m_vP = e2v((Vector3f)vP.cast<float>());
+        pP->m_vC = e2v((Vector3f)vC.cast<float>());
         pP->m_tStamp = tStamp;
 
         m_iP = iInc(m_iP, m_nP);
@@ -166,24 +180,6 @@ namespace kai
     int _PCstream::iP(void)
     {
         return m_iP;
-    }
-
-    void _PCstream::writeToSharedMem(void)
-    {
-        IF_(!m_bWriteSharedMem);
-        NULL_(m_psmG);
-        IF_(!m_psmG->bOpen());
-
-		memcpy(m_psmG->p(), m_pP, m_nP * sizeof(GEOMETRY_POINT));
-    }
-
-    void _PCstream::readFromSharedMem(void)
-    {
-        IF_(!m_bReadSharedMem);
-        NULL_(m_psmG);
-        IF_(!m_psmG->bOpen());
-
-		memcpy(m_pP, m_psmG->p(), m_nP * sizeof(GEOMETRY_POINT));
     }
 
 }

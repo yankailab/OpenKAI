@@ -31,14 +31,14 @@ namespace kai
 
     struct GEOMETRY_POINT
     {
-        Vector3d m_vP; //pos
-        Vector3f m_vC; //color
+        vFloat3 m_vP; //pos
+        vFloat3 m_vC; //color
         uint64_t m_tStamp;
 
         void clear(void)
         {
-            m_vP = Vector3d(0,0,0);
-            m_vC = Vector3f(0,0,0);
+            m_vP = 0;
+            m_vC = 0;
             m_tStamp = 0;
         }
     };
@@ -69,8 +69,8 @@ namespace kai
         virtual void getPCframe(void* p);
         virtual void getPCgrid(void* p);
 
-        virtual void writeToSharedMem(void);
-        virtual void readFromSharedMem(void);
+        virtual void writeSharedMem(void);
+        virtual void readSharedMem(void);
 
     protected:
         void mutexLock(void);
@@ -91,9 +91,7 @@ namespace kai
 		pthread_mutex_t m_mutex;
 
         // shared mem for data
-        SharedMem* m_psmG;
-        bool m_bWriteSharedMem;
-        bool m_bReadSharedMem;
+        SharedMem* m_pSM;
     };
 
 }

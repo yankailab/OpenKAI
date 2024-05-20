@@ -36,8 +36,7 @@ namespace kai
 		//	io::ReadPointCloudOption ro;
 		IF_F(!io::ReadPointCloud(m_fName, m_pc));
 		LOG_I("Read point cloud: " + i2str(m_pc.points_.size()));
-		*m_sPC.next() = m_pc;
-		swapBuffer();
+		*m_sPC.get() = m_pc;
 
 		return true;
 	}
@@ -54,8 +53,7 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			// *m_sPC.next() = m_pc;
-			// swapBuffer();
+			writeSharedMem();
 
 			m_pT->autoFPSto();
 		}

@@ -23,9 +23,7 @@ namespace kai
 
         pthread_mutex_init(&m_mutex, NULL);
 
-        m_psmG = NULL;
-        m_bWriteSharedMem = false;
-        m_bReadSharedMem = false;
+        m_pSM = NULL;
     }
 
     _GeometryBase::~_GeometryBase()
@@ -39,8 +37,6 @@ namespace kai
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("vDefaultColor", &m_vDefaultColor);
-        pK->v("bWriteSharedMem", &m_bWriteSharedMem);
-        pK->v("bReadSharedMem", &m_bReadSharedMem);
 
         pK->v("vT", &m_vT);
         pK->v("vR", &m_vR);
@@ -58,8 +54,8 @@ namespace kai
 
         string n;
         n = "";
-        pK->v("SharedMemG", &n);
-        m_psmG = (SharedMem *)(pK->getInst(n));
+        pK->v("SharedMem", &n);
+        m_pSM = (SharedMem *)(pK->getInst(n));
 
         return true;
     }
@@ -142,11 +138,11 @@ namespace kai
     {
     }
 
-    void _GeometryBase::writeToSharedMem(void)
+    void _GeometryBase::writeSharedMem(void)
     {
     }
 
-    void _GeometryBase::readFromSharedMem(void)
+    void _GeometryBase::readSharedMem(void)
     {
     }
 

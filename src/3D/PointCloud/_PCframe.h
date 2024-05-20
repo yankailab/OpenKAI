@@ -18,22 +18,38 @@ namespace kai
 		_PCframe();
 		virtual ~_PCframe();
 
+		// BASE
 		virtual bool init(void *pKiss);
+        virtual bool start(void);
 		virtual int check(void);
 
+        // _GeometryBase
 		virtual bool initBuffer(void);
-		virtual void swapBuffer(void);
-		virtual PointCloud* getBuffer(void);
-		virtual PointCloud* getNextBuffer(void);
         virtual void clear(void);
-
         virtual void getPCstream(void* p, const uint64_t& tExpire);
         virtual void getPCframe(void* p);
         virtual void getPCgrid(void* p);
 
+        virtual void writeSharedMem(void);
+        virtual void readSharedMem(void);
+
+        // _PCframe
+		virtual void swapBuffer(void);
+		virtual PointCloud* getBuffer(void);
+		virtual PointCloud* getNextBuffer(void);
+
    		virtual void copyTo(PointCloud *pPC);
         virtual int nP(void);
         virtual int nPnext(void);
+
+    private:
+        void updatePCframe(void);
+        void update(void);
+        static void *getUpdate(void *This)
+        {
+            ((_PCframe *)This)->update();
+            return NULL;
+        }
 
 	protected:
 		// frame buf
@@ -41,6 +57,9 @@ namespace kai
 		int m_nPresvNext;
 		tSwap<PointCloud> m_sPC;
 		uint64_t m_tStamp;
+
+        GEOMETRY_POINT *m_pGpSM;
+        int m_nGpSM;
 	};
 
 }

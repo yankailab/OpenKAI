@@ -18,6 +18,9 @@ namespace kai
         m_nPresv = 0;
         m_nPresvNext = 0;
         m_tStamp = NULL;
+
+        m_pGpSM = NULL;
+        m_nGpSM = 256;
     }
 
     _PCframe::~_PCframe()
@@ -27,60 +30,53 @@ namespace kai
     bool _PCframe::init(void *pKiss)
     {
         IF_F(!this->_GeometryBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+        Kiss *pK = (Kiss *)pKiss;
 
         pK->v("nPresv", &m_nPresv);
         m_nPresvNext = m_nPresv;
         pK->v("nPresvNext", &m_nPresvNext);
 
-        return true;
-    }
+        pK->v("nGpSM", &m_nGpSM);
 
-    int _PCframe::check(void)
-    {
-        return this->_GeometryBase::check();
+        return initBuffer();
     }
 
     bool _PCframe::initBuffer(void)
     {
         mutexLock();
 
+        // frame buf reservation
         if (m_nPresv > 0)
         {
             m_sPC.get()->points_.reserve(m_nPresv);
             m_sPC.get()->colors_.reserve(m_nPresv);
         }
+
         if (m_nPresvNext > 0)
         {
             m_sPC.next()->points_.reserve(m_nPresvNext);
             m_sPC.next()->colors_.reserve(m_nPresvNext);
         }
 
-        mutexUnlock();
+        // init
+        m_sPC.get()->points_.clear();
+        m_sPC.get()->colors_.clear();
+        m_sPC.get()->normals_.clear();
 
-        return true;
-    }
-
-    void _PCframe::swapBuffer(void)
-    {
-        mutexLock();
-
-        m_sPC.swap();
         m_sPC.next()->points_.clear();
         m_sPC.next()->colors_.clear();
         m_sPC.next()->normals_.clear();
 
+        // share mem
+        m_pGpSM = new GEOMETRY_POINT[m_nGpSM];
+        NULL_F(m_pGpSM);
+
+        for (int i = 0; i < m_nGpSM; i++)
+            m_pGpSM[i].clear();
+
         mutexUnlock();
-    }
 
-    PointCloud* _PCframe::getBuffer(void)
-    {
-        return m_sPC.get();
-    }
-
-    PointCloud* _PCframe::getNextBuffer(void)
-    {
-        return m_sPC.next();
+        return true;
     }
 
     void _PCframe::clear(void)
@@ -98,45 +94,148 @@ namespace kai
         mutexUnlock();
     }
 
-    void _PCframe::getPCstream(void *p, const uint64_t &tExpire)
+    bool _PCframe::start(void)
+    {
+        NULL_F(m_pT);
+        return m_pT->start(getUpdate, this);
+    }
+
+    int _PCframe::check(void)
+    {
+        return this->_GeometryBase::check();
+    }
+
+    void _PCframe::update(void)
+    {
+        sleep(5);
+
+        while (m_pT->bAlive())
+        {
+            m_pT->autoFPSfrom();
+
+            updatePCframe();
+
+            m_pT->autoFPSto();
+        }
+    }
+
+    void _PCframe::updatePCframe(void)
     {
         IF_(check() < 0);
+
+        readSharedMem();
+        writeSharedMem();
+    }
+
+    void _PCframe::getPCstream(void *p, const uint64_t &tExpire)
+    {
         NULL_(p);
         _PCstream *pS = (_PCstream *)p;
 
         mutexLock();
 
         PointCloud *pPC = m_sPC.next();
-        uint64_t tNow = getApproxTbootUs();
+        pPC->Clear();
+        pPC->points_.clear();
+        pPC->colors_.clear();
 
-        for (int i = 0; i < pS->nP(); i++)
-        {
-            GEOMETRY_POINT *pP = pS->get(i);
-            if (tExpire)
-            {
-                IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
-            }
-
-            pPC->points_.push_back(pP->m_vP);
-            pPC->colors_.push_back(pP->m_vC.cast<double>());
-        }
+        pS->copyTo(pPC, tExpire);
 
         mutexUnlock();
+
+        swapBuffer();
     }
 
     void _PCframe::getPCframe(void *p)
     {
         NULL_(p);
-
         _PCframe *pF = (_PCframe *)p;
-        PointCloud pc;
-        pF->copyTo(&pc);
 
-        *m_sPC.next() += pc;
+        mutexLock();
+        pF->copyTo(m_sPC.next());
+        mutexUnlock();
+
+        swapBuffer();
     }
 
     void _PCframe::getPCgrid(void *p)
     {
+    }
+
+    void _PCframe::writeSharedMem(void)
+    {
+        NULL_(m_pSM);
+        IF_(!m_pSM->bOpen());
+        IF_(!m_pSM->bWriter());
+
+        PointCloud *pPC = m_sPC.get();
+        int nPw = pPC->points_.size();
+        if (nPw > m_nGpSM)
+            nPw = m_nGpSM;
+
+        uint64_t tNow = getTbootUs();
+
+        for (int i = 0; i < nPw; i++)
+        {
+            GEOMETRY_POINT *pGP = &m_pGpSM[i];
+            pGP->m_vP = e2v((Vector3f)pPC->points_[i].cast<float>());
+            pGP->m_vC = e2v((Vector3f)pPC->colors_[i].cast<float>());
+            pGP->m_tStamp = tNow;
+        }
+
+        memcpy(m_pSM->p(), m_pGpSM, nPw * sizeof(GEOMETRY_POINT));
+    }
+
+    void _PCframe::readSharedMem(void)
+    {
+        NULL_(m_pSM);
+        IF_(!m_pSM->bOpen());
+        IF_(m_pSM->bWriter());
+
+        void *pSrc = m_pSM->p();
+        NULL_(pSrc);
+
+        memcpy(m_pGpSM, pSrc, m_nGpSM * sizeof(GEOMETRY_POINT));
+
+        mutexLock();
+
+        PointCloud *pPC = m_sPC.next();
+        pPC->Clear();
+        pPC->points_.clear();
+        pPC->colors_.clear();
+
+        for (int i = 0; i < m_nGpSM; i++)
+        {
+            GEOMETRY_POINT *pGP = &m_pGpSM[i];
+            pPC->points_.push_back(v2e(pGP->m_vP).cast<double>());
+            pPC->colors_.push_back(v2e(pGP->m_vC).cast<double>());
+        }
+
+        mutexUnlock();
+
+        swapBuffer();
+    }
+
+    void _PCframe::swapBuffer(void)
+    {
+        mutexLock();
+
+        m_sPC.swap();
+        m_sPC.next()->points_.clear();
+        m_sPC.next()->colors_.clear();
+        m_sPC.next()->normals_.clear();
+
+        mutexUnlock();
+    }
+
+    PointCloud *_PCframe::getBuffer(void)
+    {
+        return m_sPC.get();
+    }
+
+    PointCloud *_PCframe::getNextBuffer(void)
+    {
+        return m_sPC.next();
     }
 
     void _PCframe::copyTo(PointCloud *pPC)

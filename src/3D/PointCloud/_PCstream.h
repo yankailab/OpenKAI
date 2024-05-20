@@ -27,27 +27,27 @@ namespace kai
         _PCstream();
         virtual ~_PCstream();
 
+        // BASE
         virtual bool init(void *pKiss);
         virtual bool start(void);
         virtual int check(void);
 
+        // _GeometryBase
 		virtual bool initBuffer(void);
         virtual void clear(void);
-        
         virtual void getPCstream(void* p, const uint64_t& tExpire);
-//        virtual void getPCframe(void* p);
-//        virtual void getPCgrid(void* p);
 
+        virtual void writeSharedMem(void);
+        virtual void readSharedMem(void);
+
+        // _PCstream
    		virtual void copyTo(PointCloud *pPC, const uint64_t& tExpire);
         virtual void add(const Vector3d &vP, const Vector3f &vC, const uint64_t& tStamp);
         virtual GEOMETRY_POINT* get(int i);
         virtual int nP(void);
         virtual int iP(void);
 
-        virtual void writeToSharedMem(void);
-        virtual void readFromSharedMem(void);
-
-    protected:
+    private:
         void updatePCstream(void);
         void update(void);
         static void *getUpdate(void *This)
