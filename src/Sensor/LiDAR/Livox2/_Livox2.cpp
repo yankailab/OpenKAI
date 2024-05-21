@@ -180,11 +180,17 @@ namespace kai
                           pIMU->acc_z,
                           ((float)dT)*1e-9);
 
-        vDouble3 vR;
-        vR.set(m_SF.getRoll(), m_SF.getPitch(), 0);//m_SF.getYaw());
-        vR *= DEG_2_RAD;
+        float* pQ = m_SF.getQuat();
+        vDouble4 vQ(pQ[0], pQ[1], pQ[2], pQ[3]);
+        setQuaternion(vQ);
+
+        vDouble3 vR(m_SF.getRollRadians(), m_SF.getPitchRadians(), m_SF.getYawRadians());
         setRotation(vR);
-        updateTranslationMatrix();
+
+        vR.x = 0;
+        vR.y = 0;
+        vR.z = -vR.z;
+        updateTranslationMatrix(true, &vR);
     }
 
     void _Livox2::CbWorkMode(livox_status status, LivoxLidarAsyncControlResponse *pR)

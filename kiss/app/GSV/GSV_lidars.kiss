@@ -1,4 +1,3 @@
-
 {
 	"name":"ps1",
 	"class":"_PCstream",
@@ -8,7 +7,7 @@
 		"FPS":30,
 	}
 	"bLog":1,
-	"nP":200000,
+	"nP":50000,
 	"SharedMem":"smR1",
 }
 
@@ -21,17 +20,8 @@
 		"FPS":30,
 	}
 	"bLog":1,
-	"nP":200000,
+	"nP":50000,
 	"SharedMem":"smR2",
-}
-
-{
-	"name":"smW1",
-	"class":"SharedMem",
-	"bON":1,
-	"shmName":"smPC1",
-	"nB":6400000,
-	"bWriter":1,
 }
 
 {
@@ -39,17 +29,8 @@
 	"class":"SharedMem",
 	"bON":1,
 	"shmName":"smPC1",
-	"nB":6400000,
+	"nB":1600000,
 	"bWriter":0,
-}
-
-{
-	"name":"smW2",
-	"class":"SharedMem",
-	"bON":1,
-	"shmName":"smPC2",
-	"nB":6400000,
-	"bWriter":1,
 }
 
 {
@@ -57,40 +38,15 @@
 	"class":"SharedMem",
 	"bON":1,
 	"shmName":"smPC2",
-	"nB":6400000,
+	"nB":1600000,
 	"bWriter":0,
-}
-
-
-{
-	"name":"LivoxLidar2",
-	"class":"LivoxLidar2",
-	"bON":1,
-	"bLog":0,
-	"fConfig":"/home/kai/dev/OpenKAI/data/Livox/mid360_single.json",
-}
-
-{
-	"name":"Livox2",
-	"class":"_Livox2",
-	"bON":1,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"bLog":0,
-	"LivoxLidar2":"LivoxLidar2",
-	"/SN":"/47MDL9T0020177",
-	"lidarMode":1,
-	"nP":200000,
-	"SharedMem":"smW1",
 }
 
 
 {
 	"name":"pcFile",
 	"class":"_PCfile",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -99,5 +55,5 @@
 	"fName":"/home/kai/Downloads/office1.pcd",
 	"nPresv":500000,
 	"nGpSM":500000,
-	"SharedMem":"smW2",
+	"SharedMem":"smFile",
 }

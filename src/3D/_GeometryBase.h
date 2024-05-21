@@ -57,9 +57,9 @@ namespace kai
 
         virtual void setTranslation(const vDouble3 &vT);
         virtual void setRotation(const vDouble3 &vR);
-        virtual void updateTranslationMatrix(void);
+        virtual void setQuaternion(const vDouble4 &vQ);
+        virtual void updateTranslationMatrix(bool bUseQuaternion = true, vDouble3* pRa = NULL);
         virtual void setTranslationMatrix(const Matrix4d &mT);
-        virtual Matrix4d getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR);
 
         virtual GEOMETRY_TYPE getType(void);
 		virtual bool initBuffer(void);
@@ -77,6 +77,9 @@ namespace kai
         void mutexLock(void);
         void mutexUnlock(void);
 
+        virtual Matrix4d getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR, vDouble3* pRa = NULL);
+        virtual Matrix4d getTranslationMatrix(const vDouble3 &vT, const vDouble4 &vQ, vDouble3* pRa = NULL);
+
     protected:
         GEOMETRY_TYPE m_type;
 
@@ -85,6 +88,7 @@ namespace kai
         // transform
         vDouble3 m_vT;
         vDouble3 m_vR;
+        vDouble4 m_vQ;
     	Matrix4d m_mT;
         Eigen::Affine3d m_A;
 

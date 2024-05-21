@@ -18,6 +18,7 @@ namespace kai
 
         m_vT.clear();
         m_vR.clear();
+        m_vQ.clear();
         m_mT = Matrix4d::Identity();
         m_A = Matrix4d::Identity();
 
@@ -75,28 +76,63 @@ namespace kai
         m_vR = vR;
     }
 
-    void _GeometryBase::updateTranslationMatrix(void)
+    void _GeometryBase::setQuaternion(const vDouble4 &vQ)
     {
-        m_mT = getTranslationMatrix(m_vT, m_vR);
+        m_vQ = vQ;
+    }
+
+    void _GeometryBase::updateTranslationMatrix(bool bUseQuaternion, vDouble3* pRa)
+    {
+        if(bUseQuaternion)
+            m_mT = getTranslationMatrix(m_vT, m_vQ, pRa);
+        else
+            m_mT = getTranslationMatrix(m_vT, m_vR, pRa);
+
         m_A = m_mT;
+    }
+
+    Matrix4d _GeometryBase::getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR, vDouble3* pRa)
+    {
+        Matrix4d mT = Matrix4d::Identity();
+        Vector3d eR(vR.x, vR.y, vR.z);
+        mT.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromAxisAngle(eR);
+        mT(0, 3) = vT.x;
+        mT(1, 3) = vT.y;
+        mT(2, 3) = vT.z;
+
+        NULL__(pRa, mT);
+
+        eR = Vector3d(pRa->x, pRa->y, pRa->z);
+        Matrix3d mR = Geometry3D::GetRotationMatrixFromAxisAngle(eR);
+        Matrix3d mTr = mT.block(0, 0, 3, 3);
+        mT.block(0, 0, 3, 3) = mTr * mR;
+
+        return mT;
+    }
+
+    Matrix4d _GeometryBase::getTranslationMatrix(const vDouble3 &vT, const vDouble4 &vQ, vDouble3* pRa)
+    {
+        Matrix4d mT = Matrix4d::Identity();
+        Vector4d eQ(vQ.x, vQ.y, vQ.z, vQ.w);
+        mT.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromQuaternion(eQ);
+        mT(0, 3) = vT.x;
+        mT(1, 3) = vT.y;
+        mT(2, 3) = vT.z;
+
+        NULL__(pRa, mT);
+
+        Vector3d eR(pRa->x, pRa->y, pRa->z);
+        Matrix3d mR = Geometry3D::GetRotationMatrixFromAxisAngle(eR);
+        Matrix3d mTr = mT.block(0, 0, 3, 3);
+        mT.block(0, 0, 3, 3) = mR * mTr;
+
+        return mT;
     }
 
     void _GeometryBase::setTranslationMatrix(const Matrix4d &mT)
     {
         m_mT = mT;
         m_A = m_mT;
-    }
-
-    Matrix4d _GeometryBase::getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR)
-    {
-        Matrix4d mT = Matrix4d::Identity();
-        Vector3d eR(vR.x, vR.y, vR.z);
-        mT.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromXYZ(eR);
-        mT(0, 3) = vT.x;
-        mT(1, 3) = vT.y;
-        mT(2, 3) = vT.z;
-
-        return mT;
     }
 
     GEOMETRY_TYPE _GeometryBase::getType(void)
@@ -164,6 +200,7 @@ namespace kai
         _Console *pC = (_Console *)pConsole;
         pC->addMsg("vT = (" + f2str(m_vT.x) + "," + f2str(m_vT.y) + ", " + f2str(m_vT.z) + ")");
         pC->addMsg("vR = (" + f2str(m_vR.x) + "," + f2str(m_vR.y) + ", " + f2str(m_vR.z) + ")");
+        pC->addMsg("vQ = (" + f2str(m_vQ.x) + "," + f2str(m_vQ.y) + ", " + f2str(m_vQ.z) + ", " + f2str(m_vQ.w) + ")");
     }
 
 }
