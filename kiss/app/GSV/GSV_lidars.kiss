@@ -1,7 +1,7 @@
 {
 	"name":"ps1",
 	"class":"_PCstream",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -14,7 +14,7 @@
 {
 	"name":"ps2",
 	"class":"_PCstream",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -46,7 +46,7 @@
 {
 	"name":"pcFile",
 	"class":"_PCfile",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -54,6 +54,4 @@
 	"bLog":1,
 	"fName":"/home/kai/Downloads/office1.pcd",
 	"nPresv":500000,
-	"nGpSM":500000,
-	"SharedMem":"smFile",
 }

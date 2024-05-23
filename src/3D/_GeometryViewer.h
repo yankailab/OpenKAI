@@ -105,7 +105,7 @@ namespace kai
 				if (m_bStatic)
 					m_ls = *p->getGridLines();
 				else
-					m_ls = *p->getHLCLines();
+					m_ls = *p->getActiveCellLines();
 			}
 		}
 

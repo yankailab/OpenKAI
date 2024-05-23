@@ -5,11 +5,12 @@ namespace kai
 
 	_PCgrid::_PCgrid()
 	{
-		m_pS = NULL;
+		m_tExpire = UINT64_MAX;
 
 		m_type = pc_grid;
 		m_pCell = NULL;
 		m_nCell = 0;
+		m_nPcellThr = 1;
 		m_vDim.clear();
 		m_vPmin.clear();
 
@@ -26,8 +27,8 @@ namespace kai
 		m_vAxisColY.set(0, 1, 0);
 		m_vAxisColZ.set(0, 0, 1);
 
-		m_hlcLineWidth = 5;
-		m_vHLClineCol.set(1,1,1);
+		m_activeCellLineWidth = 5;
+		m_vActiveCellLineCol.set(1, 1, 1);
 	}
 
 	_PCgrid::~_PCgrid()
@@ -40,6 +41,8 @@ namespace kai
 		IF_F(!this->_GeometryBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
+		pK->v("nPcellThr", &m_nPcellThr);
+
 		pK->v("vPorigin", &m_vPorigin);
 		pK->v("vX", &m_vX);
 		pK->v("vY", &m_vY);
@@ -51,8 +54,10 @@ namespace kai
 		pK->v("vAxisColX", &m_vAxisColX);
 		pK->v("vAxisColY", &m_vAxisColY);
 		pK->v("vAxisColZ", &m_vAxisColZ);
-		pK->v("hlcLineWidth", &m_hlcLineWidth);
-		pK->v("vHLClineCol", &m_vHLClineCol);
+		pK->v("activeCellLineWidth", &m_activeCellLineWidth);
+		pK->v("vActiveCellLineCol", &m_vActiveCellLineCol);
+
+		pK->v("tExpire", &m_tExpire);
 
 		return initBuffer();
 	}
@@ -60,23 +65,26 @@ namespace kai
 	bool _PCgrid::link(void)
 	{
 		IF_F(!this->_GeometryBase::link());
-
 		Kiss *pK = (Kiss *)m_pKiss;
 
-		string n;
-		n = "";
-		pK->v("_PCstream", &n);
-		m_pS = (_PCstream *)(pK->getInst(n));
+		vector<string> vGn;
+		pK->a("vGeometryBase", &vGn);
+		for (string n : vGn)
+		{
+			_GeometryBase* pG = (_GeometryBase *)(pK->getInst(n));
+			IF_CONT(!pG);
+
+			m_vpGB.push_back(pG);
+		}
 
 		return true;
 	}
 
-	int _PCgrid::check(void)
-	{
-		NULL__(m_pS, -1);
-
-		return this->_GeometryBase::check();
-	}
+    bool _PCgrid::start(void)
+    {
+        NULL_F(m_pT);
+        return m_pT->start(getUpdate, this);
+    }
 
 	bool _PCgrid::initBuffer(void)
 	{
@@ -115,10 +123,6 @@ namespace kai
 		if (m_bVisual)
 		{
 			generateGridLines();
-
-			vInt3 vC = {0, 0, 0};
-			m_vHLCidx.push_back(vC);
-			generateHLClines();
 		}
 
 		return true;
@@ -132,6 +136,10 @@ namespace kai
 
 	PC_GRID_CELL *_PCgrid::getCell(const vFloat3 &vP)
 	{
+		IF_N(isnan(vP.x));
+		IF_N(isnan(vP.y));
+		IF_N(isnan(vP.z));
+
 		IF_N(!m_vRx.bInside(vP.x));
 		IF_N(!m_vRy.bInside(vP.y));
 		IF_N(!m_vRz.bInside(vP.z));
@@ -144,21 +152,35 @@ namespace kai
 		return getCell(vPi);
 	}
 
-	PC_GRID_CELL *_PCgrid::getCell(const vInt3 &vPi)
+	int _PCgrid::check(void)
 	{
-		int i = vPi.x * m_dYZ + vPi.y * m_vDim.z + vPi.z;
-
-		return &m_pCell[i];
+		return this->_GeometryBase::check();
 	}
 
-	LineSet *_PCgrid::getGridLines(void)
+	void _PCgrid::update(void)
 	{
-		return &m_gridLine;
+		while (m_pT->bAlive())
+		{
+			m_pT->autoFPSfrom();
+
+			updatePCgrid();
+
+			m_pT->autoFPSto();
+		}
 	}
 
-	LineSet *_PCgrid::getHLCLines(void)
+	void _PCgrid::updatePCgrid(void)
 	{
-		return &m_hlcLine;
+		IF_(check() < 0);
+
+		clear();
+
+		for(_GeometryBase* pG : m_vpGB)
+		{
+			getGeometry(pG, m_tExpire);
+		}
+
+		updateActiveCell();
 	}
 
 	void _PCgrid::getPCstream(void *p, const uint64_t &tExpire)
@@ -180,6 +202,64 @@ namespace kai
 
 			pC->add(1);
 		}
+	}
+
+	void _PCgrid::getPCframe(void *p)
+	{
+		IF_(check() < 0);
+		NULL_(p);
+		_PCframe *pF = (_PCframe *)p;
+
+		PointCloud *pPC = pF->getBuffer();
+		for (int i = 0; i < pPC->points_.size(); i++)
+		{
+			Vector3f vP = pPC->points_[i].cast<float>();
+			PC_GRID_CELL *pC = getCell(vFloat3(vP[0], vP[1], vP[2]));
+			IF_CONT(!pC);
+
+			pC->add(1);
+		}
+	}
+
+	void _PCgrid::updateActiveCell(void)
+	{
+		// TODO: make it swap
+		m_vActiveCellIdx.clear();
+
+		vInt3 vC;
+		for (int i = 0; i < m_vDim.x; i++)
+		{
+			for (int j = 0; j < m_vDim.y; j++)
+			{
+				for (int k = 0; k < m_vDim.z; k++)
+				{
+					vC.set(i, j, k);
+					PC_GRID_CELL *pC = getCell(vC);
+					IF_CONT(pC->m_nP < m_nPcellThr);
+
+					m_vActiveCellIdx.push_back(vC);
+				}
+			}
+		}
+
+		updateActiveCellLines();
+	}
+
+	PC_GRID_CELL *_PCgrid::getCell(const vInt3 &vPi)
+	{
+		int i = vPi.x * m_dYZ + vPi.y * m_vDim.z + vPi.z;
+
+		return &m_pCell[i];
+	}
+
+	LineSet *_PCgrid::getGridLines(void)
+	{
+		return &m_gridLine;
+	}
+
+	LineSet *_PCgrid::getActiveCellLines(void)
+	{
+		return &m_activeCellLine;
 	}
 
 	void _PCgrid::generateGridLines(void)
@@ -258,22 +338,22 @@ namespace kai
 		}
 	}
 
-
-	void _PCgrid::updateHLClines(void)
+	void _PCgrid::updateActiveCellLines(void)
 	{
-		m_hlcLine.Clear();
-		m_hlcLine.points_.clear();
-		m_hlcLine.lines_.clear();
-		m_hlcLine.colors_.clear();
+		// TODO: make it swap
+		m_activeCellLine.Clear();
+		m_activeCellLine.points_.clear();
+		m_activeCellLine.lines_.clear();
+		m_activeCellLine.colors_.clear();
 
-		generateHLClines();
+		generateActiveCellLines();
 	}
 
-	void _PCgrid::generateHLClines(void)
+	void _PCgrid::generateActiveCellLines(void)
 	{
 		vFloat3 pO, pA, pB;
 
-		for (vInt3 vC : m_vHLCidx)
+		for (vInt3 vC : m_vActiveCellIdx)
 		{
 			pO.x = m_vRx.x + m_vCellSize.x * vC.x;
 			pO.y = m_vRy.x + m_vCellSize.y * vC.y;
@@ -282,16 +362,15 @@ namespace kai
 			pA = pO;
 			pB = pA;
 			pB.x += m_vCellSize.x;
-			addHLCline(pA, pB, m_vHLClineCol);
+			addActiveCellLine(pA, pB, m_vActiveCellLineCol);
 
 			pB = pA;
 			pB.y += m_vCellSize.y;
-			addHLCline(pA, pB, m_vHLClineCol);
+			addActiveCellLine(pA, pB, m_vActiveCellLineCol);
 
 			pB = pA;
 			pB.z += m_vCellSize.z;
-			addHLCline(pA, pB, m_vHLClineCol);
-
+			addActiveCellLine(pA, pB, m_vActiveCellLineCol);
 
 			pA = pO;
 			pA.x += m_vCellSize.x;
@@ -299,16 +378,15 @@ namespace kai
 
 			pB = pA;
 			pB.x -= m_vCellSize.x;
-			addHLCline(pA, pB, m_vHLClineCol);
+			addActiveCellLine(pA, pB, m_vActiveCellLineCol);
 
 			pB = pA;
 			pB.y -= m_vCellSize.y;
-			addHLCline(pA, pB, m_vHLClineCol);
+			addActiveCellLine(pA, pB, m_vActiveCellLineCol);
 
 			pB = pA;
 			pB.z += m_vCellSize.z;
-			addHLCline(pA, pB, m_vHLClineCol);
-
+			addActiveCellLine(pA, pB, m_vActiveCellLineCol);
 
 			pA = pO;
 			pA.x += m_vCellSize.x;
@@ -316,16 +394,15 @@ namespace kai
 
 			pB = pA;
 			pB.x -= m_vCellSize.x;
-			addHLCline(pA, pB, m_vHLClineCol);
+			addActiveCellLine(pA, pB, m_vActiveCellLineCol);
 
 			pB = pA;
 			pB.y += m_vCellSize.y;
-			addHLCline(pA, pB, m_vHLClineCol);
+			addActiveCellLine(pA, pB, m_vActiveCellLineCol);
 
 			pB = pA;
 			pB.z -= m_vCellSize.z;
-			addHLCline(pA, pB, m_vHLClineCol);
-
+			addActiveCellLine(pA, pB, m_vActiveCellLineCol);
 
 			pA = pO;
 			pA.y += m_vCellSize.y;
@@ -333,27 +410,27 @@ namespace kai
 
 			pB = pA;
 			pB.x += m_vCellSize.x;
-			addHLCline(pA, pB, m_vHLClineCol);
+			addActiveCellLine(pA, pB, m_vActiveCellLineCol);
 
 			pB = pA;
 			pB.y -= m_vCellSize.y;
-			addHLCline(pA, pB, m_vHLClineCol);
+			addActiveCellLine(pA, pB, m_vActiveCellLineCol);
 
 			pB = pA;
 			pB.z -= m_vCellSize.z;
-			addHLCline(pA, pB, m_vHLClineCol);
+			addActiveCellLine(pA, pB, m_vActiveCellLineCol);
 		}
 	}
 
-	void _PCgrid::addHLCline(const vFloat3 &pA,
+	void _PCgrid::addActiveCellLine(const vFloat3 &pA,
 							 const vFloat3 &pB,
 							 const vFloat3 &vCol)
 	{
-		int nP = m_hlcLine.points_.size();
-		m_hlcLine.points_.push_back(Vector3d{pA.x, pA.y, pA.z});
-		m_hlcLine.points_.push_back(Vector3d{pB.x, pB.y, pB.z});
-		m_hlcLine.lines_.push_back(Vector2i{nP, nP + 1});
-		m_hlcLine.colors_.push_back(Vector3d{vCol.x, vCol.y, vCol.z});
+		int nP = m_activeCellLine.points_.size();
+		m_activeCellLine.points_.push_back(Vector3d{pA.x, pA.y, pA.z});
+		m_activeCellLine.points_.push_back(Vector3d{pB.x, pB.y, pB.z});
+		m_activeCellLine.lines_.push_back(Vector2i{nP, nP + 1});
+		m_activeCellLine.colors_.push_back(Vector3d{vCol.x, vCol.y, vCol.z});
 	}
 
 }

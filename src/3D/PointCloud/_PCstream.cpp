@@ -80,7 +80,7 @@ namespace kai
 
     void _PCstream::update(void)
     {
-        sleep(1); // temporal, waiting for the data to be written into shared memory
+//        sleep(1); // temporal, waiting for the data to be written into shared memory
 
         while (m_pT->bAlive())
         {

@@ -3,6 +3,7 @@
 
 #include "../_GeometryBase.h"
 #include "_PCstream.h"
+#include "_PCframe.h"
 
 namespace kai
 {
@@ -29,43 +30,57 @@ namespace kai
 
 		virtual bool init(void *pKiss);
 		virtual bool link(void);
+        virtual bool start(void);
 		virtual int check(void);
 
 		virtual bool initBuffer(void);
 		virtual void clear(void);
 		virtual PC_GRID_CELL *getCell(const vFloat3 &vP);
 		virtual LineSet *getGridLines(void);
-		virtual LineSet *getHLCLines(void);
-
+		virtual LineSet *getActiveCellLines(void);
 
 		virtual void getPCstream(void *p, const uint64_t &tExpire);
+		virtual void getPCframe(void *p);
 
 	protected:
 		virtual PC_GRID_CELL *getCell(const vInt3 &vPi);
 
 		virtual void generateGridLines(void);
 		void addGridAxisLine(int nDa,
-						 const vFloat2 &vRa,
-						 float csA,
-						 int nDb,
-						 const vFloat2 &vRb,
-						 float csB,
-						 const vFloat2 &vRc,
-						 const vInt3 &vAxis,
-						 const vFloat3 &vCol);
+							 const vFloat2 &vRa,
+							 float csA,
+							 int nDb,
+							 const vFloat2 &vRb,
+							 float csB,
+							 const vFloat2 &vRc,
+							 const vInt3 &vAxis,
+							 const vFloat3 &vCol);
 
-		void updateHLClines(void);
-		void generateHLClines(void);
-		void addHLCline(const vFloat3& pA,
-						const vFloat3& pB,
-						const vFloat3& vCol);
+		void updateActiveCell(void);
+		void updateActiveCellLines(void);
+		void generateActiveCellLines(void);
+		void addActiveCellLine(const vFloat3 &pA,
+							   const vFloat3 &pB,
+							   const vFloat3 &vCol);
+
+	private:
+		void updatePCgrid(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_PCgrid *)This)->update();
+			return NULL;
+		}
 
 	protected:
 		PC_GRID_CELL *m_pCell;
 		int m_nCell;
 
-		// PCstream
-		_PCstream* m_pS;
+		int m_nPcellThr;
+
+		// point cloud input
+		vector<_GeometryBase *> m_vpGB;
+		uint64_t m_tExpire;
 
 		// cell number of each axis
 		vInt3 m_vDim;
@@ -94,18 +109,19 @@ namespace kai
 
 		// static grid
 		LineSet m_gridLine;
-		int		m_gLineWidth;
+		int m_gLineWidth;
 		vFloat3 m_vAxisColX;
 		vFloat3 m_vAxisColY;
 		vFloat3 m_vAxisColZ;
-		
-		// high lighten cells
-		LineSet m_hlcLine; // lines for high lighten cell
-		int		m_hlcLineWidth;
-		vFloat3 m_vHLClineCol;
-		vector<vInt3> m_vHLCidx;
 
+		// active cells
+		LineSet m_activeCellLine; // lines for active cell
+		int m_activeCellLineWidth;
+		vFloat3 m_vActiveCellLineCol;
+		vector<vInt3> m_vActiveCellIdx;
 
+		tSwap<vector<vInt3>> m_svActiveCellIdx;
+		tSwap<LineSet> m_sActiveCellLine;
 	};
 
 }

@@ -59,7 +59,16 @@
 	{
 		"name":"geometry",
 		{
-			"_GeometryBase":"ps1",
+			"_GeometryBase":"pcFile",
+			"bStatic":0,
+			"nP":500000,
+			"rDummyDome":1000.0,
+			"matName":"defaultUnlit",
+			"matPointSize":1,
+		}
+
+		{
+			"_GeometryBase":"/ps1",
 			"bStatic":0,
 			"nP":50000,
 			"rDummyDome":1000.0,
@@ -69,7 +78,7 @@
 			"matLineWidth":1,
 		}
 		{
-			"_GeometryBase":"ps2",
+			"_GeometryBase":"/ps2",
 			"bStatic":0,
 			"nP":50000,
 			"rDummyDome":1000.0,
@@ -79,7 +88,7 @@
 			"matLineWidth":1,
 		}
 		{
-			"_GeometryBase":"pcGrid",
+			"_GeometryBase":"/pcGrid",
 			"bStatic":1,
 			"matName":"unlitLine",
 			"matLineWidth":1,
@@ -111,7 +120,9 @@
 	"vAxisColX":[1,0,0],
 	"vAxisColY":[0,1,0],
 	"vAxisColZ":[0,0,1],
-	"hlcLineWidth":5,
-	"vHLClineCol":[1,1,1],
+	"activeCellLineWidth":5,
+	"vActiveCellLineCol":[1,1,1],
+	"nPcellThr":1,
+	"vGeometryBase":["pcFile"],
 }
 
