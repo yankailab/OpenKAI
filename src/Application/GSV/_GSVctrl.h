@@ -9,6 +9,8 @@
 #define OpenKAI_src_Application_GSV__GSVctrl_H_
 
 #include "../../Protocol/_JSONbase.h"
+#include "../../3D/_GeometryBase.h"
+#include "_GSVgrid.h"
 
 namespace kai
 {
@@ -38,12 +40,14 @@ namespace kai
 		}
 
 		// UI handler
-		void reset(picojson::object &o);
-		void start(picojson::object &o);
-		void stop(picojson::object &o);
-		void save(picojson::object &o);
-		void setConfig(picojson::object &o);
+		void resetTR(picojson::object &o);
+		void setT(picojson::object &o);
+		void setR(picojson::object &o);
+		void setSelectedCellIdx(picojson::object &o);
+
+		void saveConfig(picojson::object &o);
 		void getConfig(picojson::object &o);
+
 		void handleMsg(string &str);
 		void updateR(void);
 		static void *getUpdateR(void *This)
@@ -52,9 +56,12 @@ namespace kai
 			return NULL;
 		}
 
+		// geometry control
+		_GeometryBase* getGeometry(const string& n);
 
 	protected:
-//		_LivoxAutoScan* m_pLivox;
+		_GSVgrid* m_pGgrid;
+		vector<_GeometryBase*> m_vpGB;
 		string m_msg;
 	};
 

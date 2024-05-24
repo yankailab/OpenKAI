@@ -100,7 +100,7 @@ namespace kai
         writeSharedMem();
     }
 
-    void _PCstream::getPCstream(void *p, const uint64_t& tExpire)
+    void _PCstream::addPCstream(void *p, const uint64_t& tExpire)
     {
         IF_(check() < 0);
         NULL_(p);

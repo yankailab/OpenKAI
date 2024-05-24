@@ -57,6 +57,7 @@ namespace kai
 		PointCloud m_PC;
 		t::geometry::PointCloud m_tPC;
 		LineSet m_ls;
+		int m_iGridLS = 0;
 
 		Material m_mat;
 		string m_matName;
@@ -87,7 +88,7 @@ namespace kai
 
 			if (gt == pc_stream)
 			{
-				getPCstream();
+				addPCstream();
 				adjustNpoints(&m_PC, m_PC.points_.size(), m_nPbuf);
 				m_tPC = t::geometry::PointCloud::FromLegacy(m_PC, core::Dtype::Float32);
 			}
@@ -105,11 +106,11 @@ namespace kai
 				if (m_bStatic)
 					m_ls = *p->getGridLines();
 				else
-					m_ls = *p->getActiveCellLines();
+					m_ls = *p->getActiveCellLines(m_iGridLS);
 			}
 		}
 
-		void getPCstream(uint64_t tExpire = 0)
+		void addPCstream(uint64_t tExpire = 0)
 		{
 			_PCstream *p = (_PCstream *)m_pGB;
 			m_PC.Clear();

@@ -66,6 +66,20 @@ namespace kai
         return this->_ModuleBase::check();
     }
 
+    GEOMETRY_TYPE _GeometryBase::getType(void)
+    {
+        return m_type;
+    }
+
+    bool _GeometryBase::initBuffer(void)
+    {
+        return false;
+    }
+
+    void _GeometryBase::clear(void)
+    {
+    }
+
     void _GeometryBase::setTranslation(const vDouble3 &vT)
     {
         m_vT = vT;
@@ -135,42 +149,44 @@ namespace kai
         m_A = m_mT;
     }
 
-    GEOMETRY_TYPE _GeometryBase::getType(void)
+    vDouble3 _GeometryBase::getTranslation(void)
     {
-        return m_type;
+
     }
 
-    bool _GeometryBase::initBuffer(void)
+    vDouble3 _GeometryBase::getRotation(void)
     {
-        return false;
-    }
 
-    void _GeometryBase::clear(void)
+    }
+    
+    vDouble4 _GeometryBase::getQuaternion(void)
     {
-    }
 
-    void _GeometryBase::getGeometry(void *p, const uint64_t &tExpire)
+    }
+    
+
+    void _GeometryBase::addGeometry(void *p, const uint64_t &tExpire)
     {
         NULL_(p);
 
         GEOMETRY_TYPE gt = ((_GeometryBase *)p)->getType();
         if (gt == pc_stream)
-            getPCstream(p, tExpire);
+            addPCstream(p, tExpire);
         else if (gt == pc_frame)
-            getPCframe(p);
+            addPCframe(p);
         else if (gt == pc_grid)
-            getPCgrid(p);
+            addPCgrid(p);
     }
 
-    void _GeometryBase::getPCstream(void *p, const uint64_t &tExpire)
+    void _GeometryBase::addPCstream(void *p, const uint64_t &tExpire)
     {
     }
 
-    void _GeometryBase::getPCframe(void *p)
+    void _GeometryBase::addPCframe(void *p)
     {
     }
 
-    void _GeometryBase::getPCgrid(void *p)
+    void _GeometryBase::addPCgrid(void *p)
     {
     }
 

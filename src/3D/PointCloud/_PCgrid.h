@@ -22,6 +22,122 @@ namespace kai
 		}
 	};
 
+	struct PC_GRID_ACTIVE_CELL
+	{
+		vector<vInt3> m_vCellIdx;
+		LineSet m_LS;
+
+		void clearCellIdx(void)
+		{
+			m_vCellIdx.clear();
+		}
+
+		void clearLS(void)
+		{
+			m_LS.Clear();
+			m_LS.points_.clear();
+			m_LS.lines_.clear();
+			m_LS.colors_.clear();
+		}
+
+		void clearAll(void)
+		{
+			clearCellIdx();
+			clearLS();
+		}
+
+		void addCell(const vInt3 &vCidx)
+		{
+			m_vCellIdx.push_back(vCidx);
+		}
+
+		void addCellLine(const vFloat3 &pA,
+						 const vFloat3 &pB)
+		{
+			int nP = m_LS.points_.size();
+			m_LS.points_.push_back(Vector3d{pA.x, pA.y, pA.z});
+			m_LS.points_.push_back(Vector3d{pB.x, pB.y, pB.z});
+			m_LS.lines_.push_back(Vector2i{nP, nP + 1});
+		}
+
+		void generateLS(const vFloat2& vRx,
+						const vFloat2& vRy,
+						const vFloat2& vRz,
+						const vFloat3& vCsize)
+		{
+			vFloat3 pO, pA, pB;
+
+			for (vInt3 vC : m_vCellIdx)
+			{
+				pO.x = vRx.x + vCsize.x * vC.x;
+				pO.y = vRy.x + vCsize.y * vC.y;
+				pO.z = vRz.x + vCsize.z * vC.z;
+
+				pA = pO;
+				pB = pA;
+				pB.x += vCsize.x;
+				addCellLine(pA, pB);
+
+				pB = pA;
+				pB.y += vCsize.y;
+				addCellLine(pA, pB);
+
+				pB = pA;
+				pB.z += vCsize.z;
+				addCellLine(pA, pB);
+
+				pA = pO;
+				pA.x += vCsize.x;
+				pA.y += vCsize.y;
+
+				pB = pA;
+				pB.x -= vCsize.x;
+				addCellLine(pA, pB);
+
+				pB = pA;
+				pB.y -= vCsize.y;
+				addCellLine(pA, pB);
+
+				pB = pA;
+				pB.z += vCsize.z;
+				addCellLine(pA, pB);
+
+				pA = pO;
+				pA.x += vCsize.x;
+				pA.z += vCsize.z;
+
+				pB = pA;
+				pB.x -= vCsize.x;
+				addCellLine(pA, pB);
+
+				pB = pA;
+				pB.y += vCsize.y;
+				addCellLine(pA, pB);
+
+				pB = pA;
+				pB.z -= vCsize.z;
+				addCellLine(pA, pB);
+
+				pA = pO;
+				pA.y += vCsize.y;
+				pA.z += vCsize.z;
+
+				pB = pA;
+				pB.x += vCsize.x;
+				addCellLine(pA, pB);
+
+				pB = pA;
+				pB.y -= vCsize.y;
+				addCellLine(pA, pB);
+
+				pB = pA;
+				pB.z -= vCsize.z;
+				addCellLine(pA, pB);
+			}
+		}
+
+	};
+
 	class _PCgrid : public _GeometryBase
 	{
 	public:
@@ -30,22 +146,22 @@ namespace kai
 
 		virtual bool init(void *pKiss);
 		virtual bool link(void);
-        virtual bool start(void);
+		virtual bool start(void);
 		virtual int check(void);
 
 		virtual bool initBuffer(void);
 		virtual void clear(void);
 		virtual PC_GRID_CELL *getCell(const vFloat3 &vP);
 		virtual LineSet *getGridLines(void);
-		virtual LineSet *getActiveCellLines(void);
+		virtual LineSet *getActiveCellLines(int cIdx);
 
-		virtual void getPCstream(void *p, const uint64_t &tExpire);
-		virtual void getPCframe(void *p);
+		virtual void addPCstream(void *p, const uint64_t &tExpire);
+		virtual void addPCframe(void *p);
 
 	protected:
-		virtual PC_GRID_CELL *getCell(const vInt3 &vPi);
+		PC_GRID_CELL *getCell(const vInt3 &vPi);
 
-		virtual void generateGridLines(void);
+		void generateGridLines(void);
 		void addGridAxisLine(int nDa,
 							 const vFloat2 &vRa,
 							 float csA,
@@ -57,11 +173,6 @@ namespace kai
 							 const vFloat3 &vCol);
 
 		void updateActiveCell(void);
-		void updateActiveCellLines(void);
-		void generateActiveCellLines(void);
-		void addActiveCellLine(const vFloat3 &pA,
-							   const vFloat3 &pB,
-							   const vFloat3 &vCol);
 
 	private:
 		void updatePCgrid(void);
@@ -115,13 +226,9 @@ namespace kai
 		vFloat3 m_vAxisColZ;
 
 		// active cells
-		LineSet m_activeCellLine; // lines for active cell
-		int m_activeCellLineWidth;
-		vFloat3 m_vActiveCellLineCol;
-		vector<vInt3> m_vActiveCellIdx;
-
-		tSwap<vector<vInt3>> m_svActiveCellIdx;
-		tSwap<LineSet> m_sActiveCellLine;
+		PC_GRID_ACTIVE_CELL m_pActiveCells[2];
+		PC_GRID_ACTIVE_CELL *m_pActiveCell;	  // cells contain points
+		PC_GRID_ACTIVE_CELL *m_pSelectedCell; // cells selected
 	};
 
 }

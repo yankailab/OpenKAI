@@ -1,17 +1,16 @@
 {
-	"name":"GSVdetect",
-	"class":"_GSVdetect",
+	"name":"GSVctrl",
+	"class":"_GSVctrl",
 	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"_VisionBase":"inRange",
 	"_Universe":"univ",
 }
 
 {
-	"name":"GSValarm",
+	"name":"GSVio",
 	"class":"_GSVio",
 	"bON":0,
     {

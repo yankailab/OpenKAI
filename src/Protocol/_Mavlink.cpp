@@ -48,7 +48,6 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
 
 		pK->v("mySystemID", &m_mySystemID);
 		pK->v("myComponentID", &m_myComponentID);

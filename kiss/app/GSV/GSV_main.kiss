@@ -68,6 +68,21 @@
 		}
 
 		{
+			"_GeometryBase":"/pcGrid",
+			"bStatic":1,
+			"matName":"unlitLine",
+			"matLineWidth":1,
+		}
+		{
+			"_GeometryBase":"/pcGrid",
+			"bStatic":0,
+			"iGridLS":0,
+			"matName":"unlitLine",
+			"matLineWidth":5,
+			"matCol":[1,1,0,1],
+		}
+
+		{
 			"_GeometryBase":"/ps1",
 			"bStatic":0,
 			"nP":50000,
@@ -88,16 +103,44 @@
 			"matLineWidth":1,
 		}
 		{
-			"_GeometryBase":"/pcGrid",
-			"bStatic":1,
-			"matName":"unlitLine",
+			"_GeometryBase":"/ps3",
+			"bStatic":0,
+			"nP":50000,
+			"rDummyDome":1000.0,
+			"matName":"defaultUnlit",
+			"matCol":[0,1,0,1],
+			"matPointSize":2,
 			"matLineWidth":1,
 		}
 		{
-			"_GeometryBase":"pcGrid",
+			"_GeometryBase":"/ps4",
 			"bStatic":0,
-			"matName":"unlitLine",
-			"matLineWidth":10,
+			"nP":50000,
+			"rDummyDome":1000.0,
+			"matName":"defaultUnlit",
+			"matCol":[0,1,0,1],
+			"matPointSize":2,
+			"matLineWidth":1,
+		}
+		{
+			"_GeometryBase":"/ps5",
+			"bStatic":0,
+			"nP":50000,
+			"rDummyDome":1000.0,
+			"matName":"defaultUnlit",
+			"matCol":[0,1,0,1],
+			"matPointSize":2,
+			"matLineWidth":1,
+		}
+		{
+			"_GeometryBase":"/ps6",
+			"bStatic":0,
+			"nP":50000,
+			"rDummyDome":1000.0,
+			"matName":"defaultUnlit",
+			"matCol":[0,1,0,1],
+			"matPointSize":2,
+			"matLineWidth":1,
 		}
 	}
 }
@@ -105,7 +148,7 @@
 {
 	"name":"pcGrid",
 	"class":"_PCgrid",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,

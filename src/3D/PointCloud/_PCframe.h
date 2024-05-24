@@ -26,9 +26,9 @@ namespace kai
         // _GeometryBase
 		virtual bool initBuffer(void);
         virtual void clear(void);
-        virtual void getPCstream(void* p, const uint64_t& tExpire);
-        virtual void getPCframe(void* p);
-        virtual void getPCgrid(void* p);
+        virtual void addPCstream(void* p, const uint64_t& tExpire);
+        virtual void addPCframe(void* p);
+        virtual void addPCgrid(void* p);
 
         virtual void writeSharedMem(void);
         virtual void readSharedMem(void);

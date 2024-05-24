@@ -9,7 +9,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -22,7 +22,7 @@
 	"class":"LivoxLidar2",
 	"bON":1,
 	"bLog":0,
-	"fConfig":"/home/kai/dev/OpenKAI/data/Livox/mid360_201_134.json",
+	"fConfig":"/home/lab/dev/OpenKAI/data/Livox/mid360_201.json",
 }
 
 {

@@ -22,7 +22,7 @@
 	"class":"LivoxLidar2",
 	"bON":1,
 	"bLog":0,
-	"fConfig":"/home/lab/dev/OpenKAI/data/Livox/mid360_200.json",
+	"fConfig":"/home/lab/dev/OpenKAI/data/Livox/mid360_203.json",
 }
 
 {
@@ -44,7 +44,7 @@
 	"name":"smW",
 	"class":"SharedMem",
 	"bON":1,
-	"shmName":"smPC1",
+	"shmName":"smPC4",
 	"nB":1600000,
 	"bWriter":1,
 }

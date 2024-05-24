@@ -111,6 +111,7 @@ namespace kai
 			pG->v("matCol", &g.m_matCol);
 			pG->v("matPointSize", &g.m_matPointSize);
 			pG->v("matLineWidth", &g.m_matLineWidth);
+			pG->v("iGridLS", &g.m_iGridLS);
 
 			g.init();
 			g.updateMaterial();

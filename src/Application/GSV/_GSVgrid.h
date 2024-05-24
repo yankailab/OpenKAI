@@ -13,10 +13,21 @@ namespace kai
 		virtual ~_GSVgrid();
 
 		virtual bool init(void *pKiss);
+		virtual bool link(void);
+        virtual bool start(void);
 		virtual int check(void);
 
-
 	protected:
+
+	private:
+		void updateGSVgrid(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_GSVgrid *)This)->update();
+			return NULL;
+		}
+
 
 	protected:
 

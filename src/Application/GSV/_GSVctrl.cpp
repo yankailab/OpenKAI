@@ -11,7 +11,7 @@ namespace kai
 {
 	_GSVctrl::_GSVctrl()
 	{
-//		m_pLivox = NULL;
+		m_pGgrid = NULL;
 		m_msg = "";
 	}
 
@@ -35,11 +35,20 @@ namespace kai
 
 		Kiss *pK = (Kiss *)m_pKiss;
 
-		string n;
-		n = "";
-		// F_ERROR_F(pK->v("_LivoxAutoScan", &n));
-		// m_pLivox = (_LivoxAutoScan *)(pK->getInst(n));
-		// NULL_Fl(m_pLivox, n + ": not found");
+        string n;
+        n = "";
+        pK->v("_GSVgrid", &n);
+        m_pGgrid = (_GSVgrid *)(pK->getInst(n));
+
+		vector<string> vGn;
+		pK->a("vGeometryBase", &vGn);
+		for (string gn : vGn)
+		{
+			_GeometryBase* pG = (_GeometryBase *)(pK->getInst(gn));
+			IF_CONT(!pG);
+
+			m_vpGB.push_back(pG);
+		}
 
 		return true;
 	}
@@ -57,7 +66,7 @@ namespace kai
 
 	int _GSVctrl::check(void)
 	{
-//		NULL__(m_pLivox, -1);
+		IF__(!m_pGgrid, -1);
 
 		return this->_JSONbase::check();
 	}
@@ -99,80 +108,130 @@ namespace kai
 		IF_(!jo["cmd"].is<string>());
 		string cmd = jo["cmd"].get<string>();
 
-		if (cmd == "reset")
-			reset(jo);
-		else if (cmd == "start")
-			start(jo);
-		else if (cmd == "stop")
-			stop(jo);
-		else if (cmd == "save")
-			save(jo);
-		else if (cmd == "setConfig")
-			setConfig(jo);
+		if (cmd == "resetTR")
+			resetTR(jo);
+		else if (cmd == "setT")
+			setT(jo);
+		else if (cmd == "setR")
+			setR(jo);
+		else if (cmd == "setSelectedCellIdx")
+			setSelectedCellIdx(jo);
+		else if (cmd == "saveConfig")
+			saveConfig(jo);
 		else if (cmd == "getConfig")
 			getConfig(jo);
 	}
 
-	void _GSVctrl::reset(picojson::object &o)
+	void _GSVctrl::resetTR(picojson::object &o)
 	{
 		IF_(check() < 0);
-//		m_pLivox->reset();
 
-		m_msg = "Memory cleared";
+		IF_(!o["_GeometryBase"].is<string>());
+
+		string gName = o["_GeometryBase"].get<string>();
 	}
 
-	void _GSVctrl::start(picojson::object &o)
+	void _GSVctrl::setT(picojson::object &o)
 	{
 		IF_(check() < 0);
-//		m_pLivox->startAuto();
 
-		m_msg = "Scan started";
+		IF_(!o["_GeometryBase"].is<string>());
+		string gName = o["_GeometryBase"].get<string>();
+
+		IF_(!o["vT"].is<value::array>());
+		value::array arr = o["vT"].get<value::array>();
+		value::array::iterator it = arr.begin();
+		vDouble3 vT;
+
+		IF_(!it->is<double>());
+		vT.x = it->get<double>();
+		it++;
+
+		IF_(!it->is<double>());
+		vT.y = it->get<double>();
+		it++;
+
+		IF_(!it->is<double>());
+		vT.z = it->get<double>();
+		it++;
+
+		_GeometryBase* pG = getGeometry(gName);
+		NULL_(pG);
+		pG->setTranslation(vT);
+		pG->updateTranslationMatrix(false);
+
 	}
 
-	void _GSVctrl::stop(picojson::object &o)
+	void _GSVctrl::setR(picojson::object &o)
 	{
 		IF_(check() < 0);
-//		m_pLivox->stop();
 
-		m_msg = "Scan stopped";
+		IF_(!o["_GeometryBase"].is<string>());
+		string gName = o["_GeometryBase"].get<string>();
+
+		IF_(!o["vR"].is<value::array>());
+		value::array arr = o["vR"].get<value::array>();
+		value::array::iterator it = arr.begin();
+		vDouble3 vR;
+
+		IF_(!it->is<double>());
+		vR.x = it->get<double>();
+		it++;
+
+		IF_(!it->is<double>());
+		vR.y = it->get<double>();
+		it++;
+
+		IF_(!it->is<double>());
+		vR.z = it->get<double>();
+		it++;
+
+		_GeometryBase* pG = getGeometry(gName);
+		NULL_(pG);
+		pG->setTranslation(vR);
+		pG->updateTranslationMatrix(false);
+
 	}
 
-	void _GSVctrl::save(picojson::object &o)
+	void _GSVctrl::setSelectedCellIdx(picojson::object &o)
 	{
 		IF_(check() < 0);
-//		m_pLivox->save();
 
-		m_msg = "Point cloud files saved";
+		IF_(!o["_GeometryBase"].is<string>());
+		string gName = o["_GeometryBase"].get<string>();
+
+
+		IF_(!o["vIdx"].is<value::array>());
+		value::array arr = o["vIdx"].get<value::array>();
+		value::array::iterator it = arr.begin();
+		vInt3 vIdx;
+
+		IF_(!it->is<double>());
+		vIdx.x = it->get<double>();
+		it++;
+
+		IF_(!it->is<double>());
+		vIdx.y = it->get<double>();
+		it++;
+
+		IF_(!it->is<double>());
+		vIdx.z = it->get<double>();
+		it++;
+
+
+
 	}
 
-	void _GSVctrl::setConfig(picojson::object &o)
+	void _GSVctrl::saveConfig(picojson::object &o)
 	{
 		IF_(check() < 0);
 
-		IF_(!o["vFrom"].is<double>());
-		IF_(!o["vStep"].is<double>());
-		IF_(!o["vTo"].is<double>());
-		IF_(!o["hFrom"].is<double>());
-		IF_(!o["hStep"].is<double>());
-		IF_(!o["hTo"].is<double>());
-		IF_(!o["Xoffset"].is<double>());
-		IF_(!o["Yoffset"].is<double>());
-		IF_(!o["Zoffset"].is<double>());
+		IF_(!o["_GeometryBase"].is<string>());
+		string gName = o["_GeometryBase"].get<string>();
 
-		// LivoxAutoScanConfig c;
-		// c.m_vRangeV.x = o["vFrom"].get<double>();
-		// c.m_vRangeV.y = o["vTo"].get<double>();
-		// c.m_dV = o["vStep"].get<double>();
-		// c.m_vRangeH.x = o["hFrom"].get<double>();
-		// c.m_vRangeH.y = o["hTo"].get<double>();
-		// c.m_dH = o["hStep"].get<double>();
-		// c.m_vOffset.x = o["Xoffset"].get<double>();
-		// c.m_vOffset.y = o["Yoffset"].get<double>();
-		// c.m_vOffset.z = o["Zoffset"].get<double>();
+		//TODO: save calib to file here
+		//TODO: save active cells to file here
 
-		// m_pLivox->setConfig(c);
-
-		sendConfig();
 	}
 
 	void _GSVctrl::getConfig(picojson::object &o)
@@ -196,15 +255,6 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		// if (m_msg.empty())
-		// {
-		// 	m_msg = "Standby: ";
-		// 	if (m_pLivox->bScanning())
-		// 		m_msg = "Scanning: ";
-
-		// 	m_msg += i2str(m_pLivox->getBufferCap() * 100) + "% memory used";
-		// }
-
 		object o;
 		JO(o, "cmd", "hb");
 		JO(o, "s", "");
@@ -224,19 +274,21 @@ namespace kai
 
 		// object o;
 		// JO(o, "cmd", "getConfig");
-		// JO(o, "msg", m_msg);
-		// JO(o, "s", "");
-		// JO(o, "vFrom", c.m_vRangeV.x);
-		// JO(o, "vTo", c.m_vRangeV.y);
-		// JO(o, "vStep", c.m_dV);
-		// JO(o, "hFrom", c.m_vRangeH.x);
-		// JO(o, "hTo", c.m_vRangeH.y);
-		// JO(o, "hStep", c.m_dH);
-		// JO(o, "Xoffset", c.m_vOffset.x);
-		// JO(o, "Yoffset", c.m_vOffset.y);
-		// JO(o, "Zoffset", c.m_vOffset.z);
 
 		// sendMsg(o);
+	}
+
+
+	_GeometryBase* _GSVctrl::getGeometry(const string& n)
+	{
+		for(_GeometryBase* pG : m_vpGB)
+		{
+			string* pN = pG->getName();
+			if(*pN == n)
+				return pG;
+		}
+
+		return NULL;
 	}
 
 	void _GSVctrl::console(void *pConsole)

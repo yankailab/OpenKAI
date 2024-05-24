@@ -1,4 +1,19 @@
 {
+	"name":"pcFile",
+	"class":"_PCfile",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":1,
+	"fName":"/home/kai/Downloads/office1.pcd",
+	"/fName":"/home/lab/Downloads/office1.pcd",
+	"nPresv":500000,
+}
+
+
+{
 	"name":"ps1",
 	"class":"_PCstream",
 	"bON":0,
@@ -25,6 +40,60 @@
 }
 
 {
+	"name":"ps3",
+	"class":"_PCstream",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":1,
+	"nP":50000,
+	"SharedMem":"smR3",
+}
+
+{
+	"name":"ps4",
+	"class":"_PCstream",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":1,
+	"nP":50000,
+	"SharedMem":"smR4",
+}
+
+{
+	"name":"ps5",
+	"class":"_PCstream",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":1,
+	"nP":50000,
+	"SharedMem":"smR5",
+}
+
+{
+	"name":"ps6",
+	"class":"_PCstream",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":1,
+	"nP":50000,
+	"SharedMem":"smR6",
+}
+
+
+
+{
 	"name":"smR1",
 	"class":"SharedMem",
 	"bON":1,
@@ -42,16 +111,39 @@
 	"bWriter":0,
 }
 
+{
+	"name":"smR3",
+	"class":"SharedMem",
+	"bON":1,
+	"shmName":"smPC3",
+	"nB":1600000,
+	"bWriter":0,
+}
 
 {
-	"name":"pcFile",
-	"class":"_PCfile",
+	"name":"smR4",
+	"class":"SharedMem",
 	"bON":1,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"bLog":1,
-	"fName":"/home/kai/Downloads/office1.pcd",
-	"nPresv":500000,
+	"shmName":"smPC4",
+	"nB":1600000,
+	"bWriter":0,
 }
+
+{
+	"name":"smR5",
+	"class":"SharedMem",
+	"bON":1,
+	"shmName":"smPC5",
+	"nB":1600000,
+	"bWriter":0,
+}
+
+{
+	"name":"smR6",
+	"class":"SharedMem",
+	"bON":1,
+	"shmName":"smPC6",
+	"nB":1600000,
+	"bWriter":0,
+}
+

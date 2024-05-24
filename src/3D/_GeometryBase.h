@@ -55,20 +55,24 @@ namespace kai
         virtual int check(void);
         virtual void console(void *pConsole);
 
+        virtual GEOMETRY_TYPE getType(void);
+		virtual bool initBuffer(void);
+        virtual void clear(void);
+
         virtual void setTranslation(const vDouble3 &vT);
         virtual void setRotation(const vDouble3 &vR);
         virtual void setQuaternion(const vDouble4 &vQ);
         virtual void updateTranslationMatrix(bool bUseQuaternion = true, vDouble3* pRa = NULL);
         virtual void setTranslationMatrix(const Matrix4d &mT);
 
-        virtual GEOMETRY_TYPE getType(void);
-		virtual bool initBuffer(void);
-        virtual void clear(void);
+        virtual vDouble3 getTranslation(void);
+        virtual vDouble3 getRotation(void);
+        virtual vDouble4 getQuaternion(void);
 
-        virtual void getGeometry(void* p, const uint64_t& tExpire = 0);
-        virtual void getPCstream(void* p, const uint64_t& tExpire);
-        virtual void getPCframe(void* p);
-        virtual void getPCgrid(void* p);
+        virtual void addGeometry(void* p, const uint64_t& tExpire = 0);
+        virtual void addPCstream(void* p, const uint64_t& tExpire);
+        virtual void addPCframe(void* p);
+        virtual void addPCgrid(void* p);
 
         virtual void writeSharedMem(void);
         virtual void readSharedMem(void);

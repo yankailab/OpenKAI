@@ -125,7 +125,7 @@ namespace kai
         writeSharedMem();
     }
 
-    void _PCframe::getPCstream(void *p, const uint64_t &tExpire)
+    void _PCframe::addPCstream(void *p, const uint64_t &tExpire)
     {
         NULL_(p);
         _PCstream *pS = (_PCstream *)p;
@@ -144,7 +144,7 @@ namespace kai
         swapBuffer();
     }
 
-    void _PCframe::getPCframe(void *p)
+    void _PCframe::addPCframe(void *p)
     {
         NULL_(p);
         _PCframe *pF = (_PCframe *)p;
@@ -156,7 +156,7 @@ namespace kai
         swapBuffer();
     }
 
-    void _PCframe::getPCgrid(void *p)
+    void _PCframe::addPCgrid(void *p)
     {
     }
 
