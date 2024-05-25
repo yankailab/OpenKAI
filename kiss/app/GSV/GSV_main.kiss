@@ -5,15 +5,15 @@
 	"bLog":1,
 	"bStdErr":1,
 	"vInclude":[
-		"/home/kai/dev/OpenKAI/kiss/app/GSV/GSV_lidars.kiss",
-		"/home/kai/dev/OpenKAI/kiss/app/GSV/GSV_alarm.kiss",
+		"a/home/kai/dev/OpenKAI/kiss/app/GSV/GSV_lidars.kiss",
+		"/home/kai/dev/OpenKAI/kiss/app/GSV/GSV_io.kiss",
 	],
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
@@ -59,31 +59,47 @@
 	{
 		"name":"geometry",
 		{
-			"_GeometryBase":"pcFile",
+			"_GeometryBase":"psTest",
 			"bStatic":0,
-			"nP":500000,
+			"nP":50000,
 			"rDummyDome":1000.0,
 			"matName":"defaultUnlit",
 			"matPointSize":1,
 		}
 
 		{
-			"_GeometryBase":"/pcGrid",
+			"_GeometryBase":"/gsvGrid",
 			"bStatic":1,
 			"matName":"unlitLine",
 			"matLineWidth":1,
 		}
 		{
-			"_GeometryBase":"/pcGrid",
+			"_GeometryBase":"gsvGrid",
 			"bStatic":0,
-			"iGridLS":0,
+			"iGridLS":0, /* active cells */
 			"matName":"unlitLine",
-			"matLineWidth":5,
+			"matLineWidth":1,
+			"matCol":[0,1,0,1],
+		}
+		{
+			"_GeometryBase":"gsvGrid",
+			"bStatic":0,
+			"iGridLS":1, /* alert cells */
+			"matName":"unlitLine",
+			"matLineWidth":3,
 			"matCol":[1,1,0,1],
+		}
+		{
+			"_GeometryBase":"gsvGrid",
+			"bStatic":0,
+			"iGridLS":2, /* alarm cells */
+			"matName":"unlitLine",
+			"matLineWidth":30,
+			"matCol":[1,0,0,1],
 		}
 
 		{
-			"_GeometryBase":"/ps1",
+			"_GeometryBase":"ps1",
 			"bStatic":0,
 			"nP":50000,
 			"rDummyDome":1000.0,
@@ -93,7 +109,7 @@
 			"matLineWidth":1,
 		}
 		{
-			"_GeometryBase":"/ps2",
+			"_GeometryBase":"ps2",
 			"bStatic":0,
 			"nP":50000,
 			"rDummyDome":1000.0,
@@ -103,42 +119,42 @@
 			"matLineWidth":1,
 		}
 		{
-			"_GeometryBase":"/ps3",
+			"_GeometryBase":"ps3",
 			"bStatic":0,
 			"nP":50000,
 			"rDummyDome":1000.0,
 			"matName":"defaultUnlit",
-			"matCol":[0,1,0,1],
+			"matCol":[0,0,1,1],
 			"matPointSize":2,
 			"matLineWidth":1,
 		}
 		{
-			"_GeometryBase":"/ps4",
+			"_GeometryBase":"ps4",
 			"bStatic":0,
 			"nP":50000,
 			"rDummyDome":1000.0,
 			"matName":"defaultUnlit",
-			"matCol":[0,1,0,1],
+			"matCol":[1,1,0,1],
 			"matPointSize":2,
 			"matLineWidth":1,
 		}
 		{
-			"_GeometryBase":"/ps5",
+			"_GeometryBase":"ps5",
 			"bStatic":0,
 			"nP":50000,
 			"rDummyDome":1000.0,
 			"matName":"defaultUnlit",
-			"matCol":[0,1,0,1],
+			"matCol":[0,1,1,1],
 			"matPointSize":2,
 			"matLineWidth":1,
 		}
 		{
-			"_GeometryBase":"/ps6",
+			"_GeometryBase":"ps6",
 			"bStatic":0,
 			"nP":50000,
 			"rDummyDome":1000.0,
 			"matName":"defaultUnlit",
-			"matCol":[0,1,0,1],
+			"matCol":[1,0,1,1],
 			"matPointSize":2,
 			"matLineWidth":1,
 		}
@@ -146,26 +162,93 @@
 }
 
 {
-	"name":"pcGrid",
-	"class":"_PCgrid",
-	"bON":0,
+	"name":"gsvGrid",
+	"class":"_GSVgrid",
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
 	}
+	"_GSVio":"GSVio",
+	"nPcellActivate":1,
 	"vPorigin":[0,0,0],
 	"vX":[-10,10],
 	"vY":[-10,10],
 	"vZ":[-10,10],
 	"vCellSize":[1,1,1],
 	"bVisual":1,
-	"gLineWidth":1,
 	"vAxisColX":[1,0,0],
 	"vAxisColY":[0,1,0],
 	"vAxisColZ":[0,0,1],
-	"activeCellLineWidth":5,
-	"vActiveCellLineCol":[1,1,1],
-	"nPcellThr":1,
-	"vGeometryBase":["pcFile"],
+	"vGeometryBase":["psTest"],
 }
 
+
+{
+	"name":"pcFile",
+	"class":"_PCfile",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":1,
+	"fName":"/home/kai/Downloads/office1.pcd",
+	"/fName":"/home/lab/Downloads/office1.pcd",
+	"nPresv":500000,
+	"SharedMem":"smWtest",
+}
+
+{
+	"name":"LivoxLidar2",
+	"class":"LivoxLidar2",
+	"bON":1,
+	"bLog":0,
+	"fConfig":"/home/kai/dev/OpenKAI/data/Livox/mid360_8_103.json",
+}
+
+{
+	"name":"Livox2",
+	"class":"_Livox2",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"LivoxLidar2":"LivoxLidar2",
+	"lidarMode":1,
+	"nP":50000,
+	"SharedMem":"smWtest",
+}
+
+{
+	"name":"smWtest",
+	"class":"SharedMem",
+	"bON":1,
+	"shmName":"smPCtest",
+	"nB":1600000,
+	"bWriter":1,
+}
+
+{
+	"name":"psTest",
+	"class":"_PCstream",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":1,
+	"nP":50000,
+	"SharedMem":"smRtest",
+}
+
+{
+	"name":"smRtest",
+	"class":"SharedMem",
+	"bON":1,
+	"shmName":"smPCtest",
+	"nB":1600000,
+	"bWriter":0,
+}

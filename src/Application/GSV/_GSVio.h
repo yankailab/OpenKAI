@@ -28,6 +28,8 @@ namespace kai
         void setAlarm(bool bAlarm);
 
     protected:
+        void setEnable(bool bEnable);
+
         virtual void updateAlarm(void);
         virtual void update(void);
         static void *getUpdate(void *This)
@@ -38,13 +40,16 @@ namespace kai
 
     protected:
         _ADIObase* m_pDio;
-        int m_iDin;
-        int m_iDout;
-        int m_iDout2;
+
+        int m_iDinOn;
+        int m_iDinOff;
+
+        int m_iDoutLED;
+        int m_iDoutNO;
+        int m_iDoutNC;
 
         bool m_bAlarm;
         bool m_bEnable;
-
 
     };
 

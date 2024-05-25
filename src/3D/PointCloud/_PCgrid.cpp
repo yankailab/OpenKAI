@@ -5,12 +5,12 @@ namespace kai
 
 	_PCgrid::_PCgrid()
 	{
-		m_tExpire = UINT64_MAX;
+		m_tExpire = 0;
 
 		m_type = pc_grid;
 		m_pCell = NULL;
 		m_nCell = 0;
-		m_nPcellThr = 1;
+		m_nPcellActivate = 1;
 		m_vDim.clear();
 		m_vPmin.clear();
 
@@ -22,13 +22,11 @@ namespace kai
 
 		m_bVisual = false;
 		m_gridLine.Clear();
-		m_gLineWidth = 1;
 		m_vAxisColX.set(1, 0, 0);
 		m_vAxisColY.set(0, 1, 0);
 		m_vAxisColZ.set(0, 0, 1);
 
-		m_pActiveCell = &m_pActiveCells[0];
-		m_pSelectedCell = &m_pActiveCells[1];
+		m_pCellActive = &m_pActiveCells[0];
 	}
 
 	_PCgrid::~_PCgrid()
@@ -41,7 +39,7 @@ namespace kai
 		IF_F(!this->_GeometryBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("nPcellThr", &m_nPcellThr);
+		pK->v("nPcellActivate", &m_nPcellActivate);
 
 		pK->v("vPorigin", &m_vPorigin);
 		pK->v("vX", &m_vX);
@@ -50,7 +48,6 @@ namespace kai
 		pK->v("vCellSize", &m_vCellSize);
 
 		pK->v("bVisual", &m_bVisual);
-		pK->v("gLineWidth", &m_gLineWidth);
 		pK->v("vAxisColX", &m_vAxisColX);
 		pK->v("vAxisColY", &m_vAxisColY);
 		pK->v("vAxisColZ", &m_vAxisColZ);
@@ -89,17 +86,23 @@ namespace kai
 		float cVol = m_vCellSize.x * m_vCellSize.y * m_vCellSize.z;
 		IF_F(cVol <= 0);
 
+		// calc grid seize
 		m_vDim.set(m_vX.len(),
 				   m_vY.len(),
 				   m_vZ.len());
 		int nCell = m_vDim.x * m_vDim.y * m_vDim.z;
 		IF_F(nCell <= 0);
 
+		// alllocate cells
 		DEL(m_pCell);
 		m_pCell = new PC_GRID_CELL[nCell];
 		NULL_F(m_pCell);
 		m_nCell = nCell;
 
+		for (int i = 0; i < m_nCell; i++)
+			m_pCell[i].m_nPactivate = m_nPcellActivate;
+
+		// prepare quick access params
 		m_vRx.set(m_vPorigin.x + m_vX.x * m_vCellSize.x,
 				  m_vPorigin.x + m_vX.y * m_vCellSize.x);
 
@@ -126,7 +129,7 @@ namespace kai
 		return true;
 	}
 
-	void _PCgrid::clear(void)
+	void _PCgrid::clearAllCells(void)
 	{
 		for (int i = 0; i < m_nCell; i++)
 			m_pCell[i].clear();
@@ -171,7 +174,7 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		clear();
+		clearAllCells();
 
 		for (_GeometryBase *pG : m_vpGB)
 		{
@@ -193,7 +196,10 @@ namespace kai
 		for (int i = 0; i < nP; i++)
 		{
 			GEOMETRY_POINT *pP = pS->get(i);
-			IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
+			if (tExpire)
+			{
+				IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
+			}
 
 			PC_GRID_CELL *pC = getCell(vFloat3(pP->m_vP[0], pP->m_vP[1], pP->m_vP[2]));
 			IF_CONT(!pC);
@@ -307,17 +313,19 @@ namespace kai
 		}
 	}
 
-	LineSet *_PCgrid::getActiveCellLines(int cIdx)
+	void _PCgrid::getActiveCellLines(LineSet* pLS, int cIdx)
 	{
-		IF_N(cIdx >= 2);
+		NULL_(pLS);
+		IF_(cIdx >= PCGRID_ACTIVECELL_N);
 
-		return &m_pActiveCells[cIdx].m_LS;
+		mutexLock();
+		*pLS = m_pActiveCells[cIdx].m_LS;
+		mutexUnlock();
 	}
 
 	void _PCgrid::updateActiveCell(void)
 	{
-		// TODO: make it swap
-		m_pActiveCell->clearAll();
+		m_pCellActive->clearCellIdx();
 
 		vInt3 vC;
 		for (int i = 0; i < m_vDim.x; i++)
@@ -328,15 +336,17 @@ namespace kai
 				{
 					vC.set(i, j, k);
 					PC_GRID_CELL *pC = getCell(vC);
-					IF_CONT(pC->m_nP < m_nPcellThr);
+					IF_CONT(pC->m_nP < pC->m_nPactivate);
 
-					m_pActiveCell->addCell(vC);
+					m_pCellActive->addCell(vC);
 				}
 			}
 		}
 
-		m_pActiveCell->clearLS();
-		m_pActiveCell->generateLS(m_vRx, m_vRy, m_vRz, m_vCellSize);
+		mutexLock();
+		m_pCellActive->clearLS();
+		m_pCellActive->generateLS(m_vRx, m_vRy, m_vRz, m_vCellSize);
+		mutexUnlock();
 	}
 
 }

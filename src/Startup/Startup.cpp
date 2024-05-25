@@ -60,7 +60,10 @@ namespace kai
 		pApp->a("vInclude", &vInclude);
 		for (string s : vInclude)
 		{
-			IF_Fl(!parseKiss(s, pKiss), "Kiss parse failed: " + s);
+			if(!parseKiss(s, pKiss))
+			{
+				LOG(INFO) << "Kiss parse failed: " << s;
+			}
 		}
 
 		// run cmd

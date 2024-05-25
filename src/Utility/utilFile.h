@@ -36,8 +36,17 @@ namespace kai
 		NULL_F(pK);
 
 		string s;
-		IF_F(!readFile(fName, &s));
-		IF_F(s.empty());
+		if(!readFile(fName, &s))
+		{
+			LOG(INFO) << "Cannot open: " << fName;
+			return false;
+		}
+
+		if(s.empty())
+		{
+			LOG(INFO) << "Empty file: " << fName;
+			return false;
+		}
 
 		return pK->parse(&s);
 	}

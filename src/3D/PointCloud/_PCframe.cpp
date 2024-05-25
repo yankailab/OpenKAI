@@ -20,7 +20,6 @@ namespace kai
         m_tStamp = NULL;
 
         m_pGpSM = NULL;
-        m_nGpSM = 256;
     }
 
     _PCframe::~_PCframe()
@@ -35,8 +34,6 @@ namespace kai
         pK->v("nPresv", &m_nPresv);
         m_nPresvNext = m_nPresv;
         pK->v("nPresvNext", &m_nPresvNext);
-
-        pK->v("nGpSM", &m_nGpSM);
 
         return initBuffer();
     }
@@ -68,10 +65,10 @@ namespace kai
         m_sPC.next()->normals_.clear();
 
         // share mem
-        m_pGpSM = new GEOMETRY_POINT[m_nGpSM];
+        m_pGpSM = new GEOMETRY_POINT[m_nPresv];
         NULL_F(m_pGpSM);
 
-        for (int i = 0; i < m_nGpSM; i++)
+        for (int i = 0; i < m_nPresv; i++)
             m_pGpSM[i].clear();
 
         mutexUnlock();
@@ -168,7 +165,7 @@ namespace kai
 
         PointCloud *pPC = m_sPC.get();
         int nPw = pPC->points_.size();
-        nPw = small<int>(nPw, m_nGpSM);
+        nPw = small<int>(nPw, m_nPresv);
         nPw = small<int>(nPw, m_pSM->nB()/sizeof(GEOMETRY_POINT) );
 
         uint64_t tNow = getTbootUs();
@@ -193,7 +190,7 @@ namespace kai
         void *pSrc = m_pSM->p();
         NULL_(pSrc);
 
-        memcpy(m_pGpSM, pSrc, m_nGpSM * sizeof(GEOMETRY_POINT));
+        memcpy(m_pGpSM, pSrc, m_nPresv * sizeof(GEOMETRY_POINT));
 
         mutexLock();
 
@@ -202,7 +199,7 @@ namespace kai
         pPC->points_.clear();
         pPC->colors_.clear();
 
-        for (int i = 0; i < m_nGpSM; i++)
+        for (int i = 0; i < m_nPresv; i++)
         {
             GEOMETRY_POINT *pGP = &m_pGpSM[i];
             pPC->points_.push_back(v2e(pGP->m_vP).cast<double>());

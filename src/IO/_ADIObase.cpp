@@ -24,8 +24,6 @@ namespace kai
 		IF_F(!this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		//		pK->v("nFIFO", &m_nFIFO);
-
 		Kiss *pKp = pK->child("port");
 		IF_T(pKp->empty());
 

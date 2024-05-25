@@ -48,7 +48,7 @@ namespace kai
 		void saveConfig(picojson::object &o);
 		void getConfig(picojson::object &o);
 
-		void handleMsg(string &str);
+		void handleMsg(const string &str);
 		void updateR(void);
 		static void *getUpdateR(void *This)
 		{

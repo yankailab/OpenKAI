@@ -59,7 +59,7 @@ namespace kai
 		uint64_t m_tStamp;
 
         GEOMETRY_POINT *m_pGpSM;
-        int m_nGpSM;
+//        int m_nGpSM;
 	};
 
 }

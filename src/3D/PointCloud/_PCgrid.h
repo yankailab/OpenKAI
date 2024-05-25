@@ -9,7 +9,8 @@ namespace kai
 {
 	struct PC_GRID_CELL
 	{
-		uint32_t m_nP; // nPoints inside the cell
+		uint32_t m_nP = 0; // nPoints inside the cell
+		uint32_t m_nPactivate = 1;
 
 		void clear(void)
 		{
@@ -27,6 +28,11 @@ namespace kai
 		vector<vInt3> m_vCellIdx;
 		LineSet m_LS;
 
+		bool empty(void)
+		{
+			return m_vCellIdx.empty();
+		}
+
 		void clearCellIdx(void)
 		{
 			m_vCellIdx.clear();
@@ -38,12 +44,6 @@ namespace kai
 			m_LS.points_.clear();
 			m_LS.lines_.clear();
 			m_LS.colors_.clear();
-		}
-
-		void clearAll(void)
-		{
-			clearCellIdx();
-			clearLS();
 		}
 
 		void addCell(const vInt3 &vCidx)
@@ -60,10 +60,10 @@ namespace kai
 			m_LS.lines_.push_back(Vector2i{nP, nP + 1});
 		}
 
-		void generateLS(const vFloat2& vRx,
-						const vFloat2& vRy,
-						const vFloat2& vRz,
-						const vFloat3& vCsize)
+		void generateLS(const vFloat2 &vRx,
+						const vFloat2 &vRy,
+						const vFloat2 &vRz,
+						const vFloat3 &vCsize)
 		{
 			vFloat3 pO, pA, pB;
 
@@ -135,8 +135,9 @@ namespace kai
 				addCellLine(pA, pB);
 			}
 		}
-
 	};
+
+	#define PCGRID_ACTIVECELL_N 4
 
 	class _PCgrid : public _GeometryBase
 	{
@@ -150,10 +151,11 @@ namespace kai
 		virtual int check(void);
 
 		virtual bool initBuffer(void);
-		virtual void clear(void);
+		virtual void clearAllCells(void);
 		virtual PC_GRID_CELL *getCell(const vFloat3 &vP);
+
 		virtual LineSet *getGridLines(void);
-		virtual LineSet *getActiveCellLines(int cIdx);
+		virtual void getActiveCellLines(LineSet *pLS, int cIdx);
 
 		virtual void addPCstream(void *p, const uint64_t &tExpire);
 		virtual void addPCframe(void *p);
@@ -174,8 +176,9 @@ namespace kai
 
 		void updateActiveCell(void);
 
+		virtual void updatePCgrid(void);
+
 	private:
-		void updatePCgrid(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -187,7 +190,7 @@ namespace kai
 		PC_GRID_CELL *m_pCell;
 		int m_nCell;
 
-		int m_nPcellThr;
+		int m_nPcellActivate;
 
 		// point cloud input
 		vector<_GeometryBase *> m_vpGB;
@@ -220,15 +223,13 @@ namespace kai
 
 		// static grid
 		LineSet m_gridLine;
-		int m_gLineWidth;
 		vFloat3 m_vAxisColX;
 		vFloat3 m_vAxisColY;
 		vFloat3 m_vAxisColZ;
 
 		// active cells
-		PC_GRID_ACTIVE_CELL m_pActiveCells[2];
-		PC_GRID_ACTIVE_CELL *m_pActiveCell;	  // cells contain points
-		PC_GRID_ACTIVE_CELL *m_pSelectedCell; // cells selected
+		PC_GRID_ACTIVE_CELL m_pActiveCells[PCGRID_ACTIVECELL_N]; // active, alert, alarm, selected
+		PC_GRID_ACTIVE_CELL *m_pCellActive;
 	};
 
 }

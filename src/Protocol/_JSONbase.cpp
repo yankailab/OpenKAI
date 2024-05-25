@@ -166,7 +166,7 @@ namespace kai
         return false;
     }
 
-    void _JSONbase::handleMsg(string &str)
+    void _JSONbase::handleMsg(const string &str)
     {
         value json;
         IF_(!str2JSON(str, &json));
@@ -175,7 +175,7 @@ namespace kai
         string cmd = jo["cmd"].get<string>();
     }
 
-    bool _JSONbase::str2JSON(string &str, picojson::value *pJson)
+    bool _JSONbase::str2JSON(const string &str, picojson::value *pJson)
     {
         NULL_F(pJson);
 
@@ -187,7 +187,7 @@ namespace kai
         return true;
     }
 
-    void _JSONbase::md5(string &str, string *pDigest)
+    void _JSONbase::md5(const string &str, string *pDigest)
     {
         unsigned char digest[MD5_DIGEST_LENGTH];
         MD5((const unsigned char *)str.c_str(), str.length(), digest);

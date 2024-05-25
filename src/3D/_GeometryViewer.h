@@ -104,9 +104,13 @@ namespace kai
 				_PCgrid *p = (_PCgrid *)m_pGB;
 
 				if (m_bStatic)
+				{
 					m_ls = *p->getGridLines();
+				}
 				else
-					m_ls = *p->getActiveCellLines(m_iGridLS);
+				{
+					p->getActiveCellLines(&m_ls, m_iGridLS);
+				}
 			}
 		}
 

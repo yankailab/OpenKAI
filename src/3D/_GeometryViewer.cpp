@@ -143,7 +143,7 @@ namespace kai
 		// wait for the UI thread to get window ready
 		m_pT->sleepT(USEC_1SEC);
 
-		addAllGeometries();		
+		addAllGeometries();
 		resetCamPose();
 		updateCamPose();
 
@@ -152,10 +152,6 @@ namespace kai
 			m_pT->autoFPSfrom();
 
 			updateAllGeometries();
-
-			// m_aabb = m_PC.GetAxisAlignedBoundingBox();
-			// if (m_pUIstate)
-			// 	m_pUIstate->m_sMove = m_vDmove.constrain(m_aabb.Volume() * 0.0001);
 
 			m_pT->autoFPSto();
 		}
@@ -180,7 +176,7 @@ namespace kai
 				m_pWin->AddPointCloud(pG->m_name, &pG->m_tPC, &pG->m_mat);
 				break;
 			case pc_grid:
-				string n = (pG->m_bStatic) ? ("static" + pG->m_name) : ("dynamic" + pG->m_name);
+				string n = (pG->m_bStatic) ? ("static" + pG->m_name) : ("dynamic" + pG->m_name + i2str(pG->m_iGridLS));
 				m_pWin->RemoveGeometry(n);
 				m_pWin->AddLineSet(n, &pG->m_ls, &pG->m_mat);
 				break;
@@ -207,7 +203,7 @@ namespace kai
 				m_pWin->UpdatePointCloud(pG->m_name, &pG->m_tPC);
 				break;
 			case pc_grid:
-				m_pWin->UpdateLineSet("dynamic" + pG->m_name, &pG->m_ls, &pG->m_mat);
+				m_pWin->UpdateLineSet("dynamic" + pG->m_name + i2str(pG->m_iGridLS), &pG->m_ls, &pG->m_mat);
 				break;
 			}
 		}

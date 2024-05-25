@@ -99,7 +99,7 @@ namespace kai
 		}
 	}
 
-	void _GSVctrl::handleMsg(string &str)
+	void _GSVctrl::handleMsg(const string &str)
 	{
 		value json;
 		IF_(!str2JSON(str, &json));

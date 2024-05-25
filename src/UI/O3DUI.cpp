@@ -144,6 +144,9 @@ namespace open3d
                         auto pS = m_pScene->GetScene();
                         pS->GetScene()->RemoveGeometry(name);
 
+                        LineSet ls = *pLS;
+                        IF_(ls.IsEmpty());
+
                         MaterialRecord mr;
                         pMaterial->ToMaterialRecord(mr);
                         pS->AddGeometry(name, pLS, mr);

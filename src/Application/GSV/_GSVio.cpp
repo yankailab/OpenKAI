@@ -6,9 +6,13 @@ namespace kai
     _GSVio::_GSVio()
     {
         m_pDio = NULL;
-        m_iDin = 1;
-        m_iDout = 0;
-        m_iDout2 = 1;
+
+        m_iDinOn = 0;
+        m_iDinOff = 1;
+
+        m_iDoutLED = 0;
+        m_iDoutNO = 1;
+        m_iDoutNC = 2;
 
         m_bAlarm = false;
         m_bEnable = true;
@@ -22,11 +26,13 @@ namespace kai
     {
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
-		
 
-        pK->v("iDin", &m_iDin);
-        pK->v("iDout", &m_iDout);
-        pK->v("iDout2", &m_iDout2);
+        pK->v("iDinOn", &m_iDinOn);
+        pK->v("iDinOff", &m_iDinOff);
+
+        pK->v("iDoutLED", &m_iDoutLED);
+        pK->v("iDoutNO", &m_iDoutNO);
+        pK->v("iDoutNC", &m_iDoutNC);
 
         return true;
     }
@@ -73,15 +79,27 @@ namespace kai
     {
         IF_(check() < 0);
 
-        m_bEnable = m_pDio->readD(m_iDin);
+        bool bOn = m_pDio->readD(m_iDinOn);
+        bool bOff = m_pDio->readD(m_iDinOff);
 
-        m_pDio->writeD(m_iDout, m_bAlarm);
-        m_pDio->writeD(m_iDout2, m_bAlarm);
+        if (bOn)
+            setEnable(true);
+        else if (bOff)
+            setEnable(false);
+
+        m_pDio->writeD(m_iDoutLED, m_bEnable);
+        m_pDio->writeD(m_iDoutNO, m_bAlarm & m_bEnable);
+        m_pDio->writeD(m_iDoutNC, m_bAlarm & m_bEnable);
     }
 
     void _GSVio::setAlarm(bool bAlarm)
     {
         m_bAlarm = bAlarm;
+    }
+
+    void _GSVio::setEnable(bool bEnable)
+    {
+        m_bEnable = bEnable;
     }
 
     void _GSVio::console(void *pConsole)
@@ -101,7 +119,6 @@ namespace kai
         {
             pC->addMsg("Disabled");
         }
-
     }
 
 }

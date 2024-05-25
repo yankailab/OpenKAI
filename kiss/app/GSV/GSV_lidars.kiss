@@ -1,22 +1,7 @@
 {
-	"name":"pcFile",
-	"class":"_PCfile",
-	"bON":1,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"bLog":1,
-	"fName":"/home/kai/Downloads/office1.pcd",
-	"/fName":"/home/lab/Downloads/office1.pcd",
-	"nPresv":500000,
-}
-
-
-{
 	"name":"ps1",
 	"class":"_PCstream",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -29,7 +14,7 @@
 {
 	"name":"ps2",
 	"class":"_PCstream",
-	"bON":0,
+	"bON":2,
     {
 		"name":"thread",
 		"FPS":30,
@@ -42,7 +27,7 @@
 {
 	"name":"ps3",
 	"class":"_PCstream",
-	"bON":0,
+	"bON":3,
     {
 		"name":"thread",
 		"FPS":30,
@@ -55,7 +40,7 @@
 {
 	"name":"ps4",
 	"class":"_PCstream",
-	"bON":0,
+	"bON":4,
     {
 		"name":"thread",
 		"FPS":30,
@@ -68,7 +53,7 @@
 {
 	"name":"ps5",
 	"class":"_PCstream",
-	"bON":0,
+	"bON":5,
     {
 		"name":"thread",
 		"FPS":30,
@@ -81,7 +66,7 @@
 {
 	"name":"ps6",
 	"class":"_PCstream",
-	"bON":0,
+	"bON":6,
     {
 		"name":"thread",
 		"FPS":30,
