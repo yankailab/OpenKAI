@@ -225,10 +225,13 @@ namespace kai
 		}
 	}
 
-	PC_GRID_CELL *_PCgrid::getCell(const vInt3 &vPi)
+	PC_GRID_CELL *_PCgrid::getCell(const vInt3 &vC)
 	{
-		int i = vPi.x * m_dYZ + vPi.y * m_vDim.z + vPi.z;
+		IF_N(!m_vX.bInside(vC.x));
+		IF_N(!m_vY.bInside(vC.y));
+		IF_N(!m_vZ.bInside(vC.z));
 
+		int i = vC.x * m_dYZ + vC.y * m_vDim.z + vC.z;
 		return &m_pCell[i];
 	}
 
@@ -313,7 +316,7 @@ namespace kai
 		}
 	}
 
-	void _PCgrid::getActiveCellLines(LineSet* pLS, int cIdx)
+	void _PCgrid::getActiveCellLines(LineSet *pLS, int cIdx)
 	{
 		NULL_(pLS);
 		IF_(cIdx >= PCGRID_ACTIVECELL_N);
@@ -343,9 +346,16 @@ namespace kai
 			}
 		}
 
+		updateActiveCellLS(m_pCellActive);
+	}
+
+	void _PCgrid::updateActiveCellLS(PC_GRID_ACTIVE_CELL *pAcell)
+	{
+		NULL_(pAcell);
+
 		mutexLock();
-		m_pCellActive->clearLS();
-		m_pCellActive->generateLS(m_vRx, m_vRy, m_vRz, m_vCellSize);
+		pAcell->clearLS();
+		pAcell->generateLS(m_vRx, m_vRy, m_vRz, m_vCellSize);
 		mutexUnlock();
 	}
 

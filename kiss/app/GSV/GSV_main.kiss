@@ -97,6 +97,14 @@
 			"matLineWidth":30,
 			"matCol":[1,0,0,1],
 		}
+		{
+			"_GeometryBase":"gsvGrid",
+			"bStatic":0,
+			"iGridLS":3, /* selected cell */
+			"matName":"unlitLine",
+			"matLineWidth":30,
+			"matCol":[0,1,1,1],
+		}
 
 		{
 			"_GeometryBase":"ps1",
@@ -181,6 +189,7 @@
 	"vAxisColY":[0,1,0],
 	"vAxisColZ":[0,0,1],
 	"vGeometryBase":["psTest"],
+	"fCellConfig":"/home/kai/dev/OpenKAI/data/Livox/mid360_8_103.json",
 }
 
 

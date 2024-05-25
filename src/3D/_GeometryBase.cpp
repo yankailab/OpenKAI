@@ -13,6 +13,7 @@ namespace kai
     _GeometryBase::_GeometryBase()
     {
         m_type = geometry_unknown;
+        m_fConfig = "";
 
         m_vDefaultColor.set(1.0);
 
@@ -38,12 +39,18 @@ namespace kai
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("vDefaultColor", &m_vDefaultColor);
+        pK->v("fConfig", &m_fConfig);
 
         pK->v("vT", &m_vT);
         pK->v("vR", &m_vR);
         setTranslation(m_vT);
         setRotation(m_vR);
         updateTranslationMatrix();
+
+		if (!loadConfig())
+		{
+			LOG_I("Config load failed");
+		}
 
         return true;
     }
@@ -95,9 +102,9 @@ namespace kai
         m_vQ = vQ;
     }
 
-    void _GeometryBase::updateTranslationMatrix(bool bUseQuaternion, vDouble3* pRa)
+    void _GeometryBase::updateTranslationMatrix(bool bUseQuaternion, vDouble3 *pRa)
     {
-        if(bUseQuaternion)
+        if (bUseQuaternion)
             m_mT = getTranslationMatrix(m_vT, m_vQ, pRa);
         else
             m_mT = getTranslationMatrix(m_vT, m_vR, pRa);
@@ -105,7 +112,7 @@ namespace kai
         m_A = m_mT;
     }
 
-    Matrix4d _GeometryBase::getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR, vDouble3* pRa)
+    Matrix4d _GeometryBase::getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR, vDouble3 *pRa)
     {
         Matrix4d mT = Matrix4d::Identity();
         Vector3d eR(vR.x, vR.y, vR.z);
@@ -124,7 +131,7 @@ namespace kai
         return mT;
     }
 
-    Matrix4d _GeometryBase::getTranslationMatrix(const vDouble3 &vT, const vDouble4 &vQ, vDouble3* pRa)
+    Matrix4d _GeometryBase::getTranslationMatrix(const vDouble3 &vT, const vDouble4 &vQ, vDouble3 *pRa)
     {
         Matrix4d mT = Matrix4d::Identity();
         Vector4d eQ(vQ.x, vQ.y, vQ.z, vQ.w);
@@ -151,19 +158,15 @@ namespace kai
 
     vDouble3 _GeometryBase::getTranslation(void)
     {
-
     }
 
     vDouble3 _GeometryBase::getRotation(void)
     {
-
     }
-    
+
     vDouble4 _GeometryBase::getQuaternion(void)
     {
-
     }
-    
 
     void _GeometryBase::addGeometry(void *p, const uint64_t &tExpire)
     {
@@ -196,6 +199,65 @@ namespace kai
 
     void _GeometryBase::readSharedMem(void)
     {
+    }
+
+    bool _GeometryBase::loadConfig(void)
+    {
+        Kiss *pK = new Kiss();
+
+        if (!parseKiss(m_fConfig, pK))
+        {
+            DEL(pK);
+            return false;
+        }
+
+        Kiss *pKc = pK->root()->child("_GeometryBase");
+        if (pKc->empty())
+        {
+            DEL(pK);
+            return false;
+        }
+
+        vDouble3 vT, vR;
+        vT.clear();
+        vR.clear();
+
+        pKc->v("vT", &vT);
+        pKc->v("vR", &vR);
+
+        setTranslation(vT);
+        setRotation(vR);
+        updateTranslationMatrix(false);
+
+        return true;
+    }
+
+    bool _GeometryBase::saveConfig(void)
+    {
+        picojson::object o;
+        o.insert(make_pair("name", "_GeometryBase"));
+
+        picojson::array vT;
+        vT.push_back(value((double)m_vT.x));
+        vT.push_back(value((double)m_vT.y));
+        vT.push_back(value((double)m_vT.z));
+        o.insert(make_pair("vT", vT));
+
+        picojson::array vR;
+        vR.push_back(value((double)m_vR.x));
+        vR.push_back(value((double)m_vR.y));
+        vR.push_back(value((double)m_vR.z));
+        o.insert(make_pair("vR", vR));
+
+        string f = picojson::value(o).serialize();
+
+        _File *pF = new _File();
+        IF_F(!pF->open(m_fConfig, ios::out));
+        pF->write((uint8_t *)f.c_str(), f.length());
+        pF->close();
+        DEL(pF);
+
+        return true;
     }
 
     void _GeometryBase::mutexLock(void)

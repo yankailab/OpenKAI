@@ -46,9 +46,33 @@ namespace kai
 			m_LS.colors_.clear();
 		}
 
-		void addCell(const vInt3 &vCidx)
+		int getCellIdx(const vInt3 &vCidx)
 		{
+			for (int i = 0; i < m_vCellIdx.size(); i++)
+			{
+				vInt3 *pI = &m_vCellIdx[i];
+				if (*pI == vCidx)
+					return i;
+			}
+
+			return -1;
+		}
+
+		void deleteCell(const vInt3 &vCidx)
+		{
+			int i = getCellIdx(vCidx);
+			IF_(i < 0);
+
+			vector<vInt3>::iterator it = m_vCellIdx.begin() + i;
+			m_vCellIdx.erase(it);
+		}
+
+		bool addCell(const vInt3 &vCidx)
+		{
+			IF_F(getCellIdx(vCidx) >= 0);
+
 			m_vCellIdx.push_back(vCidx);
+			return true;
 		}
 
 		void addCellLine(const vFloat3 &pA,
@@ -137,7 +161,7 @@ namespace kai
 		}
 	};
 
-	#define PCGRID_ACTIVECELL_N 4
+#define PCGRID_ACTIVECELL_N 4
 
 	class _PCgrid : public _GeometryBase
 	{
@@ -161,7 +185,7 @@ namespace kai
 		virtual void addPCframe(void *p);
 
 	protected:
-		PC_GRID_CELL *getCell(const vInt3 &vPi);
+		PC_GRID_CELL *getCell(const vInt3 &vC);
 
 		void generateGridLines(void);
 		void addGridAxisLine(int nDa,
@@ -175,6 +199,7 @@ namespace kai
 							 const vFloat3 &vCol);
 
 		void updateActiveCell(void);
+		void updateActiveCellLS(PC_GRID_ACTIVE_CELL* pAcell);
 
 		virtual void updatePCgrid(void);
 

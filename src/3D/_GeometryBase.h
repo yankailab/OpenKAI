@@ -10,7 +10,9 @@
 
 #include "../Base/_ModuleBase.h"
 #include "../IPC/SharedMem.h"
+#include "../IO/_File.h"
 #include "../Utility/util.h"
+#include "../Utility/utilFile.h"
 #include "../Utility/utilTime.h"
 #include "../UI/_Console.h"
 
@@ -77,6 +79,9 @@ namespace kai
         virtual void writeSharedMem(void);
         virtual void readSharedMem(void);
 
+		virtual bool loadConfig(void);
+		virtual bool saveConfig(void);
+
     protected:
         void mutexLock(void);
         void mutexUnlock(void);
@@ -86,6 +91,7 @@ namespace kai
 
     protected:
         GEOMETRY_TYPE m_type;
+		string m_fConfig;
 
         vFloat3 m_vDefaultColor;
 
