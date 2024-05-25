@@ -33,7 +33,7 @@ namespace kai
 			return m_vCellIdx.empty();
 		}
 
-		void clearCellIdx(void)
+		void clearCells(void)
 		{
 			m_vCellIdx.clear();
 		}
@@ -69,7 +69,7 @@ namespace kai
 
 		bool addCell(const vInt3 &vCidx)
 		{
-			IF_F(getCellIdx(vCidx) >= 0);
+			IF_F(getCellIdx(vCidx) >= 0);	// already existed
 
 			m_vCellIdx.push_back(vCidx);
 			return true;

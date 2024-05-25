@@ -182,6 +182,7 @@ namespace kai
 		}
 
 		updateActiveCell();
+		updateActiveCellLS(m_pCellActive);
 	}
 
 	void _PCgrid::addPCstream(void *p, const uint64_t &tExpire)
@@ -227,9 +228,9 @@ namespace kai
 
 	PC_GRID_CELL *_PCgrid::getCell(const vInt3 &vC)
 	{
-		IF_N(!m_vX.bInside(vC.x));
-		IF_N(!m_vY.bInside(vC.y));
-		IF_N(!m_vZ.bInside(vC.z));
+		// IF_N(!m_vX.bInside(vC.x));
+		// IF_N(!m_vY.bInside(vC.y));
+		// IF_N(!m_vZ.bInside(vC.z));
 
 		int i = vC.x * m_dYZ + vC.y * m_vDim.z + vC.z;
 		return &m_pCell[i];
@@ -328,7 +329,7 @@ namespace kai
 
 	void _PCgrid::updateActiveCell(void)
 	{
-		m_pCellActive->clearCellIdx();
+		m_pCellActive->clearCells();
 
 		vInt3 vC;
 		for (int i = 0; i < m_vDim.x; i++)
@@ -345,8 +346,6 @@ namespace kai
 				}
 			}
 		}
-
-		updateActiveCellLS(m_pCellActive);
 	}
 
 	void _PCgrid::updateActiveCellLS(PC_GRID_ACTIVE_CELL *pAcell)

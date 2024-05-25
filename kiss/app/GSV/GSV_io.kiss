@@ -1,12 +1,36 @@
 {
-	"name":"GSVctrl",
-	"class":"_GSVctrl",
-	"bON":0,
+	"name":"ws",
+	"class":"_WebSocket",
+	"bON":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
-	"_Universe":"univ",
+    {
+		"name":"threadR",
+		"FPS":10,
+	}
+}
+
+{
+	"name":"GSVctrl",
+	"class":"_GSVctrl",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+    {
+		"name":"threadR",
+		"FPS":10,
+	}
+	"_IObase":"ws",
+	"msgFinishSend":"",
+	"msgFinishRecv":"EOJ",
+	"ieSendHB":500000,
+
+	"_GSVgrid":"gsvGrid",
+	"vGeometryBase":["psTest","ps1","ps2","ps3","ps4","ps5","ps6"],
 }
 
 {

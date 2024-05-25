@@ -1,0 +1,65 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["Livox2"],
+}
+
+{
+	"name":"LivoxLidar2",
+	"class":"LivoxLidar2",
+	"bON":0,
+	"bLog":0,
+	"fConfig":"/home/kai/dev/OpenKAI/data/Livox/mid360_8_103.json",
+}
+
+{
+	"name":"Livox2",
+	"class":"_Livox2",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"LivoxLidar2":"LivoxLidar2",
+	"lidarMode":1,
+	"nP":50000,
+	"SharedMem":"smWtest",
+}
+
+{
+	"name":"pcFile",
+	"class":"_PCfile",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"bLog":1,
+	"fName":"/home/kai/Downloads/office1.pcd",
+	"/fName":"/home/lab/Downloads/office1.pcd",
+	"nPresv":500000,
+	"SharedMem":"smWtest",
+}
+
+{
+	"name":"smWtest",
+	"class":"SharedMem",
+	"bON":1,
+	"shmName":"smPCtest",
+	"nB":1600000,
+	"bWriter":1,
+}

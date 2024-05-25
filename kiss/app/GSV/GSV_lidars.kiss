@@ -9,6 +9,7 @@
 	"bLog":1,
 	"nP":50000,
 	"SharedMem":"smR1",
+	"fConfig":"/home/kai/GSVconfig/ps1.kiss",
 }
 
 {
@@ -22,6 +23,7 @@
 	"bLog":1,
 	"nP":50000,
 	"SharedMem":"smR2",
+	"fConfig":"/home/kai/GSVconfig/ps2.kiss",
 }
 
 {
@@ -35,6 +37,7 @@
 	"bLog":1,
 	"nP":50000,
 	"SharedMem":"smR3",
+	"fConfig":"/home/kai/GSVconfig/ps3.kiss",
 }
 
 {
@@ -48,6 +51,7 @@
 	"bLog":1,
 	"nP":50000,
 	"SharedMem":"smR4",
+	"fConfig":"/home/kai/GSVconfig/ps4.kiss",
 }
 
 {
@@ -61,6 +65,7 @@
 	"bLog":1,
 	"nP":50000,
 	"SharedMem":"smR5",
+	"fConfig":"/home/kai/GSVconfig/ps5.kiss",
 }
 
 {
@@ -74,6 +79,7 @@
 	"bLog":1,
 	"nP":50000,
 	"SharedMem":"smR6",
+	"fConfig":"/home/kai/GSVconfig/ps6.kiss",
 }
 
 

@@ -24,8 +24,6 @@ namespace kai
 		IF_F(!this->_JSONbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		//		pK->v("iAct", &m_iAct);
-
 		return true;
 	}
 
@@ -39,6 +37,7 @@ namespace kai
         n = "";
         pK->v("_GSVgrid", &n);
         m_pGgrid = (_GSVgrid *)(pK->getInst(n));
+        IF_Fl(!m_pGgrid, n + ": not found");
 
 		vector<string> vGn;
 		pK->a("vGeometryBase", &vGn);
@@ -108,138 +107,141 @@ namespace kai
 		IF_(!jo["cmd"].is<string>());
 		string cmd = jo["cmd"].get<string>();
 
-		if (cmd == "resetTR")
-			resetTR(jo);
-		else if (cmd == "setT")
-			setT(jo);
-		else if (cmd == "setR")
-			setR(jo);
-		else if (cmd == "setSelectedCellIdx")
-			setSelectedCellIdx(jo);
-		else if (cmd == "saveConfig")
-			saveConfig(jo);
-		else if (cmd == "getConfig")
-			getConfig(jo);
+		if (cmd == "setTR")
+			setTR(jo);
+		else if (cmd == "saveGeometryConfig")
+			saveGeometryConfig(jo);
+		else if (cmd == "selectCell")
+			selectCell(jo);
+		else if (cmd == "setCellAlert")
+			setCellAlert(jo);
+		else if (cmd == "delCellAlert")
+			delCellAlert(jo);
+		else if (cmd == "saveGridConfig")
+			saveGridConfig(jo);
 	}
 
-	void _GSVctrl::resetTR(picojson::object &o)
-	{
-		IF_(check() < 0);
-
-		IF_(!o["_GeometryBase"].is<string>());
-
-		string gName = o["_GeometryBase"].get<string>();
-	}
-
-	void _GSVctrl::setT(picojson::object &o)
+	void _GSVctrl::setTR(picojson::object &o)
 	{
 		IF_(check() < 0);
 
 		IF_(!o["_GeometryBase"].is<string>());
 		string gName = o["_GeometryBase"].get<string>();
 
-		IF_(!o["vT"].is<value::array>());
-		value::array arr = o["vT"].get<value::array>();
-		value::array::iterator it = arr.begin();
 		vDouble3 vT;
+		IF_(!o["vTx"].is<double>());
+		vT.x = o["vTx"].get<double>();
+		IF_(!o["vTy"].is<double>());
+		vT.y = o["vTy"].get<double>();
+		IF_(!o["vTz"].is<double>());
+		vT.z = o["vTz"].get<double>();
 
-		IF_(!it->is<double>());
-		vT.x = it->get<double>();
-		it++;
-
-		IF_(!it->is<double>());
-		vT.y = it->get<double>();
-		it++;
-
-		IF_(!it->is<double>());
-		vT.z = it->get<double>();
-		it++;
+		vDouble3 vR;
+		IF_(!o["vRx"].is<double>());
+		vR.x = o["vRx"].get<double>();
+		IF_(!o["vRy"].is<double>());
+		vR.y = o["vRy"].get<double>();
+		IF_(!o["vRz"].is<double>());
+		vR.z = o["vRz"].get<double>();
 
 		_GeometryBase* pG = getGeometry(gName);
 		NULL_(pG);
 		pG->setTranslation(vT);
+		pG->setRotation(vR);
 		pG->updateTranslationMatrix(false);
 
+		// IF_(!o["vT"].is<value::array>());
+		// value::array arr = o["vT"].get<value::array>();
+		// value::array::iterator it = arr.begin();
+		// vDouble3 vT;
+
+		// IF_(!it->is<double>());
+		// vT.x = it->get<double>();
+		// it++;
+
+		// IF_(!it->is<double>());
+		// vT.y = it->get<double>();
+		// it++;
+
+		// IF_(!it->is<double>());
+		// vT.z = it->get<double>();
+		// it++;
 	}
 
-	void _GSVctrl::setR(picojson::object &o)
+	void _GSVctrl::saveGeometryConfig(picojson::object &o)
 	{
 		IF_(check() < 0);
 
 		IF_(!o["_GeometryBase"].is<string>());
 		string gName = o["_GeometryBase"].get<string>();
-
-		IF_(!o["vR"].is<value::array>());
-		value::array arr = o["vR"].get<value::array>();
-		value::array::iterator it = arr.begin();
-		vDouble3 vR;
-
-		IF_(!it->is<double>());
-		vR.x = it->get<double>();
-		it++;
-
-		IF_(!it->is<double>());
-		vR.y = it->get<double>();
-		it++;
-
-		IF_(!it->is<double>());
-		vR.z = it->get<double>();
-		it++;
 
 		_GeometryBase* pG = getGeometry(gName);
 		NULL_(pG);
-		pG->setTranslation(vR);
-		pG->updateTranslationMatrix(false);
 
+		pG->saveConfig();
 	}
 
-	void _GSVctrl::setSelectedCellIdx(picojson::object &o)
+	void _GSVctrl::selectCell(picojson::object &o)
 	{
 		IF_(check() < 0);
 
-		IF_(!o["_GeometryBase"].is<string>());
-		string gName = o["_GeometryBase"].get<string>();
+		vInt3 vC;
 
+		IF_(!o["vCx"].is<double>());
+		vC.x = o["vCx"].get<double>();
 
-		IF_(!o["vIdx"].is<value::array>());
-		value::array arr = o["vIdx"].get<value::array>();
-		value::array::iterator it = arr.begin();
-		vInt3 vIdx;
+		IF_(!o["vCy"].is<double>());
+		vC.y = o["vCy"].get<double>();
 
-		IF_(!it->is<double>());
-		vIdx.x = it->get<double>();
-		it++;
+		IF_(!o["vCz"].is<double>());
+		vC.z = o["vCz"].get<double>();
 
-		IF_(!it->is<double>());
-		vIdx.y = it->get<double>();
-		it++;
-
-		IF_(!it->is<double>());
-		vIdx.z = it->get<double>();
-		it++;
-
-
-
+		m_pGgrid->selectCell(vC);
 	}
 
-	void _GSVctrl::saveConfig(picojson::object &o)
+	void _GSVctrl::setCellAlert(picojson::object &o)
 	{
 		IF_(check() < 0);
 
-		IF_(!o["_GeometryBase"].is<string>());
-		string gName = o["_GeometryBase"].get<string>();
+		vInt3 vC;
 
-		//TODO: save calib to file here
-		//TODO: save active cells to file here
+		IF_(!o["vCx"].is<double>());
+		vC.x = o["vCx"].get<double>();
 
+		IF_(!o["vCy"].is<double>());
+		vC.y = o["vCy"].get<double>();
+
+		IF_(!o["vCz"].is<double>());
+		vC.z = o["vCz"].get<double>();
+
+		m_pGgrid->addAlertCell(vC);
 	}
 
-	void _GSVctrl::getConfig(picojson::object &o)
+	void _GSVctrl::delCellAlert(picojson::object &o)
 	{
 		IF_(check() < 0);
 
-		sendConfig();
+		vInt3 vC;
+
+		IF_(!o["vCx"].is<double>());
+		vC.x = o["vCx"].get<double>();
+
+		IF_(!o["vCy"].is<double>());
+		vC.y = o["vCy"].get<double>();
+
+		IF_(!o["vCz"].is<double>());
+		vC.z = o["vCz"].get<double>();
+
+		m_pGgrid->deleteAlertCell(vC);
 	}
+
+	void _GSVctrl::saveGridConfig(picojson::object &o)
+	{
+		IF_(check() < 0);
+
+		m_pGgrid->saveConfig();
+	}
+
 
 	void _GSVctrl::send(void)
 	{

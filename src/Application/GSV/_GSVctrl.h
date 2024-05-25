@@ -40,13 +40,14 @@ namespace kai
 		}
 
 		// UI handler
-		void resetTR(picojson::object &o);
-		void setT(picojson::object &o);
-		void setR(picojson::object &o);
-		void setSelectedCellIdx(picojson::object &o);
+		void setTR(picojson::object &o);
+		void saveGeometryConfig(picojson::object &o);
 
-		void saveConfig(picojson::object &o);
-		void getConfig(picojson::object &o);
+		void selectCell(picojson::object &o);
+		void setCellAlert(picojson::object &o);
+		void delCellAlert(picojson::object &o);
+		void saveGridConfig(picojson::object &o);
+
 
 		void handleMsg(const string &str);
 		void updateR(void);

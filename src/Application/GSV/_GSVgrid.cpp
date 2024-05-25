@@ -34,17 +34,21 @@ namespace kai
 			LOG_I("Config load failed");
 		}
 
+		m_pCellSelected->clearCells();
+		m_pCellSelected->addCell(m_vCselected);
+
+
 		// test
-		vInt3 vCellIdx = {10, 10, 10};
-		int nPalarm = 29000;
+		// vInt3 vCellIdx = {5, 5, 5};
+		// int nPalarm = 10000;
 
-		m_pCellAlert->clearCellIdx();
-		m_pCellAlert->addCell(vCellIdx);
+		// m_pCellAlert->clearCells();
+		// m_pCellAlert->addCell(vCellIdx);
 
-		updateActiveCellLS(m_pCellAlert);
+		// updateActiveCellLS(m_pCellAlert);
 
-		PC_GRID_CELL *pC = getCell(vCellIdx);
-		pC->m_nPactivate = nPalarm;
+		// PC_GRID_CELL *pC = getCell(vCellIdx);
+		// pC->m_nPactivate = nPalarm;
 
 		return true;
 	}
@@ -58,6 +62,7 @@ namespace kai
 		n = "";
 		pK->v("_GSVio", &n);
 		m_pGio = (_GSVio *)(pK->getInst(n));
+        IF_Fl(!m_pGio, n + ": not found");
 
 		return true;
 	}
@@ -86,7 +91,7 @@ namespace kai
 		pKc->a("vNpAlarm", &vNpAlarm);
 		DEL(pKc);
 
-		m_pCellAlert->clearCellIdx();
+		m_pCellAlert->clearCells();
 		for (int i = 0; i < vX.size(); i++)
 		{
 			vInt3 vC(vX[i], vY[i], vZ[i]);
@@ -104,6 +109,8 @@ namespace kai
 
 	bool _GSVgrid::saveConfig(void)
 	{
+//		calibAlertCellNpAlarm();
+
 		picojson::object o;
 		o.insert(make_pair("name", "cellAlert"));
 
@@ -115,7 +122,7 @@ namespace kai
 
 			vX.push_back(value((double)vC.x));
 			vY.push_back(value((double)vC.y));
-			vZ.push_back(value((double)vC.y));
+			vZ.push_back(value((double)vC.z));
 			vNpAlarm.push_back(value((double)pC->m_nPactivate));
 		}
 
@@ -167,7 +174,7 @@ namespace kai
 		IF_(check() < 0);
 
 		// alarm cell
-		m_pCellAlarm->clearCellIdx();
+		m_pCellAlarm->clearCells();
 
 		for (vInt3 vCi : m_pCellAlert->m_vCellIdx)
 		{
@@ -187,7 +194,7 @@ namespace kai
 		updateActiveCellLS(m_pCellAlert);
 
 		// selected cell
-		updateActiveCellLS(m_pCellAlert);
+		updateActiveCellLS(m_pCellSelected);
 	}
 
 	bool _GSVgrid::addAlertCell(const vInt3 vC)
@@ -218,7 +225,7 @@ namespace kai
 
 		m_vCselected = vC;
 
-		m_pCellSelected->clearCellIdx();
+		m_pCellSelected->clearCells();
 		m_pCellSelected->addCell(m_vCselected);
 //		updateActiveCellLS(m_pCellSelected);
 	}

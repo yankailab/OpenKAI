@@ -139,7 +139,17 @@ namespace kai
         IF_(!m_pSM->bOpen());
         IF_(m_pSM->bWriter());
 
-		memcpy(m_pP, m_pSM->p(), m_nP * sizeof(GEOMETRY_POINT));
+//		memcpy(m_pP, m_pSM->p(), m_nP * sizeof(GEOMETRY_POINT));
+        GEOMETRY_POINT* pSM = (GEOMETRY_POINT*)m_pSM->p();
+        for(int i=0; i<m_nP; i++)
+        {
+            GEOMETRY_POINT p = pSM[i];
+            Vector3d eV = m_A * v2e(p.m_vP).cast<double>();
+            p.m_vP = e2v((Vector3f)eV.cast<float>());
+
+            m_pP[m_iP] = p;
+            m_iP = iInc(m_iP, m_nP);
+        }
     }
 
     void _PCstream::copyTo(PointCloud *pPC, const uint64_t& tExpire)
