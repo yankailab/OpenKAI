@@ -19,10 +19,12 @@ namespace kai
         virtual bool start(void);
 		virtual int check(void);
 
+		bool selectCell(const vInt3 vC);
 		bool addAlertCell(const vInt3 vC);
 		void deleteAlertCell(const vInt3 vC);
 		void calibAlertCellNpAlarm(void);
-		bool selectCell(const vInt3 vC);
+
+		void setNpAlertSensitivity(int s);
 
 		bool loadConfig(void);
 		bool saveConfig(void);

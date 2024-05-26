@@ -109,7 +109,7 @@ namespace kai
 
 	bool _GSVgrid::saveConfig(void)
 	{
-//		calibAlertCellNpAlarm();
+		calibAlertCellNpAlarm();
 
 		picojson::object o;
 		o.insert(make_pair("name", "cellAlert"));
@@ -180,7 +180,7 @@ namespace kai
 		{
 			PC_GRID_CELL *pC = getCell(vCi);
 			IF_CONT(!pC);
-			IF_CONT(pC->m_nP < pC->m_nPactivate);
+			IF_CONT(pC->m_nP < pC->m_nPactivate + m_nPalertSensitivity);
 
 			m_pCellAlarm->addCell(vCi);
 		}
@@ -195,6 +195,18 @@ namespace kai
 
 		// selected cell
 		updateActiveCellLS(m_pCellSelected);
+	}
+
+	bool _GSVgrid::selectCell(const vInt3 vC)
+	{
+		PC_GRID_CELL *pC = getCell(vC);
+		NULL_F(pC);
+
+		m_vCselected = vC;
+
+		m_pCellSelected->clearCells();
+		m_pCellSelected->addCell(m_vCselected);
+//		updateActiveCellLS(m_pCellSelected);
 	}
 
 	bool _GSVgrid::addAlertCell(const vInt3 vC)
@@ -218,16 +230,10 @@ namespace kai
 		}
 	}
 
-	bool _GSVgrid::selectCell(const vInt3 vC)
+	void _GSVgrid::setNpAlertSensitivity(int s)
 	{
-		PC_GRID_CELL *pC = getCell(vC);
-		NULL_F(pC);
-
-		m_vCselected = vC;
-
-		m_pCellSelected->clearCells();
-		m_pCellSelected->addCell(m_vCselected);
-//		updateActiveCellLS(m_pCellSelected);
+		m_nPalertSensitivity = s;
 	}
+
 
 }

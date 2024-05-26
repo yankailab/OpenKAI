@@ -147,6 +147,13 @@ namespace kai
             Vector3d eV = m_A * v2e(p.m_vP).cast<double>();
             p.m_vP = e2v((Vector3f)eV.cast<float>());
 
+            float bR = 0.1;
+            float bG = 0.1;
+            float d = p.m_vP.len();
+            p.m_vC.x = constrain<float>(1.0 - d * bR, 0, 1);
+            p.m_vC.y = constrain<float>(d * bG, 0, 1);
+            p.m_vC.z = 0;
+
             m_pP[m_iP] = p;
             m_iP = iInc(m_iP, m_nP);
         }

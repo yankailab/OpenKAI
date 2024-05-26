@@ -213,6 +213,32 @@ window.onload = function () {
         wsSocket.send(cmdStr);
     };
 
+    // params
+    $('#nPs').oninput = function (e) {
+        cmdSetParams();
+    };
+
+    $('#nPsInc').onclick = function (e) {
+        $('#nPs').value = parseFloat($('#nPs').value) + 1;
+        cmdSetParams();
+    };
+
+    $('#nPsDec').onclick = function (e) {
+        $('#nPs').value = parseFloat($('#nPs').value) - 1;
+        cmdSetParams();
+    };
+
+    function cmdSetParams() {
+        var cmd = {
+            cmd: 'setParams',
+            nPs: parseFloat($('#nPs').value),
+        };
+
+        cmdStr = JSON.stringify(cmd) + strEOJ;
+        wsSocket.send(cmdStr);
+    };
+
+
 };
 
 

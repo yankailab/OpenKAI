@@ -64,6 +64,7 @@
 			"nP":50000,
 			"rDummyDome":1000.0,
 			"matName":"defaultUnlit",
+			"/matName":"depth",
 			"matPointSize":1,
 		}
 
@@ -79,14 +80,14 @@
 			"iGridLS":0, /* active cells */
 			"matName":"unlitLine",
 			"matLineWidth":1,
-			"matCol":[0,1,0,1],
+			"matCol":[0.6, 0.6, 0.6, 1],
 		}
 		{
 			"_GeometryBase":"gsvGrid",
 			"bStatic":0,
 			"iGridLS":1, /* alert cells */
 			"matName":"unlitLine",
-			"matLineWidth":3,
+			"matLineWidth":2,
 			"matCol":[1,1,0,1],
 		}
 		{
@@ -178,7 +179,6 @@
 		"FPS":10,
 	}
 	"_GSVio":"GSVio",
-	"nPcellActivate":1,
 	"vPorigin":[0,0,0],
 	"vX":[-10,10],
 	"vY":[-10,10],

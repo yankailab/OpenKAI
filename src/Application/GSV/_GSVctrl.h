@@ -48,6 +48,8 @@ namespace kai
 		void delCellAlert(picojson::object &o);
 		void saveGridConfig(picojson::object &o);
 
+		void setParams(picojson::object &o);
+
 
 		void handleMsg(const string &str);
 		void updateR(void);

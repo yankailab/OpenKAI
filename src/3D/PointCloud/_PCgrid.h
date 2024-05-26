@@ -9,8 +9,8 @@ namespace kai
 {
 	struct PC_GRID_CELL
 	{
-		uint32_t m_nP = 0; // nPoints inside the cell
-		uint32_t m_nPactivate = 1;
+		int m_nP = 0; // nPoints inside the cell
+		int m_nPactivate = 1;
 
 		void clear(void)
 		{
@@ -214,8 +214,6 @@ namespace kai
 	protected:
 		PC_GRID_CELL *m_pCell;
 		int m_nCell;
-
-		int m_nPcellActivate;
 
 		// point cloud input
 		vector<_GeometryBase *> m_vpGB;

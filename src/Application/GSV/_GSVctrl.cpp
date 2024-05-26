@@ -119,6 +119,8 @@ namespace kai
 			delCellAlert(jo);
 		else if (cmd == "saveGridConfig")
 			saveGridConfig(jo);
+		else if (cmd == "setParams")
+			setParams(jo);
 	}
 
 	void _GSVctrl::setTR(picojson::object &o)
@@ -242,6 +244,15 @@ namespace kai
 		m_pGgrid->saveConfig();
 	}
 
+	void _GSVctrl::setParams(picojson::object &o)
+	{
+		IF_(check() < 0);
+
+		IF_(!o["nPs"].is<double>());
+		int s = o["nPs"].get<double>();
+
+		m_pGgrid->setNpAlertSensitivity(s);
+	}
 
 	void _GSVctrl::send(void)
 	{

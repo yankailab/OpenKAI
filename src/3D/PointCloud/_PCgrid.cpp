@@ -10,7 +10,6 @@ namespace kai
 		m_type = pc_grid;
 		m_pCell = NULL;
 		m_nCell = 0;
-		m_nPcellActivate = 1;
 		m_vDim.clear();
 		m_vPmin.clear();
 
@@ -38,8 +37,6 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-
-		pK->v("nPcellActivate", &m_nPcellActivate);
 
 		pK->v("vPorigin", &m_vPorigin);
 		pK->v("vX", &m_vX);
@@ -100,7 +97,7 @@ namespace kai
 		m_nCell = nCell;
 
 		for (int i = 0; i < m_nCell; i++)
-			m_pCell[i].m_nPactivate = m_nPcellActivate;
+			m_pCell[i].m_nPactivate = 1;
 
 		// prepare quick access params
 		m_vRx.set(m_vPorigin.x + m_vX.x * m_vCellSize.x,
@@ -340,7 +337,7 @@ namespace kai
 				{
 					vC.set(i, j, k);
 					PC_GRID_CELL *pC = getCell(vC);
-					IF_CONT(pC->m_nP < pC->m_nPactivate);
+					IF_CONT(pC->m_nP < 1);
 
 					m_pCellActive->addCell(vC);
 				}
