@@ -40,6 +40,7 @@ namespace kai
 		}
 
 		// UI handler
+		void updateTR(picojson::object &o);
 		void setTR(picojson::object &o);
 		void saveGeometryConfig(picojson::object &o);
 
@@ -49,7 +50,6 @@ namespace kai
 		void saveGridConfig(picojson::object &o);
 
 		void setParams(picojson::object &o);
-
 
 		void handleMsg(const string &str);
 		void updateR(void);

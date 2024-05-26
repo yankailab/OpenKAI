@@ -144,7 +144,7 @@ namespace kai
                 Vector3d vP(pP->x, pP->y, pP->z);
                 vP *= 0.001;
                 vP = m_A * vP;
-                add(vP, Vector3f{m_vDefaultColor.x, m_vDefaultColor.y, m_vDefaultColor.z}, tStamp);
+                add(vP, Vector3f{m_vColorDefault.x, m_vColorDefault.y, m_vColorDefault.z}, tStamp);
             }
         }
         else if (pD->data_type == kLivoxLidarCartesianCoordinateLowData)

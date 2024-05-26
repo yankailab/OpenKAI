@@ -65,7 +65,7 @@ namespace kai
 			else if (m_type == pc_vol_ball)
 			{
 				vFloat3 vR = vP - m_vC;
-				float r = vR.r();
+				float r = vR.len();
 				if (r < m_vR.x)
 					bInside = false;
 				if (r > m_vR.y)
@@ -75,7 +75,7 @@ namespace kai
 			{
 				vFloat3 vR = vP - m_vC;
 				vR.z = 0.0;
-				float r = vR.r();
+				float r = vR.len();
 				if (r < m_vR.x)
 					bInside = false;
 				if (r > m_vR.y)

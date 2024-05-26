@@ -107,7 +107,9 @@ namespace kai
 		IF_(!jo["cmd"].is<string>());
 		string cmd = jo["cmd"].get<string>();
 
-		if (cmd == "setTR")
+		if (cmd == "updateTR")
+			updateTR(jo);
+		else if (cmd == "setTR")
 			setTR(jo);
 		else if (cmd == "saveGeometryConfig")
 			saveGeometryConfig(jo);
@@ -121,6 +123,32 @@ namespace kai
 			saveGridConfig(jo);
 		else if (cmd == "setParams")
 			setParams(jo);
+	}
+
+	void _GSVctrl::updateTR(picojson::object &o)
+	{
+		IF_(check() < 0);
+
+		IF_(!o["_GeometryBase"].is<string>());
+		string gName = o["_GeometryBase"].get<string>();
+
+		_GeometryBase* pG = getGeometry(gName);
+		NULL_(pG);
+
+		vDouble3 vT = pG->getTranslation();
+		vDouble3 vR = pG->getRotation();
+
+		object r;
+		JO(r, "cmd", "updateTR");
+		JO(r, "_GeometryBase", gName);
+		JO(r, "vTx", vT.x);
+		JO(r, "vTy", vT.y);
+		JO(r, "vTz", vT.z);
+		JO(r, "vRx", vR.x);
+		JO(r, "vRy", vR.y);
+		JO(r, "vRz", vR.z);
+
+		sendMsg(r);
 	}
 
 	void _GSVctrl::setTR(picojson::object &o)
@@ -281,16 +309,7 @@ namespace kai
 	void _GSVctrl::sendConfig(void)
 	{
 		IF_(check() < 0);
-
-		// m_msg = "Config updated";
-		// LivoxAutoScanConfig c = m_pLivox->getConfig();
-
-		// object o;
-		// JO(o, "cmd", "getConfig");
-
-		// sendMsg(o);
 	}
-
 
 	_GeometryBase* _GSVctrl::getGeometry(const string& n)
 	{

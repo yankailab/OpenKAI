@@ -9,7 +9,12 @@
 	"bLog":1,
 	"nP":50000,
 	"SharedMem":"smR1",
-	"fConfig":"/home/kai/GSVconfig/ps1.kiss",
+	"fConfig":"/home/lab/GSVconfig/ps1.kiss",
+
+	"vkColR":[0,10],
+	"vkColG":[3,15],
+	"vkColB":[12,100],
+	"bColOverwrite":1,
 }
 
 {
@@ -23,7 +28,12 @@
 	"bLog":1,
 	"nP":50000,
 	"SharedMem":"smR2",
-	"fConfig":"/home/kai/GSVconfig/ps2.kiss",
+	"fConfig":"/home/lab/GSVconfig/ps2.kiss",
+
+	"vkColR":[0,10],
+	"vkColG":[3,15],
+	"vkColB":[12,100],
+	"bColOverwrite":1,
 }
 
 {
@@ -37,7 +47,12 @@
 	"bLog":1,
 	"nP":50000,
 	"SharedMem":"smR3",
-	"fConfig":"/home/kai/GSVconfig/ps3.kiss",
+	"fConfig":"/home/lab/GSVconfig/ps3.kiss",
+
+	"vkColR":[0,10],
+	"vkColG":[3,15],
+	"vkColB":[12,100],
+	"bColOverwrite":1,
 }
 
 {
@@ -51,7 +66,12 @@
 	"bLog":1,
 	"nP":50000,
 	"SharedMem":"smR4",
-	"fConfig":"/home/kai/GSVconfig/ps4.kiss",
+	"fConfig":"/home/lab/GSVconfig/ps4.kiss",
+
+	"vkColR":[0,10],
+	"vkColG":[3,15],
+	"vkColB":[12,100],
+	"bColOverwrite":1,
 }
 
 {
@@ -65,7 +85,12 @@
 	"bLog":1,
 	"nP":50000,
 	"SharedMem":"smR5",
-	"fConfig":"/home/kai/GSVconfig/ps5.kiss",
+	"fConfig":"/home/lab/GSVconfig/ps5.kiss",
+
+	"vkColR":[0,10],
+	"vkColG":[3,15],
+	"vkColB":[12,100],
+	"bColOverwrite":1,
 }
 
 {
@@ -79,7 +104,12 @@
 	"bLog":1,
 	"nP":50000,
 	"SharedMem":"smR6",
-	"fConfig":"/home/kai/GSVconfig/ps6.kiss",
+	"fConfig":"/home/lab/GSVconfig/ps6.kiss",
+
+	"vkColR":[0,10],
+	"vkColG":[3,15],
+	"vkColB":[12,100],
+	"bColOverwrite":1,
 }
 
 

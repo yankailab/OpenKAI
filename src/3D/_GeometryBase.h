@@ -93,7 +93,13 @@ namespace kai
         GEOMETRY_TYPE m_type;
 		string m_fConfig;
 
-        vFloat3 m_vDefaultColor;
+        // material overwrite
+        vFloat3 m_vColorDefault;
+        vFloat2 m_vkColR;
+        vFloat2 m_vkColG;
+        vFloat2 m_vkColB;
+        vFloat3 m_vkColOv;
+        bool m_bColOverwrite;
 
         // transform
         vDouble3 m_vT;

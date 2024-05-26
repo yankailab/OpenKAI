@@ -6,6 +6,18 @@ window.onload = function () {
     var strEOJ = "EOJ";
     var dV = 0.1;
 
+    // update config
+    $('#btnUpdateTR').onclick = function (e) {
+        var cmd = {
+            cmd: 'updateTR',
+            _GeometryBase: $('#_GeometryBase').value,
+        };
+
+        cmdStr = JSON.stringify(cmd) + strEOJ;
+        wsSocket.send(cmdStr);
+    };
+
+
     // T
     $('#vTxInc').onclick = function (e) {
         $('#vTx').value = parseFloat($('#vTx').value) + dV;
@@ -241,10 +253,15 @@ window.onload = function () {
 
 };
 
-
 function cmdHandler(jCmd) {
-    if (jCmd.cmd == "hb") {
-        $('#state').innerHTML = jCmd.s.toUpperCase();
-        $('#msg').innerHTML = jCmd.msg;
+    if (jCmd.cmd == "updateTR")
+    {
+        $('#_GeometryBase').value = jCmd._GeometryBase;
+        $('#vTx').value = jCmd.vTx;
+        $('#vTy').value = jCmd.vTy;
+        $('#vTz').value = jCmd.vTz;
+        $('#vRx').value = jCmd.vRx;
+        $('#vRy').value = jCmd.vRy;
+        $('#vRz').value = jCmd.vRz;
     }
 }

@@ -15,7 +15,11 @@ namespace kai
         m_type = geometry_unknown;
         m_fConfig = "";
 
-        m_vDefaultColor.set(1.0);
+        m_vColorDefault.set(1.0);
+        m_vkColR.set(0, 10.0);
+        m_vkColG.set(5, 15.0);
+        m_vkColB.set(10, 20.0);
+        m_bColOverwrite = false;
 
         m_vT.clear();
         m_vR.clear();
@@ -38,8 +42,18 @@ namespace kai
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        pK->v("vDefaultColor", &m_vDefaultColor);
         pK->v("fConfig", &m_fConfig);
+
+        pK->v("vColorDefault", &m_vColorDefault);
+        pK->v("vkColR", &m_vkColR);
+        pK->v("vkColG", &m_vkColG);
+        pK->v("vkColB", &m_vkColB);
+        pK->v("bColOverwrite", &m_bColOverwrite);
+        m_vkColOv.set(
+            1.0 / m_vkColR.len(),
+            1.0 / m_vkColG.len(),
+            1.0 / m_vkColB.len()
+        );
 
         pK->v("vT", &m_vT);
         pK->v("vR", &m_vR);
@@ -47,10 +61,10 @@ namespace kai
         setRotation(m_vR);
         updateTranslationMatrix();
 
-		if (!loadConfig())
-		{
-			LOG_I("Config load failed");
-		}
+        if (!loadConfig())
+        {
+            LOG_I("Config load failed");
+        }
 
         return true;
     }
@@ -158,14 +172,17 @@ namespace kai
 
     vDouble3 _GeometryBase::getTranslation(void)
     {
+        return m_vT;
     }
 
     vDouble3 _GeometryBase::getRotation(void)
     {
+        return m_vR;
     }
 
     vDouble4 _GeometryBase::getQuaternion(void)
     {
+        return m_vQ;
     }
 
     void _GeometryBase::addGeometry(void *p, const uint64_t &tExpire)

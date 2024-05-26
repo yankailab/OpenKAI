@@ -37,7 +37,6 @@ namespace kai
 		m_pCellSelected->clearCells();
 		m_pCellSelected->addCell(m_vCselected);
 
-
 		// test
 		// vInt3 vCellIdx = {5, 5, 5};
 		// int nPalarm = 10000;
@@ -62,7 +61,7 @@ namespace kai
 		n = "";
 		pK->v("_GSVio", &n);
 		m_pGio = (_GSVio *)(pK->getInst(n));
-        IF_Fl(!m_pGio, n + ": not found");
+		IF_Fl(!m_pGio, n + ": not found");
 
 		return true;
 	}
@@ -206,7 +205,7 @@ namespace kai
 
 		m_pCellSelected->clearCells();
 		m_pCellSelected->addCell(m_vCselected);
-//		updateActiveCellLS(m_pCellSelected);
+		//		updateActiveCellLS(m_pCellSelected);
 	}
 
 	bool _GSVgrid::addAlertCell(const vInt3 vC)
@@ -235,5 +234,26 @@ namespace kai
 		m_nPalertSensitivity = s;
 	}
 
+	void _GSVgrid::autoFindAlertCells(vFloat2 &vRx, vFloat2 &vRy, vFloat2 &vRz)
+	{
+		// X plus YZ plane
+		// pC = getCell(vFloat3(vRx.y, vRy.mid(), vRz.mid()));
+
+		// vInt3 vC;
+		// for (int i = 0; i < m_vDim.x; i++)
+		// {
+		// 	for (int j = 0; j < m_vDim.y; j++)
+		// 	{
+		// 		for (int k = 0; k < m_vDim.z; k++)
+		// 		{
+		// 			vC.set(i, j, k);
+		// 			PC_GRID_CELL *pC = getCell(vC);
+		// 			IF_CONT(pC->m_nP < 1);
+
+		// 			m_pCellActive->addCell(vC);
+		// 		}
+		// 	}
+		// }
+	}
 
 }

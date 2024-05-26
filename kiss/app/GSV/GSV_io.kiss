@@ -58,8 +58,8 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"/port":"/dev/ttyS0",
-	"port":"/dev/ttyUSB0",
+	"port":"/dev/ttyS0",
+	"/port":"/dev/ttyUSB0",
 	"baud":115200,
 	"parity":"N",
 }

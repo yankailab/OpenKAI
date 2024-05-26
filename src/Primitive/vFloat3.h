@@ -190,11 +190,6 @@ namespace kai
 
 			return true;
 		}
-
-		float r(void)
-		{
-			return sqrt((x * x) + (y * y) + (z * z));
-		}
 	};
 
 }

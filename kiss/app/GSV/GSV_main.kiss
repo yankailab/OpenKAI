@@ -5,7 +5,9 @@
 	"bLog":1,
 	"bStdErr":1,
 	"vInclude":[
-		"a/home/kai/dev/OpenKAI/kiss/app/GSV/GSV_lidars.kiss",
+		"/home/lab/dev/OpenKAI/kiss/app/GSV/GSV_lidars.kiss",
+		"/home/lab/dev/OpenKAI/kiss/app/GSV/GSV_io.kiss",
+
 		"/home/kai/dev/OpenKAI/kiss/app/GSV/GSV_io.kiss",
 	],
 }
@@ -18,7 +20,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["GSVgrid","GSVio","ebyte"],
+	"vBASE":["gsvGrid","GSVio","ebyte"],
 }
 
 {
@@ -70,7 +72,7 @@
 
 		{
 			"_GeometryBase":"/gsvGrid",
-			"bStatic":1,
+			"bStatic":1, /* constant grid */
 			"matName":"unlitLine",
 			"matLineWidth":1,
 		}
@@ -95,7 +97,7 @@
 			"bStatic":0,
 			"iGridLS":2, /* alarm cells */
 			"matName":"unlitLine",
-			"matLineWidth":30,
+			"matLineWidth":20,
 			"matCol":[1,0,0,1],
 		}
 		{
@@ -188,15 +190,16 @@
 	"vAxisColX":[1,0,0],
 	"vAxisColY":[0,1,0],
 	"vAxisColZ":[0,0,1],
-	"fConfig":"/home/kai/GSVconfig/gsvConfig.kiss",
-	"vGeometryBase":["psTest"],
+	"/fConfig":"/home/kai/GSVconfig/gsvConfig.kiss",
+	"fConfig":"/home/lab/GSVconfig/gsvConfig.kiss",
+	"vGeometryBase":["psTest","ps1","ps2","ps3","ps4","ps5","ps6"],
 }
 
 
 {
 	"name":"psTest",
 	"class":"_PCstream",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -205,6 +208,10 @@
 	"nP":50000,
 	"SharedMem":"smRtest",
 	"fConfig":"/home/kai/GSVconfig/psTest.kiss",
+	"vkColR":[0,10],
+	"vkColG":[5,15],
+	"vkColB":[50,100],
+	"bColOverwrite":1,
 }
 
 {

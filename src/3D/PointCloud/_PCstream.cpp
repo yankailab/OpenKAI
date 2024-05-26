@@ -29,7 +29,7 @@ namespace kai
     bool _PCstream::init(void *pKiss)
     {
         IF_F(!this->_GeometryBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+        Kiss *pK = (Kiss *)pKiss;
 
         pK->v("nP", &m_nP);
         IF_F(m_nP <= 0);
@@ -80,7 +80,7 @@ namespace kai
 
     void _PCstream::update(void)
     {
-//        sleep(1); // temporal, waiting for the data to be written into shared memory
+        //        sleep(1); // temporal, waiting for the data to be written into shared memory
 
         while (m_pT->bAlive())
         {
@@ -100,7 +100,7 @@ namespace kai
         writeSharedMem();
     }
 
-    void _PCstream::addPCstream(void *p, const uint64_t& tExpire)
+    void _PCstream::addPCstream(void *p, const uint64_t &tExpire)
     {
         IF_(check() < 0);
         NULL_(p);
@@ -112,7 +112,7 @@ namespace kai
 
         for (int i = 0; i < pS->m_nP; i++)
         {
-            GEOMETRY_POINT* pP = &pS->m_pP[i];
+            GEOMETRY_POINT *pP = &pS->m_pP[i];
             IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
 
             m_pP[m_iP] = *pP;
@@ -128,9 +128,9 @@ namespace kai
         IF_(!m_pSM->bOpen());
         IF_(!m_pSM->bWriter());
 
-        int nPw = small<int>(m_nP, m_pSM->nB()/sizeof(GEOMETRY_POINT) );
+        int nPw = small<int>(m_nP, m_pSM->nB() / sizeof(GEOMETRY_POINT));
 
-		memcpy(m_pSM->p(), m_pP, nPw * sizeof(GEOMETRY_POINT));
+        memcpy(m_pSM->p(), m_pP, nPw * sizeof(GEOMETRY_POINT));
     }
 
     void _PCstream::readSharedMem(void)
@@ -139,27 +139,30 @@ namespace kai
         IF_(!m_pSM->bOpen());
         IF_(m_pSM->bWriter());
 
-//		memcpy(m_pP, m_pSM->p(), m_nP * sizeof(GEOMETRY_POINT));
-        GEOMETRY_POINT* pSM = (GEOMETRY_POINT*)m_pSM->p();
-        for(int i=0; i<m_nP; i++)
+        //		memcpy(m_pP, m_pSM->p(), m_nP * sizeof(GEOMETRY_POINT));
+        GEOMETRY_POINT *pSM = (GEOMETRY_POINT *)m_pSM->p();
+        for (int i = 0; i < m_nP; i++)
         {
             GEOMETRY_POINT p = pSM[i];
             Vector3d eV = m_A * v2e(p.m_vP).cast<double>();
             p.m_vP = e2v((Vector3f)eV.cast<float>());
 
-            float bR = 0.1;
-            float bG = 0.1;
-            float d = p.m_vP.len();
-            p.m_vC.x = constrain<float>(1.0 - d * bR, 0, 1);
-            p.m_vC.y = constrain<float>(d * bG, 0, 1);
-            p.m_vC.z = 0;
+            if (m_bColOverwrite)
+            {
+                float d = p.m_vP.len();
+                p.m_vC.set(
+                    1.0 - (m_vkColR.constrain(d) - m_vkColR.x) * m_vkColOv.x,
+                    (m_vkColG.constrain(d) - m_vkColG.x) * m_vkColOv.y,
+                    (m_vkColB.constrain(d) - m_vkColB.x) * m_vkColOv.z
+                    );
+            }
 
             m_pP[m_iP] = p;
             m_iP = iInc(m_iP, m_nP);
         }
     }
 
-    void _PCstream::copyTo(PointCloud *pPC, const uint64_t& tExpire)
+    void _PCstream::copyTo(PointCloud *pPC, const uint64_t &tExpire)
     {
         IF_(check() < 0);
         NULL_(pPC);
@@ -168,15 +171,15 @@ namespace kai
 
         for (int i = 0; i < m_nP; i++)
         {
-            GEOMETRY_POINT* pP = &m_pP[i];
+            GEOMETRY_POINT *pP = &m_pP[i];
             IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
 
-        	pPC->points_.push_back(v2e(pP->m_vP).cast<double>());
-        	pPC->colors_.push_back(v2e(pP->m_vC).cast<double>());
+            pPC->points_.push_back(v2e(pP->m_vP).cast<double>());
+            pPC->colors_.push_back(v2e(pP->m_vC).cast<double>());
         }
     }
 
-    void _PCstream::add(const Vector3d &vP, const Vector3f &vC, const uint64_t& tStamp)
+    void _PCstream::add(const Vector3d &vP, const Vector3f &vC, const uint64_t &tStamp)
     {
         GEOMETRY_POINT *pP = &m_pP[m_iP];
         pP->m_vP = e2v((Vector3f)vP.cast<float>());
@@ -186,7 +189,7 @@ namespace kai
         m_iP = iInc(m_iP, m_nP);
     }
 
-    GEOMETRY_POINT* _PCstream::get(int i)
+    GEOMETRY_POINT *_PCstream::get(int i)
     {
         IF_N(i >= m_nP);
 
