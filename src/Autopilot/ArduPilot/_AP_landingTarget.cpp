@@ -118,7 +118,8 @@ namespace kai
 			if (m_pAP->getApMode() == AP_COPTER_GUIDED)
 			{
 				stop();
-				m_pAP->setApMode(AP_COPTER_LAND);
+//				m_pAP->setApMode(AP_COPTER_LAND);
+				m_pAP->setApMode(AP_COPTER_RTL);
 			}
 
 			return;
@@ -129,7 +130,11 @@ namespace kai
 		{
 			if (abs(m_dHdg) > m_hdgDz)
 			{
-				if (m_pAP->getApMode() == AP_COPTER_LAND)
+				// if (m_pAP->getApMode() == AP_COPTER_LAND)
+				// 	m_pAP->setApMode(AP_COPTER_GUIDED);
+
+				if (m_pAP->getApMode() == AP_COPTER_LAND || 
+					m_pAP->getApMode() == AP_COPTER_RTL)
 					m_pAP->setApMode(AP_COPTER_GUIDED);
 
 				setHdg(0, (m_dHdg > 0) ? m_yawRate : (-m_yawRate));
@@ -139,28 +144,32 @@ namespace kai
 			stop();
 		}
 
+		// if (m_pAP->getApMode() == AP_COPTER_GUIDED)
+		// 	m_pAP->setApMode(AP_COPTER_LAND);
+
 		if (m_pAP->getApMode() == AP_COPTER_GUIDED)
-			m_pAP->setApMode(AP_COPTER_LAND);
+			m_pAP->setApMode(AP_COPTER_RTL);
 
-		vFloat3 vP = m_oTarget.getPos();
-		m_lt.angle_x = (vP.x - m_vPsp.x) * m_vFov.x * m_kP;
-		m_lt.angle_y = (vP.y - m_vPsp.y) * m_vFov.y * m_kP;
-		m_lt.size_x = m_oTarget.getWidth() * m_vFov.x;
-		m_lt.size_y = m_oTarget.getHeight() * m_vFov.y;
-		m_lt.position_valid = 0;
 
-		float h = m_pDS->d(0);
-		if(h > 0)
-		{
-			IF_(h < m_hTouchdown);
-			m_lt.distance = h;
-		}
-		else
-		{
-			m_lt.distance = m_defaultDtgt;
-		}
+		// vFloat3 vP = m_oTarget.getPos();
+		// m_lt.angle_x = (vP.x - m_vPsp.x) * m_vFov.x * m_kP;
+		// m_lt.angle_y = (vP.y - m_vPsp.y) * m_vFov.y * m_kP;
+		// m_lt.size_x = m_oTarget.getWidth() * m_vFov.x;
+		// m_lt.size_y = m_oTarget.getHeight() * m_vFov.y;
+		// m_lt.position_valid = 0;
 
-		m_pAP->m_pMav->landingTarget(m_lt);
+		// float h = m_pDS->d(0);
+		// if(h > 0)
+		// {
+		// 	IF_(h < m_hTouchdown);
+		// 	m_lt.distance = h;
+		// }
+		// else
+		// {
+		// 	m_lt.distance = m_defaultDtgt;
+		// }
+
+		// m_pAP->m_pMav->landingTarget(m_lt);
 	}
 
 	bool _AP_landingTarget::findTag(void)

@@ -83,7 +83,7 @@ namespace kai
 
         if (state == "STANDBY")
         {
-            boxRecover();
+//            boxRecover();
             return;
         }
 

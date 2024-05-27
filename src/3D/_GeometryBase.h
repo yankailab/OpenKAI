@@ -58,7 +58,7 @@ namespace kai
         virtual void console(void *pConsole);
 
         virtual GEOMETRY_TYPE getType(void);
-		virtual bool initBuffer(void);
+		virtual bool initGrid(void);
         virtual void clear(void);
 
         virtual void setTranslation(const vDouble3 &vT);

@@ -33,17 +33,17 @@ namespace kai
 
 		Kiss *pK = (Kiss *)m_pKiss;
 
-        string n;
-        n = "";
-        pK->v("_GSVgrid", &n);
-        m_pGgrid = (_GSVgrid *)(pK->getInst(n));
-        IF_Fl(!m_pGgrid, n + ": not found");
+		string n;
+		n = "";
+		pK->v("_GSVgrid", &n);
+		m_pGgrid = (_GSVgrid *)(pK->getInst(n));
+		IF_Fl(!m_pGgrid, n + ": not found");
 
 		vector<string> vGn;
 		pK->a("vGeometryBase", &vGn);
 		for (string gn : vGn)
 		{
-			_GeometryBase* pG = (_GeometryBase *)(pK->getInst(gn));
+			_GeometryBase *pG = (_GeometryBase *)(pK->getInst(gn));
 			IF_CONT(!pG);
 
 			m_vpGB.push_back(pG);
@@ -107,12 +107,22 @@ namespace kai
 		IF_(!jo["cmd"].is<string>());
 		string cmd = jo["cmd"].get<string>();
 
-		if (cmd == "updateTR")
+		if (cmd == "updateGrid")
+			updateGrid(jo);
+		else if (cmd == "setGrid")
+			setGrid(jo);
+		else if (cmd == "saveGrid")
+			saveGrid(jo);
+		else if (cmd == "updateTR")
 			updateTR(jo);
 		else if (cmd == "setTR")
 			setTR(jo);
 		else if (cmd == "saveGeometryConfig")
 			saveGeometryConfig(jo);
+		else if (cmd == "setTRall")
+			setTRall(jo);
+		else if (cmd == "saveGeometryConfigAll")
+			saveGeometryConfigAll(jo);
 		else if (cmd == "selectCell")
 			selectCell(jo);
 		else if (cmd == "setCellAlert")
@@ -125,6 +135,55 @@ namespace kai
 			setParams(jo);
 	}
 
+	void _GSVctrl::updateGrid(picojson::object &o)
+	{
+		IF_(check() < 0);
+
+		vFloat3 vPo = m_pGgrid->getPorigin();
+		vFloat3 vCsize = m_pGgrid->getCellSize();
+		vInt2 vGx = m_pGgrid->getGridX();
+
+		object r;
+		JO(r, "cmd", "updateGrid");
+		JO(r, "pOx", vPo.x);
+		JO(r, "pOy", vPo.y);
+		JO(r, "pOz", vPo.z);
+		JO(r, "cSize", vCsize.x);
+		JO(r, "gSize", (double)vGx.len());
+
+		sendMsg(r);
+	}
+
+	void _GSVctrl::setGrid(picojson::object &o)
+	{
+		vDouble3 vPo;
+		IF_(!o["pOx"].is<double>());
+		vPo.x = o["pOx"].get<double>();
+		IF_(!o["pOy"].is<double>());
+		vPo.y = o["pOy"].get<double>();
+		IF_(!o["pOz"].is<double>());
+		vPo.z = o["pOz"].get<double>();
+
+		IF_(!o["cSize"].is<double>());
+		double cSize = o["cSize"].get<double>();
+		IF_(!o["gSize"].is<double>());
+		double gSize = o["gSize"].get<double>();
+
+		//TODO:
+		/*
+		pK->v("vPorigin", &m_vPorigin);
+		pK->v("vX", &m_vX);
+		pK->v("vY", &m_vY);
+		pK->v("vZ", &m_vZ);
+		pK->v("vCellSize", &m_vCellSize);
+		*/
+
+	}
+
+	void _GSVctrl::saveGrid(picojson::object &o)
+	{
+	}
+
 	void _GSVctrl::updateTR(picojson::object &o)
 	{
 		IF_(check() < 0);
@@ -132,7 +191,7 @@ namespace kai
 		IF_(!o["_GeometryBase"].is<string>());
 		string gName = o["_GeometryBase"].get<string>();
 
-		_GeometryBase* pG = getGeometry(gName);
+		_GeometryBase *pG = getGeometry(gName);
 		NULL_(pG);
 
 		vDouble3 vT = pG->getTranslation();
@@ -174,7 +233,7 @@ namespace kai
 		IF_(!o["vRz"].is<double>());
 		vR.z = o["vRz"].get<double>();
 
-		_GeometryBase* pG = getGeometry(gName);
+		_GeometryBase *pG = getGeometry(gName);
 		NULL_(pG);
 		pG->setTranslation(vT);
 		pG->setRotation(vR);
@@ -205,10 +264,50 @@ namespace kai
 		IF_(!o["_GeometryBase"].is<string>());
 		string gName = o["_GeometryBase"].get<string>();
 
-		_GeometryBase* pG = getGeometry(gName);
+		_GeometryBase *pG = getGeometry(gName);
 		NULL_(pG);
 
 		pG->saveConfig();
+	}
+
+	void _GSVctrl::setTRall(picojson::object &o)
+	{
+		vDouble3 vT;
+		IF_(!o["vTx"].is<double>());
+		vT.x = o["vTx"].get<double>();
+		IF_(!o["vTy"].is<double>());
+		vT.y = o["vTy"].get<double>();
+		IF_(!o["vTz"].is<double>());
+		vT.z = o["vTz"].get<double>();
+
+		vDouble3 vR;
+		IF_(!o["vRx"].is<double>());
+		vR.x = o["vRx"].get<double>();
+		IF_(!o["vRy"].is<double>());
+		vR.y = o["vRy"].get<double>();
+		IF_(!o["vRz"].is<double>());
+		vR.z = o["vRz"].get<double>();
+
+		for (_GeometryBase *pG : m_vpGB)
+		{
+			vDouble3 vTc = pG->getTranslation();
+			vDouble3 vRc = pG->getRotation();
+
+			vTc += vT;
+			vRc += vR;
+
+			pG->setTranslation(vTc);
+			pG->setRotation(vRc);
+			pG->updateTranslationMatrix(false);
+		}
+	}
+
+	void _GSVctrl::saveGeometryConfigAll(picojson::object &o)
+	{
+		for (_GeometryBase *pG : m_vpGB)
+		{
+			pG->saveConfig();
+		}
 	}
 
 	void _GSVctrl::selectCell(picojson::object &o)
@@ -311,12 +410,12 @@ namespace kai
 		IF_(check() < 0);
 	}
 
-	_GeometryBase* _GSVctrl::getGeometry(const string& n)
+	_GeometryBase *_GSVctrl::getGeometry(const string &n)
 	{
-		for(_GeometryBase* pG : m_vpGB)
+		for (_GeometryBase *pG : m_vpGB)
 		{
-			string* pN = pG->getName();
-			if(*pN == n)
+			string *pN = pG->getName();
+			if (*pN == n)
 				return pG;
 		}
 

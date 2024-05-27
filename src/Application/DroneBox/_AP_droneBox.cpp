@@ -7,7 +7,6 @@ namespace kai
     {
         m_pSC =NULL;
         m_pAP = NULL;
-        m_pAPlt = NULL;
 
         m_bAutoArm = false;
         m_altTakeoff = 20.0;
@@ -47,11 +46,6 @@ namespace kai
         m_pSC = (_StateControl *)(pK->getInst(n));
         IF_Fl(!m_pSC, n + ": not found");
 
-        n = "";
-        pK->v("_AP_landingTarget", &n);
-        m_pAPlt = (_AP_landingTarget *)(pK->getInst(n));
-        IF_Fl(!m_pAPlt, n + ": not found");
-
 		return true;
 	}
 
@@ -66,7 +60,6 @@ namespace kai
         NULL__(m_pSC, -1);
         NULL__(m_pAP, -1);
         NULL__(m_pAP->m_pMav, -1);
-        NULL__(m_pAPlt, -1);
 
         return this->_ModuleBase::check();
     }
@@ -133,8 +126,6 @@ namespace kai
             m_pAP->m_pMav->clNavTakeoff(m_altTakeoff + 1.0);
 
             IF_(alt < m_altTakeoff);
-
-            //TODO: record the home pos
 
             m_pSC->transit("AIRBORNE");
             return;

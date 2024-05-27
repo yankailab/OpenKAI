@@ -86,7 +86,7 @@ namespace kai
 
 		if (!m_bWriter)
 		{
-			shm_unlink(m_shmName.c_str());
+//			shm_unlink(m_shmName.c_str());
 		}
 	}
 

@@ -6,6 +6,40 @@ window.onload = function () {
     var strEOJ = "EOJ";
     var dV = 0.1;
 
+    // grid
+    $('#btnUpdateGrid').onclick = function (e) {
+        var cmd = {
+            cmd: 'updateGrid',
+        };
+
+        cmdStr = JSON.stringify(cmd) + strEOJ;
+        wsSocket.send(cmdStr);
+    };
+
+    $('#btnSetGrid').onclick = function (e) {
+        var cmd = {
+            cmd: 'setGrid',
+            pOx: parseFloat($('#pOx').value),
+            pOy: parseFloat($('#pOy').value),
+            pOz: parseFloat($('#pOz').value),
+            gSize: parseFloat($('#gSize').value),
+            cSize: parseFloat($('#cSize').value),
+        };
+
+        cmdStr = JSON.stringify(cmd) + strEOJ;
+        wsSocket.send(cmdStr);
+    };
+
+    $('#btnSaveGrid').onclick = function (e) {
+        var cmd = {
+            cmd: 'saveGrid',
+        };
+
+        cmdStr = JSON.stringify(cmd) + strEOJ;
+        wsSocket.send(cmdStr);
+    };
+    
+
     // update config
     $('#btnUpdateTR').onclick = function (e) {
         var cmd = {
@@ -133,6 +167,122 @@ window.onload = function () {
         wsSocket.send(cmdStr);
     };
 
+
+
+    // set TR all
+    // T
+    $('#vTxAllInc').onclick = function (e) {
+        $('#vTxAll').value = parseFloat($('#vTxAll').value) + dV;
+        cmdSetTRall();
+    };
+
+    $('#vTxAllDec').onclick = function (e) {
+        $('#vTxAll').value = parseFloat($('#vTxAll').value) - dV;
+        cmdSetTRall();
+    };
+
+    $('#vTyAllInc').onclick = function (e) {
+        $('#vTyAll').value = parseFloat($('#vTyAll').value) + dV;
+        cmdSetTRall();
+    };
+
+    $('#vTyAllDec').onclick = function (e) {
+        $('#vTyAll').value = parseFloat($('#vTyAll').value) - dV;
+        cmdSetTRall();
+    };
+
+    $('#vTzAllInc').onclick = function (e) {
+        $('#vTzAll').value = parseFloat($('#vTzAll').value) + dV;
+        cmdSetTRall();
+    };
+
+    $('#vTzAllDec').onclick = function (e) {
+        $('#vTzAll').value = parseFloat($('#vTzAll').value) - dV;
+        cmdSetTRall();
+    };
+
+
+    // R
+    $('#vRxAllInc').onclick = function (e) {
+        $('#vRxAll').value = parseFloat($('#vRxAll').value) + dV;
+        cmdSetTRall();
+    };
+
+    $('#vRxAllDec').onclick = function (e) {
+        $('#vRxAll').value = parseFloat($('#vRxAll').value) - dV;
+        cmdSetTRall();
+    };
+
+    $('#vRyAllInc').onclick = function (e) {
+        $('#vRyAll').value = parseFloat($('#vRyAll').value) + dV;
+        cmdSetTRall();
+    };
+
+    $('#vRyAllDec').onclick = function (e) {
+        $('#vRyAll').value = parseFloat($('#vRyAll').value) - dV;
+        cmdSetTRall();
+    };
+
+    $('#vRzAllInc').onclick = function (e) {
+        $('#vRzAll').value = parseFloat($('#vRzAll').value) + dV;
+        cmdSetTRall();
+    };
+
+    $('#vRzAllDec').onclick = function (e) {
+        $('#vRzAll').value = parseFloat($('#vRzAll').value) - dV;
+        cmdSetTRall();
+    };
+
+    // set TR all
+    $('#vTxAll').oninput = function (e) {
+        cmdSetTRall();
+    };
+
+    $('#vTyAll').oninput = function (e) {
+        cmdSetTRall();
+    };
+
+    $('#vTzAll').oninput = function (e) {
+        cmdSetTRall();
+    };
+
+    $('#vRxAll').oninput = function (e) {
+        cmdSetTRall();
+    };
+
+    $('#vRyAll').oninput = function (e) {
+        cmdSetTRall();
+    };
+
+    $('#vRzAll').oninput = function (e) {
+        cmdSetTRall();
+    };
+
+    function cmdSetTRall() {
+        var cmd = {
+            cmd: 'setTRall',
+            vTx: parseFloat($('#vTx').value),
+            vTy: parseFloat($('#vTy').value),
+            vTz: parseFloat($('#vTz').value),
+            vRx: parseFloat($('#vRx').value),
+            vRy: parseFloat($('#vRy').value),
+            vRz: parseFloat($('#vRz').value),
+        };
+
+        cmdStr = JSON.stringify(cmd) + strEOJ;
+        wsSocket.send(cmdStr);
+    };
+
+    $('#btnSaveTRall').onclick = function (e) {
+        var cmd = {
+            cmd: 'saveGeometryConfigAll',
+        };
+
+        cmdStr = JSON.stringify(cmd) + strEOJ;
+        wsSocket.send(cmdStr);
+    };
+
+    
 
     // C
     $('#vCxInc').onclick = function (e) {
@@ -263,5 +413,13 @@ function cmdHandler(jCmd) {
         $('#vRx').value = jCmd.vRx;
         $('#vRy').value = jCmd.vRy;
         $('#vRz').value = jCmd.vRz;
+    }
+    else if (jCmd.cmd == "updateGrid")
+    {
+        $('#pOx').value = jCmd.pOx;
+        $('#pOy').value = jCmd.pOy;
+        $('#pOz').value = jCmd.pOz;
+        $('#gSize').value = jCmd.gSize;
+        $('#cSize').value = jCmd.cSize;
     }
 }

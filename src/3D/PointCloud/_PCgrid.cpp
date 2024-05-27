@@ -51,7 +51,7 @@ namespace kai
 
 		pK->v("tExpire", &m_tExpire);
 
-		return initBuffer();
+		return initGrid();
 	}
 
 	bool _PCgrid::link(void)
@@ -78,12 +78,37 @@ namespace kai
 		return m_pT->start(getUpdate, this);
 	}
 
-	bool _PCgrid::initBuffer(void)
+	vFloat3 _PCgrid::getPorigin(void)
+	{
+		return m_vPorigin;
+	}
+	
+	vFloat3 _PCgrid::getCellSize(void)
+	{
+		return m_vCellSize;
+	}
+
+	vInt2 _PCgrid::getGridX(void)
+	{
+		return m_vX;
+	}
+
+	vInt2 _PCgrid::getGridY(void)
+	{
+		return m_vY;
+	}
+
+	vInt2 _PCgrid::getGridZ(void)
+	{
+		return m_vZ;
+	}
+
+	bool _PCgrid::initGrid(void)
 	{
 		float cVol = m_vCellSize.x * m_vCellSize.y * m_vCellSize.z;
 		IF_F(cVol <= 0);
 
-		// calc grid seize
+		// calc grid size
 		m_vDim.set(m_vX.len(),
 				   m_vY.len(),
 				   m_vZ.len());

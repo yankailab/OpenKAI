@@ -33,7 +33,7 @@ namespace kai
         virtual int check(void);
 
         // _GeometryBase
-		virtual bool initBuffer(void);
+		virtual bool initGrid(void);
         virtual void clear(void);
         virtual void addPCstream(void* p, const uint64_t& tExpire);
 

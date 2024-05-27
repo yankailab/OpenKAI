@@ -94,12 +94,15 @@ namespace kai
 
     void _GSVio::setAlarm(bool bAlarm)
     {
-        m_bAlarm = bAlarm;
+        m_bAlarm = bAlarm | m_bAlarm;
     }
 
     void _GSVio::setEnable(bool bEnable)
     {
         m_bEnable = bEnable;
+
+        if(!m_bEnable)
+            m_bAlarm = false;
     }
 
     void _GSVio::console(void *pConsole)

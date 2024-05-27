@@ -36,7 +36,6 @@ namespace kai
 	protected:
 		_StateControl* m_pSC;
 		_AP_base *m_pAP;
-		_AP_landingTarget *m_pAPlt;
 
 		bool m_bAutoArm;
 		float m_altTakeoff;

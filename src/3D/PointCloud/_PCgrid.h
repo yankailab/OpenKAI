@@ -174,13 +174,23 @@ namespace kai
 		virtual bool start(void);
 		virtual int check(void);
 
-		virtual bool initBuffer(void);
+		// grid
+		virtual bool initGrid(void);
+		virtual vFloat3 getPorigin(void);
+		virtual vFloat3 getCellSize(void);
+		virtual vInt2 getGridX(void);
+		virtual vInt2 getGridY(void);
+		virtual vInt2 getGridZ(void);
+
+		// cell
 		virtual void clearAllCells(void);
 		virtual PC_GRID_CELL *getCell(const vFloat3 &vP);
 
+		// drawing
 		virtual LineSet *getGridLines(void);
 		virtual void getActiveCellLines(LineSet *pLS, int cIdx);
 
+		// data
 		virtual void addPCstream(void *p, const uint64_t &tExpire);
 		virtual void addPCframe(void *p);
 

@@ -34,10 +34,10 @@ namespace kai
         pK->v("nP", &m_nP);
         IF_F(m_nP <= 0);
 
-        return initBuffer();
+        return initGrid();
     }
 
-    bool _PCstream::initBuffer(void)
+    bool _PCstream::initGrid(void)
     {
         mutexLock();
 

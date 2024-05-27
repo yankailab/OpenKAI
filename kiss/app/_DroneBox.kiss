@@ -94,7 +94,7 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":10,
+		"FPS":1,
 	}
 	"bLog":1,
 	"_StateControl":"state",

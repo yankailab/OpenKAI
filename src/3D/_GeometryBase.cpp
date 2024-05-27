@@ -92,7 +92,7 @@ namespace kai
         return m_type;
     }
 
-    bool _GeometryBase::initBuffer(void)
+    bool _GeometryBase::initGrid(void)
     {
         return false;
     }

@@ -35,10 +35,10 @@ namespace kai
         m_nPresvNext = m_nPresv;
         pK->v("nPresvNext", &m_nPresvNext);
 
-        return initBuffer();
+        return initGrid();
     }
 
-    bool _PCframe::initBuffer(void)
+    bool _PCframe::initGrid(void)
     {
         mutexLock();
 
