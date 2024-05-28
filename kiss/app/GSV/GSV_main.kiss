@@ -15,7 +15,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -191,6 +191,7 @@
 		"FPS":10,
 	}
 	"_GSVio":"GSVio",
+	"nMedWidth":3,
 	"vPorigin":[0,0,0],
 	"vX":[-10,10],
 	"vY":[-10,10],

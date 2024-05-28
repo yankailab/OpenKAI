@@ -38,6 +38,9 @@ namespace kai
 		T *update(T *pV)
 		{
 			NULL_N(pV);
+			
+			FilterBase<T>::add(*pV);
+
 			if (FilterBase<T>::m_nW < 3 ||
 				FilterBase<T>::m_qV.size() < FilterBase<T>::m_nW)
 			{
@@ -45,7 +48,6 @@ namespace kai
 				return FilterBase<T>::m_pV;
 			}
 
-			FilterBase<T>::add(*pV);
 			m_qSort = FilterBase<T>::m_qV;
 			std::sort(m_qSort.begin(), m_qSort.end());
 			FilterBase<T>::m_v = m_qSort.at(m_iMid);

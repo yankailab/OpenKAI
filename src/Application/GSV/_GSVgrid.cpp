@@ -224,7 +224,7 @@ namespace kai
 		{
 			PC_GRID_CELL *pC = getCell(vCi);
 			IF_CONT(!pC);
-			IF_CONT(pC->m_nP < pC->m_nPactivate + m_nPalertSensitivity);
+			IF_CONT(pC->nP() < pC->m_nPactivate + m_nPalertSensitivity);
 
 			m_pCellAlarm->addCell(vCi);
 		}
@@ -270,7 +270,7 @@ namespace kai
 			PC_GRID_CELL *pC = getCell(vC);
 			IF_CONT(!pC);
 
-			pC->m_nPactivate = pC->m_nP;
+			pC->m_nPactivate = pC->nP();
 		}
 	}
 

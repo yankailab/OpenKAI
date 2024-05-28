@@ -2,6 +2,7 @@
 #define OpenKAI_src_3D_PointCloud__PCgrid_H_
 
 #include "../_GeometryBase.h"
+#include "../../Filter/Median.h"
 #include "_PCstream.h"
 #include "_PCframe.h"
 
@@ -9,17 +10,41 @@ namespace kai
 {
 	struct PC_GRID_CELL
 	{
-		int m_nP = 0; // nPoints inside the cell
+		Median<int> m_med;
+		int m_nPraw = 0; // raw nPoints inside the cell
+		int m_nP = 0; // filtered
 		int m_nPactivate = 1;
+
+		void init(int nW = 3)
+		{
+			m_med.init(nW);
+			clear();
+		}
 
 		void clear(void)
 		{
+			m_nPraw = 0;
 			m_nP = 0;
 		}
 
 		void add(int n)
 		{
-			m_nP += n;
+			m_nPraw += n;
+		}
+
+		void updateFilter(void)
+		{
+			m_nP = *m_med.update(&m_nPraw);
+		}
+
+		int nP(void)
+		{
+			return m_nP;
+		}
+
+		int nPraw(void)
+		{
+			return m_nPraw;
 		}
 	};
 
@@ -162,6 +187,7 @@ namespace kai
 	};
 
 #define PCGRID_ACTIVECELL_N 4
+#define PC_GRID_N_CELL 200000
 
 	class _PCgrid : public _GeometryBase
 	{
@@ -230,8 +256,9 @@ namespace kai
 		}
 
 	protected:
-		PC_GRID_CELL *m_pCell;
+		PC_GRID_CELL m_pCell[PC_GRID_N_CELL];
 		int m_nCell;
+		int m_nMedWidth;
 
 		// point cloud input
 		vector<_GeometryBase *> m_vpGB;

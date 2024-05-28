@@ -8,8 +8,9 @@ namespace kai
 		m_tExpire = 0;
 
 		m_type = pc_grid;
-		m_pCell = NULL;
+//		m_pCell = NULL;
 		m_nCell = 0;
+		m_nMedWidth = 3;
 		m_vDim.clear();
 		m_vPmin.clear();
 
@@ -30,13 +31,15 @@ namespace kai
 
 	_PCgrid::~_PCgrid()
 	{
-		DEL(m_pCell);
+//		DEL(m_pCell);
 	}
 
 	bool _PCgrid::init(void *pKiss)
 	{
 		IF_F(!this->_GeometryBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+
+		pK->v("nMedWidth", &m_nMedWidth);
 
 		pK->v("vPorigin", &m_vPorigin);
 		pK->v("vX", &m_vX);
@@ -146,15 +149,18 @@ namespace kai
 		mutexLock();
 
 		// alllocate cells
-		DEL(m_pCell);
+//		DEL(m_pCell);
 
-		m_pCell = new PC_GRID_CELL[nCell];
+//		m_pCell = new PC_GRID_CELL[nCell];
 		if (m_pCell)
 		{
 			m_nCell = nCell;
 
 			for (int i = 0; i < m_nCell; i++)
+			{
+				m_pCell[i].init(m_nMedWidth);
 				m_pCell[i].m_nPactivate = 1;
+			}
 
 			// prepare quick access params
 			m_vRx.set(m_vPorigin.x + m_vX.x * m_vCellSize.x,
@@ -413,7 +419,8 @@ namespace kai
 				{
 					vC.set(i, j, k);
 					PC_GRID_CELL *pC = getCell(vC);
-					IF_CONT(pC->m_nP < 1);
+					pC->updateFilter();
+					IF_CONT(pC->nP() < 1);
 
 					m_pCellActive->addCell(vC);
 				}
