@@ -133,6 +133,8 @@ namespace kai
 			saveGridConfig(jo);
 		else if (cmd == "setParams")
 			setParams(jo);
+		else if (cmd == "autoAlertCells")
+			autoAlertCells(jo);
 	}
 
 	void _GSVctrl::updateGrid(picojson::object &o)
@@ -142,14 +144,22 @@ namespace kai
 		vFloat3 vPo = m_pGgrid->getPorigin();
 		vFloat3 vCsize = m_pGgrid->getCellSize();
 		vInt2 vGx = m_pGgrid->getGridX();
+		vInt2 vGy = m_pGgrid->getGridY();
+		vInt2 vGz = m_pGgrid->getGridZ();
 
 		object r;
 		JO(r, "cmd", "updateGrid");
 		JO(r, "pOx", vPo.x);
 		JO(r, "pOy", vPo.y);
 		JO(r, "pOz", vPo.z);
-		JO(r, "cSize", vCsize.x);
-		JO(r, "gSize", (double)vGx.len());
+
+		JO(r, "vCx", vCsize.x);
+		JO(r, "vCy", vCsize.y);
+		JO(r, "vCz", vCsize.z);
+
+		JO(r, "vGx", (double)vGx.len());
+		JO(r, "vGy", (double)vGy.len());
+		JO(r, "vGz", (double)vGz.len());
 
 		sendMsg(r);
 	}
@@ -164,24 +174,39 @@ namespace kai
 		IF_(!o["pOz"].is<double>());
 		vPo.z = o["pOz"].get<double>();
 
-		IF_(!o["cSize"].is<double>());
-		double cSize = o["cSize"].get<double>();
-		IF_(!o["gSize"].is<double>());
-		double gSize = o["gSize"].get<double>();
+		vFloat3 vCsize;
+		IF_(!o["vCx"].is<double>());
+		vCsize.x = o["vCx"].get<double>();
+		IF_(!o["vCy"].is<double>());
+		vCsize.y = o["vCy"].get<double>();
+		IF_(!o["vCz"].is<double>());
+		vCsize.z = o["vCz"].get<double>();
 
-		//TODO:
-		/*
-		pK->v("vPorigin", &m_vPorigin);
-		pK->v("vX", &m_vX);
-		pK->v("vY", &m_vY);
-		pK->v("vZ", &m_vZ);
-		pK->v("vCellSize", &m_vCellSize);
-		*/
+		IF_(!o["vGx"].is<double>());
+		int Gx = o["vGx"].get<double>();
+		IF_(!o["vGy"].is<double>());
+		int Gy = o["vGy"].get<double>();
+		IF_(!o["vGz"].is<double>());
+		int Gz = o["vGz"].get<double>();
 
+		Gx /= 2;
+		Gy /= 2;
+		Gz /= 2;
+
+		m_pGgrid->setPorigin(vFloat3(vPo.x, vPo.y, vPo.z));
+		m_pGgrid->setGridX(vInt2(-Gx, Gx));
+		m_pGgrid->setGridY(vInt2(-Gy, Gy));
+		m_pGgrid->setGridZ(vInt2(-Gz, Gz));
+		m_pGgrid->setCellSize(vCsize);
+
+		m_pGgrid->initGrid();
 	}
 
 	void _GSVctrl::saveGrid(picojson::object &o)
 	{
+		IF_(check() < 0);
+
+		m_pGgrid->saveConfig();
 	}
 
 	void _GSVctrl::updateTR(picojson::object &o)
@@ -380,6 +405,14 @@ namespace kai
 
 		m_pGgrid->setNpAlertSensitivity(s);
 	}
+
+	void _GSVctrl::autoAlertCells(picojson::object &o)
+	{
+		IF_(check() < 0);
+
+		m_pGgrid->autoFindAlertCells();
+	}
+
 
 	void _GSVctrl::send(void)
 	{

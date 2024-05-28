@@ -78,11 +78,36 @@ namespace kai
 		return m_pT->start(getUpdate, this);
 	}
 
+	void _PCgrid::setPorigin(const vFloat3 &vPo)
+	{
+		m_vPorigin = vPo;
+	}
+
+	void _PCgrid::setCellSize(const vFloat3 &vCsize)
+	{
+		m_vCellSize = vCsize;
+	}
+
+	void _PCgrid::setGridX(const vInt2 &vX)
+	{
+		m_vX = vX;
+	}
+
+	void _PCgrid::setGridY(const vInt2 &vY)
+	{
+		m_vY = vY;
+	}
+
+	void _PCgrid::setGridZ(const vInt2 &vZ)
+	{
+		m_vZ = vZ;
+	}
+
 	vFloat3 _PCgrid::getPorigin(void)
 	{
 		return m_vPorigin;
 	}
-	
+
 	vFloat3 _PCgrid::getCellSize(void)
 	{
 		return m_vCellSize;
@@ -109,52 +134,66 @@ namespace kai
 		IF_F(cVol <= 0);
 
 		// calc grid size
-		m_vDim.set(m_vX.len(),
-				   m_vY.len(),
-				   m_vZ.len());
-		int nCell = m_vDim.x * m_vDim.y * m_vDim.z;
+		vInt3 vDim;
+		vDim.set(m_vX.len(),
+				 m_vY.len(),
+				 m_vZ.len());
+		int nCell = vDim.x * vDim.y * vDim.z;
 		IF_F(nCell <= 0);
+
+		m_vDim = vDim;
+
+		mutexLock();
 
 		// alllocate cells
 		DEL(m_pCell);
+
 		m_pCell = new PC_GRID_CELL[nCell];
-		NULL_F(m_pCell);
-		m_nCell = nCell;
-
-		for (int i = 0; i < m_nCell; i++)
-			m_pCell[i].m_nPactivate = 1;
-
-		// prepare quick access params
-		m_vRx.set(m_vPorigin.x + m_vX.x * m_vCellSize.x,
-				  m_vPorigin.x + m_vX.y * m_vCellSize.x);
-
-		m_vRy.set(m_vPorigin.y + m_vY.x * m_vCellSize.y,
-				  m_vPorigin.y + m_vY.y * m_vCellSize.y);
-
-		m_vRz.set(m_vPorigin.z + m_vZ.x * m_vCellSize.z,
-				  m_vPorigin.z + m_vZ.y * m_vCellSize.z);
-
-		m_vPmin.set(m_vRx.x, m_vRy.x, m_vRz.x);
-
-		m_vOvCellSize.set(1.0 / m_vCellSize.x,
-						  1.0 / m_vCellSize.y,
-						  1.0 / m_vCellSize.z);
-
-		m_dYZ = m_vDim.y * m_vDim.z;
-
-		// generate line set for grid visualization
-		if (m_bVisual)
+		if (m_pCell)
 		{
-			generateGridLines();
+			m_nCell = nCell;
+
+			for (int i = 0; i < m_nCell; i++)
+				m_pCell[i].m_nPactivate = 1;
+
+			// prepare quick access params
+			m_vRx.set(m_vPorigin.x + m_vX.x * m_vCellSize.x,
+					  m_vPorigin.x + m_vX.y * m_vCellSize.x);
+
+			m_vRy.set(m_vPorigin.y + m_vY.x * m_vCellSize.y,
+					  m_vPorigin.y + m_vY.y * m_vCellSize.y);
+
+			m_vRz.set(m_vPorigin.z + m_vZ.x * m_vCellSize.z,
+					  m_vPorigin.z + m_vZ.y * m_vCellSize.z);
+
+			m_vPmin.set(m_vRx.x, m_vRy.x, m_vRz.x);
+
+			m_vOvCellSize.set(1.0 / m_vCellSize.x,
+							  1.0 / m_vCellSize.y,
+							  1.0 / m_vCellSize.z);
+
+			m_dYZ = m_vDim.y * m_vDim.z;
+
+			// generate line set for grid visualization
+			if (m_bVisual)
+			{
+				generateGridLines();
+			}
 		}
+
+		mutexUnlock();
 
 		return true;
 	}
 
 	void _PCgrid::clearAllCells(void)
 	{
+//		mutexLock();
+
 		for (int i = 0; i < m_nCell; i++)
 			m_pCell[i].clear();
+
+//		mutexUnlock();
 	}
 
 	PC_GRID_CELL *_PCgrid::getCell(const vFloat3 &vP)
@@ -186,7 +225,11 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
+			mutexLock();
+
 			updatePCgrid();
+
+			mutexUnlock();
 
 			m_pT->autoFPSto();
 		}
@@ -256,6 +299,11 @@ namespace kai
 
 		int i = vC.x * m_dYZ + vC.y * m_vDim.z + vC.z;
 		return &m_pCell[i];
+	}
+
+	int _PCgrid::getCell1Didx(const vInt3 &vC)
+	{
+		return vC.x * m_dYZ + vC.y * m_vDim.z + vC.z;
 	}
 
 	LineSet *_PCgrid::getGridLines(void)
@@ -344,6 +392,7 @@ namespace kai
 		NULL_(pLS);
 		IF_(cIdx >= PCGRID_ACTIVECELL_N);
 
+		// TODO: lock needed?
 		mutexLock();
 		*pLS = m_pActiveCells[cIdx].m_LS;
 		mutexUnlock();
@@ -351,6 +400,8 @@ namespace kai
 
 	void _PCgrid::updateActiveCell(void)
 	{
+		//		mutexLock();
+
 		m_pCellActive->clearCells();
 
 		vInt3 vC;
@@ -368,16 +419,18 @@ namespace kai
 				}
 			}
 		}
+
+		//		mutexUnlock();
 	}
 
 	void _PCgrid::updateActiveCellLS(PC_GRID_ACTIVE_CELL *pAcell)
 	{
 		NULL_(pAcell);
 
-		mutexLock();
+		//		mutexLock();
 		pAcell->clearLS();
 		pAcell->generateLS(m_vRx, m_vRy, m_vRz, m_vCellSize);
-		mutexUnlock();
+		//		mutexUnlock();
 	}
 
 }

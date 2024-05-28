@@ -71,6 +71,15 @@
 		}
 
 		{
+			"_GeometryBase":"psTest2",
+			"bStatic":0,
+			"nP":50000,
+			"rDummyDome":1000.0,
+			"matName":"depth",
+			"matPointSize":1,
+		}
+
+		{
 			"_GeometryBase":"/gsvGrid",
 			"bStatic":1, /* constant grid */
 			"matName":"unlitLine",
@@ -89,8 +98,8 @@
 			"bStatic":0,
 			"iGridLS":1, /* alert cells */
 			"matName":"unlitLine",
-			"matLineWidth":2,
-			"matCol":[1,1,0,1],
+			"matLineWidth":1,
+			"matCol":[0,1,0,1],
 		}
 		{
 			"_GeometryBase":"gsvGrid",
@@ -191,9 +200,9 @@
 	"vAxisColX":[1,0,0],
 	"vAxisColY":[0,1,0],
 	"vAxisColZ":[0,0,1],
-	"/fConfig":"/home/kai/GSVconfig/gsvConfig.kiss",
-	"fConfig":"/home/lab/GSVconfig/gsvConfig.kiss",
-	"vGeometryBase":["psTest","ps1","ps2","ps3","ps4","ps5","ps6"],
+	"/fConfig":"/home/lab/GSVconfig/gsvConfig.kiss",
+	"fConfig":"/home/kai/GSVconfig/gsvConfig.kiss",
+	"vGeometryBase":["psTest","psTest2","ps1","ps2","ps3","ps4","ps5","ps6"],
 }
 
 
@@ -210,6 +219,25 @@
 	"SharedMem":"smRtest",
 	"/fConfig":"/home/lab/GSVconfig/psTest.kiss",
 	"fConfig":"/home/kai/GSVconfig/psTest.kiss",
+	"vkColR":[0,10],
+	"vkColG":[5,15],
+	"vkColB":[50,100],
+	"bColOverwrite":0,
+}
+
+{
+	"name":"psTest2",
+	"class":"_PCstream",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":1,
+	"nP":50000,
+	"SharedMem":"smRtest",
+	"/fConfig":"/home/lab/GSVconfig/psTest2.kiss",
+	"fConfig":"/home/kai/GSVconfig/psTest2.kiss",
 	"vkColR":[0,10],
 	"vkColG":[5,15],
 	"vkColB":[50,100],

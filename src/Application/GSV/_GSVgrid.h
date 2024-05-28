@@ -25,7 +25,7 @@ namespace kai
 		void calibAlertCellNpAlarm(void);
 
 		void setNpAlertSensitivity(int s);
-		void autoFindAlertCells(vFloat2& vRx, vFloat2& vRy, vFloat2& vRz);
+		void autoFindAlertCells(void);
 
 		bool loadConfig(void);
 		bool saveConfig(void);

@@ -4,17 +4,14 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
 	"bLog":1,
 	"nP":50000,
 	"SharedMem":"smR1",
 	"fConfig":"/home/lab/GSVconfig/ps1.kiss",
 
-	"vkColR":[0,10],
-	"vkColG":[3,15],
-	"vkColB":[12,100],
-	"bColOverwrite":1,
+	"bColOverwrite":0,
 }
 
 {
@@ -33,17 +30,14 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
 	"bLog":1,
 	"nP":50000,
 	"SharedMem":"smR2",
 	"fConfig":"/home/lab/GSVconfig/ps2.kiss",
 
-	"vkColR":[0,10],
-	"vkColG":[3,15],
-	"vkColB":[12,100],
-	"bColOverwrite":1,
+	"bColOverwrite":0,
 }
 
 {
@@ -62,17 +56,14 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
 	"bLog":1,
 	"nP":50000,
 	"SharedMem":"smR3",
 	"fConfig":"/home/lab/GSVconfig/ps3.kiss",
 
-	"vkColR":[0,10],
-	"vkColG":[3,15],
-	"vkColB":[12,100],
-	"bColOverwrite":1,
+	"bColOverwrite":0,
 }
 
 {
@@ -91,16 +82,13 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
 	"bLog":1,
 	"nP":50000,
 	"SharedMem":"smR4",
 	"fConfig":"/home/lab/GSVconfig/ps4.kiss",
 
-	"vkColR":[0,10],
-	"vkColG":[3,15],
-	"vkColB":[12,100],
 	"bColOverwrite":1,
 }
 
@@ -120,17 +108,14 @@
 	"bON":0,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
 	"bLog":1,
 	"nP":50000,
 	"SharedMem":"smR5",
 	"fConfig":"/home/lab/GSVconfig/ps5.kiss",
 
-	"vkColR":[0,10],
-	"vkColG":[3,15],
-	"vkColB":[12,100],
-	"bColOverwrite":1,
+	"bColOverwrite":0,
 }
 
 {
@@ -149,17 +134,14 @@
 	"bON":0,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
 	"bLog":1,
 	"nP":50000,
 	"SharedMem":"smR6",
 	"fConfig":"/home/lab/GSVconfig/ps6.kiss",
 
-	"vkColR":[0,10],
-	"vkColG":[3,15],
-	"vkColB":[12,100],
-	"bColOverwrite":1,
+	"bColOverwrite":0,
 }
 
 {

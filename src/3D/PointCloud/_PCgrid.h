@@ -176,6 +176,13 @@ namespace kai
 
 		// grid
 		virtual bool initGrid(void);
+
+		virtual void setPorigin(const vFloat3& vPo);
+		virtual void setCellSize(const vFloat3& vCsize);
+		virtual void setGridX(const vInt2& vX);
+		virtual void setGridY(const vInt2& vY);
+		virtual void setGridZ(const vInt2& vZ);
+
 		virtual vFloat3 getPorigin(void);
 		virtual vFloat3 getCellSize(void);
 		virtual vInt2 getGridX(void);
@@ -196,6 +203,7 @@ namespace kai
 
 	protected:
 		PC_GRID_CELL *getCell(const vInt3 &vC);
+		int getCell1Didx(const vInt3 &vC);
 
 		void generateGridLines(void);
 		void addGridAxisLine(int nDa,

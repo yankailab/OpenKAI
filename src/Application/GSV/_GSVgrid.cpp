@@ -29,10 +29,7 @@ namespace kai
 		pK->v("vCselected", &m_vCselected);
 		pK->v("fConfig", &m_fConfig);
 
-		if (!loadConfig())
-		{
-			LOG_I("Config load failed");
-		}
+		loadConfig();
 
 		m_pCellSelected->clearCells();
 		m_pCellSelected->addCell(m_vCselected);
@@ -72,10 +69,12 @@ namespace kai
 
 		if (!parseKiss(m_fConfig, pK))
 		{
+			LOG_I("Config load failed: " + m_fConfig);
 			DEL(pK);
 			return false;
 		}
 
+		// TODO: organize the json obj
 		Kiss *pKc = pK->root()->child("cellAlert");
 		if (pKc->empty())
 		{
@@ -83,6 +82,27 @@ namespace kai
 			return false;
 		}
 
+		// grid config
+		pKc->v("vPoX", &m_vPorigin.x);
+		pKc->v("vPoY", &m_vPorigin.y);
+		pKc->v("vPoZ", &m_vPorigin.z);
+
+		pKc->v("vGridXx", &m_vX.x);
+		pKc->v("vGridXy", &m_vX.y);
+
+		pKc->v("vGridYx", &m_vY.x);
+		pKc->v("vGridYy", &m_vY.y);
+
+		pKc->v("vGridZx", &m_vZ.x);
+		pKc->v("vGridZy", &m_vZ.y);
+
+		pKc->v("vCsizeX", &m_vCellSize.x);
+		pKc->v("vCsizeY", &m_vCellSize.y);
+		pKc->v("vCsizeZ", &m_vCellSize.z);
+
+		initGrid();
+
+		// alert cells
 		vector<int> vX, vY, vZ, vNpAlarm;
 		pKc->a("vX", &vX);
 		pKc->a("vY", &vY);
@@ -111,8 +131,29 @@ namespace kai
 		calibAlertCellNpAlarm();
 
 		picojson::object o;
+
+		// TODO: organize the json obj
 		o.insert(make_pair("name", "cellAlert"));
 
+		// grid config
+		o.insert(make_pair("vPoX", m_vPorigin.x));
+		o.insert(make_pair("vPoY", m_vPorigin.y));
+		o.insert(make_pair("vPoZ", m_vPorigin.z));
+
+		o.insert(make_pair("vGridXx", (double)m_vX.x));
+		o.insert(make_pair("vGridXy", (double)m_vX.y));
+
+		o.insert(make_pair("vGridYx", (double)m_vY.x));
+		o.insert(make_pair("vGridYy", (double)m_vY.y));
+
+		o.insert(make_pair("vGridZx", (double)m_vZ.x));
+		o.insert(make_pair("vGridZy", (double)m_vZ.y));
+
+		o.insert(make_pair("vCsizeX", m_vCellSize.x));
+		o.insert(make_pair("vCsizeY", m_vCellSize.y));
+		o.insert(make_pair("vCsizeZ", m_vCellSize.z));
+
+		// alert cells
 		picojson::array vX, vY, vZ, vNpAlarm;
 		for (vInt3 vC : m_pCellAlert->m_vCellIdx)
 		{
@@ -160,9 +201,13 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
+			mutexLock();
+
 			updatePCgrid();
 
 			updateGSVgrid();
+
+			mutexUnlock();
 
 			m_pT->autoFPSto();
 		}
@@ -234,26 +279,51 @@ namespace kai
 		m_nPalertSensitivity = s;
 	}
 
-	void _GSVgrid::autoFindAlertCells(vFloat2 &vRx, vFloat2 &vRy, vFloat2 &vRz)
+	void _GSVgrid::autoFindAlertCells(void)
 	{
-		// X plus YZ plane
-		// pC = getCell(vFloat3(vRx.y, vRy.mid(), vRz.mid()));
+		m_pCellAlert->clearCells();
 
-		// vInt3 vC;
-		// for (int i = 0; i < m_vDim.x; i++)
-		// {
-		// 	for (int j = 0; j < m_vDim.y; j++)
-		// 	{
-		// 		for (int k = 0; k < m_vDim.z; k++)
-		// 		{
-		// 			vC.set(i, j, k);
-		// 			PC_GRID_CELL *pC = getCell(vC);
-		// 			IF_CONT(pC->m_nP < 1);
+		int iX;
+		int iY;
+		int iZ;
 
-		// 			m_pCellActive->addCell(vC);
-		// 		}
-		// 	}
-		// }
+		iX = 0;
+		for (iY = 0; iY < m_vDim.y; iY++)
+		{
+			for (iZ = 0; iZ < m_vDim.z; iZ++)
+			{
+				m_pCellAlert->addCell(vInt3(iX, iY, iZ));
+			}
+		}
+
+		iX = m_vDim.x-1;
+		for (iY = 0; iY < m_vDim.y; iY++)
+		{
+			for (iZ = 0; iZ < m_vDim.z; iZ++)
+			{
+				m_pCellAlert->addCell(vInt3(iX, iY, iZ));
+			}
+		}
+
+
+		iY = 0;
+		for (iX = 0; iX < m_vDim.x; iX++)
+		{
+			for (iZ = 0; iZ < m_vDim.z; iZ++)
+			{
+				m_pCellAlert->addCell(vInt3(iX, iY, iZ));
+			}
+		}
+
+		iY = m_vDim.y-1;
+		for (iX = 0; iX < m_vDim.x; iX++)
+		{
+			for (iZ = 0; iZ < m_vDim.z; iZ++)
+			{
+				m_pCellAlert->addCell(vInt3(iX, iY, iZ));
+			}
+		}
+
 	}
 
 }

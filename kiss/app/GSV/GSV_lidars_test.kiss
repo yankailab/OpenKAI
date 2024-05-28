@@ -20,7 +20,7 @@
 {
 	"name":"LivoxLidar2",
 	"class":"LivoxLidar2",
-	"bON":1,
+	"bON":0,
 	"bLog":0,
 	"fConfig":"/home/kai/dev/OpenKAI/data/Livox/mid360_8_103.json",
 }
@@ -28,7 +28,7 @@
 {
 	"name":"Livox2",
 	"class":"_Livox2",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -43,7 +43,7 @@
 {
 	"name":"pcFile",
 	"class":"_PCfile",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":1,

@@ -22,8 +22,14 @@ window.onload = function () {
             pOx: parseFloat($('#pOx').value),
             pOy: parseFloat($('#pOy').value),
             pOz: parseFloat($('#pOz').value),
-            gSize: parseFloat($('#gSize').value),
-            cSize: parseFloat($('#cSize').value),
+
+            vGx: parseFloat($('#vGx').value),
+            vGy: parseFloat($('#vGy').value),
+            vGz: parseFloat($('#vGz').value),
+
+            vCx: parseFloat($('#vCx').value),
+            vCy: parseFloat($('#vCy').value),
+            vCz: parseFloat($('#vCz').value),
         };
 
         cmdStr = JSON.stringify(cmd) + strEOJ;
@@ -172,101 +178,124 @@ window.onload = function () {
     // set TR all
     // T
     $('#vTxAllInc').onclick = function (e) {
-        $('#vTxAll').value = parseFloat($('#vTxAll').value) + dV;
+        $('#vTxAll').value = 0;
+        $('#vTyAll').value = 0;
+        $('#vTzAll').value = 0;
+
+        $('#vTxAll').value = dV;
         cmdSetTRall();
     };
 
     $('#vTxAllDec').onclick = function (e) {
-        $('#vTxAll').value = parseFloat($('#vTxAll').value) - dV;
+        $('#vTxAll').value = 0;
+        $('#vTyAll').value = 0;
+        $('#vTzAll').value = 0;
+
+        $('#vTxAll').value = -dV;
         cmdSetTRall();
     };
 
     $('#vTyAllInc').onclick = function (e) {
-        $('#vTyAll').value = parseFloat($('#vTyAll').value) + dV;
+        $('#vTxAll').value = 0;
+        $('#vTyAll').value = 0;
+        $('#vTzAll').value = 0;
+
+        $('#vTyAll').value = dV;
         cmdSetTRall();
     };
 
     $('#vTyAllDec').onclick = function (e) {
-        $('#vTyAll').value = parseFloat($('#vTyAll').value) - dV;
+        $('#vTxAll').value = 0;
+        $('#vTyAll').value = 0;
+        $('#vTzAll').value = 0;
+
+        $('#vTyAll').value = -dV;
         cmdSetTRall();
     };
 
     $('#vTzAllInc').onclick = function (e) {
-        $('#vTzAll').value = parseFloat($('#vTzAll').value) + dV;
+        $('#vTxAll').value = 0;
+        $('#vTyAll').value = 0;
+        $('#vTzAll').value = 0;
+
+        $('#vTzAll').value = dV;
         cmdSetTRall();
     };
 
     $('#vTzAllDec').onclick = function (e) {
-        $('#vTzAll').value = parseFloat($('#vTzAll').value) - dV;
+        $('#vTxAll').value = 0;
+        $('#vTyAll').value = 0;
+        $('#vTzAll').value = 0;
+
+        $('#vTzAll').value = -dV;
         cmdSetTRall();
     };
 
 
     // R
     $('#vRxAllInc').onclick = function (e) {
-        $('#vRxAll').value = parseFloat($('#vRxAll').value) + dV;
+        $('#vRxAll').value = 0;
+        $('#vRyAll').value = 0;
+        $('#vRzAll').value = 0;
+
+        $('#vRxAll').value = dV;
         cmdSetTRall();
     };
 
     $('#vRxAllDec').onclick = function (e) {
-        $('#vRxAll').value = parseFloat($('#vRxAll').value) - dV;
+        $('#vRxAll').value = 0;
+        $('#vRyAll').value = 0;
+        $('#vRzAll').value = 0;
+
+        $('#vRxAll').value = -dV;
         cmdSetTRall();
     };
 
     $('#vRyAllInc').onclick = function (e) {
-        $('#vRyAll').value = parseFloat($('#vRyAll').value) + dV;
+        $('#vRxAll').value = 0;
+        $('#vRyAll').value = 0;
+        $('#vRzAll').value = 0;
+
+        $('#vRyAll').value = dV;
         cmdSetTRall();
     };
 
     $('#vRyAllDec').onclick = function (e) {
-        $('#vRyAll').value = parseFloat($('#vRyAll').value) - dV;
+        $('#vRxAll').value = 0;
+        $('#vRyAll').value = 0;
+        $('#vRzAll').value = 0;
+
+        $('#vRyAll').value = -dV;
         cmdSetTRall();
     };
 
     $('#vRzAllInc').onclick = function (e) {
-        $('#vRzAll').value = parseFloat($('#vRzAll').value) + dV;
+        $('#vRxAll').value = 0;
+        $('#vRyAll').value = 0;
+        $('#vRzAll').value = 0;
+
+        $('#vRzAll').value = dV;
         cmdSetTRall();
     };
 
     $('#vRzAllDec').onclick = function (e) {
-        $('#vRzAll').value = parseFloat($('#vRzAll').value) - dV;
-        cmdSetTRall();
-    };
+        $('#vRxAll').value = 0;
+        $('#vRyAll').value = 0;
+        $('#vRzAll').value = 0;
 
-    // set TR all
-    $('#vTxAll').oninput = function (e) {
-        cmdSetTRall();
-    };
-
-    $('#vTyAll').oninput = function (e) {
-        cmdSetTRall();
-    };
-
-    $('#vTzAll').oninput = function (e) {
-        cmdSetTRall();
-    };
-
-    $('#vRxAll').oninput = function (e) {
-        cmdSetTRall();
-    };
-
-    $('#vRyAll').oninput = function (e) {
-        cmdSetTRall();
-    };
-
-    $('#vRzAll').oninput = function (e) {
+        $('#vRzAll').value = -dV;
         cmdSetTRall();
     };
 
     function cmdSetTRall() {
         var cmd = {
             cmd: 'setTRall',
-            vTx: parseFloat($('#vTx').value),
-            vTy: parseFloat($('#vTy').value),
-            vTz: parseFloat($('#vTz').value),
-            vRx: parseFloat($('#vRx').value),
-            vRy: parseFloat($('#vRy').value),
-            vRz: parseFloat($('#vRz').value),
+            vTx: parseFloat($('#vTxAll').value),
+            vTy: parseFloat($('#vTyAll').value),
+            vTz: parseFloat($('#vTzAll').value),
+            vRx: parseFloat($('#vRxAll').value),
+            vRy: parseFloat($('#vRyAll').value),
+            vRz: parseFloat($('#vRzAll').value),
         };
 
         cmdStr = JSON.stringify(cmd) + strEOJ;
@@ -375,6 +404,15 @@ window.onload = function () {
         wsSocket.send(cmdStr);
     };
 
+    $('#btnAutoAlertCells').onclick = function (e) {
+        var cmd = {
+            cmd: 'autoAlertCells',
+        };
+
+        cmdStr = JSON.stringify(cmd) + strEOJ;
+        wsSocket.send(cmdStr);
+    };
+
     // params
     $('#nPs').oninput = function (e) {
         cmdSetParams();
@@ -419,7 +457,11 @@ function cmdHandler(jCmd) {
         $('#pOx').value = jCmd.pOx;
         $('#pOy').value = jCmd.pOy;
         $('#pOz').value = jCmd.pOz;
-        $('#gSize').value = jCmd.gSize;
-        $('#cSize').value = jCmd.cSize;
+        $('#vGx').value = jCmd.vGx;
+        $('#vGy').value = jCmd.vGy;
+        $('#vGz').value = jCmd.vGz;
+        $('#vCx').value = jCmd.vCx;
+        $('#vCy').value = jCmd.vCy;
+        $('#vCz').value = jCmd.vCz;
     }
 }

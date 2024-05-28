@@ -61,10 +61,7 @@ namespace kai
         setRotation(m_vR);
         updateTranslationMatrix();
 
-        if (!loadConfig())
-        {
-            LOG_I("Config load failed");
-        }
+        loadConfig();
 
         return true;
     }
@@ -224,6 +221,7 @@ namespace kai
 
         if (!parseKiss(m_fConfig, pK))
         {
+            LOG_I("Config load failed: " + m_fConfig);
             DEL(pK);
             return false;
         }

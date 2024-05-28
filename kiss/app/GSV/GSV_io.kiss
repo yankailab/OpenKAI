@@ -18,7 +18,7 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":10,
+		"FPS":2,
 	}
     {
 		"name":"threadR",
@@ -30,7 +30,7 @@
 	"ieSendHB":500000,
 
 	"_GSVgrid":"gsvGrid",
-	"vGeometryBase":["psTest","ps1","ps2","ps3","ps4","ps5","ps6"],
+	"vGeometryBase":["psTest","psTest2","ps1","ps2","ps3","ps4","ps5","ps6"],
 }
 
 {
@@ -39,7 +39,7 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
 	"_ADIObase":"ebyte",
 	"iDinOn":4,

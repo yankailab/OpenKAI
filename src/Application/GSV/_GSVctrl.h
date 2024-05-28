@@ -58,6 +58,8 @@ namespace kai
 
 		void setParams(picojson::object &o);
 
+		void autoAlertCells(picojson::object &o);
+
 		void handleMsg(const string &str);
 		void updateR(void);
 		static void *getUpdateR(void *This)

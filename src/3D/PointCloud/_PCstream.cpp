@@ -153,8 +153,7 @@ namespace kai
                 p.m_vC.set(
                     1.0 - (m_vkColR.constrain(d) - m_vkColR.x) * m_vkColOv.x,
                     (m_vkColG.constrain(d) - m_vkColG.x) * m_vkColOv.y,
-                    (m_vkColB.constrain(d) - m_vkColB.x) * m_vkColOv.z
-                    );
+                    (m_vkColB.constrain(d) - m_vkColB.x) * m_vkColOv.z);
             }
 
             m_pP[m_iP] = p;
