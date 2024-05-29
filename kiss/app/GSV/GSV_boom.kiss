@@ -5,10 +5,7 @@
 	"bLog":1,
 	"bStdErr":1,
 	"vInclude":[
-		"/home/lab/dev/OpenKAI/kiss/app/GSV/GSV_lidars.kiss",
 		"/home/lab/dev/OpenKAI/kiss/app/GSV/GSV_io.kiss",
-
-		"/home/kai/dev/OpenKAI/kiss/app/GSV/GSV_io.kiss",
 	],
 }
 
@@ -61,16 +58,6 @@
 	{
 		"name":"geometry",
 		{
-			"_GeometryBase":"psTest",
-			"bStatic":0,
-			"nP":50000,
-			"rDummyDome":1000.0,
-			"/matName":"defaultUnlit",
-			"matName":"depth",
-			"matPointSize":1,
-		}
-
-		{
 			"_GeometryBase":"/gsvGrid",
 			"bStatic":1, /* constant grid */
 			"matName":"unlitLine",
@@ -110,63 +97,12 @@
 		}
 
 		{
-			"_GeometryBase":"ps1",
-			"bStatic":0,
-			"nP":50000,
-			"rDummyDome":1000.0,
-			"/matName":"defaultUnlit",
-			"matName":"depth",
-			"matCol":[1,0,0,1],
-			"matPointSize":2,
-			"matLineWidth":1,
-		}
-		{
-			"_GeometryBase":"ps2",
-			"bStatic":0,
-			"nP":50000,
-			"rDummyDome":1000.0,
-			"matName":"depth",
-			"matCol":[0,1,0,1],
-			"matPointSize":2,
-			"matLineWidth":1,
-		}
-		{
 			"_GeometryBase":"ps3",
 			"bStatic":0,
 			"nP":50000,
 			"rDummyDome":1000.0,
 			"matName":"depth",
 			"matCol":[0,0,1,1],
-			"matPointSize":2,
-			"matLineWidth":1,
-		}
-		{
-			"_GeometryBase":"ps4",
-			"bStatic":0,
-			"nP":50000,
-			"rDummyDome":1000.0,
-			"matName":"depth",
-			"matCol":[1,1,0,1],
-			"matPointSize":2,
-			"matLineWidth":1,
-		}
-		{
-			"_GeometryBase":"ps5",
-			"bStatic":0,
-			"nP":50000,
-			"rDummyDome":1000.0,
-			"matName":"depth",
-			"matCol":[0,1,1,1],
-			"matPointSize":2,
-			"matLineWidth":1,
-		}
-		{
-			"_GeometryBase":"ps6",
-			"bStatic":0,
-			"nP":50000,
-			"rDummyDome":1000.0,
-			"matName":"depth",
-			"matCol":[1,0,1,1],
 			"matPointSize":2,
 			"matLineWidth":1,
 		}
@@ -192,35 +128,32 @@
 	"vAxisColX":[1,0,0],
 	"vAxisColY":[0,1,0],
 	"vAxisColZ":[0,0,1],
-	"fConfig":"/home/lab/GSVconfig/gsvConfig.kiss",
-	"/fConfig":"/home/kai/GSVconfig/gsvConfig.kiss",
-	"vGeometryBase":["psTest","ps1","ps2","ps3","ps4","ps5","ps6"],
+	"fConfig":"/home/lab/GSVconfig/gsvConfig_boom.kiss",
+	"vGeometryBase":["ps3"],
 }
 
 
 {
-	"name":"psTest",
+	"name":"ps3",
 	"class":"_PCstream",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
 	"bLog":1,
 	"nP":50000,
-	"SharedMem":"smRtest",
-	"fConfig":"/home/kai/GSVconfig/psTest.kiss",
-	"vkColR":[0,10],
-	"vkColG":[5,15],
-	"vkColB":[50,100],
+	"SharedMem":"smR3",
+	"fConfig":"/home/lab/GSVconfig/ps3_boom.kiss",
+
 	"bColOverwrite":0,
 }
 
 {
-	"name":"smRtest",
+	"name":"smR3",
 	"class":"SharedMem",
-	"bON":0,
-	"shmName":"smPCtest",
+	"bON":1,
+	"shmName":"smPC3",
 	"nB":1600000,
 	"bWriter":0,
 }

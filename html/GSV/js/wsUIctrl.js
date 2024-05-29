@@ -16,7 +16,104 @@ window.onload = function () {
         wsSocket.send(cmdStr);
     };
 
-    $('#btnSetGrid').onclick = function (e) {
+
+    $('#pOxInc').onclick = function (e) {
+        $('#pOx').value = parseFloat($('#pOx').value) + dV;
+        cmdSetGrid();
+    };
+
+    $('#pOxDec').onclick = function (e) {
+        $('#pOx').value = parseFloat($('#pOx').value) - dV;
+        cmdSetGrid();
+    };
+
+    $('#pOyInc').onclick = function (e) {
+        $('#pOy').value = parseFloat($('#pOy').value) + dV;
+        cmdSetGrid();
+    };
+
+    $('#pOyDec').onclick = function (e) {
+        $('#pOy').value = parseFloat($('#pOy').value) - dV;
+        cmdSetGrid();
+    };
+
+    $('#pOzInc').onclick = function (e) {
+        $('#pOz').value = parseFloat($('#pOz').value) + dV;
+        cmdSetGrid();
+    };
+
+    $('#pOzDec').onclick = function (e) {
+        $('#pOz').value = parseFloat($('#pOz').value) - dV;
+        cmdSetGrid();
+    };
+
+
+
+    $('#vGxInc').onclick = function (e) {
+        $('#vGx').value = parseFloat($('#vGx').value) + 1;
+        cmdSetGrid();
+    };
+
+    $('#vGxDec').onclick = function (e) {
+        $('#vGx').value = parseFloat($('#vGx').value) - 1;
+        cmdSetGrid();
+    };
+
+    $('#vGyInc').onclick = function (e) {
+        $('#vGy').value = parseFloat($('#vGy').value) + 1;
+        cmdSetGrid();
+    };
+
+    $('#vGyDec').onclick = function (e) {
+        $('#vGy').value = parseFloat($('#vGy').value) - 1;
+        cmdSetGrid();
+    };
+
+    $('#vGzInc').onclick = function (e) {
+        $('#vGz').value = parseFloat($('#vGz').value) + 1;
+        cmdSetGrid();
+    };
+
+    $('#vGzDec').onclick = function (e) {
+        $('#vGz').value = parseFloat($('#vGz').value) - 1;
+        cmdSetGrid();
+    };
+
+
+
+    $('#vCellSizeXinc').onclick = function (e) {
+        $('#vCellSizeX').value = parseFloat($('#vCellSizeX').value) + dV;
+        cmdSetGrid();
+    };
+
+    $('#vCellSizeXdec').onclick = function (e) {
+        $('#vCellSizeX').value = parseFloat($('#vCellSizeX').value) - dV;
+        cmdSetGrid();
+    };
+
+    $('#vCellSizeYinc').onclick = function (e) {
+        $('#vCellSizeY').value = parseFloat($('#vCellSizeY').value) + dV;
+        cmdSetGrid();
+    };
+
+    $('#vCellSizeYdec').onclick = function (e) {
+        $('#vCellSizeY').value = parseFloat($('#vCellSizeY').value) - dV;
+        cmdSetGrid();
+    };
+
+    $('#vCellSizeZinc').onclick = function (e) {
+        $('#vCellSizeZ').value = parseFloat($('#vCellSizeZ').value) + dV;
+        cmdSetGrid();
+    };
+
+    $('#vCellSizeZdec').onclick = function (e) {
+        $('#vCellSizeZ').value = parseFloat($('#vCellSizeZ').value) - dV;
+        cmdSetGrid();
+    };
+
+
+    function cmdSetGrid()
+    {
         var cmd = {
             cmd: 'setGrid',
             pOx: parseFloat($('#pOx').value),
@@ -27,13 +124,17 @@ window.onload = function () {
             vGy: parseFloat($('#vGy').value),
             vGz: parseFloat($('#vGz').value),
 
-            vCx: parseFloat($('#vCx').value),
-            vCy: parseFloat($('#vCy').value),
-            vCz: parseFloat($('#vCz').value),
+            vCx: parseFloat($('#vCellSizeX').value),
+            vCy: parseFloat($('#vCellSizeY').value),
+            vCz: parseFloat($('#vCellSizeZ').value),
         };
 
         cmdStr = JSON.stringify(cmd) + strEOJ;
         wsSocket.send(cmdStr);
+    };
+
+    $('#btnSetGrid').onclick = function (e) {
+        cmdSetGrid();
     };
 
     $('#btnSaveGrid').onclick = function (e) {
@@ -44,7 +145,21 @@ window.onload = function () {
         cmdStr = JSON.stringify(cmd) + strEOJ;
         wsSocket.send(cmdStr);
     };
-    
+
+    $('#btnAutoAlertCells').onclick = function (e) {
+        autoAlertCells();
+    };
+
+    function autoAlertCells()
+    {
+        var cmd = {
+            cmd: 'autoAlertCells',
+        };
+
+        cmdStr = JSON.stringify(cmd) + strEOJ;
+        wsSocket.send(cmdStr);
+    }
+
 
     // update config
     $('#btnUpdateTR').onclick = function (e) {
@@ -311,7 +426,7 @@ window.onload = function () {
         wsSocket.send(cmdStr);
     };
 
-    
+
 
     // C
     $('#vCxInc').onclick = function (e) {
@@ -404,15 +519,6 @@ window.onload = function () {
         wsSocket.send(cmdStr);
     };
 
-    $('#btnAutoAlertCells').onclick = function (e) {
-        var cmd = {
-            cmd: 'autoAlertCells',
-        };
-
-        cmdStr = JSON.stringify(cmd) + strEOJ;
-        wsSocket.send(cmdStr);
-    };
-
     // params
     $('#nPs').oninput = function (e) {
         cmdSetParams();
@@ -442,8 +548,7 @@ window.onload = function () {
 };
 
 function cmdHandler(jCmd) {
-    if (jCmd.cmd == "updateTR")
-    {
+    if (jCmd.cmd == "updateTR") {
         $('#_GeometryBase').value = jCmd._GeometryBase;
         $('#vTx').value = jCmd.vTx;
         $('#vTy').value = jCmd.vTy;
@@ -452,16 +557,15 @@ function cmdHandler(jCmd) {
         $('#vRy').value = jCmd.vRy;
         $('#vRz').value = jCmd.vRz;
     }
-    else if (jCmd.cmd == "updateGrid")
-    {
+    else if (jCmd.cmd == "updateGrid") {
         $('#pOx').value = jCmd.pOx;
         $('#pOy').value = jCmd.pOy;
         $('#pOz').value = jCmd.pOz;
         $('#vGx').value = jCmd.vGx;
         $('#vGy').value = jCmd.vGy;
         $('#vGz').value = jCmd.vGz;
-        $('#vCx').value = jCmd.vCx;
-        $('#vCy').value = jCmd.vCy;
-        $('#vCz').value = jCmd.vCz;
+        $('#vCellSizeX').value = jCmd.vCx;
+        $('#vCellSizeY').value = jCmd.vCy;
+        $('#vCellSizeZ').value = jCmd.vCz;
     }
 }

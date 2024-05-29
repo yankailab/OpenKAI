@@ -20,15 +20,16 @@
 {
 	"name":"LivoxLidar2",
 	"class":"LivoxLidar2",
-	"bON":0,
+	"bON":1,
 	"bLog":0,
-	"fConfig":"/home/kai/dev/OpenKAI/data/Livox/mid360_8_103.json",
+	"/fConfig":"/home/kai/dev/OpenKAI/data/Livox/mid360_8_103.json",
+	"fConfig":"/home/kai/dev/OpenKAI/data/Livox/mid360_204.json",
 }
 
 {
 	"name":"Livox2",
 	"class":"_Livox2",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -38,12 +39,13 @@
 	"lidarMode":1,
 	"nP":50000,
 	"SharedMem":"smWtest",
+	"bEnableIMU":0,
 }
 
 {
 	"name":"pcFile",
 	"class":"_PCfile",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":1,

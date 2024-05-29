@@ -89,6 +89,7 @@ namespace kai
 
         SF m_SF;
         uint64_t m_tIMU;
+        bool m_bEnableIMU;
 
     };
 

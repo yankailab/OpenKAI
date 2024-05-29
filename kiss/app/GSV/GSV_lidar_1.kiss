@@ -38,6 +38,7 @@
 	"lidarMode":1,
 	"nP":50000,
 	"SharedMem":"smW",
+	"bEnableIMU":1,
 }
 
 {

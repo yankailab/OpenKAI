@@ -53,7 +53,7 @@
 {
 	"name":"ps3",
 	"class":"_PCstream",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -69,7 +69,7 @@
 {
 	"name":"smR3",
 	"class":"SharedMem",
-	"bON":1,
+	"bON":0,
 	"shmName":"smPC3",
 	"nB":1600000,
 	"bWriter":0,

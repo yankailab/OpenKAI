@@ -16,6 +16,7 @@ namespace kai
         m_workMode = kLivoxLidarNormal;
 
         m_tIMU = 0;
+        m_bEnableIMU = true;
     }
 
     _Livox2::~_Livox2()
@@ -25,10 +26,11 @@ namespace kai
     bool _Livox2::init(void *pKiss)
     {
         IF_F(!this->_PCstream::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+        Kiss *pK = (Kiss *)pKiss;
 
         pK->v("SN", &m_SN);
         pK->v("lidarMode", (int *)&m_workMode);
+        pK->v("bEnableIMU", &m_bEnableIMU);
 
         return true;
     }
@@ -55,7 +57,11 @@ namespace kai
         m_handle = pD->m_handle;
 
         IF_F(!m_pLv->setCbData(m_handle, sCbPointCloud, (void *)this));
-        IF_F(!m_pLv->setCbIMU(m_handle, sCbIMU, (void *)this));
+
+        if (m_bEnableIMU)
+        {
+            IF_F(!m_pLv->setCbIMU(m_handle, sCbIMU, (void *)this));
+        }
 
         m_bOpen = true;
         LOG_I("open() success");
@@ -160,6 +166,7 @@ namespace kai
     void _Livox2::CbIMU(LivoxLidarEthernetPacket *pD)
     {
         NULL_(pD);
+        IF_(!m_bEnableIMU);
         LOG_I("CbIMU, data_num:" + i2str(pD->dot_num) + ", data_type:" + i2str(pD->data_type) + ", length:" + i2str(pD->length) + ", frame_counter:" + i2str(pD->frame_cnt));
 
         uint64_t tStamp = *((uint64_t *)pD->timestamp);
@@ -171,16 +178,16 @@ namespace kai
         LivoxLidarImuRawPoint *pIMU = (LivoxLidarImuRawPoint *)pD->data;
 
         m_SF.MahonyUpdate(
-        // m_SF.MadgwickUpdate(
-                          pIMU->gyro_x,
-                          pIMU->gyro_y,
-                          pIMU->gyro_z,
-                          pIMU->acc_x,
-                          pIMU->acc_y,
-                          pIMU->acc_z,
-                          ((float)dT)*1e-9);
+            // m_SF.MadgwickUpdate(
+            pIMU->gyro_x,
+            pIMU->gyro_y,
+            pIMU->gyro_z,
+            pIMU->acc_x,
+            pIMU->acc_y,
+            pIMU->acc_z,
+            ((float)dT) * 1e-9);
 
-        float* pQ = m_SF.getQuat();
+        float *pQ = m_SF.getQuat();
         vDouble4 vQ(pQ[0], pQ[1], pQ[2], pQ[3]);
         setQuaternion(vQ);
 
