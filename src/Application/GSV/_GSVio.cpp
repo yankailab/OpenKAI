@@ -101,8 +101,9 @@ namespace kai
     {
         m_bEnable = bEnable;
 
-        if(!m_bEnable)
-            m_bAlarm = false;
+//        if(!m_bEnable)
+        m_bAlarm = false;
+        // reset the detection
     }
 
     void _GSVio::console(void *pConsole)
