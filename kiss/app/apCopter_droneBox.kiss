@@ -219,17 +219,12 @@
 		{
 			"name":"heartbeat",
 			"id":0,
-			"tInt":0.4,
+			"tInt":0.5,
 		}
 		{
 			"name":"attitude",
 			"id":30,
 			"tInt":0.3,
-		}
-		{
-			"name":"rcChannels",
-			"id":65,
-			"tInt":1.0,
 		}
 		{
 			"name":"localPosition",
@@ -250,11 +245,6 @@
 			"name":"batteryStatus",
 			"id":147,
 			"tInt":10,
-		}
-		{
-			"name":"missionCurrent",
-			"id":42,
-			"tInt":1,
 		}
 	}
 }

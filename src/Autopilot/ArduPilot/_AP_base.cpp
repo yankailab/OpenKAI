@@ -73,7 +73,7 @@ namespace kai
 			pMI->v("tInt", &tInt);
 
 			if (!m_pMav->setMsgInterval(id, tInt * SEC_2_USEC))
-				LOG_E("Inteval msg id = " + i2str(id) + " not found");
+				LOG_E("Interval msg id = " + i2str(id) + " not found");
 		}
 
 		return true;
@@ -125,6 +125,7 @@ namespace kai
 			m_vAtti.z = m_pMav->m_attitude.m_msg.roll;
 		}
 
+		//TODO:
 		// get home position
 		if (!m_pMav->m_homePosition.bReceiving(tNow))
 		{

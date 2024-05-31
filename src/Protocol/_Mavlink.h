@@ -45,7 +45,7 @@ namespace kai
 
 		uint32_t m_id;
 		uint64_t m_tStamp;
-		uint64_t m_tInterval;
+		int64_t m_tInterval;
 	};
 
 	class MavAttitude : public MavMsgBase
