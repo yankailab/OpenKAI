@@ -284,6 +284,11 @@ cd build
 ccmake ../
 make all -j$(nproc)
 
+
+git submodule update --init --recursive
+git submodule update --remote --merge
+
+
 # To build with ROS2
 echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 echo "source /home/kai/dev/rosWS/install/setup.bash" >> ~/.bashrc

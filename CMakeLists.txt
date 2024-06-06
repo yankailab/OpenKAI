@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.18)
-set(CMAKE_BUILD_TYPE Debug)
-project(OpenKAI)
+project(OpenKAI VERSION 0.0.1)
+set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "")
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
+OPTION(BUILD_AS_LIB "Build as library" OFF)
+option(BUILD_SHARED_LIBS "Build shared library" ON)
 
 OPTION(USE_CUDA "Use NVIDIA CUDA" OFF)
 OPTION(USE_CHILITAGS "Use Chilitags" OFF)
@@ -718,6 +721,7 @@ endif()
 # Setting specific lib here
 link_directories(${OpenKAI_libDir})
 
+# packages
 if(USE_CUDA)
 find_package(CUDA)
 set(
@@ -727,17 +731,6 @@ set(
 )
 endif()
 
-# Definitions
-add_definitions(${OpenKAI_definitions})
-
-# Exe
-if(USE_CUDA)
-cuda_add_executable(OpenKAI ${OpenKAI_cpp})
-else()
-add_executable(OpenKAI ${OpenKAI_cpp})
-endif()
-
-# for ROS2
 if(USE_ROS)
   find_package(ament_cmake REQUIRED)
   find_package(rclcpp REQUIRED)
@@ -749,6 +742,38 @@ if(USE_ROS)
   ament_package()
 endif()
 
+# Definitions
+add_definitions(${OpenKAI_definitions})
+
+# Exe or Lib
+if(BUILD_AS_LIB)
+
+if(USE_CUDA)
+cuda_add_library(OpenKAI ${OpenKAI_cpp})
+else()
+add_library(OpenKAI ${OpenKAI_cpp})
+endif()
+
+else()
+
+if(USE_CUDA)
+cuda_add_executable(OpenKAI ${OpenKAI_cpp})
+else()
+add_executable(OpenKAI ${OpenKAI_cpp})
+endif()
+
+endif() # build_as_lib
+
 # C/C++ settings
 include_directories(${OpenKAI_include})
 target_link_libraries(OpenKAI ${OpenKAI_lib})
+
+
+
+include(GNUInstallDirs)
+set_target_properties(OpenKAI PROPERTIES
+    VERSION ${PROJECT_VERSION}
+    PUBLIC_HEADER src/Startup/Startup.h)
+install(TARGETS OpenKAI
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/OpenKAI
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/OpenKAI)
