@@ -15,8 +15,9 @@ namespace kai
 		m_defaultDtgt = 2.0;
 
 		m_bHdg = false;
+		m_bHdgMoving = false;
 		m_hdgSp = 0.0;
-		m_hdgDz = 2.0;
+		m_hdgDz = 10.0;
 		m_dHdg = 0.0;
 		m_hTouchdown = 0.0;
 
@@ -39,6 +40,9 @@ namespace kai
 		pK->v("vPsp", &m_vPsp);
 		pK->v("bHdg", &m_bHdg);
 		pK->v("hdgDz", &m_hdgDz);
+		m_hdgDzNav = m_hdgDz / 2;
+		pK->v("hdgDzNav", &m_hdgDzNav);
+
 		pK->v("hTouchdown", &m_hTouchdown);
 		pK->v("kP", &m_kP);
 		pK->v("defaultDtgt", &m_defaultDtgt);
@@ -118,7 +122,6 @@ namespace kai
 			if (m_pAP->getApMode() == AP_COPTER_GUIDED)
 			{
 				stop();
-//				m_pAP->setApMode(AP_COPTER_LAND);
 				m_pAP->setApMode(AP_COPTER_RTL);
 			}
 
@@ -126,26 +129,31 @@ namespace kai
 		}
 
 		m_dHdg = dHdg(m_hdgSp, m_oTarget.getRoll());
-		if (m_bHdg)
+		float dHdgAbs = abs(m_dHdg);
+
+		if(m_bHdgMoving)
 		{
-			if (abs(m_dHdg) > m_hdgDz)
+			if(dHdgAbs > m_hdgDzNav)
 			{
-				// if (m_pAP->getApMode() == AP_COPTER_LAND)
-				// 	m_pAP->setApMode(AP_COPTER_GUIDED);
-
-				if (m_pAP->getApMode() == AP_COPTER_LAND || 
-					m_pAP->getApMode() == AP_COPTER_RTL)
-					m_pAP->setApMode(AP_COPTER_GUIDED);
-
 				setHdg(0, (m_dHdg > 0) ? m_yawRate : (-m_yawRate));
 				return;
 			}
 
 			stop();
+			m_bHdgMoving = false;
 		}
+		else if (m_bHdg)
+		{
+			if (dHdgAbs > m_hdgDz)
+			{
+				if (m_pAP->getApMode() == AP_COPTER_LAND || 
+					m_pAP->getApMode() == AP_COPTER_RTL)
+					m_pAP->setApMode(AP_COPTER_GUIDED);
 
-		// if (m_pAP->getApMode() == AP_COPTER_GUIDED)
-		// 	m_pAP->setApMode(AP_COPTER_LAND);
+				m_bHdgMoving = true;
+				return;
+			}
+		}
 
 		if (m_pAP->getApMode() == AP_COPTER_GUIDED)
 			m_pAP->setApMode(AP_COPTER_RTL);

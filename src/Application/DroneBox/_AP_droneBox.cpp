@@ -78,7 +78,7 @@ namespace kai
 
 	string _AP_droneBox::getState(void)
     {
-        return *m_pSC->getCurrentStateName();
+        return m_pSC->getCurrentStateName();
     }
 
     void _AP_droneBox::updateAPdroneBox(void)

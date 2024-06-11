@@ -1,6 +1,6 @@
 {
 	"name":"APP",
-	"class":"Startup",
+	"class":"OpenKAI",
 	"appName":"OpenKAI",
 	"bLog":1,
 	"bStdErr":1,
@@ -384,7 +384,8 @@
 	"vFov":[70,60],
 	"vPsp":[0.5, 0.5],
 	"bHdg":1,
-	"hdgDz":4.0,
+	"hdgDz":10.0,
+	"hdgDzNav":4.0,
 	"yawRate":5,
 	"hTouchdown":1.0,
 	"kP":0.125,

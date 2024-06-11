@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Navigation_GPS_H_
 #define OpenKAI_src_Navigation_GPS_H_
 
-#include "../Dependency/UTM.h"
+#include "../Dependencies/UTM.h"
 #include "../Protocol/_Mavlink.h"
 
 /*

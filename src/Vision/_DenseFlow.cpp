@@ -183,7 +183,7 @@ namespace kai
 
 		Mat mF;
 		drawOpticalFlow(m_pFlow[0], m_pFlow[1], mF, 10);
-		imshow(*this->getName(), mF);
+		imshow(this->getName(), mF);
 	}
 
 	bool _DenseFlow::isFlowCorrect(Point2f u)

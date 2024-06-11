@@ -2,7 +2,7 @@
 #define OpenKAI_src_Protocol__Modbus_H_
 
 #include "../Base/_ModuleBase.h"
-#include "../Dependency/libmodbus/modbus.h"
+#include "../Dependencies/libmodbus/modbus.h"
 
 namespace kai
 {

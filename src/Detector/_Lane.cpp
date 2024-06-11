@@ -291,12 +291,12 @@ namespace kai
 				}
 			}
 
-			imshow(*this->getName() + ":Overhead", mO);
+			imshow(this->getName() + ":Overhead", mO);
 		}
 
 		if (m_bDrawOverhead && !m_mBin.empty())
 		{
-			imshow(*this->getName() + ":Bin", m_mBin);
+			imshow(this->getName() + ":Bin", m_mBin);
 		}
 	}
 

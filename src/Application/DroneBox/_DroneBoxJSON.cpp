@@ -161,7 +161,7 @@ namespace kai
         int vID = o["id"].get<double>();
         string stat = o["stat"].get<string>();
 
-        if (stat == "STANDBY" ||
+        if (//stat == "STANDBY" ||
             stat == "AIRBORNE" ||
             stat == "LANDED"
         )

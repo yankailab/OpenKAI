@@ -248,7 +248,7 @@ namespace kai
 		auto &app = gui::Application::GetInstance();
 		app.Initialize(m_pathRes.c_str());
 
-		m_pWin = new O3DUI(*this->getName(), 2000, 1000);
+		m_pWin = new O3DUI(this->getName(), 2000, 1000);
 		m_pUIstate = m_pWin->getUIState();
 		m_pUIstate->m_bSceneCache = m_bSceneCache;
 		m_pUIstate->m_mouseMode = (visualization::gui::SceneWidget::Controls)m_mouseMode;

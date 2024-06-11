@@ -40,7 +40,7 @@ namespace kai
 		virtual void console(void *pConsole);
 
 		StateBase *getCurrentState(void);
-		string* getCurrentStateName(void);
+		string getCurrentStateName(void);
 		int getCurrentStateIdx(void);
 		STATE_TYPE getCurrentStateType(void);
 

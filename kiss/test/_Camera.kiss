@@ -1,7 +1,7 @@
 {
 	"name":"APP",
-	"class":"Startup",
-	"appName":"OpenKAI",
+	"class":"OpenKAI",
+	"appName":"CameraTest",
 	"bLog":1,
 	"bStdErr":1,
 }

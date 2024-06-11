@@ -44,16 +44,16 @@ namespace kai
 		return true;
 	}
 
-	string *BASE::getName(void)
+	string BASE::getName(void)
 	{
 		NULL_N(m_pKiss);
-		return &((Kiss *)m_pKiss)->m_name;
+		return ((Kiss *)m_pKiss)->m_name;
 	}
 
-	string *BASE::getClass(void)
+	string BASE::getClass(void)
 	{
 		NULL_N(m_pKiss);
-		return &((Kiss *)m_pKiss)->m_class;
+		return ((Kiss *)m_pKiss)->m_class;
 	}
 
 	bool BASE::start(void)
@@ -86,7 +86,7 @@ namespace kai
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("____________________________________", COLOR_PAIR(_Console_COL_NAME) | A_BOLD, _Console_X_NAME, 1);
-		pC->addMsg(*this->getName(), COLOR_PAIR(_Console_COL_NAME) | A_BOLD, _Console_X_NAME, 1);
+		pC->addMsg(this->getName(), COLOR_PAIR(_Console_COL_NAME) | A_BOLD, _Console_X_NAME, 1);
 	}
 
 	void BASE::context(void* pContext)

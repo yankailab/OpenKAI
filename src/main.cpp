@@ -1,4 +1,8 @@
-#include "main.h"
+#include "OpenKAI.h"
+#include "Script/Kiss.h"
+#include "Utility/utilFile.h"
+
+using namespace kai;
 
 int main(int argc, char* argv[])
 {
@@ -17,9 +21,30 @@ int main(int argc, char* argv[])
 
 	printf("Kiss file: %s\n", argStr.c_str());
     
-	g_pStartup = new Startup();
-	g_pStartup->start(argStr);
+	OpenKAI* pOK = new OpenKAI();
 
-	delete g_pStartup;
+	if(!pOK->init())
+		goto exit;
+
+	if(!pOK->addModulesFromKiss(argStr))
+		goto exit;
+
+	if(!pOK->createAllModules())
+		goto exit;
+
+	if(!pOK->initAllModules())
+		goto exit;
+
+	if(!pOK->linkAllModules())
+		goto exit;
+
+	if(!pOK->startAllModules())
+		goto exit;
+
+
+	pOK->waitForComplete();
+
+exit:
+	delete pOK;
 	return 0;
 }

@@ -83,7 +83,7 @@ namespace kai
 		erase();
 
 		attrset(COLOR_PAIR(_Console_COL_TITLE) | A_BOLD);
-		mvaddstr(0, 1, this->getName()->c_str());
+		mvaddstr(0, 1, this->getName().c_str());
 		m_iY = 0;
 
 		for (BASE *pB : m_vpB)

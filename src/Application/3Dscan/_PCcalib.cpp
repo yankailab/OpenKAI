@@ -144,7 +144,7 @@ namespace kai
 		auto &app = gui::Application::GetInstance();
 		app.Initialize(m_pathRes.c_str());
 
-		m_pWin = new PCcalibUI(*this->getName(), 2000, 1000);
+		m_pWin = new PCcalibUI(this->getName(), 2000, 1000);
 		PCcalibUI *pW = (PCcalibUI *)m_pWin;
 		app.AddWindow(shared_ptr<PCcalibUI>(pW));
 

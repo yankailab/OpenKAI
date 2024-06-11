@@ -38,7 +38,7 @@ namespace kai
 
 		m_F.allocate(m_vSize.x, m_vSize.y);
 
-		string wn = *this->getName();
+		string wn = this->getName();
 		if (m_bFullScreen)
 		{
 			namedWindow(wn, WINDOW_NORMAL);
@@ -80,7 +80,7 @@ namespace kai
 		IF_(m_F.bEmpty());
 
 		// show window
-		imshow(*this->getName(), *m_F.m());
+		imshow(this->getName(), *m_F.m());
 
 		int key = waitKey(m_waitKey);
 	}

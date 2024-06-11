@@ -87,7 +87,7 @@ set(OpenKAI_lib pthread boost_system uuid ${EIGEN3_LIBS} gsl gslcblas ncurses ss
 
 
 # Common
-file(GLOB_RECURSE OpenKAI_cpp src/main.cpp src/Base/*.cpp src/Base/*.cc src/Base/*.c)
+file(GLOB_RECURSE OpenKAI_cpp src/main.cpp src/OpenKAI.cpp src/Base/*.cpp src/Base/*.cc src/Base/*.c)
 
 file(GLOB_RECURSE Arithmetic_cpp src/Arithmetic/*.cpp src/Arithmetic/*.cc src/Arithmetic/*.c)
 set(OpenKAI_cpp ${OpenKAI_cpp} ${Arithmetic_cpp})
@@ -103,9 +103,6 @@ set(OpenKAI_cpp ${OpenKAI_cpp} ${Primitive_cpp})
 
 file(GLOB_RECURSE Script_cpp src/Script/*.cpp src/Script/*.cc src/Script/*.c)
 set(OpenKAI_cpp ${OpenKAI_cpp} ${Script_cpp})
-
-file(GLOB_RECURSE Startup_cpp src/Startup/*.cpp src/Startup/*.cc src/Startup/*.c)
-set(OpenKAI_cpp ${OpenKAI_cpp} ${Startup_cpp})
 
 set(OpenKAI_cpp ${OpenKAI_cpp} src/UI/_Console.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/File/_FileBase.cpp)
@@ -281,8 +278,8 @@ set(OpenKAI_cpp ${OpenKAI_cpp} src/Actuator/Motor/_ZLAC8015D.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Actuator/Motor/_ZDmotor.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Actuator/Motor/_DDSM.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Actuator/_Feetech.cpp)
-file(GLOB_RECURSE Dependency_Feetech src/Dependency/Feetech/*.cpp src/Dependency/Feetech/*.c)
-set(OpenKAI_cpp ${OpenKAI_cpp} ${Dependency_Feetech})
+file(GLOB_RECURSE Dependencies_Feetech src/Dependencies/Feetech/*.cpp src/Dependencies/Feetech/*.c)
+set(OpenKAI_cpp ${OpenKAI_cpp} ${Dependencies_Feetech})
 if(USE_XARM)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Actuator/Articulated/_xArm.cpp)
 endif()
@@ -409,8 +406,8 @@ endif()
 
 if(WITH_NAVIGATION)
 add_definitions(-DWITH_NAVIGATION)
-file(GLOB_RECURSE Dependency_nav src/Dependency/minmea.c)
-set(OpenKAI_cpp ${OpenKAI_cpp} ${Dependency_nav})
+file(GLOB_RECURSE Dependencies_nav src/Dependencies/minmea.c)
+set(OpenKAI_cpp ${OpenKAI_cpp} ${Dependencies_nav})
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Navigation/_NavBase.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Navigation/Coordinate.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Navigation/_GPS.cpp)
@@ -433,10 +430,10 @@ if(WITH_PROTOCOL)
 add_definitions(-DWITH_PROTOCOL)
 file(GLOB_RECURSE Protocol_cpp src/Protocol/*.cpp src/Protocol/*.cc src/Protocol/*.c)
 set(OpenKAI_cpp ${OpenKAI_cpp} ${Protocol_cpp})
-file(GLOB_RECURSE Dependency_mdb src/Dependency/libmodbus/*.cpp src/Dependency/libmodbus/*.c)
-set(OpenKAI_cpp ${OpenKAI_cpp} ${Dependency_mdb})
-file(GLOB_RECURSE Dependency_mvl src/Dependency/c_library_v2/*.cpp src/Dependency/c_library_v2/*.c)
-set(OpenKAI_cpp ${OpenKAI_cpp} ${Dependency_mvl})
+file(GLOB_RECURSE Dependencies_mdb src/Dependencies/libmodbus/*.cpp src/Dependencies/libmodbus/*.c)
+set(OpenKAI_cpp ${OpenKAI_cpp} ${Dependencies_mdb})
+file(GLOB_RECURSE Dependencies_mvl src/Dependencies/c_library_v2/*.cpp src/Dependencies/c_library_v2/*.c)
+set(OpenKAI_cpp ${OpenKAI_cpp} ${Dependencies_mvl})
 endif()
 
 if(WITH_ROS)
@@ -461,8 +458,8 @@ endif()
 
 if(WITH_SENSOR)
 add_definitions(-DWITH_SENSOR)
-file(GLOB_RECURSE Dependency_sensor src/Dependency/SensorFusion/*.cpp src/Dependency/SensorFusion/*.c)
-set(OpenKAI_cpp ${OpenKAI_cpp} ${Dependency_sensor})
+file(GLOB_RECURSE Dependencies_sensor src/Dependencies/SensorFusion/*.cpp src/Dependencies/SensorFusion/*.c)
+set(OpenKAI_cpp ${OpenKAI_cpp} ${Dependencies_sensor})
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/Distance/_DistSensorBase.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/Distance/_LeddarVu.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/Distance/_TOFsense.cpp)
@@ -769,11 +766,15 @@ include_directories(${OpenKAI_include})
 target_link_libraries(OpenKAI ${OpenKAI_lib})
 
 
-
 include(GNUInstallDirs)
 set_target_properties(OpenKAI PROPERTIES
-    VERSION ${PROJECT_VERSION}
-    PUBLIC_HEADER src/Startup/Startup.h)
+    VERSION ${PROJECT_VERSION})
+
 install(TARGETS OpenKAI
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/OpenKAI
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/OpenKAI)
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/OpenKAI
+    FILES_MATCHING
+    PATTERN "*.h"
+)

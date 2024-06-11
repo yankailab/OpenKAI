@@ -1,8 +1,8 @@
 #ifndef OpenKAI_src_Protocol__Mavlink_H_
 #define OpenKAI_src_Protocol__Mavlink_H_
 
-#include "../Dependency/c_library_v2/ardupilotmega/mavlink.h"
-#include "../Dependency/c_library_v2/mavlink_conversions.h"
+#include "../Dependencies/c_library_v2/ardupilotmega/mavlink.h"
+#include "../Dependencies/c_library_v2/mavlink_conversions.h"
 #include "../IO/_IObase.h"
 #include "../IO/_WebSocket.h"
 

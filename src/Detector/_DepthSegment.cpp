@@ -116,7 +116,7 @@ namespace kai
 
 		if (!m_mR.empty())
 		{
-			imshow(*this->getName() + ":Thr", m_mR);
+			imshow(this->getName() + ":Thr", m_mR);
 		}
 	}
 

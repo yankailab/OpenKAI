@@ -9,7 +9,7 @@
 #define OpenKAI_src_Navigation__GPS_H_
 
 #include "../IO/_IObase.h"
-#include "../Dependency/minmea.h"
+#include "../Dependencies/minmea.h"
 #include "Coordinate.h"
 
 namespace kai

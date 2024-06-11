@@ -55,6 +55,7 @@ namespace kai
 		bool m_bHdgMoving;
 		float m_hdgSp;
 		float m_hdgDz;
+		float m_hdgDzNav;
 		float m_dHdg;
 		float m_hTouchdown;
 	};

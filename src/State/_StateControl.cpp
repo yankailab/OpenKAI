@@ -135,7 +135,7 @@ namespace kai
 	{
 		for (int i = 0; i < m_vpState.size(); i++)
 		{
-			if (*m_vpState[i]->getName() == n)
+			if (m_vpState[i]->getName() == n)
 				return i;
 		}
 
@@ -152,7 +152,7 @@ namespace kai
 		return m_iS;
 	}
 
-	string *_StateControl::getCurrentStateName(void)
+	string _StateControl::getCurrentStateName(void)
 	{
 		return m_vpState[m_iS]->getName();
 	}
@@ -178,7 +178,7 @@ namespace kai
 		IF_(m_iS < 0);
 
 		StateBase *pS = getCurrentState();
-		pC->addMsg("Current state: " + *getCurrentStateName(), 1);
+		pC->addMsg("Current state: " + getCurrentStateName(), 1);
 		pS->console(pConsole);
 	}
 

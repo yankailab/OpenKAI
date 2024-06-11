@@ -213,7 +213,7 @@ namespace kai
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
-		string msg = *this->getName();
+		string msg = this->getName();
 		if (m_pIO->bOpen())
 			msg += ": CONNECTED";
 		else

@@ -9,7 +9,7 @@
 #define OpenKAI_src_Actuator__Feetech_H_
 
 #include "_ActuatorBase.h"
-#include "../Dependency/Feetech/SCServo.h"
+#include "../Dependencies/Feetech/SCServo.h"
 
 namespace kai
 {

@@ -230,7 +230,7 @@ namespace kai
 		NULL_(pConsole);
 
 		string msg = "FPS: " + f2str(m_FPS, 2);
-		string t = " " + *this->getName();
+		string t = " " + this->getName();
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg(t, COLOR_PAIR(_Console_COL_NAME) | A_BOLD, _Console_X_NAME, 1);

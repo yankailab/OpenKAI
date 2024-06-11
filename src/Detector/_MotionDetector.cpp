@@ -128,7 +128,7 @@ namespace kai
 
 		if (!m_mFG.empty())
 		{
-			imshow(*this->getName(), m_mFG);
+			imshow(this->getName(), m_mFG);
 		}
 	}
 

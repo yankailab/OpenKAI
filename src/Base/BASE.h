@@ -33,8 +33,8 @@ namespace kai
 		virtual int serialize(uint8_t *pB, int nB);
 		virtual int deSerialize(uint8_t *pB, int nB);
 
-		string *getName(void);
-		string *getClass(void);
+		string getName(void);
+		string getClass(void);
 
 	protected:
 		void *m_pKiss;

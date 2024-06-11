@@ -141,7 +141,7 @@ namespace kai
 
 	string _DroneBox::getState(void)
     {
-        return *m_pSC->getCurrentStateName();
+        return m_pSC->getCurrentStateName();
     }
 
 	void _DroneBox::setState(const string& s)
