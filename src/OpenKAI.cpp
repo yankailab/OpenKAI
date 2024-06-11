@@ -1,4 +1,8 @@
 #include "OpenKAI.h"
+#include "Config/Module.h"
+#include "Utility/utilFile.h"
+
+using namespace kai;
 
 static OpenKAI *g_pStartup;
 
@@ -52,13 +56,15 @@ namespace kai
 		IF_F(check() < 0);
 		IF_F(fName.empty());
 
-		if (!parseKiss(fName, m_pKiss))
+		Kiss* pKiss = (Kiss*)m_pKiss;
+
+		if (!parseKiss(fName, pKiss))
 		{
 			LOG(ERROR) << "Kiss file not found or parsing failed";
 			return false;
 		}
 
-		Kiss *pApp = m_pKiss->root()->child("APP");
+		Kiss *pApp = pKiss->root()->child("APP");
 		pApp->v("appName", &m_appName);
 		pApp->v("bStdErr", &m_bStdErr);
 		pApp->v("bLog", &m_bLog);
@@ -69,7 +75,7 @@ namespace kai
 		pApp->a("vInclude", &vInclude);
 		for (string s : vInclude)
 		{
-			if (!parseKiss(s, m_pKiss))
+			if (!parseKiss(s, pKiss))
 			{
 				LOG(INFO) << "Kiss parse failed: " << s;
 			}
@@ -93,17 +99,20 @@ namespace kai
 	{
 		IF_F(check() < 0);
 
+		Kiss* pKiss = (Kiss*)m_pKiss;
+
+		Module mod;
 		OK_MODULE m;
 		int i = 0;
 		while (1)
 		{
-			Kiss *pK = m_pKiss->root()->child(i++);
+			Kiss *pK = pKiss->root()->child(i++);
 			if (pK->empty())
 				break;
 
 			IF_CONT(pK->m_class == "OpenKAI");
 
-			m.m_pInst = m_module.createInstance(pK);
+			m.m_pInst = mod.createInstance(pK);
 			if (!m.m_pInst)
 			{
 				LOG_E("Failed to create instance: " + pK->m_name);
@@ -123,8 +132,10 @@ namespace kai
 
 		for (auto inst : m_vInst)
 		{
-			IF_CONT(inst.m_pInst->init(inst.m_pKiss));
-			LOG_E(inst.m_pKiss->m_name + ".init()");
+			Kiss* pKiss = (Kiss*)inst.m_pKiss;
+			IF_CONT(((BASE*)inst.m_pInst)->init(pKiss));
+
+			LOG_E(pKiss->m_name + ".init()");
 			return false;
 		}
 
@@ -137,8 +148,8 @@ namespace kai
 
 		for (auto inst : m_vInst)
 		{
-			IF_CONT(inst.m_pInst->link());
-			LOG_E(inst.m_pKiss->m_name + ".link()");
+			IF_CONT(((BASE*)inst.m_pInst)->link());
+			LOG_E(((Kiss*)inst.m_pKiss)->m_name + ".link()");
 			return false;
 		}
 
@@ -157,8 +168,8 @@ namespace kai
 
 		for (auto inst : m_vInst)
 		{
-			IF_CONT(inst.m_pInst->start());
-			LOG_E(inst.m_pKiss->m_name + ".start()");
+			IF_CONT(((BASE*)inst.m_pInst)->start());
+			LOG_E(((Kiss*)inst.m_pKiss)->m_name + ".start()");
 			return false;
 		}
 

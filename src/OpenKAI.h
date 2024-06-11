@@ -8,19 +8,18 @@
 #ifndef OpenKAI_src_OpenKAI_H_
 #define OpenKAI_src_OpenKAI_H_
 
-#include "Base/common.h"
-#include "Config/Module.h"
-#include "Utility/utilFile.h"
+#include <string>
+#include <vector>
 
-using namespace kai;
+using namespace std;
 
 namespace kai
 {
 
 	struct OK_MODULE
 	{
-		BASE *m_pInst;
-		Kiss *m_pKiss;
+		void *m_pInst;
+		void *m_pKiss;
 	};
 
 	class OpenKAI
@@ -51,9 +50,8 @@ namespace kai
 		int check(void);
 
 	protected:
-		Module m_module;
 		vector<OK_MODULE> m_vInst;
-		Kiss *m_pKiss;
+		void *m_pKiss;
 
 		string m_appName;
 		bool m_bRun;
