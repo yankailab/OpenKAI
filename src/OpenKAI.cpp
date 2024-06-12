@@ -1,5 +1,5 @@
 #include "OpenKAI.h"
-#include "Config/Module.h"
+#include "Module/Module.h"
 #include "Utility/utilFile.h"
 
 using namespace kai;
@@ -26,7 +26,7 @@ namespace kai
 		m_bStdErr = true;
 		m_bLog = false;
 		m_rc = "";
-		m_vInst.clear();
+		m_vModules.clear();
 	}
 
 	OpenKAI::~OpenKAI()
@@ -56,7 +56,7 @@ namespace kai
 		IF_F(check() < 0);
 		IF_F(fName.empty());
 
-		Kiss* pKiss = (Kiss*)m_pKiss;
+		Kiss *pKiss = (Kiss *)m_pKiss;
 
 		if (!parseKiss(fName, pKiss))
 		{
@@ -99,7 +99,7 @@ namespace kai
 	{
 		IF_F(check() < 0);
 
-		Kiss* pKiss = (Kiss*)m_pKiss;
+		Kiss *pKiss = (Kiss *)m_pKiss;
 
 		Module mod;
 		OK_MODULE m;
@@ -112,15 +112,15 @@ namespace kai
 
 			IF_CONT(pK->m_class == "OpenKAI");
 
-			m.m_pInst = mod.createInstance(pK);
-			if (!m.m_pInst)
+			m.m_pBase = mod.createInstance(pK);
+			if (!m.m_pBase)
 			{
 				LOG_E("Failed to create instance: " + pK->m_name);
 				return false;
 			}
 
 			m.m_pKiss = pK;
-			m_vInst.push_back(m);
+			m_vModules.push_back(m);
 		}
 
 		return true;
@@ -130,10 +130,10 @@ namespace kai
 	{
 		IF_F(check() < 0);
 
-		for (auto inst : m_vInst)
+		for (auto m : m_vModules)
 		{
-			Kiss* pKiss = (Kiss*)inst.m_pKiss;
-			IF_CONT(((BASE*)inst.m_pInst)->init(pKiss));
+			Kiss *pKiss = (Kiss *)m.m_pKiss;
+			IF_CONT(((BASE *)m.m_pBase)->init(pKiss));
 
 			LOG_E(pKiss->m_name + ".init()");
 			return false;
@@ -146,10 +146,10 @@ namespace kai
 	{
 		IF_F(check() < 0);
 
-		for (auto inst : m_vInst)
+		for (auto m : m_vModules)
 		{
-			IF_CONT(((BASE*)inst.m_pInst)->link());
-			LOG_E(((Kiss*)inst.m_pKiss)->m_name + ".link()");
+			IF_CONT(((BASE *)m.m_pBase)->link());
+			LOG_E(((Kiss *)m.m_pKiss)->m_name + ".link()");
 			return false;
 		}
 
@@ -166,22 +166,30 @@ namespace kai
 			system(m_rc.c_str());
 		}
 
-		for (auto inst : m_vInst)
+		for (auto m : m_vModules)
 		{
-			IF_CONT(((BASE*)inst.m_pInst)->start());
-			LOG_E(((Kiss*)inst.m_pKiss)->m_name + ".start()");
+			IF_CONT(((BASE *)m.m_pBase)->start());
+			LOG_E(((Kiss *)m.m_pKiss)->m_name + ".start()");
 			return false;
 		}
 
 		return true;
 	}
 
-	void OpenKAI::runAllModules(void)
+	void OpenKAI::resumeAllModules(void)
 	{
+		for (auto m : m_vModules)
+		{
+			((BASE*)m.m_pBase)->resume();
+		}
 	}
 
 	void OpenKAI::pauseAllModules(void)
 	{
+		for (auto m : m_vModules)
+		{
+			((BASE*)m.m_pBase)->pause();
+		}
 	}
 
 	void OpenKAI::stopAllModules(void)
@@ -206,12 +214,86 @@ namespace kai
 
 	void OpenKAI::exit(void)
 	{
-		for (auto inst : m_vInst)
+		for (auto m : m_vModules)
 		{
-			DEL(inst.m_pInst);
+			DEL(m.m_pBase);
 		}
 
-		m_vInst.clear();
+		m_vModules.clear();
+	}
+
+	int OpenKAI::findModule(const string& mName)
+	{
+		for(int i=0; i<m_vModules.size(); i++)
+		{
+			IF_CONT(((BASE*)m_vModules[i].m_pBase)->getName() != mName);
+
+			return i;
+		}
+
+		return -1;
+	}
+
+	int OpenKAI::getModuleHandle(const string &mName)
+	{
+		return findModule(mName);
+	}
+
+	void* OpenKAI::getModule(const string &mName)
+	{
+		int i = findModule(mName);
+		IF_N(i < 0);
+
+		return m_vModules[i].m_pBase;		
+	}
+
+	bool OpenKAI::startModule(int h)
+	{
+		IF_F(h <= 0);
+		IF_F(h > m_vModules.size());
+
+		BASE* pBase = (BASE*)m_vModules[h].m_pBase;
+		pBase->start();
+
+		//TODO: verify already started thread in each ModuleBase instances
+	}
+
+	bool OpenKAI::pauseModule(int h)
+	{
+		IF_F(h <= 0);
+		IF_F(h > m_vModules.size());
+
+		BASE* pBase = (BASE*)m_vModules[h].m_pBase;
+		pBase->pause();
+	}
+
+	bool OpenKAI::resumeModule(int h)
+	{
+		IF_F(h <= 0);
+		IF_F(h > m_vModules.size());
+
+		BASE* pBase = (BASE*)m_vModules[h].m_pBase;
+		pBase->resume();
+	}
+
+	bool OpenKAI::stopModule(int h)
+	{
+		IF_F(h <= 0);
+		IF_F(h > m_vModules.size());
+
+		BASE* pBase = (BASE*)m_vModules[h].m_pBase;
+		pBase->stop();
+	}
+
+	bool OpenKAI::deleteModule(int h)
+	{
+		IF_F(h <= 0);
+		IF_F(h > m_vModules.size());
+
+		BASE* pBase = (BASE*)m_vModules[h].m_pBase;
+		pBase->stop();
+
+		//TODO:
 	}
 
 	void OpenKAI::setName(const string &n)

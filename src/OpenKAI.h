@@ -18,7 +18,7 @@ namespace kai
 
 	struct OK_MODULE
 	{
-		void *m_pInst;
+		void *m_pBase;
 		void *m_pKiss;
 	};
 
@@ -28,29 +28,40 @@ namespace kai
 		OpenKAI();
 		~OpenKAI();
 
+		// general workflow
 		bool init(void);
 		bool addModulesFromKiss(const string &fName);
 		bool createAllModules(void);
 		bool initAllModules(void);
 		bool linkAllModules(void);
 		bool startAllModules(void);
-		void runAllModules(void);
+		void resumeAllModules(void);
 		void pauseAllModules(void);
 		void stopAllModules(void);
 		void waitForComplete(void);
 		bool bComplete(void);
 		void exit(void);
 
+		// module control
+		void* getModule(const string& mName);
+		int getModuleHandle(const string& mName);
+		bool startModule(int h);
+		bool pauseModule(int h);
+		bool resumeModule(int h);
+		bool stopModule(int h);
+		bool deleteModule(int h);
+
+		// access methods
 		void setName(const string &n);
 		string getName(void);
-
 		void printEnvironment(void);
 
 	protected:
 		int check(void);
+		int findModule(const string& mName);
 
 	protected:
-		vector<OK_MODULE> m_vInst;
+		vector<OK_MODULE> m_vModules;
 		void *m_pKiss;
 
 		string m_appName;

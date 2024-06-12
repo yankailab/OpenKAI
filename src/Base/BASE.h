@@ -26,6 +26,10 @@ namespace kai
 		virtual bool start(void);
 		virtual int check(void);
 
+		virtual void pause(void);
+		virtual void resume(void);
+		virtual void stop(void);
+
 		virtual void draw(void *pFrame);
 		virtual void console(void *pConsole);
 		virtual void context(void *pContext);

@@ -92,8 +92,8 @@ file(GLOB_RECURSE OpenKAI_cpp src/main.cpp src/OpenKAI.cpp src/Base/*.cpp src/Ba
 file(GLOB_RECURSE Arithmetic_cpp src/Arithmetic/*.cpp src/Arithmetic/*.cc src/Arithmetic/*.c)
 set(OpenKAI_cpp ${OpenKAI_cpp} ${Arithmetic_cpp})
 
-file(GLOB_RECURSE Config_cpp src/Config/*.cpp src/Config/*.cc src/Config/*.c)
-set(OpenKAI_cpp ${OpenKAI_cpp} ${Config_cpp})
+file(GLOB_RECURSE Module_cpp src/Module/*.cpp src/Module/*.cc src/Module/*.c)
+set(OpenKAI_cpp ${OpenKAI_cpp} ${Module_cpp})
 
 file(GLOB_RECURSE IPC_cpp src/IPC/*.cpp src/IPC/*.cc src/IPC/*.c)
 set(OpenKAI_cpp ${OpenKAI_cpp} ${IPC_cpp})

@@ -64,6 +64,27 @@ namespace kai
     {
     }
 
+	bool _ModuleBase::bAlive(void)
+    {
+        IF_F(check() < 0);
+
+        return m_pT->bAlive();
+    }
+
+	bool _ModuleBase::bRun(void)
+    {
+        IF_F(check() < 0);
+
+        return m_pT->bRun();
+    }
+
+	bool _ModuleBase::bStop(void)
+    {
+        IF_F(check() < 0);
+
+        return m_pT->bStop();
+    }
+
     void _ModuleBase::pause(void)
     {
         IF_(check() < 0);
@@ -76,6 +97,13 @@ namespace kai
         IF_(check() < 0);
 
         m_pT->run();
+    }
+
+    void _ModuleBase::stop(void)
+    {
+        IF_(check() < 0);
+
+        m_pT->stop();
     }
 
 	void _ModuleBase::onPause(void)

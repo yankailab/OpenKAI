@@ -61,6 +61,18 @@ namespace kai
 		return true;
 	}
 
+    void BASE::pause(void)
+    {
+    }
+
+    void BASE::resume(void)
+    {
+    }
+
+    void BASE::stop(void)
+    {
+    }
+
 	int BASE::check(void)
 	{
 		return 0;

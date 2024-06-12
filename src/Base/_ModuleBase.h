@@ -36,8 +36,13 @@ namespace kai
 		virtual int check(void);
 		virtual void console(void *pConsole);
 
+		virtual bool bAlive(void);
+		virtual bool bRun(void);
+		virtual bool bStop(void);
+
 		virtual void pause(void);
 		virtual void resume(void);
+		virtual void stop(void);
 
 	protected:
 		virtual void onPause(void);
