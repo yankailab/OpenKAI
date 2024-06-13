@@ -98,7 +98,7 @@ namespace kai
 
 			string n;
 			pG->v("_GeometryBase", &n);
-			_GeometryBase *pGB = (_GeometryBase *)(pK->getInst(n));
+			_GeometryBase *pGB = (_GeometryBase *)(pK->findModule(n));
 			IF_CONT(!pGB);
 
 			GVIEWER_OBJ g;

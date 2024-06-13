@@ -45,7 +45,7 @@ namespace kai
         string n;
         n = "";
         pK->v("_ADIObase", &n);
-        m_pDio = (_ADIObase *)(pK->getInst(n));
+        m_pDio = (_ADIObase *)(pK->findModule(n));
 
         return true;
     }

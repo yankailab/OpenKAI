@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/BASE.h"
-#include "../Script/Kiss.h"
+#include "../Module/Kiss.h"
 
 #include "../Arithmetic/Destimator.h"
 #include "../IPC/SharedMem.h"
@@ -359,7 +359,7 @@
 #endif // vision
 
 #define ADD_MODULE(x)             \
-	if (pK->m_class == #x)        \
+	if (pK->getClass() == #x)     \
 	{                             \
 		return createInst<x>(pK); \
 	}

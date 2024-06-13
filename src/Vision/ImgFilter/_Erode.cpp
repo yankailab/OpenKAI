@@ -49,7 +49,7 @@ namespace kai
 		string n;
 		n = "";
 		pK->v("_VisionBase", &n);
-		m_pV = (_VisionBase *)(pK->getInst(n));
+		m_pV = (_VisionBase *)(pK->findModule(n));
 		IF_Fl(!m_pV, n + ": not found");
 
 		return true;

@@ -15,13 +15,6 @@ using namespace std;
 
 namespace kai
 {
-
-	struct OK_MODULE
-	{
-		void *m_pBase;
-		void *m_pKiss;
-	};
-
 	class OpenKAI
 	{
 	public:
@@ -30,43 +23,34 @@ namespace kai
 
 		// system
 		bool init(const string& appName = "OpenKAI");
+		void clean(void);
 
 		// module create
 		bool addKiss(const string &fName);
-		int addModule(void* pModule, const string& mName);
+		bool addModule(void* pModule, const string& mName);
+		void* findModule(const string& mName);
+		bool deleteModule(const string& mName);
 
 		// general flow
 		bool createAllModules(void);
-		bool initAllModules(void);
-		bool linkAllModules(void);
-		bool startAllModules(void);
+		int initAllModules(void);
+		int linkAllModules(void);
+		int startAllModules(void);
 		void resumeAllModules(void);
 		void pauseAllModules(void);
 		void stopAllModules(void);
 		void waitForComplete(void);
 		bool bComplete(void);
-		void exit(void);
-
-		// module control
-		void* getModule(const string& mName);
-		int getModuleHandle(const string& mName);
-		bool startModule(int h);
-		bool pauseModule(int h);
-		bool resumeModule(int h);
-		bool stopModule(int h);
-		bool deleteModule(int h);
 
 		// access methods
 		void setName(const string &n);
 		string getName(void);
 		void printEnvironment(void);
 
-	protected:
+	private:
 		int check(void);
-		int findModule(const string& mName);
 
-	protected:
-		vector<OK_MODULE> m_vModules;
+	private:
 		void *m_pKiss;
 
 		string m_appName;

@@ -34,7 +34,7 @@ bool _PCmerge::init(void *pKiss)
 
 	for(string p : vPCB)
 	{
-		_GeometryBase* pPCB = (_GeometryBase*) (pK->getInst(p));
+		_GeometryBase* pPCB = (_GeometryBase*) (pK->findModule(p));
 		IF_CONT(!pPCB);
 
 		m_vpGB.push_back(pPCB);

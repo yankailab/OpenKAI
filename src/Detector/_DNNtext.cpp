@@ -64,7 +64,7 @@ namespace kai
 #ifdef USE_OCR
 		string n = "";
 		F_INFO(pK->v("OCR", &n));
-		m_pOCR = (OCR *)(pK->getInst(n));
+		m_pOCR = (OCR *)(pK->findModule(n));
 		IF_Fl(!m_pOCR, n + " not found");
 #endif
 

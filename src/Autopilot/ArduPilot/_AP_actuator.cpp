@@ -39,15 +39,15 @@ namespace kai
 		string n = "";
 
 		pK->v("_AP_base", &n);
-		m_pAP = (_AP_base *)(pK->getInst(n));
+		m_pAP = (_AP_base *)(pK->findModule(n));
 		IF_Fl(!m_pAP, n + ": not found");
 
 		pK->v("_ActuatorBase1", &n);
-		m_pAB1 = (_ActuatorBase *)(pK->getInst(n));
+		m_pAB1 = (_ActuatorBase *)(pK->findModule(n));
 		IF_Fl(!m_pAB1, n + ": not found");
 
 		pK->v("_ActuatorBase2", &n);
-		m_pAB2 = (_ActuatorBase *)(pK->getInst(n));
+		m_pAB2 = (_ActuatorBase *)(pK->findModule(n));
 		IF_Fl(!m_pAB2, n + ": not found");
 
 		return true;

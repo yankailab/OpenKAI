@@ -29,7 +29,7 @@ namespace kai
 
 		string n = "";
 		F_ERROR_F(pK->v("_IObase", &n));
-		m_pIO = (_IObase *)(pK->getInst(n));
+		m_pIO = (_IObase *)(pK->findModule(n));
 		IF_Fl(!m_pIO, "_IObase not found");
 
 		return true;

@@ -55,7 +55,7 @@ namespace kai
 
 				string n = "";
 				F_ERROR_F(pActuatorI->v("_ActuatorBase", &n));
-				aA.m_pA = (_ActuatorBase *)(pK->getInst(n));
+				aA.m_pA = (_ActuatorBase *)(pK->findModule(n));
 				IF_CONT(!aA.m_pA);
 
 				pActuatorI->v("pos", &aA.m_vPos);

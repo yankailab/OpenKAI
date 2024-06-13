@@ -6,7 +6,7 @@
  */
 
 #include "SharedMem.h"
-#include "../Script/Kiss.h"
+#include "../Module/Kiss.h"
 #include "../UI/_Console.h"
 
 namespace kai

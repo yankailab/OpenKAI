@@ -9,7 +9,7 @@
 #define OpenKAI_src_Navigation_GeoGrid_H_
 
 #include "../Base/BASE.h"
-#include "../Script/Kiss.h"
+#include "../Module/Kiss.h"
 
 namespace kai
 {

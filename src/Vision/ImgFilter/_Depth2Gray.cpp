@@ -29,7 +29,7 @@ namespace kai
 		string n;
 		n = "";
 		pK->v("_RGBDbase", &n);
-		m_pV = (_RGBDbase *)(pK->getInst(n));
+		m_pV = (_RGBDbase *)(pK->findModule(n));
 		IF_Fl(!m_pV, n + ": not found");
 
 		return true;

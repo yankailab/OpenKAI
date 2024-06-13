@@ -65,22 +65,22 @@ namespace kai
 
 		string n = "";
 		// F_ERROR_F(pK->v("_NavBase", &n));
-		// m_pNav = (_NavBase *)(pK->getInst(n));
+		// m_pNav = (_NavBase *)(pK->findModule(n));
 		// NULL_Fl(m_pNav, n + ": not found");
 
 		n = "";
 		F_ERROR_F(pK->v("_ActuatorBase", &n));
-		m_pAct = (_ActuatorBase *)(pK->getInst(n));
+		m_pAct = (_ActuatorBase *)(pK->findModule(n));
 		NULL_Fl(m_pAct, n + ": not found");
 
 		// n = "";
 		// F_ERROR_F(pK->v("_RopewayScanLivox", &n));
-		// m_pLivox = (_RopewayScanLivox *)(pK->getInst(n));
+		// m_pLivox = (_RopewayScanLivox *)(pK->findModule(n));
 		// NULL_Fl(m_pLivox, n + ": not found");
 
 		// n = "";
 		// F_ERROR_F(pK->v("_RopewayScanVz", &n));
-		// m_pVz = (_RopewayScanVz *)(pK->getInst(n));
+		// m_pVz = (_RopewayScanVz *)(pK->findModule(n));
 		// NULL_Fl(m_pVz, n + ": not found");
 
 		return true;

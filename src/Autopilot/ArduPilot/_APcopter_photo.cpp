@@ -66,30 +66,30 @@ namespace kai
 
 		n = "";
 		pK->v("_AP_base", &n);
-		m_pAP = (_AP_base *)(pK->getInst(n));
+		m_pAP = (_AP_base *)(pK->findModule(n));
 		NULL_Fl(m_pAP, n + ": not found");
 
 		n = "";
 		pK->v("_AP_move", &n);
-		m_pPC = (_AP_move *)(pK->getInst(n));
+		m_pPC = (_AP_move *)(pK->findModule(n));
 		NULL_Fl(m_pPC, n + ": not found");
 
 		n = "";
 		pK->v("_DistSensorBase", &n);
-		m_pDS = (_DistSensorBase *)(pK->getInst(n));
+		m_pDS = (_DistSensorBase *)(pK->findModule(n));
 		NULL_Fl(m_pDS, n + ": not found");
 
 		n = "";
 		pK->v("_VisionBase", &n);
-		m_pV = (_VisionBase *)(pK->getInst(n));
+		m_pV = (_VisionBase *)(pK->findModule(n));
 
 		n = "";
 		pK->v("_RGBDbase", &n);
-		m_pDV = (_RGBDbase *)(pK->getInst(n));
+		m_pDV = (_RGBDbase *)(pK->findModule(n));
 
 		n = "";
 		pK->v("_GPhoto", &n);
-		m_pG = (_GPhoto *)(pK->getInst(n));
+		m_pG = (_GPhoto *)(pK->findModule(n));
 
 		return true;
 	}

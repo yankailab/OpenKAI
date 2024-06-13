@@ -69,7 +69,7 @@ namespace kai
 		string n;
 		n = "";
 		pK->v("_VisionBase", &n);
-		m_pV = (_VisionBase *)(pK->getInst(n));
+		m_pV = (_VisionBase *)(pK->findModule(n));
 
 		return true;
 	}

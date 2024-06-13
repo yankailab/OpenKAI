@@ -37,7 +37,7 @@ namespace kai
 		pK->a("vModuleResume", &vS);
 		for (string s : vS)
 		{
-			_ModuleBase *pM = (_ModuleBase *)(pK->getInst(s));
+			_ModuleBase *pM = (_ModuleBase *)(pK->findModule(s));
 			IF_CONT(!pM);
 			m_vpModuleResume.push_back(pM);
 		}
@@ -45,7 +45,7 @@ namespace kai
 		pK->a("vModulePause", &vS);
 		for (string s : vS)
 		{
-			_ModuleBase *pM = (_ModuleBase *)(pK->getInst(s));
+			_ModuleBase *pM = (_ModuleBase *)(pK->findModule(s));
 			IF_CONT(!pM);
 			m_vpModulePause.push_back(pM);
 		}

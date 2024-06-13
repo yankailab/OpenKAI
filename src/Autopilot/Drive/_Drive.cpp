@@ -47,7 +47,7 @@ namespace kai
 
             string n = "";
             pM->v("_ActuatorBase", &n);
-            m.m_pActuator = (_ActuatorBase *)(pK->getInst(n));
+            m.m_pActuator = (_ActuatorBase *)(pK->findModule(n));
 
             m_vM.push_back(m);
         }

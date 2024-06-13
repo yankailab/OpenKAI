@@ -35,11 +35,11 @@ namespace kai
 
 		string n = "";
 		pK->v("_NavBase", &n);
-		m_pNav = (_NavBase *)(pK->getInst(n));
+		m_pNav = (_NavBase *)(pK->findModule(n));
 
 		// n = "";
 		// pK->v("_PCstream", &n);
-		// m_pPS = (_PCstream *)(pK->getInst(n));
+		// m_pPS = (_PCstream *)(pK->findModule(n));
 
 		Kiss *pKk = pK->child("threadK");
 		IF_F(pKk->empty());

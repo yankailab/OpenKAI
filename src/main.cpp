@@ -1,5 +1,5 @@
 #include "OpenKAI.h"
-#include "Script/Kiss.h"
+#include "Module/Kiss.h"
 #include "Utility/utilFile.h"
 
 using namespace kai;

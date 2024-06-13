@@ -57,19 +57,19 @@ namespace kai
 		string n;
 		n = "";
 		F_ERROR_F(pK->v("_ActuatorBaseH", &n));
-		m_actH.m_pAct = (_ActuatorBase *)(pK->getInst(n));
+		m_actH.m_pAct = (_ActuatorBase *)(pK->findModule(n));
 		NULL_Fl(m_actH.m_pAct, n + ": not found");
 
 		n = "";
 		F_ERROR_F(pK->v("_ActuatorBaseV", &n));
-		m_actV.m_pAct = (_ActuatorBase *)(pK->getInst(n));
+		m_actV.m_pAct = (_ActuatorBase *)(pK->findModule(n));
 		NULL_Fl(m_actV.m_pAct, n + ": not found");
 
 		vector<string> vGB;
 		pK->a("vGeometryBase", &vGB);
 		for (string p : vGB)
 		{
-			_GeometryBase *pGB = (_GeometryBase *)(pK->getInst(p));
+			_GeometryBase *pGB = (_GeometryBase *)(pK->findModule(p));
 			IF_CONT(!pGB);
 
 			m_vpGB.push_back(pGB);

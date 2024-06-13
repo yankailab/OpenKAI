@@ -60,7 +60,7 @@ namespace kai
 		pK->a("vRunThread", &vRunT);
 		for (string s : vRunT)
 		{
-			_Thread *pT = (_Thread *)(pK->getInst(s));
+			_Thread *pT = (_Thread *)(pK->findModule(s));
 			NULL_d_F(pT, LOG_E("Instance not found: " + s));
 			m_vRunThread.push_back(pT);
 		}

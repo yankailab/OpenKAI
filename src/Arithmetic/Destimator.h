@@ -9,7 +9,7 @@
 #define OpenKAI_src_Arithmetic_Destimator_H_
 
 #include "../Base/BASE.h"
-#include "../Script/Kiss.h"
+#include "../Module/Kiss.h"
 #include "PolyFit.h"
 
 namespace kai

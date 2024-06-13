@@ -61,22 +61,22 @@ namespace kai
 
 		n = "";
 		pK->v("_Remap", &n);
-		m_pR = (_Remap *)(pK->getInst(n));
+		m_pR = (_Remap *)(pK->findModule(n));
 		IF_Fl(!m_pR, n + " not found");
 
 		n = "";
 		pK->v("_DistSensorBase", &n);
-		m_pD = (_DistSensorBase *)(pK->getInst(n));
+		m_pD = (_DistSensorBase *)(pK->findModule(n));
 		IF_Fl(!m_pD, n + " not found");
 
 		n = "";
 		pK->v("_NavBase", &n);
-		m_pN = (_NavBase *)(pK->getInst(n));
+		m_pN = (_NavBase *)(pK->findModule(n));
 		IF_Fl(!m_pN, n + " not found");
 
 		n = "";
 		pK->v("_WindowCV", &n);
-		m_pW = (_WindowCV *)(pK->getInst(n));
+		m_pW = (_WindowCV *)(pK->findModule(n));
 		IF_Fl(!m_pW, n + " not found");
 
 		m_pW->setCbBtn("Save", sOnBtnSave, this);

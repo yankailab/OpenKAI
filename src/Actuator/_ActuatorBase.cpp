@@ -93,7 +93,7 @@ namespace kai
 
 		n = "";
 		F_INFO(pK->v("_ActuatorBase", &n));
-		m_pParent = (_ActuatorBase *)(pK->getInst(n));
+		m_pParent = (_ActuatorBase *)(pK->findModule(n));
 
 		return true;
 	}

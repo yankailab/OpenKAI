@@ -36,14 +36,14 @@ namespace kai
 		string n;
 		n = "";
 		pK->v("_GSVgrid", &n);
-		m_pGgrid = (_GSVgrid *)(pK->getInst(n));
+		m_pGgrid = (_GSVgrid *)(pK->findModule(n));
 		IF_Fl(!m_pGgrid, n + ": not found");
 
 		vector<string> vGn;
 		pK->a("vGeometryBase", &vGn);
 		for (string gn : vGn)
 		{
-			_GeometryBase *pG = (_GeometryBase *)(pK->getInst(gn));
+			_GeometryBase *pG = (_GeometryBase *)(pK->findModule(gn));
 			IF_CONT(!pG);
 
 			m_vpGB.push_back(pG);

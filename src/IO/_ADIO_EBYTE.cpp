@@ -38,7 +38,7 @@ namespace kai
 		string n;
 		n = "";
 		pK->v("_Modbus", &n);
-		m_pMB = (_Modbus *)(pK->getInst(n));
+		m_pMB = (_Modbus *)(pK->findModule(n));
 
 		return true;
 	}

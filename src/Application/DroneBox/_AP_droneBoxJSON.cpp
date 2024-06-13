@@ -34,7 +34,7 @@ namespace kai
         string n;
         n = "";
         pK->v("_AP_droneBox", &n);
-        m_pAPdroneBox = (_AP_droneBox *)(pK->getInst(n));
+        m_pAPdroneBox = (_AP_droneBox *)(pK->findModule(n));
         IF_Fl(!m_pAPdroneBox, n + ": not found");
 
 		return true;

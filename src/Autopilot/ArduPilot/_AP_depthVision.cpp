@@ -25,11 +25,11 @@ namespace kai
 
 		n = "";
 		F_INFO(pK->v("APcopter_base", &n));
-		m_pAP = (_AP_base *)(pK->getInst(n));
+		m_pAP = (_AP_base *)(pK->findModule(n));
 
 		n = "";
 		F_INFO(pK->v("_RGBDbase", &n));
-		m_pDV = (_RGBDbase *)(pK->getInst(n));
+		m_pDV = (_RGBDbase *)(pK->findModule(n));
 		IF_Fl(!m_pDV, n + " not found");
 
 		m_nROI = 0;

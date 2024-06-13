@@ -21,12 +21,12 @@ namespace kai
 	OpenKAI::OpenKAI()
 	{
 		m_pKiss = NULL;
+
 		m_appName = "";
 		m_bRun = true;
 		m_bStdErr = true;
 		m_bLog = false;
 		m_rc = "";
-		m_vModules.clear();
 	}
 
 	OpenKAI::~OpenKAI()
@@ -40,7 +40,7 @@ namespace kai
 		return 0;
 	}
 
-	bool OpenKAI::init(const string& appName)
+	bool OpenKAI::init(const string &appName)
 	{
 		g_pStartup = this;
 		signal(SIGINT, signalHandler);
@@ -56,6 +56,20 @@ namespace kai
 #endif
 
 		return true;
+	}
+
+	void OpenKAI::clean(void)
+	{
+		Kiss *pKroot = ((Kiss *)m_pKiss)->root();
+		Kiss *pK;
+		int i = 0;
+		while (!(pK = pKroot->child(i++))->empty())
+		{
+			IF_CONT(!pK->getModule());
+			delete pK->getModule();
+		}
+
+		DEL(m_pKiss);
 	}
 
 	bool OpenKAI::addKiss(const string &fName)
@@ -90,13 +104,47 @@ namespace kai
 		return true;
 	}
 
+	bool OpenKAI::addModule(void *pModule, const string &mName)
+	{
+		IF_F(check() < 0);
+		NULL_F(pModule);
+
+		Kiss *pKiss = (Kiss *)m_pKiss;
+		Kiss *pKm = pKiss->find(mName);
+		IF_Fl(pKm->empty(), "Module not found in Kiss: " + mName);
+		IF_Fl(pKm->getModule(), "Module already existed in Kiss: " + mName);
+
+		pKm->setModule((BASE *)pModule);
+
+		return true;
+	}
+
+	void* OpenKAI::findModule(const string &mName)
+	{
+		IF_N(check() < 0);
+
+		return ((Kiss*)m_pKiss)->findModule(mName);
+	}
+
+	bool OpenKAI::deleteModule(const string& mName)
+	{
+		IF_F(check() < 0);
+
+		Kiss* pK = ((Kiss*)m_pKiss)->find(mName);
+		IF_F(pK->empty());
+
+		pK->setModule(NULL);
+
+		return true;
+	}
+
+
 	bool OpenKAI::createAllModules(void)
 	{
 		IF_F(check() < 0);
 
 		Kiss *pKiss = (Kiss *)m_pKiss;
 		Module mod;
-		OK_MODULE m;
 		int i = 0;
 		while (1)
 		{
@@ -104,81 +152,72 @@ namespace kai
 			if (pK->empty())
 				break;
 
-			IF_CONT(pK->m_class == "OpenKAI");
-			IF_CONT(pK->m_pInst);
+			IF_CONT(pK->getClass() == "OpenKAI");
+			IF_CONT(pK->getModule());
 
-			m.m_pBase = mod.createInstance(pK);
-			if (!m.m_pBase)
+			pK->setModule(mod.createInstance(pK));
+			if (!pK->getModule())
+				;
 			{
-				LOG_I("Failed to create instance: " + pK->m_name);
+				LOG_I("Failed to create instance: " + pK->getName());
 				continue;
 			}
-
-			m.m_pKiss = pK;
-			m_vModules.push_back(m);
 		}
 
 		return true;
 	}
 
-	int OpenKAI::addModule(void *pModule, const string &mName)
-	{
-		IF__(check() < 0, -1);
-		NULL__(pModule, -1);
-
-		Kiss *pKiss = (Kiss *)m_pKiss;
-		Kiss *pKm = pKiss->find(mName);
-		if(pKm->empty())
-		{
-			LOG_I("Module not found in Kiss: " + mName);
-			return -1;
-		}
-
-		if(pKm->m_pInst)
-		{
-			LOG_I("Module already existed in Kiss: " + mName);
-			return -1;
-		}
-
-		pKm->m_pInst = (BASE*)pModule;
-
-		OK_MODULE m;
-		m.m_pBase = pModule;
-		m.m_pKiss = pKm;
-		m_vModules.push_back(m);
-	}
-
-	bool OpenKAI::initAllModules(void)
+	int OpenKAI::initAllModules(void)
 	{
 		IF_F(check() < 0);
 
-		for (auto m : m_vModules)
+		Kiss *pKroot = ((Kiss *)m_pKiss)->root();
+		Kiss *pK;
+		int i = 0;
+		int n = 0;
+		while (!(pK = pKroot->child(i++))->empty())
 		{
-			Kiss *pKiss = (Kiss *)m.m_pKiss;
-			IF_CONT(((BASE *)m.m_pBase)->init(pKiss));
+			IF_CONT(!pK->getModule());
 
-			LOG_E(pKiss->m_name + ".init()");
-			return false;
+			if (((BASE *)pK->getModule())->init(pK))
+			{
+				n++;
+			}
+			else
+			{
+				LOG_E(pK->getName() + ".init()");
+			}
 		}
 
-		return true;
+		return n;
 	}
 
-	bool OpenKAI::linkAllModules(void)
+	int OpenKAI::linkAllModules(void)
 	{
 		IF_F(check() < 0);
 
-		for (auto m : m_vModules)
+		Kiss *pKroot = ((Kiss *)m_pKiss)->root();
+		Kiss *pK;
+		int i = 0;
+		int n = 0;
+		while (!(pK = pKroot->child(i++))->empty())
 		{
-			IF_CONT(((BASE *)m.m_pBase)->link());
-			LOG_E(((Kiss *)m.m_pKiss)->m_name + ".link()");
-			return false;
+			IF_CONT(!pK->getModule());
+
+			if (((BASE *)pK->getModule())->link())
+			{
+				n++;
+			}
+			else
+			{
+				LOG_E(pK->getName() + ".link()");
+			}
 		}
 
-		return true;
+		return n;
 	}
 
-	bool OpenKAI::startAllModules(void)
+	int OpenKAI::startAllModules(void)
 	{
 		IF_F(check() < 0);
 
@@ -188,35 +227,65 @@ namespace kai
 			system(m_rc.c_str());
 		}
 
-		for (auto m : m_vModules)
+		Kiss *pKroot = ((Kiss *)m_pKiss)->root();
+		Kiss *pK;
+		int i = 0;
+		int n = 0;
+		while (!(pK = pKroot->child(i++))->empty())
 		{
-			IF_CONT(((BASE *)m.m_pBase)->start());
-			LOG_E(((Kiss *)m.m_pKiss)->m_name + ".start()");
-			return false;
+			IF_CONT(!pK->getModule());
+
+			if (((BASE *)pK->getModule())->start())
+			{
+				n++;
+			}
+			else
+			{
+				LOG_E(pK->getName() + ".start()");
+			}
 		}
 
-		return true;
+		return n;
 	}
 
 	void OpenKAI::resumeAllModules(void)
 	{
-		for (auto m : m_vModules)
+		Kiss *pKroot = ((Kiss *)m_pKiss)->root();
+		Kiss *pK;
+		int i = 0;
+		while (!(pK = pKroot->child(i++))->empty())
 		{
-			((BASE *)m.m_pBase)->resume();
+			IF_CONT(!pK->getModule());
+			((BASE *)pK->getModule())->resume();
 		}
 	}
 
 	void OpenKAI::pauseAllModules(void)
 	{
-		for (auto m : m_vModules)
+		Kiss *pKroot = ((Kiss *)m_pKiss)->root();
+		Kiss *pK;
+		int i = 0;
+		while (!(pK = pKroot->child(i++))->empty())
 		{
-			((BASE *)m.m_pBase)->pause();
+			IF_CONT(!pK->getModule());
+			((BASE *)pK->getModule())->pause();
 		}
 	}
 
 	void OpenKAI::stopAllModules(void)
 	{
 		m_bRun = false;
+
+		//TODO
+
+		Kiss *pKroot = ((Kiss *)m_pKiss)->root();
+		Kiss *pK;
+		int i = 0;
+		while (!(pK = pKroot->child(i++))->empty())
+		{
+			IF_CONT(!pK->getModule());
+			((BASE *)pK->getModule())->stop();
+		}
 	}
 
 	void OpenKAI::waitForComplete(void)
@@ -232,90 +301,6 @@ namespace kai
 	{
 		// TODO: temporal impl
 		return false;
-	}
-
-	void OpenKAI::exit(void)
-	{
-		for (auto m : m_vModules)
-		{
-			DEL(m.m_pBase);
-		}
-
-		m_vModules.clear();
-	}
-
-	int OpenKAI::findModule(const string &mName)
-	{
-		for (int i = 0; i < m_vModules.size(); i++)
-		{
-			IF_CONT(((BASE *)m_vModules[i].m_pBase)->getName() != mName);
-
-			return i;
-		}
-
-		return -1;
-	}
-
-	int OpenKAI::getModuleHandle(const string &mName)
-	{
-		return findModule(mName);
-	}
-
-	void *OpenKAI::getModule(const string &mName)
-	{
-		int i = findModule(mName);
-		IF_N(i < 0);
-
-		return m_vModules[i].m_pBase;
-	}
-
-	bool OpenKAI::startModule(int h)
-	{
-		IF_F(h <= 0);
-		IF_F(h > m_vModules.size());
-
-		BASE *pBase = (BASE *)m_vModules[h].m_pBase;
-		pBase->start();
-
-		// TODO: verify already started thread in each ModuleBase instances
-	}
-
-	bool OpenKAI::pauseModule(int h)
-	{
-		IF_F(h <= 0);
-		IF_F(h > m_vModules.size());
-
-		BASE *pBase = (BASE *)m_vModules[h].m_pBase;
-		pBase->pause();
-	}
-
-	bool OpenKAI::resumeModule(int h)
-	{
-		IF_F(h <= 0);
-		IF_F(h > m_vModules.size());
-
-		BASE *pBase = (BASE *)m_vModules[h].m_pBase;
-		pBase->resume();
-	}
-
-	bool OpenKAI::stopModule(int h)
-	{
-		IF_F(h <= 0);
-		IF_F(h > m_vModules.size());
-
-		BASE *pBase = (BASE *)m_vModules[h].m_pBase;
-		pBase->stop();
-	}
-
-	bool OpenKAI::deleteModule(int h)
-	{
-		IF_F(h <= 0);
-		IF_F(h > m_vModules.size());
-
-		BASE *pBase = (BASE *)m_vModules[h].m_pBase;
-		pBase->stop();
-
-		// TODO:
 	}
 
 	void OpenKAI::setName(const string &n)

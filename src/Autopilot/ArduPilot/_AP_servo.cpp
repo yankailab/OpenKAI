@@ -21,7 +21,7 @@ namespace kai
 		string n;
 		n = "";
 		F_ERROR_F(pK->v("_AP_base", &n));
-		m_pAP = (_AP_base *)(pK->getInst(n));
+		m_pAP = (_AP_base *)(pK->findModule(n));
 
 		Kiss *pKc = pK->child("channels");
 		NULL_T(pKc);

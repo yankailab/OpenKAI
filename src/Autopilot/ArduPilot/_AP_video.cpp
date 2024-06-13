@@ -46,12 +46,12 @@ namespace kai
 
 		n = "";
 		pK->v("_AP_base", &n);
-		m_pAP = (_AP_base *)(pK->getInst(n));
+		m_pAP = (_AP_base *)(pK->findModule(n));
 		NULL_Fl(m_pAP, n + ": not found");
 
 		n = "";
 		pK->v("_Uploader", &n);
-		m_pCurl = (_Uploader *)(pK->getInst(n));
+		m_pCurl = (_Uploader *)(pK->findModule(n));
 
 		pK->v("fCalib", &m_fCalib);
 		readCamMatrices(m_fCalib, &m_mC, &m_mD);

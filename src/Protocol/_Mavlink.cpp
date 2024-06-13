@@ -71,7 +71,7 @@ namespace kai
 
 		n = "";
 		pK->v("_IObase", &n);
-		m_pIO = (_IObase *)(pK->getInst(n));
+		m_pIO = (_IObase *)(pK->findModule(n));
 		IF_Fl(!m_pIO, "_IObase not found");
 
 		Kiss *pR = pK->child("routing");
@@ -90,7 +90,7 @@ namespace kai
 
 			n = "";
 			F_ERROR_F(pP->v("_Mavlink", &n));
-			mP.m_pPeer = pK->getInst(n);
+			mP.m_pPeer = pK->findModule(n);
 			if (!mP.m_pPeer)
 			{
 				LOG_I("_Mavlink not found: " + n);

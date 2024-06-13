@@ -72,12 +72,12 @@ namespace kai
 
 		n = "";
 		pK->v("_AP_base", &n);
-		m_pAP = (_AP_base *)(pK->getInst(n));
+		m_pAP = (_AP_base *)(pK->findModule(n));
 		IF_Fl(!m_pAP, n + ": not found");
 
 		n = "";
 		pK->v("_Drive", &n);
-		m_pD = (_Drive *)(pK->getInst(n));
+		m_pD = (_Drive *)(pK->findModule(n));
 		IF_Fl(!m_pD, n + ": not found");
 
 		return true;

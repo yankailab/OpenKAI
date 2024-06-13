@@ -56,7 +56,7 @@ namespace kai
 
 		n = "";
 		pK->v("_GPhoto", &n);
-		m_pG = (_GPhoto *)(pK->getInst(n));
+		m_pG = (_GPhoto *)(pK->findModule(n));
 
 		return true;
 	}

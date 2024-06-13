@@ -9,7 +9,7 @@
 #define OpenKAI_src_Base__Thread_H_
 
 #include "BASE.h"
-#include "../Script/Kiss.h"
+#include "../Module/Kiss.h"
 
 namespace kai
 {

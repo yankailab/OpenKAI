@@ -2,7 +2,7 @@
 #define OpenKAI_src_Script_JSON_H_
 
 #include "../Base/common.h"
-#include "picojson.h"
+#include "../Dependencies/picojson.h"
 
 using namespace std;
 using namespace picojson;

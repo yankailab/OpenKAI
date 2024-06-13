@@ -38,7 +38,7 @@ namespace kai
 		string n;
 		n = "";
 		F_ERROR_F(pK->v("_LivoxAutoScan", &n));
-		m_pLivox = (_LivoxAutoScan *)(pK->getInst(n));
+		m_pLivox = (_LivoxAutoScan *)(pK->findModule(n));
 		NULL_Fl(m_pLivox, n + ": not found");
 
 		return true;

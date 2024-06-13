@@ -26,7 +26,7 @@ namespace kai
 
 		n = "";
 		F_ERROR_F(pK->v("_IObase", &n));
-		m_pIO = (_IObase *)(pK->getInst(n));
+		m_pIO = (_IObase *)(pK->findModule(n));
 		IF_Fl(!m_pIO, n + " not found");
 
 		m_frame.init(9);

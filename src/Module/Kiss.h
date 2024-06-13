@@ -24,7 +24,15 @@ namespace kai
 		bool empty(void);
 
 		Kiss *find(const string &name);
-		void *getInst(const string &name);
+		void *findModule(const string &name);
+
+		JSON *getJSON(void);
+		void setModule(BASE* pM);
+		BASE* getModule(void);
+		void setName(const string& n);
+		string getName(void);
+		bool setClass(const string& c);
+		string getClass(void);
 
 		template <typename T>
 		bool v(const string &name, T *pVal)
@@ -38,19 +46,16 @@ namespace kai
 			return m_json.a(name, pVal);
 		}
 
-
-		JSON *json(void);
-
 	private:
 		void trim(string *pS);
 		void delComment(string *pS);
 		bool addChild(const string& s);
 
-	public:
+	private:
 		string m_class;
 		string m_name;
 		JSON m_json;
-		BASE *m_pInst;
+		BASE *m_pBase;
 
 		Kiss *m_pParent;
 		vector<Kiss *> m_vChild;

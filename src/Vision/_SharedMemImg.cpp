@@ -37,7 +37,7 @@ namespace kai
         string n;
         n = "";
         F_ERROR_F(pK->v("SharedMem", &n));
-        m_pSHM = (SharedMem *)(pK->getInst(n));
+        m_pSHM = (SharedMem *)(pK->findModule(n));
         NULL_Fl(m_pSHM, "SharedMem not found");
 
         return true;

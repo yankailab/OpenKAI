@@ -66,7 +66,7 @@ namespace kai
 		pK->a("vGeometryBase", &vGn);
 		for (string n : vGn)
 		{
-			_GeometryBase *pG = (_GeometryBase *)(pK->getInst(n));
+			_GeometryBase *pG = (_GeometryBase *)(pK->findModule(n));
 			IF_CONT(!pG);
 
 			m_vpGB.push_back(pG);

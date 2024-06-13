@@ -43,7 +43,7 @@ namespace kai
         string n = "";
 
         pK->v("LivoxLidar2", &n);
-        m_pLv = (LivoxLidar2 *)(pK->getInst(n));
+        m_pLv = (LivoxLidar2 *)(pK->findModule(n));
 
         return true;
     }

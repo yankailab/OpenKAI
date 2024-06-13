@@ -31,7 +31,7 @@ namespace kai
         string n;
         n = "";
         pK->v("_DroneBox", &n);
-        m_pDB = (_DroneBox *)(pK->getInst(n));
+        m_pDB = (_DroneBox *)(pK->findModule(n));
         IF_Fl(!m_pDB, n + ": not found");
 
         return true;

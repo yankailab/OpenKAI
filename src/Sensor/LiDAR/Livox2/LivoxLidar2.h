@@ -9,7 +9,7 @@
 #define OpenKAI_src_Sensor_LiDAR_LivoxLidar2_H_
 
 #include "../../../Base/BASE.h"
-#include "../../../Script/Kiss.h"
+#include "../../../Module/Kiss.h"
 #include "../../../UI/_Console.h"
 
 #include "livox_lidar_def.h"

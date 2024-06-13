@@ -47,7 +47,7 @@ namespace kai
         // string n;
         // n = "";
         // pK->v("", &n);
-        // m_p = ( *)(pK->getInst(n));
+        // m_p = ( *)(pK->findModule(n));
         // IF_Fl(!m_p, n + ": not found");
 
 		return true;

@@ -6,7 +6,7 @@
  */
 
 #include "BASE.h"
-#include "../Script/Kiss.h"
+#include "../Module/Kiss.h"
 #include "../UI/_Console.h"
 
 namespace kai
@@ -29,7 +29,7 @@ namespace kai
 
 		m_pKiss = pKiss;
 		Kiss *pK = (Kiss *)pKiss;
-		pK->m_pInst = this;
+		pK->setModule(this);
 
 		pK->v("bLog", &m_bLog);
 		pK->v("bDebug", &m_bDebug);
@@ -49,7 +49,7 @@ namespace kai
 		if(!m_pKiss)
 			return "";
 
-		return ((Kiss *)m_pKiss)->m_name;
+		return ((Kiss *)m_pKiss)->getName();
 	}
 
 	string BASE::getClass(void)
@@ -57,7 +57,7 @@ namespace kai
 		if(!m_pKiss)
 			return "";
 
-		return ((Kiss *)m_pKiss)->m_class;
+		return ((Kiss *)m_pKiss)->getClass();
 	}
 
 	bool BASE::start(void)

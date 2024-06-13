@@ -56,7 +56,7 @@ namespace kai
 
         n = "";
         pK->v("_PCframe", &n);
-        m_pPCf = (_PCframe *)(pK->getInst(n));
+        m_pPCf = (_PCframe *)(pK->findModule(n));
 
         return true;
     }

@@ -34,17 +34,17 @@ namespace kai
 
 		n = "";
 		pK->v("_ARmeasure", &n);
-		m_pA = (_ARmeasure *)(pK->getInst(n));
+		m_pA = (_ARmeasure *)(pK->findModule(n));
 		IF_Fl(!m_pA, n + " not found");
 
 		n = "";
 		pK->v("_Remap", &n);
-		m_pR = (_Remap *)(pK->getInst(n));
+		m_pR = (_Remap *)(pK->findModule(n));
 		IF_Fl(!m_pR, n + " not found");
 
 		n = "";
 		pK->v("_WindowCV", &n);
-		m_pW = (_WindowCV *)(pK->getInst(n));
+		m_pW = (_WindowCV *)(pK->findModule(n));
 		IF_Fl(!m_pW, n + " not found");
 
 		return true;

@@ -78,11 +78,11 @@ namespace kai
 
 		n = "";
 		pK->v("_DistSensorBase", &n);
-		m_pDS = (_DistSensorBase *)pK->getInst(n);
+		m_pDS = (_DistSensorBase *)pK->findModule(n);
 
 		n = "";
 		pK->v("_Universe", &n);
-		m_pU = (_Universe *)pK->getInst(n);
+		m_pU = (_Universe *)pK->findModule(n);
 
 		return true;
 	}

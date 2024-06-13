@@ -32,7 +32,7 @@ namespace kai
 		string n;
 		n = "";
 		pK->v("_CamCalib", &n);
-		m_pCC = (_CamCalib *)(pK->getInst(n));
+		m_pCC = (_CamCalib *)(pK->findModule(n));
 
 		return true;
 	}

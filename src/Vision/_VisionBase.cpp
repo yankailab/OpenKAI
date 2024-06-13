@@ -51,7 +51,7 @@ namespace kai
 
 		n = "";
 		pK->v("_SHMrgb", &n);
-		m_psmRGB = (SharedMem *)(pK->getInst(n));
+		m_psmRGB = (SharedMem *)(pK->findModule(n));
 
 		return true;
 	}

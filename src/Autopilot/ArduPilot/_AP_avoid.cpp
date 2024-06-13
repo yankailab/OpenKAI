@@ -23,16 +23,16 @@ namespace kai
 		string n;
 		n = "";
 		F_INFO(pK->v("APcopter_base", &n));
-		m_pAP = (_AP_base *)pK->getInst(n);
+		m_pAP = (_AP_base *)pK->findModule(n);
 
 		n = "";
 		F_ERROR_F(pK->v("_Mavlink", &n));
-		m_pMavlink = (_Mavlink *)pK->getInst(n);
+		m_pMavlink = (_Mavlink *)pK->findModule(n);
 		NULL_Fl(m_pMavlink, n + ": not found");
 
 		n = "";
 		F_ERROR_F(pK->v("_DetectorBase", &n));
-		m_pDet = (_DetectorBase *)pK->getInst(n);
+		m_pDet = (_DetectorBase *)pK->findModule(n);
 		NULL_Fl(m_pDet, n + ": not found");
 
 		return true;

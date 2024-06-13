@@ -86,27 +86,27 @@ namespace kai
 
 		n = "";
 		pK->v("PIDpitch", &n);
-		m_pPitch = (PID *)(pK->getInst(n));
+		m_pPitch = (PID *)(pK->findModule(n));
 
 		n = "";
 		pK->v("PIDroll", &n);
-		m_pRoll = (PID *)(pK->getInst(n));
+		m_pRoll = (PID *)(pK->findModule(n));
 
 		n = "";
 		pK->v("PIDalt", &n);
-		m_pAlt = (PID *)(pK->getInst(n));
+		m_pAlt = (PID *)(pK->findModule(n));
 
 		n = "";
 		pK->v("PIDyaw", &n);
-		m_pYaw = (PID *)(pK->getInst(n));
+		m_pYaw = (PID *)(pK->findModule(n));
 
 		n = "";
 		pK->v("_TrackerBase", &n);
-		m_pTracker = (_TrackerBase *)pK->getInst(n);
+		m_pTracker = (_TrackerBase *)pK->findModule(n);
 
 		n = "";
 		pK->v("_Universe", &n);
-		m_pU = (_Universe *)pK->getInst(n);
+		m_pU = (_Universe *)pK->findModule(n);
 
 		return true;
 	}

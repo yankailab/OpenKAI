@@ -27,7 +27,7 @@ namespace kai
 
 		for (int i = 0; i < vName.size(); i++)
 		{
-			void *p = pK->getInst(vName[i]);
+			void *p = pK->findModule(vName[i]);
 			IF_CONT(!p);
 
 			m_pAB[m_nAB] = (_ActuatorSync *)p;

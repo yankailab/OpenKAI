@@ -57,12 +57,12 @@ namespace kai
         string n;
         n = "";
         pK->v("_SwarmCtrl", &n);
-        m_pCtrl = (_SwarmCtrl *)(pK->getInst(n));
+        m_pCtrl = (_SwarmCtrl *)(pK->findModule(n));
         IF_Fl(!m_pCtrl, n + ": not found");
 
         n = "";
         pK->v("_SwarmSearch", &n);
-        m_pSwarm = (_SwarmSearch *)(pK->getInst(n));
+        m_pSwarm = (_SwarmSearch *)(pK->findModule(n));
         IF_Fl(!m_pSwarm, n + ": not found");
 
         return true;

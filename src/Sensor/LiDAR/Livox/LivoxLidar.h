@@ -4,7 +4,7 @@
 #define LDS_LIDAR_H_
 
 #include "../../../Base/BASE.h"
-#include "../../../Script/Kiss.h"
+#include "../../../Module/Kiss.h"
 
 #include "livox_def.h"
 #include "livox_sdk.h"

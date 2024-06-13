@@ -13,13 +13,13 @@
 #include "StateBase.h"
 
 #define ADD_STATE(x)         \
-	if (pKs->m_class == #x)  \
+	if (pKs->getClass() == #x)  \
 	{                        \
 		x* pI = new x();     \
 		if(!pI->init(pKs))   \
 		{					 \
 			DEL(pI); 		 \
-			LOG_E(pKs->m_name + ": init failed"); \
+			LOG_E(pKs->getName() + ": init failed"); \
 		}	\
 		m_vpState.push_back(pI); \
 		continue; \

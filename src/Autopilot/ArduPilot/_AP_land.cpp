@@ -61,7 +61,7 @@ namespace kai
 
 		n = "";
 		pK->v("_DistSensorBase", &n);
-		m_pDS = (_DistSensorBase *)pK->getInst(n);
+		m_pDS = (_DistSensorBase *)pK->findModule(n);
 
 		return true;
 	}

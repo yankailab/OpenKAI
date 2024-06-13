@@ -66,12 +66,12 @@ namespace kai
 
 		n = "";
 		F_ERROR_F(pK->v("_AP_base", &n));
-		m_pAP = (_AP_base *)(pK->getInst(n));
+		m_pAP = (_AP_base *)(pK->findModule(n));
 		IF_Fl(!m_pAP, n + ": not found");
 
 		n = "";
 		F_ERROR_F(pK->v("_NavBase", &n));
-		m_pNav = (_NavBase *)(pK->getInst(n));
+		m_pNav = (_NavBase *)(pK->findModule(n));
 		IF_Fl(!m_pNav, n + ": not found");
 
 		return true;

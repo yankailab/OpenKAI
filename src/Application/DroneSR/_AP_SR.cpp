@@ -56,22 +56,22 @@ namespace kai
 
 		n = "";
 		pK->v("_VisionBase", &n);
-		m_pV = (_VisionBase *)(pK->getInst(n));
+		m_pV = (_VisionBase *)(pK->findModule(n));
 		NULL_Fl(m_pV, n + ": not found");
 
 		n = "";
 		pK->v("_Universe", &n);
-		m_pU = (_Universe *)(pK->getInst(n));
+		m_pU = (_Universe *)(pK->findModule(n));
 		NULL_Fl(m_pU, n + ": not found");
 
 		n = "";
 		pK->v("_AP_base", &n);
-		m_pAP = (_AP_base *)(pK->getInst(n));
+		m_pAP = (_AP_base *)(pK->findModule(n));
 		NULL_Fl(m_pAP, n + ": not found");
 
 		n = "";
 		pK->v("_Uploader", &n);
-		m_pCurl = (_Uploader *)(pK->getInst(n));
+		m_pCurl = (_Uploader *)(pK->findModule(n));
 
 		return true;
 	}

@@ -57,7 +57,7 @@ namespace kai
 		string n;
 		n = "";
 		pK->v("_GSVio", &n);
-		m_pGio = (_GSVio *)(pK->getInst(n));
+		m_pGio = (_GSVio *)(pK->findModule(n));
 		IF_Fl(!m_pGio, n + ": not found");
 
 		return true;

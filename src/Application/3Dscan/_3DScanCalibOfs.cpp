@@ -33,12 +33,12 @@ namespace kai
 
 		n = "";
 		pK->v("_VisionBase", &n);
-		m_pV = (_VisionBase *)(pK->getInst(n));
+		m_pV = (_VisionBase *)(pK->findModule(n));
 		IF_Fl(!m_pV, n + " not found");
 
 		// n = "";
 		// pK->v("_WindowCV", &n);
-		// m_pW = (_WindowCV *)(pK->getInst(n));
+		// m_pW = (_WindowCV *)(pK->findModule(n));
 		// IF_Fl(!m_pW, n + " not found");
 
 		return true;

@@ -37,12 +37,12 @@ namespace kai
 
 		n = "";
 		pK->v("_AP_base", &n);
-		m_pAP = (_AP_base *)(pK->getInst(n));
+		m_pAP = (_AP_base *)(pK->findModule(n));
 		IF_Fl(!m_pAP, n + ": not found");
 
 		n = "";
 		pK->v("_AP_move", &n);
-		m_pAPmove = (_AP_move *)(pK->getInst(n));
+		m_pAPmove = (_AP_move *)(pK->findModule(n));
 		IF_Fl(!m_pAPmove, n + ": not found");
 
 		return true;

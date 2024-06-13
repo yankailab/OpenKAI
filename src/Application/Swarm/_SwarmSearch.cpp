@@ -42,7 +42,7 @@ namespace kai
 		string n;
 		n = "";
 		pK->v("GeoGrid", &n);
-		m_pGG = (GeoGrid *)(pK->getInst(n));
+		m_pGG = (GeoGrid *)(pK->findModule(n));
 		IF_Fl(!m_pGG, n + ": not found");
 
 		return true;

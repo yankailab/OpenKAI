@@ -24,11 +24,11 @@ namespace kai
 
 		n = "";
 		F_INFO(pK->v("APcopter_base", &n));
-		m_pAP = (_AP_base *)(pK->getInst(n));
+		m_pAP = (_AP_base *)(pK->findModule(n));
 
 		n = "";
 		F_INFO(pK->v("_DistSensorBase", &n));
-		m_pDS = (_DistSensorBase *)(pK->getInst(n));
+		m_pDS = (_DistSensorBase *)(pK->findModule(n));
 		IF_Fl(!m_pDS, n + " not found");
 
 		m_nSection = 0;

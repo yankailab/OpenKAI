@@ -38,12 +38,12 @@ namespace kai
         string n;
         n = "";
         pK->v("_StateControl", &n);
-        m_pSC = (_StateControl *)(pK->getInst(n));
+        m_pSC = (_StateControl *)(pK->findModule(n));
         IF_Fl(!m_pSC, n + ": not found");
 
         n = "";
         pK->v("_Modbus", &n);
-        m_pMB = (_Modbus *)(pK->getInst(n));
+        m_pMB = (_Modbus *)(pK->findModule(n));
         IF_Fl(!m_pMB, n + ": not found");
 
 		return true;

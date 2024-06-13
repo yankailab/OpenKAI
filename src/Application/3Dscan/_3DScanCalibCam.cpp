@@ -49,12 +49,12 @@ namespace kai
 
 		n = "";
 		pK->v("_Remap", &n);
-		m_pR = (_Remap *)(pK->getInst(n));
+		m_pR = (_Remap *)(pK->findModule(n));
 		IF_Fl(!m_pR, n + " not found");
 
 		// n = "";
 		// pK->v("_WindowCV", &n);
-		// m_pW = (_WindowCV *)(pK->getInst(n));
+		// m_pW = (_WindowCV *)(pK->findModule(n));
 		// IF_Fl(!m_pW, n + " not found");
 
 		// m_pW->setCbBtn("Action", sOnBtnAction, this);

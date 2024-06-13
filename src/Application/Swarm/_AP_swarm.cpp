@@ -69,7 +69,7 @@ namespace kai
 
         n = "";
         pK->v("_StateControl", &n);
-        m_pSC = (_StateControl *)(pK->getInst(n));
+        m_pSC = (_StateControl *)(pK->findModule(n));
         IF_Fl(!m_pSC, n + ": not found");
 
 		m_state.STANDBY = m_pSC->getStateIdxByName("STANDBY");
@@ -80,27 +80,27 @@ namespace kai
 
 		n = "";
 		pK->v("_AP_base", &n);
-		m_pAP = (_AP_base *)(pK->getInst(n));
+		m_pAP = (_AP_base *)(pK->findModule(n));
 		IF_Fl(!m_pAP, n + ": not found");
 
 		n = "";
 		pK->v("_Swarm", &n);
-		m_pSwarm = (_SwarmSearch *)(pK->getInst(n));
+		m_pSwarm = (_SwarmSearch *)(pK->findModule(n));
 		IF_Fl(!m_pSwarm, n + ": not found");
 
 		n = "";
 		pK->v("_Xbee", &n);
-		m_pXb = (_Xbee *)(pK->getInst(n));
+		m_pXb = (_Xbee *)(pK->findModule(n));
 		IF_Fl(!m_pXb, n + ": not found");
 
 		n = "";
 		pK->v("_IObase", &n);
-		m_pGio = (_IObase *)(pK->getInst(n));
+		m_pGio = (_IObase *)(pK->findModule(n));
 		IF_Fl(!m_pGio, n + ": not found");
 
 		n = "";
 		pK->v("_Universe", &n);
-		m_pU = (_Universe *)(pK->getInst(n));
+		m_pU = (_Universe *)(pK->findModule(n));
 		IF_Fl(!m_pU, n + ": not found");
 
 		IF_F(!m_pXb->setCbReceivePacket(sOnRecvMsg, this));

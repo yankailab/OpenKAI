@@ -74,7 +74,7 @@ namespace kai
         string n;
         n = "";
         pK->v("SharedMem", &n);
-        m_pSM = (SharedMem *)(pK->getInst(n));
+        m_pSM = (SharedMem *)(pK->findModule(n));
 
         return true;
     }

@@ -9,7 +9,7 @@
 #define OpenKAI_src_IO__TCPserver_H_
 
 #include "../Base/_ModuleBase.h"
-#include "../Script/Kiss.h"
+#include "../Module/Kiss.h"
 #include "../IO/_IObase.h"
 #include "_TCPclient.h"
 

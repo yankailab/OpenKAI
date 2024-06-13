@@ -9,7 +9,7 @@
 #define OpenKAI_src_Application__GDimgUploader_H_
 
 #include "../../Vision/_VisionBase.h"
-#include "../../Script/JSON.h"
+#include "../../Module/JSON.h"
 
 namespace kai
 {

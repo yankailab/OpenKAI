@@ -101,9 +101,6 @@ set(OpenKAI_cpp ${OpenKAI_cpp} ${IPC_cpp})
 file(GLOB_RECURSE Primitive_cpp src/Primitive/*.cpp src/Primitive/*.cc src/Primitive/*.c)
 set(OpenKAI_cpp ${OpenKAI_cpp} ${Primitive_cpp})
 
-file(GLOB_RECURSE Script_cpp src/Script/*.cpp src/Script/*.cc src/Script/*.c)
-set(OpenKAI_cpp ${OpenKAI_cpp} ${Script_cpp})
-
 set(OpenKAI_cpp ${OpenKAI_cpp} src/UI/_Console.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/File/_FileBase.cpp)
 

@@ -54,7 +54,7 @@ namespace kai
 
 		n = "";
 		pK->v("_Mavlink", &n);
-		m_pMav = (_Mavlink *)(pK->getInst(n));
+		m_pMav = (_Mavlink *)(pK->findModule(n));
 		NULL_F(m_pMav);
 
 		Kiss *pM = pK->child("mavMsgInt");

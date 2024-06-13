@@ -35,7 +35,7 @@ namespace kai
 		pK->a("vBASE", &vB);
 		for (string p : vB)
 		{
-			BASE *pB = (BASE *)(pK->getInst(p));
+			BASE *pB = (BASE *)(pK->findModule(p));
 			IF_CONT(!pB);
 
 			m_vpB.push_back(pB);

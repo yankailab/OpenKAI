@@ -46,7 +46,7 @@ namespace kai
 
 			// Add state above
 
-			LOG_E("Unknown state class: " + pKs->m_class);
+			LOG_E("Unknown state class: " + pKs->getClass());
 			return false;
 		}
 

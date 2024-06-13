@@ -88,37 +88,37 @@ namespace kai
 
 		n = "";
 		F_ERROR_F(pK->v("_ActuatorBase", &n));
-		m_pA = (_ActuatorBase *)(pK->getInst(n));
+		m_pA = (_ActuatorBase *)(pK->findModule(n));
 		NULL_Fl(m_pA, n + " not found");
 
 		n = "";
 		F_ERROR_F(pK->v("_StepperGripper", &n));
-		m_pG = (_StepperGripper *)pK->getInst(n);
+		m_pG = (_StepperGripper *)pK->findModule(n);
 		NULL_Fl(m_pG, n + ": not found");
 
 		n = "";
 		F_ERROR_F(pK->v("_Universe", &n));
-		m_pU = (_Universe *)(pK->getInst(n));
+		m_pU = (_Universe *)(pK->findModule(n));
 		NULL_Fl(m_pU, n + " not found");
 
 		n = "";
 		F_ERROR_F(pK->v("_DistSensorBase", &n));
-		m_pD = (_DistSensorBase *)(pK->getInst(n));
+		m_pD = (_DistSensorBase *)(pK->findModule(n));
 		NULL_Fl(m_pD, n + " not found");
 
 		n = "";
 		F_ERROR_F(pK->v("PIDx", &n));
-		m_pXpid = (PID *)(pK->getInst(n));
+		m_pXpid = (PID *)(pK->findModule(n));
 		NULL_Fl(m_pXpid, n + " not found");
 
 		n = "";
 		F_ERROR_F(pK->v("PIDy", &n));
-		m_pYpid = (PID *)(pK->getInst(n));
+		m_pYpid = (PID *)(pK->findModule(n));
 		NULL_Fl(m_pYpid, n + " not found");
 
 		n = "";
 		F_ERROR_F(pK->v("PIDz", &n));
-		m_pZpid = (PID *)(pK->getInst(n));
+		m_pZpid = (PID *)(pK->findModule(n));
 		NULL_Fl(m_pZpid, n + " not found");
 
 		return true;

@@ -42,17 +42,17 @@ namespace kai
 
         n = "";
         pK->v("_PCbaseSrc", &n);
-        m_pSrc = (_PCframe *)(pK->getInst(n));
+        m_pSrc = (_PCframe *)(pK->findModule(n));
         IF_Fl(!m_pSrc, n + ": not found");
 
         n = "";
         pK->v("_PCbaseTgt", &n);
-        m_pTgt = (_PCframe *)(pK->getInst(n));
+        m_pTgt = (_PCframe *)(pK->findModule(n));
         IF_Fl(!m_pTgt, n + ": not found");
 
         n = "";
         pK->v("_PCtransform", &n);
-        m_pTf = (_PCtransform *)(pK->getInst(n));
+        m_pTf = (_PCtransform *)(pK->findModule(n));
         IF_Fl(!m_pTf, n + ": not found");
 
         return true;

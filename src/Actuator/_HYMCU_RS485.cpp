@@ -58,7 +58,7 @@ namespace kai
 		string n;
 		n = "";
 		F_ERROR_F(pK->v("_Modbus", &n));
-		m_pMB = (_Modbus *)(pK->getInst(n));
+		m_pMB = (_Modbus *)(pK->findModule(n));
 		IF_Fl(!m_pMB, n + " not found");
 
 		return true;

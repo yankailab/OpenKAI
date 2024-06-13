@@ -62,11 +62,11 @@ namespace kai
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n = "";
 		F_INFO(pK->v("_VisionBase", &n));
-		m_pV = (_VisionBase *)(pK->getInst(n));
+		m_pV = (_VisionBase *)(pK->findModule(n));
 
 		n = "";
 		pK->v("_Universe", &n);
-		m_pU = (_Universe *)(pK->getInst(n));
+		m_pU = (_Universe *)(pK->findModule(n));
 
 		return true;
 	}
