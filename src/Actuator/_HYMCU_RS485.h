@@ -59,7 +59,7 @@ namespace kai
 		bool bComplete(void);
 
 		bool move(void);
-		bool stop(void);
+		bool stopMove(void);
 		bool initPos(void);
 
 		bool readStatus(void);

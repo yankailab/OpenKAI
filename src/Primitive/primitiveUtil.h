@@ -9,23 +9,23 @@ using namespace Eigen;
 namespace kai
 {
 
-    inline Vector3f v2e(const vFloat3 &v)
+    inline Eigen::Vector3f v2e(const vFloat3 &v)
     {
-        return Vector3f(v.x, v.y, v.z);
+        return Eigen::Vector3f(v.x, v.y, v.z);
     }
 
-    inline Vector3d v2e(const vDouble3 &v)
+    inline Eigen::Vector3d v2e(const vDouble3 &v)
     {
-        return Vector3d(v.x, v.y, v.z);
+        return Eigen::Vector3d(v.x, v.y, v.z);
     }
 
 
-    inline vFloat3 e2v(const Vector3f &e)
+    inline vFloat3 e2v(const Eigen::Vector3f &e)
     {
         return vFloat3(e[0], e[1], e[2]);
     }
 
-    inline vDouble3 e2v(const Vector3d &e)
+    inline vDouble3 e2v(const Eigen::Vector3d &e)
     {
         return vDouble3(e[0], e[1], e[2]);
     }

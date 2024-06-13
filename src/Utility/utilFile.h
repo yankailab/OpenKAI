@@ -4,7 +4,6 @@
 #include "../Base/platform.h"
 #include "../Base/macro.h"
 #include "../Base/constant.h"
-#include "../Script/Kiss.h"
 
 namespace kai
 {
@@ -29,26 +28,6 @@ namespace kai
 		f.close();
 
 		return true;
-	}
-
-	inline bool parseKiss(const string &fName, Kiss *pK)
-	{
-		NULL_F(pK);
-
-		string s;
-		if(!readFile(fName, &s))
-		{
-			LOG(INFO) << "Cannot open: " << fName;
-			return false;
-		}
-
-		if(s.empty())
-		{
-			LOG(INFO) << "Empty file: " << fName;
-			return false;
-		}
-
-		return pK->parse(&s);
 	}
 
 }

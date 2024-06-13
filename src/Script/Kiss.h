@@ -16,9 +16,7 @@ namespace kai
 		Kiss(void);
 		~Kiss(void);
 
-		bool parse(string *pStr);
-		JSON *json(void);
-
+		bool parse(const string& s);
 		Kiss *child(const string &name);
 		Kiss *child(int i);
 		Kiss *root(void);
@@ -40,10 +38,13 @@ namespace kai
 			return m_json.a(name, pVal);
 		}
 
+
+		JSON *json(void);
+
 	private:
-		void trim(string *pStr);
-		void delComment(string *pStr);
-		bool addChild(string *pStr);
+		void trim(string *pS);
+		void delComment(string *pS);
+		bool addChild(const string& s);
 
 	public:
 		string m_class;

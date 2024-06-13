@@ -94,7 +94,7 @@ namespace kai
 
 			if (m_bf.b(ACT_BF_STOP, true))
 			{
-				while(!stop());
+				while(!stopMove());
 				while(!readStatus());
 				m_pA->m_p.m_vTarget = m_pA->m_p.m_v;
 			}
@@ -225,7 +225,7 @@ namespace kai
 		return true;
 	}
 
-	bool _HYMCU_RS485::stop(void)
+	bool _HYMCU_RS485::stopMove(void)
 	{
 		IF_F(check() < 0);
 

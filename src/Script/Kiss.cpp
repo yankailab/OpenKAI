@@ -29,7 +29,7 @@ namespace kai
 		}
 	}
 
-	bool Kiss::parse(string *pStr)
+	bool Kiss::parse(const string& s)
 	{
 		IF_F(m_bNULL);
 
@@ -48,26 +48,27 @@ namespace kai
 		int k;
 		std::string::size_type from, to;
 
-		trim(pStr);
-		delComment(pStr);
+		string sp = s;
+		trim(&sp);
+		delComment(&sp);
 
 		do
 		{
 			// find the object start
-			from = pStr->find('{');
+			from = sp.find('{');
 			if (from == std::string::npos)
 				break;
 
 			// find the paired bracket
 			to = from + 1;
 			k = 0;
-			while (to < pStr->length())
+			while (to < sp.length())
 			{
-				if ((*pStr)[to] == '{')
+				if (sp[to] == '{')
 				{
 					k++;
 				}
-				else if ((*pStr)[to] == '}')
+				else if (sp[to] == '}')
 				{
 					if (k == 0)
 						break;
@@ -77,22 +78,22 @@ namespace kai
 			}
 
 			// the pair bracket not found
-			if (to == pStr->length())
+			if (to == sp.length())
 				return false;
 
 			// check if it is a null object
 			if (to > from + 1)
 			{
 				// create new obj
-				string subStr = pStr->substr(from + 1, to - from - 1);
-				addChild(&subStr);
+				string subStr = sp.substr(from + 1, to - from - 1);
+				addChild(subStr);
 			}
 
-			pStr->erase(from, to - from + 1);
+			sp.erase(from, to - from + 1);
 
 		} while (1);
 
-		string jstr = "{" + (*pStr) + "}";
+		string jstr = "{" + sp + "}";
 		if (!m_json.parse(jstr))
 			return false;
 
@@ -104,60 +105,13 @@ namespace kai
 		return bON;
 	}
 
-	JSON *Kiss::json(void)
-	{
-		return &m_json;
-	}
-
-	void Kiss::trim(string *pStr)
-	{
-		std::string::size_type k;
-
-		// do NOT delete white spaces as gst pipeline use it for parameter separations
-
-		k = pStr->find('\r');
-		while (k != std::string::npos)
-		{
-			pStr->erase(k, 1);
-			k = pStr->find('\r');
-		}
-
-		k = pStr->find('\t');
-		while (k != std::string::npos)
-		{
-			pStr->erase(k, 1);
-			k = pStr->find('\t');
-		}
-	}
-
-	void Kiss::delComment(string *pStr)
-	{
-		std::string::size_type cFrom;
-		std::string::size_type cTo;
-		string commentFrom = "/*";
-		string commentTo = "*/";
-
-		cFrom = pStr->find(commentFrom);
-		while (cFrom != std::string::npos)
-		{
-			cTo = pStr->find(commentTo, cFrom + commentFrom.length());
-			if (cTo == std::string::npos)
-			{
-				cTo = pStr->length() - commentTo.length();
-			}
-
-			pStr->erase(cFrom, cTo - cFrom + commentTo.length());
-			cFrom = pStr->find(commentFrom);
-		}
-	}
-
-	bool Kiss::addChild(string *pStr)
+	bool Kiss::addChild(const string& s)
 	{
 		IF_F(m_bNULL);
 
 		Kiss *pChild = new Kiss();
 		pChild->m_pParent = this;
-		if (!pChild->parse(pStr))
+		if (!pChild->parse(s))
 		{
 			delete pChild;
 			return false;
@@ -228,6 +182,53 @@ namespace kai
 	bool Kiss::empty(void)
 	{
 		return m_bNULL;
+	}
+
+	JSON *Kiss::json(void)
+	{
+		return &m_json;
+	}
+
+	void Kiss::trim(string *pS)
+	{
+		std::string::size_type k;
+
+		// do NOT delete white spaces as gst pipeline use it for parameter separations
+
+		k = pS->find('\r');
+		while (k != std::string::npos)
+		{
+			pS->erase(k, 1);
+			k = pS->find('\r');
+		}
+
+		k = pS->find('\t');
+		while (k != std::string::npos)
+		{
+			pS->erase(k, 1);
+			k = pS->find('\t');
+		}
+	}
+
+	void Kiss::delComment(string *pStr)
+	{
+		std::string::size_type cFrom;
+		std::string::size_type cTo;
+		string commentFrom = "/*";
+		string commentTo = "*/";
+
+		cFrom = pStr->find(commentFrom);
+		while (cFrom != std::string::npos)
+		{
+			cTo = pStr->find(commentTo, cFrom + commentFrom.length());
+			if (cTo == std::string::npos)
+			{
+				cTo = pStr->length() - commentTo.length();
+			}
+
+			pStr->erase(cFrom, cTo - cFrom + commentTo.length());
+			cFrom = pStr->find(commentFrom);
+		}
 	}
 
 }

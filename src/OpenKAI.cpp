@@ -51,18 +51,16 @@ namespace kai
 		return true;
 	}
 
-	bool OpenKAI::addModulesFromKiss(const string &fName)
+	bool OpenKAI::addKiss(const string &fName)
 	{
 		IF_F(check() < 0);
 		IF_F(fName.empty());
 
-		Kiss *pKiss = (Kiss *)m_pKiss;
+		string s;
+		IF_F(!readFile(fName, &s));
 
-		if (!parseKiss(fName, pKiss))
-		{
-			LOG(ERROR) << "Kiss file not found or parsing failed";
-			return false;
-		}
+		Kiss *pKiss = (Kiss *)m_pKiss;
+		IF_F(!pKiss->parse(s));
 
 		Kiss *pApp = pKiss->root()->child("APP");
 		pApp->v("appName", &m_appName);
@@ -73,15 +71,14 @@ namespace kai
 		// parse & attach included kiss files
 		vector<string> vInclude;
 		pApp->a("vInclude", &vInclude);
-		for (string s : vInclude)
+		for (string f : vInclude)
 		{
-			if (!parseKiss(s, pKiss))
-			{
-				LOG(INFO) << "Kiss parse failed: " << s;
-			}
+			IF_CONT(!readFile(f, &s));
+			pKiss->parse(s);
 		}
 
-		// logging
+		// TODO: avoid duplication
+		//  logging
 		if (!m_bStdErr)
 		{
 			freopen("/dev/null", "w", stderr);
@@ -100,7 +97,6 @@ namespace kai
 		IF_F(check() < 0);
 
 		Kiss *pKiss = (Kiss *)m_pKiss;
-
 		Module mod;
 		OK_MODULE m;
 		int i = 0;
@@ -116,6 +112,8 @@ namespace kai
 			if (!m.m_pBase)
 			{
 				LOG_E("Failed to create instance: " + pK->m_name);
+
+				// TODO: leave it true for custom modules
 				return false;
 			}
 
@@ -124,6 +122,23 @@ namespace kai
 		}
 
 		return true;
+	}
+
+	int OpenKAI::addModule(void *pModule, const string &mName)
+	{
+		IF__(check() < 0, -1);
+		NULL__(pModule, -1);
+
+		Kiss *pKiss = (Kiss *)m_pKiss;
+		Kiss *pKm = pKiss->find(mName);
+		IF__(pKm->empty(), -1);
+
+		pKm->m_pInst = (BASE*)pModule;
+
+		OK_MODULE m;
+		m.m_pBase = pModule;
+		m.m_pKiss = pKm;
+		m_vModules.push_back(m);
 	}
 
 	bool OpenKAI::initAllModules(void)
@@ -180,7 +195,7 @@ namespace kai
 	{
 		for (auto m : m_vModules)
 		{
-			((BASE*)m.m_pBase)->resume();
+			((BASE *)m.m_pBase)->resume();
 		}
 	}
 
@@ -188,7 +203,7 @@ namespace kai
 	{
 		for (auto m : m_vModules)
 		{
-			((BASE*)m.m_pBase)->pause();
+			((BASE *)m.m_pBase)->pause();
 		}
 	}
 
@@ -222,11 +237,11 @@ namespace kai
 		m_vModules.clear();
 	}
 
-	int OpenKAI::findModule(const string& mName)
+	int OpenKAI::findModule(const string &mName)
 	{
-		for(int i=0; i<m_vModules.size(); i++)
+		for (int i = 0; i < m_vModules.size(); i++)
 		{
-			IF_CONT(((BASE*)m_vModules[i].m_pBase)->getName() != mName);
+			IF_CONT(((BASE *)m_vModules[i].m_pBase)->getName() != mName);
 
 			return i;
 		}
@@ -239,12 +254,12 @@ namespace kai
 		return findModule(mName);
 	}
 
-	void* OpenKAI::getModule(const string &mName)
+	void *OpenKAI::getModule(const string &mName)
 	{
 		int i = findModule(mName);
 		IF_N(i < 0);
 
-		return m_vModules[i].m_pBase;		
+		return m_vModules[i].m_pBase;
 	}
 
 	bool OpenKAI::startModule(int h)
@@ -252,10 +267,10 @@ namespace kai
 		IF_F(h <= 0);
 		IF_F(h > m_vModules.size());
 
-		BASE* pBase = (BASE*)m_vModules[h].m_pBase;
+		BASE *pBase = (BASE *)m_vModules[h].m_pBase;
 		pBase->start();
 
-		//TODO: verify already started thread in each ModuleBase instances
+		// TODO: verify already started thread in each ModuleBase instances
 	}
 
 	bool OpenKAI::pauseModule(int h)
@@ -263,7 +278,7 @@ namespace kai
 		IF_F(h <= 0);
 		IF_F(h > m_vModules.size());
 
-		BASE* pBase = (BASE*)m_vModules[h].m_pBase;
+		BASE *pBase = (BASE *)m_vModules[h].m_pBase;
 		pBase->pause();
 	}
 
@@ -272,7 +287,7 @@ namespace kai
 		IF_F(h <= 0);
 		IF_F(h > m_vModules.size());
 
-		BASE* pBase = (BASE*)m_vModules[h].m_pBase;
+		BASE *pBase = (BASE *)m_vModules[h].m_pBase;
 		pBase->resume();
 	}
 
@@ -281,7 +296,7 @@ namespace kai
 		IF_F(h <= 0);
 		IF_F(h > m_vModules.size());
 
-		BASE* pBase = (BASE*)m_vModules[h].m_pBase;
+		BASE *pBase = (BASE *)m_vModules[h].m_pBase;
 		pBase->stop();
 	}
 
@@ -290,10 +305,10 @@ namespace kai
 		IF_F(h <= 0);
 		IF_F(h > m_vModules.size());
 
-		BASE* pBase = (BASE*)m_vModules[h].m_pBase;
+		BASE *pBase = (BASE *)m_vModules[h].m_pBase;
 		pBase->stop();
 
-		//TODO:
+		// TODO:
 	}
 
 	void OpenKAI::setName(const string &n)

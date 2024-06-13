@@ -217,11 +217,17 @@ namespace kai
 
     bool _GeometryBase::loadConfig(void)
     {
-        Kiss *pK = new Kiss();
+		string s;
+		if(!readFile(m_fConfig, &s))
+		{
+            LOG_I("Cannot open: " + m_fConfig);
+            return false;
+		}
 
-        if (!parseKiss(m_fConfig, pK))
+        Kiss *pK = new Kiss();
+        if (!pK->parse(s))
         {
-            LOG_I("Config load failed: " + m_fConfig);
+            LOG_I("Config parse failed: " + m_fConfig);
             DEL(pK);
             return false;
         }
@@ -244,6 +250,7 @@ namespace kai
         setRotation(vR);
         updateTranslationMatrix(false);
 
+        DEL(pK);
         return true;
     }
 

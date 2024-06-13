@@ -152,7 +152,7 @@ namespace kai
 		return true;
 	}
 
-	bool _ZLAC8015::stop(void)
+	bool _ZLAC8015::stopMove(void)
 	{
 		IF_F(check() < 0);
 

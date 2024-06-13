@@ -16,8 +16,18 @@ namespace kai
 		NULL_F(pC);
 		NULL_F(pD);
 
-		Kiss *pKf = new Kiss();
-		IF_d__(!parseKiss(fCalib, pKf), DEL(pKf), false);
+		string s;
+		if(!readFile(fCalib, &s))
+		{
+            return false;
+		}
+
+ 		Kiss *pKf = new Kiss();
+		if (!pKf->parse(s))
+        {
+            DEL(pKf);
+            return false;
+        }
 
 		Kiss *pK = pKf->child("calib");
 		IF_d__(pK->empty(), DEL(pKf), false);

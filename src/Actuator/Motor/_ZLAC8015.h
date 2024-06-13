@@ -33,7 +33,7 @@ namespace kai
 		bool setBrake(void);
 
 		bool bComplete(void);
-		bool stop(void);
+		bool stopMove(void);
 		bool setSlave(int iSlave);
 		bool readStatus(void);
 		bool clearAlarm(void);

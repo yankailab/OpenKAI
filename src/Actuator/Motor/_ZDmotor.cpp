@@ -154,7 +154,7 @@ namespace kai
 		return true;
 	}
 
-	bool _ZDmotor::stop(void)
+	bool _ZDmotor::stopMove(void)
 	{
 		IF_F(check() < 0);
 

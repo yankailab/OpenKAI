@@ -37,7 +37,7 @@ namespace kai
 		IF_T(fn.empty());
 
 		Kiss *pKf = new Kiss();
-		if (pKf->parse(&fn))
+		if (pKf->parse(fn))
 		{
 			pK = pKf->child("transform");
 			pK->v("vT", &m_vT);

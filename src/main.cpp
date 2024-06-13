@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 	if(!pOK->init())
 		goto exit;
 
-	if(!pOK->addModulesFromKiss(argStr))
+	if(!pOK->addKiss(argStr))
 		goto exit;
 
 	if(!pOK->createAllModules())

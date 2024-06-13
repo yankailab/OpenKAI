@@ -28,9 +28,14 @@ namespace kai
 		OpenKAI();
 		~OpenKAI();
 
-		// general workflow
+		// system
 		bool init(void);
-		bool addModulesFromKiss(const string &fName);
+
+		// module create
+		bool addKiss(const string &fName);
+		int addModule(void* pModule, const string& mName);
+
+		// general flow
 		bool createAllModules(void);
 		bool initAllModules(void);
 		bool linkAllModules(void);

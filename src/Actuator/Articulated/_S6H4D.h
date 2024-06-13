@@ -113,7 +113,7 @@ struct S6H4D_VOL
 		else if(m_type == vol_ball)
 		{
 			vFloat3 vR = vP - m_vC;
-			float r = vR.r();
+			float r = vR.len();
 			if(r < m_vR.x)bInside = false;
 			if(r > m_vR.y)bInside = false;
 		}
@@ -121,7 +121,7 @@ struct S6H4D_VOL
 		{
 			vFloat3 vR = vP - m_vC;
 			vR.z = 0.0;
-			float r = vR.r();
+			float r = vR.len();
 			if(r < m_vR.x)bInside = false;
 			if(r > m_vR.y)bInside = false;
 		}
