@@ -46,13 +46,17 @@ namespace kai
 
 	string BASE::getName(void)
 	{
-		NULL_N(m_pKiss);
+		if(!m_pKiss)
+			return "";
+
 		return ((Kiss *)m_pKiss)->m_name;
 	}
 
 	string BASE::getClass(void)
 	{
-		NULL_N(m_pKiss);
+		if(!m_pKiss)
+			return "";
+
 		return ((Kiss *)m_pKiss)->m_class;
 	}
 

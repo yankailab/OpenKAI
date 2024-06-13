@@ -29,7 +29,7 @@ namespace kai
 		~OpenKAI();
 
 		// system
-		bool init(void);
+		bool init(const string& appName = "OpenKAI");
 
 		// module create
 		bool addKiss(const string &fName);

@@ -40,13 +40,20 @@ namespace kai
 		return 0;
 	}
 
-	bool OpenKAI::init(void)
+	bool OpenKAI::init(const string& appName)
 	{
 		g_pStartup = this;
 		signal(SIGINT, signalHandler);
 
 		DEL(m_pKiss);
 		m_pKiss = new Kiss();
+
+		m_appName = appName;
+
+#ifdef USE_GLOG
+		FLAGS_logtostderr = 1;
+		google::InitGoogleLogging(m_appName.c_str());
+#endif
 
 		return true;
 	}
@@ -60,7 +67,7 @@ namespace kai
 		IF_F(!readFile(fName, &s));
 
 		Kiss *pKiss = (Kiss *)m_pKiss;
-		IF_F(!pKiss->parse(s));
+		IF_Fl(!pKiss->parse(s), "Kiss parse failed: " + s);
 
 		Kiss *pApp = pKiss->root()->child("APP");
 		pApp->v("appName", &m_appName);
@@ -73,21 +80,12 @@ namespace kai
 		pApp->a("vInclude", &vInclude);
 		for (string f : vInclude)
 		{
-			IF_CONT(!readFile(f, &s));
-			pKiss->parse(s);
+			IF_Fl(!readFile(f, &s), "Included Kiss not found: " + f);
+			IF_Fl(!pKiss->parse(s), "Included Kiss parse failed: " + f);
 		}
 
-		// TODO: avoid duplication
-		//  logging
 		if (!m_bStdErr)
-		{
 			freopen("/dev/null", "w", stderr);
-		}
-
-#ifdef USE_GLOG
-		FLAGS_logtostderr = 1;
-		google::InitGoogleLogging(m_appName.c_str());
-#endif
 
 		return true;
 	}
@@ -107,14 +105,13 @@ namespace kai
 				break;
 
 			IF_CONT(pK->m_class == "OpenKAI");
+			IF_CONT(pK->m_pInst);
 
 			m.m_pBase = mod.createInstance(pK);
 			if (!m.m_pBase)
 			{
-				LOG_E("Failed to create instance: " + pK->m_name);
-
-				// TODO: leave it true for custom modules
-				return false;
+				LOG_I("Failed to create instance: " + pK->m_name);
+				continue;
 			}
 
 			m.m_pKiss = pK;
@@ -131,7 +128,17 @@ namespace kai
 
 		Kiss *pKiss = (Kiss *)m_pKiss;
 		Kiss *pKm = pKiss->find(mName);
-		IF__(pKm->empty(), -1);
+		if(pKm->empty())
+		{
+			LOG_I("Module not found in Kiss: " + mName);
+			return -1;
+		}
+
+		if(pKm->m_pInst)
+		{
+			LOG_I("Module already existed in Kiss: " + mName);
+			return -1;
+		}
 
 		pKm->m_pInst = (BASE*)pModule;
 

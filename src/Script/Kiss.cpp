@@ -78,8 +78,8 @@ namespace kai
 			}
 
 			// the pair bracket not found
-			if (to == sp.length())
-				return false;
+			IF_Fl(to == sp.length(), "Bracket not closed: " + sp);
+//				return false;
 
 			// check if it is a null object
 			if (to > from + 1)
@@ -93,14 +93,18 @@ namespace kai
 
 		} while (1);
 
-		string jstr = "{" + sp + "}";
-		if (!m_json.parse(jstr))
-			return false;
+		string js = "{" + sp + "}";
+		IF_Fl(!m_json.parse(js), "Parse failed:" + js);
+//			return false;
 
 		m_json.v("name", &m_name);
 		m_json.v("class", &m_class);
 		bool bON = true;
 		m_json.v("bON", &bON);
+
+//		IF_Fl(m_name.empty(), "Module name empty: " + js);
+//		IF_Fl(m_class.empty(), "Module class empty: " + js);
+		IF_Fl(find(m_name), "Module already existed" + js);
 
 		return bON;
 	}

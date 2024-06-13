@@ -10,7 +10,7 @@ using namespace std;
 namespace kai
 {
 
-	class Kiss
+	class Kiss : public BASE
 	{
 	public:
 		Kiss(void);
