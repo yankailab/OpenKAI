@@ -23,9 +23,7 @@ namespace kai
 		m_pKiss = NULL;
 
 		m_appName = "";
-		m_bRun = true;
 		m_bStdErr = true;
-		m_bLog = false;
 		m_rc = "";
 	}
 
@@ -86,7 +84,6 @@ namespace kai
 		Kiss *pApp = pKiss->root()->child("APP");
 		pApp->v("appName", &m_appName);
 		pApp->v("bStdErr", &m_bStdErr);
-		pApp->v("bLog", &m_bLog);
 		pApp->v("rc", &m_rc);
 
 		// parse & attach included kiss files
@@ -126,6 +123,13 @@ namespace kai
 		return ((Kiss*)m_pKiss)->findModule(mName);
 	}
 
+	void* OpenKAI::findModuleKiss(const string &mName)
+	{
+		IF_N(check() < 0);
+
+		return ((Kiss*)m_pKiss)->find(mName);
+	}
+
 	bool OpenKAI::deleteModule(const string& mName)
 	{
 		IF_F(check() < 0);
@@ -157,7 +161,6 @@ namespace kai
 
 			pK->setModule(mod.createInstance(pK));
 			if (!pK->getModule())
-				;
 			{
 				LOG_I("Failed to create instance: " + pK->getName());
 				continue;
@@ -274,8 +277,6 @@ namespace kai
 
 	void OpenKAI::stopAllModules(void)
 	{
-		m_bRun = false;
-
 		//TODO
 
 		Kiss *pKroot = ((Kiss *)m_pKiss)->root();
@@ -313,7 +314,7 @@ namespace kai
 		return m_appName;
 	}
 
-	void OpenKAI::printEnvironment(void)
+	void OpenKAI::logEnvironment(void)
 	{
 #ifdef USE_OPENCV
 		LOG_I("OpenCV optimized code:" + i2str(useOptimized()));

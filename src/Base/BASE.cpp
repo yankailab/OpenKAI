@@ -16,7 +16,6 @@ namespace kai
 	{
 		m_pKiss = NULL;
 		m_bLog = false;
-		m_bDebug = false;
 	}
 
 	BASE::~BASE()
@@ -32,7 +31,6 @@ namespace kai
 		pK->setModule(this);
 
 		pK->v("bLog", &m_bLog);
-		pK->v("bDebug", &m_bDebug);
 
 		return true;
 	}

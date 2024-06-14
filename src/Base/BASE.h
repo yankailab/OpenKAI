@@ -43,7 +43,6 @@ namespace kai
 	protected:
 		void *m_pKiss;
 		bool m_bLog;
-		bool m_bDebug;
 	};
 
 }

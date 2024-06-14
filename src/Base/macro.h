@@ -32,21 +32,21 @@
         string s = x;              \
         printf("%s\n", s.c_str()); \
     }
-#define LOG_I(x)                                \
-    if (m_bLog)                                 \
-    {                                           \
+#define LOG_I(x)                               \
+    if (m_bLog)                                \
+    {                                          \
         string s = this->getName() + ": " + x; \
-        printf("%s\n", s.c_str());              \
+        printf("%s\n", s.c_str());             \
     }
-#define LOG_E(x)                                \
-    {                                           \
+#define LOG_E(x)                               \
+    {                                          \
         string s = this->getName() + ": " + x; \
-        printf("%s\n", s.c_str());              \
+        printf("%s\n", s.c_str());             \
     }
-#define LOG_F(x)                                \
-    {                                           \
+#define LOG_F(x)                               \
+    {                                          \
         string s = this->getName() + ": " + x; \
-        printf("%s\n", s.c_str());              \
+        printf("%s\n", s.c_str());             \
     }
 #endif
 

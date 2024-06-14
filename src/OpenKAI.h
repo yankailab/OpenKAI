@@ -29,6 +29,7 @@ namespace kai
 		bool addKiss(const string &fName);
 		bool addModule(void* pModule, const string& mName);
 		void* findModule(const string& mName);
+		void* findModuleKiss(const string& mName);
 		bool deleteModule(const string& mName);
 
 		// general flow
@@ -45,7 +46,7 @@ namespace kai
 		// access methods
 		void setName(const string &n);
 		string getName(void);
-		void printEnvironment(void);
+		void logEnvironment(void);
 
 	private:
 		int check(void);
@@ -54,10 +55,10 @@ namespace kai
 		void *m_pKiss;
 
 		string m_appName;
-		bool m_bRun;
 		bool m_bStdErr;
-		bool m_bLog;
 		string m_rc;
+
+		bool m_bLog = 1;
 	};
 
 }

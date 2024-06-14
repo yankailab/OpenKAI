@@ -125,8 +125,8 @@ namespace kai
 			m_vAtti.z = m_pMav->m_attitude.m_msg.roll;
 		}
 
-		//TODO:
-		// get home position
+		// TODO:
+		//  get home position
 		if (!m_pMav->m_homePosition.bReceiving(tNow))
 		{
 			m_pMav->clGetHomePosition();
@@ -338,15 +338,12 @@ namespace kai
 		pC->addMsg("Battery-----------------------------", 1);
 		pC->addMsg("batt=" + f2str(m_battery));
 
-		if (m_bDebug)
-		{
-			pC->addMsg("Sensor----------------------------", 1);
-			pC->addMsg("xAcc=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xacc) + ", yAcc=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.yacc) + ", zAcc=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zacc), 1);
+		pC->addMsg("Sensor----------------------------", 1);
+		pC->addMsg("xAcc=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xacc) + ", yAcc=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.yacc) + ", zAcc=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zacc), 1);
 
-			pC->addMsg("xGyro=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xgyro) + ", yGyro=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.ygyro) + ", zGyro=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zgyro), 1);
+		pC->addMsg("xGyro=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xgyro) + ", yGyro=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.ygyro) + ", zGyro=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zgyro), 1);
 
-			pC->addMsg("xMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xmag) + ", yMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.ymag) + ", zMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zmag), 1);
-		}
+		pC->addMsg("xMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xmag) + ", yMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.ymag) + ", zMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zmag), 1);
 	}
 
 }
