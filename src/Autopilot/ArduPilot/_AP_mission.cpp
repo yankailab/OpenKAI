@@ -87,8 +87,8 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		int apMode = m_pAP->getApMode();
-		vDouble4 vP = m_pAP->getGlobalPos();
+		int apMode = m_pAP->getMode();
+		vFloat4 vP = m_pAP->getGlobalPos();
 
 		IF_(!m_pAP->bApArmed());
 		if(!m_bMissionGoing)
@@ -110,7 +110,7 @@ namespace kai
 			{
 				m_iMission = 0;
 				m_bMissionGoing = false;
-				m_pAP->setApMode(AP_COPTER_RTL);
+				m_pAP->setMode(AP_COPTER_RTL);
 				return;
 			}
 		}

@@ -144,7 +144,7 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		int apMode = m_pAP->getApMode();
+		int apMode = m_pAP->getMode();
 		bool bApArmed = m_pAP->bApArmed();
 		float alt = m_pAP->getGlobalPos().w; // relative altitude
 
@@ -162,14 +162,14 @@ namespace kai
 		{
 			if (apMode != AP_COPTER_GUIDED)
 			{
-				m_pAP->setApMode(AP_COPTER_GUIDED);
+				m_pAP->setMode(AP_COPTER_GUIDED);
 				return;
 			}
 
 			if (!bApArmed)
 			{
 				if (m_bAutoArm)
-					m_pAP->setApArm(true);
+					m_pAP->setArm(true);
 
 				return;
 			}
@@ -206,7 +206,7 @@ namespace kai
 		if (m_state.bRTL())
 		{
 			if (apMode == AP_COPTER_GUIDED)
-				m_pAP->setApMode(AP_COPTER_RTL);
+				m_pAP->setMode(AP_COPTER_RTL);
 		}
 	}
 
@@ -386,8 +386,8 @@ namespace kai
 		m.m_lat = vP.x * 1e7;
 		m.m_lng = vP.y * 1e7;
 		m.m_alt = vP.w * 1e2;
-		m.m_hdg = m_pAP->getApHdg() * 1e1;
-		m.m_spd = m_pAP->getApSpeed().len() * 1e2;
+		m.m_hdg = m_pAP->getHdg() * 1e1;
+		m.m_spd = m_pAP->getSpeed().len() * 1e2;
 		m.m_batt = m_pAP->getBattery() * 1e2;
 		m.m_mode = m_pSC->getCurrentStateIdx();
 

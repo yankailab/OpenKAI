@@ -119,10 +119,10 @@ namespace kai
 
 		if (!findTag())
 		{
-			if (m_pAP->getApMode() == AP_COPTER_GUIDED)
+			if (m_pAP->getMode() == AP_COPTER_GUIDED)
 			{
 				stop();
-				m_pAP->setApMode(AP_COPTER_RTL);
+				m_pAP->setMode(AP_COPTER_RTL);
 			}
 
 			return;
@@ -146,17 +146,17 @@ namespace kai
 		{
 			if (dHdgAbs > m_hdgDz)
 			{
-				if (m_pAP->getApMode() == AP_COPTER_LAND || 
-					m_pAP->getApMode() == AP_COPTER_RTL)
-					m_pAP->setApMode(AP_COPTER_GUIDED);
+				if (m_pAP->getMode() == AP_COPTER_LAND || 
+					m_pAP->getMode() == AP_COPTER_RTL)
+					m_pAP->setMode(AP_COPTER_GUIDED);
 
 				m_bHdgMoving = true;
 				return;
 			}
 		}
 
-		if (m_pAP->getApMode() == AP_COPTER_GUIDED)
-			m_pAP->setApMode(AP_COPTER_RTL);
+		if (m_pAP->getMode() == AP_COPTER_GUIDED)
+			m_pAP->setMode(AP_COPTER_RTL);
 
 
 		// vFloat3 vP = m_oTarget.getPos();

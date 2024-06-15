@@ -17,9 +17,9 @@ namespace kai
 		m_modeRTL = 84148224;
 		/*
 		// Mode values for pf2
-		// setApMode(100925440); // landing
-		// setApMode(50593792); // Guided
-		// setApMode(84148224); // RTL
+		// setMode(100925440); // landing
+		// setMode(50593792); // Guided
+		// setMode(84148224); // RTL
 		*/
 
 		m_dir = "/home/";
@@ -171,7 +171,7 @@ namespace kai
 
 		// RTL
 		IF_(!m_bRTL);
-//		m_pAP->setApMode(m_modeRTL);
+//		m_pAP->setMode(m_modeRTL);
 //		m_pAP->m_pMav->clNavRTL();
 	}
 

@@ -47,6 +47,7 @@ namespace kai
 
 		vector<string> vB;
 		pK->a("vBASE", &vB);
+		m_vpB.clear();
 		for (string p : vB)
 		{
 			BASE *pB = (BASE *)(pK->findModule(p));

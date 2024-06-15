@@ -94,7 +94,7 @@ namespace kai
 			return;
 		}
 
-		m_pAP->setApMode(AP_COPTER_LOITER);
+		m_pAP->setMode(AP_COPTER_LOITER);
 		LOG_I("Set Loiter");
 	}
 

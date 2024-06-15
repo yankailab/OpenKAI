@@ -142,14 +142,14 @@ namespace kai
 				// setVlocal(m_vSpd);
 
 				// temporal
-				vDouble4 vPg = m_pAP->getGlobalPos();
+				vFloat4 vPg = m_pAP->getGlobalPos();
 				if (vPg.x + vPg.y > 0)
 				{
-					float apHdg = m_pAP->getApHdg();
+					float apHdg = m_pAP->getHdg();
 					float s = sin(apHdg * DEG_2_RAD);
 					float c = cos(apHdg * DEG_2_RAD);
 
-					vDouble4 vP;
+					vFloat4 vP;
 					vP.x = 35.7936444;	// vPg.x + m_vSpd.x * c - m_vSpd.y * s;
 					vP.y = 140.2113273; // vPg.y + m_vSpd.x * s + m_vSpd.y * c;
 					vP.z = vPg.z;

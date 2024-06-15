@@ -102,12 +102,12 @@ namespace kai
 			{
 				if (m_apModeInError >= 0)
 				{
-					int apMode = m_pAP->getApMode();
+					int apMode = m_pAP->getMode();
 					if ((apMode == AP_COPTER_AUTO) ||
 						(apMode == AP_COPTER_LOITER) ||
 						(apMode == AP_COPTER_GUIDED))
 					{
-						m_pAP->setApMode(m_apModeInError);
+						m_pAP->setMode(m_apModeInError);
 					}
 				}
 			}

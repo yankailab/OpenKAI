@@ -173,8 +173,8 @@ namespace kai
 		IF_(!m_pFmeta->bOpen());
 
 		uint64_t tFrame = getTbootMs() - m_tRecStart;
-		vDouble4 vP = m_pAP->getGlobalPos();
-		vFloat3 vA = m_pAP->getApAttitude();
+		vFloat4 vP = m_pAP->getGlobalPos();
+		vFloat3 vA = m_pAP->getAttitude();
 
 		object jo;
 		JO(jo, "tFrame", (double)tFrame);
@@ -182,7 +182,7 @@ namespace kai
 		JO(jo, "lon", lf2str(vP.y, 8));
 		JO(jo, "alt", lf2str(vP.z, 5));
 		JO(jo, "rAlt", lf2str(vP.w, 5));
-		JO(jo, "hdg", lf2str(m_pAP->getApHdg(), 5));
+		JO(jo, "hdg", lf2str(m_pAP->getHdg(), 5));
 		JO(jo, "yaw", lf2str(vA.x, 5));
 		JO(jo, "pitch", lf2str(vA.y, 5));
 		JO(jo, "roll", lf2str(vA.z, 5));

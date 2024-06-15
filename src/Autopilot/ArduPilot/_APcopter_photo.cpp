@@ -119,7 +119,7 @@ namespace kai
 			{
 				m_pAP->m_pMav->clDoSetRelay(m_iRelayShutter, false);
 
-				int apMode = m_pAP->getApMode();
+				int apMode = m_pAP->getMode();
 				if (apMode == AP_COPTER_GUIDED)
 				{
 					autoMode();
@@ -185,7 +185,7 @@ namespace kai
 		cmd = "mkdir " + m_subDir;
 		system(cmd.c_str());
 
-		vDouble4 vP;
+		vFloat4 vP;
 		vP.clear();
 		vP = m_pAP->getGlobalPos();
 		string lat = lf2str(vP.x, 7);

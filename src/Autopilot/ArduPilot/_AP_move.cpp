@@ -121,7 +121,7 @@ namespace kai
 		m_pAP->m_pMav->setPositionTargetLocalNED(spt);
 	}
 
-	void _AP_move::setPlocal(const vDouble4 &vP, bool bYaw, bool bYawRate, uint8_t frame)
+	void _AP_move::setPlocal(const vFloat4 &vP, bool bYaw, bool bYawRate, uint8_t frame)
 	{
 		IF_(check() < 0);
 
@@ -141,7 +141,7 @@ namespace kai
 		m_pAP->m_pMav->setPositionTargetLocalNED(spt);
 	}
 
-	void _AP_move::setPglobal(const vDouble4 &vP, bool bYaw, bool bYawRate, uint8_t frame)
+	void _AP_move::setPglobal(const vFloat4 &vP, bool bYaw, bool bYawRate, uint8_t frame)
 	{
 		IF_(check() < 0);
 
@@ -163,7 +163,7 @@ namespace kai
 		m_pAP->m_pMav->setPositionTargetGlobalINT(spt);
 	}
 
-	void _AP_move::doReposition(const vDouble4 &vP,
+	void _AP_move::doReposition(const vFloat4 &vP,
 								float speed,
 								float radius,
 								uint8_t frame)

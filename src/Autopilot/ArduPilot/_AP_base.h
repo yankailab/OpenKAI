@@ -104,19 +104,20 @@ namespace kai
 		virtual void update(void);
 		virtual void console(void *pConsole);
 
-		void setApMode(uint32_t iMode);
-		void setApArm(bool bArm);
-		void setMount(AP_MOUNT &mount);
+		void setMode(uint32_t iMode);
+		int getMode(void);
+		string getModeName(void);
 
+		void setArm(bool bArm);
 		bool bApArmed(void);
 
-		int getApMode(void);
-		string getApModeName(void);
-		vDouble3 getHomePos(void);
-		vDouble4 getGlobalPos(void);
-		float getApHdg(void);
-		vFloat3 getApSpeed(void);
-		vFloat3 getApAttitude(void);
+		void setMount(AP_MOUNT &mount);
+
+		vFloat3 getHomePos(void);
+		vFloat4 getGlobalPos(void);
+		float getHdg(void);
+		vFloat3 getSpeed(void);
+		vFloat3 getAttitude(void);
 		float getBattery(void);
 
 		int getWPseq(void);
@@ -137,9 +138,9 @@ namespace kai
 		bool m_bApArmed;
 
 		bool m_bHomeSet;
-		vDouble3 m_vHomePos;
-		vDouble4 m_vGlobalPos; //lat, lon, alt, relative_alt in meters
-		vDouble3 m_vLocalPos;
+		vFloat3 m_vHomePos;
+		vFloat4 m_vGlobalPos; //lat, lon, alt, relative_alt in meters
+		vFloat3 m_vLocalPos;
 		vFloat3 m_vSpeed;
 		vFloat3 m_vAtti; //yaw, pitch, roll
 		float m_apHdg;	 //heading in degree

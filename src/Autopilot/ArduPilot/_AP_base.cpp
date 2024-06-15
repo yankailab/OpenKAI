@@ -177,7 +177,7 @@ namespace kai
 		}
 	}
 
-	void _AP_base::setApMode(uint32_t iMode)
+	void _AP_base::setMode(uint32_t iMode)
 	{
 		IF_(check() < 0);
 
@@ -186,12 +186,12 @@ namespace kai
 		m_pMav->setMode(D);
 	}
 
-	int _AP_base::getApMode(void)
+	int _AP_base::getMode(void)
 	{
 		return m_apMode;
 	}
 
-	string _AP_base::getApModeName(void)
+	string _AP_base::getModeName(void)
 	{
 		if (m_apMode >= AP_N_CUSTOM_MODE)
 			return "?";
@@ -206,7 +206,7 @@ namespace kai
 		return "?";
 	}
 
-	void _AP_base::setApArm(bool bArm)
+	void _AP_base::setArm(bool bArm)
 	{
 		IF_(check() < 0);
 
@@ -218,11 +218,11 @@ namespace kai
 		return m_bApArmed;
 	}
 
-	vDouble3 _AP_base::getHomePos(void)
+	vFloat3 _AP_base::getHomePos(void)
 	{
 		if (!m_bHomeSet)
 		{
-			vDouble3 vH;
+			vFloat3 vH;
 			vH.set(-1.0);
 			return vH;
 		}
@@ -230,12 +230,12 @@ namespace kai
 		return m_vHomePos;
 	}
 
-	vDouble4 _AP_base::getGlobalPos(void)
+	vFloat4 _AP_base::getGlobalPos(void)
 	{
 		return m_vGlobalPos;
 	}
 
-	float _AP_base::getApHdg(void)
+	float _AP_base::getHdg(void)
 	{
 		return m_apHdg;
 	}
@@ -281,12 +281,12 @@ namespace kai
 		m_pMav->param_set(D);
 	}
 
-	vFloat3 _AP_base::getApSpeed(void)
+	vFloat3 _AP_base::getSpeed(void)
 	{
 		return m_vSpeed;
 	}
 
-	vFloat3 _AP_base::getApAttitude(void)
+	vFloat3 _AP_base::getAttitude(void)
 	{
 		return m_vAtti;
 	}
@@ -304,7 +304,7 @@ namespace kai
 			pC->addMsg("DISARMED", 1);
 
 		pC->addMsg("Mode------------------------------", 1);
-		pC->addMsg("apMode = " + i2str(m_apMode) + ": " + getApModeName(), 1);
+		pC->addMsg("apMode = " + i2str(m_apMode) + ": " + getModeName(), 1);
 
 		pC->addMsg("Attitude--------------------------", 1);
 		pC->addMsg("y=" + f2str(m_vAtti.x) +

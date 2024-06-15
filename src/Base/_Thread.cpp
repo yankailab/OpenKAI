@@ -58,10 +58,13 @@ namespace kai
 		Kiss *pK = (Kiss *)m_pKiss;
 		vector<string> vRunT;
 		pK->a("vRunThread", &vRunT);
+
+		m_vRunThread.clear();
 		for (string s : vRunT)
 		{
 			_Thread *pT = (_Thread *)(pK->findModule(s));
 			NULL_d_F(pT, LOG_E("Instance not found: " + s));
+
 			m_vRunThread.push_back(pT);
 		}
 

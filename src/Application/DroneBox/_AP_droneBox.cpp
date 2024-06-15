@@ -85,7 +85,7 @@ namespace kai
     {
         IF_(check() < 0);
 
-        int apMode = m_pAP->getApMode();
+        int apMode = m_pAP->getMode();
         bool bApArmed = m_pAP->bApArmed();
         float alt = m_pAP->getGlobalPos().w; //relative altitude
 
@@ -119,7 +119,7 @@ namespace kai
             IF_(apMode != AP_COPTER_GUIDED);
 
             if (m_bAutoArm)
-                m_pAP->setApArm(true);
+                m_pAP->setArm(true);
 
             IF_(!bApArmed);
 
@@ -136,7 +136,7 @@ namespace kai
             IF_(m_boxState != "AIRBORNE"); // waiting box to close
 
             if (apMode == AP_COPTER_GUIDED)
-                m_pAP->setApMode(AP_COPTER_AUTO);
+                m_pAP->setMode(AP_COPTER_AUTO);
 
             IF_(apMode != AP_COPTER_AUTO);
 
@@ -152,7 +152,7 @@ namespace kai
             // hold pos until landing ready
             if (apMode == AP_COPTER_AUTO || apMode == AP_COPTER_RTL)
             {
-                m_pAP->setApMode(AP_COPTER_GUIDED);
+                m_pAP->setMode(AP_COPTER_GUIDED);
             }
 
             return;
