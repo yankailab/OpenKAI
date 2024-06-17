@@ -197,6 +197,7 @@
 	}
 	"bLog":0,
 	"_IObase":"serialAP",
+	"mySystemID":200,
 }
 
 {
@@ -219,22 +220,22 @@
 		{
 			"name":"heartbeat",
 			"id":0,
-			"tInt":0.5,
+			"tInt":1,
 		}
 		{
 			"name":"attitude",
 			"id":30,
-			"tInt":0.3,
+			"tInt":0.5,
 		}
 		{
 			"name":"localPosition",
 			"id":32,
-			"tInt":0.3,
+			"tInt":0.5,
 		}
 		{
 			"name":"globalPosition",
 			"id":33,
-			"tInt":0.3,
+			"tInt":0.5,
 		}
 		{
 			"name":"homePosition",
