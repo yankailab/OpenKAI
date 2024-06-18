@@ -22,7 +22,7 @@ namespace kai
 		virtual void console(void *pConsole);
 		virtual int check(void);
 
-		void stop(void);
+		void setHold(void);
 
 		void setHdg(float y = 0,
 					float r = 0,

@@ -66,7 +66,7 @@ namespace kai
 
 		void move(vFloat3 &vM);
 		void rotate(vFloat3 &vR);
-		void stop(void);
+		void hold(void);
 		void grip(bool bOpen);
 
 	private:

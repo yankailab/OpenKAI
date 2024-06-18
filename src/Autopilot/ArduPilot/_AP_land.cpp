@@ -89,7 +89,7 @@ namespace kai
 
 			if (bComplete())
 			{
-				stop();
+				setHold();
 			}
 
 			ON_PAUSE;
@@ -145,7 +145,7 @@ namespace kai
 		// IF_(!m_ieHdgCmd.update(m_pT->getTfrom()));
 		// IF_(abs(m_vSpd.w) < m_vComplete.w);
 
-		stop();
+		setHold();
 		//		setHdg(m_vSpd.w * DEG_2_RAD, 0, true, false);
 		m_pT->sleepT(USEC_1SEC);
 	}

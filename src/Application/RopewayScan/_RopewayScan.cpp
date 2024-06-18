@@ -124,7 +124,7 @@ namespace kai
 				move();
 
 			if (m_fProcess.b(rws_stop, true))
-				stop();
+				hold();
 
 			if (m_fProcess.b(rws_take, true))
 				take();
@@ -151,7 +151,7 @@ namespace kai
 	{
 		IF_(check() < 0);
 
-		stop();
+		hold();
 		// m_pVz->reset();
 		// m_pLivox->resetScan();
 	}

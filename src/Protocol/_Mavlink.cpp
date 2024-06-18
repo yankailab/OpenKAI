@@ -327,15 +327,8 @@ namespace kai
 			"<- mountControl: a=" + i2str(D.pointing_a) + ", b=" + i2str(D.pointing_b) + ", c=" + i2str(D.pointing_c));
 	}
 
-	void _Mavlink::param_set(mavlink_param_set_t &D)
+	void _Mavlink::paramSet(mavlink_param_set_t &D)
 	{
-		// mavlink_param_set_t D;
-		// D.param_type = MAV_PARAM_TYPE_INT8;
-		// D.param_value = 0;
-		// string id = "WP_YAW_BEHAVIOR";
-		// strcpy(D.param_id, id.c_str());
-		// m_pAP->m_pMavlink->param_set(D);
-
 		D.target_system = m_devSystemID;
 		D.target_component = m_devComponentID;
 
@@ -352,6 +345,24 @@ namespace kai
 
 			LOG_I(
 				"<- paramSet: type=" + i2str(D.param_type) + ", value=" + f2str(D.param_value) + ", id=" + string(id));
+		}
+	}
+
+	void _Mavlink::paramValue(mavlink_param_value_t &D)
+	{
+		mavlink_message_t msg;
+		mavlink_msg_param_value_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+		writeMessage(msg);
+
+		if (m_bLog)
+		{
+			char id[17];
+			memcpy(id, D.param_id, 16);
+			id[16] = 0;
+
+			LOG_I(
+				"<- paramValue: type=" + i2str(D.param_type) + ", value=" + f2str(D.param_value) + ", id=" + string(id));
 		}
 	}
 

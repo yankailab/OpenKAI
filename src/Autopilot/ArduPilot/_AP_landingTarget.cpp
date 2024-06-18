@@ -121,7 +121,7 @@ namespace kai
 		{
 			if (m_pAP->getMode() == AP_COPTER_GUIDED)
 			{
-				stop();
+				setHold();
 				m_pAP->setMode(AP_COPTER_RTL);
 			}
 
@@ -139,7 +139,7 @@ namespace kai
 				return;
 			}
 
-			stop();
+			setHold();
 			m_bHdgMoving = false;
 		}
 		else if (m_bHdg)

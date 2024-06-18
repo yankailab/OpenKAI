@@ -42,7 +42,7 @@ namespace kai
 		// main thread
 		void reset(void);
 		void move(void);
-		void stop(void);
+		void hold(void);
 		void take(void);
 		void save(void);
 		void scanUpdate(void);

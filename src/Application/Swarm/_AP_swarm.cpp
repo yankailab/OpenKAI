@@ -153,7 +153,7 @@ namespace kai
 		// Standby
 		if (m_state.bSTANDBY())
 		{
-			stop();
+			setHold();
 			return;
 		}
 
@@ -197,7 +197,7 @@ namespace kai
 				return;
 			}
 
-			stop();
+			setHold();
 
 			return;
 		}

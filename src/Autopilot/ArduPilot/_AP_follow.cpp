@@ -160,7 +160,7 @@ namespace kai
 			}
 			else
 			{
-				stop();
+				setHold();
 				clearPID();
 			}
 

@@ -273,12 +273,12 @@ namespace kai
 		D.param_value = m.m_config.stab_pitch;
 		id = "MNT_STAB_TILT";
 		strcpy(D.param_id, id.c_str());
-		m_pMav->param_set(D);
+		m_pMav->paramSet(D);
 
 		D.param_value = m.m_config.stab_roll;
 		id = "MNT_STAB_ROLL";
 		strcpy(D.param_id, id.c_str());
-		m_pMav->param_set(D);
+		m_pMav->paramSet(D);
 	}
 
 	vFloat3 _AP_base::getSpeed(void)

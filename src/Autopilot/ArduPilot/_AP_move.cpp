@@ -60,7 +60,7 @@ namespace kai
 		}
 	}
 
-	void _AP_move::stop(void)
+	void _AP_move::setHold(void)
 	{
 		IF_(check() < 0);
 

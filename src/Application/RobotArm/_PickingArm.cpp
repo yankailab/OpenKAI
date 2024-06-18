@@ -193,7 +193,7 @@ namespace kai
 		}
 		else
 		{
-			stop();
+			hold();
 		}
 
 		if (bTransit)
@@ -248,7 +248,7 @@ namespace kai
 		else if (m_vP.z < m_vZrange.y)
 		{
 			//stop and gripper closed
-			stop();
+			hold();
 			IF_T(!m_pG->bGrip());
 			m_pG->grip(false);
 			return false;

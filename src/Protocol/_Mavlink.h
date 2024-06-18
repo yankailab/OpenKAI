@@ -261,6 +261,23 @@ namespace kai
 		}
 	};
 
+	class MavParamValue : public MavMsgBase
+	{
+	public:
+		mavlink_param_value_t m_msg;
+
+		MavParamValue()
+		{
+			m_id = MAVLINK_MSG_ID_PARAM_VALUE;
+		}
+
+		void decode(mavlink_message_t *pM)
+		{
+			mavlink_msg_param_value_decode(pM, &m_msg);
+			this->MavMsgBase::decode(pM);
+		}
+	};
+
 	class MavPositionTargetLocalNED : public MavMsgBase
 	{
 	public:
@@ -511,7 +528,8 @@ namespace kai
 		void mountConfigure(mavlink_mount_configure_t &D);
 		void mountControl(mavlink_mount_control_t &D);
 		void mountStatus(mavlink_mount_status_t &D);
-		void param_set(mavlink_param_set_t &D);
+		void paramSet(mavlink_param_set_t &D);
+		void paramValue(mavlink_param_value_t &D);
 		void positionTargetLocalNed(mavlink_position_target_local_ned_t &D);
 		void positionTargetGlobalInt(mavlink_position_target_global_int_t &D);
 		void rcChannelsOverride(mavlink_rc_channels_override_t &D);
@@ -565,6 +583,7 @@ namespace kai
 		MavMissionCurrent m_missionCurrent;
 		MavMountStatus m_mountStatus;
 		MavParamSet m_paramSet;
+		MavParamValue m_paramValue;
 		MavPositionTargetLocalNED m_positionTargetLocalNED;
 		MavPositionTargetGlobalINT m_positionTargetGlobalINT;
 		MavRadioStatus m_radioStatus;
