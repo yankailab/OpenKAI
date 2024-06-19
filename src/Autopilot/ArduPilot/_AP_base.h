@@ -113,8 +113,8 @@ namespace kai
 
 		void setMount(AP_MOUNT &mount);
 
-		vFloat3 getHomePos(void);
-		vFloat4 getGlobalPos(void);
+		vDouble3 getHomePos(void);
+		vDouble4 getGlobalPos(void);
 		float getHdg(void);
 		vFloat3 getSpeed(void);
 		vFloat3 getAttitude(void);
@@ -138,9 +138,9 @@ namespace kai
 		bool m_bApArmed;
 
 		bool m_bHomeSet;
-		vFloat3 m_vHomePos;
-		vFloat4 m_vGlobalPos; //lat, lon, alt, relative_alt in meters
-		vFloat3 m_vLocalPos;
+		vDouble3 m_vHomePos;
+		vDouble4 m_vGlobalPos; //lat, lon, alt, relative_alt in meters
+		vDouble3 m_vLocalPos;
 		vFloat3 m_vSpeed;
 		vFloat3 m_vAtti; //yaw, pitch, roll
 		float m_apHdg;	 //heading in degree

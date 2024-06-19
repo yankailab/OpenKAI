@@ -185,7 +185,7 @@ namespace kai
 		cmd = "mkdir " + m_subDir;
 		system(cmd.c_str());
 
-		vFloat4 vP;
+		vDouble4 vP;
 		vP.clear();
 		vP = m_pAP->getGlobalPos();
 		string lat = lf2str(vP.x, 7);

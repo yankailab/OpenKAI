@@ -218,11 +218,11 @@ namespace kai
 		return m_bApArmed;
 	}
 
-	vFloat3 _AP_base::getHomePos(void)
+	vDouble3 _AP_base::getHomePos(void)
 	{
 		if (!m_bHomeSet)
 		{
-			vFloat3 vH;
+			vDouble3 vH;
 			vH.set(-1.0);
 			return vH;
 		}
@@ -230,7 +230,7 @@ namespace kai
 		return m_vHomePos;
 	}
 
-	vFloat4 _AP_base::getGlobalPos(void)
+	vDouble4 _AP_base::getGlobalPos(void)
 	{
 		return m_vGlobalPos;
 	}

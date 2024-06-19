@@ -40,12 +40,12 @@ namespace kai
 					   bool bYawRate = true,
 					   uint8_t frame = MAV_FRAME_BODY_OFFSET_NED);
 
-		void setPglobal(const vFloat4 &vP,
+		void setPglobal(const vDouble4 &vP,
 						bool bYaw = true,
 						bool bYawRate = false,
 						uint8_t frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT);
 
-		void doReposition(const vFloat4 &vP,	//Lat, Lon, Alt, Yaw
+		void doReposition(const vDouble4 &vP,	//Lat, Lon, Alt, Yaw
 						float speed = -1,
 						float radius = 0,
 						uint8_t frame = MAV_FRAME_GLOBAL);

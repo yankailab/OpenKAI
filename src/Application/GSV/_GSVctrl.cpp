@@ -447,8 +447,8 @@ namespace kai
 	{
 		for (_GeometryBase *pG : m_vpGB)
 		{
-			string *pN = pG->getName();
-			if (*pN == n)
+			string gn = pG->getName();
+			if (gn == n)
 				return pG;
 		}
 

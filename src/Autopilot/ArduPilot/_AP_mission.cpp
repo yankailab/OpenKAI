@@ -88,7 +88,7 @@ namespace kai
 		IF_(check() < 0);
 
 		int apMode = m_pAP->getMode();
-		vFloat4 vP = m_pAP->getGlobalPos();
+		vDouble4 vP = m_pAP->getGlobalPos();
 
 		IF_(!m_pAP->bApArmed());
 		if(!m_bMissionGoing)

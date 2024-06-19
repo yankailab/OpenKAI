@@ -9,8 +9,8 @@ namespace kai
 	struct AP_MISSION
 	{
 		int m_missionID;
-		vFloat4 m_vP;	// lat, lng, alt, hdg
-		vFloat4 m_vPlookAt;
+		vDouble4 m_vP;	// lat, lng, alt, hdg
+		vDouble4 m_vPlookAt;
 		float m_spd;
 		uint64_t m_tDelay;
 

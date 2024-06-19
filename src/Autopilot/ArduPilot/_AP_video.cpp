@@ -173,7 +173,7 @@ namespace kai
 		IF_(!m_pFmeta->bOpen());
 
 		uint64_t tFrame = getTbootMs() - m_tRecStart;
-		vFloat4 vP = m_pAP->getGlobalPos();
+		vDouble4 vP = m_pAP->getGlobalPos();
 		vFloat3 vA = m_pAP->getAttitude();
 
 		object jo;

@@ -65,9 +65,11 @@ namespace kai
 
 	bool _GSVgrid::loadConfig(void)
 	{
-		Kiss *pK = new Kiss();
+		string s;
+		IF_F(!readFile(m_fConfig, &s));
 
-		if (!parseKiss(m_fConfig, pK))
+		Kiss *pK = new Kiss();
+		if(!pK->parse(s))
 		{
 			LOG_I("Config load failed: " + m_fConfig);
 			DEL(pK);
