@@ -23,6 +23,7 @@ namespace kai
 		m_vpMsg.push_back(&m_batteryStatus);
 		m_vpMsg.push_back(&m_commandAck);
 		m_vpMsg.push_back(&m_globalPositionINT);
+		m_vpMsg.push_back(&m_gpsRawINT);
 		m_vpMsg.push_back(&m_heartbeat);
 		m_vpMsg.push_back(&m_highresIMU);
 		m_vpMsg.push_back(&m_homePosition);
@@ -274,6 +275,17 @@ namespace kai
 		writeMessage(msg);
 		LOG_I(
 			"<- GLOBAL_POS_INT lat=" + i2str(D.lat) + ", lon=" + i2str(D.lon) + ", alt=" + i2str(D.alt) + ", relative_alt=" + i2str(D.relative_alt) + ", vx=" + i2str(D.vx) + ", vy=" + i2str(D.vy) + ", vz=" + i2str(D.vz) + ", hdg=" + i2str(D.hdg));
+	}
+
+	void _Mavlink::gpsRawINT(mavlink_gps_raw_int_t &D)
+	{
+		D.time_usec = getApproxTbootUs();
+
+		mavlink_message_t msg;
+		mavlink_msg_gps_raw_int_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+		writeMessage(msg);
+		LOG_I("<- GPS_RAW_INT lat=" + i2str(D.lat) + ", lon=" + i2str(D.lon) + ", alt=" + i2str(D.alt) + ", fix_type=" + i2str(D.fix_type));
 	}
 
 	void _Mavlink::landingTarget(mavlink_landing_target_t &D)

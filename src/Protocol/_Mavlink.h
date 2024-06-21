@@ -129,6 +129,28 @@ namespace kai
 		}
 	};
 
+	class MavGpsRawINT : public MavMsgBase
+	{
+	public:
+		mavlink_gps_raw_int_t m_msg;
+
+		MavGpsRawINT()
+		{
+			m_id = MAVLINK_MSG_ID_GLOBAL_POSITION_INT;
+
+			m_msg.fix_type = GPS_FIX_TYPE_NO_GPS;
+			m_msg.alt = 0;
+			m_msg.lat = 0.0;
+			m_msg.lon = 0.0;
+		}
+
+		void decode(mavlink_message_t *pM)
+		{
+			mavlink_msg_gps_raw_int_decode(pM, &m_msg);
+			this->MavMsgBase::decode(pM);
+		}
+	};
+
 	class MavHeartbeat : public MavMsgBase
 	{
 	public:
@@ -524,6 +546,7 @@ namespace kai
 		void globalVisionPositionEstimate(mavlink_global_vision_position_estimate_t &D);
 		void gpsInput(mavlink_gps_input_t &D);
 		void globalPositionInt(mavlink_global_position_int_t &D);
+		void gpsRawINT(mavlink_gps_raw_int_t &D);
 		void landingTarget(mavlink_landing_target_t &D);
 		void mountConfigure(mavlink_mount_configure_t &D);
 		void mountControl(mavlink_mount_control_t &D);
@@ -576,6 +599,7 @@ namespace kai
 		MavBatteryStatus m_batteryStatus;
 		MavCommandAck m_commandAck;
 		MavGlobalPositionINT m_globalPositionINT;
+		MavGpsRawINT m_gpsRawINT;
 		MavHeartbeat m_heartbeat;
 		MavHighresIMU m_highresIMU;
 		MavHomePosition m_homePosition;

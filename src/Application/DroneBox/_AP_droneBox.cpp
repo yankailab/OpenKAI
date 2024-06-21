@@ -8,6 +8,9 @@ namespace kai
         m_pSC =NULL;
         m_pAP = NULL;
 
+        m_gpsFixToutSec = 100;
+        m_tGPSfixStart = 0;
+
         m_bAutoArm = false;
         m_altTakeoff = 20.0;
         m_altLand = 20.0;
@@ -22,6 +25,7 @@ namespace kai
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
+        pK->v("gpsFixToutSec", &m_gpsFixToutSec);
         pK->v("bAutoArm", &m_bAutoArm);
         pK->v("altTakeoff", &m_altTakeoff);
         pK->v("altLand", &m_altLand);
@@ -117,6 +121,23 @@ namespace kai
         if (state == "TAKEOFF_READY")
         {
             IF_(apMode != AP_COPTER_GUIDED);
+
+            if(m_pAP->getGPSfixType() != GPS_FIX_TYPE_RTK_FIXED)
+            {
+                if(m_tGPSfixStart == 0)
+                {
+                    m_tGPSfixStart = getApproxTbootUs();
+                    return;
+                }
+
+                IF_(getApproxTbootUs() - m_tGPSfixStart < m_gpsFixToutSec * SEC_2_USEC);
+
+                // GPS fix time out, abandon take-off
+                m_pSC->transit("LANDED");
+                return;
+            }
+
+            m_tGPSfixStart = 0;
 
             if (m_bAutoArm)
                 m_pAP->setArm(true);

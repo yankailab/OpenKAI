@@ -228,14 +228,19 @@
 			"tInt":0.5,
 		}
 		{
+			"name":"gpsRawINT",
+			"id":24,
+			"tInt":1,
+		}
+		{
 			"name":"localPosition",
 			"id":32,
-			"tInt":0.5,
+			"tInt":1,
 		}
 		{
 			"name":"globalPosition",
 			"id":33,
-			"tInt":0.5,
+			"tInt":1,
 		}
 		{
 			"name":"homePosition",
