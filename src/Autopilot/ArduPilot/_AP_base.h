@@ -114,6 +114,7 @@ namespace kai
 		void setMount(AP_MOUNT &mount);
 
 		int getGPSfixType(void);
+		int getGPShacc(void);
 		vDouble3 getHomePos(void);
 		vDouble4 getGlobalPos(void);
 		float getHdg(void);
@@ -147,6 +148,7 @@ namespace kai
 		float m_apHdg;	 //heading in degree
 		float m_battery; //remaining percentage
 		int8_t m_gpsFixType;
+		int m_gpsHacc;
 
 		INTERVAL_EVENT m_ieSendHB;
 		INTERVAL_EVENT m_ieSendMsgInt;

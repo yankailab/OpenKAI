@@ -37,8 +37,9 @@ namespace kai
 		_StateControl* m_pSC;
 		_AP_base *m_pAP;
 
-		int m_gpsFixToutSec;
-		uint64_t m_tGPSfixStart;
+		int m_gpsToutSec;
+		int m_gpsHaccMax;
+		uint64_t m_tGPSmeasureStart;
 		
 		bool m_bAutoArm;
 		float m_altTakeoff;

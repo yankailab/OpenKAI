@@ -22,6 +22,7 @@ namespace kai
 		m_apHdg = 0.0;
 		m_battery = 0.0;
 		m_gpsFixType = -1;
+		m_gpsHacc = INT32_MAX;
 	}
 
 	_AP_base::~_AP_base()
@@ -166,10 +167,11 @@ namespace kai
 			m_battery = (float)(m_pMav->m_batteryStatus.m_msg.battery_remaining) * 0.01;
 		}
 
-		// GPS fix
+		// GPS raw
 		if (m_pMav->m_gpsRawINT.bReceiving(tNow))
 		{
 			m_gpsFixType = (int)m_pMav->m_gpsRawINT.m_msg.fix_type;
+			m_gpsHacc = m_pMav->m_gpsRawINT.m_msg.h_acc;
 		}
 
 		// Send Heartbeat
@@ -228,6 +230,11 @@ namespace kai
 	int _AP_base::getGPSfixType(void)
 	{
 		return m_gpsFixType;
+	}
+
+	int _AP_base::getGPShacc(void)
+	{
+		return m_gpsHacc;
 	}
 
 	vDouble3 _AP_base::getHomePos(void)
@@ -326,7 +333,7 @@ namespace kai
 				   1);
 
 		pC->addMsg("Global Pos-----------------------", 1);
-		pC->addMsg("GPS fix type=" + i2str(m_gpsFixType), 1);
+		pC->addMsg("GPS fix type=" + i2str(m_gpsFixType) + ", Hacc=" + i2str(m_gpsHacc), 1);
 		pC->addMsg("lat=" + lf2str(m_vGlobalPos.x, 7) + ", lon=" + lf2str(m_vGlobalPos.y, 7), 1);
 		pC->addMsg("alt=" + lf2str(m_vGlobalPos.z, 2) + ", relAlt=" + lf2str(m_vGlobalPos.w, 2), 1);
 

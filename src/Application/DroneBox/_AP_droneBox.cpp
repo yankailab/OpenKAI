@@ -8,8 +8,9 @@ namespace kai
         m_pSC =NULL;
         m_pAP = NULL;
 
-        m_gpsFixToutSec = 100;
-        m_tGPSfixStart = 0;
+        m_gpsToutSec = 100;
+        m_gpsHaccMax = 1000; //1m uncertainty
+        m_tGPSmeasureStart = 0;
 
         m_bAutoArm = false;
         m_altTakeoff = 20.0;
@@ -25,7 +26,8 @@ namespace kai
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        pK->v("gpsFixToutSec", &m_gpsFixToutSec);
+        pK->v("gpsToutSec", &m_gpsToutSec);
+        pK->v("gpsHaccMax", &m_gpsHaccMax);
         pK->v("bAutoArm", &m_bAutoArm);
         pK->v("altTakeoff", &m_altTakeoff);
         pK->v("altLand", &m_altLand);
@@ -122,22 +124,24 @@ namespace kai
         {
             IF_(apMode != AP_COPTER_GUIDED);
 
-            if(m_pAP->getGPSfixType() != GPS_FIX_TYPE_RTK_FIXED)
+            if(m_pAP->getGPSfixType() != GPS_FIX_TYPE_RTK_FIXED ||
+                m_pAP->getGPShacc() > m_gpsHaccMax
+            )
             {
-                if(m_tGPSfixStart == 0)
+                if(m_tGPSmeasureStart == 0)
                 {
-                    m_tGPSfixStart = getApproxTbootUs();
+                    m_tGPSmeasureStart = getApproxTbootUs();
                     return;
                 }
 
-                IF_(getApproxTbootUs() - m_tGPSfixStart < m_gpsFixToutSec * SEC_2_USEC);
+                IF_(getApproxTbootUs() - m_tGPSmeasureStart < m_gpsToutSec * SEC_2_USEC);
 
                 // GPS fix time out, abandon take-off
                 m_pSC->transit("LANDED");
                 return;
             }
 
-            m_tGPSfixStart = 0;
+            m_tGPSmeasureStart = 0;
 
             if (m_bAutoArm)
                 m_pAP->setArm(true);

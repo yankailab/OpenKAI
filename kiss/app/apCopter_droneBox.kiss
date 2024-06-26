@@ -112,6 +112,8 @@
 	"altTakeoff":22.0,
 	"altLand":20.0,
 	"bAutoArm":0,
+	"gpsToutSec":100,
+	"gpsHaccMax":100,
 }
 
 {

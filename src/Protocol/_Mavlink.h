@@ -136,12 +136,14 @@ namespace kai
 
 		MavGpsRawINT()
 		{
-			m_id = MAVLINK_MSG_ID_GLOBAL_POSITION_INT;
+			m_id = MAVLINK_MSG_ID_GPS_RAW_INT;
 
 			m_msg.fix_type = GPS_FIX_TYPE_NO_GPS;
 			m_msg.alt = 0;
 			m_msg.lat = 0.0;
 			m_msg.lon = 0.0;
+			m_msg.h_acc = UINT32_MAX;
+			m_msg.v_acc = UINT32_MAX;
 		}
 
 		void decode(mavlink_message_t *pM)
