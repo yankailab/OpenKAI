@@ -20,6 +20,7 @@ namespace kai
 
 		// msg register
 		m_vpMsg.push_back(&m_attitude);
+		m_vpMsg.push_back(&m_attitudeQuaternion);
 		m_vpMsg.push_back(&m_batteryStatus);
 		m_vpMsg.push_back(&m_commandAck);
 		m_vpMsg.push_back(&m_globalPositionINT);
@@ -30,6 +31,7 @@ namespace kai
 		m_vpMsg.push_back(&m_localPositionNED);
 		m_vpMsg.push_back(&m_missionCurrent);
 		m_vpMsg.push_back(&m_mountStatus);
+		m_vpMsg.push_back(&m_paramRequestRead);
 		m_vpMsg.push_back(&m_paramSet);
 		m_vpMsg.push_back(&m_positionTargetLocalNED);
 		m_vpMsg.push_back(&m_positionTargetGlobalINT);
@@ -339,6 +341,27 @@ namespace kai
 			"<- mountControl: a=" + i2str(D.pointing_a) + ", b=" + i2str(D.pointing_b) + ", c=" + i2str(D.pointing_c));
 	}
 
+	void _Mavlink::paramRequestRead(mavlink_param_request_read_t &D)
+	{
+		D.target_system = m_devSystemID;
+		D.target_component = m_devComponentID;
+
+		mavlink_message_t msg;
+		mavlink_msg_param_request_read_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+		writeMessage(msg);
+
+		if (m_bLog)
+		{
+			char id[17];
+			memcpy(id, D.param_id, 16);
+			id[16] = 0;
+
+			LOG_I(
+				"<- paramRequestRead: id=" + string(D.param_id) + ", index=" + i2str((int)D.param_index));
+		}
+	}
+
 	void _Mavlink::paramSet(mavlink_param_set_t &D)
 	{
 		D.target_system = m_devSystemID;
@@ -560,6 +583,28 @@ namespace kai
 		LOG_I("<- cmdLongComponentArmDisarm: " + i2str(bArm));
 	}
 
+	void _Mavlink::clDoFlightTermination(bool bTerminate)
+	{
+		mavlink_command_long_t D;
+		D.target_system = m_devSystemID;
+		D.target_component = m_devComponentID;
+		D.command = MAV_CMD_DO_FLIGHTTERMINATION;
+		D.confirmation = 0;
+		D.param1 = (bTerminate) ? 1 : 0;
+		D.param2 = 0;
+		D.param3 = 0;
+		D.param4 = 0;
+		D.param5 = 0;
+		D.param6 = 0;
+		D.param7 = 0;
+
+		mavlink_message_t msg;
+		mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+		writeMessage(msg);
+		LOG_I("<- cmdLongFlightTermination: " + i2str(bTerminate));
+	}
+
 	void _Mavlink::clDoSetMode(int mode)
 	{
 		mavlink_command_long_t D;
@@ -648,6 +693,28 @@ namespace kai
 		writeMessage(msg);
 		LOG_I(
 			"<- cmdLongDoSetRelay: relay=" + i2str((int)iRelay) + " relay=" + i2str((int)bRelay));
+	}
+
+	void _Mavlink::clDoSetHome(bool bUseCurrent, float r, float p, float y, float lat, float lon, float alt)
+	{
+		mavlink_command_long_t D;
+		D.target_system = m_devSystemID;
+		D.target_component = m_devComponentID;
+		D.command = MAV_CMD_DO_SET_HOME;
+		D.confirmation = 0;
+		D.param1 = (bUseCurrent) ? 1 : 0;
+		D.param2 = r;
+		D.param3 = p;
+		D.param4 = y;
+		D.param5 = lat;
+		D.param6 = lon;
+		D.param7 = alt;
+
+		mavlink_message_t msg;
+		mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+		writeMessage(msg);
+		LOG_I("<- cmdLongSetHome");
 	}
 
 	void _Mavlink::clGetHomePosition(void)
@@ -794,7 +861,12 @@ namespace kai
 		return false;
 	}
 
-	void _Mavlink::handleMessages()
+	bool _Mavlink::bConnected(void)
+	{
+		return (m_devSystemID >= 0);
+	}
+
+	void _Mavlink::handleMessages(void)
 	{
 		mavlink_message_t msg;
 

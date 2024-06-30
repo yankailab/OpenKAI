@@ -72,6 +72,35 @@ namespace kai
 		}
 	};
 
+	class MavAttitudeQuaternion : public MavMsgBase
+	{
+	public:
+		mavlink_attitude_quaternion_t m_msg;
+
+		MavAttitudeQuaternion()
+		{
+			m_id = MAVLINK_MSG_ID_ATTITUDE_QUATERNION;
+
+			m_msg.q1 = 0;
+			m_msg.q2 = 0;
+			m_msg.q3 = 0;
+			m_msg.q4 = 0;
+			m_msg.rollspeed = 0;
+			m_msg.pitchspeed = 0;
+			m_msg.yawspeed = 0;
+			m_msg.repr_offset_q[0] = 0;
+			m_msg.repr_offset_q[1] = 0;
+			m_msg.repr_offset_q[2] = 0;
+			m_msg.repr_offset_q[3] = 0;
+		}
+
+		void decode(mavlink_message_t *pM)
+		{
+			mavlink_msg_attitude_quaternion_decode(pM, &m_msg);
+			this->MavMsgBase::decode(pM);
+		}
+	};
+
 	class MavBatteryStatus : public MavMsgBase
 	{
 	public:
@@ -264,6 +293,23 @@ namespace kai
 		void decode(mavlink_message_t *pM)
 		{
 			mavlink_msg_mount_status_decode(pM, &m_msg);
+			this->MavMsgBase::decode(pM);
+		}
+	};
+
+	class MavParamRequestRead : public MavMsgBase
+	{
+	public:
+		mavlink_param_request_read_t m_msg;
+
+		MavParamRequestRead()
+		{
+			m_id = MAVLINK_MSG_ID_PARAM_REQUEST_READ;
+		}
+
+		void decode(mavlink_message_t *pM)
+		{
+			mavlink_msg_param_request_read_decode(pM, &m_msg);
 			this->MavMsgBase::decode(pM);
 		}
 	};
@@ -535,8 +581,10 @@ namespace kai
 		virtual bool start(void);
 		virtual void console(void *pConsole);
 
+		bool bConnected(void);
+
 		//Receive
-		void handleMessages();
+		void handleMessages(void);
 		bool readMessage(mavlink_message_t &message);
 
 		//Send
@@ -553,6 +601,7 @@ namespace kai
 		void mountConfigure(mavlink_mount_configure_t &D);
 		void mountControl(mavlink_mount_control_t &D);
 		void mountStatus(mavlink_mount_status_t &D);
+		void paramRequestRead(mavlink_param_request_read_t &D);
 		void paramSet(mavlink_param_set_t &D);
 		void paramValue(mavlink_param_value_t &D);
 		void positionTargetLocalNed(mavlink_position_target_local_ned_t &D);
@@ -569,9 +618,11 @@ namespace kai
 
 		//Cmd long
 		void clComponentArmDisarm(bool bArm);
+		void clDoFlightTermination(bool bTerminate);
 		void clDoSetMode(int mode);
 		void clDoSetServo(int iServo, int PWM);
 		void clDoSetRelay(int iRelay, bool bRelay);
+		void clDoSetHome(bool bUseCurrent, float r, float p, float y, float lat, float lon, float alt);
 		void clGetHomePosition(void);
 		void clNavSetYawSpeed(float yaw, float speed, float yawMode);
 		void clNavTakeoff(float alt);
@@ -598,6 +649,7 @@ namespace kai
 		vector<MAVLINK_PEER> m_vPeer;
 
 		MavAttitude m_attitude;
+		MavAttitudeQuaternion m_attitudeQuaternion;
 		MavBatteryStatus m_batteryStatus;
 		MavCommandAck m_commandAck;
 		MavGlobalPositionINT m_globalPositionINT;
@@ -608,6 +660,7 @@ namespace kai
 		MavLocalPositionNED m_localPositionNED;
 		MavMissionCurrent m_missionCurrent;
 		MavMountStatus m_mountStatus;
+		MavParamRequestRead m_paramRequestRead;
 		MavParamSet m_paramSet;
 		MavParamValue m_paramValue;
 		MavPositionTargetLocalNED m_positionTargetLocalNED;
