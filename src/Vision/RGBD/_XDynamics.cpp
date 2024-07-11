@@ -302,10 +302,16 @@ namespace kai
         {
             RGBD_POINT_CLOUD* pP = &m_xdHDL.m_out.pstrRGBD[i];
             Vector3d vP(pP->fX, pP->fY, pP->fZ);
+//            IF_CONT(pP->fX == 0);
+//            vP = {i, 0, 0};
             m_pPC->points_.push_back(vP * 0.001);
 
             Vector3d vC(pP->r, pP->g, pP->b);
+//            vC = {255,255,255};
             m_pPC->colors_.push_back(vC * (1.0/255.0));
+
+            LOG_I("P: " + f2str(pP->fX) + ", " + f2str(pP->fY) + ", " + f2str(pP->fZ)  + "; " + i2str(pP->r)  + ", " + i2str(pP->g)  + ", " + i2str(pP->b) );
+
         }
 
         m_pPCframe->swapBuffer();

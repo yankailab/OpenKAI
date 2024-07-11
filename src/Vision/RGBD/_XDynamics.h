@@ -104,8 +104,7 @@ namespace kai
 
 			if (event == XDYN_CB_EVENT_DEVICE_DISCONNECT)
 			{
-				LOG(INFO) << *pXD->getName() << ": "
-						  << "Device disconnected";
+				LOG(INFO) << pXD->getName() << ": " << "Device disconnected";
 				pXD->close();
 			}
 		}

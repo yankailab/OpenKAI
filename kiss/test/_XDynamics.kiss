@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["XD400","XD500","XD1000"],
+	"vBASE":["XD"],
 }
 
 {
@@ -26,103 +26,19 @@
 		"FPS":30,
 	}
 	"bFullScreen":0,
-	"vBASE":["XD400","XD500","XD1000","d2g"],
+	"vBASE":["XD","d2g"],
 }
-
 
 {
 	"name":"XD",  /*XD-400*/
 	"class":"_XDynamics",
     {
 		"name":"thread",
-		"FPS":1,
+		"FPS":10,
 	}
 	"bON":0,
 	"bLog":1,
-	"URI":"192.168.31.3",
-	"xdType":2048,
-	"binning":3,
-	"mirrorMode":0,
-	"vRangeD":[0,3],
-	"devFPS":10,
-	"devFPSd":10,
-	"vSizeRGB":[320,240],
-	"vSizeD":[320,240],
-	"bRGB":1,
-	"bDepth":1,
-	"bConfidence":0,
-	"btRGB":0,
-	"btDepth":0,
-	"bIR":0,
-	"/_SHMrgb":"SHMxdRGB",
-}
-
-{
-	"name":"XD",  /*XD-500*/
-	"class":"_XDynamics",
-    {
-		"name":"thread",
-		"FPS":1,
-	}
-	"bON":0,
-	"bLog":1,
-	"URI":"192.168.31.3",
-	"xdType":0,
-	"binning":3,
-	"mirrorMode":0,
-	"vRangeD":[0,6],
-	"devFPS":10,
-	"devFPSd":10,
-	"vSizeRGB":[320,240],
-	"vSizeD":[320,240],
-	"bRGB":1,
-	"bDepth":1,
-	"bConfidence":0,
-	"btRGB":0,
-	"btDepth":0,
-	"bIR":0,
-	"/_SHMrgb":"SHMxdRGB",
-}
-
-{
-	"name":"XD", /*XD-1000*/
-	"class":"_XDynamics",
-    {
-		"name":"thread",
-		"FPS":1,
-	}
-	"bON":1,
-	"bLog":0,
-	"URI":"192.168.31.3",
-	"xdType":1027,
-	"binning":3,
-	"mirrorMode":0,
-	"vRangeD":[0,10],
-	"devFPS":10,
-	"devFPSd":10,
-	"vSizeRGB":[320,240],
-	"vSizeD":[320,240],
-	"bRGB":0,
-	"bDepth":1,
-	"bConfidence":0,
-	"btRGB":0,
-	"btDepth":0,
-	"bIR":0,
-	"/_SHMrgb":"SHMxdRGB",
-}
-
-
-
-{
-	"name":"XD",  /*XD-400*/
-	"class":"_XDynamics",
-    {
-		"name":"thread",
-		"FPS":1,
-	}
-	"bON":1,
-	"bLog":0,
-	"URI":"192.168.31.3",
+	"devURI":"192.168.31.3",
 	"xdDevType":2,
 	"xdProductType":2048,
 	"binning":3,
@@ -202,9 +118,39 @@
 }
 
 {
+	"name":"XD",  /*XD-1100*/
+	"class":"_XDynamics",
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"bON":1,
+	"bLog":1,
+	"devURI":"192.168.31.8",
+	"xdDevType":2,
+	"xdProductType":1124,
+	"binning":3,
+	"mirrorMode":0,
+	"algMode":1,
+	"vRangeD":[0,5],
+	"devFPS":5,
+	"devFPSd":5,
+	"vSizeRGB":[320,240],
+	"vSizeD":[320,240],
+	"bRGB":1,
+	"bDepth":1,
+	"bConfidence":1,
+	"btRGB":0,
+	"btDepth":0,
+	"bIR":0,
+	"bPointCloud":1,
+	"_PCframe":"pcRGBD",
+}
+
+{
 	"name":"d2g",
 	"class":"_Depth2Gray",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -239,9 +185,6 @@
 	"vWinSize":[1920,1080],
 	"pathRes":"/usr/local/bin/Open3D/resources",
 	"device":"CPU:0",
-	"nPresv":76800,
-	"nPresvNext":0,
-	"vGeometryBase":["pcRGBD"],
 	"vCamLookAt":[0,0,0],
 	"vCamEye":[0,0,2],
 	"vCamUp":[0,1,0],
@@ -257,9 +200,21 @@
 	"vBtnPadding":[1.6, 2.0],
 	"mouseMode":0,
 	"vDmove":[0.5, 5.0],
-	"rDummyDome":1000.0,
 	"dHiddenRemove":100.0,
 	"dirSave":"/home/kai/Documents/",
 	"/dirSave":"/media/lab/",
 	"rVoxel":0.05,
+
+	{
+		"name":"geometry",
+		{
+			"_GeometryBase":"pcRGBD",
+			"bStatic":0,
+			"nP":80000,
+			"rDummyDome":1000.0,
+			"matName":"defaultUnlit",
+			"/matName":"depth",
+			"matPointSize":1,
+		}
+	}
 }
