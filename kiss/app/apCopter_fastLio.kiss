@@ -18,9 +18,9 @@
 }
 
 {
-	"name":"/serial",
+	"name":"serialAP",
 	"class":"_SerialPort",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -38,9 +38,9 @@
 }
 
 {
-	"name":"serial",
+	"name":"udpAP",
 	"class":"_UDP",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":100,
@@ -63,7 +63,8 @@
 		"FPS":100,
 	}
 	"bLog":0,
-	"_IObase":"serial",
+	"_IObase":"serialAP",
+	"/_IObase":"udpAP",
 
 	"/noRouteCmd":[],
 	{
@@ -76,7 +77,7 @@
 }
 
 {
-	"name":"udp",
+	"name":"udpMav",
 	"class":"_UDP",
 	"bON":1,
     {
@@ -100,7 +101,7 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"_IObase":"udp",
+	"_IObase":"udpMav",
 
 	"/noRouteCmd":[],
 	{
@@ -131,13 +132,12 @@
 		{
 			"name":"heartbeat",
 			"id":0,
-			"tInt":0.4,
+			"tInt":1,
 		}
 		{
 			"name":"attitude",
 			"id":30,
-			"/tInt":0.3,
-			"tInt":0.02,
+			"tInt":0.5,
 		}
 		{
 			"name":"rcChannels",
@@ -147,12 +147,12 @@
 		{
 			"name":"localPosition",
 			"id":32,
-			"tInt":0.3,
+			"tInt":0.5,
 		}
 		{
 			"name":"globalPosition",
 			"id":33,
-			"tInt":0.3,
+			"tInt":0.5,
 		}
 		{
 			"name":"homePosition",

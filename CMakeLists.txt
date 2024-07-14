@@ -660,17 +660,6 @@ set(
 )
 endif()
 
-if(USE_ROS)
-  find_package(ament_cmake REQUIRED)
-  find_package(rclcpp REQUIRED)
-  find_package(std_msgs REQUIRED)
-  find_package(sensor_msgs REQUIRED)
-  find_package(nav_msgs REQUIRED)
-
-  ament_target_dependencies(OpenKAI rclcpp std_msgs sensor_msgs nav_msgs)
-  ament_package()
-endif()
-
 # Definitions
 add_definitions(${OpenKAI_definitions})
 
@@ -710,3 +699,15 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/
     FILES_MATCHING
     PATTERN "*.h"
 )
+
+# ROS2 configs
+if(USE_ROS)
+  find_package(ament_cmake REQUIRED)
+  find_package(rclcpp REQUIRED)
+  find_package(std_msgs REQUIRED)
+  find_package(sensor_msgs REQUIRED)
+  find_package(nav_msgs REQUIRED)
+
+  ament_target_dependencies(OpenKAI rclcpp std_msgs sensor_msgs nav_msgs)
+  ament_package()
+endif()
