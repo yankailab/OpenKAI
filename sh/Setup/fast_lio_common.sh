@@ -26,7 +26,10 @@ nano livox_ros_driver2/package_ROS2.xml
 # delete rosbag2
 ./livox_ros_driver2/build.sh humble
 
-git clone --depth 1 https://github.com/Ericsii/FAST_LIO_ROS2.git --recursive
+
+# FastLio ROS2
+git clone --depth 1 -b ROS2 https://github.com/hku-mars/FAST_LIO.git  --recursive
+#git clone --depth 1 https://github.com/Ericsii/FAST_LIO_ROS2.git --recursive
 nano FAST_LIO_ROS2/CMakeLists.txt
 # modify all c++14 to c++17
 
@@ -35,6 +38,9 @@ rosdep install --from-paths src --ignore-src -y
 
 export MAKEFLAGS="-j2"
 colcon build --symlink-install --parallel-workers 1 --cmake-clean-cache --cmake-args -DCMAKE_BUILD_TYPE=Release -DROS_EDITION=ROS2 -DHUMBLE_ROS=humble --event-handlers console_cohesion+
+
+
+# config and run
 
 sudo chmod a+x install/setup.bash
 ./install/setup.bash

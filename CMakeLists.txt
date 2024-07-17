@@ -686,7 +686,19 @@ endif() # build_as_lib
 include_directories(${OpenKAI_include})
 target_link_libraries(OpenKAI ${OpenKAI_lib})
 
+# ROS2 configs
+if(USE_ROS)
+  find_package(ament_cmake REQUIRED)
+  find_package(rclcpp REQUIRED)
+  find_package(std_msgs REQUIRED)
+  find_package(sensor_msgs REQUIRED)
+  find_package(nav_msgs REQUIRED)
 
+  ament_target_dependencies(OpenKAI rclcpp std_msgs sensor_msgs nav_msgs)
+  ament_package()
+endif()
+
+# install
 include(GNUInstallDirs)
 set_target_properties(OpenKAI PROPERTIES
     VERSION ${PROJECT_VERSION})
@@ -700,14 +712,3 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/
     PATTERN "*.h"
 )
 
-# ROS2 configs
-if(USE_ROS)
-  find_package(ament_cmake REQUIRED)
-  find_package(rclcpp REQUIRED)
-  find_package(std_msgs REQUIRED)
-  find_package(sensor_msgs REQUIRED)
-  find_package(nav_msgs REQUIRED)
-
-  ament_target_dependencies(OpenKAI rclcpp std_msgs sensor_msgs nav_msgs)
-  ament_package()
-endif()

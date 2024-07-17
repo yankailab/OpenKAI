@@ -65,6 +65,7 @@
 	"bLog":0,
 	"_IObase":"serialAP",
 	"/_IObase":"udpAP",
+	"mySystemID":200,
 
 	"/noRouteCmd":[],
 	{

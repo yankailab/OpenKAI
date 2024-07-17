@@ -81,8 +81,9 @@ sudo aptitude install qtbase5-dev
 # For Raspberry Pi
 #sudo apt-get install screen
 export MAKEFLAGS="-j2"
+# add --cmake-args -DCMAKE_BUILD_TYPE=Release for Release build
 #screen colcon build --symlink-install --parallel-workers 1 --packages-ignore qt_gui_app rviz_rendering rviz_rendering_tests qt_gui_cpp rqt_gui_cpp turtlesim rviz_common rviz_visual_testing_framework rviz_default_plugins rviz2 rosbag2_transport
-screen colcon build --symlink-install --parallel-workers 1 --packages-ignore-regex '.*qt' '.*rviz' '.*rqt' '.*turtlesim' '.*example' '.*demo' '.*test' '.*rosbag'
+screen colcon build --cmake-clean-cache --symlink-install --parallel-workers 1 --packages-ignore-regex '.*qt' '.*rviz' '.*rqt' '.*turtlesim' '.*example' '.*demo' '.*test' '.*rosbag' --cmake-args -DCMAKE_BUILD_TYPE=Release
 #Ctrl+A Ctrl+D
 #screen -ls
 #screen -r xxxx
