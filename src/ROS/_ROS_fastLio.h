@@ -48,7 +48,6 @@ namespace kai
 	protected:
 		_Thread *m_pTros;
 
-
 		shared_ptr<ROS_fastLio> m_pROSnode;
 
 #ifdef WITH_3D

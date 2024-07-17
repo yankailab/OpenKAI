@@ -42,11 +42,11 @@
 	}
     {
 		"name":"node",
-		"topicPC2":"Laser_map",
+		"/topicPC2":"Laser_map",
 		"topicOdom":"Odometry",
-		"topicPath":"path",
+		"/topicPath":"path",
 	}
-	"_PCframe":"pcFrame",
+	"/_PCframe":"pcFrame",
 }
 
 {
@@ -76,14 +76,12 @@
 	"vWinSize":[1920,1080],
 	"pathRes":"/usr/local/bin/Open3D/resources",
 	"device":"CPU:0",
-	"nPbuf":1000000,
-	"vGeometryBase":["pcFrame"],
 	"vCamLookAt":[0,0,0],
-	"vCamEye":[0,0,2],
-	"vCamUp":[0,1,0],
+	"vCamEye":[0,2,0],
+	"vCamUp":[0,0,1],
 	"vCamAutoLookAt":[0,0,0],
-	"vCamAutoEye":[0,0,2],
-	"vCamAutoUp":[0,1,0],
+	"vCamAutoEye":[0,2,0],
+	"vCamAutoUp":[0,0,1],
 	"vCoR":[0,0,0],
 	"camFov":75,
 	"vCamNF":[0, 500],
@@ -93,10 +91,20 @@
 	"vBtnPadding":[1.6, 2.0],
 	"mouseMode":0,
 	"vDmove":[0.5, 5.0],
-	"rDummyDome":1000.0,
 	"dHiddenRemove":100.0,
 	"dirSave":"/home/kai/Documents/",
 	"/dirSave":"/media/lab/",
 	"rVoxel":0.05,
-}
 
+	{
+		"name":"geometry",
+		{
+			"_GeometryBase":"pcFrame",
+			"bStatic":0,
+			"nP":1000000,
+			"rDummyDome":1000.0,
+			"matName":"defaultUnlit",
+			"matPointSize":1,
+		}
+	}
+}

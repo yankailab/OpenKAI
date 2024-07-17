@@ -30,9 +30,13 @@ namespace kai
     {
         if (!m_topicPC2.empty())
         {
+            rclcpp::QoS qos(40);
+            // qos.best_effort();
+            // qos.durability_volatile();
+
             m_pScPC2 = this->create_subscription<sensor_msgs::msg::PointCloud2>(
                 m_topicPC2,
-                40,
+                qos,
                 std::bind(&ROS_fastLio::cbPointCloud2, this, _1));
         }
 
@@ -55,7 +59,7 @@ namespace kai
 
     void ROS_fastLio::cbPointCloud2(const sensor_msgs::msg::PointCloud2::UniquePtr pMsg)
     {
-        //        LOG_("received PointCloud2 ");
+//        LOG_("received PointCloud2 ");
 
 #ifdef WITH_3D
         NULL_(m_pPCframe);

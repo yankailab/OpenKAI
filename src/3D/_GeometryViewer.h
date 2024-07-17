@@ -203,7 +203,7 @@ namespace kai
 
 	protected:
 		// update thread
-		virtual void addAllGeometries(void);
+		virtual bool addAllGeometries(void);
 		virtual void updateAllGeometries(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)

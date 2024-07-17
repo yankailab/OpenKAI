@@ -108,6 +108,8 @@ namespace kai
 
 		Kiss *pKiss = (Kiss *)m_pKiss;
 		Kiss *pKm = pKiss->find(mName);
+
+		NULL_Fl(pKm, "Module not found in Kiss: " + mName);
 		IF_Fl(pKm->empty(), "Module not found in Kiss: " + mName);
 		IF_Fl(pKm->getModule(), "Module already existed in Kiss: " + mName);
 

@@ -5,6 +5,7 @@ ffmpeg -i IMG_5087.MOV -vf "fps=2" %06d.jpg
 
 # COLMAP
 # https://colmap.github.io/install.html
+# For CUDA verified with CUDA 12.3 with gcc 11 under Ubuntu 22.04
 
 sudo apt-get install \
     ninja-build \
@@ -38,6 +39,7 @@ sudo ninja install
 https://pytorch.org/cppdocs/installing.html
 
 # Download and extract to somewhere
+# Using CUDA 12.3 with LibTorch (CUDA 12.1)
 https://pytorch.org/get-started/locally/#linux-installation
 
 # put the absolute path to CMAKE_PREFIX_PATH

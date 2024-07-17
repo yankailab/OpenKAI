@@ -143,7 +143,9 @@ namespace kai
 		// wait for the UI thread to get window ready
 		m_pT->sleepT(USEC_1SEC);
 
-		addAllGeometries();
+		while(!addAllGeometries())
+			sleep(1);
+
 		resetCamPose();
 		updateCamPose();
 
@@ -157,8 +159,11 @@ namespace kai
 		}
 	}
 
-	void _GeometryViewer::addAllGeometries(void)
+	bool _GeometryViewer::addAllGeometries(void)
 	{
+		IF_F(check() < 0);
+		IF_F(!m_pWin);
+
 		for (int i = 0; i < m_vGO.size(); i++)
 		{
 			GVIEWER_OBJ *pG = &m_vGO[i];
@@ -186,6 +191,9 @@ namespace kai
 
 	void _GeometryViewer::updateAllGeometries(void)
 	{
+		IF_(check() < 0);
+		IF_(!m_pWin);
+
 		for (int i = 0; i < m_vGO.size(); i++)
 		{
 			GVIEWER_OBJ *pG = &m_vGO[i];
