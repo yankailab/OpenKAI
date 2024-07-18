@@ -7,7 +7,6 @@
 
 namespace kai
 {
-
 	inline bool readFile(const string &fName, string *pStr, string delim = "")
 	{
 		NULL_F(pStr);
@@ -30,5 +29,20 @@ namespace kai
 		return true;
 	}
 
+	inline bool writeFile(const string &fName, const string &str)
+	{
+		fstream f;
+		f.open(fName.c_str(), ios::out);
+		IF_F(!f.is_open());
+
+		f.seekg(0, ios_base::beg);
+
+		IF_F(!f.write(str.c_str(), str.length()));
+
+		f.flush();
+		f.close();
+
+		return true;
+	}
 }
 #endif
