@@ -154,12 +154,14 @@ namespace kai
 #ifdef USE_OPENCV
 		ADD_MODULE(_AP_avoid);
 		ADD_MODULE(_AP_depthVision);
-		ADD_MODULE(_AP_follow);
-		ADD_MODULE(_AP_land);
-		ADD_MODULE(_AP_landingTarget);
 		ADD_MODULE(_AP_video);
 		ADD_MODULE(_AP_videoStream);
 		ADD_MODULE(_APcopter_photo);
+#ifdef USE_OPENCV_CONTRIB
+		ADD_MODULE(_AP_follow);
+		ADD_MODULE(_AP_land);
+		ADD_MODULE(_AP_landingTarget);
+#endif // opencv_contrib
 #endif // opencv
 #ifdef WITH_NAVIGATION
 		ADD_MODULE(_AP_visionEstimate);

@@ -8,7 +8,7 @@ namespace kai
         m_pTr = NULL;
         m_pIO = NULL;
 
-        m_msgFinishSend = "EOJ";
+        m_msgFinishSend = "";
         m_msgFinishRecv = "EOJ";
     }
 

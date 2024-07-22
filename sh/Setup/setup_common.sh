@@ -277,6 +277,7 @@ git clone --depth 1 https://github.com/yankailab/OpenKAI_exm.git
 # OpenKAI
 sudo apt-get install libunwind-dev
 sudo apt-get install libgoogle-glog-dev
+sudo apt-get install libevent-dev
 git clone --depth 1 https://github.com/yankailab/OpenKAI.git
 cd OpenKAI
 mkdir build

@@ -142,12 +142,14 @@
 #ifdef USE_OPENCV
 #include "../Autopilot/ArduPilot/_AP_avoid.h"
 #include "../Autopilot/ArduPilot/_AP_depthVision.h"
-#include "../Autopilot/ArduPilot/_AP_follow.h"
-#include "../Autopilot/ArduPilot/_AP_land.h"
-#include "../Autopilot/ArduPilot/_AP_landingTarget.h"
 #include "../Autopilot/ArduPilot/_AP_video.h"
 #include "../Autopilot/ArduPilot/_AP_videoStream.h"
 #include "../Autopilot/ArduPilot/_APcopter_photo.h"
+#ifdef USE_OPENCV_CONTRIB
+#include "../Autopilot/ArduPilot/_AP_follow.h"
+#include "../Autopilot/ArduPilot/_AP_land.h"
+#include "../Autopilot/ArduPilot/_AP_landingTarget.h"
+#endif // opencv_contrib
 #endif // opencv
 #ifdef WITH_NAVIGATION
 #include "../Autopilot/ArduPilot/_AP_visionEstimate.h"
