@@ -83,7 +83,7 @@ namespace kai
 
 	void _GDimgUploader::updateUpload(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		Mat m;
 		m_pV->getFrameRGB()->m()->copyTo(m);

@@ -90,7 +90,7 @@ namespace kai
 
 	void _ADIO_EBYTE::updateW(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		for (int i = 0; i < m_vPort.size(); i++)
 		{
@@ -110,7 +110,7 @@ namespace kai
 
 	void _ADIO_EBYTE::updateR(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		for (int i = 0; i < m_vPort.size(); i++)
 		{

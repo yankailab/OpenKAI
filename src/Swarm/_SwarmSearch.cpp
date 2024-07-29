@@ -80,7 +80,7 @@ namespace kai
 
     void _SwarmSearch::updateNodes(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
     }
 
 	bool _SwarmSearch::genGridCells(void)
@@ -99,7 +99,7 @@ namespace kai
 
     void _SwarmSearch::optimizeRoute(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
     }
 
 	void _SwarmSearch::handleMsgGCupdate(const SWMSG_GC_UPDATE& m)
@@ -126,7 +126,7 @@ namespace kai
 	void _SwarmSearch::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		this->_SwarmBase::console(pConsole);
 
 		// string msg = "id=" + i2str(pO->getTopClass());

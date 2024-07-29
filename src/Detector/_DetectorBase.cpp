@@ -9,8 +9,8 @@ namespace kai
 
 	_DetectorBase::_DetectorBase()
 	{
-		m_pV = NULL;
-		m_pU = NULL;
+		m_pV = nullptr;
+		m_pU = nullptr;
 
 		m_fModel = "";
 		m_fWeight = "";
@@ -22,9 +22,9 @@ namespace kai
 	{
 	}
 
-	bool _DetectorBase::init(void *pKiss)
+	int _DetectorBase::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		// model
@@ -52,23 +52,23 @@ namespace kai
 			pK->a("vClass", &m_vClass);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _DetectorBase::link(void)
+	int _DetectorBase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n = "";
-		F_INFO(pK->v("_VisionBase", &n));
+		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->findModule(n));
 
 		n = "";
 		pK->v("_Universe", &n);
 		m_pU = (_Universe *)(pK->findModule(n));
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _DetectorBase::loadModel(void)

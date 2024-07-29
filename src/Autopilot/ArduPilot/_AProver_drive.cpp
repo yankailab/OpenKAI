@@ -5,28 +5,27 @@ namespace kai
 
 	_AProver_drive::_AProver_drive()
 	{
-		m_pAP = NULL;
-		m_pD = NULL;
+		m_pAP = nullptr;
+		m_pD = nullptr;
 
 		m_yawMode = 1.0;
 		m_bSetYawSpeed = false;
 		m_bRcChanOverride = false;
 		m_pwmM = 1500;
 		m_pwmD = 500;
-		m_pRcYaw = NULL;
-		m_pRcThrottle = NULL;
+		m_pRcYaw = nullptr;
+		m_pRcThrottle = nullptr;
 	}
 
 	_AProver_drive::~_AProver_drive()
 	{
 	}
 
-	bool _AProver_drive::init(void *pKiss)
+	int _AProver_drive::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
     	
-
 		pK->v("bSetYawSpeed", &m_bSetYawSpeed);
 		pK->v("yawMode", &m_yawMode);
 		pK->v("bRcChanOverride", &m_bRcChanOverride);
@@ -73,27 +72,27 @@ namespace kai
 		n = "";
 		pK->v("_AP_base", &n);
 		m_pAP = (_AP_base *)(pK->findModule(n));
-		IF_Fl(!m_pAP, n + ": not found");
+		NULL__(m_pAP, OK_ERR_NOT_FOUND);
 
 		n = "";
 		pK->v("_Drive", &n);
 		m_pD = (_Drive *)(pK->findModule(n));
-		IF_Fl(!m_pD, n + ": not found");
+		NULL__(m_pD, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AProver_drive::start(void)
+	int _AProver_drive::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _AProver_drive::check(void)
 	{
-		NULL__(m_pAP, -1);
-		NULL__(m_pAP->m_pMav, -1);
-		NULL__(m_pD, -1);
+		NULL__(m_pAP, OK_ERR_NULLPTR);
+		NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
+		NULL__(m_pD, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}

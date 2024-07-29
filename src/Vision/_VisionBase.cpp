@@ -105,7 +105,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		IF_(m_fRGB.bEmpty());
 
 		Frame *pF = (Frame *)pFrame;

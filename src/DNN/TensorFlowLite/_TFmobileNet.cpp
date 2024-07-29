@@ -78,7 +78,7 @@ namespace kai
 
 	void _TFmobileNet::detect(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		m_fRGB.copy(*m_pV->getFrameRGB());
 		Mat m;

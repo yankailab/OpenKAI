@@ -5,9 +5,9 @@ namespace kai
 
 	_AP_actuator::_AP_actuator()
 	{
-		m_pAP = NULL;
-		m_pAB1 = NULL;
-		m_pAB2 = NULL;
+		m_pAP = nullptr;
+		m_pAB1 = nullptr;
+		m_pAB2 = nullptr;
 
 		m_rcMode.update();
 		m_rcStickV.update();
@@ -18,11 +18,10 @@ namespace kai
 	{
 	}
 
-	bool _AP_actuator::init(void *pKiss)
+	int _AP_actuator::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
 
 		pK->v("iRCmodeChan", &m_rcMode.m_iChan);
 		pK->a("vRCmodeDiv", &m_rcMode.m_vDiv);
@@ -40,31 +39,31 @@ namespace kai
 
 		pK->v("_AP_base", &n);
 		m_pAP = (_AP_base *)(pK->findModule(n));
-		IF_Fl(!m_pAP, n + ": not found");
+		NULL__(m_pAP, OK_ERR_NOT_FOUND);
 
 		pK->v("_ActuatorBase1", &n);
 		m_pAB1 = (_ActuatorBase *)(pK->findModule(n));
-		IF_Fl(!m_pAB1, n + ": not found");
+		NULL__(m_pAB1, OK_ERR_NOT_FOUND);
 
 		pK->v("_ActuatorBase2", &n);
 		m_pAB2 = (_ActuatorBase *)(pK->findModule(n));
-		IF_Fl(!m_pAB2, n + ": not found");
+		NULL__(m_pAB2, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_actuator::start(void)
+	int _AP_actuator::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _AP_actuator::check(void)
 	{
-		NULL__(m_pAP, -1);
-		NULL__(m_pAP->m_pMav, -1);
-		NULL__(m_pAB1, -1);
-		NULL__(m_pAB2, -1);
+		NULL__(m_pAP, OK_ERR_NULLPTR);
+		NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
+		NULL__(m_pAB1, OK_ERR_NULLPTR);
+		NULL__(m_pAB2, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}
@@ -83,7 +82,7 @@ namespace kai
 
 	void _AP_actuator::updateActuator(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		uint16_t pwm;
 
@@ -129,7 +128,7 @@ namespace kai
 	void _AP_actuator::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;

@@ -23,9 +23,9 @@ namespace kai
 	{
 	}
 
-	bool _DNNclassifier::init(void *pKiss)
+	int _DNNclassifier::init(void *pKiss)
 	{
-		IF_F(!this->_DetectorBase::init(pKiss));
+		CHECK_(this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("nW", &m_nW);
@@ -67,28 +67,28 @@ namespace kai
 		}
 
 		m_net = readNet(m_fWeight, m_fModel);
-		IF_Fl(m_net.empty(), "read Net failed");
+		IF__(m_net.empty(), OK_ERR_INVALID_VALUE);
 
 		m_net.setPreferableBackend(m_iBackend);
 		m_net.setPreferableTarget(m_iTarget);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _DNNclassifier::start(void)
+	int _DNNclassifier::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _DNNclassifier::check(void)
 	{
-		NULL__(m_pU, -1);
-		NULL__(m_pV, -1);
+		NULL__(m_pU, OK_ERR_NULLPTR);
+		NULL__(m_pV, OK_ERR_NULLPTR);
 		Frame *pBGR = m_pV->getFrameRGB();
-		NULL__(pBGR, -1);
-		IF__(pBGR->bEmpty(), -1);
-		IF__(pBGR->tStamp() <= m_fRGB.tStamp(), -1);
+		NULL__(pBGR, OK_ERR_NULLPTR);
+		IF__(pBGR->bEmpty(), OK_ERR_NULLPTR);
+		IF__(pBGR->tStamp() <= m_fRGB.tStamp(), OK_ERR_NULLPTR);
 
 		return this->_DetectorBase::check();
 	}
@@ -108,7 +108,7 @@ namespace kai
 
 	void _DNNclassifier::classify(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		Frame *pBGR = m_pV->getFrameRGB();
 		m_fRGB.copy(*pBGR);
@@ -171,7 +171,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_DetectorBase::draw(pFrame);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		Frame *pF = (Frame *)pFrame;
 		Mat *pM = pF->m();

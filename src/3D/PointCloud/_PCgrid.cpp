@@ -241,7 +241,7 @@ namespace kai
 
 	void _PCgrid::updatePCgrid(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		clearAllCells();
 
@@ -256,7 +256,7 @@ namespace kai
 
 	void _PCgrid::addPCstream(void *p, const uint64_t &tExpire)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		NULL_(p);
 		_PCstream *pS = (_PCstream *)p;
 
@@ -280,7 +280,7 @@ namespace kai
 
 	void _PCgrid::addPCframe(void *p)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		NULL_(p);
 		_PCframe *pF = (_PCframe *)p;
 

@@ -73,7 +73,7 @@ namespace kai
 
 	void _PCcrop::updateFilter(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		// PointCloud* pOut = m_sPC.next();
 		// PointCloud pcIn;

@@ -104,7 +104,7 @@ namespace kai
 
 	void _SBus::send(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		//		m_pIO->write(m_pB, 16);
 	}

@@ -5,8 +5,8 @@ namespace kai
 
 	_AP_follow::_AP_follow()
 	{
-		m_pU = NULL;
-		m_pTracker = NULL;
+		m_pU = nullptr;
+		m_pTracker = nullptr;
 		m_iClass = -1;
 		m_bTarget = false;
 		m_vTargetBB.clear();
@@ -19,10 +19,10 @@ namespace kai
 		m_vPsp.x = 0.5;
 		m_vPsp.y = 0.5;
 
-		m_pPitch = NULL;
-		m_pRoll = NULL;
-		m_pAlt = NULL;
-		m_pYaw = NULL;
+		m_pPitch = nullptr;
+		m_pRoll = nullptr;
+		m_pAlt = nullptr;
+		m_pYaw = nullptr;
 
 		m_apMount.init();
 	}
@@ -31,11 +31,10 @@ namespace kai
 	{
 	}
 
-	bool _AP_follow::init(void *pKiss)
+	int _AP_follow::init(void *pKiss)
 	{
-		IF_F(!this->_AP_move::init(pKiss));
+		CHECK_(this->_AP_move::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
 
 		pK->v("vPsp", &m_vPsp);
 
@@ -46,10 +45,10 @@ namespace kai
 		pK->v("nWpred", &nWpred);
 		pK->v("dThold", &dThold);
 
-		IF_F(!m_fX.init(nWmed, nWpred, dThold));
-		IF_F(!m_fY.init(nWmed, nWpred, dThold));
-		IF_F(!m_fZ.init(nWmed, nWpred, dThold));
-		IF_F(!m_fH.init(nWmed, nWpred, dThold));
+		IF__(!m_fX.init(nWmed, nWpred, dThold), OK_ERR_INVALID_VALUE);
+		IF__(!m_fY.init(nWmed, nWpred, dThold), OK_ERR_INVALID_VALUE);
+		IF__(!m_fZ.init(nWmed, nWpred, dThold), OK_ERR_INVALID_VALUE);
+		IF__(!m_fH.init(nWmed, nWpred, dThold), OK_ERR_INVALID_VALUE);
 
 		pK->v("iClass", &m_iClass);
 
@@ -74,10 +73,10 @@ namespace kai
 			pG->v("mountMode", &m_apMount.m_config.mount_mode);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_follow::link(void)
+	int _AP_follow::link(void)
 	{
 		IF_F(!this->_AP_move::link());
 
@@ -108,18 +107,18 @@ namespace kai
 		pK->v("_Universe", &n);
 		m_pU = (_Universe *)pK->findModule(n);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_follow::start(void)
+	int _AP_follow::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _AP_follow::check(void)
 	{
-		NULL__(m_pU, -1);
+		NULL__(m_pU, OK_ERR_NULLPTR);
 
 		return this->_AP_move::check();
 	}
@@ -293,7 +292,7 @@ namespace kai
 #ifdef USE_OPENCV
 		NULL_(pFrame);
 		this->_AP_move::draw(pFrame);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		Frame *pF = (Frame *)pFrame;
 		Mat *pM = pF->m();

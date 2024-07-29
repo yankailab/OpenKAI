@@ -223,7 +223,7 @@ namespace kai
 
     void _XDynamics::updateXDynamics(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         Mat mD, mDs;
         m_mXDd.convertTo(mD, CV_32FC1);
@@ -237,7 +237,7 @@ namespace kai
 
     void _XDynamics::cbStream(MemSinkCfg *pCfg, XdynFrame_t *pData)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
         IF_(!m_xdHDL.m_bInit);
 
         XdynFrame_t *pD = NULL;

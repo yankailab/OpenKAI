@@ -212,7 +212,6 @@
 #ifdef WITH_DNN
 #ifdef USE_OPENCV
 #ifdef USE_JETSON_INFERENCE
-#include "../DNN/JetsonInference/_ImageNet.h"
 #include "../DNN/JetsonInference/_DetectNet.h"
 #endif
 #ifdef USE_TF - LITE

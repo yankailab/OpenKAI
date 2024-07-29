@@ -71,7 +71,7 @@ namespace kai
 
 	void _IsingSolver::updateSolver(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 	}
 

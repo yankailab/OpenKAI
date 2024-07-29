@@ -22,9 +22,9 @@ namespace kai
 	{
 	}
 
-	bool _DepthSegment::init(void *pKiss)
+	int _DepthSegment::init(void *pKiss)
 	{
-		IF_F(!this->_DetectorBase::init(pKiss));
+		CHECK_(this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v<float>("rL", &m_rL);
@@ -32,20 +32,20 @@ namespace kai
 		pK->v<float>("rD", &m_rD);
 		pK->v<float>("rArea", &m_rArea);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _DepthSegment::start(void)
+	int _DepthSegment::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _DepthSegment::check(void)
 	{
-		NULL__(m_pV, -1);
-		NULL__(m_pU, -1);
-		IF__(m_pV->getFrameRGB()->bEmpty(), -1);
+		NULL__(m_pV, OK_ERR_NULLPTR);
+		NULL__(m_pU, OK_ERR_NULLPTR);
+		IF__(m_pV->getFrameRGB()->bEmpty(), OK_ERR_NULLPTR);
 
 		return this->_DetectorBase::check();
 	}
@@ -65,7 +65,7 @@ namespace kai
 
 	void _DepthSegment::detect(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		Mat m;
 		m_pV->getFrameRGB()->m()->copyTo(m);
@@ -112,7 +112,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_DetectorBase::draw(pFrame);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		if (!m_mR.empty())
 		{

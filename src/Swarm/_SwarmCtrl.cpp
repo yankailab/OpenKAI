@@ -94,7 +94,7 @@ namespace kai
 
     void _SwarmCtrl::send(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         uint64_t t = m_pT->getTfrom();
 
@@ -203,7 +203,7 @@ namespace kai
 
     void _SwarmCtrl::handleMsgSetState(const SWMSG_CMD_SETSTATE &m)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
         IF_((m.m_dstID != XB_BRDCAST_ADDR) && (m.m_dstID != m_pXb->getMyAddr()));
 
         // //TODO: enable iMsg counter

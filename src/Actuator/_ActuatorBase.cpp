@@ -120,7 +120,7 @@ namespace kai
 
 	void _ActuatorBase::update(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		//	m_pT->setTstamp(getApproxTbootUs());
 	}
 

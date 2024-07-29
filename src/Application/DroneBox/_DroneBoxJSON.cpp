@@ -81,7 +81,7 @@ namespace kai
 
     void _DroneBoxJSON::send(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         if (m_ieSendHB.update(m_pT->getTfrom()))
         {
@@ -149,12 +149,12 @@ namespace kai
 
     void _DroneBoxJSON::heartbeat(picojson::object &o)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
     }
 
     void _DroneBoxJSON::stat(picojson::object &o)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
         IF_(!o["id"].is<double>());
         IF_(!o["stat"].is<string>());
 
@@ -172,7 +172,7 @@ namespace kai
 
     void _DroneBoxJSON::req(picojson::object &o)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
         IF_(!o["id"].is<double>());
         IF_(!o["do"].is<string>());
 

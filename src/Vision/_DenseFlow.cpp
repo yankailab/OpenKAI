@@ -176,7 +176,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		IF_(m_pFlow[0].empty());
 		IF_(m_pFlow[1].empty());

@@ -120,7 +120,7 @@ namespace kai
 
     void _PCframe::updatePCframe(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         readSharedMem();
         writeSharedMem();
@@ -239,7 +239,7 @@ namespace kai
 
     void _PCframe::copyTo(PointCloud *pPC)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
         NULL_(pPC);
 
         pPC->Clear();

@@ -112,7 +112,7 @@ namespace kai
 
 	void _Sequencer::updateAction(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		IF_(!m_bON);
 
 		//wait if still in delay time

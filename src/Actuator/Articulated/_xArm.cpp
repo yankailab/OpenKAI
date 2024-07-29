@@ -139,7 +139,7 @@ namespace kai
 
 	void _xArm::updatePos(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		vFloat3 vP = getPtarget();
 		vFloat3 vA = getAtarget();
@@ -147,7 +147,7 @@ namespace kai
 
 	void _xArm::readState(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		int ret;
 		fp32 pose[6];

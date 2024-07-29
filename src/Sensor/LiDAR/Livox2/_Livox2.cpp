@@ -107,7 +107,7 @@ namespace kai
 
     void _Livox2::updateLidar(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         writeSharedMem();
 

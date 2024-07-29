@@ -5,8 +5,8 @@ namespace kai
 
 	_AP_distLidar::_AP_distLidar()
 	{
-		m_pAP = NULL;
-		m_pDS = NULL;
+		m_pAP = nullptr;
+		m_pDS = nullptr;
 		m_nSection = 0;
 	}
 
@@ -14,12 +14,11 @@ namespace kai
 	{
 	}
 
-	bool _AP_distLidar::init(void *pKiss)
+	int _AP_distLidar::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
     	
-
 		string n;
 
 		n = "";
@@ -29,7 +28,7 @@ namespace kai
 		n = "";
 		F_INFO(pK->v("_DistSensorBase", &n));
 		m_pDS = (_DistSensorBase *)(pK->findModule(n));
-		IF_Fl(!m_pDS, n + " not found");
+		NULL__(m_pDS, OK_ERR_NOT_FOUND);
 
 		m_nSection = 0;
 		while (1)
@@ -41,20 +40,20 @@ namespace kai
 
 			DIST_LIDAR_SECTION *pS = &m_pSection[m_nSection];
 			pS->init();
-			F_ERROR_F(pKs->v("orientation", (int *)&pS->m_orientation));
-			F_ERROR_F(pKs->v("degFrom", &pS->m_degFrom));
-			F_ERROR_F(pKs->v("degTo", &pS->m_degTo));
-			F_INFO(pKs->v("sensorScale", &pS->m_sensorScale));
+			pKs->v("orientation", (int *)&pS->m_orientation);
+			pKs->v("degFrom", &pS->m_degFrom);
+			pKs->v("degTo", &pS->m_degTo);
+			pKs->v("sensorScale", &pS->m_sensorScale);
 
-			IF_Fl(pS->m_degFrom < 0, "degFrom < 0 deg");
-			IF_Fl(pS->m_degTo < 0, "degTo < 0 deg");
-			IF_Fl(pS->m_degTo <= pS->m_degFrom, "Angle width <= 0 deg");
-			IF_Fl(pS->m_degTo - pS->m_degFrom > 180, "Angle width > 180 deg");
+			IF__(pS->m_degFrom < 0, OK_ERR_INVALID_VALUE);
+			IF__(pS->m_degTo < 0, OK_ERR_INVALID_VALUE);
+			IF__(pS->m_degTo <= pS->m_degFrom, OK_ERR_INVALID_VALUE);
+			IF__(pS->m_degTo - pS->m_degFrom > 180, OK_ERR_INVALID_VALUE);
 
 			m_nSection++;
 		}
 
-		return true;
+		return OK_OK;
 	}
 
 	void _AP_distLidar::update(void)
@@ -104,7 +103,7 @@ namespace kai
 #ifdef USE_OPENCV
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		Frame *pF = (Frame *)pFrame;
 

@@ -5,10 +5,10 @@ namespace kai
 
 	_AP_land::_AP_land()
 	{
-		m_pDS = NULL;
+		m_pDS = nullptr;
 		m_vDSrange.clear();
 
-		m_pTag = NULL;
+		m_pTag = nullptr;
 		m_vFov.set(60, 60);
 
 		m_vComplete.set(0.1, 0.1, 0.3, 3.0);
@@ -19,12 +19,11 @@ namespace kai
 	{
 	}
 
-	bool _AP_land::init(void *pKiss)
+	int _AP_land::init(void *pKiss)
 	{
-		IF_F(!this->_AP_follow::init(pKiss));
+		CHECK_(this->_AP_follow::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
-
+    
 		pK->v("vDSrange", &m_vDSrange);
 		pK->v("vFov", &m_vFov);
 		pK->v("vComplete", &m_vComplete);
@@ -35,7 +34,8 @@ namespace kai
 		// m_ieHdgCmd.init(ieHdg);
 
 		Kiss *pKt = pK->child("tags");
-		NULL_T(pKt);
+		NULL__(pKt, OK_OK);
+
 		Kiss *pT;
 		int i = 0;
 		while (!(pT = pKt->child(i++))->empty())
@@ -49,12 +49,12 @@ namespace kai
 			m_vTags.push_back(t);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_land::link(void)
+	int _AP_land::link(void)
 	{
-		IF_F(!this->_AP_follow::link());
+		CHECK_(this->_AP_follow::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
@@ -63,18 +63,18 @@ namespace kai
 		pK->v("_DistSensorBase", &n);
 		m_pDS = (_DistSensorBase *)pK->findModule(n);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_land::start(void)
+	int _AP_land::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _AP_land::check(void)
 	{
-		NULL__(m_pDS, -1);
+		NULL__(m_pDS, OK_ERR_NULLPTR);
 
 		return this->_AP_follow::check();
 	}
@@ -120,7 +120,7 @@ namespace kai
 
 	void _AP_land::updateMove(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		if (m_apMount.m_bEnable)
 			m_pAP->setMount(m_apMount);

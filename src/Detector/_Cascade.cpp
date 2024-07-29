@@ -4,9 +4,6 @@
  */
 #include "_Cascade.h"
 
-#ifdef USE_OPENCV
-#ifdef USE_CUDA
-
 namespace kai
 {
 
@@ -22,9 +19,9 @@ namespace kai
 	{
 	}
 
-	bool _Cascade::init(void *pKiss)
+	int _Cascade::init(void *pKiss)
 	{
-		IF_F(!this->_DetectorBase::init(pKiss));
+		CHECK_(this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("scaleFactor", &m_scaleFactor);
@@ -34,28 +31,28 @@ namespace kai
 		if (m_bGPU)
 		{
 			m_pGCC = cuda::CascadeClassifier::create(m_fModel);
-			NULL_F(m_pGCC);
+			NULL__(m_pGCC, OK_ERR_NOT_FOUND);
 		}
 		else
 		{
-			F_ERROR_F(m_CC.load(m_fModel));
+			IF__(!m_CC.load(m_fModel), OK_ERR_NOT_FOUND);
 		}
 
-		return true;
-	}
-
-	int _Cascade::check(void)
-	{
-		NULL__(m_pV, -1);
-		NULL__(m_pU, -1);
-
-		return this->_DetectorBase::check();
+		return OK_OK;
 	}
 
 	bool _Cascade::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
+	}
+
+	int _Cascade::check(void)
+	{
+		NULL__(m_pV, OK_ERR_NULLPTR);
+		NULL__(m_pU, OK_ERR_NULLPTR);
+
+		return this->_DetectorBase::check();
 	}
 
 	void _Cascade::update(void)
@@ -76,7 +73,7 @@ namespace kai
 
 	void _Cascade::detectGPU(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		Frame *pGray = m_pV->getFrameRGB();
 		NULL_(pGray);
@@ -119,7 +116,7 @@ namespace kai
 
 	void _Cascade::detectCPU(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		Frame *pGray = m_pV->getFrameRGB();
 		NULL_(pGray);
@@ -155,5 +152,3 @@ namespace kai
 	}
 
 }
-#endif
-#endif

@@ -84,7 +84,7 @@ namespace kai
 
     void _AP_droneBoxJSON::send(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         this->_JSONbase::send();
 
@@ -171,7 +171,7 @@ namespace kai
 
     void _AP_droneBoxJSON::heartbeat(picojson::object &o)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
         IF_(!o["id"].is<double>());
         IF_(!o["lat"].is<double>());
         IF_(!o["lng"].is<double>());
@@ -183,7 +183,7 @@ namespace kai
 
     void _AP_droneBoxJSON::stat(picojson::object &o)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
         IF_(!o["id"].is<double>());
         IF_(!o["stat"].is<string>());
 
@@ -195,7 +195,7 @@ namespace kai
 
     void _AP_droneBoxJSON::ack(picojson::object &o)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
         IF_(!o["id"].is<double>());
         IF_(!o["do"].is<string>());
         IF_(!o["r"].is<string>());

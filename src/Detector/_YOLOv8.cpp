@@ -28,9 +28,9 @@ namespace kai
 	{
 	}
 
-	bool _YOLOv8::init(void *pKiss)
+	int _YOLOv8::init(void *pKiss)
 	{
-		IF_F(!this->_DetectorBase::init(pKiss));
+		CHECK_(this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("confidence", &m_confidence);
@@ -43,9 +43,9 @@ namespace kai
 		pK->v("iBackend", &m_iBackend);
 		pK->v("iTarget", &m_iTarget);
 
-		IF_F(!loadModel());
+		IF__(!loadModel(), OK_ERR_INVALID_VALUE);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _YOLOv8::loadModel(void)
@@ -59,20 +59,20 @@ namespace kai
 		return true;
 	}
 
-	bool _YOLOv8::start(void)
+	int _YOLOv8::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _YOLOv8::check(void)
 	{
-		NULL__(m_pU, -1);
-		NULL__(m_pV, -1);
+		NULL__(m_pU, OK_ERR_NULLPTR);
+		NULL__(m_pV, OK_ERR_NULLPTR);
 		Frame *pBGR = m_pV->getFrameRGB();
-		NULL__(pBGR, -1);
-		IF__(pBGR->bEmpty(), -1);
-		IF__(pBGR->tStamp() <= m_fRGB.tStamp(), -1);
+		NULL__(pBGR, OK_ERR_NULLPTR);
+		IF__(pBGR->bEmpty(), OK_ERR_NULLPTR);
+		IF__(pBGR->tStamp() <= m_fRGB.tStamp(), OK_ERR_NULLPTR);
 
 		return this->_DetectorBase::check();
 	}
@@ -92,7 +92,7 @@ namespace kai
 
 	void _YOLOv8::detect(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		Frame *pBGR = m_pV->getFrameRGB();
 		m_fRGB.copy(*pBGR);

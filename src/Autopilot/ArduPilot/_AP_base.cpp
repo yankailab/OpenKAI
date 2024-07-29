@@ -5,7 +5,7 @@ namespace kai
 
 	_AP_base::_AP_base()
 	{
-		m_pMav = NULL;
+		m_pMav = nullptr;
 		m_apType = ardupilot_copter;
 		m_apMode = -1;
 		m_bApArmed = false;
@@ -29,9 +29,9 @@ namespace kai
 	{
 	}
 
-	bool _AP_base::init(void *pKiss)
+	int _AP_base::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("apType", (int *)&m_apType);
@@ -44,12 +44,12 @@ namespace kai
 		if (pK->v("ieSendMsgInt", &t))
 			m_ieSendMsgInt.init(t * SEC_2_USEC);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_base::link(void)
+	int _AP_base::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
@@ -57,10 +57,10 @@ namespace kai
 		n = "";
 		pK->v("_Mavlink", &n);
 		m_pMav = (_Mavlink *)(pK->findModule(n));
-		NULL_F(m_pMav);
+		NULL__(m_pMav, OK_ERR_NOT_FOUND);
 
 		Kiss *pM = pK->child("mavMsgInt");
-		NULL_T(pM);
+		NULL__(pM, OK_OK);
 
 		int i = 0;
 		while (1)
@@ -78,18 +78,18 @@ namespace kai
 				LOG_E("Interval msg id = " + i2str(id) + " not found");
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_base::start(void)
+	int _AP_base::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _AP_base::check(void)
 	{
-		NULL__(m_pMav, -1);
+		NULL__(m_pMav, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}
@@ -108,7 +108,7 @@ namespace kai
 
 	void _AP_base::updateBase(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		uint64_t tNow = m_pT->getTfrom();
 
@@ -188,7 +188,7 @@ namespace kai
 
 	void _AP_base::setMode(uint32_t iMode)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		mavlink_set_mode_t D;
 		D.custom_mode = iMode;
@@ -217,7 +217,7 @@ namespace kai
 
 	void _AP_base::setArm(bool bArm)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		m_pMav->clComponentArmDisarm(bArm);
 	}
@@ -280,7 +280,7 @@ namespace kai
 
 	void _AP_base::setMount(AP_MOUNT &m)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		m_pMav->mountControl(m.m_control);
 		m_pMav->mountConfigure(m.m_config);

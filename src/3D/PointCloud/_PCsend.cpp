@@ -79,7 +79,7 @@ namespace kai
 
     void _PCsend::sendPC(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
         //    IF_(m_iPsent == m_ring.m_iP);
 
         const double PC_SCALE = 1000;

@@ -24,7 +24,7 @@ namespace kai
 		{
 		}
 
-		int init(float dThold)
+		bool init(float dThold)
 		{
 			m_dThold = dThold;
 			reset();

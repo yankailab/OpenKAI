@@ -58,7 +58,7 @@ namespace kai
 
 	void _PCremove::updateFilter(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		// PointCloud pcIn;
 		// m_pPCB->getPC(&pcIn);

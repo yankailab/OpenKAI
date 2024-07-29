@@ -92,7 +92,7 @@ namespace kai
 
 	void _ColorConvert::filter(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		m_fRGB.copy(m_pV->getFrameRGB()->cvtColor(m_code));
 	}

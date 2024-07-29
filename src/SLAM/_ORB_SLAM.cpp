@@ -102,7 +102,7 @@ namespace kai
 
 	void _ORB_SLAM::detect(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		static const double usecBase = 1.0 / ((double)SEC_2_USEC);
 

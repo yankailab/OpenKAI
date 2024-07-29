@@ -194,7 +194,7 @@ namespace kai
 
 	void _GeometryViewer::updateAllGeometries(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		IF_(!m_pWin);
 
 		for (int i = 0; i < m_vGO.size(); i++)
@@ -222,7 +222,7 @@ namespace kai
 
 	void _GeometryViewer::updateCamProj(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		IF_(!m_pWin);
 
 		m_pWin->CamSetProj(m_camProj.m_fov,
@@ -233,7 +233,7 @@ namespace kai
 
 	void _GeometryViewer::updateCamPose(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		IF_(!m_pWin);
 
 		m_pWin->CamSetPose(v2e(m_cam.m_vLookAt),
@@ -243,7 +243,7 @@ namespace kai
 
 	void _GeometryViewer::camBound(const AxisAlignedBoundingBox &aabb)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		IF_(!m_pWin);
 
 		m_pWin->CamAutoBound(aabb, v2e(m_vCoR));

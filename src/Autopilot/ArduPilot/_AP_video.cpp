@@ -5,12 +5,12 @@ namespace kai
 
 	_AP_video::_AP_video()
 	{
-		m_pAP = NULL;
-		m_pCurl = NULL;
+		m_pAP = nullptr;
+		m_pCurl = nullptr;
 		m_fName = "";
 
 		m_process = "";
-		m_pFvid = NULL;
+		m_pFvid = nullptr;
 		m_tRecStart = 0;
 
 		m_bMeta = false;
@@ -23,23 +23,22 @@ namespace kai
 	{
 	}
 
-	bool _AP_video::init(void *pKiss)
+	int _AP_video::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
 
 		pK->v("process", &m_process);
 		pK->v("fName", &m_fName);
 		pK->v("dir", &m_dir);
 		pK->v("bMeta", &m_bMeta);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_video::link(void)
+	int _AP_video::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
@@ -47,7 +46,7 @@ namespace kai
 		n = "";
 		pK->v("_AP_base", &n);
 		m_pAP = (_AP_base *)(pK->findModule(n));
-		NULL_Fl(m_pAP, n + ": not found");
+		NULL__(m_pAP, OK_ERR_NOT_FOUND);
 
 		n = "";
 		pK->v("_Uploader", &n);
@@ -56,18 +55,18 @@ namespace kai
 		pK->v("fCalib", &m_fCalib);
 		readCamMatrices(m_fCalib, &m_mC, &m_mD);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_video::start(void)
+	int _AP_video::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _AP_video::check(void)
 	{
-		NULL__(m_pAP, -1);
+		NULL__(m_pAP, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}
@@ -194,7 +193,7 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("fName = " + m_fName);

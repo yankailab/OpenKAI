@@ -108,7 +108,7 @@ namespace kai
 
 	void _ZDmotor::updateMove(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		setSpeed();
 	}

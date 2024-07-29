@@ -81,7 +81,7 @@ namespace kai
 
 	void _DDSM::sendCMD(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		uint8_t pB[DDSM_CMD_NB];
 		int nC = m_vAxis.size();

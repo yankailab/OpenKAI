@@ -94,7 +94,7 @@ namespace kai
 
     void _PCregistICP::updateRegistration(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         PointCloud pcSrc;
         m_pSrc->copyTo(&pcSrc);

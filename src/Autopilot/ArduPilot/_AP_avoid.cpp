@@ -5,50 +5,49 @@ namespace kai
 
 	_AP_avoid::_AP_avoid()
 	{
-		m_pAP = NULL;
-		m_pDet = NULL;
-		m_pMavlink = NULL;
+		m_pAP = nullptr;
+		m_pDet = nullptr;
+		m_pMavlink = nullptr;
 	}
 
 	_AP_avoid::~_AP_avoid()
 	{
 	}
 
-	bool _AP_avoid::init(void *pKiss)
+	int _AP_avoid::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
 
 		string n;
 		n = "";
-		F_INFO(pK->v("APcopter_base", &n));
+		pK->v("APcopter_base", &n);
 		m_pAP = (_AP_base *)pK->findModule(n);
 
 		n = "";
-		F_ERROR_F(pK->v("_Mavlink", &n));
+		pK->v("_Mavlink", &n);
 		m_pMavlink = (_Mavlink *)pK->findModule(n);
-		NULL_Fl(m_pMavlink, n + ": not found");
+		NULL__(m_pMavlink, OK_ERR_NOT_FOUND);
 
 		n = "";
-		F_ERROR_F(pK->v("_DetectorBase", &n));
+		pK->v("_DetectorBase", &n);
 		m_pDet = (_DetectorBase *)pK->findModule(n);
-		NULL_Fl(m_pDet, n + ": not found");
+		NULL__(m_pDet, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_avoid::start(void)
+	int _AP_avoid::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _AP_avoid::check(void)
 	{
-		NULL__(m_pAP, -1);
-		NULL__(m_pDet, -1);
-		NULL__(m_pMavlink, -1);
+		NULL__(m_pAP, OK_ERR_NULLPTR);
+		NULL__(m_pDet, OK_ERR_NULLPTR);
+		NULL__(m_pMavlink, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}
@@ -67,7 +66,7 @@ namespace kai
 
 	void _AP_avoid::updateTarget(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		_Object o;
 		o.clear();
@@ -102,7 +101,7 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		string msg = "nTarget=" + i2str(m_pDet->getU()->size());
 		((_Console *)pConsole)->addMsg(msg);
@@ -112,7 +111,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		Frame *pF = (Frame *)pFrame;
 		Mat *pM = pF->m();

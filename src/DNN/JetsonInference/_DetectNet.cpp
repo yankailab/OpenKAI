@@ -2,7 +2,7 @@
  *  Created on: Sept 28, 2016
  *      Author: yankai
  */
-#include "../JetsonInference/_DetectNet.h"
+#include "_DetectNet.h"
 
 namespace kai
 {
@@ -112,7 +112,7 @@ namespace kai
 
 	void _DetectNet::detect(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		*m_pRGBA = m_pV->getFrameRGB()->cvtColor(CV_BGR2RGBA);
 		*m_pRGBAf = m_pRGBA->cvtTo(CV_32FC4);

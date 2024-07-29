@@ -141,7 +141,7 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_FileBase::console(pConsole);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("iTake = " + i2str(m_iTake));

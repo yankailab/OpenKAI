@@ -139,7 +139,7 @@ namespace kai
 
 	void _GSVctrl::updateGrid(picojson::object &o)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		vFloat3 vPo = m_pGgrid->getPorigin();
 		vFloat3 vCsize = m_pGgrid->getCellSize();
@@ -204,14 +204,14 @@ namespace kai
 
 	void _GSVctrl::saveGrid(picojson::object &o)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		m_pGgrid->saveConfig();
 	}
 
 	void _GSVctrl::updateTR(picojson::object &o)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		IF_(!o["_GeometryBase"].is<string>());
 		string gName = o["_GeometryBase"].get<string>();
@@ -237,7 +237,7 @@ namespace kai
 
 	void _GSVctrl::setTR(picojson::object &o)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		IF_(!o["_GeometryBase"].is<string>());
 		string gName = o["_GeometryBase"].get<string>();
@@ -284,7 +284,7 @@ namespace kai
 
 	void _GSVctrl::saveGeometryConfig(picojson::object &o)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		IF_(!o["_GeometryBase"].is<string>());
 		string gName = o["_GeometryBase"].get<string>();
@@ -337,7 +337,7 @@ namespace kai
 
 	void _GSVctrl::selectCell(picojson::object &o)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		vInt3 vC;
 
@@ -355,7 +355,7 @@ namespace kai
 
 	void _GSVctrl::setCellAlert(picojson::object &o)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		vInt3 vC;
 
@@ -373,7 +373,7 @@ namespace kai
 
 	void _GSVctrl::delCellAlert(picojson::object &o)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		vInt3 vC;
 
@@ -391,14 +391,14 @@ namespace kai
 
 	void _GSVctrl::saveGridConfig(picojson::object &o)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		m_pGgrid->saveConfig();
 	}
 
 	void _GSVctrl::setParams(picojson::object &o)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		IF_(!o["nPs"].is<double>());
 		int s = o["nPs"].get<double>();
@@ -408,7 +408,7 @@ namespace kai
 
 	void _GSVctrl::autoAlertCells(picojson::object &o)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		m_pGgrid->autoFindAlertCells();
 	}
@@ -416,7 +416,7 @@ namespace kai
 
 	void _GSVctrl::send(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		uint64_t t = getApproxTbootUs();
 
@@ -426,7 +426,7 @@ namespace kai
 
 	void _GSVctrl::sendHeartbeat(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		object o;
 		JO(o, "cmd", "hb");
@@ -440,7 +440,7 @@ namespace kai
 
 	void _GSVctrl::sendConfig(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 	}
 
 	_GeometryBase *_GSVctrl::getGeometry(const string &n)

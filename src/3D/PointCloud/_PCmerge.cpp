@@ -69,7 +69,7 @@ namespace kai
 
 	void _PCmerge::updateMerge(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		// read all inputs into one ring
 		for (_GeometryBase *pPCB : m_vpGB)

@@ -109,7 +109,7 @@ namespace kai
 
 	void _HYMCU_RS485::updateMove(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		IF_(!bComplete()); // Moving
 		IF_(!readStatus());

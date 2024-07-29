@@ -213,7 +213,7 @@ namespace kai
 
 	void _GSVgrid::updateGSVgrid(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		// alarm cell
 		m_pCellAlarm->clearCells();

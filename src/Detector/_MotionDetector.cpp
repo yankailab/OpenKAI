@@ -21,9 +21,9 @@ namespace kai
 	{
 	}
 
-	bool _MotionDetector::init(void *pKiss)
+	int _MotionDetector::init(void *pKiss)
 	{
-		IF_F(!this->_DetectorBase::init(pKiss));
+		CHECK_(this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v<string>("algorithm", &m_algorithm);
@@ -52,23 +52,23 @@ namespace kai
 		//
 
 		string n = "";
-		F_ERROR_F(pK->v("_VisionBase", &n));
+		pK->v("_VisionBase", &n);
 		m_pVision = (_VisionBase *)(pK->findModule(n));
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _MotionDetector::start(void)
+	int _MotionDetector::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _MotionDetector::check(void)
 	{
-		NULL__(m_pU, -1);
-		NULL__(m_pV, -1);
-		IF__(m_pV->getFrameRGB()->bEmpty(), -1);
+		NULL__(m_pU, OK_ERR_NULLPTR);
+		NULL__(m_pV, OK_ERR_NULLPTR);
+		IF__(m_pV->getFrameRGB()->bEmpty(), OK_ERR_NULLPTR);
 
 		return this->_DetectorBase::check();
 	}
@@ -89,7 +89,7 @@ namespace kai
 
 	void _MotionDetector::detect(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		Mat m = *m_pVision->getFrameRGB()->m();
 
@@ -124,7 +124,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_DetectorBase::draw(pFrame);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		if (!m_mFG.empty())
 		{

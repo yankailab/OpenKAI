@@ -90,7 +90,7 @@ namespace kai
 
     void _ROS_fastLio::updateNav(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         m_mT = m_pROSnode->m_mT;
         m_vT = m_pROSnode->m_vP;

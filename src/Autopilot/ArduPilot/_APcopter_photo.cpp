@@ -5,12 +5,12 @@ namespace kai
 
 	_APcopter_photo::_APcopter_photo()
 	{
-		m_pAP = NULL;
-		m_pPC = NULL;
-		m_pDS = NULL;
-		m_pV = NULL;
-		m_pDV = NULL;
-		m_pG = NULL;
+		m_pAP = nullptr;
+		m_pPC = nullptr;
+		m_pDS = nullptr;
+		m_pV = nullptr;
+		m_pDV = nullptr;
+		m_pG = nullptr;
 
 		m_iDiv = 0;
 		m_speed = 0.3;
@@ -36,11 +36,10 @@ namespace kai
 	{
 	}
 
-	bool _APcopter_photo::init(void *pKiss)
+	int _APcopter_photo::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
 
 		pK->v("quality", &m_quality);
 		pK->v("dir", &m_dir);
@@ -67,17 +66,17 @@ namespace kai
 		n = "";
 		pK->v("_AP_base", &n);
 		m_pAP = (_AP_base *)(pK->findModule(n));
-		NULL_Fl(m_pAP, n + ": not found");
+		NULL__(m_pAP, OK_ERR_NOT_FOUND);
 
 		n = "";
 		pK->v("_AP_move", &n);
 		m_pPC = (_AP_move *)(pK->findModule(n));
-		NULL_Fl(m_pPC, n + ": not found");
+		NULL__(m_pPC, OK_ERR_NOT_FOUND);
 
 		n = "";
 		pK->v("_DistSensorBase", &n);
 		m_pDS = (_DistSensorBase *)(pK->findModule(n));
-		NULL_Fl(m_pDS, n + ": not found");
+		NULL__(m_pDS, OK_ERR_NOT_FOUND);
 
 		n = "";
 		pK->v("_VisionBase", &n);
@@ -91,20 +90,20 @@ namespace kai
 		pK->v("_GPhoto", &n);
 		m_pG = (_GPhoto *)(pK->findModule(n));
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _APcopter_photo::start(void)
+	int _APcopter_photo::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _APcopter_photo::check(void)
 	{
-		NULL__(m_pAP, -1);
-		NULL__(m_pPC, -1);
-		NULL__(m_pDS, -1);
+		NULL__(m_pAP, OK_ERR_NULLPTR);
+		NULL__(m_pPC, OK_ERR_NULLPTR);
+		NULL__(m_pDS, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}
@@ -137,7 +136,7 @@ namespace kai
 
 	void _APcopter_photo::autoMode(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		// m_alt = m_pDS->d(m_iDiv);
 		// IF_(m_alt < 0.0);
@@ -158,7 +157,7 @@ namespace kai
 
 	void _APcopter_photo::manualMode(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		uint16_t rcShutter = m_pAP->m_pMav->m_rcChannels.getRC(m_iRCshutter);
 		IF_(rcShutter == UINT16_MAX);
@@ -170,7 +169,7 @@ namespace kai
 
 	void _APcopter_photo::shutter(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		m_pAP->m_pMav->clDoSetRelay(m_iRelayShutter, true);
 
@@ -257,7 +256,7 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("alt = " + f2str(m_alt) + ", lastAlt = " + f2str(m_lastAlt) + ", dAlt = " + f2str(m_dAlt));

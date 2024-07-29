@@ -29,9 +29,9 @@ namespace kai
 	{
 	}
 
-	bool _DNNtext::init(void *pKiss)
+	int _DNNtext::init(void *pKiss)
 	{
-		IF_F(!this->_DetectorBase::init(pKiss));
+		CHECK_(this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("thr", &m_thr);
@@ -50,7 +50,7 @@ namespace kai
 		pK->v("meanR", &m_vMean.z);
 
 		m_net = readNet(m_fModel);
-		IF_Fl(m_net.empty(), "read Net failed");
+		IF__(m_net.empty(), OK_ERR_INVALID_VALUE);
 
 		m_net.setPreferableBackend(m_iBackend);
 		m_net.setPreferableTarget(m_iTarget);
@@ -59,32 +59,32 @@ namespace kai
 		m_vLayerName[0] = "feature_fusion/Conv_7/Sigmoid";
 		m_vLayerName[1] = "feature_fusion/concat_3";
 
-		IF_T(!m_bOCR);
+		IF__(!m_bOCR, OK_OK);
 
 #ifdef USE_OCR
 		string n = "";
-		F_INFO(pK->v("OCR", &n));
+		pK->v("OCR", &n);
 		m_pOCR = (OCR *)(pK->findModule(n));
-		IF_Fl(!m_pOCR, n + " not found");
+		NULL__(m_pOCR, OK_ERR_NOT_FOUND);
 #endif
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _DNNtext::start(void)
+	int _DNNtext::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _DNNtext::check(void)
 	{
-		NULL__(m_pU, -1);
-		NULL__(m_pV, -1);
+		NULL__(m_pU, OK_ERR_NULLPTR);
+		NULL__(m_pV, OK_ERR_NULLPTR);
 		Frame *pBGR = m_pV->getFrameRGB();
-		NULL__(pBGR, -1);
-		IF__(pBGR->bEmpty(), -1);
-		IF__(pBGR->tStamp() <= m_fRGB.tStamp(), -1);
+		NULL__(pBGR, OK_ERR_NULLPTR);
+		IF__(pBGR->bEmpty(), OK_ERR_NULLPTR);
+		IF__(pBGR->tStamp() <= m_fRGB.tStamp(), OK_ERR_NULLPTR);
 
 		return this->_DetectorBase::check();
 	}
@@ -107,7 +107,7 @@ namespace kai
 
 	void _DNNtext::detect(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		m_fRGB.copy(*m_pV->getFrameRGB());
 		if (m_fRGB.m()->channels() < 3)
@@ -305,7 +305,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_DetectorBase::draw(pFrame);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		Frame *pF = (Frame *)pFrame;
 

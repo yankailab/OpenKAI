@@ -194,7 +194,7 @@ namespace kai
 	void _SwarmBase::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		this->_ModuleBase::console(pConsole);
 
 		// string msg = "id=" + i2str(pO->getTopClass());

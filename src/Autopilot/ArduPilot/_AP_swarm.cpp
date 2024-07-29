@@ -5,11 +5,11 @@ namespace kai
 
 	_AP_swarm::_AP_swarm()
 	{
-		m_pAP = NULL;
-		m_pXb = NULL;
-		m_pSwarm = NULL;
-		m_pGio = NULL;
-		m_pU = NULL;
+		m_pAP = nullptr;
+		m_pXb = nullptr;
+		m_pSwarm = nullptr;
+		m_pGio = nullptr;
+		m_pU = nullptr;
 
 		m_bAutoArm = true;
 		m_altTakeoff = 10.0;
@@ -34,11 +34,10 @@ namespace kai
 	{
 	}
 
-	bool _AP_swarm::init(void *pKiss)
+	int _AP_swarm::init(void *pKiss)
 	{
-		IF_F(!this->_AP_move::init(pKiss));
+		CHECK_(this->_AP_move::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		
 
 		pK->v("bAutoArm", &m_bAutoArm);
 		pK->v("altTakeoff", &m_altTakeoff);
@@ -57,12 +56,12 @@ namespace kai
 		pK->v("ieSendHB", &m_ieSendHB.m_tInterval);
 		pK->v("ieSendGCupdate", &m_ieSendGCupdate.m_tInterval);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_swarm::link(void)
+	int _AP_swarm::link(void)
 	{
-		IF_F(!this->_AP_move::link());
+		CHECK_(this->_AP_move::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
@@ -70,58 +69,58 @@ namespace kai
         n = "";
         pK->v("_StateControl", &n);
         m_pSC = (_StateControl *)(pK->findModule(n));
-        IF_Fl(!m_pSC, n + ": not found");
+        NULL__(m_pSC, OK_ERR_NOT_FOUND);
 
 		m_state.STANDBY = m_pSC->getStateIdxByName("STANDBY");
 		m_state.TAKEOFF = m_pSC->getStateIdxByName("TAKEOFF");
 		m_state.AUTO = m_pSC->getStateIdxByName("AUTO");
 		m_state.RTL = m_pSC->getStateIdxByName("RTL");
-		IF_F(!m_state.bValid());
+		IF__(!m_state.bValid(), OK_ERR_INVALID_VALUE);
 
 		n = "";
 		pK->v("_AP_base", &n);
 		m_pAP = (_AP_base *)(pK->findModule(n));
-		IF_Fl(!m_pAP, n + ": not found");
+        NULL__(m_pAP, OK_ERR_NOT_FOUND);
 
 		n = "";
 		pK->v("_Swarm", &n);
 		m_pSwarm = (_SwarmSearch *)(pK->findModule(n));
-		IF_Fl(!m_pSwarm, n + ": not found");
+        NULL__(m_pSwarm, OK_ERR_NOT_FOUND);
 
 		n = "";
 		pK->v("_Xbee", &n);
 		m_pXb = (_Xbee *)(pK->findModule(n));
-		IF_Fl(!m_pXb, n + ": not found");
+        NULL__(m_pXb, OK_ERR_NOT_FOUND);
 
 		n = "";
 		pK->v("_IObase", &n);
 		m_pGio = (_IObase *)(pK->findModule(n));
-		IF_Fl(!m_pGio, n + ": not found");
+        NULL__(m_pGio, OK_ERR_NOT_FOUND);
 
 		n = "";
 		pK->v("_Universe", &n);
 		m_pU = (_Universe *)(pK->findModule(n));
-		IF_Fl(!m_pU, n + ": not found");
+        NULL__(m_pU, OK_ERR_NOT_FOUND);
 
-		IF_F(!m_pXb->setCbReceivePacket(sOnRecvMsg, this));
+		IF__(!m_pXb->setCbReceivePacket(sOnRecvMsg, this), OK_ERR_INVALID_VALUE);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_swarm::start(void)
+	int _AP_swarm::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _AP_swarm::check(void)
 	{
-		NULL__(m_pAP, -1);
-		NULL__(m_pAP->m_pMav, -1);
-		NULL__(m_pXb, -1);
-		NULL__(m_pSwarm, -1);
-		NULL__(m_pSC, -1);
-		NULL__(m_pU, -1);
+		NULL__(m_pAP, OK_ERR_NULLPTR);
+		NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
+		NULL__(m_pXb, OK_ERR_NULLPTR);
+		NULL__(m_pSwarm, OK_ERR_NULLPTR);
+		NULL__(m_pSC, OK_ERR_NULLPTR);
+		NULL__(m_pU, OK_ERR_NULLPTR);
 
 		return this->_AP_move::check();
 	}
@@ -142,7 +141,7 @@ namespace kai
 
 	void _AP_swarm::updateState(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		int apMode = m_pAP->getMode();
 		bool bApArmed = m_pAP->bApArmed();
@@ -362,7 +361,7 @@ namespace kai
 
 	void _AP_swarm::send(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		uint64_t t = m_pT->getTfrom();
 
@@ -378,7 +377,7 @@ namespace kai
 
 	void _AP_swarm::sendHB(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		vDouble4 vP = m_pAP->getGlobalPos();
 		SWMSG_HB m;
@@ -400,7 +399,7 @@ namespace kai
 
 	void _AP_swarm::sendDetectionHB(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		for (int i = 0; i < m_vDetections.size(); i++)
 		{
@@ -468,7 +467,7 @@ namespace kai
 
 	void _AP_swarm::handleMsgSetState(const SWMSG_CMD_SETSTATE &m)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		IF_((m.m_dstID != XB_BRDCAST_ADDR) && (m.m_dstID != m_pXb->getMyAddr()));
 
 		m_state.update(m_pSC->getCurrentStateIdx());

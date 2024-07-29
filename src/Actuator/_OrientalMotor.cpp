@@ -87,7 +87,7 @@ namespace kai
 
 	void _OrientalMotor::checkAlarm(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		IF_(!m_ieCheckAlarm.update(m_pT->getTfrom()));
 
 		uint16_t pB[2];
@@ -98,7 +98,7 @@ namespace kai
 
 	void _OrientalMotor::updatePos(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		IF_(!m_ieSendCMD.update(m_pT->getTfrom()));
 
 		int32_t step = m_pA->m_p.m_vTarget;
@@ -138,7 +138,7 @@ namespace kai
 
 	void _OrientalMotor::updateSpeed(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		IF_(!m_ieSendCMD.update(m_pT->getTfrom()));
 
 		int32_t step = 0;
@@ -187,7 +187,7 @@ namespace kai
 	void _OrientalMotor::readStatus(void)
 	{
 #ifdef WITH_UI
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		IF_(!m_ieReadStatus.update(m_pT->getTfrom()));
 
 		uint16_t pB[18];

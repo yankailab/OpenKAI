@@ -5,7 +5,7 @@ namespace kai
 
 	_AP_httpJson::_AP_httpJson()
 	{
-		m_pAP = NULL;
+		m_pAP = nullptr;
 		m_url = "";
 
 	}
@@ -14,21 +14,21 @@ namespace kai
 	{
 	}
 
-	bool _AP_httpJson::init(void *pKiss)
+	int _AP_httpJson::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("url", &m_url);
 
-		IF_F(m_httpC.init());
+		IF__(m_httpC.init(), OK_ERR_UNKNOWN);
    	
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_httpJson::link(void)
+	int _AP_httpJson::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
@@ -36,21 +36,21 @@ namespace kai
 		n = "";
 		pK->v("_AP_base", &n);
 		m_pAP = (_AP_base *)(pK->findModule(n));
-		IF_Fl(!m_pAP, n + ": not found");
+		NULL__(m_pAP, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_httpJson::start(void)
+	int _AP_httpJson::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _AP_httpJson::check(void)
 	{
-		NULL__(m_pAP, -1);
-		NULL__(m_pAP->m_pMav, -1);
+		NULL__(m_pAP, OK_ERR_NULLPTR);
+		NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}

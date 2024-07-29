@@ -101,7 +101,7 @@ namespace kai
 
 	void _Feetech::updateMove(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		IF_(!setPos());
 		// IF_(!setSpeed());

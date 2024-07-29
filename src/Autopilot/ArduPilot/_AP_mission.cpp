@@ -5,8 +5,8 @@ namespace kai
 
 	_AP_mission::_AP_mission()
 	{
-		m_pAP = NULL;
-		m_pAPmove = NULL;
+		m_pAP = nullptr;
+		m_pAPmove = nullptr;
 		m_iMission = 0;
 		m_bMissionGoing = false;
 		m_dS = 1e-6;
@@ -17,20 +17,19 @@ namespace kai
 	{
 	}
 
-	bool _AP_mission::init(void *pKiss)
+	int _AP_mission::init(void *pKiss)
 	{
-		IF_F(!this->_JSONbase::init(pKiss));
+		CHECK_(this->_JSONbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
 
         pK->v("dS", &m_dS);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_mission::link(void)
+	int _AP_mission::link(void)
 	{
-		IF_F(!this->_JSONbase::link());
+		CHECK_(this->_JSONbase::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
@@ -38,29 +37,29 @@ namespace kai
 		n = "";
 		pK->v("_AP_base", &n);
 		m_pAP = (_AP_base *)(pK->findModule(n));
-		IF_Fl(!m_pAP, n + ": not found");
+		NULL__(m_pAP, OK_ERR_NOT_FOUND);
 
 		n = "";
 		pK->v("_AP_move", &n);
 		m_pAPmove = (_AP_move *)(pK->findModule(n));
-		IF_Fl(!m_pAPmove, n + ": not found");
+		NULL__(m_pAPmove, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _AP_mission::start(void)
 	{
-		NULL_F(m_pT);
-		NULL_F(m_pTr);
-		IF_F(!m_pT->start(getUpdateW, this));
+		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL__(m_pTr, OK_ERR_NULLPTR);
+		CHECK_(m_pT->start(getUpdateW, this));
 		return m_pTr->start(getUpdateR, this);
 	}
 
 	int _AP_mission::check(void)
 	{
-		NULL__(m_pAP, -1);
-		NULL__(m_pAP->m_pMav, -1);
-		NULL__(m_pAPmove, -1);
+		NULL__(m_pAP, OK_ERR_NULLPTR);
+		NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
+		NULL__(m_pAPmove, OK_ERR_NULLPTR);
 
 		return this->_JSONbase::check();
 	}
@@ -85,7 +84,7 @@ namespace kai
 
 	void _AP_mission::updateMission(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		int apMode = m_pAP->getMode();
 		vDouble4 vP = m_pAP->getGlobalPos();
@@ -124,7 +123,7 @@ namespace kai
 
 	void _AP_mission::send(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		if (m_ieSendHB.update(m_pT->getTfrom()))
 		{
@@ -175,12 +174,12 @@ namespace kai
 
 	void _AP_mission::heartbeat(picojson::object &o)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 	}
 
 	void _AP_mission::stat(picojson::object &o)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		IF_(!o["id"].is<double>());
 		IF_(!o["stat"].is<string>());
 
@@ -190,7 +189,7 @@ namespace kai
 
 	void _AP_mission::missionUpdate(picojson::object &o)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		IF_(!o["id"].is<double>());
 		IF_(!o["mission"].is<picojson::array>());
 
@@ -235,7 +234,7 @@ namespace kai
 
 	void _AP_mission::missionStart(picojson::object &o)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		IF_(!o["id"].is<double>());
 
 		m_iMission = 0;
@@ -261,7 +260,7 @@ namespace kai
 
 	void _AP_mission::missionPause(picojson::object &o)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		IF_(!o["id"].is<double>());
 
 		m_bMissionGoing = false;
@@ -277,7 +276,7 @@ namespace kai
 
 	void _AP_mission::missionResume(picojson::object &o)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		IF_(!o["id"].is<double>());
 
 		m_bMissionGoing = true;
@@ -293,7 +292,7 @@ namespace kai
 
 	void _AP_mission::missionStop(picojson::object &o)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		IF_(!o["id"].is<double>());
 
 		m_bMissionGoing = false;

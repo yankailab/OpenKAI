@@ -12,7 +12,7 @@ namespace kai
 
 	_IRLock::_IRLock()
 	{
-		m_pIO = NULL;
+		m_pIO = nullptr;
 		m_iBuf = 0;
 
 		m_vOvCamSize.x = 1.0 / 319.0;
@@ -23,9 +23,9 @@ namespace kai
 	{
 	}
 
-	bool _IRLock::init(void *pKiss)
+	int _IRLock::init(void *pKiss)
 	{
-		IF_F(!this->_DetectorBase::init(pKiss));
+		CHECK_(this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		vFloat2 vCamSize;
@@ -35,35 +35,35 @@ namespace kai
 			m_vOvCamSize.y = 1.0 / vCamSize.y;
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _IRLock::link(void)
+	int _IRLock::link(void)
 	{
-		IF_F(!this->_DetectorBase::link());
+		CHECK_(this->_DetectorBase::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 
 		string n;
 		n = "";
-		F_ERROR_F(pK->v("_IObase", &n));
+		pK->v("_IObase", &n);
 		m_pIO = (_IObase *)(pK->findModule(n));
-		NULL_Fl(m_pIO, n + ": not found");
+		NULL__(m_pIO, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
 	int _IRLock::check(void)
 	{
-		NULL__(m_pU, -1);
-		NULL__(m_pIO, -1);
+		NULL__(m_pU, OK_ERR_NULLPTR);
+		NULL__(m_pIO, OK_ERR_NULLPTR);
 
 		return this->_DetectorBase::check();
 	}
 
-	bool _IRLock::start(void)
+	int _IRLock::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
@@ -143,7 +143,7 @@ namespace kai
 	void _IRLock::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		this->_DetectorBase::console(pConsole);
 
 		string msg = "| ";

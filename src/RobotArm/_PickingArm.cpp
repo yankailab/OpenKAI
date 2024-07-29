@@ -158,7 +158,7 @@ namespace kai
 
 	void _PickingArm::updateArm(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		int iM = m_pSC->getStateIdx();
 		bool bTransit = false;
@@ -416,7 +416,7 @@ namespace kai
 
 	void _PickingArm::grip(bool bOpen)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		m_pG->grip(bOpen);
 	}
@@ -438,7 +438,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		Frame *pF = (Frame*)pFrame;
 

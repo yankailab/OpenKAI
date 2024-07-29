@@ -91,7 +91,7 @@ namespace kai
 
     void _Xbee::updateMesh(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
     }
 
     void _Xbee::send(const string &dest, uint8_t *pB, int nB)
@@ -101,7 +101,7 @@ namespace kai
 
     void _Xbee::send(uint64_t dest, uint8_t *pB, int nB)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
         NULL_(pB);
         IF_(nB == 0);
 

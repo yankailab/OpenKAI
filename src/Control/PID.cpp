@@ -27,9 +27,9 @@ namespace kai
 	{
 	}
 
-	bool PID::init(void *pKiss)
+	int PID::init(void *pKiss)
 	{
-		IF_F(!this->BASE::init(pKiss));
+		CHECK_(this->BASE::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("vMin", &m_vMin);
@@ -42,7 +42,7 @@ namespace kai
 		pK->v("Imax", &m_Imax);
 		pK->v("D", &m_D);
 
-		return true;
+		return OK_OK;
 	}
 
 	void PID::reset(void)

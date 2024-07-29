@@ -22,11 +22,10 @@ namespace kai
 	{
 	}
 
-	bool _AP_videoStream::init(void *pKiss)
+	int _AP_videoStream::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
 
 		pK->v("process", &m_process);
 		pK->v("fName", &m_fName);
@@ -34,12 +33,12 @@ namespace kai
 		pK->a("vWP", &m_vWP);
 		pK->v("tVidInt", &m_tVidInt);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_videoStream::link(void)
+	int _AP_videoStream::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
@@ -47,24 +46,24 @@ namespace kai
 		n = "";
 		pK->v("_AP_base", &n);
 		m_pAP = (_AP_base *)(pK->findModule(n));
-		NULL_Fl(m_pAP, n + ": not found");
+		NULL__(m_pAP, OK_ERR_NOT_FOUND);
 
 		n = "";
 		pK->v("_Uploader", &n);
 		m_pCurl = (_Uploader *)(pK->findModule(n));
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_videoStream::start(void)
+	int _AP_videoStream::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _AP_videoStream::check(void)
 	{
-		NULL__(m_pAP, -1);
+		NULL__(m_pAP, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}
@@ -83,7 +82,7 @@ namespace kai
 
 	void _AP_videoStream::updateStream(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		uint64_t tNow = getApproxTbootUs();
 
@@ -149,7 +148,7 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("fName = " + m_fName);

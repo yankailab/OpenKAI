@@ -25,7 +25,7 @@ namespace kai
 		{
 		}
 
-		int init(int nW)
+		bool init(int nW)
 		{
 			IF_F(nW < 0);
 			FilterBase<T>::m_nW = nW;

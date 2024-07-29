@@ -87,7 +87,7 @@ namespace kai
 
 	void _Uploader::updateUpload(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		while (!m_vFiles.empty())
 		{
@@ -197,7 +197,7 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_FileBase::console(pConsole);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("Uploading: " + m_fName);

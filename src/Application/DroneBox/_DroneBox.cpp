@@ -77,7 +77,7 @@ namespace kai
 
     void _DroneBox::updateDroneBox(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         string state = getState();
 

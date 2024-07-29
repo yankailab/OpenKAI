@@ -98,7 +98,7 @@ namespace kai
 
     void _PCstream::updatePCstream(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         readSharedMem();
         writeSharedMem();
@@ -106,7 +106,7 @@ namespace kai
 
     void _PCstream::addPCstream(void *p, const uint64_t &tExpire)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
         NULL_(p);
         _PCstream *pS = (_PCstream *)p;
 
@@ -167,7 +167,7 @@ namespace kai
 
     void _PCstream::copyTo(PointCloud *pPC, const uint64_t &tExpire)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
         NULL_(pPC);
 
         uint64_t tNow = getApproxTbootUs();

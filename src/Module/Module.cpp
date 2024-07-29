@@ -224,7 +224,6 @@ namespace kai
 #ifdef WITH_DNN
 #ifdef USE_OPENCV
 #ifdef USE_JETSON_INFERENCE
-		//	ADD_MODULE(_ImageNet);
 		ADD_MODULE(_DetectNet);
 #endif
 #ifdef USE_TF-LITE

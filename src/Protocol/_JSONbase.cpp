@@ -96,7 +96,7 @@ namespace kai
 
     void _JSONbase::send(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         if (m_ieSendHB.update(m_pT->getTfrom()))
         {

@@ -77,7 +77,7 @@ namespace kai
 
     void _GSVio::updateAlarm(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         bool bOn = m_pDio->readD(m_iDinOn);
         bool bOff = m_pDio->readD(m_iDinOff);

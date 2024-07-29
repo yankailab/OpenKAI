@@ -5,8 +5,8 @@ namespace kai
 
 	_AP_depthVision::_AP_depthVision()
 	{
-		m_pAP = NULL;
-		m_pDV = NULL;
+		m_pAP = nullptr;
+		m_pDV = nullptr;
 		m_nROI = 0;
 	}
 
@@ -14,44 +14,42 @@ namespace kai
 	{
 	}
 
-	bool _AP_depthVision::init(void *pKiss)
+	int _AP_depthVision::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
 
 		//link
 		string n;
-
 		n = "";
-		F_INFO(pK->v("APcopter_base", &n));
+		pK->v("APcopter_base", &n);
 		m_pAP = (_AP_base *)(pK->findModule(n));
 
 		n = "";
-		F_INFO(pK->v("_RGBDbase", &n));
+		pK->v("_RGBDbase", &n);
 		m_pDV = (_RGBDbase *)(pK->findModule(n));
-		IF_Fl(!m_pDV, n + " not found");
+		NULL__(m_pDV, OK_ERR_NOT_FOUND);
 
 		m_nROI = 0;
 		while (1)
 		{
-			IF_F(m_nROI >= N_DEPTH_ROI);
+			IF__(m_nROI >= N_DEPTH_ROI, OK_ERR_INVALID_VALUE);
 			Kiss *pKs = pK->child(m_nROI);
 			if (pKs->empty())
 				break;
 
 			DEPTH_ROI *pR = &m_pROI[m_nROI];
 			pR->init();
-			F_ERROR_F(pKs->v("orientation", (int *)&pR->m_orientation));
-			F_ERROR_F(pKs->v("l", &pR->m_roi.x));
-			F_ERROR_F(pKs->v("t", &pR->m_roi.y));
-			F_ERROR_F(pKs->v("r", &pR->m_roi.z));
-			F_ERROR_F(pKs->v("b", &pR->m_roi.w));
+			pKs->v("orientation", (int *)&pR->m_orientation);
+			pKs->v("l", &pR->m_roi.x);
+			pKs->v("t", &pR->m_roi.y);
+			pKs->v("r", &pR->m_roi.z);
+			pKs->v("b", &pR->m_roi.w);
 
 			m_nROI++;
 		}
 
-		return true;
+		return OK_OK;
 	}
 
 	void _AP_depthVision::update(void)
@@ -91,7 +89,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		Frame *pF = (Frame *)pFrame;
 		Mat *pM = pF->m();

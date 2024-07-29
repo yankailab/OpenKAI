@@ -25,23 +25,23 @@ namespace kai
         clReleaseContext(m_clContext);
     }
 
-    bool clBase::init(void *pKiss)
+    int clBase::init(void *pKiss)
     {
-        IF_F(!this->BASE::init(pKiss));
+        CHECK_(this->BASE::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("fKernel", &m_fKernel);
         pK->v("buildOpt", &m_buildOpt);
 
-        IF_F(!setupCL());
-        IF_F(!setupKernel());
+        IF__(!setupCL(), OK_ERR_INVALID_VALUE);
+        IF__(!setupKernel(), OK_ERR_INVALID_VALUE);
 
-        return true;
+        return OK_OK;
     }
 
-	bool clBase::link(void)
+	int clBase::link(void)
     {
-		IF_F(!this->BASE::link());
+		CHECK_(this->BASE::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
         // string n;
@@ -50,12 +50,12 @@ namespace kai
         // m_p = ( *)(pK->findModule(n));
         // IF_Fl(!m_p, n + ": not found");
 
-		return true;
+		return OK_OK;
     }
 
 	int clBase::check(void)
     {
-
+        return OK_OK;
     }
 
     bool clBase::setupCL(void)

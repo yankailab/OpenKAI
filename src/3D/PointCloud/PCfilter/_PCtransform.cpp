@@ -77,7 +77,7 @@ namespace kai
 
 	void _PCtransform::updateTransform(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 //		readPC(m_pInCtx.m_pPCB);
 		m_sPC.next()->Transform(m_mTt);

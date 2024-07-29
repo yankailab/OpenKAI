@@ -89,7 +89,7 @@ namespace kai
 
     void _AP_droneBox::updateAPdroneBox(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         int apMode = m_pAP->getMode();
         bool bApArmed = m_pAP->bApArmed();
@@ -213,7 +213,7 @@ namespace kai
 
     void _AP_droneBox::landingReady(bool bReady)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
         IF_(!bReady);
 
         if (getState() == "LANDING_REQUEST")
@@ -222,7 +222,7 @@ namespace kai
 
     void _AP_droneBox::takeoffReady(bool bReady)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
         IF_(!bReady);
 
         if (getState() == "TAKEOFF_REQUEST")

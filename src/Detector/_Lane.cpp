@@ -7,14 +7,12 @@
 
 #include "_Lane.h"
 
-#ifdef USE_OPENCV
-
 namespace kai
 {
 
 	_Lane::_Lane()
 	{
-		m_pV = NULL;
+		m_pV = nullptr;
 
 		m_roiLT.x = 0.2;
 		m_roiLT.y = 0.5;
@@ -42,47 +40,47 @@ namespace kai
 	{
 	}
 
-	bool _Lane::init(void *pKiss)
+	int _Lane::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("bDrawOverhead", &m_bDrawOverhead);
 		pK->v("bDrawFilter", &m_bDrawFilter);
 		pK->v("binMed", &m_binMed);
 
-		F_INFO(pK->v("roiLTx", &m_roiLT.x));
-		F_INFO(pK->v("roiLTy", &m_roiLT.y));
-		F_INFO(pK->v("roiLBx", &m_roiLB.x));
-		F_INFO(pK->v("roiLBy", &m_roiLB.y));
-		F_INFO(pK->v("roiRTx", &m_roiRT.x));
-		F_INFO(pK->v("roiRTy", &m_roiRT.y));
-		F_INFO(pK->v("roiRBx", &m_roiRB.x));
-		F_INFO(pK->v("roiRBy", &m_roiRB.y));
-		F_INFO(pK->v("overheadW", &m_sizeOverhead.x));
-		F_INFO(pK->v("overheadH", &m_sizeOverhead.y));
+		pK->v("roiLTx", &m_roiLT.x);
+		pK->v("roiLTy", &m_roiLT.y);
+		pK->v("roiLBx", &m_roiLB.x);
+		pK->v("roiLBy", &m_roiLB.y);
+		pK->v("roiRTx", &m_roiRT.x);
+		pK->v("roiRTy", &m_roiRT.y);
+		pK->v("roiRBx", &m_roiRB.x);
+		pK->v("roiRBy", &m_roiRB.y);
+		pK->v("overheadW", &m_sizeOverhead.x);
+		pK->v("overheadH", &m_sizeOverhead.y);
 
 		m_mOverhead = Mat(Size(m_sizeOverhead.x, m_sizeOverhead.y), CV_8UC3);
 
 		// color filters
 		Kiss *pKF = pK->child("colorFilter");
-		NULL_Fl(pKF, "colorFilter not found");
+		NULL__(pKF, OK_ERR_NOT_FOUND);
 
 		Kiss *pO;
 		m_nFilter = 0;
 		while (1)
 		{
-			IF_F(m_nFilter >= N_LANE_FILTER);
+			IF__(m_nFilter >= N_LANE_FILTER, OK_ERR_INVALID_VALUE);
 			pO = pKF->child(m_nFilter);
 			if (pO->empty())
 				break;
 
 			LANE_FILTER *pF = &m_pFilter[m_nFilter];
-			F_INFO(pO->v("iColorSpace", &pF->m_iColorSpace));
-			F_INFO(pO->v("iChannel", &pF->m_iChannel));
-			F_INFO(pO->v("nTile", &pF->m_nTile));
-			F_INFO(pO->v("thr", &pF->m_thr));
-			F_INFO(pO->v("clipLim", &pF->m_clipLim));
+			pO->v("iColorSpace", &pF->m_iColorSpace);
+			pO->v("iChannel", &pF->m_iChannel);
+			pO->v("nTile", &pF->m_nTile);
+			pO->v("thr", &pF->m_thr);
+			pO->v("clipLim", &pF->m_clipLim);
 			pF->init();
 
 			m_nFilter++;
@@ -90,27 +88,27 @@ namespace kai
 
 		// lanes
 		int nAvr = 0;
-		F_INFO(pK->v("nAvr", &nAvr));
+		pK->v("nAvr", &nAvr);
 		int nMed = 0;
-		F_INFO(pK->v("nMed", &nMed));
+		pK->v("nMed", &nMed);
 
 		Kiss *pKL = pK->child("lane");
-		NULL_Fl(pKL, "lane not found");
+		NULL__(pKL, OK_ERR_NOT_FOUND);
 
 		m_nLane = 0;
 		while (1)
 		{
-			IF_F(m_nLane >= N_LANE_FILTER);
+			IF__(m_nLane >= N_LANE_FILTER, OK_ERR_INVALID_VALUE);
 			pO = pKL->child(m_nLane);
 			if (pO->empty())
 				break;
 
 			LANE *pLane = &m_pLane[m_nLane];
 			pLane->init(m_sizeOverhead.y, nAvr, nMed);
-			F_INFO(pO->v("l", &pLane->m_ROI.x));
-			F_INFO(pO->v("t", &pLane->m_ROI.y));
-			F_INFO(pO->v("r", &pLane->m_ROI.z));
-			F_INFO(pO->v("b", &pLane->m_ROI.w));
+			pO->v("l", &pLane->m_ROI.x);
+			pO->v("t", &pLane->m_ROI.y);
+			pO->v("r", &pLane->m_ROI.z);
+			pO->v("b", &pLane->m_ROI.w);
 
 			m_nLane++;
 		}
@@ -124,23 +122,23 @@ namespace kai
 		}
 
 		string n = "";
-		F_ERROR_F(pK->v("_VisionBase", &n));
+		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->findModule(n));
-		NULL_Fl(m_pV, "_VisionBase is NULL");
+		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _Lane::start(void)
+	int _Lane::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _Lane::check(void)
 	{
-		NULL__(m_pV, -1);
-		IF__(m_pV->getFrameRGB()->m()->empty(), -1);
+		NULL__(m_pV, OK_ERR_NULLPTR);
+		IF__(m_pV->getFrameRGB()->m()->empty(), OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}
@@ -159,7 +157,7 @@ namespace kai
 
 	void _Lane::detect(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 		Mat *pM = m_pV->getFrameRGB()->m();
 
 		//Warp transform to get overhead view
@@ -239,7 +237,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		Frame *pF = (Frame*)pFrame;
 		Mat *pM = pF->m();
@@ -301,4 +299,3 @@ namespace kai
 	}
 
 }
-#endif

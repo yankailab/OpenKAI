@@ -5,8 +5,8 @@ namespace kai
 
 	_AP_GPS::_AP_GPS()
 	{
-		m_pAP = NULL;
-		m_pSB = NULL;
+		m_pAP = nullptr;
+		m_pSB = nullptr;
 
 		m_yaw = 0.0;
 		m_bYaw = false;
@@ -31,9 +31,9 @@ namespace kai
 	{
 	}
 
-	bool _AP_GPS::init(void *pKiss)
+	int _AP_GPS::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
     	
 
@@ -57,29 +57,29 @@ namespace kai
 		string n;
 
 		n = "";
-		F_ERROR_F(pK->v("_AP_base", &n));
+		pK->v("_AP_base", &n);
 		m_pAP = (_AP_base *)(pK->findModule(n));
-		IF_Fl(!m_pAP, n + ": not found");
+		NULL__(m_pAP, OK_ERR_NOT_FOUND);
 
 		n = "";
-		F_ERROR_F(pK->v("_NavBase", &n));
+		pK->v("_NavBase", &n);
 		m_pSB = (_NavBase *)(pK->findModule(n));
-		IF_Fl(!m_pSB, n + ": not found");
+		NULL_(m_pSB, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_GPS::start(void)
+	int _AP_GPS::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _AP_GPS::check(void)
 	{
-		NULL__(m_pAP, -1);
-		NULL__(m_pAP->m_pMav, -1);
-		NULL__(m_pSB, -1);
+		NULL__(m_pAP, OK_ERR_NULLPTR);
+		NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
+		NULL__(m_pSB, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}
@@ -99,7 +99,7 @@ namespace kai
 
 	void _AP_GPS::updateGPS(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		//	m_scApArm.update(m_pAP->bApArmed());
 		//	if(m_scApArm.bActive(true))

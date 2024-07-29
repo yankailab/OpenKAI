@@ -5,8 +5,8 @@ namespace kai
 
 	_AP_visionEstimate::_AP_visionEstimate()
 	{
-		m_pAP = NULL;
-		m_pNav = NULL;
+		m_pAP = nullptr;
+		m_pNav = nullptr;
 
 		m_linearAccelCov = 0.01;
 		m_angularVelCov = 0.01;
@@ -31,9 +31,9 @@ namespace kai
 	{
 	}
 
-	bool _AP_visionEstimate::init(void *pKiss)
+	int _AP_visionEstimate::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("bPos", &m_bPos);
@@ -54,40 +54,40 @@ namespace kai
 			m_mTaero2sensor = m_mTsensor2aero.inverse();
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_visionEstimate::link(void)
+	int _AP_visionEstimate::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
 		n = "";
-		F_ERROR_F(pK->v("_AP_base", &n));
+		pK->v("_AP_base", &n);
 		m_pAP = (_AP_base *)(pK->findModule(n));
-		IF_Fl(!m_pAP, n + ": not found");
+		NULL__(m_pAP, OK_ERR_NOT_FOUND);
 
 		n = "";
-		F_ERROR_F(pK->v("_NavBase", &n));
+		pK->v("_NavBase", &n);
 		m_pNav = (_NavBase *)(pK->findModule(n));
-		IF_Fl(!m_pNav, n + ": not found");
+		NULL__(m_pNav, OK_ERR_NOT_FOUND);
 
 		return true;
 	}
 
-	bool _AP_visionEstimate::start(void)
+	int _AP_visionEstimate::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _AP_visionEstimate::check(void)
 	{
-		NULL__(m_pAP, -1);
-		NULL__(m_pAP->m_pMav, -1);
-		NULL__(m_pNav, -1);
+		NULL__(m_pAP, OK_ERR_NULLPTR);
+		NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
+		NULL__(m_pNav, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}

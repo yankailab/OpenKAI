@@ -56,7 +56,7 @@ namespace kai
 
 	void _StepperGripper::updateMove(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		IF_(m_bState == m_bOpen);
 		IF_(!setMove(!m_bState));

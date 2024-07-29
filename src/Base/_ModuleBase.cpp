@@ -87,21 +87,21 @@ namespace kai
 
     void _ModuleBase::pause(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         m_pT->pause();
     }
 
     void _ModuleBase::resume(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         m_pT->run();
     }
 
     void _ModuleBase::stop(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         m_pT->stop();
     }

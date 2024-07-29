@@ -5,8 +5,8 @@ namespace kai
 
 	_AP_landingTarget::_AP_landingTarget()
 	{
-		m_pDS = NULL;
-		m_pU = NULL;
+		m_pDS = nullptr;
+		m_pU = nullptr;
 		m_vFov = 60 * DEG_2_RAD;
 		m_vPsp.set(0.5, 0.5);
 
@@ -32,9 +32,9 @@ namespace kai
 	{
 	}
 
-	bool _AP_landingTarget::init(void *pKiss)
+	int _AP_landingTarget::init(void *pKiss)
 	{
-		IF_F(!this->_AP_move::init(pKiss));
+		CHECK_(this->_AP_move::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("vPsp", &m_vPsp);
@@ -54,7 +54,8 @@ namespace kai
 			m_yawRate *= DEG_2_RAD;
 
 		Kiss *pKt = pK->child("tags");
-		NULL_T(pKt);
+		NULL__(pKt, OK_OK);
+
 		Kiss *pT;
 		int i = 0;
 		while (!(pT = pKt->child(i++))->empty())
@@ -66,12 +67,12 @@ namespace kai
 			m_vTags.push_back(t);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_landingTarget::link(void)
+	int _AP_landingTarget::link(void)
 	{
-		IF_F(!this->_AP_move::link());
+		CHECK_(this->_AP_move::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
@@ -84,19 +85,19 @@ namespace kai
 		pK->v("_Universe", &n);
 		m_pU = (_Universe *)pK->findModule(n);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_landingTarget::start(void)
+	int _AP_landingTarget::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _AP_landingTarget::check(void)
 	{
-		NULL__(m_pDS, -1);
-		NULL__(m_pU, -1);
+		NULL__(m_pDS, OK_ERR_NULLPTR);
+		NULL__(m_pU, OK_ERR_NULLPTR);
 
 		return this->_AP_move::check();
 	}
@@ -115,7 +116,7 @@ namespace kai
 
 	void _AP_landingTarget::updateLandingTarget(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		if (!findTag())
 		{

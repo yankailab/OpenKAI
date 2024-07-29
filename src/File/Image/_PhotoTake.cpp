@@ -101,7 +101,7 @@ namespace kai
 
 	void _PhotoTake::updateTake(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		if (m_bfProcess.b(pt_shutter, true))
 			take();
@@ -193,7 +193,7 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_FileBase::console(pConsole);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("iTake = " + i2str(m_iTake));

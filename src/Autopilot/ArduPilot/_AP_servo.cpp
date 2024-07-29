@@ -5,26 +5,26 @@ namespace kai
 
 	_AP_servo::_AP_servo()
 	{
-		m_pAP = NULL;
+		m_pAP = nullptr;
 	}
 
 	_AP_servo::~_AP_servo()
 	{
 	}
 
-	bool _AP_servo::init(void *pKiss)
+	int _AP_servo::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
     	
-
 		string n;
 		n = "";
-		F_ERROR_F(pK->v("_AP_base", &n));
+		pK->v("_AP_base", &n);
 		m_pAP = (_AP_base *)(pK->findModule(n));
+		NULL__(m_pAP, OK_ERR_NOT_FOUND);
 
 		Kiss *pKc = pK->child("channels");
-		NULL_T(pKc);
+		NULL__(pKc, OK_OK);
 
 		int i = 0;
 		while (1)
@@ -40,19 +40,19 @@ namespace kai
 			m_vServo.push_back(s);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _AP_servo::start(void)
+	int _AP_servo::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _AP_servo::check(void)
 	{
-		NULL__(m_pAP, -1);
-		NULL__(m_pAP->m_pMav, -1);
+		NULL__(m_pAP, OK_ERR_NULLPTR);
+		NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}
@@ -71,7 +71,7 @@ namespace kai
 
 	void _AP_servo::updateServo(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		_Mavlink *pMav = m_pAP->m_pMav;
 
@@ -85,7 +85,7 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		for (AP_SERVO s : m_vServo)
 		{

@@ -19,7 +19,7 @@ namespace kai
 		Predict<float> m_pred;
 		Hold<float> m_hold;
 
-		int init(int nWmed, int nWpred, float dThold)
+		bool init(int nWmed, int nWpred, float dThold)
 		{
 			IF_F(!m_med.init(nWmed));
 			IF_F(!m_pred.init(nWpred));

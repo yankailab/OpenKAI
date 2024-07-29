@@ -17,11 +17,10 @@ namespace kai
     {
     }
 
-    bool _Drive::init(void *pKiss)
+    int _Drive::init(void *pKiss)
     {
-        IF_F(!this->_ModuleBase::init(pKiss));
+        CHECK_(this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
-    	
 
         pK->v("nSpd", &m_nSpd);
         pK->v("nDir", &m_nDir);
@@ -30,7 +29,7 @@ namespace kai
         pK->v("vStrRange", &m_vStrRange);
 
         Kiss *pKM = pK->child("motor");
-        NULL_Fl(pKM, "motor not found");
+        NULL__(pKM, OK_ERR_NOT_FOUND);
 
         int i = 0;
         while (1)
@@ -52,12 +51,12 @@ namespace kai
             m_vM.push_back(m);
         }
 
-        return true;
+        return OK_OK;
     }
 
-    bool _Drive::start(void)
+    int _Drive::start(void)
     {
-        NULL_F(m_pT);
+        NULL__(m_pT, OK_ERR_NULLPTR);
         return m_pT->start(getUpdate, this);
     }
 

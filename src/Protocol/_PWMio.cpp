@@ -55,7 +55,7 @@ namespace kai
 
 	void _PWMio::send(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		uint8_t pB[256];
 		pB[0] = PB_BEGIN;  // start mark

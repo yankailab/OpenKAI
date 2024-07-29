@@ -104,7 +104,7 @@ namespace kai
 
     void _SwarmCtrlUI::send(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         uint64_t t = getApproxTbootUs();
 
@@ -120,7 +120,7 @@ namespace kai
 
     void _SwarmCtrlUI::sendHeartbeat(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         object o;
         JO(o, "cmd", "hb");
@@ -132,7 +132,7 @@ namespace kai
 
     void _SwarmCtrlUI::sendNodeUpdate(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         SWARM_NODE* pN = NULL;
         int i = 0;
@@ -155,7 +155,7 @@ namespace kai
 
     void _SwarmCtrlUI::sendNodeClearAll(void)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         object o;
         JO(o, "cmd", "ndClearAll");
@@ -195,7 +195,7 @@ namespace kai
 
     void _SwarmCtrlUI::setState(picojson::object &o)
     {
-        IF_(check() < 0);
+        IF_(check() != OK_OK);
 
         IF_(!o["id"].is<double>());
         IF_(!o["s"].is<string>());

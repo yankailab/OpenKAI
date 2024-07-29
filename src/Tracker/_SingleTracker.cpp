@@ -60,7 +60,7 @@ namespace kai
 
 	void _SingleTracker::track(void)
 	{
-		IF_(check() < 0);
+		IF_(check() != OK_OK);
 
 		Frame *pFrame = m_pV->getFrameRGB();
 		IF_(pFrame->bEmpty());
