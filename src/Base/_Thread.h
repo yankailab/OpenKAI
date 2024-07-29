@@ -28,9 +28,9 @@ namespace kai
 		_Thread();
 		virtual ~_Thread();
 
-		virtual bool init(void *pKiss);
-		virtual bool link(void);
-		virtual bool start(void *(*__start_routine)(void *), void *__restrict __arg);
+		virtual int init(void *pKiss);
+		virtual int link(void);
+		virtual int start(void *(*__start_routine)(void *), void *__restrict __arg);
 		virtual void console(void *pConsole);
 
 		bool bAlive(void);

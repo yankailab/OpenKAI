@@ -17,18 +17,18 @@ namespace kai
         m_type = pc_frame;
         m_nPresv = 0;
         m_nPresvNext = 0;
-        m_tStamp = NULL;
+        m_tStamp = nullptr;
 
-        m_pGpSM = NULL;
+        m_pGpSM = nullptr;
     }
 
     _PCframe::~_PCframe()
     {
     }
 
-    bool _PCframe::init(void *pKiss)
+    int _PCframe::init(void *pKiss)
     {
-        IF_F(!this->_GeometryBase::init(pKiss));
+        CHECK_(this->_GeometryBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("nPresv", &m_nPresv);
@@ -38,7 +38,7 @@ namespace kai
         return initGrid();
     }
 
-    bool _PCframe::initGrid(void)
+    int _PCframe::initGrid(void)
     {
         mutexLock();
 
@@ -66,14 +66,18 @@ namespace kai
 
         // share mem
         m_pGpSM = new GEOMETRY_POINT[m_nPresv];
-        NULL_F(m_pGpSM);
+        if (!m_pGpSM)
+        {
+            mutexUnlock();
+            return OK_ERR_ALLOCATION;
+        }
 
         for (int i = 0; i < m_nPresv; i++)
             m_pGpSM[i].clear();
 
         mutexUnlock();
 
-        return true;
+        return OK_OK;
     }
 
     void _PCframe::clear(void)
@@ -91,7 +95,7 @@ namespace kai
         mutexUnlock();
     }
 
-    bool _PCframe::start(void)
+    int _PCframe::start(void)
     {
         NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
@@ -166,7 +170,7 @@ namespace kai
         PointCloud *pPC = m_sPC.get();
         int nPw = pPC->points_.size();
         nPw = small<int>(nPw, m_nPresv);
-        nPw = small<int>(nPw, m_pSM->nB()/sizeof(GEOMETRY_POINT) );
+        nPw = small<int>(nPw, m_pSM->nB() / sizeof(GEOMETRY_POINT));
 
         uint64_t tNow = getTbootUs();
 

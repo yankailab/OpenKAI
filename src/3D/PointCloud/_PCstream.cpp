@@ -14,7 +14,7 @@ namespace kai
     {
         m_type = pc_stream;
 
-        m_pP = NULL;
+        m_pP = nullptr;
         m_nP = 256;
         m_iP = 0;
     }
@@ -26,23 +26,27 @@ namespace kai
         DEL(m_pP);
     }
 
-    bool _PCstream::init(void *pKiss)
+    int _PCstream::init(void *pKiss)
     {
-        IF_F(!this->_GeometryBase::init(pKiss));
+        CHECK_(this->_GeometryBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("nP", &m_nP);
-        IF_F(m_nP <= 0);
+        IF__(m_nP <= 0, OK_ERR_INVALID_VALUE);
 
         return initGrid();
     }
 
-    bool _PCstream::initGrid(void)
+    int _PCstream::initGrid(void)
     {
         mutexLock();
 
         m_pP = new GEOMETRY_POINT[m_nP];
-        NULL_F(m_pP);
+        if(!m_pP)
+        {
+            mutexUnlock();
+            return OK_ERR_ALLOCATION;
+        }
         m_iP = 0;
 
         for (int i = 0; i < m_nP; i++)
@@ -50,7 +54,7 @@ namespace kai
 
         mutexUnlock();
 
-        return true;
+        return OK_OK;
     }
 
     void _PCstream::clear(void)
@@ -65,15 +69,15 @@ namespace kai
         mutexUnlock();
     }
 
-    bool _PCstream::start(void)
+    int _PCstream::start(void)
     {
-        NULL_F(m_pT);
+        NULL__(m_pT, OK_ERR_NULLPTR);
         return m_pT->start(getUpdate, this);
     }
 
     int _PCstream::check(void)
     {
-        NULL__(m_pP, -1);
+        NULL__(m_pP, OK_ERR_NULLPTR);
 
         return this->_GeometryBase::check();
     }

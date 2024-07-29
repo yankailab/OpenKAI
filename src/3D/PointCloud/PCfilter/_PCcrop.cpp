@@ -18,9 +18,9 @@ namespace kai
 	{
 	}
 
-	bool _PCcrop::init(void *pKiss)
+	int _PCcrop::init(void *pKiss)
 	{
-		IF_F(!_GeometryBase::init(pKiss));
+		CHECK_(_GeometryBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		Kiss *pF = pK->child("vFilter");
@@ -43,12 +43,12 @@ namespace kai
 			m_vFilter.push_back(v);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _PCcrop::start(void)
+	int _PCcrop::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

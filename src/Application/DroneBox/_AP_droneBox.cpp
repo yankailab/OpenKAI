@@ -5,8 +5,8 @@ namespace kai
 
     _AP_droneBox::_AP_droneBox()
     {
-        m_pSC =NULL;
-        m_pAP = NULL;
+        m_pSC = nullptr;
+        m_pAP = nullptr;
 
         m_gpsToutSec = 100;
         m_gpsHaccMax = 1000; //1m uncertainty
@@ -21,9 +21,9 @@ namespace kai
     {
     }
 
-    bool _AP_droneBox::init(void *pKiss)
+    int _AP_droneBox::init(void *pKiss)
     {
-        IF_F(!this->_ModuleBase::init(pKiss));
+        CHECK_(this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("gpsToutSec", &m_gpsToutSec);
@@ -32,12 +32,12 @@ namespace kai
         pK->v("altTakeoff", &m_altTakeoff);
         pK->v("altLand", &m_altLand);
 
-        return true;
+        return OK_OK;
     }
 
-	bool _AP_droneBox::link(void)
+	int _AP_droneBox::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
@@ -45,27 +45,27 @@ namespace kai
         n = "";
         pK->v("_AP_base", &n);
         m_pAP = (_AP_base *)(pK->findModule(n));
-        IF_Fl(!m_pAP, n + ": not found");
+        NULL__(m_pAP, OK_ERR_NOT_FOUND);
 
         n = "";
         pK->v("_StateControl", &n);
         m_pSC = (_StateControl *)(pK->findModule(n));
-        IF_Fl(!m_pSC, n + ": not found");
+        NULL__(m_pSC, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
-    bool _AP_droneBox::start(void)
+    int _AP_droneBox::start(void)
     {
-        NULL_F(m_pT);
+        NULL__(m_pT, OK_ERR_NULLPTR);
         return m_pT->start(getUpdate, this);
     }
 
     int _AP_droneBox::check(void)
     {
-        NULL__(m_pSC, -1);
-        NULL__(m_pAP, -1);
-        NULL__(m_pAP->m_pMav, -1);
+        NULL__(m_pSC, OK_ERR_NULLPTR);
+        NULL__(m_pAP, OK_ERR_NULLPTR);
+        NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
 
         return this->_ModuleBase::check();
     }

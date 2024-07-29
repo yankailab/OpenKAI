@@ -14,16 +14,15 @@ using namespace std;
 
 namespace kai
 {
-
 	class BASE
 	{
 	public:
 		BASE();
 		virtual ~BASE();
 
-		virtual bool init(void *pKiss);
-		virtual bool link(void);
-		virtual bool start(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
+		virtual int start(void);
 		virtual int check(void);
 
 		virtual void pause(void);

@@ -20,21 +20,21 @@ namespace kai
 	{
 	}
 
-	bool _StepperGripper::init(void *pKiss)
+	int _StepperGripper::init(void *pKiss)
 	{
-		IF_F(!this->_HYMCU_RS485::init(pKiss));
+		CHECK_(this->_HYMCU_RS485::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("pOpen", &m_pOpen);
 		pK->v("pClose", &m_pClose);
 		pK->v("bOpen", &m_bOpen);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _StepperGripper::start(void)
+	int _StepperGripper::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

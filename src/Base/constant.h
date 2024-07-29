@@ -33,9 +33,22 @@
 #define _Console_X_FPS 18
 #define _Console_X_MSG 30
 
-#define F_OPEN 0
-#define F_READY 1
-#define F_RESET 2
-#define F_ERROR 3
+#define OK_OK 0
+#define OK_ERR_UNKNOWN 1024
+#define OK_ERR_NULLPTR 1025
+#define OK_ERR_UNIMPLEMENTED 1026
+#define OK_ERR_DUPLICATE 1027
+#define OK_ERR_INVALID_VALUE 1028
+#define OK_ERR_NOT_FOUND 1029
+#define OK_ERR_ALLOCATION 1030
+#define OK_ERR_NOT_READY 1031
+
+
+
+
+// #define F_OPEN 0
+// #define F_READY 1
+// #define F_RESET 2
+// #define F_ERROR 3
 
 #endif

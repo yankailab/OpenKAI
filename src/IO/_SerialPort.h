@@ -24,11 +24,11 @@ namespace kai
 		_SerialPort();
 		~_SerialPort();
 
-		virtual bool init(void *pKiss);
-		virtual bool link(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
 		virtual bool open(void);
 		virtual void close(void);
-		virtual bool start(void);
+		virtual int start(void);
 		virtual void console(void *pConsole);
 
 	private:

@@ -23,10 +23,10 @@ namespace kai
 		_ROS_fastLio();
 		virtual ~_ROS_fastLio();
 
-		virtual bool init(void *pKiss);
-		virtual bool link(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
 		virtual int check(void);
-		virtual bool start(void);
+		virtual int start(void);
 		virtual void console(void *pConsole);
 
 	private:

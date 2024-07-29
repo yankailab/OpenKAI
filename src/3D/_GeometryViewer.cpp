@@ -14,13 +14,13 @@ namespace kai
 	{
 		m_vWinSize.set(1280, 720);
 
-		m_pTui = NULL;
+		m_pTui = nullptr;
 		m_pathRes = "";
 		m_device = "CPU:0";
 		m_vCoR.set(0, 0, 0);
 
-		m_pWin = NULL;
-		m_pUIstate = NULL;
+		m_pWin = nullptr;
+		m_pUIstate = nullptr;
 		m_dirSave = "/home/lab/";
 
 		m_bFullScreen = false;
@@ -35,9 +35,9 @@ namespace kai
 		DEL(m_pWin);
 	}
 
-	bool _GeometryViewer::init(void *pKiss)
+	int _GeometryViewer::init(void *pKiss)
 	{
-		IF_F(!this->_GeometryBase::init(pKiss));
+		CHECK_(this->_GeometryBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("vWinSize", &m_vWinSize);
@@ -70,20 +70,23 @@ namespace kai
 		utility::SetVerbosityLevel(utility::VerbosityLevel::Error);
 
 		Kiss *pKt = pK->child("threadUI");
-		IF_F(pKt->empty());
+		IF__(pKt->empty(), OK_ERR_NOT_FOUND);
+		
 		m_pTui = new _Thread();
-		if (!m_pTui->init(pKt))
+		int r = m_pTui->init(pKt);
+		if (r != OK_OK)
 		{
 			DEL(m_pTui);
-			return false;
+			LOG_E("ThreadUI init failed");
+			return r;
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _GeometryViewer::link(void)
+	int _GeometryViewer::link(void)
 	{
-		IF_F(!this->_GeometryBase::link());
+		CHECK_(this->_GeometryBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
 		Kiss *pKg = pK->child("geometry");
@@ -119,18 +122,18 @@ namespace kai
 			m_vGO.push_back(g);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _GeometryViewer::start(void)
+	int _GeometryViewer::start(void)
 	{
-		NULL_F(m_pT);
-		IF_F(!m_pT->start(getUpdate, this));
+		NULL__(m_pT, OK_ERR_NULLPTR);
+		CHECK_(m_pT->start(getUpdate, this));
 
-		NULL_F(m_pTui);
-		IF_F(!m_pTui->start(getUpdateUI, this));
+		NULL__(m_pTui, OK_ERR_NULLPTR);
+		CHECK_(m_pTui->start(getUpdateUI, this));
 
-		return true;
+		return OK_OK;
 	}
 
 	int _GeometryViewer::check(void)
@@ -143,7 +146,7 @@ namespace kai
 		// wait for the UI thread to get window ready
 		m_pT->sleepT(USEC_1SEC);
 
-		while(!addAllGeometries())
+		while (!addAllGeometries())
 			sleep(1);
 
 		resetCamPose();

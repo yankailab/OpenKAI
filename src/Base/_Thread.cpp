@@ -39,21 +39,21 @@ namespace kai
 		pthread_cond_destroy(&m_wakeupSignal);
 	}
 
-	bool _Thread::init(void *pKiss)
+	int _Thread::init(void *pKiss)
 	{
-		IF_F(!this->BASE::init(pKiss));
+		CHECK_(this->BASE::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		float FPS = DEFAULT_FPS;
 		pK->v("FPS", &FPS);
 		setTargetFPS(FPS);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _Thread::link(void)
+	int _Thread::link(void)
 	{
-		IF_F(!this->BASE::link());
+		CHECK_(this->BASE::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		vector<string> vRunT;
@@ -63,27 +63,31 @@ namespace kai
 		for (string s : vRunT)
 		{
 			_Thread *pT = (_Thread *)(pK->findModule(s));
-			NULL_d_F(pT, LOG_E("Instance not found: " + s));
+			if(!pT)
+			{
+				LOG_I("Instance not found: " + s);
+				continue;
+			}
 
 			m_vRunThread.push_back(pT);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _Thread::start(void *(*__start_routine)(void *),
+	int _Thread::start(void *(*__start_routine)(void *),
 						void *__restrict __arg)
 	{
-		IF_F(m_threadID != 0);
+		IF__(m_threadID != 0, OK_ERR_DUPLICATE);
 
 		m_setState = thread_run;
 		m_tFrom = getApproxTbootUs();
 
 		int r = pthread_create(&m_threadID, 0, __start_routine, __arg);
-		IF_F(r != 0);
+		IF__(r != 0, r);
 
 		m_state = thread_run;
-		return true;
+		return OK_OK;
 	}
 
 	bool _Thread::bAlive(void)

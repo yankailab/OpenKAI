@@ -25,8 +25,8 @@ namespace kai
 		_TCPserver();
 		virtual ~_TCPserver();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 		void console(void *pConsole);
 		_TCPclient *getFirstSocket(void);
 

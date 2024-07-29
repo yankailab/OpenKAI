@@ -14,7 +14,7 @@ namespace kai
 
 	BASE::BASE()
 	{
-		m_pKiss = NULL;
+		m_pKiss = nullptr;
 		m_bLog = false;
 	}
 
@@ -22,9 +22,9 @@ namespace kai
 	{
 	}
 
-	bool BASE::init(void *pKiss)
+	int BASE::init(void *pKiss)
 	{
-		NULL_F(pKiss);
+		NULL__(pKiss, OK_ERR_NULLPTR);
 
 		m_pKiss = pKiss;
 		Kiss *pK = (Kiss *)pKiss;
@@ -32,15 +32,37 @@ namespace kai
 
 		pK->v("bLog", &m_bLog);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool BASE::link(void)
+	int BASE::link(void)
 	{
-		NULL_F(m_pKiss);
+		NULL__(m_pKiss, OK_ERR_NULLPTR);
 
-		return true;
+		return OK_OK;
 	}
+
+	int BASE::start(void)
+	{
+		return OK_OK;
+	}
+
+	int BASE::check(void)
+	{
+		return OK_OK;
+	}
+
+    void BASE::pause(void)
+    {
+    }
+
+    void BASE::resume(void)
+    {
+    }
+
+    void BASE::stop(void)
+    {
+    }
 
 	string BASE::getName(void)
 	{
@@ -58,36 +80,14 @@ namespace kai
 		return ((Kiss *)m_pKiss)->getClass();
 	}
 
-	bool BASE::start(void)
-	{
-		return true;
-	}
-
-    void BASE::pause(void)
-    {
-    }
-
-    void BASE::resume(void)
-    {
-    }
-
-    void BASE::stop(void)
-    {
-    }
-
-	int BASE::check(void)
-	{
-		return 0;
-	}
-
 	int BASE::serialize(uint8_t *pB, int nB)
 	{
-		return 0;
+		return OK_ERR_UNIMPLEMENTED;
 	}
 
 	int BASE::deSerialize(uint8_t *pB, int nB)
 	{
-		return 0;
+		return OK_ERR_UNIMPLEMENTED;
 	}
 
 	void BASE::draw(void *pFrame)

@@ -71,7 +71,7 @@ namespace kai
         LivoxLidar(const LivoxLidar &) = delete;
         ~LivoxLidar();
         LivoxLidar &operator=(const LivoxLidar &) = delete;
-        virtual bool init(void *pKiss);
+        virtual int init(void *pKiss);
 
         static LivoxLidar &GetInstance()
         {

@@ -20,34 +20,34 @@
 namespace kai
 {
 
-class _PCsend: public _GeometryBase
-{
-public:
-	_PCsend();
-	virtual ~_PCsend();
-
-	bool init(void* pKiss);
-	bool start(void);
-	int check(void);
-
-private:
-	void sendPC(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _PCsend : public _GeometryBase
 	{
-		((_PCsend *) This)->update();
-		return NULL;
-	}
+	public:
+		_PCsend();
+		virtual ~_PCsend();
 
-public:
-	_IObase* m_pIO;
+		int init(void *pKiss);
+		int start(void);
+		int check(void);
 
-	int m_iPsent;
+	private:
+		void sendPC(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_PCsend *)This)->update();
+			return NULL;
+		}
 
-	uint8_t*	m_pB;
-	int			m_nB;
-    uint64_t    m_tInt;
-};
+	public:
+		_IObase *m_pIO;
+
+		int m_iPsent;
+
+		uint8_t *m_pB;
+		int m_nB;
+		uint64_t m_tInt;
+	};
 
 }
 #endif

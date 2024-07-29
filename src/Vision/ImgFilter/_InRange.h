@@ -19,9 +19,9 @@ namespace kai
 		_InRange();
 		virtual ~_InRange();
 
-		bool init(void *pKiss);
-		bool link(void);
-		bool start(void);
+		int init(void *pKiss);
+		int link(void);
+		int start(void);
 		bool open(void);
 		void close(void);
 

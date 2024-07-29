@@ -21,8 +21,8 @@ namespace kai
 		_ActuatorSync();
 		~_ActuatorSync();
 
-		virtual bool init(void *pKiss);
-		virtual bool start(void);
+		virtual int init(void *pKiss);
+		virtual int start(void);
 		virtual int check(void);
 
 		virtual void setPtarget(int i, float nP);

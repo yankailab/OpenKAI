@@ -24,9 +24,9 @@ namespace kai
         _Livox();
         ~_Livox();
 
-        virtual bool init(void *pKiss);
+        virtual int init(void *pKiss);
         virtual int check(void);
-        virtual bool start(void);
+        virtual int start(void);
 
         virtual void startStream(void);
         virtual void stopStream(void);

@@ -18,8 +18,8 @@ namespace kai
 		_PWMio();
 		~_PWMio();
 
-		virtual bool init(void *pKiss);
-		virtual bool start(void);
+		virtual int init(void *pKiss);
+		virtual int start(void);
 		virtual void console(void *pConsole);
 
 		virtual void set(int iChan, uint16_t v);

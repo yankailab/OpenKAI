@@ -19,8 +19,8 @@ namespace kai
 		_TCPclient();
 		virtual ~_TCPclient();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 		bool open(void);
 		void close(void);
 		void console(void *pConsole);

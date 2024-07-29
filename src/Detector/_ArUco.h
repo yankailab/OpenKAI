@@ -19,8 +19,8 @@ namespace kai
 		_ArUco();
 		virtual ~_ArUco();
 
-		virtual bool init(void *pKiss);
-		virtual bool start(void);
+		virtual int init(void *pKiss);
+		virtual int start(void);
 		virtual int check(void);
 		virtual void draw(void *pFrame);
 		virtual void console(void *pConsole);

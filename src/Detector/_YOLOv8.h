@@ -21,8 +21,8 @@ namespace kai
 		_YOLOv8();
 		~_YOLOv8();
 
-		virtual bool init(void *pKiss);
-		virtual bool start(void);
+		virtual int init(void *pKiss);
+		virtual int start(void);
 		virtual int check(void);
 
 		virtual bool loadModel(void);

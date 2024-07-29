@@ -25,8 +25,8 @@ namespace kai
 		_TFmobileNet();
 		~_TFmobileNet();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 		int check(void);
 
 	private:

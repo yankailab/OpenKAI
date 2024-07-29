@@ -16,8 +16,8 @@ namespace kai
 		_APcopter_photo();
 		~_APcopter_photo();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 		void update(void);
 		int check(void);
 		void console(void *pConsole);

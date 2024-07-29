@@ -22,8 +22,8 @@ namespace kai
 		_FileBase();
 		~_FileBase();
 
-		virtual bool init(void *pKiss);
-		virtual bool start(void);
+		virtual int init(void *pKiss);
+		virtual int start(void);
 
 		bool createDir(const string &dir);
 		bool removeDir(const string &dir);

@@ -196,8 +196,8 @@ namespace kai
 		_SwarmBase();
 		virtual ~_SwarmBase();
 
-		virtual bool init(void *pKiss);
-		virtual bool link(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
 		virtual int check(void);
 		virtual void console(void *pConsole);
 

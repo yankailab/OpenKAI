@@ -70,8 +70,8 @@ namespace kai
 		_CutOut();
 		~_CutOut();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 
 	private:
 		void process(CutOutDir *pD);

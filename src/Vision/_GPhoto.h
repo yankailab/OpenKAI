@@ -19,8 +19,8 @@ public:
 	_GPhoto();
 	virtual ~_GPhoto();
 
-	bool init(void* pKiss);
-	bool start(void);
+	int init(void* pKiss);
+	int start(void);
 	bool open(void);
 	void close(void);
 

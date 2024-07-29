@@ -19,10 +19,10 @@ namespace kai
 		_ColorConvert();
 		virtual ~_ColorConvert();
 
-		bool init(void *pKiss);
-		bool link(void);
+		int init(void *pKiss);
+		int link(void);
 		int check(void);
-		bool start(void);
+		int start(void);
 		bool open(void);
 		void close(void);
 

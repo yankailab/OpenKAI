@@ -20,8 +20,8 @@ namespace kai
 		_PCtransform();
 		virtual ~_PCtransform();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 		int check(void);
 
 		virtual void setTranslationMatrix(Matrix4d_u &mTt);

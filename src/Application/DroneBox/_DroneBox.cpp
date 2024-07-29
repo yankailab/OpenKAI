@@ -5,8 +5,8 @@ namespace kai
 
     _DroneBox::_DroneBox()
     {
-        m_pSC = NULL;
-        m_pMB = NULL;
+        m_pSC = nullptr;
+        m_pMB = nullptr;
         m_iSlave = 1;
         m_lastCMD = dbx_unknown;
 
@@ -18,47 +18,47 @@ namespace kai
     {
     }
 
-    bool _DroneBox::init(void *pKiss)
+    int _DroneBox::init(void *pKiss)
     {
-        IF_F(!this->_ModuleBase::init(pKiss));
+        CHECK_(this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 		
         pK->v("ID", &m_ID);
         pK->v("vPos", &m_vPos);
         pK->v("iSlave", &m_iSlave);
 
-        return true;
+        return OK_OK;
     }
 
-	bool _DroneBox::link(void)
+	int _DroneBox::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
         n = "";
         pK->v("_StateControl", &n);
         m_pSC = (_StateControl *)(pK->findModule(n));
-        IF_Fl(!m_pSC, n + ": not found");
+        NULL__(m_pSC, OK_ERR_NOT_FOUND);
 
         n = "";
         pK->v("_Modbus", &n);
         m_pMB = (_Modbus *)(pK->findModule(n));
-        IF_Fl(!m_pMB, n + ": not found");
+        NULL__(m_pMB, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
-    bool _DroneBox::start(void)
+    int _DroneBox::start(void)
     {
-        NULL_F(m_pT);
+        NULL__(m_pT, OK_ERR_NULLPTR);
         return m_pT->start(getUpdate, this);
     }
 
     int _DroneBox::check(void)
     {
-        NULL__(m_pMB, -1);
-        IF__(!m_pMB->bOpen(), -1);
+        NULL__(m_pMB, OK_ERR_NULLPTR);
+        IF__(!m_pMB->bOpen(), OK_ERR_NOT_READY);
 
         return this->_ModuleBase::check();
     }

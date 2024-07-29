@@ -13,8 +13,8 @@ namespace kai
 		_Modbus();
 		~_Modbus();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 		bool open(void);
 		bool bOpen(void);
 

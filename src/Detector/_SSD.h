@@ -20,8 +20,8 @@ namespace kai
 		_SSD();
 		~_SSD();
 
-		virtual bool init(void *pKiss);
-		virtual bool start(void);
+		virtual int init(void *pKiss);
+		virtual int start(void);
 		virtual int check(void);
 
 	private:

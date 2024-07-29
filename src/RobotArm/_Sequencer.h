@@ -73,8 +73,8 @@ namespace kai
 		_Sequencer(void);
 		virtual ~_Sequencer();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 		int check(void);
 
 		void on(void);

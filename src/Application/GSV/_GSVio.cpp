@@ -22,9 +22,9 @@ namespace kai
     {
     }
 
-    bool _GSVio::init(void *pKiss)
+    int _GSVio::init(void *pKiss)
     {
-        IF_F(!this->_ModuleBase::init(pKiss));
+        CHECK_(this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("iDinOn", &m_iDinOn);
@@ -34,12 +34,12 @@ namespace kai
         pK->v("iDoutNO", &m_iDoutNO);
         pK->v("iDoutNC", &m_iDoutNC);
 
-        return true;
+        return OK_OK;
     }
 
-    bool _GSVio::link(void)
+    int _GSVio::link(void)
     {
-        IF_F(!this->_ModuleBase::link());
+        CHECK_(this->_ModuleBase::link());
         Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
@@ -47,18 +47,18 @@ namespace kai
         pK->v("_ADIObase", &n);
         m_pDio = (_ADIObase *)(pK->findModule(n));
 
-        return true;
+        return OK_OK;
     }
 
-    bool _GSVio::start(void)
+    int _GSVio::start(void)
     {
-        NULL_F(m_pT);
+        NULL__(m_pT, OK_ERR_NULLPTR);
         return m_pT->start(getUpdate, this);
     }
 
     int _GSVio::check(void)
     {
-        NULL__(m_pDio, -1);
+        NULL__(m_pDio, OK_ERR_NULLPTR);
 
         return this->_ModuleBase::check();
     }

@@ -38,9 +38,9 @@ namespace kai
 		_IRLock();
 		virtual ~_IRLock();
 
-		bool init(void *pKiss);
-		bool link(void);
-		bool start(void);
+		int init(void *pKiss);
+		int link(void);
+		int start(void);
 		void console(void *pConsole);
 		int check(void);
 

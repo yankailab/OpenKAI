@@ -22,8 +22,8 @@ namespace kai
 		_DNNtext();
 		~_DNNtext();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 		void draw(void *pFrame);
 		int check(void);
 		void ocr(void);

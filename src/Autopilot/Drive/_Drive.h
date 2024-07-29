@@ -40,8 +40,8 @@ namespace kai
         _Drive();
         ~_Drive();
 
-        virtual bool init(void *pKiss);
-        virtual bool start(void);
+        virtual int init(void *pKiss);
+        virtual int start(void);
         virtual int check(void);
         virtual void console(void *pConsole);
 

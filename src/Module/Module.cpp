@@ -127,9 +127,7 @@ namespace kai
 		ADD_MODULE(_Feetech);
 		ADD_MODULE(_OrientalMotor);
 		ADD_MODULE(_HYMCU_RS485);
-		ADD_MODULE(_S6H4D);
 		ADD_MODULE(_StepperGripper);
-		ADD_MODULE(_SkydroidGimbal);
 		ADD_MODULE(_ZLAC8015);
 		ADD_MODULE(_ZLAC8015D);
 		ADD_MODULE(_ZDmotor);

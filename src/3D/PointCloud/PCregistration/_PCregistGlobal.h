@@ -21,8 +21,8 @@ public:
 	_PCregistGlobal();
 	virtual ~_PCregistGlobal();
 
-	bool init(void* pKiss);
-	bool start(void);
+	int init(void* pKiss);
+	int start(void);
 	int check(void);
 	void console(void* pConsole);
 

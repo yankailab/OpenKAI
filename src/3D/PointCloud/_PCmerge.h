@@ -14,29 +14,29 @@
 namespace kai
 {
 
-class _PCmerge: public _GeometryBase
-{
-public:
-	_PCmerge();
-	virtual ~_PCmerge();
-
-	bool init(void* pKiss);
-	bool start(void);
-	int check(void);
-
-private:
-	void updateMerge(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _PCmerge : public _GeometryBase
 	{
-		((_PCmerge *) This)->update();
-		return NULL;
-	}
+	public:
+		_PCmerge();
+		virtual ~_PCmerge();
 
-public:
-	vector<_GeometryBase*> m_vpGB;
-    float m_rVoxel;
-};
+		int init(void *pKiss);
+		int start(void);
+		int check(void);
+
+	private:
+		void updateMerge(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_PCmerge *)This)->update();
+			return NULL;
+		}
+
+	public:
+		vector<_GeometryBase *> m_vpGB;
+		float m_rVoxel;
+	};
 
 }
 #endif

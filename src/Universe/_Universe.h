@@ -23,8 +23,8 @@ namespace kai
 		_Universe();
 		virtual ~_Universe();
 
-		virtual bool init(void *pKiss);
-		virtual bool start(void);
+		virtual int init(void *pKiss);
+		virtual int start(void);
 		virtual void update(void);
 		virtual void draw(void *pFrame);
 		virtual void console(void *pConsole);

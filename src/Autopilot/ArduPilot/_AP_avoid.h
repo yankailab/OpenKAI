@@ -14,8 +14,8 @@ namespace kai
 		_AP_avoid();
 		~_AP_avoid();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 		int check(void);
 		void update(void);
 		void draw(void *pFrame);

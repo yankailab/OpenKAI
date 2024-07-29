@@ -19,11 +19,11 @@ namespace kai
 		_ObjectArray();
 		virtual ~_ObjectArray();
 
-		virtual bool init(void *pKiss);
-		virtual bool start(void);
+		virtual int init(void *pKiss);
+		virtual int start(void);
 		virtual void update(void);
 
-		virtual bool init(int n);
+		virtual int init(int n);
 
 		//io
 		virtual _Object *add(_Object &o);

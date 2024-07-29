@@ -18,15 +18,15 @@ namespace kai
 	{
 	}
 
-	bool _PCfile::init(void *pKiss)
+	int _PCfile::init(void *pKiss)
 	{
-		IF_F(!_PCframe::init(pKiss));
+		CHECK_(_PCframe::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("fName", &m_fName);
 		open();
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _PCfile::open(void)
@@ -41,9 +41,9 @@ namespace kai
 		return true;
 	}
 
-	bool _PCfile::start(void)
+	int _PCfile::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

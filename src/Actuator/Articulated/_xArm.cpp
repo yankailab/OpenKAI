@@ -16,9 +16,9 @@ namespace kai
 	{
 	}
 
-	bool _xArm::init(void *pKiss)
+	int _xArm::init(void *pKiss)
 	{
-		IF_F(!this->_ActuatorBase::init(pKiss));
+		CHECK_(this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("ip", &m_ip);
@@ -27,18 +27,18 @@ namespace kai
 
 		m_pArm = new XArmAPI(m_ip, false, true);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _xArm::start(void)
+	int _xArm::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _xArm::check(void)
 	{
-		IF__(!m_bPower, -1);
+		IF__(!m_bPower, OK_ERR_NULLPTR);
 
 		return this->_ActuatorBase::check();
 	}

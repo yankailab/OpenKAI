@@ -13,7 +13,7 @@ namespace kai
 		m_baud = 115200;
 		m_bOpen = false;
 		m_ID = 1;
-		m_pA = NULL;
+		m_pA = nullptr;
 
 		m_ieReadStatus.init(50000);
 	}
@@ -22,9 +22,9 @@ namespace kai
 	{
 	}
 
-	bool _Feetech::init(void *pKiss)
+	int _Feetech::init(void *pKiss)
 	{
-		IF_F(!this->_ActuatorBase::init(pKiss));
+		CHECK_(this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("port", &m_port);
@@ -34,15 +34,15 @@ namespace kai
 
 		m_pA = &m_vAxis[0];
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _Feetech::link(void)
+	int _Feetech::link(void)
 	{
-		IF_F(!this->_ActuatorBase::link());
+		CHECK_(this->_ActuatorBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _Feetech::open(void)
@@ -63,16 +63,16 @@ namespace kai
 		m_bOpen = false;
 	}
 
-	bool _Feetech::start(void)
+	int _Feetech::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _Feetech::check(void)
 	{
-		IF__(!m_bOpen, -1);
-		NULL__(m_pA, -1);
+		IF__(!m_bOpen, OK_ERR_NOT_READY);
+		NULL__(m_pA, OK_ERR_NULLPTR);
 
 		return this->_ActuatorBase::check();
 	}

@@ -20,8 +20,8 @@ namespace kai
 		_GDimgUploader(void);
 		virtual ~_GDimgUploader();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 		int check(void);
 
 	private:

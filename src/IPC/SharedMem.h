@@ -22,8 +22,8 @@ namespace kai
 		SharedMem();
 		virtual ~SharedMem();
 
-		virtual bool init(void *pKiss);
-		virtual bool link(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
 		virtual bool open(void);
 		virtual bool bOpen(void);
 		virtual void close(void);

@@ -19,8 +19,8 @@ namespace kai
 		_DepthSegment();
 		virtual ~_DepthSegment();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 		int check(void);
 		void draw(void *pFrame);
 

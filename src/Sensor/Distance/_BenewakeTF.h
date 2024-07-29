@@ -44,8 +44,8 @@ namespace kai
 		_BenewakeTF();
 		~_BenewakeTF();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 		void console(void *pConsole);
 
 		DIST_SENSOR_TYPE type(void);

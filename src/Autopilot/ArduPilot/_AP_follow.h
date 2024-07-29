@@ -19,7 +19,7 @@ namespace kai
 		Predict<float> m_pred;
 		Hold<float> m_hold;
 
-		bool init(int nWmed, int nWpred, float dThold)
+		int init(int nWmed, int nWpred, float dThold)
 		{
 			IF_F(!m_med.init(nWmed));
 			IF_F(!m_pred.init(nWpred));
@@ -47,10 +47,10 @@ namespace kai
 		_AP_follow();
 		~_AP_follow();
 
-		virtual bool init(void *pKiss);
-		virtual bool link(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
 		virtual int check(void);
-		virtual bool start(void);
+		virtual int start(void);
 		virtual void update(void);
 		virtual void console(void *pConsole);
 		virtual void draw(void *pFrame);

@@ -21,7 +21,7 @@ public:
 	Destimator();
 	virtual ~Destimator();
 
-	virtual bool init(void* pKiss);
+	virtual int init(void* pKiss);
 	virtual double v(int x);
 
 protected:

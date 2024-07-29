@@ -18,7 +18,7 @@ namespace kai
         _MeshStream();
         virtual ~_MeshStream();
 
-        virtual bool init(void *pKiss);
+        virtual int init(void *pKiss);
         virtual int check(void);
 
         virtual void setAccept(bool b);

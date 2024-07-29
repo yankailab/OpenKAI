@@ -16,32 +16,32 @@
 namespace kai
 {
 
-class _PCrecv: public _PCstream
-{
-public:
-	_PCrecv();
-	virtual ~_PCrecv();
-
-	bool init(void* pKiss);
-	bool start(void);
-	int check(void);
-
-private:
-	virtual bool readCMD(void);
-	virtual void handleCMD(void);
-    void decodeStream(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _PCrecv : public _PCstream
 	{
-		((_PCrecv *) This)->update();
-		return NULL;
-	}
+	public:
+		_PCrecv();
+		virtual ~_PCrecv();
 
-public:
-	_IObase* m_pIO;
-	PROTOCOL_CMD m_recvMsg;
-	uint64_t	m_nCMDrecv;
-};
+		int init(void *pKiss);
+		int start(void);
+		int check(void);
+
+	private:
+		virtual bool readCMD(void);
+		virtual void handleCMD(void);
+		void decodeStream(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_PCrecv *)This)->update();
+			return NULL;
+		}
+
+	public:
+		_IObase *m_pIO;
+		PROTOCOL_CMD m_recvMsg;
+		uint64_t m_nCMDrecv;
+	};
 
 }
 #endif

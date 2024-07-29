@@ -30,9 +30,9 @@ namespace kai
     {
     }
 
-    bool _PCregistCol::init(void *pKiss)
+    int _PCregistCol::init(void *pKiss)
     {
-        IF_F(!_PCframe::init(pKiss));
+        CHECK_(_PCframe::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
         pK->v("rVoxel", &m_rVoxel);
@@ -44,12 +44,12 @@ namespace kai
         pK->v("maxIter", &m_maxIter);
         pK->v("minFit", &m_minFit);
 
-        return true;
+        return OK_OK;
     }
 
-    bool _PCregistCol::link(void)
+    int _PCregistCol::link(void)
     {
-        IF_F(!this->BASE::link());
+        CHECK_(this->BASE::link());
         Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
@@ -58,12 +58,12 @@ namespace kai
         pK->v("_PCframe", &n);
         m_pPCf = (_PCframe *)(pK->findModule(n));
 
-        return true;
+        return OK_OK;
     }
 
-    bool _PCregistCol::start(void)
+    int _PCregistCol::start(void)
     {
-        NULL_T(m_pT); // work in none thread mode
+        NULL__(m_pT, OK_ERR_NULLPTR); // work in none thread mode
 
         return m_pT->start(getUpdate, this);
     }
@@ -126,11 +126,11 @@ namespace kai
 
     double _PCregistCol::updateRegistration(PointCloud *pSrc, PointCloud *pTgt, Matrix4d_u *pTresult)
     {
-        IF_N(check() < 0);
-        NULL_N(pSrc);
-        NULL_N(pTgt);
-        IF_N(pSrc->IsEmpty());
-        IF_N(pTgt->IsEmpty());
+        IF__(check() > 0, -1);
+        NULL__(pSrc, -1);
+        NULL__(pTgt, -1);
+        IF__(pSrc->IsEmpty(), -1);
+        IF__(pTgt->IsEmpty(), -1);
 
         if (pSrc->normals_.empty())
             pSrc->EstimateNormals(KDTreeSearchParamHybrid(m_rNormal, m_maxNNnormal));

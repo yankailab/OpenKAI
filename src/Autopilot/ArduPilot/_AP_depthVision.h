@@ -30,7 +30,7 @@ namespace kai
 		_AP_depthVision();
 		~_AP_depthVision();
 
-		bool init(void *pKiss);
+		int init(void *pKiss);
 		void update(void);
 		void draw(void *pFrame);
 

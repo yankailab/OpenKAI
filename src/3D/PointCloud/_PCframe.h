@@ -19,12 +19,12 @@ namespace kai
 		virtual ~_PCframe();
 
 		// BASE
-		virtual bool init(void *pKiss);
-        virtual bool start(void);
+		virtual int init(void *pKiss);
+        virtual int start(void);
 		virtual int check(void);
 
         // _GeometryBase
-		virtual bool initGrid(void);
+		virtual int initGrid(void);
         virtual void clear(void);
         virtual void addPCstream(void* p, const uint64_t& tExpire);
         virtual void addPCframe(void* p);

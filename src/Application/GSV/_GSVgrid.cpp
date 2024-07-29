@@ -20,9 +20,9 @@ namespace kai
 	{
 	}
 
-	bool _GSVgrid::init(void *pKiss)
+	int _GSVgrid::init(void *pKiss)
 	{
-		IF_F(!this->_PCgrid::init(pKiss));
+		CHECK_(this->_PCgrid::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("nPalertSensitivity", &m_nPalertSensitivity);
@@ -46,21 +46,21 @@ namespace kai
 		// PC_GRID_CELL *pC = getCell(vCellIdx);
 		// pC->m_nPactivate = nPalarm;
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _GSVgrid::link(void)
+	int _GSVgrid::link(void)
 	{
-		IF_F(!this->_PCgrid::link());
+		CHECK_(this->_PCgrid::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
 		string n;
 		n = "";
 		pK->v("_GSVio", &n);
 		m_pGio = (_GSVio *)(pK->findModule(n));
-		IF_Fl(!m_pGio, n + ": not found");
+		NULL__(m_pGio, OK_ERR_NULLPTR);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _GSVgrid::loadConfig(void)
@@ -175,11 +175,7 @@ namespace kai
 
 		string f = picojson::value(o).serialize();
 
-		_File *pF = new _File();
-		IF_F(!pF->open(m_fConfig, ios::out));
-		pF->write((uint8_t *)f.c_str(), f.length());
-		pF->close();
-		DEL(pF);
+		writeFile(m_fConfig, f);
 
 		return true;
 	}

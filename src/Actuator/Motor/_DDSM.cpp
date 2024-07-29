@@ -4,8 +4,8 @@ namespace kai
 {
 	_DDSM::_DDSM()
 	{
-		m_pTr = NULL;
-		m_pIO = NULL;
+		m_pTr = nullptr;
+		m_pIO = nullptr;
 		m_iMode = 0x02; // default using speed control
 	}
 
@@ -14,53 +14,54 @@ namespace kai
 		DEL(m_pTr);
 	}
 
-	bool _DDSM::init(void *pKiss)
+	int _DDSM::init(void *pKiss)
 	{
-		IF_F(!this->_ActuatorBase::init(pKiss));
+		CHECK_(this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		
 
 		pK->v("iMode", &m_iMode);
 
 		Kiss *pKt = pK->child("threadR");
-		IF_d_F(pKt->empty(), LOG_E("threadR not found"));
-		m_pTr = new _Thread();
-		if (!m_pTr->init(pKt))
+		if (pKt->empty())
 		{
-			DEL(m_pTr);
-			return false;
+			LOG_E("threadR not found");
+			return OK_ERR_NOT_FOUND;
 		}
 
-		return true;
+		m_pTr = new _Thread();
+		CHECK_d_(m_pTr->init(pKt), DEL(m_pTr));
+
+		return OK_OK;
 	}
 
-	bool _DDSM::link(void)
+	int _DDSM::link(void)
 	{
-		IF_F(!this->_ActuatorBase::link());
-		IF_F(!m_pTr->link());
+		CHECK_(this->_ActuatorBase::link());
+		CHECK_(m_pTr->link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 		n = "";
-		F_ERROR_F(pK->v("_IObase", &n));
-		m_pIO = (_IObase *)(pK->findModule(n));
-		NULL_Fl(m_pIO, n + ": not found");
+		IF__(!pK->v("_IObase", &n), OK_ERR_NOT_FOUND);
 
-		return true;
+		m_pIO = (_IObase *)(pK->findModule(n));
+		NULL__(m_pIO, OK_ERR_NOT_FOUND);
+
+		return OK_OK;
 	}
 
-	bool _DDSM::start(void)
+	int _DDSM::start(void)
 	{
-		NULL_F(m_pT);
-		NULL_F(m_pTr);
-		IF_F(!m_pT->start(getUpdate, this));
+		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL__(m_pTr, OK_ERR_NULLPTR);
+		CHECK_(m_pT->start(getUpdate, this));
 		return m_pTr->start(getUpdateR, this);
 	}
 
 	int _DDSM::check(void)
 	{
-		NULL__(m_pIO, -1);
-		IF__(!m_pIO->bOpen(), -1);
+		NULL__(m_pIO, OK_ERR_NULLPTR);
+		IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
 
 		return this->_ActuatorBase::check();
 	}

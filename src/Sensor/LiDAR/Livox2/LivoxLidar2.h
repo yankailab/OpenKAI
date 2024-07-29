@@ -44,7 +44,7 @@ namespace kai
         LivoxLidar2();
         ~LivoxLidar2();
 
-        virtual bool init(void *pKiss);
+        virtual int init(void *pKiss);
         virtual void console(void *pConsole);
 
         bool open(void);

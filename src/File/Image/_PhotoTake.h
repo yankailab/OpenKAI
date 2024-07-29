@@ -19,9 +19,9 @@ namespace kai
 		_PhotoTake();
 		~_PhotoTake();
 
-		virtual bool init(void *pKiss);
-		virtual bool link(void);
-		virtual bool start(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
+		virtual int start(void);
 		virtual int check(void);
 		virtual void update(void);
 		virtual void console(void *pConsole);

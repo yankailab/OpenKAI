@@ -18,8 +18,8 @@ namespace kai
 		clBase();
 		virtual ~clBase();
 
-		virtual bool init(void *pKiss);
-		virtual bool link(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
 		virtual int check(void);
 
 	protected:

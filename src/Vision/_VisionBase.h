@@ -57,8 +57,8 @@ namespace kai
 		_VisionBase();
 		virtual ~_VisionBase();
 
-		virtual bool init(void *pKiss);
-		virtual bool link(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
 		virtual int check(void);
 		virtual void console(void *pConsole);
 		virtual void draw(void *pFrame);

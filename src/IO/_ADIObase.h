@@ -88,8 +88,8 @@ namespace kai
 		_ADIObase();
 		virtual ~_ADIObase();
 
-		virtual bool init(void *pKiss);
-		virtual bool link(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
 		virtual void console(void *pConsole);
 
 		virtual bool open(void);

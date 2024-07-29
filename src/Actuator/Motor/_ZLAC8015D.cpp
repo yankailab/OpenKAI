@@ -9,11 +9,11 @@ namespace kai
 
 	_ZLAC8015D::_ZLAC8015D()
 	{
-		m_pMB = NULL;
+		m_pMB = nullptr;
 		m_iSlave = 1;
 		m_iMode = 3; //speed control
-		m_pL = NULL;
-		m_pR = NULL;
+		m_pL = nullptr;
+		m_pR = nullptr;
 
 		m_ieReadStatus.init(50000);
 	}
@@ -22,9 +22,9 @@ namespace kai
 	{
 	}
 
-	bool _ZLAC8015D::init(void *pKiss)
+	int _ZLAC8015D::init(void *pKiss)
 	{
-		IF_F(!this->_ActuatorBase::init(pKiss));
+		CHECK_(this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("iSlave", &m_iSlave);
@@ -36,25 +36,25 @@ namespace kai
 
 		string n;
 		n = "";
-		F_ERROR_F(pK->v("_Modbus", &n));
+		IF__(!pK->v("_Modbus", &n), OK_ERR_NOT_FOUND);
 		m_pMB = (_Modbus *)(pK->findModule(n));
-		IF_Fl(!m_pMB, n + " not found");
+		NULL__(m_pMB, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _ZLAC8015D::start(void)
+	int _ZLAC8015D::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _ZLAC8015D::check(void)
 	{
-		NULL__(m_pMB, -1);
-		IF__(!m_pMB->bOpen(), -1);
-		NULL__(m_pL, -1);
-		NULL__(m_pR, -1);
+		NULL__(m_pMB, OK_ERR_NULLPTR);
+		IF__(!m_pMB->bOpen(), OK_ERR_NOT_READY);
+		NULL__(m_pL, OK_ERR_NULLPTR);
+		NULL__(m_pR, OK_ERR_NULLPTR);
 
 		return this->_ActuatorBase::check();
 	}

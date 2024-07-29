@@ -25,9 +25,9 @@ namespace kai
 		virtual ~_Object();
 
 		//general
-		virtual bool init(void *pKiss);
+		virtual int init(void *pKiss);
 		virtual void clear(void);
-		virtual bool start(void);
+		virtual int start(void);
 		virtual void update(void);
 
 		//pos

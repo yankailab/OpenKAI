@@ -19,8 +19,8 @@ namespace kai
 		_GstOutput();
 		virtual ~_GstOutput();
 
-		virtual bool init(void *pKiss);
-		virtual bool start(void);
+		virtual int init(void *pKiss);
+		virtual int start(void);
 
 	protected:
 		void updateGst(void);

@@ -29,7 +29,7 @@ namespace kai
 
         pthread_mutex_init(&m_mutex, NULL);
 
-        m_pSM = NULL;
+        m_pSM = nullptr;
     }
 
     _GeometryBase::~_GeometryBase()
@@ -37,13 +37,12 @@ namespace kai
         pthread_mutex_destroy(&m_mutex);
     }
 
-    bool _GeometryBase::init(void *pKiss)
+    int _GeometryBase::init(void *pKiss)
     {
-        IF_F(!this->_ModuleBase::init(pKiss));
+        CHECK_(this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("fConfig", &m_fConfig);
-
         pK->v("vColorDefault", &m_vColorDefault);
         pK->v("vkColR", &m_vkColR);
         pK->v("vkColG", &m_vkColG);
@@ -63,12 +62,12 @@ namespace kai
 
         loadConfig();
 
-        return true;
+        return OK_OK;
     }
 
-    bool _GeometryBase::link(void)
+    int _GeometryBase::link(void)
     {
-        IF_F(!this->_ModuleBase::link());
+        CHECK_(this->_ModuleBase::link());
         Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
@@ -76,7 +75,7 @@ namespace kai
         pK->v("SharedMem", &n);
         m_pSM = (SharedMem *)(pK->findModule(n));
 
-        return true;
+        return OK_OK;
     }
 
     int _GeometryBase::check(void)
@@ -89,9 +88,9 @@ namespace kai
         return m_type;
     }
 
-    bool _GeometryBase::initGrid(void)
+    int _GeometryBase::initGrid(void)
     {
-        return false;
+        return OK_ERR_UNIMPLEMENTED;
     }
 
     void _GeometryBase::clear(void)

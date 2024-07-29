@@ -11,7 +11,7 @@ namespace kai
 {
 	_GSVctrl::_GSVctrl()
 	{
-		m_pGgrid = NULL;
+		m_pGgrid = nullptr;
 		m_msg = "";
 	}
 
@@ -19,17 +19,17 @@ namespace kai
 	{
 	}
 
-	bool _GSVctrl::init(void *pKiss)
+	int _GSVctrl::init(void *pKiss)
 	{
-		IF_F(!this->_JSONbase::init(pKiss));
+		CHECK_(this->_JSONbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _GSVctrl::link(void)
+	int _GSVctrl::link(void)
 	{
-		IF_F(!this->_JSONbase::link());
+		CHECK_(this->_JSONbase::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 
@@ -37,7 +37,7 @@ namespace kai
 		n = "";
 		pK->v("_GSVgrid", &n);
 		m_pGgrid = (_GSVgrid *)(pK->findModule(n));
-		IF_Fl(!m_pGgrid, n + ": not found");
+		NULL__(m_pGgrid, OK_ERR_NOT_FOUND);
 
 		vector<string> vGn;
 		pK->a("vGeometryBase", &vGn);
@@ -49,23 +49,23 @@ namespace kai
 			m_vpGB.push_back(pG);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _GSVctrl::start(void)
+	int _GSVctrl::start(void)
 	{
-		NULL_F(m_pT);
-		NULL_F(m_pTr);
+		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL__(m_pTr, OK_ERR_NULLPTR);
 
-		IF_F(!m_pT->start(getUpdate, this));
-		IF_F(!m_pTr->start(getUpdateR, this));
+		CHECK_(m_pT->start(getUpdate, this));
+		CHECK_(m_pTr->start(getUpdateR, this));
 
-		return true;
+		return OK_OK;
 	}
 
 	int _GSVctrl::check(void)
 	{
-		IF__(!m_pGgrid, -1);
+		NULL__(m_pGgrid, OK_ERR_NULLPTR);
 
 		return this->_JSONbase::check();
 	}

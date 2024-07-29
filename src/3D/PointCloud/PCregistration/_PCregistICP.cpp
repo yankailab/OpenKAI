@@ -25,9 +25,9 @@ namespace kai
     {
     }
 
-    bool _PCregistICP::init(void *pKiss)
+    int _PCregistICP::init(void *pKiss)
     {
-        IF_F(!_ModuleBase::init(pKiss));
+        CHECK_(_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
         pK->v("est", (int *)&m_est);
@@ -38,32 +38,44 @@ namespace kai
         n = "";
         pK->v("_PCframeSrc", &n);
         m_pSrc = (_PCframe *)(pK->findModule(n));
-        IF_Fl(!m_pSrc, n + ": not found");
+        if(!m_pSrc)
+        {
+            LOG_E(n + ": not found");
+            return OK_ERR_NOT_FOUND;
+        }
 
         n = "";
         pK->v("_PCframeTgt", &n);
         m_pTgt = (_PCframe *)(pK->findModule(n));
-        IF_Fl(!m_pTgt, n + ": not found");
+        if(!m_pTgt)
+        {
+            LOG_E(n + ": not found");
+            return OK_ERR_NOT_FOUND;
+        }
 
         n = "";
         pK->v("_PCtransform", &n);
         m_pTf = (_PCtransform *)(pK->findModule(n));
-        IF_Fl(!m_pTf, n + ": not found");
+        if(!m_pTf)
+        {
+            LOG_E(n + ": not found");
+            return OK_ERR_NOT_FOUND;
+        }
 
-        return true;
+        return OK_OK;
     }
 
-    bool _PCregistICP::start(void)
+    int _PCregistICP::start(void)
     {
-        NULL_F(m_pT);
+        NULL__(m_pT, OK_ERR_NULLPTR);
         return m_pT->start(getUpdate, this);
     }
 
     int _PCregistICP::check(void)
     {
-        NULL__(m_pSrc, -1);
-        NULL__(m_pTgt, -1);
-        NULL__(m_pTf, -1);
+        NULL__(m_pSrc, OK_ERR_NULLPTR);
+        NULL__(m_pTgt, OK_ERR_NULLPTR);
+        NULL__(m_pTf, OK_ERR_NULLPTR);
 
         return _ModuleBase::check();
     }

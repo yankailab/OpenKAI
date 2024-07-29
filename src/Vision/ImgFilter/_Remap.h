@@ -19,8 +19,8 @@ namespace kai
 		_Remap();
 		virtual ~_Remap();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 		bool open(void);
 		void close(void);
 		bool bReady(void);

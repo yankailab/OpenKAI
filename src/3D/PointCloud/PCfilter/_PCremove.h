@@ -13,30 +13,29 @@
 namespace kai
 {
 
-class _PCremove: public _GeometryBase
-{
-public:
-	_PCremove();
-	virtual ~_PCremove();
-
-	bool init(void* pKiss);
-	bool start(void);
-	int check(void);
-
-private:
-	void update(void);
-	void updateFilter(void);
-	static void* getUpdate(void* This)
+	class _PCremove : public _GeometryBase
 	{
-		(( _PCremove *) This)->update();
-		return NULL;
-	}
+	public:
+		_PCremove();
+		virtual ~_PCremove();
 
-public:
-    int m_nP;
-    double m_r;
+		int init(void *pKiss);
+		int start(void);
+		int check(void);
 
-};
+	private:
+		void update(void);
+		void updateFilter(void);
+		static void *getUpdate(void *This)
+		{
+			((_PCremove *)This)->update();
+			return NULL;
+		}
+
+	public:
+		int m_nP;
+		double m_r;
+	};
 
 }
 #endif

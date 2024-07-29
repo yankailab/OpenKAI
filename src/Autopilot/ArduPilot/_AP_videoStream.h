@@ -17,9 +17,9 @@ namespace kai
 		_AP_videoStream();
 		~_AP_videoStream();
 
-		bool init(void *pKiss);
-		bool link(void);
-		bool start(void);
+		int init(void *pKiss);
+		int link(void);
+		int start(void);
 		void update(void);
 		int check(void);
 		void console(void *pConsole);

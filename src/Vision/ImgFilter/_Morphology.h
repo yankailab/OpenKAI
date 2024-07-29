@@ -47,8 +47,8 @@ namespace kai
 		_Morphology();
 		virtual ~_Morphology();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 		bool open(void);
 		void close(void);
 

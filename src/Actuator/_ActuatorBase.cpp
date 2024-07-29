@@ -31,9 +31,9 @@ namespace kai
 		pthread_mutex_destroy(&m_mutex);
 	}
 
-	bool _ActuatorBase::init(void *pKiss)
+	int _ActuatorBase::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("tCmdTimeout", &m_tCmdTimeout);
@@ -79,23 +79,27 @@ namespace kai
 			m_vAxis.push_back(a);
 		}
 
-		IF_d_F(m_vAxis.size() < m_nMinAxis, LOG_E("axis number < nMinAxis"));
+		if (m_vAxis.size() < m_nMinAxis)
+		{
+			LOG_E("axis number < nMinAxis");
+			return OK_ERR_INVALID_VALUE;
+		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _ActuatorBase::link(void)
+	int _ActuatorBase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
 		string n;
 
 		n = "";
-		F_INFO(pK->v("_ActuatorBase", &n));
+		pK->v("_ActuatorBase", &n);
 		m_pParent = (_ActuatorBase *)(pK->findModule(n));
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _ActuatorBase::power(bool bON)
@@ -108,9 +112,9 @@ namespace kai
 		m_bf.set(ACT_BF_STOP);
 	}
 
-	bool _ActuatorBase::start(void)
+	int _ActuatorBase::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

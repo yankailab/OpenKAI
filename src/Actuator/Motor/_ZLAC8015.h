@@ -20,8 +20,8 @@ namespace kai
 		_ZLAC8015();
 		~_ZLAC8015();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 
 		int check(void);
 		bool power(bool bON);

@@ -14,7 +14,7 @@ namespace kai
 		_File(void);
 		~_File(void);
 
-		bool init(void *pKiss);
+		int init(void *pKiss);
 		void close(void);
 		void reset(void);
 

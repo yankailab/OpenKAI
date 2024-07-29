@@ -16,18 +16,18 @@ namespace kai
         DEL(m_pTr);
     }
 
-    bool _AP_droneBoxJSON::init(void *pKiss)
+    int _AP_droneBoxJSON::init(void *pKiss)
     {
-        IF_F(!this->_JSONbase::init(pKiss));
+        CHECK_(this->_JSONbase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        return true;
+        return OK_OK;
     }
 
-	bool _AP_droneBoxJSON::link(void)
+	int _AP_droneBoxJSON::link(void)
 	{
-		IF_F(!this->_JSONbase::link());
-		IF_F(!m_pTr->link());
+		CHECK_(this->_JSONbase::link());
+		CHECK_(m_pTr->link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 
@@ -35,22 +35,22 @@ namespace kai
         n = "";
         pK->v("_AP_droneBox", &n);
         m_pAPdroneBox = (_AP_droneBox *)(pK->findModule(n));
-        IF_Fl(!m_pAPdroneBox, n + ": not found");
+        NULL__(m_pAPdroneBox, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
-    bool _AP_droneBoxJSON::start(void)
+    int _AP_droneBoxJSON::start(void)
     {
-        NULL_F(m_pT);
-        NULL_F(m_pTr);
-        IF_F(!m_pT->start(getUpdateW, this));
+        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL__(m_pTr, OK_ERR_NULLPTR);
+        CHECK_(m_pT->start(getUpdateW, this));
         return m_pTr->start(getUpdateR, this);
     }
 
     int _AP_droneBoxJSON::check(void)
     {
-        NULL__(m_pAPdroneBox, -1);
+        NULL__(m_pAPdroneBox, OK_ERR_NULLPTR);
 
         return this->_JSONbase::check();
     }

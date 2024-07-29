@@ -18,14 +18,12 @@ namespace kai
 	{
 	}
 
-	bool Destimator::init(void *pKiss)
+	int Destimator::init(void *pKiss)
 	{
-		IF_F(!this->BASE::init(pKiss));
+		CHECK_(this->BASE::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		//	pK->v("vMin",&m_vMin);
-
-		return true;
+		return OK_OK;
 	}
 
 	double Destimator::v(int x)

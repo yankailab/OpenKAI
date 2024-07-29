@@ -195,13 +195,13 @@ namespace kai
 		_PCgrid();
 		virtual ~_PCgrid();
 
-		virtual bool init(void *pKiss);
-		virtual bool link(void);
-		virtual bool start(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
+		virtual int start(void);
 		virtual int check(void);
 
 		// grid
-		virtual bool initGrid(void);
+		virtual int initGrid(void);
 
 		virtual void setPorigin(const vFloat3& vPo);
 		virtual void setCellSize(const vFloat3& vCsize);

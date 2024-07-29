@@ -26,7 +26,7 @@ namespace kai
 		IO_FIFO m_fifo;
 		uint64_t m_tStamp;
 
-		bool init(uint32_t id, int nB)
+		int init(uint32_t id, int nB)
 		{
 			m_id = id;
 			m_tStamp = getApproxTbootUs();
@@ -48,8 +48,8 @@ namespace kai
 		_WebSocket();
 		virtual ~_WebSocket();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 		bool open(void);
 		void close(void);
 		void console(void *pConsole);

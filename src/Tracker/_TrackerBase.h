@@ -29,7 +29,7 @@ namespace kai
 		_TrackerBase();
 		virtual ~_TrackerBase();
 
-		virtual bool init(void *pKiss);
+		virtual int init(void *pKiss);
 		virtual void update(void);
 		virtual int check(void);
 		virtual void draw(void *pFrame);

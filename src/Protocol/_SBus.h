@@ -24,9 +24,9 @@ namespace kai
 		_SBus();
 		~_SBus();
 
-		bool init(void *pKiss);
-		bool link(void);
-		bool start(void);
+		int init(void *pKiss);
+		int link(void);
+		int start(void);
 		int check(void);
 		void console(void *pConsole);
 

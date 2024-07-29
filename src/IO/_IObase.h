@@ -42,7 +42,7 @@ namespace kai
 		int m_iOut;
 		pthread_mutex_t m_mutex;
 
-		bool init(int nB)
+		int init(int nB)
 		{
 			m_pB = new uint8_t[nB];
 			NULL_F(m_pB);
@@ -137,8 +137,8 @@ namespace kai
 		_IObase();
 		virtual ~_IObase();
 
-		virtual bool init(void *pKiss);
-		virtual bool link(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
 		virtual void console(void *pConsole);
 
 		virtual IO_TYPE ioType(void);

@@ -19,8 +19,8 @@ namespace kai
 		_DNNclassifier();
 		~_DNNclassifier();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 		void draw(void *pFrame);
 		int check(void);
 		bool classify(Mat m, _Object *pO, float minConfidence = 0.0);

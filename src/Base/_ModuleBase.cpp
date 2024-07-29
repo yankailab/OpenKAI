@@ -12,7 +12,7 @@ namespace kai
 
     _ModuleBase::_ModuleBase()
     {
-        m_pT = NULL;
+        m_pT = nullptr;
     }
 
     _ModuleBase::~_ModuleBase()
@@ -20,42 +20,42 @@ namespace kai
         DEL(m_pT);
     }
 
-    bool _ModuleBase::init(void *pKiss)
+    int _ModuleBase::init(void *pKiss)
     {
-        IF_F(!this->BASE::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
-        
-        Kiss *pKt = pK->child("thread");
-        IF_d_T(pKt->empty(), LOG_E("Thread not found"));
+        CHECK_(this->BASE::init(pKiss));
 
-        m_pT = new _Thread();
-        if (!m_pT->init(pKt))
+        Kiss *pK = (Kiss *)pKiss;
+        Kiss *pKt = pK->child("thread");
+        if (pKt->empty())
         {
-            DEL(m_pT);
-            LOG_E("Thread init failed");
-            return false;
+            LOG_I("Thread not found");
+        }
+        else
+        {
+            m_pT = new _Thread();
+       		CHECK_d_l_(m_pT->init(pKt), DEL(m_pT), "Thread init failed");
         }
 
-        return true;
+        return OK_OK;
     }
 
-    bool _ModuleBase::link(void)
+    int _ModuleBase::link(void)
     {
-        IF_F(!this->BASE::link());
-        IF_F(!m_pT->link());
+        CHECK_(this->BASE::link());
+        CHECK_(m_pT->link());
 
-        return true;
+        return OK_OK;
     }
 
-    bool _ModuleBase::start(void)
+    int _ModuleBase::start(void)
     {
-        NULL_F(m_pT);
+        NULL__(m_pT, OK_ERR_NULLPTR);
         return m_pT->start(getUpdate, this);
     }
 
     int _ModuleBase::check(void)
     {
-        NULL__(m_pT, -1);
+        NULL__(m_pT, OK_ERR_NULLPTR);
 
         return BASE::check();
     }
@@ -64,21 +64,21 @@ namespace kai
     {
     }
 
-	bool _ModuleBase::bAlive(void)
+    bool _ModuleBase::bAlive(void)
     {
         IF_F(check() < 0);
 
         return m_pT->bAlive();
     }
 
-	bool _ModuleBase::bRun(void)
+    bool _ModuleBase::bRun(void)
     {
         IF_F(check() < 0);
 
         return m_pT->bRun();
     }
 
-	bool _ModuleBase::bStop(void)
+    bool _ModuleBase::bStop(void)
     {
         IF_F(check() < 0);
 
@@ -106,11 +106,11 @@ namespace kai
         m_pT->stop();
     }
 
-	void _ModuleBase::onPause(void)
+    void _ModuleBase::onPause(void)
     {
     }
 
-	void _ModuleBase::onResume(void)
+    void _ModuleBase::onResume(void)
     {
     }
 

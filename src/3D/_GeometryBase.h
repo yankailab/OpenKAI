@@ -52,13 +52,13 @@ namespace kai
         _GeometryBase();
         virtual ~_GeometryBase();
 
-        virtual bool init(void *pKiss);
-		virtual bool link(void);
+        virtual int init(void *pKiss);
+		virtual int link(void);
         virtual int check(void);
         virtual void console(void *pConsole);
 
         virtual GEOMETRY_TYPE getType(void);
-		virtual bool initGrid(void);
+		virtual int initGrid(void);
         virtual void clear(void);
 
         virtual void setTranslation(const vDouble3 &vT);

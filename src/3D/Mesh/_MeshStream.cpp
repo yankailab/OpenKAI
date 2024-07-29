@@ -13,7 +13,7 @@ namespace kai
     {
         m_type = pc_stream;
 
-        m_pP = NULL;
+        m_pP = nullptr;
         m_nP = 256;
         m_iP = 0;
         m_tLastUpdate = 0;
@@ -26,24 +26,24 @@ namespace kai
         DEL(m_pP);
     }
 
-    bool _MeshStream::init(void *pKiss)
+    int _MeshStream::init(void *pKiss)
     {
-        IF_F(!this->_GeometryBase::init(pKiss));
+        CHECK(this->_GeometryBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
         pK->v("bAccept", &m_bAccept);
         pK->v("nP", &m_nP);
-        IF_F(m_nP <= 0);
+        IF__(m_nP <= 0, OK_ERR_INVALID_VALUE);
 
         m_pP = new GEOMETRY_POINT[m_nP];
-        NULL_F(m_pP);
+        NULL__(m_pP, OK_ERR_NULLPTR);
         m_iP = 0;
         m_tLastUpdate = 0;
 
         for (int i = 0; i < m_nP; i++)
             m_pP[i].clear();
 
-        return true;
+        return OK_OK;
     }
 
     int _MeshStream::check(void)

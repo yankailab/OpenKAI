@@ -8,7 +8,6 @@ namespace kai
 		m_tExpire = 0;
 
 		m_type = pc_grid;
-//		m_pCell = NULL;
 		m_nCell = 0;
 		m_nMedWidth = 3;
 		m_vDim.clear();
@@ -31,12 +30,11 @@ namespace kai
 
 	_PCgrid::~_PCgrid()
 	{
-//		DEL(m_pCell);
 	}
 
-	bool _PCgrid::init(void *pKiss)
+	int _PCgrid::init(void *pKiss)
 	{
-		IF_F(!this->_GeometryBase::init(pKiss));
+		CHECK_(this->_GeometryBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("nMedWidth", &m_nMedWidth);
@@ -57,9 +55,9 @@ namespace kai
 		return initGrid();
 	}
 
-	bool _PCgrid::link(void)
+	int _PCgrid::link(void)
 	{
-		IF_F(!this->_GeometryBase::link());
+		CHECK_(this->_GeometryBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
 		vector<string> vGn;
@@ -72,12 +70,12 @@ namespace kai
 			m_vpGB.push_back(pG);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _PCgrid::start(void)
+	int _PCgrid::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
@@ -131,10 +129,10 @@ namespace kai
 		return m_vZ;
 	}
 
-	bool _PCgrid::initGrid(void)
+	int _PCgrid::initGrid(void)
 	{
 		float cVol = m_vCellSize.x * m_vCellSize.y * m_vCellSize.z;
-		IF_F(cVol <= 0);
+		IF__(cVol <= 0, OK_ERR_INVALID_VALUE);
 
 		// calc grid size
 		vInt3 vDim;
@@ -142,7 +140,7 @@ namespace kai
 				 m_vY.len(),
 				 m_vZ.len());
 		int nCell = vDim.x * vDim.y * vDim.z;
-		IF_F(nCell <= 0);
+		IF__(nCell <= 0, OK_ERR_INVALID_VALUE);
 
 		m_vDim = vDim;
 
@@ -189,7 +187,7 @@ namespace kai
 
 		mutexUnlock();
 
-		return true;
+		return OK_OK;
 	}
 
 	void _PCgrid::clearAllCells(void)

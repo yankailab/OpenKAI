@@ -4,8 +4,8 @@ namespace kai
 {
 	_ArduServo::_ArduServo()
 	{
-        m_pTr = NULL;
-		m_pIO = NULL;
+        m_pTr = nullptr;
+		m_pIO = nullptr;
 		m_recvMsg.init();
 		m_nCMDrecv = 0;
 	}
@@ -15,44 +15,45 @@ namespace kai
         DEL(m_pTr);
 	}
 
-	bool _ArduServo::init(void *pKiss)
+	int _ArduServo::init(void *pKiss)
 	{
-		IF_F(!this->_ActuatorBase::init(pKiss));
+		CHECK_(this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 		
-
 		Kiss *pKt = pK->child("threadR");
-		IF_d_F(pKt->empty(), LOG_E("threadR not found"));
-		m_pTr = new _Thread();
-		if (!m_pTr->init(pKt))
-		{
-			DEL(m_pTr);
-			return false;
-		}
+        if (pKt->empty())
+        {
+            LOG_I("ThreadR not found");
+        }
+        else
+        {
+            m_pTr = new _Thread();
+       		CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "ThreadR init failed");
+        }
 
-		return true;
+		return OK_OK;
 	}
 
-    bool _ArduServo::link(void)
+    int _ArduServo::link(void)
     {
-        IF_F(!this->_ActuatorBase::link());
-        IF_F(!m_pTr->link());
+        CHECK_(this->_ActuatorBase::link());
+        CHECK_(m_pTr->link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 		n = "";
-		F_ERROR_F(pK->v("_IObase", &n));
+		IF__(!pK->v("_IObase", &n), OK_ERR_NOT_FOUND);
 		m_pIO = (_IObase *)(pK->findModule(n));
-		NULL_Fl(m_pIO, n + ": not found");
+		NULL__(m_pIO, OK_ERR_NOT_FOUND);
 
-        return true;
+        return OK_OK;
     }
 
-	bool _ArduServo::start(void)
+	int _ArduServo::start(void)
 	{
-		NULL_F(m_pT);
-		NULL_F(m_pTr);
-		IF_F(!m_pT->start(getUpdate, this));
+		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL__(m_pTr, OK_ERR_NULLPTR);
+		CHECK_(m_pT->start(getUpdate, this));
 		return m_pTr->start(getUpdateR, this);
 	}
 

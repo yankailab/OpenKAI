@@ -12,7 +12,7 @@ namespace kai
 
 	_PCrecv::_PCrecv()
 	{
-		m_pIO = NULL;
+		m_pIO = nullptr;
 		m_nCMDrecv = 0;
 	}
 
@@ -20,34 +20,43 @@ namespace kai
 	{
 	}
 
-	bool _PCrecv::init(void *pKiss)
+	int _PCrecv::init(void *pKiss)
 	{
-		IF_F(!_PCstream::init(pKiss));
+		CHECK_(_PCstream::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		int nB = 256;
 		pK->v("nB", &nB);
 		m_recvMsg.init(nB);
 
-		string n;
-		n = "";
-		F_ERROR_F(pK->v("_IObase", &n));
-		m_pIO = (_IObase *)(pK->findModule(n));
-		NULL_Fl(m_pIO, "_IObase not found");
+        string n;
+        n = "";
+        if(!pK->v("_IObase", &n))
+        {
+            LOG_E("_IObase not found");
+            return OK_ERR_NOT_FOUND;
+        }
+
+        m_pIO = (_IObase *)(pK->findModule(n));
+        if(!m_pIO)
+        {
+            LOG_E("_IObase not found");
+            return OK_ERR_NOT_FOUND;
+        }
 
 		return true;
 	}
 
-	bool _PCrecv::start(void)
+	int _PCrecv::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _PCrecv::check(void)
 	{
-		NULL__(m_pIO, -1);
-		IF__(!m_pIO->bOpen(), -1);
+		NULL__(m_pIO, OK_ERR_NULLPTR);
+		IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
 
 		return this->_PCstream::check();
 	}

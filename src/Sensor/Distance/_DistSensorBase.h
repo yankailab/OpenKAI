@@ -94,7 +94,7 @@ namespace kai
 		_DistSensorBase();
 		virtual ~_DistSensorBase();
 
-		bool init(void *pKiss);
+		int init(void *pKiss);
 		void draw(void *pFrame);
 		void console(void *pConsole);
 		void update(void);

@@ -20,38 +20,39 @@ namespace kai
 	{
 	}
 
-	bool _PCtransform::init(void *pKiss)
+	int _PCtransform::init(void *pKiss)
 	{
-		IF_F(!_PCframe::init(pKiss));
+		CHECK_(_PCframe::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		// read from external kiss file if there is one
 		pK->v("paramKiss", &m_paramKiss);
-		IF_T(m_paramKiss.empty());
+		IF__(m_paramKiss.empty(), OK_OK);
 
-		_File *pFile = new _File();
-		IF_T(!pFile->open(m_paramKiss));
+		string s;
+		if (!readFile(m_paramKiss, &s))
+		{
+			LOG_I("Cannot open: " + m_paramKiss);
+			return OK_OK;
+		}
 
-		string fn;
-		pFile->readAll(&fn);
-		IF_T(fn.empty());
+		IF__(s.empty(), OK_OK);
 
 		Kiss *pKf = new Kiss();
-		if (pKf->parse(fn))
+		if (pKf->parse(s))
 		{
 			pK = pKf->child("transform");
 			pK->v("vT", &m_vT);
 			pK->v("vR", &m_vR);
 		}
-
 		delete pKf;
-		pFile->close();
-		return true;
+
+		return OK_OK;
 	}
 
-	bool _PCtransform::start(void)
+	int _PCtransform::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
@@ -109,10 +110,7 @@ namespace kai
 
 		string k = picojson::value(o).serialize();
 
-		_File *pFile = new _File();
-		IF_(!pFile->open(m_paramKiss, ios::out));
-		pFile->write((uint8_t *)k.c_str(), k.length());
-		pFile->close();
+		writeFile(m_paramKiss, k);
 	}
 
 }

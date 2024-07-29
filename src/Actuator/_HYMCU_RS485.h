@@ -41,8 +41,8 @@ namespace kai
 		_HYMCU_RS485();
 		~_HYMCU_RS485();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 		int check(void);
 
 	protected:

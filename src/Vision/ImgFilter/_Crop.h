@@ -19,9 +19,9 @@ namespace kai
 		_Crop();
 		virtual ~_Crop();
 
-		virtual bool init(void *pKiss);
-		virtual bool link(void);
-		virtual bool start(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
+		virtual int start(void);
 		virtual bool open(void);
 		virtual void close(void);
 

@@ -34,7 +34,7 @@ namespace kai
 		_AP_distLidar();
 		~_AP_distLidar();
 
-		bool init(void *pKiss);
+		int init(void *pKiss);
 		void update(void);
 		void draw(void *pFrame);
 

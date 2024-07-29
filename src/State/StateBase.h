@@ -24,8 +24,8 @@ namespace kai
 		StateBase();
 		~StateBase();
 
-		virtual bool init(void *pKiss);
-		virtual bool link(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
 		virtual void console(void *pConsole);
 
 		virtual void reset(void);

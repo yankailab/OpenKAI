@@ -50,6 +50,90 @@
     }
 #endif
 
+#define IF_(x)  \
+    if (x)      \
+    {           \
+        return; \
+    }
+#define IF__(x, y) \
+    if (x)         \
+    {              \
+        return y;  \
+    }
+#define IF_CONT(x) \
+    if (x)         \
+    {              \
+        continue;  \
+    }
+#define NULL_(x)      \
+    if (x == nullptr) \
+    {                 \
+        return;       \
+    }
+#define NULL__(x, y)  \
+    if (x == nullptr) \
+    {                 \
+        return y;     \
+    }
+#define NULL_N(x)       \
+    if (x == nullptr)   \
+    {                   \
+        return nullptr; \
+    }
+#define DEL(x)       \
+    if (x)           \
+    {                \
+        delete x;    \
+        x = nullptr; \
+    }
+#define SWAP(x, y, t) \
+    {                 \
+        t = x;        \
+        x = y;        \
+        y = t;        \
+    }
+#define CHECK_(x)       \
+    {                   \
+        int r = x;      \
+        if (r != OK_OK) \
+        {               \
+            return r;   \
+        }               \
+    }
+#define CHECK_d_(x, y)  \
+    {                   \
+        int r = x;      \
+        if (r != OK_OK) \
+        {               \
+            y;          \
+            return r;   \
+        }               \
+    }
+#define CHECK_d_l_(x, y, z) \
+    {                       \
+        int r = x;          \
+        if (r != OK_OK)     \
+        {                   \
+            y;              \
+            LOG_E(z);       \
+            return r;       \
+        }                   \
+    }
+
+
+
+
+
+#define IF_F(x)       \
+    if (x)            \
+    {                 \
+        return false; \
+    }
+#define IF_N(x)      \
+    if (x)           \
+    {                \
+        return NULL; \
+    }
 #define F_FATAL_F(x)  \
     if (x == false)   \
     {                 \
@@ -72,31 +156,6 @@
     if (x)           \
     {                \
         return true; \
-    }
-#define IF_F(x)       \
-    if (x)            \
-    {                 \
-        return false; \
-    }
-#define IF_N(x)      \
-    if (x)           \
-    {                \
-        return NULL; \
-    }
-#define IF_(x)  \
-    if (x)      \
-    {           \
-        return; \
-    }
-#define IF__(x, y) \
-    if (x)         \
-    {              \
-        return y;  \
-    }
-#define IF_CONT(x) \
-    if (x)         \
-    {              \
-        continue;  \
     }
 
 #define IF_d_T(x, y) \
@@ -149,25 +208,10 @@
         return;    \
     }
 
-#define NULL_(x)   \
-    if (x == NULL) \
-    {              \
-        return;    \
-    }
-#define NULL__(x, y) \
-    if (x == NULL)   \
-    {                \
-        return y;    \
-    }
 #define NULL_F(x)     \
     if (x == NULL)    \
     {                 \
         return false; \
-    }
-#define NULL_N(x)    \
-    if (x == NULL)   \
-    {                \
-        return NULL; \
     }
 #define NULL_T(x)    \
     if (x == NULL)   \
@@ -230,23 +274,11 @@
         return NULL;  \
     }
 
-#define DEL(x)    \
-    if (x)        \
-    {             \
-        delete x; \
-        x = NULL; \
-    }
 #define DEL_ARRAY(x) \
     if (x)           \
     {                \
         delete[] x;  \
         x = NULL;    \
-    }
-#define SWAP(x, y, t) \
-    {                 \
-        t = x;        \
-        x = y;        \
-        y = t;        \
     }
 
 #define JO(o, n, v)                       \

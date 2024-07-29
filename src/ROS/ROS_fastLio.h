@@ -44,8 +44,8 @@ namespace kai
 			m_mT = Matrix4f::Identity();
 		}
 
-		bool init(Kiss *pKiss);
-		bool link(void);
+		int init(Kiss *pKiss);
+		int link(void);
 		void console(void *pConsole);
 
 		bool createSubscriptions(void);

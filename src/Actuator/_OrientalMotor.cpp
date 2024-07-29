@@ -9,8 +9,8 @@ namespace kai
 
 	_OrientalMotor::_OrientalMotor()
 	{
-		m_pA = NULL;
-		m_pMB = NULL;
+		m_pA = nullptr;
+		m_pMB = nullptr;
 		m_iSlave = 1;
 		m_iData = 0;
 
@@ -23,9 +23,9 @@ namespace kai
 	{
 	}
 
-	bool _OrientalMotor::init(void *pKiss)
+	int _OrientalMotor::init(void *pKiss)
 	{
-		IF_F(!this->_ActuatorBase::init(pKiss));
+		CHECK_(this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("iSlave", &m_iSlave);
@@ -39,16 +39,16 @@ namespace kai
 
 		string n;
 		n = "";
-		F_ERROR_F(pK->v("_Modbus", &n));
+		IF__(!pK->v("_Modbus", &n), OK_ERR_NOT_FOUND);
 		m_pMB = (_Modbus *)(pK->findModule(n));
-		IF_Fl(!m_pMB, n + " not found");
+		NULL__(m_pMB, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _OrientalMotor::start(void)
+	int _OrientalMotor::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

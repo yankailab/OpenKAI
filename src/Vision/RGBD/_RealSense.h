@@ -63,8 +63,8 @@ namespace kai
 		_RealSense();
 		virtual ~_RealSense();
 
-		virtual bool init(void *pKiss);
-		virtual bool start(void);
+		virtual int init(void *pKiss);
+		virtual int start(void);
 		virtual int check(void);
 
 		virtual bool open(void);

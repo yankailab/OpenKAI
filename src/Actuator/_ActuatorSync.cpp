@@ -17,9 +17,9 @@ namespace kai
 	{
 	}
 
-	bool _ActuatorSync::init(void *pKiss)
+	int _ActuatorSync::init(void *pKiss)
 	{
-		IF_F(!this->_ActuatorBase::init(pKiss));
+		CHECK_(this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		vector<string> vName;
@@ -38,12 +38,12 @@ namespace kai
 		if (m_iABget >= m_nAB)
 			m_iABget = 0;
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _ActuatorSync::start(void)
+	int _ActuatorSync::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

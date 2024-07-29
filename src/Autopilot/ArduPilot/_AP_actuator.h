@@ -14,8 +14,8 @@ namespace kai
 		_AP_actuator();
 		~_AP_actuator();
 
-		bool init(void *pKiss);
-		bool start(void);
+		int init(void *pKiss);
+		int start(void);
 		int check(void);
 		void update(void);
 		void console(void *pConsole);

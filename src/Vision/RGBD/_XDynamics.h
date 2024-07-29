@@ -89,10 +89,10 @@ namespace kai
 		_XDynamics();
 		virtual ~_XDynamics();
 
-		virtual bool init(void *pKiss);
-		virtual bool link(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
 		virtual int check(void);
-		virtual bool start(void);
+		virtual int start(void);
 		virtual void console(void *pConsole);
 
 		virtual bool open(void);
