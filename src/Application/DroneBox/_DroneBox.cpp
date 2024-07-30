@@ -151,7 +151,7 @@ namespace kai
 
     bool _DroneBox::takeoffRequest(void)
     {
-        IF_F(check() < 0);
+        IF_F(check() != OK_OK);;
 
         IF_T(getState() == "TAKEOFF_READY");
         m_pSC->transit("TAKEOFF_REQUEST");
@@ -160,7 +160,7 @@ namespace kai
 
     bool _DroneBox::landingRequest(void)
     {
-        IF_F(check() < 0);
+        IF_F(check() != OK_OK);;
 
         IF_T(getState() == "LANDING");
         m_pSC->transit("LANDING_REQUEST");
@@ -169,7 +169,7 @@ namespace kai
 
     bool _DroneBox::boxTakeoffPrepare(void)
     {
-        IF_F(check() < 0);
+        IF_F(check() != OK_OK);;
         IF_T(m_lastCMD == dbx_takeoffPrepare);
         IF_T(m_lastCMD == dbx_bTakeoffReady);
 
@@ -184,7 +184,7 @@ namespace kai
 
     bool _DroneBox::bBoxTakeoffReady(void)
     {
-        IF_F(check() < 0);
+        IF_F(check() != OK_OK);;
 
         //01 03 00 04 00 01 C5 CB
         uint16_t b = 0;
@@ -198,7 +198,7 @@ namespace kai
 
     bool _DroneBox::boxTakeoffComplete(void)
     {
-        IF_F(check() < 0);
+        IF_F(check() != OK_OK);;
         IF_T(m_lastCMD == dbx_takeoffComplete);
 
         //01 06 00 05 00 01 58 0B
@@ -212,7 +212,7 @@ namespace kai
 
     bool _DroneBox::boxLandingPrepare(void)
     {
-        IF_F(check() < 0);
+        IF_F(check() != OK_OK);;
         IF_T(m_lastCMD == dbx_landingPrepare);
         IF_T(m_lastCMD == dbx_bLandingReady);
 
@@ -227,7 +227,7 @@ namespace kai
 
     bool _DroneBox::bBoxLandingReady(void)
     {
-        IF_F(check() < 0);
+        IF_F(check() != OK_OK);;
 
         //01 03 00 01 00 01 D5 CA
         uint16_t b = 0;
@@ -241,7 +241,7 @@ namespace kai
 
     bool _DroneBox::boxLandingComplete(void)
     {
-        IF_F(check() < 0);
+        IF_F(check() != OK_OK);;
         IF_F(m_lastCMD == dbx_landingComplete);
 
         //01 06 00 02 00 01 E9 CA
@@ -255,7 +255,7 @@ namespace kai
 
     bool _DroneBox::boxRecover(void)
     {
-        IF_F(check() < 0);
+        IF_F(check() != OK_OK);;
         IF_T(m_lastCMD == dbx_boxRecover);
 
         //01 06 00 06 00 01 A8 0B

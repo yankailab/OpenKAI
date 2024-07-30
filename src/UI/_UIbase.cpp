@@ -18,17 +18,17 @@ namespace kai
 	{
 	}
 
-	bool _UIbase::init(void *pKiss)
+	int _UIbase::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _UIbase::link(void)
+	int _UIbase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
 		vector<string> vB;
@@ -41,12 +41,12 @@ namespace kai
 			m_vpB.push_back(pB);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _UIbase::start(void)
+	int _UIbase::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

@@ -120,10 +120,6 @@
         }                   \
     }
 
-
-
-
-
 #define IF_F(x)       \
     if (x)            \
     {                 \
@@ -134,6 +130,8 @@
     {                \
         return NULL; \
     }
+
+
 #define F_FATAL_F(x)  \
     if (x == false)   \
     {                 \

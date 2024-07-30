@@ -17,7 +17,7 @@ namespace kai
         m_rsDFPS = 30;
         m_bAlign = false;
         m_vPreset = "High Density";
-        m_rspAlign = NULL;
+        m_rspAlign = nullptr;
         m_rsCtrl.clear();
 
         m_vSizeRGB.set(1280, 720);
@@ -30,9 +30,9 @@ namespace kai
         DEL(m_rspAlign);
     }
 
-    bool _RealSense::init(void *pKiss)
+    int _RealSense::init(void *pKiss)
     {
-        IF_F(!_RGBDbase::init(pKiss));
+        CHECK_(_RGBDbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
         pK->v("rsSN", &m_rsSN);
@@ -59,14 +59,14 @@ namespace kai
         pK->v("fWhiteBalance", &m_rsCtrl.m_fWhiteBalance);
 
         Kiss *pKt = pK->child("threadPP");
-        IF_F(pKt->empty());
+        if (pKt->empty())
+        {
+            LOG_E("threadPP not found");
+            return OK_ERR_NOT_FOUND;
+        }
 
         m_pTPP = new _Thread();
-        if (!m_pTPP->init(pKt))
-        {
-            DEL(m_pTPP);
-            return false;
-        }
+        CHECK_d_l_(m_pTPP->init(pKt), DEL(m_pTPP), "threadPP init failed");
 
         return true;
     }
@@ -282,18 +282,18 @@ namespace kai
         m_rsPipe.stop();
     }
 
-    bool _RealSense::start(void)
+    int _RealSense::start(void)
     {
-        NULL_F(m_pT);
-        NULL_F(m_pTPP);
-        IF_F(!m_pT->start(getUpdate, this));
+        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL__(m_pTPP, OK_ERR_NULLPTR);
+        CHECK_(m_pT->start(getUpdate, this));
         return m_pTPP->start(getTPP, this);
     }
 
     int _RealSense::check(void)
     {
-        NULL__(m_pT, -1);
-        NULL__(m_pTPP, -1);
+        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL__(m_pTPP, OK_ERR_NULLPTR);
 
         return _RGBDbase::check();
     }

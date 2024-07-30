@@ -180,15 +180,15 @@ namespace kai
 		return true;
 	}
 
-	bool _GSVgrid::start(void)
+	int _GSVgrid::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _GSVgrid::check(void)
 	{
-		NULL__(m_pGio, -1);
+		NULL__(m_pGio, OK_ERR_NULLPTR);
 
 		return this->_PCgrid::check();
 	}

@@ -68,7 +68,7 @@ namespace kai
         void CbWorkMode(livox_status status, LivoxLidarAsyncControlResponse *pR);
         void CbLidarInfoChange(const LivoxLidarInfo *pI);
 
-        bool open(void);
+        int open(void);
         void close(void);
 
     private:

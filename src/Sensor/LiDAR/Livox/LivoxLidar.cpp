@@ -37,9 +37,9 @@ namespace kai
     {
     }
 
-    bool LivoxLidar::init(void *pKiss)
+    int LivoxLidar::init(void *pKiss)
     {
-        IF_F(!this->BASE::init(pKiss));
+        CHECK_(this->BASE::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
         pK->a("vBroadcastCode", &m_vBroadcastCode);
@@ -50,9 +50,9 @@ namespace kai
         pK->v("scanPattern", &m_scanPattern);
 
         int r = InitLdsLidar(m_vBroadcastCode);
-        IF_F(r != 0);
+        IF__(r != 0, OK_ERR_UNKNOWN);
 
-        return true;
+        return OK_OK;
     }
 
     int LivoxLidar::InitLdsLidar(std::vector<std::string> &broadcast_code_strs)

@@ -12,11 +12,10 @@ namespace kai
 	{
 	}
 
-	bool _PWMio::init(void *pKiss)
+	int _PWMio::init(void *pKiss)
 	{
-		IF_F(!this->_ProtocolBase::init(pKiss));
+		CHECK_(this->_ProtocolBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
 
 		pK->v("nCr", &m_nCr);
 		pK->v("nCw", &m_nCw);
@@ -30,14 +29,14 @@ namespace kai
 			m_pCw[i].set(vPWM[i]);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _PWMio::start(void)
+	int _PWMio::start(void)
 	{
-		NULL_F(m_pT);
-		NULL_F(m_pTr);
-		IF_F(!m_pT->start(getUpdateW, this));
+		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL__(m_pTr, OK_ERR_NULLPTR);
+		CHECK_(m_pT->start(getUpdateW, this));
 		return m_pTr->start(getUpdateR, this);
 	}
 

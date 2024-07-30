@@ -13,7 +13,7 @@ namespace kai
 	_DepthShow::_DepthShow()
 	{
 		m_type = vision_RSdepth;
-		m_pV = NULL;
+		m_pV = nullptr;
 	}
 
 	_DepthShow::~_DepthShow()
@@ -21,18 +21,18 @@ namespace kai
 		close();
 	}
 
-	bool _DepthShow::init(void *pKiss)
+	int _DepthShow::init(void *pKiss)
 	{
-		IF_F(!_VisionBase::init(pKiss));
+		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		string n;
 		n = "";
 		pK->v("_RGBDbase", &n);
 		m_pV = (_RGBDbase *)(pK->findModule(n));
-		IF_Fl(!m_pV, "_RGBDbase not found: " + n);
+		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _DepthShow::open(void)
@@ -48,9 +48,9 @@ namespace kai
 		this->_VisionBase::close();
 	}
 
-	bool _DepthShow::start(void)
+	int _DepthShow::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

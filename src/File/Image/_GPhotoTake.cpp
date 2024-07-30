@@ -5,7 +5,7 @@ namespace kai
 
 	_GPhotoTake::_GPhotoTake()
 	{
-		m_pG = NULL;
+		m_pG = nullptr;
 
 		m_dir = "/home/";
 		m_subDir = "";
@@ -22,11 +22,10 @@ namespace kai
 	{
 	}
 
-	bool _GPhotoTake::init(void *pKiss)
+	int _GPhotoTake::init(void *pKiss)
 	{
-		IF_F(!this->_FileBase::init(pKiss));
+		CHECK_(this->_FileBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
 
 		pK->v("quality", &m_quality);
 		pK->v("dir", &m_dir);
@@ -43,33 +42,32 @@ namespace kai
 		m_compress.push_back(IMWRITE_JPEG_QUALITY);
 		m_compress.push_back(m_quality);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _GPhotoTake::link(void)
+	int _GPhotoTake::link(void)
 	{
-		IF_F(!this->_FileBase::link());
-		IF_F(!m_pT->link());
+		CHECK_(this->_FileBase::link());
+		CHECK_(m_pT->link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
 		string n;
-
 		n = "";
 		pK->v("_GPhoto", &n);
 		m_pG = (_GPhoto *)(pK->findModule(n));
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _GPhotoTake::start(void)
+	int _GPhotoTake::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _GPhotoTake::check(void)
 	{
-		NULL__(m_pG, -1);
+		NULL__(m_pG, OK_ERR_NULLPTR);
 
 		return this->_FileBase::check();
 	}
@@ -90,7 +88,7 @@ namespace kai
 
 	bool _GPhotoTake::startAutoMode(int nTake, int tInterval)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 	}
 	void _GPhotoTake::stopAutoMode(void)
 	{
@@ -98,7 +96,7 @@ namespace kai
 
 	bool _GPhotoTake::shutter(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		if (m_tDelay > 0)
 			m_pT->sleepT(m_tDelay);

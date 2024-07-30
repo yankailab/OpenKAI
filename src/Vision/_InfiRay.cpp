@@ -23,21 +23,21 @@ namespace kai
 		close();
 	}
 
-	bool _InfiRay::init(void *pKiss)
+	int _InfiRay::init(void *pKiss)
 	{
-		IF_F(!_VisionBase::init(pKiss));
+		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("deviceID", &m_deviceID);
 		pK->v("nInitRead", &m_nInitRead);
 		pK->v("bResetCam", &m_bResetCam);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _InfiRay::open(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 		IF_T(m_bOpen);
 
 		m_InfiRay.open(m_deviceID, CAP_V4L2);
@@ -77,9 +77,9 @@ namespace kai
 		m_InfiRay.release();
 	}
 
-	bool _InfiRay::start(void)
+	int _InfiRay::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

@@ -92,7 +92,7 @@ namespace kai
 
 	bool _ZLAC8015D::power(bool bON)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 		IF_T(bON == m_bPower);
 
 		if (bON)
@@ -118,7 +118,7 @@ namespace kai
 
 	bool _ZLAC8015D::setMode(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x200D, m_iMode) != 1);
 
@@ -127,7 +127,7 @@ namespace kai
 
 	bool _ZLAC8015D::setAccel(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2080, (int)m_pL->m_a.m_vTarget) != 1);
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2081, (int)m_pR->m_a.m_vTarget) != 1);
@@ -137,7 +137,7 @@ namespace kai
 
 	bool _ZLAC8015D::setBrake(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2082, (int)m_pL->m_b.m_vTarget) != 1);
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2083, (int)m_pR->m_b.m_vTarget) != 1);
@@ -147,7 +147,7 @@ namespace kai
 
 	bool _ZLAC8015D::setSpeed(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2088, (int)m_pL->m_s.m_vTarget) != 1);
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2089, (int)m_pR->m_s.m_vTarget) != 1);
@@ -157,7 +157,7 @@ namespace kai
 
 	bool _ZLAC8015D::stopMove(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		IF_F(m_pMB->writeBit(m_iSlave, 3, true) != 1);
 		return true;
@@ -165,7 +165,7 @@ namespace kai
 
 	bool _ZLAC8015D::bComplete(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		uint16_t b;
 		int r = m_pMB->readRegisters(m_iSlave, 12, 1, &b);
@@ -176,7 +176,7 @@ namespace kai
 
 	bool _ZLAC8015D::readStatus(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 		IF_T(!m_ieReadStatus.update(m_pT->getTfrom()));
 
 		uint16_t pB[2];
@@ -199,7 +199,7 @@ namespace kai
 
 	bool _ZLAC8015D::clearAlarm(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 		IF_T(!m_ieReadStatus.update(m_pT->getTfrom()));
 
 		int r = m_pMB->writeRegister(m_iSlave, 0x2031, 0x06); //clear alarm

@@ -12,7 +12,7 @@ namespace kai
 
 	_TrackerBase::_TrackerBase()
 	{
-		m_pV = NULL;
+		m_pV = nullptr;
 		m_trackerType = "";
 		m_trackState = track_stop;
 		m_bb.clear();
@@ -25,19 +25,20 @@ namespace kai
 	{
 	}
 
-	bool _TrackerBase::init(void *pKiss)
+	int _TrackerBase::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("trackerType", &m_trackerType);
 		pK->v("margin", &m_margin);
 
 		string n = "";
-		F_ERROR_F(pK->v("_VisionBase", &n));
+		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->findModule(n));
+		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
 	void _TrackerBase::createTracker(void)
@@ -46,7 +47,7 @@ namespace kai
 
 	int _TrackerBase::check(void)
 	{
-		NULL__(m_pV, -1);
+		NULL__(m_pV, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}

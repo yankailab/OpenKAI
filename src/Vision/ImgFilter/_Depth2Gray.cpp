@@ -13,7 +13,7 @@ namespace kai
 	_Depth2Gray::_Depth2Gray()
 	{
 		m_type = vision_depth2Gray;
-		m_pV = NULL;
+		m_pV = nullptr;
 	}
 
 	_Depth2Gray::~_Depth2Gray()
@@ -21,18 +21,18 @@ namespace kai
 		close();
 	}
 
-	bool _Depth2Gray::init(void *pKiss)
+	int _Depth2Gray::init(void *pKiss)
 	{
-		IF_F(!_VisionBase::init(pKiss));
+		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		string n;
 		n = "";
 		pK->v("_RGBDbase", &n);
 		m_pV = (_RGBDbase *)(pK->findModule(n));
-		IF_Fl(!m_pV, n + ": not found");
+		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _Depth2Gray::open(void)
@@ -48,9 +48,9 @@ namespace kai
 		this->_VisionBase::close();
 	}
 
-	bool _Depth2Gray::start(void)
+	int _Depth2Gray::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

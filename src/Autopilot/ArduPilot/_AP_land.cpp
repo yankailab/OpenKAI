@@ -106,7 +106,7 @@ namespace kai
 
 	bool _AP_land::bComplete(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 		IF_F(!m_bTarget);
 
 		// NEDH

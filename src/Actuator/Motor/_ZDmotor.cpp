@@ -89,7 +89,7 @@ namespace kai
 
 	bool _ZDmotor::power(bool bON)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 		IF_T(bON == m_bPower);
 
 		if (bON)
@@ -115,7 +115,7 @@ namespace kai
 
 	bool _ZDmotor::setMode(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2032, m_iMode) != 1);
 
@@ -124,7 +124,7 @@ namespace kai
 
 	bool _ZDmotor::setAccel(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		uint16_t v = m_pA->m_a.m_vTarget;
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2037, v) != 1);
@@ -134,7 +134,7 @@ namespace kai
 
 	bool _ZDmotor::setBrake(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		uint16_t v = m_pA->m_b.m_vTarget;
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2038, v) != 1);
@@ -144,7 +144,7 @@ namespace kai
 
 	bool _ZDmotor::setSpeed(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		int16_t v = m_pA->m_s.m_vTarget;
 		int16_t d = (v >= 0) ? 1 : 2;
@@ -156,7 +156,7 @@ namespace kai
 
 	bool _ZDmotor::stopMove(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		IF_F(m_pMB->writeBit(m_iSlave, 3, true) != 1);
 		return true;
@@ -164,7 +164,7 @@ namespace kai
 
 	bool _ZDmotor::bComplete(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		uint16_t b;
 		int r = m_pMB->readRegisters(m_iSlave, 12, 1, &b);
@@ -175,7 +175,7 @@ namespace kai
 
 	bool _ZDmotor::readStatus(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 		IF_T(!m_ieReadStatus.update(m_pT->getTfrom()));
 
 		uint16_t pB[2];
@@ -191,7 +191,7 @@ namespace kai
 
 	bool _ZDmotor::clearAlarm(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 		//		IF_T(!m_ieReadStatus.update(m_pT->getTfrom()));
 
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2000, 0x07) != 1);

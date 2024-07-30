@@ -13,7 +13,7 @@ namespace kai
 	_Invert::_Invert()
 	{
 		m_type = vision_invert;
-		m_pV = NULL;
+		m_pV = nullptr;
 	}
 
 	_Invert::~_Invert()
@@ -21,18 +21,18 @@ namespace kai
 		close();
 	}
 
-	bool _Invert::init(void *pKiss)
+	int _Invert::init(void *pKiss)
 	{
-		IF_F(!_VisionBase::init(pKiss));
+		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		string n;
 		n = "";
 		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->findModule(n));
-		IF_Fl(!m_pV, n + ": not found");
+		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _Invert::open(void)
@@ -48,9 +48,9 @@ namespace kai
 		this->_VisionBase::close();
 	}
 
-	bool _Invert::start(void)
+	int _Invert::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

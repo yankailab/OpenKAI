@@ -12,7 +12,7 @@ namespace kai
 
 	_GPS::_GPS()
 	{
-		m_pIO = NULL;
+		m_pIO = nullptr;
 		m_nRead = 0;
 		m_iRead = 0;
 		m_msg = "";
@@ -25,22 +25,22 @@ namespace kai
 	{
 	}
 
-	bool _GPS::init(void *pKiss)
+	int _GPS::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		string n = "";
-		F_ERROR_F(pK->v("_IObase", &n));
+		pK->v("_IObase", &n);
 		m_pIO = (_IObase *)(pK->findModule(n));
-		IF_Fl(!m_pIO, "_IObase not found");
+		NULL__(m_pIO, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _GPS::start(void)
+	int _GPS::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

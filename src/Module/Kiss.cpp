@@ -8,9 +8,9 @@ namespace kai
 		m_class = "";
 		m_name = "";
 		m_bNULL = false;
-		m_pNULL = NULL;
-		m_pParent = NULL;
-		m_pBase = NULL;
+		m_pNULL = nullptr;
+		m_pParent = nullptr;
+		m_pBase = nullptr;
 	}
 
 	Kiss::~Kiss(void)

@@ -23,21 +23,21 @@ namespace kai
 		close();
 	}
 
-	bool _Camera::init(void *pKiss)
+	int _Camera::init(void *pKiss)
 	{
-		IF_F(!_VisionBase::init(pKiss));
+		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("deviceID", &m_deviceID);
 		pK->v("nInitRead", &m_nInitRead);
 		pK->v("bResetCam", &m_bResetCam);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _Camera::open(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 		IF_T(m_bOpen);
 
 		m_camera.open(m_deviceID);
@@ -72,9 +72,9 @@ namespace kai
 		m_camera.release();
 	}
 
-	bool _Camera::start(void)
+	int _Camera::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

@@ -23,13 +23,13 @@ namespace kai
 	{
 	}
 
-	bool _Sequencer::init(void *pKiss)
+	int _Sequencer::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		Kiss *pAction = pK->child("action");
-		NULL_Fl(pAction, "action not found");
+		NULL__(pAction, OK_ERR_NOT_FOUND);
 
 		int i = 0;
 		while (1)
@@ -54,7 +54,7 @@ namespace kai
 				aA.init();
 
 				string n = "";
-				F_ERROR_F(pActuatorI->v("_ActuatorBase", &n));
+				pActuatorI->v("_ActuatorBase", &n);
 				aA.m_pA = (_ActuatorBase *)(pK->findModule(n));
 				IF_CONT(!aA.m_pA);
 
@@ -69,13 +69,20 @@ namespace kai
 
 		on();
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _Sequencer::start(void)
+	int _Sequencer::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
+	}
+
+	int _Sequencer::check(void)
+	{
+		IF__(m_vAction.size() <= 0, OK_ERR_INVALID_VALUE);
+
+		return OK_OK;
 	}
 
 	void _Sequencer::update(void)
@@ -88,13 +95,6 @@ namespace kai
 
 			m_pT->autoFPSto();
 		}
-	}
-
-	int _Sequencer::check(void)
-	{
-		IF__(m_vAction.size() <= 0, -1);
-
-		return 0;
 	}
 
 	void _Sequencer::on(void)

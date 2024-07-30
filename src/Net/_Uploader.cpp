@@ -26,9 +26,9 @@ namespace kai
 	{
 	}
 
-	bool _Uploader::init(void *pKiss)
+	int _Uploader::init(void *pKiss)
 	{
-		IF_F(!this->_FileBase::init(pKiss));
+		CHECK_(this->_FileBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("dir", &m_dir);
@@ -42,21 +42,21 @@ namespace kai
 
 		if (m_method == uploader_http)
 		{
-			IF_F(m_httpC.init());
+			IF__(m_httpC.init(), OK_ERR_UNKNOWN);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _Uploader::start(void)
+	int _Uploader::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _Uploader::check(void)
 	{
-		IF__(m_cmd.empty(), -1);
+		IF__(m_cmd.empty(), OK_ERR_NULLPTR);
 
 		return this->_FileBase::check();
 	}

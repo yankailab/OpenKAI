@@ -9,7 +9,7 @@ namespace kai
 
 	_LeddarVu::_LeddarVu()
 	{
-		m_pMb = NULL;
+		m_pMb = nullptr;
 		m_port = "";
 		m_baud = 115200;
 		m_slaveAddr = 1;
@@ -44,9 +44,9 @@ namespace kai
 		}
 	}
 
-	bool _LeddarVu::init(void *pKiss)
+	int _LeddarVu::init(void *pKiss)
 	{
-		IF_F(!this->_DistSensorBase::init(pKiss));
+		CHECK_(this->_DistSensorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("port", &m_port);
@@ -68,12 +68,12 @@ namespace kai
 		pK->v("bOvershootManagement", &m_bOvershootManagement);
 		pK->v("oprMode", &m_oprMode);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _LeddarVu::start(void)
+	int _LeddarVu::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

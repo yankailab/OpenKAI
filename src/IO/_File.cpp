@@ -18,13 +18,12 @@ namespace kai
 		close();
 	}
 
-	bool _File::init(void *pKiss)
+	int _File::init(void *pKiss)
 	{
-		IF_F(!this->_IObase::init(pKiss));
+		CHECK_(this->_IObase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
     	
-
-		return true;
+		return OK_OK;
 	}
 
 	bool _File::open(const string& fName, ios_base::openmode mode)

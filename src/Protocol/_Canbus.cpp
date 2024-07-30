@@ -5,7 +5,7 @@ namespace kai
 
 	_Canbus::_Canbus()
 	{
-		m_pIO = NULL;
+		m_pIO = nullptr;
 		m_nCanData = 0;
 		m_recvMsg.init();
 	}
@@ -14,37 +14,36 @@ namespace kai
 	{
 	}
 
-	bool _Canbus::init(void *pKiss)
+	int _Canbus::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
 
 		m_nCanData = 0;
 		while (1)
 		{
-			IF_F(m_nCanData >= N_CANDATA);
+			IF__(m_nCanData >= N_CANDATA, OK_ERR_INVALID_VALUE);
 			Kiss *pAddr = pK->child(m_nCanData);
 			if (pAddr->empty())
 				break;
 
 			m_pCanData[m_nCanData].init();
-			F_ERROR_F(pAddr->v("addr", (int *)&(m_pCanData[m_nCanData].m_addr)));
+			IF__(!pAddr->v("addr", (int *)&(m_pCanData[m_nCanData].m_addr)), OK_ERR_NOT_FOUND);
 			m_nCanData++;
 		}
 
 		string n;
 		n = "";
-		F_ERROR_F(pK->v("_IObase", &n));
+		pK->v("_IObase", &n);
 		m_pIO = (_SerialPort *)(pK->findModule(n));
-		NULL_Fl(m_pIO, "_IObase not found");
+		NULL__(m_pIO, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _Canbus::start(void)
+	int _Canbus::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

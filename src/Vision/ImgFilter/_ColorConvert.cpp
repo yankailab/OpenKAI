@@ -13,7 +13,7 @@ namespace kai
 	_ColorConvert::_ColorConvert()
 	{
 		m_type = vision_ColorConvert;
-		m_pV = NULL;
+		m_pV = nullptr;
 		m_code = COLOR_RGB2GRAY;
 	}
 
@@ -22,28 +22,28 @@ namespace kai
 		close();
 	}
 
-	bool _ColorConvert::init(void *pKiss)
+	int _ColorConvert::init(void *pKiss)
 	{
-		IF_F(!_VisionBase::init(pKiss));
+		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("code", &m_code);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _ColorConvert::link(void)
+	int _ColorConvert::link(void)
 	{
-		IF_F(!this->_VisionBase::link());
+		CHECK_(this->_VisionBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
 		string n;
 		n = "";
 		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->findModule(n));
-		IF_Fl(!m_pV, n + ": not found");
+		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _ColorConvert::open(void)
@@ -59,16 +59,16 @@ namespace kai
 		this->_VisionBase::close();
 	}
 
-	bool _ColorConvert::start(void)
+	int _ColorConvert::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _ColorConvert::check(void)
 	{
-		NULL__(m_pV, -1);
-		IF__(m_pV->getFrameRGB()->bEmpty(), -1);
+		NULL__(m_pV, OK_ERR_NULLPTR);
+		IF__(m_pV->getFrameRGB()->bEmpty(), OK_ERR_NOT_READY);
 
 		return _VisionBase::check();
 	}

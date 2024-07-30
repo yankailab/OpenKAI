@@ -108,7 +108,7 @@ namespace kai
 
 	bool _DDSM::setMode(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		uint8_t pB[DDSM_CMD_NB];
 		pB[1] = 0xA0;
@@ -145,7 +145,7 @@ namespace kai
 
 	bool _DDSM::readCMD(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		return false;
 	}

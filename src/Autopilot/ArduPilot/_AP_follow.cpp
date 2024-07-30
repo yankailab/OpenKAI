@@ -181,7 +181,7 @@ namespace kai
 
 	bool _AP_follow::updateTarget(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		if (m_apMount.m_bEnable)
 			m_pAP->setMount(m_apMount);
@@ -215,7 +215,7 @@ namespace kai
 
 	bool _AP_follow::findTarget(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		_Object *pO;
 		_Object *tO = NULL;

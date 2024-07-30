@@ -152,7 +152,7 @@ namespace kai
 
 	bool _AP_GPS::reset(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		uint16_t hdg = m_pAP->m_pMav->m_globalPositionINT.m_msg.hdg;
 		IF_F(hdg == UINT16_MAX);

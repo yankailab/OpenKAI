@@ -12,8 +12,8 @@ namespace kai
 
 	_SwarmSearch::_SwarmSearch()
 	{
-        m_pGG = NULL;
-        m_pGcell = NULL;
+        m_pGG = nullptr;
+        m_pGcell = nullptr;
         m_nGcell = 0;
 	}
 
@@ -22,41 +22,41 @@ namespace kai
         DEL(m_pGcell);
 	}
 
-	bool _SwarmSearch::init(void *pKiss)
+	int _SwarmSearch::init(void *pKiss)
 	{
-		IF_F(!this->_SwarmBase::init(pKiss));
+		CHECK_(this->_SwarmBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		int ie = USEC_1SEC;
 		pK->v("ieOptRoute", &ie);
 		m_ieOptRoute.init(ie);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _SwarmSearch::link(void)
+	int _SwarmSearch::link(void)
 	{
-		IF_F(!this->_SwarmBase::link());
+		CHECK_(this->_SwarmBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
 		string n;
 		n = "";
 		pK->v("GeoGrid", &n);
 		m_pGG = (GeoGrid *)(pK->findModule(n));
-		IF_Fl(!m_pGG, n + ": not found");
+		NULL__(m_pGG, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
-    bool _SwarmSearch::start(void)
+    int _SwarmSearch::start(void)
     {
-        NULL_F(m_pT);
+        NULL__(m_pT, OK_ERR_NULLPTR);
         return m_pT->start(getUpdate, this);
     }
 
 	int _SwarmSearch::check(void)
 	{
-        NULL__(m_pGG, -1);
+        NULL__(m_pGG, OK_ERR_NULLPTR);
 
 		return this->_SwarmBase::check();
 	}
@@ -85,7 +85,7 @@ namespace kai
 
 	bool _SwarmSearch::genGridCells(void)
     {
-        IF_F(check() < 0);
+        IF_F(check() != OK_OK);;
 
         m_nGcell = m_pGG->getNcell();
 		IF_F(m_nGcell <= 0);

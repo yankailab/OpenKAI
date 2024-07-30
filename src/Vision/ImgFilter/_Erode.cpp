@@ -13,7 +13,7 @@ namespace kai
 	_Erode::_Erode()
 	{
 		m_type = vision_erode;
-		m_pV = NULL;
+		m_pV = nullptr;
 	}
 
 	_Erode::~_Erode()
@@ -21,9 +21,9 @@ namespace kai
 		close();
 	}
 
-	bool _Erode::init(void *pKiss)
+	int _Erode::init(void *pKiss)
 	{
-		IF_F(!_VisionBase::init(pKiss));
+		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		int i = 0;
@@ -50,9 +50,9 @@ namespace kai
 		n = "";
 		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->findModule(n));
-		IF_Fl(!m_pV, n + ": not found");
+		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _Erode::open(void)
@@ -68,9 +68,9 @@ namespace kai
 		this->_VisionBase::close();
 	}
 
-	bool _Erode::start(void)
+	int _Erode::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

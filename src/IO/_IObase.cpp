@@ -12,7 +12,7 @@ namespace kai
 
 	_IObase::_IObase()
 	{
-		m_pTr = NULL;
+		m_pTr = nullptr;
 
 		m_ioType = io_none;
 		m_ioStatus = io_unknown;
@@ -27,28 +27,28 @@ namespace kai
 		m_fifoR.release();
 	}
 
-	bool _IObase::init(void *pKiss)
+	int _IObase::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CEHCK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("nFIFO", &m_nFIFO);
-		IF_F(!m_fifoW.init(m_nFIFO));
-		IF_F(!m_fifoR.init(m_nFIFO));
+		IF__(!m_fifoW.init(m_nFIFO), OK_ERR_ALLOCATION);
+		IF__(!m_fifoR.init(m_nFIFO), OK_ERR_ALLOCATION);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _IObase::link(void)
+	int _IObase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link());
 
 		if (m_pTr)
 		{
-			IF_F(!m_pTr->link());
+			CHECK_(m_pTr->link());
 		}
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _IObase::open(void)

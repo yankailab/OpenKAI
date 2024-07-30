@@ -13,7 +13,7 @@ namespace kai
 	_Remap::_Remap()
 	{
 		m_type = vision_remap;
-		m_pV = NULL;
+		m_pV = nullptr;
 		m_bReady = false;
 		m_fCalib ="";
 	}
@@ -23,23 +23,23 @@ namespace kai
 		close();
 	}
 
-	bool _Remap::init(void *pKiss)
+	int _Remap::init(void *pKiss)
 	{
-		IF_F(!_VisionBase::init(pKiss));
+		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		string n;
 		n = "";
 		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->findModule(n));
-		IF_Fl(!m_pV, n + ": not found");
+		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
 		pK->v("fCalib", &m_fCalib);
 		Mat mC, mD;
-		IF_F(!readCamMatrices(m_fCalib, &mC, &mD));
+		IF__(!readCamMatrices(m_fCalib, &mC, &mD), OK_ERR_INVALID_VALUE);
 		m_bReady = setCamMat(mC, mD);
 
-		return true;
+		return OK_OK;
 	}
 
 	// void _Remap::updateCamMat(void)
@@ -87,9 +87,9 @@ namespace kai
 		return m_bReady;
 	}
 
-	bool _Remap::start(void)
+	int _Remap::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

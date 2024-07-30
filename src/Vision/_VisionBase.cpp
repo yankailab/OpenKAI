@@ -21,16 +21,16 @@ namespace kai
 
 		m_bOpen = false;
 
-		m_psmRGB = NULL;
+		m_psmRGB = nullptr;
 	}
 
 	_VisionBase::~_VisionBase()
 	{
 	}
 
-	bool _VisionBase::init(void *pKiss)
+	int _VisionBase::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("devURI", &m_devURI);
@@ -39,12 +39,12 @@ namespace kai
 		pK->v("bRGB", &m_bRGB);
 		pK->v("vSizeRGB", &m_vSizeRGB);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _VisionBase::link(void)
+	int _VisionBase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
 		string n;
@@ -53,7 +53,7 @@ namespace kai
 		pK->v("_SHMrgb", &n);
 		m_psmRGB = (SharedMem *)(pK->findModule(n));
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _VisionBase::open(void)

@@ -20,14 +20,14 @@ namespace kai
 	{
 	}
 
-	bool _ImgFile::init(void *pKiss)
+	int _ImgFile::init(void *pKiss)
 	{
-		IF_F(!_VisionBase::init(pKiss));
+		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("file", &m_file);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _ImgFile::open(void)
@@ -47,9 +47,9 @@ namespace kai
 		return true;
 	}
 
-	bool _ImgFile::start(void)
+	int _ImgFile::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

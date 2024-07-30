@@ -16,12 +16,12 @@ namespace kai
 	{
 	}
 
-	bool _Object::init(void *pKiss)
+	int _Object::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		return true;
+		return OK_OK;
 	}
 
 	void _Object::clear(void)
@@ -38,9 +38,9 @@ namespace kai
 		resetClass();
 	}
 
-	bool _Object::start(void)
+	int _Object::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
@@ -105,14 +105,17 @@ namespace kai
 	{
 		m_vPosScr = p;
 	}
+
 	vFloat2 _Object::getPosScr(void)
 	{
 		return m_vPosScr;
 	}
+
 	void _Object::setDimScr(vFloat2 &d)
 	{
 		m_vDimScr = d;
 	}
+
 	vFloat2 _Object::getDimScr(void)
 	{
 		return m_vDimScr;

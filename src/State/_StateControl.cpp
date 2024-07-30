@@ -25,9 +25,9 @@ namespace kai
 		m_vpState.clear();
 	}
 
-	bool _StateControl::init(void *pKiss)
+	int _StateControl::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		Kiss *pKstate = pK->child("state");
@@ -47,10 +47,10 @@ namespace kai
 			// Add state above
 
 			LOG_E("Unknown state class: " + pKs->getClass());
-			return false;
+			return OK_ERR_NOT_FOUND;
 		}
 
-		IF_F(m_vpState.empty());
+		IF__(m_vpState.empty(), OK_ERR_NOT_FOUND);
 
 		string start = "";
 		pK->v("start", &start);
@@ -60,25 +60,25 @@ namespace kai
 		else
 			m_iS = i;
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _StateControl::link(void)
+	int _StateControl::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
 		for (int i = 0; i < m_vpState.size(); i++)
 		{
-			IF_F(!m_vpState[i]->link());
+			CHECK_(m_vpState[i]->link());
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _StateControl::start(void)
+	int _StateControl::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

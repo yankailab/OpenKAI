@@ -9,24 +9,24 @@
 
 namespace kai
 {
-    bool ROS_fastLio::init(Kiss *pKiss)
+    int ROS_fastLio::init(Kiss *pKiss)
     {
-        NULL_F(pKiss);
+        NULL__(pKiss, OK_ERR_NULLPTR);
         m_pKiss = pKiss;
 
         pKiss->v("topicPC2", &m_topicPC2);
         pKiss->v("topicOdom", &m_topicOdom);
         pKiss->v("topicPath", &m_topicPath);
 
-        return true;
+        return OK_OK;
     }
 
-    bool ROS_fastLio::link(void)
+    int ROS_fastLio::link(void)
     {
-        return true;
+        return OK_OK;
     }
 
-    bool ROS_fastLio::createSubscriptions(void)
+    int ROS_fastLio::createSubscriptions(void)
     {
         if (!m_topicPC2.empty())
         {
@@ -55,6 +55,8 @@ namespace kai
                 40,
                 std::bind(&ROS_fastLio::cbPath, this, _1));
         }
+
+        return OK_OK;
     }
 
     void ROS_fastLio::cbPointCloud2(const sensor_msgs::msg::PointCloud2::UniquePtr pMsg)

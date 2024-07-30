@@ -140,7 +140,7 @@ namespace kai
 
 	bool _AP_visionEstimate::bNaN(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		vFloat3 v = m_pNav->t();
 		IF_T(isnan(v.x));

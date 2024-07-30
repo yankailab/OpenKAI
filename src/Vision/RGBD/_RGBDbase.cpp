@@ -12,7 +12,7 @@ namespace kai
 
     _RGBDbase::_RGBDbase()
     {
-        m_pTPP = NULL;
+        m_pTPP = nullptr;
 
 		m_devFPSd = 30;
 		m_vSizeD.set(1280, 720);
@@ -49,9 +49,9 @@ namespace kai
         DEL(m_pTPP);
     }
 
-    bool _RGBDbase::init(void *pKiss)
+ 	int _RGBDbase::init(void *pKiss)
     {
-        IF_F(!_VisionBase::init(pKiss));
+        CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("devFPSd", &m_devFPSd);
@@ -74,12 +74,12 @@ namespace kai
 		pK->v("minHistD", &m_minHistD);
 #endif
 
-        return true;
+        return OK_OK;
     }
 
-    bool _RGBDbase::link(void)
+    int _RGBDbase::link(void)
     {
-        IF_F(!this->_VisionBase::link());
+        CHECK_(this->_VisionBase::link());
         Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
@@ -106,7 +106,7 @@ namespace kai
         m_pPCframe = (_PCframe *)(pK->findModule(n));
 #endif
 
-        return true;
+        return OK_OK;
     }
 
     bool _RGBDbase::open(void)
@@ -123,7 +123,7 @@ namespace kai
 #ifdef WITH_3D
 		if(m_bPointCloud)
 		{
-			NULL__(m_pPCframe, -1);
+			NULL__(m_pPCframe, OK_ERR_NULLPTR);
 		}
 #endif
 

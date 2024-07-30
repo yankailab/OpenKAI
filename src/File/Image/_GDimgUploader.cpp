@@ -12,7 +12,7 @@ namespace kai
 
 	_GDimgUploader::_GDimgUploader()
 	{
-		m_pV = NULL;
+		m_pV = nullptr;
 		m_tInterval = SEC_2_USEC;
 		m_tLastUpload = 0;
 		m_tempDir = "GDcam_";
@@ -25,9 +25,9 @@ namespace kai
 	{
 	}
 
-	bool _GDimgUploader::init(void *pKiss)
+	int _GDimgUploader::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("tInterval", &m_tInterval);
@@ -44,17 +44,25 @@ namespace kai
 		string n;
 
 		n = "";
-		F_ERROR_F(pK->v("_VisionBase", &n));
+		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->findModule(n));
-		IF_Fl(!m_pV, n + " not found");
+		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _GDimgUploader::start(void)
+	int _GDimgUploader::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
+	}
+
+	int _GDimgUploader::check(void)
+	{
+		NULL__(m_pV, OK_ERR_NULLPTR);
+		IF__(m_pV->getFrameRGB()->bEmpty(), OK_ERR_NOT_READY);
+
+		return OK_OK;
 	}
 
 	void _GDimgUploader::update(void)
@@ -71,14 +79,6 @@ namespace kai
 
 			m_pT->autoFPSto();
 		}
-	}
-
-	int _GDimgUploader::check(void)
-	{
-		NULL__(m_pV, -1);
-		IF__(m_pV->getFrameRGB()->bEmpty(), -1);
-
-		return 0;
 	}
 
 	void _GDimgUploader::updateUpload(void)

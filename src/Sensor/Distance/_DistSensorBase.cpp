@@ -12,7 +12,7 @@ namespace kai
 
 	_DistSensorBase::_DistSensorBase()
 	{
-		m_pDiv = NULL;
+		m_pDiv = nullptr;
 		m_nDiv = 1;
 		m_fovH = 360;
 		m_fovV = 0.1;
@@ -31,14 +31,14 @@ namespace kai
 		DEL_ARRAY(m_pDiv);
 	}
 
-	bool _DistSensorBase::init(void *pKiss)
+	int _DistSensorBase::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("fovH", &m_fovH);
-		IF_Fl(m_fovH <= 0, "angleTo > 0");
-		IF_Fl(m_fovH > 360, "angleTo <= 360");
+		IF__(m_fovH <= 0, OK_ERR_INVALID_VALUE);
+		IF__(m_fovH > 360, OK_ERR_INVALID_VALUE);
 		pK->v("fovV", &m_fovV);
 
 		pK->v("nDiv", &m_nDiv);
@@ -54,7 +54,7 @@ namespace kai
 		pK->v("nMed", &nMed);
 		pK->v("nAvr", &nAvr);
 
-		IF_F(m_nDiv >= MAX_DIST_SENSOR_DIV);
+		IF__(m_nDiv >= MAX_DIST_SENSOR_DIV, OK_ERR_INVALID_VALUE);
 
 		m_pDiv = new DIST_SENSOR_DIV[m_nDiv];
 		for (int i = 0; i < m_nDiv; i++)
@@ -62,7 +62,7 @@ namespace kai
 			m_pDiv[i].init(nAvr, nMed);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _DistSensorBase::bReady(void)

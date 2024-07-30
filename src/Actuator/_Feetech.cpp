@@ -115,28 +115,28 @@ namespace kai
 
 	bool _Feetech::setID(uint16_t iSlave)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		return true;
 	}
 
 	bool _Feetech::setBaudrate(uint32_t baudrate)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		return true;
 	}
 
 	bool _Feetech::saveData(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		return true;
 	}
 
 	bool _Feetech::setPos(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		m_servo.WritePosEx(m_ID,
 						   m_pA->m_p.m_vTarget,
@@ -148,7 +148,7 @@ namespace kai
 
 	bool _Feetech::setSpeed(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		uint16_t s = m_pA->m_s.m_vTarget;
 
@@ -157,7 +157,7 @@ namespace kai
 
 	bool _Feetech::setAccel(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		uint16_t a = m_pA->m_a.m_vTarget;
 
@@ -166,7 +166,7 @@ namespace kai
 
 	bool _Feetech::readStatus(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 		IF_T(!m_ieReadStatus.update(m_pT->getTfrom()));
 
 		// uint16_t pB[2];

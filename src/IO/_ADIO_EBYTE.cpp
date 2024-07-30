@@ -11,7 +11,7 @@ namespace kai
 {
 	_ADIO_EBYTE::_ADIO_EBYTE()
 	{
-		m_pMB = NULL;
+		m_pMB = nullptr;
 		m_iID = 32;
 	}
 
@@ -20,19 +20,19 @@ namespace kai
 		close();
 	}
 
-	bool _ADIO_EBYTE::init(void *pKiss)
+	int _ADIO_EBYTE::init(void *pKiss)
 	{
-		IF_F(!this->_ADIObase::init(pKiss));
+		CHECK_(this->_ADIObase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("iID", &m_iID);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _ADIO_EBYTE::link(void)
+	int _ADIO_EBYTE::link(void)
 	{
-		IF_F(!this->_ADIObase::link());
+		CHECK_(this->_ADIObase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
 		string n;
@@ -40,7 +40,7 @@ namespace kai
 		pK->v("_Modbus", &n);
 		m_pMB = (_Modbus *)(pK->findModule(n));
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _ADIO_EBYTE::open(void)
@@ -54,15 +54,15 @@ namespace kai
 
 	int _ADIO_EBYTE::check(void)
 	{
-		NULL__(m_pMB, -1);
-		IF__(!m_pMB->bOpen(), -1);
+		NULL__(m_pMB, OK_ERR_NULLPTR);
+		IF__(!m_pMB->bOpen(), OK_ERR_NOT_READY);
 
 		return this->_ADIObase::check();
 	}
 
-	bool _ADIO_EBYTE::start(void)
+	int _ADIO_EBYTE::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

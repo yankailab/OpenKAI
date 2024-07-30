@@ -27,11 +27,10 @@ namespace kai
 		}
 	}
 
-	bool _Modbus::init(void *pKiss)
+	int _Modbus::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
 
 		pK->v("port", &m_port);
 		pK->v("parity", &m_parity);
@@ -40,7 +39,7 @@ namespace kai
 		pK->v("tOutSec", &m_tOutSec);
 		pK->v("tOutUSec", &m_tOutUSec);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _Modbus::open(void)
@@ -73,9 +72,9 @@ namespace kai
 		return m_bOpen;
 	}
 
-	bool _Modbus::start(void)
+	int _Modbus::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

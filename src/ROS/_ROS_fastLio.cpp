@@ -12,10 +12,10 @@ namespace kai
 
     _ROS_fastLio::_ROS_fastLio()
     {
-        m_pTros = NULL;
+        m_pTros = nullptr;
 
 #ifdef WITH_3D
-        m_pPCframe = NULL;
+        m_pPCframe = nullptr;
 #endif
     }
 
@@ -23,19 +23,20 @@ namespace kai
     {
     }
 
-    bool _ROS_fastLio::init(void *pKiss)
+    int _ROS_fastLio::init(void *pKiss)
     {
-        IF_F(!this->_NavBase::init(pKiss));
+        CHECK_(this->_NavBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
         Kiss *pKr = pK->child("threadROS");
-        IF_F(pKr->empty());
-        m_pTros = new _Thread();
-        if (!m_pTros->init(pKr))
+        if (pKr->empty())
         {
-            DEL(m_pTros);
-            return false;
+            LOG_E("threadROS not found");
+            return OK_ERR_NOT_FOUND;
         }
+
+        m_pTros = new _Thread();
+        CHECK_d_l_(m_pTros->init(pKr), DEL(m_pTros), "threadROS init failed");
 
         rclcpp::init(0, NULL);
         m_pROSnode = std::make_shared<ROS_fastLio>();
@@ -43,13 +44,12 @@ namespace kai
         return m_pROSnode->init(pKn);
     }
 
-    bool _ROS_fastLio::link(void)
+    int _ROS_fastLio::link(void)
     {
-        IF_F(!this->_NavBase::link());
+        CHECK_(this->_NavBase::link());
         Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
-
 #ifdef WITH_3D
         n = "";
         pK->v("_PCframe", &n);
@@ -57,18 +57,18 @@ namespace kai
         m_pROSnode->m_pPCframe = m_pPCframe;
 #endif
 
-        return true;
+        return OK_OK;
     }
 
-    bool _ROS_fastLio::start(void)
+    int _ROS_fastLio::start(void)
     {
-        NULL_F(m_pT);
-        IF_F(!m_pT->start(getUpdate, this));
+        NULL__(m_pT, OK_ERR_NULLPTR);
+        CHECK_(m_pT->start(getUpdate, this));
 
-        NULL_F(m_pTros);
-        IF_F(!m_pTros->start(getUpdateROS, this));
+        NULL__(m_pTros, OK_ERR_NULLPTR);
+        CHECK_(m_pTros->start(getUpdateROS, this));
 
-        return true;
+        return OK_OK;
     }
 
     int _ROS_fastLio::check(void)

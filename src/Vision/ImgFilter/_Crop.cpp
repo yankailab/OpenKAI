@@ -13,7 +13,7 @@ namespace kai
 	_Crop::_Crop()
 	{
 		m_type = vision_crop;
-		m_pV = NULL;
+		m_pV = nullptr;
 
 		m_vRoi.clear();
 	}
@@ -23,28 +23,28 @@ namespace kai
 		close();
 	}
 
-	bool _Crop::init(void *pKiss)
+	int _Crop::init(void *pKiss)
 	{
-		IF_F(!_VisionBase::init(pKiss));
+		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("vRoi", &m_vRoi);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _Crop::link(void)
+	int _Crop::link(void)
 	{
-		IF_F(!this->_VisionBase::link());
+		CHECK_(this->_VisionBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
 		string n;
 		n = "";
 		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->findModule(n));
-		IF_Fl(!m_pV, n + ": not found");
+		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _Crop::open(void)
@@ -60,9 +60,9 @@ namespace kai
 		this->_VisionBase::close();
 	}
 
-	bool _Crop::start(void)
+	int _Crop::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

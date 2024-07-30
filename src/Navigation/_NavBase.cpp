@@ -23,16 +23,16 @@ namespace kai
 	{
 	}
 
-	bool _NavBase::init(void *pKiss)
+	int _NavBase::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECL_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("scale", &m_scale);
 		pK->v("vAxisIdx", &m_vAxisIdx);
 		pK->v("vRoffset", &m_vRoffset);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _NavBase::bOpen(void)

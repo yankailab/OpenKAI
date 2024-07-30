@@ -20,12 +20,12 @@ namespace kai
 			m_pTracker.release();
 	}
 
-	bool _SingleTracker::init(void *pKiss)
+	int _SingleTracker::init(void *pKiss)
 	{
-		IF_F(!this->_TrackerBase::init(pKiss));
+		CHECK_(this->_TrackerBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		return true;
+		return OK_OK;
 	}
 
 	void _SingleTracker::createTracker(void)
@@ -40,9 +40,9 @@ namespace kai
 		m_pTracker = TrackerKCF::create();
 	}
 
-	bool _SingleTracker::start(void)
+	int _SingleTracker::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

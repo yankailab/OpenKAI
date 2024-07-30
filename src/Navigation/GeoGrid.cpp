@@ -21,20 +21,19 @@ namespace kai
 	{
 	}
 
-	bool GeoGrid::init(void *pKiss)
+	int GeoGrid::init(void *pKiss)
 	{
-		IF_F(!this->BASE::init(pKiss));
+		CHECK_(this->BASE::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-
-		return true;
+		return OK_OK;
 	}
 
-	bool GeoGrid::link(void)
+	int GeoGrid::link(void)
 	{
-		IF_F(!this->BASE::link());
+		CHECK_(this->BASE::link());
 
-		return true;
+		return OK_OK;
 	}
 
 	int GeoGrid::check(void)

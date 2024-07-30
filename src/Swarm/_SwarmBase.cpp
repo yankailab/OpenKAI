@@ -19,21 +19,21 @@ namespace kai
 	{
 	}
 
-	bool _SwarmBase::init(void *pKiss)
+	int _SwarmBase::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("tExpire", &m_tExpire);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _SwarmBase::link(void)
+	int _SwarmBase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link());
 
-		return true;
+		return OK_OK;
 	}
 
 	int _SwarmBase::check(void)

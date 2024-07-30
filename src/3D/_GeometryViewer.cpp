@@ -164,7 +164,7 @@ namespace kai
 
 	bool _GeometryViewer::addAllGeometries(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 		IF_F(!m_pWin);
 
 		for (int i = 0; i < m_vGO.size(); i++)

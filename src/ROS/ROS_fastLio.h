@@ -48,7 +48,7 @@ namespace kai
 		int link(void);
 		void console(void *pConsole);
 
-		bool createSubscriptions(void);
+		int createSubscriptions(void);
 
 	protected:
 		void cbPointCloud2(const sensor_msgs::msg::PointCloud2::UniquePtr pMsg);

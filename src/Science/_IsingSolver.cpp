@@ -12,7 +12,7 @@ namespace kai
 
     _IsingSolver::_IsingSolver()
     {
-        m_pTPP = NULL;
+        m_pTPP = nullptr;
 
     }
 
@@ -21,19 +21,19 @@ namespace kai
         DEL(m_pTPP);
     }
 
-    bool _IsingSolver::init(void *pKiss)
+    int _IsingSolver::init(void *pKiss)
     {
-        IF_F(!_ModuleBase::init(pKiss));
+        CHECK_(_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 //		pK->v("URI", &m_devURI);
 
-        return true;
+        return OK_OK;
     }
 
-    bool _IsingSolver::link(void)
+    int _IsingSolver::link(void)
     {
-        IF_F(!this->_ModuleBase::link());
+        CHECK_(this->_ModuleBase::link());
         Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
@@ -42,12 +42,12 @@ namespace kai
         // pK->v("_SHMrgb", &n);
         // m_psmRGB = (SharedMem *)(pK->findModule(n));
 
-        return true;
+        return OK_OK;
     }
 
-	bool _IsingSolver::start(void)
+	int _IsingSolver::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

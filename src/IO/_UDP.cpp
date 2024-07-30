@@ -26,25 +26,21 @@ namespace kai
 		close();
 	}
 
-	bool _UDP::init(void *pKiss)
+	int _UDP::init(void *pKiss)
 	{
-		IF_F(!this->_IObase::init(pKiss));
+		CHECK_(this->_IObase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("addr", &m_addr);
 		pK->v("port", &m_port);
 
 		Kiss *pKt = pK->child("threadR");
-		IF_F(pKt->empty());
+		IF__(pKt->empty(), OK_ERR_NOT_FOUND);
 
-		m_pTr = new _Thread();
-		if (!m_pTr->init(pKt))
-		{
-			DEL(m_pTr);
-			return false;
-		}
+        m_pTr = new _Thread();
+        CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "thread init failed");
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _UDP::open(void)
@@ -81,11 +77,11 @@ namespace kai
 		this->_IObase::close();
 	}
 
-	bool _UDP::start(void)
+	int _UDP::start(void)
 	{
-		NULL_F(m_pT);
-		NULL_F(m_pTr);
-		IF_F(!m_pT->start(getUpdateW, this));
+		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL__(m_pTr, OK_ERR_NULLPTR);
+		CHECK_(m_pT->start(getUpdateW, this));
 		return m_pTr->start(getUpdateR, this);
 	}
 

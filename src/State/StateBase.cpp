@@ -17,19 +17,19 @@ namespace kai
 	{
 	}
 
-	bool StateBase::init(void *pKiss)
+	int StateBase::init(void *pKiss)
 	{
-		IF_F(!this->BASE::init(pKiss));
+		CHECK_(this->BASE::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("next", &m_next);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool StateBase::link(void)
+	int StateBase::link(void)
 	{
-		IF_F(!this->BASE::link());
+		CHECK_(this->BASE::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
 		vector<string> vS;
@@ -50,7 +50,7 @@ namespace kai
 			m_vpModulePause.push_back(pM);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
 	void StateBase::reset(void)

@@ -15,8 +15,8 @@ namespace kai
 		m_vSize.init(640, 360);
 		m_tStartup = 0;
 
-		m_pV = NULL;
-		m_pOS = NULL;
+		m_pV = nullptr;
+		m_pOS = nullptr;
 
 		m_vT.init();
 		m_bTracking = false;
@@ -35,9 +35,9 @@ namespace kai
 		}
 	}
 
-	bool _ORB_SLAM::init(void *pKiss)
+	int _ORB_SLAM::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("vSize", &m_vSize);
@@ -46,12 +46,12 @@ namespace kai
 		string fVocabulary = "";
 		string fSetting = "";
 
-		F_INFO(pK->v("fVocabulary", &fVocabulary));
-		F_INFO(pK->v("fSetting", &fSetting));
+		pK->v("fVocabulary", &fVocabulary);
+		pK->v("fSetting", &fSetting);
 
 		ifstream ifs;
 		ifs.open(fSetting.c_str(), std::ios::in);
-		IF_Fl(!ifs, "setting file not found");
+		IF__(!ifs, OK_ERR_NOT_FOUND);
 
 		// Create SLAM system. It initializes all system threads and gets ready to process frames.
 		m_pOS = new ORB_SLAM3::System(fVocabulary,
@@ -62,24 +62,24 @@ namespace kai
 		m_tStartup = 0;
 
 		string n = "";
-		F_INFO(pK->v("_VisionBase", &n));
+		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->findModule(n));
 
-		return true;
+		return OK_OK;
 	}
 
 	int _ORB_SLAM::check(void)
 	{
-		NULL__(m_pV, -1);
-		NULL__(m_pV->getFrameRGB(), -1);
-		NULL__(m_pOS, -1);
+		NULL__(m_pV, OK_ERR_NULLPTR);
+		NULL__(m_pV->getFrameRGB(), OK_ERR_NOT_READY);
+		NULL__(m_pOS, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}
 
-	bool _ORB_SLAM::start(void)
+	int _ORB_SLAM::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

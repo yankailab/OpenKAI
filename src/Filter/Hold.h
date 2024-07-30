@@ -24,11 +24,11 @@ namespace kai
 		{
 		}
 
-		bool init(float dThold)
+		int init(float dThold)
 		{
 			m_dThold = dThold;
 			reset();
-			return true;
+			return OK_OK;
 		}
 
 		T *update(T *pV, float dT)

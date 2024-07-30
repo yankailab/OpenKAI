@@ -9,7 +9,7 @@ namespace kai
 
 	_ObjectArray::_ObjectArray()
 	{
-		m_pO = NULL;
+		m_pO = nullptr;
 		m_nO = 0;
 		m_nBuf = 16;
 	}
@@ -19,34 +19,34 @@ namespace kai
 		DEL(m_pO);
 	}
 
-	bool _ObjectArray::init(void *pKiss)
+	int _ObjectArray::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("nBuf", &m_nBuf);
-		IF_F(m_nBuf <= 0);
+		IF__(m_nBuf <= 0, OK_ERR_INVALID_VALUE);
 
 		m_pO = new _Object[m_nBuf];
-		NULL_F(m_pO);
+		NULL__(m_pO, OK_ERR_ALLOCATION);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _ObjectArray::init(int n)
+	int _ObjectArray::init(int n)
 	{
 		if(n > 0)
 			m_nBuf = n;
 
 		m_pO = new _Object[m_nBuf];
-		NULL_F(m_pO);
+		NULL__(m_pO, OK_ERR_ALLOCATION);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _ObjectArray::start(void)
+	int _ObjectArray::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

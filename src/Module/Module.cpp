@@ -275,8 +275,8 @@ namespace kai
 		ADD_MODULE(_IsingSolver);
 #ifdef USE_MATHGL
 		//		ADD_MODULE(_Solver);
-		ADD_MODULE(_SolverBase);
-		ADD_MODULE(_FourierSeries);
+//		ADD_MODULE(_SolverBase);
+//		ADD_MODULE(_FourierSeries);
 #endif
 #endif
 

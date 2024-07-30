@@ -12,8 +12,8 @@ namespace kai
 
 	_DenseFlow::_DenseFlow()
 	{
-		m_pVision = NULL;
-		m_pGrayFrames = NULL;
+		m_pVision = nullptr;
+		m_pGrayFrames = nullptr;
 		m_w = 640;
 		m_h = 480;
 
@@ -27,9 +27,9 @@ namespace kai
 	{
 	}
 
-	bool _DenseFlow::init(void *pKiss)
+	int _DenseFlow::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("w", &m_w);
@@ -41,15 +41,15 @@ namespace kai
 		m_pFarn = cuda::FarnebackOpticalFlow::create();
 
 		string n = "";
-		F_INFO(pK->v("_VisionBase", &n));
+		pK->v("_VisionBase", &n);
 		m_pVision = (_VisionBase *)(pK->findModule(n));
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _DenseFlow::start(void)
+	int _DenseFlow::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

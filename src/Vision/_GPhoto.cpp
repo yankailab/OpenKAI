@@ -22,14 +22,14 @@ namespace kai
 		close();
 	}
 
-	bool _GPhoto::init(void *pKiss)
+	int _GPhoto::init(void *pKiss)
 	{
-		IF_F(!_VisionBase::init(pKiss));
+		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("mount", &m_cmdUnmount);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _GPhoto::open(void)
@@ -45,9 +45,9 @@ namespace kai
 		this->_VisionBase::close();
 	}
 
-	bool _GPhoto::start(void)
+	int _GPhoto::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

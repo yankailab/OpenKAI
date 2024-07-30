@@ -20,14 +20,14 @@ namespace kai
 	{
 	}
 
-	bool _VideoFile::init(void *pKiss)
+	int _VideoFile::init(void *pKiss)
 	{
-		IF_F(!_VisionBase::init(pKiss));
+		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("videoFile", &m_videoFile);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _VideoFile::open(void)
@@ -60,9 +60,9 @@ namespace kai
 		m_vc.release();
 	}
 
-	bool _VideoFile::start(void)
+	int _VideoFile::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

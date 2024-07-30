@@ -47,7 +47,7 @@ namespace kai
 		return OK_OK;
 	}
 
-	bool _AP_mission::start(void)
+	int _AP_mission::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
 		NULL__(m_pTr, OK_ERR_NULLPTR);

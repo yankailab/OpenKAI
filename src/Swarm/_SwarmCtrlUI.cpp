@@ -5,9 +5,9 @@ namespace kai
 
     _SwarmCtrlUI::_SwarmCtrlUI()
     {
-        m_Tr = NULL;
-        m_pCtrl = NULL;
-        m_pSwarm = NULL;
+        m_Tr = nullptr;
+        m_pCtrl = nullptr;
+        m_pSwarm = nullptr;
     }
 
     _SwarmCtrlUI::~_SwarmCtrlUI()
@@ -15,11 +15,10 @@ namespace kai
         DEL(m_pTr);
     }
 
-    bool _SwarmCtrlUI::init(void *pKiss)
+    int _SwarmCtrlUI::init(void *pKiss)
     {
-        IF_F(!this->_JSONbase::init(pKiss));
+        CHECK_(this->_JSONbase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
-    	
 
         int v;
         v = SEC_2_USEC;
@@ -35,22 +34,22 @@ namespace kai
         m_ieSendNodeClearAll.init(v);
 
         Kiss *pKt = pK->child("threadR");
-        IF_F(pKt->empty());
-
-        m_pTr = new _Thread();
-        if (!m_pTr->init(pKt))
+        if (pKt->empty())
         {
-            DEL(m_pTr);
-            return false;
+            LOG_E("threadR not found");
+            return OK_ERR_NOT_FOUND;
         }
 
-        return true;
+        m_pTr = new _Thread();
+        CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "threadR init failed");
+
+        return OK_OK;
     }
 
-    bool _SwarmCtrlUI::link(void)
+    int _SwarmCtrlUI::link(void)
     {
-        IF_F(!this->_JSONbase::link());
-        IF_F(!m_pTr->link());
+        CHECK_(this->_JSONbase::link());
+        CHECK_(m_pTr->link());
 
         Kiss *pK = (Kiss *)m_pKiss;
 
@@ -58,28 +57,28 @@ namespace kai
         n = "";
         pK->v("_SwarmCtrl", &n);
         m_pCtrl = (_SwarmCtrl *)(pK->findModule(n));
-        IF_Fl(!m_pCtrl, n + ": not found");
+        NULL__(m_pCtrl, OK_ERR_NOT_FOUND);
 
         n = "";
         pK->v("_SwarmSearch", &n);
         m_pSwarm = (_SwarmSearch *)(pK->findModule(n));
-        IF_Fl(!m_pSwarm, n + ": not found");
+        NULL__(m_pSwarm, OK_ERR_NOT_FOUND);
 
-        return true;
+        return OK_OK;
     }
 
-    bool _SwarmCtrlUI::start(void)
+    int _SwarmCtrlUI::start(void)
     {
-        NULL_F(m_pT);
-        NULL_F(m_pTr);
-        IF_F(!m_pT->start(getUpdateW, this));
+        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL__(m_pTr, OK_ERR_NULLPTR);
+        CHECK_(m_pT->start(getUpdateW, this));
         return m_pTr->start(getUpdateR, this);
     }
 
     int _SwarmCtrlUI::check(void)
     {
-        NULL__(m_pCtrl, -1);
-        NULL__(m_pSwarm, -1);
+        NULL__(m_pCtrl, OK_ERR_NULLPTR);
+        NULL__(m_pSwarm, OK_ERR_NULLPTR);
 
         return this->_JSONbase::check();
     }

@@ -21,9 +21,9 @@ namespace kai
 	{
 	}
 
-	bool _BBoxCutOut::init(void *pKiss)
+	int _BBoxCutOut::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("dirIn", &m_dirIn);
@@ -32,12 +32,12 @@ namespace kai
 		pK->v("extImgOut", &m_extImgOut);
 		pK->v("extTxt", &m_extTxt);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _BBoxCutOut::start(void)
+	int _BBoxCutOut::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

@@ -31,21 +31,21 @@ namespace kai
 		m_lSocket.clear();
 	}
 
-	bool _TCPserver::init(void *pKiss)
+	int _TCPserver::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v<uint16_t>("port", &m_listenPort);
 		pK->v<int>("nListen", &m_nListen);
 		pK->v<unsigned int>("nSocket", &m_nSocket);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _TCPserver::start(void)
+	int _TCPserver::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

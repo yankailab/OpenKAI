@@ -13,7 +13,7 @@ namespace kai
 	_DepthProj::_DepthProj()
 	{
 		m_type = vision_depthProj;
-		m_pV = NULL;
+		m_pV = nullptr;
 		m_fFov = 70;
 		m_vCenter.set(0.5,0.5);
 	}
@@ -23,9 +23,9 @@ namespace kai
 		close();
 	}
 
-	bool _DepthProj::init(void *pKiss)
+	int _DepthProj::init(void *pKiss)
 	{
-		IF_F(!_VisionBase::init(pKiss));
+		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("fFov", &m_fFov);
@@ -35,9 +35,9 @@ namespace kai
 		n = "";
 		pK->v("_RGBDbase", &n);
 		m_pV = (_RGBDbase *)(pK->findModule(n));
-		IF_Fl(!m_pV, n + ": not found");
+		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _DepthProj::open(void)
@@ -53,9 +53,9 @@ namespace kai
 		this->_VisionBase::close();
 	}
 
-	bool _DepthProj::start(void)
+	int _DepthProj::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

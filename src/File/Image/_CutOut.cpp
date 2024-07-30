@@ -21,9 +21,9 @@ namespace kai
 	{
 	}
 
-	bool _CutOut::init(void *pKiss)
+	int _CutOut::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("extImgIn", &m_extImgIn);
@@ -31,7 +31,7 @@ namespace kai
 		pK->v("nMinPixel", &m_nMinPixel);
 
 		Kiss *pDir = pK->child("dir");
-		IF_T(pDir->empty());
+		IF__(pDir->empty(), OK_OK);
 
 		CutOutDir D;
 		int i = 0;
@@ -55,12 +55,12 @@ namespace kai
 			m_vDir.push_back(D);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _CutOut::start(void)
+	int _CutOut::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

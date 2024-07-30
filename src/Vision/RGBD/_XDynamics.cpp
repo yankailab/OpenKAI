@@ -25,9 +25,9 @@ namespace kai
     {
     }
 
-    bool _XDynamics::init(void *pKiss)
+    int _XDynamics::init(void *pKiss)
     {
-        IF_F(!_RGBDbase::init(pKiss));
+        CHECK_(_RGBDbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
         pK->v("xdDevType", &m_xdDevType);
@@ -59,16 +59,16 @@ namespace kai
         m_mXDyuv.create(m_vSizeRGB.y * 3 / 2, m_vSizeRGB.x, CV_8UC1);
         m_mXDd.create(m_vSizeD.y, m_vSizeD.x, CV_16U);
 
-        return true;
+        return OK_OK;
     }
 
-    bool _XDynamics::link(void)
+    int _XDynamics::link(void)
     {
-        IF_F(!this->_RGBDbase::link());
+        CHECK_(this->_RGBDbase::link());
         Kiss *pK = (Kiss *)m_pKiss;
         string n;
 
-        return true;
+        return OK_OK;
     }
 
     bool _XDynamics::open(void)
@@ -186,15 +186,15 @@ namespace kai
         XdynContextUninit();
     }
 
-    bool _XDynamics::start(void)
+    int _XDynamics::start(void)
     {
-        NULL_F(m_pT);
+        NULL__(m_pT, OK_ERR_NULLPTR);
         return m_pT->start(getUpdate, this);
     }
 
     int _XDynamics::check(void)
     {
-        NULL__(m_pT, -1);
+        NULL__(m_pT, OK_ERR_NULLPTR);
 
         return _RGBDbase::check();
     }

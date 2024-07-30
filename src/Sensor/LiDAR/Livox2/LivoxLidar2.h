@@ -47,7 +47,7 @@ namespace kai
         virtual int init(void *pKiss);
         virtual void console(void *pConsole);
 
-        bool open(void);
+        int open(void);
         void close(void);
 
         void startStream(void);

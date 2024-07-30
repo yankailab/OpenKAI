@@ -9,7 +9,7 @@ namespace kai
 
     _Livox2::_Livox2()
     {
-        m_pLv = NULL;
+        m_pLv = nullptr;
         m_SN = "";
         m_handle = -1;
         m_bOpen = false;
@@ -23,21 +23,21 @@ namespace kai
     {
     }
 
-    bool _Livox2::init(void *pKiss)
+    int _Livox2::init(void *pKiss)
     {
-        IF_F(!this->_PCstream::init(pKiss));
+        CHECK_(this->_PCstream::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("SN", &m_SN);
         pK->v("lidarMode", (int *)&m_workMode);
         pK->v("bEnableIMU", &m_bEnableIMU);
 
-        return true;
+        return OK_OK;
     }
 
-    bool _Livox2::link(void)
+    int _Livox2::link(void)
     {
-        IF_F(!this->_PCstream::link());
+        CHECK_(this->_PCstream::link());
 
         Kiss *pK = (Kiss *)m_pKiss;
         string n = "";
@@ -45,42 +45,42 @@ namespace kai
         pK->v("LivoxLidar2", &n);
         m_pLv = (LivoxLidar2 *)(pK->findModule(n));
 
-        return true;
+        return OK_OK;
     }
 
-    bool _Livox2::open(void)
+    int _Livox2::open(void)
     {
-        NULL_F(m_pLv);
+        NULL__(m_pLv, OK_ERR_NULLPTR);
 
         LivoxLidar2device *pD = m_pLv->getDevice(m_SN);
-        NULL_F(pD);
+        NULL__(pD, OK_ERR_NULLPTR);
         m_handle = pD->m_handle;
 
-        IF_F(!m_pLv->setCbData(m_handle, sCbPointCloud, (void *)this));
+        IF__(!m_pLv->setCbData(m_handle, sCbPointCloud, (void *)this), OK_ERR_UNKNOWN);
 
         if (m_bEnableIMU)
         {
-            IF_F(!m_pLv->setCbIMU(m_handle, sCbIMU, (void *)this));
+            IF__(!m_pLv->setCbIMU(m_handle, sCbIMU, (void *)this), OK_ERR_UNKNOWN);
         }
 
         m_bOpen = true;
         LOG_I("open() success");
-        return true;
+        return OK_OK;
     }
 
     void _Livox2::close(void)
     {
     }
 
-    bool _Livox2::start(void)
+    int _Livox2::start(void)
     {
-        NULL_F(m_pT);
+        NULL__(m_pT, OK_ERR_NULLPTR);
         return m_pT->start(getUpdate, this);
     }
 
     int _Livox2::check(void)
     {
-        NULL__(m_pLv, -1);
+        NULL__(m_pLv, OK_ERR_NULLPTR);
         return this->_PCstream::check();
     }
 

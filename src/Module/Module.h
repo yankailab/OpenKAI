@@ -264,8 +264,8 @@
 #include "../Science/_IsingSolver.h"
 #ifdef USE_MATHGL
 // #include "../Science/_Solver.h"
-#include "../Science/_SolverBase.h"
-#include "../Science/_FourierSeries.h"
+//#include "../Science/_SolverBase.h"
+//#include "../Science/_FourierSeries.h"
 #endif
 #endif
 

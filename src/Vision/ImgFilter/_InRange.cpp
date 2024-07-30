@@ -13,7 +13,7 @@ namespace kai
 	_InRange::_InRange()
 	{
 		m_type = vision_inRange;
-		m_pV = NULL;
+		m_pV = nullptr;
 		m_vL.set(0, 0, 0);
 		m_vH.set(255, 255, 255);
 	}
@@ -23,20 +23,20 @@ namespace kai
 		close();
 	}
 
-	bool _InRange::init(void *pKiss)
+	int _InRange::init(void *pKiss)
 	{
-		IF_F(!_VisionBase::init(pKiss));
+		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("vL", &m_vL);
 		pK->v("vH", &m_vH);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _InRange::link(void)
+	int _InRange::link(void)
 	{
-		IF_F(!this->_VisionBase::link());
+		CHECK_(this->_VisionBase::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 
@@ -44,9 +44,9 @@ namespace kai
 		n = "";
 		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->findModule(n));
-		IF_Fl(!m_pV, n + ": not found");
+		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _InRange::open(void)
@@ -62,9 +62,9 @@ namespace kai
 		this->_VisionBase::close();
 	}
 
-	bool _InRange::start(void)
+	int _InRange::start(void)
 	{
-		NULL_F(m_pT);
+		NULL_F_(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

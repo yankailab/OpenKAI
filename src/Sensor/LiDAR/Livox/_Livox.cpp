@@ -10,7 +10,7 @@ namespace kai
     _Livox::_Livox()
     {
         m_bOpen = false;
-        m_pL = NULL;
+        m_pL = nullptr;
         m_iTransformed = 0;
         m_lidarMode = kLidarModeNormal;
         m_scanPattern = LidarScanPattern::kNoneRepetitiveScanPattern;
@@ -20,9 +20,9 @@ namespace kai
     {
     }
 
-    bool _Livox::init(void *pKiss)
+    int _Livox::init(void *pKiss)
     {
-        IF_F(!this->_PCstream::init(pKiss));
+        CHECK_(this->_PCstream::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
         pK->v("broadcastCode", &m_broadcastCode);
@@ -36,19 +36,18 @@ namespace kai
         pK->v("LivoxLidar", &n);
         m_pL = (LivoxLidar *)(pK->findModule(n));
 
-        return true;
+        return OK_OK;
     }
 
-    bool _Livox::open(void)
+    int _Livox::open(void)
     {
-        IF_F(check() < 0);
-
-        IF_F(!m_pL->setDataCallback(m_broadcastCode, CbRecvData, (void *)this));
+        CHECK_(check());
+        IF__(!m_pL->setDataCallback(m_broadcastCode, CbRecvData, (void *)this), OK_ERR_UNKNOWN);
 
         m_bOpen = true;
 
         LOG_I("Init LivoxLidar success! Starting discovering Lidars\n");
-        return true;
+        return OK_OK;
     }
 
     void _Livox::close(void)
@@ -57,14 +56,14 @@ namespace kai
 
     int _Livox::check(void)
     {
-        NULL__(m_pL, -1);
+        NULL__(m_pL, OK_ERR_NULLPTR);
 
         return this->_PCstream::check();
     }
 
-    bool _Livox::start(void)
+    int _Livox::start(void)
     {
-        NULL_F(m_pT);
+        NULL__(m_pT, OK_ERR_NULLPTR);
         return m_pT->start(getUpdate, this);
     }
 

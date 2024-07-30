@@ -21,9 +21,9 @@ namespace kai
 	{
 	}
 
-	bool _WindowCV::init(void *pKiss)
+	int _WindowCV::init(void *pKiss)
 	{
-		IF_F(!this->_UIbase::init(pKiss));
+		CHECK_(this->_UIbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("bFullScreen", &m_bFullScreen);
@@ -33,7 +33,7 @@ namespace kai
 		if (m_vSize.area() <= 0)
 		{
 			LOG_E("Window size too small");
-			return false;
+			return OK_ERR_INVALID_VALUE;
 		}
 
 		m_F.allocate(m_vSize.x, m_vSize.y);
@@ -49,12 +49,12 @@ namespace kai
 			namedWindow(wn, WINDOW_AUTOSIZE);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _WindowCV::start(void)
+	int _WindowCV::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

@@ -12,10 +12,10 @@ namespace kai
 
 	_PickingArm::_PickingArm()
 	{
-		m_pA = NULL;
-		m_pG = NULL;
-		m_pD = NULL;
-		m_pU = NULL;
+		m_pA = nullptr;
+		m_pG = nullptr;
+		m_pD = nullptr;
+		m_pU = nullptr;
 
 		m_baseAngle = 0.0;
 		m_vP.set(0.5, 0.5, 0.0);
@@ -43,9 +43,9 @@ namespace kai
 	{
 	}
 
-	bool _PickingArm::init(void *pKiss)
+	int _PickingArm::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("vPtarget", &m_vPtarget);
@@ -58,7 +58,7 @@ namespace kai
 		pK->v("oTimeout", &m_oTimeout);
 
 		Kiss *pClass = pK->child("class");
-		NULL_Fl(pClass, "class not found");
+		NULL__(pClass, OK_ERR_NOT_FOUND);
 
 		int i = 0;
 		while (1)
@@ -74,7 +74,7 @@ namespace kai
 			m_vClass.push_back(pc);
 		}
 
-		IF_F(!m_pSC);
+		NULL__(m_pSC, OK_ERR_NOT_FOUND);
 		m_iState.EXTERNAL = m_pSC->getStateIdxByName("EXTERNAL");
 		m_iState.RECOVER = m_pSC->getStateIdxByName("RECOVER");
 		m_iState.FOLLOW = m_pSC->getStateIdxByName("FOLLOW");
@@ -82,63 +82,63 @@ namespace kai
 		m_iState.DELIVER = m_pSC->getStateIdxByName("DELIVER");
 		m_iState.DESCEND = m_pSC->getStateIdxByName("DESCEND");
 		m_iState.DROP = m_pSC->getStateIdxByName("DROP");
-		IF_F(!m_iState.bValid());
+		IF__(!m_iState.bValid(), OK_ERR_INVALID_VALUE);
 
 		string n;
 
 		n = "";
-		F_ERROR_F(pK->v("_ActuatorBase", &n));
+		pK->v("_ActuatorBase", &n);
 		m_pA = (_ActuatorBase *)(pK->findModule(n));
-		NULL_Fl(m_pA, n + " not found");
+		NULL__(m_pA, OK_ERR_NOT_FOUND);
 
 		n = "";
-		F_ERROR_F(pK->v("_StepperGripper", &n));
+		pK->v("_StepperGripper", &n);
 		m_pG = (_StepperGripper *)pK->findModule(n);
-		NULL_Fl(m_pG, n + ": not found");
+		NULL__(m_pG, OK_ERR_NOT_FOUND);
 
 		n = "";
-		F_ERROR_F(pK->v("_Universe", &n));
+		pK->v("_Universe", &n);
 		m_pU = (_Universe *)(pK->findModule(n));
-		NULL_Fl(m_pU, n + " not found");
+		NULL__(m_pU, OK_ERR_NOT_FOUND);
 
 		n = "";
-		F_ERROR_F(pK->v("_DistSensorBase", &n));
+		pK->v("_DistSensorBase", &n);
 		m_pD = (_DistSensorBase *)(pK->findModule(n));
-		NULL_Fl(m_pD, n + " not found");
+		NULL__(m_pD, OK_ERR_NOT_FOUND);
 
 		n = "";
-		F_ERROR_F(pK->v("PIDx", &n));
+		pK->v("PIDx", &n);
 		m_pXpid = (PID *)(pK->findModule(n));
-		NULL_Fl(m_pXpid, n + " not found");
+		NULL__(m_pXpid, OK_ERR_NOT_FOUND);
 
 		n = "";
-		F_ERROR_F(pK->v("PIDy", &n));
+		pK->v("PIDy", &n);
 		m_pYpid = (PID *)(pK->findModule(n));
-		NULL_Fl(m_pYpid, n + " not found");
+		NULL__(m_pYpid, OK_ERR_NOT_FOUND);
 
 		n = "";
-		F_ERROR_F(pK->v("PIDz", &n));
+		pK->v("PIDz", &n);
 		m_pZpid = (PID *)(pK->findModule(n));
-		NULL_Fl(m_pZpid, n + " not found");
+		NULL__(m_pZpid, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _PickingArm::start(void)
+	int _PickingArm::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _PickingArm::check(void)
 	{
-		NULL__(m_pA, -1);
-		NULL__(m_pG, -1);
-		NULL__(m_pD, -1);
-		NULL__(m_pU, -1);
-		NULL__(m_pXpid, -1);
-		NULL__(m_pYpid, -1);
-		NULL__(m_pZpid, -1);
+		NULL__(m_pA, OK_ERR_NULLPTR);
+		NULL__(m_pG, OK_ERR_NULLPTR);
+		NULL__(m_pD, OK_ERR_NULLPTR);
+		NULL__(m_pU, OK_ERR_NULLPTR);
+		NULL__(m_pXpid, OK_ERR_NULLPTR);
+		NULL__(m_pYpid, OK_ERR_NULLPTR);
+		NULL__(m_pZpid, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}

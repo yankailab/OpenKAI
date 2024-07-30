@@ -22,15 +22,15 @@ namespace kai
 		close();
 	}
 
-	bool _GStreamer::init(void *pKiss)
+	int _GStreamer::init(void *pKiss)
 	{
-		IF_F(!_VisionBase::init(pKiss));
+		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("pipeline", &m_pipeline);
 		pK->v("nInitRead", &m_nInitRead);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _GStreamer::open(void)
@@ -63,9 +63,9 @@ namespace kai
 		m_gst.release();
 	}
 
-	bool _GStreamer::start(void)
+	int _GStreamer::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

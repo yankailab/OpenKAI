@@ -12,8 +12,8 @@ namespace kai
 
 	_Mask::_Mask()
 	{
-		m_pV = NULL;
-		m_pVmask = NULL;
+		m_pV = nullptr;
+		m_pVmask = nullptr;
 	}
 
 	_Mask::~_Mask()
@@ -21,17 +21,17 @@ namespace kai
 		close();
 	}
 
-	bool _Mask::init(void *pKiss)
+	int _Mask::init(void *pKiss)
 	{
-		IF_F(!_VisionBase::init(pKiss));
+		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _Mask::link(void)
+	int _Mask::link(void)
 	{
-		IF_F(!this->_VisionBase::link());
+		CHECK_(this->_VisionBase::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 
@@ -39,14 +39,14 @@ namespace kai
 		n = "";
 		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->findModule(n));
-		IF_Fl(!m_pV, n + ": not found");
+		NULL_(m_pV, OK_ERR_NOT_FOUND);
 
 		n = "";
 		pK->v("_VisionBaseMask", &n);
 		m_pVmask = (_VisionBase *)(pK->parent()->findModule(n));
-		IF_Fl(!m_pVmask, n + ": not found");
+		NULL_(m_pVmask, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _Mask::open(void)
@@ -67,9 +67,9 @@ namespace kai
 		this->_VisionBase::close();
 	}
 
-	bool _Mask::start(void)
+	int _Mask::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

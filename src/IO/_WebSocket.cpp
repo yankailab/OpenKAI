@@ -30,9 +30,9 @@ namespace kai
 		close();
 	}
 
-	bool _WebSocket::init(void *pKiss)
+	int _WebSocket::init(void *pKiss)
 	{
-		IF_F(!this->_IObase::init(pKiss));
+		CHECK_(this->_IObase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("fifoIn", &m_fifoIn);
@@ -41,16 +41,16 @@ namespace kai
 		m_vClient.clear();
 
 		Kiss *pKt = pK->child("threadR");
-		IF_F(pKt->empty());
+        if (pKt->empty())
+        {
+            LOG_E("threadR not found");
+            return OK_ERR_NOT_FOUND;
+        }
 
-		m_pTr = new _Thread();
-		if (!m_pTr->init(pKt))
-		{
-			DEL(m_pTr);
-			return false;
-		}
+        m_pTr = new _Thread();
+        CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "threadR init failed");
 
-		return true;
+        return OK_OK;
 	}
 
 	bool _WebSocket::open(void)
@@ -76,11 +76,11 @@ namespace kai
 		this->_IObase::close();
 	}
 
-	bool _WebSocket::start(void)
+	int _WebSocket::start(void)
 	{
-		NULL_F(m_pT);
-		NULL_F(m_pTr);
-		IF_F(!m_pT->start(getUpdateW, this));
+		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL__(m_pTr, OK_ERR_NULLPTR);
+		CHECK_(m_pT->start(getUpdateW, this));
 		return m_pTr->start(getUpdateR, this);
 	}
 
@@ -298,7 +298,6 @@ namespace kai
 
 	void _WebSocket::console(void *pConsole)
 	{
-#ifdef WITH_UI
 		NULL_(pConsole);
 		this->_IObase::console(pConsole);
 
@@ -306,7 +305,6 @@ namespace kai
 		m_pTr->console(pConsole);
 
 		((_Console *)pConsole)->addMsg("nClients: " + i2str(m_vClient.size()), 1);
-#endif
 	}
 
 }

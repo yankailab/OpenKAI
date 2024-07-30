@@ -25,12 +25,12 @@ namespace kai
 		{
 		}
 
-		bool init(int nW)
+		int init(int nW)
 		{
-			IF_F(nW < 0);
+			IF__(nW < 0, OK_ERR_INVALID_VALUE);
 			FilterBase<T>::m_nW = nW;
 			reset();
-			return true;
+			return OK_OK;
 		}
 
 		T *update(T *pV, float dT)

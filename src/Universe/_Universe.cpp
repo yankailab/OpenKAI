@@ -27,9 +27,9 @@ namespace kai
 	{
 	}
 
-	bool _Universe::init(void *pKiss)
+	int _Universe::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		// general
@@ -51,7 +51,7 @@ namespace kai
 		m_sO.next()->init(nB);
 		clear();
 
-		return true;
+		return OK_OK;
 	}
 
 	void _Universe::clear(void)
@@ -66,9 +66,9 @@ namespace kai
 		m_sO.next()->clear();
 	}
 
-	bool _Universe::start(void)
+	int _Universe::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

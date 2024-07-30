@@ -122,7 +122,7 @@ namespace kai
 
 	bool _AProver_drive::updateDrive(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		float nSpd = m_pD->getSpeed() * m_pD->getDirection();
 		float nStr = m_pD->getSteering();

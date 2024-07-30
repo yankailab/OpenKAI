@@ -102,7 +102,7 @@ namespace kai
 
 	bool _AP_video::openStream(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 		IF_F(m_pFvid);
 
 		string strT = tFormat();

@@ -18,30 +18,30 @@ namespace kai
 	{
 	}
 
-	bool _TFmobileNet::init(void *pKiss)
+	int _TFmobileNet::init(void *pKiss)
 	{
-		IF_F(!this->_DetectorBase::init(pKiss));
+		CHECK_(this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("nThreads", &m_nThreads);
 		pK->v("confidence", &m_confidence);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _TFmobileNet::start(void)
+	int _TFmobileNet::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _TFmobileNet::check(void)
 	{
-		NULL__(m_pU, -1);
-		NULL__(m_pV, -1);
+		NULL__(m_pU, OK_ERR_NULLPTR);
+		NULL__(m_pV, OK_ERR_NULLPTR);
 		Frame *pBGR = m_pV->getFrameRGB();
-		NULL__(pBGR, -1);
-		IF__(pBGR->bEmpty(), -1);
+		NULL__(pBGR, OK_ERR_NULLPTR);
+		IF__(pBGR->bEmpty(), OK_ERR_NOT_READY);
 
 		return this->_DetectorBase::check();
 	}

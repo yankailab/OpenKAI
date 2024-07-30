@@ -16,57 +16,56 @@ namespace kai
         DEL(m_pTr);
     }
 
-    bool _Xbee::init(void *pKiss)
+    int _Xbee::init(void *pKiss)
     {
-        IF_F(!this->_ModuleBase::init(pKiss));
+        CHECK_(this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
-    	
 
         string addr = "";
         pK->v("myAddr", &addr);
         m_myAddr = getAddr(addr);
 
         Kiss *pKt = pK->child("threadR");
-        IF_F(pKt->empty());
-
-        m_pTr = new _Thread();
-        if (!m_pTr->init(pKt))
+        if (pKt->empty())
         {
-            DEL(m_pTr);
-            return false;
+            LOG_E("threadR not found");
+            return OK_ERR_NOT_FOUND;
         }
 
-        return true;
+        m_pTr = new _Thread();
+        CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "thread init failed");
+
+        return OK_OK;
     }
 
-    bool _Xbee::link(void)
+    int _Xbee::link(void)
     {
-        IF_F(!this->_ModuleBase::link());
+        CHECK_(this->_ModuleBase::link());
 
         Kiss *pK = (Kiss *)m_pKiss;
         string n;
         n = "";
 
-        F_ERROR_F(pK->v("_IObase", &n));
+        pK->v("_IObase", &n);
         m_pIO = (_IObase *)(pK->findModule(n));
-        NULL_Fl(m_pIO, n + ": not found");
+        NULL__(m_pIO, OK_ERR_NOT_FOUND);
 
-        return true;
+        return OK_OK;
     }
 
-    bool _Xbee::start(void)
+    int _Xbee::start(void)
     {
-        NULL_F(m_pT);
-        NULL_F(m_pTr);
-        IF_F(!m_pT->start(getUpdateW, this));
+        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL__(m_pTr, OK_ERR_NULLPTR);
+        CHECK_(m_pT->start(getUpdateW, this));
         return m_pTr->start(getUpdateR, this);
     }
 
     int _Xbee::check(void)
     {
-        NULL__(m_pTr, -1);
-        NULL__(m_pIO, -1);
-        IF__(!m_pIO->bOpen(), -1);
+        NULL__(m_pTr, OK_ERR_NULLPTR);
+        NULL__(m_pIO, OK_ERR_NULLPTR);
+        IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
 
         return this->_ModuleBase::check();
     }
@@ -131,7 +130,7 @@ namespace kai
 
     bool _Xbee::recv()
     {
-        IF_F(check() < 0);
+        IF_F(check() != OK_OK);;
 
         uint8_t b;
         int nB;

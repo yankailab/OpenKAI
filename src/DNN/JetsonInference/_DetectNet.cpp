@@ -9,10 +9,10 @@ namespace kai
 
 	_DetectNet::_DetectNet()
 	{
-		m_pRGBA = NULL;
-		m_pRGBAf = NULL;
+		m_pRGBA = nullptr;
+		m_pRGBAf = nullptr;
 
-		m_pDN = NULL;
+		m_pDN = nullptr;
 		m_nBox = 0;
 		m_nClass = 0;
 		m_type = detectNet_uff;
@@ -36,9 +36,9 @@ namespace kai
 		DEL(m_pRGBAf);
 	}
 
-	bool _DetectNet::init(void *pKiss)
+	int _DetectNet::init(void *pKiss)
 	{
-		IF_F(!this->_DetectorBase::init(pKiss));
+		CHECK_(this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("thr", &m_thr);
@@ -49,23 +49,23 @@ namespace kai
 		m_pRGBA = new Frame();
 		m_pRGBAf = new Frame();
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _DetectNet::start(void)
+	int _DetectNet::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _DetectNet::check(void)
 	{
-		NULL__(m_pV, -1);
-		NULL__(m_pU, -1);
-		NULL__(m_pDN, -1);
+		NULL__(m_pV, OK_ERR_NULLPTR);
+		NULL__(m_pU, OK_ERR_NULLPTR);
+		NULL__(m_pDN, OK_ERR_NULLPTR);
 		Frame *pBGR = m_pV->getFrameRGB();
-		NULL__(pBGR, -1);
-		IF__(pBGR->bEmpty(), -1);
+		NULL__(pBGR, OK_ERR_NULLPTR);
+		IF__(pBGR->bEmpty(), OK_ERR_NOT_READY);
 
 		return this->_DetectorBase::check();
 	}

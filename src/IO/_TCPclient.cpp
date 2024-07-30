@@ -26,9 +26,9 @@ namespace kai
 		close();
 	}
 
-	bool _TCPclient::init(void *pKiss)
+	int _TCPclient::init(void *pKiss)
 	{
-		IF_F(!this->_IObase::init(pKiss));
+		CHECK_(this->_IObase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("addr", &m_strAddr);
@@ -37,16 +37,16 @@ namespace kai
 		m_bClient = true;
 
 		Kiss *pKt = pK->child("threadR");
-		IF_d_F(pKt->empty(), LOG_E("threadR not found"));
+        if (pKt->empty())
+        {
+            LOG_E("threadR not found");
+            return OK_ERR_NOT_FOUND;
+        }
 
-		m_pTr = new _Thread();
-		if (!m_pTr->init(pKt))
-		{
-			DEL(m_pTr);
-			return false;
-		}
+        m_pTr = new _Thread();
+        CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "threadR init failed");
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _TCPclient::open(void)
@@ -81,11 +81,11 @@ namespace kai
 		this->_IObase::close();
 	}
 
-	bool _TCPclient::start(void)
+	int _TCPclient::start(void)
 	{
-		NULL_F(m_pT);
-		NULL_F(m_pTr);
-		IF_F(!m_pT->start(getUpdateW, this));
+		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL__(m_pTr, OK_ERR_NULLPTR);
+		CHECK_(m_pT->start(getUpdateW, this));
 		return m_pTr->start(getUpdateR, this);
 	}
 

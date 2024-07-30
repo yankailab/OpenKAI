@@ -17,7 +17,7 @@ namespace kai
         m_type = pc_frame;
         m_nPresv = 0;
         m_nPresvNext = 0;
-        m_tStamp = nullptr;
+        m_tStamp = 0;
 
         m_pGpSM = nullptr;
     }

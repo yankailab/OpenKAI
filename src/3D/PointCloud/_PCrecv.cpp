@@ -79,7 +79,7 @@ namespace kai
 
 	bool _PCrecv::readCMD(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		uint8_t b;
 		while (m_pIO->read(&b, 1) > 0)

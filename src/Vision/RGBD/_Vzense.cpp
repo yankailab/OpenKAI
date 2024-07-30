@@ -13,7 +13,7 @@ namespace kai
 	_Vzense::_Vzense()
 	{
 		m_nDevice = 0;
-		m_pDeviceListInfo = NULL;
+		m_pDeviceListInfo = nullptr;
 		m_deviceHandle = 0;
 
 		m_vzfRGB = {0};
@@ -29,31 +29,31 @@ namespace kai
 	{
 	}
 
-	bool _Vzense::init(void *pKiss)
+	int _Vzense::init(void *pKiss)
 	{
-		IF_F(!_RGBDbase::init(pKiss));
+		CHECK_(_RGBDbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		Kiss *pKt = pK->child("threadPP");
-		IF_F(pKt->empty());
+        Kiss *pKt = pK->child("threadPP");
+        if (pKt->empty())
+        {
+            LOG_E("threadPP not found");
+            return OK_ERR_NOT_FOUND;
+        }
 
-		m_pTPP = new _Thread();
-		if (!m_pTPP->init(pKt))
-		{
-			DEL(m_pTPP);
-			return false;
-		}
+        m_pTPP = new _Thread();
+        CHECK_d_l_(m_pTPP->init(pKt), DEL(m_pTPP), "threadPP init failed");
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _Vzense::link(void)
+	int _Vzense::link(void)
 	{
-		IF_F(!this->_RGBDbase::link());
+		CHECK_(this->_RGBDbase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _Vzense::open(void)
@@ -152,17 +152,17 @@ namespace kai
 		DEL(m_pVzVw);
 	}
 
-	bool _Vzense::start(void)
+	int _Vzense::start(void)
 	{
-		NULL_F(m_pT);
-		NULL_F(m_pTPP);
-		IF_F(!m_pT->start(getUpdate, this));
+		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL__(m_pTPP, OK_ERR_NULLPTR);
+		CHECK_(m_pT->start(getUpdate, this));
 		return m_pTPP->start(getTPP, this);
 	}
 
 	int _Vzense::check(void)
 	{
-		NULL__(m_pTPP, -1);
+		NULL__(m_pTPP, OK_ERR_NULLPTR);
 
 		return this->_RGBDbase::check();
 	}

@@ -20,40 +20,40 @@ namespace kai
     {
     }
 
-    bool _SharedMemImg::init(void *pKiss)
+    int _SharedMemImg::init(void *pKiss)
     {
-        IF_F(!_VisionBase::init(pKiss));
+        CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
         pK->v("matType", &m_matType);
 
-        return true;
+        return OK_OK;
     }
 
-    bool _SharedMemImg::link(void)
+    int _SharedMemImg::link(void)
     {
         Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
         n = "";
-        F_ERROR_F(pK->v("SharedMem", &n));
+        pK->v("SharedMem", &n);
         m_pSHM = (SharedMem *)(pK->findModule(n));
-        NULL_Fl(m_pSHM, "SharedMem not found");
+        NULL__(m_pSHM, OK_ERR_NOT_FOUND);
 
-        return true;
+        return OK_OK;
     }
 
-    bool _SharedMemImg::start(void)
+    int _SharedMemImg::start(void)
     {
-        NULL_F(m_pT);
+        NULL__(m_pT, OK_ERR_NULLPTR);
         IF_F(!m_pT->start(getUpdate, this));
     }
 
     int _SharedMemImg::check(void)
     {
-        NULL__(m_pT, -1);
-        NULL__(m_pSHM, -1);
-        IF__(!m_pSHM->open(), -1);
+        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL__(m_pSHM, OK_ERR_NULLPTR);
+        IF__(!m_pSHM->open(), OK_ERR_NOT_READY);
 
         return _VisionBase::check();
     }

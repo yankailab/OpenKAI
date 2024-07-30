@@ -13,7 +13,7 @@ namespace kai
 	_Rotate::_Rotate()
 	{
 		m_type = vision_rotate;
-		m_pV = NULL;
+		m_pV = nullptr;
 		m_code = 0;
 	}
 
@@ -22,9 +22,9 @@ namespace kai
 		close();
 	}
 
-	bool _Rotate::init(void *pKiss)
+	int _Rotate::init(void *pKiss)
 	{
-		IF_F(!_VisionBase::init(pKiss));
+		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("code", &m_code);
@@ -33,9 +33,9 @@ namespace kai
 		n = "";
 		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->findModule(n));
-		IF_Fl(!m_pV, n + ": not found");
+		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _Rotate::open(void)
@@ -51,9 +51,9 @@ namespace kai
 		this->_VisionBase::close();
 	}
 
-	bool _Rotate::start(void)
+	int _Rotate::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

@@ -5,7 +5,7 @@ namespace kai
 
 	_PhotoTake::_PhotoTake()
 	{
-		m_pV = NULL;
+		m_pV = nullptr;
 		m_vPos.clear();
 		m_bfProcess.clearAll();
 
@@ -25,11 +25,10 @@ namespace kai
 	{
 	}
 
-	bool _PhotoTake::init(void *pKiss)
+	int _PhotoTake::init(void *pKiss)
 	{
-		IF_F(!this->_FileBase::init(pKiss));
+		CHECK_(this->_FileBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
 
 		pK->v("quality", &m_quality);
 		pK->v("bFlip", &m_bFlip);
@@ -58,12 +57,12 @@ namespace kai
 		m_compress.push_back(IMWRITE_JPEG_QUALITY);
 		m_compress.push_back(m_quality);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _PhotoTake::link(void)
+	int _PhotoTake::link(void)
 	{
-		IF_F(!this->_FileBase::link());
+		CHECK_(this->_FileBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
 		string n;
@@ -71,18 +70,18 @@ namespace kai
 		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->findModule(n));
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _PhotoTake::start(void)
+	int _PhotoTake::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _PhotoTake::check(void)
 	{
-		NULL__(m_pV, -1);
+		NULL__(m_pV, OK_ERR_NULLPTR);
 
 		return this->_FileBase::check();
 	}
@@ -147,7 +146,7 @@ namespace kai
 
 	bool _PhotoTake::take(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		if (m_tDelay > 0)
 			m_pT->sleepT(m_tDelay);

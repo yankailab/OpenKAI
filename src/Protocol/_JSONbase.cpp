@@ -5,8 +5,8 @@ namespace kai
 
     _JSONbase::_JSONbase()
     {
-        m_pTr = NULL;
-        m_pIO = NULL;
+        m_pTr = nullptr;
+        m_pIO = nullptr;
 
         m_msgFinishSend = "";
         m_msgFinishRecv = "EOJ";
@@ -17,11 +17,10 @@ namespace kai
         DEL(m_pTr);
     }
 
-    bool _JSONbase::init(void *pKiss)
+    int _JSONbase::init(void *pKiss)
     {
-        IF_F(!this->_ModuleBase::init(pKiss));
+        CHECK_(this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
-    	
 
         pK->v("msgFinishSend", &m_msgFinishSend);
         pK->v("msgFinishRecv", &m_msgFinishRecv);
@@ -31,47 +30,47 @@ namespace kai
         m_ieSendHB.init(v);
 
         Kiss *pKt = pK->child("threadR");
-        IF_F(pKt->empty());
+        if (pKt->empty())
+        {
+            LOG_E("threadR not found");
+            return OK_ERR_NOT_FOUND;
+        }
 
         m_pTr = new _Thread();
-        if (!m_pTr->init(pKt))
-        {
-            DEL(m_pTr);
-            return false;
-        }
+        CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "threadR init failed");
 
         return true;
     }
 
-	bool _JSONbase::link(void)
+	int _JSONbase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
-        IF_F(!m_pTr->link());
+		CHECK_(this->_ModuleBase::link());
+        CHECK_(m_pTr->link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
         n = "";
-        F_ERROR_F(pK->v("_IObase", &n));
+        pK->v("_IObase", &n);
         m_pIO = (_IObase *)(pK->findModule(n));
-        NULL_Fl(m_pIO, "_IObase not found");
+        NULL__(m_pIO, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
-
-    bool _JSONbase::start(void)
+    
+    int _JSONbase::start(void)
     {
-        NULL_F(m_pT);
-        NULL_F(m_pTr);
-        IF_F(!m_pT->start(getUpdateW, this));
+        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL__(m_pTr, OK_ERR_NULLPTR);
+        CHECK_(m_pT->start(getUpdateW, this));
         return m_pTr->start(getUpdateR, this);
     }
 
     int _JSONbase::check(void)
     {
-        NULL__(m_pTr, -1);
-        NULL__(m_pIO, -1);
-        IF__(!m_pIO->bOpen(), -1);
+        NULL__(m_pTr, OK_ERR_NULLPTR);
+        NULL__(m_pIO, OK_ERR_NULLPTR);
+        IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
 
         return this->_ModuleBase::check();
     }
@@ -145,7 +144,7 @@ namespace kai
 
     bool _JSONbase::recv()
     {
-        IF_F(check() < 0);
+        IF_F(check() != OK_OK);;
 
         unsigned char B;
         unsigned int nStrFinish = m_msgFinishRecv.length();

@@ -21,9 +21,9 @@ namespace kai
 		endwin();
 	}
 
-	bool _Console::init(void *pKiss)
+	int _Console::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		initscr();
@@ -37,12 +37,12 @@ namespace kai
 		init_pair(_Console_COL_MSG, COLOR_WHITE, -1);
 		init_pair(_Console_COL_ERROR, COLOR_RED, -1);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _Console::link(void)
+	int _Console::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 
 		vector<string> vB;
@@ -56,12 +56,12 @@ namespace kai
 			m_vpB.push_back(pB);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _Console::start(void)
+	int _Console::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

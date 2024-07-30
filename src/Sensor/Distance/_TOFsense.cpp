@@ -9,7 +9,7 @@ namespace kai
 
 	_TOFsense::_TOFsense()
 	{
-		m_pIO = NULL;
+		m_pIO = nullptr;
 		m_nDiv = 1;
 	}
 
@@ -17,27 +17,26 @@ namespace kai
 	{
 	}
 
-	bool _TOFsense::init(void *pKiss)
+	int _TOFsense::init(void *pKiss)
 	{
-		IF_F(!this->_DistSensorBase::init(pKiss));
+		CHECK_(this->_DistSensorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		string n;
-
 		n = "";
-		F_ERROR_F(pK->v("_IObase", &n));
+		pK->v("_IObase", &n);
 		m_pIO = (_IObase *)(pK->findModule(n));
-		IF_Fl(!m_pIO, n + " not found");
+		NULL__(m_pIO, OK_ERR_NOT_FOUND);
 
 		m_frame.init(16);
 		m_bReady = 1;
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _TOFsense::start(void)
+	int _TOFsense::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

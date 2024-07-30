@@ -20,13 +20,13 @@ namespace kai
 	{
 	}
 
-	bool _GstOutput::init(void *pKiss)
+	int _GstOutput::init(void *pKiss)
 	{
-		IF_F(!this->_UIbase::init(pKiss));
+		CHECK_(this->_UIbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("vSize", &m_vSize);
-		IF_F(m_vSize.area() <= 0);
+		IF__(m_vSize.area() <= 0, OK_ERR_INVALID_VALUE);
 
 		m_F.allocate(m_vSize.x, m_vSize.y);
 		*m_F.m() = Scalar(0, 0, 0);
@@ -42,16 +42,16 @@ namespace kai
 							true))
 			{
 				LOG_E("Cannot open GStreamer output");
-				return false;
+				return OK_ERR_UNKNOWN;
 			}
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _GstOutput::start(void)
+	int _GstOutput::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

@@ -13,7 +13,7 @@ namespace kai
 	_HistEqualize::_HistEqualize()
 	{
 		m_type = vision_histEqualize;
-		m_pV = NULL;
+		m_pV = nullptr;
 	}
 
 	_HistEqualize::~_HistEqualize()
@@ -21,18 +21,18 @@ namespace kai
 		close();
 	}
 
-	bool _HistEqualize::init(void *pKiss)
+	int _HistEqualize::init(void *pKiss)
 	{
-		IF_F(!_VisionBase::init(pKiss));
+		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		string n;
 		n = "";
 		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->findModule(n));
-		IF_Fl(!m_pV, n + ": not found");
+		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _HistEqualize::open(void)
@@ -48,9 +48,9 @@ namespace kai
 		this->_VisionBase::close();
 	}
 
-	bool _HistEqualize::start(void)
+	int _HistEqualize::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

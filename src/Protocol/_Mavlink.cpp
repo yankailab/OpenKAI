@@ -5,7 +5,7 @@ namespace kai
 
 	_Mavlink::_Mavlink()
 	{
-		m_pIO = NULL;
+		m_pIO = nullptr;
 
 		m_mySystemID = 255;
 		m_myComponentID = MAV_COMP_ID_MISSIONPLANNER;
@@ -47,9 +47,9 @@ namespace kai
 	{
 	}
 
-	bool _Mavlink::init(void *pKiss)
+	int _Mavlink::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("mySystemID", &m_mySystemID);
@@ -62,12 +62,12 @@ namespace kai
 
 		m_status.packet_rx_drop_count = 0;
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _Mavlink::link(void)
+	int _Mavlink::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
@@ -75,15 +75,15 @@ namespace kai
 		n = "";
 		pK->v("_IObase", &n);
 		m_pIO = (_IObase *)(pK->findModule(n));
-		IF_Fl(!m_pIO, "_IObase not found");
+		NULL__(m_pIO, OK_ERR_NOT_FOUND);
 
 		Kiss *pR = pK->child("routing");
-		IF_T(pR->empty());
+		IF__(pR->empty(), OK_OK);
 
 		int i = 0;
 		while (1)
 		{
-			IF_F(i >= MAV_N_PEER);
+			IF__(i >= MAV_N_PEER, OK_ERR_INVALID_VALUE);
 			Kiss *pP = pR->child(i++);
 			if (pP->empty())
 				break;
@@ -92,7 +92,7 @@ namespace kai
 			mP.init();
 
 			n = "";
-			F_ERROR_F(pP->v("_Mavlink", &n));
+			pP->v("_Mavlink", &n);
 			mP.m_pPeer = pK->findModule(n);
 			if (!mP.m_pPeer)
 			{
@@ -111,12 +111,12 @@ namespace kai
 			setCmdRoute(vNoRouteCmd[i], false);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _Mavlink::start(void)
+	int _Mavlink::start(void)
 	{
-		NULL_F(m_pT);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

@@ -43,7 +43,7 @@ namespace kai
         void addTripleP(LivoxTripleExtendRawPoint *pLp, uint64_t &tStamp);
         void updateIMU(LivoxImuPoint *pLd);
 
-        bool open(void);
+        int open(void);
         void close(void);
         bool updateLidar(void);
         void update(void);

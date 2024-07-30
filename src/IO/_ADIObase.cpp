@@ -19,18 +19,18 @@ namespace kai
 	{
 	}
 
-	bool _ADIObase::init(void *pKiss)
+	int _ADIObase::init(void *pKiss)
 	{
-		IF_F(!this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		Kiss *pKp = pK->child("port");
-		IF_T(pKp->empty());
+		IF__(pKp->empty(), OK_OK);
 
 		int i = 0;
 		while (1)
 		{
-			IF_F(i >= ADIO_MAX_PORT);
+			IF__(i >= ADIO_MAX_PORT, OK_ERR_INVALID_VALUE);
 			Kiss *pP = pKp->child(i++);
 			if (pP->empty())
 				break;
@@ -46,14 +46,14 @@ namespace kai
 			m_vPort.push_back(port);
 		}
 
-		return true;
+		return OK_OK;
 	}
 
-	bool _ADIObase::link(void)
+	int _ADIObase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link());
 
-		return true;
+		return OK_OK;
 	}
 
 	bool _ADIObase::open(void)

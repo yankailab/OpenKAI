@@ -12,18 +12,14 @@
 #include "../UI/_Console.h"
 #include "StateBase.h"
 
-#define ADD_STATE(x)         \
-	if (pKs->getClass() == #x)  \
-	{                        \
-		x* pI = new x();     \
-		if(!pI->init(pKs))   \
-		{					 \
-			DEL(pI); 		 \
-			LOG_E(pKs->getName() + ": init failed"); \
-		}	\
-		m_vpState.push_back(pI); \
-		continue; \
-	} \
+#define ADD_STATE(x)                      \
+	if (pKs->getClass() == #x)            \
+	{                                     \
+		x *pI = new x();                  \
+		CHECK_d_(pI->init(pKs), DEL(pI)); \
+		m_vpState.push_back(pI);          \
+		continue;                         \
+	}
 
 namespace kai
 {

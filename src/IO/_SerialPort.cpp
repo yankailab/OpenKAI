@@ -22,9 +22,9 @@ namespace kai
 		close();
 	}
 
-	bool _SerialPort::init(void *pKiss)
+	int _SerialPort::init(void *pKiss)
 	{
-		IF_F(!this->_IObase::init(pKiss));
+		CHECK_(this->_IObase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
     	
 		pK->v("port", &m_port);
@@ -35,23 +35,23 @@ namespace kai
 		pK->v("hardwareControl", &m_hardwareControl);
 
 		Kiss *pKt = pK->child("threadR");
-		IF_d_F(pKt->empty(), LOG_E("threadR not found"));
+        if (pKt->empty())
+        {
+            LOG_E("threadR not found");
+            return OK_ERR_NOT_FOUND;
+        }
 
-		m_pTr = new _Thread();
-		if (!m_pTr->init(pKt))
-		{
-			DEL(m_pTr);
-			return false;
-		}
+        m_pTr = new _Thread();
+        CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "thread init failed");
 
-		return true;
+		return OK_OK;
 	}
 
-    bool _SerialPort::link(void)
+    int _SerialPort::link(void)
     {
-        IF_F(!this->_IObase::link());
+        CHECK_(this->_IObase::link());
 
-        return true;
+        return OK_OK;
     }
 
 	bool _SerialPort::open(void)
@@ -74,11 +74,11 @@ namespace kai
 		this->_IObase::close();
 	}
 
-	bool _SerialPort::start(void)
+	int _SerialPort::start(void)
 	{
-		NULL_F(m_pT);
-		NULL_F(m_pTr);
-		IF_F(!m_pT->start(getUpdateW, this));
+		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL__(m_pTr, OK_ERR_NULLPTR);
+		CHECK_(m_pT->start(getUpdateW, this));
 		return m_pTr->start(getUpdateR, this);
 	}
 

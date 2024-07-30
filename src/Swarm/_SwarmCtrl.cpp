@@ -5,8 +5,8 @@ namespace kai
 
     _SwarmCtrl::_SwarmCtrl()
     {
-        m_pXb = NULL;
-        m_pSwarm = NULL;
+        m_pXb = nullptr;
+        m_pSwarm = nullptr;
 
         m_ieSendHB.init(USEC_1SEC);
         m_ieSendSetState.init(USEC_1SEC);
@@ -17,9 +17,9 @@ namespace kai
     {
     }
 
-    bool _SwarmCtrl::init(void *pKiss)
+    int _SwarmCtrl::init(void *pKiss)
     {
-        IF_F(!this->_ModuleBase::init(pKiss));
+        CHECK_(this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
     	
 
@@ -28,12 +28,12 @@ namespace kai
         pK->v("ieSendSetState", &m_ieSendSetState.m_tInterval);
         pK->v("ieSendGCupdate", &m_ieSendGCupdate.m_tInterval);
 
-        return true;
+        return OK_OK;
     }
 
-    bool _SwarmCtrl::link(void)
+    int _SwarmCtrl::link(void)
     {
-        IF_F(!this->_ModuleBase::link());
+        CHECK_(this->_ModuleBase::link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
@@ -41,41 +41,41 @@ namespace kai
         n = "";
         pK->v("_StateControl", &n);
         m_pSC = (_StateControl *)(pK->findModule(n));
-        IF_Fl(!m_pSC, n + ": not found");
+        NULL__(m_pSC, OK_ERR_NOT_FOUND);
 
         m_state.STANDBY = m_pSC->getStateIdxByName("STANDBY");
         m_state.TAKEOFF = m_pSC->getStateIdxByName("TAKEOFF");
         m_state.AUTO = m_pSC->getStateIdxByName("AUTO");
         m_state.RTL = m_pSC->getStateIdxByName("RTL");
-        IF_F(!m_state.bValid());
+        IF__(!m_state.bValid(), OK_ERR_INVALID_VALUE);
         m_state.update(m_pSC->getCurrentStateIdx());
 
         n = "";
         pK->v("_SwarmSearch", &n);
         m_pSwarm = (_SwarmSearch *)(pK->findModule(n));
-        IF_Fl(!m_pSwarm, n + ": not found");
+        NULL__(m_pSwarm, OK_ERR_NOT_FOUND);
 
         n = "";
         pK->v("_Xbee", &n);
         m_pXb = (_Xbee *)(pK->findModule(n));
-        IF_Fl(!m_pXb, n + ": not found");
+        NULL__(m_pXb, OK_ERR_NOT_FOUND);
 
-        IF_F(!m_pXb->setCbReceivePacket(sOnRecvMsg, this));
+        IF__(!m_pXb->setCbReceivePacket(sOnRecvMsg, this), OK_ERR_UNKNOWN);
 
-        return true;
+        return OK_OK;
     }
 
-    bool _SwarmCtrl::start(void)
+    int _SwarmCtrl::start(void)
     {
-        NULL_F(m_pT);
+        NULL__(m_pT, OK_ERR_NULLPTR);
         return m_pT->start(getUpdate, this);
     }
 
     int _SwarmCtrl::check(void)
     {
-        NULL__(m_pSC, -1);
-        NULL__(m_pXb, -1);
-        NULL__(m_pSwarm, -1);
+        NULL__(m_pSC, OK_ERR_NULLPTR);
+        NULL__(m_pXb, OK_ERR_NULLPTR);
+        NULL__(m_pSwarm, OK_ERR_NULLPTR);
 
         return this->_ModuleBase::check();
     }

@@ -33,12 +33,12 @@ namespace kai
 
 	int OpenKAI::check(void)
 	{
-		NULL__(m_pKiss, -1);
+		NULL__(m_pKiss, OK_ERR_NULLPTR);
 
-		return 0;
+		return OK_OK;
 	}
 
-	bool OpenKAI::init(const string &appName)
+	int OpenKAI::init(const string &appName)
 	{
 		g_pStartup = this;
 		signal(SIGINT, signalHandler);
@@ -53,7 +53,7 @@ namespace kai
 		google::InitGoogleLogging(m_appName.c_str());
 #endif
 
-		return true;
+		return OK_OK;
 	}
 
 	void OpenKAI::clean(void)
@@ -72,7 +72,7 @@ namespace kai
 
 	bool OpenKAI::addKiss(const string &fName)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 		IF_F(fName.empty());
 
 		string s;
@@ -103,7 +103,7 @@ namespace kai
 
 	bool OpenKAI::addModule(void *pModule, const string &mName)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 		NULL_F(pModule);
 
 		Kiss *pKiss = (Kiss *)m_pKiss;
@@ -134,7 +134,7 @@ namespace kai
 
 	bool OpenKAI::deleteModule(const string& mName)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		Kiss* pK = ((Kiss*)m_pKiss)->find(mName);
 		IF_F(pK->empty());
@@ -147,7 +147,7 @@ namespace kai
 
 	bool OpenKAI::createAllModules(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		Kiss *pKiss = (Kiss *)m_pKiss;
 		Module mod;
@@ -174,7 +174,7 @@ namespace kai
 
 	int OpenKAI::initAllModules(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		Kiss *pKroot = ((Kiss *)m_pKiss)->root();
 		Kiss *pK;
@@ -199,7 +199,7 @@ namespace kai
 
 	int OpenKAI::linkAllModules(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		Kiss *pKroot = ((Kiss *)m_pKiss)->root();
 		Kiss *pK;
@@ -224,7 +224,7 @@ namespace kai
 
 	int OpenKAI::startAllModules(void)
 	{
-		IF_F(check() < 0);
+		IF_F(check() != OK_OK);;
 
 		// run cmd
 		if (!m_rc.empty())

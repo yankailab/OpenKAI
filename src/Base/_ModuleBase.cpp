@@ -28,13 +28,12 @@ namespace kai
         Kiss *pKt = pK->child("thread");
         if (pKt->empty())
         {
-            LOG_I("Thread not found");
+            LOG_E("thread not found");
+            return OK_ERR_NOT_FOUND;
         }
-        else
-        {
-            m_pT = new _Thread();
-       		CHECK_d_l_(m_pT->init(pKt), DEL(m_pT), "Thread init failed");
-        }
+
+        m_pT = new _Thread();
+        CHECK_d_l_(m_pT->init(pKt), DEL(m_pT), "thread init failed");
 
         return OK_OK;
     }
@@ -66,21 +65,21 @@ namespace kai
 
     bool _ModuleBase::bAlive(void)
     {
-        IF_F(check() < 0);
+        IF_F(check() != OK_OK);;
 
         return m_pT->bAlive();
     }
 
     bool _ModuleBase::bRun(void)
     {
-        IF_F(check() < 0);
+        IF_F(check() != OK_OK);;
 
         return m_pT->bRun();
     }
 
     bool _ModuleBase::bStop(void)
     {
-        IF_F(check() < 0);
+        IF_F(check() != OK_OK);;
 
         return m_pT->bStop();
     }

@@ -27,25 +27,25 @@ namespace kai
 		close();
 	}
 
-	bool SharedMem::init(void *pKiss)
+	int SharedMem::init(void *pKiss)
 	{
-		IF_F(!this->BASE::init(pKiss));
+		CHECK_(this->BASE::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("shmName", &m_shmName);
 		pK->v("nB", &m_nB);
 		pK->v("bWriter", &m_bWriter);
 
-		IF_F(!open());
+		IF__(!open(), OK_ERR_NOT_READY);
 
-		return true;
+		return OK_OK;
 	}
 
-	bool SharedMem::link(void)
+	int SharedMem::link(void)
 	{
-		IF_F(!this->BASE::link());
+		CHECK_(this->BASE::link());
 
-		return true;
+		return OK_OK;
 	}
 
 	bool SharedMem::open(void)

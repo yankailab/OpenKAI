@@ -17,9 +17,9 @@ namespace kai
     {
     }
 
-    bool LivoxLidar2::init(void *pKiss)
+    int LivoxLidar2::init(void *pKiss)
     {
-        IF_F(!this->BASE::init(pKiss));
+        CHECK_(this->BASE::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
         pK->v("fConfig", &m_fConfig);
@@ -28,7 +28,7 @@ namespace kai
         return open();
     }
 
-    bool LivoxLidar2::open(void)
+    int LivoxLidar2::open(void)
     {
         DisableLivoxSdkConsoleLogger();
 
@@ -36,7 +36,7 @@ namespace kai
         {
             LOG_I("Livox2 Init Failed");
             LivoxLidarSdkUninit();
-            return false;
+            return OK_ERR_UNKNOWN;
         }
 
         SetLivoxLidarPointCloudCallBack(sCbPointCloud, this);
@@ -47,7 +47,7 @@ namespace kai
         m_bOpen = true;
 
         LOG_I("open() success");
-        return true;
+        return OK_OK;
     }
 
     void LivoxLidar2::close(void)
