@@ -112,7 +112,7 @@ namespace kai
         IF_F(pPC->IsEmpty());
 		*m_sPCvd.next() = *pPC->VoxelDownSample(m_rVoxel);
 
-		IF_T(m_sPCvd.get()->IsEmpty());
+		IF__(m_sPCvd.get()->IsEmpty(), true);
 
         IF_F(updateRegistration(m_sPCvd.next(), m_sPCvd.get()) < m_minFit);
 

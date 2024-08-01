@@ -27,7 +27,7 @@ namespace kai
 		}
 	}
 
-	bool Kiss::parse(const string& s)
+	bool Kiss::parse(const string &s)
 	{
 		IF_F(m_bNULL);
 
@@ -76,7 +76,11 @@ namespace kai
 			}
 
 			// the pair bracket not found
-			IF_Fl(to == sp.length(), "Bracket not closed: " + sp);
+			if (to == sp.length())
+			{
+				LOG_E("Bracket not closed: " + sp);
+				return false;
+			}
 
 			// check if it is a null object
 			if (to > from + 1)
@@ -91,19 +95,27 @@ namespace kai
 		} while (1);
 
 		string js = "{" + sp + "}";
-		IF_Fl(!m_json.parse(js), "Parse failed:" + js);
+		if (!m_json.parse(js))
+		{
+			LOG_E("Parse failed:" + js);
+			return false;
+		}
 
 		m_json.v("name", &m_name);
 		m_json.v("class", &m_class);
 		bool bON = true;
 		m_json.v("bON", &bON);
 
-		IF_Fl(find(m_name), "Module already existed" + js);
+		if (find(m_name))
+		{
+			LOG_E("Module already existed" + js);
+			return false;
+		}
 
 		return bON;
 	}
 
-	bool Kiss::addChild(const string& s)
+	bool Kiss::addChild(const string &s)
 	{
 		IF_F(m_bNULL);
 
@@ -165,13 +177,13 @@ namespace kai
 	Kiss *Kiss::find(const string &name)
 	{
 		vector<string> vName = splitBy(name, '.');
-		IF_N(vName.empty());
+		IF__(vName.empty(), nullptr);
 
 		Kiss *pK = root();
 		for (string n : vName)
 			pK = pK->child(n);
 
-		IF_N(pK->empty());
+		IF__(pK->empty(), nullptr);
 		return pK;
 	}
 
@@ -187,17 +199,17 @@ namespace kai
 		return &m_json;
 	}
 
-	void Kiss::setModule(BASE* pM)
+	void Kiss::setModule(BASE *pM)
 	{
 		m_pBase = pM;
 	}
 
-	BASE* Kiss::getModule(void)
+	BASE *Kiss::getModule(void)
 	{
 		return m_pBase;
 	}
 
-	void Kiss::setName(const string& n)
+	void Kiss::setName(const string &n)
 	{
 		m_name = n;
 	}
@@ -207,7 +219,7 @@ namespace kai
 		return m_name;
 	}
 
-	bool Kiss::setClass(const string& c)
+	bool Kiss::setClass(const string &c)
 	{
 		m_class = c;
 	}

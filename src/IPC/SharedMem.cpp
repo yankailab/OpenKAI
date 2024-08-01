@@ -50,7 +50,7 @@ namespace kai
 
 	bool SharedMem::open(void)
 	{
-		IF_T(m_bOpen);
+		IF__(m_bOpen, true);
 
 		if (m_bWriter)
 		{
@@ -97,7 +97,7 @@ namespace kai
 
 	void *SharedMem::p(void)
 	{
-		IF_N(!m_bOpen);
+		IF__(!m_bOpen, nullptr);
 
 		return m_pB;
 	}

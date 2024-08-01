@@ -88,7 +88,7 @@ namespace kai
 
 	bool _GPhotoTake::startAutoMode(int nTake, int tInterval)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 	}
 	void _GPhotoTake::stopAutoMode(void)
 	{
@@ -96,7 +96,7 @@ namespace kai
 
 	bool _GPhotoTake::shutter(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		if (m_tDelay > 0)
 			m_pT->sleepT(m_tDelay);

@@ -110,7 +110,7 @@ namespace kai
 
 	bool _AP_videoStream::openStream(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 		// IF_F(m_pFvid);
 		IF_F(m_gstPID);
 

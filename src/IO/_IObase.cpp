@@ -29,7 +29,7 @@ namespace kai
 
 	int _IObase::init(void *pKiss)
 	{
-		CEHCK_(this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("nFIFO", &m_nFIFO);
@@ -80,7 +80,7 @@ namespace kai
 
 		IF_F(!m_fifoW.input(pBuf, nB));
 
-		NULL_T(m_pT);
+		NULL__(m_pT, true);
 		m_pT->run();
 		return true;
 	}

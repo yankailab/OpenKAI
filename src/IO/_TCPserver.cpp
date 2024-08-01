@@ -143,7 +143,7 @@ namespace kai
 
 	_TCPclient *_TCPserver::getFirstSocket(void)
 	{
-		IF_N(m_lSocket.empty());
+		IF__(m_lSocket.empty(), nullptr);
 
 		return m_lSocket.front();
 	}

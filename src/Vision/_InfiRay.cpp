@@ -37,8 +37,8 @@ namespace kai
 
 	bool _InfiRay::open(void)
 	{
-		IF_F(check() != OK_OK);;
-		IF_T(m_bOpen);
+		IF_F(check() != OK_OK);
+		IF__(m_bOpen);
 
 		m_InfiRay.open(m_deviceID, CAP_V4L2);
 		if (!m_InfiRay.isOpened())

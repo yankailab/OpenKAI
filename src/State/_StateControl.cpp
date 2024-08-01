@@ -31,7 +31,7 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		Kiss *pKstate = pK->child("state");
-		IF_T(pKstate->empty());
+		IF__(pKstate->empty(), OK_OK);
 
 		int i = 0;
 		while (1)

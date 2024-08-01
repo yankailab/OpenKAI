@@ -72,14 +72,19 @@ namespace kai
 
 	bool OpenKAI::addKiss(const string &fName)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
+		;
 		IF_F(fName.empty());
 
 		string s;
 		IF_F(!readFile(fName, &s));
 
 		Kiss *pKiss = (Kiss *)m_pKiss;
-		IF_Fl(!pKiss->parse(s), "Kiss parse failed: " + s);
+		if (!pKiss->parse(s))
+		{
+			LOG_E("Kiss parse failed: " + s);
+			return false;
+		}
 
 		Kiss *pApp = pKiss->root()->child("APP");
 		pApp->v("appName", &m_appName);
@@ -91,8 +96,17 @@ namespace kai
 		pApp->a("vInclude", &vInclude);
 		for (string f : vInclude)
 		{
-			IF_Fl(!readFile(f, &s), "Included Kiss not found: " + f);
-			IF_Fl(!pKiss->parse(s), "Included Kiss parse failed: " + f);
+			if (!readFile(f, &s))
+			{
+				LOG_E("Included Kiss not found: " + f);
+				return false;
+			}
+
+			if (!pKiss->parse(s))
+			{
+				LOG_E("Included Kiss parse failed: " + f);
+				return false;
+			}
 		}
 
 		if (!m_bStdErr)
@@ -103,40 +117,56 @@ namespace kai
 
 	bool OpenKAI::addModule(void *pModule, const string &mName)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
+		;
 		NULL_F(pModule);
 
 		Kiss *pKiss = (Kiss *)m_pKiss;
 		Kiss *pKm = pKiss->find(mName);
 
-		NULL_Fl(pKm, "Module not found in Kiss: " + mName);
-		IF_Fl(pKm->empty(), "Module not found in Kiss: " + mName);
-		IF_Fl(pKm->getModule(), "Module already existed in Kiss: " + mName);
+		if (pKm == nullptr)
+		{
+			LOG_E("Module not found in Kiss: " + mName);
+			return false;
+		}
+
+		if (pKm->empty())
+		{
+			LOG_E("Module not found in Kiss: " + mName);
+			return false;
+		}
+
+		if (pKm->getModule())
+		{
+			LOG_E("Module already existed in Kiss: " + mName);
+			return false;
+		}
 
 		pKm->setModule((BASE *)pModule);
 
 		return true;
 	}
 
-	void* OpenKAI::findModule(const string &mName)
+	void *OpenKAI::findModule(const string &mName)
 	{
-		IF_N(check() < 0);
+		IF__(check() != OK_OK, nullptr);
 
-		return ((Kiss*)m_pKiss)->findModule(mName);
+		return ((Kiss *)m_pKiss)->findModule(mName);
 	}
 
-	void* OpenKAI::findModuleKiss(const string &mName)
+	void *OpenKAI::findModuleKiss(const string &mName)
 	{
-		IF_N(check() < 0);
+		IF__(check() != OK_OK, nullptr);
 
-		return ((Kiss*)m_pKiss)->find(mName);
+		return ((Kiss *)m_pKiss)->find(mName);
 	}
 
-	bool OpenKAI::deleteModule(const string& mName)
+	bool OpenKAI::deleteModule(const string &mName)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
+		;
 
-		Kiss* pK = ((Kiss*)m_pKiss)->find(mName);
+		Kiss *pK = ((Kiss *)m_pKiss)->find(mName);
 		IF_F(pK->empty());
 
 		pK->setModule(NULL);
@@ -144,10 +174,10 @@ namespace kai
 		return true;
 	}
 
-
 	bool OpenKAI::createAllModules(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
+		;
 
 		Kiss *pKiss = (Kiss *)m_pKiss;
 		Module mod;
@@ -174,7 +204,8 @@ namespace kai
 
 	int OpenKAI::initAllModules(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
+		;
 
 		Kiss *pKroot = ((Kiss *)m_pKiss)->root();
 		Kiss *pK;
@@ -199,7 +230,8 @@ namespace kai
 
 	int OpenKAI::linkAllModules(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
+		;
 
 		Kiss *pKroot = ((Kiss *)m_pKiss)->root();
 		Kiss *pK;
@@ -224,7 +256,8 @@ namespace kai
 
 	int OpenKAI::startAllModules(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
+		;
 
 		// run cmd
 		if (!m_rc.empty())
@@ -279,7 +312,7 @@ namespace kai
 
 	void OpenKAI::stopAllModules(void)
 	{
-		//TODO
+		// TODO
 
 		Kiss *pKroot = ((Kiss *)m_pKiss)->root();
 		Kiss *pK;

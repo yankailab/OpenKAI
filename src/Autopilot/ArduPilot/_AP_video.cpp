@@ -102,7 +102,7 @@ namespace kai
 
 	bool _AP_video::openStream(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 		IF_F(m_pFvid);
 
 		string strT = tFormat();
@@ -120,10 +120,10 @@ namespace kai
 		m_tRecStart = getTbootMs();
 
 		// open meta file
-		IF_T(!m_bMeta);
-		IF_T(!m_pFmeta->open(m_fName + ".json_t"));
-		IF_T(m_mC.empty());
-		IF_T(m_mD.empty());
+		IF__(!m_bMeta, true);
+		IF__(!m_pFmeta->open(m_fName + ".json_t"), true);
+		IF__(m_mC.empty(), true);
+		IF__(m_mD.empty(), true);
 
 		object jo;
 		JO(jo, "name", "calib");

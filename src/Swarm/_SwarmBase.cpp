@@ -92,7 +92,7 @@ namespace kai
 
 	SWARM_NODE* _SwarmBase::getNode(int i)
 	{
-		IF_N(i >= m_vNodes.size());
+		IF__(i >= m_vNodes.size(), nullptr);
 
 		return &m_vNodes[i];
 	}
@@ -114,7 +114,7 @@ namespace kai
 	SWARM_NODE *_SwarmBase::getNode(const uint64_t &ID)
 	{
 		int i = getNodeIdx(ID);
-		IF_N(i < 0);
+		IF__(i < 0, nullptr);
 
 		return &m_vNodes[i];
 	}
@@ -169,7 +169,7 @@ namespace kai
 
 	SWARM_NODE *_SwarmBase::findClosestNode(vDouble2 vPos)
 	{
-		IF_N(m_vNodes.size() <= 0);
+		IF__(m_vNodes.size() <= 0, nullptr);
 
 		int iN = -1;
 		double dMin = DBL_MAX;
@@ -182,7 +182,7 @@ namespace kai
 			iN = i;
 		}
 
-		IF_N(iN < 0);
+		IF__(iN < 0, nullptr);
 		return &m_vNodes[iN];
 	}
 

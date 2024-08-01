@@ -145,11 +145,25 @@ namespace kai
 
 		memset(buf, 0, sizeof buf);
 		int nReceived = modbus_receive_confirmation(m_pMb, buf);
-		IF_Fl(nReceived < 0, "Error receiving data from the sensor: " + i2str(errno));
+		if (nReceived < 0)
+		{
+			LOG_E("Error receiving data from the sensor: " + i2str(errno));
+			return false;
+		}
+
 		LOG_I("Received " + i2str(nReceived) + " bytes from the sensor");
 
-		IF_Fl(nReceived < 155, "Unexpected answer");
-		IF_Fl(!((buf[0] == 1) && (buf[1] == 0x11)), "Bad address or function");
+		if (nReceived < 155)
+		{
+			LOG_E("Unexpected answer");
+			return false;
+		}
+
+		if (!((buf[0] == 1) && (buf[1] == 0x11)))
+		{
+			LOG_E("Bad address or function");
+			return false;
+		}
 
 		if ((buf[2 + 150] == 9) && (buf[2 + 151] == 0))
 		{
@@ -324,14 +338,14 @@ namespace kai
 		pC->addMsg(msg);
 	}
 
-	void _LeddarVu::draw(void* pFrame)
+	void _LeddarVu::draw(void *pFrame)
 	{
 #ifdef USE_OPENCV
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
 		IF_(check() != OK_OK);
 
-		Frame *pF = (Frame*)pFrame;
+		Frame *pF = (Frame *)pFrame;
 		Mat *pM = pF->m();
 		IF_(pM->empty());
 

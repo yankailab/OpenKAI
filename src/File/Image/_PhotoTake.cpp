@@ -146,7 +146,7 @@ namespace kai
 
 	bool _PhotoTake::take(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		if (m_tDelay > 0)
 			m_pT->sleepT(m_tDelay);

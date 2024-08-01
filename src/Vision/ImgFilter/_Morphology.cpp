@@ -51,7 +51,7 @@ namespace kai
 		n = "";
 		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->findModule(n));
-		NULL_(m_pV, OK_ERR_NOT_FOUND);
+		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
 		return OK_OK;
 	}

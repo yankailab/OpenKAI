@@ -58,7 +58,7 @@ namespace kai
 
 	bool _Vzense::open(void)
 	{
-		IF_T(m_bOpen);
+		IF__(m_bOpen);
 
 		uint32_t m_nDevice = 0;
 		VzReturnStatus status = VZ_GetDeviceCount(&m_nDevice);
@@ -207,7 +207,7 @@ namespace kai
 
 	bool _Vzense::updateVzense(void)
 	{
-		IF_T(check() < 0);
+		IF__(check() != OK_OK, true);
 
 		VzFrameReady frameReady = {0};
 		VzReturnStatus status = VZ_GetFrameReady(m_deviceHandle,

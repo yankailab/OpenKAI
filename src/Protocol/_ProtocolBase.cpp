@@ -120,7 +120,7 @@ namespace kai
 
 	bool _ProtocolBase::readCMD(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		uint8_t b;
 		int nB;
@@ -137,7 +137,7 @@ namespace kai
 					m_recvMsg.m_nPayload = m_recvMsg.m_pB[2];
 				}
 
-				IF_T(m_recvMsg.m_iB == m_recvMsg.m_nPayload + PB_N_HDR);
+				IF__(m_recvMsg.m_iB == m_recvMsg.m_nPayload + PB_N_HDR, true);
 			}
 			else if (b == PB_BEGIN)
 			{

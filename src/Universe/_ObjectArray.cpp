@@ -67,7 +67,7 @@ namespace kai
 
 	_Object *_ObjectArray::add(_Object &o)
 	{
-		IF_N(m_nO >= m_nBuf);
+		IF__(m_nO >= m_nBuf, nullptr);
 
 		m_pO[m_nO++] = o;
 		return &m_pO[m_nO - 1];
@@ -75,8 +75,8 @@ namespace kai
 
 	_Object *_ObjectArray::get(int i)
 	{
-		IF_N(i >= m_nO);
-		IF_N(i < 0);
+		IF__(i >= m_nO, nullptr);
+		IF__(i < 0, nullptr);
 		return &m_pO[i];
 	}
 

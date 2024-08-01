@@ -90,7 +90,7 @@ namespace kai
 		Kiss *pK = (Kiss *)m_pKiss;
 
 		Kiss *pKg = pK->child("geometry");
-		IF_T(pKg->empty());
+		IF__(pKg->empty(), true);
 
 		int i = 0;
 		while (1)
@@ -164,7 +164,7 @@ namespace kai
 
 	bool _GeometryViewer::addAllGeometries(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 		IF_F(!m_pWin);
 
 		for (int i = 0; i < m_vGO.size(); i++)

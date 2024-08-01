@@ -304,7 +304,7 @@ namespace kai
 
 	vFloat2 *_Object::getVertex(int i)
 	{
-		IF_N(i > m_vVertex.size());
+		IF__(i > m_vVertex.size(), nullptr);
 
 		return &m_vVertex[i];
 	}

@@ -130,7 +130,7 @@ namespace kai
 
     bool _Xbee::recv()
     {
-        IF_F(check() != OK_OK);;
+        IF_F(check() != OK_OK);
 
         uint8_t b;
         int nB;
@@ -146,7 +146,7 @@ namespace kai
                     m_fRecv.m_length = (m_fRecv.m_pB[1] << 8) | m_fRecv.m_pB[2];
                 }
 
-                IF_T(m_fRecv.m_iB == m_fRecv.m_length + 4);
+                IF__(m_fRecv.m_iB == m_fRecv.m_length + 4, true);
             }
             else if (b == XB_DELIM)
             {

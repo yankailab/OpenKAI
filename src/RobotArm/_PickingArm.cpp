@@ -31,7 +31,7 @@ namespace kai
 		m_vS.set(0.5);
 		m_vR.set(0.5);
 
-		m_vPrecover.init();
+		m_vPrecover.clear();
 		m_vPdeliver.set(-200, 300.0, 0.0);
 		m_vPdescend.set(-200, 300.0, -100.0);
 
@@ -74,15 +74,15 @@ namespace kai
 			m_vClass.push_back(pc);
 		}
 
-		NULL__(m_pSC, OK_ERR_NOT_FOUND);
-		m_iState.EXTERNAL = m_pSC->getStateIdxByName("EXTERNAL");
-		m_iState.RECOVER = m_pSC->getStateIdxByName("RECOVER");
-		m_iState.FOLLOW = m_pSC->getStateIdxByName("FOLLOW");
-		m_iState.ASCEND = m_pSC->getStateIdxByName("ASCEND");
-		m_iState.DELIVER = m_pSC->getStateIdxByName("DELIVER");
-		m_iState.DESCEND = m_pSC->getStateIdxByName("DESCEND");
-		m_iState.DROP = m_pSC->getStateIdxByName("DROP");
-		IF__(!m_iState.bValid(), OK_ERR_INVALID_VALUE);
+		// NULL__(m_pSC, OK_ERR_NOT_FOUND);
+		// m_iState.EXTERNAL = m_pSC->getStateIdxByName("EXTERNAL");
+		// m_iState.RECOVER = m_pSC->getStateIdxByName("RECOVER");
+		// m_iState.FOLLOW = m_pSC->getStateIdxByName("FOLLOW");
+		// m_iState.ASCEND = m_pSC->getStateIdxByName("ASCEND");
+		// m_iState.DELIVER = m_pSC->getStateIdxByName("DELIVER");
+		// m_iState.DESCEND = m_pSC->getStateIdxByName("DESCEND");
+		// m_iState.DROP = m_pSC->getStateIdxByName("DROP");
+		// IF__(!m_iState.bValid(), OK_ERR_INVALID_VALUE);
 
 		string n;
 
@@ -149,7 +149,6 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			this->_ModuleBase::update();
 			updateArm();
 
 			m_pT->autoFPSto();
@@ -160,47 +159,47 @@ namespace kai
 	{
 		IF_(check() != OK_OK);
 
-		int iM = m_pSC->getStateIdx();
-		bool bTransit = false;
+		// int iM = m_pSC->getStateIdx();
+		// bool bTransit = false;
 
-		if (iM == m_iState.EXTERNAL)
-		{
-			external();
-		}
-		else if (iM == m_iState.RECOVER)
-		{
-			bTransit = recover();
-		}
-		else if (iM == m_iState.FOLLOW)
-		{
-			bTransit = follow();
-		}
-		else if (iM == m_iState.ASCEND)
-		{
-			bTransit = ascend();
-		}
-		else if (iM == m_iState.DELIVER)
-		{
-			bTransit = deliver();
-		}
-		else if (iM == m_iState.DESCEND)
-		{
-			bTransit = descend();
-		}
-		else if (iM == m_iState.DROP)
-		{
-			bTransit = drop();
-		}
-		else
-		{
-			hold();
-		}
+		// if (iM == m_iState.EXTERNAL)
+		// {
+		// 	external();
+		// }
+		// else if (iM == m_iState.RECOVER)
+		// {
+		// 	bTransit = recover();
+		// }
+		// else if (iM == m_iState.FOLLOW)
+		// {
+		// 	bTransit = follow();
+		// }
+		// else if (iM == m_iState.ASCEND)
+		// {
+		// 	bTransit = ascend();
+		// }
+		// else if (iM == m_iState.DELIVER)
+		// {
+		// 	bTransit = deliver();
+		// }
+		// else if (iM == m_iState.DESCEND)
+		// {
+		// 	bTransit = descend();
+		// }
+		// else if (iM == m_iState.DROP)
+		// {
+		// 	bTransit = drop();
+		// }
+		// else
+		// {
+		// 	hold();
+		// }
 
-		if (bTransit)
-			m_pSC->transit();
+		// if (bTransit)
+		// 	m_pSC->transit();
 	}
 
-	void _PickingArm::stop(void)
+	void _PickingArm::hold(void)
 	{
 		m_pA->setStarget(0, 0.5);
 		m_pA->setStarget(1, 0.5);
@@ -249,14 +248,14 @@ namespace kai
 		{
 			//stop and gripper closed
 			hold();
-			IF_T(!m_pG->bGrip());
-			m_pG->grip(false);
+//			IF__(!m_pG->bGrip());
+//			m_pG->grip(false);
 			return false;
 		}
 		else if (m_vP.z < m_vZrange.z)
 		{
 			//gripper start to close
-			m_pG->grip(false);
+//			m_pG->grip(false);
 			return false;
 		}
 		else if (m_vP.z < m_vZrange.w)
@@ -337,7 +336,7 @@ namespace kai
 
 	bool _PickingArm::bTargetClass(int iClass)
 	{
-		IF_T(m_vClass.empty());
+		IF__(m_vClass.empty());
 
 		for (PICKINGARM_CLASS c : m_vClass)
 		{
@@ -398,9 +397,9 @@ namespace kai
 
 	bool _PickingArm::drop(void)
 	{
-		m_pG->grip(true);
+//		m_pG->grip(true);
 
-		IF_F(!m_pG->bGrip());
+//		IF_F(!m_pG->bGrip());
 		return true;
 	}
 
@@ -418,7 +417,7 @@ namespace kai
 	{
 		IF_(check() != OK_OK);
 
-		m_pG->grip(bOpen);
+//		m_pG->grip(bOpen);
 	}
 
 	void _PickingArm::console(void *pConsole)

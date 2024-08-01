@@ -56,10 +56,18 @@ namespace kai
 	bool _WebSocket::open(void)
 	{
 		m_fdW = ::open(m_fifoIn.c_str(), O_WRONLY);
-		IF_Fl(m_fdW < 0, "Cannot open: " + m_fifoIn);
+		if(m_fdW < 0)
+		{
+			LOG_E("Cannot open: " + m_fifoIn);
+			return false;
+		}
 
 		m_fdR = ::open(m_fifoOut.c_str(), O_RDWR);
-		IF_Fl(m_fdR < 0, "Cannot open: " + m_fifoOut);
+		if(m_fdR < 0)
+		{
+			LOG_E("Cannot open: " + m_fifoOut);
+			return false;
+		}
 
 		m_ioStatus = io_opened;
 		return true;
@@ -291,7 +299,7 @@ namespace kai
 			IF_CONT(m_vClient[i].m_id != id);
 			break;
 		}
-		IF_N(i >= nClient);
+		IF__(i >= nClient, nullptr);
 
 		return &m_vClient[i];
 	}

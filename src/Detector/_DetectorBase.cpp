@@ -37,7 +37,7 @@ namespace kai
 		if (!m_fClass.empty())
 		{
 			ifstream ifs(m_fClass.c_str());
-			IF_Fl(!ifs.is_open(), "File " + m_fClass + " not found");
+			IF__(!ifs.is_open(), OK_ERR_NOT_FOUND);
 
 			string line;
 			while (std::getline(ifs, line))

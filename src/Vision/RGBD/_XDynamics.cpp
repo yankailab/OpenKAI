@@ -73,7 +73,7 @@ namespace kai
 
     bool _XDynamics::open(void)
     {
-        IF_T(m_bOpen);
+        IF__(m_bOpen, true);
         int res = XD_SUCCESS;
 
         m_xdHDL.init();
@@ -82,20 +82,36 @@ namespace kai
         XdynContextInit();
 
         XDYN_Streamer *pStream = CreateStreamerNet((XDYN_PRODUCT_TYPE_e)m_xdProductType, sCbEvent, this, m_devURI);
-        NULL_Fl(pStream, "CreateStreamerNet failed");
+        if(pStream == nullptr)
+        {
+            LOG_E("CreateStreamerNet failed");
+            return false;
+        }
 
         res = pStream->OpenCamera((XDYN_DEV_TYPE_e)m_xdDevType);
-        IF_Fl(res != XD_SUCCESS, "OpenCamera failed: " + i2str(res));
+        if(res != XD_SUCCESS)
+        {
+            LOG_E("OpenCamera failed: " + i2str(res));
+            return false;
+        }
 
         MemSinkCfg memCfg;
         memCfg.isUsed[MEM_AGENT_SINK_DEPTH] = m_bDepth;
         memCfg.isUsed[MEM_AGENT_SINK_CONFID] = m_bConfidence;
         memCfg.isUsed[MEM_AGENT_SINK_RGB] = m_bRGB;
         res = pStream->ConfigSinkType(XDYN_SINK_TYPE_CB, memCfg, sCbStream, this);
-        IF_Fl(res != XD_SUCCESS, "ConfigSinkType failed: " + i2str(res));
+        if(res != XD_SUCCESS)
+        {
+            LOG_E("ConfigSinkType failed: " + i2str(res));
+            return false;
+        }
 
         res = pStream->ConfigAlgMode((XDYN_ALG_MODE_E)m_xdCtrl.m_algMode);
-        IF_Fl(res != XD_SUCCESS, "ConfigAlgMode failed: " + i2str(res));
+        if(res != XD_SUCCESS)
+        {
+            LOG_E("ConfigAlgMode failed: " + i2str(res));
+            return false;
+        }
 
         // config Depth
         unsigned int phaseInt[4] = {m_xdCtrl.m_vPhaseInt.x,
@@ -116,7 +132,11 @@ namespace kai
         pStream->SetPhaseMode((XDYN_PHASE_MODE_e)m_xdCtrl.m_phaseMode);
         pStream->SetCamMirror((XDYN_MIRROR_MODE_e)m_xdCtrl.m_mirrorMode);
         res = pStream->ConfigCamParams();
-        IF_Fl(res != XD_SUCCESS, "conifg cam params failed: " + i2str(res));
+        if(res != XD_SUCCESS)
+        {
+            LOG_E("conifg cam params failed: " + i2str(res));
+            return false;
+        }
 
         XdynCamInfo_t camInfo;
         pStream->GetCamInfo(&m_xdCamInfo);
@@ -130,7 +150,11 @@ namespace kai
         rgbRes.fps = m_devFPS;
         pStream->RgbSetRes(rgbRes);
         res = pStream->CfgRgbParams();
-        IF_Fl(res != XD_SUCCESS, "config rgb failed: " + i2str(res));
+        if(res != XD_SUCCESS)
+        {
+            LOG_E("config rgb failed: " + i2str(res));
+            return false;
+        }
 
         MemSinkInfo sinkInfo;
         pStream->GetResolution(sinkInfo);
@@ -141,7 +165,11 @@ namespace kai
         pStream->Corr_SetAE(m_xdCtrl.m_bAE);
         pStream->Corr_SetPreDist(m_xdCtrl.m_preDist);
         res = pStream->ConfigCorrParam();
-        IF_Fl(res != XD_SUCCESS, "config corr param failed: " + i2str(res));
+        if(res != XD_SUCCESS)
+        {
+            LOG_E("config corr param failed: " + i2str(res));
+            return false;
+        }
 
         // denoise
         pStream->PP_SetDepthDenoise((XDYN_PP_TDENOISE_METHOD)m_xdCtrl.m_DtdnMethod,
@@ -154,7 +182,11 @@ namespace kai
                                    (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DsdnLev);
         pStream->PP_SetDeFlyPixel(m_xdCtrl.m_dFlyPixLev);
         pStream->ConfigPPParam();
-        IF_Fl(res != XD_SUCCESS, "config PP param failed: " + i2str(res));
+        if(res != XD_SUCCESS)
+        {
+            LOG_E("config PP param failed: " + i2str(res));
+            return false;
+        }
 
         // init RGBD HDL interface
         XdynLensParams_t lensParams;
@@ -164,11 +196,19 @@ namespace kai
         pStream->GetCaliRegParams(regParams);
 
         bool r = initHDL(&regParams, m_vSizeD.x, m_vSizeD.y, m_vSizeRGB.x, m_vSizeRGB.y);
-        IF_Fl(!r, "initHDL failed");
+        if(!r)
+        {
+            LOG_E("initHDL failed");
+            return false;
+        }
 
         // start streaming
         res = pStream->StartStreaming();
-        IF_Fl(res != XD_SUCCESS, "start streaming failed: " + i2str(res));
+        if(res != XD_SUCCESS)
+        {
+            LOG_E("start streaming failed: " + i2str(res));
+            return false;
+        }
 
         m_pXDstream = pStream;
         m_bOpen = true;
@@ -350,7 +390,11 @@ namespace kai
         m_xdHDL.m_dyn.ucThConfidence = 25;
 
         m_xdHDL.m_pHDL = sitrpInit(&puiInitSuccFlag, &m_xdHDL.m_RP, &m_xdHDL.m_dyn, FALSE, FALSE);
-        IF_Fl(puiInitSuccFlag > RP_ARITH_SUCCESS, "Algorithm initialize fail, puiInitSuccFlag: " + i2str(puiInitSuccFlag));
+        if(puiInitSuccFlag > RP_ARITH_SUCCESS)
+        {
+            LOG_E("Algorithm initialize fail, puiInitSuccFlag: " + i2str(puiInitSuccFlag));
+            return false;
+        }
 
         // init in out buffer
         m_xdHDL.m_in.pThisGlbBuffer = m_xdHDL.m_pHDL;

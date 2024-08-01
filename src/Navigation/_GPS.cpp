@@ -84,7 +84,7 @@ namespace kai
 			}
 
 			const char pCRLF[] = "\x0d\x0a";
-			IF_T(c == pCRLF[0]);
+			IF__(c == pCRLF[0], true);
 
 			m_msg += c;
 		}

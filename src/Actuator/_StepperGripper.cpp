@@ -68,7 +68,7 @@ namespace kai
 
 	bool _StepperGripper::setMove(bool bOpen)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		int32_t step = m_pOpen - m_pClose;
 		if (!bOpen)

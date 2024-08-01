@@ -19,65 +19,6 @@
 
 // Apps
 
-#ifdef WITH_APP_3DSCAN
-#include "../Application/3Dscan/_3DScanCalibCam.h"
-#include "../Application/3Dscan/_3DScanCalibOfs.h"
-#include "../Application/3Dscan/_PCscan.h"
-#include "../Application/3Dscan/_PCcalib.h"
-#endif
-
-#ifdef WITH_APP_CAMCALIB
-#include "../Application/CamCalib/_CamCalib.h"
-#endif
-
-#ifdef WITH_APP_DRONEBOX_AIR
-#include "../Application/DroneBox/_AP_droneBox.h"
-#include "../Application/DroneBox/_AP_droneBoxJSON.h"
-#endif
-
-#ifdef WITH_APP_DRONEBOX_GND
-#include "../Application/DroneBox/_DroneBox.h"
-#include "../Application/DroneBox/_DroneBoxJSON.h"
-#endif
-
-#ifdef WITH_APP_DRONESR
-#include "../Application/DroneSR/_AP_SR.h"
-#endif
-
-#ifdef WITH_APP_GSV
-#include "../Application/GSV/_GSVctrl.h"
-#include "../Application/GSV/_GSVgrid.h"
-#include "../Application/GSV/_GSVio.h"
-#endif
-
-#ifdef WITH_APP_LIVOXSCANNER
-#include "../Application/LivoxScanner/_LivoxAutoScan.h"
-#include "../Application/LivoxScanner/_LivoxScanner.h"
-#endif
-
-#ifdef WITH_APP_MEASUREMENT
-#include "../Application/Measurement/_ARmeasure.h"
-#include "../Application/Measurement/_ARmeasureVertex.h"
-#include "../Application/Measurement/_ARmeasureFree.h"
-#include "../Application/Measurement/_ARmeasureCalibCam.h"
-#include "../Application/Measurement/_ARmeasureCalibDofs.h"
-#include "../Application/Measurement/_RaspiWSbattery.h"
-#endif
-
-#ifdef WITH_APP_ROPEWAYSCAN
-#include "../Application/RopewayScan/_RopewayScan.h"
-#endif
-
-#ifdef WITH_APP_ROBOTARM
-#include "../Application/RobotArm/_Sequencer.h"
-#ifdef USE_OPENCV
-#include "../Application/RobotArm/_PickingArm.h"
-#endif
-#endif
-
-#ifdef WITH_APP_ROVER
-#endif
-
 #ifdef WITH_APP_SWARM
 #include "../Application/Swarm/_SwarmCtrl.h"
 #include "../Application/Swarm/_SwarmCtrlUI.h"
@@ -112,7 +53,6 @@
 #ifdef WITH_ACTUATOR
 #include "../Actuator/_ArduServo.h"
 #include "../Actuator/_ActuatorSync.h"
-#include "../Actuator/_Feetech.h"
 #include "../Actuator/_OrientalMotor.h"
 #include "../Actuator/_HYMCU_RS485.h"
 #include "../Actuator/_StepperGripper.h"
@@ -120,6 +60,9 @@
 #include "../Actuator/Motor/_ZLAC8015D.h"
 #include "../Actuator/Motor/_ZDmotor.h"
 #include "../Actuator/Motor/_DDSM.h"
+#ifdef USE_FEETECH
+#include "../Actuator/_Feetech.h"
+#endif
 #ifdef USE_XARM
 #include "../Actuator/Articulated/_xArm.h"
 #endif

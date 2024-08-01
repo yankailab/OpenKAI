@@ -56,12 +56,12 @@ namespace kai
 
 		int iRcYaw = 1;
 		pK->v("iRcYaw", &iRcYaw);
-		IF_Fl(iRcYaw <= 0 || iRcYaw > 18, "RC yaw channel exceeds limit");
+		IF__(iRcYaw <= 0 || iRcYaw > 18, OK_ERR_INVALID_VALUE);
 		m_pRcYaw = pRC[iRcYaw];
 
 		int iRcThrottle = 3;
 		pK->v("iRcThrottle", &iRcThrottle);
-		IF_Fl(iRcThrottle <= 0 || iRcThrottle > 18, "RC throttle channel exceeds limit");
+		IF__(iRcThrottle <= 0 || iRcThrottle > 18, OK_ERR_INVALID_VALUE);
 		m_pRcThrottle = pRC[iRcThrottle];
 
 		pK->v("pwmM", &m_pwmM);
@@ -122,7 +122,7 @@ namespace kai
 
 	bool _AProver_drive::updateDrive(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		float nSpd = m_pD->getSpeed() * m_pD->getDirection();
 		float nStr = m_pD->getSteering();

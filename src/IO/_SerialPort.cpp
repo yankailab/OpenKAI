@@ -56,10 +56,20 @@ namespace kai
 
 	bool _SerialPort::open(void)
 	{
-		IF_Fl(m_port.empty(), "port is empty");
+		if(m_port.empty())
+		{
+			LOG_E("port is empty");
+			return false;
+		}
 
 		m_fd = ::open(m_port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY); //O_SYNC | O_NONBLOCK);
-		IF_Fl(m_fd == -1, "Cannot open: " + m_port);
+		
+		if(m_fd == -1)
+		{
+			LOG_E("Cannot open: " + m_port);
+			return false;
+		}
+		
 		fcntl(m_fd, F_SETFL, 0);
 
 		m_ioStatus = io_opened;
@@ -135,11 +145,19 @@ namespace kai
 	bool _SerialPort::setup(void)
 	{
 		// Check file descriptor
-		IF_Fl(!isatty(m_fd), "file descriptor is NOT a serial port");
+		if(!isatty(m_fd))
+		{
+			LOG_E("file descriptor is NOT a serial port");
+			return false;
+		}
 
 		// Read file descritor configuration
 		struct termios config;
-		IF_Fl(tcgetattr(m_fd, &config) < 0, "could not read configuration of fd");
+		if(tcgetattr(m_fd, &config) < 0)
+		{
+			LOG_E("could not read configuration of fd");
+			return false;
+		}
 
 		// Input flags - Turn off input processing
 		// convert break to null byte, no CR to NL translation,

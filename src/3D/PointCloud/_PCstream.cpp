@@ -194,7 +194,7 @@ namespace kai
 
     GEOMETRY_POINT *_PCstream::get(int i)
     {
-        IF_N(i >= m_nP);
+        IF__(i >= m_nP, nullptr);
 
         return &m_pP[i];
     }

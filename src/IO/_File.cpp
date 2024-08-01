@@ -28,7 +28,7 @@ namespace kai
 
 	bool _File::open(const string& fName, ios_base::openmode mode)
 	{
-		IF_T(m_ioStatus == io_opened);
+		IF__(m_ioStatus == io_opened, true);
 		m_name = fName;
 
 		return open(mode);
@@ -37,7 +37,7 @@ namespace kai
 	bool _File::open(ios_base::openmode mode)
 	{
 		IF_F(m_name.empty());
-		IF_T(m_ioStatus == io_opened);
+		IF__(m_ioStatus == io_opened, true);
 
 		m_file.open(m_name.c_str(), mode);
 		IF_F(!m_file.is_open());

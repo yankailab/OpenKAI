@@ -32,8 +32,8 @@ namespace kai
 
 		bool bReceiving(uint64_t tNow)
 		{
-			IF_T(m_tStamp >= tNow);
-			IF_T(tNow - m_tStamp < m_tInterval + 1000);
+			IF__(m_tStamp >= tNow, true);
+			IF__(tNow - m_tStamp < m_tInterval + 1000, true);
 
 			return false;
 		}

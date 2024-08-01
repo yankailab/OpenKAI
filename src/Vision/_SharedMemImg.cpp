@@ -79,7 +79,7 @@ namespace kai
 
     bool _SharedMemImg::update_SharedMemImg(void)
     {
-        IF_T(check() < 0);
+        IF__(check() != OK_OK, true);
 
         m_fRGB.copy(Mat(m_vSizeRGB.y,
                         m_vSizeRGB.x,

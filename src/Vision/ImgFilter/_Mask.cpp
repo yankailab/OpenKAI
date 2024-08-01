@@ -39,12 +39,12 @@ namespace kai
 		n = "";
 		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->findModule(n));
-		NULL_(m_pV, OK_ERR_NOT_FOUND);
+		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
 		n = "";
 		pK->v("_VisionBaseMask", &n);
 		m_pVmask = (_VisionBase *)(pK->parent()->findModule(n));
-		NULL_(m_pVmask, OK_ERR_NOT_FOUND);
+		NULL__(m_pVmask, OK_ERR_NOT_FOUND);
 
 		return OK_OK;
 	}

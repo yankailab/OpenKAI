@@ -66,7 +66,7 @@ namespace kai
 
 	bool _xArm::power(bool bON)
 	{
-		IF_T(bON == m_bPower);
+		IF__(bON == m_bPower);
 
 		if (bON)
 		{

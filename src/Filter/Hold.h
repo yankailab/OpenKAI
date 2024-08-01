@@ -41,7 +41,7 @@ namespace kai
 			}
 
 			m_dT += dT;
-			IF_N(m_dT >= m_dThold);
+			IF__(m_dT >= m_dThold, nullptr);
 
 			return FilterBase<T>::m_pV;
 		}

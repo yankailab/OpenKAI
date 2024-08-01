@@ -210,7 +210,7 @@ namespace kai
 
         for (uint32_t i = 0; i < whitelist_count_; i++)
         {
-            IF_T(strncmp(bd_code, broadcast_code_whitelist_[i], kBroadcastCodeSize) == 0);
+            IF__(strncmp(bd_code, broadcast_code_whitelist_[i], kBroadcastCodeSize) == 0);
         }
 
         return false;

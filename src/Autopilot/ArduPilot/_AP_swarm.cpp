@@ -211,7 +211,7 @@ namespace kai
 
 	bool _AP_swarm::findBeacon(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		SWARM_NODE *pN = m_pSwarm->getNodeByIDrange(m_vTargetID);
 		NULL_F(pN);
@@ -225,7 +225,7 @@ namespace kai
 		setPglobal(vP, false, false);
 
 		// SWARM_DETECTION *pD = getDetByDist(pN->m_vPos, m_dRdet);
-		// IF_T(pD);
+		// IF__(pD);
 
 		// SWARM_DETECTION d;
 		// d.m_id = pN->m_id;
@@ -237,7 +237,7 @@ namespace kai
 
 	bool _AP_swarm::findVisual(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		gimbalDownward();
 
@@ -248,7 +248,7 @@ namespace kai
 		vP.x = vPos.x;
 		vP.y = vPos.y;
 		SWARM_DETECTION *pD = getDetByDist(vP, m_dRdet);
-		IF_T(pD);
+		IF__(pD, true);
 
 		pD = getDetByID(m_myID + 200);
 		if (pD)
@@ -267,7 +267,7 @@ namespace kai
 
 	bool _AP_swarm::findVisualTarget(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		_Object *pO;
 		int i = 0;

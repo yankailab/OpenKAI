@@ -202,13 +202,13 @@ namespace kai
 
 	PC_GRID_CELL *_PCgrid::getCell(const vFloat3 &vP)
 	{
-		IF_N(isnan(vP.x));
-		IF_N(isnan(vP.y));
-		IF_N(isnan(vP.z));
+		IF__(isnan(vP.x), nullptr);
+		IF__(isnan(vP.y), nullptr);
+		IF__(isnan(vP.z), nullptr);
 
-		IF_N(!m_vRx.bInside(vP.x));
-		IF_N(!m_vRy.bInside(vP.y));
-		IF_N(!m_vRz.bInside(vP.z));
+		IF__(!m_vRx.bInside(vP.x), nullptr);
+		IF__(!m_vRy.bInside(vP.y), nullptr);
+		IF__(!m_vRz.bInside(vP.z), nullptr);
 
 		vInt3 vPi;
 		vPi.x = (vP.x - m_vPmin.x) * m_vOvCellSize.x;
@@ -297,9 +297,9 @@ namespace kai
 
 	PC_GRID_CELL *_PCgrid::getCell(const vInt3 &vC)
 	{
-		// IF_N(!m_vX.bInside(vC.x));
-		// IF_N(!m_vY.bInside(vC.y));
-		// IF_N(!m_vZ.bInside(vC.z));
+		// IF__(!m_vX.bInside(vC.x), nullptr);
+		// IF__(!m_vY.bInside(vC.y), nullptr);
+		// IF__(!m_vZ.bInside(vC.z), nullptr);
 
 		int i = vC.x * m_dYZ + vC.y * m_vDim.z + vC.z;
 		return &m_pCell[i];

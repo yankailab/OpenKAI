@@ -55,6 +55,16 @@
     {           \
         return; \
     }
+#define IF_F(x)       \
+    if (x)            \
+    {                 \
+        return false; \
+    }
+#define IF_N(x)         \
+    if (x)              \
+    {                   \
+        return nullptr; \
+    }
 #define IF__(x, y) \
     if (x)         \
     {              \
@@ -65,33 +75,28 @@
     {              \
         continue;  \
     }
+
 #define NULL_(x)      \
     if (x == nullptr) \
     {                 \
         return;       \
     }
-#define NULL__(x, y)  \
+#define NULL_F(x)     \
     if (x == nullptr) \
     {                 \
-        return y;     \
+        return false; \
     }
 #define NULL_N(x)       \
     if (x == nullptr)   \
     {                   \
         return nullptr; \
     }
-#define DEL(x)       \
-    if (x)           \
-    {                \
-        delete x;    \
-        x = nullptr; \
-    }
-#define SWAP(x, y, t) \
+#define NULL__(x, y)  \
+    if (x == nullptr) \
     {                 \
-        t = x;        \
-        x = y;        \
-        y = t;        \
+        return y;     \
     }
+
 #define CHECK_(x)       \
     {                   \
         int r = x;      \
@@ -120,163 +125,23 @@
         }                   \
     }
 
-#define IF_F(x)       \
-    if (x)            \
-    {                 \
-        return false; \
-    }
-#define IF_N(x)      \
-    if (x)           \
-    {                \
-        return NULL; \
-    }
-
-
-#define F_FATAL_F(x)  \
-    if (x == false)   \
-    {                 \
-        LOG_F(#x);    \
-        return false; \
-    }
-#define F_ERROR_F(x)  \
-    if (x == false)   \
-    {                 \
-        LOG_E(#x);    \
-        return false; \
-    }
-#define F_INFO(x)   \
-    if (x == false) \
-    {               \
-        LOG_I(#x);  \
-    }
-
-#define IF_T(x)      \
-    if (x)           \
-    {                \
-        return true; \
-    }
-
-#define IF_d_T(x, y) \
-    if (x)           \
-    {                \
-        y;           \
-        return true; \
-    }
-#define IF_d_F(x, y)  \
-    if (x)            \
-    {                 \
-        y;            \
-        return false; \
-    }
-#define IF_d_N(x, y) \
-    if (x)           \
-    {                \
-        y;           \
-        return NULL; \
-    }
-#define IF_d_(x, y) \
-    if (x)          \
-    {               \
-        y;          \
-        return;     \
-    }
-#define IF_d__(x, y, z) \
-    if (x)              \
-    {                   \
-        y;              \
-        return z;       \
-    }
-
-#define IF_Fl(x, y)   \
-    if (x)            \
-    {                 \
-        LOG_E(y);     \
-        return false; \
-    }
-#define IF_Nl(x, y)  \
-    if (x)           \
-    {                \
-        LOG_E(y);    \
-        return NULL; \
-    }
-#define IF_l(x, y) \
-    if (x)         \
-    {              \
-        LOG_E(y);  \
-        return;    \
-    }
-
-#define NULL_F(x)     \
-    if (x == NULL)    \
-    {                 \
-        return false; \
-    }
-#define NULL_T(x)    \
-    if (x == NULL)   \
-    {                \
-        return true; \
-    }
-
-#define NULL_d_(x, y) \
-    if (x == NULL)    \
-    {                 \
-        y;            \
-        return;       \
-    }
-#define NULL_d__(x, y, z) \
-    if (x == NULL)        \
-    {                     \
-        y;                \
-        return z;         \
-    }
-#define NULL_d_F(x, y) \
-    if (x == NULL)     \
-    {                  \
-        y;             \
-        return false;  \
-    }
-#define NULL_d_N(x, y) \
-    if (x == NULL)     \
-    {                  \
-        y;             \
-        return NULL;   \
-    }
-#define NULL_d_T(x, y) \
-    if (x == NULL)     \
-    {                  \
-        y;             \
-        return true;   \
-    }
-
-#define NULLl(x, y) \
-    if (x == NULL)  \
-    {               \
-        LOG_E(y);   \
-    }
-#define NULL_l(x, y) \
-    if (x == NULL)   \
-    {                \
-        LOG_E(y);    \
-        return;      \
-    }
-#define NULL_Fl(x, y) \
-    if (x == NULL)    \
-    {                 \
-        LOG_E(y);     \
-        return false; \
-    }
-#define NULL_Nl(x, y) \
-    if (x == NULL)    \
-    {                 \
-        LOG_E(y);     \
-        return NULL;  \
-    }
-
 #define DEL_ARRAY(x) \
     if (x)           \
     {                \
         delete[] x;  \
         x = NULL;    \
+    }
+#define DEL(x)       \
+    if (x)           \
+    {                \
+        delete x;    \
+        x = nullptr; \
+    }
+#define SWAP(x, y, t) \
+    {                 \
+        t = x;        \
+        x = y;        \
+        y = t;        \
     }
 
 #define JO(o, n, v)                       \

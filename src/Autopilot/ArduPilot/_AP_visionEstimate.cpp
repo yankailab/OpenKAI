@@ -118,10 +118,11 @@ namespace kai
 
 	bool _AP_visionEstimate::updateVisionEstimate(void)
 	{
-		IF_T(check() < 0);
+		IF__(check() != OK_OK, true);
 
 		m_bNaN = bNaN();
-		IF_Fl(m_bNaN, "Nav returned NaN");
+		IF_F(m_bNaN);
+
 		IF_F(m_pNav->bError());
 
 		m_conf = m_pNav->confidence();
@@ -140,17 +141,17 @@ namespace kai
 
 	bool _AP_visionEstimate::bNaN(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		vFloat3 v = m_pNav->t();
-		IF_T(isnan(v.x));
-		IF_T(isnan(v.y));
-		IF_T(isnan(v.z));
+		IF__(isnan(v.x), true);
+		IF__(isnan(v.y), true);
+		IF__(isnan(v.z), true);
 
 		v = m_pNav->v();
-		IF_T(isnan(v.x));
-		IF_T(isnan(v.y));
-		IF_T(isnan(v.z));
+		IF__(isnan(v.x), true);
+		IF__(isnan(v.y), true);
+		IF__(isnan(v.z), true);
 
 		return false;
 	}

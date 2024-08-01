@@ -121,7 +121,7 @@ namespace kai
 
 	bool _HYMCU_RS485::setDistPerRound(int32_t dpr)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		uint16_t pB[2];
 		pB[0] = HIGH16(dpr);
@@ -134,7 +134,7 @@ namespace kai
 
 	bool _HYMCU_RS485::setPos(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		int32_t step = m_pA->m_p.m_vTarget - m_pA->m_p.m_v;
 		//		int32_t step = m_pA->m_p.m_vTarget;
@@ -156,7 +156,7 @@ namespace kai
 
 	bool _HYMCU_RS485::setSpeed(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		uint16_t b = m_pA->m_s.m_vTarget;
 		IF_F(m_pMB->writeRegisters(m_iSlave, m_addr.m_setSpd, 1, &b) != 1);
@@ -167,7 +167,7 @@ namespace kai
 
 	bool _HYMCU_RS485::setAccel(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		uint16_t b = m_pA->m_a.m_vTarget;
 		IF_F(m_pMB->writeRegisters(m_iSlave, m_addr.m_setAcc, 1, &b) != 1);
@@ -178,14 +178,14 @@ namespace kai
 
 	bool _HYMCU_RS485::setBrake(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		return true;
 	}
 
 	bool _HYMCU_RS485::setSlaveID(uint16_t iSlave)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		IF_F(m_pMB->writeRegisters(m_iSlave, m_addr.m_setSlaveID, 1, &iSlave) != 1);
 		m_pT->sleepT(m_cmdInt);
@@ -195,7 +195,7 @@ namespace kai
 
 	bool _HYMCU_RS485::setBaudrate(uint32_t baudrate)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		uint16_t bd;
 		bd = baudrate & 0xFFFF;
@@ -209,7 +209,7 @@ namespace kai
 
 	bool _HYMCU_RS485::saveData(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		IF_F(m_pMB->writeBit(m_iSlave, m_addr.m_saveData, true) != 1);
 		m_pT->sleepT(m_cmdInt);
@@ -218,7 +218,7 @@ namespace kai
 
 	bool _HYMCU_RS485::move(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		IF_F(m_pMB->writeBit(m_iSlave, m_addr.m_run, true) != 1);
 		m_pT->sleepT(m_cmdInt);
@@ -227,7 +227,7 @@ namespace kai
 
 	bool _HYMCU_RS485::stopMove(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		IF_F(m_pMB->writeBit(m_iSlave, m_addr.m_stop, true) != 1);
 		m_pT->sleepT(m_cmdInt);
@@ -236,7 +236,7 @@ namespace kai
 
 	bool _HYMCU_RS485::resetPos(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		IF_F(m_pMB->writeBit(m_iSlave, m_addr.m_resPos, true) != 1);
 		m_pT->sleepT(m_cmdInt);
@@ -247,7 +247,7 @@ namespace kai
 
 	bool _HYMCU_RS485::initPos(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 		IF_F(!setDistPerRound(m_dpr));
 
 		if (m_dInit != 0)
@@ -288,7 +288,7 @@ namespace kai
 
 	bool _HYMCU_RS485::bComplete(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		uint16_t b;
 		int r = m_pMB->readRegisters(m_iSlave, m_addr.m_bComplete, 1, &b);
@@ -300,8 +300,8 @@ namespace kai
 
 	bool _HYMCU_RS485::readStatus(void)
 	{
-		IF_F(check() != OK_OK);;
-		IF_T(!m_ieReadStatus.update(m_pT->getTfrom()));
+		IF_F(check() != OK_OK);
+		IF__(!m_ieReadStatus.update(m_pT->getTfrom()));
 
 		uint16_t pB[2];
 		int r = m_pMB->readRegisters(m_iSlave, m_addr.m_readStat, 2, pB);

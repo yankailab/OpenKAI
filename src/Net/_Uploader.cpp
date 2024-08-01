@@ -34,7 +34,7 @@ namespace kai
 		pK->v("dir", &m_dir);
 		m_dir = checkDirName(m_dir);
 		pK->v("bRemoveAfterUpload", &m_bRemoveAfterUpload);
-		pK->v("method", (int*)&m_method);
+		pK->v("method", (int *)&m_method);
 		pK->v("url", &m_url);
 
 		pK->v("cmd", &m_cmd);
@@ -124,7 +124,11 @@ namespace kai
 
 		FILE *fp;
 		fp = popen(cmd.c_str(), "r");
-		NULL_Fl(fp, "Failed to run command: " + cmd);
+		if (fp == nullptr)
+		{
+			LOG_E("Failed to run command: " + cmd);
+			return false;
+		}
 
 		string strR = "";
 		char pResult[1035];
@@ -162,12 +166,11 @@ namespace kai
 		// fflush(fp);
 		// fclose(fp);
 
-
-        object o;
-        JO(o, "lat", lf2str(123.456, 10));
-        JO(o, "lng", lf2str(654.321, 10));
-        JO(o, "img", strEnc);
-        string jsonStr = picojson::value(o).serialize();
+		object o;
+		JO(o, "lat", lf2str(123.456, 10));
+		JO(o, "lng", lf2str(654.321, 10));
+		JO(o, "img", strEnc);
+		string jsonStr = picojson::value(o).serialize();
 
 		m_httpC.post_imageinfo(m_url.c_str(), jsonStr.c_str());
 
@@ -177,7 +180,7 @@ namespace kai
 	bool _Uploader::addFile(const string &fName)
 	{
 		IF_F(fName.empty());
-		IF_T(bFileInList(fName));
+		IF__(bFileInList(fName), true);
 
 		m_vFiles.push_back(fName);
 		return true;
@@ -187,7 +190,7 @@ namespace kai
 	{
 		for (string f : m_vFiles)
 		{
-			IF_T(f == fName);
+			IF__(f == fName, true);
 		}
 
 		return false;

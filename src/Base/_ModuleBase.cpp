@@ -65,21 +65,21 @@ namespace kai
 
     bool _ModuleBase::bAlive(void)
     {
-        IF_F(check() != OK_OK);;
+        IF_F(check() != OK_OK);
 
         return m_pT->bAlive();
     }
 
     bool _ModuleBase::bRun(void)
     {
-        IF_F(check() != OK_OK);;
+        IF_F(check() != OK_OK);
 
         return m_pT->bRun();
     }
 
     bool _ModuleBase::bStop(void)
     {
-        IF_F(check() != OK_OK);;
+        IF_F(check() != OK_OK);
 
         return m_pT->bStop();
     }

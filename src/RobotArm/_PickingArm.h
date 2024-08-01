@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_RobotArm__PickingArm_H_
 #define OpenKAI_src_RobotArm__PickingArm_H_
 
-#include "../../Base/_ModuleBase.h"
-#include "../../Universe/_Universe.h"
-#include "../../Control/PID.h"
-#include "../../Actuator/_ActuatorBase.h"
-#include "../../Actuator/_StepperGripper.h"
-#include "../../Sensor/Distance/_DistSensorBase.h"
+#include "../Base/_ModuleBase.h"
+#include "../Universe/_Universe.h"
+#include "../Control/PID.h"
+#include "../Actuator/_ActuatorBase.h"
+#include "../Actuator/_StepperGripper.h"
+#include "../Sensor/Distance/_DistSensorBase.h"
 
 namespace kai
 {

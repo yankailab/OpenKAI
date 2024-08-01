@@ -138,9 +138,9 @@ namespace kai
 
 		inline bool operator!=(vFloat3 r)
 		{
-			IF_T(x != r.x);
-			IF_T(y != r.y);
-			IF_T(z != r.z);
+			IF__(x != r.x, true);
+			IF__(y != r.y, true);
+			IF__(z != r.z, true);
 
 			return false;
 		}

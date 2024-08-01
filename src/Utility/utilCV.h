@@ -17,20 +17,24 @@ namespace kai
 		NULL_F(pD);
 
 		string s;
-		if(!readFile(fCalib, &s))
+		if (!readFile(fCalib, &s))
 		{
-            return false;
+			return false;
 		}
 
- 		Kiss *pKf = new Kiss();
+		Kiss *pKf = new Kiss();
 		if (!pKf->parse(s))
-        {
-            DEL(pKf);
-            return false;
-        }
+		{
+			DEL(pKf);
+			return false;
+		}
 
 		Kiss *pK = pKf->child("calib");
-		IF_d__(pK->empty(), DEL(pKf), false);
+		if (pK->empty())
+		{
+			DEL(pKf);
+			return false;
+		}
 
 		Mat mC = Mat::zeros(3, 3, CV_64FC1);
 		pK->v("Fx", &mC.at<double>(0, 0));

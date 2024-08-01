@@ -20,7 +20,7 @@ namespace kai
 
 	BASE *Module::createInstance(Kiss *pK)
 	{
-		IF_N(!pK);
+		NULL__(pK, nullptr);
 
 		ADD_MODULE(SharedMem);
 		ADD_MODULE(Destimator);
@@ -28,67 +28,6 @@ namespace kai
 
 
 // Apps
-
-#ifdef WITH_APP_3DSCAN
-		ADD_MODULE(_3DScanCalibCam);
-		ADD_MODULE(_3DScanCalibOfs);
-		ADD_MODULE(_PCscan);
-		ADD_MODULE(_PCcalib);
-#endif
-
-#ifdef WITH_APP_CAMCALIB
-		ADD_MODULE(_CamCalib);
-#endif
-
-#ifdef WITH_APP_DRONEBOX_AIR
-		ADD_MODULE(_AP_droneBox);
-		ADD_MODULE(_AP_droneBoxJSON);
-#endif
-
-#ifdef WITH_APP_DRONEBOX_GND
-		ADD_MODULE(_DroneBox);
-		ADD_MODULE(_DroneBoxJSON);
-#endif
-
-#ifdef WITH_APP_DRONESR
-		ADD_MODULE(_AP_SR);
-#endif
-
-#ifdef WITH_APP_GSV
-		ADD_MODULE(_GSVctrl);
-		ADD_MODULE(_GSVgrid);
-		ADD_MODULE(_GSVio);
-#endif
-
-#ifdef WITH_APP_LIVOXSCANNER
-		ADD_MODULE(_LivoxAutoScan);
-		ADD_MODULE(_LivoxScanner);
-#endif
-
-#ifdef WITH_APP_MEASUREMENT
-		ADD_MODULE(_ARmeasure);
-		ADD_MODULE(_ARmeasureVertex);
-		ADD_MODULE(_ARmeasureFree);
-		ADD_MODULE(_ARmeasureCalibCam);
-		ADD_MODULE(_ARmeasureCalibDofs);
-		ADD_MODULE(_RaspiWSbattery);
-#endif
-
-#ifdef WITH_APP_ROPEWAYSCAN
-		ADD_MODULE(_RopewayScan);
-#endif
-
-#ifdef WITH_APP_ROBOTARM
-		ADD_MODULE(_Sequencer);
-#ifdef USE_OPENCV
-		ADD_MODULE(_PickingArm);
-#endif
-#endif
-
-#ifdef WITH_APP_ROVER
-#ifdef USE_OPENCV
-#endif
-#endif
 
 #ifdef WITH_APP_SWARM
 		ADD_MODULE(_SwarmCtrl);
@@ -124,7 +63,6 @@ namespace kai
 #ifdef WITH_ACTUATOR
 		ADD_MODULE(_ArduServo);
 		ADD_MODULE(_ActuatorSync);
-		ADD_MODULE(_Feetech);
 		ADD_MODULE(_OrientalMotor);
 		ADD_MODULE(_HYMCU_RS485);
 		ADD_MODULE(_StepperGripper);
@@ -132,6 +70,9 @@ namespace kai
 		ADD_MODULE(_ZLAC8015D);
 		ADD_MODULE(_ZDmotor);
 		ADD_MODULE(_DDSM);
+#ifdef USE_FEETECH
+		ADD_MODULE(_Feetech);
+#endif
 #ifdef USE_XARM
 		ADD_MODULE(_xArm);
 #endif
@@ -374,7 +315,7 @@ namespace kai
 	template <typename T>
 	BASE *Module::createInst(Kiss *pKiss)
 	{
-		IF_N(!pKiss);
+		NULL__(pKiss, nullptr);
 
 		T *pInst = new T();
 		return pInst;

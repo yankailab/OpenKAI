@@ -24,7 +24,7 @@ public:
 	FrameGroup();
 	virtual ~FrameGroup();
 
-	int init(int nFrame);
+	bool init(int nFrame);
 
 	void updateFrameIndex(void);
 	Frame* getPrevFrame(void);

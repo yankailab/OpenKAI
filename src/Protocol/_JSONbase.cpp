@@ -144,7 +144,7 @@ namespace kai
 
     bool _JSONbase::recv()
     {
-        IF_F(check() != OK_OK);;
+        IF_F(check() != OK_OK);
 
         unsigned char B;
         unsigned int nStrFinish = m_msgFinishRecv.length();

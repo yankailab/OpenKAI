@@ -84,16 +84,16 @@ namespace kai
 
 	_Object *_Universe::add(_Object &o)
 	{
-		IF_N(!m_vArea.bInside(o.area()));
-		IF_N(!m_vW.bInside(o.getWidth()));
-		IF_N(!m_vH.bInside(o.getHeight()));
-		IF_N(!m_vClassRange.bInside(o.getTopClass()));
+		IF__(!m_vArea.bInside(o.area()), nullptr);
+		IF__(!m_vW.bInside(o.getWidth()), nullptr);
+		IF__(!m_vH.bInside(o.getHeight()), nullptr);
+		IF__(!m_vClassRange.bInside(o.getTopClass()), nullptr);
 
 		vFloat3 p = o.getPos();
-		IF_N(p.x < m_vRoi.x);
-		IF_N(p.x > m_vRoi.z);
-		IF_N(p.y < m_vRoi.y);
-		IF_N(p.y > m_vRoi.w);
+		IF__(p.x < m_vRoi.x, nullptr);
+		IF__(p.x > m_vRoi.z, nullptr);
+		IF__(p.y < m_vRoi.y, nullptr);
+		IF__(p.y > m_vRoi.w, nullptr);
 
 		return m_sO.next()->add(o);
 	}

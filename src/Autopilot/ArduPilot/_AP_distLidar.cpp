@@ -22,11 +22,11 @@ namespace kai
 		string n;
 
 		n = "";
-		F_INFO(pK->v("APcopter_base", &n));
+		pK->v("APcopter_base", &n);
 		m_pAP = (_AP_base *)(pK->findModule(n));
 
 		n = "";
-		F_INFO(pK->v("_DistSensorBase", &n));
+		pK->v("_DistSensorBase", &n);
 		m_pDS = (_DistSensorBase *)(pK->findModule(n));
 		NULL__(m_pDS, OK_ERR_NOT_FOUND);
 

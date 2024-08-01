@@ -85,7 +85,7 @@ namespace kai
 
 	bool _SwarmSearch::genGridCells(void)
     {
-        IF_F(check() != OK_OK);;
+        IF_F(check() != OK_OK);
 
         m_nGcell = m_pGG->getNcell();
 		IF_F(m_nGcell <= 0);

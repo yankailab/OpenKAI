@@ -84,8 +84,8 @@ namespace kai
             return pD;
         }
 
-        IF_N(!bFirst);
-        IF_N(m_vDevice.empty());
+        IF__(!bFirst, nullptr);
+        IF__(m_vDevice.empty(), nullptr);
         return &m_vDevice[0];
     }
 
@@ -132,7 +132,7 @@ namespace kai
     {
         LivoxLidar2device *pD = getDevice(handle);
         NULL_F(pD);
-        IF_T(pD->m_mode == m);
+        IF__(pD->m_mode == m, true);
 
         pD->m_mode = m;
         SetLivoxLidarWorkMode(pD->m_handle, pD->m_mode, sCbWorkMode, this);

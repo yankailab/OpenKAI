@@ -64,7 +64,7 @@ namespace kai
 
 	int _InRange::start(void)
 	{
-		NULL_F_(m_pT, OK_ERR_NULLPTR);
+		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 

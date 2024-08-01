@@ -85,7 +85,11 @@ namespace kai
 
 		//open input directory in get file list
 		DIR *pDirRGBIn = opendir(pD->m_dirRGBIn.c_str());
-		NULL_l(pDirRGBIn, "RGB Input directory not found: " + pD->m_dirRGBIn);
+		if(pDirRGBIn == nullptr)
+		{
+			LOG_E("RGB Input directory not found: " + pD->m_dirRGBIn);
+			return;
+		}
 
 		struct dirent *dirRGB;
 		string fRGBIn;
@@ -100,7 +104,11 @@ namespace kai
 		closedir(pDirRGBIn);
 
 		DIR *pDirSegIn = opendir(pD->m_dirSegIn.c_str());
-		NULL_l(pDirSegIn, "Seg Input directory not found: " + pD->m_dirSegIn);
+		if(pDirSegIn == nullptr)
+		{
+			LOG_E("Seg Input directory not found: " + pD->m_dirSegIn);
+			return;
+		}
 
 		struct dirent *dirSeg;
 		string fSegIn;
@@ -118,16 +126,24 @@ namespace kai
 		DIR *pDirRGBOut = opendir(pD->m_dirRGBOut.c_str());
 		if (!pDirRGBOut)
 		{
-			IF_l(mkdir(pD->m_dirRGBOut.c_str(), 0777) != 0,
-				 "Failed to creat RGB output directory: " + pD->m_dirRGBOut);
+			if(mkdir(pD->m_dirRGBOut.c_str(), 0777) != 0)
+			{
+				LOG_E("Failed to creat RGB output directory: " + pD->m_dirRGBOut);
+				return;
+			}
+
 			LOG_I("Created RGB output directory: " + pD->m_dirRGBOut);
 		}
 
 		DIR *pDirSegOut = opendir(pD->m_dirSegOut.c_str());
 		if (!pDirSegOut)
 		{
-			IF_l(mkdir(pD->m_dirSegOut.c_str(), 0777) != 0,
-				 "Failed to creat Seg output directory: " + pD->m_dirSegOut);
+			if(mkdir(pD->m_dirSegOut.c_str(), 0777) != 0)
+			{
+				LOG_E("Failed to creat Seg output directory: " + pD->m_dirSegOut);
+				return;
+			}
+			
 			LOG_I("Created Seg output directory: " + pD->m_dirSegOut);
 		}
 

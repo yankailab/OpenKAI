@@ -79,7 +79,7 @@ namespace kai
 
 	bool _PCrecv::readCMD(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		uint8_t b;
 		while (m_pIO->read(&b, 1) > 0)
@@ -94,8 +94,8 @@ namespace kai
 					m_recvMsg.m_nPayload = unpack_int16(&m_recvMsg.m_pB[2], false);
 				}
 
-				IF_T(m_recvMsg.m_iB >= m_recvMsg.m_nPayload + PC_N_HDR);
-				IF_T(m_recvMsg.m_iB >= m_recvMsg.m_nB);
+				IF__(m_recvMsg.m_iB >= m_recvMsg.m_nPayload + PC_N_HDR, true);
+				IF__(m_recvMsg.m_iB >= m_recvMsg.m_nB, true);
 			}
 			else if (b == PB_BEGIN)
 			{

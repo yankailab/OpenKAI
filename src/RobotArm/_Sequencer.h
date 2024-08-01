@@ -8,8 +8,8 @@
 #ifndef OpenKAI_src_RobotArm__Sequencer_H_
 #define OpenKAI_src_RobotArm__Sequencer_H_
 
-#include "../../Base/common.h"
-#include "../../Actuator/_ActuatorBase.h"
+#include "../Base/common.h"
+#include "../Actuator/_ActuatorBase.h"
 
 namespace kai
 {
@@ -59,7 +59,7 @@ namespace kai
 		{
 			for (unsigned int i = 0; i < m_vActuator.size(); i++)
 			{
-				IF_CONT(*m_vActuator[i].m_pA->getName() != name);
+				IF_CONT(m_vActuator[i].m_pA->getName() != name);
 				return &m_vActuator[i];
 			}
 

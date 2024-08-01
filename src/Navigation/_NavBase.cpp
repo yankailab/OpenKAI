@@ -25,7 +25,7 @@ namespace kai
 
 	int _NavBase::init(void *pKiss)
 	{
-		CHECL_(this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("scale", &m_scale);

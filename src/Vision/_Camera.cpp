@@ -37,8 +37,8 @@ namespace kai
 
 	bool _Camera::open(void)
 	{
-		IF_F(check() != OK_OK);;
-		IF_T(m_bOpen);
+		IF_F(check() != OK_OK);
+		IF__(m_bOpen, true);
 
 		m_camera.open(m_deviceID);
 		if (!m_camera.isOpened())

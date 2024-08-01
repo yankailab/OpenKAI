@@ -131,7 +131,7 @@ namespace kai
 
 	bool _SBus::recv(void)
 	{
-		IF_F(check() != OK_OK);;
+		IF_F(check() != OK_OK);
 
 		uint8_t B;
 		while (m_pIO->read(&B, 1) > 0)
@@ -285,11 +285,11 @@ namespace kai
 
 	bool _SBus::bFailSafe(void)
 	{
-		IF_T(m_bFailSafe);
+		IF__(m_bFailSafe, true);
 
 		uint64_t t = getApproxTbootUs();
 		IF_F(t <= m_tLastRecv);
-		IF_T(t - m_tLastRecv > m_timeOutUsec);
+		IF__(t - m_tLastRecv > m_timeOutUsec, true);
 
 		return false;
 	}

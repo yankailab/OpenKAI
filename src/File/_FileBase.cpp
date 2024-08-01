@@ -143,7 +143,7 @@ namespace kai
 		string ext = getExtension(fName);
 		for (int i = 0; i < vExt.size(); i++)
 		{
-			IF_T(vExt[i] == ext);
+			IF__(vExt[i] == ext, true);
 		}
 
 		return false;

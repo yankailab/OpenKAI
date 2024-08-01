@@ -73,7 +73,7 @@ namespace kai
 
     bool _RealSense::open(void)
     {
-        IF_T(m_bOpen);
+        IF__(m_bOpen);
 
         try
         {
@@ -332,7 +332,7 @@ namespace kai
 
     bool _RealSense::updateRS(void)
     {
-        IF_T(check() < 0);
+        IF__(check() != OK_OK, true);
 
         try
         {

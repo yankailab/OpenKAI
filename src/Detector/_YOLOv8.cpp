@@ -51,7 +51,11 @@ namespace kai
 	bool _YOLOv8::loadModel(void)
 	{
 		m_net = cv::dnn::readNetFromONNX(m_fModel);
-		IF_Fl(m_net.empty(), "readNetFromONNX failed");
+		if (m_net.empty())
+		{
+			LOG_E("readNetFromONNX failed");
+			return false;
+		}
 
 		m_net.setPreferableBackend(m_iBackend);
 		m_net.setPreferableTarget(m_iTarget);
@@ -185,7 +189,7 @@ namespace kai
 			m_pU->add(o);
 			LOG_I("Class: " + i2str(o.getTopClass()));
 		}
-		
+
 		m_pU->swap();
 	}
 

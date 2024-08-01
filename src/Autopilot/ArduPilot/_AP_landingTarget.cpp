@@ -183,7 +183,7 @@ namespace kai
 
 	bool _AP_landingTarget::findTag(void)
 	{
-		IF_N(check() < 0);
+		IF_F(check() != OK_OK);
 
 		AP_LANDING_TARGET_TAG *pTag = NULL;
 		int priority = INT_MAX;
