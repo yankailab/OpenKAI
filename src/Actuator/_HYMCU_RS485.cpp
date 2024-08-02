@@ -301,7 +301,7 @@ namespace kai
 	bool _HYMCU_RS485::readStatus(void)
 	{
 		IF_F(check() != OK_OK);
-		IF__(!m_ieReadStatus.update(m_pT->getTfrom()));
+		IF__(!m_ieReadStatus.update(m_pT->getTfrom()), true);
 
 		uint16_t pB[2];
 		int r = m_pMB->readRegisters(m_iSlave, m_addr.m_readStat, 2, pB);

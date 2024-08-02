@@ -26,14 +26,14 @@ namespace kai
 		void clean(void);
 
 		// module create
-		bool addKiss(const string &fName);
-		bool addModule(void* pModule, const string& mName);
+		int addKiss(const string &fName);
+		int addModule(void* pModule, const string& mName);
 		void* findModule(const string& mName);
 		void* findModuleKiss(const string& mName);
-		bool deleteModule(const string& mName);
+		int deleteModule(const string& mName);
 
 		// general flow
-		bool createAllModules(void);
+		int createAllModules(void);
 		int initAllModules(void);
 		int linkAllModules(void);
 		int startAllModules(void);

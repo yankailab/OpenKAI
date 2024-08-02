@@ -336,7 +336,7 @@ namespace kai
 
 	bool _PickingArm::bTargetClass(int iClass)
 	{
-		IF__(m_vClass.empty());
+		IF__(m_vClass.empty(), true);
 
 		for (PICKINGARM_CLASS c : m_vClass)
 		{

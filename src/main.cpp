@@ -23,22 +23,22 @@ int main(int argc, char* argv[])
     
 	OpenKAI* pOK = new OpenKAI();
 
-	if(!pOK->init())
+	if(pOK->init() != OK_OK)
 		goto exit;
 
-	if(!pOK->addKiss(argStr))
+	if(pOK->addKiss(argStr) != OK_OK)
 		goto exit;
 
-	if(!pOK->createAllModules())
+	if(pOK->createAllModules() != OK_OK)
 		goto exit;
 
-	if(!pOK->initAllModules())
+	if(pOK->initAllModules() != OK_OK)
 		goto exit;
 
-	if(!pOK->linkAllModules())
+	if(pOK->linkAllModules() != OK_OK)
 		goto exit;
 
-	if(!pOK->startAllModules())
+	if(pOK->startAllModules() != OK_OK)
 		goto exit;
 
 

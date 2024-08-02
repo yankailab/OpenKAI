@@ -90,7 +90,7 @@ namespace kai
 	bool _ZDmotor::power(bool bON)
 	{
 		IF_F(check() != OK_OK);
-		IF__(bON == m_bPower);
+		IF__(bON == m_bPower, true);
 
 		if (bON)
 		{
@@ -176,7 +176,7 @@ namespace kai
 	bool _ZDmotor::readStatus(void)
 	{
 		IF_F(check() != OK_OK);
-		IF__(!m_ieReadStatus.update(m_pT->getTfrom()));
+		IF__(!m_ieReadStatus.update(m_pT->getTfrom()), true);
 
 		uint16_t pB[2];
 		int r = m_pMB->readRegisters(m_iSlave, 0x202C, 1, pB);
