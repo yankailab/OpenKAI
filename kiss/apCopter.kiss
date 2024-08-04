@@ -92,7 +92,7 @@
 
 {
 	"name":"apBase",
-	"class":"_AP_base",
+	"class":"_MavAP_base",
 	"bON":1,
     {
 		"name":"thread",
