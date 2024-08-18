@@ -38,7 +38,7 @@
 
 {
 	"name":"apVideo",
-	"class":"_MavAP_video",
+	"class":"_APmavlink_video",
 	"bON":0,
     {
 		"name":"thread",
@@ -47,7 +47,7 @@
 	"bLog":0,
 	"_StateControl":"state",
 	"vActiveState":["STANDBY"],
-	"_MavAP_base":"apBase",
+	"_APmavlink_base":"apBase",
 	"_VisionBase":"cam",
 	"dir":"/home/pi/ssd/video/",
 	"fCalib":"/home/pi/ok/calibCam.kiss",

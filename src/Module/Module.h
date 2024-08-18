@@ -22,7 +22,7 @@
 #ifdef WITH_APP_SWARM
 #include "../Application/Swarm/_SwarmCtrl.h"
 #include "../Application/Swarm/_SwarmCtrlUI.h"
-#include "../Application/Swarm/_MavAP_swarm.h"
+#include "../Application/Swarm/_APmavlink_swarm.h"
 #include "../Application/Swarm/_SwarmSearch.h"
 #endif
 
@@ -68,37 +68,37 @@
 #endif
 #endif
 
-#ifdef WITH_MAVLINKAP
-#include "../Autopilot/MavlinkAP/_MavAP_actuator.h"
-#include "../Autopilot/MavlinkAP/_MavAP_base.h"
-#include "../Autopilot/MavlinkAP/_MavAP_httpJson.h"
-#include "../Autopilot/MavlinkAP/_MavAP_mission.h"
-#include "../Autopilot/MavlinkAP/_MavAP_move.h"
-#include "../Autopilot/MavlinkAP/_MavAP_relay.h"
-#include "../Autopilot/MavlinkAP/_MavAP_servo.h"
-#include "../Autopilot/MavlinkAP/_MavAProver_drive.h"
+#ifdef WITH_APMAVLINK
+#include "../Autopilot/APmavlink/_APmavlink_actuator.h"
+#include "../Autopilot/APmavlink/_APmavlink_base.h"
+#include "../Autopilot/APmavlink/_APmavlink_httpJson.h"
+#include "../Autopilot/APmavlink/_APmavlink_mission.h"
+#include "../Autopilot/APmavlink/_APmavlink_move.h"
+#include "../Autopilot/APmavlink/_APmavlink_relay.h"
+#include "../Autopilot/APmavlink/_APmavlink_servo.h"
+#include "../Autopilot/APmavlink/_APmavlink_drive.h"
 #ifdef WITH_SENSOR
-#include "../Autopilot/MavlinkAP/_MavAP_distLidar.h"
+#include "../Autopilot/APmavlink/_APmavlink_distLidar.h"
 #endif
 #ifdef USE_OPENCV
-#include "../Autopilot/MavlinkAP/_MavAP_avoid.h"
-#include "../Autopilot/MavlinkAP/_MavAP_depthVision.h"
-#include "../Autopilot/MavlinkAP/_MavAP_video.h"
-#include "../Autopilot/MavlinkAP/_MavAP_videoStream.h"
-#include "../Autopilot/MavlinkAP/_MavAPcopter_photo.h"
+#include "../Autopilot/APmavlink/_APmavlink_avoid.h"
+#include "../Autopilot/APmavlink/_APmavlink_depthVision.h"
+#include "../Autopilot/APmavlink/_APmavlink_video.h"
+#include "../Autopilot/APmavlink/_APmavlink_videoStream.h"
+#include "../Autopilot/APmavlink/_APmavlink_photo.h"
 #ifdef USE_OPENCV_CONTRIB
-#include "../Autopilot/MavlinkAP/_MavAP_follow.h"
-#include "../Autopilot/MavlinkAP/_MavAP_land.h"
-#include "../Autopilot/MavlinkAP/_MavAP_landingTarget.h"
+#include "../Autopilot/APmavlink/_APmavlink_follow.h"
+#include "../Autopilot/APmavlink/_APmavlink_land.h"
+#include "../Autopilot/APmavlink/_APmavlink_landingTarget.h"
 #endif // opencv_contrib
 #endif // opencv
 #ifdef WITH_NAVIGATION
-#include "../Autopilot/MavlinkAP/_MavAP_visionEstimate.h"
+#include "../Autopilot/APmavlink/_APmavlink_visionEstimate.h"
 #ifdef USE_REALSENSE
-#include "../Autopilot/MavlinkAP/_MavAP_GPS.h"
+#include "../Autopilot/APmavlink/_APmavlink_GPS.h"
 #endif
 #endif
-#endif // MavlinkAP
+#endif // APmavlink
 
 #ifdef WITH_AUTOPILOT_DRIVE
 #include "../Autopilot/Drive/_Drive.h"

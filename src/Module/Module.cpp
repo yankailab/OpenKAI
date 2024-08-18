@@ -32,7 +32,7 @@ namespace kai
 #ifdef WITH_APP_SWARM
 		ADD_MODULE(_SwarmCtrl);
 		ADD_MODULE(_SwarmCtrlUI);
-		ADD_MODULE(_MavAP_swarm);
+		ADD_MODULE(_APmavlink_swarm);
 		ADD_MODULE(_SwarmSearch);
 #endif
 
@@ -78,34 +78,34 @@ namespace kai
 #endif
 #endif
 
-#ifdef WITH_MAVLINKAP
-		ADD_MODULE(_MavAP_actuator);
-		ADD_MODULE(_MavAP_base);
-		ADD_MODULE(_MavAP_httpJson);
-		ADD_MODULE(_MavAP_mission);
-		ADD_MODULE(_MavAP_move);
-		ADD_MODULE(_MavAP_relay);
-		ADD_MODULE(_MavAP_servo);
-		ADD_MODULE(_MavAProver_drive);
+#ifdef WITH_APMAVLINK
+		ADD_MODULE(_APmavlink_actuator);
+		ADD_MODULE(_APmavlink_base);
+		ADD_MODULE(_APmavlink_httpJson);
+		ADD_MODULE(_APmavlink_mission);
+		ADD_MODULE(_APmavlink_move);
+		ADD_MODULE(_APmavlink_relay);
+		ADD_MODULE(_APmavlink_servo);
+		ADD_MODULE(_APmavlink_drive);
 #ifdef WITH_SENSOR
-		ADD_MODULE(_MavAP_distLidar);
+		ADD_MODULE(_APmavlink_distLidar);
 #endif
 #ifdef USE_OPENCV
-		ADD_MODULE(_MavAP_avoid);
-		ADD_MODULE(_MavAP_depthVision);
-		ADD_MODULE(_MavAP_video);
-		ADD_MODULE(_MavAP_videoStream);
-		ADD_MODULE(_MavAPcopter_photo);
+		ADD_MODULE(_APmavlink_avoid);
+		ADD_MODULE(_APmavlink_depthVision);
+		ADD_MODULE(_APmavlink_video);
+		ADD_MODULE(_APmavlink_videoStream);
+		ADD_MODULE(_APmavlink_photo);
 #ifdef USE_OPENCV_CONTRIB
-		ADD_MODULE(_MavAP_follow);
-		ADD_MODULE(_MavAP_land);
-		ADD_MODULE(_MavAP_landingTarget);
+		ADD_MODULE(_APmavlink_follow);
+		ADD_MODULE(_APmavlink_land);
+		ADD_MODULE(_APmavlink_landingTarget);
 #endif // opencv_contrib
 #endif // opencv
 #ifdef WITH_NAVIGATION
-		ADD_MODULE(_MavAP_visionEstimate);
+		ADD_MODULE(_APmavlink_visionEstimate);
 #ifdef USE_REALSENSE
-		ADD_MODULE(_MavAP_GPS);
+		ADD_MODULE(_APmavlink_GPS);
 #endif
 #endif
 #endif

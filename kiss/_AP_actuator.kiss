@@ -95,14 +95,14 @@
 
 {
 	"name":"apActuator",
-	"class":"_MavAP_actuator",
+	"class":"_APmavlink_actuator",
 	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
 	"bLog":1,
-	"_MavAP_base":"apBase",
+	"_APmavlink_base":"apBase",
 	"_ActuatorBase1":"stepper1",
 	"_ActuatorBase2":"stepper2",
 	"iRCmodeChan":5,
@@ -143,7 +143,7 @@
 
 {
 	"name":"apBase",
-	"class":"_MavAP_base",
+	"class":"_APmavlink_base",
 	"bON":1,
     {
 		"name":"thread",
