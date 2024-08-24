@@ -260,6 +260,26 @@ namespace kai
 		}
 	};
 
+	class MavMissionCount : public MavMsgBase
+	{
+	public:
+		mavlink_mission_count_t m_msg;
+
+		MavMissionCount()
+		{
+			m_id = MAVLINK_MSG_ID_MISSION_COUNT;
+
+			m_msg.count = 0;
+			m_msg.mission_type = 0;
+		}
+
+		void decode(mavlink_message_t *pM)
+		{
+			mavlink_msg_mission_count_decode(pM, &m_msg);
+			this->MavMsgBase::decode(pM);
+		}
+	};
+
 	class MavMissionCurrent : public MavMsgBase
 	{
 	public:
@@ -276,6 +296,129 @@ namespace kai
 		void decode(mavlink_message_t *pM)
 		{
 			mavlink_msg_mission_current_decode(pM, &m_msg);
+			this->MavMsgBase::decode(pM);
+		}
+	};
+
+	class MavMissionRequestList : public MavMsgBase
+	{
+	public:
+		mavlink_mission_request_list_t m_msg;
+
+		MavMissionRequestList()
+		{
+			m_id = MAVLINK_MSG_ID_MISSION_REQUEST_LIST;
+
+			m_msg.mission_type = 0;
+		}
+
+		void decode(mavlink_message_t *pM)
+		{
+			mavlink_msg_mission_request_list_decode(pM, &m_msg);
+			this->MavMsgBase::decode(pM);
+		}
+	};
+
+	class MavMissionRequestInt : public MavMsgBase
+	{
+	public:
+		mavlink_mission_request_int_t m_msg;
+
+		MavMissionRequestInt()
+		{
+			m_id = MAVLINK_MSG_ID_MISSION_REQUEST_INT;
+
+			m_msg.mission_type = 0;
+		}
+
+		void decode(mavlink_message_t *pM)
+		{
+			mavlink_msg_mission_request_int_decode(pM, &m_msg);
+			this->MavMsgBase::decode(pM);
+		}
+	};
+
+	class MavMissionItemInt : public MavMsgBase
+	{
+	public:
+		mavlink_mission_item_int_t m_msg;
+
+		MavMissionItemInt()
+		{
+			m_id = MAVLINK_MSG_ID_MISSION_ITEM_INT;
+		}
+
+		void decode(mavlink_message_t *pM)
+		{
+			mavlink_msg_mission_item_int_decode(pM, &m_msg);
+			this->MavMsgBase::decode(pM);
+		}
+	};
+
+	class MavMissionAck : public MavMsgBase
+	{
+	public:
+		mavlink_mission_ack_t m_msg;
+
+		MavMissionAck()
+		{
+			m_id = MAVLINK_MSG_ID_MISSION_ACK;
+		}
+
+		void decode(mavlink_message_t *pM)
+		{
+			mavlink_msg_mission_ack_decode(pM, &m_msg);
+			this->MavMsgBase::decode(pM);
+		}
+	};
+
+	class MavMissionSetCurrent : public MavMsgBase
+	{
+	public:
+		mavlink_mission_set_current_t m_msg;
+
+		MavMissionSetCurrent()
+		{
+			m_id = MAVLINK_MSG_ID_MISSION_SET_CURRENT;
+		}
+
+		void decode(mavlink_message_t *pM)
+		{
+			mavlink_msg_mission_set_current_decode(pM, &m_msg);
+			this->MavMsgBase::decode(pM);
+		}
+	};
+
+	class MavMissionClearAll : public MavMsgBase
+	{
+	public:
+		mavlink_mission_clear_all_t m_msg;
+
+		MavMissionClearAll()
+		{
+			m_id = MAVLINK_MSG_ID_MISSION_CLEAR_ALL;
+		}
+
+		void decode(mavlink_message_t *pM)
+		{
+			mavlink_msg_mission_clear_all_decode(pM, &m_msg);
+			this->MavMsgBase::decode(pM);
+		}
+	};
+
+	class MavMissionItemReached : public MavMsgBase
+	{
+	public:
+		mavlink_mission_item_reached_t m_msg;
+
+		MavMissionItemReached()
+		{
+			m_id = MAVLINK_MSG_ID_MISSION_ITEM_REACHED;
+		}
+
+		void decode(mavlink_message_t *pM)
+		{
+			mavlink_msg_mission_item_reached_decode(pM, &m_msg);
 			this->MavMsgBase::decode(pM);
 		}
 	};
@@ -500,6 +643,23 @@ namespace kai
 		}
 	};
 
+	class MavStatusText : public MavMsgBase
+	{
+	public:
+		mavlink_statustext_t m_msg;
+
+		MavStatusText()
+		{
+			m_id = MAVLINK_MSG_ID_STATUSTEXT;
+		}
+
+		void decode(mavlink_message_t *pM)
+		{
+			mavlink_msg_statustext_decode(pM, &m_msg);
+			this->MavMsgBase::decode(pM);
+		}
+	};
+
 	class MavSysStatus : public MavMsgBase
 	{
 	public:
@@ -598,6 +758,17 @@ namespace kai
 		void globalPositionInt(mavlink_global_position_int_t &D);
 		void gpsRawINT(mavlink_gps_raw_int_t &D);
 		void landingTarget(mavlink_landing_target_t &D);
+
+		void missionAck(mavlink_mission_ack_t &D);
+		void missionClearAll(mavlink_mission_clear_all_t &D);
+		void missionCount(mavlink_mission_count_t &D);
+		void missionCurrent(mavlink_mission_current_t &D);
+		void missionItemInt(mavlink_mission_item_int_t &D);
+		void missionItemReached(mavlink_mission_item_reached_t &D);
+		void missionRequestInt(mavlink_mission_request_int_t &D);
+		void missionRequestList(mavlink_mission_request_list_t &D);
+		void missionSetCurrent(mavlink_mission_set_current_t &D);
+
 		void mountConfigure(mavlink_mount_configure_t &D);
 		void mountControl(mavlink_mount_control_t &D);
 		void mountStatus(mavlink_mount_status_t &D);
@@ -613,6 +784,7 @@ namespace kai
 		void setMode(mavlink_set_mode_t &D);
 		void setPositionTargetLocalNED(mavlink_set_position_target_local_ned_t &D);
 		void setPositionTargetGlobalINT(mavlink_set_position_target_global_int_t &D);
+		void statusText(mavlink_statustext_t &D);
 		void visionPositionEstimate(mavlink_vision_position_estimate_t &D);
 		void visionSpeedEstimate(mavlink_vision_speed_estimate_t &D);
 
@@ -658,7 +830,17 @@ namespace kai
 		MavHighresIMU m_highresIMU;
 		MavHomePosition m_homePosition;
 		MavLocalPositionNED m_localPositionNED;
+
+		MavMissionAck m_missionAck;
+		MavMissionClearAll m_missionClearAll;
+		MavMissionCount m_missionCount;
 		MavMissionCurrent m_missionCurrent;
+		MavMissionItemInt m_missionItemInt;
+		MavMissionItemReached m_missionItemReached;
+		MavMissionRequestInt m_missionRequestInt;
+		MavMissionRequestList m_missionRequestList;
+		MavMissionSetCurrent m_missionSetCurrent;
+
 		MavMountStatus m_mountStatus;
 		MavParamRequestRead m_paramRequestRead;
 		MavParamSet m_paramSet;
@@ -669,6 +851,7 @@ namespace kai
 		MavRawIMU m_rawIMU;
 		MavRcChannels m_rcChannels;
 		MavRcChannelsOverride m_rcChannelsOverride;
+		MavStatusText m_statusText;
 		MavSysStatus m_sysStatus;
 		MavScaledIMU m_scaledIMU;
 

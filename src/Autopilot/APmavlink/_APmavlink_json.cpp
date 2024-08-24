@@ -1,0 +1,321 @@
+#include "_APmavlink_json.h"
+
+namespace kai
+{
+
+	_APmavlink_json::_APmavlink_json()
+	{
+		m_pAP = nullptr;
+		m_pAPmove = nullptr;
+		m_iMission = 0;
+		m_bMissionGoing = false;
+		m_dS = 1e-6;
+		m_nCmdSent = 0;
+	}
+
+	_APmavlink_json::~_APmavlink_json()
+	{
+	}
+
+	int _APmavlink_json::init(void *pKiss)
+	{
+		CHECK_(this->_JSONbase::init(pKiss));
+		Kiss *pK = (Kiss *)pKiss;
+
+        pK->v("dS", &m_dS);
+
+		return OK_OK;
+	}
+
+	int _APmavlink_json::link(void)
+	{
+		CHECK_(this->_JSONbase::link());
+
+		Kiss *pK = (Kiss *)m_pKiss;
+		string n;
+
+		n = "";
+		pK->v("_APmavlink_base", &n);
+		m_pAP = (_APmavlink_base *)(pK->findModule(n));
+		NULL__(m_pAP, OK_ERR_NOT_FOUND);
+
+		n = "";
+		pK->v("_APmavlink_move", &n);
+		m_pAPmove = (_APmavlink_move *)(pK->findModule(n));
+		NULL__(m_pAPmove, OK_ERR_NOT_FOUND);
+
+		return OK_OK;
+	}
+
+	int _APmavlink_json::start(void)
+	{
+		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL__(m_pTr, OK_ERR_NULLPTR);
+		CHECK_(m_pT->start(getUpdateW, this));
+		return m_pTr->start(getUpdateR, this);
+	}
+
+	int _APmavlink_json::check(void)
+	{
+		NULL__(m_pAP, OK_ERR_NULLPTR);
+		NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
+		NULL__(m_pAPmove, OK_ERR_NULLPTR);
+
+		return this->_JSONbase::check();
+	}
+
+	void _APmavlink_json::updateW(void)
+	{
+		while (m_pT->bAlive())
+		{
+			if (!m_pIO)
+			{
+				m_pT->sleepT(SEC_2_USEC);
+				continue;
+			}
+
+			m_pT->autoFPSfrom();
+
+			updateMission();
+
+			m_pT->autoFPSto();
+		}
+	}
+
+	void _APmavlink_json::updateMission(void)
+	{
+		IF_(check() != OK_OK);
+
+		int apMode = m_pAP->getMode();
+		vDouble4 vP = m_pAP->getGlobalPos();
+
+		IF_(!m_pAP->bApArmed());
+		if(!m_bMissionGoing)
+		{
+			if(apMode != AP_COPTER_RTL)
+				m_pAPmove->doReposition(vP);
+		}
+
+		AP_MISSION* pM = &m_vMission[m_iMission];
+		
+		double dX = pM->m_vP.x - vP.x;
+		double dY = pM->m_vP.y - vP.y;
+		double d = sqrt(dX * dX + dY * dY);
+		if(d < m_dS)
+		{
+			m_iMission++;
+			m_nCmdSent = 0;
+			if(m_iMission >= m_vMission.size())
+			{
+				m_iMission = 0;
+				m_bMissionGoing = false;
+				m_pAP->setMode(AP_COPTER_RTL);
+				return;
+			}
+		}
+
+		m_nCmdSent++;
+		if(m_nCmdSent < 5)
+			m_pAPmove->doReposition(pM->m_vP);
+
+		// yaw to PlookAt
+	}
+
+	void _APmavlink_json::send(void)
+	{
+		IF_(check() != OK_OK);
+
+		if (m_ieSendHB.update(m_pT->getTfrom()))
+		{
+			//            sendHeartbeat();
+		}
+	}
+
+	void _APmavlink_json::updateR(void)
+	{
+		while (m_pTr->bAlive())
+		{
+			m_pTr->autoFPSfrom();
+
+			if (recv())
+			{
+				handleMsg(m_strB);
+				m_strB.clear();
+			}
+
+			m_pTr->autoFPSto();
+		}
+	}
+
+	void _APmavlink_json::handleMsg(string &str)
+	{
+		value json;
+		IF_(!str2JSON(str, &json));
+
+		object &jo = json.get<object>();
+		IF_(!jo["cmd"].is<string>());
+		string cmd = jo["cmd"].get<string>();
+
+		if (cmd == "heartbeat")
+			heartbeat(jo);
+		else if (cmd == "stat")
+			stat(jo);
+		else if (cmd == "missionUpdate")
+			missionUpdate(jo);
+		else if (cmd == "missionStart")
+			missionStart(jo);
+		else if (cmd == "missionPause")
+			missionPause(jo);
+		else if (cmd == "missionResume")
+			missionResume(jo);
+		else if (cmd == "missionStop")
+			missionStop(jo);
+	}
+
+	void _APmavlink_json::heartbeat(picojson::object &o)
+	{
+		IF_(check() != OK_OK);
+	}
+
+	void _APmavlink_json::stat(picojson::object &o)
+	{
+		IF_(check() != OK_OK);
+		IF_(!o["id"].is<double>());
+		IF_(!o["stat"].is<string>());
+
+		int vID = o["id"].get<double>();
+		string stat = o["stat"].get<string>();
+	}
+
+	void _APmavlink_json::missionUpdate(picojson::object &o)
+	{
+		IF_(check() != OK_OK);
+		IF_(!o["id"].is<double>());
+		IF_(!o["mission"].is<picojson::array>());
+
+		int vID = o["id"].get<double>();
+		m_vMission.clear();
+
+		picojson::array &aM = o["mission"].get<picojson::array>();
+		for (picojson::array::iterator it = aM.begin(); it != aM.end(); it++)
+		{
+			picojson::object &oM = it->get<picojson::object>();
+
+			AP_MISSION m;
+			m.clear();
+			m.m_missionID = oM["missionID"].get<double>();
+			m.m_spd = oM["spd"].get<double>();
+			m.m_tDelay = oM["tDelay"].get<double>();
+
+			m.m_vP.x = oM["lat"].get<double>();
+			m.m_vP.y = oM["lon"].get<double>();
+			m.m_vP.z = oM["alt"].get<double>();
+			m.m_vPlookAt.x = oM["latLookAt"].get<double>();
+			m.m_vPlookAt.y = oM["lonLookAt"].get<double>();
+			m.m_vPlookAt.z = oM["altLookAt"].get<double>();
+
+			m_vMission.push_back(m);
+		}
+
+		// reply
+		object jo;
+		JO(jo, "cmd", "missionUpdate");
+		if (m_vMission.empty())
+		{
+			JO(jo, "r", "err");
+			JO(jo, "err", "missioin is empty");
+		}
+		else
+		{
+			JO(jo, "r", "ok");
+		}
+		sendMsg(jo);
+	}
+
+	void _APmavlink_json::missionStart(picojson::object &o)
+	{
+		IF_(check() != OK_OK);
+		IF_(!o["id"].is<double>());
+
+		m_iMission = 0;
+		if(!m_vMission.empty())
+		{
+			m_bMissionGoing = true;
+		}
+
+		// reply
+		object jo;
+		JO(jo, "cmd", "missionStart");
+		if (m_vMission.empty())
+		{
+			JO(jo, "r", "err");
+			JO(jo, "err", "mission is empty");
+		}
+		else
+		{
+			JO(jo, "r", "ok");
+		}
+		sendMsg(jo);
+	}
+
+	void _APmavlink_json::missionPause(picojson::object &o)
+	{
+		IF_(check() != OK_OK);
+		IF_(!o["id"].is<double>());
+
+		m_bMissionGoing = false;
+
+		// reply
+		object jo;
+		JO(jo, "cmd", "missionPause");
+		JO(jo, "r", "paused");
+		JO(jo, "iMission", (double)m_iMission);
+
+		sendMsg(jo);
+	}
+
+	void _APmavlink_json::missionResume(picojson::object &o)
+	{
+		IF_(check() != OK_OK);
+		IF_(!o["id"].is<double>());
+
+		m_bMissionGoing = true;
+
+		// reply
+		object jo;
+		JO(jo, "cmd", "missionResume");
+		JO(jo, "r", "resumed");
+		JO(jo, "iMission", (double)m_iMission);
+
+		sendMsg(jo);
+	}
+
+	void _APmavlink_json::missionStop(picojson::object &o)
+	{
+		IF_(check() != OK_OK);
+		IF_(!o["id"].is<double>());
+
+		m_bMissionGoing = false;
+		m_iMission = 0;
+
+		// reply
+		object jo;
+		JO(jo, "cmd", "missionStop");
+		JO(jo, "r", "stopped");
+
+		sendMsg(jo);
+	}
+
+	void _APmavlink_json::console(void *pConsole)
+	{
+		NULL_(pConsole);
+		this->_JSONbase::console(pConsole);
+
+		_Console *pC = (_Console *)pConsole;
+		pC->addMsg("iMission = " + i2str(m_iMission), 1);
+		pC->addMsg("nMission = " + i2str(m_vMission.size()), 1);
+		pC->addMsg("bMissionGoing = " + i2str(m_bMissionGoing), 1);
+
+	}
+
+}

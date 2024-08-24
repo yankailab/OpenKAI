@@ -24,7 +24,15 @@ namespace kai
 		}
 	};
 
-	class _APmavlink_mission : public _JSONbase
+	enum AP_MISSION_STATE
+	{
+		apMission_none,
+		apMission_uploading,
+		apMission_downloading,
+
+	};
+
+	class _APmavlink_mission : public _ModuleBase
 	{
 	public:
 		_APmavlink_mission();
@@ -36,40 +44,41 @@ namespace kai
 		virtual int check(void);
 		virtual void console(void *pConsole);
 
+		void clearMission(void);
+		void downloadMission(void);
+		void uploadMission(void);
+
 	private:
 		void send(void);
 		void updateMission(void);
-		void updateW(void);
-		static void *getUpdateW(void *This)
+		void update(void);
+		static void *getUpdate(void *This)
 		{
-			((_APmavlink_mission *)This)->updateW();
-			return NULL;
-		}
-
-		// msg handlers
-		void handleMsg(string &str);
-		void heartbeat(picojson::object &o);
-		void stat(picojson::object &o);
-		void missionUpdate(picojson::object &o);
-		void missionStart(picojson::object &o);
-		void missionPause(picojson::object &o);
-		void missionResume(picojson::object &o);
-		void missionStop(picojson::object &o);
-		void updateR(void);
-		static void *getUpdateR(void *This)
-		{
-			((_APmavlink_mission *)This)->updateR();
+			((_APmavlink_mission *)This)->update();
 			return NULL;
 		}
 
 	protected:
+		// mavlink mission protocol
+		void missionCount(void);
+		void missionRequestList(void);
+		void missionRequestInt(void);
+		void missionItemInt(void);
+		void missionAck(void);
+		void missionCurrent(void);
+		void missionSetCurrent(void);
+		void statusText(void);
+		void missionClearAll(void);
+		void missionItemReached(void);
+
+	protected:
 		_APmavlink_base *m_pAP;
-		_APmavlink_move *m_pAPmove;
 		vector<AP_MISSION> m_vMission;
-		int m_iMission; // current mission index
-		bool m_bMissionGoing;
-		double m_dS;
-		int m_nCmdSent; // temporal for reposition command
+		int m_mID; // current mission index
+
+		AP_MISSION_STATE m_mState;
+
+		
 	};
 
 }

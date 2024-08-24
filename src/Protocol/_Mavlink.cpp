@@ -29,7 +29,17 @@ namespace kai
 		m_vpMsg.push_back(&m_highresIMU);
 		m_vpMsg.push_back(&m_homePosition);
 		m_vpMsg.push_back(&m_localPositionNED);
+
+		m_vpMsg.push_back(&m_missionAck);
+		m_vpMsg.push_back(&m_missionClearAll);
+		m_vpMsg.push_back(&m_missionCount);
 		m_vpMsg.push_back(&m_missionCurrent);
+		m_vpMsg.push_back(&m_missionItemInt);
+		m_vpMsg.push_back(&m_missionItemReached);
+		m_vpMsg.push_back(&m_missionRequestInt);
+		m_vpMsg.push_back(&m_missionRequestList);
+		m_vpMsg.push_back(&m_missionSetCurrent);
+
 		m_vpMsg.push_back(&m_mountStatus);
 		m_vpMsg.push_back(&m_paramRequestRead);
 		m_vpMsg.push_back(&m_paramSet);
@@ -39,6 +49,7 @@ namespace kai
 		m_vpMsg.push_back(&m_rawIMU);
 		m_vpMsg.push_back(&m_rcChannels);
 		m_vpMsg.push_back(&m_rcChannelsOverride);
+		m_vpMsg.push_back(&m_statusText);
 		m_vpMsg.push_back(&m_sysStatus);
 		m_vpMsg.push_back(&m_scaledIMU);
 	}
@@ -302,6 +313,117 @@ namespace kai
 			"<- landingTarget: angleX=" + f2str(D.angle_x) + ", angleY=" + f2str(D.angle_y) + ", distance=" + f2str(D.distance));
 	}
 
+	void _Mavlink::missionAck(mavlink_mission_ack_t &D)
+	{
+		D.target_system = m_devSystemID;
+		D.target_component = m_devComponentID;
+
+		mavlink_message_t msg;
+		mavlink_msg_mission_ack_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+		writeMessage(msg);
+		LOG_I(
+			"<- missionAck: type=" + i2str(D.mission_type) + ", opaqueID=" + i2str(D.opaque_id));
+	}
+
+	void _Mavlink::missionClearAll(mavlink_mission_clear_all_t &D)
+	{
+		D.target_system = m_devSystemID;
+		D.target_component = m_devComponentID;
+
+		mavlink_message_t msg;
+		mavlink_msg_mission_clear_all_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+		writeMessage(msg);
+		LOG_I(
+			"<- missionClearAll: type=" + i2str(D.mission_type));
+	}
+
+	void _Mavlink::missionCount(mavlink_mission_count_t &D)
+	{
+		D.target_system = m_devSystemID;
+		D.target_component = m_devComponentID;
+
+		mavlink_message_t msg;
+		mavlink_msg_mission_count_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+		writeMessage(msg);
+		LOG_I(
+			"<- missionCount: count=" + i2str(D.count) + ", type=" + i2str(D.mission_type) + ", opaqueID=" + i2str(D.opaque_id));
+	}
+
+	void _Mavlink::missionCurrent(mavlink_mission_current_t &D)
+	{
+		mavlink_message_t msg;
+		mavlink_msg_mission_current_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+		writeMessage(msg);
+		LOG_I(
+			"<- missionCurrent: missionID=" + i2str(D.mission_id));
+	}
+
+	void _Mavlink::missionItemInt(mavlink_mission_item_int_t &D)
+	{
+		D.target_system = m_devSystemID;
+		D.target_component = m_devComponentID;
+
+		mavlink_message_t msg;
+		mavlink_msg_mission_item_int_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+		writeMessage(msg);
+		LOG_I(
+			"<- missionItemInt");
+	}
+
+	void _Mavlink::missionItemReached(mavlink_mission_item_reached_t &D)
+	{
+		mavlink_message_t msg;
+		mavlink_msg_mission_item_reached_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+		writeMessage(msg);
+		LOG_I(
+			"<- missionItemReached: seq=" + i2str(D.seq));
+	}
+
+	void _Mavlink::missionRequestInt(mavlink_mission_request_int_t &D)
+	{
+		D.target_system = m_devSystemID;
+		D.target_component = m_devComponentID;
+
+		mavlink_message_t msg;
+		mavlink_msg_mission_request_int_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+		writeMessage(msg);
+		LOG_I(
+			"<- missionRequestInt: seq=" + i2str(D.seq) + ", type=" + i2str(D.mission_type));
+	}
+
+	void _Mavlink::missionRequestList(mavlink_mission_request_list_t &D)
+	{
+		D.target_system = m_devSystemID;
+		D.target_component = m_devComponentID;
+
+		mavlink_message_t msg;
+		mavlink_msg_mission_request_list_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+		writeMessage(msg);
+		LOG_I(
+			"<- missionRequestList: type=" + i2str(D.mission_type));
+	}
+
+	void _Mavlink::missionSetCurrent(mavlink_mission_set_current_t &D)
+	{
+		D.target_system = m_devSystemID;
+		D.target_component = m_devComponentID;
+
+		mavlink_message_t msg;
+		mavlink_msg_mission_set_current_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+		writeMessage(msg);
+		LOG_I(
+			"<- missionSetCurrent: seq=" + i2str(D.seq));
+	}
+
 	void _Mavlink::mountConfigure(mavlink_mount_configure_t &D)
 	{
 		D.target_system = m_devSystemID;
@@ -531,6 +653,16 @@ namespace kai
 		writeMessage(msg);
 		LOG_I(
 			"<- setPositionTargetGlobalINT, lat=" + i2str(D.lat_int) + ", lon=" + i2str(D.lon_int) + ", alt=" + f2str(D.alt) + ", vx=" + f2str(D.vx) + ", vy=" + f2str(D.vy) + ", vz=" + f2str(D.vz));
+	}
+
+	void _Mavlink::statusText(mavlink_statustext_t &D)
+	{
+		mavlink_message_t msg;
+		mavlink_msg_statustext_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+		writeMessage(msg);
+		LOG_I(
+			"<- statusText: " + string(D.text));
 	}
 
 	void _Mavlink::visionPositionEstimate(mavlink_vision_position_estimate_t &D)
