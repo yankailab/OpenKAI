@@ -8,8 +8,9 @@
 #ifndef OpenKAI_src_OpenKAI_H_
 #define OpenKAI_src_OpenKAI_H_
 
-#include <string>
-#include <vector>
+// #include <string>
+// #include <vector>
+#include "Base/common.h"
 
 using namespace std;
 
