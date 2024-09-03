@@ -68,16 +68,74 @@ namespace kai
 	void _APmavlink_mission::updateMission(void)
 	{
 		IF_(check() != OK_OK);
+		
+		_Mavlink* pMav = m_pAP->m_pMav;
 
-		int apMode = m_pAP->getMode();
-		vDouble4 vP = m_pAP->getGlobalPos();
+		if(m_mState == apMission_none)
+		{
+			pMav->m_missionRequestInt.clearCbRecv(sCbMavRecvMissionRequestInt, this);
+			pMav->m_missionAck.clearCbRecv(sCbMavRecvMissionAck, this);
+			pMav->m_missionCount.clearCbRecv(sCbMavRecvMissionCount, this);
 
-		IF_(!m_pAP->bApArmed());
-	}
+			return;
+		}
 
-	void _APmavlink_mission::send(void)
-	{
-		IF_(check() != OK_OK);
+		// Upload
+		if(m_mState == apMission_UL_missionCount)
+		{
+			m_tOut.setTout(APMAV_MISSION_TOUT);
+			m_tOut.start();
+
+			m_mState = apMission_UL_missionRequestInt;
+			pMav->m_missionRequestInt.addCbRecv(sCbMavRecvMissionRequestInt, this);
+			pMav->m_missionAck.addCbRecv(sCbMavRecvMissionAck, this);
+
+			sendMissionCount();
+		}
+
+		if(m_mState == apMission_UL_missionRequestInt)
+		{
+			IF_(!m_tOut.bTout(getTbootUs()));
+
+			m_mState = apMission_UL_missionCount;
+			return;
+		}
+
+		if(m_mState == apMission_UL_missionAck)
+		{
+			m_mState = apMission_none;
+			return;			
+		}
+
+		// Download
+		if(m_mState == apMission_DL_missionRequestList)
+		{
+			m_tOut.setTout(APMAV_MISSION_TOUT);
+			m_tOut.start();
+
+			m_mState = apMission_UL_missionCount;
+			pMav->m_missionCount.addCbRecv(sCbMavRecvMissionRequestInt, this);
+
+			sendMissionRequestList();
+		}
+
+		if(m_mState == apMission_DL_missionCount)
+		{
+			IF_(!m_tOut.bTout(getTbootUs()));
+
+			m_mState = apMission_DL_missionRequestList;
+			return;
+		}
+
+		if(m_mState == apMission_DL_missionRequestInt)
+		{
+			sendMissionRequestInt();			
+		}
+
+		if(m_mState == apMission_DL_missionAck)
+		{
+			sendMissionAck();			
+		}
 
 	}
 
@@ -97,10 +155,8 @@ namespace kai
 
 	}
 	
-	void _APmavlink_mission::missionCount(void)
+	void _APmavlink_mission::sendMissionCount(void)
 	{
-		IF_(check() != OK_OK);
-
 		mavlink_mission_count_t d;
 		d.count = m_vMission.size();
 //		d.mission_type = ;
@@ -108,42 +164,93 @@ namespace kai
 		m_pAP->m_pMav->missionCount(d);
 	}
 
-	void _APmavlink_mission::missionRequestList(void)
+	void _APmavlink_mission::CbMavRecvMissionRequestInt(void* pMsg)
 	{
 		IF_(check() != OK_OK);
+		NULL_(pMsg);
+		IF_(m_mState != apMission_UL_missionRequestInt);
 
+		MavMissionRequestInt* pM = (MavMissionRequestInt*)pMsg;
+		IF_(m_tOut.bTout(pM->m_tStamp));
+
+		// restart timeout
+		m_tOut.start();
+
+		// reply the requested mission item
+		mavlink_mission_item_int_t d;
+//		d.seq = ;
+//		d.mission_type = ;
+		m_pAP->m_pMav->missionItemInt(d);
+	}
+
+	void _APmavlink_mission::CbMavRecvMissionAck(void* pMsg)
+	{
+		IF_(check() != OK_OK);
+		NULL_(pMsg);
+		IF_(m_mState != apMission_UL_missionRequestInt);
+
+		MavMissionAck* pM = (MavMissionAck*)pMsg;
+		IF_(m_tOut.bTout(pM->m_tStamp));
+
+		// restart timeout
+		m_tOut.start();
+
+		m_mState = apMission_UL_missionAck;
+	}
+
+	void _APmavlink_mission::sendMissionRequestList(void)
+	{
 		mavlink_mission_request_list_t d;
 //		d.mission_type = ;
 		m_pAP->m_pMav->missionRequestList(d);
 	}
 
-	void _APmavlink_mission::missionRequestInt(void)
+	void _APmavlink_mission::CbMavRecvMissionCount(void* pMsg)
 	{
 		IF_(check() != OK_OK);
+		NULL_(pMsg);
+		IF_(m_mState != apMission_DL_missionCount);
 
+		MavMissionCount* pM = (MavMissionCount*)pMsg;
+		IF_(m_tOut.bTout(pM->m_tStamp));
+
+		// restart timeout
+		m_tOut.start();
+
+		m_mState = apMission_DL_missionRequestInt;
+	}
+
+	void _APmavlink_mission::sendMissionRequestInt(void)
+	{
 		mavlink_mission_request_int_t d;
-//		d.seq = ;
 //		d.mission_type = ;
 		m_pAP->m_pMav->missionRequestInt(d);
 	}
 
-	void _APmavlink_mission::missionItemInt(void)
+	void _APmavlink_mission::CbMavRecvMissionItemInt(void* pMsg)
 	{
 		IF_(check() != OK_OK);
+		NULL_(pMsg);
+		IF_(m_mState != apMission_DL_missionRequestInt);
 
-		mavlink_mission_item_int_t d;
-//		d.mission_type = ;
-		m_pAP->m_pMav->missionItemInt(d);
+		MavMissionItemInt* pM = (MavMissionItemInt*)pMsg;
+		IF_(m_tOut.bTout(pM->m_tStamp));
+
+		// restart timeout
+		m_tOut.start();
+
+		IF_(pM->m_msg.seq < m_nMission-1);
+
+		m_mState = apMission_DL_missionAck;
 	}
 
-	void _APmavlink_mission::missionAck(void)
+	void _APmavlink_mission::sendMissionAck(void)
 	{
-		IF_(check() != OK_OK);
-
-		mavlink_mission_ack_t d;
+		mavlink_mission_request_list_t d;
 //		d.mission_type = ;
-		m_pAP->m_pMav->missionAck(d);
+		m_pAP->m_pMav->missionRequestList(d);
 	}
+
 
 	void _APmavlink_mission::missionCurrent(void)
 	{

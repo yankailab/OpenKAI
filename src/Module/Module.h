@@ -72,6 +72,7 @@
 #include "../Autopilot/APmavlink/_APmavlink_actuator.h"
 #include "../Autopilot/APmavlink/_APmavlink_base.h"
 #include "../Autopilot/APmavlink/_APmavlink_httpJson.h"
+#include "../Autopilot/APmavlink/_APmavlink_mav2json.h"
 #include "../Autopilot/APmavlink/_APmavlink_mission.h"
 #include "../Autopilot/APmavlink/_APmavlink_move.h"
 #include "../Autopilot/APmavlink/_APmavlink_relay.h"

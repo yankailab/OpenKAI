@@ -2,7 +2,10 @@
 #define OpenKAI_src_Autopilot_APmavlink__APmavlink_mission_H_
 
 #include "../../Protocol/_JSONbase.h"
+#include "../../Utility/utilEvent.h"
 #include "_APmavlink_move.h"
+
+#define APMAV_MISSION_TOUT 3000000
 
 namespace kai
 {
@@ -26,10 +29,16 @@ namespace kai
 
 	enum AP_MISSION_STATE
 	{
-		apMission_none,
-		apMission_uploading,
-		apMission_downloading,
+		apMission_none = 0,
 
+		apMission_UL_missionCount = 1,
+		apMission_UL_missionRequestInt = 2,
+		apMission_UL_missionAck = 3,
+
+		apMission_DL_missionRequestList = 4,
+		apMission_DL_missionCount = 5,
+		apMission_DL_missionRequestInt = 6,
+		apMission_DL_missionAck = 7,
 	};
 
 	class _APmavlink_mission : public _ModuleBase
@@ -48,8 +57,25 @@ namespace kai
 		void downloadMission(void);
 		void uploadMission(void);
 
+        static void sCbMavRecvMissionRequestInt(void* pMsg, void *pInst)
+        {
+            NULL_(pInst);
+            ((_APmavlink_mission *)pInst)->CbMavRecvMissionRequestInt(pMsg);
+        }
+
+        static void sCbMavRecvMissionAck(void* pMsg, void *pInst)
+        {
+            NULL_(pInst);
+            ((_APmavlink_mission *)pInst)->CbMavRecvMissionAck(pMsg);
+        }
+
+        static void sCbMavRecvMissionCount(void* pMsg, void *pInst)
+        {
+            NULL_(pInst);
+            ((_APmavlink_mission *)pInst)->CbMavRecvMissionCount(pMsg);
+        }
+
 	private:
-		void send(void);
 		void updateMission(void);
 		void update(void);
 		static void *getUpdate(void *This)
@@ -59,12 +85,18 @@ namespace kai
 		}
 
 	protected:
-		// mavlink mission protocol
-		void missionCount(void);
-		void missionRequestList(void);
-		void missionRequestInt(void);
-		void missionItemInt(void);
-		void missionAck(void);
+		// upload
+		void sendMissionCount(void);
+		void CbMavRecvMissionRequestInt(void* pMsg);
+		void CbMavRecvMissionAck(void* pMsg);
+
+		// download
+		void sendMissionRequestList(void);
+		void CbMavRecvMissionCount(void* pMsg);
+		void sendMissionRequestInt(void);
+		void CbMavRecvMissionItemInt(void* pMsg);
+		void sendMissionAck(void);
+
 		void missionCurrent(void);
 		void missionSetCurrent(void);
 		void statusText(void);
@@ -74,9 +106,11 @@ namespace kai
 	protected:
 		_APmavlink_base *m_pAP;
 		vector<AP_MISSION> m_vMission;
+		int m_nMission;
 		int m_mID; // current mission index
 
 		AP_MISSION_STATE m_mState;
+		TIME_OUT m_tOut;
 
 		
 	};

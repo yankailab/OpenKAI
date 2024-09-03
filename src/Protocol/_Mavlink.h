@@ -12,6 +12,18 @@
 
 namespace kai
 {
+	typedef void (*CbMavMsg)(void *pMsg, void *pInst);
+	struct MavCallback
+	{
+		CbMavMsg m_pCbRecv = NULL;
+		void *m_pCbInst = NULL;
+
+		void callback(void)
+		{
+			NULL_(m_pCbRecv);
+			m_pCbRecv(this, m_pCbInst);
+		}
+	};
 
 	class MavMsgBase
 	{
@@ -23,7 +35,7 @@ namespace kai
 			m_tInterval = -1;
 		};
 
-		virtual ~MavMsgBase(void){};
+		virtual ~MavMsgBase(void) {};
 
 		void setRecvRate(uint64_t tInterval)
 		{
@@ -40,12 +52,58 @@ namespace kai
 
 		virtual void decode(mavlink_message_t *pM)
 		{
-			m_tStamp = getApproxTbootUs();
+			m_tStamp = getTbootUs();
+
+			for (MavCallback c : m_vCbRecv)
+			{
+				c.callback();
+			}
 		}
 
+		bool addCbRecv(CbMavMsg pCb, void *pInst)
+		{
+			NULL_F(pCb);
+
+			for (MavCallback c : m_vCbRecv)
+			{
+				IF_F((c.m_pCbRecv == pCb) && (c.m_pCbInst == pInst));
+			}
+
+			MavCallback cb;
+			cb.m_pCbRecv = pCb;
+			cb.m_pCbInst = pInst;
+			m_vCbRecv.push_back(cb);
+
+			return true;
+		}
+
+		void clearCbRecv(CbMavMsg pCb, void *pInst)
+		{
+			NULL_(pCb);
+
+			for (int i = 0; i < m_vCbRecv.size(); i++)
+			{
+				MavCallback *pC = &m_vCbRecv[i];
+				IF_CONT((pC->m_pCbRecv != pCb) || (pC->m_pCbInst != pInst));
+
+				vector<MavCallback>::iterator it = m_vCbRecv.begin() + i;
+				m_vCbRecv.erase(it);
+
+				return;
+			}
+		}
+
+		void clearAllCbRecv(void)
+		{
+			m_vCbRecv.clear();
+		}
+
+	public:
 		uint32_t m_id;
 		uint64_t m_tStamp;
 		int64_t m_tInterval;
+
+		vector<MavCallback> m_vCbRecv;
 	};
 
 	class MavAttitude : public MavMsgBase
@@ -697,7 +755,7 @@ namespace kai
 	struct MAVLINK_PEER
 	{
 		void *m_pPeer;
-		uint64_t m_pCmdRoute[MAV_N_CMD_U64]; //index of bit corresponds to Mavlink CMD ID
+		uint64_t m_pCmdRoute[MAV_N_CMD_U64]; // index of bit corresponds to Mavlink CMD ID
 
 		void init(void)
 		{
@@ -743,14 +801,14 @@ namespace kai
 
 		bool bConnected(void);
 
-		//Receive
+		// Receive
 		void handleMessages(void);
 		bool readMessage(mavlink_message_t &message);
 
-		//Send
+		// Send
 		void writeMessage(mavlink_message_t message);
 
-		//Cmd
+		// Cmd
 		void cmdInt(mavlink_command_int_t &D);
 		void distanceSensor(mavlink_distance_sensor_t &D);
 		void globalVisionPositionEstimate(mavlink_global_vision_position_estimate_t &D);
@@ -788,7 +846,7 @@ namespace kai
 		void visionPositionEstimate(mavlink_vision_position_estimate_t &D);
 		void visionSpeedEstimate(mavlink_vision_speed_estimate_t &D);
 
-		//Cmd long
+		// Cmd long
 		void clComponentArmDisarm(bool bArm);
 		void clDoFlightTermination(bool bTerminate);
 		void clDoSetMode(int mode);
@@ -801,10 +859,10 @@ namespace kai
 		void clNavRTL(void);
 		void clSetMessageInterval(float id, float interval, float responseTarget);
 
-		//Msg routing
+		// Msg routing
 		void setCmdRoute(uint32_t iCmd, bool bON);
 
-		//Utility
+		// Utility
 		void sendSetMsgInterval(void);
 		bool setMsgInterval(int id, uint64_t tInt);
 

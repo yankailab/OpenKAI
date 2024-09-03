@@ -82,6 +82,7 @@ namespace kai
 		ADD_MODULE(_APmavlink_actuator);
 		ADD_MODULE(_APmavlink_base);
 		ADD_MODULE(_APmavlink_httpJson);
+		ADD_MODULE(_APmavlink_mav2json);
 		ADD_MODULE(_APmavlink_mission);
 		ADD_MODULE(_APmavlink_move);
 		ADD_MODULE(_APmavlink_relay);
