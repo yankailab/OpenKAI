@@ -9,7 +9,6 @@ namespace kai
 
 	_OrientalMotor::_OrientalMotor()
 	{
-		m_pA = nullptr;
 		m_pMB = nullptr;
 		m_iSlave = 1;
 		m_iData = 0;
@@ -34,8 +33,6 @@ namespace kai
 		pK->v("tIntCheckAlarm", &m_ieCheckAlarm.m_tInterval);
 		pK->v("tIntSendCMD", &m_ieSendCMD.m_tInterval);
 		pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
-
-		m_pA = &m_vAxis[0];
 
 		string n;
 		n = "";
@@ -78,7 +75,6 @@ namespace kai
 
 	int _OrientalMotor::check(void)
 	{
-		NULL__(m_pA, -1);
 		NULL__(m_pMB, -1);
 		IF__(!m_pMB->bOpen(), -1);
 
@@ -101,11 +97,11 @@ namespace kai
 		IF_(check() != OK_OK);
 		IF_(!m_ieSendCMD.update(m_pT->getTfrom()));
 
-		int32_t step = m_pA->m_p.m_vTarget;
-		int32_t speed = m_pA->m_s.m_vRange.y;
-		int32_t accel = m_pA->m_a.m_vTarget;
-		int32_t brake = m_pA->m_b.m_vTarget;
-		int32_t current = m_pA->m_c.m_vTarget;
+		int32_t step = m_p.m_vTarget;
+		int32_t speed = m_s.m_vRange.y;
+		int32_t accel = m_a.m_vTarget;
+		int32_t brake = m_b.m_vTarget;
+		int32_t current = m_c.m_vTarget;
 
 		//create the command
 		uint16_t pB[18];
@@ -143,17 +139,17 @@ namespace kai
 
 		int32_t step = 0;
 		uint8_t dMode = 1;
-		int32_t speed = m_pA->m_s.m_vTarget;
+		int32_t speed = m_s.m_vTarget;
 		if (speed > 0)
-			step = m_pA->m_p.m_vRange.y;
+			step = m_p.m_vRange.y;
 		else if (speed < 0)
-			step = m_pA->m_p.m_vRange.x;
+			step = m_p.m_vRange.x;
 		else
 			dMode = 3;
 
-		int32_t accel = m_pA->m_a.m_vTarget;
-		int32_t brake = m_pA->m_b.m_vTarget;
-		int32_t current = m_pA->m_c.m_vTarget;
+		int32_t accel = m_a.m_vTarget;
+		int32_t brake = m_b.m_vTarget;
+		int32_t current = m_c.m_vTarget;
 
 		//create the command
 		uint16_t pB[18];
@@ -186,7 +182,6 @@ namespace kai
 
 	void _OrientalMotor::readStatus(void)
 	{
-#ifdef WITH_UI
 		IF_(check() != OK_OK);
 		IF_(!m_ieReadStatus.update(m_pT->getTfrom()));
 
@@ -198,11 +193,10 @@ namespace kai
 		int32_t p = MAKE32(pB[0], pB[1]);
 		int32_t s = MAKE32(pB[4], pB[5]);
 
-		m_pA->m_p.m_v = (float)p;
-		m_pA->m_s.m_v = (float)s;
+		m_p.m_v = (float)p;
+		m_s.m_v = (float)s;
 
-		LOG_I("step: " + f2str(m_pA->m_p.m_v) + ", speed: " + f2str(m_pA->m_s.m_v));
-#endif
+		LOG_I("step: " + f2str(m_p.m_v) + ", speed: " + f2str(m_s.m_v));
 	}
 
 }

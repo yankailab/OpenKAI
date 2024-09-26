@@ -24,15 +24,25 @@ namespace kai
 
 	int _ZLAC8015D::init(void *pKiss)
 	{
-		CHECK_(this->_ActuatorBase::init(pKiss));
+		CHECK_(this->_MultiActuatorsBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("iSlave", &m_iSlave);
 		pK->v("iMode", &m_iMode);
 		pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
 
-		m_pL = &m_vAxis[0];
-		m_pR = &m_vAxis[1];
+		return OK_OK;
+	}
+
+	int _ZLAC8015D::link(void)
+	{
+		CHECK_(this->_MultiActuatorsBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+
+		IF__(m_nAB != 2, OK_ERR_INVALID_VALUE);
+
+		m_pL = m_pAB[0];
+		m_pR = m_pAB[1];
 
 		string n;
 		n = "";
@@ -56,7 +66,7 @@ namespace kai
 		NULL__(m_pL, OK_ERR_NULLPTR);
 		NULL__(m_pR, OK_ERR_NULLPTR);
 
-		return this->_ActuatorBase::check();
+		return this->_MultiActuatorsBase::check();
 	}
 
 	void _ZLAC8015D::update(void)
@@ -129,8 +139,8 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2080, (int)m_pL->m_a.m_vTarget) != 1);
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2081, (int)m_pR->m_a.m_vTarget) != 1);
+		IF_F(m_pMB->writeRegister(m_iSlave, 0x2080, (int)m_pL->getAtarget()) != 1);
+		IF_F(m_pMB->writeRegister(m_iSlave, 0x2081, (int)m_pR->getAtarget()) != 1);
 
 		return true;
 	}
@@ -139,8 +149,8 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2082, (int)m_pL->m_b.m_vTarget) != 1);
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2083, (int)m_pR->m_b.m_vTarget) != 1);
+		IF_F(m_pMB->writeRegister(m_iSlave, 0x2082, (int)m_pL->getBtarget()) != 1);
+		IF_F(m_pMB->writeRegister(m_iSlave, 0x2083, (int)m_pR->getBtarget()) != 1);
 
 		return true;
 	}
@@ -149,8 +159,8 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2088, (int)m_pL->m_s.m_vTarget) != 1);
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2089, (int)m_pR->m_s.m_vTarget) != 1);
+		IF_F(m_pMB->writeRegister(m_iSlave, 0x2088, (int)m_pL->getStarget()) != 1);
+		IF_F(m_pMB->writeRegister(m_iSlave, 0x2089, (int)m_pR->getStarget()) != 1);
 
 		return true;
 	}
@@ -187,12 +197,12 @@ namespace kai
 		IF_F(r != 1);
 		//	int p = MAKE32(pB[0], pB[1]);
 		p = pB[0];
-		m_pL->m_p.m_v = p;
+		m_pL->setP(p);
 
 		r = m_pMB->readRegisters(m_iSlave, 0x20AC, 1, pB);
 		IF_F(r != 1);
 		p = pB[0];
-		m_pR->m_p.m_v = p;
+		m_pR->setP(p);
 
 		return true;
 	}

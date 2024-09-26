@@ -6,6 +6,8 @@ namespace kai
 	{
 		m_pTr = nullptr;
 		m_pIO = nullptr;
+
+		m_ID = 1;
 		m_iMode = 0x02; // default using speed control
 	}
 
@@ -19,6 +21,7 @@ namespace kai
 		CHECK_(this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
+		pK->v("ID", &m_ID);
 		pK->v("iMode", &m_iMode);
 
 		Kiss *pKt = pK->child("threadR");
@@ -41,9 +44,9 @@ namespace kai
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
+		
 		n = "";
 		IF__(!pK->v("_IObase", &n), OK_ERR_NOT_FOUND);
-
 		m_pIO = (_IObase *)(pK->findModule(n));
 		NULL__(m_pIO, OK_ERR_NOT_FOUND);
 
@@ -72,45 +75,42 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
+			setID();
 			setMode();
-			sendCMD();
+			setSpeed();
 
 			m_pT->autoFPSto();
 		}
 	}
 
-	void _DDSM::sendCMD(void)
+	void _DDSM::setID(void)
 	{
 		IF_(check() != OK_OK);
 
 		uint8_t pB[DDSM_CMD_NB];
-		int nC = m_vAxis.size();
-		for (int i = 0; i < nC; i++)
+		pB[0] = 0xAA;
+		pB[1] = 0x55;
+		pB[2] = 0x53;
+		pB[3] = m_ID;
+		pB[4] = 0;
+		pB[5] = 0;
+		pB[6] = 0;
+		pB[7] = 0;
+		pB[8] = 0;
+		pB[9] = crc8_MAXIM(pB, 9);
+
+		for (int i = 0; i < 5; i++)
 		{
-			ACTUATOR_AXIS *pA = &m_vAxis[i];
-
-			pB[0] = i + 1;
-			pB[1] = 0x64;
-			int16_t s = pA->m_s.m_vTarget;
-			pB[2] = s >> 8;
-			pB[3] = s & 0x00FF;
-			pB[4] = 0;
-			pB[5] = 0;
-			pB[6] = 0;
-			pB[7] = 0;
-			pB[8] = 0;
-			pB[9] = crc8_MAXIM(pB, 9);
 			m_pIO->write(pB, DDSM_CMD_NB);
-
-			// pA->m_s.m_v = pA->m_s.m_vTarget;
 		}
 	}
 
-	bool _DDSM::setMode(void)
+	void _DDSM::setMode(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_(check() != OK_OK);
 
 		uint8_t pB[DDSM_CMD_NB];
+		pB[0] = m_ID;
 		pB[1] = 0xA0;
 		pB[2] = 0;
 		pB[3] = 0;
@@ -120,15 +120,28 @@ namespace kai
 		pB[7] = 0;
 		pB[8] = 0;
 		pB[9] = m_iMode;
+		m_pIO->write(pB, DDSM_CMD_NB);
+	}
 
-		int nC = m_vAxis.size();
-		for (int i = 0; i < nC; i++)
-		{
-			pB[0] = i + 1;
-			m_pIO->write(pB, DDSM_CMD_NB);
-		}
+	void _DDSM::setSpeed(void)
+	{
+		IF_(check() != OK_OK);
 
-		return true;
+		uint8_t pB[DDSM_CMD_NB];
+		pB[0] = m_ID;
+		pB[1] = 0x64;
+		int16_t s = m_s.m_vTarget;
+		pB[2] = s >> 8;
+		pB[3] = s & 0x00FF;
+		pB[4] = 0;
+		pB[5] = 0;
+		pB[6] = 0;
+		pB[7] = 0;
+		pB[8] = 0;
+		pB[9] = crc8_MAXIM(pB, 9);
+		m_pIO->write(pB, DDSM_CMD_NB);
+
+		// pA->m_s.m_v = pA->m_s.m_vTarget;
 	}
 
 	void _DDSM::updateR(void)

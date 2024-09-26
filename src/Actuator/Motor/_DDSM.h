@@ -22,12 +22,11 @@ namespace kai
 		virtual int check(void);
 		virtual void console(void *pConsole);
 
-	protected:
-		bool setMode(void);
-		bool readCMD(void);
-
 	private:
-		void sendCMD(void);
+		void setID(void);
+		void setMode(void);
+		void setSpeed(void);
+		bool readCMD(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -42,9 +41,11 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	private:
 		_Thread *m_pTr;
 		_IObase *m_pIO;
+
+		int m_ID;
 		uint8_t m_iMode;
 	};
 

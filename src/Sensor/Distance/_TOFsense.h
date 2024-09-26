@@ -79,7 +79,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	private:
 		_IObase *m_pIO;
 		NLINK_FRAME m_frame;
 	};

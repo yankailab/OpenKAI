@@ -26,7 +26,7 @@ namespace kai
 		int check(void);
 		bool power(bool bON);
 
-	protected:
+	private:
 		bool setMode(void);
 		bool setSpeed(void);
 		bool setAccel(void);
@@ -48,11 +48,10 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	private:
 		_Modbus *m_pMB;
 		int m_iSlave;
 		int m_iMode;
-		ACTUATOR_AXIS *m_pA;
 
 		INTERVAL_EVENT m_ieReadStatus;
 	};

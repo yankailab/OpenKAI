@@ -47,6 +47,12 @@ namespace kai
 	}
 
 	template <typename T>
+	inline int sign(T v)
+	{
+		return ((v >= 0) << 1) - 1;
+	}
+
+	template <typename T>
 	inline T small(T a, T b)
 	{
 		if (a > b)
@@ -410,7 +416,6 @@ namespace kai
 
 		return pid;
 	}
-
 
 }
 #endif

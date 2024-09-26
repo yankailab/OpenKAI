@@ -74,31 +74,31 @@ namespace kai
 		NULL_(m_pIO);
 		IF_(!m_pIO->bOpen());
 
-		int i;
-		uint16_t pChan[16];
-		int nC = m_vAxis.size();
-		for (i = 0; i < nC; i++)
-		{
-			ACTUATOR_AXIS *pA = &m_vAxis[i];
-			pChan[i] = 1500;
-			if (pA->m_p.bInRange(pA->m_p.m_vTarget))
-				pChan[i] = pA->m_p.m_vTarget;
+		// int i;
+		// uint16_t pChan[16];
+		// int nC = m_vAxis.size();
+		// for (i = 0; i < nC; i++)
+		// {
+		// 	ACTUATOR_AXIS *pA = &m_vAxis[i];
+		// 	pChan[i] = 1500;
+		// 	if (pA->m_p.bInRange(pA->m_p.m_vTarget))
+		// 		pChan[i] = pA->m_p.m_vTarget;
 
-			pA->m_p.m_v = pA->m_p.m_vTarget;
-		}
+		// 	pA->m_p.m_v = pA->m_p.m_vTarget;
+		// }
 
-		m_pB[0] = ARDUSV_BEGIN;
-		m_pB[1] = ARDU_CMD_PWM;
-		m_pB[2] = nC * 2;
-		int j = 3;
-		for (int i = 0; i < nC; i++)
-		{
-			uint16_t v = pChan[i];
-			m_pB[j++] = ((uint8_t)(v & 0xFF));
-			m_pB[j++] = ((uint8_t)((v >> 8) & 0xFF));
-		}
+		// m_pB[0] = ARDUSV_BEGIN;
+		// m_pB[1] = ARDU_CMD_PWM;
+		// m_pB[2] = nC * 2;
+		// int j = 3;
+		// for (int i = 0; i < nC; i++)
+		// {
+		// 	uint16_t v = pChan[i];
+		// 	m_pB[j++] = ((uint8_t)(v & 0xFF));
+		// 	m_pB[j++] = ((uint8_t)((v >> 8) & 0xFF));
+		// }
 
-		m_pIO->write(m_pB, ARDUSV_N_HEADER + nC * 2);
+		// m_pIO->write(m_pB, ARDUSV_N_HEADER + nC * 2);
 	}
 
 	void _ArduServo::updateR(void)

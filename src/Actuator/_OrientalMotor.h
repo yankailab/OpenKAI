@@ -54,8 +54,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
-		ACTUATOR_AXIS *m_pA;
+	private:
 		_Modbus *m_pMB;
 		int m_iSlave;
 		int m_iData;

@@ -12,7 +12,6 @@ namespace kai
 		m_pMB = nullptr;
 		m_iSlave = 1;
 		m_dpr = 1;
-		m_pA = nullptr;
 		m_dInit = 20;
 		m_cmdInt = 50000;
 
@@ -53,8 +52,6 @@ namespace kai
 			pKa->v("resPos", &m_addr.m_resPos);
 		}
 
-		m_pA = &m_vAxis[0];
-
 		string n;
 		n = "";
 		IF__(!pK->v("_Modbus", &n), OK_ERR_NOT_FOUND);
@@ -74,7 +71,6 @@ namespace kai
 	{
 		NULL__(m_pMB, OK_ERR_NULLPTR);
 		IF__(!m_pMB->bOpen(), OK_ERR_NOT_READY);
-		NULL__(m_pA, OK_ERR_NULLPTR);
 
 		return this->_ActuatorBase::check();
 	}
@@ -96,7 +92,7 @@ namespace kai
 			{
 				while(!stopMove());
 				while(!readStatus());
-				m_pA->m_p.m_vTarget = m_pA->m_p.m_v;
+				m_p.m_vTarget = m_p.m_v;
 			}
 
 			//		m_pA->m_p.m_vTarget = -m_pA->m_p.m_vTarget;
@@ -136,7 +132,7 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		int32_t step = m_pA->m_p.m_vTarget - m_pA->m_p.m_v;
+		int32_t step = m_p.m_vTarget - m_p.m_v;
 		//		int32_t step = m_pA->m_p.m_vTarget;
 		IF_F(step == 0);
 		int32_t ds = abs(step);
@@ -158,7 +154,7 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		uint16_t b = m_pA->m_s.m_vTarget;
+		uint16_t b = m_s.m_vTarget;
 		IF_F(m_pMB->writeRegisters(m_iSlave, m_addr.m_setSpd, 1, &b) != 1);
 		m_pT->sleepT(m_cmdInt);
 
@@ -169,7 +165,7 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		uint16_t b = m_pA->m_a.m_vTarget;
+		uint16_t b = m_a.m_vTarget;
 		IF_F(m_pMB->writeRegisters(m_iSlave, m_addr.m_setAcc, 1, &b) != 1);
 		m_pT->sleepT(m_cmdInt);
 
@@ -241,7 +237,7 @@ namespace kai
 		IF_F(m_pMB->writeBit(m_iSlave, m_addr.m_resPos, true) != 1);
 		m_pT->sleepT(m_cmdInt);
 
-		m_pA->m_p.m_v = 0;
+		m_p.m_v = 0;
 		return true;
 	}
 
@@ -310,7 +306,7 @@ namespace kai
 
 		//	int p = MAKE32(pB[0], pB[1]);
 		int16_t p = pB[1];
-		m_pA->m_p.m_v = p;
+		m_p.m_v = p;
 
 		return true;
 	}

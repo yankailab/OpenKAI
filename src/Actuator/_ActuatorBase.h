@@ -17,7 +17,7 @@ namespace kai
 
 #define ACT_BF_STOP 0
 
-	struct ACTUATOR_AXIS_PARAM
+	struct ACTUATOR_V
 	{
 		float m_v;
 		float m_vTarget;
@@ -56,35 +56,6 @@ namespace kai
 		}
 	};
 
-	struct ACTUATOR_AXIS
-	{
-		string m_name;
-
-		float m_pOrigin;
-		ACTUATOR_AXIS_PARAM m_p; // pos
-		ACTUATOR_AXIS_PARAM m_s; // speed
-		ACTUATOR_AXIS_PARAM m_a; // accel
-		ACTUATOR_AXIS_PARAM m_b; // brake
-		ACTUATOR_AXIS_PARAM m_c; // current
-
-		void init(void)
-		{
-			m_name = "";
-
-			m_pOrigin = 0.0;
-			m_p.init();
-			m_s.init();
-			m_a.init();
-			m_b.init();
-			m_c.init();
-		}
-
-		void gotoOrigin(void)
-		{
-			m_p.setTarget(m_pOrigin);
-		}
-	};
-
 	enum ACTUATOR_CMD_TYPE
 	{
 		actCmd_standby,
@@ -107,21 +78,34 @@ namespace kai
 
 		virtual void atomicFrom(void);
 		virtual void atomicTo(void);
-		virtual void setPtarget(int i, float p, bool bNormalized = false);
-		virtual void setStarget(int i, float s, bool bNormalized = false);
-		virtual void setAtarget(int i, float a, bool bNormalized = false);
-		virtual void setBtarget(int i, float a, bool bNormalized = false);
+
+		virtual void setPtarget(float p, bool bNormalized = false);
+		virtual void setStarget(float s, bool bNormalized = false);
+		virtual void setAtarget(float a, bool bNormalized = false);
+		virtual void setBtarget(float b, bool bNormalized = false);
+		virtual float getPtarget(void);
+		virtual float getStarget(void);
+		virtual float getAtarget(void);
+		virtual float getBtarget(void);
+		virtual float getCtarget(void);
+
+		virtual float getP(void);
+		virtual float getS(void);
+		virtual float getA(void);
+		virtual float getB(void);
+		virtual float getC(void);
+
 		virtual void gotoOrigin(void);
 		virtual bool bComplete(void);
-		virtual bool bComplete(int i);
-
-		virtual float getP(int i);
-		virtual float getS(int i);
-		virtual float getPtarget(int i);
-		virtual float getStarget(int i);
-
 		virtual bool power(bool bON);
 		virtual void setStop(void);
+
+		// values read from feedback
+		virtual void setP(float p);
+		virtual void setS(float s);
+		virtual void setA(float a);
+		virtual void setB(float b);
+		virtual void setC(float c);
 
 	protected:
 		virtual bool bCmdTimeout(void);
@@ -134,8 +118,13 @@ namespace kai
 		}
 
 	protected:
-		vector<ACTUATOR_AXIS> m_vAxis;
-		int m_nMinAxis;
+		float m_pOrigin;
+		ACTUATOR_V m_p; // pos
+		float m_sDir;	// speed direction
+		ACTUATOR_V m_s; // speed
+		ACTUATOR_V m_a; // accel
+		ACTUATOR_V m_b; // brake
+		ACTUATOR_V m_c; // current
 
 		bool m_bPower;
 		bool m_bReady;

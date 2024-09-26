@@ -45,7 +45,7 @@ namespace kai
 		int start(void);
 		int check(void);
 
-	protected:
+	private:
 		bool setSlaveID(uint16_t iSlave);
 		bool setBaudrate(uint32_t baudrate);
 		bool saveData(void);
@@ -71,11 +71,10 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	private:
 		_Modbus *m_pMB;
 		int m_iSlave;
 		int32_t m_dpr; //distance per round
-		ACTUATOR_AXIS *m_pA;
 
 		HYMCU_MODBUS_ADDR m_addr;
 		int32_t m_dInit;

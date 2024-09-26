@@ -12,7 +12,6 @@ namespace kai
 		m_pMB = nullptr;
 		m_iSlave = 1;
 		m_iMode = 3; //speed control
-		m_pA = nullptr;
 
 		m_ieReadStatus.init(50000);
 	}
@@ -29,8 +28,6 @@ namespace kai
 		pK->v("iSlave", &m_iSlave);
 		pK->v("iMode", &m_iMode);
 		pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
-
-		m_pA = &m_vAxis[0];
 
 		string n;
 		n = "";
@@ -51,7 +48,6 @@ namespace kai
 	{
 		NULL__(m_pMB, OK_ERR_NULLPTR);
 		IF__(!m_pMB->bOpen(), OK_ERR_NOT_READY);
-		NULL__(m_pA, OK_ERR_NULLPTR);
 
 		return this->_ActuatorBase::check();
 	}
@@ -126,7 +122,7 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		uint16_t v = m_pA->m_a.m_vTarget;
+		uint16_t v = m_a.m_vTarget;
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2037, v) != 1);
 
 		return true;
@@ -136,7 +132,7 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		uint16_t v = m_pA->m_b.m_vTarget;
+		uint16_t v = m_b.m_vTarget;
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2038, v) != 1);
 
 		return true;
@@ -146,7 +142,7 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		int16_t v = m_pA->m_s.m_vTarget;
+		int16_t v = m_s.m_vTarget;
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x203A, v) != 1);
 
 		return true;
@@ -182,7 +178,7 @@ namespace kai
 
 		//	int p = MAKE32(pB[0], pB[1]);
 		int16_t p = pB[0];
-		m_pA->m_p.m_v = p;
+		m_p.m_v = p;
 
 		return true;
 	}

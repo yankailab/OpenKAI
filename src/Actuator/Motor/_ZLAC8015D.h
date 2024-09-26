@@ -9,24 +9,25 @@
 #define OpenKAI_src_Actuator__ZLAC8015D_H_
 
 #include "../../Protocol/_Modbus.h"
-#include "../_ActuatorBase.h"
+#include "../_MultiActuatorsBase.h"
 
 namespace kai
 {
 
-	class _ZLAC8015D : public _ActuatorBase
+	class _ZLAC8015D : public _MultiActuatorsBase
 	{
 	public:
 		_ZLAC8015D();
 		~_ZLAC8015D();
 
 		int init(void *pKiss);
+		int link(void);
 		int start(void);
-
 		int check(void);
+		
 		bool power(bool bON);
 
-	protected:
+	private:
 		bool setMode(void);
 		bool setSpeed(void);
 		bool setAccel(void);
@@ -48,12 +49,12 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	private:
 		_Modbus *m_pMB;
 		int m_iSlave;
 		int m_iMode;
-		ACTUATOR_AXIS *m_pL;
-		ACTUATOR_AXIS *m_pR;
+		_ActuatorBase *m_pL;
+		_ActuatorBase *m_pR;
 
 		INTERVAL_EVENT m_ieReadStatus;
 	};
