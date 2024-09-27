@@ -39,7 +39,7 @@ namespace kai
         m_pTr = new _Thread();
         CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "threadR init failed");
 
-        return true;
+        return OK_OK;
     }
 
 	int _JSONbase::link(void)
