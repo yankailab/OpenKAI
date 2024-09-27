@@ -58,7 +58,7 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			if (!m_bReady)
+			if (!m_bfStatus.b(actuator_ready))
 			{
 				setup();
 			}
@@ -78,12 +78,12 @@ namespace kai
 		IF_(!setMode());
 		IF_(!setAccel());
 		IF_(!setBrake());
-		IF_(!power(true));
+		IF_(!setPower(true));
 
-		m_bReady = true;
+		m_bfStatus.set(actuator_ready);
 	}
 
-	bool _ZLAC8015::power(bool bON)
+	bool _ZLAC8015::setPower(bool bON)
 	{
 		IF_F(check() != OK_OK);
 		IF__(bON == m_bPower, true);

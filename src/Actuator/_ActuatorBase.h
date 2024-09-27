@@ -15,7 +15,33 @@
 namespace kai
 {
 
-#define ACT_BF_STOP 0
+	enum ACTUATOR_BF_SET
+	{
+		actuator_power = 0,
+		actuator_setID = 1,
+		actuator_setMode = 2,
+		actuator_stop = 3,
+		actuator_pos = 4,
+		actuator_speed = 5,
+		actuator_accel = 6,
+		actuator_brake = 7,
+	};
+
+	enum ACTUATOR_BF_STATUS
+	{
+		actuator_powered = 0,
+		actuator_ready = 1,
+		actuator_feedbak = 2,
+		actuator_moving = 3,
+		actuator_complete = 4,
+	};
+
+	enum ACTUATOR_MODE
+	{
+		actuatorMode_pos = 0,
+		actuatorMode_speed = 1,
+		actuatorMode_current = 2,
+	};
 
 	struct ACTUATOR_V
 	{
@@ -56,15 +82,6 @@ namespace kai
 		}
 	};
 
-	enum ACTUATOR_CMD_TYPE
-	{
-		actCmd_standby,
-		actCmd_pos,
-		actCmd_spd,
-		actCmd_accel,
-		actCmd_brake,
-	};
-
 	class _ActuatorBase : public _ModuleBase
 	{
 	public:
@@ -97,8 +114,9 @@ namespace kai
 
 		virtual void gotoOrigin(void);
 		virtual bool bComplete(void);
-		virtual bool power(bool bON);
-		virtual void setStop(void);
+
+		virtual void power(bool bON);
+		virtual void setBitFlag(ACTUATOR_BF_SET bf);
 
 		// values read from feedback
 		virtual void setP(float p);
@@ -126,20 +144,17 @@ namespace kai
 		ACTUATOR_V m_b; // brake
 		ACTUATOR_V m_c; // current
 
+		ACTUATOR_MODE m_mode;
 		bool m_bPower;
-		bool m_bReady;
-		bool m_bFeedback;
-		bool m_bMoving;
 
-		pthread_mutex_t m_mutex;
-
-		ACTUATOR_CMD_TYPE m_lastCmdType;
 		uint64_t m_tLastCmd;
 		uint64_t m_tCmdTimeout;
 
-		_ActuatorBase *m_pParent;
+		BIT_FLAG m_bfStatus;
+		BIT_FLAG m_bfSet;
 
-		BIT_FLAG m_bf;
+		_ActuatorBase *m_pParent;
+		pthread_mutex_t m_mutex;
 	};
 
 }

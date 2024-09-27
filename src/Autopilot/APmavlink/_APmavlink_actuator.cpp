@@ -107,7 +107,7 @@ namespace kai
 		i = m_rcStickV.i();
 		if (i == 1)
 		{
-			m_pAB1->setStop();
+			m_pAB1->setBitFlag(actuator_stop);
 		}
 		else
 		{
@@ -117,7 +117,7 @@ namespace kai
 		i = m_rcStickH.i();
 		if (i == 1)
 		{
-			m_pAB2->setStop();
+			m_pAB2->setBitFlag(actuator_stop);
 		}
 		else
 		{

@@ -75,17 +75,28 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			setID();
-			setMode();
-			setSpeed();
+			if(m_bfSet.b(actuator_setID))
+			{
+				if(setID())
+					m_bfSet.clear(actuator_setID);
+			}
+	
+			if(m_bfSet.b(actuator_setMode))
+			{
+				if(setMode())
+					m_bfSet.clear(actuator_setMode);
+			}
+	
+			if(m_mode == actuatorMode_speed)
+				setSpeed();
 
 			m_pT->autoFPSto();
 		}
 	}
 
-	void _DDSM::setID(void)
+	bool _DDSM::setID(void)
 	{
-		IF_(check() != OK_OK);
+		IF_F(check() != OK_OK);
 
 		uint8_t pB[DDSM_CMD_NB];
 		pB[0] = 0xAA;
@@ -103,11 +114,13 @@ namespace kai
 		{
 			m_pIO->write(pB, DDSM_CMD_NB);
 		}
+
+		return true;
 	}
 
-	void _DDSM::setMode(void)
+	bool _DDSM::setMode(void)
 	{
-		IF_(check() != OK_OK);
+		IF_F(check() != OK_OK);
 
 		uint8_t pB[DDSM_CMD_NB];
 		pB[0] = m_ID;
@@ -121,11 +134,13 @@ namespace kai
 		pB[8] = 0;
 		pB[9] = m_iMode;
 		m_pIO->write(pB, DDSM_CMD_NB);
+
+		return true;
 	}
 
-	void _DDSM::setSpeed(void)
+	bool _DDSM::setSpeed(void)
 	{
-		IF_(check() != OK_OK);
+		IF_F(check() != OK_OK);
 
 		uint8_t pB[DDSM_CMD_NB];
 		pB[0] = m_ID;
@@ -142,6 +157,8 @@ namespace kai
 		m_pIO->write(pB, DDSM_CMD_NB);
 
 		// pA->m_s.m_v = pA->m_s.m_vTarget;
+
+		return true;
 	}
 
 	void _DDSM::updateR(void)

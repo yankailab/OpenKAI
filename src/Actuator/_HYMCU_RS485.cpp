@@ -88,7 +88,7 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			if (m_bf.b(ACT_BF_STOP, true))
+			if (m_bfSet.b(actuator_stop, true))
 			{
 				while(!stopMove());
 				while(!readStatus());

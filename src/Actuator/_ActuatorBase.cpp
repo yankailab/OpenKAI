@@ -9,20 +9,6 @@ namespace kai
 
 	_ActuatorBase::_ActuatorBase()
 	{
-		m_bPower = false;
-		m_bReady = false;
-		m_bFeedback = true;
-		m_bMoving = false;
-
-		m_lastCmdType = actCmd_standby;
-		m_tLastCmd = 0;
-		m_tCmdTimeout = SEC_2_USEC;
-
-		pthread_mutex_init(&m_mutex, NULL);
-		m_pParent = NULL;
-
-		m_bf.clearAll();
-
 		m_pOrigin = 0.0;
 		m_p.init();
 		m_sDir = 1.0;
@@ -30,6 +16,18 @@ namespace kai
 		m_a.init();
 		m_b.init();
 		m_c.init();
+
+		m_mode = actuatorMode_speed;
+		m_bPower = false;
+
+		m_tLastCmd = 0;
+		m_tCmdTimeout = 0;
+
+		m_bfStatus.clearAll();
+		m_bfSet.clearAll();
+
+		pthread_mutex_init(&m_mutex, NULL);
+		m_pParent = NULL;
 	}
 
 	_ActuatorBase::~_ActuatorBase()
@@ -43,6 +41,26 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("tCmdTimeout", &m_tCmdTimeout);
+		pK->v("mode", (int*)&m_mode);
+		pK->v("bPower", &m_bPower);
+
+		int bf;
+
+		bf = 0;
+		pK->v("setPower", &bf);
+		if(bf)
+			m_bfSet.set(actuator_power);
+
+		bf = 0;
+		pK->v("setID", &bf);
+		if(bf)
+			m_bfSet.set(actuator_setID);
+
+		bf = 0;
+		pK->v("setMode", &bf);
+		if(bf)
+			m_bfSet.set(actuator_setMode);
+
 
 		pK->v("Porigin", &m_pOrigin);
 		pK->v("p", &m_p.m_v);
@@ -88,14 +106,15 @@ namespace kai
 		return OK_OK;
 	}
 
-	bool _ActuatorBase::power(bool bON)
+	void _ActuatorBase::power(bool bON)
 	{
-		return true;
+		m_bPower = bON;
+		m_bfSet.set(actuator_power);
 	}
 
-	void _ActuatorBase::setStop(void)
+	void _ActuatorBase::setBitFlag(ACTUATOR_BF_SET bf)
 	{
-		m_bf.set(ACT_BF_STOP);
+		m_bfSet.set(bf);
 	}
 
 	int _ActuatorBase::start(void)
@@ -107,7 +126,6 @@ namespace kai
 	void _ActuatorBase::update(void)
 	{
 		IF_(check() != OK_OK);
-		//	m_pT->setTstamp(getApproxTbootUs());
 	}
 
 	bool _ActuatorBase::bCmdTimeout(void)
@@ -140,7 +158,6 @@ namespace kai
 		else
 			m_p.setNormalizedTarget(p);
 
-		m_lastCmdType = actCmd_pos;
 		m_tLastCmd = m_pT->getTfrom();
 	}
 
@@ -153,7 +170,6 @@ namespace kai
 		else
 			m_s.setNormalizedTarget(s);
 
-		m_lastCmdType = actCmd_spd;
 		m_tLastCmd = m_pT->getTfrom();
 	}
 
@@ -164,7 +180,6 @@ namespace kai
 		else
 			m_a.setNormalizedTarget(a);
 
-		m_lastCmdType = actCmd_accel;
 		m_tLastCmd = m_pT->getTfrom();
 	}
 
@@ -175,7 +190,6 @@ namespace kai
 		else
 			m_b.setNormalizedTarget(b);
 
-		m_lastCmdType = actCmd_brake;
 		m_tLastCmd = m_pT->getTfrom();
 	}
 
@@ -256,9 +270,6 @@ namespace kai
 
 	void _ActuatorBase::gotoOrigin(void)
 	{
-		gotoOrigin();
-
-		m_lastCmdType = actCmd_pos;
 		m_tLastCmd = m_pT->getTfrom();
 	}
 

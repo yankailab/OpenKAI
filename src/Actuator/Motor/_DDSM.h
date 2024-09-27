@@ -23,9 +23,9 @@ namespace kai
 		virtual void console(void *pConsole);
 
 	private:
-		void setID(void);
-		void setMode(void);
-		void setSpeed(void);
+		bool setID(void);
+		bool setMode(void);
+		bool setSpeed(void);
 		bool readCMD(void);
 		void update(void);
 		static void *getUpdate(void *This)

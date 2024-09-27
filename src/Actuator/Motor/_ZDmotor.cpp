@@ -58,7 +58,7 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			if (!m_bReady)
+			if (!m_bfStatus.b(actuator_ready))
 			{
 				setup();
 			}
@@ -80,10 +80,10 @@ namespace kai
 		// IF_(!setBrake());
 		// IF_(!power(true));
 
-		m_bReady = true;
+		m_bfStatus.set(actuator_ready);
 	}
 
-	bool _ZDmotor::power(bool bON)
+	bool _ZDmotor::setPower(bool bON)
 	{
 		IF_F(check() != OK_OK);
 		IF__(bON == m_bPower, true);

@@ -24,9 +24,9 @@ namespace kai
 		int start(void);
 
 		int check(void);
-		bool power(bool bON);
 
 	private:
+		bool setPower(bool bON);
 		bool setMode(void);
 		bool setSpeed(void);
 		bool setAccel(void);

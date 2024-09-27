@@ -55,17 +55,17 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			if (m_bFeedback)
-			{
+			// if (m_bFeedback)
+			// {
 				checkAlarm();
 				readStatus();
-			}
+//			}
 
 			//		if(!bCmdTimeout())
 			//        {
-			if (m_lastCmdType == actCmd_pos)
+//			if (m_lastCmdType == actCmd_pos)
 				updatePos();
-			else if (m_lastCmdType == actCmd_spd)
+//			else if (m_lastCmdType == actCmd_spd)
 				updateSpeed();
 			//        }
 
