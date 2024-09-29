@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["DDSM1","DDSM2"],
+	"vBASE":["DDSM1","DDSM2","DDSM3"],
 }
 
 {
@@ -30,7 +30,7 @@
 		"FPS":1,
 	}
 	"bLog":0,
-	"port":"/dev/ttyACM0",
+	"port":"/dev/ttyUSB0",
 	"baud":115200,
 }
 
@@ -55,11 +55,41 @@
 	"mode":1,
 	"bPower":1,
 	"setPower":1,
-	"setID":1,
+	"setID":0,
 	"setMode":1,
 
 	"sDir":1,
 	"s":0,
 	"sTarget":0,
-	"sRange":[0,300],
+	"sRange":[-100,100],
+}
+
+{
+	"name":"DDSM3",
+	"class":"_DDSM",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+    {
+		"name":"threadR",
+		"FPS":1,
+	}
+	"bLog":1,
+	"_IObase":"serial",
+	"ID":3,
+	"iMode":2,
+
+	"tCmdTimeout":0,
+	"mode":1,
+	"bPower":1,
+	"setPower":1,
+	"setID":0,
+	"setMode":1,
+
+	"sDir":1,
+	"s":0,
+	"sTarget":0,
+	"sRange":[-100,100],
 }
