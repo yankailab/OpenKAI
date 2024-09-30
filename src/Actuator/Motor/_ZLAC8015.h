@@ -21,12 +21,12 @@ namespace kai
 		~_ZLAC8015();
 
 		int init(void *pKiss);
+		int link(void);
 		int start(void);
-
 		int check(void);
 
 	private:
-		bool setPower(bool bON);
+//		bool setPower(bool bON);
 		bool setMode(void);
 		bool setSpeed(void);
 		bool setAccel(void);

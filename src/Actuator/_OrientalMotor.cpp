@@ -34,7 +34,16 @@ namespace kai
 		pK->v("tIntSendCMD", &m_ieSendCMD.m_tInterval);
 		pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
 
+		return OK_OK;
+	}
+
+	int _OrientalMotor::link(void)
+	{
+		CHECK_(this->_ActuatorBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+
 		string n;
+
 		n = "";
 		IF__(!pK->v("_Modbus", &n), OK_ERR_NOT_FOUND);
 		m_pMB = (_Modbus *)(pK->findModule(n));
@@ -97,11 +106,14 @@ namespace kai
 		IF_(check() != OK_OK);
 		IF_(!m_ieSendCMD.update(m_pT->getTfrom()));
 
-		int32_t step = m_p.m_vTarget;
-		int32_t speed = m_s.m_vRange.y;
-		int32_t accel = m_a.m_vTarget;
-		int32_t brake = m_b.m_vTarget;
-		int32_t current = m_c.m_vTarget;
+		ACTUATOR_CHAN* pChan = getChan();
+		NULL_(pChan);
+
+		int32_t step = pChan->pos()->getTarget();
+		int32_t speed = pChan->speed()->getTarget();
+		int32_t accel = pChan->accel()->getTarget();
+		int32_t brake = pChan->brake()->getTarget();
+		int32_t current = pChan->current()->getTarget();
 
 		//create the command
 		uint16_t pB[18];
@@ -137,19 +149,24 @@ namespace kai
 		IF_(check() != OK_OK);
 		IF_(!m_ieSendCMD.update(m_pT->getTfrom()));
 
+		ACTUATOR_CHAN* pChan = getChan();
+		NULL_(pChan);
+
 		int32_t step = 0;
 		uint8_t dMode = 1;
-		int32_t speed = m_s.m_vTarget;
+		int32_t speed = pChan->speed()->getTarget();
+
+		vFloat2 vRange = pChan->pos()->getRange();
 		if (speed > 0)
-			step = m_p.m_vRange.y;
+			step = vRange.y;
 		else if (speed < 0)
-			step = m_p.m_vRange.x;
+			step = vRange.x;
 		else
 			dMode = 3;
 
-		int32_t accel = m_a.m_vTarget;
-		int32_t brake = m_b.m_vTarget;
-		int32_t current = m_c.m_vTarget;
+		int32_t accel = pChan->accel()->getTarget();
+		int32_t brake = pChan->brake()->getTarget();
+		int32_t current = pChan->current()->getTarget();
 
 		//create the command
 		uint16_t pB[18];
@@ -193,10 +210,13 @@ namespace kai
 		int32_t p = MAKE32(pB[0], pB[1]);
 		int32_t s = MAKE32(pB[4], pB[5]);
 
-		m_p.m_v = (float)p;
-		m_s.m_v = (float)s;
+		ACTUATOR_CHAN* pChan = getChan();
+		NULL_(pChan);
+		pChan->pos()->set(p);
+		pChan->speed()->set(s);
 
-		LOG_I("step: " + f2str(m_p.m_v) + ", speed: " + f2str(m_s.m_v));
+		LOG_I("step: " + f2str(pChan->pos()->get())
+		 + ", speed: " + f2str(pChan->speed()->get()));
 	}
 
 }

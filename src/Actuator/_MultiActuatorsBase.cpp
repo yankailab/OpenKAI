@@ -9,9 +9,6 @@ namespace kai
 
 	_MultiActuatorsBase::_MultiActuatorsBase()
 	{
-		m_nAB = 0;
-		m_bPower = false;
-		m_bReady = false;
 	}
 
 	_MultiActuatorsBase::~_MultiActuatorsBase()
@@ -35,15 +32,13 @@ namespace kai
 
 		vector<string> vName;
 		pK->a("vActuatorBase", &vName);
-		m_nAB = 0;
 
 		for (int i = 0; i < vName.size(); i++)
 		{
 			void *p = pK->findModule(vName[i]);
 			IF_CONT(!p);
 
-			m_pAB[m_nAB] = (_ActuatorBase *)p;
-			m_nAB++;
+			m_vAB.push_back((_ActuatorBase *)p);
 		}
 
 		return OK_OK;
@@ -76,58 +71,29 @@ namespace kai
 	{
 	}
 
-	void _MultiActuatorsBase::setPtarget(int iA, float nP)
-	{
-		IF_(iA < 0 || iA >= m_nAB);
-
-		m_pAB[iA]->setPtarget(nP);
-	}
-
-	void _MultiActuatorsBase::setStarget(int iA, float nS)
-	{
-		IF_(iA < 0 || iA >= m_nAB);
-
-		m_pAB[iA]->setStarget(nS);
-	}
-
-	void _MultiActuatorsBase::gotoOrigin(int iA)
-	{
-		IF_(iA < 0 || iA >= m_nAB);
-
-		m_pAB[iA]->gotoOrigin();
-	}
-
-	bool _MultiActuatorsBase::bComplete(int iA)
-	{
-		IF_F(iA < 0 || iA >= m_nAB);
-
-		IF_F(!m_pAB[iA]->bComplete());
-		return true;
-	}
-
 	void _MultiActuatorsBase::setPtargetAll(float nP)
 	{
-		for (int i = 0; i < m_nAB; i++)
-			m_pAB[i]->setPtarget(nP);
+		for (_ActuatorBase* pA : m_vAB)
+			pA->getChan()->pos()->setTarget(nP);
 	}
 
 	void _MultiActuatorsBase::setStargetAll(float nS)
 	{
-		for (int i = 0; i < m_nAB; i++)
-			m_pAB[i]->setStarget(nS);
+		for (_ActuatorBase* pA : m_vAB)
+			pA->getChan()->speed()->setTarget(nS);
 	}
 
 	void _MultiActuatorsBase::gotoOriginAll(void)
 	{
-		for (int i = 0; i < m_nAB; i++)
-			m_pAB[i]->gotoOrigin();
+		for (_ActuatorBase* pA : m_vAB)
+			pA->getChan()->gotoOrigin();
 	}
 
 	bool _MultiActuatorsBase::bCompleteAll(void)
 	{
-		for (int i = 0; i < m_nAB; i++)
+		for (_ActuatorBase* pA : m_vAB)
 		{
-			IF_F(!m_pAB[i]->bComplete());
+			IF_F(!pA->getChan()->bComplete());
 		}
 
 		return true;

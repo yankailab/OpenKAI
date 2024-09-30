@@ -10,8 +10,6 @@
 
 #include "_ActuatorBase.h"
 
-#define AS_N_ACTUATOR 128
-
 namespace kai
 {
 
@@ -26,17 +24,12 @@ namespace kai
 		virtual int start(void);
 		virtual int check(void);
 
-		virtual void setPtarget(int iA, float nP);
-		virtual void setStarget(int iA, float nS);
-		virtual void gotoOrigin(int iA);
-		virtual bool bComplete(int iA);
-
 		virtual void setPtargetAll(float nP);
 		virtual void setStargetAll(float nS);
 		virtual void gotoOriginAll(void);
 		virtual bool bCompleteAll(void);
 
-	private:
+	protected:
 		virtual void updateActuators(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
@@ -45,13 +38,8 @@ namespace kai
 			return NULL;
 		}
 
-	public:
-		_ActuatorBase *m_pAB[AS_N_ACTUATOR];
-		int m_nAB;
-
-		bool m_bPower;
-		bool m_bReady;
-
+	protected:
+		vector<_ActuatorBase*> m_vAB;
 	};
 
 }

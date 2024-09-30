@@ -12,21 +12,19 @@
 
 namespace kai
 {
-
 	template <class T>
 	class FilterBase
 	{
 	public:
 		FilterBase()
 		{
-			m_pV = &m_v;
 		}
 
 		virtual ~FilterBase()
 		{	
 		}
 
-		virtual T* update(T* pV)
+		virtual T update(T v)
 		{
 		}
 
@@ -39,18 +37,16 @@ namespace kai
 
 		virtual void reset(void)
 		{
-			m_v = 0.0;
+			m_v = 0;
 			m_qV.clear();
-			m_variance = 0.0;
+			m_variance = 0;
 		}
 
-		virtual T v(void)
+		virtual T get(void)
 		{
 			return m_v;
 		}
 
-	public:
-		T* m_pV;
 	protected:
 		T m_v;				//output
 		std::deque<T> m_qV;	//trajectory

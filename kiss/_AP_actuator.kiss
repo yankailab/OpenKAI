@@ -95,7 +95,7 @@
 
 {
 	"name":"apActuator",
-	"class":"_APmavlink_actuator",
+	"class":"_APmavlink_rcChannel",
 	"bON":1,
     {
 		"name":"thread",

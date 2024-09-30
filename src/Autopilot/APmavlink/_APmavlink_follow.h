@@ -6,7 +6,6 @@
 #include "../../Filter/Median.h"
 #include "../../Filter/Average.h"
 #include "../../Filter/Predict.h"
-#include "../../Filter/Hold.h"
 #include "../../Control/PID.h"
 #include "_APmavlink_move.h"
 
@@ -17,13 +16,11 @@ namespace kai
 	{
 		Median<float> m_med;
 		Predict<float> m_pred;
-		Hold<float> m_hold;
 
-		bool init(int nWmed, int nWpred, float dThold)
+		bool init(int nWmed, int nWpred)
 		{
 			IF_F(!m_med.init(nWmed));
 			IF_F(!m_pred.init(nWpred));
-			IF_F(!m_hold.init(dThold));
 
 			return true;
 		}
@@ -32,12 +29,11 @@ namespace kai
 		{
 			m_med.reset();
 			m_pred.reset();
-			m_hold.reset();
 		}
 
-		float *update(float *pV, float dT)
+		float update(float v, float dT)
 		{
-			return m_pred.update(m_med.update(m_hold.update(pV, dT)), dT);
+			return m_pred.update(m_med.update(v), dT);
 		}
 	};
 

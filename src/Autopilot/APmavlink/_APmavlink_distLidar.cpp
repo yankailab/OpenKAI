@@ -70,25 +70,20 @@ namespace kai
 		NULL_(m_pDS);
 		IF_(!m_pDS->bReady());
 
-		double rMin = m_pDS->rMin();
-		double rMax = m_pDS->rMax();
+		vFloat2 vRange = m_pDS->range();
 
 		mavlink_distance_sensor_t D;
-
 		for (int i = 0; i < m_nSection; i++)
 		{
 			DIST_LIDAR_SECTION *pS = &m_pSection[i];
 
-			double d = m_pDS->dMin(pS->m_degFrom, pS->m_degTo) * pS->m_sensorScale;
-			if (d < rMin)
-				d = rMax;
-			if (d > rMax)
-				d = rMax;
+			float d = m_pDS->dMin(pS->m_degFrom, pS->m_degTo) * pS->m_sensorScale;
+			d = vRange.constrain(d);
 			pS->m_minD = d;
 
 			D.type = 0;
-			D.max_distance = (uint16_t)(rMax * 100); //unit: centimeters
-			D.min_distance = (uint16_t)(rMin * 100);
+			D.max_distance = (uint16_t)(vRange.y * 100); //unit: centimeters
+			D.min_distance = (uint16_t)(vRange.x * 100);
 			D.current_distance = (uint16_t)(pS->m_minD * 100);
 			D.orientation = pS->m_orientation;
 			D.covariance = 255;

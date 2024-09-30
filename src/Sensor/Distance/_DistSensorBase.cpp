@@ -14,13 +14,17 @@ namespace kai
 	{
 		m_pDiv = nullptr;
 		m_nDiv = 1;
+
 		m_fovH = 360;
 		m_fovV = 0.1;
+
 		m_dDeg = 0;
 		m_dDegInv = 0;
+
 		m_vRange.set(0, FLT_MAX);
 		m_calibScale = 1.0;
 		m_calibOffset = 0.0;
+
 		m_bReady = false;
 	}
 
@@ -70,23 +74,9 @@ namespace kai
 		return m_bReady;
 	}
 
-	void _DistSensorBase::update(void)
+	vFloat2 _DistSensorBase::range(void)
 	{
-	}
-
-	DIST_SENSOR_TYPE _DistSensorBase::type(void)
-	{
-		return ds_Unknown;
-	}
-
-	float _DistSensorBase::rMin(void)
-	{
-		return m_vRange.x;
-	}
-
-	float _DistSensorBase::rMax(void)
-	{
-		return m_vRange.y;
+		return m_vRange;
 	}
 
 	void _DistSensorBase::input(float deg, float d, float a)
@@ -110,6 +100,17 @@ namespace kai
 			d = -1;
 
 		m_pDiv[iDiv].input(d, a);
+	}
+
+	void _DistSensorBase::input(float d, float a)
+	{
+		IF_(!m_bReady);
+		input(0, d, a);
+	}
+
+	DIST_SENSOR_TYPE _DistSensorBase::type(void)
+	{
+		return ds_Unknown;
 	}
 
 	float _DistSensorBase::d(int iDiv)

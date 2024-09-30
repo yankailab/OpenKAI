@@ -47,6 +47,15 @@ namespace kai
 	}
 
 	template <typename T>
+	bool bInRange(T v, T a, T b)
+	{
+		IF_F(v < a);
+		IF_F(v > b);
+
+		return true;
+	}
+
+	template <typename T>
 	inline int sign(T v)
 	{
 		return ((v >= 0) << 1) - 1;

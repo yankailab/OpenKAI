@@ -50,7 +50,7 @@ namespace kai
 			m_d = d;
 			if (d >= 0.0)
 			{
-				m_fAvr.update(m_fMed.update(&m_d));
+				m_fAvr.update(m_fMed.update(m_d));
 				return;
 			}
 
@@ -71,14 +71,14 @@ namespace kai
 		{
 			if (m_d < 0.0)
 				return -1.0;
-			return m_fAvr.v();
+			return m_fAvr.get();
 		}
 
 		float dMed(void)
 		{
 			if (m_d < 0.0)
 				return -1.0;
-			return m_fMed.v();
+			return m_fMed.get();
 		}
 
 		void reset(void)
@@ -95,19 +95,18 @@ namespace kai
 		virtual ~_DistSensorBase();
 
 		int init(void *pKiss);
-		void draw(void *pFrame);
 		void console(void *pConsole);
-		void update(void);
+		void draw(void *pFrame);
 
-		float rMin(void);
-		float rMax(void);
-		void input(float deg, float d, float a = -1.0);
-		void input(int iDiv, float d, float a = -1.0);
 		bool bReady(void);
+		vFloat2 range(void);
+		void input(float deg, float d, float a);
+		void input(int iDiv, float d, float a);
+		void input(float d, float a = -1);
 
 		virtual DIST_SENSOR_TYPE type(void);
-		virtual float d(int iDiv);
-		virtual float d(float deg);
+		virtual float d(int iDiv = 0);
+		virtual float d(float deg = 0);
 		virtual float dMin(void);
 		virtual float dMax(void);
 		virtual float dAvr(void);
@@ -118,14 +117,17 @@ namespace kai
 	protected:
 		DIST_SENSOR_DIV *m_pDiv;
 		int m_nDiv;
+
 		float m_fovH;
 		float m_fovV;
+		
 		float m_dDeg;
 		float m_dDegInv;
+		
 		vFloat2 m_vRange;
-//		float m_hdg; // given by external sensor e.g. compass
 		float m_calibScale;
 		float m_calibOffset;
+		
 		uint16_t m_bReady;
 	};
 

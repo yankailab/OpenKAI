@@ -40,15 +40,13 @@ namespace kai
 
 		int nWmed = 0;
 		int nWpred = 0;
-		float dThold = 0.0;
 		pK->v("nWmed", &nWmed);
 		pK->v("nWpred", &nWpred);
-		pK->v("dThold", &dThold);
 
-		IF__(!m_fX.init(nWmed, nWpred, dThold), OK_ERR_INVALID_VALUE);
-		IF__(!m_fY.init(nWmed, nWpred, dThold), OK_ERR_INVALID_VALUE);
-		IF__(!m_fZ.init(nWmed, nWpred, dThold), OK_ERR_INVALID_VALUE);
-		IF__(!m_fH.init(nWmed, nWpred, dThold), OK_ERR_INVALID_VALUE);
+		IF__(!m_fX.init(nWmed, nWpred), OK_ERR_INVALID_VALUE);
+		IF__(!m_fY.init(nWmed, nWpred), OK_ERR_INVALID_VALUE);
+		IF__(!m_fZ.init(nWmed, nWpred), OK_ERR_INVALID_VALUE);
+		IF__(!m_fH.init(nWmed, nWpred), OK_ERR_INVALID_VALUE);
 
 		pK->v("iClass", &m_iClass);
 

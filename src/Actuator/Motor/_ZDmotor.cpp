@@ -29,6 +29,14 @@ namespace kai
 		pK->v("iMode", &m_iMode);
 		pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
 
+		return OK_OK;
+	}
+
+	int _ZDmotor::link(void)
+	{
+		CHECK_(this->_ActuatorBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+
 		string n;
 		n = "";
 		IF__(!pK->v("_Modbus", &n), OK_ERR_NOT_FOUND);
@@ -58,7 +66,9 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			if (!m_bfStatus.b(actuator_ready))
+			ACTUATOR_CHAN* pChan = getChan();
+
+			if (!pChan->m_bfStatus.b(actuator_ready))
 			{
 				setup();
 			}
@@ -75,29 +85,31 @@ namespace kai
 
 	void _ZDmotor::setup(void)
 	{
+		ACTUATOR_CHAN* pChan = getChan();
+
 		// IF_(!setMode());
 		// IF_(!setAccel());
 		// IF_(!setBrake());
 		// IF_(!power(true));
 
-		m_bfStatus.set(actuator_ready);
+		pChan->m_bfStatus.set(actuator_ready);
 	}
 
 	bool _ZDmotor::setPower(bool bON)
 	{
-		IF_F(check() != OK_OK);
-		IF__(bON == m_bPower, true);
+		// IF_F(check() != OK_OK);
+		// IF__(bON == m_bPower, true);
 
-		if (bON)
-		{
-			IF_F(m_pMB->writeRegister(m_iSlave, 0x2031, 0x08) != 1);
-			m_bPower = true;
-		}
-		else
-		{
-			IF_F(m_pMB->writeRegister(m_iSlave, 0x2031, 0x07) != 1);
-			m_bPower = false;
-		}
+		// if (bON)
+		// {
+		// 	IF_F(m_pMB->writeRegister(m_iSlave, 0x2031, 0x08) != 1);
+		// 	m_bPower = true;
+		// }
+		// else
+		// {
+		// 	IF_F(m_pMB->writeRegister(m_iSlave, 0x2031, 0x07) != 1);
+		// 	m_bPower = false;
+		// }
 
 		return true;
 	}
@@ -121,8 +133,9 @@ namespace kai
 	bool _ZDmotor::setAccel(void)
 	{
 		IF_F(check() != OK_OK);
+		ACTUATOR_CHAN* pChan = getChan();
 
-		uint16_t v = m_a.m_vTarget;
+		uint16_t v = pChan->accel()->getTarget();
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2037, v) != 1);
 
 		return true;
@@ -131,8 +144,9 @@ namespace kai
 	bool _ZDmotor::setBrake(void)
 	{
 		IF_F(check() != OK_OK);
+		ACTUATOR_CHAN* pChan = getChan();
 
-		uint16_t v = m_b.m_vTarget;
+		uint16_t v = pChan->brake()->getTarget();
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2038, v) != 1);
 
 		return true;
@@ -141,8 +155,9 @@ namespace kai
 	bool _ZDmotor::setSpeed(void)
 	{
 		IF_F(check() != OK_OK);
+		ACTUATOR_CHAN* pChan = getChan();
 
-		int16_t v = m_s.m_vTarget;
+		uint16_t v = pChan->speed()->getTarget();
 		int16_t d = (v >= 0) ? 1 : 2;
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2000, d) != 1);
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2001, abs(v)) != 1);
@@ -180,7 +195,8 @@ namespace kai
 
 		//	int p = MAKE32(pB[0], pB[1]);
 		int16_t p = pB[0];
-		m_p.m_v = p;
+		ACTUATOR_CHAN* pChan = getChan();
+		pChan->pos()->set(p);
 
 		return true;
 	}

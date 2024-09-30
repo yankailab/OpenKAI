@@ -112,7 +112,6 @@ namespace kai
 		AP_MISSION_STATE m_mState;
 		TIME_OUT m_tOut;
 
-		
 	};
 
 }

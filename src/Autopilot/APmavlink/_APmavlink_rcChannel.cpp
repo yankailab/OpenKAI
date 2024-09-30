@@ -1,24 +1,22 @@
-#include "_APmavlink_actuator.h"
+#include "_APmavlink_rcChannel.h"
 
 namespace kai
 {
 
-	_APmavlink_actuator::_APmavlink_actuator()
+	_APmavlink_rcChannel::_APmavlink_rcChannel()
 	{
 		m_pAP = nullptr;
-		m_pAB1 = nullptr;
-		m_pAB2 = nullptr;
 
 		m_rcMode.update();
 		m_rcStickV.update();
 		m_rcStickH.update();
 	}
 
-	_APmavlink_actuator::~_APmavlink_actuator()
+	_APmavlink_rcChannel::~_APmavlink_rcChannel()
 	{
 	}
 
-	int _APmavlink_actuator::init(void *pKiss)
+	int _APmavlink_rcChannel::init(void *pKiss)
 	{
 		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
@@ -35,52 +33,50 @@ namespace kai
 		m_rcStickV.update();
 		m_rcStickH.update();
 
+		return OK_OK;
+	}
+
+	int _APmavlink_rcChannel::link(void)
+	{
+		CHECK_(this->_ModuleBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+
 		string n = "";
 
 		pK->v("_APmavlink_base", &n);
 		m_pAP = (_APmavlink_base *)(pK->findModule(n));
 		NULL__(m_pAP, OK_ERR_NOT_FOUND);
 
-		pK->v("_ActuatorBase1", &n);
-		m_pAB1 = (_ActuatorBase *)(pK->findModule(n));
-		NULL__(m_pAB1, OK_ERR_NOT_FOUND);
-
-		pK->v("_ActuatorBase2", &n);
-		m_pAB2 = (_ActuatorBase *)(pK->findModule(n));
-		NULL__(m_pAB2, OK_ERR_NOT_FOUND);
-
 		return OK_OK;
 	}
 
-	int _APmavlink_actuator::start(void)
+	int _APmavlink_rcChannel::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _APmavlink_actuator::check(void)
+	int _APmavlink_rcChannel::check(void)
 	{
 		NULL__(m_pAP, OK_ERR_NULLPTR);
 		NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
-		NULL__(m_pAB1, OK_ERR_NULLPTR);
-		NULL__(m_pAB2, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}
 
-	void _APmavlink_actuator::update(void)
+	void _APmavlink_rcChannel::update(void)
 	{
 		while (m_pT->bAlive())
 		{
 			m_pT->autoFPSfrom();
 
-			updateActuator();
+			updateRCchannel();
 
 			m_pT->autoFPSto();
 		}
 	}
 
-	void _APmavlink_actuator::updateActuator(void)
+	void _APmavlink_rcChannel::updateRCchannel(void)
 	{
 		IF_(check() != OK_OK);
 
@@ -99,33 +95,9 @@ namespace kai
 		IF_(pwm == UINT16_MAX);
 		m_rcStickH.set(pwm);
 
-		// m_pAB1->power(iMode!=0?true:false);
-		// IF_(iMode == 0);
-
-		int i;
-
-		i = m_rcStickV.i();
-		if (i == 1)
-		{
-			m_pAB1->setBitFlag(actuator_stop);
-		}
-		else
-		{
-			m_pAB1->setPtarget(0, (i - 1) * 10);
-		}
-
-		i = m_rcStickH.i();
-		if (i == 1)
-		{
-			m_pAB2->setBitFlag(actuator_stop);
-		}
-		else
-		{
-			m_pAB2->setPtarget(0, (i - 1) * 10);
-		}
 	}
 
-	void _APmavlink_actuator::console(void *pConsole)
+	void _APmavlink_rcChannel::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		IF_(check() != OK_OK);

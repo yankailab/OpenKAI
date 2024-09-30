@@ -14,13 +14,13 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["apMavlink","apBase",],
+	"vBASE":["mavAP","apBase","ws"],
 }
 
 {
 	"name":"serialAP",
 	"class":"_SerialPort",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -39,7 +39,7 @@
 {
 	"name":"mavAP",
 	"class":"_Mavlink",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -68,7 +68,8 @@
 		"FPS":30,
 		"vRunThread":["mavUDP.thread"],
 	}
-	"port":19840,
+	"/port":19840,
+	"port":14550,
 }
 
 {
@@ -84,7 +85,7 @@
 	{
 		"name":"routing",
 		{
-			"bON":1,
+			"bON":0,
 			"_Mavlink":"mavAP",
 		}
 	}
@@ -99,7 +100,8 @@
 		"FPS":10,
 	}
 	"_StateControl":"state",
-	"_Mavlink":"mavAP",
+	"/_Mavlink":"mavAP",
+	"_Mavlink":"mavUDP",
 	"freqSendHeartbeat":1,
 	"apType":0,
 	
@@ -147,4 +149,39 @@
 			"tInt":1,
 		}
 	}
+}
+
+{
+	"name":"ws",
+	"class":"_WebSocket",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+    {
+		"name":"threadR",
+		"FPS":10,
+	}
+}
+
+{
+	"name":"apM2J",
+	"class":"_APmavlink_mav2json",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+    {
+		"name":"threadR",
+		"FPS":10,
+	}
+	"bLog":1,
+	"_IObase":"ws",
+	"msgFinishSend":"",
+	"msgFinishRecv":"EOJ",
+	"ieSendHB":100000,
+
+	"_APmavlink_base":"apBase",
 }

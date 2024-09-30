@@ -57,38 +57,54 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			if (!m_pIO)
-			{
-				m_pT->sleepT(SEC_2_USEC);
-				continue;
-			}
-
 			m_pT->autoFPSfrom();
 
-			updateVehicle();
+			update2json();
 
 			m_pT->autoFPSto();
 		}
 	}
 
-	void _APmavlink_mav2json::updateVehicle(void)
+	void _APmavlink_mav2json::update2json(void)
 	{
 		IF_(check() != OK_OK);
+
+		IF_(!m_ieSendHB.update(m_pT->getTfrom()));
 
 		int apMode = m_pAP->getMode();
 		vDouble4 vP = m_pAP->getGlobalPos();
+		vFloat3 vA = m_pAP->getAttitude();
 
-		IF_(!m_pAP->bApArmed());
-	}
+// {
+// 	"cmd":"vUpdate",	// command name
+// 	"vID":0,		// int: vehicle id
+// 	"lon":0,		// float: vehicle pos longitude
+// 	"lat":0,		// float: vehicle pos latitude
+// 	"alt":0,		// float: vehicle pos altitude in meter
+// 	"yaw":360,		// float: vehicle attitude yaw (degree), from absolute north (0) to 360 degree
+// 	"pitch":0,		// float: vehicle attitude pitch (degree)
+// 	"roll":0,		// float: vehicle attitude roll (degree)
+// 	"batt":90,		// float: vehicle battery left percentage (0.0 to 100.0)
+// 	"hdg":0,		// float: vehicle heading to next waypoint (degree), only if vehicle is in Auto mode, -1 for other modes.
+// }
 
-	void _APmavlink_mav2json::send(void)
-	{
-		IF_(check() != OK_OK);
+		object r;
+		JO(r, "cmd", "vUpdate");
+		JO(r, "vID", 0.0);
+		JO(r, "lon", vP.y);
+		JO(r, "lat", vP.x);
+		JO(r, "alt", vP.w);
+		JO(r, "yaw", vA.x);
+		JO(r, "pitch", vA.y);
+		JO(r, "roll", vA.z);
+		JO(r, "batt", m_pAP->getBattery());
+		JO(r, "hdg", -1.0);
+//		sendMsg(r);
 
-		if (m_ieSendHB.update(m_pT->getTfrom()))
-		{
-			//            sendHeartbeat();
-		}
+        string msg = picojson::value(r).serialize() + m_msgFinishSend;
+        _WebSocket *pWS = (_WebSocket *)m_pIO;
+        pWS->writeTo(0, (unsigned char *)msg.c_str(), msg.size(), WS_MODE_TXT);
+
 	}
 
 	void _APmavlink_mav2json::updateR(void)
@@ -143,7 +159,6 @@ namespace kai
 		this->_JSONbase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-//		pC->addMsg("iMission = " + i2str(m_iMission), 1);
 
 	}
 

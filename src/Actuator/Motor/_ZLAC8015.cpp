@@ -29,6 +29,14 @@ namespace kai
 		pK->v("iMode", &m_iMode);
 		pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
 
+		return OK_OK;
+	}
+
+	int _ZLAC8015::link(void)
+	{
+		CHECK_(this->_ActuatorBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+
 		string n;
 		n = "";
 		IF__(!pK->v("_Modbus", &n), OK_ERR_NOT_FOUND);
@@ -58,7 +66,8 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			if (!m_bfStatus.b(actuator_ready))
+			ACTUATOR_CHAN* pChan = getChan();
+			if (!pChan->m_bfStatus.b(actuator_ready))
 			{
 				setup();
 			}
@@ -78,29 +87,30 @@ namespace kai
 		IF_(!setMode());
 		IF_(!setAccel());
 		IF_(!setBrake());
-		IF_(!setPower(true));
+//		IF_(!setPower(true));
 
-		m_bfStatus.set(actuator_ready);
+		ACTUATOR_CHAN* pChan = getChan();
+		pChan->m_bfStatus.set(actuator_ready);
 	}
 
-	bool _ZLAC8015::setPower(bool bON)
-	{
-		IF_F(check() != OK_OK);
-		IF__(bON == m_bPower, true);
+	// bool _ZLAC8015::setPower(bool bON)
+	// {
+	// 	IF_F(check() != OK_OK);
+	// 	IF__(bON == m_bPower, true);
 
-		if (bON)
-		{
-			IF_F(m_pMB->writeRegister(m_iSlave, 0x2031, 0x08) != 1);
-			m_bPower = true;
-		}
-		else
-		{
-			IF_F(m_pMB->writeRegister(m_iSlave, 0x2031, 0x07) != 1);
-			m_bPower = false;
-		}
+	// 	if (bON)
+	// 	{
+	// 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2031, 0x08) != 1);
+	// 		m_bPower = true;
+	// 	}
+	// 	else
+	// 	{
+	// 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2031, 0x07) != 1);
+	// 		m_bPower = false;
+	// 	}
 
-		return true;
-	}
+	// 	return true;
+	// }
 
 	void _ZLAC8015::updateMove(void)
 	{
@@ -121,8 +131,9 @@ namespace kai
 	bool _ZLAC8015::setAccel(void)
 	{
 		IF_F(check() != OK_OK);
+		ACTUATOR_CHAN* pChan = getChan();
 
-		uint16_t v = m_a.m_vTarget;
+		uint16_t v = pChan->accel()->getTarget();
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2037, v) != 1);
 
 		return true;
@@ -131,8 +142,9 @@ namespace kai
 	bool _ZLAC8015::setBrake(void)
 	{
 		IF_F(check() != OK_OK);
+		ACTUATOR_CHAN* pChan = getChan();
 
-		uint16_t v = m_b.m_vTarget;
+		uint16_t v = pChan->brake()->getTarget();
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x2038, v) != 1);
 
 		return true;
@@ -141,8 +153,9 @@ namespace kai
 	bool _ZLAC8015::setSpeed(void)
 	{
 		IF_F(check() != OK_OK);
+		ACTUATOR_CHAN* pChan = getChan();
 
-		int16_t v = m_s.m_vTarget;
+		int16_t v = pChan->speed()->getTarget();
 		IF_F(m_pMB->writeRegister(m_iSlave, 0x203A, v) != 1);
 
 		return true;
@@ -178,7 +191,9 @@ namespace kai
 
 		//	int p = MAKE32(pB[0], pB[1]);
 		int16_t p = pB[0];
-		m_p.m_v = p;
+
+		ACTUATOR_CHAN* pChan = getChan();
+		pChan->pos()->set(p);
 
 		return true;
 	}

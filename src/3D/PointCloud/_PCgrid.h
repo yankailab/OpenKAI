@@ -34,7 +34,7 @@ namespace kai
 
 		void updateFilter(void)
 		{
-			m_nP = *m_med.update(&m_nPraw);
+			m_nP = m_med.update(m_nPraw);
 		}
 
 		int nP(void)

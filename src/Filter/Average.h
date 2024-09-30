@@ -25,31 +25,25 @@ namespace kai
 		{
 		}
 
-		int init(int nW)
+		bool init(int nW)
 		{
-			IF__(nW < 0, OK_ERR_INVALID_VALUE);
+			IF_F(nW < 2);
+	
 			FilterBase<T>::m_nW = nW;
 			FilterBase<T>::reset();
-			return OK_OK;
+			return true;
 		}
 
-		T *update(T *pV)
+		T update(T v)
 		{
-			NULL_N(pV);
-			if (FilterBase<T>::m_nW < 2)
-			{
-				FilterBase<T>::m_v = *pV;
-				return FilterBase<T>::m_pV;
-			}
-
-			FilterBase<T>::add(*pV);
+			FilterBase<T>::add(v);
 			T tot = 0.0;
 			int n = FilterBase<T>::m_qV.size();
 			for (int i = 0; i < n; i++)
 				tot += FilterBase<T>::m_qV.at(i);
 
 			FilterBase<T>::m_v = tot / (T)n;
-			return FilterBase<T>::m_pV;
+			return FilterBase<T>::m_v;
 		}
 	};
 

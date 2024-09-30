@@ -21,8 +21,8 @@ namespace kai
 		~_ZDmotor();
 
 		int init(void *pKiss);
+		int link(void);
 		int start(void);
-
 		int check(void);
 
 	private:

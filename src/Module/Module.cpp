@@ -78,7 +78,7 @@ namespace kai
 #endif
 
 #ifdef WITH_APMAVLINK
-		ADD_MODULE(_APmavlink_actuator);
+		ADD_MODULE(_APmavlink_rcChannel);
 		ADD_MODULE(_APmavlink_base);
 		ADD_MODULE(_APmavlink_httpJson);
 		ADD_MODULE(_APmavlink_mav2json);

@@ -36,17 +36,11 @@ namespace kai
 		actuator_complete = 4,
 	};
 
-	enum ACTUATOR_MODE
-	{
-		actuatorMode_pos = 0,
-		actuatorMode_speed = 1,
-		actuatorMode_current = 2,
-	};
-
 	struct ACTUATOR_V
 	{
 		float m_v;
 		float m_vTarget;
+		float m_vCofactor;
 		float m_vErr;
 		vFloat2 m_vRange;
 
@@ -54,6 +48,7 @@ namespace kai
 		{
 			m_v = 0.0;
 			m_vTarget = 0.0;
+			m_vCofactor = 1.0;
 			m_vErr = 0.0;
 			m_vRange.set(-FLT_MAX, FLT_MAX);
 		}
@@ -63,12 +58,14 @@ namespace kai
 			return EQUAL(m_v, m_vTarget, m_vErr);
 		}
 
-		bool bInRange(float v)
+		void set(float v)
 		{
-			IF_F(v < m_vRange.x);
-			IF_F(v > m_vRange.y);
+			m_v = v;
+		}
 
-			return true;
+		float get(void)
+		{
+			return m_v;
 		}
 
 		void setTarget(float v)
@@ -76,9 +73,136 @@ namespace kai
 			m_vTarget = m_vRange.constrain(v);
 		}
 
-		void setNormalizedTarget(float v)
+		void setTargetNormalized(float v)
 		{
 			m_vTarget = m_vRange.x + constrain<float>(v, 0, 1) * m_vRange.d();
+		}
+
+		void setTargetCurrent(void)
+		{
+			m_vTarget = m_v;
+		}
+
+		float getTarget(void)
+		{
+			return m_vTarget;
+		}
+
+		float getDtarget(void)
+		{
+			return m_vTarget - m_v;
+		}
+
+		vFloat2 getRange(void)
+		{
+			return m_vRange;
+		}
+	};
+
+	struct ACTUATOR_CHAN
+	{
+		int m_ID;
+		float m_pOrigin;
+		ACTUATOR_V m_p; // pos
+		ACTUATOR_V m_s; // speed
+		ACTUATOR_V m_a; // accel
+		ACTUATOR_V m_b; // brake
+		ACTUATOR_V m_c; // current
+
+		int m_mode;
+		bool m_bPower;
+		uint64_t m_tLastCmd;
+		uint64_t m_tCmdTimeout;
+		BIT_FLAG m_bfStatus;
+		BIT_FLAG m_bfSet;
+
+		void init(void)
+		{
+			m_ID = 0;
+			m_pOrigin = 0.0;
+			m_p.init();
+			m_s.init();
+			m_a.init();
+			m_b.init();
+			m_c.init();
+
+			m_mode = 0;
+			m_bPower = false;
+			m_tLastCmd = 0;
+			m_tCmdTimeout = 0;
+			m_bfStatus.clearAll();
+			m_bfSet.clearAll();
+		}
+
+		int getID(void)
+		{
+			return m_ID;
+		}
+
+		int getMode(void)
+		{
+			return m_mode;
+		}
+
+		void power(bool bON)
+		{
+			m_bPower = bON;
+			m_bfSet.set(actuator_power);
+		}
+
+		void setBitFlag(ACTUATOR_BF_SET bf)
+		{
+			m_bfSet.set(bf);
+		}
+
+		void setLastCmdTime(void)
+		{
+			m_tLastCmd = getTbootUs();
+		}
+
+		bool bCmdTimeout(void)
+		{
+			uint64_t t = getTbootUs();
+			IF_F(t - m_tLastCmd < m_tCmdTimeout);
+
+			return true;
+		}
+
+		void gotoOrigin(void)
+		{
+			m_p.setTarget(m_pOrigin);
+		}
+
+		bool bComplete(void)
+		{
+			IF_F(!m_p.bComplete());
+
+			return true;
+		}
+
+		ACTUATOR_V *pos(void)
+		{
+			return &m_p;
+		}
+
+		ACTUATOR_V *speed(void)
+		{
+			return &m_s;
+		}
+
+		ACTUATOR_V *accel(void)
+		{
+			return &m_a;
+		}
+
+		ACTUATOR_V *brake(void)
+		{
+			return &m_b;
+		}
+
+		ACTUATOR_V *current(void)
+		{
+			return &m_c;
 		}
 	};
 
@@ -95,38 +219,10 @@ namespace kai
 
 		virtual void atomicFrom(void);
 		virtual void atomicTo(void);
-
-		virtual void setPtarget(float p, bool bNormalized = false);
-		virtual void setStarget(float s, bool bNormalized = false);
-		virtual void setAtarget(float a, bool bNormalized = false);
-		virtual void setBtarget(float b, bool bNormalized = false);
-		virtual float getPtarget(void);
-		virtual float getStarget(void);
-		virtual float getAtarget(void);
-		virtual float getBtarget(void);
-		virtual float getCtarget(void);
-
-		virtual float getP(void);
-		virtual float getS(void);
-		virtual float getA(void);
-		virtual float getB(void);
-		virtual float getC(void);
-
-		virtual void gotoOrigin(void);
-		virtual bool bComplete(void);
-
-		virtual void power(bool bON);
-		virtual void setBitFlag(ACTUATOR_BF_SET bf);
-
-		// values read from feedback
-		virtual void setP(float p);
-		virtual void setS(float s);
-		virtual void setA(float a);
-		virtual void setB(float b);
-		virtual void setC(float c);
+		virtual ACTUATOR_CHAN *getChan(int iChan = 0);
 
 	protected:
-		virtual bool bCmdTimeout(void);
+		virtual bool bCmdTimeout(int iChan = 0);
 		virtual bool open(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
@@ -136,22 +232,7 @@ namespace kai
 		}
 
 	protected:
-		float m_pOrigin;
-		ACTUATOR_V m_p; // pos
-		float m_sDir;	// speed direction
-		ACTUATOR_V m_s; // speed
-		ACTUATOR_V m_a; // accel
-		ACTUATOR_V m_b; // brake
-		ACTUATOR_V m_c; // current
-
-		ACTUATOR_MODE m_mode;
-		bool m_bPower;
-
-		uint64_t m_tLastCmd;
-		uint64_t m_tCmdTimeout;
-
-		BIT_FLAG m_bfStatus;
-		BIT_FLAG m_bfSet;
+		vector<ACTUATOR_CHAN> m_vChan;
 
 		_ActuatorBase *m_pParent;
 		pthread_mutex_t m_mutex;

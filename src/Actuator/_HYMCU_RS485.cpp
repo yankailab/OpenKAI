@@ -52,6 +52,14 @@ namespace kai
 			pKa->v("resPos", &m_addr.m_resPos);
 		}
 
+		return OK_OK;
+	}
+
+	int _HYMCU_RS485::link(void)
+	{
+		CHECK_(this->_ActuatorBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+
 		string n;
 		n = "";
 		IF__(!pK->v("_Modbus", &n), OK_ERR_NOT_FOUND);
@@ -88,11 +96,12 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			if (m_bfSet.b(actuator_stop, true))
+			ACTUATOR_CHAN* pChan = getChan();
+			if (pChan->m_bfSet.b(actuator_stop, true))
 			{
 				while(!stopMove());
 				while(!readStatus());
-				m_p.m_vTarget = m_p.m_v;
+				pChan->pos()->setTargetCurrent();
 			}
 
 			//		m_pA->m_p.m_vTarget = -m_pA->m_p.m_vTarget;
@@ -132,7 +141,8 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		int32_t step = m_p.m_vTarget - m_p.m_v;
+		ACTUATOR_V* pP = getChan()->pos();
+		int32_t step = pP->getDtarget();
 		//		int32_t step = m_pA->m_p.m_vTarget;
 		IF_F(step == 0);
 		int32_t ds = abs(step);
@@ -154,7 +164,8 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		uint16_t b = m_s.m_vTarget;
+		ACTUATOR_V* pS = getChan()->speed();
+		uint16_t b = pS->getTarget();
 		IF_F(m_pMB->writeRegisters(m_iSlave, m_addr.m_setSpd, 1, &b) != 1);
 		m_pT->sleepT(m_cmdInt);
 
@@ -165,7 +176,8 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		uint16_t b = m_a.m_vTarget;
+		ACTUATOR_V* pA = getChan()->accel();
+		uint16_t b = pA->getTarget();
 		IF_F(m_pMB->writeRegisters(m_iSlave, m_addr.m_setAcc, 1, &b) != 1);
 		m_pT->sleepT(m_cmdInt);
 
@@ -237,7 +249,9 @@ namespace kai
 		IF_F(m_pMB->writeBit(m_iSlave, m_addr.m_resPos, true) != 1);
 		m_pT->sleepT(m_cmdInt);
 
-		m_p.m_v = 0;
+		ACTUATOR_V* pP = getChan()->pos();
+		pP->set(0);
+
 		return true;
 	}
 
@@ -304,9 +318,10 @@ namespace kai
 		IF_F(r != 2);
 		m_pT->sleepT(m_cmdInt);
 
+		ACTUATOR_V* pP = getChan()->pos();
 		//	int p = MAKE32(pB[0], pB[1]);
 		int16_t p = pB[1];
-		m_p.m_v = p;
+		pP->set(p);
 
 		return true;
 	}

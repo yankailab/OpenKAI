@@ -9,23 +9,6 @@ namespace kai
 
 	_ActuatorBase::_ActuatorBase()
 	{
-		m_pOrigin = 0.0;
-		m_p.init();
-		m_sDir = 1.0;
-		m_s.init();
-		m_a.init();
-		m_b.init();
-		m_c.init();
-
-		m_mode = actuatorMode_speed;
-		m_bPower = false;
-
-		m_tLastCmd = 0;
-		m_tCmdTimeout = 0;
-
-		m_bfStatus.clearAll();
-		m_bfSet.clearAll();
-
 		pthread_mutex_init(&m_mutex, NULL);
 		m_pParent = NULL;
 	}
@@ -40,54 +23,77 @@ namespace kai
 		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("tCmdTimeout", &m_tCmdTimeout);
-		pK->v("mode", (int*)&m_mode);
-		pK->v("bPower", &m_bPower);
+		Kiss *pKchannels = pK->child("channels");
+		IF__(pKchannels->empty(), OK_OK);
 
-		int bf;
+		int i = 0;
+		while (1)
+		{
+			Kiss *pKc = pKchannels->child(i++);
+			if (pKc->empty())
+				break;
 
-		bf = 0;
-		pK->v("setPower", &bf);
-		if(bf)
-			m_bfSet.set(actuator_power);
+			ACTUATOR_CHAN c;
+			c.init();
 
-		bf = 0;
-		pK->v("setID", &bf);
-		if(bf)
-			m_bfSet.set(actuator_setID);
+			pKc->v("ID", &c.m_ID);
+			pKc->v("tCmdTimeout", &c.m_tCmdTimeout);
+			pKc->v("mode", (int *)&c.m_mode);
+			pKc->v("bPower", &c.m_bPower);
 
-		bf = 0;
-		pK->v("setMode", &bf);
-		if(bf)
-			m_bfSet.set(actuator_setMode);
+			int bf;
 
+			bf = 0;
+			pKc->v("setPower", &bf);
+			if (bf)
+				c.m_bfSet.set(actuator_power);
 
-		pK->v("Porigin", &m_pOrigin);
-		pK->v("p", &m_p.m_v);
-		pK->v("pTarget", &m_p.m_vTarget);
-		pK->v("pErr", &m_p.m_vErr);
-		pK->v("pRange", &m_p.m_vRange);
+			bf = 0;
+			pKc->v("setID", &bf);
+			if (bf)
+				c.m_bfSet.set(actuator_setID);
 
-		pK->v("sDir", &m_sDir);
-		pK->v("s", &m_s.m_v);
-		pK->v("sTarget", &m_s.m_vTarget);
-		pK->v("sErr", &m_s.m_vErr);
-		pK->v("sRange", &m_s.m_vRange);
+			bf = 0;
+			pKc->v("setMode", &bf);
+			if (bf)
+				c.m_bfSet.set(actuator_setMode);
 
-		pK->v("a", &m_a.m_v);
-		pK->v("aTarget", &m_a.m_vTarget);
-		pK->v("aErr", &m_a.m_vErr);
-		pK->v("aRange", &m_a.m_vRange);
+			pKc->v("Porigin", &c.m_pOrigin);
+			pKc->v("p", &c.m_p.m_v);
+			pKc->v("pTarget", &c.m_p.m_vTarget);
+			pKc->v("pErr", &c.m_p.m_vErr);
+			pKc->v("pRange", &c.m_p.m_vRange);
 
-		pK->v("b", &m_b.m_v);
-		pK->v("bTarget", &m_b.m_vTarget);
-		pK->v("bErr", &m_b.m_vErr);
-		pK->v("bRange", &m_b.m_vRange);
+			pKc->v("sCofactor", &c.m_s.m_vCofactor);
+			pKc->v("s", &c.m_s.m_v);
+			pKc->v("sTarget", &c.m_s.m_vTarget);
+			pKc->v("sErr", &c.m_s.m_vErr);
+			pKc->v("sRange", &c.m_s.m_vRange);
 
-		pK->v("c", &m_c.m_v);
-		pK->v("cTarget", &m_c.m_vTarget);
-		pK->v("cErr", &m_c.m_vErr);
-		pK->v("cRange", &m_c.m_vRange);
+			pKc->v("a", &c.m_a.m_v);
+			pKc->v("aTarget", &c.m_a.m_vTarget);
+			pKc->v("aErr", &c.m_a.m_vErr);
+			pKc->v("aRange", &c.m_a.m_vRange);
+
+			pKc->v("b", &c.m_b.m_v);
+			pKc->v("bTarget", &c.m_b.m_vTarget);
+			pKc->v("bErr", &c.m_b.m_vErr);
+			pKc->v("bRange", &c.m_b.m_vRange);
+
+			pKc->v("c", &c.m_c.m_v);
+			pKc->v("cTarget", &c.m_c.m_vTarget);
+			pKc->v("cErr", &c.m_c.m_vErr);
+			pKc->v("cRange", &c.m_c.m_vRange);
+
+			m_vChan.push_back(c);
+		}
+
+		if (m_vChan.empty())
+		{
+			ACTUATOR_CHAN c;
+			c.init();
+			m_vChan.push_back(c);
+		}
 
 		return OK_OK;
 	}
@@ -106,17 +112,6 @@ namespace kai
 		return OK_OK;
 	}
 
-	void _ActuatorBase::power(bool bON)
-	{
-		m_bPower = bON;
-		m_bfSet.set(actuator_power);
-	}
-
-	void _ActuatorBase::setBitFlag(ACTUATOR_BF_SET bf)
-	{
-		m_bfSet.set(bf);
-	}
-
 	int _ActuatorBase::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
@@ -126,14 +121,6 @@ namespace kai
 	void _ActuatorBase::update(void)
 	{
 		IF_(check() != OK_OK);
-	}
-
-	bool _ActuatorBase::bCmdTimeout(void)
-	{
-		uint64_t t = getApproxTbootUs();
-		IF_F(t - m_tLastCmd < m_tCmdTimeout);
-
-		return true;
 	}
 
 	bool _ActuatorBase::open(void)
@@ -151,133 +138,16 @@ namespace kai
 		pthread_mutex_unlock(&m_mutex);
 	}
 
-	void _ActuatorBase::setPtarget(float p, bool bNormalized)
+	ACTUATOR_CHAN *_ActuatorBase::getChan(int iChan)
 	{
-		if (!bNormalized)
-			m_p.setTarget(p);
-		else
-			m_p.setNormalizedTarget(p);
+		IF_N(m_vChan.empty())
 
-		m_tLastCmd = m_pT->getTfrom();
+		return &m_vChan[iChan];
 	}
 
-	void _ActuatorBase::setStarget(float s, bool bNormalized)
+	bool _ActuatorBase::bCmdTimeout(int iChan)
 	{
-		s *= m_sDir;
-
-		if (!bNormalized)
-			m_s.setTarget(s);
-		else
-			m_s.setNormalizedTarget(s);
-
-		m_tLastCmd = m_pT->getTfrom();
-	}
-
-	void _ActuatorBase::setAtarget(float a, bool bNormalized)
-	{
-		if (!bNormalized)
-			m_a.setTarget(a);
-		else
-			m_a.setNormalizedTarget(a);
-
-		m_tLastCmd = m_pT->getTfrom();
-	}
-
-	void _ActuatorBase::setBtarget(float b, bool bNormalized)
-	{
-		if (!bNormalized)
-			m_b.setTarget(b);
-		else
-			m_b.setNormalizedTarget(b);
-
-		m_tLastCmd = m_pT->getTfrom();
-	}
-
-	float _ActuatorBase::getPtarget(void)
-	{
-		return m_p.m_vTarget;
-	}
-
-	float _ActuatorBase::getStarget(void)
-	{
-		return m_s.m_vTarget;
-	}
-
-	float _ActuatorBase::getAtarget(void)
-	{
-		return m_a.m_vTarget;
-	}
-
-	float _ActuatorBase::getBtarget(void)
-	{
-		return m_b.m_vTarget;
-	}
-
-	float _ActuatorBase::getCtarget(void)
-	{
-		return m_c.m_vTarget;
-	}
-
-	float _ActuatorBase::getP(void)
-	{
-		return m_p.m_v;
-	}
-
-	float _ActuatorBase::getS(void)
-	{
-		return m_s.m_v;
-	}
-
-	float _ActuatorBase::getA(void)
-	{
-		return m_a.m_v;
-	}
-
-	float _ActuatorBase::getB(void)
-	{
-		return m_b.m_v;
-	}
-
-	float _ActuatorBase::getC(void)
-	{
-		return m_c.m_v;
-	}
-
-	void _ActuatorBase::setP(float p)
-	{
-		m_p.m_v = p;
-	}
-
-	void _ActuatorBase::setS(float s)
-	{
-		m_s.m_v = s;
-	}
-
-	void _ActuatorBase::setA(float a)
-	{
-		m_a.m_v = a;
-	}
-
-	void _ActuatorBase::setB(float b)
-	{
-		m_b.m_v = b;
-	}
-
-	void _ActuatorBase::setC(float c)
-	{
-		m_c.m_v = c;
-	}
-
-	void _ActuatorBase::gotoOrigin(void)
-	{
-		m_tLastCmd = m_pT->getTfrom();
-	}
-
-	bool _ActuatorBase::bComplete(void)
-	{
-		IF_F(!m_p.bComplete());
-
-		return true;
+		return getChan(iChan)->bCmdTimeout();
 	}
 
 	void _ActuatorBase::console(void *pConsole)
@@ -286,38 +156,52 @@ namespace kai
 		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
+		const int nD = 5;
 
-		pC->addMsg("-----------------------", 1);
-		pC->addMsg("p=" + f2str(m_p.m_v) +
-					   ", pT=" + f2str(m_p.m_vTarget) +
-					   ", pRange=[" + f2str(m_p.m_vRange.x) + ", " + f2str(m_p.m_vRange.y) + "]" +
-					   ", pO=" + f2str(m_pOrigin) +
-					   ", pE=" + f2str(m_p.m_vErr),
-				   1);
+		for (int i = 0; i < m_vChan.size(); i++)
+		{
+			ACTUATOR_CHAN *pChan = getChan(i);
+			ACTUATOR_V *pV;
 
-		pC->addMsg("s=" + f2str(m_s.m_v) +
-					   ", sT=" + f2str(m_s.m_vTarget) +
-					   ", sRange=[" + f2str(m_s.m_vRange.x) + ", " + f2str(m_s.m_vRange.y) + "]" +
-					   ", sE=" + f2str(m_s.m_vErr),
-				   1);
+			pC->addMsg("-----------------------", 1);
+			pC->addMsg("Chan " + i2str(i), 1);
 
-		pC->addMsg("a=" + f2str(m_a.m_v) +
-					   ", aT=" + f2str(m_a.m_vTarget) +
-					   ", aRange=[" + f2str(m_a.m_vRange.x) + ", " + f2str(m_a.m_vRange.y) + "]" +
-					   ", aE=" + f2str(m_a.m_vErr),
-				   1);
+			pV = pChan->pos();
+			pC->addMsg("p=" + f2str(pV->m_v) +
+						   ", pT=" + f2str(pV->m_vTarget) +
+						   ", pRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
+						   ", pO=" + f2str(pChan->m_pOrigin) +
+						   ", pE=" + f2str(pV->m_vErr),
+					   1);
 
-		pC->addMsg("b=" + f2str(m_b.m_v) +
-					   ", bT=" + f2str(m_b.m_vTarget) +
-					   ", bRange=[" + f2str(m_b.m_vRange.x) + ", " + f2str(m_b.m_vRange.y) + "]" +
-					   ", bE=" + f2str(m_b.m_vErr),
-				   1);
+			pV = pChan->speed();
+			pC->addMsg("s=" + f2str(pV->m_v) +
+						   ", sT=" + f2str(pV->m_vTarget) +
+						   ", sRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
+						   ", sE=" + f2str(pV->m_vErr),
+					   1);
 
-		pC->addMsg("c=" + f2str(m_c.m_v) +
-					   ", cT=" + f2str(m_c.m_vTarget) +
-					   ", cRange=[" + f2str(m_c.m_vRange.x) + ", " + f2str(m_c.m_vRange.y) + "]" +
-					   ", cE=" + f2str(m_c.m_vErr),
-				   1);
+			pV = pChan->accel();
+			pC->addMsg("a=" + f2str(pV->m_v) +
+						   ", aT=" + f2str(pV->m_vTarget) +
+						   ", aRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
+						   ", aE=" + f2str(pV->m_vErr),
+					   1);
+
+			pV = pChan->brake();
+			pC->addMsg("b=" + f2str(pV->m_v) +
+						   ", bT=" + f2str(pV->m_vTarget) +
+						   ", bRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
+						   ", bE=" + f2str(pV->m_vErr),
+					   1);
+
+			pV = pChan->current();
+			pC->addMsg("c=" + f2str(pV->m_v) +
+						   ", cT=" + f2str(pV->m_vTarget) +
+						   ", cRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
+						   ", cE=" + f2str(pV->m_vErr),
+					   1);
+		}
 	}
 
 }

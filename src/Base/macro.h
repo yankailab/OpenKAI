@@ -129,7 +129,7 @@
     if (x)           \
     {                \
         delete[] x;  \
-        x = NULL;    \
+        x = nullptr; \
     }
 #define DEL(x)       \
     if (x)           \

@@ -172,7 +172,7 @@ namespace kai
 		}
 
 		// filter the position
-		float *pX, *pY, *pA, *pH;
+		float fX, fY, fA, fH;
 		float dTs = m_pT->getDt() * USEC_2_SEC;
 		if (tO)
 		{
@@ -181,32 +181,24 @@ namespace kai
 			float a = tO->area();
 			float h = tO->getRoll(); // use Roll for Aruco!
 
-			pX = m_fX.update(&x, dTs);
-			pY = m_fY.update(&y, dTs);
-			pA = m_fZ.update(&a, dTs);
-			pH = m_fH.update(&h, dTs);
+			fX = m_fX.update(x, dTs);
+			fY = m_fY.update(y, dTs);
+			fA = m_fZ.update(a, dTs);
+			fH = m_fH.update(h, dTs);
 
 			m_vTargetBB = tO->getBB2D();
 		}
 		else
-		{
-			pX = m_fX.update(NULL, dTs);
-			pY = m_fY.update(NULL, dTs);
-			pA = m_fZ.update(NULL, dTs);
-			pH = m_fH.update(NULL, dTs);
-		}
-
-		if (!pX || !pY || !pA || !pH)
 		{
 			m_vPvar = m_vPsp;
 			return false;
 		}
 
 		// convert position from screen to world relative
-		m_vPvar.z = (pTag) ? pTag->getDist(*pA) : 1.0;
-		m_vPvar.x = m_vPvar.z * tan((*pY - 0.5) * m_vFov.y * DEG_2_RAD);
-		m_vPvar.y = m_vPvar.z * tan((*pX - 0.5) * m_vFov.x * DEG_2_RAD);
-		m_vPvar.w = *pH;
+		m_vPvar.z = (pTag) ? pTag->getDist(fA) : 1.0;
+		m_vPvar.x = m_vPvar.z * tan((fY - 0.5) * m_vFov.y * DEG_2_RAD);
+		m_vPvar.y = m_vPvar.z * tan((fX - 0.5) * m_vFov.x * DEG_2_RAD);
+		m_vPvar.w = fH;
 
 		return true;
 	}

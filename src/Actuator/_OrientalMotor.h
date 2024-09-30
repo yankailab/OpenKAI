@@ -39,6 +39,7 @@ namespace kai
 		~_OrientalMotor();
 
 		int init(void *pKiss);
+		int link(void);
 		int start(void);
 		int check(void);
 

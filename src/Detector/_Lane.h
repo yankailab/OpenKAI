@@ -109,12 +109,12 @@ namespace kai
 
 		void input(int i, float v)
 		{
-			m_pAvr[i].update(m_pMed[i].update(&v));
+			m_pAvr[i].update(m_pMed[i].update(v));
 		}
 
 		double vFilter(int i)
 		{
-			return m_pAvr[i].v();
+			return m_pAvr[i].get();
 		}
 
 		void findLane(Mat &mBin)
@@ -155,7 +155,7 @@ namespace kai
 				{
 					gsl_matrix_set(m_gX, i, j, pow(i, j));
 				}
-				gsl_vector_set(m_gY, i, m_pAvr[i].v());
+				gsl_vector_set(m_gY, i, m_pAvr[i].get());
 			}
 
 			m_gWS = gsl_multifit_linear_alloc(m_n, m_degPoly);

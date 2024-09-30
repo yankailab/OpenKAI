@@ -30,7 +30,9 @@ namespace kai
             m_spd = nSpd * m_kSpd + nStr * m_kStr;
 
             NULL_(m_pActuator);
-            m_pActuator->setStarget(m_iAxis, m_spd);
+            ACTUATOR_CHAN* pChan = m_pActuator->getChan(m_iAxis);
+            NULL_(pChan);
+            pChan->speed()->setTarget(m_spd);
         }
     };
 

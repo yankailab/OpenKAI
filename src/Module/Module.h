@@ -68,7 +68,7 @@
 #endif
 
 #ifdef WITH_APMAVLINK
-#include "../Autopilot/APmavlink/_APmavlink_actuator.h"
+#include "../Autopilot/APmavlink/_APmavlink_rcChannel.h"
 #include "../Autopilot/APmavlink/_APmavlink_base.h"
 #include "../Autopilot/APmavlink/_APmavlink_httpJson.h"
 #include "../Autopilot/APmavlink/_APmavlink_mav2json.h"

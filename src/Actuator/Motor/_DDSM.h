@@ -23,9 +23,9 @@ namespace kai
 		virtual void console(void *pConsole);
 
 	private:
-		bool setID(void);
-		bool setMode(void);
-		bool setSpeed(void);
+		bool setID(int iChan = 0);
+		bool setMode(int iChan = 0);
+		bool setSpeed(int iChan = 0);
 		bool readCMD(void);
 		void update(void);
 		static void *getUpdate(void *This)
@@ -45,8 +45,7 @@ namespace kai
 		_Thread *m_pTr;
 		_IObase *m_pIO;
 
-		int m_ID;
-		uint8_t m_iMode;
+//		uint8_t m_iMode;
 	};
 
 }

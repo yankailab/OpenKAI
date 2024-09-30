@@ -19,8 +19,7 @@ namespace kai
 		virtual void console(void *pConsole);
 
 	private:
-		void send(void);
-		void updateVehicle(void);
+		void update2json(void);
 		void updateW(void);
 		static void *getUpdateW(void *This)
 		{
