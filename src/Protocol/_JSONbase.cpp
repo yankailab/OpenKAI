@@ -107,11 +107,11 @@ namespace kai
     {
         string msg = picojson::value(o).serialize() + m_msgFinishSend;
 
-        if (m_pIO->ioType() == io_webSocket)
-        {
-            _WebSocket *pWS = (_WebSocket *)m_pIO;
-            return pWS->write((unsigned char *)msg.c_str(), msg.size(), WS_MODE_TXT);
-        }
+        // if (m_pIO->ioType() == io_webSocket)
+        // {
+        //     _WebSocket *pWS = (_WebSocket *)m_pIO;
+        //     return pWS->write((unsigned char *)msg.c_str(), msg.size(), WS_MODE_TXT);
+        // }
 
         return m_pIO->write((unsigned char *)msg.c_str(), msg.size());
     }

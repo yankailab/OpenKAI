@@ -54,9 +54,13 @@ namespace kai
 		void close(void);
 		void console(void *pConsole);
 
+		//_IObase overwrite
+		bool write(uint8_t *pBuf, int nB);
+		int read(uint8_t *pBuf, int nB);
+
+		// _WebSocket impl
 		bool write(uint8_t *pBuf, int nB, uint32_t mode = WS_MODE_BIN);
 		bool writeTo(uint32_t id, uint8_t *pBuf, int nB, uint32_t mode = WS_MODE_BIN);
-		int read(uint8_t *pBuf, int nB);
 		int readFrom(uint32_t id, uint8_t *pBuf, int nB);
 
 		int nClient(void);
@@ -80,7 +84,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		string m_fifoIn;
 		string m_fifoOut;
 		int m_fdW;

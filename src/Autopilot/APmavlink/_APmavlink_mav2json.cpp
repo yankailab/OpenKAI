@@ -94,17 +94,12 @@ namespace kai
 		JO(r, "lon", vP.y);
 		JO(r, "lat", vP.x);
 		JO(r, "alt", vP.w);
-		JO(r, "yaw", vA.x);
+		JO(r, "yaw", vA.x * RAD_2_DEG - 90);
 		JO(r, "pitch", vA.y);
 		JO(r, "roll", vA.z);
 		JO(r, "batt", m_pAP->getBattery());
 		JO(r, "hdg", -1.0);
-//		sendMsg(r);
-
-        string msg = picojson::value(r).serialize() + m_msgFinishSend;
-        _WebSocket *pWS = (_WebSocket *)m_pIO;
-        pWS->writeTo(0, (unsigned char *)msg.c_str(), msg.size(), WS_MODE_TXT);
-
+		sendMsg(r);
 	}
 
 	void _APmavlink_mav2json::updateR(void)

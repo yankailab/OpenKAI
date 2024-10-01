@@ -56,6 +56,42 @@
 }
 
 {
+	"name":"udpGCS",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":30,
+	}
+	{
+		"name":"threadR",
+		"FPS":30,
+		"vRunThread":["mavGCS.thread"],
+	}
+	"addr":"127.0.0.1",
+	"port":19840,
+}
+
+{
+	"name":"mavGCS",
+	"class":"_Mavlink",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"_IObase":"udpGCS",
+	{
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavUDP",
+		}
+	}
+}
+
+{
 	"name":"udp",
 	"class":"_UDP",
 	"bON":1,
@@ -69,6 +105,7 @@
 		"vRunThread":["mavUDP.thread"],
 	}
 	"/port":19840,
+	"/addr":"127.0.0.1",
 	"port":14550,
 }
 
@@ -87,6 +124,10 @@
 		{
 			"bON":0,
 			"_Mavlink":"mavAP",
+		}
+		{
+			"bON":1,
+			"_Mavlink":"mavGCS",
 		}
 	}
 }

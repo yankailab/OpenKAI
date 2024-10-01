@@ -8,11 +8,11 @@ static OpenKAI *g_pStartup;
 
 void signalHandler(int signal)
 {
-	if (signal != SIGINT)
-		return;
-	printf("\nSIGINT: OpenKAI Shutdown\n");
-
-	g_pStartup->stopAllModules();
+	if (signal == SIGINT)
+	{
+		printf("\nSIGINT\n");
+		g_pStartup->stopAllModules();
+	}
 }
 
 namespace kai

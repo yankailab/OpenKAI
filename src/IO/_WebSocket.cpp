@@ -41,29 +41,29 @@ namespace kai
 		m_vClient.clear();
 
 		Kiss *pKt = pK->child("threadR");
-        if (pKt->empty())
-        {
-            LOG_E("threadR not found");
-            return OK_ERR_NOT_FOUND;
-        }
+		if (pKt->empty())
+		{
+			LOG_E("threadR not found");
+			return OK_ERR_NOT_FOUND;
+		}
 
-        m_pTr = new _Thread();
-        CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "threadR init failed");
+		m_pTr = new _Thread();
+		CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "threadR init failed");
 
-        return OK_OK;
+		return OK_OK;
 	}
 
 	bool _WebSocket::open(void)
 	{
 		m_fdW = ::open(m_fifoIn.c_str(), O_WRONLY);
-		if(m_fdW < 0)
+		if (m_fdW < 0)
 		{
 			LOG_E("Cannot open: " + m_fifoIn);
 			return false;
 		}
 
 		m_fdR = ::open(m_fifoOut.c_str(), O_RDWR);
-		if(m_fdR < 0)
+		if (m_fdR < 0)
 		{
 			LOG_E("Cannot open: " + m_fifoOut);
 			return false;
@@ -94,6 +94,8 @@ namespace kai
 
 	void _WebSocket::updateW(void)
 	{
+		signal(SIGPIPE, SIG_IGN);
+
 		while (m_pT->bAlive())
 		{
 			if (!bOpen())
@@ -153,17 +155,23 @@ namespace kai
 		return m_vClient.size();
 	}
 
+	bool _WebSocket::write(uint8_t *pBuf, int nB)
+	{
+		return write(pBuf, nB, WS_MODE_TXT);
+	}
+
+	int _WebSocket::read(uint8_t *pBuf, int nB)
+	{
+		IF__(m_vClient.empty(), 0);
+
+		return readFrom(m_vClient[0].m_id, pBuf, nB);
+	}
+
 	bool _WebSocket::write(uint8_t *pBuf, int nB, uint32_t mode)
 	{
-		IF_F(m_vClient.empty());
+		//		IF_F(m_vClient.empty());
 
-		bool bResult = true;
-		for (uint32_t i = 0; i < m_vClient.size(); i++)
-		{
-			writeTo(m_vClient[i].m_id, pBuf, nB, mode);
-		}
-
-		return bResult;
+		return writeTo(0, pBuf, nB, mode);
 	}
 
 	bool _WebSocket::writeTo(uint32_t id, uint8_t *pBuf, int nB, uint32_t mode)
@@ -185,18 +193,10 @@ namespace kai
 		return true;
 	}
 
-	int _WebSocket::read(uint8_t *pBuf, int nB)
-	{
-		if (m_vClient.empty())
-			return 0;
-		return readFrom(m_vClient[0].m_id, pBuf, nB);
-	}
-
 	int _WebSocket::readFrom(uint32_t id, uint8_t *pBuf, int nB)
 	{
 		WS_CLIENT *pC = findClientById(id);
-		if (!pC)
-			return -1;
+		NULL__(pC, -1);
 
 		return pC->m_fifo.output(pBuf, nB);
 	}
