@@ -56,10 +56,6 @@
 			"bON":1,
 			"_Mavlink":"mavUDP",
 		}
-		{
-			"bON":0,
-			"_Mavlink":"mavWS",
-		}
 	}
 }
 
@@ -96,10 +92,6 @@
 		{
 			"bON":1,
 			"_Mavlink":"mavAP",
-		}
-		{
-			"bON":0,
-			"_Mavlink":"mavWS",
 		}
 	}
 }

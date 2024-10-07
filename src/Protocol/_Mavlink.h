@@ -18,10 +18,10 @@ namespace kai
 		CbMavMsg m_pCbRecv = NULL;
 		void *m_pCbInst = NULL;
 
-		void callback(void)
+		void callback(void* pMavMsg)
 		{
 			NULL_(m_pCbRecv);
-			m_pCbRecv(this, m_pCbInst);
+			m_pCbRecv(pMavMsg, m_pCbInst);
 		}
 	};
 
@@ -56,7 +56,7 @@ namespace kai
 
 			for (MavCallback c : m_vCbRecv)
 			{
-				c.callback();
+				c.callback(this);
 			}
 		}
 
@@ -66,7 +66,8 @@ namespace kai
 
 			for (MavCallback c : m_vCbRecv)
 			{
-				IF_F((c.m_pCbRecv == pCb) && (c.m_pCbInst == pInst));
+				if((c.m_pCbRecv == pCb) && (c.m_pCbInst == pInst))
+					return true;
 			}
 
 			MavCallback cb;

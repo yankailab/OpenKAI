@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["mavAP","apBase","ws"],
+	"vBASE":["mavAP","/apBase","ws","apM2J","apMission"],
 }
 
 {
@@ -195,7 +195,7 @@
 {
 	"name":"ws",
 	"class":"_WebSocket",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -209,7 +209,7 @@
 {
 	"name":"apM2J",
 	"class":"_APmavlink_mav2json",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -225,4 +225,17 @@
 	"ieSendHB":100000,
 
 	"_APmavlink_base":"apBase",
+}
+
+{
+	"name":"apMission",
+	"class":"_APmavlink_mission",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"bLog":1,
+	"_APmavlink_base":"apBase",
+	"tOutSec":1000,
 }

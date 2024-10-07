@@ -5,13 +5,12 @@
 #include "../../Utility/utilEvent.h"
 #include "_APmavlink_move.h"
 
-#define APMAV_MISSION_TOUT 3000000
-
 namespace kai
 {
 	struct AP_MISSION
 	{
 		int m_missionID;
+		uint8_t m_missionType;
 		vDouble4 m_vP;	// lat, lng, alt, hdg
 		vDouble4 m_vPlookAt;
 		float m_spd;
@@ -57,6 +56,7 @@ namespace kai
 		void downloadMission(void);
 		void uploadMission(void);
 
+		// Upload
         static void sCbMavRecvMissionRequestInt(void* pMsg, void *pInst)
         {
             NULL_(pInst);
@@ -69,10 +69,17 @@ namespace kai
             ((_APmavlink_mission *)pInst)->CbMavRecvMissionAck(pMsg);
         }
 
+		// Download
         static void sCbMavRecvMissionCount(void* pMsg, void *pInst)
         {
             NULL_(pInst);
             ((_APmavlink_mission *)pInst)->CbMavRecvMissionCount(pMsg);
+        }
+
+        static void sCbMavRecvMissionItemInt(void* pMsg, void *pInst)
+        {
+            NULL_(pInst);
+            ((_APmavlink_mission *)pInst)->CbMavRecvMissionItemInt(pMsg);
         }
 
 	private:
@@ -97,6 +104,7 @@ namespace kai
 		void CbMavRecvMissionItemInt(void* pMsg);
 		void sendMissionAck(void);
 
+		void checkTimeOut(void);
 		void missionCurrent(void);
 		void missionSetCurrent(void);
 		void statusText(void);
@@ -105,12 +113,21 @@ namespace kai
 
 	protected:
 		_APmavlink_base *m_pAP;
-		vector<AP_MISSION> m_vMission;
-		int m_nMission;
-		int m_mID; // current mission index
+
+		vector<AP_MISSION> m_vMissionUL;
+		int m_iMissionUL;
+		uint64_t m_tUpdatedUL;
+
+		vector<AP_MISSION> m_vMissionDL;
+		int m_nMissionDL;
+		int m_iMissionDL;
+		int m_mIdxDL; // current mission index
+		uint64_t m_tUpdatedDL;
+
 
 		AP_MISSION_STATE m_mState;
 		TIME_OUT m_tOut;
+		int m_tOutSec;
 
 	};
 
