@@ -111,7 +111,7 @@ namespace kai
 
         writeSharedMem();
 
-        m_pLv->setWorkMode(m_handle, m_workMode);
+//        m_pLv->setWorkMode(m_handle, m_workMode);
 
         // if(m_workMode == kLivoxLidarNormal)
         //     m_pLv->setScanPattern(m_handle, m_scanPattern);

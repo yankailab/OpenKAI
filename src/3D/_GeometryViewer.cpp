@@ -190,6 +190,8 @@ namespace kai
 				break;
 			}
 		}
+
+		return true;
 	}
 
 	void _GeometryViewer::updateAllGeometries(void)

@@ -3,18 +3,18 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog":1,
-	"bStdErr":1,
+	"bStdErr":0,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["Livox2","/LivoxLidar2"],
+	"vBASE":["Livox2","/LivoxLidar2","gv"],
 }
 
 {
@@ -53,22 +53,24 @@
 	"class":"LivoxLidar2",
 	"bON":1,
 	"bLog":1,
-	"fConfig":"/home/kai/dev/OpenKAI/data/Livox/mid360_config.json",
+	"/fConfig":"/home/kai/dev/OpenKAI/data/Livox/mid360_config.json",
+	"fConfig":"/home/kai/dev/OpenKAI/data/Livox/HAP_config.json",
 }
 
 {
 	"name":"Livox2",
 	"class":"_Livox2",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
-		"FPS":1,
+		"FPS":30,
 	}
 	"bLog":0,
 	"LivoxLidar2":"LivoxLidar2",
-	"SN":"/47MDL9T0020177",
+	"/SN":"/47MDL9T0020177",
 	"lidarMode":1,
 	"nP":256000,
+	"bEnableIMU":1,
 	"vToffset":[0,0,0],
 	"vRoffset":[0,0,0],
 	"sharedMemG":"shmW",
@@ -111,7 +113,7 @@
 {
 	"name":"gv",
 	"class":"_GeometryViewer",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
@@ -123,14 +125,12 @@
 	"vWinSize":[1920,1080],
 	"pathRes":"/usr/local/bin/Open3D/resources",
 	"device":"CPU:0",
-	"nPbuf":256000,
-	"vGeometryBase":["Livox2"],
 	"vCamLookAt":[0,0,0],
-	"vCamEye":[0,0,2],
-	"vCamUp":[0,1,0],
+	"vCamEye":[0,2,0],
+	"vCamUp":[0,0,1],
 	"vCamAutoLookAt":[0,0,0],
-	"vCamAutoEye":[0,0,2],
-	"vCamAutoUp":[0,1,0],
+	"vCamAutoEye":[0,2,0],
+	"vCamAutoUp":[0,0,1],
 	"vCoR":[0,0,0],
 	"camFov":75,
 	"vCamNF":[0, 500],
@@ -140,9 +140,22 @@
 	"vBtnPadding":[1.6, 2.0],
 	"mouseMode":0,
 	"vDmove":[0.5, 5.0],
-	"rDummyDome":1000.0,
 	"dHiddenRemove":100.0,
 	"dirSave":"/home/kai/Documents/",
 	"/dirSave":"/media/lab/",
 	"rVoxel":0.05,
+
+	{
+		"name":"geometry",
+		{
+			"_GeometryBase":"Livox2",
+			"bStatic":0,
+			"nP":256000,
+			"rDummyDome":1000.0,
+			"/matName":"defaultUnlit",
+			"matName":"depth",
+			"matPointSize":1,
+		}
+	}
 }
+
