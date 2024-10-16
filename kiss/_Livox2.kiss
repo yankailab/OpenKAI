@@ -1,0 +1,217 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["Livox2","gv"],
+}
+
+{
+	"name":"Livox2UDPdeviceQuery",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":10,
+	}
+	{
+		"name":"threadR",
+		"FPS":10,
+		"vRunThread":["Livox2.threadDeviceQueryR"],
+	}
+	"port":56000,
+	"bServer":0,
+	"bW2R":0,
+	"bWbroadcast":1,
+}
+
+{
+	"name":"Livox2UDPctrlCmd",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":10,
+	}
+	{
+		"name":"threadR",
+		"FPS":10,
+		"vRunThread":["Livox2.threadControCmdR"],
+	}
+	"addr":"192.168.1.5",
+	"port":56100,
+	"bServer":0,
+	"bW2R":0,
+	"bWbroadcast":0,
+}
+
+{
+	"name":"Livox2UDPpushCmd",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":1,
+	}
+	{
+		"name":"threadR",
+		"FPS":10,
+		"vRunThread":["Livox2.threadPushCmdR"],
+	}
+	"addr":"192.168.1.5",
+	"port":56200,
+	"bServer":0,
+	"bW2R":0,
+	"bWbroadcast":0,
+}
+
+{
+	"name":"Livox2UDPpointCloud",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":1,
+	}
+	{
+		"name":"threadR",
+		"FPS":10,
+		"vRunThread":["Livox2.threadPointCloudR"],
+	}
+	"addr":"192.168.1.5",
+	"port":56300,
+	"bServer":0,
+	"bW2R":0,
+	"bWbroadcast":0,
+}
+
+{
+	"name":"Livox2UDPimu",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":1,
+	}
+	{
+		"name":"threadR",
+		"FPS":10,
+		"vRunThread":["Livox2.threadImuR"],
+	}
+	"addr":"192.168.1.5",
+	"port":56400,
+	"bServer":0,
+	"bW2R":0,
+	"bWbroadcast":0,
+}
+
+
+
+{
+	"name":"Livox2",
+	"class":"_Livox2",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadDeviceQueryR",
+		"FPS":1,
+	}
+    {
+		"name":"threadControlCmdW",
+		"FPS":2,
+	}
+    {
+		"name":"threadControlCmdR",
+		"FPS":1,
+	}
+    {
+		"name":"threadPushCmdR",
+		"FPS":1,
+	}
+    {
+		"name":"threadPointCloudR",
+		"FPS":1,
+	}
+    {
+		"name":"threadImuR",
+		"FPS":1,
+	}
+	"bLog":0,
+	"/SN":"/47MDL9T0020177",
+	"lidarMode":1,
+	"bEnableIMU":1,
+	"nP":256000,
+	"vToffset":[0,0,0],
+	"vRoffset":[0,0,0],
+	"sharedMemG":"shmW",
+
+	"_IObaseDeviceQuery":"Livox2UDPdeviceQuery",
+	"_IObaseCtrlCmd":"Livox2UDPctrlCmd",
+	"_IObasePushCmd":"Livox2UDPpushCmd",
+	"_IObasePointCloud":"Livox2UDPpointCloud",
+	"_IObaseIMU":"Livox2UDPimu",
+	"_IObaseLog":"Livox2UDPlog",
+}
+
+{
+	"name":"gv",
+	"class":"_GeometryViewer",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+    {
+		"name":"threadUI",
+		"FPS":30,
+	}
+	"vWinSize":[1920,1080],
+	"pathRes":"/usr/local/bin/Open3D/resources",
+	"device":"CPU:0",
+	"vCamLookAt":[0,0,0],
+	"vCamEye":[0,2,0],
+	"vCamUp":[0,0,1],
+	"vCamAutoLookAt":[0,0,0],
+	"vCamAutoEye":[0,2,0],
+	"vCamAutoUp":[0,0,1],
+	"vCoR":[0,0,0],
+	"camFov":75,
+	"vCamNF":[0, 500],
+	"camFovType":1,
+	"bFullScreen":0,
+	"wPanel":20,
+	"vBtnPadding":[1.6, 2.0],
+	"mouseMode":0,
+	"vDmove":[0.5, 5.0],
+	"dHiddenRemove":100.0,
+	"dirSave":"/home/kai/Documents/",
+	"/dirSave":"/media/lab/",
+	"rVoxel":0.05,
+
+	{
+		"name":"geometry",
+		{
+			"_GeometryBase":"Livox2",
+			"bStatic":0,
+			"nP":256000,
+			"rDummyDome":1000.0,
+			"/matName":"defaultUnlit",
+			"matName":"depth",
+			"matPointSize":1,
+		}
+	}
+}

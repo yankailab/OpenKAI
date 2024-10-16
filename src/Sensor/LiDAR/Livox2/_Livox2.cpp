@@ -9,10 +9,23 @@ namespace kai
 
     _Livox2::_Livox2()
     {
-        m_pLv = nullptr;
+        m_pTdeviceQueryR = nullptr;
+        m_pTcontrolCmdW = nullptr;
+        m_pTcontrolCmdR = nullptr;
+        m_pTpushCmdR = nullptr;
+        m_pTpointCloudR = nullptr;
+        m_pTimuR = nullptr;
+
+        m_pDeviceQuery = nullptr;
+        m_pCtrlCmd = nullptr;
+        m_pPushCmd = nullptr;
+        m_pPointCloud = nullptr;
+        m_pIMU = nullptr;
+        m_pLog = nullptr;
+
+        m_state = livox2_deviceQuery;
+
         m_SN = "";
-        m_handle = -1;
-        m_bOpen = false;
         m_workMode = kLivoxLidarNormal;
 
         m_tIMU = 0;
@@ -32,6 +45,73 @@ namespace kai
         pK->v("lidarMode", (int *)&m_workMode);
         pK->v("bEnableIMU", &m_bEnableIMU);
 
+        Kiss *pKt;
+
+        // Device Type Query
+        pKt = pK->child("threadDeviceQueryR");
+        if (pKt->empty())
+        {
+            LOG_E("threadDeviceQueryR not found");
+            return OK_ERR_NOT_FOUND;
+        }
+
+        m_pTdeviceQueryR = new _Thread();
+        CHECK_d_l_(m_pTdeviceQueryR->init(pKt), DEL(m_pTdeviceQueryR), "TdeviceQueryR init failed");
+
+        // Control Command
+        pKt = pK->child("threadControlCmdW");
+        if (pKt->empty())
+        {
+            LOG_E("threadControlCmdW not found");
+            return OK_ERR_NOT_FOUND;
+        }
+
+        m_pTcontrolCmdW = new _Thread();
+        CHECK_d_l_(m_pTcontrolCmdW->init(pKt), DEL(m_pTcontrolCmdW), "TcontrolCmdW init failed");
+
+        pKt = pK->child("threadControlCmdR");
+        if (pKt->empty())
+        {
+            LOG_E("threadControlCmdR not found");
+            return OK_ERR_NOT_FOUND;
+        }
+
+        m_pTcontrolCmdR = new _Thread();
+        CHECK_d_l_(m_pTcontrolCmdR->init(pKt), DEL(m_pTcontrolCmdR), "TcontrolCmdR init failed");
+
+        // Push command
+        pKt = pK->child("threadPushCmdR");
+        if (pKt->empty())
+        {
+            LOG_E("threadPushCmdR not found");
+            return OK_ERR_NOT_FOUND;
+        }
+
+        m_pTpushCmdR = new _Thread();
+        CHECK_d_l_(m_pTpushCmdR->init(pKt), DEL(m_pTpushCmdR), "TpushCmdR init failed");
+
+        // Point Cloud Data
+        pKt = pK->child("threadPointCloudR");
+        if (pKt->empty())
+        {
+            LOG_E("threadPointCloudR not found");
+            return OK_ERR_NOT_FOUND;
+        }
+
+        m_pTpointCloudR = new _Thread();
+        CHECK_d_l_(m_pTpointCloudR->init(pKt), DEL(m_pTpointCloudR), "TpointCloudR init failed");
+
+        // IMU Data
+        pKt = pK->child("threadImuR");
+        if (pKt->empty())
+        {
+            LOG_E("threadImuR not found");
+            return OK_ERR_NOT_FOUND;
+        }
+
+        m_pTimuR = new _Thread();
+        CHECK_d_l_(m_pTimuR->init(pKt), DEL(m_pTimuR), "TimuR init failed");
+
         return OK_OK;
     }
 
@@ -40,81 +120,214 @@ namespace kai
         CHECK_(this->_PCstream::link());
 
         Kiss *pK = (Kiss *)m_pKiss;
-        string n = "";
+        string n;
 
-        pK->v("LivoxLidar2", &n);
-        m_pLv = (LivoxLidar2 *)(pK->findModule(n));
+        n = "";
+        pK->v("_IObaseDeviceQuery", &n);
+        m_pDeviceQuery = (_IObase *)(pK->findModule(n));
+        NULL__(m_pDeviceQuery, OK_ERR_NOT_FOUND);
+
+        n = "";
+        pK->v("_IObaseCtrlCmd", &n);
+        m_pCtrlCmd = (_IObase *)(pK->findModule(n));
+        NULL__(m_pCtrlCmd, OK_ERR_NOT_FOUND);
+
+        n = "";
+        pK->v("_IObasePushCmd", &n);
+        m_pPushCmd = (_IObase *)(pK->findModule(n));
+        NULL__(m_pPushCmd, OK_ERR_NOT_FOUND);
+
+        n = "";
+        pK->v("_IObasePointCloud", &n);
+        m_pPointCloud = (_IObase *)(pK->findModule(n));
+        NULL__(m_pPointCloud, OK_ERR_NOT_FOUND);
+
+        n = "";
+        pK->v("_IObaseIMU", &n);
+        m_pIMU = (_IObase *)(pK->findModule(n));
+        NULL__(m_pIMU, OK_ERR_NOT_FOUND);
+
+        // n = "";
+        // pK->v("_IObaseLog", &n);
+        // m_pLog = (_IObase *)(pK->findModule(n));
+        // NULL__(m_pLog, OK_ERR_NOT_FOUND);
 
         return OK_OK;
-    }
-
-    int _Livox2::open(void)
-    {
-        NULL__(m_pLv, OK_ERR_NULLPTR);
-
-        LivoxLidar2device *pD = m_pLv->getDevice(m_SN);
-        NULL__(pD, OK_ERR_NULLPTR);
-        m_handle = pD->m_handle;
-
-        IF__(!m_pLv->setCbData(m_handle, sCbPointCloud, (void *)this), OK_ERR_UNKNOWN);
-
-        if (m_bEnableIMU)
-        {
-            IF__(!m_pLv->setCbIMU(m_handle, sCbIMU, (void *)this), OK_ERR_UNKNOWN);
-        }
-
-        m_bOpen = true;
-        LOG_I("open() success");
-        return OK_OK;
-    }
-
-    void _Livox2::close(void)
-    {
     }
 
     int _Livox2::start(void)
     {
         NULL__(m_pT, OK_ERR_NULLPTR);
-        return m_pT->start(getUpdate, this);
+        NULL__(m_pTdeviceQueryR, OK_ERR_NULLPTR);
+        NULL__(m_pTcontrolCmdW, OK_ERR_NULLPTR);
+        NULL__(m_pTcontrolCmdR, OK_ERR_NULLPTR);
+        NULL__(m_pTpushCmdR, OK_ERR_NULLPTR);
+        NULL__(m_pTpointCloudR, OK_ERR_NULLPTR);
+        NULL__(m_pTimuR, OK_ERR_NULLPTR);
+
+        CHECK_(m_pT->start(getUpdateWdeviceQuery, this));
+        CHECK_(m_pTdeviceQueryR->start(getUpdateRdeviceQuery, this));
+        CHECK_(m_pTcontrolCmdW->start(getUpdateWctrlCmd, this));
+        CHECK_(m_pTcontrolCmdR->start(getUpdateRctrlCmd, this));
+        CHECK_(m_pTpushCmdR->start(getUpdateRpushCmd, this));
+        CHECK_(m_pTpointCloudR->start(getUpdateRpointCloud, this));
+        CHECK_(m_pTimuR->start(getUpdateRimu, this));
+
+        return OK_OK;
     }
 
     int _Livox2::check(void)
     {
-        NULL__(m_pLv, OK_ERR_NULLPTR);
+        NULL__(m_pDeviceQuery, OK_ERR_NULLPTR);
+        NULL__(m_pCtrlCmd, OK_ERR_NULLPTR);
+        NULL__(m_pPushCmd, OK_ERR_NULLPTR);
+        NULL__(m_pPointCloud, OK_ERR_NULLPTR);
+        NULL__(m_pIMU, OK_ERR_NULLPTR);
+        NULL__(m_pLog, OK_ERR_NULLPTR);
+
         return this->_PCstream::check();
     }
 
-    void _Livox2::update(void)
+    void _Livox2::updateWdeviceQuery(void)
     {
         while (m_pT->bAlive())
         {
-            if (!m_bOpen)
-            {
-                if (!open())
-                {
-                    m_pT->sleepT(SEC_2_USEC);
-                    continue;
-                }
-            }
-
             m_pT->autoFPSfrom();
 
-            updateLidar();
+            if (m_state == livox2_deviceQuery)
+            {
+                sendDeviceQuery();
+            }
 
             m_pT->autoFPSto();
         }
     }
 
-    void _Livox2::updateLidar(void)
+    void _Livox2::sendDeviceQuery(void)
     {
-        IF_(check() != OK_OK);
+        LivoxLidarCmdPacket p;
 
-        writeSharedMem();
+        p.sof = LIVOX2_SOF;
+        p.version = 0;
+        p.length = 24;
+        p.seq_num = 0;
+        p.cmd_id = 0x0000;
+        p.cmd_type = 0x00;    // REQ
+        p.sender_type = 0x00; // Host computer
+        p.crc16_h = CRC::Calculate(&p.sof, 18, CRC::CRC_16_CCITTFALSE());
+        p.crc32_d = 0; // CRC::Calculate(p.data, length, CRC::CRC_32());
+        p.data[0] = 0;
 
-//        m_pLv->setWorkMode(m_handle, m_workMode);
+        int nB = sizeof(p) - 1;
+        m_pDeviceQuery->write((uint8_t *)&p, nB);
+    }
 
-        // if(m_workMode == kLivoxLidarNormal)
-        //     m_pLv->setScanPattern(m_handle, m_scanPattern);
+    void _Livox2::updateRdeviceQuery(void)
+    {
+        while (m_pTdeviceQueryR->bAlive())
+        {
+            m_pTdeviceQueryR->autoFPSfrom();
+
+			while (recvDeviceQuery())
+			{
+				handleDeviceQuery(m_recvDeviceQuery.m_cmd);
+				m_recvDeviceQuery.reset();
+			}
+
+            m_pTdeviceQueryR->autoFPSto();
+        }
+    }
+
+    bool _Livox2::recvDeviceQuery(void)
+    {
+        IF_F(check() != OK_OK);
+
+		uint8_t b;
+		while (m_pDeviceQuery->read(&b, 1) > 0)
+		{
+			if (m_recvDeviceQuery.m_iB > 0)
+			{
+				((uint8_t*)&m_recvDeviceQuery.m_cmd)[m_recvDeviceQuery.m_iB++] = b;
+				m_recvDeviceQuery.m_iB++;
+
+				if (m_recvDeviceQuery.m_iB == 4)
+				{
+					m_recvDeviceQuery.m_nB = m_recvDeviceQuery.m_cmd.length;
+				}
+
+				IF__(m_recvDeviceQuery.m_iB == m_recvDeviceQuery.m_nB, true);
+			}
+			else if (b == LIVOX2_SOF)
+			{
+				((uint8_t*)&m_recvDeviceQuery.m_cmd)[0] = b;
+				m_recvDeviceQuery.m_iB++;
+			}
+		}
+
+        return false;
+    }
+
+    void _Livox2::handleDeviceQuery(const LIVOX2_CMD& cmd)
+    {
+        IF_(cmd.cmd_id != 0x0000);
+
+        //TODO: crc check
+
+
+    }
+
+    void _Livox2::updateCtrlCmd(void)
+    {
+    }
+
+    void _Livox2::updateWctrlCmd(void)
+    {
+        while (m_pTcontrolCmdW->bAlive())
+        {
+            m_pTcontrolCmdW->autoFPSfrom();
+
+            m_pTcontrolCmdW->autoFPSto();
+        }
+    }
+
+    void _Livox2::updateRctrlCmd(void)
+    {
+        while (m_pTcontrolCmdR->bAlive())
+        {
+            m_pTcontrolCmdR->autoFPSfrom();
+
+            m_pTcontrolCmdR->autoFPSto();
+        }
+    }
+
+    void _Livox2::updateRpushCmd(void)
+    {
+        while (m_pTpushCmdR->bAlive())
+        {
+            m_pTpushCmdR->autoFPSfrom();
+
+            m_pTpushCmdR->autoFPSto();
+        }
+    }
+
+    void _Livox2::updateRpointCloud(void)
+    {
+        while (m_pTpointCloudR->bAlive())
+        {
+            m_pTpointCloudR->autoFPSfrom();
+
+            m_pTpointCloudR->autoFPSto();
+        }
+    }
+
+    void _Livox2::updateRimu(void)
+    {
+        while (m_pTimuR->bAlive())
+        {
+            m_pTimuR->autoFPSfrom();
+
+            m_pTimuR->autoFPSto();
+        }
     }
 
     void _Livox2::setLidarMode(LivoxLidarWorkMode m)
@@ -122,17 +335,7 @@ namespace kai
         m_workMode = m;
     }
 
-    void _Livox2::startStream(void)
-    {
-        m_workMode = kLivoxLidarNormal;
-    }
-
-    void _Livox2::stopStream(void)
-    {
-        m_workMode = kLivoxLidarSleep;
-    }
-
-    void _Livox2::CbPointCloud(LivoxLidarEthernetPacket *pD)
+    void _Livox2::recvPointCloud(LivoxLidarEthernetPacket *pD)
     {
         NULL_(pD);
         LOG_I("CbPointCloud data_num: " + i2str(pD->dot_num) + ", data_type: " + i2str(pD->data_type) + ", length: " + i2str(pD->length) + ", frame_counter: " + i2str(pD->frame_cnt));
@@ -163,7 +366,7 @@ namespace kai
         }
     }
 
-    void _Livox2::CbIMU(LivoxLidarEthernetPacket *pD)
+    void _Livox2::recvIMU(LivoxLidarEthernetPacket *pD)
     {
         NULL_(pD);
         IF_(!m_bEnableIMU);
@@ -200,13 +403,13 @@ namespace kai
         updateTranslationMatrix(true, &vR);
     }
 
-    void _Livox2::CbWorkMode(livox_status status, LivoxLidarAsyncControlResponse *pR)
+    void _Livox2::recvWorkMode(livox_status status, LivoxLidarAsyncControlResponse *pR)
     {
         NULL_(pR);
         LOG_I("CbWorkMode, status:" + i2str(status) + ", ret_code:" + i2str(pR->ret_code) + ", error_key:" + i2str(pR->error_key));
     }
 
-    void _Livox2::CbLidarInfoChange(const LivoxLidarInfo *pI)
+    void _Livox2::recvLidarInfoChange(const LivoxLidarInfo *pI)
     {
         NULL_(pI);
 

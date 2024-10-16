@@ -123,9 +123,7 @@ namespace kai
 		IF_F(check() != OK_OK);
 
 		uint8_t b;
-		int nB;
-
-		while ((nB = m_pIO->read(&b, 1)) > 0)
+		while (m_pIO->read(&b, 1) > 0)
 		{
 			if (m_recvMsg.m_cmd != 0)
 			{

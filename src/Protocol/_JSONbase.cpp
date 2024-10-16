@@ -48,8 +48,8 @@ namespace kai
         CHECK_(m_pTr->link());
 
 		Kiss *pK = (Kiss *)m_pKiss;
-
         string n;
+
         n = "";
         pK->v("_IObase", &n);
         m_pIO = (_IObase *)(pK->findModule(n));
@@ -57,7 +57,7 @@ namespace kai
 
 		return OK_OK;
 	}
-    
+
     int _JSONbase::start(void)
     {
         NULL__(m_pT, OK_ERR_NULLPTR);

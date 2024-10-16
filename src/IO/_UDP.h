@@ -10,8 +10,6 @@
 
 #include "_IObase.h"
 
-#define DEFAULT_UDP_PORT 19840
-
 namespace kai
 {
 
@@ -42,13 +40,18 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		string m_addr;
 		uint16_t m_port;
+		bool m_bServer;
+		bool m_bW2R;	// write back to the client recevied from
+		int m_bWbroadcast;
 
-		sockaddr_in m_sAddr;
+		sockaddr_in m_sAddrW;
+		sockaddr_in m_sAddrR;
 		unsigned int m_nSAddr;
 		int m_socket;
+		uint32_t m_addrAny;
 	};
 
 }
