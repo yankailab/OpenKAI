@@ -17,6 +17,8 @@
 #define WS_MODE_TXT 0x1
 #define WS_MODE_BIN 0x2
 
+#define WS_N_BUF 512
+
 namespace kai
 {
 
@@ -98,6 +100,9 @@ namespace kai
 		int m_nB;
 		int m_iB;
 		WS_CLIENT *m_pC;
+
+		IO_FIFO m_fifoR;
+		_Thread *m_pTr;
 	};
 
 }

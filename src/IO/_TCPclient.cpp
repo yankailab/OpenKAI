@@ -18,7 +18,6 @@ namespace kai
 		m_socket = 0;
 		m_ioType = io_tcp;
 		m_ioStatus = io_unknown;
-		m_bComplete = false;
 	}
 
 	_TCPclient::~_TCPclient()
@@ -35,16 +34,6 @@ namespace kai
 		pK->v("port", (int *)&m_port);
 
 		m_bClient = true;
-
-		Kiss *pKt = pK->child("threadR");
-        if (pKt->empty())
-        {
-            LOG_E("threadR not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
-        m_pTr = new _Thread();
-        CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "threadR init failed");
 
 		return OK_OK;
 	}
@@ -84,12 +73,10 @@ namespace kai
 	int _TCPclient::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
-		NULL__(m_pTr, OK_ERR_NULLPTR);
-		CHECK_(m_pT->start(getUpdateW, this));
-		return m_pTr->start(getUpdateR, this);
+		return m_pT->start(getUpdate, this);
 	}
 
-	void _TCPclient::updateW(void)
+	void _TCPclient::update(void)
 	{
 		while (m_pT->bAlive())
 		{
@@ -104,9 +91,9 @@ namespace kai
 
 			m_pT->autoFPSfrom();
 
-			uint8_t pB[N_IO_BUF];
+			uint8_t pB[N_TCP_BUF];
 			int nB;
-			while ((nB = m_fifoW.output(pB, N_IO_BUF)) > 0)
+			while ((nB = m_fifoW.output(pB, N_TCP_BUF)) > 0)
 			{
 				int nSend = ::send(m_socket, pB, nB, 0);
 				if (nSend == -1)
@@ -127,45 +114,25 @@ namespace kai
 		}
 	}
 
-	void _TCPclient::updateR(void)
+	int _TCPclient::read(uint8_t *pBuf, int nB)
 	{
-		while (m_pTr->bAlive())
+		if (!bOpen())
+			return -1;
+
+		int nR = ::recv(m_socket, pBuf, nB, 0);
+		if (nR <= 0)
 		{
-			if (!bOpen())
-			{
-				::sleep(1);
-				continue;
-			}
-
-			//blocking mode, no FPS control
-			uint8_t pB[N_IO_BUF];
-			int nR = ::recv(m_socket, pB, N_IO_BUF, 0);
-			if (nR <= 0)
-			{
-				LOG_E("recv error: " + i2str(errno));
-				close();
-				continue;
-			}
-
-			m_fifoR.input(pB, nR);
-			m_pTr->runAll();
-
-			LOG_I("received: " + i2str(nR) + " bytes");
+			LOG_E("recv error: " + i2str(errno));
+			close();
 		}
-	}
 
-	bool _TCPclient::bComplete(void)
-	{
-		return m_bComplete;
+		return nR;
 	}
 
 	void _TCPclient::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_IObase::console(pConsole);
-
-		NULL_(m_pTr);
-		m_pTr->console(pConsole);
 
 		string msg = "Peer IP: " + m_strAddr + ":" + i2str(m_port) + ((m_bClient) ? "; Client" : "; Server");
 		((_Console *)pConsole)->addMsg(msg);

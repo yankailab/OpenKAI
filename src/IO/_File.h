@@ -15,17 +15,18 @@ namespace kai
 		~_File(void);
 
 		int init(void *pKiss);
-		void close(void);
-		void reset(void);
 
 		bool open(ios_base::openmode mode = ios::in | ios::out | ios::app);
 		bool open(const string &fName, ios_base::openmode mode = ios::in | ios::out | ios::app);
-		int read(uint8_t *pBuf, int nB);
-		bool readAll(string *pStr);
-		bool write(uint8_t *pBuf, int nB);
-		bool writeLine(uint8_t *pBuf, int nB);
+		void close(void);
 
-	public:
+		int read(uint8_t *pBuf, int nB);
+		bool write(uint8_t *pBuf, int nB);
+
+	protected:
+		bool readAll(string *pStr);
+
+	private:
 		string m_name;
 		string m_buf;
 		fstream m_file;

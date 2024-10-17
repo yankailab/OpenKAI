@@ -12,6 +12,8 @@ namespace kai
 
 	_WebSocket::_WebSocket()
 	{
+		m_pTr = nullptr;
+
 		m_fifoIn = "/tmp/wspipein.fifo";
 		m_fifoOut = "/tmp/wspipeout.fifo";
 		m_fdW = 0;
@@ -28,6 +30,9 @@ namespace kai
 		pthread_mutex_destroy(&m_mutexW);
 		m_vClient.clear();
 		close();
+
+		DEL(m_pTr);
+		m_fifoR.release();
 	}
 
 	int _WebSocket::init(void *pKiss)
@@ -37,8 +42,9 @@ namespace kai
 
 		pK->v("fifoIn", &m_fifoIn);
 		pK->v("fifoOut", &m_fifoOut);
-
 		m_vClient.clear();
+
+		IF__(!m_fifoR.init(m_nFIFO), OK_ERR_ALLOCATION);
 
 		Kiss *pKt = pK->child("threadR");
 		if (pKt->empty())
@@ -81,6 +87,8 @@ namespace kai
 		::close(m_fdR);
 		m_fdW = 0;
 		m_fdR = 0;
+
+		m_fifoR.clear();
 		this->_IObase::close();
 	}
 
@@ -109,9 +117,9 @@ namespace kai
 
 			m_pT->autoFPSfrom();
 
-			uint8_t pB[N_IO_BUF];
+			uint8_t pB[WS_N_BUF];
 			int nB;
-			while ((nB = m_fifoW.output(pB, N_IO_BUF)) > 0)
+			while ((nB = m_fifoW.output(pB, WS_N_BUF)) > 0)
 			{
 				int nSent = ::write(m_fdW, pB, nB);
 				if (nSent == -1)
@@ -136,8 +144,8 @@ namespace kai
 				continue;
 			}
 
-			uint8_t pB[N_IO_BUF];
-			int nR = ::read(m_fdR, pB, N_IO_BUF);
+			uint8_t pB[WS_N_BUF];
+			int nR = ::read(m_fdR, pB, WS_N_BUF);
 			if (nR <= 0)
 			{
 				close();
@@ -224,7 +232,7 @@ namespace kai
 			m_iB = 0;
 		}
 
-		int iR = this->_IObase::read(&pMB[m_nB], N_IO_BUF);
+		int iR = this->_IObase::read(&pMB[m_nB], WS_N_BUF);
 		if (iR > 0)
 			m_nB += iR;
 		IF_(m_nB <= 0);
@@ -308,9 +316,6 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_IObase::console(pConsole);
-
-		NULL_(m_pTr);
-		m_pTr->console(pConsole);
 
 		((_Console *)pConsole)->addMsg("nClients: " + i2str(m_vClient.size()), 1);
 	}

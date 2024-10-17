@@ -46,7 +46,7 @@ namespace kai
 
 		int m_socket;
 		struct sockaddr_in m_serverAddr;
-		list<_TCPclient *> m_lSocket;
+		list<_TCPclient *> m_lClient;
 		unsigned int m_nSocket;
 	};
 

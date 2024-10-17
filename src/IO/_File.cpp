@@ -22,7 +22,7 @@ namespace kai
 	{
 		CHECK_(this->_IObase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
+
 		return OK_OK;
 	}
 
@@ -114,16 +114,6 @@ namespace kai
 		IF_F(nB == 0);
 		IF_F(!m_file.is_open());
 		IF_F(!m_file.write((char *)pBuf, nB));
-
-		return true;
-	}
-
-	bool _File::writeLine(uint8_t *pBuf, int nB)
-	{
-		IF_F(!write(pBuf, nB));
-
-		const char crlf[] = "\x0d\x0a";
-		IF_F(!m_file.write(crlf, 2));
 
 		return true;
 	}

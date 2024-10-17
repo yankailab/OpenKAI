@@ -12,8 +12,6 @@ namespace kai
 
 	_IObase::_IObase()
 	{
-		m_pTr = nullptr;
-
 		m_ioType = io_none;
 		m_ioStatus = io_unknown;
 		m_nFIFO = 1280000;
@@ -21,10 +19,7 @@ namespace kai
 
 	_IObase::~_IObase()
 	{
-		DEL(m_pTr);
-
 		m_fifoW.release();
-		m_fifoR.release();
 	}
 
 	int _IObase::init(void *pKiss)
@@ -34,7 +29,6 @@ namespace kai
 
 		pK->v("nFIFO", &m_nFIFO);
 		IF__(!m_fifoW.init(m_nFIFO), OK_ERR_ALLOCATION);
-		IF__(!m_fifoR.init(m_nFIFO), OK_ERR_ALLOCATION);
 
 		return OK_OK;
 	}
@@ -42,11 +36,6 @@ namespace kai
 	int _IObase::link(void)
 	{
 		CHECK_(this->_ModuleBase::link());
-
-		if (m_pTr)
-		{
-			CHECK_(m_pTr->link());
-		}
 
 		return OK_OK;
 	}
@@ -69,7 +58,6 @@ namespace kai
 	void _IObase::close(void)
 	{
 		m_fifoW.clear();
-		m_fifoR.clear();
 
 		m_ioStatus = io_closed;
 	}
@@ -85,27 +73,29 @@ namespace kai
 		return true;
 	}
 
-	bool _IObase::writeLine(uint8_t *pBuf, int nB)
-	{
-		const char pCRLF[] = "\x0d\x0a";
-
-		IF_F(!write(pBuf, nB));
-		return write((unsigned char *)pCRLF, 2);
-	}
-
 	int _IObase::read(uint8_t *pBuf, int nB)
 	{
 		if (m_ioStatus != io_opened)
 			return -1;
 
-		return m_fifoR.output(pBuf, nB);
+		return 0;
+	}
+
+	IO_STATUS _IObase::getIOstatus(void)
+	{
+		return m_ioStatus;
+	}
+
+	void _IObase::setIOstatus(IO_STATUS s)
+	{
+		m_ioStatus = s;
 	}
 
 	void _IObase::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
-		((_Console *)pConsole)->addMsg("nFifoW=" + i2str(m_fifoW.m_nData) + ", nFifoR=" + i2str(m_fifoR.m_nData), 0);
+		((_Console *)pConsole)->addMsg("nFifoW=" + i2str(m_fifoW.m_nData), 0);
 	}
 
 }

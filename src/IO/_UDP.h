@@ -10,6 +10,8 @@
 
 #include "_IObase.h"
 
+#define N_UDP_BUF 512
+
 namespace kai
 {
 
@@ -21,22 +23,17 @@ namespace kai
 
 		int init(void *pKiss);
 		int start(void);
-		void close(void);
 		void console(void *pConsole);
+
 		bool open(void);
+		void close(void);
+		int read(uint8_t *pBuf, int nB);
 
 	private:
-		void updateW(void);
-		static void *getUpdateW(void *This)
+		void update(void);
+		static void *getUpdate(void *This)
 		{
-			((_UDP *)This)->updateW();
-			return NULL;
-		}
-
-		void updateR(void);
-		static void *getUpdateR(void *This)
-		{
-			((_UDP *)This)->updateR();
+			((_UDP *)This)->update();
 			return NULL;
 		}
 
@@ -49,9 +46,7 @@ namespace kai
 
 		sockaddr_in m_sAddrW;
 		sockaddr_in m_sAddrR;
-		unsigned int m_nSAddr;
 		int m_socket;
-		uint32_t m_addrAny;
 	};
 
 }

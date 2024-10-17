@@ -17,8 +17,6 @@ namespace kai
 		m_bServer = false;
 		m_bW2R = true;
 		m_bWbroadcast = 0;
-
-		m_nSAddr = 0;
 		m_socket = -1;
 
 		m_ioType = io_udp;
@@ -41,12 +39,6 @@ namespace kai
 		pK->v("bW2R", &m_bW2R);
 		pK->v("bWbroadcast", &m_bWbroadcast);
 
-		Kiss *pKt = pK->child("threadR");
-		IF__(pKt->empty(), OK_ERR_NOT_FOUND);
-
-		m_pTr = new _Thread();
-		CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "thread init failed");
-
 		return OK_OK;
 	}
 
@@ -55,10 +47,7 @@ namespace kai
 		m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 		IF_F(m_socket < 0);
 
-		m_nSAddr = sizeof(m_sAddrW);
-		m_addrAny = htonl(INADDR_ANY);
-
-		memset((char *)&m_sAddrW, 0, m_nSAddr);
+		memset(&m_sAddrW, 0, sizeof(sockaddr_in));
 		m_sAddrW.sin_family = AF_INET;
 		m_sAddrW.sin_port = htons(m_port);
 
@@ -66,7 +55,7 @@ namespace kai
 		{
 			// server mode
 			m_sAddrW.sin_addr.s_addr = htonl(INADDR_ANY);
-			IF_F(bind(m_socket, (struct sockaddr *)&m_sAddrW, m_nSAddr) < 0);
+			IF_F(bind(m_socket, (struct sockaddr *)&m_sAddrW, sizeof(sockaddr_in)) < 0);
 		}
 		else
 		{
@@ -95,12 +84,10 @@ namespace kai
 	int _UDP::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
-		NULL__(m_pTr, OK_ERR_NULLPTR);
-		CHECK_(m_pT->start(getUpdateW, this));
-		return m_pTr->start(getUpdateR, this);
+		return m_pT->start(getUpdate, this);
 	}
 
-	void _UDP::updateW(void)
+	void _UDP::update(void)
 	{
 		while (m_pT->bAlive())
 		{
@@ -115,13 +102,13 @@ namespace kai
 
 			m_pT->autoFPSfrom();
 
-			uint8_t pB[N_IO_BUF];
+			uint8_t pB[N_UDP_BUF];
 			int nB;
-			while ((nB = m_fifoW.output(pB, N_IO_BUF)) > 0)
+			while ((nB = m_fifoW.output(pB, N_UDP_BUF)) > 0)
 			{
-				IF_CONT(m_sAddrW.sin_addr.s_addr == m_addrAny);
+				IF_CONT(m_sAddrW.sin_addr.s_addr == htonl(INADDR_ANY));
 
-				int nSend = ::sendto(m_socket, pB, nB, 0, (struct sockaddr *)&m_sAddrW, m_nSAddr);
+				int nSend = ::sendto(m_socket, pB, nB, 0, (struct sockaddr *)&m_sAddrW, sizeof(sockaddr_in));
 				if (nSend < 0)
 				{
 					LOG_I("sendto error: " + i2str(errno));
@@ -134,43 +121,32 @@ namespace kai
 		}
 	}
 
-	void _UDP::updateR(void)
+	int _UDP::read(uint8_t *pBuf, int nB)
 	{
-		while (m_pTr->bAlive())
+		if (!bOpen())
+			return -1;
+
+		unsigned int nSaddr = sizeof(sockaddr_in);
+		int nR = ::recvfrom(m_socket, pBuf, nB, 0, (struct sockaddr *)&m_sAddrR, &nSaddr);
+		if (nR <= 0)
 		{
-			while (!bOpen())
-			{
-				::sleep(1);
-			}
-
-			uint8_t pB[N_IO_BUF];
-			int nR = ::recvfrom(m_socket, pB, N_IO_BUF, 0, (struct sockaddr *)&m_sAddrR, &m_nSAddr);
-			if (nR <= 0)
-			{
-				LOG_E("recvfrom error: " + i2str(errno));
-				close();
-				continue;
-			}
-
-			m_fifoR.input(pB, nR);
-			if (m_bW2R)
-			{
-				m_sAddrW = m_sAddrR;
-			}
-
-			m_pTr->runAll();
-
-			LOG_I("Received " + i2str(nR) + " bytes from ip:" + string(inet_ntoa(m_sAddrR.sin_addr)) + ", port:" + i2str(ntohs(m_sAddrR.sin_port)));
+			LOG_E("recvfrom error: " + i2str(errno));
+			close();
 		}
+		else if (m_bW2R)
+		{
+			m_sAddrW = m_sAddrR;
+		}
+
+		LOG_I("Received " + i2str(nR) + " bytes from ip:" + string(inet_ntoa(m_sAddrR.sin_addr)) + ", port:" + i2str(ntohs(m_sAddrR.sin_port)));
+
+		return nR;
 	}
 
 	void _UDP::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_IObase::console(pConsole);
-
-		NULL_(m_pTr);
-		m_pTr->console(pConsole);
 
 		((_Console *)pConsole)->addMsg("Port:" + i2str(m_port));
 	}

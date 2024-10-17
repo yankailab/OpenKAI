@@ -26,7 +26,7 @@ namespace kai
 	{
 		CHECK_(this->_IObase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
+
 		pK->v("port", &m_port);
 		pK->v("baud", &m_baud);
 		pK->v("dataBits", &m_dataBits);
@@ -34,42 +34,32 @@ namespace kai
 		pK->v("parity", &m_parity);
 		pK->v("hardwareControl", &m_hardwareControl);
 
-		Kiss *pKt = pK->child("threadR");
-        if (pKt->empty())
-        {
-            LOG_E("threadR not found");
-            return OK_ERR_NOT_FOUND;
-        }
+		return OK_OK;
+	}
 
-        m_pTr = new _Thread();
-        CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "thread init failed");
+	int _SerialPort::link(void)
+	{
+		CHECK_(this->_IObase::link());
 
 		return OK_OK;
 	}
 
-    int _SerialPort::link(void)
-    {
-        CHECK_(this->_IObase::link());
-
-        return OK_OK;
-    }
-
 	bool _SerialPort::open(void)
 	{
-		if(m_port.empty())
+		if (m_port.empty())
 		{
 			LOG_E("port is empty");
 			return false;
 		}
 
-		m_fd = ::open(m_port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY); //O_SYNC | O_NONBLOCK);
-		
-		if(m_fd == -1)
+		m_fd = ::open(m_port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY); // O_SYNC | O_NONBLOCK);
+
+		if (m_fd == -1)
 		{
 			LOG_E("Cannot open: " + m_port);
 			return false;
 		}
-		
+
 		fcntl(m_fd, F_SETFL, 0);
 
 		m_ioStatus = io_opened;
@@ -87,12 +77,10 @@ namespace kai
 	int _SerialPort::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
-		NULL__(m_pTr, OK_ERR_NULLPTR);
-		CHECK_(m_pT->start(getUpdateW, this));
-		return m_pTr->start(getUpdateR, this);
+		return m_pT->start(getUpdate, this);
 	}
 
-	void _SerialPort::updateW(void)
+	void _SerialPort::update(void)
 	{
 		while (m_pT->bAlive())
 		{
@@ -107,9 +95,9 @@ namespace kai
 
 			m_pT->autoFPSfrom();
 
-			uint8_t pB[N_IO_BUF];
+			uint8_t pB[N_SERIAL_BUF];
 			int nB;
-			while ((nB = m_fifoW.output(pB, N_IO_BUF)) > 0)
+			while ((nB = m_fifoW.output(pB, N_SERIAL_BUF)) > 0)
 			{
 				int nW = ::write(m_fd, pB, nB);
 				LOG_I("write: " + i2str(nW) + " bytes");
@@ -121,31 +109,18 @@ namespace kai
 		}
 	}
 
-	void _SerialPort::updateR(void)
+	int _SerialPort::read(uint8_t *pBuf, int nB)
 	{
-		while (m_pTr->bAlive())
-		{
-			if (!bOpen())
-			{
-				::sleep(1);
-				continue;
-			}
+		if (!bOpen())
+			return -1;
 
-			uint8_t pB[N_IO_BUF];
-			int nR = ::read(m_fd, pB, N_IO_BUF);
-			IF_CONT(nR <= 0);
-
-			m_fifoR.input(pB, nR);
-			m_pTr->runAll();
-
-			LOG_I("read: " + i2str(nR) + " bytes");
-		}
+		return ::read(m_fd, pBuf, nB);
 	}
 
 	bool _SerialPort::setup(void)
 	{
 		// Check file descriptor
-		if(!isatty(m_fd))
+		if (!isatty(m_fd))
 		{
 			LOG_E("file descriptor is NOT a serial port");
 			return false;
@@ -153,7 +128,7 @@ namespace kai
 
 		// Read file descritor configuration
 		struct termios config;
-		if(tcgetattr(m_fd, &config) < 0)
+		if (tcgetattr(m_fd, &config) < 0)
 		{
 			LOG_E("could not read configuration of fd");
 			return false;
@@ -202,7 +177,7 @@ namespace kai
 		// 8N1
 		/*	config.c_cflag &= ~CSTOPB;
 	 // no flow control
-	 	config.c_cflag &= ~CRTSCTS;
+		config.c_cflag &= ~CRTSCTS;
 	 //    toptions.c_cflag |= CRTSCTS;
 	 */
 		//	config.c_cflag |= CREAD | CLOCAL;  // turn on READ & ignore ctrl lines
@@ -288,7 +263,7 @@ namespace kai
 			break;
 		}
 
-		//apply the configuration
+		// apply the configuration
 		if (tcsetattr(m_fd, TCSAFLUSH, &config) < 0)
 		{
 			LOG_E("Could not set configuration of fd: " + i2str(m_fd));
@@ -302,9 +277,6 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_IObase::console(pConsole);
-
-		NULL_(m_pTr);
-		m_pTr->console(pConsole);
 	}
 
 }

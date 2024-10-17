@@ -125,6 +125,19 @@ namespace kai
 		return OK_OK;
 	}
 
+	bool _Mavlink::bConnected(void)
+	{
+		return (m_devSystemID >= 0);
+	}
+
+	void _Mavlink::setCmdRoute(uint32_t iCmd, bool bON)
+	{
+		for (unsigned int i = 0; i < m_vPeer.size(); i++)
+		{
+			m_vPeer[i].setCmdRoute(iCmd, bON);
+		}
+	}
+
 	int _Mavlink::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
@@ -155,11 +168,86 @@ namespace kai
 		}
 	}
 
+	void _Mavlink::handleMessages(void)
+	{
+		mavlink_message_t msg;
+
+		while (readMessage(msg))
+		{
+			if (m_devSystemID < 0)
+				m_devSystemID = msg.sysid;
+
+			if (m_devComponentID < 0)
+				m_devComponentID = msg.compid;
+
+			IF_CONT(msg.sysid != m_devSystemID);
+			IF_CONT(msg.compid != m_devComponentID);
+
+			// Decode
+			bool bDecoded = false;
+			for (MavMsgBase *pM : m_vpMsg)
+			{
+				IF_CONT(pM->m_id != msg.msgid);
+
+				pM->decode(&msg);
+				LOG_I(" -> Decoded MSG_ID:" + i2str(msg.msgid));
+				bDecoded = true;
+				break;
+			}
+
+			if (!bDecoded)
+				LOG_I(" -> Unknown MSG_ID:" + i2str(msg.msgid));
+
+			// Routing
+			for (MAVLINK_PEER &p : m_vPeer)
+			{
+				//				IF_CONT(!p.bCmdRoute(msg.msgid));
+
+				_Mavlink *pM = (_Mavlink *)p.m_pPeer;
+				IF_CONT(!pM);
+				pM->writeMessage(msg);
+			}
+		}
+	}
+
+	bool _Mavlink::readMessage(mavlink_message_t &msg)
+	{
+		if (m_nRead == 0)
+		{
+			m_nRead = m_pIO->read(m_rBuf, MAV_N_BUF);
+			IF_F(m_nRead <= 0);
+			m_iRead = 0;
+		}
+
+		while (m_iRead < m_nRead)
+		{
+			mavlink_status_t status;
+			uint8_t result = mavlink_frame_char(MAVLINK_COMM_0, m_rBuf[m_iRead],
+												&msg, &status);
+			m_iRead++;
+
+			if (result == 1)
+			{
+				// Good message decoded
+				m_status = status;
+				return true;
+			}
+			else if (result == 2)
+			{
+				// Bad CRC
+				LOG_I(" -> DROPPED PACKETS:" + i2str(status.packet_rx_drop_count));
+			}
+		}
+
+		m_nRead = 0;
+		return false;
+	}
+
 	void _Mavlink::writeMessage(mavlink_message_t msg)
 	{
 		NULL_(m_pIO);
 
-		uint8_t pB[N_IO_BUF];
+		uint8_t pB[MAV_N_BUF];
 		int nB = mavlink_msg_to_send_buffer(pB, &msg);
 
 		if (m_pIO->ioType() != io_webSocket)
@@ -958,94 +1046,6 @@ namespace kai
 		}
 
 		return false;
-	}
-
-	bool _Mavlink::readMessage(mavlink_message_t &msg)
-	{
-		if (m_nRead == 0)
-		{
-			m_nRead = m_pIO->read(m_rBuf, N_IO_BUF);
-			IF_F(m_nRead <= 0);
-			m_iRead = 0;
-		}
-
-		while (m_iRead < m_nRead)
-		{
-			mavlink_status_t status;
-			uint8_t result = mavlink_frame_char(MAVLINK_COMM_0, m_rBuf[m_iRead],
-												&msg, &status);
-			m_iRead++;
-
-			if (result == 1)
-			{
-				// Good message decoded
-				m_status = status;
-				return true;
-			}
-			else if (result == 2)
-			{
-				// Bad CRC
-				LOG_I(" -> DROPPED PACKETS:" + i2str(status.packet_rx_drop_count));
-			}
-		}
-
-		m_nRead = 0;
-		return false;
-	}
-
-	bool _Mavlink::bConnected(void)
-	{
-		return (m_devSystemID >= 0);
-	}
-
-	void _Mavlink::handleMessages(void)
-	{
-		mavlink_message_t msg;
-
-		while (readMessage(msg))
-		{
-			if (m_devSystemID < 0)
-				m_devSystemID = msg.sysid;
-
-			if (m_devComponentID < 0)
-				m_devComponentID = msg.compid;
-
-			IF_CONT(msg.sysid != m_devSystemID);
-			IF_CONT(msg.compid != m_devComponentID);
-
-			// Decode
-			bool bDecoded = false;
-			for (MavMsgBase *pM : m_vpMsg)
-			{
-				IF_CONT(pM->m_id != msg.msgid);
-
-				pM->decode(&msg);
-				LOG_I(" -> Decoded MSG_ID:" + i2str(msg.msgid));
-				bDecoded = true;
-				break;
-			}
-
-			if (!bDecoded)
-				LOG_I(" -> Unknown MSG_ID:" + i2str(msg.msgid));
-
-			// Routing
-			for (MAVLINK_PEER &p : m_vPeer)
-			{
-				//				IF_CONT(!p.bCmdRoute(msg.msgid));
-
-				_Mavlink *pM = (_Mavlink *)p.m_pPeer;
-				IF_CONT(!pM);
-				pM->writeMessage(msg);
-			}
-		}
-	}
-
-	void _Mavlink::setCmdRoute(uint32_t iCmd, bool bON)
-	{
-		for (unsigned int i = 0; i < m_vPeer.size(); i++)
-		{
-			m_vPeer[i].setCmdRoute(iCmd, bON);
-		}
 	}
 
 	void _Mavlink::console(void *pConsole)

@@ -9,6 +9,7 @@
 #define MAV_N_PEER 16
 #define MAV_N_CMD_U64 4
 #define MAV_N_CMD 256
+#define MAV_N_BUF 512
 
 namespace kai
 {
@@ -925,7 +926,7 @@ namespace kai
 		int m_devComponentID;
 		int m_devType;
 
-		uint8_t m_rBuf[N_IO_BUF];
+		uint8_t m_rBuf[MAV_N_BUF];
 		int m_nRead;
 		int m_iRead;
 	};

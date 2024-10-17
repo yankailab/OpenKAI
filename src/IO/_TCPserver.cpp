@@ -16,19 +16,19 @@ namespace kai
 		m_listenPort = 8888;
 		m_nListen = N_LISTEN;
 		m_nSocket = N_SOCKET;
-		m_lSocket.clear();
+		m_lClient.clear();
 	}
 
 	_TCPserver::~_TCPserver()
 	{
 		close(m_socket);
 
-		for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); itr++)
+		for (auto itr = m_lClient.begin(); itr != m_lClient.end(); itr++)
 		{
 			delete (_TCPclient *)*itr;
 		}
 
-		m_lSocket.clear();
+		m_lClient.clear();
 	}
 
 	int _TCPserver::init(void *pKiss)
@@ -71,24 +71,24 @@ namespace kai
 		while ((socketNew = accept(m_socket, (struct sockaddr *)&clientAddr, (socklen_t *)&c)) >= 0)
 		{
 			cleanupClient();
-			IF_CONT(m_lSocket.size() >= m_nSocket);
+			IF_CONT(m_lClient.size() >= m_nSocket);
 
-			_TCPclient *pSocket = new _TCPclient();
-			IF_CONT(!pSocket);
-			pSocket->init(m_pKiss);
+			_TCPclient *pClient = new _TCPclient();
+			IF_CONT(!pClient);
+			pClient->init(m_pKiss);
 			struct sockaddr_in *pAddr = (struct sockaddr_in *)&clientAddr;
-			pSocket->m_strAddr = inet_ntoa(pAddr->sin_addr);
-			pSocket->m_socket = socketNew;
-			pSocket->m_ioStatus = io_opened;
-			pSocket->m_bClient = false;
+			pClient->m_strAddr = inet_ntoa(pAddr->sin_addr);
+			pClient->m_socket = socketNew;
+			pClient->m_bClient = false;
+			pClient->setIOstatus(io_opened);
 
-			if (!pSocket->start())
+			if (!pClient->start())
 			{
-				delete pSocket;
+				delete pClient;
 				continue;
 			}
 
-			m_lSocket.push_back(pSocket);
+			m_lClient.push_back(pClient);
 		}
 
 		close(m_socket);
@@ -97,14 +97,14 @@ namespace kai
 
 	void _TCPserver::cleanupClient(void)
 	{
-		auto itr = m_lSocket.begin();
-		while (itr != m_lSocket.end())
+		auto itr = m_lClient.begin();
+		while (itr != m_lClient.end())
 		{
-			_TCPclient *pSocket = *itr;
-			if (pSocket->m_ioStatus != io_opened)
+			_TCPclient *pClient = *itr;
+			if (pClient->getIOstatus() != io_opened)
 			{
-				itr = m_lSocket.erase(itr);
-				delete pSocket;
+				itr = m_lClient.erase(itr);
+				delete pClient;
 				LOG_I("Deleted disconnected socket");
 			}
 			else
@@ -143,9 +143,9 @@ namespace kai
 
 	_TCPclient *_TCPserver::getFirstSocket(void)
 	{
-		IF__(m_lSocket.empty(), nullptr);
+		IF__(m_lClient.empty(), nullptr);
 
-		return m_lSocket.front();
+		return m_lClient.front();
 	}
 
 	void _TCPserver::console(void *pConsole)
@@ -156,7 +156,7 @@ namespace kai
 		string msg = "Server port: " + i2str(m_listenPort);
 		((_Console *)pConsole)->addMsg(msg);
 
-		for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); ++itr)
+		for (auto itr = m_lClient.begin(); itr != m_lClient.end(); ++itr)
 		{
 			((_TCPclient *)*itr)->console(pConsole);
 		}

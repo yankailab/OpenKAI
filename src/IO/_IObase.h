@@ -11,8 +11,6 @@
 #include "../Base/_ModuleBase.h"
 #include "../UI/_Console.h"
 
-#define N_IO_BUF 512
-
 namespace kai
 {
 
@@ -146,19 +144,18 @@ namespace kai
 		virtual bool bOpen(void);
 		virtual void close(void);
 
-		virtual int read(uint8_t *pBuf, int nB);
 		virtual bool write(uint8_t *pBuf, int nB);
-		virtual bool writeLine(uint8_t *pBuf, int nB);
+		virtual int read(uint8_t *pBuf, int nB);
 
-	public:
+		virtual IO_STATUS getIOstatus(void);
+		virtual void setIOstatus(IO_STATUS s);
+
+	protected:
 		IO_TYPE m_ioType;
 		IO_STATUS m_ioStatus;
 
 		int m_nFIFO;
 		IO_FIFO m_fifoW;
-		IO_FIFO m_fifoR;
-
-		_Thread *m_pTr;
 	};
 
 }

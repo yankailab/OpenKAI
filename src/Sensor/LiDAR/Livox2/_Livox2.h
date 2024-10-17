@@ -18,6 +18,7 @@
 
 #define LIVOX2_N_DATA 1400
 #define LIVOX2_SOF 0xAA
+#define LIVOX2_CMD_N_HDR 24
 
 namespace kai
 {
@@ -37,17 +38,6 @@ namespace kai
 		uint8_t data[LIVOX2_N_DATA];
 	};
 
-	struct LIVOX2_DATA_RECV
-	{
-		LIVOX2_DATA m_cmd;
-		int m_iB;
-
-		void reset(void)
-		{
-			m_iB = 0;
-		}
-	};
-
 	struct LIVOX2_CMD
 	{
 		uint8_t sof;
@@ -61,19 +51,6 @@ namespace kai
 		uint16_t crc16_h;
 		uint32_t crc32_d;
 		uint8_t data[LIVOX2_N_DATA];
-	};
-
-	struct LIVOX2_CMD_RECV
-	{
-		LIVOX2_CMD m_cmd;
-		int m_iB;
-		int m_nB;
-
-		void reset(void)
-		{
-			m_iB = 0;
-			m_nB = 24;
-		}
 	};
 
 	enum LIVOX2_STATE
@@ -102,6 +79,10 @@ namespace kai
 		void setLidarMode(LivoxLidarWorkMode m);
 
 	private:
+		// Common
+	    bool recvLivoxCmd(_IObase* pIO, LIVOX2_CMD* pResvCmd);
+	    bool recvLivoxData(_IObase* pIO, LIVOX2_DATA* pResvDATA);
+
 		// Device Type Query
 		void sendDeviceQuery(void);
 		void updateWdeviceQuery(void);
@@ -112,7 +93,6 @@ namespace kai
 		}
 
 		void handleDeviceQuery(const LIVOX2_CMD& cmd);
-		bool recvDeviceQuery(void);
 		void updateRdeviceQuery(void);
 		static void *getUpdateRdeviceQuery(void *This)
 		{
@@ -178,8 +158,6 @@ namespace kai
 		_IObase *m_pPointCloud;
 		_IObase *m_pIMU;
 		_IObase *m_pLog;
-
-		LIVOX2_CMD_RECV m_recvDeviceQuery;
 
 		LIVOX2_STATE m_state;
 		string m_SN;

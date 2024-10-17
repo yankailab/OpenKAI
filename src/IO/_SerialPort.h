@@ -15,6 +15,8 @@
 
 using namespace std;
 
+#define N_SERIAL_BUF 512
+
 namespace kai
 {
 
@@ -26,25 +28,19 @@ namespace kai
 
 		virtual int init(void *pKiss);
 		virtual int link(void);
-		virtual bool open(void);
-		virtual void close(void);
 		virtual int start(void);
 		virtual void console(void *pConsole);
 
+		virtual bool open(void);
+		virtual void close(void);
+		virtual int read(uint8_t *pBuf, int nB);
+
 	private:
 		bool setup(void);
-
-		void updateW(void);
-		static void *getUpdateW(void *This)
+		void update(void);
+		static void *getUpdate(void *This)
 		{
-			((_SerialPort *)This)->updateW();
-			return NULL;
-		}
-
-		void updateR(void);
-		static void *getUpdateR(void *This)
-		{
-			((_SerialPort *)This)->updateR();
+			((_SerialPort *)This)->update();
 			return NULL;
 		}
 

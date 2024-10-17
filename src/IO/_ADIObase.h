@@ -110,8 +110,6 @@ namespace kai
 		int m_nPort;
 		vector<ADIO_PORT> m_vPort;
 
-
-
 	};
 
 }

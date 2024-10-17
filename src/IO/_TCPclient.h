@@ -10,6 +10,8 @@
 
 #include "_IObase.h"
 
+#define N_TCP_BUF 512
+
 namespace kai
 {
 
@@ -21,23 +23,18 @@ namespace kai
 
 		int init(void *pKiss);
 		int start(void);
+		void console(void *pConsole);
+
 		bool open(void);
 		void close(void);
-		void console(void *pConsole);
-		bool bComplete(void);
 
-	public:
-		void updateW(void);
-		static void *getUpdateW(void *This)
-		{
-			((_TCPclient *)This)->updateW();
-			return NULL;
-		}
+		virtual int read(uint8_t *pBuf, int nB);
 
-		void updateR(void);
-		static void *getUpdateR(void *This)
+	private:
+		void update(void);
+		static void *getUpdate(void *This)
 		{
-			((_TCPclient *)This)->updateR();
+			((_TCPclient *)This)->update();
 			return NULL;
 		}
 
@@ -48,7 +45,6 @@ namespace kai
 
 		bool m_bClient;
 		int m_socket;
-		bool m_bComplete;
 	};
 
 }

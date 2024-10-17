@@ -137,7 +137,9 @@ namespace kai
 		JO(jo, "p2", m_mD.at<double>(0, 3));
 		JO(jo, "k3", m_mD.at<double>(0, 4));
 		string m = picojson::value(jo).serialize();
-		m_pFmeta->writeLine((uint8_t *)m.c_str(), m.length());
+
+		m += "\x0d\x0a";
+		m_pFmeta->write((uint8_t *)m.c_str(), m.length());
 
 		return true;
 	}
@@ -186,7 +188,9 @@ namespace kai
 		JO(jo, "pitch", lf2str(vA.y, 5));
 		JO(jo, "roll", lf2str(vA.z, 5));
 		string m = picojson::value(jo).serialize();
-		m_pFmeta->writeLine((uint8_t *)m.c_str(), m.length());
+
+		m += "\x0d\x0a";
+		m_pFmeta->write((uint8_t *)m.c_str(), m.length());
 	}
 
 	void _APmavlink_video::console(void *pConsole)

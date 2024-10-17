@@ -183,9 +183,34 @@ namespace kai
         NULL__(m_pPushCmd, OK_ERR_NULLPTR);
         NULL__(m_pPointCloud, OK_ERR_NULLPTR);
         NULL__(m_pIMU, OK_ERR_NULLPTR);
-        NULL__(m_pLog, OK_ERR_NULLPTR);
+        //        NULL__(m_pLog, OK_ERR_NULLPTR);
 
         return this->_PCstream::check();
+    }
+
+    bool _Livox2::recvLivoxCmd(_IObase *pIO, LIVOX2_CMD *pCmdRecv)
+    {
+        NULL_F(pIO);
+        NULL_F(pCmdRecv);
+
+        int nBr = pIO->read((uint8_t *)pCmdRecv, LIVOX2_N_DATA);
+        IF_F(nBr <= 0);
+        IF_F(nBr < pCmdRecv->length);
+        IF_F(pCmdRecv->sof != LIVOX2_SOF);
+
+        return true;
+    }
+
+    bool _Livox2::recvLivoxData(_IObase *pIO, LIVOX2_DATA *pDataRecv)
+    {
+        NULL_F(pIO);
+        NULL_F(pDataRecv);
+
+        int nBr = pIO->read((uint8_t *)pDataRecv, LIVOX2_N_DATA);
+        IF_F(nBr <= 0);
+        IF_F(nBr < pDataRecv->length);
+
+        return true;
     }
 
     void _Livox2::updateWdeviceQuery(void)
@@ -205,16 +230,18 @@ namespace kai
 
     void _Livox2::sendDeviceQuery(void)
     {
+        static uint32_t iSeq = 0;
+
         LivoxLidarCmdPacket p;
 
         p.sof = LIVOX2_SOF;
         p.version = 0;
-        p.length = 24;
-        p.seq_num = 0;
+        p.length = LIVOX2_CMD_N_HDR;
+        p.seq_num = iSeq++;
         p.cmd_id = 0x0000;
         p.cmd_type = 0x00;    // REQ
         p.sender_type = 0x00; // Host computer
-        p.crc16_h = CRC::Calculate(&p.sof, 18, CRC::CRC_16_CCITTFALSE());
+        p.crc16_h = CRC::Calculate(&p, 18, CRC::CRC_16_CCITTFALSE());
         p.crc32_d = 0; // CRC::Calculate(p.data, length, CRC::CRC_32());
         p.data[0] = 0;
 
@@ -226,54 +253,19 @@ namespace kai
     {
         while (m_pTdeviceQueryR->bAlive())
         {
-            m_pTdeviceQueryR->autoFPSfrom();
-
-			while (recvDeviceQuery())
-			{
-				handleDeviceQuery(m_recvDeviceQuery.m_cmd);
-				m_recvDeviceQuery.reset();
-			}
-
-            m_pTdeviceQueryR->autoFPSto();
+            LIVOX2_CMD cmd;
+            if (recvLivoxCmd(m_pDeviceQuery, &cmd))
+            {
+                handleDeviceQuery(cmd);
+            }
         }
     }
 
-    bool _Livox2::recvDeviceQuery(void)
-    {
-        IF_F(check() != OK_OK);
-
-		uint8_t b;
-		while (m_pDeviceQuery->read(&b, 1) > 0)
-		{
-			if (m_recvDeviceQuery.m_iB > 0)
-			{
-				((uint8_t*)&m_recvDeviceQuery.m_cmd)[m_recvDeviceQuery.m_iB++] = b;
-				m_recvDeviceQuery.m_iB++;
-
-				if (m_recvDeviceQuery.m_iB == 4)
-				{
-					m_recvDeviceQuery.m_nB = m_recvDeviceQuery.m_cmd.length;
-				}
-
-				IF__(m_recvDeviceQuery.m_iB == m_recvDeviceQuery.m_nB, true);
-			}
-			else if (b == LIVOX2_SOF)
-			{
-				((uint8_t*)&m_recvDeviceQuery.m_cmd)[0] = b;
-				m_recvDeviceQuery.m_iB++;
-			}
-		}
-
-        return false;
-    }
-
-    void _Livox2::handleDeviceQuery(const LIVOX2_CMD& cmd)
+    void _Livox2::handleDeviceQuery(const LIVOX2_CMD &cmd)
     {
         IF_(cmd.cmd_id != 0x0000);
 
-        //TODO: crc check
-
-
+        // TODO: crc check
     }
 
     void _Livox2::updateCtrlCmd(void)
@@ -426,3 +418,51 @@ namespace kai
     }
 
 }
+
+
+
+/*
+    bool _Livox2::recvLivoxCmd(_IObase *pIO, LIVOX2_CMD_RECV *pCmdRecv)
+    {
+        NULL_F(pIO);
+        NULL_F(pCmdRecv);
+
+        uint8_t b;
+        if (pCmdRecv->m_iB <= 0)
+        {
+            while (pIO->read(&b, 1) > 0)
+            {
+                IF_CONT(b != LIVOX2_SOF);
+
+                ((uint8_t *)&pCmdRecv->m_cmd)[pCmdRecv->m_iB++] = b;
+                break;
+            }
+            IF_F(pCmdRecv->m_iB <= 0);
+        }
+
+        int nBr;
+
+        if (pCmdRecv->m_iB < LIVOX2_CMD_N_HDR)
+        {
+            while ((nBr = pIO->read((uint8_t *)&pCmdRecv->m_cmd.version, LIVOX2_CMD_N_HDR - pCmdRecv->m_iB)) > 0)
+            {
+                pCmdRecv->m_iB += nBr;
+
+                if (pCmdRecv->m_iB >= LIVOX2_CMD_N_HDR)
+                    break;
+            }
+            IF_F(pCmdRecv->m_iB < LIVOX2_CMD_N_HDR);
+        }
+
+        while ((nBr = pIO->read(&(((uint8_t *)&pCmdRecv->m_cmd)[pCmdRecv->m_iB]), pCmdRecv->m_cmd.length - pCmdRecv->m_iB)) > 0)
+        {
+            pCmdRecv->m_iB += nBr;
+
+            if (pCmdRecv->m_iB >= pCmdRecv->m_cmd.length)
+                break;
+        }
+        IF_F(pCmdRecv->m_iB < pCmdRecv->m_cmd.length);
+
+        return true;
+    }
+*/

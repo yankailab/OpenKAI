@@ -272,13 +272,7 @@ namespace kai
 
         string f = picojson::value(o).serialize();
 
-        _File *pF = new _File();
-        IF_F(!pF->open(m_fConfig, ios::out));
-        pF->write((uint8_t *)f.c_str(), f.length());
-        pF->close();
-        DEL(pF);
-
-        return true;
+        return writeFile(m_fConfig, f);
     }
 
     void _GeometryBase::mutexLock(void)
