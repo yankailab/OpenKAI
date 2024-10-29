@@ -1,0 +1,37 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["uploader"],
+}
+
+{
+	"name":"uploader",
+	"class":"_Uploader",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"bLog":1,
+	"dir":"/home/kai/Downloads/test/",
+	"vExt":[".mka",".json",".png",".jpg"],
+	"bRemoveAfterUpload":0,
+	"method":0,
+	"url":"http://183.6.39.6:9055/api/Uav/UavImageData",
+
+	"/cmd":"uploader 2>&1 -T [fName] ftp://193.112.75.123/pub/ -u anonymous: --connect-timeout 60 --no-progress-meter",
+	"bConfirmCmdResult":0,
+}

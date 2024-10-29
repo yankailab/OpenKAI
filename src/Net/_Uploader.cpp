@@ -56,8 +56,6 @@ namespace kai
 
 	int _Uploader::check(void)
 	{
-		IF__(m_cmd.empty(), OK_ERR_NULLPTR);
-
 		return this->_FileBase::check();
 	}
 
@@ -167,9 +165,12 @@ namespace kai
 		// fclose(fp);
 
 		object o;
-		JO(o, "lat", lf2str(123.456, 10));
-		JO(o, "lng", lf2str(654.321, 10));
+		JO(o, "id", "1");
+		JO(o, "ip", "192.168.1.108");
+		JO(o, "longitude", lf2str(123.456, 10));
+		JO(o, "latitude", lf2str(654.321, 10));
 		JO(o, "img", strEnc);
+		JO(o, "status", (double)3);
 		string jsonStr = picojson::value(o).serialize();
 
 		m_httpC.post_imageinfo(m_url.c_str(), jsonStr.c_str());

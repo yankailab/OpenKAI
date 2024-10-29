@@ -144,9 +144,4 @@
         y = t;        \
     }
 
-#define JO(o, n, v)                       \
-    {                                     \
-        o.insert(make_pair(n, value(v))); \
-    }
-
 #endif

@@ -20,14 +20,17 @@ int main(int argc, char* argv[])
 	}
 
 	printf("Kiss file: %s\n", argStr.c_str());
-    
+
 	OpenKAI* pOK = new OpenKAI();
 
 	if(pOK->init() != OK_OK)
 		goto exit;
 
 	if(pOK->addKiss(argStr) != OK_OK)
+	{
+		printf("Kiss file read failed: %s\n", argStr.c_str());
 		goto exit;
+	}
 
 	if(pOK->createAllModules() != OK_OK)
 		goto exit;

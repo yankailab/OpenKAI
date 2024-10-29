@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Sensor_LiDAR__Livox2_H_
 #define OpenKAI_src_Sensor_LiDAR__Livox2_H_
 
-#include "../../../IO/_IObase.h"
+#include "../../../IO/_UDP.h"
 #include "../../../3D/PointCloud/_PCstream.h"
 #include "../../../Dependencies/SensorFusion/SensorFusion.h"
 #include "../../../Dependencies/CRC.h"
@@ -19,6 +19,7 @@
 #define LIVOX2_N_DATA 1400
 #define LIVOX2_SOF 0xAA
 #define LIVOX2_CMD_N_HDR 24
+#define LIVOX2_DATA_N_HDR 24
 
 namespace kai
 {
@@ -109,6 +110,7 @@ namespace kai
 			return NULL;
 		}
 
+		void handleCtrlCmdAck(const LIVOX2_CMD& cmd);
 		void updateRctrlCmd(void);
 		static void *getUpdateRctrlCmd(void *This)
 		{
@@ -119,6 +121,7 @@ namespace kai
 		// Push command
 		void recvWorkMode(livox_status status, LivoxLidarAsyncControlResponse *pR);
 		void recvLidarInfoChange(const LivoxLidarInfo *pI);
+		void handlePushCmd(const LIVOX2_CMD& cmd);
 		void updateRpushCmd(void);
 		static void *getUpdateRpushCmd(void *This)
 		{
@@ -128,6 +131,7 @@ namespace kai
 
 		// Point Cloud Data
 		void recvPointCloud(LivoxLidarEthernetPacket *pD);
+		void handlePointCloudData(const LIVOX2_DATA& d);
 		void updateRpointCloud(void);
 		static void *getUpdateRpointCloud(void *This)
 		{
@@ -137,6 +141,7 @@ namespace kai
 
 		// IMU
 		void recvIMU(LivoxLidarEthernetPacket *pD);
+		void handleIMUdata(const LIVOX2_DATA& d);
 		void updateRimu(void);
 		static void *getUpdateRimu(void *This)
 		{
@@ -152,12 +157,12 @@ namespace kai
 		_Thread *m_pTpointCloudR;
 		_Thread *m_pTimuR;
 
-		_IObase *m_pDeviceQuery;
-		_IObase *m_pCtrlCmd;
-		_IObase *m_pPushCmd;
-		_IObase *m_pPointCloud;
-		_IObase *m_pIMU;
-		_IObase *m_pLog;
+		_UDP *m_pDeviceQuery;
+		_UDP *m_pCtrlCmd;
+		_UDP *m_pPushCmd;
+		_UDP *m_pPointCloud;
+		_UDP *m_pIMU;
+		_UDP *m_pLog;
 
 		LIVOX2_STATE m_state;
 		string m_SN;

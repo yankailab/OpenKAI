@@ -51,7 +51,7 @@ sudo apt-get -y install libglu1-mesa-dev libglu1-mesa libgl1-mesa-glx libgl1-mes
 sudo apt-get -y install libgtk-3-dev gstreamer1.0-x gstreamer1.0-gtk3
 
 # Numerical
-sudo apt-get -y install libqhull-dev qhull-bin gfortran libblas-dev liblapack-dev liblapacke-dev liblapack3 libatlas-base-dev libopenblas-base libopenblas-dev gsl-bin libgsl0-dev libflann-dev libproj-dev
+sudo apt-get -y install libqhull-dev qhull-bin gfortran libblas-dev liblapack-dev liblapacke-dev liblapack3 libatlas-base-dev libopenblas-base libopenblas-dev libflann-dev libproj-dev
 
 # Graph plotting
 sudo apt-get -y install libmgl-dev
@@ -229,7 +229,7 @@ make -j$(nproc)
 #----------------------------------------------------
 # (Optional) Vzense Nebular
 git clone --depth 1 https://github.com/Vzense/NebulaSDK.git
-# In direct connection mode configure the host ip to be 
+# In direct connection mode configure the host ip to be
 # IP: 192.168.1.100
 # Netmask: 255.255.255.0
 # Gateway: 192.168.100.1
@@ -243,7 +243,7 @@ cd build
 cmake -DCMAKE_BUILD_TYPE=Release ../
 make -j$(nproc)
 sudo make install
-# In direct connection mode configure the host ip to be 
+# In direct connection mode configure the host ip to be
 # IP: 192.168.1.50
 # Netmask: 255.255.255.0
 # Gateway: 192.168.1.1
@@ -257,7 +257,7 @@ cd build
 cmake -DCMAKE_BUILD_TYPE=Release ../
 make -j$(nproc)
 sudo make install
-# In direct connection mode configure the host ip to be 
+# In direct connection mode configure the host ip to be
 # IP: 192.168.1.50
 # Netmask: 255.255.255.0
 # Gateway: 192.168.1.1
@@ -275,9 +275,7 @@ git clone --depth 1 https://github.com/yankailab/OpenKAI_exm.git
 
 #----------------------------------------------------
 # OpenKAI
-sudo apt-get install libunwind-dev
-sudo apt-get install libgoogle-glog-dev
-sudo apt-get install libevent-dev
+sudo apt-get install libunwind-dev libgoogle-glog-dev libevent-dev gsl-bin libgsl0-dev
 git clone --depth 1 https://github.com/yankailab/OpenKAI.git
 cd OpenKAI
 mkdir build

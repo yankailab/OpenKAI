@@ -7,6 +7,11 @@
 using namespace std;
 using namespace picojson;
 
+#define JO(o, n, v)                       \
+    {                                     \
+        o.insert(make_pair(n, value(v))); \
+    }
+
 namespace kai
 {
 

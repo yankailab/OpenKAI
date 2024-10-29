@@ -123,28 +123,28 @@ namespace kai
         string n;
 
         n = "";
-        pK->v("_IObaseDeviceQuery", &n);
-        m_pDeviceQuery = (_IObase *)(pK->findModule(n));
+        pK->v("_UDPdeviceQuery", &n);
+        m_pDeviceQuery = (_UDP *)(pK->findModule(n));
         NULL__(m_pDeviceQuery, OK_ERR_NOT_FOUND);
 
         n = "";
-        pK->v("_IObaseCtrlCmd", &n);
-        m_pCtrlCmd = (_IObase *)(pK->findModule(n));
+        pK->v("_UDPctrlCmd", &n);
+        m_pCtrlCmd = (_UDP *)(pK->findModule(n));
         NULL__(m_pCtrlCmd, OK_ERR_NOT_FOUND);
 
         n = "";
-        pK->v("_IObasePushCmd", &n);
-        m_pPushCmd = (_IObase *)(pK->findModule(n));
+        pK->v("_UDPpushCmd", &n);
+        m_pPushCmd = (_UDP *)(pK->findModule(n));
         NULL__(m_pPushCmd, OK_ERR_NOT_FOUND);
 
         n = "";
-        pK->v("_IObasePointCloud", &n);
-        m_pPointCloud = (_IObase *)(pK->findModule(n));
+        pK->v("_UDPpointCloud", &n);
+        m_pPointCloud = (_UDP *)(pK->findModule(n));
         NULL__(m_pPointCloud, OK_ERR_NOT_FOUND);
 
         n = "";
-        pK->v("_IObaseIMU", &n);
-        m_pIMU = (_IObase *)(pK->findModule(n));
+        pK->v("_UDPimu", &n);
+        m_pIMU = (_UDP *)(pK->findModule(n));
         NULL__(m_pIMU, OK_ERR_NOT_FOUND);
 
         // n = "";
@@ -198,6 +198,12 @@ namespace kai
         IF_F(nBr < pCmdRecv->length);
         IF_F(pCmdRecv->sof != LIVOX2_SOF);
 
+        uint16_t crc16 = CRC::Calculate(pCmdRecv, 18, CRC::CRC_16_CCITTFALSE());
+        IF_F(crc16 != pCmdRecv->crc16_h);
+
+        uint32_t crc32 = CRC::Calculate(pCmdRecv->data, pCmdRecv->length - LIVOX2_CMD_N_HDR, CRC::CRC_32());
+        IF_F(crc32 != pCmdRecv->crc32_d);
+
         return true;
     }
 
@@ -209,6 +215,9 @@ namespace kai
         int nBr = pIO->read((uint8_t *)pDataRecv, LIVOX2_N_DATA);
         IF_F(nBr <= 0);
         IF_F(nBr < pDataRecv->length);
+
+        uint32_t crc32 = CRC::Calculate(pDataRecv->data, pDataRecv->length - LIVOX2_DATA_N_HDR, CRC::CRC_32());
+        IF_F(crc32 != pDataRecv->crc32);
 
         return true;
     }
@@ -264,12 +273,6 @@ namespace kai
     void _Livox2::handleDeviceQuery(const LIVOX2_CMD &cmd)
     {
         IF_(cmd.cmd_id != 0x0000);
-
-        // TODO: crc check
-    }
-
-    void _Livox2::updateCtrlCmd(void)
-    {
     }
 
     void _Livox2::updateWctrlCmd(void)
@@ -282,45 +285,79 @@ namespace kai
         }
     }
 
+    void _Livox2::updateCtrlCmd(void)
+    {
+    }
+
     void _Livox2::updateRctrlCmd(void)
     {
         while (m_pTcontrolCmdR->bAlive())
         {
-            m_pTcontrolCmdR->autoFPSfrom();
-
-            m_pTcontrolCmdR->autoFPSto();
+            LIVOX2_CMD cmd;
+            if (recvLivoxCmd(m_pCtrlCmd, &cmd))
+            {
+                handleCtrlCmdAck(cmd);
+            }
         }
+    }
+
+    void _Livox2::handleCtrlCmdAck(const LIVOX2_CMD &cmd)
+    {
+        IF_(cmd.cmd_id != 0x0000);
     }
 
     void _Livox2::updateRpushCmd(void)
     {
         while (m_pTpushCmdR->bAlive())
         {
-            m_pTpushCmdR->autoFPSfrom();
-
-            m_pTpushCmdR->autoFPSto();
+            LIVOX2_CMD cmd;
+            if (recvLivoxCmd(m_pPushCmd, &cmd))
+            {
+                handlePushCmd(cmd);
+            }
         }
+    }
+
+	void _Livox2::handlePushCmd(const LIVOX2_CMD& cmd)
+    {
+        IF_(cmd.cmd_id != 0x0000);
+
     }
 
     void _Livox2::updateRpointCloud(void)
     {
         while (m_pTpointCloudR->bAlive())
         {
-            m_pTpointCloudR->autoFPSfrom();
-
-            m_pTpointCloudR->autoFPSto();
+            LIVOX2_DATA d;
+            if (recvLivoxData(m_pPointCloud, &d))
+            {
+                handlePointCloudData(d);
+            }
         }
+    }
+
+	void _Livox2::handlePointCloudData(const LIVOX2_DATA& d)
+    {
+
     }
 
     void _Livox2::updateRimu(void)
     {
         while (m_pTimuR->bAlive())
         {
-            m_pTimuR->autoFPSfrom();
-
-            m_pTimuR->autoFPSto();
+            LIVOX2_DATA d;
+            if (recvLivoxData(m_pIMU, &d))
+            {
+                handleIMUdata(d);
+            }
         }
     }
+
+	void _Livox2::handleIMUdata(const LIVOX2_DATA& d)
+    {
+
+    }
+
 
     void _Livox2::setLidarMode(LivoxLidarWorkMode m)
     {
@@ -418,8 +455,6 @@ namespace kai
     }
 
 }
-
-
 
 /*
     bool _Livox2::recvLivoxCmd(_IObase *pIO, LIVOX2_CMD_RECV *pCmdRecv)
