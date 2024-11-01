@@ -239,23 +239,10 @@ namespace kai
 
     void _Livox2::sendDeviceQuery(void)
     {
-        static uint32_t iSeq = 0;
-
-        LivoxLidarCmdPacket p;
-
-        p.sof = LIVOX2_SOF;
-        p.version = 0;
-        p.length = LIVOX2_CMD_N_HDR;
-        p.seq_num = iSeq++;
-        p.cmd_id = 0x0000;
-        p.cmd_type = 0x00;    // REQ
-        p.sender_type = 0x00; // Host computer
-        p.crc16_h = CRC::Calculate(&p, 18, CRC::CRC_16_CCITTFALSE());
-        p.crc32_d = 0; // CRC::Calculate(p.data, length, CRC::CRC_32());
-        p.data[0] = 0;
-
-        int nB = sizeof(p) - 1;
-        m_pDeviceQuery->write((uint8_t *)&p, nB);
+        LIVOX2_CMD cmd;
+        cmd.init(0x0000, 0x00, 0);
+        cmd.calcCRC();
+        m_pDeviceQuery->write((uint8_t *)&cmd, cmd.length);
     }
 
     void _Livox2::updateRdeviceQuery(void)
@@ -273,6 +260,16 @@ namespace kai
     void _Livox2::handleDeviceQuery(const LIVOX2_CMD &cmd)
     {
         IF_(cmd.cmd_id != 0x0000);
+
+        uint8_t pSN[16];
+        memcpy(pSN, &cmd.data[2], 16);
+
+        uint8_t pIP[4];
+        memcpy(pIP, &cmd.data[18], 4);
+
+        uint8_t rCode = cmd.data[0];
+        m_devType = cmd.data[1];
+        m_cmdPort = *(uint16_t *)(&cmd.data[22]);
     }
 
     void _Livox2::updateWctrlCmd(void)
@@ -281,12 +278,46 @@ namespace kai
         {
             m_pTcontrolCmdW->autoFPSfrom();
 
+            updateCtrlCmd();
+
             m_pTcontrolCmdW->autoFPSto();
         }
     }
 
     void _Livox2::updateCtrlCmd(void)
     {
+    }
+
+    void _Livox2::setPclDataType(void)
+    {
+        LIVOX2_CMD cmd;
+        cmd.init(0x0100, 0x00, 0);
+        // data
+        cmd.addData((uint16_t)1); // key_num
+        cmd.addData((uint16_t)0); // rsvd
+        // key value list
+        cmd.addData((uint16_t)kKeyPclDataType); // key
+        cmd.addData((uint16_t)1);               // length
+        cmd.addData((uint8_t)kLivoxLidarCartesianCoordinateHighData);
+
+        cmd.calcCRC();
+        m_pDeviceQuery->write((uint8_t *)&cmd, cmd.length);
+    }
+
+    void _Livox2::setPatternMode(void)
+    {
+        LIVOX2_CMD cmd;
+        cmd.init(0x0100, 0x00, 0);
+        // data
+        cmd.addData((uint16_t)1); // key_num
+        cmd.addData((uint16_t)0); // rsvd
+        // key value list
+        cmd.addData((uint16_t)kKeyPatternMode); // key
+        cmd.addData((uint16_t)1);               // length
+        cmd.addData((uint8_t)kLivoxLidarScanPatternNoneRepetive);
+
+        cmd.calcCRC();
+        m_pDeviceQuery->write((uint8_t *)&cmd, cmd.length);
     }
 
     void _Livox2::updateRctrlCmd(void)
@@ -318,10 +349,9 @@ namespace kai
         }
     }
 
-	void _Livox2::handlePushCmd(const LIVOX2_CMD& cmd)
+    void _Livox2::handlePushCmd(const LIVOX2_CMD &cmd)
     {
         IF_(cmd.cmd_id != 0x0000);
-
     }
 
     void _Livox2::updateRpointCloud(void)
@@ -336,9 +366,33 @@ namespace kai
         }
     }
 
-	void _Livox2::handlePointCloudData(const LIVOX2_DATA& d)
+    void _Livox2::handlePointCloudData(const LIVOX2_DATA &d)
     {
+        LOG_I("CbPointCloud data_num: " + i2str(d.dot_num) + ", data_type: " + i2str(d.data_type) + ", length: " + i2str(d.length) + ", frame_counter: " + i2str(d.frame_cnt));
 
+        // uint64_t tStamp = *((uint64_t *)(pD->timestamp));
+        uint64_t tStamp = getApproxTbootUs();
+
+        if (d.data_type == kLivoxLidarCartesianCoordinateHighData)
+        {
+            LivoxLidarCartesianHighRawPoint *pPd = (LivoxLidarCartesianHighRawPoint *)d.data;
+            for (uint32_t i = 0; i < d.dot_num; i++)
+            {
+                LivoxLidarCartesianHighRawPoint *pP = &pPd[i];
+                Vector3d vP(pP->x, pP->y, pP->z);
+                vP *= 0.001;
+                vP = m_A * vP;
+                add(vP, Vector3f{m_vColorDefault.x, m_vColorDefault.y, m_vColorDefault.z}, tStamp);
+            }
+        }
+        else if (d.data_type == kLivoxLidarCartesianCoordinateLowData)
+        {
+            LivoxLidarCartesianLowRawPoint *pP = (LivoxLidarCartesianLowRawPoint *)d.data;
+        }
+        else if (d.data_type == kLivoxLidarSphericalCoordinateData)
+        {
+            LivoxLidarSpherPoint *pP = (LivoxLidarSpherPoint *)d.data;
+        }
     }
 
     void _Livox2::updateRimu(void)
@@ -353,11 +407,41 @@ namespace kai
         }
     }
 
-	void _Livox2::handleIMUdata(const LIVOX2_DATA& d)
+    void _Livox2::handleIMUdata(const LIVOX2_DATA &d)
     {
+        IF_(!m_bEnableIMU);
+        LOG_I("CbIMU, data_num:" + i2str(d.dot_num) + ", data_type:" + i2str(d.data_type) + ", length:" + i2str(d.length) + ", frame_counter:" + i2str(d.frame_cnt));
 
+        uint64_t tStamp = *((uint64_t *)d.timestamp);
+        uint64_t dT = tStamp - m_tIMU;
+        m_tIMU = tStamp;
+        if (dT > USEC_1SEC * 1000)
+            dT = 0;
+
+        LivoxLidarImuRawPoint *pIMU = (LivoxLidarImuRawPoint *)d.data;
+
+        m_SF.MahonyUpdate(
+            // m_SF.MadgwickUpdate(
+            pIMU->gyro_x,
+            pIMU->gyro_y,
+            pIMU->gyro_z,
+            pIMU->acc_x,
+            pIMU->acc_y,
+            pIMU->acc_z,
+            ((float)dT) * 1e-9);
+
+        float *pQ = m_SF.getQuat();
+        vDouble4 vQ(pQ[0], pQ[1], pQ[2], pQ[3]);
+        setQuaternion(vQ);
+
+        vDouble3 vR(m_SF.getRollRadians(), m_SF.getPitchRadians(), m_SF.getYawRadians());
+        setRotation(vR);
+
+        vR.x = 0;
+        vR.y = 0;
+        vR.z = -vR.z;
+        updateTranslationMatrix(true, &vR);
     }
-
 
     void _Livox2::setLidarMode(LivoxLidarWorkMode m)
     {

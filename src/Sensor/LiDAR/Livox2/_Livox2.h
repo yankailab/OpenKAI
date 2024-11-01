@@ -52,6 +52,45 @@ namespace kai
 		uint16_t crc16_h;
 		uint32_t crc32_d;
 		uint8_t data[LIVOX2_N_DATA];
+		int m_iD;
+
+		void init(uint16_t cmdID, uint8_t cmdType, uint32_t seqNum)
+		{
+			sof = LIVOX2_SOF;
+			version = 0;
+			length = LIVOX2_CMD_N_HDR;
+			seq_num = seqNum;
+			cmd_id = cmdID;
+			cmd_type = cmdType; // REQ
+			sender_type = 0x00; // Host computer
+			m_iD = 0;
+		}
+
+		void calcCRC(void)
+		{
+			crc16_h = CRC::Calculate(this, 18, CRC::CRC_16_CCITTFALSE());
+			crc32_d = 0;
+			if (length > LIVOX2_CMD_N_HDR)
+				crc32_d = CRC::Calculate(data, length - LIVOX2_CMD_N_HDR, CRC::CRC_32());
+		}
+
+		void addData(void* pD, int nD)
+		{
+			memcpy(&data[m_iD], pD, nD);
+			m_iD += nD;
+			length += nD;
+		}
+
+		void addData(uint16_t v)
+		{
+			addData(&v, 2);
+		}
+
+		void addData(uint8_t v)
+		{
+			data[m_iD++] = v;
+			length++;
+		}
 	};
 
 	enum LIVOX2_STATE
@@ -81,8 +120,8 @@ namespace kai
 
 	private:
 		// Common
-	    bool recvLivoxCmd(_IObase* pIO, LIVOX2_CMD* pResvCmd);
-	    bool recvLivoxData(_IObase* pIO, LIVOX2_DATA* pResvDATA);
+		bool recvLivoxCmd(_IObase *pIO, LIVOX2_CMD *pResvCmd);
+		bool recvLivoxData(_IObase *pIO, LIVOX2_DATA *pResvDATA);
 
 		// Device Type Query
 		void sendDeviceQuery(void);
@@ -93,7 +132,7 @@ namespace kai
 			return NULL;
 		}
 
-		void handleDeviceQuery(const LIVOX2_CMD& cmd);
+		void handleDeviceQuery(const LIVOX2_CMD &cmd);
 		void updateRdeviceQuery(void);
 		static void *getUpdateRdeviceQuery(void *This)
 		{
@@ -102,6 +141,8 @@ namespace kai
 		}
 
 		// Control Command
+		void setPclDataType(void);
+		void setPatternMode(void);
 		void updateCtrlCmd(void);
 		void updateWctrlCmd(void);
 		static void *getUpdateWctrlCmd(void *This)
@@ -110,7 +151,7 @@ namespace kai
 			return NULL;
 		}
 
-		void handleCtrlCmdAck(const LIVOX2_CMD& cmd);
+		void handleCtrlCmdAck(const LIVOX2_CMD &cmd);
 		void updateRctrlCmd(void);
 		static void *getUpdateRctrlCmd(void *This)
 		{
@@ -121,7 +162,7 @@ namespace kai
 		// Push command
 		void recvWorkMode(livox_status status, LivoxLidarAsyncControlResponse *pR);
 		void recvLidarInfoChange(const LivoxLidarInfo *pI);
-		void handlePushCmd(const LIVOX2_CMD& cmd);
+		void handlePushCmd(const LIVOX2_CMD &cmd);
 		void updateRpushCmd(void);
 		static void *getUpdateRpushCmd(void *This)
 		{
@@ -131,7 +172,7 @@ namespace kai
 
 		// Point Cloud Data
 		void recvPointCloud(LivoxLidarEthernetPacket *pD);
-		void handlePointCloudData(const LIVOX2_DATA& d);
+		void handlePointCloudData(const LIVOX2_DATA &d);
 		void updateRpointCloud(void);
 		static void *getUpdateRpointCloud(void *This)
 		{
@@ -141,7 +182,7 @@ namespace kai
 
 		// IMU
 		void recvIMU(LivoxLidarEthernetPacket *pD);
-		void handleIMUdata(const LIVOX2_DATA& d);
+		void handleIMUdata(const LIVOX2_DATA &d);
 		void updateRimu(void);
 		static void *getUpdateRimu(void *This)
 		{
@@ -165,8 +206,13 @@ namespace kai
 		_UDP *m_pLog;
 
 		LIVOX2_STATE m_state;
-		string m_SN;
 		LivoxLidarWorkMode m_workMode;
+
+		string m_SN;
+		uint8_t m_devType;
+		uint8_t m_pSN[16];
+		uint8_t m_pIP[4];
+		uint16_t m_cmdPort;
 
 		SF m_SF;
 		uint64_t m_tIMU;
