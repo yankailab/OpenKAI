@@ -97,7 +97,7 @@ namespace kai
 
 			uint8_t pB[N_SERIAL_BUF];
 			int nB;
-			while ((nB = m_fifoW.output(pB, N_SERIAL_BUF)) > 0)
+			while ((nB = m_packetW.getPacket(pB, N_SERIAL_BUF)) > 0)
 			{
 				int nW = ::write(m_fd, pB, nB);
 				LOG_I("write: " + i2str(nW) + " bytes");

@@ -443,77 +443,13 @@ namespace kai
         updateTranslationMatrix(true, &vR);
     }
 
+
+
+
+
     void _Livox2::setLidarMode(LivoxLidarWorkMode m)
     {
         m_workMode = m;
-    }
-
-    void _Livox2::recvPointCloud(LivoxLidarEthernetPacket *pD)
-    {
-        NULL_(pD);
-        LOG_I("CbPointCloud data_num: " + i2str(pD->dot_num) + ", data_type: " + i2str(pD->data_type) + ", length: " + i2str(pD->length) + ", frame_counter: " + i2str(pD->frame_cnt));
-
-        uint8_t tStampType = pD->time_type;
-        //        uint64_t tStamp = *((uint64_t *)(pD->timestamp));
-        uint64_t tStamp = getApproxTbootUs();
-
-        if (pD->data_type == kLivoxLidarCartesianCoordinateHighData)
-        {
-            LivoxLidarCartesianHighRawPoint *pPd = (LivoxLidarCartesianHighRawPoint *)pD->data;
-            for (uint32_t i = 0; i < pD->dot_num; i++)
-            {
-                LivoxLidarCartesianHighRawPoint *pP = &pPd[i];
-                Vector3d vP(pP->x, pP->y, pP->z);
-                vP *= 0.001;
-                vP = m_A * vP;
-                add(vP, Vector3f{m_vColorDefault.x, m_vColorDefault.y, m_vColorDefault.z}, tStamp);
-            }
-        }
-        else if (pD->data_type == kLivoxLidarCartesianCoordinateLowData)
-        {
-            LivoxLidarCartesianLowRawPoint *pP = (LivoxLidarCartesianLowRawPoint *)pD->data;
-        }
-        else if (pD->data_type == kLivoxLidarSphericalCoordinateData)
-        {
-            LivoxLidarSpherPoint *pP = (LivoxLidarSpherPoint *)pD->data;
-        }
-    }
-
-    void _Livox2::recvIMU(LivoxLidarEthernetPacket *pD)
-    {
-        NULL_(pD);
-        IF_(!m_bEnableIMU);
-        LOG_I("CbIMU, data_num:" + i2str(pD->dot_num) + ", data_type:" + i2str(pD->data_type) + ", length:" + i2str(pD->length) + ", frame_counter:" + i2str(pD->frame_cnt));
-
-        uint64_t tStamp = *((uint64_t *)pD->timestamp);
-        uint64_t dT = tStamp - m_tIMU;
-        m_tIMU = tStamp;
-        if (dT > USEC_1SEC * 1000)
-            dT = 0;
-
-        LivoxLidarImuRawPoint *pIMU = (LivoxLidarImuRawPoint *)pD->data;
-
-        m_SF.MahonyUpdate(
-            // m_SF.MadgwickUpdate(
-            pIMU->gyro_x,
-            pIMU->gyro_y,
-            pIMU->gyro_z,
-            pIMU->acc_x,
-            pIMU->acc_y,
-            pIMU->acc_z,
-            ((float)dT) * 1e-9);
-
-        float *pQ = m_SF.getQuat();
-        vDouble4 vQ(pQ[0], pQ[1], pQ[2], pQ[3]);
-        setQuaternion(vQ);
-
-        vDouble3 vR(m_SF.getRollRadians(), m_SF.getPitchRadians(), m_SF.getYawRadians());
-        setRotation(vR);
-
-        vR.x = 0;
-        vR.y = 0;
-        vR.z = -vR.z;
-        updateTranslationMatrix(true, &vR);
     }
 
     void _Livox2::recvWorkMode(livox_status status, LivoxLidarAsyncControlResponse *pR)

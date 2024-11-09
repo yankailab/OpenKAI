@@ -171,7 +171,6 @@ namespace kai
 		}
 
 		// Point Cloud Data
-		void recvPointCloud(LivoxLidarEthernetPacket *pD);
 		void handlePointCloudData(const LIVOX2_DATA &d);
 		void updateRpointCloud(void);
 		static void *getUpdateRpointCloud(void *This)
@@ -181,7 +180,6 @@ namespace kai
 		}
 
 		// IMU
-		void recvIMU(LivoxLidarEthernetPacket *pD);
 		void handleIMUdata(const LIVOX2_DATA &d);
 		void updateRimu(void);
 		static void *getUpdateRimu(void *This)

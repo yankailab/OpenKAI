@@ -14,32 +14,29 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["mavAP","/apBase","ws","apM2J","apMission"],
+	"vBASE":["serialAP","mavAP","apBase","ws","apM2J","apMission"],
 }
 
 {
 	"name":"serialAP",
 	"class":"_SerialPort",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-    {
-		"name":"threadR",
-		"FPS":10,
-		"vRunThread":["mavAP.thread"],
-	}
+	"nPacket":1024,
+	"nPbuffer":512,
 	"/port":"/dev/ttyAMA0",
-	"/port":"/dev/ttyACM0",
-	"port":"/dev/ttyTHS1",
+	"port":"/dev/ttyACM0",
+	"/port":"/dev/ttyTHS1",
 	"baud":115200,
 }
 
 {
 	"name":"mavAP",
 	"class":"_Mavlink",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -58,7 +55,7 @@
 {
 	"name":"udpGCS",
 	"class":"_UDP",
-	"bON":1,
+	"bON":0,
 	{
 		"name":"thread",
 		"FPS":30,
@@ -75,7 +72,7 @@
 {
 	"name":"mavGCS",
 	"class":"_Mavlink",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -94,7 +91,7 @@
 {
 	"name":"udp",
 	"class":"_UDP",
-	"bON":1,
+	"bON":0,
 	{
 		"name":"thread",
 		"FPS":30,
@@ -112,7 +109,7 @@
 {
 	"name":"mavUDP",
 	"class":"_Mavlink",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -141,14 +138,14 @@
 		"FPS":10,
 	}
 	"_StateControl":"state",
-	"/_Mavlink":"mavAP",
-	"_Mavlink":"mavUDP",
+	"_Mavlink":"mavAP",
+	"/_Mavlink":"mavUDP",
 	"freqSendHeartbeat":1,
 	"apType":0,
-	
+
 	{
 		"name":"mavMsgInt",
-		
+
 		{
 			"name":"heartbeat",
 			"id":0,
@@ -230,7 +227,7 @@
 {
 	"name":"apMission",
 	"class":"_APmavlink_mission",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,

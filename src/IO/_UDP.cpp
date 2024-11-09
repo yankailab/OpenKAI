@@ -104,7 +104,7 @@ namespace kai
 
 			uint8_t pB[N_UDP_BUF];
 			int nB;
-			while ((nB = m_fifoW.output(pB, N_UDP_BUF)) > 0)
+			while ((nB = m_packetW.getPacket(pB, N_UDP_BUF)) > 0)
 			{
 				IF_CONT(m_sAddrW.sin_addr.s_addr == htonl(INADDR_ANY));
 

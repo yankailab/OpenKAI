@@ -93,7 +93,7 @@ namespace kai
 
 			uint8_t pB[N_TCP_BUF];
 			int nB;
-			while ((nB = m_fifoW.output(pB, N_TCP_BUF)) > 0)
+			while ((nB = m_packetW.getPacket(pB, N_TCP_BUF)) > 0)
 			{
 				int nSend = ::send(m_socket, pB, nB, 0);
 				if (nSend == -1)

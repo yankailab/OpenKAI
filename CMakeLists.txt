@@ -29,6 +29,7 @@ OPTION(USE_REALSENSE "Use Intel RealSense" OFF)
 OPTION(USE_ROS "Use ROS" OFF)
 OPTION(USE_TF-LITE "Use TensorFlow-Lite" OFF)
 OPTION(USE_VZENSE "Use Vzense Nebular SDK" OFF)
+OPTION(USE_WSSERVER "Use wsServer" OFF)
 OPTION(USE_XDYNAMICS "Use XDynamics SDK" OFF)
 OPTION(USE_XARM "Use xArm" OFF)
 
@@ -286,8 +287,19 @@ endif()
 
 if(WITH_IO)
 add_definitions(-DWITH_IO)
-file(GLOB_RECURSE IO_cpp src/IO/*.cpp src/IO/*.cc src/IO/*.c)
-set(OpenKAI_cpp ${OpenKAI_cpp} ${IO_cpp})
+set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_ADIO_EBYTE.cpp)
+set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_ADIObase.cpp)
+set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_File.cpp)
+set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_IObase.cpp)
+set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_SerialPort.cpp)
+set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_TCPclient.cpp)
+set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_TCPserver.cpp)
+set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_UDP.cpp)
+if(USE_WSSERVER)
+set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_WebSocket.cpp)
+set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_WebSocketServer.cpp)
+set(OpenKAI_lib ${OpenKAI_lib} ws)
+endif()
 endif()
 
 if(WITH_NAVIGATION)
@@ -607,7 +619,7 @@ if(USE_CUDA)
 find_package(CUDA)
 set(
 	CUDA_NVCC_FLAGS
-	${CUDA_NVCC_FLAGS}; 
+	${CUDA_NVCC_FLAGS};
     -O3 -gencode arch=compute_${CUDA_ARCH},code=sm_${CUDA_ARCH}
 )
 endif()
@@ -663,4 +675,3 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/
     FILES_MATCHING
     PATTERN "*.h"
 )
-

@@ -804,7 +804,6 @@ namespace kai
 		bool bConnected(void);
 
 		// Receive
-		void handleMessages(void);
 		bool readMessage(mavlink_message_t &message);
 
 		// Send

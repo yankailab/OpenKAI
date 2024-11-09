@@ -31,101 +31,117 @@ namespace kai
 		io_opened
 	};
 
-	struct IO_FIFO
+	struct IO_PACKET
 	{
 		uint8_t *m_pB = NULL;
 		int m_nB;
-		int m_nData;
-		int m_iIn;
-		int m_iOut;
-		pthread_mutex_t m_mutex;
+		int m_nBw;
 
-		int init(int nB)
+		bool init(int nB)
 		{
 			m_pB = new uint8_t[nB];
 			NULL_F(m_pB);
 			m_nB = nB;
+			m_nBw = 0;
 
-			pthread_mutex_init(&m_mutex, NULL);
-			clear();
 			return true;
 		}
 
 		void release(void)
 		{
 			DEL(m_pB);
-			pthread_mutex_destroy(&m_mutex);
+		}
+
+		int set(uint8_t *pB, int nB)
+		{
+			m_nBw = nB;
+			if (m_nBw > m_nB)
+				m_nBw = m_nB;
+
+			memcpy(m_pB, pB, m_nBw);
+
+			return m_nBw;
+		}
+	};
+
+	struct IO_PACKET_FIFO
+	{
+		IO_PACKET *m_pP = NULL;
+		int m_nP;
+		int m_iPset;
+		int m_iPget;
+
+		bool init(int nB, int nP)
+		{
+			m_pP = new IO_PACKET[nP];
+			NULL_F(m_pP);
+			m_nP = nP;
+
+			int iP;
+			for (iP = 0; iP < m_nP; iP++)
+			{
+				if (!m_pP[iP].init(nB))
+					break;
+			}
+
+			if (iP < nP)
+			{
+				release();
+				return false;
+			}
+
+			clear();
+			return true;
+		}
+
+		void release(void)
+		{
+			clear();
+
+			for (int i = 0; i < m_nP; i++)
+			{
+				m_pP[i].release();
+			}
+
+			DEL(m_pP);
 		}
 
 		void clear(void)
 		{
-			m_iIn = 0;
-			m_iOut = 0;
-			m_nData = 0;
+			m_iPset = 0;
+			m_iPget = 0;
 		}
 
-		bool input(uint8_t *pB, int nB)
+		void setPacket(uint8_t *pB, int nB)
 		{
-			IF_F(nB <= 0);
-			NULL_F(pB);
-			int bResult = false;
+			NULL_(pB);
 
-			pthread_mutex_lock(&m_mutex);
-
-			if (m_nData + nB <= m_nB)
+			int nBw = 0;
+			while (nBw < nB)
 			{
-				int iB = 0;
-				if (m_iIn + nB > m_nB)
-				{
-					iB = m_nB - m_iIn;
-					memcpy(&m_pB[m_iIn], pB, iB);
-					m_iIn = 0;
-				}
+				IO_PACKET *pP = &m_pP[m_iPset];
+				nBw += pP->set(&pB[nBw], nB - nBw);
 
-				int n = nB - iB;
-				memcpy(&m_pB[m_iIn], &pB[iB], n);
-				m_iIn += n;
-				m_nData += nB;
-
-				bResult = true;
+				if (m_iPset == m_nP - 1)
+					m_iPset = 0;
+				else
+					m_iPset++;
 			}
-
-			pthread_mutex_unlock(&m_mutex);
-
-			return bResult;
 		}
 
-		int output(uint8_t *pB, int nB)
+		int getPacket(uint8_t *pB, int nB)
 		{
-			if (nB <= 0)
-				return 0;
-			if (pB == NULL)
+			IF__(m_iPget == m_iPset, 0);
+
+			IO_PACKET *pP = &m_pP[m_iPget++];
+			if (m_iPget >= m_nP)
+				m_iPget = 0;
+
+			if (pP->m_nBw > nB)
 				return -1;
 
-			pthread_mutex_lock(&m_mutex);
-
-			int nO = nB;
-			if (nO > m_nData)
-				nO = m_nData;
-			if (nO > 0)
-			{
-				int iB = 0;
-				if (m_iOut + nO > m_nB)
-				{
-					iB = m_nB - m_iOut;
-					memcpy(pB, &m_pB[m_iOut], iB);
-					m_iOut = 0;
-				}
-
-				int n = nO - iB;
-				memcpy(&pB[iB], &m_pB[m_iOut], n);
-				m_iOut += n;
-				m_nData -= nO;
-			}
-
-			pthread_mutex_unlock(&m_mutex);
-
-			return nO;
+			memcpy(pB, pP->m_pB, pP->m_nBw);
+			return pP->m_nBw;
 		}
 	};
 
@@ -154,8 +170,7 @@ namespace kai
 		IO_TYPE m_ioType;
 		IO_STATUS m_ioStatus;
 
-		int m_nFIFO;
-		IO_FIFO m_fifoW;
+		IO_PACKET_FIFO m_packetW;
 	};
 
 }

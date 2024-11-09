@@ -14,12 +14,11 @@ namespace kai
 	{
 		m_ioType = io_none;
 		m_ioStatus = io_unknown;
-		m_nFIFO = 1280000;
 	}
 
 	_IObase::~_IObase()
 	{
-		m_fifoW.release();
+		m_packetW.release();
 	}
 
 	int _IObase::init(void *pKiss)
@@ -27,8 +26,11 @@ namespace kai
 		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("nFIFO", &m_nFIFO);
-		IF__(!m_fifoW.init(m_nFIFO), OK_ERR_ALLOCATION);
+		int nPacket = 1024;
+		int nPbuffer = 512;
+		pK->v("nPacket", &nPacket);
+		pK->v("nPbuffer", &nPbuffer);
+		IF__(!m_packetW.init(nPbuffer, nPacket), OK_ERR_ALLOCATION);
 
 		return OK_OK;
 	}
@@ -57,7 +59,7 @@ namespace kai
 
 	void _IObase::close(void)
 	{
-		m_fifoW.clear();
+		m_packetW.clear();
 
 		m_ioStatus = io_closed;
 	}
@@ -66,7 +68,7 @@ namespace kai
 	{
 		IF_F(m_ioStatus != io_opened);
 
-		IF_F(!m_fifoW.input(pBuf, nB));
+		m_packetW.setPacket(pBuf, nB);
 
 		NULL__(m_pT, true);
 		m_pT->run();
@@ -95,7 +97,10 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
-		((_Console *)pConsole)->addMsg("nFifoW=" + i2str(m_fifoW.m_nData), 0);
+		_Console* pC = (_Console *)pConsole;
+
+		pC->addMsg("packetW_iPset=" + i2str(m_packetW.m_iPset));
+		pC->addMsg("packetW_iPget=" + i2str(m_packetW.m_iPget));
 	}
 
 }

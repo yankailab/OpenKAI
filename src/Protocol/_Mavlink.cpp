@@ -160,20 +160,10 @@ namespace kai
 				continue;
 			}
 
-			m_pT->autoFPSfrom();
+			mavlink_message_t msg;
+			IF_CONT(!readMessage(msg));
 
-			handleMessages();
 
-			m_pT->autoFPSto();
-		}
-	}
-
-	void _Mavlink::handleMessages(void)
-	{
-		mavlink_message_t msg;
-
-		while (readMessage(msg))
-		{
 			if (m_devSystemID < 0)
 				m_devSystemID = msg.sysid;
 
@@ -214,7 +204,7 @@ namespace kai
 	{
 		if (m_nRead == 0)
 		{
-			m_nRead = m_pIO->read(m_rBuf, MAV_N_BUF);
+			m_nRead = m_pIO->read(m_rBuf, MAV_N_BUF); // TODO: has to be UDP packtized
 			IF_F(m_nRead <= 0);
 			m_iRead = 0;
 		}
@@ -222,9 +212,13 @@ namespace kai
 		while (m_iRead < m_nRead)
 		{
 			mavlink_status_t status;
-			uint8_t result = mavlink_frame_char(MAVLINK_COMM_0, m_rBuf[m_iRead],
+			uint8_t result = mavlink_frame_char(MAVLINK_COMM_0, m_rBuf[m_iRead++],
 												&msg, &status);
-			m_iRead++;
+			if (m_iRead == m_nRead)
+			{
+				m_iRead = 0;
+				m_nRead = 0;
+			}
 
 			if (result == 1)
 			{
@@ -239,7 +233,6 @@ namespace kai
 			}
 		}
 
-		m_nRead = 0;
 		return false;
 	}
 
@@ -249,16 +242,7 @@ namespace kai
 
 		uint8_t pB[MAV_N_BUF];
 		int nB = mavlink_msg_to_send_buffer(pB, &msg);
-
-		if (m_pIO->ioType() != io_webSocket)
-		{
-			m_pIO->write(pB, nB);
-		}
-		else
-		{
-			_WebSocket *pWS = (_WebSocket *)m_pIO;
-			pWS->write(pB, nB, WS_MODE_BIN);
-		}
+		m_pIO->write(pB, nB);
 
 		LOG_I("<- MSG_ID = " + i2str((int)msg.msgid) + ", seq = " + i2str((int)msg.seq));
 	}
