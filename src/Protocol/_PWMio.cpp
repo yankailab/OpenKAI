@@ -74,45 +74,30 @@ namespace kai
 
 	void _PWMio::updateR(void)
 	{
-		while (m_pT->bAlive())
+		PROTOCOL_CMD rCMD;
+
+		while (m_pTr->bAlive())
 		{
-			if (!m_pIO)
-			{
-				m_pT->sleepT(SEC_2_USEC);
-				continue;
-			}
+			IF_CONT(!readCMD(&rCMD));
 
-			if (!m_pIO->bOpen())
-			{
-				m_pT->sleepT(SEC_2_USEC);
-				continue;
-			}
-
-			m_pT->autoFPSfrom();
-
-			while (readCMD())
-			{
-				handleCMD();
-				m_recvMsg.reset();
-				m_nCMDrecv++;
-			}
-
-			m_pT->autoFPSto();
+			handleCMD(rCMD);
+			rCMD.clear();
+			m_nCMDrecv++;
 		}
 	}
 
-	void _PWMio::handleCMD(void)
+	void _PWMio::handleCMD(const PROTOCOL_CMD& cmd)
 	{
-		switch (m_recvMsg.m_pB[1])
+		switch (cmd.m_cmd)
 		{
 		case ARDU_CMD_HB:
 			for (int i = 0; i < m_nCr; i++)
 			{
 				int iB = i * 2;
-				if (iB >= m_recvMsg.m_nPayload)
+				if (iB >= cmd.m_nPayload)
 					break;
 
-				uint16_t v = *((uint16_t *)(&m_recvMsg.m_pB[PB_N_HDR + iB]));
+				uint16_t v = *((uint16_t *)(&cmd.m_pB[PB_N_HDR + iB]));
 				m_pCr[i].set(v);
 			}
 			break;

@@ -1,17 +1,19 @@
 #ifndef OpenKAI_src_Protocol__JSONbase_H_
 #define OpenKAI_src_Protocol__JSONbase_H_
 
-#include "../Base/_ModuleBase.h"
-#include "../IO/_WebSocket.h"
+#include "_ProtocolBase.h"
+#include "../IO/_IObase.h"
 #include "../UI/_Console.h"
 #include <openssl/md5.h>
 
 using namespace picojson;
 
+#define JB_N_BUF 512
+
 namespace kai
 {
 
-	class _JSONbase : public _ModuleBase
+	class _JSONbase : public _ProtocolBase
 	{
 	public:
 		_JSONbase();
@@ -28,8 +30,8 @@ namespace kai
 		virtual bool sendMsg(picojson::object &o);
 		virtual void sendHeartbeat(void);
 
-		virtual bool recv(void);
-		virtual void handleMsg(const string &str);
+		virtual bool recvJson(string* pStr);
+		virtual void handleJson(const string &str);
 		virtual void md5(const string &str, string *pDigest);
 		virtual bool str2JSON(const string &str, picojson::value *pJson);
 
@@ -49,12 +51,8 @@ namespace kai
 		}
 
 	protected:
-		_Thread *m_pTr;
-		_IObase *m_pIO;
-
 		string m_msgFinishSend;
 		string m_msgFinishRecv;
-		string m_strB;
 
 		INTERVAL_EVENT m_ieSendHB;
 	};

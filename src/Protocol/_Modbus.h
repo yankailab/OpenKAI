@@ -33,7 +33,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		modbus_t *m_pMb;
 		string m_port;
 		string m_parity;

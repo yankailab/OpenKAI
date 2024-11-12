@@ -6,49 +6,27 @@ namespace kai
     _Xbee::_Xbee()
     {
         m_myAddr = 0;
-        m_pTr = NULL;
-        m_pIO = NULL;
-        m_fRecv.reset();
     }
 
     _Xbee::~_Xbee()
     {
-        DEL(m_pTr);
     }
 
     int _Xbee::init(void *pKiss)
     {
-        CHECK_(this->_ModuleBase::init(pKiss));
+        CHECK_(this->_ProtocolBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
         string addr = "";
         pK->v("myAddr", &addr);
         m_myAddr = getAddr(addr);
 
-        Kiss *pKt = pK->child("threadR");
-        if (pKt->empty())
-        {
-            LOG_E("threadR not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
-        m_pTr = new _Thread();
-        CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "thread init failed");
-
         return OK_OK;
     }
 
     int _Xbee::link(void)
     {
-        CHECK_(this->_ModuleBase::link());
-
-        Kiss *pK = (Kiss *)m_pKiss;
-        string n;
-        n = "";
-
-        pK->v("_IObase", &n);
-        m_pIO = (_IObase *)(pK->findModule(n));
-        NULL__(m_pIO, OK_ERR_NOT_FOUND);
+        CHECK_(this->_ProtocolBase::link());
 
         return OK_OK;
     }
@@ -63,23 +41,13 @@ namespace kai
 
     int _Xbee::check(void)
     {
-        NULL__(m_pTr, OK_ERR_NULLPTR);
-        NULL__(m_pIO, OK_ERR_NULLPTR);
-        IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
-
-        return this->_ModuleBase::check();
+        return this->_ProtocolBase::check();
     }
 
     void _Xbee::updateW(void)
     {
         while (m_pT->bAlive())
         {
-            if (!m_pIO)
-            {
-                m_pT->sleepT(SEC_2_USEC);
-                continue;
-            }
-
             m_pT->autoFPSfrom();
 
             updateMesh();
@@ -113,61 +81,57 @@ namespace kai
 
     void _Xbee::updateR(void)
     {
+  		XBframe xbFrame;
+        xbFrame.clear();
+
         while (m_pTr->bAlive())
         {
-            m_pTr->autoFPSfrom();
-
-            if (recv())
+            if (readFrame(&xbFrame))
             {
-                handleFrame();
-                m_fRecv.reset();
+                handleFrame(&xbFrame);
+                xbFrame.clear();
             }
-            //        m_pT->sleepT ( 0 ); //wait for the IObase to wake me up when received data
-
-            m_pTr->autoFPSto();
         }
     }
 
-    bool _Xbee::recv()
+    bool _Xbee::readFrame(XBframe* pF)
     {
         IF_F(check() != OK_OK);
+		NULL_F(pF);
 
-        uint8_t b;
-        int nB;
-        while ((nB = m_pIO->read(&b, 1)) > 0)
-        {
-            if (m_fRecv.m_iB > 0)
-            {
-                m_fRecv.m_pB[m_fRecv.m_iB] = b;
-                m_fRecv.m_iB++;
+		if (m_nRead == 0)
+		{
+			m_nRead = m_pIO->read(m_pBuf, PB_N_BUF);
+			IF_F(m_nRead <= 0);
+			m_iRead = 0;
+		}
 
-                if (m_fRecv.m_iB == 3)
-                {
-                    m_fRecv.m_length = (m_fRecv.m_pB[1] << 8) | m_fRecv.m_pB[2];
-                }
+		while (m_iRead < m_nRead)
+		{
+			bool r = pF->input(m_pBuf[m_iRead++]);
+			if (m_iRead == m_nRead)
+			{
+				m_iRead = 0;
+				m_nRead = 0;
+			}
 
-                IF__(m_fRecv.m_iB == m_fRecv.m_length + 4, true);
-            }
-            else if (b == XB_DELIM)
-            {
-                m_fRecv.m_pB[0] = b;
-                m_fRecv.m_iB = 1;
-                m_fRecv.m_length = 0;
-            }
-        }
+			IF__(r, true);
+		}
 
-        return false;
+		return false;
     }
 
-    void _Xbee::handleFrame(void)
+    void _Xbee::handleFrame(XBframe* pF)
     {
-        uint8_t fType = m_fRecv.m_pB[3];
+		NULL_(pF);
+
+        uint8_t fType = pF->m_pB[3];
 
         if (fType == 0x90)
         {
             // Receive Packet
     		XBframe_receivePacket rP;
-            IF_(!rP.decode(m_fRecv.m_pB, m_fRecv.m_iB));
+            IF_(!rP.decode(pF->m_pB, pF->m_iB));
 
             m_cbReceivePacket.call(rP);
         }
@@ -212,7 +176,7 @@ namespace kai
 
     uint64_t _Xbee::getMyAddr(void)
     {
-        return m_myAddr;       
+        return m_myAddr;
     }
 
     uint64_t _Xbee::getAddr(const string &sAddr)
@@ -231,7 +195,7 @@ namespace kai
     void _Xbee::console(void *pConsole)
     {
         NULL_(pConsole);
-        this->_ModuleBase::console(pConsole);
+        this->_ProtocolBase::console(pConsole);
 
         string msg;
         if (m_pIO->bOpen())

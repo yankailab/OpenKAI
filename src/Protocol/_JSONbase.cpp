@@ -5,21 +5,17 @@ namespace kai
 
     _JSONbase::_JSONbase()
     {
-        m_pTr = nullptr;
-        m_pIO = nullptr;
-
         m_msgFinishSend = "";
         m_msgFinishRecv = "EOJ";
     }
 
     _JSONbase::~_JSONbase()
     {
-        DEL(m_pTr);
     }
 
     int _JSONbase::init(void *pKiss)
     {
-        CHECK_(this->_ModuleBase::init(pKiss));
+        CHECK_(this->_ProtocolBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
         pK->v("msgFinishSend", &m_msgFinishSend);
@@ -29,31 +25,12 @@ namespace kai
         pK->v("ieSendHB", &v);
         m_ieSendHB.init(v);
 
-        Kiss *pKt = pK->child("threadR");
-        if (pKt->empty())
-        {
-            LOG_E("threadR not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
-        m_pTr = new _Thread();
-        CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "threadR init failed");
-
         return OK_OK;
     }
 
 	int _JSONbase::link(void)
 	{
-		CHECK_(this->_ModuleBase::link());
-        CHECK_(m_pTr->link());
-
-		Kiss *pK = (Kiss *)m_pKiss;
-        string n;
-
-        n = "";
-        pK->v("_IObase", &n);
-        m_pIO = (_IObase *)(pK->findModule(n));
-        NULL__(m_pIO, OK_ERR_NOT_FOUND);
+		CHECK_(this->_ProtocolBase::link());
 
 		return OK_OK;
 	}
@@ -68,23 +45,13 @@ namespace kai
 
     int _JSONbase::check(void)
     {
-        NULL__(m_pTr, OK_ERR_NULLPTR);
-        NULL__(m_pIO, OK_ERR_NULLPTR);
-        IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
-
-        return this->_ModuleBase::check();
+        return this->_ProtocolBase::check();
     }
 
     void _JSONbase::updateW(void)
     {
         while (m_pT->bAlive())
         {
-            if (!m_pIO)
-            {
-                m_pT->sleepT(SEC_2_USEC);
-                continue;
-            }
-
             m_pT->autoFPSfrom();
 
             send();
@@ -107,12 +74,6 @@ namespace kai
     {
         string msg = picojson::value(o).serialize() + m_msgFinishSend;
 
-        // if (m_pIO->ioType() == io_webSocket)
-        // {
-        //     _WebSocket *pWS = (_WebSocket *)m_pIO;
-        //     return pWS->write((unsigned char *)msg.c_str(), msg.size(), WS_MODE_TXT);
-        // }
-
         return m_pIO->write((unsigned char *)msg.c_str(), msg.size());
     }
 
@@ -128,44 +89,55 @@ namespace kai
 
     void _JSONbase::updateR(void)
     {
+        string strR = "";
+
         while (m_pTr->bAlive())
         {
-            m_pTr->autoFPSfrom();
+            IF_CONT(!recvJson(&strR));
 
-            if (recv())
-            {
-                handleMsg(m_strB);
-                m_strB.clear();
-            }
-
-            m_pTr->autoFPSto();
+            handleJson(strR);
+            strR.clear();
+			m_nCMDrecv++;
         }
     }
 
-    bool _JSONbase::recv()
+    bool _JSONbase::recvJson(string* pStr)
     {
         IF_F(check() != OK_OK);
+        NULL_F(pStr);
 
-        unsigned char B;
+		if (m_nRead == 0)
+		{
+			m_nRead = m_pIO->read(m_pBuf, JB_N_BUF);
+			IF_F(m_nRead <= 0);
+			m_iRead = 0;
+		}
+
         unsigned int nStrFinish = m_msgFinishRecv.length();
 
-        while (m_pIO->read(&B, 1) > 0)
-        {
-            m_strB += B;
-            IF_CONT(m_strB.length() <= nStrFinish);
+		while (m_iRead < m_nRead)
+		{
+			*pStr += m_pBuf[m_iRead++];
+			if (m_iRead == m_nRead)
+			{
+				m_iRead = 0;
+				m_nRead = 0;
+			}
 
-            string lstr = m_strB.substr(m_strB.length() - nStrFinish, nStrFinish);
+            IF_CONT(pStr->length() <= nStrFinish);
+
+            string lstr = pStr->substr(pStr->length() - nStrFinish, nStrFinish);
             IF_CONT(lstr != m_msgFinishRecv);
 
-            m_strB.erase(m_strB.length() - nStrFinish, nStrFinish);
-            LOG_I("Received: " + m_strB);
+            pStr->erase(pStr->length() - nStrFinish, nStrFinish);
+            LOG_I("Received: " + *pStr);
             return true;
-        }
+		}
 
         return false;
     }
 
-    void _JSONbase::handleMsg(const string &str)
+    void _JSONbase::handleJson(const string &str)
     {
         value json;
         IF_(!str2JSON(str, &json));
@@ -199,7 +171,7 @@ namespace kai
     void _JSONbase::console(void *pConsole)
     {
         NULL_(pConsole);
-        this->_ModuleBase::console(pConsole);
+        this->_ProtocolBase::console(pConsole);
 
         string msg;
         if (m_pIO->bOpen())

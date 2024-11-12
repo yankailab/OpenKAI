@@ -7,23 +7,21 @@ namespace kai
 	{
 		m_pTr = nullptr;
 		m_pIO = nullptr;
-		m_pBuf = nullptr;
-		m_nBuf = 256;
 		m_nCMDrecv = 0;
+
+		m_nRead = 0;
+		m_iRead = 0;
 	}
 
 	_ProtocolBase::~_ProtocolBase()
 	{
+        DEL(m_pTr);
 	}
 
 	int _ProtocolBase::init(void *pKiss)
 	{
 		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-
-		pK->v("nBuf", &m_nBuf);
-		m_pBuf = new uint8_t[m_nBuf];
-		m_recvMsg.init(m_nBuf);
 
         Kiss *pKt = pK->child("threadR");
         if (pKt->empty())
@@ -35,7 +33,7 @@ namespace kai
         m_pTr = new _Thread();
         CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "threadR init failed");
 
-		return true;
+		return OK_OK;
 	}
 
     int _ProtocolBase::link(void)
@@ -45,6 +43,7 @@ namespace kai
 
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
+
 		n = "";
 		pK->v("_IObase", &n);
 		m_pIO = (_IObase *)(pK->findModule(n));
@@ -65,7 +64,6 @@ namespace kai
 	{
 		NULL__(m_pIO, OK_ERR_NULLPTR);
 		IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
-		NULL__(m_pBuf, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}
@@ -86,70 +84,50 @@ namespace kai
 	{
 		IF_(check() != OK_OK);
 
-		//m_pIO->write(m_pB, 16);
 	}
 
 	void _ProtocolBase::updateR(void)
 	{
+		PROTOCOL_CMD rCMD;
+
 		while (m_pTr->bAlive())
 		{
-			if (!m_pIO)
-			{
-				m_pTr->sleepT(SEC_2_USEC);
-				continue;
-			}
+			IF_CONT(!readCMD(&rCMD));
 
-			if (!m_pIO->bOpen())
-			{
-				m_pTr->sleepT(SEC_2_USEC);
-				continue;
-			}
-
-			m_pTr->autoFPSfrom();
-
-			while (readCMD())
-			{
-				handleCMD();
-				m_recvMsg.reset();
-				m_nCMDrecv++;
-			}
-
-			m_pTr->autoFPSto();
+			handleCMD(rCMD);
+			rCMD.clear();
+			m_nCMDrecv++;
 		}
 	}
 
-	bool _ProtocolBase::readCMD(void)
+	bool _ProtocolBase::readCMD(PROTOCOL_CMD* pCmd)
 	{
 		IF_F(check() != OK_OK);
+		NULL_F(pCmd);
 
-		uint8_t b;
-		while (m_pIO->read(&b, 1) > 0)
+		if (m_nRead == 0)
 		{
-			if (m_recvMsg.m_cmd != 0)
-			{
-				m_recvMsg.m_pB[m_recvMsg.m_iB] = b;
-				m_recvMsg.m_iB++;
+			m_nRead = m_pIO->read(m_pBuf, PB_N_BUF);
+			IF_F(m_nRead <= 0);
+			m_iRead = 0;
+		}
 
-				if (m_recvMsg.m_iB == 3)
-				{
-					m_recvMsg.m_nPayload = m_recvMsg.m_pB[2];
-				}
-
-				IF__(m_recvMsg.m_iB == m_recvMsg.m_nPayload + PB_N_HDR, true);
-			}
-			else if (b == PB_BEGIN)
+		while (m_iRead < m_nRead)
+		{
+			bool r = pCmd->input(m_pBuf[m_iRead++]);
+			if (m_iRead == m_nRead)
 			{
-				m_recvMsg.m_cmd = b;
-				m_recvMsg.m_pB[0] = b;
-				m_recvMsg.m_iB = 1;
-				m_recvMsg.m_nPayload = 0;
+				m_iRead = 0;
+				m_nRead = 0;
 			}
+
+			IF__(r, true);
 		}
 
 		return false;
 	}
 
-	void _ProtocolBase::handleCMD(void)
+	void _ProtocolBase::handleCMD(const PROTOCOL_CMD& cmd)
 	{
 	}
 

@@ -18,8 +18,14 @@ namespace kai
 		virtual int check(void);
 		virtual void console(void *pConsole);
 
+	protected:
+		virtual void send(void);
+		virtual void handleJson(const string &str);
+
+		virtual void handleHeartbeat(picojson::object &o);
+		virtual void handleStat(picojson::object &o);
+
 	private:
-		void update2json(void);
 		void updateW(void);
 		static void *getUpdateW(void *This)
 		{
@@ -27,9 +33,6 @@ namespace kai
 			return NULL;
 		}
 
-		void handleMsg(string &str);
-		void heartbeat(picojson::object &o);
-//		void stat(picojson::object &o);
 		void updateR(void);
 		static void *getUpdateR(void *This)
 		{

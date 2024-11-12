@@ -4,17 +4,10 @@ namespace kai
 {
 	_SBus::_SBus()
 	{
-		m_pTr = nullptr;
-		m_pIO = nullptr;
-		m_bSend = false;
+		m_bSender = false;
 		m_bRawSbus = true;
 
-		m_timeOutUsec = USEC_1SEC;
-		m_tLastRecv = 0;
-		m_bLostFrame = false;
-		m_bFailSafe = false;
-
-		reset();
+		m_frame.clear();
 	}
 
 	_SBus::~_SBus()
@@ -23,62 +16,51 @@ namespace kai
 
 	int _SBus::init(void *pKiss)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
+		CHECK_(this->_ProtocolBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("bSend", &m_bSend);
-		pK->v("timeOutUsec", &m_timeOutUsec);
+		pK->v("bSender", &m_bSender);
+		pK->v("timeOutUsec", &m_frame.m_timeOutUsec);
 		pK->v("bRawSbus", &m_bRawSbus);
-		m_nFrame = (m_bRawSbus) ? 25 : SBUS_NBUF;
+		m_frame.m_nBframe = (m_bRawSbus) ? 25 : SBUS_N_BUF;
 
-		pK->v("vRawRC", &m_vRawRC);
+		vInt3 vRawRC;
+		pK->v("vRawRC", &vRawRC);
 		for (int i = 0; i < SBUS_NCHAN; i++)
 		{
-			RC_CHANNEL *pC = &m_pRC[i];
+			RC_CHANNEL *pC = &m_frame.m_pRC[i];
 			pC->m_iChan = i;
-			pC->m_rawL = m_vRawRC.x;
-			pC->m_rawM = m_vRawRC.y;
-			pC->m_rawH = m_vRawRC.z;
+			pC->m_rawL = vRawRC.x;
+			pC->m_rawM = vRawRC.y;
+			pC->m_rawH = vRawRC.z;
 			pC->update();
 		}
 
-        Kiss *pKt = pK->child("threadR");
-        if (pKt->empty())
-        {
-            LOG_E("threadR not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
-        m_pTr = new _Thread();
-        CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "threadR init failed");
-
-		return true;
+		return OK_OK;
 	}
 
 	int _SBus::link(void)
 	{
+		CHECK_(this->_ProtocolBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
-
-		string n;
-		n = "";
-		pK->v("_IObase", &n);
-		m_pIO = (_IObase *)(pK->findModule(n));
-		NULL__(m_pIO, OK_ERR_NOT_FOUND);
 
 		return OK_OK;
 	}
 
 	int _SBus::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
-		NULL__(m_pTr, OK_ERR_NULLPTR);
-
-		if (m_bSend)
+		if (m_bSender)
 		{
+			NULL__(m_pT, OK_ERR_NULLPTR);
 			CHECK_(m_pT->start(getUpdateW, this));
 		}
+		else
+		{
+			NULL__(m_pTr, OK_ERR_NULLPTR);
+			CHECK_(m_pTr->start(getUpdateR, this));
+		}
 
-		return m_pTr->start(getUpdateR, this);
+		return OK_OK;
 	}
 
 	int _SBus::check(void)
@@ -86,7 +68,7 @@ namespace kai
 		NULL__(m_pIO, OK_ERR_NULLPTR);
 		IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
 
-		return this->_ModuleBase::check();
+		return this->_ProtocolBase::check();
 	}
 
 	void _SBus::updateW(void)
@@ -112,192 +94,69 @@ namespace kai
 	{
 		while (m_pTr->bAlive())
 		{
-			m_pTr->autoFPSfrom();
+			IF_CONT(!readSbus(&m_frame));
 
-			if (recv())
-			{
-				if (m_bRawSbus)
-					decodeRaw();
-				else
-					decode();
+			if (m_bRawSbus)
+				m_frame.decodeRaw();
+			else
+				m_frame.decode();
 
-				m_tLastRecv = getApproxTbootUs();
-				reset();
-			}
-
-			m_pTr->autoFPSto();
+			m_frame.m_tLastRecv = getApproxTbootUs();
+			m_frame.clear();
 		}
 	}
 
-	bool _SBus::recv(void)
+	bool _SBus::readSbus(SBUS_FRAME *pF)
 	{
 		IF_F(check() != OK_OK);
+		NULL_F(pF);
 
-		uint8_t B;
-		while (m_pIO->read(&B, 1) > 0)
+		if (m_nRead == 0)
 		{
-			if (m_iB == 0)
+			m_nRead = m_pIO->read(m_pBuf, PB_N_BUF);
+			IF_F(m_nRead <= 0);
+			m_iRead = 0;
+		}
+
+		while (m_iRead < m_nRead)
+		{
+			bool r = pF->input(m_pBuf[m_iRead++]);
+			if (m_iRead == m_nRead)
 			{
-				IF_CONT(B != SBUS_HEADER_);
+				m_iRead = 0;
+				m_nRead = 0;
 			}
 
-			m_pB[m_iB++] = B;
-			IF_CONT(m_iB < m_nFrame);
+			IF_CONT(!r);
 
-			m_iB = 0;
-			if (!m_bRawSbus)
-			{
-				uint8_t cs = checksum(&m_pB[1], 33);
-				IF_CONT(m_pB[m_nFrame - 1] != cs);
-			}
+			IF__(m_bRawSbus, true);
+			IF__(pF->bChecksum(), true);
 
-			return true;
+			pF->clear();
+			continue;
 		}
 
 		return false;
 	}
 
-	void _SBus::decodeRaw(void)
+	uint16_t _SBus::raw(int iChan)
 	{
-		m_pRC[0].set(static_cast<uint16_t>(m_pB[1] | m_pB[2] << 8 & 0x07FF));
-		m_pRC[1].set(static_cast<uint16_t>(m_pB[2] >> 3 | m_pB[3] << 5 & 0x07FF));
-		m_pRC[2].set(static_cast<uint16_t>(m_pB[3] >> 6 | m_pB[4] << 2 |
-										   m_pB[5] << 10 & 0x07FF));
-		m_pRC[3].set(static_cast<uint16_t>(m_pB[5] >> 1 | m_pB[6] << 7 & 0x07FF));
-		m_pRC[4].set(static_cast<uint16_t>(m_pB[6] >> 4 | m_pB[7] << 4 & 0x07FF));
-		m_pRC[5].set(static_cast<uint16_t>(m_pB[7] >> 7 | m_pB[8] << 1 |
-										   m_pB[9] << 9 & 0x07FF));
-		m_pRC[6].set(static_cast<uint16_t>(m_pB[9] >> 2 | m_pB[10] << 6 & 0x07FF));
-		m_pRC[7].set(static_cast<uint16_t>(m_pB[10] >> 5 | m_pB[11] << 3 & 0x07FF));
-		m_pRC[8].set(static_cast<uint16_t>(m_pB[12] | m_pB[13] << 8 & 0x07FF));
-		m_pRC[9].set(static_cast<uint16_t>(m_pB[13] >> 3 | m_pB[14] << 5 & 0x07FF));
-		m_pRC[10].set(static_cast<uint16_t>(m_pB[14] >> 6 | m_pB[15] << 2 |
-											m_pB[16] << 10 & 0x07FF));
-		m_pRC[11].set(static_cast<uint16_t>(m_pB[16] >> 1 | m_pB[17] << 7 & 0x07FF));
-		m_pRC[12].set(static_cast<uint16_t>(m_pB[17] >> 4 | m_pB[18] << 4 & 0x07FF));
-		m_pRC[13].set(static_cast<uint16_t>(m_pB[18] >> 7 | m_pB[19] << 1 |
-											m_pB[20] << 9 & 0x07FF));
-		m_pRC[14].set(static_cast<uint16_t>(m_pB[20] >> 2 | m_pB[21] << 6 & 0x07FF));
-		m_pRC[15].set(static_cast<uint16_t>(m_pB[21] >> 5 | m_pB[22] << 3 & 0x07FF));
+		IF__(iChan >= SBUS_NCHAN, 0);
 
-		m_bLostFrame = m_pB[23] & SBUS_LOST_FRAME_;
-		m_bFailSafe = m_pB[23] & SBUS_FAILSAFE_;
+		return m_frame.m_pRC[iChan].raw();
 	}
 
-	void _SBus::encodeRaw(void)
+	float _SBus::v(int iChan)
 	{
-		m_pB[0] = SBUS_HEADER_;
-		m_pB[1] = static_cast<uint8_t>((m_pRC[0].raw() & 0x07FF));
-		m_pB[2] = static_cast<uint8_t>((m_pRC[0].raw() & 0x07FF) >> 8 |
-									   (m_pRC[1].raw() & 0x07FF) << 3);
-		m_pB[3] = static_cast<uint8_t>((m_pRC[1].raw() & 0x07FF) >> 5 |
-									   (m_pRC[2].raw() & 0x07FF) << 6);
-		m_pB[4] = static_cast<uint8_t>((m_pRC[2].raw() & 0x07FF) >> 2);
-		m_pB[5] = static_cast<uint8_t>((m_pRC[2].raw() & 0x07FF) >> 10 |
-									   (m_pRC[3].raw() & 0x07FF) << 1);
-		m_pB[6] = static_cast<uint8_t>((m_pRC[3].raw() & 0x07FF) >> 7 |
-									   (m_pRC[4].raw() & 0x07FF) << 4);
-		m_pB[7] = static_cast<uint8_t>((m_pRC[4].raw() & 0x07FF) >> 4 |
-									   (m_pRC[5].raw() & 0x07FF) << 7);
-		m_pB[8] = static_cast<uint8_t>((m_pRC[5].raw() & 0x07FF) >> 1);
-		m_pB[9] = static_cast<uint8_t>((m_pRC[5].raw() & 0x07FF) >> 9 |
-									   (m_pRC[6].raw() & 0x07FF) << 2);
-		m_pB[10] = static_cast<uint8_t>((m_pRC[6].raw() & 0x07FF) >> 6 |
-										(m_pRC[7].raw() & 0x07FF) << 5);
-		m_pB[11] = static_cast<uint8_t>((m_pRC[7].raw() & 0x07FF) >> 3);
-		m_pB[12] = static_cast<uint8_t>((m_pRC[8].raw() & 0x07FF));
-		m_pB[13] = static_cast<uint8_t>((m_pRC[8].raw() & 0x07FF) >> 8 |
-										(m_pRC[9].raw() & 0x07FF) << 3);
-		m_pB[14] = static_cast<uint8_t>((m_pRC[9].raw() & 0x07FF) >> 5 |
-										(m_pRC[10].raw() & 0x07FF) << 6);
-		m_pB[15] = static_cast<uint8_t>((m_pRC[10].raw() & 0x07FF) >> 2);
-		m_pB[16] = static_cast<uint8_t>((m_pRC[10].raw() & 0x07FF) >> 10 |
-										(m_pRC[11].raw() & 0x07FF) << 1);
-		m_pB[17] = static_cast<uint8_t>((m_pRC[11].raw() & 0x07FF) >> 7 |
-										(m_pRC[12].raw() & 0x07FF) << 4);
-		m_pB[18] = static_cast<uint8_t>((m_pRC[12].raw() & 0x07FF) >> 4 |
-										(m_pRC[13].raw() & 0x07FF) << 7);
-		m_pB[19] = static_cast<uint8_t>((m_pRC[13].raw() & 0x07FF) >> 1);
-		m_pB[20] = static_cast<uint8_t>((m_pRC[13].raw() & 0x07FF) >> 9 |
-										(m_pRC[14].raw() & 0x07FF) << 2);
-		m_pB[21] = static_cast<uint8_t>((m_pRC[14].raw() & 0x07FF) >> 6 |
-										(m_pRC[15].raw() & 0x07FF) << 5);
-		m_pB[22] = static_cast<uint8_t>((m_pRC[15].raw() & 0x07FF) >> 3);
-		m_pB[23] = 0x00 | (m_bCh17 * SBUS_CH17_) | (m_bCh18 * SBUS_CH18_) |
-				   (m_bFailSafe * SBUS_FAILSAFE_) | (m_bLostFrame * SBUS_LOST_FRAME_);
-		m_pB[24] = SBUS_FOOTER_;
-	}
+		IF__(iChan >= SBUS_NCHAN, 0);
 
-	void _SBus::decode(void)
-	{
-		for (int i = 0; i < 16; i++)
-		{
-			int j = i * 2;
-			m_pRC[i].set(static_cast<uint16_t>(m_pB[j + 1] << 8 | m_pB[j + 2]));
-		}
-
-		m_flag = m_pB[SBUS_NBUF - 2];
-	}
-
-	void _SBus::encode(void)
-	{
-		for (int i = 0; i < 16; i++)
-		{
-			int j = i * 2;
-			m_pB[j + 1] = static_cast<uint8_t>(m_pRC[i].raw() >> 8);
-			m_pB[j + 2] = static_cast<uint8_t>(m_pRC[i].raw() & 0x00FF);
-		}
-
-		m_pB[34] = checksum(&m_pB[1], 33);
-	}
-
-	uint8_t _SBus::checksum(uint8_t *pB, uint8_t n)
-	{
-		uint8_t checksum = 0;
-
-		for (int i = 0; i < n; ++i)
-			checksum ^= pB[i];
-
-		return checksum;
-	}
-
-	void _SBus::reset(void)
-	{
-		m_iB = 0;
-		m_flag = 0;
-		m_bCh17 = false;
-		m_bCh18 = false;
-	}
-
-	uint16_t _SBus::raw(int i)
-	{
-		IF__(i >= SBUS_NCHAN, 0);
-
-		return m_pRC[i].raw();
-	}
-
-	float _SBus::v(int i)
-	{
-		IF__(i >= SBUS_NCHAN, 0);
-
-		return m_pRC[i].v();
-	}
-
-	bool _SBus::bFailSafe(void)
-	{
-		IF__(m_bFailSafe, true);
-
-		uint64_t t = getApproxTbootUs();
-		IF_F(t <= m_tLastRecv);
-		IF__(t - m_tLastRecv > m_timeOutUsec, true);
-
-		return false;
+		return m_frame.m_pRC[iChan].v();
 	}
 
 	void _SBus::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_ModuleBase::console(pConsole);
+		this->_ProtocolBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
 		if (!m_pIO->bOpen())
@@ -305,9 +164,41 @@ namespace kai
 		else
 			pC->addMsg("Connected");
 
-		pC->addMsg("Raw: " + i2str(m_pRC[0].raw()) + "|" + i2str(m_pRC[1].raw()) + "|" + i2str(m_pRC[2].raw()) + "|" + i2str(m_pRC[3].raw()) + "|" + i2str(m_pRC[4].raw()) + "|" + i2str(m_pRC[5].raw()) + "|" + i2str(m_pRC[6].raw()) + "|" + i2str(m_pRC[7].raw()) + "|" + i2str(m_pRC[8].raw()) + "|" + i2str(m_pRC[9].raw()) + "|" + i2str(m_pRC[10].raw()) + "|" + i2str(m_pRC[11].raw()) + "|" + i2str(m_pRC[12].raw()) + "|" + i2str(m_pRC[13].raw()) + "|" + i2str(m_pRC[14].raw()) + "|" + i2str(m_pRC[15].raw()));
-		pC->addMsg("v: " + f2str(m_pRC[0].v(), 2) + "|" + f2str(m_pRC[1].v(), 2) + "|" + f2str(m_pRC[2].v(), 2) + "|" + f2str(m_pRC[3].v(), 2) + "|" + f2str(m_pRC[4].v(), 2) + "|" + f2str(m_pRC[5].v(), 2) + "|" + f2str(m_pRC[6].v(), 2) + "|" + f2str(m_pRC[7].v(), 2) + "|" + f2str(m_pRC[8].v(), 2) + "|" + f2str(m_pRC[9].v(), 2) + "|" + f2str(m_pRC[10].v(), 2) + "|" + f2str(m_pRC[11].v(), 2) + "|" + f2str(m_pRC[12].v(), 2) + "|" + f2str(m_pRC[13].v(), 2) + "|" + f2str(m_pRC[14].v(), 2) + "|" + f2str(m_pRC[15].v(), 2));
-		if(bFailSafe())
+		pC->addMsg("Raw: " + i2str(m_frame.m_pRC[0].raw())
+					+ "|" + i2str(m_frame.m_pRC[1].raw())
+					+ "|" + i2str(m_frame.m_pRC[2].raw())
+					+ "|" + i2str(m_frame.m_pRC[3].raw())
+					+ "|" + i2str(m_frame.m_pRC[4].raw())
+					+ "|" + i2str(m_frame.m_pRC[5].raw())
+					+ "|" + i2str(m_frame.m_pRC[6].raw())
+					+ "|" + i2str(m_frame.m_pRC[7].raw())
+					+ "|" + i2str(m_frame.m_pRC[8].raw())
+					+ "|" + i2str(m_frame.m_pRC[9].raw())
+					+ "|" + i2str(m_frame.m_pRC[10].raw())
+					+ "|" + i2str(m_frame.m_pRC[11].raw())
+					+ "|" + i2str(m_frame.m_pRC[12].raw())
+					+ "|" + i2str(m_frame.m_pRC[13].raw())
+					+ "|" + i2str(m_frame.m_pRC[14].raw())
+					+ "|" + i2str(m_frame.m_pRC[15].raw()));
+
+		pC->addMsg("v: " + f2str(m_frame.m_pRC[0].v(), 2)
+					+ "|" + f2str(m_frame.m_pRC[1].v(), 2)
+					+ "|" + f2str(m_frame.m_pRC[2].v(), 2)
+					+ "|" + f2str(m_frame.m_pRC[3].v(), 2)
+					+ "|" + f2str(m_frame.m_pRC[4].v(), 2)
+					+ "|" + f2str(m_frame.m_pRC[5].v(), 2)
+					+ "|" + f2str(m_frame.m_pRC[6].v(), 2)
+					+ "|" + f2str(m_frame.m_pRC[7].v(), 2)
+					+ "|" + f2str(m_frame.m_pRC[8].v(), 2)
+					+ "|" + f2str(m_frame.m_pRC[9].v(), 2)
+					+ "|" + f2str(m_frame.m_pRC[10].v(), 2)
+					+ "|" + f2str(m_frame.m_pRC[11].v(), 2)
+					+ "|" + f2str(m_frame.m_pRC[12].v(), 2)
+					+ "|" + f2str(m_frame.m_pRC[13].v(), 2)
+					+ "|" + f2str(m_frame.m_pRC[14].v(), 2)
+					+ "|" + f2str(m_frame.m_pRC[15].v(), 2));
+
+		if (m_frame.bFailSafe())
 			pC->addMsg("FailSafe");
 	}
 

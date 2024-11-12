@@ -59,13 +59,13 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			update2json();
+			send();
 
 			m_pT->autoFPSto();
 		}
 	}
 
-	void _APmavlink_mav2json::update2json(void)
+	void _APmavlink_mav2json::send(void)
 	{
 		IF_(check() != OK_OK);
 
@@ -104,21 +104,19 @@ namespace kai
 
 	void _APmavlink_mav2json::updateR(void)
 	{
-		while (m_pTr->bAlive())
-		{
-			m_pTr->autoFPSfrom();
+        string strR = "";
 
-			if (recv())
-			{
-				handleMsg(m_strB);
-				m_strB.clear();
-			}
+        while (m_pTr->bAlive())
+        {
+            IF_CONT(!recvJson(&strR));
 
-			m_pTr->autoFPSto();
-		}
+            handleJson(strR);
+            strR.clear();
+			m_nCMDrecv++;
+        }
 	}
 
-	void _APmavlink_mav2json::handleMsg(string &str)
+	void _APmavlink_mav2json::handleJson(const string &str)
 	{
 		value json;
 		IF_(!str2JSON(str, &json));
@@ -128,25 +126,25 @@ namespace kai
 		string cmd = jo["cmd"].get<string>();
 
 		if (cmd == "heartbeat")
-			heartbeat(jo);
-		// else if (cmd == "stat")
-		// 	stat(jo);
+			handleHeartbeat(jo);
+		else if (cmd == "stat")
+			handleStat(jo);
 	}
 
-	void _APmavlink_mav2json::heartbeat(picojson::object &o)
+	void _APmavlink_mav2json::handleHeartbeat(picojson::object &o)
 	{
 		IF_(check() != OK_OK);
 	}
 
-	// void _APmavlink_mav2json::stat(picojson::object &o)
-	// {
-	// 	IF_(check() != OK_OK);
-	// 	IF_(!o["id"].is<double>());
-	// 	IF_(!o["stat"].is<string>());
+	void _APmavlink_mav2json::handleStat(picojson::object &o)
+	{
+		IF_(check() != OK_OK);
+		IF_(!o["id"].is<double>());
+		IF_(!o["stat"].is<string>());
 
-	// 	int vID = o["id"].get<double>();
-	// 	string stat = o["stat"].get<string>();
-	// }
+		int vID = o["id"].get<double>();
+		string stat = o["stat"].get<string>();
+	}
 
 	void _APmavlink_mav2json::console(void *pConsole)
 	{

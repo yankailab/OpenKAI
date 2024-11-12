@@ -799,15 +799,16 @@ namespace kai
 		virtual int init(void *pKiss);
 		virtual int link(void);
 		virtual int start(void);
+		virtual int check(void);
 		virtual void console(void *pConsole);
 
 		bool bConnected(void);
 
 		// Receive
-		bool readMessage(mavlink_message_t &message);
+		bool readMessage(mavlink_message_t* pMsg);
 
 		// Send
-		void writeMessage(mavlink_message_t message);
+		void writeMessage(const mavlink_message_t& msg);
 
 		// Cmd
 		void cmdInt(mavlink_command_int_t &D);
@@ -916,7 +917,7 @@ namespace kai
 
 		vector<MavMsgBase *> m_vpMsg;
 
-	private:
+	protected:
 		_IObase *m_pIO;
 		int m_mySystemID;
 		int m_myComponentID;
@@ -928,6 +929,7 @@ namespace kai
 		uint8_t m_rBuf[MAV_N_BUF];
 		int m_nRead;
 		int m_iRead;
+		uint8_t m_iMavComm;	// Mavlink decode channel index
 	};
 
 }

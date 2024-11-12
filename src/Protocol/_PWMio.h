@@ -25,9 +25,11 @@ namespace kai
 		virtual void set(int iChan, uint16_t v);
 		virtual uint16_t getRaw(int iChan);
 
+	protected:
+		virtual void send(void);
+		virtual void handleCMD(const PROTOCOL_CMD &cmd);
+
 	private:
-		void send(void);
-		void handleCMD(void);
 		void updateW(void);
 		static void *getUpdateW(void *This)
 		{
@@ -42,7 +44,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		uint8_t m_nCr;
 		RC_CHANNEL m_pCr[PWMIO_N_CHAN];
 

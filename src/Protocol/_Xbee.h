@@ -1,14 +1,12 @@
 #ifndef OpenKAI_src_Protocol__Xbee_H_
 #define OpenKAI_src_Protocol__Xbee_H_
 
-#include "../Base/_ModuleBase.h"
-#include "../IO/_IObase.h"
+#include "_ProtocolBase.h"
 #include "../Utility/util.h"
 
 #define XB_DELIM 0x7E
 #define XB_N_FRAME 128
 #define XB_N_PAYLOAD 49
-
 #define XB_BRDCAST_ADDR 0x000000000000FFFF
 
 namespace kai
@@ -99,16 +97,39 @@ namespace kai
 		}
 	};
 
-	struct XBframe_buf
+	struct XBframe
 	{
 		int m_length;
 		int m_iB;
 		uint8_t m_pB[XB_N_FRAME];
 
-		void reset(void)
+		void clear(void)
 		{
 			m_length = 0;
 			m_iB = 0;
+		}
+
+		bool input(uint8_t b)
+		{
+            if (m_iB > 0)
+            {
+                m_pB[m_iB++] = b;
+
+                if (m_iB == 3)
+                {
+                    m_length = (m_pB[1] << 8) | m_pB[2];
+                }
+
+                IF__(m_iB == m_length + 4, true);
+            }
+            else if (b == XB_DELIM)
+            {
+                m_pB[0] = b;
+                m_iB = 1;
+                m_length = 0;
+            }
+
+			return false;
 		}
 	};
 
@@ -138,7 +159,7 @@ namespace kai
 		}
 	};
 
-	class _Xbee : public _ModuleBase
+	class _Xbee : public _ProtocolBase
 	{
 	public:
 		_Xbee();
@@ -158,8 +179,8 @@ namespace kai
 
 	protected:
 		virtual void updateMesh(void);
-		virtual bool recv(void);
-		virtual void handleFrame(void);
+		virtual bool readFrame(XBframe* pF);
+		virtual void handleFrame(XBframe* pF);
 
 	private:
 		void updateW(void);
@@ -177,12 +198,8 @@ namespace kai
 		}
 
 	protected:
-		_Thread *m_pTr;
-		_IObase *m_pIO;
-
 		uint64_t m_myAddr;
 
-		XBframe_buf m_fRecv;
 		XBcb_receivePacket m_cbReceivePacket;
 	};
 

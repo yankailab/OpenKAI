@@ -10,26 +10,29 @@
 
 #include "_PCsend.h"
 #include "_PCstream.h"
-#include "../../IO/_IObase.h"
 #include "../../Protocol/_ProtocolBase.h"
+
+#define PC_N_BUF 1024
 
 namespace kai
 {
-
 	class _PCrecv : public _PCstream
 	{
 	public:
 		_PCrecv();
 		virtual ~_PCrecv();
 
-		int init(void *pKiss);
-		int start(void);
-		int check(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
+		virtual int start(void);
+		virtual int check(void);
+
+	protected:
+		virtual bool readCMD(PROTOCOL_CMD *pCmd);
+		virtual void handleCMD(const PROTOCOL_CMD &cmd);
+		virtual void decodeStream(const PROTOCOL_CMD &cmd);
 
 	private:
-		virtual bool readCMD(void);
-		virtual void handleCMD(void);
-		void decodeStream(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -37,10 +40,13 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		_IObase *m_pIO;
-		PROTOCOL_CMD m_recvMsg;
 		uint64_t m_nCMDrecv;
+
+		uint8_t m_pBuf[PC_N_BUF];
+		int m_nRead;
+		int m_iRead;
 	};
 
 }

@@ -14,6 +14,9 @@ namespace kai
 	{
 		m_pIO = nullptr;
 		m_nCMDrecv = 0;
+
+		m_nRead = 0;
+		m_iRead = 0;
 	}
 
 	_PCrecv::~_PCrecv()
@@ -25,27 +28,22 @@ namespace kai
 		CHECK_(_PCstream::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		int nB = 256;
-		pK->v("nB", &nB);
-		m_recvMsg.init(nB);
-
-        string n;
-        n = "";
-        if(!pK->v("_IObase", &n))
-        {
-            LOG_E("_IObase not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
-        m_pIO = (_IObase *)(pK->findModule(n));
-        if(!m_pIO)
-        {
-            LOG_E("_IObase not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
 		return true;
 	}
+
+    int _PCrecv::link(void)
+    {
+        CHECK_(this->_PCstream::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+		string n;
+
+		n = "";
+		pK->v("_IObase", &n);
+		m_pIO = (_IObase *)(pK->findModule(n));
+		NULL__(m_pIO, OK_ERR_NOT_FOUND);
+
+        return OK_OK;
+    }
 
 	int _PCrecv::start(void)
 	{
@@ -63,59 +61,52 @@ namespace kai
 
 	void _PCrecv::update(void)
 	{
+		PROTOCOL_CMD rCMD;
+
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			IF_CONT(!readCMD(&rCMD));
 
-			while (readCMD())
-			{
-				handleCMD();
-				m_nCMDrecv++;
-			}
-
-			m_pT->autoFPSto();
+			handleCMD(rCMD);
+			rCMD.clear();
+			m_nCMDrecv++;
 		}
 	}
 
-	bool _PCrecv::readCMD(void)
+	bool _PCrecv::readCMD(PROTOCOL_CMD* pCmd)
 	{
 		IF_F(check() != OK_OK);
+		NULL_F(pCmd);
 
-		uint8_t b;
-		while (m_pIO->read(&b, 1) > 0)
+		if (m_nRead == 0)
 		{
-			if (m_recvMsg.m_cmd != 0)
-			{
-				m_recvMsg.m_pB[m_recvMsg.m_iB] = b;
-				m_recvMsg.m_iB++;
+			m_nRead = m_pIO->read(m_pBuf, PB_N_BUF);
+			IF_F(m_nRead <= 0);
+			m_iRead = 0;
+		}
 
-				if (m_recvMsg.m_iB == 4)
-				{
-					m_recvMsg.m_nPayload = unpack_int16(&m_recvMsg.m_pB[2], false);
-				}
-
-				IF__(m_recvMsg.m_iB >= m_recvMsg.m_nPayload + PC_N_HDR, true);
-				IF__(m_recvMsg.m_iB >= m_recvMsg.m_nB, true);
-			}
-			else if (b == PB_BEGIN)
+		while (m_iRead < m_nRead)
+		{
+			bool r = pCmd->input(m_pBuf[m_iRead++]);
+			if (m_iRead == m_nRead)
 			{
-				m_recvMsg.m_cmd = b;
-				m_recvMsg.m_pB[0] = b;
-				m_recvMsg.m_iB = 1;
-				m_recvMsg.m_nPayload = 0;
+				m_iRead = 0;
+				m_nRead = 0;
 			}
+
+			IF__(r, true);
 		}
 
 		return false;
 	}
 
-	void _PCrecv::handleCMD(void)
+	void _PCrecv::handleCMD(const PROTOCOL_CMD& cmd)
 	{
-		switch (m_recvMsg.m_pB[1])
+		switch (cmd.m_pB[1])
 		{
 		case PC_STREAM:
 		{
-			decodeStream();
+			decodeStream(cmd);
 			break;
 		}
 		case PC_FRAME_END:
@@ -125,29 +116,27 @@ namespace kai
 		default:
 			break;
 		}
-
-		m_recvMsg.reset();
 	}
 
-	void _PCrecv::decodeStream(void)
+	void _PCrecv::decodeStream(const PROTOCOL_CMD &cmd)
 	{
 		const double PC_SCALE_INV = 0.001;
 		int16_t x, y, z;
 
-		for (int i = PC_N_HDR; i < m_recvMsg.m_nPayload + PC_N_HDR; i += 12)
+		for (int i = PC_N_HDR; i < cmd.m_nPayload + PC_N_HDR; i += 12)
 		{
-			IF_(i + 12 > m_recvMsg.m_nB);
+			IF_(i + 12 > PC_N_BUF);
 
-			x = unpack_int16(&m_recvMsg.m_pB[i], false);
-			y = unpack_int16(&m_recvMsg.m_pB[i + 2], false);
-			z = unpack_int16(&m_recvMsg.m_pB[i + 4], false);
+			x = unpack_int16(&cmd.m_pB[i], false);
+			y = unpack_int16(&cmd.m_pB[i + 2], false);
+			z = unpack_int16(&cmd.m_pB[i + 4], false);
 			Eigen::Vector3d vP(((double)x) * PC_SCALE_INV,
 							   ((double)y) * PC_SCALE_INV,
 							   ((double)z) * PC_SCALE_INV);
 
-			x = unpack_int16(&m_recvMsg.m_pB[i + 6], false);
-			y = unpack_int16(&m_recvMsg.m_pB[i + 8], false);
-			z = unpack_int16(&m_recvMsg.m_pB[i + 10], false);
+			x = unpack_int16(&cmd.m_pB[i + 6], false);
+			y = unpack_int16(&cmd.m_pB[i + 8], false);
+			z = unpack_int16(&cmd.m_pB[i + 10], false);
 			Eigen::Vector3f vC(((float)x) * PC_SCALE_INV,
 							   ((float)y) * PC_SCALE_INV,
 							   ((float)z) * PC_SCALE_INV);

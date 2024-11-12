@@ -17,6 +17,7 @@ namespace kai
 
 		m_nRead = 0;
 		m_iRead = 0;
+		m_iMavComm = MAVLINK_COMM_0;
 
 		// msg register
 		m_vpMsg.push_back(&m_attitude);
@@ -70,6 +71,8 @@ namespace kai
 		pK->v("devSystemID", &m_devSystemID);
 		pK->v("devComponentID", &m_devComponentID);
 		pK->v("devType", &m_devType);
+
+		pK->v("iMavComm", &m_iMavComm);
 
 		m_status.packet_rx_drop_count = 0;
 
@@ -144,8 +147,18 @@ namespace kai
 		return m_pT->start(getUpdate, this);
 	}
 
+	int _Mavlink::check(void)
+	{
+		NULL__(m_pIO, OK_ERR_NULLPTR);
+		IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
+
+		return this->_ModuleBase::check();
+	}
+
 	void _Mavlink::update(void)
 	{
+		mavlink_message_t msg;
+
 		while (m_pT->bAlive())
 		{
 			if (!m_pIO)
@@ -160,9 +173,8 @@ namespace kai
 				continue;
 			}
 
-			mavlink_message_t msg;
-			IF_CONT(!readMessage(msg));
 
+			IF_CONT(!readMessage(&msg));
 
 			if (m_devSystemID < 0)
 				m_devSystemID = msg.sysid;
@@ -200,11 +212,14 @@ namespace kai
 		}
 	}
 
-	bool _Mavlink::readMessage(mavlink_message_t &msg)
+	bool _Mavlink::readMessage(mavlink_message_t* pMsg)
 	{
+		IF_F(check() != OK_OK);
+		NULL_F(pMsg);
+
 		if (m_nRead == 0)
 		{
-			m_nRead = m_pIO->read(m_rBuf, MAV_N_BUF); // TODO: has to be UDP packtized
+			m_nRead = m_pIO->read(m_rBuf, MAV_N_BUF);
 			IF_F(m_nRead <= 0);
 			m_iRead = 0;
 		}
@@ -212,8 +227,10 @@ namespace kai
 		while (m_iRead < m_nRead)
 		{
 			mavlink_status_t status;
-			uint8_t result = mavlink_frame_char(MAVLINK_COMM_0, m_rBuf[m_iRead++],
-												&msg, &status);
+			uint8_t result = mavlink_frame_char(m_iMavComm,
+												m_rBuf[m_iRead++],
+												pMsg,
+												&status);
 			if (m_iRead == m_nRead)
 			{
 				m_iRead = 0;
@@ -236,7 +253,7 @@ namespace kai
 		return false;
 	}
 
-	void _Mavlink::writeMessage(mavlink_message_t msg)
+	void _Mavlink::writeMessage(const mavlink_message_t& msg)
 	{
 		NULL_(m_pIO);
 
