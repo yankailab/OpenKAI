@@ -41,7 +41,7 @@ namespace kai
 		return OK_OK;
 	}
 
-	bool _Cascade::start(void)
+	int _Cascade::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
@@ -81,14 +81,14 @@ namespace kai
 		GpuMat m;
 		pGray->gm()->copyTo(m);
 
-		int minSize = m.cols * m_pU->m_rArea.x;
-		int maxSize = m.cols * m_pU->m_rArea.y;
+//		int minSize = m.cols * m_pU->m_rArea.x;
+//		int maxSize = m.cols * m_pU->m_rArea.y;
 
 		m_pGCC->setFindLargestObject(false);
 		m_pGCC->setScaleFactor(m_scaleFactor);
 		m_pGCC->setMinNeighbors(m_minNeighbors);
-		m_pGCC->setMinObjectSize(cv::Size(minSize, minSize));
-		m_pGCC->setMaxObjectSize(cv::Size(maxSize, maxSize));
+//		m_pGCC->setMinObjectSize(cv::Size(minSize, minSize));
+//		m_pGCC->setMaxObjectSize(cv::Size(maxSize, maxSize));
 
 		vector<Rect> vRect;
 		cv::cuda::GpuMat gFound;
@@ -124,17 +124,17 @@ namespace kai
 		Mat m;
 		pGray->m()->copyTo(m);
 
-		int minSize = m.cols * m_pU->m_rArea.x;
-		int maxSize = m.cols * m_pU->m_rArea.y;
+//		int minSize = m.cols * m_pU->m_rArea.x;
+//		int maxSize = m.cols * m_pU->m_rArea.y;
 
 		vector<Rect> vRect;
 		_Object o;
 		float kx = 1.0 / m.cols;
 		float ky = 1.0 / m.rows;
 
-		m_CC.detectMultiScale(m, vRect, m_scaleFactor, m_minNeighbors,
-							  0 | CASCADE_SCALE_IMAGE, Size(minSize, minSize),
-							  Size(maxSize, maxSize));
+		// m_CC.detectMultiScale(m, vRect, m_scaleFactor, m_minNeighbors,
+		// 					  0 | CASCADE_SCALE_IMAGE, Size(minSize, minSize),
+		// 					  Size(maxSize, maxSize));
 
 		for (int i = 0; i < vRect.size(); i++)
 		{

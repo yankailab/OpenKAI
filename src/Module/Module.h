@@ -228,11 +228,9 @@
 #endif // Livox2
 #endif // sensor
 
-#ifdef WITH_SLAM
+#ifdef WITH_SLAM && WITH_NAVIGATION
 #ifdef USE_OPENCV
-#ifdef USE_ORB_SLAM
-#include "../SLAM/_ORB_SLAM.h"
-#endif
+#include "../SLAM/_SLAMbase.h"
 #endif
 #endif
 

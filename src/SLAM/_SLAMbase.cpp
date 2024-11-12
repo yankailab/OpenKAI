@@ -1,94 +1,69 @@
 /*
- * _ORB_SLAM.cpp
+ * _SLAMbase.cpp
  *
- *  Created on: Jul 18, 2017
+ *  Created on: Nov 12, 2024
  *      Author: yankai
  */
 
-#include "_ORB_SLAM.h"
+#include "_SLAMbase.h"
 
 namespace kai
 {
 
-	_ORB_SLAM::_ORB_SLAM()
+	_SLAMbase::_SLAMbase()
 	{
-		m_vSize.init(640, 360);
-		m_tStartup = 0;
-
 		m_pV = nullptr;
-		m_pOS = nullptr;
-
-		m_vT.init();
+		m_vSize.set(640, 360);
 		m_bTracking = false;
-		m_bViewer = false;
-
-		m_mRwc = Mat(3, 3, CV_32F);
-		m_mTwc = Mat(3, 1, CV_32F);
 	}
 
-	_ORB_SLAM::~_ORB_SLAM()
+	_SLAMbase::~_SLAMbase()
 	{
-		if (m_pOS)
-		{
-			m_pOS->Shutdown();
-			delete m_pOS;
-		}
 	}
 
-	int _ORB_SLAM::init(void *pKiss)
+	int _SLAMbase::init(void *pKiss)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
+		CHECK_(this->_NavBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("vSize", &m_vSize);
-		pK->v("bViewer", &m_bViewer);
 
-		string fVocabulary = "";
-		string fSetting = "";
+		return OK_OK;
+	}
 
-		pK->v("fVocabulary", &fVocabulary);
-		pK->v("fSetting", &fSetting);
+	int _SLAMbase::link(void)
+	{
+		CHECK_(this->_NavBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
 
-		ifstream ifs;
-		ifs.open(fSetting.c_str(), std::ios::in);
-		IF__(!ifs, OK_ERR_NOT_FOUND);
-
-		// Create SLAM system. It initializes all system threads and gets ready to process frames.
-		m_pOS = new ORB_SLAM3::System(fVocabulary,
-									  fSetting,
-									  ORB_SLAM3::System::MONOCULAR,
-									  m_bViewer);
-
-		m_tStartup = 0;
-
-		string n = "";
+		string n;
+		n = "";
 		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->findModule(n));
 
 		return OK_OK;
 	}
 
-	int _ORB_SLAM::check(void)
+	int _SLAMbase::check(void)
 	{
 		NULL__(m_pV, OK_ERR_NULLPTR);
 		NULL__(m_pV->getFrameRGB(), OK_ERR_NOT_READY);
-		NULL__(m_pOS, OK_ERR_NULLPTR);
 
-		return this->_ModuleBase::check();
+		return this->_NavBase::check();
 	}
 
-	int _ORB_SLAM::start(void)
+	int _SLAMbase::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
-	bool _ORB_SLAM::bTracking(void)
+	bool _SLAMbase::bTracking(void)
 	{
 		return m_bTracking;
 	}
 
-	void _ORB_SLAM::update(void)
+	void _SLAMbase::update(void)
 	{
 		while (m_pT->bAlive())
 		{
@@ -100,7 +75,7 @@ namespace kai
 		}
 	}
 
-	void _ORB_SLAM::detect(void)
+	void _SLAMbase::detect(void)
 	{
 		IF_(check() != OK_OK);
 
@@ -110,24 +85,18 @@ namespace kai
 		m_pV->getFrameRGB()->m()->copyTo(mGray);
 		IF_(mGray.empty());
 
-		uint64_t tNow = getApproxTbootUs();
-		if (m_tStartup <= 0)
-			m_tStartup = tNow;
-
-		double t = ((double)(tNow - m_tStartup)) * usecBase;
-
 //		m_pose = m_pOS->TrackMonocular(mGray, t);
-		if (m_pose.empty())
-		{
-			m_bTracking = false;
+		// if (m_pose.empty())
+		// {
+		// 	m_bTracking = false;
 
-			//TODO: if lost too long reset the system
+		// 	//TODO: if lost too long reset the system
 
-			return;
-		}
+		// 	return;
+		// }
 
-		m_bTracking = true;
-
+		// m_bTracking = true;
+/*
 		m_mRwc = m_pose.rowRange(0, 3).colRange(0, 3).t();
 		m_mTwc = -m_mRwc * m_pose.rowRange(0, 3).col(3);
 
@@ -150,12 +119,13 @@ namespace kai
 			 << "  " << fixed << m_vT.x << "  " << fixed << m_vT.y << "  " << fixed << m_vT.z << "  "
 			 << "Q: "
 			 << "  " << fixed << m_vQ.x << "  " << fixed << m_vQ.y << "  " << fixed << m_vQ.z << "  " << fixed << m_vQ.w << endl;
+*/
 	}
 
-	void _ORB_SLAM::console(void *pConsole)
+	void _SLAMbase::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_ModuleBase::console(pConsole);
+		this->_NavBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
 		string msg;

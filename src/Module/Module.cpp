@@ -237,11 +237,9 @@ namespace kai
 #endif // Livox2
 #endif // sensor
 
-#ifdef WITH_SLAM
+#ifdef WITH_SLAM && WITH_NAVIGATION
 #ifdef USE_OPENCV
-#ifdef USE_ORB_SLAM
-		ADD_MODULE(_ORB_SLAM);
-#endif
+		ADD_MODULE(_SLAMbase);
 #endif
 #endif
 
