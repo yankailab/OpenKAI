@@ -1,0 +1,107 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["serialAP","mavAP","apBase","apPhoto"],
+}
+
+{
+	"name":"serialAP",
+	"class":"_SerialPort",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"nPacket":1024,
+	"nPbuffer":512,
+	"/port":"/dev/ttyAMA0",
+	"port":"/dev/ttyACM0",
+	"/port":"/dev/ttyTHS1",
+	"baud":115200,
+}
+
+{
+	"name":"mavAP",
+	"class":"_Mavlink",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"_IObase":"serialAP",
+	{
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavUDP",
+		}
+	}
+}
+
+{
+	"name":"apBase",
+	"class":"_APmavlink_base",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"_StateControl":"state",
+	"_Mavlink":"mavAP",
+	"freqSendHeartbeat":1,
+	"apType":0,
+
+	{
+		"name":"mavMsgInt",
+
+		{
+			"name":"heartbeat",
+			"id":0,
+			"tInt":0.4,
+		}
+		{
+			"name":"attitude",
+			"id":30,
+			"tInt":0.1,
+		}
+		{
+			"name":"localPosition",
+			"id":32,
+			"tInt":0.1,
+		}
+		{
+			"name":"globalPosition",
+			"id":33,
+			"tInt":0.1,
+		}
+	}
+}
+
+{
+	"name":"apPhoto",
+	"class":"_APmavlink_photo",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":2,
+	}
+	"bLog":1,
+	"exifConfig":"-config /home/kai/dev/OpenKAI/data/exiftool/example.config",
+	"dir":"/home/kai/Downloads/gphoto/",
+	"subDir":"",
+	"_APmavlink_base":"apBase",
+}
