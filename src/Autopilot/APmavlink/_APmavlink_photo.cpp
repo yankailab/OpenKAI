@@ -110,13 +110,13 @@ namespace kai
 		cmd = "gphoto2 --capture-image-and-download --filename " + fName;
 		system(cmd.c_str());
 		cmd = "exiftool " + m_exifConfig +
-			  " -overwrite_original " +
+			  " -overwrite_original" +
 			  " -GPSLongitude=" + lon +
 			  " -GPSLatitude=" + lat +
 			  " -GPSAltitude=" + alt +
 			  " -GPSImgDirection=" + yaw +
 			  " -GPSPitch=" + pitch +
-			  " -GPSRoll=" + roll +
+			  " -GPSRoll=" + roll + " " +
 			  fName;
 		system(cmd.c_str());
 		LOG_I("GPhoto: " + fName);

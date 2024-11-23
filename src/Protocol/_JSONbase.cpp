@@ -179,7 +179,7 @@ namespace kai
         else
             msg = "Not connected";
 
-        ((_Console *)pConsole)->addMsg(msg, 0);
+        ((_Console *)pConsole)->addMsg(msg, 1);
     }
 
 }

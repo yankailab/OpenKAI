@@ -16,17 +16,6 @@
 #include "../IPC/SharedMem.h"
 #include "../UI/_Console.h"
 
-
-// Apps
-
-#ifdef WITH_APP_SWARM
-#include "../Application/Swarm/_SwarmCtrl.h"
-#include "../Application/Swarm/_SwarmCtrlUI.h"
-#include "../Application/Swarm/_APmavlink_swarm.h"
-#include "../Application/Swarm/_SwarmSearch.h"
-#endif
-
-
 // modules
 
 #ifdef WITH_3D
@@ -92,12 +81,15 @@
 #include "../Autopilot/APmavlink/_APmavlink_landingTarget.h"
 #endif // opencv_contrib
 #endif // opencv
+#ifdef WITH_SWARM
+#include "../Autopilot/APmavlink/_APmavlink_swarm.h"
+#endif
 #ifdef WITH_NAVIGATION
 #include "../Autopilot/APmavlink/_APmavlink_visionEstimate.h"
 #ifdef USE_REALSENSE
 #include "../Autopilot/APmavlink/_APmavlink_GPS.h"
 #endif
-#endif
+#endif // nav
 #endif // APmavlink
 
 #ifdef WITH_AUTOPILOT_DRIVE
@@ -173,7 +165,10 @@
 #include "../IO/_TCPclient.h"
 #include "../IO/_SerialPort.h"
 #include "../IO/_UDP.h"
+#ifdef USE_WSSERVER
 #include "../IO/_WebSocket.h"
+#include "../IO/_WebSocketServer.h"
+#endif
 #endif
 
 #ifdef WITH_NAVIGATION
@@ -216,16 +211,9 @@
 #include "../Sensor/Distance/_LeddarVu.h"
 #include "../Sensor/Distance/_TOFsense.h"
 #include "../Sensor/Distance/_BenewakeTF.h"
-#ifdef USE_LIVOX
-#include "../Sensor/LiDAR/Livox/_Livox.h"
-#include "../Sensor/LiDAR/Livox/LivoxLidar.h"
-#endif
-#ifdef USE_LIVOX2
-#include "../Sensor/LiDAR/Livox2/LivoxLidar2.h"
 #ifdef WITH_3D && USE_OPEN3D
-#include "../Sensor/LiDAR/Livox2/_Livox2.h"
+#include "../Sensor/LiDAR/_Livox2.h"
 #endif // 3D
-#endif // Livox2
 #endif // sensor
 
 #ifdef WITH_SLAM && WITH_NAVIGATION
@@ -240,6 +228,9 @@
 
 #ifdef WITH_SWARM
 #include "../Swarm/_SwarmBase.h"
+#include "../Swarm/_SwarmCtrl.h"
+#include "../Swarm/_SwarmCtrlUI.h"
+#include "../Swarm/_SwarmSearch.h"
 #endif
 
 #ifdef WITH_UI

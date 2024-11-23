@@ -43,6 +43,8 @@
 	}
 	"bLog":0,
 	"_IObase":"serialAP",
+	"mySystemID":200,
+	"iMavComm":0,
 	{
 		"name":"routing",
 		{
@@ -91,15 +93,10 @@
 {
 	"name":"udp",
 	"class":"_UDP",
-	"bON":0,
+	"bON":1,
 	{
 		"name":"thread",
 		"FPS":30,
-	}
-	{
-		"name":"threadR",
-		"FPS":30,
-		"vRunThread":["mavUDP.thread"],
 	}
 	"/port":19840,
 	"/addr":"127.0.0.1",
@@ -140,8 +137,9 @@
 	"_StateControl":"state",
 	"_Mavlink":"mavAP",
 	"/_Mavlink":"mavUDP",
-	"freqSendHeartbeat":1,
 	"apType":0,
+	"ieSendHB":1,
+	"ieSendMsgInt":1,
 
 	{
 		"name":"mavMsgInt",
@@ -206,7 +204,7 @@
 {
 	"name":"apM2J",
 	"class":"_APmavlink_mav2json",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
@@ -216,7 +214,8 @@
 		"FPS":10,
 	}
 	"bLog":1,
-	"_IObase":"ws",
+	"/_IObase":"ws",
+	"_IObase":"udp",
 	"msgFinishSend":"",
 	"msgFinishRecv":"EOJ",
 	"ieSendHB":100000,

@@ -26,17 +26,6 @@ namespace kai
 		ADD_MODULE(Destimator);
 		ADD_MODULE(_Console);
 
-
-// Apps
-
-#ifdef WITH_APP_SWARM
-		ADD_MODULE(_SwarmCtrl);
-		ADD_MODULE(_SwarmCtrlUI);
-		ADD_MODULE(_APmavlink_swarm);
-		ADD_MODULE(_SwarmSearch);
-#endif
-
-
 // modules
 
 #ifdef WITH_3D
@@ -90,6 +79,9 @@ namespace kai
 #ifdef WITH_SENSOR
 		ADD_MODULE(_APmavlink_distLidar);
 #endif
+#ifdef WITH_SWARM
+		ADD_MODULE(_APmavlink_swarm);
+#endif
 #ifdef USE_OPENCV
 		ADD_MODULE(_APmavlink_avoid);
 		ADD_MODULE(_APmavlink_depthVision);
@@ -107,8 +99,8 @@ namespace kai
 #ifdef USE_REALSENSE
 		ADD_MODULE(_APmavlink_GPS);
 #endif
-#endif
-#endif
+#endif // nav
+#endif // apMavlink
 
 #ifdef WITH_AUTOPILOT_DRIVE
 		ADD_MODULE(_Drive);
@@ -182,7 +174,10 @@ namespace kai
 		ADD_MODULE(_TCPserver);
 		ADD_MODULE(_TCPclient);
 		ADD_MODULE(_UDP);
+#ifdef USE_WSSERVER
 		ADD_MODULE(_WebSocket);
+		ADD_MODULE(_WebSocketServer);
+#endif
 #endif
 
 #ifdef WITH_NAVIGATION
@@ -225,16 +220,9 @@ namespace kai
 		ADD_MODULE(_BenewakeTF);
 		ADD_MODULE(_TOFsense);
 		ADD_MODULE(_LeddarVu);
-#ifdef USE_LIVOX
-		ADD_MODULE(_Livox);
-		ADD_MODULE(LivoxLidar);
-#endif
-#ifdef USE_LIVOX2
-		ADD_MODULE(LivoxLidar2);
 #ifdef WITH_3D && USE_OPEN3D
 		ADD_MODULE(_Livox2);
 #endif // 3D
-#endif // Livox2
 #endif // sensor
 
 #ifdef WITH_SLAM && WITH_NAVIGATION
@@ -249,6 +237,9 @@ namespace kai
 
 #ifdef WITH_SWARM
 		ADD_MODULE(_SwarmBase);
+		ADD_MODULE(_SwarmCtrl);
+		ADD_MODULE(_SwarmCtrlUI);
+		ADD_MODULE(_SwarmSearch);
 #endif
 
 #ifdef WITH_UI
