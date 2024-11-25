@@ -72,12 +72,15 @@ namespace kai
 		int m_nP;
 		int m_iPset;
 		int m_iPget;
+		pthread_mutex_t m_mutex;
 
 		bool init(int nB, int nP)
 		{
 			m_pP = new IO_PACKET[nP];
 			NULL_F(m_pP);
 			m_nP = nP;
+
+			pthread_mutex_init(&m_mutex, NULL);
 
 			int iP;
 			for (iP = 0; iP < m_nP; iP++)
@@ -106,6 +109,7 @@ namespace kai
 			}
 
 			DEL(m_pP);
+			pthread_mutex_destroy(&m_mutex);
 		}
 
 		void clear(void)
@@ -118,6 +122,8 @@ namespace kai
 		{
 			NULL_(pB);
 
+			pthread_mutex_lock(&m_mutex);
+
 			int nBw = 0;
 			while (nBw < nB)
 			{
@@ -129,6 +135,8 @@ namespace kai
 				else
 					m_iPset++;
 			}
+
+			pthread_mutex_unlock(&m_mutex);
 		}
 
 		int getPacket(uint8_t *pB, int nB)

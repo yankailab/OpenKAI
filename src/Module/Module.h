@@ -186,6 +186,7 @@
 
 #ifdef WITH_PROTOCOL
 #include "../Protocol/_Canbus.h"
+#include "../Protocol/_JSONbase.h"
 #include "../Protocol/_Mavlink.h"
 #include "../Protocol/_PWMio.h"
 #include "../Protocol/_ProtocolBase.h"
@@ -288,6 +289,17 @@
 #endif
 #endif // opencv
 #endif // vision
+
+// Test modules
+
+#ifdef WITH_TEST
+
+#ifdef WITH_PROTOCOL
+#include "../../test/Protocol/_TestJSON.h"
+#endif
+
+#endif // test
+
 
 #define ADD_MODULE(x)             \
 	if (pK->getClass() == #x)     \

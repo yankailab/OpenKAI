@@ -12,6 +12,7 @@ void signalHandler(int signal)
 	{
 		printf("\nSIGINT\n");
 		g_pStartup->stopAllModules();
+		exit(0);
 	}
 }
 

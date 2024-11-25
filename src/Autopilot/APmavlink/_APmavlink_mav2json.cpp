@@ -99,7 +99,7 @@ namespace kai
 		JO(r, "roll", vA.z);
 		JO(r, "batt", m_pAP->getBattery());
 		JO(r, "hdg", -1.0);
-		sendMsg(r);
+		sendJson(r);
 	}
 
 	void _APmavlink_mav2json::updateR(void)

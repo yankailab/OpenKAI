@@ -195,6 +195,7 @@ namespace kai
 
 #ifdef WITH_PROTOCOL
 		ADD_MODULE(_Canbus);
+		ADD_MODULE(_JSONbase);
 		ADD_MODULE(_Mavlink);
 		ADD_MODULE(_Modbus);
 		ADD_MODULE(_SBus);
@@ -297,6 +298,17 @@ namespace kai
 #endif
 #endif	//opencv
 #endif	//vision
+
+// Test modules
+
+#ifdef WITH_TEST
+
+#ifdef WITH_PROTOCOL
+		ADD_MODULE(_TestJSON);
+#endif
+
+#endif // test
+
 
 		return NULL;
 	}

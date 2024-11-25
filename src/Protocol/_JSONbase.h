@@ -25,9 +25,10 @@ namespace kai
 		virtual int check(void);
 		virtual void console(void *pConsole);
 
+		virtual bool sendJson(picojson::object &o);
+
 	protected:
 		virtual void send(void);
-		virtual bool sendMsg(picojson::object &o);
 		virtual void sendHeartbeat(void);
 
 		virtual bool recvJson(string* pStr);

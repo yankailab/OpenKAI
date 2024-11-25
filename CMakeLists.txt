@@ -55,6 +55,7 @@ OPTION(WITH_SWARM "" OFF)
 OPTION(WITH_UI "" OFF)
 OPTION(WITH_UNIVERSE "" OFF)
 OPTION(WITH_VISION "" OFF)
+OPTION(WITH_TEST "Build with unit test modules" OFF)
 
 find_package(Eigen3 3.1.0 REQUIRED)
 #find_package(Eigen3 3.1.0 REQUIRED NO_MODULE)
@@ -451,7 +452,22 @@ endif()
 endif()
 endif()
 
+# Test modules
+
+if(WITH_TEST)
+add_definitions(-DWITH_TEST)
+set(OpenKAI_cpp ${OpenKAI_cpp} test/_TestBase.cpp)
+
+if(WITH_PROTOCOL)
+file(GLOB_RECURSE Test_Protocol test/Protocol/*.cpp test/Protocol/*.c)
+set(OpenKAI_cpp ${OpenKAI_cpp} ${Test_Protocol})
+endif()
+
+endif()
+
+
 # Dependencies
+
 if(USE_CHILITAGS)
   add_definitions(-DUSE_CHILITAGS)
   set(OpenKAI_lib ${OpenKAI_lib} chilitags)

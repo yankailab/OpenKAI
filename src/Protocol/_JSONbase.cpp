@@ -70,10 +70,11 @@ namespace kai
         }
     }
 
-    bool _JSONbase::sendMsg(picojson::object &o)
+    bool _JSONbase::sendJson(picojson::object &o)
     {
-        string msg = picojson::value(o).serialize() + m_msgFinishSend;
+        IF_F(check() != OK_OK);
 
+        string msg = picojson::value(o).serialize() + m_msgFinishSend;
         return m_pIO->write((unsigned char *)msg.c_str(), msg.size());
     }
 
@@ -84,7 +85,7 @@ namespace kai
         JO(o, "cmd", "heartbeat");
         JO(o, "t", li2str(m_pT->getTfrom()));
 
-        sendMsg(o);
+        sendJson(o);
     }
 
     void _JSONbase::updateR(void)
