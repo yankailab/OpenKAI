@@ -4,7 +4,6 @@
 #include "../Dependencies/c_library_v2/ardupilotmega/mavlink.h"
 #include "../Dependencies/c_library_v2/mavlink_conversions.h"
 #include "../IO/_IObase.h"
-#include "../IO/_WebSocket.h"
 
 #define MAV_N_PEER 16
 #define MAV_N_CMD_U64 4

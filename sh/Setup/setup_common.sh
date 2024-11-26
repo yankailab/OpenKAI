@@ -220,11 +220,18 @@ sudo make install
 
 #----------------------------------------------------
 # (Optional) gwsocket
-git clone --depth 1 https://github.com/allinurl/gwsocket.git
-cd gwsocket
-autoreconf -fiv
-./configure
-make -j$(nproc)
+#git clone --depth 1 https://github.com/allinurl/gwsocket.git
+#cd gwsocket
+#autoreconf -fiv
+#./configure
+#make -j$(nproc)
+
+#----------------------------------------------------
+# (Optional) wsserver
+git clone https://github.com/Theldus/wsServer
+cd wsServer/
+make
+make install
 
 #----------------------------------------------------
 # (Optional) Vzense Nebular

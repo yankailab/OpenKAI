@@ -13,7 +13,7 @@ namespace kai
 	_DenseFlow::_DenseFlow()
 	{
 		m_pVision = nullptr;
-		m_pGrayFrames = nullptr;
+//		m_pGrayFrames = nullptr;
 		m_w = 640;
 		m_h = 480;
 
@@ -36,8 +36,8 @@ namespace kai
 		pK->v("h", &m_h);
 		m_gFlow = GpuMat(m_h, m_w, CV_32FC2);
 
-		m_pGrayFrames = new FrameGroup();
-		m_pGrayFrames->init(2);
+//		m_pGrayFrames = new FrameGroup();
+//		m_pGrayFrames->init(2);
 		m_pFarn = cuda::FarnebackOpticalFlow::create();
 
 		string n = "";
@@ -67,30 +67,30 @@ namespace kai
 
 	void _DenseFlow::detect(void)
 	{
-		NULL_(m_pVision);
-		Frame *pGray = m_pVision->getFrameRGB();
-		NULL_(pGray);
-		IF_(pGray->bEmpty());
+		// NULL_(m_pVision);
+		// Frame *pGray = m_pVision->getFrameRGB();
+		// NULL_(pGray);
+		// IF_(pGray->bEmpty());
 
-		Frame *pNextFrame = m_pGrayFrames->getLastFrame();
-		IF_(pGray->tStamp() <= pNextFrame->tStamp());
-		Frame *pPrevFrame = m_pGrayFrames->getPrevFrame();
+		// Frame *pNextFrame = m_pGrayFrames->getLastFrame();
+		// IF_(pGray->tStamp() <= pNextFrame->tStamp());
+		// Frame *pPrevFrame = m_pGrayFrames->getPrevFrame();
 
-		m_pGrayFrames->updateFrameIndex();
+		// m_pGrayFrames->updateFrameIndex();
 
-		pNextFrame->copy(pGray->resize(m_w, m_h).cvtColor(COLOR_BGR2GRAY));
-		GpuMat *pPrev = pPrevFrame->gm();
-		GpuMat *pNext = pNextFrame->gm();
+		// pNextFrame->copy(pGray->resize(m_w, m_h).cvtColor(COLOR_BGR2GRAY));
+		// GpuMat *pPrev = pPrevFrame->gm();
+		// GpuMat *pNext = pNextFrame->gm();
 
-		IF_(pPrev->empty());
-		IF_(pNext->empty());
-		IF_(pPrev->size() != pNext->size());
+		// IF_(pPrev->empty());
+		// IF_(pNext->empty());
+		// IF_(pPrev->size() != pNext->size());
 
-		m_pFarn->calc(*pPrev, *pNext, m_gFlow);
+		// m_pFarn->calc(*pPrev, *pNext, m_gFlow);
 
-		Mat mFlow;
-		m_gFlow.download(mFlow);
-		cv::split(mFlow, m_pFlow);
+		// Mat mFlow;
+		// m_gFlow.download(mFlow);
+		// cv::split(mFlow, m_pFlow);
 	}
 
 	vDouble2 _DenseFlow::vFlow(vDouble4 *pROI)

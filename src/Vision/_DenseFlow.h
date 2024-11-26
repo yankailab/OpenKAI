@@ -9,7 +9,6 @@
 #define OpenKAI_src_Vision__Flow_H_
 
 #include "../Base/common.h"
-#include "FrameGroup.h"
 #include "_VisionBase.h"
 
 namespace kai
@@ -44,7 +43,7 @@ namespace kai
 		int m_w;
 		int m_h;
 		_VisionBase *m_pVision;
-		FrameGroup *m_pGrayFrames;
+//		FrameGroup *m_pGrayFrames;
 		Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
 		GpuMat m_gFlow;
 		Mat m_pFlow[2];
