@@ -32,6 +32,8 @@ namespace kai
 		{
 			m_id = 0x7fffffff;
 			m_tStamp = 0;
+			m_tActualInterval = LONG_MAX;
+			m_tIntervalDelayAllowed = 1000;
 			m_tInterval = -1;
 		};
 
@@ -42,17 +44,18 @@ namespace kai
 			m_tInterval = tInterval;
 		}
 
-		bool bReceiving(uint64_t tNow)
+		bool bReceiving(void)
 		{
-			IF__(m_tStamp >= tNow, true);
-			IF__(tNow - m_tStamp < m_tInterval + 1000, true);
+			IF__(m_tActualInterval < m_tInterval + m_tIntervalDelayAllowed, true);
 
 			return false;
 		}
 
 		virtual void decode(mavlink_message_t *pM)
 		{
-			m_tStamp = getTbootUs();
+			uint64_t tNow = getTbootUs();
+			m_tActualInterval = tNow - m_tStamp;
+			m_tStamp = tNow;
 
 			for (MavCallback c : m_vCbRecv)
 			{
@@ -102,6 +105,8 @@ namespace kai
 	public:
 		uint32_t m_id;
 		uint64_t m_tStamp;
+		int64_t m_tActualInterval;
+		int m_tIntervalDelayAllowed;
 		int64_t m_tInterval;
 
 		vector<MavCallback> m_vCbRecv;
@@ -801,13 +806,8 @@ namespace kai
 		virtual int check(void);
 		virtual void console(void *pConsole);
 
+		// General
 		bool bConnected(void);
-
-		// Receive
-		bool readMessage(mavlink_message_t* pMsg);
-
-		// Send
-		void writeMessage(const mavlink_message_t& msg);
 
 		// Cmd
 		void cmdInt(mavlink_command_int_t &D);
@@ -867,6 +867,10 @@ namespace kai
 		void sendSetMsgInterval(void);
 		bool setMsgInterval(int id, uint64_t tInt);
 
+	protected:
+		void writeMessage(const mavlink_message_t& msg);
+		int readMessage(mavlink_message_t* pMsg);
+
 	private:
 		void update(void);
 		static void *getUpdate(void *This)
@@ -876,9 +880,6 @@ namespace kai
 		}
 
 	public:
-		mavlink_status_t m_status;
-		vector<MAVLINK_PEER> m_vPeer;
-
 		MavAttitude m_attitude;
 		MavAttitudeQuaternion m_attitudeQuaternion;
 		MavBatteryStatus m_batteryStatus;
@@ -929,6 +930,9 @@ namespace kai
 		int m_nRead;
 		int m_iRead;
 		uint8_t m_iMavComm;	// Mavlink decode channel index
+		mavlink_status_t m_status;
+
+		vector<MAVLINK_PEER> m_vPeer;
 	};
 
 }

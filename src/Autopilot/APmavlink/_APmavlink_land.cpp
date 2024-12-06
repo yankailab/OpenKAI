@@ -23,7 +23,7 @@ namespace kai
 	{
 		CHECK_(this->_APmavlink_follow::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    
+
 		pK->v("vDSrange", &m_vDSrange);
 		pK->v("vFov", &m_vFov);
 		pK->v("vComplete", &m_vComplete);
@@ -83,7 +83,7 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			updateMove();
 
@@ -93,7 +93,6 @@ namespace kai
 			}
 
 			ON_PAUSE;
-			m_pT->autoFPSto();
 		}
 	}
 

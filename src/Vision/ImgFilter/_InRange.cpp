@@ -75,14 +75,13 @@ namespace kai
 			if (!m_bOpen)
 				open();
 
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			if (m_bOpen)
 			{
 				filter();
 			}
 
-			m_pT->autoFPSto();
 		}
 	}
 

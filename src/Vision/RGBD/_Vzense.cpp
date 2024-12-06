@@ -188,7 +188,7 @@ namespace kai
 				}
 			}
 
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			if (updateVzense())
 			{
@@ -201,7 +201,6 @@ namespace kai
 				m_bOpen = false;
 			}
 
-			m_pT->autoFPSto();
 		}
 	}
 

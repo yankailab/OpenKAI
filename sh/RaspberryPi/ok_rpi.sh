@@ -62,6 +62,17 @@ exit 0
 --
 
 
+
+
+
+
+
+
+
+
+
+# To be updated
+
 --------------
 # Disable OS use of UART and Enable UART hardware
 set +H

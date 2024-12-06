@@ -59,7 +59,7 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			if (m_bGPU)
 				detectGPU();
@@ -67,7 +67,6 @@ namespace kai
 				detectCPU();
 
 			ON_PAUSE;
-			m_pT->autoFPSto();
 		}
 	}
 

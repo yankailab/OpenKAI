@@ -22,7 +22,7 @@ namespace kai
 		pK->v("url", &m_url);
 
 		IF__(m_httpC.init(), OK_ERR_UNKNOWN);
-   	
+
 		return OK_OK;
 	}
 
@@ -59,11 +59,10 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			updateHttpSend();
 
-			m_pT->autoFPSto();
 		}
 	}
 

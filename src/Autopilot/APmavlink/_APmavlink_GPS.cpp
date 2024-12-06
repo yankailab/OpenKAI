@@ -35,7 +35,7 @@ namespace kai
 	{
 		CHECK(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
+
 
 		pK->v("yaw", &m_yaw);
 		pK->v("bYaw", &m_bYaw);
@@ -88,12 +88,11 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 			this->_ModuleBase::update();
 
 			updateGPS();
 
-			m_pT->autoFPSto();
 		}
 	}
 

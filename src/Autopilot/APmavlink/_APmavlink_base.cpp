@@ -98,11 +98,9 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			updateBase();
-
-			m_pT->autoFPSto();
 		}
 	}
 
@@ -113,14 +111,14 @@ namespace kai
 		uint64_t tNow = m_pT->getTfrom();
 
 		// update Ardupilot
-		if (m_pMav->m_heartbeat.bReceiving(tNow))
+		if (m_pMav->m_heartbeat.bReceiving())
 		{
 			m_apMode = m_pMav->m_heartbeat.m_msg.custom_mode;
 			m_bApArmed = m_pMav->m_heartbeat.m_msg.base_mode & 0b10000000;
 		}
 
 		// Attitude
-		if (m_pMav->m_attitude.bReceiving(tNow))
+		if (m_pMav->m_attitude.bReceiving())
 		{
 			m_vAtti.x = m_pMav->m_attitude.m_msg.yaw;
 			m_vAtti.y = m_pMav->m_attitude.m_msg.pitch;
@@ -129,9 +127,9 @@ namespace kai
 
 		// TODO:
 		//  get home position
-		if (!m_pMav->m_homePosition.bReceiving(tNow))
+		if (!m_pMav->m_homePosition.bReceiving())
 		{
-			m_pMav->clGetHomePosition();
+//			m_pMav->clGetHomePosition();
 		}
 		else
 		{
@@ -142,7 +140,7 @@ namespace kai
 		}
 
 		// get position
-		if (m_pMav->m_globalPositionINT.bReceiving(tNow))
+		if (m_pMav->m_globalPositionINT.bReceiving())
 		{
 			m_vGlobalPos.x = ((double)(m_pMav->m_globalPositionINT.m_msg.lat)) * 1e-7;
 			m_vGlobalPos.y = ((double)(m_pMav->m_globalPositionINT.m_msg.lon)) * 1e-7;
@@ -151,7 +149,7 @@ namespace kai
 			m_apHdg = ((float)(m_pMav->m_globalPositionINT.m_msg.hdg)) * 1e-2;
 		}
 
-		if (m_pMav->m_localPositionNED.bReceiving(tNow))
+		if (m_pMav->m_localPositionNED.bReceiving())
 		{
 			m_vLocalPos.x = m_pMav->m_localPositionNED.m_msg.x;
 			m_vLocalPos.y = m_pMav->m_localPositionNED.m_msg.y;
@@ -162,13 +160,13 @@ namespace kai
 		}
 
 		// Battery status
-		if (m_pMav->m_batteryStatus.bReceiving(tNow))
+		if (m_pMav->m_batteryStatus.bReceiving())
 		{
 			m_battery = (float)(m_pMav->m_batteryStatus.m_msg.battery_remaining) * 0.01;
 		}
 
 		// GPS raw
-		if (m_pMav->m_gpsRawINT.bReceiving(tNow))
+		if (m_pMav->m_gpsRawINT.bReceiving())
 		{
 			m_gpsFixType = (int)m_pMav->m_gpsRawINT.m_msg.fix_type;
 			m_gpsHacc = m_pMav->m_gpsRawINT.m_msg.h_acc;
@@ -364,6 +362,8 @@ namespace kai
 		pC->addMsg("xGyro=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xgyro) + ", yGyro=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.ygyro) + ", zGyro=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zgyro), 1);
 
 		pC->addMsg("xMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xmag) + ", yMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.ymag) + ", zMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zmag), 1);
+
+
 	}
 
 }

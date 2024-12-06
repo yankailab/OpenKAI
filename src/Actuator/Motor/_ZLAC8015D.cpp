@@ -66,7 +66,7 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			// if (!m_bReady)
 			// {
@@ -78,8 +78,6 @@ namespace kai
 			// 	clearAlarm();
 			// 	updateMove();
 			// }
-
-			m_pT->autoFPSto();
 		}
 	}
 
@@ -183,7 +181,7 @@ namespace kai
 		uint16_t pB[2];
 		int r;
 		int16_t p;
-		
+
 		r = m_pMB->readRegisters(m_iSlave, 0x20AB, 1, pB);
 		IF_F(r != 1);
 		//	int p = MAKE32(pB[0], pB[1]);

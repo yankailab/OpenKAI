@@ -96,7 +96,7 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			if (!updateVisionEstimate())
 			{
@@ -112,7 +112,6 @@ namespace kai
 				}
 			}
 
-			m_pT->autoFPSto();
 		}
 	}
 
@@ -170,7 +169,7 @@ namespace kai
 		float dV = dvV.len();
 
 		IF_((dT < m_thrJumpPos) && (dV < m_thrJumpSpd));
-		
+
 		m_iReset++;
 		if (m_iReset > 255)
 			m_iReset = 1;

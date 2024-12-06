@@ -74,7 +74,7 @@ namespace kai
 				}
 			}
 
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			uint8_t pB[WS_N_BUF];
 			int nB;
@@ -89,7 +89,6 @@ namespace kai
 				// }
 			}
 
-			m_pT->autoFPSto();
 		}
 	}
 

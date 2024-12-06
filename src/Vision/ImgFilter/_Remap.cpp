@@ -104,11 +104,10 @@ namespace kai
 					continue;
 			}
 
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			filter();
 
-			m_pT->autoFPSto();
 		}
 	}
 

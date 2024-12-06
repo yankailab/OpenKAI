@@ -226,7 +226,7 @@ namespace kai
     {
         while (m_pT->bAlive())
         {
-            m_pT->autoFPSfrom();
+            m_pT->autoFPS();
 
             if (m_state == livox2_deviceQuery)
             {
@@ -276,7 +276,7 @@ namespace kai
     {
         while (m_pTcontrolCmdW->bAlive())
         {
-            m_pTcontrolCmdW->autoFPSfrom();
+            m_pTcontrolCmdW->autoFPS();
 
             updateCtrlCmd();
 

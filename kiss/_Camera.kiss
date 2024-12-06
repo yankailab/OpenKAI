@@ -142,8 +142,11 @@
 {
 	"name":"videoFile",
 	"class":"_VideoFile",
-	"FPS":30,
 	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"videoFile":"/home/kai/Videos/sz.ts",
 	"vSize":[1280,720],
 }
@@ -151,8 +154,11 @@
 {
 	"name":"imgFile",
 	"class":"_ImgFile",
-	"FPS":30,
 	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"file":"/home/kai/Pictures/test.jpg",
 	"vSize":[1280,720],
 }
@@ -168,4 +174,3 @@
 	"_VisionBase":"cam",
 	"vSize":[640,512],
 }
-

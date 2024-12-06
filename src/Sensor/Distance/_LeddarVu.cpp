@@ -90,7 +90,7 @@ namespace kai
 				}
 			}
 
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			if (m_bUse0x41)
 			{
@@ -101,7 +101,6 @@ namespace kai
 				updateLidar();
 			}
 
-			m_pT->autoFPSto();
 		}
 	}
 

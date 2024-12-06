@@ -16,7 +16,7 @@ namespace kai
 	{
 		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
+
 		string n;
 		n = "";
 		pK->v("_APmavlink_base", &n);
@@ -61,11 +61,10 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			updateServo();
 
-			m_pT->autoFPSto();
 		}
 	}
 

@@ -94,7 +94,7 @@ namespace kai
 
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			ACTUATOR_CHAN* pChan = getChan();
 			if (pChan->m_bfSet.b(actuator_stop, true))
@@ -107,8 +107,6 @@ namespace kai
 			//		m_pA->m_p.m_vTarget = -m_pA->m_p.m_vTarget;
 
 			updateMove();
-
-			m_pT->autoFPSto();
 		}
 	}
 

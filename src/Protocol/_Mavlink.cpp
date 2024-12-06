@@ -157,24 +157,18 @@ namespace kai
 
 	void _Mavlink::update(void)
 	{
+		// Mavlink read and decode thread
+
 		mavlink_message_t msg;
 
 		while (m_pT->bAlive())
 		{
-			if (!m_pIO)
-			{
-				m_pT->sleepT(SEC_2_USEC);
-				continue;
-			}
+			m_pT->autoFPS();
 
-			if (!m_pIO->bOpen())
-			{
-				m_pT->sleepT(SEC_2_USEC);
-				continue;
-			}
+			int r = readMessage(&msg);
+			IF_CONT(r != OK_OK);
 
-
-			IF_CONT(!readMessage(&msg));
+			m_pT->skipSleep();
 
 			if (m_devSystemID < 0)
 				m_devSystemID = msg.sysid;
@@ -212,25 +206,25 @@ namespace kai
 		}
 	}
 
-	bool _Mavlink::readMessage(mavlink_message_t* pMsg)
+	int _Mavlink::readMessage(mavlink_message_t* pMsg)
 	{
-		IF_F(check() != OK_OK);
-		NULL_F(pMsg);
+		IF__(check() != OK_OK, OK_ERR_NOT_READY);
+		NULL__(pMsg, OK_ERR_NULLPTR);
 
-		if (m_nRead == 0)
+		if (m_nRead <= 0)
 		{
 			m_nRead = m_pIO->read(m_rBuf, MAV_N_BUF);
-			IF_F(m_nRead <= 0);
+			IF__(m_nRead < 0, OK_ERR_UNKNOWN);
+			IF__(m_nRead == 0, OK_ERR_NOT_READY);
 			m_iRead = 0;
 		}
 
 		while (m_iRead < m_nRead)
 		{
-			mavlink_status_t status;
 			uint8_t result = mavlink_frame_char(m_iMavComm,
 												m_rBuf[m_iRead++],
 												pMsg,
-												&status);
+												&m_status);
 			if (m_iRead == m_nRead)
 			{
 				m_iRead = 0;
@@ -240,17 +234,16 @@ namespace kai
 			if (result == 1)
 			{
 				// Good message decoded
-				m_status = status;
-				return true;
+				return OK_OK;
 			}
 			else if (result == 2)
 			{
 				// Bad CRC
-				LOG_I(" -> DROPPED PACKETS:" + i2str(status.packet_rx_drop_count));
+				LOG_I(" -> DROPPED PACKETS:" + i2str(m_status.packet_rx_drop_count));
 			}
 		}
 
-		return false;
+		return OK_ERR_NOT_READY;
 	}
 
 	void _Mavlink::writeMessage(const mavlink_message_t& msg)
@@ -1031,7 +1024,7 @@ namespace kai
 		for (MavMsgBase *pM : m_vpMsg)
 		{
 			IF_CONT(pM->m_tInterval < 0);
-			IF_CONT(pM->bReceiving(m_pT->getTfrom()));
+			IF_CONT(pM->bReceiving());
 			clSetMessageInterval(pM->m_id, pM->m_tInterval, 0);
 		}
 	}
@@ -1063,8 +1056,9 @@ namespace kai
 		pC->addMsg("Connected", 0);
 		pC->addMsg("mySysID = " + i2str(m_mySystemID) + " myComID = " + i2str(m_myComponentID) + " myType = " + i2str(m_myType));
 		pC->addMsg("devSysID = " + i2str(m_devSystemID) + " devComID = " + i2str(m_devComponentID) + " devType = " + i2str(m_devType));
-
+		pC->addMsg("Dropped packets = " + i2str(m_status.packet_rx_drop_count));
 		pC->addMsg("Mission seq=" + i2str(m_missionCurrent.m_msg.seq) + " tot=" + i2str(m_missionCurrent.m_msg.total) + " mode = " + i2str(m_missionCurrent.m_msg.mission_mode) + " state = " + i2str(m_missionCurrent.m_msg.mission_state));
+
 	}
 
 }

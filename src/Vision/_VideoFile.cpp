@@ -79,14 +79,13 @@ namespace kai
 				}
 			}
 
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			Mat mCam;
 			while (!m_vc.read(mCam))
 				;
 			m_fRGB.copy(mCam);
 
-			m_pT->autoFPSto();
 		}
 	}
 

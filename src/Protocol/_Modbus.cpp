@@ -91,9 +91,8 @@ namespace kai
 				}
 			}
 
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
-			m_pT->autoFPSto();
 		}
 	}
 

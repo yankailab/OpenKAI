@@ -46,8 +46,9 @@ namespace kai
 		void runAll(void);	   // wake up all the other instances
 
 		void sleepT(int64_t usec);
-		void autoFPSfrom(void);
-		void autoFPSto(void);
+		void skipSleep(void);
+		void autoFPS(void);
+
 		float getFPS(void);
 		void setTargetFPS(float fps);
 		float getTargetFPS(void);
@@ -70,6 +71,7 @@ namespace kai
 		float m_targetTframe;
 		float m_dT;
 		float m_FPS;
+		bool m_bSkipSleep;
 
 		// linked
 		vector<_Thread *> m_vRunThread;

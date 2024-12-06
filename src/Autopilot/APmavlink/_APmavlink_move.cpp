@@ -16,7 +16,7 @@ namespace kai
 	{
 		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
+
 		return OK_OK;
 	}
 
@@ -53,9 +53,8 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
-			m_pT->autoFPSto();
 		}
 	}
 

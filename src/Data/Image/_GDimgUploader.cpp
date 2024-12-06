@@ -69,7 +69,7 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			if (m_pT->getTfrom() - m_tLastUpload > m_tInterval)
 			{
@@ -77,7 +77,6 @@ namespace kai
 				m_tLastUpload = m_pT->getTfrom();
 			}
 
-			m_pT->autoFPSto();
 		}
 	}
 

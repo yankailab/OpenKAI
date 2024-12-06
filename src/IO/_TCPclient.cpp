@@ -89,7 +89,7 @@ namespace kai
 				}
 			}
 
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			uint8_t pB[N_TCP_BUF];
 			int nB;
@@ -110,7 +110,6 @@ namespace kai
 				LOG_I("send: " + i2str(nSend) + " bytes");
 			}
 
-			m_pT->autoFPSto();
 		}
 	}
 

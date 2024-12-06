@@ -69,11 +69,9 @@ namespace kai
                 continue;
             }
 
-            m_pT->autoFPSfrom();
+            m_pT->autoFPS();
 
             update_SharedMemImg();
-
-            m_pT->autoFPSto();
         }
     }
 

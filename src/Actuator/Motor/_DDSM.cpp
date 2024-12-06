@@ -73,7 +73,7 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			for (int i=0; i<m_vChan.size(); i++)
 			{
@@ -94,8 +94,6 @@ namespace kai
 				if (pChan->m_mode == 0x02)	// speed mode
 					setSpeed(i);
 			}
-
-			m_pT->autoFPSto();
 		}
 	}
 
@@ -176,11 +174,9 @@ namespace kai
 	{
 		while (m_pTr->bAlive())
 		{
-			m_pTr->autoFPSfrom();
+			m_pTr->autoFPS();
 
 			readCMD();
-
-			m_pTr->autoFPSto();
 		}
 	}
 

@@ -67,12 +67,11 @@ namespace kai
 			}
 
 			//Regular update loop
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			//Handling incoming messages
 			recv();
 
-			m_pT->autoFPSto();
 		}
 	}
 

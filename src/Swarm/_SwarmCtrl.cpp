@@ -21,7 +21,7 @@ namespace kai
     {
         CHECK_(this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
-    	
+
 
         pK->v("myID", &m_node.m_id);
         pK->v("ieSendHB", &m_ieSendHB.m_tInterval);
@@ -84,7 +84,7 @@ namespace kai
     {
         while (m_pT->bAlive())
         {
-            m_pT->autoFPSfrom();
+            m_pT->autoFPS();
 
             send();
 

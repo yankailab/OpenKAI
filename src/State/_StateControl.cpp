@@ -86,7 +86,7 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			IF_CONT(m_iS >= m_vpState.size());
 			IF_CONT(m_iS < 0);
@@ -101,7 +101,6 @@ namespace kai
 					transit(pS->getNext());
 			}
 
-			m_pT->autoFPSto();
 		}
 	}
 

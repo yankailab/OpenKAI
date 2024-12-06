@@ -149,7 +149,7 @@ namespace kai
 				continue;
 			}
 
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			if (updateRS())
 			{
@@ -160,7 +160,6 @@ namespace kai
 				m_flag.set(F_ERROR);
 			}
 
-			m_pT->autoFPSto();
 		}
 	}
 

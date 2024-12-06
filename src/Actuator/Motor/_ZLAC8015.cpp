@@ -64,7 +64,7 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			ACTUATOR_CHAN* pChan = getChan();
 			if (!pChan->m_bfStatus.b(actuator_ready))
@@ -77,8 +77,6 @@ namespace kai
 				clearAlarm();
 				updateMove();
 			}
-
-			m_pT->autoFPSto();
 		}
 	}
 

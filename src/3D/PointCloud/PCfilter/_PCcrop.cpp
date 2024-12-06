@@ -63,11 +63,10 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			updateFilter();
 
-			m_pT->autoFPSto();
 		}
 	}
 

@@ -25,7 +25,7 @@ namespace kai
 	{
 		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
+
 		pK->v("bSetYawSpeed", &m_bSetYawSpeed);
 		pK->v("yawMode", &m_yawMode);
 		pK->v("bRcChanOverride", &m_bRcChanOverride);
@@ -101,12 +101,11 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			updateDrive();
 
 			ON_PAUSE;
-			m_pT->autoFPSto();
 		}
 	}
 

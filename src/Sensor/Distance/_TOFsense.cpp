@@ -56,14 +56,13 @@ namespace kai
 				continue;
 			}
 
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			while (readCMD())
 			{
 				handleCMD();
 			}
 
-			m_pT->autoFPSto();
 		}
 	}
 

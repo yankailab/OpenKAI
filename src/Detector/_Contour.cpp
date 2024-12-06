@@ -45,12 +45,11 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			detect();
 
 			ON_PAUSE;
-			m_pT->autoFPSto();
 		}
 	}
 
@@ -58,7 +57,7 @@ namespace kai
 	{
 		IF_(check() != OK_OK);
 
-		Mat mBGR = *(m_pV->getFrameRGB()->m());	
+		Mat mBGR = *(m_pV->getFrameRGB()->m());
 		vector<vector<Point>> vvContours;
 		findContours(mBGR, vvContours, RETR_EXTERNAL, CHAIN_APPROX_NONE);
 

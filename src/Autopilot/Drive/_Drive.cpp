@@ -69,7 +69,7 @@ namespace kai
     {
         while (m_pT->bAlive())
         {
-            m_pT->autoFPSfrom();
+            m_pT->autoFPS();
 
             if (m_nSpd < 0.0)
                 m_nStr *= -1.0;

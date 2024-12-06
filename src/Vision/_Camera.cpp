@@ -91,7 +91,7 @@ namespace kai
 				}
 			}
 
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			Mat mCam;
 			while (!m_camera.read(mCam))
@@ -104,7 +104,6 @@ namespace kai
 				m_bOpen = false;
 			}
 
-			m_pT->autoFPSto();
 		}
 	}
 

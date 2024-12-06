@@ -23,6 +23,7 @@ namespace kai
 		m_state = thread_stop;
 		m_setState = thread_stop;
 		m_bPaused = false;
+		m_bSkipSleep = false;
 
 		pthread_mutex_init(&m_wakeupMutex, NULL);
 		pthread_cond_init(&m_wakeupSignal, NULL);
@@ -63,7 +64,7 @@ namespace kai
 		for (string s : vRunT)
 		{
 			_Thread *pT = (_Thread *)(pK->findModule(s));
-			if(!pT)
+			if (!pT)
 			{
 				LOG_I("Instance not found: " + s);
 				continue;
@@ -76,7 +77,7 @@ namespace kai
 	}
 
 	int _Thread::start(void *(*__start_routine)(void *),
-						void *__restrict __arg)
+					   void *__restrict __arg)
 	{
 		IF__(m_threadID != 0, OK_ERR_DUPLICATE);
 
@@ -174,22 +175,26 @@ namespace kai
 		m_state = thread_run;
 	}
 
-	void _Thread::autoFPSfrom(void)
+	void _Thread::skipSleep(void)
 	{
-		uint64_t tNow = getApproxTbootUs();
-		m_dT = (float)(tNow - m_tFrom + 1);
-		m_tFrom = tNow;
-		m_FPS = SEC_2_USEC / m_dT;
+		m_bSkipSleep = true;
 	}
 
-	void _Thread::autoFPSto(void)
+	void _Thread::autoFPS(void)
 	{
 		m_tTo = getApproxTbootUs();
 
-		int uSleep = (int)(m_targetTframe - (m_tTo - m_tFrom));
-		if (uSleep > 1000)
+		if (!m_bSkipSleep)
 		{
-			sleepT(uSleep);
+			int uSleep = (int)(m_targetTframe - (m_tTo - m_tFrom));
+			if (uSleep > 1000)
+			{
+				sleepT(uSleep);
+			}
+		}
+		else
+		{
+			m_bSkipSleep = false;
 		}
 
 		if (m_setState == thread_pause)
@@ -197,6 +202,11 @@ namespace kai
 			m_FPS = 0;
 			sleepT(0);
 		}
+
+		uint64_t tNow = getApproxTbootUs();
+		m_dT = (float)(tNow - m_tFrom + 1);
+		m_tFrom = tNow;
+		m_FPS = SEC_2_USEC / m_dT;
 	}
 
 	float _Thread::getFPS(void)

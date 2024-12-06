@@ -82,7 +82,7 @@ namespace kai
 			if (!m_bOpen)
 				open();
 
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			if (m_bOpen)
 			{
@@ -92,7 +92,6 @@ namespace kai
 				}
 			}
 
-			m_pT->autoFPSto();
 		}
 	}
 

@@ -93,7 +93,7 @@ namespace kai
                 continue;
             }
 
-            m_pT->autoFPSfrom();
+            m_pT->autoFPS();
 
             send();
 
@@ -167,7 +167,7 @@ namespace kai
     {
         while (m_pTr->bAlive())
         {
-            m_pTr->autoFPSfrom();
+            m_pTr->autoFPS();
 
             if (recv())
             {

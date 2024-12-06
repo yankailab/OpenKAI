@@ -19,7 +19,7 @@ namespace kai
 	{
 		CHECK_(this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-		
+
 		Kiss *pKt = pK->child("threadR");
         if (pKt->empty())
         {
@@ -61,11 +61,9 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			sendCMD();
-
-			m_pT->autoFPSto();
 		}
 	}
 
@@ -105,7 +103,7 @@ namespace kai
 	{
 		while (m_pTr->bAlive())
 		{
-			m_pTr->autoFPSfrom();
+			m_pTr->autoFPS();
 
 			while (readCMD())
 			{
@@ -113,8 +111,6 @@ namespace kai
 				m_recvMsg.init();
 				m_nCMDrecv++;
 			}
-
-			m_pTr->autoFPSto();
 		}
 	}
 

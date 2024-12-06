@@ -93,7 +93,7 @@ namespace kai
 				}
 			}
 
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			uint8_t pB[N_SERIAL_BUF];
 			int nB;
@@ -105,7 +105,6 @@ namespace kai
 
 			tcdrain(m_fd);
 
-			m_pT->autoFPSto();
 		}
 	}
 

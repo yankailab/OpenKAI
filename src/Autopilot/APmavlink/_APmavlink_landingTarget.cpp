@@ -106,11 +106,10 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			updateLandingTarget();
 
-			m_pT->autoFPSto();
 		}
 	}
 
@@ -147,7 +146,7 @@ namespace kai
 		{
 			if (dHdgAbs > m_hdgDz)
 			{
-				if (m_pAP->getMode() == AP_COPTER_LAND || 
+				if (m_pAP->getMode() == AP_COPTER_LAND ||
 					m_pAP->getMode() == AP_COPTER_RTL)
 					m_pAP->setMode(AP_COPTER_GUIDED);
 

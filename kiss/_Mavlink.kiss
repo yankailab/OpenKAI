@@ -12,9 +12,9 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":10,
+		"FPS":30,
 	}
-	"vBASE":["serial","mavAP","udp","mavUDP"],
+	"vBASE":["serial","mavAP","apBase","udp","mavUDP"],
 }
 
 {
@@ -23,13 +23,10 @@
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
-    {
-		"name":"threadR",
-		"FPS":30,
-		"vRunThread":["mavAP.thread"],
-	}
+	"nPacket":1024,
+	"nPbuffer":512,
 	"/port":"/dev/ttyUSB0",
 	"port":"/dev/ttyACM0",
 	"/port":"/dev/ttyAMA0",
@@ -42,55 +39,122 @@
 	"name":"mavAP",
 	"class":"_Mavlink",
 	"bON":1,
+	"bLog":0,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
-	"bLog":0,
 	"_IObase":"serial",
+	"devSystemID":1,
+	"mySystemID":200,
+	"iMavComm":0,
 
 	"/noRouteCmd":[],
 	{
 		"name":"routing",
 		{
-			"bON":1,
+			"bON":0,
 			"_Mavlink":"mavUDP",
 		}
 	}
 }
 
 {
-	"name":"udp",
-	"class":"_UDP",
+	"name":"apBase",
+	"class":"_APmavlink_base",
 	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-    {
-		"name":"threadR",
-		"FPS":30,
-		"vRunThread":["mavUDP.thread"],
+	"/_StateControl":"state",
+	"_Mavlink":"mavAP",
+	"/_Mavlink":"mavUDP",
+	"apType":0,
+	"ieSendHB":1,
+	"ieSendMsgInt":1,
+
+	{
+		"name":"mavMsgInt",
+
+		{
+			"name":"heartbeat",
+			"id":0,
+			"tInt":1,
+		}
+		{
+			"name":"attitude",
+			"id":30,
+			"tInt":0.05,
+		}
+		{
+			"name":"rcChannels",
+			"id":65,
+			"tInt":1.0,
+		}
+		{
+			"name":"localPosition",
+			"id":32,
+			"tInt":0.5,
+		}
+		{
+			"name":"globalPosition",
+			"id":33,
+			"tInt":0.5,
+		}
+		{
+			"name":"homePosition",
+			"id":242,
+			"tInt":10,
+		}
+		{
+			"name":"batteryStatus",
+			"id":147,
+			"tInt":10,
+		}
+		{
+			"name":"missionCurrent",
+			"id":42,
+			"tInt":1,
+		}
 	}
-	"port":19840,
+}
+
+
+
+
+{
+	"name":"udp",
+	"class":"_UDP",
+	"bON":0,
+	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"/addr":"127.0.0.1",
+	"port":14550,
 }
 
 {
 	"name":"mavUDP",
 	"class":"_Mavlink",
-	"bON":1,
+	"bON":0,
+	"bLog":0,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":10,
 	}
-	"bLog":0,
 	"_IObase":"udp",
+	"/devSystemID":1,
+	"mySystemID":200,
+	"iMavComm":0,
 
 	"/noRouteCmd":[],
 	{
 		"name":"routing",
 		{
-			"bON":1,
+			"bON":0,
 			"_Mavlink":"mavAP",
 		}
 	}

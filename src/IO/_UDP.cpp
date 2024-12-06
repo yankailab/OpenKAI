@@ -100,7 +100,7 @@ namespace kai
 				}
 			}
 
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			uint8_t pB[N_UDP_BUF];
 			int nB;
@@ -117,7 +117,6 @@ namespace kai
 				LOG_I("send: " + i2str(nSend) + " bytes to " + string(inet_ntoa(m_sAddrW.sin_addr)) + ", port:" + i2str(ntohs(m_sAddrW.sin_port)));
 			}
 
-			m_pT->autoFPSto();
 		}
 	}
 

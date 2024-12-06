@@ -71,7 +71,7 @@ namespace kai
 
 		Kiss *pKt = pK->child("threadUI");
 		IF__(pKt->empty(), OK_ERR_NOT_FOUND);
-		
+
 		m_pTui = new _Thread();
 		int r = m_pTui->init(pKt);
 		if (r != OK_OK)
@@ -154,11 +154,10 @@ namespace kai
 
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			updateAllGeometries();
 
-			m_pT->autoFPSto();
 		}
 	}
 

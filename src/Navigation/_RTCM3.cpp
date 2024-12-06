@@ -45,12 +45,11 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPSfrom();
+			m_pT->autoFPS();
 
 			decode();
 			m_msg = "";
 
-			m_pT->autoFPSto();
 		}
 	}
 
