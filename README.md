@@ -2,16 +2,22 @@
 <img src="https://github.com/yankailab/OpenKAI/raw/master/data/OK.png" width=300px alt="OpenKAI">
 </p>
 
-## OpenKAI: A modern framework for unmanned vehicle and robot control
-OpenKAI (Kinetic AI) is an open-source framework that realize rapid development of unmanned vehicles and robots that incorporate AI, sensors, actuators, etc.. OpenKAI is light weight to run on embedded hardwares. A simple and unified multi-threading modular architecture written purely in C++ makes it highly customizable for versatile applications and easily expanded to support new devices.
+# OpenKAI: A lightweight & paralleled framework for unmanned vehicle and robot control
+OpenKAI is an open-source framework that realize rapid prototyping & development of unmanned vehicles and robots.
+It features a simple and unified multi-threading modular architecture which is purely written in C++.
+OpenKAI is light weight to run on embedded hardwares yet is scalable to utilize the resources on high performance platforms.
+OpenKAI is highly customizable for versatile applications and easily expanded to support new devices.
 
-We are keep adding supports for sensors and actuators available on market from hackable modules to industry solutions. The supported devices can be used easily as an abstracted object in OpenKAI. We welcome contributions from vendors to provide evaluation device, as well as coders from open-source community.
+We are keep adding supports for sensors and actuators available on market from hackable modules to industry solutions.
+The supported devices can be used easily as an abstracted object in OpenKAI.
+We welcome contributions from vendors to provide evaluation device, as well as coders from open-source community.
 
 ## Platforms
 Tested but not limited to
-* x86 PC (Ubuntu 20.04 LTS)
+* x86 PC (>= Ubuntu 20.04 LTS, recommended 24.04 LTS)
 * NVIDIA Jetson series (JetPack/Ubuntu)
 * Raspberry Pi (Raspberry Pi OS)
+* Kakip (Under testing)
 
 ## Dependencies
 * Mandatory: Pthread, Google glog, Eigen.
@@ -19,10 +25,10 @@ Tested but not limited to
 
 ## Interfaces
 * UART
-* USB Serial
+* USB
 * CAN (incl. USB <-> CAN converter)
 * RS-485 (USB <-> RS-485 converter)
-* LAN/Wifi
+* Ethernet
 
 ## Protocols
 * Mavlink 2
@@ -32,33 +38,28 @@ Tested but not limited to
 * JSON
 
 ## External controllers
-* Pixhawk and its compatibles (Mavlink/UART)
+* Mavlink compatible flight controllers
 * Oriental Motor (Modbus/RS-485)
 * ZLAC 8015 (Modbus/RS-485)
 
-and more are coming.
-
 ## Sensors
-* Intel Realsense D400 series, L515, T265.
-* LeddarTech LeddarVu (UART/USB)
+* Intel Realsense.
+* Orbbec (Coming soon)
+* Livox
+* LeddarTech LeddarVu
 * TOFsense
 * Raspberry Camera module
-* Hiphen Airphen
-* Canon SLR
-* Sony RX0 series
-* Livox
-
-and more are coming.
 
 ## Actuators
 * Oriental Motor
-* DRV8825 (RS485)
-
-and more are coming.
-
-## Displays
-* Mutrics ARiC AR glasses (Coming soon)
+* DRV8825
 
 ## Showcase of Solutions
+Coming soon.
 
-Updating...
+
+# Functions
+
+
+# Setup & Install
+Refer to [setup](./docs/setup.md).

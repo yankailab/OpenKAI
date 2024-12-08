@@ -71,7 +71,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(OpenKAI_definitions "-w -Wall -c -fmessage-length=0 -MMD -MP")
 set(OpenKAI_libDir /usr/lib /usr/local/lib)
 set(OpenKAI_include /usr/local/include /usr/include ${EIGEN3_INCLUDE_DIR})
-set(OpenKAI_lib pthread boost_system uuid ${EIGEN3_LIBS} gsl gslcblas ncurses ssl crypto rt)
+set(OpenKAI_lib pthread uuid ${EIGEN3_LIBS} gsl gslcblas ncurses ssl crypto rt)
 
 
 # Common
@@ -593,10 +593,16 @@ if(USE_XARM)
   set(OpenKAI_lib ${OpenKAI_lib} xarm)
 endif()
 
+# Definitions
+add_definitions(${OpenKAI_definitions})
+
+# C/C++ settings
+include_directories(${OpenKAI_include})
+
 # Setting specific lib here
 link_directories(${OpenKAI_libDir})
 
-# packages
+# Optional CUDA
 if(USE_CUDA)
 find_package(CUDA)
 set(
@@ -605,9 +611,6 @@ set(
     -O3 -gencode arch=compute_${CUDA_ARCH},code=sm_${CUDA_ARCH}
 )
 endif()
-
-# Definitions
-add_definitions(${OpenKAI_definitions})
 
 # Exe or Lib
 if(BUILD_AS_LIB)
@@ -628,11 +631,9 @@ endif()
 
 endif() # build_as_lib
 
-# C/C++ settings
-include_directories(${OpenKAI_include})
 target_link_libraries(OpenKAI ${OpenKAI_lib})
 
-# ROS2 configs
+# Optional ROS2 configs
 if(USE_ROS)
   find_package(ament_cmake REQUIRED)
   find_package(rclcpp REQUIRED)
@@ -644,7 +645,7 @@ if(USE_ROS)
   ament_package()
 endif()
 
-# install
+# Install
 include(GNUInstallDirs)
 set_target_properties(OpenKAI PROPERTIES
     VERSION ${PROJECT_VERSION})
