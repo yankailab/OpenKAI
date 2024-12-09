@@ -104,14 +104,13 @@ namespace kai
 		virtual void update(void);
 		virtual void console(void *pConsole);
 
-		void setMode(uint32_t iMode);
-		int getMode(void);
-		string getModeName(void);
+		virtual void setMode(uint32_t iMode);
+		virtual int getMode(void);
+		virtual string getModeName(void);
 
-		void setArm(bool bArm);
-		bool bApArmed(void);
-
-		void setMount(AP_MOUNT &mount);
+		virtual void setArm(bool bArm);
+		virtual bool bApArmed(void);
+		virtual void setMount(AP_MOUNT &mount);
 
 		int getGPSfixType(void);
 		int getGPShacc(void);
@@ -133,7 +132,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		_Mavlink *m_pMav;
 		AP_TYPE m_apType;
 		int m_apMode;
