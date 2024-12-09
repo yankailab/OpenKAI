@@ -68,7 +68,7 @@ sudo make install
 libusb-1.0-0-dev libusb-dev libudev-dev
 ```
 
-#----------------------------------------------------
+
 # (Optional) OpenCV
 ```bash
 sudo apt-get -y install libprotobuf-dev protobuf-compiler

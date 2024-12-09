@@ -18,6 +18,7 @@ namespace kai
 		m_vPsp.clear();
 		m_vPsp.x = 0.5;
 		m_vPsp.y = 0.5;
+		m_tLastPIDupdate = 0;
 
 		m_pPitch = nullptr;
 		m_pRoll = nullptr;
@@ -138,7 +139,6 @@ namespace kai
 				clearPID();
 			}
 
-
 			ON_PAUSE;
 		}
 	}
@@ -177,10 +177,11 @@ namespace kai
 		IF_F(!m_bTarget);
 
 		// NEDH (PRAH) order
-		m_vPvar.x = m_vTargetBB.midY();
-		m_vPvar.y = m_vTargetBB.midX();
-		m_vPvar.z = m_vPsp.z;
-		m_vPvar.w = m_vPsp.w;
+		float dT = m_pT->getDt();
+		m_vPvar.x = m_fY.update(m_vTargetBB.midY(), dT);
+		m_vPvar.y = m_fX.update(m_vTargetBB.midX(), dT);
+		m_vPvar.z = m_fZ.update(m_vPsp.z, dT);
+		m_vPvar.w = m_fH.update(m_vPsp.w, dT);
 
 		return true;
 	}
@@ -210,8 +211,8 @@ namespace kai
 
 	void _APmavlink_follow::updatePID(void)
 	{
-		uint64_t tNow = getApproxTbootUs();
-		float dTs = (!m_tLastPIDupdate) ? 0 : ((float)(tNow - m_tLastPIDupdate)) * USEC_2_SEC;
+		uint64_t tNow = getTbootUs();
+		float dTs = (m_tLastPIDupdate == 0) ? 0 : ((float)(tNow - m_tLastPIDupdate)) * USEC_2_SEC;
 		m_tLastPIDupdate = tNow;
 
 		m_vSpd.x = (m_pPitch) ? m_pPitch->update(m_vPvar.x, m_vPsp.x, dTs) : 0;

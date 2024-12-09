@@ -201,6 +201,7 @@ namespace kai
 		{
 			m_FPS = 0;
 			sleepT(0);
+			m_tFrom = getApproxTbootUs();
 		}
 
 		uint64_t tNow = getApproxTbootUs();

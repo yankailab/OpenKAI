@@ -75,7 +75,7 @@ namespace kai
 		FOLLOW_TARGET_FILT m_fX;
 		FOLLOW_TARGET_FILT m_fY;
 		FOLLOW_TARGET_FILT m_fZ;
-		FOLLOW_TARGET_FILT m_fH;		
+		FOLLOW_TARGET_FILT m_fH;
 
 		// PID control
 		// make sure var and sp are in the same coordinate unit
@@ -88,7 +88,7 @@ namespace kai
 		PID *m_pRoll;
 		PID *m_pAlt;
 		PID *m_pYaw;
-		
+
 		// Gimbal mount
 		AP_MOUNT m_apMount;
 	};
