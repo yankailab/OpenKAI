@@ -132,7 +132,7 @@ namespace kai
 			return NULL;
 		}
 
-	protected:
+	public:
 		_Mavlink *m_pMav;
 		AP_TYPE m_apType;
 		int m_apMode;
