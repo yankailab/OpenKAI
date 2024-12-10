@@ -9,7 +9,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -32,13 +32,13 @@
 {
 	"name":"cam",
 	"class":"_Camera",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
 	"deviceID":0,
-	"vSize":[640,480],
+	"vSizeRGB":[640,480],
 }
 
 {
@@ -59,7 +59,7 @@
 {
 	"name":"cam",
 	"class":"_VideoFile",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":60,
@@ -83,7 +83,7 @@
 {
 	"name":"contrast",
 	"class":"_Contrast",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -96,7 +96,7 @@
 {
 	"name":"inv",
 	"class":"_Invert",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -107,7 +107,7 @@
 {
 	"name":"hsv",
 	"class":"_ColorConvert",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -119,7 +119,7 @@
 {
 	"name":"inRange",
 	"class":"_InRange",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -134,7 +134,7 @@
 {
 	"name":"morph",
 	"class":"_Morphology",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -142,7 +142,7 @@
 	"_VisionBase":"inRange",
 
 	{
-		"bON":1,	
+		"bON":1,
 		"morphOp":2, /*open*/
 		"nItr":1,
 		"kW":2,
@@ -150,7 +150,7 @@
 		"aX":1,
 		"aY":1,
 	}
-	
+
 	{
 		"bON":0,
 		"morphOp":3, /*close*/
@@ -196,7 +196,7 @@
 	"bLog":1,
 	"_VisionBase":"cam",
 	"_Universe":"univ",
-	"fModel":"/home/kai/dev/models/yolov8l.onnx",
+	"fModel":"/home/kai/dev/models/yolov8n.onnx",
 	"confidence":0.001,
 	"bLetterBoxForSquare":0,
 }

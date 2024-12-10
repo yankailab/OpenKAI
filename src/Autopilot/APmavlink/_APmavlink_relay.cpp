@@ -49,7 +49,7 @@ namespace kai
 	int _APmavlink_relay::check(void)
 	{
 		NULL__(m_pAP, OK_ERR_NULLPTR);
-		NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
+		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}
@@ -69,7 +69,7 @@ namespace kai
 	{
 		IF_(check() != OK_OK);
 
-		_Mavlink *pMav = m_pAP->m_pMav;
+		_Mavlink *pMav = m_pAP->getMavlink();
 
 		for (AP_relay s : m_vRelay)
 		{

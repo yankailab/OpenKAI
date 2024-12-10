@@ -59,7 +59,7 @@ namespace kai
 	int _APmavlink_rcChannel::check(void)
 	{
 		NULL__(m_pAP, OK_ERR_NULLPTR);
-		NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
+		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}
@@ -81,16 +81,16 @@ namespace kai
 
 		uint16_t pwm;
 
-		// pwm = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcMode.m_iChan );
+		// pwm = m_pAP->getMavlink()->m_rcChannels.getRC ( m_rcMode.m_iChan );
 		// IF_ ( pwm == UINT16_MAX );
 		// m_rcMode.pwm ( pwm );
 		// int iMode = m_rcMode.i();
 
-		pwm = m_pAP->m_pMav->m_rcChannels.getRC(m_rcStickV.m_iChan);
+		pwm = m_pAP->getMavlink()->m_rcChannels.getRC(m_rcStickV.m_iChan);
 		IF_(pwm == UINT16_MAX);
 		m_rcStickV.set(pwm);
 
-		pwm = m_pAP->m_pMav->m_rcChannels.getRC(m_rcStickH.m_iChan);
+		pwm = m_pAP->getMavlink()->m_rcChannels.getRC(m_rcStickH.m_iChan);
 		IF_(pwm == UINT16_MAX);
 		m_rcStickH.set(pwm);
 

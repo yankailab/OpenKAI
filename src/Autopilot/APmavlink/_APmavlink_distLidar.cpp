@@ -18,7 +18,7 @@ namespace kai
 	{
 		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-    	
+
 		string n;
 
 		n = "";
@@ -64,8 +64,8 @@ namespace kai
 	void _APmavlink_distLidar::updateMavlink(void)
 	{
 		NULL_(m_pAP);
-		NULL_(m_pAP->m_pMav);
-		_Mavlink *pMavlink = m_pAP->m_pMav;
+		NULL_(m_pAP->getMavlink());
+		_Mavlink *pMavlink = m_pAP->getMavlink();
 
 		NULL_(m_pDS);
 		IF_(!m_pDS->bReady());

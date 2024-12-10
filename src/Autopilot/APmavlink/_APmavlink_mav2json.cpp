@@ -48,7 +48,7 @@ namespace kai
 	int _APmavlink_mav2json::check(void)
 	{
 		NULL__(m_pAP, OK_ERR_NULLPTR);
-		NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
+		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
 
 		return this->_JSONbase::check();
 	}

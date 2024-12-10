@@ -22,30 +22,30 @@ namespace kai
 		virtual void console(void *pConsole);
 		virtual int check(void);
 
-		void setHold(void);
+		virtual void setHold(void);
 
-		void setHdg(float y = 0,
+		virtual void setHdg(float y = 0,
 					float r = 0,
 					bool bYaw = false,
 					bool bYawRate = true,
 					uint8_t frame = MAV_FRAME_BODY_OFFSET_NED);
 
-		void setVlocal(const vFloat4 &vSpd,
+		virtual void setVlocal(const vFloat4 &vSpd,
 					   bool bYaw = false,
 					   bool bYawRate = true,
 					   uint8_t frame = MAV_FRAME_BODY_OFFSET_NED);
 
-		void setPlocal(const vFloat4 &vP,
+		virtual void setPlocal(const vFloat4 &vP,
 					   bool bYaw = false,
 					   bool bYawRate = true,
 					   uint8_t frame = MAV_FRAME_BODY_OFFSET_NED);
 
-		void setPglobal(const vDouble4 &vP,
+		virtual void setPglobal(const vDouble4 &vP,
 						bool bYaw = true,
 						bool bYawRate = false,
 						uint8_t frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT);
 
-		void doReposition(const vDouble4 &vP,	//Lat, Lon, Alt, Yaw
+		virtual void doReposition(const vDouble4 &vP,	//Lat, Lon, Alt, Yaw
 						float speed = -1,
 						float radius = 0,
 						uint8_t frame = MAV_FRAME_GLOBAL);

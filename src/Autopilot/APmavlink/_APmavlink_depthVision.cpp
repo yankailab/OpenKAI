@@ -55,8 +55,8 @@ namespace kai
 	void _APmavlink_depthVision::update(void)
 	{
 		NULL_(m_pAP);
-		NULL_(m_pAP->m_pMav);
-		_Mavlink *pMavlink = m_pAP->m_pMav;
+		NULL_(m_pAP->getMavlink());
+		_Mavlink *pMavlink = m_pAP->getMavlink();
 		NULL_(m_pDV);
 
 		vFloat2 range = m_pDV->getRangeD();

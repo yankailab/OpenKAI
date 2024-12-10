@@ -91,7 +91,7 @@ namespace kai
 	int _APmavlink_drive::check(void)
 	{
 		NULL__(m_pAP, OK_ERR_NULLPTR);
-		NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
+		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
 		NULL__(m_pD, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
@@ -116,7 +116,7 @@ namespace kai
 		IF_(!m_bRcChanOverride);
 		*m_pRcYaw = 0;
 		*m_pRcThrottle = 0;
-		m_pAP->m_pMav->rcChannelsOverride(m_rcOverride);
+		m_pAP->getMavlink()->rcChannelsOverride(m_rcOverride);
 	}
 
 	bool _APmavlink_drive::updateDrive(void)
@@ -128,7 +128,7 @@ namespace kai
 
 		if (m_bSetYawSpeed)
 		{
-			m_pAP->m_pMav->clNavSetYawSpeed(nStr,
+			m_pAP->getMavlink()->clNavSetYawSpeed(nStr,
 											nSpd,
 											m_yawMode);
 		}
@@ -141,7 +141,7 @@ namespace kai
 			*m_pRcThrottle = constrain(nSpd * m_pwmD + m_pwmM,
 									   m_pwmM - m_pwmD,
 									   m_pwmM + m_pwmD);
-			m_pAP->m_pMav->rcChannelsOverride(m_rcOverride);
+			m_pAP->getMavlink()->rcChannelsOverride(m_rcOverride);
 		}
 
 		return true;

@@ -85,7 +85,7 @@ namespace kai
 
 		m_obs = o;
 
-		if (m_pAP->m_apMode == AP_COPTER_LOITER)
+		if (m_pAP->getMode() == AP_COPTER_LOITER)
 		{
 			LOG_I("Already Loiter");
 			return;

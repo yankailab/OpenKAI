@@ -86,7 +86,7 @@ namespace kai
 	int _APmavlink_visionEstimate::check(void)
 	{
 		NULL__(m_pAP, OK_ERR_NULLPTR);
-		NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
+		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
 		NULL__(m_pNav, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
@@ -199,7 +199,7 @@ namespace kai
 		m_Dpos.yaw = vRPY(2);
 		memcpy(m_Dpos.covariance, vCov, sizeof(float) * 21);
 		m_Dpos.reset_counter = m_iReset;
-		m_pAP->m_pMav->visionPositionEstimate(m_Dpos);
+		m_pAP->getMavlink()->visionPositionEstimate(m_Dpos);
 	}
 
 	void _APmavlink_visionEstimate::sendSpeedEstimate(void)
@@ -221,7 +221,7 @@ namespace kai
 		m_Dspd.z = V_aeroRef_aeroBody(2, 3);
 		memcpy(m_Dspd.covariance, vCov2, sizeof(float) * 9);
 		m_Dpos.reset_counter = m_iReset;
-		m_pAP->m_pMav->visionSpeedEstimate(m_Dspd);
+		m_pAP->getMavlink()->visionSpeedEstimate(m_Dspd);
 	}
 
 	void _APmavlink_visionEstimate::console(void *pConsole)

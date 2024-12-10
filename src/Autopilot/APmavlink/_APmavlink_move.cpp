@@ -44,7 +44,7 @@ namespace kai
 	int _APmavlink_move::check(void)
 	{
 		NULL__(m_pAP, OK_ERR_NULLPTR);
-		NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
+		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}
@@ -73,7 +73,7 @@ namespace kai
 		spt.yaw = 0.0;
 		spt.yaw_rate = 0.0;
 		spt.type_mask = 0b0000010111000111;
-		m_pAP->m_pMav->setPositionTargetLocalNED(spt);
+		m_pAP->getMavlink()->setPositionTargetLocalNED(spt);
 	}
 
 	void _APmavlink_move::setHdg(float y, float r, bool bYaw, bool bYawRate, uint8_t frame)
@@ -96,7 +96,7 @@ namespace kai
 		if (!bYawRate)
 			spt.type_mask |= IGN_YAW_RATE;
 
-		m_pAP->m_pMav->setPositionTargetLocalNED(spt);
+		m_pAP->getMavlink()->setPositionTargetLocalNED(spt);
 	}
 
 	void _APmavlink_move::setVlocal(const vFloat4 &vSpd, bool bYaw, bool bYawRate, uint8_t frame)
@@ -116,7 +116,7 @@ namespace kai
 		if (!bYawRate)
 			spt.type_mask |= IGN_YAW_RATE;
 
-		m_pAP->m_pMav->setPositionTargetLocalNED(spt);
+		m_pAP->getMavlink()->setPositionTargetLocalNED(spt);
 	}
 
 	void _APmavlink_move::setPlocal(const vFloat4 &vP, bool bYaw, bool bYawRate, uint8_t frame)
@@ -136,7 +136,7 @@ namespace kai
 		if (!bYawRate)
 			spt.type_mask |= IGN_YAW_RATE;
 
-		m_pAP->m_pMav->setPositionTargetLocalNED(spt);
+		m_pAP->getMavlink()->setPositionTargetLocalNED(spt);
 	}
 
 	void _APmavlink_move::setPglobal(const vDouble4 &vP, bool bYaw, bool bYawRate, uint8_t frame)
@@ -158,7 +158,7 @@ namespace kai
 		if (!bYawRate)
 			spt.type_mask |= IGN_YAW_RATE;
 
-		m_pAP->m_pMav->setPositionTargetGlobalINT(spt);
+		m_pAP->getMavlink()->setPositionTargetGlobalINT(spt);
 	}
 
 	void _APmavlink_move::doReposition(const vDouble4 &vP,
@@ -179,7 +179,7 @@ namespace kai
 		D.y = (int32_t)(vP.y * 1e7);
 		D.z = vP.z;
 
-		m_pAP->m_pMav->cmdInt(D);
+		m_pAP->getMavlink()->cmdInt(D);
 	}
 
 	void _APmavlink_move::console(void *pConsole)

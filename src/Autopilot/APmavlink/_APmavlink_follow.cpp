@@ -37,6 +37,7 @@ namespace kai
 		CHECK_(this->_APmavlink_move::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
+		pK->v("iClass", &m_iClass);
 		pK->v("vPsp", &m_vPsp);
 
 		int nWmed = 0;
@@ -48,8 +49,6 @@ namespace kai
 		IF__(!m_fY.init(nWmed, nWpred), OK_ERR_INVALID_VALUE);
 		IF__(!m_fZ.init(nWmed, nWpred), OK_ERR_INVALID_VALUE);
 		IF__(!m_fH.init(nWmed, nWpred), OK_ERR_INVALID_VALUE);
-
-		pK->v("iClass", &m_iClass);
 
 		Kiss *pG = pK->child("mount");
 		if (!pG->empty())
@@ -262,9 +261,10 @@ namespace kai
 
 	void _APmavlink_follow::draw(void *pFrame)
 	{
-#ifdef USE_OPENCV
 		NULL_(pFrame);
 		this->_APmavlink_move::draw(pFrame);
+
+#ifdef USE_OPENCV
 		IF_(check() != OK_OK);
 
 		Frame *pF = (Frame *)pFrame;

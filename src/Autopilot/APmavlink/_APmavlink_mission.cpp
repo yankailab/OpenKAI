@@ -49,7 +49,7 @@ namespace kai
 	int _APmavlink_mission::check(void)
 	{
 		NULL__(m_pAP, OK_ERR_NULLPTR);
-		NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
+		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}
@@ -70,7 +70,7 @@ namespace kai
 	{
 		IF_(check() != OK_OK);
 
-		_Mavlink *pMav = m_pAP->m_pMav;
+		_Mavlink *pMav = m_pAP->getMavlink();
 
 		if (m_mState == apMission_none)
 		{
@@ -150,7 +150,7 @@ namespace kai
 		mavlink_mission_count_t d;
 		d.count = m_vMissionDL.size();
 
-		m_pAP->m_pMav->missionCount(d);
+		m_pAP->getMavlink()->missionCount(d);
 	}
 
 	void _APmavlink_mission::CbMavRecvMissionRequestInt(void *pMsg)
@@ -165,7 +165,7 @@ namespace kai
 		mavlink_mission_item_int_t d;
 		//		d.seq = ;
 		//		d.mission_type = ;
-		m_pAP->m_pMav->missionItemInt(d);
+		m_pAP->getMavlink()->missionItemInt(d);
 
 		// restart timeout
 		m_tOut.start();
@@ -189,7 +189,7 @@ namespace kai
 	{
 		mavlink_mission_request_list_t d;
 		//		d.mission_type = ;
-		m_pAP->m_pMav->missionRequestList(d);
+		m_pAP->getMavlink()->missionRequestList(d);
 	}
 
 	// Download
@@ -213,7 +213,7 @@ namespace kai
 		m_nMissionDL = pM->m_msg.count;
 		m_iMissionDL = 0;
 
-		m_pAP->m_pMav->m_missionItemInt.addCbRecv(sCbMavRecvMissionItemInt, this);
+		m_pAP->getMavlink()->m_missionItemInt.addCbRecv(sCbMavRecvMissionItemInt, this);
 		m_mState = apMission_DL_missionRequestInt;
 		m_tOut.start();
 	}
@@ -223,7 +223,7 @@ namespace kai
 		mavlink_mission_request_int_t d;
 		d.mission_type = MAV_MISSION_TYPE_MISSION;
 		d.seq = m_iMissionDL;
-		m_pAP->m_pMav->missionRequestInt(d);
+		m_pAP->getMavlink()->missionRequestInt(d);
 	}
 
 	void _APmavlink_mission::CbMavRecvMissionItemInt(void *pMsg)
@@ -250,7 +250,7 @@ namespace kai
 	void _APmavlink_mission::sendMissionAck(void)
 	{
 		mavlink_mission_ack_t d;
-		m_pAP->m_pMav->missionAck(d);
+		m_pAP->getMavlink()->missionAck(d);
 	}
 
 	void _APmavlink_mission::checkTimeOut(void)
@@ -264,7 +264,7 @@ namespace kai
 		IF_(check() != OK_OK);
 
 		mavlink_mission_current_t d;
-		m_pAP->m_pMav->missionCurrent(d);
+		m_pAP->getMavlink()->missionCurrent(d);
 	}
 
 	void _APmavlink_mission::missionSetCurrent(void)
@@ -272,7 +272,7 @@ namespace kai
 		IF_(check() != OK_OK);
 
 		mavlink_mission_set_current_t d;
-		m_pAP->m_pMav->missionSetCurrent(d);
+		m_pAP->getMavlink()->missionSetCurrent(d);
 	}
 
 	void _APmavlink_mission::statusText(void)
@@ -280,7 +280,7 @@ namespace kai
 		IF_(check() != OK_OK);
 
 		mavlink_statustext_t d;
-		m_pAP->m_pMav->statusText(d);
+		m_pAP->getMavlink()->statusText(d);
 	}
 
 	void _APmavlink_mission::missionClearAll(void)
@@ -288,7 +288,7 @@ namespace kai
 		IF_(check() != OK_OK);
 
 		mavlink_mission_clear_all_t d;
-		m_pAP->m_pMav->missionClearAll(d);
+		m_pAP->getMavlink()->missionClearAll(d);
 	}
 
 	void _APmavlink_mission::missionItemReached(void)
@@ -296,7 +296,7 @@ namespace kai
 		IF_(check() != OK_OK);
 
 		mavlink_mission_item_reached_t d;
-		m_pAP->m_pMav->missionItemReached(d);
+		m_pAP->getMavlink()->missionItemReached(d);
 	}
 
 	void _APmavlink_mission::console(void *pConsole)

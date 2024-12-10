@@ -78,7 +78,7 @@ namespace kai
 	int _APmavlink_GPS::check(void)
 	{
 		NULL__(m_pAP, OK_ERR_NULLPTR);
-		NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
+		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
 		NULL__(m_pSB, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
@@ -110,7 +110,7 @@ namespace kai
 			return;
 		}
 
-		m_pAP->m_pMav->clDoSetRelay(m_iRelayLED, true);
+		m_pAP->getMavlink()->clDoSetRelay(m_iRelayLED, true);
 
 		if (m_bUseApOrigin)
 		{
@@ -123,7 +123,7 @@ namespace kai
 		}
 
 		m_utmOrigin.m_hdg = m_yaw;
-		m_utmOrigin.m_altRel = ((double)m_pAP->m_pMav->m_globalPositionINT.m_msg.relative_alt) * 0.01;
+		m_utmOrigin.m_altRel = ((double)m_pAP->getMavlink()->m_globalPositionINT.m_msg.relative_alt) * 0.01;
 
 		vFloat3 vRSt = m_pSB->t();
 		vFloat3 vT;
@@ -146,14 +146,14 @@ namespace kai
 		m_D.vn = vV.x;
 		m_D.ve = vV.y;
 		m_D.vd = vV.z;
-		m_pAP->m_pMav->gpsInput(m_D);
+		m_pAP->getMavlink()->gpsInput(m_D);
 	}
 
 	bool _APmavlink_GPS::reset(void)
 	{
 		IF_F(check() != OK_OK);
 
-		uint16_t hdg = m_pAP->m_pMav->m_globalPositionINT.m_msg.hdg;
+		uint16_t hdg = m_pAP->getMavlink()->m_globalPositionINT.m_msg.hdg;
 		IF_F(hdg == UINT16_MAX);
 
 		m_yaw = ((double)hdg) * 0.01;

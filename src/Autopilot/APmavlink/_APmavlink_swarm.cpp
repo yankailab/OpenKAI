@@ -116,7 +116,7 @@ namespace kai
 	int _APmavlink_swarm::check(void)
 	{
 		NULL__(m_pAP, OK_ERR_NULLPTR);
-		NULL__(m_pAP->m_pMav, OK_ERR_NULLPTR);
+		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
 		NULL__(m_pXb, OK_ERR_NULLPTR);
 		NULL__(m_pSwarm, OK_ERR_NULLPTR);
 		NULL__(m_pSC, OK_ERR_NULLPTR);
@@ -179,7 +179,7 @@ namespace kai
 			}
 
 			// add some extra to make it easier for takeoff completion detection
-			m_pAP->m_pMav->clNavTakeoff(m_altTakeoff + 1.0);
+			m_pAP->getMavlink()->clNavTakeoff(m_altTakeoff + 1.0);
 			return;
 		}
 

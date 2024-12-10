@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/OpenKAI",
-            "args": ["${workspaceFolder}/kiss/_Mavlink.kiss"],
+            "args": ["${workspaceFolder}/kiss/_Detectors.kiss"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

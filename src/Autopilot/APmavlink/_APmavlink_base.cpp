@@ -7,11 +7,6 @@ namespace kai
 	{
 		m_pMav = nullptr;
 		m_apType = ardupilot_copter;
-		m_apMode = -1;
-		m_bApArmed = false;
-
-		m_ieSendHB.init(USEC_1SEC);
-		m_ieSendMsgInt.init(USEC_1SEC);
 
 		m_bHomeSet = false;
 		m_vHomePos.set(0.0);
@@ -23,6 +18,13 @@ namespace kai
 		m_battery = 0.0;
 		m_gpsFixType = -1;
 		m_gpsHacc = INT32_MAX;
+
+		m_ieSendHB.init(USEC_1SEC);
+		m_ieSendMsgInt.init(USEC_1SEC);
+
+		m_bSyncMode = false;
+		m_wrApMode.init(-1, -1);
+		m_wrbArm.init(false, false);
 	}
 
 	_APmavlink_base::~_APmavlink_base()
@@ -35,6 +37,7 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("apType", (int *)&m_apType);
+		pK->v("bSyncMode", &m_bSyncMode);
 
 		float t;
 
@@ -101,6 +104,9 @@ namespace kai
 			m_pT->autoFPS();
 
 			updateBase();
+
+			if (m_bSyncMode)
+				updateModeSync();
 		}
 	}
 
@@ -113,8 +119,8 @@ namespace kai
 		// update Ardupilot
 		if (m_pMav->m_heartbeat.bReceiving())
 		{
-			m_apMode = m_pMav->m_heartbeat.m_msg.custom_mode;
-			m_bApArmed = m_pMav->m_heartbeat.m_msg.base_mode & 0b10000000;
+			m_wrApMode.read(m_pMav->m_heartbeat.m_msg.custom_mode);
+			m_wrbArm.read(m_pMav->m_heartbeat.m_msg.base_mode & 0b10000000);
 		}
 
 		// Attitude
@@ -129,7 +135,7 @@ namespace kai
 		//  get home position
 		if (!m_pMav->m_homePosition.bReceiving())
 		{
-//			m_pMav->clGetHomePosition();
+			//			m_pMav->clGetHomePosition();
 		}
 		else
 		{
@@ -184,9 +190,28 @@ namespace kai
 		}
 	}
 
+	void _APmavlink_base::updateModeSync(void)
+	{
+		IF_(check() != OK_OK);
+
+		if (m_wrApMode.bW())
+		{
+			m_pMav->clComponentArmDisarm(m_wrbArm.getWrite());
+		}
+
+		if (m_wrbArm.bW())
+		{
+			mavlink_set_mode_t D;
+			D.custom_mode = m_wrbArm.getWrite();
+			m_pMav->setMode(D);
+		}
+	}
+
 	void _APmavlink_base::setMode(uint32_t iMode)
 	{
 		IF_(check() != OK_OK);
+
+		m_wrApMode.write(iMode);
 
 		mavlink_set_mode_t D;
 		D.custom_mode = iMode;
@@ -195,20 +220,21 @@ namespace kai
 
 	int _APmavlink_base::getMode(void)
 	{
-		return m_apMode;
+		return m_wrApMode.getRead();
 	}
 
 	string _APmavlink_base::getModeName(void)
 	{
-		if (m_apMode >= AP_N_CUSTOM_MODE)
+		uint32_t iModeR = m_wrApMode.getRead();
+		if (iModeR >= AP_N_CUSTOM_MODE)
 			return "?";
-		if (m_apMode < 0)
+		if (iModeR < 0)
 			return "?";
 
 		if (m_apType == ardupilot_copter)
-			return AP_COPTER_CUSTOM_MODE_NAME[m_apMode];
+			return AP_COPTER_CUSTOM_MODE_NAME[iModeR];
 		else if (m_apType == ardupilot_rover)
-			return AP_ROVER_CUSTOM_MODE_NAME[m_apMode];
+			return AP_ROVER_CUSTOM_MODE_NAME[iModeR];
 
 		return "?";
 	}
@@ -217,12 +243,42 @@ namespace kai
 	{
 		IF_(check() != OK_OK);
 
+		m_wrbArm.write(bArm);
 		m_pMav->clComponentArmDisarm(bArm);
 	}
 
-	bool _APmavlink_base::bApArmed(void)
+	bool _APmavlink_base::bArmed(void)
 	{
-		return m_bApArmed;
+		return m_wrbArm.getRead();
+	}
+
+	void _APmavlink_base::takeOff(float alt)
+	{
+		IF_(check() != OK_OK);
+
+		m_pMav->clNavTakeoff(alt);
+	}
+
+	void _APmavlink_base::setMount(AP_MOUNT &m)
+	{
+		IF_(check() != OK_OK);
+
+		m_pMav->mountControl(m.m_control);
+		m_pMav->mountConfigure(m.m_config);
+
+		mavlink_param_set_t D;
+		D.param_type = MAV_PARAM_TYPE_INT8;
+		string id;
+
+		D.param_value = m.m_config.stab_pitch;
+		id = "MNT_STAB_TILT";
+		strcpy(D.param_id, id.c_str());
+		m_pMav->paramSet(D);
+
+		D.param_value = m.m_config.stab_roll;
+		id = "MNT_STAB_ROLL";
+		strcpy(D.param_id, id.c_str());
+		m_pMav->paramSet(D);
 	}
 
 	int _APmavlink_base::getGPSfixType(void)
@@ -257,6 +313,16 @@ namespace kai
 		return m_apHdg;
 	}
 
+	vFloat3 _APmavlink_base::getSpeed(void)
+	{
+		return m_vSpeed;
+	}
+
+	vFloat3 _APmavlink_base::getAttitude(void)
+	{
+		return m_vAtti;
+	}
+
 	float _APmavlink_base::getBattery(void)
 	{
 		return m_battery;
@@ -276,36 +342,9 @@ namespace kai
 		return m_pMav->m_missionCurrent.m_msg.total;
 	}
 
-	void _APmavlink_base::setMount(AP_MOUNT &m)
+	_Mavlink* _APmavlink_base::getMavlink(void)
 	{
-		IF_(check() != OK_OK);
-
-		m_pMav->mountControl(m.m_control);
-		m_pMav->mountConfigure(m.m_config);
-
-		mavlink_param_set_t D;
-		D.param_type = MAV_PARAM_TYPE_INT8;
-		string id;
-
-		D.param_value = m.m_config.stab_pitch;
-		id = "MNT_STAB_TILT";
-		strcpy(D.param_id, id.c_str());
-		m_pMav->paramSet(D);
-
-		D.param_value = m.m_config.stab_roll;
-		id = "MNT_STAB_ROLL";
-		strcpy(D.param_id, id.c_str());
-		m_pMav->paramSet(D);
-	}
-
-	vFloat3 _APmavlink_base::getSpeed(void)
-	{
-		return m_vSpeed;
-	}
-
-	vFloat3 _APmavlink_base::getAttitude(void)
-	{
-		return m_vAtti;
+		return m_pMav;
 	}
 
 	void _APmavlink_base::console(void *pConsole)
@@ -315,13 +354,13 @@ namespace kai
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("State-----------------------------", 1);
-		if (m_bApArmed)
+		if (m_wrbArm.getRead())
 			pC->addMsg("ARMED", 1);
 		else
 			pC->addMsg("DISARMED", 1);
 
 		pC->addMsg("Mode------------------------------", 1);
-		pC->addMsg("apMode = " + i2str(m_apMode) + ": " + getModeName(), 1);
+		pC->addMsg("apMode = " + i2str(getMode()) + ": " + getModeName(), 1);
 
 		pC->addMsg("Attitude--------------------------", 1);
 		pC->addMsg("y=" + f2str(m_vAtti.x) +
@@ -362,8 +401,6 @@ namespace kai
 		pC->addMsg("xGyro=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xgyro) + ", yGyro=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.ygyro) + ", zGyro=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zgyro), 1);
 
 		pC->addMsg("xMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xmag) + ", yMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.ymag) + ", zMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zmag), 1);
-
-
 	}
 
 }

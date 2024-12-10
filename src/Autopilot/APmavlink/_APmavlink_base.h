@@ -4,6 +4,7 @@
 #include "../../Protocol/_Mavlink.h"
 #include "../../State/_StateControl.h"
 #include "../../Utility/utilEvent.h"
+#include "../../Utility/utilVar.h"
 
 #define AP_N_CUSTOM_MODE 28
 
@@ -104,14 +105,19 @@ namespace kai
 		virtual void update(void);
 		virtual void console(void *pConsole);
 
-		virtual void setMode(uint32_t iMode);
-		virtual int getMode(void);
+		// mode
+		void setMode(uint32_t iMode);
+		int getMode(void);
 		virtual string getModeName(void);
 
-		virtual void setArm(bool bArm);
-		virtual bool bApArmed(void);
+		void setArm(bool bArm);
+		bool bArmed(void);
+		void takeOff(float alt);
+
+		// gimbal, payloads
 		virtual void setMount(AP_MOUNT &mount);
 
+		// status
 		int getGPSfixType(void);
 		int getGPShacc(void);
 		vDouble3 getHomePos(void);
@@ -121,10 +127,15 @@ namespace kai
 		vFloat3 getAttitude(void);
 		float getBattery(void);
 
+		// mission
 		int getWPseq(void);
 		int getWPtotal(void);
 
+		// Mavlink
+		_Mavlink* getMavlink(void);
+
 	protected:
+		void updateModeSync(void);
 		void updateBase(void);
 		static void *getUpdate(void *This)
 		{
@@ -132,11 +143,11 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		_Mavlink *m_pMav;
 		AP_TYPE m_apType;
-		int m_apMode;
-		bool m_bApArmed;
+		// int m_apMode;
+		// bool m_bApArmed;
 
 		bool m_bHomeSet;
 		vDouble3 m_vHomePos;
@@ -151,6 +162,12 @@ namespace kai
 
 		INTERVAL_EVENT m_ieSendHB;
 		INTERVAL_EVENT m_ieSendMsgInt;
+
+		// set vars
+		bool m_bSyncMode;
+		VAR_WR<uint32_t> m_wrApMode;
+		VAR_WR<bool> m_wrbArm;
+
 	};
 
 }

@@ -177,7 +177,7 @@ namespace kai
 		// 	m_lt.distance = m_defaultDtgt;
 		// }
 
-		// m_pAP->m_pMav->landingTarget(m_lt);
+		// m_pAP->getMavlink()->landingTarget(m_lt);
 	}
 
 	bool _APmavlink_landingTarget::findTag(void)

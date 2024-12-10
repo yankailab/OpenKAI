@@ -21,15 +21,29 @@ namespace kai
 			m_vR = 0;
 		}
 
-		bool read(T v)
+		void read(T v)
 		{
 			m_vR = v;
-			return bW();
+		}
+
+		void write(T v)
+		{
+			m_vW = v;
+		}
+
+		T getRead(void)
+		{
+			return m_vR;
+		}
+
+		T getWrite(void)
+		{
+			return m_vW;
 		}
 
 		bool bW(void)
 		{
-			return (m_vR == m_vW);
+			return (m_vR != m_vW);
 		}
 	};
 
