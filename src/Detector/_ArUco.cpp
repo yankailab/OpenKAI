@@ -163,18 +163,8 @@ namespace kai
 	void _ArUco::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		IF_(check() != OK_OK);
 		this->_DetectorBase::console(pConsole);
-
-		_Object *pO;
-		int i = 0;
-		while ((pO = m_pU->get(i++)) != NULL)
-		{
-			string msg = "id=" + i2str(pO->getTopClass()) +
-						 ", pos=(" + f2str(pO->getX()) + ", " + f2str(pO->getY()) + ", " + f2str(pO->getZ()) +
-						 ")";
-			((_Console *)pConsole)->addMsg(msg, 1);
-		}
+		IF_(check() != OK_OK);
 	}
 
 	void _ArUco::draw(void *pFrame)

@@ -24,6 +24,7 @@ namespace kai
 		virtual int init(void *pKiss);
 		virtual int start(void);
 		virtual int check(void);
+		virtual void console(void *pConsole);
 
 		virtual bool loadModel(void);
 

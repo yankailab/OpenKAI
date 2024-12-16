@@ -7,17 +7,15 @@ namespace kai
 	{
 		m_pU = nullptr;
 		m_pTracker = nullptr;
+		m_tOutTargetNotFound.startT(0);
+		m_tOutTargetNotFound.setTout(USEC_1SEC / 10);
 		m_iClass = -1;
 		m_bTarget = false;
 		m_vTargetBB.clear();
 
 		m_vPvar.clear();
-		m_vPvar.x = 0.5;
-		m_vPvar.y = 0.5;
-
 		m_vPsp.clear();
-		m_vPsp.x = 0.5;
-		m_vPsp.y = 0.5;
+		m_vSpd.set(0);
 		m_tLastPIDupdate = 0;
 
 		m_pPitch = nullptr;
@@ -40,15 +38,19 @@ namespace kai
 		pK->v("iClass", &m_iClass);
 		pK->v("vPsp", &m_vPsp);
 
-		int nWmed = 0;
-		int nWpred = 0;
-		pK->v("nWmed", &nWmed);
-		pK->v("nWpred", &nWpred);
+		int tOutTargetNotFound;
+		if (pK->v("tOutTargetNotFound", &tOutTargetNotFound))
+			m_tOutTargetNotFound.setTout(tOutTargetNotFound);
 
-		IF__(!m_fX.init(nWmed, nWpred), OK_ERR_INVALID_VALUE);
-		IF__(!m_fY.init(nWmed, nWpred), OK_ERR_INVALID_VALUE);
-		IF__(!m_fZ.init(nWmed, nWpred), OK_ERR_INVALID_VALUE);
-		IF__(!m_fH.init(nWmed, nWpred), OK_ERR_INVALID_VALUE);
+		int nWmed = 0;
+		int kTpred = 0;
+		pK->v("nWmed", &nWmed);
+		pK->v("kTpred", &kTpred);
+
+		IF__(!m_fX.init(nWmed, kTpred), OK_ERR_INVALID_VALUE);
+		IF__(!m_fY.init(nWmed, kTpred), OK_ERR_INVALID_VALUE);
+		IF__(!m_fZ.init(nWmed, kTpred), OK_ERR_INVALID_VALUE);
+		IF__(!m_fH.init(nWmed, kTpred), OK_ERR_INVALID_VALUE);
 
 		Kiss *pG = pK->child("mount");
 		if (!pG->empty())
@@ -136,6 +138,7 @@ namespace kai
 			{
 				setHold();
 				clearPID();
+				m_vSpd.set(0);
 			}
 
 			ON_PAUSE;
@@ -157,26 +160,51 @@ namespace kai
 		if (m_apMount.m_bEnable)
 			m_pAP->setMount(m_apMount);
 
-		m_bTarget = findTarget();
+		bool bFound = findTarget();
 
 		// use tracker if available
 		if (m_pTracker)
 		{
-			if (m_bTarget)
+			if (bFound)
 				m_pTracker->startTrack(m_vTargetBB);
 
 			if (m_pTracker->trackState() == track_update)
 			{
 				m_vTargetBB = *m_pTracker->getBB();
-				m_bTarget = true;
+				bFound = true;
 			}
 		}
 
-		// both detection and tracking failed
-		IF_F(!m_bTarget);
+		if (bFound)
+		{
+			// target found or tracked
+			m_bTarget = true;
+			m_tOutTargetNotFound.start();
+		}
+		else if (!m_tOutTargetNotFound.bTout())
+		{
+			// both detection and tracking failed but hold for timeout
+			m_bTarget = true;
+		}
+		else
+		{
+			// both detection and tracking failed and time is out
+			m_bTarget = false;
+		}
+
+		if(!m_bTarget)
+		{
+			m_fY.reset();
+			m_fX.reset();
+			m_fZ.reset();
+			m_fH.reset();
+			m_vPvar.set(0);
+			m_vTargetBB.clear();
+			return false;
+		}
 
 		// NEDH (PRAH) order
-		float dT = m_pT->getDt();
+		float dT = usec2sec<float>(m_pT->getDt());
 		m_vPvar.x = m_fY.update(m_vTargetBB.midY(), dT);
 		m_vPvar.y = m_fX.update(m_vTargetBB.midX(), dT);
 		m_vPvar.z = m_fZ.update(m_vPsp.z, dT);
@@ -240,39 +268,39 @@ namespace kai
 		this->_APmavlink_move::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		if (!m_bTarget)
-		{
-			pC->addMsg("Target not found", 1);
-			return;
-		}
 
 		pC->addMsg("vPsp  = (" + f2str(m_vPsp.x) + ", " + f2str(m_vPsp.y) + ", " + f2str(m_vPsp.z) + ", " + f2str(m_vPsp.w) + ")", 1);
 		pC->addMsg("vPvar = (" + f2str(m_vPvar.x) + ", " + f2str(m_vPvar.y) + ", " + f2str(m_vPvar.z) + ", " + f2str(m_vPvar.w) + ")", 1);
 		pC->addMsg("vSpd  = (" + f2str(m_vSpd.x) + ", " + f2str(m_vSpd.y) + ", " + f2str(m_vSpd.z) + ", " + f2str(m_vSpd.w) + ")", 1);
-
 		pC->addMsg("", 1);
 
-		pC->addMsg("vTbb  = (" + f2str(m_vTargetBB.x) + ", " + f2str(m_vTargetBB.y) + ", " + f2str(m_vTargetBB.z) + ", " + f2str(m_vTargetBB.w) + ")", 1);
+		pC->addMsg("vTbb     = (" + f2str(m_vTargetBB.x) + ", " + f2str(m_vTargetBB.y) + ", " + f2str(m_vTargetBB.z) + ", " + f2str(m_vTargetBB.w) + ")", 1);
 		vFloat2 c = m_vTargetBB.center();
-		pC->addMsg("vTc   = (" + f2str(c.x) + ", " + f2str(c.y) + ")", 1);
-		pC->addMsg("vTs   = (" + f2str(m_vTargetBB.width()) + ", " + f2str(m_vTargetBB.height()) + ")", 1);
-		pC->addMsg("vTa   = " + f2str(m_vTargetBB.area()), 1);
+		pC->addMsg("vTcenter = (" + f2str(c.x) + ", " + f2str(c.y) + ")", 1);
+		pC->addMsg("vTsize   = (" + f2str(m_vTargetBB.width()) + ", " + f2str(m_vTargetBB.height()) + ")", 1);
+		pC->addMsg("vTarea   = " + f2str(m_vTargetBB.area()), 1);
+		pC->addMsg("", 1);
+
+		if (m_bTarget)
+			pC->addMsg("Target found", 1);
+		else
+			pC->addMsg("Target not found", 1);
 	}
 
 	void _APmavlink_follow::draw(void *pFrame)
 	{
 		NULL_(pFrame);
 		this->_APmavlink_move::draw(pFrame);
-
-#ifdef USE_OPENCV
 		IF_(check() != OK_OK);
 
+#ifdef USE_OPENCV
 		Frame *pF = (Frame *)pFrame;
 		Mat *pM = pF->m();
 		IF_(pM->empty());
+		IF_(!m_bTarget);
 
 		Rect r = bb2Rect(bbScale(m_vTargetBB, pM->cols, pM->rows));
-		rectangle(*pM, r, Scalar(0, 0, 255), 2);
+		rectangle(*pM, r, Scalar(255, 0, 0), 3);
 #endif
 	}
 

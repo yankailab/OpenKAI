@@ -7,6 +7,7 @@
 #include "../../Filter/Average.h"
 #include "../../Filter/Predict.h"
 #include "../../Control/PID.h"
+#include "../../Utility/utilTime.h"
 #include "_APmavlink_move.h"
 
 namespace kai
@@ -17,10 +18,10 @@ namespace kai
 		Median<float> m_med;
 		Predict<float> m_pred;
 
-		bool init(int nWmed, int nWpred)
+		bool init(int nWmed, float kT)
 		{
 			IF_F(!m_med.init(nWmed));
-			IF_F(!m_pred.init(nWpred));
+			IF_F(!m_pred.init(kT));
 
 			return true;
 		}
@@ -67,9 +68,10 @@ namespace kai
 	protected:
 		_Universe *m_pU;
 		_TrackerBase *m_pTracker;
-		int m_iClass;
+		TIME_OUT m_tOutTargetNotFound;
 		bool m_bTarget;
 		vFloat4 m_vTargetBB;
+		int m_iClass;
 
 		// Target detection pos filter
 		FOLLOW_TARGET_FILT m_fX;

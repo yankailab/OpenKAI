@@ -34,7 +34,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		cv::Ptr<cv::aruco::Dictionary> m_pDict;
 		uint8_t m_dict;
 		float m_realSize;

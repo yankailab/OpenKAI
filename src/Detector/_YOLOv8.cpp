@@ -202,4 +202,10 @@ namespace kai
 		return mResult;
 	}
 
+	void _YOLOv8::console(void *pConsole)
+	{
+		NULL_(pConsole);
+		this->_DetectorBase::console(pConsole);
+		IF_(check() != OK_OK);
+	}
 }

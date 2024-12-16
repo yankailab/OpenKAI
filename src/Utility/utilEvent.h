@@ -29,6 +29,11 @@ namespace kai
 
 			return true;
 		}
+
+		bool bTout(void)
+		{
+			return bTout(getTbootUs());
+		}
 	};
 
 	struct INTERVAL_EVENT

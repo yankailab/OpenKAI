@@ -27,8 +27,9 @@ namespace kai
 
 		bool init(int nW)
 		{
-			IF_F(nW < 2);
-	
+			if(nW < 2)
+				nW = 2;
+
 			FilterBase<T>::m_nW = nW;
 			FilterBase<T>::reset();
 			return true;

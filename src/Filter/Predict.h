@@ -20,16 +20,15 @@ namespace kai
 		Predict<T>()
 		{
 			FilterBase<T>::m_nW = 2;
+			m_kT = 1.0;
 		}
 		virtual ~Predict()
 		{
 		}
 
-		bool init(int nW)
+		bool init(float kT)
 		{
-			IF_F(nW < 2);
-
-			FilterBase<T>::m_nW = nW;
+			m_kT = kT;
 			FilterBase<T>::reset();
 			return true;
 		}
@@ -47,10 +46,13 @@ namespace kai
 			int s = FilterBase<T>::m_qV.size();
 			T p = FilterBase<T>::m_qV.at(s - 2);
 			T q = FilterBase<T>::m_qV.at(s - 1);
-				
-			FilterBase<T>::m_v = q + (q - p) * (T)dT;
+
+			FilterBase<T>::m_v = q + (q - p) * (T)dT * m_kT;
 			return FilterBase<T>::m_v;
 		}
+
+	protected:
+		float m_kT;
 	};
 
 }

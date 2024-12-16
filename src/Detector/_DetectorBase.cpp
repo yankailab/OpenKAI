@@ -119,7 +119,6 @@ namespace kai
 		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-//		pC->addMsg("nState: " + i2str(m_vStates.size()), 0);
 	}
 
 }

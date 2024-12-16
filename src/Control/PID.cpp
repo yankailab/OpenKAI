@@ -12,14 +12,13 @@ namespace kai
 
 	PID::PID()
 	{
-		m_vMin = -FLT_MAX;
-		m_vMax = FLT_MAX;
-		m_oMin = -FLT_MAX;
-		m_oMax = FLT_MAX;
 		m_P = 0;
 		m_I = 0;
 		m_Imax = 0;
 		m_D = 0;
+		m_vRin.set(-FLT_MAX, FLT_MAX);
+		m_vRout.set(-FLT_MAX, FLT_MAX);
+
 		reset();
 	}
 
@@ -32,15 +31,13 @@ namespace kai
 		CHECK_(this->BASE::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("vMin", &m_vMin);
-		pK->v("vMax", &m_vMax);
-		pK->v("oMin", &m_oMin);
-		pK->v("oMax", &m_oMax);
-
 		pK->v("P", &m_P);
 		pK->v("I", &m_I);
 		pK->v("Imax", &m_Imax);
 		pK->v("D", &m_D);
+
+		pK->v("vRin", &m_vRin);
+		pK->v("vRout", &m_vRout);
 
 		return OK_OK;
 	}
@@ -62,7 +59,7 @@ namespace kai
 		if (dT != 0.0)
 			ovdT = 1.0 / dT;
 
-		m_vVar = constrain(v, m_vMin, m_vMax);
+		m_vVar = m_vRin.constrain(v);
 		m_vSetPoint = sp;
 
 		m_eOld = m_e;
@@ -72,7 +69,7 @@ namespace kai
 		// P,I,D should be of the same symbol
 		float o = m_P * m_e + m_D * (m_e - m_eOld) * ovdT + constrain(m_I * m_eI, -m_Imax, m_Imax);
 
-		m_vOut = constrain(o, m_oMin, m_oMax);
+		m_vOut = m_vRout.constrain(o);
 		return m_vOut;
 	}
 

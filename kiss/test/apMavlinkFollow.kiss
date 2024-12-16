@@ -1,0 +1,247 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":0,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["/udpAP","/serialAP","/mavAP","/apBase","arUco","YOLO","apFollow"],
+}
+
+{
+	"name":"CVwindow",
+	"class":"_WindowCV",
+	"bON":1,
+	"bFullScreen":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vBASE":["cam","univ","/arUco","/YOLO","apFollow"],
+	"bShow":1,
+}
+
+{
+	"name":"udpAP",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":30,
+	}
+	"nPacket":10,
+	"nPbuffer":512,
+	"addr":"127.0.0.1",
+	"port":19840,
+	"bServer":0,
+	"bW2R":1,
+	"bWbroadcast":0,
+}
+
+{
+	"name":"serialAP",
+	"class":"_SerialPort",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"nPacket":10,
+	"nPbuffer":512,
+	"/port":"/dev/ttyAMA0",
+	"port":"/dev/ttyACM0",
+	"/port":"/dev/ttyTHS1",
+	"baud":115200,
+}
+
+{
+	"name":"mavAP",
+	"class":"_Mavlink",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_IObase":"serialAP",
+	"mySystemID":200,
+	"iMavComm":0,
+	{
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavUDP",
+		}
+	}
+}
+
+{
+	"name":"apBase",
+	"class":"_APmavlink_base",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"_StateControl":"state",
+	"_Mavlink":"mavAP",
+	"apType":0,
+	"ieSendHB":1,
+	"ieSendMsgInt":1,
+
+	{
+		"name":"mavMsgInt",
+
+		{
+			"name":"heartbeat",
+			"id":0,
+			"tInt":0.4,
+		}
+		{
+			"name":"attitude",
+			"id":30,
+			"tInt":0.3,
+		}
+		{
+			"name":"rcChannels",
+			"id":65,
+			"tInt":1.0,
+		}
+		{
+			"name":"localPosition",
+			"id":32,
+			"tInt":0.3,
+		}
+		{
+			"name":"globalPosition",
+			"id":33,
+			"tInt":0.3,
+		}
+		{
+			"name":"homePosition",
+			"id":242,
+			"tInt":10,
+		}
+		{
+			"name":"batteryStatus",
+			"id":147,
+			"tInt":10,
+		}
+		{
+			"name":"missionCurrent",
+			"id":42,
+			"tInt":1,
+		}
+	}
+}
+
+{
+	"name":"cam",
+	"class":"_GStreamer",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"vSize":[1280,720],
+	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.10.1:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! queue ! videoconvert ! appsink max-buffers=1 drop=true",
+	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.10.1:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! tee name=t t. ! queue ! videoconvert ! appsink max-buffers=1 sync=false drop=true t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+	"pipeline":"v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! appsink",
+}
+
+{
+	"name":"arUco",
+	"class":"_ArUco",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"cam",
+	"_Universe":"univ",
+	"dict":17,
+}
+
+{
+	"name":"YOLO",
+	"class":"_YOLOv8",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":1,
+	"_VisionBase":"cam",
+	"_Universe":"univ",
+	"fModel":"/home/kai/dev/models/yolov8n.onnx",
+	"confidence":0.001,
+	"bLetterBoxForSquare":0,
+}
+
+{
+	"name":"univ",
+	"class":"_Universe",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"bDrawText":1,
+	"vArea":[0.0001, 1.0],
+	"vW":[0.0, 1.0],
+	"vH":[0.0, 1.0],
+}
+
+{
+	"name":"PIDroll",
+	"class":"PID",
+	"bON":1,
+	"P":-1.0,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.0,
+	"vRin":[0,1],
+	"vRout":[-0.5,0.5],
+}
+
+{
+	"name":"PIDpitch",
+	"class":"PID",
+	"bON":1,
+	"P":1.0,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.0,
+	"vRin":[0,1],
+	"vRout":[-0.5,0.5],
+}
+
+{
+	"name":"apFollow",
+	"class":"_APmavlink_follow",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"_APmavlink_base":"apBase",
+	"_Universe":"univ",
+	"iClass":0,
+	"tOutTargetNotFound":500000,
+	"vPsp":[0.5, 0.5, 0.3, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
+	"nWmed":3,
+	"kTpred":1.0,
+
+	"PIDroll":"PIDroll",
+	"PIDpitch":"PIDpitch",
+
+}

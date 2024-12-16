@@ -27,7 +27,7 @@ namespace kai
 		virtual void console(void *pConsole);
 		virtual void reset(void);
 
-	public:
+	protected:
 		float m_P;
 		float m_I;
 		float m_Imax;
@@ -35,16 +35,13 @@ namespace kai
 
 		float m_vVar;
 		float m_vSetPoint;
-		float m_vMin;
-		float m_vMax;
-
 		float m_e;
 		float m_eOld;
 		float m_eI; //e integration
 
 		float m_vOut;
-		float m_oMin;
-		float m_oMax;
+		vFloat2 m_vRin;
+		vFloat2 m_vRout;
 	};
 
 }

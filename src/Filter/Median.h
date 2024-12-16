@@ -28,7 +28,9 @@ namespace kai
 
 		bool init(int nW)
 		{
-			IF_F(nW < 3);
+			if(nW < 3)
+				nW = 3;
+
 			FilterBase<T>::m_nW = nW;
 			m_iMid = FilterBase<T>::m_nW / 2;
 			FilterBase<T>::reset();
@@ -36,7 +38,7 @@ namespace kai
 		}
 
 		T update(T v)
-		{			
+		{
 			FilterBase<T>::add(v);
 
 			if (FilterBase<T>::m_qV.size() < FilterBase<T>::m_nW)
