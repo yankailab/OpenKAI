@@ -108,6 +108,7 @@ namespace kai
 
 			_Object o;
 			o.clear();
+			o.setType(obj_bbox);
 			//	o.m_tStamp = m_pT->getTfrom();
 			o.setTopClass(dMat.at<float>(i, 1), 1.0);
 			o.setBB2D(bb);

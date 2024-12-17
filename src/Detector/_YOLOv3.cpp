@@ -150,6 +150,7 @@ namespace kai
 			_Object o;
 			o.clear();
 			//		o.m_tStamp = m_pT->getTfrom();
+			o.setType(obj_bbox);
 			o.setTopClass(vClassID[idx], (float)vConfidence[idx]);
 			o.setBB2D(rect2BB<vFloat4>(vRect[idx]));
 			o.scale(kx, ky);

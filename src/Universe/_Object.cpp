@@ -26,6 +26,7 @@ namespace kai
 
 	void _Object::clear(void)
 	{
+		m_type = obj_unknown;
 		m_vPos.clear();
 		m_vAtti.clear();
 		m_vDim.clear();
@@ -306,6 +307,16 @@ namespace kai
 		IF__(i > m_vVertex.size(), nullptr);
 
 		return &m_vVertex[i];
+	}
+
+	void _Object::setType(OBJ_TYPE type)
+	{
+		m_type = type;
+	}
+
+	OBJ_TYPE _Object::getType(void)
+	{
+		return m_type;
 	}
 
 	void _Object::addClassIdx(int iClass)

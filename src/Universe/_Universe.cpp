@@ -77,7 +77,6 @@ namespace kai
 		while (m_pT->bAlive())
 		{
 			m_pT->autoFPS();
-
 		}
 	}
 
@@ -132,34 +131,54 @@ namespace kai
 		int col;
 		int colStep = 20;
 		int i = 0;
+
 		while ((pO = get(i++)) != NULL)
 		{
-			int iClass = pO->getTopClass();
-
-			col = colStep * iClass;
-			oCol = Scalar((col + 85) % 255, (col + 170) % 255, col) + bCol;
-
-			// bb
-			Rect r = bb2Rect<vFloat4>(pO->getBB2Dscaled(pM->cols, pM->rows));
-			rectangle(*pM, r, oCol, 1);
-
-			// position
-			if (m_bDrawPos)
+			if (pO->getType() == obj_tag)
 			{
-				putText(*pM, f2str(pO->getPos().z),
-						Point(r.x + 15, r.y + 25),
-						FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
+				Point pCenter = Point(pO->getX() * pM->cols,
+									  pO->getY() * pM->rows);
+				int r = pO->getRadius() * pM->cols;
+
+				circle(*pM, pCenter, r, Scalar(255, 255, 0), 2);
+
+				putText(*pM, "iTag=" + i2str(pO->getTopClass()) + ", angle=" + i2str(pO->getRoll()),
+						pCenter,
+						FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 0);
+
+				double rad = -pO->getRoll() * DEG_2_RAD;
+				Point pD = Point(r * sin(rad), r * cos(rad));
+				line(*pM, pCenter + pD, pCenter - pD, Scalar(0, 0, 255), 2);
 			}
-
-			// text
-			if (m_bDrawText)
+			else
 			{
-				string oName = string(pO->getText());
-				if (oName.length() > 0)
+				int iClass = pO->getTopClass();
+
+				col = colStep * iClass;
+				oCol = Scalar((col + 85) % 255, (col + 170) % 255, col) + bCol;
+
+				// bb
+				Rect r = bb2Rect<vFloat4>(pO->getBB2Dscaled(pM->cols, pM->rows));
+				rectangle(*pM, r, oCol, 1);
+
+				// position
+				if (m_bDrawPos)
 				{
-					putText(*pM, oName,
-							Point(r.x + 15, r.y + 50),
+					putText(*pM, f2str(pO->getPos().z),
+							Point(r.x + 15, r.y + 25),
 							FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
+				}
+
+				// text
+				if (m_bDrawText)
+				{
+					string oName = string(pO->getText());
+					if (oName.length() > 0)
+					{
+						putText(*pM, oName,
+								Point(r.x + 15, r.y + 50),
+								FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
+					}
 				}
 			}
 		}

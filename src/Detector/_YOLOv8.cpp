@@ -180,6 +180,7 @@ namespace kai
 			_Object o;
 			o.clear();
 			o.setTstamp(m_pT->getTfrom());
+			o.setType(obj_bbox);
 			o.setTopClass(vClassID[idx], vConfidence[idx]);
 			o.setBB2D(rect2BB<vFloat4>(vBox[idx]));
 			o.scale(kx, ky);

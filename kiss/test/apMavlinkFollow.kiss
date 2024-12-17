@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["/udpAP","/serialAP","/mavAP","/apBase","arUco","YOLO","apFollow"],
+	"vBASE":["/udpAP","/serialAP","/mavAP","apBase","arUco","YOLO","apFollow"],
 }
 
 {
@@ -60,7 +60,8 @@
 	"/port":"/dev/ttyAMA0",
 	"port":"/dev/ttyACM0",
 	"/port":"/dev/ttyTHS1",
-	"baud":115200,
+	"/baud":115200,
+	"baud":921600,
 }
 
 {
@@ -174,7 +175,7 @@
 {
 	"name":"YOLO",
 	"class":"_YOLOv8",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,

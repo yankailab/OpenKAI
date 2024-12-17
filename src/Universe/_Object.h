@@ -17,6 +17,13 @@
 
 namespace kai
 {
+	enum OBJ_TYPE
+	{
+		obj_unknown = 0,
+		obj_bbox = 1,
+		obj_tag = 2,
+
+	};
 
 	class _Object : public _ModuleBase
 	{
@@ -86,6 +93,8 @@ namespace kai
 		vFloat2 *getVertex(int i);
 
 		//classification
+		void setType(OBJ_TYPE type);
+		OBJ_TYPE getType(void);
 		void resetClass(void);
 		void addClassIdx(int iClass);
 		void setClassMask(uint64_t mClass);
@@ -129,6 +138,7 @@ namespace kai
 		vFloat3 m_vAccel;
 
 		//classification
+		OBJ_TYPE m_type;
 		int m_topClass;	   //most probable class
 		float m_topProb;   //prob for the topClass
 		uint64_t m_mClass; //all candidate class mask

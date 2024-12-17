@@ -81,6 +81,7 @@ namespace kai
         {
             o.clear();
             //        o.m_tStamp = m_pT->getTfrom();
+			o.setType(obj_tag);
             o.setTopClass(tag.first, 1.0);
 
             // We wrap the corner matrix into a datastructure that allows an easy access to the coordinates

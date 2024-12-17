@@ -106,6 +106,7 @@ namespace kai
 		for (unsigned int i = 0; i < vID.size(); i++)
 		{
 			o.clear();
+			o.setType(obj_tag);
 			o.setTopClass(vID[i], 1.0);
 
 			if (m_bPose)
@@ -169,36 +170,9 @@ namespace kai
 
 	void _ArUco::draw(void *pFrame)
 	{
-#ifdef USE_OPENCV
 		NULL_(pFrame);
 		this->_DetectorBase::draw(pFrame);
 		IF_(check() != OK_OK);
-
-		Frame *pF = (Frame *)pFrame;
-
-		Mat *pM = pF->m();
-		IF_(pM->empty());
-
-		IF_(m_pU->size() <= 0);
-		int i = 0;
-		_Object *pO;
-		while ((pO = m_pU->get(i++)) != NULL)
-		{
-			Point pCenter = Point(pO->getX() * pM->cols,
-								  pO->getY() * pM->rows);
-			int r = pO->getRadius() * pM->cols;
-
-			circle(*pM, pCenter, r, Scalar(255, 255, 0), 2);
-
-			putText(*pM, "iTag=" + i2str(pO->getTopClass()) + ", angle=" + i2str(pO->getRoll()),
-					pCenter,
-					FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 0);
-
-			double rad = -pO->getRoll() * DEG_2_RAD;
-			Point pD = Point(r * sin(rad), r * cos(rad));
-			line(*pM, pCenter + pD, pCenter - pD, Scalar(0, 0, 255), 2);
-		}
-#endif
 	}
 
 }

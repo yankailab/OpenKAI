@@ -72,6 +72,7 @@ namespace kai
 			Rect r = boundingRect(vPoly);
 
 			o.clear();
+			o.setType(obj_bbox);
 			o.setTstamp(m_pT->getTfrom());
 			o.setBB2D(rect2BB<vFloat4>(r));
 			o.scale(kx, ky);
