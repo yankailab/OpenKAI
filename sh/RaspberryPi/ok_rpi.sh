@@ -13,6 +13,14 @@ sudo apt-get dist-upgrade
 # sudo rpi-update
 
 
+# Disable unused services
+sudo systemctl disable hciuart
+sudo systemctl stop serial-getty@ttyAMA0.service
+sudo systemctl disable serial-getty@ttyAMA0.service
+sudo systemctl stop getty@ttyAMA0.service
+sudo systemctl disable getty@ttyAMA0.service
+sudo reboot now
+
 --------------
 # Connect to wifi
 # https://www.raspberrypi.com/documentation/computers/configuration.html
@@ -38,7 +46,6 @@ method=manual
 #method=manual
 method=auto
 
-
 --------------
 # Auto start using crontab
 crontab -e
@@ -61,6 +68,11 @@ sleep 5
 exit 0
 --
 
+--------------
+# clone SD image
+sudo fdisk -l
+sudo umount /dev/sdb1 /dev/sdb2
+sudo dd if=/dev/sdb of=~/RPi.img bs=8M status=progress
 
 
 
@@ -84,18 +96,6 @@ sudo reboot now
 # Enable multiple UART
 dtoverlay=uart3        # without flow control pins
 dtoverlay=uart3,ctsrts # with flow control pins
-
-# Disable unused services
-sudo systemctl disable hciuart
-sudo systemctl stop serial-getty@ttyAMA0.service
-sudo systemctl disable serial-getty@ttyAMA0.service
-sudo systemctl stop serial-getty@ttyS0.service
-sudo systemctl disable serial-getty@ttyS0.service
-sudo systemctl stop getty@ttyAMA0.service
-sudo systemctl disable getty@ttyAMA0.service
-sudo systemctl stop getty@ttyS0.service
-sudo systemctl disable getty@ttyS0.service
-sudo reboot now
 
 
 --------------

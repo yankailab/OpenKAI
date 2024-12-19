@@ -1045,6 +1045,7 @@ namespace kai
 	void _Mavlink::console(void *pConsole)
 	{
 		this->_ModuleBase::console(pConsole);
+		IF_(check() != OK_OK);
 
 		_Console *pC = (_Console *)pConsole;
 		if (!m_pIO->bOpen())

@@ -40,7 +40,7 @@ cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 
 # add user to dialout
-sudo adduser [username] dialout
+sudo adduser $USER dialout
 #sudo gpasswd --add ${USER} dialout
 sudo reboot now
 #sudo chmod 666 /dev/ttyUSB0

@@ -124,12 +124,12 @@ namespace kai
 		}
 
 		// Attitude
-		if (m_pMav->m_attitude.bReceiving())
-		{
+//		if (m_pMav->m_attitude.bReceiving())
+//		{
 			m_vAtti.x = m_pMav->m_attitude.m_msg.yaw;
 			m_vAtti.y = m_pMav->m_attitude.m_msg.pitch;
 			m_vAtti.z = m_pMav->m_attitude.m_msg.roll;
-		}
+//		}
 
 		// TODO:
 		//  get home position

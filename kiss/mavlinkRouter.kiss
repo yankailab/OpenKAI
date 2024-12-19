@@ -1,0 +1,154 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":0,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["udpGCS","mavGCS","serialAP","mavAP","apBase"],
+}
+
+{
+	"name":"udpGCS",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":10,
+	}
+	"nPacket":256,
+	"nPbuffer":512,
+	"/addr":"127.0.0.1",
+	"port":24601,
+	"bServer":1,
+	"bW2R":1,
+	"bWbroadcast":0,
+}
+
+{
+	"name":"mavGCS",
+	"class":"_Mavlink",
+	"bON":1,
+	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"_IObase":"udpGCS",
+	"mySystemID":200,
+	"iMavComm":1,
+	{
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavAP",
+		}
+	}
+}
+
+{
+	"name":"serialAP",
+	"class":"_SerialPort",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"nPacket":256,
+	"nPbuffer":512,
+	"/port":"/dev/ttyAMA0",
+	"port":"/dev/ttyACM0",
+	"/port":"/dev/ttyTHS1",
+	"/baud":115200,
+	"baud":921600,
+}
+
+{
+	"name":"mavAP",
+	"class":"_Mavlink",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"_IObase":"serialAP",
+	"mySystemID":200,
+	"iMavComm":0,
+	{
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavGCS",
+		}
+	}
+}
+
+{
+	"name":"apBase",
+	"class":"_APmavlink_base",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"_StateControl":"state",
+	"_Mavlink":"mavAP",
+	"apType":0,
+	"ieSendHB":1,
+	"ieSendMsgInt":1,
+
+	{
+		"name":"mavMsgInt",
+
+		{
+			"name":"heartbeat",
+			"id":0,
+			"tInt":0.4,
+		}
+		{
+			"name":"attitude",
+			"id":30,
+			"tInt":0.2,
+		}
+		{
+			"name":"rcChannels",
+			"id":65,
+			"tInt":1.0,
+		}
+		{
+			"name":"localPosition",
+			"id":32,
+			"tInt":0.3,
+		}
+		{
+			"name":"globalPosition",
+			"id":33,
+			"tInt":0.3,
+		}
+		{
+			"name":"homePosition",
+			"id":242,
+			"tInt":10,
+		}
+		{
+			"name":"batteryStatus",
+			"id":147,
+			"tInt":10,
+		}
+		{
+			"name":"missionCurrent",
+			"id":42,
+			"tInt":1,
+		}
+	}
+}
