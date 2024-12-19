@@ -3,13 +3,13 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog":1,
-	"bStdErr":0,
+	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -76,7 +76,7 @@
 	"name":"mavAP",
 	"class":"_Mavlink",
 	"bON":1,
-	"bLog":1,
+	"bLog":0,
     {
 		"name":"thread",
 		"FPS":10,
