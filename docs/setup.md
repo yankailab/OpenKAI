@@ -468,6 +468,24 @@ make -j$(nproc)
 sudo make install
 ```
 
+# (Optional) OrbbecSDK_v2
+```bash
+git clone --depth 1 https://github.com/orbbec/OrbbecSDK_v2.git
+cd OrbbecSDK_v2
+mkdir build
+cd build
+cmake ..
+cmake --build . --config Release
+sudo make install
+
+cd OrbbecSDK-dev/scripts/env_setup
+sudo chmod +x ./install_udev_rules.sh
+sudo ./install_udev_rules.sh
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+```
+
+
 # (Optional) wsServer
 ```bash
 git clone https://github.com/Theldus/wsServer
@@ -476,10 +494,12 @@ make
 sudo make install
 ```
 
+
 # (Optional) OpenKAI extra modules
 ```bash
 git clone --depth 1 https://github.com/yankailab/OpenKAI_exm.git
 ```
+
 
 # OpenKAI
 ```bash
