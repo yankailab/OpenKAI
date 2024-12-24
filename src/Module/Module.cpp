@@ -258,6 +258,9 @@ namespace kai
 #endif
 
 #ifdef WITH_VISION
+#ifdef USE_ORBBEC
+		ADD_MODULE(_Orbbec);
+#endif
 #ifdef USE_REALSENSE
 		ADD_MODULE(_RealSense);
 #endif

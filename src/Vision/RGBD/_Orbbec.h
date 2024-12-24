@@ -12,7 +12,7 @@
 
 namespace kai
 {
-	struct VzCtrl
+	struct OrbbecCtrl
 	{
 		bool m_bAutoExposureToF = true;
 		int m_tExposureToF = 4000;
@@ -48,23 +48,10 @@ namespace kai
 		virtual bool open(void);
 		virtual void close(void);
 
-		VzCtrl getCamCtrl(void);
-		bool setCamCtrl(const VzCtrl& camCtrl);
-		bool setToFexposureControlMode(bool bAuto);
-		bool setToFexposureTime(bool bAuto, int tExposure);
-		bool setRGBexposureControlMode(bool bAuto);
-		bool setRGBexposureTime(bool bAuto, int tExposure);
-		bool setTimeFilter(bool bON, int thr);
-		bool setConfidenceFilter(bool bON, int thr);
-		bool setFlyingPixelFilter(bool bON, int thr);
-		bool setFillHole(bool bON);
-		bool setSpatialFilter(bool bON);
-		bool setHDR(bool bON);
-
 	private:
-		bool updatePointCloud(const VzFrameReady& vfr);
-		bool updateRGBD(const VzFrameReady& vfr);
-		bool updateVzense(void);
+		// bool updatePointCloud(const VzFrameReady& vfr);
+		// bool updateRGBD(const VzFrameReady& vfr);
+		bool updateOrbbec(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -80,15 +67,14 @@ namespace kai
 		}
 
 	private:
-		VzCtrl m_vzCtrl;
+		OrbbecCtrl m_orbbecCtrl;
 
-		VzFrame m_vzfRGB;
-		VzFrame m_vzfDepth;
-        VzFrame m_vzfTransformedDepth;
-        VzFrame m_vzfTransformedRGB;
-		VzFrame m_vzfIR;
+		// VzFrame m_vzfRGB;
+		// VzFrame m_vzfDepth;
+        // VzFrame m_vzfTransformedDepth;
+        // VzFrame m_vzfTransformedRGB;
+		// VzFrame m_vzfIR;
 
-		VzVector3f *m_pVzVw; // world vector
 	};
 
 }

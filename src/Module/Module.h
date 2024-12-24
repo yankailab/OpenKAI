@@ -249,6 +249,9 @@
 #endif
 
 #ifdef WITH_VISION
+#ifdef USE_ORBBEC
+#include "../Vision/RGBD/_Orbbec.h"
+#endif
 #ifdef USE_REALSENSE
 #include "../Vision/RGBD/_RealSense.h"
 #endif
