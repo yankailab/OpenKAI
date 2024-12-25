@@ -233,7 +233,7 @@ namespace kai
                 sendDeviceQuery();
             }
 
-            m_pT->autoFPSto();
+
         }
     }
 
@@ -279,8 +279,6 @@ namespace kai
             m_pTcontrolCmdW->autoFPS();
 
             updateCtrlCmd();
-
-            m_pTcontrolCmdW->autoFPSto();
         }
     }
 

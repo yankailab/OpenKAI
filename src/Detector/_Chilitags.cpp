@@ -58,7 +58,7 @@ namespace kai
             detect();
 
             ON_PAUSE;
-            m_pT->autoFPSto();
+
         }
     }
 

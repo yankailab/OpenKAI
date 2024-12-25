@@ -404,10 +404,12 @@ sudo make install
 ```
 
 # (Optional) Open3D
+Install gcc-11 on Ubuntu 24.04 if met compile error.
+
 ```bash
-sudo apt-get -y install libjsoncpp-dev libc++1 gfortran
+sudo apt-get -y install libjsoncpp-dev libc++1 gfortran libfmt-dev
+sudo apt-get -y install xorg-dev libxcb-shm0 libglu1-mesa-dev
 sudo apt-get -y install python3 python3-pip
-sudo apt-get -y install xorg-dev libxcb-shm0 libglu1-mesa-dev libosmesa6-dev
 
 git clone --branch v0.18.0 --depth 1 --recursive https://github.com/intel-isl/Open3D
 cd Open3D
@@ -416,7 +418,7 @@ git submodule update --init --recursive
 
 ## (Optional) Build Filament from source
 ```bash
-sudo apt-get -y install clang libc++-dev libc++abi-dev libsdl2-dev ninja-build libxi-dev
+sudo apt-get -y install libsdl2-dev libxi-dev
     # ML
     libtbb-dev
     # Headless rendering
@@ -434,6 +436,9 @@ sudo apt-get -y install clang libc++-dev libc++abi-dev libsdl2-dev ninja-build l
 mkdir build && cd build
 
 # (desktop)
+sudo apt-get -y install clang libc++-dev libc++abi-dev ninja-build
+#sudo apt-get -y install libassimp5 libassimp-dev assimp-utils
+
 cmake -DCMAKE_BUILD_TYPE=Release \
       -DGLIBCXX_USE_CXX11_ABI=ON \
       -DBUILD_CUDA_MODULE=OFF \
@@ -449,6 +454,8 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       -DWITH_SIMD=ON ../
 
 # (Raspberry pi)
+# Headless rendering
+sudo apt-get -y install libosmesa6-dev
 cmake -DCMAKE_BUILD_TYPE=Release \
       -DGLIBCXX_USE_CXX11_ABI=ON \
       -DBUILD_CUDA_MODULE=OFF \
@@ -478,7 +485,7 @@ cmake ..
 cmake --build . --config Release
 sudo make install
 
-cd OrbbecSDK-dev/scripts/env_setup
+cd OrbbecSDK_v2/scripts/env_setup
 sudo chmod +x ./install_udev_rules.sh
 sudo ./install_udev_rules.sh
 sudo udevadm control --reload-rules

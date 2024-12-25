@@ -88,7 +88,7 @@ namespace kai
 
             updateRegistration();
 
-            m_pT->autoFPSto();
+
         }
     }
 

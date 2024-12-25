@@ -257,7 +257,7 @@ namespace kai
 
             updateXDynamics();
 
-            m_pT->autoFPSto();
+
         }
     }
 

@@ -92,8 +92,6 @@ namespace kai
             m_pT->autoFPS();
 
             updateRegistration();
-
-            m_pT->autoFPSto();
         }
     }
 

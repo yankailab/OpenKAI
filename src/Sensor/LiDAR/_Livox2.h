@@ -8,13 +8,14 @@
 #ifndef OpenKAI_src_Sensor_LiDAR__Livox2_H_
 #define OpenKAI_src_Sensor_LiDAR__Livox2_H_
 
-#include "../../../IO/_UDP.h"
-#include "../../../3D/PointCloud/_PCstream.h"
-#include "../../../Dependencies/SensorFusion/SensorFusion.h"
-#include "../../../Dependencies/CRC.h"
+#include "../../IO/_UDP.h"
+#include "../../3D/PointCloud/_PCstream.h"
+#include "../../Dependencies/SensorFusion/SensorFusion.h"
+#include "../../Dependencies/CRC.h"
 
-#include "livox_lidar_def.h"
-#include "livox_lidar_api.h"
+#include "Livox2/livox_lidar_def.h"
+#include "Livox2/livox_lidar_api.h"
+
 
 #define LIVOX2_N_DATA 1400
 #define LIVOX2_SOF 0xAA

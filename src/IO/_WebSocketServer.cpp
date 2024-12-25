@@ -74,7 +74,7 @@ namespace kai
 		// while (m_pT->bAlive())
 		// {
 		// 	m_pT->autoFPS();
-		// 	m_pT->autoFPSto();
+		//
 		// }
 	}
 

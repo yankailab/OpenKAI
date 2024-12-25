@@ -326,7 +326,7 @@ namespace kai
                 m_bOpen = false;
             }
 
-            m_pT->autoFPSto();
+
         }
     }
 

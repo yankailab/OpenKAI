@@ -83,8 +83,6 @@ namespace kai
             {
                 updatePC();
             }
-
-            m_pT->autoFPSto();
         }
     }
 

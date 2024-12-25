@@ -92,7 +92,6 @@ namespace kai
 
             updatePCstream();
 
-            m_pT->autoFPSto();
         }
     }
 

@@ -101,7 +101,7 @@ namespace kai
 
             updateLidar();
 
-            m_pT->autoFPSto();
+
         }
     }
 

@@ -113,8 +113,6 @@ namespace kai
             m_pT->autoFPS();
 
             updatePCframe();
-
-            m_pT->autoFPSto();
         }
     }
 

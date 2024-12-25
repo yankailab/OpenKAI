@@ -74,7 +74,7 @@ namespace kai
 
             optimizeRoute();
 
-            m_pT->autoFPSto();
+
         }
     }
 

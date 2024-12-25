@@ -84,7 +84,7 @@ namespace kai
 
             updateNav();
 
-            m_pT->autoFPSto();
+
         }
     }
 

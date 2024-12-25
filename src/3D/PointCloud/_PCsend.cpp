@@ -72,8 +72,6 @@ namespace kai
             m_pT->autoFPS();
 
             sendPC();
-
-            m_pT->autoFPSto();
         }
     }
 

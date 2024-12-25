@@ -76,7 +76,7 @@ namespace kai
 
             m_pJsender->sendJson(o);
 
-            m_pT->autoFPSto();
+
         }
     }
 

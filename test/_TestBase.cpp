@@ -46,7 +46,7 @@ namespace kai
             m_pT->autoFPS();
 
 
-            m_pT->autoFPSto();
+
         }
     }
 

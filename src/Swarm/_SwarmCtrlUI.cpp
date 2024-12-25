@@ -97,7 +97,7 @@ namespace kai
 
             send();
 
-            m_pT->autoFPSto();
+
         }
     }
 
