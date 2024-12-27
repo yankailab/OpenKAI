@@ -418,7 +418,7 @@ git submodule update --init --recursive
 
 ## (Optional) Build Filament from source
 ```bash
-sudo apt-get -y install libsdl2-dev libxi-dev
+sudo apt-get -y install clang libsdl2-dev libxi-dev
     # ML
     libtbb-dev
     # Headless rendering
@@ -436,8 +436,7 @@ sudo apt-get -y install libsdl2-dev libxi-dev
 mkdir build && cd build
 
 # (desktop)
-sudo apt-get -y install clang libc++-dev libc++abi-dev ninja-build
-#sudo apt-get -y install libassimp5 libassimp-dev assimp-utils
+sudo apt-get -y install libc++-dev libc++abi-dev ninja-build
 
 cmake -DCMAKE_BUILD_TYPE=Release \
       -DGLIBCXX_USE_CXX11_ABI=ON \
@@ -481,8 +480,8 @@ git clone --depth 1 https://github.com/orbbec/OrbbecSDK_v2.git
 cd OrbbecSDK_v2
 mkdir build
 cd build
-cmake ..
-cmake --build . --config Release
+cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DENABLE_SHARED=ON -DOB_BUILD_TOOLS=ON -DOB_INSTALL_EXAMPLES_SOURCE=OFF  ../
+make -j$(nproc)
 sudo make install
 
 cd OrbbecSDK_v2/scripts/env_setup
