@@ -50,6 +50,9 @@ namespace kai
 	{
 		IF__(m_bOpen, true);
 
+		m_spObConfig = std::make_shared<ob::Config>();
+		m_spObConfig->enableVideoStream(OB_STREAM_COLOR);
+		m_obPipe.start(m_spObConfig);
 
 		m_bOpen = true;
 		return true;
@@ -57,6 +60,9 @@ namespace kai
 
 	void _Orbbec::close(void)
 	{
+		IF_(!m_bOpen);
+
+		m_obPipe.stop();
 	}
 
 	int _Orbbec::start(void)
@@ -108,7 +114,16 @@ namespace kai
 	{
 		IF__(check() != OK_OK, true);
 
+        // Wait for up to 100ms for a frameset in blocking mode.
+        auto obFrameSet = m_obPipe.waitForFrameset();
+        NULL_F(obFrameSet);
 
+        // get color frame from frameset.
+        auto obColorFrame = obFrameSet->getFrame(OB_FRAME_COLOR);
+
+        // Render colorFrame.
+//        win.pushFramesToView(obColorFrame);
+		obColorFrame->getData();
 
 
 //		updateRGBD(frameReady);

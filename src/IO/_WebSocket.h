@@ -22,31 +22,14 @@ namespace kai
 		virtual ~_WebSocket();
 
 		int init(void *pKiss);
-		int start(void);
 		void console(void *pConsole);
 
-		//_IObase overwrite
 		int read(uint8_t *pBuf, int nB);
-
-	private:
-		void updateW(void);
-		static void *getUpdateW(void *This)
-		{
-			((_WebSocket *)This)->updateW();
-			return NULL;
-		}
-
-		void updateR(void);
-		static void *getUpdateR(void *This)
-		{
-			((_WebSocket *)This)->updateR();
-			return NULL;
-		}
+		IO_PACKET_FIFO* getPacketFIFOr(void);
 
 	protected:
-		pthread_mutex_t m_mutexW;
+		IO_PACKET_FIFO m_packetR;
 
-		_Thread *m_pTr;
 	};
 
 }

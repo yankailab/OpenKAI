@@ -2,62 +2,78 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
-	"bDraw":1,
 	"bLog":1,
 	"bStdErr":1,
-	"waitKey":30,
 }
 
 {
-	"name":"_Console",
+	"name":"console",
 	"class":"_Console",
 	"bON":1,
-}
-
-{
-	"name":"OKview",
-	"class":"Window",
-	"bON":1,
-	"bFullScreen":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["modbus","omL"],
 }
 
 {
 	"name":"modbus",
 	"class":"_Modbus",
 	"bON":1,
-	"FPS":30,
-	"bLog":1,
-	"Window":"OKview",
+	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"tOutSec":2,
 	"port":"/dev/ttyUSB0",
 	"baud":230400,
 	"parity":"E",
 }
 
 {
-	"name":"omRot",
+	"name":"omL",
 	"class":"_OrientalMotor",
-	"bON":0,
-	"FPS":30,
+	"bON":1,
 	"bLog":0,
-	"Window":"OKview",
-	"_Console":"_Console",
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+
 	"_Modbus":"modbus",
-	"iSlave":5,
-	"tIntCheckAlarm":100000,
+	"tIntSendCMD":100000,
 	"tIntReadStatus":100000,
-	"tInt":100000,
+	"tIntCheckAlarm":100000,
 
 	{
-		"name":"axis",
+		"name":"channels",
 		{
-			"name":"Rot",
-			"pOrigin":0,
+			"name":"X",
+			"ID":1,
+			"pOrigin":100,
 			"pTarget":0,
 			"pErr":10,
-			"pRange":[-8000,0],
-			"sTarget":100,
-			"sRange":[-100,100],
+			"pRange":[0,85000],
+			"sTarget":15000,
+			"sRange":[0,15000],
+			"aTarget":1000000,
+			"aRange":[1,1000000],
+			"bTarget":1000000,
+			"bRange":[1,1000000],
+			"cTarget":1000,
+			"cRange":[1,1000],
+		}
+		{
+			"name":"Y",
+			"ID":2,
+			"pOrigin":100,
+			"pTarget":0,
+			"pErr":10,
+			"pRange":[0,85000],
+			"sTarget":15000,
+			"sRange":[0,15000],
 			"aTarget":1000000,
 			"aRange":[1,1000000],
 			"bTarget":1000000,
@@ -69,10 +85,17 @@
 }
 
 
+
+
+
+
+
+
+
 {
 	"name":"omWX",
 	"class":"_OrientalMotor",
-	"bON":1,
+	"bON":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -106,7 +129,7 @@
 {
 	"name":"omWY",
 	"class":"_OrientalMotor",
-	"bON":1,
+	"bON":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",

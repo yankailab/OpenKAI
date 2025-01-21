@@ -176,6 +176,8 @@ namespace kai
 		virtual IO_STATUS getIOstatus(void);
 		virtual void setIOstatus(IO_STATUS s);
 
+		virtual IO_PACKET_FIFO* getPacketFIFOw(void);
+
 	protected:
 		IO_TYPE m_ioType;
 		IO_STATUS m_ioStatus;

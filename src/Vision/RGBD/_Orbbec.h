@@ -8,6 +8,7 @@
 #ifndef OpenKAI_src_Vision_RGBD__Orbbec_H_
 #define OpenKAI_src_Vision_RGBD__Orbbec_H_
 
+#include <libobsensor/ObSensor.hpp>
 #include "_RGBDbase.h"
 
 namespace kai
@@ -28,7 +29,7 @@ namespace kai
 
 		bool m_bFilFlyingPix = false;
 		int m_filFlyingPix = 0;
-		
+
 		bool m_bFillHole = false;
 		bool m_bSpatialFilter = false;
 		bool m_bHDR = false;
@@ -69,12 +70,8 @@ namespace kai
 	private:
 		OrbbecCtrl m_orbbecCtrl;
 
-		// VzFrame m_vzfRGB;
-		// VzFrame m_vzfDepth;
-        // VzFrame m_vzfTransformedDepth;
-        // VzFrame m_vzfTransformedRGB;
-		// VzFrame m_vzfIR;
-
+		ob::Pipeline m_obPipe;
+	    std::shared_ptr<ob::Config> m_spObConfig;
 	};
 
 }

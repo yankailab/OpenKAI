@@ -57,7 +57,6 @@ namespace kai
 
 	private:
 		_Modbus *m_pMB;
-		int m_iSlave;
 		int m_iData;
 
 		INTERVAL_EVENT m_ieCheckAlarm;

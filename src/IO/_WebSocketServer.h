@@ -55,10 +55,17 @@ namespace kai
 		void cbClose(ws_cli_conn_t client);
 		void cbMessage(ws_cli_conn_t client, const unsigned char *msg, uint64_t size, int type);
 
-		void update(void);
-		static void *getUpdate(void *This)
+		void updateW(void);
+		static void *getUpdateW(void *This)
 		{
-			((_WebSocketServer *)This)->update();
+			((_WebSocketServer *)This)->updateW();
+			return NULL;
+		}
+
+		void updateR(void);
+		static void *getUpdateR(void *This)
+		{
+			((_WebSocketServer *)This)->updateR();
 			return NULL;
 		}
 
@@ -67,6 +74,9 @@ namespace kai
 		string m_host;
 		uint16_t m_port;
 		uint32_t m_tOutMs;
+
+		_Thread *m_pTr;
+
 	};
 
 }

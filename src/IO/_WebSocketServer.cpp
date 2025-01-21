@@ -13,6 +13,7 @@ namespace kai
 
 	_WebSocketServer::_WebSocketServer()
 	{
+		m_pTr = nullptr;
 		g_pWSserver = this;
 
 		m_host = "localhost";
@@ -34,16 +35,38 @@ namespace kai
 		pK->v("port", &m_port);
 		pK->v("tOutMs", &m_tOutMs);
 
+		Kiss *pKt = pK->child("thread");
+		if (pKt->empty())
+		{
+			LOG_E("thread not found");
+			return OK_ERR_NOT_FOUND;
+		}
+
+		m_pTr = new _Thread();
+		CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "thread init failed");
+
 		return OK_OK;
 	}
 
 	int _WebSocketServer::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
-		return m_pT->start(getUpdate, this);
+		NULL__(m_pTr, OK_ERR_NULLPTR);
+		CHECK_(m_pT->start(getUpdateW, this));
+		return m_pTr->start(getUpdateR, this);
 	}
 
-	void _WebSocketServer::update(void)
+	void _WebSocketServer::updateW(void)
+	{
+		// signal(SIGPIPE, SIG_IGN);
+
+		while (m_pT->bAlive())
+		{
+			m_pT->autoFPS();
+		}
+	}
+
+	void _WebSocketServer::updateR(void)
 	{
 		/*
 		 * Main loop, this function never* returns.
@@ -69,13 +92,6 @@ namespace kai
 		ws.evs.onmessage = &sCbMessage;
 
 		ws_socket(&ws);
-
-		// signal(SIGPIPE, SIG_IGN);
-		// while (m_pT->bAlive())
-		// {
-		// 	m_pT->autoFPS();
-		//
-		// }
 	}
 
 	int _WebSocketServer::nClient(void)
@@ -125,7 +141,7 @@ namespace kai
 		char *cli;
 		cli = ws_getaddress(client);
 
-		LOG_I("Received message: " + string((char*)msg) + ", size: " + i2str(size) + ", type: " + i2str(type) + ", from: " + string(cli));
+		LOG_I("Received message: " + string((char *)msg) + ", size: " + i2str(size) + ", type: " + i2str(type) + ", from: " + string(cli));
 
 		/**
 		 * Mimicks the same frame type received and re-send it again

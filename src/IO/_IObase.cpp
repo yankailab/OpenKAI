@@ -93,6 +93,11 @@ namespace kai
 		m_ioStatus = s;
 	}
 
+	IO_PACKET_FIFO* _IObase::getPacketFIFOw(void)
+	{
+		return &m_packetW;
+	}
+
 	void _IObase::console(void *pConsole)
 	{
 		NULL_(pConsole);
