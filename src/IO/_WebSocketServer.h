@@ -14,37 +14,43 @@ namespace kai
 {
 	struct wsClient
 	{
-		uint32_t m_id;
-		IO_PACKET_FIFO m_packetW;
+		_WebSocket *m_pWS;
+		ws_cli_conn_t m_wsConn;
 		uint64_t m_tStamp;
 
-		int init(uint32_t id, int nB, int nP)
+		bool init(_WebSocket* pWS)
 		{
-			m_id = id;
-			m_tStamp = getApproxTbootUs();
-			IF_F(!m_packetW.init(nB, nP));
-			reset();
+			NULL_F(pWS);
 
+			m_pWS = pWS;
+			m_tStamp = getApproxTbootUs();
 			return true;
 		}
 
-		void reset(void)
+		void setWS(_WebSocket *pWS)
 		{
-			m_packetW.clear();
+			m_pWS = pWS;
+		}
+
+		_WebSocket *getWS(void)
+		{
+			return m_pWS;
 		}
 	};
 
-	class _WebSocketServer : public _ModuleBase
+	class _WebSocketServer : public _IObase
 	{
 	public:
 		_WebSocketServer();
 		virtual ~_WebSocketServer();
 
 		int init(void *pKiss);
+		int link(void);
 		int start(void);
 		void console(void *pConsole);
 
 		int nClient(void);
+		_WebSocket* getWS(int i);
 
 		static void sCbOpen(ws_cli_conn_t client);
 		static void sCbClose(ws_cli_conn_t client);
@@ -54,6 +60,9 @@ namespace kai
 		void cbOpen(ws_cli_conn_t client);
 		void cbClose(ws_cli_conn_t client);
 		void cbMessage(ws_cli_conn_t client, const unsigned char *msg, uint64_t size, int type);
+
+		wsClient *getClient(int i);
+		wsClient *findClient(const string& addr, const string& port);
 
 		void updateW(void);
 		static void *getUpdateW(void *This)
@@ -71,12 +80,13 @@ namespace kai
 
 	protected:
 		vector<wsClient> m_vClient;
+		int m_nClientMax;
+
 		string m_host;
 		uint16_t m_port;
 		uint32_t m_tOutMs;
 
 		_Thread *m_pTr;
-
 	};
 
 }

@@ -297,6 +297,12 @@
 
 #ifdef WITH_TEST
 
+#ifdef WITH_IO
+#ifdef USE_WSSERVER
+#include "../../test/IO/_TestWebSocket.h"
+#endif
+#endif
+
 #ifdef WITH_PROTOCOL
 #include "../../test/Protocol/_TestJSON.h"
 #endif

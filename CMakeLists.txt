@@ -459,6 +459,13 @@ if(WITH_TEST)
 add_definitions(-DWITH_TEST)
 set(OpenKAI_cpp ${OpenKAI_cpp} test/_TestBase.cpp)
 
+if(WITH_IO)
+if(USE_WSSERVER)
+set(OpenKAI_cpp ${OpenKAI_cpp} test/IO/_TestWebSocket.cpp)
+endif()
+endif()
+
+
 if(WITH_PROTOCOL)
 file(GLOB_RECURSE Test_Protocol test/Protocol/*.cpp test/Protocol/*.c)
 set(OpenKAI_cpp ${OpenKAI_cpp} ${Test_Protocol})

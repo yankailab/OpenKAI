@@ -306,6 +306,12 @@ namespace kai
 
 #ifdef WITH_TEST
 
+#ifdef WITH_IO
+#ifdef USE_WSSERVER
+		ADD_MODULE(_TestWebSocket);
+#endif
+#endif
+
 #ifdef WITH_PROTOCOL
 		ADD_MODULE(_TestJSON);
 #endif

@@ -24,40 +24,22 @@ namespace kai
 
 	int _WebSocket::init(void *pKiss)
 	{
-		CHECK_(this->_IObase::init(pKiss));
+		//		CHECK_(this->_IObase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		int nPacket = 1024;
 		int nPbuffer = 512;
-		pK->v("nPacket", &nPacket);
-		pK->v("nPbuffer", &nPbuffer);
+		if (pK)
+		{
+			pK->v("nPacket", &nPacket);
+			pK->v("nPbuffer", &nPbuffer);
+		}
+
+		IF__(!m_packetW.init(nPbuffer, nPacket), OK_ERR_ALLOCATION);
 		IF__(!m_packetR.init(nPbuffer, nPacket), OK_ERR_ALLOCATION);
 
 		return OK_OK;
 	}
-
-	// void _WebSocket::update(void)
-	// {
-	// 	signal(SIGPIPE, SIG_IGN);
-
-	// 	while (m_pT->bAlive())
-	// 	{
-	// 		m_pT->autoFPS();
-
-	// 		uint8_t pB[WS_N_BUF];
-	// 		int nB;
-	// 		while ((nB = m_packetW.getPacket(pB, WS_N_BUF)) > 0)
-	// 		{
-	// 			int nSent = ::write(m_fdW, pB, nB);
-	// 			if (nSent == -1)
-	// 			{
-	// 				LOG_E("write error: " + i2str(errno));
-	// 				close();
-	// 				break;
-	// 			}
-	// 		}
-	// 	}
-	// }
 
 	int _WebSocket::read(uint8_t *pBuf, int nB)
 	{

@@ -18,19 +18,6 @@
 }
 
 {
-	"name":"ws",
-	"class":"_WebSocket",
-	"bON":1,
-	"bLog":1,
-    {
-		"name":"thread",
-		"FPS":1,
-	}
-	"nPacket":1024,
-	"nPbuffer":512,
-}
-
-{
 	"name":"wsServer",
 	"class":"_WebSocketServer",
 	"bON":1,
@@ -42,4 +29,16 @@
 	"host":"localhost",
 	"port":7890,
 	"tOutMs":10000,
+}
+
+{
+	"name":"TestWebSocket",
+	"class":"_TestWebSocket",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"_WebSocketServer":"wsServer",
 }
