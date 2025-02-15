@@ -263,6 +263,7 @@
 #endif
 #ifdef USE_OPENCV
 #include "../Vision/_Camera.h"
+#include "../Vision/_UVC.h"
 #include "../Vision/_VideoFile.h"
 #include "../Vision/_ImgFile.h"
 #include "../Vision/_GStreamer.h"

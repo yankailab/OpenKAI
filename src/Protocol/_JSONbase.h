@@ -31,7 +31,7 @@ namespace kai
 		virtual void send(void);
 		virtual void sendHeartbeat(void);
 
-		virtual bool recvJson(string* pStr);
+		virtual bool recvJson(string *pStr);
 		virtual void handleJson(const string &str);
 		virtual void md5(const string &str, string *pDigest);
 		virtual bool str2JSON(const string &str, picojson::value *pJson);

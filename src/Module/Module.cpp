@@ -272,6 +272,7 @@ namespace kai
 #endif
 #ifdef USE_OPENCV
 		ADD_MODULE(_Camera);
+		ADD_MODULE(_UVC);
 		ADD_MODULE(_Contrast);
 		ADD_MODULE(_DepthProj);
 		ADD_MODULE(_Crop);

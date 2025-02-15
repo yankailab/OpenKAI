@@ -72,7 +72,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(OpenKAI_definitions "-w -Wall -c -fmessage-length=0 -MMD -MP")
 set(OpenKAI_libDir /usr/lib /usr/local/lib)
 set(OpenKAI_include /usr/local/include /usr/include ${EIGEN3_INCLUDE_DIR})
-set(OpenKAI_lib pthread uuid ${EIGEN3_LIBS} gsl gslcblas ncurses ssl crypto rt)
+set(OpenKAI_lib pthread uuid ${EIGEN3_LIBS} gsl gslcblas ncurses ssl crypto rt uvc)
 
 
 # Common
@@ -421,6 +421,7 @@ endif()
 if(USE_OPENCV)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/FrameBase.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/_Camera.cpp)
+set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/_UVC.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/_CamCalib.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/_SharedMemImg.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/_VideoFile.cpp)

@@ -9,7 +9,7 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
@@ -45,6 +45,18 @@
 {
 	"name":"cam",
 	"class":"_Camera",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"deviceID":0,
+	"vSizeRGB":[640,480],
+}
+
+{
+	"name":"uvc",
+	"class":"_UVC",
 	"bON":1,
     {
 		"name":"thread",
@@ -52,6 +64,8 @@
 	}
 	"deviceID":0,
 	"vSizeRGB":[640,480],
+	"vendorID":11231,
+	"productID":258,
 }
 
 {

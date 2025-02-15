@@ -25,11 +25,9 @@ namespace kai
 		vision_gstreamer,
 		vision_video,
 		vision_realsense,
-		vision_pylon,
-		vision_raspivid,
+		vision_orbbec,
+		vision_uvc,
 		vision_file,
-		vision_hiphen,
-		vision_mynteye,
 		vision_morphology,
 		vision_threshold,
 		vision_erode,
@@ -47,7 +45,6 @@ namespace kai
 		vision_RSdepth,
 		vision_depthProj,
 		vision_SharedMemImg,
-		vision_infiRay,
 		vision_BGR2HSV,
 	};
 
