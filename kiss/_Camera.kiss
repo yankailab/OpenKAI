@@ -26,7 +26,7 @@
 		"FPS":30,
 	}
 	"bFullScreen":0,
-	"vBASE":["cam","/crop","iRay","/contrast"],
+	"vBASE":["/cam","uvc","/crop","/contrast"],
 }
 
 {

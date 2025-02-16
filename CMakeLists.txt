@@ -72,7 +72,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(OpenKAI_definitions "-w -Wall -c -fmessage-length=0 -MMD -MP")
 set(OpenKAI_libDir /usr/lib /usr/local/lib)
 set(OpenKAI_include /usr/local/include /usr/include ${EIGEN3_INCLUDE_DIR})
-set(OpenKAI_lib pthread uuid ${EIGEN3_LIBS} gsl gslcblas ncurses ssl crypto rt uvc)
+set(OpenKAI_lib pthread uuid ${EIGEN3_LIBS} gsl gslcblas ncurses ssl crypto rt uvc usb-1.0)
 
 
 # Common
