@@ -97,19 +97,24 @@ namespace kai
 		};
 
 	private:
-		int get_len(unsigned short wValue, int retries);
-		int get_cur(unsigned short wValue, unsigned char *data, unsigned short len, int retries);
-		int get_errno(void);
-		int set_cur(unsigned short wValue, unsigned char *data, unsigned short len, int retries);
-		int set_curr_func(unsigned short cs_id, unsigned char sub_id, int retries);
-		int set_curr_data(unsigned short cs_id, unsigned char *buf, int retries);
-		int get_curr_data(unsigned short cs_id, unsigned char *buf, int retries);
-		int get_protocol_version(int retries);
+		int USBgetLen(unsigned short wValue);
+		int USBgetCur(unsigned short wValue, unsigned char *pData, unsigned short len);
+		int USBgetErrno(void);
+		int USBsetCur(unsigned short wValue, unsigned char *pData, unsigned short len);
+		bool USBsetCurFunc(unsigned short csID, unsigned char subID);
+		int USBsetCurData(unsigned short csID, unsigned char *pB);
+		int USBgetCurData(unsigned short csID, unsigned char *pB);
+		int USBctrlTransfer(unsigned char bmRequestType, unsigned char bRequest,
+							unsigned short wValue, unsigned short wIndex,
+							unsigned char *pData, uint16_t wLength, unsigned int timeout);
+
+		bool getProtocolVersion(void);
+		bool setStreamType(unsigned char type);
+
+
 		void dump_devinfo(unsigned char *ptr);
 		unsigned int get_fw_version(uint8_t *d);
-		int get_device_info(int retries);
-		int wait_cmd_done(int after, int repeat);
-		int stream_type_config(unsigned char type, int retries);
+		bool get_device_info(void);
 
 		bool UVCopen(void);
 		void UVCclose(void);
@@ -117,9 +122,6 @@ namespace kai
 		bool UVCstreamStart(void);
 		void UVCstreamClose(void);
 		void UVCstreamGetFrame(unsigned int tOut);
-		int UVCctrlTransfer(unsigned char bmRequestType, unsigned char bRequest,
-							unsigned short wValue, unsigned short wIndex,
-							unsigned char *data, uint16_t wLength, unsigned int timeout);
 		void cbGetFrame(uvc_frame *pFrame);
 
 		void update(void);

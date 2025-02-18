@@ -51,8 +51,14 @@ namespace kai
 
 		IF_F(!UVCopen());
 
-		/* set stream type: temperature+yuv */
-		if (stream_type_config(STREAM_TYPE_YUV_TEMP, 20) != 0)
+		getProtocolVersion();
+		// if (get_device_info(30) != 0)
+		// {
+		// 	printf("\n--- get_device_info error ---\n");
+		// 	return -1;
+		// }
+
+		if (!setStreamType(3))
 		{
 			printf("\n--- stream_type_config error ---\n");
 			return false;
@@ -155,8 +161,10 @@ namespace kai
 
 		printf("width=%d,height=%d,size=%d,len=%d,offset=%d\n", m_vSizeRGB.x, m_vSizeRGB.y, m_uvcSize, m_uvcLen, m_uvcOffset);
 
-		uvc_get_stream_ctrl_format_size(m_pHandleDev, &m_ctrl, UVC_FRAME_FORMAT_YUYV,
-										m_vSizeRGB.x, height, m_uvcFPS);
+		// uvc_get_stream_ctrl_format_size(m_pHandleDev, &m_ctrl, UVC_FRAME_FORMAT_YUYV,
+		// 								m_vSizeRGB.x, height, m_uvcFPS);
+		uvc_get_stream_ctrl_format_size(m_pHandleDev, &m_ctrl, UVC_FRAME_FORMAT_UNCOMPRESSED,
+										m_vSizeRGB.x, m_vSizeRGB.y, m_uvcFPS);
 	}
 
 	bool _UVC::UVCstreamStart(void)
@@ -203,17 +211,6 @@ namespace kai
 
 		m_pUVCframe = NULL;
 		r = uvc_stream_get_frame(m_pHandleStream, &m_pUVCframe, tOut);
-		//		return (int)err;
-	}
-
-	int _UVC::UVCctrlTransfer(unsigned char bmRequestType, unsigned char bRequest,
-						 unsigned short wValue, unsigned short wIndex,
-						 unsigned char *data, uint16_t wLength, unsigned int timeout)
-	{
-		libusb_device_handle* pHandleUSB = uvc_get_libusb_handle(m_pHandleDev);
-
-		return libusb_control_transfer(pHandleUSB, bmRequestType, bRequest, wValue, wIndex,
-									   data, wLength, timeout);
 	}
 
 	int _UVC::start(void)
@@ -260,177 +257,172 @@ namespace kai
 				continue;
 			}
 
-			if (frame->data_bytes != m_uvcSize)
-			{
-				std::cerr << "Frame size wrong" << std::endl;
-				continue;
-			}
+			// if (frame->data_bytes != m_uvcSize)
+			// {
+			// 	std::cerr << "Frame size wrong" << std::endl;
+			// 	continue;
+			// }
 
 			Mat mRGB;
-			Mat mYUV = cv::Mat(m_vSizeRGB.y, m_vSizeRGB.x, CV_8UC2, ((unsigned char *)frame->data) + m_uvcOffset, Mat::AUTO_STEP);
-			cv::cvtColor(mYUV, mRGB, COLOR_YUV2RGB_YUY2);
+			// Mat mYUV = cv::Mat(m_vSizeRGB.y, m_vSizeRGB.x, CV_8UC2, ((unsigned char *)frame->data) + m_uvcOffset, Mat::AUTO_STEP);
+			// cv::cvtColor(mYUV, mRGB, COLOR_YUV2RGB_YUY2);
+
+			Mat mThermal = cv::Mat(m_vSizeRGB.y, m_vSizeRGB.x, CV_16UC1, ((uint16_t *)frame->data), Mat::AUTO_STEP);
+
+			Mat mA;
+			mThermal.convertTo(mA, CV_16UC1, 1.0 / 64, -50);
+
+			Mat mRange;
+			cv::inRange(mA,
+					cv::Scalar(10),
+					cv::Scalar(80), mRange);
+
+			Mat mC;
+			mRange.convertTo(mC, CV_8UC1);
+
+			// Mat mG;
+			// float range = 30;
+			// float scale = 255.0 / range;
+			// mThermal.convertTo(mG,
+			// 			 CV_8UC1,
+			// 			 scale,
+			// 			 -range * scale);
+
+			cv::cvtColor(mRange, mRGB, COLOR_GRAY2BGR);
 
 			m_fRGB.copy(mRGB);
 		}
 	}
 
-
-	int _UVC::get_len(unsigned short wValue, int retries)
+	int _UVC::USBctrlTransfer(unsigned char bmRequestType, unsigned char bRequest,
+							  unsigned short wValue, unsigned short wIndex,
+							  unsigned char *data, uint16_t wLength, unsigned int timeout)
 	{
-		int err, c = 0;
-		unsigned char data[2];
+		return libusb_control_transfer(uvc_get_libusb_handle(m_pHandleDev), bmRequestType, bRequest, wValue, wIndex,
+									   data, wLength, timeout);
+	}
 
-		while (c < retries)
-		{
-			err = UVCctrlTransfer(REQ_TYPE_GET, REQ_GET_LEN, wValue, 0x0a00, data, 2, 0);
-			if (err == 2)
-				return *((unsigned short *)data);
+	int _UVC::USBgetLen(unsigned short wValue)
+	{
+		int r;
+		unsigned char pData[2];
+		int len = 2;
 
-			printf("--- get_len error: %d ---\n", err);
-			++c;
-			usleep(500000);
-		}
+		r = USBctrlTransfer(REQ_TYPE_GET, REQ_GET_LEN, wValue, 0x0a00, pData, len, 0);
+		IF__(r == len, *((unsigned short *)pData));
 
 		return -1;
 	}
 
-	int _UVC::get_cur(unsigned short wValue, unsigned char *data, unsigned short len, int retries)
+	int _UVC::USBgetCur(unsigned short wValue, unsigned char *pData, unsigned short len)
 	{
-		int err, c = 0;
+		int r, c = 0;
 
-		while (c < retries)
-		{
-			err = UVCctrlTransfer(REQ_TYPE_GET, REQ_GET_CUR, wValue, 0x0a00, data, len, 0);
-			if (err == len)
-				return len;
-
-			printf("--- get_cur error: %d ---\n", err);
-			++c;
-			usleep(500000);
-		}
+		r = USBctrlTransfer(REQ_TYPE_GET, REQ_GET_CUR, wValue, 0x0a00, pData, len, 0);
+		IF__(r == len, len);
 
 		return -1;
 	}
 
-	int _UVC::get_errno(void)
+	int _UVC::USBgetErrno(void)
 	{
 		int len;
-		unsigned char data[4];
+		unsigned char pData[4];
 
-		len = get_len(XU_CS_ID_ERROR_CODE, 10);
+		len = USBgetLen(XU_CS_ID_ERROR_CODE);
 		if (len < 0)
 			return -1;
-		if (get_cur(XU_CS_ID_ERROR_CODE, data, 1, 10) < 0)
+		if (USBgetCur(XU_CS_ID_ERROR_CODE, pData, 1) < 0)
 			return -1;
 
-		printf("errno = %d\n", data[0]);
-		return (int)data[0];
+		printf("errno = %d\n", pData[0]);
+		return (int)pData[0];
 	}
 
-	int _UVC::set_cur(unsigned short wValue, unsigned char *data, unsigned short len, int retries)
+	int _UVC::USBsetCur(unsigned short wValue, unsigned char *pData, unsigned short len)
 	{
-		int err, c = 0;
+		int r, c = 0;
 
-		while (c < retries)
-		{
-			err = UVCctrlTransfer(REQ_TYPE_SET, REQ_SET_CUR, wValue, 0x0a00, data, len, 0);
-			if (err == len)
-				return len;
-			printf("--- set_cur error: %d ---\n", err);
-			++c;
-			usleep(500000);
-		}
+		r = USBctrlTransfer(REQ_TYPE_SET, REQ_SET_CUR, wValue, 0x0a00, pData, len, 0);
+		IF__(r == len, len);
 
 		return -1;
 	}
 
-	int _UVC::set_curr_func(unsigned short cs_id, unsigned char sub_id, int retries)
+	bool _UVC::USBsetCurFunc(unsigned short csID, unsigned char subID)
 	{
 		int len;
-		unsigned char func[2];
 
-		while (1)
-		{
-			len = get_len(XU_CS_ID_COMMAND_SWITCH, retries);
-			if (len == 2)
-				break;
-			printf("--- get switch cmd len error: %d. ---\n", len);
-			usleep(500000);
-		}
+		len = USBgetLen(XU_CS_ID_COMMAND_SWITCH);
+		IF_F(len != 2);
 
-		func[0] = (cs_id >> 8) & 0xff;
-		func[1] = sub_id;
-		if (set_cur(XU_CS_ID_COMMAND_SWITCH, func, 2, retries) < 0)
-		{
-			printf("--- set switch cmd error. ---\n");
-			return -1;
-		}
+		unsigned char pFunc[2];
+		pFunc[0] = (csID >> 8) & 0xff;
+		pFunc[1] = subID;
 
-		return 0;
+		IF_F(USBsetCur(XU_CS_ID_COMMAND_SWITCH, pFunc, 2) < 0);
+
+		return true;
 	}
 
-	int _UVC::set_curr_data(unsigned short cs_id, unsigned char *buf, int retries)
+	int _UVC::USBsetCurData(unsigned short csID, unsigned char *pB)
 	{
 		int len;
 
-		len = get_len(cs_id, retries);
-		if (len < 0)
-		{
-			printf("--- get_len error. ---\n");
-			return -1;
-		}
-		printf("\n--- set_curr_data: len = %d ---\n\n", len);
-		if (set_cur(cs_id, buf, len, retries) < 0)
-		{
-			printf("--- set_curr error. ---\n");
-			return -1;
-		}
+		len = USBgetLen(csID);
+		IF__(len < 0, -1);
+
+		IF__(USBsetCur(csID, pB, len) < 0, -1);
 
 		return len;
 	}
 
-	int _UVC::get_curr_data(unsigned short cs_id, unsigned char *buf, int retries)
+	int _UVC::USBgetCurData(unsigned short csID, unsigned char *pB)
 	{
 		int len;
 
-		len = get_len(cs_id, retries);
-		if (len < 0)
-		{
-			printf("--- get_len error. ---\n");
-			return -1;
-		}
+		len = USBgetLen(csID);
+		IF__(len < 0, -1);
 
-		printf("\n--- get_curr_data: len = %d ---\n\n", len);
-
-		if (get_cur(cs_id, buf, len, retries) < 0)
-		{
-			printf("-- get_curr error. ---\n");
-			return -1;
-		}
+		IF__(USBgetCur(csID, pB, len) < 0, -1);
 
 		return len;
 	}
 
-	int _UVC::get_protocol_version(int retries)
+	bool _UVC::getProtocolVersion(void)
 	{
 		int len;
-		unsigned char data[4];
+		unsigned char pData[4];
 
-		len = get_len(XU_CS_ID_PROTOCOL_VER, retries);
-		if (len < 0)
-		{
-			printf("--- get version len error. ---\n");
-			return -1;
-		}
-		printf("--- proto version len: %d ---\n", len);
-		if (get_cur(XU_CS_ID_PROTOCOL_VER, data, len, retries) < 0)
-		{
-			printf("--- get version error. ---\n");
-			return -1;
-		}
-		printf("\n--- proto version: %s ---\n\n", data);
+		len = USBgetLen(XU_CS_ID_PROTOCOL_VER);
+		IF_F(len < 0);
 
-		return 0;
+		IF_F(USBgetCur(XU_CS_ID_PROTOCOL_VER, pData, len) < 0);
+		printf("\n--- proto version: %s ---\n\n", pData);
+
+		return true;
+	}
+
+	bool _UVC::setStreamType(unsigned char type)
+	{
+		unsigned char pData[1600] = {0};
+
+		IF_F(!USBsetCurFunc(XU_CS_ID_THERMAL, THERMAL_STREAM_PARAM));
+
+		IF_F(USBgetCurData(XU_CS_ID_THERMAL, pData) < 0);
+
+		printf("0: chnlid = %d, stream_type = %d\n", pData[0], pData[1]);
+
+		IF__(pData[1] == type, true);
+
+		pData[1] = type;
+		IF_F(USBsetCurData(XU_CS_ID_THERMAL, pData) < 0);
+
+		USBgetCurData(XU_CS_ID_THERMAL, pData);
+		printf("1: chnlid = %d, stream_type = %d\n", pData[0], pData[1]);
+
+		IF__(pData[1] == type, true);
+		return false;
 	}
 
 	void _UVC::dump_devinfo(unsigned char *ptr)
@@ -457,69 +449,19 @@ namespace kai
 		return (unsigned int)strtol(ptr, NULL, 10);
 	}
 
-	int _UVC::get_device_info(int retries)
+	bool _UVC::get_device_info(void)
 	{
-		unsigned char rbuf[1600];
+		unsigned char pB[1600];
 		unsigned int fw_ver;
 
 		printf("\n--- starting get_device_info ----\n");
-		if (set_curr_func(XU_CS_ID_SYSTEM, SYSTEM_DEVICE_INFO, retries) < 0)
-			return -1;
-		if (get_curr_data(XU_CS_ID_SYSTEM, rbuf, retries) < 0)
-			return -1;
-		dump_devinfo(rbuf);
-		fw_ver = get_fw_version(rbuf);
+		IF_F(USBsetCurFunc(XU_CS_ID_SYSTEM, SYSTEM_DEVICE_INFO) < 0);
+		IF_F(USBgetCurData(XU_CS_ID_SYSTEM, pB) < 0);
+		dump_devinfo(pB);
+		fw_ver = get_fw_version(pB);
 		printf("fw_ver = %u\n", fw_ver);
 
-		//	if (set_curr_func(u, XU_CS_ID_THERMAL, THERMAL_ALG_VERSION) < 0) return -1;
-		//	if (get_curr_data(u, XU_CS_ID_THERMAL, rbuf) < 0) return -1;
-		return 0;
+		return true;
 	}
-
-	int _UVC::wait_cmd_done(int after, int repeat)
-	{
-		int r = 0;
-
-		usleep(after * 1000);
-		while ((r = get_errno()) == 1)
-			usleep(repeat * 1000);
-
-		printf("finally errno = %d\n", r);
-		return r;
-	}
-
-	int _UVC::stream_type_config(unsigned char type, int retries)
-	{
-		unsigned char data[1600] = {0};
-
-		printf("\n--- starting stream_type_config ----\n");
-		if (set_curr_func(XU_CS_ID_THERMAL, THERMAL_STREAM_PARAM, retries) != 0)
-			return -1;
-		wait_cmd_done(15, 15);
-
-		if (get_curr_data(XU_CS_ID_THERMAL, data, retries) < 0)
-			return -1;
-		printf("0: chnlid = %d, stream_type = %d\n", data[0], data[1]);
-
-		if (data[1] != type)
-		{
-			data[1] = type;
-			if (set_curr_data(XU_CS_ID_THERMAL, data, retries) < 0)
-				return -1;
-
-			wait_cmd_done(100, 100);
-
-			get_curr_data(XU_CS_ID_THERMAL, data, retries);
-			printf("1: chnlid = %d, stream_type = %d\n", data[0], data[1]);
-		}
-		else
-		{
-			printf("---- stream_type meets my demands and not config again! ------\n");
-		}
-
-		return 0;
-	}
-
-
 
 }
