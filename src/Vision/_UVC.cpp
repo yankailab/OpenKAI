@@ -58,7 +58,7 @@ namespace kai
 		// 	return -1;
 		// }
 
-		if (!setStreamType(3))
+		if (!setStreamType(2))
 		{
 			printf("\n--- stream_type_config error ---\n");
 			return false;
@@ -161,10 +161,10 @@ namespace kai
 
 		printf("width=%d,height=%d,size=%d,len=%d,offset=%d\n", m_vSizeRGB.x, m_vSizeRGB.y, m_uvcSize, m_uvcLen, m_uvcOffset);
 
-		// uvc_get_stream_ctrl_format_size(m_pHandleDev, &m_ctrl, UVC_FRAME_FORMAT_YUYV,
-		// 								m_vSizeRGB.x, height, m_uvcFPS);
-		uvc_get_stream_ctrl_format_size(m_pHandleDev, &m_ctrl, UVC_FRAME_FORMAT_UNCOMPRESSED,
-										m_vSizeRGB.x, m_vSizeRGB.y, m_uvcFPS);
+		 uvc_get_stream_ctrl_format_size(m_pHandleDev, &m_ctrl, UVC_FRAME_FORMAT_YUYV,
+		 								m_vSizeRGB.x, height, m_uvcFPS);
+		// uvc_get_stream_ctrl_format_size(m_pHandleDev, &m_ctrl, UVC_FRAME_FORMAT_UNKNOWN,
+		// 								m_vSizeRGB.x, m_vSizeRGB.y, m_uvcFPS);
 	}
 
 	bool _UVC::UVCstreamStart(void)
@@ -257,38 +257,42 @@ namespace kai
 				continue;
 			}
 
-			// if (frame->data_bytes != m_uvcSize)
-			// {
-			// 	std::cerr << "Frame size wrong" << std::endl;
-			// 	continue;
-			// }
+			if (frame->data_bytes != m_uvcSize)
+			{
+				std::cerr << "Frame size wrong" << std::endl;
+				continue;
+			}
 
 			Mat mRGB;
 			// Mat mYUV = cv::Mat(m_vSizeRGB.y, m_vSizeRGB.x, CV_8UC2, ((unsigned char *)frame->data) + m_uvcOffset, Mat::AUTO_STEP);
 			// cv::cvtColor(mYUV, mRGB, COLOR_YUV2RGB_YUY2);
 
-			Mat mThermal = cv::Mat(m_vSizeRGB.y, m_vSizeRGB.x, CV_16UC1, ((uint16_t *)frame->data), Mat::AUTO_STEP);
+			int nHead = ((uint8_t*)frame->data)[4];
+			Mat mThermal = cv::Mat(m_vSizeRGB.y, m_vSizeRGB.x, CV_16UC1, ((uint16_t *)(frame->data + 4640)), Mat::AUTO_STEP);
+			// uint16_t* pD = (uint16_t*)(frame->data + 4640);
+			// uint16_t t = pD[10];
+			// printf("Data size: %i, t_sample: %f\n", frame->data_bytes, ((float)t)/64.0 - 50);
 
 			Mat mA;
-			mThermal.convertTo(mA, CV_16UC1, 1.0 / 64, -50);
+			mThermal.convertTo(mA, CV_32FC1, 1.0/64, -50.0);
+			printf("t_sample: %f\n", mA.at<float>(320,240));
 
-			Mat mRange;
-			cv::inRange(mA,
-					cv::Scalar(10),
-					cv::Scalar(80), mRange);
+			// Mat mRange;
+			// cv::inRange(mA,
+			// 		cv::Scalar(10),
+			// 		cv::Scalar(80), mRange);
+			// Mat mC;
+			// mRange.convertTo(mC, CV_8UC1);
 
-			Mat mC;
-			mRange.convertTo(mC, CV_8UC1);
+			Mat mG;
+			float range = 40;
+			float scale = 255.0 / range;
+			mA.convertTo(mG,
+						 CV_8UC1,
+						 scale,
+						 0);//-range * scale);
 
-			// Mat mG;
-			// float range = 30;
-			// float scale = 255.0 / range;
-			// mThermal.convertTo(mG,
-			// 			 CV_8UC1,
-			// 			 scale,
-			// 			 -range * scale);
-
-			cv::cvtColor(mRange, mRGB, COLOR_GRAY2BGR);
+			cv::cvtColor(mG, mRGB, COLOR_GRAY2BGR);
 
 			m_fRGB.copy(mRGB);
 		}
