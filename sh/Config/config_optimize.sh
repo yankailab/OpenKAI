@@ -31,6 +31,40 @@ sudo systemctl disable systemd-journald.service
 sudo systemctl mask systemd-journald.service
 sudo truncate /var/log/*.log --size 0
 
+# delete snap
+# https://www.baeldung.com/linux/snap-remove-disable
+snap --version
+snap list
+snap remove firefox
+snap remove gtk-common-themes
+snap remove gnome-3-38-2004
+snap remove snapd-desktop-integration
+snap remove snap-store
+snap remove core20
+snap remove bare
+snap remove snapd
+snap list
+
+sudo systemctl stop snapd
+sudo systemctl disable snapd
+sudo systemctl mask snapd
+sudo apt purge snapd -y
+sudo apt-mark hold snapd
+
+rm -rf ~/snap/
+
+# Preventing Snap Installation Through the apt Command
+sudo cat <<EOF | sudo tee /etc/apt/preferences.d/nosnap.pref
+Package: snapd
+Pin: release a=*
+Pin-Priority: -10
+EOF
+
+rm -rf ~/snap
+sudo rm -rf /snap
+sudo rm -rf /var/snap
+sudo rm -rf /var/lib/snapd
+
 # clear bash history
 history -c && history -w
 

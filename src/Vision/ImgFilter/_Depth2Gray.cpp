@@ -59,15 +59,14 @@ namespace kai
 		while (m_pT->bAlive())
 		{
 			if (!m_bOpen)
+			{
 				open();
+				continue;
+			}
 
 			m_pT->autoFPS();
 
-			if (m_bOpen)
-			{
-				filter();
-			}
-
+			filter();
 		}
 	}
 

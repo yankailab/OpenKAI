@@ -87,6 +87,7 @@ namespace kai
 		int start(void);
 		bool open(void);
 		void close(void);
+		void draw(void *pFrame);
 
 		static void sCbGetFrame(uvc_frame *pFrame, void *p)
 		{
@@ -110,15 +111,11 @@ namespace kai
 
 		bool getProtocolVersion(void);
 		bool setStreamType(unsigned char type);
-
-
-		void dump_devinfo(unsigned char *ptr);
-		unsigned int get_fw_version(uint8_t *d);
-		bool get_device_info(void);
+		bool getDeviceInfo(void);
 
 		bool UVCopen(void);
 		void UVCclose(void);
-		void UVCsetVideoMode(void);
+		bool UVCsetVideoMode(void);
 		bool UVCstreamStart(void);
 		void UVCstreamClose(void);
 		void UVCstreamGetFrame(unsigned int tOut);
@@ -139,15 +136,19 @@ namespace kai
 		uvc_stream_handle_t *m_pHandleStream;
 		uvc_frame_t *m_pUVCframe;
 		uvc_frame_callback_t *m_pCB; //(uvc_frame_t* frame, void* ptr)
+
 		int m_uvcFPS;
 		int m_uvcSize;
 		int m_uvcOffset;
 		int m_uvcLen;
 		unsigned char *m_pFptr;
 
+		int m_streamType;
 		int m_vendorID;
 		int m_productID;
 		string m_SN;
+
+		vFloat2 m_vRangeDraw;
 
 		/*
 		add 99-hik.rules to /etc/udev/rules.d/

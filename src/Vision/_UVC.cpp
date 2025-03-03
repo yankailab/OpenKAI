@@ -22,9 +22,12 @@ namespace kai
 		m_pCB = nullptr;
 		m_pFptr = nullptr;
 
+		m_streamType = 2;
 		m_vendorID = 0;
 		m_productID = 0;
 		m_SN = "";
+
+		m_vRangeDraw.set(0, 100);
 	}
 
 	_UVC::~_UVC()
@@ -37,9 +40,11 @@ namespace kai
 		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
+		pK->v("streamType", &m_streamType);
 		pK->v("vendorID", &m_vendorID);
 		pK->v("productID", &m_productID);
 		pK->v("SN", &m_SN);
+		pK->v("vRangeDraw", &m_vRangeDraw);
 
 		return OK_OK;
 	}
@@ -51,21 +56,17 @@ namespace kai
 
 		IF_F(!UVCopen());
 
-		getProtocolVersion();
-		// if (get_device_info(30) != 0)
-		// {
-		// 	printf("\n--- get_device_info error ---\n");
-		// 	return -1;
-		// }
+		IF_F(!getProtocolVersion());
+		IF_F(!getDeviceInfo());
 
-		if (!setStreamType(2))
+		IF_F(!setStreamType(m_streamType))
 		{
-			printf("\n--- stream_type_config error ---\n");
+			LOG_I("setStreamType " + i2str(m_streamType) + " failed");
 			return false;
 		}
 
-		UVCsetVideoMode();
-		UVCstreamStart();
+		IF_F(!UVCsetVideoMode());
+		IF_F(!UVCstreamStart());
 
 		m_bOpen = true;
 		return true;
@@ -127,7 +128,7 @@ namespace kai
 		uvc_exit(m_pCtx);
 	}
 
-	void _UVC::UVCsetVideoMode(void)
+	bool _UVC::UVCsetVideoMode(void)
 	{
 		int height = 0;
 
@@ -159,12 +160,21 @@ namespace kai
 		m_uvcSize = 4640 + 2 * m_uvcLen;
 		m_uvcOffset = m_uvcLen + 4640;
 
-		printf("width=%d,height=%d,size=%d,len=%d,offset=%d\n", m_vSizeRGB.x, m_vSizeRGB.y, m_uvcSize, m_uvcLen, m_uvcOffset);
+		LOG_I("width=" + i2str(m_vSizeRGB.x) +
+			  ", height=" + i2str(m_vSizeRGB.y) +
+			  ", size=" + i2str(m_uvcSize) +
+			  ", len=" + i2str(m_uvcLen) +
+			  ", offset=" + i2str(m_uvcOffset) +
+			  ", FPS=" + i2str(m_uvcFPS));
 
-		 uvc_get_stream_ctrl_format_size(m_pHandleDev, &m_ctrl, UVC_FRAME_FORMAT_YUYV,
-		 								m_vSizeRGB.x, height, m_uvcFPS);
+		uvc_error r = uvc_get_stream_ctrl_format_size(m_pHandleDev, &m_ctrl, UVC_FRAME_FORMAT_YUYV,
+													  m_vSizeRGB.x, height, m_uvcFPS);
 		// uvc_get_stream_ctrl_format_size(m_pHandleDev, &m_ctrl, UVC_FRAME_FORMAT_UNKNOWN,
 		// 								m_vSizeRGB.x, m_vSizeRGB.y, m_uvcFPS);
+
+		IF_F(r != UVC_SUCCESS);
+
+		return true;
 	}
 
 	bool _UVC::UVCstreamStart(void)
@@ -234,67 +244,35 @@ namespace kai
 
 			m_pT->autoFPS();
 
-			Mat mCam;
-
-			// while (!m_UVC.read(mCam))
-			// 	;
-			// m_fRGB.copy(mCam);
-
-			// if (m_bResetCam)
-			// {
-			// 	m_UVC.release();
-			// 	m_bOpen = false;
-			// }
-
-			uvc_frame_t *frame = nullptr;
+			uvc_frame_t *pFrame = nullptr;
 			uvc_error_t r;
 
-			// Get frame (blocking call)
-			r = uvc_stream_get_frame(m_pHandleStream, &frame, 1000000); // Timeout: 1 second
-			if (r < 0 || !frame)
+			// Get pFrame (blocking call)
+			r = uvc_stream_get_frame(m_pHandleStream, &pFrame, USEC_1SEC); // Timeout: 1 second
+			if (r < 0 || !pFrame)
 			{
-				std::cerr << "Failed to get frame: " << uvc_strerror(r) << std::endl;
+				LOG_I("uvc_stream_get_frame: " + string(uvc_strerror(r)));
 				continue;
 			}
 
-			if (frame->data_bytes != m_uvcSize)
+			if (pFrame->data_bytes != m_uvcSize)
 			{
-				std::cerr << "Frame size wrong" << std::endl;
+				LOG_I("Frame size wrong, " + i2str(pFrame->data_bytes) + " : " + i2str(m_uvcSize));
 				continue;
 			}
 
-			Mat mRGB;
-			// Mat mYUV = cv::Mat(m_vSizeRGB.y, m_vSizeRGB.x, CV_8UC2, ((unsigned char *)frame->data) + m_uvcOffset, Mat::AUTO_STEP);
-			// cv::cvtColor(mYUV, mRGB, COLOR_YUV2RGB_YUY2);
+			// Mat mRGB;
+			//  Mat mYUV = cv::Mat(m_vSizeRGB.y, m_vSizeRGB.x, CV_8UC2, ((unsigned char *)pFrame->data) + m_uvcOffset, Mat::AUTO_STEP);
+			//  cv::cvtColor(mYUV, mRGB, COLOR_YUV2RGB_YUY2);
+			//  int nHead = ((uint8_t *)pFrame->data)[4];
 
-			int nHead = ((uint8_t*)frame->data)[4];
-			Mat mThermal = cv::Mat(m_vSizeRGB.y, m_vSizeRGB.x, CV_16UC1, ((uint16_t *)(frame->data + 4640)), Mat::AUTO_STEP);
-			// uint16_t* pD = (uint16_t*)(frame->data + 4640);
-			// uint16_t t = pD[10];
-			// printf("Data size: %i, t_sample: %f\n", frame->data_bytes, ((float)t)/64.0 - 50);
+			Mat mRaw = cv::Mat(m_vSizeRGB.y, m_vSizeRGB.x, CV_16UC1, ((uint16_t *)(pFrame->data + 4640)), Mat::AUTO_STEP);
 
-			Mat mA;
-			mThermal.convertTo(mA, CV_32FC1, 1.0/64, -50.0);
-			printf("t_sample: %f\n", mA.at<float>(320,240));
+			const float tScale = (1.0 / 64.0);
+			Mat mC;
+			mRaw.convertTo(mC, CV_32FC1, tScale, -50.0);
 
-			// Mat mRange;
-			// cv::inRange(mA,
-			// 		cv::Scalar(10),
-			// 		cv::Scalar(80), mRange);
-			// Mat mC;
-			// mRange.convertTo(mC, CV_8UC1);
-
-			Mat mG;
-			float range = 40;
-			float scale = 255.0 / range;
-			mA.convertTo(mG,
-						 CV_8UC1,
-						 scale,
-						 0);//-range * scale);
-
-			cv::cvtColor(mG, mRGB, COLOR_GRAY2BGR);
-
-			m_fRGB.copy(mRGB);
+			m_fRGB.copy(mC);
 		}
 	}
 
@@ -429,8 +407,15 @@ namespace kai
 		return false;
 	}
 
-	void _UVC::dump_devinfo(unsigned char *ptr)
+	bool _UVC::getDeviceInfo(void)
 	{
+		unsigned char pB[1600];
+
+		printf("\n--- starting getDeviceInfo ----\n");
+		IF_F(USBsetCurFunc(XU_CS_ID_SYSTEM, SYSTEM_DEVICE_INFO) < 0);
+		IF_F(USBgetCurData(XU_CS_ID_SYSTEM, pB) < 0);
+
+		uint8_t *ptr = pB;
 		printf("\nfirmwareVersion: %s\n", ptr);
 		ptr += 64;
 		printf("encoderVersion: %s\n", ptr);
@@ -442,30 +427,45 @@ namespace kai
 		printf("protocolVersion: %s\n", ptr);
 		ptr += 4;
 		printf("serialNumber: %s\n\n", ptr);
-	}
 
-	unsigned int _UVC::get_fw_version(uint8_t *d)
-	{
-		char *ptr = (char *)d;
-
-		ptr = strstr(ptr, "BUILD");
-		ptr += 6;
-		return (unsigned int)strtol(ptr, NULL, 10);
-	}
-
-	bool _UVC::get_device_info(void)
-	{
-		unsigned char pB[1600];
-		unsigned int fw_ver;
-
-		printf("\n--- starting get_device_info ----\n");
-		IF_F(USBsetCurFunc(XU_CS_ID_SYSTEM, SYSTEM_DEVICE_INFO) < 0);
-		IF_F(USBgetCurData(XU_CS_ID_SYSTEM, pB) < 0);
-		dump_devinfo(pB);
-		fw_ver = get_fw_version(pB);
-		printf("fw_ver = %u\n", fw_ver);
+		char *pFW = (char *)pB;
+		pFW = strstr(pFW, "BUILD");
+		pFW += 6;
+		unsigned int fwVer = (unsigned int)strtol(pFW, NULL, 10);
+		printf("FW ver = %u\n", fwVer);
 
 		return true;
+	}
+
+	void _UVC::draw(void *pFrame)
+	{
+		NULL_(pFrame);
+		this->_ModuleBase::draw(pFrame);
+		IF_(check() != OK_OK);
+		IF_(m_fRGB.bEmpty());
+
+		Frame *pF = (Frame *)pFrame;
+		Mat mC = *pF->m();
+
+		// Mat mRange;
+		// cv::inRange(mA,
+		// 		cv::Scalar(10),
+		// 		cv::Scalar(80), mRange);
+		// Mat mC;
+		// mRange.convertTo(mC, CV_8UC1);
+
+		Mat mG;
+		float range = m_vRangeDraw.len();
+		float scale = 255.0 / range;
+		mC.convertTo(mG,
+					 CV_8UC1,
+					 scale,
+					 -m_vRangeDraw.x * scale);
+
+		// Mat mRGB;
+		// cv::cvtColor(mG, mRGB, COLOR_GRAY2BGR);
+
+		pF->copy(mG);
 	}
 
 }
