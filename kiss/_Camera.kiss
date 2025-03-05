@@ -63,10 +63,11 @@
 		"FPS":30,
 	}
 	"deviceID":0,
+	"streamType":2,
 	"vSizeRGB":[640,480],
 	"vendorID":11231,
 	"productID":258,
-	"vRangeDraw":[0,30],
+	"vRangeDraw":[0,90],
 }
 
 {

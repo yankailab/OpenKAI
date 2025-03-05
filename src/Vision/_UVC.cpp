@@ -59,7 +59,7 @@ namespace kai
 		IF_F(!getProtocolVersion());
 		IF_F(!getDeviceInfo());
 
-		IF_F(!setStreamType(m_streamType))
+		if(!setStreamType(m_streamType))
 		{
 			LOG_I("setStreamType " + i2str(m_streamType) + " failed");
 			return false;
@@ -235,6 +235,7 @@ namespace kai
 			{
 				if (!open())
 				{
+					close();
 					m_pT->sleepT(SEC_2_USEC);
 					continue;
 				}
@@ -443,25 +444,15 @@ namespace kai
 		IF_(m_fRGB.bEmpty());
 
 		Frame *pF = (Frame *)pFrame;
-		Mat mC = *pF->m();
-
-		// Mat mRange;
-		// cv::inRange(mA,
-		// 		cv::Scalar(10),
-		// 		cv::Scalar(80), mRange);
-		// Mat mC;
-		// mRange.convertTo(mC, CV_8UC1);
+		Mat mT = *m_fRGB.m();
 
 		Mat mG;
 		float range = m_vRangeDraw.len();
 		float scale = 255.0 / range;
-		mC.convertTo(mG,
+		mT.convertTo(mG,
 					 CV_8UC1,
 					 scale,
 					 -m_vRangeDraw.x * scale);
-
-		// Mat mRGB;
-		// cv::cvtColor(mG, mRGB, COLOR_GRAY2BGR);
 
 		pF->copy(mG);
 	}
