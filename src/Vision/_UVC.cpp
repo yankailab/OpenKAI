@@ -167,10 +167,8 @@ namespace kai
 			  ", offset=" + i2str(m_uvcOffset) +
 			  ", FPS=" + i2str(m_uvcFPS));
 
-		uvc_error r = uvc_get_stream_ctrl_format_size(m_pHandleDev, &m_ctrl, UVC_FRAME_FORMAT_YUYV,
+		uvc_error r = uvc_get_stream_ctrl_format_size(m_pHandleDev, &m_ctrl, UVC_FRAME_FORMAT_YUYV, //UVC_FRAME_FORMAT_UNKNOWN
 													  m_vSizeRGB.x, height, m_uvcFPS);
-		// uvc_get_stream_ctrl_format_size(m_pHandleDev, &m_ctrl, UVC_FRAME_FORMAT_UNKNOWN,
-		// 								m_vSizeRGB.x, m_vSizeRGB.y, m_uvcFPS);
 
 		IF_F(r != UVC_SUCCESS);
 
@@ -195,7 +193,7 @@ namespace kai
 		{
 			LOG_I("stream_start error!");
 			uvc_perror(r, "stream_start");
-			uvc_stream_close(m_pHandleStream);
+			UVCstreamClose();
 			return false;
 		}
 

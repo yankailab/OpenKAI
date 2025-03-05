@@ -66,6 +66,7 @@
 	"vSizeRGB":[640,480],
 	"vendorID":11231,
 	"productID":258,
+	"vRangeDraw":[0,30],
 }
 
 {
