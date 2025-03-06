@@ -25,6 +25,11 @@ namespace kai
 		m_bNaN = false;
 		m_bPos = true;
 		m_bSpd = true;
+
+		m_Dspd.x = 0;
+		m_Dspd.y = 0;
+		m_Dspd.z = 0;
+
 	}
 
 	_APmavlink_visionEstimate::~_APmavlink_visionEstimate()
@@ -74,7 +79,7 @@ namespace kai
 		m_pNav = (_NavBase *)(pK->findModule(n));
 		NULL__(m_pNav, OK_ERR_NOT_FOUND);
 
-		return true;
+		return OK_OK;
 	}
 
 	int _APmavlink_visionEstimate::start(void)
