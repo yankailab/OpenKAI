@@ -125,8 +125,9 @@ namespace kai
 		if (!bOpen())
 			return -1;
 
+		sockaddr_in sAddrR;
 		unsigned int nSaddr = sizeof(sockaddr_in);
-		int nR = ::recvfrom(m_socket, pBuf, nB, 0, (struct sockaddr *)&m_sAddrR, &nSaddr);
+		int nR = ::recvfrom(m_socket, pBuf, nB, 0, (struct sockaddr *)&sAddrR, &nSaddr);
 		if (nR <= 0)
 		{
 			LOG_E("recvfrom error: " + i2str(errno));
@@ -134,10 +135,10 @@ namespace kai
 		}
 		else if (m_bW2R)
 		{
-			m_sAddrW = m_sAddrR;
+			m_sAddrW = sAddrR;
 		}
 
-		LOG_I("Received " + i2str(nR) + " bytes from ip:" + string(inet_ntoa(m_sAddrR.sin_addr)) + ", port:" + i2str(ntohs(m_sAddrR.sin_port)));
+		LOG_I("Received " + i2str(nR) + " bytes from ip:" + string(inet_ntoa(sAddrR.sin_addr)) + ", port:" + i2str(ntohs(sAddrR.sin_port)));
 
 		return nR;
 	}

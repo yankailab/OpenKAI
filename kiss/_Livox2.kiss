@@ -57,7 +57,7 @@
 		"FPS":1,
 	}
 	"addr":"192.168.1.3",
-	"port":56200,
+	"port":56201,
 	"bServer":1,
 	"bW2R":0,
 	"bWbroadcast":0,
@@ -71,8 +71,9 @@
 		"name":"thread",
 		"FPS":1,
 	}
+	"bLog":0,
 	"addr":"192.168.1.3",
-	"port":56300,
+	"port":56301,
 	"bServer":1,
 	"bW2R":0,
 	"bWbroadcast":0,
@@ -86,8 +87,9 @@
 		"name":"thread",
 		"FPS":1,
 	}
+	"bLog":0,
 	"addr":"192.168.1.3",
-	"port":56400,
+	"port":56402,
 	"bServer":1,
 	"bW2R":0,
 	"bWbroadcast":0,
@@ -121,7 +123,7 @@
 	}
     {
 		"name":"threadPointCloudR",
-		"FPS":1,
+		"FPS":1000,
 	}
     {
 		"name":"threadImuR",
@@ -136,18 +138,22 @@
 	"vRoffset":[0,0,0],
 	"sharedMemG":"shmW",
 
-	"_IObaseDeviceQuery":"Livox2UDPdeviceQuery",
-	"_IObaseCtrlCmd":"Livox2UDPctrlCmd",
-	"_IObasePushCmd":"Livox2UDPpushCmd",
-	"_IObasePointCloud":"Livox2UDPpointCloud",
-	"_IObaseIMU":"Livox2UDPimu",
-	"_IObaseLog":"Livox2UDPlog",
+	"_UDPdeviceQuery":"Livox2UDPdeviceQuery",
+	"_UDPctrlCmd":"Livox2UDPctrlCmd",
+	"_UDPpushCmd":"Livox2UDPpushCmd",
+	"_UDPpointCloud":"Livox2UDPpointCloud",
+	"_UDPimu":"Livox2UDPimu",
+	"_UDPlog":"Livox2UDPlog",
+
+	"IPstate":"192.168.1.100:56201",
+	"IPpcl":"192.168.1.100:56301",
+	"IPimu":"192.168.1.100:56401",
 }
 
 {
 	"name":"gv",
 	"class":"_GeometryViewer",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,

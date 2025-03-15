@@ -12,15 +12,17 @@
 #include "../../3D/PointCloud/_PCstream.h"
 #include "../../Dependencies/SensorFusion/SensorFusion.h"
 #include "../../Dependencies/CRC.h"
+#include "../../Utility/utilNet.h"
 
 #include "Livox2/livox_lidar_def.h"
 #include "Livox2/livox_lidar_api.h"
 
 
-#define LIVOX2_N_DATA 1400
+#define LIVOX2_N_BUF 1380
+#define LIVOX2_N_DATA 1344
 #define LIVOX2_SOF 0xAA
 #define LIVOX2_CMD_N_HDR 24
-#define LIVOX2_DATA_N_HDR 24
+#define LIVOX2_DATA_N_HDR 28
 
 namespace kai
 {
@@ -124,6 +126,7 @@ namespace kai
 		bool recvLivoxCmd(_IObase *pIO, LIVOX2_CMD *pResvCmd);
 		bool recvLivoxData(_IObase *pIO, LIVOX2_DATA *pResvDATA);
 
+
 		// Device Type Query
 		void sendDeviceQuery(void);
 		void updateWdeviceQuery(void);
@@ -141,7 +144,9 @@ namespace kai
 			return NULL;
 		}
 
+
 		// Control Command
+		void setHostIPconfig(void);
 		void setPclDataType(void);
 		void setPatternMode(void);
 		void updateCtrlCmd(void);
@@ -160,6 +165,7 @@ namespace kai
 			return NULL;
 		}
 
+
 		// Push command
 		void recvWorkMode(livox_status status, LivoxLidarAsyncControlResponse *pR);
 		void recvLidarInfoChange(const LivoxLidarInfo *pI);
@@ -170,6 +176,7 @@ namespace kai
 			((_Livox2 *)This)->updateRpushCmd();
 			return NULL;
 		}
+
 
 		// Point Cloud Data
 		void handlePointCloudData(const LIVOX2_DATA &d);
@@ -197,12 +204,12 @@ namespace kai
 		_Thread *m_pTpointCloudR;
 		_Thread *m_pTimuR;
 
-		_UDP *m_pDeviceQuery;
-		_UDP *m_pCtrlCmd;
-		_UDP *m_pPushCmd;
-		_UDP *m_pPointCloud;
-		_UDP *m_pIMU;
-		_UDP *m_pLog;
+		_UDP *m_pUDPdeviceQuery;
+		_UDP *m_pUDPctrlCmd;
+		_UDP *m_pUDPpushCmd;
+		_UDP *m_pUDPpointCloud;
+		_UDP *m_pUDPimu;
+		_UDP *m_pUDPlog;
 
 		LIVOX2_STATE m_state;
 		LivoxLidarWorkMode m_workMode;
@@ -216,6 +223,10 @@ namespace kai
 		SF m_SF;
 		uint64_t m_tIMU;
 		bool m_bEnableIMU;
+
+		string m_IPstate;
+		string m_IPpcl;
+		string m_IPimu;
 	};
 
 }

@@ -45,7 +45,7 @@ namespace kai
 		int m_bWbroadcast;
 
 		sockaddr_in m_sAddrW;
-		sockaddr_in m_sAddrR;
+//		sockaddr_in m_sAddrR;
 		int m_socket;
 	};
 

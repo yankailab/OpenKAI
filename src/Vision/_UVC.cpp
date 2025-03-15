@@ -59,7 +59,7 @@ namespace kai
 		IF_F(!getProtocolVersion());
 		IF_F(!getDeviceInfo());
 
-		if(!setStreamType(m_streamType))
+		if (!setStreamType(m_streamType))
 		{
 			LOG_I("setStreamType " + i2str(m_streamType) + " failed");
 			return false;
@@ -167,7 +167,7 @@ namespace kai
 			  ", offset=" + i2str(m_uvcOffset) +
 			  ", FPS=" + i2str(m_uvcFPS));
 
-		uvc_error r = uvc_get_stream_ctrl_format_size(m_pHandleDev, &m_ctrl, UVC_FRAME_FORMAT_YUYV, //UVC_FRAME_FORMAT_UNKNOWN
+		uvc_error r = uvc_get_stream_ctrl_format_size(m_pHandleDev, &m_ctrl, UVC_FRAME_FORMAT_YUYV, // UVC_FRAME_FORMAT_UNKNOWN
 													  m_vSizeRGB.x, height, m_uvcFPS);
 
 		IF_F(r != UVC_SUCCESS);
