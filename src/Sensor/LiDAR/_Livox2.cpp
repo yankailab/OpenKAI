@@ -23,21 +23,22 @@ namespace kai
         m_pUDPimu = nullptr;
         m_pUDPlog = nullptr;
 
+        // lvx state
+        m_lvxState = lvxState_deviceQuery;
+        m_lvxTout.setTout(USEC_10SEC);
+
+        // lvx info
         m_lvxSN = "";
         memset(m_pLvxSN, 0, LVX2_N_SN);
         m_lvxIP = 0;
         m_lvxCmdPort = 0;
+        m_lvxDevType = 0;
 
-        m_lvxState = lvxState_deviceQuery;
-        m_lvxWorkMode = kLivoxLidarNormal;
+        // lvx default config
+        m_lvxCfg.init();
 
+        // lvx IMU
         m_tIMU = 0;
-        m_bEnableIMU = true;
-
-        m_hostIP = 0;
-        m_hostPortState = 0;
-        m_hostPortPCL = 0;
-        m_hostPortIMU = 0;
     }
 
     _Livox2::~_Livox2()
@@ -49,98 +50,81 @@ namespace kai
         CHECK_(this->_PCstream::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
+        // lvx select
         pK->v("lvxSN", &m_lvxSN);
         if (!m_lvxSN.empty())
         {
             memcpy(m_pLvxSN, m_lvxSN.c_str(), m_lvxSN.length());
         }
 
-        pK->v("lvxWorkMode", (int *)&m_lvxWorkMode);
-        pK->v("bEnableIMU", &m_bEnableIMU);
-
         string ip;
-
         ip = "";
         pK->v("lvxIP", &ip);
         parseIP(ip.c_str(), (uint8_t *)&m_lvxIP);
 
-        pK->v("hostIP", &ip);
-        if (!parseIP(ip.c_str(), (uint8_t *)&m_hostIP))
+        // lvx time out
+        int tOutSec = 10;
+        pK->v("tOutSec", &tOutSec);
+        m_lvxTout.setTout(USEC_1SEC * tOutSec);
+
+        // lvx config
+        pK->v("lvxPCLdataType", &m_lvxCfg.m_pclDataType);
+        pK->v("lvxPatternMode", &m_lvxCfg.m_patternMode);
+        ip = "";
+        pK->v("lvxHostIP", &ip);
+        if (!parseIP(ip.c_str(), (uint8_t *)&m_lvxCfg.m_hostIP))
         {
-            LOG_E("hostIP parse failed");
+            LOG_E("lvxHostIP parse failed");
             return OK_ERR_INVALID_VALUE;
         }
+        pK->v("lvxHostPortState", &m_lvxCfg.m_hostPortState);
+        pK->v("lvxHostPortPCL", &m_lvxCfg.m_hostPortPCL);
+        pK->v("lvxHostPortIMU", &m_lvxCfg.m_hostPortIMU);
+        pK->v("lvxFrameRate", &m_lvxCfg.m_frameRate);
+        pK->v("lvxDetectMode", &m_lvxCfg.m_detectMode);
+        pK->v("lvxWorkModeAfterBoot", &m_lvxCfg.m_workModeAfterBoot);
+        pK->v("lvxWorkMode", &m_lvxCfg.m_workMode);
+        pK->v("lvxIMUdataEn", &m_lvxCfg.m_imuDataEn);
 
-        pK->v("hostPortState", &m_hostPortState);
-        pK->v("hostPortPCL", &m_hostPortPCL);
-        pK->v("hostPortIMU", &m_hostPortIMU);
 
-        Kiss *pKt;
-
-        // Device Type Query
-        pKt = pK->child("threadDeviceQueryR");
-        if (pKt->empty())
+        // common thread config
+        Kiss *pKw;
+        Kiss *pKr = pK->child("threadR");
+        if (pKr->empty())
         {
-            LOG_E("threadDeviceQueryR not found");
+            LOG_E("threadR not found");
             return OK_ERR_NOT_FOUND;
         }
 
+        // Device Type Query
         m_pTdeviceQueryR = new _Thread();
-        CHECK_d_l_(m_pTdeviceQueryR->init(pKt), DEL(m_pTdeviceQueryR), "TdeviceQueryR init failed");
+        CHECK_d_l_(m_pTdeviceQueryR->init(pKr), DEL(m_pTdeviceQueryR), "TdeviceQueryR init failed");
 
         // Control Command
-        pKt = pK->child("threadCtrlCmdW");
-        if (pKt->empty())
+        pKw = nullptr;
+        pKw = pK->child("threadCtrlCmdW");
+        if (pKw->empty())
         {
             LOG_E("threadCtrlCmdW not found");
             return OK_ERR_NOT_FOUND;
         }
-
         m_pTctrlCmdW = new _Thread();
-        CHECK_d_l_(m_pTctrlCmdW->init(pKt), DEL(m_pTctrlCmdW), "TctrlCmdW init failed");
-
-        pKt = pK->child("threadCtrlCmdR");
-        if (pKt->empty())
-        {
-            LOG_E("threadCtrlCmdR not found");
-            return OK_ERR_NOT_FOUND;
-        }
+        CHECK_d_l_(m_pTctrlCmdW->init(pKw), DEL(m_pTctrlCmdW), "TctrlCmdW init failed");
 
         m_pTctrlCmdR = new _Thread();
-        CHECK_d_l_(m_pTctrlCmdR->init(pKt), DEL(m_pTctrlCmdR), "TctrlCmdR init failed");
+        CHECK_d_l_(m_pTctrlCmdR->init(pKr), DEL(m_pTctrlCmdR), "TctrlCmdR init failed");
 
         // Push command
-        pKt = pK->child("threadPushCmdR");
-        if (pKt->empty())
-        {
-            LOG_E("threadPushCmdR not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
         m_pTpushCmdR = new _Thread();
-        CHECK_d_l_(m_pTpushCmdR->init(pKt), DEL(m_pTpushCmdR), "TpushCmdR init failed");
+        CHECK_d_l_(m_pTpushCmdR->init(pKr), DEL(m_pTpushCmdR), "TpushCmdR init failed");
 
         // Point Cloud Data
-        pKt = pK->child("threadPclR");
-        if (pKt->empty())
-        {
-            LOG_E("threadPclR not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
         m_pTpclR = new _Thread();
-        CHECK_d_l_(m_pTpclR->init(pKt), DEL(m_pTpclR), "TpclR init failed");
+        CHECK_d_l_(m_pTpclR->init(pKr), DEL(m_pTpclR), "TpclR init failed");
 
         // IMU Data
-        pKt = pK->child("threadImuR");
-        if (pKt->empty())
-        {
-            LOG_E("threadImuR not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
         m_pTimuR = new _Thread();
-        CHECK_d_l_(m_pTimuR->init(pKt), DEL(m_pTimuR), "TimuR init failed");
+        CHECK_d_l_(m_pTimuR->init(pKr), DEL(m_pTimuR), "TimuR init failed");
 
         return OK_OK;
     }
@@ -225,7 +209,12 @@ namespace kai
         NULL_F(pCmdRecv);
 
         int nBr = pIO->read((uint8_t *)pCmdRecv, sizeof(LIVOX2_CMD));
-        IF_F(nBr <= 0);
+        if(nBr <= 0)
+        {
+            //TODO; change mode to socket error
+            return false;
+        }
+
         IF_F(nBr < pCmdRecv->length);
         IF_F(pCmdRecv->sof != LVX2_SOF);
 
@@ -238,6 +227,7 @@ namespace kai
             IF_F(crc32 != pCmdRecv->crc32_d);
         }
 
+        m_lvxTout.start();
         return true;
     }
 
@@ -248,7 +238,11 @@ namespace kai
 
         uint8_t pB[LVX2_N_BUF];
         int nBr = pIO->read(pB, LVX2_N_BUF);
-        IF_F(nBr <= 0);
+        if(nBr <= 0)
+        {
+            //TODO; change mode to socket error
+            return false;
+        }
 
         pDataRecv->version = pB[0];
         pDataRecv->length = *((uint16_t *)&pB[1]);
@@ -269,6 +263,7 @@ namespace kai
 
         memcpy(pDataRecv->data, &pB[36], LVX2_N_DATA);
 
+        m_lvxTout.start();
         return true;
     }
 
@@ -283,6 +278,11 @@ namespace kai
             {
                 sendDeviceQuery();
             }
+
+            if(m_lvxTout.bTout())
+            {
+                m_lvxState = lvxState_deviceQuery;  // disconnected
+            }
         }
     }
 
@@ -291,7 +291,7 @@ namespace kai
         IF_(check() != OK_OK);
 
         LIVOX2_CMD cmd;
-        cmd.init(0x0000, 0x00, 0);
+        cmd.init(LVX2_CMD_DISCOVER, LVX2_CMD_REQ, 0);
         cmd.calcCRC();
         m_pUDPdeviceQuery->write((uint8_t *)&cmd, cmd.length);
     }
@@ -300,8 +300,6 @@ namespace kai
     {
         while (m_pTdeviceQueryR->bAlive())
         {
-            m_pTdeviceQueryR->autoFPS();
-
             LIVOX2_CMD cmd;
             if (recvLivoxCmd(m_pUDPdeviceQuery, &cmd))
             {
@@ -312,9 +310,9 @@ namespace kai
 
     void _Livox2::handleDeviceQuery(const LIVOX2_CMD &cmd)
     {
-        IF_(cmd.cmd_id != 0x0000);
+        IF_(cmd.cmd_id != LVX2_CMD_DISCOVER);
         uint8_t rCode = cmd.data[0];
-        IF_(rCode != 0x00); // LVX_RET_SUCCESS
+        IF_(rCode != LVX2_RET_SUCCESS);
 
         uint8_t pSN[LVX2_N_SN];
         memcpy(pSN, &cmd.data[2], LVX2_N_SN);
@@ -347,93 +345,39 @@ namespace kai
         {
             m_pTctrlCmdW->autoFPS();
 
-            if (m_lvxState >= lvxState_config)
+            if (m_lvxState == lvxState_config)
             {
-                updateCtrlCmd();
+                setLvxHost();
             }
+
+            getLvxConfig();
         }
     }
 
-    void _Livox2::updateCtrlCmd(void)
-    {
-        if (m_lvxState == lvxState_config)
-        {
-            setLvxHost();
-            setLvxWorkMode();
-            setLvxPattern();
-            setLvxPCLdataType();
-
-            m_lvxState = lvxState_work;
-            return;
-        }
-    }
-
-    void _Livox2::setLvxHost(void)
+    void _Livox2::getLvxConfig(void)
     {
         IF_(check() != OK_OK);
 
         LIVOX2_CMD cmd;
-        cmd.init(0x0100, 0x00, 0);
+        cmd.init(LVX2_CMD_GET, LVX2_CMD_REQ, 0);
+
         // data
-        cmd.addData((uint16_t)3); // key_num
+        cmd.addData((uint16_t)12); // key_num
         cmd.addData((uint16_t)0); // rsvd
 
-        // state
-        cmd.addData((uint16_t)kKeyStateInfoHostIpCfg); // key
-        cmd.addData((uint16_t)8);                      // length
-        cmd.addData(&m_hostIP, 4);
-        cmd.addData((uint16_t)m_hostPortState);
-        cmd.addData((uint16_t)0);
-
-        // point cloud
-        cmd.addData((uint16_t)kKeyLidarPointDataHostIpCfg);
-        cmd.addData((uint16_t)8);
-        cmd.addData(&m_hostIP, 4);
-        cmd.addData((uint16_t)m_hostPortPCL);
-        cmd.addData((uint16_t)0);
-
-        // IMU
-        cmd.addData((uint16_t)kKeyLidarImuHostIpCfg);
-        cmd.addData((uint16_t)8);
-        cmd.addData(&m_hostIP, 4);
-        cmd.addData((uint16_t)m_hostPortIMU);
-        cmd.addData((uint16_t)0);
-
-        cmd.calcCRC();
-        m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
-    }
-
-    void _Livox2::setLvxWorkMode(void)
-    {
-        IF_(check() != OK_OK);
-
-        LIVOX2_CMD cmd;
-        cmd.init(0x0100, 0x00, 0);
-        // data
-        cmd.addData((uint16_t)1); // key_num
-        cmd.addData((uint16_t)0); // rsvd
         // key value list
-        cmd.addData((uint16_t)kKeyWorkMode);
-        cmd.addData((uint16_t)1);
-        cmd.addData((uint8_t)m_lvxWorkMode);
-
-        cmd.calcCRC();
-        m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
-    }
-
-    void _Livox2::setLvxPattern(void)
-    {
-        IF_(check() != OK_OK);
-
-        LIVOX2_CMD cmd;
-        cmd.init(0x0100, 0x00, 0);
-        // data
-        cmd.addData((uint16_t)1); // key_num
-        cmd.addData((uint16_t)0); // rsvd
-        // key value list
+        cmd.addData((uint16_t)kKeyPclDataType);
         cmd.addData((uint16_t)kKeyPatternMode);
-        cmd.addData((uint16_t)1);
-        cmd.addData((uint8_t)kLivoxLidarScanPatternNoneRepetive);
+        cmd.addData((uint16_t)kKeyStateInfoHostIpCfg);
+        cmd.addData((uint16_t)kKeyLidarPointDataHostIpCfg);
+        cmd.addData((uint16_t)kKeyLidarImuHostIpCfg);
+        cmd.addData((uint16_t)kKeyFrameRate);
+        cmd.addData((uint16_t)kKeyDetectMode);
+        cmd.addData((uint16_t)kKeyWorkModeAfterBoot);
+        cmd.addData((uint16_t)kKeyWorkMode);
+        cmd.addData((uint16_t)kKeyImuDataEn);
+        cmd.addData((uint16_t)kKeyLidarDiagStatus);
+        cmd.addData((uint16_t)kKeyHmsCode);
 
         cmd.calcCRC();
         m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
@@ -444,14 +388,157 @@ namespace kai
         IF_(check() != OK_OK);
 
         LIVOX2_CMD cmd;
-        cmd.init(0x0100, 0x00, 0);
+        cmd.init(LVX2_CMD_SET, LVX2_CMD_REQ, 0);
         // data
         cmd.addData((uint16_t)1); // key_num
         cmd.addData((uint16_t)0); // rsvd
         // key value list
         cmd.addData((uint16_t)kKeyPclDataType);
         cmd.addData((uint16_t)1);
-        cmd.addData((uint8_t)kLivoxLidarCartesianCoordinateHighData);
+        cmd.addData((uint8_t)m_lvxCfg.m_pclDataType);
+
+        cmd.calcCRC();
+        m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
+    }
+
+    void _Livox2::setLvxPattern(void)
+    {
+        IF_(check() != OK_OK);
+
+        LIVOX2_CMD cmd;
+        cmd.init(LVX2_CMD_SET, LVX2_CMD_REQ, 0);
+        // data
+        cmd.addData((uint16_t)1); // key_num
+        cmd.addData((uint16_t)0); // rsvd
+        // key value list
+        cmd.addData((uint16_t)kKeyPatternMode);
+        cmd.addData((uint16_t)1);
+        cmd.addData((uint8_t)m_lvxCfg.m_patternMode);
+
+        cmd.calcCRC();
+        m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
+    }
+
+    void _Livox2::setLvxHost(void)
+    {
+        IF_(check() != OK_OK);
+
+        LIVOX2_CMD cmd;
+        cmd.init(LVX2_CMD_SET, LVX2_CMD_REQ, 0);
+        // data
+        cmd.addData((uint16_t)3); // key_num
+        cmd.addData((uint16_t)0); // rsvd
+
+        // state
+        cmd.addData((uint16_t)kKeyStateInfoHostIpCfg); // key
+        cmd.addData((uint16_t)8);                      // length
+        cmd.addData(&m_lvxCfg.m_hostIP, 4);
+        cmd.addData((uint16_t)m_lvxCfg.m_hostPortState);
+        cmd.addData((uint16_t)0);
+
+        // point cloud
+        cmd.addData((uint16_t)kKeyLidarPointDataHostIpCfg);
+        cmd.addData((uint16_t)8);
+        cmd.addData(&m_lvxCfg.m_hostIP, 4);
+        cmd.addData((uint16_t)m_lvxCfg.m_hostPortPCL);
+        cmd.addData((uint16_t)0);
+
+        // IMU
+        cmd.addData((uint16_t)kKeyLidarImuHostIpCfg);
+        cmd.addData((uint16_t)8);
+        cmd.addData(&m_lvxCfg.m_hostIP, 4);
+        cmd.addData((uint16_t)m_lvxCfg.m_hostPortIMU);
+        cmd.addData((uint16_t)0);
+
+        cmd.calcCRC();
+        m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
+    }
+
+    void _Livox2::setLvxFrameRate(void)
+    {
+        IF_(check() != OK_OK);
+
+        LIVOX2_CMD cmd;
+        cmd.init(LVX2_CMD_SET, LVX2_CMD_REQ, 0);
+        // data
+        cmd.addData((uint16_t)1); // key_num
+        cmd.addData((uint16_t)0); // rsvd
+        // key value list
+        cmd.addData((uint16_t)kKeyFrameRate);
+        cmd.addData((uint16_t)1);
+        cmd.addData((uint8_t)m_lvxCfg.m_frameRate);
+
+        cmd.calcCRC();
+        m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
+    }
+
+    void _Livox2::setLvxDetectMode(void)
+    {
+        IF_(check() != OK_OK);
+
+        LIVOX2_CMD cmd;
+        cmd.init(LVX2_CMD_SET, LVX2_CMD_REQ, 0);
+        // data
+        cmd.addData((uint16_t)1); // key_num
+        cmd.addData((uint16_t)0); // rsvd
+        // key value list
+        cmd.addData((uint16_t)kKeyDetectMode);
+        cmd.addData((uint16_t)1);
+        cmd.addData((uint8_t)m_lvxCfg.m_detectMode);
+
+        cmd.calcCRC();
+        m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
+    }
+
+    void _Livox2::setLvxWorkModeAfterBoot(void)
+    {
+        IF_(check() != OK_OK);
+
+        LIVOX2_CMD cmd;
+        cmd.init(LVX2_CMD_SET, LVX2_CMD_REQ, 0);
+        // data
+        cmd.addData((uint16_t)1); // key_num
+        cmd.addData((uint16_t)0); // rsvd
+        // key value list
+        cmd.addData((uint16_t)kKeyWorkModeAfterBoot);
+        cmd.addData((uint16_t)1);
+        cmd.addData((uint8_t)m_lvxCfg.m_workModeAfterBoot);
+
+        cmd.calcCRC();
+        m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
+    }
+
+    void _Livox2::setLvxWorkMode(void)
+    {
+        IF_(check() != OK_OK);
+
+        LIVOX2_CMD cmd;
+        cmd.init(LVX2_CMD_SET, LVX2_CMD_REQ, 0);
+        // data
+        cmd.addData((uint16_t)1); // key_num
+        cmd.addData((uint16_t)0); // rsvd
+        // key value list
+        cmd.addData((uint16_t)kKeyWorkMode);
+        cmd.addData((uint16_t)1);
+        cmd.addData((uint8_t)m_lvxCfg.m_workMode);
+
+        cmd.calcCRC();
+        m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
+    }
+
+    void _Livox2::setLvxIMUdataEn(void)
+    {
+        IF_(check() != OK_OK);
+
+        LIVOX2_CMD cmd;
+        cmd.init(LVX2_CMD_SET, LVX2_CMD_REQ, 0);
+        // data
+        cmd.addData((uint16_t)1); // key_num
+        cmd.addData((uint16_t)0); // rsvd
+        // key value list
+        cmd.addData((uint16_t)kKeyImuDataEn);
+        cmd.addData((uint16_t)1);
+        cmd.addData((uint8_t)m_lvxCfg.m_imuDataEn);
 
         cmd.calcCRC();
         m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
@@ -471,7 +558,71 @@ namespace kai
 
     void _Livox2::handleCtrlCmdAck(const LIVOX2_CMD &cmd)
     {
-        IF_(cmd.cmd_id != 0x0000);
+        IF_(cmd.cmd_id != LVX2_CMD_GET);
+        IF_(cmd.cmd_type != LVX2_CMD_ACK);
+
+        uint8_t rCode = cmd.data[0];
+        IF_(rCode != LVX2_RET_SUCCESS);
+        uint16_t nK = *(uint16_t *)(&cmd.data[1]);
+        uint8_t* pK = (uint8_t *)&cmd.data[3];
+
+        int iD = 0;
+        for(int iK = 0; iK < nK; iK++)
+        {
+            uint16_t key = *((uint16_t*)&pK[iD]);
+            iD += 2;
+            uint16_t nKb = *((uint16_t*)&pK[iD]);
+            iD += 2;
+
+            uint8_t v;
+            switch (key)
+            {
+                case kKeyPclDataType:
+                    v = pK[iD];
+                    if(v != m_lvxCfg.m_pclDataType)
+                        setLvxPCLdataType();
+                break;
+                case kKeyPatternMode:
+                    v = pK[iD];
+                    if(v != m_lvxCfg.m_patternMode)
+                        setLvxPattern();
+                break;
+                case kKeyStateInfoHostIpCfg:
+
+                break;
+                case kKeyLidarPointDataHostIpCfg:
+
+                break;
+                case kKeyLidarImuHostIpCfg:
+
+                break;
+                case kKeyFrameRate:
+
+                break;
+                case kKeyDetectMode:
+
+                break;
+                case kKeyWorkModeAfterBoot:
+
+                break;
+                case kKeyWorkMode:
+
+                break;
+                case kKeyImuDataEn:
+
+                break;
+                case kKeyLidarDiagStatus:
+
+                break;
+                case kKeyHmsCode:
+
+                break;
+            };
+
+            iD += nKb;
+        }
+
+//        m_lvxState = lvxState_config;
     }
 
     // Push command
@@ -549,8 +700,6 @@ namespace kai
 
     void _Livox2::handleIMUdata(const LIVOX2_DATA &d)
     {
-        IF_(!m_bEnableIMU);
-
         uint64_t tStamp = *((uint64_t *)d.timestamp);
         uint64_t dT = tStamp - m_tIMU;
         m_tIMU = tStamp;
@@ -584,22 +733,14 @@ namespace kai
         LOG_I("IMU, data_num:" + i2str(d.dot_num) + ", data_type:" + i2str(d.data_type) + ", length:" + i2str(d.length) + ", frame_counter:" + i2str(d.frame_cnt));
     }
 
-    void _Livox2::setLidarMode(LivoxLidarWorkMode m)
+	LVX2_CONFIG _Livox2::getConfig(void)
     {
-        m_lvxWorkMode = m;
+        return m_lvxCfg;
     }
 
-    void _Livox2::recvWorkMode(livox_status status, LivoxLidarAsyncControlResponse *pR)
+	void _Livox2::setConfig(const LVX2_CONFIG& cfg)
     {
-        NULL_(pR);
-        LOG_I("CbWorkMode, status:" + i2str(status) + ", ret_code:" + i2str(pR->ret_code) + ", error_key:" + i2str(pR->error_key));
-    }
-
-    void _Livox2::recvLidarInfoChange(const LivoxLidarInfo *pI)
-    {
-        NULL_(pI);
-
-        LOG_I("LidarInfoChangeCallback Lidar IP: " + string(pI->lidar_ip) + " SN: " + string(pI->sn));
+        m_lvxCfg = cfg;
     }
 
     void _Livox2::console(void *pConsole)
@@ -608,7 +749,6 @@ namespace kai
         this->_PCstream::console(pConsole);
 
         _Console *pC = (_Console *)pConsole;
-        //		pC->addMsg("nState: " + i2str(m_vStates.size()), 0);
     }
 
 }

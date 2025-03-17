@@ -79,7 +79,7 @@ typedef enum {
   kKeyLidarImuHostIpCfg       = 0x0007,
   kKeyCtlHostIpCfg            = 0x0008,
   kKeyLogHostIpCfg            = 0x0009,
-  
+
   kKeyVehicleSpeed            = 0x0010,
   kKeyEnvironmentTemp         = 0x0011,
   kKeyInstallAttitude         = 0x0012,
@@ -111,14 +111,14 @@ typedef enum {
   kKeyLocalTimeNow            = 0x8009,
   kKeyLastSyncTime            = 0x800A,
   kKeyTimeOffset              = 0x800B,
-  kKeyTimeSyncType            = 0x800C,  
+  kKeyTimeSyncType            = 0x800C,
   kKeyStatusCode              = 0x800D,
   kKeyLidarDiagStatus         = 0x800E,
   kKeyLidarFlashStatus        = 0x800F,
   kKeyFwType                  = 0x8010,
   kKeyHmsCode                 = 0x8011,
   kKeyCurGlassHeatState       = 0x8012,
-  
+
   kKeyRoiMode                 = 0xFFFE,
   kKeyLidarDiagInfoQuery      = 0xFFFF
 } ParamKeyName;
@@ -355,22 +355,22 @@ typedef struct {
   uint8_t             pcl_data_type;            // 0x0000
   uint8_t             pattern_mode;             // 0x0001
   uint8_t             dual_emit_en;             // 0x0002
-  uint8_t             point_send_en;            // 0x0003  
+  uint8_t             point_send_en;            // 0x0003
   LivoxLidarIpInfo    lidar_ipcfg;              // 0x0004
   HostStateInfoIpInfo host_state_info;          // 0x0005
   HostPointIPInfo     pointcloud_host_ipcfg;    // 0x0006
   HostImuDataIPInfo   imu_host_ipcfg;           // 0x0007
   LivoxIpCfg          ctl_host_ipcfg;           // 0x0008
   LivoxIpCfg          log_host_ipcfg;           // 0x0009
-  
+
   int32_t             vehicle_speed;            // 0x0010
-  int32_t             environment_temp;         // 0x0011  
+  int32_t             environment_temp;         // 0x0011
   LivoxLidarInstallAttitude install_attitude;   // 0x0012
   uint32_t            blind_spot_set;           // 0x0013
   uint8_t             frame_rate;               // 0x0014
   FovCfg              fov_cfg0;                 // 0x0015
   FovCfg              fov_cfg1;                 // 0x0016
-  uint8_t             fov_cfg_en;               // 0x0017 
+  uint8_t             fov_cfg_en;               // 0x0017
   uint8_t             detect_mode;              // 0x0018
   uint8_t             func_io_cfg[4];           // 0x0019
   uint8_t             work_tgt_mode;            // 0x001A
@@ -535,7 +535,7 @@ typedef void (*QueryLivoxLidarInternalInfoCallback)(livox_status status, uint32_
  * @param  client_data            user data associated with the command.
  * @return kStatusSuccess on successful return, see \ref LivoxStatus for other error code.
  */
-typedef void (*LivoxLidarAsyncControlCallback)(livox_status status, uint32_t handle, 
+typedef void (*LivoxLidarAsyncControlCallback)(livox_status status, uint32_t handle,
                                                LivoxLidarAsyncControlResponse *response, void *client_data);
 /**
  * Callback function for receiving the reset setting response from lidar.

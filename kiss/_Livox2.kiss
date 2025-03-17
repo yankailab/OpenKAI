@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":1,
+	"bLog":0,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -18,7 +18,7 @@
 }
 
 {
-	"name":"Livox2UDPdeviceQuery",
+	"name":"udpLvxDeviceQuery",
 	"class":"_UDP",
 	"bON":1,
 	{
@@ -34,7 +34,7 @@
 }
 
 {
-	"name":"Livox2UDPctrlCmd",
+	"name":"udpLvxCtrlCmd",
 	"class":"_UDP",
 	"bON":1,
 	{
@@ -49,7 +49,7 @@
 }
 
 {
-	"name":"Livox2UDPpushCmd",
+	"name":"udpLvxPushCmd",
 	"class":"_UDP",
 	"bON":1,
 	{
@@ -64,7 +64,7 @@
 }
 
 {
-	"name":"Livox2UDPpcl",
+	"name":"udpLvxPCL",
 	"class":"_UDP",
 	"bON":1,
 	{
@@ -80,7 +80,7 @@
 }
 
 {
-	"name":"Livox2UDPimu",
+	"name":"udpLvxIMU",
 	"class":"_UDP",
 	"bON":1,
 	{
@@ -106,50 +106,40 @@
 		"FPS":1,
 	}
     {
-		"name":"threadDeviceQueryR",
+		"name":"threadR",
 		"FPS":1,
 	}
     {
 		"name":"threadCtrlCmdW",
 		"FPS":1,
 	}
-    {
-		"name":"threadCtrlCmdR",
-		"FPS":1,
-	}
-    {
-		"name":"threadPushCmdR",
-		"FPS":1,
-	}
-    {
-		"name":"threadPclR",
-		"FPS":1,
-	}
-    {
-		"name":"threadImuR",
-		"FPS":1,
-	}
 	"bLog":0,
+	"_UDPdeviceQuery":"udpLvxDeviceQuery",
+	"_UDPctrlCmd":"udpLvxCtrlCmd",
+	"_UDPpushCmd":"udpLvxPushCmd",
+	"_UDPpcl":"udpLvxPCL",
+	"_UDPimu":"udpLvxIMU",
+	"_UDPlog":"udpLvxLog",
+
 	"lvxSN":"47MDLC50020003",
 	"lvxIP":"",
+	"tOutSec":10,
+
+	"lvxPCLdataType":1,
+	"lvxPatternMode":0,
+	"lvxHostIP":"192.168.1.100",
+	"lvxHostPortState":56201,
+	"lvxHostPortPCL":56301,
+	"lvxHostPortIMU":56401,
+	"lvxFrameRate":3,
+	"lvxDetectMode":0,
+	"lvxWorkModeAfterBoot":1,
 	"lvxWorkMode":1,
-	"bEnableIMU":1,
+	"lvxIMUdataEn":1,
+
 	"nP":256000,
 	"vToffset":[0,0,0],
 	"vRoffset":[0,0,0],
-	"/sharedMemG":"shmW",
-
-	"_UDPdeviceQuery":"Livox2UDPdeviceQuery",
-	"_UDPctrlCmd":"Livox2UDPctrlCmd",
-	"_UDPpushCmd":"Livox2UDPpushCmd",
-	"_UDPpcl":"Livox2UDPpcl",
-	"_UDPimu":"Livox2UDPimu",
-	"_UDPlog":"Livox2UDPlog",
-
-	"hostIP":"192.168.1.100",
-	"hostPortState":56201,
-	"hostPortPCL":56301,
-	"hostPortIMU":56401,
 }
 
 {

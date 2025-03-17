@@ -24,6 +24,21 @@
 #define LVX2_DATA_N_HDR 28
 #define LVX2_SOF 0xAA
 
+#define LVX2_CMD_REQ 0x00
+#define LVX2_CMD_ACK 0x01
+
+#define LVX2_CMD_DISCOVER 0x0000
+#define LVX2_CMD_SET 0x0100
+#define LVX2_CMD_GET 0x0101
+#define LVX2_CMD_PUSH 0x0102
+
+#define LVX2_CMD_REBOOT 0x0200
+#define LVX2_CMD_RST_FACTORY 0x0201
+#define LVX2_CMD_SET_GOS_TSTAMP 0x0202
+#define LVX2_CMD_GET_LOG 0x0300
+
+#define LVX2_RET_SUCCESS 0x00
+
 namespace kai
 {
 	struct LIVOX2_DATA
@@ -103,9 +118,38 @@ namespace kai
 		lvxState_work = 2,
 	};
 
-	struct Livox2Ctrl
+	struct LVX2_CONFIG
 	{
+		uint8_t m_pclDataType;
+		uint8_t m_patternMode;
+		uint64_t m_hostIP;
+		uint16_t m_hostPortState;
+		uint16_t m_hostPortPCL;
+		uint16_t m_hostPortIMU;
+		uint8_t m_frameRate;
+		uint8_t m_detectMode;
+		uint8_t m_workModeAfterBoot;
+		uint8_t m_workMode;
+		uint8_t m_imuDataEn;
+
 		vFloat2 m_vRz = {0.0, 500.0}; // z region
+
+		void init(void)
+		{
+			m_pclDataType = kLivoxLidarCartesianCoordinateHighData;
+			m_patternMode = kLivoxLidarScanPatternNoneRepetive;
+			m_hostIP = 0;
+			m_hostPortState = 0;
+			m_hostPortPCL = 0;
+			m_hostPortIMU = 0;
+			m_frameRate = kLivoxLidarFrameRate25Hz;
+			m_detectMode = kLivoxLidarDetectNormal;
+			m_workModeAfterBoot = kLivoxLidarWorkModeAfterBootNormal;
+			m_workMode = kLivoxLidarNormal;
+			m_imuDataEn = 1;
+
+			m_vRz = {0.0, 500.0};
+		}
 	};
 
 	class _Livox2 : public _PCstream
@@ -120,7 +164,8 @@ namespace kai
 		virtual int start(void);
 		virtual void console(void *pConsole);
 
-		void setLidarMode(LivoxLidarWorkMode m);
+		LVX2_CONFIG getConfig(void);
+		void setConfig(const LVX2_CONFIG& cfg);
 
 	private:
 		// Common
@@ -145,12 +190,16 @@ namespace kai
 		}
 
 		// Control Command
-		void setLvxHost(void);
-		void setLvxWorkMode(void);
-		void setLvxPattern(void);
 		void setLvxPCLdataType(void);
+		void setLvxPattern(void);
+		void setLvxHost(void);
+		void setLvxFrameRate(void);
 		void setLvxDetectMode(void);
-		void updateCtrlCmd(void);
+		void setLvxWorkModeAfterBoot(void);
+		void setLvxWorkMode(void);
+		void setLvxIMUdataEn(void);
+
+		void getLvxConfig(void);
 		void updateWctrlCmd(void);
 		static void *getUpdateWctrlCmd(void *This)
 		{
@@ -167,8 +216,6 @@ namespace kai
 		}
 
 		// Push command
-		void recvWorkMode(livox_status status, LivoxLidarAsyncControlResponse *pR);
-		void recvLidarInfoChange(const LivoxLidarInfo *pI);
 		void handlePushCmd(const LIVOX2_CMD &cmd);
 		void updateRpushCmd(void);
 		static void *getUpdateRpushCmd(void *This)
@@ -210,28 +257,23 @@ namespace kai
 		_UDP *m_pUDPimu;
 		_UDP *m_pUDPlog;
 
-		// lvx config
+		// lvx state
+		LVX2_STATE m_lvxState;
+		TIME_OUT m_lvxTout;
+
+		// lvx info
 		string m_lvxSN;
 		uint8_t m_pLvxSN[16];
 		uint64_t m_lvxIP;
 		uint16_t m_lvxCmdPort;
 		uint8_t m_lvxDevType;
 
-		// lvx state
-		LVX2_STATE m_lvxState;
-		LivoxLidarWorkMode m_lvxWorkMode;
+		// lvx config
+		LVX2_CONFIG m_lvxCfg;
 
 		// lvx IMU
 		SF m_SF;
 		uint64_t m_tIMU;
-		bool m_bEnableIMU;
-
-		// host config
-		uint64_t m_hostIP;
-		uint16_t m_hostPortState;
-		uint16_t m_hostPortPCL;
-		uint16_t m_hostPortIMU;
-
 	};
 
 }
