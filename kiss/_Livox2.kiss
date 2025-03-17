@@ -64,7 +64,7 @@
 }
 
 {
-	"name":"Livox2UDPpointCloud",
+	"name":"Livox2UDPpcl",
 	"class":"_UDP",
 	"bON":1,
 	{
@@ -110,11 +110,11 @@
 		"FPS":1,
 	}
     {
-		"name":"threadControlCmdW",
-		"FPS":2,
+		"name":"threadCtrlCmdW",
+		"FPS":1,
 	}
     {
-		"name":"threadControlCmdR",
+		"name":"threadCtrlCmdR",
 		"FPS":1,
 	}
     {
@@ -122,32 +122,34 @@
 		"FPS":1,
 	}
     {
-		"name":"threadPointCloudR",
-		"FPS":1000,
+		"name":"threadPclR",
+		"FPS":1,
 	}
     {
 		"name":"threadImuR",
 		"FPS":1,
 	}
 	"bLog":0,
-	"/SN":"/47MDL9T0020177",
-	"lidarMode":1,
+	"lvxSN":"47MDLC50020003",
+	"lvxIP":"",
+	"lvxWorkMode":1,
 	"bEnableIMU":1,
 	"nP":256000,
 	"vToffset":[0,0,0],
 	"vRoffset":[0,0,0],
-	"sharedMemG":"shmW",
+	"/sharedMemG":"shmW",
 
 	"_UDPdeviceQuery":"Livox2UDPdeviceQuery",
 	"_UDPctrlCmd":"Livox2UDPctrlCmd",
 	"_UDPpushCmd":"Livox2UDPpushCmd",
-	"_UDPpointCloud":"Livox2UDPpointCloud",
+	"_UDPpcl":"Livox2UDPpcl",
 	"_UDPimu":"Livox2UDPimu",
 	"_UDPlog":"Livox2UDPlog",
 
-	"IPstate":"192.168.1.100:56201",
-	"IPpcl":"192.168.1.100:56301",
-	"IPimu":"192.168.1.100:56401",
+	"hostIP":"192.168.1.100",
+	"hostPortState":56201,
+	"hostPortPCL":56301,
+	"hostPortIMU":56401,
 }
 
 {

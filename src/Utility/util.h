@@ -426,5 +426,18 @@ namespace kai
 		return pid;
 	}
 
+	inline bool bEqual(uint8_t* pA, uint8_t* pB, int n)
+	{
+		NULL_F(pA);
+		NULL_F(pB);
+
+		for(int i=0; i<n; i++)
+		{
+			IF_F(pA[i] != pB[i]);
+		}
+
+		return true;
+	}
+
 }
 #endif

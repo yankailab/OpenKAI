@@ -12,17 +12,17 @@
 #include "../../3D/PointCloud/_PCstream.h"
 #include "../../Dependencies/SensorFusion/SensorFusion.h"
 #include "../../Dependencies/CRC.h"
+#include "../../Utility/util.h"
 #include "../../Utility/utilNet.h"
 
-#include "Livox2/livox_lidar_def.h"
-#include "Livox2/livox_lidar_api.h"
+#include "livox_lidar_def.h"
 
-
-#define LIVOX2_N_BUF 1380
-#define LIVOX2_N_DATA 1344
-#define LIVOX2_SOF 0xAA
-#define LIVOX2_CMD_N_HDR 24
-#define LIVOX2_DATA_N_HDR 28
+#define LVX2_N_BUF 1380
+#define LVX2_N_DATA 1344
+#define LVX2_N_SN 16
+#define LVX2_CMD_N_HDR 24
+#define LVX2_DATA_N_HDR 28
+#define LVX2_SOF 0xAA
 
 namespace kai
 {
@@ -39,7 +39,7 @@ namespace kai
 		uint8_t rsvd[12];
 		uint32_t crc32;
 		uint8_t timestamp[8];
-		uint8_t data[LIVOX2_N_DATA];
+		uint8_t data[LVX2_N_DATA];
 	};
 
 	struct LIVOX2_CMD
@@ -54,14 +54,14 @@ namespace kai
 		char rsvd[6];
 		uint16_t crc16_h;
 		uint32_t crc32_d;
-		uint8_t data[LIVOX2_N_DATA];
+		uint8_t data[LVX2_N_DATA];
 		int m_iD;
 
 		void init(uint16_t cmdID, uint8_t cmdType, uint32_t seqNum)
 		{
-			sof = LIVOX2_SOF;
+			sof = LVX2_SOF;
 			version = 0;
-			length = LIVOX2_CMD_N_HDR;
+			length = LVX2_CMD_N_HDR;
 			seq_num = seqNum;
 			cmd_id = cmdID;
 			cmd_type = cmdType; // REQ
@@ -73,11 +73,11 @@ namespace kai
 		{
 			crc16_h = CRC::Calculate(this, 18, CRC::CRC_16_CCITTFALSE());
 			crc32_d = 0;
-			if (length > LIVOX2_CMD_N_HDR)
-				crc32_d = CRC::Calculate(data, length - LIVOX2_CMD_N_HDR, CRC::CRC_32());
+			if (length > LVX2_CMD_N_HDR)
+				crc32_d = CRC::Calculate(data, length - LVX2_CMD_N_HDR, CRC::CRC_32());
 		}
 
-		void addData(void* pD, int nD)
+		void addData(void *pD, int nD)
 		{
 			memcpy(&data[m_iD], pD, nD);
 			m_iD += nD;
@@ -96,10 +96,11 @@ namespace kai
 		}
 	};
 
-	enum LIVOX2_STATE
+	enum LVX2_STATE
 	{
-		livox2_deviceQuery = 0,
-		livox2_work = 1,
+		lvxState_deviceQuery = 0,
+		lvxState_config = 1,
+		lvxState_work = 2,
 	};
 
 	struct Livox2Ctrl
@@ -123,9 +124,8 @@ namespace kai
 
 	private:
 		// Common
-		bool recvLivoxCmd(_IObase *pIO, LIVOX2_CMD *pResvCmd);
-		bool recvLivoxData(_IObase *pIO, LIVOX2_DATA *pResvDATA);
-
+		bool recvLivoxCmd(_IObase *pIO, LIVOX2_CMD *pResvCmd, bool bParity = false);
+		bool recvLivoxData(_IObase *pIO, LIVOX2_DATA *pResvDATA, bool bParity = false);
 
 		// Device Type Query
 		void sendDeviceQuery(void);
@@ -144,11 +144,12 @@ namespace kai
 			return NULL;
 		}
 
-
 		// Control Command
-		void setHostIPconfig(void);
-		void setPclDataType(void);
-		void setPatternMode(void);
+		void setLvxHost(void);
+		void setLvxWorkMode(void);
+		void setLvxPattern(void);
+		void setLvxPCLdataType(void);
+		void setLvxDetectMode(void);
 		void updateCtrlCmd(void);
 		void updateWctrlCmd(void);
 		static void *getUpdateWctrlCmd(void *This)
@@ -165,7 +166,6 @@ namespace kai
 			return NULL;
 		}
 
-
 		// Push command
 		void recvWorkMode(livox_status status, LivoxLidarAsyncControlResponse *pR);
 		void recvLidarInfoChange(const LivoxLidarInfo *pI);
@@ -176,7 +176,6 @@ namespace kai
 			((_Livox2 *)This)->updateRpushCmd();
 			return NULL;
 		}
-
 
 		// Point Cloud Data
 		void handlePointCloudData(const LIVOX2_DATA &d);
@@ -198,35 +197,41 @@ namespace kai
 
 	protected:
 		_Thread *m_pTdeviceQueryR;
-		_Thread *m_pTcontrolCmdW;
-		_Thread *m_pTcontrolCmdR;
+		_Thread *m_pTctrlCmdW;
+		_Thread *m_pTctrlCmdR;
 		_Thread *m_pTpushCmdR;
-		_Thread *m_pTpointCloudR;
+		_Thread *m_pTpclR;
 		_Thread *m_pTimuR;
 
 		_UDP *m_pUDPdeviceQuery;
 		_UDP *m_pUDPctrlCmd;
 		_UDP *m_pUDPpushCmd;
-		_UDP *m_pUDPpointCloud;
+		_UDP *m_pUDPpcl;
 		_UDP *m_pUDPimu;
 		_UDP *m_pUDPlog;
 
-		LIVOX2_STATE m_state;
-		LivoxLidarWorkMode m_workMode;
+		// lvx config
+		string m_lvxSN;
+		uint8_t m_pLvxSN[16];
+		uint64_t m_lvxIP;
+		uint16_t m_lvxCmdPort;
+		uint8_t m_lvxDevType;
 
-		string m_SN;
-		uint8_t m_devType;
-		uint8_t m_pSN[16];
-		uint8_t m_pIP[4];
-		uint16_t m_cmdPort;
+		// lvx state
+		LVX2_STATE m_lvxState;
+		LivoxLidarWorkMode m_lvxWorkMode;
 
+		// lvx IMU
 		SF m_SF;
 		uint64_t m_tIMU;
 		bool m_bEnableIMU;
 
-		string m_IPstate;
-		string m_IPpcl;
-		string m_IPimu;
+		// host config
+		uint64_t m_hostIP;
+		uint16_t m_hostPortState;
+		uint16_t m_hostPortPCL;
+		uint16_t m_hostPortIMU;
+
 	};
 
 }
