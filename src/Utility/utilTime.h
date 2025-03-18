@@ -35,6 +35,15 @@ namespace kai
 		return tFromBoot.tv_sec * SEC_2_USEC + (tFromBoot.tv_nsec / 1000);
 	}
 
+	inline uint64_t getTbootNs(void)
+	{
+		// get number of nano sec since boot
+		struct timespec tFromBoot;
+		clock_gettime(CLOCK_BOOTTIME, &tFromBoot);
+
+		return tFromBoot.tv_sec * SEC_2_USEC * 1000 + (tFromBoot.tv_nsec);
+	}
+
 	inline bool bExpired(uint64_t tStamp, uint64_t tExpire, uint64_t tNow)
 	{
 		return (tStamp + tExpire < tNow);

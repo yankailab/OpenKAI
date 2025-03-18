@@ -38,14 +38,14 @@ namespace kai
 		}
 
 	protected:
-		string m_addr;
-		uint16_t m_port;
-		bool m_bServer;
+		string m_addrRemote;
+		uint16_t m_portRemote;
+		uint16_t m_portLocal;
 		bool m_bW2R;	// write back to the client recevied from
 		int m_bWbroadcast;
 
-		sockaddr_in m_sAddrW;
-//		sockaddr_in m_sAddrR;
+		sockaddr_in m_sAddrLocal;
+		sockaddr_in m_sAddrRemote;
 		int m_socket;
 	};
 

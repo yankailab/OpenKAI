@@ -114,7 +114,7 @@ namespace kai
 	enum LVX2_STATE
 	{
 		lvxState_deviceQuery = 0,
-		lvxState_config = 1,
+		lvxState_init = 1,
 		lvxState_work = 2,
 	};
 
@@ -264,7 +264,7 @@ namespace kai
 		// lvx info
 		string m_lvxSN;
 		uint8_t m_pLvxSN[16];
-		uint64_t m_lvxIP;
+		uint32_t m_lvxIP;
 		uint16_t m_lvxCmdPort;
 		uint8_t m_lvxDevType;
 

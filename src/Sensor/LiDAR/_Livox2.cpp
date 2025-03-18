@@ -86,7 +86,6 @@ namespace kai
         pK->v("lvxWorkMode", &m_lvxCfg.m_workMode);
         pK->v("lvxIMUdataEn", &m_lvxCfg.m_imuDataEn);
 
-
         // common thread config
         Kiss *pKw;
         Kiss *pKr = pK->child("threadR");
@@ -209,9 +208,9 @@ namespace kai
         NULL_F(pCmdRecv);
 
         int nBr = pIO->read((uint8_t *)pCmdRecv, sizeof(LIVOX2_CMD));
-        if(nBr <= 0)
+        if (nBr <= 0)
         {
-            //TODO; change mode to socket error
+            // TODO; change mode to socket error
             return false;
         }
 
@@ -238,9 +237,9 @@ namespace kai
 
         uint8_t pB[LVX2_N_BUF];
         int nBr = pIO->read(pB, LVX2_N_BUF);
-        if(nBr <= 0)
+        if (nBr <= 0)
         {
-            //TODO; change mode to socket error
+            // TODO; change mode to socket error
             return false;
         }
 
@@ -279,9 +278,9 @@ namespace kai
                 sendDeviceQuery();
             }
 
-            if(m_lvxTout.bTout())
+            if (m_lvxTout.bTout())
             {
-                m_lvxState = lvxState_deviceQuery;  // disconnected
+                m_lvxState = lvxState_deviceQuery; // disconnected
             }
         }
     }
@@ -325,7 +324,7 @@ namespace kai
             IF_(!bEqual(m_pLvxSN, pSN, LVX2_N_SN));
         }
 
-        uint64_t lvxIP;
+        uint32_t lvxIP;
         memcpy((uint8_t *)&lvxIP, &cmd.data[18], 4);
         if (m_lvxIP != 0)
         {
@@ -335,7 +334,7 @@ namespace kai
         m_lvxCmdPort = *(uint16_t *)(&cmd.data[22]);
         m_lvxDevType = cmd.data[1];
 
-        m_lvxState = lvxState_config;
+        m_lvxState = lvxState_init;
     }
 
     // Control Command
@@ -345,7 +344,7 @@ namespace kai
         {
             m_pTctrlCmdW->autoFPS();
 
-            if (m_lvxState == lvxState_config)
+            if (m_lvxState == lvxState_init)
             {
                 setLvxHost();
             }
@@ -363,7 +362,7 @@ namespace kai
 
         // data
         cmd.addData((uint16_t)12); // key_num
-        cmd.addData((uint16_t)0); // rsvd
+        cmd.addData((uint16_t)0);  // rsvd
 
         // key value list
         cmd.addData((uint16_t)kKeyPclDataType);
@@ -562,67 +561,95 @@ namespace kai
         IF_(cmd.cmd_type != LVX2_CMD_ACK);
 
         uint8_t rCode = cmd.data[0];
-        IF_(rCode != LVX2_RET_SUCCESS);
+        //        IF_(rCode != LVX2_RET_SUCCESS);
         uint16_t nK = *(uint16_t *)(&cmd.data[1]);
-        uint8_t* pK = (uint8_t *)&cmd.data[3];
+        uint8_t *pK = (uint8_t *)&cmd.data[3];
 
         int iD = 0;
-        for(int iK = 0; iK < nK; iK++)
+        for (int iK = 0; iK < nK; iK++)
         {
-            uint16_t key = *((uint16_t*)&pK[iD]);
+            uint16_t key = *((uint16_t *)&pK[iD]);
             iD += 2;
-            uint16_t nKb = *((uint16_t*)&pK[iD]);
+            uint16_t nKb = *((uint16_t *)&pK[iD]);
             iD += 2;
 
             uint8_t v;
+            uint16_t v2;
+            uint32_t v4;
             switch (key)
             {
-                case kKeyPclDataType:
-                    v = pK[iD];
-                    if(v != m_lvxCfg.m_pclDataType)
-                        setLvxPCLdataType();
+            case kKeyPclDataType:
+                v = pK[iD];
+                if (v != m_lvxCfg.m_pclDataType)
+                    setLvxPCLdataType();
                 break;
-                case kKeyPatternMode:
-                    v = pK[iD];
-                    if(v != m_lvxCfg.m_patternMode)
-                        setLvxPattern();
+            case kKeyPatternMode:
+                v = pK[iD];
+                if (v != m_lvxCfg.m_patternMode)
+                    setLvxPattern();
                 break;
-                case kKeyStateInfoHostIpCfg:
-
+            case kKeyStateInfoHostIpCfg:
+                v4 = *(uint32_t *)&pK[iD];
+                v2 = *(uint16_t *)&pK[iD + 4];
+                if(v4 != m_lvxCfg.m_hostIP || v2 != m_lvxCfg.m_hostPortState)
+                    setLvxHost();
                 break;
-                case kKeyLidarPointDataHostIpCfg:
-
+            case kKeyLidarPointDataHostIpCfg:
+                v4 = *(uint32_t *)&pK[iD];
+                v2 = *(uint16_t *)&pK[iD + 4];
+                if(v4 != m_lvxCfg.m_hostIP || v2 != m_lvxCfg.m_hostPortPCL)
+                    setLvxHost();
                 break;
-                case kKeyLidarImuHostIpCfg:
-
+            case kKeyLidarImuHostIpCfg:
+                v4 = *(uint32_t *)&pK[iD];
+                v2 = *(uint16_t *)&pK[iD + 4];
+                if(v4 != m_lvxCfg.m_hostIP || v2 != m_lvxCfg.m_hostPortIMU)
+                    setLvxHost();
                 break;
-                case kKeyFrameRate:
-
+            case kKeyFrameRate:
+                v = pK[iD];
+                if (v != m_lvxCfg.m_frameRate)
+                    setLvxFrameRate();
                 break;
-                case kKeyDetectMode:
-
+            case kKeyDetectMode:
+                v = pK[iD];
+                if (v != m_lvxCfg.m_detectMode)
+                    setLvxDetectMode();
                 break;
-                case kKeyWorkModeAfterBoot:
-
+            case kKeyWorkModeAfterBoot:
+                v = pK[iD];
+                if (v != m_lvxCfg.m_workModeAfterBoot)
+                    setLvxWorkModeAfterBoot();
                 break;
-                case kKeyWorkMode:
-
+            case kKeyWorkMode:
+                v = pK[iD];
+                if (v != m_lvxCfg.m_workMode)
+                    setLvxWorkMode();
                 break;
-                case kKeyImuDataEn:
-
+            case kKeyImuDataEn:
+                v = pK[iD];
+                if (v != m_lvxCfg.m_imuDataEn)
+                    setLvxIMUdataEn();
                 break;
-                case kKeyLidarDiagStatus:
-
+            case kKeyLidarDiagStatus:
+                v2 = *(uint16_t *)&pK[iD];
+                if(v2 != 0)
+                {
+                    // lvx error
+                }
                 break;
-                case kKeyHmsCode:
-
+            case kKeyHmsCode:
+                v4 = *(uint32_t *)&pK[iD];
+                if(v4 != 0)
+                {
+                    // lvx hms error
+                }
                 break;
             };
 
             iD += nKb;
         }
 
-//        m_lvxState = lvxState_config;
     }
 
     // Push command
@@ -700,7 +727,8 @@ namespace kai
 
     void _Livox2::handleIMUdata(const LIVOX2_DATA &d)
     {
-        uint64_t tStamp = *((uint64_t *)d.timestamp);
+//        uint64_t tStamp = *((uint64_t *)d.timestamp);
+        uint64_t tStamp = getTbootNs();
         uint64_t dT = tStamp - m_tIMU;
         m_tIMU = tStamp;
         if (dT > USEC_1SEC * 1000)
@@ -725,6 +753,7 @@ namespace kai
         vDouble3 vR(m_SF.getRollRadians(), m_SF.getPitchRadians(), m_SF.getYawRadians());
         setRotation(vR);
 
+        // cancel yaw rot
         vR.x = 0;
         vR.y = 0;
         vR.z = -vR.z;
@@ -733,12 +762,12 @@ namespace kai
         LOG_I("IMU, data_num:" + i2str(d.dot_num) + ", data_type:" + i2str(d.data_type) + ", length:" + i2str(d.length) + ", frame_counter:" + i2str(d.frame_cnt));
     }
 
-	LVX2_CONFIG _Livox2::getConfig(void)
+    LVX2_CONFIG _Livox2::getConfig(void)
     {
         return m_lvxCfg;
     }
 
-	void _Livox2::setConfig(const LVX2_CONFIG& cfg)
+    void _Livox2::setConfig(const LVX2_CONFIG &cfg)
     {
         m_lvxCfg = cfg;
     }

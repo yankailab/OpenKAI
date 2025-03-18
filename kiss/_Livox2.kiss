@@ -26,9 +26,9 @@
 		"FPS":1,
 	}
 	"/addr":"255.255.255.255",
-	"addr":"192.168.1.3",
-	"port":56000,
-	"bServer":0,
+	"addrRemote":"192.168.1.3",
+	"portRemote":56000,
+	"portLocal":0,
 	"bW2R":0,
 	"bWbroadcast":0,
 }
@@ -41,9 +41,9 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"addr":"192.168.1.3",
-	"port":56100,
-	"bServer":0,
+	"addrRemote":"192.168.1.3",
+	"portRemote":56100,
+	"portLocal":56101,
 	"bW2R":0,
 	"bWbroadcast":0,
 }
@@ -56,9 +56,9 @@
 		"name":"thread",
 		"FPS":1,
 	}
-	"addr":"192.168.1.3",
-	"port":56201,
-	"bServer":1,
+	"addrRemote":"192.168.1.3",
+	"portRemote":56200,
+	"portLocal":56201,
 	"bW2R":0,
 	"bWbroadcast":0,
 }
@@ -72,9 +72,9 @@
 		"FPS":1,
 	}
 	"bLog":0,
-	"addr":"192.168.1.3",
-	"port":56301,
-	"bServer":1,
+	"addrRemote":"192.168.1.3",
+	"portRemote":56300,
+	"portLocal":56301,
 	"bW2R":0,
 	"bWbroadcast":0,
 }
@@ -88,13 +88,12 @@
 		"FPS":1,
 	}
 	"bLog":0,
-	"addr":"192.168.1.3",
-	"port":56402,
-	"bServer":1,
+	"addrRemote":"192.168.1.3",
+	"portRemote":56400,
+	"portLocal":56401,
 	"bW2R":0,
 	"bWbroadcast":0,
 }
-
 
 
 {
@@ -132,7 +131,7 @@
 	"lvxHostPortPCL":56301,
 	"lvxHostPortIMU":56401,
 	"lvxFrameRate":3,
-	"lvxDetectMode":0,
+	"lvxDetectMode":1,
 	"lvxWorkModeAfterBoot":1,
 	"lvxWorkMode":1,
 	"lvxIMUdataEn":1,
