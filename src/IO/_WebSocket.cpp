@@ -24,7 +24,6 @@ namespace kai
 
 	int _WebSocket::init(void *pKiss)
 	{
-		//		CHECK_(this->_IObase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		int nPacket = 1024;

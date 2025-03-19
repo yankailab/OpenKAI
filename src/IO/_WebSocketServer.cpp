@@ -129,6 +129,23 @@ namespace kai
 		return pC->getWS();
 	}
 
+	bool _WebSocketServer::write(uint8_t *pBuf, int nB)
+	{
+		_WebSocket* pWS = getWS(0);
+		NULL_F(pWS);
+
+		pWS->write(pBuf, nB);
+		return true;
+	}
+
+	int _WebSocketServer::read(uint8_t *pBuf, int nB)
+	{
+		_WebSocket* pWS = getWS(0);
+		NULL__(pWS, 0);
+
+		return pWS->read(pBuf, nB);
+	}
+
 	void _WebSocketServer::sCbOpen(ws_cli_conn_t client)
 	{
 		NULL_(g_pWSserver);
@@ -173,6 +190,8 @@ namespace kai
 		char *cli;
 		cli = ws_getaddress(client);
 
+		// TODO: delete the client
+
 		LOG_I("Connection closed, addr: " + string(cli));
 	}
 
@@ -182,6 +201,7 @@ namespace kai
 		char *cli;
 		cli = ws_getaddress(client);
 
+		// TODO: put into correspondent client
 		wsClient* pC = getClient(0);
 		NULL_(pC);
 

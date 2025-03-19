@@ -49,6 +49,10 @@ namespace kai
 		int start(void);
 		void console(void *pConsole);
 
+		// default to client 0
+		bool write(uint8_t *pBuf, int nB);
+		int read(uint8_t *pBuf, int nB);
+
 		int nClient(void);
 		_WebSocket* getWS(int i);
 
