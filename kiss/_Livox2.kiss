@@ -14,11 +14,13 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"vBASE":["Livox2","gv"],
+	"vBASE":["Lvx1","Lvx2","gv"],
 }
 
+
+
 {
-	"name":"udpLvxDeviceQuery",
+	"name":"udpLvxDeviceQuery_1",
 	"class":"_UDP",
 	"bON":1,
 	{
@@ -26,7 +28,7 @@
 		"FPS":1,
 	}
 	"/addr":"255.255.255.255",
-	"addrRemote":"192.168.1.3",
+	"addrRemote":"192.168.1.200",
 	"portRemote":56000,
 	"portLocal":0,
 	"bW2R":0,
@@ -34,14 +36,14 @@
 }
 
 {
-	"name":"udpLvxCtrlCmd",
+	"name":"udpLvxCtrlCmd_1",
 	"class":"_UDP",
 	"bON":1,
 	{
 		"name":"thread",
 		"FPS":10,
 	}
-	"addrRemote":"192.168.1.3",
+	"addrRemote":"192.168.1.200",
 	"portRemote":56100,
 	"portLocal":56101,
 	"bW2R":0,
@@ -49,14 +51,14 @@
 }
 
 {
-	"name":"udpLvxPushCmd",
+	"name":"udpLvxPushCmd_1",
 	"class":"_UDP",
 	"bON":1,
 	{
 		"name":"thread",
 		"FPS":1,
 	}
-	"addrRemote":"192.168.1.3",
+	"addrRemote":"192.168.1.200",
 	"portRemote":56200,
 	"portLocal":56201,
 	"bW2R":0,
@@ -64,7 +66,7 @@
 }
 
 {
-	"name":"udpLvxPCL",
+	"name":"udpLvxPCL_1",
 	"class":"_UDP",
 	"bON":1,
 	{
@@ -72,7 +74,7 @@
 		"FPS":1,
 	}
 	"bLog":0,
-	"addrRemote":"192.168.1.3",
+	"addrRemote":"192.168.1.200",
 	"portRemote":56300,
 	"portLocal":56301,
 	"bW2R":0,
@@ -80,7 +82,7 @@
 }
 
 {
-	"name":"udpLvxIMU",
+	"name":"udpLvxIMU_1",
 	"class":"_UDP",
 	"bON":1,
 	{
@@ -88,7 +90,7 @@
 		"FPS":1,
 	}
 	"bLog":0,
-	"addrRemote":"192.168.1.3",
+	"addrRemote":"192.168.1.200",
 	"portRemote":56400,
 	"portLocal":56401,
 	"bW2R":0,
@@ -97,7 +99,7 @@
 
 
 {
-	"name":"Livox2",
+	"name":"Lvx1",
 	"class":"_Livox2",
 	"bON":1,
     {
@@ -113,15 +115,15 @@
 		"FPS":1,
 	}
 	"bLog":0,
-	"_UDPdeviceQuery":"udpLvxDeviceQuery",
-	"_UDPctrlCmd":"udpLvxCtrlCmd",
-	"_UDPpushCmd":"udpLvxPushCmd",
-	"_UDPpcl":"udpLvxPCL",
-	"_UDPimu":"udpLvxIMU",
-	"_UDPlog":"udpLvxLog",
+	"_UDPdeviceQuery":"udpLvxDeviceQuery_1",
+	"_UDPctrlCmd":"udpLvxCtrlCmd_1",
+	"_UDPpushCmd":"udpLvxPushCmd_1",
+	"_UDPpcl":"udpLvxPCL_1",
+	"_UDPimu":"udpLvxIMU_1",
+	"_UDPlog":"udpLvxLog_1",
 
-	"lvxSN":"47MDLC50020003",
-	"lvxIP":"",
+	"/lvxSN":"47MDLC50020003",
+	"lvxIP":"192.168.1.200",
 	"tOutSec":10,
 
 	"lvxPCLdataType":1,
@@ -134,12 +136,157 @@
 	"lvxDetectMode":1,
 	"lvxWorkModeAfterBoot":1,
 	"lvxWorkMode":1,
-	"lvxIMUdataEn":1,
+	"lvxIMUdataEn":0,
 
 	"nP":256000,
 	"vToffset":[0,0,0],
 	"vRoffset":[0,0,0],
 }
+
+
+
+
+
+
+
+{
+	"name":"udpLvxDeviceQuery_2",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":1,
+	}
+	"/addr":"255.255.255.255",
+	"addrRemote":"192.168.1.201",
+	"portRemote":56000,
+	"portLocal":0,
+	"bW2R":0,
+	"bWbroadcast":0,
+}
+
+{
+	"name":"udpLvxCtrlCmd_2",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":10,
+	}
+	"addrRemote":"192.168.1.201",
+	"portRemote":56100,
+	"portLocal":56102,
+	"bW2R":0,
+	"bWbroadcast":0,
+}
+
+{
+	"name":"udpLvxPushCmd_2",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":1,
+	}
+	"addrRemote":"192.168.1.201",
+	"portRemote":56200,
+	"portLocal":56202,
+	"bW2R":0,
+	"bWbroadcast":0,
+}
+
+{
+	"name":"udpLvxPCL_2",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":1,
+	}
+	"bLog":0,
+	"addrRemote":"192.168.1.201",
+	"portRemote":56300,
+	"portLocal":56302,
+	"bW2R":0,
+	"bWbroadcast":0,
+}
+
+{
+	"name":"udpLvxIMU_2",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":1,
+	}
+	"bLog":0,
+	"addrRemote":"192.168.1.201",
+	"portRemote":56400,
+	"portLocal":56402,
+	"bW2R":0,
+	"bWbroadcast":0,
+}
+
+
+{
+	"name":"Lvx2",
+	"class":"_Livox2",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadR",
+		"FPS":1,
+	}
+    {
+		"name":"threadCtrlCmdW",
+		"FPS":1,
+	}
+	"bLog":0,
+	"_UDPdeviceQuery":"udpLvxDeviceQuery_2",
+	"_UDPctrlCmd":"udpLvxCtrlCmd_2",
+	"_UDPpushCmd":"udpLvxPushCmd_2",
+	"_UDPpcl":"udpLvxPCL_2",
+	"_UDPimu":"udpLvxIMU_2",
+	"_UDPlog":"udpLvxLog_2",
+
+	"/lvxSN":"47MDLC50020003",
+	"lvxIP":"192.168.1.201",
+	"tOutSec":10,
+
+	"lvxPCLdataType":1,
+	"lvxPatternMode":0,
+	"lvxHostIP":"192.168.1.100",
+	"lvxHostPortState":56202,
+	"lvxHostPortPCL":56302,
+	"lvxHostPortIMU":56402,
+	"lvxFrameRate":3,
+	"lvxDetectMode":1,
+	"lvxWorkModeAfterBoot":1,
+	"lvxWorkMode":1,
+	"lvxIMUdataEn":0,
+
+	"nP":256000,
+	"vToffset":[0,0,0],
+	"vRoffset":[0,0,0],
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 {
 	"name":"gv",
@@ -179,7 +326,7 @@
 	{
 		"name":"geometry",
 		{
-			"_GeometryBase":"Livox2",
+			"_GeometryBase":"Lvx1",
 			"bStatic":0,
 			"nP":256000,
 			"rDummyDome":1000.0,
@@ -187,5 +334,16 @@
 			"matName":"depth",
 			"matPointSize":1,
 		}
+
+		{
+			"_GeometryBase":"Lvx2",
+			"bStatic":0,
+			"nP":256000,
+			"rDummyDome":1000.0,
+			"/matName":"defaultUnlit",
+			"matName":"depth",
+			"matPointSize":1,
+		}
+
 	}
 }

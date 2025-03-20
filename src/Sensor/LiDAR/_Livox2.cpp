@@ -210,7 +210,7 @@ namespace kai
         int nBr = pIO->read((uint8_t *)pCmdRecv, sizeof(LIVOX2_CMD));
         if (nBr <= 0)
         {
-            // TODO; change mode to socket error
+            m_lvxState = lvxState_deviceQuery;
             return false;
         }
 
@@ -239,7 +239,7 @@ namespace kai
         int nBr = pIO->read(pB, LVX2_N_BUF);
         if (nBr <= 0)
         {
-            // TODO; change mode to socket error
+            m_lvxState = lvxState_deviceQuery;
             return false;
         }
 
@@ -313,6 +313,15 @@ namespace kai
         uint8_t rCode = cmd.data[0];
         IF_(rCode != LVX2_RET_SUCCESS);
 
+        // check IP correspondence
+        uint32_t lvxIP;
+        memcpy((uint8_t *)&lvxIP, &cmd.data[18], 4);
+        if (m_lvxIP != 0)
+        {
+            IF_(m_lvxIP != lvxIP);
+        }
+
+        // check SN correspondence if specified
         uint8_t pSN[LVX2_N_SN];
         memcpy(pSN, &cmd.data[2], LVX2_N_SN);
         if (m_lvxSN.empty())
@@ -324,14 +333,11 @@ namespace kai
             IF_(!bEqual(m_pLvxSN, pSN, LVX2_N_SN));
         }
 
-        uint32_t lvxIP;
-        memcpy((uint8_t *)&lvxIP, &cmd.data[18], 4);
-        if (m_lvxIP != 0)
-        {
-            IF_(m_lvxIP != lvxIP);
-        }
 
         m_lvxCmdPort = *(uint16_t *)(&cmd.data[22]);
+        //TODO: change cmd port in _UDP
+
+
         m_lvxDevType = cmd.data[1];
 
         m_lvxState = lvxState_init;
@@ -361,12 +367,13 @@ namespace kai
         cmd.init(LVX2_CMD_GET, LVX2_CMD_REQ, 0);
 
         // data
-        cmd.addData((uint16_t)12); // key_num
+        cmd.addData((uint16_t)13); // key_num
         cmd.addData((uint16_t)0);  // rsvd
 
         // key value list
         cmd.addData((uint16_t)kKeyPclDataType);
         cmd.addData((uint16_t)kKeyPatternMode);
+        cmd.addData((uint16_t)kKeyLidarIpCfg);
         cmd.addData((uint16_t)kKeyStateInfoHostIpCfg);
         cmd.addData((uint16_t)kKeyLidarPointDataHostIpCfg);
         cmd.addData((uint16_t)kKeyLidarImuHostIpCfg);
@@ -588,6 +595,17 @@ namespace kai
                 if (v != m_lvxCfg.m_patternMode)
                     setLvxPattern();
                 break;
+            case kKeyLidarIpCfg:
+                v4 = *(uint32_t *)&pK[iD];
+                if(v4 != m_lvxIP)
+                {
+                    setLvxHost();
+                }
+                else
+                {
+                    m_lvxState = lvxState_work;
+                }
+                break;
             case kKeyStateInfoHostIpCfg:
                 v4 = *(uint32_t *)&pK[iD];
                 v2 = *(uint16_t *)&pK[iD + 4];
@@ -727,6 +745,8 @@ namespace kai
 
     void _Livox2::handleIMUdata(const LIVOX2_DATA &d)
     {
+        IF_(!m_lvxCfg.m_imuDataEn);
+
 //        uint64_t tStamp = *((uint64_t *)d.timestamp);
         uint64_t tStamp = getTbootNs();
         uint64_t dT = tStamp - m_tIMU;
@@ -778,6 +798,10 @@ namespace kai
         this->_PCstream::console(pConsole);
 
         _Console *pC = (_Console *)pConsole;
+
+		pC->addMsg("States: " + i2str((int)m_lvxState));
+		pC->addMsg("SN: " + m_lvxSN);
+
     }
 
 }
