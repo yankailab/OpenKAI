@@ -483,4 +483,44 @@ namespace kai
 		return i;
 	}
 
+	int JSON::a(const string &name, vector<vInt4> *pVal)
+	{
+		value::array arr;
+		IF__(!array(name, &arr), -1);
+
+		value::array::iterator it;
+		int i = 0;
+		for (it = arr.begin(); it != arr.end(); it++)
+		{
+			IF_CONT(!it->is<value::array>());
+
+			vInt4 v;
+			v.clear();
+
+			value::array aV = it->get<value::array>();
+			value::array::iterator vItr;
+
+			vItr = aV.begin();
+			if (vItr != aV.end() && vItr->is<double>())
+				v.x = (int)vItr->get<double>();
+
+			vItr++;
+			if (vItr != aV.end() && vItr->is<double>())
+				v.y = (int)vItr->get<double>();
+
+			vItr++;
+			if (vItr != aV.end() && vItr->is<double>())
+				v.z = (int)vItr->get<double>();
+
+			vItr++;
+			if (vItr != aV.end() && vItr->is<double>())
+				v.w = (int)vItr->get<double>();
+
+			pVal->push_back(v);
+			i++;
+		}
+
+		return i;
+	}
+
 }

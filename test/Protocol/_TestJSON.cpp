@@ -18,7 +18,8 @@ namespace kai
         CHECK_(this->_TestBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        //        pK->v("", &);
+        // vector<vInt4> vTest;
+        // pK->a("avTest", &vTest);
 
         return OK_OK;
     }

@@ -57,6 +57,7 @@ namespace kai
 		int a(const string &name, vector<double> *pVal);
 		int a(const string &name, vector<float> *pVal);
 		int a(const string &name, vector<string> *pVal);
+		int a(const string &name, vector<vInt4> *pVal);
 	};
 
 }
