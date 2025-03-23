@@ -23,7 +23,7 @@ namespace kai
 		CHECK_(_PCframe::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("fName", &m_fName);
+		pK->a("vfName", &m_vfName);
 		open();
 
 		return OK_OK;
@@ -31,12 +31,18 @@ namespace kai
 
 	bool _PCfile::open(void)
 	{
-		IF_F(m_fName.empty());
+		IF_F(m_vfName.empty());
 
-		//	io::ReadPointCloudOption ro;
-		IF_F(!io::ReadPointCloud(m_fName, m_pc));
-		LOG_I("Read point cloud: " + i2str(m_pc.points_.size()));
-		*m_sPC.get() = m_pc;
+		m_sPC.get()->Clear();
+		PointCloud pc;
+		for (string f : m_vfName)
+		{
+			//	io::ReadPointCloudOption ro;
+			pc.Clear();
+			IF_CONT(!io::ReadPointCloud(f, pc));
+			LOG_I("File: " + f + ", Npoints: " + i2str(pc.points_.size()));
+			*m_sPC.get() += pc;
+		}
 
 		return true;
 	}
@@ -54,7 +60,6 @@ namespace kai
 			m_pT->autoFPS();
 
 			writeSharedMem();
-
 		}
 	}
 

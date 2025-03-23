@@ -57,7 +57,7 @@ namespace kai
         virtual void console(void *pConsole);
 
         virtual GEOMETRY_TYPE getType(void);
-		virtual int initGrid(void);
+		virtual int initGeometry(void);
         virtual void clear(void);
 
         virtual void setTranslation(const vDouble3 &vT);
@@ -77,6 +77,8 @@ namespace kai
 
         virtual void writeSharedMem(void);
         virtual void readSharedMem(void);
+
+        virtual bool save2file(const string& fName);
 
 		virtual bool loadConfig(void);
 		virtual bool saveConfig(void);

@@ -8,24 +8,22 @@ using namespace std;
 using namespace picojson;
 
 #define JO(o, n, v)                       \
-    {                                     \
-        o.insert(make_pair(n, value(v))); \
-    }
+	{                                     \
+		o.insert(make_pair(n, value(v))); \
+	}
 
 namespace kai
 {
 
 	class JSON
 	{
-	private:
-		picojson::value m_JSON;
-
 	public:
 		JSON(void);
 		~JSON(void);
 
-		bool parse(string &json);
+		bool parse(const string &json);
 		int checkErrorNum(void);
+		void setJSON(const picojson::value &json);
 
 		bool v(const string &name, picojson::value *pVal);
 
@@ -58,6 +56,9 @@ namespace kai
 		int a(const string &name, vector<float> *pVal);
 		int a(const string &name, vector<string> *pVal);
 		int a(const string &name, vector<vInt4> *pVal);
+
+	private:
+		picojson::value m_JSON;
 	};
 
 }

@@ -35,10 +35,10 @@ namespace kai
         m_nPresvNext = m_nPresv;
         pK->v("nPresvNext", &m_nPresvNext);
 
-        return initGrid();
+        return initGeometry();
     }
 
-    int _PCframe::initGrid(void)
+    int _PCframe::initGeometry(void)
     {
         mutexLock();
 

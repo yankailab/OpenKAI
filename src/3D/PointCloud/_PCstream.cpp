@@ -34,15 +34,15 @@ namespace kai
         pK->v("nP", &m_nP);
         IF__(m_nP <= 0, OK_ERR_INVALID_VALUE);
 
-        return initGrid();
+        return initGeometry();
     }
 
-    int _PCstream::initGrid(void)
+    int _PCstream::initGeometry(void)
     {
         mutexLock();
 
         m_pP = new GEOMETRY_POINT[m_nP];
-        if(!m_pP)
+        if (!m_pP)
         {
             mutexUnlock();
             return OK_ERR_ALLOCATION;
@@ -91,7 +91,6 @@ namespace kai
             m_pT->autoFPS();
 
             updatePCstream();
-
         }
     }
 
@@ -103,7 +102,7 @@ namespace kai
         writeSharedMem();
     }
 
-    void _PCstream::addPCstream(void *p, const uint64_t &tExpire)
+    void _PCstream::addPCstream(void *p, uint64_t tExpire)
     {
         IF_(check() != OK_OK);
         NULL_(p);
@@ -116,7 +115,7 @@ namespace kai
         for (int i = 0; i < pS->m_nP; i++)
         {
             GEOMETRY_POINT *pP = &pS->m_pP[i];
-            IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
+            IF_CONT(tExpire > 0 && bExpired(pP->m_tStamp, tExpire, tNow));
 
             m_pP[m_iP] = *pP;
             m_iP = iInc(m_iP, m_nP);
@@ -164,7 +163,21 @@ namespace kai
         }
     }
 
-    void _PCstream::copyTo(PointCloud *pPC, const uint64_t &tExpire)
+    bool _PCstream::save2file(const string &fName)
+    {
+        IF_F(fName.empty());
+
+        PointCloud pc;
+        this->copyTo(&pc);
+
+        io::WritePointCloudOption par;
+        par.write_ascii = io::WritePointCloudOption::IsAscii::Binary;
+        par.compressed = io::WritePointCloudOption::Compressed::Uncompressed;
+
+        return io::WritePointCloudToPLY(fName.c_str(), pc, par);
+    }
+
+    void _PCstream::copyTo(PointCloud *pPC, uint64_t tExpire)
     {
         IF_(check() != OK_OK);
         NULL_(pPC);
@@ -174,7 +187,7 @@ namespace kai
         for (int i = 0; i < m_nP; i++)
         {
             GEOMETRY_POINT *pP = &m_pP[i];
-            IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
+            IF_CONT(tExpire > 0 && bExpired(pP->m_tStamp, tExpire, tNow));
 
             pPC->points_.push_back(v2e(pP->m_vP).cast<double>());
             pPC->colors_.push_back(v2e(pP->m_vC).cast<double>());

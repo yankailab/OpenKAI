@@ -24,7 +24,7 @@ namespace kai
 		virtual int check(void);
 
         // _GeometryBase
-		virtual int initGrid(void);
+		virtual int initGeometry(void);
         virtual void clear(void);
         virtual void addPCstream(void* p, const uint64_t& tExpire);
         virtual void addPCframe(void* p);

@@ -33,15 +33,16 @@ namespace kai
         virtual int check(void);
 
         // _GeometryBase
-		virtual int initGrid(void);
+		virtual int initGeometry(void);
         virtual void clear(void);
-        virtual void addPCstream(void* p, const uint64_t& tExpire);
+        virtual void addPCstream(void* p, uint64_t tExpire = 0);
 
         virtual void writeSharedMem(void);
         virtual void readSharedMem(void);
+        virtual bool save2file(const string& fName);
 
         // _PCstream
-   		virtual void copyTo(PointCloud *pPC, const uint64_t& tExpire);
+   		virtual void copyTo(PointCloud *pPC, uint64_t tExpire = 0);
         virtual void add(const Vector3d &vP, const Vector3f &vC, const uint64_t& tStamp);
         virtual GEOMETRY_POINT* get(int i);
         virtual int nP(void);

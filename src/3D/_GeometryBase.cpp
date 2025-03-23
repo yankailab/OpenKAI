@@ -88,7 +88,7 @@ namespace kai
         return m_type;
     }
 
-    int _GeometryBase::initGrid(void)
+    int _GeometryBase::initGeometry(void)
     {
         return OK_ERR_UNIMPLEMENTED;
     }
@@ -212,6 +212,11 @@ namespace kai
 
     void _GeometryBase::readSharedMem(void)
     {
+    }
+
+    bool _GeometryBase::save2file(const string& fName)
+    {
+        return false;
     }
 
     bool _GeometryBase::loadConfig(void)

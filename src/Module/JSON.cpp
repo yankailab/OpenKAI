@@ -11,7 +11,7 @@ namespace kai
 	{
 	}
 
-	bool JSON::parse(string &json)
+	bool JSON::parse(const string &json)
 	{
 		string error;
 		const char *jsonstr = json.c_str();
@@ -20,6 +20,26 @@ namespace kai
 		IF_F(!m_JSON.is<object>());
 
 		return true;
+	}
+
+	int JSON::checkErrorNum(void)
+	{
+		int numError;
+		string errorDesc;
+		string err = "error";
+		if (!v(err, &numError))
+		{
+			return -1;
+		}
+
+		// TODO record error description
+
+		return numError;
+	}
+
+	void JSON::setJSON(const picojson::value& json)
+	{
+		m_JSON = json;
 	}
 
 	bool JSON::v(const string &name, picojson::value *pVal)
@@ -398,21 +418,6 @@ namespace kai
 
 		*pVal = var.get<value::array>();
 		return true;
-	}
-
-	int JSON::checkErrorNum(void)
-	{
-		int numError;
-		string errorDesc;
-		string err = "error";
-		if (!v(err, &numError))
-		{
-			return -1;
-		}
-
-		// TODO record error description
-
-		return numError;
 	}
 
 	int JSON::a(const string &name, vector<string> *pVal)

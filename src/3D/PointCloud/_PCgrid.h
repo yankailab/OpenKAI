@@ -201,7 +201,7 @@ namespace kai
 		virtual int check(void);
 
 		// grid
-		virtual int initGrid(void);
+		virtual int initGeometry(void);
 
 		virtual void setPorigin(const vFloat3& vPo);
 		virtual void setCellSize(const vFloat3& vCsize);
@@ -226,6 +226,8 @@ namespace kai
 		// data
 		virtual void addPCstream(void *p, const uint64_t &tExpire);
 		virtual void addPCframe(void *p);
+
+		// save/load
 
 	protected:
 		PC_GRID_CELL *getCell(const vInt3 &vC);
