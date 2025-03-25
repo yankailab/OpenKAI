@@ -14,9 +14,9 @@ namespace kai
 		m_vPmin.clear();
 
 		m_vPorigin.clear();
-		m_vX.clear();
-		m_vY.clear();
-		m_vZ.clear();
+		m_vCellRangeX.clear();
+		m_vCellRangeY.clear();
+		m_vCellRangeZ.clear();
 		m_vCellSize.clear();
 
 		m_bVisual = false;
@@ -40,9 +40,9 @@ namespace kai
 		pK->v("nMedWidth", &m_nMedWidth);
 
 		pK->v("vPorigin", &m_vPorigin);
-		pK->v("vX", &m_vX);
-		pK->v("vY", &m_vY);
-		pK->v("vZ", &m_vZ);
+		pK->v("vCellRangeX", &m_vCellRangeX);
+		pK->v("vCellRangeY", &m_vCellRangeY);
+		pK->v("vCellRangeZ", &m_vCellRangeZ);
 		pK->v("vCellSize", &m_vCellSize);
 
 		pK->v("bVisual", &m_bVisual);
@@ -80,9 +80,9 @@ namespace kai
 
 		// calc grid size
 		vInt3 vDim;
-		vDim.set(m_vX.len(),
-				 m_vY.len(),
-				 m_vZ.len());
+		vDim.set(m_vCellRangeX.len(),
+				 m_vCellRangeY.len(),
+				 m_vCellRangeZ.len());
 		int nCell = vDim.x * vDim.y * vDim.z;
 		IF__(nCell <= 0, OK_ERR_INVALID_VALUE);
 
@@ -105,14 +105,14 @@ namespace kai
 			}
 
 			// prepare quick access params
-			m_vRx.set(m_vPorigin.x + m_vX.x * m_vCellSize.x,
-					  m_vPorigin.x + m_vX.y * m_vCellSize.x);
+			m_vRx.set(m_vPorigin.x + m_vCellRangeX.x * m_vCellSize.x,
+					  m_vPorigin.x + m_vCellRangeX.y * m_vCellSize.x);
 
-			m_vRy.set(m_vPorigin.y + m_vY.x * m_vCellSize.y,
-					  m_vPorigin.y + m_vY.y * m_vCellSize.y);
+			m_vRy.set(m_vPorigin.y + m_vCellRangeY.x * m_vCellSize.y,
+					  m_vPorigin.y + m_vCellRangeY.y * m_vCellSize.y);
 
-			m_vRz.set(m_vPorigin.z + m_vZ.x * m_vCellSize.z,
-					  m_vPorigin.z + m_vZ.y * m_vCellSize.z);
+			m_vRz.set(m_vPorigin.z + m_vCellRangeZ.x * m_vCellSize.z,
+					  m_vPorigin.z + m_vCellRangeZ.y * m_vCellSize.z);
 
 			m_vPmin.set(m_vRx.x, m_vRy.x, m_vRz.x);
 
@@ -225,19 +225,19 @@ namespace kai
 		m_vCellSize = vCsize;
 	}
 
-	void _PCgrid::setGridX(const vInt2 &vX)
+	void _PCgrid::setCellRangeX(const vInt2 &vX)
 	{
-		m_vX = vX;
+		m_vCellRangeX = vX;
 	}
 
-	void _PCgrid::setGridY(const vInt2 &vY)
+	void _PCgrid::setCellRangeY(const vInt2 &vY)
 	{
-		m_vY = vY;
+		m_vCellRangeY = vY;
 	}
 
-	void _PCgrid::setGridZ(const vInt2 &vZ)
+	void _PCgrid::setCellRangeZ(const vInt2 &vZ)
 	{
-		m_vZ = vZ;
+		m_vCellRangeZ = vZ;
 	}
 
 	vFloat3 _PCgrid::getPorigin(void)
@@ -250,19 +250,19 @@ namespace kai
 		return m_vCellSize;
 	}
 
-	vInt2 _PCgrid::getGridX(void)
+	vInt2 _PCgrid::getCellRangeX(void)
 	{
-		return m_vX;
+		return m_vCellRangeX;
 	}
 
-	vInt2 _PCgrid::getGridY(void)
+	vInt2 _PCgrid::getCellRangeY(void)
 	{
-		return m_vY;
+		return m_vCellRangeY;
 	}
 
-	vInt2 _PCgrid::getGridZ(void)
+	vInt2 _PCgrid::getCellRangeZ(void)
 	{
-		return m_vZ;
+		return m_vCellRangeZ;
 	}
 
 	void _PCgrid::clearAllCells(void)
@@ -295,9 +295,9 @@ namespace kai
 
 	PC_GRID_CELL *_PCgrid::getCell(const vInt3 &vC)
 	{
-		// IF__(!m_vX.bInside(vC.x), nullptr);
-		// IF__(!m_vY.bInside(vC.y), nullptr);
-		// IF__(!m_vZ.bInside(vC.z), nullptr);
+		// IF__(!m_vCellRangeX.bInside(vC.x), nullptr);
+		// IF__(!m_vCellRangeY.bInside(vC.y), nullptr);
+		// IF__(!m_vCellRangeZ.bInside(vC.z), nullptr);
 
 		int i = vC.x * m_dYZ + vC.y * m_vDim.z + vC.z;
 		return &m_pCell[i];

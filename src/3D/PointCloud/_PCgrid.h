@@ -205,15 +205,15 @@ namespace kai
 
 		virtual void setPorigin(const vFloat3& vPo);
 		virtual void setCellSize(const vFloat3& vCsize);
-		virtual void setGridX(const vInt2& vX);
-		virtual void setGridY(const vInt2& vY);
-		virtual void setGridZ(const vInt2& vZ);
+		virtual void setCellRangeX(const vInt2& vCrX);
+		virtual void setCellRangeY(const vInt2& vCrY);
+		virtual void setCellRangeZ(const vInt2& vCrZ);
 
 		virtual vFloat3 getPorigin(void);
 		virtual vFloat3 getCellSize(void);
-		virtual vInt2 getGridX(void);
-		virtual vInt2 getGridY(void);
-		virtual vInt2 getGridZ(void);
+		virtual vInt2 getCellRangeX(void);
+		virtual vInt2 getCellRangeY(void);
+		virtual vInt2 getCellRangeZ(void);
 
 		// cell
 		virtual void clearAllCells(void);
@@ -266,6 +266,19 @@ namespace kai
 		vector<_GeometryBase *> m_vpGB;
 		uint64_t m_tExpire;
 
+		//Grid config
+		// grid generating params
+		vFloat3 m_vPorigin;
+
+		// cell number around the origin for each direction of each axis
+		vInt2 m_vCellRangeX;
+		vInt2 m_vCellRangeY;
+		vInt2 m_vCellRangeZ;
+
+		// dimension for each cell
+		vFloat3 m_vCellSize;
+
+		// Grid param
 		// cell number of each axis
 		vInt3 m_vDim;
 		int m_dYZ;
@@ -276,17 +289,6 @@ namespace kai
 		vFloat2 m_vRy;
 		vFloat2 m_vRz;
 		vFloat3 m_vOvCellSize;
-
-		// grid generating params
-		vFloat3 m_vPorigin;
-
-		// cell number around the origin for each direction of each axis
-		vInt2 m_vX;
-		vInt2 m_vY;
-		vInt2 m_vZ;
-
-		// dimension for each cell
-		vFloat3 m_vCellSize;
 
 		// visualization
 		bool m_bVisual;
