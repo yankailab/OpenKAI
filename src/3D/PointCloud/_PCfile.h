@@ -33,6 +33,7 @@ namespace kai
 
 	public:
 		vector<string> m_vfName;
+		PointCloud m_pcl;
 	};
 
 }

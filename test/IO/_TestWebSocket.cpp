@@ -54,19 +54,28 @@ namespace kai
         {
             m_pT->autoFPS();
 
-            while(check() != OK_OK)
+            while (check() != OK_OK)
                 sleep(1);
 
-            _WebSocket* pWS = m_pWSserver->getWS(0);
+            _WebSocket *pWS = m_pWSserver->getWS(0);
             IF_CONT(!pWS);
 
             uint8_t pB[512];
             int nB;
             nB = pWS->read(pB, 512);
 
-            if(nB > 0)
-                pWS->write(pB, nB);
+            IF_CONT(nB <= 0);
 
+            // if(nB > 0)
+            //     pWS->write(pB, nB);
+
+            object o;
+            JO(o, "id", i2str(1));
+            JO(o, "cmd", "heartbeat");
+            JO(o, "t", li2str(m_pT->getTfrom()));
+
+            string msg = picojson::value(o).serialize();
+            pWS->write((uint8_t*)msg.c_str(), msg.length());
         }
     }
 

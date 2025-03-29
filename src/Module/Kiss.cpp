@@ -23,7 +23,10 @@ namespace kai
 
 		if (!m_pParent)
 		{
-			DEL(m_pNULL);
+			if (!m_bNULL)
+			{
+				DEL(m_pNULL);
+			}
 		}
 	}
 

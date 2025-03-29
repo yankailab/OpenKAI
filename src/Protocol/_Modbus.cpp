@@ -8,9 +8,15 @@ namespace kai
 		pthread_mutex_init(&m_mutex, NULL);
 
 		m_pMb = NULL;
-		m_port = "";
-		m_parity = 'E';
-		m_baud = 115200;
+		m_type = "RTU";
+
+		m_rtuPort = "";
+		m_rtuParity = 'E';
+		m_rtuBaud = 115200;
+
+		m_tcpAddr = "";
+		m_tcpPort = 0;
+
 		m_bOpen = false;
 		m_tIntervalUsec = 10000;
 		m_tOutSec = 1;
@@ -32,9 +38,20 @@ namespace kai
 		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("port", &m_port);
-		pK->v("parity", &m_parity);
-		pK->v("baud", &m_baud);
+		pK->v("type", &m_type);
+		if (m_type != "RTU" && m_type != "TCP")
+		{
+			LOG_E("Modbus type wrong (RTU/TCP): " + m_type);
+			return false;
+		}
+
+		pK->v("rtuPort", &m_rtuPort);
+		pK->v("rtuParity", &m_rtuParity);
+		pK->v("rtuBaud", &m_rtuBaud);
+
+		pK->v("tcpAddr", &m_tcpAddr);
+		pK->v("tcpPort", &m_tcpPort);
+
 		pK->v("tIntervalUsec", &m_tIntervalUsec);
 		pK->v("tOutSec", &m_tOutSec);
 		pK->v("tOutUSec", &m_tOutUSec);
@@ -44,7 +61,19 @@ namespace kai
 
 	bool _Modbus::open(void)
 	{
-		m_pMb = modbus_new_rtu(m_port.c_str(), m_baud, *m_parity.c_str(), 8, 1);
+		if (m_type == "RTU")
+		{
+			m_pMb = modbus_new_rtu(m_rtuPort.c_str(), m_rtuBaud, *m_rtuParity.c_str(), 8, 1);
+		}
+		else if (m_type == "TCP")
+		{
+			m_pMb = modbus_new_tcp(m_tcpAddr.c_str(), m_tcpPort);
+		}
+		else
+		{
+			return false;
+		}
+
 		if (m_pMb == nullptr)
 		{
 			m_pMb = NULL;
@@ -92,7 +121,6 @@ namespace kai
 			}
 
 			m_pT->autoFPS();
-
 		}
 	}
 
@@ -111,7 +139,7 @@ namespace kai
 		return r;
 	}
 
-	//Function code: 2
+	// Function code: 2
 	int _Modbus::readInputBits(int iSlave, int addr, int nB, uint8_t *pB)
 	{
 		IF__(!m_pMb, -1);
@@ -132,7 +160,7 @@ namespace kai
 		return r;
 	}
 
-	//Function code: 3
+	// Function code: 3
 	int _Modbus::readRegisters(int iSlave, int addr, int nRegister, uint16_t *pB)
 	{
 		IF__(!m_pMb, -1);
@@ -153,7 +181,7 @@ namespace kai
 		return r;
 	}
 
-	//Function code: 5
+	// Function code: 5
 	int _Modbus::writeBit(int iSlave, int addr, bool bStatus)
 	{
 		IF__(!m_pMb, -1);
@@ -173,7 +201,7 @@ namespace kai
 		return r;
 	}
 
-	//Function code: 6
+	// Function code: 6
 	int _Modbus::writeRegister(int iSlave, int addr, int v)
 	{
 		IF__(!m_pMb, -1);
@@ -196,7 +224,7 @@ namespace kai
 		return r;
 	}
 
-	//Function code: 10
+	// Function code: 10
 	int _Modbus::writeRegisters(int iSlave, int addr, int nRegister, uint16_t *pB)
 	{
 		IF__(!m_pMb, -1);

@@ -26,7 +26,7 @@
 		"FPS":30,
 	}
 	"bFullScreen":0,
-	"vBASE":["/cam","uvc","/crop","/contrast","/resize"],
+	"vBASE":["cam","uvc","/crop","/contrast","/resize"],
 }
 
 {
@@ -57,7 +57,7 @@
 {
 	"name":"uvc",
 	"class":"_UVC",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -98,7 +98,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -118,13 +118,14 @@
 	"/pipeline":"udpsrc port=5678 ! application/x-rtp, media=video, encoding-name=h264, payload=96, clock-rate=90000 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
 	"/pipeline":"udpsrc port=5678 ! application/x-rtp, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
 
+	"pipeline":"rtspsrc location=rtsp://admin:LabRomance@192.168.8.128:554/stream=1 ! queue ! rtph264depay ! queue ! avdec_h264 ! videoconvert ! appsink", /* TP-Link */
+
 	"/pipeline":"rtspsrc location=rtsp://admin:12345@192.168.1.121:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
 	"/pipeline":"rtspsrc location=rtsp://admin:admin@192.168.100.2/webcam latency=0 ! decodebin ! videoconvert ! appsink",
 	"/pipeline":"rtspsrc location=rtsp://admin:admin@192.168.100.2/webcam latency=0 ! decodebin ! videoconvert ! appsink",
 	"/pipeline":"rtspsrc location=rtsp://192.168.144.108:554/stream=0 latency=0 ! decodebin ! videoconvert ! appsink", /* C10 mini: set host PC IP to 192.168.144.100 */
 	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! queue ! videoconvert ! appsink", /* C10 mini: set host PC IP to 192.168.144.100 */
 	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! appsink", /* C10 mini, using YUV, Y chan only */
-	"pipeline":"rtspsrc location=rtsp://192.168.10.1:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! appsink",
 	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! queue ! videoconvert ! appsink max-buffers=1 drop=true", /* C10 mini: set host PC IP to 192.168.144.100 */
 	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! appsink max-buffers=1 sync=false drop=true", /* C10 mini, using YUV, Y chan only */
 	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! tee name=t t. appsink max-buffers=1 sync=false drop=true t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",

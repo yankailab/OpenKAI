@@ -107,7 +107,7 @@ namespace kai
 
         while (m_pTr->bAlive())
         {
-            IF_CONT(!recvJson(&strR));
+            IF_CONT(!recvJson(&strR, m_pIO));
 
             handleJson(strR);
             strR.clear();

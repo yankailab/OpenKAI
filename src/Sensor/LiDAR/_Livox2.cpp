@@ -704,7 +704,7 @@ namespace kai
     void _Livox2::handlePointCloudData(const LIVOX2_DATA &d)
     {
         // uint64_t tStamp = *((uint64_t *)(pD->timestamp));
-        uint64_t tStamp = getApproxTbootUs();
+        uint64_t tStamp = getTbootUs();
 
         if (d.data_type == kLivoxLidarCartesianCoordinateHighData)
         {

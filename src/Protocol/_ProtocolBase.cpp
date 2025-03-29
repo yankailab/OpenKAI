@@ -47,7 +47,7 @@ namespace kai
 		n = "";
 		pK->v("_IObase", &n);
 		m_pIO = (_IObase *)(pK->findModule(n));
-		NULL__(m_pIO, OK_ERR_NOT_FOUND);
+//		NULL__(m_pIO, OK_ERR_NOT_FOUND);
 
 		return OK_OK;
 	}

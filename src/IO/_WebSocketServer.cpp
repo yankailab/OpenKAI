@@ -16,6 +16,7 @@ namespace kai
 		m_pTr = nullptr;
 		g_pWSserver = this;
 		m_nClientMax = 128;
+		m_wsMode = wsSocket_txt_bcast;
 
 		m_host = "localhost";
 		m_port = 8080;
@@ -32,6 +33,7 @@ namespace kai
 		CHECK_(this->_IObase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
+		pK->v("wsMode", (int *)&m_wsMode);
 		pK->v("host", &m_host);
 		pK->v("port", &m_port);
 		pK->v("tOutMs", &m_tOutMs);
@@ -46,6 +48,8 @@ namespace kai
 
 		m_pTr = new _Thread();
 		CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "thread init failed");
+
+		m_ioStatus = io_opened;
 
 		return OK_OK;
 	}
@@ -86,16 +90,29 @@ namespace kai
 				int nB;
 				while ((nB = pPw->getPacket(pB, WS_N_BUF)) > 0)
 				{
-					ws_sendframe_bin(c.m_wsConn, (char*)pB, nB);
+					if (m_wsMode == wsSocket_bin)
+					{
+						ws_sendframe_bin(c.m_wsConn, (char *)pB, nB);
+					}
+					else if (m_wsMode == wsSocket_bin_bcast)
+					{
+						ws_sendframe_bin_bcast(c.m_wsConn, (char *)pB, nB);
+					}
+					else if (m_wsMode == wsSocket_txt)
+					{
+						pB[nB] = 0;
+						ws_sendframe_txt(c.m_wsConn, (char *)pB);
+					}
+					else if (m_wsMode == wsSocket_txt_bcast)
+					{
+						pB[nB] = 0;
+						ws_sendframe_txt_bcast(c.m_wsConn, (char *)pB);
+					}
 
 					/**
 					 * Alternative functions:
 					 *	 ws_sendframe_bcast(8080, (char *)msg, size, type);
 					 *   ws_sendframe()
-					 *   ws_sendframe_txt()
-					 *   ws_sendframe_txt_bcast()
-					 *   ws_sendframe_bin()
-					 *   ws_sendframe_bin_bcast()
 					 */
 				}
 			}
@@ -121,9 +138,9 @@ namespace kai
 		return m_vClient.size();
 	}
 
-	_WebSocket* _WebSocketServer::getWS(int i)
+	_WebSocket *_WebSocketServer::getClient(int i)
 	{
-		wsClient* pC = getClient(i);
+		wsClient *pC = getWSclient(i);
 		NULL_N(pC);
 
 		return pC->getWS();
@@ -131,7 +148,7 @@ namespace kai
 
 	bool _WebSocketServer::write(uint8_t *pBuf, int nB)
 	{
-		_WebSocket* pWS = getWS(0);
+		_WebSocket *pWS = getClient(0);
 		NULL_F(pWS);
 
 		pWS->write(pBuf, nB);
@@ -140,7 +157,7 @@ namespace kai
 
 	int _WebSocketServer::read(uint8_t *pBuf, int nB)
 	{
-		_WebSocket* pWS = getWS(0);
+		_WebSocket *pWS = getClient(0);
 		NULL__(pWS, 0);
 
 		return pWS->read(pBuf, nB);
@@ -173,8 +190,9 @@ namespace kai
 
 		IF_(m_vClient.size() >= m_nClientMax);
 
-		_WebSocket* pWS = new _WebSocket();
+		_WebSocket *pWS = new _WebSocket();
 		pWS->init();
+		pWS->setIOstatus(io_opened);
 
 		wsClient c;
 		c.init(pWS);
@@ -190,7 +208,20 @@ namespace kai
 		char *cli;
 		cli = ws_getaddress(client);
 
-		// TODO: delete the client
+		// TODO: add mutex
+		int iC = findWSclientIdx(client);
+		IF_(iC < 0);
+
+		wsClient* pClient = getWSclient(iC);
+		NULL_(pClient);
+
+		_WebSocket* pWS = pClient->getWS();
+		NULL_(pWS);
+
+		pWS->setIOstatus(io_closed);
+		delete pWS;
+
+		delWSclient(iC);
 
 		LOG_I("Connection closed, addr: " + string(cli));
 	}
@@ -201,32 +232,58 @@ namespace kai
 		char *cli;
 		cli = ws_getaddress(client);
 
-		// TODO: put into correspondent client
-		wsClient* pC = getClient(0);
+		wsClient *pC = findWSclient(client);
 		NULL_(pC);
 
-		_WebSocket* pWS = pC->getWS();
+		_WebSocket *pWS = pC->getWS();
 		NULL_(pWS);
 
-		IO_PACKET_FIFO* pFifo = pWS->getPacketFIFOr();
+		IO_PACKET_FIFO *pFifo = pWS->getPacketFIFOr();
 		NULL_(pFifo);
 
-		pFifo->setPacket((uint8_t*)msg, size);
+		pFifo->setPacket((uint8_t *)msg, size);
 
 		LOG_I("Received message: " + string((char *)msg) + ", size: " + i2str(size) + ", type: " + i2str(type) + ", from: " + string(cli));
 	}
 
-	wsClient* _WebSocketServer::getClient(int i)
+	wsClient *_WebSocketServer::findWSclient(ws_cli_conn_t wsCli)
 	{
+		return getWSclient(findWSclientIdx(wsCli));
+	}
+
+	int _WebSocketServer::findWSclientIdx(ws_cli_conn_t wsCli)
+	{
+		for (int i = 0; i < m_vClient.size(); i++)
+		{
+			wsClient* pWSc = &m_vClient[i];
+			IF_CONT(pWSc->m_wsConn != wsCli);
+
+			return i;
+		}
+
+		return -1;
+	}
+
+	wsClient *_WebSocketServer::getWSclient(int i)
+	{
+		IF_N(i < 0);
 		IF_N(m_vClient.size() <= i);
 
 		return &m_vClient[i];
 	}
 
-	wsClient* _WebSocketServer::findClient(const string& addr, const string& port)
+	void _WebSocketServer::delWSclient(int i)
 	{
+		IF_(i < 0);
+		IF_(m_vClient.size() <= i);
 
+		// TODO: add mutex
+		m_vClient.erase(m_vClient.begin() + i);
 	}
+
+	// wsClient *_WebSocketServer::findClient(const string &addr, const string &port)
+	// {
+	// }
 
 	void _WebSocketServer::console(void *pConsole)
 	{

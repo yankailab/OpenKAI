@@ -174,6 +174,53 @@ namespace kai
 		updateActiveCellLS(m_pCellActive);
 	}
 
+	void _PCgrid::updateActiveCell(void)
+	{
+		//		mutexLock();
+
+		m_pCellActive->clearCells();
+
+		vInt3 vC;
+		for (int i = 0; i < m_vDim.x; i++)
+		{
+			for (int j = 0; j < m_vDim.y; j++)
+			{
+				for (int k = 0; k < m_vDim.z; k++)
+				{
+					vC.set(i, j, k);
+					PC_GRID_CELL *pC = getCell(vC);
+					pC->updateFilter();
+					IF_CONT(pC->nP() < 1);
+
+					m_pCellActive->addCell(vC);
+				}
+			}
+		}
+
+		//		mutexUnlock();
+	}
+
+	void _PCgrid::updateActiveCellLS(PC_GRID_ACTIVE_CELL *pAcell)
+	{
+		NULL_(pAcell);
+
+		//		mutexLock();
+		pAcell->clearLS();
+		pAcell->generateLS(m_vRx, m_vRy, m_vRz, m_vCellSize);
+		//		mutexUnlock();
+	}
+
+	void _PCgrid::getActiveCellLines(LineSet *pLS, int cIdx)
+	{
+		NULL_(pLS);
+		IF_(cIdx >= PCGRID_ACTIVECELL_N);
+
+		// TODO: lock needed?
+		mutexLock();
+		*pLS = m_pActiveCells[cIdx].m_LS;
+		mutexUnlock();
+	}
+
 	void _PCgrid::addPCstream(void *p, const uint64_t &tExpire)
 	{
 		IF_(check() != OK_OK);
@@ -387,53 +434,6 @@ namespace kai
 				m_gridLine.colors_.push_back(Vector3d{vCol.x, vCol.y, vCol.z});
 			}
 		}
-	}
-
-	void _PCgrid::getActiveCellLines(LineSet *pLS, int cIdx)
-	{
-		NULL_(pLS);
-		IF_(cIdx >= PCGRID_ACTIVECELL_N);
-
-		// TODO: lock needed?
-		mutexLock();
-		*pLS = m_pActiveCells[cIdx].m_LS;
-		mutexUnlock();
-	}
-
-	void _PCgrid::updateActiveCell(void)
-	{
-		//		mutexLock();
-
-		m_pCellActive->clearCells();
-
-		vInt3 vC;
-		for (int i = 0; i < m_vDim.x; i++)
-		{
-			for (int j = 0; j < m_vDim.y; j++)
-			{
-				for (int k = 0; k < m_vDim.z; k++)
-				{
-					vC.set(i, j, k);
-					PC_GRID_CELL *pC = getCell(vC);
-					pC->updateFilter();
-					IF_CONT(pC->nP() < 1);
-
-					m_pCellActive->addCell(vC);
-				}
-			}
-		}
-
-		//		mutexUnlock();
-	}
-
-	void _PCgrid::updateActiveCellLS(PC_GRID_ACTIVE_CELL *pAcell)
-	{
-		NULL_(pAcell);
-
-		//		mutexLock();
-		pAcell->clearLS();
-		pAcell->generateLS(m_vRx, m_vRy, m_vRz, m_vCellSize);
-		//		mutexUnlock();
 	}
 
 }

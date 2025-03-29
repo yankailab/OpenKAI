@@ -92,7 +92,7 @@ namespace kai
 
         while (m_pTr->bAlive())
         {
-            IF_CONT(!recvJson(&strR));
+            IF_CONT(!recvJson(&strR, m_pIO));
 
             handleJson(strR);
             strR.clear();
@@ -100,7 +100,7 @@ namespace kai
         }
     }
 
-    bool _JSONbase::recvJson(string* pStr)
+    bool _JSONbase::recvJson(string* pStr, _IObase* pIO)
     {
         IF_F(check() != OK_OK);
         NULL_F(pStr);

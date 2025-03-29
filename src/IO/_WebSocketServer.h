@@ -38,6 +38,14 @@ namespace kai
 		}
 	};
 
+	enum WSSOCKET_MODE
+	{
+		wsSocket_bin = 0,
+		wsSocket_bin_bcast = 1,
+		wsSocket_txt = 2,
+		wsSocket_txt_bcast = 3,
+	};
+
 	class _WebSocketServer : public _IObase
 	{
 	public:
@@ -54,7 +62,7 @@ namespace kai
 		int read(uint8_t *pBuf, int nB);
 
 		int nClient(void);
-		_WebSocket* getWS(int i);
+		_WebSocket* getClient(int i);
 
 		static void sCbOpen(ws_cli_conn_t client);
 		static void sCbClose(ws_cli_conn_t client);
@@ -65,8 +73,11 @@ namespace kai
 		void cbClose(ws_cli_conn_t client);
 		void cbMessage(ws_cli_conn_t client, const unsigned char *msg, uint64_t size, int type);
 
-		wsClient *getClient(int i);
-		wsClient *findClient(const string& addr, const string& port);
+		wsClient* findWSclient(ws_cli_conn_t wsCli);
+		int findWSclientIdx(ws_cli_conn_t wsCli);
+		wsClient *getWSclient(int i);
+		void delWSclient(int i);
+//		wsClient *findClient(const string& addr, const string& port);
 
 		void updateW(void);
 		static void *getUpdateW(void *This)
@@ -85,6 +96,7 @@ namespace kai
 	protected:
 		vector<wsClient> m_vClient;
 		int m_nClientMax;
+		WSSOCKET_MODE m_wsMode;
 
 		string m_host;
 		uint16_t m_port;

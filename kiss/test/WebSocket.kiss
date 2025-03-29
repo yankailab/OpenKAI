@@ -26,6 +26,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
+	"wsMode":3,
 	"host":"localhost",
 	"port":7890,
 	"tOutMs":10000,

@@ -1,0 +1,284 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["pcGrid", "Lvx_1"],
+}
+
+{
+	"name":"pcGrid",
+	"class":"_PCgrid",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+
+	/* _PCgrid */
+	"nMedWidth":3,
+	"vPorigin":[0,0,0],
+	"vCellRangeX":[-10,10],
+	"vCellRangeY":[-10,10],
+	"vCellRangeZ":[-10,10],
+	"vCellSize":[1,1,1],
+	"bVisual":1,
+	"vAxisColX":[1,0,0],
+	"vAxisColY":[0,1,0],
+	"vAxisColZ":[0,0,1],
+	"tExpire":1000000,
+	"vGeometryBase":["psTest","Lvx1"],
+}
+
+{
+	"name":"geometryViewer",
+	"class":"_GeometryViewer",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+    {
+		"name":"threadUI",
+		"FPS":30,
+	}
+	"vWinSize":[1920,1080],
+	"pathRes":"/usr/local/bin/Open3D/resources",
+	"device":"CPU:0",
+	"vCamLookAt":[0,0,0],
+	"vCamEye":[0,2,0],
+	"vCamUp":[0,0,1],
+	"vCamAutoLookAt":[0,0,0],
+	"vCamAutoEye":[0,2,0],
+	"vCamAutoUp":[0,0,1],
+	"vCoR":[0,0,0],
+	"camFov":75,
+	"vCamNF":[0, 500],
+	"camFovType":1,
+	"bFullScreen":0,
+	"mouseMode":0,
+	"vDmove":[0.5, 5.0],
+	"dHiddenRemove":100.0,
+	"dirSave":"/home/kai/Documents/",
+	"/dirSave":"/media/lab/",
+	"rVoxel":0.05,
+
+	{
+		"name":"geometry",
+		{
+			"_GeometryBase":"psTest",
+			"bStatic":0,
+			"nP":50000,
+			"rDummyDome":1000.0,
+			"/matName":"defaultUnlit",
+			"matName":"depth",
+			"matPointSize":1,
+		}
+
+		{
+			"_GeometryBase":"/pcGrid",
+			"bStatic":1, /* constant grid */
+			"matName":"unlitLine",
+			"matLineWidth":1,
+		}
+		{
+			"_GeometryBase":"pcGrid",
+			"bStatic":0,
+			"iGridLS":0, /* active cells */
+			"matName":"unlitLine",
+			"matLineWidth":1,
+			"matCol":[0.6, 0.6, 0.6, 1],
+		}
+		{
+			"_GeometryBase":"pcGrid",
+			"bStatic":0,
+			"iGridLS":1, /* alert cells */
+			"matName":"unlitLine",
+			"matLineWidth":2,
+			"matCol":[0,1,0,1],
+		}
+		{
+			"_GeometryBase":"pcGrid",
+			"bStatic":0,
+			"iGridLS":2, /* alarm cells */
+			"matName":"unlitLine",
+			"matLineWidth":20,
+			"matCol":[1,0,0,1],
+		}
+		{
+			"_GeometryBase":"pcGrid",
+			"bStatic":0,
+			"iGridLS":3, /* selected cell */
+			"matName":"unlitLine",
+			"matLineWidth":10,
+			"matCol":[0,1,1,1],
+		}
+
+		{
+			"_GeometryBase":"Lvx_1",
+			"bStatic":0,
+			"nP":50000,
+			"rDummyDome":1000.0,
+			"/matName":"defaultUnlit",
+			"matName":"depth",
+			"matCol":[1,0,0,1],
+			"matPointSize":2,
+			"matLineWidth":1,
+		}
+	}
+}
+
+
+
+
+
+
+{
+	"name":"udpLvxDeviceQuery_1",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":1,
+	}
+	"/addr":"255.255.255.255",
+	"addrRemote":"192.168.1.200",
+	"portRemote":56000,
+	"portLocal":0,
+	"bW2R":0,
+	"bWbroadcast":0,
+}
+
+{
+	"name":"udpLvxCtrlCmd_1",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":10,
+	}
+	"addrRemote":"192.168.1.200",
+	"portRemote":56100,
+	"portLocal":56101,
+	"bW2R":0,
+	"bWbroadcast":0,
+}
+
+{
+	"name":"udpLvxPushCmd_1",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":1,
+	}
+	"addrRemote":"192.168.1.200",
+	"portRemote":56200,
+	"portLocal":56201,
+	"bW2R":0,
+	"bWbroadcast":0,
+}
+
+{
+	"name":"udpLvxPCL_1",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":1,
+	}
+	"bLog":0,
+	"addrRemote":"192.168.1.200",
+	"portRemote":56300,
+	"portLocal":56301,
+	"bW2R":0,
+	"bWbroadcast":0,
+}
+
+{
+	"name":"udpLvxIMU_1",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":1,
+	}
+	"bLog":0,
+	"addrRemote":"192.168.1.200",
+	"portRemote":56400,
+	"portLocal":56401,
+	"bW2R":0,
+	"bWbroadcast":0,
+}
+
+
+{
+	"name":"Lvx1",
+	"class":"_Livox2",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadR",
+		"FPS":1,
+	}
+    {
+		"name":"threadCtrlCmdW",
+		"FPS":1,
+	}
+	"bLog":0,
+	"_UDPdeviceQuery":"udpLvxDeviceQuery_1",
+	"_UDPctrlCmd":"udpLvxCtrlCmd_1",
+	"_UDPpushCmd":"udpLvxPushCmd_1",
+	"_UDPpcl":"udpLvxPCL_1",
+	"_UDPimu":"udpLvxIMU_1",
+	"_UDPlog":"udpLvxLog_1",
+
+	"/lvxSN":"47MDLC50020003",
+	"lvxIP":"192.168.1.200",
+	"tOutSec":10,
+
+	"lvxPCLdataType":1,
+	"lvxPatternMode":0,
+	"lvxHostIP":"192.168.1.100",
+	"lvxHostPortState":56201,
+	"lvxHostPortPCL":56301,
+	"lvxHostPortIMU":56401,
+	"lvxFrameRate":3,
+	"lvxDetectMode":1,
+	"lvxWorkModeAfterBoot":1,
+	"lvxWorkMode":1,
+	"lvxIMUdataEn":0,
+
+	"nP":256000,
+	"vToffset":[0,0,0],
+	"vRoffset":[0,0,0],
+}
+
+
+{
+	"name":"psTest",
+	"class":"_PCfile",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"bLog":1,
+	"vfName":["/home/kai/Downloads/room_scan1.pcd"],
+	"/vfName":["/home/lab/Downloads/office1.pcd"],
+	"nPresv":500000,
+}

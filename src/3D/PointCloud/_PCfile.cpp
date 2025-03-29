@@ -33,15 +33,15 @@ namespace kai
 	{
 		IF_F(m_vfName.empty());
 
-		m_sPC.get()->Clear();
+		m_pcl.Clear();
 		PointCloud pc;
 		for (string f : m_vfName)
 		{
-			//	io::ReadPointCloudOption ro;
 			pc.Clear();
+			//	io::ReadPointCloudOption ro;
 			IF_CONT(!io::ReadPointCloud(f, pc));
+			m_pcl += pc;
 			LOG_I("File: " + f + ", Npoints: " + i2str(pc.points_.size()));
-			*m_sPC.get() += pc;
 		}
 
 		return true;
@@ -58,6 +58,12 @@ namespace kai
 		while (m_pT->bAlive())
 		{
 			m_pT->autoFPS();
+
+			PointCloud* pNext = m_sPC.next();
+			pNext->Clear();
+			*pNext = m_pcl;
+			pNext->Transform(m_mT);
+			swapBuffer();
 
 			writeSharedMem();
 		}

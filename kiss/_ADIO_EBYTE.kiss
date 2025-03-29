@@ -24,11 +24,17 @@
 	"bLog":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":1,
 	}
-	"port":"/dev/ttyUSB0",
-	"baud":115200,
-	"parity":"N",
+	"type":"RTU",
+	"/type":"TCP",
+
+	"rtuPort":"/dev/ttyUSB0",
+	"rtuBaud":115200,
+	"rtuParity":"N",
+
+	"tcpAddr":"192.168.3.7",
+	"tcpPort":502,
 }
 
 {
@@ -41,7 +47,8 @@
 		"FPS":10,
 	}
 	"_Modbus":"modbus",
-	"iID":32,
+	"/iID":32,
+	"iID":1,
 
 	{
 		"name":"port",

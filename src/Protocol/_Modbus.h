@@ -35,11 +35,17 @@ namespace kai
 
 	protected:
 		modbus_t *m_pMb;
-		string m_port;
-		string m_parity;
-		int m_baud;
-		bool m_bOpen;
+		string m_type; // "RTU", "TCP"
 
+		// RTU
+		string m_rtuPort;
+		string m_rtuParity;
+		int m_rtuBaud;
+		// TCP
+		string m_tcpAddr;
+		int m_tcpPort;
+
+		bool m_bOpen;
 		uint64_t m_tIntervalUsec;
 		uint32_t m_tOutSec;
 		uint32_t m_tOutUSec;
