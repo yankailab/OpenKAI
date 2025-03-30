@@ -85,15 +85,13 @@ namespace kai
 				 m_vCellRangeZ.len());
 		int nCell = vDim.x * vDim.y * vDim.z;
 		IF__(nCell <= 0, OK_ERR_INVALID_VALUE);
+		IF__(nCell > PC_GRID_N_CELL, OK_ERR_INVALID_VALUE);
 
 		m_vDim = vDim;
 
 		mutexLock();
 
 		// alllocate cells
-		//		DEL(m_pCell);
-
-		//		m_pCell = new PC_GRID_CELL[nCell];
 		if (m_pCell)
 		{
 			m_nCell = nCell;
@@ -172,6 +170,7 @@ namespace kai
 
 		updateActiveCell();
 		updateActiveCellLS(m_pCellActive);
+
 	}
 
 	void _PCgrid::updateActiveCell(void)
@@ -189,6 +188,7 @@ namespace kai
 				{
 					vC.set(i, j, k);
 					PC_GRID_CELL *pC = getCell(vC);
+					IF_CONT(!pC);
 					pC->updateFilter();
 					IF_CONT(pC->nP() < 1);
 
@@ -342,9 +342,12 @@ namespace kai
 
 	PC_GRID_CELL *_PCgrid::getCell(const vInt3 &vC)
 	{
-		// IF__(!m_vCellRangeX.bInside(vC.x), nullptr);
-		// IF__(!m_vCellRangeY.bInside(vC.y), nullptr);
-		// IF__(!m_vCellRangeZ.bInside(vC.z), nullptr);
+		IF__(vC.x < 0, nullptr);
+		IF__(vC.x >= m_vDim.x, nullptr);
+		IF__(vC.y < 0, nullptr);
+		IF__(vC.y >= m_vDim.y, nullptr);
+		IF__(vC.z < 0, nullptr);
+		IF__(vC.z >= m_vDim.z, nullptr);
 
 		int i = vC.x * m_dYZ + vC.y * m_vDim.z + vC.z;
 		return &m_pCell[i];

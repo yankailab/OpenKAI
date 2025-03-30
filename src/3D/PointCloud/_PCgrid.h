@@ -187,7 +187,7 @@ namespace kai
 	};
 
 #define PCGRID_ACTIVECELL_N 4
-#define PC_GRID_N_CELL 200000
+#define PC_GRID_N_CELL 1000000
 
 	class _PCgrid : public _GeometryBase
 	{
