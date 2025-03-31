@@ -213,6 +213,20 @@ namespace kai
         swapBuffer();
     }
 
+    bool _PCframe::save2file(const string &fName)
+    {
+        IF_F(fName.empty());
+
+        PointCloud pc;
+        this->copyTo(&pc);
+
+        io::WritePointCloudOption par;
+        par.write_ascii = io::WritePointCloudOption::IsAscii::Binary;
+        par.compressed = io::WritePointCloudOption::Compressed::Uncompressed;
+
+        return io::WritePointCloudToPLY(fName.c_str(), pc, par);
+    }
+
     void _PCframe::swapBuffer(void)
     {
         mutexLock();

@@ -12,7 +12,7 @@ namespace kai
 	{
 		Median<int> m_med;
 		int m_nPraw = 0; // raw nPoints inside the cell
-		int m_nP = 0; // filtered
+		int m_nP = 0;	 // filtered
 		int m_nPactivate = 1;
 
 		void init(int nW = 3)
@@ -94,7 +94,7 @@ namespace kai
 
 		bool addCell(const vInt3 &vCidx)
 		{
-			IF_F(getCellIdx(vCidx) >= 0);	// already existed
+			IF_F(getCellIdx(vCidx) >= 0); // already existed
 
 			m_vCellIdx.push_back(vCidx);
 			return true;
@@ -184,6 +184,61 @@ namespace kai
 				addCellLine(pA, pB);
 			}
 		}
+
+		void generateBBoxLS(const vFloat2 &vRx,
+							const vFloat2 &vRy,
+							const vFloat2 &vRz)
+		{
+			vFloat3 pA, pB;
+
+			pA.set(vRx.x, vRy.x, vRz.x);
+			pB.set(vRx.y, vRy.x, vRz.x);
+			addCellLine(pA, pB);
+
+			pA.z = vRz.y;
+			pB.z = vRz.y;
+			addCellLine(pA, pB);
+
+			pA.y = vRy.y;
+			pB.y = vRy.y;
+			addCellLine(pA, pB);
+
+			pA.z = vRz.x;
+			pB.z = vRz.x;
+			addCellLine(pA, pB);
+
+			pA.set(vRx.x, vRy.x, vRz.x);
+			pB.set(vRx.x, vRy.y, vRz.x);
+			addCellLine(pA, pB);
+
+			pA.z = vRz.y;
+			pB.z = vRz.y;
+			addCellLine(pA, pB);
+
+			pA.x = vRx.y;
+			pB.x = vRx.y;
+			addCellLine(pA, pB);
+
+			pA.z = vRz.x;
+			pB.z = vRz.x;
+			addCellLine(pA, pB);
+
+			pA.set(vRx.x, vRy.x, vRz.x);
+			pB.set(vRx.x, vRy.x, vRz.y);
+			addCellLine(pA, pB);
+
+			pA.x = vRx.y;
+			pB.x = vRx.y;
+			addCellLine(pA, pB);
+
+			pA.y = vRy.y;
+			pB.y = vRy.y;
+			addCellLine(pA, pB);
+
+			pA.x = vRx.x;
+			pB.x = vRx.x;
+			addCellLine(pA, pB);
+		}
 	};
 
 #define PCGRID_ACTIVECELL_N 4
@@ -203,11 +258,11 @@ namespace kai
 		// grid
 		virtual int initGeometry(void);
 
-		virtual void setPorigin(const vFloat3& vPo);
-		virtual void setCellSize(const vFloat3& vCsize);
-		virtual void setCellRangeX(const vInt2& vCrX);
-		virtual void setCellRangeY(const vInt2& vCrY);
-		virtual void setCellRangeZ(const vInt2& vCrZ);
+		virtual void setPorigin(const vFloat3 &vPo);
+		virtual void setCellSize(const vFloat3 &vCsize);
+		virtual void setCellRangeX(const vInt2 &vCrX);
+		virtual void setCellRangeY(const vInt2 &vCrY);
+		virtual void setCellRangeZ(const vInt2 &vCrZ);
 
 		virtual vFloat3 getPorigin(void);
 		virtual vFloat3 getCellSize(void);
@@ -245,7 +300,7 @@ namespace kai
 							 const vFloat3 &vCol);
 
 		void updateActiveCell(void);
-		void updateActiveCellLS(PC_GRID_ACTIVE_CELL* pAcell);
+		void updateActiveCellLS(PC_GRID_ACTIVE_CELL *pAcell, bool bBBox = false);
 
 		virtual void updatePCgrid(void);
 
@@ -266,8 +321,8 @@ namespace kai
 		vector<_GeometryBase *> m_vpGB;
 		uint64_t m_tExpire;
 
-		//Grid config
-		// grid generating params
+		// Grid config
+		//  grid generating params
 		vFloat3 m_vPorigin;
 
 		// cell number around the origin for each direction of each axis

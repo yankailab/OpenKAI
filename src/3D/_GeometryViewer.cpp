@@ -255,6 +255,17 @@ namespace kai
 		m_cam = m_camDefault;
 	}
 
+	void _GeometryViewer::setCamPose(const GVIEWER_CAM& camPose)
+	{
+		m_cam = camPose;
+		updateCamPose();
+	}
+
+	GVIEWER_CAM _GeometryViewer::getCamPose(void)
+	{
+		return m_cam;
+	}
+
 	void _GeometryViewer::updateUI(void)
 	{
 		auto &app = gui::Application::GetInstance();

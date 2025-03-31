@@ -32,6 +32,7 @@ namespace kai
 
         virtual void writeSharedMem(void);
         virtual void readSharedMem(void);
+        virtual bool save2file(const string& fName);
 
         // _PCframe
 		virtual void swapBuffer(void);

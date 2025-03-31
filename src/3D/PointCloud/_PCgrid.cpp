@@ -169,7 +169,7 @@ namespace kai
 		}
 
 		updateActiveCell();
-		updateActiveCellLS(m_pCellActive);
+		updateActiveCellLS(m_pCellActive, true);
 
 	}
 
@@ -200,13 +200,16 @@ namespace kai
 		//		mutexUnlock();
 	}
 
-	void _PCgrid::updateActiveCellLS(PC_GRID_ACTIVE_CELL *pAcell)
+	void _PCgrid::updateActiveCellLS(PC_GRID_ACTIVE_CELL *pAcell, bool bBBox)
 	{
 		NULL_(pAcell);
 
 		//		mutexLock();
 		pAcell->clearLS();
 		pAcell->generateLS(m_vRx, m_vRy, m_vRz, m_vCellSize);
+
+		if(bBBox)
+			pAcell->generateBBoxLS(m_vRx, m_vRy, m_vRz);
 		//		mutexUnlock();
 	}
 

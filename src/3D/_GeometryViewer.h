@@ -200,6 +200,8 @@ namespace kai
 		virtual int check(void);
 
 		virtual void resetCamPose(void);
+		virtual void setCamPose(const GVIEWER_CAM& camPose);
+		virtual GVIEWER_CAM getCamPose(void);
 
 	protected:
 		// update thread
