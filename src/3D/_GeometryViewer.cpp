@@ -52,9 +52,12 @@ namespace kai
 		pK->v("mouseMode", &m_mouseMode);
 		pK->v("vDmove", &m_vDmove);
 
+		pK->v("camProjType", &m_camProj.m_type);
 		pK->v("camFov", &m_camProj.m_fov);
-		pK->v("vCamNF", &m_camProj.m_vNF);
 		pK->v("camFovType", &m_camProj.m_fovType);
+		pK->v("vCamLR", &m_camProj.m_vLR);
+		pK->v("vCamBT", &m_camProj.m_vBT);
+		pK->v("vCamNF", &m_camProj.m_vNF);
 
 		pK->v("vCamLookAt", &m_camDefault.m_vLookAt);
 		pK->v("vCamEye", &m_camDefault.m_vEye);
@@ -157,7 +160,6 @@ namespace kai
 			m_pT->autoFPS();
 
 			updateAllGeometries();
-
 		}
 	}
 
@@ -226,10 +228,24 @@ namespace kai
 		IF_(check() != OK_OK);
 		IF_(!m_pWin);
 
-		m_pWin->CamSetProj(m_camProj.m_fov,
-						   m_camProj.m_vNF.x,
-						   m_camProj.m_vNF.y,
-						   m_camProj.m_fovType);
+		if (m_camProj.m_type == 0) // Perspective
+		{
+			m_pWin->CamSetProj(m_camProj.m_fov,
+							   m_camProj.m_vNF.x,
+							   m_camProj.m_vNF.y,
+							   m_camProj.m_fovType);
+		}
+		else
+		{
+			m_pWin->CamSetProj((Camera::Projection)m_camProj.m_type,
+								m_camProj.m_vLR.x,
+								m_camProj.m_vLR.y,
+								m_camProj.m_vBT.x,
+								m_camProj.m_vBT.y,
+								m_camProj.m_vNF.x,
+								m_camProj.m_vNF.y
+								);
+		}
 	}
 
 	void _GeometryViewer::updateCamPose(void)
@@ -255,7 +271,7 @@ namespace kai
 		m_cam = m_camDefault;
 	}
 
-	void _GeometryViewer::setCamPose(const GVIEWER_CAM& camPose)
+	void _GeometryViewer::setCamPose(const GVIEWER_CAM &camPose)
 	{
 		m_cam = camPose;
 		updateCamPose();

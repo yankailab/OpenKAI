@@ -34,9 +34,13 @@ namespace kai
 
 	struct GVIEWER_CAM_PROJ
 	{
+		int m_type = 0; //Perspective, Ortho
 		float m_fov = 70.0;
-		vFloat2 m_vNF = {0, FLT_MAX}; // near & far plane
 		uint8_t m_fovType = 0;
+
+		vFloat2 m_vLR = {-10, 10};
+		vFloat2 m_vBT = {-10, 10};
+		vFloat2 m_vNF = {0, FLT_MAX}; // near & far plane
 	};
 
 	struct GVIEWER_CAM

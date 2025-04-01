@@ -65,6 +65,10 @@ namespace kai
         virtual void setQuaternion(const vDouble4 &vQ);
         virtual void updateTranslationMatrix(bool bUseQuaternion = true, vDouble3* pRa = NULL);
         virtual void setTranslationMatrix(const Matrix4d &mT);
+        virtual Matrix4d getTranslationMatrix(void);
+
+        virtual Matrix4d createTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR, vDouble3* pRa = NULL);
+        virtual Matrix4d createTranslationMatrix(const vDouble3 &vT, const vDouble4 &vQ, vDouble3* pRa = NULL);
 
         virtual vDouble3 getTranslation(void);
         virtual vDouble3 getRotation(void);
@@ -86,9 +90,6 @@ namespace kai
     protected:
         void mutexLock(void);
         void mutexUnlock(void);
-
-        virtual Matrix4d getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR, vDouble3* pRa = NULL);
-        virtual Matrix4d getTranslationMatrix(const vDouble3 &vT, const vDouble4 &vQ, vDouble3* pRa = NULL);
 
     protected:
         GEOMETRY_TYPE m_type;

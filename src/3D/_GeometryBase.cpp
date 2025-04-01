@@ -115,18 +115,19 @@ namespace kai
     void _GeometryBase::updateTranslationMatrix(bool bUseQuaternion, vDouble3 *pRa)
     {
         if (bUseQuaternion)
-            m_mT = getTranslationMatrix(m_vT, m_vQ, pRa);
+            m_mT = createTranslationMatrix(m_vT, m_vQ, pRa);
         else
-            m_mT = getTranslationMatrix(m_vT, m_vR, pRa);
+            m_mT = createTranslationMatrix(m_vT, m_vR, pRa);
 
         m_A = m_mT;
     }
 
-    Matrix4d _GeometryBase::getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR, vDouble3 *pRa)
+    Matrix4d _GeometryBase::createTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR, vDouble3 *pRa)
     {
         Matrix4d mT = Matrix4d::Identity();
         Vector3d eR(vR.x, vR.y, vR.z);
-        mT.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromAxisAngle(eR);
+//        mT.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromAxisAngle(eR);
+        mT.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromXYZ(eR);
         mT(0, 3) = vT.x;
         mT(1, 3) = vT.y;
         mT(2, 3) = vT.z;
@@ -141,7 +142,7 @@ namespace kai
         return mT;
     }
 
-    Matrix4d _GeometryBase::getTranslationMatrix(const vDouble3 &vT, const vDouble4 &vQ, vDouble3 *pRa)
+    Matrix4d _GeometryBase::createTranslationMatrix(const vDouble3 &vT, const vDouble4 &vQ, vDouble3 *pRa)
     {
         Matrix4d mT = Matrix4d::Identity();
         Vector4d eQ(vQ.x, vQ.y, vQ.z, vQ.w);
@@ -158,6 +159,11 @@ namespace kai
         mT.block(0, 0, 3, 3) = mR * mTr;
 
         return mT;
+    }
+
+    Matrix4d _GeometryBase::getTranslationMatrix(void)
+    {
+        return m_mT;
     }
 
     void _GeometryBase::setTranslationMatrix(const Matrix4d &mT)
@@ -243,16 +249,42 @@ namespace kai
             return false;
         }
 
-        vDouble3 vT, vR;
-        vT.clear();
-        vR.clear();
+        // vDouble3 vT, vR;
+        // vT.clear();
+        // vR.clear();
 
-        pKc->v("vT", &vT);
-        pKc->v("vR", &vR);
+        // pKc->v("vT", &vT);
+        // pKc->v("vR", &vR);
 
-        setTranslation(vT);
-        setRotation(vR);
-        updateTranslationMatrix(false);
+        // setTranslation(vT);
+        // setRotation(vR);
+        // updateTranslationMatrix(false);
+
+		vector<double> vT;
+		pKc->a("mT", &vT);
+
+        Matrix4d mT;
+        mT(0,0) = vT[0];
+        mT(0,1) = vT[1];
+        mT(0,2) = vT[2];
+        mT(0,3) = vT[3];
+
+        mT(1,0) = vT[4];
+        mT(1,1) = vT[5];
+        mT(1,2) = vT[6];
+        mT(1,3) = vT[7];
+
+        mT(2,0) = vT[8];
+        mT(2,1) = vT[9];
+        mT(2,2) = vT[10];
+        mT(2,3) = vT[11];
+
+        mT(3,0) = vT[12];
+        mT(3,1) = vT[13];
+        mT(3,2) = vT[14];
+        mT(3,3) = vT[15];
+
+        setTranslationMatrix(mT);
 
         DEL(pK);
         return true;
@@ -263,17 +295,42 @@ namespace kai
         picojson::object o;
         o.insert(make_pair("name", "_GeometryBase"));
 
-        picojson::array vT;
-        vT.push_back(value((double)m_vT.x));
-        vT.push_back(value((double)m_vT.y));
-        vT.push_back(value((double)m_vT.z));
-        o.insert(make_pair("vT", vT));
+        // picojson::array vT;
+        // vT.push_back(value((double)m_vT.x));
+        // vT.push_back(value((double)m_vT.y));
+        // vT.push_back(value((double)m_vT.z));
+        // o.insert(make_pair("vT", vT));
 
-        picojson::array vR;
-        vR.push_back(value((double)m_vR.x));
-        vR.push_back(value((double)m_vR.y));
-        vR.push_back(value((double)m_vR.z));
-        o.insert(make_pair("vR", vR));
+        // picojson::array vR;
+        // vR.push_back(value((double)m_vR.x));
+        // vR.push_back(value((double)m_vR.y));
+        // vR.push_back(value((double)m_vR.z));
+        // o.insert(make_pair("vR", vR));
+
+        Matrix4d mT = getTranslationMatrix();
+
+        picojson::array vT;
+        vT.push_back(value((double)mT(0,0)));
+        vT.push_back(value((double)mT(0,1)));
+        vT.push_back(value((double)mT(0,2)));
+        vT.push_back(value((double)mT(0,3)));
+
+        vT.push_back(value((double)mT(1,0)));
+        vT.push_back(value((double)mT(1,1)));
+        vT.push_back(value((double)mT(1,2)));
+        vT.push_back(value((double)mT(1,3)));
+
+        vT.push_back(value((double)mT(2,0)));
+        vT.push_back(value((double)mT(2,1)));
+        vT.push_back(value((double)mT(2,2)));
+        vT.push_back(value((double)mT(2,3)));
+
+        vT.push_back(value((double)mT(3,0)));
+        vT.push_back(value((double)mT(3,1)));
+        vT.push_back(value((double)mT(3,2)));
+        vT.push_back(value((double)mT(3,3)));
+
+        o.insert(make_pair("mT", vT));
 
         string f = picojson::value(o).serialize();
 

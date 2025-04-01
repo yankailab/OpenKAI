@@ -30,7 +30,7 @@ namespace open3d
             }
 
             void O3DUI::AddPointCloud(const string &name,
-                                      t::geometry::PointCloud* pTpc,
+                                      t::geometry::PointCloud *pTpc,
                                       rendering::Material *pMaterial,
                                       bool bVisible)
             {
@@ -177,6 +177,30 @@ namespace open3d
                     near,
                     far,
                     (fov_type == 0) ? Camera::FovType::Horizontal : Camera::FovType::Vertical);
+                m_pScene->ForceRedraw();
+            }
+
+            void O3DUI::CamSetProj(
+                Camera::Projection projType,
+                double left,
+                double right,
+                double bottom,
+                double top,
+                double near,
+                double far)
+            {
+                auto f = m_pScene->GetFrame();
+                auto sCam = m_pScene->GetScene()->GetCamera();
+
+                sCam->SetProjection(
+                    projType,
+                    left,
+                    right,
+                    bottom,
+                    top,
+                    near,
+                    far);
+
                 m_pScene->ForceRedraw();
             }
 

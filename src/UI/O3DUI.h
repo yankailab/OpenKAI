@@ -146,6 +146,15 @@ namespace open3d
 					double far,
 					uint8_t fov_type);
 
+				virtual void CamSetProj(
+					Camera::Projection projType,
+					double left,
+					double right,
+					double bottom,
+					double top,
+					double near,
+					double far);
+
 				virtual void CamSetPose(
 					const Vector3f &center,
 					const Vector3f &eye,

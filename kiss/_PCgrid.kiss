@@ -63,9 +63,15 @@
 	"vCamAutoEye":[0,2,0],
 	"vCamAutoUp":[0,0,1],
 	"vCoR":[0,0,0],
+
+	"camProjType":0,
 	"camFov":75,
-	"vCamNF":[0, 500],
 	"camFovType":1,
+
+	"vCamLR":[-100, 100],
+	"vCamBT":[-100, 100],
+	"vCamNF":[0, 500],
+
 	"bFullScreen":0,
 	"mouseMode":0,
 	"vDmove":[0.5, 5.0],
