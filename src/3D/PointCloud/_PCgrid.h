@@ -13,7 +13,7 @@ namespace kai
 		Median<int> m_med;
 		int m_nPraw = 0; // raw nPoints inside the cell
 		int m_nP = 0;	 // filtered
-		int m_nPactivate = 1;
+		int m_nPactivate = 0;
 
 		void init(int nW = 3)
 		{
@@ -25,6 +25,7 @@ namespace kai
 		{
 			m_nPraw = 0;
 			m_nP = 0;
+			m_nPactivate = 0;
 		}
 
 		void add(int n)

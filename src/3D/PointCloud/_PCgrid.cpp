@@ -99,7 +99,7 @@ namespace kai
 			for (int i = 0; i < m_nCell; i++)
 			{
 				m_pCell[i].init(m_nMedWidth);
-				m_pCell[i].m_nPactivate = 1;
+				m_pCell[i].m_nPactivate = 0;
 			}
 
 			// prepare quick access params
@@ -190,7 +190,9 @@ namespace kai
 					PC_GRID_CELL *pC = getCell(vC);
 					IF_CONT(!pC);
 					pC->updateFilter();
-					IF_CONT(pC->nP() < 1);
+
+					pC->m_nPactivate = pC->nP();
+					IF_CONT(pC->m_nPactivate < 1);
 
 					m_pCellActive->addCell(vC);
 				}
