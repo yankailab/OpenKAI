@@ -191,8 +191,7 @@ namespace kai
 					IF_CONT(!pC);
 					pC->updateFilter();
 
-					pC->m_nPactivate = pC->nP();
-					IF_CONT(pC->m_nPactivate < 1);
+					IF_CONT(pC->nP() < 1);
 
 					m_pCellActive->addCell(vC);
 				}

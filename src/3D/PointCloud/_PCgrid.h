@@ -25,7 +25,6 @@ namespace kai
 		{
 			m_nPraw = 0;
 			m_nP = 0;
-			m_nPactivate = 0;
 		}
 
 		void add(int n)
