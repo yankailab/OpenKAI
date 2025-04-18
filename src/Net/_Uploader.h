@@ -38,7 +38,7 @@ namespace kai
 
 		bool addFile(const string &fName);
 
-	private:
+	protected:
 		bool uploadByCurl(const string& fName);
 		bool uploadByHttp(const string& url, const string& fName);
 
@@ -52,7 +52,7 @@ namespace kai
 			return NULL;
 		}
 
-	private:
+	protected:
 		string m_dir;
 		vector<string> m_vFiles;
 		string m_fName;
