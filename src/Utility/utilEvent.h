@@ -34,6 +34,16 @@ namespace kai
 		{
 			return bTout(getTbootUs());
 		}
+
+		void clear(void)
+		{
+			m_tSet = 0;
+		}
+
+		bool bStarted(void)
+		{
+			return (m_tSet) ? true : false;
+		}
 	};
 
 	struct INTERVAL_EVENT
