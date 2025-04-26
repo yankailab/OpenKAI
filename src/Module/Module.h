@@ -214,6 +214,7 @@
 #include "../Sensor/Distance/_BenewakeTF.h"
 #ifdef WITH_3D && USE_OPEN3D
 #include "../Sensor/LiDAR/_Livox2.h"
+#include "../Sensor/LiDAR/_RoboSenseAiry.h"
 #endif // 3D
 #endif // sensor
 

@@ -223,6 +223,7 @@ namespace kai
 		ADD_MODULE(_LeddarVu);
 #ifdef WITH_3D && USE_OPEN3D
 		ADD_MODULE(_Livox2);
+		ADD_MODULE(_RoboSenseAiry);
 #endif // 3D
 #endif // sensor
 

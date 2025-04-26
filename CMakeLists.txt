@@ -359,6 +359,7 @@ set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/Distance/_TOFsense.cpp)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/Distance/_BenewakeTF.cpp)
 if(WITH_3D AND USE_OPEN3D)
 set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/LiDAR/_Livox2.cpp)
+set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/LiDAR/_RoboSenseAiry.cpp)
 endif() # 3D
 endif() # sensor
 
