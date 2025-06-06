@@ -194,7 +194,7 @@ namespace kai
 #endif
 
 #ifdef WITH_PROTOCOL
-		ADD_MODULE(_Canbus);
+		ADD_MODULE(_USR_CANET);
 		ADD_MODULE(_JSONbase);
 		ADD_MODULE(_Mavlink);
 		ADD_MODULE(_Modbus);

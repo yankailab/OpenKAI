@@ -411,7 +411,7 @@ sudo apt-get -y install libjsoncpp-dev libc++1 gfortran libfmt-dev
 sudo apt-get -y install xorg-dev libxcb-shm0 libglu1-mesa-dev
 sudo apt-get -y install python3 python3-pip
 
-git clone --branch v0.18.0 --depth 1 --recursive https://github.com/intel-isl/Open3D
+git clone --branch v0.19.0 --depth 1 --recursive https://github.com/intel-isl/Open3D
 cd Open3D
 git submodule update --init --recursive
 ```

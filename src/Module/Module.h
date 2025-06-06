@@ -185,7 +185,7 @@
 #endif
 
 #ifdef WITH_PROTOCOL
-#include "../Protocol/_Canbus.h"
+#include "../Protocol/_USR_CANET.h"
 #include "../Protocol/_JSONbase.h"
 #include "../Protocol/_Mavlink.h"
 #include "../Protocol/_PWMio.h"

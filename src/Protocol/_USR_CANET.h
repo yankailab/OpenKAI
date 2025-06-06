@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Protocol__Canbus_H_
-#define OpenKAI_src_Protocol__Canbus_H_
+#ifndef OpenKAI_src_Protocol__USR_CANET_H_
+#define OpenKAI_src_Protocol__USR_CANET_H_
 
 #include "../Base/_ModuleBase.h"
 #include "../IO/_SerialPort.h"
@@ -49,11 +49,11 @@ namespace kai
 		}
 	};
 
-	class _Canbus : public _ModuleBase
+	class _USR_CANET : public _ModuleBase
 	{
 	public:
-		_Canbus();
-		~_Canbus();
+		_USR_CANET();
+		~_USR_CANET();
 
 		int init(void *pKiss);
 		int start(void);
@@ -69,7 +69,7 @@ namespace kai
 		void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_Canbus *)This)->update();
+			((_USR_CANET *)This)->update();
 			return NULL;
 		}
 

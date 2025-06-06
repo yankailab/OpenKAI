@@ -1,20 +1,20 @@
-#include "_Canbus.h"
+#include "_USR_CANET.h"
 
 namespace kai
 {
 
-	_Canbus::_Canbus()
+	_USR_CANET::_USR_CANET()
 	{
 		m_pIO = nullptr;
 		m_nCanData = 0;
 		m_recvMsg.init();
 	}
 
-	_Canbus::~_Canbus()
+	_USR_CANET::~_USR_CANET()
 	{
 	}
 
-	int _Canbus::init(void *pKiss)
+	int _USR_CANET::init(void *pKiss)
 	{
 		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
@@ -41,13 +41,13 @@ namespace kai
 		return OK_OK;
 	}
 
-	int _Canbus::start(void)
+	int _USR_CANET::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
-	void _Canbus::update(void)
+	void _USR_CANET::update(void)
 	{
 		while (m_pT->bAlive())
 		{
@@ -75,7 +75,7 @@ namespace kai
 		}
 	}
 
-	bool _Canbus::recv()
+	bool _USR_CANET::recv()
 	{
 		unsigned char inByte;
 		int byteRead;
@@ -117,7 +117,7 @@ namespace kai
 		return false;
 	}
 
-	void _Canbus::recvMsg(void)
+	void _USR_CANET::recvMsg(void)
 	{
 		uint8_t cmd = m_recvMsg.m_pBuf[2];
 
@@ -142,7 +142,7 @@ namespace kai
 		}
 	}
 
-	uint8_t *_Canbus::get(unsigned long addr)
+	uint8_t *_USR_CANET::get(unsigned long addr)
 	{
 		for (int i = 0; i < m_nCanData; i++)
 		{
@@ -155,7 +155,7 @@ namespace kai
 		return NULL;
 	}
 
-	void _Canbus::send(unsigned long addr, unsigned char len, unsigned char *pData)
+	void _USR_CANET::send(unsigned long addr, unsigned char len, unsigned char *pData)
 	{
 		IF_(len + 8 > CAN_BUF);
 		IF_(!m_pIO->bOpen());
@@ -186,7 +186,7 @@ namespace kai
 		m_pIO->write(pBuf, len + 8);
 	}
 
-	void _Canbus::pinOut(uint8_t pin, uint8_t output)
+	void _USR_CANET::pinOut(uint8_t pin, uint8_t output)
 	{
 		IF_(!m_pIO->bOpen());
 
@@ -206,7 +206,7 @@ namespace kai
 		m_pIO->write(pBuf, 5);
 	}
 
-	void _Canbus::console(void *pConsole)
+	void _USR_CANET::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
