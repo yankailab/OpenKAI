@@ -2,51 +2,52 @@
 #define OpenKAI_src_Protocol__USR_CANET_H_
 
 #include "../Base/_ModuleBase.h"
-#include "../IO/_SerialPort.h"
+#include "../IO/_IObase.h"
 
-//0 START MARK
-//1 PAYLOAD LENGTH
-//2 COMMAND
-//3 Payload...
-
-#define MAVLINK_BEGIN 0xFE
-#define MAVLINK_HEADDER_LEN 3
-
-#define CAN_CMD_CAN_SEND 0
-#define CAN_CMD_PIN_OUTPUT 2
-#define CAN_BUF 256
-
-#define N_CANDATA 256
+#define CAN_BUF_N 256
 
 namespace kai
 {
-
-	struct CAN_MESSAGE
+	struct CAN_FRAME
 	{
-		int m_cmd;
-		int m_iByte;
-		int m_payloadLen;
-		char m_pBuf[CAN_BUF];
-
-		void init(void)
-		{
-			m_cmd = 0;
-			m_iByte = 0;
-			m_payloadLen = 0;
-		}
-	};
-
-	struct CAN_DATA
-	{
-		uint32_t m_addr;
-		uint8_t m_len;
+		uint8_t m_frameInfo;
+		uint8_t m_pID[4];
 		uint8_t m_pData[8];
 
-		void init(void)
+		void clear(void)
 		{
-			m_addr = 0;
-			m_len = 0;
+			m_frameInfo = 0;
 		}
+
+		bool input(uint8_t b)
+		{
+			// if (m_cmd != 0)
+			// {
+			// 	m_pB[m_iB++] = b;
+
+			// 	if (m_iB == 4)
+			// 	{
+			// 		m_nPayload = *((uint16_t *)&m_pB[2]);
+			// 		//m_nPayload = unpack_int16(&m_pB[2], false);
+			// 	}
+
+			// 	if (m_iB == m_nPayload + PB_N_HDR)
+			// 	{
+			// 		m_cmd = m_pB[1];
+			// 		return true;
+			// 	}
+			// }
+			// else if (b == PB_BEGIN)
+			// {
+			// 	m_cmd = b;
+			// 	m_pB[0] = b;
+			// 	m_iB = 1;
+			// 	m_nPayload = 0;
+			// }
+
+			return false;
+		}
+
 	};
 
 	class _USR_CANET : public _ModuleBase
@@ -55,29 +56,41 @@ namespace kai
 		_USR_CANET();
 		~_USR_CANET();
 
-		int init(void *pKiss);
-		int start(void);
-		void console(void *pConsole);
+		virtual int init(void *pKiss);
+		virtual int link(void);
+		virtual int start(void);
+		virtual int check(void);
+		virtual void console(void *pConsole);
 
-		void send(unsigned long addr, unsigned char len, unsigned char *pData);
-		void pinOut(uint8_t pin, uint8_t output);
-		bool recv();
-		uint8_t *get(unsigned long addr);
+	protected:
+//		virtual void send(void);
+		virtual void send(unsigned long addr, unsigned char len, unsigned char *pData);
+		virtual bool readFrame(CAN_FRAME *pFrame);
+		virtual void handleFrame(const CAN_FRAME &frame);
 
-	public:
-		void recvMsg(void);
-		void update(void);
-		static void *getUpdate(void *This)
+	private:
+		void updateW(void);
+		static void *getUpdateW(void *This)
 		{
-			((_USR_CANET *)This)->update();
+			((_USR_CANET *)This)->updateW();
 			return NULL;
 		}
 
-		_SerialPort *m_pIO;
+		void updateR(void);
+		static void *getUpdateR(void *This)
+		{
+			((_USR_CANET *)This)->updateR();
+			return NULL;
+		}
 
-		CAN_MESSAGE m_recvMsg;
-		CAN_DATA m_pCanData[N_CANDATA];
-		int m_nCanData;
+	protected:
+		_Thread *m_pTr;
+		_IObase *m_pIO;
+		uint64_t m_nCMDrecv;
+
+		uint8_t m_pBuf[CAN_BUF_N];
+		int m_nRead;
+		int m_iRead;
 	};
 
 }
