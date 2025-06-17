@@ -7,10 +7,7 @@ namespace kai
 	{
 		m_pTr = nullptr;
 		m_pIO = nullptr;
-		m_nCMDrecv = 0;
-
-		m_nRead = 0;
-		m_iRead = 0;
+		m_nFrameRecv = 0;
 	}
 
 	_USR_CANET::~_USR_CANET()
@@ -31,20 +28,6 @@ namespace kai
 
 		m_pTr = new _Thread();
 		CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "threadR init failed");
-
-
-		// m_nCanData = 0;
-		// while (1)
-		// {
-		// 	IF__(m_nCanData >= N_CANDATA, OK_ERR_INVALID_VALUE);
-		// 	Kiss *pAddr = pK->child(m_nCanData);
-		// 	if (pAddr->empty())
-		// 		break;
-
-		// 	m_pCanData[m_nCanData].init();
-		// 	IF__(!pAddr->v("addr", (int *)&(m_pCanData[m_nCanData].m_addr)), OK_ERR_NOT_FOUND);
-		// 	m_nCanData++;
-		// }
 
 		return OK_OK;
 	}
@@ -119,7 +102,7 @@ namespace kai
 
 			handleFrame(f);
 			f.clear();
-			m_nCMDrecv++;
+			m_nFrameRecv++;
 		}
 	}
 
@@ -128,82 +111,17 @@ namespace kai
 		IF_F(check() != OK_OK);
 		NULL_F(pFrame);
 
-		if (m_nRead == 0)
-		{
-			m_nRead = m_pIO->read(m_pBuf, CAN_BUF_N);
-			IF_F(m_nRead <= 0);
-			m_iRead = 0;
-		}
-
-		while (m_iRead < m_nRead)
-		{
-			bool r = pFrame->input(m_pBuf[m_iRead++]);
-			if (m_iRead == m_nRead)
-			{
-				m_iRead = 0;
-				m_nRead = 0;
-			}
-
-			IF__(r, true);
-		}
-
-		return false;
+		return pFrame->read(m_pIO);
 	}
 
 	void _USR_CANET::handleFrame(const CAN_FRAME &frame)
 	{
-		// uint8_t cmd = m_recvMsg.m_pBuf[2];
-
-		// if (cmd == CAN_CMD_CAN_SEND)
-		// {
-		// 	uint32_t *pAddr = (uint32_t *)(&m_recvMsg.m_pBuf[3]);
-		// 	uint32_t addr = *pAddr;
-
-		// 	for (int i = 0; i < m_nCanData; i++)
-		// 	{
-		// 		CAN_FRAME *pCan = &m_pCanData[i];
-		// 		IF_CONT(pCan->m_addr != addr);
-
-		// 		pCan->m_len = m_recvMsg.m_pBuf[7];
-		// 		memcpy(pCan->m_pData, &m_recvMsg.m_pBuf[8], 8);
-
-		// 		LOG_I("Updated data for CANID:" + i2str(addr));
-		// 		return;
-		// 	}
-
-		// 	LOG_I("CANID:" + i2str(addr));
-		// }
 	}
 
-	void _USR_CANET::send(unsigned long addr, unsigned char len, unsigned char *pData)
+	bool _USR_CANET::sendFrame(CAN_FRAME* pF)
 	{
-		IF_(len + 8 > CAN_BUF_N);
-		IF_(!m_pIO->bOpen());
-
-		unsigned char pBuf[CAN_BUF_N];
-
-		//Link header
-		pBuf[0] = 0xFE;	   //Mavlink begin
-		pBuf[1] = 5 + len; //Payload Length
-//		pBuf[2] = CAN_CMD_CAN_SEND;
-
-		//Payload from here
-		//CAN addr
-		pBuf[3] = (uint8_t)addr;
-		pBuf[4] = (uint8_t)(addr >> 8);
-		pBuf[5] = (uint8_t)(addr >> 16);
-		pBuf[6] = (uint8_t)(addr >> 24);
-
-		//CAN data len
-		pBuf[7] = len;
-
-		for (int i = 0; i < len; i++)
-		{
-			pBuf[i + 8] = pData[i];
-		}
-		//Payload to here
-
-		m_pIO->write(pBuf, len + 8);
+		NULL_F(pF);
+		return m_pIO->write(pF->m_pB, CAN_BUF_N);
 	}
 
 	void _USR_CANET::console(void *pConsole)

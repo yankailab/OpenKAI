@@ -4,50 +4,83 @@
 #include "../Base/_ModuleBase.h"
 #include "../IO/_IObase.h"
 
-#define CAN_BUF_N 256
+#define CAN_BUF_N 13
 
 namespace kai
 {
 	struct CAN_FRAME
 	{
-		uint8_t m_frameInfo;
-		uint8_t m_pID[4];
+		// frame
+		uint8_t m_ctrl;
+		uint32_t m_ID;
 		uint8_t m_pData[8];
+
+		uint8_t m_nData;
+		bool m_bExtended;
+		bool m_bRTR;
+
+		// working buffer
+		uint8_t m_pB[CAN_BUF_N];
+		uint8_t m_iB;
 
 		void clear(void)
 		{
-			m_frameInfo = 0;
+			m_iB = 0;
 		}
 
-		bool input(uint8_t b)
+		bool read(_IObase *pIO)
 		{
-			// if (m_cmd != 0)
-			// {
-			// 	m_pB[m_iB++] = b;
+			NULL_F(pIO);
 
-			// 	if (m_iB == 4)
-			// 	{
-			// 		m_nPayload = *((uint16_t *)&m_pB[2]);
-			// 		//m_nPayload = unpack_int16(&m_pB[2], false);
-			// 	}
+			int nR = pIO->read(&m_pB[m_iB], CAN_BUF_N - m_iB);
+			IF_F(nR <= 0);
+			m_iB += nR;
 
-			// 	if (m_iB == m_nPayload + PB_N_HDR)
-			// 	{
-			// 		m_cmd = m_pB[1];
-			// 		return true;
-			// 	}
-			// }
-			// else if (b == PB_BEGIN)
-			// {
-			// 	m_cmd = b;
-			// 	m_pB[0] = b;
-			// 	m_iB = 1;
-			// 	m_nPayload = 0;
-			// }
+			IF_F(m_iB < CAN_BUF_N);
 
-			return false;
+			decode();
+			return true;
 		}
 
+		void decode(void)
+		{
+			m_ctrl = m_pB[0];
+			m_nData = m_ctrl & 0x0F;
+			m_bExtended = (m_ctrl & (1 << 7));
+			m_bRTR = (m_ctrl & (1 << 6));
+
+			m_ID = *((uint32_t *)&m_pB[1]);
+			memcpy(m_pData, &m_pB[5], 8);
+		}
+
+		bool encode(uint32_t ID, uint8_t nData, uint8_t *pData, bool bExtended = false, bool bRTR = false)
+		{
+			IF_F(nData > 8);
+			NULL_F(pData);
+
+			m_ID = ID;
+			m_nData = nData;
+			m_bExtended = bExtended;
+			m_bRTR = bRTR;
+
+			m_ctrl = 0;
+			m_ctrl |= (nData & 0x0F);
+			if (bExtended)
+			{
+				m_ctrl |= (1 << 7);
+			}
+			if (bRTR)
+			{
+				m_ctrl |= (1 << 6);
+			}
+
+			memset(m_pB, 0, CAN_BUF_N);
+			m_pB[0] = m_ctrl;
+			memcpy(&m_pB[1], &m_ID, 4);
+			memcpy(&m_pB[5], pData, nData);
+
+			return true;
+		}
 	};
 
 	class _USR_CANET : public _ModuleBase
@@ -62,9 +95,9 @@ namespace kai
 		virtual int check(void);
 		virtual void console(void *pConsole);
 
+		virtual bool sendFrame(CAN_FRAME* pF);
+
 	protected:
-//		virtual void send(void);
-		virtual void send(unsigned long addr, unsigned char len, unsigned char *pData);
 		virtual bool readFrame(CAN_FRAME *pFrame);
 		virtual void handleFrame(const CAN_FRAME &frame);
 
@@ -86,11 +119,7 @@ namespace kai
 	protected:
 		_Thread *m_pTr;
 		_IObase *m_pIO;
-		uint64_t m_nCMDrecv;
-
-		uint8_t m_pBuf[CAN_BUF_N];
-		int m_nRead;
-		int m_iRead;
+		uint64_t m_nFrameRecv;
 	};
 
 }

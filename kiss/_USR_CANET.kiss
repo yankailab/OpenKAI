@@ -1,0 +1,52 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["udp","CANET"],
+}
+
+{
+	"name":"udp",
+	"class":"_UDP",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"bLog":0,
+	"nPacket":1024,
+	"nPbuffer":512,
+	"addrRemote":"192.168.1.200",
+	"portRemote":20000,
+	"bServer":0,
+	"bW2R":1,
+	"bWbroadcast":0,
+}
+
+{
+	"name":"CANET",
+	"class":"_USR_CANET",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadR",
+		"FPS":1,
+	}
+	"_IObase":"udp",
+}
