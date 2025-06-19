@@ -9,12 +9,12 @@
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["udp","CANET"],
+	"vBASE":["udp","tcp","CANET"],
 }
 
 {
@@ -28,11 +28,27 @@
 	"bLog":0,
 	"nPacket":1024,
 	"nPbuffer":512,
-	"addrRemote":"192.168.1.200",
-	"portRemote":20000,
-	"bServer":0,
+	"addrRemote":"192.168.0.7",
+	"portRemote":20001,
+	"portLocal":20001,
+	"bServer":1,
 	"bW2R":1,
 	"bWbroadcast":0,
+}
+
+{
+	"name":"tcp",
+	"class":"_TCPclient",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"bLog":0,
+	"nPacket":1024,
+	"nPbuffer":512,
+	"addr":"192.168.0.7",
+	"port":20001,
 }
 
 {
@@ -42,11 +58,12 @@
 	"bLog":1,
     {
 		"name":"thread",
-		"FPS":1,
+		"FPS":33,
 	}
     {
 		"name":"threadR",
 		"FPS":1,
 	}
 	"_IObase":"udp",
+	"/_IObase":"tcp",
 }
