@@ -3,6 +3,7 @@
 
 #include "../Base/_ModuleBase.h"
 #include "../IO/_IObase.h"
+#include "../Utility/util.h"
 
 #define CAN_BUF_N 13
 
@@ -23,10 +24,6 @@ namespace kai
 		uint8_t m_pB[CAN_BUF_N];
 		uint8_t m_iB;
 
-		void clear(void)
-		{
-			m_iB = 0;
-		}
 
 		bool read(_IObase *pIO)
 		{
@@ -39,6 +36,7 @@ namespace kai
 			IF_F(m_iB < CAN_BUF_N);
 
 			decode();
+			m_iB = 0;
 			return true;
 		}
 
@@ -74,9 +72,16 @@ namespace kai
 				m_ctrl |= (1 << 6);
 			}
 
+			// clear buf
 			memset(m_pB, 0, CAN_BUF_N);
+
+			// ctrl byte
 			m_pB[0] = m_ctrl;
-			memcpy(&m_pB[1], &m_ID, 4);
+
+			// ID
+			pack_uint32(&m_pB[1], m_ID, true);
+
+			// data
 			memcpy(&m_pB[5], pData, nData);
 
 			return true;

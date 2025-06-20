@@ -163,12 +163,12 @@ namespace kai
 
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPS();
+//			m_pT->autoFPS();
 
 			int r = readMessage(&msg);
 			IF_CONT(r != OK_OK);
 
-			m_pT->skipSleep();
+//			m_pT->skipSleep();
 
 			if (m_devSystemID < 0)
 				m_devSystemID = msg.sysid;

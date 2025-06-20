@@ -31,7 +31,7 @@
 	"addrRemote":"192.168.0.7",
 	"portRemote":20001,
 	"portLocal":20001,
-	"bServer":1,
+	"bServer":0,
 	"bW2R":1,
 	"bWbroadcast":0,
 }
@@ -58,7 +58,7 @@
 	"bLog":1,
     {
 		"name":"thread",
-		"FPS":33,
+		"FPS":90,
 	}
     {
 		"name":"threadR",

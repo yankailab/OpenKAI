@@ -90,11 +90,11 @@ namespace kai
 
 		while (m_pTr->bAlive())
 		{
-			m_pTr->autoFPS();
+//			m_pTr->autoFPS();
 
 			IF_CONT(!readCMD(&rCMD));
 
-			m_pTr->skipSleep();
+//			m_pTr->skipSleep();
 
 			handleCMD(rCMD);
 			rCMD.clear();

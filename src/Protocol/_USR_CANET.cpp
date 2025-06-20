@@ -85,21 +85,6 @@ namespace kai
 
 			m_pT->autoFPS();
 
-
-			CAN_FRAME f;
-			int8_t pData[8];
-			pData[0] = 0; //str
-			pData[1] = 0; //f/b
-			pData[2] = -92; //stop
-			pData[3] = 0;
-			pData[4] = -92;
-			pData[5] = -92;
-			pData[6] = 0;
-			pData[7] = 0;
-
-			f.encode(0x0F, 8, (uint8_t*)pData, false);
-
-			sendFrame(&f);
 		}
 	}
 
@@ -115,14 +100,10 @@ namespace kai
 
 		while (m_pTr->bAlive())
 		{
-//			m_pTr->autoFPS();
-
+			// blocking read
 			IF_CONT(!readFrame(&f));
 
-//			m_pTr->skipSleep();
-
 			handleFrame(f);
-			f.clear();
 			m_nFrameRecv++;
 		}
 	}
