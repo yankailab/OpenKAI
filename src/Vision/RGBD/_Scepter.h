@@ -13,8 +13,10 @@
 
 namespace kai
 {
-	struct VzCtrl
+	struct ScCtrl
 	{
+		int m_tScan = 3000; // scan time
+
 		bool m_bAutoExposureToF = true;
 		int m_tExposureToF = 4000;
 
@@ -29,7 +31,7 @@ namespace kai
 
 		bool m_bFilFlyingPix = false;
 		int m_filFlyingPix = 0;
-		
+
 		bool m_bFillHole = false;
 		bool m_bSpatialFilter = false;
 		bool m_bHDR = false;
@@ -49,8 +51,8 @@ namespace kai
 		virtual bool open(void);
 		virtual void close(void);
 
-		VzCtrl getCamCtrl(void);
-		bool setCamCtrl(const VzCtrl& camCtrl);
+		ScCtrl getCamCtrl(void);
+		bool setCamCtrl(const ScCtrl& camCtrl);
 		bool setToFexposureControlMode(bool bAuto);
 		bool setToFexposureTime(bool bAuto, int tExposure);
 		bool setRGBexposureControlMode(bool bAuto);
@@ -65,7 +67,7 @@ namespace kai
 	private:
 		bool updatePointCloud(const ScFrameReady& vfr);
 		bool updateRGBD(const ScFrameReady& vfr);
-		bool updateVzense(void);
+		bool updateScepter(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -82,18 +84,18 @@ namespace kai
 
 	private:
 		uint32_t m_nDevice;
-		VzDeviceInfo *m_pDeviceListInfo;
-		VzDeviceHandle m_deviceHandle;
-		VzSensorIntrinsicParameters m_cameraParameters;
-		VzCtrl m_vzCtrl;
+		ScDeviceInfo *m_pDeviceListInfo;
+		ScDeviceHandle m_deviceHandle;
+		ScSensorIntrinsicParameters m_cameraParameters;
+		ScCtrl m_scCtrl;
 
-		ScFrame m_vzfRGB;
-		ScFrame m_vzfDepth;
-        ScFrame m_vzfTransformedDepth;
-        ScFrame m_vzfTransformedRGB;
-		ScFrame m_vzfIR;
+		ScFrame m_scfRGB;
+		ScFrame m_scfDepth;
+        ScFrame m_scfTransformedDepth;
+        ScFrame m_scfTransformedRGB;
+		ScFrame m_scfIR;
 
-		VzVector3f *m_pVzVw; // world vector
+		ScVector3f *m_pScVw; // world vector
 	};
 
 }

@@ -16,13 +16,13 @@ namespace kai
 		m_pDeviceListInfo = nullptr;
 		m_deviceHandle = 0;
 
-		m_vzfRGB = {0};
-		m_vzfDepth = {0};
-		m_vzfTransformedRGB = {0};
-		m_vzfTransformedDepth = {0};
-		m_vzfIR = {0};
+		m_scfRGB = {0};
+		m_scfDepth = {0};
+		m_scfTransformedRGB = {0};
+		m_scfTransformedDepth = {0};
+		m_scfIR = {0};
 
-		m_pVzVw = NULL;
+		m_pScVw = NULL;
 	}
 
 	_Scepter::~_Scepter()
@@ -58,24 +58,26 @@ namespace kai
 
 	bool _Scepter::open(void)
 	{
-		IF__(m_bOpen);
+		IF__(m_bOpen, true);
 
 		uint32_t m_nDevice = 0;
-		VzReturnStatus status = VZ_GetDeviceCount(&m_nDevice);
-		if (status != VzReturnStatus::VzRetOK)
+		ScStatus status = scGetDeviceCount(&m_nDevice, m_scCtrl.m_tScan);
+		if (status != ScStatus::SC_OK)
 		{
-			LOG_E("VzGetDeviceCount failed");
+			LOG_E("ScGetDeviceCount failed");
 			return false;
 		}
 
 		LOG_I("Get device count: " + i2str(m_nDevice));
 		IF_F(m_nDevice == 0);
 
-		//        VZ_SetHotPlugStatusCallback(HotPlugStateCallback, nullptr);
 
-		m_pDeviceListInfo = new VzDeviceInfo[m_nDevice];
-		status = VZ_GetDeviceInfoList(m_nDevice, m_pDeviceListInfo);
-		if (status != VzReturnStatus::VzRetOK)
+		//scSetHotPlugStatusCallback(HotPlugStateCallback, nullptr);
+
+
+		m_pDeviceListInfo = new ScDeviceInfo[m_nDevice];
+		status = scGetDeviceInfoList(m_nDevice, m_pDeviceListInfo);
+		if (status != ScStatus::SC_OK)
 		{
 			LOG_E("GetDeviceListInfo failed:" + i2str(status));
 			return false;
@@ -83,17 +85,17 @@ namespace kai
 
 		m_deviceHandle = 0;
 		if (m_devURI.empty())
-			m_devURI = string(m_pDeviceListInfo[0].uri);
+			m_devURI = string(m_pDeviceListInfo[0].ip);
 
-		status = VZ_OpenDeviceByUri(m_devURI.c_str(), &m_deviceHandle);
-		if (status != VzReturnStatus::VzRetOK)
+		status = scOpenDeviceByIP(m_devURI.c_str(), &m_deviceHandle);
+		if (status != ScStatus::SC_OK)
 		{
 			LOG_E("OpenDevice failed");
 			return false;
 		}
 
-		status = VZ_GetSensorIntrinsicParameters(m_deviceHandle, VzToFSensor, &m_cameraParameters);
-		cout << "Get VZ_GetSensorIntrinsicParameters status: " << status << endl;
+		status = scGetSensorIntrinsicParameters(m_deviceHandle, SC_TOF_SENSOR, &m_cameraParameters);
+		cout << "Get scGetSensorIntrinsicParameters status: " << status << endl;
 		cout << "ToF Sensor Intinsic: " << endl;
 		cout << "Fx: " << m_cameraParameters.fx << endl;
 		cout << "Cx: " << m_cameraParameters.cx << endl;
@@ -111,28 +113,28 @@ namespace kai
 
 		const int nBfw = 64;
 		char fw[nBfw] = {0};
-		VZ_GetFirmwareVersion(m_deviceHandle, fw, nBfw);
+		scGetFirmwareVersion(m_deviceHandle, fw, nBfw);
 		LOG_I("fw  ==  " + string(fw));
 		LOG_I("sn  ==  " + string(m_pDeviceListInfo[0].serialNumber));
 
-		VZ_SetFrameRate(m_deviceHandle, (int)this->m_pT->getTargetFPS());
-		VZ_SetColorResolution(m_deviceHandle, m_vSizeRGB.x, m_vSizeRGB.y);
-		VZ_SetColorPixelFormat(m_deviceHandle, VzPixelFormatBGR888);
-		VZ_SetTransformColorImgToDepthSensorEnabled(m_deviceHandle, m_btRGB);
-		VZ_SetTransformDepthImgToColorSensorEnabled(m_deviceHandle, m_btDepth);
-		setToFexposureTime(m_vzCtrl.m_bAutoExposureToF, m_vzCtrl.m_tExposureToF);
-		setToFexposureControlMode(m_vzCtrl.m_bAutoExposureToF);
-		setRGBexposureTime(m_vzCtrl.m_bAutoExposureRGB, m_vzCtrl.m_tExposureToF);
-		setRGBexposureControlMode(m_vzCtrl.m_bAutoExposureRGB);
-		setTimeFilter(m_vzCtrl.m_bFilTime, m_vzCtrl.m_filTime);
-		setConfidenceFilter(m_vzCtrl.m_bFilConfidence, m_vzCtrl.m_filConfidence);
-		setFlyingPixelFilter(m_vzCtrl.m_bFilFlyingPix, m_vzCtrl.m_filFlyingPix);
-		setFillHole(m_vzCtrl.m_bFillHole);
-		setSpatialFilter(m_vzCtrl.m_bSpatialFilter);
-		setHDR(m_vzCtrl.m_bHDR);
-		status = VZ_StartStream(m_deviceHandle);
+		scSetFrameRate(m_deviceHandle, (int)this->m_pT->getTargetFPS());
+		scSetColorResolution(m_deviceHandle, m_vSizeRGB.x, m_vSizeRGB.y);
+		scSetColorPixelFormat(m_deviceHandle, SC_PIXEL_FORMAT_RGB_888);
+		scSetTransformColorImgToDepthSensorEnabled(m_deviceHandle, m_btRGB);
+		scSetTransformDepthImgToColorSensorEnabled(m_deviceHandle, m_btDepth);
+		setToFexposureTime(m_scCtrl.m_bAutoExposureToF, m_scCtrl.m_tExposureToF);
+		setToFexposureControlMode(m_scCtrl.m_bAutoExposureToF);
+		setRGBexposureTime(m_scCtrl.m_bAutoExposureRGB, m_scCtrl.m_tExposureToF);
+		setRGBexposureControlMode(m_scCtrl.m_bAutoExposureRGB);
+		setTimeFilter(m_scCtrl.m_bFilTime, m_scCtrl.m_filTime);
+		setConfidenceFilter(m_scCtrl.m_bFilConfidence, m_scCtrl.m_filConfidence);
+		setFlyingPixelFilter(m_scCtrl.m_bFilFlyingPix, m_scCtrl.m_filFlyingPix);
+		setFillHole(m_scCtrl.m_bFillHole);
+		setSpatialFilter(m_scCtrl.m_bSpatialFilter);
+		setHDR(m_scCtrl.m_bHDR);
+		status = scStartStream(m_deviceHandle);
 
-		m_pVzVw = new VzVector3f[m_vSizeRGB.x * m_vSizeRGB.y];
+		m_pScVw = new ScVector3f[m_vSizeRGB.x * m_vSizeRGB.y];
 
 		m_tFrameInterval = 2 * 1000 / this->m_pT->getTargetFPS();
 		m_bOpen = true;
@@ -141,15 +143,15 @@ namespace kai
 
 	void _Scepter::close(void)
 	{
-		VzReturnStatus status = VZ_StopStream(m_deviceHandle);
-		status = VZ_CloseDevice(&m_deviceHandle);
+		ScStatus status = scStopStream(m_deviceHandle);
+		status = scCloseDevice(&m_deviceHandle);
 		m_deviceHandle = 0;
 		LOG_I("CloseDevice status: " + i2str(status));
 
-		status = VZ_Shutdown();
+		status = scShutdown();
 
 		DEL(m_pDeviceListInfo);
-		DEL(m_pVzVw);
+		DEL(m_pScVw);
 	}
 
 	int _Scepter::start(void)
@@ -169,10 +171,11 @@ namespace kai
 
 	void _Scepter::update(void)
 	{
-		VzReturnStatus status = VZ_Initialize();
-		if (status != VzReturnStatus::VzRetOK)
+		ScStatus status = scInitialize();
+
+		if (status != ScStatus::SC_OK)
 		{
-			LOG_E("VzInitialize failed");
+			LOG_E("ScInitialize failed");
 			return;
 		}
 
@@ -182,7 +185,7 @@ namespace kai
 			{
 				if (!open())
 				{
-					LOG_E("Cannot open Vzense");
+					LOG_E("Cannot open Scense");
 					m_pT->sleepT(SEC_2_USEC);
 					continue;
 				}
@@ -190,9 +193,9 @@ namespace kai
 
 			m_pT->autoFPS();
 
-			if (updateVzense())
+			if (updateScepter())
 			{
-				m_pTPP->wakeUp();
+				m_pTPP->run();
 				//				updatePC();
 			}
 			else
@@ -204,12 +207,12 @@ namespace kai
 		}
 	}
 
-	bool _Scepter::updateVzense(void)
+	bool _Scepter::updateScepter(void)
 	{
 		IF__(check() != OK_OK, true);
 
-		VzFrameReady frameReady = {0};
-		VzReturnStatus status = VZ_GetFrameReady(m_deviceHandle,
+		ScFrameReady frameReady = {0};
+		ScStatus status = scGetFrameReady(m_deviceHandle,
 												 m_tFrameInterval,
 												 &frameReady);
 
@@ -219,90 +222,90 @@ namespace kai
 		return true;
 	}
 
-	bool _Scepter::updateRGBD(const VzFrameReady &vfr)
+	bool _Scepter::updateRGBD(const ScFrameReady &vfr)
 	{
-		VzReturnStatus status;
+		ScStatus status;
 
 		if (m_bRGB && vfr.color == 1)
 		{
-			status = VZ_GetFrame(m_deviceHandle, VzColorFrame, &m_vzfRGB);
-			if (m_vzfRGB.pFrameData)
-				memcpy(m_psmRGB->p(), m_vzfRGB.pFrameData, m_vzfRGB.dataLen);
+			status = scGetFrame(m_deviceHandle, SC_COLOR_FRAME, &m_scfRGB);
+			if (m_scfRGB.pFrameData)
+				memcpy(m_psmRGB->p(), m_scfRGB.pFrameData, m_scfRGB.dataLen);
 		}
 
 		if (m_btRGB && vfr.transformedColor == 1)
 		{
-			status = VZ_GetFrame(m_deviceHandle, VzTransformColorImgToDepthSensorFrame, &m_vzfTransformedRGB);
-			if (m_vzfTransformedRGB.pFrameData)
+			status = scGetFrame(m_deviceHandle, SC_TRANSFORM_COLOR_IMG_TO_DEPTH_SENSOR_FRAME, &m_scfTransformedRGB);
+			if (m_scfTransformedRGB.pFrameData)
 				memcpy(m_psmTransformedRGB->p(),
-					   m_vzfTransformedRGB.pFrameData,
-					   m_vzfTransformedRGB.dataLen);
+					   m_scfTransformedRGB.pFrameData,
+					   m_scfTransformedRGB.dataLen);
 		}
 
 		if (m_bDepth && vfr.depth == 1)
 		{
-			status = VZ_GetFrame(m_deviceHandle, VzDepthFrame, &m_vzfDepth);
-			if (m_vzfDepth.pFrameData)
-				memcpy(m_psmDepth->p(), m_vzfDepth.pFrameData, m_vzfDepth.dataLen);
+			status = scGetFrame(m_deviceHandle, SC_DEPTH_FRAME, &m_scfDepth);
+			if (m_scfDepth.pFrameData)
+				memcpy(m_psmDepth->p(), m_scfDepth.pFrameData, m_scfDepth.dataLen);
 		}
 
 		if (m_btDepth && vfr.transformedDepth == 1)
 		{
-			status = VZ_GetFrame(m_deviceHandle, VzTransformDepthImgToColorSensorFrame, &m_vzfTransformedDepth);
-			if (m_vzfTransformedDepth.pFrameData)
+			status = scGetFrame(m_deviceHandle, SC_TRANSFORM_DEPTH_IMG_TO_COLOR_SENSOR_FRAME, &m_scfTransformedDepth);
+			if (m_scfTransformedDepth.pFrameData)
 				memcpy(m_psmTransformedDepth->p(),
-					   m_vzfTransformedDepth.pFrameData,
-					   m_vzfTransformedDepth.dataLen);
+					   m_scfTransformedDepth.pFrameData,
+					   m_scfTransformedDepth.dataLen);
 		}
 
 		if (m_bIR && vfr.ir == 1)
 		{
-			status = VZ_GetFrame(m_deviceHandle, VzIRFrame, &m_vzfIR);
-			if (m_vzfIR.pFrameData)
-				memcpy(m_psmIR->p(), m_vzfIR.pFrameData, m_vzfIR.dataLen);
+			status = scGetFrame(m_deviceHandle, SC_IR_FRAME, &m_scfIR);
+			if (m_scfIR.pFrameData)
+				memcpy(m_psmIR->p(), m_scfIR.pFrameData, m_scfIR.dataLen);
 		}
 
 		return true;
 	}
 
-	bool _Scepter::updatePointCloud(const VzFrameReady &vfr)
+	bool _Scepter::updatePointCloud(const ScFrameReady &vfr)
 	{
-		VzReturnStatus status;
+		ScStatus status;
 
 		// Eigen::Affine3d mA = m_A;
-		// IF_F(status != VzReturnStatus::VzRetOK);
+		// IF_F(status != ScStatus::SC_OK);
 		// IF_F(vfr.transformedColor != 1);
 		// IF_F(vfr.depth != 1);
 
-		// status = VZ_GetFrame(m_deviceHandle, VzDepthFrame, &m_vzfDepth);
-		// IF_F(status != VzReturnStatus::VzRetOK);
-		// IF_F(!m_vzfDepth.pFrameData);
+		// status = scGetFrame(m_deviceHandle, ScDepthFrame, &m_scfDepth);
+		// IF_F(status != ScStatus::SC_OK);
+		// IF_F(!m_scfDepth.pFrameData);
 
-		// status = VZ_GetFrame(m_deviceHandle, VzTransformColorImgToDepthSensorFrame, &m_vzfRGB);
-		// IF_F(status != VzReturnStatus::VzRetOK);
-		// IF_F(!m_vzfRGB.pFrameData);
+		// status = scGetFrame(m_deviceHandle, ScTransformColorImgToDepthSensorFrame, &m_scfRGB);
+		// IF_F(status != ScStatus::SC_OK);
+		// IF_F(!m_scfRGB.pFrameData);
 
 		// PointCloud *pPC = m_sPC.next();
 		// const static float s_b = 1.0 / 1000.0;
 		// const static float c_b = 1.0 / 255.0;
 
 		// // Convert Depth frame to World vectors.
-		// VZ_ConvertDepthFrameToPointCloudVector(m_deviceHandle,
-		// 									   &m_vzfDepth,
-		// 									   m_pVzVw);
+		// scConvertDepthFrameToPointCloudVector(m_deviceHandle,
+		// 									   &m_scfDepth,
+		// 									   m_pScVw);
 
 		// int nPi = 0;
-		// for (int i = 0; i < m_vzfDepth.height; i++)
+		// for (int i = 0; i < m_scfDepth.height; i++)
 		// {
-		// 	for (int j = 0; j < m_vzfDepth.width; j++)
+		// 	for (int j = 0; j < m_scfDepth.width; j++)
 		// 	{
-		// 		int k = i * m_vzfDepth.width + j;
+		// 		int k = i * m_scfDepth.width + j;
 
-		// 		VzVector3f *pV = &m_pVzVw[k];
+		// 		ScVector3f *pV = &m_pScVw[k];
 		// 		Eigen::Vector3d vP(pV->x, pV->y, pV->z);
 		// 		vP *= s_b;
-		// 		IF_CONT(vP.z() < m_vzCtrl.m_vRz.x);
-		// 		IF_CONT(vP.z() > m_vzCtrl.m_vRz.y);
+		// 		IF_CONT(vP.z() < m_scCtrl.m_vRz.x);
+		// 		IF_CONT(vP.z() > m_scCtrl.m_vRz.y);
 
 		// 		Eigen::Vector3d vPik = Vector3d(
 		// 			vP[m_vAxisIdx.x] * m_vAxisK.x,
@@ -312,7 +315,7 @@ namespace kai
 		// 		pPC->points_.push_back(vP);
 
 		// 		// texture color
-		// 		uint8_t *pC = &m_vzfRGB.pFrameData[k * sizeof(uint8_t) * 3];
+		// 		uint8_t *pC = &m_scfRGB.pFrameData[k * sizeof(uint8_t) * 3];
 		// 		Eigen::Vector3d vC(pC[2], pC[1], pC[0]);
 		// 		vC *= c_b;
 		// 		pPC->colors_.push_back(vC);
@@ -354,116 +357,108 @@ namespace kai
 
 	bool _Scepter::setToFexposureControlMode(bool bAuto)
 	{
-		m_vzCtrl.m_bAutoExposureToF = bAuto;
+		m_scCtrl.m_bAutoExposureToF = bAuto;
 
-		VzReturnStatus vzR = VZ_SetExposureControlMode(m_deviceHandle,
-													   VzToFSensor,
-													   bAuto ? VzExposureControlMode_Auto
-															 : VzExposureControlMode_Manual);
-		return (vzR == VzRetOK) ? true : false;
+		ScStatus ScR = scSetExposureControlMode(m_deviceHandle,
+													   SC_TOF_SENSOR,
+													   bAuto ? SC_EXPOSURE_CONTROL_MODE_AUTO
+															 : SC_EXPOSURE_CONTROL_MODE_MANUAL);
+		return (ScR == SC_OK) ? true : false;
 	}
 
 	bool _Scepter::setToFexposureTime(bool bAuto, int tExposure)
 	{
-		m_vzCtrl.m_bAutoExposureToF = bAuto;
-		m_vzCtrl.m_tExposureToF = tExposure;
+		m_scCtrl.m_bAutoExposureToF = bAuto;
+		m_scCtrl.m_tExposureToF = tExposure;
 
-		VzExposureTimeParams p;
-		p.mode = bAuto ? VzExposureControlMode_Auto
-					   : VzExposureControlMode_Manual;
-		p.exposureTime = tExposure;
-		VzReturnStatus vzR = VZ_SetExposureTime(m_deviceHandle,
-												VzToFSensor,
-												p);
+		ScStatus ScR = scSetExposureTime(m_deviceHandle,
+												SC_TOF_SENSOR,
+												tExposure);
 
-		return (vzR == VzRetOK) ? true : false;
+		return (ScR == SC_OK) ? true : false;
 	}
 
 	bool _Scepter::setRGBexposureControlMode(bool bAuto)
 	{
-		m_vzCtrl.m_bAutoExposureRGB = bAuto;
+		m_scCtrl.m_bAutoExposureRGB = bAuto;
 
-		VzReturnStatus vzR = VZ_SetExposureControlMode(m_deviceHandle,
-													   VzColorSensor,
-													   bAuto ? VzExposureControlMode_Auto
-															 : VzExposureControlMode_Manual);
-		return (vzR == VzRetOK) ? true : false;
+		ScStatus ScR = scSetExposureControlMode(m_deviceHandle,
+													   SC_COLOR_SENSOR,
+													   bAuto ? SC_EXPOSURE_CONTROL_MODE_AUTO
+															 : SC_EXPOSURE_CONTROL_MODE_MANUAL);
+		return (ScR == SC_OK) ? true : false;
 	}
 
 	bool _Scepter::setRGBexposureTime(bool bAuto, int tExposure)
 	{
-		m_vzCtrl.m_bAutoExposureRGB = bAuto;
-		m_vzCtrl.m_tExposureRGB = tExposure;
+		m_scCtrl.m_bAutoExposureRGB = bAuto;
+		m_scCtrl.m_tExposureRGB = tExposure;
 
-		VzExposureTimeParams p;
-		p.mode = bAuto ? VzExposureControlMode_Auto
-					   : VzExposureControlMode_Manual;
-		p.exposureTime = tExposure;
-		VzReturnStatus vzR = VZ_SetExposureTime(m_deviceHandle,
-												VzColorSensor,
-												p);
+		ScStatus ScR = scSetExposureTime(m_deviceHandle,
+												SC_COLOR_SENSOR,
+												tExposure);
 
-		return (vzR == VzRetOK) ? true : false;
+		return (ScR == SC_OK) ? true : false;
 	}
 
 	bool _Scepter::setTimeFilter(bool bON, int thr)
 	{
-		m_vzCtrl.m_bFilTime = bON;
-		m_vzCtrl.m_filTime = thr;
+		m_scCtrl.m_bFilTime = bON;
+		m_scCtrl.m_filTime = thr;
 
-		VzTimeFilterParams p;
+		ScTimeFilterParams p;
 		p.enable = bON;
 		p.threshold = thr;
-		VzReturnStatus vzR = VZ_SetTimeFilterParams(m_deviceHandle, p);
-		return (vzR == VzRetOK) ? true : false;
+		ScStatus ScR = scSetTimeFilterParams(m_deviceHandle, p);
+		return (ScR == SC_OK) ? true : false;
 	}
 
 	bool _Scepter::setConfidenceFilter(bool bON, int thr)
 	{
-		m_vzCtrl.m_bFilConfidence = bON;
-		m_vzCtrl.m_filConfidence = thr;
+		m_scCtrl.m_bFilConfidence = bON;
+		m_scCtrl.m_filConfidence = thr;
 
-		VzConfidenceFilterParams p;
+		ScConfidenceFilterParams p;
 		p.enable = bON;
 		p.threshold = thr;
-		VzReturnStatus vzR = VZ_SetConfidenceFilterParams(m_deviceHandle, p);
-		return (vzR == VzRetOK) ? true : false;
+		ScStatus ScR = scSetConfidenceFilterParams(m_deviceHandle, p);
+		return (ScR == SC_OK) ? true : false;
 	}
 
 	bool _Scepter::setFlyingPixelFilter(bool bON, int thr)
 	{
-		m_vzCtrl.m_bFilFlyingPix = bON;
-		m_vzCtrl.m_filFlyingPix = thr;
+		m_scCtrl.m_bFilFlyingPix = bON;
+		m_scCtrl.m_filFlyingPix = thr;
 
-		VzFlyingPixelFilterParams p;
+		ScFlyingPixelFilterParams p;
 		p.enable = bON;
 		p.threshold;
-		VzReturnStatus vzR = VZ_SetFlyingPixelFilterParams(m_deviceHandle, p);
-		return (vzR == VzRetOK) ? true : false;
+		ScStatus ScR = scSetFlyingPixelFilterParams(m_deviceHandle, p);
+		return (ScR == SC_OK) ? true : false;
 	}
 
 	bool _Scepter::setFillHole(bool bON)
 	{
-		m_vzCtrl.m_bFillHole = bON;
+		m_scCtrl.m_bFillHole = bON;
 
-		VzReturnStatus vzR = VZ_SetFillHoleFilterEnabled(m_deviceHandle, bON);
-		return (vzR == VzRetOK) ? true : false;
+		ScStatus ScR = scSetFillHoleFilterEnabled(m_deviceHandle, bON);
+		return (ScR == SC_OK) ? true : false;
 	}
 
 	bool _Scepter::setSpatialFilter(bool bON)
 	{
-		m_vzCtrl.m_bSpatialFilter = bON;
+		m_scCtrl.m_bSpatialFilter = bON;
 
-		VzReturnStatus vzR = VZ_SetSpatialFilterEnabled(m_deviceHandle, bON);
-		return (vzR == VzRetOK) ? true : false;
+		ScStatus ScR = scSetSpatialFilterEnabled(m_deviceHandle, bON);
+		return (ScR == SC_OK) ? true : false;
 	}
 
 	bool _Scepter::setHDR(bool bON)
 	{
-		m_vzCtrl.m_bHDR = bON;
+		m_scCtrl.m_bHDR = bON;
 
-		VzReturnStatus vzR = VZ_SetHDRModeEnabled(m_deviceHandle, bON);
-		return (vzR == VzRetOK) ? true : false;
+		ScStatus ScR = scSetHDRModeEnabled(m_deviceHandle, bON);
+		return (ScR == SC_OK) ? true : false;
 	}
 
 }
