@@ -266,7 +266,7 @@ namespace kai
 		ADD_MODULE(_RealSense);
 #endif
 #ifdef USE_SCEPTER_SDK
-		ADD_MODULE(_Vzense);
+		ADD_MODULE(_Scepter);
 #endif
 #ifdef USE_XDYNAMICS
 		ADD_MODULE(_XDynamics);

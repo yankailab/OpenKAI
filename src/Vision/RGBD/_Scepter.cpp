@@ -1,16 +1,16 @@
 /*
- * _Vzense.cpp
+ * _Scepter.cpp
  *
  *  Created on: Feb 13, 2023
  *      Author: yankai
  */
 
-#include "_Vzense.h"
+#include "_Scepter.h"
 
 namespace kai
 {
 
-	_Vzense::_Vzense()
+	_Scepter::_Scepter()
 	{
 		m_nDevice = 0;
 		m_pDeviceListInfo = nullptr;
@@ -25,11 +25,11 @@ namespace kai
 		m_pVzVw = NULL;
 	}
 
-	_Vzense::~_Vzense()
+	_Scepter::~_Scepter()
 	{
 	}
 
-	int _Vzense::init(void *pKiss)
+	int _Scepter::init(void *pKiss)
 	{
 		CHECK_(_RGBDbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
@@ -47,7 +47,7 @@ namespace kai
 		return OK_OK;
 	}
 
-	int _Vzense::link(void)
+	int _Scepter::link(void)
 	{
 		CHECK_(this->_RGBDbase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
@@ -56,7 +56,7 @@ namespace kai
 		return OK_OK;
 	}
 
-	bool _Vzense::open(void)
+	bool _Scepter::open(void)
 	{
 		IF__(m_bOpen);
 
@@ -139,7 +139,7 @@ namespace kai
 		return true;
 	}
 
-	void _Vzense::close(void)
+	void _Scepter::close(void)
 	{
 		VzReturnStatus status = VZ_StopStream(m_deviceHandle);
 		status = VZ_CloseDevice(&m_deviceHandle);
@@ -152,7 +152,7 @@ namespace kai
 		DEL(m_pVzVw);
 	}
 
-	int _Vzense::start(void)
+	int _Scepter::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
 		NULL__(m_pTPP, OK_ERR_NULLPTR);
@@ -160,14 +160,14 @@ namespace kai
 		return m_pTPP->start(getTPP, this);
 	}
 
-	int _Vzense::check(void)
+	int _Scepter::check(void)
 	{
 		NULL__(m_pTPP, OK_ERR_NULLPTR);
 
 		return this->_RGBDbase::check();
 	}
 
-	void _Vzense::update(void)
+	void _Scepter::update(void)
 	{
 		VzReturnStatus status = VZ_Initialize();
 		if (status != VzReturnStatus::VzRetOK)
@@ -204,7 +204,7 @@ namespace kai
 		}
 	}
 
-	bool _Vzense::updateVzense(void)
+	bool _Scepter::updateVzense(void)
 	{
 		IF__(check() != OK_OK, true);
 
@@ -219,7 +219,7 @@ namespace kai
 		return true;
 	}
 
-	bool _Vzense::updateRGBD(const VzFrameReady &vfr)
+	bool _Scepter::updateRGBD(const VzFrameReady &vfr)
 	{
 		VzReturnStatus status;
 
@@ -265,7 +265,7 @@ namespace kai
 		return true;
 	}
 
-	bool _Vzense::updatePointCloud(const VzFrameReady &vfr)
+	bool _Scepter::updatePointCloud(const VzFrameReady &vfr)
 	{
 		VzReturnStatus status;
 
@@ -329,7 +329,7 @@ namespace kai
 		return true;
 	}
 
-	void _Vzense::updateTPP(void)
+	void _Scepter::updateTPP(void)
 	{
 		while (m_pTPP->bAlive())
 		{
@@ -352,7 +352,7 @@ namespace kai
 		}
 	}
 
-	bool _Vzense::setToFexposureControlMode(bool bAuto)
+	bool _Scepter::setToFexposureControlMode(bool bAuto)
 	{
 		m_vzCtrl.m_bAutoExposureToF = bAuto;
 
@@ -363,7 +363,7 @@ namespace kai
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _Vzense::setToFexposureTime(bool bAuto, int tExposure)
+	bool _Scepter::setToFexposureTime(bool bAuto, int tExposure)
 	{
 		m_vzCtrl.m_bAutoExposureToF = bAuto;
 		m_vzCtrl.m_tExposureToF = tExposure;
@@ -379,7 +379,7 @@ namespace kai
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _Vzense::setRGBexposureControlMode(bool bAuto)
+	bool _Scepter::setRGBexposureControlMode(bool bAuto)
 	{
 		m_vzCtrl.m_bAutoExposureRGB = bAuto;
 
@@ -390,7 +390,7 @@ namespace kai
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _Vzense::setRGBexposureTime(bool bAuto, int tExposure)
+	bool _Scepter::setRGBexposureTime(bool bAuto, int tExposure)
 	{
 		m_vzCtrl.m_bAutoExposureRGB = bAuto;
 		m_vzCtrl.m_tExposureRGB = tExposure;
@@ -406,7 +406,7 @@ namespace kai
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _Vzense::setTimeFilter(bool bON, int thr)
+	bool _Scepter::setTimeFilter(bool bON, int thr)
 	{
 		m_vzCtrl.m_bFilTime = bON;
 		m_vzCtrl.m_filTime = thr;
@@ -418,7 +418,7 @@ namespace kai
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _Vzense::setConfidenceFilter(bool bON, int thr)
+	bool _Scepter::setConfidenceFilter(bool bON, int thr)
 	{
 		m_vzCtrl.m_bFilConfidence = bON;
 		m_vzCtrl.m_filConfidence = thr;
@@ -430,7 +430,7 @@ namespace kai
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _Vzense::setFlyingPixelFilter(bool bON, int thr)
+	bool _Scepter::setFlyingPixelFilter(bool bON, int thr)
 	{
 		m_vzCtrl.m_bFilFlyingPix = bON;
 		m_vzCtrl.m_filFlyingPix = thr;
@@ -442,7 +442,7 @@ namespace kai
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _Vzense::setFillHole(bool bON)
+	bool _Scepter::setFillHole(bool bON)
 	{
 		m_vzCtrl.m_bFillHole = bON;
 
@@ -450,7 +450,7 @@ namespace kai
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _Vzense::setSpatialFilter(bool bON)
+	bool _Scepter::setSpatialFilter(bool bON)
 	{
 		m_vzCtrl.m_bSpatialFilter = bON;
 
@@ -458,7 +458,7 @@ namespace kai
 		return (vzR == VzRetOK) ? true : false;
 	}
 
-	bool _Vzense::setHDR(bool bON)
+	bool _Scepter::setHDR(bool bON)
 	{
 		m_vzCtrl.m_bHDR = bON;
 

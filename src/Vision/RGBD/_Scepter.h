@@ -1,15 +1,15 @@
 /*
- * _Vzense.h
+ * _Scepter.h
  *
  *  Created on: Feb 13, 2023
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Vision_RGBD__Vzense_H_
-#define OpenKAI_src_Vision_RGBD__Vzense_H_
+#ifndef OpenKAI_src_Vision_RGBD__Scepter_H_
+#define OpenKAI_src_Vision_RGBD__Scepter_H_
 
 #include "_RGBDbase.h"
-#include <VzenseNebula_api.h>
+#include <Scepter_api.h>
 
 namespace kai
 {
@@ -35,11 +35,11 @@ namespace kai
 		bool m_bHDR = false;
 	};
 
-	class _Vzense : public _RGBDbase
+	class _Scepter : public _RGBDbase
 	{
 	public:
-		_Vzense();
-		virtual ~_Vzense();
+		_Scepter();
+		virtual ~_Scepter();
 
 		virtual int init(void *pKiss);
 		virtual int link(void);
@@ -63,20 +63,20 @@ namespace kai
 		bool setHDR(bool bON);
 
 	private:
-		bool updatePointCloud(const VzFrameReady& vfr);
-		bool updateRGBD(const VzFrameReady& vfr);
+		bool updatePointCloud(const ScFrameReady& vfr);
+		bool updateRGBD(const ScFrameReady& vfr);
 		bool updateVzense(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_Vzense *)This)->update();
+			((_Scepter *)This)->update();
 			return NULL;
 		}
 
 		void updateTPP(void);
 		static void *getTPP(void *This)
 		{
-			((_Vzense *)This)->updateTPP();
+			((_Scepter *)This)->updateTPP();
 			return NULL;
 		}
 
@@ -87,11 +87,11 @@ namespace kai
 		VzSensorIntrinsicParameters m_cameraParameters;
 		VzCtrl m_vzCtrl;
 
-		VzFrame m_vzfRGB;
-		VzFrame m_vzfDepth;
-        VzFrame m_vzfTransformedDepth;
-        VzFrame m_vzfTransformedRGB;
-		VzFrame m_vzfIR;
+		ScFrame m_vzfRGB;
+		ScFrame m_vzfDepth;
+        ScFrame m_vzfTransformedDepth;
+        ScFrame m_vzfTransformedRGB;
+		ScFrame m_vzfIR;
 
 		VzVector3f *m_pVzVw; // world vector
 	};

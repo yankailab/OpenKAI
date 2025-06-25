@@ -257,7 +257,7 @@
 #include "../Vision/RGBD/_RealSense.h"
 #endif
 #ifdef USE_SCEPTER_SDK
-#include "../Vision/RGBD/_Vzense.h"
+#include "../Vision/RGBD/_Scepter.h"
 #endif
 #ifdef USE_XDYNAMICS
 #include "../Vision/RGBD/_XDynamics.h"
