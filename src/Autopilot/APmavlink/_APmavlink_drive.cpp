@@ -6,7 +6,7 @@ namespace kai
 	_APmavlink_drive::_APmavlink_drive()
 	{
 		m_pAP = nullptr;
-		m_pD = nullptr;
+//		m_pD = nullptr;
 
 		m_yawMode = 1.0;
 		m_bSetYawSpeed = false;
@@ -67,6 +67,13 @@ namespace kai
 		pK->v("pwmM", &m_pwmM);
 		pK->v("pwmD", &m_pwmD);
 
+		return OK_OK;
+	}
+
+	int _APmavlink_drive::link(void)
+	{
+		CHECK_(this->_ModuleBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
 		n = "";
@@ -74,10 +81,10 @@ namespace kai
 		m_pAP = (_APmavlink_base *)(pK->findModule(n));
 		NULL__(m_pAP, OK_ERR_NOT_FOUND);
 
-		n = "";
-		pK->v("_Drive", &n);
-		m_pD = (_Drive *)(pK->findModule(n));
-		NULL__(m_pD, OK_ERR_NOT_FOUND);
+		// n = "";
+		// pK->v("_Drive", &n);
+		// m_pD = (_Drive *)(pK->findModule(n));
+		// NULL__(m_pD, OK_ERR_NOT_FOUND);
 
 		return OK_OK;
 	}
@@ -92,7 +99,7 @@ namespace kai
 	{
 		NULL__(m_pAP, OK_ERR_NULLPTR);
 		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
-		NULL__(m_pD, OK_ERR_NULLPTR);
+//		NULL__(m_pD, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}
@@ -123,8 +130,11 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		float nSpd = m_pD->getSpeed() * m_pD->getDirection();
-		float nStr = m_pD->getSteering();
+		// float nSpd = m_pD->getSpeed() * m_pD->getDirection();
+		// float nStr = m_pD->getSteering();
+
+		float nSpd = 0.25;
+		float nStr = 1.0;
 
 		if (m_bSetYawSpeed)
 		{

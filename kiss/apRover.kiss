@@ -1,0 +1,132 @@
+{
+	"name":"APP",
+	"class":"OpenKAI",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["cam","serialAP","apMavlink","apBase","apDrive"],
+}
+
+{
+	"name":"serialAP",
+	"class":"_SerialPort",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"nPacket":1024,
+	"nPbuffer":512,
+	"//port":"/dev/ttyAMA0",
+	"/port":"/dev/ttyS0",
+	"port":"/dev/ttyACM0",
+	"/port":"/dev/ttyTHS1",
+	"baud":115200,
+}
+
+{
+	"name":"apMavlink",
+	"class":"_Mavlink",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"bLog":0,
+	"_IObase":"serialAP",
+	"/devSystemID":0,
+	"mySystemID":255,
+	"iMavComm":0,
+}
+
+{
+	"name":"apBase",
+	"class":"_APmavlink_base",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"_StateControl":"state",
+	"_Mavlink":"apMavlink",
+	"apType":0,
+	"ieSendHB":1,
+	"ieSendMsgInt":1,
+
+	{
+		"name":"mavMsgInt",
+
+		{
+			"name":"heartbeat",
+			"id":0,
+			"tInt":0.2,
+		}
+		{
+			"name":"attitude",
+			"id":30,
+			"tInt":0.5,
+		}
+		{
+			"name":"gpsRawINT",
+			"id":24,
+			"tInt":1,
+		}
+		{
+			"name":"localPosition",
+			"id":32,
+			"tInt":0.3,
+		}
+		{
+			"name":"globalPosition",
+			"id":33,
+			"tInt":0.3,
+		}
+		{
+			"name":"homePosition",
+			"id":242,
+			"tInt":10,
+		}
+		{
+			"name":"batteryStatus",
+			"id":147,
+			"tInt":10,
+		}
+		{
+			"name":"missionCurrent",
+			"id":42,
+			"tInt":1,
+		}
+	}
+}
+
+{
+	"name":"apDrive",
+	"class":"_APmavlink_drive",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"_APmavlink_base":"apBase",
+	"_StateControl":"state",
+	"bSetYawSpeed":0,
+	"yawMode":1,
+	"bRcChanOverride":1,
+
+	"iRcYaw":1,
+	"iRCThrottle":3,
+	"pwmM":1500,
+	"pwmD":500,
+}
+

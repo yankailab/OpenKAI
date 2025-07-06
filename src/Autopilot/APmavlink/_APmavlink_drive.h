@@ -14,6 +14,7 @@ namespace kai
 		~_APmavlink_drive();
 
 		virtual int init(void *pKiss);
+		virtual int link(void);
 		virtual int start(void);
 		virtual int check(void);
 		virtual void update(void);
@@ -31,9 +32,9 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		_APmavlink_base *m_pAP;
-		_Drive *m_pD;
+//		_Drive *m_pD;
 
 		bool m_bSetYawSpeed;
 		float m_yawMode;

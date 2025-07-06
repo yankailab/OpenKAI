@@ -34,15 +34,15 @@ namespace kai
 		CHECK_(_RGBDbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-        Kiss *pKt = pK->child("threadPP");
-        if (pKt->empty())
-        {
-            LOG_E("threadPP not found");
-            return OK_ERR_NOT_FOUND;
-        }
+		Kiss *pKt = pK->child("threadPP");
+		if (pKt->empty())
+		{
+			LOG_E("threadPP not found");
+			return OK_ERR_NOT_FOUND;
+		}
 
-        m_pTPP = new _Thread();
-        CHECK_d_l_(m_pTPP->init(pKt), DEL(m_pTPP), "threadPP init failed");
+		m_pTPP = new _Thread();
+		CHECK_d_l_(m_pTPP->init(pKt), DEL(m_pTPP), "threadPP init failed");
 
 		return OK_OK;
 	}
@@ -71,9 +71,7 @@ namespace kai
 		LOG_I("Get device count: " + i2str(m_nDevice));
 		IF_F(m_nDevice == 0);
 
-
-		//scSetHotPlugStatusCallback(HotPlugStateCallback, nullptr);
-
+		// scSetHotPlugStatusCallback(HotPlugStateCallback, nullptr);
 
 		m_pDeviceListInfo = new ScDeviceInfo[m_nDevice];
 		status = scGetDeviceInfoList(m_nDevice, m_pDeviceListInfo);
@@ -203,79 +201,166 @@ namespace kai
 				m_pT->sleepT(SEC_2_USEC);
 				m_bOpen = false;
 			}
-
 		}
 	}
 
 	bool _Scepter::updateScepter(void)
 	{
-		IF__(check() != OK_OK, true);
+		//		IF_F(check() != OK_OK);
 
-		ScFrameReady frameReady = {0};
-		ScStatus status = scGetFrameReady(m_deviceHandle,
-												 m_tFrameInterval,
-												 &frameReady);
-
-		updateRGBD(frameReady);
-		updatePointCloud(frameReady);
+		updateRGBD();
+		//		updatePointCloud(frameReady);
 
 		return true;
 	}
 
-	bool _Scepter::updateRGBD(const ScFrameReady &vfr)
+	bool _Scepter::updateRGBD(const ScFrameReady &sFr)
 	{
 		ScStatus status;
 
-		if (m_bRGB && vfr.color == 1)
+		ScFrameReady frameReady = {0};
+		status = scGetFrameReady(m_deviceHandle,
+								 m_tFrameInterval,
+								 &frameReady);
+
+		if (m_bRGB && sFr.color == 1)
 		{
 			status = scGetFrame(m_deviceHandle, SC_COLOR_FRAME, &m_scfRGB);
 			if (m_scfRGB.pFrameData)
+			{
 				memcpy(m_psmRGB->p(), m_scfRGB.pFrameData, m_scfRGB.dataLen);
+
+				// Opencv mat
+				imageMat = cv::Mat(m_scfRGB.height, m_scfRGB.width, CV_8UC3, m_scfRGB.pFrameData);
+				colorFrameWH.x = m_scfRGB.width;
+				colorFrameWH.y = m_scfRGB.height;
+
+				if (true == isTransformedDepthPointToColorPointEnable)
+				{
+					ScVector2u16 posInColor[4] = {};
+
+					for (size_t i = 0; i < sizeof(TransformedDepthDepthVector) / sizeof(TransformedDepthDepthVector[0]); i++)
+					{
+						scTransformDepthPointToColorPoint(g_DeviceHandle, TransformedDepthDepthVector[i],
+														  ScVector2u16{m_scfRGB.width, m_scfRGB.height}, &posInColor[i]);
+						if (0 != posInColor[i].x && 0 != posInColor[i].y)
+						{
+							circle(imageMat, cv::Point(posInColor[i].x, posInColor[i].y), 4, cv::Scalar(0, 0, 255), -1, 8, 0);
+						}
+					}
+
+					if (0 != posInColor[0].x && 0 != posInColor[0].y && 0 != posInColor[1].x && 0 != posInColor[1].y && 0 != posInColor[2].x && 0 != posInColor[2].y && 0 != posInColor[3].x && 0 != posInColor[3].y)
+					{
+						cv::line(imageMat, cv::Point(posInColor[0].x, posInColor[0].y), cv::Point(posInColor[1].x, posInColor[1].y), Scalar(0, 0, 255));
+						cv::line(imageMat, cv::Point(posInColor[1].x, posInColor[1].y), cv::Point(posInColor[3].x, posInColor[3].y), Scalar(0, 0, 255));
+						cv::line(imageMat, cv::Point(posInColor[2].x, posInColor[2].y), cv::Point(posInColor[0].x, posInColor[0].y), Scalar(0, 0, 255));
+						cv::line(imageMat, cv::Point(posInColor[3].x, posInColor[3].y), cv::Point(posInColor[2].x, posInColor[2].y), Scalar(0, 0, 255));
+					}
+				}
+
+				cv::imshow(colorImageWindow, imageMat);
+			}
 		}
 
-		if (m_btRGB && vfr.transformedColor == 1)
+		if (m_btRGB && sFr.transformedColor == 1)
 		{
 			status = scGetFrame(m_deviceHandle, SC_TRANSFORM_COLOR_IMG_TO_DEPTH_SENSOR_FRAME, &m_scfTransformedRGB);
 			if (m_scfTransformedRGB.pFrameData)
+			{
 				memcpy(m_psmTransformedRGB->p(),
 					   m_scfTransformedRGB.pFrameData,
 					   m_scfTransformedRGB.dataLen);
+
+				// OpenCV
+				imageMat = cv::Mat(m_scfTransformedRGB.height, m_scfTransformedRGB.width, CV_8UC3, m_scfTransformedRGB.pFrameData);
+				cv::imshow("TransformedColor", imageMat);
+			}
 		}
 
-		if (m_bDepth && vfr.depth == 1)
+		if (m_bDepth && sFr.depth == 1)
 		{
 			status = scGetFrame(m_deviceHandle, SC_DEPTH_FRAME, &m_scfDepth);
 			if (m_scfDepth.pFrameData)
+			{
 				memcpy(m_psmDepth->p(), m_scfDepth.pFrameData, m_scfDepth.dataLen);
+
+				if (true == g_IsSavePointCloud)
+				{
+					g_IsSavePointCloud = (1 == frameReady.transformedDepth) ? true : false;
+					SavePointCloud("pointCloud.txt", depthFrame);
+				}
+
+				if (true == isTransformedDepthPointToColorPointEnable)
+				{
+					cv::Mat depthMat = cv::Mat(depthFrame.height, depthFrame.width, CV_16UC1, depthFrame.pFrameData);
+					for (size_t i = 0; i < sizeof(TransformedDepthDepthVector) / sizeof(TransformedDepthDepthVector[0]); i++)
+					{
+						TransformedDepthDepthVector[i].depthX = TransformedDepthPoint[i].x;
+						TransformedDepthDepthVector[i].depthY = TransformedDepthPoint[i].y;
+						TransformedDepthDepthVector[i].depthZ = depthMat.at<uint16_t>(TransformedDepthPoint[i]);
+					}
+				}
+
+				// Display the Depth Image
+				Opencv_Depth(g_Slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat, g_Pos);
+
+				if (true == isTransformedDepthPointToColorPointEnable)
+				{
+					cv::rectangle(imageMat, TransformedDepthPoint[0], TransformedDepthPoint[3], Scalar(255, 255, 255));
+				}
+				cv::imshow(depthImageWindow, imageMat);
+			}
 		}
 
-		if (m_btDepth && vfr.transformedDepth == 1)
+		if (m_btDepth && sFr.transformedDepth == 1)
 		{
 			status = scGetFrame(m_deviceHandle, SC_TRANSFORM_DEPTH_IMG_TO_COLOR_SENSOR_FRAME, &m_scfTransformedDepth);
 			if (m_scfTransformedDepth.pFrameData)
+			{
 				memcpy(m_psmTransformedDepth->p(),
 					   m_scfTransformedDepth.pFrameData,
 					   m_scfTransformedDepth.dataLen);
+
+				if (transformedDepthFrame.pFrameData != NULL)
+				{
+					if (true == g_IsSavePointCloud)
+					{
+						g_IsSavePointCloud = false;
+						SavePointCloud("transformedPointCloud.txt", transformedDepthFrame);
+					}
+
+					// Display the Depth Image
+					Opencv_Depth(g_Slope, transformedDepthFrame.height, transformedDepthFrame.width, transformedDepthFrame.pFrameData, imageMat, g_TransPos);
+					cv::imshow(transformedDepthWindow, imageMat);
+				}
+			}
 		}
 
-		if (m_bIR && vfr.ir == 1)
+		if (m_bIR && sFr.ir == 1)
 		{
 			status = scGetFrame(m_deviceHandle, SC_IR_FRAME, &m_scfIR);
 			if (m_scfIR.pFrameData)
+			{
 				memcpy(m_psmIR->p(), m_scfIR.pFrameData, m_scfIR.dataLen);
-		}
 
-		return true;
+				if (irFrame.pFrameData != NULL)
+				{
+					// Display the IR Image
+					imageMat = cv::Mat(irFrame.height, irFrame.width, CV_8UC1, irFrame.pFrameData);
+					cv::imshow(irImageWindow, imageMat);
+				}
+			}
+		}
 	}
 
-	bool _Scepter::updatePointCloud(const ScFrameReady &vfr)
+	bool _Scepter::updatePointCloud(void)
 	{
 		ScStatus status;
 
 		// Eigen::Affine3d mA = m_A;
 		// IF_F(status != ScStatus::SC_OK);
-		// IF_F(vfr.transformedColor != 1);
-		// IF_F(vfr.depth != 1);
+		// IF_F(sFr.transformedColor != 1);
+		// IF_F(sFr.depth != 1);
 
 		// status = scGetFrame(m_deviceHandle, ScDepthFrame, &m_scfDepth);
 		// IF_F(status != ScStatus::SC_OK);
@@ -360,9 +445,9 @@ namespace kai
 		m_scCtrl.m_bAutoExposureToF = bAuto;
 
 		ScStatus ScR = scSetExposureControlMode(m_deviceHandle,
-													   SC_TOF_SENSOR,
-													   bAuto ? SC_EXPOSURE_CONTROL_MODE_AUTO
-															 : SC_EXPOSURE_CONTROL_MODE_MANUAL);
+												SC_TOF_SENSOR,
+												bAuto ? SC_EXPOSURE_CONTROL_MODE_AUTO
+													  : SC_EXPOSURE_CONTROL_MODE_MANUAL);
 		return (ScR == SC_OK) ? true : false;
 	}
 
@@ -372,8 +457,8 @@ namespace kai
 		m_scCtrl.m_tExposureToF = tExposure;
 
 		ScStatus ScR = scSetExposureTime(m_deviceHandle,
-												SC_TOF_SENSOR,
-												tExposure);
+										 SC_TOF_SENSOR,
+										 tExposure);
 
 		return (ScR == SC_OK) ? true : false;
 	}
@@ -383,9 +468,9 @@ namespace kai
 		m_scCtrl.m_bAutoExposureRGB = bAuto;
 
 		ScStatus ScR = scSetExposureControlMode(m_deviceHandle,
-													   SC_COLOR_SENSOR,
-													   bAuto ? SC_EXPOSURE_CONTROL_MODE_AUTO
-															 : SC_EXPOSURE_CONTROL_MODE_MANUAL);
+												SC_COLOR_SENSOR,
+												bAuto ? SC_EXPOSURE_CONTROL_MODE_AUTO
+													  : SC_EXPOSURE_CONTROL_MODE_MANUAL);
 		return (ScR == SC_OK) ? true : false;
 	}
 
@@ -395,8 +480,8 @@ namespace kai
 		m_scCtrl.m_tExposureRGB = tExposure;
 
 		ScStatus ScR = scSetExposureTime(m_deviceHandle,
-												SC_COLOR_SENSOR,
-												tExposure);
+										 SC_COLOR_SENSOR,
+										 tExposure);
 
 		return (ScR == SC_OK) ? true : false;
 	}
@@ -460,5 +545,4 @@ namespace kai
 		ScStatus ScR = scSetHDRModeEnabled(m_deviceHandle, bON);
 		return (ScR == SC_OK) ? true : false;
 	}
-
 }

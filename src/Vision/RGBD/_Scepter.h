@@ -65,8 +65,8 @@ namespace kai
 		bool setHDR(bool bON);
 
 	private:
-		bool updatePointCloud(const ScFrameReady& vfr);
-		bool updateRGBD(const ScFrameReady& vfr);
+		bool updatePointCloud(void);
+		bool updateRGBD(void);
 		bool updateScepter(void);
 		void update(void);
 		static void *getUpdate(void *This)
