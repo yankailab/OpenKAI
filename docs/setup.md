@@ -502,6 +502,22 @@ make
 sudo make install
 ```
 
+# (Optional) Livox
+In direct connection mode configure the host ip
+IP: 192.168.1.50
+Netmask: 255.255.255.0
+Gateway: 192.168.1.1
+
+
+# (Optional) ScepterSDK
+```bash
+git clone https://github.com/ScepterSW/ScepterSDK.git
+```
+In direct connection mode configure the host ip
+IP: 192.168.1.100
+Netmask: 255.255.255.0
+Gateway: 192.168.100.1
+
 
 # (Optional) OpenKAI extra modules
 ```bash
@@ -511,7 +527,7 @@ git clone --depth 1 https://github.com/yankailab/OpenKAI_exm.git
 
 # OpenKAI
 ```bash
-sudo apt-get -y install libgoogle-glog-dev libevent-dev gsl-bin libgsl0-dev
+sudo apt-get -y install libunwind-dev libgoogle-glog-dev libevent-dev gsl-bin libgsl0-dev
 git clone --depth 1 https://github.com/yankailab/OpenKAI.git
 cd OpenKAI
 mkdir build && cd build

@@ -204,15 +204,6 @@ make -j$(nproc)
 sudo make install
 sudo ldconfig
 
-#----------------------------------------------------
-# (Optional) Chilitags
-git clone --depth 1 https://github.com/chili-epfl/chilitags.git
-cd chilitags
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ../
-make -j$(nproc)
-sudo make install
 
 #----------------------------------------------------
 # (Optional) Open3D
@@ -226,48 +217,6 @@ sudo make install
 #./configure
 #make -j$(nproc)
 
-#----------------------------------------------------
-# (Optional) wsserver
-git clone https://github.com/Theldus/wsServer
-cd wsServer/
-make
-make install
-
-#----------------------------------------------------
-# (Optional) Vzense Nebular
-git clone --depth 1 https://github.com/Vzense/NebulaSDK.git
-# In direct connection mode configure the host ip to be
-# IP: 192.168.1.100
-# Netmask: 255.255.255.0
-# Gateway: 192.168.100.1
-
-#----------------------------------------------------
-# (Optional) Livox
-git clone --depth 1 https://github.com/yankailab/Livox-SDK.git
-cd Livox-SDK
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ../
-make -j$(nproc)
-sudo make install
-# In direct connection mode configure the host ip to be
-# IP: 192.168.1.50
-# Netmask: 255.255.255.0
-# Gateway: 192.168.1.1
-
-#----------------------------------------------------
-# (Optional) Livox SDK2
-git clone --depth 1 https://github.com/Livox-SDK/Livox-SDK2.git
-cd Livox-SDK2
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ../
-make -j$(nproc)
-sudo make install
-# In direct connection mode configure the host ip to be
-# IP: 192.168.1.50
-# Netmask: 255.255.255.0
-# Gateway: 192.168.1.1
 
 #----------------------------------------------------
 # (Optional) xArm
@@ -276,19 +225,6 @@ cd xArm-CPLUS-SDK/
 make all -j$(nproc)
 sudo make install
 
-#----------------------------------------------------
-# (Optional) OpenKAI extra modules
-git clone --depth 1 https://github.com/yankailab/OpenKAI_exm.git
-
-#----------------------------------------------------
-# OpenKAI
-sudo apt-get install libunwind-dev libgoogle-glog-dev libevent-dev gsl-bin libgsl0-dev
-git clone --depth 1 https://github.com/yankailab/OpenKAI.git
-cd OpenKAI
-mkdir build
-cd build
-ccmake ../
-make all -j$(nproc)
 
 
 git submodule update --init --recursive
