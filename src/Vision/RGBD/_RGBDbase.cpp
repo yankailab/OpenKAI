@@ -10,63 +10,65 @@
 namespace kai
 {
 
-    _RGBDbase::_RGBDbase()
-    {
-        m_pTPP = nullptr;
+	_RGBDbase::_RGBDbase()
+	{
+		m_pTPP = nullptr;
 
 		m_devFPSd = 30;
 		m_vSizeD.set(1280, 720);
 		m_vRangeD.set(0, FLT_MAX);
 
-        m_bDepth = true;
-        m_bIR = false;
-        m_btRGB = false;
-        m_btDepth = false;
+		m_bDepth = true;
+		m_bIR = false;
+		m_btRGB = false;
+		m_btDepth = false;
 		m_bConfidence = true;
-        m_fConfidenceThreshold = 0.0;
+		m_fConfidenceThreshold = 0.0;
 		m_bPointCloud = false;
 
-        m_psmDepth = NULL;
-        m_psmTransformedRGB = NULL;
-        m_psmTransformedDepth = NULL;
-        m_psmIR = NULL;
+		m_psmDepth = nullptr;
+		m_psmTransformedRGB = nullptr;
+		m_psmTransformedDepth = nullptr;
+		m_psmIR = nullptr;
 
 #ifdef WITH_3D
-		m_pPCframe = NULL;
+		m_pPCframe = nullptr;
 #endif
 
 #ifdef USE_OPENCV
+		m_bDebugDepth = 0;
 		m_dScale = 1.0;
 		m_dOfs = 0.0;
 		m_nHistLev = 128;
 		m_iHistFrom = 0;
 		m_minHistD = 0.25;
 #endif
-    }
+	}
 
-    _RGBDbase::~_RGBDbase()
-    {
-        DEL(m_pTPP);
-    }
+	_RGBDbase::~_RGBDbase()
+	{
+		DEL(m_pTPP);
+	}
 
- 	int _RGBDbase::init(void *pKiss)
-    {
-        CHECK_(_VisionBase::init(pKiss));
+	int _RGBDbase::init(void *pKiss)
+	{
+		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("devFPSd", &m_devFPSd);
-        pK->v("vSizeD", &m_vSizeD);
+		pK->v("vSizeD", &m_vSizeD);
 		pK->v("vRangeD", &m_vRangeD);
 
-        pK->v("bDepth", &m_bDepth);
-        pK->v("bIR", &m_bIR);
-        pK->v("btRGB", &m_btRGB);
-        pK->v("btDepth", &m_btDepth);
-        pK->v("bConfidence", &m_bConfidence);
-        pK->v("fConfidenceThreshold", &m_fConfidenceThreshold);
-        pK->v("bPointCloud", &m_bPointCloud);
+		pK->v("bDepth", &m_bDepth);
+		pK->v("bIR", &m_bIR);
+		pK->v("btRGB", &m_btRGB);
+		pK->v("btDepth", &m_btDepth);
+		pK->v("bConfidence", &m_bConfidence);
+		pK->v("fConfidenceThreshold", &m_fConfidenceThreshold);
+		pK->v("bPointCloud", &m_bPointCloud);
 
 #ifdef USE_OPENCV
+		pK->v("bDebugDepth", &m_bDebugDepth);
 		pK->v("dScale", &m_dScale);
 		pK->v("dOfs", &m_dOfs);
 		pK->v("nHistLev", &m_nHistLev);
@@ -74,61 +76,61 @@ namespace kai
 		pK->v("minHistD", &m_minHistD);
 #endif
 
-        return OK_OK;
-    }
+		return OK_OK;
+	}
 
-    int _RGBDbase::link(void)
-    {
-        CHECK_(this->_VisionBase::link());
-        Kiss *pK = (Kiss *)m_pKiss;
+	int _RGBDbase::link(void)
+	{
+		CHECK_(this->_VisionBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
 
-        string n;
+		string n;
 
-        n = "";
-        pK->v("_SHMtransformedRGB", &n);
-        m_psmTransformedRGB = (SharedMem *)(pK->findModule(n));
+		n = "";
+		pK->v("_SHMtransformedRGB", &n);
+		m_psmTransformedRGB = (SharedMem *)(pK->findModule(n));
 
-        n = "";
-        pK->v("_SHMdepth", &n);
-        m_psmDepth = (SharedMem *)(pK->findModule(n));
+		n = "";
+		pK->v("_SHMdepth", &n);
+		m_psmDepth = (SharedMem *)(pK->findModule(n));
 
-        n = "";
-        pK->v("_SHMtransformedDepth", &n);
-        m_psmTransformedDepth = (SharedMem *)(pK->findModule(n));
+		n = "";
+		pK->v("_SHMtransformedDepth", &n);
+		m_psmTransformedDepth = (SharedMem *)(pK->findModule(n));
 
-        n = "";
-        pK->v("_SHMir", &n);
-        m_psmIR = (SharedMem *)(pK->findModule(n));
+		n = "";
+		pK->v("_SHMir", &n);
+		m_psmIR = (SharedMem *)(pK->findModule(n));
 
 #ifdef WITH_3D
-        n = "";
-        pK->v("_PCframe", &n);
-        m_pPCframe = (_PCframe *)(pK->findModule(n));
+		n = "";
+		pK->v("_PCframe", &n);
+		m_pPCframe = (_PCframe *)(pK->findModule(n));
 #endif
 
-        return OK_OK;
-    }
+		return OK_OK;
+	}
 
-    bool _RGBDbase::open(void)
-    {
-        return false;
-    }
+	bool _RGBDbase::open(void)
+	{
+		return false;
+	}
 
-    void _RGBDbase::close(void)
-    {
-    }
+	void _RGBDbase::close(void)
+	{
+	}
 
-    int _RGBDbase::check(void)
-    {
+	int _RGBDbase::check(void)
+	{
 #ifdef WITH_3D
-		if(m_bPointCloud)
+		if (m_bPointCloud)
 		{
 			NULL__(m_pPCframe, OK_ERR_NULLPTR);
 		}
 #endif
 
-        return _VisionBase::check();
-    }
+		return _VisionBase::check();
+	}
 
 	void _RGBDbase::console(void *pConsole)
 	{
@@ -136,7 +138,7 @@ namespace kai
 		this->_VisionBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-//		pC->addMsg("", 0);
+		//		pC->addMsg("", 0);
 	}
 
 #ifdef USE_OPENCV
@@ -150,7 +152,7 @@ namespace kai
 		return m_vRangeD;
 	}
 
-	float _RGBDbase::d(const vFloat4& bb)
+	float _RGBDbase::d(const vFloat4 &bb)
 	{
 		IF__(m_fDepth.bEmpty(), -1.0);
 
@@ -173,7 +175,7 @@ namespace kai
 		return d(vBB);
 	}
 
-	float _RGBDbase::d(const vInt4& bb)
+	float _RGBDbase::d(const vInt4 &bb)
 	{
 		IF__(m_fDepth.bEmpty(), -1.0);
 
@@ -187,7 +189,7 @@ namespace kai
 		Mat mHist;
 		cv::calcHist(vRoi, vChannel, Mat(),
 					 mHist, vHistLev, vRange,
-					 false //accumulate
+					 false // accumulate
 		);
 
 		int nMinHist = m_minHistD * mRoi.cols * mRoi.rows;
@@ -203,36 +205,35 @@ namespace kai
 		return (m_vRangeD.x + (((float)i) / (float)m_nHistLev) * m_vRangeD.len());
 	}
 
-    void _RGBDbase::draw(void* pFrame)
+	void _RGBDbase::draw(void *pFrame)
 	{
 		NULL_(pFrame);
 		this->_VisionBase::draw(pFrame);
 		IF_(check() != OK_OK);
 		IF_(m_fRGB.bEmpty());
 
-		// Frame *pF = (Frame*)pFrame;
-		// pF->copy(m_fDepth);
+		if (m_bDebugDepth)
+		{
+			Frame *pF = (Frame *)pFrame;
+//			pF->copy(m_fDepth);
 
-		// if (m_bDebug)
-		// {
-		// 	Mat *pM = pF->m();
-		// 	IF_(pM->empty());
+			Mat *pM = pF->m();
+			IF_(pM->empty());
 
-		// 	vFloat4 vRoi(0.4, 0.4, 0.6, 0.6);
+			vFloat4 vRoi(0.4, 0.4, 0.6, 0.6);
 
-		// 	vFloat4 bb;
-		// 	bb.x = vRoi.x * pM->cols;
-		// 	bb.y = vRoi.y * pM->rows;
-		// 	bb.z = vRoi.z * pM->cols;
-		// 	bb.w = vRoi.w * pM->rows;
-		// 	Rect r = bb2Rect(bb);
-		// 	rectangle(*pM, r, Scalar(0, 255, 0), 1);
+			vFloat4 bb;
+			bb.x = vRoi.x * pM->cols;
+			bb.y = vRoi.y * pM->rows;
+			bb.z = vRoi.z * pM->cols;
+			bb.w = vRoi.w * pM->rows;
+			Rect r = bb2Rect(bb);
+			rectangle(*pM, r, Scalar(128, 128, 128), 2);
 
-		// 	putText(*pM, f2str(d(vRoi)),
-		// 			Point(r.x + 15, r.y + 25),
-		// 			FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0, 255, 0), 1);
-		// }
-
+			putText(*pM, f2str(d(vRoi)),
+					Point(r.x + 15, r.y + 25),
+					FONT_HERSHEY_SIMPLEX, 0.6, Scalar(128, 128, 128), 2);
+		}
 	}
 #endif
 

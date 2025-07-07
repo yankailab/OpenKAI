@@ -1,0 +1,96 @@
+{
+	"name":"APP",
+	"class":"OpenKAI",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["cam","d2g","inRange"],
+}
+
+{
+	"name":"view",
+	"class":"_WindowCV",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bFullScreen":0,
+	"vBASE":["cam","d2g","inRange"],
+}
+
+{
+	"name":"cam",
+	"class":"_Scepter",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadPP",
+		"FPS":30,
+	}
+	"URI":"",
+	"vSizeRGB":[1600,1200],
+	"vRangeD":[0,4000],
+	"scPixelFormat":4,
+
+	"bRGB":1,
+	"bDepth":1,
+	"btRGB":0,
+	"btDepth":0,
+	"bIR":0,
+
+	"bDebugDepth":1,
+
+	"/_SHMrgb":"SHMvzRGB",
+}
+
+{
+	"name":"d2g",
+	"class":"_Depth2Gray",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_RGBDbase":"cam",
+}
+
+{
+	"name":"inRange",
+	"class":"_InRange",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"d2g",
+	"vL":[0,0,0],
+	"vH":[30,30,30],
+}
+
+{
+	"name":"SHMvzRGB",
+	"class":"SharedMem",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"shmName":"SHMvzRGB",
+	"nB":5760000,
+	"bWriter":1,
+}

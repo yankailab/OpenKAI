@@ -70,8 +70,9 @@ namespace kai
 #ifdef WITH_3D
 		_PCframe* m_pPCframe;
 #endif
-		
+
 #ifdef USE_OPENCV
+		bool m_bDebugDepth;
 		Frame m_fDepth;
 		float m_dScale;
 		float m_dOfs;

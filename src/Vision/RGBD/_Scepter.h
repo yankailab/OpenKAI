@@ -16,6 +16,7 @@ namespace kai
 	struct ScCtrl
 	{
 		int m_tScan = 3000; // scan time
+		int m_pixelFormat = SC_PIXEL_FORMAT_BGR_888;
 
 		bool m_bAutoExposureToF = true;
 		int m_tExposureToF = 4000;
@@ -66,8 +67,7 @@ namespace kai
 
 	private:
 		bool updatePointCloud(void);
-		bool updateRGBD(void);
-		bool updateScepter(void);
+		bool updateScRGBD(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -82,7 +82,7 @@ namespace kai
 			return NULL;
 		}
 
-	private:
+	protected:
 		uint32_t m_nDevice;
 		ScDeviceInfo *m_pDeviceListInfo;
 		ScDeviceHandle m_deviceHandle;
@@ -96,6 +96,7 @@ namespace kai
 		ScFrame m_scfIR;
 
 		ScVector3f *m_pScVw; // world vector
+		int m_scSlope;
 	};
 
 }

@@ -23,6 +23,7 @@ namespace kai
 		m_scfIR = {0};
 
 		m_pScVw = NULL;
+		m_scSlope = 7495;
 	}
 
 	_Scepter::~_Scepter()
@@ -33,6 +34,9 @@ namespace kai
 	{
 		CHECK_(_RGBDbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+
+		pK->v("scSlope", &m_scSlope);
+		pK->v("scPixelFormat", &m_scCtrl.m_pixelFormat);
 
 		Kiss *pKt = pK->child("threadPP");
 		if (pKt->empty())
@@ -85,6 +89,8 @@ namespace kai
 		if (m_devURI.empty())
 			m_devURI = string(m_pDeviceListInfo[0].ip);
 
+		LOG_I("Device URI: " + m_devURI);
+
 		status = scOpenDeviceByIP(m_devURI.c_str(), &m_deviceHandle);
 		if (status != ScStatus::SC_OK)
 		{
@@ -117,12 +123,12 @@ namespace kai
 
 		scSetFrameRate(m_deviceHandle, (int)this->m_pT->getTargetFPS());
 		scSetColorResolution(m_deviceHandle, m_vSizeRGB.x, m_vSizeRGB.y);
-		scSetColorPixelFormat(m_deviceHandle, SC_PIXEL_FORMAT_RGB_888);
+		scSetColorPixelFormat(m_deviceHandle, (ScPixelFormat)m_scCtrl.m_pixelFormat);
 		scSetTransformColorImgToDepthSensorEnabled(m_deviceHandle, m_btRGB);
 		scSetTransformDepthImgToColorSensorEnabled(m_deviceHandle, m_btDepth);
 		setToFexposureTime(m_scCtrl.m_bAutoExposureToF, m_scCtrl.m_tExposureToF);
 		setToFexposureControlMode(m_scCtrl.m_bAutoExposureToF);
-		setRGBexposureTime(m_scCtrl.m_bAutoExposureRGB, m_scCtrl.m_tExposureToF);
+		setRGBexposureTime(m_scCtrl.m_bAutoExposureRGB, m_scCtrl.m_tExposureRGB);
 		setRGBexposureControlMode(m_scCtrl.m_bAutoExposureRGB);
 		setTimeFilter(m_scCtrl.m_bFilTime, m_scCtrl.m_filTime);
 		setConfidenceFilter(m_scCtrl.m_bFilConfidence, m_scCtrl.m_filConfidence);
@@ -191,89 +197,37 @@ namespace kai
 
 			m_pT->autoFPS();
 
-			if (updateScepter())
+			if (updateScRGBD())
 			{
 				m_pTPP->run();
-				//				updatePC();
+				// updatePC();
 			}
 			else
 			{
-				m_pT->sleepT(SEC_2_USEC);
 				m_bOpen = false;
 			}
 		}
 	}
 
-	bool _Scepter::updateScepter(void)
+	bool _Scepter::updateScRGBD(void)
 	{
-		//		IF_F(check() != OK_OK);
-
-		updateRGBD();
-		//		updatePointCloud(frameReady);
-
-		return true;
-	}
-
-	bool _Scepter::updateRGBD(const ScFrameReady &sFr)
-	{
-		ScStatus status;
-
-		ScFrameReady frameReady = {0};
-		status = scGetFrameReady(m_deviceHandle,
-								 m_tFrameInterval,
-								 &frameReady);
+		ScFrameReady sFr = {0};
+		ScStatus status = scGetFrameReady(m_deviceHandle,
+										  m_tFrameInterval,
+										  &sFr);
+//		IF_F(status != SC_OK);
 
 		if (m_bRGB && sFr.color == 1)
 		{
 			status = scGetFrame(m_deviceHandle, SC_COLOR_FRAME, &m_scfRGB);
 			if (m_scfRGB.pFrameData)
 			{
-				memcpy(m_psmRGB->p(), m_scfRGB.pFrameData, m_scfRGB.dataLen);
+				if (m_psmRGB)
+					memcpy(m_psmRGB->p(), m_scfRGB.pFrameData, m_scfRGB.dataLen);
 
-				// Opencv mat
-				imageMat = cv::Mat(m_scfRGB.height, m_scfRGB.width, CV_8UC3, m_scfRGB.pFrameData);
-				colorFrameWH.x = m_scfRGB.width;
-				colorFrameWH.y = m_scfRGB.height;
-
-				if (true == isTransformedDepthPointToColorPointEnable)
-				{
-					ScVector2u16 posInColor[4] = {};
-
-					for (size_t i = 0; i < sizeof(TransformedDepthDepthVector) / sizeof(TransformedDepthDepthVector[0]); i++)
-					{
-						scTransformDepthPointToColorPoint(g_DeviceHandle, TransformedDepthDepthVector[i],
-														  ScVector2u16{m_scfRGB.width, m_scfRGB.height}, &posInColor[i]);
-						if (0 != posInColor[i].x && 0 != posInColor[i].y)
-						{
-							circle(imageMat, cv::Point(posInColor[i].x, posInColor[i].y), 4, cv::Scalar(0, 0, 255), -1, 8, 0);
-						}
-					}
-
-					if (0 != posInColor[0].x && 0 != posInColor[0].y && 0 != posInColor[1].x && 0 != posInColor[1].y && 0 != posInColor[2].x && 0 != posInColor[2].y && 0 != posInColor[3].x && 0 != posInColor[3].y)
-					{
-						cv::line(imageMat, cv::Point(posInColor[0].x, posInColor[0].y), cv::Point(posInColor[1].x, posInColor[1].y), Scalar(0, 0, 255));
-						cv::line(imageMat, cv::Point(posInColor[1].x, posInColor[1].y), cv::Point(posInColor[3].x, posInColor[3].y), Scalar(0, 0, 255));
-						cv::line(imageMat, cv::Point(posInColor[2].x, posInColor[2].y), cv::Point(posInColor[0].x, posInColor[0].y), Scalar(0, 0, 255));
-						cv::line(imageMat, cv::Point(posInColor[3].x, posInColor[3].y), cv::Point(posInColor[2].x, posInColor[2].y), Scalar(0, 0, 255));
-					}
-				}
-
-				cv::imshow(colorImageWindow, imageMat);
-			}
-		}
-
-		if (m_btRGB && sFr.transformedColor == 1)
-		{
-			status = scGetFrame(m_deviceHandle, SC_TRANSFORM_COLOR_IMG_TO_DEPTH_SENSOR_FRAME, &m_scfTransformedRGB);
-			if (m_scfTransformedRGB.pFrameData)
-			{
-				memcpy(m_psmTransformedRGB->p(),
-					   m_scfTransformedRGB.pFrameData,
-					   m_scfTransformedRGB.dataLen);
-
-				// OpenCV
-				imageMat = cv::Mat(m_scfTransformedRGB.height, m_scfTransformedRGB.width, CV_8UC3, m_scfTransformedRGB.pFrameData);
-				cv::imshow("TransformedColor", imageMat);
+				*m_fRGB.m() = cv::Mat(m_scfRGB.height, m_scfRGB.width, CV_8UC3, m_scfRGB.pFrameData);
+				m_vSizeRGB.x = m_scfRGB.width;
+				m_vSizeRGB.y = m_scfRGB.height;
 			}
 		}
 
@@ -282,33 +236,24 @@ namespace kai
 			status = scGetFrame(m_deviceHandle, SC_DEPTH_FRAME, &m_scfDepth);
 			if (m_scfDepth.pFrameData)
 			{
-				memcpy(m_psmDepth->p(), m_scfDepth.pFrameData, m_scfDepth.dataLen);
+				if (m_psmDepth)
+					memcpy(m_psmDepth->p(), m_scfDepth.pFrameData, m_scfDepth.dataLen);
 
-				if (true == g_IsSavePointCloud)
-				{
-					g_IsSavePointCloud = (1 == frameReady.transformedDepth) ? true : false;
-					SavePointCloud("pointCloud.txt", depthFrame);
-				}
+				*m_fDepth.m() = cv::Mat(m_scfDepth.height, m_scfDepth.width, CV_16UC1, m_scfDepth.pFrameData);
+			}
+		}
 
-				if (true == isTransformedDepthPointToColorPointEnable)
-				{
-					cv::Mat depthMat = cv::Mat(depthFrame.height, depthFrame.width, CV_16UC1, depthFrame.pFrameData);
-					for (size_t i = 0; i < sizeof(TransformedDepthDepthVector) / sizeof(TransformedDepthDepthVector[0]); i++)
-					{
-						TransformedDepthDepthVector[i].depthX = TransformedDepthPoint[i].x;
-						TransformedDepthDepthVector[i].depthY = TransformedDepthPoint[i].y;
-						TransformedDepthDepthVector[i].depthZ = depthMat.at<uint16_t>(TransformedDepthPoint[i]);
-					}
-				}
+		if (m_btRGB && sFr.transformedColor == 1)
+		{
+			status = scGetFrame(m_deviceHandle, SC_TRANSFORM_COLOR_IMG_TO_DEPTH_SENSOR_FRAME, &m_scfTransformedRGB);
+			if (m_scfTransformedRGB.pFrameData)
+			{
+				if (m_psmTransformedRGB)
+					memcpy(m_psmTransformedRGB->p(),
+						   m_scfTransformedRGB.pFrameData,
+						   m_scfTransformedRGB.dataLen);
 
-				// Display the Depth Image
-				Opencv_Depth(g_Slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat, g_Pos);
-
-				if (true == isTransformedDepthPointToColorPointEnable)
-				{
-					cv::rectangle(imageMat, TransformedDepthPoint[0], TransformedDepthPoint[3], Scalar(255, 255, 255));
-				}
-				cv::imshow(depthImageWindow, imageMat);
+//				imageMat = cv::Mat(m_scfTransformedRGB.height, m_scfTransformedRGB.width, CV_8UC3, m_scfTransformedRGB.pFrameData);
 			}
 		}
 
@@ -317,22 +262,12 @@ namespace kai
 			status = scGetFrame(m_deviceHandle, SC_TRANSFORM_DEPTH_IMG_TO_COLOR_SENSOR_FRAME, &m_scfTransformedDepth);
 			if (m_scfTransformedDepth.pFrameData)
 			{
-				memcpy(m_psmTransformedDepth->p(),
-					   m_scfTransformedDepth.pFrameData,
-					   m_scfTransformedDepth.dataLen);
+				if (m_psmTransformedDepth)
+					memcpy(m_psmTransformedDepth->p(),
+						   m_scfTransformedDepth.pFrameData,
+						   m_scfTransformedDepth.dataLen);
 
-				if (transformedDepthFrame.pFrameData != NULL)
-				{
-					if (true == g_IsSavePointCloud)
-					{
-						g_IsSavePointCloud = false;
-						SavePointCloud("transformedPointCloud.txt", transformedDepthFrame);
-					}
-
-					// Display the Depth Image
-					Opencv_Depth(g_Slope, transformedDepthFrame.height, transformedDepthFrame.width, transformedDepthFrame.pFrameData, imageMat, g_TransPos);
-					cv::imshow(transformedDepthWindow, imageMat);
-				}
+//				imageMat = cv::Mat(m_scfTransformedDepth.height, m_scfTransformedDepth.width, CV_16UC1, m_scfTransformedDepth.pFrameData);
 			}
 		}
 
@@ -341,16 +276,14 @@ namespace kai
 			status = scGetFrame(m_deviceHandle, SC_IR_FRAME, &m_scfIR);
 			if (m_scfIR.pFrameData)
 			{
-				memcpy(m_psmIR->p(), m_scfIR.pFrameData, m_scfIR.dataLen);
+				if (m_psmIR)
+					memcpy(m_psmIR->p(), m_scfIR.pFrameData, m_scfIR.dataLen);
 
-				if (irFrame.pFrameData != NULL)
-				{
-					// Display the IR Image
-					imageMat = cv::Mat(irFrame.height, irFrame.width, CV_8UC1, irFrame.pFrameData);
-					cv::imshow(irImageWindow, imageMat);
-				}
+//				imageMat = cv::Mat(irFrame.height, irFrame.width, CV_8UC1, irFrame.pFrameData);
 			}
 		}
+
+		return true;
 	}
 
 	bool _Scepter::updatePointCloud(void)

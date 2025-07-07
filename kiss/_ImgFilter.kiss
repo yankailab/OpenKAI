@@ -128,8 +128,8 @@
 		"FPS":30,
 	}
 	"_VisionBase":"d2g",
-	"rFrom":0,
-	"rTo":30,
+	"vL":[0,0,0],
+	"vH":[30,30,30],
 }
 
 {
@@ -212,7 +212,7 @@
 	"_VisionBase":"cam",
 
 	{
-		"bON":1,	
+		"bON":1,
 		"morphOp":2, /*open*/
 		"nItr":1,
 		"kW":3,
@@ -220,7 +220,7 @@
 		"aX":1,
 		"aY":1,
 	}
-	
+
 	{
 		"bON":0,
 		"morphOp":3, /*close*/
