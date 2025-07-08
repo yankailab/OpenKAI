@@ -65,7 +65,7 @@ namespace kai
             return NULL;
         }
 
-    private:
+    protected:
         float m_nSpd;
         float m_nDir;
         float m_nStr;

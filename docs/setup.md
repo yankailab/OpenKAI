@@ -502,6 +502,7 @@ make
 sudo make install
 ```
 
+
 # (Optional) Livox
 In direct connection mode configure the host ip
 IP: 192.168.1.50
@@ -512,6 +513,10 @@ Gateway: 192.168.1.1
 # (Optional) ScepterSDK
 ```bash
 git clone https://github.com/ScepterSW/ScepterSDK.git
+set +H
+sudo sh -c "echo '[Path]/ScepterSDK/BaseSDK/Ubuntu/Lib' >> /etc/ld.so.conf"
+set -H
+sudo ldconfig
 ```
 In direct connection mode configure the host ip
 IP: 192.168.1.100

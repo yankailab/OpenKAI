@@ -2,7 +2,6 @@
 #define OpenKAI_src_Autopilot_APmavlink__APmavlink_drive_H_
 
 #include "_APmavlink_base.h"
-#include "../Drive/_Drive.h"
 
 namespace kai
 {
@@ -20,6 +19,7 @@ namespace kai
 		virtual void update(void);
 		virtual void console(void *pConsole);
 
+		virtual void setSteerSpeed(float steer, float spd);
 		virtual void setYawMode(bool bRelative);
 
 	protected:
@@ -34,11 +34,13 @@ namespace kai
 
 	protected:
 		_APmavlink_base *m_pAP;
-//		_Drive *m_pD;
 
 		bool m_bSetYawSpeed;
 		float m_yawMode;
 		bool m_bRcChanOverride;
+
+		float m_steer;	// normalized
+		float m_speed;	// normalized
 		float m_pwmM;
 		float m_pwmD;
 		uint16_t *m_pRcYaw;

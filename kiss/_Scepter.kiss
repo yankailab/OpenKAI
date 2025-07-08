@@ -14,19 +14,59 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["cam","d2g","inRange"],
+	"vBASE":["cam","d2g","inRange","CR"],
 }
 
 {
-	"name":"view",
+	"name":"RGBview",
 	"class":"_WindowCV",
 	"bON":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":20,
 	}
 	"bFullScreen":0,
-	"vBASE":["cam","d2g","inRange"],
+	"vBASE":["cam"],
+}
+
+{
+	"name":"DepthView",
+	"class":"_WindowCV",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":20,
+	}
+	"bFullScreen":0,
+	"vBASE":["cam","d2g","inRange","morph","univ"],
+}
+
+{
+	"name":"gst",
+	"class":"_GstOutput",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":20,
+	}
+	"vBASE":["cam"],
+	"vSize":[1280,720],
+	"/gstOutput":"appsrc ! v4l2convert ! fbdevsink",
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.4 port=5678 auto-multicast=false",
+}
+
+{
+	"name":"SHMscRGB",
+	"class":"SharedMem",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"shmName":"SHMscRGB",
+	"nB":5760000,
+	"bWriter":1,
 }
 
 {
@@ -54,8 +94,7 @@
 	"bIR":0,
 
 	"bDebugDepth":1,
-
-	"/_SHMrgb":"SHMvzRGB",
+	"/_SHMrgb":"SHMscRGB",
 }
 
 {
@@ -83,14 +122,54 @@
 }
 
 {
-	"name":"SHMvzRGB",
-	"class":"SharedMem",
-	"bON":0,
+	"name":"morph",
+	"class":"_Morphology",
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"shmName":"SHMvzRGB",
-	"nB":5760000,
-	"bWriter":1,
+	"_VisionBase":"inRange",
+
+	{
+		"bON":1,
+		"morphOp":2, /*open*/
+		"nItr":1,
+		"kW":2,
+		"kH":2,
+		"aX":1,
+		"aY":1,
+	}
+	{
+		"bON":0,
+		"morphOp":3, /*close*/
+		"nItr":2,
+	}
+}
+
+{
+	"name":"CR",
+	"class":"_Contour",
+	"bON":1,
+	"bLog":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_VisionBase":"morph",
+	"_Universe":"univ",
+}
+
+{
+	"name":"univ",
+	"class":"_Universe",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"bDrawText":0,
+	"vArea":[0.0001, 0.5],
+	"vW":[0.0, 0.5],
+	"vH":[0.0, 0.5],
 }

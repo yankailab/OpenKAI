@@ -80,7 +80,6 @@ namespace kai
                 pM->update(m_nSpd * m_nDir, m_nStr);
             }
 
-
         }
     }
 

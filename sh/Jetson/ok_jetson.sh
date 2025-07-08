@@ -14,7 +14,7 @@ sudo apt install xserver-xorg-input-synaptics
 # create the following dir if there isn't one
 sudo mkdir /etc/X11/xorg.conf.d
 sudo cp /usr/share/X11/xorg.conf.d/40-libinput.conf /etc/X11/xorg.conf.d/
-sudo nano /etc/X11/xorg.conf.d/40-libinput.conf 
+sudo nano /etc/X11/xorg.conf.d/40-libinput.conf
 # add the following line into "touchscreen" section, then save it
 Option "CalibrationMatrix" "0 1 0 -1 0 1 0 0 1"
 # rotation matrix

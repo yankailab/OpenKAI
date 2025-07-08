@@ -44,7 +44,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		//general
 		uint8_t m_nDim;
 

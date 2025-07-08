@@ -6,11 +6,13 @@ namespace kai
 	_APmavlink_drive::_APmavlink_drive()
 	{
 		m_pAP = nullptr;
-//		m_pD = nullptr;
 
 		m_yawMode = 1.0;
 		m_bSetYawSpeed = false;
 		m_bRcChanOverride = false;
+
+		m_steer = 0.0;
+		m_speed = 0.0;
 		m_pwmM = 1500;
 		m_pwmD = 500;
 		m_pRcYaw = nullptr;
@@ -29,6 +31,11 @@ namespace kai
 		pK->v("bSetYawSpeed", &m_bSetYawSpeed);
 		pK->v("yawMode", &m_yawMode);
 		pK->v("bRcChanOverride", &m_bRcChanOverride);
+
+		pK->v("steer", &m_steer);
+		pK->v("speed", &m_speed);
+		pK->v("pwmM", &m_pwmM);
+		pK->v("pwmD", &m_pwmD);
 
 		uint16_t *pRC[19];
 		pRC[0] = NULL;
@@ -64,9 +71,6 @@ namespace kai
 		IF__(iRcThrottle <= 0 || iRcThrottle > 18, OK_ERR_INVALID_VALUE);
 		m_pRcThrottle = pRC[iRcThrottle];
 
-		pK->v("pwmM", &m_pwmM);
-		pK->v("pwmD", &m_pwmD);
-
 		return OK_OK;
 	}
 
@@ -81,11 +85,6 @@ namespace kai
 		m_pAP = (_APmavlink_base *)(pK->findModule(n));
 		NULL__(m_pAP, OK_ERR_NOT_FOUND);
 
-		// n = "";
-		// pK->v("_Drive", &n);
-		// m_pD = (_Drive *)(pK->findModule(n));
-		// NULL__(m_pD, OK_ERR_NOT_FOUND);
-
 		return OK_OK;
 	}
 
@@ -99,7 +98,6 @@ namespace kai
 	{
 		NULL__(m_pAP, OK_ERR_NULLPTR);
 		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
-//		NULL__(m_pD, OK_ERR_NULLPTR);
 
 		return this->_ModuleBase::check();
 	}
@@ -130,31 +128,31 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		// float nSpd = m_pD->getSpeed() * m_pD->getDirection();
-		// float nStr = m_pD->getSteering();
-
-		float nSpd = 0.25;
-		float nStr = 1.0;
-
 		if (m_bSetYawSpeed)
 		{
-			m_pAP->getMavlink()->clNavSetYawSpeed(nStr,
-											nSpd,
-											m_yawMode);
+			m_pAP->getMavlink()->clNavSetYawSpeed(m_steer,
+												  m_speed,
+												  m_yawMode);
 		}
 
 		if (m_bRcChanOverride)
 		{
-			*m_pRcYaw = constrain(nStr * m_pwmD + m_pwmM,
+			*m_pRcYaw = constrain(m_steer * m_pwmD + m_pwmM,
 								  m_pwmM - m_pwmD,
 								  m_pwmM + m_pwmD);
-			*m_pRcThrottle = constrain(nSpd * m_pwmD + m_pwmM,
+			*m_pRcThrottle = constrain(m_speed * m_pwmD + m_pwmM,
 									   m_pwmM - m_pwmD,
 									   m_pwmM + m_pwmD);
 			m_pAP->getMavlink()->rcChannelsOverride(m_rcOverride);
 		}
 
 		return true;
+	}
+
+	void _APmavlink_drive::setSteerSpeed(float steer, float spd)
+	{
+		m_steer = steer;
+		m_speed = spd;
 	}
 
 	void _APmavlink_drive::setYawMode(bool bRelative)
@@ -169,6 +167,8 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
+
+		((_Console *)pConsole)->addMsg("steer=" + f2str(m_steer) + ", speed=" + f2str(m_speed));
 
 		NULL_(m_pRcYaw);
 		NULL_(m_pRcThrottle);
