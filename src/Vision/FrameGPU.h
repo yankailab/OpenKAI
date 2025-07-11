@@ -52,7 +52,7 @@ namespace kai
 		void updateTstamp(uint64_t t);
 		void updateTstampG(uint64_t t);
 
-	public:
+	protected:
 		uint64_t m_tStamp;
 		Mat m_mat;
 

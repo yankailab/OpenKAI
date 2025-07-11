@@ -62,6 +62,7 @@ namespace kai
 		//show
 		bool m_bDrawText;
 		bool m_bDrawPos;
+		bool m_bDrawBB;
 	};
 
 }

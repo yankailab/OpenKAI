@@ -524,6 +524,39 @@ Netmask: 255.255.255.0
 Gateway: 192.168.100.1
 
 
+# (Optional) Qiskit
+https://quantum.cloud.ibm.com/docs/en/guides/install-qiskit-source
+
+Install Rust compiler
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+Prerequisites
+```bash
+sudo apt-get install python3-dev
+cargo install --force cbindgen
+```
+
+```bash
+git clone https://github.com/Qiskit/qiskit.git
+cd qiskit
+
+python3 -m venv .venv
+source .venv/bin/activate
+pip install .
+
+make c
+```
+
+Install Qiskit Runtime
+```bash
+git clone https://github.com/Qiskit/qiskit-ibm-runtime.git
+cd qiskit-ibm-runtime
+pip install .
+```
+
+
 # (Optional) OpenKAI extra modules
 ```bash
 git clone --depth 1 https://github.com/yankailab/OpenKAI_exm.git

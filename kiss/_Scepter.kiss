@@ -100,6 +100,17 @@
 {
 	"name":"d2g",
 	"class":"_Depth2Gray",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_RGBDbase":"cam",
+}
+
+{
+	"name":"d2rgb",
+	"class":"_D2RGB",
 	"bON":1,
     {
 		"name":"thread",
@@ -116,9 +127,13 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"_VisionBase":"d2g",
+	"/_VisionBase":"d2g",
+	"_VisionBase":"d2rgb",
+	"/vL":[0,0,0],
+	"/vH":[30,30,30],
+
 	"vL":[0,0,0],
-	"vH":[30,30,30],
+	"vH":[300,300,300],
 }
 
 {
@@ -150,7 +165,7 @@
 {
 	"name":"CR",
 	"class":"_Contour",
-	"bON":1,
+	"bON":0,
 	"bLog":0,
     {
 		"name":"thread",
@@ -163,13 +178,13 @@
 {
 	"name":"univ",
 	"class":"_Universe",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":1,
 	}
 	"bDrawText":0,
-	"vArea":[0.0001, 0.5],
-	"vW":[0.0, 0.5],
-	"vH":[0.0, 0.5],
+	"/vArea":[0.0001, 0.5],
+	"/vW":[0.0, 0.5],
+	"/vH":[0.0, 0.5],
 }

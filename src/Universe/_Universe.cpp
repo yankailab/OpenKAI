@@ -19,6 +19,7 @@ namespace kai
 
 		m_bDrawText = false;
 		m_bDrawPos = false;
+		m_bDrawBB = false;
 
 		clear();
 	}
@@ -43,6 +44,7 @@ namespace kai
 		// draw
 		pK->v("bDrawText", &m_bDrawText);
 		pK->v("bDrawPos", &m_bDrawPos);
+		pK->v("bDrawBB", &m_bDrawBB);
 
 		// buffer
 		int nB = 16;
@@ -171,6 +173,18 @@ namespace kai
 
 				// text
 				if (m_bDrawText)
+				{
+					string oName = string(pO->getText());
+					if (oName.length() > 0)
+					{
+						putText(*pM, oName,
+								Point(r.x + 15, r.y + 50),
+								FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
+					}
+				}
+
+				// BB
+				if (m_bDrawBB)
 				{
 					string oName = string(pO->getText());
 					if (oName.length() > 0)

@@ -99,7 +99,7 @@ namespace kai
 	{
 		IF_(m_pV->getFrameRGB()->bEmpty());
 
-		if (m_pV->getFrameRGB()->m_mat.type() != CV_8UC1)
+		if (m_pV->getFrameRGB()->m()->type() != CV_8UC1)
 			m_fIn.copy(m_pV->getFrameRGB()->cvtColor(COLOR_RGB2GRAY));
 		else
 			m_fIn.copy(*m_pV->getFrameRGB());

@@ -39,7 +39,7 @@ namespace kai
 
 		uint64_t tStamp(void);
 
-	public:
+	protected:
 		uint64_t m_tStamp;
 		Mat m_mat;
 	};

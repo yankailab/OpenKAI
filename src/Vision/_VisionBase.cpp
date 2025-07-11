@@ -95,9 +95,6 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
-
-		_Console *pC = (_Console *)pConsole;
-		//		pC->addMsg("""), 0);
 	}
 
 #ifdef USE_OPENCV
@@ -109,7 +106,6 @@ namespace kai
 		IF_(m_fRGB.bEmpty());
 
 		Frame *pF = (Frame *)pFrame;
-
 		pF->copy(m_fRGB);
 
 		// Mat *pM = pF->m();
