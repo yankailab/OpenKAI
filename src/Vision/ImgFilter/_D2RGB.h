@@ -21,8 +21,6 @@ namespace kai
 
 		int init(void *pKiss);
 		int link(void);
-		bool open(void);
-		void close(void);
 
 		Frame *getFrameRGB(void);
 

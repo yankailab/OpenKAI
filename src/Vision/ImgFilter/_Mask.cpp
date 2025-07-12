@@ -18,7 +18,6 @@ namespace kai
 
 	_Mask::~_Mask()
 	{
-		close();
 	}
 
 	int _Mask::init(void *pKiss)
@@ -49,24 +48,6 @@ namespace kai
 		return OK_OK;
 	}
 
-	bool _Mask::open(void)
-	{
-		NULL_F(m_pV);
-		NULL_F(m_pVmask);
-
-		m_bOpen = m_pV->isOpened();
-		IF_F(!m_bOpen);
-
-		m_bOpen = m_pVmask->isOpened();
-
-		return m_bOpen;
-	}
-
-	void _Mask::close(void)
-	{
-		this->_VisionBase::close();
-	}
-
 	int _Mask::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
@@ -77,29 +58,26 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			if (!m_bOpen)
-				open();
-
 			m_pT->autoFPS();
 
-			if (m_bOpen)
-			{
-				if (m_fIn.tStamp() < m_pV->getFrameRGB()->tStamp())
-				{
-					filter();
-				}
-			}
-
+			filter();
 		}
 	}
 
 	void _Mask::filter(void)
 	{
-		IF_(m_pV->getFrameRGB()->bEmpty());
-		IF_(m_pVmask->getFrameRGB()->bEmpty());
+		NULL_(m_pV);
+		NULL_(m_pVmask);
 
-		m_fIn.copy(*m_pV->getFrameRGB());
-		m_fMask.copy(*m_pVmask->getFrameRGB());
+		Frame *pF = m_pV->getFrameRGB();
+		Frame *pFmask = m_pVmask->getFrameRGB();
+
+		IF_(pF->bEmpty());
+		IF_(pFmask->bEmpty());
+		IF_(m_fIn.tStamp() >= pF->tStamp());
+
+		m_fIn.copy(*pF);
+		m_fMask.copy(*pFmask);
 
 		Mat mV = *m_fIn.m();
 		Mat mM = *m_fMask.m();

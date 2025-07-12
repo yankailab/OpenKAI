@@ -20,7 +20,6 @@ namespace kai
 
 	_Crop::~_Crop()
 	{
-		close();
 	}
 
 	int _Crop::init(void *pKiss)
@@ -47,19 +46,6 @@ namespace kai
 		return OK_OK;
 	}
 
-	bool _Crop::open(void)
-	{
-		NULL_F(m_pV);
-		m_bOpen = m_pV->isOpened();
-
-		return m_bOpen;
-	}
-
-	void _Crop::close(void)
-	{
-		this->_VisionBase::close();
-	}
-
 	int _Crop::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
@@ -70,24 +56,20 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			if (!m_bOpen)
-				open();
-
 			m_pT->autoFPS();
 
-			if (m_bOpen)
-			{
-				filter();
-			}
-
+			filter();
 		}
 	}
 
 	void _Crop::filter(void)
 	{
-		IF_(m_pV->getFrameRGB()->bEmpty());
+		NULL_(m_pV);
+		Frame* pF = m_pV->getFrameRGB();
+		IF_(pF->bEmpty());
+//		IF_(m_fRGB.tStamp() >= pF->tStamp());
 
-		Mat mIn = *m_pV->getFrameRGB()->m();
+		Mat mIn = *pF->m();
 		Rect r;
 		r.x = constrain(m_vRoi.x, 0, mIn.cols);
 		r.y = constrain(m_vRoi.y, 0, mIn.rows);

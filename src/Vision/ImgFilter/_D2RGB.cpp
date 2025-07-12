@@ -18,7 +18,6 @@ namespace kai
 
 	_D2RGB::~_D2RGB()
 	{
-		close();
 	}
 
 	int _D2RGB::init(void *pKiss)
@@ -41,18 +40,6 @@ namespace kai
 		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
 		return OK_OK;
-	}
-
-	bool _D2RGB::open(void)
-	{
-		NULL_F(m_pV);
-		return m_pV->isOpened();
-	}
-
-	void _D2RGB::close(void)
-	{
-		NULL_(m_pV);
-		m_pV->close();
 	}
 
 	Frame *_D2RGB::getFrameRGB(void)

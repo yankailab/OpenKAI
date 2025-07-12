@@ -21,7 +21,6 @@ namespace kai
 
 	_Contrast::~_Contrast()
 	{
-		close();
 	}
 
 	int _Contrast::init(void *pKiss)
@@ -32,6 +31,14 @@ namespace kai
 		pK->v("alpha", &m_alpha);
 		pK->v("beta", &m_beta);
 
+		return OK_OK;
+	}
+
+	int _Contrast::link(void)
+	{
+		CHECK_(this->_VisionBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+
 		string n;
 		n = "";
 		pK->v("_VisionBase", &n);
@@ -39,19 +46,6 @@ namespace kai
 		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
 		return OK_OK;
-	}
-
-	bool _Contrast::open(void)
-	{
-		NULL_F(m_pV);
-		m_bOpen = m_pV->isOpened();
-
-		return m_bOpen;
-	}
-
-	void _Contrast::close(void)
-	{
-		this->_VisionBase::close();
 	}
 
 	int _Contrast::start(void)
@@ -64,25 +58,21 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			if (!m_bOpen)
-				open();
-
 			m_pT->autoFPS();
 
-			if (m_bOpen)
-			{
-				filter();
-			}
-
+			filter();
 		}
 	}
 
 	void _Contrast::filter(void)
 	{
-		IF_(m_pV->getFrameRGB()->bEmpty());
+		NULL_(m_pV);
+		Frame *pF = m_pV->getFrameRGB();
+		IF_(pF->bEmpty());
+		//		IF_(m_fRGB.tStamp() >= pF->tStamp());
 
 		Mat m;
-		m_pV->getFrameRGB()->m()->convertTo(m, -1, m_alpha, m_beta);
+		pF->m()->convertTo(m, -1, m_alpha, m_beta);
 		m_fRGB.copy(m);
 	}
 

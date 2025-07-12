@@ -18,7 +18,6 @@ namespace kai
 
 	_Morphology::~_Morphology()
 	{
-		close();
 	}
 
 	int _Morphology::init(void *pKiss)
@@ -47,6 +46,14 @@ namespace kai
 			m_vFilter.push_back(m);
 		}
 
+		return OK_OK;
+	}
+
+	int _Morphology::link(void)
+	{
+		CHECK_(this->_VisionBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+
 		string n;
 		n = "";
 		pK->v("_VisionBase", &n);
@@ -54,19 +61,6 @@ namespace kai
 		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
 		return OK_OK;
-	}
-
-	bool _Morphology::open(void)
-	{
-		NULL_F(m_pV);
-		m_bOpen = m_pV->isOpened();
-
-		return m_bOpen;
-	}
-
-	void _Morphology::close(void)
-	{
-		this->_VisionBase::close();
 	}
 
 	int _Morphology::start(void)
@@ -79,27 +73,20 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			if (!m_bOpen)
-				open();
-
 			m_pT->autoFPS();
 
-			if (m_bOpen)
-			{
-				if (m_fIn.tStamp() < m_pV->getFrameRGB()->tStamp())
-				{
-					filter();
-				}
-			}
-
+			filter();
 		}
 	}
 
 	void _Morphology::filter(void)
 	{
-		IF_(m_pV->getFrameRGB()->bEmpty());
+		NULL_(m_pV);
+		Frame *pF = m_pV->getFrameRGB();
+		IF_(pF->bEmpty());
+		IF_(m_fIn.tStamp() >= pF->tStamp());
 
-		m_fIn.copy(*m_pV->getFrameRGB());
+		m_fIn.copy(*pF);
 
 		Mat m1 = *m_fIn.m();
 		Mat m2;

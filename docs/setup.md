@@ -542,9 +542,10 @@ cargo install --force cbindgen
 git clone https://github.com/Qiskit/qiskit.git
 cd qiskit
 
-python3 -m venv .venv
-source .venv/bin/activate
-pip install .
+# if you need python
+# python3 -m venv .venv
+# source .venv/bin/activate
+# pip install .
 
 make c
 ```

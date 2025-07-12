@@ -20,7 +20,6 @@ namespace kai
 
 	_InRange::~_InRange()
 	{
-		close();
 	}
 
 	int _InRange::init(void *pKiss)
@@ -49,19 +48,6 @@ namespace kai
 		return OK_OK;
 	}
 
-	bool _InRange::open(void)
-	{
-		NULL_F(m_pV);
-		m_bOpen = m_pV->isOpened();
-
-		return m_bOpen;
-	}
-
-	void _InRange::close(void)
-	{
-		this->_VisionBase::close();
-	}
-
 	int _InRange::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
@@ -72,25 +58,21 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			if (!m_bOpen)
-				open();
-
 			m_pT->autoFPS();
 
-			if (m_bOpen)
-			{
-				filter();
-			}
-
+			filter();
 		}
 	}
 
 	void _InRange::filter(void)
 	{
-		IF_(m_pV->getFrameRGB()->bEmpty());
+		NULL_(m_pV);
+		Frame* pF = m_pV->getFrameRGB();
+		IF_(pF->bEmpty());
+//		IF_(m_fRGB.tStamp() >= pF->tStamp());
 
 		Mat m;
-		cv::inRange(*m_pV->getFrameRGB()->m(),
+		cv::inRange(*pF->m(),
 					cv::Scalar(m_vL.x, m_vL.y, m_vL.z),
 					cv::Scalar(m_vH.x, m_vH.y, m_vH.z), m);
 

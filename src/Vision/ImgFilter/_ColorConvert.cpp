@@ -19,7 +19,6 @@ namespace kai
 
 	_ColorConvert::~_ColorConvert()
 	{
-		close();
 	}
 
 	int _ColorConvert::init(void *pKiss)
@@ -46,31 +45,10 @@ namespace kai
 		return OK_OK;
 	}
 
-	bool _ColorConvert::open(void)
-	{
-		NULL_F(m_pV);
-		m_bOpen = m_pV->isOpened();
-
-		return m_bOpen;
-	}
-
-	void _ColorConvert::close(void)
-	{
-		this->_VisionBase::close();
-	}
-
 	int _ColorConvert::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
-	}
-
-	int _ColorConvert::check(void)
-	{
-		NULL__(m_pV, OK_ERR_NULLPTR);
-		IF__(m_pV->getFrameRGB()->bEmpty(), OK_ERR_NOT_READY);
-
-		return _VisionBase::check();
 	}
 
 	void _ColorConvert::update(void)
@@ -79,21 +57,18 @@ namespace kai
 		{
 			m_pT->autoFPS();
 
-			if (!m_bOpen)
-			{
-				open();
-			}
-
 			filter();
-
 		}
 	}
 
 	void _ColorConvert::filter(void)
 	{
-		IF_(check() != OK_OK);
+		NULL_(m_pV);
+		Frame* pF = m_pV->getFrameRGB();
+		IF_(pF->bEmpty());
+//		IF_(m_fRGB.tStamp() >= pF->tStamp());
 
-		m_fRGB.copy(m_pV->getFrameRGB()->cvtColor(m_code));
+		m_fRGB.copy(pF->cvtColor(m_code));
 	}
 
 }

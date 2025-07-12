@@ -18,7 +18,6 @@ namespace kai
 
 	_Resize::~_Resize()
 	{
-		close();
 	}
 
 	int _Resize::init(void *pKiss)
@@ -26,26 +25,21 @@ namespace kai
 		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
+		return OK_OK;
+	}
+
+	int _Resize::link(void)
+	{
+		CHECK_(this->_VisionBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
+
 		string n;
 		n = "";
 		pK->v("_VisionBase", &n);
 		m_pV = (_VisionBase *)(pK->findModule(n));
-		NULL__(m_pV, OK_ERR_NULLPTR);
+		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
 		return OK_OK;
-	}
-
-	bool _Resize::open(void)
-	{
-		NULL_F(m_pV);
-		m_bOpen = m_pV->isOpened();
-
-		return m_bOpen;
-	}
-
-	void _Resize::close(void)
-	{
-		this->_VisionBase::close();
 	}
 
 	int _Resize::start(void)
@@ -58,25 +52,20 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			if (!m_bOpen)
-				open();
-
 			m_pT->autoFPS();
 
-			if (m_bOpen)
-			{
-				if (m_fRGB.tStamp() < m_pV->getFrameRGB()->tStamp())
-					filter();
-			}
-
+			filter();
 		}
 	}
 
 	void _Resize::filter(void)
 	{
-		IF_(m_pV->getFrameRGB()->bEmpty());
+		NULL_(m_pV);
+		Frame* pF = m_pV->getFrameRGB();
+		IF_(pF->bEmpty());
+		IF_(m_fRGB.tStamp() >= pF->tStamp());
 
-		m_fRGB.copy(m_pV->getFrameRGB()->resize(m_vSizeRGB.x, m_vSizeRGB.y));
+		m_fRGB.copy(pF->resize(m_vSizeRGB.x, m_vSizeRGB.y));
 	}
 
 }

@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["cam","d2g","inRange","CR"],
+	"vBASE":["cam","d2g","inRange","morph","CR"],
 }
 
 {
@@ -38,7 +38,7 @@
 		"FPS":20,
 	}
 	"bFullScreen":0,
-	"vBASE":["cam","d2g","inRange","morph","univ"],
+	"vBASE":["/cam","/d2g","/inRange","morph","/univ"],
 }
 
 {
@@ -127,12 +127,8 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"/_VisionBase":"d2g",
 	"_VisionBase":"d2rgb",
-	"/vL":[0,0,0],
-	"/vH":[30,30,30],
-
-	"vL":[0,0,0],
+	"vL":[10,10,10],
 	"vH":[300,300,300],
 }
 

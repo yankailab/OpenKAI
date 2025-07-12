@@ -22,8 +22,6 @@ namespace kai
 		virtual int init(void *pKiss);
 		virtual int link(void);
 		virtual int start(void);
-		virtual bool open(void);
-		virtual void close(void);
 
 	private:
 		void filter(void);
@@ -34,7 +32,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		_VisionBase *m_pV;
 		vInt4 m_vRoi;
 	};

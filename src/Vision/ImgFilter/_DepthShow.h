@@ -19,10 +19,9 @@ namespace kai
 		_DepthShow();
 		virtual ~_DepthShow();
 
-		int init(void *pKiss);
-		int start(void);
-		bool open(void);
-		void close(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
+		virtual int start(void);
 
 	private:
 		void filter(void);
@@ -33,7 +32,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		_RGBDbase *m_pV;
 	};
 

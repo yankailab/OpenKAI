@@ -18,13 +18,20 @@ namespace kai
 
 	_Depth2Gray::~_Depth2Gray()
 	{
-		close();
 	}
 
 	int _Depth2Gray::init(void *pKiss)
 	{
 		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+
+		return OK_OK;
+	}
+
+	int _Depth2Gray::link(void)
+	{
+		CHECK_(this->_VisionBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
 
 		string n;
 		n = "";
@@ -33,19 +40,6 @@ namespace kai
 		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
 		return OK_OK;
-	}
-
-	bool _Depth2Gray::open(void)
-	{
-		NULL_F(m_pV);
-		m_bOpen = m_pV->isOpened();
-
-		return m_bOpen;
-	}
-
-	void _Depth2Gray::close(void)
-	{
-		this->_VisionBase::close();
 	}
 
 	int _Depth2Gray::start(void)
@@ -58,12 +52,6 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			if (!m_bOpen)
-			{
-				open();
-				continue;
-			}
-
 			m_pT->autoFPS();
 
 			filter();
@@ -72,9 +60,12 @@ namespace kai
 
 	void _Depth2Gray::filter(void)
 	{
-		IF_(m_pV->getFrameD()->bEmpty());
+		NULL_(m_pV);
+		Frame* pF = m_pV->getFrameRGB();
+		IF_(pF->bEmpty());
+//		IF_(m_fRGB.tStamp() >= pF->tStamp());
 
-		Mat mD = *m_pV->getFrameD()->m();
+		Mat mD = *pF->m();
 		Mat mGray;
 		float scale = 255.0 / m_pV->getRangeD().len();
 		mD.convertTo(mGray,

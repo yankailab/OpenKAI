@@ -18,13 +18,20 @@ namespace kai
 
 	_DepthShow::~_DepthShow()
 	{
-		close();
 	}
 
 	int _DepthShow::init(void *pKiss)
 	{
 		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+
+		return OK_OK;
+	}
+
+	int _DepthShow::link(void)
+	{
+		CHECK_(this->_VisionBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
 
 		string n;
 		n = "";
@@ -33,19 +40,6 @@ namespace kai
 		NULL__(m_pV, OK_ERR_NOT_FOUND);
 
 		return OK_OK;
-	}
-
-	bool _DepthShow::open(void)
-	{
-		NULL_F(m_pV);
-		m_bOpen = m_pV->isOpened();
-
-		return m_bOpen;
-	}
-
-	void _DepthShow::close(void)
-	{
-		this->_VisionBase::close();
 	}
 
 	int _DepthShow::start(void)
@@ -58,25 +52,23 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			if (!m_bOpen)
-				open();
-
 			m_pT->autoFPS();
 
-			if (m_bOpen)
-			{
-				filter();
-			}
-
+			filter();
 		}
 	}
 
 	void _DepthShow::filter(void)
 	{
-//		IF_(m_pV->DepthShow()->bEmpty());
+		NULL_(m_pV);
+		Frame *pF = m_pV->getFrameRGB();
+		IF_(pF->bEmpty());
+		IF_(m_fRGB.tStamp() >= pF->tStamp());
 
-//		Mat mD = *m_pV->DepthShow()->m();
-//		m_fRGB.copy(mD);
+		//		IF_(m_pV->DepthShow()->bEmpty());
+
+		//		Mat mD = *m_pV->DepthShow()->m();
+		//		m_fRGB.copy(mD);
 	}
 
 }

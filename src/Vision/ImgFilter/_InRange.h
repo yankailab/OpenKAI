@@ -19,11 +19,9 @@ namespace kai
 		_InRange();
 		virtual ~_InRange();
 
-		int init(void *pKiss);
-		int link(void);
-		int start(void);
-		bool open(void);
-		void close(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
+		virtual int start(void);
 
 	private:
 		void filter(void);
@@ -34,7 +32,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		_VisionBase *m_pV;
 		vInt3 m_vL;
 		vInt3 m_vH;

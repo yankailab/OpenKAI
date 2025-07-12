@@ -45,10 +45,9 @@ namespace kai
 		_Erode();
 		virtual ~_Erode();
 
-		int init(void *pKiss);
-		int start(void);
-		bool open(void);
-		void close(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
+		virtual int start(void);
 
 	private:
 		void filter(void);
@@ -59,7 +58,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		_VisionBase *m_pV;
 		Frame m_fIn;
 		vector<IMG_ERODE> m_vFilter;

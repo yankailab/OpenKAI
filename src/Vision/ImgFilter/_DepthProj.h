@@ -19,10 +19,9 @@ namespace kai
 		_DepthProj();
 		virtual ~_DepthProj();
 
-		int init(void *pKiss);
-		int start(void);
-		bool open(void);
-		void close(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
+		virtual int start(void);
 
 		void createFilterMat(void);
 
@@ -35,7 +34,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		_RGBDbase *m_pV;
 		Mat m_mF;
 

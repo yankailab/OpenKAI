@@ -15,18 +15,25 @@ namespace kai
 		m_type = vision_remap;
 		m_pV = nullptr;
 		m_bReady = false;
-		m_fCalib ="";
+		m_fCalib = "";
 	}
 
 	_Remap::~_Remap()
 	{
-		close();
 	}
 
 	int _Remap::init(void *pKiss)
 	{
 		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+
+		return OK_OK;
+	}
+
+	int _Remap::link(void)
+	{
+		CHECK_(this->_VisionBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
 
 		string n;
 		n = "";
@@ -40,6 +47,43 @@ namespace kai
 		m_bReady = setCamMat(mC, mD);
 
 		return OK_OK;
+	}
+
+	int _Remap::start(void)
+	{
+		NULL__(m_pT, OK_ERR_NULLPTR);
+		return m_pT->start(getUpdate, this);
+	}
+
+	void _Remap::update(void)
+	{
+		while (m_pT->bAlive())
+		{
+			m_pT->autoFPS();
+
+			filter();
+		}
+	}
+
+	void _Remap::filter(void)
+	{
+		NULL_(m_pV);
+		Frame* pF = m_pV->getFrameRGB();
+		IF_(pF->bEmpty());
+		IF_(m_fRGB.tStamp() >= pF->tStamp());
+
+		if (!m_bReady || pF->size() != cv::Size(m_vSizeRGB.x, m_vSizeRGB.y))
+		{
+			cv::Size s = pF->size();
+			m_vSizeRGB.x = s.width;
+			m_vSizeRGB.y = s.height;
+			m_bReady = scaleCamMat();
+		}
+
+		if (m_bReady)
+			m_fRGB.copy(pF->remap(m_m1, m_m2));
+		else
+			m_fRGB.copy(*pF);
 	}
 
 	// void _Remap::updateCamMat(void)
@@ -69,48 +113,6 @@ namespace kai
 	// 	DEL(pKf);
 	// }
 
-	bool _Remap::open(void)
-	{
-		NULL_F(m_pV);
-		m_bOpen = m_pV->isOpened();
-
-		return m_bOpen;
-	}
-
-	void _Remap::close(void)
-	{
-		this->_VisionBase::close();
-	}
-
-	bool _Remap::bReady(void)
-	{
-		return m_bReady;
-	}
-
-	int _Remap::start(void)
-	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
-		return m_pT->start(getUpdate, this);
-	}
-
-	void _Remap::update(void)
-	{
-		while (m_pT->bAlive())
-		{
-			if (!m_bOpen)
-			{
-				open();
-				if (!m_bOpen)
-					continue;
-			}
-
-			m_pT->autoFPS();
-
-			filter();
-
-		}
-	}
-
 	bool _Remap::setCamMat(const Mat &mC, const Mat &mD)
 	{
 		IF_F(mC.empty() || mD.empty());
@@ -124,9 +126,9 @@ namespace kai
 	{
 		cv::Size s(m_vSizeRGB.x, m_vSizeRGB.y);
 		IF_F(!scaleCamMatrices(s,
-							  m_mC,
-							  m_mD,
-							  &m_mCscaled));
+							   m_mC,
+							   m_mD,
+							   &m_mCscaled));
 
 #ifdef USE_CUDA
 		initUndistortRectifyMap(m_mCscaled, m_mD, Mat(), m_mCscaled, s, CV_32F, m_m1, m_m2);
@@ -150,7 +152,7 @@ namespace kai
 
 	vDouble2 _Remap::getF(void)
 	{
-		vDouble2 vF = {0,0};
+		vDouble2 vF = {0, 0};
 		IF__(m_mCscaled.empty(), vF);
 
 		vF.x = m_mCscaled.at<double>(0, 0);
@@ -160,7 +162,7 @@ namespace kai
 
 	vDouble2 _Remap::getC(void)
 	{
-		vDouble2 vC = {0,0};
+		vDouble2 vC = {0, 0};
 		IF__(m_mCscaled.empty(), vC);
 
 		vC.x = m_mCscaled.at<double>(0, 2);
@@ -170,7 +172,7 @@ namespace kai
 
 	vFloat2 _Remap::getFf(void)
 	{
-		vFloat2 vF = {0,0};
+		vFloat2 vF = {0, 0};
 		IF__(m_mCscaled.empty(), vF);
 
 		vF.x = (float)m_mCscaled.at<double>(0, 0);
@@ -180,7 +182,7 @@ namespace kai
 
 	vFloat2 _Remap::getCf(void)
 	{
-		vFloat2 vC = {0,0};
+		vFloat2 vC = {0, 0};
 		IF__(m_mCscaled.empty(), vC);
 
 		vC.x = (float)m_mCscaled.at<double>(0, 2);
@@ -201,25 +203,5 @@ namespace kai
 	Mat _Remap::mD(void)
 	{
 		return m_mD;
-	}
-
-	void _Remap::filter(void)
-	{
-		Frame *pF = m_pV->getFrameRGB();
-		IF_(pF->bEmpty());
-		IF_(m_fRGB.tStamp() >= pF->tStamp())
-
-		if(!m_bReady || pF->size() != cv::Size(m_vSizeRGB.x, m_vSizeRGB.y))
-		{
-			cv::Size s = pF->size();
-			m_vSizeRGB.x = s.width;
-			m_vSizeRGB.y = s.height;
-			m_bReady = scaleCamMat();
-		}
-
-		if(m_bReady)
-			m_fRGB.copy(pF->remap(m_m1, m_m2));
-		else
-			m_fRGB.copy(*pF);
 	}
 }

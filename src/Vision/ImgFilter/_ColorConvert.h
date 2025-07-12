@@ -19,12 +19,9 @@ namespace kai
 		_ColorConvert();
 		virtual ~_ColorConvert();
 
-		int init(void *pKiss);
-		int link(void);
-		int check(void);
-		int start(void);
-		bool open(void);
-		void close(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
+		virtual int start(void);
 
 	private:
 		void filter(void);
@@ -35,7 +32,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		_VisionBase *m_pV;
 		int m_code;
 	};

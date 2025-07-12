@@ -19,11 +19,9 @@ namespace kai
 		_Remap();
 		virtual ~_Remap();
 
-		int init(void *pKiss);
-		int start(void);
-		bool open(void);
-		void close(void);
-		bool bReady(void);
+		virtual int init(void *pKiss);
+		virtual int link(void);
+		virtual int start(void);
 
 		bool setCamMat(const Mat &mC, const Mat &mD);
 		bool scaleCamMat(void);
@@ -45,7 +43,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		_VisionBase *m_pV;
 		bool m_bReady;
 		string m_fCalib;
