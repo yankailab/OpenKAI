@@ -186,13 +186,10 @@ namespace kai
 				// BB
 				if (m_bDrawBB)
 				{
-					string oName = string(pO->getText());
-					if (oName.length() > 0)
-					{
-						putText(*pM, oName,
-								Point(r.x + 15, r.y + 50),
-								FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
-					}
+					string strBB = "(" + i2str(r.x) + ", " + i2str(r.y) + ", " + i2str(r.width) + "," + i2str(r.height) + ")";
+					putText(*pM, strBB,
+							Point(r.x + 15, r.y + 50),
+							FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
 				}
 			}
 		}

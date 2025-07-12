@@ -34,6 +34,8 @@ namespace kai
 		}
 
 	protected:
+		int m_mode;
+		int m_method;
 	};
 
 }

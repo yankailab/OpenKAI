@@ -61,7 +61,7 @@ namespace kai
 	void _Depth2Gray::filter(void)
 	{
 		NULL_(m_pV);
-		Frame* pF = m_pV->getFrameRGB();
+		Frame* pF = m_pV->getFrameD();
 		IF_(pF->bEmpty());
 //		IF_(m_fRGB.tStamp() >= pF->tStamp());
 

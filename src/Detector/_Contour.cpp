@@ -12,6 +12,8 @@ namespace kai
 
 	_Contour::_Contour()
 	{
+		m_mode = RETR_EXTERNAL;
+		m_method = CHAIN_APPROX_NONE;
 	}
 
 	_Contour::~_Contour()
@@ -22,6 +24,9 @@ namespace kai
 	{
 		CHECK_(this->_DetectorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
+
+		pK->v("mode", &m_mode);
+		pK->v("method", &m_method);
 
 		return OK_OK;
 	}
@@ -59,7 +64,7 @@ namespace kai
 
 		Mat mBGR = *(m_pV->getFrameRGB()->m());
 		vector<vector<Point>> vvContours;
-		findContours(mBGR, vvContours, RETR_EXTERNAL, CHAIN_APPROX_NONE);
+		findContours(mBGR, vvContours, m_mode, m_method);
 
 		_Object o;
 		vector<Point> vPoly;

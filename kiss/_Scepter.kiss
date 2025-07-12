@@ -14,7 +14,7 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["cam","d2g","inRange","morph","CR"],
+	"vBASE":["cam","d2g","inRange","morph","CR","univ"],
 }
 
 {
@@ -38,7 +38,7 @@
 		"FPS":20,
 	}
 	"bFullScreen":0,
-	"vBASE":["/cam","/d2g","/inRange","morph","/univ"],
+	"vBASE":["/cam","/d2g","/inRange","morph","univ"],
 }
 
 {
@@ -129,7 +129,7 @@
 	}
 	"_VisionBase":"d2rgb",
 	"vL":[10,10,10],
-	"vH":[300,300,300],
+	"vH":[500,500,500],
 }
 
 {
@@ -161,7 +161,7 @@
 {
 	"name":"CR",
 	"class":"_Contour",
-	"bON":0,
+	"bON":1,
 	"bLog":0,
     {
 		"name":"thread",
@@ -169,18 +169,21 @@
 	}
 	"_VisionBase":"morph",
 	"_Universe":"univ",
+	"mode":0,
+	"method":1,
 }
 
 {
 	"name":"univ",
 	"class":"_Universe",
-	"bON":0,
+	"bON":1,
     {
 		"name":"thread",
 		"FPS":1,
 	}
 	"bDrawText":0,
+	"bDrawBB":1,
 	"/vArea":[0.0001, 0.5],
-	"/vW":[0.0, 0.5],
+	"vW":[0.0, 0.5],
 	"/vH":[0.0, 0.5],
 }
