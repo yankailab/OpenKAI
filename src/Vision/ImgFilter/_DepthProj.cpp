@@ -67,6 +67,7 @@ namespace kai
 	{
 		NULL_(m_pV);
 		Frame* pF = m_pV->getFrameRGB();
+		NULL_(pF);
 		IF_(pF->bEmpty());
 
 		Mat mD = *pF->m();

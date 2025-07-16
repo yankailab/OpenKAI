@@ -175,13 +175,14 @@ namespace kai
 		float dTs = m_pT->getDt() * USEC_2_SEC;
 		if (tO)
 		{
-			float x = tO->getX();
-			float y = tO->getY();
-			float a = tO->area();
-			float h = tO->getRoll(); // use Roll for Aruco!
+			vFloat3 vP = tO->getPos();
+			float a = tO->getDimArea();
 
-			fX = m_fX.update(x, dTs);
-			fY = m_fY.update(y, dTs);
+			vFloat3 vA = tO->getAttitude();
+			float h = vA.x; // use Roll for Aruco!
+
+			fX = m_fX.update(vP.x, dTs);
+			fY = m_fY.update(vP.y, dTs);
 			fA = m_fZ.update(a, dTs);
 			fH = m_fH.update(h, dTs);
 

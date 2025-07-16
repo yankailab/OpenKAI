@@ -138,21 +138,17 @@ namespace kai
 			// center position
 			float dx = (float)(pLT.x + pRT.x + pRB.x + pLB.x) * 0.25;
 			float dy = (float)(pLT.y + pRT.y + pRB.y + pLB.y) * 0.25;
-			o.setX(dx);
-			o.setY(dy);
+			o.setPos(dx*kx, dy*ky, 0);
 
 			// radius
 			dx -= pLT.x;
 			dy -= pLT.y;
-			o.setRadius(sqrt(dx * dx + dy * dy));
-
-			// normalize
-			o.scale(kx, ky);
+			o.setDim(0,0,0, sqrt(dx*dx + dy*dy));	// vDim.w = radius
 
 			// angle in deg
 			dx = pLB.x - pLT.x;
 			dy = pLB.y - pLT.y;
-			o.setRoll(-atan2(dx, dy) * RAD_2_DEG + 180.0);
+			o.setAttitude(-atan2(dx, dy) * RAD_2_DEG + 180.0, 0,0);	// roll
 
 			m_pU->add(o);
 			LOG_I("ID: " + i2str(o.getTopClass()));

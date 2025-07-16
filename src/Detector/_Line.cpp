@@ -126,12 +126,11 @@ namespace kai
 		_Object o;
 		o.clear();
 		//	o.m_tStamp = m_pT->getTfrom();
-		o.setBB2D(rect2BB<vFloat4>(rBB));
-		o.scale(kx, ky);
+		o.setBB2D(rect2BB<vFloat4>(rBB), kx, ky);
 		o.setTopClass(0, 1.0);
 		m_pU->add(o);
 
-		m_line = o.getY();
+		m_line = o.getPos().y;
 		LOG_I("Line pos: " + f2str(m_line));
 
 		m_pU->swap();

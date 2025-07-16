@@ -22,7 +22,6 @@ namespace kai
 		obj_unknown = 0,
 		obj_bbox = 1,
 		obj_tag = 2,
-
 	};
 
 	class _Object : public _ModuleBase
@@ -38,58 +37,29 @@ namespace kai
 		virtual void update(void);
 
 		//pos
-		void setPos(vFloat3 &p);
+		void setPos(const vFloat3 &vP);
+		void setPos(float x, float y, float z);
 		vFloat3 getPos(void);
 
-		void setX(float x);
-		void setY(float y);
-		void setZ(float z);
-		float getX(void);
-		float getY(void);
-		float getZ(void);
-
-		void setPosScr(vFloat2 &p);
-		vFloat2 getPosScr(void);
-		void setDimScr(vFloat2 &d);
-		vFloat2 getDimScr(void);
+		//dimension
+		void setDim(const vFloat4 &vD);
+		void setDim(float w, float h, float d, float r);
+		vFloat4 getDim(void);
+		float getDimArea(void);
+		float getDimVolume(void);
 
 		//attitude
-		void setAttitude(vFloat3 &a);
+		void setAttitude(const vFloat3 &vA);
+		void setAttitude(float r, float p, float y);
 		vFloat3 getAttitude(void);
 
-		void setRoll(float r);
-		void setPitch(float p);
-		void setYaw(float y);
-		float getRoll(void);
-		float getPitch(void);
-		float getYaw(void);
-
-		//dimension
-		void setDim(vFloat4 &d);
-		void setWidth(float w);
-		void setHeight(float h);
-		void setDepth(float d);
-		void setRadius(float r);
-
-		vFloat4 getDim(void);
-		float getWidth(void);
-		float getHeight(void);
-		float getDepth(void);
-		float getRadius(void);
-
-		float area(void);
-		float volume(void);
-
-		void scale(float kx = 1.0, float ky = 1.0, float kz = 1.0);
-
 		//convenient
-		void setBB2D(vFloat4 bb);
-		void setBB2D(float l, float t, float w, float h);
-		vFloat4 getBB2D(void);
-		vFloat4 getBB2Dscaled(float kx, float ky);
+		void setBB2D(const vFloat4& vBB, float kX = 1.0, float kY = 1.0);
+		void setRect(float l, float t, float w, float h, float kX = 1.0, float kY = 1.0);
+		vFloat4 getBB2D(float kX = 1.0, float kY = 1.0);
 
 		//vertex
-		void setVertices2D(vFloat2 *pV, int nV);
+		void setVertices2D(vFloat2 *pV, int nV, float kX = 1.0, float kY = 1.0);
 		vFloat2 *getVertex(int i);
 
 		//classification
@@ -127,11 +97,11 @@ namespace kai
 
 		//pos and dim
 		vFloat3 m_vPos;	 //world pos x, y, z
-		vFloat3 m_vAtti; //attitude roll, pith, yaw
 		vFloat4 m_vDim;	 //width, height, depth, radius
+		vFloat3 m_vAtti; //attitude roll, pith, yaw
 
-		vFloat2 m_vPosScr; //screen pos x, y
-		vFloat2 m_vDimScr; //w,h
+		//vertex
+		vector<vFloat2> m_vVertices;
 
 		//kinetics
 		vFloat3 m_vSpeed;
@@ -143,12 +113,6 @@ namespace kai
 		float m_topProb;   //prob for the topClass
 		uint64_t m_mClass; //all candidate class mask
 		string m_txt;
-
-		//vertex
-		vector<vFloat2> m_vVertex;
-
-		//bitflag
-		uint64_t m_mFlag;
 
 		//Tracker
 		void *m_pTracker;

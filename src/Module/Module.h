@@ -123,7 +123,6 @@
 #include "../Detector/_YOLOv8.h"
 #include "../Detector/_DNNclassifier.h"
 #include "../Detector/_DNNtext.h"
-#include "../Detector/_DepthSegment.h"
 #include "../Detector/_IRLock.h"
 #include "../Detector/_Line.h"
 #include "../Detector/_OpenPose.h"

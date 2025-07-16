@@ -11,7 +11,7 @@ namespace kai
 	{
 		m_pO = nullptr;
 		m_nO = 0;
-		m_nBuf = 16;
+		m_nBuf = 128;
 	}
 
 	_ObjectArray::~_ObjectArray()

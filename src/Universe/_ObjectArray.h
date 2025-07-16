@@ -38,7 +38,7 @@ namespace kai
 			return NULL;
 		}
 
-	private:
+	protected:
 		_Object *m_pO;
 		int m_nBuf;
 		int m_nO;

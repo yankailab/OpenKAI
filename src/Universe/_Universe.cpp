@@ -84,9 +84,9 @@ namespace kai
 
 	_Object *_Universe::add(_Object &o)
 	{
-		IF__(!m_vArea.bInside(o.area()), nullptr);
-		IF__(!m_vW.bInside(o.getWidth()), nullptr);
-		IF__(!m_vH.bInside(o.getHeight()), nullptr);
+		IF__(!m_vArea.bInside(o.getDimArea()), nullptr);
+		IF__(!m_vW.bInside(o.getDim().x), nullptr);
+		IF__(!m_vH.bInside(o.getDim().y), nullptr);
 		IF__(!m_vClassRange.bInside(o.getTopClass()), nullptr);
 
 		vFloat3 p = o.getPos();
@@ -138,17 +138,17 @@ namespace kai
 		{
 			if (pO->getType() == obj_tag)
 			{
-				Point pCenter = Point(pO->getX() * pM->cols,
-									  pO->getY() * pM->rows);
-				int r = pO->getRadius() * pM->cols;
+				vFloat3 vP = pO->getPos();
+				Point pCenter = Point(vP.x * pM->cols, vP.y * pM->rows);
+				int r = pO->getDim().w;// * pM->cols;
 
 				circle(*pM, pCenter, r, Scalar(255, 255, 0), 2);
 
-				putText(*pM, "iTag=" + i2str(pO->getTopClass()) + ", angle=" + i2str(pO->getRoll()),
+				putText(*pM, "iTag=" + i2str(pO->getTopClass()) + ", angle=" + i2str(pO->getAttitude().x),
 						pCenter,
 						FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 0);
 
-				double rad = -pO->getRoll() * DEG_2_RAD;
+				double rad = -pO->getAttitude().x * DEG_2_RAD;
 				Point pD = Point(r * sin(rad), r * cos(rad));
 				line(*pM, pCenter + pD, pCenter - pD, Scalar(0, 0, 255), 2);
 			}
@@ -160,7 +160,7 @@ namespace kai
 				oCol = Scalar((col + 85) % 255, (col + 170) % 255, col) + bCol;
 
 				// bb
-				Rect r = bb2Rect<vFloat4>(pO->getBB2Dscaled(pM->cols, pM->rows));
+				Rect r = bb2Rect<vFloat4>(pO->getBB2D(pM->cols, pM->rows));
 				rectangle(*pM, r, oCol, 1);
 
 				// position

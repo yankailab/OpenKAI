@@ -128,7 +128,7 @@ namespace kai
 			return;
 		}
 
-		m_dHdg = dHdg(m_hdgSp, m_oTarget.getRoll());
+		m_dHdg = dHdg(m_hdgSp, m_oTarget.getAttitude().x);
 		float dHdgAbs = abs(m_dHdg);
 
 		if(m_bHdgMoving)

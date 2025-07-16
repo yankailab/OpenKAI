@@ -152,8 +152,7 @@ namespace kai
 			//		o.m_tStamp = m_pT->getTfrom();
 			o.setType(obj_bbox);
 			o.setTopClass(vClassID[idx], (float)vConfidence[idx]);
-			o.setBB2D(rect2BB<vFloat4>(vRect[idx]));
-			o.scale(kx, ky);
+			o.setBB2D(rect2BB<vFloat4>(vRect[idx]), kx, ky);
 
 			m_pU->add(o);
 			LOG_I("Class: " + i2str(o.getTopClass()));

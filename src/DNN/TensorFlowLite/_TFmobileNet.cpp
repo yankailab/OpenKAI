@@ -113,7 +113,7 @@ namespace kai
 			o.setTopClass(det_index, detection_scores[i]);
 			string txt(getClassName(det_index)); // -1??
 			o.setText(txt);
-			o.setBB2D(x1, y1, x2 - x1, y2 - y1);
+			o.setRect(x1, y1, x2 - x1, y2 - y1);
 			// o.scale(kx, ky);
 
 			m_pU->add(o);

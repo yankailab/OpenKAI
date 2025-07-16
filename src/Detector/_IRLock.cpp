@@ -91,7 +91,7 @@ namespace kai
 		uint16_t y = unpack_uint16(&m_pBuf[10], false);
 		uint16_t w = unpack_uint16(&m_pBuf[12], false);
 		uint16_t h = unpack_uint16(&m_pBuf[14], false);
-		o.setBB2D(x, y, w, h);
+		o.setRect(x, y, w, h);
 
 		// TODO:distance
 

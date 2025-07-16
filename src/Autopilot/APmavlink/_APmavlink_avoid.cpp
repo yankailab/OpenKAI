@@ -117,7 +117,7 @@ namespace kai
 
 		IF_(m_obs.getTopClass() < 0);
 
-		Rect r = bb2Rect(m_obs.getBB2Dscaled(pM->cols, pM->rows));
+		Rect r = bb2Rect(m_obs.getBB2D(pM->cols, pM->rows));
 		rectangle(*pM, r, Scalar(0, 0, 255), 3);
 	}
 

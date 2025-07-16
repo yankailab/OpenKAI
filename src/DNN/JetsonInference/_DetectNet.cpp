@@ -134,8 +134,8 @@ namespace kai
 			o.setTopClass(pB->ClassID, pB->Confidence);
 			string txt(m_pDN->GetClassDesc(pB->ClassID));
 			o.setText(txt);
-			o.setBB2D(pB->Left, pB->Top, pB->Width(), pB->Height());
-			o.scale(kx, ky);
+			o.setRect(pB->Left, pB->Top, pB->Width(), pB->Height());
+			o.scalePosDim(kx, ky);
 
 			m_pU->add(o);
 			LOG_I("BBox: " << o.getText() << " Prob: " << f2str(o.getTopClassProb()));

@@ -102,7 +102,7 @@ namespace kai
 		{
 			o.setType(obj_bbox);
 			o.setBB2D(rect2BB<vFloat4>(vRect[i]));
-			o.scale(kx, ky);
+			o.scalePosDim(kx, ky);
 			o.setTopClass(0, 1.0);
 			o.setZ(0.0);
 			o.setText(m_className);
@@ -139,7 +139,7 @@ namespace kai
 		for (int i = 0; i < vRect.size(); i++)
 		{
 			o.setBB2D(rect2BB<vFloat4>(vRect[i]));
-			o.scale(kx, ky);
+			o.scalePosDim(kx, ky);
 			o.setTopClass(0, 1.0);
 			o.setZ(0.0);
 			o.setText(m_className);

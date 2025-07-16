@@ -62,6 +62,7 @@ namespace kai
 	{
 		NULL_(m_pV);
 		Frame* pF = m_pV->getFrameRGB();
+		NULL_(pF);
 		IF_(pF->bEmpty());
 		IF_(m_fRGB.tStamp() >= pF->tStamp());
 

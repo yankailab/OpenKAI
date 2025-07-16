@@ -70,7 +70,9 @@ namespace kai
 		NULL_(m_pVmask);
 
 		Frame *pF = m_pV->getFrameRGB();
+		NULL_(pF);
 		Frame *pFmask = m_pVmask->getFrameRGB();
+		NULL_(pFmask);
 
 		IF_(pF->bEmpty());
 		IF_(pFmask->bEmpty());

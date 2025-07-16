@@ -132,7 +132,6 @@ namespace kai
 		ADD_MODULE(_YOLOv8);
 		ADD_MODULE(_YOLOv3);
 		ADD_MODULE(_DNNtext);
-		ADD_MODULE(_DepthSegment);
 		ADD_MODULE(_IRLock);
 		ADD_MODULE(_OpenPose);
 		ADD_MODULE(_HandKey);

@@ -154,8 +154,8 @@ namespace kai
 				pV[p].x = pP[p].x * kx;
 				pV[p].y = pP[p].y * ky;
 			}
-			o.setVertices2D(pV, 4);
-			o.scale(mIn.cols, mIn.rows);
+			o.setVertices2D(pV, 4, mIn.cols, mIn.rows);	// scaling?
+//			o.scalePosDim(mIn.cols, mIn.rows);
 
 			m_pU->add(o);
 		}
@@ -338,7 +338,7 @@ namespace kai
 			line(*pM, Point2f(pV3->x, pV3->y),
 				 Point2f(pV0->x, pV0->y), col, t);
 
-			Rect r = bb2Rect(pO->getBB2Dscaled(pM->cols, pM->rows));
+			Rect r = bb2Rect(pO->getBB2D(pM->cols, pM->rows));
 			rectangle(*pM, r, col, t + 1);
 
 #ifdef USE_OCR
