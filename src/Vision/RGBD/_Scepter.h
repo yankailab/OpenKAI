@@ -52,6 +52,10 @@ namespace kai
 		virtual bool open(void);
 		virtual void close(void);
 
+#ifdef WITH_3D
+		virtual int getPointCloud(_PCframe* pPCframe, int nPmax = INT_MAX);
+#endif
+
 		ScCtrl getCamCtrl(void);
 		bool setCamCtrl(const ScCtrl& camCtrl);
 		bool setToFexposureControlMode(bool bAuto);
@@ -75,18 +79,11 @@ namespace kai
 			return NULL;
 		}
 
-		void updateTPP(void);
-		static void *getTPP(void *This)
-		{
-			((_Scepter *)This)->updateTPP();
-			return NULL;
-		}
-
 	protected:
 		uint32_t m_nDevice;
-		ScDeviceInfo *m_pDeviceListInfo;
-		ScDeviceHandle m_deviceHandle;
-		ScSensorIntrinsicParameters m_cameraParameters;
+		ScDeviceInfo *m_pScDevListInfo;
+		ScDeviceHandle m_scDevHandle;
+		ScSensorIntrinsicParameters m_scCamParams;
 		ScCtrl m_scCtrl;
 
 		ScFrame m_scfRGB;
@@ -96,7 +93,6 @@ namespace kai
 		ScFrame m_scfIR;
 
 		ScVector3f *m_pScVw; // world vector
-		int m_scSlope;
 	};
 
 }

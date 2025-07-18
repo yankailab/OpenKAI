@@ -70,6 +70,10 @@ namespace kai
 		virtual bool open(void);
 		virtual void close(void);
 
+#ifdef WITH_3D
+		virtual int getPointCloud(_PCframe* pPCframe, int nPmax = INT_MAX);
+#endif
+
 		bool setSensorOption(const rs2::sensor &sensor, rs2_option option_type, float v);
 		bool setCsensorOption(rs2_option option_type, float v);
 		bool setDsensorOption(rs2_option option_type, float v);
@@ -78,9 +82,8 @@ namespace kai
 		bool getCsensorOption(rs2_option option_type, rs2::option_range *pR);
 		bool getDsensorOption(rs2_option option_type, rs2::option_range *pR);
 
-	protected:
+	private:
 		void sensorReset(void);
-		bool updatePointCloud(void);
 		bool updateRS(void);
 		void update(void);
 		static void *getUpdate(void *This)
@@ -96,7 +99,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		string m_rsSN;
 		rs2::config m_rsConfig;
 		rs2::pipeline_profile m_rsProfile;

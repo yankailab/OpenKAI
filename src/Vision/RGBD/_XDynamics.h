@@ -98,6 +98,10 @@ namespace kai
 		virtual bool open(void);
 		virtual void close(void);
 
+#ifdef WITH_3D
+		virtual int getPointCloud(_PCframe* pPCframe, int nPmax = INT_MAX);
+#endif
+
 		static void sCbEvent(void *pHandle, int event, void *pData)
 		{
 			_XDynamics *pXD = (_XDynamics *)pHandle;
@@ -134,7 +138,7 @@ namespace kai
 			return NULL;
 		}
 
-	private:
+	protected:
 		int m_xdDevType;
 		int m_xdProductType;
 		XdynCamInfo_t m_xdCamInfo;

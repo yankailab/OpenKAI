@@ -11,13 +11,13 @@
 #include "../_VisionBase.h"
 #include "../../IPC/SharedMem.h"
 
-#ifdef WITH_3D
-#include "../../3D/PointCloud/_PCframe.h"
-#endif
-
 #ifdef USE_OPENCV
 #include "../../Utility/utilCV.h"
 #include "../../Vision/Frame.h"
+#endif
+
+#ifdef WITH_3D
+#include "../../3D/PointCloud/_PCframe.h"
 #endif
 
 namespace kai
@@ -44,6 +44,10 @@ namespace kai
 		virtual float d(const vFloat4 &bb);
 #endif
 
+#ifdef WITH_3D
+		virtual int getPointCloud(_PCframe* pPCframe, int nPmax = INT_MAX);
+#endif
+
 	protected:
 		// post processing thread
 		_Thread *m_pTPP;
@@ -59,27 +63,27 @@ namespace kai
 		bool m_btDepth;
 		bool m_bConfidence;
 		float m_fConfidenceThreshold;
-		bool m_bPointCloud;
+
+#ifdef USE_OPENCV
+		Frame m_fDepth;
+		Frame m_fTfDepth;
+		Frame m_fTfRGB;
+		Frame m_fIR;
+
+		float m_dScale;
+		float m_dOfs;
+		int m_nHistLev;
+		int m_iHistFrom;
+		float m_minHistD;
+
+		bool m_bDebugDepth;
+#endif
 
 		// frames
 		SharedMem *m_psmDepth;
 		SharedMem *m_psmTransformedDepth;
 		SharedMem *m_psmTransformedRGB;
 		SharedMem *m_psmIR;
-
-#ifdef WITH_3D
-		_PCframe* m_pPCframe;
-#endif
-
-#ifdef USE_OPENCV
-		bool m_bDebugDepth;
-		Frame m_fDepth;
-		float m_dScale;
-		float m_dOfs;
-		int m_nHistLev;
-		int m_iHistFrom;
-		float m_minHistD;
-#endif
 
 	};
 

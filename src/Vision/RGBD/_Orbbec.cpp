@@ -24,16 +24,6 @@ namespace kai
 		CHECK_(_RGBDbase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-        Kiss *pKt = pK->child("threadPP");
-        if (pKt->empty())
-        {
-            LOG_E("threadPP not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
-        m_pTPP = new _Thread();
-        CHECK_d_l_(m_pTPP->init(pKt), DEL(m_pTPP), "threadPP init failed");
-
 		return OK_OK;
 	}
 
@@ -68,15 +58,11 @@ namespace kai
 	int _Orbbec::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
-		NULL__(m_pTPP, OK_ERR_NULLPTR);
-		CHECK_(m_pT->start(getUpdate, this));
-		return m_pTPP->start(getTPP, this);
+		return m_pT->start(getUpdate, this);
 	}
 
 	int _Orbbec::check(void)
 	{
-		NULL__(m_pTPP, OK_ERR_NULLPTR);
-
 		return this->_RGBDbase::check();
 	}
 
@@ -99,7 +85,6 @@ namespace kai
 			if (updateOrbbec())
 			{
 				m_pTPP->run();
-				//				updatePC();
 			}
 			else
 			{
@@ -122,90 +107,19 @@ namespace kai
         auto obColorFrame = obFrameSet->getFrame(OB_FRAME_COLOR);
 
         // Render colorFrame.
-//        win.pushFramesToView(obColorFrame);
 		obColorFrame->getData();
-
-
-//		updateRGBD(frameReady);
-//		updatePointCloud(frameReady);
 
 		return true;
 	}
 
-	// bool _Orbbec::updateRGBD(const VzFrameReady &vfr)
-	// {
-	// 	VzReturnStatus status;
-
-	// 	if (m_bRGB && vfr.color == 1)
-	// 	{
-	// 		status = VZ_GetFrame(m_deviceHandle, VzColorFrame, &m_vzfRGB);
-	// 		if (m_vzfRGB.pFrameData)
-	// 			memcpy(m_psmRGB->p(), m_vzfRGB.pFrameData, m_vzfRGB.dataLen);
-	// 	}
-
-	// 	if (m_btRGB && vfr.transformedColor == 1)
-	// 	{
-	// 		status = VZ_GetFrame(m_deviceHandle, VzTransformColorImgToDepthSensorFrame, &m_vzfTransformedRGB);
-	// 		if (m_vzfTransformedRGB.pFrameData)
-	// 			memcpy(m_psmTransformedRGB->p(),
-	// 				   m_vzfTransformedRGB.pFrameData,
-	// 				   m_vzfTransformedRGB.dataLen);
-	// 	}
-
-	// 	if (m_bDepth && vfr.depth == 1)
-	// 	{
-	// 		status = VZ_GetFrame(m_deviceHandle, VzDepthFrame, &m_vzfDepth);
-	// 		if (m_vzfDepth.pFrameData)
-	// 			memcpy(m_psmDepth->p(), m_vzfDepth.pFrameData, m_vzfDepth.dataLen);
-	// 	}
-
-	// 	if (m_btDepth && vfr.transformedDepth == 1)
-	// 	{
-	// 		status = VZ_GetFrame(m_deviceHandle, VzTransformDepthImgToColorSensorFrame, &m_vzfTransformedDepth);
-	// 		if (m_vzfTransformedDepth.pFrameData)
-	// 			memcpy(m_psmTransformedDepth->p(),
-	// 				   m_vzfTransformedDepth.pFrameData,
-	// 				   m_vzfTransformedDepth.dataLen);
-	// 	}
-
-	// 	if (m_bIR && vfr.ir == 1)
-	// 	{
-	// 		status = VZ_GetFrame(m_deviceHandle, VzIRFrame, &m_vzfIR);
-	// 		if (m_vzfIR.pFrameData)
-	// 			memcpy(m_psmIR->p(), m_vzfIR.pFrameData, m_vzfIR.dataLen);
-	// 	}
-
-	// 	return true;
-	// }
-
-	// bool _Orbbec::updatePointCloud(const VzFrameReady &vfr)
-	// {
-
-
-	// 	return true;
-	// }
-
-	void _Orbbec::updateTPP(void)
+#ifdef WITH_3D
+	int _Orbbec::getPointCloud(_PCframe* pPCframe, int nPmax)
 	{
-		while (m_pTPP->bAlive())
-		{
-			m_pTPP->sleepT(0);
+		NULL__(pPCframe, -1);
+		PointCloud* pPC = pPCframe->getNextBuffer();
 
-			//            m_fDepth.copy(mDs + m_dOfs);
-			// if (m_bDepthShow)
-			// {
-			//     IF_(m_fDepth.bEmpty());
-
-			//     dispImg = cv::Mat(height, width, CV_16UC1, pData);
-
-			//     dispImg.convertTo(dispImg, CV_8U, 255.0 / slope);
-			//     applyColorMap(dispImg, dispImg, cv::COLORMAP_RAINBOW);
-
-			//     Mat mDColor(Size(m_vDsize.x, m_vDsize.y), CV_8UC3, (void *)dColor.get_data(),
-			//                 Mat::AUTO_STEP);
-			//     m_fDepthShow.copy(mDColor);
-			// }
-		}
+		return 0;
 	}
+#endif
 
 }

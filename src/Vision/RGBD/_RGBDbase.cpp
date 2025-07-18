@@ -24,25 +24,20 @@ namespace kai
 		m_btDepth = false;
 		m_bConfidence = true;
 		m_fConfidenceThreshold = 0.0;
-		m_bPointCloud = false;
-
-		m_psmDepth = nullptr;
-		m_psmTransformedRGB = nullptr;
-		m_psmTransformedDepth = nullptr;
-		m_psmIR = nullptr;
-
-#ifdef WITH_3D
-		m_pPCframe = nullptr;
-#endif
 
 #ifdef USE_OPENCV
-		m_bDebugDepth = 0;
 		m_dScale = 1.0;
 		m_dOfs = 0.0;
 		m_nHistLev = 128;
 		m_iHistFrom = 0;
 		m_minHistD = 0.25;
+		m_bDebugDepth = 0;
 #endif
+
+		m_psmDepth = nullptr;
+		m_psmTransformedRGB = nullptr;
+		m_psmTransformedDepth = nullptr;
+		m_psmIR = nullptr;
 	}
 
 	_RGBDbase::~_RGBDbase()
@@ -65,15 +60,14 @@ namespace kai
 		pK->v("btDepth", &m_btDepth);
 		pK->v("bConfidence", &m_bConfidence);
 		pK->v("fConfidenceThreshold", &m_fConfidenceThreshold);
-		pK->v("bPointCloud", &m_bPointCloud);
 
 #ifdef USE_OPENCV
-		pK->v("bDebugDepth", &m_bDebugDepth);
 		pK->v("dScale", &m_dScale);
 		pK->v("dOfs", &m_dOfs);
 		pK->v("nHistLev", &m_nHistLev);
 		pK->v("iHistFrom", &m_nHistLev);
 		pK->v("minHistD", &m_minHistD);
+		pK->v("bDebugDepth", &m_bDebugDepth);
 #endif
 
 		return OK_OK;
@@ -102,12 +96,6 @@ namespace kai
 		pK->v("_SHMir", &n);
 		m_psmIR = (SharedMem *)(pK->findModule(n));
 
-#ifdef WITH_3D
-		n = "";
-		pK->v("_PCframe", &n);
-		m_pPCframe = (_PCframe *)(pK->findModule(n));
-#endif
-
 		return OK_OK;
 	}
 
@@ -122,13 +110,6 @@ namespace kai
 
 	int _RGBDbase::check(void)
 	{
-#ifdef WITH_3D
-		if (m_bPointCloud)
-		{
-			NULL__(m_pPCframe, OK_ERR_NULLPTR);
-		}
-#endif
-
 		return _VisionBase::check();
 	}
 
@@ -236,5 +217,13 @@ namespace kai
 		}
 	}
 #endif
+
+#ifdef WITH_3D
+	int _RGBDbase::getPointCloud(_PCframe* pPCframe, int nPmax)
+	{
+
+	}
+#endif
+
 
 }

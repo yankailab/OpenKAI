@@ -257,7 +257,6 @@ namespace kai
 
             updateXDynamics();
 
-
         }
     }
 
@@ -425,6 +424,16 @@ namespace kai
     {
         m_xdHDL.release();
     }
+
+#ifdef WITH_3D
+	int _XDynamics::getPointCloud(_PCframe* pPCframe, int nPmax)
+	{
+		NULL__(pPCframe, -1);
+		PointCloud* pPC = pPCframe->getNextBuffer();
+
+		return 0;
+	}
+#endif
 
     void _XDynamics::console(void *pConsole)
     {

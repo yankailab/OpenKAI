@@ -49,21 +49,16 @@ namespace kai
 		virtual bool open(void);
 		virtual void close(void);
 
+#ifdef WITH_3D
+		virtual int getPointCloud(_PCframe* pPCframe, int nPmax = INT_MAX);
+#endif
+
 	private:
-		// bool updatePointCloud(const VzFrameReady& vfr);
-		// bool updateRGBD(const VzFrameReady& vfr);
 		bool updateOrbbec(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_Orbbec *)This)->update();
-			return NULL;
-		}
-
-		void updateTPP(void);
-		static void *getTPP(void *This)
-		{
-			((_Orbbec *)This)->updateTPP();
 			return NULL;
 		}
 
