@@ -24,6 +24,7 @@
 #include "../3D/PointCloud/_PCframe.h"
 #include "../3D/PointCloud/_PCgrid.h"
 #include "../3D/PointCloud/_PCfile.h"
+#include "../3D/PointCloud/_RGBD2PCframe.h"
 #include "../3D/PointCloud/_PCmerge.h"
 #include "../3D/PointCloud/_PCsend.h"
 #include "../3D/PointCloud/_PCrecv.h"
@@ -272,10 +273,8 @@
 #include "../Vision/ImgFilter/_ColorConvert.h"
 #include "../Vision/ImgFilter/_Contrast.h"
 #include "../Vision/ImgFilter/_Crop.h"
-#include "../Vision/ImgFilter/_Depth2Gray.h"
-#include "../Vision/ImgFilter/_DepthShow.h"
-#include "../Vision/ImgFilter/_DepthProj.h"
-#include "../Vision/ImgFilter/_D2RGB.h"
+#include "../Vision/RGBD/_D2G.h"
+#include "../Vision/RGBD/_D2RGB.h"
 #include "../Vision/ImgFilter/_Erode.h"
 #include "../Vision/ImgFilter/_HistEqualize.h"
 #include "../Vision/ImgFilter/_Invert.h"
@@ -286,9 +285,7 @@
 #include "../Vision/ImgFilter/_Remap.h"
 #include "../Vision/ImgFilter/_Rotate.h"
 #include "../Vision/ImgFilter/_Threshold.h"
-#ifdef USE_INFIRAY
-#include "../Vision/_InfiRay.h"
-#endif
+
 #ifdef USE_CUDA
 #include "../Vision/_DenseFlow.h"
 #endif

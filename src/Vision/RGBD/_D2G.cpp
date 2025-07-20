@@ -1,26 +1,26 @@
 /*
- * _Depth2Gray.cpp
+ * _D2G.cpp
  *
  *  Created on: April 23, 2019
  *      Author: yankai
  */
 
-#include "_Depth2Gray.h"
+#include "_D2G.h"
 
 namespace kai
 {
 
-	_Depth2Gray::_Depth2Gray()
+	_D2G::_D2G()
 	{
 		m_type = vision_depth2Gray;
 		m_pV = nullptr;
 	}
 
-	_Depth2Gray::~_Depth2Gray()
+	_D2G::~_D2G()
 	{
 	}
 
-	int _Depth2Gray::init(void *pKiss)
+	int _D2G::init(void *pKiss)
 	{
 		CHECK_(_VisionBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
@@ -28,7 +28,7 @@ namespace kai
 		return OK_OK;
 	}
 
-	int _Depth2Gray::link(void)
+	int _D2G::link(void)
 	{
 		CHECK_(this->_VisionBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
@@ -42,13 +42,13 @@ namespace kai
 		return OK_OK;
 	}
 
-	int _Depth2Gray::start(void)
+	int _D2G::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
-	void _Depth2Gray::update(void)
+	void _D2G::update(void)
 	{
 		while (m_pT->bAlive())
 		{
@@ -58,7 +58,7 @@ namespace kai
 		}
 	}
 
-	void _Depth2Gray::filter(void)
+	void _D2G::filter(void)
 	{
 		NULL_(m_pV);
 		Frame* pF = m_pV->getFrameD();

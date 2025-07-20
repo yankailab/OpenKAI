@@ -34,6 +34,7 @@ namespace kai
 		ADD_MODULE(_PCframe);
 		ADD_MODULE(_PCgrid);
 		ADD_MODULE(_PCfile);
+		ADD_MODULE(_RGBD2PCframe);
 		ADD_MODULE(_PCmerge);
 		ADD_MODULE(_PCsend);
 		ADD_MODULE(_PCrecv);
@@ -276,9 +277,7 @@ namespace kai
 		ADD_MODULE(_Contrast);
 		ADD_MODULE(_Crop);
 		ADD_MODULE(_ColorConvert);
-		ADD_MODULE(_DepthProj);
-		ADD_MODULE(_Depth2Gray);
-		ADD_MODULE(_DepthShow);
+		ADD_MODULE(_D2G);
 		ADD_MODULE(_D2RGB);
 		ADD_MODULE(_Erode);
 		ADD_MODULE(_GPhoto);
@@ -295,9 +294,7 @@ namespace kai
 		ADD_MODULE(_SharedMemImg);
 		ADD_MODULE(_Threshold);
 		ADD_MODULE(_VideoFile);
-#ifdef USE_INFIRAY
-		ADD_MODULE(_InfiRay);
-#endif
+
 #ifdef USE_CUDA
 		ADD_MODULE(_DenseFlow);
 #endif

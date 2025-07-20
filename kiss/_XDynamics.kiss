@@ -149,7 +149,7 @@
 
 {
 	"name":"d2g",
-	"class":"_Depth2Gray",
+	"class":"_D2G",
 	"bON":1,
     {
 		"name":"thread",

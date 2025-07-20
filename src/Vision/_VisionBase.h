@@ -34,18 +34,17 @@ namespace kai
 		vision_contrast,
 		vision_histEqualize,
 		vision_invert,
-		vision_depth2Gray,
 		vision_resize,
 		vision_rotate,
 		vision_inRange,
-		vision_ColorConvert,
+		vision_colorConvert,
 		vision_crop,
 		vision_gphoto,
 		vision_remap,
 		vision_RSdepth,
-		vision_depthProj,
 		vision_SharedMemImg,
 		vision_BGR2HSV,
+		vision_depth2Gray,
 		vision_D2RGB
 	};
 

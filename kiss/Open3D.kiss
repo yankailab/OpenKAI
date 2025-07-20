@@ -18,30 +18,6 @@
 }
 
 {
-	"name":"RGBview",
-	"class":"_WindowCV",
-	"bON":0,
-	"bFullScreen":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"vBASE":["cam"],
-}
-
-{
-	"name":"cam",
-	"class":"_GStreamer",
-	"bON":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! appsink",
-	"/pipeline":"nvarguscamerasrc sensor-id=0 ! video/x-raw(memory:NVMM), width=1920, height=1080, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)1920, height=(int)1080, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink",
-}
-
-{
 	"name":"GViewer",
 	"class":"_GeometryViewer",
 	"bON":1,
@@ -63,9 +39,15 @@
 	"vCamAutoEye":[0,2,0],
 	"vCamAutoUp":[0,1,0],
 	"vCoR":[0,0,0],
+
 	"camFov":80,
 	"vCamNF":[0, 500],
 	"camFovType":1,
+
+	"vCamLR":[-100, 100],
+	"vCamBT":[-100, 100],
+	"vCamNF":[0, 500],
+
 	"bFullScreen":0,
 	"wPanel":20,
 	"vBtnPadding":[1.6, 2.0],
@@ -99,12 +81,12 @@
 			"matLineWidth":1,
 		}
 		{
-			"_GeometryBase":"VzensePC",
+			"_GeometryBase":"rgbd2pcf",
 			"bStatic":0,
-			"nP":250000,
+			"nP":500000,
 			"rDummyDome":1000.0,
 			"matName":"default",
-			"matCol":[1,1,1,1],
+			"/matCol":[1,1,1,1],
 			"matPointSize":1,
 			"matLineWidth":1,
 		}
@@ -114,19 +96,64 @@
 			"matName":"unlitLine",
 			"matLineWidth":1,
 		}
-		{
-			"_GeometryBase":"pcGrid",
-			"bStatic":0,
-			"matName":"unlitLine",
-			"matLineWidth":10,
-		}
 	}
 }
 
 {
-	"name":"VzensePC",
-	"class":"_ScepterPC",
+	"name":"Scepter",
+	"class":"_Scepter",
 	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadPP",
+		"FPS":30,
+	}
+	"URI":"",
+	"vSizeRGB":[800,600],
+	"/vRangeD":[0,4000],
+	"scPixelFormat":4,
+
+	"bRGB":1,
+	"bDepth":1,
+	"btRGB":1,
+	"btDepth":0,
+	"bIR":0,
+
+	"/bDebugDepth":1,
+	"/_SHMrgb":"SHMscRGB",
+}
+
+{
+	"name":"rgbd2pcf",
+	"class":"_RGBD2PCframe",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"_RGBDbase":"Scepter",
+}
+
+
+
+
+
+
+
+
+
+
+
+
+{
+	"name":Scepter",
+	"class":"_Scepter",
+	"bON":0,
 	"bLog":1,
     {
 		"name":"thread",
@@ -142,11 +169,10 @@
 	"fCalib":"/home/kai/3Dscan/calibOfs.kiss",
 }
 
-
 {
 	"name":"shmFileW",
 	"class":"SharedMem",
-	"bON":1,
+	"bON":0,
 	"shmName":"smFile",
 	"nB":6400000,
 	"bWriter":1,
@@ -155,7 +181,7 @@
 {
 	"name":"shmFileR",
 	"class":"SharedMem",
-	"bON":1,
+	"bON":0,
 	"shmName":"smFile",
 	"nB":6400000,
 	"bWriter":0,
@@ -194,7 +220,7 @@
 {
 	"name":"pcStream",
 	"class":"_PCstream",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -207,7 +233,7 @@
 {
 	"name":"pcGrid",
 	"class":"_PCgrid",
-	"bON":1,
+	"bON":0,
     {
 		"name":"thread",
 		"FPS":10,

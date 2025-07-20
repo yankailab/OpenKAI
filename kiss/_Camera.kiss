@@ -71,18 +71,6 @@
 }
 
 {
-	"name":"iRay",
-	"class":"_InfiRay",
-	"bON":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"deviceID":4,
-	"vSize":[256,196],
-}
-
-{
 	"name":"contrast",
 	"class":"_Contrast",
 	"bON":0,

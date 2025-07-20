@@ -33,11 +33,6 @@ namespace kai
 		m_minHistD = 0.25;
 		m_bDebugDepth = 0;
 #endif
-
-		m_psmDepth = nullptr;
-		m_psmTransformedRGB = nullptr;
-		m_psmTransformedDepth = nullptr;
-		m_psmIR = nullptr;
 	}
 
 	_RGBDbase::~_RGBDbase()
@@ -77,24 +72,6 @@ namespace kai
 	{
 		CHECK_(this->_VisionBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
-
-		string n;
-
-		n = "";
-		pK->v("_SHMtransformedRGB", &n);
-		m_psmTransformedRGB = (SharedMem *)(pK->findModule(n));
-
-		n = "";
-		pK->v("_SHMdepth", &n);
-		m_psmDepth = (SharedMem *)(pK->findModule(n));
-
-		n = "";
-		pK->v("_SHMtransformedDepth", &n);
-		m_psmTransformedDepth = (SharedMem *)(pK->findModule(n));
-
-		n = "";
-		pK->v("_SHMir", &n);
-		m_psmIR = (SharedMem *)(pK->findModule(n));
 
 		return OK_OK;
 	}

@@ -9,7 +9,6 @@
 #define OpenKAI_src_Vision_RGBD__RGBDbase_H_
 
 #include "../_VisionBase.h"
-#include "../../IPC/SharedMem.h"
 
 #ifdef USE_OPENCV
 #include "../../Utility/utilCV.h"
@@ -78,13 +77,6 @@ namespace kai
 
 		bool m_bDebugDepth;
 #endif
-
-		// frames
-		SharedMem *m_psmDepth;
-		SharedMem *m_psmTransformedDepth;
-		SharedMem *m_psmTransformedRGB;
-		SharedMem *m_psmIR;
-
 	};
 
 }

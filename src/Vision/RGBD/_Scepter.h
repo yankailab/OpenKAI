@@ -70,7 +70,6 @@ namespace kai
 		bool setHDR(bool bON);
 
 	private:
-		bool updatePointCloud(void);
 		bool updateScRGBD(void);
 		void update(void);
 		static void *getUpdate(void *This)

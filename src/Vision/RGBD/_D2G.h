@@ -1,23 +1,23 @@
 /*
- * _DepthShow.h
+ * _D2G.h
  *
  *  Created on: April 23, 2019
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Vision__RSdepth_H_
-#define OpenKAI_src_Vision__RSdepth_H_
+#ifndef OpenKAI_src_Vision__Depth2Gray_H_
+#define OpenKAI_src_Vision__Depth2Gray_H_
 
 #include "../RGBD/_RGBDbase.h"
 
 namespace kai
 {
 
-	class _DepthShow : public _VisionBase
+	class _D2G : public _VisionBase
 	{
 	public:
-		_DepthShow();
-		virtual ~_DepthShow();
+		_D2G();
+		virtual ~_D2G();
 
 		virtual int init(void *pKiss);
 		virtual int link(void);
@@ -28,7 +28,7 @@ namespace kai
 		void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_DepthShow *)This)->update();
+			((_D2G *)This)->update();
 			return NULL;
 		}
 

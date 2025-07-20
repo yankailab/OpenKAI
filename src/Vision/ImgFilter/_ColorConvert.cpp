@@ -12,7 +12,7 @@ namespace kai
 
 	_ColorConvert::_ColorConvert()
 	{
-		m_type = vision_ColorConvert;
+		m_type = vision_colorConvert;
 		m_pV = nullptr;
 		m_code = COLOR_RGB2GRAY;
 	}

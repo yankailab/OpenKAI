@@ -231,8 +231,8 @@ namespace kai
 				m_vSizeRGB.x = m_scfRGB.width;
 				m_vSizeRGB.y = m_scfRGB.height;
 
-				if (m_psmRGB)
-					memcpy(m_psmRGB->p(), m_scfRGB.pFrameData, m_scfRGB.dataLen);
+				// if (m_psmRGB)
+				// 	memcpy(m_psmRGB->p(), m_scfRGB.pFrameData, m_scfRGB.dataLen);
 			}
 		}
 
@@ -245,8 +245,8 @@ namespace kai
 				m_vSizeD.x = m_scfDepth.width;
 				m_vSizeD.y = m_scfDepth.height;
 
-				if (m_psmDepth)
-					memcpy(m_psmDepth->p(), m_scfDepth.pFrameData, m_scfDepth.dataLen);
+				// if (m_psmDepth)
+				// 	memcpy(m_psmDepth->p(), m_scfDepth.pFrameData, m_scfDepth.dataLen);
 			}
 		}
 
@@ -257,10 +257,10 @@ namespace kai
 			{
 				*m_fTfRGB.m() = cv::Mat(m_scfTransformedRGB.height, m_scfTransformedRGB.width, CV_8UC3, m_scfTransformedRGB.pFrameData);
 
-				if (m_psmTransformedRGB)
-					memcpy(m_psmTransformedRGB->p(),
-						   m_scfTransformedRGB.pFrameData,
-						   m_scfTransformedRGB.dataLen);
+				// if (m_psmTransformedRGB)
+				// 	memcpy(m_psmTransformedRGB->p(),
+				// 		   m_scfTransformedRGB.pFrameData,
+				// 		   m_scfTransformedRGB.dataLen);
 			}
 		}
 
@@ -271,10 +271,10 @@ namespace kai
 			{
 				*m_fTfDepth.m() = cv::Mat(m_scfTransformedDepth.height, m_scfTransformedDepth.width, CV_16UC1, m_scfTransformedDepth.pFrameData);
 
-				if (m_psmTransformedDepth)
-					memcpy(m_psmTransformedDepth->p(),
-						   m_scfTransformedDepth.pFrameData,
-						   m_scfTransformedDepth.dataLen);
+				// if (m_psmTransformedDepth)
+				// 	memcpy(m_psmTransformedDepth->p(),
+				// 		   m_scfTransformedDepth.pFrameData,
+				// 		   m_scfTransformedDepth.dataLen);
 			}
 		}
 
@@ -285,8 +285,8 @@ namespace kai
 			{
 				*m_fIR.m() = cv::Mat(m_scfIR.height, m_scfIR.width, CV_8UC1, m_scfIR.pFrameData);
 
-				if (m_psmIR)
-					memcpy(m_psmIR->p(), m_scfIR.pFrameData, m_scfIR.dataLen);
+				// if (m_psmIR)
+				// 	memcpy(m_psmIR->p(), m_scfIR.pFrameData, m_scfIR.dataLen);
 			}
 		}
 
@@ -330,7 +330,7 @@ namespace kai
 				pPC->points_.push_back(vP);
 
 				// texture color
-				uint8_t *pC = &m_scfRGB.pFrameData[k * sizeof(uint8_t) * 3];
+				uint8_t *pC = &m_scfTransformedRGB.pFrameData[k * sizeof(uint8_t) * 3];
 				Eigen::Vector3d vC(pC[2], pC[1], pC[0]);
 				vC *= c_b;
 				pPC->colors_.push_back(vC);
