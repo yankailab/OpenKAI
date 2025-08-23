@@ -199,15 +199,6 @@
 #include "../ROS/_ROS_fastLio.h"
 #endif
 
-#ifdef WITH_SCIENCE
-#include "../Science/_IsingSolver.h"
-#ifdef USE_MATHGL
-// #include "../Science/_Solver.h"
-//#include "../Science/_SolverBase.h"
-//#include "../Science/_FourierSeries.h"
-#endif
-#endif
-
 #ifdef WITH_SENSOR
 #include "../Sensor/Distance/_LeddarVu.h"
 #include "../Sensor/Distance/_TOFsense.h"

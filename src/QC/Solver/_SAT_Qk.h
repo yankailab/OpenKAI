@@ -1,23 +1,23 @@
 /*
- * _IsingSolver.h
+ * _SAT_Qk.h
  *
  *  Created on: Feb 2, 2024
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Science_IsingSolver_H_
-#define OpenKAI_src_Science_IsingSolver_H_
+#ifndef OpenKAI_src_QC_SAT_Qk_H_
+#define OpenKAI_src_QC_SAT_Qk_H_
 
 #include "../Base/_ModuleBase.h"
 #include "../UI/_Console.h"
 
 namespace kai
 {
-	class _IsingSolver : public _ModuleBase
+	class _SAT_Qk : public _ModuleBase
 	{
 	public:
-		_IsingSolver();
-		virtual ~_IsingSolver();
+		_SAT_Qk();
+		virtual ~_SAT_Qk();
 
 		virtual int init(void *pKiss);
 		virtual int link(void);
@@ -30,7 +30,7 @@ namespace kai
 		void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_IsingSolver *)This)->update();
+			((_SAT_Qk *)This)->update();
 			return NULL;
 		}
 

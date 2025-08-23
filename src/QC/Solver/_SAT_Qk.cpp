@@ -1,27 +1,27 @@
 /*
- * _IsingSolver.cpp
+ * _SAT_Qk.cpp
  *
  *  Created on: Feb 2, 2024
  *      Author: yankai
  */
 
-#include "_IsingSolver.h"
+#include "_SAT_Qk.h"
 
 namespace kai
 {
 
-    _IsingSolver::_IsingSolver()
+    _SAT_Qk::_SAT_Qk()
     {
         m_pTPP = nullptr;
 
     }
 
-    _IsingSolver::~_IsingSolver()
+    _SAT_Qk::~_SAT_Qk()
     {
         DEL(m_pTPP);
     }
 
-    int _IsingSolver::init(void *pKiss)
+    int _SAT_Qk::init(void *pKiss)
     {
         CHECK_(_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
@@ -31,7 +31,7 @@ namespace kai
         return OK_OK;
     }
 
-    int _IsingSolver::link(void)
+    int _SAT_Qk::link(void)
     {
         CHECK_(this->_ModuleBase::link());
         Kiss *pK = (Kiss *)m_pKiss;
@@ -45,19 +45,19 @@ namespace kai
         return OK_OK;
     }
 
-	int _IsingSolver::start(void)
+	int _SAT_Qk::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _IsingSolver::check(void)
+	int _SAT_Qk::check(void)
 	{
 //		NULL__(, -1);
 		return this->_ModuleBase::check();
 	}
 
-	void _IsingSolver::update(void)
+	void _SAT_Qk::update(void)
 	{
 		while (m_pT->bAlive())
 		{
@@ -68,13 +68,13 @@ namespace kai
 		}
 	}
 
-	void _IsingSolver::updateSolver(void)
+	void _SAT_Qk::updateSolver(void)
 	{
 		IF_(check() != OK_OK);
 
 	}
 
-	void _IsingSolver::console(void *pConsole)
+	void _SAT_Qk::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);

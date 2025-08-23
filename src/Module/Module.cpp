@@ -208,15 +208,6 @@ namespace kai
 		ADD_MODULE(_ROS_fastLio);
 #endif
 
-#ifdef WITH_SCIENCE
-		ADD_MODULE(_IsingSolver);
-#ifdef USE_MATHGL
-		//		ADD_MODULE(_Solver);
-//		ADD_MODULE(_SolverBase);
-//		ADD_MODULE(_FourierSeries);
-#endif
-#endif
-
 #ifdef WITH_SENSOR
 		ADD_MODULE(_BenewakeTF);
 		ADD_MODULE(_TOFsense);

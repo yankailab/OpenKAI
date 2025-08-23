@@ -1,24 +1,24 @@
 /*
- * _QCbase.cpp
+ * _SATbase.cpp
  *
  *  Created on: Jul 11, 2025
  *      Author: yankai
  */
 
-#include "_QCbase.h"
+#include "_SATbase.h"
 
 namespace kai
 {
 
-	_QCbase::_QCbase()
+	_SATbase::_SATbase()
 	{
 	}
 
-	_QCbase::~_QCbase()
+	_SATbase::~_SATbase()
 	{
 	}
 
-	int _QCbase::init(void *pKiss)
+	int _SATbase::init(void *pKiss)
 	{
 		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
@@ -28,7 +28,7 @@ namespace kai
 		return OK_OK;
 	}
 
-	int _QCbase::link(void)
+	int _SATbase::link(void)
 	{
 		CHECK_(this->_ModuleBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
@@ -36,12 +36,12 @@ namespace kai
 		return OK_OK;
 	}
 
-	int _QCbase::check(void)
+	int _SATbase::check(void)
 	{
 		return _ModuleBase::check();
 	}
 
-	void _QCbase::console(void *pConsole)
+	void _SATbase::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);

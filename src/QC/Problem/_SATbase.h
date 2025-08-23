@@ -5,25 +5,24 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_QC__QCbase_H_
-#define OpenKAI_src_QC__QCbase_H_
+#ifndef OpenKAI_src_QC__SATbase_H_
+#define OpenKAI_src_QC__SATbase_H_
 
-#include "../Base/_ModuleBase.h"
+#include "../../Base/_ModuleBase.h"
 
 namespace kai
 {
 
-	class _QCbase : public _ModuleBase
+	class _SATbase : public _ModuleBase
 	{
 	public:
-		_QCbase();
-		virtual ~_QCbase();
+		_SATbase();
+		virtual ~_SATbase();
 
 		virtual int init(void *pKiss);
 		virtual int link(void);
 		virtual int check(void);
 		virtual void console(void *pConsole);
-		virtual void draw(void *pFrame);
 
 	protected:
 	};
