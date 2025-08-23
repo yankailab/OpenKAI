@@ -204,6 +204,12 @@ namespace kai
 		ADD_MODULE(_Xbee);
 #endif
 
+#ifdef WITH_QC
+#ifdef USE_QISKIT
+		ADD_MODULE(_SAT_Qk);
+#endif
+#endif
+
 #ifdef WITH_ROS
 		ADD_MODULE(_ROS_fastLio);
 #endif

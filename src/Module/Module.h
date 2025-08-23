@@ -195,6 +195,13 @@
 #include "../Protocol/_Xbee.h"
 #endif
 
+#ifdef WITH_QC
+#include "../QC/Problem/_SATbase.h"
+#ifdef USE_QISKIT
+#include "../QC/Solver/_SAT_Qk.h"
+#endif
+#endif
+
 #ifdef WITH_ROS
 #include "../ROS/_ROS_fastLio.h"
 #endif
@@ -203,13 +210,13 @@
 #include "../Sensor/Distance/_LeddarVu.h"
 #include "../Sensor/Distance/_TOFsense.h"
 #include "../Sensor/Distance/_BenewakeTF.h"
-#ifdef WITH_3D && USE_OPEN3D
+#ifdef WITH_3D &&USE_OPEN3D
 #include "../Sensor/LiDAR/_Livox2.h"
 #include "../Sensor/LiDAR/_RoboSenseAiry.h"
 #endif // 3D
 #endif // sensor
 
-#ifdef WITH_SLAM && WITH_NAVIGATION
+#ifdef WITH_SLAM &&WITH_NAVIGATION
 #ifdef USE_OPENCV
 #include "../SLAM/_SLAMbase.h"
 #endif
@@ -298,7 +305,6 @@
 #endif
 
 #endif // test
-
 
 #define ADD_MODULE(x)             \
 	if (pK->getClass() == #x)     \

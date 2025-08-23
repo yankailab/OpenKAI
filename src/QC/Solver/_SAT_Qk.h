@@ -8,8 +8,13 @@
 #ifndef OpenKAI_src_QC_SAT_Qk_H_
 #define OpenKAI_src_QC_SAT_Qk_H_
 
-#include "../Base/_ModuleBase.h"
-#include "../UI/_Console.h"
+#include "../../Base/_ModuleBase.h"
+#include "../../UI/_Console.h"
+
+#include <stdio.h>
+#include <stdint.h>
+#include <complex.h>
+#include <qiskit.h>
 
 namespace kai
 {
@@ -26,6 +31,7 @@ namespace kai
 		virtual void console(void *pConsole);
 
 	private:
+		void runQ(void);
 		void updateSolver(void);
 		void update(void);
 		static void *getUpdate(void *This)
