@@ -235,7 +235,7 @@ namespace kai
 			{
 				if (!open())
 				{
-					close();
+					close();	// keep it, as it may requires several tries to get connected
 					m_pT->sleepT(SEC_2_USEC);
 					continue;
 				}

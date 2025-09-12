@@ -152,7 +152,8 @@ namespace kai
 
 		/*
 		add 99-hik.rules to /etc/udev/rules.d/
-		SUBSYSTEM=="usb", ATTRS{idVendor}=="", MODE:="0666"
+		sudo nano /etc/udev/rules.d/99-hik.rules
+		SUBSYSTEM=="usb", ATTRS{idVendor}=="2bdf", MODE:="0666"
 		*/
 	};
 }
