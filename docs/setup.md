@@ -558,6 +558,17 @@ pip install .
 ```
 
 
+# (Optional) M4RI
+```bash
+git clone https://github.com/malb/m4ri.git
+cd m4ri/
+autoreconf --install
+./configure
+make
+make check
+sudo make install
+```
+
 # (Optional) OpenKAI extra modules
 ```bash
 git clone --depth 1 https://github.com/yankailab/OpenKAI_exm.git

@@ -204,9 +204,13 @@ namespace kai
 		ADD_MODULE(_Xbee);
 #endif
 
-#ifdef WITH_QC
+#ifdef WITH_SOLVER
+		ADD_MODULE(_SATbase);
+#ifdef USE_M4RI
+//		ADD_MODULE(_SATbase);
+#endif
 #ifdef USE_QISKIT
-		ADD_MODULE(_SAT_Qk);
+//		ADD_MODULE(_SATbase);
 #endif
 #endif
 

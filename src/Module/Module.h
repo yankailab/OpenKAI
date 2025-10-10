@@ -195,10 +195,13 @@
 #include "../Protocol/_Xbee.h"
 #endif
 
-#ifdef WITH_QC
-#include "../QC/Problem/_SATbase.h"
+#ifdef WITH_SOLVER
+#include "../Solver/SAT/_SATbase.h"
+#ifdef USE_M4RI
+//#include "../Solver/SAT/_SATbase.h"
+#endif
 #ifdef USE_QISKIT
-#include "../QC/Solver/_SAT_Qk.h"
+//#include "../Solver/SAT/_SATbase.h"
 #endif
 #endif
 
