@@ -12,6 +12,8 @@ namespace kai
 
 	_SATbase::_SATbase()
 	{
+		m_pV = NULL;
+		m_pC = NULL;
 	}
 
 	_SATbase::~_SATbase()
@@ -50,12 +52,13 @@ namespace kai
 	bool _SATbase::decodeCNF(const string &cnf)
 	{
 		// cnf file input
-		vector<string> vClauses = splitBy(cnf, '\n');
+		vector<string> vLines = splitBy(cnf, '\n');
 
-		for (int i = 0; i < vClauses.size(); i++)
+		// find header
+		for (int i = 0; i < vLines.size(); i++)
 		{
-			IF_CONT(vClauses[i].empty());
-			vector<string> vL = splitBy(vClauses[i], ' ');
+			IF_CONT(vLines[i].empty());
+			vector<string> vL = splitBy(vLines[i], ' ');
 			IF_CONT(vL[0] == "c");
 			IF_CONT(vL[0] != "p");
 
@@ -68,26 +71,37 @@ namespace kai
 		}
 		IF_F((m_nV == 0) || (m_nC == 0));
 
+		// allocate
+		m_nV++;	// index 0 is not used
+		m_pV = new VARIABLE[m_nV];
+		NULL_F(m_pV);
+
 		m_pC = new CLAUSE[m_nC];
 		NULL_F(m_pC);
 
+		// decode clauses
 		int iC = 0;
-		for (int i = 0; i < vClauses.size(); i++)
+		for (int i = 0; i < vLines.size(); i++)
 		{
-			IF_CONT(vClauses[i].empty());
-			vector<string> vL = splitBy(vClauses[i], ' ');
+			IF_CONT(vLines[i].empty());
+			vector<string> vL = splitBy(vLines[i], ' ');
 			IF_CONT(vL[0] == "c");
 			IF_CONT(vL[0] == "p");
+
+			CLAUSE* pC = &m_pC[iC];
+			pC->clear();
 
 			int iL = 0;
 			while (vL[iL] != "0")
 			{
-				m_pC[iC].m_pL[iL] = atoi(vL[iL].c_str());
-				iL++;
+				pC->addLiteral(atoi(vL[iL++].c_str()));
+
+				// m_pC[iC].m_pL[iL] = atoi(vL[iL].c_str());
+				// iL++;
 			}
 			IF_CONT(iL <= 0);
 
-			m_pC[iC].m_nL = iL;
+//			m_pC[iC].m_nL = iL;
 			iC++;
 
 			if (iC >= m_nC)
@@ -108,22 +122,12 @@ namespace kai
 
 			for (int j = 0; j < pC->m_nL; j++)
 			{
-				int L = pC->m_pL[j];
-				bool bN;
-				if (L >= 0)
-				{
-					L = L - 1;
-					bN = false;
-				}
-				else
-				{
-					L = abs(L) - 1;
-					bN = true;
-				}
+				int L = pC->getLiteral(j);
+				IF_F(L == 0);	// error
 
-				VARIABLE *pV = &m_pV[L];
-				int v = pV->v() - 2;
-				nT += (bN) ? 1 - v : v;
+				VARIABLE *pV = &m_pV[abs(L)];
+				int v = pV->v();
+				nT += (L < 0) ? 1 - v : v;
 
 				if (nT > 0)
 					break;
@@ -148,9 +152,9 @@ namespace kai
 	void _SATbase::printSolution(void)
 	{
 		string s = "";
-		for (int i = 0; i < m_nV; i++)
+		for (int i = 1; i < m_nV; i++)
 		{
-			int v = m_pV[i].v() - 2;
+			int v = m_pV[i].v();
 			s += i2str(v) + " ";
 		}
 

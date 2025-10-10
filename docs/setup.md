@@ -560,6 +560,7 @@ pip install .
 
 # (Optional) M4RI
 ```bash
+sudo apt-get install autoconf automake libtool
 git clone https://github.com/malb/m4ri.git
 cd m4ri/
 autoreconf --install
@@ -568,6 +569,7 @@ make
 make check
 sudo make install
 ```
+
 
 # (Optional) OpenKAI extra modules
 ```bash

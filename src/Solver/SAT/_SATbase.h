@@ -18,35 +18,43 @@ namespace kai
 {
 	struct VARIABLE
 	{
-		int m_iV = 0;
+		int m_v = -1;	//-1: undefined, 0: false, 1: true
 
-		void assign(int iV)
+		void assign(int v)
 		{
-			m_iV = iV;
+			m_v = v;
 		}
 
 		int v(void)
 		{
-			return m_iV;
+			return m_v;
 		}
 	};
 
 	struct CLAUSE
 	{
-		int m_pL[N_MAX_LITERAL];
+		int m_pL[N_MAX_LITERAL];	// var index from 1, +/- sign = negation 
 		int m_nL = 0;
 
-		bool literal(int i, int *piV)
+		void clear(void)
 		{
-			int L = m_pL[i];
-			if (L >= 0)
-			{
-				*piV = L - 1;
-				return true;
-			}
+			m_nL = 0;
+		}
 
-			*piV = abs(L) - 1;
-			return false;
+		bool addLiteral(int L)
+		{
+			IF_F(m_nL >= N_MAX_LITERAL);
+
+			m_pL[m_nL++] = L;
+			return true;
+		}
+
+		int getLiteral(int i)
+		{
+			IF__(i < 0, 0);
+			IF__(i >= m_nL, 0);
+
+			return m_pL[i];
 		}
 	};
 
@@ -69,11 +77,11 @@ namespace kai
 
 	protected:
 		// variables
-		VARIABLE *m_pV = NULL;
-		int m_nV;
+		VARIABLE *m_pV;	// variable index from 1, [0] is not used
+		int m_nV;	// actual number of variables + 1
 
 		// clauses
-		CLAUSE *m_pC = NULL;
+		CLAUSE *m_pC;
 		int m_nC;
 
 	};
