@@ -33,7 +33,7 @@ namespace kai
 
 	struct CLAUSE
 	{
-		int m_pL[N_MAX_LITERAL];	// var index from 1, +/- sign = negation 
+		int m_pL[N_MAX_LITERAL];	// var index from 1, +/- sign = negation
 		int m_nL = 0;
 
 		void clear(void)
@@ -72,8 +72,6 @@ namespace kai
 		bool decodeCNF(const string& cnf);
 		bool verify(void);
 		void printSolution(void);
-
-	protected:
 
 	protected:
 		// variables

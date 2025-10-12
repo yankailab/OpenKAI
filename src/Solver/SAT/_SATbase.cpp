@@ -12,12 +12,17 @@ namespace kai
 
 	_SATbase::_SATbase()
 	{
-		m_pV = NULL;
-		m_pC = NULL;
+		m_pV = nullptr;
+		m_nV = 0;
+
+		m_pC = nullptr;
+		m_nC = 0;
 	}
 
 	_SATbase::~_SATbase()
 	{
+		DEL(m_pV);
+		DEL(m_pC);
 	}
 
 	int _SATbase::init(void *pKiss)
@@ -25,7 +30,6 @@ namespace kai
 		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		///		pK->v("", &);
 		string fName;
 		pK->v("fName", &fName);
 
@@ -51,25 +55,31 @@ namespace kai
 
 	bool _SATbase::decodeCNF(const string &cnf)
 	{
+		IF_F(cnf.empty());
+
 		// cnf file input
 		vector<string> vLines = splitBy(cnf, '\n');
 
+		int i;
+
 		// find header
-		for (int i = 0; i < vLines.size(); i++)
+		for (i = 0; i < vLines.size(); i++)
 		{
 			IF_CONT(vLines[i].empty());
+
+			// p cnf <variables> <clauses>
 			vector<string> vL = splitBy(vLines[i], ' ');
 			IF_CONT(vL[0] == "c");
 			IF_CONT(vL[0] != "p");
 
-			// p cnf <VARIABLE_HWs> <clauses>
 			IF_F(vL[1] != "cnf");
 
 			m_nV = atoi(vL[2].c_str());
 			m_nC = atoi(vL[3].c_str());
 			break;
 		}
-		IF_F((m_nV == 0) || (m_nC == 0));
+
+		IF_F((m_nV <= 0) || (m_nC <= 0));
 
 		// allocate
 		m_nV++;	// index 0 is not used
@@ -81,9 +91,10 @@ namespace kai
 
 		// decode clauses
 		int iC = 0;
-		for (int i = 0; i < vLines.size(); i++)
+		for (i++; i < vLines.size(); i++)
 		{
 			IF_CONT(vLines[i].empty());
+
 			vector<string> vL = splitBy(vLines[i], ' ');
 			IF_CONT(vL[0] == "c");
 			IF_CONT(vL[0] == "p");
