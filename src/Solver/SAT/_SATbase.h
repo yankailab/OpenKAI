@@ -69,11 +69,16 @@ namespace kai
 		virtual int check(void);
 		virtual void console(void *pConsole);
 
+		void clear(void);
+		bool readCNF(const string& fName, string* pCNF);
 		bool decodeCNF(const string& cnf);
 		bool verify(void);
 		void printSolution(void);
 
 	protected:
+		string m_fName;
+		string m_cnf; // problem input
+
 		// variables
 		VARIABLE *m_pV;	// variable index from 1, [0] is not used
 		int m_nV;	// actual number of variables + 1

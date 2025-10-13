@@ -12,17 +12,13 @@ namespace kai
 
 	_SATbase::_SATbase()
 	{
-		m_pV = nullptr;
-		m_nV = 0;
-
-		m_pC = nullptr;
-		m_nC = 0;
+		m_fName = "";
+		clear();
 	}
 
 	_SATbase::~_SATbase()
 	{
-		DEL(m_pV);
-		DEL(m_pC);
+		clear();
 	}
 
 	int _SATbase::init(void *pKiss)
@@ -30,12 +26,7 @@ namespace kai
 		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		string fName;
-		pK->v("fName", &fName);
-
-		string cnf;
-		IF_F(!readFile(fName, &cnf, "\n"));
-		IF_F(cnf.empty());
+		pK->v("fName", &m_fName);
 
 		return OK_OK;
 	}
@@ -51,6 +42,28 @@ namespace kai
 	int _SATbase::check(void)
 	{
 		return _ModuleBase::check();
+	}
+
+	void _SATbase::clear(void)
+	{
+		DEL(m_pV);
+		DEL(m_pC);
+
+		m_cnf = "";
+		m_pV = nullptr;
+		m_nV = 0;
+		m_pC = nullptr;
+		m_nC = 0;
+	}
+
+	bool _SATbase::readCNF(const string& fName, string* pCNF)
+	{
+		NULL_F(pCNF);
+
+		IF_F(!readFile(fName, pCNF, "\n"));
+		IF_F(pCNF->empty());
+
+		return true;
 	}
 
 	bool _SATbase::decodeCNF(const string &cnf)
@@ -89,7 +102,7 @@ namespace kai
 		m_pC = new CLAUSE[m_nC];
 		NULL_F(m_pC);
 
-		// decode clauses
+		// clauses
 		int iC = 0;
 		for (i++; i < vLines.size(); i++)
 		{
@@ -105,14 +118,10 @@ namespace kai
 			int iL = 0;
 			while (vL[iL] != "0")
 			{
-				pC->addLiteral(atoi(vL[iL++].c_str()));
-
-				// m_pC[iC].m_pL[iL] = atoi(vL[iL].c_str());
-				// iL++;
+				IF_F(!pC->addLiteral(atoi(vL[iL++].c_str())));
 			}
 			IF_CONT(iL <= 0);
 
-//			m_pC[iC].m_nL = iL;
 			iC++;
 
 			if (iC >= m_nC)
