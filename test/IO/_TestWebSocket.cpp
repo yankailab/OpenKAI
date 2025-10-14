@@ -57,7 +57,7 @@ namespace kai
             while (check() != OK_OK)
                 sleep(1);
 
-            _WebSocket *pWS = m_pWSserver->getWS(0);
+            _WebSocket *pWS = m_pWSserver->getClient(0);
             IF_CONT(!pWS);
 
             uint8_t pB[512];

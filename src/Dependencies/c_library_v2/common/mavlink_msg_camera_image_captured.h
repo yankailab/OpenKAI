@@ -13,8 +13,8 @@ typedef struct __mavlink_camera_image_captured_t {
  int32_t relative_alt; /*< [mm] Altitude above ground*/
  float q[4]; /*<  Quaternion of camera orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)*/
  int32_t image_index; /*<  Zero based index of this image (i.e. a new image will have index CAMERA_CAPTURE_STATUS.image count -1)*/
- uint8_t camera_id; /*<  Deprecated/unused. Component IDs are used to differentiate multiple cameras.*/
- int8_t capture_result; /*<  Boolean indicating success (1) or failure (0) while capturing this image.*/
+ uint8_t camera_id; /*<  Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id). Field name is usually camera_device_id.*/
+ int8_t capture_result; /*<  Image was captured successfully (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.*/
  char file_url[205]; /*<  URL of image taken. Either local storage or http://foo.jpg if camera provides an HTTP interface.*/
 } mavlink_camera_image_captured_t;
 
@@ -74,14 +74,14 @@ typedef struct __mavlink_camera_image_captured_t {
  *
  * @param time_boot_ms [ms] Timestamp (time since system boot).
  * @param time_utc [us] Timestamp (time since UNIX epoch) in UTC. 0 for unknown.
- * @param camera_id  Deprecated/unused. Component IDs are used to differentiate multiple cameras.
+ * @param camera_id  Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id). Field name is usually camera_device_id.
  * @param lat [degE7] Latitude where image was taken
  * @param lon [degE7] Longitude where capture was taken
  * @param alt [mm] Altitude (MSL) where image was taken
  * @param relative_alt [mm] Altitude above ground
  * @param q  Quaternion of camera orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
  * @param image_index  Zero based index of this image (i.e. a new image will have index CAMERA_CAPTURE_STATUS.image count -1)
- * @param capture_result  Boolean indicating success (1) or failure (0) while capturing this image.
+ * @param capture_result  Image was captured successfully (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.
  * @param file_url  URL of image taken. Either local storage or http://foo.jpg if camera provides an HTTP interface.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
@@ -113,8 +113,8 @@ static inline uint16_t mavlink_msg_camera_image_captured_pack(uint8_t system_id,
     packet.image_index = image_index;
     packet.camera_id = camera_id;
     packet.capture_result = capture_result;
-    mav_array_memcpy(packet.q, q, sizeof(float)*4);
-    mav_array_memcpy(packet.file_url, file_url, sizeof(char)*205);
+    mav_array_assign_float(packet.q, q, 4);
+    mav_array_assign_char(packet.file_url, file_url, 205);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED_LEN);
 #endif
 
@@ -131,14 +131,14 @@ static inline uint16_t mavlink_msg_camera_image_captured_pack(uint8_t system_id,
  *
  * @param time_boot_ms [ms] Timestamp (time since system boot).
  * @param time_utc [us] Timestamp (time since UNIX epoch) in UTC. 0 for unknown.
- * @param camera_id  Deprecated/unused. Component IDs are used to differentiate multiple cameras.
+ * @param camera_id  Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id). Field name is usually camera_device_id.
  * @param lat [degE7] Latitude where image was taken
  * @param lon [degE7] Longitude where capture was taken
  * @param alt [mm] Altitude (MSL) where image was taken
  * @param relative_alt [mm] Altitude above ground
  * @param q  Quaternion of camera orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
  * @param image_index  Zero based index of this image (i.e. a new image will have index CAMERA_CAPTURE_STATUS.image count -1)
- * @param capture_result  Boolean indicating success (1) or failure (0) while capturing this image.
+ * @param capture_result  Image was captured successfully (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.
  * @param file_url  URL of image taken. Either local storage or http://foo.jpg if camera provides an HTTP interface.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
@@ -191,14 +191,14 @@ static inline uint16_t mavlink_msg_camera_image_captured_pack_status(uint8_t sys
  * @param msg The MAVLink message to compress the data into
  * @param time_boot_ms [ms] Timestamp (time since system boot).
  * @param time_utc [us] Timestamp (time since UNIX epoch) in UTC. 0 for unknown.
- * @param camera_id  Deprecated/unused. Component IDs are used to differentiate multiple cameras.
+ * @param camera_id  Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id). Field name is usually camera_device_id.
  * @param lat [degE7] Latitude where image was taken
  * @param lon [degE7] Longitude where capture was taken
  * @param alt [mm] Altitude (MSL) where image was taken
  * @param relative_alt [mm] Altitude above ground
  * @param q  Quaternion of camera orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
  * @param image_index  Zero based index of this image (i.e. a new image will have index CAMERA_CAPTURE_STATUS.image count -1)
- * @param capture_result  Boolean indicating success (1) or failure (0) while capturing this image.
+ * @param capture_result  Image was captured successfully (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.
  * @param file_url  URL of image taken. Either local storage or http://foo.jpg if camera provides an HTTP interface.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
@@ -231,8 +231,8 @@ static inline uint16_t mavlink_msg_camera_image_captured_pack_chan(uint8_t syste
     packet.image_index = image_index;
     packet.camera_id = camera_id;
     packet.capture_result = capture_result;
-    mav_array_memcpy(packet.q, q, sizeof(float)*4);
-    mav_array_memcpy(packet.file_url, file_url, sizeof(char)*205);
+    mav_array_assign_float(packet.q, q, 4);
+    mav_array_assign_char(packet.file_url, file_url, 205);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED_LEN);
 #endif
 
@@ -287,14 +287,14 @@ static inline uint16_t mavlink_msg_camera_image_captured_encode_status(uint8_t s
  *
  * @param time_boot_ms [ms] Timestamp (time since system boot).
  * @param time_utc [us] Timestamp (time since UNIX epoch) in UTC. 0 for unknown.
- * @param camera_id  Deprecated/unused. Component IDs are used to differentiate multiple cameras.
+ * @param camera_id  Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id). Field name is usually camera_device_id.
  * @param lat [degE7] Latitude where image was taken
  * @param lon [degE7] Longitude where capture was taken
  * @param alt [mm] Altitude (MSL) where image was taken
  * @param relative_alt [mm] Altitude above ground
  * @param q  Quaternion of camera orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
  * @param image_index  Zero based index of this image (i.e. a new image will have index CAMERA_CAPTURE_STATUS.image count -1)
- * @param capture_result  Boolean indicating success (1) or failure (0) while capturing this image.
+ * @param capture_result  Image was captured successfully (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.
  * @param file_url  URL of image taken. Either local storage or http://foo.jpg if camera provides an HTTP interface.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
@@ -326,8 +326,8 @@ static inline void mavlink_msg_camera_image_captured_send(mavlink_channel_t chan
     packet.image_index = image_index;
     packet.camera_id = camera_id;
     packet.capture_result = capture_result;
-    mav_array_memcpy(packet.q, q, sizeof(float)*4);
-    mav_array_memcpy(packet.file_url, file_url, sizeof(char)*205);
+    mav_array_assign_float(packet.q, q, 4);
+    mav_array_assign_char(packet.file_url, file_url, 205);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED, (const char *)&packet, MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED_MIN_LEN, MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED_LEN, MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED_CRC);
 #endif
 }
@@ -348,7 +348,7 @@ static inline void mavlink_msg_camera_image_captured_send_struct(mavlink_channel
 
 #if MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This variant of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by reusing
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
@@ -381,8 +381,8 @@ static inline void mavlink_msg_camera_image_captured_send_buf(mavlink_message_t 
     packet->image_index = image_index;
     packet->camera_id = camera_id;
     packet->capture_result = capture_result;
-    mav_array_memcpy(packet->q, q, sizeof(float)*4);
-    mav_array_memcpy(packet->file_url, file_url, sizeof(char)*205);
+    mav_array_assign_float(packet->q, q, 4);
+    mav_array_assign_char(packet->file_url, file_url, 205);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED, (const char *)packet, MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED_MIN_LEN, MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED_LEN, MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED_CRC);
 #endif
 }
@@ -416,7 +416,7 @@ static inline uint64_t mavlink_msg_camera_image_captured_get_time_utc(const mavl
 /**
  * @brief Get field camera_id from camera_image_captured message
  *
- * @return  Deprecated/unused. Component IDs are used to differentiate multiple cameras.
+ * @return  Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id). Field name is usually camera_device_id.
  */
 static inline uint8_t mavlink_msg_camera_image_captured_get_camera_id(const mavlink_message_t* msg)
 {
@@ -486,7 +486,7 @@ static inline int32_t mavlink_msg_camera_image_captured_get_image_index(const ma
 /**
  * @brief Get field capture_result from camera_image_captured message
  *
- * @return  Boolean indicating success (1) or failure (0) while capturing this image.
+ * @return  Image was captured successfully (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid.
  */
 static inline int8_t mavlink_msg_camera_image_captured_get_capture_result(const mavlink_message_t* msg)
 {
