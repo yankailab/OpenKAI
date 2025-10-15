@@ -45,6 +45,11 @@ namespace kai
 			y = b;
 		}
 
+		inline float &operator[](int i)
+		{
+			return (&x)[i];
+		}
+
 		inline vFloat2 operator+(vFloat2 &r)
 		{
 			vFloat2 v;
@@ -83,6 +88,12 @@ namespace kai
 			y = r;
 		}
 
+		inline void operator=(Eigen::Vector2f r)
+		{
+			x = r[0];
+			y = r[1];
+		}
+
 		inline void operator+=(vFloat2 &r)
 		{
 			x += r.x;
@@ -107,6 +118,14 @@ namespace kai
 			y /= r;
 		}
 
+		inline bool operator!=(vFloat2 r)
+		{
+			IF__(x != r.x, true);
+			IF__(y != r.y, true);
+
+			return false;
+		}
+
 		inline bool operator==(vFloat2 r)
 		{
 			IF_F(x != r.x);
@@ -121,16 +140,6 @@ namespace kai
 		}
 
 		float len(void)
-		{
-			return abs(y - x);
-		}
-
-		float d(void)
-		{
-			return y - x;
-		}
-
-		float r(void)
 		{
 			return sqrt((x * x) + (y * y));
 		}

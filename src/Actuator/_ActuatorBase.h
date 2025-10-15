@@ -75,7 +75,7 @@ namespace kai
 
 		void setTargetNormalized(float v)
 		{
-			m_vTarget = m_vRange.x + constrain<float>(v, 0, 1) * m_vRange.d();
+			m_vTarget = m_vRange.x + constrain<float>(v, 0, 1) * (m_vRange.y - m_vRange.x);
 		}
 
 		void setTargetCurrent(void)

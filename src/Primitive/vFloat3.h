@@ -154,32 +154,14 @@ namespace kai
 			return true;
 		}
 
+		Eigen::Vector3f v3f(void)
+		{
+			return Eigen::Vector3f(x, y, z);
+		}
+
 		float len(void)
 		{
 			return sqrt(x * x + y * y + z * z);
-		}
-
-		void constrain(float a, float b)
-		{
-			x = (x < a) ? a : x;
-			x = (x > b) ? b : x;
-			y = (y < a) ? a : y;
-			y = (y > b) ? b : y;
-			z = (z < a) ? a : z;
-			z = (z > b) ? b : z;
-		}
-
-		float *v(int i)
-		{
-			IF__(i >= 3, 0);
-			IF__(i < 0, 0);
-
-			float *pv[3];
-			pv[0] = &x;
-			pv[1] = &y;
-			pv[2] = &z;
-
-			return pv[i];
 		}
 
 		bool bEqual(vFloat3 &v, float d)
@@ -190,6 +172,29 @@ namespace kai
 
 			return true;
 		}
+
+		// void constrain(float a, float b)
+		// {
+		// 	x = (x < a) ? a : x;
+		// 	x = (x > b) ? b : x;
+		// 	y = (y < a) ? a : y;
+		// 	y = (y > b) ? b : y;
+		// 	z = (z < a) ? a : z;
+		// 	z = (z > b) ? b : z;
+		// }
+
+		// float *v(int i)
+		// {
+		// 	IF__(i >= 3, 0);
+		// 	IF__(i < 0, 0);
+
+		// 	float *pv[3];
+		// 	pv[0] = &x;
+		// 	pv[1] = &y;
+		// 	pv[2] = &z;
+
+		// 	return pv[i];
+		// }
 	};
 
 }

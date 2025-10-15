@@ -62,6 +62,11 @@ namespace kai
 			w = d;
 		}
 
+		inline float &operator[](int i)
+		{
+			return (&x)[i];
+		}
+
 		inline vFloat4 operator+(vFloat4 &r)
 		{
 			vFloat4 v;
@@ -118,6 +123,14 @@ namespace kai
 			w = pR[3];
 		}
 
+		inline void operator=(Eigen::Vector4f r)
+		{
+			x = r[0];
+			y = r[1];
+			z = r[2];
+			w = r[3];
+		}
+
 		inline void operator+=(vFloat4 &r)
 		{
 			x += r.x;
@@ -148,6 +161,26 @@ namespace kai
 			y /= r;
 			z /= r;
 			w /= r;
+		}
+
+		inline bool operator!=(vFloat4 r)
+		{
+			IF__(x != r.x, true);
+			IF__(y != r.y, true);
+			IF__(z != r.z, true);
+			IF__(w != r.w, true);
+
+			return false;
+		}
+
+		inline bool operator==(vFloat4 r)
+		{
+			IF_F(x != r.x);
+			IF_F(y != r.y);
+			IF_F(z != r.z);
+			IF_F(w != r.w);
+
+			return true;
 		}
 
 		float midX(void)
