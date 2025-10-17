@@ -95,7 +95,7 @@ namespace kai
 		IF_F((m_nV <= 0) || (m_nC <= 0));
 
 		// allocate
-		m_nV++;	// index 0 is not used
+		m_nV += 1;	// index 0 is not used
 		m_pV = new VARIABLE[m_nV];
 		NULL_F(m_pV);
 

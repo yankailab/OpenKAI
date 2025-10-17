@@ -18,7 +18,7 @@ namespace kai
 {
 	struct VARIABLE
 	{
-		int m_v = -1;	//-1: undefined, 0: false, 1: true
+		int m_v = -1;	//0: undefined, +/-1: true/false
 
 		void assign(int v)
 		{

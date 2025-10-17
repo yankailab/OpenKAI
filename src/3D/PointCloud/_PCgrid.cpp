@@ -5,15 +5,12 @@ namespace kai
 
 	_PCgrid::_PCgrid()
 	{
-		m_fGridConfig = "";
-
-		m_tExpire = 0;
-
 		m_type = pc_grid;
 		m_nCell = 0;
-		m_nMedWidth = 3;
 		m_vDim.clear();
 		m_vPmin.clear();
+
+		m_fGridConfig = "";
 
 		m_vPorigin.clear();
 		m_vCellRangeX.clear();
@@ -22,11 +19,14 @@ namespace kai
 		m_vCellSize.clear();
 
 		m_bVisual = false;
-		m_gridLine.Clear();
 		m_vAxisColX.set(1, 0, 0);
 		m_vAxisColY.set(0, 1, 0);
 		m_vAxisColZ.set(0, 0, 1);
 
+		m_nMedWidth = 3;
+		m_tExpire = 0;
+
+		m_gridLine.Clear();
 		m_pCellActive = &m_pActiveCells[0];
 	}
 
@@ -115,38 +115,11 @@ namespace kai
 		initGeometry();
 
 		return true;
-
-		// pKc->v("kNpAlarm", &m_kNpAlarm);
-		// pKc->v("nNpAlarm", &m_nNpAlarm);
-
-		// // alert cells
-		// vector<vInt4> vCellAlert; // x, y, z, nP_alarm
-		// pKc->a("vCellAlert", &vCellAlert);
-
-		// DEL(pKc);
-
-		// m_pCellAlert->clearCells();
-		// for (int i = 0; i < vCellAlert.size(); i++)
-		// {
-		// 	vInt4 vCa = vCellAlert[i];
-		// 	vInt3 vC(vCa.x, vCa.y, vCa.z);
-		// 	PC_GRID_CELL *pC = getCell(vC);
-		// 	IF_CONT(!pC);
-
-		// 	m_pCellAlert->addCell(vC);
-		// 	pC->m_nPactivate = vCa.w;
-		// }
-
-		// updateActiveCellLS(m_pCellAlert);
-
-		// return true;
 	}
 
 	bool _PCgrid::saveConfig(const string &fName, picojson::object* pO)
 	{
 		NULL_F(pO);
-
-//		picojson::object o;
 
 		pO->insert(make_pair("name", "gridConfig"));
 
@@ -201,31 +174,7 @@ namespace kai
 		pO->insert(make_pair("nMedWidth", value((double)m_nMedWidth)));
 		pO->insert(make_pair("tExpire", value((double)m_tExpire)));
 
-		// o.insert(make_pair("kNpAlarm", m_kNpAlarm));
-		// o.insert(make_pair("nNpAlarm", m_nNpAlarm));
-
-		// // alert cells
-		// picojson::array vAcells;
-		// for (vInt3 vC : m_pCellAlert->m_vCellIdx)
-		// {
-		// 	PC_GRID_CELL *pC = getCell(vC);
-		// 	IF_CONT(!pC);
-
-		// 	pC->m_nPactivate = pC->nP();
-
-		// 	vA.clear();
-		// 	vA.push_back(value((double)vC.x));
-		// 	vA.push_back(value((double)vC.y));
-		// 	vA.push_back(value((double)vC.z));
-		// 	vA.push_back(value((double)pC->m_nPactivate));
-
-		// 	vAcells.push_back(value(vA));
-		// }
-
-		// o.insert(make_pair("vCellAlert", vAcells));
-
 		string f = picojson::value(*pO).serialize();
-
 		writeFile(fName, f);
 
 		return true;
