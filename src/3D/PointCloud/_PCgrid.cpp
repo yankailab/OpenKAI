@@ -5,6 +5,8 @@ namespace kai
 
 	_PCgrid::_PCgrid()
 	{
+		m_fGridConfig = "";
+
 		m_tExpire = 0;
 
 		m_type = pc_grid;
@@ -37,7 +39,7 @@ namespace kai
 		CHECK_(this->_GeometryBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("nMedWidth", &m_nMedWidth);
+		pK->v("fGridConfig", &m_fGridConfig);
 
 		pK->v("vPorigin", &m_vPorigin);
 		pK->v("vCellRangeX", &m_vCellRangeX);
@@ -50,6 +52,7 @@ namespace kai
 		pK->v("vAxisColY", &m_vAxisColY);
 		pK->v("vAxisColZ", &m_vAxisColZ);
 
+		pK->v("nMedWidth", &m_nMedWidth);
 		pK->v("tExpire", &m_tExpire);
 
 		return initGeometry();
@@ -71,6 +74,161 @@ namespace kai
 		}
 
 		return OK_OK;
+	}
+
+	string _PCgrid::getConfigFileName(void)
+	{
+		return m_fGridConfig;
+	}
+
+	bool _PCgrid::loadConfig(const string &fName, Kiss* pK)
+	{
+		NULL_F(pK);
+
+		string s;
+		IF_F(!readFile(fName, &s));
+
+		if (!pK->parse(s))
+		{
+			LOG_I("Config load failed: " + fName);
+			return false;
+		}
+
+		Kiss *pKc = pK->root()->child("gridConfig");
+		IF_F(pKc->empty());
+
+		// grid config
+		pKc->v("vPorigin", &m_vPorigin);
+		pKc->v("vCellRangeX", &m_vCellRangeX);
+		pKc->v("vCellRangeY", &m_vCellRangeY);
+		pKc->v("vCellRangeZ", &m_vCellRangeZ);
+		pKc->v("vCellSize", &m_vCellSize);
+
+		pKc->v("bVisual", &m_bVisual);
+		pKc->v("vAxisColX", &m_vAxisColX);
+		pKc->v("vAxisColY", &m_vAxisColY);
+		pKc->v("vAxisColZ", &m_vAxisColZ);
+
+		pKc->v("nMedWidth", &m_nMedWidth);
+		pKc->v("tExpire", &m_tExpire);
+
+		initGeometry();
+
+		return true;
+
+		// pKc->v("kNpAlarm", &m_kNpAlarm);
+		// pKc->v("nNpAlarm", &m_nNpAlarm);
+
+		// // alert cells
+		// vector<vInt4> vCellAlert; // x, y, z, nP_alarm
+		// pKc->a("vCellAlert", &vCellAlert);
+
+		// DEL(pKc);
+
+		// m_pCellAlert->clearCells();
+		// for (int i = 0; i < vCellAlert.size(); i++)
+		// {
+		// 	vInt4 vCa = vCellAlert[i];
+		// 	vInt3 vC(vCa.x, vCa.y, vCa.z);
+		// 	PC_GRID_CELL *pC = getCell(vC);
+		// 	IF_CONT(!pC);
+
+		// 	m_pCellAlert->addCell(vC);
+		// 	pC->m_nPactivate = vCa.w;
+		// }
+
+		// updateActiveCellLS(m_pCellAlert);
+
+		// return true;
+	}
+
+	bool _PCgrid::saveConfig(const string &fName, picojson::object* pO)
+	{
+		NULL_F(pO);
+
+//		picojson::object o;
+
+		pO->insert(make_pair("name", "gridConfig"));
+
+		// grid config
+		picojson::array vA;
+		vA.push_back(value((double)m_vPorigin.x));
+		vA.push_back(value((double)m_vPorigin.y));
+		vA.push_back(value((double)m_vPorigin.z));
+		pO->insert(make_pair("vPorigin", vA));
+
+		vA.clear();
+		vA.push_back(value((double)m_vCellRangeX.x));
+		vA.push_back(value((double)m_vCellRangeX.y));
+		pO->insert(make_pair("vCellRangeX", vA));
+
+		vA.clear();
+		vA.push_back(value((double)m_vCellRangeY.x));
+		vA.push_back(value((double)m_vCellRangeY.y));
+		pO->insert(make_pair("vCellRangeY", vA));
+
+		vA.clear();
+		vA.push_back(value((double)m_vCellRangeZ.x));
+		vA.push_back(value((double)m_vCellRangeZ.y));
+		pO->insert(make_pair("vCellRangeZ", vA));
+
+		vA.clear();
+		vA.push_back(value((double)m_vCellSize.x));
+		vA.push_back(value((double)m_vCellSize.y));
+		vA.push_back(value((double)m_vCellSize.z));
+		pO->insert(make_pair("vCellSize", vA));
+
+		pO->insert(make_pair("bVisual", value((double)m_bVisual)));
+
+		vA.clear();
+		vA.push_back(value((double)m_vAxisColX.x));
+		vA.push_back(value((double)m_vAxisColX.y));
+		vA.push_back(value((double)m_vAxisColX.z));
+		pO->insert(make_pair("vAxisColX", vA));
+
+		vA.clear();
+		vA.push_back(value((double)m_vAxisColY.x));
+		vA.push_back(value((double)m_vAxisColY.y));
+		vA.push_back(value((double)m_vAxisColY.z));
+		pO->insert(make_pair("vAxisColY", vA));
+
+		vA.clear();
+		vA.push_back(value((double)m_vAxisColZ.x));
+		vA.push_back(value((double)m_vAxisColZ.y));
+		vA.push_back(value((double)m_vAxisColZ.z));
+		pO->insert(make_pair("vAxisColZ", vA));
+
+		pO->insert(make_pair("nMedWidth", value((double)m_nMedWidth)));
+		pO->insert(make_pair("tExpire", value((double)m_tExpire)));
+
+		// o.insert(make_pair("kNpAlarm", m_kNpAlarm));
+		// o.insert(make_pair("nNpAlarm", m_nNpAlarm));
+
+		// // alert cells
+		// picojson::array vAcells;
+		// for (vInt3 vC : m_pCellAlert->m_vCellIdx)
+		// {
+		// 	PC_GRID_CELL *pC = getCell(vC);
+		// 	IF_CONT(!pC);
+
+		// 	pC->m_nPactivate = pC->nP();
+
+		// 	vA.clear();
+		// 	vA.push_back(value((double)vC.x));
+		// 	vA.push_back(value((double)vC.y));
+		// 	vA.push_back(value((double)vC.z));
+		// 	vA.push_back(value((double)pC->m_nPactivate));
+
+		// 	vAcells.push_back(value(vA));
+		// }
+
+		// o.insert(make_pair("vCellAlert", vAcells));
+
+		string f = picojson::value(*pO).serialize();
+
+		writeFile(fName, f);
+
+		return true;
 	}
 
 	int _PCgrid::initGeometry(void)

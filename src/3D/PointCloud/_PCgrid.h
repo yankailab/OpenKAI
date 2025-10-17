@@ -255,6 +255,11 @@ namespace kai
 		virtual int start(void);
 		virtual int check(void);
 
+		// config
+		virtual string getConfigFileName(void);
+		virtual bool loadConfig(const string& fName, Kiss* pK);
+		virtual bool saveConfig(const string& fName, picojson::object* pO);
+
 		// grid
 		virtual int initGeometry(void);
 
@@ -322,7 +327,9 @@ namespace kai
 		uint64_t m_tExpire;
 
 		// Grid config
-		//  grid generating params
+		string m_fGridConfig;
+
+		// grid generating params
 		vFloat3 m_vPorigin;
 
 		// cell number around the origin for each direction of each axis
