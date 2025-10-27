@@ -45,20 +45,29 @@ sudo apt-get install cmake
 ```
 ## (Optional) Build from source for the latest
 ```bash
-wget https://github.com/Kitware/CMake/releases/download/v3.31.2/cmake-3.31.2.tar.gz
-tar xvf cmake-3.31.2.tar.gz
-cd cmake-3.31.2
+wget https://github.com/Kitware/CMake/releases/download/v3.31.9/cmake-3.31.9.tar.gz
+tar xvf cmake-3.31.9.tar.gz
+cd cmake-3.31.9
+#wget https://github.com/Kitware/CMake/releases/download/v4.1.2/cmake-4.1.2.tar.gz
+#tar xvf cmake-4.1.2.tar.gz
+#cd cmake-4.1.2
+
 ./bootstrap
 make -j$(nproc)
 sudo make install
 bash
 ```
 
+
 # Eigen
 ```bash
-wget https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
-tar xvf eigen-3.4.0.tar.gz
-cd eigen-3.4.0
+wget https://gitlab.com/libeigen/eigen/-/archive/3.4.1/eigen-3.4.1.tar.gz
+tar xvf eigen-3.4.1.tar.gz
+cd eigen-3.4.1
+#wget https://gitlab.com/libeigen/eigen/-/archive/5.0.0/eigen-5.0.0.tar.gz
+#tar xvf eigen-5.0.0.tar.gz
+#cd eigen-5.0.0
+
 mkdir build && cd build
 cmake ../
 sudo make install
@@ -67,7 +76,7 @@ sudo make install
 
 # (Optional) RealSense
 ```bash
-libusb-1.0-0-dev libusb-dev libudev-dev
+sudo apt-get install libusb-1.0-0-dev libusb-dev libudev-dev
 ```
 
 
@@ -75,8 +84,8 @@ libusb-1.0-0-dev libusb-dev libudev-dev
 General CMake configs for x86-64 machines
 ```bash
 sudo apt-get -y install libprotobuf-dev protobuf-compiler
-git clone --branch 4.10.0 --depth 1 https://github.com/opencv/opencv.git
-git clone --branch 4.10.0 --depth 1 https://github.com/opencv/opencv_contrib.git
+git clone --branch 4.12.0 --depth 1 https://github.com/opencv/opencv.git
+git clone --branch 4.12.0 --depth 1 https://github.com/opencv/opencv_contrib.git
 cd opencv
 mkdir build && cd build
 cmake -DBUILD_CUDA_STUBS=OFF \
@@ -398,7 +407,7 @@ sudo ldconfig
 git clone --depth 1 https://github.com/chili-epfl/chilitags.git
 cd chilitags
 mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release ../
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ../
 make -j$(nproc)
 sudo make install
 ```
@@ -585,4 +594,5 @@ cd OpenKAI
 mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_AS_LIB=ON -DWITH_DEFAULT_MODULES=ON ../
 make all -j$(nproc)
+sudo make install
 ```
