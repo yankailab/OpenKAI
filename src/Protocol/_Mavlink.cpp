@@ -50,6 +50,7 @@ namespace kai
 		m_vpMsg.push_back(&m_rawIMU);
 		m_vpMsg.push_back(&m_rcChannels);
 		m_vpMsg.push_back(&m_rcChannelsOverride);
+		m_vpMsg.push_back(&m_servoOutputRaw);
 		m_vpMsg.push_back(&m_statusText);
 		m_vpMsg.push_back(&m_sysStatus);
 		m_vpMsg.push_back(&m_scaledIMU);
@@ -163,12 +164,8 @@ namespace kai
 
 		while (m_pT->bAlive())
 		{
-//			m_pT->autoFPS();
-
 			int r = readMessage(&msg);
 			IF_CONT(r != OK_OK);
-
-//			m_pT->skipSleep();
 
 			if (m_devSystemID < 0)
 				m_devSystemID = msg.sysid;
