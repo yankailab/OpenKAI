@@ -29,7 +29,7 @@
 		"name":"threadUI",
 		"FPS":30,
 	}
-	"vWinSize":[1920,1080],
+	"vWinSize":[1280,720],
 	"pathRes":"/usr/local/bin/Open3D/resources",
 	"device":"CPU:0",
 	"vCamLookAt":[0,0,0],
