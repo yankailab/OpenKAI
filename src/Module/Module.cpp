@@ -32,7 +32,7 @@ namespace kai
 		ADD_MODULE(_MeshStream);
 		ADD_MODULE(_PCstream);
 		ADD_MODULE(_PCframe);
-		ADD_MODULE(_PCgrid);
+		ADD_MODULE(_PCgridBase);
 		ADD_MODULE(_PCfile);
 		ADD_MODULE(_RGBD2PCframe);
 		ADD_MODULE(_PCmerge);

@@ -1,9 +1,9 @@
-#include "_PCgrid.h"
+#include "_PCgridBase.h"
 
 namespace kai
 {
 
-	_PCgrid::_PCgrid()
+	_PCgridBase::_PCgridBase()
 	{
 		m_type = pc_grid;
 		m_nCell = 0;
@@ -30,16 +30,14 @@ namespace kai
 		m_pCellActive = &m_pActiveCells[0];
 	}
 
-	_PCgrid::~_PCgrid()
+	_PCgridBase::~_PCgridBase()
 	{
 	}
 
-	int _PCgrid::init(void *pKiss)
+	int _PCgridBase::init(void *pKiss)
 	{
 		CHECK_(this->_GeometryBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-
-		pK->v("fGridConfig", &m_fGridConfig);
 
 		pK->v("vPorigin", &m_vPorigin);
 		pK->v("vCellRangeX", &m_vCellRangeX);
@@ -55,10 +53,12 @@ namespace kai
 		pK->v("nMedWidth", &m_nMedWidth);
 		pK->v("tExpire", &m_tExpire);
 
-		return initGeometry();
+		pK->v("fGridConfig", &m_fGridConfig);
+
+		return OK_OK;
 	}
 
-	int _PCgrid::link(void)
+	int _PCgridBase::link(void)
 	{
 		CHECK_(this->_GeometryBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
@@ -76,12 +76,12 @@ namespace kai
 		return OK_OK;
 	}
 
-	string _PCgrid::getConfigFileName(void)
+	string _PCgridBase::getConfigFileName(void)
 	{
 		return m_fGridConfig;
 	}
 
-	bool _PCgrid::loadConfig(const string &fName, Kiss* pK)
+	bool _PCgridBase::loadConfig(const string &fName, Kiss* pK)
 	{
 		NULL_F(pK);
 
@@ -112,12 +112,10 @@ namespace kai
 		pKc->v("nMedWidth", &m_nMedWidth);
 		pKc->v("tExpire", &m_tExpire);
 
-		initGeometry();
-
 		return true;
 	}
 
-	bool _PCgrid::saveConfig(const string &fName, picojson::object* pO)
+	bool _PCgridBase::saveConfig(const string &fName, picojson::object* pO)
 	{
 		NULL_F(pO);
 
@@ -180,7 +178,7 @@ namespace kai
 		return true;
 	}
 
-	int _PCgrid::initGeometry(void)
+	int _PCgridBase::initGeometry(void)
 	{
 		float cVol = m_vCellSize.x * m_vCellSize.y * m_vCellSize.z;
 		IF__(cVol <= 0, OK_ERR_INVALID_VALUE);
@@ -239,18 +237,18 @@ namespace kai
 		return OK_OK;
 	}
 
-	int _PCgrid::start(void)
+	int _PCgridBase::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _PCgrid::check(void)
+	int _PCgridBase::check(void)
 	{
 		return this->_GeometryBase::check();
 	}
 
-	void _PCgrid::update(void)
+	void _PCgridBase::update(void)
 	{
 		while (m_pT->bAlive())
 		{
@@ -264,7 +262,7 @@ namespace kai
 		}
 	}
 
-	void _PCgrid::updatePCgrid(void)
+	void _PCgridBase::updatePCgrid(void)
 	{
 		IF_(check() != OK_OK);
 
@@ -280,10 +278,8 @@ namespace kai
 
 	}
 
-	void _PCgrid::updateActiveCell(void)
+	void _PCgridBase::updateActiveCell(void)
 	{
-		//		mutexLock();
-
 		m_pCellActive->clearCells();
 
 		vInt3 vC;
@@ -304,24 +300,20 @@ namespace kai
 				}
 			}
 		}
-
-		//		mutexUnlock();
 	}
 
-	void _PCgrid::updateActiveCellLS(PC_GRID_ACTIVE_CELL *pAcell, bool bBBox)
+	void _PCgridBase::updateActiveCellLS(PC_GRID_ACTIVE_CELL *pAcell, bool bBBox)
 	{
 		NULL_(pAcell);
 
-		//		mutexLock();
 		pAcell->clearLS();
 		pAcell->generateLS(m_vRx, m_vRy, m_vRz, m_vCellSize);
 
 		if(bBBox)
 			pAcell->generateBBoxLS(m_vRx, m_vRy, m_vRz);
-		//		mutexUnlock();
 	}
 
-	void _PCgrid::getActiveCellLines(LineSet *pLS, int cIdx)
+	void _PCgridBase::getActiveCellLines(LineSet *pLS, int cIdx)
 	{
 		NULL_(pLS);
 		IF_(cIdx >= PCGRID_ACTIVECELL_N);
@@ -332,7 +324,7 @@ namespace kai
 		mutexUnlock();
 	}
 
-	void _PCgrid::addPCstream(void *p, const uint64_t &tExpire)
+	void _PCgridBase::addPCstream(void *p, const uint64_t &tExpire)
 	{
 		IF_(check() != OK_OK);
 		NULL_(p);
@@ -356,7 +348,7 @@ namespace kai
 		}
 	}
 
-	void _PCgrid::addPCframe(void *p)
+	void _PCgridBase::addPCframe(void *p)
 	{
 		IF_(check() != OK_OK);
 		NULL_(p);
@@ -373,57 +365,57 @@ namespace kai
 		}
 	}
 
-	void _PCgrid::setPorigin(const vFloat3 &vPo)
+	void _PCgridBase::setPorigin(const vFloat3 &vPo)
 	{
 		m_vPorigin = vPo;
 	}
 
-	void _PCgrid::setCellSize(const vFloat3 &vCsize)
+	void _PCgridBase::setCellSize(const vFloat3 &vCsize)
 	{
 		m_vCellSize = vCsize;
 	}
 
-	void _PCgrid::setCellRangeX(const vInt2 &vX)
+	void _PCgridBase::setCellRangeX(const vInt2 &vX)
 	{
 		m_vCellRangeX = vX;
 	}
 
-	void _PCgrid::setCellRangeY(const vInt2 &vY)
+	void _PCgridBase::setCellRangeY(const vInt2 &vY)
 	{
 		m_vCellRangeY = vY;
 	}
 
-	void _PCgrid::setCellRangeZ(const vInt2 &vZ)
+	void _PCgridBase::setCellRangeZ(const vInt2 &vZ)
 	{
 		m_vCellRangeZ = vZ;
 	}
 
-	vFloat3 _PCgrid::getPorigin(void)
+	vFloat3 _PCgridBase::getPorigin(void)
 	{
 		return m_vPorigin;
 	}
 
-	vFloat3 _PCgrid::getCellSize(void)
+	vFloat3 _PCgridBase::getCellSize(void)
 	{
 		return m_vCellSize;
 	}
 
-	vInt2 _PCgrid::getCellRangeX(void)
+	vInt2 _PCgridBase::getCellRangeX(void)
 	{
 		return m_vCellRangeX;
 	}
 
-	vInt2 _PCgrid::getCellRangeY(void)
+	vInt2 _PCgridBase::getCellRangeY(void)
 	{
 		return m_vCellRangeY;
 	}
 
-	vInt2 _PCgrid::getCellRangeZ(void)
+	vInt2 _PCgridBase::getCellRangeZ(void)
 	{
 		return m_vCellRangeZ;
 	}
 
-	void _PCgrid::clearAllCells(void)
+	void _PCgridBase::clearAllCells(void)
 	{
 		//		mutexLock();
 
@@ -433,7 +425,7 @@ namespace kai
 		//		mutexUnlock();
 	}
 
-	PC_GRID_CELL *_PCgrid::getCell(const vFloat3 &vP)
+	PC_GRID_CELL *_PCgridBase::getCell(const vFloat3 &vP)
 	{
 		IF__(isnan(vP.x), nullptr);
 		IF__(isnan(vP.y), nullptr);
@@ -451,7 +443,7 @@ namespace kai
 		return getCell(vPi);
 	}
 
-	PC_GRID_CELL *_PCgrid::getCell(const vInt3 &vC)
+	PC_GRID_CELL *_PCgridBase::getCell(const vInt3 &vC)
 	{
 		IF__(vC.x < 0, nullptr);
 		IF__(vC.x >= m_vDim.x, nullptr);
@@ -464,17 +456,17 @@ namespace kai
 		return &m_pCell[i];
 	}
 
-	int _PCgrid::getCell1Didx(const vInt3 &vC)
+	int _PCgridBase::getCell1Didx(const vInt3 &vC)
 	{
 		return vC.x * m_dYZ + vC.y * m_vDim.z + vC.z;
 	}
 
-	LineSet *_PCgrid::getGridLines(void)
+	LineSet *_PCgridBase::getGridLines(void)
 	{
 		return &m_gridLine;
 	}
 
-	void _PCgrid::generateGridLines(void)
+	void _PCgridBase::generateGridLines(void)
 	{
 		m_gridLine.Clear();
 
@@ -509,7 +501,7 @@ namespace kai
 						vFloat3(0, 0, 1));
 	}
 
-	void _PCgrid::addGridAxisLine(int nDa,
+	void _PCgridBase::addGridAxisLine(int nDa,
 								  const vFloat2 &vRa,
 								  float csA,
 								  int nDb,

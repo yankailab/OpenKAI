@@ -70,7 +70,7 @@
 
 {
 	"name":"pcGrid",
-	"class":"_PCgrid",
+	"class":"_PCgridBase",
 	"bON":1,
     {
 		"name":"thread",

@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_3D_PointCloud__PCgrid_H_
-#define OpenKAI_src_3D_PointCloud__PCgrid_H_
+#ifndef OpenKAI_src_3D_PointCloud__PCgridBase_H_
+#define OpenKAI_src_3D_PointCloud__PCgridBase_H_
 
 #include "../_GeometryBase.h"
 #include "../../Filter/Median.h"
@@ -244,11 +244,11 @@ namespace kai
 #define PCGRID_ACTIVECELL_N 4
 #define PC_GRID_N_CELL 1000000
 
-	class _PCgrid : public _GeometryBase
+	class _PCgridBase : public _GeometryBase
 	{
 	public:
-		_PCgrid();
-		virtual ~_PCgrid();
+		_PCgridBase();
+		virtual ~_PCgridBase();
 
 		virtual int init(void *pKiss);
 		virtual int link(void);
@@ -313,7 +313,7 @@ namespace kai
 		void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_PCgrid *)This)->update();
+			((_PCgridBase *)This)->update();
 			return NULL;
 		}
 

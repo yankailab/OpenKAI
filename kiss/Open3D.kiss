@@ -40,13 +40,14 @@
 	"vCamAutoUp":[0,1,0],
 	"vCoR":[0,0,0],
 
-	"camFov":80,
+	"camProjType":0, /*Perspective*/
 	"vCamNF":[0, 500],
+	/*Perspective*/
+	"camFov":80,
 	"camFovType":1,
-
+	/*Ortho*/
 	"vCamLR":[-100, 100],
 	"vCamBT":[-100, 100],
-	"vCamNF":[0, 500],
 
 	"bFullScreen":0,
 	"wPanel":20,
@@ -232,7 +233,7 @@
 
 {
 	"name":"pcGrid",
-	"class":"_PCgrid",
+	"class":"_PCgridBase",
 	"bON":0,
     {
 		"name":"thread",

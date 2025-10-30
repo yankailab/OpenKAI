@@ -10,7 +10,7 @@
 
 #include "PointCloud/_PCstream.h"
 #include "PointCloud/_PCframe.h"
-#include "PointCloud/_PCgrid.h"
+#include "PointCloud/_PCgridBase.h"
 #include "../UI/O3DUI.h"
 
 namespace kai
@@ -105,7 +105,7 @@ namespace kai
 			}
 			else if (gt == pc_grid)
 			{
-				_PCgrid *p = (_PCgrid *)m_pGB;
+				_PCgridBase *p = (_PCgridBase *)m_pGB;
 
 				if (m_bStatic)
 				{

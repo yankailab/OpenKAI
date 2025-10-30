@@ -19,14 +19,14 @@
 
 {
 	"name":"pcGrid",
-	"class":"_PCgrid",
+	"class":"_PCgridBase",
 	"bON":1,
     {
 		"name":"thread",
 		"FPS":10,
 	}
 
-	/* _PCgrid */
+	/* _PCgridBase */
 	"nMedWidth":3,
 	"vPorigin":[0,0,0],
 	"vCellRangeX":[-10,10],

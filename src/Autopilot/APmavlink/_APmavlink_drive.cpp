@@ -137,12 +137,20 @@ namespace kai
 
 		if (m_bRcChanOverride)
 		{
-			*m_pRcYaw = constrain(m_steer * m_pwmD + m_pwmM,
-								  m_pwmM - m_pwmD,
-								  m_pwmM + m_pwmD);
-			*m_pRcThrottle = constrain(m_speed * m_pwmD + m_pwmM,
-									   m_pwmM - m_pwmD,
-									   m_pwmM + m_pwmD);
+			if (m_pRcYaw)
+			{
+				*m_pRcYaw = constrain(m_steer * m_pwmD + m_pwmM,
+									  m_pwmM - m_pwmD,
+									  m_pwmM + m_pwmD);
+			}
+
+			if (m_pRcThrottle)
+			{
+				*m_pRcThrottle = constrain(m_speed * m_pwmD + m_pwmM,
+										   m_pwmM - m_pwmD,
+										   m_pwmM + m_pwmD);
+			}
+
 			m_pAP->getMavlink()->rcChannelsOverride(m_rcOverride);
 		}
 

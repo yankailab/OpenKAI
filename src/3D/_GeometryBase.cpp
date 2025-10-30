@@ -78,6 +78,118 @@ namespace kai
         return OK_OK;
     }
 
+    bool _GeometryBase::loadConfig(void)
+    {
+		string s;
+		if(!readFile(m_fConfig, &s))
+		{
+            LOG_I("Cannot open: " + m_fConfig);
+            return false;
+		}
+
+        Kiss *pK = new Kiss();
+        if (!pK->parse(s))
+        {
+            LOG_I("Config parse failed: " + m_fConfig);
+            DEL(pK);
+            return false;
+        }
+
+        Kiss *pKc = pK->root()->child("_GeometryBase");
+        if (pKc->empty())
+        {
+            DEL(pK);
+            return false;
+        }
+
+        // vDouble3 vT, vR;
+        // vT.clear();
+        // vR.clear();
+
+        // pKc->v("vT", &vT);
+        // pKc->v("vR", &vR);
+
+        // setTranslation(vT);
+        // setRotation(vR);
+        // updateTranslationMatrix(false);
+
+		vector<double> vT;
+		pKc->a("mT", &vT);
+
+        Matrix4d mT;
+        mT(0,0) = vT[0];
+        mT(0,1) = vT[1];
+        mT(0,2) = vT[2];
+        mT(0,3) = vT[3];
+
+        mT(1,0) = vT[4];
+        mT(1,1) = vT[5];
+        mT(1,2) = vT[6];
+        mT(1,3) = vT[7];
+
+        mT(2,0) = vT[8];
+        mT(2,1) = vT[9];
+        mT(2,2) = vT[10];
+        mT(2,3) = vT[11];
+
+        mT(3,0) = vT[12];
+        mT(3,1) = vT[13];
+        mT(3,2) = vT[14];
+        mT(3,3) = vT[15];
+
+        setTranslationMatrix(mT);
+
+        DEL(pK);
+        return true;
+    }
+
+    bool _GeometryBase::saveConfig(void)
+    {
+        picojson::object o;
+        o.insert(make_pair("name", "_GeometryBase"));
+
+        // picojson::array vT;
+        // vT.push_back(value((double)m_vT.x));
+        // vT.push_back(value((double)m_vT.y));
+        // vT.push_back(value((double)m_vT.z));
+        // o.insert(make_pair("vT", vT));
+
+        // picojson::array vR;
+        // vR.push_back(value((double)m_vR.x));
+        // vR.push_back(value((double)m_vR.y));
+        // vR.push_back(value((double)m_vR.z));
+        // o.insert(make_pair("vR", vR));
+
+        Matrix4d mT = getTranslationMatrix();
+
+        picojson::array vT;
+        vT.push_back(value((double)mT(0,0)));
+        vT.push_back(value((double)mT(0,1)));
+        vT.push_back(value((double)mT(0,2)));
+        vT.push_back(value((double)mT(0,3)));
+
+        vT.push_back(value((double)mT(1,0)));
+        vT.push_back(value((double)mT(1,1)));
+        vT.push_back(value((double)mT(1,2)));
+        vT.push_back(value((double)mT(1,3)));
+
+        vT.push_back(value((double)mT(2,0)));
+        vT.push_back(value((double)mT(2,1)));
+        vT.push_back(value((double)mT(2,2)));
+        vT.push_back(value((double)mT(2,3)));
+
+        vT.push_back(value((double)mT(3,0)));
+        vT.push_back(value((double)mT(3,1)));
+        vT.push_back(value((double)mT(3,2)));
+        vT.push_back(value((double)mT(3,3)));
+
+        o.insert(make_pair("mT", vT));
+
+        string f = picojson::value(o).serialize();
+
+        return writeFile(m_fConfig, f);
+    }
+
     int _GeometryBase::check(void)
     {
         return this->_ModuleBase::check();
@@ -223,118 +335,6 @@ namespace kai
     bool _GeometryBase::save2file(const string& fName)
     {
         return false;
-    }
-
-    bool _GeometryBase::loadConfig(void)
-    {
-		string s;
-		if(!readFile(m_fConfig, &s))
-		{
-            LOG_I("Cannot open: " + m_fConfig);
-            return false;
-		}
-
-        Kiss *pK = new Kiss();
-        if (!pK->parse(s))
-        {
-            LOG_I("Config parse failed: " + m_fConfig);
-            DEL(pK);
-            return false;
-        }
-
-        Kiss *pKc = pK->root()->child("_GeometryBase");
-        if (pKc->empty())
-        {
-            DEL(pK);
-            return false;
-        }
-
-        // vDouble3 vT, vR;
-        // vT.clear();
-        // vR.clear();
-
-        // pKc->v("vT", &vT);
-        // pKc->v("vR", &vR);
-
-        // setTranslation(vT);
-        // setRotation(vR);
-        // updateTranslationMatrix(false);
-
-		vector<double> vT;
-		pKc->a("mT", &vT);
-
-        Matrix4d mT;
-        mT(0,0) = vT[0];
-        mT(0,1) = vT[1];
-        mT(0,2) = vT[2];
-        mT(0,3) = vT[3];
-
-        mT(1,0) = vT[4];
-        mT(1,1) = vT[5];
-        mT(1,2) = vT[6];
-        mT(1,3) = vT[7];
-
-        mT(2,0) = vT[8];
-        mT(2,1) = vT[9];
-        mT(2,2) = vT[10];
-        mT(2,3) = vT[11];
-
-        mT(3,0) = vT[12];
-        mT(3,1) = vT[13];
-        mT(3,2) = vT[14];
-        mT(3,3) = vT[15];
-
-        setTranslationMatrix(mT);
-
-        DEL(pK);
-        return true;
-    }
-
-    bool _GeometryBase::saveConfig(void)
-    {
-        picojson::object o;
-        o.insert(make_pair("name", "_GeometryBase"));
-
-        // picojson::array vT;
-        // vT.push_back(value((double)m_vT.x));
-        // vT.push_back(value((double)m_vT.y));
-        // vT.push_back(value((double)m_vT.z));
-        // o.insert(make_pair("vT", vT));
-
-        // picojson::array vR;
-        // vR.push_back(value((double)m_vR.x));
-        // vR.push_back(value((double)m_vR.y));
-        // vR.push_back(value((double)m_vR.z));
-        // o.insert(make_pair("vR", vR));
-
-        Matrix4d mT = getTranslationMatrix();
-
-        picojson::array vT;
-        vT.push_back(value((double)mT(0,0)));
-        vT.push_back(value((double)mT(0,1)));
-        vT.push_back(value((double)mT(0,2)));
-        vT.push_back(value((double)mT(0,3)));
-
-        vT.push_back(value((double)mT(1,0)));
-        vT.push_back(value((double)mT(1,1)));
-        vT.push_back(value((double)mT(1,2)));
-        vT.push_back(value((double)mT(1,3)));
-
-        vT.push_back(value((double)mT(2,0)));
-        vT.push_back(value((double)mT(2,1)));
-        vT.push_back(value((double)mT(2,2)));
-        vT.push_back(value((double)mT(2,3)));
-
-        vT.push_back(value((double)mT(3,0)));
-        vT.push_back(value((double)mT(3,1)));
-        vT.push_back(value((double)mT(3,2)));
-        vT.push_back(value((double)mT(3,3)));
-
-        o.insert(make_pair("mT", vT));
-
-        string f = picojson::value(o).serialize();
-
-        return writeFile(m_fConfig, f);
     }
 
     void _GeometryBase::mutexLock(void)
