@@ -443,6 +443,26 @@ namespace kai
 		return getCell(vPi);
 	}
 
+	vInt3 _PCgridBase::getCellCoord(const vFloat3 &vP)
+	{
+		vInt3 vPi;
+		vPi.set(-1);
+
+		IF__(isnan(vP.x), vPi);
+		IF__(isnan(vP.y), vPi);
+		IF__(isnan(vP.z), vPi);
+
+		IF__(!m_vRx.bInside(vP.x), vPi);
+		IF__(!m_vRy.bInside(vP.y), vPi);
+		IF__(!m_vRz.bInside(vP.z), vPi);
+
+		vPi.x = (vP.x - m_vPmin.x) * m_vOvCellSize.x;
+		vPi.y = (vP.y - m_vPmin.y) * m_vOvCellSize.y;
+		vPi.z = (vP.z - m_vPmin.z) * m_vOvCellSize.z;
+
+		return vPi;
+	}
+
 	PC_GRID_CELL *_PCgridBase::getCell(const vInt3 &vC)
 	{
 		IF__(vC.x < 0, nullptr);

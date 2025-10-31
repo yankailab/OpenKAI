@@ -278,6 +278,7 @@ namespace kai
 		// cell
 		virtual void clearAllCells(void);
 		virtual PC_GRID_CELL *getCell(const vFloat3 &vP);
+		virtual vInt3 getCellCoord(const vFloat3 &vP);
 
 		// drawing
 		virtual LineSet *getGridLines(void);
