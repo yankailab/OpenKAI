@@ -8,6 +8,7 @@
 #include "BASE.h"
 #include "../Module/Kiss.h"
 #include "../UI/_Console.h"
+#include "../Utility/utilFile.h"
 
 namespace kai
 {
@@ -16,6 +17,9 @@ namespace kai
 	{
 		m_pKiss = nullptr;
 		m_bLog = false;
+
+		m_fConfig = "";
+		m_pKconfig = nullptr;
 	}
 
 	BASE::~BASE()
@@ -32,7 +36,31 @@ namespace kai
 
 		pK->v("bLog", &m_bLog);
 
+		pK->v("fConfig", &m_fConfig);
+		IF__(m_fConfig.empty(), OK_OK);
+
+		string s;
+		IF__(!readFile(m_fConfig, &s), OK_ERR_NOT_FOUND);
+
+		DEL(m_pKconfig);
+		m_pKconfig = new Kiss();
+		if (!((Kiss *)m_pKconfig)->parse(s))
+		{
+			DEL(m_pKconfig);
+			return OK_ERR_INVALID_VALUE;
+		}
+
 		return OK_OK;
+	}
+
+	bool BASE::saveConfig(const string &fConfig, picojson::object* pO)
+	{
+		NULL_F(pO);
+
+		string f = picojson::value(*pO).serialize();
+		writeFile(fConfig, f);
+
+		return true;
 	}
 
 	int BASE::link(void)
@@ -52,21 +80,21 @@ namespace kai
 		return OK_OK;
 	}
 
-    void BASE::pause(void)
-    {
-    }
+	void BASE::pause(void)
+	{
+	}
 
-    void BASE::resume(void)
-    {
-    }
+	void BASE::resume(void)
+	{
+	}
 
-    void BASE::stop(void)
-    {
-    }
+	void BASE::stop(void)
+	{
+	}
 
 	string BASE::getName(void)
 	{
-		if(!m_pKiss)
+		if (!m_pKiss)
 			return "";
 
 		return ((Kiss *)m_pKiss)->getName();
@@ -74,7 +102,7 @@ namespace kai
 
 	string BASE::getClass(void)
 	{
-		if(!m_pKiss)
+		if (!m_pKiss)
 			return "";
 
 		return ((Kiss *)m_pKiss)->getClass();
@@ -103,7 +131,7 @@ namespace kai
 		pC->addMsg(this->getName(), COLOR_PAIR(_Console_COL_NAME) | A_BOLD, _Console_X_NAME, 1);
 	}
 
-	void BASE::context(void* pContext)
+	void BASE::context(void *pContext)
 	{
 	}
 

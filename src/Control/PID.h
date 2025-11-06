@@ -27,6 +27,21 @@ namespace kai
 		virtual void console(void *pConsole);
 		virtual void reset(void);
 
+		float getP(void);
+		void setP(float P);
+		float getI(void);
+		void setI(float I);
+		float getImax(void);
+		void setImax(float Imax);
+		float getD(void);
+		void setD(float D);
+
+		vFloat2 getRangeIn(void);
+		void setRangeIn(const vFloat2& vRin);
+
+		vFloat2 getRangeOut(void);
+		void setRangeOut(const vFloat2& vRout);
+
 	protected:
 		float m_P;
 		float m_I;

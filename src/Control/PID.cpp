@@ -78,11 +78,72 @@ namespace kai
 		return m_vOut;
 	}
 
+	float PID::getP(void)
+	{
+		return m_P;
+	}
+
+	void PID::setP(float P)
+	{
+		m_P = P;
+	}
+
+	float PID::getI(void)
+	{
+		return m_I;
+	}
+
+	void PID::setI(float I)
+	{
+		m_I = I;
+	}
+
+	float PID::getImax(void)
+	{
+		return m_Imax;
+	}
+
+	void PID::setImax(float Imax)
+	{
+		m_Imax = Imax;
+	}
+
+	float PID::getD(void)
+	{
+		return m_D;
+	}
+
+	void PID::setD(float D)
+	{
+		m_D = D;
+	}
+
+	vFloat2 PID::getRangeIn(void)
+	{
+		return m_vRin;
+	}
+
+	void PID::setRangeIn(const vFloat2 &vRin)
+	{
+		m_vRin = vRin;
+	}
+
+	vFloat2 PID::getRangeOut(void)
+	{
+		return m_vRout;
+	}
+
+	void PID::setRangeOut(const vFloat2 &vRout)
+	{
+		m_vRout = vRout;
+	}
+
 	void PID::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->BASE::console(pConsole);
 
+		((_Console *)pConsole)->addMsg("P=" + f2str(m_P) + ", I=" + f2str(m_I) + ", Imax=" + f2str(m_Imax) + ", D=" + f2str(m_D), 1);
 		((_Console *)pConsole)->addMsg("v=" + f2str(m_vVar) + ", sp=" + f2str(m_vSetPoint) + ", vO=" + f2str(m_vOut), 1);
 	}
 

@@ -9,6 +9,7 @@
 #define OpenKAI_src_Base_BASE_H_
 
 #include "common.h"
+#include "../Dependencies/picojson.h"
 
 using namespace std;
 
@@ -39,9 +40,14 @@ namespace kai
 		string getName(void);
 		string getClass(void);
 
+		bool saveConfig(const string &fConfig, picojson::object* pO);
+
 	protected:
 		void *m_pKiss;
 		bool m_bLog;
+
+		string m_fConfig;
+		void* m_pKconfig;
 	};
 
 }
