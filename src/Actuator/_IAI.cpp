@@ -71,14 +71,14 @@ namespace kai
 
 			// if (m_bFeedback)
 			// {
-			//			checkAlarm();
+			checkAlarm();
 			//			readStatus();
 			//			}
 
 			//		if(!bCmdTimeout())
 			//        {
 			//			if (m_lastCmdType == actCmd_pos)
-			updatePos();
+//			updatePos();
 			//			else if (m_lastCmdType == actCmd_spd)
 			//				updateSpeed();
 			//        }
@@ -93,10 +93,36 @@ namespace kai
 		for (int i = 0; i < m_vChan.size(); i++)
 		{
 			ACTUATOR_CHAN *pChan = &m_vChan[i];
-			uint16_t pB[2];
-			pB[0] = 1 << 7;
-			pB[1] = 0;
-			m_pMB->writeRegisters(pChan->getID(), 125, 1, pB);
+
+			// reset alarm
+			// uint8_t pB[10];
+			// pB[0] = pChan->getID();
+			// pB[1] = 0x45;
+			// pB[2] = 0;
+			// pB[3] = 0x05;
+			// pB[4] = 0;
+			// pB[5] = 0;
+			// pB[6] = 0;
+			// pB[7] = 0;
+			// pB[8] = 0x59;
+			// pB[9] = 0x03;
+
+			// return to origin
+			uint8_t pB[10];
+			pB[0] = pChan->getID();
+			pB[1] = 0x45;
+			pB[2] = 0;
+			pB[3] = 0x0A;
+			pB[4] = 0;
+			pB[5] = 0x07;
+			pB[6] = 0;
+			pB[7] = 0;
+			pB[8] = 0xBC;
+			pB[9] = 0xC3;
+
+			int nR = m_pMB->sendRawRequest(pChan->getID(), pB, 8);
+
+			LOG_I(i2str(nR));
 		}
 	}
 
@@ -115,28 +141,34 @@ namespace kai
 			int32_t brake = pChan->brake()->getTarget();
 			int32_t current = pChan->current()->getTarget();
 
+			int32_t inp = 10;
+
 			// create the command
 			uint16_t pB[9];
 			// 9900h	PCMD target position
 			pB[0] = HIGH16(step);
 			pB[1] = LOW16(step);
 			// 9902		INP	position width
-			pB[2] = 0; // HIGH16();
-			pB[3] = 0; // LOW16();
+			pB[2] = HIGH16(inp);
+			pB[3] = LOW16(inp);
 			// 9904		VCMD speed
 			pB[4] = HIGH16(speed);
 			pB[5] = LOW16(speed);
 			// 9906		ACMD accel
 			pB[6] = LOW16(accel);
 			// 9907		PPOW power limit
-			pB[7] = HIGH16(accel);
+			pB[7] = LOW16(current);
 			// 9908		CTLF control flag
 			pB[8] = 0;
 
-			if (m_pMB->writeRegisters(pChan->getID(), // m_iSlave,
-									  9900,			  // 9900h
-									  9, pB) != 9)
+			int nB = m_pMB->writeRegisters(pChan->getID(), // m_iSlave,
+									  0x9900,		  // 9900h
+									  7,
+									  pB);
+			if (nB != 7)
+			{
 				m_ieSendCMD.reset();
+			}
 		}
 	}
 

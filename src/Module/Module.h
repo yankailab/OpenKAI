@@ -42,6 +42,7 @@
 
 #ifdef WITH_ACTUATOR
 #include "../Actuator/_ArduServo.h"
+#include "../Actuator/_IAI.h"
 #include "../Actuator/_MultiActuatorsBase.h"
 #include "../Actuator/_OrientalMotor.h"
 #include "../Actuator/_HYMCU_RS485.h"

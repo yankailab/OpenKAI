@@ -245,4 +245,24 @@ namespace kai
 		return r;
 	}
 
+	int _Modbus::sendRawRequest(int iSlave, uint8_t *pB, int nB)
+	{
+		IF__(!m_pMb, -1);
+		NULL__(pB, -1);
+
+		int r = -1;
+
+		pthread_mutex_lock(&m_mutex);
+
+		if (modbus_set_slave(m_pMb, iSlave) == 0)
+		{
+			r = modbus_send_raw_request(m_pMb, pB, nB);
+		}
+
+		modbus_flush(m_pMb);
+		pthread_mutex_unlock(&m_mutex);
+
+		return r;
+	}
+
 }

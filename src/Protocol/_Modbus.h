@@ -24,6 +24,7 @@ namespace kai
 		int writeBit(int iSlave, int addr, bool bStatus);
 		int writeRegister(int iSlave, int addr, int v);
 		int writeRegisters(int iSlave, int addr, int nRegister, uint16_t *pB);
+		int sendRawRequest(int iSlave, uint8_t* pB, int nB);
 
 	private:
 		void update(void);

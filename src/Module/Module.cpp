@@ -52,6 +52,7 @@ namespace kai
 
 #ifdef WITH_ACTUATOR
 		ADD_MODULE(_ArduServo);
+		ADD_MODULE(_IAI);
 		ADD_MODULE(_MultiActuatorsBase);
 		ADD_MODULE(_OrientalMotor);
 		ADD_MODULE(_HYMCU_RS485);
