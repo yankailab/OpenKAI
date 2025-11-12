@@ -72,26 +72,26 @@ namespace kai
 	void _MultiActuatorsBase::setPtargetAll(float nP)
 	{
 		for (_ActuatorBase* pA : m_vAB)
-			pA->getChan()->pos()->setTarget(nP);
+			pA->pos()->setTarget(nP);
 	}
 
 	void _MultiActuatorsBase::setStargetAll(float nS)
 	{
 		for (_ActuatorBase* pA : m_vAB)
-			pA->getChan()->speed()->setTarget(nS);
+			pA->speed()->setTarget(nS);
 	}
 
 	void _MultiActuatorsBase::gotoOriginAll(void)
 	{
 		for (_ActuatorBase* pA : m_vAB)
-			pA->getChan()->gotoOrigin();
+			pA->gotoOrigin();
 	}
 
 	bool _MultiActuatorsBase::bCompleteAll(void)
 	{
 		for (_ActuatorBase* pA : m_vAB)
 		{
-			IF_F(!pA->getChan()->bComplete());
+			IF_F(!pA->bComplete());
 		}
 
 		return true;

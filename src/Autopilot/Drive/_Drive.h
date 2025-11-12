@@ -9,12 +9,11 @@ namespace kai
 
     struct DRIVE_MOTOR
     {
-        float m_kSpd; //velocity +/-
+        float m_kSpd; // velocity +/-
         float m_kStr;
         float m_spd;
 
         _ActuatorBase *m_pActuator;
-        uint8_t m_iAxis;
 
         void init(void)
         {
@@ -22,7 +21,6 @@ namespace kai
             m_kStr = 1.0;
             m_spd = 0.0;
             m_pActuator = NULL;
-            m_iAxis = 0;
         }
 
         void update(float nSpd, float nStr)
@@ -30,9 +28,7 @@ namespace kai
             m_spd = nSpd * m_kSpd + nStr * m_kStr;
 
             NULL_(m_pActuator);
-            ACTUATOR_CHAN* pChan = m_pActuator->getChan(m_iAxis);
-            NULL_(pChan);
-            pChan->speed()->setTarget(m_spd);
+            m_pActuator->speed()->setTarget(m_spd);
         }
     };
 
@@ -70,8 +66,8 @@ namespace kai
         float m_nDir;
         float m_nStr;
 
-        vFloat2 m_vSpdRange; //overall speed range
-        vFloat2 m_vStrRange; //overall steering range
+        vFloat2 m_vSpdRange; // overall speed range
+        vFloat2 m_vStrRange; // overall steering range
 
         vector<DRIVE_MOTOR> m_vM;
     };

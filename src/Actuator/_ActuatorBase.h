@@ -17,38 +17,38 @@ namespace kai
 
 	enum ACTUATOR_BF_SET
 	{
-		actuator_power = 0,
-		actuator_setID = 1,
-		actuator_setMode = 2,
-		actuator_stop = 3,
-		actuator_pos = 4,
-		actuator_speed = 5,
-		actuator_accel = 6,
-		actuator_brake = 7,
+		actuator_power = 0,		 // set to energize
+		actuator_setID = 1,		 // set to send set ID cmd
+		actuator_setMode = 2,	 // set to send set mode cmd
+		actuator_clearAlarm = 3, // set to clear alarm
+		actuator_gotoOrigin = 4, // set to send goto origin command
+		actuator_move = 5,		 // set to activate the move, unset to stop
+		actuator_pos = 6,		 // set to send pos commands in update loop
+		actuator_speed = 7,
+		actuator_accel = 8,
+		actuator_brake = 9,
 	};
 
 	enum ACTUATOR_BF_STATUS
 	{
-		actuator_powered = 0,
-		actuator_ready = 1,
-		actuator_feedbak = 2,
-		actuator_moving = 3,
-		actuator_complete = 4,
+		actuator_powered = 0,  // set when energized
+		actuator_alarm = 1,	   // set when there is an alarm
+		actuator_ready = 2,	   // set when ready to move
+		actuator_moving = 3,   // set during moving to target pos
+		actuator_complete = 4, // achieved target pos within acceptable error range
 	};
 
 	struct ACTUATOR_V
 	{
 		float m_v;
 		float m_vTarget;
-		float m_vCofactor;
-		float m_vErr;	// acceptable err range
+		float m_vErr; // acceptable err range
 		vFloat2 m_vRange;
 
 		void init(void)
 		{
 			m_v = 0.0;
 			m_vTarget = 0.0;
-			m_vCofactor = 1.0;
 			m_vErr = 0.0;
 			m_vRange.set(-FLT_MAX, FLT_MAX);
 		}
@@ -107,114 +107,6 @@ namespace kai
 		{
 			return m_vErr;
 		}
-
-	};
-
-	struct ACTUATOR_CHAN
-	{
-		int m_ID;
-		float m_pOrigin;
-		ACTUATOR_V m_p; // pos
-		ACTUATOR_V m_s; // speed
-		ACTUATOR_V m_a; // accel
-		ACTUATOR_V m_b; // brake
-		ACTUATOR_V m_c; // current
-
-		int m_mode;
-		bool m_bPower;
-		uint64_t m_tLastCmd;
-		uint64_t m_tCmdTimeout;
-		BIT_FLAG m_bfStatus;
-		BIT_FLAG m_bfSet;
-
-		void init(void)
-		{
-			m_ID = 0;
-			m_pOrigin = 0.0;
-			m_p.init();
-			m_s.init();
-			m_a.init();
-			m_b.init();
-			m_c.init();
-
-			m_mode = 0;
-			m_bPower = false;
-			m_tLastCmd = 0;
-			m_tCmdTimeout = 0;
-			m_bfStatus.clearAll();
-			m_bfSet.clearAll();
-		}
-
-		int getID(void)
-		{
-			return m_ID;
-		}
-
-		int getMode(void)
-		{
-			return m_mode;
-		}
-
-		void power(bool bON)
-		{
-			m_bPower = bON;
-			m_bfSet.set(actuator_power);
-		}
-
-		void setBitFlag(ACTUATOR_BF_SET bf)
-		{
-			m_bfSet.set(bf);
-		}
-
-		void setLastCmdTime(void)
-		{
-			m_tLastCmd = getTbootUs();
-		}
-
-		bool bCmdTimeout(void)
-		{
-			uint64_t t = getTbootUs();
-			IF_F(t - m_tLastCmd < m_tCmdTimeout);
-
-			return true;
-		}
-
-		void gotoOrigin(void)
-		{
-			m_p.setTarget(m_pOrigin);
-		}
-
-		bool bComplete(void)
-		{
-			IF_F(!m_p.bComplete());
-
-			return true;
-		}
-
-		ACTUATOR_V *pos(void)
-		{
-			return &m_p;
-		}
-
-		ACTUATOR_V *speed(void)
-		{
-			return &m_s;
-		}
-
-		ACTUATOR_V *accel(void)
-		{
-			return &m_a;
-		}
-
-		ACTUATOR_V *brake(void)
-		{
-			return &m_b;
-		}
-
-		ACTUATOR_V *current(void)
-		{
-			return &m_c;
-		}
 	};
 
 	class _ActuatorBase : public _ModuleBase
@@ -228,13 +120,24 @@ namespace kai
 		virtual int start(void);
 		virtual void console(void *pConsole);
 
-//		virtual void atomicFrom(void);
-//		virtual void atomicTo(void);
-		virtual ACTUATOR_CHAN *getChan(int iChan = 0);
+		int getID(void);
+		void power(bool bON);
+		void move(bool bMove);
+		void gotoOrigin(void);
+		bool bComplete(void);
+		bool bAlarm(void);
+
+		ACTUATOR_V *pos(void);
+		ACTUATOR_V *speed(void);
+		ACTUATOR_V *accel(void);
+		ACTUATOR_V *brake(void);
+		ACTUATOR_V *current(void);
 
 	protected:
-		virtual bool bCmdTimeout(int iChan = 0);
-		virtual bool open(void);
+		void setBitFlag(ACTUATOR_BF_SET bf);
+		void setLastCmdTime(void);
+
+		virtual bool bCmdTimeout(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -243,10 +146,24 @@ namespace kai
 		}
 
 	protected:
-		vector<ACTUATOR_CHAN> m_vChan;
+		int m_ID;
+		float m_origin;
+		ACTUATOR_V m_p; // pos
+		ACTUATOR_V m_s; // speed
+		ACTUATOR_V m_a; // accel
+		ACTUATOR_V m_b; // brake
+		ACTUATOR_V m_c; // current
+
+		uint64_t m_tLastCmd;
+		uint64_t m_tCmdTimeout;
+		INTERVAL_EVENT m_ieCheckAlarm;
+		INTERVAL_EVENT m_ieReadStatus;
+		INTERVAL_EVENT m_ieSendCMD;
+
+		BIT_FLAG m_bfStatus;
+		BIT_FLAG m_bfSet;
 
 		_ActuatorBase *m_pParent;
-		pthread_mutex_t m_mutex;
 	};
 
 }

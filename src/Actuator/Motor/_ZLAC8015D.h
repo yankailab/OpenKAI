@@ -24,8 +24,8 @@ namespace kai
 		int link(void);
 		int start(void);
 		int check(void);
-		
-	private:
+
+	protected:
 		bool setMode(void);
 		bool setSpeed(void);
 		bool setAccel(void);
@@ -38,8 +38,9 @@ namespace kai
 		bool clearAlarm(void);
 
 		void setup(void);
-
 		void updateMove(void);
+
+	private:
 		void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -47,12 +48,9 @@ namespace kai
 			return NULL;
 		}
 
-	private:
+	protected:
 		_Modbus *m_pMB;
-		int m_iSlave;
 		int m_iMode;
-
-		INTERVAL_EVENT m_ieReadStatus;
 	};
 
 }

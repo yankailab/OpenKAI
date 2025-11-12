@@ -26,10 +26,12 @@ namespace kai
 		int check(void);
 
 	protected:
-		void checkAlarm(void);
-		void updatePos(void);
-		void readStatus(void);
-		void retOrigin(void);
+		bool clearAlarm(void);
+		bool readStatus(void);
+
+		bool gotoOrigin(void);
+		bool setPos(void);
+		bool stopMove(void);
 
 	private:
 		void update(void);
@@ -41,11 +43,6 @@ namespace kai
 
 	protected:
 		_Modbus *m_pMB;
-		int m_iData;
-
-		INTERVAL_EVENT m_ieCheckAlarm;
-		INTERVAL_EVENT m_ieSendCMD;
-		INTERVAL_EVENT m_ieReadStatus;
 	};
 
 }

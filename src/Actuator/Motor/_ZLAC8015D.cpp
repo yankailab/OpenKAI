@@ -10,10 +10,9 @@ namespace kai
 	_ZLAC8015D::_ZLAC8015D()
 	{
 		m_pMB = nullptr;
-		m_iSlave = 1;
+		m_ID = 1;
 		m_iMode = 3; //speed control
 
-		m_ieReadStatus.init(50000);
 	}
 
 	_ZLAC8015D::~_ZLAC8015D()
@@ -25,11 +24,7 @@ namespace kai
 		CHECK_(this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		IF__(m_vChan.size() != 2, OK_ERR_INVALID_VALUE);
-
-		pK->v("iSlave", &m_iSlave);
 		pK->v("iMode", &m_iMode);
-		pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
 
 		return OK_OK;
 	}
@@ -96,12 +91,12 @@ namespace kai
 
 	// 	if (bON)
 	// 	{
-	// 		IF_F(m_pMB->writeRegister(m_iSlave, 0x200E, 0x08) != 1);
+	// 		IF_F(m_pMB->writeRegister(m_ID, 0x200E, 0x08) != 1);
 	// 		m_bPower = true;
 	// 	}
 	// 	else
 	// 	{
-	// 		IF_F(m_pMB->writeRegister(m_iSlave, 0x200E, 0x07) != 1);
+	// 		IF_F(m_pMB->writeRegister(m_ID, 0x200E, 0x07) != 1);
 	// 		m_bPower = false;
 	// 	}
 
@@ -119,7 +114,7 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x200D, m_iMode) != 1);
+		IF_F(m_pMB->writeRegister(m_ID, 0x200D, m_iMode) != 1);
 
 		return true;
 	}
@@ -128,8 +123,8 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2080, (int)getChan(0)->accel()->getTarget()) != 1);
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2081, (int)getChan(1)->accel()->getTarget()) != 1);
+		IF_F(m_pMB->writeRegister(m_ID, 0x2080, (int)m_a.getTarget()) != 1);
+		IF_F(m_pMB->writeRegister(m_ID, 0x2081, (int)m_a.getTarget()) != 1);
 
 		return true;
 	}
@@ -138,8 +133,8 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2082, (int)getChan(0)->brake()->getTarget()) != 1);
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2083, (int)getChan(1)->brake()->getTarget()) != 1);
+		IF_F(m_pMB->writeRegister(m_ID, 0x2082, (int)m_b.getTarget()) != 1);
+		IF_F(m_pMB->writeRegister(m_ID, 0x2083, (int)m_b.getTarget()) != 1);
 
 		return true;
 	}
@@ -148,8 +143,8 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2088, (int)getChan(0)->speed()->getTarget()) != 1);
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2089, (int)getChan(1)->speed()->getTarget()) != 1);
+		IF_F(m_pMB->writeRegister(m_ID, 0x2088, (int)m_s.getTarget()) != 1);
+		IF_F(m_pMB->writeRegister(m_ID, 0x2089, (int)m_s.getTarget()) != 1);
 
 		return true;
 	}
@@ -158,7 +153,7 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		IF_F(m_pMB->writeBit(m_iSlave, 3, true) != 1);
+		IF_F(m_pMB->writeBit(m_ID, 3, true) != 1);
 		return true;
 	}
 
@@ -167,7 +162,7 @@ namespace kai
 		IF_F(check() != OK_OK);
 
 		uint16_t b;
-		int r = m_pMB->readRegisters(m_iSlave, 12, 1, &b);
+		int r = m_pMB->readRegisters(m_ID, 12, 1, &b);
 		IF_F(r != 1);
 
 		return (b == 1) ? true : false;
@@ -182,16 +177,17 @@ namespace kai
 		int r;
 		int16_t p;
 
-		r = m_pMB->readRegisters(m_iSlave, 0x20AB, 1, pB);
+//TODO: to two channels
+		r = m_pMB->readRegisters(m_ID, 0x20AB, 1, pB);
 		IF_F(r != 1);
 		//	int p = MAKE32(pB[0], pB[1]);
 		p = pB[0];
-		getChan(0)->pos()->set(p);
+		m_p.set(p);
 
-		r = m_pMB->readRegisters(m_iSlave, 0x20AC, 1, pB);
+		r = m_pMB->readRegisters(m_ID, 0x20AC, 1, pB);
 		IF_F(r != 1);
 		p = pB[0];
-		getChan(1)->pos()->set(p);
+		m_p.set(p);
 
 		return true;
 	}
@@ -201,7 +197,7 @@ namespace kai
 		IF_F(check() != OK_OK);
 		IF__(!m_ieReadStatus.update(m_pT->getTfrom()), true);
 
-		int r = m_pMB->writeRegister(m_iSlave, 0x2031, 0x06); //clear alarm
+		int r = m_pMB->writeRegister(m_ID, 0x2031, 0x06); //clear alarm
 		IF_F(r != 1);
 
 		return true;

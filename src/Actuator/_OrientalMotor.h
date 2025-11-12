@@ -13,25 +13,6 @@
 
 namespace kai
 {
-
-	// struct OM_STATE
-	// {
-	// 	int32_t m_step;	   // position
-	// 	int32_t m_speed;   // Hz
-	// 	int32_t m_accel;   // 0.001kHz/s
-	// 	int32_t m_brake;   // 0.001kHz/s
-	// 	int32_t m_current; // 0.1%
-
-	// 	void init(void)
-	// 	{
-	// 		m_step = 0;
-	// 		m_speed = 1e3;
-	// 		m_accel = 1e6;
-	// 		m_brake = 1e6;
-	// 		m_current = 1e3;
-	// 	}
-	// };
-
 	class _OrientalMotor : public _ActuatorBase
 	{
 	public:
@@ -44,10 +25,11 @@ namespace kai
 		int check(void);
 
 	protected:
-		void checkAlarm(void);
-		void updatePos(void);
-		void updateSpeed(void);
-		void readStatus(void);
+		bool clearAlarm(void);
+		bool readStatus(void);
+
+		bool setPos(void);
+		bool setSpeed(void);
 
 	private:
 		void update(void);
@@ -60,10 +42,6 @@ namespace kai
 	protected:
 		_Modbus *m_pMB;
 		int m_iData;
-
-		INTERVAL_EVENT m_ieCheckAlarm;
-		INTERVAL_EVENT m_ieSendCMD;
-		INTERVAL_EVENT m_ieReadStatus;
 	};
 
 }

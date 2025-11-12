@@ -14,8 +14,6 @@ namespace kai
 		m_dpr = 1;
 		m_dInit = 20;
 		m_cmdInt = 50000;
-
-		m_ieReadStatus.init(50000);
 	}
 
 	_HYMCU_RS485::~_HYMCU_RS485()
@@ -31,7 +29,6 @@ namespace kai
 		pK->v("dpr", &m_dpr);
 		pK->v("dInit", &m_dInit);
 		pK->v("cmdInt", &m_cmdInt);
-		pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
 
 		Kiss *pKa = pK->child("addr");
 		if (pKa)
@@ -96,12 +93,13 @@ namespace kai
 		{
 			m_pT->autoFPS();
 
-			ACTUATOR_CHAN* pChan = getChan();
-			if (pChan->m_bfSet.b(actuator_stop, true))
+			if (!m_bfSet.b(actuator_move, true))
 			{
-				while(!stopMove());
-				while(!readStatus());
-				pChan->pos()->setTargetCurrent();
+				while (!stopMove())
+					;
+				while (!readStatus())
+					;
+				pos()->setTargetCurrent();
 			}
 
 			//		m_pA->m_p.m_vTarget = -m_pA->m_p.m_vTarget;
@@ -139,7 +137,7 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		ACTUATOR_V* pP = getChan()->pos();
+		ACTUATOR_V *pP = pos();
 		int32_t step = pP->getDtarget();
 		//		int32_t step = m_pA->m_p.m_vTarget;
 		IF_F(step == 0);
@@ -162,7 +160,7 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		ACTUATOR_V* pS = getChan()->speed();
+		ACTUATOR_V *pS = speed();
 		uint16_t b = pS->getTarget();
 		IF_F(m_pMB->writeRegisters(m_iSlave, m_addr.m_setSpd, 1, &b) != 1);
 		m_pT->sleepT(m_cmdInt);
@@ -174,7 +172,7 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		ACTUATOR_V* pA = getChan()->accel();
+		ACTUATOR_V *pA = accel();
 		uint16_t b = pA->getTarget();
 		IF_F(m_pMB->writeRegisters(m_iSlave, m_addr.m_setAcc, 1, &b) != 1);
 		m_pT->sleepT(m_cmdInt);
@@ -247,7 +245,7 @@ namespace kai
 		IF_F(m_pMB->writeBit(m_iSlave, m_addr.m_resPos, true) != 1);
 		m_pT->sleepT(m_cmdInt);
 
-		ACTUATOR_V* pP = getChan()->pos();
+		ACTUATOR_V *pP = pos();
 		pP->set(0);
 
 		return true;
@@ -316,7 +314,7 @@ namespace kai
 		IF_F(r != 2);
 		m_pT->sleepT(m_cmdInt);
 
-		ACTUATOR_V* pP = getChan()->pos();
+		ACTUATOR_V *pP = pos();
 		//	int p = MAKE32(pB[0], pB[1]);
 		int16_t p = pB[1];
 		pP->set(p);

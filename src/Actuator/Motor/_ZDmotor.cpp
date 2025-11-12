@@ -10,10 +10,8 @@ namespace kai
 	_ZDmotor::_ZDmotor()
 	{
 		m_pMB = nullptr;
-		m_iSlave = 1;
+		m_ID = 1;
 		m_iMode = 3; // speed control
-
-		m_ieReadStatus.init(50000);
 	}
 
 	_ZDmotor::~_ZDmotor()
@@ -25,9 +23,7 @@ namespace kai
 		CHECK_(this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("iSlave", &m_iSlave);
 		pK->v("iMode", &m_iMode);
-		pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
 
 		return OK_OK;
 	}
@@ -66,9 +62,7 @@ namespace kai
 		{
 			m_pT->autoFPS();
 
-			ACTUATOR_CHAN* pChan = getChan();
-
-			if (!pChan->m_bfStatus.b(actuator_ready))
+			if (!m_bfStatus.b(actuator_ready))
 			{
 				setup();
 			}
@@ -83,14 +77,12 @@ namespace kai
 
 	void _ZDmotor::setup(void)
 	{
-		ACTUATOR_CHAN* pChan = getChan();
-
 		// IF_(!setMode());
 		// IF_(!setAccel());
 		// IF_(!setBrake());
 		// IF_(!power(true));
 
-		pChan->m_bfStatus.set(actuator_ready);
+		m_bfStatus.set(actuator_ready);
 	}
 
 	bool _ZDmotor::setPower(bool bON)
@@ -100,12 +92,12 @@ namespace kai
 
 		// if (bON)
 		// {
-		// 	IF_F(m_pMB->writeRegister(m_iSlave, 0x2031, 0x08) != 1);
+		// 	IF_F(m_pMB->writeRegister(m_ID, 0x2031, 0x08) != 1);
 		// 	m_bPower = true;
 		// }
 		// else
 		// {
-		// 	IF_F(m_pMB->writeRegister(m_iSlave, 0x2031, 0x07) != 1);
+		// 	IF_F(m_pMB->writeRegister(m_ID, 0x2031, 0x07) != 1);
 		// 	m_bPower = false;
 		// }
 
@@ -123,7 +115,7 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2032, m_iMode) != 1);
+		IF_F(m_pMB->writeRegister(m_ID, 0x2032, m_iMode) != 1);
 
 		return true;
 	}
@@ -131,10 +123,9 @@ namespace kai
 	bool _ZDmotor::setAccel(void)
 	{
 		IF_F(check() != OK_OK);
-		ACTUATOR_CHAN* pChan = getChan();
 
-		uint16_t v = pChan->accel()->getTarget();
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2037, v) != 1);
+		uint16_t v = m_a.getTarget();
+		IF_F(m_pMB->writeRegister(m_ID, 0x2037, v) != 1);
 
 		return true;
 	}
@@ -142,10 +133,9 @@ namespace kai
 	bool _ZDmotor::setBrake(void)
 	{
 		IF_F(check() != OK_OK);
-		ACTUATOR_CHAN* pChan = getChan();
 
-		uint16_t v = pChan->brake()->getTarget();
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2038, v) != 1);
+		uint16_t v = m_b.getTarget();
+		IF_F(m_pMB->writeRegister(m_ID, 0x2038, v) != 1);
 
 		return true;
 	}
@@ -153,12 +143,11 @@ namespace kai
 	bool _ZDmotor::setSpeed(void)
 	{
 		IF_F(check() != OK_OK);
-		ACTUATOR_CHAN* pChan = getChan();
 
-		uint16_t v = pChan->speed()->getTarget();
+		uint16_t v = m_s.getTarget();
 		int16_t d = (v >= 0) ? 1 : 2;
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2000, d) != 1);
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2001, abs(v)) != 1);
+		IF_F(m_pMB->writeRegister(m_ID, 0x2000, d) != 1);
+		IF_F(m_pMB->writeRegister(m_ID, 0x2001, abs(v)) != 1);
 
 		return true;
 	}
@@ -167,7 +156,7 @@ namespace kai
 	{
 		IF_F(check() != OK_OK);
 
-		IF_F(m_pMB->writeBit(m_iSlave, 3, true) != 1);
+		IF_F(m_pMB->writeBit(m_ID, 3, true) != 1);
 		return true;
 	}
 
@@ -176,7 +165,7 @@ namespace kai
 		IF_F(check() != OK_OK);
 
 		uint16_t b;
-		int r = m_pMB->readRegisters(m_iSlave, 12, 1, &b);
+		int r = m_pMB->readRegisters(m_ID, 12, 1, &b);
 		IF_F(r != 1);
 
 		return (b == 1) ? true : false;
@@ -188,13 +177,12 @@ namespace kai
 		IF__(!m_ieReadStatus.update(m_pT->getTfrom()), true);
 
 		uint16_t pB[2];
-		int r = m_pMB->readRegisters(m_iSlave, 0x202C, 1, pB);
+		int r = m_pMB->readRegisters(m_ID, 0x202C, 1, pB);
 		IF_F(r != 1);
 
 		//	int p = MAKE32(pB[0], pB[1]);
 		int16_t p = pB[0];
-		ACTUATOR_CHAN* pChan = getChan();
-		pChan->pos()->set(p);
+		m_p.set(p);
 
 		return true;
 	}
@@ -204,7 +192,7 @@ namespace kai
 		IF_F(check() != OK_OK);
 		//		IF__(!m_ieReadStatus.update(m_pT->getTfrom()));
 
-		IF_F(m_pMB->writeRegister(m_iSlave, 0x2000, 0x07) != 1);
+		IF_F(m_pMB->writeRegister(m_ID, 0x2000, 0x07) != 1);
 
 		return true;
 	}

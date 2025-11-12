@@ -13,11 +13,13 @@ namespace kai
     _ModuleBase::_ModuleBase()
     {
         m_pT = nullptr;
+        pthread_mutex_init(&m_mutexAtomic, NULL);
     }
 
     _ModuleBase::~_ModuleBase()
     {
         DEL(m_pT);
+        pthread_mutex_destroy(&m_mutexAtomic);
     }
 
     int _ModuleBase::init(void *pKiss)
@@ -103,6 +105,16 @@ namespace kai
         IF_(check() != OK_OK);
 
         m_pT->stop();
+    }
+
+    void _ModuleBase::atomicFrom(void)
+    {
+        pthread_mutex_lock(&m_mutexAtomic);
+    }
+
+    void _ModuleBase::atomicTo(void)
+    {
+        pthread_mutex_unlock(&m_mutexAtomic);
     }
 
     void _ModuleBase::onPause(void)

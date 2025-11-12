@@ -42,7 +42,6 @@ namespace kai
             m.init();
             pM->v("kSpd", &m.m_kSpd);
             pM->v("kStr", &m.m_kStr);
-            pM->v("iAxis", &m.m_iAxis);
 
             string n = "";
             pM->v("_ActuatorBase", &n);

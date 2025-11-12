@@ -9,13 +9,28 @@ namespace kai
 
 	_ActuatorBase::_ActuatorBase()
 	{
-		pthread_mutex_init(&m_mutex, NULL);
-		m_pParent = NULL;
+		m_ID = 0;
+		m_origin = 0;
+		m_p.init();
+		m_s.init();
+		m_a.init();
+		m_b.init();
+		m_c.init();
+
+		m_tLastCmd = 0;
+		m_tCmdTimeout = 0;
+		m_ieCheckAlarm.init(100000);
+		m_ieReadStatus.init(50000);
+		m_ieSendCMD.init(50000);
+
+		m_bfStatus.clearAll();
+		m_bfSet.clearAll();
+
+		m_pParent = nullptr;
 	}
 
 	_ActuatorBase::~_ActuatorBase()
 	{
-		pthread_mutex_destroy(&m_mutex);
 	}
 
 	int _ActuatorBase::init(void *pKiss)
@@ -23,77 +38,60 @@ namespace kai
 		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		Kiss *pKchannels = pK->child("channels");
-		IF__(pKchannels->empty(), OK_OK);
+		pK->v("ID", &m_ID);
+		pK->v("origin", &m_origin);
 
-		int i = 0;
-		while (1)
-		{
-			Kiss *pKc = pKchannels->child(i++);
-			if (pKc->empty())
-				break;
+		pK->v("p", &m_p.m_v);
+		pK->v("pTarget", &m_p.m_vTarget);
+		pK->v("pErr", &m_p.m_vErr);
+		pK->v("pRange", &m_p.m_vRange);
 
-			ACTUATOR_CHAN c;
-			c.init();
+		pK->v("s", &m_s.m_v);
+		pK->v("sTarget", &m_s.m_vTarget);
+		pK->v("sErr", &m_s.m_vErr);
+		pK->v("sRange", &m_s.m_vRange);
 
-			pKc->v("ID", &c.m_ID);
-			pKc->v("tCmdTimeout", &c.m_tCmdTimeout);
-			pKc->v("mode", (int *)&c.m_mode);
-			pKc->v("bPower", &c.m_bPower);
+		pK->v("a", &m_a.m_v);
+		pK->v("aTarget", &m_a.m_vTarget);
+		pK->v("aErr", &m_a.m_vErr);
+		pK->v("aRange", &m_a.m_vRange);
 
-			int bf;
+		pK->v("b", &m_b.m_v);
+		pK->v("bTarget", &m_b.m_vTarget);
+		pK->v("bErr", &m_b.m_vErr);
+		pK->v("bRange", &m_b.m_vRange);
 
-			bf = 0;
-			pKc->v("setPower", &bf);
-			if (bf)
-				c.m_bfSet.set(actuator_power);
+		pK->v("c", &m_c.m_v);
+		pK->v("cTarget", &m_c.m_vTarget);
+		pK->v("cErr", &m_c.m_vErr);
+		pK->v("cRange", &m_c.m_vRange);
 
-			bf = 0;
-			pKc->v("setID", &bf);
-			if (bf)
-				c.m_bfSet.set(actuator_setID);
+		pK->v("tCmdTimeout", &m_tCmdTimeout);
+		pK->v("tIntCheckAlarm", &m_ieCheckAlarm.m_tInterval);
+		pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
+		pK->v("tIntSendCMD", &m_ieSendCMD.m_tInterval);
 
-			bf = 0;
-			pKc->v("setMode", &bf);
-			if (bf)
-				c.m_bfSet.set(actuator_setMode);
+		int bf;
 
-			pKc->v("Porigin", &c.m_pOrigin);
-			pKc->v("p", &c.m_p.m_v);
-			pKc->v("pTarget", &c.m_p.m_vTarget);
-			pKc->v("pErr", &c.m_p.m_vErr);
-			pKc->v("pRange", &c.m_p.m_vRange);
+		bf = 0;
+		pK->v("bfSetPower", &bf);
+		if (bf)
+			m_bfSet.set(actuator_power);
 
-			pKc->v("sCofactor", &c.m_s.m_vCofactor);
-			pKc->v("s", &c.m_s.m_v);
-			pKc->v("sTarget", &c.m_s.m_vTarget);
-			pKc->v("sErr", &c.m_s.m_vErr);
-			pKc->v("sRange", &c.m_s.m_vRange);
+		bf = 0;
+		pK->v("bfSetID", &bf);
+		if (bf)
+			m_bfSet.set(actuator_setID);
 
-			pKc->v("a", &c.m_a.m_v);
-			pKc->v("aTarget", &c.m_a.m_vTarget);
-			pKc->v("aErr", &c.m_a.m_vErr);
-			pKc->v("aRange", &c.m_a.m_vRange);
+		bf = 0;
+		pK->v("bfSetMode", &bf);
+		if (bf)
+			m_bfSet.set(actuator_setMode);
 
-			pKc->v("b", &c.m_b.m_v);
-			pKc->v("bTarget", &c.m_b.m_vTarget);
-			pKc->v("bErr", &c.m_b.m_vErr);
-			pKc->v("bRange", &c.m_b.m_vRange);
-
-			pKc->v("c", &c.m_c.m_v);
-			pKc->v("cTarget", &c.m_c.m_vTarget);
-			pKc->v("cErr", &c.m_c.m_vErr);
-			pKc->v("cRange", &c.m_c.m_vRange);
-
-			m_vChan.push_back(c);
-		}
-
-		if (m_vChan.empty())
-		{
-			ACTUATOR_CHAN c;
-			c.init();
-			m_vChan.push_back(c);
-		}
+		bf = 0;
+		pK->v("bfMove", &bf);
+		if (bf)
+			m_bfSet.set(actuator_move);
 
 		return OK_OK;
 	}
@@ -123,31 +121,81 @@ namespace kai
 		IF_(check() != OK_OK);
 	}
 
-	bool _ActuatorBase::open(void)
+	int _ActuatorBase::getID(void)
 	{
-		return false;
+		return m_ID;
 	}
 
-	// void _ActuatorBase::atomicFrom(void)
-	// {
-	// 	pthread_mutex_lock(&m_mutex);
-	// }
-
-	// void _ActuatorBase::atomicTo(void)
-	// {
-	// 	pthread_mutex_unlock(&m_mutex);
-	// }
-
-	ACTUATOR_CHAN *_ActuatorBase::getChan(int iChan)
+	void _ActuatorBase::power(bool bON)
 	{
-		IF_N(m_vChan.empty())
-
-		return &m_vChan[iChan];
+		if (bON)
+			m_bfSet.set(actuator_power);
+		else
+			m_bfSet.clear(actuator_power);
 	}
 
-	bool _ActuatorBase::bCmdTimeout(int iChan)
+	void _ActuatorBase::move(bool bMove)
 	{
-		return getChan(iChan)->bCmdTimeout();
+		if (bMove)
+			m_bfSet.set(actuator_move);
+		else
+			m_bfSet.clear(actuator_move);
+	}
+
+	void _ActuatorBase::gotoOrigin(void)
+	{
+		m_p.setTarget(m_origin);
+		m_bfSet.set(actuator_gotoOrigin);
+	}
+
+	bool _ActuatorBase::bComplete(void)
+	{
+		IF_F(!m_p.bComplete());
+
+		return true;
+	}
+
+	ACTUATOR_V *_ActuatorBase::pos(void)
+	{
+		return &m_p;
+	}
+
+	ACTUATOR_V *_ActuatorBase::speed(void)
+	{
+		return &m_s;
+	}
+
+	ACTUATOR_V *_ActuatorBase::accel(void)
+	{
+		return &m_a;
+	}
+
+	ACTUATOR_V *_ActuatorBase::brake(void)
+	{
+		return &m_b;
+	}
+
+	ACTUATOR_V *_ActuatorBase::current(void)
+	{
+		return &m_c;
+	}
+
+	void _ActuatorBase::setBitFlag(ACTUATOR_BF_SET bf)
+	{
+		m_bfSet.set(bf);
+	}
+
+	void _ActuatorBase::setLastCmdTime(void)
+	{
+		m_tLastCmd = getTbootUs();
+	}
+
+	bool _ActuatorBase::bCmdTimeout(void)
+	{
+		uint64_t t = getTbootUs();
+		IF_F(t - m_tLastCmd < m_tCmdTimeout);
+
+		return true;
 	}
 
 	void _ActuatorBase::console(void *pConsole)
@@ -158,50 +206,45 @@ namespace kai
 		_Console *pC = (_Console *)pConsole;
 		const int nD = 5;
 
-		for (int i = 0; i < m_vChan.size(); i++)
-		{
-			ACTUATOR_CHAN *pChan = getChan(i);
-			ACTUATOR_V *pV;
+		pC->addMsg("ID: " + i2str(m_ID), 1);
 
-			pC->addMsg("-----------------------", 1);
-			pC->addMsg("Chan " + i2str(i), 1);
+		ACTUATOR_V *pV;
 
-			pV = pChan->pos();
-			pC->addMsg("p=" + f2str(pV->m_v) +
-						   ", pT=" + f2str(pV->m_vTarget) +
-						   ", pRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
-						   ", pO=" + f2str(pChan->m_pOrigin) +
-						   ", pE=" + f2str(pV->m_vErr),
-					   1);
+		pV = pos();
+		pC->addMsg("p=" + f2str(pV->m_v) +
+					   ", pT=" + f2str(pV->m_vTarget) +
+					   ", pRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
+					   ", pOrigin=" + f2str(m_origin) +
+					   ", pE=" + f2str(pV->m_vErr),
+				   1);
 
-			pV = pChan->speed();
-			pC->addMsg("s=" + f2str(pV->m_v) +
-						   ", sT=" + f2str(pV->m_vTarget) +
-						   ", sRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
-						   ", sE=" + f2str(pV->m_vErr),
-					   1);
+		pV = speed();
+		pC->addMsg("s=" + f2str(pV->m_v) +
+					   ", sT=" + f2str(pV->m_vTarget) +
+					   ", sRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
+					   ", sE=" + f2str(pV->m_vErr),
+				   1);
 
-			pV = pChan->accel();
-			pC->addMsg("a=" + f2str(pV->m_v) +
-						   ", aT=" + f2str(pV->m_vTarget) +
-						   ", aRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
-						   ", aE=" + f2str(pV->m_vErr),
-					   1);
+		pV = accel();
+		pC->addMsg("a=" + f2str(pV->m_v) +
+					   ", aT=" + f2str(pV->m_vTarget) +
+					   ", aRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
+					   ", aE=" + f2str(pV->m_vErr),
+				   1);
 
-			pV = pChan->brake();
-			pC->addMsg("b=" + f2str(pV->m_v) +
-						   ", bT=" + f2str(pV->m_vTarget) +
-						   ", bRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
-						   ", bE=" + f2str(pV->m_vErr),
-					   1);
+		pV = brake();
+		pC->addMsg("b=" + f2str(pV->m_v) +
+					   ", bT=" + f2str(pV->m_vTarget) +
+					   ", bRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
+					   ", bE=" + f2str(pV->m_vErr),
+				   1);
 
-			pV = pChan->current();
-			pC->addMsg("c=" + f2str(pV->m_v) +
-						   ", cT=" + f2str(pV->m_vTarget) +
-						   ", cRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
-						   ", cE=" + f2str(pV->m_vErr),
-					   1);
-		}
+		pV = current();
+		pC->addMsg("c=" + f2str(pV->m_v) +
+					   ", cT=" + f2str(pV->m_vTarget) +
+					   ", cRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
+					   ", cE=" + f2str(pV->m_vErr),
+				   1);
 	}
 
 }

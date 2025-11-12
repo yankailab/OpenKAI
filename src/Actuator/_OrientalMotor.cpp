@@ -11,10 +11,6 @@ namespace kai
 	{
 		m_pMB = nullptr;
 		m_iData = 0;
-
-		m_ieCheckAlarm.init(100000);
-		m_ieSendCMD.init(50000);
-		m_ieReadStatus.init(50000);
 	}
 
 	_OrientalMotor::~_OrientalMotor()
@@ -27,9 +23,6 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("iData", &m_iData);
-		pK->v("tIntCheckAlarm", &m_ieCheckAlarm.m_tInterval);
-		pK->v("tIntSendCMD", &m_ieSendCMD.m_tInterval);
-		pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
 
 		return OK_OK;
 	}
@@ -68,162 +61,139 @@ namespace kai
 		while (m_pT->bAlive())
 		{
 			m_pT->autoFPS();
+			uint64_t t = m_pT->getTfrom();
 
-			// if (m_bFeedback)
-			// {
-			checkAlarm();
-			readStatus();
-			//			}
+			clearAlarm();
 
-			//		if(!bCmdTimeout())
-			//        {
-			//			if (m_lastCmdType == actCmd_pos)
-			updatePos();
-			//			else if (m_lastCmdType == actCmd_spd)
-			//				updateSpeed();
-			//        }
+			if (!m_ieReadStatus.update(t))
+			{
+				readStatus();
+			}
+
+			if (m_ieSendCMD.update(t))
+			{
+				if (!setPos())
+					m_ieSendCMD.reset();
+
+				if (!setSpeed())
+					m_ieSendCMD.reset();
+			}
 		}
 	}
 
-	void _OrientalMotor::checkAlarm(void)
+	bool _OrientalMotor::clearAlarm(void)
 	{
-		IF_(check() != OK_OK);
-		IF_(!m_ieCheckAlarm.update(m_pT->getTfrom()));
+		IF_F(check() != OK_OK);
 
-		for (int i = 0; i < m_vChan.size(); i++)
-		{
-			ACTUATOR_CHAN *pChan = &m_vChan[i];
-			uint16_t pB[2];
-			pB[0] = 1 << 7;
-			pB[1] = 0;
-			m_pMB->writeRegisters(pChan->getID(), 125, 1, pB);
-		}
+		uint16_t pB[2];
+		pB[0] = 1 << 7;
+		pB[1] = 0;
+		m_pMB->writeRegisters(m_ID, 125, 1, pB);
 	}
 
-	void _OrientalMotor::updatePos(void)
+	bool _OrientalMotor::readStatus(void)
 	{
-		IF_(check() != OK_OK);
-		IF_(!m_ieSendCMD.update(m_pT->getTfrom()));
+		IF_F(check() != OK_OK);
 
-		for (int i = 0; i < m_vChan.size(); i++)
-		{
-			ACTUATOR_CHAN *pChan = &m_vChan[i];
-			//			NULL_(pChan);
+		uint16_t pB[18];
+		int nB = 6;
+		int nR = m_pMB->readRegisters(m_ID, 204, nB, pB);
+		IF_F(nR != nB);
 
-			int32_t step = pChan->pos()->getTarget();
-			int32_t speed = pChan->speed()->getTarget();
-			int32_t accel = pChan->accel()->getTarget();
-			int32_t brake = pChan->brake()->getTarget();
-			int32_t current = pChan->current()->getTarget();
+		int32_t p = MAKE32(pB[0], pB[1]);
+		int32_t s = MAKE32(pB[4], pB[5]);
 
-			// create the command
-			uint16_t pB[18];
-			// 88
-			pB[0] = 0;
-			pB[1] = m_iData;
-			pB[2] = 0;
-			pB[3] = 1;
-			// 92
-			pB[4] = HIGH16(step);
-			pB[5] = LOW16(step);
-			pB[6] = HIGH16(speed);
-			pB[7] = LOW16(speed);
+		m_p.set(p);
+		m_s.set(s);
 
-			// 96
-			pB[8] = HIGH16(accel);
-			pB[9] = LOW16(accel);
-			pB[10] = HIGH16(brake);
-			pB[11] = LOW16(brake);
-			pB[12] = HIGH16(current);
-			pB[13] = LOW16(current);
-			pB[14] = 0;
-			pB[15] = 1;
-			pB[16] = 0;
-			pB[17] = 0;
+		LOG_I("step: " + f2str(m_p.get()) + ", speed: " + f2str(m_s.get()));
 
-			if (m_pMB->writeRegisters(pChan->getID(), // m_iSlave,
-									  88, 18, pB) != 18)
-				m_ieSendCMD.reset();
-		}
+		return true;
 	}
 
-	void _OrientalMotor::updateSpeed(void)
+	bool _OrientalMotor::setPos(void)
 	{
-		IF_(check() != OK_OK);
-		IF_(!m_ieSendCMD.update(m_pT->getTfrom()));
+		IF_F(check() != OK_OK);
 
-		for (int i = 0; i < m_vChan.size(); i++)
-		{
-			ACTUATOR_CHAN *pChan = &m_vChan[i];
+		int32_t step = m_p.getTarget();
+		int32_t speed = m_s.getTarget();
+		int32_t accel = m_a.getTarget();
+		int32_t brake = m_b.getTarget();
+		int32_t current = m_c.getTarget();
 
-			int32_t step = 0;
-			uint8_t dMode = 1;
-			int32_t speed = pChan->speed()->getTarget();
+		// create the command
+		uint16_t pB[18];
+		// 88
+		pB[0] = 0;
+		pB[1] = m_iData;
+		pB[2] = 0;
+		pB[3] = 1;
+		// 92
+		pB[4] = HIGH16(step);
+		pB[5] = LOW16(step);
+		pB[6] = HIGH16(speed);
+		pB[7] = LOW16(speed);
 
-			vFloat2 vRange = pChan->pos()->getRange();
-			if (speed > 0)
-				step = vRange.y;
-			else if (speed < 0)
-				step = vRange.x;
-			else
-				dMode = 3;
+		// 96
+		pB[8] = HIGH16(accel);
+		pB[9] = LOW16(accel);
+		pB[10] = HIGH16(brake);
+		pB[11] = LOW16(brake);
+		pB[12] = HIGH16(current);
+		pB[13] = LOW16(current);
+		pB[14] = 0;
+		pB[15] = 1;
+		pB[16] = 0;
+		pB[17] = 0;
 
-			int32_t accel = pChan->accel()->getTarget();
-			int32_t brake = pChan->brake()->getTarget();
-			int32_t current = pChan->current()->getTarget();
-
-			// create the command
-			uint16_t pB[18];
-			// 88
-			pB[0] = 0;
-			pB[1] = m_iData;
-			pB[2] = 0;
-			pB[3] = dMode;
-			// 92
-			pB[4] = HIGH16(step);
-			pB[5] = LOW16(step);
-			pB[6] = HIGH16(speed);
-			pB[7] = LOW16(speed);
-
-			// 96
-			pB[8] = HIGH16(accel);
-			pB[9] = LOW16(accel);
-			pB[10] = HIGH16(brake);
-			pB[11] = LOW16(brake);
-			pB[12] = HIGH16(current);
-			pB[13] = LOW16(current);
-			pB[14] = 0;
-			pB[15] = 1;
-			pB[16] = 0;
-			pB[17] = 0;
-
-			if (m_pMB->writeRegisters(pChan->getID(), 88, 18, pB) != 18)
-				m_ieSendCMD.reset();
-		}
+		return (m_pMB->writeRegisters(m_ID, 88, 18, pB) == 18);
 	}
 
-	void _OrientalMotor::readStatus(void)
+	bool _OrientalMotor::setSpeed(void)
 	{
-		IF_(check() != OK_OK);
-		IF_(!m_ieReadStatus.update(m_pT->getTfrom()));
+		IF_F(check() != OK_OK);
 
-		for (int i = 0; i < m_vChan.size(); i++)
-		{
-			ACTUATOR_CHAN *pChan = &m_vChan[i];
+		int32_t step = 0;
+		uint8_t dMode = 1;
+		int32_t speed = m_s.getTarget();
+		vFloat2 vRange = m_p.getRange();
+		if (speed > 0)
+			step = vRange.y;
+		else if (speed < 0)
+			step = vRange.x;
+		else
+			dMode = 3;
 
-			uint16_t pB[18];
-			int nR = 6;
-			int r = m_pMB->readRegisters(pChan->getID(), 204, nR, pB);
-			IF_(r != 6);
+		int32_t accel = m_a.getTarget();
+		int32_t brake = m_b.getTarget();
+		int32_t current = m_c.getTarget();
 
-			int32_t p = MAKE32(pB[0], pB[1]);
-			int32_t s = MAKE32(pB[4], pB[5]);
+		// create the command
+		uint16_t pB[18];
+		// 88
+		pB[0] = 0;
+		pB[1] = m_iData;
+		pB[2] = 0;
+		pB[3] = dMode;
+		// 92
+		pB[4] = HIGH16(step);
+		pB[5] = LOW16(step);
+		pB[6] = HIGH16(speed);
+		pB[7] = LOW16(speed);
 
-			pChan->pos()->set(p);
-			pChan->speed()->set(s);
+		// 96
+		pB[8] = HIGH16(accel);
+		pB[9] = LOW16(accel);
+		pB[10] = HIGH16(brake);
+		pB[11] = LOW16(brake);
+		pB[12] = HIGH16(current);
+		pB[13] = LOW16(current);
+		pB[14] = 0;
+		pB[15] = 1;
+		pB[16] = 0;
+		pB[17] = 0;
 
-			LOG_I("step: " + f2str(pChan->pos()->get()) + ", speed: " + f2str(pChan->speed()->get()));
-		}
+		return (m_pMB->writeRegisters(m_ID, 88, 18, pB) == 18);
 	}
 
 }

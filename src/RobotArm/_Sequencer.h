@@ -33,7 +33,7 @@ namespace kai
 			//		m_pA->pos(m_vPos);
 			//		m_pA->speed(m_vSpeed);
 
-			return m_pA->getChan()->bComplete();
+			return m_pA->bComplete();
 		}
 
 		void setTarget(vFloat4 &p, vFloat4 &s)
@@ -95,7 +95,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		bool m_bON;
 		vector<SEQ_ACTION> m_vAction;
 		int m_iAction;

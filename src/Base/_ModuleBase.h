@@ -44,6 +44,9 @@ namespace kai
 		virtual void resume(void);
 		virtual void stop(void);
 
+		virtual void atomicFrom(void);
+		virtual void atomicTo(void);
+
 	protected:
 		virtual void onPause(void);
 		virtual void onResume(void);
@@ -58,6 +61,7 @@ namespace kai
 
 	protected:
 		_Thread *m_pT;
+		pthread_mutex_t m_mutexAtomic;
 	};
 
 }

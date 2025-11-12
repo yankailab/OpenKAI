@@ -10,11 +10,6 @@ namespace kai
 	_IAI::_IAI()
 	{
 		m_pMB = nullptr;
-		m_iData = 0;
-
-		m_ieCheckAlarm.init(100000);
-		m_ieSendCMD.init(50000);
-		m_ieReadStatus.init(50000);
 	}
 
 	_IAI::~_IAI()
@@ -25,11 +20,6 @@ namespace kai
 	{
 		CHECK_(this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
-
-		pK->v("iData", &m_iData);
-		pK->v("tIntCheckAlarm", &m_ieCheckAlarm.m_tInterval);
-		pK->v("tIntSendCMD", &m_ieSendCMD.m_tInterval);
-		pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
 
 		return OK_OK;
 	}
@@ -68,160 +58,128 @@ namespace kai
 		while (m_pT->bAlive())
 		{
 			m_pT->autoFPS();
+			uint64_t t = m_pT->getTfrom();
 
-			// if (m_bFeedback)
-			// {
-			checkAlarm();
-			//			readStatus();
-			//			}
-
-			//		if(!bCmdTimeout())
-			//        {
-			//			if (m_lastCmdType == actCmd_pos)
-			//			updatePos();
-			//			else if (m_lastCmdType == actCmd_spd)
-			//				updateSpeed();
-			//        }
-		}
-	}
-
-	void _IAI::checkAlarm(void)
-	{
-		IF_(check() != OK_OK);
-		IF_(!m_ieCheckAlarm.update(m_pT->getTfrom()));
-
-		for (int i = 0; i < m_vChan.size(); i++)
-		{
-			ACTUATOR_CHAN *pChan = &m_vChan[i];
-
-			// reset alarm
-			// uint8_t pB[10];
-			// pB[0] = pChan->getID();
-			// pB[1] = 0x45;
-			// pB[2] = 0;
-			// pB[3] = 0x05;
-			// pB[4] = 0;
-			// pB[5] = 0;
-			// pB[6] = 0;
-			// pB[7] = 0;
-			// pB[8] = 0x59;
-			// pB[9] = 0x03;
-
-			// return to origin
-			uint8_t pB[10];
-			pB[0] = pChan->getID();
-			pB[1] = 0x45;
-			pB[2] = 0;
-			pB[3] = 0x0A;
-			pB[4] = 0;
-			pB[5] = 0x07;
-			pB[6] = 0;
-			pB[7] = 0;
-			pB[8] = 0xBC;
-			pB[9] = 0xC3;
-
-			int nR = m_pMB->sendRawRequest(pChan->getID(), pB, 8);
-
-			LOG_I(i2str(nR));
-		}
-	}
-
-	void _IAI::updatePos(void)
-	{
-		IF_(check() != OK_OK);
-		IF_(!m_ieSendCMD.update(m_pT->getTfrom()));
-
-		for (int i = 0; i < m_vChan.size(); i++)
-		{
-			ACTUATOR_CHAN *pChan = &m_vChan[i];
-
-			int32_t step = pChan->pos()->getTarget();
-			int32_t pErr = pChan->pos()->getErrRange();
-			int32_t speed = pChan->speed()->getTarget();
-			int32_t accel = pChan->accel()->getTarget();
-			int32_t brake = pChan->brake()->getTarget();
-			int32_t current = pChan->current()->getTarget();
-
-			// create the command
-			uint16_t pB[9];
-			// 9900h	PCMD target position
-			pB[0] = HIGH16(step);
-			pB[1] = LOW16(step);
-			// 9902		INP	position width
-			pB[2] = HIGH16(pErr);
-			pB[3] = LOW16(pErr);
-			// 9904		VCMD speed
-			pB[4] = HIGH16(speed);
-			pB[5] = LOW16(speed);
-			// 9906		ACMD accel
-			pB[6] = LOW16(accel);
-			// 9907		PPOW power limit
-			pB[7] = LOW16(current);
-			// 9908		CTLF control flag
-			pB[8] = 0;
-
-			int nB = 7;
-			int nR = m_pMB->writeRegisters(pChan->getID(), // m_iSlave,
-										   0x9900,		   // 9900h
-										   7,
-										   pB);
-			if (nR != nB)
+			if (m_ieReadStatus.update(t))
 			{
-				m_ieSendCMD.reset();
+				readStatus();
+			}
+
+			if (m_bfSet.b(actuator_clearAlarm, true))
+			{
+				clearAlarm();
+			}
+
+			if (m_bfSet.b(actuator_gotoOrigin, true))
+			{
+				gotoOrigin();
+			}
+
+			if (m_ieSendCMD.update(t))
+			{
+				if (m_bfSet.b(actuator_move))
+				{
+					if (!setPos())
+						m_ieSendCMD.reset();
+				}
+				else
+				{
+					if (!stopMove())
+						m_ieSendCMD.reset();
+				}
 			}
 		}
 	}
 
-	void _IAI::retOrigin(void)
+	bool _IAI::clearAlarm(void)
 	{
-		IF_(check() != OK_OK);
-//		IF_(!m_ieCheckAlarm.update(m_pT->getTfrom()));
+		IF_F(check() != OK_OK);
 
-		for (int i = 0; i < m_vChan.size(); i++)
-		{
-			ACTUATOR_CHAN *pChan = &m_vChan[i];
+		uint8_t pB[10];
+		pB[0] = getID();
+		pB[1] = 0x45;
+		pB[2] = 0;
+		pB[3] = 0x05;
+		pB[4] = 0;
+		pB[5] = 0;
+		pB[6] = 0;
+		pB[7] = 0;
+		// pB[8] = 0x59;
+		// pB[9] = 0x03;
 
-			// return to origin
-			uint8_t pB[10];
-			pB[0] = pChan->getID();
-			pB[1] = 0x45;
-			pB[2] = 0;
-			pB[3] = 0x0A;
-			pB[4] = 0;
-			pB[5] = 0x07;
-			pB[6] = 0;
-			pB[7] = 0;
-			pB[8] = 0xBC;
-			pB[9] = 0xC3;
-
-			int nR = m_pMB->sendRawRequest(pChan->getID(), pB, 8);
-
-			LOG_I(i2str(nR));
-		}
+		return (m_pMB->sendRawRequest(getID(), pB, 8) == 8);
 	}
 
-	void _IAI::readStatus(void)
+	bool _IAI::readStatus(void)
 	{
-		IF_(check() != OK_OK);
-		IF_(!m_ieReadStatus.update(m_pT->getTfrom()));
+		IF_F(check() != OK_OK);
 
-		for (int i = 0; i < m_vChan.size(); i++)
-		{
-			ACTUATOR_CHAN *pChan = &m_vChan[i];
+		// uint16_t pB[18];
+		// int nR = 6;
+		// int r = m_pMB->readRegisters(m_ID, 204, nR, pB);
+		// IF_(r != 6);
 
-			uint16_t pB[18];
-			int nR = 6;
-			int r = m_pMB->readRegisters(pChan->getID(), 204, nR, pB);
-			IF_(r != 6);
+		// int32_t p = MAKE32(pB[0], pB[1]);
+		// int32_t s = MAKE32(pB[4], pB[5]);
 
-			int32_t p = MAKE32(pB[0], pB[1]);
-			int32_t s = MAKE32(pB[4], pB[5]);
+		// m_p.set(p);
+		// m_s.set(s);
 
-			pChan->pos()->set(p);
-			pChan->speed()->set(s);
+		// LOG_I("step: " + f2str(m_p.get()) + ", speed: " + f2str(m_s.get()));
+	}
 
-			LOG_I("step: " + f2str(pChan->pos()->get()) + ", speed: " + f2str(pChan->speed()->get()));
-		}
+	bool _IAI::gotoOrigin(void)
+	{
+		IF_F(check() != OK_OK);
+
+		uint8_t pB[10];
+		pB[0] = m_ID;
+		pB[1] = 0x45;
+		pB[2] = 0;
+		pB[3] = 0x0A;
+		pB[4] = 0;
+		pB[5] = 0x07;
+		pB[6] = 0;
+		pB[7] = 0;
+		// pB[8] = 0xBC;
+		// pB[9] = 0xC3;
+
+		return (m_pMB->sendRawRequest(m_ID, pB, 8) == 8);
+	}
+
+	bool _IAI::setPos(void)
+	{
+		IF_F(check() != OK_OK);
+
+		int32_t step = m_p.getTarget();
+		int32_t pErr = m_p.getErrRange();
+		int32_t speed = m_s.getTarget();
+		int32_t accel = m_a.getTarget();
+		int32_t brake = m_b.getTarget();
+		int32_t current = m_c.getTarget();
+
+		uint16_t pB[9];
+		pB[0] = HIGH16(step); // 9900 PCMD target position
+		pB[1] = LOW16(step);
+		pB[2] = HIGH16(pErr); // 9902	INP	position width
+		pB[3] = LOW16(pErr);
+		pB[4] = HIGH16(speed); // 9904	VCMD speed
+		pB[5] = LOW16(speed);
+		pB[6] = LOW16(accel);	// 9906	ACMD accel
+		pB[7] = LOW16(current); // 9907	PPOW power limit
+		pB[8] = 0;				// 9908	CTLF control flag
+
+		return (m_pMB->writeRegisters(m_ID, 0x9900, 7, pB) == 7);
+	}
+
+	bool _IAI::stopMove(void)
+	{
+		IF_F(check() != OK_OK);
+
+		uint16_t pB[9];
+		// TODO
+
+		return (m_pMB->writeRegisters(m_ID, 0x9900, 7, pB) == 7);
 	}
 
 }
