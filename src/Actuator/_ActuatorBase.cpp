@@ -128,15 +128,15 @@ namespace kai
 		return false;
 	}
 
-	void _ActuatorBase::atomicFrom(void)
-	{
-		pthread_mutex_lock(&m_mutex);
-	}
+	// void _ActuatorBase::atomicFrom(void)
+	// {
+	// 	pthread_mutex_lock(&m_mutex);
+	// }
 
-	void _ActuatorBase::atomicTo(void)
-	{
-		pthread_mutex_unlock(&m_mutex);
-	}
+	// void _ActuatorBase::atomicTo(void)
+	// {
+	// 	pthread_mutex_unlock(&m_mutex);
+	// }
 
 	ACTUATOR_CHAN *_ActuatorBase::getChan(int iChan)
 	{

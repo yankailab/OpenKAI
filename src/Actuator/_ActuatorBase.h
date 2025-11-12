@@ -41,7 +41,7 @@ namespace kai
 		float m_v;
 		float m_vTarget;
 		float m_vCofactor;
-		float m_vErr;
+		float m_vErr;	// acceptable err range
 		vFloat2 m_vRange;
 
 		void init(void)
@@ -97,6 +97,17 @@ namespace kai
 		{
 			return m_vRange;
 		}
+
+		void setErrRange(float v)
+		{
+			m_vErr = v;
+		}
+
+		float getErrRange(void)
+		{
+			return m_vErr;
+		}
+
 	};
 
 	struct ACTUATOR_CHAN
@@ -217,8 +228,8 @@ namespace kai
 		virtual int start(void);
 		virtual void console(void *pConsole);
 
-		virtual void atomicFrom(void);
-		virtual void atomicTo(void);
+//		virtual void atomicFrom(void);
+//		virtual void atomicTo(void);
 		virtual ACTUATOR_CHAN *getChan(int iChan = 0);
 
 	protected:

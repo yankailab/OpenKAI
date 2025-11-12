@@ -78,7 +78,7 @@ namespace kai
 			//		if(!bCmdTimeout())
 			//        {
 			//			if (m_lastCmdType == actCmd_pos)
-//			updatePos();
+			//			updatePos();
 			//			else if (m_lastCmdType == actCmd_spd)
 			//				updateSpeed();
 			//        }
@@ -136,12 +136,11 @@ namespace kai
 			ACTUATOR_CHAN *pChan = &m_vChan[i];
 
 			int32_t step = pChan->pos()->getTarget();
+			int32_t pErr = pChan->pos()->getErrRange();
 			int32_t speed = pChan->speed()->getTarget();
 			int32_t accel = pChan->accel()->getTarget();
 			int32_t brake = pChan->brake()->getTarget();
 			int32_t current = pChan->current()->getTarget();
-
-			int32_t inp = 10;
 
 			// create the command
 			uint16_t pB[9];
@@ -149,8 +148,8 @@ namespace kai
 			pB[0] = HIGH16(step);
 			pB[1] = LOW16(step);
 			// 9902		INP	position width
-			pB[2] = HIGH16(inp);
-			pB[3] = LOW16(inp);
+			pB[2] = HIGH16(pErr);
+			pB[3] = LOW16(pErr);
 			// 9904		VCMD speed
 			pB[4] = HIGH16(speed);
 			pB[5] = LOW16(speed);
@@ -161,69 +160,43 @@ namespace kai
 			// 9908		CTLF control flag
 			pB[8] = 0;
 
-			int nB = m_pMB->writeRegisters(pChan->getID(), // m_iSlave,
-									  0x9900,		  // 9900h
-									  7,
-									  pB);
-			if (nB != 7)
+			int nB = 7;
+			int nR = m_pMB->writeRegisters(pChan->getID(), // m_iSlave,
+										   0x9900,		   // 9900h
+										   7,
+										   pB);
+			if (nR != nB)
 			{
 				m_ieSendCMD.reset();
 			}
 		}
 	}
 
-	void _IAI::updateSpeed(void)
+	void _IAI::retOrigin(void)
 	{
 		IF_(check() != OK_OK);
-		IF_(!m_ieSendCMD.update(m_pT->getTfrom()));
+//		IF_(!m_ieCheckAlarm.update(m_pT->getTfrom()));
 
 		for (int i = 0; i < m_vChan.size(); i++)
 		{
 			ACTUATOR_CHAN *pChan = &m_vChan[i];
 
-			int32_t step = 0;
-			uint8_t dMode = 1;
-			int32_t speed = pChan->speed()->getTarget();
-
-			vFloat2 vRange = pChan->pos()->getRange();
-			if (speed > 0)
-				step = vRange.y;
-			else if (speed < 0)
-				step = vRange.x;
-			else
-				dMode = 3;
-
-			int32_t accel = pChan->accel()->getTarget();
-			int32_t brake = pChan->brake()->getTarget();
-			int32_t current = pChan->current()->getTarget();
-
-			// create the command
-			uint16_t pB[18];
-			// 88
-			pB[0] = 0;
-			pB[1] = m_iData;
+			// return to origin
+			uint8_t pB[10];
+			pB[0] = pChan->getID();
+			pB[1] = 0x45;
 			pB[2] = 0;
-			pB[3] = dMode;
-			// 92
-			pB[4] = HIGH16(step);
-			pB[5] = LOW16(step);
-			pB[6] = HIGH16(speed);
-			pB[7] = LOW16(speed);
+			pB[3] = 0x0A;
+			pB[4] = 0;
+			pB[5] = 0x07;
+			pB[6] = 0;
+			pB[7] = 0;
+			pB[8] = 0xBC;
+			pB[9] = 0xC3;
 
-			// 96
-			pB[8] = HIGH16(accel);
-			pB[9] = LOW16(accel);
-			pB[10] = HIGH16(brake);
-			pB[11] = LOW16(brake);
-			pB[12] = HIGH16(current);
-			pB[13] = LOW16(current);
-			pB[14] = 0;
-			pB[15] = 1;
-			pB[16] = 0;
-			pB[17] = 0;
+			int nR = m_pMB->sendRawRequest(pChan->getID(), pB, 8);
 
-			if (m_pMB->writeRegisters(pChan->getID(), 88, 18, pB) != 18)
-				m_ieSendCMD.reset();
+			LOG_I(i2str(nR));
 		}
 	}
 

@@ -43,11 +43,13 @@ namespace kai
 		int start(void);
 		int check(void);
 
-	private:
+	protected:
 		void checkAlarm(void);
 		void updatePos(void);
 		void updateSpeed(void);
 		void readStatus(void);
+
+	private:
 		void update(void);
 		static void *getUpdate(void *This)
 		{
