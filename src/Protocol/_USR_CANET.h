@@ -22,21 +22,17 @@ namespace kai
 
 		// working buffer
 		uint8_t m_pB[CAN_BUF_N];
-		uint8_t m_iB;
 
 
 		bool read(_IObase *pIO)
 		{
 			NULL_F(pIO);
 
-			int nR = pIO->read(&m_pB[m_iB], CAN_BUF_N - m_iB);
+			int nR = pIO->read(m_pB, CAN_BUF_N);
 			IF_F(nR <= 0);
-			m_iB += nR;
-
-			IF_F(m_iB < CAN_BUF_N);
+			IF_F(nR < CAN_BUF_N);
 
 			decode();
-			m_iB = 0;
 			return true;
 		}
 
@@ -103,7 +99,7 @@ namespace kai
 		virtual bool sendFrame(CAN_FRAME* pF);
 
 	protected:
-		virtual bool readFrame(CAN_FRAME *pFrame);
+		virtual bool readFrame(CAN_FRAME *pF);
 		virtual void handleFrame(const CAN_FRAME &frame);
 
 	private:

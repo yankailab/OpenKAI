@@ -68,21 +68,6 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			if (!m_pIO)
-			{
-				m_pT->sleepT(SEC_2_USEC);
-				continue;
-			}
-
-			if (!m_pIO->bOpen())
-			{
-				if (!m_pIO->open())
-				{
-					m_pT->sleepT(SEC_2_USEC);
-					continue;
-				}
-			}
-
 			m_pT->autoFPS();
 
 		}
@@ -90,7 +75,9 @@ namespace kai
 
 	bool _USR_CANET::sendFrame(CAN_FRAME* pF)
 	{
+		IF_F(check() != OK_OK);
 		NULL_F(pF);
+
 		return m_pIO->write(pF->m_pB, CAN_BUF_N);
 	}
 
@@ -108,28 +95,28 @@ namespace kai
 		}
 	}
 
-	bool _USR_CANET::readFrame(CAN_FRAME *pFrame)
+	bool _USR_CANET::readFrame(CAN_FRAME *pF)
 	{
 		IF_F(check() != OK_OK);
-		NULL_F(pFrame);
+		NULL_F(pF);
 
-		return pFrame->read(m_pIO);
+		return pF->read(m_pIO);
 	}
 
-	void _USR_CANET::handleFrame(const CAN_FRAME &frame)
+	void _USR_CANET::handleFrame(const CAN_FRAME &f)
 	{
-		LOG_I("Recv: ID=" + i2str(frame.m_ID) +
-			", bExtended=" + i2str(frame.m_bExtended) +
-			", bRTR=" + i2str(frame.m_bRTR) +
-			", nData=" + i2str(frame.m_nData) +
-			", Data=" + i2str(frame.m_pData[0]) +
-			", " + i2str(frame.m_pData[1]) +
-			", " + i2str(frame.m_pData[2]) +
-			", " + i2str(frame.m_pData[3]) +
-			", " + i2str(frame.m_pData[4]) +
-			", " + i2str(frame.m_pData[5]) +
-			", " + i2str(frame.m_pData[6]) +
-			", " + i2str(frame.m_pData[7])
+		LOG_I("Recv: ID=" + i2str(f.m_ID) +
+			", bExtended=" + i2str(f.m_bExtended) +
+			", bRTR=" + i2str(f.m_bRTR) +
+			", nData=" + i2str(f.m_nData) +
+			", Data=" + i2str(f.m_pData[0]) +
+			", " + i2str(f.m_pData[1]) +
+			", " + i2str(f.m_pData[2]) +
+			", " + i2str(f.m_pData[3]) +
+			", " + i2str(f.m_pData[4]) +
+			", " + i2str(f.m_pData[5]) +
+			", " + i2str(f.m_pData[6]) +
+			", " + i2str(f.m_pData[7])
 		);
 	}
 
