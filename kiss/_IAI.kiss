@@ -30,7 +30,6 @@
 
 	"rtuPort":"/dev/ttyACM3",
 	"rtuBaud":38400,
-	"/rtuBaud":230400,
 	"/rtuBaud":115200,
 	"rtuParity":"N",
 

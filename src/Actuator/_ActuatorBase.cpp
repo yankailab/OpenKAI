@@ -39,7 +39,7 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("ID", &m_ID);
-		
+
 		pK->v("pOrigin", &m_origin);
 		pK->v("p", &m_p.m_v);
 		pK->v("pTarget", &m_p.m_vTarget);
@@ -146,6 +146,11 @@ namespace kai
 	{
 		m_p.setTarget(m_origin);
 		m_bfSet.set(actuator_gotoOrigin);
+	}
+
+	void _ActuatorBase::clearAlarm(void)
+	{
+		m_bfSet.set(actuator_clearAlarm);
 	}
 
 	bool _ActuatorBase::bComplete(void)

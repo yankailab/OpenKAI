@@ -60,47 +60,46 @@ namespace kai
 			m_pT->autoFPS();
 			uint64_t t = m_pT->getTfrom();
 
-			bool bR = gotoOrigin();
+			// bool bR = gotoOrigin();
+			// setPos();
 
-			setPos();
-
-			if (bR)
-			{
-				setPos();
-			}
-			else
-			{
-				LOG_I(i2str(bR));
-			}
+			// if (bR)
+			// {
+			// 	setPos();
+			// }
+			// else
+			// {
+			// 	LOG_I(i2str(bR));
+			// }
 
 			// if (m_ieReadStatus.update(t))
 			// {
 			// 	readStatus();
 			// }
 
-			// if (m_bfSet.b(actuator_clearAlarm, true))
-			// {
-			// 	clearAlarm();
-			// }
+			if (m_bfSet.b(actuator_clearAlarm, true))
+			{
+				clearAlarm();
+			}
 
-			// if (m_bfSet.b(actuator_gotoOrigin, true))
-			// {
-			// 	gotoOrigin();
-			// }
+			if (m_bfSet.b(actuator_gotoOrigin, true))
+			{
+				gotoOrigin();
+			}
 
-			// if (m_ieSendCMD.update(t))
-			// {
-			// 	if (m_bfSet.b(actuator_move))
-			// 	{
-			// 		if (!setPos())
-			// 			m_ieSendCMD.reset();
-			// 	}
-			// 	else
-			// 	{
-			// 		if (!stopMove())
-			// 			m_ieSendCMD.reset();
-			// 	}
-			// }
+			if (m_ieSendCMD.update(t))
+			{
+				if (m_bfSet.b(actuator_move))
+				{
+					if (!setPos())
+						m_ieSendCMD.reset();
+				}
+				else
+				{
+					if (!stopMove())
+						m_ieSendCMD.reset();
+				}
+			}
 		}
 	}
 
@@ -109,7 +108,7 @@ namespace kai
 		IF_F(check() != OK_OK);
 
 		uint8_t pB[10];
-		pB[0] = getID();
+		pB[0] = m_ID;
 		pB[1] = 0x45;
 		pB[2] = 0;
 		pB[3] = 0x05;
@@ -120,7 +119,10 @@ namespace kai
 		// pB[8] = 0x59;
 		// pB[9] = 0x03;
 
-		return (m_pMB->sendRawRequest(getID(), pB, 8) == 8);
+		int nR = m_pMB->sendRawRequest(m_ID, pB, 8);
+		LOG_I("clearAlarm: " + i2str(nR));
+
+		return (nR == 8);
 	}
 
 	bool _IAI::readStatus(void)
@@ -157,7 +159,10 @@ namespace kai
 		// pB[8] = 0xBC;
 		// pB[9] = 0xC3;
 
-		return (m_pMB->sendRawRequest(m_ID, pB, 8) == 8);
+		int nR = m_pMB->sendRawRequest(m_ID, pB, 8);
+		LOG_I("gotoOrigin: " + i2str(nR));
+
+		return (nR == 8);
 	}
 
 	bool _IAI::setPos(void)
@@ -182,17 +187,21 @@ namespace kai
 		pB[7] = LOW16(current); // 9907	PPOW power limit
 		pB[8] = 0;				// 9908	CTLF control flag
 
-		return (m_pMB->writeRegisters(m_ID, 0x9900, 7, pB) == 7);
+		int nR = m_pMB->writeRegisters(m_ID, 0x9900, 7, pB);
+		LOG_I("setPos: " + i2str(nR));
+
+		return (nR == 7);
 	}
 
 	bool _IAI::stopMove(void)
 	{
 		IF_F(check() != OK_OK);
 
-		uint16_t pB[9];
-		// TODO
+		// uint16_t pB[9];
 
-		return (m_pMB->writeRegisters(m_ID, 0x9900, 7, pB) == 7);
+		// return (m_pMB->writeRegisters(m_ID, 0x9900, 7, pB) == 7);
+
+		return true;
 	}
 
 }

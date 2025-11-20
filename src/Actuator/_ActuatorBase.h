@@ -124,6 +124,7 @@ namespace kai
 		void power(bool bON);
 		void move(bool bMove);
 		void gotoOrigin(void);
+		void clearAlarm(void);
 		bool bComplete(void);
 		bool bAlarm(void);
 
