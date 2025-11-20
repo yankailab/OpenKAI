@@ -39,8 +39,8 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("ID", &m_ID);
-		pK->v("origin", &m_origin);
-
+		
+		pK->v("pOrigin", &m_origin);
 		pK->v("p", &m_p.m_v);
 		pK->v("pTarget", &m_p.m_vTarget);
 		pK->v("pErr", &m_p.m_vErr);

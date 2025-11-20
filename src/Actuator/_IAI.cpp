@@ -60,34 +60,47 @@ namespace kai
 			m_pT->autoFPS();
 			uint64_t t = m_pT->getTfrom();
 
-			if (m_ieReadStatus.update(t))
+			bool bR = gotoOrigin();
+
+			setPos();
+
+			if (bR)
 			{
-				readStatus();
+				setPos();
+			}
+			else
+			{
+				LOG_I(i2str(bR));
 			}
 
-			if (m_bfSet.b(actuator_clearAlarm, true))
-			{
-				clearAlarm();
-			}
+			// if (m_ieReadStatus.update(t))
+			// {
+			// 	readStatus();
+			// }
 
-			if (m_bfSet.b(actuator_gotoOrigin, true))
-			{
-				gotoOrigin();
-			}
+			// if (m_bfSet.b(actuator_clearAlarm, true))
+			// {
+			// 	clearAlarm();
+			// }
 
-			if (m_ieSendCMD.update(t))
-			{
-				if (m_bfSet.b(actuator_move))
-				{
-					if (!setPos())
-						m_ieSendCMD.reset();
-				}
-				else
-				{
-					if (!stopMove())
-						m_ieSendCMD.reset();
-				}
-			}
+			// if (m_bfSet.b(actuator_gotoOrigin, true))
+			// {
+			// 	gotoOrigin();
+			// }
+
+			// if (m_ieSendCMD.update(t))
+			// {
+			// 	if (m_bfSet.b(actuator_move))
+			// 	{
+			// 		if (!setPos())
+			// 			m_ieSendCMD.reset();
+			// 	}
+			// 	else
+			// 	{
+			// 		if (!stopMove())
+			// 			m_ieSendCMD.reset();
+			// 	}
+			// }
 		}
 	}
 
