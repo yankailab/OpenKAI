@@ -1,15 +1,15 @@
-#ifndef OpenKAI_src_Protocol__USR_CANET_H_
-#define OpenKAI_src_Protocol__USR_CANET_H_
+#ifndef OpenKAI_src_Protocol__SocketCAN_H_
+#define OpenKAI_src_Protocol__SocketCAN_H_
 
 #include "../Base/_ModuleBase.h"
 #include "../IO/_IObase.h"
 #include "../Utility/util.h"
 
-#define CANET_BUF_N 13
+#define SOCKCAN_BUF_N 13
 
 namespace kai
 {
-	struct CANET_FRAME
+	struct SOCKETCAN_FRAME
 	{
 		// frame
 		uint8_t m_ctrl;
@@ -21,16 +21,16 @@ namespace kai
 		bool m_bRTR;
 
 		// working buffer
-		uint8_t m_pB[CANET_BUF_N];
+		uint8_t m_pB[SOCKCAN_BUF_N];
 
 
 		bool read(_IObase *pIO)
 		{
 			NULL_F(pIO);
 
-			int nR = pIO->read(m_pB, CANET_BUF_N);
+			int nR = pIO->read(m_pB, SOCKCAN_BUF_N);
 			IF_F(nR <= 0);
-			IF_F(nR < CANET_BUF_N);
+			IF_F(nR < SOCKCAN_BUF_N);
 
 			decode();
 			return true;
@@ -69,7 +69,7 @@ namespace kai
 			}
 
 			// clear buf
-			memset(m_pB, 0, CANET_BUF_N);
+			memset(m_pB, 0, SOCKCAN_BUF_N);
 
 			// ctrl byte
 			m_pB[0] = m_ctrl;
@@ -84,11 +84,11 @@ namespace kai
 		}
 	};
 
-	class _USR_CANET : public _ModuleBase
+	class _SocketCAN : public _ModuleBase
 	{
 	public:
-		_USR_CANET();
-		~_USR_CANET();
+		_SocketCAN();
+		~_SocketCAN();
 
 		virtual int init(void *pKiss);
 		virtual int link(void);
@@ -96,24 +96,24 @@ namespace kai
 		virtual int check(void);
 		virtual void console(void *pConsole);
 
-		virtual bool sendFrame(CANET_FRAME* pF);
+		virtual bool sendFrame(SOCKETCAN_FRAME* pF);
 
 	protected:
-		virtual bool readFrame(CANET_FRAME *pF);
-		virtual void handleFrame(const CANET_FRAME &frame);
+		virtual bool readFrame(SOCKETCAN_FRAME *pF);
+		virtual void handleFrame(const SOCKETCAN_FRAME &frame);
 
 	private:
 		void updateW(void);
 		static void *getUpdateW(void *This)
 		{
-			((_USR_CANET *)This)->updateW();
+			((_SocketCAN *)This)->updateW();
 			return NULL;
 		}
 
 		void updateR(void);
 		static void *getUpdateR(void *This)
 		{
-			((_USR_CANET *)This)->updateR();
+			((_SocketCAN *)This)->updateR();
 			return NULL;
 		}
 

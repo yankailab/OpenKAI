@@ -1,20 +1,20 @@
-#include "_USR_CANET.h"
+#include "_SocketCAN.h"
 
 namespace kai
 {
 
-	_USR_CANET::_USR_CANET()
+	_SocketCAN::_SocketCAN()
 	{
 		m_pTr = nullptr;
 		m_pIO = nullptr;
 		m_nFrameRecv = 0;
 	}
 
-	_USR_CANET::~_USR_CANET()
+	_SocketCAN::~_SocketCAN()
 	{
 	}
 
-	int _USR_CANET::init(void *pKiss)
+	int _SocketCAN::init(void *pKiss)
 	{
 		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
@@ -32,7 +32,7 @@ namespace kai
 		return OK_OK;
 	}
 
-	int _USR_CANET::link(void)
+	int _SocketCAN::link(void)
 	{
 		CHECK_(this->_ModuleBase::link());
 		CHECK_(m_pTr->link());
@@ -48,7 +48,7 @@ namespace kai
 		return OK_OK;
 	}
 
-	int _USR_CANET::start(void)
+	int _SocketCAN::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
 		NULL__(m_pTr, OK_ERR_NULLPTR);
@@ -56,7 +56,7 @@ namespace kai
 		return m_pTr->start(getUpdateR, this);
 	}
 
-	int _USR_CANET::check(void)
+	int _SocketCAN::check(void)
 	{
 		NULL__(m_pIO, OK_ERR_NULLPTR);
 		IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
@@ -64,7 +64,7 @@ namespace kai
 		return this->_ModuleBase::check();
 	}
 
-	void _USR_CANET::updateW(void)
+	void _SocketCAN::updateW(void)
 	{
 		while (m_pT->bAlive())
 		{
@@ -73,17 +73,17 @@ namespace kai
 		}
 	}
 
-	bool _USR_CANET::sendFrame(CANET_FRAME* pF)
+	bool _SocketCAN::sendFrame(SOCKETCAN_FRAME* pF)
 	{
 		IF_F(check() != OK_OK);
 		NULL_F(pF);
 
-		return m_pIO->write(pF->m_pB, CANET_BUF_N);
+		return true;//m_pIO->write(pF->m_pB, CAN_BUF_N);
 	}
 
-	void _USR_CANET::updateR(void)
+	void _SocketCAN::updateR(void)
 	{
-		CANET_FRAME f;
+		SOCKETCAN_FRAME f;
 
 		while (m_pTr->bAlive())
 		{
@@ -95,7 +95,7 @@ namespace kai
 		}
 	}
 
-	bool _USR_CANET::readFrame(CANET_FRAME *pF)
+	bool _SocketCAN::readFrame(SOCKETCAN_FRAME *pF)
 	{
 		IF_F(check() != OK_OK);
 		NULL_F(pF);
@@ -103,7 +103,7 @@ namespace kai
 		return pF->read(m_pIO);
 	}
 
-	void _USR_CANET::handleFrame(const CANET_FRAME &f)
+	void _SocketCAN::handleFrame(const SOCKETCAN_FRAME &f)
 	{
 		LOG_I("Recv: ID=" + i2str(f.m_ID) +
 			", bExtended=" + i2str(f.m_bExtended) +
@@ -120,7 +120,7 @@ namespace kai
 		);
 	}
 
-	void _USR_CANET::console(void *pConsole)
+	void _SocketCAN::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);

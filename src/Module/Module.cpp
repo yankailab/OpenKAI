@@ -195,6 +195,7 @@ namespace kai
 #endif
 
 #ifdef WITH_PROTOCOL
+		ADD_MODULE(_SocketCAN);
 		ADD_MODULE(_USR_CANET);
 		ADD_MODULE(_JSONbase);
 		ADD_MODULE(_Mavlink);
