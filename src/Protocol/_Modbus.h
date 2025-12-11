@@ -15,8 +15,10 @@ namespace kai
 
 		int init(void *pKiss);
 		int start(void);
+		int check(void);
 		bool open(void);
 		bool bOpen(void);
+		void close(void);
 
 		int rawRequest(uint8_t *pB, int nB);
 		int readInputBits(int iSlave, int addr, int nB, uint8_t *pB);
@@ -24,6 +26,7 @@ namespace kai
 		int writeBit(int iSlave, int addr, bool bStatus);
 		int writeRegister(int iSlave, int addr, int v);
 		int writeRegisters(int iSlave, int addr, int nRegister, uint16_t *pB);
+		int sendRawRequest(uint8_t* pB, int nB);
 		int sendRawRequest(int iSlave, uint8_t* pB, int nB);
 
 	private:
@@ -37,6 +40,9 @@ namespace kai
 	protected:
 		modbus_t *m_pMb;
 		string m_type; // "RTU", "TCP"
+		bool m_bModbusDebug;
+		int m_nErrReconnect;	// reconnect on n-th error
+		int m_iErr;
 
 		// RTU
 		string m_rtuPort;
