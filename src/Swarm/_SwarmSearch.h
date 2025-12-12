@@ -8,7 +8,6 @@
 #ifndef OpenKAI_src_App_SwarmSearch_SwarmSearchSearch_H_
 #define OpenKAI_src_App_SwarmSearch_SwarmSearchSearch_H_
 
-#include "../Navigation/GeoGrid.h"
 #include "_SwarmBase.h"
 
 namespace kai
@@ -107,7 +106,6 @@ namespace kai
 		}
 
 	protected:
-		GeoGrid* m_pGG;
 		GCELL_SEARCH* m_pGcell;
 		int m_nGcell;
 

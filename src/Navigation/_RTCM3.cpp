@@ -12,10 +12,6 @@ namespace kai
 
 	_RTCM3::_RTCM3()
 	{
-		m_pIO = nullptr;
-		m_nRead = 0;
-		m_iRead = 0;
-		m_msg = "";
 	}
 
 	_RTCM3::~_RTCM3()
@@ -27,10 +23,20 @@ namespace kai
 		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		string n = "";
-		pK->v("_IObase", &n);
-		m_pIO = (_IObase *)(pK->findModule(n));
-		NULL__(m_pIO, OK_ERR_NOT_FOUND);
+		return OK_OK;
+	}
+
+	int _RTCM3::link(void)
+	{
+		CHECK_(this->_ModuleBase::link());
+
+		Kiss *pK = (Kiss *)m_pKiss;
+		string n;
+
+		// n = "";
+		// pK->v("_IObase", &n);
+		// m_pIO = (_IObase *)(pK->findModule(n));
+		// NULL__(m_pIO, OK_ERR_NOT_FOUND);
 
 		return OK_OK;
 	}
@@ -38,22 +44,76 @@ namespace kai
 	int _RTCM3::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
-		return m_pT->start(getUpdate, this);
+		NULL__(m_pTr, OK_ERR_NULLPTR);
+		CHECK_(m_pT->start(getUpdateW, this));
+		return m_pTr->start(getUpdateR, this);
 	}
 
-	void _RTCM3::update(void)
+	int _RTCM3::check(void)
+	{
+		NULL__(m_pIO, OK_ERR_NULLPTR);
+		IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
+
+		return this->_ModuleBase::check();
+	}
+
+	void _RTCM3::updateW(void)
 	{
 		while (m_pT->bAlive())
 		{
 			m_pT->autoFPS();
 
-			decode();
-			m_msg = "";
-
+			send();
 		}
 	}
 
-	void _RTCM3::decode(void)
+	void _RTCM3::send(void)
+	{
+		IF_(check() != OK_OK);
+	}
+
+	void _RTCM3::updateR(void)
+	{
+		RTCM_BUF rCMD;
+
+		while (m_pTr->bAlive())
+		{
+			IF_CONT(!readCMD(&rCMD));
+
+			handleCMD(rCMD);
+			rCMD.clear();
+			m_nCMDrecv++;
+		}
+	}
+
+	bool _RTCM3::readCMD(RTCM_BUF *pCmd)
+	{
+		IF_F(check() != OK_OK);
+		NULL_F(pCmd);
+
+		if (m_nRead == 0)
+		{
+			m_nRead = m_pIO->read(m_pBuf, PB_N_BUF);
+			IF_F(m_nRead <= 0);
+			m_iRead = 0;
+		}
+
+		while (m_iRead < m_nRead)
+		{
+			bool r = pCmd->input(m_pBuf[m_iRead++]);
+			if (m_iRead == m_nRead)
+			{
+				m_iRead = 0;
+				m_nRead = 0;
+			}
+
+			IF__(r, true);
+		}
+
+		return false;
+	}
+
+	void _RTCM3::handleCMD(const RTCM_BUF &cmd)
 	{
 	}
 

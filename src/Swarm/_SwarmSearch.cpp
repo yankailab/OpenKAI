@@ -12,7 +12,6 @@ namespace kai
 
 	_SwarmSearch::_SwarmSearch()
 	{
-        m_pGG = nullptr;
         m_pGcell = nullptr;
         m_nGcell = 0;
 	}
@@ -38,12 +37,6 @@ namespace kai
 	{
 		CHECK_(this->_SwarmBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
-
-		string n;
-		n = "";
-		pK->v("GeoGrid", &n);
-		m_pGG = (GeoGrid *)(pK->findModule(n));
-		NULL__(m_pGG, OK_ERR_NOT_FOUND);
 
 		return OK_OK;
 	}

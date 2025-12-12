@@ -90,11 +90,7 @@ namespace kai
 
 		while (m_pTr->bAlive())
 		{
-//			m_pTr->autoFPS();
-
 			IF_CONT(!readCMD(&rCMD));
-
-//			m_pTr->skipSleep();
 
 			handleCMD(rCMD);
 			rCMD.clear();
@@ -139,15 +135,6 @@ namespace kai
 		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		if (m_pIO)
-		{
-			if (!m_pIO->bOpen())
-			{
-				pC->addMsg("Not Connected", 1);
-				return;
-			}
-		}
-
 		pC->addMsg("nCMD = " + i2str(m_nCMDrecv), 1);
 	}
 

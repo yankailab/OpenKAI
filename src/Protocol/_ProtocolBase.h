@@ -12,7 +12,7 @@
 
 #define PB_BEGIN 0xFE
 #define PB_N_HDR 4
-#define PB_N_BUF 1024
+#define PB_N_BUF 2000
 
 namespace kai
 {
