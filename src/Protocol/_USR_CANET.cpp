@@ -12,6 +12,7 @@ namespace kai
 
 	_USR_CANET::~_USR_CANET()
 	{
+		DEL(m_pTr);
 	}
 
 	int _USR_CANET::init(void *pKiss)
@@ -125,13 +126,8 @@ namespace kai
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
-		string msg = this->getName();
-		if (m_pIO->bOpen())
-			msg += ": CONNECTED";
-		else
-			msg += ": Not connected";
-
-		((_Console *)pConsole)->addMsg(msg);
+		_Console *pC = (_Console *)pConsole;
+		pC->addMsg("nFrameRecv = " + i2str(m_nFrameRecv), 1);
 	}
 
 }
