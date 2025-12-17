@@ -14,18 +14,18 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"vBASE":["udp","tcp","CANET"],
+	"vBASE":["udp","tcp","CANET","socketCAN"],
 }
 
 {
 	"name":"udp",
 	"class":"_UDP",
 	"bON":1,
+	"bLog":0,
     {
 		"name":"thread",
 		"FPS":1,
 	}
-	"bLog":0,
 	"nPacket":1024,
 	"nPbuffer":512,
 	"addrRemote":"192.168.0.7",
@@ -40,11 +40,11 @@
 	"name":"tcp",
 	"class":"_TCPclient",
 	"bON":0,
+	"bLog":0,
     {
 		"name":"thread",
 		"FPS":1,
 	}
-	"bLog":0,
 	"nPacket":1024,
 	"nPbuffer":512,
 	"addr":"192.168.0.7",
@@ -58,12 +58,21 @@
 	"bLog":1,
     {
 		"name":"thread",
-		"FPS":90,
-	}
-    {
-		"name":"threadR",
 		"FPS":1,
 	}
 	"_IObase":"udp",
 	"/_IObase":"tcp",
+}
+
+
+{
+	"name":"socketCAN",
+	"class":"_SocketCAN",
+	"bON":0,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+	"ifName":"can0",
 }
