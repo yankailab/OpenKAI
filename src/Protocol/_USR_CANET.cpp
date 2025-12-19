@@ -64,7 +64,7 @@ namespace kai
 		NULL__(m_pIO, OK_ERR_NULLPTR);
 		IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
 
-		return this->_CANbase::check();
+		return this->_ModuleBase::check();
 	}
 
 	void _USR_CANET::update(void)
