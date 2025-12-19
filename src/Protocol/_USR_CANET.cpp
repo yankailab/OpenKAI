@@ -64,6 +64,7 @@ namespace kai
 		NULL__(m_pIO, OK_ERR_NULLPTR);
 		IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
 
+		// use ModuleBase::check() as CANbase uses m_bOpen but CANET does not rely on it
 		return this->_ModuleBase::check();
 	}
 

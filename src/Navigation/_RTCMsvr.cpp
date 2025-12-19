@@ -1,24 +1,24 @@
 /*
- * _RTCM3.cpp
+ * _RTCMsvr.cpp
  *
  *  Created on: Jun 3, 2020
  *      Author: yankai
  */
 
-#include "_RTCM3.h"
+#include "_RTCMsvr.h"
 
 namespace kai
 {
 
-	_RTCM3::_RTCM3()
+	_RTCMsvr::_RTCMsvr()
 	{
 	}
 
-	_RTCM3::~_RTCM3()
+	_RTCMsvr::~_RTCMsvr()
 	{
 	}
 
-	int _RTCM3::init(void *pKiss)
+	int _RTCMsvr::init(void *pKiss)
 	{
 		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
@@ -26,7 +26,7 @@ namespace kai
 		return OK_OK;
 	}
 
-	int _RTCM3::link(void)
+	int _RTCMsvr::link(void)
 	{
 		CHECK_(this->_ModuleBase::link());
 
@@ -41,7 +41,7 @@ namespace kai
 		return OK_OK;
 	}
 
-	int _RTCM3::start(void)
+	int _RTCMsvr::start(void)
 	{
 		NULL__(m_pT, OK_ERR_NULLPTR);
 		NULL__(m_pTr, OK_ERR_NULLPTR);
@@ -49,7 +49,7 @@ namespace kai
 		return m_pTr->start(getUpdateR, this);
 	}
 
-	int _RTCM3::check(void)
+	int _RTCMsvr::check(void)
 	{
 		NULL__(m_pIO, OK_ERR_NULLPTR);
 		IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
@@ -57,7 +57,7 @@ namespace kai
 		return this->_ModuleBase::check();
 	}
 
-	void _RTCM3::updateW(void)
+	void _RTCMsvr::updateW(void)
 	{
 		while (m_pT->bAlive())
 		{
@@ -67,12 +67,12 @@ namespace kai
 		}
 	}
 
-	void _RTCM3::send(void)
+	void _RTCMsvr::send(void)
 	{
 		IF_(check() != OK_OK);
 	}
 
-	void _RTCM3::updateR(void)
+	void _RTCMsvr::updateR(void)
 	{
 		RTCM_BUF rCMD;
 
@@ -86,7 +86,7 @@ namespace kai
 		}
 	}
 
-	bool _RTCM3::readCMD(RTCM_BUF *pCmd)
+	bool _RTCMsvr::readCMD(RTCM_BUF *pCmd)
 	{
 		IF_F(check() != OK_OK);
 		NULL_F(pCmd);
@@ -113,11 +113,11 @@ namespace kai
 		return false;
 	}
 
-	void _RTCM3::handleCMD(const RTCM_BUF &cmd)
+	void _RTCMsvr::handleCMD(const RTCM_BUF &cmd)
 	{
 	}
 
-	void _RTCM3::console(void *pConsole)
+	void _RTCMsvr::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);

@@ -182,7 +182,7 @@ namespace kai
 #endif
 
 #ifdef WITH_NAVIGATION
-		ADD_MODULE(_RTCM3);
+		ADD_MODULE(_RTCMsvr);
 		ADD_MODULE(_GPS);
 #ifdef USE_REALSENSE
 		ADD_MODULE(_RStracking);
