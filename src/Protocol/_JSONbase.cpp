@@ -62,7 +62,7 @@ namespace kai
     {
         IF_(check() != OK_OK);
 
-        if (m_ieSendHB.update(m_pT->getTfrom()))
+        if (m_ieSendHB.updateT(m_pT->getTfrom()))
         {
 //            sendHeartbeat();
         }

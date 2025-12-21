@@ -15,23 +15,24 @@ namespace kai
 		_APmavlink_GPS();
 		~_APmavlink_GPS();
 
-		int init(void *pKiss);
-		int start(void);
-		int check(void);
-		void update(void);
-		void console(void *pConsole);
+		virtual int init(void *pKiss);
+		virtual int link(void);
+		virtual int start(void);
+		virtual int check(void);
+		virtual void console(void *pConsole);
 
 		bool reset(void);
 
 	protected:
 		void updateGPS(void);
+		void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_APmavlink_GPS *)This)->update();
 			return NULL;
 		}
 
-	public:
+	protected:
 		_APmavlink_base *m_pAP;
 		_NavBase *m_pSB;
 		Coordinate m_GPS;

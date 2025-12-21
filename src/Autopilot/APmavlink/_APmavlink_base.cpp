@@ -179,12 +179,12 @@ namespace kai
 		}
 
 		// Send Heartbeat
-		if (m_ieSendHB.update(tNow))
+		if (m_ieSendHB.updateT(tNow))
 		{
 			m_pMav->heartbeat();
 		}
 
-		if (m_ieSendMsgInt.update(tNow))
+		if (m_ieSendMsgInt.updateT(tNow))
 		{
 			m_pMav->sendSetMsgInterval();
 		}

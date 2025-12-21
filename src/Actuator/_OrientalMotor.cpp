@@ -65,12 +65,12 @@ namespace kai
 
 			clearAlarm();
 
-			if (!m_ieReadStatus.update(t))
+			if (!m_ieReadStatus.updateT(t))
 			{
 				readStatus();
 			}
 
-			if (m_ieSendCMD.update(t))
+			if (m_ieSendCMD.updateT(t))
 			{
 				if (!setPos())
 					m_ieSendCMD.reset();

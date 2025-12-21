@@ -72,7 +72,7 @@
 #include "../Autopilot/APmavlink/_APmavlink_distLidar.h"
 #endif
 #ifdef USE_OPENCV
-#include "../Autopilot/APmavlink/_APmavlink_avoid.h"
+#include "../Autopilot/APmavlink/_APmavlink_RTCM.h"
 #include "../Autopilot/APmavlink/_APmavlink_depthVision.h"
 #include "../Autopilot/APmavlink/_APmavlink_video.h"
 #include "../Autopilot/APmavlink/_APmavlink_videoStream.h"
@@ -174,7 +174,7 @@
 
 #ifdef WITH_NAVIGATION
 #include "../Navigation/_GPS.h"
-#include "../Navigation/_RTCMsvr.h"
+#include "../Navigation/_RTCMcast.h"
 #ifdef USE_REALSENSE
 #include "../Navigation/_RStracking.h"
 #endif

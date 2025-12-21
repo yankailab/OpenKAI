@@ -226,7 +226,7 @@ namespace kai
             IF_F(crc32 != pCmdRecv->crc32_d);
         }
 
-        m_lvxTout.start();
+        m_lvxTout.reStart();
         return true;
     }
 
@@ -262,7 +262,7 @@ namespace kai
 
         memcpy(pDataRecv->data, &pB[36], LVX2_N_DATA);
 
-        m_lvxTout.start();
+        m_lvxTout.reStart();
         return true;
     }
 

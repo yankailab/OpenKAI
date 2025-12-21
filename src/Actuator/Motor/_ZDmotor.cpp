@@ -174,7 +174,7 @@ namespace kai
 	bool _ZDmotor::readStatus(void)
 	{
 		IF_F(check() != OK_OK);
-		IF__(!m_ieReadStatus.update(m_pT->getTfrom()), true);
+		IF__(!m_ieReadStatus.updateT(m_pT->getTfrom()), true);
 
 		uint16_t pB[2];
 		int r = m_pMB->readRegisters(m_ID, 0x202C, 1, pB);

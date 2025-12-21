@@ -1,0 +1,201 @@
+/*
+ * _RTCMcast.cpp
+ *
+ *  Created on: Jun 3, 2020
+ *      Author: yankai
+ */
+
+#include "_RTCMcast.h"
+
+namespace kai
+{
+
+	_RTCMcast::_RTCMcast()
+	{
+		m_pIOsend = nullptr;
+	}
+
+	_RTCMcast::~_RTCMcast()
+	{
+	}
+
+	int _RTCMcast::init(void *pKiss)
+	{
+		CHECK_(this->_ProtocolBase::init(pKiss));
+		Kiss *pK = (Kiss *)pKiss;
+
+		Kiss *pR = pK->child("RTCMmsg");
+		IF__(pR->empty(), OK_OK);
+
+		int i = 0;
+		while (1)
+		{
+			Kiss *pM = pR->child(i++);
+			if (pM->empty())
+				break;
+
+			uint64_t ieSend = USEC_1SEC;
+			uint64_t tOut = USEC_10SEC;
+			pM->v("ieSend", &ieSend);
+			pM->v("tOut", &tOut);
+
+			RTCM_MSG m;
+			m.init(ieSend, tOut);
+			pM->v("ID", &m.m_msgID);
+			pM->v("bSendOnceOnly", &m.m_bSendOnceOnly);
+
+			m_vMsg.push_back(m);
+		}
+
+		return OK_OK;
+	}
+
+	int _RTCMcast::link(void)
+	{
+		CHECK_(this->_ProtocolBase::link());
+
+		Kiss *pK = (Kiss *)m_pKiss;
+		string n;
+
+		n = "";
+		pK->v("_IObaseSend", &n);
+		m_pIOsend = (_IObase *)(pK->findModule(n));
+		NULL__(m_pIOsend, OK_ERR_NOT_FOUND);
+
+		return OK_OK;
+	}
+
+	int _RTCMcast::start(void)
+	{
+		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL__(m_pTr, OK_ERR_NULLPTR);
+		CHECK_(m_pT->start(getUpdateW, this));
+		return m_pTr->start(getUpdateR, this);
+	}
+
+	int _RTCMcast::check(void)
+	{
+		NULL__(m_pIOsend, OK_ERR_NULLPTR);
+		IF__(!m_pIOsend->bOpen(), OK_ERR_NOT_READY);
+
+		return this->_ProtocolBase::check();
+	}
+
+	void _RTCMcast::updateW(void)
+	{
+		while (m_pT->bAlive())
+		{
+			m_pT->autoFPS();
+
+			sendMsg();
+		}
+	}
+
+	void _RTCMcast::sendMsg(void)
+	{
+		IF_(check() != OK_OK);
+
+		uint64_t tNow = getTbootMs();
+
+		for (int i = 0; i < m_vMsg.size(); i++)
+		{
+			RTCM_MSG *pM = &m_vMsg[i];
+			uint64_t tLr = pM->m_tLastRecv;
+
+			IF_CONT(pM->m_tLastRecv == 0);
+
+			if(pM->m_tLastSent != tLr)
+			{
+				IF_CONT(!m_pIOsend->write(pM->m_pB, pM->m_nB));
+
+				pM->m_tLastSent = tLr;
+				pM->m_ieSend.reset(tNow);
+				continue;
+			}
+
+			IF_CONT(pM->m_bSendOnceOnly);
+
+			IF_CONT(pM->m_tOutRecv.bTout(tNow));
+			IF_CONT(!pM->m_ieSend.updateT(tNow, false));
+			IF_CONT(!m_pIOsend->write(pM->m_pB, pM->m_nB));
+
+			pM->m_tLastSent = tLr;
+			pM->m_ieSend.reset(tNow);
+		}
+	}
+
+	void _RTCMcast::updateR(void)
+	{
+		RTCM_MSG rtcmMsg;
+
+		while (m_pTr->bAlive())
+		{
+			IF_CONT(!readMsg(&rtcmMsg));
+
+			handleMsg(rtcmMsg);
+			rtcmMsg.init();
+			m_nCMDrecv++;
+		}
+	}
+
+	bool _RTCMcast::readMsg(RTCM_MSG *pMsg)
+	{
+		IF_F(check() != OK_OK);
+		NULL_F(pMsg);
+
+		if (m_nRead == 0)
+		{
+			m_nRead = m_pIO->read(m_pBuf, RTCM_N_BUF);
+			IF_F(m_nRead <= 0);
+			m_iRead = 0;
+		}
+
+		while (m_iRead < m_nRead)
+		{
+			bool r = pMsg->input(m_pBuf[m_iRead++]);
+			if (m_iRead == m_nRead)
+			{
+				m_iRead = 0;
+				m_nRead = 0;
+			}
+
+			IF__(r, true);
+		}
+
+		return false;
+	}
+
+	void _RTCMcast::handleMsg(const RTCM_MSG &msg)
+	{
+		uint64_t tNow = getTbootMs();
+
+		for (int i = 0; i < m_vMsg.size(); i++)
+		{
+			RTCM_MSG *pM = &m_vMsg[i];
+			IF_CONT(pM->m_msgID != msg.m_msgID);
+
+			pM->updateTo(msg);
+			pM->m_tLastRecv = tNow;
+			pM->m_tOutRecv.reStart();
+			return;
+		}
+
+		RTCM_MSG m;
+		m.init();
+		m.m_msgID = msg.m_msgID;
+		m.updateTo(msg);
+		m.m_tLastRecv = tNow;
+		m.m_tOutRecv.reStart();
+		m_vMsg.push_back(m);
+	}
+
+	void _RTCMcast::console(void *pConsole)
+	{
+		NULL_(pConsole);
+		this->_ProtocolBase::console(pConsole);
+
+		_Console *pC = (_Console *)pConsole;
+		pC->addMsg("nCMD = " + i2str(m_nCMDrecv), 1);
+	}
+
+}

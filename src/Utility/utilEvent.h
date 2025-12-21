@@ -13,12 +13,12 @@ namespace kai
 			m_tOut = tOut;
 		}
 
-		void startT(uint64_t tNow)
+		void reStartT(uint64_t tNow)
 		{
 			m_tSet = tNow;
 		}
 
-		void start(void)
+		void reStart(void)
 		{
 			m_tSet = getTbootUs();
 		}
@@ -33,11 +33,6 @@ namespace kai
 		bool bTout(void)
 		{
 			return bTout(getTbootUs());
-		}
-
-		void clear(void)
-		{
-			m_tSet = 0;
 		}
 
 		bool bStarted(void)
@@ -57,18 +52,25 @@ namespace kai
 			reset();
 		}
 
-		bool update(uint64_t tNow)
+		bool update(bool bUpdateT = true)
 		{
-			IF_F(m_tInterval <= 0);
+			return updateT(getTbootUs(), bUpdateT);
+		}
+
+		bool updateT(uint64_t tNow, bool bUpdateT = true)
+		{
+			IF__(m_tInterval <= 0, true);
 			IF_F(tNow - m_tLastEvent < m_tInterval);
 
-			m_tLastEvent = tNow;
+			if(bUpdateT)
+				m_tLastEvent = tNow;
+
 			return true;
 		}
 
-		void reset(void)
+		void reset(uint64_t tReset = 0)
 		{
-			m_tLastEvent = 0;
+			m_tLastEvent = tReset;
 		}
 	};
 

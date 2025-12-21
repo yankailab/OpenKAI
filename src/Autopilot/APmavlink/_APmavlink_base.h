@@ -102,7 +102,6 @@ namespace kai
 		virtual int link(void);
 		virtual int start(void);
 		virtual int check(void);
-		virtual void update(void);
 		virtual void console(void *pConsole);
 
 		// mode
@@ -134,9 +133,10 @@ namespace kai
 		// Mavlink
 		_Mavlink* getMavlink(void);
 
-	protected:
+	private:
 		void updateModeSync(void);
 		void updateBase(void);
+		void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_APmavlink_base *)This)->update();

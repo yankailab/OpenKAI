@@ -7,7 +7,7 @@ namespace kai
 	{
 		m_pU = nullptr;
 		m_pTracker = nullptr;
-		m_tOutTargetNotFound.startT(0);
+		m_tOutTargetNotFound.reStartT(0);
 		m_tOutTargetNotFound.setTout(USEC_1SEC / 10);
 		m_iClass = -1;
 		m_bTarget = false;
@@ -179,7 +179,7 @@ namespace kai
 		{
 			// target found or tracked
 			m_bTarget = true;
-			m_tOutTargetNotFound.start();
+			m_tOutTargetNotFound.reStart();
 		}
 		else if (!m_tOutTargetNotFound.bTout())
 		{

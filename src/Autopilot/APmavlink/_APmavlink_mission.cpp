@@ -85,7 +85,7 @@ namespace kai
 		if (m_mState == apMission_UL_missionCount)
 		{
 			m_tOut.setTout(m_tOutSec * USEC_1SEC);
-			m_tOut.start();
+			m_tOut.reStart();
 
 			m_mState = apMission_UL_missionRequestInt;
 			pMav->m_missionRequestInt.addCbRecv(sCbMavRecvMissionRequestInt, this);
@@ -108,7 +108,7 @@ namespace kai
 		if (m_mState == apMission_DL_missionRequestList)
 		{
 			m_tOut.setTout(m_tOutSec * USEC_1SEC);
-			m_tOut.start();
+			m_tOut.reStart();
 
 			pMav->m_missionCount.addCbRecv(sCbMavRecvMissionCount, this);
 			m_mState = apMission_DL_missionCount;
@@ -168,7 +168,7 @@ namespace kai
 		m_pAP->getMavlink()->missionItemInt(d);
 
 		// restart timeout
-		m_tOut.start();
+		m_tOut.reStart();
 	}
 
 	void _APmavlink_mission::CbMavRecvMissionAck(void *pMsg)
@@ -180,7 +180,7 @@ namespace kai
 		MavMissionAck *pM = (MavMissionAck *)pMsg;
 
 		// restart timeout
-		m_tOut.start();
+		m_tOut.reStart();
 
 		m_mState = apMission_UL_missionAck;
 	}
@@ -215,7 +215,7 @@ namespace kai
 
 		m_pAP->getMavlink()->m_missionItemInt.addCbRecv(sCbMavRecvMissionItemInt, this);
 		m_mState = apMission_DL_missionRequestInt;
-		m_tOut.start();
+		m_tOut.reStart();
 	}
 
 	void _APmavlink_mission::sendMissionRequestInt(void)
@@ -241,7 +241,7 @@ namespace kai
 
 		m_iMissionDL++;
 
-		m_tOut.start();
+		m_tOut.reStart();
 		IF_(pM->m_msg.seq < m_nMissionDL - 1);
 
 		m_mState = apMission_DL_missionAck;

@@ -106,7 +106,7 @@ namespace kai
 
 		IF_(!m_bAuto);
 
-		if (m_ieShutter.update(getApproxTbootUs()))
+		if (m_ieShutter.updateT(getApproxTbootUs()))
 			take();
 	}
 

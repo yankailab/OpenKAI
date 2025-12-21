@@ -54,6 +54,13 @@ namespace kai
 		pK->v("vdop", &m_D.vdop);
 		pK->v("fIgnore", &m_D.ignore_flags);
 
+		return OK_OK;
+	}
+
+	int _APmavlink_GPS::link(void)
+	{
+		CHECK_(this->_ModuleBase::link());
+		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
 		n = "";

@@ -87,7 +87,7 @@ namespace kai
 				gotoOrigin();
 			}
 
-			if (m_ieSendCMD.update(t))
+			if (m_ieSendCMD.updateT(t))
 			{
 				if (m_bfSet.b(actuator_move))
 				{

@@ -872,55 +872,56 @@ namespace kai
 		bool bConnected(void);
 
 		// Cmd
-		void cmdInt(mavlink_command_int_t &D);
-		void distanceSensor(mavlink_distance_sensor_t &D);
-		void globalVisionPositionEstimate(mavlink_global_vision_position_estimate_t &D);
-		void gpsInput(mavlink_gps_input_t &D);
-		void globalPositionInt(mavlink_global_position_int_t &D);
-		void gpsRawINT(mavlink_gps_raw_int_t &D);
-		void landingTarget(mavlink_landing_target_t &D);
+		bool cmdInt(mavlink_command_int_t &D);
+		bool distanceSensor(mavlink_distance_sensor_t &D);
+		bool globalPositionInt(mavlink_global_position_int_t &D);
+		bool globalVisionPositionEstimate(mavlink_global_vision_position_estimate_t &D);
+		bool gpsInput(mavlink_gps_input_t &D);
+		bool gpsRawINT(mavlink_gps_raw_int_t &D);
+		bool gpsRTCMdata(mavlink_gps_rtcm_data_t &D);
+		bool landingTarget(mavlink_landing_target_t &D);
 
-		void missionAck(mavlink_mission_ack_t &D);
-		void missionClearAll(mavlink_mission_clear_all_t &D);
-		void missionCount(mavlink_mission_count_t &D);
-		void missionCurrent(mavlink_mission_current_t &D);
-		void missionItemInt(mavlink_mission_item_int_t &D);
-		void missionItemReached(mavlink_mission_item_reached_t &D);
-		void missionRequestInt(mavlink_mission_request_int_t &D);
-		void missionRequestList(mavlink_mission_request_list_t &D);
-		void missionSetCurrent(mavlink_mission_set_current_t &D);
+		bool missionAck(mavlink_mission_ack_t &D);
+		bool missionClearAll(mavlink_mission_clear_all_t &D);
+		bool missionCount(mavlink_mission_count_t &D);
+		bool missionCurrent(mavlink_mission_current_t &D);
+		bool missionItemInt(mavlink_mission_item_int_t &D);
+		bool missionItemReached(mavlink_mission_item_reached_t &D);
+		bool missionRequestInt(mavlink_mission_request_int_t &D);
+		bool missionRequestList(mavlink_mission_request_list_t &D);
+		bool missionSetCurrent(mavlink_mission_set_current_t &D);
 
-		void mountConfigure(mavlink_mount_configure_t &D);
-		void mountControl(mavlink_mount_control_t &D);
-		void mountStatus(mavlink_mount_status_t &D);
-		void paramRequestRead(mavlink_param_request_read_t &D);
-		void paramSet(mavlink_param_set_t &D);
-		void paramValue(mavlink_param_value_t &D);
-		void positionTargetLocalNed(mavlink_position_target_local_ned_t &D);
-		void positionTargetGlobalInt(mavlink_position_target_global_int_t &D);
-		void rcChannelsOverride(mavlink_rc_channels_override_t &D);
-		void requestDataStream(uint8_t stream_id, int rate);
-		void heartbeat(void);
-		void setAttitudeTarget(mavlink_set_attitude_target_t &D);
-		void setMode(mavlink_set_mode_t &D);
-		void setPositionTargetLocalNED(mavlink_set_position_target_local_ned_t &D);
-		void setPositionTargetGlobalINT(mavlink_set_position_target_global_int_t &D);
-		void statusText(mavlink_statustext_t &D);
-		void visionPositionEstimate(mavlink_vision_position_estimate_t &D);
-		void visionSpeedEstimate(mavlink_vision_speed_estimate_t &D);
+		bool mountConfigure(mavlink_mount_configure_t &D);
+		bool mountControl(mavlink_mount_control_t &D);
+		bool mountStatus(mavlink_mount_status_t &D);
+		bool paramRequestRead(mavlink_param_request_read_t &D);
+		bool paramSet(mavlink_param_set_t &D);
+		bool paramValue(mavlink_param_value_t &D);
+		bool positionTargetLocalNed(mavlink_position_target_local_ned_t &D);
+		bool positionTargetGlobalInt(mavlink_position_target_global_int_t &D);
+		bool rcChannelsOverride(mavlink_rc_channels_override_t &D);
+		bool requestDataStream(uint8_t stream_id, int rate);
+		bool heartbeat(void);
+		bool setAttitudeTarget(mavlink_set_attitude_target_t &D);
+		bool setMode(mavlink_set_mode_t &D);
+		bool setPositionTargetLocalNED(mavlink_set_position_target_local_ned_t &D);
+		bool setPositionTargetGlobalINT(mavlink_set_position_target_global_int_t &D);
+		bool statusText(mavlink_statustext_t &D);
+		bool visionPositionEstimate(mavlink_vision_position_estimate_t &D);
+		bool visionSpeedEstimate(mavlink_vision_speed_estimate_t &D);
 
 		// Cmd long
-		void clComponentArmDisarm(bool bArm);
-		void clDoFlightTermination(bool bTerminate);
-		void clDoSetMode(int mode);
-		void clDoSetServo(int iServo, int PWM);
-		void clDoSetRelay(int iRelay, bool bRelay);
-		void clDoSetHome(bool bUseCurrent, float r, float p, float y, float lat, float lon, float alt);
-		void clGetHomePosition(void);
-		void clNavSetYawSpeed(float yaw, float speed, float yawMode);
-		void clNavTakeoff(float alt);
-		void clNavRTL(void);
-		void clSetMessageInterval(float id, float interval, float responseTarget);
+		bool clComponentArmDisarm(bool bArm);
+		bool clDoFlightTermination(bool bTerminate);
+		bool clDoSetMode(int mode);
+		bool clDoSetServo(int iServo, int PWM);
+		bool clDoSetRelay(int iRelay, bool bRelay);
+		bool clDoSetHome(bool bUseCurrent, float r, float p, float y, float lat, float lon, float alt);
+		bool clGetHomePosition(void);
+		bool clNavSetYawSpeed(float yaw, float speed, float yawMode);
+		bool clNavTakeoff(float alt);
+		bool clNavRTL(void);
+		bool clSetMessageInterval(float id, float interval, float responseTarget);
 
 		// Msg routing
 		void setCmdRoute(uint32_t iCmd, bool bON);
@@ -930,7 +931,7 @@ namespace kai
 		bool setMsgInterval(int id, uint64_t tInt);
 
 	protected:
-		void writeMessage(const mavlink_message_t& msg);
+		bool writeMessage(const mavlink_message_t& msg);
 		int readMessage(mavlink_message_t* pMsg);
 
 	private:

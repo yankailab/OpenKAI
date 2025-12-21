@@ -68,7 +68,7 @@ namespace kai
 	{
 		IF_(check() != OK_OK);
 
-		IF_(!m_ieSendHB.update(m_pT->getTfrom()));
+		IF_(!m_ieSendHB.updateT(m_pT->getTfrom()));
 
 		int apMode = m_pAP->getMode();
 		vDouble4 vP = m_pAP->getGlobalPos();

@@ -85,7 +85,7 @@ namespace kai
 		ADD_MODULE(_APmavlink_swarm);
 #endif
 #ifdef USE_OPENCV
-		ADD_MODULE(_APmavlink_avoid);
+		ADD_MODULE(_APmavlink_RTCM);
 		ADD_MODULE(_APmavlink_depthVision);
 		ADD_MODULE(_APmavlink_video);
 		ADD_MODULE(_APmavlink_videoStream);
@@ -182,7 +182,7 @@ namespace kai
 #endif
 
 #ifdef WITH_NAVIGATION
-		ADD_MODULE(_RTCMsvr);
+		ADD_MODULE(_RTCMcast);
 		ADD_MODULE(_GPS);
 #ifdef USE_REALSENSE
 		ADD_MODULE(_RStracking);
