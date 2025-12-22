@@ -63,7 +63,7 @@ namespace kai
 	{
 		if (m_nRead == 0)
 		{
-			m_nRead = m_pIO->read(m_rBuf, N_IO_BUF);
+			m_nRead = m_pIO->read(m_rBuf, IO_BUF_N);
 			IF_F(m_nRead <= 0);
 			m_iRead = 0;
 		}

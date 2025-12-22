@@ -26,8 +26,8 @@ namespace kai
 		CHECK_(this->_ModuleBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		int nPacket = 1024;
-		int nPbuffer = 512;
+		int nPacket = 256;
+		int nPbuffer = 2000;
 		pK->v("nPacket", &nPacket);
 		pK->v("nPbuffer", &nPbuffer);
 		IF__(!m_packetW.init(nPbuffer, nPacket), OK_ERR_ALLOCATION);

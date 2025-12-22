@@ -11,7 +11,7 @@
 #include "../Base/_ModuleBase.h"
 #include "../UI/_Console.h"
 
-#define N_IO_BUF 1024
+#define IO_BUF_N 2000
 
 namespace kai
 {

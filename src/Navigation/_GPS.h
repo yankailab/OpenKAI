@@ -40,7 +40,7 @@ namespace kai
 
 	private:
 		_IObase *m_pIO;
-		uint8_t m_rBuf[N_IO_BUF];
+		uint8_t m_rBuf[IO_BUF_N];
 		int m_nRead;
 		int m_iRead;
 		string m_msg;

@@ -37,7 +37,9 @@ namespace kai
 		TIME_OUT m_tOutRecv;	 // do not send after this timeout in receiving the msg
 		uint64_t m_tLastRecv;
 		uint64_t m_tLastSent;
+		float m_tIntSec;
 		bool m_bSendOnceOnly;
+		int m_nRecv;
 
 		void init(uint64_t ieSend = USEC_1SEC, uint64_t tOut = USEC_10SEC)
 		{
@@ -53,7 +55,9 @@ namespace kai
 
 			m_tLastRecv = 0;
 			m_tLastSent = 0;
+			m_tIntSec = -1;
 			m_bSendOnceOnly = false;
+			m_nRecv = 0;
 		}
 
 		bool input(uint8_t b)

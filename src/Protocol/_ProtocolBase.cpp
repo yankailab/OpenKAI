@@ -133,6 +133,9 @@ namespace kai
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
+		if(m_pTr)
+			m_pTr->console(pConsole);
+
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("nCMD = " + i2str(m_nCMDrecv), 1);
 	}

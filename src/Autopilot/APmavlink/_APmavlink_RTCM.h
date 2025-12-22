@@ -4,6 +4,8 @@
 #include "../../Protocol/_Mavlink.h"
 #include "../../Navigation/_RTCMcast.h"
 
+#define GPS_DATA_FRAG_N 180
+
 namespace kai
 {
 
@@ -20,8 +22,8 @@ namespace kai
 		virtual void console(void *pConsole);
 
 	protected:
-		virtual bool writeMavlink(const RTCM_MSG &msg);
-		virtual void sendMsg(void);
+		virtual bool writeMavlink(RTCM_MSG* pM);
+		virtual void writeMsg(void);
 		virtual void handleMsg(const RTCM_MSG &msg);
 
 	protected:
@@ -41,7 +43,6 @@ namespace kai
 
 	protected:
 		_Mavlink* m_pMav;
-		mavlink_gps_rtcm_data_t m_D;
 	};
 
 }

@@ -14,7 +14,7 @@ namespace kai
 
 	int _APmavlink_RTCM::init(void *pKiss)
 	{
-		CHECK(this->_RTCMcast::init(pKiss));
+		CHECK_(this->_RTCMcast::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		return OK_OK;
@@ -22,7 +22,7 @@ namespace kai
 
 	int _APmavlink_RTCM::link(void)
 	{
-		CHECK_(this->_RTCMcast::link());
+		CHECK_(this->_ProtocolBase::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
@@ -53,15 +53,17 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			sendMsg();
+			writeMsg();
 
 			m_pT->sleepT(0);
 		}
 	}
 
-	void _APmavlink_RTCM::sendMsg(void)
+	void _APmavlink_RTCM::writeMsg(void)
 	{
 		IF_(check() != OK_OK);
+
+		uint64_t tNow = getTbootUs();
 
 		for (int i = 0; i < m_vMsg.size(); i++)
 		{
@@ -71,20 +73,36 @@ namespace kai
 			IF_CONT(pM->m_tLastRecv == 0);
 			IF_CONT(pM->m_tLastSent == tLr);
 
-			IF_CONT(!writeMavlink(*pM));
+			IF_CONT(!writeMavlink(pM));
 
 			pM->m_tLastSent = tLr;
 		}
 	}
 
-	bool _APmavlink_RTCM::writeMavlink(const RTCM_MSG &msg)
+	bool _APmavlink_RTCM::writeMavlink(RTCM_MSG* pM)
 	{
 		IF_F(check() != OK_OK);
 
-		m_D.flags = 0;
-		// TODO
+		mavlink_gps_rtcm_data_t D;
+		D.flags = (pM->m_nB > GPS_DATA_FRAG_N) & 1;
 
-		m_pMav->gpsRTCMdata(m_D);
+		int iB = 0;
+		uint8_t iFrag = 0;
+		while(iB < pM->m_nB)
+		{
+			int nB = pM->m_nB - iB;
+			if(nB > GPS_DATA_FRAG_N)
+				nB = GPS_DATA_FRAG_N;
+
+			D.flags |= ((iFrag) & 3) << 1;
+			D.len = nB;
+			memcpy(D.data, &pM->m_pB[iB], nB);
+			iB += nB;
+			
+			m_pMav->gpsRTCMdata(D);
+		}
+
+		return true;
 	}
 
 	void _APmavlink_RTCM::updateR(void)
@@ -96,6 +114,7 @@ namespace kai
 			IF_CONT(!readMsg(&rtcmMsg));
 
 			handleMsg(rtcmMsg);
+			m_pT->run();
 			rtcmMsg.init();
 			m_nCMDrecv++;
 		}
@@ -103,17 +122,20 @@ namespace kai
 
 	void _APmavlink_RTCM::handleMsg(const RTCM_MSG &msg)
 	{
-		uint64_t tNow = getTbootMs();
+		uint64_t tNow = getTbootUs();
 
 		for (int i = 0; i < m_vMsg.size(); i++)
 		{
 			RTCM_MSG *pM = &m_vMsg[i];
 			IF_CONT(pM->m_msgID != msg.m_msgID);
-			IF_(*pM == msg);
+
+			IF_(*pM == msg);	// TODO: some msg remains same all the time?
 
 			pM->updateTo(msg);
+			pM->m_nRecv++;
+			pM->m_tIntSec = ((float)(tNow - pM->m_tLastRecv)) / USEC_1SEC;
 			pM->m_tLastRecv = tNow;
-			//TODO: wakeup send thread
+			pM->m_tOutRecv.reStart();
 			return;
 		}
 
@@ -121,9 +143,10 @@ namespace kai
 		m.init();
 		m.m_msgID = msg.m_msgID;
 		m.updateTo(msg);
+		m.m_nRecv++;
 		m.m_tLastRecv = tNow;
+		m.m_tOutRecv.reStart();
 		m_vMsg.push_back(m);
-		//TODO: wakeup send thread
 	}
 
 	void _APmavlink_RTCM::console(void *pConsole)

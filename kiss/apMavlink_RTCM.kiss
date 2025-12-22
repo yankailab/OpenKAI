@@ -1,0 +1,240 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bLog":1,
+	"bStdErr":1,
+}
+
+{
+	"name":"console",
+	"class":"_Console",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"vBASE":["/serialAP","mavAP","apBase","tcpNtrip","RTCMcast","udpRTCMsvr","udpRTCMcli","apRTCM",],
+}
+
+{
+	"name":"udpGCS",
+	"class":"_UDP",
+	"bON":0,
+	{
+		"name":"thread",
+		"FPS":30,
+	}
+	"nPacket":256,
+	"nPbuffer":2000,
+	"addrRemote":"127.0.0.1",
+	"portRemote":24601,
+	"/portLocal":24600,
+	"bW2R":0,
+	"bWbroadcast":0,
+}
+
+{
+	"name":"mavGCS",
+	"class":"_Mavlink",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bLog":0,
+	"_IObase":"udpGCS",
+	{
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavAP",
+		}
+	}
+}
+
+{
+	"name":"serialAP",
+	"class":"_SerialPort",
+	"bON":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"nPacket":256,
+	"nPbuffer":2000,
+	"port":"/dev/ttyACM0",
+	"baud":115200,
+}
+
+{
+	"name":"mavAP",
+	"class":"_Mavlink",
+	"bON":1,
+	"bLog":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"_IObase":"serialAP",
+	"mySystemID":255,
+	"iMavComm":0,
+	{
+		"name":"routing",
+		{
+			"bON":1,
+			"_Mavlink":"mavGCS",
+		}
+	}
+}
+
+{
+	"name":"apBase",
+	"class":"_APmavlink_base",
+	"bON":0,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
+	"_StateControl":"state",
+	"_Mavlink":"mavAP",
+	"apType":0,
+	"ieSendHB":1,
+	"ieSendMsgInt":1,
+
+	{
+		"name":"mavMsgInt",
+
+		{
+			"name":"heartbeat",
+			"id":0,
+			"tInt":0.4,
+		}
+		{
+			"name":"attitude",
+			"id":30,
+			"tInt":0.3,
+		}
+		{
+			"name":"rcChannels",
+			"id":65,
+			"tInt":1.0,
+		}
+		{
+			"name":"localPosition",
+			"id":32,
+			"tInt":0.3,
+		}
+		{
+			"name":"globalPosition",
+			"id":33,
+			"tInt":0.3,
+		}
+		{
+			"name":"homePosition",
+			"id":242,
+			"tInt":10,
+		}
+		{
+			"name":"batteryStatus",
+			"id":147,
+			"tInt":10,
+		}
+		{
+			"name":"missionCurrent",
+			"id":42,
+			"tInt":1,
+		}
+	}
+}
+
+{
+	"name":"tcpNtrip",
+	"class":"_TCPclient",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":30,
+	}
+	"nPacket":256,
+	"nPbuffer":2000,
+	"addr":"127.0.0.1",
+	"port":24608,
+}
+
+{
+	"name":"udpRTCMsvr",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":30,
+	}
+	"nPacket":256,
+	"nPbuffer":2000,
+	"addrRemote":"127.0.0.1",
+	"portRemote":24609,
+	"/portLocal":24609,
+	"bW2R":0,
+	"bWbroadcast":0,
+}
+
+{
+	"name":"RTCMcast",
+	"class":"_RTCMcast",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":1,
+	}
+	{
+		"name":"threadR",
+		"FPS":1,
+	}
+	"_IObase":"tcpNtrip",
+	"_IObaseSend":"udpRTCMsvr",
+
+	{
+		"name":"/RTCMmsg",
+		{
+			"ID":1006,
+			"bSendOnceOnly":0,
+			"ieSendSec":1,
+			"tOutSec":1,
+		}
+	}
+}
+
+{
+	"name":"udpRTCMcli",
+	"class":"_UDP",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":30,
+	}
+	"nPacket":256,
+	"nPbuffer":2000,
+	"/addrRemote":"127.0.0.1",
+	"/portRemote":24609,
+	"portLocal":24609,
+	"bW2R":0,
+	"bWbroadcast":0,
+}
+
+{
+	"name":"apRTCM",
+	"class":"_APmavlink_RTCM",
+	"bON":1,
+	{
+		"name":"thread",
+		"FPS":1,
+	}
+	{
+		"name":"threadR",
+		"FPS":1,
+	}
+	"_IObase":"udpRTCMcli",
+	"_Mavlink":"mavAP",
+}
+

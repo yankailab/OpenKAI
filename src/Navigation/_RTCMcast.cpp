@@ -34,13 +34,13 @@ namespace kai
 			if (pM->empty())
 				break;
 
-			uint64_t ieSend = USEC_1SEC;
-			uint64_t tOut = USEC_10SEC;
-			pM->v("ieSend", &ieSend);
-			pM->v("tOut", &tOut);
+			uint64_t ieSendSec = 1;
+			uint64_t tOutSec = 10;
+			pM->v("ieSendSec", &ieSendSec);
+			pM->v("tOutSec", &tOutSec);
 
 			RTCM_MSG m;
-			m.init(ieSend, tOut);
+			m.init(ieSendSec * USEC_1SEC, tOutSec * USEC_1SEC);
 			pM->v("ID", &m.m_msgID);
 			pM->v("bSendOnceOnly", &m.m_bSendOnceOnly);
 
@@ -53,7 +53,6 @@ namespace kai
 	int _RTCMcast::link(void)
 	{
 		CHECK_(this->_ProtocolBase::link());
-
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
@@ -95,7 +94,7 @@ namespace kai
 	{
 		IF_(check() != OK_OK);
 
-		uint64_t tNow = getTbootMs();
+		uint64_t tNow = getTbootUs();
 
 		for (int i = 0; i < m_vMsg.size(); i++)
 		{
@@ -104,7 +103,7 @@ namespace kai
 
 			IF_CONT(pM->m_tLastRecv == 0);
 
-			if(pM->m_tLastSent != tLr)
+			if (pM->m_tLastSent != tLr)
 			{
 				IF_CONT(!m_pIOsend->write(pM->m_pB, pM->m_nB));
 
@@ -133,6 +132,7 @@ namespace kai
 			IF_CONT(!readMsg(&rtcmMsg));
 
 			handleMsg(rtcmMsg);
+			m_pT->run();
 			rtcmMsg.init();
 			m_nCMDrecv++;
 		}
@@ -167,7 +167,7 @@ namespace kai
 
 	void _RTCMcast::handleMsg(const RTCM_MSG &msg)
 	{
-		uint64_t tNow = getTbootMs();
+		uint64_t tNow = getTbootUs();
 
 		for (int i = 0; i < m_vMsg.size(); i++)
 		{
@@ -175,6 +175,8 @@ namespace kai
 			IF_CONT(pM->m_msgID != msg.m_msgID);
 
 			pM->updateTo(msg);
+			pM->m_nRecv++;
+			pM->m_tIntSec = ((float)(tNow - pM->m_tLastRecv)) / USEC_1SEC;
 			pM->m_tLastRecv = tNow;
 			pM->m_tOutRecv.reStart();
 			return;
@@ -184,6 +186,7 @@ namespace kai
 		m.init();
 		m.m_msgID = msg.m_msgID;
 		m.updateTo(msg);
+		m.m_nRecv++;
 		m.m_tLastRecv = tNow;
 		m.m_tOutRecv.reStart();
 		m_vMsg.push_back(m);
@@ -194,8 +197,14 @@ namespace kai
 		NULL_(pConsole);
 		this->_ProtocolBase::console(pConsole);
 
+		uint64_t tNow = getTbootUs();
+
 		_Console *pC = (_Console *)pConsole;
-		pC->addMsg("nCMD = " + i2str(m_nCMDrecv), 1);
+		for (int i = 0; i < m_vMsg.size(); i++)
+		{
+			RTCM_MSG *pM = &m_vMsg[i];
+			pC->addMsg("msgID: " + i2str(pM->m_msgID) + ", nB=" + i2str(pM->m_nB) + ", nRecv=" + i2str(pM->m_nRecv) + ", tIntSec=" + f2str(pM->m_tIntSec, 2) + ", bTout=" + i2str(pM->m_tOutRecv.bTout(tNow)));
+		}
 	}
 
 }
