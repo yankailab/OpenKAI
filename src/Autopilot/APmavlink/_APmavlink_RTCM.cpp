@@ -6,6 +6,7 @@ namespace kai
 	_APmavlink_RTCM::_APmavlink_RTCM()
 	{
 		m_pMav = nullptr;
+		m_iSeq = 0;
 	}
 
 	_APmavlink_RTCM::~_APmavlink_RTCM()
@@ -79,28 +80,33 @@ namespace kai
 		}
 	}
 
-	bool _APmavlink_RTCM::writeMavlink(RTCM_MSG* pM)
+	bool _APmavlink_RTCM::writeMavlink(RTCM_MSG *pM)
 	{
 		IF_F(check() != OK_OK);
 
 		mavlink_gps_rtcm_data_t D;
-		D.flags = (pM->m_nB > GPS_DATA_FRAG_N) & 1;
+		D.flags = (pM->m_nB > GPS_DATA_FRAG_N) ? 1 : 0;
 
 		int iB = 0;
 		uint8_t iFrag = 0;
-		while(iB < pM->m_nB)
+		uint8_t iSeq = 0;
+		while (iB < pM->m_nB)
 		{
 			int nB = pM->m_nB - iB;
-			if(nB > GPS_DATA_FRAG_N)
+			if (nB > GPS_DATA_FRAG_N)
 				nB = GPS_DATA_FRAG_N;
 
-			D.flags |= ((iFrag) & 3) << 1;
+			D.flags &= 0x01;
+			D.flags |= ((iFrag++) & 0x03) << 1;
+			D.flags |= ((m_iSeq) & 0x1F) << 3;
 			D.len = nB;
 			memcpy(D.data, &pM->m_pB[iB], nB);
 			iB += nB;
-			
+
 			m_pMav->gpsRTCMdata(D);
 		}
+
+		m_iSeq = (m_iSeq + 1) & 0x1F;
 
 		return true;
 	}
@@ -129,7 +135,7 @@ namespace kai
 			RTCM_MSG *pM = &m_vMsg[i];
 			IF_CONT(pM->m_msgID != msg.m_msgID);
 
-			IF_(*pM == msg);	// TODO: some msg remains same all the time?
+//			IF_(*pM == msg); // TODO: some msg remains same all the time?
 
 			pM->updateTo(msg);
 			pM->m_nRecv++;
@@ -155,7 +161,7 @@ namespace kai
 		this->_RTCMcast::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		//		pC->addMsg("nCMD = " + i2str(m_nCMDrecv), 1);
+		pC->addMsg("iSeq = " + i2str(m_iSeq));
 	}
 
 }

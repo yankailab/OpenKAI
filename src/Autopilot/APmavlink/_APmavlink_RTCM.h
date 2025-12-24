@@ -43,6 +43,8 @@ namespace kai
 
 	protected:
 		_Mavlink* m_pMav;
+
+		uint8_t m_iSeq;
 	};
 
 }

@@ -71,7 +71,7 @@
 	"name":"mavAP",
 	"class":"_Mavlink",
 	"bON":1,
-	"bLog":1,
+	"bLog":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -165,7 +165,7 @@
 {
 	"name":"udpRTCMsvr",
 	"class":"_UDP",
-	"bON":1,
+	"bON":0,
 	{
 		"name":"thread",
 		"FPS":30,
@@ -182,7 +182,7 @@
 {
 	"name":"RTCMcast",
 	"class":"_RTCMcast",
-	"bON":1,
+	"bON":0,
 	{
 		"name":"thread",
 		"FPS":1,
@@ -208,7 +208,7 @@
 {
 	"name":"udpRTCMcli",
 	"class":"_UDP",
-	"bON":1,
+	"bON":0,
 	{
 		"name":"thread",
 		"FPS":30,
@@ -234,7 +234,8 @@
 		"name":"threadR",
 		"FPS":1,
 	}
-	"_IObase":"udpRTCMcli",
+	"/_IObase":"udpRTCMcli",
+	"_IObase":"tcpNtrip",
 	"_Mavlink":"mavAP",
 }
 
