@@ -9,6 +9,12 @@
 
 namespace kai
 {
+	enum DDSM_MODE
+	{
+		ddsm_current = 0x01,
+		ddsm_speed = 0x02,
+		ddsm_pos = 0x03,
+	};
 
 	class _DDSM : public _ActuatorBase
 	{
@@ -22,10 +28,10 @@ namespace kai
 		virtual int check(void);
 		virtual void console(void *pConsole);
 
-	private:
+	protected:
 		bool setID(void);
 		bool setMode(void);
-		bool setSpeed(void);
+		bool setOutput(int16_t v);
 		bool readCMD(void);
 		void update(void);
 		static void *getUpdate(void *This)
@@ -41,11 +47,11 @@ namespace kai
 			return NULL;
 		}
 
-	private:
+	protected:
 		_Thread *m_pTr;
 		_IObase *m_pIO;
 
-		uint8_t m_iMode;
+		DDSM_MODE m_ddsmMode;
 	};
 
 }

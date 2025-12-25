@@ -7,7 +7,7 @@ namespace kai
 		m_pTr = nullptr;
 		m_pIO = nullptr;
 
-		m_iMode = 0x02; // default using speed control
+		m_ddsmMode = ddsm_speed;
 	}
 
 	_DDSM::~_DDSM()
@@ -20,7 +20,7 @@ namespace kai
 		CHECK_(this->_ActuatorBase::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
-		pK->v("iMode", &m_iMode);
+		pK->v("ddsmMode", (uint8_t*)&m_ddsmMode);
 
 		Kiss *pKt = pK->child("threadR");
 		if (pKt->empty())
@@ -85,8 +85,12 @@ namespace kai
 					m_bfSet.clear(actuator_setMode);
 			}
 
-			if (m_iMode == 0x02) // speed mode
-				setSpeed();
+			if (m_ddsmMode == ddsm_speed)
+				setOutput(m_s.getTarget());
+			else if(m_ddsmMode == ddsm_current)
+				setOutput(m_c.getTarget());
+			else if(m_ddsmMode == ddsm_pos)
+				setOutput(m_p.getTarget());
 		}
 	}
 
@@ -128,20 +132,20 @@ namespace kai
 		pB[6] = 0;
 		pB[7] = 0;
 		pB[8] = 0;
-		pB[9] = m_iMode;
+		pB[9] = m_ddsmMode;
 		return m_pIO->write(pB, DDSM_CMD_NB);
 	}
 
-	bool _DDSM::setSpeed(void)
+	bool _DDSM::setOutput(int16_t v)
 	{
 		IF_F(check() != OK_OK);
 
 		uint8_t pB[DDSM_CMD_NB];
 		pB[0] = m_ID;
 		pB[1] = 0x64;
-		int16_t s = m_s.getTarget();
-		pB[2] = s >> 8;
-		pB[3] = s & 0x00FF;
+//		int16_t s = m_s.getTarget();
+		pB[2] = v >> 8;
+		pB[3] = v & 0x00FF;
 		pB[4] = 0;
 		pB[5] = 0;
 		pB[6] = 0;
