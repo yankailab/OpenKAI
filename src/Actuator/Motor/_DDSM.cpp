@@ -143,7 +143,6 @@ namespace kai
 		uint8_t pB[DDSM_CMD_NB];
 		pB[0] = m_ID;
 		pB[1] = 0x64;
-//		int16_t s = m_s.getTarget();
 		pB[2] = v >> 8;
 		pB[3] = v & 0x00FF;
 		pB[4] = 0;
