@@ -51,9 +51,7 @@ namespace kai
 #endif
 
 #ifdef WITH_ACTUATOR
-		ADD_MODULE(_ArduServo);
 		ADD_MODULE(_IAI);
-		ADD_MODULE(_MultiActuatorsBase);
 		ADD_MODULE(_OrientalMotor);
 		ADD_MODULE(_HYMCU_RS485);
 		ADD_MODULE(_ZLAC8015);
@@ -119,13 +117,6 @@ namespace kai
 #endif
 
 #ifdef WITH_FILE
-#ifdef USE_OPENCV
-		ADD_MODULE(_PhotoTake);
-		ADD_MODULE(_GPhotoTake);
-		ADD_MODULE(_GDimgUploader);
-		ADD_MODULE(_BBoxCutOut);
-		ADD_MODULE(_CutOut);
-#endif
 #endif
 
 #ifdef WITH_DETECTOR
@@ -139,7 +130,6 @@ namespace kai
 		ADD_MODULE(_HandKey);
 		ADD_MODULE(_Lane);
 		ADD_MODULE(_Line);
-		ADD_MODULE(_SSD);
 		ADD_MODULE(_Contour);
 #ifdef USE_OPENCV_CONTRIB
 		ADD_MODULE(_ArUco);

@@ -17,9 +17,6 @@ namespace kai
 	{
 		m_pKiss = nullptr;
 		m_bLog = false;
-
-		m_fConfig = "";
-		m_pKconfig = nullptr;
 	}
 
 	BASE::~BASE()
@@ -35,20 +32,6 @@ namespace kai
 		pK->setModule(this);
 
 		pK->v("bLog", &m_bLog);
-
-		pK->v("fConfig", &m_fConfig);
-		IF__(m_fConfig.empty(), OK_OK);
-
-		string s;
-		IF__(!readFile(m_fConfig, &s), OK_ERR_NOT_FOUND);
-
-		DEL(m_pKconfig);
-		m_pKconfig = new Kiss();
-		if (!((Kiss *)m_pKconfig)->parse(s))
-		{
-			DEL(m_pKconfig);
-			return OK_ERR_INVALID_VALUE;
-		}
 
 		return OK_OK;
 	}

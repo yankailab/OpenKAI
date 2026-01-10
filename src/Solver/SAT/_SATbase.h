@@ -12,13 +12,11 @@
 #include "../../Primitive/tSwap.h"
 #include "../../Utility/utilFile.h"
 
-#define N_MAX_LITERAL 10
-
 namespace kai
 {
 	struct VARIABLE
 	{
-		int m_v = -1;	//0: undefined, +/-1: true/false
+		int m_v = 0;	//0: undefined, +/-1: true/false
 
 		void assign(int v)
 		{
@@ -33,28 +31,24 @@ namespace kai
 
 	struct CLAUSE
 	{
-		int m_pL[N_MAX_LITERAL];	// var index from 1, +/- sign = negation
-		int m_nL = 0;
+		vector<int> m_vL;	// var index from 1, +/- sign = negation
 
 		void clear(void)
 		{
-			m_nL = 0;
+			m_vL.clear();
 		}
 
-		bool addLiteral(int L)
+		void addLiteral(int L)
 		{
-			IF_F(m_nL >= N_MAX_LITERAL);
-
-			m_pL[m_nL++] = L;
-			return true;
+			m_vL.push_back(L);
 		}
 
 		int getLiteral(int i)
 		{
 			IF__(i < 0, 0);
-			IF__(i >= m_nL, 0);
+			IF__(i >= m_vL.size(), 0);
 
-			return m_pL[i];
+			return m_vL[i];
 		}
 	};
 
@@ -72,20 +66,15 @@ namespace kai
 		void clear(void);
 		bool readCNF(const string& fName, string* pCNF);
 		bool decodeCNF(const string& cnf);
-		bool verify(void);
+		bool bSatisfied(void);
 		void printSolution(void);
 
 	protected:
 		string m_fName;
 		string m_cnf; // problem input
 
-		// variables
-		VARIABLE *m_pV;	// variable index from 1, [0] is not used
-		int m_nV;	// actual number of variables + 1
-
-		// clauses
-		CLAUSE *m_pC;
-		int m_nC;
+		vector<VARIABLE> m_vV;	// variable index from 1, [0] is not used
+		vector<CLAUSE> m_vC;	// clauses
 
 	};
 

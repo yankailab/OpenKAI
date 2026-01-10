@@ -45,9 +45,6 @@ namespace kai
 	protected:
 		void *m_pKiss;
 		bool m_bLog;
-
-		string m_fConfig;
-		void* m_pKconfig;
 	};
 
 }

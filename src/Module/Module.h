@@ -41,9 +41,7 @@
 #endif
 
 #ifdef WITH_ACTUATOR
-#include "../Actuator/_ArduServo.h"
 #include "../Actuator/_IAI.h"
-#include "../Actuator/_MultiActuatorsBase.h"
 #include "../Actuator/_OrientalMotor.h"
 #include "../Actuator/_HYMCU_RS485.h"
 #include "../Actuator/Motor/_ZLAC8015.h"
@@ -109,13 +107,6 @@
 #endif
 
 #ifdef WITH_FILE
-#ifdef USE_OPENCV
-#include "../Data/Image/_PhotoTake.h"
-#include "../Data/Image/_GPhotoTake.h"
-#include "../Data/Image/_GDimgUploader.h"
-#include "../Data/Image/_BBoxCutOut.h"
-#include "../Data/Image/_CutOut.h"
-#endif
 #endif
 
 #ifdef WITH_DETECTOR
@@ -129,7 +120,6 @@
 #include "../Detector/_Line.h"
 #include "../Detector/_OpenPose.h"
 #include "../Detector/_HandKey.h"
-#include "../Detector/_SSD.h"
 #include "../Detector/_Contour.h"
 #ifdef USE_OPENCV_CONTRIB
 #include "../Detector/_ArUco.h"

@@ -46,14 +46,9 @@ namespace kai
 
 	void _SATbase::clear(void)
 	{
-		DEL(m_pV);
-		DEL(m_pC);
-
 		m_cnf = "";
-		m_pV = nullptr;
-		m_nV = 0;
-		m_pC = nullptr;
-		m_nC = 0;
+		m_vV.clear();
+		m_vC.clear();
 	}
 
 	bool _SATbase::readCNF(const string& fName, string* pCNF)
@@ -76,6 +71,8 @@ namespace kai
 		int i;
 
 		// find header
+		int nV;
+		int nC;
 		for (i = 0; i < vLines.size(); i++)
 		{
 			IF_CONT(vLines[i].empty());
@@ -87,20 +84,16 @@ namespace kai
 
 			IF_F(vL[1] != "cnf");
 
-			m_nV = atoi(vL[2].c_str());
-			m_nC = atoi(vL[3].c_str());
+			nV = atoi(vL[2].c_str());
+			nC = atoi(vL[3].c_str());
 			break;
 		}
 
-		IF_F((m_nV <= 0) || (m_nC <= 0));
+		IF_F((nV <= 0) || (nC <= 0));
 
 		// allocate
-		m_nV += 1;	// index 0 is not used
-		m_pV = new VARIABLE[m_nV];
-		NULL_F(m_pV);
-
-		m_pC = new CLAUSE[m_nC];
-		NULL_F(m_pC);
+		VARIABLE v0; // index 0 is not used
+		m_vV.push_back(v0);
 
 		// clauses
 		int iC = 0;
@@ -112,41 +105,36 @@ namespace kai
 			IF_CONT(vL[0] == "c");
 			IF_CONT(vL[0] == "p");
 
-			CLAUSE* pC = &m_pC[iC];
-			pC->clear();
+			CLAUSE c;
+			c.clear();
 
 			int iL = 0;
 			while (vL[iL] != "0")
 			{
-				IF_F(!pC->addLiteral(atoi(vL[iL++].c_str())));
+				c.addLiteral(atoi(vL[iL++].c_str()));
 			}
 			IF_CONT(iL <= 0);
 
-			iC++;
-
-			if (iC >= m_nC)
-				break;
+			m_vC.push_back(c);
 		}
-		m_nC = iC;
 
 		return true;
 	}
 
-	bool _SATbase::verify(void)
+	bool _SATbase::bSatisfied(void)
 	{
 		int nS = 0;
-		for (int i = 0; i < m_nC; i++)
+		for (int i = 0; i < m_vC.size(); i++)
 		{
-			CLAUSE *pC = &m_pC[i];
+			CLAUSE *pC = &m_vC[i];
 			int nT = 0;
 
-			for (int j = 0; j < pC->m_nL; j++)
+			for (int j = 0; j < pC->m_vL.size(); j++)
 			{
 				int L = pC->getLiteral(j);
 				IF_F(L == 0);	// error
 
-				VARIABLE *pV = &m_pV[abs(L)];
-				int v = pV->v();
+				int v = m_vV[abs(L)].v();
 				nT += (L < 0) ? 1 - v : v;
 
 				if (nT > 0)
@@ -163,7 +151,7 @@ namespace kai
 			}
 		}
 
-		if (nS >= m_nC)
+		if (nS >= m_vC.size())
 			return true;
 
 		return false;
@@ -172,9 +160,9 @@ namespace kai
 	void _SATbase::printSolution(void)
 	{
 		string s = "";
-		for (int i = 1; i < m_nV; i++)
+		for (int i = 1; i < m_vV.size(); i++)
 		{
-			int v = m_pV[i].v();
+			int v = m_vV[i].v();
 			s += i2str(v) + " ";
 		}
 
