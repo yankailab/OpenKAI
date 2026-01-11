@@ -9,7 +9,6 @@
 #define OpenKAI_src_Base_BASE_H_
 
 #include "common.h"
-#include "../Dependencies/picojson.h"
 
 using namespace std;
 
@@ -32,17 +31,14 @@ namespace kai
 
 		virtual void draw(void *pFrame);
 		virtual void console(void *pConsole);
-		virtual void context(void *pContext);
-
-		virtual int serialize(uint8_t *pB, int nB);
-		virtual int deSerialize(uint8_t *pB, int nB);
 
 		string getName(void);
 		string getClass(void);
 
-		bool saveConfig(const string &fConfig, picojson::object* pO);
-
 	protected:
+		string m_class;
+		string m_name;
+
 		void *m_pKiss;
 		bool m_bLog;
 	};

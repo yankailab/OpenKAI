@@ -36,16 +36,6 @@ namespace kai
 		return OK_OK;
 	}
 
-	bool BASE::saveConfig(const string &fConfig, picojson::object* pO)
-	{
-		NULL_F(pO);
-
-		string f = picojson::value(*pO).serialize();
-		writeFile(fConfig, f);
-
-		return true;
-	}
-
 	int BASE::link(void)
 	{
 		NULL__(m_pKiss, OK_ERR_NULLPTR);
@@ -91,16 +81,6 @@ namespace kai
 		return ((Kiss *)m_pKiss)->getClass();
 	}
 
-	int BASE::serialize(uint8_t *pB, int nB)
-	{
-		return OK_ERR_UNIMPLEMENTED;
-	}
-
-	int BASE::deSerialize(uint8_t *pB, int nB)
-	{
-		return OK_ERR_UNIMPLEMENTED;
-	}
-
 	void BASE::draw(void *pFrame)
 	{
 	}
@@ -112,10 +92,6 @@ namespace kai
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("____________________________________", COLOR_PAIR(_Console_COL_NAME) | A_BOLD, _Console_X_NAME, 1);
 		pC->addMsg(this->getName(), COLOR_PAIR(_Console_COL_NAME) | A_BOLD, _Console_X_NAME, 1);
-	}
-
-	void BASE::context(void *pContext)
-	{
 	}
 
 }

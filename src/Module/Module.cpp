@@ -18,9 +18,21 @@ namespace kai
 	{
 	}
 
+	BASE *Module::createInstance(const string& name)
+	{
+		IF_N(name.empty());
+
+		//TODO
+
+		return nullptr;
+	}
+
+
 	BASE *Module::createInstance(Kiss *pK)
 	{
 		NULL__(pK, nullptr);
+
+		string name = pK->getClass();
 
 		ADD_MODULE(SharedMem);
 		ADD_MODULE(Destimator);
@@ -309,15 +321,12 @@ namespace kai
 
 #endif // test
 
-
 		return NULL;
 	}
 
 	template <typename T>
-	BASE *Module::createInst(Kiss *pKiss)
+	BASE *Module::createInst(void)
 	{
-		NULL__(pKiss, nullptr);
-
 		T *pInst = new T();
 		return pInst;
 	}

@@ -189,10 +189,10 @@
 #ifdef WITH_SOLVER
 #include "../Solver/SAT/_SATbase.h"
 #ifdef USE_M4RI
-//#include "../Solver/SAT/_SATbase.h"
+// #include "../Solver/SAT/_SATbase.h"
 #endif
 #ifdef USE_QISKIT
-//#include "../Solver/SAT/_SATbase.h"
+// #include "../Solver/SAT/_SATbase.h"
 #endif
 #endif
 
@@ -300,10 +300,16 @@
 
 #endif // test
 
+// #define ADD_MODULE(x)             \
+// 	if (pK->getClass() == #x)     \
+// 	{                             \
+// 		return createInst<x>(pK); \
+// 	}
+
 #define ADD_MODULE(x)             \
-	if (pK->getClass() == #x)     \
+	if (name == #x)               \
 	{                             \
-		return createInst<x>(pK); \
+		return createInst<x>(); \
 	}
 
 namespace kai
@@ -315,10 +321,11 @@ namespace kai
 		Module();
 		virtual ~Module();
 		BASE *createInstance(Kiss *pK);
+		BASE *createInstance(const string &name);
 
 	private:
 		template <typename T>
-		BASE *createInst(Kiss *pKiss);
+		BASE *createInst(void);
 	};
 
 }
