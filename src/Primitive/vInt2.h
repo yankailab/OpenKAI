@@ -90,6 +90,17 @@ namespace kai
 			y = r[1];
 		}
 
+		inline void operator=(const vector<int>& v)
+		{
+			int n = v.size();
+
+			if (n >= 1)
+				x = v[0];
+
+			if (n >= 2)
+				y = v[1];
+		}
+
 		inline void operator+=(vInt2 &r)
 		{
 			x += r.x;

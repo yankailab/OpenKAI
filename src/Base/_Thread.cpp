@@ -40,6 +40,38 @@ namespace kai
 		pthread_cond_destroy(&m_wakeupSignal);
 	}
 
+	bool _Thread::init(const json &j)
+	{
+		IF_F(!this->BASE::init(j));
+
+		float FPS = j.value("FPS", DEFAULT_FPS);
+		setTargetFPS(FPS);
+
+		return true;
+	}
+
+	bool _Thread::link(const json &j, ModuleMgr* pM)
+	{
+		IF_F(!this->BASE::link(j, pM));
+
+		vector<string> vRunT = j.value("vRunThread", vector<string>{});
+		m_vRunThread.clear();
+		for (string s : vRunT)
+		{
+			_Thread *pT = (_Thread *)(pM->findModule(s));
+			if (!pT)
+			{
+				LOG_I("Instance not found: " + s);
+				continue;
+			}
+
+			m_vRunThread.push_back(pT);
+		}
+
+		return true;
+	}
+
+
 	int _Thread::init(void *pKiss)
 	{
 		CHECK_(this->BASE::init(pKiss));

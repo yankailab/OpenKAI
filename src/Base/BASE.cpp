@@ -2,13 +2,14 @@
  * BASE.cpp
  *
  *  Created on: Sep 15, 2016
- *      Author: root
+ *      Author: Kai Yan
  */
 
 #include "BASE.h"
-#include "../Module/Kiss.h"
 #include "../UI/_Console.h"
-#include "../Utility/utilFile.h"
+
+#include "../Module/Kiss.h"
+
 
 namespace kai
 {
@@ -16,12 +17,33 @@ namespace kai
 	BASE::BASE()
 	{
 		m_pKiss = nullptr;
-		m_bLog = false;
 	}
 
 	BASE::~BASE()
 	{
 	}
+
+	bool BASE::init(const json& j)
+	{
+		IF_F(!j.is_object());
+
+		m_name = j.value("name", "");
+		m_class = j.value("class", "");
+		m_bLog = j.value("bLog", false);
+
+		IF_F(m_name.empty());
+		IF_F(m_class.empty());
+
+		return true;
+	}
+
+	bool BASE::link(const json& j, ModuleMgr* pM)
+	{
+		NULL_F(pM);
+
+		return true;
+	}
+
 
 	int BASE::init(void *pKiss)
 	{

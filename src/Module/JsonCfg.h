@@ -2,11 +2,10 @@
 #define OpenKAI_src_Module_JsonCfg_H_
 
 #include "../Base/common.h"
-#include "../Utility/utilFile.h"
 #include "../Dependencies/json.hpp"
 
 using namespace std;
-using json = nlohmann::json;
+using namespace nlohmann;
 
 namespace kai
 {

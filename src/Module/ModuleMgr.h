@@ -1,8 +1,6 @@
 #ifndef OpenKAI_src_Module_ModuleMgr_H_
 #define OpenKAI_src_Module_ModuleMgr_H_
 
-#include "../Base/BASE.h"
-#include "Module.h"
 #include "JsonCfg.h"
 
 namespace kai
@@ -14,7 +12,7 @@ namespace kai
 		ModuleMgr(void);
 		~ModuleMgr(void);
 
-		bool addJsonCfg(JsonCfg* pJc);
+		bool addJsonCfg(JsonCfg* pJcfg);
 		string getName(void);
 
 		bool createAll(void);
@@ -29,7 +27,7 @@ namespace kai
 
 		void clean(void);
 
-		void *findModule(const string &name);
+		void* findModule(const string &name);
 
 
 	private:
@@ -37,7 +35,7 @@ namespace kai
 		bool m_bLog;
 
 		JsonCfg* m_pJcfg;
-		vector<BASE*> m_vModules;
+		vector<void*> m_vModules;
 	};
 
 }

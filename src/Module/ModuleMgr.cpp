@@ -1,4 +1,6 @@
 #include "ModuleMgr.h"
+#include "Module.h"
+#include "../Base/BASE.h"
 
 namespace kai
 {
@@ -10,15 +12,15 @@ namespace kai
 
 	ModuleMgr::~ModuleMgr(void)
 	{
-		for (BASE *pB : m_vModules)
+		for (void *pM : m_vModules)
 		{
-			DEL(pB);
+			DEL(pM);
 		}
 
 		m_vModules.clear();
 	}
 
-	bool ModuleMgr::addJsonCfg(JsonCfg *pJc)
+	bool ModuleMgr::addJsonCfg(JsonCfg *pJcfg)
 	{
 	}
 
@@ -73,7 +75,9 @@ namespace kai
 				continue;
 			}
 
-			m_vModules.push_back(pM);
+//			pM->set m_name
+
+			m_vModules.push_back((void*)pM);
 		}
 
 		return true;
@@ -81,11 +85,15 @@ namespace kai
 
 	bool ModuleMgr::initAll(void)
 	{
-		for (BASE* pM : m_vModules)
+		for (void* pM : m_vModules)
 		{
-			// if (pM->init(pK) != OK_OK)
+			BASE* pB = (BASE*)pM;
+
+// TODO assign json ptr for each module
+
+			// if (pB->init(pK) != OK_OK)
 			// {
-			// 	LOG_E(pM->getName() + ".init()");
+			// 	LOG_E(pB->getName() + ".init()");
 			// }
 		}
 
@@ -94,11 +102,12 @@ namespace kai
 
 	bool ModuleMgr::linkAll(void)
 	{
-		for (BASE* pM : m_vModules)
+		for (void* pM : m_vModules)
 		{
-			if (pM->link() != OK_OK)
+			BASE* pB = (BASE*)pM;
+			if (pB->link() != OK_OK)
 			{
-				LOG_E(pM->getName() + ".link()");
+				LOG_E(pB->getName() + ".link()");
 			}
 		}
 
@@ -107,11 +116,12 @@ namespace kai
 
 	bool ModuleMgr::startAll(void)
 	{
-		for (BASE* pM : m_vModules)
+		for (void* pM : m_vModules)
 		{
-			if (pM->start() != OK_OK)
+			BASE* pB = (BASE*)pM;
+			if (pB->start() != OK_OK)
 			{
-				LOG_E(pM->getName() + ".start()");
+				LOG_E(pB->getName() + ".start()");
 			}
 		}
 
@@ -120,25 +130,25 @@ namespace kai
 
 	void ModuleMgr::resumeAll(void)
 	{
-		for (BASE* pM : m_vModules)
+		for (void* pM : m_vModules)
 		{
-			pM->resume();
+			((BASE*)pM)->resume();
 		}
 	}
 
 	void ModuleMgr::pauseAll(void)
 	{
-		for (BASE* pM : m_vModules)
+		for (void* pM : m_vModules)
 		{
-			pM->pause();
+			((BASE*)pM)->pause();
 		}
 	}
 
 	void ModuleMgr::stopAll(void)
 	{
-		for (BASE* pM : m_vModules)
+		for (void* pM : m_vModules)
 		{
-			pM->stop();
+			((BASE*)pM)->stop();
 		}
 
 		// TODO

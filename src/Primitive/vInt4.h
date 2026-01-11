@@ -122,6 +122,23 @@ namespace kai
 			w = r[3];
 		}
 
+		inline void operator=(const vector<int>& v)
+		{
+			int n = v.size();
+
+			if (n >= 1)
+				x = v[0];
+
+			if (n >= 2)
+				y = v[1];
+
+			if (n >= 3)
+				z = v[2];
+
+			if (n >= 4)
+				w = v[3];
+		}
+
 		inline void operator+=(vInt4 &r)
 		{
 			x += r.x;

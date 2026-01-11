@@ -30,6 +30,11 @@ namespace kai
 		_ModuleBase();
 		virtual ~_ModuleBase();
 
+		virtual bool init(const json& j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+
+
+
 		virtual int init(void *pKiss);
 		virtual int link(void);
 		virtual int start(void);

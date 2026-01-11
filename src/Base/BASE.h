@@ -9,6 +9,7 @@
 #define OpenKAI_src_Base_BASE_H_
 
 #include "common.h"
+#include "../Module/ModuleMgr.h"
 
 using namespace std;
 
@@ -20,8 +21,13 @@ namespace kai
 		BASE();
 		virtual ~BASE();
 
+		virtual bool init(const json& j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+
+
 		virtual int init(void *pKiss);
 		virtual int link(void);
+
 		virtual int start(void);
 		virtual int check(void);
 
@@ -38,6 +44,7 @@ namespace kai
 	protected:
 		string m_class;
 		string m_name;
+
 
 		void *m_pKiss;
 		bool m_bLog;

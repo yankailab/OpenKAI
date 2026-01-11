@@ -22,6 +22,45 @@ namespace kai
         pthread_mutex_destroy(&m_mutexAtomic);
     }
 
+    bool _ModuleBase::init(const json &j)
+    {
+        IF_F(this->BASE::init(j));
+
+        if (!j.contains("thread"))
+        {
+            LOG_E("json: thread not found");
+            return false;
+        }
+
+        const json &jt = j.at("thread");
+        if (!jt.is_object())
+        {
+            LOG_E("json: thread is not an object");
+            return false;
+        }
+
+        m_pT = new _Thread();
+        if (!m_pT->init(jt))
+        {
+            DEL(m_pT);
+            LOG_E("thread.init() failed");
+            return false;
+        }
+
+        return true;
+    }
+
+    bool _ModuleBase::link(const json &j, ModuleMgr* pM)
+    {
+        IF_F(!this->BASE::link(j, pM));
+
+//TODO: j to be jt
+        IF_F(!m_pT->link(j, pM));
+
+        return true;
+    }
+
+
     int _ModuleBase::init(void *pKiss)
     {
         CHECK_(this->BASE::init(pKiss));

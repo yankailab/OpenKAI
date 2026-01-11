@@ -109,6 +109,20 @@ namespace kai
 			z = r[2];
 		}
 
+		inline void operator=(const vector<int>& v)
+		{
+			int n = v.size();
+
+			if (n >= 1)
+				x = v[0];
+
+			if (n >= 2)
+				y = v[1];
+
+			if (n >= 3)
+				z = v[2];
+		}
+
 		inline void operator+=(vInt3 &r)
 		{
 			x += r.x;
