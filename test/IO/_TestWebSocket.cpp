@@ -12,38 +12,38 @@ namespace kai
     {
     }
 
-    int _TestWebSocket::init(void *pKiss)
+    int _TestWebSocket::init(const json& j)
     {
-        CHECK_(this->_TestBase::init(pKiss));
+        CHECK_(this->_TestBase::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
-        return OK_OK;
+        return true;
     }
 
-    int _TestWebSocket::link(void)
+    int _TestWebSocket::link(const json& j, ModuleMgr* pM)
     {
-        CHECK_(this->_TestBase::link());
+        CHECK_(this->_TestBase::link(j, pM));
 
         Kiss *pK = (Kiss *)m_pKiss;
         string n;
 
         n = "";
-        pK->v("_WebSocketServer", &n);
-        m_pWSserver = (_WebSocketServer *)(pK->findModule(n));
-        NULL__(m_pWSserver, OK_ERR_NOT_FOUND);
+        = j.value("_WebSocketServer", &n);
+        m_pWSserver = (_WebSocketServer *)(pM->findModule(n));
+        NULL__(m_pWSserver);
 
-        return OK_OK;
+        return true;
     }
 
     int _TestWebSocket::start(void)
     {
-        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
     int _TestWebSocket::check(void)
     {
-        NULL__(m_pWSserver, OK_ERR_NULLPTR);
+        NULL__(m_pWSserver);
 
         return this->_TestBase::check();
     }

@@ -41,40 +41,16 @@ namespace kai
 		return true;
 	}
 
-
-
-	int _PCrecv::init(void *pKiss)
+	bool _PCrecv::start(void)
 	{
-		CHECK_(_PCstream::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
-
-		return true;
-	}
-
-	int _PCrecv::link(void)
-	{
-		CHECK_(this->_PCstream::link());
-		Kiss *pK = (Kiss *)m_pKiss;
-		string n;
-
-		n = "";
-		pK->v("_IObase", &n);
-		m_pIO = (_IObase *)(pK->findModule(n));
-		NULL__(m_pIO, OK_ERR_NOT_FOUND);
-
-		return OK_OK;
-	}
-
-	int _PCrecv::start(void)
-	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _PCrecv::check(void)
+	bool _PCrecv::check(void)
 	{
-		NULL__(m_pIO, OK_ERR_NULLPTR);
-		IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
+		NULL_F(m_pIO);
+		IF_F(!m_pIO->bOpen());
 
 		return this->_PCstream::check();
 	}
@@ -95,7 +71,7 @@ namespace kai
 
 	bool _PCrecv::readCMD(PROTOCOL_CMD *pCmd)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 		NULL_F(pCmd);
 
 		if (m_nRead == 0)

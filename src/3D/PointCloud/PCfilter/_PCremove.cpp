@@ -12,45 +12,31 @@ namespace kai
 
 	_PCremove::_PCremove()
 	{
-		m_nP = 16;
-		m_r = 0.05;
 	}
 
 	_PCremove::~_PCremove()
 	{
 	}
 
-    bool _PCremove::init(const json &j)
-    {
-        IF_F(!this->_GeometryBase::init(j));
+	bool _PCremove::init(const json &j)
+	{
+		IF_F(!this->_GeometryBase::init(j));
 
 		m_nP = j.value("nP", 16);
 		m_r = j.value("r", 0.05);
 
-        return true;
-    }
-
-
-	int _PCremove::init(void *pKiss)
-	{
-		CHECK_(_GeometryBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
-
-		pK->v("nP", &m_nP);
-		pK->v("r", &m_r);
-
-		return OK_OK;
+		return true;
 	}
 
-	int _PCremove::start(void)
+	bool _PCremove::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _PCremove::check(void)
+	bool _PCremove::check(void)
 	{
-		//	NULL__(m_pInCtx.m_pPCB, -1);
+		//	NULL_F(m_pInCtx.m_pPCB);
 
 		return _GeometryBase::check();
 	}
@@ -62,13 +48,12 @@ namespace kai
 			m_pT->autoFPS();
 
 			updateFilter();
-
 		}
 	}
 
 	void _PCremove::updateFilter(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		// PointCloud pcIn;
 		// m_pPCB->getPC(&pcIn);

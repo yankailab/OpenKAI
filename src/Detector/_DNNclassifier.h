@@ -19,10 +19,10 @@ namespace kai
 		_DNNclassifier();
 		~_DNNclassifier();
 
-		int init(void *pKiss);
-		int start(void);
+		bool init(const json& j);
+		bool start(void);
 		void draw(void *pFrame);
-		int check(void);
+		bool check(void);
 		bool classify(Mat m, _Object *pO, float minConfidence = 0.0);
 
 	private:

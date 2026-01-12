@@ -23,9 +23,9 @@ namespace kai
     {
     }
 
-    int _ROS_fastLio::init(void *pKiss)
+    int _ROS_fastLio::init(const json& j)
     {
-        CHECK_(this->_NavBase::init(pKiss));
+        CHECK_(this->_NavBase::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
         Kiss *pKr = pK->child("threadROS");
@@ -44,31 +44,31 @@ namespace kai
         return m_pROSnode->init(pKn);
     }
 
-    int _ROS_fastLio::link(void)
+    int _ROS_fastLio::link(const json& j, ModuleMgr* pM)
     {
-        CHECK_(this->_NavBase::link());
+        CHECK_(this->_NavBase::link(j, pM));
         Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
 #ifdef WITH_3D
         n = "";
-        pK->v("_PCframe", &n);
-        m_pPCframe = (_PCframe *)(pK->findModule(n));
+        = j.value("_PCframe", &n);
+        m_pPCframe = (_PCframe *)(pM->findModule(n));
         m_pROSnode->m_pPCframe = m_pPCframe;
 #endif
 
-        return OK_OK;
+        return true;
     }
 
     int _ROS_fastLio::start(void)
     {
-        NULL__(m_pT, OK_ERR_NULLPTR);
-        CHECK_(m_pT->start(getUpdate, this));
+        NULL_F(m_pT);
+        IF_F(!m_pT->start(getUpdate, this));
 
-        NULL__(m_pTros, OK_ERR_NULLPTR);
+        NULL__(m_pTros);
         CHECK_(m_pTros->start(getUpdateROS, this));
 
-        return OK_OK;
+        return true;
     }
 
     int _ROS_fastLio::check(void)
@@ -90,7 +90,7 @@ namespace kai
 
     void _ROS_fastLio::updateNav(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         m_mT = m_pROSnode->m_mT;
         m_vT = m_pROSnode->m_vP;

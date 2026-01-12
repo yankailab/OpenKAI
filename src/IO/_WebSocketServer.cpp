@@ -28,16 +28,15 @@ namespace kai
 		m_vClient.clear();
 	}
 
-	int _WebSocketServer::init(void *pKiss)
+	int _WebSocketServer::init(const json& j)
 	{
-		CHECK_(this->_IObase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_IObase::init(j));
 
-		pK->v("wsMode", (int *)&m_wsMode);
-		pK->v("host", &m_host);
-		pK->v("port", &m_port);
-		pK->v("tOutMs", &m_tOutMs);
-		pK->v("nClientMax", &m_nClientMax);
+		= j.value("wsMode", (int *)&m_wsMode);
+		= j.value("host", &m_host);
+		= j.value("port", &m_port);
+		= j.value("tOutMs", &m_tOutMs);
+		= j.value("nClientMax", &m_nClientMax);
 
 		Kiss *pKt = pK->child("thread");
 		if (pKt->empty())
@@ -51,23 +50,22 @@ namespace kai
 
 		m_ioStatus = io_opened;
 
-		return OK_OK;
+		return true;
 	}
 
-	int _WebSocketServer::link(void)
+	int _WebSocketServer::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_IObase::link());
+		CHECK_(this->_IObase::link(j, pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
-		return OK_OK;
+		return true;
 	}
 
 	int _WebSocketServer::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
-		NULL__(m_pTr, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
+		NULL_F(m_pTr);
 		CHECK_(m_pT->start(getUpdateW, this));
 		return m_pTr->start(getUpdateR, this);
 	}

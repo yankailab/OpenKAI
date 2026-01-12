@@ -40,31 +40,30 @@ namespace kai
 	{
 	}
 
-	int _Lane::init(void *pKiss)
+	int _Lane::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
-		pK->v("bDrawOverhead", &m_bDrawOverhead);
-		pK->v("bDrawFilter", &m_bDrawFilter);
-		pK->v("binMed", &m_binMed);
+		= j.value("bDrawOverhead", &m_bDrawOverhead);
+		= j.value("bDrawFilter", &m_bDrawFilter);
+		= j.value("binMed", &m_binMed);
 
-		pK->v("roiLTx", &m_roiLT.x);
-		pK->v("roiLTy", &m_roiLT.y);
-		pK->v("roiLBx", &m_roiLB.x);
-		pK->v("roiLBy", &m_roiLB.y);
-		pK->v("roiRTx", &m_roiRT.x);
-		pK->v("roiRTy", &m_roiRT.y);
-		pK->v("roiRBx", &m_roiRB.x);
-		pK->v("roiRBy", &m_roiRB.y);
-		pK->v("overheadW", &m_sizeOverhead.x);
-		pK->v("overheadH", &m_sizeOverhead.y);
+		= j.value("roiLTx", &m_roiLT.x);
+		= j.value("roiLTy", &m_roiLT.y);
+		= j.value("roiLBx", &m_roiLB.x);
+		= j.value("roiLBy", &m_roiLB.y);
+		= j.value("roiRTx", &m_roiRT.x);
+		= j.value("roiRTy", &m_roiRT.y);
+		= j.value("roiRBx", &m_roiRB.x);
+		= j.value("roiRBy", &m_roiRB.y);
+		= j.value("overheadW", &m_sizeOverhead.x);
+		= j.value("overheadH", &m_sizeOverhead.y);
 
 		m_mOverhead = Mat(Size(m_sizeOverhead.x, m_sizeOverhead.y), CV_8UC3);
 
 		// color filters
 		Kiss *pKF = pK->child("colorFilter");
-		NULL__(pKF, OK_ERR_NOT_FOUND);
+		NULL__(pKF);
 
 		Kiss *pO;
 		m_nFilter = 0;
@@ -88,12 +87,12 @@ namespace kai
 
 		// lanes
 		int nAvr = 0;
-		pK->v("nAvr", &nAvr);
+		= j.value("nAvr", &nAvr);
 		int nMed = 0;
-		pK->v("nMed", &nMed);
+		= j.value("nMed", &nMed);
 
 		Kiss *pKL = pK->child("lane");
-		NULL__(pKL, OK_ERR_NOT_FOUND);
+		NULL__(pKL);
 
 		m_nLane = 0;
 		while (1)
@@ -122,23 +121,23 @@ namespace kai
 		}
 
 		string n = "";
-		pK->v("_VisionBase", &n);
-		m_pV = (_VisionBase *)(pK->findModule(n));
-		NULL__(m_pV, OK_ERR_NOT_FOUND);
+		= j.value("_VisionBase", &n);
+		m_pV = (_VisionBase *)(pM->findModule(n));
+		NULL__(m_pV);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _Lane::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _Lane::check(void)
 	{
-		NULL__(m_pV, OK_ERR_NULLPTR);
-		IF__(m_pV->getFrameRGB()->m()->empty(), OK_ERR_NULLPTR);
+		NULL__(m_pV);
+		IF__(m_pV->getFrameRGB()->m()->empty());
 
 		return this->_ModuleBase::check();
 	}
@@ -156,7 +155,7 @@ namespace kai
 
 	void _Lane::detect(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 		Mat *pM = m_pV->getFrameRGB()->m();
 
 		//Warp transform to get overhead view
@@ -236,7 +235,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		Frame *pF = (Frame*)pFrame;
 		Mat *pM = pF->m();

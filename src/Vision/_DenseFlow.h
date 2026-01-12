@@ -20,8 +20,8 @@ namespace kai
 		_DenseFlow();
 		virtual ~_DenseFlow();
 
-		int init(void *pKiss);
-		int start(void);
+		bool init(const json& j);
+		bool start(void);
 		void draw(void *pFrame);
 
 		vDouble2 vFlow(vInt4 *pROI);

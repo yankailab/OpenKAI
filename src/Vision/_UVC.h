@@ -83,8 +83,8 @@ namespace kai
 		_UVC();
 		virtual ~_UVC();
 
-		int init(void *pKiss);
-		int start(void);
+		bool init(const json& j);
+		bool start(void);
 		bool open(void);
 		void close(void);
 		void draw(void *pFrame);

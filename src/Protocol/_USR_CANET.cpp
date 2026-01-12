@@ -13,27 +13,25 @@ namespace kai
 	{
 	}
 
-	int _USR_CANET::init(void *pKiss)
+	int _USR_CANET::init(const json& j)
 	{
-		CHECK_(this->_CANbase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_CANbase::init(j));
 
-		return OK_OK;
+		return true;
 	}
 
-	int _USR_CANET::link(void)
+	int _USR_CANET::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_CANbase::link());
+		CHECK_(this->_CANbase::link(j, pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
 		n = "";
-		pK->v("_IObase", &n);
-		m_pIO = (_IObase *)(pK->findModule(n));
-		NULL__(m_pIO, OK_ERR_NOT_FOUND);
+		= j.value("_IObase", &n);
+		m_pIO = (_IObase *)(pM->findModule(n));
+		NULL_F(m_pIO);
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _USR_CANET::open(void)
@@ -55,14 +53,14 @@ namespace kai
 
 	int _USR_CANET::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _USR_CANET::check(void)
 	{
-		NULL__(m_pIO, OK_ERR_NULLPTR);
-		IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
+		NULL_F(m_pIO);
+		IF_F(!m_pIO->bOpen());
 
 		// use ModuleBase::check() as CANbase uses m_bOpen but CANET does not rely on it
 		return this->_ModuleBase::check();
@@ -78,7 +76,7 @@ namespace kai
 
 	bool _USR_CANET::sendFrame(const CAN_F &f)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 		IF_F(f.m_nData > 8);
 
 		uint8_t ctrlB = 0;
@@ -113,7 +111,7 @@ namespace kai
 
 	bool _USR_CANET::readFrame(CAN_F *pF)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 		NULL_F(pF);
 
 		uint8_t pB[CANET_BUF_N];

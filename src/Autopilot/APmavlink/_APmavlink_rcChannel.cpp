@@ -16,15 +16,14 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_rcChannel::init(void *pKiss)
+	int _APmavlink_rcChannel::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
-		pK->v("iRCmodeChan", &m_rcMode.m_iChan);
+		= j.value("iRCmodeChan", &m_rcMode.m_iChan);
 		pK->a("vRCmodeDiv", &m_rcMode.m_vDiv);
-		pK->v("iRCstickV", &m_rcStickV.m_iChan);
-		pK->v("iRCstickH", &m_rcStickH.m_iChan);
+		= j.value("iRCstickV", &m_rcStickV.m_iChan);
+		= j.value("iRCstickH", &m_rcStickH.m_iChan);
 
 		pK->a("vRCmodeDiv", &m_rcStickV.m_vDiv);
 		pK->a("vRCmodeDiv", &m_rcStickH.m_vDiv);
@@ -33,33 +32,32 @@ namespace kai
 		m_rcStickV.update();
 		m_rcStickH.update();
 
-		return OK_OK;
+		return true;
 	}
 
-	int _APmavlink_rcChannel::link(void)
+	int _APmavlink_rcChannel::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_ModuleBase::link(j, pM));
 
 		string n = "";
 
-		pK->v("_APmavlink_base", &n);
-		m_pAP = (_APmavlink_base *)(pK->findModule(n));
-		NULL__(m_pAP, OK_ERR_NOT_FOUND);
+		= j.value("_APmavlink_base", &n);
+		m_pAP = (_APmavlink_base *)(pM->findModule(n));
+		NULL__(m_pAP);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _APmavlink_rcChannel::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _APmavlink_rcChannel::check(void)
 	{
-		NULL__(m_pAP, OK_ERR_NULLPTR);
-		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
+		NULL__(m_pAP);
+		NULL__(m_pAP->getMavlink());
 
 		return this->_ModuleBase::check();
 	}
@@ -77,7 +75,7 @@ namespace kai
 
 	void _APmavlink_rcChannel::updateRCchannel(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		uint16_t pwm;
 
@@ -99,7 +97,7 @@ namespace kai
 	void _APmavlink_rcChannel::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		IF_(check() != OK_OK);
+		IF_(!check());
 		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;

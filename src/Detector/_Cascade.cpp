@@ -19,38 +19,37 @@ namespace kai
 	{
 	}
 
-	int _Cascade::init(void *pKiss)
+	int _Cascade::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_DetectorBase::init(j));
 
-		pK->v("scaleFactor", &m_scaleFactor);
-		pK->v("minNeighbors", &m_minNeighbors);
-		pK->v("bGPU", &m_bGPU);
+		= j.value("scaleFactor", &m_scaleFactor);
+		= j.value("minNeighbors", &m_minNeighbors);
+		= j.value("bGPU", &m_bGPU);
 
 		if (m_bGPU)
 		{
 			m_pGCC = cuda::CascadeClassifier::create(m_fModel);
-			NULL__(m_pGCC, OK_ERR_NOT_FOUND);
+			NULL__(m_pGCC);
 		}
 		else
 		{
-			IF__(!m_CC.load(m_fModel), OK_ERR_NOT_FOUND);
+			IF__(!m_CC.load(m_fModel));
 		}
 
-		return OK_OK;
+		return true;
 	}
 
 	int _Cascade::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _Cascade::check(void)
 	{
-		NULL__(m_pV, OK_ERR_NULLPTR);
-		NULL__(m_pU, OK_ERR_NULLPTR);
+		NULL__(m_pV);
+		NULL__(m_pU);
 
 		return this->_DetectorBase::check();
 	}
@@ -72,7 +71,7 @@ namespace kai
 
 	void _Cascade::detectGPU(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		Frame *pGray = m_pV->getFrameRGB();
 		NULL_(pGray);
@@ -116,7 +115,7 @@ namespace kai
 
 	void _Cascade::detectCPU(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		Frame *pGray = m_pV->getFrameRGB();
 		NULL_(pGray);

@@ -21,7 +21,7 @@ namespace kai
 		PID();
 		virtual ~PID();
 
-		virtual int init(void *pKiss);
+		virtual bool init(const json& j);
 		virtual float update(float v, float sp, float dT);
 		virtual double o(void);
 		virtual void console(void *pConsole);

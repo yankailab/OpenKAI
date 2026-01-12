@@ -15,10 +15,7 @@ namespace kai
     _PCframe::_PCframe()
     {
         m_type = pc_frame;
-        m_nPresv = 0;
-        m_nPresvNext = 0;
         m_tStamp = 0;
-
         m_pGpSM = nullptr;
     }
 
@@ -32,19 +29,6 @@ namespace kai
 
         m_nPresv = j.value("nPresv", 0);
         m_nPresvNext = j.value("nPresvNext", m_nPresv);
-
-        return initGeometry();
-    }
-
-
-    int _PCframe::init(void *pKiss)
-    {
-        CHECK_(this->_GeometryBase::init(pKiss));
-        Kiss *pK = (Kiss *)pKiss;
-
-        pK->v("nPresv", &m_nPresv);
-        m_nPresvNext = m_nPresv;
-        pK->v("nPresvNext", &m_nPresvNext);
 
         return initGeometry();
     }
@@ -106,13 +90,13 @@ namespace kai
         mutexUnlock();
     }
 
-    int _PCframe::start(void)
+    bool _PCframe::start(void)
     {
         NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
-    int _PCframe::check(void)
+    bool _PCframe::check(void)
     {
         return this->_GeometryBase::check();
     }
@@ -129,7 +113,7 @@ namespace kai
 
     void _PCframe::updatePCframe(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         readSharedMem();
         writeSharedMem();
@@ -262,7 +246,7 @@ namespace kai
 
     void _PCframe::copyTo(PointCloud *pPC)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
         NULL_(pPC);
 
         pPC->Clear();

@@ -199,11 +199,11 @@ namespace kai
 		_Lane();
 		virtual ~_Lane();
 
-		int init(void *pKiss);
-		int start(void);
+		bool init(const json& j);
+		bool start(void);
 		void draw(void *pFrame);
 		void console(void *pConsole);
-		int check(void);
+		bool check(void);
 
 	private:
 		void updateVisionSize(void);

@@ -16,24 +16,22 @@ namespace kai
 	{
 	}
 
-	int _CANbase::init(void *pKiss)
+	int _CANbase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
-		pK->v("nErrReconnect", &m_nErrReconnect);
+		= j.value("nErrReconnect", &m_nErrReconnect);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _CANbase::link(void)
+	int _CANbase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link(j, pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _CANbase::open(void)
@@ -54,14 +52,14 @@ namespace kai
 
 	int _CANbase::check(void)
 	{
-		IF__(!m_bOpen, OK_ERR_NOT_READY);
+		IF__(!m_bOpen);
 
 		return this->_ModuleBase::check();
 	}
 
 	bool _CANbase::sendFrame(const CAN_F& f)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		return false;
 	}

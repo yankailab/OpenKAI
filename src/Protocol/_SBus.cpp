@@ -14,18 +14,17 @@ namespace kai
 	{
 	}
 
-	int _SBus::init(void *pKiss)
+	int _SBus::init(const json& j)
 	{
-		CHECK_(this->_ProtocolBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ProtocolBase::init(j));
 
-		pK->v("bSender", &m_bSender);
-		pK->v("timeOutUsec", &m_frame.m_timeOutUsec);
-		pK->v("bRawSbus", &m_bRawSbus);
+		= j.value("bSender", &m_bSender);
+		= j.value("timeOutUsec", &m_frame.m_timeOutUsec);
+		= j.value("bRawSbus", &m_bRawSbus);
 		m_frame.m_nBframe = (m_bRawSbus) ? 25 : SBUS_N_BUF;
 
 		vInt3 vRawRC;
-		pK->v("vRawRC", &vRawRC);
+		= j.value("vRawRC", &vRawRC);
 		for (int i = 0; i < SBUS_NCHAN; i++)
 		{
 			RC_CHANNEL *pC = &m_frame.m_pRC[i];
@@ -36,37 +35,36 @@ namespace kai
 			pC->update();
 		}
 
-		return OK_OK;
+		return true;
 	}
 
-	int _SBus::link(void)
+	int _SBus::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ProtocolBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_ProtocolBase::link(j, pM));
 
-		return OK_OK;
+		return true;
 	}
 
 	int _SBus::start(void)
 	{
 		if (m_bSender)
 		{
-			NULL__(m_pT, OK_ERR_NULLPTR);
+			NULL_F(m_pT);
 			CHECK_(m_pT->start(getUpdateW, this));
 		}
 		else
 		{
-			NULL__(m_pTr, OK_ERR_NULLPTR);
+			NULL_F(m_pTr);
 			CHECK_(m_pTr->start(getUpdateR, this));
 		}
 
-		return OK_OK;
+		return true;
 	}
 
 	int _SBus::check(void)
 	{
-		NULL__(m_pIO, OK_ERR_NULLPTR);
-		IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
+		NULL_F(m_pIO);
+		IF_F(!m_pIO->bOpen());
 
 		return this->_ProtocolBase::check();
 	}
@@ -84,7 +82,7 @@ namespace kai
 
 	void _SBus::send(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		//		m_pIO->write(m_pB, 16);
 	}
@@ -107,7 +105,7 @@ namespace kai
 
 	bool _SBus::readSbus(SBUS_FRAME *pF)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 		NULL_F(pF);
 
 		if (m_nRead == 0)

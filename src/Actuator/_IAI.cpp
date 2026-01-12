@@ -16,32 +16,30 @@ namespace kai
 	{
 	}
 
-	int _IAI::init(void *pKiss)
+	int _IAI::init(const json& j)
 	{
-		CHECK_(this->_ActuatorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ActuatorBase::init(j));
 
-		return OK_OK;
+		return true;
 	}
 
-	int _IAI::link(void)
+	int _IAI::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ActuatorBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_ActuatorBase::link(j, pM));
 
 		string n;
 
 		n = "";
-		IF__(!pK->v("_Modbus", &n), OK_ERR_NOT_FOUND);
-		m_pMB = (_Modbus *)(pK->findModule(n));
-		NULL__(m_pMB, OK_ERR_NOT_FOUND);
+		IF__(!= j.value("_Modbus", &n));
+		m_pMB = (_Modbus *)(pM->findModule(n));
+		NULL__(m_pMB);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _IAI::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
@@ -105,7 +103,7 @@ namespace kai
 
 	bool _IAI::clearAlarm(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		uint8_t pB[10];
 		pB[0] = m_ID;
@@ -127,7 +125,7 @@ namespace kai
 
 	bool _IAI::readStatus(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		// uint16_t pB[18];
 		// int nR = 6;
@@ -145,7 +143,7 @@ namespace kai
 
 	bool _IAI::gotoOrigin(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		uint8_t pB[10];
 		pB[0] = m_ID;
@@ -167,7 +165,7 @@ namespace kai
 
 	bool _IAI::setPos(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		int32_t step = m_p.getTarget();
 		int32_t pErr = m_p.getErrRange();
@@ -195,7 +193,7 @@ namespace kai
 
 	bool _IAI::stopMove(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		// uint16_t pB[9];
 

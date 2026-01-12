@@ -22,15 +22,14 @@ namespace kai
 		close();
 	}
 
-	int _GStreamer::init(void *pKiss)
+	int _GStreamer::init(const json& j)
 	{
-		CHECK_(_VisionBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(_VisionBase::init(j));
 
-		pK->v("pipeline", &m_pipeline);
-		pK->v("nInitRead", &m_nInitRead);
+		= j.value("pipeline", &m_pipeline);
+		= j.value("nInitRead", &m_nInitRead);
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _GStreamer::open(void)
@@ -65,7 +64,7 @@ namespace kai
 
 	int _GStreamer::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 

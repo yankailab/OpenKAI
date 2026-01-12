@@ -22,35 +22,33 @@ namespace kai
 	{
 	}
 
-	int _InRange::init(void *pKiss)
+	int _InRange::init(const json& j)
 	{
-		CHECK_(_VisionBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(_VisionBase::init(j));
 
-		pK->v("vL", &m_vL);
-		pK->v("vH", &m_vH);
+		= j.value("vL", &m_vL);
+		= j.value("vH", &m_vH);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _InRange::link(void)
+	int _InRange::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_VisionBase::link());
+		CHECK_(this->_VisionBase::link(j, pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
 
 		string n;
 		n = "";
-		pK->v("_VisionBase", &n);
-		m_pV = (_VisionBase *)(pK->findModule(n));
-		NULL__(m_pV, OK_ERR_NOT_FOUND);
+		= j.value("_VisionBase", &n);
+		m_pV = (_VisionBase *)(pM->findModule(n));
+		NULL__(m_pV);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _InRange::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 

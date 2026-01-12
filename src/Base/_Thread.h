@@ -28,13 +28,9 @@ namespace kai
 		_Thread();
 		virtual ~_Thread();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
-
-
-		virtual int init(void *pKiss);
-		virtual int link(void);
-		virtual int start(void *(*__start_routine)(void *), void *__restrict __arg);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
+		virtual bool start(void *(*__start_routine)(void *), void *__restrict __arg);
 		virtual void console(void *pConsole);
 
 		bool bAlive(void);
@@ -47,7 +43,7 @@ namespace kai
 
 		bool bOnPause(void);
 		bool bOnResume(void);
-		void runAll(void);	   // wake up all the other instances
+		void runAll(void); // wake up all the other instances
 
 		void sleepT(int64_t usec);
 		void skipSleep(void);

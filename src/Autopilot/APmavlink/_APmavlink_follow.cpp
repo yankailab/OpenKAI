@@ -30,22 +30,21 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_follow::init(void *pKiss)
+	int _APmavlink_follow::init(const json& j)
 	{
-		CHECK_(this->_APmavlink_move::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_APmavlink_move::init(j));
 
-		pK->v("iClass", &m_iClass);
-		pK->v("vPsp", &m_vPsp);
+		= j.value("iClass", &m_iClass);
+		= j.value("vPsp", &m_vPsp);
 
 		int tOutTargetNotFound;
-		if (pK->v("tOutTargetNotFound", &tOutTargetNotFound))
+		if (= j.value("tOutTargetNotFound", &tOutTargetNotFound))
 			m_tOutTargetNotFound.setTout(tOutTargetNotFound);
 
 		int nWmed = 0;
 		int kTpred = 0;
-		pK->v("nWmed", &nWmed);
-		pK->v("kTpred", &kTpred);
+		= j.value("nWmed", &nWmed);
+		= j.value("kTpred", &kTpred);
 
 		IF__(!m_fX.init(nWmed, kTpred), OK_ERR_INVALID_VALUE);
 		IF__(!m_fY.init(nWmed, kTpred), OK_ERR_INVALID_VALUE);
@@ -73,52 +72,51 @@ namespace kai
 			pG->v("mountMode", &m_apMount.m_config.mount_mode);
 		}
 
-		return OK_OK;
+		return true;
 	}
 
-	int _APmavlink_follow::link(void)
+	int _APmavlink_follow::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_APmavlink_move::link());
+		CHECK_(this->_APmavlink_move::link(j, pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
 		n = "";
-		pK->v("PIDpitch", &n);
-		m_pPitch = (PID *)(pK->findModule(n));
+		= j.value("PIDpitch", &n);
+		m_pPitch = (PID *)(pM->findModule(n));
 
 		n = "";
-		pK->v("PIDroll", &n);
-		m_pRoll = (PID *)(pK->findModule(n));
+		= j.value("PIDroll", &n);
+		m_pRoll = (PID *)(pM->findModule(n));
 
 		n = "";
-		pK->v("PIDalt", &n);
-		m_pAlt = (PID *)(pK->findModule(n));
+		= j.value("PIDalt", &n);
+		m_pAlt = (PID *)(pM->findModule(n));
 
 		n = "";
-		pK->v("PIDyaw", &n);
-		m_pYaw = (PID *)(pK->findModule(n));
+		= j.value("PIDyaw", &n);
+		m_pYaw = (PID *)(pM->findModule(n));
 
 		n = "";
-		pK->v("_TrackerBase", &n);
-		m_pTracker = (_TrackerBase *)pK->findModule(n);
+		= j.value("_TrackerBase", &n);
+		m_pTracker = (_TrackerBase *)pM->findModule(n);
 
 		n = "";
-		pK->v("_Universe", &n);
-		m_pU = (_Universe *)pK->findModule(n);
+		= j.value("_Universe", &n);
+		m_pU = (_Universe *)pM->findModule(n);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _APmavlink_follow::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _APmavlink_follow::check(void)
 	{
-		NULL__(m_pU, OK_ERR_NOT_FOUND);
+		NULL__(m_pU);
 
 		return this->_APmavlink_move::check();
 	}
@@ -155,7 +153,7 @@ namespace kai
 
 	bool _APmavlink_follow::updateTarget(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		if (m_apMount.m_bEnable)
 			m_pAP->setMount(m_apMount);
@@ -215,7 +213,7 @@ namespace kai
 
 	bool _APmavlink_follow::findTarget(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		_Object *pO;
 		_Object *tO = NULL;
@@ -291,7 +289,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_APmavlink_move::draw(pFrame);
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 #ifdef USE_OPENCV
 		Frame *pF = (Frame *)pFrame;

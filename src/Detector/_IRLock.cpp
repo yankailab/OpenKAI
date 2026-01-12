@@ -23,47 +23,45 @@ namespace kai
 	{
 	}
 
-	int _IRLock::init(void *pKiss)
+	int _IRLock::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_DetectorBase::init(j));
 
 		vFloat2 vCamSize;
-		if (pK->v("vCamSize", &vCamSize))
+		if (= j.value("vCamSize", &vCamSize))
 		{
 			m_vOvCamSize.x = 1.0 / vCamSize.x;
 			m_vOvCamSize.y = 1.0 / vCamSize.y;
 		}
 
-		return OK_OK;
+		return true;
 	}
 
-	int _IRLock::link(void)
+	int _IRLock::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_DetectorBase::link());
+		CHECK_(this->_DetectorBase::link(j, pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
 
 		string n;
 		n = "";
-		pK->v("_IObase", &n);
-		m_pIO = (_IObase *)(pK->findModule(n));
-		NULL__(m_pIO, OK_ERR_NOT_FOUND);
+		= j.value("_IObase", &n);
+		m_pIO = (_IObase *)(pM->findModule(n));
+		NULL_F(m_pIO);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _IRLock::check(void)
 	{
-		NULL__(m_pU, OK_ERR_NULLPTR);
-		NULL__(m_pIO, OK_ERR_NULLPTR);
+		NULL__(m_pU);
+		NULL_F(m_pIO);
 
 		return this->_DetectorBase::check();
 	}
 
 	int _IRLock::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
@@ -142,7 +140,7 @@ namespace kai
 	void _IRLock::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		IF_(check() != OK_OK);
+		IF_(!check());
 		this->_DetectorBase::console(pConsole);
 
 		string msg = "| ";

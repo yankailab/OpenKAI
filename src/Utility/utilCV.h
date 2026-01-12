@@ -37,18 +37,18 @@ namespace kai
 		}
 
 		Mat mC = Mat::zeros(3, 3, CV_64FC1);
-		pK->v("Fx", &mC.at<double>(0, 0));
-		pK->v("Fy", &mC.at<double>(1, 1));
-		pK->v("Cx", &mC.at<double>(0, 2));
-		pK->v("Cy", &mC.at<double>(1, 2));
+		= j.value("Fx", &mC.at<double>(0, 0));
+		= j.value("Fy", &mC.at<double>(1, 1));
+		= j.value("Cx", &mC.at<double>(0, 2));
+		= j.value("Cy", &mC.at<double>(1, 2));
 		mC.at<double>(2, 2) = 1.0;
 
 		Mat mD = Mat::zeros(1, 5, CV_64FC1);
-		pK->v("k1", &mD.at<double>(0, 0));
-		pK->v("k2", &mD.at<double>(0, 1));
-		pK->v("p1", &mD.at<double>(0, 2));
-		pK->v("p2", &mD.at<double>(0, 3));
-		pK->v("k3", &mD.at<double>(0, 4));
+		= j.value("k1", &mD.at<double>(0, 0));
+		= j.value("k2", &mD.at<double>(0, 1));
+		= j.value("p1", &mD.at<double>(0, 2));
+		= j.value("p2", &mD.at<double>(0, 3));
+		= j.value("k3", &mD.at<double>(0, 4));
 
 		*pC = mC;
 		*pD = mD;

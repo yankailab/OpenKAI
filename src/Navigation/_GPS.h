@@ -21,8 +21,8 @@ namespace kai
 		_GPS(void);
 		virtual ~_GPS();
 
-		int init(void *pKiss);
-		int start(void);
+		bool init(const json& j);
+		bool start(void);
 		void console(void *pConsole);
 
 		LL_POS getLLpos(void);

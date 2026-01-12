@@ -10,22 +10,6 @@ namespace kai
 		m_vDim.clear();
 		m_vPmin.clear();
 
-		m_fGridConfig = "";
-
-		m_vPorigin.clear();
-		m_vCellRangeX.clear();
-		m_vCellRangeY.clear();
-		m_vCellRangeZ.clear();
-		m_vCellSize.clear();
-
-		m_bVisual = false;
-		m_vAxisColX.set(1, 0, 0);
-		m_vAxisColY.set(0, 1, 0);
-		m_vAxisColZ.set(0, 0, 1);
-
-		m_nMedWidth = 3;
-		m_tExpire = 0;
-
 		m_gridLine.Clear();
 		m_pCellActive = &m_pActiveCells[0];
 	}
@@ -71,49 +55,6 @@ namespace kai
 		}
 
 		return true;
-	}
-
-
-	int _PCgridBase::init(void *pKiss)
-	{
-		CHECK_(this->_GeometryBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
-
-		pK->v("vPorigin", &m_vPorigin);
-		pK->v("vCellRangeX", &m_vCellRangeX);
-		pK->v("vCellRangeY", &m_vCellRangeY);
-		pK->v("vCellRangeZ", &m_vCellRangeZ);
-		pK->v("vCellSize", &m_vCellSize);
-
-		pK->v("bVisual", &m_bVisual);
-		pK->v("vAxisColX", &m_vAxisColX);
-		pK->v("vAxisColY", &m_vAxisColY);
-		pK->v("vAxisColZ", &m_vAxisColZ);
-
-		pK->v("nMedWidth", &m_nMedWidth);
-		pK->v("tExpire", &m_tExpire);
-
-		pK->v("fGridConfig", &m_fGridConfig);
-
-		return OK_OK;
-	}
-
-	int _PCgridBase::link(void)
-	{
-		CHECK_(this->_GeometryBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
-
-		vector<string> vGn;
-		pK->a("vGeometryBase", &vGn);
-		for (string n : vGn)
-		{
-			_GeometryBase *pG = (_GeometryBase *)(pK->findModule(n));
-			IF_CONT(!pG);
-
-			m_vpGB.push_back(pG);
-		}
-
-		return OK_OK;
 	}
 
 	string _PCgridBase::getConfigFileName(void)
@@ -221,7 +162,7 @@ namespace kai
 	bool _PCgridBase::initGeometry(void)
 	{
 		float cVol = m_vCellSize.x * m_vCellSize.y * m_vCellSize.z;
-		IF__(cVol <= 0, OK_ERR_INVALID_VALUE);
+		IF_F(cVol <= 0);
 
 		// calc grid size
 		vInt3 vDim;
@@ -229,8 +170,8 @@ namespace kai
 				 m_vCellRangeY.len(),
 				 m_vCellRangeZ.len());
 		int nCell = vDim.x * vDim.y * vDim.z;
-		IF__(nCell <= 0, OK_ERR_INVALID_VALUE);
-		IF__(nCell > PC_GRID_N_CELL, OK_ERR_INVALID_VALUE);
+		IF_F(nCell <= 0);
+		IF_F(nCell > PC_GRID_N_CELL);
 
 		m_vDim = vDim;
 
@@ -274,16 +215,16 @@ namespace kai
 
 		mutexUnlock();
 
-		return OK_OK;
+		return true;
 	}
 
-	int _PCgridBase::start(void)
+	bool _PCgridBase::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _PCgridBase::check(void)
+	bool _PCgridBase::check(void)
 	{
 		return this->_GeometryBase::check();
 	}
@@ -304,7 +245,7 @@ namespace kai
 
 	void _PCgridBase::updatePCgrid(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		clearAllCells();
 
@@ -365,7 +306,7 @@ namespace kai
 
 	void _PCgridBase::addPCstream(void *p, const uint64_t &tExpire)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 		NULL_(p);
 		_PCstream *pS = (_PCstream *)p;
 
@@ -389,7 +330,7 @@ namespace kai
 
 	void _PCgridBase::addPCframe(void *p)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 		NULL_(p);
 		_PCframe *pF = (_PCframe *)p;
 

@@ -25,10 +25,9 @@ namespace kai
 		m_vpState.clear();
 	}
 
-	int _StateControl::init(void *pKiss)
+	int _StateControl::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
 		Kiss *pKstate = pK->child("state");
 		IF__(pKstate->empty(), OK_OK);
@@ -50,35 +49,34 @@ namespace kai
 			return OK_ERR_NOT_FOUND;
 		}
 
-		IF__(m_vpState.empty(), OK_ERR_NOT_FOUND);
+		IF__(m_vpState.empty());
 
 		string start = "";
-		pK->v("start", &start);
+		= j.value("start", &start);
 		i = getStateIdxByName(start);
 		if (i < 0)
 			m_iS = 0;
 		else
 			m_iS = i;
 
-		return OK_OK;
+		return true;
 	}
 
-	int _StateControl::link(void)
+	int _StateControl::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_ModuleBase::link(j, pM));
 
 		for (int i = 0; i < m_vpState.size(); i++)
 		{
 			CHECK_(m_vpState[i]->link());
 		}
 
-		return OK_OK;
+		return true;
 	}
 
 	int _StateControl::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 

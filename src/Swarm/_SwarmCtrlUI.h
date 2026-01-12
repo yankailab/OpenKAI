@@ -13,10 +13,10 @@ namespace kai
 		_SwarmCtrlUI();
 		~_SwarmCtrlUI();
 
-		virtual int init(void *pKiss);
-		virtual int link(void);
-		virtual int start(void);
-		virtual int check(void);
+		virtual bool init(const json& j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool start(void);
+		virtual bool check(void);
 		virtual void console(void *pConsole);
 
 	protected:
@@ -48,7 +48,7 @@ namespace kai
 		_Thread *m_Tr;
 		_SwarmCtrl* m_pCtrl;
 		_SwarmSearch *m_pSwarm;
-		
+
 		INTERVAL_EVENT m_ieSendNodeUpdate;
 		INTERVAL_EVENT m_ieSendNodeClearAll;
 

@@ -58,9 +58,9 @@ namespace kai
 		_SATbase();
 		virtual ~_SATbase();
 
-		virtual int init(void *pKiss);
-		virtual int link(void);
-		virtual int check(void);
+		virtual bool init(const json& j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool check(void);
 		virtual void console(void *pConsole);
 
 		void clear(void);

@@ -25,37 +25,36 @@ namespace kai
         clReleaseContext(m_clContext);
     }
 
-    int clBase::init(void *pKiss)
+    int clBase::init(const json& j)
     {
-        CHECK_(this->BASE::init(pKiss));
+        CHECK_(this->BASE::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
-        pK->v("fKernel", &m_fKernel);
-        pK->v("buildOpt", &m_buildOpt);
+        = j.value("fKernel", &m_fKernel);
+        = j.value("buildOpt", &m_buildOpt);
 
         IF__(!setupCL(), OK_ERR_INVALID_VALUE);
         IF__(!setupKernel(), OK_ERR_INVALID_VALUE);
 
-        return OK_OK;
+        return true;
     }
 
-	int clBase::link(void)
+	int clBase::link(const json& j, ModuleMgr* pM)
     {
-		CHECK_(this->BASE::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->BASE::link(j, pM));
 
         // string n;
         // n = "";
-        // pK->v("", &n);
-        // m_p = ( *)(pK->findModule(n));
+        // = j.value("", &n);
+        // m_p = ( *)(pM->findModule(n));
         // IF_Fl(!m_p, n + ": not found");
 
-		return OK_OK;
+		return true;
     }
 
 	int clBase::check(void)
     {
-        return OK_OK;
+        return true;
     }
 
     bool clBase::setupCL(void)

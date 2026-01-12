@@ -13,21 +13,15 @@ namespace kai
 
     _PCregistGlobal::_PCregistGlobal()
     {
-        m_rNormal = 0.2;
-        m_rFeature = 0.5;
-        m_maxNNnormal = 30;
-        m_maxNNfpfh = 100;
-        m_lastFit = 0.0;
-
         m_pSrc = nullptr;
         m_pTgt = nullptr;
         m_pTf = nullptr;
+        m_lastFit = 0.0;
     }
 
     _PCregistGlobal::~_PCregistGlobal()
     {
     }
-
 
     bool _PCregistGlobal::init(const json &j)
     {
@@ -49,7 +43,7 @@ namespace kai
 
         n = j.value("_PCbaseSrc", "");
         m_pSrc = (_PCframe *)(pM->findModule(n));
-        if(!m_pSrc)
+        if (!m_pSrc)
         {
             LOG_E(n + ": not found");
             return false;
@@ -57,7 +51,7 @@ namespace kai
 
         n = j.value("_PCbaseTgt", "");
         m_pTgt = (_PCframe *)(pM->findModule(n));
-        if(!m_pTgt)
+        if (!m_pTgt)
         {
             LOG_E(n + ": not found");
             return false;
@@ -65,7 +59,7 @@ namespace kai
 
         n = j.value("_PCtransform", "");
         m_pTf = (_PCtransform *)(pM->findModule(n));
-        if(!m_pTf)
+        if (!m_pTf)
         {
             LOG_E(n + ": not found");
             return false;
@@ -74,63 +68,17 @@ namespace kai
         return true;
     }
 
-
-
-
-
-    int _PCregistGlobal::init(void *pKiss)
+    bool _PCregistGlobal::start(void)
     {
-        CHECK_(_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
-
-        pK->v("rNormal", &m_rNormal);
-        pK->v("rFeature", &m_rFeature);
-        pK->v("maxNNnormal", &m_maxNNnormal);
-        pK->v("maxNNfpfh", &m_maxNNfpfh);
-
-        string n;
-
-        n = "";
-        pK->v("_PCbaseSrc", &n);
-        m_pSrc = (_PCframe *)(pK->findModule(n));
-        if(!m_pSrc)
-        {
-            LOG_E(n + ": not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
-        n = "";
-        pK->v("_PCbaseTgt", &n);
-        m_pTgt = (_PCframe *)(pK->findModule(n));
-        if(!m_pTgt)
-        {
-            LOG_E(n + ": not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
-        n = "";
-        pK->v("_PCtransform", &n);
-        m_pTf = (_PCtransform *)(pK->findModule(n));
-        if(!m_pTf)
-        {
-            LOG_E(n + ": not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
-        return true;
-    }
-
-    int _PCregistGlobal::start(void)
-    {
-        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
-    int _PCregistGlobal::check(void)
+    bool _PCregistGlobal::check(void)
     {
-        NULL__(m_pSrc, OK_ERR_NULLPTR);
-        NULL__(m_pTgt, OK_ERR_NULLPTR);
-        NULL__(m_pTf, OK_ERR_NULLPTR);
+        NULL_F(m_pSrc);
+        NULL_F(m_pTgt);
+        NULL_F(m_pTf);
 
         return _ModuleBase::check();
     }
@@ -147,7 +95,7 @@ namespace kai
 
     void _PCregistGlobal::updateRegistration(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         PointCloud pcSrc;
         m_pSrc->copyTo(&pcSrc);
@@ -181,12 +129,11 @@ namespace kai
             KDTreeSearchParamHybrid(m_rFeature, m_maxNNfpfh));
     }
 
-    void _PCregistGlobal::console(void* pConsole)
+    void _PCregistGlobal::console(void *pConsole)
     {
         NULL_(pConsole);
         this->_ModuleBase::console(pConsole);
-        ((_Console*)pConsole)->addMsg("Fitness = " + f2str((float)m_RR.fitness_) +
-               ", Inliner_rmse = " + f2str((float)m_RR.inlier_rmse_));
+        ((_Console *)pConsole)->addMsg("Fitness = " + f2str((float)m_RR.fitness_) + ", Inliner_rmse = " + f2str((float)m_RR.inlier_rmse_));
     }
 
 }

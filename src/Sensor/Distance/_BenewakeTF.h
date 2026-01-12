@@ -44,8 +44,8 @@ namespace kai
 		_BenewakeTF();
 		~_BenewakeTF();
 
-		int init(void *pKiss);
-		int start(void);
+		bool init(const json& j);
+		bool start(void);
 		void console(void *pConsole);
 
 		DIST_SENSOR_TYPE type(void);

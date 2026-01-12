@@ -17,20 +17,18 @@ namespace kai
 	{
 	}
 
-	int StateBase::init(void *pKiss)
+	int StateBase::init(const json& j)
 	{
-		CHECK_(this->BASE::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->BASE::init(j));
 
-		pK->v("next", &m_next);
+		= j.value("next", &m_next);
 
-		return OK_OK;
+		return true;
 	}
 
-	int StateBase::link(void)
+	int StateBase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->BASE::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->BASE::link(j, pM));
 
 		vector<string> vS;
 
@@ -50,7 +48,7 @@ namespace kai
 			m_vpModulePause.push_back(pM);
 		}
 
-		return OK_OK;
+		return true;
 	}
 
 	void StateBase::reset(void)

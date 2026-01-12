@@ -20,27 +20,25 @@ namespace kai
 		close();
 	}
 
-	int _ADIO_EBYTE::init(void *pKiss)
+	int _ADIO_EBYTE::init(const json& j)
 	{
-		CHECK_(this->_ADIObase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ADIObase::init(j));
 
-		pK->v("iID", &m_iID);
+		= j.value("iID", &m_iID);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _ADIO_EBYTE::link(void)
+	int _ADIO_EBYTE::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ADIObase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_ADIObase::link(j, pM));
 
 		string n;
 		n = "";
-		pK->v("_Modbus", &n);
-		m_pMB = (_Modbus *)(pK->findModule(n));
+		= j.value("_Modbus", &n);
+		m_pMB = (_Modbus *)(pM->findModule(n));
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _ADIO_EBYTE::open(void)
@@ -54,15 +52,15 @@ namespace kai
 
 	int _ADIO_EBYTE::check(void)
 	{
-		NULL__(m_pMB, OK_ERR_NULLPTR);
-		IF__(!m_pMB->bOpen(), OK_ERR_NOT_READY);
+		NULL__(m_pMB);
+		IF__(!m_pMB->bOpen());
 
 		return this->_ADIObase::check();
 	}
 
 	int _ADIO_EBYTE::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
@@ -89,7 +87,7 @@ namespace kai
 
 	void _ADIO_EBYTE::updateW(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		for (int i = 0; i < m_vPort.size(); i++)
 		{
@@ -109,7 +107,7 @@ namespace kai
 
 	void _ADIO_EBYTE::updateR(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		for (int i = 0; i < m_vPort.size(); i++)
 		{

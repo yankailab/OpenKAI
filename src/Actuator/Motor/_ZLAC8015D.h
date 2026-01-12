@@ -20,10 +20,10 @@ namespace kai
 		_ZLAC8015D();
 		~_ZLAC8015D();
 
-		int init(void *pKiss);
-		int link(void);
-		int start(void);
-		int check(void);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
+		virtual bool start(void);
+		virtual bool check(void);
 
 	protected:
 		bool setMode(void);

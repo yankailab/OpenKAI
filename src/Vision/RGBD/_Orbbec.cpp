@@ -19,21 +19,19 @@ namespace kai
 	{
 	}
 
-	int _Orbbec::init(void *pKiss)
+	int _Orbbec::init(const json& j)
 	{
-		CHECK_(_RGBDbase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(_RGBDbase::init(j));
 
-		return OK_OK;
+		return true;
 	}
 
-	int _Orbbec::link(void)
+	int _Orbbec::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_RGBDbase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_RGBDbase::link(j, pM));
 		string n;
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _Orbbec::open(void)
@@ -57,7 +55,7 @@ namespace kai
 
 	int _Orbbec::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 

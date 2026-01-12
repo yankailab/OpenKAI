@@ -28,25 +28,23 @@ namespace kai
         virtual ~_PCstream();
 
         // BASE
-		virtual bool init(const json &j);
-
-        virtual int init(void *pKiss);
-        virtual int start(void);
-        virtual int check(void);
+        virtual bool init(const json &j);
+        virtual bool start(void);
+        virtual bool check(void);
 
         // _GeometryBase
-		virtual bool initGeometry(void);
+        virtual bool initGeometry(void);
         virtual void clear(void);
-        virtual void addPCstream(void* p, uint64_t tExpire = 0);
+        virtual void addPCstream(void *p, uint64_t tExpire = 0);
 
         virtual void writeSharedMem(void);
         virtual void readSharedMem(void);
-        virtual bool save2file(const string& fName);
+        virtual bool save2file(const string &fName);
 
         // _PCstream
-   		virtual void copyTo(PointCloud *pPC, uint64_t tExpire = 0);
-        virtual void add(const Vector3d &vP, const Vector3f &vC, const uint64_t& tStamp);
-        virtual GEOMETRY_POINT* get(int i);
+        virtual void copyTo(PointCloud *pPC, uint64_t tExpire = 0);
+        virtual void add(const Vector3d &vP, const Vector3f &vC, const uint64_t &tStamp);
+        virtual GEOMETRY_POINT *get(int i);
         virtual int nP(void);
         virtual int iP(void);
 
@@ -60,7 +58,7 @@ namespace kai
         }
 
     protected:
-        //ring buf
+        // ring buf
         GEOMETRY_POINT *m_pP;
         int m_nP;
         int m_iP;

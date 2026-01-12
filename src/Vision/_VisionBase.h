@@ -54,9 +54,9 @@ namespace kai
 		_VisionBase();
 		virtual ~_VisionBase();
 
-		virtual int init(void *pKiss);
-		virtual int link(void);
-		virtual int check(void);
+		virtual bool init(const json& j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool check(void);
 		virtual void console(void *pConsole);
 		virtual void draw(void *pFrame);
 

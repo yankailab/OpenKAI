@@ -25,22 +25,21 @@ namespace kai
 	{
 	}
 
-	int _GPS::init(void *pKiss)
+	int _GPS::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
 		string n = "";
-		pK->v("_IObase", &n);
-		m_pIO = (_IObase *)(pK->findModule(n));
-		NULL__(m_pIO, OK_ERR_NOT_FOUND);
+		= j.value("_IObase", &n);
+		m_pIO = (_IObase *)(pM->findModule(n));
+		NULL_F(m_pIO);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _GPS::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 

@@ -28,10 +28,10 @@ namespace kai
 		_APmavlink_land();
 		~_APmavlink_land();
 
-		virtual int init(void *pKiss);
-		virtual int link(void);
-		virtual int start(void);
-		virtual int check(void);
+		virtual bool init(const json& j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool start(void);
+		virtual bool check(void);
 		virtual void update(void);
 
 		bool bComplete(void);
@@ -52,7 +52,7 @@ namespace kai
 	protected:
 		_DistSensorBase* m_pDS;
 		vFloat2 m_vDSrange;
-		
+
 		vector<AP_LAND_TAG> m_vTags;
 		AP_LAND_TAG* m_pTag;
 		vFloat2 m_vFov; // cam FOV horiz/vert

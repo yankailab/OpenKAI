@@ -19,10 +19,7 @@ namespace kai
         virtual ~_MeshStream();
 
 		virtual bool init(const json& j);
-
-
-        virtual int init(void *pKiss);
-        virtual int check(void);
+        virtual bool check(void);
 
         virtual void setAccept(bool b);
         virtual int nP(void);

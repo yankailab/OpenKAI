@@ -22,48 +22,46 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_videoStream::init(void *pKiss)
+	int _APmavlink_videoStream::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
-		pK->v("process", &m_process);
-		pK->v("fName", &m_fName);
-		pK->v("dir", &m_dir);
+		= j.value("process", &m_process);
+		= j.value("fName", &m_fName);
+		= j.value("dir", &m_dir);
 		pK->a("vWP", &m_vWP);
-		pK->v("tVidInt", &m_tVidInt);
+		= j.value("tVidInt", &m_tVidInt);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _APmavlink_videoStream::link(void)
+	int _APmavlink_videoStream::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link(j, pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
 		n = "";
-		pK->v("_APmavlink_base", &n);
-		m_pAP = (_APmavlink_base *)(pK->findModule(n));
-		NULL__(m_pAP, OK_ERR_NOT_FOUND);
+		= j.value("_APmavlink_base", &n);
+		m_pAP = (_APmavlink_base *)(pM->findModule(n));
+		NULL__(m_pAP);
 
 		n = "";
-		pK->v("_Uploader", &n);
-		m_pCurl = (_Uploader *)(pK->findModule(n));
+		= j.value("_Uploader", &n);
+		m_pCurl = (_Uploader *)(pM->findModule(n));
 
-		return OK_OK;
+		return true;
 	}
 
 	int _APmavlink_videoStream::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _APmavlink_videoStream::check(void)
 	{
-		NULL__(m_pAP, OK_ERR_NULLPTR);
+		NULL__(m_pAP);
 
 		return this->_ModuleBase::check();
 	}
@@ -81,7 +79,7 @@ namespace kai
 
 	void _APmavlink_videoStream::updateStream(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		uint64_t tNow = getApproxTbootUs();
 
@@ -109,7 +107,7 @@ namespace kai
 
 	bool _APmavlink_videoStream::openStream(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 		// IF_F(m_pFvid);
 		IF_F(m_gstPID);
 
@@ -147,7 +145,7 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("fName = " + m_fName);

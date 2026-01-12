@@ -13,10 +13,10 @@ namespace kai
 		_SocketCAN();
 		~_SocketCAN();
 
-		virtual int init(void *pKiss);
-		virtual int link(void);
-		virtual int start(void);
-		virtual int check(void);
+		virtual bool init(const json& j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool start(void);
+		virtual bool check(void);
 		virtual void console(void *pConsole);
 
 		virtual bool open(void);

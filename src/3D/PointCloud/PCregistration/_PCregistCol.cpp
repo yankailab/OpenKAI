@@ -13,17 +13,8 @@ namespace kai
 
     _PCregistCol::_PCregistCol()
     {
-        m_maxDistance = 0.1;
-        m_rNormal = 0.2;
-        m_maxNNnormal = 30;
-        m_rFitness = 1e-6;
-        m_rRMSE = 1e-6;
-        m_maxIter = 30;
-        m_minFit = 0.0;
-        m_rVoxel = 0.1;
-
-        m_pPCf = NULL;
-        m_pTf = NULL;
+        m_pPCf = nullptr;
+        m_pTf = nullptr;
     }
 
     _PCregistCol::~_PCregistCol()
@@ -56,48 +47,14 @@ namespace kai
         return true;
     }
 
-
-
-
-    int _PCregistCol::init(void *pKiss)
+    bool _PCregistCol::start(void)
     {
-        CHECK_(_PCframe::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
-
-        pK->v("rVoxel", &m_rVoxel);
-        pK->v("maxDistance", &m_maxDistance);
-        pK->v("rNormal", &m_rNormal);
-        pK->v("maxNNnormal", &m_maxNNnormal);
-        pK->v("rFitness", &m_rFitness);
-        pK->v("rRMSE", &m_rRMSE);
-        pK->v("maxIter", &m_maxIter);
-        pK->v("minFit", &m_minFit);
-
-        return OK_OK;
-    }
-
-    int _PCregistCol::link(void)
-    {
-        CHECK_(this->BASE::link());
-        Kiss *pK = (Kiss *)m_pKiss;
-
-        string n;
-
-        n = "";
-        pK->v("_PCframe", &n);
-        m_pPCf = (_PCframe *)(pK->findModule(n));
-
-        return OK_OK;
-    }
-
-    int _PCregistCol::start(void)
-    {
-        NULL__(m_pT, OK_ERR_NULLPTR); // work in none thread mode
+        NULL_F(m_pT); // work in none thread mode
 
         return m_pT->start(getUpdate, this);
     }
 
-    int _PCregistCol::check(void)
+    bool _PCregistCol::check(void)
     {
         return BASE::check();
     }
@@ -134,17 +91,17 @@ namespace kai
     {
         NULL_F(m_pPCf);
 
-        PointCloud* pPC = m_sPC.next();
+        PointCloud *pPC = m_sPC.next();
         m_pPCf->copyTo(pPC);
         IF_F(pPC->IsEmpty());
-		*m_sPCvd.next() = *pPC->VoxelDownSample(m_rVoxel);
+        *m_sPCvd.next() = *pPC->VoxelDownSample(m_rVoxel);
 
-		IF__(m_sPCvd.get()->IsEmpty(), true);
+        IF__(m_sPCvd.get()->IsEmpty(), true);
 
         IF_F(updateRegistration(m_sPCvd.next(), m_sPCvd.get()) < m_minFit);
 
-		m_sPC.next()->Transform(m_RR.transformation_);
-		m_sPCvd.next()->Transform(m_RR.transformation_);
+        m_sPC.next()->Transform(m_RR.transformation_);
+        m_sPCvd.next()->Transform(m_RR.transformation_);
         if (m_pTf)
             m_pTf->setTranslationMatrix(m_RR.transformation_);
 

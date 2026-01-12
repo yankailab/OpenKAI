@@ -11,26 +11,26 @@ namespace kai
     {
     }
 
-    int _TestBase::init(void *pKiss)
+    int _TestBase::init(const json& j)
     {
-        CHECK_(this->_ModuleBase::init(pKiss));
+        CHECK_(this->_ModuleBase::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
-//        pK->v("", &);
+//        = j.value("", &);
 
-        return OK_OK;
+        return true;
     }
 
-	int _TestBase::link(void)
+	int _TestBase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link(j, pM));
 
-		return OK_OK;
+		return true;
 	}
 
     int _TestBase::start(void)
     {
-        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 

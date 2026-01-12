@@ -50,7 +50,7 @@ namespace kai
 		return true;
 	}
 
-	bool _Thread::link(const json &j, ModuleMgr* pM)
+	bool _Thread::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->BASE::link(j, pM));
 
@@ -71,56 +71,19 @@ namespace kai
 		return true;
 	}
 
-
-	int _Thread::init(void *pKiss)
+	bool _Thread::start(void *(*__start_routine)(void *),
+						void *__restrict __arg)
 	{
-		CHECK_(this->BASE::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
-
-		float FPS = DEFAULT_FPS;
-		pK->v("FPS", &FPS);
-		setTargetFPS(FPS);
-
-		return OK_OK;
-	}
-
-	int _Thread::link(void)
-	{
-		CHECK_(this->BASE::link());
-
-		Kiss *pK = (Kiss *)m_pKiss;
-		vector<string> vRunT;
-		pK->a("vRunThread", &vRunT);
-
-		m_vRunThread.clear();
-		for (string s : vRunT)
-		{
-			_Thread *pT = (_Thread *)(pK->findModule(s));
-			if (!pT)
-			{
-				LOG_I("Instance not found: " + s);
-				continue;
-			}
-
-			m_vRunThread.push_back(pT);
-		}
-
-		return OK_OK;
-	}
-
-	int _Thread::start(void *(*__start_routine)(void *),
-					   void *__restrict __arg)
-	{
-		IF__(m_threadID != 0, OK_ERR_DUPLICATE);
+		IF_F(m_threadID != 0);
 
 		m_setState = thread_run;
 		m_tFrom = getApproxTbootUs();
 
 		int r = pthread_create(&m_threadID, 0, __start_routine, __arg);
-		IF__(r != 0, r);
+		IF_F(r != 0);
 
 		m_state = thread_run;
-		return OK_OK;
+		return true;
 	}
 
 	bool _Thread::bAlive(void)

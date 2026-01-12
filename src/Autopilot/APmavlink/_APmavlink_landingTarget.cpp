@@ -32,25 +32,24 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_landingTarget::init(void *pKiss)
+	int _APmavlink_landingTarget::init(const json& j)
 	{
-		CHECK_(this->_APmavlink_move::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_APmavlink_move::init(j));
 
-		pK->v("vPsp", &m_vPsp);
-		pK->v("bHdg", &m_bHdg);
-		pK->v("hdgDz", &m_hdgDz);
+		= j.value("vPsp", &m_vPsp);
+		= j.value("bHdg", &m_bHdg);
+		= j.value("hdgDz", &m_hdgDz);
 		m_hdgDzNav = m_hdgDz / 2;
-		pK->v("hdgDzNav", &m_hdgDzNav);
+		= j.value("hdgDzNav", &m_hdgDzNav);
 
-		pK->v("hTouchdown", &m_hTouchdown);
-		pK->v("kP", &m_kP);
-		pK->v("defaultDtgt", &m_defaultDtgt);
+		= j.value("hTouchdown", &m_hTouchdown);
+		= j.value("kP", &m_kP);
+		= j.value("defaultDtgt", &m_defaultDtgt);
 
-		if (pK->v("vFov", &m_vFov))
+		if (= j.value("vFov", &m_vFov))
 			m_vFov *= DEG_2_RAD;
 
-		if (pK->v("yawRate", &m_yawRate))
+		if (= j.value("yawRate", &m_yawRate))
 			m_yawRate *= DEG_2_RAD;
 
 		Kiss *pKt = pK->child("tags");
@@ -67,37 +66,36 @@ namespace kai
 			m_vTags.push_back(t);
 		}
 
-		return OK_OK;
+		return true;
 	}
 
-	int _APmavlink_landingTarget::link(void)
+	int _APmavlink_landingTarget::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_APmavlink_move::link());
+		CHECK_(this->_APmavlink_move::link(j, pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
 		n = "";
-		pK->v("_DistSensorBase", &n);
-		m_pDS = (_DistSensorBase *)pK->findModule(n);
+		= j.value("_DistSensorBase", &n);
+		m_pDS = (_DistSensorBase *)pM->findModule(n);
 
 		n = "";
-		pK->v("_Universe", &n);
-		m_pU = (_Universe *)pK->findModule(n);
+		= j.value("_Universe", &n);
+		m_pU = (_Universe *)pM->findModule(n);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _APmavlink_landingTarget::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _APmavlink_landingTarget::check(void)
 	{
-		NULL__(m_pDS, OK_ERR_NULLPTR);
-		NULL__(m_pU, OK_ERR_NULLPTR);
+		NULL__(m_pDS);
+		NULL__(m_pU);
 
 		return this->_APmavlink_move::check();
 	}
@@ -115,7 +113,7 @@ namespace kai
 
 	void _APmavlink_landingTarget::updateLandingTarget(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		if (!findTag())
 		{
@@ -182,7 +180,7 @@ namespace kai
 
 	bool _APmavlink_landingTarget::findTag(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		AP_LANDING_TARGET_TAG *pTag = NULL;
 		int priority = INT_MAX;

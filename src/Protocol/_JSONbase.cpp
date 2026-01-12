@@ -13,32 +13,32 @@ namespace kai
     {
     }
 
-    int _JSONbase::init(void *pKiss)
+    int _JSONbase::init(const json& j)
     {
-        CHECK_(this->_ProtocolBase::init(pKiss));
+        CHECK_(this->_ProtocolBase::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
-        pK->v("msgFinishSend", &m_msgFinishSend);
-        pK->v("msgFinishRecv", &m_msgFinishRecv);
+        = j.value("msgFinishSend", &m_msgFinishSend);
+        = j.value("msgFinishRecv", &m_msgFinishRecv);
 
         int v = SEC_2_USEC;
-        pK->v("ieSendHB", &v);
+        = j.value("ieSendHB", &v);
         m_ieSendHB.init(v);
 
-        return OK_OK;
+        return true;
     }
 
-	int _JSONbase::link(void)
+	int _JSONbase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ProtocolBase::link());
+		CHECK_(this->_ProtocolBase::link(j, pM));
 
-		return OK_OK;
+		return true;
 	}
 
     int _JSONbase::start(void)
     {
-        NULL__(m_pT, OK_ERR_NULLPTR);
-        NULL__(m_pTr, OK_ERR_NULLPTR);
+        NULL_F(m_pT);
+        NULL_F(m_pTr);
         CHECK_(m_pT->start(getUpdateW, this));
         return m_pTr->start(getUpdateR, this);
     }
@@ -60,7 +60,7 @@ namespace kai
 
     void _JSONbase::send(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         if (m_ieSendHB.updateT(m_pT->getTfrom()))
         {
@@ -70,7 +70,7 @@ namespace kai
 
     bool _JSONbase::sendJson(picojson::object &o)
     {
-        IF_F(check() != OK_OK);
+        IF_F(!check());
 
         string msg = picojson::value(o).serialize() + m_msgFinishSend;
         return m_pIO->write((unsigned char *)msg.c_str(), msg.size());
@@ -102,7 +102,7 @@ namespace kai
 
     bool _JSONbase::recvJson(string* pStr, _IObase* pIO)
     {
-        IF_F(check() != OK_OK);
+        IF_F(!check());
         NULL_F(pStr);
 
 		if (m_nRead == 0)

@@ -22,22 +22,21 @@ namespace kai
 	{
 	}
 
-	int _DetectorBase::init(void *pKiss)
+	int _DetectorBase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
 		// model
-		pK->v("fModel", &m_fModel);
-		pK->v("fWeight", &m_fWeight);
-		pK->v("fMean", &m_fMean);
-		pK->v("fClass", &m_fClass);
+		= j.value("fModel", &m_fModel);
+		= j.value("fWeight", &m_fWeight);
+		= j.value("fMean", &m_fMean);
+		= j.value("fClass", &m_fClass);
 
 		// statistics
 		if (!m_fClass.empty())
 		{
 			ifstream ifs(m_fClass.c_str());
-			IF__(!ifs.is_open(), OK_ERR_NOT_FOUND);
+			IF__(!ifs.is_open());
 
 			string line;
 			while (std::getline(ifs, line))
@@ -52,23 +51,22 @@ namespace kai
 			pK->a("vClass", &m_vClass);
 		}
 
-		return OK_OK;
+		return true;
 	}
 
-	int _DetectorBase::link(void)
+	int _DetectorBase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link(j, pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
 		string n = "";
-		pK->v("_VisionBase", &n);
-		m_pV = (_VisionBase *)(pK->findModule(n));
+		= j.value("_VisionBase", &n);
+		m_pV = (_VisionBase *)(pM->findModule(n));
 
 		n = "";
-		pK->v("_Universe", &n);
-		m_pU = (_Universe *)(pK->findModule(n));
+		= j.value("_Universe", &n);
+		m_pU = (_Universe *)(pM->findModule(n));
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _DetectorBase::loadModel(void)

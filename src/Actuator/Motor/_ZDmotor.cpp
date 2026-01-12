@@ -18,40 +18,36 @@ namespace kai
 	{
 	}
 
-	int _ZDmotor::init(void *pKiss)
+	bool _ZDmotor::init(const json &j)
 	{
-		CHECK_(this->_ActuatorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		IF_F(!this->_ActuatorBase::init(j));
 
-		pK->v("iMode", &m_iMode);
+		m_iMode = j.value("iMode", 3);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _ZDmotor::link(void)
+	bool _ZDmotor::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_ActuatorBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		IF_F(!this->_ActuatorBase::link(j, pM));
 
-		string n;
-		n = "";
-		IF__(!pK->v("_Modbus", &n), OK_ERR_NOT_FOUND);
-		m_pMB = (_Modbus *)(pK->findModule(n));
-		NULL__(m_pMB, OK_ERR_NOT_FOUND);
+		string n = j.value("_Modbus", "");
+		m_pMB = (_Modbus *)(pM->findModule(n));
+		NULL_F(m_pMB);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _ZDmotor::start(void)
+	bool _ZDmotor::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _ZDmotor::check(void)
+	bool _ZDmotor::check(void)
 	{
-		NULL__(m_pMB, OK_ERR_NULLPTR);
-		IF__(!m_pMB->bOpen(), OK_ERR_NOT_READY);
+		NULL_F(m_pMB);
+		IF_F(!m_pMB->bOpen());
 
 		return this->_ActuatorBase::check();
 	}
@@ -87,7 +83,7 @@ namespace kai
 
 	bool _ZDmotor::setPower(bool bON)
 	{
-		// IF_F(check() != OK_OK);
+		// IF_F(!check());
 		// IF__(bON == m_bPower, true);
 
 		// if (bON)
@@ -106,14 +102,14 @@ namespace kai
 
 	void _ZDmotor::updateMove(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		setSpeed();
 	}
 
 	bool _ZDmotor::setMode(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		IF_F(m_pMB->writeRegister(m_ID, 0x2032, m_iMode) != 1);
 
@@ -122,7 +118,7 @@ namespace kai
 
 	bool _ZDmotor::setAccel(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		uint16_t v = m_a.getTarget();
 		IF_F(m_pMB->writeRegister(m_ID, 0x2037, v) != 1);
@@ -132,7 +128,7 @@ namespace kai
 
 	bool _ZDmotor::setBrake(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		uint16_t v = m_b.getTarget();
 		IF_F(m_pMB->writeRegister(m_ID, 0x2038, v) != 1);
@@ -142,7 +138,7 @@ namespace kai
 
 	bool _ZDmotor::setSpeed(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		uint16_t v = m_s.getTarget();
 		int16_t d = (v >= 0) ? 1 : 2;
@@ -154,7 +150,7 @@ namespace kai
 
 	bool _ZDmotor::stopMove(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		IF_F(m_pMB->writeBit(m_ID, 3, true) != 1);
 		return true;
@@ -162,7 +158,7 @@ namespace kai
 
 	bool _ZDmotor::bComplete(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		uint16_t b;
 		int r = m_pMB->readRegisters(m_ID, 12, 1, &b);
@@ -173,7 +169,7 @@ namespace kai
 
 	bool _ZDmotor::readStatus(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 		IF__(!m_ieReadStatus.updateT(m_pT->getTfrom()), true);
 
 		uint16_t pB[2];
@@ -189,7 +185,7 @@ namespace kai
 
 	bool _ZDmotor::clearAlarm(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 		//		IF__(!m_ieReadStatus.update(m_pT->getTfrom()));
 
 		IF_F(m_pMB->writeRegister(m_ID, 0x2000, 0x07) != 1);

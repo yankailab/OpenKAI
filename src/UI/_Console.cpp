@@ -21,10 +21,9 @@ namespace kai
 		endwin();
 	}
 
-	int _Console::init(void *pKiss)
+	int _Console::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
 		initscr();
 		noecho();
@@ -37,13 +36,12 @@ namespace kai
 		init_pair(_Console_COL_MSG, COLOR_WHITE, -1);
 		init_pair(_Console_COL_ERROR, COLOR_RED, -1);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _Console::link(void)
+	int _Console::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_ModuleBase::link(j, pM));
 
 		vector<string> vB;
 		pK->a("vBASE", &vB);
@@ -56,12 +54,12 @@ namespace kai
 			m_vpB.push_back(pB);
 		}
 
-		return OK_OK;
+		return true;
 	}
 
 	int _Console::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 

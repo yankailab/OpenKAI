@@ -20,9 +20,9 @@ namespace kai
     {
     }
 
-    int _RoboSenseAiry::init(void *pKiss)
+    int _RoboSenseAiry::init(const json& j)
     {
-        CHECK_(this->_PCstream::init(pKiss));
+        CHECK_(this->_PCstream::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
         // common thread config
@@ -36,44 +36,44 @@ namespace kai
         m_pTdifop = new _Thread();
         CHECK_d_l_(m_pTdifop->init(pKd), DEL(m_pTdifop), "Tdifop init failed");
 
-        return OK_OK;
+        return true;
     }
 
-    int _RoboSenseAiry::link(void)
+    int _RoboSenseAiry::link(const json& j, ModuleMgr* pM)
     {
-        CHECK_(this->_PCstream::link());
+        CHECK_(this->_PCstream::link(j, pM));
 
         Kiss *pK = (Kiss *)m_pKiss;
         string n;
 
         n = "";
-        pK->v("_UDPmsop", &n);
-        m_pUDPmsop = (_UDP *)(pK->findModule(n));
-        NULL__(m_pUDPmsop, OK_ERR_NOT_FOUND);
+        = j.value("_UDPmsop", &n);
+        m_pUDPmsop = (_UDP *)(pM->findModule(n));
+        NULL__(m_pUDPmsop);
 
         n = "";
-        pK->v("_UDPdifop", &n);
-        m_pUDPdifop = (_UDP *)(pK->findModule(n));
-        NULL__(m_pUDPdifop, OK_ERR_NOT_FOUND);
+        = j.value("_UDPdifop", &n);
+        m_pUDPdifop = (_UDP *)(pM->findModule(n));
+        NULL__(m_pUDPdifop);
 
-        return OK_OK;
+        return true;
     }
 
     int _RoboSenseAiry::start(void)
     {
-        NULL__(m_pT, OK_ERR_NULLPTR);
-        NULL__(m_pTdifop, OK_ERR_NULLPTR);
+        NULL_F(m_pT);
+        NULL__(m_pTdifop);
 
         CHECK_(m_pT->start(getUpdateMSOP, this));
         CHECK_(m_pTdifop->start(getUpdateDIFOP, this));
 
-        return OK_OK;
+        return true;
     }
 
     int _RoboSenseAiry::check(void)
     {
-        NULL__(m_pUDPmsop, OK_ERR_NULLPTR);
-        NULL__(m_pUDPdifop, OK_ERR_NULLPTR);
+        NULL__(m_pUDPmsop);
+        NULL__(m_pUDPdifop);
 
         return this->_PCstream::check();
     }

@@ -17,26 +17,25 @@ namespace kai
 	{
 	}
 
-	int _TOFsense::init(void *pKiss)
+	int _TOFsense::init(const json& j)
 	{
-		CHECK_(this->_DistSensorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_DistSensorBase::init(j));
 
 		string n;
 		n = "";
-		pK->v("_IObase", &n);
-		m_pIO = (_IObase *)(pK->findModule(n));
-		NULL__(m_pIO, OK_ERR_NOT_FOUND);
+		= j.value("_IObase", &n);
+		m_pIO = (_IObase *)(pM->findModule(n));
+		NULL_F(m_pIO);
 
 		m_frame.init(16);
 		m_bReady = 1;
 
-		return OK_OK;
+		return true;
 	}
 
 	int _TOFsense::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 

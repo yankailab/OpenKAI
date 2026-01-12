@@ -22,26 +22,25 @@ namespace kai
 		close();
 	}
 
-	int _SerialPort::init(void *pKiss)
+	int _SerialPort::init(const json& j)
 	{
-		CHECK_(this->_IObase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_IObase::init(j));
 
-		pK->v("port", &m_port);
-		pK->v("baud", &m_baud);
-		pK->v("dataBits", &m_dataBits);
-		pK->v("stopBits", &m_stopBits);
-		pK->v("parity", &m_parity);
-		pK->v("hardwareControl", &m_hardwareControl);
+		= j.value("port", &m_port);
+		= j.value("baud", &m_baud);
+		= j.value("dataBits", &m_dataBits);
+		= j.value("stopBits", &m_stopBits);
+		= j.value("parity", &m_parity);
+		= j.value("hardwareControl", &m_hardwareControl);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _SerialPort::link(void)
+	int _SerialPort::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_IObase::link());
+		CHECK_(this->_IObase::link(j, pM));
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _SerialPort::open(void)
@@ -76,7 +75,7 @@ namespace kai
 
 	int _SerialPort::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 

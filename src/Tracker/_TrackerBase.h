@@ -29,9 +29,9 @@ namespace kai
 		_TrackerBase();
 		virtual ~_TrackerBase();
 
-		virtual int init(void *pKiss);
+		virtual bool init(const json& j);
 		virtual void update(void);
-		virtual int check(void);
+		virtual bool check(void);
 		virtual void draw(void *pFrame);
 		virtual void console(void *pConsole);
 

@@ -14,24 +14,22 @@ namespace kai
 		close();
 	}
 
-	int _SocketCAN::init(void *pKiss)
+	int _SocketCAN::init(const json& j)
 	{
-		CHECK_(this->_CANbase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_CANbase::init(j));
 
-		pK->v("ifName", &m_ifName);
+		= j.value("ifName", &m_ifName);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _SocketCAN::link(void)
+	int _SocketCAN::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_CANbase::link());
+		CHECK_(this->_CANbase::link(j, pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _SocketCAN::open(void)
@@ -78,13 +76,13 @@ namespace kai
 
 	int _SocketCAN::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _SocketCAN::check(void)
 	{
-		IF__(!m_bOpen, OK_ERR_NOT_READY);
+		IF__(!m_bOpen);
 
 		return this->_CANbase::check();
 	}
@@ -113,7 +111,7 @@ namespace kai
 
 	bool _SocketCAN::sendFrame(const CAN_F &f)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		can_frame canF = {0};
 		canF.can_id = f.m_ID;
@@ -135,7 +133,7 @@ namespace kai
 
 	bool _SocketCAN::readFrame(CAN_F *pF)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 		NULL_F(pF);
 
 		can_frame canF = {0};

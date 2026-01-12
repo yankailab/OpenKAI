@@ -19,9 +19,9 @@ namespace kai
 		_Cascade();
 		~_Cascade();
 
-		int init(void *pKiss);
-		int start(void);
-		int check(void);
+		bool init(const json& j);
+		bool start(void);
+		bool check(void);
 
 	private:
 		void detectCPU(void);

@@ -19,8 +19,8 @@ namespace kai
 		_ImgFile();
 		virtual ~_ImgFile();
 
-		int init(void *pKiss);
-		int start(void);
+		bool init(const json& j);
+		bool start(void);
 
 	private:
 		bool open(void);

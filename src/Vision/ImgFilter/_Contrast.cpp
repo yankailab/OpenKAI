@@ -23,34 +23,32 @@ namespace kai
 	{
 	}
 
-	int _Contrast::init(void *pKiss)
+	int _Contrast::init(const json& j)
 	{
-		CHECK_(_VisionBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(_VisionBase::init(j));
 
-		pK->v("alpha", &m_alpha);
-		pK->v("beta", &m_beta);
+		= j.value("alpha", &m_alpha);
+		= j.value("beta", &m_beta);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _Contrast::link(void)
+	int _Contrast::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_VisionBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_VisionBase::link(j, pM));
 
 		string n;
 		n = "";
-		pK->v("_VisionBase", &n);
-		m_pV = (_VisionBase *)(pK->findModule(n));
-		NULL__(m_pV, OK_ERR_NOT_FOUND);
+		= j.value("_VisionBase", &n);
+		m_pV = (_VisionBase *)(pM->findModule(n));
+		NULL__(m_pV);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _Contrast::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 

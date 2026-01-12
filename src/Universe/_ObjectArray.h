@@ -19,8 +19,8 @@ namespace kai
 		_ObjectArray();
 		virtual ~_ObjectArray();
 
-		virtual int init(void *pKiss);
-		virtual int start(void);
+		virtual bool init(const json& j);
+		virtual bool start(void);
 		virtual void update(void);
 
 		virtual int init(int n);

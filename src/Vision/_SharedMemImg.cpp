@@ -20,40 +20,39 @@ namespace kai
     {
     }
 
-    int _SharedMemImg::init(void *pKiss)
+    int _SharedMemImg::init(const json& j)
     {
-        CHECK_(_VisionBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+        CHECK_(_VisionBase::init(j));
 
-        pK->v("matType", &m_matType);
+        = j.value("matType", &m_matType);
 
-        return OK_OK;
+        return true;
     }
 
-    int _SharedMemImg::link(void)
+    int _SharedMemImg::link(const json& j, ModuleMgr* pM)
     {
         Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
         n = "";
-        pK->v("SharedMem", &n);
-        m_pSHM = (SharedMem *)(pK->findModule(n));
-        NULL__(m_pSHM, OK_ERR_NOT_FOUND);
+        = j.value("SharedMem", &n);
+        m_pSHM = (SharedMem *)(pM->findModule(n));
+        NULL__(m_pSHM);
 
-        return OK_OK;
+        return true;
     }
 
     int _SharedMemImg::start(void)
     {
-        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL_F(m_pT);
         IF_F(!m_pT->start(getUpdate, this));
     }
 
     int _SharedMemImg::check(void)
     {
-        NULL__(m_pT, OK_ERR_NULLPTR);
-        NULL__(m_pSHM, OK_ERR_NULLPTR);
-        IF__(!m_pSHM->open(), OK_ERR_NOT_READY);
+        NULL_F(m_pT);
+        NULL__(m_pSHM);
+        IF__(!m_pSHM->open());
 
         return _VisionBase::check();
     }

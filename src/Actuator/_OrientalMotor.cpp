@@ -17,34 +17,32 @@ namespace kai
 	{
 	}
 
-	int _OrientalMotor::init(void *pKiss)
+	int _OrientalMotor::init(const json& j)
 	{
-		CHECK_(this->_ActuatorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ActuatorBase::init(j));
 
-		pK->v("iData", &m_iData);
+		= j.value("iData", &m_iData);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _OrientalMotor::link(void)
+	int _OrientalMotor::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ActuatorBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_ActuatorBase::link(j, pM));
 
 		string n;
 
 		n = "";
-		IF__(!pK->v("_Modbus", &n), OK_ERR_NOT_FOUND);
-		m_pMB = (_Modbus *)(pK->findModule(n));
-		NULL__(m_pMB, OK_ERR_NOT_FOUND);
+		IF__(!= j.value("_Modbus", &n));
+		m_pMB = (_Modbus *)(pM->findModule(n));
+		NULL__(m_pMB);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _OrientalMotor::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
@@ -83,7 +81,7 @@ namespace kai
 
 	bool _OrientalMotor::clearAlarm(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		uint16_t pB[2];
 		pB[0] = 1 << 7;
@@ -93,7 +91,7 @@ namespace kai
 
 	bool _OrientalMotor::readStatus(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		uint16_t pB[18];
 		int nB = 6;
@@ -113,7 +111,7 @@ namespace kai
 
 	bool _OrientalMotor::setPos(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		int32_t step = m_p.getTarget();
 		int32_t speed = m_s.getTarget();
@@ -151,7 +149,7 @@ namespace kai
 
 	bool _OrientalMotor::setSpeed(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		int32_t step = 0;
 		uint8_t dMode = 1;

@@ -19,18 +19,18 @@ namespace kai
 	{
 	}
 
-    bool _PCmerge::init(const json &j)
-    {
-        IF_F(!this->_GeometryBase::init(j));
+	bool _PCmerge::init(const json &j)
+	{
+		IF_F(!this->_GeometryBase::init(j));
 
 		m_rVoxel = j.value("rVoxel", 0.0);
 
-        return true;
-    }
+		return true;
+	}
 
-    bool _PCmerge::link(const json &j, ModuleMgr *pM)
-    {
-        IF_F(!this->_GeometryBase::link(j, pM));
+	bool _PCmerge::link(const json &j, ModuleMgr *pM)
+	{
+		IF_F(!this->_GeometryBase::link(j, pM));
 
 		vector<string> vPCB = j.value("vPCbase", vector<string>{});
 		IF_F(vPCB.empty());
@@ -44,42 +44,16 @@ namespace kai
 		}
 		IF_F(m_vpGB.empty());
 
-        return true;
-    }
-
-
-	int _PCmerge::init(void *pKiss)
-	{
-		CHECK_(_GeometryBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
-
-		pK->v("rVoxel", &m_rVoxel);
-
-		string n;
-
-		vector<string> vPCB;
-		pK->a("vPCbase", &vPCB);
-		IF__(vPCB.empty(), OK_ERR_NOT_FOUND);
-
-		for (string p : vPCB)
-		{
-			_GeometryBase *pPCB = (_GeometryBase *)(pK->findModule(p));
-			IF_CONT(!pPCB);
-
-			m_vpGB.push_back(pPCB);
-		}
-		IF__(m_vpGB.empty(), OK_ERR_NOT_FOUND);
-
-		return OK_OK;
+		return true;
 	}
 
-	int _PCmerge::start(void)
+	bool _PCmerge::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _PCmerge::check(void)
+	bool _PCmerge::check(void)
 	{
 		return this->_GeometryBase::check();
 	}
@@ -91,13 +65,12 @@ namespace kai
 			m_pT->autoFPS();
 
 			updateMerge();
-
 		}
 	}
 
 	void _PCmerge::updateMerge(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		// read all inputs into one ring
 		for (_GeometryBase *pPCB : m_vpGB)

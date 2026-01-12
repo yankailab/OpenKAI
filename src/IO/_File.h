@@ -14,7 +14,7 @@ namespace kai
 		_File(void);
 		~_File(void);
 
-		int init(void *pKiss);
+		bool init(const json& j);
 
 		bool open(ios_base::openmode mode = ios::in | ios::out | ios::app);
 		bool open(const string &fName, ios_base::openmode mode = ios::in | ios::out | ios::app);

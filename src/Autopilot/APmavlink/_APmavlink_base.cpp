@@ -31,36 +31,34 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_base::init(void *pKiss)
+	int _APmavlink_base::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
-		pK->v("apType", (int *)&m_apType);
-		pK->v("bSyncMode", &m_bSyncMode);
+		= j.value("apType", (int *)&m_apType);
+		= j.value("bSyncMode", &m_bSyncMode);
 
 		float t;
 
-		if (pK->v("ieSendHB", &t))
+		if (= j.value("ieSendHB", &t))
 			m_ieSendHB.init(t * SEC_2_USEC);
 
-		if (pK->v("ieSendMsgInt", &t))
+		if (= j.value("ieSendMsgInt", &t))
 			m_ieSendMsgInt.init(t * SEC_2_USEC);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _APmavlink_base::link(void)
+	int _APmavlink_base::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link(j, pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
 		n = "";
-		pK->v("_Mavlink", &n);
-		m_pMav = (_Mavlink *)(pK->findModule(n));
-		NULL__(m_pMav, OK_ERR_NOT_FOUND);
+		= j.value("_Mavlink", &n);
+		m_pMav = (_Mavlink *)(pM->findModule(n));
+		NULL__(m_pMav);
 
 		Kiss *pM = pK->child("mavMsgInt");
 		NULL__(pM, OK_OK);
@@ -81,18 +79,18 @@ namespace kai
 				LOG_E("Interval msg id = " + i2str(id) + " not found");
 		}
 
-		return OK_OK;
+		return true;
 	}
 
 	int _APmavlink_base::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _APmavlink_base::check(void)
 	{
-		NULL__(m_pMav, OK_ERR_NULLPTR);
+		NULL__(m_pMav);
 
 		return this->_ModuleBase::check();
 	}
@@ -112,7 +110,7 @@ namespace kai
 
 	void _APmavlink_base::updateBase(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		uint64_t tNow = m_pT->getTfrom();
 
@@ -192,7 +190,7 @@ namespace kai
 
 	void _APmavlink_base::updateModeSync(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		if (m_wrApMode.bW())
 		{
@@ -209,7 +207,7 @@ namespace kai
 
 	void _APmavlink_base::setMode(uint32_t iMode)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		m_wrApMode.write(iMode);
 
@@ -241,7 +239,7 @@ namespace kai
 
 	void _APmavlink_base::setArm(bool bArm)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		m_wrbArm.write(bArm);
 		m_pMav->clComponentArmDisarm(bArm);
@@ -254,14 +252,14 @@ namespace kai
 
 	void _APmavlink_base::takeOff(float alt)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		m_pMav->clNavTakeoff(alt);
 	}
 
 	void _APmavlink_base::setMount(AP_MOUNT &m)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		m_pMav->mountControl(m.m_control);
 		m_pMav->mountConfigure(m.m_config);

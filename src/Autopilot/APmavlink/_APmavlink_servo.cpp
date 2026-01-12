@@ -12,16 +12,15 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_servo::init(void *pKiss)
+	int _APmavlink_servo::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
 		string n;
 		n = "";
-		pK->v("_APmavlink_base", &n);
-		m_pAP = (_APmavlink_base *)(pK->findModule(n));
-		NULL__(m_pAP, OK_ERR_NOT_FOUND);
+		= j.value("_APmavlink_base", &n);
+		m_pAP = (_APmavlink_base *)(pM->findModule(n));
+		NULL__(m_pAP);
 
 		Kiss *pKc = pK->child("channels");
 		NULL__(pKc, OK_OK);
@@ -40,19 +39,19 @@ namespace kai
 			m_vServo.push_back(s);
 		}
 
-		return OK_OK;
+		return true;
 	}
 
 	int _APmavlink_servo::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _APmavlink_servo::check(void)
 	{
-		NULL__(m_pAP, OK_ERR_NULLPTR);
-		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
+		NULL__(m_pAP);
+		NULL__(m_pAP->getMavlink());
 
 		return this->_ModuleBase::check();
 	}
@@ -70,7 +69,7 @@ namespace kai
 
 	void _APmavlink_servo::updateServo(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		_Mavlink *pMav = m_pAP->getMavlink();
 
@@ -84,7 +83,7 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		for (AP_SERVO s : m_vServo)
 		{

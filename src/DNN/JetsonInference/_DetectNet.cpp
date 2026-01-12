@@ -36,36 +36,35 @@ namespace kai
 		DEL(m_pRGBAf);
 	}
 
-	int _DetectNet::init(void *pKiss)
+	int _DetectNet::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_DetectorBase::init(j));
 
-		pK->v("thr", &m_thr);
-		pK->v("bSwapRB", &m_bSwapRB);
-		pK->v("vMean", &m_vMean);
-		pK->v("type", (int *)&m_type);
+		= j.value("thr", &m_thr);
+		= j.value("bSwapRB", &m_bSwapRB);
+		= j.value("vMean", &m_vMean);
+		= j.value("type", (int *)&m_type);
 
 		m_pRGBA = new Frame();
 		m_pRGBAf = new Frame();
 
-		return OK_OK;
+		return true;
 	}
 
 	int _DetectNet::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _DetectNet::check(void)
 	{
-		NULL__(m_pV, OK_ERR_NULLPTR);
-		NULL__(m_pU, OK_ERR_NULLPTR);
-		NULL__(m_pDN, OK_ERR_NULLPTR);
+		NULL__(m_pV);
+		NULL__(m_pU);
+		NULL__(m_pDN);
 		Frame *pBGR = m_pV->getFrameRGB();
-		NULL__(pBGR, OK_ERR_NULLPTR);
-		IF__(pBGR->bEmpty(), OK_ERR_NOT_READY);
+		NULL__(pBGR);
+		IF__(pBGR->bEmpty());
 
 		return this->_DetectorBase::check();
 	}
@@ -111,7 +110,7 @@ namespace kai
 
 	void _DetectNet::detect(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		*m_pRGBA = m_pV->getFrameRGB()->cvtColor(CV_BGR2RGBA);
 		*m_pRGBAf = m_pRGBA->cvtTo(CV_32FC4);

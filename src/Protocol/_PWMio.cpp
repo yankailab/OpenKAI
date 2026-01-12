@@ -12,13 +12,12 @@ namespace kai
 	{
 	}
 
-	int _PWMio::init(void *pKiss)
+	int _PWMio::init(const json& j)
 	{
-		CHECK_(this->_ProtocolBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ProtocolBase::init(j));
 
-		pK->v("nCr", &m_nCr);
-		pK->v("nCw", &m_nCw);
+		= j.value("nCr", &m_nCr);
+		= j.value("nCw", &m_nCw);
 
 		vector<int> vPWM;
 		pK->a("vPWM", &vPWM);
@@ -29,13 +28,13 @@ namespace kai
 			m_pCw[i].set(vPWM[i]);
 		}
 
-		return OK_OK;
+		return true;
 	}
 
 	int _PWMio::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
-		NULL__(m_pTr, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
+		NULL_F(m_pTr);
 		CHECK_(m_pT->start(getUpdateW, this));
 		return m_pTr->start(getUpdateR, this);
 	}
@@ -53,7 +52,7 @@ namespace kai
 
 	void _PWMio::send(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		uint8_t pB[256];
 		pB[0] = PB_BEGIN;  // start mark

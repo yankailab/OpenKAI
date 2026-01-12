@@ -21,35 +21,33 @@ namespace kai
         DEL(m_pGcell);
 	}
 
-	int _SwarmSearch::init(void *pKiss)
+	int _SwarmSearch::init(const json& j)
 	{
-		CHECK_(this->_SwarmBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_SwarmBase::init(j));
 
 		int ie = USEC_1SEC;
-		pK->v("ieOptRoute", &ie);
+		= j.value("ieOptRoute", &ie);
 		m_ieOptRoute.init(ie);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _SwarmSearch::link(void)
+	int _SwarmSearch::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_SwarmBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_SwarmBase::link(j, pM));
 
-		return OK_OK;
+		return true;
 	}
 
     int _SwarmSearch::start(void)
     {
-        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
 	int _SwarmSearch::check(void)
 	{
-        NULL__(m_pGG, OK_ERR_NULLPTR);
+        NULL__(m_pGG);
 
 		return this->_SwarmBase::check();
 	}
@@ -73,12 +71,12 @@ namespace kai
 
     void _SwarmSearch::updateNodes(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
     }
 
 	bool _SwarmSearch::genGridCells(void)
     {
-        IF_F(check() != OK_OK);
+        IF_F(!check());
 
         m_nGcell = m_pGG->getNcell();
 		IF_F(m_nGcell <= 0);
@@ -92,7 +90,7 @@ namespace kai
 
     void _SwarmSearch::optimizeRoute(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
     }
 
 	void _SwarmSearch::handleMsgGCupdate(const SWMSG_GC_UPDATE& m)
@@ -119,7 +117,7 @@ namespace kai
 	void _SwarmSearch::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		IF_(check() != OK_OK);
+		IF_(!check());
 		this->_SwarmBase::console(pConsole);
 
 		// string msg = "id=" + i2str(pO->getTopClass());

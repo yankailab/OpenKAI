@@ -13,8 +13,6 @@ namespace kai
 
     _PCregistICP::_PCregistICP()
     {
-        m_est = icp_p2point;
-        m_thr = 0.02;
         m_pSrc = NULL;
         m_pTgt = NULL;
         m_pTf = NULL;
@@ -68,59 +66,17 @@ namespace kai
         return true;
     }
 
-
-
-    int _PCregistICP::init(void *pKiss)
+    bool _PCregistICP::start(void)
     {
-        CHECK_(_ModuleBase::init(pKiss));
-        Kiss *pK = (Kiss *)pKiss;
-
-        pK->v("est", (int *)&m_est);
-        pK->v("thr", &m_thr);
-
-        string n;
-
-        n = "";
-        pK->v("_PCframeSrc", &n);
-        m_pSrc = (_PCframe *)(pK->findModule(n));
-        if (!m_pSrc)
-        {
-            LOG_E(n + ": not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
-        n = "";
-        pK->v("_PCframeTgt", &n);
-        m_pTgt = (_PCframe *)(pK->findModule(n));
-        if (!m_pTgt)
-        {
-            LOG_E(n + ": not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
-        n = "";
-        pK->v("_PCtransform", &n);
-        m_pTf = (_PCtransform *)(pK->findModule(n));
-        if (!m_pTf)
-        {
-            LOG_E(n + ": not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
-        return OK_OK;
-    }
-
-    int _PCregistICP::start(void)
-    {
-        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
-    int _PCregistICP::check(void)
+    bool _PCregistICP::check(void)
     {
-        NULL__(m_pSrc, OK_ERR_NULLPTR);
-        NULL__(m_pTgt, OK_ERR_NULLPTR);
-        NULL__(m_pTf, OK_ERR_NULLPTR);
+        NULL_F(m_pSrc);
+        NULL_F(m_pTgt);
+        NULL_F(m_pTf);
 
         return _ModuleBase::check();
     }
@@ -137,7 +93,7 @@ namespace kai
 
     void _PCregistICP::updateRegistration(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         PointCloud pcSrc;
         m_pSrc->copyTo(&pcSrc);

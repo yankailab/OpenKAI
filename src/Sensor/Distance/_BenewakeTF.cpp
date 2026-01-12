@@ -17,26 +17,25 @@ namespace kai
 	{
 	}
 
-	int _BenewakeTF::init(void *pKiss)
+	int _BenewakeTF::init(const json& j)
 	{
-		CHECK_(this->_DistSensorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_DistSensorBase::init(j));
 
 		string n;
 		n = "";
-		pK->v("_IObase", &n);
-		m_pIO = (_IObase *)(pK->findModule(n));
-		NULL__(m_pIO, OK_ERR_NOT_FOUND);
+		= j.value("_IObase", &n);
+		m_pIO = (_IObase *)(pM->findModule(n));
+		NULL_F(m_pIO);
 
 		m_frame.init(9);
 		m_bReady = true;
 
-		return OK_OK;
+		return true;
 	}
 
 	int _BenewakeTF::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 

@@ -12,29 +12,29 @@ namespace kai
     {
     }
 
-    int _Xbee::init(void *pKiss)
+    int _Xbee::init(const json& j)
     {
-        CHECK_(this->_ProtocolBase::init(pKiss));
+        CHECK_(this->_ProtocolBase::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
         string addr = "";
-        pK->v("myAddr", &addr);
+        = j.value("myAddr", &addr);
         m_myAddr = getAddr(addr);
 
-        return OK_OK;
+        return true;
     }
 
-    int _Xbee::link(void)
+    int _Xbee::link(const json& j, ModuleMgr* pM)
     {
-        CHECK_(this->_ProtocolBase::link());
+        CHECK_(this->_ProtocolBase::link(j, pM));
 
-        return OK_OK;
+        return true;
     }
 
     int _Xbee::start(void)
     {
-        NULL__(m_pT, OK_ERR_NULLPTR);
-        NULL__(m_pTr, OK_ERR_NULLPTR);
+        NULL_F(m_pT);
+        NULL_F(m_pTr);
         CHECK_(m_pT->start(getUpdateW, this));
         return m_pTr->start(getUpdateR, this);
     }
@@ -57,7 +57,7 @@ namespace kai
 
     void _Xbee::updateMesh(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
     }
 
     void _Xbee::send(const string &dest, uint8_t *pB, int nB)
@@ -67,7 +67,7 @@ namespace kai
 
     void _Xbee::send(uint64_t dest, uint8_t *pB, int nB)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
         NULL_(pB);
         IF_(nB == 0);
 
@@ -95,7 +95,7 @@ namespace kai
 
     bool _Xbee::readFrame(XBframe* pF)
     {
-        IF_F(check() != OK_OK);
+        IF_F(!check());
 		NULL_F(pF);
 
 		if (m_nRead == 0)

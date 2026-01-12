@@ -21,25 +21,24 @@ namespace kai
 		m_packetW.release();
 	}
 
-	int _IObase::init(void *pKiss)
+	int _IObase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
 		int nPacket = 256;
 		int nPbuffer = 2000;
-		pK->v("nPacket", &nPacket);
-		pK->v("nPbuffer", &nPbuffer);
+		= j.value("nPacket", &nPacket);
+		= j.value("nPbuffer", &nPbuffer);
 		IF__(!m_packetW.init(nPbuffer, nPacket), OK_ERR_ALLOCATION);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _IObase::link(void)
+	int _IObase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link(j, pM));
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _IObase::open(void)

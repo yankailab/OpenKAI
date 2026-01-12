@@ -94,7 +94,7 @@ namespace kai
 		_DistSensorBase();
 		virtual ~_DistSensorBase();
 
-		int init(void *pKiss);
+		bool init(const json& j);
 		void console(void *pConsole);
 		void draw(void *pFrame);
 
@@ -120,14 +120,14 @@ namespace kai
 
 		float m_fovH;
 		float m_fovV;
-		
+
 		float m_dDeg;
 		float m_dDegInv;
-		
+
 		vFloat2 m_vRange;
 		float m_calibScale;
 		float m_calibOffset;
-		
+
 		uint16_t m_bReady;
 	};
 

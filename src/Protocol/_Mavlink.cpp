@@ -60,37 +60,35 @@ namespace kai
 	{
 	}
 
-	int _Mavlink::init(void *pKiss)
+	int _Mavlink::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
-		pK->v("mySystemID", &m_mySystemID);
-		pK->v("myComponentID", &m_myComponentID);
-		pK->v("myType", &m_myType);
+		= j.value("mySystemID", &m_mySystemID);
+		= j.value("myComponentID", &m_myComponentID);
+		= j.value("myType", &m_myType);
 
-		pK->v("devSystemID", &m_devSystemID);
-		pK->v("devComponentID", &m_devComponentID);
-		pK->v("devType", &m_devType);
+		= j.value("devSystemID", &m_devSystemID);
+		= j.value("devComponentID", &m_devComponentID);
+		= j.value("devType", &m_devType);
 
-		pK->v("iMavComm", &m_iMavComm);
+		= j.value("iMavComm", &m_iMavComm);
 
 		m_status.packet_rx_drop_count = 0;
 
-		return OK_OK;
+		return true;
 	}
 
-	int _Mavlink::link(void)
+	int _Mavlink::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link(j, pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
 		n = "";
-		pK->v("_IObase", &n);
-		m_pIO = (_IObase *)(pK->findModule(n));
-		NULL__(m_pIO, OK_ERR_NOT_FOUND);
+		= j.value("_IObase", &n);
+		m_pIO = (_IObase *)(pM->findModule(n));
+		NULL_F(m_pIO);
 
 		Kiss *pR = pK->child("routing");
 		IF__(pR->empty(), OK_OK);
@@ -108,7 +106,7 @@ namespace kai
 
 			n = "";
 			pP->v("_Mavlink", &n);
-			mP.m_pPeer = pK->findModule(n);
+			mP.m_pPeer = pM->findModule(n);
 			if (!mP.m_pPeer)
 			{
 				LOG_I("_Mavlink not found: " + n);
@@ -126,7 +124,7 @@ namespace kai
 			setCmdRoute(vNoRouteCmd[i], false);
 		}
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _Mavlink::bConnected(void)
@@ -144,14 +142,14 @@ namespace kai
 
 	int _Mavlink::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _Mavlink::check(void)
 	{
-		NULL__(m_pIO, OK_ERR_NULLPTR);
-		IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
+		NULL_F(m_pIO);
+		IF_F(!m_pIO->bOpen());
 
 		return this->_ModuleBase::check();
 	}
@@ -205,14 +203,14 @@ namespace kai
 
 	int _Mavlink::readMessage(mavlink_message_t *pMsg)
 	{
-		IF__(check() != OK_OK, OK_ERR_NOT_READY);
-		NULL__(pMsg, OK_ERR_NULLPTR);
+		IF__(check() != OK_OK);
+		NULL__(pMsg);
 
 		if (m_nRead <= 0)
 		{
 			m_nRead = m_pIO->read(m_rBuf, MAV_N_BUF);
 			IF__(m_nRead < 0, OK_ERR_UNKNOWN);
-			IF__(m_nRead == 0, OK_ERR_NOT_READY);
+			IF__(m_nRead == 0);
 			m_iRead = 0;
 		}
 
@@ -231,7 +229,7 @@ namespace kai
 			if (result == 1)
 			{
 				// Good message decoded
-				return OK_OK;
+				return true;
 			}
 			else if (result == 2)
 			{
@@ -1050,7 +1048,7 @@ namespace kai
 	void _Mavlink::console(void *pConsole)
 	{
 		this->_ModuleBase::console(pConsole);
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		_Console *pC = (_Console *)pConsole;
 		if (!m_pIO->bOpen())

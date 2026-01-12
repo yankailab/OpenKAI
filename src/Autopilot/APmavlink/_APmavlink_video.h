@@ -17,11 +17,11 @@ namespace kai
 		_APmavlink_video();
 		~_APmavlink_video();
 
-		int init(void *pKiss);
-		int link(void);
-		int start(void);
+		bool init(const json& j);
+		bool link(const json& j, ModuleMgr* pM);
+		bool start(void);
 		void update(void);
-		int check(void);
+		bool check(void);
 		void console(void *pConsole);
 
 	private:

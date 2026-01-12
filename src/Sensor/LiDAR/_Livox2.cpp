@@ -45,13 +45,13 @@ namespace kai
     {
     }
 
-    int _Livox2::init(void *pKiss)
+    int _Livox2::init(const json& j)
     {
-        CHECK_(this->_PCstream::init(pKiss));
+        CHECK_(this->_PCstream::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
         // lvx select
-        pK->v("lvxSN", &m_lvxSN);
+        = j.value("lvxSN", &m_lvxSN);
         if (!m_lvxSN.empty())
         {
             memcpy(m_pLvxSN, m_lvxSN.c_str(), m_lvxSN.length());
@@ -59,32 +59,32 @@ namespace kai
 
         string ip;
         ip = "";
-        pK->v("lvxIP", &ip);
+        = j.value("lvxIP", &ip);
         parseIP(ip.c_str(), (uint8_t *)&m_lvxIP);
 
         // lvx time out
         int tOutSec = 10;
-        pK->v("tOutSec", &tOutSec);
+        = j.value("tOutSec", &tOutSec);
         m_lvxTout.setTout(USEC_1SEC * tOutSec);
 
         // lvx config
-        pK->v("lvxPCLdataType", &m_lvxCfg.m_pclDataType);
-        pK->v("lvxPatternMode", &m_lvxCfg.m_patternMode);
+        = j.value("lvxPCLdataType", &m_lvxCfg.m_pclDataType);
+        = j.value("lvxPatternMode", &m_lvxCfg.m_patternMode);
         ip = "";
-        pK->v("lvxHostIP", &ip);
+        = j.value("lvxHostIP", &ip);
         if (!parseIP(ip.c_str(), (uint8_t *)&m_lvxCfg.m_hostIP))
         {
             LOG_E("lvxHostIP parse failed");
             return OK_ERR_INVALID_VALUE;
         }
-        pK->v("lvxHostPortState", &m_lvxCfg.m_hostPortState);
-        pK->v("lvxHostPortPCL", &m_lvxCfg.m_hostPortPCL);
-        pK->v("lvxHostPortIMU", &m_lvxCfg.m_hostPortIMU);
-        pK->v("lvxFrameRate", &m_lvxCfg.m_frameRate);
-        pK->v("lvxDetectMode", &m_lvxCfg.m_detectMode);
-        pK->v("lvxWorkModeAfterBoot", &m_lvxCfg.m_workModeAfterBoot);
-        pK->v("lvxWorkMode", &m_lvxCfg.m_workMode);
-        pK->v("lvxIMUdataEn", &m_lvxCfg.m_imuDataEn);
+        = j.value("lvxHostPortState", &m_lvxCfg.m_hostPortState);
+        = j.value("lvxHostPortPCL", &m_lvxCfg.m_hostPortPCL);
+        = j.value("lvxHostPortIMU", &m_lvxCfg.m_hostPortIMU);
+        = j.value("lvxFrameRate", &m_lvxCfg.m_frameRate);
+        = j.value("lvxDetectMode", &m_lvxCfg.m_detectMode);
+        = j.value("lvxWorkModeAfterBoot", &m_lvxCfg.m_workModeAfterBoot);
+        = j.value("lvxWorkMode", &m_lvxCfg.m_workMode);
+        = j.value("lvxIMUdataEn", &m_lvxCfg.m_imuDataEn);
 
         // common thread config
         Kiss *pKw;
@@ -125,58 +125,58 @@ namespace kai
         m_pTimuR = new _Thread();
         CHECK_d_l_(m_pTimuR->init(pKr), DEL(m_pTimuR), "TimuR init failed");
 
-        return OK_OK;
+        return true;
     }
 
-    int _Livox2::link(void)
+    int _Livox2::link(const json& j, ModuleMgr* pM)
     {
-        CHECK_(this->_PCstream::link());
+        CHECK_(this->_PCstream::link(j, pM));
 
         Kiss *pK = (Kiss *)m_pKiss;
         string n;
 
         n = "";
-        pK->v("_UDPdeviceQuery", &n);
-        m_pUDPdeviceQuery = (_UDP *)(pK->findModule(n));
-        NULL__(m_pUDPdeviceQuery, OK_ERR_NOT_FOUND);
+        = j.value("_UDPdeviceQuery", &n);
+        m_pUDPdeviceQuery = (_UDP *)(pM->findModule(n));
+        NULL__(m_pUDPdeviceQuery);
 
         n = "";
-        pK->v("_UDPctrlCmd", &n);
-        m_pUDPctrlCmd = (_UDP *)(pK->findModule(n));
-        NULL__(m_pUDPctrlCmd, OK_ERR_NOT_FOUND);
+        = j.value("_UDPctrlCmd", &n);
+        m_pUDPctrlCmd = (_UDP *)(pM->findModule(n));
+        NULL__(m_pUDPctrlCmd);
 
         n = "";
-        pK->v("_UDPpushCmd", &n);
-        m_pUDPpushCmd = (_UDP *)(pK->findModule(n));
-        NULL__(m_pUDPpushCmd, OK_ERR_NOT_FOUND);
+        = j.value("_UDPpushCmd", &n);
+        m_pUDPpushCmd = (_UDP *)(pM->findModule(n));
+        NULL__(m_pUDPpushCmd);
 
         n = "";
-        pK->v("_UDPpcl", &n);
-        m_pUDPpcl = (_UDP *)(pK->findModule(n));
-        NULL__(m_pUDPpcl, OK_ERR_NOT_FOUND);
+        = j.value("_UDPpcl", &n);
+        m_pUDPpcl = (_UDP *)(pM->findModule(n));
+        NULL__(m_pUDPpcl);
 
         n = "";
-        pK->v("_UDPimu", &n);
-        m_pUDPimu = (_UDP *)(pK->findModule(n));
-        NULL__(m_pUDPimu, OK_ERR_NOT_FOUND);
+        = j.value("_UDPimu", &n);
+        m_pUDPimu = (_UDP *)(pM->findModule(n));
+        NULL__(m_pUDPimu);
 
         // n = "";
-        // pK->v("_IObaseLog", &n);
-        // m_pUDPlog = (_IObase *)(pK->findModule(n));
-        // NULL__(m_pUDPlog, OK_ERR_NOT_FOUND);
+        // = j.value("_IObaseLog", &n);
+        // m_pUDPlog = (_IObase *)(pM->findModule(n));
+        // NULL__(m_pUDPlog);
 
-        return OK_OK;
+        return true;
     }
 
     int _Livox2::start(void)
     {
-        NULL__(m_pT, OK_ERR_NULLPTR);
-        NULL__(m_pTdeviceQueryR, OK_ERR_NULLPTR);
-        NULL__(m_pTctrlCmdW, OK_ERR_NULLPTR);
-        NULL__(m_pTctrlCmdR, OK_ERR_NULLPTR);
-        NULL__(m_pTpushCmdR, OK_ERR_NULLPTR);
-        NULL__(m_pTpclR, OK_ERR_NULLPTR);
-        NULL__(m_pTimuR, OK_ERR_NULLPTR);
+        NULL_F(m_pT);
+        NULL__(m_pTdeviceQueryR);
+        NULL__(m_pTctrlCmdW);
+        NULL__(m_pTctrlCmdR);
+        NULL__(m_pTpushCmdR);
+        NULL__(m_pTpclR);
+        NULL__(m_pTimuR);
 
         CHECK_(m_pT->start(getUpdateWdeviceQuery, this));
         CHECK_(m_pTdeviceQueryR->start(getUpdateRdeviceQuery, this));
@@ -186,17 +186,17 @@ namespace kai
         CHECK_(m_pTpclR->start(getUpdateRpointCloud, this));
         CHECK_(m_pTimuR->start(getUpdateRimu, this));
 
-        return OK_OK;
+        return true;
     }
 
     int _Livox2::check(void)
     {
-        NULL__(m_pUDPdeviceQuery, OK_ERR_NULLPTR);
-        NULL__(m_pUDPctrlCmd, OK_ERR_NULLPTR);
-        NULL__(m_pUDPpushCmd, OK_ERR_NULLPTR);
-        NULL__(m_pUDPpcl, OK_ERR_NULLPTR);
-        NULL__(m_pUDPimu, OK_ERR_NULLPTR);
-        //        NULL__(m_pUDPlog, OK_ERR_NULLPTR);
+        NULL__(m_pUDPdeviceQuery);
+        NULL__(m_pUDPctrlCmd);
+        NULL__(m_pUDPpushCmd);
+        NULL__(m_pUDPpcl);
+        NULL__(m_pUDPimu);
+        //        NULL__(m_pUDPlog);
 
         return this->_PCstream::check();
     }
@@ -287,7 +287,7 @@ namespace kai
 
     void _Livox2::sendDeviceQuery(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         LIVOX2_CMD cmd;
         cmd.init(LVX2_CMD_DISCOVER, LVX2_CMD_REQ, 0);
@@ -361,7 +361,7 @@ namespace kai
 
     void _Livox2::getLvxConfig(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         LIVOX2_CMD cmd;
         cmd.init(LVX2_CMD_GET, LVX2_CMD_REQ, 0);
@@ -391,7 +391,7 @@ namespace kai
 
     void _Livox2::setLvxPCLdataType(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         LIVOX2_CMD cmd;
         cmd.init(LVX2_CMD_SET, LVX2_CMD_REQ, 0);
@@ -409,7 +409,7 @@ namespace kai
 
     void _Livox2::setLvxPattern(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         LIVOX2_CMD cmd;
         cmd.init(LVX2_CMD_SET, LVX2_CMD_REQ, 0);
@@ -427,7 +427,7 @@ namespace kai
 
     void _Livox2::setLvxHost(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         LIVOX2_CMD cmd;
         cmd.init(LVX2_CMD_SET, LVX2_CMD_REQ, 0);
@@ -462,7 +462,7 @@ namespace kai
 
     void _Livox2::setLvxFrameRate(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         LIVOX2_CMD cmd;
         cmd.init(LVX2_CMD_SET, LVX2_CMD_REQ, 0);
@@ -480,7 +480,7 @@ namespace kai
 
     void _Livox2::setLvxDetectMode(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         LIVOX2_CMD cmd;
         cmd.init(LVX2_CMD_SET, LVX2_CMD_REQ, 0);
@@ -498,7 +498,7 @@ namespace kai
 
     void _Livox2::setLvxWorkModeAfterBoot(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         LIVOX2_CMD cmd;
         cmd.init(LVX2_CMD_SET, LVX2_CMD_REQ, 0);
@@ -516,7 +516,7 @@ namespace kai
 
     void _Livox2::setLvxWorkMode(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         LIVOX2_CMD cmd;
         cmd.init(LVX2_CMD_SET, LVX2_CMD_REQ, 0);
@@ -534,7 +534,7 @@ namespace kai
 
     void _Livox2::setLvxIMUdataEn(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         LIVOX2_CMD cmd;
         cmd.init(LVX2_CMD_SET, LVX2_CMD_REQ, 0);

@@ -44,36 +44,35 @@ namespace kai
 		}
 	}
 
-	int _LeddarVu::init(void *pKiss)
+	int _LeddarVu::init(const json& j)
 	{
-		CHECK_(this->_DistSensorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_DistSensorBase::init(j));
 
-		pK->v("port", &m_port);
-		pK->v("baud", &m_baud);
-		pK->v("slaveAddr", &m_slaveAddr);
-		pK->v("bUse0x41", &m_bUse0x41);
-		pK->v("showOriginOffsetX", &m_showOriginOffsetX);
-		pK->v("showOriginOffsetY", &m_showOriginOffsetY);
+		= j.value("port", &m_port);
+		= j.value("baud", &m_baud);
+		= j.value("slaveAddr", &m_slaveAddr);
+		= j.value("bUse0x41", &m_bUse0x41);
+		= j.value("showOriginOffsetX", &m_showOriginOffsetX);
+		= j.value("showOriginOffsetY", &m_showOriginOffsetY);
 
-		pK->v("nAccumulationsExpo", &m_nAccumulationsExpo);
-		pK->v("nOversamplingsExpo", &m_nOversamplingsExpo);
-		pK->v("nPoint", &m_nPoint);
-		pK->v("lightSrcPwr", &m_lightSrcPwr);
-		pK->v("bAutoLightSrcPwr", &m_bAutoLightSrcPwr);
-		pK->v("bDemergeObj", &m_bDemergeObj);
-		pK->v("bStaticNoiseRemoval", &m_bStaticNoiseRemoval);
-		pK->v("bPrecicion", &m_bPrecision);
-		pK->v("bSaturationCompensation", &m_bSaturationCompensation);
-		pK->v("bOvershootManagement", &m_bOvershootManagement);
-		pK->v("oprMode", &m_oprMode);
+		= j.value("nAccumulationsExpo", &m_nAccumulationsExpo);
+		= j.value("nOversamplingsExpo", &m_nOversamplingsExpo);
+		= j.value("nPoint", &m_nPoint);
+		= j.value("lightSrcPwr", &m_lightSrcPwr);
+		= j.value("bAutoLightSrcPwr", &m_bAutoLightSrcPwr);
+		= j.value("bDemergeObj", &m_bDemergeObj);
+		= j.value("bStaticNoiseRemoval", &m_bStaticNoiseRemoval);
+		= j.value("bPrecicion", &m_bPrecision);
+		= j.value("bSaturationCompensation", &m_bSaturationCompensation);
+		= j.value("bOvershootManagement", &m_bOvershootManagement);
+		= j.value("oprMode", &m_oprMode);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _LeddarVu::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
@@ -342,7 +341,7 @@ namespace kai
 #ifdef USE_OPENCV
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		Frame *pF = (Frame *)pFrame;
 		Mat *pM = pF->m();

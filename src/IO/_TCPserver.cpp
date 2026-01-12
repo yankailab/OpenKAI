@@ -31,21 +31,20 @@ namespace kai
 		m_lClient.clear();
 	}
 
-	int _TCPserver::init(void *pKiss)
+	int _TCPserver::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
-		pK->v<uint16_t>("port", &m_listenPort);
-		pK->v<int>("nListen", &m_nListen);
-		pK->v<unsigned int>("nSocket", &m_nSocket);
+		= j.value<uint16_t>("port", &m_listenPort);
+		= j.value<int>("nListen", &m_nListen);
+		= j.value<unsigned int>("nSocket", &m_nSocket);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _TCPserver::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 

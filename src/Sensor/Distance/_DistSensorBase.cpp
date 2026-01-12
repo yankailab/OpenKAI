@@ -35,28 +35,27 @@ namespace kai
 		DEL_ARRAY(m_pDiv);
 	}
 
-	int _DistSensorBase::init(void *pKiss)
+	int _DistSensorBase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
-		pK->v("fovH", &m_fovH);
+		= j.value("fovH", &m_fovH);
 		IF__(m_fovH <= 0, OK_ERR_INVALID_VALUE);
 		IF__(m_fovH > 360, OK_ERR_INVALID_VALUE);
-		pK->v("fovV", &m_fovV);
+		= j.value("fovV", &m_fovV);
 
-		pK->v("nDiv", &m_nDiv);
+		= j.value("nDiv", &m_nDiv);
 		m_dDeg = m_fovH / m_nDiv;
 		m_dDegInv = 1.0 / m_dDeg;
 
-		pK->v("vRange", &m_vRange);
-		pK->v("calibScale", &m_calibScale);
-		pK->v("calibOffset", &m_calibOffset);
+		= j.value("vRange", &m_vRange);
+		= j.value("calibScale", &m_calibScale);
+		= j.value("calibOffset", &m_calibOffset);
 
 		int nMed = 0;
 		int nAvr = 0;
-		pK->v("nMed", &nMed);
-		pK->v("nAvr", &nAvr);
+		= j.value("nMed", &nMed);
+		= j.value("nAvr", &nAvr);
 
 		IF__(m_nDiv >= MAX_DIST_SENSOR_DIV, OK_ERR_INVALID_VALUE);
 
@@ -66,7 +65,7 @@ namespace kai
 			m_pDiv[i].init(nAvr, nMed);
 		}
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _DistSensorBase::bReady(void)
@@ -328,7 +327,7 @@ namespace kai
 #ifdef USE_OPENCV
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		Frame *pF = (Frame*)pFrame;
 

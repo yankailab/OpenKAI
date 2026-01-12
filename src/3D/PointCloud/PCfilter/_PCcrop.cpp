@@ -18,11 +18,11 @@ namespace kai
 	{
 	}
 
-    bool _PCcrop::init(const json &j)
-    {
-        IF_F(!this->_GeometryBase::init(j));
+	bool _PCcrop::init(const json &j)
+	{
+		IF_F(!this->_GeometryBase::init(j));
 
-		const json& jf = j.at("vFilter");
+		const json &jf = j.at("vFilter");
 		IF_F(!jf.is_object());
 
 		for (auto iF = jf.begin(); iF != jf.end(); iF++)
@@ -42,48 +42,18 @@ namespace kai
 			m_vFilter.push_back(v);
 		}
 
-        return true;
-    }
-
-
-
-	int _PCcrop::init(void *pKiss)
-	{
-		CHECK_(_GeometryBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
-
-		Kiss *pF = pK->child("vFilter");
-		int i = 0;
-		while (1)
-		{
-			Kiss *pA = pF->child(i++);
-			if (pA->empty())
-				break;
-
-			POINTCLOUD_VOL v;
-			v.init();
-			pA->v("type", (int *)&v.m_type);
-			pA->v("bInside", &v.m_bInside);
-			pA->v("vX", &v.m_vX);
-			pA->v("vY", &v.m_vY);
-			pA->v("vZ", &v.m_vZ);
-			pA->v("vC", &v.m_vC);
-			pA->v("vR", &v.m_vR);
-			m_vFilter.push_back(v);
-		}
-
-		return OK_OK;
+		return true;
 	}
 
-	int _PCcrop::start(void)
+	bool _PCcrop::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _PCcrop::check(void)
+	bool _PCcrop::check(void)
 	{
-//		NULL__(m_pInCtx.m_pPCB, -1);
+		//		NULL_F(m_pInCtx.m_pPCB);
 
 		return _GeometryBase::check();
 	}
@@ -95,13 +65,12 @@ namespace kai
 			m_pT->autoFPS();
 
 			updateFilter();
-
 		}
 	}
 
 	void _PCcrop::updateFilter(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		// PointCloud* pOut = m_sPC.next();
 		// PointCloud pcIn;

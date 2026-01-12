@@ -30,25 +30,12 @@ namespace kai
     {
         IF_F(!this->_GeometryBase::init(j));
 
-		m_nP = j.value("nP", 256);
-        if(m_nP <= 0)
+        m_nP = j.value("nP", 256);
+        if (m_nP <= 0)
         {
             LOG_E("Invalid nP: " + i2str(m_nP));
             return false;
         }
-
-        return initGeometry();
-    }
-
-
-
-    int _PCstream::init(void *pKiss)
-    {
-        CHECK_(this->_GeometryBase::init(pKiss));
-        Kiss *pK = (Kiss *)pKiss;
-
-        pK->v("nP", &m_nP);
-        IF__(m_nP <= 0, OK_ERR_INVALID_VALUE);
 
         return initGeometry();
     }
@@ -61,7 +48,7 @@ namespace kai
         if (!m_pP)
         {
             mutexUnlock();
-            return OK_ERR_ALLOCATION;
+            return false;
         }
         m_iP = 0;
 
@@ -70,7 +57,7 @@ namespace kai
 
         mutexUnlock();
 
-        return OK_OK;
+        return true;
     }
 
     void _PCstream::clear(void)
@@ -85,15 +72,15 @@ namespace kai
         mutexUnlock();
     }
 
-    int _PCstream::start(void)
+    bool _PCstream::start(void)
     {
-        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
-    int _PCstream::check(void)
+    bool _PCstream::check(void)
     {
-        NULL__(m_pP, OK_ERR_NULLPTR);
+        NULL_F(m_pP);
 
         return this->_GeometryBase::check();
     }
@@ -112,7 +99,7 @@ namespace kai
 
     void _PCstream::updatePCstream(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         readSharedMem();
         writeSharedMem();
@@ -120,7 +107,7 @@ namespace kai
 
     void _PCstream::addPCstream(void *p, uint64_t tExpire)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
         NULL_(p);
         _PCstream *pS = (_PCstream *)p;
 
@@ -195,7 +182,7 @@ namespace kai
 
     void _PCstream::copyTo(PointCloud *pPC, uint64_t tExpire)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
         NULL_(pPC);
 
         uint64_t tNow = getApproxTbootUs();

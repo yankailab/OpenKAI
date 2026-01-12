@@ -50,7 +50,7 @@ namespace kai
 		void logEnvironment(void);
 
 	private:
-		int check(void);
+		bool check(void);
 
 	private:
 		void *m_pKiss;

@@ -25,7 +25,7 @@ namespace kai
 
 	bool BASE::init(const json& j)
 	{
-		IF_F(!j.is_object());
+		IF_Le_F(!j.is_object(), "json is not an object");
 
 		m_name = j.value("name", "");
 		m_class = j.value("class", "");
@@ -40,40 +40,19 @@ namespace kai
 	bool BASE::link(const json& j, ModuleMgr* pM)
 	{
 		NULL_F(pM);
-		IF_F(!j.is_object());
+		IF_Le_F(!j.is_object(), "json is not an object");
 
 		return true;
 	}
 
-
-	int BASE::init(void *pKiss)
+	bool BASE::start(void)
 	{
-		NULL__(pKiss, OK_ERR_NULLPTR);
-
-		m_pKiss = pKiss;
-		Kiss *pK = (Kiss *)pKiss;
-		pK->setModule(this);
-
-		pK->v("bLog", &m_bLog);
-
-		return OK_OK;
+		return true;
 	}
 
-	int BASE::link(void)
+	bool BASE::check(void)
 	{
-		NULL__(m_pKiss, OK_ERR_NULLPTR);
-
-		return OK_OK;
-	}
-
-	int BASE::start(void)
-	{
-		return OK_OK;
-	}
-
-	int BASE::check(void)
-	{
-		return OK_OK;
+		return true;
 	}
 
 	void BASE::pause(void)

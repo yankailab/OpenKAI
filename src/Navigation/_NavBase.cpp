@@ -23,16 +23,15 @@ namespace kai
 	{
 	}
 
-	int _NavBase::init(void *pKiss)
+	int _NavBase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
-		pK->v("scale", &m_scale);
-		pK->v("vAxisIdx", &m_vAxisIdx);
-		pK->v("vRoffset", &m_vRoffset);
+		= j.value("scale", &m_scale);
+		= j.value("vAxisIdx", &m_vAxisIdx);
+		= j.value("vRoffset", &m_vRoffset);
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _NavBase::bOpen(void)

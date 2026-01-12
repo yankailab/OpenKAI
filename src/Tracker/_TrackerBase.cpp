@@ -25,20 +25,19 @@ namespace kai
 	{
 	}
 
-	int _TrackerBase::init(void *pKiss)
+	int _TrackerBase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
-		pK->v("trackerType", &m_trackerType);
-		pK->v("margin", &m_margin);
+		= j.value("trackerType", &m_trackerType);
+		= j.value("margin", &m_margin);
 
 		string n = "";
-		pK->v("_VisionBase", &n);
-		m_pV = (_VisionBase *)(pK->findModule(n));
-		NULL__(m_pV, OK_ERR_NOT_FOUND);
+		= j.value("_VisionBase", &n);
+		m_pV = (_VisionBase *)(pM->findModule(n));
+		NULL__(m_pV);
 
-		return OK_OK;
+		return true;
 	}
 
 	void _TrackerBase::createTracker(void)
@@ -47,7 +46,7 @@ namespace kai
 
 	int _TrackerBase::check(void)
 	{
-		NULL__(m_pV, OK_ERR_NULLPTR);
+		NULL__(m_pV);
 
 		return this->_ModuleBase::check();
 	}
@@ -115,7 +114,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		Frame *pF = (Frame*)pFrame;
 		Mat *pM = pF->m();

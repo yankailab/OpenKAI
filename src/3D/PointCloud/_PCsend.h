@@ -27,11 +27,9 @@ namespace kai
 		virtual ~_PCsend();
 
 		virtual bool init(const json &j);
-		virtual bool link(const json& j, ModuleMgr* pM);
-
-		int init(void *pKiss);
-		int start(void);
-		int check(void);
+		virtual bool link(const json &j, ModuleMgr *pM);
+		virtual bool start(void);
+		virtual bool check(void);
 
 	private:
 		void sendPC(void);

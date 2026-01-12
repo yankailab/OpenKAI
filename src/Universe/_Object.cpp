@@ -16,12 +16,11 @@ namespace kai
 	{
 	}
 
-	int _Object::init(void *pKiss)
+	int _Object::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
-		return OK_OK;
+		return true;
 	}
 
 	void _Object::clear(void)
@@ -43,7 +42,7 @@ namespace kai
 
 	int _Object::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
@@ -57,7 +56,7 @@ namespace kai
 
 	void _Object::updateKinetics(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 		m_vSpeed += m_vAccel * m_pT->getDt() * USEC_2_SEC;
 		m_vPos += m_vSpeed;
 	}

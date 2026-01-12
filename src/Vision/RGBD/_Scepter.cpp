@@ -29,12 +29,11 @@ namespace kai
 	{
 	}
 
-	int _Scepter::init(void *pKiss)
+	int _Scepter::init(const json& j)
 	{
-		CHECK_(_RGBDbase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(_RGBDbase::init(j));
 
-		pK->v("scPixelFormat", &m_scCtrl.m_pixelFormat);
+		= j.value("scPixelFormat", &m_scCtrl.m_pixelFormat);
 
 		Kiss *pKt = pK->child("threadPP");
 		if (pKt->empty())
@@ -46,16 +45,15 @@ namespace kai
 		m_pTPP = new _Thread();
 		CHECK_d_l_(m_pTPP->init(pKt), DEL(m_pTPP), "threadPP init failed");
 
-		return OK_OK;
+		return true;
 	}
 
-	int _Scepter::link(void)
+	int _Scepter::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_RGBDbase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_RGBDbase::link(j, pM));
 		string n;
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _Scepter::open(void)
@@ -158,7 +156,7 @@ namespace kai
 
 	int _Scepter::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 

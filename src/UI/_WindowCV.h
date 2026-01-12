@@ -21,8 +21,8 @@ namespace kai
 		_WindowCV();
 		virtual ~_WindowCV();
 
-		int init(void *pKiss);
-		int start(void);
+		bool init(const json& j);
+		bool start(void);
 
 	protected:
 		void updateWindow(void);

@@ -21,11 +21,8 @@ namespace kai
 		// BASE
 		virtual bool init(const json &j);
 		virtual bool link(const json& j, ModuleMgr* pM);
-
-
-		virtual int init(void *pKiss);
-        virtual int start(void);
-		virtual int check(void);
+        virtual bool start(void);
+		virtual bool check(void);
 
         // _GeometryBase
 		virtual bool initGeometry(void);

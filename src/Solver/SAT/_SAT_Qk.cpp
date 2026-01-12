@@ -20,33 +20,31 @@ namespace kai
 		DEL(m_pTPP);
 	}
 
-	int _SAT_Qk::init(void *pKiss)
+	int _SAT_Qk::init(const json& j)
 	{
-		CHECK_(_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(_ModuleBase::init(j));
 
-		//		pK->v("URI", &m_devURI);
+		//		= j.value("URI", &m_devURI);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _SAT_Qk::link(void)
+	int _SAT_Qk::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_ModuleBase::link(j, pM));
 
 		string n;
 
 		// n = "";
-		// pK->v("_SHMrgb", &n);
-		// m_psmRGB = (SharedMem *)(pK->findModule(n));
+		// = j.value("_SHMrgb", &n);
+		// m_psmRGB = (SharedMem *)(pM->findModule(n));
 
-		return OK_OK;
+		return true;
 	}
 
 	int _SAT_Qk::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
@@ -68,7 +66,7 @@ namespace kai
 
 	void _SAT_Qk::updateSolver(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		runQ();
 	}

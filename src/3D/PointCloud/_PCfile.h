@@ -20,9 +20,7 @@ namespace kai
 		virtual ~_PCfile();
 
 		virtual bool init(const json &j);
-
-		int init(void *pKiss);
-		int start(void);
+		virtual bool start(void);
 		bool open(void);
 
 	private:

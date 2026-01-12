@@ -20,8 +20,8 @@ namespace kai
 		_SingleTracker();
 		virtual ~_SingleTracker();
 
-		int init(void *pKiss);
-		int start(void);
+		bool init(const json& j);
+		bool start(void);
 
 		void createTracker(void);
 

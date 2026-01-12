@@ -27,25 +27,24 @@ namespace kai
 		close();
 	}
 
-	int SharedMem::init(void *pKiss)
+	int SharedMem::init(const json& j)
 	{
-		CHECK_(this->BASE::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->BASE::init(j));
 
-		pK->v("shmName", &m_shmName);
-		pK->v("nB", &m_nB);
-		pK->v("bWriter", &m_bWriter);
+		= j.value("shmName", &m_shmName);
+		= j.value("nB", &m_nB);
+		= j.value("bWriter", &m_bWriter);
 
-		IF__(!open(), OK_ERR_NOT_READY);
+		IF__(!open());
 
-		return OK_OK;
+		return true;
 	}
 
-	int SharedMem::link(void)
+	int SharedMem::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->BASE::link());
+		CHECK_(this->BASE::link(j, pM));
 
-		return OK_OK;
+		return true;
 	}
 
 	bool SharedMem::open(void)

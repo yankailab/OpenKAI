@@ -17,31 +17,30 @@ namespace kai
     {
     }
 
-    int _SwarmCtrl::init(void *pKiss)
+    int _SwarmCtrl::init(const json& j)
     {
-        CHECK_(this->_ModuleBase::init(pKiss));
+        CHECK_(this->_ModuleBase::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
 
-        pK->v("myID", &m_node.m_id);
-        pK->v("ieSendHB", &m_ieSendHB.m_tInterval);
-        pK->v("ieSendSetState", &m_ieSendSetState.m_tInterval);
-        pK->v("ieSendGCupdate", &m_ieSendGCupdate.m_tInterval);
+        = j.value("myID", &m_node.m_id);
+        = j.value("ieSendHB", &m_ieSendHB.m_tInterval);
+        = j.value("ieSendSetState", &m_ieSendSetState.m_tInterval);
+        = j.value("ieSendGCupdate", &m_ieSendGCupdate.m_tInterval);
 
-        return OK_OK;
+        return true;
     }
 
-    int _SwarmCtrl::link(void)
+    int _SwarmCtrl::link(const json& j, ModuleMgr* pM)
     {
-        CHECK_(this->_ModuleBase::link());
+        CHECK_(this->_ModuleBase::link(j, pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
         n = "";
-        pK->v("_StateControl", &n);
-        m_pSC = (_StateControl *)(pK->findModule(n));
-        NULL__(m_pSC, OK_ERR_NOT_FOUND);
+        = j.value("_StateControl", &n);
+        m_pSC = (_StateControl *)(pM->findModule(n));
+        NULL__(m_pSC);
 
         m_state.STANDBY = m_pSC->getStateIdxByName("STANDBY");
         m_state.TAKEOFF = m_pSC->getStateIdxByName("TAKEOFF");
@@ -51,31 +50,31 @@ namespace kai
         m_state.update(m_pSC->getCurrentStateIdx());
 
         n = "";
-        pK->v("_SwarmSearch", &n);
-        m_pSwarm = (_SwarmSearch *)(pK->findModule(n));
-        NULL__(m_pSwarm, OK_ERR_NOT_FOUND);
+        = j.value("_SwarmSearch", &n);
+        m_pSwarm = (_SwarmSearch *)(pM->findModule(n));
+        NULL__(m_pSwarm);
 
         n = "";
-        pK->v("_Xbee", &n);
-        m_pXb = (_Xbee *)(pK->findModule(n));
-        NULL__(m_pXb, OK_ERR_NOT_FOUND);
+        = j.value("_Xbee", &n);
+        m_pXb = (_Xbee *)(pM->findModule(n));
+        NULL__(m_pXb);
 
         IF__(!m_pXb->setCbReceivePacket(sOnRecvMsg, this), OK_ERR_UNKNOWN);
 
-        return OK_OK;
+        return true;
     }
 
     int _SwarmCtrl::start(void)
     {
-        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
     int _SwarmCtrl::check(void)
     {
-        NULL__(m_pSC, OK_ERR_NULLPTR);
-        NULL__(m_pXb, OK_ERR_NULLPTR);
-        NULL__(m_pSwarm, OK_ERR_NULLPTR);
+        NULL__(m_pSC);
+        NULL__(m_pXb);
+        NULL__(m_pSwarm);
 
         return this->_ModuleBase::check();
     }
@@ -94,7 +93,7 @@ namespace kai
 
     void _SwarmCtrl::send(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         uint64_t t = m_pT->getTfrom();
 
@@ -203,7 +202,7 @@ namespace kai
 
     void _SwarmCtrl::handleMsgSetState(const SWMSG_CMD_SETSTATE &m)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
         IF_((m.m_dstID != XB_BRDCAST_ADDR) && (m.m_dstID != m_pXb->getMyAddr()));
 
         // //TODO: enable iMsg counter

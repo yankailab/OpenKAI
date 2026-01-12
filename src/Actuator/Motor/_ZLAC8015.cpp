@@ -11,8 +11,6 @@ namespace kai
 	{
 		m_pMB = nullptr;
 		m_ID = 1;
-		m_iMode = 3; //speed control
-
 		m_ieReadStatus.init(50000);
 	}
 
@@ -20,41 +18,37 @@ namespace kai
 	{
 	}
 
-	int _ZLAC8015::init(void *pKiss)
+	bool _ZLAC8015::init(const json &j)
 	{
-		CHECK_(this->_ActuatorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		IF_F(!this->_ActuatorBase::init(j));
 
-		pK->v("iMode", &m_iMode);
-		pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
+		m_iMode = j.value("iMode", 3);
+		m_ieReadStatus.m_tInterval = j.value("tIntReadStatus", 50000);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _ZLAC8015::link(void)
+	bool _ZLAC8015::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_ActuatorBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		IF_F(!this->_ActuatorBase::link(j, pM));
 
-		string n;
-		n = "";
-		IF__(!pK->v("_Modbus", &n), OK_ERR_NOT_FOUND);
-		m_pMB = (_Modbus *)(pK->findModule(n));
-		NULL__(m_pMB, OK_ERR_NOT_FOUND);
+		string n = j.value("_Modbus", "");
+		m_pMB = (_Modbus *)(pM->findModule(n));
+		NULL_F(m_pMB);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _ZLAC8015::start(void)
+	bool _ZLAC8015::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _ZLAC8015::check(void)
+	bool _ZLAC8015::check(void)
 	{
-		NULL__(m_pMB, OK_ERR_NULLPTR);
-		IF__(!m_pMB->bOpen(), OK_ERR_NOT_READY);
+		NULL_F(m_pMB);
+		IF_F(!m_pMB->bOpen());
 
 		return this->_ActuatorBase::check();
 	}
@@ -83,14 +77,14 @@ namespace kai
 		IF_(!setMode());
 		IF_(!setAccel());
 		IF_(!setBrake());
-//		IF_(!setPower(true));
+		//		IF_(!setPower(true));
 
 		m_bfStatus.set(actuator_ready);
 	}
 
 	// bool _ZLAC8015::setPower(bool bON)
 	// {
-	// 	IF_F(check() != OK_OK);
+	// 	IF_F(!check());
 	// 	IF__(bON == m_bPower, true);
 
 	// 	if (bON)
@@ -109,14 +103,14 @@ namespace kai
 
 	void _ZLAC8015::updateMove(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		setSpeed();
 	}
 
 	bool _ZLAC8015::setMode(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		IF_F(m_pMB->writeRegister(m_ID, 0x2032, m_iMode) != 1);
 
@@ -125,7 +119,7 @@ namespace kai
 
 	bool _ZLAC8015::setAccel(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		uint16_t v = m_a.getTarget();
 		IF_F(m_pMB->writeRegister(m_ID, 0x2037, v) != 1);
@@ -135,7 +129,7 @@ namespace kai
 
 	bool _ZLAC8015::setBrake(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		uint16_t v = m_b.getTarget();
 		IF_F(m_pMB->writeRegister(m_ID, 0x2038, v) != 1);
@@ -145,7 +139,7 @@ namespace kai
 
 	bool _ZLAC8015::setSpeed(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		int16_t v = m_s.getTarget();
 		IF_F(m_pMB->writeRegister(m_ID, 0x203A, v) != 1);
@@ -155,7 +149,7 @@ namespace kai
 
 	bool _ZLAC8015::stopMove(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		IF_F(m_pMB->writeBit(m_ID, 3, true) != 1);
 		return true;
@@ -163,7 +157,7 @@ namespace kai
 
 	bool _ZLAC8015::bComplete(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		uint16_t b;
 		int r = m_pMB->readRegisters(m_ID, 12, 1, &b);
@@ -174,7 +168,7 @@ namespace kai
 
 	bool _ZLAC8015::readStatus(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 		IF__(!m_ieReadStatus.updateT(m_pT->getTfrom()), true);
 
 		uint16_t pB[2];
@@ -191,10 +185,10 @@ namespace kai
 
 	bool _ZLAC8015::clearAlarm(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 		IF__(!m_ieReadStatus.updateT(m_pT->getTfrom()), true);
 
-		int r = m_pMB->writeRegister(m_ID, 0x2031, 0x06); //clear alarm
+		int r = m_pMB->writeRegister(m_ID, 0x2031, 0x06); // clear alarm
 		IF_F(r != 1);
 
 		return true;

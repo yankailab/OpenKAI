@@ -18,30 +18,29 @@ namespace kai
 	{
 	}
 
-	int _TFmobileNet::init(void *pKiss)
+	int _TFmobileNet::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_DetectorBase::init(j));
 
-		pK->v("nThreads", &m_nThreads);
-		pK->v("confidence", &m_confidence);
+		= j.value("nThreads", &m_nThreads);
+		= j.value("confidence", &m_confidence);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _TFmobileNet::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _TFmobileNet::check(void)
 	{
-		NULL__(m_pU, OK_ERR_NULLPTR);
-		NULL__(m_pV, OK_ERR_NULLPTR);
+		NULL__(m_pU);
+		NULL__(m_pV);
 		Frame *pBGR = m_pV->getFrameRGB();
-		NULL__(pBGR, OK_ERR_NULLPTR);
-		IF__(pBGR->bEmpty(), OK_ERR_NOT_READY);
+		NULL__(pBGR);
+		IF__(pBGR->bEmpty());
 
 		return this->_DetectorBase::check();
 	}
@@ -77,7 +76,7 @@ namespace kai
 
 	void _TFmobileNet::detect(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		m_fRGB.copy(*m_pV->getFrameRGB());
 		Mat m;

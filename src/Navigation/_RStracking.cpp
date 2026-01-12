@@ -19,12 +19,11 @@ namespace kai
 		close();
 	}
 
-	int _RStracking::init(void *pKiss)
+	int _RStracking::init(const json& j)
 	{
-		CHECK_(this->_NavBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_NavBase::init(j));
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _RStracking::open(void)
@@ -123,7 +122,7 @@ namespace kai
 
 	int _RStracking::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 

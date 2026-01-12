@@ -31,9 +31,9 @@ namespace kai
 		virtual ~_Object();
 
 		//general
-		virtual int init(void *pKiss);
+		virtual bool init(const json& j);
 		virtual void clear(void);
-		virtual int start(void);
+		virtual bool start(void);
 		virtual void update(void);
 
 		//pos

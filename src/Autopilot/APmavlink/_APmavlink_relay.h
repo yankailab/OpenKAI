@@ -25,9 +25,9 @@ namespace kai
 		_APmavlink_relay();
 		~_APmavlink_relay();
 
-		int init(void *pKiss);
-		int start(void);
-		int check(void);
+		bool init(const json& j);
+		bool start(void);
+		bool check(void);
 		void update(void);
 		void console(void *pConsole);
 

@@ -15,54 +15,49 @@ namespace kai
 		DEL(m_pTr);
 	}
 
-	int _DDSM::init(void *pKiss)
+	bool _DDSM::init(const json &j)
 	{
-		CHECK_(this->_ActuatorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		IF_F(!this->_ActuatorBase::init(j));
 
-		pK->v("ddsmMode", (uint8_t*)&m_ddsmMode);
+		m_ddsmMode = j.value("ddsmMode", ddsm_speed);
 
-		Kiss *pKt = pK->child("threadR");
-		if (pKt->empty())
+		IF_Le_F(!j.contains("threadR"), "json: thread not found");
+		DEL(m_pTr);
+		m_pTr = new _Thread();
+		if (!m_pTr->init(j.at("threadR")))
 		{
-			LOG_E("threadR not found");
-			return OK_ERR_NOT_FOUND;
+			DEL(m_pTr);
+			LOG_E("threadR.init() failed");
+			return false;
 		}
 
-		m_pTr = new _Thread();
-		CHECK_d_(m_pTr->init(pKt), DEL(m_pTr));
-
-		return OK_OK;
+		return true;
 	}
 
-	int _DDSM::link(void)
+	bool _DDSM::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_ActuatorBase::link());
-		CHECK_(m_pTr->link());
+		IF_F(!this->_ActuatorBase::link(j, pM));
+		IF_F(!m_pTr->link(j.at("threadR"), pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
-		string n;
+		string n = j.value("_IObase", "");
+		m_pIO = (_IObase *)(pM->findModule(n));
+		NULL_F(m_pIO);
 
-		n = "";
-		IF__(!pK->v("_IObase", &n), OK_ERR_NOT_FOUND);
-		m_pIO = (_IObase *)(pK->findModule(n));
-		NULL__(m_pIO, OK_ERR_NOT_FOUND);
-
-		return OK_OK;
+		return true;
 	}
 
-	int _DDSM::start(void)
+	bool _DDSM::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
-		NULL__(m_pTr, OK_ERR_NULLPTR);
-		CHECK_(m_pT->start(getUpdate, this));
+		NULL_F(m_pT);
+		NULL_F(m_pTr);
+		IF_F(!m_pT->start(getUpdate, this));
 		return m_pTr->start(getUpdateR, this);
 	}
 
-	int _DDSM::check(void)
+	bool _DDSM::check(void)
 	{
-		NULL__(m_pIO, OK_ERR_NULLPTR);
-		IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
+		NULL_F(m_pIO);
+		IF_F(!m_pIO->bOpen());
 
 		return this->_ActuatorBase::check();
 	}
@@ -87,16 +82,16 @@ namespace kai
 
 			if (m_ddsmMode == ddsm_speed)
 				setOutput(m_s.getTarget());
-			else if(m_ddsmMode == ddsm_current)
+			else if (m_ddsmMode == ddsm_current)
 				setOutput(m_c.getTarget());
-			else if(m_ddsmMode == ddsm_pos)
+			else if (m_ddsmMode == ddsm_pos)
 				setOutput(m_p.getTarget());
 		}
 	}
 
 	bool _DDSM::setID(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		uint8_t pB[DDSM_CMD_NB];
 		pB[0] = 0xAA;
@@ -120,7 +115,7 @@ namespace kai
 
 	bool _DDSM::setMode(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		uint8_t pB[DDSM_CMD_NB];
 		pB[0] = m_ID;
@@ -138,7 +133,7 @@ namespace kai
 
 	bool _DDSM::setOutput(int16_t v)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		uint8_t pB[DDSM_CMD_NB];
 		pB[0] = m_ID;
@@ -166,7 +161,7 @@ namespace kai
 
 	bool _DDSM::readCMD(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		return false;
 	}

@@ -6,39 +6,34 @@ namespace kai
 	_xArm::_xArm()
 	{
 		m_pArm = NULL;
-		m_ip = "192.168.1.222";
-		m_mode = 0;
-		m_state = 0;
-		m_nMinAxis = 6;
 	}
 
 	_xArm::~_xArm()
 	{
 	}
 
-	int _xArm::init(void *pKiss)
+	bool _xArm::init(const json &j)
 	{
-		CHECK_(this->_ActuatorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		IF_F(!this->_ActuatorBase::init(j));
 
-		pK->v("ip", &m_ip);
-		pK->v("mode", &m_mode);
-		pK->v("state", &m_state);
+		m_ip = j.value("ip", "192.168.1.222");
+		m_mode = j.value("mode", 0);
+		m_state = j.value("state", 0);
 
 		m_pArm = new XArmAPI(m_ip, false, true);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _xArm::start(void)
+	bool _xArm::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _xArm::check(void)
+	bool _xArm::check(void)
 	{
-		IF__(!m_bPower, OK_ERR_NULLPTR);
+		NULL_F(m_pArm);
 
 		return this->_ActuatorBase::check();
 	}
@@ -59,13 +54,12 @@ namespace kai
 			}
 
 			readState();
-
 		}
 	}
 
 	bool _xArm::power(bool bON)
 	{
-		IF__(bON == m_bPower);
+		IF_F(bON == m_bPower);
 
 		if (bON)
 		{
@@ -138,7 +132,7 @@ namespace kai
 
 	void _xArm::updatePos(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		vFloat3 vP = getPtarget();
 		vFloat3 vA = getAtarget();
@@ -146,7 +140,7 @@ namespace kai
 
 	void _xArm::readState(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		int ret;
 		fp32 pose[6];

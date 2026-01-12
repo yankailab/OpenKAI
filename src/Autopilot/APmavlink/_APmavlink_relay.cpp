@@ -12,10 +12,9 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_relay::init(void *pKiss)
+	int _APmavlink_relay::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
 		int i = 0;
 		while (1)
@@ -33,23 +32,23 @@ namespace kai
 
 		string n;
 		n = "";
-		pK->v("_APmavlink_base", &n);
-		m_pAP = (_APmavlink_base *)(pK->findModule(n));
-		NULL__(m_pAP, OK_ERR_NOT_FOUND);
+		= j.value("_APmavlink_base", &n);
+		m_pAP = (_APmavlink_base *)(pM->findModule(n));
+		NULL__(m_pAP);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _APmavlink_relay::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _APmavlink_relay::check(void)
 	{
-		NULL__(m_pAP, OK_ERR_NULLPTR);
-		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
+		NULL__(m_pAP);
+		NULL__(m_pAP->getMavlink());
 
 		return this->_ModuleBase::check();
 	}
@@ -67,7 +66,7 @@ namespace kai
 
 	void _APmavlink_relay::updateRelay(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		_Mavlink *pMav = m_pAP->getMavlink();
 
@@ -81,7 +80,7 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		for (AP_relay s : m_vRelay)
 		{

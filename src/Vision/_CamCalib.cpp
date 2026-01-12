@@ -14,21 +14,21 @@ namespace kai
     {
     }
 
-    int _CamCalib::init(void *pKiss)
+    int _CamCalib::init(const json& j)
     {
-        CHECK_(this->_ModuleBase::init(pKiss));
+        CHECK_(this->_ModuleBase::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
-        pK->v("path", &m_path);
-        pK->v("vChessBoardSize", &m_vChessBoardSize);
-        pK->v("squareSize", &m_squareSize);
+        = j.value("path", &m_path);
+        = j.value("vChessBoardSize", &m_vChessBoardSize);
+        = j.value("squareSize", &m_squareSize);
 
-        return OK_OK;
+        return true;
     }
 
     int _CamCalib::start(void)
     {
-        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
@@ -66,9 +66,9 @@ namespace kai
             cv::cvtColor(m, mGray, cv::COLOR_BGR2GRAY);
 
             // If desired number of corners are found in the image then bSuccess = true
-            bSuccess = cv::findChessboardCorners(mGray, 
-                                            cv::Size(m_vChessBoardSize.y, m_vChessBoardSize.x), 
-                                            vPcorner, 
+            bSuccess = cv::findChessboardCorners(mGray,
+                                            cv::Size(m_vChessBoardSize.y, m_vChessBoardSize.x),
+                                            vPcorner,
                                             cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_FAST_CHECK | cv::CALIB_CB_NORMALIZE_IMAGE);
             if (bSuccess)
             {

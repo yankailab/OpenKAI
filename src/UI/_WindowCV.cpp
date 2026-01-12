@@ -21,13 +21,12 @@ namespace kai
 	{
 	}
 
-	int _WindowCV::init(void *pKiss)
+	int _WindowCV::init(const json& j)
 	{
-		CHECK_(this->_UIbase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_UIbase::init(j));
 
-		pK->v("bFullScreen", &m_bFullScreen);
-		pK->v("vSize", &m_vSize);
+		= j.value("bFullScreen", &m_bFullScreen);
+		= j.value("vSize", &m_vSize);
 		m_waitKey = 1000.0f / m_pT->getTargetFPS();
 
 		if (m_vSize.area() <= 0)
@@ -49,12 +48,12 @@ namespace kai
 			namedWindow(wn, WINDOW_AUTOSIZE);
 		}
 
-		return OK_OK;
+		return true;
 	}
 
 	int _WindowCV::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 

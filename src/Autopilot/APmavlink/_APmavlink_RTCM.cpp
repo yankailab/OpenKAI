@@ -13,39 +13,37 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_RTCM::init(void *pKiss)
+	int _APmavlink_RTCM::init(const json& j)
 	{
-		CHECK_(this->_RTCMcast::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_RTCMcast::init(j));
 
-		return OK_OK;
+		return true;
 	}
 
-	int _APmavlink_RTCM::link(void)
+	int _APmavlink_RTCM::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ProtocolBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_ProtocolBase::link(j, pM));
 		string n;
 
 		n = "";
-		pK->v("_Mavlink", &n);
-		m_pMav = (_Mavlink *)(pK->findModule(n));
-		NULL__(m_pMav, OK_ERR_NOT_FOUND);
+		= j.value("_Mavlink", &n);
+		m_pMav = (_Mavlink *)(pM->findModule(n));
+		NULL__(m_pMav);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _APmavlink_RTCM::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
-		NULL__(m_pTr, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
+		NULL_F(m_pTr);
 		CHECK_(m_pT->start(getUpdateW, this));
 		return m_pTr->start(getUpdateR, this);
 	}
 
 	int _APmavlink_RTCM::check(void)
 	{
-		NULL__(m_pMav, OK_ERR_NULLPTR);
+		NULL__(m_pMav);
 
 		return this->_ProtocolBase::check();
 	}
@@ -62,7 +60,7 @@ namespace kai
 
 	void _APmavlink_RTCM::writeMsg(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		uint64_t tNow = getTbootUs();
 
@@ -82,7 +80,7 @@ namespace kai
 
 	bool _APmavlink_RTCM::writeMavlink(RTCM_MSG *pM)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		mavlink_gps_rtcm_data_t D;
 		D.flags = (pM->m_nB > GPS_DATA_FRAG_N) ? 1 : 0;

@@ -13,47 +13,47 @@ namespace kai
     {
     }
 
-    int _TestJSON::init(void *pKiss)
+    int _TestJSON::init(const json& j)
     {
-        CHECK_(this->_TestBase::init(pKiss));
+        CHECK_(this->_TestBase::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
         // vector<vInt4> vTest;
         // pK->a("avTest", &vTest);
 
-        return OK_OK;
+        return true;
     }
 
-    int _TestJSON::link(void)
+    int _TestJSON::link(const json& j, ModuleMgr* pM)
     {
-        CHECK_(this->_TestBase::link());
+        CHECK_(this->_TestBase::link(j, pM));
 
         Kiss *pK = (Kiss *)m_pKiss;
         string n;
 
         n = "";
-        pK->v("_JSONbaseSender", &n);
-        m_pJsender = (_JSONbase *)(pK->findModule(n));
-        NULL__(m_pJsender, OK_ERR_NOT_FOUND);
+        = j.value("_JSONbaseSender", &n);
+        m_pJsender = (_JSONbase *)(pM->findModule(n));
+        NULL__(m_pJsender);
 
         n = "";
-        pK->v("_JSONbaseReceiver", &n);
-        m_pJreceiver = (_JSONbase *)(pK->findModule(n));
-        NULL__(m_pJreceiver, OK_ERR_NOT_FOUND);
+        = j.value("_JSONbaseReceiver", &n);
+        m_pJreceiver = (_JSONbase *)(pM->findModule(n));
+        NULL__(m_pJreceiver);
 
-        return OK_OK;
+        return true;
     }
 
     int _TestJSON::start(void)
     {
-        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
     int _TestJSON::check(void)
     {
-        NULL__(m_pJsender, OK_ERR_NULLPTR);
-        NULL__(m_pJreceiver, OK_ERR_NULLPTR);
+        NULL__(m_pJsender);
+        NULL__(m_pJreceiver);
 
         return this->_TestBase::check();
     }

@@ -18,12 +18,11 @@ namespace kai
 		close();
 	}
 
-	int _File::init(void *pKiss)
+	int _File::init(const json& j)
 	{
-		CHECK_(this->_IObase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_IObase::init(j));
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _File::open(const string& fName, ios_base::openmode mode)

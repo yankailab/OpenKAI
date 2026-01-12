@@ -23,19 +23,18 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_drive::init(void *pKiss)
+	int _APmavlink_drive::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
-		pK->v("bSetYawSpeed", &m_bSetYawSpeed);
-		pK->v("yawMode", &m_yawMode);
-		pK->v("bRcChanOverride", &m_bRcChanOverride);
+		= j.value("bSetYawSpeed", &m_bSetYawSpeed);
+		= j.value("yawMode", &m_yawMode);
+		= j.value("bRcChanOverride", &m_bRcChanOverride);
 
-		pK->v("steer", &m_steer);
-		pK->v("speed", &m_speed);
-		pK->v("pwmM", &m_pwmM);
-		pK->v("pwmD", &m_pwmD);
+		= j.value("steer", &m_steer);
+		= j.value("speed", &m_speed);
+		= j.value("pwmM", &m_pwmM);
+		= j.value("pwmD", &m_pwmD);
 
 		uint16_t *pRC[19];
 		pRC[0] = NULL;
@@ -62,42 +61,41 @@ namespace kai
 			*pRC[i] = UINT16_MAX;
 
 		int iRcYaw = 1;
-		pK->v("iRcYaw", &iRcYaw);
+		= j.value("iRcYaw", &iRcYaw);
 		IF__(iRcYaw <= 0 || iRcYaw > 18, OK_ERR_INVALID_VALUE);
 		m_pRcYaw = pRC[iRcYaw];
 
 		int iRcThrottle = 3;
-		pK->v("iRcThrottle", &iRcThrottle);
+		= j.value("iRcThrottle", &iRcThrottle);
 		IF__(iRcThrottle <= 0 || iRcThrottle > 18, OK_ERR_INVALID_VALUE);
 		m_pRcThrottle = pRC[iRcThrottle];
 
-		return OK_OK;
+		return true;
 	}
 
-	int _APmavlink_drive::link(void)
+	int _APmavlink_drive::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_ModuleBase::link(j, pM));
 		string n;
 
 		n = "";
-		pK->v("_APmavlink_base", &n);
-		m_pAP = (_APmavlink_base *)(pK->findModule(n));
-		NULL__(m_pAP, OK_ERR_NOT_FOUND);
+		= j.value("_APmavlink_base", &n);
+		m_pAP = (_APmavlink_base *)(pM->findModule(n));
+		NULL__(m_pAP);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _APmavlink_drive::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _APmavlink_drive::check(void)
 	{
-		NULL__(m_pAP, OK_ERR_NULLPTR);
-		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
+		NULL__(m_pAP);
+		NULL__(m_pAP->getMavlink());
 
 		return this->_ModuleBase::check();
 	}
@@ -126,7 +124,7 @@ namespace kai
 
 	bool _APmavlink_drive::updateDrive(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		if (m_bSetYawSpeed)
 		{

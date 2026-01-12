@@ -20,9 +20,9 @@ namespace kai
 	{
 	}
 
-    bool _PCtransform::init(const json &j)
-    {
-        IF_F(!this->_PCframe::init(j));
+	bool _PCtransform::init(const json &j)
+	{
+		IF_F(!this->_PCframe::init(j));
 
 		// read from external json config file if there is one
 		m_jsonCfgFile = j.value("jsonCfgFile", "");
@@ -31,56 +31,24 @@ namespace kai
 		JsonCfg jCfg;
 		IF__(!jCfg.parseJsonFile(m_jsonCfgFile), true);
 
-		const json& jt = jCfg.getJson().at("transform");
+		const json &jt = jCfg.getJson().at("transform");
 		IF__(!jt.is_object(), true);
 
 		m_vT = jt.value("vT", vector<double>{});
 		m_vR = jt.value("vR", vector<double>{});
 
-        return true;
-    }
-
-
-
-	int _PCtransform::init(void *pKiss)
-	{
-		CHECK_(_PCframe::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
-
-		// read from external kiss file if there is one
-		pK->v("paramKiss", &m_jsonCfgFile);
-		IF__(m_jsonCfgFile.empty(), OK_OK);
-
-		string s;
-		if (!readFile(m_jsonCfgFile, &s))
-		{
-			LOG_I("Cannot open: " + m_jsonCfgFile);
-			return OK_OK;
-		}
-
-		IF__(s.empty(), OK_OK);
-
-		Kiss *pKf = new Kiss();
-		if (pKf->parse(s))
-		{
-			pK = pKf->child("transform");
-			pK->v("vT", &m_vT);
-			pK->v("vR", &m_vR);
-		}
-		delete pKf;
-
-		return OK_OK;
+		return true;
 	}
 
-	int _PCtransform::start(void)
+	bool _PCtransform::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _PCtransform::check(void)
+	bool _PCtransform::check(void)
 	{
-//		NULL__(m_pInCtx.m_pPCB, -1);
+		//		NULL_F(m_pInCtx.m_pPCB);
 
 		return this->_PCframe::check();
 	}
@@ -92,15 +60,14 @@ namespace kai
 			m_pT->autoFPS();
 
 			updateTransform();
-
 		}
 	}
 
 	void _PCtransform::updateTransform(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
-//		readPC(m_pInCtx.m_pPCB);
+		//		readPC(m_pInCtx.m_pPCB);
 		m_sPC.next()->Transform(m_mTt);
 		swapBuffer();
 	}

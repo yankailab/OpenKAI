@@ -20,7 +20,7 @@ public:
 	virtual ~_GPhoto();
 
 	int init(void* pKiss);
-	int start(void);
+	bool start(void);
 	bool open(void);
 	void close(void);
 

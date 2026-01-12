@@ -12,39 +12,37 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_move::init(void *pKiss)
+	int _APmavlink_move::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
-		return OK_OK;
+		return true;
 	}
 
-	int _APmavlink_move::link(void)
+	int _APmavlink_move::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link(j, pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
 		n = "";
-		pK->v("_APmavlink_base", &n);
-		m_pAP = (_APmavlink_base *)(pK->findModule(n));
-		NULL__(m_pAP, OK_ERR_NOT_FOUND);
+		= j.value("_APmavlink_base", &n);
+		m_pAP = (_APmavlink_base *)(pM->findModule(n));
+		NULL__(m_pAP);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _APmavlink_move::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _APmavlink_move::check(void)
 	{
-		NULL__(m_pAP, OK_ERR_NULLPTR);
-		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
+		NULL__(m_pAP);
+		NULL__(m_pAP->getMavlink());
 
 		return this->_ModuleBase::check();
 	}
@@ -60,7 +58,7 @@ namespace kai
 
 	void _APmavlink_move::setHold(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		mavlink_set_position_target_local_ned_t spt;
 		spt.coordinate_frame = MAV_FRAME_BODY_OFFSET_NED;
@@ -78,7 +76,7 @@ namespace kai
 
 	void _APmavlink_move::setHdg(float y, float r, bool bYaw, bool bYawRate, uint8_t frame)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		mavlink_set_position_target_local_ned_t spt;
 		spt.coordinate_frame = frame;
@@ -101,7 +99,7 @@ namespace kai
 
 	void _APmavlink_move::setVlocal(const vFloat4 &vSpd, bool bYaw, bool bYawRate, uint8_t frame)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		mavlink_set_position_target_local_ned_t spt;
 		spt.coordinate_frame = frame;
@@ -121,7 +119,7 @@ namespace kai
 
 	void _APmavlink_move::setPlocal(const vFloat4 &vP, bool bYaw, bool bYawRate, uint8_t frame)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		mavlink_set_position_target_local_ned_t spt;
 		spt.coordinate_frame = frame;
@@ -141,7 +139,7 @@ namespace kai
 
 	void _APmavlink_move::setPglobal(const vDouble4 &vP, bool bYaw, bool bYawRate, uint8_t frame)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		mavlink_set_position_target_global_int_t spt;
 		spt.coordinate_frame = frame;
@@ -166,7 +164,7 @@ namespace kai
 								float radius,
 								uint8_t frame)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		mavlink_command_int_t D;
 		D.frame = frame;

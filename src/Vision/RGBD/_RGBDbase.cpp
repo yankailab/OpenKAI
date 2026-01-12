@@ -40,40 +40,38 @@ namespace kai
 		DEL(m_pTPP);
 	}
 
-	int _RGBDbase::init(void *pKiss)
+	int _RGBDbase::init(const json& j)
 	{
-		CHECK_(_VisionBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(_VisionBase::init(j));
 
-		pK->v("devFPSd", &m_devFPSd);
-		pK->v("vSizeD", &m_vSizeD);
-		pK->v("vRangeD", &m_vRangeD);
+		= j.value("devFPSd", &m_devFPSd);
+		= j.value("vSizeD", &m_vSizeD);
+		= j.value("vRangeD", &m_vRangeD);
 
-		pK->v("bDepth", &m_bDepth);
-		pK->v("bIR", &m_bIR);
-		pK->v("btRGB", &m_btRGB);
-		pK->v("btDepth", &m_btDepth);
-		pK->v("bConfidence", &m_bConfidence);
-		pK->v("fConfidenceThreshold", &m_fConfidenceThreshold);
+		= j.value("bDepth", &m_bDepth);
+		= j.value("bIR", &m_bIR);
+		= j.value("btRGB", &m_btRGB);
+		= j.value("btDepth", &m_btDepth);
+		= j.value("bConfidence", &m_bConfidence);
+		= j.value("fConfidenceThreshold", &m_fConfidenceThreshold);
 
 #ifdef USE_OPENCV
-		pK->v("dScale", &m_dScale);
-		pK->v("dOfs", &m_dOfs);
-		pK->v("nHistLev", &m_nHistLev);
-		pK->v("iHistFrom", &m_nHistLev);
-		pK->v("minHistD", &m_minHistD);
-		pK->v("bDebugDepth", &m_bDebugDepth);
+		= j.value("dScale", &m_dScale);
+		= j.value("dOfs", &m_dOfs);
+		= j.value("nHistLev", &m_nHistLev);
+		= j.value("iHistFrom", &m_nHistLev);
+		= j.value("minHistD", &m_minHistD);
+		= j.value("bDebugDepth", &m_bDebugDepth);
 #endif
 
-		return OK_OK;
+		return true;
 	}
 
-	int _RGBDbase::link(void)
+	int _RGBDbase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_VisionBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_VisionBase::link(j, pM));
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _RGBDbase::open(void)
@@ -167,7 +165,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_VisionBase::draw(pFrame);
-		IF_(check() != OK_OK);
+		IF_(!check());
 		IF_(m_fRGB.bEmpty());
 
 		if (m_bDebugDepth)

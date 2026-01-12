@@ -22,36 +22,34 @@ namespace kai
 	{
 	}
 
-	int _Remap::init(void *pKiss)
+	int _Remap::init(const json& j)
 	{
-		CHECK_(_VisionBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(_VisionBase::init(j));
 
-		return OK_OK;
+		return true;
 	}
 
-	int _Remap::link(void)
+	int _Remap::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_VisionBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_VisionBase::link(j, pM));
 
 		string n;
 		n = "";
-		pK->v("_VisionBase", &n);
-		m_pV = (_VisionBase *)(pK->findModule(n));
-		NULL__(m_pV, OK_ERR_NOT_FOUND);
+		= j.value("_VisionBase", &n);
+		m_pV = (_VisionBase *)(pM->findModule(n));
+		NULL__(m_pV);
 
-		pK->v("fCalib", &m_fCalib);
+		= j.value("fCalib", &m_fCalib);
 		Mat mC, mD;
 		IF__(!readCamMatrices(m_fCalib, &mC, &mD), OK_ERR_INVALID_VALUE);
 		m_bReady = setCamMat(mC, mD);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _Remap::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
@@ -96,18 +94,18 @@ namespace kai
 	// 		IF_d_(pK->empty(), DEL(pKf));
 
 	// 		Mat mC = Mat::zeros(3, 3, CV_64FC1);
-	// 		pK->v("Fx", &mC.at<double>(0, 0));
-	// 		pK->v("Fy", &mC.at<double>(1, 1));
-	// 		pK->v("Cx", &mC.at<double>(0, 2));
-	// 		pK->v("Cy", &mC.at<double>(1, 2));
+	// 		= j.value("Fx", &mC.at<double>(0, 0));
+	// 		= j.value("Fy", &mC.at<double>(1, 1));
+	// 		= j.value("Cx", &mC.at<double>(0, 2));
+	// 		= j.value("Cy", &mC.at<double>(1, 2));
 	// 		mC.at<double>(2, 2) = 1.0;
 
 	// 		Mat mD = Mat::zeros(1, 5, CV_64FC1);
-	// 		pK->v("k1", &mD.at<double>(0, 0));
-	// 		pK->v("k2", &mD.at<double>(0, 1));
-	// 		pK->v("p1", &mD.at<double>(0, 2));
-	// 		pK->v("p2", &mD.at<double>(0, 3));
-	// 		pK->v("k3", &mD.at<double>(0, 4));
+	// 		= j.value("k1", &mD.at<double>(0, 0));
+	// 		= j.value("k2", &mD.at<double>(0, 1));
+	// 		= j.value("p1", &mD.at<double>(0, 2));
+	// 		= j.value("p2", &mD.at<double>(0, 3));
+	// 		= j.value("k3", &mD.at<double>(0, 4));
 
 	// 		m_bReady = setCamMatrices(mC, mD);
 	// 	}

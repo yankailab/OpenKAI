@@ -21,30 +21,29 @@ namespace kai
     {
     }
 
-    int _Chilitags::init(void *pKiss)
+    int _Chilitags::init(const json& j)
     {
-        CHECK_(this->_DetectorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+        CHECK_(this->_DetectorBase::init(j));
 
-        pK->v("persistence", &m_persistence);
-        pK->v("gain", &m_gain);
-        pK->v("angleOffset", &m_angleOffset);
+        = j.value("persistence", &m_persistence);
+        = j.value("gain", &m_gain);
+        = j.value("angleOffset", &m_angleOffset);
 
         m_chilitags.setFilter(m_persistence, m_gain);
 
-        return OK_OK;
+        return true;
     }
 
     int _Chilitags::start(void)
     {
-        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
     int _Chilitags::check(void)
     {
-        NULL__(m_pV, OK_ERR_NULLPTR);
-        NULL__(m_pU, OK_ERR_NULLPTR);
+        NULL__(m_pV);
+        NULL__(m_pU);
 
         return this->_DetectorBase::check();
     }
@@ -130,7 +129,7 @@ namespace kai
     void _Chilitags::console(void *pConsole)
     {
         NULL_(pConsole);
-        IF_(check() != OK_OK);
+        IF_(!check());
         this->_DetectorBase::console(pConsole);
 
         string msg = "| ";
@@ -147,7 +146,7 @@ namespace kai
     {
         NULL_(pFrame);
         this->_DetectorBase::draw(pFrame);
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         Frame *pF = (Frame *)pFrame;
         Mat *pM = pF->m();

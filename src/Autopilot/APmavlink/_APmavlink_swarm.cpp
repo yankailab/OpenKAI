@@ -34,42 +34,40 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_swarm::init(void *pKiss)
+	int _APmavlink_swarm::init(const json& j)
 	{
-		CHECK_(this->_APmavlink_move::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_APmavlink_move::init(j));
 
-		pK->v("bAutoArm", &m_bAutoArm);
-		pK->v("altTakeoff", &m_altTakeoff);
-		pK->v("altAuto", &m_altAuto);
-		pK->v("altLand", &m_altLand);
-		pK->v("myID", &m_myID);
+		= j.value("bAutoArm", &m_bAutoArm);
+		= j.value("altTakeoff", &m_altTakeoff);
+		= j.value("altAuto", &m_altAuto);
+		= j.value("altLand", &m_altLand);
+		= j.value("myID", &m_myID);
 
-		pK->v("vTargetID", &m_vTargetID);
-		pK->v("iClass", &m_iClass);
-		pK->v("dRdet", &m_dRdet);
+		= j.value("vTargetID", &m_vTargetID);
+		= j.value("iClass", &m_iClass);
+		= j.value("dRdet", &m_dRdet);
 
-		pK->v("vWPd", &m_vWPd);
-		pK->v("vWPrange", &m_vWPrange);
-		pK->v("ieNextWP", &m_ieNextWP.m_tInterval);
+		= j.value("vWPd", &m_vWPd);
+		= j.value("vWPrange", &m_vWPrange);
+		= j.value("ieNextWP", &m_ieNextWP.m_tInterval);
 
-		pK->v("ieSendHB", &m_ieSendHB.m_tInterval);
-		pK->v("ieSendGCupdate", &m_ieSendGCupdate.m_tInterval);
+		= j.value("ieSendHB", &m_ieSendHB.m_tInterval);
+		= j.value("ieSendGCupdate", &m_ieSendGCupdate.m_tInterval);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _APmavlink_swarm::link(void)
+	int _APmavlink_swarm::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_APmavlink_move::link());
+		CHECK_(this->_APmavlink_move::link(j, pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
         n = "";
-        pK->v("_StateControl", &n);
-        m_pSC = (_StateControl *)(pK->findModule(n));
-        NULL__(m_pSC, OK_ERR_NOT_FOUND);
+        = j.value("_StateControl", &n);
+        m_pSC = (_StateControl *)(pM->findModule(n));
+        NULL__(m_pSC);
 
 		m_state.STANDBY = m_pSC->getStateIdxByName("STANDBY");
 		m_state.TAKEOFF = m_pSC->getStateIdxByName("TAKEOFF");
@@ -78,49 +76,49 @@ namespace kai
 		IF__(!m_state.bValid(), OK_ERR_INVALID_VALUE);
 
 		n = "";
-		pK->v("_APmavlink_base", &n);
-		m_pAP = (_APmavlink_base *)(pK->findModule(n));
-        NULL__(m_pAP, OK_ERR_NOT_FOUND);
+		= j.value("_APmavlink_base", &n);
+		m_pAP = (_APmavlink_base *)(pM->findModule(n));
+        NULL__(m_pAP);
 
 		n = "";
-		pK->v("_Swarm", &n);
-		m_pSwarm = (_SwarmSearch *)(pK->findModule(n));
-        NULL__(m_pSwarm, OK_ERR_NOT_FOUND);
+		= j.value("_Swarm", &n);
+		m_pSwarm = (_SwarmSearch *)(pM->findModule(n));
+        NULL__(m_pSwarm);
 
 		n = "";
-		pK->v("_Xbee", &n);
-		m_pXb = (_Xbee *)(pK->findModule(n));
-        NULL__(m_pXb, OK_ERR_NOT_FOUND);
+		= j.value("_Xbee", &n);
+		m_pXb = (_Xbee *)(pM->findModule(n));
+        NULL__(m_pXb);
 
 		n = "";
-		pK->v("_IObase", &n);
-		m_pGio = (_IObase *)(pK->findModule(n));
-        NULL__(m_pGio, OK_ERR_NOT_FOUND);
+		= j.value("_IObase", &n);
+		m_pGio = (_IObase *)(pM->findModule(n));
+        NULL__(m_pGio);
 
 		n = "";
-		pK->v("_Universe", &n);
-		m_pU = (_Universe *)(pK->findModule(n));
-        NULL__(m_pU, OK_ERR_NOT_FOUND);
+		= j.value("_Universe", &n);
+		m_pU = (_Universe *)(pM->findModule(n));
+        NULL__(m_pU);
 
 		IF__(!m_pXb->setCbReceivePacket(sOnRecvMsg, this), OK_ERR_INVALID_VALUE);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _APmavlink_swarm::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _APmavlink_swarm::check(void)
 	{
-		NULL__(m_pAP, OK_ERR_NULLPTR);
-		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
-		NULL__(m_pXb, OK_ERR_NULLPTR);
-		NULL__(m_pSwarm, OK_ERR_NULLPTR);
-		NULL__(m_pSC, OK_ERR_NULLPTR);
-		NULL__(m_pU, OK_ERR_NULLPTR);
+		NULL__(m_pAP);
+		NULL__(m_pAP->getMavlink());
+		NULL__(m_pXb);
+		NULL__(m_pSwarm);
+		NULL__(m_pSC);
+		NULL__(m_pU);
 
 		return this->_APmavlink_move::check();
 	}
@@ -140,7 +138,7 @@ namespace kai
 
 	void _APmavlink_swarm::updateState(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		int apMode = m_pAP->getMode();
 		bool bApArmed = m_pAP->bApArmed();
@@ -210,7 +208,7 @@ namespace kai
 
 	bool _APmavlink_swarm::findBeacon(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		SWARM_NODE *pN = m_pSwarm->getNodeByIDrange(m_vTargetID);
 		NULL_F(pN);
@@ -236,7 +234,7 @@ namespace kai
 
 	bool _APmavlink_swarm::findVisual(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		gimbalDownward();
 
@@ -266,7 +264,7 @@ namespace kai
 
 	bool _APmavlink_swarm::findVisualTarget(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		_Object *pO;
 		int i = 0;
@@ -360,7 +358,7 @@ namespace kai
 
 	void _APmavlink_swarm::send(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		uint64_t t = m_pT->getTfrom();
 
@@ -376,7 +374,7 @@ namespace kai
 
 	void _APmavlink_swarm::sendHB(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		vDouble4 vP = m_pAP->getGlobalPos();
 		SWMSG_HB m;
@@ -398,7 +396,7 @@ namespace kai
 
 	void _APmavlink_swarm::sendDetectionHB(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		for (int i = 0; i < m_vDetections.size(); i++)
 		{
@@ -466,7 +464,7 @@ namespace kai
 
 	void _APmavlink_swarm::handleMsgSetState(const SWMSG_CMD_SETSTATE &m)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 		IF_((m.m_dstID != XB_BRDCAST_ADDR) && (m.m_dstID != m_pXb->getMyAddr()));
 
 		m_state.update(m_pSC->getCurrentStateIdx());

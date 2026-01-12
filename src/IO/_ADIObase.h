@@ -88,8 +88,8 @@ namespace kai
 		_ADIObase();
 		virtual ~_ADIObase();
 
-		virtual int init(void *pKiss);
-		virtual int link(void);
+		virtual bool init(const json& j);
+		virtual bool link(const json& j, ModuleMgr* pM);
 		virtual void console(void *pConsole);
 
 		virtual bool open(void);

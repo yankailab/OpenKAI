@@ -22,22 +22,21 @@ namespace kai
 		close();
 	}
 
-	int _WebSocket::init(void *pKiss)
+	int _WebSocket::init(const json& j)
 	{
-		Kiss *pK = (Kiss *)pKiss;
 
 		int nPacket = 1024;
 		int nPbuffer = 512;
 		if (pK)
 		{
-			pK->v("nPacket", &nPacket);
-			pK->v("nPbuffer", &nPbuffer);
+			= j.value("nPacket", &nPacket);
+			= j.value("nPbuffer", &nPbuffer);
 		}
 
 		IF__(!m_packetW.init(nPbuffer, nPacket), OK_ERR_ALLOCATION);
 		IF__(!m_packetR.init(nPbuffer, nPacket), OK_ERR_ALLOCATION);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _WebSocket::read(uint8_t *pBuf, int nB)

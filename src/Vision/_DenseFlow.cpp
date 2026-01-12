@@ -27,13 +27,12 @@ namespace kai
 	{
 	}
 
-	int _DenseFlow::init(void *pKiss)
+	int _DenseFlow::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
-		pK->v("w", &m_w);
-		pK->v("h", &m_h);
+		= j.value("w", &m_w);
+		= j.value("h", &m_h);
 		m_gFlow = GpuMat(m_h, m_w, CV_32FC2);
 
 //		m_pGrayFrames = new FrameGroup();
@@ -41,15 +40,15 @@ namespace kai
 		m_pFarn = cuda::FarnebackOpticalFlow::create();
 
 		string n = "";
-		pK->v("_VisionBase", &n);
-		m_pVision = (_VisionBase *)(pK->findModule(n));
+		= j.value("_VisionBase", &n);
+		m_pVision = (_VisionBase *)(pM->findModule(n));
 
-		return OK_OK;
+		return true;
 	}
 
 	int _DenseFlow::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
@@ -175,7 +174,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		IF_(m_pFlow[0].empty());
 		IF_(m_pFlow[1].empty());

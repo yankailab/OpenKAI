@@ -18,27 +18,14 @@ namespace kai
 	{
 	}
 
-    bool _PCfile::init(const json &j)
-    {
-        IF_F(!this->_PCframe::init(j));
+	bool _PCfile::init(const json &j)
+	{
+		IF_F(!this->_PCframe::init(j));
 
 		m_vfName = j.value("vfName", vector<string>{});
 		open();
 
-        return true;
-    }
-
-
-
-	int _PCfile::init(void *pKiss)
-	{
-		CHECK_(_PCframe::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
-
-		pK->a("vfName", &m_vfName);
-		open();
-
-		return OK_OK;
+		return true;
 	}
 
 	bool _PCfile::open(void)
@@ -59,9 +46,9 @@ namespace kai
 		return true;
 	}
 
-	int _PCfile::start(void)
+	bool _PCfile::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
@@ -71,7 +58,7 @@ namespace kai
 		{
 			m_pT->autoFPS();
 
-			PointCloud* pNext = m_sPC.next();
+			PointCloud *pNext = m_sPC.next();
 			pNext->Clear();
 			*pNext = m_pcl;
 			pNext->Transform(m_mT);

@@ -22,10 +22,10 @@ namespace kai
 		_DNNtext();
 		~_DNNtext();
 
-		int init(void *pKiss);
-		int start(void);
+		bool init(const json& j);
+		bool start(void);
 		void draw(void *pFrame);
-		int check(void);
+		bool check(void);
 		void ocr(void);
 
 	public:

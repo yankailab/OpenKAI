@@ -16,47 +16,45 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_photo::init(void *pKiss)
+	int _APmavlink_photo::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
-		pK->v("exifConfig", &m_exifConfig);
-		pK->v("dir", &m_dir);
-		pK->v("subDir", &m_subDir);
+		= j.value("exifConfig", &m_exifConfig);
+		= j.value("dir", &m_dir);
+		= j.value("subDir", &m_subDir);
 
 		if (m_subDir.empty())
 			m_subDir = m_dir + tFormat() + "/";
 		else
 			m_subDir = m_dir + m_subDir;
 
-		return OK_OK;
+		return true;
 	}
 
-	int _APmavlink_photo::link(void)
+	int _APmavlink_photo::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_ModuleBase::link(j, pM));
 
 		string n;
 
 		n = "";
-		pK->v("_APmavlink_base", &n);
-		m_pAP = (_APmavlink_base *)(pK->findModule(n));
-		NULL__(m_pAP, OK_ERR_NOT_FOUND);
+		= j.value("_APmavlink_base", &n);
+		m_pAP = (_APmavlink_base *)(pM->findModule(n));
+		NULL__(m_pAP);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _APmavlink_photo::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _APmavlink_photo::check(void)
 	{
-		NULL__(m_pAP, OK_ERR_NULLPTR);
+		NULL__(m_pAP);
 
 		return this->_ModuleBase::check();
 	}
@@ -74,7 +72,7 @@ namespace kai
 
 	void _APmavlink_photo::updatePhoto(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		string cmd;
 		// cmd = "mkdir /media/usb";
@@ -146,7 +144,7 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("iTake = " + i2str(m_iTake));

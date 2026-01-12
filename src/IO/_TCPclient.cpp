@@ -25,17 +25,16 @@ namespace kai
 		close();
 	}
 
-	int _TCPclient::init(void *pKiss)
+	int _TCPclient::init(const json& j)
 	{
-		CHECK_(this->_IObase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_IObase::init(j));
 
-		pK->v("addr", &m_strAddr);
-		pK->v("port", (int *)&m_port);
+		= j.value("addr", &m_strAddr);
+		= j.value("port", (int *)&m_port);
 
 		m_bClient = true;
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _TCPclient::open(void)
@@ -72,7 +71,7 @@ namespace kai
 
 	int _TCPclient::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 

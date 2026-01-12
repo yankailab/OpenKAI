@@ -28,32 +28,30 @@ namespace kai
 	{
 	}
 
-	int _VisionBase::init(void *pKiss)
+	int _VisionBase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
-		pK->v("devURI", &m_devURI);
-		pK->v("devFPS", &m_devFPS);
-		pK->v("tFrameInterval", &m_tFrameInterval);
-		pK->v("bRGB", &m_bRGB);
-		pK->v("vSizeRGB", &m_vSizeRGB);
+		= j.value("devURI", &m_devURI);
+		= j.value("devFPS", &m_devFPS);
+		= j.value("tFrameInterval", &m_tFrameInterval);
+		= j.value("bRGB", &m_bRGB);
+		= j.value("vSizeRGB", &m_vSizeRGB);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _VisionBase::link(void)
+	int _VisionBase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_ModuleBase::link(j, pM));
 
 		string n;
 
 		n = "";
-		pK->v("_SHMrgb", &n);
-		m_psmRGB = (SharedMem *)(pK->findModule(n));
+		= j.value("_SHMrgb", &n);
+		m_psmRGB = (SharedMem *)(pM->findModule(n));
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _VisionBase::open(void)
@@ -102,7 +100,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
-		IF_(check() != OK_OK);
+		IF_(!check());
 		IF_(m_fRGB.bEmpty());
 
 		Frame *pF = (Frame *)pFrame;

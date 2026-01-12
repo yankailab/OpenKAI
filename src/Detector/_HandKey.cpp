@@ -24,18 +24,17 @@ namespace kai
 	{
 	}
 
-	int _HandKey::init(void *pKiss)
+	int _HandKey::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_DetectorBase::init(j));
 
-		pK->v("nW", &m_nW);
-		pK->v("nH", &m_nH);
-		pK->v("iBackend", &m_iBackend);
-		pK->v("iTarget", &m_iTarget);
-		pK->v("bSwapRB", &m_bSwapRB);
-		pK->v("scale", &m_scale);
-		pK->v("vMean", &m_vMean);
+		= j.value("nW", &m_nW);
+		= j.value("nH", &m_nH);
+		= j.value("iBackend", &m_iBackend);
+		= j.value("iTarget", &m_iTarget);
+		= j.value("bSwapRB", &m_bSwapRB);
+		= j.value("scale", &m_scale);
+		= j.value("vMean", &m_vMean);
 
 		m_net = readNetFromCaffe(m_fModel, m_fWeight);
 		IF__(m_net.empty(), OK_ERR_INVALID_VALUE);
@@ -43,22 +42,22 @@ namespace kai
 		m_net.setPreferableBackend(m_iBackend);
 		m_net.setPreferableTarget(m_iTarget);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _HandKey::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _HandKey::check(void)
 	{
-		NULL__(m_pV, OK_ERR_NULLPTR);
+		NULL__(m_pV);
 		Frame *pBGR = m_pV->getFrameRGB();
-		NULL__(pBGR, OK_ERR_NULLPTR);
-		IF__(pBGR->bEmpty(), OK_ERR_NULLPTR);
-		IF__(pBGR->tStamp() <= m_fRGB.tStamp(), OK_ERR_NULLPTR);
+		NULL__(pBGR);
+		IF__(pBGR->bEmpty());
+		IF__(pBGR->tStamp() <= m_fRGB.tStamp());
 
 		return this->_DetectorBase::check();
 	}
@@ -77,7 +76,7 @@ namespace kai
 
 	void _HandKey::detect(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		Frame *pBGR = m_pV->getFrameRGB();
 		m_fRGB.copy(*pBGR);
@@ -139,7 +138,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_DetectorBase::draw(pFrame);
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		if (!m_mDebug.empty())
 		{

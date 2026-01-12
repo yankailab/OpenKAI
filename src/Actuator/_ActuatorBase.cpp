@@ -9,8 +9,6 @@ namespace kai
 
 	_ActuatorBase::_ActuatorBase()
 	{
-		m_ID = 0;
-		m_origin = 0;
 		m_p.init();
 		m_s.init();
 		m_a.init();
@@ -18,7 +16,6 @@ namespace kai
 		m_c.init();
 
 		m_tLastCmd = 0;
-		m_tCmdTimeout = 0;
 		m_ieCheckAlarm.init(100000);
 		m_ieReadStatus.init(50000);
 		m_ieSendCMD.init(50000);
@@ -33,92 +30,83 @@ namespace kai
 	{
 	}
 
-	int _ActuatorBase::init(void *pKiss)
+	bool _ActuatorBase::init(const json &j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		IF_F(!this->_ModuleBase::init(j));
 
-		pK->v("ID", &m_ID);
+		m_ID = j.value("ID", 0);
 
-		pK->v("pOrigin", &m_origin);
-		pK->v("p", &m_p.m_v);
-		pK->v("pTarget", &m_p.m_vTarget);
-		pK->v("pErr", &m_p.m_vErr);
-		pK->v("pRange", &m_p.m_vRange);
+		m_origin = j.value("pOrigin", 0);
+		m_p.m_v = j.value("p", 0);
+		m_p.m_vTarget = j.value("pTarget", 0);
+		m_p.m_vErr = j.value("pErr", 0);
+		m_p.m_vRange = j.value("pRange", vector<float>{-FLT_MAX, FLT_MAX});
 
-		pK->v("s", &m_s.m_v);
-		pK->v("sTarget", &m_s.m_vTarget);
-		pK->v("sErr", &m_s.m_vErr);
-		pK->v("sRange", &m_s.m_vRange);
+		m_s.m_v = j.value("s", 0);
+		m_s.m_vTarget = j.value("sTarget", 0);
+		m_s.m_vErr = j.value("sErr", 0);
+		m_s.m_vRange = j.value("sRange", vector<float>{-FLT_MAX, FLT_MAX});
 
-		pK->v("a", &m_a.m_v);
-		pK->v("aTarget", &m_a.m_vTarget);
-		pK->v("aErr", &m_a.m_vErr);
-		pK->v("aRange", &m_a.m_vRange);
+		m_a.m_v = j.value("a", 0);
+		m_a.m_vTarget = j.value("aTarget", 0);
+		m_a.m_vErr = j.value("aErr", 0);
+		m_a.m_vRange = j.value("aRange", vector<float>{-FLT_MAX, FLT_MAX});
 
-		pK->v("b", &m_b.m_v);
-		pK->v("bTarget", &m_b.m_vTarget);
-		pK->v("bErr", &m_b.m_vErr);
-		pK->v("bRange", &m_b.m_vRange);
+		m_b.m_v = j.value("b", 0);
+		m_b.m_vTarget = j.value("bTarget", 0);
+		m_b.m_vErr = j.value("bErr", 0);
+		m_b.m_vRange = j.value("bRange", vector<float>{-FLT_MAX, FLT_MAX});
 
-		pK->v("c", &m_c.m_v);
-		pK->v("cTarget", &m_c.m_vTarget);
-		pK->v("cErr", &m_c.m_vErr);
-		pK->v("cRange", &m_c.m_vRange);
+		m_c.m_v = j.value("c", 0);
+		m_c.m_vTarget = j.value("cTarget", 0);
+		m_c.m_vErr = j.value("cErr", 0);
+		m_c.m_vRange = j.value("cRange", vector<float>{-FLT_MAX, FLT_MAX});
 
-		pK->v("tCmdTimeout", &m_tCmdTimeout);
-		pK->v("tIntCheckAlarm", &m_ieCheckAlarm.m_tInterval);
-		pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
-		pK->v("tIntSendCMD", &m_ieSendCMD.m_tInterval);
+		m_tCmdTimeout = j.value("tCmdTimeout", 0);
+		m_ieCheckAlarm.m_tInterval = j.value("tIntCheckAlarm", 100000);
+		m_ieReadStatus.m_tInterval = j.value("tIntReadStatus", 50000);
+		m_ieSendCMD.m_tInterval = j.value("tIntSendCMD", 50000);
 
 		int bf;
 
-		bf = 0;
-		pK->v("bfSetPower", &bf);
+		bf = j.value("bfSetPower", 0);
 		if (bf)
 			m_bfSet.set(actuator_power);
 
-		bf = 0;
-		pK->v("bfSetID", &bf);
+		bf = j.value("bfSetID", 0);
 		if (bf)
 			m_bfSet.set(actuator_setID);
 
-		bf = 0;
-		pK->v("bfSetMode", &bf);
+		bf = j.value("bfSetMode", 0);
 		if (bf)
 			m_bfSet.set(actuator_setMode);
 
-		bf = 0;
-		pK->v("bfMove", &bf);
+		bf = j.value("bfMove", 0);
 		if (bf)
 			m_bfSet.set(actuator_move);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _ActuatorBase::link(void)
+	bool _ActuatorBase::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_ModuleBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n;
+		string n = j.value("_ActuatorBase", "");
+		m_pParent = (_ActuatorBase *)(pM->findModule(n));
 
-		n = "";
-		pK->v("_ActuatorBase", &n);
-		m_pParent = (_ActuatorBase *)(pK->findModule(n));
-
-		return OK_OK;
+		return true;
 	}
 
-	int _ActuatorBase::start(void)
+	bool _ActuatorBase::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	void _ActuatorBase::update(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 	}
 
 	int _ActuatorBase::getID(void)

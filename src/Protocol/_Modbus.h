@@ -13,9 +13,9 @@ namespace kai
 		_Modbus();
 		~_Modbus();
 
-		int init(void *pKiss);
-		int start(void);
-		int check(void);
+		bool init(const json& j);
+		bool start(void);
+		bool check(void);
 		bool open(void);
 		bool bOpen(void);
 		void close(void);

@@ -22,27 +22,25 @@ namespace kai
 	{
 	}
 
-	int _Feetech::init(void *pKiss)
+	int _Feetech::init(const json& j)
 	{
-		CHECK_(this->_ActuatorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ActuatorBase::init(j));
 
-		pK->v("port", &m_port);
-		pK->v("baud", &m_baud);
-		pK->v("iID", &m_ID);
-		pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
+		= j.value("port", &m_port);
+		= j.value("baud", &m_baud);
+		= j.value("iID", &m_ID);
+		= j.value("tIntReadStatus", &m_ieReadStatus.m_tInterval);
 
 		m_pA = &m_vAxis[0];
 
-		return OK_OK;
+		return true;
 	}
 
-	int _Feetech::link(void)
+	int _Feetech::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ActuatorBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_ActuatorBase::link(j, pM));
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _Feetech::open(void)
@@ -65,14 +63,14 @@ namespace kai
 
 	int _Feetech::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _Feetech::check(void)
 	{
-		IF__(!m_bOpen, OK_ERR_NOT_READY);
-		NULL__(m_pA, OK_ERR_NULLPTR);
+		IF__(!m_bOpen);
+		NULL__(m_pA);
 
 		return this->_ActuatorBase::check();
 	}
@@ -100,7 +98,7 @@ namespace kai
 
 	void _Feetech::updateMove(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		IF_(!setPos());
 		// IF_(!setSpeed());
@@ -114,28 +112,28 @@ namespace kai
 
 	bool _Feetech::setID(uint16_t iSlave)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		return true;
 	}
 
 	bool _Feetech::setBaudrate(uint32_t baudrate)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		return true;
 	}
 
 	bool _Feetech::saveData(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		return true;
 	}
 
 	bool _Feetech::setPos(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		m_servo.WritePosEx(m_ID,
 						   m_pA->m_p.m_vTarget,
@@ -147,7 +145,7 @@ namespace kai
 
 	bool _Feetech::setSpeed(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		uint16_t s = m_pA->m_s.m_vTarget;
 
@@ -156,7 +154,7 @@ namespace kai
 
 	bool _Feetech::setAccel(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		uint16_t a = m_pA->m_a.m_vTarget;
 
@@ -165,7 +163,7 @@ namespace kai
 
 	bool _Feetech::readStatus(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 		IF__(!m_ieReadStatus.update(m_pT->getTfrom()));
 
 		// uint16_t pB[2];

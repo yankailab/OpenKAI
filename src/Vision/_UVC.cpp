@@ -35,23 +35,22 @@ namespace kai
 		close();
 	}
 
-	int _UVC::init(void *pKiss)
+	int _UVC::init(const json& j)
 	{
-		CHECK_(_VisionBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(_VisionBase::init(j));
 
-		pK->v("streamType", &m_streamType);
-		pK->v("vendorID", &m_vendorID);
-		pK->v("productID", &m_productID);
-		pK->v("SN", &m_SN);
-		pK->v("vRangeDraw", &m_vRangeDraw);
+		= j.value("streamType", &m_streamType);
+		= j.value("vendorID", &m_vendorID);
+		= j.value("productID", &m_productID);
+		= j.value("SN", &m_SN);
+		= j.value("vRangeDraw", &m_vRangeDraw);
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _UVC::open(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 		IF__(m_bOpen, true);
 
 		IF_F(!UVCopen());
@@ -223,7 +222,7 @@ namespace kai
 
 	int _UVC::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
@@ -440,7 +439,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
-		IF_(check() != OK_OK);
+		IF_(!check());
 		IF_(m_fRGB.bEmpty());
 
 		Frame *pF = (Frame *)pFrame;

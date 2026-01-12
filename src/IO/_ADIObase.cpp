@@ -19,10 +19,9 @@ namespace kai
 	{
 	}
 
-	int _ADIObase::init(void *pKiss)
+	int _ADIObase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
 		Kiss *pKp = pK->child("port");
 		IF__(pKp->empty(), OK_OK);
@@ -46,14 +45,14 @@ namespace kai
 			m_vPort.push_back(port);
 		}
 
-		return OK_OK;
+		return true;
 	}
 
-	int _ADIObase::link(void)
+	int _ADIObase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link(j, pM));
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _ADIObase::open(void)

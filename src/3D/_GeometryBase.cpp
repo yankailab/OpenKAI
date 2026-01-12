@@ -15,14 +15,6 @@ namespace kai
         m_type = geometry_unknown;
         m_fConfig = "";
 
-        m_vColorDefault.set(1.0);
-        m_vkColR.set(0, 10.0);
-        m_vkColG.set(5, 15.0);
-        m_vkColB.set(10, 20.0);
-        m_bColOverwrite = false;
-
-        m_vT.clear();
-        m_vR.clear();
         m_vQ.clear();
         m_mT = Matrix4d::Identity();
         m_A = Matrix4d::Identity();
@@ -37,14 +29,12 @@ namespace kai
         pthread_mutex_destroy(&m_mutex);
     }
 
-
-
     bool _GeometryBase::init(const json &j)
     {
         IF_F(!this->_ModuleBase::init(j));
 
         m_fConfig = j.value("fConfig", "");
-        m_vColorDefault = j.value("vColorDefault", vector<float>{1,1,1});
+        m_vColorDefault = j.value("vColorDefault", vector<float>{1, 1, 1});
         m_vkColR = j.value("vkColR", vector<float>{0, 10});
         m_vkColG = j.value("vkColG", vector<float>{5, 15});
         m_vkColB = j.value("vkColB", vector<float>{10, 20});
@@ -52,8 +42,7 @@ namespace kai
         m_vkColOv.set(
             1.0 / m_vkColR.len(),
             1.0 / m_vkColG.len(),
-            1.0 / m_vkColB.len()
-        );
+            1.0 / m_vkColB.len());
 
         m_vT = j.value("vT", vector<double>{0, 0, 0});
         m_vR = j.value("vR", vector<double>{0, 0, 0});
@@ -76,59 +65,14 @@ namespace kai
         return true;
     }
 
-
-
-
-
-    int _GeometryBase::init(void *pKiss)
-    {
-        CHECK_(this->_ModuleBase::init(pKiss));
-        Kiss *pK = (Kiss *)pKiss;
-
-        pK->v("fConfig", &m_fConfig);
-        pK->v("vColorDefault", &m_vColorDefault);
-        pK->v("vkColR", &m_vkColR);
-        pK->v("vkColG", &m_vkColG);
-        pK->v("vkColB", &m_vkColB);
-        pK->v("bColOverwrite", &m_bColOverwrite);
-        m_vkColOv.set(
-            1.0 / m_vkColR.len(),
-            1.0 / m_vkColG.len(),
-            1.0 / m_vkColB.len()
-        );
-
-        pK->v("vT", &m_vT);
-        pK->v("vR", &m_vR);
-        setTranslation(m_vT);
-        setRotation(m_vR);
-        updateTranslationMatrix();
-
-        loadConfig();
-
-        return OK_OK;
-    }
-
-    int _GeometryBase::link(void)
-    {
-        CHECK_(this->_ModuleBase::link());
-        Kiss *pK = (Kiss *)m_pKiss;
-
-        string n;
-        n = "";
-        pK->v("SharedMem", &n);
-        m_pSM = (SharedMem *)(pK->findModule(n));
-
-        return OK_OK;
-    }
-
     bool _GeometryBase::loadConfig(void)
     {
-		string s;
-		if(!readFile(m_fConfig, &s))
-		{
+        string s;
+        if (!readFile(m_fConfig, &s))
+        {
             LOG_I("Cannot open: " + m_fConfig);
             return false;
-		}
+        }
 
         Kiss *pK = new Kiss();
         if (!pK->parse(s))
@@ -156,29 +100,29 @@ namespace kai
         // setRotation(vR);
         // updateTranslationMatrix(false);
 
-		vector<double> vT;
-		pKc->a("mT", &vT);
+        vector<double> vT;
+        pKc->a("mT", &vT);
 
         Matrix4d mT;
-        mT(0,0) = vT[0];
-        mT(0,1) = vT[1];
-        mT(0,2) = vT[2];
-        mT(0,3) = vT[3];
+        mT(0, 0) = vT[0];
+        mT(0, 1) = vT[1];
+        mT(0, 2) = vT[2];
+        mT(0, 3) = vT[3];
 
-        mT(1,0) = vT[4];
-        mT(1,1) = vT[5];
-        mT(1,2) = vT[6];
-        mT(1,3) = vT[7];
+        mT(1, 0) = vT[4];
+        mT(1, 1) = vT[5];
+        mT(1, 2) = vT[6];
+        mT(1, 3) = vT[7];
 
-        mT(2,0) = vT[8];
-        mT(2,1) = vT[9];
-        mT(2,2) = vT[10];
-        mT(2,3) = vT[11];
+        mT(2, 0) = vT[8];
+        mT(2, 1) = vT[9];
+        mT(2, 2) = vT[10];
+        mT(2, 3) = vT[11];
 
-        mT(3,0) = vT[12];
-        mT(3,1) = vT[13];
-        mT(3,2) = vT[14];
-        mT(3,3) = vT[15];
+        mT(3, 0) = vT[12];
+        mT(3, 1) = vT[13];
+        mT(3, 2) = vT[14];
+        mT(3, 3) = vT[15];
 
         setTranslationMatrix(mT);
 
@@ -206,25 +150,25 @@ namespace kai
         Matrix4d mT = getTranslationMatrix();
 
         picojson::array vT;
-        vT.push_back(value((double)mT(0,0)));
-        vT.push_back(value((double)mT(0,1)));
-        vT.push_back(value((double)mT(0,2)));
-        vT.push_back(value((double)mT(0,3)));
+        vT.push_back(value((double)mT(0, 0)));
+        vT.push_back(value((double)mT(0, 1)));
+        vT.push_back(value((double)mT(0, 2)));
+        vT.push_back(value((double)mT(0, 3)));
 
-        vT.push_back(value((double)mT(1,0)));
-        vT.push_back(value((double)mT(1,1)));
-        vT.push_back(value((double)mT(1,2)));
-        vT.push_back(value((double)mT(1,3)));
+        vT.push_back(value((double)mT(1, 0)));
+        vT.push_back(value((double)mT(1, 1)));
+        vT.push_back(value((double)mT(1, 2)));
+        vT.push_back(value((double)mT(1, 3)));
 
-        vT.push_back(value((double)mT(2,0)));
-        vT.push_back(value((double)mT(2,1)));
-        vT.push_back(value((double)mT(2,2)));
-        vT.push_back(value((double)mT(2,3)));
+        vT.push_back(value((double)mT(2, 0)));
+        vT.push_back(value((double)mT(2, 1)));
+        vT.push_back(value((double)mT(2, 2)));
+        vT.push_back(value((double)mT(2, 3)));
 
-        vT.push_back(value((double)mT(3,0)));
-        vT.push_back(value((double)mT(3,1)));
-        vT.push_back(value((double)mT(3,2)));
-        vT.push_back(value((double)mT(3,3)));
+        vT.push_back(value((double)mT(3, 0)));
+        vT.push_back(value((double)mT(3, 1)));
+        vT.push_back(value((double)mT(3, 2)));
+        vT.push_back(value((double)mT(3, 3)));
 
         o.insert(make_pair("mT", vT));
 
@@ -233,7 +177,7 @@ namespace kai
         return writeFile(m_fConfig, f);
     }
 
-    int _GeometryBase::check(void)
+    bool _GeometryBase::check(void)
     {
         return this->_ModuleBase::check();
     }
@@ -281,7 +225,7 @@ namespace kai
     {
         Matrix4d mT = Matrix4d::Identity();
         Vector3d eR(vR.x, vR.y, vR.z);
-//        mT.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromAxisAngle(eR);
+        //        mT.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromAxisAngle(eR);
         mT.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromXYZ(eR);
         mT(0, 3) = vT.x;
         mT(1, 3) = vT.y;
@@ -375,7 +319,7 @@ namespace kai
     {
     }
 
-    bool _GeometryBase::save2file(const string& fName)
+    bool _GeometryBase::save2file(const string &fName)
     {
         return false;
     }

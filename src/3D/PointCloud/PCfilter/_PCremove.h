@@ -19,11 +19,9 @@ namespace kai
 		_PCremove();
 		virtual ~_PCremove();
 
-		virtual bool init(const json& j);
-
-		int init(void *pKiss);
-		int start(void);
-		int check(void);
+		virtual bool init(const json &j);
+		virtual bool start(void);
+		virtual bool check(void);
 
 	private:
 		void update(void);
@@ -34,7 +32,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		int m_nP;
 		double m_r;
 	};

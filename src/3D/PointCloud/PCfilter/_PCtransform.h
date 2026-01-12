@@ -21,10 +21,8 @@ namespace kai
 		virtual ~_PCtransform();
 
 		virtual bool init(const json& j);
-
-		int init(void *pKiss);
-		int start(void);
-		int check(void);
+		virtual bool start(void);
+		virtual bool check(void);
 
 		virtual void setTranslationMatrix(Matrix4d_u &mTt);
 		virtual void saveParamKiss(void);
@@ -38,7 +36,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		Matrix4d_u m_mTt;
 		string m_jsonCfgFile;
 	};

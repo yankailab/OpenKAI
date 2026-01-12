@@ -15,22 +15,22 @@ namespace kai
         DEL(m_pTr);
     }
 
-    int _SwarmCtrlUI::init(void *pKiss)
+    int _SwarmCtrlUI::init(const json& j)
     {
-        CHECK_(this->_JSONbase::init(pKiss));
+        CHECK_(this->_JSONbase::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
         int v;
         v = SEC_2_USEC;
-        pK->v("ieSendHB", &v);
+        = j.value("ieSendHB", &v);
         m_ieSendHB.init(v);
 
         v = SEC_2_USEC;
-        pK->v("ieSendNodeUpdate", &v);
+        = j.value("ieSendNodeUpdate", &v);
         m_ieSendNodeUpdate.init(v);
 
         v = SEC_2_USEC;
-        pK->v("ieSendNodeClearAll", &v);
+        = j.value("ieSendNodeClearAll", &v);
         m_ieSendNodeClearAll.init(v);
 
         Kiss *pKt = pK->child("threadR");
@@ -43,42 +43,42 @@ namespace kai
         m_pTr = new _Thread();
         CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "threadR init failed");
 
-        return OK_OK;
+        return true;
     }
 
-    int _SwarmCtrlUI::link(void)
+    int _SwarmCtrlUI::link(const json& j, ModuleMgr* pM)
     {
-        CHECK_(this->_JSONbase::link());
+        CHECK_(this->_JSONbase::link(j, pM));
         CHECK_(m_pTr->link());
 
         Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
         n = "";
-        pK->v("_SwarmCtrl", &n);
-        m_pCtrl = (_SwarmCtrl *)(pK->findModule(n));
-        NULL__(m_pCtrl, OK_ERR_NOT_FOUND);
+        = j.value("_SwarmCtrl", &n);
+        m_pCtrl = (_SwarmCtrl *)(pM->findModule(n));
+        NULL__(m_pCtrl);
 
         n = "";
-        pK->v("_SwarmSearch", &n);
-        m_pSwarm = (_SwarmSearch *)(pK->findModule(n));
-        NULL__(m_pSwarm, OK_ERR_NOT_FOUND);
+        = j.value("_SwarmSearch", &n);
+        m_pSwarm = (_SwarmSearch *)(pM->findModule(n));
+        NULL__(m_pSwarm);
 
-        return OK_OK;
+        return true;
     }
 
     int _SwarmCtrlUI::start(void)
     {
-        NULL__(m_pT, OK_ERR_NULLPTR);
-        NULL__(m_pTr, OK_ERR_NULLPTR);
+        NULL_F(m_pT);
+        NULL_F(m_pTr);
         CHECK_(m_pT->start(getUpdateW, this));
         return m_pTr->start(getUpdateR, this);
     }
 
     int _SwarmCtrlUI::check(void)
     {
-        NULL__(m_pCtrl, OK_ERR_NULLPTR);
-        NULL__(m_pSwarm, OK_ERR_NULLPTR);
+        NULL__(m_pCtrl);
+        NULL__(m_pSwarm);
 
         return this->_JSONbase::check();
     }
@@ -103,7 +103,7 @@ namespace kai
 
     void _SwarmCtrlUI::send(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         uint64_t t = getApproxTbootUs();
 
@@ -119,7 +119,7 @@ namespace kai
 
     void _SwarmCtrlUI::sendHeartbeat(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         object o;
         JO(o, "cmd", "hb");
@@ -131,7 +131,7 @@ namespace kai
 
     void _SwarmCtrlUI::sendNodeUpdate(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         SWARM_NODE* pN = NULL;
         int i = 0;
@@ -154,7 +154,7 @@ namespace kai
 
     void _SwarmCtrlUI::sendNodeClearAll(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         object o;
         JO(o, "cmd", "ndClearAll");
@@ -194,7 +194,7 @@ namespace kai
 
     void _SwarmCtrlUI::setState(picojson::object &o)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
 
         IF_(!o["id"].is<double>());
         IF_(!o["s"].is<string>());

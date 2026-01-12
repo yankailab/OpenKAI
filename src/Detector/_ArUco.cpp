@@ -21,37 +21,36 @@ namespace kai
 	{
 	}
 
-	int _ArUco::init(void *pKiss)
+	int _ArUco::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_DetectorBase::init(j));
 
-		pK->v<uint8_t>("dict", &m_dict);
+		= j.value<uint8_t>("dict", &m_dict);
 		m_pDict = cv::Ptr<cv::aruco::Dictionary>(new cv::aruco::Dictionary());
 		*m_pDict = aruco::getPredefinedDictionary(m_dict);
-		pK->v("realSize", &m_realSize);
+		= j.value("realSize", &m_realSize);
 
-		pK->v("bPose", &m_bPose);
+		= j.value("bPose", &m_bPose);
 		if (m_bPose)
 		{
 			string n;
-			pK->v("fCalib", &n);
+			= j.value("fCalib", &n);
 			readCamMatrices(n, &m_mC, &m_mD);
 		}
 
-		return OK_OK;
+		return true;
 	}
 
 	int _ArUco::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _ArUco::check(void)
 	{
-		NULL__(m_pV, OK_ERR_NULLPTR);
-		NULL__(m_pU, OK_ERR_NULLPTR);
+		NULL__(m_pV);
+		NULL__(m_pU);
 
 		return this->_DetectorBase::check();
 	}
@@ -70,7 +69,7 @@ namespace kai
 
 	void _ArUco::detect(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		Mat m = *m_pV->getFrameRGB()->m();
 		IF_(m.empty());
@@ -161,14 +160,14 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_DetectorBase::console(pConsole);
-		IF_(check() != OK_OK);
+		IF_(!check());
 	}
 
 	void _ArUco::draw(void *pFrame)
 	{
 		NULL_(pFrame);
 		this->_DetectorBase::draw(pFrame);
-		IF_(check() != OK_OK);
+		IF_(!check());
 	}
 
 }

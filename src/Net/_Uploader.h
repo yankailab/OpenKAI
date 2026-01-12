@@ -31,9 +31,9 @@ namespace kai
 		_Uploader(void);
 		virtual ~_Uploader();
 
-		virtual int init(void *pKiss);
-		virtual int start(void);
-		virtual int check(void);
+		virtual bool init(const json& j);
+		virtual bool start(void);
+		virtual bool check(void);
 		virtual void console(void *pConsole);
 
 		bool addFile(const string &fName);

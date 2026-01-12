@@ -22,42 +22,40 @@ namespace kai
 	{
 	}
 
-	int _Line::init(void *pKiss)
+	int _Line::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_DetectorBase::init(j));
 
-		pK->v("minPixLine", &m_minPixLine);
-		pK->v("wSlide", &m_wSlide);
+		= j.value("minPixLine", &m_minPixLine);
+		= j.value("wSlide", &m_wSlide);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _Line::link(void)
+	int _Line::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link(j, pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 		n = "";
-		pK->v("_VisionBase", &n);
-		m_pV = (_VisionBase *)(pK->findModule(n));
-		NULL__(m_pV, OK_ERR_NOT_FOUND);
+		= j.value("_VisionBase", &n);
+		m_pV = (_VisionBase *)(pM->findModule(n));
+		NULL__(m_pV);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _Line::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _Line::check(void)
 	{
-		NULL__(m_pU, OK_ERR_NULLPTR);
-		NULL__(m_pV, OK_ERR_NULLPTR);
-		IF__(m_pV->getFrameRGB()->bEmpty(), OK_ERR_NULLPTR);
+		NULL__(m_pU);
+		NULL__(m_pV);
+		IF__(m_pV->getFrameRGB()->bEmpty());
 
 		return this->_DetectorBase::check();
 	}
@@ -76,7 +74,7 @@ namespace kai
 
 	void _Line::detect(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		m_pV->getFrameRGB()->m()->copyTo(m_mIn);
 		float nP = m_mIn.rows * m_mIn.cols;

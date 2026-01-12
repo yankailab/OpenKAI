@@ -19,18 +19,17 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_land::init(void *pKiss)
+	int _APmavlink_land::init(const json& j)
 	{
-		CHECK_(this->_APmavlink_follow::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_APmavlink_follow::init(j));
 
-		pK->v("vDSrange", &m_vDSrange);
-		pK->v("vFov", &m_vFov);
-		pK->v("vComplete", &m_vComplete);
-		pK->v("zrK", &m_zrK);
+		= j.value("vDSrange", &m_vDSrange);
+		= j.value("vFov", &m_vFov);
+		= j.value("vComplete", &m_vComplete);
+		= j.value("zrK", &m_zrK);
 
 		// int ieHdg = USEC_1SEC;
-		// pK->v("ieHdgUsec", &ieHdg);
+		// = j.value("ieHdgUsec", &ieHdg);
 		// m_ieHdgCmd.init(ieHdg);
 
 		Kiss *pKt = pK->child("tags");
@@ -49,32 +48,31 @@ namespace kai
 			m_vTags.push_back(t);
 		}
 
-		return OK_OK;
+		return true;
 	}
 
-	int _APmavlink_land::link(void)
+	int _APmavlink_land::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_APmavlink_follow::link());
+		CHECK_(this->_APmavlink_follow::link(j, pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
 		n = "";
-		pK->v("_DistSensorBase", &n);
-		m_pDS = (_DistSensorBase *)pK->findModule(n);
+		= j.value("_DistSensorBase", &n);
+		m_pDS = (_DistSensorBase *)pM->findModule(n);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _APmavlink_land::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _APmavlink_land::check(void)
 	{
-		NULL__(m_pDS, OK_ERR_NULLPTR);
+		NULL__(m_pDS);
 
 		return this->_APmavlink_follow::check();
 	}
@@ -105,7 +103,7 @@ namespace kai
 
 	bool _APmavlink_land::bComplete(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 		IF_F(!m_bTarget);
 
 		// NEDH
@@ -119,7 +117,7 @@ namespace kai
 
 	void _APmavlink_land::updateMove(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		if (m_apMount.m_bEnable)
 			m_pAP->setMount(m_apMount);
@@ -151,7 +149,7 @@ namespace kai
 
 	bool _APmavlink_land::findTag(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		// find target
 		AP_LAND_TAG *pTag = NULL;

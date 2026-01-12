@@ -27,12 +27,10 @@ namespace kai
 		virtual ~_PCregistICP();
 
 		virtual bool init(const json &j);
-		virtual bool link(const json& j, ModuleMgr* pM);
-
-		int init(void *pKiss);
-		int start(void);
-		int check(void);
-		void console(void *pConsole);
+		virtual bool link(const json &j, ModuleMgr *pM);
+		virtual bool start(void);
+		virtual bool check(void);
+		virtual void console(void *pConsole);
 
 	private:
 		void updateRegistration(void);

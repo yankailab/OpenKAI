@@ -31,62 +31,60 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_GPS::init(void *pKiss)
+	int _APmavlink_GPS::init(const json& j)
 	{
-		CHECK(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK(this->_ModuleBase::init(j));
 
 
-		pK->v("yaw", &m_yaw);
-		pK->v("bYaw", &m_bYaw);
-		pK->v("iRelayLED", &m_iRelayLED);
+		= j.value("yaw", &m_yaw);
+		= j.value("bYaw", &m_bYaw);
+		= j.value("iRelayLED", &m_iRelayLED);
 
-		pK->v("vAxisIdx", &m_vAxisIdx);
-		pK->v("vAxisK", &m_vAxisK);
-		pK->v("lat", &m_llOrigin.m_lat);
-		pK->v("lng", &m_llOrigin.m_lng);
+		= j.value("vAxisIdx", &m_vAxisIdx);
+		= j.value("vAxisK", &m_vAxisK);
+		= j.value("lat", &m_llOrigin.m_lat);
+		= j.value("lng", &m_llOrigin.m_lng);
 		m_utmOrigin = m_GPS.LL2UTM(m_llOrigin);
 
-		pK->v("gpsID", &m_D.gps_id);
-		pK->v("iFixType", &m_D.fix_type);
-		pK->v("nSat", &m_D.satellites_visible);
-		pK->v("hdop", &m_D.hdop);
-		pK->v("vdop", &m_D.vdop);
-		pK->v("fIgnore", &m_D.ignore_flags);
+		= j.value("gpsID", &m_D.gps_id);
+		= j.value("iFixType", &m_D.fix_type);
+		= j.value("nSat", &m_D.satellites_visible);
+		= j.value("hdop", &m_D.hdop);
+		= j.value("vdop", &m_D.vdop);
+		= j.value("fIgnore", &m_D.ignore_flags);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _APmavlink_GPS::link(void)
+	int _APmavlink_GPS::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_ModuleBase::link(j, pM));
 		string n;
 
 		n = "";
-		pK->v("_APmavlink_base", &n);
-		m_pAP = (_APmavlink_base *)(pK->findModule(n));
-		NULL__(m_pAP, OK_ERR_NOT_FOUND);
+		= j.value("_APmavlink_base", &n);
+		m_pAP = (_APmavlink_base *)(pM->findModule(n));
+		NULL__(m_pAP);
 
 		n = "";
-		pK->v("_NavBase", &n);
-		m_pSB = (_NavBase *)(pK->findModule(n));
-		NULL_(m_pSB, OK_ERR_NOT_FOUND);
+		= j.value("_NavBase", &n);
+		m_pSB = (_NavBase *)(pM->findModule(n));
+		NULL_(m_pSB);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _APmavlink_GPS::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _APmavlink_GPS::check(void)
 	{
-		NULL__(m_pAP, OK_ERR_NULLPTR);
-		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
-		NULL__(m_pSB, OK_ERR_NULLPTR);
+		NULL__(m_pAP);
+		NULL__(m_pAP->getMavlink());
+		NULL__(m_pSB);
 
 		return this->_ModuleBase::check();
 	}
@@ -105,7 +103,7 @@ namespace kai
 
 	void _APmavlink_GPS::updateGPS(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		//	m_scApArm.update(m_pAP->bApArmed());
 		//	if(m_scApArm.bActive(true))
@@ -158,7 +156,7 @@ namespace kai
 
 	bool _APmavlink_GPS::reset(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		uint16_t hdg = m_pAP->getMavlink()->m_globalPositionINT.m_msg.hdg;
 		IF_F(hdg == UINT16_MAX);

@@ -19,21 +19,20 @@ namespace kai
 	{
 	}
 
-	int _SwarmBase::init(void *pKiss)
+	int _SwarmBase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
-		pK->v("tExpire", &m_tExpire);
+		= j.value("tExpire", &m_tExpire);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _SwarmBase::link(void)
+	int _SwarmBase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link(j, pM));
 
-		return OK_OK;
+		return true;
 	}
 
 	int _SwarmBase::check(void)
@@ -194,7 +193,7 @@ namespace kai
 	void _SwarmBase::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		IF_(check() != OK_OK);
+		IF_(!check());
 		this->_ModuleBase::console(pConsole);
 
 		// string msg = "id=" + i2str(pO->getTopClass());

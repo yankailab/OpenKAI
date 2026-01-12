@@ -22,12 +22,12 @@ namespace kai
 		SharedMem();
 		virtual ~SharedMem();
 
-		virtual int init(void *pKiss);
-		virtual int link(void);
+		virtual bool init(const json& j);
+		virtual bool link(const json& j, ModuleMgr* pM);
 		virtual bool open(void);
 		virtual bool bOpen(void);
 		virtual void close(void);
-		
+
 		virtual int nB(void);
 		virtual void* p(void);
 		virtual bool bWriter(void);
@@ -40,7 +40,7 @@ namespace kai
 		bool m_bWriter;
 
 		bool m_bOpen;
-		
+
 	};
 
 }

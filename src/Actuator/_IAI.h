@@ -20,10 +20,10 @@ namespace kai
 		_IAI();
 		~_IAI();
 
-		int init(void *pKiss);
-		int link(void);
-		int start(void);
-		int check(void);
+		bool init(const json& j);
+		bool link(const json& j, ModuleMgr* pM);
+		bool start(void);
+		bool check(void);
 
 	protected:
 		bool clearAlarm(void);

@@ -23,7 +23,7 @@ namespace kai
 	struct POINTCLOUD_VOL
 	{
 		POINTCLOUD_VOL_TYPE m_type;
-		bool m_bInside; //true: inside valid
+		bool m_bInside; // true: inside valid
 
 		vFloat2 m_vX;
 		vFloat2 m_vY;
@@ -93,11 +93,9 @@ namespace kai
 		_PCcrop();
 		virtual ~_PCcrop();
 
-		virtual bool init(const json& j);
-
-		int init(void *pKiss);
-		int start(void);
-		int check(void);
+		virtual bool init(const json &j);
+		virtual bool start(void);
+		virtual bool check(void);
 
 	private:
 		void update(void);
@@ -109,7 +107,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		vector<POINTCLOUD_VOL> m_vFilter;
 	};
 

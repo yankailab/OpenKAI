@@ -18,12 +18,11 @@ namespace kai
 	{
 	}
 
-	int Destimator::init(void *pKiss)
+	int Destimator::init(const json& j)
 	{
-		CHECK_(this->BASE::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->BASE::init(j));
 
-		return OK_OK;
+		return true;
 	}
 
 	double Destimator::v(int x)

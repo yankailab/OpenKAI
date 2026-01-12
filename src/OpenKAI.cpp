@@ -34,9 +34,9 @@ namespace kai
 
 	int OpenKAI::check(void)
 	{
-		NULL__(m_pKiss, OK_ERR_NULLPTR);
+		NULL__(m_pKiss);
 
-		return OK_OK;
+		return true;
 	}
 
 	int OpenKAI::init(const string &appName)
@@ -54,7 +54,7 @@ namespace kai
 		google::InitGoogleLogging(m_appName.c_str());
 #endif
 
-		return OK_OK;
+		return true;
 	}
 
 	void OpenKAI::clean(void)
@@ -77,7 +77,7 @@ namespace kai
 		IF__(fName.empty(), OK_ERR_INVALID_VALUE);
 
 		string s;
-		IF__(!readFile(fName, &s), OK_ERR_NOT_FOUND);
+		IF__(!readFile(fName, &s));
 
 		Kiss *pKiss = (Kiss *)m_pKiss;
 		if (!pKiss->parse(s))
@@ -112,7 +112,7 @@ namespace kai
 		if (!m_bStdErr)
 			freopen("/dev/null", "w", stderr);
 
-		return OK_OK;
+		return true;
 	}
 
 	int OpenKAI::addModule(void *pModule, const string &mName)
@@ -143,7 +143,7 @@ namespace kai
 
 		pKm->setModule((BASE *)pModule);
 
-		return OK_OK;
+		return true;
 	}
 
 	void *OpenKAI::findModule(const string &mName)
@@ -165,11 +165,11 @@ namespace kai
 		CHECK_(check());
 
 		Kiss *pK = ((Kiss *)m_pKiss)->find(mName);
-		IF__(pK->empty(), OK_ERR_NOT_FOUND);
+		IF__(pK->empty());
 
 		pK->setModule(NULL);
 
-		return OK_OK;
+		return true;
 	}
 
 	int OpenKAI::createAllModules(void)
@@ -196,7 +196,7 @@ namespace kai
 			}
 		}
 
-		return OK_OK;
+		return true;
 	}
 
 	int OpenKAI::initAllModules(void)
@@ -216,7 +216,7 @@ namespace kai
 			}
 		}
 
-		return OK_OK;
+		return true;
 	}
 
 	int OpenKAI::linkAllModules(void)
@@ -236,7 +236,7 @@ namespace kai
 			}
 		}
 
-		return OK_OK;
+		return true;
 	}
 
 	int OpenKAI::startAllModules(void)
@@ -262,7 +262,7 @@ namespace kai
 			}
 		}
 
-		return OK_OK;
+		return true;
 	}
 
 	void OpenKAI::resumeAllModules(void)

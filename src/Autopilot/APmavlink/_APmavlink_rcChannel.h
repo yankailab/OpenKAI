@@ -13,10 +13,10 @@ namespace kai
 		_APmavlink_rcChannel();
 		~_APmavlink_rcChannel();
 
-		int init(void *pKiss);
-		int link(void);
-		int start(void);
-		int check(void);
+		bool init(const json& j);
+		bool link(const json& j, ModuleMgr* pM);
+		bool start(void);
+		bool check(void);
 		void update(void);
 		void console(void *pConsole);
 

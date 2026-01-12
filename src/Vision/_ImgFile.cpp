@@ -20,14 +20,13 @@ namespace kai
 	{
 	}
 
-	int _ImgFile::init(void *pKiss)
+	int _ImgFile::init(const json& j)
 	{
-		CHECK_(_VisionBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(_VisionBase::init(j));
 
-		pK->v("file", &m_file);
+		= j.value("file", &m_file);
 
-		return OK_OK;
+		return true;
 	}
 
 	bool _ImgFile::open(void)
@@ -49,7 +48,7 @@ namespace kai
 
 	int _ImgFile::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 

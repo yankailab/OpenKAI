@@ -29,25 +29,24 @@ namespace kai
 	{
 	}
 
-	int _DNNtext::init(void *pKiss)
+	int _DNNtext::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_DetectorBase::init(j));
 
-		pK->v("thr", &m_thr);
-		pK->v("nms", &m_nms);
-		pK->v("vBlobSize", &m_vBlobSize);
-		pK->v("iBackend", &m_iBackend);
-		pK->v("iTarget", &m_iTarget);
-		pK->v("bSwapRB", &m_bSwapRB);
-		pK->v("scale", &m_scale);
-		pK->v("bDetect", &m_bDetect);
-		pK->v("bOCR", &m_bOCR);
-		pK->v("bWarp", &m_bWarp);
-		pK->v("iClassDraw", &m_iClassDraw);
-		pK->v("meanB", &m_vMean.x);
-		pK->v("meanG", &m_vMean.y);
-		pK->v("meanR", &m_vMean.z);
+		= j.value("thr", &m_thr);
+		= j.value("nms", &m_nms);
+		= j.value("vBlobSize", &m_vBlobSize);
+		= j.value("iBackend", &m_iBackend);
+		= j.value("iTarget", &m_iTarget);
+		= j.value("bSwapRB", &m_bSwapRB);
+		= j.value("scale", &m_scale);
+		= j.value("bDetect", &m_bDetect);
+		= j.value("bOCR", &m_bOCR);
+		= j.value("bWarp", &m_bWarp);
+		= j.value("iClassDraw", &m_iClassDraw);
+		= j.value("meanB", &m_vMean.x);
+		= j.value("meanG", &m_vMean.y);
+		= j.value("meanR", &m_vMean.z);
 
 		m_net = readNet(m_fModel);
 		IF__(m_net.empty(), OK_ERR_INVALID_VALUE);
@@ -63,28 +62,28 @@ namespace kai
 
 #ifdef USE_OCR
 		string n = "";
-		pK->v("OCR", &n);
-		m_pOCR = (OCR *)(pK->findModule(n));
-		NULL__(m_pOCR, OK_ERR_NOT_FOUND);
+		= j.value("OCR", &n);
+		m_pOCR = (OCR *)(pM->findModule(n));
+		NULL__(m_pOCR);
 #endif
 
-		return OK_OK;
+		return true;
 	}
 
 	int _DNNtext::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _DNNtext::check(void)
 	{
-		NULL__(m_pU, OK_ERR_NULLPTR);
-		NULL__(m_pV, OK_ERR_NULLPTR);
+		NULL__(m_pU);
+		NULL__(m_pV);
 		Frame *pBGR = m_pV->getFrameRGB();
-		NULL__(pBGR, OK_ERR_NULLPTR);
-		IF__(pBGR->bEmpty(), OK_ERR_NULLPTR);
-		IF__(pBGR->tStamp() <= m_fRGB.tStamp(), OK_ERR_NULLPTR);
+		NULL__(pBGR);
+		IF__(pBGR->bEmpty());
+		IF__(pBGR->tStamp() <= m_fRGB.tStamp());
 
 		return this->_DetectorBase::check();
 	}
@@ -106,7 +105,7 @@ namespace kai
 
 	void _DNNtext::detect(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		m_fRGB.copy(*m_pV->getFrameRGB());
 		if (m_fRGB.m()->channels() < 3)
@@ -304,7 +303,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_DetectorBase::draw(pFrame);
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		Frame *pF = (Frame *)pFrame;
 

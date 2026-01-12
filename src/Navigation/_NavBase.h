@@ -22,7 +22,7 @@ namespace kai
 		_NavBase();
 		virtual ~_NavBase();
 
-		virtual int init(void *pKiss);
+		virtual bool init(const json& j);
 		virtual void console(void *pConsole);
 
 		virtual bool bOpen(void);

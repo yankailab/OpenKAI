@@ -26,31 +26,30 @@ namespace kai
 	{
 	}
 
-	int _Uploader::init(void *pKiss)
+	int _Uploader::init(const json& j)
 	{
-		CHECK_(this->_FileBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_FileBase::init(j));
 
-		pK->v("dir", &m_dir);
+		= j.value("dir", &m_dir);
 		m_dir = checkDirName(m_dir);
-		pK->v("bRemoveAfterUpload", &m_bRemoveAfterUpload);
-		pK->v("method", (int *)&m_method);
-		pK->v("url", &m_url);
+		= j.value("bRemoveAfterUpload", &m_bRemoveAfterUpload);
+		= j.value("method", (int *)&m_method);
+		= j.value("url", &m_url);
 
-		pK->v("cmd", &m_cmd);
-		pK->v("bConfirmCmdResult", &m_bConfirmCmdResult);
+		= j.value("cmd", &m_cmd);
+		= j.value("bConfirmCmdResult", &m_bConfirmCmdResult);
 
 		if (m_method == uploader_http)
 		{
 			IF__(m_httpC.init(), OK_ERR_UNKNOWN);
 		}
 
-		return OK_OK;
+		return true;
 	}
 
 	int _Uploader::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
@@ -84,7 +83,7 @@ namespace kai
 
 	void _Uploader::updateUpload(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		while (!m_vFiles.empty())
 		{
@@ -200,7 +199,7 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_FileBase::console(pConsole);
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("Uploading: " + m_fName);

@@ -11,8 +11,8 @@ namespace kai
 		_CamCalib();
 		~_CamCalib();
 
-		int init(void *pKiss);
-		int start(void);
+		bool init(const json& j);
+		bool start(void);
 
 		bool calibRGB(const char *pPath);
 		Mat mC(void);

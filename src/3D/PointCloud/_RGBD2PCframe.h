@@ -21,12 +21,8 @@ namespace kai
 		virtual ~_RGBD2PCframe();
 
 		virtual bool init(const json &j);
-		virtual bool link(const json& j, ModuleMgr* pM);
-
-
-		virtual int init(void *pKiss);
-		virtual int link(void);
-		virtual int start(void);
+		virtual bool link(const json &j, ModuleMgr *pM);
+		virtual bool start(void);
 
 	private:
 		void getPointCloud(void);

@@ -20,12 +20,11 @@ namespace kai
 			m_pTracker.release();
 	}
 
-	int _SingleTracker::init(void *pKiss)
+	int _SingleTracker::init(const json& j)
 	{
-		CHECK_(this->_TrackerBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_TrackerBase::init(j));
 
-		return OK_OK;
+		return true;
 	}
 
 	void _SingleTracker::createTracker(void)
@@ -42,7 +41,7 @@ namespace kai
 
 	int _SingleTracker::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
@@ -59,7 +58,7 @@ namespace kai
 
 	void _SingleTracker::track(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		Frame *pFrame = m_pV->getFrameRGB();
 		IF_(pFrame->bEmpty());

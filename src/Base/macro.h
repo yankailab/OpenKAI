@@ -76,6 +76,20 @@
         continue;  \
     }
 
+#define IF_Le_(x, y) \
+    if (x)           \
+    {                \
+        LOG_E(y);    \
+        return;      \
+    }
+
+#define IF_Le_F(x, y) \
+    if (x)            \
+    {                 \
+        LOG_E(y);     \
+        return false; \
+    }
+
 #define NULL_(x)      \
     if (x == nullptr) \
     {                 \
@@ -95,34 +109,6 @@
     if (x == nullptr) \
     {                 \
         return y;     \
-    }
-
-#define CHECK_(x)       \
-    {                   \
-        int r = x;      \
-        if (r != OK_OK) \
-        {               \
-            return r;   \
-        }               \
-    }
-#define CHECK_d_(x, y)  \
-    {                   \
-        int r = x;      \
-        if (r != OK_OK) \
-        {               \
-            y;          \
-            return r;   \
-        }               \
-    }
-#define CHECK_d_l_(x, y, z) \
-    {                       \
-        int r = x;          \
-        if (r != OK_OK)     \
-        {                   \
-            y;              \
-            LOG_E(z);       \
-            return r;       \
-        }                   \
     }
 
 #define DEL_ARRAY(x) \

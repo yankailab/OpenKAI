@@ -43,10 +43,10 @@ namespace kai
 		_OpenPose();
 		~_OpenPose();
 
-		virtual int init(void *pKiss);
-		virtual int start(void);
+		virtual bool init(const json& j);
+		virtual bool start(void);
 		virtual void draw(void *pFrame);
-		virtual int check(void);
+		virtual bool check(void);
 
 	private:
 		void detect(void);

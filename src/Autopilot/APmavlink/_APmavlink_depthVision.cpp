@@ -14,21 +14,20 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_depthVision::init(void *pKiss)
+	int _APmavlink_depthVision::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
 		//link
 		string n;
 		n = "";
-		pK->v("APcopter_base", &n);
-		m_pAP = (_APmavlink_base *)(pK->findModule(n));
+		= j.value("APcopter_base", &n);
+		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 
 		n = "";
-		pK->v("_RGBDbase", &n);
-		m_pDV = (_RGBDbase *)(pK->findModule(n));
-		NULL__(m_pDV, OK_ERR_NOT_FOUND);
+		= j.value("_RGBDbase", &n);
+		m_pDV = (_RGBDbase *)(pM->findModule(n));
+		NULL__(m_pDV);
 
 		m_nROI = 0;
 		while (1)
@@ -49,7 +48,7 @@ namespace kai
 			m_nROI++;
 		}
 
-		return OK_OK;
+		return true;
 	}
 
 	void _APmavlink_depthVision::update(void)
@@ -89,7 +88,7 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		Frame *pF = (Frame *)pFrame;
 		Mat *pM = pF->m();

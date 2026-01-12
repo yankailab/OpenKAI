@@ -28,32 +28,31 @@ namespace kai
 	{
 	}
 
-	int _Universe::init(void *pKiss)
+	int _Universe::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
 		// general
-		pK->v("minConfidence", &m_minConfidence);
-		pK->v("vArea", &m_vArea);
-		pK->v("vW", &m_vW);
-		pK->v("vH", &m_vH);
-		pK->v("vRoi", &m_vRoi);
-		pK->v("vClassRange", &m_vClassRange);
+		= j.value("minConfidence", &m_minConfidence);
+		= j.value("vArea", &m_vArea);
+		= j.value("vW", &m_vW);
+		= j.value("vH", &m_vH);
+		= j.value("vRoi", &m_vRoi);
+		= j.value("vClassRange", &m_vClassRange);
 
 		// draw
-		pK->v("bDrawText", &m_bDrawText);
-		pK->v("bDrawPos", &m_bDrawPos);
-		pK->v("bDrawBB", &m_bDrawBB);
+		= j.value("bDrawText", &m_bDrawText);
+		= j.value("bDrawPos", &m_bDrawPos);
+		= j.value("bDrawBB", &m_bDrawBB);
 
 		// buffer
 		int nB = 16;
-		pK->v("nBuf", &nB);
+		= j.value("nBuf", &nB);
 		m_sO.get()->init(nB);
 		m_sO.next()->init(nB);
 		clear();
 
-		return OK_OK;
+		return true;
 	}
 
 	void _Universe::clear(void)
@@ -70,7 +69,7 @@ namespace kai
 
 	int _Universe::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
@@ -121,7 +120,7 @@ namespace kai
 #ifdef USE_OPENCV
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		Frame *pF = (Frame *)pFrame;
 		Mat *pM = pF->m();

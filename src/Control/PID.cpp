@@ -26,20 +26,19 @@ namespace kai
 	{
 	}
 
-	int PID::init(void *pKiss)
+	int PID::init(const json& j)
 	{
-		CHECK_(this->BASE::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->BASE::init(j));
 
-		pK->v("P", &m_P);
-		pK->v("I", &m_I);
-		pK->v("Imax", &m_Imax);
-		pK->v("D", &m_D);
+		= j.value("P", &m_P);
+		= j.value("I", &m_I);
+		= j.value("Imax", &m_Imax);
+		= j.value("D", &m_D);
 
-		pK->v("vRin", &m_vRin);
-		pK->v("vRout", &m_vRout);
+		= j.value("vRin", &m_vRin);
+		= j.value("vRout", &m_vRout);
 
-		return OK_OK;
+		return true;
 	}
 
 	void PID::reset(void)

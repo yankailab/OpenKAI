@@ -30,7 +30,7 @@ namespace kai
 		_APmavlink_depthVision();
 		~_APmavlink_depthVision();
 
-		int init(void *pKiss);
+		bool init(const json& j);
 		void update(void);
 		void draw(void *pFrame);
 

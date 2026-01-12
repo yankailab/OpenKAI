@@ -20,28 +20,27 @@ namespace kai
 	{
 	}
 
-	int _Contour::init(void *pKiss)
+	int _Contour::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_DetectorBase::init(j));
 
-		pK->v("mode", &m_mode);
-		pK->v("method", &m_method);
+		= j.value("mode", &m_mode);
+		= j.value("method", &m_method);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _Contour::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _Contour::check(void)
 	{
-		NULL__(m_pU, OK_ERR_NULLPTR);
-		NULL__(m_pV, OK_ERR_NULLPTR);
-		IF__(m_pV->getFrameRGB()->bEmpty(), OK_ERR_NULLPTR);
+		NULL__(m_pU);
+		NULL__(m_pV);
+		IF__(m_pV->getFrameRGB()->bEmpty());
 
 		return this->_DetectorBase::check();
 	}
@@ -60,7 +59,7 @@ namespace kai
 
 	void _Contour::detect(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		Mat mBGR = *(m_pV->getFrameRGB()->m());
 		vector<vector<Point>> vvContours;
@@ -93,6 +92,6 @@ namespace kai
 	{
 		NULL_(pFrame);
 		this->_DetectorBase::draw(pFrame);
-		IF_(check() != OK_OK);
+		IF_(!check());
 	}
 }

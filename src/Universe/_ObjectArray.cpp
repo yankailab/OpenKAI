@@ -19,18 +19,17 @@ namespace kai
 		DEL(m_pO);
 	}
 
-	int _ObjectArray::init(void *pKiss)
+	int _ObjectArray::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
-		pK->v("nBuf", &m_nBuf);
+		= j.value("nBuf", &m_nBuf);
 		IF__(m_nBuf <= 0, OK_ERR_INVALID_VALUE);
 
 		m_pO = new _Object[m_nBuf];
 		NULL__(m_pO, OK_ERR_ALLOCATION);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _ObjectArray::init(int n)
@@ -41,12 +40,12 @@ namespace kai
 		m_pO = new _Object[m_nBuf];
 		NULL__(m_pO, OK_ERR_ALLOCATION);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _ObjectArray::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 

@@ -36,17 +36,16 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_visionEstimate::init(void *pKiss)
+	int _APmavlink_visionEstimate::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
-		pK->v("bPos", &m_bPos);
-		pK->v("bSpd", &m_bSpd);
-		pK->v("thrJumpPos", &m_thrJumpPos);
-		pK->v("thrJumpSpd", &m_thrJumpSpd);
-		pK->v("vAxisRPY", &m_vAxisRPY);
-		pK->v("apModeInError", &m_apModeInError);
+		= j.value("bPos", &m_bPos);
+		= j.value("bSpd", &m_bSpd);
+		= j.value("thrJumpPos", &m_thrJumpPos);
+		= j.value("thrJumpSpd", &m_thrJumpSpd);
+		= j.value("vAxisRPY", &m_vAxisRPY);
+		= j.value("apModeInError", &m_apModeInError);
 
 		vector<float> vT;
 		pK->a("mTsensor2aero", &vT);
@@ -59,40 +58,39 @@ namespace kai
 			m_mTaero2sensor = m_mTsensor2aero.inverse();
 		}
 
-		return OK_OK;
+		return true;
 	}
 
-	int _APmavlink_visionEstimate::link(void)
+	int _APmavlink_visionEstimate::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link(j, pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
 		n = "";
-		pK->v("_APmavlink_base", &n);
-		m_pAP = (_APmavlink_base *)(pK->findModule(n));
-		NULL__(m_pAP, OK_ERR_NOT_FOUND);
+		= j.value("_APmavlink_base", &n);
+		m_pAP = (_APmavlink_base *)(pM->findModule(n));
+		NULL__(m_pAP);
 
 		n = "";
-		pK->v("_NavBase", &n);
-		m_pNav = (_NavBase *)(pK->findModule(n));
-		NULL__(m_pNav, OK_ERR_NOT_FOUND);
+		= j.value("_NavBase", &n);
+		m_pNav = (_NavBase *)(pM->findModule(n));
+		NULL__(m_pNav);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _APmavlink_visionEstimate::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
 	int _APmavlink_visionEstimate::check(void)
 	{
-		NULL__(m_pAP, OK_ERR_NULLPTR);
-		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
-		NULL__(m_pNav, OK_ERR_NULLPTR);
+		NULL__(m_pAP);
+		NULL__(m_pAP->getMavlink());
+		NULL__(m_pNav);
 
 		return this->_ModuleBase::check();
 	}
@@ -145,7 +143,7 @@ namespace kai
 
 	bool _APmavlink_visionEstimate::bNaN(void)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 
 		vFloat3 v = m_pNav->t();
 		IF__(isnan(v.x), true);

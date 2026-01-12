@@ -18,10 +18,9 @@ namespace kai
 		DEL(m_pTr);
 	}
 
-	int _ProtocolBase::init(void *pKiss)
+	int _ProtocolBase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ModuleBase::init(j));
 
 		Kiss *pKt = pK->child("threadR");
 		if (pKt->empty())
@@ -33,37 +32,36 @@ namespace kai
 		m_pTr = new _Thread();
 		CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "threadR init failed");
 
-		return OK_OK;
+		return true;
 	}
 
-	int _ProtocolBase::link(void)
+	int _ProtocolBase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link());
+		CHECK_(this->_ModuleBase::link(j, pM));
 		CHECK_(m_pTr->link());
 
-		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
 		n = "";
-		pK->v("_IObase", &n);
-		m_pIO = (_IObase *)(pK->findModule(n));
-		NULL__(m_pIO, OK_ERR_NOT_FOUND);
+		= j.value("_IObase", &n);
+		m_pIO = (_IObase *)(pM->findModule(n));
+		NULL_F(m_pIO);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _ProtocolBase::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
-		NULL__(m_pTr, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
+		NULL_F(m_pTr);
 		CHECK_(m_pT->start(getUpdateW, this));
 		return m_pTr->start(getUpdateR, this);
 	}
 
 	int _ProtocolBase::check(void)
 	{
-		NULL__(m_pIO, OK_ERR_NULLPTR);
-		IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
+		NULL_F(m_pIO);
+		IF_F(!m_pIO->bOpen());
 
 		return this->_ModuleBase::check();
 	}
@@ -80,7 +78,7 @@ namespace kai
 
 	void _ProtocolBase::send(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 	}
 
 	void _ProtocolBase::updateR(void)
@@ -99,7 +97,7 @@ namespace kai
 
 	bool _ProtocolBase::readCMD(PROTOCOL_CMD *pCmd)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 		NULL_F(pCmd);
 
 		if (m_nRead == 0)

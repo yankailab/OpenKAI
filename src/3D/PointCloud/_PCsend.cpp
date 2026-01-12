@@ -53,46 +53,16 @@ namespace kai
         return true;
     }
 
-
-
-    int _PCsend::init(void *pKiss)
+    bool _PCsend::start(void)
     {
-        CHECK_(_GeometryBase::init(pKiss));
-        Kiss *pK = (Kiss *)pKiss;
-
-        pK->v("tInt", &m_tInt);
-        pK->v("nB", &m_nB);
-        m_pB = new uint8_t[m_nB];
-        NULL__(m_pB, OK_ERR_ALLOCATION);
-
-        string n;
-        n = "";
-        if (!pK->v("_IObase", &n))
-        {
-            LOG_E("_IObase not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
-        m_pIO = (_IObase *)(pK->findModule(n));
-        if (!m_pIO)
-        {
-            LOG_E("_IObase not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
-        return OK_OK;
-    }
-
-    int _PCsend::start(void)
-    {
-        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
-    int _PCsend::check(void)
+    bool _PCsend::check(void)
     {
-        NULL__(m_pIO, OK_ERR_NULLPTR);
-        IF__(!m_pIO->bOpen(), OK_ERR_NOT_READY);
+        NULL_F(m_pIO);
+        IF_F(!m_pIO->bOpen());
 
         return this->_GeometryBase::check();
     }
@@ -109,7 +79,7 @@ namespace kai
 
     void _PCsend::sendPC(void)
     {
-        IF_(check() != OK_OK);
+        IF_(!check());
         //    IF_(m_iPsent == m_ring.m_iP);
 
         const double PC_SCALE = 1000;

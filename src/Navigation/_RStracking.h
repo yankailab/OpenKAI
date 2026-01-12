@@ -20,8 +20,8 @@ namespace kai
 		_RStracking();
 		virtual ~_RStracking();
 
-		int init(void *pKiss);
-		int start(void);
+		bool init(const json& j);
+		bool start(void);
 		bool open(void);
 		void close(void);
 

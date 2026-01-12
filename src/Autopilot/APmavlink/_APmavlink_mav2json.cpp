@@ -12,43 +12,41 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_mav2json::init(void *pKiss)
+	int _APmavlink_mav2json::init(const json& j)
 	{
-		CHECK_(this->_JSONbase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_JSONbase::init(j));
 
-//        pK->v("dS", &m_dS);
+//        = j.value("dS", &m_dS);
 
-		return OK_OK;
+		return true;
 	}
 
-	int _APmavlink_mav2json::link(void)
+	int _APmavlink_mav2json::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_JSONbase::link());
+		CHECK_(this->_JSONbase::link(j, pM));
 
-		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
 		n = "";
-		pK->v("_APmavlink_base", &n);
-		m_pAP = (_APmavlink_base *)(pK->findModule(n));
-		NULL__(m_pAP, OK_ERR_NOT_FOUND);
+		= j.value("_APmavlink_base", &n);
+		m_pAP = (_APmavlink_base *)(pM->findModule(n));
+		NULL__(m_pAP);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _APmavlink_mav2json::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
-		NULL__(m_pTr, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
+		NULL_F(m_pTr);
 		CHECK_(m_pT->start(getUpdateW, this));
 		return m_pTr->start(getUpdateR, this);
 	}
 
 	int _APmavlink_mav2json::check(void)
 	{
-		NULL__(m_pAP, OK_ERR_NULLPTR);
-		NULL__(m_pAP->getMavlink(), OK_ERR_NULLPTR);
+		NULL__(m_pAP);
+		NULL__(m_pAP->getMavlink());
 
 		return this->_JSONbase::check();
 	}
@@ -66,7 +64,7 @@ namespace kai
 
 	void _APmavlink_mav2json::send(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		IF_(!m_ieSendHB.updateT(m_pT->getTfrom()));
 
@@ -132,12 +130,12 @@ namespace kai
 
 	void _APmavlink_mav2json::handleHeartbeat(picojson::object &o)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 	}
 
 	void _APmavlink_mav2json::handleStat(picojson::object &o)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 		IF_(!o["id"].is<double>());
 		IF_(!o["stat"].is<string>());
 

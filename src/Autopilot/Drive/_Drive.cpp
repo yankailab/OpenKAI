@@ -17,19 +17,19 @@ namespace kai
     {
     }
 
-    int _Drive::init(void *pKiss)
+    int _Drive::init(const json& j)
     {
-        CHECK_(this->_ModuleBase::init(pKiss));
+        CHECK_(this->_ModuleBase::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
-        pK->v("nSpd", &m_nSpd);
-        pK->v("nDir", &m_nDir);
-        pK->v("nStr", &m_nStr);
-        pK->v("vSpdRange", &m_vSpdRange);
-        pK->v("vStrRange", &m_vStrRange);
+        = j.value("nSpd", &m_nSpd);
+        = j.value("nDir", &m_nDir);
+        = j.value("nStr", &m_nStr);
+        = j.value("vSpdRange", &m_vSpdRange);
+        = j.value("vStrRange", &m_vStrRange);
 
         Kiss *pKM = pK->child("motor");
-        NULL__(pKM, OK_ERR_NOT_FOUND);
+        NULL__(pKM);
 
         int i = 0;
         while (1)
@@ -45,17 +45,17 @@ namespace kai
 
             string n = "";
             pM->v("_ActuatorBase", &n);
-            m.m_pActuator = (_ActuatorBase *)(pK->findModule(n));
+            m.m_pActuator = (_ActuatorBase *)(pM->findModule(n));
 
             m_vM.push_back(m);
         }
 
-        return OK_OK;
+        return true;
     }
 
     int _Drive::start(void)
     {
-        NULL__(m_pT, OK_ERR_NULLPTR);
+        NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 

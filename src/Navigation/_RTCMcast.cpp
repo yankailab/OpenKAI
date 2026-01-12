@@ -19,10 +19,9 @@ namespace kai
 	{
 	}
 
-	int _RTCMcast::init(void *pKiss)
+	int _RTCMcast::init(const json& j)
 	{
-		CHECK_(this->_ProtocolBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+		CHECK_(this->_ProtocolBase::init(j));
 
 		Kiss *pR = pK->child("RTCMmsg");
 		IF__(pR->empty(), OK_OK);
@@ -47,35 +46,34 @@ namespace kai
 			m_vMsg.push_back(m);
 		}
 
-		return OK_OK;
+		return true;
 	}
 
-	int _RTCMcast::link(void)
+	int _RTCMcast::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ProtocolBase::link());
-		Kiss *pK = (Kiss *)m_pKiss;
+		CHECK_(this->_ProtocolBase::link(j, pM));
 		string n;
 
 		n = "";
-		pK->v("_IObaseSend", &n);
-		m_pIOsend = (_IObase *)(pK->findModule(n));
-		NULL__(m_pIOsend, OK_ERR_NOT_FOUND);
+		= j.value("_IObaseSend", &n);
+		m_pIOsend = (_IObase *)(pM->findModule(n));
+		NULL__(m_pIOsend);
 
-		return OK_OK;
+		return true;
 	}
 
 	int _RTCMcast::start(void)
 	{
-		NULL__(m_pT, OK_ERR_NULLPTR);
-		NULL__(m_pTr, OK_ERR_NULLPTR);
+		NULL_F(m_pT);
+		NULL_F(m_pTr);
 		CHECK_(m_pT->start(getUpdateW, this));
 		return m_pTr->start(getUpdateR, this);
 	}
 
 	int _RTCMcast::check(void)
 	{
-		NULL__(m_pIOsend, OK_ERR_NULLPTR);
-		IF__(!m_pIOsend->bOpen(), OK_ERR_NOT_READY);
+		NULL__(m_pIOsend);
+		IF__(!m_pIOsend->bOpen());
 
 		return this->_ProtocolBase::check();
 	}
@@ -92,7 +90,7 @@ namespace kai
 
 	void _RTCMcast::sendMsg(void)
 	{
-		IF_(check() != OK_OK);
+		IF_(!check());
 
 		uint64_t tNow = getTbootUs();
 
@@ -140,7 +138,7 @@ namespace kai
 
 	bool _RTCMcast::readMsg(RTCM_MSG *pMsg)
 	{
-		IF_F(check() != OK_OK);
+		IF_F(!check());
 		NULL_F(pMsg);
 
 		if (m_nRead == 0)

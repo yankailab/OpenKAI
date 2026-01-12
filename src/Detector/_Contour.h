@@ -19,9 +19,9 @@ namespace kai
 		_Contour();
 		virtual ~_Contour();
 
-		virtual int init(void *pKiss);
-		virtual int start(void);
-		virtual int check(void);
+		virtual bool init(const json& j);
+		virtual bool start(void);
+		virtual bool check(void);
 		virtual void draw(void *pFrame);
 
 	private:

@@ -22,8 +22,8 @@ namespace kai
 		_LeddarVu();
 		~_LeddarVu();
 
-		int init(void *pKiss);
-		int start(void);
+		bool init(const json& j);
+		bool start(void);
 		void draw(void *pFrame);
 		void console(void *pConsole);
 

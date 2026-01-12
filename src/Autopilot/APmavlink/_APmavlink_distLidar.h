@@ -34,7 +34,7 @@ namespace kai
 		_APmavlink_distLidar();
 		~_APmavlink_distLidar();
 
-		int init(void *pKiss);
+		bool init(const json& j);
 		void update(void);
 		void draw(void *pFrame);
 
