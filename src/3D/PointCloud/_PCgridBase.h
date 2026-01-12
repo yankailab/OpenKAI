@@ -250,6 +250,9 @@ namespace kai
 		_PCgridBase();
 		virtual ~_PCgridBase();
 
+		virtual bool init(const json &j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+
 		virtual int init(void *pKiss);
 		virtual int link(void);
 		virtual int start(void);
@@ -261,7 +264,7 @@ namespace kai
 		virtual bool saveConfig(const string& fName, picojson::object* pO);
 
 		// grid
-		virtual int initGeometry(void);
+		virtual bool initGeometry(void);
 
 		virtual void setPorigin(const vFloat3 &vPo);
 		virtual void setCellSize(const vFloat3 &vCsize);

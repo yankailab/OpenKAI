@@ -19,6 +19,16 @@ namespace kai
 	{
 	}
 
+    bool _PCdownSample::init(const json &j)
+    {
+        IF_F(!this->_GeometryBase::init(j));
+
+		m_rVoxel = j.value("rVoxel", 0.1);
+
+        return true;
+    }
+
+
 	int _PCdownSample::init(void *pKiss)
 	{
 		CHECK_(_GeometryBase::init(pKiss));

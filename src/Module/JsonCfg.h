@@ -16,11 +16,12 @@ namespace kai
 		JsonCfg(void);
 		~JsonCfg(void);
 
+		bool parseJsonFile(const string& fName);
 		bool readFromFile(const string &fName);
 		bool saveToFile(const string &fName);
 
 		string getJsonStr(void);
-		bool parseJson(const string& s);
+		bool parseJsonStr(const string& s);
 
 		json getJson(void);
 		json getJson(const string& s);

@@ -20,6 +20,9 @@ namespace kai
 		_PCmerge();
 		virtual ~_PCmerge();
 
+		virtual bool init(const json &j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+
 		int init(void *pKiss);
 		int start(void);
 		int check(void);
@@ -33,7 +36,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		vector<_GeometryBase *> m_vpGB;
 		float m_rVoxel;
 	};

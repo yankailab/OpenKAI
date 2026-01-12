@@ -18,6 +18,18 @@ namespace kai
 	{
 	}
 
+    bool _PCfile::init(const json &j)
+    {
+        IF_F(!this->_PCframe::init(j));
+
+		m_vfName = j.value("vfName", vector<string>{});
+		open();
+
+        return true;
+    }
+
+
+
 	int _PCfile::init(void *pKiss)
 	{
 		CHECK_(_PCframe::init(pKiss));

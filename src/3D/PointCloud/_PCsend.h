@@ -26,6 +26,9 @@ namespace kai
 		_PCsend();
 		virtual ~_PCsend();
 
+		virtual bool init(const json &j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+
 		int init(void *pKiss);
 		int start(void);
 		int check(void);
@@ -39,7 +42,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		_IObase *m_pIO;
 
 		int m_iPsent;

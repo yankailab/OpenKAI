@@ -39,6 +39,7 @@ namespace kai
             return false;
         }
 
+        DEL(m_pT);
         m_pT = new _Thread();
         if (!m_pT->init(jt))
         {
@@ -50,16 +51,21 @@ namespace kai
         return true;
     }
 
-    bool _ModuleBase::link(const json &j, ModuleMgr* pM)
+    bool _ModuleBase::link(const json &j, ModuleMgr *pM)
     {
         IF_F(!this->BASE::link(j, pM));
 
-//TODO: j to be jt
-        IF_F(!m_pT->link(j, pM));
+        const json &jt = j.at("thread");
+        if (!jt.is_object())
+        {
+            LOG_E("json: thread is not an object");
+            return false;
+        }
+
+        IF_F(!m_pT->link(jt, pM));
 
         return true;
     }
-
 
     int _ModuleBase::init(void *pKiss)
     {

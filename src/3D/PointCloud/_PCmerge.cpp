@@ -19,6 +19,35 @@ namespace kai
 	{
 	}
 
+    bool _PCmerge::init(const json &j)
+    {
+        IF_F(!this->_GeometryBase::init(j));
+
+		m_rVoxel = j.value("rVoxel", 0.0);
+
+        return true;
+    }
+
+    bool _PCmerge::link(const json &j, ModuleMgr *pM)
+    {
+        IF_F(!this->_GeometryBase::link(j, pM));
+
+		vector<string> vPCB = j.value("vPCbase", vector<string>{});
+		IF_F(vPCB.empty());
+
+		for (string p : vPCB)
+		{
+			_GeometryBase *pPCB = (_GeometryBase *)(pM->findModule(p));
+			IF_CONT(!pPCB);
+
+			m_vpGB.push_back(pPCB);
+		}
+		IF_F(m_vpGB.empty());
+
+        return true;
+    }
+
+
 	int _PCmerge::init(void *pKiss)
 	{
 		CHECK_(_GeometryBase::init(pKiss));

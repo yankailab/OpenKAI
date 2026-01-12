@@ -26,6 +26,9 @@ namespace kai
 		_PCregistICP();
 		virtual ~_PCregistICP();
 
+		virtual bool init(const json &j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+
 		int init(void *pKiss);
 		int start(void);
 		int check(void);
@@ -40,7 +43,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		float m_thr; // ICP threshold
 		PCREGIST_ICP_EST m_est;
 		_PCframe *m_pSrc;

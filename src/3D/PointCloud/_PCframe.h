@@ -19,12 +19,16 @@ namespace kai
 		virtual ~_PCframe();
 
 		// BASE
+		virtual bool init(const json &j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+
+
 		virtual int init(void *pKiss);
         virtual int start(void);
 		virtual int check(void);
 
         // _GeometryBase
-		virtual int initGeometry(void);
+		virtual bool initGeometry(void);
         virtual void clear(void);
         virtual void addPCstream(void* p, const uint64_t& tExpire);
         virtual void addPCframe(void* p);

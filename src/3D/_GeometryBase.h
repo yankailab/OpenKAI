@@ -51,13 +51,17 @@ namespace kai
         _GeometryBase();
         virtual ~_GeometryBase();
 
+		virtual bool init(const json &j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+
+
         virtual int init(void *pKiss);
 		virtual int link(void);
         virtual int check(void);
         virtual void console(void *pConsole);
 
         virtual GEOMETRY_TYPE getType(void);
-		virtual int initGeometry(void);
+		virtual bool initGeometry(void);
         virtual void clear(void);
 
         virtual void setTranslation(const vDouble3 &vT);

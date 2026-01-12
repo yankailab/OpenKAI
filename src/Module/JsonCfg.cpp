@@ -13,6 +13,13 @@ namespace kai
 	{
 	}
 
+	bool JsonCfg::parseJsonFile(const string &fName)
+	{
+		IF_F(!readFromFile(fName));
+
+		return parseJsonStr(m_jsonStr);
+	}
+
 	bool JsonCfg::readFromFile(const string &fName)
 	{
 		IF_F(!readFile(fName, &m_jsonStr));
@@ -32,7 +39,7 @@ namespace kai
 		return m_jsonStr;
 	}
 
-	bool JsonCfg::parseJson(const string &s)
+	bool JsonCfg::parseJsonStr(const string &s)
 	{
 		m_jsonStr = s;
 		delComment(&m_jsonStr);

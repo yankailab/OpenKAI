@@ -22,6 +22,10 @@ namespace kai
 		_PCregistCol();
 		virtual ~_PCregistCol();
 
+		virtual bool init(const json& j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+
+
 		virtual int init(void *pKiss);
 		virtual int link(void);
 		virtual int start(void);
@@ -41,7 +45,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		double m_maxDistance;
 		double m_rNormal;
 		int m_maxNNnormal;

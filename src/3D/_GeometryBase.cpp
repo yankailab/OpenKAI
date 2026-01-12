@@ -37,6 +37,49 @@ namespace kai
         pthread_mutex_destroy(&m_mutex);
     }
 
+
+
+    bool _GeometryBase::init(const json &j)
+    {
+        IF_F(!this->_ModuleBase::init(j));
+
+        m_fConfig = j.value("fConfig", "");
+        m_vColorDefault = j.value("vColorDefault", vector<float>{1,1,1});
+        m_vkColR = j.value("vkColR", vector<float>{0, 10});
+        m_vkColG = j.value("vkColG", vector<float>{5, 15});
+        m_vkColB = j.value("vkColB", vector<float>{10, 20});
+        m_bColOverwrite = j.value("bColOverwrite", false);
+        m_vkColOv.set(
+            1.0 / m_vkColR.len(),
+            1.0 / m_vkColG.len(),
+            1.0 / m_vkColB.len()
+        );
+
+        m_vT = j.value("vT", vector<double>{0, 0, 0});
+        m_vR = j.value("vR", vector<double>{0, 0, 0});
+        setTranslation(m_vT);
+        setRotation(m_vR);
+        updateTranslationMatrix();
+
+        loadConfig();
+
+        return true;
+    }
+
+    bool _GeometryBase::link(const json &j, ModuleMgr *pM)
+    {
+        IF_F(!this->_ModuleBase::link(j, pM));
+
+        string n = j.value("SharedMem", "");
+        m_pSM = (SharedMem *)(pM->findModule(n));
+
+        return true;
+    }
+
+
+
+
+
     int _GeometryBase::init(void *pKiss)
     {
         CHECK_(this->_ModuleBase::init(pKiss));
@@ -200,9 +243,9 @@ namespace kai
         return m_type;
     }
 
-    int _GeometryBase::initGeometry(void)
+    bool _GeometryBase::initGeometry(void)
     {
-        return OK_ERR_UNIMPLEMENTED;
+        return false;
     }
 
     void _GeometryBase::clear(void)

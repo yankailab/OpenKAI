@@ -19,6 +19,8 @@ namespace kai
         _PCdownSample();
         virtual ~_PCdownSample();
 
+		virtual bool init(const json& j);
+
         int init(void *pKiss);
         int start(void);
         int check(void);

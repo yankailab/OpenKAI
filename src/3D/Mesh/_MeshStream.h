@@ -18,6 +18,9 @@ namespace kai
         _MeshStream();
         virtual ~_MeshStream();
 
+		virtual bool init(const json& j);
+
+
         virtual int init(void *pKiss);
         virtual int check(void);
 
@@ -37,7 +40,7 @@ namespace kai
         virtual void getNextFrame(void *p);
         virtual void getLattice(void *p);
 
-    public:
+    protected:
         GEOMETRY_POINT *m_pP;
         int m_nP;
         int m_iP;

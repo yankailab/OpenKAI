@@ -34,6 +34,46 @@ namespace kai
 	{
 	}
 
+	bool _PCgridBase::init(const json &j)
+	{
+		IF_F(!this->_GeometryBase::init(j));
+
+		m_vPorigin = j.value("vPorigin", vector<float>{0, 0, 0});
+		m_vCellRangeX = j.value("vCellRangeX", vector<int>{0, 0});
+		m_vCellRangeY = j.value("vCellRangeY", vector<int>{0, 0});
+		m_vCellRangeZ = j.value("vCellRangeZ", vector<int>{0, 0});
+		m_vCellSize = j.value("vCellSize", vector<float>{0, 0, 0});
+
+		m_bVisual = j.value("bVisual", false);
+		m_vAxisColX = j.value("vAxisColX", vector<float>{1, 0, 0});
+		m_vAxisColY = j.value("vAxisColY", vector<float>{0, 1, 0});
+		m_vAxisColZ = j.value("vAxisColZ", vector<float>{0, 0, 1});
+
+		m_nMedWidth = j.value("nMedWidth", 3);
+		m_tExpire = j.value("tExpire", 0);
+
+		m_fGridConfig = j.value("fGridConfig", "");
+
+		return true;
+	}
+
+	bool _PCgridBase::link(const json &j, ModuleMgr *pM)
+	{
+		IF_F(!this->_GeometryBase::link(j, pM));
+
+		vector<string> vGn = j.value("vGeometryBase", vector<string>{});
+		for (string n : vGn)
+		{
+			_GeometryBase *pG = (_GeometryBase *)(pM->findModule(n));
+			IF_CONT(!pG);
+
+			m_vpGB.push_back(pG);
+		}
+
+		return true;
+	}
+
+
 	int _PCgridBase::init(void *pKiss)
 	{
 		CHECK_(this->_GeometryBase::init(pKiss));
@@ -81,7 +121,7 @@ namespace kai
 		return m_fGridConfig;
 	}
 
-	bool _PCgridBase::loadConfig(const string &fName, Kiss* pK)
+	bool _PCgridBase::loadConfig(const string &fName, Kiss *pK)
 	{
 		NULL_F(pK);
 
@@ -115,7 +155,7 @@ namespace kai
 		return true;
 	}
 
-	bool _PCgridBase::saveConfig(const string &fName, picojson::object* pO)
+	bool _PCgridBase::saveConfig(const string &fName, picojson::object *pO)
 	{
 		NULL_F(pO);
 
@@ -178,7 +218,7 @@ namespace kai
 		return true;
 	}
 
-	int _PCgridBase::initGeometry(void)
+	bool _PCgridBase::initGeometry(void)
 	{
 		float cVol = m_vCellSize.x * m_vCellSize.y * m_vCellSize.z;
 		IF__(cVol <= 0, OK_ERR_INVALID_VALUE);
@@ -275,7 +315,6 @@ namespace kai
 
 		updateActiveCell();
 		updateActiveCellLS(m_pCellActive, true);
-
 	}
 
 	void _PCgridBase::updateActiveCell(void)
@@ -309,7 +348,7 @@ namespace kai
 		pAcell->clearLS();
 		pAcell->generateLS(m_vRx, m_vRy, m_vRz, m_vCellSize);
 
-		if(bBBox)
+		if (bBBox)
 			pAcell->generateBBoxLS(m_vRx, m_vRy, m_vRz);
 	}
 
@@ -522,14 +561,14 @@ namespace kai
 	}
 
 	void _PCgridBase::addGridAxisLine(int nDa,
-								  const vFloat2 &vRa,
-								  float csA,
-								  int nDb,
-								  const vFloat2 &vRb,
-								  float csB,
-								  const vFloat2 &vRc,
-								  const vInt3 &vAxis,
-								  const vFloat3 &vCol)
+									  const vFloat2 &vRa,
+									  float csA,
+									  int nDb,
+									  const vFloat2 &vRb,
+									  float csB,
+									  const vFloat2 &vRc,
+									  const vInt3 &vAxis,
+									  const vFloat3 &vCol)
 	{
 		int iA, iB;
 		Vector3f pA, pB;

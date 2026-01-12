@@ -13,12 +13,34 @@ namespace kai
 	_PCtransform::_PCtransform()
 	{
 		m_mTt = Matrix4d::Identity();
-		m_paramKiss = "";
+		m_jsonCfgFile = "";
 	}
 
 	_PCtransform::~_PCtransform()
 	{
 	}
+
+    bool _PCtransform::init(const json &j)
+    {
+        IF_F(!this->_PCframe::init(j));
+
+		// read from external json config file if there is one
+		m_jsonCfgFile = j.value("jsonCfgFile", "");
+		IF__(m_jsonCfgFile.empty(), true);
+
+		JsonCfg jCfg;
+		IF__(!jCfg.parseJsonFile(m_jsonCfgFile), true);
+
+		const json& jt = jCfg.getJson().at("transform");
+		IF__(!jt.is_object(), true);
+
+		m_vT = jt.value("vT", vector<double>{});
+		m_vR = jt.value("vR", vector<double>{});
+
+        return true;
+    }
+
+
 
 	int _PCtransform::init(void *pKiss)
 	{
@@ -26,13 +48,13 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		// read from external kiss file if there is one
-		pK->v("paramKiss", &m_paramKiss);
-		IF__(m_paramKiss.empty(), OK_OK);
+		pK->v("paramKiss", &m_jsonCfgFile);
+		IF__(m_jsonCfgFile.empty(), OK_OK);
 
 		string s;
-		if (!readFile(m_paramKiss, &s))
+		if (!readFile(m_jsonCfgFile, &s))
 		{
-			LOG_I("Cannot open: " + m_paramKiss);
+			LOG_I("Cannot open: " + m_jsonCfgFile);
 			return OK_OK;
 		}
 
@@ -90,7 +112,7 @@ namespace kai
 
 	void _PCtransform::saveParamKiss(void)
 	{
-		IF_(m_paramKiss.empty());
+		IF_(m_jsonCfgFile.empty());
 
 		picojson::object o;
 		o.insert(make_pair("name", "transform"));
@@ -109,7 +131,7 @@ namespace kai
 
 		string k = picojson::value(o).serialize();
 
-		writeFile(m_paramKiss, k);
+		writeFile(m_jsonCfgFile, k);
 	}
 
 }

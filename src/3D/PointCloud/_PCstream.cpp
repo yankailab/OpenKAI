@@ -26,6 +26,22 @@ namespace kai
         DEL(m_pP);
     }
 
+    bool _PCstream::init(const json &j)
+    {
+        IF_F(!this->_GeometryBase::init(j));
+
+		m_nP = j.value("nP", 256);
+        if(m_nP <= 0)
+        {
+            LOG_E("Invalid nP: " + i2str(m_nP));
+            return false;
+        }
+
+        return initGeometry();
+    }
+
+
+
     int _PCstream::init(void *pKiss)
     {
         CHECK_(this->_GeometryBase::init(pKiss));
@@ -37,7 +53,7 @@ namespace kai
         return initGeometry();
     }
 
-    int _PCstream::initGeometry(void)
+    bool _PCstream::initGeometry(void)
     {
         mutexLock();
 

@@ -26,6 +26,17 @@ namespace kai
     {
     }
 
+    bool _PCframe::init(const json &j)
+    {
+        IF_F(!this->_GeometryBase::init(j));
+
+        m_nPresv = j.value("nPresv", 0);
+        m_nPresvNext = j.value("nPresvNext", m_nPresv);
+
+        return initGeometry();
+    }
+
+
     int _PCframe::init(void *pKiss)
     {
         CHECK_(this->_GeometryBase::init(pKiss));
@@ -38,7 +49,7 @@ namespace kai
         return initGeometry();
     }
 
-    int _PCframe::initGeometry(void)
+    bool _PCframe::initGeometry(void)
     {
         mutexLock();
 
@@ -69,7 +80,7 @@ namespace kai
         if (!m_pGpSM)
         {
             mutexUnlock();
-            return OK_ERR_ALLOCATION;
+            return false;
         }
 
         for (int i = 0; i < m_nPresv; i++)
@@ -77,7 +88,7 @@ namespace kai
 
         mutexUnlock();
 
-        return OK_OK;
+        return true;
     }
 
     void _PCframe::clear(void)

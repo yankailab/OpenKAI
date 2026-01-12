@@ -40,6 +40,7 @@ namespace kai
 	bool BASE::link(const json& j, ModuleMgr* pM)
 	{
 		NULL_F(pM);
+		IF_F(!j.is_object());
 
 		return true;
 	}
@@ -85,6 +86,11 @@ namespace kai
 
 	void BASE::stop(void)
 	{
+	}
+
+	void BASE::setName(const string& n)
+	{
+		m_name = n;
 	}
 
 	string BASE::getName(void)

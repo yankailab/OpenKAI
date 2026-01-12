@@ -28,6 +28,56 @@ namespace kai
     {
     }
 
+
+    bool _PCregistGlobal::init(const json &j)
+    {
+        IF_F(!this->_ModuleBase::init(j));
+
+        m_rNormal = j.value("rNormal", 0.2);
+        m_rFeature = j.value("rFeature", 0.5);
+        m_maxNNnormal = j.value("maxNNnormal", 30);
+        m_maxNNfpfh = j.value("maxNNfpfh", 100);
+
+        return true;
+    }
+
+    bool _PCregistGlobal::link(const json &j, ModuleMgr *pM)
+    {
+        IF_F(!this->_ModuleBase::link(j, pM));
+
+        string n;
+
+        n = j.value("_PCbaseSrc", "");
+        m_pSrc = (_PCframe *)(pM->findModule(n));
+        if(!m_pSrc)
+        {
+            LOG_E(n + ": not found");
+            return false;
+        }
+
+        n = j.value("_PCbaseTgt", "");
+        m_pTgt = (_PCframe *)(pM->findModule(n));
+        if(!m_pTgt)
+        {
+            LOG_E(n + ": not found");
+            return false;
+        }
+
+        n = j.value("_PCtransform", "");
+        m_pTf = (_PCtransform *)(pM->findModule(n));
+        if(!m_pTf)
+        {
+            LOG_E(n + ": not found");
+            return false;
+        }
+
+        return true;
+    }
+
+
+
+
+
     int _PCregistGlobal::init(void *pKiss)
     {
         CHECK_(_ModuleBase::init(pKiss));

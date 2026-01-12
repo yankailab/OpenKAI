@@ -30,6 +30,35 @@ namespace kai
     {
     }
 
+    bool _PCregistCol::init(const json &j)
+    {
+        IF_F(!this->_PCframe::init(j));
+
+        m_rVoxel = j.value("rVoxel", 0.1);
+        m_maxDistance = j.value("maxDistance", 0.1);
+        m_rNormal = j.value("rNormal", 0.2);
+        m_maxNNnormal = j.value("maxNNnormal", 30);
+        m_rFitness = j.value("rFitness", 1e-6);
+        m_rRMSE = j.value("rRMSE", 1e-6);
+        m_maxIter = j.value("maxIter", 30);
+        m_minFit = j.value("minFit", 0.0);
+
+        return true;
+    }
+
+    bool _PCregistCol::link(const json &j, ModuleMgr *pM)
+    {
+        IF_F(!this->BASE::link(j, pM));
+
+        string n = j.value("_PCframe", "");
+        m_pPCf = (_PCframe *)(pM->findModule(n));
+
+        return true;
+    }
+
+
+
+
     int _PCregistCol::init(void *pKiss)
     {
         CHECK_(_PCframe::init(pKiss));

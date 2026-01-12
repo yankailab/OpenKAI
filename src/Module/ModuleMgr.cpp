@@ -7,7 +7,6 @@ namespace kai
 
 	ModuleMgr::ModuleMgr(void)
 	{
-		m_pJcfg = nullptr;
 	}
 
 	ModuleMgr::~ModuleMgr(void)
@@ -20,8 +19,14 @@ namespace kai
 		m_vModules.clear();
 	}
 
-	bool ModuleMgr::addJsonCfg(JsonCfg *pJcfg)
+	bool ModuleMgr::parseJsonFile(const string &fName)
 	{
+		return m_jCfg.readFromFile(fName);
+	}
+
+	void ModuleMgr::setJsonCfg(const JsonCfg &jCfg)
+	{
+		m_jCfg = jCfg;
 	}
 
 	string ModuleMgr::getName(void)
@@ -31,10 +36,8 @@ namespace kai
 
 	bool ModuleMgr::createAll(void)
 	{
-		NULL_F(m_pJcfg);
-
 		Module md;
-		json js = m_pJcfg->getJson();
+		json js = m_jCfg.getJson();
 		for (auto it = js.begin(); it != js.end(); it++)
 		{
 			const json &j = it.value();
@@ -75,9 +78,9 @@ namespace kai
 				continue;
 			}
 
-//			pM->set m_name
+			pM->setName(n);
 
-			m_vModules.push_back((void*)pM);
+			m_vModules.push_back((void *)pM);
 		}
 
 		return true;
@@ -85,16 +88,24 @@ namespace kai
 
 	bool ModuleMgr::initAll(void)
 	{
-		for (void* pM : m_vModules)
+		const json &j = m_jCfg.getJson();
+
+		for (void *pM : m_vModules)
 		{
-			BASE* pB = (BASE*)pM;
+			BASE *pB = (BASE *)pM;
 
-// TODO assign json ptr for each module
+			const json &jm = j.at(pB->getName());
+			if (!jm.is_object())
+			{
+				LOG_E(pB->getName() + " is not an json object");
+				return false;
+			}
 
-			// if (pB->init(pK) != OK_OK)
-			// {
-			// 	LOG_E(pB->getName() + ".init()");
-			// }
+			if (!pB->init(jm))
+			{
+				LOG_E(pB->getName() + ".init() failed");
+				return false;
+			}
 		}
 
 		return true;
@@ -102,12 +113,23 @@ namespace kai
 
 	bool ModuleMgr::linkAll(void)
 	{
-		for (void* pM : m_vModules)
+		const json &j = m_jCfg.getJson();
+
+		for (void *pM : m_vModules)
 		{
-			BASE* pB = (BASE*)pM;
-			if (pB->link() != OK_OK)
+			BASE *pB = (BASE *)pM;
+
+			const json &jm = j.at(pB->getName());
+			if (!jm.is_object())
 			{
-				LOG_E(pB->getName() + ".link()");
+				LOG_E(pB->getName() + " is not an json object");
+				return false;
+			}
+
+			if (!pB->link(jm, this))
+			{
+				LOG_E(pB->getName() + ".link() failed");
+				return false;
 			}
 		}
 
@@ -116,12 +138,13 @@ namespace kai
 
 	bool ModuleMgr::startAll(void)
 	{
-		for (void* pM : m_vModules)
+		for (void *pM : m_vModules)
 		{
-			BASE* pB = (BASE*)pM;
-			if (pB->start() != OK_OK)
+			BASE *pB = (BASE *)pM;
+			if (!pB->start())
 			{
-				LOG_E(pB->getName() + ".start()");
+				LOG_E(pB->getName() + ".start() failed");
+				return false;
 			}
 		}
 
@@ -130,25 +153,25 @@ namespace kai
 
 	void ModuleMgr::resumeAll(void)
 	{
-		for (void* pM : m_vModules)
+		for (void *pM : m_vModules)
 		{
-			((BASE*)pM)->resume();
+			((BASE *)pM)->resume();
 		}
 	}
 
 	void ModuleMgr::pauseAll(void)
 	{
-		for (void* pM : m_vModules)
+		for (void *pM : m_vModules)
 		{
-			((BASE*)pM)->pause();
+			((BASE *)pM)->pause();
 		}
 	}
 
 	void ModuleMgr::stopAll(void)
 	{
-		for (void* pM : m_vModules)
+		for (void *pM : m_vModules)
 		{
-			((BASE*)pM)->stop();
+			((BASE *)pM)->stop();
 		}
 
 		// TODO
@@ -171,7 +194,17 @@ namespace kai
 
 	void *ModuleMgr::findModule(const string &name)
 	{
+		IF_N(name.empty());
 
+		for (void *pM : m_vModules)
+		{
+			if (name == ((BASE *)pM)->getName())
+			{
+				return pM;
+			}
+		}
+
+		return nullptr;
 	}
 
 }

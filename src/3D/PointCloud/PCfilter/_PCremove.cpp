@@ -20,6 +20,17 @@ namespace kai
 	{
 	}
 
+    bool _PCremove::init(const json &j)
+    {
+        IF_F(!this->_GeometryBase::init(j));
+
+		m_nP = j.value("nP", 16);
+		m_r = j.value("r", 0.05);
+
+        return true;
+    }
+
+
 	int _PCremove::init(void *pKiss)
 	{
 		CHECK_(_GeometryBase::init(pKiss));

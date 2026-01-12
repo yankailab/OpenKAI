@@ -25,10 +25,55 @@ namespace kai
     {
     }
 
+    bool _PCregistICP::init(const json &j)
+    {
+        IF_F(!this->_ModuleBase::init(j));
+
+        m_est = (PCREGIST_ICP_EST)j.value<int>("est", icp_p2point);
+        m_thr = j.value("thr", 0.02);
+
+        return true;
+    }
+
+    bool _PCregistICP::link(const json &j, ModuleMgr *pM)
+    {
+        IF_F(!this->_ModuleBase::link(j, pM));
+
+        string n;
+
+        n = j.value("_PCframeSrc", "");
+        m_pSrc = (_PCframe *)(pM->findModule(n));
+        if (!m_pSrc)
+        {
+            LOG_E(n + ": not found");
+            return false;
+        }
+
+        n = j.value("_PCframeTgt", "");
+        m_pTgt = (_PCframe *)(pM->findModule(n));
+        if (!m_pTgt)
+        {
+            LOG_E(n + ": not found");
+            return false;
+        }
+
+        n = j.value("_PCtransform", "");
+        m_pTf = (_PCtransform *)(pM->findModule(n));
+        if (!m_pTf)
+        {
+            LOG_E(n + ": not found");
+            return false;
+        }
+
+        return true;
+    }
+
+
+
     int _PCregistICP::init(void *pKiss)
     {
         CHECK_(_ModuleBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+        Kiss *pK = (Kiss *)pKiss;
 
         pK->v("est", (int *)&m_est);
         pK->v("thr", &m_thr);
@@ -38,7 +83,7 @@ namespace kai
         n = "";
         pK->v("_PCframeSrc", &n);
         m_pSrc = (_PCframe *)(pK->findModule(n));
-        if(!m_pSrc)
+        if (!m_pSrc)
         {
             LOG_E(n + ": not found");
             return OK_ERR_NOT_FOUND;
@@ -47,7 +92,7 @@ namespace kai
         n = "";
         pK->v("_PCframeTgt", &n);
         m_pTgt = (_PCframe *)(pK->findModule(n));
-        if(!m_pTgt)
+        if (!m_pTgt)
         {
             LOG_E(n + ": not found");
             return OK_ERR_NOT_FOUND;
@@ -56,7 +101,7 @@ namespace kai
         n = "";
         pK->v("_PCtransform", &n);
         m_pTf = (_PCtransform *)(pK->findModule(n));
-        if(!m_pTf)
+        if (!m_pTf)
         {
             LOG_E(n + ": not found");
             return OK_ERR_NOT_FOUND;
@@ -87,8 +132,6 @@ namespace kai
             m_pT->autoFPS();
 
             updateRegistration();
-
-
         }
     }
 

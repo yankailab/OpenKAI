@@ -23,6 +23,26 @@ namespace kai
 	{
 	}
 
+	bool _PCrecv::init(const json &j)
+	{
+		IF_F(!this->_PCstream::init(j));
+
+		return true;
+	}
+
+	bool _PCrecv::link(const json &j, ModuleMgr *pM)
+	{
+		IF_F(!this->_PCstream::link(j, pM));
+
+		string n = j.value("_IObase", "");
+		m_pIO = (_IObase *)(pM->findModule(n));
+		NULL_F(m_pIO);
+
+		return true;
+	}
+
+
+
 	int _PCrecv::init(void *pKiss)
 	{
 		CHECK_(_PCstream::init(pKiss));
@@ -31,9 +51,9 @@ namespace kai
 		return true;
 	}
 
-    int _PCrecv::link(void)
-    {
-        CHECK_(this->_PCstream::link());
+	int _PCrecv::link(void)
+	{
+		CHECK_(this->_PCstream::link());
 		Kiss *pK = (Kiss *)m_pKiss;
 		string n;
 
@@ -42,8 +62,8 @@ namespace kai
 		m_pIO = (_IObase *)(pK->findModule(n));
 		NULL__(m_pIO, OK_ERR_NOT_FOUND);
 
-        return OK_OK;
-    }
+		return OK_OK;
+	}
 
 	int _PCrecv::start(void)
 	{
@@ -73,7 +93,7 @@ namespace kai
 		}
 	}
 
-	bool _PCrecv::readCMD(PROTOCOL_CMD* pCmd)
+	bool _PCrecv::readCMD(PROTOCOL_CMD *pCmd)
 	{
 		IF_F(check() != OK_OK);
 		NULL_F(pCmd);
@@ -100,7 +120,7 @@ namespace kai
 		return false;
 	}
 
-	void _PCrecv::handleCMD(const PROTOCOL_CMD& cmd)
+	void _PCrecv::handleCMD(const PROTOCOL_CMD &cmd)
 	{
 		switch (cmd.m_pB[1])
 		{

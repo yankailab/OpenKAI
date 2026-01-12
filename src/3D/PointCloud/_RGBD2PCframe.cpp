@@ -19,6 +19,26 @@ namespace kai
 	{
 	}
 
+    bool _RGBD2PCframe::init(const json &j)
+    {
+        IF_F(!this->_PCframe::init(j));
+
+        return true;
+    }
+
+    bool _RGBD2PCframe::link(const json &j, ModuleMgr *pM)
+    {
+        IF_F(!this->_PCframe::link(j, pM));
+
+		string n = j.value("_RGBDbase", "");
+		m_pV = (_RGBDbase *)(pM->findModule(n));
+		NULL_F(m_pV);
+
+        return true;
+    }
+
+
+
 	int _RGBD2PCframe::init(void *pKiss)
 	{
 		CHECK_(_PCframe::init(pKiss));

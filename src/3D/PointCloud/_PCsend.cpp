@@ -21,7 +21,39 @@ namespace kai
 
     _PCsend::~_PCsend()
     {
+        DEL(m_pB);
     }
+
+    bool _PCsend::init(const json &j)
+    {
+        IF_F(!this->_GeometryBase::init(j));
+
+        m_tInt = j.value("tInt", 100000);
+        m_nB = j.value("nB", 256);
+
+        DEL(m_pB);
+        m_pB = new uint8_t[m_nB];
+        NULL_F(m_pB);
+
+        return true;
+    }
+
+    bool _PCsend::link(const json &j, ModuleMgr *pM)
+    {
+        IF_F(!this->_GeometryBase::link(j, pM));
+
+        string n = j.value("_IObase", "");
+        m_pIO = (_IObase *)(pM->findModule(n));
+        if (!m_pIO)
+        {
+            LOG_E("_IObase not found");
+            return false;
+        }
+
+        return true;
+    }
+
+
 
     int _PCsend::init(void *pKiss)
     {
@@ -35,14 +67,14 @@ namespace kai
 
         string n;
         n = "";
-        if(!pK->v("_IObase", &n))
+        if (!pK->v("_IObase", &n))
         {
             LOG_E("_IObase not found");
             return OK_ERR_NOT_FOUND;
         }
 
         m_pIO = (_IObase *)(pK->findModule(n));
-        if(!m_pIO)
+        if (!m_pIO)
         {
             LOG_E("_IObase not found");
             return OK_ERR_NOT_FOUND;

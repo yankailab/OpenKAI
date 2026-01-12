@@ -20,6 +20,8 @@ namespace kai
 		_PCtransform();
 		virtual ~_PCtransform();
 
+		virtual bool init(const json& j);
+
 		int init(void *pKiss);
 		int start(void);
 		int check(void);
@@ -38,7 +40,7 @@ namespace kai
 
 	public:
 		Matrix4d_u m_mTt;
-		string m_paramKiss;
+		string m_jsonCfgFile;
 	};
 
 }

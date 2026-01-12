@@ -28,12 +28,14 @@ namespace kai
         virtual ~_PCstream();
 
         // BASE
+		virtual bool init(const json &j);
+
         virtual int init(void *pKiss);
         virtual int start(void);
         virtual int check(void);
 
         // _GeometryBase
-		virtual int initGeometry(void);
+		virtual bool initGeometry(void);
         virtual void clear(void);
         virtual void addPCstream(void* p, uint64_t tExpire = 0);
 

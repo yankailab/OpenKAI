@@ -15,9 +15,9 @@ namespace kai
 
         m_pP = nullptr;
         m_nP = 256;
-        m_iP = 0;
-        m_tLastUpdate = 0;
-        m_bAccept = true;
+        // m_iP = 0;
+        // m_tLastUpdate = 0;
+        // m_bAccept = true;
     }
 
     _MeshStream::~_MeshStream()
@@ -26,10 +26,31 @@ namespace kai
         DEL(m_pP);
     }
 
+    bool _MeshStream::init(const json &j)
+    {
+        IF_F(!this->_GeometryBase::init(j));
+
+        m_bAccept = j.value("bAccept", true);
+        m_nP = j.value("nP", 256);
+        IF_F(m_nP <= 0);
+
+        DEL(m_pP);
+        m_pP = new GEOMETRY_POINT[m_nP];
+        NULL_F(m_pP);
+        m_iP = 0;
+        m_tLastUpdate = 0;
+
+        for (int i = 0; i < m_nP; i++)
+            m_pP[i].clear();
+
+        return true;
+    }
+
+
     int _MeshStream::init(void *pKiss)
     {
         CHECK(this->_GeometryBase::init(pKiss));
-		Kiss *pK = (Kiss *)pKiss;
+        Kiss *pK = (Kiss *)pKiss;
 
         pK->v("bAccept", &m_bAccept);
         pK->v("nP", &m_nP);
@@ -64,22 +85,21 @@ namespace kai
         return 0;
     }
 
-    int _MeshStream::addTriangle(const vInt3& vVertices, uint64_t tStamp)
+    int _MeshStream::addTriangle(const vInt3 &vVertices, uint64_t tStamp)
     {
         return -1;
     }
 
-    void _MeshStream::getStream(void* p)
+    void _MeshStream::getStream(void *p)
     {
         NULL_(p);
-
     }
 
-    void _MeshStream::getNextFrame(void* p)
+    void _MeshStream::getNextFrame(void *p)
     {
     }
 
-    void _MeshStream::getLattice(void* p)
+    void _MeshStream::getLattice(void *p)
     {
     }
 
@@ -103,7 +123,7 @@ namespace kai
 
     void _MeshStream::clear(void)
     {
-        for(int i=0; i<m_nP; i++)
+        for (int i = 0; i < m_nP; i++)
             m_pP[i].clear();
 
         m_iP = 0;
