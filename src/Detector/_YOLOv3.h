@@ -20,7 +20,7 @@ namespace kai
 		_YOLOv3();
 		~_YOLOv3();
 
-		virtual bool init(const json& j);
+		virtual bool init(const json &j);
 		virtual bool start(void);
 		virtual bool check(void);
 

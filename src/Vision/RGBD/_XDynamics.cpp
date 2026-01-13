@@ -64,7 +64,7 @@ namespace kai
     bool _XDynamics::link(const json& j, ModuleMgr* pM)
     {
         IF_F(!this->_RGBDbase::link(j, pM));
-        Kiss *pK = (Kiss *)m_pKiss;
+        0
         string n;
 
         return true;

@@ -36,7 +36,7 @@ namespace kai
 
 		void sensorReset(void);
 
-	public:
+	protected:
 		string m_rsSN;
 		rs2::config m_rsConfig;
 		rs2::pipeline m_rsPipe;

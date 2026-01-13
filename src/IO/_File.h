@@ -26,7 +26,7 @@ namespace kai
 	protected:
 		bool readAll(string *pStr);
 
-	private:
+	protected:
 		string m_name;
 		string m_buf;
 		fstream m_file;

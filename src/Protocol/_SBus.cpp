@@ -4,9 +4,6 @@ namespace kai
 {
 	_SBus::_SBus()
 	{
-		m_bSender = false;
-		m_bRawSbus = true;
-
 		m_frame.clear();
 	}
 
@@ -14,17 +11,16 @@ namespace kai
 	{
 	}
 
-	bool _SBus::init(const json& j)
+	bool _SBus::init(const json &j)
 	{
 		IF_F(!this->_ProtocolBase::init(j));
 
-		m_bSender = j.value("bSender", "");
+		m_bSender = j.value("bSender", false);
 		m_frame.m_timeOutUsec = j.value("timeOutUsec", m_frame.m_timeOutUsec);
-		m_bRawSbus = j.value("bRawSbus", "");
+		m_bRawSbus = j.value("bRawSbus", true);
 		m_frame.m_nBframe = (m_bRawSbus) ? 25 : SBUS_N_BUF;
 
-		vInt3 vRawRC;
-		vRawRC = j.value("vRawRC", "");
+		vInt3 vRawRC = j.value("vRawRC", 0);
 		for (int i = 0; i < SBUS_NCHAN; i++)
 		{
 			RC_CHANNEL *pC = &m_frame.m_pRC[i];
@@ -38,7 +34,7 @@ namespace kai
 		return true;
 	}
 
-	bool _SBus::link(const json& j, ModuleMgr* pM)
+	bool _SBus::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ProtocolBase::link(j, pM));
 
@@ -76,7 +72,6 @@ namespace kai
 			m_pT->autoFPS();
 
 			send();
-
 		}
 	}
 
@@ -161,39 +156,9 @@ namespace kai
 		else
 			pC->addMsg("Connected");
 
-		pC->addMsg("Raw: " + i2str(m_frame.m_pRC[0].raw())
-					+ "|" + i2str(m_frame.m_pRC[1].raw())
-					+ "|" + i2str(m_frame.m_pRC[2].raw())
-					+ "|" + i2str(m_frame.m_pRC[3].raw())
-					+ "|" + i2str(m_frame.m_pRC[4].raw())
-					+ "|" + i2str(m_frame.m_pRC[5].raw())
-					+ "|" + i2str(m_frame.m_pRC[6].raw())
-					+ "|" + i2str(m_frame.m_pRC[7].raw())
-					+ "|" + i2str(m_frame.m_pRC[8].raw())
-					+ "|" + i2str(m_frame.m_pRC[9].raw())
-					+ "|" + i2str(m_frame.m_pRC[10].raw())
-					+ "|" + i2str(m_frame.m_pRC[11].raw())
-					+ "|" + i2str(m_frame.m_pRC[12].raw())
-					+ "|" + i2str(m_frame.m_pRC[13].raw())
-					+ "|" + i2str(m_frame.m_pRC[14].raw())
-					+ "|" + i2str(m_frame.m_pRC[15].raw()));
+		pC->addMsg("Raw: " + i2str(m_frame.m_pRC[0].raw()) + "|" + i2str(m_frame.m_pRC[1].raw()) + "|" + i2str(m_frame.m_pRC[2].raw()) + "|" + i2str(m_frame.m_pRC[3].raw()) + "|" + i2str(m_frame.m_pRC[4].raw()) + "|" + i2str(m_frame.m_pRC[5].raw()) + "|" + i2str(m_frame.m_pRC[6].raw()) + "|" + i2str(m_frame.m_pRC[7].raw()) + "|" + i2str(m_frame.m_pRC[8].raw()) + "|" + i2str(m_frame.m_pRC[9].raw()) + "|" + i2str(m_frame.m_pRC[10].raw()) + "|" + i2str(m_frame.m_pRC[11].raw()) + "|" + i2str(m_frame.m_pRC[12].raw()) + "|" + i2str(m_frame.m_pRC[13].raw()) + "|" + i2str(m_frame.m_pRC[14].raw()) + "|" + i2str(m_frame.m_pRC[15].raw()));
 
-		pC->addMsg("v: " + f2str(m_frame.m_pRC[0].v(), 2)
-					+ "|" + f2str(m_frame.m_pRC[1].v(), 2)
-					+ "|" + f2str(m_frame.m_pRC[2].v(), 2)
-					+ "|" + f2str(m_frame.m_pRC[3].v(), 2)
-					+ "|" + f2str(m_frame.m_pRC[4].v(), 2)
-					+ "|" + f2str(m_frame.m_pRC[5].v(), 2)
-					+ "|" + f2str(m_frame.m_pRC[6].v(), 2)
-					+ "|" + f2str(m_frame.m_pRC[7].v(), 2)
-					+ "|" + f2str(m_frame.m_pRC[8].v(), 2)
-					+ "|" + f2str(m_frame.m_pRC[9].v(), 2)
-					+ "|" + f2str(m_frame.m_pRC[10].v(), 2)
-					+ "|" + f2str(m_frame.m_pRC[11].v(), 2)
-					+ "|" + f2str(m_frame.m_pRC[12].v(), 2)
-					+ "|" + f2str(m_frame.m_pRC[13].v(), 2)
-					+ "|" + f2str(m_frame.m_pRC[14].v(), 2)
-					+ "|" + f2str(m_frame.m_pRC[15].v(), 2));
+		pC->addMsg("v: " + f2str(m_frame.m_pRC[0].v(), 2) + "|" + f2str(m_frame.m_pRC[1].v(), 2) + "|" + f2str(m_frame.m_pRC[2].v(), 2) + "|" + f2str(m_frame.m_pRC[3].v(), 2) + "|" + f2str(m_frame.m_pRC[4].v(), 2) + "|" + f2str(m_frame.m_pRC[5].v(), 2) + "|" + f2str(m_frame.m_pRC[6].v(), 2) + "|" + f2str(m_frame.m_pRC[7].v(), 2) + "|" + f2str(m_frame.m_pRC[8].v(), 2) + "|" + f2str(m_frame.m_pRC[9].v(), 2) + "|" + f2str(m_frame.m_pRC[10].v(), 2) + "|" + f2str(m_frame.m_pRC[11].v(), 2) + "|" + f2str(m_frame.m_pRC[12].v(), 2) + "|" + f2str(m_frame.m_pRC[13].v(), 2) + "|" + f2str(m_frame.m_pRC[14].v(), 2) + "|" + f2str(m_frame.m_pRC[15].v(), 2));
 
 		if (m_frame.bFailSafe())
 			pC->addMsg("FailSafe");

@@ -14,12 +14,6 @@ namespace kai
 	{
 		m_ioType = io_udp;
 		m_ioStatus = io_unknown;
-
-		m_addrRemote = "";
-		m_portRemote = 0;
-		m_portLocal = 0;
-		m_bW2R = true;
-		m_bWbroadcast = 0;
 		m_socket = -1;
 	}
 
@@ -28,15 +22,15 @@ namespace kai
 		close();
 	}
 
-	bool _UDP::init(const json& j)
+	bool _UDP::init(const json &j)
 	{
 		IF_F(!this->_IObase::init(j));
 
 		m_addrRemote = j.value("addrRemote", "");
-		m_portRemote = j.value("portRemote", "");
-		m_portLocal = j.value("portLocal", "");
-		m_bW2R = j.value("bW2R", "");
-		m_bWbroadcast = j.value("bWbroadcast", "");
+		m_portRemote = j.value("portRemote", 0);
+		m_portLocal = j.value("portLocal", 0);
+		m_bW2R = j.value("bW2R", true);
+		m_bWbroadcast = j.value("bWbroadcast", 0);
 
 		return true;
 	}
@@ -146,7 +140,7 @@ namespace kai
 		NULL_(pConsole);
 		this->_IObase::console(pConsole);
 
-		_Console* pC = (_Console *)pConsole;
+		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("PortLocal:" + i2str(m_portLocal));
 		pC->addMsg("PortRemote:" + i2str(m_portRemote));
 	}

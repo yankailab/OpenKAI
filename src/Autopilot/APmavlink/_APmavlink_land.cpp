@@ -17,7 +17,7 @@ namespace kai
 	{
 		IF_F(!this->_APmavlink_follow::init(j));
 
-		m_vDSrange = j.value("vDSrange", vector<float>{0, 0});
+		m_vDSrange = j.value("vDSrange", 0);
 		m_vFov = j.value("vFov", vector<float>{60, 60});
 		m_vComplete = j.value("vComplete", vector<float>{0.1, 0.1, 0.3, 3.0});
 		m_zrK = j.value("zrK", 1.0);
@@ -31,14 +31,14 @@ namespace kai
 
 		for (auto it = jc.begin(); it != jc.end(); it++)
 		{
-			const json &ji = it.value();
-			IF_CONT(!ji.is_object());
+			const json &Ji = it.value();
+			IF_CONT(!Ji.is_object());
 
 			AP_LAND_TAG t;
-			t.m_id = ji.value("id", t.m_id);
-			t.m_priority = ji.value("priority", t.m_priority);
-			t.m_vSize = ji.value("vSize", vector<float>{t.m_vSize.x, t.m_vSize.y});
-			t.m_vKdist = ji.value("vKdist", vector<float>{t.m_vKdist.x, t.m_vKdist.y});
+			t.m_id = Ji.value("id", t.m_id);
+			t.m_priority = Ji.value("priority", t.m_priority);
+			t.m_vSize = Ji.value("vSize", vector<float>{t.m_vSize.x, t.m_vSize.y});
+			t.m_vKdist = Ji.value("vKdist", vector<float>{t.m_vKdist.x, t.m_vKdist.y});
 			m_vTags.push_back(t);
 		}
 

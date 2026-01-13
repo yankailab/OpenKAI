@@ -108,7 +108,7 @@ namespace kai
 			z = r[2];
 		}
 
-		inline void operator=(const vector<float>& v)
+		inline void operator=(const vector<float> &v)
 		{
 			int n = v.size();
 
@@ -197,18 +197,18 @@ namespace kai
 		// 	z = (z > b) ? b : z;
 		// }
 
-		// float *v(int i)
-		// {
-		// 	IF__(i >= 3, 0);
-		// 	IF__(i < 0, 0);
+		float *v(int i)
+		{
+			IF__(i >= 3, 0);
+			IF__(i < 0, 0);
 
-		// 	float *pv[3];
-		// 	pv[0] = &x;
-		// 	pv[1] = &y;
-		// 	pv[2] = &z;
+			float *pv[3];
+			pv[0] = &x;
+			pv[1] = &y;
+			pv[2] = &z;
 
-		// 	return pv[i];
-		// }
+			return pv[i];
+		}
 	};
 
 }

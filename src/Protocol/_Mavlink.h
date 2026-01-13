@@ -932,7 +932,7 @@ namespace kai
 
 	protected:
 		bool writeMessage(const mavlink_message_t& msg);
-		int readMessage(mavlink_message_t* pMsg);
+		bool readMessage(mavlink_message_t* pMsg);
 
 	private:
 		virtual void update(void);

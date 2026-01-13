@@ -15,12 +15,6 @@ namespace kai
 	{
 		m_pTr = nullptr;
 		g_pWSserver = this;
-		m_nClientMax = 128;
-		m_wsMode = wsSocket_txt_bcast;
-
-		m_host = "localhost";
-		m_port = 8080;
-		m_tOutMs = 1000;
 	}
 
 	_WebSocketServer::~_WebSocketServer()
@@ -28,36 +22,34 @@ namespace kai
 		m_vClient.clear();
 	}
 
-	bool _WebSocketServer::init(const json& j)
+	bool _WebSocketServer::init(const json &j)
 	{
 		IF_F(!this->_IObase::init(j));
 
-		= j.value("wsMode", (int *)&m_wsMode);
-		m_host = j.value("host", "");
-		m_port = j.value("port", "");
-		m_tOutMs = j.value("tOutMs", "");
-		m_nClientMax = j.value("nClientMax", "");
+		m_wsMode = j.value("wsMode", wsSocket_txt_bcast);
+		m_host = j.value("host", "localhost");
+		m_port = j.value("port", 8080);
+		m_tOutMs = j.value("tOutMs", 1000);
+		m_nClientMax = j.value("nClientMax", 128);
 
-		Kiss *pKt = pK->child("thread");
-		if (pKt->empty())
-		{
-			LOG_E("thread not found");
-			return OK_ERR_NOT_FOUND;
-		}
-
+		IF_Le_F(!j.contains("threadR"), "json: thread not found");
+		DEL(m_pTr);
 		m_pTr = new _Thread();
-		CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "thread init failed");
+		if (!m_pTr->init(j.at("threadR")))
+		{
+			DEL(m_pTr);
+			LOG_E("threadR.init() failed");
+			return false;
+		}
 
 		m_ioStatus = io_opened;
 
 		return true;
 	}
 
-	bool _WebSocketServer::link(const json& j, ModuleMgr* pM)
+	bool _WebSocketServer::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_IObase::link(j, pM));
-
-		string n;
 
 		return true;
 	}
@@ -189,8 +181,10 @@ namespace kai
 		IF_(m_vClient.size() >= m_nClientMax);
 
 		_WebSocket *pWS = new _WebSocket();
-		pWS->init();
-		pWS->setIOstatus(io_opened);
+
+//TODO:
+		// pWS->init();
+		// pWS->setIOstatus(io_opened);
 
 		wsClient c;
 		c.init(pWS);
@@ -210,10 +204,10 @@ namespace kai
 		int iC = findWSclientIdx(client);
 		IF_(iC < 0);
 
-		wsClient* pClient = getWSclient(iC);
+		wsClient *pClient = getWSclient(iC);
 		NULL_(pClient);
 
-		_WebSocket* pWS = pClient->getWS();
+		_WebSocket *pWS = pClient->getWS();
 		NULL_(pWS);
 
 		pWS->setIOstatus(io_closed);
@@ -253,7 +247,7 @@ namespace kai
 	{
 		for (int i = 0; i < m_vClient.size(); i++)
 		{
-			wsClient* pWSc = &m_vClient[i];
+			wsClient *pWSc = &m_vClient[i];
 			IF_CONT(pWSc->m_wsConn != wsCli);
 
 			return i;

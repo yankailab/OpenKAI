@@ -31,7 +31,7 @@ namespace kai
 
     bool _SharedMemImg::link(const json& j, ModuleMgr* pM)
     {
-        Kiss *pK = (Kiss *)m_pKiss;
+        0
 
         string n;
         n = "";

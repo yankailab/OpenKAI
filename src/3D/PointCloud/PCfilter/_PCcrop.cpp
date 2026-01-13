@@ -22,23 +22,23 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::init(j));
 
-		const json &jf = j.at("vFilter");
-		IF_F(!jf.is_object());
+		const json &jF = j.at("vFilter");
+		IF_F(!jF.is_object());
 
-		for (auto iF = jf.begin(); iF != jf.end(); iF++)
+		for (auto it = jF.begin(); it != jF.end(); it++)
 		{
-			const json &jFi = iF.value();
-			IF_CONT(!jFi.is_object());
+			const json &Ji = it.value();
+			IF_CONT(!Ji.is_object());
 
 			POINTCLOUD_VOL v;
 			v.init();
-			v.m_type = (POINTCLOUD_VOL_TYPE)jFi.value<int>("type", 0);
-			v.m_bInside = jFi.value("bInside", true);
-			v.m_vX = jFi.value("vX", vector<float>{});
-			v.m_vY = jFi.value("vY", vector<float>{});
-			v.m_vZ = jFi.value("vZ", vector<float>{});
-			v.m_vC = jFi.value("vC", vector<float>{});
-			v.m_vR = jFi.value("vR", vector<float>{});
+			v.m_type = (POINTCLOUD_VOL_TYPE)Ji.value<int>("type", 0);
+			v.m_bInside = Ji.value("bInside", true);
+			v.m_vX = Ji.value("vX", vector<float>{});
+			v.m_vY = Ji.value("vY", vector<float>{});
+			v.m_vZ = Ji.value("vZ", vector<float>{});
+			v.m_vC = Ji.value("vC", vector<float>{});
+			v.m_vR = Ji.value("vR", vector<float>{});
 			m_vFilter.push_back(v);
 		}
 

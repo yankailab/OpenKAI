@@ -6,18 +6,8 @@ namespace kai
 	_Mavlink::_Mavlink()
 	{
 		m_pIO = nullptr;
-
-		m_mySystemID = 255;
-		m_myComponentID = MAV_COMP_ID_MISSIONPLANNER;
-		m_myType = MAV_TYPE_GCS;
-
-		m_devSystemID = -1;
-		m_devComponentID = -1;
-		m_devType = 0;
-
 		m_nRead = 0;
 		m_iRead = 0;
-		m_iMavComm = MAVLINK_COMM_0;
 
 		// msg register
 		m_vpMsg.push_back(&m_attitude);
@@ -60,52 +50,44 @@ namespace kai
 	{
 	}
 
-	bool _Mavlink::init(const json& j)
+	bool _Mavlink::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_mySystemID = j.value("mySystemID", "");
-		m_myComponentID = j.value("myComponentID", "");
-		m_myType = j.value("myType", "");
+		m_mySystemID = j.value("mySystemID", 255);
+		m_myComponentID = j.value("myComponentID", MAV_COMP_ID_MISSIONPLANNER);
+		m_myType = j.value("myType", MAV_TYPE_GCS);
 
-		m_devSystemID = j.value("devSystemID", "");
-		m_devComponentID = j.value("devComponentID", "");
-		m_devType = j.value("devType", "");
+		m_devSystemID = j.value("devSystemID", -1);
+		m_devComponentID = j.value("devComponentID", -1);
+		m_devType = j.value("devType", 0);
 
-		m_iMavComm = j.value("iMavComm", "");
+		m_iMavComm = j.value("iMavComm", MAVLINK_COMM_0);
 
 		m_status.packet_rx_drop_count = 0;
 
 		return true;
 	}
 
-	bool _Mavlink::link(const json& j, ModuleMgr* pM)
+	bool _Mavlink::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n;
-
-		n = "";
-		n = j.value("_IObase", "");
+		string n = j.value("_IObase", "");
 		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 
-		Kiss *pR = pK->child("routing");
-		IF__(pR->empty(), OK_OK);
+		const json &jR = j.at("routings");
+		IF__(!jR.is_object(), true);
 
-		int i = 0;
-		while (1)
+		for (auto it = jR.begin(); it != jR.end(); it++)
 		{
-			IF__(i >= MAV_N_PEER, OK_ERR_INVALID_VALUE);
-			Kiss *pP = pR->child(i++);
-			if (pP->empty())
-				break;
+			const json &Ji = it.value();
+			IF_CONT(!Ji.is_object());
 
 			MAVLINK_PEER mP;
 			mP.init();
-
-			n = "";
-			pP->v("_Mavlink", &n);
+			n = Ji.value("_Mavlink", "");
 			mP.m_pPeer = pM->findModule(n);
 			if (!mP.m_pPeer)
 			{
@@ -118,7 +100,7 @@ namespace kai
 
 		// cmd routing
 		vector<int> vNoRouteCmd;
-		pK->a("noRouteCmd", &vNoRouteCmd);
+		vNoRouteCmd = j.value("noRouteCmd", vector<int>{});
 		for (int i = 0; i < vNoRouteCmd.size(); i++)
 		{
 			setCmdRoute(vNoRouteCmd[i], false);
@@ -162,8 +144,7 @@ namespace kai
 
 		while (m_pT->bAlive())
 		{
-			int r = readMessage(&msg);
-			IF_CONT(r != OK_OK);
+			IF_CONT(!readMessage(&msg));
 
 			if (m_devSystemID < 0)
 				m_devSystemID = msg.sysid;
@@ -201,16 +182,16 @@ namespace kai
 		}
 	}
 
-	int _Mavlink::readMessage(mavlink_message_t *pMsg)
+	bool _Mavlink::readMessage(mavlink_message_t *pMsg)
 	{
-		IF__(check() != OK_OK);
-		NULL__(pMsg);
+		IF_F(!check());
+		NULL_F(pMsg);
 
 		if (m_nRead <= 0)
 		{
 			m_nRead = m_pIO->read(m_rBuf, MAV_N_BUF);
-			IF__(m_nRead < 0, OK_ERR_UNKNOWN);
-			IF__(m_nRead == 0);
+			IF_F(m_nRead < 0);
+			IF_F(m_nRead == 0);
 			m_iRead = 0;
 		}
 
@@ -238,7 +219,7 @@ namespace kai
 			}
 		}
 
-		return OK_ERR_NOT_READY;
+		return false;
 	}
 
 	bool _Mavlink::writeMessage(const mavlink_message_t &msg)

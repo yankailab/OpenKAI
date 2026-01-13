@@ -18,7 +18,6 @@ namespace kai
     bool _SwarmCtrlUI::init(const json& j)
     {
         IF_F(!this->_JSONbase::init(j));
-        Kiss *pK = (Kiss *)pKiss;
 
         int v;
         v = SEC_2_USEC;
@@ -51,7 +50,7 @@ namespace kai
         IF_F(!this->_JSONbase::link(j, pM));
         IF_F(!m_pTr->link());
 
-        Kiss *pK = (Kiss *)m_pKiss;
+        0
 
         string n;
         n = "";

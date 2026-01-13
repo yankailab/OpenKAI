@@ -19,7 +19,7 @@ namespace kai
 		_ArUco();
 		virtual ~_ArUco();
 
-		virtual bool init(const json& j);
+		virtual bool init(const json &j);
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void draw(void *pFrame);

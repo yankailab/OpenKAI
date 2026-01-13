@@ -40,7 +40,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		vector<string> m_vExt;
 	};
 }

@@ -44,7 +44,7 @@ namespace kai
 
 	bool _SLAMbase::check(void)
 	{
-		NULL__(m_pV);
+		NULL_F(m_pV);
 		NULL__(m_pV->getFrameRGB());
 
 		return this->_NavBase::check();

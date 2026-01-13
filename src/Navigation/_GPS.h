@@ -21,7 +21,8 @@ namespace kai
 		_GPS(void);
 		virtual ~_GPS();
 
-		virtual bool init(const json& j);
+		virtual bool init(const json &j);
+		virtual bool link(const json& j, ModuleMgr* pM);
 		virtual bool start(void);
 		virtual void console(void *pConsole);
 
@@ -38,7 +39,7 @@ namespace kai
 			return NULL;
 		}
 
-	private:
+	protected:
 		_IObase *m_pIO;
 		uint8_t m_rBuf[IO_BUF_N];
 		int m_nRead;

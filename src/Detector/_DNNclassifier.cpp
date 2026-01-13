@@ -9,52 +9,39 @@ namespace kai
 
 	_DNNclassifier::_DNNclassifier()
 	{
-		m_nW = 224;
-		m_nH = 224;
-		m_bSwapRB = true;
 		m_vMean.clear();
-		m_scale = 1.0;
-
-		m_iBackend = cv::dnn::DNN_BACKEND_OPENCV;
-		m_iTarget = cv::dnn::DNN_TARGET_CPU;
 	}
 
 	_DNNclassifier::~_DNNclassifier()
 	{
 	}
 
-	bool _DNNclassifier::init(const json& j)
+	bool _DNNclassifier::init(const json &j)
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_nW = j.value("nW", "");
-		m_nH = j.value("nH", "");
-		m_bSwapRB = j.value("bSwapRB", "");
-		m_scale = j.value("scale", "");
-		m_iBackend = j.value("iBackend", "");
-		m_iTarget = j.value("iTarget", "");
+		m_nW = j.value("nW", 224);
+		m_nH = j.value("nH", 224);
+		m_bSwapRB = j.value("bSwapRB", true);
+		m_scale = j.value("scale", 1);
+		m_iBackend = j.value("iBackend", cv::dnn::DNN_BACKEND_OPENCV);
+		m_iTarget = j.value("iTarget", cv::dnn::DNN_TARGET_CPU);
 		m_vMean.x = j.value("meanB", m_vMean.x);
 		m_vMean.y = j.value("meanG", m_vMean.y);
 		m_vMean.z = j.value("meanR", m_vMean.z);
 
-		Kiss *pR = pK->child("ROI");
-		vFloat4 r;
-		if (pR)
-		{
-			int i = 0;
-			while (1)
-			{
-				pR = pK->child("ROI")->child(i++);
-				if (pR->empty())
-					break;
+		const json &jF = j.at("vFilter");
+		IF_F(!jF.is_object());
 
-				r.clear();
-				pR->v("x", &r.x);
-				pR->v("y", &r.y);
-				pR->v("z", &r.z);
-				pR->v("w", &r.w);
-				m_vROI.push_back(r);
-			}
+		vFloat4 r;
+		for (auto it = jF.begin(); it != jF.end(); it++)
+		{
+			const json &Ji = it.value();
+			IF_CONT(!Ji.is_object());
+
+			r.clear();
+			r = Ji.value("vROI", 0);
+			m_vROI.push_back(r);
 		}
 
 		if (m_vROI.empty())
@@ -66,7 +53,7 @@ namespace kai
 		}
 
 		m_net = readNet(m_fWeight, m_fModel);
-		IF__(m_net.empty(), OK_ERR_INVALID_VALUE);
+		IF_F(m_net.empty());
 
 		m_net.setPreferableBackend(m_iBackend);
 		m_net.setPreferableTarget(m_iTarget);
@@ -82,12 +69,12 @@ namespace kai
 
 	bool _DNNclassifier::check(void)
 	{
-		NULL__(m_pU);
-		NULL__(m_pV);
+		NULL_F(m_pU);
+		NULL_F(m_pV);
 		Frame *pBGR = m_pV->getFrameRGB();
-		NULL__(pBGR);
-		IF__(pBGR->bEmpty());
-		IF__(pBGR->tStamp() <= m_fRGB.tStamp());
+		NULL_F(pBGR);
+		IF_F(pBGR->bEmpty());
+		IF_F(pBGR->tStamp() <= m_fRGB.tStamp());
 
 		return this->_DetectorBase::check();
 	}

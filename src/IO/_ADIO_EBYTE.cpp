@@ -12,7 +12,6 @@ namespace kai
 	_ADIO_EBYTE::_ADIO_EBYTE()
 	{
 		m_pMB = nullptr;
-		m_iID = 32;
 	}
 
 	_ADIO_EBYTE::~_ADIO_EBYTE()
@@ -20,23 +19,22 @@ namespace kai
 		close();
 	}
 
-	bool _ADIO_EBYTE::init(const json& j)
+	bool _ADIO_EBYTE::init(const json &j)
 	{
 		IF_F(!this->_ADIObase::init(j));
 
-		m_iID = j.value("iID", "");
+		m_iID = j.value("iID", 32);
 
 		return true;
 	}
 
-	bool _ADIO_EBYTE::link(const json& j, ModuleMgr* pM)
+	bool _ADIO_EBYTE::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ADIObase::link(j, pM));
 
-		string n;
-		n = "";
-		n = j.value("_Modbus", "");
+		string n = j.value("_Modbus", "");
 		m_pMB = (_Modbus *)(pM->findModule(n));
+		NULL_F(m_pMB);
 
 		return true;
 	}
@@ -52,8 +50,8 @@ namespace kai
 
 	bool _ADIO_EBYTE::check(void)
 	{
-		NULL__(m_pMB);
-		IF__(!m_pMB->bOpen());
+		NULL_F(m_pMB);
+		IF_F(!m_pMB->bOpen());
 
 		return this->_ADIObase::check();
 	}
@@ -81,7 +79,6 @@ namespace kai
 
 			updateW();
 			updateR();
-
 		}
 	}
 
@@ -100,7 +97,7 @@ namespace kai
 			}
 			else
 			{
-//				m_pMB->writeBit(m_iID, pP->m_addr, pP->readD());
+				//				m_pMB->writeBit(m_iID, pP->m_addr, pP->readD());
 			}
 		}
 	}
@@ -118,14 +115,13 @@ namespace kai
 			{
 				uint8_t b = 0;
 				m_pMB->readInputBits(m_iID, pP->m_addr, 1, &b);
-				pP->m_vR = (b)?1:0;
+				pP->m_vR = (b) ? 1 : 0;
 			}
 			else
 			{
-//				m_pMB->writeBit(m_iID, pP->m_addr, pP->readD());
+				//				m_pMB->writeBit(m_iID, pP->m_addr, pP->readD());
 			}
 		}
-
 	}
 
 	void _ADIO_EBYTE::console(void *pConsole)

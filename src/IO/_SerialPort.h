@@ -44,7 +44,7 @@ namespace kai
 			return NULL;
 		}
 
-	private:
+	protected:
 		int m_fd;
 		string m_port;
 		int m_baud;

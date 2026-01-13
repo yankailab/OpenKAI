@@ -18,24 +18,24 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		const json &js = j.at("sections");
-		IF__(!js.is_object(), true);
+		const json &jS = j.at("sections");
+		IF__(!jS.is_object(), true);
 
 		m_nROI = 0;
-		for (auto it = js.begin(); it != js.end(); it++)
+		for (auto it = jS.begin(); it != jS.end(); it++)
 		{
-			const json &ji = it.value();
-			IF_CONT(!ji.is_object());
+			const json &Ji = it.value();
+			IF_CONT(!Ji.is_object());
 
 			IF_F(m_nROI >= N_DEPTH_ROI);
 
 			DEPTH_ROI *pR = &m_pROI[m_nROI];
 			pR->init();
-			pR->m_orientation = ji.value("orientation", pR->m_orientation);
-			pR->m_roi.x = ji.value("l", pR->m_roi.x);
-			pR->m_roi.y = ji.value("t", pR->m_roi.y);
-			pR->m_roi.z = ji.value("r", pR->m_roi.z);
-			pR->m_roi.w = ji.value("b", pR->m_roi.w);
+			pR->m_orientation = Ji.value("orientation", pR->m_orientation);
+			pR->m_roi.x = Ji.value("l", pR->m_roi.x);
+			pR->m_roi.y = Ji.value("t", pR->m_roi.y);
+			pR->m_roi.z = Ji.value("r", pR->m_roi.z);
+			pR->m_roi.w = Ji.value("b", pR->m_roi.w);
 
 			m_nROI++;
 		}

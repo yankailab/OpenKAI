@@ -13,8 +13,6 @@ namespace kai
 	_Line::_Line()
 	{
 		m_pV = NULL;
-		m_wSlide = 0.01;
-		m_minPixLine = 0.005;
 		m_line = -1.0;
 	}
 
@@ -22,25 +20,23 @@ namespace kai
 	{
 	}
 
-	bool _Line::init(const json& j)
+	bool _Line::init(const json &j)
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_minPixLine = j.value("minPixLine", "");
-		m_wSlide = j.value("wSlide", "");
+		m_minPixLine = j.value("minPixLine", 0.005);
+		m_wSlide = j.value("wSlide", 0.01);
 
 		return true;
 	}
 
-	bool _Line::link(const json& j, ModuleMgr* pM)
+	bool _Line::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n;
-		n = "";
-		n = j.value("_VisionBase", "");
+		string n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
-		NULL__(m_pV);
+		NULL_F(m_pV);
 
 		return true;
 	}
@@ -53,9 +49,9 @@ namespace kai
 
 	bool _Line::check(void)
 	{
-		NULL__(m_pU);
-		NULL__(m_pV);
-		IF__(m_pV->getFrameRGB()->bEmpty());
+		NULL_F(m_pU);
+		NULL_F(m_pV);
+		IF_F(m_pV->getFrameRGB()->bEmpty());
 
 		return this->_DetectorBase::check();
 	}

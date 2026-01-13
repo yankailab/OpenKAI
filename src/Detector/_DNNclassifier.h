@@ -19,7 +19,7 @@ namespace kai
 		_DNNclassifier();
 		~_DNNclassifier();
 
-		virtual bool init(const json& j);
+		virtual bool init(const json &j);
 		virtual bool start(void);
 		virtual void draw(void *pFrame);
 		virtual bool check(void);

@@ -40,7 +40,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		uint16_t m_listenPort;
 		int m_nListen;
 

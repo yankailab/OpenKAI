@@ -19,8 +19,8 @@ namespace kai
 		_JSONbase();
 		~_JSONbase();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
@@ -31,7 +31,7 @@ namespace kai
 		virtual void send(void);
 		virtual void sendHeartbeat(void);
 
-		virtual bool recvJson(string *pStr, _IObase* pIO);
+		virtual bool recvJson(string *pStr, _IObase *pIO);
 		virtual void handleJson(const string &str);
 		virtual void md5(const string &str, string *pDigest);
 		virtual bool str2JSON(const string &str, picojson::value *pJson);

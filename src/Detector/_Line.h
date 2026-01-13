@@ -34,7 +34,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		_VisionBase *m_pV;
 		float m_wSlide;
 		float m_minPixLine;

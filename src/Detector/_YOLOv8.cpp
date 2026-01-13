@@ -11,38 +11,28 @@ namespace kai
 
 	_YOLOv8::_YOLOv8()
 	{
-		m_confidence = 0.25;
-		m_score = 0.45;
-		m_nms = 0.5;
-		m_bLetterBoxForSquare = true;
-		m_vModelInputSize.set(640, 640);
 		m_vClass = vector<string>{"person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella", "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball", "kite", "baseball bat", "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle", "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake", "chair", "couch", "potted plant", "bed", "dining table", "toilet", "tv", "laptop", "mouse", "remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"};
-		m_bSwapRB = true;
-		m_scale = 1.0 / 255.0;
-
-		m_iBackend = cv::dnn::DNN_BACKEND_OPENCV;
-		m_iTarget = cv::dnn::DNN_TARGET_CPU;
 	}
 
 	_YOLOv8::~_YOLOv8()
 	{
 	}
 
-	bool _YOLOv8::init(const json& j)
+	bool _YOLOv8::init(const json &j)
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_confidence = j.value("confidence", "");
-		m_score = j.value("score", "");
-		m_nms = j.value("nms", "");
-		m_bLetterBoxForSquare = j.value("bLetterBoxForSquare", "");
-		m_vModelInputSize = j.value("vModelInputSize", "");
-		m_bSwapRB = j.value("bSwapRB", "");
-		m_scale = j.value("scale", "");
-		m_iBackend = j.value("iBackend", "");
-		m_iTarget = j.value("iTarget", "");
+		m_confidence = j.value("confidence", 0.25);
+		m_score = j.value("score", 0.45);
+		m_nms = j.value("nms", 0.5);
+		m_bLetterBoxForSquare = j.value("bLetterBoxForSquare", true);
+		m_vModelInputSize = j.value("vModelInputSize", vector<int>{640, 640});
+		m_bSwapRB = j.value("bSwapRB", true);
+		m_scale = j.value("scale", 1.0 / 255.0);
+		m_iBackend = j.value("iBackend", cv::dnn::DNN_BACKEND_OPENCV);
+		m_iTarget = j.value("iTarget", cv::dnn::DNN_TARGET_CPU);
 
-		IF__(!loadModel(), OK_ERR_INVALID_VALUE);
+		IF_F(!loadModel());
 
 		return true;
 	}
@@ -70,8 +60,8 @@ namespace kai
 
 	bool _YOLOv8::check(void)
 	{
-		NULL__(m_pU);
-		NULL__(m_pV);
+		NULL_F(m_pU);
+		NULL_F(m_pV);
 		Frame *pBGR = m_pV->getFrameRGB();
 		NULL__(pBGR);
 		IF__(pBGR->bEmpty());

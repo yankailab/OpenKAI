@@ -21,20 +21,18 @@ namespace kai
 		m_packetW.release();
 	}
 
-	bool _IObase::init(const json& j)
+	bool _IObase::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		int nPacket = 256;
-		int nPbuffer = 2000;
-		nPacket = j.value("nPacket", "");
-		nPbuffer = j.value("nPbuffer", "");
-		IF__(!m_packetW.init(nPbuffer, nPacket), OK_ERR_ALLOCATION);
+		int nPacket = j.value("nPacket", 256);
+		int nPbuffer = j.value("nPbuffer", 2000);
+		IF_F(!m_packetW.init(nPbuffer, nPacket));
 
 		return true;
 	}
 
-	bool _IObase::link(const json& j, ModuleMgr* pM)
+	bool _IObase::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
@@ -92,7 +90,7 @@ namespace kai
 		m_ioStatus = s;
 	}
 
-	IO_PACKET_FIFO* _IObase::getPacketFIFOw(void)
+	IO_PACKET_FIFO *_IObase::getPacketFIFOw(void)
 	{
 		return &m_packetW;
 	}
@@ -101,7 +99,7 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
-		_Console* pC = (_Console *)pConsole;
+		_Console *pC = (_Console *)pConsole;
 
 		pC->addMsg("packetW_iPset=" + i2str(m_packetW.m_iPset));
 		pC->addMsg("packetW_iPget=" + i2str(m_packetW.m_iPget));

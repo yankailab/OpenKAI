@@ -48,7 +48,6 @@ namespace kai
     bool _Livox2::init(const json& j)
     {
         IF_F(!this->_PCstream::init(j));
-        Kiss *pK = (Kiss *)pKiss;
 
         // lvx select
         m_lvxSN = j.value("lvxSN", "");
@@ -132,7 +131,7 @@ namespace kai
     {
         IF_F(!this->_PCstream::link(j, pM));
 
-        Kiss *pK = (Kiss *)m_pKiss;
+        0
         string n;
 
         n = "";

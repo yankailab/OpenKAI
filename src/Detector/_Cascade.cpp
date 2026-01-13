@@ -9,32 +9,29 @@ namespace kai
 
 	_Cascade::_Cascade()
 	{
-		m_scaleFactor = 1.1;
-		m_minNeighbors = 3;
 		m_className = "";
-		m_bGPU = true;
 	}
 
 	_Cascade::~_Cascade()
 	{
 	}
 
-	bool _Cascade::init(const json& j)
+	bool _Cascade::init(const json &j)
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_scaleFactor = j.value("scaleFactor", "");
-		m_minNeighbors = j.value("minNeighbors", "");
-		m_bGPU = j.value("bGPU", "");
+		m_scaleFactor = j.value("scaleFactor", 1.1);
+		m_minNeighbors = j.value("minNeighbors", 3);
+		m_bGPU = j.value("bGPU", true);
 
 		if (m_bGPU)
 		{
 			m_pGCC = cuda::CascadeClassifier::create(m_fModel);
-			NULL__(m_pGCC);
+			NULL_F(m_pGCC);
 		}
 		else
 		{
-			IF__(!m_CC.load(m_fModel));
+			IF_F(!m_CC.load(m_fModel));
 		}
 
 		return true;
@@ -48,8 +45,8 @@ namespace kai
 
 	bool _Cascade::check(void)
 	{
-		NULL__(m_pV);
-		NULL__(m_pU);
+		NULL_F(m_pV);
+		NULL_F(m_pU);
 
 		return this->_DetectorBase::check();
 	}
@@ -79,14 +76,14 @@ namespace kai
 		GpuMat m;
 		pGray->gm()->copyTo(m);
 
-//		int minSize = m.cols * m_pU->m_rArea.x;
-//		int maxSize = m.cols * m_pU->m_rArea.y;
+		//		int minSize = m.cols * m_pU->m_rArea.x;
+		//		int maxSize = m.cols * m_pU->m_rArea.y;
 
 		m_pGCC->setFindLargestObject(false);
 		m_pGCC->setScaleFactor(m_scaleFactor);
 		m_pGCC->setMinNeighbors(m_minNeighbors);
-//		m_pGCC->setMinObjectSize(cv::Size(minSize, minSize));
-//		m_pGCC->setMaxObjectSize(cv::Size(maxSize, maxSize));
+		//		m_pGCC->setMinObjectSize(cv::Size(minSize, minSize));
+		//		m_pGCC->setMaxObjectSize(cv::Size(maxSize, maxSize));
 
 		vector<Rect> vRect;
 		cv::cuda::GpuMat gFound;
@@ -123,8 +120,8 @@ namespace kai
 		Mat m;
 		pGray->m()->copyTo(m);
 
-//		int minSize = m.cols * m_pU->m_rArea.x;
-//		int maxSize = m.cols * m_pU->m_rArea.y;
+		//		int minSize = m.cols * m_pU->m_rArea.x;
+		//		int maxSize = m.cols * m_pU->m_rArea.y;
 
 		vector<Rect> vRect;
 		_Object o;

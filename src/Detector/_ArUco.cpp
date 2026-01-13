@@ -12,8 +12,6 @@ namespace kai
 
 	_ArUco::_ArUco()
 	{
-		m_dict = aruco::DICT_4X4_50; // aruco::DICT_APRILTAG_16h5;
-		m_realSize = 0.05;
 		m_bPose = false;
 	}
 
@@ -21,16 +19,16 @@ namespace kai
 	{
 	}
 
-	bool _ArUco::init(const json& j)
+	bool _ArUco::init(const json &j)
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		= j.value<uint8_t>("dict", &m_dict);
+		m_dict = j.value("dict", aruco::DICT_4X4_50); // aruco::DICT_APRILTAG_16h5;
 		m_pDict = cv::Ptr<cv::aruco::Dictionary>(new cv::aruco::Dictionary());
 		*m_pDict = aruco::getPredefinedDictionary(m_dict);
-		m_realSize = j.value("realSize", "");
+		m_realSize = j.value("realSize", 0.05);
 
-		m_bPose = j.value("bPose", "");
+		m_bPose = j.value("bPose", false);
 		if (m_bPose)
 		{
 			string n;
@@ -49,8 +47,8 @@ namespace kai
 
 	bool _ArUco::check(void)
 	{
-		NULL__(m_pV);
-		NULL__(m_pU);
+		NULL_F(m_pV);
+		NULL_F(m_pU);
 
 		return this->_DetectorBase::check();
 	}
@@ -137,17 +135,17 @@ namespace kai
 			// center position
 			float dx = (float)(pLT.x + pRT.x + pRB.x + pLB.x) * 0.25;
 			float dy = (float)(pLT.y + pRT.y + pRB.y + pLB.y) * 0.25;
-			o.setPos(dx*kx, dy*ky, 0);
+			o.setPos(dx * kx, dy * ky, 0);
 
 			// radius
 			dx -= pLT.x;
 			dy -= pLT.y;
-			o.setDim(0,0,0, sqrt(dx*dx + dy*dy));	// vDim.w = radius
+			o.setDim(0, 0, 0, sqrt(dx * dx + dy * dy)); // vDim.w = radius
 
 			// angle in deg
 			dx = pLB.x - pLT.x;
 			dy = pLB.y - pLT.y;
-			o.setAttitude(-atan2(dx, dy) * RAD_2_DEG + 180.0, 0,0);	// roll
+			o.setAttitude(-atan2(dx, dy) * RAD_2_DEG + 180.0, 0, 0); // roll
 
 			m_pU->add(o);
 			LOG_I("ID: " + i2str(o.getTopClass()));

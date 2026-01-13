@@ -19,28 +19,25 @@ namespace kai
 	{
 	}
 
-	bool _ADIObase::init(const json& j)
+	bool _ADIObase::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		Kiss *pKp = pK->child("port");
-		IF__(pKp->empty(), OK_OK);
+		const json &jP = j.at("ports");
+		IF__(!jP.is_object(), true);
 
-		int i = 0;
-		while (1)
+		for (auto it = jP.begin(); it != jP.end(); it++)
 		{
-			IF__(i >= ADIO_MAX_PORT, OK_ERR_INVALID_VALUE);
-			Kiss *pP = pKp->child(i++);
-			if (pP->empty())
-				break;
+			const json &Ji = it.value();
+			IF_CONT(!Ji.is_object());
 
 			ADIO_PORT port;
 			port.clear();
-			pP->v("bDigital", &port.m_bDigital);
-			pP->v("type", (int*)&port.m_type);
-			pP->v("addr", &port.m_addr);
-			pP->v("vW", &port.m_vW);
-			pP->v("vR", &port.m_vR);
+			port.m_bDigital = Ji.value("bDigital", port.m_bDigital);
+			port.m_type = Ji.value("type", port.m_type);
+			port.m_addr = Ji.value("addr", port.m_addr);
+			port.m_vW = Ji.value("vW", port.m_vW);
+			port.m_vR = Ji.value("vR", port.m_vR);
 
 			m_vPort.push_back(port);
 		}
@@ -48,7 +45,7 @@ namespace kai
 		return true;
 	}
 
-	bool _ADIObase::link(const json& j, ModuleMgr* pM)
+	bool _ADIObase::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 

@@ -12,20 +12,18 @@ namespace kai
 
 	_Contour::_Contour()
 	{
-		m_mode = RETR_EXTERNAL;
-		m_method = CHAIN_APPROX_NONE;
 	}
 
 	_Contour::~_Contour()
 	{
 	}
 
-	bool _Contour::init(const json& j)
+	bool _Contour::init(const json &j)
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_mode = j.value("mode", "");
-		m_method = j.value("method", "");
+		m_mode = j.value("mode", RETR_EXTERNAL);
+		m_method = j.value("method", CHAIN_APPROX_NONE);
 
 		return true;
 	}
@@ -38,9 +36,9 @@ namespace kai
 
 	bool _Contour::check(void)
 	{
-		NULL__(m_pU);
-		NULL__(m_pV);
-		IF__(m_pV->getFrameRGB()->bEmpty());
+		NULL_F(m_pU);
+		NULL_F(m_pV);
+		IF_F(m_pV->getFrameRGB()->bEmpty());
 
 		return this->_DetectorBase::check();
 	}

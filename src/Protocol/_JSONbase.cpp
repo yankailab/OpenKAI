@@ -5,35 +5,31 @@ namespace kai
 
     _JSONbase::_JSONbase()
     {
-        m_msgFinishSend = "";
-        m_msgFinishRecv = "EOJ";
     }
 
     _JSONbase::~_JSONbase()
     {
     }
 
-    bool _JSONbase::init(const json& j)
+    bool _JSONbase::init(const json &j)
     {
         IF_F(!this->_ProtocolBase::init(j));
-        Kiss *pK = (Kiss *)pKiss;
 
         m_msgFinishSend = j.value("msgFinishSend", "");
-        m_msgFinishRecv = j.value("msgFinishRecv", "");
+        m_msgFinishRecv = j.value("msgFinishRecv", "EOJ");
 
-        int v = SEC_2_USEC;
-        v = j.value("ieSendHB", "");
+        int v = j.value("ieSendHB", SEC_2_USEC);
         m_ieSendHB.init(v);
 
         return true;
     }
 
-	bool _JSONbase::link(const json& j, ModuleMgr* pM)
-	{
-		IF_F(!this->_ProtocolBase::link(j, pM));
+    bool _JSONbase::link(const json &j, ModuleMgr *pM)
+    {
+        IF_F(!this->_ProtocolBase::link(j, pM));
 
-		return true;
-	}
+        return true;
+    }
 
     bool _JSONbase::start(void)
     {
@@ -64,7 +60,7 @@ namespace kai
 
         if (m_ieSendHB.updateT(m_pT->getTfrom()))
         {
-//            sendHeartbeat();
+            //            sendHeartbeat();
         }
     }
 
@@ -96,32 +92,32 @@ namespace kai
 
             handleJson(strR);
             strR.clear();
-			m_nCMDrecv++;
+            m_nCMDrecv++;
         }
     }
 
-    bool _JSONbase::recvJson(string* pStr, _IObase* pIO)
+    bool _JSONbase::recvJson(string *pStr, _IObase *pIO)
     {
         IF_F(!check());
         NULL_F(pStr);
 
-		if (m_nRead == 0)
-		{
-			m_nRead = m_pIO->read(m_pBuf, JB_N_BUF);
-			IF_F(m_nRead <= 0);
-			m_iRead = 0;
-		}
+        if (m_nRead == 0)
+        {
+            m_nRead = m_pIO->read(m_pBuf, JB_N_BUF);
+            IF_F(m_nRead <= 0);
+            m_iRead = 0;
+        }
 
         unsigned int nStrFinish = m_msgFinishRecv.length();
 
-		while (m_iRead < m_nRead)
-		{
-			*pStr += m_pBuf[m_iRead++];
-			if (m_iRead == m_nRead)
-			{
-				m_iRead = 0;
-				m_nRead = 0;
-			}
+        while (m_iRead < m_nRead)
+        {
+            *pStr += m_pBuf[m_iRead++];
+            if (m_iRead == m_nRead)
+            {
+                m_iRead = 0;
+                m_nRead = 0;
+            }
 
             IF_CONT(pStr->length() <= nStrFinish);
 
@@ -131,7 +127,7 @@ namespace kai
             pStr->erase(pStr->length() - nStrFinish, nStrFinish);
             LOG_I("Received: " + *pStr);
             return true;
-		}
+        }
 
         return false;
     }

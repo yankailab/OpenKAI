@@ -31,7 +31,7 @@ namespace kai
 		IF_F(!this->_APmavlink_move::init(j));
 
 		m_iClass = j.value("iClass", -1);
-		m_vPsp = j.value("vPsp", vector<float>{0, 0, 0, 0});
+		m_vPsp = j.value("vPsp", 0);
 
 		int tOutTargetNotFound = j.value("tOutTargetNotFound", USEC_1SEC / 10);
 		m_tOutTargetNotFound.setTout(tOutTargetNotFound);

@@ -47,7 +47,7 @@ namespace kai
 		m_bFullScreen = j.value("bFullScreen", false);
 		m_bSceneCache = j.value("bSceneCache", false);
 		m_wPanel = j.value("wPanel", 15);
-		m_vBtnPadding = j.value("vBtnPadding", vector<float>{0, 0});
+		m_vBtnPadding = j.value("vBtnPadding", 0);
 		m_mouseMode = j.value("mouseMode", 0);
 		m_vDmove = j.value("vDmove", vector<float>{0.5, 5.0});
 
@@ -58,16 +58,16 @@ namespace kai
 		m_camProj.m_vBT = j.value("vCamBT", vector<float>{-10, 10});
 		m_camProj.m_vNF = j.value("vCamNF", vector<float>{0, FLT_MAX});
 
-		m_camDefault.m_vLookAt = j.value("vCamLookAt", vector<float>{0, 0, 0});
+		m_camDefault.m_vLookAt = j.value("vCamLookAt", 0);
 		m_camDefault.m_vEye = j.value("vCamEye", vector<float>{0, 0, 1});
 		m_camDefault.m_vUp = j.value("vCamUp", vector<float>{0, 1, 0});
 		m_cam = m_camDefault;
 
-		m_camAuto.m_vLookAt = j.value("vCamAutoLookAt", vector<float>{0, 0, 0});
+		m_camAuto.m_vLookAt = j.value("vCamAutoLookAt", 0);
 		m_camAuto.m_vEye = j.value("vCamAutoEye", vector<float>{0, 0, 1});
 		m_camAuto.m_vUp = j.value("vCamAutoUp", vector<float>{0, 1, 0});
 
-		m_vCoR = j.value("vCoR", vector<float>{0, 0, 0});
+		m_vCoR = j.value("vCoR", 0);
 
 		utility::SetVerbosityLevel(utility::VerbosityLevel::Error);
 
@@ -105,24 +105,24 @@ namespace kai
 
 		for (auto it = jg.begin(); it != jg.end(); it++)
 		{
-			const json &ji = it.value();
-			IF_CONT(!ji.is_object());
+			const json &Ji = it.value();
+			IF_CONT(!Ji.is_object());
 
-			string n = ji.value("_GeometryBase", "");
+			string n = Ji.value("_GeometryBase", "");
 			_GeometryBase *pGB = (_GeometryBase *)(pM->findModule(n));
 			IF_CONT(!pGB);
 
 			GVIEWER_OBJ g;
 			g.m_pGB = pGB;
 			g.m_name = n;
-			g.m_bStatic = ji.value("bStatic", true);
-			g.m_nPbuf = ji.value("nP", 0);
-			g.m_rDummyDome = ji.value("rDummyDome", 1000.0);
-			g.m_matName = ji.value("matName", "");
-			g.m_matCol = ji.value("matCol", vector<float>{1, 1, 1, 1});
-			g.m_matPointSize = ji.value("matPointSize", 1);
-			g.m_matLineWidth = ji.value("matLineWidth", 1);
-			g.m_iGridLS = ji.value("iGridLS", 0);
+			g.m_bStatic = Ji.value("bStatic", true);
+			g.m_nPbuf = Ji.value("nP", 0);
+			g.m_rDummyDome = Ji.value("rDummyDome", 1000.0);
+			g.m_matName = Ji.value("matName", "");
+			g.m_matCol = Ji.value("matCol", vector<float>{1, 1, 1, 1});
+			g.m_matPointSize = Ji.value("matPointSize", 1);
+			g.m_matLineWidth = Ji.value("matLineWidth", 1);
+			g.m_iGridLS = Ji.value("iGridLS", 0);
 
 			g.init();
 			g.updateMaterial();

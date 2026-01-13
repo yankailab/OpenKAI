@@ -32,7 +32,7 @@ namespace kai
 		virtual void* p(void);
 		virtual bool bWriter(void);
 
-	public:
+	protected:
 		string m_shmName;
 		int m_nB;
 		int m_fd;

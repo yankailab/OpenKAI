@@ -35,7 +35,7 @@ namespace kai
 		string n = "";
 		n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
-		NULL__(m_pV);
+		NULL_F(m_pV);
 
 		return true;
 	}
@@ -46,7 +46,7 @@ namespace kai
 
 	bool _TrackerBase::check(void)
 	{
-		NULL__(m_pV);
+		NULL_F(m_pV);
 
 		return this->_ModuleBase::check();
 	}

@@ -12,9 +12,6 @@ namespace kai
 
 	_TCPclient::_TCPclient()
 	{
-		m_strAddr = "";
-		m_port = 0;
-		m_bClient = true;
 		m_socket = 0;
 		m_ioType = io_tcp;
 		m_ioStatus = io_unknown;
@@ -25,13 +22,12 @@ namespace kai
 		close();
 	}
 
-	bool _TCPclient::init(const json& j)
+	bool _TCPclient::init(const json &j)
 	{
 		IF_F(!this->_IObase::init(j));
 
 		m_strAddr = j.value("addr", "");
-		= j.value("port", (int *)&m_port);
-
+		m_port = j.value("port", 0);
 		m_bClient = true;
 
 		return true;
@@ -108,7 +104,6 @@ namespace kai
 
 				LOG_I("send: " + i2str(nSend) + " bytes");
 			}
-
 		}
 	}
 

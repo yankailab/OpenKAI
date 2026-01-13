@@ -9,39 +9,28 @@ namespace kai
 
 	_YOLOv3::_YOLOv3()
 	{
-		m_thr = 0.5;
-		m_nms = 0.4;
-		m_vBlobSize.set(416, 416);
-		m_bSwapRB = true;
-		m_vMean.clear();
-		m_scale = 1.0 / 255.0;
-		m_iClassDraw = -1;
-
-		m_iBackend = cv::dnn::DNN_BACKEND_OPENCV;
-		m_iTarget = cv::dnn::DNN_TARGET_CPU;
 	}
 
 	_YOLOv3::~_YOLOv3()
 	{
 	}
 
-	bool _YOLOv3::init(const json& j)
+	bool _YOLOv3::init(const json &j)
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_thr = j.value("thr", "");
-		m_nms = j.value("nms", "");
-		m_vBlobSize = j.value("vBlobSize", "");
-		m_iBackend = j.value("iBackend", "");
-		m_iTarget = j.value("iTarget", "");
-		m_bSwapRB = j.value("bSwapRB", "");
-		m_scale = j.value("scale", "");
-		m_iClassDraw = j.value("iClassDraw", "");
-		m_vMean = j.value("vMean", "");
+		m_thr = j.value("thr", 0.5);
+		m_nms = j.value("nms", 0.4);
+		m_vBlobSize = j.value("vBlobSize", vector<int>{416, 416});
+		m_iBackend = j.value("iBackend", cv::dnn::DNN_BACKEND_OPENCV);
+		m_iTarget = j.value("iTarget", cv::dnn::DNN_TARGET_CPU);
+		m_bSwapRB = j.value("bSwapRB", true);
+		m_scale = j.value("scale", 1.0 / 255.0);
+		m_iClassDraw = j.value("iClassDraw", -1);
+		m_vMean = j.value("vMean", 0);
 
 		m_net = readNetFromDarknet(m_fModel, m_fWeight);
-
-		IF__(m_net.empty(), OK_ERR_INVALID_VALUE);
+		IF_F(m_net.empty());
 
 		m_net.setPreferableBackend(m_iBackend);
 		m_net.setPreferableTarget(m_iTarget);
@@ -64,12 +53,12 @@ namespace kai
 
 	bool _YOLOv3::check(void)
 	{
-		NULL__(m_pU);
-		NULL__(m_pV);
+		NULL_F(m_pU);
+		NULL_F(m_pV);
 		Frame *pBGR = m_pV->getFrameRGB();
-		NULL__(pBGR);
-		IF__(pBGR->bEmpty());
-		IF__(pBGR->tStamp() <= m_fRGB.tStamp());
+		NULL_F(pBGR);
+		IF_F(pBGR->bEmpty());
+		IF_F(pBGR->tStamp() <= m_fRGB.tStamp());
 
 		return this->_DetectorBase::check();
 	}

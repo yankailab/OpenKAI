@@ -27,7 +27,7 @@ namespace kai
 		IF__(m_nBuf <= 0, OK_ERR_INVALID_VALUE);
 
 		m_pO = new _Object[m_nBuf];
-		NULL__(m_pO, OK_ERR_ALLOCATION);
+		NULL__(m_pO);
 
 		return true;
 	}
@@ -38,7 +38,7 @@ namespace kai
 			m_nBuf = n;
 
 		m_pO = new _Object[m_nBuf];
-		NULL__(m_pO, OK_ERR_ALLOCATION);
+		NULL__(m_pO);
 
 		return true;
 	}

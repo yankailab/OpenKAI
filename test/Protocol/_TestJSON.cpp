@@ -16,7 +16,6 @@ namespace kai
     bool _TestJSON::init(const json& j)
     {
         IF_F(!this->_TestBase::init(j));
-        Kiss *pK = (Kiss *)pKiss;
 
         // vector<vInt4> vTest;
         // pK->a("avTest", &vTest);
@@ -28,7 +27,7 @@ namespace kai
     {
         IF_F(!this->_TestBase::link(j, pM));
 
-        Kiss *pK = (Kiss *)m_pKiss;
+        0
         string n;
 
         n = "";

@@ -9,21 +9,19 @@ namespace kai
 
 	_TFmobileNet::_TFmobileNet()
 	{
-		m_vSize.set(300, 300);
-		m_nThreads = 4;
-		m_confidence = 0.25;
 	}
 
 	_TFmobileNet::~_TFmobileNet()
 	{
 	}
 
-	bool _TFmobileNet::init(const json& j)
+	bool _TFmobileNet::init(const json &j)
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_nThreads = j.value("nThreads", "");
-		m_confidence = j.value("confidence", "");
+		m_vSize = j.value("vSize", vector<int>{300, 300});
+		m_nThreads = j.value("nThreads", 4);
+		m_confidence = j.value("confidence", 0.25);
 
 		return true;
 	}
@@ -36,11 +34,11 @@ namespace kai
 
 	bool _TFmobileNet::check(void)
 	{
-		NULL__(m_pU);
-		NULL__(m_pV);
+		NULL_F(m_pU);
+		NULL_F(m_pV);
 		Frame *pBGR = m_pV->getFrameRGB();
-		NULL__(pBGR);
-		IF__(pBGR->bEmpty());
+		NULL_F(pBGR);
+		IF_F(pBGR->bEmpty());
 
 		return this->_DetectorBase::check();
 	}

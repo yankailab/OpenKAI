@@ -23,20 +23,19 @@ namespace kai
     {
     }
 
-    bool _ROS_fastLio::init(const json& j)
+    bool _ROS_fastLio::init(const json &j)
     {
         IF_F(!this->_NavBase::init(j));
-        Kiss *pK = (Kiss *)pKiss;
 
-        Kiss *pKr = pK->child("threadROS");
-        if (pKr->empty())
-        {
-            LOG_E("threadROS not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
+        IF_Le_F(!j.contains("threadROS"), "json: threadROS not found");
+        DEL(m_pTros);
         m_pTros = new _Thread();
-        CHECK_d_l_(m_pTros->init(pKr), DEL(m_pTros), "threadROS init failed");
+        if (!m_pTros->init(j.at("threadROS")))
+        {
+            DEL(m_pTros);
+            LOG_E("threadROS.init() failed");
+            return false;
+        }
 
         rclcpp::init(0, NULL);
         m_pROSnode = std::make_shared<ROS_fastLio>();
@@ -44,14 +43,12 @@ namespace kai
         return m_pROSnode->init(pKn);
     }
 
-    bool _ROS_fastLio::link(const json& j, ModuleMgr* pM)
+    bool _ROS_fastLio::link(const json &j, ModuleMgr *pM)
     {
         IF_F(!this->_NavBase::link(j, pM));
-        Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
 #ifdef WITH_3D
-        n = "";
         n = j.value("_PCframe", "");
         m_pPCframe = (_PCframe *)(pM->findModule(n));
         m_pROSnode->m_pPCframe = m_pPCframe;
@@ -83,8 +80,6 @@ namespace kai
             m_pT->autoFPS();
 
             updateNav();
-
-
         }
     }
 
@@ -95,8 +90,7 @@ namespace kai
         m_mT = m_pROSnode->m_mT;
         m_vT = m_pROSnode->m_vP;
         m_vQ = m_pROSnode->m_vQ;
-		m_confidence = 30.0;
-
+        m_confidence = 30.0;
     }
 
     void _ROS_fastLio::updateROS(void)

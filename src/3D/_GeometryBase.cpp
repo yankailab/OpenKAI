@@ -44,8 +44,8 @@ namespace kai
             1.0 / m_vkColG.len(),
             1.0 / m_vkColB.len());
 
-        m_vT = j.value("vT", vector<double>{0, 0, 0});
-        m_vR = j.value("vR", vector<double>{0, 0, 0});
+        m_vT = j.value("vT", 0);
+        m_vR = j.value("vR", 0);
         setTranslation(m_vT);
         setRotation(m_vR);
         updateTranslationMatrix();

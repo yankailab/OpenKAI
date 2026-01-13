@@ -22,11 +22,11 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::init(j));
 
-		m_vPorigin = j.value("vPorigin", vector<float>{0, 0, 0});
-		m_vCellRangeX = j.value("vCellRangeX", vector<int>{0, 0});
-		m_vCellRangeY = j.value("vCellRangeY", vector<int>{0, 0});
-		m_vCellRangeZ = j.value("vCellRangeZ", vector<int>{0, 0});
-		m_vCellSize = j.value("vCellSize", vector<float>{0, 0, 0});
+		m_vPorigin = j.value("vPorigin", 0);
+		m_vCellRangeX = j.value("vCellRangeX", 0);
+		m_vCellRangeY = j.value("vCellRangeY", 0);
+		m_vCellRangeZ = j.value("vCellRangeZ", 0);
+		m_vCellSize = j.value("vCellSize", 0);
 
 		m_bVisual = j.value("bVisual", false);
 		m_vAxisColX = j.value("vAxisColX", vector<float>{1, 0, 0});

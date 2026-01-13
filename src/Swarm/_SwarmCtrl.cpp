@@ -20,7 +20,6 @@ namespace kai
     bool _SwarmCtrl::init(const json& j)
     {
         IF_F(!this->_ModuleBase::init(j));
-        Kiss *pK = (Kiss *)pKiss;
 
 
         m_node.m_id = j.value("myID", m_node.m_id);

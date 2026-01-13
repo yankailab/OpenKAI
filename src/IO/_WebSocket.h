@@ -21,7 +21,7 @@ namespace kai
 		_WebSocket();
 		virtual ~_WebSocket();
 
-		int init(void *pKiss = NULL);
+		virtual bool init(const json &j);
 		virtual void console(void *pConsole);
 
 		int read(uint8_t *pBuf, int nB);

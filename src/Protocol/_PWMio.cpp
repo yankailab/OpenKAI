@@ -4,23 +4,20 @@ namespace kai
 {
 	_PWMio::_PWMio()
 	{
-		m_nCr = 8;
-		m_nCw = 8;
 	}
 
 	_PWMio::~_PWMio()
 	{
 	}
 
-	bool _PWMio::init(const json& j)
+	bool _PWMio::init(const json &j)
 	{
 		IF_F(!this->_ProtocolBase::init(j));
 
-		m_nCr = j.value("nCr", "");
-		m_nCw = j.value("nCw", "");
+		m_nCr = j.value("nCr", 8);
+		m_nCw = j.value("nCw", 8);
 
-		vector<int> vPWM;
-		pK->a("vPWM", &vPWM);
+		vector<int> vPWM = j.value("vPWM", vector<int>{});
 		for (int i = 0; i < vPWM.size(); i++)
 		{
 			if (i >= m_nCw)
@@ -46,7 +43,6 @@ namespace kai
 			m_pT->autoFPS();
 
 			send();
-
 		}
 	}
 
@@ -84,7 +80,7 @@ namespace kai
 		}
 	}
 
-	void _PWMio::handleCMD(const PROTOCOL_CMD& cmd)
+	void _PWMio::handleCMD(const PROTOCOL_CMD &cmd)
 	{
 		switch (cmd.m_cmd)
 		{

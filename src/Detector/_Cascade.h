@@ -33,7 +33,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		cv::CascadeClassifier m_CC;
 		Ptr<cuda::CascadeClassifier> m_pGCC;
 

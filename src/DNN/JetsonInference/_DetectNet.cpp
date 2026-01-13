@@ -15,8 +15,6 @@ namespace kai
 		m_pDN = nullptr;
 		m_nBox = 0;
 		m_nClass = 0;
-		m_type = detectNet_uff;
-		m_thr = 0.5;
 		m_layerIn = "Input";
 		m_layerOut = "NMS";
 		m_layerNboxOut = "NMS_1";
@@ -25,9 +23,6 @@ namespace kai
 		m_precision = TYPE_FASTEST;
 		m_device = DEVICE_GPU;
 		m_bAllowGPUfallback = true;
-
-		m_bSwapRB = false;
-		m_vMean.init();
 	}
 
 	_DetectNet::~_DetectNet()
@@ -36,14 +31,14 @@ namespace kai
 		DEL(m_pRGBAf);
 	}
 
-	bool _DetectNet::init(const json& j)
+	bool _DetectNet::init(const json &j)
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_thr = j.value("thr", "");
-		m_bSwapRB = j.value("bSwapRB", "");
-		m_vMean = j.value("vMean", "");
-		= j.value("type", (int *)&m_type);
+		m_thr = j.value("thr", 0.5);
+		m_bSwapRB = j.value("bSwapRB", false);
+		m_vMean = j.value("vMean", 0);
+		m_type = j.value("type", detectNet_uff);
 
 		m_pRGBA = new Frame();
 		m_pRGBAf = new Frame();
@@ -59,12 +54,12 @@ namespace kai
 
 	bool _DetectNet::check(void)
 	{
-		NULL__(m_pV);
-		NULL__(m_pU);
-		NULL__(m_pDN);
+		NULL_F(m_pV);
+		NULL_F(m_pU);
+		NULL_F(m_pDN);
 		Frame *pBGR = m_pV->getFrameRGB();
-		NULL__(pBGR);
-		IF__(pBGR->bEmpty());
+		NULL_F(pBGR);
+		IF_F(pBGR->bEmpty());
 
 		return this->_DetectorBase::check();
 	}
@@ -104,7 +99,6 @@ namespace kai
 
 			detect();
 			m_pU->swap();
-
 		}
 	}
 

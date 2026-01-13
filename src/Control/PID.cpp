@@ -12,13 +12,6 @@ namespace kai
 
 	PID::PID()
 	{
-		m_P = 0;
-		m_I = 0;
-		m_Imax = 0;
-		m_D = 0;
-		m_vRin.set(-FLT_MAX, FLT_MAX);
-		m_vRout.set(-FLT_MAX, FLT_MAX);
-
 		reset();
 	}
 
@@ -26,17 +19,17 @@ namespace kai
 	{
 	}
 
-	bool PID::init(const json& j)
+	bool PID::init(const json &j)
 	{
 		IF_F(!this->BASE::init(j));
 
-		m_P = j.value("P", "");
-		m_I = j.value("I", "");
-		m_Imax = j.value("Imax", "");
-		m_D = j.value("D", "");
+		m_P = j.value("P", 0);
+		m_I = j.value("I", 0);
+		m_Imax = j.value("Imax", 0);
+		m_D = j.value("D", 0);
 
-		m_vRin = j.value("vRin", "");
-		m_vRout = j.value("vRout", "");
+		m_vRin = j.value("vRin", vector<float>{-FLT_MAX, FLT_MAX});
+		m_vRout = j.value("vRout", vector<float>{-FLT_MAX, FLT_MAX});
 
 		return true;
 	}

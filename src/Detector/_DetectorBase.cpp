@@ -11,18 +11,13 @@ namespace kai
 	{
 		m_pV = nullptr;
 		m_pU = nullptr;
-
-		m_fModel = "";
-		m_fWeight = "";
-		m_fMean = "";
-		m_fClass = "";
 	}
 
 	_DetectorBase::~_DetectorBase()
 	{
 	}
 
-	bool _DetectorBase::init(const json& j)
+	bool _DetectorBase::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
@@ -36,7 +31,7 @@ namespace kai
 		if (!m_fClass.empty())
 		{
 			ifstream ifs(m_fClass.c_str());
-			IF__(!ifs.is_open());
+			IF_F(!ifs.is_open());
 
 			string line;
 			while (std::getline(ifs, line))
@@ -48,13 +43,13 @@ namespace kai
 		}
 		else
 		{
-			pK->a("vClass", &m_vClass);
+			m_vClass = j.value("vClass", vector<string>{});
 		}
 
 		return true;
 	}
 
-	bool _DetectorBase::link(const json& j, ModuleMgr* pM)
+	bool _DetectorBase::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
@@ -106,7 +101,7 @@ namespace kai
 		return m_vClass[iClass];
 	}
 
-	_Universe* _DetectorBase::getU(void)
+	_Universe *_DetectorBase::getU(void)
 	{
 		return m_pU;
 	}

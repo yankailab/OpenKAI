@@ -9,35 +9,27 @@ namespace kai
 
 	_OpenPose::_OpenPose()
 	{
-		m_nW = 368;
-		m_nH = 368;
-		m_bSwapRB = false;
-		m_vMean.clear();
-		m_scale = 1.0 / 255.0;
-		m_thr = 0.1;
-
-		m_iBackend = dnn::DNN_BACKEND_OPENCV;
-		m_iTarget = dnn::DNN_TARGET_CPU;
 	}
 
 	_OpenPose::~_OpenPose()
 	{
 	}
 
-	bool _OpenPose::init(const json& j)
+	bool _OpenPose::init(const json &j)
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_nW = j.value("nW", "");
-		m_nH = j.value("nH", "");
-		m_iBackend = j.value("iBackend", "");
-		m_iTarget = j.value("iTarget", "");
-		m_bSwapRB = j.value("bSwapRB", "");
-		m_scale = j.value("scale", "");
-		m_vMean = j.value("vMean", "");
+		m_nW = j.value("nW", 368);
+		m_nH = j.value("nH", 368);
+		m_iBackend = j.value("iBackend", dnn::DNN_BACKEND_OPENCV);
+		m_iTarget = j.value("iTarget", dnn::DNN_TARGET_CPU);
+		m_bSwapRB = j.value("bSwapRB", false);
+		m_scale = j.value("scale", 1.0 / 255.0);
+		m_vMean = j.value("vMean", 0);
+		m_thr = j.value("thr", 0.1);
 
 		m_net = readNetFromCaffe(m_fModel, m_fWeight);
-		IF__(m_net.empty(), OK_ERR_INVALID_VALUE);
+		IF_F(m_net.empty());
 
 		m_net.setPreferableBackend(m_iBackend);
 		m_net.setPreferableTarget(m_iTarget);
@@ -53,11 +45,11 @@ namespace kai
 
 	bool _OpenPose::check(void)
 	{
-		NULL__(m_pV);
+		NULL_F(m_pV);
 		Frame *pBGR = m_pV->getFrameRGB();
-		NULL__(pBGR);
-		IF__(pBGR->bEmpty());
-		IF__(pBGR->tStamp() <= m_fRGB.tStamp());
+		NULL_F(pBGR);
+		IF_F(pBGR->bEmpty());
+		IF_F(pBGR->tStamp() <= m_fRGB.tStamp());
 
 		return this->_DetectorBase::check();
 	}
@@ -136,7 +128,7 @@ namespace kai
 		}
 	}
 
-	void _OpenPose::draw(void* pFrame)
+	void _OpenPose::draw(void *pFrame)
 	{
 		NULL_(pFrame);
 		this->_DetectorBase::draw(pFrame);

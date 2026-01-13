@@ -18,32 +18,29 @@ namespace kai
 		DEL(m_pTr);
 	}
 
-	bool _ProtocolBase::init(const json& j)
+	bool _ProtocolBase::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		Kiss *pKt = pK->child("threadR");
-		if (pKt->empty())
-		{
-			LOG_E("threadR not found");
-			return OK_ERR_NOT_FOUND;
-		}
-
+		IF_Le_F(!j.contains("threadR"), "json: thread not found");
+		DEL(m_pTr);
 		m_pTr = new _Thread();
-		CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "threadR init failed");
+		if (!m_pTr->init(j.at("threadR")))
+		{
+			DEL(m_pTr);
+			LOG_E("threadR.init() failed");
+			return false;
+		}
 
 		return true;
 	}
 
-	bool _ProtocolBase::link(const json& j, ModuleMgr* pM)
+	bool _ProtocolBase::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
-		IF_F(!m_pTr->link());
+		IF_F(!m_pTr->link(j.at("threadR"), pM));
 
-		string n;
-
-		n = "";
-		n = j.value("_IObase", "");
+		string n = j.value("_IObase", "");
 		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 
@@ -131,7 +128,7 @@ namespace kai
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
-		if(m_pTr)
+		if (m_pTr)
 			m_pTr->console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;

@@ -23,7 +23,6 @@ namespace kai
     bool _RoboSenseAiry::init(const json& j)
     {
         IF_F(!this->_PCstream::init(j));
-        Kiss *pK = (Kiss *)pKiss;
 
         // common thread config
         Kiss *pKd = pK->child("threadDIFOP");
@@ -43,7 +42,7 @@ namespace kai
     {
         IF_F(!this->_PCstream::link(j, pM));
 
-        Kiss *pK = (Kiss *)m_pKiss;
+        0
         string n;
 
         n = "";

@@ -18,21 +18,21 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		const json &js = j.at("sections");
-		IF__(!js.is_object(), true);
+		const json &jS = j.at("sections");
+		IF__(!jS.is_object(), true);
 
 		m_nSection = 0;
-		for (auto it = js.begin(); it != js.end(); it++)
+		for (auto it = jS.begin(); it != jS.end(); it++)
 		{
-			const json &ji = it.value();
-			IF_CONT(!ji.is_object());
+			const json &Ji = it.value();
+			IF_CONT(!Ji.is_object());
 
 			DIST_LIDAR_SECTION *pS = &m_pSection[m_nSection];
 			pS->init();
-			pS->m_orientation = ji.value("orientation", pS->m_orientation);
-			pS->m_degFrom = ji.value("degFrom", pS->m_degFrom);
-			pS->m_degTo = ji.value("degTo", pS->m_degTo);
-			pS->m_sensorScale = ji.value("sensorScale", pS->m_sensorScale);
+			pS->m_orientation = Ji.value("orientation", pS->m_orientation);
+			pS->m_degFrom = Ji.value("degFrom", pS->m_degFrom);
+			pS->m_degTo = Ji.value("degTo", pS->m_degTo);
+			pS->m_sensorScale = Ji.value("sensorScale", pS->m_sensorScale);
 
 			IF_F(pS->m_degFrom < 0);
 			IF_F(pS->m_degTo < 0);

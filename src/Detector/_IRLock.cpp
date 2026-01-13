@@ -23,28 +23,22 @@ namespace kai
 	{
 	}
 
-	bool _IRLock::init(const json& j)
+	bool _IRLock::init(const json &j)
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		vFloat2 vCamSize;
-		if (= j.value("vCamSize", &vCamSize))
-		{
-			m_vOvCamSize.x = 1.0 / vCamSize.x;
-			m_vOvCamSize.y = 1.0 / vCamSize.y;
-		}
+		vFloat2 vCamSize = j.value("vCamSize", vector<float>{319, 199});
+		m_vOvCamSize.x = 1.0 / vCamSize.x;
+		m_vOvCamSize.y = 1.0 / vCamSize.y;
 
 		return true;
 	}
 
-	bool _IRLock::link(const json& j, ModuleMgr* pM)
+	bool _IRLock::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_DetectorBase::link(j, pM));
 
-
-		string n;
-		n = "";
-		n = j.value("_IObase", "");
+		string n = j.value("_IObase", "");
 		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 
@@ -53,7 +47,7 @@ namespace kai
 
 	bool _IRLock::check(void)
 	{
-		NULL__(m_pU);
+		NULL_F(m_pU);
 		NULL_F(m_pIO);
 
 		return this->_DetectorBase::check();

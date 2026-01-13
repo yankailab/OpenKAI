@@ -28,7 +28,6 @@ namespace kai
     bool clBase::init(const json& j)
     {
         IF_F(!this->BASE::init(j));
-        Kiss *pK = (Kiss *)pKiss;
 
         m_fKernel = j.value("fKernel", "");
         m_buildOpt = j.value("buildOpt", "");

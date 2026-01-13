@@ -55,7 +55,7 @@ namespace kai
 		Median<float> *m_pMed = NULL;
 		Average<float> *m_pAvr = NULL;
 		double m_deviation;
-		vDouble4 m_ROI;
+		vFloat4 m_ROI;
 
 		double *m_pX = NULL;
 		double *m_pY = NULL;
@@ -199,7 +199,8 @@ namespace kai
 		_Lane();
 		virtual ~_Lane();
 
-		virtual bool init(const json& j);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual void draw(void *pFrame);
 		virtual void console(void *pConsole);
@@ -216,13 +217,14 @@ namespace kai
 			return NULL;
 		}
 
+	protected:
 		_VisionBase *m_pV;
 		vInt2 m_vSize;
 
-		vDouble2 m_roiLT;
-		vDouble2 m_roiLB;
-		vDouble2 m_roiRT;
-		vDouble2 m_roiRB;
+		vFloat2 m_vRoiLT;
+		vFloat2 m_vRoiLB;
+		vFloat2 m_vRoiRT;
+		vFloat2 m_vRoiRB;
 		Mat m_mPerspective;
 		Mat m_mPerspectiveInv;
 		vInt2 m_sizeOverhead;

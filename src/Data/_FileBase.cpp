@@ -19,12 +19,11 @@ namespace kai
 		m_vExt.clear();
 	}
 
-	bool _FileBase::init(const json& j)
+	bool _FileBase::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_vExt.clear();
-		pK->a("vExt", &m_vExt);
+		m_vExt = j.value("vExt", vector<string>{});
 
 		return true;
 	}

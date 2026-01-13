@@ -52,12 +52,12 @@ namespace kai
 
 		for (auto it = jm.begin(); it != jm.end(); it++)
 		{
-			const json &ji = it.value();
-			IF_CONT(!ji.is_object());
+			const json &Ji = it.value();
+			IF_CONT(!Ji.is_object());
 
-			if (!m_pMav->setMsgInterval(ji.value("id", 0), ji.value("tInt", 1) * SEC_2_USEC))
+			if (!m_pMav->setMsgInterval(Ji.value("id", 0), Ji.value("tInt", 1) * SEC_2_USEC))
 			{
-				LOG_E("Interval msg id = " + i2str(ji.value("id", 0)) + " not found");
+				LOG_E("Interval msg id = " + i2str(Ji.value("id", 0)) + " not found");
 			}
 		}
 

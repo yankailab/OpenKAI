@@ -5,7 +5,6 @@ namespace kai
 
 	_SocketCAN::_SocketCAN()
 	{
-		m_ifName = "can0";
 		m_socket = -1;
 	}
 
@@ -14,20 +13,18 @@ namespace kai
 		close();
 	}
 
-	bool _SocketCAN::init(const json& j)
+	bool _SocketCAN::init(const json &j)
 	{
 		IF_F(!this->_CANbase::init(j));
 
-		m_ifName = j.value("ifName", "");
+		m_ifName = j.value("ifName", "can0");
 
 		return true;
 	}
 
-	bool _SocketCAN::link(const json& j, ModuleMgr* pM)
+	bool _SocketCAN::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_CANbase::link(j, pM));
-
-		string n;
 
 		return true;
 	}

@@ -12,19 +12,17 @@ namespace kai
     {
     }
 
-    bool _Xbee::init(const json& j)
+    bool _Xbee::init(const json &j)
     {
         IF_F(!this->_ProtocolBase::init(j));
-        Kiss *pK = (Kiss *)pKiss;
 
-        string addr = "";
-        addr = j.value("myAddr", "");
+        string addr = j.value("myAddr", "");
         m_myAddr = getAddr(addr);
 
         return true;
     }
 
-    bool _Xbee::link(const json& j, ModuleMgr* pM)
+    bool _Xbee::link(const json &j, ModuleMgr *pM)
     {
         IF_F(!this->_ProtocolBase::link(j, pM));
 
@@ -51,7 +49,6 @@ namespace kai
             m_pT->autoFPS();
 
             updateMesh();
-
         }
     }
 
@@ -80,7 +77,7 @@ namespace kai
 
     void _Xbee::updateR(void)
     {
-  		XBframe xbFrame;
+        XBframe xbFrame;
         xbFrame.clear();
 
         while (m_pTr->bAlive())
@@ -93,43 +90,43 @@ namespace kai
         }
     }
 
-    bool _Xbee::readFrame(XBframe* pF)
+    bool _Xbee::readFrame(XBframe *pF)
     {
         IF_F(!check());
-		NULL_F(pF);
+        NULL_F(pF);
 
-		if (m_nRead == 0)
-		{
-			m_nRead = m_pIO->read(m_pBuf, PB_N_BUF);
-			IF_F(m_nRead <= 0);
-			m_iRead = 0;
-		}
+        if (m_nRead == 0)
+        {
+            m_nRead = m_pIO->read(m_pBuf, PB_N_BUF);
+            IF_F(m_nRead <= 0);
+            m_iRead = 0;
+        }
 
-		while (m_iRead < m_nRead)
-		{
-			bool r = pF->input(m_pBuf[m_iRead++]);
-			if (m_iRead == m_nRead)
-			{
-				m_iRead = 0;
-				m_nRead = 0;
-			}
+        while (m_iRead < m_nRead)
+        {
+            bool r = pF->input(m_pBuf[m_iRead++]);
+            if (m_iRead == m_nRead)
+            {
+                m_iRead = 0;
+                m_nRead = 0;
+            }
 
-			IF__(r, true);
-		}
+            IF__(r, true);
+        }
 
-		return false;
+        return false;
     }
 
-    void _Xbee::handleFrame(XBframe* pF)
+    void _Xbee::handleFrame(XBframe *pF)
     {
-		NULL_(pF);
+        NULL_(pF);
 
         uint8_t fType = pF->m_pB[3];
 
         if (fType == 0x90)
         {
             // Receive Packet
-    		XBframe_receivePacket rP;
+            XBframe_receivePacket rP;
             IF_(!rP.decode(pF->m_pB, pF->m_iB));
 
             m_cbReceivePacket.call(rP);
@@ -170,7 +167,6 @@ namespace kai
         {
             // Remote AT Command Response
         }
-
     }
 
     uint64_t _Xbee::getMyAddr(void)
@@ -183,13 +179,13 @@ namespace kai
         return strtol(sAddr.c_str(), NULL, 16);
     }
 
-	bool _Xbee::setCbReceivePacket(CbXBeeReceivePacket pCb, void *pInst)
-	{
-		NULL_F(pInst);
+    bool _Xbee::setCbReceivePacket(CbXBeeReceivePacket pCb, void *pInst)
+    {
+        NULL_F(pInst);
 
-		m_cbReceivePacket.set(pCb, pInst);
-		return true;
-	}
+        m_cbReceivePacket.set(pCb, pInst);
+        return true;
+    }
 
     void _Xbee::console(void *pConsole)
     {

@@ -54,7 +54,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		_IObase *m_pIO;
 		uint8_t m_pBuf[IRLOCK_N_BUF];
 		int m_iBuf;

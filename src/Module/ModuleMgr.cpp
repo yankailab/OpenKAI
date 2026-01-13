@@ -37,13 +37,13 @@ namespace kai
 	bool ModuleMgr::createAll(void)
 	{
 		Module md;
-		json js = m_jCfg.getJson();
-		for (auto it = js.begin(); it != js.end(); it++)
+		json jC = m_jCfg.getJson();
+		for (auto it = jC.begin(); it != jC.end(); it++)
 		{
-			const json &j = it.value();
-			IF_CONT(!j.is_object());
+			const json &Ji = it.value();
+			IF_CONT(!Ji.is_object());
 
-			string n = j.value("name", "");
+			string n = Ji.value("name", "");
 			if (n.empty())
 			{
 				LOG_I("Module name is empty");
@@ -56,7 +56,7 @@ namespace kai
 				continue;
 			}
 
-			string c = j.value("class", "");
+			string c = Ji.value("class", "");
 			IF_CONT(c == "ModuleMgr");
 			if (c.empty())
 			{
@@ -64,7 +64,7 @@ namespace kai
 				continue;
 			}
 
-			int bON = j.value("bON", 1);
+			int bON = Ji.value("bON", 1);
 			if (bON == 0)
 			{
 				LOG_I("Module disabled: " + n);

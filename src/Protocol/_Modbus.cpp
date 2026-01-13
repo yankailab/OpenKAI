@@ -8,21 +8,7 @@ namespace kai
 		pthread_mutex_init(&m_mutex, NULL);
 
 		m_pMb = nullptr;
-		m_type = "RTU";
-		m_bModbusDebug = false;
-		m_nErrReconnect = 0;
-
-		m_rtuPort = "";
-		m_rtuParity = 'E';
-		m_rtuBaud = 115200;
-
-		m_tcpAddr = "";
-		m_tcpPort = 0;
-
 		m_bOpen = false;
-		m_tIntervalUsec = 10000;
-		m_tOutSec = 1;
-		m_tOutUSec = 0;
 	}
 
 	_Modbus::~_Modbus()
@@ -35,25 +21,25 @@ namespace kai
 		m_pMb = nullptr;
 	}
 
-	bool _Modbus::init(const json& j)
+	bool _Modbus::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_bModbusDebug = j.value("bModbusDebug", "");
-		m_nErrReconnect = j.value("nErrReconnect", "");
+		m_bModbusDebug = j.value("bModbusDebug", false);
+		m_nErrReconnect = j.value("nErrReconnect", 0);
 
 		m_rtuPort = j.value("rtuPort", "");
-		m_rtuParity = j.value("rtuParity", "");
-		m_rtuBaud = j.value("rtuBaud", "");
+		m_rtuParity = j.value("rtuParity", 'E');
+		m_rtuBaud = j.value("rtuBaud", 115200);
 
 		m_tcpAddr = j.value("tcpAddr", "");
-		m_tcpPort = j.value("tcpPort", "");
+		m_tcpPort = j.value("tcpPort", 0);
 
-		m_tIntervalUsec = j.value("tIntervalUsec", "");
-		m_tOutSec = j.value("tOutSec", "");
-		m_tOutUSec = j.value("tOutUSec", "");
+		m_tIntervalUsec = j.value("tIntervalUsec", 10000);
+		m_tOutSec = j.value("tOutSec", 1);
+		m_tOutUSec = j.value("tOutUSec", 0);
 
-		m_type = j.value("type", "");
+		m_type = j.value("type", "RTU");
 		if (m_type == "RTU")
 		{
 			m_pMb = modbus_new_rtu(m_rtuPort.c_str(), m_rtuBaud, *m_rtuParity.c_str(), 8, 1);
@@ -121,8 +107,8 @@ namespace kai
 
 	bool _Modbus::check(void)
 	{
-		NULL__(m_pMb);
-		IF__(!bOpen());
+		NULL_F(m_pMb);
+		IF_F(!bOpen());
 
 		return this->_ModuleBase::check();
 	}
@@ -157,7 +143,7 @@ namespace kai
 	// Function code: 2
 	int _Modbus::readInputBits(int iSlave, int addr, int nB, uint8_t *pB)
 	{
-		IF__(check() != OK_OK, -1);
+		IF__(!check(), -1);
 		NULL__(pB, -1);
 
 		int r = -1;
@@ -183,7 +169,7 @@ namespace kai
 	// Function code: 3
 	int _Modbus::readRegisters(int iSlave, int addr, int nRegister, uint16_t *pB)
 	{
-		IF__(check() != OK_OK, -1);
+		IF__(!check(), -1);
 		NULL__(pB, -1);
 
 		int r = -1;
@@ -209,7 +195,7 @@ namespace kai
 	// Function code: 5
 	int _Modbus::writeBit(int iSlave, int addr, bool bStatus)
 	{
-		IF__(check() != OK_OK, -1);
+		IF__(!check(), -1);
 
 		int r = -1;
 
@@ -236,7 +222,7 @@ namespace kai
 	// Function code: 6
 	int _Modbus::writeRegister(int iSlave, int addr, int v)
 	{
-		IF__(check() != OK_OK, -1);
+		IF__(!check(), -1);
 
 		int r = -1;
 
@@ -263,7 +249,7 @@ namespace kai
 	// Function code: 10
 	int _Modbus::writeRegisters(int iSlave, int addr, int nRegister, uint16_t *pB)
 	{
-		IF__(check() != OK_OK, -1);
+		IF__(!check(), -1);
 		NULL__(pB, -1);
 
 		int r = -1;
@@ -288,7 +274,7 @@ namespace kai
 
 	int _Modbus::sendRawRequest(uint8_t *pB, int nB)
 	{
-		IF__(check() != OK_OK, -1);
+		IF__(!check(), -1);
 		NULL__(pB, -1);
 
 		pthread_mutex_lock(&m_mutex);
@@ -308,7 +294,7 @@ namespace kai
 
 	int _Modbus::sendRawRequest(int iSlave, uint8_t *pB, int nB)
 	{
-		IF__(check() != OK_OK, -1);
+		IF__(!check(), -1);
 		NULL__(pB, -1);
 
 		int r = -1;

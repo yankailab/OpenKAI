@@ -35,7 +35,7 @@ namespace kai
 		n = "";
 		n = j.value("_RGBDbase", "");
 		m_pV = (_RGBDbase *)(pM->findModule(n));
-		NULL__(m_pV);
+		NULL_F(m_pV);
 
 		return true;
 	}

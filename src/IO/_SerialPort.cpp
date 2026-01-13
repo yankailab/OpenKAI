@@ -7,14 +7,7 @@ namespace kai
 	_SerialPort::_SerialPort(void)
 	{
 		m_fd = -1;
-		m_port = "";
 		m_ioType = io_serialPort;
-
-		m_baud = 115200;
-		m_dataBits = 8;
-		m_stopBits = 1;
-		m_parity = false;
-		m_hardwareControl = false;
 	}
 
 	_SerialPort::~_SerialPort()
@@ -22,21 +15,21 @@ namespace kai
 		close();
 	}
 
-	bool _SerialPort::init(const json& j)
+	bool _SerialPort::init(const json &j)
 	{
 		IF_F(!this->_IObase::init(j));
 
 		m_port = j.value("port", "");
-		m_baud = j.value("baud", "");
-		m_dataBits = j.value("dataBits", "");
-		m_stopBits = j.value("stopBits", "");
-		m_parity = j.value("parity", "");
-		m_hardwareControl = j.value("hardwareControl", "");
+		m_baud = j.value("baud", 115200);
+		m_dataBits = j.value("dataBits", 8);
+		m_stopBits = j.value("stopBits", 1);
+		m_parity = j.value("parity", false);
+		m_hardwareControl = j.value("hardwareControl", false);
 
 		return true;
 	}
 
-	bool _SerialPort::link(const json& j, ModuleMgr* pM)
+	bool _SerialPort::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_IObase::link(j, pM));
 
@@ -103,7 +96,6 @@ namespace kai
 			}
 
 			tcdrain(m_fd);
-
 		}
 	}
 

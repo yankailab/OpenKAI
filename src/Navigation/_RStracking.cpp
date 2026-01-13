@@ -28,7 +28,7 @@ namespace kai
 
 	bool _RStracking::open(void)
 	{
-		IF__(m_flag.b(F_OPEN));
+		IF_F(!m_flag.b(F_OPEN));
 
 		try
 		{

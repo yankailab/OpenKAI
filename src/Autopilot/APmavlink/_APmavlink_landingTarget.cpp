@@ -49,12 +49,12 @@ namespace kai
 
 		for (auto it = jc.begin(); it != jc.end(); it++)
 		{
-			const json &ji = it.value();
-			IF_CONT(!ji.is_object());
+			const json &Ji = it.value();
+			IF_CONT(!Ji.is_object());
 
 			AP_LANDING_TARGET_TAG t;
-			t.m_id = ji.value("id", t.m_id);
-			t.m_priority = ji.value("priority", t.m_priority);
+			t.m_id = Ji.value("id", t.m_id);
+			t.m_priority = Ji.value("priority", t.m_priority);
 			m_vTags.push_back(t);
 		}
 

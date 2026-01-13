@@ -39,7 +39,7 @@ namespace kai
 		n = "";
 		n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
-		NULL__(m_pV);
+		NULL_F(m_pV);
 
 		return true;
 	}

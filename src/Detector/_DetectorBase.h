@@ -21,15 +21,15 @@ namespace kai
 		_DetectorBase();
 		virtual ~_DetectorBase();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 
 		virtual bool loadModel(void);
 		virtual int getClassIdx(string &className);
 		virtual string getClassName(int iClass);
-		virtual _Universe* getU(void);
+		virtual _Universe *getU(void);
 
 	protected:
 		virtual void onPause(void);

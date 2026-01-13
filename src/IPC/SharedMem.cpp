@@ -14,11 +14,8 @@ namespace kai
 
 	SharedMem::SharedMem()
 	{
-		m_shmName = "";
-		m_nB = 0;
 		m_fd = 0;
 		m_pB = 0;
-		m_bWriter = true;
 		m_bOpen = false;
 	}
 
@@ -27,20 +24,20 @@ namespace kai
 		close();
 	}
 
-	bool SharedMem::init(const json& j)
+	bool SharedMem::init(const json &j)
 	{
 		IF_F(!this->BASE::init(j));
 
 		m_shmName = j.value("shmName", "");
-		m_nB = j.value("nB", "");
-		m_bWriter = j.value("bWriter", "");
+		m_nB = j.value("nB", 0);
+		m_bWriter = j.value("bWriter", true);
 
-		IF__(!open());
+		IF_F(!open());
 
 		return true;
 	}
 
-	bool SharedMem::link(const json& j, ModuleMgr* pM)
+	bool SharedMem::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->BASE::link(j, pM));
 
@@ -85,7 +82,7 @@ namespace kai
 
 		if (!m_bWriter)
 		{
-//			shm_unlink(m_shmName.c_str());
+			//			shm_unlink(m_shmName.c_str());
 		}
 	}
 

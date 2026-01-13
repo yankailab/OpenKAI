@@ -39,7 +39,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		vInt2 m_vSize;
 		std::vector<std::string> m_Labels;
 		std::unique_ptr<tflite::Interpreter> m_interpreter;

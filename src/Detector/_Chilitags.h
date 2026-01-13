@@ -26,7 +26,7 @@ namespace kai
 		_Chilitags();
 		virtual ~_Chilitags();
 
-		virtual bool init(const json& j);
+		virtual bool init(const json &j);
 		virtual bool start(void);
 		virtual void draw(void *pFrame);
 		virtual void console(void *pConsole);

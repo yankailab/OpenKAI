@@ -13,20 +13,18 @@ namespace kai
 	_MotionDetector::_MotionDetector()
 	{
 		m_pVision = NULL;
-		m_algorithm = "";
-		m_learningRate = -1;
 	}
 
 	_MotionDetector::~_MotionDetector()
 	{
 	}
 
-	bool _MotionDetector::init(const json& j)
+	bool _MotionDetector::init(const json &j)
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		= j.value<string>("algorithm", &m_algorithm);
-		= j.value<double>("learningRate", &m_learningRate);
+		m_algorithm = j.value("algorithm", "");
+		m_learningRate = j.value("learningRate", -1);
 
 		//	if(m_algorithm == "cnt")
 		//	{
@@ -50,9 +48,16 @@ namespace kai
 		//	}
 		//
 
-		string n = "";
-		n = j.value("_VisionBase", "");
+		return true;
+	}
+
+	bool _MotionDetector::link(const json &j, ModuleMgr *pM)
+	{
+		IF_F(!this->_ModuleBase::link(j, pM));
+
+		string n = j.value("_VisionBase", "");
 		m_pVision = (_VisionBase *)(pM->findModule(n));
+		NULL_F(m_pVision);
 
 		return true;
 	}
@@ -65,9 +70,9 @@ namespace kai
 
 	bool _MotionDetector::check(void)
 	{
-		NULL__(m_pU);
-		NULL__(m_pV);
-		IF__(m_pV->getFrameRGB()->bEmpty());
+		NULL_F(m_pU);
+		NULL_F(m_pV);
+		IF_F(m_pV->getFrameRGB()->bEmpty());
 
 		return this->_DetectorBase::check();
 	}

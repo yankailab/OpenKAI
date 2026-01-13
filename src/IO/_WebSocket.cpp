@@ -22,19 +22,15 @@ namespace kai
 		close();
 	}
 
-	bool _WebSocket::init(const json& j)
+	bool _WebSocket::init(const json &j)
 	{
+		IF_F(!this->_IObase::init(j));
 
-		int nPacket = 1024;
-		int nPbuffer = 512;
-		if (pK)
-		{
-			nPacket = j.value("nPacket", "");
-			nPbuffer = j.value("nPbuffer", "");
-		}
+		int nPacket = j.value("nPacket", 1024);
+		int nPbuffer = j.value("nPbuffer", 512);
 
-		IF__(!m_packetW.init(nPbuffer, nPacket), OK_ERR_ALLOCATION);
-		IF__(!m_packetR.init(nPbuffer, nPacket), OK_ERR_ALLOCATION);
+		IF_F(!m_packetW.init(nPbuffer, nPacket));
+		IF_F(!m_packetR.init(nPbuffer, nPacket));
 
 		return true;
 	}

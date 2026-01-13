@@ -7,29 +7,25 @@ namespace kai
 	{
 		m_bOpen = false;
 		m_nFrameRecv = 0;
-
 		m_iErr = 0;
-		m_nErrReconnect = 1;
 	}
 
 	_CANbase::~_CANbase()
 	{
 	}
 
-	bool _CANbase::init(const json& j)
+	bool _CANbase::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_nErrReconnect = j.value("nErrReconnect", "");
+		m_nErrReconnect = j.value("nErrReconnect", 1);
 
 		return true;
 	}
 
-	bool _CANbase::link(const json& j, ModuleMgr* pM)
+	bool _CANbase::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
-
-		string n;
 
 		return true;
 	}
@@ -57,19 +53,18 @@ namespace kai
 		return this->_ModuleBase::check();
 	}
 
-	bool _CANbase::sendFrame(const CAN_F& f)
+	bool _CANbase::sendFrame(const CAN_F &f)
 	{
 		IF_F(!check());
 
 		return false;
 	}
 
-	bool _CANbase::readFrame(CAN_F* pF)
+	bool _CANbase::readFrame(CAN_F *pF)
 	{
 		NULL_F(pF);
 
 		return false;
-
 	}
 
 	void _CANbase::handleFrame(const CAN_F &f)

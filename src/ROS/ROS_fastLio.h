@@ -18,7 +18,6 @@ using std::placeholders::_1;
 #include "nav_msgs/msg/odometry.hpp"
 #include "nav_msgs/msg/path.hpp"
 
-#include "../Module/Kiss.h"
 #include "../UI/_Console.h"
 #ifdef WITH_3D
 #include "../3D/PointCloud/_PCframe.h"
@@ -44,7 +43,7 @@ namespace kai
 			m_mT = Matrix4f::Identity();
 		}
 
-		int init(Kiss *pKiss);
+		virtual bool init(const json &j);
 		virtual bool link(const json& j, ModuleMgr* pM);
 		virtual void console(void *pConsole);
 
@@ -72,7 +71,6 @@ namespace kai
 		Matrix4f m_mT;
 
 	protected:
-		Kiss *m_pKiss;
 
 #ifdef WITH_3D
 	public:

@@ -21,7 +21,7 @@ namespace kai
 		PID();
 		virtual ~PID();
 
-		virtual bool init(const json& j);
+		virtual bool init(const json &j);
 		virtual float update(float v, float sp, float dT);
 		virtual double o(void);
 		virtual void console(void *pConsole);
@@ -37,10 +37,10 @@ namespace kai
 		void setD(float D);
 
 		vFloat2 getRangeIn(void);
-		void setRangeIn(const vFloat2& vRin);
+		void setRangeIn(const vFloat2 &vRin);
 
 		vFloat2 getRangeOut(void);
-		void setRangeOut(const vFloat2& vRout);
+		void setRangeOut(const vFloat2 &vRout);
 
 	protected:
 		float m_P;
@@ -52,7 +52,7 @@ namespace kai
 		float m_vSetPoint;
 		float m_e;
 		float m_eOld;
-		float m_eI; //e integration
+		float m_eI; // e integration
 
 		float m_vOut;
 		vFloat2 m_vRin;

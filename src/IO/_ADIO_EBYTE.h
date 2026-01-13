@@ -20,8 +20,8 @@ namespace kai
 		_ADIO_EBYTE();
 		virtual ~_ADIO_EBYTE();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void close(void);
@@ -40,10 +40,9 @@ namespace kai
 			return NULL;
 		}
 
-	private:
-		_Modbus* m_pMB;
+	protected:
+		_Modbus *m_pMB;
 		int m_iID;
-
 	};
 
 }

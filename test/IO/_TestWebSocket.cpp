@@ -15,7 +15,6 @@ namespace kai
     bool _TestWebSocket::init(const json& j)
     {
         IF_F(!this->_TestBase::init(j));
-        Kiss *pK = (Kiss *)pKiss;
 
         return true;
     }
@@ -24,11 +23,7 @@ namespace kai
     {
         IF_F(!this->_TestBase::link(j, pM));
 
-        Kiss *pK = (Kiss *)m_pKiss;
-        string n;
-
-        n = "";
-        n = j.value("_WebSocketServer", "");
+        string n = j.value("_WebSocketServer", "");
         m_pWSserver = (_WebSocketServer *)(pM->findModule(n));
         NULL__(m_pWSserver);
 

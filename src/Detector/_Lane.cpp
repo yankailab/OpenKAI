@@ -13,103 +13,77 @@ namespace kai
 	_Lane::_Lane()
 	{
 		m_pV = nullptr;
-
-		m_roiLT.x = 0.2;
-		m_roiLT.y = 0.5;
-		m_roiLB.x = 0.0;
-		m_roiLB.y = 1.0;
-		m_roiRT.x = 0.8;
-		m_roiRT.y = 0.5;
-		m_roiRB.x = 1.0;
-		m_roiRB.y = 1.0;
-
-		m_sizeOverhead.x = 400;
-		m_sizeOverhead.y = 300;
 		m_vSize.clear();
-		m_binMed = 3;
 
-		m_nFilter = 0;
-		m_nLane = 0;
 		m_ppPoint = NULL;
 		m_pNp = NULL;
-		m_bDrawOverhead = false;
-		m_bDrawFilter = false;
 	}
 
 	_Lane::~_Lane()
 	{
 	}
 
-	bool _Lane::init(const json& j)
+	bool _Lane::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_bDrawOverhead = j.value("bDrawOverhead", "");
-		m_bDrawFilter = j.value("bDrawFilter", "");
-		m_binMed = j.value("binMed", "");
+		m_bDrawOverhead = j.value("bDrawOverhead", false);
+		m_bDrawFilter = j.value("bDrawFilter", false);
+		m_binMed = j.value("binMed", 3);
 
-		m_roiLT.x = j.value("roiLTx", m_roiLT.x);
-		m_roiLT.y = j.value("roiLTy", m_roiLT.y);
-		m_roiLB.x = j.value("roiLBx", m_roiLB.x);
-		m_roiLB.y = j.value("roiLBy", m_roiLB.y);
-		m_roiRT.x = j.value("roiRTx", m_roiRT.x);
-		m_roiRT.y = j.value("roiRTy", m_roiRT.y);
-		m_roiRB.x = j.value("roiRBx", m_roiRB.x);
-		m_roiRB.y = j.value("roiRBy", m_roiRB.y);
-		m_sizeOverhead.x = j.value("overheadW", m_sizeOverhead.x);
-		m_sizeOverhead.y = j.value("overheadH", m_sizeOverhead.y);
+		m_vRoiLT = j.value("vRoiLT", vector<float>{0.2, 0.5});
+		m_vRoiLB = j.value("vRoiLB", vector<float>{0.0, 1.0});
+		m_vRoiRT = j.value("vRoiRT", vector<float>{0.8, 0.5});
+		m_vRoiRB = j.value("vRoiRB", vector<float>{1.0, 1.0});
+		m_sizeOverhead.x = j.value("overheadW", 400);
+		m_sizeOverhead.y = j.value("overheadH", 300);
 
 		m_mOverhead = Mat(Size(m_sizeOverhead.x, m_sizeOverhead.y), CV_8UC3);
 
 		// color filters
-		Kiss *pKF = pK->child("colorFilter");
-		NULL__(pKF);
-
-		Kiss *pO;
 		m_nFilter = 0;
-		while (1)
+		const json &jC = j.at("colorFilters");
+		if (jC.is_object())
 		{
-			IF__(m_nFilter >= N_LANE_FILTER, OK_ERR_INVALID_VALUE);
-			pO = pKF->child(m_nFilter);
-			if (pO->empty())
-				break;
+			for (auto it = jC.begin(); it != jC.end(); it++)
+			{
+				IF_F(m_nFilter >= N_LANE_FILTER);
 
-			LANE_FILTER *pF = &m_pFilter[m_nFilter];
-			pO->v("iColorSpace", &pF->m_iColorSpace);
-			pO->v("iChannel", &pF->m_iChannel);
-			pO->v("nTile", &pF->m_nTile);
-			pO->v("thr", &pF->m_thr);
-			pO->v("clipLim", &pF->m_clipLim);
-			pF->init();
+				const json &Ji = it.value();
+				IF_CONT(!Ji.is_object());
 
-			m_nFilter++;
+				LANE_FILTER *pF = &m_pFilter[m_nFilter];
+				pF->m_iColorSpace = Ji.value("iColorSpace", pF->m_iColorSpace);
+				pF->m_iChannel = Ji.value("iChannel", pF->m_iChannel);
+				pF->m_nTile = Ji.value("nTile", pF->m_nTile);
+				pF->m_thr = Ji.value("thr", pF->m_thr);
+				pF->m_clipLim = Ji.value("clipLim", pF->m_clipLim);
+				pF->init();
+
+				m_nFilter++;
+			}
 		}
 
 		// lanes
-		int nAvr = 0;
-		nAvr = j.value("nAvr", "");
-		int nMed = 0;
-		nMed = j.value("nMed", "");
-
-		Kiss *pKL = pK->child("lane");
-		NULL__(pKL);
-
+		int nAvr = j.value("nAvr", 0);
+		int nMed = j.value("nMed", 0);
 		m_nLane = 0;
-		while (1)
+		const json &jL = j.at("lane");
+		if (jL.is_object())
 		{
-			IF__(m_nLane >= N_LANE_FILTER, OK_ERR_INVALID_VALUE);
-			pO = pKL->child(m_nLane);
-			if (pO->empty())
-				break;
+			for (auto it = jL.begin(); it != jL.end(); it++)
+			{
+				IF_F(m_nLane >= N_LANE_FILTER);
 
-			LANE *pLane = &m_pLane[m_nLane];
-			pLane->init(m_sizeOverhead.y, nAvr, nMed);
-			pO->v("l", &pLane->m_ROI.x);
-			pO->v("t", &pLane->m_ROI.y);
-			pO->v("r", &pLane->m_ROI.z);
-			pO->v("b", &pLane->m_ROI.w);
+				const json &Ji = it.value();
+				IF_CONT(!Ji.is_object());
 
-			m_nLane++;
+				LANE *pLane = &m_pLane[m_nLane];
+				pLane->init(m_sizeOverhead.y, nAvr, nMed);
+				pLane->m_ROI = Ji.value("vROI", vector<float>{0, 0, 1, 1});
+
+				m_nLane++;
+			}
 		}
 
 		m_ppPoint = new Point *[m_nLane];
@@ -120,10 +94,16 @@ namespace kai
 			m_pNp[i] = m_sizeOverhead.y;
 		}
 
-		string n = "";
-		n = j.value("_VisionBase", "");
+		return true;
+	}
+
+	bool _Lane::link(const json &j, ModuleMgr *pM)
+	{
+		IF_F(!this->_ModuleBase::link(j, pM));
+
+		string n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
-		NULL__(m_pV);
+		NULL_F(m_pV);
 
 		return true;
 	}
@@ -136,8 +116,8 @@ namespace kai
 
 	bool _Lane::check(void)
 	{
-		NULL__(m_pV);
-		IF__(m_pV->getFrameRGB()->m()->empty());
+		NULL_F(m_pV);
+		IF_F(m_pV->getFrameRGB()->m()->empty());
 
 		return this->_ModuleBase::check();
 	}
@@ -149,7 +129,6 @@ namespace kai
 			m_pT->autoFPS();
 
 			detect();
-
 		}
 	}
 
@@ -158,7 +137,7 @@ namespace kai
 		IF_(!check());
 		Mat *pM = m_pV->getFrameRGB()->m();
 
-		//Warp transform to get overhead view
+		// Warp transform to get overhead view
 		if (m_vSize.x != pM->cols || m_vSize.y != pM->rows)
 		{
 			m_vSize.x = pM->cols;
@@ -169,7 +148,7 @@ namespace kai
 		cv::warpPerspective(*pM, m_mOverhead, m_mPerspective,
 							m_mOverhead.size(), cv::INTER_LINEAR);
 
-		//Filter image to get binary view
+		// Filter image to get binary view
 		filterBin();
 
 		for (int i = 0; i < m_nLane; i++)
@@ -196,16 +175,16 @@ namespace kai
 
 	void _Lane::updateVisionSize(void)
 	{
-		Point2f LT = Point2f((float)(m_roiLT.x * m_vSize.x),
-							 (float)(m_roiLT.y * m_vSize.y));
-		Point2f LB = Point2f((float)(m_roiLB.x * m_vSize.x),
-							 (float)(m_roiLB.y * m_vSize.y));
-		Point2f RT = Point2f((float)(m_roiRT.x * m_vSize.x),
-							 (float)(m_roiRT.y * m_vSize.y));
-		Point2f RB = Point2f((float)(m_roiRB.x * m_vSize.x),
-							 (float)(m_roiRB.y * m_vSize.y));
+		Point2f LT = Point2f((float)(m_vRoiLT.x * m_vSize.x),
+							 (float)(m_vRoiLT.y * m_vSize.y));
+		Point2f LB = Point2f((float)(m_vRoiLB.x * m_vSize.x),
+							 (float)(m_vRoiLB.y * m_vSize.y));
+		Point2f RT = Point2f((float)(m_vRoiRT.x * m_vSize.x),
+							 (float)(m_vRoiRT.y * m_vSize.y));
+		Point2f RB = Point2f((float)(m_vRoiRB.x * m_vSize.x),
+							 (float)(m_vRoiRB.y * m_vSize.y));
 
-		//LT, LB, RB, RT
+		// LT, LB, RB, RT
 		Point2f ptsFrom[] = {LT, LB, RB, RT};
 		Point2f ptsTo[] =
 			{cv::Point2f(0, 0),
@@ -231,13 +210,13 @@ namespace kai
 		}
 	}
 
-	void _Lane::draw(void* pFrame)
+	void _Lane::draw(void *pFrame)
 	{
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
 		IF_(!check());
 
-		Frame *pF = (Frame*)pFrame;
+		Frame *pF = (Frame *)pFrame;
 		Mat *pM = pF->m();
 		IF_(pM->empty());
 
@@ -246,7 +225,7 @@ namespace kai
 		int i, j;
 		LANE *pL;
 
-		//visualization of the lane
+		// visualization of the lane
 		Mat mLane = Mat::zeros(m_mOverhead.size(), CV_8UC1);
 		Mat mOverlay = Mat::zeros(pM->size(), CV_8UC1);
 

@@ -25,12 +25,18 @@ namespace kai
 	{
 	}
 
-	bool _GPS::init(const json& j)
+	bool _GPS::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		string n = "";
-		n = j.value("_IObase", "");
+		return true;
+	}
+
+	bool _GPS::link(const json &j, ModuleMgr *pM)
+	{
+		IF_F(!this->_ModuleBase::link(j, pM));
+
+		string n = j.value("_IObase", "");
 		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 
@@ -54,7 +60,6 @@ namespace kai
 				decodeNMEA();
 				m_msg = "";
 			}
-
 		}
 	}
 
@@ -230,7 +235,7 @@ namespace kai
 			return;
 		}
 
-		//RMC
+		// RMC
 		pC->addMsg("RMC");
 		pC->addMsg("Raw: lat=" + i2str(m_rmc.latitude.value) + "/" + i2str(m_rmc.latitude.scale) + ", lon=" + i2str(m_rmc.longitude.value) + "/" + i2str(m_rmc.longitude.scale) + ", spd=" + i2str(m_rmc.speed.value) + "/" + i2str(m_rmc.speed.scale));
 
@@ -238,11 +243,11 @@ namespace kai
 
 		pC->addMsg("Floating-point: lat=" + f2str(minmea_tocoord(&m_rmc.latitude)) + ", lon=" + f2str(minmea_tocoord(&m_rmc.longitude)) + ", spd=" + f2str(minmea_tofloat(&m_rmc.speed)));
 
-		//GGA
+		// GGA
 		pC->addMsg("GGA");
 		pC->addMsg("Fix quality: " + i2str(m_gga.fix_quality));
 
-		//GST
+		// GST
 		pC->addMsg("GST");
 		pC->addMsg("Raw latErr=" + i2str(m_gst.latitude_error_deviation.value) + "/" + i2str(m_gst.latitude_error_deviation.scale) + ", lonErr=" + i2str(m_gst.longitude_error_deviation.value) + "/" + i2str(m_gst.longitude_error_deviation.scale) + ", altErr=" + i2str(m_gst.altitude_error_deviation.value) + "/" + i2str(m_gst.altitude_error_deviation.scale));
 
@@ -250,19 +255,19 @@ namespace kai
 
 		pC->addMsg("Floating-point: latErr=" + f2str(minmea_tofloat(&m_gst.latitude_error_deviation)) + ", lonErr=" + f2str(minmea_tofloat(&m_gst.longitude_error_deviation)) + ", altErr=" + f2str(minmea_tofloat(&m_gst.altitude_error_deviation)));
 
-		//GSV
+		// GSV
 		pC->addMsg("GSV");
 		pC->addMsg("nMessage: " + i2str(m_gsv.msg_nr) + "/" + i2str(m_gsv.total_msgs));
 		pC->addMsg("nSattelites: " + i2str(m_gsv.total_sats));
 
-		//VTG
+		// VTG
 		pC->addMsg("VTG");
 		pC->addMsg("True track degrees: " + f2str(minmea_tofloat(&m_vtg.true_track_degrees)));
 		pC->addMsg("Magnetic track degrees: " + f2str(minmea_tofloat(&m_vtg.magnetic_track_degrees)));
 		pC->addMsg("Speed knots: " + f2str(minmea_tofloat(&m_vtg.speed_knots)));
 		pC->addMsg("speed kph: " + f2str(minmea_tofloat(&m_vtg.speed_kph)));
 
-		//ZDA
+		// ZDA
 		pC->addMsg("ZDA");
 		pC->addMsg("" + i2str(m_zda.time.hours) + ":" + i2str(m_zda.time.minutes) + ":" + i2str(m_zda.time.seconds) + " " + i2str(m_zda.date.day) + "." + i2str(m_zda.date.month) + "." + i2str(m_zda.date.year) + " UTC%+" + i2str(m_zda.hour_offset) + ":" + i2str(m_zda.minute_offset));
 	}

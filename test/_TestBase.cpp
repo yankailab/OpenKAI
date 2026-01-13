@@ -14,7 +14,6 @@ namespace kai
     bool _TestBase::init(const json& j)
     {
         IF_F(!this->_ModuleBase::init(j));
-        Kiss *pK = (Kiss *)pKiss;
 
 //        = j.value("", &);
 

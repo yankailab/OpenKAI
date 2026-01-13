@@ -111,23 +111,23 @@ namespace kai
 
 		bool input(uint8_t b)
 		{
-            if (m_iB > 0)
-            {
-                m_pB[m_iB++] = b;
+			if (m_iB > 0)
+			{
+				m_pB[m_iB++] = b;
 
-                if (m_iB == 3)
-                {
-                    m_length = (m_pB[1] << 8) | m_pB[2];
-                }
+				if (m_iB == 3)
+				{
+					m_length = (m_pB[1] << 8) | m_pB[2];
+				}
 
-                IF__(m_iB == m_length + 4, true);
-            }
-            else if (b == XB_DELIM)
-            {
-                m_pB[0] = b;
-                m_iB = 1;
-                m_length = 0;
-            }
+				IF__(m_iB == m_length + 4, true);
+			}
+			else if (b == XB_DELIM)
+			{
+				m_pB[0] = b;
+				m_iB = 1;
+				m_length = 0;
+			}
 
 			return false;
 		}
@@ -165,8 +165,8 @@ namespace kai
 		_Xbee();
 		~_Xbee();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
@@ -179,8 +179,8 @@ namespace kai
 
 	protected:
 		virtual void updateMesh(void);
-		virtual bool readFrame(XBframe* pF);
-		virtual void handleFrame(XBframe* pF);
+		virtual bool readFrame(XBframe *pF);
+		virtual void handleFrame(XBframe *pF);
 
 	private:
 		void updateW(void);

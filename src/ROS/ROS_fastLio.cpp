@@ -9,19 +9,16 @@
 
 namespace kai
 {
-    int ROS_fastLio::init(Kiss *pKiss)
+    bool ROS_fastLio::init(const json &j)
     {
-        NULL__(pKiss);
-        m_pKiss = pKiss;
-
-        pKiss->v("topicPC2", &m_topicPC2);
-        pKiss->v("topicOdom", &m_topicOdom);
-        pKiss->v("topicPath", &m_topicPath);
+        m_topicPC2 = j.value("topicPC2", m_topicPC2);
+        m_topicOdom = j.value("topicOdom", m_topicOdom);
+        m_topicPath = j.value("topicPath", m_topicPath);
 
         return true;
     }
 
-    bool ROS_fastLio::link(const json& j, ModuleMgr* pM)
+    bool ROS_fastLio::link(const json &j, ModuleMgr *pM)
     {
         return true;
     }
@@ -61,7 +58,7 @@ namespace kai
 
     void ROS_fastLio::cbPointCloud2(const sensor_msgs::msg::PointCloud2::UniquePtr pMsg)
     {
-//        LOG_("received PointCloud2 ");
+        //        LOG_("received PointCloud2 ");
 
 #ifdef WITH_3D
         NULL_(m_pPCframe);

@@ -14,7 +14,7 @@ using namespace cv::dnn;
 namespace kai
 {
 
-//#define MPI
+// #define MPI
 #define COCO
 
 #ifdef MPI
@@ -43,7 +43,7 @@ namespace kai
 		_OpenPose();
 		~_OpenPose();
 
-		virtual bool init(const json& j);
+		virtual bool init(const json &j);
 		virtual bool start(void);
 		virtual void draw(void *pFrame);
 		virtual bool check(void);
@@ -57,7 +57,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		cv::dnn::Net m_net;
 		int m_nW;
 		int m_nH;

@@ -20,6 +20,7 @@ namespace kai
 		virtual ~_MotionDetector();
 
 		virtual bool init(const json& j);
+		virtual bool link(const json& j, ModuleMgr* pM);
 		virtual bool start(void);
 		virtual void draw(void *pFrame);
 		virtual bool check(void);
@@ -33,7 +34,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		_VisionBase *m_pVision;
 		string m_algorithm;
 		cv::Ptr<cv::BackgroundSubtractor> m_pBS;

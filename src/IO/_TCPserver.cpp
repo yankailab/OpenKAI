@@ -13,9 +13,6 @@ namespace kai
 	_TCPserver::_TCPserver()
 	{
 		m_socket = 0;
-		m_listenPort = 8888;
-		m_nListen = N_LISTEN;
-		m_nSocket = N_SOCKET;
 		m_lClient.clear();
 	}
 
@@ -31,13 +28,13 @@ namespace kai
 		m_lClient.clear();
 	}
 
-	bool _TCPserver::init(const json& j)
+	bool _TCPserver::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		= j.value<uint16_t>("port", &m_listenPort);
-		= j.value<int>("nListen", &m_nListen);
-		= j.value<unsigned int>("nSocket", &m_nSocket);
+		m_listenPort = j.value("port", 8888);
+		m_nListen = j.value("nListen", N_LISTEN);
+		m_nSocket = j.value("nSocket", N_SOCKET);
 
 		return true;
 	}
@@ -74,12 +71,14 @@ namespace kai
 
 			_TCPclient *pClient = new _TCPclient();
 			IF_CONT(!pClient);
-			pClient->init(m_pKiss);
-			struct sockaddr_in *pAddr = (struct sockaddr_in *)&clientAddr;
-			pClient->m_strAddr = inet_ntoa(pAddr->sin_addr);
-			pClient->m_socket = socketNew;
-			pClient->m_bClient = false;
-			pClient->setIOstatus(io_opened);
+
+//TODO:
+			// pClient->init(m_pKiss);
+			// struct sockaddr_in *pAddr = (struct sockaddr_in *)&clientAddr;
+			// pClient->m_strAddr = inet_ntoa(pAddr->sin_addr);
+			// pClient->m_socket = socketNew;
+			// pClient->m_bClient = false;
+			// pClient->setIOstatus(io_opened);
 
 			if (!pClient->start())
 			{
@@ -115,11 +114,11 @@ namespace kai
 
 	bool _TCPserver::setup(void)
 	{
-		//Create socket
+		// Create socket
 		m_socket = socket(AF_INET, SOCK_STREAM, 0);
 		IF_F(m_socket < 0);
 
-		//Prepare the sockaddr_in structure
+		// Prepare the sockaddr_in structure
 		m_serverAddr.sin_family = AF_INET;
 		m_serverAddr.sin_addr.s_addr = INADDR_ANY;
 		m_serverAddr.sin_port = htons(m_listenPort);
@@ -127,14 +126,14 @@ namespace kai
 		int yes = 1;
 		setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes, sizeof(yes));
 
-		//Bind
+		// Bind
 		if (bind(m_socket, (struct sockaddr *)&m_serverAddr, sizeof(m_serverAddr)) < 0)
 		{
 			close(m_socket);
 			return false;
 		}
 
-		//Listen
+		// Listen
 		listen(m_socket, m_nListen);
 
 		return true;

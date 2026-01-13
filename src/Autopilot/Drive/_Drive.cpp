@@ -5,46 +5,43 @@ namespace kai
 
     _Drive::_Drive()
     {
-        m_nSpd = 0.0;
-        m_nDir = 1.0;
-        m_nStr = 0.0;
-
-        m_vSpdRange.set(-1.0, 1.0);
-        m_vStrRange.set(-1.0, 1.0);
     }
 
     _Drive::~_Drive()
     {
     }
 
-    bool _Drive::init(const json& j)
+    bool _Drive::init(const json &j)
     {
         IF_F(!this->_ModuleBase::init(j));
-        Kiss *pK = (Kiss *)pKiss;
 
-        m_nSpd = j.value("nSpd", "");
-        m_nDir = j.value("nDir", "");
-        m_nStr = j.value("nStr", "");
-        m_vSpdRange = j.value("vSpdRange", "");
-        m_vStrRange = j.value("vStrRange", "");
+        m_nSpd = j.value("nSpd", 0);
+        m_nDir = j.value("nDir", 1);
+        m_nStr = j.value("nStr", 0);
+        m_vSpdRange = j.value("vSpdRange", vector<float>{-1, 1});
+        m_vStrRange = j.value("vStrRange", vector<float>{-1, 1});
 
-        Kiss *pKM = pK->child("motor");
-        NULL__(pKM);
+        return true;
+    }
 
-        int i = 0;
-        while (1)
+    bool _Drive::link(const json &j, ModuleMgr *pM)
+    {
+        IF_F(!this->_ModuleBase::link(j, pM));
+
+        const json &jM = j.at("motors");
+        IF__(!jM.is_object(), true);
+
+        for (auto it = jM.begin(); it != jM.end(); it++)
         {
-            Kiss *pM = pKM->child(i++);
-            if (pM->empty())
-                break;
+            const json &Ji = it.value();
+            IF_CONT(!Ji.is_object());
 
             DRIVE_MOTOR m;
             m.init();
-            pM->v("kSpd", &m.m_kSpd);
-            pM->v("kStr", &m.m_kStr);
+            m.m_kSpd = Ji.value("kSpd", m.m_kSpd);
+            m.m_kStr = Ji.value("kStr", m.m_kStr);
 
-            string n = "";
-            pM->v("_ActuatorBase", &n);
+            string n = Ji.value("_ActuatorBase", "");
             m.m_pActuator = (_ActuatorBase *)(pM->findModule(n));
 
             m_vM.push_back(m);
@@ -78,7 +75,6 @@ namespace kai
                 DRIVE_MOTOR *pM = &m_vM[i];
                 pM->update(m_nSpd * m_nDir, m_nStr);
             }
-
         }
     }
 

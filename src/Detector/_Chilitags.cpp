@@ -12,22 +12,19 @@ namespace kai
 
     _Chilitags::_Chilitags()
     {
-        m_persistence = 0;
-        m_gain = 0.0;
-        m_angleOffset = 0.0;
     }
 
     _Chilitags::~_Chilitags()
     {
     }
 
-    bool _Chilitags::init(const json& j)
+    bool _Chilitags::init(const json &j)
     {
         IF_F(!this->_DetectorBase::init(j));
 
-        m_persistence = j.value("persistence", "");
-        m_gain = j.value("gain", "");
-        m_angleOffset = j.value("angleOffset", "");
+        m_persistence = j.value("persistence", 0);
+        m_gain = j.value("gain", 0);
+        m_angleOffset = j.value("angleOffset", 0);
 
         m_chilitags.setFilter(m_persistence, m_gain);
 
@@ -42,8 +39,8 @@ namespace kai
 
     bool _Chilitags::check(void)
     {
-        NULL__(m_pV);
-        NULL__(m_pU);
+        NULL_F(m_pV);
+        NULL_F(m_pU);
 
         return this->_DetectorBase::check();
     }
@@ -57,7 +54,6 @@ namespace kai
             detect();
 
             ON_PAUSE;
-
         }
     }
 
@@ -80,7 +76,7 @@ namespace kai
         {
             o.clear();
             //        o.m_tStamp = m_pT->getTfrom();
-			o.setType(obj_tag);
+            o.setType(obj_tag);
             o.setTopClass(tag.first, 1.0);
 
             // We wrap the corner matrix into a datastructure that allows an easy access to the coordinates
@@ -155,7 +151,7 @@ namespace kai
         IF_(m_pU->size() <= 0);
 
         int i = 0;
-        _Object* pO;
+        _Object *pO;
         while ((pO = m_pU->get(i++)) != NULL)
         {
             Point pCenter = Point(pO->getX() * pM->cols,

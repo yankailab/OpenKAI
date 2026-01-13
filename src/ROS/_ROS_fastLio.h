@@ -23,8 +23,8 @@ namespace kai
 		_ROS_fastLio();
 		virtual ~_ROS_fastLio();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool check(void);
 		virtual bool start(void);
 		virtual void console(void *pConsole);
@@ -47,13 +47,11 @@ namespace kai
 
 	protected:
 		_Thread *m_pTros;
-
 		shared_ptr<ROS_fastLio> m_pROSnode;
 
 #ifdef WITH_3D
-		_PCframe* m_pPCframe;
+		_PCframe *m_pPCframe;
 #endif
-
 	};
 
 }

@@ -38,7 +38,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		struct sockaddr_in m_serverAddr;
 		string m_strAddr;
 		uint16_t m_port;

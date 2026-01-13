@@ -11,14 +11,7 @@ namespace kai
 {
 	_Uploader::_Uploader()
 	{
-		m_dir = "";
 		m_fName = "";
-		m_bRemoveAfterUpload = true;
-
-		m_method = uploader_http;
-		m_url = "";
-
-		m_cmd = "";
 		m_bConfirmCmdResult = false;
 	}
 
@@ -26,22 +19,21 @@ namespace kai
 	{
 	}
 
-	bool _Uploader::init(const json& j)
+	bool _Uploader::init(const json &j)
 	{
 		IF_F(!this->_FileBase::init(j));
 
 		m_dir = j.value("dir", "");
 		m_dir = checkDirName(m_dir);
-		m_bRemoveAfterUpload = j.value("bRemoveAfterUpload", "");
-		= j.value("method", (int *)&m_method);
+		m_bRemoveAfterUpload = j.value("bRemoveAfterUpload", true);
+		m_method = j.value("method", uploader_http);
 		m_url = j.value("url", "");
-
 		m_cmd = j.value("cmd", "");
-		m_bConfirmCmdResult = j.value("bConfirmCmdResult", "");
+		m_bConfirmCmdResult = j.value("bConfirmCmdResult", false);
 
 		if (m_method == uploader_http)
 		{
-			IF__(m_httpC.init(), OK_ERR_UNKNOWN);
+			IF_F(m_httpC.init());
 		}
 
 		return true;
@@ -66,7 +58,6 @@ namespace kai
 
 			updateFileList();
 			updateUpload();
-
 		}
 	}
 

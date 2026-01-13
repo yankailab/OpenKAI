@@ -23,12 +23,13 @@ namespace kai
 		~_DNNtext();
 
 		virtual bool init(const json& j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual void draw(void *pFrame);
 		virtual bool check(void);
 		void ocr(void);
 
-	public:
+	protected:
 		Mat getTransform(Mat mImg, vFloat2 *pBox);
 		void decode(const Mat &mScores, const Mat &mGeometry, float scoreThresh,
 					std::vector<RotatedRect> &vDetections, std::vector<float> &vConfidences);
@@ -40,7 +41,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		vDouble3 m_vMean;
 		bool m_bDetect;
 		bool m_bOCR;

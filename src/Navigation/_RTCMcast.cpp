@@ -19,29 +19,25 @@ namespace kai
 	{
 	}
 
-	bool _RTCMcast::init(const json& j)
+	bool _RTCMcast::init(const json &j)
 	{
 		IF_F(!this->_ProtocolBase::init(j));
 
-		Kiss *pR = pK->child("RTCMmsg");
-		IF__(pR->empty(), OK_OK);
+		const json &jM = j.at("RTCMmsg");
+		IF__(!jM.is_object(), true);
 
-		int i = 0;
-		while (1)
+		for (auto it = jM.begin(); it != jM.end(); it++)
 		{
-			Kiss *pM = pR->child(i++);
-			if (pM->empty())
-				break;
+			const json &Ji = it.value();
+			IF_CONT(!Ji.is_object());
 
-			uint64_t ieSendSec = 1;
-			uint64_t tOutSec = 10;
-			pM->v("ieSendSec", &ieSendSec);
-			pM->v("tOutSec", &tOutSec);
+			uint64_t ieSendSec = Ji.value("ieSendSec", 1);
+			uint64_t tOutSec = Ji.value("tOutSec", 10);
 
 			RTCM_MSG m;
 			m.init(ieSendSec * USEC_1SEC, tOutSec * USEC_1SEC);
-			pM->v("ID", &m.m_msgID);
-			pM->v("bSendOnceOnly", &m.m_bSendOnceOnly);
+			m.m_msgID = Ji.value("ID", m.m_msgID);
+			m.m_bSendOnceOnly = Ji.value("bSendOnceOnly", m.m_bSendOnceOnly);
 
 			m_vMsg.push_back(m);
 		}
@@ -49,15 +45,13 @@ namespace kai
 		return true;
 	}
 
-	bool _RTCMcast::link(const json& j, ModuleMgr* pM)
+	bool _RTCMcast::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ProtocolBase::link(j, pM));
-		string n;
 
-		n = "";
-		n = j.value("_IObaseSend", "");
+		string n = j.value("_IObaseSend", "");
 		m_pIOsend = (_IObase *)(pM->findModule(n));
-		NULL__(m_pIOsend);
+		NULL_F(m_pIOsend);
 
 		return true;
 	}
@@ -72,8 +66,8 @@ namespace kai
 
 	bool _RTCMcast::check(void)
 	{
-		NULL__(m_pIOsend);
-		IF__(!m_pIOsend->bOpen());
+		NULL_F(m_pIOsend);
+		IF_F(!m_pIOsend->bOpen());
 
 		return this->_ProtocolBase::check();
 	}

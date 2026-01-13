@@ -21,13 +21,13 @@ namespace kai
 
 		for (auto it = jc.begin(); it != jc.end(); it++)
 		{
-			const json &ji = it.value();
-			IF_CONT(!ji.is_object());
+			const json &Ji = it.value();
+			IF_CONT(!Ji.is_object());
 
 			AP_relay s;
 			s.init();
-			s.m_iChan = ji.value("iChan", 9);
-			s.m_bRelay = ji.value("bRelay", false);
+			s.m_iChan = Ji.value("iChan", 9);
+			s.m_bRelay = Ji.value("bRelay", false);
 			m_vRelay.push_back(s);
 		}
 

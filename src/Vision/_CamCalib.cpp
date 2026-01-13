@@ -17,7 +17,6 @@ namespace kai
     bool _CamCalib::init(const json& j)
     {
         IF_F(!this->_ModuleBase::init(j));
-        Kiss *pK = (Kiss *)pKiss;
 
         m_path = j.value("path", "");
         m_vChessBoardSize = j.value("vChessBoardSize", "");

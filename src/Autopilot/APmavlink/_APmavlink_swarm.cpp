@@ -31,7 +31,7 @@ namespace kai
 		m_altLand = j.value("altLand", 8.0);
 		m_myID = j.value("myID", 0);
 
-		m_vTargetID = j.value("vTargetID", vector<int>{0, 0});
+		m_vTargetID = j.value("vTargetID", 0);
 		m_iClass = j.value("iClass", 1);
 		m_dRdet = j.value("dRdet", 1e-6);
 

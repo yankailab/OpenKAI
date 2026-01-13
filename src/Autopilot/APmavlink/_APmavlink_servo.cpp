@@ -21,13 +21,13 @@ namespace kai
 
 		for (auto it = jc.begin(); it != jc.end(); it++)
 		{
-			const json &ji = it.value();
-			IF_CONT(!ji.is_object());
+			const json &Ji = it.value();
+			IF_CONT(!Ji.is_object());
 
 			AP_SERVO s;
 			s.init();
-			s.m_iChan = ji.value("iChan", 9);
-			s.m_pwm = ji.value("pwm", 1500);
+			s.m_iChan = Ji.value("iChan", 9);
+			s.m_pwm = Ji.value("pwm", 1500);
 			m_vServo.push_back(s);
 		}
 

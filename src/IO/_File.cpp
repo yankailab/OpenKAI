@@ -18,16 +18,16 @@ namespace kai
 		close();
 	}
 
-	bool _File::init(const json& j)
+	bool _File::init(const json &j)
 	{
 		IF_F(!this->_IObase::init(j));
 
 		return true;
 	}
 
-	bool _File::open(const string& fName, ios_base::openmode mode)
+	bool _File::open(const string &fName, ios_base::openmode mode)
 	{
-		IF__(m_ioStatus == io_opened, true);
+		IF_F(m_ioStatus == io_opened, true);
 		m_name = fName;
 
 		return open(mode);
