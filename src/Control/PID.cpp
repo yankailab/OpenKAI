@@ -26,17 +26,17 @@ namespace kai
 	{
 	}
 
-	int PID::init(const json& j)
+	bool PID::init(const json& j)
 	{
-		CHECK_(this->BASE::init(j));
+		IF_F(!this->BASE::init(j));
 
-		= j.value("P", &m_P);
-		= j.value("I", &m_I);
-		= j.value("Imax", &m_Imax);
-		= j.value("D", &m_D);
+		m_P = j.value("P", "");
+		m_I = j.value("I", "");
+		m_Imax = j.value("Imax", "");
+		m_D = j.value("D", "");
 
-		= j.value("vRin", &m_vRin);
-		= j.value("vRout", &m_vRout);
+		m_vRin = j.value("vRin", "");
+		m_vRout = j.value("vRout", "");
 
 		return true;
 	}

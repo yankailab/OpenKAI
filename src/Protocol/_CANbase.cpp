@@ -16,18 +16,18 @@ namespace kai
 	{
 	}
 
-	int _CANbase::init(const json& j)
+	bool _CANbase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		= j.value("nErrReconnect", &m_nErrReconnect);
+		m_nErrReconnect = j.value("nErrReconnect", "");
 
 		return true;
 	}
 
-	int _CANbase::link(const json& j, ModuleMgr* pM)
+	bool _CANbase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
 		string n;
 
@@ -50,7 +50,7 @@ namespace kai
 		m_iErr = 0;
 	}
 
-	int _CANbase::check(void)
+	bool _CANbase::check(void)
 	{
 		IF__(!m_bOpen);
 

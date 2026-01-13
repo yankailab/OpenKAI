@@ -20,11 +20,11 @@ namespace kai
 	{
 	}
 
-	int _VideoFile::init(const json& j)
+	bool _VideoFile::init(const json& j)
 	{
-		CHECK_(_VisionBase::init(j));
+		IF_F(!_VisionBase::init(j));
 
-		= j.value("videoFile", &m_videoFile);
+		m_videoFile = j.value("videoFile", "");
 
 		return true;
 	}
@@ -59,7 +59,7 @@ namespace kai
 		m_vc.release();
 	}
 
-	int _VideoFile::start(void)
+	bool _VideoFile::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

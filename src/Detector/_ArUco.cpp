@@ -21,33 +21,33 @@ namespace kai
 	{
 	}
 
-	int _ArUco::init(const json& j)
+	bool _ArUco::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(j));
+		IF_F(!this->_DetectorBase::init(j));
 
 		= j.value<uint8_t>("dict", &m_dict);
 		m_pDict = cv::Ptr<cv::aruco::Dictionary>(new cv::aruco::Dictionary());
 		*m_pDict = aruco::getPredefinedDictionary(m_dict);
-		= j.value("realSize", &m_realSize);
+		m_realSize = j.value("realSize", "");
 
-		= j.value("bPose", &m_bPose);
+		m_bPose = j.value("bPose", "");
 		if (m_bPose)
 		{
 			string n;
-			= j.value("fCalib", &n);
+			n = j.value("fCalib", "");
 			readCamMatrices(n, &m_mC, &m_mD);
 		}
 
 		return true;
 	}
 
-	int _ArUco::start(void)
+	bool _ArUco::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _ArUco::check(void)
+	bool _ArUco::check(void)
 	{
 		NULL__(m_pV);
 		NULL__(m_pU);

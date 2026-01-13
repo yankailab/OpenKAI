@@ -22,36 +22,36 @@ namespace kai
 	{
 	}
 
-	int _Line::init(const json& j)
+	bool _Line::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(j));
+		IF_F(!this->_DetectorBase::init(j));
 
-		= j.value("minPixLine", &m_minPixLine);
-		= j.value("wSlide", &m_wSlide);
+		m_minPixLine = j.value("minPixLine", "");
+		m_wSlide = j.value("wSlide", "");
 
 		return true;
 	}
 
-	int _Line::link(const json& j, ModuleMgr* pM)
+	bool _Line::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
 		string n;
 		n = "";
-		= j.value("_VisionBase", &n);
+		n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL__(m_pV);
 
 		return true;
 	}
 
-	int _Line::start(void)
+	bool _Line::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _Line::check(void)
+	bool _Line::check(void)
 	{
 		NULL__(m_pU);
 		NULL__(m_pV);

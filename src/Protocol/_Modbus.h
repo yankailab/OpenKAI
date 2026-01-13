@@ -13,9 +13,9 @@ namespace kai
 		_Modbus();
 		~_Modbus();
 
-		bool init(const json& j);
-		bool start(void);
-		bool check(void);
+		virtual bool init(const json& j);
+		virtual bool start(void);
+		virtual bool check(void);
 		bool open(void);
 		bool bOpen(void);
 		void close(void);
@@ -30,7 +30,7 @@ namespace kai
 		int sendRawRequest(int iSlave, uint8_t* pB, int nB);
 
 	private:
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_Modbus *)This)->update();

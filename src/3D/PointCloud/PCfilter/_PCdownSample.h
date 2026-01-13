@@ -24,7 +24,7 @@ namespace kai
         virtual bool check(void);
 
     private:
-        void update(void);
+        virtual void update(void);
         void updateFilter(void);
         static void *getUpdate(void *This)
         {

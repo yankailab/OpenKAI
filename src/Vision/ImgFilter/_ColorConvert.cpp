@@ -21,29 +21,29 @@ namespace kai
 	{
 	}
 
-	int _ColorConvert::init(const json& j)
+	bool _ColorConvert::init(const json& j)
 	{
-		CHECK_(_VisionBase::init(j));
+		IF_F(!_VisionBase::init(j));
 
-		= j.value("code", &m_code);
+		m_code = j.value("code", "");
 
 		return true;
 	}
 
-	int _ColorConvert::link(const json& j, ModuleMgr* pM)
+	bool _ColorConvert::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_VisionBase::link(j, pM));
+		IF_F(!this->_VisionBase::link(j, pM));
 
 		string n;
 		n = "";
-		= j.value("_VisionBase", &n);
+		n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL__(m_pV);
 
 		return true;
 	}
 
-	int _ColorConvert::start(void)
+	bool _ColorConvert::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

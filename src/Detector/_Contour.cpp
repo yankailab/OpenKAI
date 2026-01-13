@@ -20,23 +20,23 @@ namespace kai
 	{
 	}
 
-	int _Contour::init(const json& j)
+	bool _Contour::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(j));
+		IF_F(!this->_DetectorBase::init(j));
 
-		= j.value("mode", &m_mode);
-		= j.value("method", &m_method);
+		m_mode = j.value("mode", "");
+		m_method = j.value("method", "");
 
 		return true;
 	}
 
-	int _Contour::start(void)
+	bool _Contour::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _Contour::check(void)
+	bool _Contour::check(void)
 	{
 		NULL__(m_pU);
 		NULL__(m_pV);

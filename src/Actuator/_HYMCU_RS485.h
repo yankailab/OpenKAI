@@ -16,7 +16,7 @@ namespace kai
 
 	struct HYMCU_MODBUS_ADDR
 	{
-		//default for DRV8825
+		// default for DRV8825
 		uint16_t m_setDPR = 4;
 		uint16_t m_setDist = 9;
 		uint16_t m_setDir = 11;
@@ -41,10 +41,10 @@ namespace kai
 		_HYMCU_RS485();
 		~_HYMCU_RS485();
 
-		bool init(const json& j);
-		bool link(const json& j, ModuleMgr* pM);
-		bool start(void);
-		bool check(void);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
+		virtual bool start(void);
+		virtual bool check(void);
 
 	protected:
 		bool setSlaveID(uint16_t iSlave);
@@ -67,7 +67,7 @@ namespace kai
 		void updateMove(void);
 
 	private:
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_HYMCU_RS485 *)This)->update();
@@ -77,7 +77,7 @@ namespace kai
 	protected:
 		_Modbus *m_pMB;
 		int m_iSlave;
-		int32_t m_dpr; //distance per round
+		int32_t m_dpr; // distance per round
 
 		HYMCU_MODBUS_ADDR m_addr;
 		int32_t m_dInit;

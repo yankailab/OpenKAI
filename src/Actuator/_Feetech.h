@@ -40,14 +40,14 @@ namespace kai
 
 		bool readStatus(void);
 		void updateMove(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_Feetech *)This)->update();
 			return NULL;
 		}
 
-	public:
+	protected:
 		string m_port;
 		int m_baud;
 		bool m_bOpen;

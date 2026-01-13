@@ -32,7 +32,7 @@ namespace kai
 
 		virtual bool init(const json& j);
 		virtual bool link(const json& j, ModuleMgr* pM);
-		virtual bool start(void));
+		virtual bool start(void);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 
@@ -52,7 +52,7 @@ namespace kai
 		virtual void onResume(void);
 
 	private:
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_ModuleBase *)This)->update();

@@ -25,9 +25,9 @@ namespace kai
 		m_vpState.clear();
 	}
 
-	int _StateControl::init(const json& j)
+	bool _StateControl::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
 		Kiss *pKstate = pK->child("state");
 		IF__(pKstate->empty(), OK_OK);
@@ -52,7 +52,7 @@ namespace kai
 		IF__(m_vpState.empty());
 
 		string start = "";
-		= j.value("start", &start);
+		start = j.value("start", "");
 		i = getStateIdxByName(start);
 		if (i < 0)
 			m_iS = 0;
@@ -62,19 +62,19 @@ namespace kai
 		return true;
 	}
 
-	int _StateControl::link(const json& j, ModuleMgr* pM)
+	bool _StateControl::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
 		for (int i = 0; i < m_vpState.size(); i++)
 		{
-			CHECK_(m_vpState[i]->link());
+			IF_F(!m_vpState[i]->link());
 		}
 
 		return true;
 	}
 
-	int _StateControl::start(void)
+	bool _StateControl::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

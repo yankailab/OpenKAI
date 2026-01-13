@@ -47,7 +47,7 @@ namespace kai
 	private:
 		void sync(void);
 		void updateG(void);
-		void update(void);
+		virtual void update(void);
 
 		void updateTstamp(uint64_t t);
 		void updateTstampG(uint64_t t);

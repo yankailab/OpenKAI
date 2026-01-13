@@ -20,10 +20,10 @@ namespace kai
 		_IAI();
 		~_IAI();
 
-		bool init(const json& j);
-		bool link(const json& j, ModuleMgr* pM);
-		bool start(void);
-		bool check(void);
+		virtual bool init(const json& j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool start(void);
+		virtual bool check(void);
 
 	protected:
 		bool clearAlarm(void);
@@ -34,7 +34,7 @@ namespace kai
 		bool stopMove(void);
 
 	private:
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_IAI *)This)->update();

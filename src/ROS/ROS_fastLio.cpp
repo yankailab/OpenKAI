@@ -21,7 +21,7 @@ namespace kai
         return true;
     }
 
-    int ROS_fastLio::link(const json& j, ModuleMgr* pM)
+    bool ROS_fastLio::link(const json& j, ModuleMgr* pM)
     {
         return true;
     }

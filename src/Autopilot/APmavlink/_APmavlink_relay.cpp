@@ -12,43 +12,49 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_relay::init(const json& j)
+	bool _APmavlink_relay::init(const json &j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		int i = 0;
-		while (1)
+		const json &jc = j.at("channels");
+		IF__(!jc.is_object(), true);
+
+		for (auto it = jc.begin(); it != jc.end(); it++)
 		{
-			Kiss *pR = pK->child(i++);
-			if (pR->empty())
-				break;
+			const json &ji = it.value();
+			IF_CONT(!ji.is_object());
 
-			AP_relay r;
-			r.init();
-			pR->v("iChan", &r.m_iChan);
-			pR->v("bRelay", &r.m_bRelay);
-			m_vRelay.push_back(r);
+			AP_relay s;
+			s.init();
+			s.m_iChan = ji.value("iChan", 9);
+			s.m_bRelay = ji.value("bRelay", false);
+			m_vRelay.push_back(s);
 		}
-
-		string n;
-		n = "";
-		= j.value("_APmavlink_base", &n);
-		m_pAP = (_APmavlink_base *)(pM->findModule(n));
-		NULL__(m_pAP);
 
 		return true;
 	}
 
-	int _APmavlink_relay::start(void)
+	bool _APmavlink_relay::link(const json &j, ModuleMgr *pM)
+	{
+		IF_F(!this->_ModuleBase::link(j, pM));
+
+		string n = j.value("_APmavlink_base", "");
+		m_pAP = (_APmavlink_base *)(pM->findModule(n));
+		NULL_F(m_pAP);
+
+		return true;
+	}
+
+	bool _APmavlink_relay::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _APmavlink_relay::check(void)
+	bool _APmavlink_relay::check(void)
 	{
-		NULL__(m_pAP);
-		NULL__(m_pAP->getMavlink());
+		NULL_F(m_pAP);
+		NULL_F(m_pAP->getMavlink());
 
 		return this->_ModuleBase::check();
 	}
@@ -60,7 +66,6 @@ namespace kai
 			m_pT->autoFPS();
 
 			updateRelay();
-
 		}
 	}
 

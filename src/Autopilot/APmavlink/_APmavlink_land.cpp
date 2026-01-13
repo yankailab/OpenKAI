@@ -6,73 +6,64 @@ namespace kai
 	_APmavlink_land::_APmavlink_land()
 	{
 		m_pDS = nullptr;
-		m_vDSrange.clear();
-
 		m_pTag = nullptr;
-		m_vFov.set(60, 60);
-
-		m_vComplete.set(0.1, 0.1, 0.3, 3.0);
-		m_zrK = 1.0;
 	}
 
 	_APmavlink_land::~_APmavlink_land()
 	{
 	}
 
-	int _APmavlink_land::init(const json& j)
+	bool _APmavlink_land::init(const json &j)
 	{
-		CHECK_(this->_APmavlink_follow::init(j));
+		IF_F(!this->_APmavlink_follow::init(j));
 
-		= j.value("vDSrange", &m_vDSrange);
-		= j.value("vFov", &m_vFov);
-		= j.value("vComplete", &m_vComplete);
-		= j.value("zrK", &m_zrK);
+		m_vDSrange = j.value("vDSrange", vector<float>{0, 0});
+		m_vFov = j.value("vFov", vector<float>{60, 60});
+		m_vComplete = j.value("vComplete", vector<float>{0.1, 0.1, 0.3, 3.0});
+		m_zrK = j.value("zrK", 1.0);
 
 		// int ieHdg = USEC_1SEC;
-		// = j.value("ieHdgUsec", &ieHdg);
+		// ieHdg = j.value("ieHdgUsec", "");
 		// m_ieHdgCmd.init(ieHdg);
 
-		Kiss *pKt = pK->child("tags");
-		NULL__(pKt, OK_OK);
+		const json &jc = j.at("tags");
+		IF__(!jc.is_object(), true);
 
-		Kiss *pT;
-		int i = 0;
-		while (!(pT = pKt->child(i++))->empty())
+		for (auto it = jc.begin(); it != jc.end(); it++)
 		{
-			AP_LAND_TAG t;
-			pT->v("id", &t.m_id);
-			pT->v("priority", &t.m_priority);
-			pT->v("vSize", &t.m_vSize);
-			pT->v("vKdist", &t.m_vKdist);
+			const json &ji = it.value();
+			IF_CONT(!ji.is_object());
 
+			AP_LAND_TAG t;
+			t.m_id = ji.value("id", t.m_id);
+			t.m_priority = ji.value("priority", t.m_priority);
+			t.m_vSize = ji.value("vSize", vector<float>{t.m_vSize.x, t.m_vSize.y});
+			t.m_vKdist = ji.value("vKdist", vector<float>{t.m_vKdist.x, t.m_vKdist.y});
 			m_vTags.push_back(t);
 		}
 
 		return true;
 	}
 
-	int _APmavlink_land::link(const json& j, ModuleMgr* pM)
+	bool _APmavlink_land::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_APmavlink_follow::link(j, pM));
+		IF_F(!this->_APmavlink_follow::link(j, pM));
 
-		string n;
-
-		n = "";
-		= j.value("_DistSensorBase", &n);
+		string n = j.value("_DistSensorBase", "");
 		m_pDS = (_DistSensorBase *)pM->findModule(n);
 
 		return true;
 	}
 
-	int _APmavlink_land::start(void)
+	bool _APmavlink_land::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _APmavlink_land::check(void)
+	bool _APmavlink_land::check(void)
 	{
-		NULL__(m_pDS);
+		NULL_F(m_pDS);
 
 		return this->_APmavlink_follow::check();
 	}

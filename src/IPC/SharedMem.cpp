@@ -27,22 +27,22 @@ namespace kai
 		close();
 	}
 
-	int SharedMem::init(const json& j)
+	bool SharedMem::init(const json& j)
 	{
-		CHECK_(this->BASE::init(j));
+		IF_F(!this->BASE::init(j));
 
-		= j.value("shmName", &m_shmName);
-		= j.value("nB", &m_nB);
-		= j.value("bWriter", &m_bWriter);
+		m_shmName = j.value("shmName", "");
+		m_nB = j.value("nB", "");
+		m_bWriter = j.value("bWriter", "");
 
 		IF__(!open());
 
 		return true;
 	}
 
-	int SharedMem::link(const json& j, ModuleMgr* pM)
+	bool SharedMem::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->BASE::link(j, pM));
+		IF_F(!this->BASE::link(j, pM));
 
 		return true;
 	}

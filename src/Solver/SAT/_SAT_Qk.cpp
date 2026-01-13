@@ -20,35 +20,35 @@ namespace kai
 		DEL(m_pTPP);
 	}
 
-	int _SAT_Qk::init(const json& j)
+	bool _SAT_Qk::init(const json& j)
 	{
-		CHECK_(_ModuleBase::init(j));
+		IF_F(!_ModuleBase::init(j));
 
-		//		= j.value("URI", &m_devURI);
+		//		m_devURI = j.value("URI", "");
 
 		return true;
 	}
 
-	int _SAT_Qk::link(const json& j, ModuleMgr* pM)
+	bool _SAT_Qk::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
 		string n;
 
 		// n = "";
-		// = j.value("_SHMrgb", &n);
+		// n = j.value("_SHMrgb", "");
 		// m_psmRGB = (SharedMem *)(pM->findModule(n));
 
 		return true;
 	}
 
-	int _SAT_Qk::start(void)
+	bool _SAT_Qk::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _SAT_Qk::check(void)
+	bool _SAT_Qk::check(void)
 	{
 		//		NULL__(, -1);
 		return this->_ModuleBase::check();

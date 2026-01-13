@@ -28,19 +28,19 @@ namespace kai
 	{
 	}
 
-	int _YOLOv8::init(const json& j)
+	bool _YOLOv8::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(j));
+		IF_F(!this->_DetectorBase::init(j));
 
-		= j.value("confidence", &m_confidence);
-		= j.value("score", &m_score);
-		= j.value("nms", &m_nms);
-		= j.value("bLetterBoxForSquare", &m_bLetterBoxForSquare);
-		= j.value("vModelInputSize", &m_vModelInputSize);
-		= j.value("bSwapRB", &m_bSwapRB);
-		= j.value("scale", &m_scale);
-		= j.value("iBackend", &m_iBackend);
-		= j.value("iTarget", &m_iTarget);
+		m_confidence = j.value("confidence", "");
+		m_score = j.value("score", "");
+		m_nms = j.value("nms", "");
+		m_bLetterBoxForSquare = j.value("bLetterBoxForSquare", "");
+		m_vModelInputSize = j.value("vModelInputSize", "");
+		m_bSwapRB = j.value("bSwapRB", "");
+		m_scale = j.value("scale", "");
+		m_iBackend = j.value("iBackend", "");
+		m_iTarget = j.value("iTarget", "");
 
 		IF__(!loadModel(), OK_ERR_INVALID_VALUE);
 
@@ -62,13 +62,13 @@ namespace kai
 		return true;
 	}
 
-	int _YOLOv8::start(void)
+	bool _YOLOv8::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _YOLOv8::check(void)
+	bool _YOLOv8::check(void)
 	{
 		NULL__(m_pU);
 		NULL__(m_pV);

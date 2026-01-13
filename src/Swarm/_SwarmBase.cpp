@@ -19,23 +19,23 @@ namespace kai
 	{
 	}
 
-	int _SwarmBase::init(const json& j)
+	bool _SwarmBase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		= j.value("tExpire", &m_tExpire);
+		m_tExpire = j.value("tExpire", "");
 
 		return true;
 	}
 
-	int _SwarmBase::link(const json& j, ModuleMgr* pM)
+	bool _SwarmBase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
 		return true;
 	}
 
-	int _SwarmBase::check(void)
+	bool _SwarmBase::check(void)
 	{
 		return this->_ModuleBase::check();
 	}

@@ -12,36 +12,33 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_move::init(const json& j)
+	bool _APmavlink_move::init(const json &j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
 		return true;
 	}
 
-	int _APmavlink_move::link(const json& j, ModuleMgr* pM)
+	bool _APmavlink_move::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n;
-
-		n = "";
-		= j.value("_APmavlink_base", &n);
+		string n = j.value("_APmavlink_base", "");
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
-		NULL__(m_pAP);
+		NULL_F(m_pAP);
 
 		return true;
 	}
 
-	int _APmavlink_move::start(void)
+	bool _APmavlink_move::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _APmavlink_move::check(void)
+	bool _APmavlink_move::check(void)
 	{
-		NULL__(m_pAP);
+		NULL_F(m_pAP);
 		NULL__(m_pAP->getMavlink());
 
 		return this->_ModuleBase::check();
@@ -52,7 +49,6 @@ namespace kai
 		while (m_pT->bAlive())
 		{
 			m_pT->autoFPS();
-
 		}
 	}
 
@@ -160,9 +156,9 @@ namespace kai
 	}
 
 	void _APmavlink_move::doReposition(const vDouble4 &vP,
-								float speed,
-								float radius,
-								uint8_t frame)
+									   float speed,
+									   float radius,
+									   uint8_t frame)
 	{
 		IF_(!check());
 

@@ -25,15 +25,15 @@ namespace kai
 		_TCPserver();
 		virtual ~_TCPserver();
 
-		bool init(const json& j);
-		bool start(void);
-		void console(void *pConsole);
+		virtual bool init(const json& j);
+		virtual bool start(void);
+		virtual void console(void *pConsole);
 		_TCPclient *getFirstSocket(void);
 
 		bool setup(void);
 		void cleanupClient(void);
 		bool handler(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_TCPserver *)This)->update();

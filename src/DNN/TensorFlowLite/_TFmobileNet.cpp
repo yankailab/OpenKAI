@@ -18,23 +18,23 @@ namespace kai
 	{
 	}
 
-	int _TFmobileNet::init(const json& j)
+	bool _TFmobileNet::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(j));
+		IF_F(!this->_DetectorBase::init(j));
 
-		= j.value("nThreads", &m_nThreads);
-		= j.value("confidence", &m_confidence);
+		m_nThreads = j.value("nThreads", "");
+		m_confidence = j.value("confidence", "");
 
 		return true;
 	}
 
-	int _TFmobileNet::start(void)
+	bool _TFmobileNet::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _TFmobileNet::check(void)
+	bool _TFmobileNet::check(void)
 	{
 		NULL__(m_pU);
 		NULL__(m_pV);

@@ -22,10 +22,10 @@ namespace kai
 		_LeddarVu();
 		~_LeddarVu();
 
-		bool init(const json& j);
-		bool start(void);
-		void draw(void *pFrame);
-		void console(void *pConsole);
+		virtual bool init(const json& j);
+		virtual bool start(void);
+		virtual void draw(void *pFrame);
+		virtual void console(void *pConsole);
 
 		DIST_SENSOR_TYPE type(void);
 
@@ -33,7 +33,7 @@ namespace kai
 		bool open(void);
 		bool updateLidar(void);
 		bool updateLidarFast(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_LeddarVu *)This)->update();

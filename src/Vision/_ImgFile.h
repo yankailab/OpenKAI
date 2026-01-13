@@ -19,12 +19,12 @@ namespace kai
 		_ImgFile();
 		virtual ~_ImgFile();
 
-		bool init(const json& j);
-		bool start(void);
+		virtual bool init(const json& j);
+		virtual bool start(void);
 
 	private:
 		bool open(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_ImgFile *)This)->update();

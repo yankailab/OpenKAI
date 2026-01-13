@@ -21,31 +21,31 @@ namespace kai
         DEL(m_pGcell);
 	}
 
-	int _SwarmSearch::init(const json& j)
+	bool _SwarmSearch::init(const json& j)
 	{
-		CHECK_(this->_SwarmBase::init(j));
+		IF_F(!this->_SwarmBase::init(j));
 
 		int ie = USEC_1SEC;
-		= j.value("ieOptRoute", &ie);
+		ie = j.value("ieOptRoute", "");
 		m_ieOptRoute.init(ie);
 
 		return true;
 	}
 
-	int _SwarmSearch::link(const json& j, ModuleMgr* pM)
+	bool _SwarmSearch::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_SwarmBase::link(j, pM));
+		IF_F(!this->_SwarmBase::link(j, pM));
 
 		return true;
 	}
 
-    int _SwarmSearch::start(void)
+    bool _SwarmSearch::start(void)
     {
         NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
-	int _SwarmSearch::check(void)
+	bool _SwarmSearch::check(void)
 	{
         NULL__(m_pGG);
 

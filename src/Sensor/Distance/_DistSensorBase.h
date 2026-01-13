@@ -94,9 +94,9 @@ namespace kai
 		_DistSensorBase();
 		virtual ~_DistSensorBase();
 
-		bool init(const json& j);
-		void console(void *pConsole);
-		void draw(void *pFrame);
+		virtual bool init(const json& j);
+		virtual void console(void *pConsole);
+		virtual void draw(void *pFrame);
 
 		bool bReady(void);
 		vFloat2 range(void);

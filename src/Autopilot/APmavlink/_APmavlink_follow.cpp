@@ -7,14 +7,10 @@ namespace kai
 	{
 		m_pU = nullptr;
 		m_pTracker = nullptr;
-		m_tOutTargetNotFound.reStartT(0);
-		m_tOutTargetNotFound.setTout(USEC_1SEC / 10);
-		m_iClass = -1;
 		m_bTarget = false;
 		m_vTargetBB.clear();
 
 		m_vPvar.clear();
-		m_vPsp.clear();
 		m_vSpd.set(0);
 		m_tLastPIDupdate = 0;
 
@@ -30,93 +26,79 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_follow::init(const json& j)
+	bool _APmavlink_follow::init(const json &j)
 	{
-		CHECK_(this->_APmavlink_move::init(j));
+		IF_F(!this->_APmavlink_move::init(j));
 
-		= j.value("iClass", &m_iClass);
-		= j.value("vPsp", &m_vPsp);
+		m_iClass = j.value("iClass", -1);
+		m_vPsp = j.value("vPsp", vector<float>{0, 0, 0, 0});
 
-		int tOutTargetNotFound;
-		if (= j.value("tOutTargetNotFound", &tOutTargetNotFound))
-			m_tOutTargetNotFound.setTout(tOutTargetNotFound);
+		int tOutTargetNotFound = j.value("tOutTargetNotFound", USEC_1SEC / 10);
+		m_tOutTargetNotFound.setTout(tOutTargetNotFound);
+		m_tOutTargetNotFound.reStartT(0);
 
-		int nWmed = 0;
-		int kTpred = 0;
-		= j.value("nWmed", &nWmed);
-		= j.value("kTpred", &kTpred);
+		int nWmed = j.value("nWmed", 0);
+		int kTpred = j.value("kTpred", 0);
 
-		IF__(!m_fX.init(nWmed, kTpred), OK_ERR_INVALID_VALUE);
-		IF__(!m_fY.init(nWmed, kTpred), OK_ERR_INVALID_VALUE);
-		IF__(!m_fZ.init(nWmed, kTpred), OK_ERR_INVALID_VALUE);
-		IF__(!m_fH.init(nWmed, kTpred), OK_ERR_INVALID_VALUE);
+		IF_F(!m_fX.init(nWmed, kTpred));
+		IF_F(!m_fY.init(nWmed, kTpred));
+		IF_F(!m_fZ.init(nWmed, kTpred));
+		IF_F(!m_fH.init(nWmed, kTpred));
 
-		Kiss *pG = pK->child("mount");
-		if (!pG->empty())
-		{
-			pG->v("bEnable", &m_apMount.m_bEnable);
+		const json &jm = j.at("mount");
+		IF__(!jm.is_object(), true);
 
-			float p = 0, r = 0, y = 0;
-			pG->v("pitch", &p);
-			pG->v("roll", &r);
-			pG->v("yaw", &y);
+		m_apMount.m_bEnable = jm.value("bEnable", m_apMount.m_bEnable);
 
-			m_apMount.m_control.input_a = p * 100; // pitch
-			m_apMount.m_control.input_b = r * 100; // roll
-			m_apMount.m_control.input_c = y * 100; // yaw
-			m_apMount.m_control.save_position = 0;
+		m_apMount.m_control.input_a = jm.value("pitch", 0) * 100; // pitch
+		m_apMount.m_control.input_b = jm.value("roll", 0) * 100;  // roll
+		m_apMount.m_control.input_c = jm.value("yaw", 0) * 100;	  // yaw
+		m_apMount.m_control.save_position = 0;
 
-			pG->v("stabPitch", &m_apMount.m_config.stab_pitch);
-			pG->v("stabRoll", &m_apMount.m_config.stab_roll);
-			pG->v("stabYaw", &m_apMount.m_config.stab_yaw);
-			pG->v("mountMode", &m_apMount.m_config.mount_mode);
-		}
+		m_apMount.m_config.stab_pitch = jm.value("stabPitch", m_apMount.m_config.stab_pitch);
+		m_apMount.m_config.stab_roll = jm.value("stabRoll", m_apMount.m_config.stab_roll);
+		m_apMount.m_config.stab_yaw = jm.value("stabYaw", m_apMount.m_config.stab_yaw);
+		m_apMount.m_config.mount_mode = jm.value("mountMode", m_apMount.m_config.mount_mode);
 
 		return true;
 	}
 
-	int _APmavlink_follow::link(const json& j, ModuleMgr* pM)
+	bool _APmavlink_follow::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_APmavlink_move::link(j, pM));
+		IF_F(!this->_APmavlink_move::link(j, pM));
 
 		string n;
 
-		n = "";
-		= j.value("PIDpitch", &n);
+		n = j.value("PIDpitch", "");
 		m_pPitch = (PID *)(pM->findModule(n));
 
-		n = "";
-		= j.value("PIDroll", &n);
+		n = j.value("PIDroll", "");
 		m_pRoll = (PID *)(pM->findModule(n));
 
-		n = "";
-		= j.value("PIDalt", &n);
+		n = j.value("PIDalt", "");
 		m_pAlt = (PID *)(pM->findModule(n));
 
-		n = "";
-		= j.value("PIDyaw", &n);
+		n = j.value("PIDyaw", "");
 		m_pYaw = (PID *)(pM->findModule(n));
 
-		n = "";
-		= j.value("_TrackerBase", &n);
+		n = j.value("_TrackerBase", "");
 		m_pTracker = (_TrackerBase *)pM->findModule(n);
 
-		n = "";
-		= j.value("_Universe", &n);
+		n = j.value("_Universe", "");
 		m_pU = (_Universe *)pM->findModule(n);
 
 		return true;
 	}
 
-	int _APmavlink_follow::start(void)
+	bool _APmavlink_follow::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _APmavlink_follow::check(void)
+	bool _APmavlink_follow::check(void)
 	{
-		NULL__(m_pU);
+		NULL_F(m_pU);
 
 		return this->_APmavlink_move::check();
 	}
@@ -190,7 +172,7 @@ namespace kai
 			m_bTarget = false;
 		}
 
-		if(!m_bTarget)
+		if (!m_bTarget)
 		{
 			m_fY.reset();
 			m_fX.reset();

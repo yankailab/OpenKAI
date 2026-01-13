@@ -34,11 +34,12 @@ namespace kai
 		_APmavlink_distLidar();
 		~_APmavlink_distLidar();
 
-		bool init(const json& j);
-		void update(void);
-		void draw(void *pFrame);
+		virtual bool init(const json &j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual void update(void);
+		virtual void draw(void *pFrame);
 
-	private:
+	protected:
 		void updateMavlink(void);
 
 		_APmavlink_base *m_pAP;

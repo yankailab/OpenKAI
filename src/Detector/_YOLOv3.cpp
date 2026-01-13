@@ -25,19 +25,19 @@ namespace kai
 	{
 	}
 
-	int _YOLOv3::init(const json& j)
+	bool _YOLOv3::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(j));
+		IF_F(!this->_DetectorBase::init(j));
 
-		= j.value("thr", &m_thr);
-		= j.value("nms", &m_nms);
-		= j.value("vBlobSize", &m_vBlobSize);
-		= j.value("iBackend", &m_iBackend);
-		= j.value("iTarget", &m_iTarget);
-		= j.value("bSwapRB", &m_bSwapRB);
-		= j.value("scale", &m_scale);
-		= j.value("iClassDraw", &m_iClassDraw);
-		= j.value("vMean", &m_vMean);
+		m_thr = j.value("thr", "");
+		m_nms = j.value("nms", "");
+		m_vBlobSize = j.value("vBlobSize", "");
+		m_iBackend = j.value("iBackend", "");
+		m_iTarget = j.value("iTarget", "");
+		m_bSwapRB = j.value("bSwapRB", "");
+		m_scale = j.value("scale", "");
+		m_iClassDraw = j.value("iClassDraw", "");
+		m_vMean = j.value("vMean", "");
 
 		m_net = readNetFromDarknet(m_fModel, m_fWeight);
 
@@ -56,13 +56,13 @@ namespace kai
 		return true;
 	}
 
-	int _YOLOv3::start(void)
+	bool _YOLOv3::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _YOLOv3::check(void)
+	bool _YOLOv3::check(void)
 	{
 		NULL__(m_pU);
 		NULL__(m_pV);

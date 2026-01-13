@@ -13,37 +13,37 @@ namespace kai
     {
     }
 
-    int _JSONbase::init(const json& j)
+    bool _JSONbase::init(const json& j)
     {
-        CHECK_(this->_ProtocolBase::init(j));
+        IF_F(!this->_ProtocolBase::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
-        = j.value("msgFinishSend", &m_msgFinishSend);
-        = j.value("msgFinishRecv", &m_msgFinishRecv);
+        m_msgFinishSend = j.value("msgFinishSend", "");
+        m_msgFinishRecv = j.value("msgFinishRecv", "");
 
         int v = SEC_2_USEC;
-        = j.value("ieSendHB", &v);
+        v = j.value("ieSendHB", "");
         m_ieSendHB.init(v);
 
         return true;
     }
 
-	int _JSONbase::link(const json& j, ModuleMgr* pM)
+	bool _JSONbase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ProtocolBase::link(j, pM));
+		IF_F(!this->_ProtocolBase::link(j, pM));
 
 		return true;
 	}
 
-    int _JSONbase::start(void)
+    bool _JSONbase::start(void)
     {
         NULL_F(m_pT);
         NULL_F(m_pTr);
-        CHECK_(m_pT->start(getUpdateW, this));
+        IF_F(!m_pT->start(getUpdateW, this));
         return m_pTr->start(getUpdateR, this);
     }
 
-    int _JSONbase::check(void)
+    bool _JSONbase::check(void)
     {
         return this->_ProtocolBase::check();
     }

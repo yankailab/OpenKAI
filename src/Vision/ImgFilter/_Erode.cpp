@@ -20,9 +20,9 @@ namespace kai
 	{
 	}
 
-	int _Erode::init(const json& j)
+	bool _Erode::init(const json& j)
 	{
-		CHECK_(_VisionBase::init(j));
+		IF_F(!_VisionBase::init(j));
 
 		int i = 0;
 		while (1)
@@ -47,20 +47,20 @@ namespace kai
 		return true;
 	}
 
-	int _Erode::link(const json& j, ModuleMgr* pM)
+	bool _Erode::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_VisionBase::link(j, pM));
+		IF_F(!this->_VisionBase::link(j, pM));
 
 		string n;
 		n = "";
-		= j.value("_VisionBase", &n);
+		n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL__(m_pV);
 
 		return true;
 	}
 
-	int _Erode::start(void)
+	bool _Erode::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

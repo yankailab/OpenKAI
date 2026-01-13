@@ -6,15 +6,6 @@ namespace kai
 	_APmavlink_drive::_APmavlink_drive()
 	{
 		m_pAP = nullptr;
-
-		m_yawMode = 1.0;
-		m_bSetYawSpeed = false;
-		m_bRcChanOverride = false;
-
-		m_steer = 0.0;
-		m_speed = 0.0;
-		m_pwmM = 1500;
-		m_pwmD = 500;
 		m_pRcYaw = nullptr;
 		m_pRcThrottle = nullptr;
 	}
@@ -23,18 +14,18 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_drive::init(const json& j)
+	bool _APmavlink_drive::init(const json &j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		= j.value("bSetYawSpeed", &m_bSetYawSpeed);
-		= j.value("yawMode", &m_yawMode);
-		= j.value("bRcChanOverride", &m_bRcChanOverride);
+		m_bSetYawSpeed = j.value("bSetYawSpeed", false);
+		m_yawMode = j.value("yawMode", 1.0);
+		m_bRcChanOverride = j.value("bRcChanOverride", false);
 
-		= j.value("steer", &m_steer);
-		= j.value("speed", &m_speed);
-		= j.value("pwmM", &m_pwmM);
-		= j.value("pwmD", &m_pwmD);
+		m_steer = j.value("steer", 0.0);
+		m_speed = j.value("speed", 0.0);
+		m_pwmM = j.value("pwmM", 1500);
+		m_pwmD = j.value("pwmD", 500);
 
 		uint16_t *pRC[19];
 		pRC[0] = NULL;
@@ -60,42 +51,38 @@ namespace kai
 		for (int i = 1; i < 19; i++)
 			*pRC[i] = UINT16_MAX;
 
-		int iRcYaw = 1;
-		= j.value("iRcYaw", &iRcYaw);
-		IF__(iRcYaw <= 0 || iRcYaw > 18, OK_ERR_INVALID_VALUE);
+		int iRcYaw = j.value("iRcYaw", 1);
+		IF_F(iRcYaw <= 0 || iRcYaw > 18);
 		m_pRcYaw = pRC[iRcYaw];
 
-		int iRcThrottle = 3;
-		= j.value("iRcThrottle", &iRcThrottle);
-		IF__(iRcThrottle <= 0 || iRcThrottle > 18, OK_ERR_INVALID_VALUE);
+		int iRcThrottle = j.value("iRcThrottle", 3);
+		IF_F(iRcThrottle <= 0 || iRcThrottle > 18);
 		m_pRcThrottle = pRC[iRcThrottle];
 
 		return true;
 	}
 
-	int _APmavlink_drive::link(const json& j, ModuleMgr* pM)
+	bool _APmavlink_drive::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
-		string n;
+		IF_F(!this->_ModuleBase::link(j, pM));
 
-		n = "";
-		= j.value("_APmavlink_base", &n);
+		string n = j.value("_APmavlink_base", "");
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
-		NULL__(m_pAP);
+		NULL_F(m_pAP);
 
 		return true;
 	}
 
-	int _APmavlink_drive::start(void)
+	bool _APmavlink_drive::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _APmavlink_drive::check(void)
+	bool _APmavlink_drive::check(void)
 	{
-		NULL__(m_pAP);
-		NULL__(m_pAP->getMavlink());
+		NULL_F(m_pAP);
+		NULL_F(m_pAP->getMavlink());
 
 		return this->_ModuleBase::check();
 	}

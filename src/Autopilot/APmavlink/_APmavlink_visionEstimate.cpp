@@ -16,39 +16,29 @@ namespace kai
 								   {0, 0, 0, 1}}; // default for T265
 		m_mTaero2sensor = m_mTsensor2aero.inverse();
 
-		m_thrJumpPos = 0.1;	 // m
-		m_thrJumpSpd = 20.0; // m/s
 		m_iReset = 0;
-		m_vAxisRPY.set(0, 1, 2);
-
-		m_apModeInError = -1;
 		m_bNaN = false;
-		m_bPos = true;
-		m_bSpd = true;
-
 		m_Dspd.x = 0;
 		m_Dspd.y = 0;
 		m_Dspd.z = 0;
-
 	}
 
 	_APmavlink_visionEstimate::~_APmavlink_visionEstimate()
 	{
 	}
 
-	int _APmavlink_visionEstimate::init(const json& j)
+	bool _APmavlink_visionEstimate::init(const json &j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		= j.value("bPos", &m_bPos);
-		= j.value("bSpd", &m_bSpd);
-		= j.value("thrJumpPos", &m_thrJumpPos);
-		= j.value("thrJumpSpd", &m_thrJumpSpd);
-		= j.value("vAxisRPY", &m_vAxisRPY);
-		= j.value("apModeInError", &m_apModeInError);
+		m_bPos = j.value("bPos", true);
+		m_bSpd = j.value("bSpd", true);
+		m_thrJumpPos = j.value("thrJumpPos", 0.1);	// m
+		m_thrJumpSpd = j.value("thrJumpSpd", 20.0); // m/s
+		m_vAxisRPY = j.value("vAxisRPY", vector<int>{0, 1, 2});
+		m_apModeInError = j.value("apModeInError", -1);
 
-		vector<float> vT;
-		pK->a("mTsensor2aero", &vT);
+		vector<float> vT = j.value("mTsensor2aero", vector<float>{});
 		if (vT.size() == 16)
 		{
 			m_mTsensor2aero = Matrix4f{{vT[0], vT[1], vT[2], vT[3]},
@@ -61,36 +51,34 @@ namespace kai
 		return true;
 	}
 
-	int _APmavlink_visionEstimate::link(const json& j, ModuleMgr* pM)
+	bool _APmavlink_visionEstimate::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
 		string n;
 
-		n = "";
-		= j.value("_APmavlink_base", &n);
+		n = j.value("_APmavlink_base", "");
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
-		NULL__(m_pAP);
+		NULL_F(m_pAP);
 
-		n = "";
-		= j.value("_NavBase", &n);
+		n = j.value("_NavBase", "");
 		m_pNav = (_NavBase *)(pM->findModule(n));
-		NULL__(m_pNav);
+		NULL_F(m_pNav);
 
 		return true;
 	}
 
-	int _APmavlink_visionEstimate::start(void)
+	bool _APmavlink_visionEstimate::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _APmavlink_visionEstimate::check(void)
+	bool _APmavlink_visionEstimate::check(void)
 	{
-		NULL__(m_pAP);
-		NULL__(m_pAP->getMavlink());
-		NULL__(m_pNav);
+		NULL_F(m_pAP);
+		NULL_F(m_pAP->getMavlink());
+		NULL_F(m_pNav);
 
 		return this->_ModuleBase::check();
 	}
@@ -114,13 +102,12 @@ namespace kai
 					}
 				}
 			}
-
 		}
 	}
 
 	bool _APmavlink_visionEstimate::updateVisionEstimate(void)
 	{
-		IF__(check() != OK_OK, true);
+		IF_F(!check());
 
 		m_bNaN = bNaN();
 		IF_F(m_bNaN);

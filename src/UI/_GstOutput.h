@@ -24,7 +24,7 @@ namespace kai
 
 	protected:
 		void updateGst(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_GstOutput *)This)->update();

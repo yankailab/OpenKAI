@@ -25,19 +25,19 @@ namespace kai
 	{
 	}
 
-	int _GPS::init(const json& j)
+	bool _GPS::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
 		string n = "";
-		= j.value("_IObase", &n);
+		n = j.value("_IObase", "");
 		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 
 		return true;
 	}
 
-	int _GPS::start(void)
+	bool _GPS::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

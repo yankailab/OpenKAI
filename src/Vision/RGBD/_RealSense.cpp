@@ -30,32 +30,32 @@ namespace kai
         DEL(m_rspAlign);
     }
 
-    int _RealSense::init(const json& j)
+    bool _RealSense::init(const json& j)
     {
-        CHECK_(_RGBDbase::init(j));
+        IF_F(!_RGBDbase::init(j));
 
-        = j.value("rsSN", &m_rsSN);
-        = j.value("rsFPS", &m_rsFPS);
-        = j.value("rsDFPS", &m_rsDFPS);
-        = j.value("bAlign", &m_bAlign);
-        = j.value("vPreset", &m_vPreset);
+        m_rsSN = j.value("rsSN", "");
+        m_rsFPS = j.value("rsFPS", "");
+        m_rsDFPS = j.value("rsDFPS", "");
+        m_bAlign = j.value("bAlign", "");
+        m_vPreset = j.value("vPreset", "");
 
-        = j.value("fConfidenceThreshold", &m_rsCtrl.m_fConfidenceThreshold);
-        = j.value("fDigitalGain", &m_rsCtrl.m_fDigitalGain);
-        = j.value("fPostProcessingSharpening", &m_rsCtrl.m_fPostProcessingSharpening);
-        = j.value("fFilterMagnitude", &m_rsCtrl.m_fFilterMagnitude);
-        = j.value("fHolesFill", &m_rsCtrl.m_fHolesFill);
-        = j.value("fEmitter", &m_rsCtrl.m_fEmitter);
-        = j.value("fLaserPower", &m_rsCtrl.m_fLaserPower);
+        m_rsCtrl.m_fConfidenceThreshold = j.value("fConfidenceThreshold", m_rsCtrl.m_fConfidenceThreshold);
+        m_rsCtrl.m_fDigitalGain = j.value("fDigitalGain", m_rsCtrl.m_fDigitalGain);
+        m_rsCtrl.m_fPostProcessingSharpening = j.value("fPostProcessingSharpening", m_rsCtrl.m_fPostProcessingSharpening);
+        m_rsCtrl.m_fFilterMagnitude = j.value("fFilterMagnitude", m_rsCtrl.m_fFilterMagnitude);
+        m_rsCtrl.m_fHolesFill = j.value("fHolesFill", m_rsCtrl.m_fHolesFill);
+        m_rsCtrl.m_fEmitter = j.value("fEmitter", m_rsCtrl.m_fEmitter);
+        m_rsCtrl.m_fLaserPower = j.value("fLaserPower", m_rsCtrl.m_fLaserPower);
 
-        = j.value("fBrightness", &m_rsCtrl.m_fBrightness);
-        = j.value("fContrast", &m_rsCtrl.m_fContrast);
-        = j.value("fGain", &m_rsCtrl.m_fGain);
-        = j.value("fExposure", &m_rsCtrl.m_fExposure);
-        = j.value("fHue", &m_rsCtrl.m_fHue);
-        = j.value("fSaturation", &m_rsCtrl.m_fSaturation);
-        = j.value("fSharpness", &m_rsCtrl.m_fSharpness);
-        = j.value("fWhiteBalance", &m_rsCtrl.m_fWhiteBalance);
+        m_rsCtrl.m_fBrightness = j.value("fBrightness", m_rsCtrl.m_fBrightness);
+        m_rsCtrl.m_fContrast = j.value("fContrast", m_rsCtrl.m_fContrast);
+        m_rsCtrl.m_fGain = j.value("fGain", m_rsCtrl.m_fGain);
+        m_rsCtrl.m_fExposure = j.value("fExposure", m_rsCtrl.m_fExposure);
+        m_rsCtrl.m_fHue = j.value("fHue", m_rsCtrl.m_fHue);
+        m_rsCtrl.m_fSaturation = j.value("fSaturation", m_rsCtrl.m_fSaturation);
+        m_rsCtrl.m_fSharpness = j.value("fSharpness", m_rsCtrl.m_fSharpness);
+        m_rsCtrl.m_fWhiteBalance = j.value("fWhiteBalance", m_rsCtrl.m_fWhiteBalance);
 
         Kiss *pKt = pK->child("threadPP");
         if (pKt->empty())
@@ -281,7 +281,7 @@ namespace kai
         m_rsPipe.stop();
     }
 
-    int _RealSense::start(void)
+    bool _RealSense::start(void)
     {
         NULL_F(m_pT);
         NULL__(m_pTPP);
@@ -289,7 +289,7 @@ namespace kai
         return m_pTPP->start(getTPP, this);
     }
 
-    int _RealSense::check(void)
+    bool _RealSense::check(void)
     {
         NULL_F(m_pT);
         NULL__(m_pTPP);
@@ -331,7 +331,7 @@ namespace kai
 
     bool _RealSense::updateRS(void)
     {
-        IF__(check() != OK_OK, true);
+        IF_F(!check());
 
         try
         {

@@ -27,12 +27,12 @@ namespace kai
 	{
 	}
 
-	int _DenseFlow::init(const json& j)
+	bool _DenseFlow::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		= j.value("w", &m_w);
-		= j.value("h", &m_h);
+		m_w = j.value("w", "");
+		m_h = j.value("h", "");
 		m_gFlow = GpuMat(m_h, m_w, CV_32FC2);
 
 //		m_pGrayFrames = new FrameGroup();
@@ -40,13 +40,13 @@ namespace kai
 		m_pFarn = cuda::FarnebackOpticalFlow::create();
 
 		string n = "";
-		= j.value("_VisionBase", &n);
+		n = j.value("_VisionBase", "");
 		m_pVision = (_VisionBase *)(pM->findModule(n));
 
 		return true;
 	}
 
-	int _DenseFlow::start(void)
+	bool _DenseFlow::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

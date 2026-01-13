@@ -22,15 +22,15 @@ namespace kai
 	{
 	}
 
-	int _DetectorBase::init(const json& j)
+	bool _DetectorBase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
 		// model
-		= j.value("fModel", &m_fModel);
-		= j.value("fWeight", &m_fWeight);
-		= j.value("fMean", &m_fMean);
-		= j.value("fClass", &m_fClass);
+		m_fModel = j.value("fModel", "");
+		m_fWeight = j.value("fWeight", "");
+		m_fMean = j.value("fMean", "");
+		m_fClass = j.value("fClass", "");
 
 		// statistics
 		if (!m_fClass.empty())
@@ -54,16 +54,16 @@ namespace kai
 		return true;
 	}
 
-	int _DetectorBase::link(const json& j, ModuleMgr* pM)
+	bool _DetectorBase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
 		string n = "";
-		= j.value("_VisionBase", &n);
+		n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
 
 		n = "";
-		= j.value("_Universe", &n);
+		n = j.value("_Universe", "");
 		m_pU = (_Universe *)(pM->findModule(n));
 
 		return true;
@@ -74,7 +74,7 @@ namespace kai
 		return true;
 	}
 
-	int _DetectorBase::check(void)
+	bool _DetectorBase::check(void)
 	{
 		return this->_ModuleBase::check();
 	}

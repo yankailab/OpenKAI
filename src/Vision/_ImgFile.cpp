@@ -20,11 +20,11 @@ namespace kai
 	{
 	}
 
-	int _ImgFile::init(const json& j)
+	bool _ImgFile::init(const json& j)
 	{
-		CHECK_(_VisionBase::init(j));
+		IF_F(!_VisionBase::init(j));
 
-		= j.value("file", &m_file);
+		m_file = j.value("file", "");
 
 		return true;
 	}
@@ -46,7 +46,7 @@ namespace kai
 		return true;
 	}
 
-	int _ImgFile::start(void)
+	bool _ImgFile::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

@@ -12,45 +12,48 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_servo::init(const json& j)
+	bool _APmavlink_servo::init(const json &j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		string n;
-		n = "";
-		= j.value("_APmavlink_base", &n);
-		m_pAP = (_APmavlink_base *)(pM->findModule(n));
-		NULL__(m_pAP);
+		const json &jc = j.at("channels");
+		IF__(!jc.is_object(), true);
 
-		Kiss *pKc = pK->child("channels");
-		NULL__(pKc, OK_OK);
-
-		int i = 0;
-		while (1)
+		for (auto it = jc.begin(); it != jc.end(); it++)
 		{
-			Kiss *pS = pKc->child(i++);
-			if (pS->empty())
-				break;
+			const json &ji = it.value();
+			IF_CONT(!ji.is_object());
 
 			AP_SERVO s;
 			s.init();
-			pS->v("iChan", &s.m_iChan);
-			pS->v("pwm", &s.m_pwm);
+			s.m_iChan = ji.value("iChan", 9);
+			s.m_pwm = ji.value("pwm", 1500);
 			m_vServo.push_back(s);
 		}
 
 		return true;
 	}
 
-	int _APmavlink_servo::start(void)
+	bool _APmavlink_servo::link(const json &j, ModuleMgr *pM)
+	{
+		IF_F(!this->_ModuleBase::link(j, pM));
+
+		string n = j.value("_APmavlink_base", "");
+		m_pAP = (_APmavlink_base *)(pM->findModule(n));
+		NULL_F(m_pAP);
+
+		return true;
+	}
+
+	bool _APmavlink_servo::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _APmavlink_servo::check(void)
+	bool _APmavlink_servo::check(void)
 	{
-		NULL__(m_pAP);
+		NULL_F(m_pAP);
 		NULL__(m_pAP->getMavlink());
 
 		return this->_ModuleBase::check();
@@ -63,7 +66,6 @@ namespace kai
 			m_pT->autoFPS();
 
 			updateServo();
-
 		}
 	}
 

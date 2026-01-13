@@ -15,19 +15,18 @@
 namespace kai
 {
 
-class Destimator : public BASE
-{
-public:
-	Destimator();
-	virtual ~Destimator();
+	class Destimator : public BASE
+	{
+	public:
+		Destimator();
+		virtual ~Destimator();
 
-	virtual int init(void* pKiss);
-	virtual double v(int x);
+		virtual bool init(const json &j);
+		virtual double v(int x);
 
-protected:
-	PolyFit m_fit;
-
-};
+	protected:
+		PolyFit m_fit;
+	};
 
 }
 #endif

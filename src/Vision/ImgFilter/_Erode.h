@@ -51,7 +51,7 @@ namespace kai
 
 	private:
 		void filter(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_Erode *)This)->update();

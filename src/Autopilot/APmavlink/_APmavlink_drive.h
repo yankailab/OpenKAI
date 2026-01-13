@@ -12,8 +12,8 @@ namespace kai
 		_APmavlink_drive();
 		~_APmavlink_drive();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void update(void);
@@ -39,8 +39,8 @@ namespace kai
 		float m_yawMode;
 		bool m_bRcChanOverride;
 
-		float m_steer;	// normalized
-		float m_speed;	// normalized
+		float m_steer; // normalized
+		float m_speed; // normalized
 		float m_pwmM;
 		float m_pwmD;
 		uint16_t *m_pRcYaw;

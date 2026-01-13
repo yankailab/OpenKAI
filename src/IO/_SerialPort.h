@@ -37,7 +37,7 @@ namespace kai
 
 	private:
 		bool setup(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_SerialPort *)This)->update();

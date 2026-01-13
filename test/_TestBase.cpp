@@ -11,9 +11,9 @@ namespace kai
     {
     }
 
-    int _TestBase::init(const json& j)
+    bool _TestBase::init(const json& j)
     {
-        CHECK_(this->_ModuleBase::init(j));
+        IF_F(!this->_ModuleBase::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
 //        = j.value("", &);
@@ -21,20 +21,20 @@ namespace kai
         return true;
     }
 
-	int _TestBase::link(const json& j, ModuleMgr* pM)
+	bool _TestBase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
 		return true;
 	}
 
-    int _TestBase::start(void)
+    bool _TestBase::start(void)
     {
         NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
-    int _TestBase::check(void)
+    bool _TestBase::check(void)
     {
         return this->_ModuleBase::check();
     }

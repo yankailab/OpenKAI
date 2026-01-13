@@ -83,11 +83,11 @@ namespace kai
 		_UVC();
 		virtual ~_UVC();
 
-		bool init(const json& j);
-		bool start(void);
+		virtual bool init(const json& j);
+		virtual bool start(void);
 		bool open(void);
 		void close(void);
-		void draw(void *pFrame);
+		virtual void draw(void *pFrame);
 
 		static void sCbGetFrame(uvc_frame *pFrame, void *p)
 		{
@@ -121,7 +121,7 @@ namespace kai
 		void UVCstreamGetFrame(unsigned int tOut);
 		void cbGetFrame(uvc_frame *pFrame);
 
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_UVC *)This)->update();

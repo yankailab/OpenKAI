@@ -14,39 +14,48 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_depthVision::init(const json& j)
+	bool _APmavlink_depthVision::init(const json &j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		//link
-		string n;
-		n = "";
-		= j.value("APcopter_base", &n);
-		m_pAP = (_APmavlink_base *)(pM->findModule(n));
-
-		n = "";
-		= j.value("_RGBDbase", &n);
-		m_pDV = (_RGBDbase *)(pM->findModule(n));
-		NULL__(m_pDV);
+		const json &js = j.at("sections");
+		IF__(!js.is_object(), true);
 
 		m_nROI = 0;
-		while (1)
+		for (auto it = js.begin(); it != js.end(); it++)
 		{
-			IF__(m_nROI >= N_DEPTH_ROI, OK_ERR_INVALID_VALUE);
-			Kiss *pKs = pK->child(m_nROI);
-			if (pKs->empty())
-				break;
+			const json &ji = it.value();
+			IF_CONT(!ji.is_object());
+
+			IF_F(m_nROI >= N_DEPTH_ROI);
 
 			DEPTH_ROI *pR = &m_pROI[m_nROI];
 			pR->init();
-			pKs->v("orientation", (int *)&pR->m_orientation);
-			pKs->v("l", &pR->m_roi.x);
-			pKs->v("t", &pR->m_roi.y);
-			pKs->v("r", &pR->m_roi.z);
-			pKs->v("b", &pR->m_roi.w);
+			pR->m_orientation = ji.value("orientation", pR->m_orientation);
+			pR->m_roi.x = ji.value("l", pR->m_roi.x);
+			pR->m_roi.y = ji.value("t", pR->m_roi.y);
+			pR->m_roi.z = ji.value("r", pR->m_roi.z);
+			pR->m_roi.w = ji.value("b", pR->m_roi.w);
 
 			m_nROI++;
 		}
+
+		return true;
+	}
+
+	bool _APmavlink_depthVision::link(const json &j, ModuleMgr *pM)
+	{
+		IF_F(!this->_ModuleBase::link(j, pM));
+
+		string n;
+
+		n = j.value("APmavlink_base", "");
+		m_pAP = (_APmavlink_base *)(pM->findModule(n));
+		NULL_F(m_pAP);
+
+		n = j.value("_RGBDbase", "");
+		m_pDV = (_RGBDbase *)(pM->findModule(n));
+		NULL_F(m_pDV);
 
 		return true;
 	}
@@ -73,7 +82,7 @@ namespace kai
 			pR->m_minD = d;
 
 			D.type = 0;
-			D.max_distance = (uint16_t)(range.y * 100); //unit: centimeters
+			D.max_distance = (uint16_t)(range.y * 100); // unit: centimeters
 			D.min_distance = (uint16_t)(range.x * 100);
 			D.current_distance = (uint16_t)(pR->m_minD * 100);
 			D.orientation = pR->m_orientation;

@@ -15,39 +15,36 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_mission::init(const json& j)
+	bool _APmavlink_mission::init(const json &j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		= j.value("tOutSec", &m_tOutSec);
+		m_tOutSec = j.value("tOutSec", 10);
 
 		return true;
 	}
 
-	int _APmavlink_mission::link(const json& j, ModuleMgr* pM)
+	bool _APmavlink_mission::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n;
-
-		n = "";
-		= j.value("_APmavlink_base", &n);
+		string n = j.value("_APmavlink_base", "");
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
-		NULL__(m_pAP);
+		NULL_F(m_pAP);
 
 		return true;
 	}
 
-	int _APmavlink_mission::start(void)
+	bool _APmavlink_mission::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _APmavlink_mission::check(void)
+	bool _APmavlink_mission::check(void)
 	{
-		NULL__(m_pAP);
-		NULL__(m_pAP->getMavlink());
+		NULL_F(m_pAP);
+		NULL_F(m_pAP->getMavlink());
 
 		return this->_ModuleBase::check();
 	}
@@ -60,7 +57,6 @@ namespace kai
 
 			downloadMission();
 			updateMission();
-
 		}
 	}
 

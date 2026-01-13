@@ -20,22 +20,22 @@ namespace kai
 		close();
 	}
 
-	int _ADIO_EBYTE::init(const json& j)
+	bool _ADIO_EBYTE::init(const json& j)
 	{
-		CHECK_(this->_ADIObase::init(j));
+		IF_F(!this->_ADIObase::init(j));
 
-		= j.value("iID", &m_iID);
+		m_iID = j.value("iID", "");
 
 		return true;
 	}
 
-	int _ADIO_EBYTE::link(const json& j, ModuleMgr* pM)
+	bool _ADIO_EBYTE::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ADIObase::link(j, pM));
+		IF_F(!this->_ADIObase::link(j, pM));
 
 		string n;
 		n = "";
-		= j.value("_Modbus", &n);
+		n = j.value("_Modbus", "");
 		m_pMB = (_Modbus *)(pM->findModule(n));
 
 		return true;
@@ -50,7 +50,7 @@ namespace kai
 	{
 	}
 
-	int _ADIO_EBYTE::check(void)
+	bool _ADIO_EBYTE::check(void)
 	{
 		NULL__(m_pMB);
 		IF__(!m_pMB->bOpen());
@@ -58,7 +58,7 @@ namespace kai
 		return this->_ADIObase::check();
 	}
 
-	int _ADIO_EBYTE::start(void)
+	bool _ADIO_EBYTE::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

@@ -16,17 +16,17 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_rcChannel::init(const json& j)
+	bool _APmavlink_rcChannel::init(const json &j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		= j.value("iRCmodeChan", &m_rcMode.m_iChan);
-		pK->a("vRCmodeDiv", &m_rcMode.m_vDiv);
-		= j.value("iRCstickV", &m_rcStickV.m_iChan);
-		= j.value("iRCstickH", &m_rcStickH.m_iChan);
+		m_rcMode.m_iChan = j.value("iRCmodeChan", m_rcMode.m_iChan);
+		m_rcMode.m_vDiv = j.value("vRCmodeDiv", m_rcMode.m_vDiv);
+		m_rcStickV.m_iChan = j.value("iRCstickV", m_rcStickV.m_iChan);
+		m_rcStickH.m_iChan = j.value("iRCstickH", m_rcStickH.m_iChan);
 
-		pK->a("vRCmodeDiv", &m_rcStickV.m_vDiv);
-		pK->a("vRCmodeDiv", &m_rcStickH.m_vDiv);
+		m_rcStickV.m_vDiv = j.value("vRCmodeDiv", m_rcStickV.m_vDiv);
+		m_rcStickH.m_vDiv = j.value("vRCmodeDiv", m_rcStickH.m_vDiv);
 
 		m_rcMode.update();
 		m_rcStickV.update();
@@ -35,28 +35,26 @@ namespace kai
 		return true;
 	}
 
-	int _APmavlink_rcChannel::link(const json& j, ModuleMgr* pM)
+	bool _APmavlink_rcChannel::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n = "";
-
-		= j.value("_APmavlink_base", &n);
+		string n = j.value("_APmavlink_base", "");
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
-		NULL__(m_pAP);
+		NULL_F(m_pAP);
 
 		return true;
 	}
 
-	int _APmavlink_rcChannel::start(void)
+	bool _APmavlink_rcChannel::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _APmavlink_rcChannel::check(void)
+	bool _APmavlink_rcChannel::check(void)
 	{
-		NULL__(m_pAP);
+		NULL_F(m_pAP);
 		NULL__(m_pAP->getMavlink());
 
 		return this->_ModuleBase::check();
@@ -69,7 +67,6 @@ namespace kai
 			m_pT->autoFPS();
 
 			updateRCchannel();
-
 		}
 	}
 
@@ -91,7 +88,6 @@ namespace kai
 		pwm = m_pAP->getMavlink()->m_rcChannels.getRC(m_rcStickH.m_iChan);
 		IF_(pwm == UINT16_MAX);
 		m_rcStickH.set(pwm);
-
 	}
 
 	void _APmavlink_rcChannel::console(void *pConsole)

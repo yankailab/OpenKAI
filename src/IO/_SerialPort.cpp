@@ -22,23 +22,23 @@ namespace kai
 		close();
 	}
 
-	int _SerialPort::init(const json& j)
+	bool _SerialPort::init(const json& j)
 	{
-		CHECK_(this->_IObase::init(j));
+		IF_F(!this->_IObase::init(j));
 
-		= j.value("port", &m_port);
-		= j.value("baud", &m_baud);
-		= j.value("dataBits", &m_dataBits);
-		= j.value("stopBits", &m_stopBits);
-		= j.value("parity", &m_parity);
-		= j.value("hardwareControl", &m_hardwareControl);
+		m_port = j.value("port", "");
+		m_baud = j.value("baud", "");
+		m_dataBits = j.value("dataBits", "");
+		m_stopBits = j.value("stopBits", "");
+		m_parity = j.value("parity", "");
+		m_hardwareControl = j.value("hardwareControl", "");
 
 		return true;
 	}
 
-	int _SerialPort::link(const json& j, ModuleMgr* pM)
+	bool _SerialPort::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_IObase::link(j, pM));
+		IF_F(!this->_IObase::link(j, pM));
 
 		return true;
 	}
@@ -73,7 +73,7 @@ namespace kai
 		this->_IObase::close();
 	}
 
-	int _SerialPort::start(void)
+	bool _SerialPort::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

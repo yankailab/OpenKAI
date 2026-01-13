@@ -33,7 +33,7 @@ namespace kai
 		bool bExtension(const string &fName, const vector<string>& vExt);
 
 	private:
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_FileBase *)This)->update();

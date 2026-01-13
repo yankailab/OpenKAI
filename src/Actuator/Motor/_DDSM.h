@@ -33,7 +33,7 @@ namespace kai
 		bool setMode(void);
 		bool setOutput(int16_t v);
 		bool readCMD(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_DDSM *)This)->update();

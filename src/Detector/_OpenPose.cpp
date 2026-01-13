@@ -24,17 +24,17 @@ namespace kai
 	{
 	}
 
-	int _OpenPose::init(const json& j)
+	bool _OpenPose::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(j));
+		IF_F(!this->_DetectorBase::init(j));
 
-		= j.value("nW", &m_nW);
-		= j.value("nH", &m_nH);
-		= j.value("iBackend", &m_iBackend);
-		= j.value("iTarget", &m_iTarget);
-		= j.value("bSwapRB", &m_bSwapRB);
-		= j.value("scale", &m_scale);
-		= j.value("vMean", &m_vMean);
+		m_nW = j.value("nW", "");
+		m_nH = j.value("nH", "");
+		m_iBackend = j.value("iBackend", "");
+		m_iTarget = j.value("iTarget", "");
+		m_bSwapRB = j.value("bSwapRB", "");
+		m_scale = j.value("scale", "");
+		m_vMean = j.value("vMean", "");
 
 		m_net = readNetFromCaffe(m_fModel, m_fWeight);
 		IF__(m_net.empty(), OK_ERR_INVALID_VALUE);
@@ -45,13 +45,13 @@ namespace kai
 		return true;
 	}
 
-	int _OpenPose::start(void)
+	bool _OpenPose::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _OpenPose::check(void)
+	bool _OpenPose::check(void)
 	{
 		NULL__(m_pV);
 		Frame *pBGR = m_pV->getFrameRGB();

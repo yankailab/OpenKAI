@@ -19,9 +19,9 @@ namespace kai
 	{
 	}
 
-	int _RTCMcast::init(const json& j)
+	bool _RTCMcast::init(const json& j)
 	{
-		CHECK_(this->_ProtocolBase::init(j));
+		IF_F(!this->_ProtocolBase::init(j));
 
 		Kiss *pR = pK->child("RTCMmsg");
 		IF__(pR->empty(), OK_OK);
@@ -49,28 +49,28 @@ namespace kai
 		return true;
 	}
 
-	int _RTCMcast::link(const json& j, ModuleMgr* pM)
+	bool _RTCMcast::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ProtocolBase::link(j, pM));
+		IF_F(!this->_ProtocolBase::link(j, pM));
 		string n;
 
 		n = "";
-		= j.value("_IObaseSend", &n);
+		n = j.value("_IObaseSend", "");
 		m_pIOsend = (_IObase *)(pM->findModule(n));
 		NULL__(m_pIOsend);
 
 		return true;
 	}
 
-	int _RTCMcast::start(void)
+	bool _RTCMcast::start(void)
 	{
 		NULL_F(m_pT);
 		NULL_F(m_pTr);
-		CHECK_(m_pT->start(getUpdateW, this));
+		IF_F(!m_pT->start(getUpdateW, this));
 		return m_pTr->start(getUpdateR, this);
 	}
 
-	int _RTCMcast::check(void)
+	bool _RTCMcast::check(void)
 	{
 		NULL__(m_pIOsend);
 		IF__(!m_pIOsend->bOpen());

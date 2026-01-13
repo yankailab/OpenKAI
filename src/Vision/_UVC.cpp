@@ -35,15 +35,15 @@ namespace kai
 		close();
 	}
 
-	int _UVC::init(const json& j)
+	bool _UVC::init(const json& j)
 	{
-		CHECK_(_VisionBase::init(j));
+		IF_F(!_VisionBase::init(j));
 
-		= j.value("streamType", &m_streamType);
-		= j.value("vendorID", &m_vendorID);
-		= j.value("productID", &m_productID);
-		= j.value("SN", &m_SN);
-		= j.value("vRangeDraw", &m_vRangeDraw);
+		m_streamType = j.value("streamType", "");
+		m_vendorID = j.value("vendorID", "");
+		m_productID = j.value("productID", "");
+		m_SN = j.value("SN", "");
+		m_vRangeDraw = j.value("vRangeDraw", "");
 
 		return true;
 	}
@@ -220,7 +220,7 @@ namespace kai
 		r = uvc_stream_get_frame(m_pHandleStream, &m_pUVCframe, tOut);
 	}
 
-	int _UVC::start(void)
+	bool _UVC::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

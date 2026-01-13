@@ -45,13 +45,13 @@ namespace kai
     {
     }
 
-    int _Livox2::init(const json& j)
+    bool _Livox2::init(const json& j)
     {
-        CHECK_(this->_PCstream::init(j));
+        IF_F(!this->_PCstream::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
         // lvx select
-        = j.value("lvxSN", &m_lvxSN);
+        m_lvxSN = j.value("lvxSN", "");
         if (!m_lvxSN.empty())
         {
             memcpy(m_pLvxSN, m_lvxSN.c_str(), m_lvxSN.length());
@@ -59,32 +59,32 @@ namespace kai
 
         string ip;
         ip = "";
-        = j.value("lvxIP", &ip);
+        ip = j.value("lvxIP", "");
         parseIP(ip.c_str(), (uint8_t *)&m_lvxIP);
 
         // lvx time out
         int tOutSec = 10;
-        = j.value("tOutSec", &tOutSec);
+        tOutSec = j.value("tOutSec", "");
         m_lvxTout.setTout(USEC_1SEC * tOutSec);
 
         // lvx config
-        = j.value("lvxPCLdataType", &m_lvxCfg.m_pclDataType);
-        = j.value("lvxPatternMode", &m_lvxCfg.m_patternMode);
+        m_lvxCfg.m_pclDataType = j.value("lvxPCLdataType", m_lvxCfg.m_pclDataType);
+        m_lvxCfg.m_patternMode = j.value("lvxPatternMode", m_lvxCfg.m_patternMode);
         ip = "";
-        = j.value("lvxHostIP", &ip);
+        ip = j.value("lvxHostIP", "");
         if (!parseIP(ip.c_str(), (uint8_t *)&m_lvxCfg.m_hostIP))
         {
             LOG_E("lvxHostIP parse failed");
             return OK_ERR_INVALID_VALUE;
         }
-        = j.value("lvxHostPortState", &m_lvxCfg.m_hostPortState);
-        = j.value("lvxHostPortPCL", &m_lvxCfg.m_hostPortPCL);
-        = j.value("lvxHostPortIMU", &m_lvxCfg.m_hostPortIMU);
-        = j.value("lvxFrameRate", &m_lvxCfg.m_frameRate);
-        = j.value("lvxDetectMode", &m_lvxCfg.m_detectMode);
-        = j.value("lvxWorkModeAfterBoot", &m_lvxCfg.m_workModeAfterBoot);
-        = j.value("lvxWorkMode", &m_lvxCfg.m_workMode);
-        = j.value("lvxIMUdataEn", &m_lvxCfg.m_imuDataEn);
+        m_lvxCfg.m_hostPortState = j.value("lvxHostPortState", m_lvxCfg.m_hostPortState);
+        m_lvxCfg.m_hostPortPCL = j.value("lvxHostPortPCL", m_lvxCfg.m_hostPortPCL);
+        m_lvxCfg.m_hostPortIMU = j.value("lvxHostPortIMU", m_lvxCfg.m_hostPortIMU);
+        m_lvxCfg.m_frameRate = j.value("lvxFrameRate", m_lvxCfg.m_frameRate);
+        m_lvxCfg.m_detectMode = j.value("lvxDetectMode", m_lvxCfg.m_detectMode);
+        m_lvxCfg.m_workModeAfterBoot = j.value("lvxWorkModeAfterBoot", m_lvxCfg.m_workModeAfterBoot);
+        m_lvxCfg.m_workMode = j.value("lvxWorkMode", m_lvxCfg.m_workMode);
+        m_lvxCfg.m_imuDataEn = j.value("lvxIMUdataEn", m_lvxCfg.m_imuDataEn);
 
         // common thread config
         Kiss *pKw;
@@ -128,47 +128,47 @@ namespace kai
         return true;
     }
 
-    int _Livox2::link(const json& j, ModuleMgr* pM)
+    bool _Livox2::link(const json& j, ModuleMgr* pM)
     {
-        CHECK_(this->_PCstream::link(j, pM));
+        IF_F(!this->_PCstream::link(j, pM));
 
         Kiss *pK = (Kiss *)m_pKiss;
         string n;
 
         n = "";
-        = j.value("_UDPdeviceQuery", &n);
+        n = j.value("_UDPdeviceQuery", "");
         m_pUDPdeviceQuery = (_UDP *)(pM->findModule(n));
         NULL__(m_pUDPdeviceQuery);
 
         n = "";
-        = j.value("_UDPctrlCmd", &n);
+        n = j.value("_UDPctrlCmd", "");
         m_pUDPctrlCmd = (_UDP *)(pM->findModule(n));
         NULL__(m_pUDPctrlCmd);
 
         n = "";
-        = j.value("_UDPpushCmd", &n);
+        n = j.value("_UDPpushCmd", "");
         m_pUDPpushCmd = (_UDP *)(pM->findModule(n));
         NULL__(m_pUDPpushCmd);
 
         n = "";
-        = j.value("_UDPpcl", &n);
+        n = j.value("_UDPpcl", "");
         m_pUDPpcl = (_UDP *)(pM->findModule(n));
         NULL__(m_pUDPpcl);
 
         n = "";
-        = j.value("_UDPimu", &n);
+        n = j.value("_UDPimu", "");
         m_pUDPimu = (_UDP *)(pM->findModule(n));
         NULL__(m_pUDPimu);
 
         // n = "";
-        // = j.value("_IObaseLog", &n);
+        // n = j.value("_IObaseLog", "");
         // m_pUDPlog = (_IObase *)(pM->findModule(n));
         // NULL__(m_pUDPlog);
 
         return true;
     }
 
-    int _Livox2::start(void)
+    bool _Livox2::start(void)
     {
         NULL_F(m_pT);
         NULL__(m_pTdeviceQueryR);
@@ -178,18 +178,18 @@ namespace kai
         NULL__(m_pTpclR);
         NULL__(m_pTimuR);
 
-        CHECK_(m_pT->start(getUpdateWdeviceQuery, this));
-        CHECK_(m_pTdeviceQueryR->start(getUpdateRdeviceQuery, this));
-        CHECK_(m_pTctrlCmdW->start(getUpdateWctrlCmd, this));
-        CHECK_(m_pTctrlCmdR->start(getUpdateRctrlCmd, this));
-        CHECK_(m_pTpushCmdR->start(getUpdateRpushCmd, this));
-        CHECK_(m_pTpclR->start(getUpdateRpointCloud, this));
-        CHECK_(m_pTimuR->start(getUpdateRimu, this));
+        IF_F(!m_pT->start(getUpdateWdeviceQuery, this));
+        IF_F(!m_pTdeviceQueryR->start(getUpdateRdeviceQuery, this));
+        IF_F(!m_pTctrlCmdW->start(getUpdateWctrlCmd, this));
+        IF_F(!m_pTctrlCmdR->start(getUpdateRctrlCmd, this));
+        IF_F(!m_pTpushCmdR->start(getUpdateRpushCmd, this));
+        IF_F(!m_pTpclR->start(getUpdateRpointCloud, this));
+        IF_F(!m_pTimuR->start(getUpdateRimu, this));
 
         return true;
     }
 
-    int _Livox2::check(void)
+    bool _Livox2::check(void)
     {
         NULL__(m_pUDPdeviceQuery);
         NULL__(m_pUDPctrlCmd);

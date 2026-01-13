@@ -28,7 +28,7 @@ namespace kai
 
 	protected:
 		void updateConsole(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_Console *)This)->update();

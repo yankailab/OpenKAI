@@ -31,7 +31,7 @@ namespace kai
 
 	private:
 		void updateNav(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_ROS_fastLio *)This)->update();

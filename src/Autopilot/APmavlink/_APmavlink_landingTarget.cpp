@@ -7,19 +7,11 @@ namespace kai
 	{
 		m_pDS = nullptr;
 		m_pU = nullptr;
-		m_vFov = 60 * DEG_2_RAD;
-		m_vPsp.set(0.5, 0.5);
-
-		m_yawRate = 30 * DEG_2_RAD;
-		m_kP = 1.0;
-		m_defaultDtgt = 2.0;
 
 		m_bHdg = false;
 		m_bHdgMoving = false;
 		m_hdgSp = 0.0;
-		m_hdgDz = 10.0;
 		m_dHdg = 0.0;
-		m_hTouchdown = 0.0;
 
 		m_lt.angle_x = 0;
 		m_lt.angle_y = 0;
@@ -32,70 +24,68 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_landingTarget::init(const json& j)
+	bool _APmavlink_landingTarget::init(const json &j)
 	{
-		CHECK_(this->_APmavlink_move::init(j));
+		IF_F(!this->_APmavlink_move::init(j));
 
-		= j.value("vPsp", &m_vPsp);
-		= j.value("bHdg", &m_bHdg);
-		= j.value("hdgDz", &m_hdgDz);
+		m_vPsp = j.value("vPsp", vector<float>{0.5, 0.5});
+		m_bHdg = j.value("bHdg", false);
+		m_hdgDz = j.value("hdgDz", 10.0);
 		m_hdgDzNav = m_hdgDz / 2;
-		= j.value("hdgDzNav", &m_hdgDzNav);
+		m_hdgDzNav = j.value("hdgDzNav", m_hdgDzNav);
 
-		= j.value("hTouchdown", &m_hTouchdown);
-		= j.value("kP", &m_kP);
-		= j.value("defaultDtgt", &m_defaultDtgt);
+		m_hTouchdown = j.value("hTouchdown", 0.0);
+		m_kP = j.value("kP", 1.0);
+		m_defaultDtgt = j.value("defaultDtgt", 2.0);
 
-		if (= j.value("vFov", &m_vFov))
-			m_vFov *= DEG_2_RAD;
+		m_vFov = j.value("vFov", vector<float>{90, 60});
+		m_vFov *= DEG_2_RAD;
 
-		if (= j.value("yawRate", &m_yawRate))
-			m_yawRate *= DEG_2_RAD;
+		m_yawRate = j.value("yawRate", 30);
+		m_yawRate *= DEG_2_RAD;
 
-		Kiss *pKt = pK->child("tags");
-		NULL__(pKt, OK_OK);
+		const json &jc = j.at("tags");
+		IF__(!jc.is_object(), true);
 
-		Kiss *pT;
-		int i = 0;
-		while (!(pT = pKt->child(i++))->empty())
+		for (auto it = jc.begin(); it != jc.end(); it++)
 		{
-			AP_LANDING_TARGET_TAG t;
-			pT->v("id", &t.m_id);
-			pT->v("priority", &t.m_priority);
+			const json &ji = it.value();
+			IF_CONT(!ji.is_object());
 
+			AP_LANDING_TARGET_TAG t;
+			t.m_id = ji.value("id", t.m_id);
+			t.m_priority = ji.value("priority", t.m_priority);
 			m_vTags.push_back(t);
 		}
 
 		return true;
 	}
 
-	int _APmavlink_landingTarget::link(const json& j, ModuleMgr* pM)
+	bool _APmavlink_landingTarget::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_APmavlink_move::link(j, pM));
+		IF_F(!this->_APmavlink_move::link(j, pM));
 
 		string n;
 
-		n = "";
-		= j.value("_DistSensorBase", &n);
+		n = j.value("_DistSensorBase", "");
 		m_pDS = (_DistSensorBase *)pM->findModule(n);
 
-		n = "";
-		= j.value("_Universe", &n);
+		n = j.value("_Universe", "");
 		m_pU = (_Universe *)pM->findModule(n);
 
 		return true;
 	}
 
-	int _APmavlink_landingTarget::start(void)
+	bool _APmavlink_landingTarget::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _APmavlink_landingTarget::check(void)
+	bool _APmavlink_landingTarget::check(void)
 	{
-		NULL__(m_pDS);
-		NULL__(m_pU);
+		NULL_F(m_pDS);
+		NULL_F(m_pU);
 
 		return this->_APmavlink_move::check();
 	}
@@ -107,7 +97,6 @@ namespace kai
 			m_pT->autoFPS();
 
 			updateLandingTarget();
-
 		}
 	}
 
@@ -129,9 +118,9 @@ namespace kai
 		m_dHdg = dHdg(m_hdgSp, m_oTarget.getAttitude().x);
 		float dHdgAbs = abs(m_dHdg);
 
-		if(m_bHdgMoving)
+		if (m_bHdgMoving)
 		{
-			if(dHdgAbs > m_hdgDzNav)
+			if (dHdgAbs > m_hdgDzNav)
 			{
 				setHdg(0, (m_dHdg > 0) ? m_yawRate : (-m_yawRate));
 				return;
@@ -155,7 +144,6 @@ namespace kai
 
 		if (m_pAP->getMode() == AP_COPTER_GUIDED)
 			m_pAP->setMode(AP_COPTER_RTL);
-
 
 		// vFloat3 vP = m_oTarget.getPos();
 		// m_lt.angle_x = (vP.x - m_vPsp.x) * m_vFov.x * m_kP;

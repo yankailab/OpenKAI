@@ -31,7 +31,7 @@ namespace kai
 		virtual void handleFrame(const CAN_F &f);
 
 	private:
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_USR_CANET *)This)->update();

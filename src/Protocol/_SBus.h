@@ -183,11 +183,11 @@ namespace kai
 		_SBus();
 		~_SBus();
 
-		bool init(const json& j);
-		bool link(const json& j, ModuleMgr* pM);
-		bool start(void);
-		bool check(void);
-		void console(void *pConsole);
+		virtual bool init(const json& j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool start(void);
+		virtual bool check(void);
+		virtual void console(void *pConsole);
 
 		uint16_t raw(int iChan);
 		float v(int iChan);

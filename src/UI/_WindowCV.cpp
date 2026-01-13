@@ -21,12 +21,12 @@ namespace kai
 	{
 	}
 
-	int _WindowCV::init(const json& j)
+	bool _WindowCV::init(const json& j)
 	{
-		CHECK_(this->_UIbase::init(j));
+		IF_F(!this->_UIbase::init(j));
 
-		= j.value("bFullScreen", &m_bFullScreen);
-		= j.value("vSize", &m_vSize);
+		m_bFullScreen = j.value("bFullScreen", "");
+		m_vSize = j.value("vSize", "");
 		m_waitKey = 1000.0f / m_pT->getTargetFPS();
 
 		if (m_vSize.area() <= 0)
@@ -51,7 +51,7 @@ namespace kai
 		return true;
 	}
 
-	int _WindowCV::start(void)
+	bool _WindowCV::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

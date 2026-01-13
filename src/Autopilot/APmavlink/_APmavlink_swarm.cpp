@@ -11,21 +11,8 @@ namespace kai
 		m_pGio = nullptr;
 		m_pU = nullptr;
 
-		m_bAutoArm = true;
-		m_altTakeoff = 10.0;
-		m_altAuto = 10.0;
-		m_altLand = 8.0;
-		m_myID = 0;
-
-		m_vTargetID.clear();
-		m_iClass = 1;
-		m_dRdet = 1e-6;
-
 		m_ieNextWP.init(USEC_10SEC);
 		m_vWP.set(0, 0);
-		m_vWPd.set(5, 5);
-		m_vWPrange.set(10, 10);
-
 		m_ieSendHB.init(USEC_1SEC);
 		m_ieSendGCupdate.init(USEC_1SEC);
 	}
@@ -34,40 +21,38 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_swarm::init(const json& j)
+	bool _APmavlink_swarm::init(const json &j)
 	{
-		CHECK_(this->_APmavlink_move::init(j));
+		IF_F(!this->_APmavlink_move::init(j));
 
-		= j.value("bAutoArm", &m_bAutoArm);
-		= j.value("altTakeoff", &m_altTakeoff);
-		= j.value("altAuto", &m_altAuto);
-		= j.value("altLand", &m_altLand);
-		= j.value("myID", &m_myID);
+		m_bAutoArm = j.value("bAutoArm", true);
+		m_altTakeoff = j.value("altTakeoff", 10.0);
+		m_altAuto = j.value("altAuto", 10.0);
+		m_altLand = j.value("altLand", 8.0);
+		m_myID = j.value("myID", 0);
 
-		= j.value("vTargetID", &m_vTargetID);
-		= j.value("iClass", &m_iClass);
-		= j.value("dRdet", &m_dRdet);
+		m_vTargetID = j.value("vTargetID", vector<int>{0, 0});
+		m_iClass = j.value("iClass", 1);
+		m_dRdet = j.value("dRdet", 1e-6);
 
-		= j.value("vWPd", &m_vWPd);
-		= j.value("vWPrange", &m_vWPrange);
-		= j.value("ieNextWP", &m_ieNextWP.m_tInterval);
-
-		= j.value("ieSendHB", &m_ieSendHB.m_tInterval);
-		= j.value("ieSendGCupdate", &m_ieSendGCupdate.m_tInterval);
+		m_vWPd = j.value("vWPd", vector<double>{5, 5});
+		m_vWPrange = j.value("vWPrange", vector<double>{10, 10});
+		m_ieNextWP.m_tInterval = j.value("ieNextWP", USEC_10SEC);
+		m_ieSendHB.m_tInterval = j.value("ieSendHB", USEC_1SEC);
+		m_ieSendGCupdate.m_tInterval = j.value("ieSendGCupdate", USEC_1SEC);
 
 		return true;
 	}
 
-	int _APmavlink_swarm::link(const json& j, ModuleMgr* pM)
+	bool _APmavlink_swarm::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_APmavlink_move::link(j, pM));
+		IF_F(!this->_APmavlink_move::link(j, pM));
 
 		string n;
 
-        n = "";
-        = j.value("_StateControl", &n);
-        m_pSC = (_StateControl *)(pM->findModule(n));
-        NULL__(m_pSC);
+		n = j.value("_StateControl", "");
+		m_pSC = (_StateControl *)(pM->findModule(n));
+		NULL__(m_pSC);
 
 		m_state.STANDBY = m_pSC->getStateIdxByName("STANDBY");
 		m_state.TAKEOFF = m_pSC->getStateIdxByName("TAKEOFF");
@@ -75,50 +60,46 @@ namespace kai
 		m_state.RTL = m_pSC->getStateIdxByName("RTL");
 		IF__(!m_state.bValid(), OK_ERR_INVALID_VALUE);
 
-		n = "";
-		= j.value("_APmavlink_base", &n);
+		n = j.value("_APmavlink_base", "");
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
-        NULL__(m_pAP);
+		NULL_F(m_pAP);
 
-		n = "";
-		= j.value("_Swarm", &n);
+		n = j.value("_Swarm", "");
 		m_pSwarm = (_SwarmSearch *)(pM->findModule(n));
-        NULL__(m_pSwarm);
+		NULL_F(m_pSwarm);
 
-		n = "";
-		= j.value("_Xbee", &n);
+		n = j.value("_Xbee", "");
 		m_pXb = (_Xbee *)(pM->findModule(n));
-        NULL__(m_pXb);
+		NULL_F(m_pXb);
 
-		n = "";
-		= j.value("_IObase", &n);
+		n = j.value("_IObase", "");
 		m_pGio = (_IObase *)(pM->findModule(n));
-        NULL__(m_pGio);
+		NULL_F(m_pGio);
 
 		n = "";
-		= j.value("_Universe", &n);
+		n = j.value("_Universe", "");
 		m_pU = (_Universe *)(pM->findModule(n));
-        NULL__(m_pU);
+		NULL_F(m_pU);
 
-		IF__(!m_pXb->setCbReceivePacket(sOnRecvMsg, this), OK_ERR_INVALID_VALUE);
+		IF_F(!m_pXb->setCbReceivePacket(sOnRecvMsg, this));
 
 		return true;
 	}
 
-	int _APmavlink_swarm::start(void)
+	bool _APmavlink_swarm::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _APmavlink_swarm::check(void)
+	bool _APmavlink_swarm::check(void)
 	{
-		NULL__(m_pAP);
-		NULL__(m_pAP->getMavlink());
-		NULL__(m_pXb);
-		NULL__(m_pSwarm);
-		NULL__(m_pSC);
-		NULL__(m_pU);
+		NULL_F(m_pAP);
+		NULL_F(m_pAP->getMavlink());
+		NULL_F(m_pXb);
+		NULL_F(m_pSwarm);
+		NULL_F(m_pSC);
+		NULL_F(m_pU);
 
 		return this->_APmavlink_move::check();
 	}
@@ -132,7 +113,6 @@ namespace kai
 			updateState();
 
 			send();
-
 		}
 	}
 

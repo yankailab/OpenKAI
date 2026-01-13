@@ -19,9 +19,9 @@ namespace kai
 		m_vExt.clear();
 	}
 
-	int _FileBase::init(const json& j)
+	bool _FileBase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
 		m_vExt.clear();
 		pK->a("vExt", &m_vExt);
@@ -29,7 +29,7 @@ namespace kai
 		return true;
 	}
 
-	int _FileBase::start(void)
+	bool _FileBase::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

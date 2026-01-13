@@ -6,9 +6,6 @@ namespace kai
 	_APmavlink_photo::_APmavlink_photo()
 	{
 		m_pAP = nullptr;
-		m_dir = "/home/";
-		m_subDir = "";
-		m_exifConfig = "";
 		m_iTake = 0;
 	}
 
@@ -16,13 +13,13 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_photo::init(const json& j)
+	bool _APmavlink_photo::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		= j.value("exifConfig", &m_exifConfig);
-		= j.value("dir", &m_dir);
-		= j.value("subDir", &m_subDir);
+		m_exifConfig = j.value("exifConfig", "");
+		m_dir = j.value("dir", "/home/");
+		m_subDir = j.value("subDir", "");
 
 		if (m_subDir.empty())
 			m_subDir = m_dir + tFormat() + "/";
@@ -32,29 +29,26 @@ namespace kai
 		return true;
 	}
 
-	int _APmavlink_photo::link(const json& j, ModuleMgr* pM)
+	bool _APmavlink_photo::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n;
-
-		n = "";
-		= j.value("_APmavlink_base", &n);
+		string n = j.value("_APmavlink_base", "");
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
-		NULL__(m_pAP);
+		NULL_F(m_pAP);
 
 		return true;
 	}
 
-	int _APmavlink_photo::start(void)
+	bool _APmavlink_photo::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _APmavlink_photo::check(void)
+	bool _APmavlink_photo::check(void)
 	{
-		NULL__(m_pAP);
+		NULL_F(m_pAP);
 
 		return this->_ModuleBase::check();
 	}

@@ -21,9 +21,9 @@ namespace kai
 		endwin();
 	}
 
-	int _Console::init(const json& j)
+	bool _Console::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
 		initscr();
 		noecho();
@@ -39,9 +39,9 @@ namespace kai
 		return true;
 	}
 
-	int _Console::link(const json& j, ModuleMgr* pM)
+	bool _Console::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
 		vector<string> vB;
 		pK->a("vBASE", &vB);
@@ -57,7 +57,7 @@ namespace kai
 		return true;
 	}
 
-	int _Console::start(void)
+	bool _Console::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

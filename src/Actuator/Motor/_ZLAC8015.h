@@ -20,10 +20,10 @@ namespace kai
 		_ZLAC8015();
 		~_ZLAC8015();
 
-		bool init(const json& j);
-		bool link(const json& j, ModuleMgr* pM);
-		bool start(void);
-		bool check(void);
+		virtual bool init(const json& j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool start(void);
+		virtual bool check(void);
 
 	private:
 //		bool setPower(bool bON);
@@ -41,7 +41,7 @@ namespace kai
 		void setup(void);
 
 		void updateMove(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_ZLAC8015 *)This)->update();

@@ -30,7 +30,7 @@ namespace kai
 	private:
 		std::shared_ptr<Feature> preprocess(PointCloud &pc);
 		void updateRegistration(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_PCregistGlobal *)This)->update();

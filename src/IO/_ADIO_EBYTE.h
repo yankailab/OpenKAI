@@ -33,7 +33,7 @@ namespace kai
 		virtual void updateW(void);
 		virtual void updateR(void);
 
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_ADIO_EBYTE *)This)->update();

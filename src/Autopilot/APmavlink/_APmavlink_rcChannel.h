@@ -13,12 +13,12 @@ namespace kai
 		_APmavlink_rcChannel();
 		~_APmavlink_rcChannel();
 
-		bool init(const json& j);
-		bool link(const json& j, ModuleMgr* pM);
-		bool start(void);
-		bool check(void);
-		void update(void);
-		void console(void *pConsole);
+		virtual bool init(const json& j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool start(void);
+		virtual bool check(void);
+		virtual void update(void);
+		virtual void console(void *pConsole);
 
 	private:
 		void updateRCchannel(void);
@@ -28,7 +28,7 @@ namespace kai
 			return NULL;
 		}
 
-	private:
+	protected:
 		_APmavlink_base *m_pAP;
 		RC_CHANNEL m_rcMode;
 		RC_CHANNEL m_rcStickV;

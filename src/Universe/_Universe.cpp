@@ -28,26 +28,26 @@ namespace kai
 	{
 	}
 
-	int _Universe::init(const json& j)
+	bool _Universe::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
 		// general
-		= j.value("minConfidence", &m_minConfidence);
-		= j.value("vArea", &m_vArea);
-		= j.value("vW", &m_vW);
-		= j.value("vH", &m_vH);
-		= j.value("vRoi", &m_vRoi);
-		= j.value("vClassRange", &m_vClassRange);
+		m_minConfidence = j.value("minConfidence", "");
+		m_vArea = j.value("vArea", "");
+		m_vW = j.value("vW", "");
+		m_vH = j.value("vH", "");
+		m_vRoi = j.value("vRoi", "");
+		m_vClassRange = j.value("vClassRange", "");
 
 		// draw
-		= j.value("bDrawText", &m_bDrawText);
-		= j.value("bDrawPos", &m_bDrawPos);
-		= j.value("bDrawBB", &m_bDrawBB);
+		m_bDrawText = j.value("bDrawText", "");
+		m_bDrawPos = j.value("bDrawPos", "");
+		m_bDrawBB = j.value("bDrawBB", "");
 
 		// buffer
 		int nB = 16;
-		= j.value("nBuf", &nB);
+		nB = j.value("nBuf", "");
 		m_sO.get()->init(nB);
 		m_sO.next()->init(nB);
 		clear();
@@ -67,7 +67,7 @@ namespace kai
 		m_sO.next()->clear();
 	}
 
-	int _Universe::start(void)
+	bool _Universe::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

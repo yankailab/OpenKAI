@@ -33,7 +33,7 @@ namespace kai
 	private:
 		void runQ(void);
 		void updateSolver(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_SAT_Qk *)This)->update();

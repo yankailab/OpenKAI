@@ -27,7 +27,7 @@ namespace kai
 	private:
 		void detectYolo(void);
 		void detect(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_YOLOv3 *)This)->update();

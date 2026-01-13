@@ -14,43 +14,50 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_distLidar::init(const json& j)
+	bool _APmavlink_distLidar::init(const json &j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		string n;
-
-		n = "";
-		= j.value("APcopter_base", &n);
-		m_pAP = (_APmavlink_base *)(pM->findModule(n));
-
-		n = "";
-		= j.value("_DistSensorBase", &n);
-		m_pDS = (_DistSensorBase *)(pM->findModule(n));
-		NULL__(m_pDS);
+		const json &js = j.at("sections");
+		IF__(!js.is_object(), true);
 
 		m_nSection = 0;
-		while (1)
+		for (auto it = js.begin(); it != js.end(); it++)
 		{
-			IF_F(m_nSection >= N_LIDAR_SECTION);
-			Kiss *pKs = pK->child(m_nSection);
-			if (pKs->empty())
-				break;
+			const json &ji = it.value();
+			IF_CONT(!ji.is_object());
 
 			DIST_LIDAR_SECTION *pS = &m_pSection[m_nSection];
 			pS->init();
-			pKs->v("orientation", (int *)&pS->m_orientation);
-			pKs->v("degFrom", &pS->m_degFrom);
-			pKs->v("degTo", &pS->m_degTo);
-			pKs->v("sensorScale", &pS->m_sensorScale);
+			pS->m_orientation = ji.value("orientation", pS->m_orientation);
+			pS->m_degFrom = ji.value("degFrom", pS->m_degFrom);
+			pS->m_degTo = ji.value("degTo", pS->m_degTo);
+			pS->m_sensorScale = ji.value("sensorScale", pS->m_sensorScale);
 
-			IF__(pS->m_degFrom < 0, OK_ERR_INVALID_VALUE);
-			IF__(pS->m_degTo < 0, OK_ERR_INVALID_VALUE);
-			IF__(pS->m_degTo <= pS->m_degFrom, OK_ERR_INVALID_VALUE);
-			IF__(pS->m_degTo - pS->m_degFrom > 180, OK_ERR_INVALID_VALUE);
+			IF_F(pS->m_degFrom < 0);
+			IF_F(pS->m_degTo < 0);
+			IF_F(pS->m_degTo <= pS->m_degFrom);
+			IF_F(pS->m_degTo - pS->m_degFrom > 180);
 
 			m_nSection++;
 		}
+
+		return true;
+	}
+
+	bool _APmavlink_distLidar::link(const json &j, ModuleMgr *pM)
+	{
+		IF_F(!this->_ModuleBase::link(j, pM));
+
+		string n;
+
+		n = j.value("APmavlink_base", "");
+		m_pAP = (_APmavlink_base *)(pM->findModule(n));
+		NULL_F(m_pAP);
+
+		n = j.value("_DistSensorBase", "");
+		m_pDS = (_DistSensorBase *)(pM->findModule(n));
+		NULL_F(m_pDS);
 
 		return true;
 	}
@@ -81,7 +88,7 @@ namespace kai
 			pS->m_minD = d;
 
 			D.type = 0;
-			D.max_distance = (uint16_t)(vRange.y * 100); //unit: centimeters
+			D.max_distance = (uint16_t)(vRange.y * 100); // unit: centimeters
 			D.min_distance = (uint16_t)(vRange.x * 100);
 			D.current_distance = (uint16_t)(pS->m_minD * 100);
 			D.orientation = pS->m_orientation;

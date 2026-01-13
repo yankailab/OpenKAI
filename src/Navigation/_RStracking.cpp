@@ -19,9 +19,9 @@ namespace kai
 		close();
 	}
 
-	int _RStracking::init(const json& j)
+	bool _RStracking::init(const json& j)
 	{
-		CHECK_(this->_NavBase::init(j));
+		IF_F(!this->_NavBase::init(j));
 
 		return true;
 	}
@@ -120,7 +120,7 @@ namespace kai
 		}
 	}
 
-	int _RStracking::start(void)
+	bool _RStracking::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

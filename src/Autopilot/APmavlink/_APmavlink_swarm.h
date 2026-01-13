@@ -21,22 +21,22 @@ namespace kai
 		_APmavlink_swarm();
 		~_APmavlink_swarm();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void update(void);
 
-        // callback for Xbee recv
-        void onRecvMsg(const XBframe_receivePacket& d);
-    	static void sOnRecvMsg(void *pInst, XBframe_receivePacket d)
-        {
-            NULL_(pInst);
-            ((_APmavlink_swarm*)pInst)->onRecvMsg(d);
-        }
+		// callback for Xbee recv
+		void onRecvMsg(const XBframe_receivePacket &d);
+		static void sOnRecvMsg(void *pInst, XBframe_receivePacket d)
+		{
+			NULL_(pInst);
+			((_APmavlink_swarm *)pInst)->onRecvMsg(d);
+		}
 
 		// swarm msg handlers
-		void handleMsgSetState(const SWMSG_CMD_SETSTATE& m);
+		void handleMsgSetState(const SWMSG_CMD_SETSTATE &m);
 
 	protected:
 		// gimbal
@@ -55,8 +55,8 @@ namespace kai
 		virtual bool findVisualTarget(void);
 		virtual void calcMove(void);
 
-		SWARM_DETECTION* getDetByID(uint16_t id);
-		SWARM_DETECTION* getDetByDist(vDouble2 vP, double r);
+		SWARM_DETECTION *getDetByID(uint16_t id);
+		SWARM_DETECTION *getDetByDist(vDouble2 vP, double r);
 
 		// update routine
 		virtual void updateState(void);
@@ -67,11 +67,11 @@ namespace kai
 		}
 
 	protected:
-		_StateControl* m_pSC;
+		_StateControl *m_pSC;
 		_APmavlink_base *m_pAP;
 		SWARM_SEARCH_STATE_NODE m_state;
-        _Xbee* m_pXb;
-        _SwarmSearch* m_pSwarm;
+		_Xbee *m_pXb;
+		_SwarmSearch *m_pSwarm;
 		_Universe *m_pU;
 		_IObase *m_pGio;
 

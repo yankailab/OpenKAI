@@ -46,7 +46,7 @@ namespace kai
 		void transit(int iS);
 
 	private:
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_StateControl *)This)->update();

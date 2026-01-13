@@ -19,13 +19,13 @@ namespace kai
 		_GStreamer();
 		virtual ~_GStreamer();
 
-		bool init(const json& j);
-		bool start(void);
+		virtual bool init(const json& j);
+		virtual bool start(void);
 		bool open(void);
 		void close(void);
 
 	private:
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_GStreamer *)This)->update();

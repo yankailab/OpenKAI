@@ -11,7 +11,7 @@ namespace kai
 	{
 		int m_missionID;
 		uint8_t m_missionType;
-		vDouble4 m_vP;	// lat, lng, alt, hdg
+		vDouble4 m_vP; // lat, lng, alt, hdg
 		vDouble4 m_vPlookAt;
 		float m_spd;
 		uint64_t m_tDelay;
@@ -46,8 +46,8 @@ namespace kai
 		_APmavlink_mission();
 		~_APmavlink_mission();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
@@ -57,34 +57,34 @@ namespace kai
 		void uploadMission(void);
 
 		// Upload
-        static void sCbMavRecvMissionRequestInt(void* pMsg, void *pInst)
-        {
-            NULL_(pInst);
-            ((_APmavlink_mission *)pInst)->CbMavRecvMissionRequestInt(pMsg);
-        }
+		static void sCbMavRecvMissionRequestInt(void *pMsg, void *pInst)
+		{
+			NULL_(pInst);
+			((_APmavlink_mission *)pInst)->CbMavRecvMissionRequestInt(pMsg);
+		}
 
-        static void sCbMavRecvMissionAck(void* pMsg, void *pInst)
-        {
-            NULL_(pInst);
-            ((_APmavlink_mission *)pInst)->CbMavRecvMissionAck(pMsg);
-        }
+		static void sCbMavRecvMissionAck(void *pMsg, void *pInst)
+		{
+			NULL_(pInst);
+			((_APmavlink_mission *)pInst)->CbMavRecvMissionAck(pMsg);
+		}
 
 		// Download
-        static void sCbMavRecvMissionCount(void* pMsg, void *pInst)
-        {
-            NULL_(pInst);
-            ((_APmavlink_mission *)pInst)->CbMavRecvMissionCount(pMsg);
-        }
+		static void sCbMavRecvMissionCount(void *pMsg, void *pInst)
+		{
+			NULL_(pInst);
+			((_APmavlink_mission *)pInst)->CbMavRecvMissionCount(pMsg);
+		}
 
-        static void sCbMavRecvMissionItemInt(void* pMsg, void *pInst)
-        {
-            NULL_(pInst);
-            ((_APmavlink_mission *)pInst)->CbMavRecvMissionItemInt(pMsg);
-        }
+		static void sCbMavRecvMissionItemInt(void *pMsg, void *pInst)
+		{
+			NULL_(pInst);
+			((_APmavlink_mission *)pInst)->CbMavRecvMissionItemInt(pMsg);
+		}
 
 	private:
 		void updateMission(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_APmavlink_mission *)This)->update();
@@ -94,14 +94,14 @@ namespace kai
 	protected:
 		// upload
 		void sendMissionCount(void);
-		void CbMavRecvMissionRequestInt(void* pMsg);
-		void CbMavRecvMissionAck(void* pMsg);
+		void CbMavRecvMissionRequestInt(void *pMsg);
+		void CbMavRecvMissionAck(void *pMsg);
 
 		// download
 		void sendMissionRequestList(void);
-		void CbMavRecvMissionCount(void* pMsg);
+		void CbMavRecvMissionCount(void *pMsg);
 		void sendMissionRequestInt(void);
-		void CbMavRecvMissionItemInt(void* pMsg);
+		void CbMavRecvMissionItemInt(void *pMsg);
 		void sendMissionAck(void);
 
 		void checkTimeOut(void);
@@ -124,11 +124,9 @@ namespace kai
 		int m_mIdxDL; // current mission index
 		uint64_t m_tUpdatedDL;
 
-
 		AP_MISSION_STATE m_mState;
 		TIME_OUT m_tOut;
 		int m_tOutSec;
-
 	};
 
 }

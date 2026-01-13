@@ -20,9 +20,9 @@ namespace kai
 			m_pTracker.release();
 	}
 
-	int _SingleTracker::init(const json& j)
+	bool _SingleTracker::init(const json& j)
 	{
-		CHECK_(this->_TrackerBase::init(j));
+		IF_F(!this->_TrackerBase::init(j));
 
 		return true;
 	}
@@ -39,7 +39,7 @@ namespace kai
 		m_pTracker = TrackerKCF::create();
 	}
 
-	int _SingleTracker::start(void)
+	bool _SingleTracker::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

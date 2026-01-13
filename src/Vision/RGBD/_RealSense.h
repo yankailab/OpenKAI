@@ -85,7 +85,7 @@ namespace kai
 	private:
 		void sensorReset(void);
 		bool updateRS(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_RealSense *)This)->update();

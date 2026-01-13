@@ -23,30 +23,30 @@ namespace kai
 	{
 	}
 
-	int _Contrast::init(const json& j)
+	bool _Contrast::init(const json& j)
 	{
-		CHECK_(_VisionBase::init(j));
+		IF_F(!_VisionBase::init(j));
 
-		= j.value("alpha", &m_alpha);
-		= j.value("beta", &m_beta);
+		m_alpha = j.value("alpha", "");
+		m_beta = j.value("beta", "");
 
 		return true;
 	}
 
-	int _Contrast::link(const json& j, ModuleMgr* pM)
+	bool _Contrast::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_VisionBase::link(j, pM));
+		IF_F(!this->_VisionBase::link(j, pM));
 
 		string n;
 		n = "";
-		= j.value("_VisionBase", &n);
+		n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL__(m_pV);
 
 		return true;
 	}
 
-	int _Contrast::start(void)
+	bool _Contrast::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

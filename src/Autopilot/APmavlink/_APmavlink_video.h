@@ -17,12 +17,12 @@ namespace kai
 		_APmavlink_video();
 		~_APmavlink_video();
 
-		bool init(const json& j);
-		bool link(const json& j, ModuleMgr* pM);
-		bool start(void);
-		void update(void);
-		bool check(void);
-		void console(void *pConsole);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
+		virtual bool start(void);
+		virtual void update(void);
+		virtual bool check(void);
+		virtual void console(void *pConsole);
 
 	private:
 		void onResume(void);
@@ -37,17 +37,17 @@ namespace kai
 			return NULL;
 		}
 
-	private:
+	protected:
 		_APmavlink_base *m_pAP;
-		_Uploader* m_pCurl;
+		_Uploader *m_pCurl;
 		string m_fName;
 
 		string m_process;
-		FILE* m_pFvid;
+		FILE *m_pFvid;
 		uint64_t m_tRecStart;
 
 		bool m_bMeta;
-		_File* m_pFmeta;
+		_File *m_pFmeta;
 		string m_fCalib;
 		Mat m_mC;
 		Mat m_mD;

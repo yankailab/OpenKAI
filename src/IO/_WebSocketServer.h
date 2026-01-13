@@ -52,10 +52,10 @@ namespace kai
 		_WebSocketServer();
 		virtual ~_WebSocketServer();
 
-		bool init(const json& j);
-		bool link(const json& j, ModuleMgr* pM);
-		bool start(void);
-		void console(void *pConsole);
+		virtual bool init(const json& j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool start(void);
+		virtual void console(void *pConsole);
 
 		// default to client 0
 		bool write(uint8_t *pBuf, int nB);

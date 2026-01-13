@@ -16,37 +16,34 @@ namespace kai
 	{
 	}
 
-	int _IAI::init(const json& j)
+	bool _IAI::init(const json &j)
 	{
-		CHECK_(this->_ActuatorBase::init(j));
+		IF_F(!this->_ActuatorBase::init(j));
 
 		return true;
 	}
 
-	int _IAI::link(const json& j, ModuleMgr* pM)
+	bool _IAI::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_ActuatorBase::link(j, pM));
+		IF_F(!this->_ActuatorBase::link(j, pM));
 
-		string n;
-
-		n = "";
-		IF__(!= j.value("_Modbus", &n));
+		string n = j.value("_Modbus", "");
 		m_pMB = (_Modbus *)(pM->findModule(n));
-		NULL__(m_pMB);
+		NULL_F(m_pMB);
 
 		return true;
 	}
 
-	int _IAI::start(void)
+	bool _IAI::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _IAI::check(void)
+	bool _IAI::check(void)
 	{
-		NULL__(m_pMB, -1);
-		IF__(!m_pMB->bOpen(), -1);
+		NULL_F(m_pMB);
+		IF_F(!m_pMB->bOpen());
 
 		return this->_ActuatorBase::check();
 	}

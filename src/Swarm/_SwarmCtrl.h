@@ -54,7 +54,7 @@ namespace kai
 		// UI
 
 	private:
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_SwarmCtrl *)This)->update();

@@ -26,18 +26,18 @@ namespace kai
 	{
 	}
 
-	int _Uploader::init(const json& j)
+	bool _Uploader::init(const json& j)
 	{
-		CHECK_(this->_FileBase::init(j));
+		IF_F(!this->_FileBase::init(j));
 
-		= j.value("dir", &m_dir);
+		m_dir = j.value("dir", "");
 		m_dir = checkDirName(m_dir);
-		= j.value("bRemoveAfterUpload", &m_bRemoveAfterUpload);
+		m_bRemoveAfterUpload = j.value("bRemoveAfterUpload", "");
 		= j.value("method", (int *)&m_method);
-		= j.value("url", &m_url);
+		m_url = j.value("url", "");
 
-		= j.value("cmd", &m_cmd);
-		= j.value("bConfirmCmdResult", &m_bConfirmCmdResult);
+		m_cmd = j.value("cmd", "");
+		m_bConfirmCmdResult = j.value("bConfirmCmdResult", "");
 
 		if (m_method == uploader_http)
 		{
@@ -47,13 +47,13 @@ namespace kai
 		return true;
 	}
 
-	int _Uploader::start(void)
+	bool _Uploader::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _Uploader::check(void)
+	bool _Uploader::check(void)
 	{
 		return this->_FileBase::check();
 	}

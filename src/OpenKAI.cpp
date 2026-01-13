@@ -32,7 +32,7 @@ namespace kai
 	{
 	}
 
-	int OpenKAI::check(void)
+	bool OpenKAI::check(void)
 	{
 		NULL__(m_pKiss);
 
@@ -73,7 +73,7 @@ namespace kai
 
 	int OpenKAI::addKiss(const string &fName)
 	{
-		CHECK_(check());
+		IF_F(!check());
 		IF__(fName.empty(), OK_ERR_INVALID_VALUE);
 
 		string s;
@@ -117,7 +117,7 @@ namespace kai
 
 	int OpenKAI::addModule(void *pModule, const string &mName)
 	{
-		CHECK_(check());
+		IF_F(!check());
 		NULL__(pModule, OK_ERR_INVALID_VALUE);
 
 		Kiss *pKiss = (Kiss *)m_pKiss;
@@ -162,7 +162,7 @@ namespace kai
 
 	int OpenKAI::deleteModule(const string &mName)
 	{
-		CHECK_(check());
+		IF_F(!check());
 
 		Kiss *pK = ((Kiss *)m_pKiss)->find(mName);
 		IF__(pK->empty());
@@ -174,7 +174,7 @@ namespace kai
 
 	int OpenKAI::createAllModules(void)
 	{
-		CHECK_(check() != OK_OK);
+		IF_F(!check() != OK_OK);
 
 		Kiss *pKiss = (Kiss *)m_pKiss;
 		Module mod;
@@ -201,7 +201,7 @@ namespace kai
 
 	int OpenKAI::initAllModules(void)
 	{
-		CHECK_(check());
+		IF_F(!check());
 
 		Kiss *pKroot = ((Kiss *)m_pKiss)->root();
 		Kiss *pK;
@@ -221,7 +221,7 @@ namespace kai
 
 	int OpenKAI::linkAllModules(void)
 	{
-		CHECK_(check());
+		IF_F(!check());
 
 		Kiss *pKroot = ((Kiss *)m_pKiss)->root();
 		Kiss *pK;
@@ -241,7 +241,7 @@ namespace kai
 
 	int OpenKAI::startAllModules(void)
 	{
-		CHECK_(check());
+		IF_F(!check());
 
 		// run cmd
 		if (!m_rc.empty())

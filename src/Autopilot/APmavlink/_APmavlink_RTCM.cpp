@@ -13,37 +13,37 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_RTCM::init(const json& j)
+	bool _APmavlink_RTCM::init(const json &j)
 	{
-		CHECK_(this->_RTCMcast::init(j));
+		IF_F(!this->_RTCMcast::init(j));
 
 		return true;
 	}
 
-	int _APmavlink_RTCM::link(const json& j, ModuleMgr* pM)
+	bool _APmavlink_RTCM::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_ProtocolBase::link(j, pM));
+		IF_F(!this->_ProtocolBase::link(j, pM));
 		string n;
 
 		n = "";
-		= j.value("_Mavlink", &n);
+		n = j.value("_Mavlink", "");
 		m_pMav = (_Mavlink *)(pM->findModule(n));
-		NULL__(m_pMav);
+		NULL_F(m_pMav);
 
 		return true;
 	}
 
-	int _APmavlink_RTCM::start(void)
+	bool _APmavlink_RTCM::start(void)
 	{
 		NULL_F(m_pT);
 		NULL_F(m_pTr);
-		CHECK_(m_pT->start(getUpdateW, this));
+		IF_F(!m_pT->start(getUpdateW, this));
 		return m_pTr->start(getUpdateR, this);
 	}
 
-	int _APmavlink_RTCM::check(void)
+	bool _APmavlink_RTCM::check(void)
 	{
-		NULL__(m_pMav);
+		NULL_F(m_pMav);
 
 		return this->_ProtocolBase::check();
 	}
@@ -133,7 +133,7 @@ namespace kai
 			RTCM_MSG *pM = &m_vMsg[i];
 			IF_CONT(pM->m_msgID != msg.m_msgID);
 
-//			IF_(*pM == msg); // TODO: some msg remains same all the time?
+			//			IF_(*pM == msg); // TODO: some msg remains same all the time?
 
 			pM->updateTo(msg);
 			pM->m_nRecv++;

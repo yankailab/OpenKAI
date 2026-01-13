@@ -61,9 +61,9 @@ namespace kai
 		_TOFsense();
 		~_TOFsense();
 
-		bool init(const json& j);
-		bool start(void);
-		void console(void *pConsole);
+		virtual bool init(const json& j);
+		virtual bool start(void);
+		virtual void console(void *pConsole);
 
 		DIST_SENSOR_TYPE type(void);
 		int32_t int24Value(uint8_t *pD);
@@ -72,7 +72,7 @@ namespace kai
 	private:
 		bool readCMD(void);
 		void handleCMD(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_TOFsense *)This)->update();

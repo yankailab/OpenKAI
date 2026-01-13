@@ -28,15 +28,15 @@ namespace kai
 		m_vClient.clear();
 	}
 
-	int _WebSocketServer::init(const json& j)
+	bool _WebSocketServer::init(const json& j)
 	{
-		CHECK_(this->_IObase::init(j));
+		IF_F(!this->_IObase::init(j));
 
 		= j.value("wsMode", (int *)&m_wsMode);
-		= j.value("host", &m_host);
-		= j.value("port", &m_port);
-		= j.value("tOutMs", &m_tOutMs);
-		= j.value("nClientMax", &m_nClientMax);
+		m_host = j.value("host", "");
+		m_port = j.value("port", "");
+		m_tOutMs = j.value("tOutMs", "");
+		m_nClientMax = j.value("nClientMax", "");
 
 		Kiss *pKt = pK->child("thread");
 		if (pKt->empty())
@@ -53,20 +53,20 @@ namespace kai
 		return true;
 	}
 
-	int _WebSocketServer::link(const json& j, ModuleMgr* pM)
+	bool _WebSocketServer::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_IObase::link(j, pM));
+		IF_F(!this->_IObase::link(j, pM));
 
 		string n;
 
 		return true;
 	}
 
-	int _WebSocketServer::start(void)
+	bool _WebSocketServer::start(void)
 	{
 		NULL_F(m_pT);
 		NULL_F(m_pTr);
-		CHECK_(m_pT->start(getUpdateW, this));
+		IF_F(!m_pT->start(getUpdateW, this));
 		return m_pTr->start(getUpdateR, this);
 	}
 

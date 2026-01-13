@@ -20,9 +20,9 @@ namespace kai
 		_DenseFlow();
 		virtual ~_DenseFlow();
 
-		bool init(const json& j);
-		bool start(void);
-		void draw(void *pFrame);
+		virtual bool init(const json& j);
+		virtual bool start(void);
+		virtual void draw(void *pFrame);
 
 		vDouble2 vFlow(vInt4 *pROI);
 		vDouble2 vFlow(vDouble4 *pROI);
@@ -32,7 +32,7 @@ namespace kai
 		Vec3b computeColor(float fx, float fy);
 		void drawOpticalFlow(const Mat_<float> &flowx, const Mat_<float> &flowy, Mat &dst, float maxmotion);
 		void detect(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_DenseFlow *)This)->update();

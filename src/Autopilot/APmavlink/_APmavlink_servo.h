@@ -25,11 +25,12 @@ namespace kai
 		_APmavlink_servo();
 		~_APmavlink_servo();
 
-		bool init(const json& j);
-		bool start(void);
-		bool check(void);
-		void update(void);
-		void console(void *pConsole);
+		virtual bool init(const json& j);
+		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool start(void);
+		virtual bool check(void);
+		virtual void update(void);
+		virtual void console(void *pConsole);
 
 	private:
 		void updateServo(void);
@@ -39,7 +40,7 @@ namespace kai
 			return NULL;
 		}
 
-	private:
+	protected:
 		_APmavlink_base *m_pAP;
 		vector<AP_SERVO> m_vServo;
 	};

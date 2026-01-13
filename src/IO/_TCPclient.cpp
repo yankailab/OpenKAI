@@ -25,11 +25,11 @@ namespace kai
 		close();
 	}
 
-	int _TCPclient::init(const json& j)
+	bool _TCPclient::init(const json& j)
 	{
-		CHECK_(this->_IObase::init(j));
+		IF_F(!this->_IObase::init(j));
 
-		= j.value("addr", &m_strAddr);
+		m_strAddr = j.value("addr", "");
 		= j.value("port", (int *)&m_port);
 
 		m_bClient = true;
@@ -69,7 +69,7 @@ namespace kai
 		this->_IObase::close();
 	}
 
-	int _TCPclient::start(void)
+	bool _TCPclient::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

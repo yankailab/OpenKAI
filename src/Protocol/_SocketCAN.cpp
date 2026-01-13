@@ -14,18 +14,18 @@ namespace kai
 		close();
 	}
 
-	int _SocketCAN::init(const json& j)
+	bool _SocketCAN::init(const json& j)
 	{
-		CHECK_(this->_CANbase::init(j));
+		IF_F(!this->_CANbase::init(j));
 
-		= j.value("ifName", &m_ifName);
+		m_ifName = j.value("ifName", "");
 
 		return true;
 	}
 
-	int _SocketCAN::link(const json& j, ModuleMgr* pM)
+	bool _SocketCAN::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_CANbase::link(j, pM));
+		IF_F(!this->_CANbase::link(j, pM));
 
 		string n;
 
@@ -74,13 +74,13 @@ namespace kai
 		m_iErr = 0;
 	}
 
-	int _SocketCAN::start(void)
+	bool _SocketCAN::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _SocketCAN::check(void)
+	bool _SocketCAN::check(void)
 	{
 		IF__(!m_bOpen);
 

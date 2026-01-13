@@ -44,33 +44,33 @@ namespace kai
 		}
 	}
 
-	int _LeddarVu::init(const json& j)
+	bool _LeddarVu::init(const json& j)
 	{
-		CHECK_(this->_DistSensorBase::init(j));
+		IF_F(!this->_DistSensorBase::init(j));
 
-		= j.value("port", &m_port);
-		= j.value("baud", &m_baud);
-		= j.value("slaveAddr", &m_slaveAddr);
-		= j.value("bUse0x41", &m_bUse0x41);
-		= j.value("showOriginOffsetX", &m_showOriginOffsetX);
-		= j.value("showOriginOffsetY", &m_showOriginOffsetY);
+		m_port = j.value("port", "");
+		m_baud = j.value("baud", "");
+		m_slaveAddr = j.value("slaveAddr", "");
+		m_bUse0x41 = j.value("bUse0x41", "");
+		m_showOriginOffsetX = j.value("showOriginOffsetX", "");
+		m_showOriginOffsetY = j.value("showOriginOffsetY", "");
 
-		= j.value("nAccumulationsExpo", &m_nAccumulationsExpo);
-		= j.value("nOversamplingsExpo", &m_nOversamplingsExpo);
-		= j.value("nPoint", &m_nPoint);
-		= j.value("lightSrcPwr", &m_lightSrcPwr);
-		= j.value("bAutoLightSrcPwr", &m_bAutoLightSrcPwr);
-		= j.value("bDemergeObj", &m_bDemergeObj);
-		= j.value("bStaticNoiseRemoval", &m_bStaticNoiseRemoval);
-		= j.value("bPrecicion", &m_bPrecision);
-		= j.value("bSaturationCompensation", &m_bSaturationCompensation);
-		= j.value("bOvershootManagement", &m_bOvershootManagement);
-		= j.value("oprMode", &m_oprMode);
+		m_nAccumulationsExpo = j.value("nAccumulationsExpo", "");
+		m_nOversamplingsExpo = j.value("nOversamplingsExpo", "");
+		m_nPoint = j.value("nPoint", "");
+		m_lightSrcPwr = j.value("lightSrcPwr", "");
+		m_bAutoLightSrcPwr = j.value("bAutoLightSrcPwr", "");
+		m_bDemergeObj = j.value("bDemergeObj", "");
+		m_bStaticNoiseRemoval = j.value("bStaticNoiseRemoval", "");
+		m_bPrecision = j.value("bPrecicion", "");
+		m_bSaturationCompensation = j.value("bSaturationCompensation", "");
+		m_bOvershootManagement = j.value("bOvershootManagement", "");
+		m_oprMode = j.value("oprMode", "");
 
 		return true;
 	}
 
-	int _LeddarVu::start(void)
+	bool _LeddarVu::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

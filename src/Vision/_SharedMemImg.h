@@ -27,7 +27,7 @@ namespace kai
 		virtual bool check(void);
 
 	private:
-		void update(void);
+		virtual void update(void);
 		bool update_SharedMemImg(void);
 		static void *getUpdate(void *This)
 		{

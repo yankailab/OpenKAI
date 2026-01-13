@@ -26,15 +26,15 @@ namespace kai
 		_Chilitags();
 		virtual ~_Chilitags();
 
-		bool init(const json& j);
-		bool start(void);
-		void draw(void *pFrame);
-		void console(void *pConsole);
-		bool check(void);
+		virtual bool init(const json& j);
+		virtual bool start(void);
+		virtual void draw(void *pFrame);
+		virtual void console(void *pConsole);
+		virtual bool check(void);
 
 	private:
 		void detect(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_Chilitags *)This)->update();

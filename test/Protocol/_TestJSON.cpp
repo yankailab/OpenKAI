@@ -13,9 +13,9 @@ namespace kai
     {
     }
 
-    int _TestJSON::init(const json& j)
+    bool _TestJSON::init(const json& j)
     {
-        CHECK_(this->_TestBase::init(j));
+        IF_F(!this->_TestBase::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
         // vector<vInt4> vTest;
@@ -24,33 +24,33 @@ namespace kai
         return true;
     }
 
-    int _TestJSON::link(const json& j, ModuleMgr* pM)
+    bool _TestJSON::link(const json& j, ModuleMgr* pM)
     {
-        CHECK_(this->_TestBase::link(j, pM));
+        IF_F(!this->_TestBase::link(j, pM));
 
         Kiss *pK = (Kiss *)m_pKiss;
         string n;
 
         n = "";
-        = j.value("_JSONbaseSender", &n);
+        n = j.value("_JSONbaseSender", "");
         m_pJsender = (_JSONbase *)(pM->findModule(n));
         NULL__(m_pJsender);
 
         n = "";
-        = j.value("_JSONbaseReceiver", &n);
+        n = j.value("_JSONbaseReceiver", "");
         m_pJreceiver = (_JSONbase *)(pM->findModule(n));
         NULL__(m_pJreceiver);
 
         return true;
     }
 
-    int _TestJSON::start(void)
+    bool _TestJSON::start(void)
     {
         NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
-    int _TestJSON::check(void)
+    bool _TestJSON::check(void)
     {
         NULL__(m_pJsender);
         NULL__(m_pJreceiver);

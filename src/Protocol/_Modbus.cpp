@@ -35,25 +35,25 @@ namespace kai
 		m_pMb = nullptr;
 	}
 
-	int _Modbus::init(const json& j)
+	bool _Modbus::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		= j.value("bModbusDebug", &m_bModbusDebug);
-		= j.value("nErrReconnect", &m_nErrReconnect);
+		m_bModbusDebug = j.value("bModbusDebug", "");
+		m_nErrReconnect = j.value("nErrReconnect", "");
 
-		= j.value("rtuPort", &m_rtuPort);
-		= j.value("rtuParity", &m_rtuParity);
-		= j.value("rtuBaud", &m_rtuBaud);
+		m_rtuPort = j.value("rtuPort", "");
+		m_rtuParity = j.value("rtuParity", "");
+		m_rtuBaud = j.value("rtuBaud", "");
 
-		= j.value("tcpAddr", &m_tcpAddr);
-		= j.value("tcpPort", &m_tcpPort);
+		m_tcpAddr = j.value("tcpAddr", "");
+		m_tcpPort = j.value("tcpPort", "");
 
-		= j.value("tIntervalUsec", &m_tIntervalUsec);
-		= j.value("tOutSec", &m_tOutSec);
-		= j.value("tOutUSec", &m_tOutUSec);
+		m_tIntervalUsec = j.value("tIntervalUsec", "");
+		m_tOutSec = j.value("tOutSec", "");
+		m_tOutUSec = j.value("tOutUSec", "");
 
-		= j.value("type", &m_type);
+		m_type = j.value("type", "");
 		if (m_type == "RTU")
 		{
 			m_pMb = modbus_new_rtu(m_rtuPort.c_str(), m_rtuBaud, *m_rtuParity.c_str(), 8, 1);
@@ -113,13 +113,13 @@ namespace kai
 		modbus_close(m_pMb);
 	}
 
-	int _Modbus::start(void)
+	bool _Modbus::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _Modbus::check(void)
+	bool _Modbus::check(void)
 	{
 		NULL__(m_pMb);
 		IF__(!bOpen());

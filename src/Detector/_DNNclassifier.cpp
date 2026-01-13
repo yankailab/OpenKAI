@@ -23,19 +23,19 @@ namespace kai
 	{
 	}
 
-	int _DNNclassifier::init(const json& j)
+	bool _DNNclassifier::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(j));
+		IF_F(!this->_DetectorBase::init(j));
 
-		= j.value("nW", &m_nW);
-		= j.value("nH", &m_nH);
-		= j.value("bSwapRB", &m_bSwapRB);
-		= j.value("scale", &m_scale);
-		= j.value("iBackend", &m_iBackend);
-		= j.value("iTarget", &m_iTarget);
-		= j.value("meanB", &m_vMean.x);
-		= j.value("meanG", &m_vMean.y);
-		= j.value("meanR", &m_vMean.z);
+		m_nW = j.value("nW", "");
+		m_nH = j.value("nH", "");
+		m_bSwapRB = j.value("bSwapRB", "");
+		m_scale = j.value("scale", "");
+		m_iBackend = j.value("iBackend", "");
+		m_iTarget = j.value("iTarget", "");
+		m_vMean.x = j.value("meanB", m_vMean.x);
+		m_vMean.y = j.value("meanG", m_vMean.y);
+		m_vMean.z = j.value("meanR", m_vMean.z);
 
 		Kiss *pR = pK->child("ROI");
 		vFloat4 r;
@@ -74,13 +74,13 @@ namespace kai
 		return true;
 	}
 
-	int _DNNclassifier::start(void)
+	bool _DNNclassifier::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _DNNclassifier::check(void)
+	bool _DNNclassifier::check(void)
 	{
 		NULL__(m_pU);
 		NULL__(m_pV);

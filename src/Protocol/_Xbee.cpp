@@ -12,34 +12,34 @@ namespace kai
     {
     }
 
-    int _Xbee::init(const json& j)
+    bool _Xbee::init(const json& j)
     {
-        CHECK_(this->_ProtocolBase::init(j));
+        IF_F(!this->_ProtocolBase::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
         string addr = "";
-        = j.value("myAddr", &addr);
+        addr = j.value("myAddr", "");
         m_myAddr = getAddr(addr);
 
         return true;
     }
 
-    int _Xbee::link(const json& j, ModuleMgr* pM)
+    bool _Xbee::link(const json& j, ModuleMgr* pM)
     {
-        CHECK_(this->_ProtocolBase::link(j, pM));
+        IF_F(!this->_ProtocolBase::link(j, pM));
 
         return true;
     }
 
-    int _Xbee::start(void)
+    bool _Xbee::start(void)
     {
         NULL_F(m_pT);
         NULL_F(m_pTr);
-        CHECK_(m_pT->start(getUpdateW, this));
+        IF_F(!m_pT->start(getUpdateW, this));
         return m_pTr->start(getUpdateR, this);
     }
 
-    int _Xbee::check(void)
+    bool _Xbee::check(void)
     {
         return this->_ProtocolBase::check();
     }

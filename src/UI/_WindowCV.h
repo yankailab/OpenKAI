@@ -21,12 +21,12 @@ namespace kai
 		_WindowCV();
 		virtual ~_WindowCV();
 
-		bool init(const json& j);
-		bool start(void);
+		virtual bool init(const json& j);
+		virtual bool start(void);
 
 	protected:
 		void updateWindow(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_WindowCV *)This)->update();

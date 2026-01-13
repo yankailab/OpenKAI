@@ -935,7 +935,7 @@ namespace kai
 		int readMessage(mavlink_message_t* pMsg);
 
 	private:
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_Mavlink *)This)->update();

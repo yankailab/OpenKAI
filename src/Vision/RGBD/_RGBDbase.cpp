@@ -40,36 +40,36 @@ namespace kai
 		DEL(m_pTPP);
 	}
 
-	int _RGBDbase::init(const json& j)
+	bool _RGBDbase::init(const json& j)
 	{
-		CHECK_(_VisionBase::init(j));
+		IF_F(!_VisionBase::init(j));
 
-		= j.value("devFPSd", &m_devFPSd);
-		= j.value("vSizeD", &m_vSizeD);
-		= j.value("vRangeD", &m_vRangeD);
+		m_devFPSd = j.value("devFPSd", "");
+		m_vSizeD = j.value("vSizeD", "");
+		m_vRangeD = j.value("vRangeD", "");
 
-		= j.value("bDepth", &m_bDepth);
-		= j.value("bIR", &m_bIR);
-		= j.value("btRGB", &m_btRGB);
-		= j.value("btDepth", &m_btDepth);
-		= j.value("bConfidence", &m_bConfidence);
-		= j.value("fConfidenceThreshold", &m_fConfidenceThreshold);
+		m_bDepth = j.value("bDepth", "");
+		m_bIR = j.value("bIR", "");
+		m_btRGB = j.value("btRGB", "");
+		m_btDepth = j.value("btDepth", "");
+		m_bConfidence = j.value("bConfidence", "");
+		m_fConfidenceThreshold = j.value("fConfidenceThreshold", "");
 
 #ifdef USE_OPENCV
-		= j.value("dScale", &m_dScale);
-		= j.value("dOfs", &m_dOfs);
-		= j.value("nHistLev", &m_nHistLev);
-		= j.value("iHistFrom", &m_nHistLev);
-		= j.value("minHistD", &m_minHistD);
-		= j.value("bDebugDepth", &m_bDebugDepth);
+		m_dScale = j.value("dScale", "");
+		m_dOfs = j.value("dOfs", "");
+		m_nHistLev = j.value("nHistLev", "");
+		m_nHistLev = j.value("iHistFrom", "");
+		m_minHistD = j.value("minHistD", "");
+		m_bDebugDepth = j.value("bDebugDepth", "");
 #endif
 
 		return true;
 	}
 
-	int _RGBDbase::link(const json& j, ModuleMgr* pM)
+	bool _RGBDbase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_VisionBase::link(j, pM));
+		IF_F(!this->_VisionBase::link(j, pM));
 
 		return true;
 	}
@@ -83,7 +83,7 @@ namespace kai
 	{
 	}
 
-	int _RGBDbase::check(void)
+	bool _RGBDbase::check(void)
 	{
 		return _VisionBase::check();
 	}

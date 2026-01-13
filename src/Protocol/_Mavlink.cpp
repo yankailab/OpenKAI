@@ -60,33 +60,33 @@ namespace kai
 	{
 	}
 
-	int _Mavlink::init(const json& j)
+	bool _Mavlink::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		= j.value("mySystemID", &m_mySystemID);
-		= j.value("myComponentID", &m_myComponentID);
-		= j.value("myType", &m_myType);
+		m_mySystemID = j.value("mySystemID", "");
+		m_myComponentID = j.value("myComponentID", "");
+		m_myType = j.value("myType", "");
 
-		= j.value("devSystemID", &m_devSystemID);
-		= j.value("devComponentID", &m_devComponentID);
-		= j.value("devType", &m_devType);
+		m_devSystemID = j.value("devSystemID", "");
+		m_devComponentID = j.value("devComponentID", "");
+		m_devType = j.value("devType", "");
 
-		= j.value("iMavComm", &m_iMavComm);
+		m_iMavComm = j.value("iMavComm", "");
 
 		m_status.packet_rx_drop_count = 0;
 
 		return true;
 	}
 
-	int _Mavlink::link(const json& j, ModuleMgr* pM)
+	bool _Mavlink::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
 		string n;
 
 		n = "";
-		= j.value("_IObase", &n);
+		n = j.value("_IObase", "");
 		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 
@@ -140,13 +140,13 @@ namespace kai
 		}
 	}
 
-	int _Mavlink::start(void)
+	bool _Mavlink::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _Mavlink::check(void)
+	bool _Mavlink::check(void)
 	{
 		NULL_F(m_pIO);
 		IF_F(!m_pIO->bOpen());

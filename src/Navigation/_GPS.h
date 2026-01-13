@@ -21,9 +21,9 @@ namespace kai
 		_GPS(void);
 		virtual ~_GPS();
 
-		bool init(const json& j);
-		bool start(void);
-		void console(void *pConsole);
+		virtual bool init(const json& j);
+		virtual bool start(void);
+		virtual void console(void *pConsole);
 
 		LL_POS getLLpos(void);
 		UTM_POS getUTMpos(void);
@@ -31,7 +31,7 @@ namespace kai
 	private:
 		bool readNMEA(void);
 		void decodeNMEA(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_GPS *)This)->update();

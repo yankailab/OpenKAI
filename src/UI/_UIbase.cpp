@@ -18,16 +18,16 @@ namespace kai
 	{
 	}
 
-	int _UIbase::init(const json& j)
+	bool _UIbase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
 		return true;
 	}
 
-	int _UIbase::link(const json& j, ModuleMgr* pM)
+	bool _UIbase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
 		vector<string> vB;
 		pK->a("vBASE", &vB);
@@ -42,7 +42,7 @@ namespace kai
 		return true;
 	}
 
-	int _UIbase::start(void)
+	bool _UIbase::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

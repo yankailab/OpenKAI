@@ -40,24 +40,24 @@ namespace kai
 	{
 	}
 
-	int _Lane::init(const json& j)
+	bool _Lane::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		= j.value("bDrawOverhead", &m_bDrawOverhead);
-		= j.value("bDrawFilter", &m_bDrawFilter);
-		= j.value("binMed", &m_binMed);
+		m_bDrawOverhead = j.value("bDrawOverhead", "");
+		m_bDrawFilter = j.value("bDrawFilter", "");
+		m_binMed = j.value("binMed", "");
 
-		= j.value("roiLTx", &m_roiLT.x);
-		= j.value("roiLTy", &m_roiLT.y);
-		= j.value("roiLBx", &m_roiLB.x);
-		= j.value("roiLBy", &m_roiLB.y);
-		= j.value("roiRTx", &m_roiRT.x);
-		= j.value("roiRTy", &m_roiRT.y);
-		= j.value("roiRBx", &m_roiRB.x);
-		= j.value("roiRBy", &m_roiRB.y);
-		= j.value("overheadW", &m_sizeOverhead.x);
-		= j.value("overheadH", &m_sizeOverhead.y);
+		m_roiLT.x = j.value("roiLTx", m_roiLT.x);
+		m_roiLT.y = j.value("roiLTy", m_roiLT.y);
+		m_roiLB.x = j.value("roiLBx", m_roiLB.x);
+		m_roiLB.y = j.value("roiLBy", m_roiLB.y);
+		m_roiRT.x = j.value("roiRTx", m_roiRT.x);
+		m_roiRT.y = j.value("roiRTy", m_roiRT.y);
+		m_roiRB.x = j.value("roiRBx", m_roiRB.x);
+		m_roiRB.y = j.value("roiRBy", m_roiRB.y);
+		m_sizeOverhead.x = j.value("overheadW", m_sizeOverhead.x);
+		m_sizeOverhead.y = j.value("overheadH", m_sizeOverhead.y);
 
 		m_mOverhead = Mat(Size(m_sizeOverhead.x, m_sizeOverhead.y), CV_8UC3);
 
@@ -87,9 +87,9 @@ namespace kai
 
 		// lanes
 		int nAvr = 0;
-		= j.value("nAvr", &nAvr);
+		nAvr = j.value("nAvr", "");
 		int nMed = 0;
-		= j.value("nMed", &nMed);
+		nMed = j.value("nMed", "");
 
 		Kiss *pKL = pK->child("lane");
 		NULL__(pKL);
@@ -121,20 +121,20 @@ namespace kai
 		}
 
 		string n = "";
-		= j.value("_VisionBase", &n);
+		n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL__(m_pV);
 
 		return true;
 	}
 
-	int _Lane::start(void)
+	bool _Lane::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _Lane::check(void)
+	bool _Lane::check(void)
 	{
 		NULL__(m_pV);
 		IF__(m_pV->getFrameRGB()->m()->empty());

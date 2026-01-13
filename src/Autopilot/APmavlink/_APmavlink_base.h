@@ -81,9 +81,9 @@ namespace kai
 		void init(void)
 		{
 			m_bEnable = false;
-			m_control.input_a = 0; //pitch
-			m_control.input_b = 0; //roll
-			m_control.input_c = 0; //yaw
+			m_control.input_a = 0; // pitch
+			m_control.input_b = 0; // roll
+			m_control.input_c = 0; // yaw
 			m_control.save_position = 0;
 			m_config.stab_pitch = 0;
 			m_config.stab_roll = 0;
@@ -98,8 +98,8 @@ namespace kai
 		_APmavlink_base();
 		~_APmavlink_base();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
@@ -131,12 +131,12 @@ namespace kai
 		int getWPtotal(void);
 
 		// Mavlink
-		_Mavlink* getMavlink(void);
+		_Mavlink *getMavlink(void);
 
 	private:
 		void updateModeSync(void);
 		void updateBase(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_APmavlink_base *)This)->update();
@@ -151,12 +151,12 @@ namespace kai
 
 		bool m_bHomeSet;
 		vDouble3 m_vHomePos;
-		vDouble4 m_vGlobalPos; //lat, lon, alt, relative_alt in meters
+		vDouble4 m_vGlobalPos; // lat, lon, alt, relative_alt in meters
 		vDouble3 m_vLocalPos;
 		vFloat3 m_vSpeed;
-		vFloat3 m_vAtti; //yaw, pitch, roll
-		float m_apHdg;	 //heading in degree
-		float m_battery; //remaining percentage
+		vFloat3 m_vAtti; // yaw, pitch, roll
+		float m_apHdg;	 // heading in degree
+		float m_battery; // remaining percentage
 		int8_t m_gpsFixType;
 		int m_gpsHacc;
 
@@ -167,7 +167,6 @@ namespace kai
 		bool m_bSyncMode;
 		VAR_WR<uint32_t> m_wrApMode;
 		VAR_WR<bool> m_wrbArm;
-
 	};
 
 }

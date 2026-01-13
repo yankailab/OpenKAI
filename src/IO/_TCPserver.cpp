@@ -31,9 +31,9 @@ namespace kai
 		m_lClient.clear();
 	}
 
-	int _TCPserver::init(const json& j)
+	bool _TCPserver::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
 		= j.value<uint16_t>("port", &m_listenPort);
 		= j.value<int>("nListen", &m_nListen);
@@ -42,7 +42,7 @@ namespace kai
 		return true;
 	}
 
-	int _TCPserver::start(void)
+	bool _TCPserver::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

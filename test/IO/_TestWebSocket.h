@@ -20,7 +20,7 @@ namespace kai
 		virtual void console(void *pConsole);
 
 	protected:
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_TestWebSocket *)This)->update();

@@ -14,19 +14,19 @@ namespace kai
     {
     }
 
-    int _CamCalib::init(const json& j)
+    bool _CamCalib::init(const json& j)
     {
-        CHECK_(this->_ModuleBase::init(j));
+        IF_F(!this->_ModuleBase::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
-        = j.value("path", &m_path);
-        = j.value("vChessBoardSize", &m_vChessBoardSize);
-        = j.value("squareSize", &m_squareSize);
+        m_path = j.value("path", "");
+        m_vChessBoardSize = j.value("vChessBoardSize", "");
+        m_squareSize = j.value("squareSize", "");
 
         return true;
     }
 
-    int _CamCalib::start(void)
+    bool _CamCalib::start(void)
     {
         NULL_F(m_pT);
         return m_pT->start(getUpdate, this);

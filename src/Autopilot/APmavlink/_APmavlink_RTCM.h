@@ -15,14 +15,14 @@ namespace kai
 		_APmavlink_RTCM();
 		~_APmavlink_RTCM();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 
 	protected:
-		virtual bool writeMavlink(RTCM_MSG* pM);
+		virtual bool writeMavlink(RTCM_MSG *pM);
 		virtual void writeMsg(void);
 		virtual void handleMsg(const RTCM_MSG &msg);
 
@@ -42,7 +42,7 @@ namespace kai
 		}
 
 	protected:
-		_Mavlink* m_pMav;
+		_Mavlink *m_pMav;
 
 		uint8_t m_iSeq;
 	};

@@ -9,12 +9,8 @@ namespace kai
 
 	_Feetech::_Feetech()
 	{
-		m_port = "";
-		m_baud = 115200;
 		m_bOpen = false;
-		m_ID = 1;
 		m_pA = nullptr;
-
 		m_ieReadStatus.init(50000);
 	}
 
@@ -22,23 +18,23 @@ namespace kai
 	{
 	}
 
-	int _Feetech::init(const json& j)
+	bool _Feetech::init(const json& j)
 	{
-		CHECK_(this->_ActuatorBase::init(j));
+		IF_F(!this->_ActuatorBase::init(j));
 
-		= j.value("port", &m_port);
-		= j.value("baud", &m_baud);
-		= j.value("iID", &m_ID);
-		= j.value("tIntReadStatus", &m_ieReadStatus.m_tInterval);
+		m_port = j.value("port", "");
+		m_baud = j.value("baud", 115200);
+		m_ID = j.value("iID", 1);
+		m_ieReadStatus.m_tInterval = j.value("tIntReadStatus", 50000);
 
 		m_pA = &m_vAxis[0];
 
 		return true;
 	}
 
-	int _Feetech::link(const json& j, ModuleMgr* pM)
+	bool _Feetech::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ActuatorBase::link(j, pM));
+		IF_F(!this->_ActuatorBase::link(j, pM));
 
 		return true;
 	}
@@ -61,13 +57,13 @@ namespace kai
 		m_bOpen = false;
 	}
 
-	int _Feetech::start(void)
+	bool _Feetech::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _Feetech::check(void)
+	bool _Feetech::check(void)
 	{
 		IF__(!m_bOpen);
 		NULL__(m_pA);

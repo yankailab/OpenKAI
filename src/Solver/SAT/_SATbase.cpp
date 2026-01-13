@@ -21,23 +21,23 @@ namespace kai
 		clear();
 	}
 
-	int _SATbase::init(const json& j)
+	bool _SATbase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		= j.value("fName", &m_fName);
+		m_fName = j.value("fName", "");
 
 		return true;
 	}
 
-	int _SATbase::link(const json& j, ModuleMgr* pM)
+	bool _SATbase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
 		return true;
 	}
 
-	int _SATbase::check(void)
+	bool _SATbase::check(void)
 	{
 		return _ModuleBase::check();
 	}

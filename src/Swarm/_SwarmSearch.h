@@ -98,7 +98,7 @@ namespace kai
 		bool genGridCells(void);
 		void optimizeRoute(void);
 		void updateNodes(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_SwarmSearch *)This)->update();

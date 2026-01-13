@@ -19,16 +19,16 @@ namespace kai
 	{
 	}
 
-	int _Orbbec::init(const json& j)
+	bool _Orbbec::init(const json& j)
 	{
-		CHECK_(_RGBDbase::init(j));
+		IF_F(!_RGBDbase::init(j));
 
 		return true;
 	}
 
-	int _Orbbec::link(const json& j, ModuleMgr* pM)
+	bool _Orbbec::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_RGBDbase::link(j, pM));
+		IF_F(!this->_RGBDbase::link(j, pM));
 		string n;
 
 		return true;
@@ -53,13 +53,13 @@ namespace kai
 		m_obPipe.stop();
 	}
 
-	int _Orbbec::start(void)
+	bool _Orbbec::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _Orbbec::check(void)
+	bool _Orbbec::check(void)
 	{
 		return this->_RGBDbase::check();
 	}
@@ -95,7 +95,7 @@ namespace kai
 
 	bool _Orbbec::updateOrbbec(void)
 	{
-		IF__(check() != OK_OK, true);
+		IF_F(!check());
 
         // Wait for up to 100ms for a frameset in blocking mode.
         auto obFrameSet = m_obPipe.waitForFrameset();

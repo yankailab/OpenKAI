@@ -21,22 +21,22 @@ namespace kai
 		m_packetW.release();
 	}
 
-	int _IObase::init(const json& j)
+	bool _IObase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
 		int nPacket = 256;
 		int nPbuffer = 2000;
-		= j.value("nPacket", &nPacket);
-		= j.value("nPbuffer", &nPbuffer);
+		nPacket = j.value("nPacket", "");
+		nPbuffer = j.value("nPbuffer", "");
 		IF__(!m_packetW.init(nPbuffer, nPacket), OK_ERR_ALLOCATION);
 
 		return true;
 	}
 
-	int _IObase::link(const json& j, ModuleMgr* pM)
+	bool _IObase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
 		return true;
 	}

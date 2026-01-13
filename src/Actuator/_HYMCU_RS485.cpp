@@ -10,70 +10,65 @@ namespace kai
 	_HYMCU_RS485::_HYMCU_RS485()
 	{
 		m_pMB = nullptr;
-		m_iSlave = 1;
-		m_dpr = 1;
-		m_dInit = 20;
-		m_cmdInt = 50000;
 	}
 
 	_HYMCU_RS485::~_HYMCU_RS485()
 	{
 	}
 
-	int _HYMCU_RS485::init(const json& j)
+	bool _HYMCU_RS485::init(const json &j)
 	{
-		CHECK_(this->_ActuatorBase::init(j));
+		IF_F(!this->_ActuatorBase::init(j));
 
-		= j.value("iSlave", &m_iSlave);
-		= j.value("dpr", &m_dpr);
-		= j.value("dInit", &m_dInit);
-		= j.value("cmdInt", &m_cmdInt);
+		m_iSlave = j.value("iSlave", 1);
+		m_dpr = j.value("dpr", 1);
+		m_dInit = j.value("dInit", 20);
+		m_cmdInt = j.value("cmdInt", 50000);
 
-		Kiss *pKa = pK->child("addr");
-		if (pKa)
+		const json &ja = j.at("addr");
+		if (ja.is_object())
 		{
-			pKa->v("setDPR", &m_addr.m_setDPR);
-			pKa->v("setDist", &m_addr.m_setDist);
-			pKa->v("setDir", &m_addr.m_setDir);
-			pKa->v("setSpd", &m_addr.m_setSpd);
-			pKa->v("setAcc", &m_addr.m_setAcc);
-			pKa->v("setSlaveID", &m_addr.m_setSlaveID);
-			pKa->v("setBaudL", &m_addr.m_setBaudL);
-			pKa->v("setBaudH", &m_addr.m_setBaudH);
+			m_addr.m_setDPR = ja.value("setDPR", 4);
+			m_addr.m_setDist = ja.value("setDist", 9);
+			m_addr.m_setDir = ja.value("setDir", 11);
+			m_addr.m_setSpd = ja.value("setSpd", 8);
+			m_addr.m_setAcc = ja.value("setAcc", 2);
+			m_addr.m_setSlaveID = ja.value("setSlaveID", 16);
+			m_addr.m_setBaudL = ja.value("setBaudL", 73);
+			m_addr.m_setBaudH = ja.value("setBaudH", 74);
 
-			pKa->v("bComplete", &m_addr.m_bComplete);
-			pKa->v("readStat", &m_addr.m_readStat);
-			pKa->v("run", &m_addr.m_run);
-			pKa->v("stop", &m_addr.m_stop);
-			pKa->v("resPos", &m_addr.m_resPos);
+			m_addr.m_bComplete = ja.value("bComplete", 12);
+			m_addr.m_readStat = ja.value("readStat", 22);
+			m_addr.m_run = ja.value("run", 7);
+			m_addr.m_stop = ja.value("stop", 3);
+			m_addr.m_resPos = ja.value("resPos", 10);
+			m_addr.m_saveData = ja.value("saveData", 0);
 		}
 
 		return true;
 	}
 
-	int _HYMCU_RS485::link(const json& j, ModuleMgr* pM)
+	bool _HYMCU_RS485::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_ActuatorBase::link(j, pM));
+		IF_F(!this->_ActuatorBase::link(j, pM));
 
-		string n;
-		n = "";
-		IF__(!= j.value("_Modbus", &n));
+		string n = j.value("_Modbus", "");
 		m_pMB = (_Modbus *)(pM->findModule(n));
-		NULL__(m_pMB);
+		NULL_F(m_pMB);
 
 		return true;
 	}
 
-	int _HYMCU_RS485::start(void)
+	bool _HYMCU_RS485::start(void)
 	{
-		NULL__(m_pT);
+		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _HYMCU_RS485::check(void)
+	bool _HYMCU_RS485::check(void)
 	{
-		NULL__(m_pMB);
-		IF__(!m_pMB->bOpen());
+		NULL_F(m_pMB);
+		IF_F(!m_pMB->bOpen());
 
 		return this->_ActuatorBase::check();
 	}

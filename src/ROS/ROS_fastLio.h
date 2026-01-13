@@ -45,8 +45,8 @@ namespace kai
 		}
 
 		int init(Kiss *pKiss);
-		bool link(const json& j, ModuleMgr* pM);
-		void console(void *pConsole);
+		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual void console(void *pConsole);
 
 		int createSubscriptions(void);
 

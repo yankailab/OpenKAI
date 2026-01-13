@@ -45,7 +45,7 @@ namespace kai
 		bool bFileInList(const string &fName);
 		void updateFileList(void);
 		void updateUpload(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_Uploader *)This)->update();

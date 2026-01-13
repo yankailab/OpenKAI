@@ -25,14 +25,14 @@ namespace kai
 		_TFmobileNet();
 		~_TFmobileNet();
 
-		bool init(const json& j);
-		bool start(void);
-		bool check(void);
+		virtual bool init(const json& j);
+		virtual bool start(void);
+		virtual bool check(void);
 
 	private:
 		bool open(void);
 		void detect(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_TFmobileNet *)This)->update();

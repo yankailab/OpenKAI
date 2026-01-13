@@ -22,24 +22,24 @@ namespace kai
 	{
 	}
 
-	int _Remap::init(const json& j)
+	bool _Remap::init(const json& j)
 	{
-		CHECK_(_VisionBase::init(j));
+		IF_F(!_VisionBase::init(j));
 
 		return true;
 	}
 
-	int _Remap::link(const json& j, ModuleMgr* pM)
+	bool _Remap::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_VisionBase::link(j, pM));
+		IF_F(!this->_VisionBase::link(j, pM));
 
 		string n;
 		n = "";
-		= j.value("_VisionBase", &n);
+		n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL__(m_pV);
 
-		= j.value("fCalib", &m_fCalib);
+		m_fCalib = j.value("fCalib", "");
 		Mat mC, mD;
 		IF__(!readCamMatrices(m_fCalib, &mC, &mD), OK_ERR_INVALID_VALUE);
 		m_bReady = setCamMat(mC, mD);
@@ -47,7 +47,7 @@ namespace kai
 		return true;
 	}
 
-	int _Remap::start(void)
+	bool _Remap::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

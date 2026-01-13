@@ -16,8 +16,8 @@ namespace kai
 		_APmavlink_visionEstimate();
 		~_APmavlink_visionEstimate();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void update(void);
@@ -35,7 +35,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		_APmavlink_base *m_pAP;
 		_NavBase *m_pNav;
 

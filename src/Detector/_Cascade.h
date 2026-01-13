@@ -19,14 +19,14 @@ namespace kai
 		_Cascade();
 		~_Cascade();
 
-		bool init(const json& j);
-		bool start(void);
-		bool check(void);
+		virtual bool init(const json& j);
+		virtual bool start(void);
+		virtual bool check(void);
 
 	private:
 		void detectCPU(void);
 		void detectGPU(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_Cascade *)This)->update();

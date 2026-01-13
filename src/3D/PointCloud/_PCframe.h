@@ -46,7 +46,7 @@ namespace kai
 
     private:
         void updatePCframe(void);
-        void update(void);
+        virtual void update(void);
         static void *getUpdate(void *This)
         {
             ((_PCframe *)This)->update();

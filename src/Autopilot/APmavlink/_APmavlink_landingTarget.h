@@ -20,15 +20,15 @@ namespace kai
 		_APmavlink_landingTarget();
 		~_APmavlink_landingTarget();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void update(void);
 		virtual void console(void *pConsole);
 
 	protected:
-		virtual AP_LANDING_TARGET_TAG* getTag(int id);
+		virtual AP_LANDING_TARGET_TAG *getTag(int id);
 		virtual bool findTag(void);
 		virtual void updateLandingTarget(void);
 		static void *getUpdate(void *This)
@@ -38,7 +38,7 @@ namespace kai
 		}
 
 	protected:
-		_DistSensorBase* m_pDS;
+		_DistSensorBase *m_pDS;
 		_Universe *m_pU;
 		_Object m_oTarget;
 

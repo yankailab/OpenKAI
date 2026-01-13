@@ -41,7 +41,7 @@ namespace kai
 		void updateMove(void);
 
 	private:
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_ZLAC8015D *)This)->update();

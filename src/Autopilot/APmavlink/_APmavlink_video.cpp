@@ -7,64 +7,58 @@ namespace kai
 	{
 		m_pAP = nullptr;
 		m_pCurl = nullptr;
-		m_fName = "";
 
-		m_process = "";
 		m_pFvid = nullptr;
 		m_tRecStart = 0;
 
-		m_bMeta = false;
 		m_pFmeta = new _File();
 		m_fCalib = "";
-		m_dir = "";
 	}
 
 	_APmavlink_video::~_APmavlink_video()
 	{
 	}
 
-	int _APmavlink_video::init(const json& j)
+	bool _APmavlink_video::init(const json &j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		= j.value("process", &m_process);
-		= j.value("fName", &m_fName);
-		= j.value("dir", &m_dir);
-		= j.value("bMeta", &m_bMeta);
+		m_process = j.value("process", "");
+		m_fName = j.value("fName", "");
+		m_dir = j.value("dir", "");
+		m_bMeta = j.value("bMeta", false);
 
 		return true;
 	}
 
-	int _APmavlink_video::link(const json& j, ModuleMgr* pM)
+	bool _APmavlink_video::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
 		string n;
 
-		n = "";
-		= j.value("_APmavlink_base", &n);
+		n = j.value("_APmavlink_base", "");
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
-		NULL__(m_pAP);
+		NULL_F(m_pAP);
 
-		n = "";
-		= j.value("_Uploader", &n);
+		n = j.value("_Uploader", "");
 		m_pCurl = (_Uploader *)(pM->findModule(n));
 
-		= j.value("fCalib", &m_fCalib);
+		m_fCalib = j.value("fCalib", "");
 		readCamMatrices(m_fCalib, &m_mC, &m_mD);
 
 		return true;
 	}
 
-	int _APmavlink_video::start(void)
+	bool _APmavlink_video::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _APmavlink_video::check(void)
+	bool _APmavlink_video::check(void)
 	{
-		NULL__(m_pAP);
+		NULL_F(m_pAP);
 
 		return this->_ModuleBase::check();
 	}

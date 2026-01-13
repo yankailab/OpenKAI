@@ -21,28 +21,28 @@ namespace kai
 	{
 	}
 
-	int _SLAMbase::init(const json& j)
+	bool _SLAMbase::init(const json& j)
 	{
-		CHECK_(this->_NavBase::init(j));
+		IF_F(!this->_NavBase::init(j));
 
-		= j.value("vSize", &m_vSize);
+		m_vSize = j.value("vSize", "");
 
 		return true;
 	}
 
-	int _SLAMbase::link(const json& j, ModuleMgr* pM)
+	bool _SLAMbase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_NavBase::link(j, pM));
+		IF_F(!this->_NavBase::link(j, pM));
 
 		string n;
 		n = "";
-		= j.value("_VisionBase", &n);
+		n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
 
 		return true;
 	}
 
-	int _SLAMbase::check(void)
+	bool _SLAMbase::check(void)
 	{
 		NULL__(m_pV);
 		NULL__(m_pV->getFrameRGB());
@@ -50,7 +50,7 @@ namespace kai
 		return this->_NavBase::check();
 	}
 
-	int _SLAMbase::start(void)
+	bool _SLAMbase::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

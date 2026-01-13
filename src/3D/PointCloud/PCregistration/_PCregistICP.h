@@ -34,7 +34,7 @@ namespace kai
 
 	private:
 		void updateRegistration(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_PCregistICP *)This)->update();

@@ -29,24 +29,24 @@ namespace kai
 	{
 	}
 
-	int _DNNtext::init(const json& j)
+	bool _DNNtext::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(j));
+		IF_F(!this->_DetectorBase::init(j));
 
-		= j.value("thr", &m_thr);
-		= j.value("nms", &m_nms);
-		= j.value("vBlobSize", &m_vBlobSize);
-		= j.value("iBackend", &m_iBackend);
-		= j.value("iTarget", &m_iTarget);
-		= j.value("bSwapRB", &m_bSwapRB);
-		= j.value("scale", &m_scale);
-		= j.value("bDetect", &m_bDetect);
-		= j.value("bOCR", &m_bOCR);
-		= j.value("bWarp", &m_bWarp);
-		= j.value("iClassDraw", &m_iClassDraw);
-		= j.value("meanB", &m_vMean.x);
-		= j.value("meanG", &m_vMean.y);
-		= j.value("meanR", &m_vMean.z);
+		m_thr = j.value("thr", "");
+		m_nms = j.value("nms", "");
+		m_vBlobSize = j.value("vBlobSize", "");
+		m_iBackend = j.value("iBackend", "");
+		m_iTarget = j.value("iTarget", "");
+		m_bSwapRB = j.value("bSwapRB", "");
+		m_scale = j.value("scale", "");
+		m_bDetect = j.value("bDetect", "");
+		m_bOCR = j.value("bOCR", "");
+		m_bWarp = j.value("bWarp", "");
+		m_iClassDraw = j.value("iClassDraw", "");
+		m_vMean.x = j.value("meanB", m_vMean.x);
+		m_vMean.y = j.value("meanG", m_vMean.y);
+		m_vMean.z = j.value("meanR", m_vMean.z);
 
 		m_net = readNet(m_fModel);
 		IF__(m_net.empty(), OK_ERR_INVALID_VALUE);
@@ -62,7 +62,7 @@ namespace kai
 
 #ifdef USE_OCR
 		string n = "";
-		= j.value("OCR", &n);
+		n = j.value("OCR", "");
 		m_pOCR = (OCR *)(pM->findModule(n));
 		NULL__(m_pOCR);
 #endif
@@ -70,13 +70,13 @@ namespace kai
 		return true;
 	}
 
-	int _DNNtext::start(void)
+	bool _DNNtext::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _DNNtext::check(void)
+	bool _DNNtext::check(void)
 	{
 		NULL__(m_pU);
 		NULL__(m_pV);

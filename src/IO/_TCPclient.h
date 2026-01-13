@@ -21,9 +21,9 @@ namespace kai
 		_TCPclient();
 		virtual ~_TCPclient();
 
-		bool init(const json& j);
-		bool start(void);
-		void console(void *pConsole);
+		virtual bool init(const json& j);
+		virtual bool start(void);
+		virtual void console(void *pConsole);
 
 		bool open(void);
 		void close(void);
@@ -31,7 +31,7 @@ namespace kai
 		virtual int read(uint8_t *pBuf, int nB);
 
 	private:
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_TCPclient *)This)->update();

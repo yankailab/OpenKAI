@@ -13,21 +13,21 @@ namespace kai
 	{
 	}
 
-	int _USR_CANET::init(const json& j)
+	bool _USR_CANET::init(const json& j)
 	{
-		CHECK_(this->_CANbase::init(j));
+		IF_F(!this->_CANbase::init(j));
 
 		return true;
 	}
 
-	int _USR_CANET::link(const json& j, ModuleMgr* pM)
+	bool _USR_CANET::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_CANbase::link(j, pM));
+		IF_F(!this->_CANbase::link(j, pM));
 
 		string n;
 
 		n = "";
-		= j.value("_IObase", &n);
+		n = j.value("_IObase", "");
 		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 
@@ -51,13 +51,13 @@ namespace kai
 		m_iErr = 0;
 	}
 
-	int _USR_CANET::start(void)
+	bool _USR_CANET::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _USR_CANET::check(void)
+	bool _USR_CANET::check(void)
 	{
 		NULL_F(m_pIO);
 		IF_F(!m_pIO->bOpen());

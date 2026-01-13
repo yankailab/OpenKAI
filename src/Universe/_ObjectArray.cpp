@@ -19,11 +19,11 @@ namespace kai
 		DEL(m_pO);
 	}
 
-	int _ObjectArray::init(const json& j)
+	bool _ObjectArray::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		= j.value("nBuf", &m_nBuf);
+		m_nBuf = j.value("nBuf", "");
 		IF__(m_nBuf <= 0, OK_ERR_INVALID_VALUE);
 
 		m_pO = new _Object[m_nBuf];
@@ -43,7 +43,7 @@ namespace kai
 		return true;
 	}
 
-	int _ObjectArray::start(void)
+	bool _ObjectArray::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

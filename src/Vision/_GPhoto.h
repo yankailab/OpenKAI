@@ -20,14 +20,14 @@ public:
 	virtual ~_GPhoto();
 
 	int init(void* pKiss);
-	bool start(void);
+	virtual bool start(void);
 	bool open(void);
 	void close(void);
 
 	bool shutter(string& fName);
 
 private:
-	void update(void);
+	virtual void update(void);
 	static void* getUpdate(void* This)
 	{
 		((_GPhoto*) This)->update();

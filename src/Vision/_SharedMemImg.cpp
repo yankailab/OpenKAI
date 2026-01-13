@@ -20,35 +20,35 @@ namespace kai
     {
     }
 
-    int _SharedMemImg::init(const json& j)
+    bool _SharedMemImg::init(const json& j)
     {
-        CHECK_(_VisionBase::init(j));
+        IF_F(!_VisionBase::init(j));
 
-        = j.value("matType", &m_matType);
+        m_matType = j.value("matType", "");
 
         return true;
     }
 
-    int _SharedMemImg::link(const json& j, ModuleMgr* pM)
+    bool _SharedMemImg::link(const json& j, ModuleMgr* pM)
     {
         Kiss *pK = (Kiss *)m_pKiss;
 
         string n;
         n = "";
-        = j.value("SharedMem", &n);
+        n = j.value("SharedMem", "");
         m_pSHM = (SharedMem *)(pM->findModule(n));
         NULL__(m_pSHM);
 
         return true;
     }
 
-    int _SharedMemImg::start(void)
+    bool _SharedMemImg::start(void)
     {
         NULL_F(m_pT);
         IF_F(!m_pT->start(getUpdate, this));
     }
 
-    int _SharedMemImg::check(void)
+    bool _SharedMemImg::check(void)
     {
         NULL_F(m_pT);
         NULL__(m_pSHM);
@@ -76,7 +76,7 @@ namespace kai
 
     bool _SharedMemImg::update_SharedMemImg(void)
     {
-        IF__(check() != OK_OK, true);
+        IF_F(!check());
 
         m_fRGB.copy(Mat(m_vSizeRGB.y,
                         m_vSizeRGB.x,

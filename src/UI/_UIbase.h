@@ -23,7 +23,7 @@ namespace kai
 		virtual bool start(void);
 
 	protected:
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_UIbase *)This)->update();

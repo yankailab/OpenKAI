@@ -17,16 +17,16 @@ namespace kai
     {
     }
 
-    int _Drive::init(const json& j)
+    bool _Drive::init(const json& j)
     {
-        CHECK_(this->_ModuleBase::init(j));
+        IF_F(!this->_ModuleBase::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
-        = j.value("nSpd", &m_nSpd);
-        = j.value("nDir", &m_nDir);
-        = j.value("nStr", &m_nStr);
-        = j.value("vSpdRange", &m_vSpdRange);
-        = j.value("vStrRange", &m_vStrRange);
+        m_nSpd = j.value("nSpd", "");
+        m_nDir = j.value("nDir", "");
+        m_nStr = j.value("nStr", "");
+        m_vSpdRange = j.value("vSpdRange", "");
+        m_vStrRange = j.value("vStrRange", "");
 
         Kiss *pKM = pK->child("motor");
         NULL__(pKM);
@@ -53,13 +53,13 @@ namespace kai
         return true;
     }
 
-    int _Drive::start(void)
+    bool _Drive::start(void)
     {
         NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
-    int _Drive::check(void)
+    bool _Drive::check(void)
     {
         return this->_ModuleBase::check();
     }

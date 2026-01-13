@@ -17,18 +17,18 @@ namespace kai
 	{
 	}
 
-	int StateBase::init(const json& j)
+	bool StateBase::init(const json& j)
 	{
-		CHECK_(this->BASE::init(j));
+		IF_F(!this->BASE::init(j));
 
-		= j.value("next", &m_next);
+		m_next = j.value("next", "");
 
 		return true;
 	}
 
-	int StateBase::link(const json& j, ModuleMgr* pM)
+	bool StateBase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->BASE::link(j, pM));
+		IF_F(!this->BASE::link(j, pM));
 
 		vector<string> vS;
 

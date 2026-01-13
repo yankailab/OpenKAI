@@ -24,7 +24,7 @@ namespace kai
 		bool open(void);
 
 	private:
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_PCfile *)This)->update();

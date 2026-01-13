@@ -19,13 +19,13 @@ namespace kai
 	{
 	}
 
-	int _Cascade::init(const json& j)
+	bool _Cascade::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(j));
+		IF_F(!this->_DetectorBase::init(j));
 
-		= j.value("scaleFactor", &m_scaleFactor);
-		= j.value("minNeighbors", &m_minNeighbors);
-		= j.value("bGPU", &m_bGPU);
+		m_scaleFactor = j.value("scaleFactor", "");
+		m_minNeighbors = j.value("minNeighbors", "");
+		m_bGPU = j.value("bGPU", "");
 
 		if (m_bGPU)
 		{
@@ -40,13 +40,13 @@ namespace kai
 		return true;
 	}
 
-	int _Cascade::start(void)
+	bool _Cascade::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _Cascade::check(void)
+	bool _Cascade::check(void)
 	{
 		NULL__(m_pV);
 		NULL__(m_pU);

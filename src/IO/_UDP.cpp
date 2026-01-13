@@ -28,15 +28,15 @@ namespace kai
 		close();
 	}
 
-	int _UDP::init(const json& j)
+	bool _UDP::init(const json& j)
 	{
-		CHECK_(this->_IObase::init(j));
+		IF_F(!this->_IObase::init(j));
 
-		= j.value("addrRemote", &m_addrRemote);
-		= j.value("portRemote", &m_portRemote);
-		= j.value("portLocal", &m_portLocal);
-		= j.value("bW2R", &m_bW2R);
-		= j.value("bWbroadcast", &m_bWbroadcast);
+		m_addrRemote = j.value("addrRemote", "");
+		m_portRemote = j.value("portRemote", "");
+		m_portLocal = j.value("portLocal", "");
+		m_bW2R = j.value("bW2R", "");
+		m_bWbroadcast = j.value("bWbroadcast", "");
 
 		return true;
 	}
@@ -80,7 +80,7 @@ namespace kai
 		this->_IObase::close();
 	}
 
-	int _UDP::start(void)
+	bool _UDP::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

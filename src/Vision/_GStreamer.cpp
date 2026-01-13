@@ -22,12 +22,12 @@ namespace kai
 		close();
 	}
 
-	int _GStreamer::init(const json& j)
+	bool _GStreamer::init(const json& j)
 	{
-		CHECK_(_VisionBase::init(j));
+		IF_F(!_VisionBase::init(j));
 
-		= j.value("pipeline", &m_pipeline);
-		= j.value("nInitRead", &m_nInitRead);
+		m_pipeline = j.value("pipeline", "");
+		m_nInitRead = j.value("nInitRead", "");
 
 		return true;
 	}
@@ -62,7 +62,7 @@ namespace kai
 		m_gst.release();
 	}
 
-	int _GStreamer::start(void)
+	bool _GStreamer::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

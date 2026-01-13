@@ -10,46 +10,42 @@ namespace kai
 	_OrientalMotor::_OrientalMotor()
 	{
 		m_pMB = nullptr;
-		m_iData = 0;
 	}
 
 	_OrientalMotor::~_OrientalMotor()
 	{
 	}
 
-	int _OrientalMotor::init(const json& j)
+	bool _OrientalMotor::init(const json &j)
 	{
-		CHECK_(this->_ActuatorBase::init(j));
+		IF_F(!this->_ActuatorBase::init(j));
 
-		= j.value("iData", &m_iData);
+		m_iData = j.value("iData", 0);
 
 		return true;
 	}
 
-	int _OrientalMotor::link(const json& j, ModuleMgr* pM)
+	bool _OrientalMotor::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_ActuatorBase::link(j, pM));
+		IF_F(!this->_ActuatorBase::link(j, pM));
 
-		string n;
-
-		n = "";
-		IF__(!= j.value("_Modbus", &n));
+		string n = j.value("_Modbus", "");
 		m_pMB = (_Modbus *)(pM->findModule(n));
-		NULL__(m_pMB);
+		NULL_F(m_pMB);
 
 		return true;
 	}
 
-	int _OrientalMotor::start(void)
+	bool _OrientalMotor::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _OrientalMotor::check(void)
+	bool _OrientalMotor::check(void)
 	{
-		NULL__(m_pMB, -1);
-		IF__(!m_pMB->bOpen(), -1);
+		NULL_F(m_pMB);
+		IF_F(!m_pMB->bOpen());
 
 		return this->_ActuatorBase::check();
 	}

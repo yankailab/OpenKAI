@@ -29,11 +29,11 @@ namespace kai
 	{
 	}
 
-	int _Scepter::init(const json& j)
+	bool _Scepter::init(const json& j)
 	{
-		CHECK_(_RGBDbase::init(j));
+		IF_F(!_RGBDbase::init(j));
 
-		= j.value("scPixelFormat", &m_scCtrl.m_pixelFormat);
+		m_scCtrl.m_pixelFormat = j.value("scPixelFormat", m_scCtrl.m_pixelFormat);
 
 		Kiss *pKt = pK->child("threadPP");
 		if (pKt->empty())
@@ -48,9 +48,9 @@ namespace kai
 		return true;
 	}
 
-	int _Scepter::link(const json& j, ModuleMgr* pM)
+	bool _Scepter::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_RGBDbase::link(j, pM));
+		IF_F(!this->_RGBDbase::link(j, pM));
 		string n;
 
 		return true;
@@ -154,13 +154,13 @@ namespace kai
 		DEL(m_pScVw);
 	}
 
-	int _Scepter::start(void)
+	bool _Scepter::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _Scepter::check(void)
+	bool _Scepter::check(void)
 	{
 		return this->_RGBDbase::check();
 	}

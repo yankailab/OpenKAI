@@ -23,13 +23,13 @@ namespace kai
 	{
 	}
 
-	int _NavBase::init(const json& j)
+	bool _NavBase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		= j.value("scale", &m_scale);
-		= j.value("vAxisIdx", &m_vAxisIdx);
-		= j.value("vRoffset", &m_vRoffset);
+		m_scale = j.value("scale", "");
+		m_vAxisIdx = j.value("vAxisIdx", "");
+		m_vRoffset = j.value("vRoffset", "");
 
 		return true;
 	}

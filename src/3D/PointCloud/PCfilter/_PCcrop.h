@@ -98,7 +98,7 @@ namespace kai
 		virtual bool check(void);
 
 	private:
-		void update(void);
+		virtual void update(void);
 		void updateFilter(void);
 		virtual bool bFilter(Eigen::Vector3d &vP);
 		static void *getUpdate(void *This)

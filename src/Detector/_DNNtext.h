@@ -22,10 +22,10 @@ namespace kai
 		_DNNtext();
 		~_DNNtext();
 
-		bool init(const json& j);
-		bool start(void);
-		void draw(void *pFrame);
-		bool check(void);
+		virtual bool init(const json& j);
+		virtual bool start(void);
+		virtual void draw(void *pFrame);
+		virtual bool check(void);
 		void ocr(void);
 
 	public:
@@ -33,7 +33,7 @@ namespace kai
 		void decode(const Mat &mScores, const Mat &mGeometry, float scoreThresh,
 					std::vector<RotatedRect> &vDetections, std::vector<float> &vConfidences);
 		void detect(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_DNNtext *)This)->update();

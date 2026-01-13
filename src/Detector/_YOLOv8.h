@@ -31,7 +31,7 @@ namespace kai
 	private:
 		Mat formatToSquare(const Mat &mSrc);
 		void detect(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_YOLOv8 *)This)->update();

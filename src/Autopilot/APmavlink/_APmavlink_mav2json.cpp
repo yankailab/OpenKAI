@@ -12,40 +12,37 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_mav2json::init(const json& j)
+	bool _APmavlink_mav2json::init(const json &j)
 	{
-		CHECK_(this->_JSONbase::init(j));
+		IF_F(!this->_JSONbase::init(j));
 
-//        = j.value("dS", &m_dS);
+		//        m_dS = j.value("dS", "");
 
 		return true;
 	}
 
-	int _APmavlink_mav2json::link(const json& j, ModuleMgr* pM)
+	bool _APmavlink_mav2json::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_JSONbase::link(j, pM));
+		IF_F(!this->_JSONbase::link(j, pM));
 
-		string n;
-
-		n = "";
-		= j.value("_APmavlink_base", &n);
+		string n = j.value("_APmavlink_base", "");
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
-		NULL__(m_pAP);
+		NULL_F(m_pAP);
 
 		return true;
 	}
 
-	int _APmavlink_mav2json::start(void)
+	bool _APmavlink_mav2json::start(void)
 	{
 		NULL_F(m_pT);
 		NULL_F(m_pTr);
-		CHECK_(m_pT->start(getUpdateW, this));
+		IF_F(!m_pT->start(getUpdateW, this));
 		return m_pTr->start(getUpdateR, this);
 	}
 
-	int _APmavlink_mav2json::check(void)
+	bool _APmavlink_mav2json::check(void)
 	{
-		NULL__(m_pAP);
+		NULL_F(m_pAP);
 		NULL__(m_pAP->getMavlink());
 
 		return this->_JSONbase::check();
@@ -58,7 +55,6 @@ namespace kai
 			m_pT->autoFPS();
 
 			send();
-
 		}
 	}
 
@@ -72,18 +68,18 @@ namespace kai
 		vDouble4 vP = m_pAP->getGlobalPos();
 		vFloat3 vA = m_pAP->getAttitude();
 
-// {
-// 	"cmd":"vUpdate",	// command name
-// 	"vID":0,		// int: vehicle id
-// 	"lon":0,		// float: vehicle pos longitude
-// 	"lat":0,		// float: vehicle pos latitude
-// 	"alt":0,		// float: vehicle pos altitude in meter
-// 	"yaw":360,		// float: vehicle attitude yaw (degree), from absolute north (0) to 360 degree
-// 	"pitch":0,		// float: vehicle attitude pitch (degree)
-// 	"roll":0,		// float: vehicle attitude roll (degree)
-// 	"batt":90,		// float: vehicle battery left percentage (0.0 to 100.0)
-// 	"hdg":0,		// float: vehicle heading to next waypoint (degree), only if vehicle is in Auto mode, -1 for other modes.
-// }
+		// {
+		// 	"cmd":"vUpdate",	// command name
+		// 	"vID":0,		// int: vehicle id
+		// 	"lon":0,		// float: vehicle pos longitude
+		// 	"lat":0,		// float: vehicle pos latitude
+		// 	"alt":0,		// float: vehicle pos altitude in meter
+		// 	"yaw":360,		// float: vehicle attitude yaw (degree), from absolute north (0) to 360 degree
+		// 	"pitch":0,		// float: vehicle attitude pitch (degree)
+		// 	"roll":0,		// float: vehicle attitude roll (degree)
+		// 	"batt":90,		// float: vehicle battery left percentage (0.0 to 100.0)
+		// 	"hdg":0,		// float: vehicle heading to next waypoint (degree), only if vehicle is in Auto mode, -1 for other modes.
+		// }
 
 		object r;
 		JO(r, "cmd", "vUpdate");
@@ -101,16 +97,16 @@ namespace kai
 
 	void _APmavlink_mav2json::updateR(void)
 	{
-        string strR = "";
+		string strR = "";
 
-        while (m_pTr->bAlive())
-        {
-            IF_CONT(!recvJson(&strR, m_pIO));
+		while (m_pTr->bAlive())
+		{
+			IF_CONT(!recvJson(&strR, m_pIO));
 
-            handleJson(strR);
-            strR.clear();
+			handleJson(strR);
+			strR.clear();
 			m_nCMDrecv++;
-        }
+		}
 	}
 
 	void _APmavlink_mav2json::handleJson(const string &str)
@@ -149,7 +145,6 @@ namespace kai
 		this->_JSONbase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-
 	}
 
 }

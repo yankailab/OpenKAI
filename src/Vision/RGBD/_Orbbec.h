@@ -55,7 +55,7 @@ namespace kai
 
 	private:
 		bool updateOrbbec(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_Orbbec *)This)->update();

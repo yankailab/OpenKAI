@@ -36,13 +36,13 @@ namespace kai
 		DEL(m_pRGBAf);
 	}
 
-	int _DetectNet::init(const json& j)
+	bool _DetectNet::init(const json& j)
 	{
-		CHECK_(this->_DetectorBase::init(j));
+		IF_F(!this->_DetectorBase::init(j));
 
-		= j.value("thr", &m_thr);
-		= j.value("bSwapRB", &m_bSwapRB);
-		= j.value("vMean", &m_vMean);
+		m_thr = j.value("thr", "");
+		m_bSwapRB = j.value("bSwapRB", "");
+		m_vMean = j.value("vMean", "");
 		= j.value("type", (int *)&m_type);
 
 		m_pRGBA = new Frame();
@@ -51,13 +51,13 @@ namespace kai
 		return true;
 	}
 
-	int _DetectNet::start(void)
+	bool _DetectNet::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _DetectNet::check(void)
+	bool _DetectNet::check(void)
 	{
 		NULL__(m_pV);
 		NULL__(m_pU);

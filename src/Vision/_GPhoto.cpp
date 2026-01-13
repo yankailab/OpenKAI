@@ -22,11 +22,11 @@ namespace kai
 		close();
 	}
 
-	int _GPhoto::init(const json& j)
+	bool _GPhoto::init(const json& j)
 	{
-		CHECK_(_VisionBase::init(j));
+		IF_F(!_VisionBase::init(j));
 
-		= j.value("mount", &m_cmdUnmount);
+		m_cmdUnmount = j.value("mount", "");
 
 		return true;
 	}
@@ -44,7 +44,7 @@ namespace kai
 		this->_VisionBase::close();
 	}
 
-	int _GPhoto::start(void)
+	bool _GPhoto::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

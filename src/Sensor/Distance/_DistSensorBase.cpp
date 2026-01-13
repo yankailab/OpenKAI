@@ -35,27 +35,27 @@ namespace kai
 		DEL_ARRAY(m_pDiv);
 	}
 
-	int _DistSensorBase::init(const json& j)
+	bool _DistSensorBase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		= j.value("fovH", &m_fovH);
+		m_fovH = j.value("fovH", "");
 		IF__(m_fovH <= 0, OK_ERR_INVALID_VALUE);
 		IF__(m_fovH > 360, OK_ERR_INVALID_VALUE);
-		= j.value("fovV", &m_fovV);
+		m_fovV = j.value("fovV", "");
 
-		= j.value("nDiv", &m_nDiv);
+		m_nDiv = j.value("nDiv", "");
 		m_dDeg = m_fovH / m_nDiv;
 		m_dDegInv = 1.0 / m_dDeg;
 
-		= j.value("vRange", &m_vRange);
-		= j.value("calibScale", &m_calibScale);
-		= j.value("calibOffset", &m_calibOffset);
+		m_vRange = j.value("vRange", "");
+		m_calibScale = j.value("calibScale", "");
+		m_calibOffset = j.value("calibOffset", "");
 
 		int nMed = 0;
 		int nAvr = 0;
-		= j.value("nMed", &nMed);
-		= j.value("nAvr", &nAvr);
+		nMed = j.value("nMed", "");
+		nAvr = j.value("nAvr", "");
 
 		IF__(m_nDiv >= MAX_DIST_SENSOR_DIV, OK_ERR_INVALID_VALUE);
 

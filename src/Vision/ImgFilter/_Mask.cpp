@@ -20,33 +20,33 @@ namespace kai
 	{
 	}
 
-	int _Mask::init(const json& j)
+	bool _Mask::init(const json& j)
 	{
-		CHECK_(_VisionBase::init(j));
+		IF_F(!_VisionBase::init(j));
 
 		return true;
 	}
 
-	int _Mask::link(const json& j, ModuleMgr* pM)
+	bool _Mask::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_VisionBase::link(j, pM));
+		IF_F(!this->_VisionBase::link(j, pM));
 
 
 		string n;
 		n = "";
-		= j.value("_VisionBase", &n);
+		n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL__(m_pV);
 
 		n = "";
-		= j.value("_VisionBaseMask", &n);
+		n = j.value("_VisionBaseMask", "");
 		m_pVmask = (_VisionBase *)(pK->parent()->findModule(n));
 		NULL__(m_pVmask);
 
 		return true;
 	}
 
-	int _Mask::start(void)
+	bool _Mask::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

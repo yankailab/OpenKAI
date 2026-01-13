@@ -6,7 +6,6 @@ namespace kai
 	_APmavlink_base::_APmavlink_base()
 	{
 		m_pMav = nullptr;
-		m_apType = ardupilot_copter;
 
 		m_bHomeSet = false;
 		m_vHomePos.set(0.0);
@@ -19,10 +18,6 @@ namespace kai
 		m_gpsFixType = -1;
 		m_gpsHacc = INT32_MAX;
 
-		m_ieSendHB.init(USEC_1SEC);
-		m_ieSendMsgInt.init(USEC_1SEC);
-
-		m_bSyncMode = false;
 		m_wrApMode.init(-1, -1);
 		m_wrbArm.init(false, false);
 	}
@@ -31,66 +26,53 @@ namespace kai
 	{
 	}
 
-	int _APmavlink_base::init(const json& j)
+	bool _APmavlink_base::init(const json &j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		= j.value("apType", (int *)&m_apType);
-		= j.value("bSyncMode", &m_bSyncMode);
+		m_apType = j.value("apType", ardupilot_copter);
+		m_bSyncMode = j.value("bSyncMode", false);
 
-		float t;
-
-		if (= j.value("ieSendHB", &t))
-			m_ieSendHB.init(t * SEC_2_USEC);
-
-		if (= j.value("ieSendMsgInt", &t))
-			m_ieSendMsgInt.init(t * SEC_2_USEC);
+		m_ieSendHB.init(j.value("ieSendHB", 1) * SEC_2_USEC);
+		m_ieSendMsgInt.init(j.value("ieSendMsgInt", 1) * SEC_2_USEC);
 
 		return true;
 	}
 
-	int _APmavlink_base::link(const json& j, ModuleMgr* pM)
+	bool _APmavlink_base::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n;
-
-		n = "";
-		= j.value("_Mavlink", &n);
+		string n = j.value("_Mavlink", "");
 		m_pMav = (_Mavlink *)(pM->findModule(n));
-		NULL__(m_pMav);
+		NULL_F(m_pMav);
 
-		Kiss *pM = pK->child("mavMsgInt");
-		NULL__(pM, OK_OK);
+		const json &jm = j.at("mavMsgInt");
+		IF__(!jm.is_object(), true);
 
-		int i = 0;
-		while (1)
+		for (auto it = jm.begin(); it != jm.end(); it++)
 		{
-			Kiss *pMI = pM->child(i++);
-			if (pMI->empty())
-				break;
+			const json &ji = it.value();
+			IF_CONT(!ji.is_object());
 
-			int id;
-			pMI->v("id", &id);
-			float tInt = 1;
-			pMI->v("tInt", &tInt);
-
-			if (!m_pMav->setMsgInterval(id, tInt * SEC_2_USEC))
-				LOG_E("Interval msg id = " + i2str(id) + " not found");
+			if (!m_pMav->setMsgInterval(ji.value("id", 0), ji.value("tInt", 1) * SEC_2_USEC))
+			{
+				LOG_E("Interval msg id = " + i2str(ji.value("id", 0)) + " not found");
+			}
 		}
 
 		return true;
 	}
 
-	int _APmavlink_base::start(void)
+	bool _APmavlink_base::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _APmavlink_base::check(void)
+	bool _APmavlink_base::check(void)
 	{
-		NULL__(m_pMav);
+		NULL_F(m_pMav);
 
 		return this->_ModuleBase::check();
 	}
@@ -122,12 +104,12 @@ namespace kai
 		}
 
 		// Attitude
-//		if (m_pMav->m_attitude.bReceiving())
-//		{
-			m_vAtti.x = m_pMav->m_attitude.m_msg.yaw;
-			m_vAtti.y = m_pMav->m_attitude.m_msg.pitch;
-			m_vAtti.z = m_pMav->m_attitude.m_msg.roll;
-//		}
+		//		if (m_pMav->m_attitude.bReceiving())
+		//		{
+		m_vAtti.x = m_pMav->m_attitude.m_msg.yaw;
+		m_vAtti.y = m_pMav->m_attitude.m_msg.pitch;
+		m_vAtti.z = m_pMav->m_attitude.m_msg.roll;
+		//		}
 
 		// TODO:
 		//  get home position
@@ -340,7 +322,7 @@ namespace kai
 		return m_pMav->m_missionCurrent.m_msg.total;
 	}
 
-	_Mavlink* _APmavlink_base::getMavlink(void)
+	_Mavlink *_APmavlink_base::getMavlink(void)
 	{
 		return m_pMav;
 	}

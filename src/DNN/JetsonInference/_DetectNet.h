@@ -28,13 +28,13 @@ public:
 	~_DetectNet();
 
 	int init(void* pKiss);
-	bool start(void);
-	bool check(void);
+	virtual bool start(void);
+	virtual bool check(void);
 
 private:
 	bool open(void);
 	void detect(void);
-	void update(void);
+	virtual void update(void);
 	static void* getUpdate(void* This)
 	{
 		((_DetectNet*) This)->update();

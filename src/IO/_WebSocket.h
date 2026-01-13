@@ -22,7 +22,7 @@ namespace kai
 		virtual ~_WebSocket();
 
 		int init(void *pKiss = NULL);
-		void console(void *pConsole);
+		virtual void console(void *pConsole);
 
 		int read(uint8_t *pBuf, int nB);
 		IO_PACKET_FIFO* getPacketFIFOr(void);

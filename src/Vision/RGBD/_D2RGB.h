@@ -19,8 +19,8 @@ namespace kai
 		_D2RGB();
 		virtual ~_D2RGB();
 
-		bool init(const json& j);
-		bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json& j);
+		virtual bool link(const json& j, ModuleMgr* pM);
 
 		Frame *getFrameRGB(void);
 

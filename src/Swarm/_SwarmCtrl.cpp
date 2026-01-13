@@ -17,28 +17,28 @@ namespace kai
     {
     }
 
-    int _SwarmCtrl::init(const json& j)
+    bool _SwarmCtrl::init(const json& j)
     {
-        CHECK_(this->_ModuleBase::init(j));
+        IF_F(!this->_ModuleBase::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
 
-        = j.value("myID", &m_node.m_id);
-        = j.value("ieSendHB", &m_ieSendHB.m_tInterval);
-        = j.value("ieSendSetState", &m_ieSendSetState.m_tInterval);
-        = j.value("ieSendGCupdate", &m_ieSendGCupdate.m_tInterval);
+        m_node.m_id = j.value("myID", m_node.m_id);
+        m_ieSendHB.m_tInterval = j.value("ieSendHB", m_ieSendHB.m_tInterval);
+        m_ieSendSetState.m_tInterval = j.value("ieSendSetState", m_ieSendSetState.m_tInterval);
+        m_ieSendGCupdate.m_tInterval = j.value("ieSendGCupdate", m_ieSendGCupdate.m_tInterval);
 
         return true;
     }
 
-    int _SwarmCtrl::link(const json& j, ModuleMgr* pM)
+    bool _SwarmCtrl::link(const json& j, ModuleMgr* pM)
     {
-        CHECK_(this->_ModuleBase::link(j, pM));
+        IF_F(!this->_ModuleBase::link(j, pM));
 
 		string n;
 
         n = "";
-        = j.value("_StateControl", &n);
+        n = j.value("_StateControl", "");
         m_pSC = (_StateControl *)(pM->findModule(n));
         NULL__(m_pSC);
 
@@ -50,12 +50,12 @@ namespace kai
         m_state.update(m_pSC->getCurrentStateIdx());
 
         n = "";
-        = j.value("_SwarmSearch", &n);
+        n = j.value("_SwarmSearch", "");
         m_pSwarm = (_SwarmSearch *)(pM->findModule(n));
         NULL__(m_pSwarm);
 
         n = "";
-        = j.value("_Xbee", &n);
+        n = j.value("_Xbee", "");
         m_pXb = (_Xbee *)(pM->findModule(n));
         NULL__(m_pXb);
 
@@ -64,13 +64,13 @@ namespace kai
         return true;
     }
 
-    int _SwarmCtrl::start(void)
+    bool _SwarmCtrl::start(void)
     {
         NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
-    int _SwarmCtrl::check(void)
+    bool _SwarmCtrl::check(void)
     {
         NULL__(m_pSC);
         NULL__(m_pXb);

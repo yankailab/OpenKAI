@@ -18,9 +18,9 @@ namespace kai
 		DEL(m_pTr);
 	}
 
-	int _ProtocolBase::init(const json& j)
+	bool _ProtocolBase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
 		Kiss *pKt = pK->child("threadR");
 		if (pKt->empty())
@@ -35,30 +35,30 @@ namespace kai
 		return true;
 	}
 
-	int _ProtocolBase::link(const json& j, ModuleMgr* pM)
+	bool _ProtocolBase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
-		CHECK_(m_pTr->link());
+		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!m_pTr->link());
 
 		string n;
 
 		n = "";
-		= j.value("_IObase", &n);
+		n = j.value("_IObase", "");
 		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 
 		return true;
 	}
 
-	int _ProtocolBase::start(void)
+	bool _ProtocolBase::start(void)
 	{
 		NULL_F(m_pT);
 		NULL_F(m_pTr);
-		CHECK_(m_pT->start(getUpdateW, this));
+		IF_F(!m_pT->start(getUpdateW, this));
 		return m_pTr->start(getUpdateR, this);
 	}
 
-	int _ProtocolBase::check(void)
+	bool _ProtocolBase::check(void)
 	{
 		NULL_F(m_pIO);
 		IF_F(!m_pIO->bOpen());

@@ -28,27 +28,27 @@ namespace kai
 	{
 	}
 
-	int _VisionBase::init(const json& j)
+	bool _VisionBase::init(const json& j)
 	{
-		CHECK_(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		= j.value("devURI", &m_devURI);
-		= j.value("devFPS", &m_devFPS);
-		= j.value("tFrameInterval", &m_tFrameInterval);
-		= j.value("bRGB", &m_bRGB);
-		= j.value("vSizeRGB", &m_vSizeRGB);
+		m_devURI = j.value("devURI", "");
+		m_devFPS = j.value("devFPS", "");
+		m_tFrameInterval = j.value("tFrameInterval", "");
+		m_bRGB = j.value("bRGB", "");
+		m_vSizeRGB = j.value("vSizeRGB", "");
 
 		return true;
 	}
 
-	int _VisionBase::link(const json& j, ModuleMgr* pM)
+	bool _VisionBase::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
 
 		string n;
 
 		n = "";
-		= j.value("_SHMrgb", &n);
+		n = j.value("_SHMrgb", "");
 		m_psmRGB = (SharedMem *)(pM->findModule(n));
 
 		return true;
@@ -69,7 +69,7 @@ namespace kai
 		m_bOpen = false;
 	}
 
-	int _VisionBase::check(void)
+	bool _VisionBase::check(void)
 	{
 		return _ModuleBase::check();
 	}

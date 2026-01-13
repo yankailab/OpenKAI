@@ -18,9 +18,9 @@ namespace kai
 	{
 	}
 
-	int Destimator::init(const json& j)
+	bool Destimator::init(const json &j)
 	{
-		CHECK_(this->BASE::init(j));
+		IF_F(!this->BASE::init(j));
 
 		return true;
 	}

@@ -27,7 +27,7 @@ namespace kai
 
 	private:
 		void updateMerge(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_PCmerge *)This)->update();

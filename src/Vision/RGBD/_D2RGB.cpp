@@ -20,20 +20,20 @@ namespace kai
 	{
 	}
 
-	int _D2RGB::init(const json& j)
+	bool _D2RGB::init(const json& j)
 	{
-		CHECK_(_VisionBase::init(j));
+		IF_F(!_VisionBase::init(j));
 
 		return true;
 	}
 
-	int _D2RGB::link(const json& j, ModuleMgr* pM)
+	bool _D2RGB::link(const json& j, ModuleMgr* pM)
 	{
-		CHECK_(this->_VisionBase::link(j, pM));
+		IF_F(!this->_VisionBase::link(j, pM));
 
 		string n;
 		n = "";
-		= j.value("_RGBDbase", &n);
+		n = j.value("_RGBDbase", "");
 		m_pV = (_RGBDbase *)(pM->findModule(n));
 		NULL__(m_pV);
 

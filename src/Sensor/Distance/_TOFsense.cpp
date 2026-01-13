@@ -17,13 +17,13 @@ namespace kai
 	{
 	}
 
-	int _TOFsense::init(const json& j)
+	bool _TOFsense::init(const json& j)
 	{
-		CHECK_(this->_DistSensorBase::init(j));
+		IF_F(!this->_DistSensorBase::init(j));
 
 		string n;
 		n = "";
-		= j.value("_IObase", &n);
+		n = j.value("_IObase", "");
 		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 
@@ -33,7 +33,7 @@ namespace kai
 		return true;
 	}
 
-	int _TOFsense::start(void)
+	bool _TOFsense::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

@@ -21,26 +21,26 @@ namespace kai
     {
     }
 
-    int _Chilitags::init(const json& j)
+    bool _Chilitags::init(const json& j)
     {
-        CHECK_(this->_DetectorBase::init(j));
+        IF_F(!this->_DetectorBase::init(j));
 
-        = j.value("persistence", &m_persistence);
-        = j.value("gain", &m_gain);
-        = j.value("angleOffset", &m_angleOffset);
+        m_persistence = j.value("persistence", "");
+        m_gain = j.value("gain", "");
+        m_angleOffset = j.value("angleOffset", "");
 
         m_chilitags.setFilter(m_persistence, m_gain);
 
         return true;
     }
 
-    int _Chilitags::start(void)
+    bool _Chilitags::start(void)
     {
         NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
-    int _Chilitags::check(void)
+    bool _Chilitags::check(void)
     {
         NULL__(m_pV);
         NULL__(m_pU);

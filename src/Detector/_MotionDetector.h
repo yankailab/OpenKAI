@@ -19,14 +19,14 @@ namespace kai
 		_MotionDetector();
 		virtual ~_MotionDetector();
 
-		bool init(const json& j);
-		bool start(void);
-		void draw(void *pFrame);
-		bool check(void);
+		virtual bool init(const json& j);
+		virtual bool start(void);
+		virtual void draw(void *pFrame);
+		virtual bool check(void);
 
 	private:
 		void detect(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_MotionDetector *)This)->update();

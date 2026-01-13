@@ -29,7 +29,7 @@ namespace kai
 
 	private:
 		void detect(void);
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_SLAMbase *)This)->update();

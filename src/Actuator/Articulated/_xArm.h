@@ -28,7 +28,7 @@ namespace kai
 		virtual vFloat3 getA(void);
 		virtual void readState(void);
 
-		void update(void);
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_xArm *)This)->update();

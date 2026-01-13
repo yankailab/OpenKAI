@@ -20,17 +20,17 @@ namespace kai
 	{
 	}
 
-	int _GstOutput::init(const json& j)
+	bool _GstOutput::init(const json& j)
 	{
-		CHECK_(this->_UIbase::init(j));
+		IF_F(!this->_UIbase::init(j));
 
-		= j.value("vSize", &m_vSize);
+		m_vSize = j.value("vSize", "");
 		IF__(m_vSize.area() <= 0, OK_ERR_INVALID_VALUE);
 
 		m_F.allocate(m_vSize.x, m_vSize.y);
 		*m_F.m() = Scalar(0, 0, 0);
 
-		= j.value("gstOutput", &m_gstOutput);
+		m_gstOutput = j.value("gstOutput", "");
 		if (!m_gstOutput.empty())
 		{
 			if (!m_gst.open(m_gstOutput,
@@ -48,7 +48,7 @@ namespace kai
 		return true;
 	}
 
-	int _GstOutput::start(void)
+	bool _GstOutput::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);

@@ -12,77 +12,65 @@ namespace kai
 		m_bYaw = false;
 		m_iRelayLED = 0;
 
-		m_vAxisIdx.set(0, 1, 2);
-		m_vAxisK.set(1, 1, 1);
 		m_utmPos.init();
-
 		m_bUseApOrigin = false;
 		m_llOrigin.init();
-
-		m_D.gps_id = 0;
-		m_D.fix_type = 3;
-		m_D.satellites_visible = 10;
-		m_D.hdop = 0;
-		m_D.vdop = 0;
-		m_D.ignore_flags = 0b11110101;
 	}
 
 	_APmavlink_GPS::~_APmavlink_GPS()
 	{
 	}
 
-	int _APmavlink_GPS::init(const json& j)
+	bool _APmavlink_GPS::init(const json &j)
 	{
-		CHECK(this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
+		m_yaw = j.value("yaw", 0);
+		m_bYaw = j.value("bYaw", false);
+		m_iRelayLED = j.value("iRelayLED", 0);
 
-		= j.value("yaw", &m_yaw);
-		= j.value("bYaw", &m_bYaw);
-		= j.value("iRelayLED", &m_iRelayLED);
-
-		= j.value("vAxisIdx", &m_vAxisIdx);
-		= j.value("vAxisK", &m_vAxisK);
-		= j.value("lat", &m_llOrigin.m_lat);
-		= j.value("lng", &m_llOrigin.m_lng);
+		m_vAxisIdx = j.value("vAxisIdx", vector<int>{0, 1, 2});
+		m_vAxisK = j.value("vAxisK", vector<float>{1, 1, 1});
+		m_llOrigin.m_lat = j.value("lat", m_llOrigin.m_lat);
+		m_llOrigin.m_lng = j.value("lng", m_llOrigin.m_lng);
 		m_utmOrigin = m_GPS.LL2UTM(m_llOrigin);
 
-		= j.value("gpsID", &m_D.gps_id);
-		= j.value("iFixType", &m_D.fix_type);
-		= j.value("nSat", &m_D.satellites_visible);
-		= j.value("hdop", &m_D.hdop);
-		= j.value("vdop", &m_D.vdop);
-		= j.value("fIgnore", &m_D.ignore_flags);
+		m_D.gps_id = j.value("gpsID", 0);
+		m_D.fix_type = j.value("iFixType", 3);
+		m_D.satellites_visible = j.value("nSat", 10);
+		m_D.hdop = j.value("hdop", 0);
+		m_D.vdop = j.value("vdop", 0);
+		m_D.ignore_flags = j.value("fIgnore", 0b11110101);
 
 		return true;
 	}
 
-	int _APmavlink_GPS::link(const json& j, ModuleMgr* pM)
+	bool _APmavlink_GPS::link(const json &j, ModuleMgr *pM)
 	{
-		CHECK_(this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
+
 		string n;
 
-		n = "";
-		= j.value("_APmavlink_base", &n);
+		n = j.value("_APmavlink_base", "");
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
-		NULL__(m_pAP);
+		NULL_F(m_pAP);
 
-		n = "";
-		= j.value("_NavBase", &n);
+		n = j.value("_NavBase", "");
 		m_pSB = (_NavBase *)(pM->findModule(n));
 		NULL_(m_pSB);
 
 		return true;
 	}
 
-	int _APmavlink_GPS::start(void)
+	bool _APmavlink_GPS::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	int _APmavlink_GPS::check(void)
+	bool _APmavlink_GPS::check(void)
 	{
-		NULL__(m_pAP);
+		NULL_F(m_pAP);
 		NULL__(m_pAP->getMavlink());
 		NULL__(m_pSB);
 
@@ -94,10 +82,8 @@ namespace kai
 		while (m_pT->bAlive())
 		{
 			m_pT->autoFPS();
-			this->_ModuleBase::update();
 
 			updateGPS();
-
 		}
 	}
 

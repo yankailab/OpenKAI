@@ -25,13 +25,13 @@ namespace kai
         clReleaseContext(m_clContext);
     }
 
-    int clBase::init(const json& j)
+    bool clBase::init(const json& j)
     {
-        CHECK_(this->BASE::init(j));
+        IF_F(!this->BASE::init(j));
         Kiss *pK = (Kiss *)pKiss;
 
-        = j.value("fKernel", &m_fKernel);
-        = j.value("buildOpt", &m_buildOpt);
+        m_fKernel = j.value("fKernel", "");
+        m_buildOpt = j.value("buildOpt", "");
 
         IF__(!setupCL(), OK_ERR_INVALID_VALUE);
         IF__(!setupKernel(), OK_ERR_INVALID_VALUE);
@@ -39,9 +39,9 @@ namespace kai
         return true;
     }
 
-	int clBase::link(const json& j, ModuleMgr* pM)
+	bool clBase::link(const json& j, ModuleMgr* pM)
     {
-		CHECK_(this->BASE::link(j, pM));
+		IF_F(!this->BASE::link(j, pM));
 
         // string n;
         // n = "";
@@ -52,7 +52,7 @@ namespace kai
 		return true;
     }
 
-	int clBase::check(void)
+	bool clBase::check(void)
     {
         return true;
     }

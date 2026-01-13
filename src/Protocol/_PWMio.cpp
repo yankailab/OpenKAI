@@ -12,12 +12,12 @@ namespace kai
 	{
 	}
 
-	int _PWMio::init(const json& j)
+	bool _PWMio::init(const json& j)
 	{
-		CHECK_(this->_ProtocolBase::init(j));
+		IF_F(!this->_ProtocolBase::init(j));
 
-		= j.value("nCr", &m_nCr);
-		= j.value("nCw", &m_nCw);
+		m_nCr = j.value("nCr", "");
+		m_nCw = j.value("nCw", "");
 
 		vector<int> vPWM;
 		pK->a("vPWM", &vPWM);
@@ -31,11 +31,11 @@ namespace kai
 		return true;
 	}
 
-	int _PWMio::start(void)
+	bool _PWMio::start(void)
 	{
 		NULL_F(m_pT);
 		NULL_F(m_pTr);
-		CHECK_(m_pT->start(getUpdateW, this));
+		IF_F(!m_pT->start(getUpdateW, this));
 		return m_pTr->start(getUpdateR, this);
 	}
 

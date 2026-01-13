@@ -25,35 +25,35 @@ namespace kai
     {
     }
 
-    int _XDynamics::init(const json& j)
+    bool _XDynamics::init(const json& j)
     {
-        CHECK_(_RGBDbase::init(j));
+        IF_F(!_RGBDbase::init(j));
 
-        = j.value("xdDevType", &m_xdDevType);
-        = j.value("xdProductType", &m_xdProductType);
-        = j.value("vPhaseInt", &m_xdCtrl.m_vPhaseInt);
-        = j.value("vSpaceInt", &m_xdCtrl.m_vSpaceInt);
-        = j.value("vFreq", &m_xdCtrl.m_vFreq);
-        = j.value("binning", &m_xdCtrl.m_binning);
-        = j.value("phaseMode", &m_xdCtrl.m_phaseMode);
-        = j.value("mirrorMode", &m_xdCtrl.m_mirrorMode);
-        = j.value("algMode", &m_xdCtrl.m_algMode);
-        = j.value("rgbStride", &m_xdCtrl.m_rgbStride);
-        = j.value("rgbFmt", &m_xdCtrl.m_rgbFmt);
-        = j.value("bAE", &m_xdCtrl.m_bAE);
-        = j.value("preDist", &m_xdCtrl.m_preDist);
+        m_xdDevType = j.value("xdDevType", "");
+        m_xdProductType = j.value("xdProductType", "");
+        m_xdCtrl.m_vPhaseInt = j.value("vPhaseInt", m_xdCtrl.m_vPhaseInt);
+        m_xdCtrl.m_vSpaceInt = j.value("vSpaceInt", m_xdCtrl.m_vSpaceInt);
+        m_xdCtrl.m_vFreq = j.value("vFreq", m_xdCtrl.m_vFreq);
+        m_xdCtrl.m_binning = j.value("binning", m_xdCtrl.m_binning);
+        m_xdCtrl.m_phaseMode = j.value("phaseMode", m_xdCtrl.m_phaseMode);
+        m_xdCtrl.m_mirrorMode = j.value("mirrorMode", m_xdCtrl.m_mirrorMode);
+        m_xdCtrl.m_algMode = j.value("algMode", m_xdCtrl.m_algMode);
+        m_xdCtrl.m_rgbStride = j.value("rgbStride", m_xdCtrl.m_rgbStride);
+        m_xdCtrl.m_rgbFmt = j.value("rgbFmt", m_xdCtrl.m_rgbFmt);
+        m_xdCtrl.m_bAE = j.value("bAE", m_xdCtrl.m_bAE);
+        m_xdCtrl.m_preDist = j.value("preDist", m_xdCtrl.m_preDist);
 
-        = j.value("DtdnMethod", &m_xdCtrl.m_DtdnMethod);
-        = j.value("DtdnLev", &m_xdCtrl.m_DtdnLev);
-        = j.value("DsdnMethod", &m_xdCtrl.m_DsdnMethod);
-        = j.value("DsdnLev", &m_xdCtrl.m_DsdnLev);
+        m_xdCtrl.m_DtdnMethod = j.value("DtdnMethod", m_xdCtrl.m_DtdnMethod);
+        m_xdCtrl.m_DtdnLev = j.value("DtdnLev", m_xdCtrl.m_DtdnLev);
+        m_xdCtrl.m_DsdnMethod = j.value("DsdnMethod", m_xdCtrl.m_DsdnMethod);
+        m_xdCtrl.m_DsdnLev = j.value("DsdnLev", m_xdCtrl.m_DsdnLev);
 
-        = j.value("GtdnMethod", &m_xdCtrl.m_GtdnMethod);
-        = j.value("GtdnLev", &m_xdCtrl.m_GtdnLev);
-        = j.value("GsdnMethod", &m_xdCtrl.m_GsdnMethod);
-        = j.value("GsdnLev", &m_xdCtrl.m_GsdnLev);
+        m_xdCtrl.m_GtdnMethod = j.value("GtdnMethod", m_xdCtrl.m_GtdnMethod);
+        m_xdCtrl.m_GtdnLev = j.value("GtdnLev", m_xdCtrl.m_GtdnLev);
+        m_xdCtrl.m_GsdnMethod = j.value("GsdnMethod", m_xdCtrl.m_GsdnMethod);
+        m_xdCtrl.m_GsdnLev = j.value("GsdnLev", m_xdCtrl.m_GsdnLev);
 
-        = j.value("dFlyPixLev", &m_xdCtrl.m_dFlyPixLev);
+        m_xdCtrl.m_dFlyPixLev = j.value("dFlyPixLev", m_xdCtrl.m_dFlyPixLev);
 
         m_mXDyuv.create(m_vSizeRGB.y * 3 / 2, m_vSizeRGB.x, CV_8UC1);
         m_mXDd.create(m_vSizeD.y, m_vSizeD.x, CV_16U);
@@ -61,9 +61,9 @@ namespace kai
         return true;
     }
 
-    int _XDynamics::link(const json& j, ModuleMgr* pM)
+    bool _XDynamics::link(const json& j, ModuleMgr* pM)
     {
-        CHECK_(this->_RGBDbase::link(j, pM));
+        IF_F(!this->_RGBDbase::link(j, pM));
         Kiss *pK = (Kiss *)m_pKiss;
         string n;
 
@@ -225,13 +225,13 @@ namespace kai
         XdynContextUninit();
     }
 
-    int _XDynamics::start(void)
+    bool _XDynamics::start(void)
     {
         NULL_F(m_pT);
         return m_pT->start(getUpdate, this);
     }
 
-    int _XDynamics::check(void)
+    bool _XDynamics::check(void)
     {
         NULL_F(m_pT);
 

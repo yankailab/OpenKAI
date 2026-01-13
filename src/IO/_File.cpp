@@ -18,9 +18,9 @@ namespace kai
 		close();
 	}
 
-	int _File::init(const json& j)
+	bool _File::init(const json& j)
 	{
-		CHECK_(this->_IObase::init(j));
+		IF_F(!this->_IObase::init(j));
 
 		return true;
 	}
