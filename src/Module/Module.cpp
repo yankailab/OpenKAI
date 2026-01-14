@@ -18,27 +18,15 @@ namespace kai
 	{
 	}
 
-	BASE *Module::createInstance(const string& name)
+	BASE *Module::createInstance(const string &name)
 	{
 		IF_N(name.empty());
-
-		//TODO
-
-		return nullptr;
-	}
-
-
-	BASE *Module::createInstance(Kiss *pK)
-	{
-		NULL__(pK, nullptr);
-
-		string name = pK->getClass();
 
 		ADD_MODULE(SharedMem);
 		ADD_MODULE(Destimator);
 		ADD_MODULE(_Console);
 
-// modules
+		// modules
 
 #ifdef WITH_3D
 		ADD_MODULE(_MeshStream);
@@ -154,7 +142,7 @@ namespace kai
 #ifdef USE_CHILITAGS
 		ADD_MODULE(_Chilitags);
 #endif
-#endif //USE_OPENCV
+#endif // USE_OPENCV
 #endif
 
 #ifdef WITH_DNN
@@ -162,7 +150,7 @@ namespace kai
 #ifdef USE_JETSON_INFERENCE
 		ADD_MODULE(_DetectNet);
 #endif
-#ifdef USE_TF-LITE
+#ifdef USE_TF - LITE
 		ADD_MODULE(_TFmobileNet);
 #endif
 #endif
@@ -225,13 +213,13 @@ namespace kai
 		ADD_MODULE(_BenewakeTF);
 		ADD_MODULE(_TOFsense);
 		ADD_MODULE(_LeddarVu);
-#ifdef WITH_3D && USE_OPEN3D
+#ifdef WITH_3D &&USE_OPEN3D
 		ADD_MODULE(_Livox2);
 		ADD_MODULE(_RoboSenseAiry);
 #endif // 3D
 #endif // sensor
 
-#ifdef WITH_SLAM && WITH_NAVIGATION
+#ifdef WITH_SLAM &&WITH_NAVIGATION
 #ifdef USE_OPENCV
 		ADD_MODULE(_SLAMbase);
 #endif
@@ -302,10 +290,10 @@ namespace kai
 #ifdef USE_CUDA
 		ADD_MODULE(_DenseFlow);
 #endif
-#endif	//opencv
-#endif	//vision
+#endif // opencv
+#endif // vision
 
-// Test modules
+		// Test modules
 
 #ifdef WITH_TEST
 
@@ -321,7 +309,7 @@ namespace kai
 
 #endif // test
 
-		return NULL;
+		return nullptr;
 	}
 
 	template <typename T>

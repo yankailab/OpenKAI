@@ -79,7 +79,7 @@ namespace kai
 
 	bool _SocketCAN::check(void)
 	{
-		IF__(!m_bOpen);
+		IF_F(!m_bOpen);
 
 		return this->_CANbase::check();
 	}

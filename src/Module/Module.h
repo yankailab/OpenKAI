@@ -10,7 +10,6 @@
 
 #include "../Base/common.h"
 #include "../Base/BASE.h"
-#include "../Module/Kiss.h"
 
 #include "../Arithmetic/Destimator.h"
 #include "../IPC/SharedMem.h"
@@ -300,15 +299,9 @@
 
 #endif // test
 
-// #define ADD_MODULE(x)             \
-// 	if (pK->getClass() == #x)     \
-// 	{                             \
-// 		return createInst<x>(pK); \
-// 	}
-
-#define ADD_MODULE(x)             \
-	if (name == #x)               \
-	{                             \
+#define ADD_MODULE(x)           \
+	if (name == #x)             \
+	{                           \
 		return createInst<x>(); \
 	}
 
@@ -320,7 +313,6 @@ namespace kai
 	public:
 		Module();
 		virtual ~Module();
-		BASE *createInstance(Kiss *pK);
 		BASE *createInstance(const string &name);
 
 	private:

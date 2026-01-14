@@ -12,15 +12,6 @@
 #include "../UI/_Console.h"
 #include "StateBase.h"
 
-#define ADD_STATE(x)                      \
-	if (pKs->getClass() == #x)            \
-	{                                     \
-		x *pI = new x();                  \
-		CHECK_d_(pI->init(pKs), DEL(pI)); \
-		m_vpState.push_back(pI);          \
-		continue;                         \
-	}
-
 namespace kai
 {
 
@@ -53,6 +44,7 @@ namespace kai
 			return NULL;
 		}
 
+	protected:
 		vector<StateBase *> m_vpState;
 		int m_iS; // current state
 	};

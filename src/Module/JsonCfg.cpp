@@ -44,8 +44,18 @@ namespace kai
 		m_jsonStr = s;
 		delComment(&m_jsonStr);
 
-		m_json = json::parse(m_jsonStr, /*callback*/ nullptr, /*allow_exceptions*/ false);
-		IF_F(m_json.is_discarded());
+		//		m_json = json::parse(m_jsonStr, /*callback*/ nullptr, /*allow_exceptions*/ false);
+		//		IF_F(m_json.is_discarded());
+
+		try
+		{
+			m_json = json::parse(m_jsonStr);
+		}
+		catch (const json::parse_error &e)
+		{
+			std::cerr << "Parse error: " << e.what() << "\n";
+			return false;
+		}
 
 		return true;
 	}

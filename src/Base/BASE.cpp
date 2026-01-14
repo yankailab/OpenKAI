@@ -8,26 +8,22 @@
 #include "BASE.h"
 #include "../UI/_Console.h"
 
-#include "../Module/Kiss.h"
-
-
 namespace kai
 {
 
 	BASE::BASE()
 	{
-		m_pKiss = nullptr;
 	}
 
 	BASE::~BASE()
 	{
 	}
 
-	bool BASE::init(const json& j)
+	bool BASE::init(const json &j)
 	{
-		IF_Le_F(!j.is_object(), "json is not an object");
+		IF_Le_F(!j.is_object(), "JSON is not an object");
 
-		m_name = j.value("name", "");
+		m_name = j.value("name", m_name);
 		m_class = j.value("class", "");
 		m_bLog = j.value("bLog", false);
 
@@ -37,10 +33,10 @@ namespace kai
 		return true;
 	}
 
-	bool BASE::link(const json& j, ModuleMgr* pM)
+	bool BASE::link(const json &j, ModuleMgr *pM)
 	{
 		NULL_F(pM);
-		IF_Le_F(!j.is_object(), "json is not an object");
+		IF_Le_F(!j.is_object(), "JSON is not an object");
 
 		return true;
 	}
@@ -67,25 +63,19 @@ namespace kai
 	{
 	}
 
-	void BASE::setName(const string& n)
+	void BASE::setName(const string &n)
 	{
 		m_name = n;
 	}
 
 	string BASE::getName(void)
 	{
-		if (!m_pKiss)
-			return "";
-
-		return ((Kiss *)m_pKiss)->getName();
+		return m_name;
 	}
 
 	string BASE::getClass(void)
 	{
-		if (!m_pKiss)
-			return "";
-
-		return ((Kiss *)m_pKiss)->getClass();
+		return m_class;
 	}
 
 	void BASE::draw(void *pFrame)

@@ -76,7 +76,7 @@ set(OpenKAI_lib pthread uuid ${EIGEN3_LIBS} gsl gslcblas ncurses ssl crypto rt u
 
 
 # Common
-file(GLOB_RECURSE OpenKAI_cpp src/main.cpp src/OpenKAI.cpp src/Base/*.cpp src/Base/*.cc src/Base/*.c)
+file(GLOB_RECURSE OpenKAI_cpp src/main.cpp src/Base/*.cpp src/Base/*.cc src/Base/*.c)
 
 file(GLOB_RECURSE Arithmetic_cpp src/Arithmetic/*.cpp src/Arithmetic/*.cc src/Arithmetic/*.c)
 set(OpenKAI_cpp ${OpenKAI_cpp} ${Arithmetic_cpp})

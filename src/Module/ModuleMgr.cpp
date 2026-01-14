@@ -21,7 +21,7 @@ namespace kai
 
 	bool ModuleMgr::parseJsonFile(const string &fName)
 	{
-		return m_jCfg.readFromFile(fName);
+		return m_jCfg.parseJsonFile(fName);
 	}
 
 	void ModuleMgr::setJsonCfg(const JsonCfg &jCfg)
@@ -43,7 +43,7 @@ namespace kai
 			const json &Ji = it.value();
 			IF_CONT(!Ji.is_object());
 
-			string n = Ji.value("name", "");
+			string n = it.key();
 			if (n.empty())
 			{
 				LOG_I("Module name is empty");
@@ -74,7 +74,7 @@ namespace kai
 			BASE *pM = md.createInstance(c);
 			if (pM == nullptr)
 			{
-				LOG_I("Failed to create instance: " + n);
+				LOG_I("Instance not created: " + n);
 				continue;
 			}
 
@@ -97,7 +97,7 @@ namespace kai
 			const json &jm = j.at(pB->getName());
 			if (!jm.is_object())
 			{
-				LOG_E(pB->getName() + " is not an json object");
+				LOG_E(pB->getName() + " is not an JSON object");
 				return false;
 			}
 

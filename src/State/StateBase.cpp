@@ -17,7 +17,7 @@ namespace kai
 	{
 	}
 
-	bool StateBase::init(const json& j)
+	bool StateBase::init(const json &j)
 	{
 		IF_F(!this->BASE::init(j));
 
@@ -26,26 +26,26 @@ namespace kai
 		return true;
 	}
 
-	bool StateBase::link(const json& j, ModuleMgr* pM)
+	bool StateBase::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->BASE::link(j, pM));
 
 		vector<string> vS;
 
-		pK->a("vModuleResume", &vS);
-		for (string s : vS)
+		vS = j.value("vModuleResume", vector<string>{});
+		for (string n : vS)
 		{
-			_ModuleBase *pM = (_ModuleBase *)(pK->findModule(s));
-			IF_CONT(!pM);
-			m_vpModuleResume.push_back(pM);
+			_ModuleBase *pB = (_ModuleBase *)(pM->findModule(n));
+			IF_CONT(!pB);
+			m_vpModuleResume.push_back(pB);
 		}
 
-		pK->a("vModulePause", &vS);
-		for (string s : vS)
+		vS = j.value("vModulePause", vector<string>{});
+		for (string n : vS)
 		{
-			_ModuleBase *pM = (_ModuleBase *)(pK->findModule(s));
-			IF_CONT(!pM);
-			m_vpModulePause.push_back(pM);
+			_ModuleBase *pB = (_ModuleBase *)(pM->findModule(n));
+			IF_CONT(!pB);
+			m_vpModulePause.push_back(pB);
 		}
 
 		return true;

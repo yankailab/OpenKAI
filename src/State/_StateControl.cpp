@@ -29,31 +29,30 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		Kiss *pKstate = pK->child("state");
-		IF__(pKstate->empty(), OK_OK);
+		const json &jS = j.at("states");
+		IF__(!jS.is_object(), true);
 
-		int i = 0;
-		while (1)
+		for (auto it = jS.begin(); it != jS.end(); it++)
 		{
-			Kiss *pKs = pKstate->child(i++);
-			if (pKs->empty())
-				break;
+			const json &Ji = it.value();
+			IF_CONT(!Ji.is_object());
 
-			// Add state below
+			StateBase *pB = new StateBase();
+			NULL_F(pB);
+			if (!pB->init(Ji))
+			{
+				LOG_E("Init failed: " + pB->getName());
+				DEL(pB);
+				return false;
+			}
 
-			ADD_STATE(StateBase);
-
-			// Add state above
-
-			LOG_E("Unknown state class: " + pKs->getClass());
-			return OK_ERR_NOT_FOUND;
+			m_vpState.push_back(pB);
 		}
 
-		IF__(m_vpState.empty());
+		IF__(m_vpState.empty(), true);
 
-		string start = "";
-		start = j.value("start", "");
-		i = getStateIdxByName(start);
+		string start = j.value("start", "");
+		int i = getStateIdxByName(start);
 		if (i < 0)
 			m_iS = 0;
 		else
@@ -68,7 +67,7 @@ namespace kai
 
 		for (int i = 0; i < m_vpState.size(); i++)
 		{
-			IF_F(!m_vpState[i]->link());
+			IF_F(!m_vpState[i]->link(m_vpState[i]->getName(), pM));
 		}
 
 		return true;

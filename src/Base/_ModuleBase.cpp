@@ -29,6 +29,7 @@ namespace kai
         IF_Le_F(!j.contains("thread"), "json: thread not found");
         DEL(m_pT);
         m_pT = new _Thread();
+        m_pT->setName("thread");
         if (!m_pT->init(j.at("thread")))
         {
             DEL(m_pT);

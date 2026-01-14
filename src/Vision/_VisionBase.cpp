@@ -15,6 +15,7 @@ namespace kai
 		m_type = vision_unknown;
 		m_bOpen = false;
 		m_psmRGB = nullptr;
+		m_tFrameInterval = 0;
 	}
 
 	_VisionBase::~_VisionBase()
@@ -27,7 +28,6 @@ namespace kai
 
 		m_devURI = j.value("devURI", "");
 		m_devFPS = j.value("devFPS", 30);
-		m_tFrameInterval = j.value("tFrameInterval", 0);
 		m_bRGB = j.value("bRGB", true);
 		m_vSizeRGB = j.value("vSizeRGB", vector<int>{1280, 720});
 

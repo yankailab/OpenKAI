@@ -65,7 +65,7 @@ namespace kai
 
 	bool _Feetech::check(void)
 	{
-		IF__(!m_bOpen);
+		IF_F(!m_bOpen);
 		NULL__(m_pA);
 
 		return this->_ActuatorBase::check();

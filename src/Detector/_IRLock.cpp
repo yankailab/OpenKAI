@@ -27,7 +27,8 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		vFloat2 vCamSize = j.value("vCamSize", vector<float>{319, 199});
+		vFloat2 vCamSize;
+		vCamSize = j.value("vCamSize", vector<float>{319, 199});
 		m_vOvCamSize.x = 1.0 / vCamSize.x;
 		m_vOvCamSize.y = 1.0 / vCamSize.y;
 

@@ -41,8 +41,6 @@ namespace kai
 		string m_class;
 		string m_name;
 
-
-		void *m_pKiss;
 		bool m_bLog;
 	};
 

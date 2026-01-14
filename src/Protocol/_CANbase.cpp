@@ -48,7 +48,7 @@ namespace kai
 
 	bool _CANbase::check(void)
 	{
-		IF__(!m_bOpen);
+		IF_F(!m_bOpen);
 
 		return this->_ModuleBase::check();
 	}

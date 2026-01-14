@@ -16,44 +16,29 @@ namespace kai
 		NULL_F(pC);
 		NULL_F(pD);
 
-		string s;
-		if (!readFile(fCalib, &s))
-		{
-			return false;
-		}
+		JsonCfg jCfg;
+		IF_F(!jCfg.parseJsonFile(fCalib));
 
-		Kiss *pKf = new Kiss();
-		if (!pKf->parse(s))
-		{
-			DEL(pKf);
-			return false;
-		}
-
-		Kiss *pK = pKf->child("calib");
-		if (pK->empty())
-		{
-			DEL(pKf);
-			return false;
-		}
+		const json &j = jCfg.getJson("calib");
+		IF_F(j.is_object());
 
 		Mat mC = Mat::zeros(3, 3, CV_64FC1);
-		= j.value("Fx", &mC.at<double>(0, 0));
-		= j.value("Fy", &mC.at<double>(1, 1));
-		= j.value("Cx", &mC.at<double>(0, 2));
-		= j.value("Cy", &mC.at<double>(1, 2));
+		mC.at<double>(0, 0) = j.value("Fx", 0);
+		mC.at<double>(1, 1) = j.value("Fy", 0);
+		mC.at<double>(0, 2) = j.value("Cx", 0);
+		mC.at<double>(1, 2) = j.value("Cy", 0);
 		mC.at<double>(2, 2) = 1.0;
 
 		Mat mD = Mat::zeros(1, 5, CV_64FC1);
-		= j.value("k1", &mD.at<double>(0, 0));
-		= j.value("k2", &mD.at<double>(0, 1));
-		= j.value("p1", &mD.at<double>(0, 2));
-		= j.value("p2", &mD.at<double>(0, 3));
-		= j.value("k3", &mD.at<double>(0, 4));
+		mD.at<double>(0, 0) = j.value("k1", 0);
+		mD.at<double>(0, 1) = j.value("k2", 0);
+		mD.at<double>(0, 2) = j.value("p1", 0);
+		mD.at<double>(0, 3) = j.value("p2", 0);
+		mD.at<double>(0, 4) = j.value("k3", 0);
 
 		*pC = mC;
 		*pD = mD;
 
-		DEL(pKf);
 		return true;
 	}
 

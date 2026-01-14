@@ -63,9 +63,9 @@ namespace kai
 		NULL_F(m_pU);
 		NULL_F(m_pV);
 		Frame *pBGR = m_pV->getFrameRGB();
-		NULL__(pBGR);
-		IF__(pBGR->bEmpty());
-		IF__(pBGR->tStamp() <= m_fRGB.tStamp());
+		NULL_F(pBGR);
+		IF_F(pBGR->bEmpty());
+		IF_F(pBGR->tStamp() <= m_fRGB.tStamp());
 
 		return this->_DetectorBase::check();
 	}

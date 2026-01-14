@@ -71,7 +71,7 @@ namespace kai
 	bool _APmavlink_GPS::check(void)
 	{
 		NULL_F(m_pAP);
-		NULL__(m_pAP->getMavlink());
+		IF_F(!m_pAP->getMavlink());
 		NULL__(m_pSB);
 
 		return this->_ModuleBase::check();
