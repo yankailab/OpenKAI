@@ -19,7 +19,7 @@ namespace kai
 		_VideoFile();
 		virtual ~_VideoFile();
 
-		virtual bool init(const json& j);
+		virtual bool init(const json &j);
 		virtual bool start(void);
 		void close(void);
 
@@ -32,7 +32,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		VideoCapture m_vc;
 		string m_videoFile;
 	};

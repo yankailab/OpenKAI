@@ -12,25 +12,23 @@ namespace kai
 
 	_GstOutput::_GstOutput()
 	{
-		m_gstOutput = "appsrc ! videoconvert ! fbdevsink";
-		m_vSize.set(1280, 720);
 	}
 
 	_GstOutput::~_GstOutput()
 	{
 	}
 
-	bool _GstOutput::init(const json& j)
+	bool _GstOutput::init(const json &j)
 	{
 		IF_F(!this->_UIbase::init(j));
 
-		m_vSize = j.value("vSize", "");
-		IF__(m_vSize.area() <= 0, OK_ERR_INVALID_VALUE);
+		m_vSize = j.value("vSize", vector<int>{1280, 720});
+		IF_F(m_vSize.area() <= 0);
 
 		m_F.allocate(m_vSize.x, m_vSize.y);
 		*m_F.m() = Scalar(0, 0, 0);
 
-		m_gstOutput = j.value("gstOutput", "");
+		m_gstOutput = j.value("gstOutput", "appsrc ! videoconvert ! fbdevsink");
 		if (!m_gstOutput.empty())
 		{
 			if (!m_gst.open(m_gstOutput,
@@ -41,7 +39,7 @@ namespace kai
 							true))
 			{
 				LOG_E("Cannot open GStreamer output");
-				return OK_ERR_UNKNOWN;
+				return false;
 			}
 		}
 
@@ -61,7 +59,6 @@ namespace kai
 			m_pT->autoFPS();
 
 			updateGst();
-
 		}
 	}
 
@@ -73,7 +70,7 @@ namespace kai
 		*m_F.m() = Scalar(0);
 		for (BASE *pB : m_vpB)
 		{
-			pB->draw((void*)&m_F);
+			pB->draw((void *)&m_F);
 		}
 
 		Size fs = m_F.size();
@@ -85,7 +82,7 @@ namespace kai
 		}
 
 		Mat m = *m_F.m();
-		if(m.type() != CV_8UC3)
+		if (m.type() != CV_8UC3)
 		{
 			cv::cvtColor(*m_F.m(), m, COLOR_GRAY2BGR);
 		}

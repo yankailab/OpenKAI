@@ -5,22 +5,19 @@ namespace kai
 
     _CamCalib::_CamCalib()
     {
-        m_path = "";
-        m_vChessBoardSize.set(9,6);
-        m_squareSize = 1.0;
     }
 
     _CamCalib::~_CamCalib()
     {
     }
 
-    bool _CamCalib::init(const json& j)
+    bool _CamCalib::init(const json &j)
     {
         IF_F(!this->_ModuleBase::init(j));
 
         m_path = j.value("path", "");
-        m_vChessBoardSize = j.value("vChessBoardSize", "");
-        m_squareSize = j.value("squareSize", "");
+        m_vChessBoardSize = j.value("vChessBoardSize", vector<int>{9, 6});
+        m_squareSize = j.value("squareSize", 1.0);
 
         return true;
     }
@@ -48,7 +45,7 @@ namespace kai
         for (int i = 0; i < m_vChessBoardSize.x; i++)
         {
             for (int j = 0; j < m_vChessBoardSize.y; j++)
-                vObj.push_back(cv::Point3f(j*m_squareSize, i*m_squareSize, 0));
+                vObj.push_back(cv::Point3f(j * m_squareSize, i * m_squareSize, 0));
         }
 
         vector<cv::String> vImgs;
@@ -66,9 +63,9 @@ namespace kai
 
             // If desired number of corners are found in the image then bSuccess = true
             bSuccess = cv::findChessboardCorners(mGray,
-                                            cv::Size(m_vChessBoardSize.y, m_vChessBoardSize.x),
-                                            vPcorner,
-                                            cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_FAST_CHECK | cv::CALIB_CB_NORMALIZE_IMAGE);
+                                                 cv::Size(m_vChessBoardSize.y, m_vChessBoardSize.x),
+                                                 vPcorner,
+                                                 cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_FAST_CHECK | cv::CALIB_CB_NORMALIZE_IMAGE);
             if (bSuccess)
             {
                 TermCriteria criteria(TermCriteria::EPS | TermCriteria::MAX_ITER, 30, 0.001);
@@ -91,10 +88,10 @@ namespace kai
 
         Mat mR, mT;
         calibrateCamera(vvPobj, vvPimg, cv::Size(mGray.rows, mGray.cols), m_mC, m_mD, mR, mT);
-     	m_mC.at<double>(0,0) /= (double)mGray.cols; //Fx
-		m_mC.at<double>(1,1) /= (double)mGray.rows; //Fy
-		m_mC.at<double>(0,2) /= (double)mGray.cols; //Cx
-		m_mC.at<double>(1,2) /= (double)mGray.rows; //Cy
+        m_mC.at<double>(0, 0) /= (double)mGray.cols; // Fx
+        m_mC.at<double>(1, 1) /= (double)mGray.rows; // Fy
+        m_mC.at<double>(0, 2) /= (double)mGray.cols; // Cx
+        m_mC.at<double>(1, 2) /= (double)mGray.rows; // Cy
 
         cout << "Camera Matrix : " << m_mC << endl;
         cout << "DistCoeffs : " << m_mD << endl;
@@ -104,12 +101,12 @@ namespace kai
         return true;
     }
 
-	Mat _CamCalib::mC(void)
+    Mat _CamCalib::mC(void)
     {
         return m_mC;
     }
 
-	Mat _CamCalib::mD(void)
+    Mat _CamCalib::mD(void)
     {
         return m_mD;
     }

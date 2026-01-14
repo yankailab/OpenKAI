@@ -20,7 +20,7 @@ namespace kai
 			m_pTracker.release();
 	}
 
-	bool _SingleTracker::init(const json& j)
+	bool _SingleTracker::init(const json &j)
 	{
 		IF_F(!this->_TrackerBase::init(j));
 
@@ -52,7 +52,6 @@ namespace kai
 			m_pT->autoFPS();
 
 			track();
-
 		}
 	}
 
@@ -66,7 +65,7 @@ namespace kai
 
 		if (m_iSet > m_iInit)
 		{
-			//init a new track target
+			// init a new track target
 			if (!m_pTracker.empty())
 				m_pTracker.release();
 
@@ -78,7 +77,7 @@ namespace kai
 		}
 		else
 		{
-			//track update
+			// track update
 			IF_(m_trackState != track_update);
 			IF_(m_pTracker.empty());
 

@@ -54,8 +54,8 @@ namespace kai
 		_VisionBase();
 		virtual ~_VisionBase();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 		virtual void draw(void *pFrame);
@@ -74,8 +74,8 @@ namespace kai
 	protected:
 		VISION_TYPE m_type;
 		string m_devURI;
-		int m_devFPS;	// device native FPS
-		uint64_t m_tFrameInterval;	// minimal interval between frame reading
+		int m_devFPS;			   // device native FPS
+		uint64_t m_tFrameInterval; // minimal interval between frame reading
 		bool m_bRGB;
 		vInt2 m_vSizeRGB;
 

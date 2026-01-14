@@ -10,27 +10,7 @@ namespace kai
 	_LeddarVu::_LeddarVu()
 	{
 		m_pMb = nullptr;
-		m_port = "";
-		m_baud = 115200;
-		m_slaveAddr = 1;
-		m_bUse0x41 = false;
-		m_showOriginOffsetX = 0.5;
-		m_showOriginOffsetY = 0.5;
-
 		m_nDetection = 0;
-		m_lightSrcPwr = 0;
-
-		m_nAccumulationsExpo = 5;
-		m_nOversamplingsExpo = 1;
-		m_lightSrcPwr = 100;
-		m_nPoint = 18;
-		m_bAutoLightSrcPwr = false;
-		m_bDemergeObj = true;
-		m_bStaticNoiseRemoval = true;
-		m_bPrecision = true;
-		m_bSaturationCompensation = true;
-		m_bOvershootManagement = true;
-		m_oprMode = 1;
 
 		m_nDiv = 8;
 	}
@@ -44,28 +24,28 @@ namespace kai
 		}
 	}
 
-	bool _LeddarVu::init(const json& j)
+	bool _LeddarVu::init(const json &j)
 	{
 		IF_F(!this->_DistSensorBase::init(j));
 
 		m_port = j.value("port", "");
-		m_baud = j.value("baud", "");
-		m_slaveAddr = j.value("slaveAddr", "");
-		m_bUse0x41 = j.value("bUse0x41", "");
-		m_showOriginOffsetX = j.value("showOriginOffsetX", "");
-		m_showOriginOffsetY = j.value("showOriginOffsetY", "");
+		m_baud = j.value("baud", 115200);
+		m_slaveAddr = j.value("slaveAddr", 1);
+		m_bUse0x41 = j.value("bUse0x41", false);
+		m_showOriginOffsetX = j.value("showOriginOffsetX", 0.5);
+		m_showOriginOffsetY = j.value("showOriginOffsetY", 0.5);
 
-		m_nAccumulationsExpo = j.value("nAccumulationsExpo", "");
-		m_nOversamplingsExpo = j.value("nOversamplingsExpo", "");
-		m_nPoint = j.value("nPoint", "");
-		m_lightSrcPwr = j.value("lightSrcPwr", "");
-		m_bAutoLightSrcPwr = j.value("bAutoLightSrcPwr", "");
-		m_bDemergeObj = j.value("bDemergeObj", "");
-		m_bStaticNoiseRemoval = j.value("bStaticNoiseRemoval", "");
-		m_bPrecision = j.value("bPrecicion", "");
-		m_bSaturationCompensation = j.value("bSaturationCompensation", "");
-		m_bOvershootManagement = j.value("bOvershootManagement", "");
-		m_oprMode = j.value("oprMode", "");
+		m_nAccumulationsExpo = j.value("nAccumulationsExpo", 5);
+		m_nOversamplingsExpo = j.value("nOversamplingsExpo", 1);
+		m_nPoint = j.value("nPoint", 18);
+		m_lightSrcPwr = j.value("lightSrcPwr", 100);
+		m_bAutoLightSrcPwr = j.value("bAutoLightSrcPwr", false);
+		m_bDemergeObj = j.value("bDemergeObj", true);
+		m_bStaticNoiseRemoval = j.value("bStaticNoiseRemoval", true);
+		m_bPrecision = j.value("bPrecicion", true);
+		m_bSaturationCompensation = j.value("bSaturationCompensation", true);
+		m_bOvershootManagement = j.value("bOvershootManagement", true);
+		m_oprMode = j.value("oprMode", 1);
 
 		return true;
 	}
@@ -99,7 +79,6 @@ namespace kai
 			{
 				updateLidar();
 			}
-
 		}
 	}
 

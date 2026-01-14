@@ -20,40 +20,37 @@ namespace kai
     {
     }
 
-    bool _RoboSenseAiry::init(const json& j)
+    bool _RoboSenseAiry::init(const json &j)
     {
         IF_F(!this->_PCstream::init(j));
 
         // common thread config
-        Kiss *pKd = pK->child("threadDIFOP");
-        if (pKd->empty())
-        {
-            LOG_E("threadDIFOP not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
+        IF_Le_F(!j.contains("threadDIFOP"), "json: threadDIFOP not found");
+        DEL(m_pTdifop);
         m_pTdifop = new _Thread();
-        CHECK_d_l_(m_pTdifop->init(pKd), DEL(m_pTdifop), "Tdifop init failed");
+        if (!m_pTdifop->init(j.at("threadDIFOP")))
+        {
+            DEL(m_pTdifop);
+            LOG_E("threadDIFOP.init() failed");
+            return false;
+        }
 
         return true;
     }
 
-    bool _RoboSenseAiry::link(const json& j, ModuleMgr* pM)
+    bool _RoboSenseAiry::link(const json &j, ModuleMgr *pM)
     {
         IF_F(!this->_PCstream::link(j, pM));
 
-        0
         string n;
 
-        n = "";
         n = j.value("_UDPmsop", "");
         m_pUDPmsop = (_UDP *)(pM->findModule(n));
-        NULL__(m_pUDPmsop);
+        NULL_F(m_pUDPmsop);
 
-        n = "";
         n = j.value("_UDPdifop", "");
         m_pUDPdifop = (_UDP *)(pM->findModule(n));
-        NULL__(m_pUDPdifop);
+        NULL_F(m_pUDPdifop);
 
         return true;
     }
@@ -61,7 +58,7 @@ namespace kai
     bool _RoboSenseAiry::start(void)
     {
         NULL_F(m_pT);
-        NULL__(m_pTdifop);
+        NULL_F(m_pTdifop);
 
         IF_F(!m_pT->start(getUpdateMSOP, this));
         IF_F(!m_pTdifop->start(getUpdateDIFOP, this));
@@ -71,8 +68,8 @@ namespace kai
 
     bool _RoboSenseAiry::check(void)
     {
-        NULL__(m_pUDPmsop);
-        NULL__(m_pUDPdifop);
+        NULL_F(m_pUDPmsop);
+        NULL_F(m_pUDPdifop);
 
         return this->_PCstream::check();
     }
@@ -136,7 +133,7 @@ namespace kai
 
         _Console *pC = (_Console *)pConsole;
 
-//        pC->addMsg("States: " + i2str((int)m_lvxState));
+        //        pC->addMsg("States: " + i2str((int)m_lvxState));
     }
 
 }

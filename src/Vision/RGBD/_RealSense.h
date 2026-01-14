@@ -63,7 +63,7 @@ namespace kai
 		_RealSense();
 		virtual ~_RealSense();
 
-		virtual bool init(const json& j);
+		virtual bool init(const json &j);
 		virtual bool start(void);
 		virtual bool check(void);
 
@@ -71,7 +71,7 @@ namespace kai
 		virtual void close(void);
 
 #ifdef WITH_3D
-		virtual int getPointCloud(_PCframe* pPCframe, int nPmax = INT_MAX);
+		virtual int getPointCloud(_PCframe *pPCframe, int nPmax = INT_MAX);
 #endif
 
 		bool setSensorOption(const rs2::sensor &sensor, rs2_option option_type, float v);

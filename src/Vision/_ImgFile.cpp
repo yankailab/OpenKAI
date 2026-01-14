@@ -13,14 +13,13 @@ namespace kai
 	_ImgFile::_ImgFile()
 	{
 		m_type = vision_file;
-		m_file = "";
 	}
 
 	_ImgFile::~_ImgFile()
 	{
 	}
 
-	bool _ImgFile::init(const json& j)
+	bool _ImgFile::init(const json &j)
 	{
 		IF_F(!_VisionBase::init(j));
 
@@ -66,7 +65,6 @@ namespace kai
 			}
 
 			m_pT->autoFPS();
-
 		}
 	}
 

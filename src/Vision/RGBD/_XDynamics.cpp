@@ -16,8 +16,6 @@ namespace kai
         m_vSizeD.set(320, 240);
 
         m_devURI = "192.168.31.3";
-        m_xdDevType = XDYN_DEV_TYPE_TOF_RGB;
-        m_xdProductType = XDYN_PRODUCT_TYPE_XD_400;
         m_pXDstream = NULL;
     }
 
@@ -25,12 +23,12 @@ namespace kai
     {
     }
 
-    bool _XDynamics::init(const json& j)
+    bool _XDynamics::init(const json &j)
     {
         IF_F(!_RGBDbase::init(j));
 
-        m_xdDevType = j.value("xdDevType", "");
-        m_xdProductType = j.value("xdProductType", "");
+        m_xdDevType = j.value("xdDevType", XDYN_DEV_TYPE_TOF_RGB);
+        m_xdProductType = j.value("xdProductType", XDYN_PRODUCT_TYPE_XD_400);
         m_xdCtrl.m_vPhaseInt = j.value("vPhaseInt", m_xdCtrl.m_vPhaseInt);
         m_xdCtrl.m_vSpaceInt = j.value("vSpaceInt", m_xdCtrl.m_vSpaceInt);
         m_xdCtrl.m_vFreq = j.value("vFreq", m_xdCtrl.m_vFreq);
@@ -61,11 +59,9 @@ namespace kai
         return true;
     }
 
-    bool _XDynamics::link(const json& j, ModuleMgr* pM)
+    bool _XDynamics::link(const json &j, ModuleMgr *pM)
     {
         IF_F(!this->_RGBDbase::link(j, pM));
-        0
-        string n;
 
         return true;
     }
@@ -81,14 +77,14 @@ namespace kai
         XdynContextInit();
 
         XDYN_Streamer *pStream = CreateStreamerNet((XDYN_PRODUCT_TYPE_e)m_xdProductType, sCbEvent, this, m_devURI);
-        if(pStream == nullptr)
+        if (pStream == nullptr)
         {
             LOG_E("CreateStreamerNet failed");
             return false;
         }
 
         res = pStream->OpenCamera((XDYN_DEV_TYPE_e)m_xdDevType);
-        if(res != XD_SUCCESS)
+        if (res != XD_SUCCESS)
         {
             LOG_E("OpenCamera failed: " + i2str(res));
             return false;
@@ -99,14 +95,14 @@ namespace kai
         memCfg.isUsed[MEM_AGENT_SINK_CONFID] = m_bConfidence;
         memCfg.isUsed[MEM_AGENT_SINK_RGB] = m_bRGB;
         res = pStream->ConfigSinkType(XDYN_SINK_TYPE_CB, memCfg, sCbStream, this);
-        if(res != XD_SUCCESS)
+        if (res != XD_SUCCESS)
         {
             LOG_E("ConfigSinkType failed: " + i2str(res));
             return false;
         }
 
         res = pStream->ConfigAlgMode((XDYN_ALG_MODE_E)m_xdCtrl.m_algMode);
-        if(res != XD_SUCCESS)
+        if (res != XD_SUCCESS)
         {
             LOG_E("ConfigAlgMode failed: " + i2str(res));
             return false;
@@ -131,7 +127,7 @@ namespace kai
         pStream->SetPhaseMode((XDYN_PHASE_MODE_e)m_xdCtrl.m_phaseMode);
         pStream->SetCamMirror((XDYN_MIRROR_MODE_e)m_xdCtrl.m_mirrorMode);
         res = pStream->ConfigCamParams();
-        if(res != XD_SUCCESS)
+        if (res != XD_SUCCESS)
         {
             LOG_E("conifg cam params failed: " + i2str(res));
             return false;
@@ -149,7 +145,7 @@ namespace kai
         rgbRes.fps = m_devFPS;
         pStream->RgbSetRes(rgbRes);
         res = pStream->CfgRgbParams();
-        if(res != XD_SUCCESS)
+        if (res != XD_SUCCESS)
         {
             LOG_E("config rgb failed: " + i2str(res));
             return false;
@@ -164,7 +160,7 @@ namespace kai
         pStream->Corr_SetAE(m_xdCtrl.m_bAE);
         pStream->Corr_SetPreDist(m_xdCtrl.m_preDist);
         res = pStream->ConfigCorrParam();
-        if(res != XD_SUCCESS)
+        if (res != XD_SUCCESS)
         {
             LOG_E("config corr param failed: " + i2str(res));
             return false;
@@ -181,7 +177,7 @@ namespace kai
                                    (XDYN_PP_DENOISE_LEVEL)m_xdCtrl.m_DsdnLev);
         pStream->PP_SetDeFlyPixel(m_xdCtrl.m_dFlyPixLev);
         pStream->ConfigPPParam();
-        if(res != XD_SUCCESS)
+        if (res != XD_SUCCESS)
         {
             LOG_E("config PP param failed: " + i2str(res));
             return false;
@@ -195,7 +191,7 @@ namespace kai
         pStream->GetCaliRegParams(regParams);
 
         bool r = initHDL(&regParams, m_vSizeD.x, m_vSizeD.y, m_vSizeRGB.x, m_vSizeRGB.y);
-        if(!r)
+        if (!r)
         {
             LOG_E("initHDL failed");
             return false;
@@ -203,7 +199,7 @@ namespace kai
 
         // start streaming
         res = pStream->StartStreaming();
-        if(res != XD_SUCCESS)
+        if (res != XD_SUCCESS)
         {
             LOG_E("start streaming failed: " + i2str(res));
             return false;
@@ -255,7 +251,6 @@ namespace kai
             m_pT->autoFPS();
 
             updateXDynamics();
-
         }
     }
 
@@ -306,7 +301,7 @@ namespace kai
         if (bConf)
         {
             pConf = &pData[MEM_AGENT_SINK_CONFID];
-//            memcpy(m_mXDyuv.data, pRGB->addr, pRGB->size);
+            //            memcpy(m_mXDyuv.data, pRGB->addr, pRGB->size);
         }
 
         if (bD && bRGB && bConf)
@@ -338,18 +333,17 @@ namespace kai
         PointCloud *m_pPC = m_pPCframe->getNextBuffer();
         for (int i = 0; i < m_xdHDL.m_out.uiOutRGBDLen; i++)
         {
-            RGBD_POINT_CLOUD* pP = &m_xdHDL.m_out.pstrRGBD[i];
+            RGBD_POINT_CLOUD *pP = &m_xdHDL.m_out.pstrRGBD[i];
             Vector3d vP(pP->fX, pP->fY, pP->fZ);
-//            IF_CONT(pP->fX == 0);
-//            vP = {i, 0, 0};
+            //            IF_CONT(pP->fX == 0);
+            //            vP = {i, 0, 0};
             m_pPC->points_.push_back(vP * 0.001);
 
             Vector3d vC(pP->r, pP->g, pP->b);
-//            vC = {255,255,255};
-            m_pPC->colors_.push_back(vC * (1.0/255.0));
+            //            vC = {255,255,255};
+            m_pPC->colors_.push_back(vC * (1.0 / 255.0));
 
-            LOG_I("P: " + f2str(pP->fX) + ", " + f2str(pP->fY) + ", " + f2str(pP->fZ)  + "; " + i2str(pP->r)  + ", " + i2str(pP->g)  + ", " + i2str(pP->b) );
-
+            LOG_I("P: " + f2str(pP->fX) + ", " + f2str(pP->fY) + ", " + f2str(pP->fZ) + "; " + i2str(pP->r) + ", " + i2str(pP->g) + ", " + i2str(pP->b));
         }
 
         m_pPCframe->swapBuffer();
@@ -388,7 +382,7 @@ namespace kai
         m_xdHDL.m_dyn.ucThConfidence = 25;
 
         m_xdHDL.m_pHDL = sitrpInit(&puiInitSuccFlag, &m_xdHDL.m_RP, &m_xdHDL.m_dyn, FALSE, FALSE);
-        if(puiInitSuccFlag > RP_ARITH_SUCCESS)
+        if (puiInitSuccFlag > RP_ARITH_SUCCESS)
         {
             LOG_E("Algorithm initialize fail, puiInitSuccFlag: " + i2str(puiInitSuccFlag));
             return false;
@@ -425,13 +419,13 @@ namespace kai
     }
 
 #ifdef WITH_3D
-	int _XDynamics::getPointCloud(_PCframe* pPCframe, int nPmax)
-	{
-		NULL__(pPCframe, -1);
-		PointCloud* pPC = pPCframe->getNextBuffer();
+    int _XDynamics::getPointCloud(_PCframe *pPCframe, int nPmax)
+    {
+        NULL__(pPCframe, -1);
+        PointCloud *pPC = pPCframe->getNextBuffer();
 
-		return 0;
-	}
+        return 0;
+    }
 #endif
 
     void _XDynamics::console(void *pConsole)

@@ -13,8 +13,6 @@ namespace kai
 	_GStreamer::_GStreamer()
 	{
 		m_type = vision_gstreamer;
-		m_pipeline = "";
-		m_nInitRead = 1;
 	}
 
 	_GStreamer::~_GStreamer()
@@ -22,12 +20,12 @@ namespace kai
 		close();
 	}
 
-	bool _GStreamer::init(const json& j)
+	bool _GStreamer::init(const json &j)
 	{
 		IF_F(!_VisionBase::init(j));
 
 		m_pipeline = j.value("pipeline", "");
-		m_nInitRead = j.value("nInitRead", "");
+		m_nInitRead = j.value("nInitRead", 1);
 
 		return true;
 	}
@@ -87,7 +85,6 @@ namespace kai
 			while (!m_gst.read(mCam))
 				;
 			m_fRGB.copy(mCam);
-
 		}
 	}
 

@@ -21,7 +21,7 @@ namespace kai
 		endwin();
 	}
 
-	bool _Console::init(const json& j)
+	bool _Console::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
@@ -39,16 +39,15 @@ namespace kai
 		return true;
 	}
 
-	bool _Console::link(const json& j, ModuleMgr* pM)
+	bool _Console::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		vector<string> vB;
-		pK->a("vBASE", &vB);
+		vector<string> vB = j.value("vBASE", vector<string>{});
 		m_vpB.clear();
-		for (string p : vB)
+		for (string n : vB)
 		{
-			BASE *pB = (BASE *)(pK->findModule(p));
+			BASE *pB = (BASE *)(pM->findModule(n));
 			IF_CONT(!pB);
 
 			m_vpB.push_back(pB);

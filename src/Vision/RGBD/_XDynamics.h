@@ -78,7 +78,7 @@ namespace kai
 			m_pHDL = NULL;
 			m_bInit = false;
 
-			if(m_out.pstrRGBD)
+			if (m_out.pstrRGBD)
 				free(m_out.pstrRGBD);
 		}
 	};
@@ -89,8 +89,8 @@ namespace kai
 		_XDynamics();
 		virtual ~_XDynamics();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool check(void);
 		virtual bool start(void);
 		virtual void console(void *pConsole);
@@ -99,7 +99,7 @@ namespace kai
 		virtual void close(void);
 
 #ifdef WITH_3D
-		virtual int getPointCloud(_PCframe* pPCframe, int nPmax = INT_MAX);
+		virtual int getPointCloud(_PCframe *pPCframe, int nPmax = INT_MAX);
 #endif
 
 		static void sCbEvent(void *pHandle, int event, void *pData)
@@ -123,10 +123,9 @@ namespace kai
 	protected:
 		void cbStream(MemSinkCfg *pCfg, XdynFrame_t *pData);
 		void runHDL(
-			unsigned short* pD,
-			unsigned char* pRGB,
-			unsigned char* pC
-		);
+			unsigned short *pD,
+			unsigned char *pRGB,
+			unsigned char *pC);
 		bool initHDL(XdynRegParams_t *pRegParams, uint16_t tofW, uint16_t tofH, uint16_t rgbW, uint16_t rgbH);
 		void releaseHDL(void);
 

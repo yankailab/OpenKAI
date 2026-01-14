@@ -13,8 +13,8 @@ namespace kai
 		_SwarmCtrlUI();
 		~_SwarmCtrlUI();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
@@ -44,14 +44,12 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		_Thread *m_Tr;
-		_SwarmCtrl* m_pCtrl;
-		_SwarmSearch *m_pSwarm;
+		_SwarmCtrl *m_pCtrl;
 
 		INTERVAL_EVENT m_ieSendNodeUpdate;
 		INTERVAL_EVENT m_ieSendNodeClearAll;
-
 	};
 
 }

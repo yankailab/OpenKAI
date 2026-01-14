@@ -29,29 +29,28 @@ namespace kai
 	{
 	}
 
-	bool _Scepter::init(const json& j)
+	bool _Scepter::init(const json &j)
 	{
 		IF_F(!_RGBDbase::init(j));
 
 		m_scCtrl.m_pixelFormat = j.value("scPixelFormat", m_scCtrl.m_pixelFormat);
 
-		Kiss *pKt = pK->child("threadPP");
-		if (pKt->empty())
-		{
-			LOG_E("threadPP not found");
-			return OK_ERR_NOT_FOUND;
-		}
-
-		m_pTPP = new _Thread();
-		CHECK_d_l_(m_pTPP->init(pKt), DEL(m_pTPP), "threadPP init failed");
+        IF_Le_F(!j.contains("threadPP"), "json: threadPP not found");
+        DEL(m_pTPP);
+        m_pTPP = new _Thread();
+        if (!m_pTPP->init(j.at("threadPP")))
+        {
+            DEL(m_pTPP);
+            LOG_E("threadPP.init() failed");
+            return false;
+        }
 
 		return true;
 	}
 
-	bool _Scepter::link(const json& j, ModuleMgr* pM)
+	bool _Scepter::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_RGBDbase::link(j, pM));
-		string n;
 
 		return true;
 	}
@@ -292,10 +291,10 @@ namespace kai
 	}
 
 #ifdef WITH_3D
-	int _Scepter::getPointCloud(_PCframe* pPCframe, int nPmax)
+	int _Scepter::getPointCloud(_PCframe *pPCframe, int nPmax)
 	{
 		NULL__(pPCframe, -1);
-		PointCloud* pPC = pPCframe->getNextBuffer();
+		PointCloud *pPC = pPCframe->getNextBuffer();
 
 		const static float s_b = 1.0 / 1000.0;
 		const static float c_b = 1.0 / 255.0;
@@ -305,7 +304,7 @@ namespace kai
 											  &m_scfDepth,
 											  m_pScVw);
 
-//		Eigen::Affine3d mA = m_A;
+		//		Eigen::Affine3d mA = m_A;
 
 		int nPi = 0;
 		for (int i = 0; i < m_scfDepth.height; i++)

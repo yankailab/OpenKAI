@@ -21,8 +21,8 @@ namespace kai
 		_SharedMemImg();
 		virtual ~_SharedMemImg();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
 
@@ -35,10 +35,9 @@ namespace kai
 			return NULL;
 		}
 
-	public:
-		SharedMem* m_pSHM;
+	protected:
+		SharedMem *m_pSHM;
 		int m_matType;
-
 	};
 
 }

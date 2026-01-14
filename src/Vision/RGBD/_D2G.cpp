@@ -20,20 +20,18 @@ namespace kai
 	{
 	}
 
-	bool _D2G::init(const json& j)
+	bool _D2G::init(const json &j)
 	{
 		IF_F(!_VisionBase::init(j));
 
 		return true;
 	}
 
-	bool _D2G::link(const json& j, ModuleMgr* pM)
+	bool _D2G::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_VisionBase::link(j, pM));
 
-		string n;
-		n = "";
-		n = j.value("_RGBDbase", "");
+		string n = j.value("_RGBDbase", "");
 		m_pV = (_RGBDbase *)(pM->findModule(n));
 		NULL_F(m_pV);
 
@@ -59,10 +57,10 @@ namespace kai
 	void _D2G::filter(void)
 	{
 		NULL_(m_pV);
-		Frame* pF = m_pV->getFrameD();
+		Frame *pF = m_pV->getFrameD();
 		NULL_(pF);
 		IF_(pF->bEmpty());
-//		IF_(m_fRGB.tStamp() >= pF->tStamp());
+		//		IF_(m_fRGB.tStamp() >= pF->tStamp());
 
 		Mat mD = *pF->m();
 		Mat mGray;

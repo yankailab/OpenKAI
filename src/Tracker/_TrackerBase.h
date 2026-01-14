@@ -29,7 +29,8 @@ namespace kai
 		_TrackerBase();
 		virtual ~_TrackerBase();
 
-		virtual bool init(const json& j);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual void update(void);
 		virtual bool check(void);
 		virtual void draw(void *pFrame);
@@ -41,7 +42,7 @@ namespace kai
 		TRACK_STATE trackState(void);
 		vFloat4 *getBB(void);
 
-	public:
+	protected:
 		_VisionBase *m_pV;
 		Rect2d m_rBB;
 		vFloat4 m_bb;

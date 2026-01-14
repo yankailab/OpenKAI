@@ -21,7 +21,7 @@ namespace kai
 		clear();
 	}
 
-	bool _SATbase::init(const json& j)
+	bool _SATbase::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
@@ -30,7 +30,7 @@ namespace kai
 		return true;
 	}
 
-	bool _SATbase::link(const json& j, ModuleMgr* pM)
+	bool _SATbase::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
@@ -49,7 +49,7 @@ namespace kai
 		m_vC.clear();
 	}
 
-	bool _SATbase::readCNF(const string& fName, string* pCNF)
+	bool _SATbase::readCNF(const string &fName, string *pCNF)
 	{
 		NULL_F(pCNF);
 
@@ -130,7 +130,7 @@ namespace kai
 			for (int j = 0; j < pC->m_vL.size(); j++)
 			{
 				int L = pC->getLiteral(j);
-				IF_F(L == 0);	// error
+				IF_F(L == 0); // error
 
 				int v = m_vV[abs(L)].v();
 				nT += (L < 0) ? 1 - v : v;

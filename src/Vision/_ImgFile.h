@@ -31,7 +31,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		string m_file;
 	};
 

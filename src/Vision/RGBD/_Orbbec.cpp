@@ -12,24 +12,22 @@ namespace kai
 
 	_Orbbec::_Orbbec()
 	{
-
 	}
 
 	_Orbbec::~_Orbbec()
 	{
 	}
 
-	bool _Orbbec::init(const json& j)
+	bool _Orbbec::init(const json &j)
 	{
 		IF_F(!_RGBDbase::init(j));
 
 		return true;
 	}
 
-	bool _Orbbec::link(const json& j, ModuleMgr* pM)
+	bool _Orbbec::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_RGBDbase::link(j, pM));
-		string n;
 
 		return true;
 	}
@@ -89,7 +87,6 @@ namespace kai
 				m_pT->sleepT(SEC_2_USEC);
 				m_bOpen = false;
 			}
-
 		}
 	}
 
@@ -97,24 +94,24 @@ namespace kai
 	{
 		IF_F(!check());
 
-        // Wait for up to 100ms for a frameset in blocking mode.
-        auto obFrameSet = m_obPipe.waitForFrameset();
-        NULL_F(obFrameSet);
+		// Wait for up to 100ms for a frameset in blocking mode.
+		auto obFrameSet = m_obPipe.waitForFrameset();
+		NULL_F(obFrameSet);
 
-        // get color frame from frameset.
-        auto obColorFrame = obFrameSet->getFrame(OB_FRAME_COLOR);
+		// get color frame from frameset.
+		auto obColorFrame = obFrameSet->getFrame(OB_FRAME_COLOR);
 
-        // Render colorFrame.
+		// Render colorFrame.
 		obColorFrame->getData();
 
 		return true;
 	}
 
 #ifdef WITH_3D
-	int _Orbbec::getPointCloud(_PCframe* pPCframe, int nPmax)
+	int _Orbbec::getPointCloud(_PCframe *pPCframe, int nPmax)
 	{
 		NULL__(pPCframe, -1);
-		PointCloud* pPC = pPCframe->getNextBuffer();
+		PointCloud *pPC = pPCframe->getNextBuffer();
 
 		return 0;
 	}

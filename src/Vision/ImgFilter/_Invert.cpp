@@ -20,20 +20,18 @@ namespace kai
 	{
 	}
 
-	bool _Invert::init(const json& j)
+	bool _Invert::init(const json &j)
 	{
 		IF_F(!_VisionBase::init(j));
 
 		return true;
 	}
 
-	bool _Invert::link(const json& j, ModuleMgr* pM)
+	bool _Invert::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_VisionBase::link(j, pM));
 
-		string n;
-		n = "";
-		n = j.value("_VisionBase", "");
+		string n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 
@@ -59,7 +57,7 @@ namespace kai
 	void _Invert::filter(void)
 	{
 		NULL_(m_pV);
-		Frame* pF = m_pV->getFrameRGB();
+		Frame *pF = m_pV->getFrameRGB();
 		NULL_(pF);
 		IF_(pF->bEmpty());
 		IF_(m_fRGB.tStamp() >= pF->tStamp());

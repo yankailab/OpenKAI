@@ -13,9 +13,6 @@ namespace kai
 	_Camera::_Camera()
 	{
 		m_type = vision_camera;
-		m_deviceID = 0;
-		m_nInitRead = 1;
-		m_bResetCam = false;
 	}
 
 	_Camera::~_Camera()
@@ -23,13 +20,13 @@ namespace kai
 		close();
 	}
 
-	bool _Camera::init(const json& j)
+	bool _Camera::init(const json &j)
 	{
 		IF_F(!_VisionBase::init(j));
 
-		m_deviceID = j.value("deviceID", "");
-		m_nInitRead = j.value("nInitRead", "");
-		m_bResetCam = j.value("bResetCam", "");
+		m_deviceID = j.value("deviceID", 0);
+		m_nInitRead = j.value("nInitRead", 1);
+		m_bResetCam = j.value("bResetCam", false);
 
 		return true;
 	}
@@ -102,7 +99,6 @@ namespace kai
 				m_camera.release();
 				m_bOpen = false;
 			}
-
 		}
 	}
 

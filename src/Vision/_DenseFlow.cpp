@@ -12,10 +12,8 @@ namespace kai
 
 	_DenseFlow::_DenseFlow()
 	{
-		m_pVision = nullptr;
+		m_pV = nullptr;
 //		m_pGrayFrames = nullptr;
-		m_w = 640;
-		m_h = 480;
 
 		m_nHistLev = 128;
 		m_vRange.x = 0.0;
@@ -31,17 +29,24 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_w = j.value("w", "");
-		m_h = j.value("h", "");
+		m_w = j.value("w", 640);
+		m_h = j.value("h", 480);
 		m_gFlow = GpuMat(m_h, m_w, CV_32FC2);
 
 //		m_pGrayFrames = new FrameGroup();
 //		m_pGrayFrames->init(2);
 		m_pFarn = cuda::FarnebackOpticalFlow::create();
 
-		string n = "";
-		n = j.value("_VisionBase", "");
-		m_pVision = (_VisionBase *)(pM->findModule(n));
+		return true;
+	}
+
+	bool _DenseFlow::link(const json &j, ModuleMgr *pM)
+	{
+		IF_F(!this->_ModuleBase::link(j, pM));
+
+		string n = j.value("_VisionBase", "");
+		m_pV = (_VisionBase *)(pM->findModule(n));
+		NULL_F(m_pV);
 
 		return true;
 	}
@@ -65,8 +70,8 @@ namespace kai
 
 	void _DenseFlow::detect(void)
 	{
-		// NULL_(m_pVision);
-		// Frame *pGray = m_pVision->getFrameRGB();
+		// NULL_(m_pV);
+		// Frame *pGray = m_pV->getFrameRGB();
 		// NULL_(pGray);
 		// IF_(pGray->bEmpty());
 

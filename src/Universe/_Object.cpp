@@ -16,7 +16,7 @@ namespace kai
 	{
 	}
 
-	bool _Object::init(const json& j)
+	bool _Object::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
@@ -166,7 +166,7 @@ namespace kai
 		for (int i = 0; i < nV; i++)
 		{
 			vFloat2 *pVi = &pV[i];
-			m_vVertices.push_back(vFloat2(pVi->x*kX, pVi->y*kY));
+			m_vVertices.push_back(vFloat2(pVi->x * kX, pVi->y * kY));
 			vP.push_back(Point(pVi->x, pVi->y));
 		}
 

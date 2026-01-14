@@ -11,8 +11,8 @@ namespace kai
 	struct SWARM_SEARCH_CTRL_NODE
 	{
 		uint16_t m_id = 0;
-		vDouble2 m_pos = {0,0};
-		float	 m_alt = 0;
+		vDouble2 m_pos = {0, 0};
+		float m_alt = 0;
 	};
 
 	class _SwarmCtrl : public _ModuleBase
@@ -21,8 +21,8 @@ namespace kai
 		_SwarmCtrl();
 		~_SwarmCtrl();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
@@ -37,7 +37,7 @@ namespace kai
 		void onRecvMsg(const XBframe_receivePacket &d);
 
 		// UI
-		bool setState(const string& state);
+		bool setState(const string &state);
 
 		bool updateGridCells();
 		bool clearGridCells(void);
@@ -61,8 +61,8 @@ namespace kai
 			return NULL;
 		}
 
-	public:
-		_StateControl* m_pSC;
+	protected:
+		_StateControl *m_pSC;
 		_Xbee *m_pXb;
 		_SwarmSearch *m_pSwarm;
 		SWARM_SEARCH_STATE_NODE m_state;

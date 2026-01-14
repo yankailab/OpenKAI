@@ -20,20 +20,18 @@ namespace kai
 	{
 	}
 
-	bool _HistEqualize::init(const json& j)
+	bool _HistEqualize::init(const json &j)
 	{
 		IF_F(!_VisionBase::init(j));
 
 		return true;
 	}
 
-	bool _HistEqualize::link(const json& j, ModuleMgr* pM)
+	bool _HistEqualize::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_VisionBase::link(j, pM));
 
-		string n;
-		n = "";
-		n = j.value("_VisionBase", "");
+		string n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

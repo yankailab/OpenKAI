@@ -41,8 +41,8 @@ namespace kai
 		_Orbbec();
 		virtual ~_Orbbec();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
 
@@ -50,7 +50,7 @@ namespace kai
 		virtual void close(void);
 
 #ifdef WITH_3D
-		virtual int getPointCloud(_PCframe* pPCframe, int nPmax = INT_MAX);
+		virtual int getPointCloud(_PCframe *pPCframe, int nPmax = INT_MAX);
 #endif
 
 	private:
@@ -66,7 +66,7 @@ namespace kai
 		OrbbecCtrl m_orbbecCtrl;
 
 		ob::Pipeline m_obPipe;
-	    std::shared_ptr<ob::Config> m_spObConfig;
+		std::shared_ptr<ob::Config> m_spObConfig;
 	};
 
 }

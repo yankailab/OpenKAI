@@ -35,29 +35,26 @@ namespace kai
 		DEL_ARRAY(m_pDiv);
 	}
 
-	bool _DistSensorBase::init(const json& j)
+	bool _DistSensorBase::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_fovH = j.value("fovH", "");
-		IF__(m_fovH <= 0, OK_ERR_INVALID_VALUE);
-		IF__(m_fovH > 360, OK_ERR_INVALID_VALUE);
-		m_fovV = j.value("fovV", "");
+		m_fovH = j.value("fovH", 360);
+		IF_F(m_fovH <= 0 || m_fovH > 360);
+		m_fovV = j.value("fovV", 0.1);
 
-		m_nDiv = j.value("nDiv", "");
+		m_nDiv = j.value("nDiv", 1);
 		m_dDeg = m_fovH / m_nDiv;
 		m_dDegInv = 1.0 / m_dDeg;
 
-		m_vRange = j.value("vRange", "");
-		m_calibScale = j.value("calibScale", "");
-		m_calibOffset = j.value("calibOffset", "");
+		m_vRange = j.value("vRange", vector<float>{0, FLT_MAX});
+		m_calibScale = j.value("calibScale", 1.0);
+		m_calibOffset = j.value("calibOffset", 0.0);
 
-		int nMed = 0;
-		int nAvr = 0;
-		nMed = j.value("nMed", "");
-		nAvr = j.value("nAvr", "");
+		int nMed = j.value("nMed", 0);
+		int nAvr = j.value("nAvr", 0);
 
-		IF__(m_nDiv >= MAX_DIST_SENSOR_DIV, OK_ERR_INVALID_VALUE);
+		IF_F(m_nDiv >= MAX_DIST_SENSOR_DIV);
 
 		m_pDiv = new DIST_SENSOR_DIV[m_nDiv];
 		for (int i = 0; i < m_nDiv; i++)
@@ -322,14 +319,14 @@ namespace kai
 		((_Console *)pConsole)->addMsg(msg);
 	}
 
-	void _DistSensorBase::draw(void* pFrame)
+	void _DistSensorBase::draw(void *pFrame)
 	{
 #ifdef USE_OPENCV
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
 		IF_(!check());
 
-		Frame *pF = (Frame*)pFrame;
+		Frame *pF = (Frame *)pFrame;
 
 		Mat *pM = pF->m();
 		IF_(pM->empty());
@@ -337,11 +334,11 @@ namespace kai
 		IF_(!m_bReady);
 		IF_(m_nDiv <= 0);
 
-		//Plot center as vehicle position
+		// Plot center as vehicle position
 		Point pCenter(pM->cols / 2, pM->rows / 2);
 		circle(*pM, pCenter, 10, Scalar(0, 0, 255), 2);
 
-		//Plot lidar result
+		// Plot lidar result
 		float rad = 0.0;
 		float dRad = m_dDeg * DEG_2_RAD;
 
@@ -349,7 +346,7 @@ namespace kai
 		{
 			float dist = m_pDiv[i].dAvr();
 			IF_CONT(!m_vRange.bInside(dist));
-//			dist *= m_showScale;
+			//			dist *= m_showScale;
 
 			rad += dRad;
 			int pX = dist * sin(rad);

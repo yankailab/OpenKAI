@@ -25,7 +25,7 @@ namespace kai
 		m_vpState.clear();
 	}
 
-	bool _StateControl::init(const json& j)
+	bool _StateControl::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
@@ -62,7 +62,7 @@ namespace kai
 		return true;
 	}
 
-	bool _StateControl::link(const json& j, ModuleMgr* pM)
+	bool _StateControl::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
@@ -98,7 +98,6 @@ namespace kai
 				if (pS->bComplete())
 					transit(pS->getNext());
 			}
-
 		}
 	}
 

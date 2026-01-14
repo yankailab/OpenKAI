@@ -11,21 +11,19 @@ namespace kai
     {
     }
 
-    bool _TestBase::init(const json& j)
+    bool _TestBase::init(const json &j)
     {
         IF_F(!this->_ModuleBase::init(j));
-
-//        = j.value("", &);
 
         return true;
     }
 
-	bool _TestBase::link(const json& j, ModuleMgr* pM)
-	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+    bool _TestBase::link(const json &j, ModuleMgr *pM)
+    {
+        IF_F(!this->_ModuleBase::link(j, pM));
 
-		return true;
-	}
+        return true;
+    }
 
     bool _TestBase::start(void)
     {
@@ -43,9 +41,6 @@ namespace kai
         while (m_pT->bAlive())
         {
             m_pT->autoFPS();
-
-
-
         }
     }
 

@@ -12,16 +12,11 @@ namespace kai
 
     _RealSense::_RealSense()
     {
-        m_rsSN = "";
-        m_rsFPS = 30;
-        m_rsDFPS = 30;
-        m_bAlign = false;
-        m_vPreset = "High Density";
         m_rspAlign = nullptr;
         m_rsCtrl.clear();
 
         m_vSizeRGB.set(1280, 720);
-		m_vSizeD.set(640, 480);
+        m_vSizeD.set(640, 480);
     }
 
     _RealSense::~_RealSense()
@@ -30,15 +25,15 @@ namespace kai
         DEL(m_rspAlign);
     }
 
-    bool _RealSense::init(const json& j)
+    bool _RealSense::init(const json &j)
     {
         IF_F(!_RGBDbase::init(j));
 
         m_rsSN = j.value("rsSN", "");
-        m_rsFPS = j.value("rsFPS", "");
-        m_rsDFPS = j.value("rsDFPS", "");
-        m_bAlign = j.value("bAlign", "");
-        m_vPreset = j.value("vPreset", "");
+        m_rsFPS = j.value("rsFPS", 30);
+        m_rsDFPS = j.value("rsDFPS", 30);
+        m_bAlign = j.value("bAlign", false);
+        m_vPreset = j.value("vPreset", "High Density");
 
         m_rsCtrl.m_fConfidenceThreshold = j.value("fConfidenceThreshold", m_rsCtrl.m_fConfidenceThreshold);
         m_rsCtrl.m_fDigitalGain = j.value("fDigitalGain", m_rsCtrl.m_fDigitalGain);
@@ -57,32 +52,31 @@ namespace kai
         m_rsCtrl.m_fSharpness = j.value("fSharpness", m_rsCtrl.m_fSharpness);
         m_rsCtrl.m_fWhiteBalance = j.value("fWhiteBalance", m_rsCtrl.m_fWhiteBalance);
 
-        Kiss *pKt = pK->child("threadPP");
-        if (pKt->empty())
-        {
-            LOG_E("threadPP not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
+        IF_Le_F(!j.contains("threadPP"), "json: threadPP not found");
+        DEL(m_pTPP);
         m_pTPP = new _Thread();
-        CHECK_d_l_(m_pTPP->init(pKt), DEL(m_pTPP), "threadPP init failed");
+        if (!m_pTPP->init(j.at("threadPP")))
+        {
+            DEL(m_pTPP);
+            LOG_E("threadPP.init() failed");
+            return false;
+        }
 
         return true;
     }
 
     bool _RealSense::open(void)
     {
-        IF__(m_bOpen);
+        IF_F(m_bOpen);
 
         try
         {
             if (!m_rsSN.empty())
                 m_rsConfig.enable_device(m_rsSN);
 
-			m_rsConfig.enable_stream(RS2_STREAM_DEPTH, m_vSizeD.x, m_vSizeD.y, RS2_FORMAT_Z16, m_rsDFPS);
-			if (m_bRGB)
-				m_rsConfig.enable_stream(RS2_STREAM_COLOR, m_vSizeRGB.x, m_vSizeRGB.y, RS2_FORMAT_BGR8, m_rsFPS);
-
+            m_rsConfig.enable_stream(RS2_STREAM_DEPTH, m_vSizeD.x, m_vSizeD.y, RS2_FORMAT_Z16, m_rsDFPS);
+            if (m_bRGB)
+                m_rsConfig.enable_stream(RS2_STREAM_COLOR, m_vSizeRGB.x, m_vSizeRGB.y, RS2_FORMAT_BGR8, m_rsFPS);
 
             m_rsProfile = m_rsPipe.start(m_rsConfig);
             rs2::device dev = m_rsProfile.get_device();
@@ -146,8 +140,8 @@ namespace kai
                     m_rsDepth = rsFrameset.get_depth_frame();
                 }
 
-				m_vSizeRGB.x = m_rsColor.as<rs2::video_frame>().get_width();
-				m_vSizeRGB.y = m_rsColor.as<rs2::video_frame>().get_height();
+                m_vSizeRGB.x = m_rsColor.as<rs2::video_frame>().get_width();
+                m_vSizeRGB.y = m_rsColor.as<rs2::video_frame>().get_height();
             }
             else
             {
@@ -159,8 +153,8 @@ namespace kai
             if (m_rsCtrl.m_fHolesFill < m_rsCtrl.m_fDefault)
                 m_rsDepth = m_rsfSpat.process(m_rsDepth);
 
-			m_vSizeD.x = m_rsDepth.as<rs2::video_frame>().get_width();
-			m_vSizeD.y = m_rsDepth.as<rs2::video_frame>().get_height();
+            m_vSizeD.x = m_rsDepth.as<rs2::video_frame>().get_width();
+            m_vSizeD.y = m_rsDepth.as<rs2::video_frame>().get_height();
         }
         catch (const rs2::camera_disconnected_error &e)
         {
@@ -183,9 +177,8 @@ namespace kai
             return false;
         }
 
-		// m_spImg = std::make_shared<geometry::Image>();
-		// m_spImg->Prepare(m_vSizeRGB.x, m_vSizeRGB.y, 3, 1);
-
+        // m_spImg = std::make_shared<geometry::Image>();
+        // m_spImg->Prepare(m_vSizeRGB.x, m_vSizeRGB.y, 3, 1);
 
         m_bOpen = true;
         return true;
@@ -324,8 +317,6 @@ namespace kai
                 m_pT->sleepT(SEC_2_USEC);
                 m_bOpen = false;
             }
-
-
         }
     }
 
@@ -413,71 +404,70 @@ namespace kai
             // }
 #endif
 
-			updatePointCloud();
+            updatePointCloud();
         }
     }
 
 #ifdef WITH_3D
-	int _RealSense::getPointCloud(_PCframe* pPCframe, int nPmax)
-	{
-		NULL__(pPCframe, -1);
-		PointCloud* pPC = pPCframe->getNextBuffer();
+    int _RealSense::getPointCloud(_PCframe *pPCframe, int nPmax)
+    {
+        NULL__(pPCframe, -1);
+        PointCloud *pPC = pPCframe->getNextBuffer();
 
-		m_rsPC.map_to(m_rsColor);
-		m_rsPoints = m_rsPC.calculate(m_rsDepth);
+        m_rsPC.map_to(m_rsColor);
+        m_rsPoints = m_rsPC.calculate(m_rsDepth);
 
-		// memcpy(m_spImg->data_.data(),
-		// 	   m_rsColor.get_data(),
-		// 	   m_vSizeRGB.area() * 3);
+        // memcpy(m_spImg->data_.data(),
+        // 	   m_rsColor.get_data(),
+        // 	   m_vSizeRGB.area() * 3);
 
-		// auto rspVertex = m_rsPoints.get_vertices();
-		// auto rspTexCoord = m_rsPoints.get_texture_coordinates();
-		// int nP = m_rsPoints.size();
+        // auto rspVertex = m_rsPoints.get_vertices();
+        // auto rspTexCoord = m_rsPoints.get_texture_coordinates();
+        // int nP = m_rsPoints.size();
 
-		// PointCloud *pPC = m_sPC.next();
+        // PointCloud *pPC = m_sPC.next();
 
-		// const static float c_b = 1.0 / 255.0;
+        // const static float c_b = 1.0 / 255.0;
 
-		// for (int i = 0; i < nP; i++)
-		// {
-		// 	rs2::vertex vr = rspVertex[i];
-		// 	IF_CONT(vr.z < m_vRz.x);
-		// 	IF_CONT(vr.z > m_vRz.y);
+        // for (int i = 0; i < nP; i++)
+        // {
+        // 	rs2::vertex vr = rspVertex[i];
+        // 	IF_CONT(vr.z < m_vRz.x);
+        // 	IF_CONT(vr.z > m_vRz.y);
 
-		// 	Eigen::Vector3d ve(vr.x, vr.y, vr.z);
-		// 	pPC->points_.push_back(ve);
+        // 	Eigen::Vector3d ve(vr.x, vr.y, vr.z);
+        // 	pPC->points_.push_back(ve);
 
-		// 	rs2::texture_coordinate tc = rspTexCoord[i];
-		// 	int tx = constrain<int>(tc.u * m_vSizeRGB.x, 0, m_vSizeRGB.x - 1);
-		// 	int ty = constrain<int>(tc.v * m_vSizeRGB.y, 0, m_vSizeRGB.y - 1);
-		// 	Eigen::Vector3d te((double)*m_spImg->PointerAt<uint8_t>(tx, ty, 2),
-		// 					   (double)*m_spImg->PointerAt<uint8_t>(tx, ty, 1),
-		// 					   (double)*m_spImg->PointerAt<uint8_t>(tx, ty, 0));
-		// 	te *= c_b;
-		// 	pPC->colors_.push_back(te);
-		// }
+        // 	rs2::texture_coordinate tc = rspTexCoord[i];
+        // 	int tx = constrain<int>(tc.u * m_vSizeRGB.x, 0, m_vSizeRGB.x - 1);
+        // 	int ty = constrain<int>(tc.v * m_vSizeRGB.y, 0, m_vSizeRGB.y - 1);
+        // 	Eigen::Vector3d te((double)*m_spImg->PointerAt<uint8_t>(tx, ty, 2),
+        // 					   (double)*m_spImg->PointerAt<uint8_t>(tx, ty, 1),
+        // 					   (double)*m_spImg->PointerAt<uint8_t>(tx, ty, 0));
+        // 	te *= c_b;
+        // 	pPC->colors_.push_back(te);
+        // }
 
-		return 0;
-	}
+        return 0;
+    }
 #endif
 
-//		auto cIntr = m_pRS->m_cIntrinsics;
-//		auto dIntr = m_pRS->m_dIntrinsics;
-//		dIntr = cIntr;
-//		m_imgD.Prepare(dIntr.width, dIntr.height, 1, 2);
-//		m_imgRGB.Prepare(cIntr.width, cIntr.height, 3, 1);
-//		memcpy(m_imgD.data_.data(), m_pRS->m_rsDepth.get_data(), dIntr.width * dIntr.height * 2);
-//		memcpy(m_imgRGB.data_.data(), m_pRS->m_rsColor.get_data(), cIntr.width * cIntr.height * 3);
-//
-//		shared_ptr<RGBDImage> imgRGBD = RGBDImage::CreateFromColorAndDepth(m_imgRGB, m_imgD, 1.0/m_pRS->m_dScale, m_pRS->m_vRange.y, false);
-//        camera::PinholeCameraIntrinsic camInt(dIntr.width,
-//        										dIntr.height,
-//												dIntr.fx,
-//												dIntr.fy,
-//												dIntr.ppx,
-//												dIntr.ppy);
-//        m_spPC = PointCloud::CreateFromRGBDImage(*imgRGBD, camInt);
-//        m_pPC = m_spPC;
-
+    //		auto cIntr = m_pRS->m_cIntrinsics;
+    //		auto dIntr = m_pRS->m_dIntrinsics;
+    //		dIntr = cIntr;
+    //		m_imgD.Prepare(dIntr.width, dIntr.height, 1, 2);
+    //		m_imgRGB.Prepare(cIntr.width, cIntr.height, 3, 1);
+    //		memcpy(m_imgD.data_.data(), m_pRS->m_rsDepth.get_data(), dIntr.width * dIntr.height * 2);
+    //		memcpy(m_imgRGB.data_.data(), m_pRS->m_rsColor.get_data(), cIntr.width * cIntr.height * 3);
+    //
+    //		shared_ptr<RGBDImage> imgRGBD = RGBDImage::CreateFromColorAndDepth(m_imgRGB, m_imgD, 1.0/m_pRS->m_dScale, m_pRS->m_vRange.y, false);
+    //        camera::PinholeCameraIntrinsic camInt(dIntr.width,
+    //        										dIntr.height,
+    //												dIntr.fx,
+    //												dIntr.fy,
+    //												dIntr.ppx,
+    //												dIntr.ppy);
+    //        m_spPC = PointCloud::CreateFromRGBDImage(*imgRGBD, camInt);
+    //        m_pPC = m_spPC;
 
 }

@@ -17,10 +17,9 @@ namespace kai
     {
     }
 
-    bool _SwarmCtrl::init(const json& j)
+    bool _SwarmCtrl::init(const json &j)
     {
         IF_F(!this->_ModuleBase::init(j));
-
 
         m_node.m_id = j.value("myID", m_node.m_id);
         m_ieSendHB.m_tInterval = j.value("ieSendHB", m_ieSendHB.m_tInterval);
@@ -30,16 +29,15 @@ namespace kai
         return true;
     }
 
-    bool _SwarmCtrl::link(const json& j, ModuleMgr* pM)
+    bool _SwarmCtrl::link(const json &j, ModuleMgr *pM)
     {
         IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n;
+        string n;
 
-        n = "";
         n = j.value("_StateControl", "");
         m_pSC = (_StateControl *)(pM->findModule(n));
-        NULL__(m_pSC);
+        NULL_F(m_pSC);
 
         m_state.STANDBY = m_pSC->getStateIdxByName("STANDBY");
         m_state.TAKEOFF = m_pSC->getStateIdxByName("TAKEOFF");
@@ -48,17 +46,15 @@ namespace kai
         IF__(!m_state.bValid(), OK_ERR_INVALID_VALUE);
         m_state.update(m_pSC->getCurrentStateIdx());
 
-        n = "";
         n = j.value("_SwarmSearch", "");
         m_pSwarm = (_SwarmSearch *)(pM->findModule(n));
-        NULL__(m_pSwarm);
+        NULL_F(m_pSwarm);
 
-        n = "";
         n = j.value("_Xbee", "");
         m_pXb = (_Xbee *)(pM->findModule(n));
-        NULL__(m_pXb);
+        NULL_F(m_pXb);
 
-        IF__(!m_pXb->setCbReceivePacket(sOnRecvMsg, this), OK_ERR_UNKNOWN);
+        IF_F(!m_pXb->setCbReceivePacket(sOnRecvMsg, this), OK_ERR_UNKNOWN);
 
         return true;
     }
@@ -71,9 +67,9 @@ namespace kai
 
     bool _SwarmCtrl::check(void)
     {
-        NULL__(m_pSC);
-        NULL__(m_pXb);
-        NULL__(m_pSwarm);
+        NULL_F(m_pSC);
+        NULL_F(m_pXb);
+        NULL_F(m_pSwarm);
 
         return this->_ModuleBase::check();
     }
@@ -85,8 +81,6 @@ namespace kai
             m_pT->autoFPS();
 
             send();
-
-
         }
     }
 
@@ -148,15 +142,15 @@ namespace kai
         m_pXb->send(XB_BRDCAST_ADDR, pB, nB);
     }
 
-	bool _SwarmCtrl::setState(const string& state)
+    bool _SwarmCtrl::setState(const string &state)
     {
-        if(state == "standby")
+        if (state == "standby")
             m_pSC->transit(m_state.STANDBY);
-        else if(state == "takeoff")
+        else if (state == "takeoff")
             m_pSC->transit(m_state.TAKEOFF);
-        else if(state == "auto")
+        else if (state == "auto")
             m_pSC->transit(m_state.AUTO);
-        else if(state == "rtl")
+        else if (state == "rtl")
             m_pSC->transit(m_state.RTL);
 
         m_state.update(m_pSC->getCurrentStateIdx());
@@ -196,7 +190,6 @@ namespace kai
         //         handleMsgSetState(mSS);
         // }
         // break;
-
     }
 
     void _SwarmCtrl::handleMsgSetState(const SWMSG_CMD_SETSTATE &m)

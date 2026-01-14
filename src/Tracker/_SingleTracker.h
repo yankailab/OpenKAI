@@ -20,7 +20,7 @@ namespace kai
 		_SingleTracker();
 		virtual ~_SingleTracker();
 
-		virtual bool init(const json& j);
+		virtual bool init(const json &j);
 		virtual bool start(void);
 
 		void createTracker(void);
@@ -34,7 +34,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		Ptr<Tracker> m_pTracker;
 	};
 

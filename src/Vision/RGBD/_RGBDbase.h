@@ -27,8 +27,8 @@ namespace kai
 		_RGBDbase();
 		virtual ~_RGBDbase();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 		virtual void draw(void *pFrame);
@@ -44,7 +44,7 @@ namespace kai
 #endif
 
 #ifdef WITH_3D
-		virtual int getPointCloud(_PCframe* pPCframe, int nPmax = INT_MAX);
+		virtual int getPointCloud(_PCframe *pPCframe, int nPmax = INT_MAX);
 #endif
 
 	protected:

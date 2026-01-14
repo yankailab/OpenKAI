@@ -22,24 +22,21 @@ namespace kai
 	{
 	}
 
-	bool _InRange::init(const json& j)
+	bool _InRange::init(const json &j)
 	{
 		IF_F(!_VisionBase::init(j));
 
-		m_vL = j.value("vL", "");
-		m_vH = j.value("vH", "");
+		m_vL = j.value("vL", 0);
+		m_vH = j.value("vH", 255);
 
 		return true;
 	}
 
-	bool _InRange::link(const json& j, ModuleMgr* pM)
+	bool _InRange::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_VisionBase::link(j, pM));
 
-
-		string n;
-		n = "";
-		n = j.value("_VisionBase", "");
+		string n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 
@@ -65,10 +62,10 @@ namespace kai
 	void _InRange::filter(void)
 	{
 		NULL_(m_pV);
-		Frame* pF = m_pV->getFrameRGB();
+		Frame *pF = m_pV->getFrameRGB();
 		NULL_(pF);
 		IF_(pF->bEmpty());
-//		IF_(m_fRGB.tStamp() >= pF->tStamp());
+		//		IF_(m_fRGB.tStamp() >= pF->tStamp());
 
 		Mat m;
 		cv::inRange(*pF->m(),

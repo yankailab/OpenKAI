@@ -13,7 +13,6 @@ namespace kai
     _SharedMemImg::_SharedMemImg()
     {
         m_type = vision_SharedMemImg;
-        m_matType = CV_8UC3;
     }
 
     _SharedMemImg::~_SharedMemImg()
@@ -24,20 +23,18 @@ namespace kai
     {
         IF_F(!_VisionBase::init(j));
 
-        m_matType = j.value("matType", "");
+        m_matType = j.value("matType", CV_8UC3);
 
         return true;
     }
 
     bool _SharedMemImg::link(const json& j, ModuleMgr* pM)
     {
-        0
+		IF_F(!this->_VisionBase::link(j, pM));
 
-        string n;
-        n = "";
-        n = j.value("SharedMem", "");
+        string n = j.value("SharedMem", "");
         m_pSHM = (SharedMem *)(pM->findModule(n));
-        NULL__(m_pSHM);
+        NULL_F(m_pSHM);
 
         return true;
     }
@@ -51,8 +48,8 @@ namespace kai
     bool _SharedMemImg::check(void)
     {
         NULL_F(m_pT);
-        NULL__(m_pSHM);
-        IF__(!m_pSHM->open());
+        NULL_F(m_pSHM);
+        IF_F(!m_pSHM->open());
 
         return _VisionBase::check();
     }

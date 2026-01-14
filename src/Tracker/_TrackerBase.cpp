@@ -13,27 +13,31 @@ namespace kai
 	_TrackerBase::_TrackerBase()
 	{
 		m_pV = nullptr;
-		m_trackerType = "";
 		m_trackState = track_stop;
 		m_bb.clear();
 		m_iSet = 0;
 		m_iInit = 0;
-		m_margin = 0.0;
 	}
 
 	_TrackerBase::~_TrackerBase()
 	{
 	}
 
-	bool _TrackerBase::init(const json& j)
+	bool _TrackerBase::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
 		m_trackerType = j.value("trackerType", "");
-		m_margin = j.value("margin", "");
+		m_margin = j.value("margin", 0.0);
 
-		string n = "";
-		n = j.value("_VisionBase", "");
+		return true;
+	}
+
+	bool _TrackerBase::link(const json &j, ModuleMgr *pM)
+	{
+		IF_F(!this->_ModuleBase::link(j, pM));
+
+		string n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 
@@ -110,13 +114,13 @@ namespace kai
 		pC->addMsg("Tracking pos = (" + f2str(m_bb.midX()) + ", " + f2str(m_bb.midY()) + ")");
 	}
 
-	void _TrackerBase::draw(void* pFrame)
+	void _TrackerBase::draw(void *pFrame)
 	{
 		NULL_(pFrame);
 		this->_ModuleBase::draw(pFrame);
 		IF_(!check());
 
-		Frame *pF = (Frame*)pFrame;
+		Frame *pF = (Frame *)pFrame;
 		Mat *pM = pF->m();
 		IF_(pM->empty());
 

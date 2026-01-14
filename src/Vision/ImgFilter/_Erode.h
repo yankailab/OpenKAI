@@ -45,8 +45,8 @@ namespace kai
 		_Erode();
 		virtual ~_Erode();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 
 	private:

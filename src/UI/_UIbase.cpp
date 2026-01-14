@@ -18,22 +18,22 @@ namespace kai
 	{
 	}
 
-	bool _UIbase::init(const json& j)
+	bool _UIbase::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
 		return true;
 	}
 
-	bool _UIbase::link(const json& j, ModuleMgr* pM)
+	bool _UIbase::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		vector<string> vB;
-		pK->a("vBASE", &vB);
-		for (string p : vB)
+		vector<string> vB = j.value("vBASE", vector<string>{});
+		m_vpB.clear();
+		for (string n : vB)
 		{
-			BASE *pB = (BASE *)(pK->findModule(p));
+			BASE *pB = (BASE *)(pM->findModule(n));
 			IF_CONT(!pB);
 
 			m_vpB.push_back(pB);
@@ -53,7 +53,6 @@ namespace kai
 		while (m_pT->bAlive())
 		{
 			m_pT->autoFPS();
-
 		}
 	}
 }

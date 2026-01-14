@@ -20,26 +20,27 @@ namespace kai
 	{
 	}
 
-	bool _Morphology::init(const json& j)
+	bool _Morphology::init(const json &j)
 	{
 		IF_F(!_VisionBase::init(j));
 
-		int i = 0;
-		while (1)
+		const json &jF = j.at("filters");
+		IF__(!jF.is_object(), true);
+
+		for (auto it = jF.begin(); it != jF.end(); it++)
 		{
-			Kiss *pM = pK->child(i++);
-			if (pM->empty())
-				break;
+			const json &Ji = it.value();
+			IF_CONT(!Ji.is_object());
 
 			IMG_MORPH m;
 			m.init();
-			pM->v("morphOp", &m.m_morphOp);
-			pM->v("nItr", &m.m_nItr);
-			pM->v("kShape", &m.m_kShape);
-			pM->v("kW", &m.m_kW);
-			pM->v("kH", &m.m_kH);
-			pM->v("aX", &m.m_aX);
-			pM->v("aY", &m.m_aY);
+			m.m_morphOp = Ji.value("morphOp", m.m_morphOp);
+			m.m_nItr = Ji.value("nItr", m.m_nItr);
+			m.m_kShape = Ji.value("kShape", m.m_kShape);
+			m.m_kW = Ji.value("kW", m.m_kW);
+			m.m_kH = Ji.value("kH", m.m_kH);
+			m.m_aX = Ji.value("aX", m.m_aX);
+			m.m_aY = Ji.value("aY", m.m_aY);
 			m.updateKernel();
 
 			m_vFilter.push_back(m);
@@ -48,13 +49,11 @@ namespace kai
 		return true;
 	}
 
-	bool _Morphology::link(const json& j, ModuleMgr* pM)
+	bool _Morphology::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_VisionBase::link(j, pM));
 
-		string n;
-		n = "";
-		n = j.value("_VisionBase", "");
+		string n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

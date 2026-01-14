@@ -22,26 +22,24 @@ namespace kai
 	{
 	}
 
-	bool _Remap::init(const json& j)
+	bool _Remap::init(const json &j)
 	{
 		IF_F(!_VisionBase::init(j));
 
 		return true;
 	}
 
-	bool _Remap::link(const json& j, ModuleMgr* pM)
+	bool _Remap::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_VisionBase::link(j, pM));
 
-		string n;
-		n = "";
-		n = j.value("_VisionBase", "");
+		string n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 
 		m_fCalib = j.value("fCalib", "");
 		Mat mC, mD;
-		IF__(!readCamMatrices(m_fCalib, &mC, &mD), OK_ERR_INVALID_VALUE);
+		IF_F(!readCamMatrices(m_fCalib, &mC, &mD));
 		m_bReady = setCamMat(mC, mD);
 
 		return true;
@@ -66,7 +64,7 @@ namespace kai
 	void _Remap::filter(void)
 	{
 		NULL_(m_pV);
-		Frame* pF = m_pV->getFrameRGB();
+		Frame *pF = m_pV->getFrameRGB();
 		NULL_(pF);
 		IF_(pF->bEmpty());
 		IF_(m_fRGB.tStamp() >= pF->tStamp());

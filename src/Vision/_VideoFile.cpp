@@ -13,14 +13,13 @@ namespace kai
 	_VideoFile::_VideoFile()
 	{
 		m_type = vision_file;
-		m_videoFile = "";
 	}
 
 	_VideoFile::~_VideoFile()
 	{
 	}
 
-	bool _VideoFile::init(const json& j)
+	bool _VideoFile::init(const json &j)
 	{
 		IF_F(!_VisionBase::init(j));
 
@@ -84,7 +83,6 @@ namespace kai
 			while (!m_vc.read(mCam))
 				;
 			m_fRGB.copy(mCam);
-
 		}
 	}
 

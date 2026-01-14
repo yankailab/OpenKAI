@@ -44,8 +44,8 @@ namespace kai
 		_Scepter();
 		virtual ~_Scepter();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
 
@@ -53,11 +53,11 @@ namespace kai
 		virtual void close(void);
 
 #ifdef WITH_3D
-		virtual int getPointCloud(_PCframe* pPCframe, int nPmax = INT_MAX);
+		virtual int getPointCloud(_PCframe *pPCframe, int nPmax = INT_MAX);
 #endif
 
 		ScCtrl getCamCtrl(void);
-		bool setCamCtrl(const ScCtrl& camCtrl);
+		bool setCamCtrl(const ScCtrl &camCtrl);
 		bool setToFexposureControlMode(bool bAuto);
 		bool setToFexposureTime(bool bAuto, int tExposure);
 		bool setRGBexposureControlMode(bool bAuto);
@@ -87,8 +87,8 @@ namespace kai
 
 		ScFrame m_scfRGB;
 		ScFrame m_scfDepth;
-        ScFrame m_scfTransformedDepth;
-        ScFrame m_scfTransformedRGB;
+		ScFrame m_scfTransformedDepth;
+		ScFrame m_scfTransformedRGB;
 		ScFrame m_scfIR;
 
 		ScVector3f *m_pScVw; // world vector

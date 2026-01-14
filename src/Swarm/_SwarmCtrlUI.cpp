@@ -7,7 +7,6 @@ namespace kai
     {
         m_Tr = nullptr;
         m_pCtrl = nullptr;
-        m_pSwarm = nullptr;
     }
 
     _SwarmCtrlUI::~_SwarmCtrlUI()
@@ -15,53 +14,36 @@ namespace kai
         DEL(m_pTr);
     }
 
-    bool _SwarmCtrlUI::init(const json& j)
+    bool _SwarmCtrlUI::init(const json &j)
     {
         IF_F(!this->_JSONbase::init(j));
 
-        int v;
-        v = SEC_2_USEC;
-        v = j.value("ieSendHB", "");
-        m_ieSendHB.init(v);
+        m_ieSendHB.init(j.value("ieSendHB", SEC_2_USEC));
+        m_ieSendNodeUpdate.init(j.value("ieSendNodeUpdate", SEC_2_USEC));
+        m_ieSendNodeClearAll.init(j.value("ieSendNodeClearAll", SEC_2_USEC));
 
-        v = SEC_2_USEC;
-        v = j.value("ieSendNodeUpdate", "");
-        m_ieSendNodeUpdate.init(v);
-
-        v = SEC_2_USEC;
-        v = j.value("ieSendNodeClearAll", "");
-        m_ieSendNodeClearAll.init(v);
-
-        Kiss *pKt = pK->child("threadR");
-        if (pKt->empty())
-        {
-            LOG_E("threadR not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
+        IF_Le_F(!j.contains("threadR"), "json: threadR not found");
+        DEL(m_pTr);
         m_pTr = new _Thread();
-        CHECK_d_l_(m_pTr->init(pKt), DEL(m_pTr), "threadR init failed");
+        if (!m_pTr->init(j.at("threadR")))
+        {
+            DEL(m_pTr);
+            LOG_E("threadR.init() failed");
+            return false;
+        }
 
         return true;
     }
 
-    bool _SwarmCtrlUI::link(const json& j, ModuleMgr* pM)
+    bool _SwarmCtrlUI::link(const json &j, ModuleMgr *pM)
     {
         IF_F(!this->_JSONbase::link(j, pM));
-        IF_F(!m_pTr->link());
-
-        0
+        IF_F(!m_pTr->link(j.at("threadR"), pM));
 
         string n;
-        n = "";
         n = j.value("_SwarmCtrl", "");
         m_pCtrl = (_SwarmCtrl *)(pM->findModule(n));
-        NULL__(m_pCtrl);
-
-        n = "";
-        n = j.value("_SwarmSearch", "");
-        m_pSwarm = (_SwarmSearch *)(pM->findModule(n));
-        NULL__(m_pSwarm);
+        NULL_F(m_pCtrl);
 
         return true;
     }
@@ -76,8 +58,7 @@ namespace kai
 
     bool _SwarmCtrlUI::check(void)
     {
-        NULL__(m_pCtrl);
-        NULL__(m_pSwarm);
+        NULL_F(m_pCtrl);
 
         return this->_JSONbase::check();
     }
@@ -95,8 +76,6 @@ namespace kai
             m_pT->autoFPS();
 
             send();
-
-
         }
     }
 
@@ -132,20 +111,20 @@ namespace kai
     {
         IF_(!check());
 
-        SWARM_NODE* pN = NULL;
+        SWARM_NODE *pN = NULL;
         int i = 0;
-        while((pN = m_pSwarm->getNode(i++)))
+        while ((pN = m_pSwarm->getNode(i++)))
         {
             object o;
             JO(o, "cmd", "ndUpdate");
             JO(o, "id", (double)pN->m_id);
-            JO(o, "lat", lf2str(pN->m_vPos.x,10));
-            JO(o, "lng", lf2str(pN->m_vPos.y,10));
-            JO(o, "alt", f2str((double)pN->m_alt,2));
-            JO(o, "hdg", f2str((double)pN->m_hdg,2));
-            JO(o, "spd", f2str((double)pN->m_spd,2));
+            JO(o, "lat", lf2str(pN->m_vPos.x, 10));
+            JO(o, "lng", lf2str(pN->m_vPos.y, 10));
+            JO(o, "alt", f2str((double)pN->m_alt, 2));
+            JO(o, "hdg", f2str((double)pN->m_hdg, 2));
+            JO(o, "spd", f2str((double)pN->m_spd, 2));
             JO(o, "mode", (double)pN->m_mode);
-            JO(o, "batt", f2str((double)pN->m_batt,2));
+            JO(o, "batt", f2str((double)pN->m_batt, 2));
 
             sendMsg(o);
         }

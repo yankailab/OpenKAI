@@ -13,31 +13,30 @@
 namespace kai
 {
 
-class _GPhoto: public _VisionBase
-{
-public:
-	_GPhoto();
-	virtual ~_GPhoto();
-
-	int init(void* pKiss);
-	virtual bool start(void);
-	bool open(void);
-	void close(void);
-
-	bool shutter(string& fName);
-
-private:
-	virtual void update(void);
-	static void* getUpdate(void* This)
+	class _GPhoto : public _VisionBase
 	{
-		((_GPhoto*) This)->update();
-		return NULL;
-	}
+	public:
+		_GPhoto();
+		virtual ~_GPhoto();
 
-public:
-	string m_cmdUnmount;
+		virtual bool init(const json &j);
+		virtual bool start(void);
 
-};
+		bool open(void);
+		void close(void);
+		bool shutter(string &fName);
+
+	private:
+		virtual void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_GPhoto *)This)->update();
+			return NULL;
+		}
+
+	protected:
+		string m_cmdUnmount;
+	};
 
 }
 #endif

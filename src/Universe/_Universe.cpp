@@ -9,18 +9,6 @@ namespace kai
 
 	_Universe::_Universe()
 	{
-		m_minConfidence = 0.0;
-		m_vArea.set(-FLT_MAX, FLT_MAX);
-		m_vW.set(-FLT_MAX, FLT_MAX);
-		m_vH.set(-FLT_MAX, FLT_MAX);
-
-		m_vRoi.set(0.0, 0.0, 1.0, 1.0);
-		m_vClassRange.set(-INT_MAX, INT_MAX);
-
-		m_bDrawText = false;
-		m_bDrawPos = false;
-		m_bDrawBB = false;
-
 		clear();
 	}
 
@@ -28,26 +16,30 @@ namespace kai
 	{
 	}
 
-	bool _Universe::init(const json& j)
+	bool _Universe::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
 		// general
-		m_minConfidence = j.value("minConfidence", "");
-		m_vArea = j.value("vArea", "");
-		m_vW = j.value("vW", "");
-		m_vH = j.value("vH", "");
-		m_vRoi = j.value("vRoi", "");
-		m_vClassRange = j.value("vClassRange", "");
+		m_minConfidence = j.value("minConfidence", 0.0);
+		m_vArea = j.value("vArea", vector<float>{-FLT_MAX, FLT_MAX});
+		m_vW = j.value("vW", vector<float>{-FLT_MAX, FLT_MAX});
+		m_vH = j.value("vH", vector<float>{-FLT_MAX, FLT_MAX});
+		m_vRoi = j.value("vRoi", vector<float>{
+									 0,
+									 0,
+									 1,
+									 1,
+								 });
+		m_vClassRange = j.value("vClassRange", vector<int>{-INT_MAX, INT_MAX});
 
 		// draw
-		m_bDrawText = j.value("bDrawText", "");
-		m_bDrawPos = j.value("bDrawPos", "");
-		m_bDrawBB = j.value("bDrawBB", "");
+		m_bDrawText = j.value("bDrawText", false);
+		m_bDrawPos = j.value("bDrawPos", false);
+		m_bDrawBB = j.value("bDrawBB", false);
 
 		// buffer
-		int nB = 16;
-		nB = j.value("nBuf", "");
+		int nB = j.value("nBuf", 16);
 		m_sO.get()->init(nB);
 		m_sO.next()->init(nB);
 		clear();
@@ -139,7 +131,7 @@ namespace kai
 			{
 				vFloat3 vP = pO->getPos();
 				Point pCenter = Point(vP.x * pM->cols, vP.y * pM->rows);
-				int r = pO->getDim().w;// * pM->cols;
+				int r = pO->getDim().w; // * pM->cols;
 
 				circle(*pM, pCenter, r, Scalar(255, 255, 0), 2);
 

@@ -20,27 +20,28 @@ namespace kai
 	{
 	}
 
-	bool _Threshold::init(const json& j)
+	bool _Threshold::init(const json &j)
 	{
 		IF_F(!_VisionBase::init(j));
 
-		int i = 0;
-		while (1)
+		const json &jF = j.at("filters");
+		IF__(!jF.is_object(), true);
+
+		for (auto it = jF.begin(); it != jF.end(); it++)
 		{
-			Kiss *pM = pK->child(i++);
-			if (pM->empty())
-				break;
+			const json &Ji = it.value();
+			IF_CONT(!Ji.is_object());
 
 			IMG_THRESHOLD t;
 			t.init();
-			pM->v("type", &t.m_type);
-			pM->v("vMax", &t.m_vMax);
-			pM->v("bAutoThr", &t.m_bAutoThr);
-			pM->v("thr", &t.m_thr);
-			pM->v("method", &t.m_method);
-			pM->v("thrType", &t.m_thrType);
-			pM->v("blockSize", &t.m_blockSize);
-			pM->v("C", &t.m_C);
+			t.m_type = Ji.value("type", t.m_type);
+			t.m_vMax = Ji.value("vMax", t.m_vMax);
+			t.m_bAutoThr = Ji.value("bAutoThr", t.m_bAutoThr);
+			t.m_thr = Ji.value("thr", t.m_thr);
+			t.m_method = Ji.value("method", t.m_method);
+			t.m_thrType = Ji.value("thrType", t.m_thrType);
+			t.m_blockSize = Ji.value("blockSize", t.m_blockSize);
+			t.m_C = Ji.value("C", t.m_C);
 
 			m_vFilter.push_back(t);
 		}
@@ -48,13 +49,11 @@ namespace kai
 		return true;
 	}
 
-	bool _Threshold::link(const json& j, ModuleMgr* pM)
+	bool _Threshold::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_VisionBase::link(j, pM));
 
-		string n;
-		n = "";
-		n = j.value("_VisionBase", "");
+		string n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

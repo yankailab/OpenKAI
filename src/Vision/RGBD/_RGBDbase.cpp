@@ -13,26 +13,6 @@ namespace kai
 	_RGBDbase::_RGBDbase()
 	{
 		m_pTPP = nullptr;
-
-		m_devFPSd = 30;
-		m_vSizeD.set(1280, 720);
-		m_vRangeD.set(0, FLT_MAX);
-
-		m_bDepth = true;
-		m_bIR = false;
-		m_btRGB = false;
-		m_btDepth = false;
-		m_bConfidence = true;
-		m_fConfidenceThreshold = 0.0;
-
-#ifdef USE_OPENCV
-		m_dScale = 1.0;
-		m_dOfs = 0.0;
-		m_nHistLev = 128;
-		m_iHistFrom = 0;
-		m_minHistD = 0.25;
-		m_bDebugDepth = 0;
-#endif
 	}
 
 	_RGBDbase::~_RGBDbase()
@@ -40,34 +20,34 @@ namespace kai
 		DEL(m_pTPP);
 	}
 
-	bool _RGBDbase::init(const json& j)
+	bool _RGBDbase::init(const json &j)
 	{
 		IF_F(!_VisionBase::init(j));
 
-		m_devFPSd = j.value("devFPSd", "");
-		m_vSizeD = j.value("vSizeD", "");
-		m_vRangeD = j.value("vRangeD", "");
+		m_devFPSd = j.value("devFPSd", 30);
+		m_vSizeD = j.value("vSizeD", vector<int>{1280, 720});
+		m_vRangeD = j.value("vRangeD", vector<float>{0, FLT_MAX});
 
-		m_bDepth = j.value("bDepth", "");
-		m_bIR = j.value("bIR", "");
-		m_btRGB = j.value("btRGB", "");
-		m_btDepth = j.value("btDepth", "");
-		m_bConfidence = j.value("bConfidence", "");
-		m_fConfidenceThreshold = j.value("fConfidenceThreshold", "");
+		m_bDepth = j.value("bDepth", true);
+		m_bIR = j.value("bIR", false);
+		m_btRGB = j.value("btRGB", false);
+		m_btDepth = j.value("btDepth", false);
+		m_bConfidence = j.value("bConfidence", true);
+		m_fConfidenceThreshold = j.value("fConfidenceThreshold", 0.0);
 
 #ifdef USE_OPENCV
-		m_dScale = j.value("dScale", "");
-		m_dOfs = j.value("dOfs", "");
-		m_nHistLev = j.value("nHistLev", "");
-		m_nHistLev = j.value("iHistFrom", "");
-		m_minHistD = j.value("minHistD", "");
-		m_bDebugDepth = j.value("bDebugDepth", "");
+		m_dScale = j.value("dScale", 1.0);
+		m_dOfs = j.value("dOfs", 0.0);
+		m_nHistLev = j.value("nHistLev", 128);
+		m_iHistFrom = j.value("iHistFrom", 0);
+		m_minHistD = j.value("minHistD", 0.25);
+		m_bDebugDepth = j.value("bDebugDepth", 0);
 #endif
 
 		return true;
 	}
 
-	bool _RGBDbase::link(const json& j, ModuleMgr* pM)
+	bool _RGBDbase::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_VisionBase::link(j, pM));
 
@@ -171,7 +151,7 @@ namespace kai
 		if (m_bDebugDepth)
 		{
 			Frame *pF = (Frame *)pFrame;
-//			pF->copy(m_fDepth);
+			//			pF->copy(m_fDepth);
 
 			Mat *pM = pF->m();
 			IF_(pM->empty());
@@ -194,11 +174,9 @@ namespace kai
 #endif
 
 #ifdef WITH_3D
-	int _RGBDbase::getPointCloud(_PCframe* pPCframe, int nPmax)
+	int _RGBDbase::getPointCloud(_PCframe *pPCframe, int nPmax)
 	{
-
 	}
 #endif
-
 
 }

@@ -12,23 +12,22 @@ namespace kai
 
 	_SwarmBase::_SwarmBase()
 	{
-		m_tExpire = UINT64_MAX;
 	}
 
 	_SwarmBase::~_SwarmBase()
 	{
 	}
 
-	bool _SwarmBase::init(const json& j)
+	bool _SwarmBase::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_tExpire = j.value("tExpire", "");
+		m_tExpire = j.value("tExpire", UINT64_MAX);
 
 		return true;
 	}
 
-	bool _SwarmBase::link(const json& j, ModuleMgr* pM)
+	bool _SwarmBase::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
@@ -89,7 +88,7 @@ namespace kai
 		return NULL;
 	}
 
-	SWARM_NODE* _SwarmBase::getNode(int i)
+	SWARM_NODE *_SwarmBase::getNode(int i)
 	{
 		IF__(i >= m_vNodes.size(), nullptr);
 

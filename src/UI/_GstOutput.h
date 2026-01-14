@@ -22,7 +22,7 @@ namespace kai
 		virtual bool init(const json& j);
 		virtual bool start(void);
 
-	protected:
+	private:
 		void updateGst(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
@@ -31,7 +31,7 @@ namespace kai
 			return NULL;
 		}
 
-	private:
+	protected:
 		Frame m_F;
 		vInt2 m_vSize;
 

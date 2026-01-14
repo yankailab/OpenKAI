@@ -22,7 +22,7 @@ namespace kai
 		_LeddarVu();
 		~_LeddarVu();
 
-		virtual bool init(const json& j);
+		virtual bool init(const json &j);
 		virtual bool start(void);
 		virtual void draw(void *pFrame);
 		virtual void console(void *pConsole);
@@ -40,7 +40,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		modbus_t *m_pMb;
 		string m_port;
 		int m_baud;
@@ -54,7 +54,7 @@ namespace kai
 
 		uint16_t m_nDetection;
 
-		//configurations
+		// configurations
 		uint16_t m_nAccumulationsExpo;
 		uint16_t m_nOversamplingsExpo;
 		uint16_t m_lightSrcPwr;

@@ -20,7 +20,7 @@ namespace kai
 		DEL(m_pTPP);
 	}
 
-	bool _SAT_Qk::init(const json& j)
+	bool _SAT_Qk::init(const json &j)
 	{
 		IF_F(!_ModuleBase::init(j));
 
@@ -29,7 +29,7 @@ namespace kai
 		return true;
 	}
 
-	bool _SAT_Qk::link(const json& j, ModuleMgr* pM)
+	bool _SAT_Qk::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
@@ -79,8 +79,8 @@ namespace kai
 		complex<double> coeff = 2;
 		QkBitTerm bit_terms[3] = {QkBitTerm_X, QkBitTerm_Y, QkBitTerm_Z};
 		uint32_t idx[3] = {0, 1, 2};
-//		QkObsTerm term = {coeff, 3, bit_terms, idx, n};
-		QkObsTerm term = {{2,0}, 3, bit_terms, idx, n};
+		//		QkObsTerm term = {coeff, 3, bit_terms, idx, n};
+		QkObsTerm term = {{2, 0}, 3, bit_terms, idx, n};
 		qk_obs_add_term(obs, &term);
 
 		printf("num_qubits: %u\n", qk_obs_num_qubits(obs));

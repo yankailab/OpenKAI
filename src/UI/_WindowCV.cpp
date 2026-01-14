@@ -21,20 +21,15 @@ namespace kai
 	{
 	}
 
-	bool _WindowCV::init(const json& j)
+	bool _WindowCV::init(const json &j)
 	{
 		IF_F(!this->_UIbase::init(j));
 
-		m_bFullScreen = j.value("bFullScreen", "");
-		m_vSize = j.value("vSize", "");
+		m_bFullScreen = j.value("bFullScreen", false);
+		m_vSize = j.value("vSize", vector<int>{1280, 720});
 		m_waitKey = 1000.0f / m_pT->getTargetFPS();
 
-		if (m_vSize.area() <= 0)
-		{
-			LOG_E("Window size too small");
-			return OK_ERR_INVALID_VALUE;
-		}
-
+		IF_Le_F(m_vSize.area() <= 0, "Window size too small");
 		m_F.allocate(m_vSize.x, m_vSize.y);
 
 		string wn = this->getName();
@@ -64,7 +59,6 @@ namespace kai
 			m_pT->autoFPS();
 
 			updateWindow();
-
 		}
 	}
 

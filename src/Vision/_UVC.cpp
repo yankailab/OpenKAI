@@ -21,13 +21,6 @@ namespace kai
 		m_pUVCframe = nullptr;
 		m_pCB = nullptr;
 		m_pFptr = nullptr;
-
-		m_streamType = 2;
-		m_vendorID = 0;
-		m_productID = 0;
-		m_SN = "";
-
-		m_vRangeDraw.set(0, 100);
 	}
 
 	_UVC::~_UVC()
@@ -35,15 +28,15 @@ namespace kai
 		close();
 	}
 
-	bool _UVC::init(const json& j)
+	bool _UVC::init(const json &j)
 	{
 		IF_F(!_VisionBase::init(j));
 
-		m_streamType = j.value("streamType", "");
-		m_vendorID = j.value("vendorID", "");
-		m_productID = j.value("productID", "");
+		m_streamType = j.value("streamType", 2);
+		m_vendorID = j.value("vendorID", 0);
+		m_productID = j.value("productID", 0);
 		m_SN = j.value("SN", "");
-		m_vRangeDraw = j.value("vRangeDraw", "");
+		m_vRangeDraw = j.value("vRangeDraw", vector<float>{0, 100});
 
 		return true;
 	}
@@ -234,7 +227,7 @@ namespace kai
 			{
 				if (!open())
 				{
-					close();	// keep it, as it may requires several tries to get connected
+					close(); // keep it, as it may requires several tries to get connected
 					m_pT->sleepT(SEC_2_USEC);
 					continue;
 				}

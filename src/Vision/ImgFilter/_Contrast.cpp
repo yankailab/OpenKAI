@@ -14,32 +14,27 @@ namespace kai
 	{
 		m_type = vision_contrast;
 		m_pV = nullptr;
-
-		m_alpha = 1.0;
-		m_beta = 0.0;
 	}
 
 	_Contrast::~_Contrast()
 	{
 	}
 
-	bool _Contrast::init(const json& j)
+	bool _Contrast::init(const json &j)
 	{
 		IF_F(!_VisionBase::init(j));
 
-		m_alpha = j.value("alpha", "");
-		m_beta = j.value("beta", "");
+		m_alpha = j.value("alpha", 1.0);
+		m_beta = j.value("beta", 0.0);
 
 		return true;
 	}
 
-	bool _Contrast::link(const json& j, ModuleMgr* pM)
+	bool _Contrast::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_VisionBase::link(j, pM));
 
-		string n;
-		n = "";
-		n = j.value("_VisionBase", "");
+		string n = j.value("_VisionBase", "");
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

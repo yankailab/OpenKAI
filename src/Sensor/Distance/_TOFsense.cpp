@@ -17,18 +17,23 @@ namespace kai
 	{
 	}
 
-	bool _TOFsense::init(const json& j)
+	bool _TOFsense::init(const json &j)
 	{
 		IF_F(!this->_DistSensorBase::init(j));
 
-		string n;
-		n = "";
-		n = j.value("_IObase", "");
-		m_pIO = (_IObase *)(pM->findModule(n));
-		NULL_F(m_pIO);
-
 		m_frame.init(16);
 		m_bReady = 1;
+
+		return true;
+	}
+
+	bool _TOFsense::link(const json &j, ModuleMgr *pM)
+	{
+		IF_F(!this->_DistSensorBase::link(j, pM));
+
+		string n = j.value("_IObase", "");
+		m_pIO = (_IObase *)(pM->findModule(n));
+		NULL_F(m_pIO);
 
 		return true;
 	}
@@ -61,7 +66,6 @@ namespace kai
 			{
 				handleCMD();
 			}
-
 		}
 	}
 
@@ -79,7 +83,7 @@ namespace kai
 
 				if (m_frame.m_iB == 2)
 				{
-					//m_frame.m_nPayload = ;
+					// m_frame.m_nPayload = ;
 				}
 				else if (m_frame.m_iB >= 16)
 				{

@@ -16,7 +16,7 @@ namespace kai
 {
 	struct VARIABLE
 	{
-		int m_v = 0;	//0: undefined, +/-1: true/false
+		int m_v = 0; // 0: undefined, +/-1: true/false
 
 		void assign(int v)
 		{
@@ -31,7 +31,7 @@ namespace kai
 
 	struct CLAUSE
 	{
-		vector<int> m_vL;	// var index from 1, +/- sign = negation
+		vector<int> m_vL; // var index from 1, +/- sign = negation
 
 		void clear(void)
 		{
@@ -58,14 +58,14 @@ namespace kai
 		_SATbase();
 		virtual ~_SATbase();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 
 		void clear(void);
-		bool readCNF(const string& fName, string* pCNF);
-		bool decodeCNF(const string& cnf);
+		bool readCNF(const string &fName, string *pCNF);
+		bool decodeCNF(const string &cnf);
 		bool bSatisfied(void);
 		void printSolution(void);
 
@@ -73,9 +73,8 @@ namespace kai
 		string m_fName;
 		string m_cnf; // problem input
 
-		vector<VARIABLE> m_vV;	// variable index from 1, [0] is not used
-		vector<CLAUSE> m_vC;	// clauses
-
+		vector<VARIABLE> m_vV; // variable index from 1, [0] is not used
+		vector<CLAUSE> m_vC;   // clauses
 	};
 
 }

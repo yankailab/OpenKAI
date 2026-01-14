@@ -32,7 +32,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		string m_pipeline;
 		VideoCapture m_gst;
 		int m_nInitRead;

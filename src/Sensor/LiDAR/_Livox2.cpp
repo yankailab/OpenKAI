@@ -45,7 +45,7 @@ namespace kai
     {
     }
 
-    bool _Livox2::init(const json& j)
+    bool _Livox2::init(const json &j)
     {
         IF_F(!this->_PCstream::init(j));
 
@@ -56,25 +56,21 @@ namespace kai
             memcpy(m_pLvxSN, m_lvxSN.c_str(), m_lvxSN.length());
         }
 
-        string ip;
-        ip = "";
-        ip = j.value("lvxIP", "");
+        string ip = j.value("lvxIP", "");
         parseIP(ip.c_str(), (uint8_t *)&m_lvxIP);
 
         // lvx time out
-        int tOutSec = 10;
-        tOutSec = j.value("tOutSec", "");
+        int tOutSec = j.value("tOutSec", 10);
         m_lvxTout.setTout(USEC_1SEC * tOutSec);
 
         // lvx config
         m_lvxCfg.m_pclDataType = j.value("lvxPCLdataType", m_lvxCfg.m_pclDataType);
         m_lvxCfg.m_patternMode = j.value("lvxPatternMode", m_lvxCfg.m_patternMode);
-        ip = "";
         ip = j.value("lvxHostIP", "");
         if (!parseIP(ip.c_str(), (uint8_t *)&m_lvxCfg.m_hostIP))
         {
             LOG_E("lvxHostIP parse failed");
-            return OK_ERR_INVALID_VALUE;
+            return false;
         }
         m_lvxCfg.m_hostPortState = j.value("lvxHostPortState", m_lvxCfg.m_hostPortState);
         m_lvxCfg.m_hostPortPCL = j.value("lvxHostPortPCL", m_lvxCfg.m_hostPortPCL);
@@ -85,84 +81,103 @@ namespace kai
         m_lvxCfg.m_workMode = j.value("lvxWorkMode", m_lvxCfg.m_workMode);
         m_lvxCfg.m_imuDataEn = j.value("lvxIMUdataEn", m_lvxCfg.m_imuDataEn);
 
-        // common thread config
-        Kiss *pKw;
-        Kiss *pKr = pK->child("threadR");
-        if (pKr->empty())
-        {
-            LOG_E("threadR not found");
-            return OK_ERR_NOT_FOUND;
-        }
-
         // Device Type Query
+        IF_Le_F(!j.contains("TdeviceQueryR"), "json: TdeviceQueryR not found");
+        DEL(m_pTdeviceQueryR);
         m_pTdeviceQueryR = new _Thread();
-        CHECK_d_l_(m_pTdeviceQueryR->init(pKr), DEL(m_pTdeviceQueryR), "TdeviceQueryR init failed");
+        if (!m_pTdeviceQueryR->init(j.at("TdeviceQueryR")))
+        {
+            DEL(m_pTdeviceQueryR);
+            LOG_E("TdeviceQueryR.init() failed");
+            return false;
+        }
 
         // Control Command
-        pKw = nullptr;
-        pKw = pK->child("threadCtrlCmdW");
-        if (pKw->empty())
-        {
-            LOG_E("threadCtrlCmdW not found");
-            return OK_ERR_NOT_FOUND;
-        }
+        IF_Le_F(!j.contains("TctrlCmdW"), "json: TctrlCmdW not found");
+        DEL(m_pTctrlCmdW);
         m_pTctrlCmdW = new _Thread();
-        CHECK_d_l_(m_pTctrlCmdW->init(pKw), DEL(m_pTctrlCmdW), "TctrlCmdW init failed");
+        if (!m_pTctrlCmdW->init(j.at("TctrlCmdW")))
+        {
+            DEL(m_pTctrlCmdW);
+            LOG_E("TctrlCmdW.init() failed");
+            return false;
+        }
 
+        IF_Le_F(!j.contains("TctrlCmdR"), "json: TctrlCmdR not found");
+        DEL(m_pTctrlCmdR);
         m_pTctrlCmdR = new _Thread();
-        CHECK_d_l_(m_pTctrlCmdR->init(pKr), DEL(m_pTctrlCmdR), "TctrlCmdR init failed");
+        if (!m_pTctrlCmdR->init(j.at("TctrlCmdR")))
+        {
+            DEL(m_pTctrlCmdR);
+            LOG_E("TctrlCmdR.init() failed");
+            return false;
+        }
 
         // Push command
+        IF_Le_F(!j.contains("TpushCmdR"), "json: TpushCmdR not found");
+        DEL(m_pTpushCmdR);
         m_pTpushCmdR = new _Thread();
-        CHECK_d_l_(m_pTpushCmdR->init(pKr), DEL(m_pTpushCmdR), "TpushCmdR init failed");
+        if (!m_pTpushCmdR->init(j.at("TpushCmdR")))
+        {
+            DEL(m_pTpushCmdR);
+            LOG_E("TpushCmdR.init() failed");
+            return false;
+        }
 
         // Point Cloud Data
+        IF_Le_F(!j.contains("TpclR"), "json: TpclR not found");
+        DEL(m_pTpclR);
         m_pTpclR = new _Thread();
-        CHECK_d_l_(m_pTpclR->init(pKr), DEL(m_pTpclR), "TpclR init failed");
+        if (!m_pTpclR->init(j.at("TpclR")))
+        {
+            DEL(m_pTpclR);
+            LOG_E("TpclR.init() failed");
+            return false;
+        }
 
         // IMU Data
+        IF_Le_F(!j.contains("TimuR"), "json: TimuR not found");
+        DEL(m_pTimuR);
         m_pTimuR = new _Thread();
-        CHECK_d_l_(m_pTimuR->init(pKr), DEL(m_pTimuR), "TimuR init failed");
+        if (!m_pTimuR->init(j.at("TimuR")))
+        {
+            DEL(m_pTimuR);
+            LOG_E("TimuR.init() failed");
+            return false;
+        }
 
         return true;
     }
 
-    bool _Livox2::link(const json& j, ModuleMgr* pM)
+    bool _Livox2::link(const json &j, ModuleMgr *pM)
     {
         IF_F(!this->_PCstream::link(j, pM));
 
-        0
         string n;
 
-        n = "";
         n = j.value("_UDPdeviceQuery", "");
         m_pUDPdeviceQuery = (_UDP *)(pM->findModule(n));
-        NULL__(m_pUDPdeviceQuery);
+        NULL_F(m_pUDPdeviceQuery);
 
-        n = "";
         n = j.value("_UDPctrlCmd", "");
         m_pUDPctrlCmd = (_UDP *)(pM->findModule(n));
-        NULL__(m_pUDPctrlCmd);
+        NULL_F(m_pUDPctrlCmd);
 
-        n = "";
         n = j.value("_UDPpushCmd", "");
         m_pUDPpushCmd = (_UDP *)(pM->findModule(n));
-        NULL__(m_pUDPpushCmd);
+        NULL_F(m_pUDPpushCmd);
 
-        n = "";
         n = j.value("_UDPpcl", "");
         m_pUDPpcl = (_UDP *)(pM->findModule(n));
-        NULL__(m_pUDPpcl);
+        NULL_F(m_pUDPpcl);
 
-        n = "";
         n = j.value("_UDPimu", "");
         m_pUDPimu = (_UDP *)(pM->findModule(n));
-        NULL__(m_pUDPimu);
+        NULL_F(m_pUDPimu);
 
-        // n = "";
         // n = j.value("_IObaseLog", "");
         // m_pUDPlog = (_IObase *)(pM->findModule(n));
-        // NULL__(m_pUDPlog);
+        // NULL_F(m_pUDPlog);
 
         return true;
     }
@@ -170,12 +185,12 @@ namespace kai
     bool _Livox2::start(void)
     {
         NULL_F(m_pT);
-        NULL__(m_pTdeviceQueryR);
-        NULL__(m_pTctrlCmdW);
-        NULL__(m_pTctrlCmdR);
-        NULL__(m_pTpushCmdR);
-        NULL__(m_pTpclR);
-        NULL__(m_pTimuR);
+        NULL_F(m_pTdeviceQueryR);
+        NULL_F(m_pTctrlCmdW);
+        NULL_F(m_pTctrlCmdR);
+        NULL_F(m_pTpushCmdR);
+        NULL_F(m_pTpclR);
+        NULL_F(m_pTimuR);
 
         IF_F(!m_pT->start(getUpdateWdeviceQuery, this));
         IF_F(!m_pTdeviceQueryR->start(getUpdateRdeviceQuery, this));
@@ -190,12 +205,12 @@ namespace kai
 
     bool _Livox2::check(void)
     {
-        NULL__(m_pUDPdeviceQuery);
-        NULL__(m_pUDPctrlCmd);
-        NULL__(m_pUDPpushCmd);
-        NULL__(m_pUDPpcl);
-        NULL__(m_pUDPimu);
-        //        NULL__(m_pUDPlog);
+        NULL_F(m_pUDPdeviceQuery);
+        NULL_F(m_pUDPctrlCmd);
+        NULL_F(m_pUDPpushCmd);
+        NULL_F(m_pUDPpcl);
+        NULL_F(m_pUDPimu);
+        //        NULL_F(m_pUDPlog);
 
         return this->_PCstream::check();
     }
@@ -332,10 +347,8 @@ namespace kai
             IF_(!bEqual(m_pLvxSN, pSN, LVX2_N_SN));
         }
 
-
         m_lvxCmdPort = *(uint16_t *)(&cmd.data[22]);
-        //TODO: change cmd port in _UDP
-
+        // TODO: change cmd port in _UDP
 
         m_lvxDevType = cmd.data[1];
 
@@ -596,7 +609,7 @@ namespace kai
                 break;
             case kKeyLidarIpCfg:
                 v4 = *(uint32_t *)&pK[iD];
-                if(v4 != m_lvxIP)
+                if (v4 != m_lvxIP)
                 {
                     setLvxHost();
                 }
@@ -608,19 +621,19 @@ namespace kai
             case kKeyStateInfoHostIpCfg:
                 v4 = *(uint32_t *)&pK[iD];
                 v2 = *(uint16_t *)&pK[iD + 4];
-                if(v4 != m_lvxCfg.m_hostIP || v2 != m_lvxCfg.m_hostPortState)
+                if (v4 != m_lvxCfg.m_hostIP || v2 != m_lvxCfg.m_hostPortState)
                     setLvxHost();
                 break;
             case kKeyLidarPointDataHostIpCfg:
                 v4 = *(uint32_t *)&pK[iD];
                 v2 = *(uint16_t *)&pK[iD + 4];
-                if(v4 != m_lvxCfg.m_hostIP || v2 != m_lvxCfg.m_hostPortPCL)
+                if (v4 != m_lvxCfg.m_hostIP || v2 != m_lvxCfg.m_hostPortPCL)
                     setLvxHost();
                 break;
             case kKeyLidarImuHostIpCfg:
                 v4 = *(uint32_t *)&pK[iD];
                 v2 = *(uint16_t *)&pK[iD + 4];
-                if(v4 != m_lvxCfg.m_hostIP || v2 != m_lvxCfg.m_hostPortIMU)
+                if (v4 != m_lvxCfg.m_hostIP || v2 != m_lvxCfg.m_hostPortIMU)
                     setLvxHost();
                 break;
             case kKeyFrameRate:
@@ -650,14 +663,14 @@ namespace kai
                 break;
             case kKeyLidarDiagStatus:
                 v2 = *(uint16_t *)&pK[iD];
-                if(v2 != 0)
+                if (v2 != 0)
                 {
                     // lvx error
                 }
                 break;
             case kKeyHmsCode:
                 v4 = *(uint32_t *)&pK[iD];
-                if(v4 != 0)
+                if (v4 != 0)
                 {
                     // lvx hms error
                 }
@@ -666,7 +679,6 @@ namespace kai
 
             iD += nKb;
         }
-
     }
 
     // Push command
@@ -746,7 +758,7 @@ namespace kai
     {
         IF_(!m_lvxCfg.m_imuDataEn);
 
-//        uint64_t tStamp = *((uint64_t *)d.timestamp);
+        //        uint64_t tStamp = *((uint64_t *)d.timestamp);
         uint64_t tStamp = getTbootNs();
         uint64_t dT = tStamp - m_tIMU;
         m_tIMU = tStamp;
@@ -798,9 +810,8 @@ namespace kai
 
         _Console *pC = (_Console *)pConsole;
 
-		pC->addMsg("States: " + i2str((int)m_lvxState));
-		pC->addMsg("SN: " + m_lvxSN);
-
+        pC->addMsg("States: " + i2str((int)m_lvxState));
+        pC->addMsg("SN: " + m_lvxSN);
     }
 
 }

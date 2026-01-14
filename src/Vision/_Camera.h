@@ -19,7 +19,7 @@ namespace kai
 		_Camera();
 		virtual ~_Camera();
 
-		virtual bool init(const json& j);
+		virtual bool init(const json &j);
 		virtual bool start(void);
 		bool open(void);
 		void close(void);
@@ -32,7 +32,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		int m_deviceID;
 		VideoCapture m_camera;
 		int m_nInitRead;

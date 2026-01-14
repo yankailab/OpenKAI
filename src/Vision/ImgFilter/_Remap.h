@@ -19,8 +19,8 @@ namespace kai
 		_Remap();
 		virtual ~_Remap();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 
 		bool setCamMat(const Mat &mC, const Mat &mD);
@@ -48,11 +48,11 @@ namespace kai
 		bool m_bReady;
 		string m_fCalib;
 
-		//original camera matrix
-		Mat m_mC;		//Intrinsic
-		Mat m_mCscaled; //scaled with input image size
-		Mat m_mD;		//Distortion
-		//Remap
+		// original camera matrix
+		Mat m_mC;		// Intrinsic
+		Mat m_mCscaled; // scaled with input image size
+		Mat m_mD;		// Distortion
+		// Remap
 		Mat m_m1;
 		Mat m_m2;
 	};

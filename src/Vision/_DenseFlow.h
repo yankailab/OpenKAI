@@ -21,6 +21,7 @@ namespace kai
 		virtual ~_DenseFlow();
 
 		virtual bool init(const json& j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual void draw(void *pFrame);
 
@@ -39,10 +40,10 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		int m_w;
 		int m_h;
-		_VisionBase *m_pVision;
+		_VisionBase *m_pV;
 //		FrameGroup *m_pGrayFrames;
 		Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
 		GpuMat m_gFlow;

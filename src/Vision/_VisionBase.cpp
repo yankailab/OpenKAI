@@ -13,14 +13,7 @@ namespace kai
 	_VisionBase::_VisionBase()
 	{
 		m_type = vision_unknown;
-		m_devURI = "";
-		m_devFPS = 30;
-		m_tFrameInterval = 0;
-		m_bRGB = true;
-		m_vSizeRGB.set(1280, 720);
-
 		m_bOpen = false;
-
 		m_psmRGB = nullptr;
 	}
 
@@ -28,27 +21,24 @@ namespace kai
 	{
 	}
 
-	bool _VisionBase::init(const json& j)
+	bool _VisionBase::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
 		m_devURI = j.value("devURI", "");
-		m_devFPS = j.value("devFPS", "");
-		m_tFrameInterval = j.value("tFrameInterval", "");
-		m_bRGB = j.value("bRGB", "");
-		m_vSizeRGB = j.value("vSizeRGB", "");
+		m_devFPS = j.value("devFPS", 30);
+		m_tFrameInterval = j.value("tFrameInterval", 0);
+		m_bRGB = j.value("bRGB", true);
+		m_vSizeRGB = j.value("vSizeRGB", vector<int>{1280, 720});
 
 		return true;
 	}
 
-	bool _VisionBase::link(const json& j, ModuleMgr* pM)
+	bool _VisionBase::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n;
-
-		n = "";
-		n = j.value("_SHMrgb", "");
+		string n = j.value("_SHMrgb", "");
 		m_psmRGB = (SharedMem *)(pM->findModule(n));
 
 		return true;

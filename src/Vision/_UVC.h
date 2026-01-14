@@ -83,7 +83,7 @@ namespace kai
 		_UVC();
 		virtual ~_UVC();
 
-		virtual bool init(const json& j);
+		virtual bool init(const json &j);
 		virtual bool start(void);
 		bool open(void);
 		void close(void);

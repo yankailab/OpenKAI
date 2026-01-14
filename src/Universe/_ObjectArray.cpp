@@ -11,7 +11,6 @@ namespace kai
 	{
 		m_pO = nullptr;
 		m_nO = 0;
-		m_nBuf = 128;
 	}
 
 	_ObjectArray::~_ObjectArray()
@@ -19,26 +18,26 @@ namespace kai
 		DEL(m_pO);
 	}
 
-	bool _ObjectArray::init(const json& j)
+	bool _ObjectArray::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_nBuf = j.value("nBuf", "");
-		IF__(m_nBuf <= 0, OK_ERR_INVALID_VALUE);
+		m_nBuf = j.value("nBuf", 128);
+		IF_F(m_nBuf <= 0);
 
 		m_pO = new _Object[m_nBuf];
-		NULL__(m_pO);
+		NULL_F(m_pO);
 
 		return true;
 	}
 
 	int _ObjectArray::init(int n)
 	{
-		if(n > 0)
+		if (n > 0)
 			m_nBuf = n;
 
 		m_pO = new _Object[m_nBuf];
-		NULL__(m_pO);
+		NULL_F(m_pO);
 
 		return true;
 	}
@@ -54,7 +53,6 @@ namespace kai
 		while (m_pT->bAlive())
 		{
 			m_pT->autoFPS();
-
 		}
 	}
 

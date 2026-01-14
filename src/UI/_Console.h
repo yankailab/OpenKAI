@@ -19,8 +19,8 @@ namespace kai
 		_Console();
 		virtual ~_Console();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 
 		void addMsg(const string &msg, int iLine = 1);
@@ -35,7 +35,7 @@ namespace kai
 			return NULL;
 		}
 
-	private:
+	protected:
 		vector<BASE *> m_vpB;
 		int m_iY;
 	};
