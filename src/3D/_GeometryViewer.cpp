@@ -71,27 +71,9 @@ namespace kai
 
 		utility::SetVerbosityLevel(utility::VerbosityLevel::Error);
 
-		if (!j.contains("threadUI"))
-		{
-			LOG_E("json: threadUI not found");
-			return false;
-		}
-
-		const json &jt = j.at("threadUI");
-		if (!jt.is_object())
-		{
-			LOG_E("json: threadUI is not an object");
-			return false;
-		}
-
 		DEL(m_pTui);
-		m_pTui = new _Thread();
-		if (!m_pTui->init(jt))
-		{
-			DEL(m_pTui);
-			LOG_E("threadUI.init() failed");
-			return false;
-		}
+        m_pTui = createThread(j.at("threadUI"), "threadUI");
+        NULL_F(m_pTui);
 
 		return true;
 	}

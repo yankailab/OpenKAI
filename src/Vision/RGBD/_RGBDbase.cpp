@@ -12,12 +12,12 @@ namespace kai
 
 	_RGBDbase::_RGBDbase()
 	{
-		m_pTPP = nullptr;
+		m_pTpp = nullptr;
 	}
 
 	_RGBDbase::~_RGBDbase()
 	{
-		DEL(m_pTPP);
+		DEL(m_pTpp);
 	}
 
 	bool _RGBDbase::init(const json &j)

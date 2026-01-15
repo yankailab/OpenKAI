@@ -42,7 +42,7 @@ namespace kai
 
 	protected:
 		// post processing thread
-		_Thread *m_pTPP;
+		_Thread *m_pTpp;
 	};
 
 }

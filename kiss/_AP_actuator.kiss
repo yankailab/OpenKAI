@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"APactuator",
-	"bLog":0,
+	"bLog":false,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -20,12 +20,12 @@
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"bLog":0,
+	"bLog":false,
 	"port":"/dev/ttyUSB0",
 	"baud":9600,
 	"parity":"N",	
@@ -34,12 +34,12 @@
 {
 	"name":"stepper1",
 	"class":"_HYMCU_RS485",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":5,
 	}
-	"bLog":1,
+	"bLog": true,
 	"_Modbus":"modbus",
 	"iSlave":1,
 	"dpr":1,
@@ -65,12 +65,12 @@
 {
 	"name":"stepper2",
 	"class":"_HYMCU_RS485",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":5,
 	}
-	"bLog":1,
+	"bLog": true,
 	"_Modbus":"modbus",
 	"iSlave":2,
 	"dpr":1,
@@ -96,12 +96,12 @@
 {
 	"name":"apActuator",
 	"class":"_APmavlink_rcChannel",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"bLog":1,
+	"bLog": true,
 	"_APmavlink_base":"apBase",
 	"_ActuatorBase1":"stepper1",
 	"_ActuatorBase2":"stepper2",
@@ -114,7 +114,7 @@
 {
 	"name":"apSerial",
 	"class":"_SerialPort",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -123,7 +123,7 @@
 		"name":"threadR",
 		"FPS":1,
 	}
-	"bLog":0,
+	"bLog":false,
 	"/port":"/dev/ttyTHS1",
 	"port":"/dev/ttyACM0",
 	"baud":115200,
@@ -132,19 +132,19 @@
 {
 	"name":"apMavlink",
 	"class":"_Mavlink",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"bLog":0,
+	"bLog":false,
 	"_IObase":"apSerial",	
 }
 
 {
 	"name":"apBase",
 	"class":"_APmavlink_base",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,

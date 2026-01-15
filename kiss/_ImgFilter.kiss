@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":10,
@@ -20,7 +20,7 @@
 {
 	"name":"OKview",
 	"class":"_WindowCV",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -31,7 +31,7 @@
 {
 	"name":"cam",
 	"class":"_Camera",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -44,7 +44,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -59,7 +59,7 @@
 {
 	"name":"cam",
 	"class":"_VideoFile",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -80,8 +80,8 @@
 		"name":"threadPP",
 		"FPS":30,
 	}
-	"bON":1,
-	"bLog":1,
+	"bON": true,
+	"bLog": true,
 	"vPreset":"Short Range",
 	"bRsRGB":1,
 	"vSize":[1280,720],
@@ -100,7 +100,7 @@
 {
 	"name":"DepthShow",
 	"class":"_DepthShow",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -111,7 +111,7 @@
 {
 	"name":"d2g",
 	"class":"_D2G",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -122,7 +122,7 @@
 {
 	"name":"inRange",
 	"class":"_InRange",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -135,7 +135,7 @@
 {
 	"name":"mask",
 	"class":"_Mask",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -147,7 +147,7 @@
 {
 	"name":"thr",
 	"class":"_Threshold",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -167,7 +167,7 @@
 {
 	"name":"histEqualize",
 	"class":"_HistEqualize",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -178,7 +178,7 @@
 {
 	"name":"contrast",
 	"class":"_Contrast",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -191,7 +191,7 @@
 {
 	"name":"resize",
 	"class":"_Resize",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -204,7 +204,7 @@
 {
 	"name":"morph",
 	"class":"_Morphology",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -212,7 +212,7 @@
 	"_VisionBase":"cam",
 
 	{
-		"bON":1,
+		"bON": true,
 		"morphOp":2, /*open*/
 		"nItr":1,
 		"kW":3,
@@ -222,7 +222,7 @@
 	}
 
 	{
-		"bON":0,
+		"bON": false,
 		"morphOp":3, /*close*/
 		"nItr":2,
 	}
@@ -231,7 +231,7 @@
 {
 	"name":"erode",
 	"class":"_Erode",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,

@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,
@@ -20,8 +20,8 @@
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bON":1,
-	"bLog":1,
+	"bON": true,
+	"bLog": true,
     {
 		"name":"thread",
 		"FPS":1,
@@ -40,8 +40,8 @@
 {
 	"name":"ebyte",
 	"class":"_ADIO_EBYTE",
-	"bON":1,
-	"bLog":0,
+	"bON": true,
+	"bLog":false,
     {
 		"name":"thread",
 		"FPS":10,

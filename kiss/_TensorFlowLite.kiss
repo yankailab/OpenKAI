@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":0,
+	"bLog":false,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -20,7 +20,7 @@
 {
 	"name":"RGBview",
 	"class":"_WindowCV",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -35,7 +35,7 @@
 {
 	"name":"FB",
 	"class":"_GstOutput",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -48,7 +48,7 @@
 {
 	"name":"cam",
 	"class":"_Camera",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -60,7 +60,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -72,7 +72,7 @@
 {
 	"name":"camCrop",
 	"class":"_Crop",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -84,7 +84,7 @@
 {
 	"name":"univ",
 	"class":"_Universe",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -94,13 +94,13 @@
 {
 	"name":"tfMN",
 	"class":"_TFmobileNet",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
 	}
 	"bDraw":1,
-	"bLog":1,
+	"bLog": true,
 	"_VisionBase":"cam",
 	"_Universe":"univ",
 	"nThreads":4,

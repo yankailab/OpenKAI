@@ -21,15 +21,9 @@ namespace kai
 
 		m_ddsmMode = j.value("ddsmMode", ddsm_speed);
 
-		IF_Le_F(!j.contains("threadR"), "json: thread not found");
-		DEL(m_pTr);
-		m_pTr = new _Thread();
-		if (!m_pTr->init(j.at("threadR")))
-		{
-			DEL(m_pTr);
-			LOG_E("threadR.init() failed");
-			return false;
-		}
+        DEL(m_pTr);
+        m_pTr = createThread(j.at("threadR"), "threadR");
+        NULL_F(m_pTr);
 
 		return true;
 	}

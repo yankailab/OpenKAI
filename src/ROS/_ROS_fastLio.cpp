@@ -27,15 +27,9 @@ namespace kai
     {
         IF_F(!this->_NavBase::init(j));
 
-        IF_Le_F(!j.contains("threadROS"), "json: threadROS not found");
         DEL(m_pTros);
-        m_pTros = new _Thread();
-        if (!m_pTros->init(j.at("threadROS")))
-        {
-            DEL(m_pTros);
-            LOG_E("threadROS.init() failed");
-            return false;
-        }
+        m_pTros = createThread(j.at("threadROS"), "threadROS");
+        NULL_F(m_pTros);
 
         rclcpp::init(0, NULL);
         m_pROSnode = std::make_shared<ROS_fastLio>();

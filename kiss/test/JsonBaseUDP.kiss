@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":0,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,
@@ -20,7 +20,7 @@
 {
 	"name":"udpClient",
 	"class":"_UDP",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":30,
@@ -37,7 +37,7 @@
 {
 	"name":"udpServer",
 	"class":"_UDP",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":30,
@@ -53,8 +53,8 @@
 {
 	"name":"JsonSender",
 	"class":"_JSONbase",
-	"bON":1,
-	"bLog":0,
+	"bON": true,
+	"bLog":false,
     {
 		"name":"thread",
 		"FPS":1,
@@ -71,8 +71,8 @@
 {
 	"name":"JsonReceiver",
 	"class":"_JSONbase",
-	"bON":1,
-	"bLog":0,
+	"bON": true,
+	"bLog":false,
     {
 		"name":"thread",
 		"FPS":1,
@@ -89,8 +89,8 @@
 {
 	"name":"TestJSON",
 	"class":"_TestJSON",
-	"bON":1,
-	"bLog":0,
+	"bON": true,
+	"bLog":false,
     {
 		"name":"thread",
 		"FPS":1,

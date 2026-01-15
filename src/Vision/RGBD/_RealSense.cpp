@@ -21,7 +21,7 @@ namespace kai
 
     _RealSense::~_RealSense()
     {
-        DEL(m_pTPP);
+        DEL(m_pTpp);
         DEL(m_rspAlign);
     }
 
@@ -52,15 +52,9 @@ namespace kai
         m_rsCtrl.m_fSharpness = j.value("fSharpness", m_rsCtrl.m_fSharpness);
         m_rsCtrl.m_fWhiteBalance = j.value("fWhiteBalance", m_rsCtrl.m_fWhiteBalance);
 
-        IF_Le_F(!j.contains("threadPP"), "json: threadPP not found");
-        DEL(m_pTPP);
-        m_pTPP = new _Thread();
-        if (!m_pTPP->init(j.at("threadPP")))
-        {
-            DEL(m_pTPP);
-            LOG_E("threadPP.init() failed");
-            return false;
-        }
+        DEL(m_pTpp);
+        m_pTpp = createThread(j.at("threadPP"), "threadPP");
+        NULL_F(m_pTpp);
 
         return true;
     }
@@ -277,15 +271,15 @@ namespace kai
     bool _RealSense::start(void)
     {
         NULL_F(m_pT);
-        NULL__(m_pTPP);
+        NULL__(m_pTpp);
         IF_F(!m_pT->start(getUpdate, this));
-        return m_pTPP->start(getTPP, this);
+        return m_pTpp->start(getTPP, this);
     }
 
     bool _RealSense::check(void)
     {
         NULL_F(m_pT);
-        NULL__(m_pTPP);
+        NULL__(m_pTpp);
 
         return _RGBDbase::check();
     }
@@ -309,7 +303,7 @@ namespace kai
 
             if (updateRS())
             {
-                m_pTPP->wakeUp();
+                m_pTpp->wakeUp();
             }
             else
             {
@@ -377,9 +371,9 @@ namespace kai
 
     void _RealSense::updateTPP(void)
     {
-        while (m_pTPP->bAlive())
+        while (m_pTpp->bAlive())
         {
-            m_pTPP->sleepT(0);
+            m_pTpp->sleepT(0);
 
             if (m_rsCtrl.m_fFilterMagnitude < m_rsCtrl.m_fDefault)
                 m_rsDepth = m_rsfDec.process(m_rsDepth);

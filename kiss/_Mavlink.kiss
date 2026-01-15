@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -20,7 +20,7 @@
 {
 	"name":"serial",
 	"class":"_SerialPort",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,
@@ -38,8 +38,8 @@
 {
 	"name":"mavAP",
 	"class":"_Mavlink",
-	"bON":1,
-	"bLog":0,
+	"bON": true,
+	"bLog":false,
     {
 		"name":"thread",
 		"FPS":10,
@@ -53,7 +53,7 @@
 	{
 		"name":"routing",
 		{
-			"bON":0,
+			"bON": false,
 			"_Mavlink":"mavUDP",
 		}
 	}
@@ -62,7 +62,7 @@
 {
 	"name":"apBase",
 	"class":"_APmavlink_base",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -126,8 +126,8 @@
 {
 	"name":"udp",
 	"class":"_UDP",
-	"bON":0,
-	"bLog":0,
+	"bON": false,
+	"bLog":false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -139,8 +139,8 @@
 {
 	"name":"mavUDP",
 	"class":"_Mavlink",
-	"bON":0,
-	"bLog":0,
+	"bON": false,
+	"bLog":false,
     {
 		"name":"thread",
 		"FPS":10,
@@ -154,7 +154,7 @@
 	{
 		"name":"routing",
 		{
-			"bON":0,
+			"bON": false,
 			"_Mavlink":"mavAP",
 		}
 	}

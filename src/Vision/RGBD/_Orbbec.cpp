@@ -80,7 +80,7 @@ namespace kai
 
 			if (updateOrbbec())
 			{
-				m_pTPP->run();
+				m_pTpp->run();
 			}
 			else
 			{

@@ -4,7 +4,7 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"bDraw":1,
-	"bLog":0,
+	"bLog":false,
 	"bStdErr":1,
 	"waitKey":30,
 }
@@ -12,20 +12,20 @@
 {
 	"name":"OK_Console",
 	"class":"_Console",
-	"bON":1,
+	"bON": true,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bON":1,
+	"bON": true,
 }
 
 {
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bON":1,
+	"bON": true,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"deviceID":0,
@@ -36,7 +36,7 @@
 {
 	"name":"universe",
 	"class":"_Universe",
-	"bON":1,
+	"bON": true,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 }
@@ -45,7 +45,7 @@
 	"name":"Chilitags",
 	"class":"_Chilitags",
 	"FPS":30,
-	"bON":1,
+	"bON": true,
 	"bDraw":1,
 	"Window":"OKview",
 	"_Console":"OK_Console",

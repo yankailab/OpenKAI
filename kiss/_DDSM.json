@@ -1,0 +1,59 @@
+{
+	"APP": {
+		"class": "ModuleMgr",
+		"appName": "OpenKAI",
+		"bLog": false,
+		"bStdErr": 1
+	},
+	"console": {
+		"class": "_Console",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"DDSM"
+		]
+	},
+	"serial": {
+		"class": "_SerialPort",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"bLog": false,
+		"/port": "/dev/ttyACM0",
+		"port": "/dev/ttyUSB0",
+		"baud": 115200
+	},
+	"DDSM": {
+		"class": "_DDSM",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"threadR": {
+			"FPS": 1
+		},
+		"bLog": true,
+		"_IObase": "serial",
+		"ID": 1,
+		"ddsmMode": 1,
+		"tCmdTimeout": 0,
+		"bfSetPower": 1,
+		"bfSetID": 0,
+		"bfSetMode": 1,
+		"s": 0,
+		"sTarget": 0,
+		"sRange": [
+			-100,
+			100
+		],
+		"c": 0,
+		"cTarget": 0,
+		"cRange": [
+			-10000,
+			10000
+		]
+	}
+}

@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":10,
@@ -20,7 +20,7 @@
 {
 	"name":"serialAP",
 	"class":"_SerialPort",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -36,8 +36,8 @@
 {
 	"name":"mavAP",
 	"class":"_Mavlink",
-	"bON":1,
-	"bLog":1,
+	"bON": true,
+	"bLog": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -48,7 +48,7 @@
 	{
 		"name":"routing",
 		{
-			"bON":1,
+			"bON": true,
 			"_Mavlink":"mavUDP",
 		}
 	}
@@ -57,7 +57,7 @@
 {
 	"name":"udpGCS",
 	"class":"_UDP",
-	"bON":0,
+	"bON": false,
 	{
 		"name":"thread",
 		"FPS":30,
@@ -74,17 +74,17 @@
 {
 	"name":"mavGCS",
 	"class":"_Mavlink",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"bLog":0,
+	"bLog":false,
 	"_IObase":"udpGCS",
 	{
 		"name":"routing",
 		{
-			"bON":1,
+			"bON": true,
 			"_Mavlink":"mavUDP",
 		}
 	}
@@ -93,7 +93,7 @@
 {
 	"name":"udp",
 	"class":"_UDP",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":30,
@@ -106,21 +106,21 @@
 {
 	"name":"mavUDP",
 	"class":"_Mavlink",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"bLog":0,
+	"bLog":false,
 	"_IObase":"udp",
 	{
 		"name":"routing",
 		{
-			"bON":0,
+			"bON": false,
 			"_Mavlink":"mavAP",
 		}
 		{
-			"bON":1,
+			"bON": true,
 			"_Mavlink":"mavGCS",
 		}
 	}
@@ -129,7 +129,7 @@
 {
 	"name":"apBase",
 	"class":"_APmavlink_base",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,
@@ -190,7 +190,7 @@
 {
 	"name":"ws",
 	"class":"_WebSocket",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":10,
@@ -204,7 +204,7 @@
 {
 	"name":"apM2J",
 	"class":"_APmavlink_mav2json",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,
@@ -213,7 +213,7 @@
 		"name":"threadR",
 		"FPS":10,
 	}
-	"bLog":1,
+	"bLog": true,
 	"/_IObase":"ws",
 	"_IObase":"udp",
 	"msgFinishSend":"",
@@ -226,12 +226,12 @@
 {
 	"name":"apMission",
 	"class":"_APmavlink_mission",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":10,
 	}
-	"bLog":1,
+	"bLog": true,
 	"_APmavlink_base":"apBase",
 	"tOutSec":1000,
 }

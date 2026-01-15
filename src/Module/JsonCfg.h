@@ -26,10 +26,12 @@ namespace kai
 		json getJson(void);
 		json getJson(const string& s);
 
+		string getName(void);
+
 	private:
 		void delComment(string *pStr);
 
-	private:
+	protected:
 		string m_jsonStr;
 		json m_json;
 

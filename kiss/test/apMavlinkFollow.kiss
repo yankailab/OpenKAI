@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":0,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,
@@ -20,7 +20,7 @@
 {
 	"name":"CVwindow",
 	"class":"_WindowCV",
-	"bON":1,
+	"bON": true,
 	"bFullScreen":0,
     {
 		"name":"thread",
@@ -33,7 +33,7 @@
 {
 	"name":"udpAP",
 	"class":"_UDP",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":30,
@@ -50,7 +50,7 @@
 {
 	"name":"serialAP",
 	"class":"_SerialPort",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -67,8 +67,8 @@
 {
 	"name":"mavAP",
 	"class":"_Mavlink",
-	"bON":1,
-	"bLog":1,
+	"bON": true,
+	"bLog": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -79,7 +79,7 @@
 	{
 		"name":"routing",
 		{
-			"bON":1,
+			"bON": true,
 			"_Mavlink":"mavUDP",
 		}
 	}
@@ -88,7 +88,7 @@
 {
 	"name":"apBase",
 	"class":"_APmavlink_base",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,
@@ -148,7 +148,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -162,7 +162,7 @@
 {
 	"name":"arUco",
 	"class":"_ArUco",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -175,12 +175,12 @@
 {
 	"name":"YOLO",
 	"class":"_YOLOv8",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"bLog":1,
+	"bLog": true,
 	"_VisionBase":"cam",
 	"_Universe":"univ",
 	"fModel":"/home/kai/dev/models/yolov8n.onnx",
@@ -191,7 +191,7 @@
 {
 	"name":"univ",
 	"class":"_Universe",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":1,
@@ -205,7 +205,7 @@
 {
 	"name":"PIDroll",
 	"class":"PID",
-	"bON":1,
+	"bON": true,
 	"P":-1.0,
 	"I":0.0,
 	"Imax":0.0,
@@ -217,7 +217,7 @@
 {
 	"name":"PIDpitch",
 	"class":"PID",
-	"bON":1,
+	"bON": true,
 	"P":1.0,
 	"I":0.0,
 	"Imax":0.0,
@@ -229,7 +229,7 @@
 {
 	"name":"apFollow",
 	"class":"_APmavlink_follow",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,

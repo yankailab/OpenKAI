@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"OpenKAI",
 	"appName":"OpenKAI",
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,
@@ -20,7 +20,7 @@
 {
 	"name":"serialAP",
 	"class":"_SerialPort",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,
@@ -37,12 +37,12 @@
 {
 	"name":"apMavlink",
 	"class":"_Mavlink",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,
 	}
-	"bLog":0,
+	"bLog":false,
 	"_IObase":"serialAP",
 	"/devSystemID":0,
 	"mySystemID":255,
@@ -52,7 +52,7 @@
 {
 	"name":"apBase",
 	"class":"_APmavlink_base",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,
@@ -112,8 +112,8 @@
 {
 	"name":"apDrive",
 	"class":"_APmavlink_drive",
-	"bON":1,
-	"bLog":1,
+	"bON": true,
+	"bLog": true,
     {
 		"name":"thread",
 		"FPS":10,

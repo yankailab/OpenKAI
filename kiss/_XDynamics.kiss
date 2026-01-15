@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -20,7 +20,7 @@
 {
 	"name":"view",
 	"class":"_WindowCV",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -36,8 +36,8 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"bON":0,
-	"bLog":1,
+	"bON": false,
+	"bLog": true,
 	"devURI":"192.168.31.3",
 	"xdDevType":2,
 	"xdProductType":2048,
@@ -66,8 +66,8 @@
 		"name":"thread",
 		"FPS":1,
 	}
-	"bON":0,
-	"bLog":1,
+	"bON": false,
+	"bLog": true,
 	"URI":"192.168.31.3",
 	"xdDevType":0,
 	"xdProductType":0,
@@ -95,8 +95,8 @@
 		"name":"thread",
 		"FPS":1,
 	}
-	"bON":0,
-	"bLog":0,
+	"bON": false,
+	"bLog":false,
 	"URI":"192.168.31.3",
 	"xdDevType":0,
 	"xdProductType":1027,
@@ -124,8 +124,8 @@
 		"name":"thread",
 		"FPS":10,
 	}
-	"bON":1,
-	"bLog":1,
+	"bON": true,
+	"bLog": true,
 	"devURI":"192.168.31.8",
 	"xdDevType":2,
 	"xdProductType":1124,
@@ -150,7 +150,7 @@
 {
 	"name":"d2g",
 	"class":"_D2G",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -161,7 +161,7 @@
 {
 	"name":"pcRGBD",
 	"class":"_PCframe",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -173,7 +173,7 @@
 {
 	"name":"gv",
 	"class":"_GeometryViewer",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,

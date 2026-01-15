@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,
@@ -20,7 +20,7 @@
 {
 	"name":"view",
 	"class":"_WindowCV",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -32,7 +32,7 @@
 {
 	"name":"cam",
 	"class":"_Camera",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -44,7 +44,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -56,7 +56,7 @@
 {
 	"name":"crop",
 	"class":"_Crop",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -68,7 +68,7 @@
 {
 	"name":"univTag",
 	"class":"_Universe",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -78,7 +78,7 @@
 {
 	"name":"arUco",
 	"class":"_ArUco",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,

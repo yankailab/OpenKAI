@@ -3,14 +3,14 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bWindow":1,
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":1,
 }
 
 {
 	"name":"camCalib",
 	"class":"_CamCalib",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,

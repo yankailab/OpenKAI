@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":0,
+	"bLog":false,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -22,7 +22,7 @@
 {
 	"name":"udpLvxDeviceQuery_1",
 	"class":"_UDP",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":1,
@@ -38,7 +38,7 @@
 {
 	"name":"udpLvxCtrlCmd_1",
 	"class":"_UDP",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":10,
@@ -53,7 +53,7 @@
 {
 	"name":"udpLvxPushCmd_1",
 	"class":"_UDP",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":1,
@@ -68,12 +68,12 @@
 {
 	"name":"udpLvxPCL_1",
 	"class":"_UDP",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":1,
 	}
-	"bLog":0,
+	"bLog":false,
 	"addrRemote":"192.168.1.200",
 	"portRemote":56300,
 	"portLocal":56301,
@@ -84,12 +84,12 @@
 {
 	"name":"udpLvxIMU_1",
 	"class":"_UDP",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":1,
 	}
-	"bLog":0,
+	"bLog":false,
 	"addrRemote":"192.168.1.200",
 	"portRemote":56400,
 	"portLocal":56401,
@@ -101,7 +101,7 @@
 {
 	"name":"Lvx1",
 	"class":"_Livox2",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":1,
@@ -114,7 +114,7 @@
 		"name":"threadCtrlCmdW",
 		"FPS":1,
 	}
-	"bLog":0,
+	"bLog":false,
 	"_UDPdeviceQuery":"udpLvxDeviceQuery_1",
 	"_UDPctrlCmd":"udpLvxCtrlCmd_1",
 	"_UDPpushCmd":"udpLvxPushCmd_1",
@@ -152,7 +152,7 @@
 {
 	"name":"udpLvxDeviceQuery_2",
 	"class":"_UDP",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":1,
@@ -168,7 +168,7 @@
 {
 	"name":"udpLvxCtrlCmd_2",
 	"class":"_UDP",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":10,
@@ -183,7 +183,7 @@
 {
 	"name":"udpLvxPushCmd_2",
 	"class":"_UDP",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":1,
@@ -198,12 +198,12 @@
 {
 	"name":"udpLvxPCL_2",
 	"class":"_UDP",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":1,
 	}
-	"bLog":0,
+	"bLog":false,
 	"addrRemote":"192.168.1.201",
 	"portRemote":56300,
 	"portLocal":56302,
@@ -214,12 +214,12 @@
 {
 	"name":"udpLvxIMU_2",
 	"class":"_UDP",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":1,
 	}
-	"bLog":0,
+	"bLog":false,
 	"addrRemote":"192.168.1.201",
 	"portRemote":56400,
 	"portLocal":56402,
@@ -231,7 +231,7 @@
 {
 	"name":"Lvx2",
 	"class":"_Livox2",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":1,
@@ -244,7 +244,7 @@
 		"name":"threadCtrlCmdW",
 		"FPS":1,
 	}
-	"bLog":0,
+	"bLog":false,
 	"_UDPdeviceQuery":"udpLvxDeviceQuery_2",
 	"_UDPctrlCmd":"udpLvxCtrlCmd_2",
 	"_UDPpushCmd":"udpLvxPushCmd_2",
@@ -281,7 +281,7 @@
 {
 	"name":"gv",
 	"class":"_GeometryViewer",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,

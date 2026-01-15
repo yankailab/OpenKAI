@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"GeometryViewer",
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -20,7 +20,7 @@
 {
 	"name":"gv",
 	"class":"_GeometryViewer",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,
@@ -59,7 +59,7 @@
 {
 	"name":"pcFile",
 	"class":"_PCfile",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -71,7 +71,7 @@
 {
 	"name":"pcGrid",
 	"class":"_PCgridBase",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,

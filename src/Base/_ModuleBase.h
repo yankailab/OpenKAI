@@ -51,6 +51,9 @@ namespace kai
 		virtual void onPause(void);
 		virtual void onResume(void);
 
+		virtual _Thread* createThread(const json& j, const string& name);
+		virtual _Thread* getThread(const string& name);
+
 	private:
 		virtual void update(void);
 		static void *getUpdate(void *This)

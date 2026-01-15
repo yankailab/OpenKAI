@@ -4,7 +4,7 @@
 	"appName":"OpenKAI",
 	"bWindow":0,
 	"bDraw":1,
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":0,
 	"waitKey":30,
 }
@@ -12,22 +12,22 @@
 {
 	"name":"OpenKAI",
 	"class":"_Console",
-	"bON":1,
+	"bON": true,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bON":0,
+	"bON": false,
 	"bFullScreen":0,
 }
 
 {
 	"name":"xArm",
 	"class":"_xArm",
-	"bON":1,
+	"bON": true,
 	"FPS":30,
-	"bLog":1,
+	"bLog": true,
 	"Window":"OKview",
 	"_Console":"OpenKAI",
 	"ip":"192.168.1.222",

@@ -22,7 +22,11 @@ namespace kai
 
 	bool JsonCfg::readFromFile(const string &fName)
 	{
-		IF_F(!readFile(fName, &m_jsonStr));
+		if (!readFile(fName, &m_jsonStr))
+		{
+			LOG_E("Cannot read file: " + fName);
+			return false;
+		}
 
 		return true;
 	}
@@ -86,6 +90,11 @@ namespace kai
 	json JsonCfg::getJson(void)
 	{
 		return m_json;
+	}
+
+	string JsonCfg::getName(void)
+	{
+		return "Jsonfg";
 	}
 
 	json JsonCfg::getJson(const string &s)

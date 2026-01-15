@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -20,7 +20,7 @@
 {
 	"name":"RGBview",
 	"class":"_WindowCV",
-	"bON":1,
+	"bON": true,
 	"bFullScreen":0,
     {
 		"name":"thread",
@@ -32,7 +32,7 @@
 {
 	"name":"depthView",
 	"class":"_WindowCV",
-	"bON":0,
+	"bON": false,
 	"bFullScreen":0,
     {
 		"name":"thread",
@@ -44,7 +44,7 @@
 {
 	"name":"SHMvzRGB",
 	"class":"SharedMem",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -61,8 +61,8 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"bON":1,
-	"bLog":1,
+	"bON": true,
+	"bLog": true,
 	"vSize":[1600,1200],
 	"SharedMem":"SHMvzRGB",
 }
@@ -70,7 +70,7 @@
 {
 	"name":"DepthShow",
 	"class":"_DepthShow",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,

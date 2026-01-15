@@ -12,6 +12,7 @@ namespace kai
 {
 	_Thread::_Thread()
 	{
+		m_class = "_Thread";
 		m_threadID = 0;
 		m_dT = 1.0;
 		m_FPS = 0;

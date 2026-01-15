@@ -3,7 +3,7 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bWindow":0,
-	"bLog":0,
+	"bLog":false,
 	"b_Console":1,
 	"bStdErr":0,
 	"waitKey":30,
@@ -12,9 +12,9 @@
 {
 	"name":"serial",
 	"class":"_SerialPort",
-	"bON":1,
+	"bON": true,
 	"FPS":30,
-	"bLog":0,
+	"bLog":false,
 	"port":"/dev/ttyUSB0",
 	"baud":115200,
 	"_wakeUp":"GPS",
@@ -24,8 +24,8 @@
 	"name":"GPS",
 	"class":"_GPS",
 	"FPS":30,
-	"bON":1,
-	"bLog":0,
+	"bON": true,
+	"bLog":false,
 	"_IObase":"serial",
 }
 

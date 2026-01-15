@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":0,
+	"bLog":false,
 	"bStdErr":1,
 }
 
 {
     "name":"console",
     "class":"_Console",
-    "bON":1,
+    "bON": true,
     {
         "name":"thread",
         "FPS":30,
@@ -20,7 +20,7 @@
 {
 	"name":"serial",
 	"class":"_SerialPort",
-	"bON":1,
+	"bON": true,
     {
         "name":"thread",
         "FPS":30,
@@ -29,7 +29,7 @@
         "name":"threadR",
         "FPS":30,
     }
-	"bLog":1,
+	"bLog": true,
 	"port":"/dev/ttyAMA1",
 	"baud":921600,
 }
@@ -37,11 +37,11 @@
 {
 	"name":"TOFsense",
 	"class":"_TOFsense",
-	"bON":1,
+	"bON": true,
     {
         "name":"thread",
         "FPS":30,
     }
-	"bLog":1,
+	"bLog": true,
 	"_IObase":"serial",
 }

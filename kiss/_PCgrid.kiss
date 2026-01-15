@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,
@@ -20,7 +20,7 @@
 {
 	"name":"pcGrid",
 	"class":"_PCgridBase",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,
@@ -44,7 +44,7 @@
 {
 	"name":"geometryViewer",
 	"class":"_GeometryViewer",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,
@@ -153,7 +153,7 @@
 {
 	"name":"udpLvxDeviceQuery_1",
 	"class":"_UDP",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":1,
@@ -169,7 +169,7 @@
 {
 	"name":"udpLvxCtrlCmd_1",
 	"class":"_UDP",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":10,
@@ -184,7 +184,7 @@
 {
 	"name":"udpLvxPushCmd_1",
 	"class":"_UDP",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":1,
@@ -199,12 +199,12 @@
 {
 	"name":"udpLvxPCL_1",
 	"class":"_UDP",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":1,
 	}
-	"bLog":0,
+	"bLog":false,
 	"addrRemote":"192.168.1.200",
 	"portRemote":56300,
 	"portLocal":56301,
@@ -215,12 +215,12 @@
 {
 	"name":"udpLvxIMU_1",
 	"class":"_UDP",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":1,
 	}
-	"bLog":0,
+	"bLog":false,
 	"addrRemote":"192.168.1.200",
 	"portRemote":56400,
 	"portLocal":56401,
@@ -232,7 +232,7 @@
 {
 	"name":"Lvx1",
 	"class":"_Livox2",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":1,
@@ -245,7 +245,7 @@
 		"name":"threadCtrlCmdW",
 		"FPS":1,
 	}
-	"bLog":0,
+	"bLog":false,
 	"_UDPdeviceQuery":"udpLvxDeviceQuery_1",
 	"_UDPctrlCmd":"udpLvxCtrlCmd_1",
 	"_UDPpushCmd":"udpLvxPushCmd_1",
@@ -278,12 +278,12 @@
 {
 	"name":"psTest",
 	"class":"_PCfile",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":1,
 	}
-	"bLog":1,
+	"bLog": true,
 	"vfName":["/home/kai/Downloads/room_scan1.pcd"],
 	"/vfName":["/home/lab/Downloads/office1.pcd"],
 	"nPresv":500000,

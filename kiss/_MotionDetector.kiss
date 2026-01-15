@@ -4,14 +4,14 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"bDraw":1,
-	"bLog":1,
+	"bLog": true,
 	"waitKey":30,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bON":1,
+	"bON": true,
 	"bFullScreen":0,
 }
 
@@ -19,7 +19,7 @@
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bON":0,
+	"bON": false,
 	"Window":"OKview",
 	"deviceID":0,
 	"w":1280,
@@ -32,7 +32,7 @@
 	"name":"gst",
 	"class":"_GStreamer",
 	"FPS":60,
-	"bON":0,
+	"bON": false,
 	"Window":"OKview",
 	"pipeline":"nvcamerasrc fpsRange='60.0 60.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)60/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
 	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=2 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
@@ -44,7 +44,7 @@
 	"name":"vf",
 	"class":"_VideoFile",
 	"FPS":30,
-	"bON":1,
+	"bON": true,
 	"Window":"OKview",
 	"videoFile":"/home/kai/Videos/suzhou.ts",
 	"w":1280,
@@ -57,7 +57,7 @@
 	"name":"md",
 	"class":"_MotionDetector",
 	"FPS":30,
-	"bON":1,
+	"bON": true,
 	"Window":"OKview",
 	"_VisionBase":"vf",
 	"learningRate":1,

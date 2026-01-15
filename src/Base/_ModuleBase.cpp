@@ -26,18 +26,38 @@ namespace kai
     {
         IF_F(!this->BASE::init(j));
 
-        IF_Le_F(!j.contains("thread"), "json: thread not found");
         DEL(m_pT);
-        m_pT = new _Thread();
-        m_pT->setName("thread");
-        if (!m_pT->init(j.at("thread")))
-        {
-            DEL(m_pT);
-            LOG_E("thread.init() failed");
-            return false;
-        }
+        m_pT = createThread(j.at("thread"), "thread");
+        NULL_F(m_pT);
 
         return true;
+    }
+
+    _Thread *_ModuleBase::createThread(const json &j, const string &name)
+    {
+        IF_N(name.empty());
+        IF_Le__(!j.is_object(), "JSON is not an object: " + name, nullptr);
+
+        _Thread *pT = new _Thread();
+        NULL_N(pT);
+        pT->setName(name);
+
+        if (!pT->init(j))
+        {
+            DEL(pT);
+            LOG_E("thread.init() failed: " + name);
+            return nullptr;
+        }
+
+        return pT;
+    }
+
+    _Thread *_ModuleBase::getThread(const string &name)
+    {
+        NULL_N(m_pT);
+        IF_N(m_pT->getName() != name);
+
+        return m_pT;
     }
 
     bool _ModuleBase::link(const json &j, ModuleMgr *pM)

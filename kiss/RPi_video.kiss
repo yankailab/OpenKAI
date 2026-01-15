@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":1,
 	"/rc":"sudo mkdir /home/pi/ssd\nsudo mount /dev/nvme0p1 /home/pi/ssd/\nsudo chown pi /home/pi/ssd\n",
 }
@@ -10,7 +10,7 @@
 {
 	"name":"FB",
 	"class":"_GstOutput",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -23,7 +23,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -39,12 +39,12 @@
 {
 	"name":"apVideo",
 	"class":"_APmavlink_video",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"bLog":0,
+	"bLog":false,
 	"_StateControl":"state",
 	"vActiveState":["STANDBY"],
 	"_APmavlink_base":"apBase",

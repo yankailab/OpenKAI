@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":0,
+	"bLog":false,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -20,12 +20,12 @@
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"bLog":0,
+	"bLog":false,
 	"port":"/dev/ttyUSB0",
 	"baud":19200,
 	"parity":"N",
@@ -34,12 +34,12 @@
 {
 	"name":"ZDmotor_LF",
 	"class":"_ZDmotor",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,
 	}
-	"bLog":1,
+	"bLog": true,
 	"_Modbus":"modbus",
 	"iSlave":1,
 
@@ -62,12 +62,12 @@
 {
 	"name":"ZDmotor_LB",
 	"class":"_ZDmotor",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":5,
 	}
-	"bLog":1,
+	"bLog": true,
 	"_Modbus":"modbus",
 	"iSlave":2,
 
@@ -90,12 +90,12 @@
 {
 	"name":"ZDmotor_RF",
 	"class":"_ZDmotor",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":5,
 	}
-	"bLog":1,
+	"bLog": true,
 	"_Modbus":"modbus",
 	"iSlave":3,
 
@@ -118,12 +118,12 @@
 {
 	"name":"ZDmotor_RB",
 	"class":"_ZDmotor",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":5,
 	}
-	"bLog":1,
+	"bLog": true,
 	"_Modbus":"modbus",
 	"iSlave":4,
 

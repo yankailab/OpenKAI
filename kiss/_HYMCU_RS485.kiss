@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":0,
+	"bLog":false,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -20,12 +20,12 @@
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"bLog":0,
+	"bLog":false,
 	"port":"/dev/ttyUSB0",
 	"/baud":9600,
 	"baud":115200,
@@ -35,12 +35,12 @@
 {
 	"name":"stepperX",
 	"class":"_HYMCU_RS485",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":5,
 	}
-	"bLog":1,
+	"bLog": true,
 	"_Modbus":"modbus",
 	"iSlave":2,
 	"dpr":1,
@@ -80,12 +80,12 @@
 {
 	"name":"stepperY",
 	"class":"_HYMCU_RS485",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":5,
 	}
-	"bLog":1,
+	"bLog": true,
 	"_Modbus":"modbus",
 	"iSlave":3,
 	"dpr":1,

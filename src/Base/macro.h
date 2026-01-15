@@ -83,6 +83,13 @@
         return;      \
     }
 
+#define IF_Le__(x, y, z) \
+    if (x)               \
+    {                    \
+        LOG_E(y);        \
+        return z;        \
+    }
+
 #define IF_Le_F(x, y) \
     if (x)            \
     {                 \

@@ -35,15 +35,9 @@ namespace kai
 
 		m_scCtrl.m_pixelFormat = j.value("scPixelFormat", m_scCtrl.m_pixelFormat);
 
-        IF_Le_F(!j.contains("threadPP"), "json: threadPP not found");
-        DEL(m_pTPP);
-        m_pTPP = new _Thread();
-        if (!m_pTPP->init(j.at("threadPP")))
-        {
-            DEL(m_pTPP);
-            LOG_E("threadPP.init() failed");
-            return false;
-        }
+		DEL(m_pTpp);
+		m_pTpp = createThread(j.at("threadPP"), "threadPP");
+		NULL_F(m_pTpp);
 
 		return true;
 	}

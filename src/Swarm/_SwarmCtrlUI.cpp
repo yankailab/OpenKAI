@@ -22,15 +22,9 @@ namespace kai
         m_ieSendNodeUpdate.init(j.value("ieSendNodeUpdate", SEC_2_USEC));
         m_ieSendNodeClearAll.init(j.value("ieSendNodeClearAll", SEC_2_USEC));
 
-        IF_Le_F(!j.contains("threadR"), "json: threadR not found");
         DEL(m_pTr);
-        m_pTr = new _Thread();
-        if (!m_pTr->init(j.at("threadR")))
-        {
-            DEL(m_pTr);
-            LOG_E("threadR.init() failed");
-            return false;
-        }
+        m_pTr = createThread(j.at("threadR"), "threadR");
+        NULL_F(m_pTr);
 
         return true;
     }

@@ -24,16 +24,9 @@ namespace kai
     {
         IF_F(!this->_PCstream::init(j));
 
-        // common thread config
-        IF_Le_F(!j.contains("threadDIFOP"), "json: threadDIFOP not found");
         DEL(m_pTdifop);
-        m_pTdifop = new _Thread();
-        if (!m_pTdifop->init(j.at("threadDIFOP")))
-        {
-            DEL(m_pTdifop);
-            LOG_E("threadDIFOP.init() failed");
-            return false;
-        }
+        m_pTdifop = createThread(j.at("threadDIFOP"), "threadDIFOP");
+        NULL_F(m_pTdifop);
 
         return true;
     }

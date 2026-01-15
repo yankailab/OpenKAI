@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -20,7 +20,7 @@
 {
 	"name":"RGBview",
 	"class":"_WindowCV",
-	"bON":1,
+	"bON": true,
 	"bFullScreen":0,
     {
 		"name":"thread",
@@ -32,7 +32,7 @@
 {
 	"name":"depthView",
 	"class":"_WindowCV",
-	"bON":0,
+	"bON": false,
 	"bFullScreen":0,
     {
 		"name":"thread",
@@ -52,8 +52,8 @@
 		"name":"threadPP",
 		"FPS":30,
 	}
-	"bON":1,
-	"bLog":1,
+	"bON": true,
+	"bLog": true,
 	"vPreset":"Short Range",
 	"bRsRGB":1,
 	"vSize":[1280,720],
@@ -74,7 +74,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"bON":0,
+	"bON": false,
 	"pipeline":"v4l2src device=/dev/video3 ! videoflip method=2 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
 	"/pipeline":"v4l2src device=/dev/video2 ! videoflip method=2 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
 }
@@ -86,6 +86,6 @@
 		"name":"thread",
 		"FPS":100,
 	}
-	"bON":0,
-	"bLog":0,
+	"bON": false,
+	"bLog":false,
 }

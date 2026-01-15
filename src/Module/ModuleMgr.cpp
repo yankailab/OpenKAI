@@ -64,7 +64,7 @@ namespace kai
 				continue;
 			}
 
-			int bON = Ji.value("bON", 1);
+			int bON = Ji.value("bON", true);
 			if (bON == 0)
 			{
 				LOG_I("Module disabled: " + n);
@@ -79,8 +79,8 @@ namespace kai
 			}
 
 			pM->setName(n);
-
 			m_vModules.push_back((void *)pM);
+			LOG_I("Instance created: " + n);
 		}
 
 		return true;

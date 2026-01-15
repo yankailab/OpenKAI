@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,
@@ -20,7 +20,7 @@
 {
 	"name":"udpGCS",
 	"class":"_UDP",
-	"bON":0,
+	"bON": false,
 	{
 		"name":"thread",
 		"FPS":30,
@@ -37,17 +37,17 @@
 {
 	"name":"mavGCS",
 	"class":"_Mavlink",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"bLog":0,
+	"bLog":false,
 	"_IObase":"udpGCS",
 	{
 		"name":"routing",
 		{
-			"bON":1,
+			"bON": true,
 			"_Mavlink":"mavAP",
 		}
 	}
@@ -56,7 +56,7 @@
 {
 	"name":"serialAP",
 	"class":"_SerialPort",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -70,8 +70,8 @@
 {
 	"name":"mavAP",
 	"class":"_Mavlink",
-	"bON":1,
-	"bLog":0,
+	"bON": true,
+	"bLog":false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -82,7 +82,7 @@
 	{
 		"name":"routing",
 		{
-			"bON":1,
+			"bON": true,
 			"_Mavlink":"mavGCS",
 		}
 	}
@@ -91,7 +91,7 @@
 {
 	"name":"apBase",
 	"class":"_APmavlink_base",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":10,
@@ -151,7 +151,7 @@
 {
 	"name":"tcpNtrip",
 	"class":"_TCPclient",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":30,
@@ -165,7 +165,7 @@
 {
 	"name":"udpRTCMsvr",
 	"class":"_UDP",
-	"bON":0,
+	"bON": false,
 	{
 		"name":"thread",
 		"FPS":30,
@@ -182,7 +182,7 @@
 {
 	"name":"RTCMcast",
 	"class":"_RTCMcast",
-	"bON":0,
+	"bON": false,
 	{
 		"name":"thread",
 		"FPS":1,
@@ -208,7 +208,7 @@
 {
 	"name":"udpRTCMcli",
 	"class":"_UDP",
-	"bON":0,
+	"bON": false,
 	{
 		"name":"thread",
 		"FPS":30,
@@ -225,7 +225,7 @@
 {
 	"name":"apRTCM",
 	"class":"_APmavlink_RTCM",
-	"bON":1,
+	"bON": true,
 	{
 		"name":"thread",
 		"FPS":1,

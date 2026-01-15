@@ -12,12 +12,12 @@ namespace kai
 
 	_SAT_Qk::_SAT_Qk()
 	{
-		m_pTPP = nullptr;
+		m_pTpp = nullptr;
 	}
 
 	_SAT_Qk::~_SAT_Qk()
 	{
-		DEL(m_pTPP);
+		DEL(m_pTpp);
 	}
 
 	bool _SAT_Qk::init(const json &j)

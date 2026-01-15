@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":10,
@@ -20,8 +20,8 @@
 {
 	"name":"cl",
 	"class":"clBase",
-	"bON":1,
-	"bLog":1,
+	"bON": true,
+	"bLog": true,
 	"fKernel":"",
 	"buildOpt":"",
 }

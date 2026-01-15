@@ -32,15 +32,9 @@ namespace kai
 		m_tOutMs = j.value("tOutMs", 1000);
 		m_nClientMax = j.value("nClientMax", 128);
 
-		IF_Le_F(!j.contains("threadR"), "json: thread not found");
-		DEL(m_pTr);
-		m_pTr = new _Thread();
-		if (!m_pTr->init(j.at("threadR")))
-		{
-			DEL(m_pTr);
-			LOG_E("threadR.init() failed");
-			return false;
-		}
+        DEL(m_pTr);
+        m_pTr = createThread(j.at("threadR"), "threadR");
+        NULL_F(m_pTr);
 
 		m_ioStatus = io_opened;
 

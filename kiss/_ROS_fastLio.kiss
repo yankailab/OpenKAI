@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -20,7 +20,7 @@
 {
 	"name":"view",
 	"class":"_WindowCV",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -31,7 +31,7 @@
 {
 	"name":"fastLio",
 	"class":"_ROS_fastLio",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -52,7 +52,7 @@
 {
 	"name":"pcFrame",
 	"class":"_PCframe",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -64,7 +64,7 @@
 {
 	"name":"gv",
 	"class":"_GeometryViewer",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":10,

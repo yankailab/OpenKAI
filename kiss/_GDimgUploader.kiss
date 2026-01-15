@@ -4,7 +4,7 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"bDraw":1,
-	"bLog":1,
+	"bLog": true,
 	"b_Console":0,
 	"bStdErr":1,
 	"waitKey":30,
@@ -13,14 +13,14 @@
 {
 	"name":"OKview",
 	"class":"Window",
-	"bON":1,
+	"bON": true,
 }
 
 {
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bON":1,
+	"bON": true,
 	"Window":"OKview",
 	"deviceID":0,
 	"w":640,
@@ -31,7 +31,7 @@
 	"name":"cam",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bON":0,
+	"bON": false,
 	"Window":"OKview",
 	"pipeline":"rtspsrc location=rtsp://admin:12345@10.0.0.100:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
 }
@@ -40,8 +40,8 @@
 	"name":"gdUpload",
 	"class":"_GDimgUploader",
 	"FPS":30,
-	"bON":1,
-	"bLog":1,
+	"bON": true,
+	"bLog": true,
 	"bDraw":1,
 	"Window":"OKview",
 	"tempDir":"/home/kai/dev/test/",

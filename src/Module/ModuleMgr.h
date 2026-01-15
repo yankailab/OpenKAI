@@ -26,12 +26,10 @@ namespace kai
 		void waitForComplete(void);
 		bool bComplete(void);
 
+		void* findModule(const string &name);
 		void clean(void);
 
-		void* findModule(const string &name);
-
-
-	private:
+	protected:
 		string m_name;
 		bool m_bLog;
 

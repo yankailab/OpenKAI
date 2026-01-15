@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"Open3D",
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -20,7 +20,7 @@
 {
 	"name":"GViewer",
 	"class":"_GeometryViewer",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":10,
@@ -103,8 +103,8 @@
 {
 	"name":"Scepter",
 	"class":"_Scepter",
-	"bON":1,
-	"bLog":1,
+	"bON": true,
+	"bLog": true,
     {
 		"name":"thread",
 		"FPS":30,
@@ -131,8 +131,8 @@
 {
 	"name":"rgbd2pcf",
 	"class":"_RGBD2PCframe",
-	"bON":1,
-	"bLog":1,
+	"bON": true,
+	"bLog": true,
     {
 		"name":"thread",
 		"FPS":10,
@@ -154,8 +154,8 @@
 {
 	"name":Scepter",
 	"class":"_Scepter",
-	"bON":0,
-	"bLog":1,
+	"bON": false,
+	"bLog": true,
     {
 		"name":"thread",
 		"FPS":25,
@@ -173,7 +173,7 @@
 {
 	"name":"shmFileW",
 	"class":"SharedMem",
-	"bON":0,
+	"bON": false,
 	"shmName":"smFile",
 	"nB":6400000,
 	"bWriter":1,
@@ -182,7 +182,7 @@
 {
 	"name":"shmFileR",
 	"class":"SharedMem",
-	"bON":0,
+	"bON": false,
 	"shmName":"smFile",
 	"nB":6400000,
 	"bWriter":0,
@@ -191,12 +191,12 @@
 {
 	"name":"pcFile",
 	"class":"_PCfile",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"bLog":1,
+	"bLog": true,
 	"fName":"/home/kai/Downloads/office1.pcd",
 	"nPresv":500000,
 	"nGpSM":500000,
@@ -206,12 +206,12 @@
 {
 	"name":"pcFrame",
 	"class":"_PCframe",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"bLog":1,
+	"bLog": true,
 	"nPresv":500000,
 	"nPresvNext":500000,
 	"nGpSM":300000,
@@ -221,12 +221,12 @@
 {
 	"name":"pcStream",
 	"class":"_PCstream",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
 	}
-	"bLog":1,
+	"bLog": true,
 	"nP":200000,
 	"SharedMem":"shmFileR",
 }
@@ -234,7 +234,7 @@
 {
 	"name":"pcGrid",
 	"class":"_PCgridBase",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":10,

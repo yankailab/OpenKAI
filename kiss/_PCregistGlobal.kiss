@@ -4,7 +4,7 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"bDraw":1,
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":1,
 	"waitKey":30,
 }
@@ -12,13 +12,13 @@
 {
 	"name":"OK_Console",
 	"class":"_Console",
-	"bON":1,
+	"bON": true,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bON":0,
+	"bON": false,
 	"bFullScreen":0,
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",	
@@ -27,7 +27,7 @@
 {
 	"name":"camera",
 	"class":"_Camera",
-	"bON":0,
+	"bON": false,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"deviceID":0,
@@ -41,7 +41,7 @@
 {
 	"name":"pcv",
 	"class":"_PCviewer",
-	"bON":1,
+	"bON": true,
 	"_Console":"OK_Console",
 	"vWinSize":[1920,1080],
 	"fov":100,
@@ -54,8 +54,8 @@
 {
 	"name":"pcf",
 	"class":"_PCfile",
-	"bON":1,
-	"bLog":1,
+	"bON": true,
+	"bLog": true,
 	"_Console":"OK_Console",
 	"/_PCviewer":"pcv",
 	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
@@ -68,7 +68,7 @@
 {
 	"name":"tfPcf",
 	"class":"_PCtransform",
-	"bON":1,
+	"bON": true,
 	"_PCbase":"pcf",
 	"_PCviewer":"pcv",
 	"vT":[1, 0.8, 0.9],
@@ -85,7 +85,7 @@
 {
 	"name":"pcDS",
 	"class":"_PCdownSample",
-	"bON":1,
+	"bON": true,
 	"_Console":"OK_Console",
 	"/_PCviewer":"pcv",
 	"_PCbase":"pcf",
@@ -99,7 +99,7 @@
 {
 	"name":"pcDS2",
 	"class":"_PCdownSample",
-	"bON":1,
+	"bON": true,
 	"_Console":"OK_Console",
 	"/_PCviewer":"pcv",
 	"_PCbase":"tfPcf",
@@ -113,7 +113,7 @@
 {
 	"name":"tfRRglobal",
 	"class":"_PCtransform",
-	"bON":1,
+	"bON": true,
 	"_Console":"OK_Console",
 	"_PCbase":"pcf",
 	"/_PCviewer":"pcv",
@@ -130,7 +130,7 @@
 {
 	"name":"pcRegistGlobal",
 	"class":"_PCregistGlobal",
-	"bON":1,
+	"bON": true,
 	"_Console":"OK_Console",
 	"_PCbaseSrc":"pcf",
 	"_PCbaseTgt":"tfPcf",
@@ -153,7 +153,7 @@
 {
 	"name":"tfRRicp",
 	"class":"_PCtransform",
-	"bON":1,
+	"bON": true,
 	"_Console":"OK_Console",
 	"_PCbase":"tfRRglobal",
 	"_PCviewer":"pcv",
@@ -171,7 +171,7 @@
 {
 	"name":"pcRegistICP",
 	"class":"_PCregistGlobal",
-	"bON":1,
+	"bON": true,
 	"_Console":"OK_Console",
 	"_PCbaseSrc":"tfRRglobal",
 	"_PCbaseTgt":"tfPcf",
@@ -191,8 +191,8 @@
 {
 	"name":"rs1",
 	"class":"_RealSensePC",
-	"bON":0,
-	"bLog":1,
+	"bON": false,
+	"bLog": true,
 	"_Console":"OK_Console",
 	"vPreset":"Short Range",
 	"rsRGB":1,
@@ -216,7 +216,7 @@
 {
 	"name":"tf1",
 	"class":"_PCtransform",
-	"bON":0,
+	"bON": false,
 	"_PCbase":"rs1",
 	"_PCviewer":"pcv",
 	"vT":[0, 0, 0],
@@ -233,8 +233,8 @@
 	"name":"rs2",
 	"class":"_RealSensePC",
 	"FPS":30,
-	"bON":0,
-	"bLog":1,
+	"bON": false,
+	"bLog": true,
 	"_Console":"OK_Console",
 	"vPreset":"Short Range",
 	"rsRGB":1,
@@ -258,7 +258,7 @@
 {
 	"name":"tf2",
 	"class":"_PCtransform",
-	"bON":0,
+	"bON": false,
 	"_PCbase":"rs2",
 	"_PCviewer":"pcv",
 	"vT":[0, 0, 0],
@@ -270,8 +270,8 @@
 {
 	"name":"rs3",
 	"class":"_RealSensePC",
-	"bON":0,
-	"bLog":1,
+	"bON": false,
+	"bLog": true,
 	"_Console":"OK_Console",
 	"vPreset":"Short Range",
 	"rsRGB":1,
@@ -295,7 +295,7 @@
 {
 	"name":"tf3",
 	"class":"_PCtransform",
-	"bON":0,
+	"bON": false,
 	"_PCbase":"rs3",
 	"_PCviewer":"pcv",
 	"vT":[0, 0, 0],
@@ -308,8 +308,8 @@
 {
 	"name":"ws",
 	"class":"_WebSocket",
-	"bON":0,
-	"bLog":0,
+	"bON": false,
+	"bLog":false,
 	"Window":"OKview",
 	"_wakeUp":"ui",
     {
@@ -325,7 +325,7 @@
 {
 	"name":"ui",
 	"class":"_PCui",
-	"bON":0,
+	"bON": false,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"_IObase":"ws",
@@ -342,9 +342,9 @@
 {
 	"name":"UDPsend",
 	"class":"_UDP",
-	"bON":0,
+	"bON": false,
 	"FPS":30,
-	"bLog":0,
+	"bLog":false,
 	"Window":"OKview",
 	"_Console":"OpenKAI",
 	"addr":"127.0.0.1",
@@ -355,9 +355,9 @@
 {
 	"name":"PCsend",
 	"class":"_PCsend",
-	"bON":0,
+	"bON": false,
 	"FPS":30,
-	"bLog":1,
+	"bLog": true,
 	"Window":"OKview",
 	"_Console":"OpenKAI",
 	"_IObase":"UDPsend",	
@@ -369,7 +369,7 @@
 {
 	"name":"UDPrecv",
 	"class":"_UDP",
-	"bON":0,
+	"bON": false,
 	"FPS":30,
 	"Window":"OKview",
 	"_Console":"OpenKAI",
@@ -382,7 +382,7 @@
 {
 	"name":"PCrecv",
 	"class":"_PCrecv",
-	"bON":0,
+	"bON": false,
 	"FPS":30,
 	"Window":"OKview",
 	"_Console":"OpenKAI",

@@ -2,14 +2,14 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bLog":1,
+	"bLog": true,
 	"bStdErr":1,
 }
 
 {
 	"name":"console",
 	"class":"_Console",
-	"bON":0,
+	"bON": false,
     {
 		"name":"thread",
 		"FPS":30,
@@ -20,12 +20,12 @@
 {
 	"name":"uploader",
 	"class":"_Uploader",
-	"bON":1,
+	"bON": true,
     {
 		"name":"thread",
 		"FPS":1,
 	}
-	"bLog":1,
+	"bLog": true,
 	"dir":"/home/kai/Downloads/test/",
 	"vExt":[".mka",".json",".png",".jpg"],
 	"bRemoveAfterUpload":0,

@@ -2,12 +2,12 @@
 	"APP": {
 		"class": "ModuleMgr",
 		"appName": "helloOK",
-		"bLog": 1,
+		"bLog": true,
 		"bStdErr": 1
 	},
 	"console": {
 		"class": "_Console",
-		"bON": 0,
+		"bON": false,
 		"thread": {
 			"name": "thread",
 			"class": "_Thread",
@@ -19,7 +19,7 @@
 	},
 	"view": {
 		"class": "_WindowCV",
-		"bON": 1,
+		"bON": true,
 		"thread": {
 			"name": "thread",
 			"class": "_Thread",
@@ -32,7 +32,7 @@
 	},
 	"cam": {
 		"class": "_Camera",
-		"bON": 1,
+		"bON": true,
 		"thread": {
 			"name": "thread",
 			"class": "_Thread",

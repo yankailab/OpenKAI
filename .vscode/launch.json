@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/OpenKAI",
-            "args": ["${workspaceFolder}/kiss/helloOK.json"],
+            "args": ["${workspaceFolder}/kiss/_DDSM.json"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

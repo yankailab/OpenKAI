@@ -24,7 +24,7 @@ namespace kai
 		IF_Le_F(!j.is_object(), "JSON is not an object");
 
 		m_name = j.value("name", m_name);
-		m_class = j.value("class", "");
+		m_class = j.value("class", m_class);
 		m_bLog = j.value("bLog", false);
 
 		IF_F(m_name.empty());
