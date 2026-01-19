@@ -40,10 +40,10 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		jVar(j, "thr", m_thr);
-		jVar(j, "bSwapRB", m_bSwapRB);
-		jVec<float>(j, "vMean", m_vMean);
-		jVar(j, "type", m_type);
+		jKv(j, "thr", m_thr);
+		jKv(j, "bSwapRB", m_bSwapRB);
+		jKv<float>(j, "vMean", m_vMean);
+		jKv(j, "type", m_type);
 
 		m_pRGBA = new Frame();
 		m_pRGBAf = new Frame();

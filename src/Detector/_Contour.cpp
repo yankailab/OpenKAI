@@ -24,8 +24,8 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		jVar(j, "mode", m_mode);
-		jVar(j, "method", m_method);
+		jKv(j, "mode", m_mode);
+		jKv(j, "method", m_method);
 
 		return true;
 	}

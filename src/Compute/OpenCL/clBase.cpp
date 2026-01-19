@@ -29,8 +29,8 @@ namespace kai
     {
         IF_F(!this->BASE::init(j));
 
-        jVar(j, "fKernel", m_fKernel);
-        jVar(j, "buildOpt", m_buildOpt);
+        jKv(j, "fKernel", m_fKernel);
+        jKv(j, "buildOpt", m_buildOpt);
 
         IF_F(!setupCL());
         IF_F(!setupKernel());

@@ -17,7 +17,7 @@ namespace kai
         IF_F(!this->_ProtocolBase::init(j));
 
         string addr = "";
-        jVar(j, "myAddr", addr);
+        jKv(j, "myAddr", addr);
         m_myAddr = getAddr(addr);
 
         return true;

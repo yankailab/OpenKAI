@@ -34,18 +34,18 @@ namespace kai
 	{
 		IF_F(!this->_APmavlink_move::init(j));
 
-		jVar(j, "iClass", m_iClass);
-		jVec<float>(j, "vPsp", m_vPsp);
+		jKv(j, "iClass", m_iClass);
+		jKv<float>(j, "vPsp", m_vPsp);
 
 		int tOutTargetNotFound;
-		if (jVar(j, "tOutTargetNotFound", tOutTargetNotFound))
+		if (jKv(j, "tOutTargetNotFound", tOutTargetNotFound))
 			m_tOutTargetNotFound.setTout(tOutTargetNotFound);
 		m_tOutTargetNotFound.reStartT(0);
 
 		int nWmed = 0;
-		jVar(j, "nWmed", nWmed);
+		jKv(j, "nWmed", nWmed);
 		int kTpred = 0;
-		jVar(j, "kTpred", kTpred);
+		jKv(j, "kTpred", kTpred);
 
 		IF_F(!m_fX.init(nWmed, kTpred));
 		IF_F(!m_fY.init(nWmed, kTpred));
@@ -55,21 +55,21 @@ namespace kai
 		const json &jm = j.at("mount");
 		IF__(!jm.is_object(), true);
 
-		jVar(jm, "bEnable", m_apMount.m_bEnable);
+		jKv(jm, "bEnable", m_apMount.m_bEnable);
 
 		float p = 0, r = 0, y = 0;
-		jVar(jm, "pitch", p);
-		jVar(jm, "roll", r);
-		jVar(jm, "yaw", y);
+		jKv(jm, "pitch", p);
+		jKv(jm, "roll", r);
+		jKv(jm, "yaw", y);
 		m_apMount.m_control.input_a = p * 100; // pitch
 		m_apMount.m_control.input_b = r * 100; // roll
 		m_apMount.m_control.input_c = y * 100; // yaw
 		m_apMount.m_control.save_position = 0;
 
-		jVar(jm, "stabPitch", m_apMount.m_config.stab_pitch);
-		jVar(jm, "stabRoll", m_apMount.m_config.stab_roll);
-		jVar(jm, "stabYaw", m_apMount.m_config.stab_yaw);
-		jVar(jm, "mountMode", m_apMount.m_config.mount_mode);
+		jKv(jm, "stabPitch", m_apMount.m_config.stab_pitch);
+		jKv(jm, "stabRoll", m_apMount.m_config.stab_roll);
+		jKv(jm, "stabYaw", m_apMount.m_config.stab_yaw);
+		jKv(jm, "mountMode", m_apMount.m_config.mount_mode);
 
 		return true;
 	}
@@ -81,27 +81,27 @@ namespace kai
 		string n;
 
 		n = "";
-		jVar(j, "PIDpitch", n);
+		jKv(j, "PIDpitch", n);
 		m_pPitch = (PID *)(pM->findModule(n));
 
 		n = "";
-		jVar(j, "PIDroll", n);
+		jKv(j, "PIDroll", n);
 		m_pRoll = (PID *)(pM->findModule(n));
 
 		n = "";
-		jVar(j, "PIDalt", n);
+		jKv(j, "PIDalt", n);
 		m_pAlt = (PID *)(pM->findModule(n));
 
 		n = "";
-		jVar(j, "PIDyaw", n);
+		jKv(j, "PIDyaw", n);
 		m_pYaw = (PID *)(pM->findModule(n));
 
 		n = "";
-		jVar(j, "_TrackerBase", n);
+		jKv(j, "_TrackerBase", n);
 		m_pTracker = (_TrackerBase *)pM->findModule(n);
 
 		n = "";
-		jVar(j, "_Universe", n);
+		jKv(j, "_Universe", n);
 		m_pU = (_Universe *)pM->findModule(n);
 
 		return true;

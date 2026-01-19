@@ -30,8 +30,8 @@ namespace kai
     {
         IF_F(!this->_GeometryBase::init(j));
 
-        jVar(j, "nPresv", m_nPresv);
-        jVar(j, "nPresvNext", m_nPresvNext);
+        jKv(j, "nPresv", m_nPresv);
+        jKv(j, "nPresvNext", m_nPresvNext);
 
         return initGeometry();
     }

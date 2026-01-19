@@ -31,18 +31,18 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		jVar(j, "thr", m_thr);
-		jVar(j, "nms", m_nms);
-		jVec<int>(j, "vBlobSize", m_vBlobSize);
-		jVar(j, "iBackend", m_iBackend);
-		jVar(j, "iTarget", m_iTarget);
-		jVar(j, "bSwapRB", m_bSwapRB);
-		jVar(j, "scale", m_scale);
-		jVar(j, "bDetect", m_bDetect);
-		jVar(j, "bOCR", m_bOCR);
-		jVar(j, "bWarp", m_bWarp);
-		jVar(j, "iClassDraw", m_iClassDraw);
-		jVec<double>(j, "vMean", m_vMean);
+		jKv(j, "thr", m_thr);
+		jKv(j, "nms", m_nms);
+		jKv<int>(j, "vBlobSize", m_vBlobSize);
+		jKv(j, "iBackend", m_iBackend);
+		jKv(j, "iTarget", m_iTarget);
+		jKv(j, "bSwapRB", m_bSwapRB);
+		jKv(j, "scale", m_scale);
+		jKv(j, "bDetect", m_bDetect);
+		jKv(j, "bOCR", m_bOCR);
+		jKv(j, "bWarp", m_bWarp);
+		jKv(j, "iClassDraw", m_iClassDraw);
+		jKv<double>(j, "vMean", m_vMean);
 
 		m_net = readNet(m_fModel);
 		IF_F(m_net.empty());
@@ -64,7 +64,7 @@ namespace kai
 
 #ifdef USE_OCR
 		string n = "";
-		jVar(j, "OCR", n);
+		jKv(j, "OCR", n);
 		m_pOCR = (OCR *)(pM->findModule(n));
 		NULL_F(m_pOCR);
 #endif

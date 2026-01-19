@@ -31,7 +31,7 @@ namespace kai
 		IF_F(!this->_PCframe::link(j, pM));
 
 		string n = "";
-		jVar(j, "_RGBDbase", n);
+		jKv(j, "_RGBDbase", n);
 		m_pV = (_RGBDbase *)(pM->findModule(n));
 		IF_Le_F(!m_pV, "_RGBDbase not found: " + n);
 

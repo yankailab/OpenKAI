@@ -34,13 +34,13 @@ namespace kai
 
 			IMG_MORPH m;
 			m.init();
-			jVar(Ji, "morphOp", m.m_morphOp);
-			jVar(Ji, "nItr", m.m_nItr);
-			jVar(Ji, "kShape", m.m_kShape);
-			jVar(Ji, "kW", m.m_kW);
-			jVar(Ji, "kH", m.m_kH);
-			jVar(Ji, "aX", m.m_aX);
-			jVar(Ji, "aY", m.m_aY);
+			jKv(Ji, "morphOp", m.m_morphOp);
+			jKv(Ji, "nItr", m.m_nItr);
+			jKv(Ji, "kShape", m.m_kShape);
+			jKv(Ji, "kW", m.m_kW);
+			jKv(Ji, "kH", m.m_kH);
+			jKv(Ji, "aX", m.m_aX);
+			jKv(Ji, "aY", m.m_aY);
 			m.updateKernel();
 
 			m_vFilter.push_back(m);
@@ -54,7 +54,7 @@ namespace kai
 		IF_F(!this->_VisionBase::link(j, pM));
 
 		string n = "";
-		jVar(j, "_VisionBase", n);
+		jKv(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

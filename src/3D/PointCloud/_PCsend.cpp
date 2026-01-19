@@ -28,8 +28,8 @@ namespace kai
     {
         IF_F(!this->_GeometryBase::init(j));
 
-        jVar(j, "tInt", m_tInt);
-        jVar(j, "nB", m_nB);
+        jKv(j, "tInt", m_tInt);
+        jKv(j, "nB", m_nB);
 
         DEL(m_pB);
         m_pB = new uint8_t[m_nB];
@@ -43,7 +43,7 @@ namespace kai
         IF_F(!this->_GeometryBase::link(j, pM));
 
         string n = "";
-        jVar(j, "_IObase", n);
+        jKv(j, "_IObase", n);
         m_pIO = (_IObase *)(pM->findModule(n));
         IF_Le_F(!m_pIO, "_IObase not found: " + n);
 

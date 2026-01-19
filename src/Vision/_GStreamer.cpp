@@ -26,8 +26,8 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(j));
 
-		jVar(j, "pipeline", m_pipeline);
-		jVar(j, "nInitRead", m_nInitRead);
+		jKv(j, "pipeline", m_pipeline);
+		jKv(j, "nInitRead", m_nInitRead);
 
 		return true;
 	}

@@ -48,24 +48,24 @@ namespace kai
 	{
 		IF_F(!this->_DistSensorBase::init(j));
 
-		jVar(j, "port", m_port);
-		jVar(j, "baud", m_baud);
-		jVar(j, "slaveAddr", m_slaveAddr);
-		jVar(j, "bUse0x41", m_bUse0x41);
-		jVar(j, "showOriginOffsetX", m_showOriginOffsetX);
-		jVar(j, "showOriginOffsetY", m_showOriginOffsetY);
+		jKv(j, "port", m_port);
+		jKv(j, "baud", m_baud);
+		jKv(j, "slaveAddr", m_slaveAddr);
+		jKv(j, "bUse0x41", m_bUse0x41);
+		jKv(j, "showOriginOffsetX", m_showOriginOffsetX);
+		jKv(j, "showOriginOffsetY", m_showOriginOffsetY);
 
-		jVar(j, "nAccumulationsExpo", m_nAccumulationsExpo);
-		jVar(j, "nOversamplingsExpo", m_nOversamplingsExpo);
-		jVar(j, "nPoint", m_nPoint);
-		jVar(j, "lightSrcPwr", m_lightSrcPwr);
-		jVar(j, "bAutoLightSrcPwr", m_bAutoLightSrcPwr);
-		jVar(j, "bDemergeObj", m_bDemergeObj);
-		jVar(j, "bStaticNoiseRemoval", m_bStaticNoiseRemoval);
-		jVar(j, "bPrecicion", m_bPrecision);
-		jVar(j, "bSaturationCompensation", m_bSaturationCompensation);
-		jVar(j, "bOvershootManagement", m_bOvershootManagement);
-		jVar(j, "oprMode", m_oprMode);
+		jKv(j, "nAccumulationsExpo", m_nAccumulationsExpo);
+		jKv(j, "nOversamplingsExpo", m_nOversamplingsExpo);
+		jKv(j, "nPoint", m_nPoint);
+		jKv(j, "lightSrcPwr", m_lightSrcPwr);
+		jKv(j, "bAutoLightSrcPwr", m_bAutoLightSrcPwr);
+		jKv(j, "bDemergeObj", m_bDemergeObj);
+		jKv(j, "bStaticNoiseRemoval", m_bStaticNoiseRemoval);
+		jKv(j, "bPrecicion", m_bPrecision);
+		jKv(j, "bSaturationCompensation", m_bSaturationCompensation);
+		jKv(j, "bOvershootManagement", m_bOvershootManagement);
+		jKv(j, "oprMode", m_oprMode);
 
 		return true;
 	}

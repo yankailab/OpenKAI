@@ -22,9 +22,9 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		jVec<int>(j, "vSize", m_vSize);
-		jVar(j, "nThreads", m_nThreads);
-		jVar(j, "confidence", m_confidence);
+		jKv<int>(j, "vSize", m_vSize);
+		jKv(j, "nThreads", m_nThreads);
+		jKv(j, "confidence", m_confidence);
 
 		return true;
 	}

@@ -16,11 +16,11 @@ namespace kai
 	{
 		IF_F(!this->_ProtocolBase::init(j));
 
-		jVar(j, "nCr", m_nCr);
-		jVar(j, "nCw", m_nCw);
+		jKv(j, "nCr", m_nCr);
+		jKv(j, "nCw", m_nCw);
 
 		vector<int> vPWM;
-		jVar(j, "vPWM", vPWM);
+		jKv(j, "vPWM", vPWM);
 		for (int i = 0; i < vPWM.size(); i++)
 		{
 			if (i >= m_nCw)

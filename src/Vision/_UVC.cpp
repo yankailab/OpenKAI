@@ -39,11 +39,11 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(j));
 
-		jVar(j, "streamType", m_streamType);
-		jVar(j, "vendorID", m_vendorID);
-		jVar(j, "productID", m_productID);
-		jVar(j, "SN", m_SN);
-		jVec<float>(j, "vRangeDraw", m_vRangeDraw);
+		jKv(j, "streamType", m_streamType);
+		jKv(j, "vendorID", m_vendorID);
+		jKv(j, "productID", m_productID);
+		jKv(j, "SN", m_SN);
+		jKv<float>(j, "vRangeDraw", m_vRangeDraw);
 
 		return true;
 	}

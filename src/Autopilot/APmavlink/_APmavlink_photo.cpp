@@ -20,9 +20,9 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		jVar(j, "exifConfig", m_exifConfig);
-		jVar(j, "dir", m_dir);
-		jVar(j, "subDir", m_subDir);
+		jKv(j, "exifConfig", m_exifConfig);
+		jKv(j, "dir", m_dir);
+		jKv(j, "subDir", m_subDir);
 
 		if (m_subDir.empty())
 			m_subDir = m_dir + tFormat() + "/";
@@ -37,7 +37,7 @@ namespace kai
 		IF_F(!this->_ModuleBase::link(j, pM));
 
 		string n = "";
-		jVar(j, "_APmavlink_base", n);
+		jKv(j, "_APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 		NULL_F(m_pAP);
 

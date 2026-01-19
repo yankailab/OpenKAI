@@ -24,29 +24,29 @@ namespace kai
 	{
 		IF_F(!this->_ActuatorBase::init(j));
 
-		jVar(j, "iSlave", m_iSlave);
-		jVar(j, "dpr", m_dpr);
-		jVar(j, "dInit", m_dInit);
-		jVar(j, "cmdInt", m_cmdInt);
+		jKv(j, "iSlave", m_iSlave);
+		jKv(j, "dpr", m_dpr);
+		jKv(j, "dInit", m_dInit);
+		jKv(j, "cmdInt", m_cmdInt);
 
 		const json &ja = j.at("addr");
 		if (ja.is_object())
 		{
-			jVar(ja, "setDPR", m_addr.m_setDPR);
-			jVar(ja, "setDist", m_addr.m_setDist);
-			jVar(ja, "setDir", m_addr.m_setDir);
-			jVar(ja, "setSpd", m_addr.m_setSpd);
-			jVar(ja, "setAcc", m_addr.m_setAcc);
-			jVar(ja, "setSlaveID", m_addr.m_setSlaveID);
-			jVar(ja, "setBaudL", m_addr.m_setBaudL);
-			jVar(ja, "setBaudH", m_addr.m_setBaudH);
+			jKv(ja, "setDPR", m_addr.m_setDPR);
+			jKv(ja, "setDist", m_addr.m_setDist);
+			jKv(ja, "setDir", m_addr.m_setDir);
+			jKv(ja, "setSpd", m_addr.m_setSpd);
+			jKv(ja, "setAcc", m_addr.m_setAcc);
+			jKv(ja, "setSlaveID", m_addr.m_setSlaveID);
+			jKv(ja, "setBaudL", m_addr.m_setBaudL);
+			jKv(ja, "setBaudH", m_addr.m_setBaudH);
 
-			jVar(ja, "bComplete", m_addr.m_bComplete);
-			jVar(ja, "readStat", m_addr.m_readStat);
-			jVar(ja, "run", m_addr.m_run);
-			jVar(ja, "stop", m_addr.m_stop);
-			jVar(ja, "resPos", m_addr.m_resPos);
-			jVar(ja, "saveData", m_addr.m_saveData);
+			jKv(ja, "bComplete", m_addr.m_bComplete);
+			jKv(ja, "readStat", m_addr.m_readStat);
+			jKv(ja, "run", m_addr.m_run);
+			jKv(ja, "stop", m_addr.m_stop);
+			jKv(ja, "resPos", m_addr.m_resPos);
+			jKv(ja, "saveData", m_addr.m_saveData);
 		}
 
 		return true;
@@ -57,7 +57,7 @@ namespace kai
 		IF_F(!this->_ActuatorBase::link(j, pM));
 
 		string n = "";
-		jVar(j, "_Modbus", n);
+		jKv(j, "_Modbus", n);
 		m_pMB = (_Modbus *)(pM->findModule(n));
 		IF_Le_F(!m_pMB, "_Modbus not found: " + n);
 

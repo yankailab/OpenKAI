@@ -36,12 +36,12 @@ namespace kai
 		string n;
 
 		n = "";
-		jVar(j, "_VisionBase", n);
+		jKv(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 
 		n = "";
-		jVar(j, "fCalib", m_fCalib);
+		jKv(j, "fCalib", m_fCalib);
 		Mat mC, mD;
 		IF_F(!readCamMatrices(m_fCalib, &mC, &mD));
 		m_bReady = setCamMat(mC, mD);

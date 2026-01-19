@@ -23,7 +23,7 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::init(j));
 
-		jVar(j, "rVoxel", m_rVoxel);
+		jKv(j, "rVoxel", m_rVoxel);
 
 		return true;
 	}

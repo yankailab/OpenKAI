@@ -29,13 +29,13 @@ namespace kai
 	{
 		IF_F(!this->BASE::init(j));
 
-		jVar(j, "P", m_P);
-		jVar(j, "I", m_I);
-		jVar(j, "Imax", m_Imax);
-		jVar(j, "D", m_D);
+		jKv(j, "P", m_P);
+		jKv(j, "I", m_I);
+		jKv(j, "Imax", m_Imax);
+		jKv(j, "D", m_D);
 
-		jVec<float>(j, "vRin", m_vRin);
-		jVec<float>(j, "vRout", m_vRout);
+		jKv<float>(j, "vRin", m_vRin);
+		jKv<float>(j, "vRout", m_vRout);
 
 		return true;
 	}

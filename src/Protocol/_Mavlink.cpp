@@ -64,15 +64,15 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		jVar(j, "mySystemID", m_mySystemID);
-		jVar(j, "myComponentID", m_myComponentID);
-		jVar(j, "myType", m_myType);
+		jKv(j, "mySystemID", m_mySystemID);
+		jKv(j, "myComponentID", m_myComponentID);
+		jKv(j, "myType", m_myType);
 
-		jVar(j, "devSystemID", m_devSystemID);
-		jVar(j, "devComponentID", m_devComponentID);
-		jVar(j, "devType", m_devType);
+		jKv(j, "devSystemID", m_devSystemID);
+		jKv(j, "devComponentID", m_devComponentID);
+		jKv(j, "devType", m_devType);
 
-		jVar(j, "iMavComm", m_iMavComm);
+		jKv(j, "iMavComm", m_iMavComm);
 
 		m_status.packet_rx_drop_count = 0;
 
@@ -84,7 +84,7 @@ namespace kai
 		IF_F(!this->_ModuleBase::link(j, pM));
 
 		string n = "";
-		jVar(j, "_IObase", n);
+		jKv(j, "_IObase", n);
 		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 
@@ -99,7 +99,7 @@ namespace kai
 			MAVLINK_PEER mP;
 			mP.init();
 			n = "";
-			jVar(Ji, "_Mavlink", n);
+			jKv(Ji, "_Mavlink", n);
 			mP.m_pPeer = pM->findModule(n);
 			if (!mP.m_pPeer)
 			{
@@ -112,7 +112,7 @@ namespace kai
 
 		// cmd routing
 		vector<int> vNoRouteCmd;
-		jVar(j, "noRouteCmd", vNoRouteCmd);
+		jKv(j, "noRouteCmd", vNoRouteCmd);
 		for (int i = 0; i < vNoRouteCmd.size(); i++)
 		{
 			setCmdRoute(vNoRouteCmd[i], false);

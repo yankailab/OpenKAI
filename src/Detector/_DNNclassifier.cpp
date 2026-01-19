@@ -27,13 +27,13 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		jVar(j, "nW", m_nW);
-		jVar(j, "nH", m_nH);
-		jVar(j, "bSwapRB", m_bSwapRB);
-		jVar(j, "scale", m_scale);
-		jVar(j, "iBackend", m_iBackend);
-		jVar(j, "iTarget", m_iTarget);
-		jVec<int>(j, "vMeanBGR", m_vMean);
+		jKv(j, "nW", m_nW);
+		jKv(j, "nH", m_nH);
+		jKv(j, "bSwapRB", m_bSwapRB);
+		jKv(j, "scale", m_scale);
+		jKv(j, "iBackend", m_iBackend);
+		jKv(j, "iTarget", m_iTarget);
+		jKv<int>(j, "vMeanBGR", m_vMean);
 
 		const json &jF = j.at("vFilter");
 		IF_F(!jF.is_object());
@@ -45,7 +45,7 @@ namespace kai
 			IF_CONT(!Ji.is_object());
 
 			r.clear();
-			jVar(Ji, "vROI", r);
+			jKv<float>(Ji, "vROI", r);
 			m_vROI.push_back(r);
 		}
 

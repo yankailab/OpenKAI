@@ -17,11 +17,11 @@ namespace kai
     {
         IF_F(!this->_ProtocolBase::init(j));
 
-        jVar(j, "msgFinishSend", m_msgFinishSend);
-        jVar(j, "msgFinishRecv", m_msgFinishRecv);
+        jKv(j, "msgFinishSend", m_msgFinishSend);
+        jKv(j, "msgFinishRecv", m_msgFinishRecv);
 
         int v = SEC_2_USEC;
-        jVar(j, "ieSendHB", v);
+        jKv(j, "ieSendHB", v);
         m_ieSendHB.init(v);
 
         return true;

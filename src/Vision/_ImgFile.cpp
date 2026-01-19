@@ -24,7 +24,7 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(j));
 
-		jVar(j, "file", m_file);
+		jKv(j, "file", m_file);
 
 		return true;
 	}

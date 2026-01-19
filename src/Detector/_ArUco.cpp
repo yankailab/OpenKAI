@@ -25,16 +25,16 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		jVar(j, "dict", m_dict);
+		jKv(j, "dict", m_dict);
 		m_pDict = cv::Ptr<cv::aruco::Dictionary>(new cv::aruco::Dictionary());
 		*m_pDict = aruco::getPredefinedDictionary(m_dict);
-		jVar(j, "realSize", m_realSize);
+		jKv(j, "realSize", m_realSize);
 
-		jVar(j, "bPose", m_bPose);
+		jKv(j, "bPose", m_bPose);
 		if (m_bPose)
 		{
 			string n = "";
-			jVar(j, "fCalib", n);
+			jKv(j, "fCalib", n);
 			readCamMatrices(n, &m_mC, &m_mD);
 		}
 

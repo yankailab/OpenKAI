@@ -27,9 +27,9 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		jVar(j, "scale", m_scale);
-		jVec<int>(j, "vAxisIdx", m_vAxisIdx);
-		jVec<float>(j, "vRoffset", m_vRoffset);
+		jKv(j, "scale", m_scale);
+		jKv<int>(j, "vAxisIdx", m_vAxisIdx);
+		jKv<float>(j, "vRoffset", m_vRoffset);
 
 		return true;
 	}

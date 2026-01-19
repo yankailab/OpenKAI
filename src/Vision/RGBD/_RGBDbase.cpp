@@ -44,24 +44,24 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(j));
 
-		jVar(j, "devFPSd", m_devFPSd);
-		jVec<int>(j, "vSizeD", m_vSizeD);
-		jVec<float>(j, "vRangeD", m_vRangeD);
+		jKv(j, "devFPSd", m_devFPSd);
+		jKv<int>(j, "vSizeD", m_vSizeD);
+		jKv<float>(j, "vRangeD", m_vRangeD);
 
-		jVar(j, "bDepth", m_bDepth);
-		jVar(j, "bIR", m_bIR);
-		jVar(j, "btRGB", m_btRGB);
-		jVar(j, "btDepth", m_btDepth);
-		jVar(j, "bConfidence", m_bConfidence);
-		jVar(j, "fConfidenceThreshold", m_fConfidenceThreshold);
+		jKv(j, "bDepth", m_bDepth);
+		jKv(j, "bIR", m_bIR);
+		jKv(j, "btRGB", m_btRGB);
+		jKv(j, "btDepth", m_btDepth);
+		jKv(j, "bConfidence", m_bConfidence);
+		jKv(j, "fConfidenceThreshold", m_fConfidenceThreshold);
 
 #ifdef USE_OPENCV
-		jVar(j, "dScale", m_dScale);
-		jVar(j, "dOfs", m_dOfs);
-		jVar(j, "nHistLev", m_nHistLev);
-		jVar(j, "iHistFrom", m_iHistFrom);
-		jVar(j, "minHistD", m_minHistD);
-		jVar(j, "bDebugDepth", m_bDebugDepth);
+		jKv(j, "dScale", m_dScale);
+		jKv(j, "dOfs", m_dOfs);
+		jKv(j, "nHistLev", m_nHistLev);
+		jKv(j, "iHistFrom", m_iHistFrom);
+		jKv(j, "minHistD", m_minHistD);
+		jKv(j, "bDebugDepth", m_bDebugDepth);
 #endif
 
 		return true;

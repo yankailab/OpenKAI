@@ -28,8 +28,8 @@ namespace kai
 
 		int nPacket = 1024;
 		int nPbuffer = 512;
-		jVar(j, "nPacket", nPacket);
-		jVar(j, "nPbuffer", nPbuffer);
+		jKv(j, "nPacket", nPacket);
+		jKv(j, "nPbuffer", nPbuffer);
 
 		IF_F(!m_packetW.init(nPbuffer, nPacket));
 		IF_F(!m_packetR.init(nPbuffer, nPacket));

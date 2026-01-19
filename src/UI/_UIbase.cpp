@@ -30,7 +30,7 @@ namespace kai
 		IF_F(!this->_ModuleBase::link(j, pM));
 
 		vector<string> vB;
-		jVec<string>(j, "vBASE", vB);
+		jKv(j, "vBASE", vB);
 		m_vpB.clear();
 		for (string n : vB)
 		{

@@ -26,11 +26,11 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		jVar(j, "process", m_process);
-		jVar(j, "fName", m_fName);
-		jVar(j, "dir", m_dir);
-		jVar(j, "vWP", m_vWP);
-		jVar(j, "tVidInt", m_tVidInt);
+		jKv(j, "process", m_process);
+		jKv(j, "fName", m_fName);
+		jKv(j, "dir", m_dir);
+		jKv(j, "vWP", m_vWP);
+		jKv(j, "tVidInt", m_tVidInt);
 
 		return true;
 	}
@@ -42,12 +42,12 @@ namespace kai
 		string n;
 
 		n = "";
-		jVar(j, "_APmavlink_base", n);
+		jKv(j, "_APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 		NULL_F(m_pAP);
 
 		n = "";
-		jVar(j, "_Uploader", n);
+		jKv(j, "_Uploader", n);
 		m_pCurl = (_Uploader *)(pM->findModule(n));
 
 		return true;

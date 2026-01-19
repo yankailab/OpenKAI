@@ -35,15 +35,15 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		jVar(j, "apType", m_apType);
-		jVar(j, "bSyncMode", m_bSyncMode);
+		jKv(j, "apType", m_apType);
+		jKv(j, "bSyncMode", m_bSyncMode);
 
 		float t;
 
-		if (jVar(j, "ieSendHB", t))
+		if (jKv(j, "ieSendHB", t))
 			m_ieSendHB.init(t * SEC_2_USEC);
 
-		if (jVar(j, "ieSendMsgInt", t))
+		if (jKv(j, "ieSendMsgInt", t))
 			m_ieSendMsgInt.init(t * SEC_2_USEC);
 
 		return true;
@@ -54,7 +54,7 @@ namespace kai
 		IF_F(!this->_ModuleBase::link(j, pM));
 
 		string n = "";
-		jVar(j, "_Mavlink", n);
+		jKv(j, "_Mavlink", n);
 		m_pMav = (_Mavlink *)(pM->findModule(n));
 		NULL_F(m_pMav);
 
@@ -67,9 +67,9 @@ namespace kai
 			IF_CONT(!Ji.is_object());
 
 			int id = 0;
-			jVar(Ji, "id", id);
+			jKv(Ji, "id", id);
 			float tInt = 1;
-			jVar(Ji, "tInt", tInt);
+			jKv(Ji, "tInt", tInt);
 
 			if (!m_pMav->setMsgInterval(id, tInt * SEC_2_USEC))
 			{

@@ -25,9 +25,9 @@ namespace kai
     {
         IF_F(!this->_DetectorBase::init(j));
 
-        jVar(j, "persistence", m_persistence);
-        jVar(j, "gain", m_gain);
-        jVar(j, "angleOffset", m_angleOffset);
+        jKv(j, "persistence", m_persistence);
+        jKv(j, "gain", m_gain);
+        jKv(j, "angleOffset", m_angleOffset);
 
         m_chilitags.setFilter(m_persistence, m_gain);
 

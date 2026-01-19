@@ -19,7 +19,7 @@ namespace kai
 	{
 		IF_F(!this->_ActuatorBase::init(j));
 
-		jVar(j, "ddsmMode", m_ddsmMode);
+		jKv(j, "ddsmMode", m_ddsmMode);
 
 		DEL(m_pTr);
 		m_pTr = createThread(j.at("threadR"), "threadR");
@@ -34,7 +34,7 @@ namespace kai
 		IF_F(!m_pTr->link(j.at("threadR"), pM));
 
 		string n = "";
-		jVar(j, "_IObase", n);
+		jKv(j, "_IObase", n);
 		m_pIO = (_IObase *)(pM->findModule(n));
 		IF_Le_F(!m_pIO, "_IObase not found: " + n);
 

@@ -28,13 +28,13 @@ namespace kai
 	{
 		IF_F(!this->_FileBase::init(j));
 
-		jVar(j, "dir", m_dir);
+		jKv(j, "dir", m_dir);
 		m_dir = checkDirName(m_dir);
-		jVar(j, "bRemoveAfterUpload", m_bRemoveAfterUpload);
-		jVar(j, "method", m_method);
-		jVar(j, "url", m_url);
-		jVar(j, "cmd", m_cmd);
-		jVar(j, "bConfirmCmdResult", m_bConfirmCmdResult);
+		jKv(j, "bRemoveAfterUpload", m_bRemoveAfterUpload);
+		jKv(j, "method", m_method);
+		jKv(j, "url", m_url);
+		jKv(j, "cmd", m_cmd);
+		jKv(j, "bConfirmCmdResult", m_bConfirmCmdResult);
 
 		if (m_method == uploader_http)
 		{

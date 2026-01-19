@@ -27,8 +27,8 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(j));
 
-		jVar(j, "alpha", m_alpha);
-		jVar(j, "beta", m_beta);
+		jKv(j, "alpha", m_alpha);
+		jKv(j, "beta", m_beta);
 
 		return true;
 	}
@@ -38,7 +38,7 @@ namespace kai
 		IF_F(!this->_VisionBase::link(j, pM));
 
 		string n = "";
-		jVar(j, "_VisionBase", n);
+		jKv(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

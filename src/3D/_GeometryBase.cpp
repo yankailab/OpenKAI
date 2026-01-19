@@ -45,19 +45,19 @@ namespace kai
     {
         IF_F(!this->_ModuleBase::init(j));
 
-        jVar(j, "fConfig", m_fConfig);
-        jVec<float>(j, "vColorDefault", m_vColorDefault);
-        jVec<float>(j, "vkColR", m_vkColR);
-        jVec<float>(j, "vkColG", m_vkColG);
-        jVec<float>(j, "vkColB", m_vkColB);
-        jVar(j, "bColOverwrite", m_bColOverwrite);
+        jKv(j, "fConfig", m_fConfig);
+        jKv<float>(j, "vColorDefault", m_vColorDefault);
+        jKv<float>(j, "vkColR", m_vkColR);
+        jKv<float>(j, "vkColG", m_vkColG);
+        jKv<float>(j, "vkColB", m_vkColB);
+        jKv(j, "bColOverwrite", m_bColOverwrite);
         m_vkColOv.set(
             1.0 / m_vkColR.len(),
             1.0 / m_vkColG.len(),
             1.0 / m_vkColB.len());
 
-        jVec<double>(j, "vT", m_vT);
-        jVec<double>(j, "vR", m_vR);
+        jKv<double>(j, "vT", m_vT);
+        jKv<double>(j, "vR", m_vR);
         setTranslation(m_vT);
         setRotation(m_vR);
         updateTranslationMatrix();
@@ -72,7 +72,7 @@ namespace kai
         IF_F(!this->_ModuleBase::link(j, pM));
 
         string n = "";
-        jVar(j, "SharedMem", n);
+        jKv(j, "SharedMem", n);
         m_pSM = (SharedMem *)(pM->findModule(n));
 
         return true;

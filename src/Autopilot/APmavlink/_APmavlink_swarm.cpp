@@ -38,21 +38,21 @@ namespace kai
 	{
 		IF_F(!this->_APmavlink_move::init(j));
 
-		jVar(j, "bAutoArm", m_bAutoArm);
-		jVar(j, "altTakeoff", m_altTakeoff);
-		jVar(j, "altAuto", m_altAuto);
-		jVar(j, "altLand", m_altLand);
-		jVar(j, "myID", m_myID);
+		jKv(j, "bAutoArm", m_bAutoArm);
+		jKv(j, "altTakeoff", m_altTakeoff);
+		jKv(j, "altAuto", m_altAuto);
+		jKv(j, "altLand", m_altLand);
+		jKv(j, "myID", m_myID);
 
-		jVar(j, "vTargetID", m_vTargetID);
-		jVar(j, "iClass", m_iClass);
-		jVar(j, "dRdet", m_dRdet);
+		jKv(j, "vTargetID", m_vTargetID);
+		jKv(j, "iClass", m_iClass);
+		jKv(j, "dRdet", m_dRdet);
 
-		jVec<double>(j, "vWPd", m_vWPd);
-		jVec<double>(j, "vWPrange", m_vWPrange);
-		jVar(j, "ieNextWP", m_ieNextWP.m_tInterval);
-		jVar(j, "ieSendHB", m_ieSendHB.m_tInterval);
-		jVar(j, "ieSendGCupdate", m_ieSendGCupdate.m_tInterval);
+		jKv<double>(j, "vWPd", m_vWPd);
+		jKv<double>(j, "vWPrange", m_vWPrange);
+		jKv(j, "ieNextWP", m_ieNextWP.m_tInterval);
+		jKv(j, "ieSendHB", m_ieSendHB.m_tInterval);
+		jKv(j, "ieSendGCupdate", m_ieSendGCupdate.m_tInterval);
 
 		return true;
 	}
@@ -64,7 +64,7 @@ namespace kai
 		string n;
 
 		n = "";
-		jVar(j, "_StateControl", n);
+		jKv(j, "_StateControl", n);
 		m_pSC = (_StateControl *)(pM->findModule(n));
 		NULL_F(m_pSC);
 
@@ -75,27 +75,27 @@ namespace kai
 		IF_F(!m_state.bValid());
 
 		n = "";
-		jVar(j, "_APmavlink_base", n);
+		jKv(j, "_APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 		NULL_F(m_pAP);
 
 		n = "";
-		jVar(j, "_Swarm", n);
+		jKv(j, "_Swarm", n);
 		m_pSwarm = (_SwarmSearch *)(pM->findModule(n));
 		NULL_F(m_pSwarm);
 
 		n = "";
-		jVar(j, "_Xbee", n);
+		jKv(j, "_Xbee", n);
 		m_pXb = (_Xbee *)(pM->findModule(n));
 		NULL_F(m_pXb);
 
 		n = "";
-		jVar(j, "_IObase", n);
+		jKv(j, "_IObase", n);
 		m_pGio = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pGio);
 
 		n = "";
-		jVar(j, "_Universe", n);
+		jKv(j, "_Universe", n);
 		m_pU = (_Universe *)(pM->findModule(n));
 		NULL_F(m_pU);
 

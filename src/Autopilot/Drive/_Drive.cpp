@@ -21,11 +21,11 @@ namespace kai
     {
         IF_F(!this->_ModuleBase::init(j));
 
-        jVar(j, "nSpd", m_nSpd);
-        jVar(j, "nDir", m_nDir);
-        jVar(j, "nStr", m_nStr);
-        jVec<float>(j, "vSpdRange", m_vSpdRange);
-        jVec<float>(j, "vStrRange", m_vStrRange);
+        jKv(j, "nSpd", m_nSpd);
+        jKv(j, "nDir", m_nDir);
+        jKv(j, "nStr", m_nStr);
+        jKv<float>(j, "vSpdRange", m_vSpdRange);
+        jKv<float>(j, "vStrRange", m_vStrRange);
 
         return true;
     }
@@ -44,11 +44,11 @@ namespace kai
 
             DRIVE_MOTOR m;
             m.init();
-            jVar(Ji, "kSpd", m.m_kSpd);
-            jVar(Ji, "kStr", m.m_kStr);
+            jKv(Ji, "kSpd", m.m_kSpd);
+            jKv(Ji, "kStr", m.m_kStr);
 
             string n = "";
-            jVar(Ji, "_ActuatorBase", n);
+            jKv(Ji, "_ActuatorBase", n);
             m.m_pActuator = (_ActuatorBase *)(pM->findModule(n));
 
             m_vM.push_back(m);

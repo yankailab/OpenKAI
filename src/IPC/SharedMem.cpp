@@ -31,9 +31,9 @@ namespace kai
 	{
 		IF_F(!this->BASE::init(j));
 
-		jVar(j, "shmName", m_shmName);
-		jVar(j, "nB", m_nB);
-		jVar(j, "bWriter", m_bWriter);
+		jKv(j, "shmName", m_shmName);
+		jKv(j, "nB", m_nB);
+		jKv(j, "bWriter", m_bWriter);
 
 		IF_F(!open());
 

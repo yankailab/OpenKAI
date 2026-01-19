@@ -24,8 +24,8 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::init(j));
 
-		jVar(j, "nP", m_nP);
-		jVar(j, "r", m_r);
+		jKv(j, "nP", m_nP);
+		jKv(j, "r", m_r);
 
 		return true;
 	}

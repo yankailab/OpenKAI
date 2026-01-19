@@ -30,8 +30,8 @@ namespace kai
     {
         IF_F(!this->_ModuleBase::init(j));
 
-        jVar(j, "est", (int &)m_est);
-        jVar(j, "thr", m_thr);
+        jKv(j, "est", (int &)m_est);
+        jKv(j, "thr", m_thr);
 
         return true;
     }
@@ -43,17 +43,17 @@ namespace kai
         string n;
 
         n = "";
-        jVar(j, "_PCframeSrc", n);
+        jKv(j, "_PCframeSrc", n);
         m_pSrc = (_PCframe *)(pM->findModule(n));
         IF_Le_F(!m_pSrc, n + ": not found");
 
         n = "";
-        jVar(j, "_PCframeTgt", n);
+        jKv(j, "_PCframeTgt", n);
         m_pTgt = (_PCframe *)(pM->findModule(n));
         IF_Le_F(!m_pTgt, n + ": not found");
 
         n = "";
-        jVar(j, "_PCtransform", n);
+        jKv(j, "_PCtransform", n);
         m_pTf = (_PCtransform *)(pM->findModule(n));
         IF_Le_F(!m_pTf, n + ": not found");
 

@@ -32,11 +32,11 @@ namespace kai
 	{
 		IF_F(!this->_IObase::init(j));
 
-		jVar(j, "addrRemote", m_addrRemote);
-		jVar(j, "portRemote", m_portRemote);
-		jVar(j, "portLocal", m_portLocal);
-		jVar(j, "bW2R", m_bW2R);
-		jVar(j, "bWbroadcast", m_bWbroadcast);
+		jKv(j, "addrRemote", m_addrRemote);
+		jKv(j, "portRemote", m_portRemote);
+		jKv(j, "portLocal", m_portLocal);
+		jKv(j, "bW2R", m_bW2R);
+		jKv(j, "bWbroadcast", m_bWbroadcast);
 
 		return true;
 	}

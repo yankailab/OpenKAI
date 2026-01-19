@@ -7,15 +7,8 @@
 using namespace std;
 using namespace nlohmann;
 
-#include <string>
-#include <type_traits>
-
-template <class T>
-inline constexpr bool is_string_v =
-	std::is_same_v<std::remove_cv_t<std::remove_reference_t<T>>, std::string>;
-
 template <typename T>
-bool jVar(const json &j, const std::string &key, T &v)
+bool jKv(const json &j, const std::string &key, T &v)
 {
 	if (!j.is_object())
 	{
@@ -30,74 +23,41 @@ bool jVar(const json &j, const std::string &key, T &v)
 		return false;
 	}
 
-	// const T *p = it->get_ptr<const T *>();
-	// if (p == nullptr)
-	// {
-	// 	LOG(INFO) << "Incorrect type: " + key;
-	// 	return false;
-	// }
+	try
+	{
+		v = it->get<T>();
+		return true;
+	}
+	catch (const json::type_error &e)
+	{
+		LOG(INFO) << "Type error: " + key + ": " + std::string(e.what());
+		return false;
+	}
+	catch (const json::out_of_range &e)
+	{
+		LOG(INFO) << "Out-of-range: " + key + ": " + std::string(e.what());
+		return false;
+	}
+	catch (const json::exception &e)
+	{
+		LOG(INFO) << "JSON exception: " + key + ": " + std::string(e.what());
+		return false;
+	}
 
-	// v = *p;
 	return true;
 }
 
 template <typename T1, typename T2>
-bool jVec(const json &j, const std::string &key, T2 &v)
+bool jKv(const json &j, const std::string &key, T2 &v)
 {
-	if (!j.is_object())
-	{
-		LOG(INFO) << "JSON is not an object: " + key;
-		return false;
-	}
-
-	auto it = j.find(key);
-	if (it == j.end())
-	{
-		LOG(INFO) << "Cannot find: " + key;
-		return false;
-	}
-
-	if (!it->is_array())
-	{
-		LOG(INFO) << "Not an array: " + key;
-		return false;
-	}
-
 	std::vector<T1> vT;
-	vT.reserve(it->size());
-
-	if constexpr (is_string_v<T1>)
+	if (jKv(j, key, vT))
 	{
-		for (const auto &e : *it)
-		{
-			if (!e.is_string())
-			{
-				LOG(INFO) << "Array element is not a string";
-				vT.clear();
-				break;
-			}
-
-			vT.push_back(e.get<T1>());
-		}
-	}
-	else
-	{
-		for (const auto &e : *it)
-		{
-			if (!e.is_number())
-			{
-				LOG(INFO) << "Array element is not a number";
-				vT.clear();
-				break;
-			}
-
-			vT.push_back(e.get<T1>());
-		}
+		v = vT;
+		return true;
 	}
 
-	v = vT;
-
-	return true;
+	return false;
 }
 
 namespace kai

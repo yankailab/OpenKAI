@@ -29,8 +29,8 @@ namespace kai
 	{
 		IF_F(!this->_IObase::init(j));
 
-		jVar(j, "addr", m_strAddr);
-		jVar(j, "port", m_port);
+		jKv(j, "addr", m_strAddr);
+		jKv(j, "port", m_port);
 		m_bClient = true;
 
 		return true;

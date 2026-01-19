@@ -25,7 +25,7 @@ namespace kai
 		IF_F(!this->_PCframe::init(j));
 
 		// read from external json config file if there is one
-		jVar(j, "jsonCfgFile", m_jsonCfgFile);
+		jKv(j, "jsonCfgFile", m_jsonCfgFile);
 		IF__(m_jsonCfgFile.empty(), true);
 
 		JsonCfg jCfg;
@@ -34,8 +34,8 @@ namespace kai
 		const json &jt = jCfg.getJson().at("transform");
 		IF__(!jt.is_object(), true);
 
-		jVec<double>(j, "vT", m_vT);
-		jVec<double>(j, "vR", m_vR);
+		jKv<double>(j, "vT", m_vT);
+		jKv<double>(j, "vR", m_vR);
 
 		return true;
 	}

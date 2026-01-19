@@ -23,13 +23,13 @@ namespace kai
 	{
 		IF_F(!this->_APmavlink_follow::init(j));
 
-		jVec<float>(j, "vDSrange", m_vDSrange);
-		jVec<float>(j, "vFov", m_vFov);
-		jVec<float>(j, "vComplete", m_vComplete);
-		jVar(j, "zrK", m_zrK);
+		jKv<float>(j, "vDSrange", m_vDSrange);
+		jKv<float>(j, "vFov", m_vFov);
+		jKv<float>(j, "vComplete", m_vComplete);
+		jKv(j, "zrK", m_zrK);
 
 		// int ieHdg = USEC_1SEC;
-		// jVar(j,"ieHdgUsec",ieHdg);//""
+		// jKv(j,"ieHdgUsec",ieHdg);//""
 		// m_ieHdgCmd.init(ieHdg);
 
 		const json &jc = j.at("tags");
@@ -41,10 +41,10 @@ namespace kai
 			IF_CONT(!Ji.is_object());
 
 			AP_LAND_TAG t;
-			jVar(Ji, "id", t.m_id);
-			jVar(Ji, "priority", t.m_priority);
-			jVec<float>(Ji, "vSize", t.m_vSize);
-			jVec<float>(Ji, "vKdist", t.m_vKdist);
+			jKv(Ji, "id", t.m_id);
+			jKv(Ji, "priority", t.m_priority);
+			jKv<float>(Ji, "vSize", t.m_vSize);
+			jKv<float>(Ji, "vKdist", t.m_vKdist);
 			m_vTags.push_back(t);
 		}
 
@@ -56,7 +56,7 @@ namespace kai
 		IF_F(!this->_APmavlink_follow::link(j, pM));
 
 		string n = "";
-		jVar(j, "_DistSensorBase", n);
+		jKv(j, "_DistSensorBase", n);
 		m_pDS = (_DistSensorBase *)pM->findModule(n);
 
 		return true;

@@ -38,20 +38,20 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::init(j));
 
-		jVec<float>(j, "vPorigin", m_vPorigin);
-		jVec<int>(j, "vCellRangeX", m_vCellRangeX);
-		jVec<int>(j, "vCellRangeY", m_vCellRangeY);
-		jVec<int>(j, "vCellRangeZ", m_vCellRangeZ);
-		jVec<float>(j, "vCellSize", m_vCellSize);
+		jKv<float>(j, "vPorigin", m_vPorigin);
+		jKv<int>(j, "vCellRangeX", m_vCellRangeX);
+		jKv<int>(j, "vCellRangeY", m_vCellRangeY);
+		jKv<int>(j, "vCellRangeZ", m_vCellRangeZ);
+		jKv<float>(j, "vCellSize", m_vCellSize);
 
-		jVar(j, "bVisual", m_bVisual);
-		jVec<float>(j, "vAxisColX", m_vAxisColX);
-		jVec<float>(j, "vAxisColY", m_vAxisColY);
-		jVec<float>(j, "vAxisColZ", m_vAxisColZ);
+		jKv(j, "bVisual", m_bVisual);
+		jKv<float>(j, "vAxisColX", m_vAxisColX);
+		jKv<float>(j, "vAxisColY", m_vAxisColY);
+		jKv<float>(j, "vAxisColZ", m_vAxisColZ);
 
-		jVar(j, "nMedWidth", m_nMedWidth);
-		jVar(j, "tExpire", m_tExpire);
-		jVar(j, "fGridConfig", m_fGridConfig);
+		jKv(j, "nMedWidth", m_nMedWidth);
+		jKv(j, "tExpire", m_tExpire);
+		jKv(j, "fGridConfig", m_fGridConfig);
 
 		return true;
 	}
@@ -61,7 +61,7 @@ namespace kai
 		IF_F(!this->_GeometryBase::link(j, pM));
 
 		vector<string> vGn;
-		jVar(j, "vGeometryBase", vGn);
+		jKv(j, "vGeometryBase", vGn);
 		for (string n : vGn)
 		{
 			_GeometryBase *pG = (_GeometryBase *)(pM->findModule(n));

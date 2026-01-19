@@ -34,14 +34,14 @@ namespace kai
 
 			IMG_THRESHOLD t;
 			t.init();
-			jVar(Ji, "type", t.m_type);
-			jVar(Ji, "vMax", t.m_vMax);
-			jVar(Ji, "bAutoThr", t.m_bAutoThr);
-			jVar(Ji, "thr", t.m_thr);
-			jVar(Ji, "method", t.m_method);
-			jVar(Ji, "thrType", t.m_thrType);
-			jVar(Ji, "blockSize", t.m_blockSize);
-			jVar(Ji, "C", t.m_C);
+			jKv(Ji, "type", t.m_type);
+			jKv(Ji, "vMax", t.m_vMax);
+			jKv(Ji, "bAutoThr", t.m_bAutoThr);
+			jKv(Ji, "thr", t.m_thr);
+			jKv(Ji, "method", t.m_method);
+			jKv(Ji, "thrType", t.m_thrType);
+			jKv(Ji, "blockSize", t.m_blockSize);
+			jKv(Ji, "C", t.m_C);
 
 			m_vFilter.push_back(t);
 		}
@@ -54,7 +54,7 @@ namespace kai
 		IF_F(!this->_VisionBase::link(j, pM));
 
 		string n = "";
-		jVar(j, "_VisionBase", n);
+		jKv(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

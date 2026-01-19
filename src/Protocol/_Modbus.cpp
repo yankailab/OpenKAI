@@ -39,21 +39,21 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		jVar(j, "bModbusDebug", m_bModbusDebug);
-		jVar(j, "nErrReconnect", m_nErrReconnect);
+		jKv(j, "bModbusDebug", m_bModbusDebug);
+		jKv(j, "nErrReconnect", m_nErrReconnect);
 
-		jVar(j, "rtuPort", m_rtuPort);
-		jVar(j, "rtuParity", m_rtuParity);
-		jVar(j, "rtuBaud", m_rtuBaud);
+		jKv(j, "rtuPort", m_rtuPort);
+		jKv(j, "rtuParity", m_rtuParity);
+		jKv(j, "rtuBaud", m_rtuBaud);
 
-		jVar(j, "tcpAddr", m_tcpAddr);
-		jVar(j, "tcpPort", m_tcpPort);
+		jKv(j, "tcpAddr", m_tcpAddr);
+		jKv(j, "tcpPort", m_tcpPort);
 
-		jVar(j, "tIntervalUsec", m_tIntervalUsec);
-		jVar(j, "tOutSec", m_tOutSec);
-		jVar(j, "tOutUSec", m_tOutUSec);
+		jKv(j, "tIntervalUsec", m_tIntervalUsec);
+		jKv(j, "tOutSec", m_tOutSec);
+		jKv(j, "tOutUSec", m_tOutUSec);
 
-		jVar(j, "type", m_type);
+		jKv(j, "type", m_type);
 		if (m_type == "RTU")
 		{
 			m_pMb = modbus_new_rtu(m_rtuPort.c_str(), m_rtuBaud, *m_rtuParity.c_str(), 8, 1);

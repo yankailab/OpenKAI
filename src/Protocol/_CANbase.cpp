@@ -20,7 +20,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		jVar(j, "nErrReconnect", m_nErrReconnect);
+		jKv(j, "nErrReconnect", m_nErrReconnect);
 
 		return true;
 	}

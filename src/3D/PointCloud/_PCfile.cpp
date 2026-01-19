@@ -22,7 +22,7 @@ namespace kai
 	{
 		IF_F(!this->_PCframe::init(j));
 
-		jVec<string>(j, "vfName", m_vfName);
+		jKv(j, "vfName", m_vfName);
 		open();
 
 		return true;

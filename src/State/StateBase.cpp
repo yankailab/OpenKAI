@@ -21,7 +21,7 @@ namespace kai
 	{
 		IF_F(!this->BASE::init(j));
 
-		jVar(j, "next", m_next);
+		jKv(j, "next", m_next);
 
 		return true;
 	}
@@ -33,7 +33,7 @@ namespace kai
 		vector<string> vS;
 
 		vS.clear();
-		jVec<string>(j, "vModuleResume", vS);
+		jKv(j, "vModuleResume", vS);
 		for (string n : vS)
 		{
 			_ModuleBase *pB = (_ModuleBase *)(pM->findModule(n));
@@ -42,7 +42,7 @@ namespace kai
 		}
 
 		vS.clear();
-		jVec<string>(j, "vModulePause", vS);
+		jKv(j, "vModulePause", vS);
 		for (string n : vS)
 		{
 			_ModuleBase *pB = (_ModuleBase *)(pM->findModule(n));

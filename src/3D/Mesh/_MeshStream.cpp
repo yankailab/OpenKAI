@@ -28,8 +28,8 @@ namespace kai
     {
         IF_F(!this->_GeometryBase::init(j));
 
-        jVar(j, "bAccept", m_bAccept);
-        jVar(j, "nP", m_nP);
+        jKv(j, "bAccept", m_bAccept);
+        jKv(j, "nP", m_nP);
         IF_F(m_nP <= 0);
 
         DEL(m_pP);

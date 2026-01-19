@@ -57,7 +57,7 @@ namespace kai
 			}
 
 			string c = "";
-			jVar(Ji, "class", c);
+			jKv(Ji, "class", c);
 			IF_CONT(c == "ModuleMgr");
 			if (c.empty())
 			{
@@ -66,7 +66,7 @@ namespace kai
 			}
 
 			int bON = true;
-			jVar(Ji, "bON", bON);
+			jKv(Ji, "bON", bON);
 			if (bON == 0)
 			{
 				LOG_I("Module disabled: " + n);

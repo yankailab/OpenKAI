@@ -30,10 +30,10 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		jVar(j, "devURI", m_devURI);
-		jVar(j, "devFPS", m_devFPS);
-		jVar(j, "bRGB", m_bRGB);
-		jVec<int>(j, "vSizeRGB", m_vSizeRGB);
+		jKv(j, "devURI", m_devURI);
+		jKv(j, "devFPS", m_devFPS);
+		jKv(j, "bRGB", m_bRGB);
+		jKv<int>(j, "vSizeRGB", m_vSizeRGB);
 
 		return true;
 	}
@@ -43,7 +43,7 @@ namespace kai
 		IF_F(!this->_ModuleBase::link(j, pM));
 
 		string n = "";
-		jVar(j, "_SHMrgb", n);
+		jKv(j, "_SHMrgb", n);
 		m_psmRGB = (SharedMem *)(pM->findModule(n));
 
 		return true;

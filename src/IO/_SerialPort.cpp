@@ -26,12 +26,12 @@ namespace kai
 	{
 		IF_F(!this->_IObase::init(j));
 
-		jVar(j, "port", m_port);
-		jVar(j, "baud", m_baud);
-		jVar(j, "dataBits", m_dataBits);
-		jVar(j, "stopBits", m_stopBits);
-		jVar(j, "parity", m_parity);
-		jVar(j, "hardwareControl", m_hardwareControl);
+		jKv(j, "port", m_port);
+		jKv(j, "baud", m_baud);
+		jKv(j, "dataBits", m_dataBits);
+		jKv(j, "stopBits", m_stopBits);
+		jKv(j, "parity", m_parity);
+		jKv(j, "hardwareControl", m_hardwareControl);
 
 		return true;
 	}

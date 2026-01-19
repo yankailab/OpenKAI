@@ -32,15 +32,15 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		jVar(j, "confidence", m_confidence);
-		jVar(j, "score", m_score);
-		jVar(j, "nms", m_nms);
-		jVar(j, "bLetterBoxForSquare", m_bLetterBoxForSquare);
-		jVec<int>(j, "vModelInputSize", m_vModelInputSize);
-		jVar(j, "bSwapRB", m_bSwapRB);
-		jVar(j, "scale", m_scale);
-		jVar(j, "iBackend", m_iBackend);
-		jVar(j, "iTarget", m_iTarget);
+		jKv(j, "confidence", m_confidence);
+		jKv(j, "score", m_score);
+		jKv(j, "nms", m_nms);
+		jKv(j, "bLetterBoxForSquare", m_bLetterBoxForSquare);
+		jKv<int>(j, "vModelInputSize", m_vModelInputSize);
+		jKv(j, "bSwapRB", m_bSwapRB);
+		jKv(j, "scale", m_scale);
+		jKv(j, "iBackend", m_iBackend);
+		jKv(j, "iTarget", m_iTarget);
 
 		IF_F(!loadModel());
 

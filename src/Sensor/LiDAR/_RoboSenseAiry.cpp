@@ -38,12 +38,12 @@ namespace kai
         string n;
 
         n = "";
-        jVar(j, "_UDPmsop", n);
+        jKv(j, "_UDPmsop", n);
         m_pUDPmsop = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPmsop);
 
         n = "";
-        jVar(j, "_UDPdifop", n);
+        jKv(j, "_UDPdifop", n);
         m_pUDPdifop = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPdifop);
 

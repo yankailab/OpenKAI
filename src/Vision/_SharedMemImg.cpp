@@ -24,7 +24,7 @@ namespace kai
     {
         IF_F(!_VisionBase::init(j));
 
-        jVar(j, "matType", m_matType);
+        jKv(j, "matType", m_matType);
 
         return true;
     }
@@ -34,7 +34,7 @@ namespace kai
         IF_F(!this->_VisionBase::link(j, pM));
 
         string n = "";
-        jVar(j, "SharedMem", n);
+        jKv(j, "SharedMem", n);
         m_pSHM = (SharedMem *)(pM->findModule(n));
         NULL_F(m_pSHM);
 

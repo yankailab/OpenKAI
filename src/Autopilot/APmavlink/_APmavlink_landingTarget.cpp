@@ -36,20 +36,20 @@ namespace kai
 	{
 		IF_F(!this->_APmavlink_move::init(j));
 
-		jVec<float>(j, "vPsp", m_vPsp);
-		jVar(j, "bHdg", m_bHdg);
-		jVar(j, "hdgDz", m_hdgDz);
+		jKv<float>(j, "vPsp", m_vPsp);
+		jKv(j, "bHdg", m_bHdg);
+		jKv(j, "hdgDz", m_hdgDz);
 		m_hdgDzNav = m_hdgDz / 2;
-		jVar(j, "hdgDzNav", m_hdgDzNav);
+		jKv(j, "hdgDzNav", m_hdgDzNav);
 
-		jVar(j, "hTouchdown", m_hTouchdown);
-		jVar(j, "kP", m_kP);
-		jVar(j, "defaultDtgt", m_defaultDtgt);
+		jKv(j, "hTouchdown", m_hTouchdown);
+		jKv(j, "kP", m_kP);
+		jKv(j, "defaultDtgt", m_defaultDtgt);
 
-		if (jVec<float>(j, "vFov", m_vFov))
+		if (jKv<float>(j, "vFov", m_vFov))
 			m_vFov *= DEG_2_RAD;
 
-		jVar(j, "yawRate", m_yawRate);
+		jKv(j, "yawRate", m_yawRate);
 		m_yawRate *= DEG_2_RAD;
 
 		const json &jc = j.at("tags");
@@ -61,8 +61,8 @@ namespace kai
 			IF_CONT(!Ji.is_object());
 
 			AP_LANDING_TARGET_TAG t;
-			jVar(Ji, "id", t.m_id);
-			jVar(Ji, "priority", t.m_priority);
+			jKv(Ji, "id", t.m_id);
+			jKv(Ji, "priority", t.m_priority);
 			m_vTags.push_back(t);
 		}
 
@@ -76,11 +76,11 @@ namespace kai
 		string n;
 
 		n = "";
-		jVar(j, "_DistSensorBase", n);
+		jKv(j, "_DistSensorBase", n);
 		m_pDS = (_DistSensorBase *)pM->findModule(n);
 
 		n = "";
-		jVar(j, "_Universe", n);
+		jKv(j, "_Universe", n);
 		m_pU = (_Universe *)pM->findModule(n);
 
 		return true;

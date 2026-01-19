@@ -25,7 +25,7 @@ namespace kai
 	{
 		IF_F(!this->_NavBase::init(j));
 
-		jVec<int>(j, "vSize", m_vSize);
+		jKv<int>(j, "vSize", m_vSize);
 
 		return true;
 	}
@@ -35,7 +35,7 @@ namespace kai
 		IF_F(!this->_NavBase::link(j, pM));
 
 		string n = "";
-		jVar(j, "_VisionBase", n);
+		jKv(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

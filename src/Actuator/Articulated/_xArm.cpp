@@ -20,9 +20,9 @@ namespace kai
 	{
 		IF_F(!this->_ActuatorBase::init(j));
 
-		jVar(j, "ip", m_ip);
-		jVar(j, "mode", m_mode);
-		jVar(j, "state", m_state);
+		jKv(j, "ip", m_ip);
+		jKv(j, "mode", m_mode);
+		jKv(j, "state", m_state);
 
 		m_pArm = new XArmAPI(m_ip, false, true);
 

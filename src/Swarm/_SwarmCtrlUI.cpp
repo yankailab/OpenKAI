@@ -21,15 +21,15 @@ namespace kai
 
         int v;
         v = SEC_2_USEC;
-        jVar(j, "ieSendHB", v);
+        jKv(j, "ieSendHB", v);
         m_ieSendHB.init(v);
 
         v = SEC_2_USEC;
-        jVar(j, "ieSendNodeUpdate", v);
+        jKv(j, "ieSendNodeUpdate", v);
         m_ieSendNodeUpdate.init(v);
 
         v = SEC_2_USEC;
-        jVar(j, "ieSendNodeClearAll", v);
+        jKv(j, "ieSendNodeClearAll", v);
         m_ieSendNodeClearAll.init(v);
 
         DEL(m_pTr);
@@ -45,7 +45,7 @@ namespace kai
         IF_F(!m_pTr->link(j.at("threadR"), pM));
 
         string n = "";
-        jVar(j, "_SwarmCtrl", n);
+        jKv(j, "_SwarmCtrl", n);
         m_pCtrl = (_SwarmCtrl *)(pM->findModule(n));
         NULL_F(m_pCtrl);
 

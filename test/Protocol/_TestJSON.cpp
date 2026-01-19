@@ -30,12 +30,12 @@ namespace kai
         string n;
 
         n = "";
-        jVar(j, "_JSONbaseSender", n);
+        jKv(j, "_JSONbaseSender", n);
         m_pJsender = (_JSONbase *)(pM->findModule(n));
         NULL_F(m_pJsender);
 
         n = "";
-        jVar(j, "_JSONbaseReceiver", n);
+        jKv(j, "_JSONbaseReceiver", n);
         m_pJreceiver = (_JSONbase *)(pM->findModule(n));
         NULL_F(m_pJreceiver);
 

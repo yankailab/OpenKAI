@@ -31,8 +31,8 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		jVar(j, "w", m_w);
-		jVar(j, "h", m_h);
+		jKv(j, "w", m_w);
+		jKv(j, "h", m_h);
 		m_gFlow = GpuMat(m_h, m_w, CV_32FC2);
 
 		//		m_pGrayFrames = new FrameGroup();
@@ -47,7 +47,7 @@ namespace kai
 		IF_F(!this->_ModuleBase::link(j, pM));
 
 		string n = "";
-		jVar(j, "_VisionBase", n);
+		jKv(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

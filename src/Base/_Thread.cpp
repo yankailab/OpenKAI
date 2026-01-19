@@ -46,7 +46,7 @@ namespace kai
 		IF_F(!this->BASE::init(j));
 
 		float FPS = DEFAULT_FPS;
-		jVar(j, "FPS", FPS);
+		jKv(j, "FPS", FPS);
 		setTargetFPS(FPS);
 
 		return true;
@@ -57,7 +57,7 @@ namespace kai
 		IF_F(!this->BASE::link(j, pM));
 
 		vector<string> vRunT;
-		jVar(j, "vRunThread", vRunT);
+		jKv(j, "vRunThread", vRunT);
 		m_vRunThread.clear();
 		for (string s : vRunT)
 		{

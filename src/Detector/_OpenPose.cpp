@@ -28,14 +28,14 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		jVar(j, "nW", m_nW);
-		jVar(j, "nH", m_nH);
-		jVar(j, "iBackend", m_iBackend);
-		jVar(j, "iTarget", m_iTarget);
-		jVar(j, "bSwapRB", m_bSwapRB);
-		jVar(j, "scale", m_scale);
-		jVec<int>(j, "vMean", m_vMean);
-		jVar(j, "thr", m_thr);
+		jKv(j, "nW", m_nW);
+		jKv(j, "nH", m_nH);
+		jKv(j, "iBackend", m_iBackend);
+		jKv(j, "iTarget", m_iTarget);
+		jKv(j, "bSwapRB", m_bSwapRB);
+		jKv(j, "scale", m_scale);
+		jKv<int>(j, "vMean", m_vMean);
+		jKv(j, "thr", m_thr);
 
 		m_net = readNetFromCaffe(m_fModel, m_fWeight);
 		IF_F(m_net.empty());

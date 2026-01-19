@@ -50,38 +50,38 @@ namespace kai
         IF_F(!this->_PCstream::init(j));
 
         // lvx select
-        jVar(j, "lvxSN", m_lvxSN);
+        jKv(j, "lvxSN", m_lvxSN);
         if (!m_lvxSN.empty())
         {
             memcpy(m_pLvxSN, m_lvxSN.c_str(), m_lvxSN.length());
         }
 
         string ip;
-        jVar(j, "lvxIP", ip);
+        jKv(j, "lvxIP", ip);
         parseIP(ip.c_str(), (uint8_t *)&m_lvxIP);
 
         // lvx time out
         int tOutSec = 10;
-        jVar(j, "tOutSec", tOutSec);
+        jKv(j, "tOutSec", tOutSec);
         m_lvxTout.setTout(USEC_1SEC * tOutSec);
 
         // lvx config
-        jVar(j, "lvxPCLdataType", m_lvxCfg.m_pclDataType);
-        jVar(j, "lvxPatternMode", m_lvxCfg.m_patternMode);
-        jVar(j, "lvxHostIP", ip);
+        jKv(j, "lvxPCLdataType", m_lvxCfg.m_pclDataType);
+        jKv(j, "lvxPatternMode", m_lvxCfg.m_patternMode);
+        jKv(j, "lvxHostIP", ip);
         if (!parseIP(ip.c_str(), (uint8_t *)&m_lvxCfg.m_hostIP))
         {
             LOG_E("lvxHostIP parse failed");
             return false;
         }
-        jVar(j, "lvxHostPortState", m_lvxCfg.m_hostPortState);
-        jVar(j, "lvxHostPortPCL", m_lvxCfg.m_hostPortPCL);
-        jVar(j, "lvxHostPortIMU", m_lvxCfg.m_hostPortIMU);
-        jVar(j, "lvxFrameRate", m_lvxCfg.m_frameRate);
-        jVar(j, "lvxDetectMode", m_lvxCfg.m_detectMode);
-        jVar(j, "lvxWorkModeAfterBoot", m_lvxCfg.m_workModeAfterBoot);
-        jVar(j, "lvxWorkMode", m_lvxCfg.m_workMode);
-        jVar(j, "lvxIMUdataEn", m_lvxCfg.m_imuDataEn);
+        jKv(j, "lvxHostPortState", m_lvxCfg.m_hostPortState);
+        jKv(j, "lvxHostPortPCL", m_lvxCfg.m_hostPortPCL);
+        jKv(j, "lvxHostPortIMU", m_lvxCfg.m_hostPortIMU);
+        jKv(j, "lvxFrameRate", m_lvxCfg.m_frameRate);
+        jKv(j, "lvxDetectMode", m_lvxCfg.m_detectMode);
+        jKv(j, "lvxWorkModeAfterBoot", m_lvxCfg.m_workModeAfterBoot);
+        jKv(j, "lvxWorkMode", m_lvxCfg.m_workMode);
+        jKv(j, "lvxIMUdataEn", m_lvxCfg.m_imuDataEn);
 
         // Device Type Query
         IF_Le_F(!j.contains("TdeviceQueryR"), "json: TdeviceQueryR not found");
@@ -128,32 +128,32 @@ namespace kai
         string n;
 
         n = "";
-        jVar(j, "_UDPdeviceQuery", n);
+        jKv(j, "_UDPdeviceQuery", n);
         m_pUDPdeviceQuery = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPdeviceQuery);
 
         n = "";
-        jVar(j, "_UDPctrlCmd", n);
+        jKv(j, "_UDPctrlCmd", n);
         m_pUDPctrlCmd = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPctrlCmd);
 
         n = "";
-        jVar(j, "_UDPpushCmd", n);
+        jKv(j, "_UDPpushCmd", n);
         m_pUDPpushCmd = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPpushCmd);
 
         n = "";
-        jVar(j, "_UDPpcl", n);
+        jKv(j, "_UDPpcl", n);
         m_pUDPpcl = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPpcl);
 
         n = "";
-        jVar(j, "_UDPimu", n);
+        jKv(j, "_UDPimu", n);
         m_pUDPimu = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPimu);
 
         // n = "";
-        // jVar(j,"_IObaseLog",n);
+        // jKv(j,"_IObaseLog",n);
         // m_pUDPlog = (_IObase *)(pM->findModule(n));
         // NULL_F(m_pUDPlog);
 

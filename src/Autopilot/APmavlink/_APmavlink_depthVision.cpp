@@ -31,11 +31,11 @@ namespace kai
 
 			DEPTH_ROI *pR = &m_pROI[m_nROI];
 			pR->init();
-			jVar(Ji, "orientation", pR->m_orientation);
-			jVar(Ji, "l", pR->m_roi.x);
-			jVar(Ji, "t", pR->m_roi.y);
-			jVar(Ji, "r", pR->m_roi.z);
-			jVar(Ji, "b", pR->m_roi.w);
+			jKv(Ji, "orientation", pR->m_orientation);
+			jKv(Ji, "l", pR->m_roi.x);
+			jKv(Ji, "t", pR->m_roi.y);
+			jKv(Ji, "r", pR->m_roi.z);
+			jKv(Ji, "b", pR->m_roi.w);
 
 			m_nROI++;
 		}
@@ -50,12 +50,12 @@ namespace kai
 		string n;
 
 		n = "";
-		jVar(j, "APmavlink_base", n);
+		jKv(j, "APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 		NULL_F(m_pAP);
 
 		n = "";
-		jVar(j, "_RGBDbase", n);
+		jKv(j, "_RGBDbase", n);
 		m_pDV = (_RGBDbase *)(pM->findModule(n));
 		NULL_F(m_pDV);
 

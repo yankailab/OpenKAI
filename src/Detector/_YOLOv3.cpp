@@ -29,15 +29,15 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		jVar(j, "thr", m_thr);
-		jVar(j, "nms", m_nms);
-		jVar(j, "vBlobSize", m_vBlobSize);
-		jVar(j, "iBackend", m_iBackend);
-		jVar(j, "iTarget", m_iTarget);
-		jVar(j, "bSwapRB", m_bSwapRB);
-		jVar(j, "scale", m_scale);
-		jVar(j, "iClassDraw", m_iClassDraw);
-		jVec<int>(j, "vMean", m_vMean);
+		jKv(j, "thr", m_thr);
+		jKv(j, "nms", m_nms);
+		jKv<int>(j, "vBlobSize", m_vBlobSize);
+		jKv(j, "iBackend", m_iBackend);
+		jKv(j, "iTarget", m_iTarget);
+		jKv(j, "bSwapRB", m_bSwapRB);
+		jKv(j, "scale", m_scale);
+		jKv(j, "iClassDraw", m_iClassDraw);
+		jKv<int>(j, "vMean", m_vMean);
 
 		m_net = readNetFromDarknet(m_fModel, m_fWeight);
 		IF_F(m_net.empty());

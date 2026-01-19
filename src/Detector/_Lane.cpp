@@ -44,16 +44,16 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		jVar(j, "bDrawOverhead", m_bDrawOverhead);
-		jVar(j, "bDrawFilter", m_bDrawFilter);
-		jVar(j, "binMed", m_binMed);
+		jKv(j, "bDrawOverhead", m_bDrawOverhead);
+		jKv(j, "bDrawFilter", m_bDrawFilter);
+		jKv(j, "binMed", m_binMed);
 
-		jVec<float>(j, "vRoiLT", m_vRoiLT);
-		jVec<float>(j, "vRoiLB", m_vRoiLB);
-		jVec<float>(j, "vRoiRT", m_vRoiRT);
-		jVec<float>(j, "vRoiRB", m_vRoiRB);
-		jVar(j, "overheadW", m_sizeOverhead.x);
-		jVar(j, "overheadH", m_sizeOverhead.y);
+		jKv<float>(j, "vRoiLT", m_vRoiLT);
+		jKv<float>(j, "vRoiLB", m_vRoiLB);
+		jKv<float>(j, "vRoiRT", m_vRoiRT);
+		jKv<float>(j, "vRoiRB", m_vRoiRB);
+		jKv(j, "overheadW", m_sizeOverhead.x);
+		jKv(j, "overheadH", m_sizeOverhead.y);
 
 		m_mOverhead = Mat(Size(m_sizeOverhead.x, m_sizeOverhead.y), CV_8UC3);
 
@@ -70,11 +70,11 @@ namespace kai
 				IF_CONT(!Ji.is_object());
 
 				LANE_FILTER *pF = &m_pFilter[m_nFilter];
-				jVar(Ji, "iColorSpace", pF->m_iColorSpace);
-				jVar(Ji, "iChannel", pF->m_iChannel);
-				jVar(Ji, "nTile", pF->m_nTile);
-				jVar(Ji, "thr", pF->m_thr);
-				jVar(Ji, "clipLim", pF->m_clipLim);
+				jKv(Ji, "iColorSpace", pF->m_iColorSpace);
+				jKv(Ji, "iChannel", pF->m_iChannel);
+				jKv(Ji, "nTile", pF->m_nTile);
+				jKv(Ji, "thr", pF->m_thr);
+				jKv(Ji, "clipLim", pF->m_clipLim);
 				pF->init();
 
 				m_nFilter++;
@@ -83,9 +83,9 @@ namespace kai
 
 		// lanes
 		int nAvr = 0;
-		jVar(j, "nAvr", nAvr);
+		jKv(j, "nAvr", nAvr);
 		int nMed = 0;
-		jVar(j, "nMed", nMed);
+		jKv(j, "nMed", nMed);
 		m_nLane = 0;
 		const json &jL = j.at("lane");
 		if (jL.is_object())
@@ -99,7 +99,7 @@ namespace kai
 
 				LANE *pLane = &m_pLane[m_nLane];
 				pLane->init(m_sizeOverhead.y, nAvr, nMed);
-				jVar(Ji, "vROI", pLane->m_ROI);
+				jKv<float>(Ji, "vROI", pLane->m_ROI);
 
 				m_nLane++;
 			}
@@ -121,7 +121,7 @@ namespace kai
 		IF_F(!this->_ModuleBase::link(j, pM));
 
 		string n = "";
-		jVar(j, "_VisionBase", n);
+		jKv(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

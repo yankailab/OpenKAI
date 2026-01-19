@@ -43,7 +43,7 @@ namespace kai
         string n;
 #ifdef WITH_3D
         n = "";
-        jVar(j, "_PCframe", n);
+        jKv(j, "_PCframe", n);
         m_pPCframe = (_PCframe *)(pM->findModule(n));
         m_pROSnode->m_pPCframe = m_pPCframe;
 #endif

@@ -34,14 +34,14 @@ namespace kai
     {
         IF_F(!this->_PCframe::init(j));
 
-        jVar(j, "rVoxel", m_rVoxel);
-        jVar(j, "maxDistance", m_maxDistance);
-        jVar(j, "rNormal", m_rNormal);
-        jVar(j, "maxNNnormal", m_maxNNnormal);
-        jVar(j, "rFitness", m_rFitness);
-        jVar(j, "rRMSE", m_rRMSE);
-        jVar(j, "maxIter", m_maxIter);
-        jVar(j, "minFit", m_minFit);
+        jKv(j, "rVoxel", m_rVoxel);
+        jKv(j, "maxDistance", m_maxDistance);
+        jKv(j, "rNormal", m_rNormal);
+        jKv(j, "maxNNnormal", m_maxNNnormal);
+        jKv(j, "rFitness", m_rFitness);
+        jKv(j, "rRMSE", m_rRMSE);
+        jKv(j, "maxIter", m_maxIter);
+        jKv(j, "minFit", m_minFit);
 
         return true;
     }
@@ -51,7 +51,7 @@ namespace kai
         IF_F(!this->BASE::link(j, pM));
 
         string n = "";
-        jVar(j, "_PCframe", n);
+        jKv(j, "_PCframe", n);
         m_pPCf = (_PCframe *)(pM->findModule(n));
 
         return true;

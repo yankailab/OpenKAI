@@ -25,8 +25,8 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		jVar(j, "algorithm", m_algorithm);
-		jVar(j, "learningRate", m_learningRate);
+		jKv(j, "algorithm", m_algorithm);
+		jKv(j, "learningRate", m_learningRate);
 
 		//	if(m_algorithm == "cnt")
 		//	{
@@ -58,7 +58,7 @@ namespace kai
 		IF_F(!this->_ModuleBase::link(j, pM));
 
 		string n = "";
-		jVar(j, "_VisionBase", n);
+		jKv(j, "_VisionBase", n);
 		m_pVision = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pVision);
 

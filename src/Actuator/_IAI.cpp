@@ -28,7 +28,7 @@ namespace kai
 		IF_F(!this->_ActuatorBase::link(j, pM));
 
 		string n = "";
-		jVar(j, "_Modbus", n);
+		jKv(j, "_Modbus", n);
 		m_pMB = (_Modbus *)(pM->findModule(n));
 		IF_Le_F(!m_pMB, "_Modbus not found: " + n);
 

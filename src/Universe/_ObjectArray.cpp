@@ -23,7 +23,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		jVar(j, "nBuf", m_nBuf);
+		jKv(j, "nBuf", m_nBuf);
 		IF_F(m_nBuf <= 0);
 
 		m_pO = new _Object[m_nBuf];

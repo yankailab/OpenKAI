@@ -39,15 +39,15 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		jVar(j, "bPos", m_bPos);
-		jVar(j, "bSpd", m_bSpd);
-		jVar(j, "thrJumpPos", m_thrJumpPos);
-		jVar(j, "thrJumpSpd", m_thrJumpSpd);
-		jVec<int>(j, "vAxisRPY", m_vAxisRPY);
-		jVar(j, "apModeInError", m_apModeInError);
+		jKv(j, "bPos", m_bPos);
+		jKv(j, "bSpd", m_bSpd);
+		jKv(j, "thrJumpPos", m_thrJumpPos);
+		jKv(j, "thrJumpSpd", m_thrJumpSpd);
+		jKv<int>(j, "vAxisRPY", m_vAxisRPY);
+		jKv(j, "apModeInError", m_apModeInError);
 
 		vector<float> vT;
-		jVec<float>(j, "mTsensor2aero", vT);
+		jKv<float>(j, "mTsensor2aero", vT);
 		if (vT.size() == 16)
 		{
 			m_mTsensor2aero = Matrix4f{{vT[0], vT[1], vT[2], vT[3]},
@@ -67,12 +67,12 @@ namespace kai
 		string n;
 
 		n = "";
-		jVar(j, "_APmavlink_base", n);
+		jKv(j, "_APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 		NULL_F(m_pAP);
 
 		n = "";
-		jVar(j, "_NavBase", n);
+		jKv(j, "_NavBase", n);
 		m_pNav = (_NavBase *)(pM->findModule(n));
 		NULL_F(m_pNav);
 

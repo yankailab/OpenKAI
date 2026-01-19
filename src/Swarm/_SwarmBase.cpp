@@ -23,7 +23,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		jVar(j, "tExpire", m_tExpire);
+		jKv(j, "tExpire", m_tExpire);
 
 		return true;
 	}

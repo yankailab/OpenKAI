@@ -32,11 +32,11 @@ namespace kai
 	{
 		IF_F(!this->_IObase::init(j));
 
-		jVar(j, "wsMode", m_wsMode);
-		jVar(j, "host", m_host);
-		jVar(j, "port", m_port);
-		jVar(j, "tOutMs", m_tOutMs);
-		jVar(j, "nClientMax", m_nClientMax);
+		jKv(j, "wsMode", m_wsMode);
+		jKv(j, "host", m_host);
+		jKv(j, "port", m_port);
+		jKv(j, "tOutMs", m_tOutMs);
+		jKv(j, "nClientMax", m_nClientMax);
 
 		DEL(m_pTr);
 		m_pTr = createThread(j.at("threadR"), "threadR");

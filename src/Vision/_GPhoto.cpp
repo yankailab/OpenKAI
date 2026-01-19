@@ -25,7 +25,7 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(j));
 
-		jVar(j, "mount", m_cmdUnmount);
+		jKv(j, "mount", m_cmdUnmount);
 
 		return true;
 	}

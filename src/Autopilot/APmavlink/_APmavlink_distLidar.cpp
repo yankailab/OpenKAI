@@ -29,10 +29,10 @@ namespace kai
 
 			DIST_LIDAR_SECTION *pS = &m_pSection[m_nSection];
 			pS->init();
-			jVar(Ji, "orientation", pS->m_orientation);
-			jVar(Ji, "degFrom", pS->m_degFrom);
-			jVar(Ji, "degTo", pS->m_degTo);
-			jVar(Ji, "sensorScale", pS->m_sensorScale);
+			jKv(Ji, "orientation", pS->m_orientation);
+			jKv(Ji, "degFrom", pS->m_degFrom);
+			jKv(Ji, "degTo", pS->m_degTo);
+			jKv(Ji, "sensorScale", pS->m_sensorScale);
 
 			IF_F(pS->m_degFrom < 0);
 			IF_F(pS->m_degTo < 0);
@@ -52,12 +52,12 @@ namespace kai
 		string n;
 
 		n = "";
-		jVar(j, "APmavlink_base", n);
+		jKv(j, "APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 		NULL_F(m_pAP);
 
 		n = "";
-		jVar(j, "_DistSensorBase", n);
+		jKv(j, "_DistSensorBase", n);
 		m_pDS = (_DistSensorBase *)(pM->findModule(n));
 		NULL_F(m_pDS);
 

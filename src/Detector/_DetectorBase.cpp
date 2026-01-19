@@ -27,10 +27,10 @@ namespace kai
 		IF_F(!this->_ModuleBase::init(j));
 
 		// model
-		jVar(j, "fModel", m_fModel);
-		jVar(j, "fWeight", m_fWeight);
-		jVar(j, "fMean", m_fMean);
-		jVar(j, "fClass", m_fClass);
+		jKv(j, "fModel", m_fModel);
+		jKv(j, "fWeight", m_fWeight);
+		jKv(j, "fMean", m_fMean);
+		jKv(j, "fClass", m_fClass);
 
 		// statistics
 		if (!m_fClass.empty())
@@ -48,7 +48,7 @@ namespace kai
 		}
 		else
 		{
-			jVar(j, "vClass", m_vClass);
+			jKv(j, "vClass", m_vClass);
 		}
 
 		return true;
@@ -61,11 +61,11 @@ namespace kai
 		string n;
 
 		n = "";
-		jVar(j, "_VisionBase", n);
+		jKv(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 
 		n = "";
-		jVar(j, "_Universe", n);
+		jKv(j, "_Universe", n);
 		m_pU = (_Universe *)(pM->findModule(n));
 
 		return true;

@@ -39,22 +39,22 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		jVar(j, "fovH", m_fovH);
+		jKv(j, "fovH", m_fovH);
 		IF_F(m_fovH <= 0 || m_fovH > 360);
-		jVar(j, "fovV", m_fovV);
+		jKv(j, "fovV", m_fovV);
 
-		jVar(j, "nDiv", m_nDiv);
+		jKv(j, "nDiv", m_nDiv);
 		m_dDeg = m_fovH / m_nDiv;
 		m_dDegInv = 1.0 / m_dDeg;
 
-		jVec<float>(j, "vRange", m_vRange);
-		jVar(j, "calibScale", m_calibScale);
-		jVar(j, "calibOffset", m_calibOffset);
+		jKv<float>(j, "vRange", m_vRange);
+		jKv(j, "calibScale", m_calibScale);
+		jKv(j, "calibOffset", m_calibOffset);
 
 		int nMed = 0;
-		jVar(j, "nMed", nMed);
+		jKv(j, "nMed", nMed);
 		int nAvr = 0;
-		jVar(j, "nAvr", nAvr);
+		jKv(j, "nAvr", nAvr);
 
 		IF_F(m_nDiv >= MAX_DIST_SENSOR_DIV);
 

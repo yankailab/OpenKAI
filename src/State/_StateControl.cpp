@@ -52,7 +52,7 @@ namespace kai
 		IF__(m_vpState.empty(), true);
 
 		string start = "";
-		jVar(j, "start", start);
+		jKv(j, "start", start);
 		int i = getStateIdxByName(start);
 		if (i < 0)
 			m_iS = 0;

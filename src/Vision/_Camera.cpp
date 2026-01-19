@@ -27,9 +27,9 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(j));
 
-		jVar(j, "deviceID", m_deviceID);
-		jVar(j, "nInitRead", m_nInitRead);
-		jVar(j, "bResetCam", m_bResetCam);
+		jKv(j, "deviceID", m_deviceID);
+		jKv(j, "nInitRead", m_nInitRead);
+		jKv(j, "bResetCam", m_bResetCam);
 
 		return true;
 	}

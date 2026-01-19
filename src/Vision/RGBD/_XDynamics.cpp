@@ -29,31 +29,31 @@ namespace kai
     {
         IF_F(!_RGBDbase::init(j));
 
-        jVar(j, "xdDevType", m_xdDevType);
-        jVar(j, "xdProductType", m_xdProductType);
-        jVec<int>(j, "vPhaseInt", m_xdCtrl.m_vPhaseInt);
-        jVec<int>(j, "vSpaceInt", m_xdCtrl.m_vSpaceInt);
-        jVec<int>(j, "vFreq", m_xdCtrl.m_vFreq);
-        jVar(j, "binning", m_xdCtrl.m_binning);
-        jVar(j, "phaseMode", m_xdCtrl.m_phaseMode);
-        jVar(j, "mirrorMode", m_xdCtrl.m_mirrorMode);
-        jVar(j, "algMode", m_xdCtrl.m_algMode);
-        jVar(j, "rgbStride", m_xdCtrl.m_rgbStride);
-        jVar(j, "rgbFmt", m_xdCtrl.m_rgbFmt);
-        jVar(j, "bAE", m_xdCtrl.m_bAE);
-        jVar(j, "preDist", m_xdCtrl.m_preDist);
+        jKv(j, "xdDevType", m_xdDevType);
+        jKv(j, "xdProductType", m_xdProductType);
+        jKv<int>(j, "vPhaseInt", m_xdCtrl.m_vPhaseInt);
+        jKv<int>(j, "vSpaceInt", m_xdCtrl.m_vSpaceInt);
+        jKv<int>(j, "vFreq", m_xdCtrl.m_vFreq);
+        jKv(j, "binning", m_xdCtrl.m_binning);
+        jKv(j, "phaseMode", m_xdCtrl.m_phaseMode);
+        jKv(j, "mirrorMode", m_xdCtrl.m_mirrorMode);
+        jKv(j, "algMode", m_xdCtrl.m_algMode);
+        jKv(j, "rgbStride", m_xdCtrl.m_rgbStride);
+        jKv(j, "rgbFmt", m_xdCtrl.m_rgbFmt);
+        jKv(j, "bAE", m_xdCtrl.m_bAE);
+        jKv(j, "preDist", m_xdCtrl.m_preDist);
 
-        jVar(j, "DtdnMethod", m_xdCtrl.m_DtdnMethod);
-        jVar(j, "DtdnLev", m_xdCtrl.m_DtdnLev);
-        jVar(j, "DsdnMethod", m_xdCtrl.m_DsdnMethod);
-        jVar(j, "DsdnLev", m_xdCtrl.m_DsdnLev);
+        jKv(j, "DtdnMethod", m_xdCtrl.m_DtdnMethod);
+        jKv(j, "DtdnLev", m_xdCtrl.m_DtdnLev);
+        jKv(j, "DsdnMethod", m_xdCtrl.m_DsdnMethod);
+        jKv(j, "DsdnLev", m_xdCtrl.m_DsdnLev);
 
-        jVar(j, "GtdnMethod", m_xdCtrl.m_GtdnMethod);
-        jVar(j, "GtdnLev", m_xdCtrl.m_GtdnLev);
-        jVar(j, "GsdnMethod", m_xdCtrl.m_GsdnMethod);
-        jVar(j, "GsdnLev", m_xdCtrl.m_GsdnLev);
+        jKv(j, "GtdnMethod", m_xdCtrl.m_GtdnMethod);
+        jKv(j, "GtdnLev", m_xdCtrl.m_GtdnLev);
+        jKv(j, "GsdnMethod", m_xdCtrl.m_GsdnMethod);
+        jKv(j, "GsdnLev", m_xdCtrl.m_GsdnLev);
 
-        jVar(j, "dFlyPixLev", m_xdCtrl.m_dFlyPixLev);
+        jKv(j, "dFlyPixLev", m_xdCtrl.m_dFlyPixLev);
 
         m_mXDyuv.create(m_vSizeRGB.y * 3 / 2, m_vSizeRGB.x, CV_8UC1);
         m_mXDd.create(m_vSizeD.y, m_vSizeD.x, CV_16U);

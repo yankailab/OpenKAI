@@ -40,35 +40,35 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::init(j));
 
-		jVar(j, "vWinSize", m_vWinSize);
-		jVar(j, "pathRes", m_pathRes);
-		jVar(j, "device", m_device);
-		jVar(j, "dirSave", m_dirSave);
+		jKv<int>(j, "vWinSize", m_vWinSize);
+		jKv(j, "pathRes", m_pathRes);
+		jKv(j, "device", m_device);
+		jKv(j, "dirSave", m_dirSave);
 
-		jVar(j, "bFullScreen", m_bFullScreen);
-		jVar(j, "bSceneCache", m_bSceneCache);
-		jVar(j, "wPanel", m_wPanel);
-		jVec<float>(j, "vBtnPadding", m_vBtnPadding);
-		jVar(j, "mouseMode", m_mouseMode);
-		jVec<float>(j, "vDmove", m_vDmove);
+		jKv(j, "bFullScreen", m_bFullScreen);
+		jKv(j, "bSceneCache", m_bSceneCache);
+		jKv(j, "wPanel", m_wPanel);
+		jKv<float>(j, "vBtnPadding", m_vBtnPadding);
+		jKv(j, "mouseMode", m_mouseMode);
+		jKv<float>(j, "vDmove", m_vDmove);
 
-		jVar(j, "camProjType", m_camProj.m_type);
-		jVar(j, "camFov", m_camProj.m_fov);
-		jVar(j, "camFovType", m_camProj.m_fovType);
-		jVec<float>(j, "vCamLR", m_camProj.m_vLR);
-		jVec<float>(j, "vCamBT", m_camProj.m_vBT);
-		jVec<float>(j, "vCamNF", m_camProj.m_vNF);
+		jKv(j, "camProjType", m_camProj.m_type);
+		jKv(j, "camFov", m_camProj.m_fov);
+		jKv(j, "camFovType", m_camProj.m_fovType);
+		jKv<float>(j, "vCamLR", m_camProj.m_vLR);
+		jKv<float>(j, "vCamBT", m_camProj.m_vBT);
+		jKv<float>(j, "vCamNF", m_camProj.m_vNF);
 
-		jVec<float>(j, "vCamLookAt", m_camDefault.m_vLookAt);
-		jVec<float>(j, "vCamEye", m_camDefault.m_vEye);
-		jVec<float>(j, "vCamUp", m_camDefault.m_vUp);
+		jKv<float>(j, "vCamLookAt", m_camDefault.m_vLookAt);
+		jKv<float>(j, "vCamEye", m_camDefault.m_vEye);
+		jKv<float>(j, "vCamUp", m_camDefault.m_vUp);
 		m_cam = m_camDefault;
 
-		jVec<float>(j, "vCamAutoLookAt", m_camAuto.m_vLookAt);
-		jVec<float>(j, "vCamAutoEye", m_camAuto.m_vEye);
-		jVec<float>(j, "vCamAutoUp", m_camAuto.m_vUp);
+		jKv<float>(j, "vCamAutoLookAt", m_camAuto.m_vLookAt);
+		jKv<float>(j, "vCamAutoEye", m_camAuto.m_vEye);
+		jKv<float>(j, "vCamAutoUp", m_camAuto.m_vUp);
 
-		jVec<float>(j, "vCoR", m_vCoR);
+		jKv<float>(j, "vCoR", m_vCoR);
 
 		utility::SetVerbosityLevel(utility::VerbosityLevel::Error);
 
@@ -92,21 +92,21 @@ namespace kai
 			IF_CONT(!Ji.is_object());
 
 			string n = "";
-			jVar(Ji, "_GeometryBase", n);
+			jKv(Ji, "_GeometryBase", n);
 			_GeometryBase *pGB = (_GeometryBase *)(pM->findModule(n));
 			IF_CONT(!pGB);
 
 			GVIEWER_OBJ g;
 			g.m_pGB = pGB;
 			g.m_name = n;
-			jVar(Ji, "bStatic", g.m_bStatic);
-			jVar(Ji, "nP", g.m_nPbuf);
-			jVar(Ji, "rDummyDome", g.m_rDummyDome);
-			jVar(Ji, "matName", g.m_matName);
-			jVar(Ji, "matCol", g.m_matCol);
-			jVar(Ji, "matPointSize", g.m_matPointSize);
-			jVar(Ji, "matLineWidth", g.m_matLineWidth);
-			jVar(Ji, "iGridLS", g.m_iGridLS);
+			jKv(Ji, "bStatic", g.m_bStatic);
+			jKv(Ji, "nP", g.m_nPbuf);
+			jKv(Ji, "rDummyDome", g.m_rDummyDome);
+			jKv(Ji, "matName", g.m_matName);
+			jKv<float>(Ji, "matCol", g.m_matCol);
+			jKv(Ji, "matPointSize", g.m_matPointSize);
+			jKv(Ji, "matLineWidth", g.m_matLineWidth);
+			jKv(Ji, "iGridLS", g.m_iGridLS);
 
 			g.init();
 			g.updateMaterial();

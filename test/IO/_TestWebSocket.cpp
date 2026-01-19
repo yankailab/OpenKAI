@@ -24,7 +24,7 @@ namespace kai
         IF_F(!this->_TestBase::link(j, pM));
 
         string n = "";
-        jVar(j, "_WebSocketServer", n);
+        jKv(j, "_WebSocketServer", n);
         m_pWSserver = (_WebSocketServer *)(pM->findModule(n));
         NULL_F(m_pWSserver);
 

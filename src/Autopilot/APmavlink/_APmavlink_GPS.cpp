@@ -35,22 +35,22 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		jVar(j, "yaw", m_yaw);
-		jVar(j, "bYaw", m_bYaw);
-		jVar(j, "iRelayLED", m_iRelayLED);
+		jKv(j, "yaw", m_yaw);
+		jKv(j, "bYaw", m_bYaw);
+		jKv(j, "iRelayLED", m_iRelayLED);
 
-		jVec<int>(j, "vAxisIdx", m_vAxisIdx);
-		jVec<float>(j, "vAxisK", m_vAxisK);
-		jVar(j, "lat", m_llOrigin.m_lat);
-		jVar(j, "lng", m_llOrigin.m_lng);
+		jKv<int>(j, "vAxisIdx", m_vAxisIdx);
+		jKv<float>(j, "vAxisK", m_vAxisK);
+		jKv(j, "lat", m_llOrigin.m_lat);
+		jKv(j, "lng", m_llOrigin.m_lng);
 		m_utmOrigin = m_GPS.LL2UTM(m_llOrigin);
 
-		jVar(j, "gpsID", m_D.gps_id);
-		jVar(j, "iFixType", m_D.fix_type);
-		jVar(j, "nSat", m_D.satellites_visible);
-		jVar(j, "hdop", m_D.hdop);
-		jVar(j, "vdop", m_D.vdop);
-		jVar(j, "fIgnore", m_D.ignore_flags);
+		jKv(j, "gpsID", m_D.gps_id);
+		jKv(j, "iFixType", m_D.fix_type);
+		jKv(j, "nSat", m_D.satellites_visible);
+		jKv(j, "hdop", m_D.hdop);
+		jKv(j, "vdop", m_D.vdop);
+		jKv(j, "fIgnore", m_D.ignore_flags);
 
 		return true;
 	}
@@ -62,12 +62,12 @@ namespace kai
 		string n;
 
 		n = "";
-		jVar(j, "_APmavlink_base", n);
+		jKv(j, "_APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 		NULL_F(m_pAP);
 
 		n = "";
-		jVar(j, "_NavBase", n);
+		jKv(j, "_NavBase", n);
 		m_pSB = (_NavBase *)(pM->findModule(n));
 		NULL_(m_pSB);
 

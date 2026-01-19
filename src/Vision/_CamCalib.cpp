@@ -18,9 +18,9 @@ namespace kai
     {
         IF_F(!this->_ModuleBase::init(j));
 
-        jVar(j, "path", m_path);
-        jVec<int>(j, "vChessBoardSize", m_vChessBoardSize);
-        jVar(j, "squareSize", m_squareSize);
+        jKv(j, "path", m_path);
+        jKv<int>(j, "vChessBoardSize", m_vChessBoardSize);
+        jKv(j, "squareSize", m_squareSize);
 
         return true;
     }

@@ -25,10 +25,10 @@ namespace kai
 	{
 		IF_F(!this->_ActuatorBase::init(j));
 
-		jVar(j, "port", m_port);
-		jVar(j, "baud", m_baud);
-		jVar(j, "iID", m_ID);
-		jVar(j, "tIntReadStatus", m_ieReadStatus.m_tInterval);
+		jKv(j, "port", m_port);
+		jKv(j, "baud", m_baud);
+		jKv(j, "iID", m_ID);
+		jKv(j, "tIntReadStatus", m_ieReadStatus.m_tInterval);
 
 		m_pA = &m_vAxis[0];
 

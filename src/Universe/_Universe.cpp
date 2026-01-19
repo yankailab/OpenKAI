@@ -33,26 +33,26 @@ namespace kai
 		IF_F(!this->_ModuleBase::init(j));
 
 		// general
-		jVar(j, "minConfidence", m_minConfidence);
-		jVec<float>(j, "vArea", m_vArea);
-		jVec<float>(j, "vW", m_vW);
-		jVec<float>(j, "vH", m_vH);
+		jKv(j, "minConfidence", m_minConfidence);
+		jKv<float>(j, "vArea", m_vArea);
+		jKv<float>(j, "vW", m_vW);
+		jKv<float>(j, "vH", m_vH);
 		m_vRoi = j.value("vRoi", vector<float>{
 									 0,
 									 0,
 									 1,
 									 1,
 								 });
-		jVec<int>(j, "vClassRange", m_vClassRange);
+		jKv<int>(j, "vClassRange", m_vClassRange);
 
 		// draw
-		jVar(j, "bDrawText", m_bDrawText);
-		jVar(j, "bDrawPos", m_bDrawPos);
-		jVar(j, "bDrawBB", m_bDrawBB);
+		jKv(j, "bDrawText", m_bDrawText);
+		jKv(j, "bDrawPos", m_bDrawPos);
+		jKv(j, "bDrawBB", m_bDrawBB);
 
 		// buffer
 		int nB = 16;
-		jVar(j, "nBuf", nB);
+		jKv(j, "nBuf", nB);
 		m_sO.get()->init(nB);
 		m_sO.next()->init(nB);
 		clear();

@@ -13,9 +13,9 @@ namespace kai
     {
         IF_F(!j.is_object());
 
-        jVar(j, "topicPC2", m_topicPC2);
-        jVar(j, "topicOdom", m_topicOdom);
-        jVar(j, "topicPath", m_topicPath);
+        jKv(j, "topicPC2", m_topicPC2);
+        jKv(j, "topicOdom", m_topicOdom);
+        jKv(j, "topicPath", m_topicPath);
 
         return true;
     }

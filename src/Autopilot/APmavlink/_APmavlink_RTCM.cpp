@@ -25,7 +25,7 @@ namespace kai
 		IF_F(!this->_ProtocolBase::link(j, pM));
 
 		string n = "";
-		jVar(j, "_Mavlink", n);
+		jKv(j, "_Mavlink", n);
 		m_pMav = (_Mavlink *)(pM->findModule(n));
 		NULL_F(m_pMav);
 

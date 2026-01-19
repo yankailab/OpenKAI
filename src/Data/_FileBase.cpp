@@ -23,7 +23,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		jVec<string>(j, "vExt", m_vExt);
+		jKv(j, "vExt", m_vExt);
 
 		return true;
 	}

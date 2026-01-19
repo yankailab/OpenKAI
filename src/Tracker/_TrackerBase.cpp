@@ -29,8 +29,8 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		jVar(j, "trackerType", m_trackerType);
-		jVar(j, "margin", m_margin);
+		jKv(j, "trackerType", m_trackerType);
+		jKv(j, "margin", m_margin);
 
 		return true;
 	}
@@ -40,7 +40,7 @@ namespace kai
 		IF_F(!this->_ModuleBase::link(j, pM));
 
 		string n = "";
-		jVar(j, "_VisionBase", n);
+		jKv(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

@@ -25,7 +25,7 @@ namespace kai
 		IF_F(!this->_CANbase::link(j, pM));
 
 		string n = "";
-		jVar(j, "_IObase", n);
+		jKv(j, "_IObase", n);
 		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 

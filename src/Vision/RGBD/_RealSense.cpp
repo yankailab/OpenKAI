@@ -34,28 +34,28 @@ namespace kai
     {
         IF_F(!_RGBDbase::init(j));
 
-        jVar(j, "rsSN", m_rsSN);
-        jVar(j, "rsFPS", m_rsFPS);
-        jVar(j, "rsDFPS", m_rsDFPS);
-        jVar(j, "bAlign", m_bAlign);
-        jVar(j, "vPreset", m_vPreset);
+        jKv(j, "rsSN", m_rsSN);
+        jKv(j, "rsFPS", m_rsFPS);
+        jKv(j, "rsDFPS", m_rsDFPS);
+        jKv(j, "bAlign", m_bAlign);
+        jKv(j, "vPreset", m_vPreset);
 
-        jVar(j, "fConfidenceThreshold", m_rsCtrl.m_fConfidenceThreshold);
-        jVar(j, "fDigitalGain", m_rsCtrl.m_fDigitalGain);
-        jVar(j, "fPostProcessingSharpening", m_rsCtrl.m_fPostProcessingSharpening);
-        jVar(j, "fFilterMagnitude", m_rsCtrl.m_fFilterMagnitude);
-        jVar(j, "fHolesFill", m_rsCtrl.m_fHolesFill);
-        jVar(j, "fEmitter", m_rsCtrl.m_fEmitter);
-        jVar(j, "fLaserPower", m_rsCtrl.m_fLaserPower);
+        jKv(j, "fConfidenceThreshold", m_rsCtrl.m_fConfidenceThreshold);
+        jKv(j, "fDigitalGain", m_rsCtrl.m_fDigitalGain);
+        jKv(j, "fPostProcessingSharpening", m_rsCtrl.m_fPostProcessingSharpening);
+        jKv(j, "fFilterMagnitude", m_rsCtrl.m_fFilterMagnitude);
+        jKv(j, "fHolesFill", m_rsCtrl.m_fHolesFill);
+        jKv(j, "fEmitter", m_rsCtrl.m_fEmitter);
+        jKv(j, "fLaserPower", m_rsCtrl.m_fLaserPower);
 
-        jVar(j, "fBrightness", m_rsCtrl.m_fBrightness);
-        jVar(j, "fContrast", m_rsCtrl.m_fContrast);
-        jVar(j, "fGain", m_rsCtrl.m_fGain);
-        jVar(j, "fExposure", m_rsCtrl.m_fExposure);
-        jVar(j, "fHue", m_rsCtrl.m_fHue);
-        jVar(j, "fSaturation", m_rsCtrl.m_fSaturation);
-        jVar(j, "fSharpness", m_rsCtrl.m_fSharpness);
-        jVar(j, "fWhiteBalance", m_rsCtrl.m_fWhiteBalance);
+        jKv(j, "fBrightness", m_rsCtrl.m_fBrightness);
+        jKv(j, "fContrast", m_rsCtrl.m_fContrast);
+        jKv(j, "fGain", m_rsCtrl.m_fGain);
+        jKv(j, "fExposure", m_rsCtrl.m_fExposure);
+        jKv(j, "fHue", m_rsCtrl.m_fHue);
+        jKv(j, "fSaturation", m_rsCtrl.m_fSaturation);
+        jKv(j, "fSharpness", m_rsCtrl.m_fSharpness);
+        jKv(j, "fWhiteBalance", m_rsCtrl.m_fWhiteBalance);
 
         DEL(m_pTpp);
         m_pTpp = createThread(j.at("threadPP"), "threadPP");

@@ -33,7 +33,7 @@ namespace kai
 	{
 		IF_F(!_RGBDbase::init(j));
 
-		jVar(j, "scPixelFormat", m_scCtrl.m_pixelFormat);
+		jKv(j, "scPixelFormat", m_scCtrl.m_pixelFormat);
 
 		DEL(m_pTpp);
 		m_pTpp = createThread(j.at("threadPP"), "threadPP");

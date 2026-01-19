@@ -24,13 +24,13 @@ namespace kai
 	{
 		IF_F(!this->_UIbase::init(j));
 
-		jVec<int>(j, "vSize", m_vSize);
+		jKv<int>(j, "vSize", m_vSize);
 		IF_F(m_vSize.area() <= 0);
 
 		m_F.allocate(m_vSize.x, m_vSize.y);
 		*m_F.m() = Scalar(0, 0, 0);
 
-		jVar(j, "gstOutput", m_gstOutput);
+		jKv(j, "gstOutput", m_gstOutput);
 		if (!m_gstOutput.empty())
 		{
 			if (!m_gst.open(m_gstOutput,

@@ -18,7 +18,7 @@ namespace kai
 	{
 		IF_F(!this->_CANbase::init(j));
 
-		jVar(j, "ifName", m_ifName);
+		jKv(j, "ifName", m_ifName);
 
 		return true;
 	}

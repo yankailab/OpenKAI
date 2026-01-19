@@ -35,9 +35,9 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		jVar(j, "port", m_listenPort);
-		jVar(j, "nListen", m_nListen);
-		jVar(j, "nSocket", m_nSocket);
+		jKv(j, "port", m_listenPort);
+		jKv(j, "nListen", m_nListen);
+		jKv(j, "nSocket", m_nSocket);
 
 		return true;
 	}

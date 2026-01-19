@@ -32,10 +32,10 @@ namespace kai
     {
         IF_F(!this->_ModuleBase::init(j));
 
-        jVar(j, "rNormal", m_rNormal);
-        jVar(j, "rFeature", m_rFeature);
-        jVar(j, "maxNNnormal", m_maxNNnormal);
-        jVar(j, "maxNNfpfh", m_maxNNfpfh);
+        jKv(j, "rNormal", m_rNormal);
+        jKv(j, "rFeature", m_rFeature);
+        jKv(j, "maxNNnormal", m_maxNNnormal);
+        jKv(j, "maxNNfpfh", m_maxNNfpfh);
 
         return true;
     }
@@ -47,17 +47,17 @@ namespace kai
         string n;
 
         n = "";
-        jVar(j, "_PCbaseSrc", n);
+        jKv(j, "_PCbaseSrc", n);
         m_pSrc = (_PCframe *)(pM->findModule(n));
         IF_Le_F(!m_pSrc, "_PCbaseSrc not found: " + n);
 
         n = "";
-        jVar(j, "_PCbaseTgt", n);
+        jKv(j, "_PCbaseTgt", n);
         m_pTgt = (_PCframe *)(pM->findModule(n));
         IF_Le_F(!m_pTgt, "_PCbaseTgt not found: " + n);
 
         n = "";
-        jVar(j, "_PCtransform", n);
+        jKv(j, "_PCtransform", n);
         m_pTf = (_PCtransform *)(pM->findModule(n));
         IF_Le_F(!m_pTf, "_PCtransform not found: " + n);
 

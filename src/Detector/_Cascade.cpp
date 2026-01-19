@@ -23,9 +23,9 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		jVar(j, "scaleFactor", m_scaleFactor);
-		jVar(j, "minNeighbors", m_minNeighbors);
-		jVar(j, "bGPU", m_bGPU);
+		jKv(j, "scaleFactor", m_scaleFactor);
+		jKv(j, "minNeighbors", m_minNeighbors);
+		jKv(j, "bGPU", m_bGPU);
 
 		if (m_bGPU)
 		{
