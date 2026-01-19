@@ -13,10 +13,12 @@ namespace kai
 	_TrackerBase::_TrackerBase()
 	{
 		m_pV = nullptr;
+		m_trackerType = "";
 		m_trackState = track_stop;
 		m_bb.clear();
 		m_iSet = 0;
 		m_iInit = 0;
+		m_margin = 0.0;
 	}
 
 	_TrackerBase::~_TrackerBase()
@@ -27,8 +29,8 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_trackerType = j.value("trackerType", "");
-		m_margin = j.value("margin", 0.0);
+		jVar(j, "trackerType", m_trackerType);
+		jVar(j, "margin", m_margin);
 
 		return true;
 	}
@@ -37,7 +39,8 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n = j.value("_VisionBase", "");
+		string n = "";
+		jVar(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

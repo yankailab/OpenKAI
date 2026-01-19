@@ -22,8 +22,8 @@ namespace kai
 		virtual void send(void);
 		virtual void handleJson(const string &str);
 
-		virtual void handleHeartbeat(picojson::object &o);
-		virtual void handleStat(picojson::object &o);
+		// virtual void handleHeartbeat(picojson::object &o);
+		// virtual void handleStat(picojson::object &o);
 
 	private:
 		void updateW(void);

@@ -10,7 +10,27 @@ namespace kai
 	_LeddarVu::_LeddarVu()
 	{
 		m_pMb = nullptr;
+		m_port = "";
+		m_baud = 115200;
+		m_slaveAddr = 1;
+		m_bUse0x41 = false;
+		m_showOriginOffsetX = 0.5;
+		m_showOriginOffsetY = 0.5;
+
 		m_nDetection = 0;
+		m_lightSrcPwr = 0;
+
+		m_nAccumulationsExpo = 5;
+		m_nOversamplingsExpo = 1;
+		m_lightSrcPwr = 100;
+		m_nPoint = 18;
+		m_bAutoLightSrcPwr = false;
+		m_bDemergeObj = true;
+		m_bStaticNoiseRemoval = true;
+		m_bPrecision = true;
+		m_bSaturationCompensation = true;
+		m_bOvershootManagement = true;
+		m_oprMode = 1;
 
 		m_nDiv = 8;
 	}
@@ -28,24 +48,24 @@ namespace kai
 	{
 		IF_F(!this->_DistSensorBase::init(j));
 
-		m_port = j.value("port", "");
-		m_baud = j.value("baud", 115200);
-		m_slaveAddr = j.value("slaveAddr", 1);
-		m_bUse0x41 = j.value("bUse0x41", false);
-		m_showOriginOffsetX = j.value("showOriginOffsetX", 0.5);
-		m_showOriginOffsetY = j.value("showOriginOffsetY", 0.5);
+		jVar(j, "port", m_port);
+		jVar(j, "baud", m_baud);
+		jVar(j, "slaveAddr", m_slaveAddr);
+		jVar(j, "bUse0x41", m_bUse0x41);
+		jVar(j, "showOriginOffsetX", m_showOriginOffsetX);
+		jVar(j, "showOriginOffsetY", m_showOriginOffsetY);
 
-		m_nAccumulationsExpo = j.value("nAccumulationsExpo", 5);
-		m_nOversamplingsExpo = j.value("nOversamplingsExpo", 1);
-		m_nPoint = j.value("nPoint", 18);
-		m_lightSrcPwr = j.value("lightSrcPwr", 100);
-		m_bAutoLightSrcPwr = j.value("bAutoLightSrcPwr", false);
-		m_bDemergeObj = j.value("bDemergeObj", true);
-		m_bStaticNoiseRemoval = j.value("bStaticNoiseRemoval", true);
-		m_bPrecision = j.value("bPrecicion", true);
-		m_bSaturationCompensation = j.value("bSaturationCompensation", true);
-		m_bOvershootManagement = j.value("bOvershootManagement", true);
-		m_oprMode = j.value("oprMode", 1);
+		jVar(j, "nAccumulationsExpo", m_nAccumulationsExpo);
+		jVar(j, "nOversamplingsExpo", m_nOversamplingsExpo);
+		jVar(j, "nPoint", m_nPoint);
+		jVar(j, "lightSrcPwr", m_lightSrcPwr);
+		jVar(j, "bAutoLightSrcPwr", m_bAutoLightSrcPwr);
+		jVar(j, "bDemergeObj", m_bDemergeObj);
+		jVar(j, "bStaticNoiseRemoval", m_bStaticNoiseRemoval);
+		jVar(j, "bPrecicion", m_bPrecision);
+		jVar(j, "bSaturationCompensation", m_bSaturationCompensation);
+		jVar(j, "bOvershootManagement", m_bOvershootManagement);
+		jVar(j, "oprMode", m_oprMode);
 
 		return true;
 	}

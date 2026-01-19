@@ -16,7 +16,7 @@ namespace kai
 	{
 		IF_F(!this->_JSONbase::init(j));
 
-		//        m_dS = j.value("dS", "");
+		//        jVar(j,"dS",m_dS);//""
 
 		return true;
 	}
@@ -25,7 +25,8 @@ namespace kai
 	{
 		IF_F(!this->_JSONbase::link(j, pM));
 
-		string n = j.value("_APmavlink_base", "");
+		string n = "";
+		jVar(j, "_APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 		NULL_F(m_pAP);
 
@@ -81,18 +82,18 @@ namespace kai
 		// 	"hdg":0,		// float: vehicle heading to next waypoint (degree), only if vehicle is in Auto mode, -1 for other modes.
 		// }
 
-		object r;
-		JO(r, "cmd", "vUpdate");
-		JO(r, "vID", 0.0);
-		JO(r, "lon", vP.y);
-		JO(r, "lat", vP.x);
-		JO(r, "alt", vP.w);
-		JO(r, "yaw", vA.x * RAD_2_DEG - 90);
-		JO(r, "pitch", vA.y);
-		JO(r, "roll", vA.z);
-		JO(r, "batt", m_pAP->getBattery());
-		JO(r, "hdg", -1.0);
-		sendJson(r);
+		// object r;
+		// JO(r, "cmd", "vUpdate");
+		// JO(r, "vID", 0.0);
+		// JO(r, "lon", vP.y);
+		// JO(r, "lat", vP.x);
+		// JO(r, "alt", vP.w);
+		// JO(r, "yaw", vA.x * RAD_2_DEG - 90);
+		// JO(r, "pitch", vA.y);
+		// JO(r, "roll", vA.z);
+		// JO(r, "batt", m_pAP->getBattery());
+		// JO(r, "hdg", -1.0);
+		// sendJson(r);
 	}
 
 	void _APmavlink_mav2json::updateR(void)
@@ -111,33 +112,33 @@ namespace kai
 
 	void _APmavlink_mav2json::handleJson(const string &str)
 	{
-		value json;
-		IF_(!str2JSON(str, &json));
+		// value json;
+		// IF_(!str2JSON(str, &json));
 
-		object &jo = json.get<object>();
-		IF_(!jo["cmd"].is<string>());
-		string cmd = jo["cmd"].get<string>();
+		// object &jo = json.get<object>();
+		// IF_(!jo["cmd"].is<string>());
+		// string cmd = jo["cmd"].get<string>();
 
-		if (cmd == "heartbeat")
-			handleHeartbeat(jo);
-		else if (cmd == "stat")
-			handleStat(jo);
+		// if (cmd == "heartbeat")
+		// 	handleHeartbeat(jo);
+		// else if (cmd == "stat")
+		// 	handleStat(jo);
 	}
 
-	void _APmavlink_mav2json::handleHeartbeat(picojson::object &o)
-	{
-		IF_(!check());
-	}
+	// void _APmavlink_mav2json::handleHeartbeat(picojson::object &o)
+	// {
+	// 	IF_(!check());
+	// }
 
-	void _APmavlink_mav2json::handleStat(picojson::object &o)
-	{
-		IF_(!check());
-		IF_(!o["id"].is<double>());
-		IF_(!o["stat"].is<string>());
+	// void _APmavlink_mav2json::handleStat(picojson::object &o)
+	// {
+	// 	IF_(!check());
+	// 	IF_(!o["id"].is<double>());
+	// 	IF_(!o["stat"].is<string>());
 
-		int vID = o["id"].get<double>();
-		string stat = o["stat"].get<string>();
-	}
+	// 	int vID = o["id"].get<double>();
+	// 	string stat = o["stat"].get<string>();
+	// }
 
 	void _APmavlink_mav2json::console(void *pConsole)
 	{

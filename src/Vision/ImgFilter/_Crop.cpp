@@ -14,6 +14,8 @@ namespace kai
 	{
 		m_type = vision_crop;
 		m_pV = nullptr;
+
+		m_vRoi.clear();
 	}
 
 	_Crop::~_Crop()
@@ -24,7 +26,7 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(j));
 
-		m_vRoi = j.value("vRoi", vector<int>{});
+		jVec<int>(j, "vRoi", m_vRoi);
 
 		return true;
 	}
@@ -33,7 +35,8 @@ namespace kai
 	{
 		IF_F(!this->_VisionBase::link(j, pM));
 
-		string n = j.value("_VisionBase", "");
+		string n = "";
+		jVar(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

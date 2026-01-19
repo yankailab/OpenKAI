@@ -14,6 +14,12 @@ namespace kai
 	{
 		m_ioType = io_udp;
 		m_ioStatus = io_unknown;
+
+		m_addrRemote = "";
+		m_portRemote = 0;
+		m_portLocal = 0;
+		m_bW2R = true;
+		m_bWbroadcast = 0;
 		m_socket = -1;
 	}
 
@@ -26,11 +32,11 @@ namespace kai
 	{
 		IF_F(!this->_IObase::init(j));
 
-		m_addrRemote = j.value("addrRemote", "");
-		m_portRemote = j.value("portRemote", 0);
-		m_portLocal = j.value("portLocal", 0);
-		m_bW2R = j.value("bW2R", true);
-		m_bWbroadcast = j.value("bWbroadcast", 0);
+		jVar(j, "addrRemote", m_addrRemote);
+		jVar(j, "portRemote", m_portRemote);
+		jVar(j, "portLocal", m_portLocal);
+		jVar(j, "bW2R", m_bW2R);
+		jVar(j, "bWbroadcast", m_bWbroadcast);
 
 		return true;
 	}

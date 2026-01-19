@@ -10,6 +10,10 @@ namespace kai
 	_HYMCU_RS485::_HYMCU_RS485()
 	{
 		m_pMB = nullptr;
+		m_iSlave = 1;
+		m_dpr = 1;
+		m_dInit = 20;
+		m_cmdInt = 50000;
 	}
 
 	_HYMCU_RS485::~_HYMCU_RS485()
@@ -20,29 +24,29 @@ namespace kai
 	{
 		IF_F(!this->_ActuatorBase::init(j));
 
-		m_iSlave = j.value("iSlave", 1);
-		m_dpr = j.value("dpr", 1);
-		m_dInit = j.value("dInit", 20);
-		m_cmdInt = j.value("cmdInt", 50000);
+		jVar(j, "iSlave", m_iSlave);
+		jVar(j, "dpr", m_dpr);
+		jVar(j, "dInit", m_dInit);
+		jVar(j, "cmdInt", m_cmdInt);
 
 		const json &ja = j.at("addr");
 		if (ja.is_object())
 		{
-			m_addr.m_setDPR = ja.value("setDPR", 4);
-			m_addr.m_setDist = ja.value("setDist", 9);
-			m_addr.m_setDir = ja.value("setDir", 11);
-			m_addr.m_setSpd = ja.value("setSpd", 8);
-			m_addr.m_setAcc = ja.value("setAcc", 2);
-			m_addr.m_setSlaveID = ja.value("setSlaveID", 16);
-			m_addr.m_setBaudL = ja.value("setBaudL", 73);
-			m_addr.m_setBaudH = ja.value("setBaudH", 74);
+			jVar(ja, "setDPR", m_addr.m_setDPR);
+			jVar(ja, "setDist", m_addr.m_setDist);
+			jVar(ja, "setDir", m_addr.m_setDir);
+			jVar(ja, "setSpd", m_addr.m_setSpd);
+			jVar(ja, "setAcc", m_addr.m_setAcc);
+			jVar(ja, "setSlaveID", m_addr.m_setSlaveID);
+			jVar(ja, "setBaudL", m_addr.m_setBaudL);
+			jVar(ja, "setBaudH", m_addr.m_setBaudH);
 
-			m_addr.m_bComplete = ja.value("bComplete", 12);
-			m_addr.m_readStat = ja.value("readStat", 22);
-			m_addr.m_run = ja.value("run", 7);
-			m_addr.m_stop = ja.value("stop", 3);
-			m_addr.m_resPos = ja.value("resPos", 10);
-			m_addr.m_saveData = ja.value("saveData", 0);
+			jVar(ja, "bComplete", m_addr.m_bComplete);
+			jVar(ja, "readStat", m_addr.m_readStat);
+			jVar(ja, "run", m_addr.m_run);
+			jVar(ja, "stop", m_addr.m_stop);
+			jVar(ja, "resPos", m_addr.m_resPos);
+			jVar(ja, "saveData", m_addr.m_saveData);
 		}
 
 		return true;
@@ -52,9 +56,10 @@ namespace kai
 	{
 		IF_F(!this->_ActuatorBase::link(j, pM));
 
-		string n = j.value("_Modbus", "");
+		string n = "";
+		jVar(j, "_Modbus", n);
 		m_pMB = (_Modbus *)(pM->findModule(n));
-		NULL_F(m_pMB);
+		IF_Le_F(!m_pMB, "_Modbus not found: " + n);
 
 		return true;
 	}

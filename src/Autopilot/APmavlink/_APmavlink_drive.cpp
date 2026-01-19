@@ -8,6 +8,15 @@ namespace kai
 		m_pAP = nullptr;
 		m_pRcYaw = nullptr;
 		m_pRcThrottle = nullptr;
+
+		m_yawMode = 1.0;
+		m_bSetYawSpeed = false;
+		m_bRcChanOverride = false;
+
+		m_steer = 0.0;
+		m_speed = 0.0;
+		m_pwmM = 1500;
+		m_pwmD = 500;
 	}
 
 	_APmavlink_drive::~_APmavlink_drive()
@@ -18,14 +27,14 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_bSetYawSpeed = j.value("bSetYawSpeed", false);
-		m_yawMode = j.value("yawMode", 1.0);
-		m_bRcChanOverride = j.value("bRcChanOverride", false);
+		jVar(j, "bSetYawSpeed", m_bSetYawSpeed);
+		jVar(j, "yawMode", m_yawMode);
+		jVar(j, "bRcChanOverride", m_bRcChanOverride);
 
-		m_steer = j.value("steer", 0.0);
-		m_speed = j.value("speed", 0.0);
-		m_pwmM = j.value("pwmM", 1500);
-		m_pwmD = j.value("pwmD", 500);
+		jVar(j, "steer", m_steer);
+		jVar(j, "speed", m_speed);
+		jVar(j, "pwmM", m_pwmM);
+		jVar(j, "pwmD", m_pwmD);
 
 		uint16_t *pRC[19];
 		pRC[0] = NULL;
@@ -51,11 +60,13 @@ namespace kai
 		for (int i = 1; i < 19; i++)
 			*pRC[i] = UINT16_MAX;
 
-		int iRcYaw = j.value("iRcYaw", 1);
+		int iRcYaw = 1;
+		jVar(j, "iRcYaw", iRcYaw);
 		IF_F(iRcYaw <= 0 || iRcYaw > 18);
 		m_pRcYaw = pRC[iRcYaw];
 
-		int iRcThrottle = j.value("iRcThrottle", 3);
+		int iRcThrottle = 3;
+		jVar(j, "iRcThrottle", iRcThrottle);
 		IF_F(iRcThrottle <= 0 || iRcThrottle > 18);
 		m_pRcThrottle = pRC[iRcThrottle];
 
@@ -66,9 +77,10 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n = j.value("_APmavlink_base", "");
+		string n = "";
+		jVar(j, "_APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
-		NULL_F(m_pAP);
+		IF_Le_F(!m_pAP, "_APmavlink_base not found: " + n);
 
 		return true;
 	}

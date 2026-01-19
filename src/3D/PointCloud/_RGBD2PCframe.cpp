@@ -30,9 +30,10 @@ namespace kai
 	{
 		IF_F(!this->_PCframe::link(j, pM));
 
-		string n = j.value("_RGBDbase", "");
+		string n = "";
+		jVar(j, "_RGBDbase", n);
 		m_pV = (_RGBDbase *)(pM->findModule(n));
-		NULL_F(m_pV);
+		IF_Le_F(!m_pV, "_RGBDbase not found: " + n);
 
 		return true;
 	}

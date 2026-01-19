@@ -12,6 +12,7 @@ namespace kai
 
 	_PCdownSample::_PCdownSample()
 	{
+		m_rVoxel = 0.1;
 	}
 
 	_PCdownSample::~_PCdownSample()
@@ -22,7 +23,7 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::init(j));
 
-		m_rVoxel = j.value("rVoxel", 0.1);
+		jVar(j, "rVoxel", m_rVoxel);
 
 		return true;
 	}

@@ -14,6 +14,9 @@ namespace kai
 	{
 		m_type = vision_contrast;
 		m_pV = nullptr;
+
+		m_alpha = 1.0;
+		m_beta = 0.0;
 	}
 
 	_Contrast::~_Contrast()
@@ -24,8 +27,8 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(j));
 
-		m_alpha = j.value("alpha", 1.0);
-		m_beta = j.value("beta", 0.0);
+		jVar(j, "alpha", m_alpha);
+		jVar(j, "beta", m_beta);
 
 		return true;
 	}
@@ -34,7 +37,8 @@ namespace kai
 	{
 		IF_F(!this->_VisionBase::link(j, pM));
 
-		string n = j.value("_VisionBase", "");
+		string n = "";
+		jVar(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

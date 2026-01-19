@@ -7,9 +7,14 @@ namespace kai
 	{
 		m_pAP = NULL;
 		m_pCurl = NULL;
+		m_fName = "";
+		m_process = "";
+		m_dir = "";
+
 		m_iWP = INT_MAX;
 
 		m_gstPID = 0;
+		m_tVidInt = 10;
 		m_tRecStart = 0;
 	}
 
@@ -21,11 +26,11 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_process = j.value("process", "");
-		m_fName = j.value("fName", "");
-		m_dir = j.value("dir", "");
-		m_vWP = j.value("vWP", vector<int>{});
-		m_tVidInt = j.value("tVidInt", 10);
+		jVar(j, "process", m_process);
+		jVar(j, "fName", m_fName);
+		jVar(j, "dir", m_dir);
+		jVar(j, "vWP", m_vWP);
+		jVar(j, "tVidInt", m_tVidInt);
 
 		return true;
 	}
@@ -36,11 +41,13 @@ namespace kai
 
 		string n;
 
-		n = j.value("_APmavlink_base", "");
+		n = "";
+		jVar(j, "_APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 		NULL_F(m_pAP);
 
-		n = j.value("_Uploader", "");
+		n = "";
+		jVar(j, "_Uploader", n);
 		m_pCurl = (_Uploader *)(pM->findModule(n));
 
 		return true;

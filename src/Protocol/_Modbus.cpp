@@ -8,7 +8,21 @@ namespace kai
 		pthread_mutex_init(&m_mutex, NULL);
 
 		m_pMb = nullptr;
+		m_type = "RTU";
+		m_bModbusDebug = false;
+		m_nErrReconnect = 0;
+
+		m_rtuPort = "";
+		m_rtuParity = 'E';
+		m_rtuBaud = 115200;
+
+		m_tcpAddr = "";
+		m_tcpPort = 0;
+
 		m_bOpen = false;
+		m_tIntervalUsec = 10000;
+		m_tOutSec = 1;
+		m_tOutUSec = 0;
 	}
 
 	_Modbus::~_Modbus()
@@ -25,21 +39,21 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_bModbusDebug = j.value("bModbusDebug", false);
-		m_nErrReconnect = j.value("nErrReconnect", 0);
+		jVar(j, "bModbusDebug", m_bModbusDebug);
+		jVar(j, "nErrReconnect", m_nErrReconnect);
 
-		m_rtuPort = j.value("rtuPort", "");
-		m_rtuParity = j.value("rtuParity", 'E');
-		m_rtuBaud = j.value("rtuBaud", 115200);
+		jVar(j, "rtuPort", m_rtuPort);
+		jVar(j, "rtuParity", m_rtuParity);
+		jVar(j, "rtuBaud", m_rtuBaud);
 
-		m_tcpAddr = j.value("tcpAddr", "");
-		m_tcpPort = j.value("tcpPort", 0);
+		jVar(j, "tcpAddr", m_tcpAddr);
+		jVar(j, "tcpPort", m_tcpPort);
 
-		m_tIntervalUsec = j.value("tIntervalUsec", 10000);
-		m_tOutSec = j.value("tOutSec", 1);
-		m_tOutUSec = j.value("tOutUSec", 0);
+		jVar(j, "tIntervalUsec", m_tIntervalUsec);
+		jVar(j, "tOutSec", m_tOutSec);
+		jVar(j, "tOutUSec", m_tOutUSec);
 
-		m_type = j.value("type", "RTU");
+		jVar(j, "type", m_type);
 		if (m_type == "RTU")
 		{
 			m_pMb = modbus_new_rtu(m_rtuPort.c_str(), m_rtuBaud, *m_rtuParity.c_str(), 8, 1);

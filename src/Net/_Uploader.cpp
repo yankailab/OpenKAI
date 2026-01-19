@@ -11,7 +11,12 @@ namespace kai
 {
 	_Uploader::_Uploader()
 	{
+		m_dir = "";
 		m_fName = "";
+		m_bRemoveAfterUpload = true;
+		m_method = uploader_http;
+		m_url = "";
+		m_cmd = "";
 		m_bConfirmCmdResult = false;
 	}
 
@@ -23,13 +28,13 @@ namespace kai
 	{
 		IF_F(!this->_FileBase::init(j));
 
-		m_dir = j.value("dir", "");
+		jVar(j, "dir", m_dir);
 		m_dir = checkDirName(m_dir);
-		m_bRemoveAfterUpload = j.value("bRemoveAfterUpload", true);
-		m_method = j.value("method", uploader_http);
-		m_url = j.value("url", "");
-		m_cmd = j.value("cmd", "");
-		m_bConfirmCmdResult = j.value("bConfirmCmdResult", false);
+		jVar(j, "bRemoveAfterUpload", m_bRemoveAfterUpload);
+		jVar(j, "method", m_method);
+		jVar(j, "url", m_url);
+		jVar(j, "cmd", m_cmd);
+		jVar(j, "bConfirmCmdResult", m_bConfirmCmdResult);
 
 		if (m_method == uploader_http)
 		{
@@ -153,16 +158,16 @@ namespace kai
 		// fflush(fp);
 		// fclose(fp);
 
-		object o;
-		JO(o, "id", "1");
-		JO(o, "ip", "192.168.1.108");
-		JO(o, "longitude", lf2str(123.456, 10));
-		JO(o, "latitude", lf2str(654.321, 10));
-		JO(o, "img", strEnc);
-		JO(o, "status", (double)3);
-		string jsonStr = picojson::value(o).serialize();
+		// object o;
+		// JO(o, "id", "1");
+		// JO(o, "ip", "192.168.1.108");
+		// JO(o, "longitude", lf2str(123.456, 10));
+		// JO(o, "latitude", lf2str(654.321, 10));
+		// JO(o, "img", strEnc);
+		// JO(o, "status", (double)3);
+		// string jsonStr = picojson::value(o).serialize();
 
-		m_httpC.post_imageinfo(m_url.c_str(), jsonStr.c_str());
+		// m_httpC.post_imageinfo(m_url.c_str(), jsonStr.c_str());
 
 		return true;
 	}

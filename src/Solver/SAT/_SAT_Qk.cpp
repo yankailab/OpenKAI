@@ -24,20 +24,12 @@ namespace kai
 	{
 		IF_F(!_ModuleBase::init(j));
 
-		//		m_devURI = j.value("URI", "");
-
 		return true;
 	}
 
 	bool _SAT_Qk::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
-
-		string n;
-
-		// n = "";
-		// n = j.value("_SHMrgb", "");
-		// m_psmRGB = (SharedMem *)(pM->findModule(n));
 
 		return true;
 	}
@@ -50,7 +42,6 @@ namespace kai
 
 	bool _SAT_Qk::check(void)
 	{
-		//		NULL__(, -1);
 		return this->_ModuleBase::check();
 	}
 

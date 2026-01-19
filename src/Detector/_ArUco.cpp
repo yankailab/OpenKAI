@@ -12,6 +12,8 @@ namespace kai
 
 	_ArUco::_ArUco()
 	{
+		m_dict = aruco::DICT_4X4_50; // aruco::DICT_APRILTAG_16h5;
+		m_realSize = 0.05;
 		m_bPose = false;
 	}
 
@@ -23,16 +25,16 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_dict = j.value("dict", aruco::DICT_4X4_50); // aruco::DICT_APRILTAG_16h5;
+		jVar(j, "dict", m_dict);
 		m_pDict = cv::Ptr<cv::aruco::Dictionary>(new cv::aruco::Dictionary());
 		*m_pDict = aruco::getPredefinedDictionary(m_dict);
-		m_realSize = j.value("realSize", 0.05);
+		jVar(j, "realSize", m_realSize);
 
-		m_bPose = j.value("bPose", false);
+		jVar(j, "bPose", m_bPose);
 		if (m_bPose)
 		{
-			string n;
-			n = j.value("fCalib", "");
+			string n = "";
+			jVar(j, "fCalib", n);
 			readCamMatrices(n, &m_mC, &m_mD);
 		}
 

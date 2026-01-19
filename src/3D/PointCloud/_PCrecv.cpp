@@ -34,9 +34,10 @@ namespace kai
 	{
 		IF_F(!this->_PCstream::link(j, pM));
 
-		string n = j.value("_IObase", "");
+		string n = "";
+		jVar(j, "_IObase", n);
 		m_pIO = (_IObase *)(pM->findModule(n));
-		NULL_F(m_pIO);
+		IF_Le_F(!m_pIO, "_IObase not found: " + n);
 
 		return true;
 	}

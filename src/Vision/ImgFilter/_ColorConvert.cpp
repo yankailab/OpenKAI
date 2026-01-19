@@ -14,6 +14,7 @@ namespace kai
 	{
 		m_type = vision_colorConvert;
 		m_pV = nullptr;
+		m_code = COLOR_RGB2GRAY;
 	}
 
 	_ColorConvert::~_ColorConvert()
@@ -24,7 +25,7 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(j));
 
-		m_code = j.value("code", COLOR_RGB2GRAY);
+		jVar(j, "code", m_code);
 
 		return true;
 	}
@@ -33,7 +34,8 @@ namespace kai
 	{
 		IF_F(!this->_VisionBase::link(j, pM));
 
-		string n = j.value("_VisionBase", "");
+		string n = "";
+		jVar(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

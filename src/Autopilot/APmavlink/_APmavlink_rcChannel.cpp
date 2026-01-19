@@ -20,13 +20,13 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_rcMode.m_iChan = j.value("iRCmodeChan", m_rcMode.m_iChan);
-		m_rcMode.m_vDiv = j.value("vRCmodeDiv", m_rcMode.m_vDiv);
-		m_rcStickV.m_iChan = j.value("iRCstickV", m_rcStickV.m_iChan);
-		m_rcStickH.m_iChan = j.value("iRCstickH", m_rcStickH.m_iChan);
+		jVar(j, "iRCmodeChan", m_rcMode.m_iChan);
+		jVec<int>(j, "vRCmodeDiv", m_rcMode.m_vDiv);
+		jVar(j, "iRCstickV", m_rcStickV.m_iChan);
+		jVar(j, "iRCstickH", m_rcStickH.m_iChan);
 
-		m_rcStickV.m_vDiv = j.value("vRCmodeDiv", m_rcStickV.m_vDiv);
-		m_rcStickH.m_vDiv = j.value("vRCmodeDiv", m_rcStickH.m_vDiv);
+		jVec<int>(j, "vRCmodeDiv", m_rcStickV.m_vDiv);
+		jVec<int>(j, "vRCmodeDiv", m_rcStickH.m_vDiv);
 
 		m_rcMode.update();
 		m_rcStickV.update();
@@ -39,7 +39,8 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n = j.value("_APmavlink_base", "");
+		string n = "";
+		jVar(j, "_APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 		NULL_F(m_pAP);
 

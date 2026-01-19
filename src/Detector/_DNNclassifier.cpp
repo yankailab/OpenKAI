@@ -9,7 +9,14 @@ namespace kai
 
 	_DNNclassifier::_DNNclassifier()
 	{
+		m_nW = 224;
+		m_nH = 224;
+		m_bSwapRB = true;
 		m_vMean.clear();
+		m_scale = 1.0;
+
+		m_iBackend = cv::dnn::DNN_BACKEND_OPENCV;
+		m_iTarget = cv::dnn::DNN_TARGET_CPU;
 	}
 
 	_DNNclassifier::~_DNNclassifier()
@@ -20,15 +27,13 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_nW = j.value("nW", 224);
-		m_nH = j.value("nH", 224);
-		m_bSwapRB = j.value("bSwapRB", true);
-		m_scale = j.value("scale", 1);
-		m_iBackend = j.value("iBackend", cv::dnn::DNN_BACKEND_OPENCV);
-		m_iTarget = j.value("iTarget", cv::dnn::DNN_TARGET_CPU);
-		m_vMean.x = j.value("meanB", m_vMean.x);
-		m_vMean.y = j.value("meanG", m_vMean.y);
-		m_vMean.z = j.value("meanR", m_vMean.z);
+		jVar(j, "nW", m_nW);
+		jVar(j, "nH", m_nH);
+		jVar(j, "bSwapRB", m_bSwapRB);
+		jVar(j, "scale", m_scale);
+		jVar(j, "iBackend", m_iBackend);
+		jVar(j, "iTarget", m_iTarget);
+		jVec<int>(j, "vMeanBGR", m_vMean);
 
 		const json &jF = j.at("vFilter");
 		IF_F(!jF.is_object());
@@ -40,7 +45,7 @@ namespace kai
 			IF_CONT(!Ji.is_object());
 
 			r.clear();
-			r = Ji.value("vROI", 0);
+			jVar(Ji, "vROI", r);
 			m_vROI.push_back(r);
 		}
 

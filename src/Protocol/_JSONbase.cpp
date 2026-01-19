@@ -5,6 +5,8 @@ namespace kai
 
     _JSONbase::_JSONbase()
     {
+        m_msgFinishSend = "";
+        m_msgFinishRecv = "EOJ";
     }
 
     _JSONbase::~_JSONbase()
@@ -15,10 +17,11 @@ namespace kai
     {
         IF_F(!this->_ProtocolBase::init(j));
 
-        m_msgFinishSend = j.value("msgFinishSend", "");
-        m_msgFinishRecv = j.value("msgFinishRecv", "EOJ");
+        jVar(j, "msgFinishSend", m_msgFinishSend);
+        jVar(j, "msgFinishRecv", m_msgFinishRecv);
 
-        int v = j.value("ieSendHB", SEC_2_USEC);
+        int v = SEC_2_USEC;
+        jVar(j, "ieSendHB", v);
         m_ieSendHB.init(v);
 
         return true;
@@ -64,22 +67,22 @@ namespace kai
         }
     }
 
-    bool _JSONbase::sendJson(picojson::object &o)
-    {
-        IF_F(!check());
+    // bool _JSONbase::sendJson(picojson::object &o)
+    // {
+    //     IF_F(!check());
 
-        string msg = picojson::value(o).serialize() + m_msgFinishSend;
-        return m_pIO->write((unsigned char *)msg.c_str(), msg.size());
-    }
+    //     string msg = picojson::value(o).serialize() + m_msgFinishSend;
+    //     return m_pIO->write((unsigned char *)msg.c_str(), msg.size());
+    // }
 
     void _JSONbase::sendHeartbeat(void)
     {
-        object o;
-        JO(o, "id", i2str(1));
-        JO(o, "cmd", "heartbeat");
-        JO(o, "t", li2str(m_pT->getTfrom()));
+        // object o;
+        // JO(o, "id", i2str(1));
+        // JO(o, "cmd", "heartbeat");
+        // JO(o, "t", li2str(m_pT->getTfrom()));
 
-        sendJson(o);
+        // sendJson(o);
     }
 
     void _JSONbase::updateR(void)
@@ -134,24 +137,24 @@ namespace kai
 
     void _JSONbase::handleJson(const string &str)
     {
-        value json;
-        IF_(!str2JSON(str, &json));
+        // value json;
+        // IF_(!str2JSON(str, &json));
 
-        object &jo = json.get<object>();
-        string cmd = jo["cmd"].get<string>();
+        // object &jo = json.get<object>();
+        // string cmd = jo["cmd"].get<string>();
     }
 
-    bool _JSONbase::str2JSON(const string &str, picojson::value *pJson)
-    {
-        NULL_F(pJson);
+    // bool _JSONbase::str2JSON(const string &str, picojson::value *pJson)
+    // {
+    //     NULL_F(pJson);
 
-        string err;
-        const char *jsonstr = str.c_str();
-        parse(*pJson, jsonstr, jsonstr + strlen(jsonstr), &err);
-        IF_F(!pJson->is<object>());
+    //     string err;
+    //     const char *jsonstr = str.c_str();
+    //     parse(*pJson, jsonstr, jsonstr + strlen(jsonstr), &err);
+    //     IF_F(!pJson->is<object>());
 
-        return true;
-    }
+    //     return true;
+    // }
 
     void _JSONbase::md5(const string &str, string *pDigest)
     {

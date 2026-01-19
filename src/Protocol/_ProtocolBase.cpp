@@ -22,9 +22,9 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-        DEL(m_pTr);
-        m_pTr = createThread(j.at("threadR"), "threadR");
-        NULL_F(m_pTr);
+		DEL(m_pTr);
+		m_pTr = createThread(j.at("threadR"), "threadR");
+		NULL_F(m_pTr);
 
 		return true;
 	}
@@ -34,7 +34,8 @@ namespace kai
 		IF_F(!this->_ModuleBase::link(j, pM));
 		IF_F(!m_pTr->link(j.at("threadR"), pM));
 
-		string n = j.value("_IObase", "");
+		string n = "";
+		jVar(j, "_IObase", n);
 		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 

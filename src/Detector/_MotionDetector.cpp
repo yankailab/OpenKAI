@@ -13,6 +13,8 @@ namespace kai
 	_MotionDetector::_MotionDetector()
 	{
 		m_pVision = NULL;
+		m_algorithm = "";
+		m_learningRate = -1;
 	}
 
 	_MotionDetector::~_MotionDetector()
@@ -23,8 +25,8 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_algorithm = j.value("algorithm", "");
-		m_learningRate = j.value("learningRate", -1);
+		jVar(j, "algorithm", m_algorithm);
+		jVar(j, "learningRate", m_learningRate);
 
 		//	if(m_algorithm == "cnt")
 		//	{
@@ -55,7 +57,8 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n = j.value("_VisionBase", "");
+		string n = "";
+		jVar(j, "_VisionBase", n);
 		m_pVision = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pVision);
 

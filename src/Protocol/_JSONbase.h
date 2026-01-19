@@ -6,8 +6,6 @@
 #include "../UI/_Console.h"
 #include <openssl/md5.h>
 
-using namespace picojson;
-
 #define JB_N_BUF 512
 
 namespace kai
@@ -25,7 +23,7 @@ namespace kai
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 
-		virtual bool sendJson(picojson::object &o);
+//		virtual bool sendJson(picojson::object &o);
 
 	protected:
 		virtual void send(void);
@@ -34,7 +32,7 @@ namespace kai
 		virtual bool recvJson(string *pStr, _IObase *pIO);
 		virtual void handleJson(const string &str);
 		virtual void md5(const string &str, string *pDigest);
-		virtual bool str2JSON(const string &str, picojson::value *pJson);
+//		virtual bool str2JSON(const string &str, picojson::value *pJson);
 
 	private:
 		void updateW(void);

@@ -9,6 +9,8 @@ namespace kai
 
 	_ActuatorBase::_ActuatorBase()
 	{
+		m_ID = 0;
+		m_origin = 0;
 		m_p.init();
 		m_s.init();
 		m_a.init();
@@ -16,6 +18,7 @@ namespace kai
 		m_c.init();
 
 		m_tLastCmd = 0;
+		m_tCmdTimeout = 0;
 		m_ieCheckAlarm.init(100000);
 		m_ieReadStatus.init(50000);
 		m_ieSendCMD.init(50000);
@@ -34,54 +37,58 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_ID = j.value("ID", 0);
+		jVar(j, "ID", m_ID);
 
-		m_origin = j.value("pOrigin", 0);
-		m_p.m_v = j.value("p", 0);
-		m_p.m_vTarget = j.value("pTarget", 0);
-		m_p.m_vErr = j.value("pErr", 0);
-		m_p.m_vRange = j.value("pRange", vector<float>{-FLT_MAX, FLT_MAX});
+		jVar(j, "pOrigin", m_origin);
+		jVar(j, "p", m_p.m_v);
+		jVar(j, "pTarget", m_p.m_vTarget);
+		jVar(j, "pErr", m_p.m_vErr);
+		jVec<float>(j, "pRange", m_p.m_vRange);
 
-		m_s.m_v = j.value("s", 0);
-		m_s.m_vTarget = j.value("sTarget", 0);
-		m_s.m_vErr = j.value("sErr", 0);
-		m_s.m_vRange = j.value("sRange", vector<float>{-FLT_MAX, FLT_MAX});
+		jVar(j, "s", m_s.m_v);
+		jVar(j, "sTarget", m_s.m_vTarget);
+		jVar(j, "sErr", m_s.m_vErr);
+		jVec<float>(j, "sRange", m_s.m_vRange);
 
-		m_a.m_v = j.value("a", 0);
-		m_a.m_vTarget = j.value("aTarget", 0);
-		m_a.m_vErr = j.value("aErr", 0);
-		m_a.m_vRange = j.value("aRange", vector<float>{-FLT_MAX, FLT_MAX});
+		jVar(j, "a", m_a.m_v);
+		jVar(j, "aTarget", m_a.m_vTarget);
+		jVar(j, "aErr", m_a.m_vErr);
+		jVec<float>(j, "aRange", m_a.m_vRange);
 
-		m_b.m_v = j.value("b", 0);
-		m_b.m_vTarget = j.value("bTarget", 0);
-		m_b.m_vErr = j.value("bErr", 0);
-		m_b.m_vRange = j.value("bRange", vector<float>{-FLT_MAX, FLT_MAX});
+		jVar(j, "b", m_b.m_v);
+		jVar(j, "bTarget", m_b.m_vTarget);
+		jVar(j, "bErr", m_b.m_vErr);
+		jVec<float>(j, "bRange", m_b.m_vRange);
 
-		m_c.m_v = j.value("c", 0);
-		m_c.m_vTarget = j.value("cTarget", 0);
-		m_c.m_vErr = j.value("cErr", 0);
-		m_c.m_vRange = j.value("cRange", vector<float>{-FLT_MAX, FLT_MAX});
+		jVar(j, "c", m_c.m_v);
+		jVar(j, "cTarget", m_c.m_vTarget);
+		jVar(j, "cErr", m_c.m_vErr);
+		jVec<float>(j, "cRange", m_c.m_vRange);
 
-		m_tCmdTimeout = j.value("tCmdTimeout", 0);
-		m_ieCheckAlarm.m_tInterval = j.value("tIntCheckAlarm", 100000);
-		m_ieReadStatus.m_tInterval = j.value("tIntReadStatus", 50000);
-		m_ieSendCMD.m_tInterval = j.value("tIntSendCMD", 50000);
+		jVar(j, "tCmdTimeout", m_tCmdTimeout);
+		jVar(j, "tIntCheckAlarm", m_ieCheckAlarm.m_tInterval);
+		jVar(j, "tIntReadStatus", m_ieReadStatus.m_tInterval);
+		jVar(j, "tIntSendCMD", m_ieSendCMD.m_tInterval);
 
 		int bf;
 
-		bf = j.value("bfSetPower", 0);
+		bf = 0;
+		jVar(j, "bfSetPower", bf);
 		if (bf)
 			m_bfSet.set(actuator_power);
 
-		bf = j.value("bfSetID", 0);
+		bf = 0;
+		jVar(j, "bfSetID", bf);
 		if (bf)
 			m_bfSet.set(actuator_setID);
 
-		bf = j.value("bfSetMode", 0);
+		bf = 0;
+		jVar(j, "bfSetMode", bf);
 		if (bf)
 			m_bfSet.set(actuator_setMode);
 
-		bf = j.value("bfMove", 0);
+		bf = 0;
+		jVar(j, "bfMove", bf);
 		if (bf)
 			m_bfSet.set(actuator_move);
 
@@ -92,7 +99,8 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n = j.value("_ActuatorBase", "");
+		string n = "";
+		jVar(j, "_ActuatorBase", n);
 		m_pParent = (_ActuatorBase *)(pM->findModule(n));
 
 		return true;

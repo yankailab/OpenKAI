@@ -13,6 +13,26 @@ namespace kai
 	_RGBDbase::_RGBDbase()
 	{
 		m_pTpp = nullptr;
+
+		m_devFPSd = 30;
+		m_vSizeD.set(1280, 720);
+		m_vRangeD.set(0, FLT_MAX);
+
+		m_bDepth = true;
+		m_bIR = false;
+		m_btRGB = false;
+		m_btDepth = false;
+		m_bConfidence = true;
+		m_fConfidenceThreshold = 0.0;
+
+#ifdef USE_OPENCV
+		m_dScale = 1.0;
+		m_dOfs = 0.0;
+		m_nHistLev = 128;
+		m_iHistFrom = 0;
+		m_minHistD = 0.25;
+		m_bDebugDepth = 0;
+#endif
 	}
 
 	_RGBDbase::~_RGBDbase()
@@ -24,24 +44,24 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(j));
 
-		m_devFPSd = j.value("devFPSd", 30);
-		m_vSizeD = j.value("vSizeD", vector<int>{1280, 720});
-		m_vRangeD = j.value("vRangeD", vector<float>{0, FLT_MAX});
+		jVar(j, "devFPSd", m_devFPSd);
+		jVec<int>(j, "vSizeD", m_vSizeD);
+		jVec<float>(j, "vRangeD", m_vRangeD);
 
-		m_bDepth = j.value("bDepth", true);
-		m_bIR = j.value("bIR", false);
-		m_btRGB = j.value("btRGB", false);
-		m_btDepth = j.value("btDepth", false);
-		m_bConfidence = j.value("bConfidence", true);
-		m_fConfidenceThreshold = j.value("fConfidenceThreshold", 0.0);
+		jVar(j, "bDepth", m_bDepth);
+		jVar(j, "bIR", m_bIR);
+		jVar(j, "btRGB", m_btRGB);
+		jVar(j, "btDepth", m_btDepth);
+		jVar(j, "bConfidence", m_bConfidence);
+		jVar(j, "fConfidenceThreshold", m_fConfidenceThreshold);
 
 #ifdef USE_OPENCV
-		m_dScale = j.value("dScale", 1.0);
-		m_dOfs = j.value("dOfs", 0.0);
-		m_nHistLev = j.value("nHistLev", 128);
-		m_iHistFrom = j.value("iHistFrom", 0);
-		m_minHistD = j.value("minHistD", 0.25);
-		m_bDebugDepth = j.value("bDebugDepth", 0);
+		jVar(j, "dScale", m_dScale);
+		jVar(j, "dOfs", m_dOfs);
+		jVar(j, "nHistLev", m_nHistLev);
+		jVar(j, "iHistFrom", m_iHistFrom);
+		jVar(j, "minHistD", m_minHistD);
+		jVar(j, "bDebugDepth", m_bDebugDepth);
 #endif
 
 		return true;

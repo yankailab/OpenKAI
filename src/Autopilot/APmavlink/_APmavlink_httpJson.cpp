@@ -17,7 +17,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_url = j.value("url", "");
+		jVar(j, "url", m_url);
 
 		IF_F(m_httpC.init());
 
@@ -28,7 +28,8 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n = j.value("_APmavlink_base", "");
+		string n = "";
+		jVar(j, "_APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 		NULL_F(m_pAP);
 
@@ -61,18 +62,18 @@ namespace kai
 
 	void _APmavlink_httpJson::updateHttpSend(void)
 	{
-		object o;
+		//		object o;
 		// JO(o, "id", i2str(m_pDB->getID()));
 		// JO(o, "lat", lf2str(vP.x, 10));
 		// JO(o, "lng", lf2str(vP.y, 10));
 
-		JO(o, "id", i2str(0));
-		JO(o, "lat", lf2str(123.4567));
-		JO(o, "lng", lf2str(765.4321));
+		// JO(o, "id", i2str(0));
+		// JO(o, "lat", lf2str(123.4567));
+		// JO(o, "lng", lf2str(765.4321));
 
-		string jsonMsg = picojson::value(o).serialize();
+		// string jsonMsg = picojson::value(o).serialize();
 
-		m_httpC.post_imageinfo(m_url.c_str(), jsonMsg.c_str());
+		// m_httpC.post_imageinfo(m_url.c_str(), jsonMsg.c_str());
 	}
 
 	void _APmavlink_httpJson::console(void *pConsole)

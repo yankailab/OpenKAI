@@ -6,6 +6,9 @@ namespace kai
 	_APmavlink_photo::_APmavlink_photo()
 	{
 		m_pAP = nullptr;
+		m_dir = "/home/";
+		m_subDir = "";
+		m_exifConfig = "";
 		m_iTake = 0;
 	}
 
@@ -13,13 +16,13 @@ namespace kai
 	{
 	}
 
-	bool _APmavlink_photo::init(const json& j)
+	bool _APmavlink_photo::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_exifConfig = j.value("exifConfig", "");
-		m_dir = j.value("dir", "/home/");
-		m_subDir = j.value("subDir", "");
+		jVar(j, "exifConfig", m_exifConfig);
+		jVar(j, "dir", m_dir);
+		jVar(j, "subDir", m_subDir);
 
 		if (m_subDir.empty())
 			m_subDir = m_dir + tFormat() + "/";
@@ -29,11 +32,12 @@ namespace kai
 		return true;
 	}
 
-	bool _APmavlink_photo::link(const json& j, ModuleMgr* pM)
+	bool _APmavlink_photo::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n = j.value("_APmavlink_base", "");
+		string n = "";
+		jVar(j, "_APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 		NULL_F(m_pAP);
 
@@ -60,7 +64,6 @@ namespace kai
 			m_pT->autoFPS();
 
 			updatePhoto();
-
 		}
 	}
 

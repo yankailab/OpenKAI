@@ -16,8 +16,16 @@ namespace kai
 								   {0, 0, 0, 1}}; // default for T265
 		m_mTaero2sensor = m_mTsensor2aero.inverse();
 
+		m_thrJumpPos = 0.1;	 // m
+		m_thrJumpSpd = 20.0; // m/s
 		m_iReset = 0;
+		m_vAxisRPY.set(0, 1, 2);
+
+		m_apModeInError = -1;
 		m_bNaN = false;
+		m_bPos = true;
+		m_bSpd = true;
+
 		m_Dspd.x = 0;
 		m_Dspd.y = 0;
 		m_Dspd.z = 0;
@@ -31,14 +39,15 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_bPos = j.value("bPos", true);
-		m_bSpd = j.value("bSpd", true);
-		m_thrJumpPos = j.value("thrJumpPos", 0.1);	// m
-		m_thrJumpSpd = j.value("thrJumpSpd", 20.0); // m/s
-		m_vAxisRPY = j.value("vAxisRPY", vector<int>{0, 1, 2});
-		m_apModeInError = j.value("apModeInError", -1);
+		jVar(j, "bPos", m_bPos);
+		jVar(j, "bSpd", m_bSpd);
+		jVar(j, "thrJumpPos", m_thrJumpPos);
+		jVar(j, "thrJumpSpd", m_thrJumpSpd);
+		jVec<int>(j, "vAxisRPY", m_vAxisRPY);
+		jVar(j, "apModeInError", m_apModeInError);
 
-		vector<float> vT = j.value("mTsensor2aero", vector<float>{});
+		vector<float> vT;
+		jVec<float>(j, "mTsensor2aero", vT);
 		if (vT.size() == 16)
 		{
 			m_mTsensor2aero = Matrix4f{{vT[0], vT[1], vT[2], vT[3]},
@@ -57,11 +66,13 @@ namespace kai
 
 		string n;
 
-		n = j.value("_APmavlink_base", "");
+		n = "";
+		jVar(j, "_APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 		NULL_F(m_pAP);
 
-		n = j.value("_NavBase", "");
+		n = "";
+		jVar(j, "_NavBase", n);
 		m_pNav = (_NavBase *)(pM->findModule(n));
 		NULL_F(m_pNav);
 

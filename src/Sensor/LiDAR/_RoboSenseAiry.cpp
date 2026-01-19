@@ -37,11 +37,13 @@ namespace kai
 
         string n;
 
-        n = j.value("_UDPmsop", "");
+        n = "";
+        jVar(j, "_UDPmsop", n);
         m_pUDPmsop = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPmsop);
 
-        n = j.value("_UDPdifop", "");
+        n = "";
+        jVar(j, "_UDPdifop", n);
         m_pUDPdifop = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPdifop);
 

@@ -12,6 +12,7 @@ namespace kai
 
 	_SwarmBase::_SwarmBase()
 	{
+		m_tExpire = UINT64_MAX;
 	}
 
 	_SwarmBase::~_SwarmBase()
@@ -22,7 +23,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_tExpire = j.value("tExpire", UINT64_MAX);
+		jVar(j, "tExpire", m_tExpire);
 
 		return true;
 	}

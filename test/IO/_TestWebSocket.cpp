@@ -12,20 +12,21 @@ namespace kai
     {
     }
 
-    bool _TestWebSocket::init(const json& j)
+    bool _TestWebSocket::init(const json &j)
     {
         IF_F(!this->_TestBase::init(j));
 
         return true;
     }
 
-    bool _TestWebSocket::link(const json& j, ModuleMgr* pM)
+    bool _TestWebSocket::link(const json &j, ModuleMgr *pM)
     {
         IF_F(!this->_TestBase::link(j, pM));
 
-        string n = j.value("_WebSocketServer", "");
+        string n = "";
+        jVar(j, "_WebSocketServer", n);
         m_pWSserver = (_WebSocketServer *)(pM->findModule(n));
-        NULL__(m_pWSserver);
+        NULL_F(m_pWSserver);
 
         return true;
     }
@@ -38,7 +39,7 @@ namespace kai
 
     bool _TestWebSocket::check(void)
     {
-        NULL__(m_pWSserver);
+        NULL_F(m_pWSserver);
 
         return this->_TestBase::check();
     }
@@ -49,7 +50,7 @@ namespace kai
         {
             m_pT->autoFPS();
 
-            while (check() != OK_OK)
+            while (!check())
                 sleep(1);
 
             _WebSocket *pWS = m_pWSserver->getClient(0);
@@ -70,7 +71,7 @@ namespace kai
             JO(o, "t", li2str(m_pT->getTfrom()));
 
             string msg = picojson::value(o).serialize();
-            pWS->write((uint8_t*)msg.c_str(), msg.length());
+            pWS->write((uint8_t *)msg.c_str(), msg.length());
         }
     }
 

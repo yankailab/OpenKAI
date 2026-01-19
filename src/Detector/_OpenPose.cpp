@@ -9,6 +9,15 @@ namespace kai
 
 	_OpenPose::_OpenPose()
 	{
+		m_nW = 368;
+		m_nH = 368;
+		m_bSwapRB = false;
+		m_vMean.clear();
+		m_scale = 1.0 / 255.0;
+		m_thr = 0.1;
+
+		m_iBackend = dnn::DNN_BACKEND_OPENCV;
+		m_iTarget = dnn::DNN_TARGET_CPU;
 	}
 
 	_OpenPose::~_OpenPose()
@@ -19,14 +28,14 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_nW = j.value("nW", 368);
-		m_nH = j.value("nH", 368);
-		m_iBackend = j.value("iBackend", dnn::DNN_BACKEND_OPENCV);
-		m_iTarget = j.value("iTarget", dnn::DNN_TARGET_CPU);
-		m_bSwapRB = j.value("bSwapRB", false);
-		m_scale = j.value("scale", 1.0 / 255.0);
-		m_vMean = j.value("vMean", 0);
-		m_thr = j.value("thr", 0.1);
+		jVar(j, "nW", m_nW);
+		jVar(j, "nH", m_nH);
+		jVar(j, "iBackend", m_iBackend);
+		jVar(j, "iTarget", m_iTarget);
+		jVar(j, "bSwapRB", m_bSwapRB);
+		jVar(j, "scale", m_scale);
+		jVec<int>(j, "vMean", m_vMean);
+		jVar(j, "thr", m_thr);
 
 		m_net = readNetFromCaffe(m_fModel, m_fWeight);
 		IF_F(m_net.empty());

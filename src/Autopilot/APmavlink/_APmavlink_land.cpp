@@ -6,7 +6,13 @@ namespace kai
 	_APmavlink_land::_APmavlink_land()
 	{
 		m_pDS = nullptr;
+		m_vDSrange.clear();
+
 		m_pTag = nullptr;
+		m_vFov.set(60, 60);
+
+		m_vComplete.set(0.1, 0.1, 0.3, 3.0);
+		m_zrK = 1.0;
 	}
 
 	_APmavlink_land::~_APmavlink_land()
@@ -17,13 +23,13 @@ namespace kai
 	{
 		IF_F(!this->_APmavlink_follow::init(j));
 
-		m_vDSrange = j.value("vDSrange", 0);
-		m_vFov = j.value("vFov", vector<float>{60, 60});
-		m_vComplete = j.value("vComplete", vector<float>{0.1, 0.1, 0.3, 3.0});
-		m_zrK = j.value("zrK", 1.0);
+		jVec<float>(j, "vDSrange", m_vDSrange);
+		jVec<float>(j, "vFov", m_vFov);
+		jVec<float>(j, "vComplete", m_vComplete);
+		jVar(j, "zrK", m_zrK);
 
 		// int ieHdg = USEC_1SEC;
-		// ieHdg = j.value("ieHdgUsec", "");
+		// jVar(j,"ieHdgUsec",ieHdg);//""
 		// m_ieHdgCmd.init(ieHdg);
 
 		const json &jc = j.at("tags");
@@ -35,10 +41,10 @@ namespace kai
 			IF_CONT(!Ji.is_object());
 
 			AP_LAND_TAG t;
-			t.m_id = Ji.value("id", t.m_id);
-			t.m_priority = Ji.value("priority", t.m_priority);
-			t.m_vSize = Ji.value("vSize", vector<float>{t.m_vSize.x, t.m_vSize.y});
-			t.m_vKdist = Ji.value("vKdist", vector<float>{t.m_vKdist.x, t.m_vKdist.y});
+			jVar(Ji, "id", t.m_id);
+			jVar(Ji, "priority", t.m_priority);
+			jVec<float>(Ji, "vSize", t.m_vSize);
+			jVec<float>(Ji, "vKdist", t.m_vKdist);
 			m_vTags.push_back(t);
 		}
 
@@ -49,7 +55,8 @@ namespace kai
 	{
 		IF_F(!this->_APmavlink_follow::link(j, pM));
 
-		string n = j.value("_DistSensorBase", "");
+		string n = "";
+		jVar(j, "_DistSensorBase", n);
 		m_pDS = (_DistSensorBase *)pM->findModule(n);
 
 		return true;

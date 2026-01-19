@@ -25,33 +25,32 @@ namespace kai
         clReleaseContext(m_clContext);
     }
 
-    bool clBase::init(const json& j)
+    bool clBase::init(const json &j)
     {
         IF_F(!this->BASE::init(j));
 
-        m_fKernel = j.value("fKernel", "");
-        m_buildOpt = j.value("buildOpt", "");
+        jVar(j, "fKernel", m_fKernel);
+        jVar(j, "buildOpt", m_buildOpt);
 
-        IF__(!setupCL(), OK_ERR_INVALID_VALUE);
-        IF__(!setupKernel(), OK_ERR_INVALID_VALUE);
+        IF_F(!setupCL());
+        IF_F(!setupKernel());
 
         return true;
     }
 
-	bool clBase::link(const json& j, ModuleMgr* pM)
+    bool clBase::link(const json &j, ModuleMgr *pM)
     {
-		IF_F(!this->BASE::link(j, pM));
+        IF_F(!this->BASE::link(j, pM));
 
-        // string n;
-        // n = "";
-        // = j.value("", &n);
+        // string n = "";
+        // j.value("", n);
         // m_p = ( *)(pM->findModule(n));
         // IF_Fl(!m_p, n + ": not found");
 
-		return true;
+        return true;
     }
 
-	bool clBase::check(void)
+    bool clBase::check(void)
     {
         return true;
     }
@@ -83,7 +82,7 @@ namespace kai
 
         cl_int r;
 
-        char* pSrc = (char*)malloc(CLBASE_SRC_NB);
+        char *pSrc = (char *)malloc(CLBASE_SRC_NB);
         size_t nSrc = fread(pSrc, 1, CLBASE_SRC_NB, fp);
         fclose(fp);
 

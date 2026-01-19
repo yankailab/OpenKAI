@@ -13,6 +13,7 @@ namespace kai
 	_ImgFile::_ImgFile()
 	{
 		m_type = vision_file;
+		m_file = "";
 	}
 
 	_ImgFile::~_ImgFile()
@@ -23,7 +24,7 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(j));
 
-		m_file = j.value("file", "");
+		jVar(j, "file", m_file);
 
 		return true;
 	}

@@ -12,6 +12,12 @@ namespace kai
 
 	PID::PID()
 	{
+		m_P = 0;
+		m_I = 0;
+		m_Imax = 0;
+		m_D = 0;
+		m_vRin.set(-FLT_MAX, FLT_MAX);
+		m_vRout.set(-FLT_MAX, FLT_MAX);
 		reset();
 	}
 
@@ -23,13 +29,13 @@ namespace kai
 	{
 		IF_F(!this->BASE::init(j));
 
-		m_P = j.value("P", 0);
-		m_I = j.value("I", 0);
-		m_Imax = j.value("Imax", 0);
-		m_D = j.value("D", 0);
+		jVar(j, "P", m_P);
+		jVar(j, "I", m_I);
+		jVar(j, "Imax", m_Imax);
+		jVar(j, "D", m_D);
 
-		m_vRin = j.value("vRin", vector<float>{-FLT_MAX, FLT_MAX});
-		m_vRout = j.value("vRout", vector<float>{-FLT_MAX, FLT_MAX});
+		jVec<float>(j, "vRin", m_vRin);
+		jVec<float>(j, "vRout", m_vRout);
 
 		return true;
 	}

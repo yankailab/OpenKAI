@@ -30,12 +30,8 @@ namespace kai
     {
         IF_F(!this->_GeometryBase::init(j));
 
-        m_nP = j.value("nP", 256);
-        if (m_nP <= 0)
-        {
-            LOG_E("Invalid nP: " + i2str(m_nP));
-            return false;
-        }
+        jVar(j, "nP", m_nP);
+        IF_Le_F(m_nP <= 0, "Invalid nP: " + i2str(m_nP));
 
         return initGeometry();
     }

@@ -14,6 +14,7 @@ namespace kai
 	{
 		m_type = vision_rotate;
 		m_pV = nullptr;
+		m_code = 0;
 	}
 
 	_Rotate::~_Rotate()
@@ -24,7 +25,7 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(j));
 
-		m_code = j.value("code", 0);
+		jVar(j, "code", m_code);
 
 		return true;
 	}
@@ -33,7 +34,8 @@ namespace kai
 	{
 		IF_F(!this->_VisionBase::link(j, pM));
 
-		string n = j.value("_VisionBase", "");
+		string n = "";
+		jVar(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

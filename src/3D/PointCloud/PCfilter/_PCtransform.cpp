@@ -25,7 +25,7 @@ namespace kai
 		IF_F(!this->_PCframe::init(j));
 
 		// read from external json config file if there is one
-		m_jsonCfgFile = j.value("jsonCfgFile", "");
+		jVar(j, "jsonCfgFile", m_jsonCfgFile);
 		IF__(m_jsonCfgFile.empty(), true);
 
 		JsonCfg jCfg;
@@ -34,8 +34,8 @@ namespace kai
 		const json &jt = jCfg.getJson().at("transform");
 		IF__(!jt.is_object(), true);
 
-		m_vT = jt.value("vT", vector<double>{});
-		m_vR = jt.value("vR", vector<double>{});
+		jVec<double>(j, "vT", m_vT);
+		jVec<double>(j, "vR", m_vR);
 
 		return true;
 	}
@@ -79,26 +79,26 @@ namespace kai
 
 	void _PCtransform::saveParamKiss(void)
 	{
-		IF_(m_jsonCfgFile.empty());
+		// IF_(m_jsonCfgFile.empty());
 
-		picojson::object o;
-		o.insert(make_pair("name", "transform"));
+		// picojson::object o;
+		// o.insert(make_pair("name", "transform"));
 
-		picojson::array vT;
-		vT.push_back(value(m_vT.x));
-		vT.push_back(value(m_vT.y));
-		vT.push_back(value(m_vT.z));
-		o.insert(make_pair("vT", value(vT)));
+		// picojson::array vT;
+		// vT.push_back(value(m_vT.x));
+		// vT.push_back(value(m_vT.y));
+		// vT.push_back(value(m_vT.z));
+		// o.insert(make_pair("vT", value(vT)));
 
-		picojson::array vR;
-		vR.push_back(value(m_vR.x));
-		vR.push_back(value(m_vR.y));
-		vR.push_back(value(m_vR.z));
-		o.insert(make_pair("vR", value(vR)));
+		// picojson::array vR;
+		// vR.push_back(value(m_vR.x));
+		// vR.push_back(value(m_vR.y));
+		// vR.push_back(value(m_vR.z));
+		// o.insert(make_pair("vR", value(vR)));
 
-		string k = picojson::value(o).serialize();
+		// string k = picojson::value(o).serialize();
 
-		writeFile(m_jsonCfgFile, k);
+		// writeFile(m_jsonCfgFile, k);
 	}
 
 }

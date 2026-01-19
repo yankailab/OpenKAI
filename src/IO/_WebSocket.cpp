@@ -26,8 +26,10 @@ namespace kai
 	{
 		IF_F(!this->_IObase::init(j));
 
-		int nPacket = j.value("nPacket", 1024);
-		int nPbuffer = j.value("nPbuffer", 512);
+		int nPacket = 1024;
+		int nPbuffer = 512;
+		jVar(j, "nPacket", nPacket);
+		jVar(j, "nPbuffer", nPbuffer);
 
 		IF_F(!m_packetW.init(nPbuffer, nPacket));
 		IF_F(!m_packetR.init(nPbuffer, nPacket));

@@ -17,6 +17,11 @@ namespace kai
         m_pTgt = nullptr;
         m_pTf = nullptr;
         m_lastFit = 0.0;
+
+        m_rNormal = 0.2;
+        m_rFeature = 0.5;
+        m_maxNNnormal = 30;
+        m_maxNNfpfh = 100;
     }
 
     _PCregistGlobal::~_PCregistGlobal()
@@ -27,10 +32,10 @@ namespace kai
     {
         IF_F(!this->_ModuleBase::init(j));
 
-        m_rNormal = j.value("rNormal", 0.2);
-        m_rFeature = j.value("rFeature", 0.5);
-        m_maxNNnormal = j.value("maxNNnormal", 30);
-        m_maxNNfpfh = j.value("maxNNfpfh", 100);
+        jVar(j, "rNormal", m_rNormal);
+        jVar(j, "rFeature", m_rFeature);
+        jVar(j, "maxNNnormal", m_maxNNnormal);
+        jVar(j, "maxNNfpfh", m_maxNNfpfh);
 
         return true;
     }
@@ -41,29 +46,20 @@ namespace kai
 
         string n;
 
-        n = j.value("_PCbaseSrc", "");
+        n = "";
+        jVar(j, "_PCbaseSrc", n);
         m_pSrc = (_PCframe *)(pM->findModule(n));
-        if (!m_pSrc)
-        {
-            LOG_E(n + ": not found");
-            return false;
-        }
+        IF_Le_F(!m_pSrc, "_PCbaseSrc not found: " + n);
 
-        n = j.value("_PCbaseTgt", "");
+        n = "";
+        jVar(j, "_PCbaseTgt", n);
         m_pTgt = (_PCframe *)(pM->findModule(n));
-        if (!m_pTgt)
-        {
-            LOG_E(n + ": not found");
-            return false;
-        }
+        IF_Le_F(!m_pTgt, "_PCbaseTgt not found: " + n);
 
-        n = j.value("_PCtransform", "");
+        n = "";
+        jVar(j, "_PCtransform", n);
         m_pTf = (_PCtransform *)(pM->findModule(n));
-        if (!m_pTf)
-        {
-            LOG_E(n + ": not found");
-            return false;
-        }
+        IF_Le_F(!m_pTf, "_PCtransform not found: " + n);
 
         return true;
     }

@@ -26,6 +26,7 @@ namespace kai
 		m_bFullScreen = false;
 		m_bSceneCache = false;
 		m_wPanel = 15;
+		m_vBtnPadding.set(0);
 		m_mouseMode = 0;
 		m_vDmove.set(0.5, 5.0);
 	}
@@ -39,41 +40,41 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::init(j));
 
-		m_vWinSize = j.value("vWinSize", vector<int>{1280, 720});
-		m_pathRes = j.value("pathRes", "");
-		m_device = j.value("device", "CPU:0");
-		m_dirSave = j.value("dirSave", "/home/lab/");
+		jVar(j, "vWinSize", m_vWinSize);
+		jVar(j, "pathRes", m_pathRes);
+		jVar(j, "device", m_device);
+		jVar(j, "dirSave", m_dirSave);
 
-		m_bFullScreen = j.value("bFullScreen", false);
-		m_bSceneCache = j.value("bSceneCache", false);
-		m_wPanel = j.value("wPanel", 15);
-		m_vBtnPadding = j.value("vBtnPadding", 0);
-		m_mouseMode = j.value("mouseMode", 0);
-		m_vDmove = j.value("vDmove", vector<float>{0.5, 5.0});
+		jVar(j, "bFullScreen", m_bFullScreen);
+		jVar(j, "bSceneCache", m_bSceneCache);
+		jVar(j, "wPanel", m_wPanel);
+		jVec<float>(j, "vBtnPadding", m_vBtnPadding);
+		jVar(j, "mouseMode", m_mouseMode);
+		jVec<float>(j, "vDmove", m_vDmove);
 
-		m_camProj.m_type = j.value("camProjType", 0);
-		m_camProj.m_fov = j.value("camFov", 70.0);
-		m_camProj.m_fovType = j.value("camFovType", 0);
-		m_camProj.m_vLR = j.value("vCamLR", vector<float>{-10, 10});
-		m_camProj.m_vBT = j.value("vCamBT", vector<float>{-10, 10});
-		m_camProj.m_vNF = j.value("vCamNF", vector<float>{0, FLT_MAX});
+		jVar(j, "camProjType", m_camProj.m_type);
+		jVar(j, "camFov", m_camProj.m_fov);
+		jVar(j, "camFovType", m_camProj.m_fovType);
+		jVec<float>(j, "vCamLR", m_camProj.m_vLR);
+		jVec<float>(j, "vCamBT", m_camProj.m_vBT);
+		jVec<float>(j, "vCamNF", m_camProj.m_vNF);
 
-		m_camDefault.m_vLookAt = j.value("vCamLookAt", 0);
-		m_camDefault.m_vEye = j.value("vCamEye", vector<float>{0, 0, 1});
-		m_camDefault.m_vUp = j.value("vCamUp", vector<float>{0, 1, 0});
+		jVec<float>(j, "vCamLookAt", m_camDefault.m_vLookAt);
+		jVec<float>(j, "vCamEye", m_camDefault.m_vEye);
+		jVec<float>(j, "vCamUp", m_camDefault.m_vUp);
 		m_cam = m_camDefault;
 
-		m_camAuto.m_vLookAt = j.value("vCamAutoLookAt", 0);
-		m_camAuto.m_vEye = j.value("vCamAutoEye", vector<float>{0, 0, 1});
-		m_camAuto.m_vUp = j.value("vCamAutoUp", vector<float>{0, 1, 0});
+		jVec<float>(j, "vCamAutoLookAt", m_camAuto.m_vLookAt);
+		jVec<float>(j, "vCamAutoEye", m_camAuto.m_vEye);
+		jVec<float>(j, "vCamAutoUp", m_camAuto.m_vUp);
 
-		m_vCoR = j.value("vCoR", 0);
+		jVec<float>(j, "vCoR", m_vCoR);
 
 		utility::SetVerbosityLevel(utility::VerbosityLevel::Error);
 
 		DEL(m_pTui);
-        m_pTui = createThread(j.at("threadUI"), "threadUI");
-        NULL_F(m_pTui);
+		m_pTui = createThread(j.at("threadUI"), "threadUI");
+		NULL_F(m_pTui);
 
 		return true;
 	}
@@ -90,21 +91,22 @@ namespace kai
 			const json &Ji = it.value();
 			IF_CONT(!Ji.is_object());
 
-			string n = Ji.value("_GeometryBase", "");
+			string n = "";
+			jVar(Ji, "_GeometryBase", n);
 			_GeometryBase *pGB = (_GeometryBase *)(pM->findModule(n));
 			IF_CONT(!pGB);
 
 			GVIEWER_OBJ g;
 			g.m_pGB = pGB;
 			g.m_name = n;
-			g.m_bStatic = Ji.value("bStatic", true);
-			g.m_nPbuf = Ji.value("nP", 0);
-			g.m_rDummyDome = Ji.value("rDummyDome", 1000.0);
-			g.m_matName = Ji.value("matName", "");
-			g.m_matCol = Ji.value("matCol", vector<float>{1, 1, 1, 1});
-			g.m_matPointSize = Ji.value("matPointSize", 1);
-			g.m_matLineWidth = Ji.value("matLineWidth", 1);
-			g.m_iGridLS = Ji.value("iGridLS", 0);
+			jVar(Ji, "bStatic", g.m_bStatic);
+			jVar(Ji, "nP", g.m_nPbuf);
+			jVar(Ji, "rDummyDome", g.m_rDummyDome);
+			jVar(Ji, "matName", g.m_matName);
+			jVar(Ji, "matCol", g.m_matCol);
+			jVar(Ji, "matPointSize", g.m_matPointSize);
+			jVar(Ji, "matLineWidth", g.m_matLineWidth);
+			jVar(Ji, "iGridLS", g.m_iGridLS);
 
 			g.init();
 			g.updateMaterial();

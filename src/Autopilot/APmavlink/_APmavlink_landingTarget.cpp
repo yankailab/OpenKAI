@@ -7,11 +7,19 @@ namespace kai
 	{
 		m_pDS = nullptr;
 		m_pU = nullptr;
+		m_vFov = 60 * DEG_2_RAD;
+		m_vPsp.set(0.5, 0.5);
+
+		m_yawRate = 30 * DEG_2_RAD;
+		m_kP = 1.0;
+		m_defaultDtgt = 2.0;
 
 		m_bHdg = false;
 		m_bHdgMoving = false;
 		m_hdgSp = 0.0;
+		m_hdgDz = 10.0;
 		m_dHdg = 0.0;
+		m_hTouchdown = 0.0;
 
 		m_lt.angle_x = 0;
 		m_lt.angle_y = 0;
@@ -28,20 +36,20 @@ namespace kai
 	{
 		IF_F(!this->_APmavlink_move::init(j));
 
-		m_vPsp = j.value("vPsp", vector<float>{0.5, 0.5});
-		m_bHdg = j.value("bHdg", false);
-		m_hdgDz = j.value("hdgDz", 10.0);
+		jVec<float>(j, "vPsp", m_vPsp);
+		jVar(j, "bHdg", m_bHdg);
+		jVar(j, "hdgDz", m_hdgDz);
 		m_hdgDzNav = m_hdgDz / 2;
-		m_hdgDzNav = j.value("hdgDzNav", m_hdgDzNav);
+		jVar(j, "hdgDzNav", m_hdgDzNav);
 
-		m_hTouchdown = j.value("hTouchdown", 0.0);
-		m_kP = j.value("kP", 1.0);
-		m_defaultDtgt = j.value("defaultDtgt", 2.0);
+		jVar(j, "hTouchdown", m_hTouchdown);
+		jVar(j, "kP", m_kP);
+		jVar(j, "defaultDtgt", m_defaultDtgt);
 
-		m_vFov = j.value("vFov", vector<float>{90, 60});
-		m_vFov *= DEG_2_RAD;
+		if (jVec<float>(j, "vFov", m_vFov))
+			m_vFov *= DEG_2_RAD;
 
-		m_yawRate = j.value("yawRate", 30);
+		jVar(j, "yawRate", m_yawRate);
 		m_yawRate *= DEG_2_RAD;
 
 		const json &jc = j.at("tags");
@@ -53,8 +61,8 @@ namespace kai
 			IF_CONT(!Ji.is_object());
 
 			AP_LANDING_TARGET_TAG t;
-			t.m_id = Ji.value("id", t.m_id);
-			t.m_priority = Ji.value("priority", t.m_priority);
+			jVar(Ji, "id", t.m_id);
+			jVar(Ji, "priority", t.m_priority);
 			m_vTags.push_back(t);
 		}
 
@@ -67,10 +75,12 @@ namespace kai
 
 		string n;
 
-		n = j.value("_DistSensorBase", "");
+		n = "";
+		jVar(j, "_DistSensorBase", n);
 		m_pDS = (_DistSensorBase *)pM->findModule(n);
 
-		n = j.value("_Universe", "");
+		n = "";
+		jVar(j, "_Universe", n);
 		m_pU = (_Universe *)pM->findModule(n);
 
 		return true;

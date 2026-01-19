@@ -11,8 +11,21 @@ namespace kai
 		m_pGio = nullptr;
 		m_pU = nullptr;
 
+		m_bAutoArm = true;
+		m_altTakeoff = 10.0;
+		m_altAuto = 10.0;
+		m_altLand = 8.0;
+		m_myID = 0;
+
+		m_vTargetID.clear();
+		m_iClass = 1;
+		m_dRdet = 1e-6;
+
 		m_ieNextWP.init(USEC_10SEC);
 		m_vWP.set(0, 0);
+		m_vWPd.set(5, 5);
+		m_vWPrange.set(10, 10);
+
 		m_ieSendHB.init(USEC_1SEC);
 		m_ieSendGCupdate.init(USEC_1SEC);
 	}
@@ -25,21 +38,21 @@ namespace kai
 	{
 		IF_F(!this->_APmavlink_move::init(j));
 
-		m_bAutoArm = j.value("bAutoArm", true);
-		m_altTakeoff = j.value("altTakeoff", 10.0);
-		m_altAuto = j.value("altAuto", 10.0);
-		m_altLand = j.value("altLand", 8.0);
-		m_myID = j.value("myID", 0);
+		jVar(j, "bAutoArm", m_bAutoArm);
+		jVar(j, "altTakeoff", m_altTakeoff);
+		jVar(j, "altAuto", m_altAuto);
+		jVar(j, "altLand", m_altLand);
+		jVar(j, "myID", m_myID);
 
-		m_vTargetID = j.value("vTargetID", 0);
-		m_iClass = j.value("iClass", 1);
-		m_dRdet = j.value("dRdet", 1e-6);
+		jVar(j, "vTargetID", m_vTargetID);
+		jVar(j, "iClass", m_iClass);
+		jVar(j, "dRdet", m_dRdet);
 
-		m_vWPd = j.value("vWPd", vector<double>{5, 5});
-		m_vWPrange = j.value("vWPrange", vector<double>{10, 10});
-		m_ieNextWP.m_tInterval = j.value("ieNextWP", USEC_10SEC);
-		m_ieSendHB.m_tInterval = j.value("ieSendHB", USEC_1SEC);
-		m_ieSendGCupdate.m_tInterval = j.value("ieSendGCupdate", USEC_1SEC);
+		jVec<double>(j, "vWPd", m_vWPd);
+		jVec<double>(j, "vWPrange", m_vWPrange);
+		jVar(j, "ieNextWP", m_ieNextWP.m_tInterval);
+		jVar(j, "ieSendHB", m_ieSendHB.m_tInterval);
+		jVar(j, "ieSendGCupdate", m_ieSendGCupdate.m_tInterval);
 
 		return true;
 	}
@@ -50,34 +63,39 @@ namespace kai
 
 		string n;
 
-		n = j.value("_StateControl", "");
+		n = "";
+		jVar(j, "_StateControl", n);
 		m_pSC = (_StateControl *)(pM->findModule(n));
-		NULL__(m_pSC);
+		NULL_F(m_pSC);
 
 		m_state.STANDBY = m_pSC->getStateIdxByName("STANDBY");
 		m_state.TAKEOFF = m_pSC->getStateIdxByName("TAKEOFF");
 		m_state.AUTO = m_pSC->getStateIdxByName("AUTO");
 		m_state.RTL = m_pSC->getStateIdxByName("RTL");
-		IF__(!m_state.bValid(), OK_ERR_INVALID_VALUE);
+		IF_F(!m_state.bValid());
 
-		n = j.value("_APmavlink_base", "");
+		n = "";
+		jVar(j, "_APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 		NULL_F(m_pAP);
 
-		n = j.value("_Swarm", "");
+		n = "";
+		jVar(j, "_Swarm", n);
 		m_pSwarm = (_SwarmSearch *)(pM->findModule(n));
 		NULL_F(m_pSwarm);
 
-		n = j.value("_Xbee", "");
+		n = "";
+		jVar(j, "_Xbee", n);
 		m_pXb = (_Xbee *)(pM->findModule(n));
 		NULL_F(m_pXb);
 
-		n = j.value("_IObase", "");
+		n = "";
+		jVar(j, "_IObase", n);
 		m_pGio = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pGio);
 
 		n = "";
-		n = j.value("_Universe", "");
+		jVar(j, "_Universe", n);
 		m_pU = (_Universe *)(pM->findModule(n));
 		NULL_F(m_pU);
 

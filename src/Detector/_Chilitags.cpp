@@ -12,6 +12,9 @@ namespace kai
 
     _Chilitags::_Chilitags()
     {
+        m_persistence = 0;
+        m_gain = 0.0;
+        m_angleOffset = 0.0;
     }
 
     _Chilitags::~_Chilitags()
@@ -22,9 +25,9 @@ namespace kai
     {
         IF_F(!this->_DetectorBase::init(j));
 
-        m_persistence = j.value("persistence", 0);
-        m_gain = j.value("gain", 0);
-        m_angleOffset = j.value("angleOffset", 0);
+        jVar(j, "persistence", m_persistence);
+        jVar(j, "gain", m_gain);
+        jVar(j, "angleOffset", m_angleOffset);
 
         m_chilitags.setFilter(m_persistence, m_gain);
 

@@ -19,7 +19,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_tOutSec = j.value("tOutSec", 10);
+		jVar(j, "tOutSec", m_tOutSec);
 
 		return true;
 	}
@@ -28,7 +28,8 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n = j.value("_APmavlink_base", "");
+		string n = "";
+		jVar(j, "_APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 		NULL_F(m_pAP);
 

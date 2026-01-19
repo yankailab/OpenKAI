@@ -34,12 +34,12 @@ namespace kai
 
 			IMG_ERODE e;
 			e.init();
-			e.m_nItr = Ji.value("nItr", e.m_nItr);
-			e.m_kShape = Ji.value("kShape", e.m_kShape);
-			e.m_kW = Ji.value("kW", e.m_kW);
-			e.m_kH = Ji.value("kH", e.m_kH);
-			e.m_aX = Ji.value("aX", e.m_aX);
-			e.m_aY = Ji.value("aY", e.m_aY);
+			jVar(Ji, "nItr", e.m_nItr);
+			jVar(Ji, "kShape", e.m_kShape);
+			jVar(Ji, "kW", e.m_kW);
+			jVar(Ji, "kH", e.m_kH);
+			jVar(Ji, "aX", e.m_aX);
+			jVar(Ji, "aY", e.m_aY);
 			e.updateKernel();
 
 			m_vFilter.push_back(e);
@@ -52,7 +52,8 @@ namespace kai
 	{
 		IF_F(!this->_VisionBase::link(j, pM));
 
-		string n = j.value("_VisionBase", "");
+		string n = "";
+		jVar(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

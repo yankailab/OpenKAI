@@ -5,6 +5,12 @@ namespace kai
 
     _Drive::_Drive()
     {
+        m_nSpd = 0.0;
+        m_nDir = 1.0;
+        m_nStr = 0.0;
+
+        m_vSpdRange.set(-1.0, 1.0);
+        m_vStrRange.set(-1.0, 1.0);
     }
 
     _Drive::~_Drive()
@@ -15,11 +21,11 @@ namespace kai
     {
         IF_F(!this->_ModuleBase::init(j));
 
-        m_nSpd = j.value("nSpd", 0);
-        m_nDir = j.value("nDir", 1);
-        m_nStr = j.value("nStr", 0);
-        m_vSpdRange = j.value("vSpdRange", vector<float>{-1, 1});
-        m_vStrRange = j.value("vStrRange", vector<float>{-1, 1});
+        jVar(j, "nSpd", m_nSpd);
+        jVar(j, "nDir", m_nDir);
+        jVar(j, "nStr", m_nStr);
+        jVec<float>(j, "vSpdRange", m_vSpdRange);
+        jVec<float>(j, "vStrRange", m_vStrRange);
 
         return true;
     }
@@ -38,10 +44,11 @@ namespace kai
 
             DRIVE_MOTOR m;
             m.init();
-            m.m_kSpd = Ji.value("kSpd", m.m_kSpd);
-            m.m_kStr = Ji.value("kStr", m.m_kStr);
+            jVar(Ji, "kSpd", m.m_kSpd);
+            jVar(Ji, "kStr", m.m_kStr);
 
-            string n = Ji.value("_ActuatorBase", "");
+            string n = "";
+            jVar(Ji, "_ActuatorBase", n);
             m.m_pActuator = (_ActuatorBase *)(pM->findModule(n));
 
             m_vM.push_back(m);

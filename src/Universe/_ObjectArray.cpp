@@ -11,6 +11,7 @@ namespace kai
 	{
 		m_pO = nullptr;
 		m_nO = 0;
+		m_nBuf = 128;
 	}
 
 	_ObjectArray::~_ObjectArray()
@@ -22,7 +23,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_nBuf = j.value("nBuf", 128);
+		jVar(j, "nBuf", m_nBuf);
 		IF_F(m_nBuf <= 0);
 
 		m_pO = new _Object[m_nBuf];

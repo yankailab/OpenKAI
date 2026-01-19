@@ -26,8 +26,8 @@ namespace kai
 
 			AP_SERVO s;
 			s.init();
-			s.m_iChan = Ji.value("iChan", 9);
-			s.m_pwm = Ji.value("pwm", 1500);
+			jVar(Ji, "iChan", s.m_iChan);
+			jVar(Ji, "pwm", s.m_pwm);
 			m_vServo.push_back(s);
 		}
 
@@ -38,7 +38,8 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n = j.value("_APmavlink_base", "");
+		string n = "";
+		jVar(j, "_APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 		NULL_F(m_pAP);
 

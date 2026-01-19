@@ -12,8 +12,10 @@ namespace kai
     _MeshStream::_MeshStream()
     {
         m_type = pc_stream;
-
         m_pP = nullptr;
+
+        m_bAccept = true;
+        m_nP = 256;
     }
 
     _MeshStream::~_MeshStream()
@@ -26,8 +28,8 @@ namespace kai
     {
         IF_F(!this->_GeometryBase::init(j));
 
-        m_bAccept = j.value("bAccept", true);
-        m_nP = j.value("nP", 256);
+        jVar(j, "bAccept", m_bAccept);
+        jVar(j, "nP", m_nP);
         IF_F(m_nP <= 0);
 
         DEL(m_pP);

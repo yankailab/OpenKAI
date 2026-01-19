@@ -6,6 +6,10 @@ namespace kai
 	_xArm::_xArm()
 	{
 		m_pArm = NULL;
+
+		m_ip = "192.168.1.222";
+		m_mode = 0;
+		m_state = 0;
 	}
 
 	_xArm::~_xArm()
@@ -16,9 +20,9 @@ namespace kai
 	{
 		IF_F(!this->_ActuatorBase::init(j));
 
-		m_ip = j.value("ip", "192.168.1.222");
-		m_mode = j.value("mode", 0);
-		m_state = j.value("state", 0);
+		jVar(j, "ip", m_ip);
+		jVar(j, "mode", m_mode);
+		jVar(j, "state", m_state);
 
 		m_pArm = new XArmAPI(m_ip, false, true);
 

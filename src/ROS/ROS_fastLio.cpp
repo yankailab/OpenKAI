@@ -11,9 +11,11 @@ namespace kai
 {
     bool ROS_fastLio::init(const json &j)
     {
-        m_topicPC2 = j.value("topicPC2", m_topicPC2);
-        m_topicOdom = j.value("topicOdom", m_topicOdom);
-        m_topicPath = j.value("topicPath", m_topicPath);
+        IF_F(!j.is_object());
+
+        jVar(j, "topicPC2", m_topicPC2);
+        jVar(j, "topicOdom", m_topicOdom);
+        jVar(j, "topicPath", m_topicPath);
 
         return true;
     }

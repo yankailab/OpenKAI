@@ -7,10 +7,14 @@ namespace kai
 	{
 		m_pU = nullptr;
 		m_pTracker = nullptr;
+		m_tOutTargetNotFound.reStartT(0);
+		m_tOutTargetNotFound.setTout(USEC_1SEC / 10);
+		m_iClass = -1;
 		m_bTarget = false;
 		m_vTargetBB.clear();
 
 		m_vPvar.clear();
+		m_vPsp.clear();
 		m_vSpd.set(0);
 		m_tLastPIDupdate = 0;
 
@@ -30,15 +34,18 @@ namespace kai
 	{
 		IF_F(!this->_APmavlink_move::init(j));
 
-		m_iClass = j.value("iClass", -1);
-		m_vPsp = j.value("vPsp", 0);
+		jVar(j, "iClass", m_iClass);
+		jVec<float>(j, "vPsp", m_vPsp);
 
-		int tOutTargetNotFound = j.value("tOutTargetNotFound", USEC_1SEC / 10);
-		m_tOutTargetNotFound.setTout(tOutTargetNotFound);
+		int tOutTargetNotFound;
+		if (jVar(j, "tOutTargetNotFound", tOutTargetNotFound))
+			m_tOutTargetNotFound.setTout(tOutTargetNotFound);
 		m_tOutTargetNotFound.reStartT(0);
 
-		int nWmed = j.value("nWmed", 0);
-		int kTpred = j.value("kTpred", 0);
+		int nWmed = 0;
+		jVar(j, "nWmed", nWmed);
+		int kTpred = 0;
+		jVar(j, "kTpred", kTpred);
 
 		IF_F(!m_fX.init(nWmed, kTpred));
 		IF_F(!m_fY.init(nWmed, kTpred));
@@ -48,17 +55,21 @@ namespace kai
 		const json &jm = j.at("mount");
 		IF__(!jm.is_object(), true);
 
-		m_apMount.m_bEnable = jm.value("bEnable", m_apMount.m_bEnable);
+		jVar(jm, "bEnable", m_apMount.m_bEnable);
 
-		m_apMount.m_control.input_a = jm.value("pitch", 0) * 100; // pitch
-		m_apMount.m_control.input_b = jm.value("roll", 0) * 100;  // roll
-		m_apMount.m_control.input_c = jm.value("yaw", 0) * 100;	  // yaw
+		float p = 0, r = 0, y = 0;
+		jVar(jm, "pitch", p);
+		jVar(jm, "roll", r);
+		jVar(jm, "yaw", y);
+		m_apMount.m_control.input_a = p * 100; // pitch
+		m_apMount.m_control.input_b = r * 100; // roll
+		m_apMount.m_control.input_c = y * 100; // yaw
 		m_apMount.m_control.save_position = 0;
 
-		m_apMount.m_config.stab_pitch = jm.value("stabPitch", m_apMount.m_config.stab_pitch);
-		m_apMount.m_config.stab_roll = jm.value("stabRoll", m_apMount.m_config.stab_roll);
-		m_apMount.m_config.stab_yaw = jm.value("stabYaw", m_apMount.m_config.stab_yaw);
-		m_apMount.m_config.mount_mode = jm.value("mountMode", m_apMount.m_config.mount_mode);
+		jVar(jm, "stabPitch", m_apMount.m_config.stab_pitch);
+		jVar(jm, "stabRoll", m_apMount.m_config.stab_roll);
+		jVar(jm, "stabYaw", m_apMount.m_config.stab_yaw);
+		jVar(jm, "mountMode", m_apMount.m_config.mount_mode);
 
 		return true;
 	}
@@ -69,22 +80,28 @@ namespace kai
 
 		string n;
 
-		n = j.value("PIDpitch", "");
+		n = "";
+		jVar(j, "PIDpitch", n);
 		m_pPitch = (PID *)(pM->findModule(n));
 
-		n = j.value("PIDroll", "");
+		n = "";
+		jVar(j, "PIDroll", n);
 		m_pRoll = (PID *)(pM->findModule(n));
 
-		n = j.value("PIDalt", "");
+		n = "";
+		jVar(j, "PIDalt", n);
 		m_pAlt = (PID *)(pM->findModule(n));
 
-		n = j.value("PIDyaw", "");
+		n = "";
+		jVar(j, "PIDyaw", n);
 		m_pYaw = (PID *)(pM->findModule(n));
 
-		n = j.value("_TrackerBase", "");
+		n = "";
+		jVar(j, "_TrackerBase", n);
 		m_pTracker = (_TrackerBase *)pM->findModule(n);
 
-		n = j.value("_Universe", "");
+		n = "";
+		jVar(j, "_Universe", n);
 		m_pU = (_Universe *)pM->findModule(n);
 
 		return true;

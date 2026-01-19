@@ -12,6 +12,9 @@ namespace kai
 
 	_TCPclient::_TCPclient()
 	{
+		m_strAddr = "";
+		m_port = 0;
+		m_bClient = true;
 		m_socket = 0;
 		m_ioType = io_tcp;
 		m_ioStatus = io_unknown;
@@ -26,8 +29,8 @@ namespace kai
 	{
 		IF_F(!this->_IObase::init(j));
 
-		m_strAddr = j.value("addr", "");
-		m_port = j.value("port", 0);
+		jVar(j, "addr", m_strAddr);
+		jVar(j, "port", m_port);
 		m_bClient = true;
 
 		return true;

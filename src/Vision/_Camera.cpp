@@ -13,6 +13,9 @@ namespace kai
 	_Camera::_Camera()
 	{
 		m_type = vision_camera;
+		m_deviceID = 0;
+		m_nInitRead = 1;
+		m_bResetCam = false;
 	}
 
 	_Camera::~_Camera()
@@ -24,9 +27,9 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(j));
 
-		m_deviceID = j.value("deviceID", 0);
-		m_nInitRead = j.value("nInitRead", 1);
-		m_bResetCam = j.value("bResetCam", false);
+		jVar(j, "deviceID", m_deviceID);
+		jVar(j, "nInitRead", m_nInitRead);
+		jVar(j, "bResetCam", m_bResetCam);
 
 		return true;
 	}

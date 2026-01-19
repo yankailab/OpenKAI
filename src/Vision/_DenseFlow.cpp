@@ -13,7 +13,9 @@ namespace kai
 	_DenseFlow::_DenseFlow()
 	{
 		m_pV = nullptr;
-//		m_pGrayFrames = nullptr;
+		//		m_pGrayFrames = nullptr;
+		m_w = 640;
+		m_h = 480;
 
 		m_nHistLev = 128;
 		m_vRange.x = 0.0;
@@ -25,16 +27,16 @@ namespace kai
 	{
 	}
 
-	bool _DenseFlow::init(const json& j)
+	bool _DenseFlow::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_w = j.value("w", 640);
-		m_h = j.value("h", 480);
+		jVar(j, "w", m_w);
+		jVar(j, "h", m_h);
 		m_gFlow = GpuMat(m_h, m_w, CV_32FC2);
 
-//		m_pGrayFrames = new FrameGroup();
-//		m_pGrayFrames->init(2);
+		//		m_pGrayFrames = new FrameGroup();
+		//		m_pGrayFrames->init(2);
 		m_pFarn = cuda::FarnebackOpticalFlow::create();
 
 		return true;
@@ -44,7 +46,8 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n = j.value("_VisionBase", "");
+		string n = "";
+		jVar(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 
@@ -64,7 +67,6 @@ namespace kai
 			m_pT->autoFPS();
 
 			detect();
-
 		}
 	}
 
@@ -150,7 +152,7 @@ namespace kai
 		vector<Mat> vRoiX = {mRoiX};
 		cv::calcHist(vRoiX, vChannel, Mat(),
 					 mHist, vHistLev, vRange,
-					 true //accumulate
+					 true // accumulate
 		);
 		for (i = 0; i < m_nHistLev; i++)
 		{
@@ -163,7 +165,7 @@ namespace kai
 		vector<Mat> vRoiY = {mRoiY};
 		cv::calcHist(vRoiY, vChannel, Mat(),
 					 mHist, vHistLev, vRange,
-					 true //accumulate
+					 true // accumulate
 		);
 		for (i = 0; i < m_nHistLev; i++)
 		{

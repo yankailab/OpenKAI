@@ -13,7 +13,7 @@ namespace kai
     {
     }
 
-    bool _TestJSON::init(const json& j)
+    bool _TestJSON::init(const json &j)
     {
         IF_F(!this->_TestBase::init(j));
 
@@ -23,22 +23,21 @@ namespace kai
         return true;
     }
 
-    bool _TestJSON::link(const json& j, ModuleMgr* pM)
+    bool _TestJSON::link(const json &j, ModuleMgr *pM)
     {
         IF_F(!this->_TestBase::link(j, pM));
 
-        0
         string n;
 
         n = "";
-        n = j.value("_JSONbaseSender", "");
+        jVar(j, "_JSONbaseSender", n);
         m_pJsender = (_JSONbase *)(pM->findModule(n));
-        NULL__(m_pJsender);
+        NULL_F(m_pJsender);
 
         n = "";
-        n = j.value("_JSONbaseReceiver", "");
+        jVar(j, "_JSONbaseReceiver", n);
         m_pJreceiver = (_JSONbase *)(pM->findModule(n));
-        NULL__(m_pJreceiver);
+        NULL_F(m_pJreceiver);
 
         return true;
     }
@@ -51,8 +50,8 @@ namespace kai
 
     bool _TestJSON::check(void)
     {
-        NULL__(m_pJsender);
-        NULL__(m_pJreceiver);
+        NULL_F(m_pJsender);
+        NULL_F(m_pJreceiver);
 
         return this->_TestBase::check();
     }
@@ -63,7 +62,7 @@ namespace kai
         {
             m_pT->autoFPS();
 
-            while(check() != OK_OK)
+            while (!check())
                 sleep(1);
 
             object o;
@@ -75,8 +74,6 @@ namespace kai
             m_pJreceiver->sendJson(o);
 
             m_pJsender->sendJson(o);
-
-
         }
     }
 

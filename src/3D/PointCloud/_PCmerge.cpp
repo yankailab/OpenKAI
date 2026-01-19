@@ -23,7 +23,7 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::init(j));
 
-		m_rVoxel = j.value("rVoxel", 0.0);
+		jVar(j, "rVoxel", m_rVoxel);
 
 		return true;
 	}
@@ -32,7 +32,8 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::link(j, pM));
 
-		vector<string> vPCB = j.value("vPCbase", vector<string>{});
+		vector<string> vPCB;
+		jVec<string>(j, "vPCbase", vPCB);
 		IF_F(vPCB.empty());
 
 		for (string p : vPCB)

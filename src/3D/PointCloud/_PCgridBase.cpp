@@ -12,6 +12,22 @@ namespace kai
 
 		m_gridLine.Clear();
 		m_pCellActive = &m_pActiveCells[0];
+
+		m_vPorigin.clear();
+		m_vCellRangeX.clear();
+		m_vCellRangeY.clear();
+		m_vCellRangeZ.clear();
+		m_vCellSize.clear();
+
+		m_bVisual = false;
+		m_vAxisColX.set(1, 0, 0);
+		m_vAxisColY.set(0, 1, 0);
+		m_vAxisColZ.set(0, 0, 1);
+
+		m_nMedWidth = 3;
+		m_tExpire = 0;
+
+		m_fGridConfig = "";
 	}
 
 	_PCgridBase::~_PCgridBase()
@@ -22,21 +38,20 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::init(j));
 
-		m_vPorigin = j.value("vPorigin", 0);
-		m_vCellRangeX = j.value("vCellRangeX", 0);
-		m_vCellRangeY = j.value("vCellRangeY", 0);
-		m_vCellRangeZ = j.value("vCellRangeZ", 0);
-		m_vCellSize = j.value("vCellSize", 0);
+		jVec<float>(j, "vPorigin", m_vPorigin);
+		jVec<int>(j, "vCellRangeX", m_vCellRangeX);
+		jVec<int>(j, "vCellRangeY", m_vCellRangeY);
+		jVec<int>(j, "vCellRangeZ", m_vCellRangeZ);
+		jVec<float>(j, "vCellSize", m_vCellSize);
 
-		m_bVisual = j.value("bVisual", false);
-		m_vAxisColX = j.value("vAxisColX", vector<float>{1, 0, 0});
-		m_vAxisColY = j.value("vAxisColY", vector<float>{0, 1, 0});
-		m_vAxisColZ = j.value("vAxisColZ", vector<float>{0, 0, 1});
+		jVar(j, "bVisual", m_bVisual);
+		jVec<float>(j, "vAxisColX", m_vAxisColX);
+		jVec<float>(j, "vAxisColY", m_vAxisColY);
+		jVec<float>(j, "vAxisColZ", m_vAxisColZ);
 
-		m_nMedWidth = j.value("nMedWidth", 3);
-		m_tExpire = j.value("tExpire", 0);
-
-		m_fGridConfig = j.value("fGridConfig", "");
+		jVar(j, "nMedWidth", m_nMedWidth);
+		jVar(j, "tExpire", m_tExpire);
+		jVar(j, "fGridConfig", m_fGridConfig);
 
 		return true;
 	}
@@ -45,7 +60,8 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::link(j, pM));
 
-		vector<string> vGn = j.value("vGeometryBase", vector<string>{});
+		vector<string> vGn;
+		jVar(j, "vGeometryBase", vGn);
 		for (string n : vGn)
 		{
 			_GeometryBase *pG = (_GeometryBase *)(pM->findModule(n));
@@ -62,99 +78,95 @@ namespace kai
 		return m_fGridConfig;
 	}
 
-	bool _PCgridBase::loadConfig(const string &fName, Kiss *pK)
+	bool _PCgridBase::loadConfig(const string &fName)
 	{
-		NULL_F(pK);
+		// string s;
+		// IF_F(!readFile(fName, &s));
 
-		string s;
-		IF_F(!readFile(fName, &s));
+		// if (!pK->parse(s))
+		// {
+		// 	LOG_I("Config load failed: " + fName);
+		// 	return false;
+		// }
 
-		if (!pK->parse(s))
-		{
-			LOG_I("Config load failed: " + fName);
-			return false;
-		}
+		// Kiss *pKc = pK->root()->child("gridConfig");
+		// IF_F(pKc->empty());
 
-		Kiss *pKc = pK->root()->child("gridConfig");
-		IF_F(pKc->empty());
+		// // grid config
+		// pKc->v("vPorigin", &m_vPorigin);
+		// pKc->v("vCellRangeX", &m_vCellRangeX);
+		// pKc->v("vCellRangeY", &m_vCellRangeY);
+		// pKc->v("vCellRangeZ", &m_vCellRangeZ);
+		// pKc->v("vCellSize", &m_vCellSize);
 
-		// grid config
-		pKc->v("vPorigin", &m_vPorigin);
-		pKc->v("vCellRangeX", &m_vCellRangeX);
-		pKc->v("vCellRangeY", &m_vCellRangeY);
-		pKc->v("vCellRangeZ", &m_vCellRangeZ);
-		pKc->v("vCellSize", &m_vCellSize);
+		// pKc->v("bVisual", &m_bVisual);
+		// pKc->v("vAxisColX", &m_vAxisColX);
+		// pKc->v("vAxisColY", &m_vAxisColY);
+		// pKc->v("vAxisColZ", &m_vAxisColZ);
 
-		pKc->v("bVisual", &m_bVisual);
-		pKc->v("vAxisColX", &m_vAxisColX);
-		pKc->v("vAxisColY", &m_vAxisColY);
-		pKc->v("vAxisColZ", &m_vAxisColZ);
-
-		pKc->v("nMedWidth", &m_nMedWidth);
-		pKc->v("tExpire", &m_tExpire);
+		// pKc->v("nMedWidth", &m_nMedWidth);
+		// pKc->v("tExpire", &m_tExpire);
 
 		return true;
 	}
 
-	bool _PCgridBase::saveConfig(const string &fName, picojson::object *pO)
+	bool _PCgridBase::saveConfig(const string &fName)
 	{
-		NULL_F(pO);
+		// pO->insert(make_pair("name", "gridConfig"));
 
-		pO->insert(make_pair("name", "gridConfig"));
+		// // grid config
+		// picojson::array vA;
+		// vA.push_back(value((double)m_vPorigin.x));
+		// vA.push_back(value((double)m_vPorigin.y));
+		// vA.push_back(value((double)m_vPorigin.z));
+		// pO->insert(make_pair("vPorigin", vA));
 
-		// grid config
-		picojson::array vA;
-		vA.push_back(value((double)m_vPorigin.x));
-		vA.push_back(value((double)m_vPorigin.y));
-		vA.push_back(value((double)m_vPorigin.z));
-		pO->insert(make_pair("vPorigin", vA));
+		// vA.clear();
+		// vA.push_back(value((double)m_vCellRangeX.x));
+		// vA.push_back(value((double)m_vCellRangeX.y));
+		// pO->insert(make_pair("vCellRangeX", vA));
 
-		vA.clear();
-		vA.push_back(value((double)m_vCellRangeX.x));
-		vA.push_back(value((double)m_vCellRangeX.y));
-		pO->insert(make_pair("vCellRangeX", vA));
+		// vA.clear();
+		// vA.push_back(value((double)m_vCellRangeY.x));
+		// vA.push_back(value((double)m_vCellRangeY.y));
+		// pO->insert(make_pair("vCellRangeY", vA));
 
-		vA.clear();
-		vA.push_back(value((double)m_vCellRangeY.x));
-		vA.push_back(value((double)m_vCellRangeY.y));
-		pO->insert(make_pair("vCellRangeY", vA));
+		// vA.clear();
+		// vA.push_back(value((double)m_vCellRangeZ.x));
+		// vA.push_back(value((double)m_vCellRangeZ.y));
+		// pO->insert(make_pair("vCellRangeZ", vA));
 
-		vA.clear();
-		vA.push_back(value((double)m_vCellRangeZ.x));
-		vA.push_back(value((double)m_vCellRangeZ.y));
-		pO->insert(make_pair("vCellRangeZ", vA));
+		// vA.clear();
+		// vA.push_back(value((double)m_vCellSize.x));
+		// vA.push_back(value((double)m_vCellSize.y));
+		// vA.push_back(value((double)m_vCellSize.z));
+		// pO->insert(make_pair("vCellSize", vA));
 
-		vA.clear();
-		vA.push_back(value((double)m_vCellSize.x));
-		vA.push_back(value((double)m_vCellSize.y));
-		vA.push_back(value((double)m_vCellSize.z));
-		pO->insert(make_pair("vCellSize", vA));
+		// pO->insert(make_pair("bVisual", value((double)m_bVisual)));
 
-		pO->insert(make_pair("bVisual", value((double)m_bVisual)));
+		// vA.clear();
+		// vA.push_back(value((double)m_vAxisColX.x));
+		// vA.push_back(value((double)m_vAxisColX.y));
+		// vA.push_back(value((double)m_vAxisColX.z));
+		// pO->insert(make_pair("vAxisColX", vA));
 
-		vA.clear();
-		vA.push_back(value((double)m_vAxisColX.x));
-		vA.push_back(value((double)m_vAxisColX.y));
-		vA.push_back(value((double)m_vAxisColX.z));
-		pO->insert(make_pair("vAxisColX", vA));
+		// vA.clear();
+		// vA.push_back(value((double)m_vAxisColY.x));
+		// vA.push_back(value((double)m_vAxisColY.y));
+		// vA.push_back(value((double)m_vAxisColY.z));
+		// pO->insert(make_pair("vAxisColY", vA));
 
-		vA.clear();
-		vA.push_back(value((double)m_vAxisColY.x));
-		vA.push_back(value((double)m_vAxisColY.y));
-		vA.push_back(value((double)m_vAxisColY.z));
-		pO->insert(make_pair("vAxisColY", vA));
+		// vA.clear();
+		// vA.push_back(value((double)m_vAxisColZ.x));
+		// vA.push_back(value((double)m_vAxisColZ.y));
+		// vA.push_back(value((double)m_vAxisColZ.z));
+		// pO->insert(make_pair("vAxisColZ", vA));
 
-		vA.clear();
-		vA.push_back(value((double)m_vAxisColZ.x));
-		vA.push_back(value((double)m_vAxisColZ.y));
-		vA.push_back(value((double)m_vAxisColZ.z));
-		pO->insert(make_pair("vAxisColZ", vA));
+		// pO->insert(make_pair("nMedWidth", value((double)m_nMedWidth)));
+		// pO->insert(make_pair("tExpire", value((double)m_tExpire)));
 
-		pO->insert(make_pair("nMedWidth", value((double)m_nMedWidth)));
-		pO->insert(make_pair("tExpire", value((double)m_tExpire)));
-
-		string f = picojson::value(*pO).serialize();
-		writeFile(fName, f);
+		// string f = picojson::value(*pO).serialize();
+		// writeFile(fName, f);
 
 		return true;
 	}

@@ -33,8 +33,7 @@ namespace kai
 
         rclcpp::init(0, NULL);
         m_pROSnode = std::make_shared<ROS_fastLio>();
-        Kiss *pKn = pK->child("node");
-        return m_pROSnode->init(pKn);
+        return m_pROSnode->init(j.at("node"));
     }
 
     bool _ROS_fastLio::link(const json &j, ModuleMgr *pM)
@@ -43,7 +42,8 @@ namespace kai
 
         string n;
 #ifdef WITH_3D
-        n = j.value("_PCframe", "");
+        n = "";
+        jVar(j, "_PCframe", n);
         m_pPCframe = (_PCframe *)(pM->findModule(n));
         m_pROSnode->m_pPCframe = m_pPCframe;
 #endif

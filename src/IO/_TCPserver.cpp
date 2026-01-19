@@ -13,6 +13,9 @@ namespace kai
 	_TCPserver::_TCPserver()
 	{
 		m_socket = 0;
+		m_listenPort = 8888;
+		m_nListen = N_LISTEN;
+		m_nSocket = N_SOCKET;
 		m_lClient.clear();
 	}
 
@@ -32,9 +35,9 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_listenPort = j.value("port", 8888);
-		m_nListen = j.value("nListen", N_LISTEN);
-		m_nSocket = j.value("nSocket", N_SOCKET);
+		jVar(j, "port", m_listenPort);
+		jVar(j, "nListen", m_nListen);
+		jVar(j, "nSocket", m_nSocket);
 
 		return true;
 	}
@@ -72,13 +75,13 @@ namespace kai
 			_TCPclient *pClient = new _TCPclient();
 			IF_CONT(!pClient);
 
-//TODO:
-			// pClient->init(m_pKiss);
-			// struct sockaddr_in *pAddr = (struct sockaddr_in *)&clientAddr;
-			// pClient->m_strAddr = inet_ntoa(pAddr->sin_addr);
-			// pClient->m_socket = socketNew;
-			// pClient->m_bClient = false;
-			// pClient->setIOstatus(io_opened);
+			// TODO:
+			//  pClient->init(m_pKiss);
+			//  struct sockaddr_in *pAddr = (struct sockaddr_in *)&clientAddr;
+			//  pClient->m_strAddr = inet_ntoa(pAddr->sin_addr);
+			//  pClient->m_socket = socketNew;
+			//  pClient->m_bClient = false;
+			//  pClient->setIOstatus(io_opened);
 
 			if (!pClient->start())
 			{

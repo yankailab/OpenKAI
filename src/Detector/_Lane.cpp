@@ -13,10 +13,27 @@ namespace kai
 	_Lane::_Lane()
 	{
 		m_pV = nullptr;
-		m_vSize.clear();
 
+		m_vRoiLT.x = 0.2;
+		m_vRoiLT.y = 0.5;
+		m_vRoiLB.x = 0.0;
+		m_vRoiLB.y = 1.0;
+		m_vRoiRT.x = 0.8;
+		m_vRoiRT.y = 0.5;
+		m_vRoiRB.x = 1.0;
+		m_vRoiRB.y = 1.0;
+
+		m_sizeOverhead.x = 400;
+		m_sizeOverhead.y = 300;
+		m_vSize.clear();
+		m_binMed = 3;
+
+		m_nFilter = 0;
+		m_nLane = 0;
 		m_ppPoint = NULL;
 		m_pNp = NULL;
+		m_bDrawOverhead = false;
+		m_bDrawFilter = false;
 	}
 
 	_Lane::~_Lane()
@@ -27,16 +44,16 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_bDrawOverhead = j.value("bDrawOverhead", false);
-		m_bDrawFilter = j.value("bDrawFilter", false);
-		m_binMed = j.value("binMed", 3);
+		jVar(j, "bDrawOverhead", m_bDrawOverhead);
+		jVar(j, "bDrawFilter", m_bDrawFilter);
+		jVar(j, "binMed", m_binMed);
 
-		m_vRoiLT = j.value("vRoiLT", vector<float>{0.2, 0.5});
-		m_vRoiLB = j.value("vRoiLB", vector<float>{0.0, 1.0});
-		m_vRoiRT = j.value("vRoiRT", vector<float>{0.8, 0.5});
-		m_vRoiRB = j.value("vRoiRB", vector<float>{1.0, 1.0});
-		m_sizeOverhead.x = j.value("overheadW", 400);
-		m_sizeOverhead.y = j.value("overheadH", 300);
+		jVec<float>(j, "vRoiLT", m_vRoiLT);
+		jVec<float>(j, "vRoiLB", m_vRoiLB);
+		jVec<float>(j, "vRoiRT", m_vRoiRT);
+		jVec<float>(j, "vRoiRB", m_vRoiRB);
+		jVar(j, "overheadW", m_sizeOverhead.x);
+		jVar(j, "overheadH", m_sizeOverhead.y);
 
 		m_mOverhead = Mat(Size(m_sizeOverhead.x, m_sizeOverhead.y), CV_8UC3);
 
@@ -53,11 +70,11 @@ namespace kai
 				IF_CONT(!Ji.is_object());
 
 				LANE_FILTER *pF = &m_pFilter[m_nFilter];
-				pF->m_iColorSpace = Ji.value("iColorSpace", pF->m_iColorSpace);
-				pF->m_iChannel = Ji.value("iChannel", pF->m_iChannel);
-				pF->m_nTile = Ji.value("nTile", pF->m_nTile);
-				pF->m_thr = Ji.value("thr", pF->m_thr);
-				pF->m_clipLim = Ji.value("clipLim", pF->m_clipLim);
+				jVar(Ji, "iColorSpace", pF->m_iColorSpace);
+				jVar(Ji, "iChannel", pF->m_iChannel);
+				jVar(Ji, "nTile", pF->m_nTile);
+				jVar(Ji, "thr", pF->m_thr);
+				jVar(Ji, "clipLim", pF->m_clipLim);
 				pF->init();
 
 				m_nFilter++;
@@ -65,8 +82,10 @@ namespace kai
 		}
 
 		// lanes
-		int nAvr = j.value("nAvr", 0);
-		int nMed = j.value("nMed", 0);
+		int nAvr = 0;
+		jVar(j, "nAvr", nAvr);
+		int nMed = 0;
+		jVar(j, "nMed", nMed);
 		m_nLane = 0;
 		const json &jL = j.at("lane");
 		if (jL.is_object())
@@ -80,7 +99,7 @@ namespace kai
 
 				LANE *pLane = &m_pLane[m_nLane];
 				pLane->init(m_sizeOverhead.y, nAvr, nMed);
-				pLane->m_ROI = Ji.value("vROI", vector<float>{0, 0, 1, 1});
+				jVar(Ji, "vROI", pLane->m_ROI);
 
 				m_nLane++;
 			}
@@ -101,7 +120,8 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n = j.value("_VisionBase", "");
+		string n = "";
+		jVar(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

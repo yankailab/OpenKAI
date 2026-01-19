@@ -14,8 +14,11 @@ namespace kai
 
 	SharedMem::SharedMem()
 	{
+		m_shmName = "";
+		m_nB = 0;
 		m_fd = 0;
 		m_pB = 0;
+		m_bWriter = true;
 		m_bOpen = false;
 	}
 
@@ -28,9 +31,9 @@ namespace kai
 	{
 		IF_F(!this->BASE::init(j));
 
-		m_shmName = j.value("shmName", "");
-		m_nB = j.value("nB", 0);
-		m_bWriter = j.value("bWriter", true);
+		jVar(j, "shmName", m_shmName);
+		jVar(j, "nB", m_nB);
+		jVar(j, "bWriter", m_bWriter);
 
 		IF_F(!open());
 

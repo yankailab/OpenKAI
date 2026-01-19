@@ -64,7 +64,7 @@ namespace kai
 		int m_iGridLS = 0;
 
 		Material m_mat;
-		string m_matName;
+		string m_matName = "";
 		vFloat4 m_matCol = {1, 1, 1, 1};
 		int m_matPointSize = 1;
 		int m_matLineWidth = 1;

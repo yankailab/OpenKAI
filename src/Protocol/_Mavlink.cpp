@@ -6,8 +6,18 @@ namespace kai
 	_Mavlink::_Mavlink()
 	{
 		m_pIO = nullptr;
+
+		m_mySystemID = 255;
+		m_myComponentID = MAV_COMP_ID_MISSIONPLANNER;
+		m_myType = MAV_TYPE_GCS;
+
+		m_devSystemID = -1;
+		m_devComponentID = -1;
+		m_devType = 0;
+
 		m_nRead = 0;
 		m_iRead = 0;
+		m_iMavComm = MAVLINK_COMM_0;
 
 		// msg register
 		m_vpMsg.push_back(&m_attitude);
@@ -54,15 +64,15 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_mySystemID = j.value("mySystemID", 255);
-		m_myComponentID = j.value("myComponentID", MAV_COMP_ID_MISSIONPLANNER);
-		m_myType = j.value("myType", MAV_TYPE_GCS);
+		jVar(j, "mySystemID", m_mySystemID);
+		jVar(j, "myComponentID", m_myComponentID);
+		jVar(j, "myType", m_myType);
 
-		m_devSystemID = j.value("devSystemID", -1);
-		m_devComponentID = j.value("devComponentID", -1);
-		m_devType = j.value("devType", 0);
+		jVar(j, "devSystemID", m_devSystemID);
+		jVar(j, "devComponentID", m_devComponentID);
+		jVar(j, "devType", m_devType);
 
-		m_iMavComm = j.value("iMavComm", MAVLINK_COMM_0);
+		jVar(j, "iMavComm", m_iMavComm);
 
 		m_status.packet_rx_drop_count = 0;
 
@@ -73,7 +83,8 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n = j.value("_IObase", "");
+		string n = "";
+		jVar(j, "_IObase", n);
 		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 
@@ -87,7 +98,8 @@ namespace kai
 
 			MAVLINK_PEER mP;
 			mP.init();
-			n = Ji.value("_Mavlink", "");
+			n = "";
+			jVar(Ji, "_Mavlink", n);
 			mP.m_pPeer = pM->findModule(n);
 			if (!mP.m_pPeer)
 			{
@@ -100,7 +112,7 @@ namespace kai
 
 		// cmd routing
 		vector<int> vNoRouteCmd;
-		vNoRouteCmd = j.value("noRouteCmd", vector<int>{});
+		jVar(j, "noRouteCmd", vNoRouteCmd);
 		for (int i = 0; i < vNoRouteCmd.size(); i++)
 		{
 			setCmdRoute(vNoRouteCmd[i], false);

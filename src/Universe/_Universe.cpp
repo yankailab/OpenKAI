@@ -9,6 +9,18 @@ namespace kai
 
 	_Universe::_Universe()
 	{
+		m_minConfidence = 0.0;
+		m_vArea.set(-FLT_MAX, FLT_MAX);
+		m_vW.set(-FLT_MAX, FLT_MAX);
+		m_vH.set(-FLT_MAX, FLT_MAX);
+
+		m_vRoi.set(0.0, 0.0, 1.0, 1.0);
+		m_vClassRange.set(-INT_MAX, INT_MAX);
+
+		m_bDrawText = false;
+		m_bDrawPos = false;
+		m_bDrawBB = false;
+
 		clear();
 	}
 
@@ -21,25 +33,26 @@ namespace kai
 		IF_F(!this->_ModuleBase::init(j));
 
 		// general
-		m_minConfidence = j.value("minConfidence", 0.0);
-		m_vArea = j.value("vArea", vector<float>{-FLT_MAX, FLT_MAX});
-		m_vW = j.value("vW", vector<float>{-FLT_MAX, FLT_MAX});
-		m_vH = j.value("vH", vector<float>{-FLT_MAX, FLT_MAX});
+		jVar(j, "minConfidence", m_minConfidence);
+		jVec<float>(j, "vArea", m_vArea);
+		jVec<float>(j, "vW", m_vW);
+		jVec<float>(j, "vH", m_vH);
 		m_vRoi = j.value("vRoi", vector<float>{
 									 0,
 									 0,
 									 1,
 									 1,
 								 });
-		m_vClassRange = j.value("vClassRange", vector<int>{-INT_MAX, INT_MAX});
+		jVec<int>(j, "vClassRange", m_vClassRange);
 
 		// draw
-		m_bDrawText = j.value("bDrawText", false);
-		m_bDrawPos = j.value("bDrawPos", false);
-		m_bDrawBB = j.value("bDrawBB", false);
+		jVar(j, "bDrawText", m_bDrawText);
+		jVar(j, "bDrawPos", m_bDrawPos);
+		jVar(j, "bDrawBB", m_bDrawBB);
 
 		// buffer
-		int nB = j.value("nBuf", 16);
+		int nB = 16;
+		jVar(j, "nBuf", nB);
 		m_sO.get()->init(nB);
 		m_sO.next()->init(nB);
 		clear();

@@ -13,6 +13,8 @@ namespace kai
 	_GStreamer::_GStreamer()
 	{
 		m_type = vision_gstreamer;
+		m_pipeline = "";
+		m_nInitRead = 1;
 	}
 
 	_GStreamer::~_GStreamer()
@@ -24,8 +26,8 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(j));
 
-		m_pipeline = j.value("pipeline", "");
-		m_nInitRead = j.value("nInitRead", 1);
+		jVar(j, "pipeline", m_pipeline);
+		jVar(j, "nInitRead", m_nInitRead);
 
 		return true;
 	}

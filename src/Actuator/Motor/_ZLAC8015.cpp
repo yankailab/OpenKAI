@@ -12,6 +12,7 @@ namespace kai
 		m_pMB = nullptr;
 		m_ID = 1;
 		m_ieReadStatus.init(50000);
+		m_iMode = 3;
 	}
 
 	_ZLAC8015::~_ZLAC8015()
@@ -22,8 +23,8 @@ namespace kai
 	{
 		IF_F(!this->_ActuatorBase::init(j));
 
-		m_iMode = j.value("iMode", 3);
-		m_ieReadStatus.m_tInterval = j.value("tIntReadStatus", 50000);
+		jVar(j, "iMode", m_iMode);
+		jVar(j, "tIntReadStatus", m_ieReadStatus.m_tInterval);
 
 		return true;
 	}
@@ -32,9 +33,10 @@ namespace kai
 	{
 		IF_F(!this->_ActuatorBase::link(j, pM));
 
-		string n = j.value("_Modbus", "");
+		string n = "";
+		jVar(j, "_Modbus", n);
 		m_pMB = (_Modbus *)(pM->findModule(n));
-		NULL_F(m_pMB);
+		IF_Le_F(!m_pMB, "_Modbuse not found: " + n);
 
 		return true;
 	}

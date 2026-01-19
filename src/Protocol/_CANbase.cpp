@@ -7,7 +7,9 @@ namespace kai
 	{
 		m_bOpen = false;
 		m_nFrameRecv = 0;
+
 		m_iErr = 0;
+		m_nErrReconnect = 1;
 	}
 
 	_CANbase::~_CANbase()
@@ -18,7 +20,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_nErrReconnect = j.value("nErrReconnect", 1);
+		jVar(j, "nErrReconnect", m_nErrReconnect);
 
 		return true;
 	}

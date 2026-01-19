@@ -4,6 +4,8 @@ namespace kai
 {
 	_PWMio::_PWMio()
 	{
+		m_nCr = 8;
+		m_nCw = 8;
 	}
 
 	_PWMio::~_PWMio()
@@ -14,10 +16,11 @@ namespace kai
 	{
 		IF_F(!this->_ProtocolBase::init(j));
 
-		m_nCr = j.value("nCr", 8);
-		m_nCw = j.value("nCw", 8);
+		jVar(j, "nCr", m_nCr);
+		jVar(j, "nCw", m_nCw);
 
-		vector<int> vPWM = j.value("vPWM", vector<int>{});
+		vector<int> vPWM;
+		jVar(j, "vPWM", vPWM);
 		for (int i = 0; i < vPWM.size(); i++)
 		{
 			if (i >= m_nCw)

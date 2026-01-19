@@ -7,6 +7,7 @@ namespace kai
     {
         m_Tr = nullptr;
         m_pCtrl = nullptr;
+        m_pSwarm = nullptr;
     }
 
     _SwarmCtrlUI::~_SwarmCtrlUI()
@@ -18,9 +19,18 @@ namespace kai
     {
         IF_F(!this->_JSONbase::init(j));
 
-        m_ieSendHB.init(j.value("ieSendHB", SEC_2_USEC));
-        m_ieSendNodeUpdate.init(j.value("ieSendNodeUpdate", SEC_2_USEC));
-        m_ieSendNodeClearAll.init(j.value("ieSendNodeClearAll", SEC_2_USEC));
+        int v;
+        v = SEC_2_USEC;
+        jVar(j, "ieSendHB", v);
+        m_ieSendHB.init(v);
+
+        v = SEC_2_USEC;
+        jVar(j, "ieSendNodeUpdate", v);
+        m_ieSendNodeUpdate.init(v);
+
+        v = SEC_2_USEC;
+        jVar(j, "ieSendNodeClearAll", v);
+        m_ieSendNodeClearAll.init(v);
 
         DEL(m_pTr);
         m_pTr = createThread(j.at("threadR"), "threadR");
@@ -34,8 +44,8 @@ namespace kai
         IF_F(!this->_JSONbase::link(j, pM));
         IF_F(!m_pTr->link(j.at("threadR"), pM));
 
-        string n;
-        n = j.value("_SwarmCtrl", "");
+        string n = "";
+        jVar(j, "_SwarmCtrl", n);
         m_pCtrl = (_SwarmCtrl *)(pM->findModule(n));
         NULL_F(m_pCtrl);
 

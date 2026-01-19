@@ -13,6 +13,7 @@ namespace kai
 	_VideoFile::_VideoFile()
 	{
 		m_type = vision_file;
+		m_videoFile = "";
 	}
 
 	_VideoFile::~_VideoFile()
@@ -23,7 +24,7 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(j));
 
-		m_videoFile = j.value("videoFile", "");
+		jVar(j, "videoFile", m_videoFile);
 
 		return true;
 	}

@@ -32,13 +32,13 @@ namespace kai
 
 			POINTCLOUD_VOL v;
 			v.init();
-			v.m_type = (POINTCLOUD_VOL_TYPE)Ji.value<int>("type", 0);
-			v.m_bInside = Ji.value("bInside", true);
-			v.m_vX = Ji.value("vX", vector<float>{});
-			v.m_vY = Ji.value("vY", vector<float>{});
-			v.m_vZ = Ji.value("vZ", vector<float>{});
-			v.m_vC = Ji.value("vC", vector<float>{});
-			v.m_vR = Ji.value("vR", vector<float>{});
+			jVar(Ji, "type", (int&)v.m_type);
+			jVar(Ji, "bInside", v.m_bInside);
+			jVec<float>(Ji, "vX", v.m_vX);
+			jVec<float>(Ji, "vY", v.m_vY);
+			jVec<float>(Ji, "vZ", v.m_vZ);
+			jVec<float>(Ji, "vC", v.m_vC);
+			jVec<float>(Ji, "vR", v.m_vR);
 			m_vFilter.push_back(v);
 		}
 

@@ -25,8 +25,10 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		int nPacket = j.value("nPacket", 256);
-		int nPbuffer = j.value("nPbuffer", 2000);
+		int nPacket = 256;
+		int nPbuffer = 2000;
+		jVar(j, "nPacket", nPacket);
+		jVar(j, "nPbuffer", nPbuffer);
 		IF_F(!m_packetW.init(nPbuffer, nPacket));
 
 		return true;

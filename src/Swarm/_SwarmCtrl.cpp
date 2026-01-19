@@ -21,10 +21,10 @@ namespace kai
     {
         IF_F(!this->_ModuleBase::init(j));
 
-        m_node.m_id = j.value("myID", m_node.m_id);
-        m_ieSendHB.m_tInterval = j.value("ieSendHB", m_ieSendHB.m_tInterval);
-        m_ieSendSetState.m_tInterval = j.value("ieSendSetState", m_ieSendSetState.m_tInterval);
-        m_ieSendGCupdate.m_tInterval = j.value("ieSendGCupdate", m_ieSendGCupdate.m_tInterval);
+        jVar(j, "myID", m_node.m_id);
+        jVar(j, "ieSendHB", m_ieSendHB.m_tInterval);
+        jVar(j, "ieSendSetState", m_ieSendSetState.m_tInterval);
+        jVar(j, "ieSendGCupdate", m_ieSendGCupdate.m_tInterval);
 
         return true;
     }
@@ -35,7 +35,8 @@ namespace kai
 
         string n;
 
-        n = j.value("_StateControl", "");
+        n = "";
+        jVar(j, "_StateControl", n);
         m_pSC = (_StateControl *)(pM->findModule(n));
         NULL_F(m_pSC);
 
@@ -46,11 +47,13 @@ namespace kai
         IF__(!m_state.bValid(), OK_ERR_INVALID_VALUE);
         m_state.update(m_pSC->getCurrentStateIdx());
 
-        n = j.value("_SwarmSearch", "");
+        n = "";
+        jVar(j, "_SwarmSearch", n);
         m_pSwarm = (_SwarmSearch *)(pM->findModule(n));
         NULL_F(m_pSwarm);
 
-        n = j.value("_Xbee", "");
+        n = "";
+        jVar(j, "_Xbee", n);
         m_pXb = (_Xbee *)(pM->findModule(n));
         NULL_F(m_pXb);
 

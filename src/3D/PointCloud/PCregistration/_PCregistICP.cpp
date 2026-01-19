@@ -17,6 +17,9 @@ namespace kai
         m_pTgt = NULL;
         m_pTf = NULL;
         m_lastFit = 0.0;
+
+        m_est = icp_p2point;
+        m_thr = 0.02;
     }
 
     _PCregistICP::~_PCregistICP()
@@ -27,8 +30,8 @@ namespace kai
     {
         IF_F(!this->_ModuleBase::init(j));
 
-        m_est = (PCREGIST_ICP_EST)j.value<int>("est", icp_p2point);
-        m_thr = j.value("thr", 0.02);
+        jVar(j, "est", (int &)m_est);
+        jVar(j, "thr", m_thr);
 
         return true;
     }
@@ -39,29 +42,20 @@ namespace kai
 
         string n;
 
-        n = j.value("_PCframeSrc", "");
+        n = "";
+        jVar(j, "_PCframeSrc", n);
         m_pSrc = (_PCframe *)(pM->findModule(n));
-        if (!m_pSrc)
-        {
-            LOG_E(n + ": not found");
-            return false;
-        }
+        IF_Le_F(!m_pSrc, n + ": not found");
 
-        n = j.value("_PCframeTgt", "");
+        n = "";
+        jVar(j, "_PCframeTgt", n);
         m_pTgt = (_PCframe *)(pM->findModule(n));
-        if (!m_pTgt)
-        {
-            LOG_E(n + ": not found");
-            return false;
-        }
+        IF_Le_F(!m_pTgt, n + ": not found");
 
-        n = j.value("_PCtransform", "");
+        n = "";
+        jVar(j, "_PCtransform", n);
         m_pTf = (_PCtransform *)(pM->findModule(n));
-        if (!m_pTf)
-        {
-            LOG_E(n + ": not found");
-            return false;
-        }
+        IF_Le_F(!m_pTf, n + ": not found");
 
         return true;
     }

@@ -56,7 +56,8 @@ namespace kai
 				continue;
 			}
 
-			string c = Ji.value("class", "");
+			string c = "";
+			jVar(Ji, "class", c);
 			IF_CONT(c == "ModuleMgr");
 			if (c.empty())
 			{
@@ -64,7 +65,8 @@ namespace kai
 				continue;
 			}
 
-			int bON = Ji.value("bON", true);
+			int bON = true;
+			jVar(Ji, "bON", bON);
 			if (bON == 0)
 			{
 				LOG_I("Module disabled: " + n);
@@ -205,6 +207,18 @@ namespace kai
 		}
 
 		return nullptr;
+	}
+
+	bool ModuleMgr::addModule(void *pModule, const string &name)
+	{
+		NULL_F(pModule);
+		IF_F(findModule(name));
+		IF_F(!m_jCfg.getJson().at(name).is_object());
+
+		m_vModules.push_back(pModule);
+		LOG_I("Instance added: " + name);
+
+		return true;
 	}
 
 }

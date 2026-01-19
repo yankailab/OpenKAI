@@ -25,8 +25,8 @@ namespace kai
 	{
 		IF_F(!this->_UIbase::init(j));
 
-		m_bFullScreen = j.value("bFullScreen", false);
-		m_vSize = j.value("vSize", vector<int>{1280, 720});
+		jVar(j, "bFullScreen", m_bFullScreen);
+		jVec<int>(j, "vSize", m_vSize);
 		m_waitKey = 1000.0f / m_pT->getTargetFPS();
 
 		IF_Le_F(m_vSize.area() <= 0, "Window size too small");

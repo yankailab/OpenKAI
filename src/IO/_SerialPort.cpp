@@ -8,6 +8,13 @@ namespace kai
 	{
 		m_fd = -1;
 		m_ioType = io_serialPort;
+		m_port = "";
+
+		m_baud = 115200;
+		m_dataBits = 8;
+		m_stopBits = 1;
+		m_parity = false;
+		m_hardwareControl = false;
 	}
 
 	_SerialPort::~_SerialPort()
@@ -19,12 +26,12 @@ namespace kai
 	{
 		IF_F(!this->_IObase::init(j));
 
-		m_port = j.value("port", "");
-		m_baud = j.value("baud", 115200);
-		m_dataBits = j.value("dataBits", 8);
-		m_stopBits = j.value("stopBits", 1);
-		m_parity = j.value("parity", false);
-		m_hardwareControl = j.value("hardwareControl", false);
+		jVar(j, "port", m_port);
+		jVar(j, "baud", m_baud);
+		jVar(j, "dataBits", m_dataBits);
+		jVar(j, "stopBits", m_stopBits);
+		jVar(j, "parity", m_parity);
+		jVar(j, "hardwareControl", m_hardwareControl);
 
 		return true;
 	}

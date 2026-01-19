@@ -13,6 +13,9 @@ namespace kai
 
 	BASE::BASE()
 	{
+		m_name = "";
+		m_class = "";
+		m_bLog = false;
 	}
 
 	BASE::~BASE()
@@ -23,9 +26,9 @@ namespace kai
 	{
 		IF_Le_F(!j.is_object(), "JSON is not an object");
 
-		m_name = j.value("name", m_name);
-		m_class = j.value("class", m_class);
-		m_bLog = j.value("bLog", false);
+		jVar(j, "name", m_name);
+		jVar(j, "class", m_class);
+		jVar(j, "bLog", m_bLog);
 
 		IF_F(m_name.empty());
 		IF_F(m_class.empty());

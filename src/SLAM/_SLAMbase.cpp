@@ -14,6 +14,7 @@ namespace kai
 	{
 		m_pV = nullptr;
 		m_bTracking = false;
+		m_vSize.set(640, 360);
 	}
 
 	_SLAMbase::~_SLAMbase()
@@ -24,7 +25,7 @@ namespace kai
 	{
 		IF_F(!this->_NavBase::init(j));
 
-		m_vSize = j.value("vSize", vector<int>{640, 360});
+		jVec<int>(j, "vSize", m_vSize);
 
 		return true;
 	}
@@ -33,7 +34,8 @@ namespace kai
 	{
 		IF_F(!this->_NavBase::link(j, pM));
 
-		string n = j.value("_VisionBase", "");
+		string n = "";
+		jVar(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

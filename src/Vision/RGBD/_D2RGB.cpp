@@ -31,7 +31,8 @@ namespace kai
 	{
 		IF_F(!this->_VisionBase::link(j, pM));
 
-		string n = j.value("_RGBDbase", "");
+		string n = "";
+		jVar(j, "_RGBDbase", n);
 		m_pV = (_RGBDbase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

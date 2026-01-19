@@ -15,6 +15,8 @@ namespace kai
 		m_pDN = nullptr;
 		m_nBox = 0;
 		m_nClass = 0;
+		m_type = detectNet_uff;
+		m_thr = 0.5;
 		m_layerIn = "Input";
 		m_layerOut = "NMS";
 		m_layerNboxOut = "NMS_1";
@@ -23,6 +25,9 @@ namespace kai
 		m_precision = TYPE_FASTEST;
 		m_device = DEVICE_GPU;
 		m_bAllowGPUfallback = true;
+
+		m_bSwapRB = false;
+		m_vMean.init();
 	}
 
 	_DetectNet::~_DetectNet()
@@ -35,10 +40,10 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_thr = j.value("thr", 0.5);
-		m_bSwapRB = j.value("bSwapRB", false);
-		m_vMean = j.value("vMean", 0);
-		m_type = j.value("type", detectNet_uff);
+		jVar(j, "thr", m_thr);
+		jVar(j, "bSwapRB", m_bSwapRB);
+		jVec<float>(j, "vMean", m_vMean);
+		jVar(j, "type", m_type);
 
 		m_pRGBA = new Frame();
 		m_pRGBAf = new Frame();

@@ -15,6 +15,15 @@ namespace kai
     {
         m_pPCf = nullptr;
         m_pTf = nullptr;
+
+        m_rVoxel = 0.1;
+        m_maxDistance = 0.1;
+        m_rNormal = 0.2;
+        m_maxNNnormal = 30;
+        m_rFitness = 1e-6;
+        m_rRMSE = 1e-6;
+        m_maxIter = 30;
+        m_minFit = 0.0;
     }
 
     _PCregistCol::~_PCregistCol()
@@ -25,14 +34,14 @@ namespace kai
     {
         IF_F(!this->_PCframe::init(j));
 
-        m_rVoxel = j.value("rVoxel", 0.1);
-        m_maxDistance = j.value("maxDistance", 0.1);
-        m_rNormal = j.value("rNormal", 0.2);
-        m_maxNNnormal = j.value("maxNNnormal", 30);
-        m_rFitness = j.value("rFitness", 1e-6);
-        m_rRMSE = j.value("rRMSE", 1e-6);
-        m_maxIter = j.value("maxIter", 30);
-        m_minFit = j.value("minFit", 0.0);
+        jVar(j, "rVoxel", m_rVoxel);
+        jVar(j, "maxDistance", m_maxDistance);
+        jVar(j, "rNormal", m_rNormal);
+        jVar(j, "maxNNnormal", m_maxNNnormal);
+        jVar(j, "rFitness", m_rFitness);
+        jVar(j, "rRMSE", m_rRMSE);
+        jVar(j, "maxIter", m_maxIter);
+        jVar(j, "minFit", m_minFit);
 
         return true;
     }
@@ -41,7 +50,8 @@ namespace kai
     {
         IF_F(!this->BASE::link(j, pM));
 
-        string n = j.value("_PCframe", "");
+        string n = "";
+        jVar(j, "_PCframe", n);
         m_pPCf = (_PCframe *)(pM->findModule(n));
 
         return true;

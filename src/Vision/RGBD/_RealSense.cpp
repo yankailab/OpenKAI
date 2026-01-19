@@ -12,6 +12,11 @@ namespace kai
 
     _RealSense::_RealSense()
     {
+        m_rsSN = "";
+        m_rsFPS = 30;
+        m_rsDFPS = 30;
+        m_bAlign = false;
+        m_vPreset = "High Density";
         m_rspAlign = nullptr;
         m_rsCtrl.clear();
 
@@ -29,28 +34,28 @@ namespace kai
     {
         IF_F(!_RGBDbase::init(j));
 
-        m_rsSN = j.value("rsSN", "");
-        m_rsFPS = j.value("rsFPS", 30);
-        m_rsDFPS = j.value("rsDFPS", 30);
-        m_bAlign = j.value("bAlign", false);
-        m_vPreset = j.value("vPreset", "High Density");
+        jVar(j, "rsSN", m_rsSN);
+        jVar(j, "rsFPS", m_rsFPS);
+        jVar(j, "rsDFPS", m_rsDFPS);
+        jVar(j, "bAlign", m_bAlign);
+        jVar(j, "vPreset", m_vPreset);
 
-        m_rsCtrl.m_fConfidenceThreshold = j.value("fConfidenceThreshold", m_rsCtrl.m_fConfidenceThreshold);
-        m_rsCtrl.m_fDigitalGain = j.value("fDigitalGain", m_rsCtrl.m_fDigitalGain);
-        m_rsCtrl.m_fPostProcessingSharpening = j.value("fPostProcessingSharpening", m_rsCtrl.m_fPostProcessingSharpening);
-        m_rsCtrl.m_fFilterMagnitude = j.value("fFilterMagnitude", m_rsCtrl.m_fFilterMagnitude);
-        m_rsCtrl.m_fHolesFill = j.value("fHolesFill", m_rsCtrl.m_fHolesFill);
-        m_rsCtrl.m_fEmitter = j.value("fEmitter", m_rsCtrl.m_fEmitter);
-        m_rsCtrl.m_fLaserPower = j.value("fLaserPower", m_rsCtrl.m_fLaserPower);
+        jVar(j, "fConfidenceThreshold", m_rsCtrl.m_fConfidenceThreshold);
+        jVar(j, "fDigitalGain", m_rsCtrl.m_fDigitalGain);
+        jVar(j, "fPostProcessingSharpening", m_rsCtrl.m_fPostProcessingSharpening);
+        jVar(j, "fFilterMagnitude", m_rsCtrl.m_fFilterMagnitude);
+        jVar(j, "fHolesFill", m_rsCtrl.m_fHolesFill);
+        jVar(j, "fEmitter", m_rsCtrl.m_fEmitter);
+        jVar(j, "fLaserPower", m_rsCtrl.m_fLaserPower);
 
-        m_rsCtrl.m_fBrightness = j.value("fBrightness", m_rsCtrl.m_fBrightness);
-        m_rsCtrl.m_fContrast = j.value("fContrast", m_rsCtrl.m_fContrast);
-        m_rsCtrl.m_fGain = j.value("fGain", m_rsCtrl.m_fGain);
-        m_rsCtrl.m_fExposure = j.value("fExposure", m_rsCtrl.m_fExposure);
-        m_rsCtrl.m_fHue = j.value("fHue", m_rsCtrl.m_fHue);
-        m_rsCtrl.m_fSaturation = j.value("fSaturation", m_rsCtrl.m_fSaturation);
-        m_rsCtrl.m_fSharpness = j.value("fSharpness", m_rsCtrl.m_fSharpness);
-        m_rsCtrl.m_fWhiteBalance = j.value("fWhiteBalance", m_rsCtrl.m_fWhiteBalance);
+        jVar(j, "fBrightness", m_rsCtrl.m_fBrightness);
+        jVar(j, "fContrast", m_rsCtrl.m_fContrast);
+        jVar(j, "fGain", m_rsCtrl.m_fGain);
+        jVar(j, "fExposure", m_rsCtrl.m_fExposure);
+        jVar(j, "fHue", m_rsCtrl.m_fHue);
+        jVar(j, "fSaturation", m_rsCtrl.m_fSaturation);
+        jVar(j, "fSharpness", m_rsCtrl.m_fSharpness);
+        jVar(j, "fWhiteBalance", m_rsCtrl.m_fWhiteBalance);
 
         DEL(m_pTpp);
         m_pTpp = createThread(j.at("threadPP"), "threadPP");

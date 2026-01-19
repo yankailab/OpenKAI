@@ -9,6 +9,11 @@ namespace kai
 
 	_DNNtext::_DNNtext()
 	{
+		m_thr = 0.5;
+		m_nms = 0.4;
+		m_vBlobSize.set(320, 320);
+		m_vMean.set(123.68, 116.78, 103.94);
+		m_scale = 1.0;
 		m_bOCR = false;
 		m_bDetect = true;
 		m_bWarp = false;
@@ -26,18 +31,18 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_thr = j.value("thr", 0.5);
-		m_nms = j.value("nms", 0.4);
-		m_vBlobSize = j.value("vBlobSize", vector<int>{320, 320});
-		m_iBackend = j.value("iBackend", m_iBackend);
-		m_iTarget = j.value("iTarget", m_iTarget);
-		m_bSwapRB = j.value("bSwapRB", m_bSwapRB);
-		m_scale = j.value("scale", 1.0);
-		m_bDetect = j.value("bDetect", true);
-		m_bOCR = j.value("bOCR", false);
-		m_bWarp = j.value("bWarp", false);
-		m_iClassDraw = j.value("iClassDraw", m_iClassDraw);
-		m_vMean = j.value("vMean", vector<double>{123.68, 116.78, 103.94});
+		jVar(j, "thr", m_thr);
+		jVar(j, "nms", m_nms);
+		jVec<int>(j, "vBlobSize", m_vBlobSize);
+		jVar(j, "iBackend", m_iBackend);
+		jVar(j, "iTarget", m_iTarget);
+		jVar(j, "bSwapRB", m_bSwapRB);
+		jVar(j, "scale", m_scale);
+		jVar(j, "bDetect", m_bDetect);
+		jVar(j, "bOCR", m_bOCR);
+		jVar(j, "bWarp", m_bWarp);
+		jVar(j, "iClassDraw", m_iClassDraw);
+		jVec<double>(j, "vMean", m_vMean);
 
 		m_net = readNet(m_fModel);
 		IF_F(m_net.empty());
@@ -58,7 +63,8 @@ namespace kai
 		IF_F(!this->_ModuleBase::link(j, pM));
 
 #ifdef USE_OCR
-		string n = j.value("OCR", "");
+		string n = "";
+		jVar(j, "OCR", n);
 		m_pOCR = (OCR *)(pM->findModule(n));
 		NULL_F(m_pOCR);
 #endif

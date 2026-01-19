@@ -5,6 +5,7 @@ namespace kai
 
 	_SocketCAN::_SocketCAN()
 	{
+		m_ifName = "can0";
 		m_socket = -1;
 	}
 
@@ -17,7 +18,7 @@ namespace kai
 	{
 		IF_F(!this->_CANbase::init(j));
 
-		m_ifName = j.value("ifName", "can0");
+		jVar(j, "ifName", m_ifName);
 
 		return true;
 	}

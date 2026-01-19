@@ -12,6 +12,8 @@ namespace kai
 
 	_PCremove::_PCremove()
 	{
+		m_nP = 16;
+		m_r = 0.05;
 	}
 
 	_PCremove::~_PCremove()
@@ -22,8 +24,8 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::init(j));
 
-		m_nP = j.value("nP", 16);
-		m_r = j.value("r", 0.05);
+		jVar(j, "nP", m_nP);
+		jVar(j, "r", m_r);
 
 		return true;
 	}

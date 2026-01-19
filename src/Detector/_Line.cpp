@@ -13,6 +13,8 @@ namespace kai
 	_Line::_Line()
 	{
 		m_pV = NULL;
+		m_wSlide = 0.01;
+		m_minPixLine = 0.005;
 		m_line = -1.0;
 	}
 
@@ -24,8 +26,8 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_minPixLine = j.value("minPixLine", 0.005);
-		m_wSlide = j.value("wSlide", 0.01);
+		jVar(j, "minPixLine", m_minPixLine);
+		jVar(j, "wSlide", m_wSlide);
 
 		return true;
 	}
@@ -34,7 +36,8 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n = j.value("_VisionBase", "");
+		string n = "";
+		jVar(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 

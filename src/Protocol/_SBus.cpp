@@ -4,6 +4,9 @@ namespace kai
 {
 	_SBus::_SBus()
 	{
+		m_bSender = false;
+		m_bRawSbus = true;
+
 		m_frame.clear();
 	}
 
@@ -15,12 +18,14 @@ namespace kai
 	{
 		IF_F(!this->_ProtocolBase::init(j));
 
-		m_bSender = j.value("bSender", false);
-		m_frame.m_timeOutUsec = j.value("timeOutUsec", m_frame.m_timeOutUsec);
-		m_bRawSbus = j.value("bRawSbus", true);
+		jVar(j, "bSender", m_bSender);
+		jVar(j, "timeOutUsec", m_frame.m_timeOutUsec);
+		jVar(j, "bRawSbus", m_bRawSbus);
 		m_frame.m_nBframe = (m_bRawSbus) ? 25 : SBUS_N_BUF;
 
-		vInt3 vRawRC = j.value("vRawRC", 0);
+		vInt3 vRawRC;
+		vRawRC.set(0);
+		jVec<int>(j, "vRawRC", vRawRC);
 		for (int i = 0; i < SBUS_NCHAN; i++)
 		{
 			RC_CHANNEL *pC = &m_frame.m_pRC[i];

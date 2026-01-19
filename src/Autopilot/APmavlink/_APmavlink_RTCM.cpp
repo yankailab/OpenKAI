@@ -23,10 +23,9 @@ namespace kai
 	bool _APmavlink_RTCM::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ProtocolBase::link(j, pM));
-		string n;
 
-		n = "";
-		n = j.value("_Mavlink", "");
+		string n = "";
+		jVar(j, "_Mavlink", n);
 		m_pMav = (_Mavlink *)(pM->findModule(n));
 		NULL_F(m_pMav);
 

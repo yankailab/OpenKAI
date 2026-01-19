@@ -12,6 +12,8 @@ namespace kai
 
 	_Contour::_Contour()
 	{
+		m_mode = RETR_EXTERNAL;
+		m_method = CHAIN_APPROX_NONE;
 	}
 
 	_Contour::~_Contour()
@@ -22,8 +24,8 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_mode = j.value("mode", RETR_EXTERNAL);
-		m_method = j.value("method", CHAIN_APPROX_NONE);
+		jVar(j, "mode", m_mode);
+		jVar(j, "method", m_method);
 
 		return true;
 	}

@@ -6,6 +6,7 @@ namespace kai
 	_APmavlink_base::_APmavlink_base()
 	{
 		m_pMav = nullptr;
+		m_apType = ardupilot_copter;
 
 		m_bHomeSet = false;
 		m_vHomePos.set(0.0);
@@ -18,6 +19,10 @@ namespace kai
 		m_gpsFixType = -1;
 		m_gpsHacc = INT32_MAX;
 
+		m_ieSendHB.init(USEC_1SEC);
+		m_ieSendMsgInt.init(USEC_1SEC);
+
+		m_bSyncMode = false;
 		m_wrApMode.init(-1, -1);
 		m_wrbArm.init(false, false);
 	}
@@ -30,11 +35,16 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_apType = j.value("apType", ardupilot_copter);
-		m_bSyncMode = j.value("bSyncMode", false);
+		jVar(j, "apType", m_apType);
+		jVar(j, "bSyncMode", m_bSyncMode);
 
-		m_ieSendHB.init(j.value("ieSendHB", 1) * SEC_2_USEC);
-		m_ieSendMsgInt.init(j.value("ieSendMsgInt", 1) * SEC_2_USEC);
+		float t;
+
+		if (jVar(j, "ieSendHB", t))
+			m_ieSendHB.init(t * SEC_2_USEC);
+
+		if (jVar(j, "ieSendMsgInt", t))
+			m_ieSendMsgInt.init(t * SEC_2_USEC);
 
 		return true;
 	}
@@ -43,7 +53,8 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n = j.value("_Mavlink", "");
+		string n = "";
+		jVar(j, "_Mavlink", n);
 		m_pMav = (_Mavlink *)(pM->findModule(n));
 		NULL_F(m_pMav);
 
@@ -55,9 +66,14 @@ namespace kai
 			const json &Ji = it.value();
 			IF_CONT(!Ji.is_object());
 
-			if (!m_pMav->setMsgInterval(Ji.value("id", 0), Ji.value("tInt", 1) * SEC_2_USEC))
+			int id = 0;
+			jVar(Ji, "id", id);
+			float tInt = 1;
+			jVar(Ji, "tInt", tInt);
+
+			if (!m_pMav->setMsgInterval(id, tInt * SEC_2_USEC))
 			{
-				LOG_E("Interval msg id = " + i2str(Ji.value("id", 0)) + " not found");
+				LOG_E("Interval msg id = " + i2str(id) + " not found");
 			}
 		}
 

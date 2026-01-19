@@ -28,9 +28,11 @@ namespace kai
 		IF_F(!this->_DetectorBase::init(j));
 
 		vFloat2 vCamSize;
-		vCamSize = j.value("vCamSize", vector<float>{319, 199});
-		m_vOvCamSize.x = 1.0 / vCamSize.x;
-		m_vOvCamSize.y = 1.0 / vCamSize.y;
+		if (jVec<float>(j, "vCamSize", vCamSize))
+		{
+			m_vOvCamSize.x = 1.0 / vCamSize.x;
+			m_vOvCamSize.y = 1.0 / vCamSize.y;
+		}
 
 		return true;
 	}
@@ -39,7 +41,8 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::link(j, pM));
 
-		string n = j.value("_IObase", "");
+		string n = "";
+		jVar(j, "_IObase", n);
 		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 

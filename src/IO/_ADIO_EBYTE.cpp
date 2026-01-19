@@ -12,6 +12,7 @@ namespace kai
 	_ADIO_EBYTE::_ADIO_EBYTE()
 	{
 		m_pMB = nullptr;
+		m_iID = 32;
 	}
 
 	_ADIO_EBYTE::~_ADIO_EBYTE()
@@ -23,7 +24,7 @@ namespace kai
 	{
 		IF_F(!this->_ADIObase::init(j));
 
-		m_iID = j.value("iID", 32);
+		jVar(j, "iID", m_iID);
 
 		return true;
 	}
@@ -32,7 +33,8 @@ namespace kai
 	{
 		IF_F(!this->_ADIObase::link(j, pM));
 
-		string n = j.value("_Modbus", "");
+		string n = "";
+		jVar(j, "_Modbus", n);
 		m_pMB = (_Modbus *)(pM->findModule(n));
 		NULL_F(m_pMB);
 

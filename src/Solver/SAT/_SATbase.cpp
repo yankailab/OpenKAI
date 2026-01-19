@@ -25,7 +25,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_fName = j.value("fName", "");
+		jVar(j, "fName", m_fName);
 
 		return true;
 	}

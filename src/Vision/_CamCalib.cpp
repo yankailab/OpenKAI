@@ -5,6 +5,9 @@ namespace kai
 
     _CamCalib::_CamCalib()
     {
+        m_path = "";
+        m_vChessBoardSize.set(9, 6);
+        m_squareSize = 1.0;
     }
 
     _CamCalib::~_CamCalib()
@@ -15,9 +18,9 @@ namespace kai
     {
         IF_F(!this->_ModuleBase::init(j));
 
-        m_path = j.value("path", "");
-        m_vChessBoardSize = j.value("vChessBoardSize", vector<int>{9, 6});
-        m_squareSize = j.value("squareSize", 1.0);
+        jVar(j, "path", m_path);
+        jVec<int>(j, "vChessBoardSize", m_vChessBoardSize);
+        jVar(j, "squareSize", m_squareSize);
 
         return true;
     }

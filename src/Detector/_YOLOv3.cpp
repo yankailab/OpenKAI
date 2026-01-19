@@ -9,6 +9,16 @@ namespace kai
 
 	_YOLOv3::_YOLOv3()
 	{
+		m_thr = 0.5;
+		m_nms = 0.4;
+		m_vBlobSize.set(416, 416);
+		m_bSwapRB = true;
+		m_vMean.clear();
+		m_scale = 1.0 / 255.0;
+		m_iClassDraw = -1;
+
+		m_iBackend = cv::dnn::DNN_BACKEND_OPENCV;
+		m_iTarget = cv::dnn::DNN_TARGET_CPU;
 	}
 
 	_YOLOv3::~_YOLOv3()
@@ -19,15 +29,15 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_thr = j.value("thr", 0.5);
-		m_nms = j.value("nms", 0.4);
-		m_vBlobSize = j.value("vBlobSize", vector<int>{416, 416});
-		m_iBackend = j.value("iBackend", cv::dnn::DNN_BACKEND_OPENCV);
-		m_iTarget = j.value("iTarget", cv::dnn::DNN_TARGET_CPU);
-		m_bSwapRB = j.value("bSwapRB", true);
-		m_scale = j.value("scale", 1.0 / 255.0);
-		m_iClassDraw = j.value("iClassDraw", -1);
-		m_vMean = j.value("vMean", 0);
+		jVar(j, "thr", m_thr);
+		jVar(j, "nms", m_nms);
+		jVar(j, "vBlobSize", m_vBlobSize);
+		jVar(j, "iBackend", m_iBackend);
+		jVar(j, "iTarget", m_iTarget);
+		jVar(j, "bSwapRB", m_bSwapRB);
+		jVar(j, "scale", m_scale);
+		jVar(j, "iClassDraw", m_iClassDraw);
+		jVec<int>(j, "vMean", m_vMean);
 
 		m_net = readNetFromDarknet(m_fModel, m_fWeight);
 		IF_F(m_net.empty());

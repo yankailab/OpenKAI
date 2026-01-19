@@ -15,6 +15,12 @@ namespace kai
 	{
 		m_pTr = nullptr;
 		g_pWSserver = this;
+		m_nClientMax = 128;
+		m_wsMode = wsSocket_txt_bcast;
+
+		m_host = "localhost";
+		m_port = 8080;
+		m_tOutMs = 1000;
 	}
 
 	_WebSocketServer::~_WebSocketServer()
@@ -26,15 +32,15 @@ namespace kai
 	{
 		IF_F(!this->_IObase::init(j));
 
-		m_wsMode = j.value("wsMode", wsSocket_txt_bcast);
-		m_host = j.value("host", "localhost");
-		m_port = j.value("port", 8080);
-		m_tOutMs = j.value("tOutMs", 1000);
-		m_nClientMax = j.value("nClientMax", 128);
+		jVar(j, "wsMode", m_wsMode);
+		jVar(j, "host", m_host);
+		jVar(j, "port", m_port);
+		jVar(j, "tOutMs", m_tOutMs);
+		jVar(j, "nClientMax", m_nClientMax);
 
-        DEL(m_pTr);
-        m_pTr = createThread(j.at("threadR"), "threadR");
-        NULL_F(m_pTr);
+		DEL(m_pTr);
+		m_pTr = createThread(j.at("threadR"), "threadR");
+		NULL_F(m_pTr);
 
 		m_ioStatus = io_opened;
 
@@ -176,9 +182,9 @@ namespace kai
 
 		_WebSocket *pWS = new _WebSocket();
 
-//TODO:
-		// pWS->init();
-		// pWS->setIOstatus(io_opened);
+		// TODO:
+		//  pWS->init();
+		//  pWS->setIOstatus(io_opened);
 
 		wsClient c;
 		c.init(pWS);

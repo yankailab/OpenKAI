@@ -13,9 +13,13 @@ namespace kai
 	_VisionBase::_VisionBase()
 	{
 		m_type = vision_unknown;
+		m_devURI = "";
+		m_devFPS = 30;
+		m_tFrameInterval = 0;
+		m_bRGB = true;
+		m_vSizeRGB.set(1280, 720);
 		m_bOpen = false;
 		m_psmRGB = nullptr;
-		m_tFrameInterval = 0;
 	}
 
 	_VisionBase::~_VisionBase()
@@ -26,10 +30,10 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_devURI = j.value("devURI", "");
-		m_devFPS = j.value("devFPS", 30);
-		m_bRGB = j.value("bRGB", true);
-		m_vSizeRGB = j.value("vSizeRGB", vector<int>{1280, 720});
+		jVar(j, "devURI", m_devURI);
+		jVar(j, "devFPS", m_devFPS);
+		jVar(j, "bRGB", m_bRGB);
+		jVec<int>(j, "vSizeRGB", m_vSizeRGB);
 
 		return true;
 	}
@@ -38,7 +42,8 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n = j.value("_SHMrgb", "");
+		string n = "";
+		jVar(j, "_SHMrgb", n);
 		m_psmRGB = (SharedMem *)(pM->findModule(n));
 
 		return true;

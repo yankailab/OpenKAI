@@ -9,7 +9,10 @@ namespace kai
 
 	_Cascade::_Cascade()
 	{
+		m_scaleFactor = 1.1;
+		m_minNeighbors = 3;
 		m_className = "";
+		m_bGPU = true;
 	}
 
 	_Cascade::~_Cascade()
@@ -20,9 +23,9 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_scaleFactor = j.value("scaleFactor", 1.1);
-		m_minNeighbors = j.value("minNeighbors", 3);
-		m_bGPU = j.value("bGPU", true);
+		jVar(j, "scaleFactor", m_scaleFactor);
+		jVar(j, "minNeighbors", m_minNeighbors);
+		jVar(j, "bGPU", m_bGPU);
 
 		if (m_bGPU)
 		{

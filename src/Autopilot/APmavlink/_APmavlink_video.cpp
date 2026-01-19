@@ -7,12 +7,16 @@ namespace kai
 	{
 		m_pAP = nullptr;
 		m_pCurl = nullptr;
+		m_fName = "";
 
+		m_process = "";
 		m_pFvid = nullptr;
 		m_tRecStart = 0;
 
+		m_bMeta = false;
 		m_pFmeta = new _File();
 		m_fCalib = "";
+		m_dir = "";
 	}
 
 	_APmavlink_video::~_APmavlink_video()
@@ -23,10 +27,10 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_process = j.value("process", "");
-		m_fName = j.value("fName", "");
-		m_dir = j.value("dir", "");
-		m_bMeta = j.value("bMeta", false);
+		jVar(j, "process", m_process);
+		jVar(j, "fName", m_fName);
+		jVar(j, "dir", m_dir);
+		jVar(j, "bMeta", m_bMeta);
 
 		return true;
 	}
@@ -37,14 +41,17 @@ namespace kai
 
 		string n;
 
-		n = j.value("_APmavlink_base", "");
+		n = "";
+		jVar(j, "_APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 		NULL_F(m_pAP);
 
-		n = j.value("_Uploader", "");
+		n = "";
+		jVar(j, "_Uploader", n);
 		m_pCurl = (_Uploader *)(pM->findModule(n));
 
-		m_fCalib = j.value("fCalib", "");
+		n = "";
+		jVar(j, "fCalib", m_fCalib);
 		readCamMatrices(m_fCalib, &m_mC, &m_mD);
 
 		return true;
@@ -116,21 +123,21 @@ namespace kai
 		IF__(m_mC.empty(), true);
 		IF__(m_mD.empty(), true);
 
-		object jo;
-		JO(jo, "name", "calib");
-		JO(jo, "Fx", m_mC.at<double>(0, 0));
-		JO(jo, "Fy", m_mC.at<double>(1, 1));
-		JO(jo, "Cx", m_mC.at<double>(0, 2));
-		JO(jo, "Cy", m_mC.at<double>(1, 2));
-		JO(jo, "k1", m_mD.at<double>(0, 0));
-		JO(jo, "k2", m_mD.at<double>(0, 1));
-		JO(jo, "p1", m_mD.at<double>(0, 2));
-		JO(jo, "p2", m_mD.at<double>(0, 3));
-		JO(jo, "k3", m_mD.at<double>(0, 4));
-		string m = picojson::value(jo).serialize();
+		// object jo;
+		// JO(jo, "name", "calib");
+		// JO(jo, "Fx", m_mC.at<double>(0, 0));
+		// JO(jo, "Fy", m_mC.at<double>(1, 1));
+		// JO(jo, "Cx", m_mC.at<double>(0, 2));
+		// JO(jo, "Cy", m_mC.at<double>(1, 2));
+		// JO(jo, "k1", m_mD.at<double>(0, 0));
+		// JO(jo, "k2", m_mD.at<double>(0, 1));
+		// JO(jo, "p1", m_mD.at<double>(0, 2));
+		// JO(jo, "p2", m_mD.at<double>(0, 3));
+		// JO(jo, "k3", m_mD.at<double>(0, 4));
+		// string m = picojson::value(jo).serialize();
 
-		m += "\x0d\x0a";
-		m_pFmeta->write((uint8_t *)m.c_str(), m.length());
+		// m += "\x0d\x0a";
+		// m_pFmeta->write((uint8_t *)m.c_str(), m.length());
 
 		return true;
 	}
@@ -168,20 +175,20 @@ namespace kai
 		vDouble4 vP = m_pAP->getGlobalPos();
 		vFloat3 vA = m_pAP->getAttitude();
 
-		object jo;
-		JO(jo, "tFrame", (double)tFrame);
-		JO(jo, "lat", lf2str(vP.x, 8));
-		JO(jo, "lon", lf2str(vP.y, 8));
-		JO(jo, "alt", lf2str(vP.z, 5));
-		JO(jo, "rAlt", lf2str(vP.w, 5));
-		JO(jo, "hdg", lf2str(m_pAP->getHdg(), 5));
-		JO(jo, "yaw", lf2str(vA.x, 5));
-		JO(jo, "pitch", lf2str(vA.y, 5));
-		JO(jo, "roll", lf2str(vA.z, 5));
-		string m = picojson::value(jo).serialize();
+		// object jo;
+		// JO(jo, "tFrame", (double)tFrame);
+		// JO(jo, "lat", lf2str(vP.x, 8));
+		// JO(jo, "lon", lf2str(vP.y, 8));
+		// JO(jo, "alt", lf2str(vP.z, 5));
+		// JO(jo, "rAlt", lf2str(vP.w, 5));
+		// JO(jo, "hdg", lf2str(m_pAP->getHdg(), 5));
+		// JO(jo, "yaw", lf2str(vA.x, 5));
+		// JO(jo, "pitch", lf2str(vA.y, 5));
+		// JO(jo, "roll", lf2str(vA.z, 5));
+		// string m = picojson::value(jo).serialize();
 
-		m += "\x0d\x0a";
-		m_pFmeta->write((uint8_t *)m.c_str(), m.length());
+		//		m += "\x0d\x0a";
+		//		m_pFmeta->write((uint8_t *)m.c_str(), m.length());
 	}
 
 	void _APmavlink_video::console(void *pConsole)

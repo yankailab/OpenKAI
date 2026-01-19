@@ -2,15 +2,13 @@
 #define OpenKAI_src_Script_JSON_H_
 
 #include "../Base/common.h"
-#include "../Dependencies/picojson.h"
 
 using namespace std;
-using namespace picojson;
 
-#define JO(o, n, v)                       \
-	{                                     \
-		o.insert(make_pair(n, value(v))); \
-	}
+// #define JO(o, n, v)                       \
+// 	{                                     \
+// 		o.insert(make_pair(n, value(v))); \
+// 	}
 
 namespace kai
 {
@@ -23,9 +21,9 @@ namespace kai
 
 		bool parse(const string &json);
 		int checkErrorNum(void);
-		void setJSON(const picojson::value &json);
+//		void setJSON(const picojson::value &json);
 
-		bool v(const string &name, picojson::value *pVal);
+//		bool v(const string &name, picojson::value *pVal);
 
 		bool v(const string &name, int *pVal);
 		bool v(const string &name, bool *pVal);
@@ -50,7 +48,7 @@ namespace kai
 		bool v(const string &name, vDouble3 *pV);
 		bool v(const string &name, vDouble4 *pV);
 
-		bool array(const string &name, value::array *pVal);
+//		bool array(const string &name, value::array *pVal);
 		int a(const string &name, vector<int> *pVal);
 		int a(const string &name, vector<double> *pVal);
 		int a(const string &name, vector<float> *pVal);
@@ -58,7 +56,7 @@ namespace kai
 		int a(const string &name, vector<vInt4> *pVal);
 
 	private:
-		picojson::value m_JSON;
+//		picojson::value m_JSON;
 	};
 
 }

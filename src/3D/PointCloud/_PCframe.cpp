@@ -17,6 +17,9 @@ namespace kai
         m_type = pc_frame;
         m_tStamp = 0;
         m_pGpSM = nullptr;
+
+        m_nPresv = 0;
+        m_nPresvNext = 0;
     }
 
     _PCframe::~_PCframe()
@@ -27,8 +30,8 @@ namespace kai
     {
         IF_F(!this->_GeometryBase::init(j));
 
-        m_nPresv = j.value("nPresv", 0);
-        m_nPresvNext = j.value("nPresvNext", m_nPresv);
+        jVar(j, "nPresv", m_nPresv);
+        jVar(j, "nPresvNext", m_nPresvNext);
 
         return initGeometry();
     }

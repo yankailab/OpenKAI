@@ -12,6 +12,8 @@ namespace kai
 
 	_GstOutput::_GstOutput()
 	{
+		m_gstOutput = "appsrc ! videoconvert ! fbdevsink";
+		m_vSize.set(1280, 720);
 	}
 
 	_GstOutput::~_GstOutput()
@@ -22,13 +24,13 @@ namespace kai
 	{
 		IF_F(!this->_UIbase::init(j));
 
-		m_vSize = j.value("vSize", vector<int>{1280, 720});
+		jVec<int>(j, "vSize", m_vSize);
 		IF_F(m_vSize.area() <= 0);
 
 		m_F.allocate(m_vSize.x, m_vSize.y);
 		*m_F.m() = Scalar(0, 0, 0);
 
-		m_gstOutput = j.value("gstOutput", "appsrc ! videoconvert ! fbdevsink");
+		jVar(j, "gstOutput", m_gstOutput);
 		if (!m_gstOutput.empty())
 		{
 			if (!m_gst.open(m_gstOutput,

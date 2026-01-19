@@ -35,11 +35,11 @@ namespace kai
 
 	LL_POS Coordinate::offset(LL_POS &LL, vFloat3 &dNEA)
 	{
-		//http://www.edwilliams.org/avform.htm#LL
+		// http://www.edwilliams.org/avform.htm#LL
 
 		LL_POS oLL = LL;
 		double d = sqrt(dNEA.x * dNEA.x + dNEA.y * dNEA.y) * OV_R_EARTH;
-		double tc = oLL.m_hdg * DEG_2_RAD + atan2(dNEA.y, dNEA.x); //true course
+		double tc = oLL.m_hdg * DEG_2_RAD + atan2(dNEA.y, dNEA.x); // true course
 
 		double sinLat = sin(LL.m_lat);
 		double cosLat = cos(LL.m_lat);

@@ -12,7 +12,10 @@ namespace kai
 
 	_NavBase::_NavBase()
 	{
+		m_scale = 1.0;
 		m_flag.clearAll();
+		m_vAxisIdx.set(0, 1, 2);
+		m_vRoffset.clear();
 		resetAll();
 	}
 
@@ -24,9 +27,9 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_scale = j.value("scale", 1.0);
-		m_vAxisIdx = j.value("vAxisIdx", vector<int>{0, 1, 2});
-		m_vRoffset = j.value("vRoffset", 0);
+		jVar(j, "scale", m_scale);
+		jVec<int>(j, "vAxisIdx", m_vAxisIdx);
+		jVec<float>(j, "vRoffset", m_vRoffset);
 
 		return true;
 	}

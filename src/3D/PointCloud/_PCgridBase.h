@@ -257,8 +257,8 @@ namespace kai
 
 		// config
 		virtual string getConfigFileName(void);
-		virtual bool loadConfig(const string& fName, Kiss* pK);
-		virtual bool saveConfig(const string& fName, picojson::object* pO);
+		virtual bool loadConfig(const string& fName);
+		virtual bool saveConfig(const string& fName);
 
 		// grid
 		virtual bool initGeometry(void);

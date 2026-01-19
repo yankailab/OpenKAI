@@ -12,9 +12,19 @@ namespace kai
 		m_bYaw = false;
 		m_iRelayLED = 0;
 
+		m_vAxisIdx.set(0, 1, 2);
+		m_vAxisK.set(1, 1, 1);
 		m_utmPos.init();
+
 		m_bUseApOrigin = false;
 		m_llOrigin.init();
+
+		m_D.gps_id = 0;
+		m_D.fix_type = 3;
+		m_D.satellites_visible = 10;
+		m_D.hdop = 0;
+		m_D.vdop = 0;
+		m_D.ignore_flags = 0b11110101;
 	}
 
 	_APmavlink_GPS::~_APmavlink_GPS()
@@ -25,22 +35,22 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		m_yaw = j.value("yaw", 0);
-		m_bYaw = j.value("bYaw", false);
-		m_iRelayLED = j.value("iRelayLED", 0);
+		jVar(j, "yaw", m_yaw);
+		jVar(j, "bYaw", m_bYaw);
+		jVar(j, "iRelayLED", m_iRelayLED);
 
-		m_vAxisIdx = j.value("vAxisIdx", vector<int>{0, 1, 2});
-		m_vAxisK = j.value("vAxisK", vector<float>{1, 1, 1});
-		m_llOrigin.m_lat = j.value("lat", m_llOrigin.m_lat);
-		m_llOrigin.m_lng = j.value("lng", m_llOrigin.m_lng);
+		jVec<int>(j, "vAxisIdx", m_vAxisIdx);
+		jVec<float>(j, "vAxisK", m_vAxisK);
+		jVar(j, "lat", m_llOrigin.m_lat);
+		jVar(j, "lng", m_llOrigin.m_lng);
 		m_utmOrigin = m_GPS.LL2UTM(m_llOrigin);
 
-		m_D.gps_id = j.value("gpsID", 0);
-		m_D.fix_type = j.value("iFixType", 3);
-		m_D.satellites_visible = j.value("nSat", 10);
-		m_D.hdop = j.value("hdop", 0);
-		m_D.vdop = j.value("vdop", 0);
-		m_D.ignore_flags = j.value("fIgnore", 0b11110101);
+		jVar(j, "gpsID", m_D.gps_id);
+		jVar(j, "iFixType", m_D.fix_type);
+		jVar(j, "nSat", m_D.satellites_visible);
+		jVar(j, "hdop", m_D.hdop);
+		jVar(j, "vdop", m_D.vdop);
+		jVar(j, "fIgnore", m_D.ignore_flags);
 
 		return true;
 	}
@@ -51,11 +61,13 @@ namespace kai
 
 		string n;
 
-		n = j.value("_APmavlink_base", "");
+		n = "";
+		jVar(j, "_APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 		NULL_F(m_pAP);
 
-		n = j.value("_NavBase", "");
+		n = "";
+		jVar(j, "_NavBase", n);
 		m_pSB = (_NavBase *)(pM->findModule(n));
 		NULL_(m_pSB);
 
@@ -72,7 +84,7 @@ namespace kai
 	{
 		NULL_F(m_pAP);
 		IF_F(!m_pAP->getMavlink());
-		NULL__(m_pSB);
+		NULL_F(m_pSB);
 
 		return this->_ModuleBase::check();
 	}

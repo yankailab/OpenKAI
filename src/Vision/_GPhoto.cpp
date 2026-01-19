@@ -13,6 +13,7 @@ namespace kai
 	_GPhoto::_GPhoto()
 	{
 		m_type = vision_gphoto;
+		m_cmdUnmount = "gio mount -s gphoto2";
 	}
 
 	_GPhoto::~_GPhoto()
@@ -24,7 +25,7 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(j));
 
-		m_cmdUnmount = j.value("mount", "gio mount -s gphoto2");
+		jVar(j, "mount", m_cmdUnmount);
 
 		return true;
 	}

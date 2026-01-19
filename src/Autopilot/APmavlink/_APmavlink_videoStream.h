@@ -6,8 +6,6 @@
 #include "_APmavlink_base.h"
 #include "../../Utility/util.h"
 
-using namespace picojson;
-
 namespace kai
 {
 

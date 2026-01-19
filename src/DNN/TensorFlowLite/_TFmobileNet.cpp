@@ -9,6 +9,9 @@ namespace kai
 
 	_TFmobileNet::_TFmobileNet()
 	{
+		m_vSize.set(300, 300);
+		m_nThreads = 4;
+		m_confidence = 0.25;
 	}
 
 	_TFmobileNet::~_TFmobileNet()
@@ -19,9 +22,9 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		m_vSize = j.value("vSize", vector<int>{300, 300});
-		m_nThreads = j.value("nThreads", 4);
-		m_confidence = j.value("confidence", 0.25);
+		jVec<int>(j, "vSize", m_vSize);
+		jVar(j, "nThreads", m_nThreads);
+		jVar(j, "confidence", m_confidence);
 
 		return true;
 	}

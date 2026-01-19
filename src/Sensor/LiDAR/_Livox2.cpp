@@ -50,36 +50,38 @@ namespace kai
         IF_F(!this->_PCstream::init(j));
 
         // lvx select
-        m_lvxSN = j.value("lvxSN", "");
+        jVar(j, "lvxSN", m_lvxSN);
         if (!m_lvxSN.empty())
         {
             memcpy(m_pLvxSN, m_lvxSN.c_str(), m_lvxSN.length());
         }
 
-        string ip = j.value("lvxIP", "");
+        string ip;
+        jVar(j, "lvxIP", ip);
         parseIP(ip.c_str(), (uint8_t *)&m_lvxIP);
 
         // lvx time out
-        int tOutSec = j.value("tOutSec", 10);
+        int tOutSec = 10;
+        jVar(j, "tOutSec", tOutSec);
         m_lvxTout.setTout(USEC_1SEC * tOutSec);
 
         // lvx config
-        m_lvxCfg.m_pclDataType = j.value("lvxPCLdataType", m_lvxCfg.m_pclDataType);
-        m_lvxCfg.m_patternMode = j.value("lvxPatternMode", m_lvxCfg.m_patternMode);
-        ip = j.value("lvxHostIP", "");
+        jVar(j, "lvxPCLdataType", m_lvxCfg.m_pclDataType);
+        jVar(j, "lvxPatternMode", m_lvxCfg.m_patternMode);
+        jVar(j, "lvxHostIP", ip);
         if (!parseIP(ip.c_str(), (uint8_t *)&m_lvxCfg.m_hostIP))
         {
             LOG_E("lvxHostIP parse failed");
             return false;
         }
-        m_lvxCfg.m_hostPortState = j.value("lvxHostPortState", m_lvxCfg.m_hostPortState);
-        m_lvxCfg.m_hostPortPCL = j.value("lvxHostPortPCL", m_lvxCfg.m_hostPortPCL);
-        m_lvxCfg.m_hostPortIMU = j.value("lvxHostPortIMU", m_lvxCfg.m_hostPortIMU);
-        m_lvxCfg.m_frameRate = j.value("lvxFrameRate", m_lvxCfg.m_frameRate);
-        m_lvxCfg.m_detectMode = j.value("lvxDetectMode", m_lvxCfg.m_detectMode);
-        m_lvxCfg.m_workModeAfterBoot = j.value("lvxWorkModeAfterBoot", m_lvxCfg.m_workModeAfterBoot);
-        m_lvxCfg.m_workMode = j.value("lvxWorkMode", m_lvxCfg.m_workMode);
-        m_lvxCfg.m_imuDataEn = j.value("lvxIMUdataEn", m_lvxCfg.m_imuDataEn);
+        jVar(j, "lvxHostPortState", m_lvxCfg.m_hostPortState);
+        jVar(j, "lvxHostPortPCL", m_lvxCfg.m_hostPortPCL);
+        jVar(j, "lvxHostPortIMU", m_lvxCfg.m_hostPortIMU);
+        jVar(j, "lvxFrameRate", m_lvxCfg.m_frameRate);
+        jVar(j, "lvxDetectMode", m_lvxCfg.m_detectMode);
+        jVar(j, "lvxWorkModeAfterBoot", m_lvxCfg.m_workModeAfterBoot);
+        jVar(j, "lvxWorkMode", m_lvxCfg.m_workMode);
+        jVar(j, "lvxIMUdataEn", m_lvxCfg.m_imuDataEn);
 
         // Device Type Query
         IF_Le_F(!j.contains("TdeviceQueryR"), "json: TdeviceQueryR not found");
@@ -93,58 +95,28 @@ namespace kai
         }
 
         // Control Command
-        IF_Le_F(!j.contains("TctrlCmdW"), "json: TctrlCmdW not found");
         DEL(m_pTctrlCmdW);
-        m_pTctrlCmdW = new _Thread();
-        if (!m_pTctrlCmdW->init(j.at("TctrlCmdW")))
-        {
-            DEL(m_pTctrlCmdW);
-            LOG_E("TctrlCmdW.init() failed");
-            return false;
-        }
+        m_pTctrlCmdW = createThread(j.at("TctrlCmdW"), "TctrlCmdW");
+        NULL_F(m_pTctrlCmdW);
 
-        IF_Le_F(!j.contains("TctrlCmdR"), "json: TctrlCmdR not found");
         DEL(m_pTctrlCmdR);
-        m_pTctrlCmdR = new _Thread();
-        if (!m_pTctrlCmdR->init(j.at("TctrlCmdR")))
-        {
-            DEL(m_pTctrlCmdR);
-            LOG_E("TctrlCmdR.init() failed");
-            return false;
-        }
+        m_pTctrlCmdR = createThread(j.at("TctrlCmdR"), "TctrlCmdR");
+        NULL_F(m_pTctrlCmdR);
 
         // Push command
-        IF_Le_F(!j.contains("TpushCmdR"), "json: TpushCmdR not found");
         DEL(m_pTpushCmdR);
-        m_pTpushCmdR = new _Thread();
-        if (!m_pTpushCmdR->init(j.at("TpushCmdR")))
-        {
-            DEL(m_pTpushCmdR);
-            LOG_E("TpushCmdR.init() failed");
-            return false;
-        }
+        m_pTpushCmdR = createThread(j.at("TpushCmdR"), "TpushCmdR");
+        NULL_F(m_pTpushCmdR);
 
         // Point Cloud Data
-        IF_Le_F(!j.contains("TpclR"), "json: TpclR not found");
         DEL(m_pTpclR);
-        m_pTpclR = new _Thread();
-        if (!m_pTpclR->init(j.at("TpclR")))
-        {
-            DEL(m_pTpclR);
-            LOG_E("TpclR.init() failed");
-            return false;
-        }
+        m_pTpclR = createThread(j.at("TpclR"), "TpclR");
+        NULL_F(m_pTpclR);
 
         // IMU Data
-        IF_Le_F(!j.contains("TimuR"), "json: TimuR not found");
         DEL(m_pTimuR);
-        m_pTimuR = new _Thread();
-        if (!m_pTimuR->init(j.at("TimuR")))
-        {
-            DEL(m_pTimuR);
-            LOG_E("TimuR.init() failed");
-            return false;
-        }
+        m_pTimuR = createThread(j.at("TimuR"), "TimuR");
+        NULL_F(m_pTimuR);
 
         return true;
     }
@@ -155,27 +127,33 @@ namespace kai
 
         string n;
 
-        n = j.value("_UDPdeviceQuery", "");
+        n = "";
+        jVar(j, "_UDPdeviceQuery", n);
         m_pUDPdeviceQuery = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPdeviceQuery);
 
-        n = j.value("_UDPctrlCmd", "");
+        n = "";
+        jVar(j, "_UDPctrlCmd", n);
         m_pUDPctrlCmd = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPctrlCmd);
 
-        n = j.value("_UDPpushCmd", "");
+        n = "";
+        jVar(j, "_UDPpushCmd", n);
         m_pUDPpushCmd = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPpushCmd);
 
-        n = j.value("_UDPpcl", "");
+        n = "";
+        jVar(j, "_UDPpcl", n);
         m_pUDPpcl = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPpcl);
 
-        n = j.value("_UDPimu", "");
+        n = "";
+        jVar(j, "_UDPimu", n);
         m_pUDPimu = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPimu);
 
-        // n = j.value("_IObaseLog", "");
+        // n = "";
+        // jVar(j,"_IObaseLog",n);
         // m_pUDPlog = (_IObase *)(pM->findModule(n));
         // NULL_F(m_pUDPlog);
 

@@ -33,11 +33,11 @@ namespace kai
 
 			ADIO_PORT port;
 			port.clear();
-			port.m_bDigital = Ji.value("bDigital", port.m_bDigital);
-			port.m_type = Ji.value("type", port.m_type);
-			port.m_addr = Ji.value("addr", port.m_addr);
-			port.m_vW = Ji.value("vW", port.m_vW);
-			port.m_vR = Ji.value("vR", port.m_vR);
+			jVar(Ji, "bDigital", port.m_bDigital);
+			jVar(Ji, "type", port.m_type);
+			jVar(Ji, "addr", port.m_addr);
+			jVar(Ji, "vW", port.m_vW);
+			jVar(Ji, "vR", port.m_vR);
 
 			m_vPort.push_back(port);
 		}

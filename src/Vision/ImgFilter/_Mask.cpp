@@ -32,11 +32,13 @@ namespace kai
 		IF_F(!this->_VisionBase::link(j, pM));
 
 		string n;
-		n = j.value("_VisionBase", "");
+		n = "";
+		jVar(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 
-		n = j.value("_VisionBaseMask", "");
+		n = "";
+		jVar(j, "_VisionBaseMask", n);
 		m_pVmask = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pVmask);
 

@@ -31,13 +31,15 @@ namespace kai
 			const json &Ji = it.value();
 			IF_CONT(!Ji.is_object());
 
-			uint64_t ieSendSec = Ji.value("ieSendSec", 1);
-			uint64_t tOutSec = Ji.value("tOutSec", 10);
+			uint64_t ieSendSec = 1;
+			jVar(Ji, "ieSendSec", ieSendSec);
+			uint64_t tOutSec = 10;
+			jVar(Ji, "tOutSec", tOutSec);
 
 			RTCM_MSG m;
 			m.init(ieSendSec * USEC_1SEC, tOutSec * USEC_1SEC);
-			m.m_msgID = Ji.value("ID", m.m_msgID);
-			m.m_bSendOnceOnly = Ji.value("bSendOnceOnly", m.m_bSendOnceOnly);
+			jVar(Ji, "ID", m.m_msgID);
+			jVar(Ji, "bSendOnceOnly", m.m_bSendOnceOnly);
 
 			m_vMsg.push_back(m);
 		}
@@ -49,7 +51,8 @@ namespace kai
 	{
 		IF_F(!this->_ProtocolBase::link(j, pM));
 
-		string n = j.value("_IObaseSend", "");
+		string n = "";
+		jVar(j, "_IObaseSend", n);
 		m_pIOsend = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIOsend);
 

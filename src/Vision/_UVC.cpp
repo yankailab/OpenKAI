@@ -21,6 +21,13 @@ namespace kai
 		m_pUVCframe = nullptr;
 		m_pCB = nullptr;
 		m_pFptr = nullptr;
+
+		m_streamType = 2;
+		m_vendorID = 0;
+		m_productID = 0;
+		m_SN = "";
+
+		m_vRangeDraw.set(0, 100);
 	}
 
 	_UVC::~_UVC()
@@ -32,11 +39,11 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(j));
 
-		m_streamType = j.value("streamType", 2);
-		m_vendorID = j.value("vendorID", 0);
-		m_productID = j.value("productID", 0);
-		m_SN = j.value("SN", "");
-		m_vRangeDraw = j.value("vRangeDraw", vector<float>{0, 100});
+		jVar(j, "streamType", m_streamType);
+		jVar(j, "vendorID", m_vendorID);
+		jVar(j, "productID", m_productID);
+		jVar(j, "SN", m_SN);
+		jVec<float>(j, "vRangeDraw", m_vRangeDraw);
 
 		return true;
 	}
