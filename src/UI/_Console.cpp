@@ -6,7 +6,6 @@
  */
 
 #include "_Console.h"
-#include "../Module/Kiss.h"
 
 namespace kai
 {

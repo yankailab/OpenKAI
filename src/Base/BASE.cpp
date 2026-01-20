@@ -30,8 +30,8 @@ namespace kai
 		jKv(j, "class", m_class);
 		jKv(j, "bLog", m_bLog);
 
-		IF_F(m_name.empty());
-		IF_F(m_class.empty());
+		IF_Le_F(m_name.empty(), "name empty");
+		IF_Le_F(m_class.empty(), "class empty");
 
 		return true;
 	}
@@ -39,6 +39,7 @@ namespace kai
 	bool BASE::link(const json &j, ModuleMgr *pM)
 	{
 		NULL_F(pM);
+
 		IF_Le_F(!j.is_object(), "JSON is not an object");
 
 		return true;

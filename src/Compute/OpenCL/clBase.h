@@ -2,7 +2,6 @@
 #define OpenKAI_src_Control_clBase_H_
 
 #include "../../Base/BASE.h"
-#include "../../Module/Kiss.h"
 
 #define CL_TARGET_OPENCL_VERSION 300
 #include <CL/cl.h>

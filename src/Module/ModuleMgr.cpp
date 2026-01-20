@@ -7,6 +7,8 @@ namespace kai
 
 	ModuleMgr::ModuleMgr(void)
 	{
+		m_name = "ModuleMgr";
+		m_bLog = true;
 	}
 
 	ModuleMgr::~ModuleMgr(void)
@@ -108,6 +110,8 @@ namespace kai
 				LOG_E(pB->getName() + ".init() failed");
 				return false;
 			}
+
+			LOG_I("Initialized: " + pB->getName());
 		}
 
 		return true;
@@ -133,6 +137,8 @@ namespace kai
 				LOG_E(pB->getName() + ".link() failed");
 				return false;
 			}
+
+			LOG_I("Linked: " + pB->getName());
 		}
 
 		return true;
@@ -148,6 +154,8 @@ namespace kai
 				LOG_E(pB->getName() + ".start() failed");
 				return false;
 			}
+
+			LOG_I("Started: " + pB->getName());
 		}
 
 		return true;
@@ -194,6 +202,14 @@ namespace kai
 		return false;
 	}
 
+	void ModuleMgr::cleanAll(void)
+	{
+		for (void *pM : m_vModules)
+		{
+			DEL(pM);
+		}
+	}
+
 	void *ModuleMgr::findModule(const string &name)
 	{
 		IF_N(name.empty());
@@ -212,11 +228,11 @@ namespace kai
 	bool ModuleMgr::addModule(void *pModule, const string &name)
 	{
 		NULL_F(pModule);
-		IF_F(findModule(name));
-		IF_F(!m_jCfg.getJson().at(name).is_object());
+		IF_Le_F(findModule(name), "Module already existed: " + name);
+		IF_Le_F(!m_jCfg.getJson().at(name).is_object(), "Module not found in JSON");
 
 		m_vModules.push_back(pModule);
-		LOG_I("Instance added: " + name);
+		LOG_I("Added: " + name);
 
 		return true;
 	}

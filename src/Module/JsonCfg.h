@@ -8,18 +8,24 @@ using namespace std;
 using namespace nlohmann;
 
 template <typename T>
-bool jKv(const json &j, const std::string &key, T &v)
+bool jKv(const json &j, const std::string &key, T &v, bool bLog = false)
 {
 	if (!j.is_object())
 	{
-		LOG(INFO) << "JSON is not an object: " + key;
+		if (bLog)
+		{
+			LOG(INFO) << "JSON is not an object: " + key;
+		}
 		return false;
 	}
 
 	auto it = j.find(key);
 	if (it == j.end())
 	{
-		LOG(INFO) << "Cannot find: " + key;
+		if (bLog)
+		{
+			LOG(INFO) << "Cannot find: " + key;
+		}
 		return false;
 	}
 
@@ -30,17 +36,26 @@ bool jKv(const json &j, const std::string &key, T &v)
 	}
 	catch (const json::type_error &e)
 	{
-		LOG(INFO) << "Type error: " + key + ": " + std::string(e.what());
+		if (bLog)
+		{
+			LOG(INFO) << "Type error: " + key + ": " + std::string(e.what());
+		}
 		return false;
 	}
 	catch (const json::out_of_range &e)
 	{
-		LOG(INFO) << "Out-of-range: " + key + ": " + std::string(e.what());
+		if (bLog)
+		{
+			LOG(INFO) << "Out-of-range: " + key + ": " + std::string(e.what());
+		}
 		return false;
 	}
 	catch (const json::exception &e)
 	{
-		LOG(INFO) << "JSON exception: " + key + ": " + std::string(e.what());
+		if (bLog)
+		{
+			LOG(INFO) << "JSON exception: " + key + ": " + std::string(e.what());
+		}
 		return false;
 	}
 
@@ -48,10 +63,10 @@ bool jKv(const json &j, const std::string &key, T &v)
 }
 
 template <typename T1, typename T2>
-bool jKv(const json &j, const std::string &key, T2 &v)
+bool jKv(const json &j, const std::string &key, T2 &v, bool bLog = false)
 {
 	std::vector<T1> vT;
-	if (jKv(j, key, vT))
+	if (jKv(j, key, vT, bLog))
 	{
 		v = vT;
 		return true;

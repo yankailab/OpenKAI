@@ -1,7 +1,6 @@
 #ifndef OpenKAI_src_Autopilot_APmavlink__APmavlink_httpJson_H_
 #define OpenKAI_src_Autopilot_APmavlink__APmavlink_httpJson_H_
 
-#include "../../Module/JSON.h"
 #include "../../Net/HttpClient.h"
 #include "_APmavlink_base.h"
 

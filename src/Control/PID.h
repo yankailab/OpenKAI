@@ -9,7 +9,6 @@
 #define OpenKAI_src_Control_PID_H_
 
 #include "../Base/BASE.h"
-#include "../Module/Kiss.h"
 #include "../UI/_Console.h"
 
 namespace kai

@@ -1,4 +1,3 @@
-#include "../Module/Kiss.h"
 #include "_SerialPort.h"
 
 namespace kai

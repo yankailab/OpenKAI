@@ -25,11 +25,11 @@ namespace kai
 		void stopAll(void);
 		void waitForComplete(void);
 		bool bComplete(void);
+		void cleanAll(void);
 
 		void *findModule(const string &name);
 		bool addModule(void *pModule, const string &name);
 
-		void clean(void);
 
 	protected:
 		string m_name;

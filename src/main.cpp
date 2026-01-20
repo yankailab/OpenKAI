@@ -1,7 +1,3 @@
-#include "OpenKAI.h"
-#include "Module/Kiss.h"
-#include "Utility/utilFile.h"
-
 #include "Module/ModuleMgr.h"
 
 using namespace kai;
@@ -39,31 +35,6 @@ int main(int argc, char *argv[])
 
 	printf("Using JSON file: %s\n", argStr.c_str());
 
-	// OpenKAI *pOK = new OpenKAI();
-
-	// if (pOK->init() != OK_OK)
-	// 	goto exit;
-
-	// if (pOK->addKiss(argStr) != OK_OK)
-	// {
-	// 	printf("Kiss file read failed: %s\n", argStr.c_str());
-	// 	goto exit;
-	// }
-
-	// if (pOK->createAllModules() != OK_OK)
-	// 	goto exit;
-
-	// if (pOK->initAllModules() != OK_OK)
-	// 	goto exit;
-
-	// if (pOK->linkAllModules() != OK_OK)
-	// 	goto exit;
-
-	// if (pOK->startAllModules() != OK_OK)
-	// 	goto exit;
-
-	// pOK->waitForComplete();
-
 	ModuleMgr *pMmgr = new ModuleMgr();
 	if (pMmgr == nullptr)
 	{
@@ -74,9 +45,12 @@ int main(int argc, char *argv[])
 	signal(SIGINT, signalHandler);
 
 #ifdef USE_GLOG
-		FLAGS_logtostderr = 1;
-		google::InitGoogleLogging(argv[0]);
+	FLAGS_logtostderr = 1;
+	google::InitGoogleLogging(argv[0]);
 #endif
+
+	// if (!m_bStdErr)
+	// 	freopen("/dev/null", "w", stderr);
 
 	if (!pMmgr->parseJsonFile(argStr))
 	{
