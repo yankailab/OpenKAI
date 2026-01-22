@@ -23,7 +23,7 @@ namespace kai
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 
-//		virtual bool sendJson(picojson::object &o);
+		virtual bool sendJson(const json &j);
 
 	protected:
 		virtual void send(void);
@@ -32,7 +32,7 @@ namespace kai
 		virtual bool recvJson(string *pStr, _IObase *pIO);
 		virtual void handleJson(const string &str);
 		virtual void md5(const string &str, string *pDigest);
-//		virtual bool str2JSON(const string &str, picojson::value *pJson);
+		virtual bool str2JSON(const string &str, json &j);
 
 	private:
 		void updateW(void);

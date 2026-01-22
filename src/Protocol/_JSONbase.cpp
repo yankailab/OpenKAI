@@ -67,13 +67,14 @@ namespace kai
         }
     }
 
-    // bool _JSONbase::sendJson(picojson::object &o)
-    // {
-    //     IF_F(!check());
+    bool _JSONbase::sendJson(const json &j)
+    {
+        IF_F(!check());
+        IF_F(!j.is_object());
 
-    //     string msg = picojson::value(o).serialize() + m_msgFinishSend;
-    //     return m_pIO->write((unsigned char *)msg.c_str(), msg.size());
-    // }
+        string msg = j.dump() + m_msgFinishSend;
+        return m_pIO->write((unsigned char *)msg.c_str(), msg.size());
+    }
 
     void _JSONbase::sendHeartbeat(void)
     {
@@ -144,17 +145,19 @@ namespace kai
         // string cmd = jo["cmd"].get<string>();
     }
 
-    // bool _JSONbase::str2JSON(const string &str, picojson::value *pJson)
-    // {
-    //     NULL_F(pJson);
+    bool _JSONbase::str2JSON(const string &str, json &j)
+    {
+        string err;
+        const char *jsonstr = str.c_str();
 
-    //     string err;
-    //     const char *jsonstr = str.c_str();
-    //     parse(*pJson, jsonstr, jsonstr + strlen(jsonstr), &err);
-    //     IF_F(!pJson->is<object>());
+        JsonCfg jCfg;
+        jCfg.parseJsonStr(str);
+        j = jCfg.getJson();
 
-    //     return true;
-    // }
+        IF_F(!j.is_object());
+
+        return true;
+    }
 
     void _JSONbase::md5(const string &str, string *pDigest)
     {
