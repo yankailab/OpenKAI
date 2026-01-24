@@ -26,8 +26,6 @@ namespace kai
 
 		m_nMedWidth = 3;
 		m_tExpire = 0;
-
-		m_fGridConfig = "";
 	}
 
 	_PCgridBase::~_PCgridBase()
@@ -51,7 +49,6 @@ namespace kai
 
 		jKv(j, "nMedWidth", m_nMedWidth);
 		jKv(j, "tExpire", m_tExpire);
-		jKv(j, "fGridConfig", m_fGridConfig);
 
 		return true;
 	}
@@ -73,102 +70,53 @@ namespace kai
 		return true;
 	}
 
-	string _PCgridBase::getConfigFileName(void)
+	bool _PCgridBase::loadConfig(const string &fName, json &j)
 	{
-		return m_fGridConfig;
-	}
+		IF_F(!this->_GeometryBase::loadConfig(fName, j));
 
-	bool _PCgridBase::loadConfig(const string &fName)
-	{
-		// string s;
-		// IF_F(!readFile(fName, &s));
+		const json &jG = j.at("_PCgridBase");
+		if (jG.is_object())
+		{
+			// grid config
+			jKv<float>(jG, "vPorigin", m_vPorigin);
+			jKv<int>(jG, "vCellRangeX", m_vCellRangeX);
+			jKv<int>(jG, "vCellRangeY", m_vCellRangeY);
+			jKv<int>(jG, "vCellRangeZ", m_vCellRangeZ);
+			jKv<float>(jG, "vCellSize", m_vCellSize);
 
-		// if (!pK->parse(s))
-		// {
-		// 	LOG_I("Config load failed: " + fName);
-		// 	return false;
-		// }
+			jKv(jG, "bVisual", m_bVisual);
+			jKv<float>(jG, "vAxisColX", m_vAxisColX);
+			jKv<float>(jG, "vAxisColY", m_vAxisColY);
+			jKv<float>(jG, "vAxisColZ", m_vAxisColZ);
 
-		// Kiss *pKc = pK->root()->child("gridConfig");
-		// IF_F(pKc->empty());
-
-		// // grid config
-		// pKc->v("vPorigin", &m_vPorigin);
-		// pKc->v("vCellRangeX", &m_vCellRangeX);
-		// pKc->v("vCellRangeY", &m_vCellRangeY);
-		// pKc->v("vCellRangeZ", &m_vCellRangeZ);
-		// pKc->v("vCellSize", &m_vCellSize);
-
-		// pKc->v("bVisual", &m_bVisual);
-		// pKc->v("vAxisColX", &m_vAxisColX);
-		// pKc->v("vAxisColY", &m_vAxisColY);
-		// pKc->v("vAxisColZ", &m_vAxisColZ);
-
-		// pKc->v("nMedWidth", &m_nMedWidth);
-		// pKc->v("tExpire", &m_tExpire);
+			jKv(jG, "nMedWidth", m_nMedWidth);
+			jKv(jG, "tExpire", m_tExpire);
+		}
 
 		return true;
 	}
 
-	bool _PCgridBase::saveConfig(const string &fName)
+	bool _PCgridBase::saveConfig(const string &fName, json &j)
 	{
-		// pO->insert(make_pair("name", "gridConfig"));
+		json jG = json::object();
 
-		// // grid config
-		// picojson::array vA;
-		// vA.push_back(value((double)m_vPorigin.x));
-		// vA.push_back(value((double)m_vPorigin.y));
-		// vA.push_back(value((double)m_vPorigin.z));
-		// pO->insert(make_pair("vPorigin", vA));
+		// grid config
+		jG["vPorigin"] = {m_vPorigin.x, m_vPorigin.y, m_vPorigin.z};
+		jG["vCellRangeX"] = {m_vCellRangeX.x, m_vCellRangeX.y};
+		jG["vCellRangeY"] = {m_vCellRangeY.x, m_vCellRangeY.y};
+		jG["vCellRangeZ"] = {m_vCellRangeZ.x, m_vCellRangeZ.y};
+		jG["vCellSize"] = {m_vCellSize.x, m_vCellSize.y, m_vCellSize.z};
+		jG["bVisual"] = m_bVisual;
 
-		// vA.clear();
-		// vA.push_back(value((double)m_vCellRangeX.x));
-		// vA.push_back(value((double)m_vCellRangeX.y));
-		// pO->insert(make_pair("vCellRangeX", vA));
+		jG["vAxisColX"] = {m_vAxisColX.x, m_vAxisColX.y, m_vAxisColX.z};
+		jG["vAxisColY"] = {m_vAxisColY.x, m_vAxisColY.y, m_vAxisColY.z};
+		jG["vAxisColZ"] = {m_vAxisColZ.x, m_vAxisColZ.y, m_vAxisColZ.z};
 
-		// vA.clear();
-		// vA.push_back(value((double)m_vCellRangeY.x));
-		// vA.push_back(value((double)m_vCellRangeY.y));
-		// pO->insert(make_pair("vCellRangeY", vA));
+		jG["nMedWidth"] = m_nMedWidth;
+		jG["tExpire"] = m_tExpire;
 
-		// vA.clear();
-		// vA.push_back(value((double)m_vCellRangeZ.x));
-		// vA.push_back(value((double)m_vCellRangeZ.y));
-		// pO->insert(make_pair("vCellRangeZ", vA));
-
-		// vA.clear();
-		// vA.push_back(value((double)m_vCellSize.x));
-		// vA.push_back(value((double)m_vCellSize.y));
-		// vA.push_back(value((double)m_vCellSize.z));
-		// pO->insert(make_pair("vCellSize", vA));
-
-		// pO->insert(make_pair("bVisual", value((double)m_bVisual)));
-
-		// vA.clear();
-		// vA.push_back(value((double)m_vAxisColX.x));
-		// vA.push_back(value((double)m_vAxisColX.y));
-		// vA.push_back(value((double)m_vAxisColX.z));
-		// pO->insert(make_pair("vAxisColX", vA));
-
-		// vA.clear();
-		// vA.push_back(value((double)m_vAxisColY.x));
-		// vA.push_back(value((double)m_vAxisColY.y));
-		// vA.push_back(value((double)m_vAxisColY.z));
-		// pO->insert(make_pair("vAxisColY", vA));
-
-		// vA.clear();
-		// vA.push_back(value((double)m_vAxisColZ.x));
-		// vA.push_back(value((double)m_vAxisColZ.y));
-		// vA.push_back(value((double)m_vAxisColZ.z));
-		// pO->insert(make_pair("vAxisColZ", vA));
-
-		// pO->insert(make_pair("nMedWidth", value((double)m_nMedWidth)));
-		// pO->insert(make_pair("tExpire", value((double)m_tExpire)));
-
-		// string f = picojson::value(*pO).serialize();
-		// writeFile(fName, f);
-
-		return true;
+		j["_PCgridBase"] = jG;
+		return this->_GeometryBase::saveConfig(fName, j);
 	}
 
 	bool _PCgridBase::initGeometry(void)

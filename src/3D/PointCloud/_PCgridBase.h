@@ -256,9 +256,8 @@ namespace kai
 		virtual bool check(void);
 
 		// config
-		virtual string getConfigFileName(void);
-		virtual bool loadConfig(const string& fName);
-		virtual bool saveConfig(const string& fName);
+		virtual bool loadConfig(const string& fName, json& j);
+		virtual bool saveConfig(const string& fName, json& j);
 
 		// grid
 		virtual bool initGeometry(void);
@@ -326,9 +325,6 @@ namespace kai
 		// point cloud input
 		vector<_GeometryBase *> m_vpGB;
 		uint64_t m_tExpire;
-
-		// Grid config
-		string m_fGridConfig;
 
 		// grid generating params
 		vFloat3 m_vPorigin;

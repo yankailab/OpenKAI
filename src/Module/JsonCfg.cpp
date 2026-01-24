@@ -99,13 +99,15 @@ namespace kai
 
 	json JsonCfg::getJson(const string &s)
 	{
+		json j;
+
 		auto jP = json::json_pointer(s);
-		IF__(!m_json.contains(jP), nullptr);
+		IF__(!m_json.contains(jP), j);
 
-		json j = m_json.at(jP);
-		IF__(!j.is_object(), nullptr);
+		json jO = m_json.at(jP);
+		IF__(!jO.is_object(), j);
 
-		return j;
+		return jO;
 	}
 
 }

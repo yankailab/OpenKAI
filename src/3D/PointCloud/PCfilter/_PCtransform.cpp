@@ -34,8 +34,8 @@ namespace kai
 		const json &jt = jCfg.getJson().at("transform");
 		IF__(!jt.is_object(), true);
 
-		jKv<double>(j, "vT", m_vT);
-		jKv<double>(j, "vR", m_vR);
+		jKv<double>(jt, "vT", m_vT);
+		jKv<double>(jt, "vR", m_vR);
 
 		return true;
 	}

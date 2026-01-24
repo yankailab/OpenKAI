@@ -84,8 +84,10 @@ namespace kai
 
         virtual bool save2file(const string& fName);
 
-		virtual bool loadConfig(void);
-		virtual bool saveConfig(void);
+
+		virtual string getConfigFileName(void);
+		virtual bool loadConfig(const string& fName, json& j);
+		virtual bool saveConfig(const string& fName, json& j);
 
     protected:
         void mutexLock(void);
