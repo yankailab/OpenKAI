@@ -96,7 +96,7 @@ namespace kai
 
 		string getName(void);
 
-	private:
+	protected:
 		void delComment(string *pStr);
 
 	protected:

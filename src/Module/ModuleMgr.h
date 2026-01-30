@@ -13,8 +13,6 @@ namespace kai
 		~ModuleMgr(void);
 
 		bool parseJsonFile(const string &fName);
-		void setJsonCfg(const JsonCfg &jCfg);
-		string getName(void);
 
 		bool createAll(void);
 		bool initAll(void);
@@ -28,14 +26,16 @@ namespace kai
 		void cleanAll(void);
 
 		void *findModule(const string &name);
+		json findJson(const string &name);
 		bool addModule(void *pModule, const string &name);
 
+		string getName(void);
 
 	protected:
 		string m_name;
 		bool m_bLog;
 
-		JsonCfg m_jCfg;
+		vector<JsonCfg> m_vJcfg;
 		vector<void *> m_vModules;
 	};
 

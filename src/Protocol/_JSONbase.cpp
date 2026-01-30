@@ -78,12 +78,12 @@ namespace kai
 
     void _JSONbase::sendHeartbeat(void)
     {
-        // object o;
-        // JO(o, "id", i2str(1));
-        // JO(o, "cmd", "heartbeat");
-        // JO(o, "t", li2str(m_pT->getTfrom()));
+        json j = json::object();
+        j["id"] = i2str(1);
+        j["cmd"] = "heartbeat";
+        j["t"] = li2str(m_pT->getTfrom());
 
-        // sendJson(o);
+        sendJson(j);
     }
 
     void _JSONbase::updateR(void)

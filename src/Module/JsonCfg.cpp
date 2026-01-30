@@ -48,9 +48,6 @@ namespace kai
 		m_jsonStr = s;
 		delComment(&m_jsonStr);
 
-		//		m_json = json::parse(m_jsonStr, /*callback*/ nullptr, /*allow_exceptions*/ false);
-		//		IF_F(m_json.is_discarded());
-
 		try
 		{
 			m_json = json::parse(m_jsonStr);
@@ -92,22 +89,18 @@ namespace kai
 		return m_json;
 	}
 
-	string JsonCfg::getName(void)
-	{
-		return "Jsonfg";
-	}
-
 	json JsonCfg::getJson(const string &s)
 	{
 		json j;
-
 		auto jP = json::json_pointer(s);
 		IF__(!m_json.contains(jP), j);
 
-		json jO = m_json.at(jP);
-		IF__(!jO.is_object(), j);
+		return m_json.at(jP);
+	}
 
-		return jO;
+	string JsonCfg::getName(void)
+	{
+		return "Jsonfg";
 	}
 
 }

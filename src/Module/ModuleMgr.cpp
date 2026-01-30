@@ -23,12 +23,26 @@ namespace kai
 
 	bool ModuleMgr::parseJsonFile(const string &fName)
 	{
-		return m_jCfg.parseJsonFile(fName);
-	}
+		JsonCfg jCfg;
+		IF_F(!jCfg.parseJsonFile(fName));
 
-	void ModuleMgr::setJsonCfg(const JsonCfg &jCfg)
-	{
-		m_jCfg = jCfg;
+		m_vJcfg.clear();
+		m_vJcfg.push_back(jCfg);
+
+		json jApp = jCfg.getJson("APP");
+		IF__(!jApp.is_object(), true);
+
+		vector<string> vJsonFiles;
+		jKv(jApp, "vInclude", vJsonFiles);
+		for (string f : vJsonFiles)
+		{
+			JsonCfg jCi;
+			IF_CONT(!jCi.parseJsonFile(f));
+
+			m_vJcfg.push_back(jCi);
+		}
+
+		return true;
 	}
 
 	string ModuleMgr::getName(void)
@@ -223,6 +237,13 @@ namespace kai
 		}
 
 		return nullptr;
+	}
+
+	json ModuleMgr::findJson(const string &name)
+	{
+		//TODO:
+
+
 	}
 
 	bool ModuleMgr::addModule(void *pModule, const string &name)
