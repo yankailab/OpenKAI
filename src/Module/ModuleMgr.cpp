@@ -53,52 +53,57 @@ namespace kai
 	bool ModuleMgr::createAll(void)
 	{
 		Module md;
-		json jC = m_jCfg.getJson();
-		for (auto it = jC.begin(); it != jC.end(); it++)
+
+		for (int i = 0; i < m_vJcfg.size(); i++)
 		{
-			const json &Ji = it.value();
-			IF_CONT(!Ji.is_object());
-
-			string n = it.key();
-			if (n.empty())
+			JsonCfg *pJc = &m_vJcfg[i];
+			json J = pJc->getJson();
+			for (auto it = J.begin(); it != J.end(); it++)
 			{
-				LOG_I("Module name is empty");
-				continue;
-			}
+				const json &Ji = it.value();
+				IF_CONT(!Ji.is_object());
 
-			if (findModule(n))
-			{
-				LOG_I("Module name already existed: " + n);
-				continue;
-			}
+				string n = it.key();
+				if (n.empty())
+				{
+					LOG_I("Module name is empty");
+					continue;
+				}
 
-			string c = "";
-			jKv(Ji, "class", c);
-			IF_CONT(c == "ModuleMgr");
-			if (c.empty())
-			{
-				LOG_I("Class name is empty: " + n);
-				continue;
-			}
+				if (findModule(n))
+				{
+					LOG_I("Module name already existed: " + n);
+					continue;
+				}
 
-			int bON = true;
-			jKv(Ji, "bON", bON);
-			if (bON == 0)
-			{
-				LOG_I("Module disabled: " + n);
-				continue;
-			}
+				string c = "";
+				jKv(Ji, "class", c);
+				IF_CONT(c == "ModuleMgr");
+				if (c.empty())
+				{
+					LOG_I("Class name is empty: " + n);
+					continue;
+				}
 
-			BASE *pM = md.createInstance(c);
-			if (pM == nullptr)
-			{
-				LOG_I("Instance not created: " + n);
-				continue;
-			}
+				int bON = true;
+				jKv(Ji, "bON", bON);
+				if (bON == 0)
+				{
+					LOG_I("Module disabled: " + n);
+					continue;
+				}
 
-			pM->setName(n);
-			m_vModules.push_back((void *)pM);
-			LOG_I("Instance created: " + n);
+				BASE *pM = md.createInstance(c);
+				if (pM == nullptr)
+				{
+					LOG_I("Instance not created: " + n);
+					continue;
+				}
+
+				pM->setName(n);
+				m_vModules.push_back((void *)pM);
+				LOG_I("Instance created: " + n);
+			}
 		}
 
 		return true;
@@ -106,20 +111,18 @@ namespace kai
 
 	bool ModuleMgr::initAll(void)
 	{
-		const json &j = m_jCfg.getJson();
-
 		for (void *pM : m_vModules)
 		{
 			BASE *pB = (BASE *)pM;
 
-			const json &jm = j.at(pB->getName());
-			if (!jm.is_object())
+			const json &j = findJson(pB->getName());
+			if (!j.is_object())
 			{
 				LOG_E(pB->getName() + " is not an JSON object");
 				return false;
 			}
 
-			if (!pB->init(jm))
+			if (!pB->init(j))
 			{
 				LOG_E(pB->getName() + ".init() failed");
 				return false;
@@ -133,20 +136,18 @@ namespace kai
 
 	bool ModuleMgr::linkAll(void)
 	{
-		const json &j = m_jCfg.getJson();
-
 		for (void *pM : m_vModules)
 		{
 			BASE *pB = (BASE *)pM;
 
-			const json &jm = j.at(pB->getName());
-			if (!jm.is_object())
+			const json &j = findJson(pB->getName());
+			if (!j.is_object())
 			{
 				LOG_E(pB->getName() + " is not an json object");
 				return false;
 			}
 
-			if (!pB->link(jm, this))
+			if (!pB->link(j, this))
 			{
 				LOG_E(pB->getName() + ".link() failed");
 				return false;
@@ -241,16 +242,24 @@ namespace kai
 
 	json ModuleMgr::findJson(const string &name)
 	{
-		//TODO:
+		for (int i = 0; i < m_vJcfg.size(); i++)
+		{
+			JsonCfg *pJc = &m_vJcfg[i];
+			json J = pJc->getJson().at(name);
 
+			if (J.is_object())
+				return J;
+		}
 
+		json Jr;
+		return Jr;
 	}
 
 	bool ModuleMgr::addModule(void *pModule, const string &name)
 	{
 		NULL_F(pModule);
 		IF_Le_F(findModule(name), "Module already existed: " + name);
-		IF_Le_F(!m_jCfg.getJson().at(name).is_object(), "Module not found in JSON");
+		IF_Le_F(!findJson(name).is_object(), "Module not found in JSON");
 
 		m_vModules.push_back(pModule);
 		LOG_I("Added: " + name);

@@ -91,8 +91,8 @@ namespace kai
 		string getJsonStr(void);
 		bool parseJsonStr(const string &s);
 
-		json getJson(void);
-		json getJson(const string &s);
+		json& getJson(void);
+		json& getJson(const string &s);
 
 		string getName(void);
 

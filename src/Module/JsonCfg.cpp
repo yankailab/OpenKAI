@@ -84,12 +84,12 @@ namespace kai
 		}
 	}
 
-	json JsonCfg::getJson(void)
+	json& JsonCfg::getJson(void)
 	{
 		return m_json;
 	}
 
-	json JsonCfg::getJson(const string &s)
+	json& JsonCfg::getJson(const string &s)
 	{
 		json j;
 		auto jP = json::json_pointer(s);
