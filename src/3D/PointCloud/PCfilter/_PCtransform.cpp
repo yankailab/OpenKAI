@@ -31,7 +31,7 @@ namespace kai
 		JsonCfg jCfg;
 		IF__(!jCfg.parseJsonFile(m_jsonCfgFile), true);
 
-		const json &jt = jCfg.getJson().at("transform");
+		const json &jt = jK(jCfg.getJson(), "transform");
 		IF__(!jt.is_object(), true);
 
 		jKv<double>(jt, "vT", m_vT);

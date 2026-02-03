@@ -33,7 +33,7 @@ namespace kai
         m_ieSendNodeClearAll.init(v);
 
         DEL(m_pTr);
-        m_pTr = createThread(j.at("threadR"), "threadR");
+        m_pTr = createThread(jK(j, "threadR"), "threadR");
         NULL_F(m_pTr);
 
         return true;
@@ -42,7 +42,7 @@ namespace kai
     bool _SwarmCtrlUI::link(const json &j, ModuleMgr *pM)
     {
         IF_F(!this->_JSONbase::link(j, pM));
-        IF_F(!m_pTr->link(j.at("threadR"), pM));
+        IF_F(!m_pTr->link(jK(j, "threadR"), pM));
 
         string n = "";
         jKv(j, "_SwarmCtrl", n);

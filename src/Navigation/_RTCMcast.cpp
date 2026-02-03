@@ -23,7 +23,7 @@ namespace kai
 	{
 		IF_F(!this->_ProtocolBase::init(j));
 
-		const json &jM = j.at("RTCMmsg");
+		const json &jM = jK(j, "RTCMmsg");
 		IF__(!jM.is_object(), true);
 
 		for (auto it = jM.begin(); it != jM.end(); it++)

@@ -58,7 +58,7 @@ namespace kai
         jKv(j, "fWhiteBalance", m_rsCtrl.m_fWhiteBalance);
 
         DEL(m_pTpp);
-        m_pTpp = createThread(j.at("threadPP"), "threadPP");
+        m_pTpp = createThread(jK(j, "threadPP"), "threadPP");
         NULL_F(m_pTpp);
 
         return true;

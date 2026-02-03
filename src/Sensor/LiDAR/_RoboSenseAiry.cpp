@@ -25,7 +25,7 @@ namespace kai
         IF_F(!this->_PCstream::init(j));
 
         DEL(m_pTdifop);
-        m_pTdifop = createThread(j.at("threadDIFOP"), "threadDIFOP");
+        m_pTdifop = createThread(jK(j, "threadDIFOP"), "threadDIFOP");
         NULL_F(m_pTdifop);
 
         return true;

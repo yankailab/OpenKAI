@@ -28,12 +28,12 @@ namespace kai
         IF_F(!this->_NavBase::init(j));
 
         DEL(m_pTros);
-        m_pTros = createThread(j.at("threadROS"), "threadROS");
+        m_pTros = createThread(jK(j, "threadROS"), "threadROS");
         NULL_F(m_pTros);
 
         rclcpp::init(0, NULL);
         m_pROSnode = std::make_shared<ROS_fastLio>();
-        return m_pROSnode->init(j.at("node"));
+        return m_pROSnode->init(jK(j, "node"));
     }
 
     bool _ROS_fastLio::link(const json &j, ModuleMgr *pM)

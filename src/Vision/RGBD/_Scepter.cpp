@@ -36,7 +36,7 @@ namespace kai
 		jKv(j, "scPixelFormat", m_scCtrl.m_pixelFormat);
 
 		DEL(m_pTpp);
-		m_pTpp = createThread(j.at("threadPP"), "threadPP");
+		m_pTpp = createThread(jK(j, "threadPP"), "threadPP");
 		NULL_F(m_pTpp);
 
 		return true;

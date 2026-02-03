@@ -35,7 +35,7 @@ namespace kai
 		jKv(j, "iTarget", m_iTarget);
 		jKv<int>(j, "vMeanBGR", m_vMean);
 
-		const json &jF = j.at("vFilter");
+		const json &jF = jK(j, "vFilter");
 		IF_F(!jF.is_object());
 
 		vFloat4 r;

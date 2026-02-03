@@ -16,7 +16,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		const json &jc = j.at("channels");
+		const json &jc = jK(j, "channels");
 		IF__(!jc.is_object(), true);
 
 		for (auto it = jc.begin(); it != jc.end(); it++)

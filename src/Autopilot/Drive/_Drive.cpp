@@ -34,7 +34,7 @@ namespace kai
     {
         IF_F(!this->_ModuleBase::link(j, pM));
 
-        const json &jM = j.at("motors");
+        const json &jM = jK(j, "motors");
         IF__(!jM.is_object(), true);
 
         for (auto it = jM.begin(); it != jM.end(); it++)

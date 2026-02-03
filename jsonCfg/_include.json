@@ -1,0 +1,34 @@
+{
+	"APP": {
+		"class": "ModuleMgr",
+		"appName": "includeTest",
+		"bLog": true,
+		"bStdErr": 1,
+		"vInclude":["/home/kai/dev/OpenKAI/jsonCfg/_include2.json"]
+	},
+	"console": {
+		"class": "_Console",
+		"bON": false,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"cam"
+		]
+	},
+	"view": {
+		"class": "_WindowCV",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"bFullScreen": 0,
+		"vBASE": [
+			"cam",
+			"/uvc",
+			"/crop",
+			"/contrast",
+			"/resize"
+		]
+	}
+}

@@ -9,6 +9,7 @@ namespace kai
 	{
 		m_name = "ModuleMgr";
 		m_bLog = true;
+		m_jNull = nullptr;
 	}
 
 	ModuleMgr::~ModuleMgr(void)
@@ -29,7 +30,7 @@ namespace kai
 		m_vJcfg.clear();
 		m_vJcfg.push_back(jCfg);
 
-		json jApp = jCfg.getJson("APP");
+		const json& jApp = jK(jCfg.getJson(), "APP");
 		IF__(!jApp.is_object(), true);
 
 		vector<string> vJsonFiles;
@@ -57,7 +58,7 @@ namespace kai
 		for (int i = 0; i < m_vJcfg.size(); i++)
 		{
 			JsonCfg *pJc = &m_vJcfg[i];
-			json J = pJc->getJson();
+			const json& J = pJc->getJson();
 			for (auto it = J.begin(); it != J.end(); it++)
 			{
 				const json &Ji = it.value();
@@ -240,19 +241,18 @@ namespace kai
 		return nullptr;
 	}
 
-	json ModuleMgr::findJson(const string &name)
+	const json& ModuleMgr::findJson(const string &name)
 	{
 		for (int i = 0; i < m_vJcfg.size(); i++)
 		{
 			JsonCfg *pJc = &m_vJcfg[i];
-			json J = pJc->getJson().at(name);
+			const json& j = jK(pJc->getJson(), name);
 
-			if (J.is_object())
-				return J;
+			if (j.is_object())
+				return j;
 		}
 
-		json Jr;
-		return Jr;
+		return m_jNull;
 	}
 
 	bool ModuleMgr::addModule(void *pModule, const string &name)

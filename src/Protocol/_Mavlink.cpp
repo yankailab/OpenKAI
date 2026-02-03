@@ -88,7 +88,7 @@ namespace kai
 		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 
-		const json &jR = j.at("routings");
+		const json &jR = jK(j, "routings");
 		IF__(!jR.is_object(), true);
 
 		for (auto it = jR.begin(); it != jR.end(); it++)

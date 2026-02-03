@@ -89,15 +89,6 @@ namespace kai
 		return m_json;
 	}
 
-	json& JsonCfg::getJson(const string &s)
-	{
-		json j;
-		auto jP = json::json_pointer(s);
-		IF__(!m_json.contains(jP), j);
-
-		return m_json.at(jP);
-	}
-
 	string JsonCfg::getName(void)
 	{
 		return "Jsonfg";

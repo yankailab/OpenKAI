@@ -58,7 +58,7 @@ namespace kai
 		m_pMav = (_Mavlink *)(pM->findModule(n));
 		NULL_F(m_pMav);
 
-		const json &jm = j.at("mavMsgInt");
+		const json &jm = jK(j, "mavMsgInt");
 		IF__(!jm.is_object(), true);
 
 		for (auto it = jm.begin(); it != jm.end(); it++)

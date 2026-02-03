@@ -19,7 +19,7 @@ namespace kai
 		JsonCfg jCfg;
 		IF_F(!jCfg.parseJsonFile(fCalib));
 
-		const json &j = jCfg.getJson("calib");
+		const json &j = jK(jCfg.getJson(), "calib");
 		IF_F(j.is_object());
 
 		Mat mC = Mat::zeros(3, 3, CV_64FC1);

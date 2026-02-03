@@ -29,7 +29,7 @@ namespace kai
 		jKv(j, "dInit", m_dInit);
 		jKv(j, "cmdInt", m_cmdInt);
 
-		const json &ja = j.at("addr");
+		const json &ja = jK(j, "addr");
 		if (ja.is_object())
 		{
 			jKv(ja, "setDPR", m_addr.m_setDPR);

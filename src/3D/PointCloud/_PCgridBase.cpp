@@ -74,7 +74,7 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::loadConfig(fName, j));
 
-		const json &jG = j.at("_PCgridBase");
+		const json &jG = jK(j, "_PCgridBase");
 		if (jG.is_object())
 		{
 			// grid config

@@ -52,7 +52,7 @@ namespace kai
 		jKv(j, "yawRate", m_yawRate);
 		m_yawRate *= DEG_2_RAD;
 
-		const json &jc = j.at("tags");
+		const json &jc = jK(j, "tags");
 		IF__(!jc.is_object(), true);
 
 		for (auto it = jc.begin(); it != jc.end(); it++)

@@ -52,7 +52,7 @@ namespace kai
 		IF_F(!m_fZ.init(nWmed, kTpred));
 		IF_F(!m_fH.init(nWmed, kTpred));
 
-		const json &jm = j.at("mount");
+		const json &jm = jK(j, "mount");
 		IF__(!jm.is_object(), true);
 
 		jKv(jm, "bEnable", m_apMount.m_bEnable);

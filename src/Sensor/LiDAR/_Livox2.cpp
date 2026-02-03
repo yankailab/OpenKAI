@@ -87,7 +87,7 @@ namespace kai
         IF_Le_F(!j.contains("TdeviceQueryR"), "json: TdeviceQueryR not found");
         DEL(m_pTdeviceQueryR);
         m_pTdeviceQueryR = new _Thread();
-        if (!m_pTdeviceQueryR->init(j.at("TdeviceQueryR")))
+        if (!m_pTdeviceQueryR->init(jK(j, "TdeviceQueryR")))
         {
             DEL(m_pTdeviceQueryR);
             LOG_E("TdeviceQueryR.init() failed");
@@ -96,26 +96,26 @@ namespace kai
 
         // Control Command
         DEL(m_pTctrlCmdW);
-        m_pTctrlCmdW = createThread(j.at("TctrlCmdW"), "TctrlCmdW");
+        m_pTctrlCmdW = createThread(jK(j, "TctrlCmdW"), "TctrlCmdW");
         NULL_F(m_pTctrlCmdW);
 
         DEL(m_pTctrlCmdR);
-        m_pTctrlCmdR = createThread(j.at("TctrlCmdR"), "TctrlCmdR");
+        m_pTctrlCmdR = createThread(jK(j, "TctrlCmdR"), "TctrlCmdR");
         NULL_F(m_pTctrlCmdR);
 
         // Push command
         DEL(m_pTpushCmdR);
-        m_pTpushCmdR = createThread(j.at("TpushCmdR"), "TpushCmdR");
+        m_pTpushCmdR = createThread(jK(j, "TpushCmdR"), "TpushCmdR");
         NULL_F(m_pTpushCmdR);
 
         // Point Cloud Data
         DEL(m_pTpclR);
-        m_pTpclR = createThread(j.at("TpclR"), "TpclR");
+        m_pTpclR = createThread(jK(j, "TpclR"), "TpclR");
         NULL_F(m_pTpclR);
 
         // IMU Data
         DEL(m_pTimuR);
-        m_pTimuR = createThread(j.at("TimuR"), "TimuR");
+        m_pTimuR = createThread(jK(j, "TimuR"), "TimuR");
         NULL_F(m_pTimuR);
 
         return true;

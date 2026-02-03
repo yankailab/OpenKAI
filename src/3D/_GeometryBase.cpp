@@ -94,7 +94,7 @@ namespace kai
 
         j = jCfg.getJson();
 
-        const json &jG = jCfg.getJson("_GeometryBase");
+        const json &jG = jK(j, "_GeometryBase");
         if (jG.is_object())
         {
             vDouble3 vT, vR;

@@ -22,7 +22,7 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::init(j));
 
-		const json &jF = j.at("vFilter");
+		const json &jF = jK(j, "vFilter");
 		IF_F(!jF.is_object());
 
 		for (auto it = jF.begin(); it != jF.end(); it++)

@@ -23,7 +23,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		const json &jP = j.at("ports");
+		const json &jP = jK(j, "ports");
 		IF__(!jP.is_object(), true);
 
 		for (auto it = jP.begin(); it != jP.end(); it++)

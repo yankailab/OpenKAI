@@ -29,7 +29,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		const json &jS = j.at("states");
+		const json &jS = jK(j, "states");
 		IF__(!jS.is_object(), true);
 
 		for (auto it = jS.begin(); it != jS.end(); it++)

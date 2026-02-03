@@ -24,7 +24,7 @@ namespace kai
 	{
 		IF_F(!_VisionBase::init(j));
 
-		const json &jF = j.at("filters");
+		const json &jF = jK(j, "filters");
 		IF__(!jF.is_object(), true);
 
 		for (auto it = jF.begin(); it != jF.end(); it++)

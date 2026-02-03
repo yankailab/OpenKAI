@@ -23,7 +23,7 @@ namespace kai
 		IF_F(!this->_ModuleBase::init(j));
 
 		DEL(m_pTr);
-		m_pTr = createThread(j.at("threadR"), "threadR");
+		m_pTr = createThread(jK(j, "threadR"), "threadR");
 		NULL_F(m_pTr);
 
 		return true;
@@ -32,7 +32,7 @@ namespace kai
 	bool _ProtocolBase::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
-		IF_F(!m_pTr->link(j.at("threadR"), pM));
+		IF_F(!m_pTr->link(jK(j, "threadR"), pM));
 
 		string n = "";
 		jKv(j, "_IObase", n);

@@ -22,7 +22,7 @@ namespace kai
 		jKv(j, "ddsmMode", m_ddsmMode);
 
 		DEL(m_pTr);
-		m_pTr = createThread(j.at("threadR"), "threadR");
+		m_pTr = createThread(jK(j, "threadR"), "threadR");
 		NULL_F(m_pTr);
 
 		return true;
@@ -31,7 +31,7 @@ namespace kai
 	bool _DDSM::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_ActuatorBase::link(j, pM));
-		IF_F(!m_pTr->link(j.at("threadR"), pM));
+		IF_F(!m_pTr->link(jK(j, "threadR"), pM));
 
 		string n = "";
 		jKv(j, "_IObase", n);

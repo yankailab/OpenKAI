@@ -27,7 +27,7 @@ namespace kai
         IF_F(!this->BASE::init(j));
 
         DEL(m_pT);
-        m_pT = createThread(j.at("thread"), "thread");
+        m_pT = createThread(jK(j, "thread"), "thread");
         NULL_F(m_pT);
 
         return true;
@@ -63,7 +63,7 @@ namespace kai
     bool _ModuleBase::link(const json &j, ModuleMgr *pM)
     {
         IF_F(!this->BASE::link(j, pM));
-        IF_F(!m_pT->link(j.at("thread"), pM));
+        IF_F(!m_pT->link(jK(j, "thread"), pM));
 
         return true;
     }

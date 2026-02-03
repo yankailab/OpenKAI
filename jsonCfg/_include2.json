@@ -1,0 +1,20 @@
+{
+	"APP": {
+		"class": "ModuleMgr",
+		"appName": "includeTest",
+		"bLog": true,
+		"bStdErr": 1
+	},
+	"cam": {
+		"class": "_Camera",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"deviceID": 0,
+		"vSizeRGB": [
+			640,
+			480
+		]
+	}
+}

@@ -157,7 +157,7 @@
     }  // namespace nlohmann
 #endif
 
-// #include <nlohmann/detail/conversions/from_json.h>
+// #include <nlohmann/detail/conversions/from_json.hpp>
 //     __ _____ _____ _____
 //  __|  |   __|     |   | |  JSON for Modern C++
 // |  |  |__   |  |  | | | |  version 3.12.0
@@ -2376,7 +2376,7 @@ JSON_HEDLEY_DIAGNOSTIC_POP
 
 
 // This file contains all internal macro definitions (except those affecting ABI)
-// You MUST include macro_unscope.hpp at the end of json.h to undef all of them
+// You MUST include macro_unscope.hpp at the end of json.hpp to undef all of them
 
 // #include <nlohmann/detail/abi_macros.hpp>
 
@@ -5415,7 +5415,7 @@ JSON_INLINE_VARIABLE constexpr const auto& from_json = // NOLINT(misc-definition
 
 NLOHMANN_JSON_NAMESPACE_END
 
-// #include <nlohmann/detail/conversions/to_json.h>
+// #include <nlohmann/detail/conversions/to_json.hpp>
 //     __ _____ _____ _____
 //  __|  |   __|     |   | |  JSON for Modern C++
 // |  |  |__   |  |  | | | |  version 3.12.0
@@ -6334,9 +6334,9 @@ class byte_container_with_subtype : public BinaryType
 
 NLOHMANN_JSON_NAMESPACE_END
 
-// #include <nlohmann/detail/conversions/from_json.h>
+// #include <nlohmann/detail/conversions/from_json.hpp>
 
-// #include <nlohmann/detail/conversions/to_json.h>
+// #include <nlohmann/detail/conversions/to_json.hpp>
 
 // #include <nlohmann/detail/exceptions.hpp>
 

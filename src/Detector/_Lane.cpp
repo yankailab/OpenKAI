@@ -59,7 +59,7 @@ namespace kai
 
 		// color filters
 		m_nFilter = 0;
-		const json &jC = j.at("colorFilters");
+		const json &jC = jK(j, "colorFilters");
 		if (jC.is_object())
 		{
 			for (auto it = jC.begin(); it != jC.end(); it++)
@@ -87,7 +87,7 @@ namespace kai
 		int nMed = 0;
 		jKv(j, "nMed", nMed);
 		m_nLane = 0;
-		const json &jL = j.at("lane");
+		const json &jL = jK(j, "lane");
 		if (jL.is_object())
 		{
 			for (auto it = jL.begin(); it != jL.end(); it++)

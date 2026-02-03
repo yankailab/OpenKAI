@@ -32,7 +32,7 @@ namespace kai
 		// jKv(j,"ieHdgUsec",ieHdg);//""
 		// m_ieHdgCmd.init(ieHdg);
 
-		const json &jc = j.at("tags");
+		const json &jc = jK(j, "tags");
 		IF__(!jc.is_object(), true);
 
 		for (auto it = jc.begin(); it != jc.end(); it++)

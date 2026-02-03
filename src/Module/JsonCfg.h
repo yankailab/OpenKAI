@@ -75,6 +75,32 @@ bool jKv(const json &j, const std::string &key, T2 &v, bool bLog = false)
 	return false;
 }
 
+inline const json& jK(const json &j, const std::string &key, bool bLog = false)
+{
+	static const json jNull = nullptr;
+
+	if (!j.is_object())
+	{
+		if (bLog)
+		{
+			LOG(INFO) << "JSON is not an object: " + key;
+		}
+		return jNull;
+	}
+
+	auto it = j.find(key);
+	if (it == j.end())
+	{
+		if (bLog)
+		{
+			LOG(INFO) << "Cannot find: " + key;
+		}
+		return jNull;
+	}
+
+	return j.at(key);
+}
+
 namespace kai
 {
 
@@ -92,8 +118,6 @@ namespace kai
 		bool parseJsonStr(const string &s);
 
 		json& getJson(void);
-		json& getJson(const string &s);
-
 		string getName(void);
 
 	protected:

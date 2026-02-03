@@ -39,7 +39,7 @@ namespace kai
 		jKv(j, "nClientMax", m_nClientMax);
 
 		DEL(m_pTr);
-		m_pTr = createThread(j.at("threadR"), "threadR");
+		m_pTr = createThread(jK(j, "threadR"), "threadR");
 		NULL_F(m_pTr);
 
 		m_ioStatus = io_opened;

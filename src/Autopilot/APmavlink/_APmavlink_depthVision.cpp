@@ -18,7 +18,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		const json &jS = j.at("sections");
+		const json &jS = jK(j, "sections");
 		IF__(!jS.is_object(), true);
 
 		m_nROI = 0;

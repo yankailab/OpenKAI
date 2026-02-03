@@ -26,7 +26,7 @@ namespace kai
 		void cleanAll(void);
 
 		void *findModule(const string &name);
-		json findJson(const string &name);
+		const json& findJson(const string &name);
 		bool addModule(void *pModule, const string &name);
 
 		string getName(void);
@@ -37,6 +37,7 @@ namespace kai
 
 		vector<JsonCfg> m_vJcfg;
 		vector<void *> m_vModules;
+		json m_jNull;
 	};
 
 }

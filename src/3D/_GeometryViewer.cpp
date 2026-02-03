@@ -73,7 +73,7 @@ namespace kai
 		utility::SetVerbosityLevel(utility::VerbosityLevel::Error);
 
 		DEL(m_pTui);
-		m_pTui = createThread(j.at("threadUI"), "threadUI");
+		m_pTui = createThread(jK(j, "threadUI"), "threadUI");
 		NULL_F(m_pTui);
 
 		return true;
@@ -83,7 +83,7 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::link(j, pM));
 
-		const json &jg = j.at("geometry");
+		const json &jg = jK(j, "geometry");
 		IF__(!jg.is_object(), true);
 
 		for (auto it = jg.begin(); it != jg.end(); it++)
