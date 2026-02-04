@@ -31,7 +31,7 @@ namespace kai
 		jKv(j, "nPacket", nPacket);
 		jKv(j, "nPbuffer", nPbuffer);
 
-		IF_F(!m_packetW.init(nPbuffer, nPacket));
+//		IF_F(!m_packetW.init(nPbuffer, nPacket));
 		IF_F(!m_packetR.init(nPbuffer, nPacket));
 
 		return true;

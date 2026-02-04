@@ -88,6 +88,16 @@ namespace kai
 			m_bfSet.set(actuator_setMode);
 
 		bf = 0;
+		jKv(j, "bfGotoOrigin", bf);
+		if (bf)
+			m_bfSet.set(actuator_gotoOrigin);
+
+		bf = 0;
+		jKv(j, "bfClearAlarm", bf);
+		if (bf)
+			m_bfSet.set(actuator_clearAlarm);
+
+		bf = 0;
 		jKv(j, "bfMove", bf);
 		if (bf)
 			m_bfSet.set(actuator_move);

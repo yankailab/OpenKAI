@@ -26,12 +26,11 @@ namespace kai
 		virtual bool check(void);
 
 	protected:
-		bool clearAlarm(void);
-		bool readStatus(void);
-
-		bool gotoOrigin(void);
-		bool setPos(void);
-		bool stopMove(void);
+		bool IAIclearAlarm(void);
+		bool IAIreadStatus(void);
+		bool IAIgotoOrigin(void);
+		bool IAIsetPos(void);
+		bool IAIstopMove(void);
 
 	private:
 		virtual void update(void);

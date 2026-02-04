@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/OpenKAI",
-            "args": ["${workspaceFolder}/jsonCfg/_include.json"],
+            "args": ["${workspaceFolder}/jsonCfg/_IAI.json"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

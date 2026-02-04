@@ -1,0 +1,85 @@
+{
+	"APP": {
+		"class": "ModuleMgr",
+		"appName": "IAI",
+		"bLog": true,
+		"bStdErr": 1
+	},
+
+	"console": {
+		"class": "_Console",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"modbus",
+			"IAI"
+		]
+	},
+
+	"modbus": {
+		"class": "_Modbus",
+		"bON": true,
+		"bLog": false,
+		"thread": {
+			"FPS": 10
+		},
+		"type": "RTU",
+		"rtuPort": "/dev/ttyACM3",
+		"rtuBaud": 38400,
+		"/rtuBaud": 115200,
+		"rtuParity": "N",
+		"tOutSec": 2
+	},
+
+	"IAI": {
+		"class": "_IAI",
+		"bON": true,
+		"bLog": false,
+		"thread": {
+			"FPS": 10
+		},
+		"_Modbus": "modbus",
+
+		"tIntSendCMD": 100000,
+		"tIntReadStatus": 100000,
+		"tIntCheckAlarm": 100000,
+
+		"bfSetPower": 0,
+		"bfSetID": 0,
+		"bfSetMode": 0,
+		"bfGotoOrigin": 0,
+		"bfClearAlarm": 0,
+		"bfMove": 0,
+
+		"ID": 0,
+		"pOrigin": 0,
+		"pTarget": 1000,
+		"pErr": 10,
+		"pRange": [
+			0,
+			15000
+		],
+		"sTarget": 1000,
+		"sRange": [
+			0,
+			10000
+		],
+		"aTarget": 10,
+		"aRange": [
+			1,
+			100
+		],
+		"bTarget": 10,
+		"bRange": [
+			1,
+			100
+		],
+		"cTarget": 50,
+		"cRange": [
+			1,
+			100
+		]
+	}
+}

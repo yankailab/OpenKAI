@@ -180,11 +180,18 @@ namespace kai
 
 		IF_(m_vClient.size() >= m_nClientMax);
 
-		_WebSocket *pWS = new _WebSocket();
+		json j = json::object();
+		j["name"] = this->getName() + ".WS" + i2str(m_vClient.size());
+		j["class"] = "_WebSocket";
+		j["nPacket"] = 1024;
+		j["nPbuffer"] = 512;
+		json jT = json::object();
+		jT["FPS"] = 1;
+		j["thread"] = jT;
 
-		// TODO:
-		//  pWS->init();
-		//  pWS->setIOstatus(io_opened);
+		_WebSocket *pWS = new _WebSocket();
+		pWS->init(j);
+		pWS->setIOstatus(io_opened);
 
 		wsClient c;
 		c.init(pWS);

@@ -56,18 +56,6 @@ namespace kai
 			m_pT->autoFPS();
 			uint64_t t = m_pT->getTfrom();
 
-			// bool bR = gotoOrigin();
-			// setPos();
-
-			// if (bR)
-			// {
-			// 	setPos();
-			// }
-			// else
-			// {
-			// 	LOG_I(i2str(bR));
-			// }
-
 			// if (m_ieReadStatus.update(t))
 			// {
 			// 	readStatus();
@@ -75,31 +63,31 @@ namespace kai
 
 			if (m_bfSet.b(actuator_clearAlarm, true))
 			{
-				clearAlarm();
+				IAIclearAlarm();
 			}
 
 			if (m_bfSet.b(actuator_gotoOrigin, true))
 			{
-				gotoOrigin();
+				IAIgotoOrigin();
 			}
 
 			if (m_ieSendCMD.updateT(t))
 			{
 				if (m_bfSet.b(actuator_move))
 				{
-					if (!setPos())
+					if (!IAIsetPos())
 						m_ieSendCMD.reset();
 				}
 				else
 				{
-					if (!stopMove())
+					if (!IAIstopMove())
 						m_ieSendCMD.reset();
 				}
 			}
 		}
 	}
 
-	bool _IAI::clearAlarm(void)
+	bool _IAI::IAIclearAlarm(void)
 	{
 		IF_F(!check());
 
@@ -121,7 +109,7 @@ namespace kai
 		return (nR == 8);
 	}
 
-	bool _IAI::readStatus(void)
+	bool _IAI::IAIreadStatus(void)
 	{
 		IF_F(!check());
 
@@ -139,7 +127,7 @@ namespace kai
 		// LOG_I("step: " + f2str(m_p.get()) + ", speed: " + f2str(m_s.get()));
 	}
 
-	bool _IAI::gotoOrigin(void)
+	bool _IAI::IAIgotoOrigin(void)
 	{
 		IF_F(!check());
 
@@ -161,7 +149,7 @@ namespace kai
 		return (nR == 8);
 	}
 
-	bool _IAI::setPos(void)
+	bool _IAI::IAIsetPos(void)
 	{
 		IF_F(!check());
 
@@ -189,7 +177,7 @@ namespace kai
 		return (nR == 7);
 	}
 
-	bool _IAI::stopMove(void)
+	bool _IAI::IAIstopMove(void)
 	{
 		IF_F(!check());
 
