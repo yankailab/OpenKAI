@@ -13,7 +13,8 @@ sudo reboot now
 #----------------------------------------------------
 # (Optional) sshd
 sudo apt-get install ssh
-systemctl start sshd
+#systemctl start sshd
+systemctl start ssh
 
 # (Optional) opc
 sudo apt-get install openconnect

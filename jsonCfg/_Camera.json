@@ -4,7 +4,7 @@
 		"class": "OpenKAI",
 		"appName": "CameraTest",
 		"bLog": true,
-		"bStdErr": 1
+		"bStdErr": true
 	},
 	{
 		"name": "console",

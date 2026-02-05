@@ -29,6 +29,8 @@ namespace kai
 		const json& findJson(const string &name);
 		bool addModule(void *pModule, const string &name);
 
+		bool bStdErr(void);
+
 		string getName(void);
 
 	protected:

@@ -3,7 +3,7 @@
 		"class": "ModuleMgr",
 		"appName": "includeTest",
 		"bLog": true,
-		"bStdErr": 1,
+		"bStdErr": true,
 		"vInclude":["/home/kai/dev/OpenKAI/jsonCfg/_include2.json"]
 	},
 	"console": {

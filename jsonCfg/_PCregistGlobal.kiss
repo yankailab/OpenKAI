@@ -5,7 +5,7 @@
 	"bWindow":1,
 	"bDraw":1,
 	"bLog": true,
-	"bStdErr":1,
+	"bStdErr": true,
 	"waitKey":30,
 }
 
@@ -21,7 +21,7 @@
 	"bON": false,
 	"bFullScreen":0,
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
-	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",	
+	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
 }
 
 {
@@ -31,7 +31,7 @@
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"deviceID":0,
-	"vSize":[640,480],	
+	"vSize":[640,480],
     {
 		"name":"thread",
 		"FPS":30,
@@ -360,7 +360,7 @@
 	"bLog": true,
 	"Window":"OKview",
 	"_Console":"OpenKAI",
-	"_IObase":"UDPsend",	
+	"_IObase":"UDPsend",
 	"_PCbase":"rs1",
 	"nB":256,
 	"tInt":100000,

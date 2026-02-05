@@ -268,4 +268,14 @@ namespace kai
 		return true;
 	}
 
+	bool ModuleMgr::bStdErr(void)
+	{
+		const json& j = findJson("APP");
+		IF__(!j.is_object(), true);
+
+		bool bStdErr;
+		jKv(j, "bStdErr", bStdErr);
+		return bStdErr;
+	}
+
 }

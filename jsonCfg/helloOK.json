@@ -3,7 +3,7 @@
 		"class": "ModuleMgr",
 		"appName": "helloOK",
 		"bLog": true,
-		"bStdErr": 1
+		"bStdErr": true
 	},
 	"console": {
 		"class": "_Console",

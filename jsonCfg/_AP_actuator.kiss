@@ -3,7 +3,7 @@
 	"class":"Startup",
 	"appName":"APactuator",
 	"bLog":false,
-	"bStdErr":1,
+	"bStdErr": true,
 }
 
 {
@@ -28,7 +28,7 @@
 	"bLog":false,
 	"port":"/dev/ttyUSB0",
 	"baud":9600,
-	"parity":"N",	
+	"parity":"N",
 }
 
 {
@@ -138,7 +138,7 @@
 		"FPS":30,
 	}
 	"bLog":false,
-	"_IObase":"apSerial",	
+	"_IObase":"apSerial",
 }
 
 {
@@ -152,10 +152,10 @@
 	"_Mavlink":"apMavlink",
 	"freqSendHeartbeat":1,
 	"apType":1,
-	
+
 	{
 		"name":"mavMsgInt",
-		
+
 		{
 			"name":"heartbeat",
 			"id":0,

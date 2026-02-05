@@ -3,7 +3,7 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog": true,
-	"bStdErr":0,
+	"bStdErr": false,
 }
 
 {

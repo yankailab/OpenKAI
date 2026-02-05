@@ -3,7 +3,7 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog":false,
-	"bStdErr":1,
+	"bStdErr": true,
 }
 
 {
@@ -28,7 +28,7 @@
 	"bLog":false,
 	"port":"/dev/ttyUSB0",
 	"baud":115200,
-	"parity":"N",	
+	"parity":"N",
 }
 
 {

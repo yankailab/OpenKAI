@@ -2,16 +2,16 @@
 
 using namespace kai;
 
-static ModuleMgr *g_pMmgr = nullptr;
+static ModuleMgr *g_pMgr = nullptr;
 
 void signalHandler(int signal)
 {
 	if (signal == SIGINT)
 	{
 		printf("\nSIGINT\n");
-		if (g_pMmgr)
+		if (g_pMgr)
 		{
-			g_pMmgr->stopAll();
+			g_pMgr->stopAll();
 		}
 
 		exit(0);
@@ -35,13 +35,13 @@ int main(int argc, char *argv[])
 
 	printf("Using JSON file: %s\n", argStr.c_str());
 
-	ModuleMgr *pMmgr = new ModuleMgr();
-	if (pMmgr == nullptr)
+	ModuleMgr *pMgr = new ModuleMgr();
+	if (pMgr == nullptr)
 	{
 		goto exit;
 	}
 
-	g_pMmgr = pMmgr;
+	g_pMgr = pMgr;
 	signal(SIGINT, signalHandler);
 
 #ifdef USE_GLOG
@@ -49,30 +49,32 @@ int main(int argc, char *argv[])
 	google::InitGoogleLogging(argv[0]);
 #endif
 
-	// if (!m_bStdErr)
-	// 	freopen("/dev/null", "w", stderr);
-
-	if (!pMmgr->parseJsonFile(argStr))
+	if (!pMgr->parseJsonFile(argStr))
 	{
 		printf("JSON file parse failed: %s\n", argStr.c_str());
 		goto exit;
 	}
 
-	if (!pMmgr->createAll())
+	if (!pMgr->bStdErr())
+	{
+		freopen("/dev/null", "w", stderr);
+	}
+
+	if (!pMgr->createAll())
 		goto exit;
 
-	if (!pMmgr->initAll())
+	if (!pMgr->initAll())
 		goto exit;
 
-	if (!pMmgr->linkAll())
+	if (!pMgr->linkAll())
 		goto exit;
 
-	if (!pMmgr->startAll())
+	if (!pMgr->startAll())
 		goto exit;
 
-	pMmgr->waitForComplete();
+	pMgr->waitForComplete();
 
 exit:
-	delete pMmgr;
+	delete pMgr;
 	return 0;
 }

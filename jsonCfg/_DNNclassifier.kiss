@@ -6,7 +6,7 @@
 	"bDraw":1,
 	"bLog": true,
 	"b_Console":0,
-	"bStdErr":1,
+	"bStdErr": true,
 	"waitKey":30,
 }
 

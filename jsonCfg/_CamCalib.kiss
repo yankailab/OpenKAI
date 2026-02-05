@@ -4,7 +4,7 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"bLog": true,
-	"bStdErr":1,
+	"bStdErr": true,
 }
 
 {
