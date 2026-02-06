@@ -1,29 +1,22 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog": true,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"vBASE":["modbus","omL"],
 }
-
-{
-	"name":"modbus",
+"modbus":{
 	"class":"_Modbus",
 	"bON": true,
 	"bLog":false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"tOutSec":2,
@@ -31,14 +24,11 @@
 	"baud":230400,
 	"parity":"E",
 }
-
-{
-	"name":"omL",
+"omL":{
 	"class":"_OrientalMotor",
 	"bON": true,
 	"bLog":false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":1,
 	}
 
@@ -46,11 +36,8 @@
 	"tIntSendCMD":100000,
 	"tIntReadStatus":100000,
 	"tIntCheckAlarm":100000,
-
-	{
-		"name":"channels",
-		{
-			"name":"X",
+"channels":{
+"X":{
 			"ID":1,
 			"pOrigin":100,
 			"pTarget":0,
@@ -65,8 +52,7 @@
 			"cTarget":1000,
 			"cRange":[1,1000],
 		}
-		{
-			"name":"Y",
+"Y":{
 			"ID":2,
 			"pOrigin":100,
 			"pTarget":0,
@@ -83,17 +69,7 @@
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-{
-	"name":"omWX",
+"omWX":{
 	"class":"_OrientalMotor",
 	"bON": false,
 	"FPS":30,
@@ -105,11 +81,8 @@
 	"tIntCheckAlarm":100000,
 	"tIntReadStatus":100000,
 	"tInt":100000,
-
-	{
-		"name":"axis",
-		{
-			"name":"WX",
+"axis":{
+"WX":{
 			"pOrigin":20000,
 			"pTarget":20000,
 			"pErr":10,
@@ -125,9 +98,7 @@
 		}
 	}
 }
-
-{
-	"name":"omWY",
+"omWY":{
 	"class":"_OrientalMotor",
 	"bON": false,
 	"FPS":30,
@@ -139,11 +110,8 @@
 	"tIntCheckAlarm":100000,
 	"tIntReadStatus":100000,
 	"tInt":100000,
-
-	{
-		"name":"axis",
-		{
-			"name":"WY",
+"axis":{
+"WY":{
 			"pOrigin":0,
 			"pTarget":0,
 			"pErr":10,
@@ -159,9 +127,7 @@
 		}
 	}
 }
-
-{
-	"name":"omR",
+"omR":{
 	"class":"_OrientalMotor",
 	"bON": false,
 	"FPS":30,
@@ -173,11 +139,8 @@
 	"tIntCheckAlarm":100000,
 	"tIntReadStatus":100000,
 	"tInt":100000,
-
-	{
-		"name":"axis",
-		{
-			"name":"Y",
+"axis":{
+"Y":{
 			"pOrigin":100,
 			"pTarget":100,
 			"pErr":10,
@@ -193,9 +156,7 @@
 		}
 	}
 }
-
-{
-	"name":"omL",
+"omL":{
 	"class":"_OrientalMotor",
 	"bON": false,
 	"FPS":30,
@@ -207,11 +168,8 @@
 	"tIntCheckAlarm":100000,
 	"tIntReadStatus":100000,
 	"tInt":100000,
-
-	{
-		"name":"axis",
-		{
-			"name":"Y",
+"axis":{
+"Y":{
 			"pOrigin":100,
 			"pTarget":100,
 			"pErr":10,
@@ -227,9 +185,7 @@
 		}
 	}
 }
-
-{
-	"name":"omM",
+"omM":{
 	"class":"_OrientalMotor",
 	"bON": false,
 	"FPS":30,
@@ -241,11 +197,8 @@
 	"tIntCheckAlarm":100000,
 	"tIntReadStatus":100000,
 	"tInt":100000,
-
-	{
-		"name":"axis",
-		{
-			"name":"X",
+"axis":{
+"X":{
 			"pOrigin":43000,
 			"pTarget":43000,
 			"pErr":10,

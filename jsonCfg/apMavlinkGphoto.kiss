@@ -1,28 +1,21 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog": true,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"vBASE":["serialAP","mavAP","apBase","apPhoto"],
 }
-
-{
-	"name":"serialAP",
+"serialAP":{
 	"class":"_SerialPort",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"nPacket":1024,
@@ -32,71 +25,54 @@
 	"/port":"/dev/ttyTHS1",
 	"baud":115200,
 }
-
-{
-	"name":"mavAP",
+"mavAP":{
 	"class":"_Mavlink",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bLog":false,
 	"_IObase":"serialAP",
-	{
-		"name":"routing",
+"routing":{
 		{
 			"bON": true,
 			"_Mavlink":"mavUDP",
 		}
 	}
 }
-
-{
-	"name":"apBase",
+"apBase":{
 	"class":"_APmavlink_base",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"_StateControl":"state",
 	"_Mavlink":"mavAP",
 	"freqSendHeartbeat":1,
 	"apType":0,
-
-	{
-		"name":"mavMsgInt",
-
-		{
-			"name":"heartbeat",
+"mavMsgInt":{
+"heartbeat":{
 			"id":0,
 			"tInt":0.4,
 		}
-		{
-			"name":"attitude",
+"attitude":{
 			"id":30,
 			"tInt":0.1,
 		}
-		{
-			"name":"localPosition",
+"localPosition":{
 			"id":32,
 			"tInt":0.1,
 		}
-		{
-			"name":"globalPosition",
+"globalPosition":{
 			"id":33,
 			"tInt":0.1,
 		}
 	}
 }
-
-{
-	"name":"apPhoto",
+"apPhoto":{
 	"class":"_APmavlink_photo",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":2,
 	}
 	"bLog": true,

@@ -1,5 +1,4 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bWindow":0,
@@ -8,22 +7,16 @@
 	"bStdErr": false,
 	"waitKey":30,
 }
-
-{
-	"name":"OpenKAI",
+"OpenKAI":{
 	"class":"_Console",
 	"bON": true,
 }
-
-{
-	"name":"OKview",
+"OKview":{
 	"class":"Window",
 	"bON": false,
 	"bFullScreen":0,
 }
-
-{
-	"name":"xArm",
+"xArm":{
 	"class":"_xArm",
 	"bON": true,
 	"FPS":30,

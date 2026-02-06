@@ -1,5 +1,4 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bWindow":0,
@@ -8,9 +7,7 @@
 	"bStdErr": false,
 	"waitKey":30,
 }
-
-{
-	"name":"serial",
+"serial":{
 	"class":"_SerialPort",
 	"bON": true,
 	"FPS":30,
@@ -19,9 +16,7 @@
 	"baud":115200,
 	"_wakeUp":"GPS",
 }
-
-{
-	"name":"GPS",
+"GPS":{
 	"class":"_GPS",
 	"FPS":30,
 	"bON": true,

@@ -1,28 +1,21 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog":false,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"vBASE":["ZDmotor_LF","ZDmotor_LB","ZDmotor_RF","ZDmotor_RB"],
 }
-
-{
-	"name":"modbus",
+"modbus":{
 	"class":"_Modbus",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bLog":false,
@@ -30,23 +23,17 @@
 	"baud":19200,
 	"parity":"N",
 }
-
-{
-	"name":"ZDmotor_LF",
+"ZDmotor_LF":{
 	"class":"_ZDmotor",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"bLog": true,
 	"_Modbus":"modbus",
 	"iSlave":1,
-
-	{
-		"name":"axis",
-		{
-			"name":"lf",
+"axis":{
+"lf":{
 			"pOrigin":0.0,
 			"pTarget":0.0,
 			"pErr":0.01,
@@ -58,23 +45,17 @@
 		}
 	}
 }
-
-{
-	"name":"ZDmotor_LB",
+"ZDmotor_LB":{
 	"class":"_ZDmotor",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":5,
 	}
 	"bLog": true,
 	"_Modbus":"modbus",
 	"iSlave":2,
-
-	{
-		"name":"axis",
-		{
-			"name":"lb",
+"axis":{
+"lb":{
 			"pOrigin":0.0,
 			"pTarget":0.0,
 			"pErr":0.01,
@@ -86,23 +67,17 @@
 		}
 	}
 }
-
-{
-	"name":"ZDmotor_RF",
+"ZDmotor_RF":{
 	"class":"_ZDmotor",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":5,
 	}
 	"bLog": true,
 	"_Modbus":"modbus",
 	"iSlave":3,
-
-	{
-		"name":"axis",
-		{
-			"name":"rf",
+"axis":{
+"rf":{
 			"pOrigin":0.0,
 			"pTarget":0.0,
 			"pErr":0.01,
@@ -114,23 +89,17 @@
 		}
 	}
 }
-
-{
-	"name":"ZDmotor_RB",
+"ZDmotor_RB":{
 	"class":"_ZDmotor",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":5,
 	}
 	"bLog": true,
 	"_Modbus":"modbus",
 	"iSlave":4,
-
-	{
-		"name":"axis",
-		{
-			"name":"rb",
+"axis":{
+"rb":{
 			"pOrigin":0.0,
 			"pTarget":0.0,
 			"pErr":0.01,

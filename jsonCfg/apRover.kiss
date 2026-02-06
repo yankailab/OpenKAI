@@ -1,28 +1,21 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"OpenKAI",
 	"appName":"OpenKAI",
 	"bLog": true,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"vBASE":["cam","serialAP","apMavlink","apBase","apDrive"],
 }
-
-{
-	"name":"serialAP",
+"serialAP":{
 	"class":"_SerialPort",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"nPacket":1024,
@@ -33,13 +26,10 @@
 	"/port":"/dev/ttyTHS1",
 	"baud":115200,
 }
-
-{
-	"name":"apMavlink",
+"apMavlink":{
 	"class":"_Mavlink",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"bLog":false,
@@ -48,13 +38,10 @@
 	"mySystemID":255,
 	"iMavComm":0,
 }
-
-{
-	"name":"apBase",
+"apBase":{
 	"class":"_APmavlink_base",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"_StateControl":"state",
@@ -62,60 +49,46 @@
 	"apType":0,
 	"ieSendHB":1,
 	"ieSendMsgInt":1,
-
-	{
-		"name":"mavMsgInt",
-
-		{
-			"name":"heartbeat",
+"mavMsgInt":{
+"heartbeat":{
 			"id":0,
 			"tInt":0.2,
 		}
-		{
-			"name":"attitude",
+"attitude":{
 			"id":30,
 			"tInt":0.5,
 		}
-		{
-			"name":"gpsRawINT",
+"gpsRawINT":{
 			"id":24,
 			"tInt":1,
 		}
-		{
-			"name":"localPosition",
+"localPosition":{
 			"id":32,
 			"tInt":0.3,
 		}
-		{
-			"name":"globalPosition",
+"globalPosition":{
 			"id":33,
 			"tInt":0.3,
 		}
-		{
-			"name":"homePosition",
+"homePosition":{
 			"id":242,
 			"tInt":10,
 		}
-		{
-			"name":"batteryStatus",
+"batteryStatus":{
 			"id":147,
 			"tInt":10,
 		}
-		{
-			"name":"missionCurrent",
+"missionCurrent":{
 			"id":42,
 			"tInt":1,
 		}
 	}
 }
-
-{
-	"name":"apDrive",
+"apDrive":{
 	"class":"_APmavlink_drive",
 	"bON": true,
 	"bLog": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"_APmavlink_base":"apBase",

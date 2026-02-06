@@ -1,41 +1,31 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog": true,
 	"bStdErr": false,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"vBASE":["/udpAP","/serialAP","/mavAP","apBase","arUco","YOLO","apFollow"],
 }
-
-{
-	"name":"CVwindow",
+"CVwindow":{
 	"class":"_WindowCV",
 	"bON": true,
 	"bFullScreen":0,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"vBASE":["cam","univ","/arUco","/YOLO","apFollow"],
 	"bShow":1,
 }
-
-{
-	"name":"udpAP",
+"udpAP":{
 	"class":"_UDP",
 	"bON": true,
-	{
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"nPacket":10,
@@ -46,13 +36,10 @@
 	"bW2R":1,
 	"bWbroadcast":0,
 }
-
-{
-	"name":"serialAP",
+"serialAP":{
 	"class":"_SerialPort",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"nPacket":10,
@@ -63,34 +50,27 @@
 	"/baud":115200,
 	"baud":921600,
 }
-
-{
-	"name":"mavAP",
+"mavAP":{
 	"class":"_Mavlink",
 	"bON": true,
 	"bLog": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"_IObase":"serialAP",
 	"mySystemID":200,
 	"iMavComm":0,
-	{
-		"name":"routing",
+"routing":{
 		{
 			"bON": true,
 			"_Mavlink":"mavUDP",
 		}
 	}
 }
-
-{
-	"name":"apBase",
+"apBase":{
 	"class":"_APmavlink_base",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"_StateControl":"state",
@@ -98,59 +78,45 @@
 	"apType":0,
 	"ieSendHB":1,
 	"ieSendMsgInt":1,
-
-	{
-		"name":"mavMsgInt",
-
-		{
-			"name":"heartbeat",
+"mavMsgInt":{
+"heartbeat":{
 			"id":0,
 			"tInt":0.4,
 		}
-		{
-			"name":"attitude",
+"attitude":{
 			"id":30,
 			"tInt":0.3,
 		}
-		{
-			"name":"rcChannels",
+"rcChannels":{
 			"id":65,
 			"tInt":1.0,
 		}
-		{
-			"name":"localPosition",
+"localPosition":{
 			"id":32,
 			"tInt":0.3,
 		}
-		{
-			"name":"globalPosition",
+"globalPosition":{
 			"id":33,
 			"tInt":0.3,
 		}
-		{
-			"name":"homePosition",
+"homePosition":{
 			"id":242,
 			"tInt":10,
 		}
-		{
-			"name":"batteryStatus",
+"batteryStatus":{
 			"id":147,
 			"tInt":10,
 		}
-		{
-			"name":"missionCurrent",
+"missionCurrent":{
 			"id":42,
 			"tInt":1,
 		}
 	}
 }
-
-{
-	"name":"cam",
+"cam":{
 	"class":"_GStreamer",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"vSize":[1280,720],
@@ -158,26 +124,20 @@
 	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.10.1:8554/video ! queue ! rtph264depay ! queue ! avdec_h264 ! tee name=t t. ! queue ! videoconvert ! appsink max-buffers=1 sync=false drop=true t. ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"pipeline":"v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! appsink",
 }
-
-{
-	"name":"arUco",
+"arUco":{
 	"class":"_ArUco",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"_VisionBase":"cam",
 	"_Universe":"univ",
 	"dict":17,
 }
-
-{
-	"name":"YOLO",
+"YOLO":{
 	"class":"_YOLOv8",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bLog": true,
@@ -187,13 +147,10 @@
 	"confidence":0.001,
 	"bLetterBoxForSquare":0,
 }
-
-{
-	"name":"univ",
+"univ":{
 	"class":"_Universe",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":1,
 	}
 	"bDrawText":1,
@@ -201,9 +158,7 @@
 	"vW":[0.0, 1.0],
 	"vH":[0.0, 1.0],
 }
-
-{
-	"name":"PIDroll",
+"PIDroll":{
 	"class":"PID",
 	"bON": true,
 	"P":-1.0,
@@ -213,9 +168,7 @@
 	"vRin":[0,1],
 	"vRout":[-0.5,0.5],
 }
-
-{
-	"name":"PIDpitch",
+"PIDpitch":{
 	"class":"PID",
 	"bON": true,
 	"P":1.0,
@@ -225,13 +178,10 @@
 	"vRin":[0,1],
 	"vRout":[-0.5,0.5],
 }
-
-{
-	"name":"apFollow",
+"apFollow":{
 	"class":"_APmavlink_follow",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"_APmavlink_base":"apBase",

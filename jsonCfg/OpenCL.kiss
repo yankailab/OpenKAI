@@ -1,24 +1,18 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog": true,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"vBASE":["cl"],
 }
-
-{
-	"name":"cl",
+"cl":{
 	"class":"clBase",
 	"bON": true,
 	"bLog": true,

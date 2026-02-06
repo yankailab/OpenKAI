@@ -1,40 +1,30 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog": true,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"vBASE":["ft"],
 }
-
-{
-	"name":"ft",
+"ft":{
 	"class":"_Feetech",
 	"bON": true,
 	"bLog":false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"port":"/dev/ttyUSB0",
 	"/port":"/dev/ttyACM0",
 	"baud":115200,
 	"iID":1,
-
-	{
-		"name":"axis",
-		{
-			"name":"X",
+"axis":{
+"X":{
 			"pOrigin":0.0,
 			"pErr":1,
 			"pTarget":600,
@@ -46,14 +36,11 @@
 		}
 	}
 }
-
-{
-	"name":"modbus",
+"modbus":{
 	"class":"_Modbus",
 	"bON": false,
 	"bLog": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"port":"/dev/ttyUSB1",

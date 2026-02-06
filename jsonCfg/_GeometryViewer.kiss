@@ -1,32 +1,24 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"GeometryViewer",
 	"bLog": true,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"vBASE":["gv"],
 }
-
-{
-	"name":"gv",
+"gv":{
 	"class":"_GeometryViewer",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
-    {
-		"name":"threadUI",
+"threadUI":{
 		"FPS":30,
 	}
 	"vWinSize":[1920,1080],
@@ -55,25 +47,19 @@
 	"/dirSave":"/media/lab/",
 	"rVoxel":0.05,
 }
-
-{
-	"name":"pcFile",
+"pcFile":{
 	"class":"_PCfile",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"fName":"/home/kai/Downloads/office1.pcd",
 	"nPresv":480000,
 }
-
-{
-	"name":"pcGrid",
+"pcGrid":{
 	"class":"_PCgridBase",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"vPorigin":[0,0,0],

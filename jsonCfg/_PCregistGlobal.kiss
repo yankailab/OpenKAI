@@ -1,5 +1,4 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bWindow":1,
@@ -8,65 +7,50 @@
 	"bStdErr": true,
 	"waitKey":30,
 }
-
-{
-	"name":"OK_Console",
+"OK_Console":{
 	"class":"_Console",
 	"bON": true,
 }
-
-{
-	"name":"OKview",
+"OKview":{
 	"class":"Window",
 	"bON": false,
 	"bFullScreen":0,
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
 }
-
-{
-	"name":"camera",
+"camera":{
 	"class":"_Camera",
 	"bON": false,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"deviceID":0,
 	"vSize":[640,480],
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 }
-
-{
-	"name":"pcv",
+"pcv":{
 	"class":"_PCviewer",
 	"bON": true,
 	"_Console":"OK_Console",
 	"vWinSize":[1920,1080],
 	"fov":100,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 }
-
-{
-	"name":"pcf",
+"pcf":{
 	"class":"_PCfile",
 	"bON": true,
 	"bLog": true,
 	"_Console":"OK_Console",
 	"/_PCviewer":"pcv",
 	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 }
-
-{
-	"name":"tfPcf",
+"tfPcf":{
 	"class":"_PCtransform",
 	"bON": true,
 	"_PCbase":"pcf",
@@ -76,42 +60,33 @@
 	"nMt":1,
 	"vColOvrr":[0, 0, 1.0],
 	"paramKiss":"/home/kai/config/tf1.kiss",
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 }
-
-{
-	"name":"pcDS",
+"pcDS":{
 	"class":"_PCdownSample",
 	"bON": true,
 	"_Console":"OK_Console",
 	"/_PCviewer":"pcv",
 	"_PCbase":"pcf",
 	"voxelSize":0.1,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 }
-
-{
-	"name":"pcDS2",
+"pcDS2":{
 	"class":"_PCdownSample",
 	"bON": true,
 	"_Console":"OK_Console",
 	"/_PCviewer":"pcv",
 	"_PCbase":"tfPcf",
 	"voxelSize":0.1,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 }
-
-{
-	"name":"tfRRglobal",
+"tfRRglobal":{
 	"class":"_PCtransform",
 	"bON": true,
 	"_Console":"OK_Console",
@@ -121,14 +96,11 @@
 	"vR":[0, 0, 0],
 	"nMt":1,
 	"paramKiss":"/home/kai/config/tfRRglobal.kiss",
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 }
-
-{
-	"name":"pcRegistGlobal",
+"pcRegistGlobal":{
 	"class":"_PCregistGlobal",
 	"bON": true,
 	"_Console":"OK_Console",
@@ -141,17 +113,11 @@
 	"rFeature":0.5,
 	"maxNNnormal":30,
 	"maxNNfpfh":100,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 }
-
-
-
-
-{
-	"name":"tfRRicp",
+"tfRRicp":{
 	"class":"_PCtransform",
 	"bON": true,
 	"_Console":"OK_Console",
@@ -162,14 +128,11 @@
 	"nMt":1,
 	"vColOvrr":[0, 1.0, 0.0],
 	"paramKiss":"/home/kai/config/tfRRicp.kiss",
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 }
-
-{
-	"name":"pcRegistICP",
+"pcRegistICP":{
 	"class":"_PCregistGlobal",
 	"bON": true,
 	"_Console":"OK_Console",
@@ -178,18 +141,11 @@
 	"_PCtransform":"tfRRicp",
 	"thr":0.2,
 	"iMt":0,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 }
-
-
-
-
-
-{
-	"name":"rs1",
+"rs1":{
 	"class":"_RealSensePC",
 	"bON": false,
 	"bLog": true,
@@ -207,14 +163,11 @@
 	"rsSN":"f0210205",
 	"/_PCviewer":"pcv",
 	"vRz":[0, 1000.0],
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 }
-
-{
-	"name":"tf1",
+"tf1":{
 	"class":"_PCtransform",
 	"bON": false,
 	"_PCbase":"rs1",
@@ -223,14 +176,11 @@
 	"vR":[0, 0, 0],
 	"nMt":1,
 	"paramKiss":"/home/kai/config/tf1.kiss",
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 }
-
-{
-	"name":"rs2",
+"rs2":{
 	"class":"_RealSensePC",
 	"FPS":30,
 	"bON": false,
@@ -249,14 +199,11 @@
 	"rsSN":"f0210237",
 	"/_PCviewer":"pcv",
 	"vRz":[0, 1000.0],
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 }
-
-{
-	"name":"tf2",
+"tf2":{
 	"class":"_PCtransform",
 	"bON": false,
 	"_PCbase":"rs2",
@@ -266,9 +213,7 @@
 	"nMt":1,
 	"paramKiss":"/home/kai/config/tf2.kiss",
 }
-
-{
-	"name":"rs3",
+"rs3":{
 	"class":"_RealSensePC",
 	"bON": false,
 	"bLog": true,
@@ -286,14 +231,11 @@
 	"rsSN":"f0211594",
 	"/_PCviewer":"pcv",
 	"vRz":[0, 1000.0],
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 }
-
-{
-	"name":"tf3",
+"tf3":{
 	"class":"_PCtransform",
 	"bON": false,
 	"_PCbase":"rs3",
@@ -303,44 +245,31 @@
 	"nMt":1,
 	"paramKiss":"/home/kai/config/tf3.kiss",
 }
-
-
-{
-	"name":"ws",
+"ws":{
 	"class":"_WebSocket",
 	"bON": false,
 	"bLog":false,
 	"Window":"OKview",
 	"_wakeUp":"ui",
-    {
-		"name":"thread",
+"thread":{
 		"FPS":100,
 	}
-    {
-		"name":"threadR",
+"threadR":{
 		"FPS":1,
 	}
 }
-
-{
-	"name":"ui",
+"ui":{
 	"class":"_PCui",
 	"bON": false,
 	"Window":"OKview",
 	"_Console":"OK_Console",
 	"_IObase":"ws",
 	"PCT":["tf1","tf2","tf3"],
-    {
-		"name":"thread",
+"thread":{
 		"FPS":1,
 	}
 }
-
-
-
-
-{
-	"name":"UDPsend",
+"UDPsend":{
 	"class":"_UDP",
 	"bON": false,
 	"FPS":30,
@@ -351,9 +280,7 @@
 	"port":19840,
 	"nFIFO":1280000,
 }
-
-{
-	"name":"PCsend",
+"PCsend":{
 	"class":"_PCsend",
 	"bON": false,
 	"FPS":30,
@@ -365,9 +292,7 @@
 	"nB":256,
 	"tInt":100000,
 }
-
-{
-	"name":"UDPrecv",
+"UDPrecv":{
 	"class":"_UDP",
 	"bON": false,
 	"FPS":30,
@@ -378,9 +303,7 @@
 	"nFIFO":1280000,
 	"_wakeUp":"PCrecv",
 }
-
-{
-	"name":"PCrecv",
+"PCrecv":{
 	"class":"_PCrecv",
 	"bON": false,
 	"FPS":30,

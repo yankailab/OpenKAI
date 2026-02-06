@@ -1,29 +1,22 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog": true,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"vBASE":["ebyte"],
 }
-
-{
-	"name":"modbus",
+"modbus":{
 	"class":"_Modbus",
 	"bON": true,
 	"bLog": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":1,
 	}
 	"type":"RTU",
@@ -36,22 +29,17 @@
 	"tcpAddr":"192.168.3.7",
 	"tcpPort":502,
 }
-
-{
-	"name":"ebyte",
+"ebyte":{
 	"class":"_ADIO_EBYTE",
 	"bON": true,
 	"bLog":false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"_Modbus":"modbus",
 	"/iID":32,
 	"iID":1,
-
-	{
-		"name":"port",
+"port":{
 		{
 			"bDigital":1,
 			"type":2, /* Dout */

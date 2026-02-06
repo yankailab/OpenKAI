@@ -1,5 +1,4 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bWindow":1,
@@ -8,15 +7,11 @@
 	"bStdErr": true,
 	"waitKey":30,
 }
-
-{
-	"name":"OK_Console",
+"OK_Console":{
 	"class":"_Console",
 	"bON": true,
 }
-
-{
-	"name":"OKview",
+"OKview":{
 	"class":"Window",
 	"bON": true,
 	"bDrawMsg":1,
@@ -24,9 +19,7 @@
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.201 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 }
-
-{
-	"name":"camera",
+"camera":{
 	"class":"_Camera",
 	"FPS":30,
 	"bON": false,
@@ -36,9 +29,7 @@
 	"width":640,
 	"height":480,
 }
-
-{
-	"name":"leddarVu0",
+"leddarVu0":{
 	"class":"_LeddarVu",
 	"FPS":30,
 	"bON": true,
@@ -73,9 +64,7 @@
 	"nAvr":3,
 	"nMed":3,
 }
-
-{
-	"name":"leddarVu1",
+"leddarVu1":{
 	"class":"_LeddarVu",
 	"FPS":30,
 	"bON": false,
@@ -109,9 +98,7 @@
 	"nAvr":3,
 	"nMed":3,
 }
-
-{
-	"name":"leddarVu2",
+"leddarVu2":{
 	"class":"_LeddarVu",
 	"FPS":30,
 	"bON": false,

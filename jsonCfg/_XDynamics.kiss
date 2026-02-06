@@ -1,28 +1,21 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog": true,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"vBASE":["XD"],
 }
-
-{
-	"name":"view",
+"view":{
 	"class":"_WindowCV",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bFullScreen":0,
@@ -32,8 +25,7 @@
 {
 	"name":"XD",  /*XD-400*/
 	"class":"_XDynamics",
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"bON": false,
@@ -62,8 +54,7 @@
 {
 	"name":"XD",  /*XD-500*/
 	"class":"_XDynamics",
-    {
-		"name":"thread",
+"thread":{
 		"FPS":1,
 	}
 	"bON": false,
@@ -91,8 +82,7 @@
 {
 	"name":"XD", /*XD-1000*/
 	"class":"_XDynamics",
-    {
-		"name":"thread",
+"thread":{
 		"FPS":1,
 	}
 	"bON": false,
@@ -120,8 +110,7 @@
 {
 	"name":"XD",  /*XD-1100*/
 	"class":"_XDynamics",
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"bON": true,
@@ -146,40 +135,30 @@
 	"bPointCloud":1,
 	"_PCframe":"pcRGBD",
 }
-
-{
-	"name":"d2g",
+"d2g":{
 	"class":"_D2G",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"_RGBDbase":"XD",
 }
-
-{
-	"name":"pcRGBD",
+"pcRGBD":{
 	"class":"_PCframe",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"nPresv":76800,
 	"nPresvNext":76800,
 }
-
-{
-	"name":"gv",
+"gv":{
 	"class":"_GeometryViewer",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
-    {
-		"name":"threadUI",
+"threadUI":{
 		"FPS":30,
 	}
 	"vWinSize":[1920,1080],
@@ -204,9 +183,7 @@
 	"dirSave":"/home/kai/Documents/",
 	"/dirSave":"/media/lab/",
 	"rVoxel":0.05,
-
-	{
-		"name":"geometry",
+"geometry":{
 		{
 			"_GeometryBase":"pcRGBD",
 			"bStatic":0,

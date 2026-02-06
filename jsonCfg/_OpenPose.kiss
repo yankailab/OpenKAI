@@ -1,5 +1,4 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bWindow":1,
@@ -9,16 +8,12 @@
 	"bStdErr": true,
 	"waitKey":30,
 }
-
-{
-	"name":"OKview",
+"OKview":{
 	"class":"Window",
 	"bON": true,
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
 }
-
-{
-	"name":"cam",
+"cam":{
 	"class":"_Camera",
 	"FPS":30,
 	"bON": false,
@@ -27,18 +22,14 @@
 	"w":640,
 	"h":480,
 }
-
-{
-	"name":"cam",
+"cam":{
 	"class":"_GStreamer",
 	"FPS":30,
 	"bON": true,
 	"Window":"OKview",
 	"pipeline":"rtspsrc location=rtsp://admin:12345@192.168.1.120:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
 }
-
-{
-	"name":"videoFile",
+"videoFile":{
 	"class":"_VideoFile",
 	"FPS":30,
 	"bON": false,
@@ -49,9 +40,7 @@
 	"fovW":60,
 	"fovH":60,
 }
-
-{
-	"name":"OP",
+"OP":{
 	"class":"_OpenPose",
 	"bON": true,
 	"bDraw":1,

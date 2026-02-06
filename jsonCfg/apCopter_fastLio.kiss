@@ -1,28 +1,21 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog": true,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"vBASE":["serialAP","apBase","apVision","fastLio"],
 }
-
-{
-	"name":"serialAP",
+"serialAP":{
 	"class":"_SerialPort",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"nPacket":1024,
@@ -33,25 +26,19 @@
 	"/baud":115200,
 	"baud":921600,
 }
-
-{
-	"name":"udpAP",
+"udpAP":{
 	"class":"_UDP",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":100,
 	}
 	"/addr":"192.168.1.14",
 	"port":2024,
 }
-
-{
-	"name":"mavAP",
+"mavAP":{
 	"class":"_Mavlink",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":100,
 	}
 	"bLog":false,
@@ -62,53 +49,42 @@
 	"iMavComm":0,
 
 	"/noRouteCmd":[],
-	{
-		"name":"routing",
+"routing":{
 		{
 			"bON": true,
 			"_Mavlink":"mavUDP",
 		}
 	}
 }
-
-{
-	"name":"udpMav",
+"udpMav":{
 	"class":"_UDP",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"port":19840,
 }
-
-{
-	"name":"mavUDP",
+"mavUDP":{
 	"class":"_Mavlink",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bLog":false,
 	"_IObase":"udpMav",
 
 	"/noRouteCmd":[],
-	{
-		"name":"routing",
+"routing":{
 		{
 			"bON": true,
 			"_Mavlink":"mavAP",
 		}
 	}
 }
-
-{
-	"name":"apBase",
+"apBase":{
 	"class":"_APmavlink_base",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"_StateControl":"state",
@@ -116,67 +92,51 @@
 	"apType":0,
 	"ieSendHB":1,
 	"ieSendMsgInt":1,
-
-	{
-		"name":"mavMsgInt",
-
-		{
-			"name":"heartbeat",
+"mavMsgInt":{
+"heartbeat":{
 			"id":0,
 			"tInt":1,
 		}
-		{
-			"name":"attitude",
+"attitude":{
 			"id":30,
 			"tInt":0.5,
 		}
-		{
-			"name":"rcChannels",
+"rcChannels":{
 			"id":65,
 			"tInt":1.0,
 		}
-		{
-			"name":"localPosition",
+"localPosition":{
 			"id":32,
 			"tInt":0.5,
 		}
-		{
-			"name":"globalPosition",
+"globalPosition":{
 			"id":33,
 			"tInt":0.5,
 		}
-		{
-			"name":"homePosition",
+"homePosition":{
 			"id":242,
 			"tInt":10,
 		}
-		{
-			"name":"batteryStatus",
+"batteryStatus":{
 			"id":147,
 			"tInt":10,
 		}
-		{
-			"name":"missionCurrent",
+"missionCurrent":{
 			"id":42,
 			"tInt":1,
 		}
 	}
 }
-
-{
-	"name":"fastLio",
+"fastLio":{
 	"class":"_ROS_fastLio",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
-    {
-		"name":"threadROS",
+"threadROS":{
 		"FPS":1,
 	}
-    {
-		"name":"node",
+"node":{
 		"/topicPC2":"Laser_map",
 		"topicOdom":"Odometry",
 		"/topicPath":"path",
@@ -186,13 +146,10 @@
 	"scale":1.0,
 	"vAxisIdx":[0,1,2],
 }
-
-{
-	"name":"apVision",
+"apVision":{
 	"class":"_APmavlink_visionEstimate",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bLog":false,

@@ -1,28 +1,21 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog": true,
 	"bStdErr": false,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"vBASE":["udpClient","udpServer","JsonSender","JsonReceiver","TestJSON"],
 }
-
-{
-	"name":"udpClient",
+"udpClient":{
 	"class":"_UDP",
 	"bON": true,
-	{
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"nPacket":10,
@@ -33,13 +26,10 @@
 	"bW2R":1,
 	"bWbroadcast":0,
 }
-
-{
-	"name":"udpServer",
+"udpServer":{
 	"class":"_UDP",
 	"bON": true,
-	{
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"nPacket":10,
@@ -49,50 +39,39 @@
 	"bW2R":1,
 	"bWbroadcast":0,
 }
-
-{
-	"name":"JsonSender",
+"JsonSender":{
 	"class":"_JSONbase",
 	"bON": true,
 	"bLog":false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":1,
 	}
-    {
-		"name":"threadR",
+"threadR":{
 		"FPS":1,
 	}
 	"msgFinishSend":"EOJ",
 	"msgFinishRecv":"EOJ",
 	"_IObase":"udpClient",
 }
-
-{
-	"name":"JsonReceiver",
+"JsonReceiver":{
 	"class":"_JSONbase",
 	"bON": true,
 	"bLog":false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":1,
 	}
-    {
-		"name":"threadR",
+"threadR":{
 		"FPS":1,
 	}
 	"msgFinishSend":"EOJ",
 	"msgFinishRecv":"EOJ",
 	"_IObase":"udpServer",
 }
-
-{
-	"name":"TestJSON",
+"TestJSON":{
 	"class":"_TestJSON",
 	"bON": true,
 	"bLog":false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":1,
 	}
 	"_JSONbaseSender":"JsonSender",

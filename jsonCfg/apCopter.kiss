@@ -1,28 +1,21 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog": true,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"vBASE":["serialAP","mavAP","apBase","ws","apM2J","apMission"],
 }
-
-{
-	"name":"serialAP",
+"serialAP":{
 	"class":"_SerialPort",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"nPacket":1024,
@@ -32,89 +25,70 @@
 	"/port":"/dev/ttyTHS1",
 	"baud":115200,
 }
-
-{
-	"name":"mavAP",
+"mavAP":{
 	"class":"_Mavlink",
 	"bON": true,
 	"bLog": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"_IObase":"serialAP",
 	"mySystemID":200,
 	"iMavComm":0,
-	{
-		"name":"routing",
+"routing":{
 		{
 			"bON": true,
 			"_Mavlink":"mavUDP",
 		}
 	}
 }
-
-{
-	"name":"udpGCS",
+"udpGCS":{
 	"class":"_UDP",
 	"bON": false,
-	{
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
-	{
-		"name":"threadR",
+"threadR":{
 		"FPS":30,
 		"vRunThread":["mavGCS.thread"],
 	}
 	"addr":"127.0.0.1",
 	"port":19840,
 }
-
-{
-	"name":"mavGCS",
+"mavGCS":{
 	"class":"_Mavlink",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bLog":false,
 	"_IObase":"udpGCS",
-	{
-		"name":"routing",
+"routing":{
 		{
 			"bON": true,
 			"_Mavlink":"mavUDP",
 		}
 	}
 }
-
-{
-	"name":"udp",
+"udp":{
 	"class":"_UDP",
 	"bON": true,
-	{
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"/port":19840,
 	"/addr":"127.0.0.1",
 	"port":14550,
 }
-
-{
-	"name":"mavUDP",
+"mavUDP":{
 	"class":"_Mavlink",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bLog":false,
 	"_IObase":"udp",
-	{
-		"name":"routing",
+"routing":{
 		{
 			"bON": false,
 			"_Mavlink":"mavAP",
@@ -125,13 +99,10 @@
 		}
 	}
 }
-
-{
-	"name":"apBase",
+"apBase":{
 	"class":"_APmavlink_base",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"_StateControl":"state",
@@ -140,77 +111,58 @@
 	"apType":0,
 	"ieSendHB":1,
 	"ieSendMsgInt":1,
-
-	{
-		"name":"mavMsgInt",
-
-		{
-			"name":"heartbeat",
+"mavMsgInt":{
+"heartbeat":{
 			"id":0,
 			"tInt":0.4,
 		}
-		{
-			"name":"attitude",
+"attitude":{
 			"id":30,
 			"tInt":0.3,
 		}
-		{
-			"name":"rcChannels",
+"rcChannels":{
 			"id":65,
 			"tInt":1.0,
 		}
-		{
-			"name":"localPosition",
+"localPosition":{
 			"id":32,
 			"tInt":0.3,
 		}
-		{
-			"name":"globalPosition",
+"globalPosition":{
 			"id":33,
 			"tInt":0.3,
 		}
-		{
-			"name":"homePosition",
+"homePosition":{
 			"id":242,
 			"tInt":10,
 		}
-		{
-			"name":"batteryStatus",
+"batteryStatus":{
 			"id":147,
 			"tInt":10,
 		}
-		{
-			"name":"missionCurrent",
+"missionCurrent":{
 			"id":42,
 			"tInt":1,
 		}
 	}
 }
-
-{
-	"name":"ws",
+"ws":{
 	"class":"_WebSocket",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
-    {
-		"name":"threadR",
+"threadR":{
 		"FPS":10,
 	}
 }
-
-{
-	"name":"apM2J",
+"apM2J":{
 	"class":"_APmavlink_mav2json",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
-    {
-		"name":"threadR",
+"threadR":{
 		"FPS":10,
 	}
 	"bLog": true,
@@ -222,13 +174,10 @@
 
 	"_APmavlink_base":"apBase",
 }
-
-{
-	"name":"apMission",
+"apMission":{
 	"class":"_APmavlink_mission",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"bLog": true,

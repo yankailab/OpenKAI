@@ -1,5 +1,4 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bWindow":1,
@@ -9,21 +8,15 @@
 	"bStdErr": true,
 	"waitKey":30,
 }
-
-{
-	"name":"OKview",
+"OKview":{
 	"class":"Window",
 	"bON": true,
 }
-
-{
-	"name":"filterView",
+"filterView":{
 	"class":"Window",
 	"bON": true,
 }
-
-{
-	"name":"cam",
+"cam":{
 	"class":"_Camera",
 	"FPS":30,
 	"bON": false,
@@ -32,9 +25,7 @@
 	"w":1920,
 	"h":1080,
 }
-
-{
-	"name":"cam",
+"cam":{
 	"class":"_GStreamer",
 	"FPS":60,
 	"bON": false,
@@ -44,9 +35,7 @@
 	"_pipeline":"udpsrc port=5678 ! application/x-rtp, media=video, encoding-name=h264, payload=96, clock-rate=90000 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
 	"_pipeline":"rpicamsrc bitrate=1000000 preview=0 rotation=180 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! omxh264enc ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678"
 }
-
-{
-	"name":"cam",
+"cam":{
 	"class":"_VideoFile",
 	"FPS":30,
 	"bON": false,
@@ -57,9 +46,7 @@
 	"fovW":60,
 	"fovH":60,
 }
-
-{
-	"name":"cam",
+"cam":{
 	"class":"_RealSense",
 	"FPS":30,
 	"bON": false,
@@ -72,18 +59,14 @@
 	"rsFPS":30,
 	"bAlign":0,
 }
-
-{
-	"name":"cam",
+"cam":{
 	"class":"_ImgFile",
 	"FPS":30,
 	"bON": true,
 	"Window":"OKview",
 	"file":"/home/kai/dev/test/truck/DSCF7019.JPG",
 }
-
-{
-	"name":"contrast",
+"contrast":{
 	"class":"_Contrast",
 	"FPS":30,
 	"bON": true,
@@ -92,9 +75,7 @@
 	"alpha":1.5,
 	"beta":0.0,
 }
-
-{
-	"name":"crop",
+"crop":{
 	"class":"_Crop",
 	"FPS":30,
 	"bON": true,
@@ -105,9 +86,7 @@
 	"z":0.625,
 	"w":0.85,
 }
-
-{
-	"name":"ocr",
+"ocr":{
 	"class":"OCR",
 	"bON": true,
 	"bDraw":0,
@@ -119,9 +98,7 @@
 	"ocrDataDir":"/home/kai/dev/eii/tesseract",
 	"locale":"C.UTF-8",
 }
-
-{
-	"name":"DNNtext",
+"DNNtext":{
 	"class":"_DNNtext",
 	"bON": true,
 	"bDraw":1,

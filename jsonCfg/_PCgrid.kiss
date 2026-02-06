@@ -1,28 +1,21 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog": true,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"vBASE":["pcGrid", "Lvx_1"],
 }
-
-{
-	"name":"pcGrid",
+"pcGrid":{
 	"class":"_PCgridBase",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 
@@ -40,17 +33,13 @@
 	"tExpire":1000000,
 	"vGeometryBase":["psTest","Lvx1"],
 }
-
-{
-	"name":"geometryViewer",
+"geometryViewer":{
 	"class":"_GeometryViewer",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
-    {
-		"name":"threadUI",
+"threadUI":{
 		"FPS":30,
 	}
 	"vWinSize":[1920,1080],
@@ -79,9 +68,7 @@
 	"dirSave":"/home/kai/Documents/",
 	"/dirSave":"/media/lab/",
 	"rVoxel":0.05,
-
-	{
-		"name":"geometry",
+"geometry":{
 		{
 			"_GeometryBase":"psTest",
 			"bStatic":0,
@@ -144,18 +131,10 @@
 		}
 	}
 }
-
-
-
-
-
-
-{
-	"name":"udpLvxDeviceQuery_1",
+"udpLvxDeviceQuery_1":{
 	"class":"_UDP",
 	"bON": true,
-	{
-		"name":"thread",
+"thread":{
 		"FPS":1,
 	}
 	"/addr":"255.255.255.255",
@@ -165,13 +144,10 @@
 	"bW2R":0,
 	"bWbroadcast":0,
 }
-
-{
-	"name":"udpLvxCtrlCmd_1",
+"udpLvxCtrlCmd_1":{
 	"class":"_UDP",
 	"bON": true,
-	{
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"addrRemote":"192.168.1.200",
@@ -180,13 +156,10 @@
 	"bW2R":0,
 	"bWbroadcast":0,
 }
-
-{
-	"name":"udpLvxPushCmd_1",
+"udpLvxPushCmd_1":{
 	"class":"_UDP",
 	"bON": true,
-	{
-		"name":"thread",
+"thread":{
 		"FPS":1,
 	}
 	"addrRemote":"192.168.1.200",
@@ -195,13 +168,10 @@
 	"bW2R":0,
 	"bWbroadcast":0,
 }
-
-{
-	"name":"udpLvxPCL_1",
+"udpLvxPCL_1":{
 	"class":"_UDP",
 	"bON": true,
-	{
-		"name":"thread",
+"thread":{
 		"FPS":1,
 	}
 	"bLog":false,
@@ -211,13 +181,10 @@
 	"bW2R":0,
 	"bWbroadcast":0,
 }
-
-{
-	"name":"udpLvxIMU_1",
+"udpLvxIMU_1":{
 	"class":"_UDP",
 	"bON": true,
-	{
-		"name":"thread",
+"thread":{
 		"FPS":1,
 	}
 	"bLog":false,
@@ -227,22 +194,16 @@
 	"bW2R":0,
 	"bWbroadcast":0,
 }
-
-
-{
-	"name":"Lvx1",
+"Lvx1":{
 	"class":"_Livox2",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":1,
 	}
-    {
-		"name":"threadR",
+"threadR":{
 		"FPS":1,
 	}
-    {
-		"name":"threadCtrlCmdW",
+"threadCtrlCmdW":{
 		"FPS":1,
 	}
 	"bLog":false,
@@ -273,14 +234,10 @@
 	"vToffset":[0,0,0],
 	"vRoffset":[0,0,0],
 }
-
-
-{
-	"name":"psTest",
+"psTest":{
 	"class":"_PCfile",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":1,
 	}
 	"bLog": true,

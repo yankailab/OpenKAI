@@ -1,64 +1,48 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog": true,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"vBASE":["Vzense"],
 }
-
-{
-	"name":"RGBview",
+"RGBview":{
 	"class":"_WindowCV",
 	"bON": true,
 	"bFullScreen":0,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"vBASE":["SHMvzense"],
 }
-
-{
-	"name":"depthView",
+"depthView":{
 	"class":"_WindowCV",
 	"bON": false,
 	"bFullScreen":0,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"vBASE":["DepthShow"],
 }
-
-{
-	"name":"SHMvzRGB",
+"SHMvzRGB":{
 	"class":"SharedMem",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"shmName":"SHMvzRGB",
 	"nB":5760000,
 	"bWriter":0,
 }
-
-{
-	"name":"SHMvzense",
+"SHMvzense":{
 	"class":"SharedMemImg",
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bON": true,
@@ -66,13 +50,10 @@
 	"vSize":[1600,1200],
 	"SharedMem":"SHMvzRGB",
 }
-
-{
-	"name":"DepthShow",
+"DepthShow":{
 	"class":"_DepthShow",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"_RGBDbase":"Vzense",

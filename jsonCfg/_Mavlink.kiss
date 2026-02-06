@@ -1,28 +1,21 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog": true,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"vBASE":["serial","mavAP","apBase","udp","mavUDP"],
 }
-
-{
-	"name":"serial",
+"serial":{
 	"class":"_SerialPort",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"nPacket":1024,
@@ -34,14 +27,11 @@
 	"baud":115200,
 	"/baud":921600,
 }
-
-{
-	"name":"mavAP",
+"mavAP":{
 	"class":"_Mavlink",
 	"bON": true,
 	"bLog":false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"_IObase":"serial",
@@ -50,21 +40,17 @@
 	"iMavComm":0,
 
 	"/noRouteCmd":[],
-	{
-		"name":"routing",
+"routing":{
 		{
 			"bON": false,
 			"_Mavlink":"mavUDP",
 		}
 	}
 }
-
-{
-	"name":"apBase",
+"apBase":{
 	"class":"_APmavlink_base",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"/_StateControl":"state",
@@ -73,76 +59,56 @@
 	"apType":0,
 	"ieSendHB":1,
 	"ieSendMsgInt":1,
-
-	{
-		"name":"mavMsgInt",
-
-		{
-			"name":"heartbeat",
+"mavMsgInt":{
+"heartbeat":{
 			"id":0,
 			"tInt":1,
 		}
-		{
-			"name":"attitude",
+"attitude":{
 			"id":30,
 			"tInt":0.05,
 		}
-		{
-			"name":"rcChannels",
+"rcChannels":{
 			"id":65,
 			"tInt":1.0,
 		}
-		{
-			"name":"localPosition",
+"localPosition":{
 			"id":32,
 			"tInt":0.5,
 		}
-		{
-			"name":"globalPosition",
+"globalPosition":{
 			"id":33,
 			"tInt":0.5,
 		}
-		{
-			"name":"homePosition",
+"homePosition":{
 			"id":242,
 			"tInt":10,
 		}
-		{
-			"name":"batteryStatus",
+"batteryStatus":{
 			"id":147,
 			"tInt":10,
 		}
-		{
-			"name":"missionCurrent",
+"missionCurrent":{
 			"id":42,
 			"tInt":1,
 		}
 	}
 }
-
-
-
-
-{
-	"name":"udp",
+"udp":{
 	"class":"_UDP",
 	"bON": false,
 	"bLog":false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"/addr":"127.0.0.1",
 	"port":14550,
 }
-
-{
-	"name":"mavUDP",
+"mavUDP":{
 	"class":"_Mavlink",
 	"bON": false,
 	"bLog":false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"_IObase":"udp",
@@ -151,8 +117,7 @@
 	"iMavComm":0,
 
 	"/noRouteCmd":[],
-	{
-		"name":"routing",
+"routing":{
 		{
 			"bON": false,
 			"_Mavlink":"mavAP",

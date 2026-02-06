@@ -1,28 +1,21 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"APactuator",
 	"bLog":false,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"vBASE":["modbus","stepper1","stepper2","apActuator","apBase"],
 }
-
-{
-	"name":"modbus",
+"modbus":{
 	"class":"_Modbus",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bLog":false,
@@ -30,13 +23,10 @@
 	"baud":9600,
 	"parity":"N",
 }
-
-{
-	"name":"stepper1",
+"stepper1":{
 	"class":"_HYMCU_RS485",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":5,
 	}
 	"bLog": true,
@@ -45,11 +35,8 @@
 	"dpr":1,
 	"bFeedback":1,
 	"dInit":0,
-
-	{
-		"name":"axis",
-		{
-			"name":"X",
+"axis":{
+"X":{
 			"pOrigin":0.0,
 			"pTarget":0.0,
 			"pErr":0.01,
@@ -61,13 +48,10 @@
 		}
 	}
 }
-
-{
-	"name":"stepper2",
+"stepper2":{
 	"class":"_HYMCU_RS485",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":5,
 	}
 	"bLog": true,
@@ -76,11 +60,8 @@
 	"dpr":1,
 	"bFeedback":1,
 	"dInit":0,
-
-	{
-		"name":"axis",
-		{
-			"name":"X",
+"axis":{
+"X":{
 			"pOrigin":0.0,
 			"pTarget":0.0,
 			"pErr":0.01,
@@ -92,13 +73,10 @@
 		}
 	}
 }
-
-{
-	"name":"apActuator",
+"apActuator":{
 	"class":"_APmavlink_rcChannel",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bLog": true,
@@ -110,17 +88,13 @@
 	"iRCstickV":2,
 	"iRCstickH":4,
 }
-
-{
-	"name":"apSerial",
+"apSerial":{
 	"class":"_SerialPort",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
-    {
-		"name":"threadR",
+"threadR":{
 		"FPS":1,
 	}
 	"bLog":false,
@@ -128,61 +102,46 @@
 	"port":"/dev/ttyACM0",
 	"baud":115200,
 }
-
-{
-	"name":"apMavlink",
+"apMavlink":{
 	"class":"_Mavlink",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bLog":false,
 	"_IObase":"apSerial",
 }
-
-{
-	"name":"apBase",
+"apBase":{
 	"class":"_APmavlink_base",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"_Mavlink":"apMavlink",
 	"freqSendHeartbeat":1,
 	"apType":1,
-
-	{
-		"name":"mavMsgInt",
-
-		{
-			"name":"heartbeat",
+"mavMsgInt":{
+"heartbeat":{
 			"id":0,
 			"tInt":1.0,
 		}
-		{
-			"name":"attitude",
+"attitude":{
 			"id":30,
 			"tInt":1.0,
 		}
-		{
-			"name":"rcChannels",
+"rcChannels":{
 			"id":65,
 			"tInt":0.5,
 		}
-		{
-			"name":"localPosition",
+"localPosition":{
 			"id":32,
 			"tInt":1.0,
 		}
-		{
-			"name":"globalPosition",
+"globalPosition":{
 			"id":33,
 			"tInt":1.0,
 		}
-		{
-			"name":"batteryStatus",
+"batteryStatus":{
 			"id":147,
 			"tInt":10,
 		}

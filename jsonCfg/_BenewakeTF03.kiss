@@ -1,32 +1,24 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog": true,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"vBASE":["TF03"],
 }
-
-{
-	"name":"serial",
+"serial":{
 	"class":"_SerialPort",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
-    {
-		"name":"threadR",
+"threadR":{
 		"FPS":30,
 	}
 	"bLog":false,
@@ -34,13 +26,10 @@
 	"/port":"/dev/ttyUSB0",
 	"baud":115200,
 }
-
-{
-	"name":"TF03",
+"TF03":{
 	"class":"_BenewakeTF",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bLog": true,

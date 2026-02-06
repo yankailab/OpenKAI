@@ -1,5 +1,4 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bWindow":0,
@@ -8,62 +7,46 @@
 	"bStdErr": true,
 	"waitKey":30,
 }
-
-{
-	"name":"OK_Console",
+"OK_Console":{
 	"class":"_Console",
 	"bON": true,
 }
-
-{
-	"name":"OKview",
+"OKview":{
 	"class":"Window",
 	"bON": false,
 	"bFullScreen":0,
 }
-
-{
-	"name":"cam",
+"cam":{
 	"class":"_Camera",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"Window":"OKview",
 	"deviceID":0,
 	"vSize":[640, 480],
 }
-
-{
-	"name":"cam",
+"cam":{
 	"class":"_GStreamer",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"Window":"OKview",
 	"pipeline":"v4l2src device=/dev/video4 ! videoflip method=0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
 }
-
-{
-	"name":"gray",
+"gray":{
 	"class":"_ColorConvert",
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bON": true,
 	"/Window":"OKview",
 	"_VisionBase":"cam",
 }
-
-{
-	"name":"resize",
+"resize":{
 	"class":"_Resize",
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bON": true,
@@ -71,12 +54,9 @@
 	"_VisionBase":"gray",
 	"vSize":[640,360],
 }
-
-{
-	"name":"orbSlam",
+"orbSlam":{
 	"class":"_ORB_SLAM",
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bON": true,

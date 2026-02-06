@@ -1,52 +1,39 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"OpenKAI",
 	"appName":"OpenKAI",
 	"bLog": true,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"vBASE":["cam","d2g","inRange","morph","CR","univ"],
 }
-
-{
-	"name":"RGBview",
+"RGBview":{
 	"class":"_WindowCV",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":20,
 	}
 	"bFullScreen":0,
 	"vBASE":["cam"],
 }
-
-{
-	"name":"DepthView",
+"DepthView":{
 	"class":"_WindowCV",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":20,
 	}
 	"bFullScreen":0,
 	"vBASE":["/cam","/d2g","/inRange","morph","univ"],
 }
-
-{
-	"name":"gst",
+"gst":{
 	"class":"_GstOutput",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":20,
 	}
 	"vBASE":["cam"],
@@ -55,31 +42,24 @@
 	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.4 port=5678 auto-multicast=false",
 }
-
-{
-	"name":"SHMscRGB",
+"SHMscRGB":{
 	"class":"SharedMem",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"shmName":"SHMscRGB",
 	"nB":5760000,
 	"bWriter":1,
 }
-
-{
-	"name":"cam",
+"cam":{
 	"class":"_Scepter",
 	"bON": true,
 	"bLog": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
-    {
-		"name":"threadPP",
+"threadPP":{
 		"FPS":30,
 	}
 	"URI":"",
@@ -96,48 +76,36 @@
 	"bDebugDepth":1,
 	"/_SHMrgb":"SHMscRGB",
 }
-
-{
-	"name":"d2g",
+"d2g":{
 	"class":"_D2G",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"_RGBDbase":"cam",
 }
-
-{
-	"name":"d2rgb",
+"d2rgb":{
 	"class":"_D2RGB",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"_RGBDbase":"cam",
 }
-
-{
-	"name":"inRange",
+"inRange":{
 	"class":"_InRange",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"_VisionBase":"d2rgb",
 	"vL":[10,10,10],
 	"vH":[500,500,500],
 }
-
-{
-	"name":"morph",
+"morph":{
 	"class":"_Morphology",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"_VisionBase":"inRange",
@@ -157,14 +125,11 @@
 		"nItr":2,
 	}
 }
-
-{
-	"name":"CR",
+"CR":{
 	"class":"_Contour",
 	"bON": true,
 	"bLog":false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"_VisionBase":"morph",
@@ -172,13 +137,10 @@
 	"mode":0,
 	"method":1,
 }
-
-{
-	"name":"univ",
+"univ":{
 	"class":"_Universe",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":1,
 	}
 	"bDrawText":0,

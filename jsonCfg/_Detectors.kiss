@@ -1,52 +1,39 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog":false,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"vBASE":["cam","univ","YOLO","SSD"],
 }
-
-{
-	"name":"RGBview",
+"RGBview":{
 	"class":"_WindowCV",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bFullScreen":0,
 	"vBASE":["cam","contrast","/inv","/hsv","/inRange","/morph","univ"],
 }
-
-{
-	"name":"cam",
+"cam":{
 	"class":"_Camera",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"deviceID":0,
 	"vSizeRGB":[640,480],
 }
-
-{
-	"name":"cam",
+"cam":{
 	"class":"_GStreamer",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! appsink",
@@ -55,73 +42,55 @@
 	"/pipeline":"udpsrc port=5678 ! application/x-rtp, media=video, encoding-name=h264, payload=96, clock-rate=90000 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
 	"/pipeline":"rpicamsrc bitrate=1000000 preview=0 rotation=180 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! omxh264enc ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678"
 }
-
-{
-	"name":"cam",
+"cam":{
 	"class":"_VideoFile",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":60,
 	}
 	"videoFile":"/home/kai/Downloads/DJi.MP4",
 	"vSize":[1280,720],
 }
-
-{
-	"name":"cam",
+"cam":{
 	"class":"_ImgFile",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":60,
 	}
 	"file":"/home/kai/Documents/soten_20240313/soten.png",
 	"vSize":[1280,720],
 }
-
-{
-	"name":"contrast",
+"contrast":{
 	"class":"_Contrast",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"_VisionBase":"cam",
 	"alpha":1.0,
 	"beta":0.0,
 }
-
-{
-	"name":"inv",
+"inv":{
 	"class":"_Invert",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"_VisionBase":"contrast",
 }
-
-{
-	"name":"hsv",
+"hsv":{
 	"class":"_ColorConvert",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"_VisionBase":"inv",
 	"code":40,
 }
-
-{
-	"name":"inRange",
+"inRange":{
 	"class":"_InRange",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"_VisionBase":"hsv",
@@ -130,13 +99,10 @@
 	"/vL":[80, 30, 150],
 	"/vH":[100, 255, 255],
 }
-
-{
-	"name":"morph",
+"morph":{
 	"class":"_Morphology",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"_VisionBase":"inRange",
@@ -157,26 +123,20 @@
 		"nItr":2,
 	}
 }
-
-{
-	"name":"CR",
+"CR":{
 	"class":"_Contour",
 	"bON": false,
 	"bLog":false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"_VisionBase":"morph",
 	"_Universe":"univ",
 }
-
-{
-	"name":"univ",
+"univ":{
 	"class":"_Universe",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"bDrawText":1,
@@ -184,13 +144,10 @@
 	"vW":[0.0, 0.25],
 	"vH":[0.0, 0.25],
 }
-
-{
-	"name":"YOLO",
+"YOLO":{
 	"class":"_YOLOv8",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bLog": true,
@@ -209,13 +166,10 @@ from ultralytics import YOLO
 model = YOLO('yolov8x.pt')
 model.export(format='onnx')
 */
-
-{
-	"name":"YOLO",
+"YOLO":{
 	"class":"_YOLOv3",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bLog": true,
@@ -228,13 +182,10 @@ model.export(format='onnx')
 	"scale":0.00392,
 	"thr":0.1,
 }
-
-{
-	"name":"SSD",
+"SSD":{
 	"class":"_SSD",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bLog":false,
@@ -249,13 +200,10 @@ model.export(format='onnx')
 	"vMean":[127.5, 127.5, 127.5],
 	"thr":0.1,
 }
-
-{
-	"name":"TF",
+"TF":{
 	"class":"_YOLOv3",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bLog": true,
@@ -273,13 +221,10 @@ model.export(format='onnx')
 	"nH":300,
 	"thr":0.5,
 }
-
-{
-	"name":"Caffe",
+"Caffe":{
 	"class":"_YOLOv3",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bDraw":1,
@@ -297,13 +242,10 @@ model.export(format='onnx')
 	"thr":0.5,
 	"iClassDraw":-1,
 }
-
-{
-	"name":"DetectNet",
+"DetectNet":{
 	"class":"_DetectNet",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bDraw":1,

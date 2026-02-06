@@ -1,28 +1,21 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog":false,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"vBASE":["modbus","stepperX","stepperY"],
 }
-
-{
-	"name":"modbus",
+"modbus":{
 	"class":"_Modbus",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bLog":false,
@@ -31,13 +24,10 @@
 	"baud":115200,
 	"parity":"N",
 }
-
-{
-	"name":"stepperX",
+"stepperX":{
 	"class":"_HYMCU_RS485",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":5,
 	}
 	"bLog": true,
@@ -46,9 +36,7 @@
 	"dpr":1,
 	"bFeedback":1,
 	"dInit":5,
-
-	{
-		"name":"addr",
+"addr":{
 		"setDPR":4,
 		"setDist":9,
 		"setDir":11,
@@ -60,11 +48,8 @@
 		"stop":3,
 		"resPos":10,
 	}
-
-	{
-		"name":"axis",
-		{
-			"name":"X",
+"axis":{
+"X":{
 			"pOrigin":0.0,
 			"pTarget":5.0,
 			"pErr":0.01,
@@ -76,13 +61,10 @@
 		}
 	}
 }
-
-{
-	"name":"stepperY",
+"stepperY":{
 	"class":"_HYMCU_RS485",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":5,
 	}
 	"bLog": true,
@@ -91,9 +73,7 @@
 	"dpr":1,
 	"bFeedback":1,
 	"dInit":5,
-
-	{
-		"name":"addr",
+"addr":{
 		"setDPR":4,
 		"setDist":9,
 		"setDir":11,
@@ -105,11 +85,8 @@
 		"stop":3,
 		"resPos":10,
 	}
-
-	{
-		"name":"axis",
-		{
-			"name":"Y",
+"axis":{
+"Y":{
 			"pOrigin":0.0,
 			"pTarget":5.0,
 			"pErr":0.01,

@@ -1,14 +1,11 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
-
-{
-	"name":"OKview",
+"OKview":{
 	"class":"Window",
 	"bON": true,
 	"bFullScreen":0,
@@ -17,9 +14,7 @@
 	"recCodec":"MJPG",
 	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
 }
-
-{
-	"name":"camera",
+"camera":{
 	"class":"_Camera",
 	"FPS":30,
 	"bON": false,
@@ -28,9 +23,7 @@
 	"width":1280,
 	"height":720,
 }
-
-{
-	"name":"camera",
+"camera":{
 	"class":"_RealSense",
 	"FPS":30,
 	"bON": true,
@@ -48,9 +41,7 @@
 	"rFrom":0.1,
 	"rTo":15.0,
 }
-
-{
-	"name":"lane",
+"lane":{
 	"class":"_Lane",
 	"FPS":30,
 	"bON": true,
@@ -71,9 +62,7 @@
 	"nMed":5,
 	"bDrawOverhead":1,
 	"bDrawFilter":0,
-
-	{
-		"name":"colorFilter",
+"colorFilter":{
 		"bON": true,
 		{
 			"bON": true,
@@ -100,9 +89,7 @@
 			"clipLim":2.0,
 		}
 	}
-	
-	{
-		"name":"lane",
+"lane":{
 		"bON": true,
 		{
 			"bON": true,

@@ -1,28 +1,21 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog": true,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"vBASE":["uploader"],
 }
-
-{
-	"name":"uploader",
+"uploader":{
 	"class":"_Uploader",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":1,
 	}
 	"bLog": true,

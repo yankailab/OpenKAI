@@ -1,42 +1,32 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog": true,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"vBASE":["wsServer"],
 }
-
-{
-	"name":"ws",
+"ws":{
 	"class":"_WebSocket",
 	"bON": true,
 	"bLog": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":1,
 	}
 	"nPacket":1024,
 	"nPbuffer":512,
 }
-
-{
-	"name":"wsServer",
+"wsServer":{
 	"class":"_WebSocketServer",
 	"bON": true,
 	"bLog": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"host":"localhost",

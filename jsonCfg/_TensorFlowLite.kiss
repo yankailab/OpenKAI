@@ -1,28 +1,21 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bLog":false,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"vBASE":["cam","univ","tfMN"],
 }
-
-{
-	"name":"RGBview",
+"RGBview":{
 	"class":"_WindowCV",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bFullScreen":0,
@@ -31,72 +24,54 @@
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.4 port=5678 auto-multicast=false",
 }
-
-{
-	"name":"FB",
+"FB":{
 	"class":"_GstOutput",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"vBASE":["camCrop"],
 	"gstOutput":"appsrc ! v4l2convert ! fbdevsink",
 	"vSize":[1280,720],
 }
-
-{
-	"name":"cam",
+"cam":{
 	"class":"_Camera",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"deviceID":0,
 	"vSize":[640,480],
 }
-
-{
-	"name":"cam",
+"cam":{
 	"class":"_GStreamer",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"/pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! videoconvert ! appsink max-buffers=1 sync=false drop=true", /* C10 mini, using YUV, Y chan only */
 	"pipeline":"rtspsrc latency=0 location=rtsp://192.168.144.108:554/stream=0 ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! appsink max-buffers=1 sync=false drop=true", /* C10 mini, using YUV, Y chan only */
 }
-
-{
-	"name":"camCrop",
+"camCrop":{
 	"class":"_Crop",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"_VisionBase":"cam",
 	"vRoi":[0,0,1280,720],
 }
-
-{
-	"name":"univ",
+"univ":{
 	"class":"_Universe",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 }
-
-{
-	"name":"tfMN",
+"tfMN":{
 	"class":"_TFmobileNet",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bDraw":1,

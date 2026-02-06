@@ -1,32 +1,24 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"Open3D",
 	"bLog": true,
 	"bStdErr": true,
 }
-
-{
-	"name":"console",
+"console":{
 	"class":"_Console",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"vBASE":["cam","RGBview","pcScan"],
 }
-
-{
-	"name":"GViewer",
+"GViewer":{
 	"class":"_GeometryViewer",
 	"bON": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
-    {
-		"name":"threadUI",
+"threadUI":{
 		"FPS":30,
 	}
 	"vWinSize":[1280,720],
@@ -58,9 +50,7 @@
 	"dirSave":"/home/kai/Documents/",
 	"/dirSave":"/media/lab/",
 	"rVoxel":0.05,
-
-	{
-		"name":"geometry",
+"geometry":{
 		{
 			"_GeometryBase":"pcStream",
 			"bStatic":0,
@@ -99,18 +89,14 @@
 		}
 	}
 }
-
-{
-	"name":"Scepter",
+"Scepter":{
 	"class":"_Scepter",
 	"bON": true,
 	"bLog": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
-    {
-		"name":"threadPP",
+"threadPP":{
 		"FPS":30,
 	}
 	"URI":"",
@@ -127,14 +113,11 @@
 	"/bDebugDepth":1,
 	"/_SHMrgb":"SHMscRGB",
 }
-
-{
-	"name":"rgbd2pcf",
+"rgbd2pcf":{
 	"class":"_RGBD2PCframe",
 	"bON": true,
 	"bLog": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"_RGBDbase":"Scepter",
@@ -156,8 +139,7 @@
 	"class":"_Scepter",
 	"bON": false,
 	"bLog": true,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":25,
 	}
 	"URI":"",
@@ -169,31 +151,24 @@
 	"vAxisK":[-1, -1, 1],
 	"fCalib":"/home/kai/3Dscan/calibOfs.kiss",
 }
-
-{
-	"name":"shmFileW",
+"shmFileW":{
 	"class":"SharedMem",
 	"bON": false,
 	"shmName":"smFile",
 	"nB":6400000,
 	"bWriter":1,
 }
-
-{
-	"name":"shmFileR",
+"shmFileR":{
 	"class":"SharedMem",
 	"bON": false,
 	"shmName":"smFile",
 	"nB":6400000,
 	"bWriter":0,
 }
-
-{
-	"name":"pcFile",
+"pcFile":{
 	"class":"_PCfile",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bLog": true,
@@ -202,13 +177,10 @@
 	"nGpSM":500000,
 	"SharedMem":"shmFileW",
 }
-
-{
-	"name":"pcFrame",
+"pcFrame":{
 	"class":"_PCframe",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bLog": true,
@@ -217,26 +189,20 @@
 	"nGpSM":300000,
 	"SharedMem":"shmFileR",
 }
-
-{
-	"name":"pcStream",
+"pcStream":{
 	"class":"_PCstream",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":30,
 	}
 	"bLog": true,
 	"nP":200000,
 	"SharedMem":"shmFileR",
 }
-
-{
-	"name":"pcGrid",
+"pcGrid":{
 	"class":"_PCgridBase",
 	"bON": false,
-    {
-		"name":"thread",
+"thread":{
 		"FPS":10,
 	}
 	"vPorigin":[0,0,0],

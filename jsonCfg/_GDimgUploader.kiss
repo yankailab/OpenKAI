@@ -1,5 +1,4 @@
-{
-	"name":"APP",
+"APP":{
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bWindow":1,
@@ -9,15 +8,11 @@
 	"bStdErr": true,
 	"waitKey":30,
 }
-
-{
-	"name":"OKview",
+"OKview":{
 	"class":"Window",
 	"bON": true,
 }
-
-{
-	"name":"cam",
+"cam":{
 	"class":"_Camera",
 	"FPS":30,
 	"bON": true,
@@ -26,18 +21,14 @@
 	"w":640,
 	"h":480,
 }
-
-{
-	"name":"cam",
+"cam":{
 	"class":"_GStreamer",
 	"FPS":30,
 	"bON": false,
 	"Window":"OKview",
 	"pipeline":"rtspsrc location=rtsp://admin:12345@10.0.0.100:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
 }
-
-{
-	"name":"gdUpload",
+"gdUpload":{
 	"class":"_GDimgUploader",
 	"FPS":30,
 	"bON": true,
