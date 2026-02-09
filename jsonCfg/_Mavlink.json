@@ -1,0 +1,126 @@
+{
+	"APP": {
+		"class": "Startup",
+		"appName": "OpenKAI",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"vBASE": [
+			"serial",
+			"mavAP",
+			"apBase",
+			"udp",
+			"mavUDP"
+		]
+	},
+	"serial": {
+		"class": "_SerialPort",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"nPacket": 1024,
+		"nPbuffer": 512,
+		"/port": "/dev/ttyUSB0",
+		"port": "/dev/ttyACM0",
+		"/port": "/dev/ttyAMA0",
+		"/port": "/dev/ttyTHS1",
+		"baud": 115200,
+		"/baud": 921600
+	},
+	"mavAP": {
+		"class": "_Mavlink",
+		"bON": true,
+		"bLog": false,
+		"thread": {
+			"FPS": 10
+		},
+		"_IObase": "serial",
+		"devSystemID": 1,
+		"mySystemID": 200,
+		"iMavComm": 0,
+		"/noRouteCmd": [],
+		"vRoutings": [
+			"mavUDP"
+		]
+	},
+	"apBase": {
+		"class": "_APmavlink_base",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"/_StateControl": "state",
+		"_Mavlink": "mavAP",
+		"/_Mavlink": "mavUDP",
+		"apType": 0,
+		"ieSendHB": 1,
+		"ieSendMsgInt": 1,
+		"mavMsgInt": {
+			"heartbeat": {
+				"id": 0,
+				"tInt": 1
+			},
+			"attitude": {
+				"id": 30,
+				"tInt": 0.05
+			},
+			"rcChannels": {
+				"id": 65,
+				"tInt": 1.0
+			},
+			"localPosition": {
+				"id": 32,
+				"tInt": 0.5
+			},
+			"globalPosition": {
+				"id": 33,
+				"tInt": 0.5
+			},
+			"homePosition": {
+				"id": 242,
+				"tInt": 10
+			},
+			"batteryStatus": {
+				"id": 147,
+				"tInt": 10
+			},
+			"missionCurrent": {
+				"id": 42,
+				"tInt": 1
+			}
+		}
+	},
+	"udp": {
+		"class": "_UDP",
+		"bON": false,
+		"bLog": false,
+		"thread": {
+			"FPS": 30
+		},
+		"/addr": "127.0.0.1",
+		"port": 14550
+	},
+	"mavUDP": {
+		"class": "_Mavlink",
+		"bON": false,
+		"bLog": false,
+		"thread": {
+			"FPS": 10
+		},
+		"_IObase": "udp",
+		"/devSystemID": 1,
+		"mySystemID": 200,
+		"iMavComm": 0,
+		"/noRouteCmd": [],
+		"vRoutings": [
+			"mavAP"
+		]
+	}
+}

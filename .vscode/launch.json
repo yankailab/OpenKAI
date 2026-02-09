@@ -10,11 +10,16 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/OpenKAI",
             "args": [
-                "${workspaceFolder}/jsonCfg/_IAI.json"
+                "${workspaceFolder}/jsonCfg/_Mavlink.json"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "environment": [],
+            "environment": [
+                {
+                    "name": "DEBUGINFOD_URLS",
+                    "value": ""
+                }
+            ],
             "MIMode": "gdb",
             "setupCommands": [
                 {

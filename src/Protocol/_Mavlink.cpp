@@ -88,18 +88,13 @@ namespace kai
 		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 
-		const json &jR = jK(j, "routings");
-		IF__(!jR.is_object(), true);
+		vector<string> vRoutings;
+		IF__(!jKv(j, "vRoutings", vRoutings), true);
 
-		for (auto it = jR.begin(); it != jR.end(); it++)
+		for (const string& n : vRoutings)
 		{
-			const json &Ji = it.value();
-			IF_CONT(!Ji.is_object());
-
 			MAVLINK_PEER mP;
 			mP.init();
-			n = "";
-			jKv(Ji, "_Mavlink", n);
 			mP.m_pPeer = pM->findModule(n);
 			if (!mP.m_pPeer)
 			{
