@@ -1,8 +1,10 @@
 #include <arpa/inet.h>
 #include <algorithm>
 #include <bitset>
-#include <cstdio>
 #include <cmath>
+#include <cstddef>
+#include <cstdio>
+#include <cstdint>
 #include <cstdarg>
 #include <cstdlib>
 #include <curses.h>

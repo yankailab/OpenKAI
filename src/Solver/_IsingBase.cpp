@@ -45,7 +45,7 @@ namespace kai
 	void _IsingBase::clear(void)
 	{
 		m_cnf = "";
-		m_vV.clear();
+		m_spinAssign.reset();
 		m_vC.clear();
 	}
 
@@ -89,11 +89,7 @@ namespace kai
 
 		IF_F((nV <= 0) || (nC <= 0));
 
-		// allocate
-		ISING_VAR v0; // index 0 is not used
-		m_vV.push_back(v0);
-
-		// ISING_TERMs
+		// Ising terms
 		int iC = 0;
 		for (i++; i < vLines.size(); i++)
 		{
@@ -106,12 +102,12 @@ namespace kai
 			ISING_TERM c;
 			c.clear();
 
-			int iL = 0;
-			while (vL[iL] != "0")
-			{
-				c.addLiteral(atoi(vL[iL++].c_str()));
-			}
-			IF_CONT(iL <= 0);
+			// int iL = 0;
+			// while (vL[iL] != "0")
+			// {
+			// 	c.addLiteral(atoi(vL[iL++].c_str()));
+			// }
+			// IF_CONT(iL <= 0);
 
 			m_vC.push_back(c);
 		}
@@ -119,7 +115,7 @@ namespace kai
 		return true;
 	}
 
-	bool _IsingBase::bSatisfied(void)
+	double _IsingBase::energy(void)
 	{
 		int nS = 0;
 		for (int i = 0; i < m_vC.size(); i++)
@@ -127,17 +123,17 @@ namespace kai
 			ISING_TERM *pC = &m_vC[i];
 			int nT = 0;
 
-			for (int j = 0; j < pC->m_vL.size(); j++)
-			{
-				int L = pC->getLiteral(j);
-				IF_F(L == 0); // error
+			// for (int j = 0; j < pC->m_vL.size(); j++)
+			// {
+			// 	int L = pC->getLiteral(j);
+			// 	IF_F(L == 0); // error
 
-				int v = m_vV[abs(L)].v();
-				nT += (L < 0) ? 1 - v : v;
+			// 	int v = m_vV[abs(L)].v();
+			// 	nT += (L < 0) ? 1 - v : v;
 
-				if (nT > 0)
-					break;
-			}
+			// 	if (nT > 0)
+			// 		break;
+			// }
 
 			if (nT <= 0)
 			{
@@ -158,11 +154,11 @@ namespace kai
 	void _IsingBase::printSolution(void)
 	{
 		string s = "";
-		for (int i = 1; i < m_vV.size(); i++)
-		{
-			int v = m_vV[i].v();
-			s += i2str(v) + " ";
-		}
+		// for (int i = 1; i < m_vV.size(); i++)
+		// {
+		// 	int v = m_vV[i].v();
+		// 	s += i2str(v) + " ";
+		// }
 
 		LOG_I("Assign: " + s);
 	}
