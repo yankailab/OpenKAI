@@ -197,6 +197,7 @@ namespace kai
 
 #ifdef WITH_SOLVER
 		ADD_MODULE(_SATbase);
+		ADD_MODULE(_IsingBase);
 #ifdef USE_M4RI
 //		ADD_MODULE(_SATbase);
 #endif

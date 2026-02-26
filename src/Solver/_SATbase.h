@@ -8,15 +8,15 @@
 #ifndef OpenKAI_src_Solver_SAT__SATbase_H_
 #define OpenKAI_src_Solver_SAT__SATbase_H_
 
-#include "../../Base/_ModuleBase.h"
-#include "../../Primitive/tSwap.h"
-#include "../../Utility/utilFile.h"
+#include "../Base/_ModuleBase.h"
+#include "../Primitive/tSwap.h"
+#include "../Utility/utilFile.h"
 
 namespace kai
 {
-	struct VARIABLE
+	struct BOOLEAN_VAR
 	{
-		int m_v = 0; // 0: undefined, +/-1: true/false
+		int8_t m_v = 0; // 0/1 = true/false
 
 		void assign(int v)
 		{
@@ -29,9 +29,9 @@ namespace kai
 		}
 	};
 
-	struct CLAUSE
+	struct SAT_CLAUSE
 	{
-		vector<int> m_vL; // var index from 1, +/- sign = negation
+		vector<int> m_vL; // var index from 0, +/- sign = negation
 
 		void clear(void)
 		{
@@ -45,8 +45,8 @@ namespace kai
 
 		int getLiteral(int i)
 		{
-			IF__(i < 0, 0);
-			IF__(i >= m_vL.size(), 0);
+			IF__(i < 0, -1);
+			IF__(i >= m_vL.size(), -1);
 
 			return m_vL[i];
 		}
@@ -73,8 +73,8 @@ namespace kai
 		string m_fName;
 		string m_cnf; // problem input
 
-		vector<VARIABLE> m_vV; // variable index from 1, [0] is not used
-		vector<CLAUSE> m_vC;   // clauses
+		vector<BOOLEAN_VAR> m_vV; // variable index from 1, [0] is not used
+		vector<SAT_CLAUSE> m_vC;  // clauses
 	};
 
 }

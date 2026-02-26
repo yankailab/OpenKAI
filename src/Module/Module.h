@@ -186,7 +186,8 @@
 #endif
 
 #ifdef WITH_SOLVER
-#include "../Solver/SAT/_SATbase.h"
+#include "../Solver/_SATbase.h"
+#include "../Solver/_IsingBase.h"
 #ifdef USE_M4RI
 // #include "../Solver/SAT/_SATbase.h"
 #endif
