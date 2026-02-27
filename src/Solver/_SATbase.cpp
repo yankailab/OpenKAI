@@ -171,6 +171,14 @@ namespace kai
 		LOG_I("Assign: " + s);
 	}
 
+	bool _SATbase::convet2Ising(_IsingBase* pI)
+	{
+		NULL_F(pI);
+
+		
+
+	}
+
 	void _SATbase::console(void *pConsole)
 	{
 		NULL_(pConsole);

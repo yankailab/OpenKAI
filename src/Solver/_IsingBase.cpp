@@ -45,8 +45,8 @@ namespace kai
 	void _IsingBase::clear(void)
 	{
 		m_cnf = "";
-		m_spinAssign.reset();
-		m_vC.clear();
+		m_spinAssign.clearAll();
+		m_vJw.clear();
 	}
 
 	bool _IsingBase::readCNF(const string &fName, string *pCNF)
@@ -99,7 +99,7 @@ namespace kai
 			IF_CONT(vL[0] == "c");
 			IF_CONT(vL[0] == "p");
 
-			ISING_TERM c;
+			ISING_JW c;
 			c.clear();
 
 			// int iL = 0;
@@ -109,7 +109,7 @@ namespace kai
 			// }
 			// IF_CONT(iL <= 0);
 
-			m_vC.push_back(c);
+			m_vJw.push_back(c);
 		}
 
 		return true;
@@ -117,38 +117,31 @@ namespace kai
 
 	double _IsingBase::energy(void)
 	{
-		int nS = 0;
-		for (int i = 0; i < m_vC.size(); i++)
+		double e = 0;
+		for (int i = 0; i < m_vJw.size(); i++)
 		{
-			ISING_TERM *pC = &m_vC[i];
-			int nT = 0;
+			ISING_JW *pJw = &m_vJw[i];
+			vBit *pWb = &pJw->m_w;
 
-			// for (int j = 0; j < pC->m_vL.size(); j++)
-			// {
-			// 	int L = pC->getLiteral(j);
-			// 	IF_F(L == 0); // error
-
-			// 	int v = m_vV[abs(L)].v();
-			// 	nT += (L < 0) ? 1 - v : v;
-
-			// 	if (nT > 0)
-			// 		break;
-			// }
-
-			if (nT <= 0)
+			int jwS = 1;
+			size_t nB = pWb->nBits();
+			size_t iBp = pWb->findFirstOne();
+			while (iBp < nB)
 			{
-				LOG_I("Unsatified: " + i2str(i));
+				int8_t s = m_spinAssign.get(iBp);
+				if (s < 0)
+					break;
+
+				jwS *= (s << 1) - 1; // 0/1 to -1/1
+
+				iBp = pWb->findNextOne(iBp);
 			}
-			else
-			{
-				nS++;
-			}
+
+			e += pJw->m_J * jwS;
 		}
 
-		if (nS >= m_vC.size())
-			return true;
-
-		return false;
+		LOG_I("Energy: " + lf2str(e));
+		return e;
 	}
 
 	void _IsingBase::printSolution(void)

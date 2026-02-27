@@ -11,6 +11,7 @@
 #include "../Base/_ModuleBase.h"
 #include "../Primitive/tSwap.h"
 #include "../Utility/utilFile.h"
+#include "_IsingBase.h"
 
 namespace kai
 {
@@ -66,8 +67,11 @@ namespace kai
 		void clear(void);
 		bool readCNF(const string &fName, string *pCNF);
 		bool decodeCNF(const string &cnf);
+
 		bool bSatisfied(void);
 		void printSolution(void);
+
+		bool convet2Ising(_IsingBase* pI);
 
 	protected:
 		string m_fName;

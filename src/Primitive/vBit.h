@@ -15,7 +15,10 @@ namespace kai
             m_nWords = 0;
         }
 
-        vBit(size_t nBits) { init(nBits); }
+        vBit(size_t nBits)
+        {
+            init(nBits);
+        }
 
         // init(nBits): allocate and clear
         void init(size_t nBits)
@@ -25,18 +28,35 @@ namespace kai
             m_vData.assign(m_nWords, 0ULL);
         }
 
-        size_t size_bits() const { return m_nBits; }
-        size_t size_words() const { return m_nWords; }
+        size_t nBits(void) const
+        {
+            return m_nBits;
+        }
 
-        uint64_t *raw() { return m_vData.data(); }
-        const uint64_t *raw() const { return m_vData.data(); }
+        size_t nWords(void) const
+        {
+            return m_nWords;
+        }
 
-        void reset() { std::fill(m_vData.begin(), m_vData.end(), 0ULL); }
+        uint64_t *raw(void)
+        {
+            return m_vData.data();
+        }
+        const uint64_t *raw() const
+        {
+            return m_vData.data();
+        }
+
+        void clearAll(void)
+        {
+            std::fill(m_vData.begin(), m_vData.end(), 0ULL);
+        }
 
         inline void set(size_t bit)
         {
             if (bit >= m_nBits)
                 return;
+
             m_vData[bit >> 6] |= (1ULL << (bit & 63));
         }
 
@@ -44,13 +64,15 @@ namespace kai
         {
             if (bit >= m_nBits)
                 return;
+
             m_vData[bit >> 6] &= ~(1ULL << (bit & 63));
         }
 
-        inline bool bit(size_t bit) const
+        inline int8_t get(size_t bit) const
         {
             if (bit >= m_nBits)
-                return false;
+                return -1;
+
             return (m_vData[bit >> 6] >> (bit & 63)) & 1ULL;
         }
 
@@ -62,6 +84,7 @@ namespace kai
             for (size_t i = 0; i < m; ++i)
                 m_vData[i] ^= v.m_vData[i];
             maskLastWord();
+
             return *this;
         }
 
@@ -71,6 +94,7 @@ namespace kai
             for (size_t i = 0; i < m; ++i)
                 m_vData[i] &= v.m_vData[i];
             maskLastWord();
+
             return *this;
         }
 
@@ -80,22 +104,26 @@ namespace kai
             for (size_t i = 0; i < m; ++i)
                 m_vData[i] |= v.m_vData[i];
             maskLastWord();
+
             return *this;
         }
 
         friend vBit operator^(vBit a, const vBit &b)
         {
             a ^= b;
+
             return a;
         }
         friend vBit operator&(vBit a, const vBit &b)
         {
             a &= b;
+
             return a;
         }
         friend vBit operator|(vBit a, const vBit &b)
         {
             a |= b;
+
             return a;
         }
 
@@ -109,10 +137,14 @@ namespace kai
                 if (maskedWord(i) != v.maskedWord(i))
                     return false;
             }
+
             return true;
         }
 
-        bool operator!=(const vBit &v) const { return !(*this == v); }
+        bool operator!=(const vBit &v) const
+        {
+            return !(*this == v);
+        }
 
         bool operator<(const vBit &v) const
         {
@@ -130,9 +162,18 @@ namespace kai
             return false;
         }
 
-        bool operator>(const vBit &v) const { return v < *this; }
-        bool operator<=(const vBit &v) const { return !(*this > v); }
-        bool operator>=(const vBit &v) const { return !(*this < v); }
+        bool operator>(const vBit &v) const
+        {
+            return v < *this;
+        }
+        bool operator<=(const vBit &v) const
+        {
+            return !(*this > v);
+        }
+        bool operator>=(const vBit &v) const
+        {
+            return !(*this < v);
+        }
 
         // Popcount / predicates
         size_t popcount() const
@@ -143,6 +184,7 @@ namespace kai
             for (size_t i = 0; i + 1 < m_nWords; ++i)
                 c += popcount64_(m_vData[i]);
             c += popcount64_(maskedWord(m_nWords - 1));
+
             return c;
         }
 
@@ -150,26 +192,37 @@ namespace kai
         {
             if (m_nWords == 0)
                 return false;
+
             for (size_t i = 0; i + 1 < m_nWords; ++i)
+            {
                 if (m_vData[i])
                     return true;
+            }
+
             return maskedWord(m_nWords - 1) != 0;
         }
 
-        bool none() const { return !any(); }
+        bool none() const
+        {
+            return !any();
+        }
 
         bool all() const
         {
             if (m_nWords == 0)
                 return true;
             for (size_t i = 0; i + 1 < m_nWords; ++i)
+            {
                 if (m_vData[i] != ~0ULL)
                     return false;
+            }
 
             const size_t used = m_nBits & 63;
             if (used == 0)
                 return m_vData[m_nWords - 1] == ~0ULL;
+
             const uint64_t mask = (1ULL << used) - 1ULL;
+
             return (m_vData[m_nWords - 1] & mask) == mask;
         }
 
@@ -185,6 +238,7 @@ namespace kai
             }
             const uint64_t a = maskedWord(m_nWords - 1);
             const uint64_t b = v.maskedWord(m_nWords - 1);
+
             return (a & ~b) == 0;
         }
 
@@ -192,11 +246,13 @@ namespace kai
         {
             if (m_nBits != v.m_nBits)
                 return false;
+
             for (size_t i = 0; i + 1 < m_nWords; ++i)
             {
                 if (m_vData[i] & v.m_vData[i])
                     return true;
             }
+
             return (maskedWord(m_nWords - 1) & v.maskedWord(m_nWords - 1)) != 0;
         }
 
@@ -207,7 +263,7 @@ namespace kai
                 return;
             if (k >= m_nBits)
             {
-                reset();
+                clearAll();
                 return;
             }
 
@@ -239,7 +295,7 @@ namespace kai
                 return;
             if (k >= m_nBits)
             {
-                reset();
+                clearAll();
                 return;
             }
 
@@ -287,19 +343,22 @@ namespace kai
         }
 
         // Bit scanning (returns m_nBits if not found)
-        size_t findFirstOne() const
+        size_t findFirstOne(void) const
         {
             if (m_nWords == 0)
                 return m_nBits;
+
             for (size_t wi = 0; wi + 1 < m_nWords; ++wi)
             {
                 uint64_t w = m_vData[wi];
                 if (w)
                     return (wi << 6) + ctz64_(w);
             }
+
             uint64_t w = maskedWord(m_nWords - 1);
             if (!w)
                 return m_nBits;
+
             return ((m_nWords - 1) << 6) + ctz64_(w);
         }
 
@@ -336,6 +395,7 @@ namespace kai
                 if (w)
                     return (wi << 6) + ctz64_(w);
             }
+
             return m_nBits;
         }
 
@@ -350,6 +410,7 @@ namespace kai
                     continue;
                 return (wi << 6) + (63u - clz64_(w));
             }
+
             return m_nBits;
         }
 
@@ -361,13 +422,14 @@ namespace kai
                 h = mix_(h ^ m_vData[i]);
             if (m_nWords)
                 h = mix_(h ^ maskedWord(m_nWords - 1));
+
             return h;
         }
 
         // Batch XOR reduce
         static void xorReduce(vBit &out, const vBit *arr, size_t count)
         {
-            out.reset();
+            out.clearAll();
             if (count == 0 || arr == nullptr)
                 return;
 
@@ -410,9 +472,11 @@ namespace kai
         {
             if (m_nWords == 0)
                 return;
+
             const size_t used = m_nBits & 63;
             if (used == 0)
                 return;
+
             const uint64_t mask = (1ULL << used) - 1ULL;
             m_vData[m_nWords - 1] &= mask;
         }
@@ -421,9 +485,11 @@ namespace kai
         {
             if (i + 1 != m_nWords)
                 return m_vData[i];
+
             const size_t used = m_nBits & 63;
             if (used == 0)
                 return m_vData[i];
+
             const uint64_t mask = (1ULL << used) - 1ULL;
             return m_vData[i] & mask;
         }
@@ -435,6 +501,7 @@ namespace kai
             x ^= x >> 27;
             x *= 0x94d049bb133111ebULL;
             x ^= x >> 31;
+
             return x;
         }
 

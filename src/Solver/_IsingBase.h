@@ -15,7 +15,7 @@
 
 namespace kai
 {
-	struct ISING_TERM
+	struct ISING_JW
 	{
 		int m_J;
 		vBit m_w;	// spin multiplication as walsh indices
@@ -28,7 +28,7 @@ namespace kai
 
 		void clear(void)
 		{
-			m_w.reset();
+			m_w.clearAll();
 		}
 
 		void addSpin(int i)
@@ -51,6 +51,7 @@ namespace kai
 		void clear(void);
 		bool readCNF(const string &fName, string *pCNF);
 		bool decodeCNF(const string &cnf);
+
 		double energy(void);
 		void printSolution(void);
 
@@ -59,7 +60,7 @@ namespace kai
 		string m_cnf; // problem input
 
 		vBit m_spinAssign;
-		vector<ISING_TERM> m_vC;
+		vector<ISING_JW> m_vJw;
 	};
 
 }
