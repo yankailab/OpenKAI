@@ -224,6 +224,9 @@ namespace kai
 #ifdef USE_OPENCV
 		ADD_MODULE(_SLAMbase);
 #endif
+#ifdef USE_FASTLIVO
+		ADD_MODULE(_FastLivo2);
+#endif
 #endif
 
 #ifdef WITH_STATE

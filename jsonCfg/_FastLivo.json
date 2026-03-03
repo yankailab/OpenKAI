@@ -1,0 +1,57 @@
+{
+	"APP": {
+		"class": "ModuleMgr",
+		"appName": "helloOK",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": false,
+		"thread": {
+			"name": "thread",
+			"class": "_Thread",
+			"FPS": 10
+		},
+		"vBASE": [
+			"cam"
+		]
+	},
+	"view": {
+		"class": "_WindowCV",
+		"bON": false,
+		"thread": {
+			"name": "thread",
+			"class": "_Thread",
+			"FPS": 30
+		},
+		"bFullScreen": false,
+		"vBASE": [
+			"cam"
+		]
+	},
+	"cam": {
+		"class": "_Camera",
+		"bON": false,
+		"thread": {
+			"name": "thread",
+			"class": "_Thread",
+			"FPS": 30
+		},
+		"deviceID": 0,
+		"vSizeRGB": [
+			640,
+			480
+		]
+	},
+	"fastLivo": {
+		"class": "_FastLivo2",
+		"bON": true,
+		"thread": {
+			"name": "thread",
+			"class": "_Thread",
+			"FPS": 30
+		}
+	}
+
+}

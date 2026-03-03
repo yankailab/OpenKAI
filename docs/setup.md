@@ -7,6 +7,7 @@ sudo apt-get upgrade
 sudo rasp-config
 ```
 
+
 # Install prerequisites
 ```bash
 sudo apt-get -y install build-essential cmake cmake-curses-gui git uuid-dev ncurses-dev libcurl4 curl libssl-dev libuvc-dev libusb-1.0-0-dev
@@ -36,7 +37,14 @@ sudo apt install nvidia-cuda-toolkit
 sudo apt-get -y install g++-12 gcc-12
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12 --slave /usr/bin/g++ g++ /usr/bin/g++-12
 sudo update-alternatives --config gcc
+
+# Update the video driver first with Software and Update
+wget https://developer.download.nvidia.com/compute/cuda/12.3.2/local_installers/cuda_12.3.2_545.23.08_linux.run
+sudo chmod a+x cuda_12.3.2_545.23.08_linux.run
+sudo sh cuda_12.3.2_545.23.08_linux.run
+sudo echo -e "export PATH=/usr/local/cuda-12.3/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda-12.3/lib64:\$LD_LIBRARY_PATH\nexport LC_ALL=en_US.UTF-8" >> ~/.bashrc
 ```
+
 
 # CMake
 ## Install from apt-get
@@ -48,14 +56,18 @@ sudo apt-get install cmake
 wget https://github.com/Kitware/CMake/releases/download/v3.31.9/cmake-3.31.9.tar.gz
 tar xvf cmake-3.31.9.tar.gz
 cd cmake-3.31.9
-#wget https://github.com/Kitware/CMake/releases/download/v4.1.2/cmake-4.1.2.tar.gz
-#tar xvf cmake-4.1.2.tar.gz
-#cd cmake-4.1.2
 
 ./bootstrap
 make -j$(nproc)
 sudo make install
 bash
+```
+
+(Optionally) If using the latest version
+```bash
+wget https://github.com/Kitware/CMake/releases/download/v4.1.2/cmake-4.1.2.tar.gz
+tar xvf cmake-4.1.2.tar.gz
+cd cmake-4.1.2
 ```
 
 
@@ -64,19 +76,112 @@ bash
 wget https://gitlab.com/libeigen/eigen/-/archive/3.4.1/eigen-3.4.1.tar.gz
 tar xvf eigen-3.4.1.tar.gz
 cd eigen-3.4.1
-#wget https://gitlab.com/libeigen/eigen/-/archive/5.0.0/eigen-5.0.0.tar.gz
-#tar xvf eigen-5.0.0.tar.gz
-#cd eigen-5.0.0
 
 mkdir build && cd build
 cmake ../
 sudo make install
 ```
 
+(Optionally) If using the latest version
+```bash
+wget https://gitlab.com/libeigen/eigen/-/archive/5.0.0/eigen-5.0.0.tar.gz
+tar xvf eigen-5.0.0.tar.gz
+cd eigen-5.0.0
+```
+
 
 # (Optional) RealSense
 ```bash
 sudo apt-get install libusb-1.0-0-dev libusb-dev libudev-dev
+
+git clone --depth 1 https://github.com/IntelRealSense/librealsense.git
+# git clone --depth 1 --branch v2.53.1 https://github.com/IntelRealSense/librealsense.git # for T265, L535
+cd librealsense
+sudo ./scripts/setup_udev_rules.sh
+mkdir build
+cd build
+
+# for Raspberry pi
+cmake -DFORCE_LIBUVC=true -DFORCE_RSUSB_BACKEND=ON -DBUILD_WITH_TM2=true -DBUILD_WITH_CUDA=OFF -DCMAKE_BUILD_TYPE=Release
+-DIMPORT_DEPTH_CAM_FW=ON ../
+
+# for Jetson
+cmake -DFORCE_LIBUVC=true -DFORCE_RSUSB_BACKEND=ON -DBUILD_WITH_TM2=true -DBUILD_WITH_CUDA=ON -DCMAKE_BUILD_TYPE=Release -DIMPORT_DEPTH_CAM_FW=ON ../
+
+make -j$(nproc)
+sudo make install
+```
+
+
+# (Optional) gphoto2
+```bash
+sudo apt-get install -y build-essential libltdl-dev libusb-1.0-0-dev libexif-dev udev libpopt-dev libudev-dev pkg-config git automake autoconf autopoint gettext libtool wget
+
+git clone --branch libgphoto2-2_5_31-release --depth 1 https://github.com/gphoto/libgphoto2.git
+cd libgphoto2
+autoreconf --install --symlink
+./configure
+make -j$(nproc)
+sudo make install
+
+git clone --branch gphoto2-2_5_28-release --depth 1 https://github.com/gphoto/gphoto2.git
+cd gphoto2
+autoreconf --install --symlink
+./configure
+make -j$(nproc)
+sudo make install
+
+sudo ldconfig
+
+udev_version=$(udevadm --version)
+if   [ "$udev_version" -ge "201" ]
+then
+  udev_rules=201
+elif [ "$udev_version" -ge "175" ]
+then
+  udev_rules=175
+elif [ "$udev_version" -ge "136" ]
+then
+  udev_rules=136
+else
+  udev_rules=0.98
+fi
+set +H
+sudo sh -c "/usr/local/lib/libgphoto2/print-camera-list udev-rules version $udev_rules group plugdev mode 0660 > /etc/udev/rules.d/90-libgphoto2.rules"
+set -H
+if   [ "$udev_rules" = "201" ]
+then
+set +H
+sudo sh -c "/usr/local/lib/libgphoto2/print-camera-list hwdb > /etc/udev/hwdb.d/20-gphoto.hwdb"
+set -H
+fi
+
+gphoto2 --version
+gphoto2 --abilities
+# gphoto2 --capture-image-and-download --filename /tmp/hoge.jpg
+```
+
+
+# (Optional) TensorFlow Lite
+```bash
+sudo apt-get install cmake curl
+git clone --branch v2.6.0 --depth 1 https://github.com/tensorflow/tensorflow.git
+cd tensorflow
+./tensorflow/lite/tools/make/download_dependencies.sh
+# Raspberry pi Bullseye 64bit
+#./tensorflow/lite/tools/make/build_aarch64_lib.sh
+./tensorflow/lite/tools/make/build_lib.sh
+# update flatbuffers
+cd tensorflow/lite/tools/make/downloads
+rm -rf flatbuffers
+git clone -b v2.0.0 --depth=1 --recursive https://github.com/google/flatbuffers.git
+cd flatbuffers
+mkdir build
+cd build
+cmake ..
+make -j4
+sudo make install
+sudo ldconfig
 ```
 
 
@@ -483,6 +588,7 @@ make -j$(nproc)
 sudo make install
 ```
 
+
 # (Optional) OrbbecSDK_v2
 ```bash
 git clone --depth 1 https://github.com/orbbec/OrbbecSDK_v2.git
@@ -500,6 +606,18 @@ sudo chmod +x ./install_udev_rules.sh
 sudo ./install_udev_rules.sh
 sudo udevadm control --reload-rules
 sudo udevadm trigger
+```
+
+
+# (Optional) FAST_LIVO2
+```bash
+git clone --depth 1 https://github.com/yankailab/FAST-LIVO2.git
+cd FAST-LIVO2
+rm -rf build-core
+cmake -S core -B build-core -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build-core
+sudo cmake --install build-core
+sudo ldconfig
 ```
 
 

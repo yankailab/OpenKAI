@@ -214,6 +214,9 @@
 #ifdef USE_OPENCV
 #include "../SLAM/_SLAMbase.h"
 #endif
+#ifdef USE_FASTLIVO
+#include "../SLAM/_FastLivo2.h"
+#endif
 #endif
 
 #ifdef WITH_STATE

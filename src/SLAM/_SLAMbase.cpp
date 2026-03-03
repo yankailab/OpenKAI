@@ -37,15 +37,15 @@ namespace kai
 		string n = "";
 		jKv(j, "_VisionBase", n);
 		m_pV = (_VisionBase *)(pM->findModule(n));
-		NULL_F(m_pV);
+//		NULL_F(m_pV);
 
 		return true;
 	}
 
 	bool _SLAMbase::check(void)
 	{
-		NULL_F(m_pV);
-		NULL_F(m_pV->getFrameRGB());
+//		NULL_F(m_pV);
+//		NULL_F(m_pV->getFrameRGB());
 
 		return this->_NavBase::check();
 	}
