@@ -63,6 +63,10 @@ namespace kai
 		bool m_bConfidence;
 		float m_fConfidenceThreshold;
 
+		bool m_bIMU;
+		bool m_bPCd;	// Depth point cloud
+		bool m_bPCrgb;	// RGB point cloud
+
 #ifdef USE_OPENCV
 		Frame m_fDepth;
 		Frame m_fTfDepth;

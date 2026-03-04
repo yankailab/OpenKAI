@@ -23,12 +23,13 @@ namespace kai
 		IF_F(!this->_SLAMbase::init(j));
 
 		//		jKv<int>(j, "vSize", m_vSize);
-
 		if (!core.init(""))
 		{
 			std::cerr << "init failed\n";
 			return false;
 		}
+
+		core.setImageEnabled(true);
 
 		W = 640;
 		H = 480;
@@ -55,8 +56,8 @@ namespace kai
 		t = 0.0;
 		T_end = 5.0;
 		imu_dt = 0.005; // 200 Hz
-		scan_dt = 0.1;	 // 10 Hz
-		img_dt = 0.1;	 // 10 Hz
+		scan_dt = 0.1;	// 10 Hz
+		img_dt = 0.1;	// 10 Hz
 		next_scan = 0.0;
 		next_img = 0.0;
 

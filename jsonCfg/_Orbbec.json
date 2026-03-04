@@ -1,0 +1,183 @@
+{
+	"APP": {
+		"class": "OpenKAI",
+		"appName": "Orbbec",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"Orbbec"
+		]
+	},
+	"view": {
+		"class": "_WindowCV",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"bFullScreen": 0,
+		"vBASE": [
+			"Orbbec"
+		]
+	},
+	"viewD": {
+		"class": "_WindowCV",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"bFullScreen": 0,
+		"vBASE": [
+			"d2g"
+		]
+	},
+	"Orbbec": {
+		"class": "_Orbbec",
+		"bON": true,
+		"thread": {
+			"FPS": 200
+		},
+		"threadPP": {
+			"FPS": 30
+		},
+		"devFPS": 30,
+		"vSizeRGB": [
+			640,
+			480
+		],
+		"devFPSd": 30,
+		"vSizeD": [
+			640,
+			480
+		],
+		"SN": "",
+		"tOutMs": 1000,
+		"bRGB": true,
+		"bDepth": true,
+		"bIMU": true,
+		"bPCd": true,
+		"bPCrgb": false
+	},
+	"d2g": {
+		"class": "_D2G",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"_RGBDbase": "Orbbec"
+	},
+	"GViewer": {
+		"class": "_GeometryViewer",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"threadUI": {
+			"FPS": 30
+		},
+		"vWinSize": [
+			1280,
+			720
+		],
+		"pathRes": "/usr/local/bin/Open3D/resources",
+		"device": "CPU:0",
+		"vCamLookAt": [
+			0,
+			0,
+			0
+		],
+		"vCamEye": [
+			0,
+			0,
+			2
+		],
+		"vCamUp": [
+			0,
+			1,
+			0
+		],
+		"vCamAutoLookAt": [
+			0,
+			0,
+			0
+		],
+		"vCamAutoEye": [
+			0,
+			2,
+			0
+		],
+		"vCamAutoUp": [
+			0,
+			1,
+			0
+		],
+		"vCoR": [
+			0,
+			0,
+			0
+		],
+		"camProjType": 0,
+		"vCamNF": [
+			0,
+			500
+		],
+		"camFov": 80,
+		"camFovType": 1,
+		"vCamLR": [
+			-100,
+			100
+		],
+		"vCamBT": [
+			-100,
+			100
+		],
+		"bFullScreen": 0,
+		"wPanel": 20,
+		"vBtnPadding": [
+			1.6,
+			2.0
+		],
+		"mouseMode": 0,
+		"vDmove": [
+			0.5,
+			5.0
+		],
+		"dHiddenRemove": 100.0,
+		"dirSave": "/home/kai/Documents/",
+		"/dirSave": "/media/lab/",
+		"rVoxel": 0.05,
+		"geometry": [
+			{
+				"_GeometryBase": "rgbd2pcf",
+				"bStatic": false,
+				"nP": 500000,
+				"rDummyDome": 1000.0,
+				"matName": "depth",
+				"/matName": "default",
+				"/matCol": [
+					1,
+					1,
+					1,
+					1
+				],
+				"matPointSize": 1,
+				"matLineWidth": 1
+			}
+		]
+	},
+	"rgbd2pcf": {
+		"class": "_RGBD2PCframe",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 10
+		},
+		"_RGBDbase": "Orbbec"
+	}
+}

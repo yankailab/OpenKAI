@@ -26,7 +26,6 @@ namespace kai
 
     _RealSense::~_RealSense()
     {
-        DEL(m_pTpp);
         DEL(m_rspAlign);
     }
 
@@ -276,16 +275,13 @@ namespace kai
     bool _RealSense::start(void)
     {
         NULL_F(m_pT);
-        NULL__(m_pTpp);
+        NULL_F(m_pTpp);
         IF_F(!m_pT->start(getUpdate, this));
         return m_pTpp->start(getTPP, this);
     }
 
     bool _RealSense::check(void)
     {
-        NULL_F(m_pT);
-        NULL__(m_pTpp);
-
         return _RGBDbase::check();
     }
 

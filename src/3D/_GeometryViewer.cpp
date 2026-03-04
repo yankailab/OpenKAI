@@ -84,7 +84,7 @@ namespace kai
 		IF_F(!this->_GeometryBase::link(j, pM));
 
 		const json &jg = jK(j, "geometry");
-		IF__(!jg.is_object(), true);
+		IF__(!jg.is_array(), true);
 
 		for (auto it = jg.begin(); it != jg.end(); it++)
 		{

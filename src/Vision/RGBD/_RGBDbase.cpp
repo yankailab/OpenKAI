@@ -25,6 +25,10 @@ namespace kai
 		m_bConfidence = true;
 		m_fConfidenceThreshold = 0.0;
 
+		m_bIMU = false;
+		m_bPCd = false;
+		m_bPCrgb = false;
+
 #ifdef USE_OPENCV
 		m_dScale = 1.0;
 		m_dOfs = 0.0;
@@ -54,6 +58,10 @@ namespace kai
 		jKv(j, "btDepth", m_btDepth);
 		jKv(j, "bConfidence", m_bConfidence);
 		jKv(j, "fConfidenceThreshold", m_fConfidenceThreshold);
+
+		jKv(j, "bIMU", m_bIMU);
+		jKv(j, "bPCd", m_bPCd);
+		jKv(j, "bPCrgb", m_bPCrgb);
 
 #ifdef USE_OPENCV
 		jKv(j, "dScale", m_dScale);
