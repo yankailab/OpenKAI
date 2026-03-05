@@ -12,6 +12,11 @@ namespace kai
 
 	_FastLivo2::_FastLivo2()
 	{
+		m_bImg = false;
+		m_vSizeImg.set(640, 480);
+
+		m_vF.set(520, 520);
+		m_vC.set(320, 240);
 	}
 
 	_FastLivo2::~_FastLivo2()
@@ -22,65 +27,52 @@ namespace kai
 	{
 		IF_F(!this->_SLAMbase::init(j));
 
-		//		jKv<int>(j, "vSize", m_vSize);
-		if (!core.init(""))
-		{
-			std::cerr << "init failed\n";
-			return false;
-		}
+		jKv(j, "bImg", m_bImg);
+		jKv<int>(j, "vSizeImg", m_vSizeImg);
 
-		core.setImageEnabled(true);
+		jKv(j, "nFdownSample", m_config.m_nFdownSample);
+		jKv(j, "nPmax", m_config.m_nPmax);
+		jKv(j, "voxelLeafSize", m_config.m_voxelLeafSize);
 
-		W = 640;
-		H = 480;
-		const double fx = 520.0, fy = 520.0, cx = 320.0, cy = 240.0;
-		std::array<double, 5> dist = {0.0, 0.0, 0.0, 0.0, 0.0}; // k1,k2,p1,p2,k3 (fill real values if you have them)
-		core.setCameraPinholeDistorted(W, H, fx, fy, cx, cy, dist);
+		jKv<double>(j, "vF", m_vF);
+		jKv<double>(j, "vC", m_vC);
+		jKv(j, "aILr", m_aILr);
+		jKv(j, "aILt", m_aILt);
+		jKv(j, "aCLr", m_aCLr);
+		jKv(j, "aCLt", m_aCLt);
 
-		// 3) extrinsics
-		// IMU<-LiDAR: p_imu = R_il * p_lidar + t_il
-		std::array<double, 9> R_il = {1, 0, 0, 0, 1, 0, 0, 0, 1};
-		std::array<double, 3> t_il = {0, 0, 0};
-		core.setImuToLidarExtrinsic(R_il, t_il);
+		return setup();
+	}
 
-		// Camera<-LiDAR: p_cam = R_cl * p_lidar + t_cl
-		std::array<double, 9> R_cl = {1, 0, 0, 0, 1, 0, 0, 0, 1};
-		std::array<double, 3> t_cl = {0.05, 0.0, 0.0}; // example 5cm
-		core.setLidarToCameraExtrinsic(R_cl, t_cl);
+	bool _FastLivo2::setup(void)
+	{
+		IF_F(!m_fastLivo.init(""));
 
-		// 4) colored map maintenance options
-		// downsample_every_n_frames, max_map_points, voxel_leaf_size_m
-		core.configureColoredMapMaintenance(20, 300000, 0.10);
+		m_fastLivo.setImageEnabled(m_bImg);
 
-		// 5) feed loop (synthetic demo)
-		t = 0.0;
-		T_end = 5.0;
-		imu_dt = 0.005; // 200 Hz
-		scan_dt = 0.1;	// 10 Hz
-		img_dt = 0.1;	// 10 Hz
-		next_scan = 0.0;
-		next_img = 0.0;
+		IF_F(!m_fastLivo.setCameraPinholeDistorted(m_vSizeImg.x, m_vSizeImg.y, m_vF.x, m_vF.y, m_vC.x, m_vC.y, m_aDist));
+		IF_F(!m_fastLivo.setImuToLidarExtrinsic(m_aILr, m_aILt));
+		IF_F(!m_fastLivo.setLidarToCameraExtrinsic(m_aCLr, m_aCLt));
+
+		IF_F(!m_fastLivo.configureColoredMapMaintenance(m_config.m_nFdownSample, m_config.m_nPmax, m_config.m_voxelLeafSize));
 
 		return true;
+	}
+
+	void _FastLivo2::reset(void)
+	{
+
 	}
 
 	bool _FastLivo2::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_SLAMbase::link(j, pM));
 
-		// string n = "";
-		// jKv(j, "_VisionBase", n);
-		// m_pV = (_VisionBase *)(pM->findModule(n));
-		// NULL_F(m_pV);
-
 		return true;
 	}
 
 	bool _FastLivo2::check(void)
 	{
-		NULL_F(m_pV);
-		NULL_F(m_pV->getFrameRGB());
-
 		return this->_SLAMbase::check();
 	}
 
@@ -94,7 +86,9 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			m_pT->autoFPS();
+//			m_pT->autoFPS();
+
+			m_pT->sleepT(0);
 
 			updateFastLivo2();
 		}
@@ -102,41 +96,36 @@ namespace kai
 
 	void _FastLivo2::updateFastLivo2(void)
 	{
-		//		IF_(!check());
+		IF_(!check());
 
-		// static const double usecBase = 1.0 / ((double)SEC_2_USEC);
-
-		// Mat mGray;
-		// m_pV->getFrameRGB()->m()->copyTo(mGray);
-		// IF_(mGray.empty());
-
-		// IMU sample
-		ImuSample imu;
-		imu.t = t;
-		imu.acc = Eigen::Vector3d(0, 0, 9.81);	// gravity-ish
-		imu.gyro = Eigen::Vector3d(0, 0, 0.02); // slow yaw
-		core.pushImu(imu);
-
-		// LiDAR scan
-		if (t >= next_scan)
+		// IMU
+		Vector3d vG, vA;
+		uint64_t tIMU;
+		while ((tIMU = this->getIMUpair(&vG, &vA)) > 0)
 		{
-			auto scan = makeTestScan(t, t + scan_dt, 20000);
-			core.pushLidar(scan);
-			next_scan += scan_dt;
+			ImuSample imu;
+			imu.t = tIMU;
+			imu.acc = vA;
+			imu.gyro = vG;
+			m_fastLivo.pushImu(imu);
 		}
 
-		// BGR image
-		if (t >= next_img)
+		// point cloud
+		m_fastLivo.pushLidar(m_LS);
+
+		// image
+		if (m_bImg)
 		{
-			auto img = makeTestBGR(t, W, H);
-			core.pushImage(img);
-			next_img += img_dt;
+			ImageFrame fImg;
+			m_fastLivo.pushImage(fImg);
 		}
 
-		// run one step (may return false if not enough data yet)
-		(void)core.spinOnce();
+		IF_(!m_fastLivo.spinOnce());
 
-		t += imu_dt;
+		Pose pFL;
+		m_vT.x = pFL.p[0];
+		m_vT.y = pFL.p[1];
+		m_vT.z = pFL.p[2];
 	}
 
 	ImageFrame _FastLivo2::makeTestBGR(double t, int w, int h)
@@ -190,7 +179,6 @@ namespace kai
 		this->_SLAMbase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-//		pC->addMsg("Global pos: x=" + f2str(m_vT.x) + ", y=" + f2str(m_vT.y) + ", z=" + f2str(m_vT.z));
 	}
 
 }

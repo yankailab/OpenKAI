@@ -10,6 +10,9 @@
 
 #include "../Navigation/_NavBase.h"
 
+#include <fastlivo2_core/FastLivo2Core.hpp>
+using namespace fastlivo2_core;
+
 namespace kai
 {
 	static inline double us_to_s(uint64_t us) { return double(us) * 1e-6; }
@@ -36,7 +39,10 @@ namespace kai
 
 		void pushGyro(uint64_t t_us, const Eigen::Vector3d &g);
 		void pushAcc(uint64_t t_us, const Eigen::Vector3d &a);
-		bool getIMUpair(Vector3d* pGyro, Vector3d* pAcc);
+		uint64_t getIMUpair(Vector3d* pGyro, Vector3d* pAcc);
+
+		void pushPointCloud(const LidarScan& ls);
+
 
 	private:
 		virtual void update(void);
@@ -50,8 +56,12 @@ namespace kai
 		bool m_bTracking;
 
 		int m_nIMUdqMax;
+		uint64_t m_tIMUpairToleranceUs;
 		deque<TimedVec3> m_dqGyro;
 		deque<TimedVec3> m_dqAcc;
+
+		LidarScan m_LS;
+
 	};
 
 }

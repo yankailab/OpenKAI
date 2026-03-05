@@ -194,3 +194,1051 @@
 [03/05 09:44:49.172332][info][9867][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
 [03/05 09:44:49.173029][info][9875][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.958059fps
 [03/05 09:44:49.174233][info][9874][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.964043fps
+[03/05 11:50:43.316845][info][5705][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 11:50:43.354644][info][5705][DeviceManager.cpp:25] Current found device(s): (1)
+[03/05 11:50:43.354661][info][5705][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 11:50:43.354666][info][5705][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 11:50:46.217110][info][5705][DeviceManager.cpp:25] Current device(s) list: (1)
+[03/05 11:50:46.217192][info][5705][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 11:50:46.300912][info][5705][DeviceBase.cpp:651] key: AppSlot,value:1
+[03/05 11:50:46.300949][info][5705][DeviceBase.cpp:651] key: HwType,value:R1
+[03/05 11:50:46.300956][info][5705][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[03/05 11:50:46.300962][info][5705][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[03/05 11:50:46.300967][info][5705][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[03/05 11:50:46.300971][info][5705][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[03/05 11:50:46.462468][info][5705][DeviceManager.cpp:193] Device created successfully! Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP FW: 1.6.00
+[03/05 11:50:46.463106][info][5705][Pipeline.cpp:42] [CP1Z841000ZP] Pipeline created with device: {name: Gemini 335, sn: CP1Z841000ZP}, @0x7FFFBC02C120
+[03/05 11:50:46.533193][warning][5705][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 11:50:46.534488][warning][5705][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 11:50:46.534926][info][5705][Pipeline.cpp:216] [CP1Z841000ZP] Check and set config done!
+[03/05 11:50:46.535096][info][5705][Pipeline.cpp:254] [CP1Z841000ZP] Try to start streams!
+[03/05 11:50:46.535106][info][5705][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[03/05 11:50:46.535116][info][5705][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Color
+[03/05 11:50:46.535123][info][5705][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[03/05 11:50:46.536806][info][5705][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[03/05 11:50:46.536829][info][5705][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Depth
+[03/05 11:50:46.536833][info][5705][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Depth, format: Z16, width: 640, height: 480, fps: 30}
+[03/05 11:50:46.538461][info][5705][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Accel
+[03/05 11:50:46.554555][info][5705][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Gyro
+[03/05 11:50:46.555831][info][5705][Pipeline.cpp:270] [CP1Z841000ZP] Start streams done!
+[03/05 11:50:46.555861][info][5705][Pipeline.cpp:238] [CP1Z841000ZP] Pipeline start done!
+[03/05 11:50:46.697777][info][5813][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Accel
+[03/05 11:50:46.697852][info][5813][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Gyro
+[03/05 11:50:47.101983][info][5809][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Color
+[03/05 11:50:47.125208][info][5810][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Depth
+[03/05 11:50:47.131332][warning][5823][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset!
+[03/05 11:50:50.131879][warning][5824][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**99 logs in 3000ms, last: 11:50:49.925767**]
+[03/05 11:50:51.706522][info][5813][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.635269fps
+[03/05 11:50:51.706548][info][5813][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.635269fps
+[03/05 11:50:52.127478][info][5809][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=30.043772fps
+[03/05 11:50:52.127622][info][5810][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=30.175858fps
+[03/05 11:50:52.127868][info][5822][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=30.091669fps
+[03/05 11:50:52.161694][info][5823][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=30.224697fps
+[03/05 11:50:56.132986][warning][5823][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**46 logs in 6001ms**]
+[03/05 11:50:56.716840][info][5813][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.395203fps
+[03/05 11:50:56.716881][info][5813][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.395203fps
+[03/05 11:50:57.133475][info][5809][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.964043fps
+[03/05 11:50:57.133527][info][5810][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 11:50:57.133971][info][5822][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.964043fps
+[03/05 11:50:57.168076][info][5823][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.958059fps
+[03/05 11:51:01.717045][info][5813][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.359528fps
+[03/05 11:51:01.717079][info][5813][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.359528fps
+[03/05 11:51:02.139327][info][5809][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.964043fps
+[03/05 11:51:02.139402][info][5810][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 11:51:02.139701][info][5822][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.964043fps
+[03/05 11:51:02.173680][info][5823][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.970030fps
+[03/05 11:51:06.727372][info][5813][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.395203fps
+[03/05 11:51:06.727403][info][5813][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.395203fps
+[03/05 11:51:07.143890][info][5809][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.776178fps
+[03/05 11:51:07.144289][info][5822][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.770229fps
+[03/05 11:51:07.145301][info][5810][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 11:51:07.179633][info][5823][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.964043fps
+[03/05 11:51:08.214195][warning][5823][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**94 logs in 12081ms**]
+[03/05 11:51:11.737791][info][5813][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.395203fps
+[03/05 11:51:11.737827][info][5813][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.395203fps
+[03/05 11:51:12.150281][info][5809][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.958059fps
+[03/05 11:51:12.150818][info][5822][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.964043fps
+[03/05 11:51:12.151091][info][5810][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 11:51:12.185533][info][5823][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.964043fps
+[03/05 11:51:16.747633][info][5813][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.395203fps
+[03/05 11:51:16.747672][info][5813][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.395203fps
+[03/05 11:51:17.157090][info][5810][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 11:51:17.158141][info][5809][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.952078fps
+[03/05 11:51:17.158409][info][5822][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.952078fps
+[03/05 11:51:17.191183][info][5823][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.964043fps
+[03/05 13:02:37.012360][info][11035][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 13:02:37.012412][info][11035][DeviceManager.cpp:25] Current found device(s): (1)
+[03/05 13:02:37.012418][info][11035][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 13:02:37.012423][info][11035][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 13:02:39.830834][info][11035][DeviceManager.cpp:25] Current device(s) list: (1)
+[03/05 13:02:39.830899][info][11035][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 13:02:39.914991][info][11035][DeviceBase.cpp:651] key: AppSlot,value:1
+[03/05 13:02:39.915074][info][11035][DeviceBase.cpp:651] key: HwType,value:R1
+[03/05 13:02:39.915087][info][11035][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[03/05 13:02:39.915095][info][11035][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[03/05 13:02:39.915104][info][11035][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[03/05 13:02:39.915111][info][11035][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[03/05 13:02:40.078858][info][11035][DeviceManager.cpp:193] Device created successfully! Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP FW: 1.6.00
+[03/05 13:02:40.079205][info][11035][Pipeline.cpp:42] [CP1Z841000ZP] Pipeline created with device: {name: Gemini 335, sn: CP1Z841000ZP}, @0x7FFFBC02C120
+[03/05 13:02:40.149388][warning][11035][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 13:02:40.150722][warning][11035][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 13:02:40.151186][info][11035][Pipeline.cpp:216] [CP1Z841000ZP] Check and set config done!
+[03/05 13:02:40.151442][info][11035][Pipeline.cpp:254] [CP1Z841000ZP] Try to start streams!
+[03/05 13:02:40.151458][info][11035][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[03/05 13:02:40.151469][info][11035][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Color
+[03/05 13:02:40.151475][info][11035][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[03/05 13:02:40.153104][info][11035][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[03/05 13:02:40.153131][info][11035][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Depth
+[03/05 13:02:40.153138][info][11035][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Depth, format: Z16, width: 640, height: 480, fps: 30}
+[03/05 13:02:40.154853][info][11035][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Accel
+[03/05 13:02:40.172632][info][11035][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Gyro
+[03/05 13:02:40.174125][info][11035][Pipeline.cpp:270] [CP1Z841000ZP] Start streams done!
+[03/05 13:02:40.174146][info][11035][Pipeline.cpp:238] [CP1Z841000ZP] Pipeline start done!
+[03/05 13:02:40.310918][info][11149][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Accel
+[03/05 13:02:40.311023][info][11149][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Gyro
+[03/05 13:02:40.718787][info][11145][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Color
+[03/05 13:02:40.740294][info][11146][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Depth
+[03/05 13:02:40.743902][warning][11159][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset!
+[03/05 13:03:54.775249][info][11537][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 13:03:54.775301][info][11537][DeviceManager.cpp:25] Current found device(s): (1)
+[03/05 13:03:54.775306][info][11537][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 13:03:54.775312][info][11537][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 13:03:56.784860][info][11537][DeviceManager.cpp:25] Current device(s) list: (1)
+[03/05 13:03:56.784916][info][11537][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 13:03:56.787548][info][11537][DeviceBase.cpp:651] key: AppSlot,value:1
+[03/05 13:03:56.787559][info][11537][DeviceBase.cpp:651] key: HwType,value:R1
+[03/05 13:03:56.787561][info][11537][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[03/05 13:03:56.787563][info][11537][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[03/05 13:03:56.787564][info][11537][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[03/05 13:03:56.787566][info][11537][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[03/05 13:03:56.955990][info][11537][DeviceManager.cpp:193] Device created successfully! Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP FW: 1.6.00
+[03/05 13:03:56.956544][info][11537][Pipeline.cpp:42] [CP1Z841000ZP] Pipeline created with device: {name: Gemini 335, sn: CP1Z841000ZP}, @0x7FFFB802BFD0
+[03/05 13:03:57.025185][warning][11537][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 13:03:57.026421][warning][11537][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 13:03:57.026727][info][11537][Pipeline.cpp:216] [CP1Z841000ZP] Check and set config done!
+[03/05 13:03:57.026925][info][11537][Pipeline.cpp:254] [CP1Z841000ZP] Try to start streams!
+[03/05 13:03:57.026932][info][11537][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[03/05 13:03:57.026942][info][11537][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Color
+[03/05 13:03:57.026947][info][11537][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[03/05 13:03:57.029899][info][11537][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[03/05 13:03:57.029926][info][11537][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Depth
+[03/05 13:03:57.029930][info][11537][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Depth, format: Z16, width: 640, height: 480, fps: 30}
+[03/05 13:03:57.032716][info][11537][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Accel
+[03/05 13:03:57.047926][info][11537][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Gyro
+[03/05 13:03:57.049000][info][11537][Pipeline.cpp:270] [CP1Z841000ZP] Start streams done!
+[03/05 13:03:57.049014][info][11537][Pipeline.cpp:238] [CP1Z841000ZP] Pipeline start done!
+[03/05 13:03:57.189800][info][11642][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Accel
+[03/05 13:03:57.189833][info][11642][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Gyro
+[03/05 13:03:57.592178][info][11634][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Color
+[03/05 13:03:57.614919][info][11635][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Depth
+[03/05 13:03:57.618206][warning][11653][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset!
+[03/05 13:04:00.618922][warning][11654][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**95 logs in 3000ms, last: 13:04:00.618539**]
+[03/05 13:04:02.199885][info][11642][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.594803fps
+[03/05 13:04:02.199913][info][11642][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.594803fps
+[03/05 13:04:02.619584][info][11635][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=30.169830fps
+[03/05 13:04:02.620537][info][11653][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=30.187925fps
+[03/05 13:04:02.620613][info][11634][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=30.031822fps
+[03/05 13:04:02.620892][info][11652][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=30.043772fps
+[03/05 13:04:06.734448][warning][11652][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**44 logs in 6115ms**]
+[03/05 13:04:07.200214][info][11642][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.359528fps
+[03/05 13:04:07.200273][info][11642][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.359528fps
+[03/05 13:04:07.625645][info][11635][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 13:04:07.626582][info][11653][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.964043fps
+[03/05 13:04:07.631375][info][11634][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.734583fps
+[03/05 13:04:07.631696][info][11652][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.734583fps
+[03/05 13:04:12.210363][info][11642][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.395203fps
+[03/05 13:04:12.210400][info][11642][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.395203fps
+[03/05 13:04:12.631533][info][11635][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 13:04:12.632581][info][11653][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.964043fps
+[03/05 13:04:12.635888][info][11634][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.576338fps
+[03/05 13:04:12.636272][info][11652][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.570429fps
+[03/05 13:04:17.220723][info][11642][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.395203fps
+[03/05 13:04:17.220758][info][11642][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.395203fps
+[03/05 13:04:17.637315][info][11635][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 13:04:17.638130][info][11653][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.964043fps
+[03/05 13:04:17.641378][info][11634][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.964043fps
+[03/05 13:04:17.641873][info][11652][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.970030fps
+[03/05 13:04:18.809802][warning][11652][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**87 logs in 12075ms**]
+[03/05 13:04:22.221284][info][11642][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.359528fps
+[03/05 13:04:22.221314][info][11642][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.359528fps
+[03/05 13:04:22.643299][info][11635][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 13:04:22.644524][info][11653][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.964043fps
+[03/05 13:04:22.647405][info][11634][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.964043fps
+[03/05 13:04:22.679338][info][11652][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.773720fps
+[03/05 13:04:27.231824][info][11642][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.395203fps
+[03/05 13:04:27.231858][info][11642][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.395203fps
+[03/05 13:04:27.649310][info][11635][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 13:04:27.650189][info][11653][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.964043fps
+[03/05 13:04:27.653558][info][11634][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.964043fps
+[03/05 13:04:27.687283][info][11652][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=30.151758fps
+[03/05 13:04:32.232118][info][11642][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.359528fps
+[03/05 13:04:32.232157][info][11642][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.359528fps
+[03/05 13:04:32.655200][info][11635][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 13:04:32.656119][info][11653][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.964043fps
+[03/05 13:04:32.659229][info][11634][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.964043fps
+[03/05 13:04:32.693045][info][11652][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.964043fps
+[03/05 14:36:26.364303][info][16516][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 14:36:26.364358][info][16516][DeviceManager.cpp:25] Current found device(s): (1)
+[03/05 14:36:26.364363][info][16516][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:36:26.364368][info][16516][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 14:36:28.374453][info][16516][DeviceManager.cpp:25] Current device(s) list: (1)
+[03/05 14:36:28.374535][info][16516][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:36:28.379596][info][16516][DeviceBase.cpp:651] key: AppSlot,value:1
+[03/05 14:36:28.379676][info][16516][DeviceBase.cpp:651] key: HwType,value:R1
+[03/05 14:36:28.379719][info][16516][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[03/05 14:36:28.379725][info][16516][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[03/05 14:36:28.379729][info][16516][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[03/05 14:36:28.379733][info][16516][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[03/05 14:36:28.542963][info][16516][DeviceManager.cpp:193] Device created successfully! Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP FW: 1.6.00
+[03/05 14:36:28.543312][info][16516][Pipeline.cpp:42] [CP1Z841000ZP] Pipeline created with device: {name: Gemini 335, sn: CP1Z841000ZP}, @0x7FFF8402BFD0
+[03/05 14:36:28.610531][warning][16516][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:36:28.611631][warning][16516][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:36:28.611987][info][16516][Pipeline.cpp:216] [CP1Z841000ZP] Check and set config done!
+[03/05 14:36:28.612198][info][16516][Pipeline.cpp:254] [CP1Z841000ZP] Try to start streams!
+[03/05 14:36:28.612203][info][16516][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[03/05 14:36:28.612211][info][16516][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Color
+[03/05 14:36:28.612215][info][16516][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[03/05 14:36:28.614935][info][16516][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[03/05 14:36:28.614945][info][16516][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Depth
+[03/05 14:36:28.614948][info][16516][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Depth, format: Z16, width: 640, height: 480, fps: 30}
+[03/05 14:36:28.617649][info][16516][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Accel
+[03/05 14:36:28.632512][info][16516][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Gyro
+[03/05 14:36:28.633589][info][16516][Pipeline.cpp:270] [CP1Z841000ZP] Start streams done!
+[03/05 14:36:28.633592][info][16516][Pipeline.cpp:238] [CP1Z841000ZP] Pipeline start done!
+[03/05 14:36:28.776395][info][16620][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Accel
+[03/05 14:36:28.776430][info][16620][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Gyro
+[03/05 14:36:29.178958][info][16616][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Color
+[03/05 14:36:29.202877][info][16617][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Depth
+[03/05 14:36:29.212061][warning][16625][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset!
+[03/05 14:36:34.137349][warning][16626][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**71 logs in 4925ms, last: 14:36:29.213276**]
+[03/05 14:36:34.141310][info][16620][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=16.961790fps
+[03/05 14:36:34.141986][info][16620][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=16.961790fps
+[03/05 14:38:10.322254][info][17116][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 14:38:10.322307][info][17116][DeviceManager.cpp:25] Current found device(s): (1)
+[03/05 14:38:10.322313][info][17116][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:38:10.322318][info][17116][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 14:38:12.649885][info][17116][DeviceManager.cpp:25] Current device(s) list: (1)
+[03/05 14:38:12.649926][info][17116][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:38:12.729302][info][17116][DeviceBase.cpp:651] key: AppSlot,value:1
+[03/05 14:38:12.729323][info][17116][DeviceBase.cpp:651] key: HwType,value:R1
+[03/05 14:38:12.729325][info][17116][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[03/05 14:38:12.729326][info][17116][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[03/05 14:38:12.729327][info][17116][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[03/05 14:38:12.729328][info][17116][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[03/05 14:38:12.898935][info][17116][DeviceManager.cpp:193] Device created successfully! Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP FW: 1.6.00
+[03/05 14:38:12.899406][info][17116][Pipeline.cpp:42] [CP1Z841000ZP] Pipeline created with device: {name: Gemini 335, sn: CP1Z841000ZP}, @0x7FFF6C02BFD0
+[03/05 14:38:12.964470][warning][17116][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:38:12.965553][warning][17116][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:38:12.965876][info][17116][Pipeline.cpp:216] [CP1Z841000ZP] Check and set config done!
+[03/05 14:38:12.966042][info][17116][Pipeline.cpp:254] [CP1Z841000ZP] Try to start streams!
+[03/05 14:38:12.966046][info][17116][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[03/05 14:38:12.966053][info][17116][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Color
+[03/05 14:38:12.966056][info][17116][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[03/05 14:38:12.968898][info][17116][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[03/05 14:38:12.968910][info][17116][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Depth
+[03/05 14:38:12.968914][info][17116][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Depth, format: Z16, width: 640, height: 480, fps: 30}
+[03/05 14:38:12.971731][info][17116][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Accel
+[03/05 14:38:12.988044][info][17116][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Gyro
+[03/05 14:38:12.990143][info][17116][Pipeline.cpp:270] [CP1Z841000ZP] Start streams done!
+[03/05 14:38:12.990179][info][17116][Pipeline.cpp:238] [CP1Z841000ZP] Pipeline start done!
+[03/05 14:38:13.127364][info][17210][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Accel
+[03/05 14:38:13.127404][info][17210][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Gyro
+[03/05 14:38:13.530770][info][17206][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Color
+[03/05 14:38:13.554027][info][17207][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Depth
+[03/05 14:38:13.558462][warning][17215][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset!
+[03/05 14:38:18.524737][warning][17215][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**2 logs in 4966ms**]
+[03/05 14:38:18.531761][info][17206][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=0.799840fps
+[03/05 14:38:23.987969][info][17207][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=0.383362fps
+[03/05 14:38:23.989074][info][17206][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=0.183217fps
+[03/05 14:38:29.130731][info][17206][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=0.194515fps
+[03/05 14:38:29.130999][warning][17206][VideoSensor.cpp:193] [CP1Z841000ZP] This frame will be dropped because the data size does not match the expectation! size=392972, expected=614400 @Color
+[03/05 14:38:29.131323][warning][17215][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset!
+[03/05 14:38:29.131511][info][17207][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=0.388802fps
+[03/05 14:38:29.132296][info][17214][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=0.128205fps
+[03/05 14:38:29.132348][info][17210][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=5.560762fps
+[03/05 14:38:29.132390][info][17210][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=5.560762fps
+[03/05 14:38:29.144616][warning][17210][ObException.cpp:8] Timestamp anomaly detected, timestamp: 91624609, cacheTimestamp: 81263214 ,currentDiff: 10361395, maxValidTimestampDiff: 5000000
+[03/05 14:38:29.145218][warning][17210][SensorBase.cpp:415] [CP1Z841000ZP] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(415):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 91624609, cacheTimestamp: 81263214 ,currentDiff: 10361395, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor23invalid_value_exceptionE
+[03/05 14:38:29.145233][error][17210][SensorBase.cpp:416] [CP1Z841000ZP] Timestamp anomaly detected, frame: 91624609, sensor: Accel
+[03/05 14:38:29.145267][warning][17210][ObException.cpp:8] Timestamp anomaly detected, timestamp: 91624609, cacheTimestamp: 81263214 ,currentDiff: 10361395, maxValidTimestampDiff: 5000000
+[03/05 14:38:29.145279][warning][17210][SensorBase.cpp:415] [CP1Z841000ZP] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(415):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 91624609, cacheTimestamp: 81263214 ,currentDiff: 10361395, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor23invalid_value_exceptionE
+[03/05 14:38:29.145282][error][17210][SensorBase.cpp:416] [CP1Z841000ZP] Timestamp anomaly detected, frame: 91624609, sensor: Gyro
+[03/05 14:38:29.145396][warning][17210][ObException.cpp:8] Timestamp anomaly detected, timestamp: 96773226, cacheTimestamp: 91639432 ,currentDiff: 5133794, maxValidTimestampDiff: 5000000
+[03/05 14:38:29.145413][warning][17210][SensorBase.cpp:415] [CP1Z841000ZP] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(415):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 96773226, cacheTimestamp: 91639432 ,currentDiff: 5133794, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor23invalid_value_exceptionE
+[03/05 14:38:29.145417][error][17210][SensorBase.cpp:416] [CP1Z841000ZP] Timestamp anomaly detected, frame: 96773226, sensor: Accel
+[03/05 14:38:29.145427][warning][17210][ObException.cpp:8] Timestamp anomaly detected, timestamp: 96773226, cacheTimestamp: 91639432 ,currentDiff: 5133794, maxValidTimestampDiff: 5000000
+[03/05 14:38:29.145434][warning][17210][SensorBase.cpp:415] [CP1Z841000ZP] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(415):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 96773226, cacheTimestamp: 91639432 ,currentDiff: 5133794, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor23invalid_value_exceptionE
+[03/05 14:38:29.145437][error][17210][SensorBase.cpp:416] [CP1Z841000ZP] Timestamp anomaly detected, frame: 96773226, sensor: Gyro
+[03/05 14:38:32.469621][warning][17294][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**82 logs in 3338ms, last: 14:38:29.143284**]
+[03/05 14:38:33.028721][warning][17116][Pipeline.cpp:305] [CP1Z841000ZP] Wait for frame timeout, you can try to increase the wait time! current timeout=1000
+[03/05 14:38:33.028773][info][17116][Pipeline.cpp:336] [CP1Z841000ZP] Try to stop pipeline!
+[03/05 14:38:33.028779][info][17116][Pipeline.cpp:312] [CP1Z841000ZP] Try to stop streams!
+[03/05 14:38:33.028801][info][17116][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STOPPING@Gyro
+[03/05 14:38:33.030451][info][17116][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STOPPED@Gyro
+[03/05 14:38:33.030482][info][17116][Pipeline.cpp:326] [CP1Z841000ZP] Sensor stream stopped, sensorType=Gyro
+[03/05 14:38:33.030498][info][17116][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STOPPING@Accel
+[03/05 14:38:33.564056][info][17116][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STOPPED@Accel
+[03/05 14:38:33.564113][info][17116][Pipeline.cpp:326] [CP1Z841000ZP] Sensor stream stopped, sensorType=Accel
+[03/05 14:38:33.564134][info][17116][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STOPPING@Depth
+[03/05 14:38:51.867807][warning][17173][ObException.cpp:8] Resource busy! You can try again later!
+[03/05 14:38:52.869623][info][17116][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STOPPED@Depth
+[03/05 14:38:52.869735][info][17116][Pipeline.cpp:326] [CP1Z841000ZP] Sensor stream stopped, sensorType=Depth
+[03/05 14:38:52.869754][info][17116][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STOPPING@Color
+[03/05 14:38:54.988208][info][17116][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STOPPED@Color
+[03/05 14:38:54.988529][info][17116][Pipeline.cpp:326] [CP1Z841000ZP] Sensor stream stopped, sensorType=Color
+[03/05 14:38:54.988542][info][17116][Pipeline.cpp:332] [CP1Z841000ZP] Stop streams done!
+[03/05 14:38:54.988777][info][17116][Pipeline.cpp:356] [CP1Z841000ZP] Stop pipeline done!
+[03/05 14:38:54.989149][info][17116][Pipeline.cpp:42] [CP1Z841000ZP] Pipeline created with device: {name: Gemini 335, sn: CP1Z841000ZP}, @0x7FFF6C02C090
+[03/05 14:38:54.989157][info][17116][Pipeline.cpp:53] [CP1Z841000ZP] Pipeline destroyed! @0x7FFF6C02BFD0
+[03/05 14:38:54.989497][info][17116][Pipeline.cpp:216] [CP1Z841000ZP] Check and set config done!
+[03/05 14:38:55.385179][info][17116][Pipeline.cpp:254] [CP1Z841000ZP] Try to start streams!
+[03/05 14:38:55.385213][info][17116][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[03/05 14:38:55.385223][info][17116][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Color
+[03/05 14:38:55.385229][info][17116][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[03/05 14:38:55.826713][info][17116][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[03/05 14:38:55.826745][info][17116][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Depth
+[03/05 14:38:55.826751][info][17116][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Depth, format: Z16, width: 640, height: 480, fps: 30}
+[03/05 14:38:56.234482][info][17375][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=0.036895fps
+[03/05 14:38:56.234508][info][17375][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Color
+[03/05 14:38:56.236479][info][17116][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Accel
+[03/05 14:38:56.236904][info][17378][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=0.147580fps
+[03/05 14:38:56.650073][warning][17375][VideoSensor.cpp:193] [CP1Z841000ZP] This frame will be dropped because the data size does not match the expectation! size=32675, expected=614400 @Color
+[03/05 14:38:56.650091][info][17376][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=0.036339fps
+[03/05 14:38:56.650114][warning][17376][VideoSensor.cpp:193] [CP1Z841000ZP] This frame will be dropped because the data size does not match the expectation! size=16657, expected=614400 @Depth
+[03/05 14:38:57.411036][warning][17375][ObException.hpp:48] Update data size(647079) > data buffer size! (614400)
+[03/05 14:38:57.412816][warning][17375][ObLibuvcDevicePort.cpp:444] Execute failure! A libobsensor_exception has occurred!
+ - where: ObLibuvcDevicePort.cpp(444):onFrameCallback
+ - msg: Update data size(647079) > data buffer size! (614400)
+ - type: N11libobsensor16memory_exceptionE
+[03/05 14:39:03.748223][warning][17379][VideoSensor.cpp:193] [CP1Z841000ZP] This frame will be dropped because the data size does not match the expectation! size=228913, expected=614400 @Color [**8 logs in 7098ms, last: 14:38:58.251700**]
+[03/05 14:39:03.748240][info][17375][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=1.863189fps
+[03/05 14:39:09.692194][warning][17376][ObException.cpp:8] Resource busy! You can try again later!
+[03/05 14:39:09.692215][warning][17173][ObException.cpp:8] Resource busy! You can try again later!
+[03/05 14:39:09.692920][warning][17375][ObException.hpp:48] Update data size(909036) > data buffer size! (614400)
+[03/05 14:39:09.692972][warning][17375][ObLibuvcDevicePort.cpp:444] Execute failure! A libobsensor_exception has occurred!
+ - where: ObLibuvcDevicePort.cpp(444):onFrameCallback
+ - msg: Update data size(909036) > data buffer size! (614400)
+ - type: N11libobsensor16memory_exceptionE
+[03/05 14:39:09.693071][info][17378][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=0.371554fps
+[03/05 14:39:09.694815][error][17376][G330AlgParamManager.cpp:195] Get depth calibration params failed! Resource busy! You can try again later!
+[03/05 14:39:09.694901][info][17376][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Depth
+[03/05 14:39:09.695753][info][17375][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=0.336304fps
+[03/05 14:39:09.695845][info][17376][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=0.153315fps
+[03/05 14:39:09.696655][info][17116][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Gyro
+[03/05 14:39:09.698018][info][17116][Pipeline.cpp:270] [CP1Z841000ZP] Start streams done!
+[03/05 14:39:09.698021][info][17396][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=0.172558fps
+[03/05 14:39:09.698043][info][17116][Pipeline.cpp:238] [CP1Z841000ZP] Pipeline start done!
+[03/05 14:39:09.698598][info][17399][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Accel
+[03/05 14:39:09.698632][info][17399][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=1.232559fps
+[03/05 14:39:09.698638][info][17399][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Gyro
+[03/05 14:39:09.698656][info][17399][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=1.183257fps
+[03/05 14:39:17.661215][warning][17399][ObException.cpp:8] Timestamp anomaly detected, timestamp: 137334539, cacheTimestamp: 126508271 ,currentDiff: 10826268, maxValidTimestampDiff: 5000000
+[03/05 14:39:17.661311][warning][17399][SensorBase.cpp:415] [CP1Z841000ZP] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(415):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 137334539, cacheTimestamp: 126508271 ,currentDiff: 10826268, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor23invalid_value_exceptionE
+[03/05 14:39:17.661324][error][17399][SensorBase.cpp:416] [CP1Z841000ZP] Timestamp anomaly detected, frame: 137334539, sensor: Accel
+[03/05 14:39:17.661349][warning][17399][ObException.cpp:8] Timestamp anomaly detected, timestamp: 137334539, cacheTimestamp: 126508271 ,currentDiff: 10826268, maxValidTimestampDiff: 5000000
+[03/05 14:39:17.661360][warning][17399][SensorBase.cpp:415] [CP1Z841000ZP] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(415):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 137334539, cacheTimestamp: 126508271 ,currentDiff: 10826268, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor23invalid_value_exceptionE
+[03/05 14:39:17.661365][error][17399][SensorBase.cpp:416] [CP1Z841000ZP] Timestamp anomaly detected, frame: 137334539, sensor: Gyro
+[03/05 14:39:46.852071][info][17711][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 14:39:46.852121][info][17711][DeviceManager.cpp:25] Current found device(s): (1)
+[03/05 14:39:46.852126][info][17711][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:39:46.852130][info][17711][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 14:39:49.193779][info][17711][DeviceManager.cpp:25] Current device(s) list: (1)
+[03/05 14:39:49.193809][info][17711][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:39:49.277036][info][17711][DeviceBase.cpp:651] key: AppSlot,value:1
+[03/05 14:39:49.277078][info][17711][DeviceBase.cpp:651] key: HwType,value:R1
+[03/05 14:39:49.277086][info][17711][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[03/05 14:39:49.277091][info][17711][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[03/05 14:39:49.277096][info][17711][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[03/05 14:39:49.277100][info][17711][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[03/05 14:39:49.441137][info][17711][DeviceManager.cpp:193] Device created successfully! Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP FW: 1.6.00
+[03/05 14:39:49.441648][info][17711][Pipeline.cpp:42] [CP1Z841000ZP] Pipeline created with device: {name: Gemini 335, sn: CP1Z841000ZP}, @0x7FFF8002BFD0
+[03/05 14:39:49.504381][warning][17711][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:39:49.505841][warning][17711][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:39:49.506176][info][17711][Pipeline.cpp:216] [CP1Z841000ZP] Check and set config done!
+[03/05 14:39:49.506395][info][17711][Pipeline.cpp:254] [CP1Z841000ZP] Try to start streams!
+[03/05 14:39:49.506400][info][17711][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[03/05 14:39:49.506407][info][17711][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Color
+[03/05 14:39:49.506411][info][17711][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[03/05 14:39:49.509090][info][17711][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[03/05 14:39:49.509102][info][17711][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Depth
+[03/05 14:39:49.509105][info][17711][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Depth, format: Z16, width: 640, height: 480, fps: 30}
+[03/05 14:39:49.511935][info][17711][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Accel
+[03/05 14:39:49.526812][info][17711][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Gyro
+[03/05 14:39:49.527778][info][17711][Pipeline.cpp:270] [CP1Z841000ZP] Start streams done!
+[03/05 14:39:49.527785][info][17711][Pipeline.cpp:238] [CP1Z841000ZP] Pipeline start done!
+[03/05 14:39:49.667950][info][17805][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Accel
+[03/05 14:39:49.667988][info][17805][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Gyro
+[03/05 14:39:50.073959][info][17801][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Color
+[03/05 14:39:50.096772][info][17802][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Depth
+[03/05 14:39:50.107732][warning][17819][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset!
+[03/05 14:40:30.641020][info][18143][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 14:40:30.641070][info][18143][DeviceManager.cpp:25] Current found device(s): (1)
+[03/05 14:40:30.641075][info][18143][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:40:30.641079][info][18143][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 14:40:32.946466][info][18143][DeviceManager.cpp:25] Current device(s) list: (1)
+[03/05 14:40:32.946498][info][18143][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:40:33.025055][info][18143][DeviceBase.cpp:651] key: AppSlot,value:1
+[03/05 14:40:33.025087][info][18143][DeviceBase.cpp:651] key: HwType,value:R1
+[03/05 14:40:33.025089][info][18143][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[03/05 14:40:33.025091][info][18143][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[03/05 14:40:33.025099][info][18143][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[03/05 14:40:33.025100][info][18143][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[03/05 14:40:33.189426][info][18143][DeviceManager.cpp:193] Device created successfully! Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP FW: 1.6.00
+[03/05 14:40:33.190128][info][18143][Pipeline.cpp:42] [CP1Z841000ZP] Pipeline created with device: {name: Gemini 335, sn: CP1Z841000ZP}, @0x7FFF9002BFD0
+[03/05 14:40:33.266052][warning][18143][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:40:33.267737][warning][18143][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:40:33.268438][info][18143][Pipeline.cpp:216] [CP1Z841000ZP] Check and set config done!
+[03/05 14:40:33.268675][info][18143][Pipeline.cpp:254] [CP1Z841000ZP] Try to start streams!
+[03/05 14:40:33.268693][info][18143][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[03/05 14:40:33.268708][info][18143][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Color
+[03/05 14:40:33.268718][info][18143][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[03/05 14:40:33.272444][info][18143][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[03/05 14:40:33.272491][info][18143][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Depth
+[03/05 14:40:33.272504][info][18143][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Depth, format: Z16, width: 640, height: 480, fps: 30}
+[03/05 14:40:33.276354][info][18143][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Accel
+[03/05 14:40:33.291341][info][18143][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Gyro
+[03/05 14:40:33.293431][info][18143][Pipeline.cpp:270] [CP1Z841000ZP] Start streams done!
+[03/05 14:40:33.293475][info][18143][Pipeline.cpp:238] [CP1Z841000ZP] Pipeline start done!
+[03/05 14:40:33.430479][info][18244][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Accel
+[03/05 14:40:33.430511][info][18244][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Gyro
+[03/05 14:40:33.834540][info][18240][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Color
+[03/05 14:40:33.858988][info][18241][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Depth
+[03/05 14:40:33.865615][warning][18249][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset!
+[03/05 14:40:38.242510][warning][18250][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**75 logs in 4376ms, last: 14:40:33.962114**]
+[03/05 14:40:42.149758][info][18244][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=14.565891fps
+[03/05 14:40:42.149821][info][18244][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=14.565891fps
+[03/05 14:40:44.324197][warning][18285][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**19 logs in 6081ms, last: 14:40:38.252270**]
+[03/05 14:40:49.330438][info][18244][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=1.392564fps
+[03/05 14:40:49.331047][info][18244][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=1.392370fps
+[03/05 14:40:49.642291][warning][18244][ObException.cpp:8] Timestamp anomaly detected, timestamp: 44528856, cacheTimestamp: 37724666 ,currentDiff: 6804190, maxValidTimestampDiff: 5000000
+[03/05 14:40:49.642342][warning][18244][SensorBase.cpp:415] [CP1Z841000ZP] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(415):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 44528856, cacheTimestamp: 37724666 ,currentDiff: 6804190, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor23invalid_value_exceptionE
+[03/05 14:40:49.642356][error][18244][SensorBase.cpp:416] [CP1Z841000ZP] Timestamp anomaly detected, frame: 44528856, sensor: Accel
+[03/05 14:40:49.642381][warning][18244][ObException.cpp:8] Timestamp anomaly detected, timestamp: 44528856, cacheTimestamp: 37724666 ,currentDiff: 6804190, maxValidTimestampDiff: 5000000
+[03/05 14:40:49.642389][warning][18244][SensorBase.cpp:415] [CP1Z841000ZP] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(415):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 44528856, cacheTimestamp: 37724666 ,currentDiff: 6804190, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor23invalid_value_exceptionE
+[03/05 14:40:49.642392][error][18244][SensorBase.cpp:416] [CP1Z841000ZP] Timestamp anomaly detected, frame: 44528856, sensor: Gyro
+[03/05 14:40:56.617833][warning][18143][Pipeline.cpp:305] [CP1Z841000ZP] Wait for frame timeout, you can try to increase the wait time! current timeout=1000
+[03/05 14:40:56.617891][info][18143][Pipeline.cpp:336] [CP1Z841000ZP] Try to stop pipeline!
+[03/05 14:40:56.617898][info][18143][Pipeline.cpp:312] [CP1Z841000ZP] Try to stop streams!
+[03/05 14:40:56.617922][info][18143][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STOPPING@Gyro
+[03/05 14:41:32.650855][info][18708][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 14:41:32.650906][info][18708][DeviceManager.cpp:25] Current found device(s): (1)
+[03/05 14:41:32.650911][info][18708][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:41:32.650915][info][18708][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 14:41:34.661028][info][18708][DeviceManager.cpp:25] Current device(s) list: (1)
+[03/05 14:41:34.661064][info][18708][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:41:34.743907][info][18708][DeviceBase.cpp:651] key: AppSlot,value:1
+[03/05 14:41:34.743963][info][18708][DeviceBase.cpp:651] key: HwType,value:R1
+[03/05 14:41:34.743974][info][18708][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[03/05 14:41:34.743982][info][18708][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[03/05 14:41:34.743989][info][18708][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[03/05 14:41:34.743996][info][18708][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[03/05 14:41:34.914634][info][18708][DeviceManager.cpp:193] Device created successfully! Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP FW: 1.6.00
+[03/05 14:41:34.915151][info][18708][Pipeline.cpp:42] [CP1Z841000ZP] Pipeline created with device: {name: Gemini 335, sn: CP1Z841000ZP}, @0x7FFF8002BFD0
+[03/05 14:41:34.971624][info][18708][Pipeline.cpp:216] [CP1Z841000ZP] Check and set config done!
+[03/05 14:41:34.972313][info][18708][Pipeline.cpp:254] [CP1Z841000ZP] Try to start streams!
+[03/05 14:41:34.972327][info][18708][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[03/05 14:41:34.972335][info][18708][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Color
+[03/05 14:41:34.972339][info][18708][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[03/05 14:41:34.975615][info][18708][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[03/05 14:41:34.975631][info][18708][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Depth
+[03/05 14:41:34.975635][info][18708][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Depth, format: Z16, width: 640, height: 480, fps: 30}
+[03/05 14:41:34.978803][info][18708][Pipeline.cpp:270] [CP1Z841000ZP] Start streams done!
+[03/05 14:41:34.978812][info][18708][Pipeline.cpp:238] [CP1Z841000ZP] Pipeline start done!
+[03/05 14:41:35.537919][info][18796][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Color
+[03/05 14:41:35.561372][info][18797][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Depth
+[03/05 14:41:38.814956][warning][18708][Pipeline.cpp:305] [CP1Z841000ZP] Wait for frame timeout, you can try to increase the wait time! current timeout=1000
+[03/05 14:41:38.815007][info][18708][Pipeline.cpp:336] [CP1Z841000ZP] Try to stop pipeline!
+[03/05 14:41:38.815014][info][18708][Pipeline.cpp:312] [CP1Z841000ZP] Try to stop streams!
+[03/05 14:41:38.815039][info][18708][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STOPPING@Depth
+[03/05 14:41:44.696370][info][18804][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=0.436824fps
+[03/05 14:41:44.696451][info][18796][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=0.545911fps
+[03/05 14:42:19.435161][info][19117][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 14:42:19.435212][info][19117][DeviceManager.cpp:25] Current found device(s): (1)
+[03/05 14:42:19.435218][info][19117][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:42:19.435223][info][19117][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 14:42:21.731959][info][19117][DeviceManager.cpp:25] Current device(s) list: (1)
+[03/05 14:42:21.731987][info][19117][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:42:21.812296][info][19117][DeviceBase.cpp:651] key: AppSlot,value:1
+[03/05 14:42:21.812334][info][19117][DeviceBase.cpp:651] key: HwType,value:R1
+[03/05 14:42:21.812341][info][19117][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[03/05 14:42:21.812346][info][19117][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[03/05 14:42:21.812351][info][19117][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[03/05 14:42:21.812356][info][19117][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[03/05 14:42:21.983401][info][19117][DeviceManager.cpp:193] Device created successfully! Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP FW: 1.6.00
+[03/05 14:42:21.984219][info][19117][Pipeline.cpp:42] [CP1Z841000ZP] Pipeline created with device: {name: Gemini 335, sn: CP1Z841000ZP}, @0x7FFF7802BFD0
+[03/05 14:42:22.053246][warning][19117][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:42:22.054685][warning][19117][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:42:22.055008][info][19117][Pipeline.cpp:216] [CP1Z841000ZP] Check and set config done!
+[03/05 14:42:22.055184][info][19117][Pipeline.cpp:254] [CP1Z841000ZP] Try to start streams!
+[03/05 14:42:22.055190][info][19117][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[03/05 14:42:22.055197][info][19117][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Color
+[03/05 14:42:22.055201][info][19117][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[03/05 14:42:22.057988][info][19117][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[03/05 14:42:22.057996][info][19117][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Depth
+[03/05 14:42:22.057999][info][19117][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Depth, format: Z16, width: 640, height: 480, fps: 30}
+[03/05 14:42:22.060617][info][19117][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Accel
+[03/05 14:42:22.076776][info][19117][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Gyro
+[03/05 14:42:22.078338][info][19117][Pipeline.cpp:270] [CP1Z841000ZP] Start streams done!
+[03/05 14:42:22.078367][info][19117][Pipeline.cpp:238] [CP1Z841000ZP] Pipeline start done!
+[03/05 14:42:22.215828][info][19214][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Accel
+[03/05 14:42:22.215905][info][19214][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Gyro
+[03/05 14:42:22.621789][info][19205][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Color
+[03/05 14:42:22.643513][info][19206][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Depth
+[03/05 14:42:22.646308][warning][19219][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset!
+[03/05 14:42:25.908391][warning][19220][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**76 logs in 3262ms, last: 14:42:22.748075**]
+[03/05 14:42:27.576208][info][19214][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=27.047192fps
+[03/05 14:42:27.576242][info][19214][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=27.047192fps
+[03/05 14:42:32.376516][warning][19235][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**26 logs in 6467ms, last: 14:42:30.824835**]
+[03/05 14:42:36.102155][info][19214][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=11.728829fps
+[03/05 14:42:36.102914][info][19214][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=11.728829fps
+[03/05 14:42:37.234864][warning][19214][ObException.cpp:8] Timestamp anomaly detected, timestamp: 37493227, cacheTimestamp: 32289909 ,currentDiff: 5203318, maxValidTimestampDiff: 5000000
+[03/05 14:42:37.234981][warning][19214][SensorBase.cpp:415] [CP1Z841000ZP] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(415):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 37493227, cacheTimestamp: 32289909 ,currentDiff: 5203318, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor23invalid_value_exceptionE
+[03/05 14:42:37.234995][error][19214][SensorBase.cpp:416] [CP1Z841000ZP] Timestamp anomaly detected, frame: 37493227, sensor: Accel
+[03/05 14:42:37.235045][warning][19214][ObException.cpp:8] Timestamp anomaly detected, timestamp: 37493227, cacheTimestamp: 32289909 ,currentDiff: 5203318, maxValidTimestampDiff: 5000000
+[03/05 14:42:37.235067][warning][19214][SensorBase.cpp:415] [CP1Z841000ZP] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(415):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 37493227, cacheTimestamp: 32289909 ,currentDiff: 5203318, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor23invalid_value_exceptionE
+[03/05 14:42:37.235076][error][19214][SensorBase.cpp:416] [CP1Z841000ZP] Timestamp anomaly detected, frame: 37493227, sensor: Gyro
+[03/05 14:42:47.968113][info][19214][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=6.489129fps
+[03/05 14:42:47.968282][info][19214][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=6.489129fps
+[03/05 14:42:47.972690][warning][19214][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**55 logs in 15596ms**]
+[03/05 14:42:47.973383][warning][19214][ObException.cpp:8] Timestamp anomaly detected, timestamp: 49352717, cacheTimestamp: 41194364 ,currentDiff: 8158353, maxValidTimestampDiff: 5000000
+[03/05 14:42:47.973415][warning][19214][SensorBase.cpp:415] [CP1Z841000ZP] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(415):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 49352717, cacheTimestamp: 41194364 ,currentDiff: 8158353, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor23invalid_value_exceptionE
+[03/05 14:42:47.973419][error][19214][SensorBase.cpp:416] [CP1Z841000ZP] Timestamp anomaly detected, frame: 49352717, sensor: Accel
+[03/05 14:42:47.973438][warning][19214][ObException.cpp:8] Timestamp anomaly detected, timestamp: 49352717, cacheTimestamp: 41194364 ,currentDiff: 8158353, maxValidTimestampDiff: 5000000
+[03/05 14:42:47.973443][warning][19214][SensorBase.cpp:415] [CP1Z841000ZP] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(415):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 49352717, cacheTimestamp: 41194364 ,currentDiff: 8158353, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor23invalid_value_exceptionE
+[03/05 14:42:47.973454][error][19214][SensorBase.cpp:416] [CP1Z841000ZP] Timestamp anomaly detected, frame: 49352717, sensor: Gyro
+[03/05 14:42:52.969695][info][19214][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=205.358932fps
+[03/05 14:42:52.969722][info][19214][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=205.358932fps
+[03/05 14:42:57.970425][info][19214][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.359528fps
+[03/05 14:42:57.970457][info][19214][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.359528fps
+[03/05 14:43:02.971261][info][19214][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.359528fps
+[03/05 14:43:02.971293][info][19214][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.359528fps
+[03/05 14:43:07.981924][info][19214][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.395203fps
+[03/05 14:43:07.981969][info][19214][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.395203fps
+[03/05 14:43:51.189675][info][20429][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 14:43:51.189732][info][20429][DeviceManager.cpp:25] Current found device(s): (1)
+[03/05 14:43:51.189738][info][20429][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:43:51.189742][info][20429][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 14:43:53.201073][info][20429][DeviceManager.cpp:25] Current device(s) list: (1)
+[03/05 14:43:53.201137][info][20429][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:43:53.206328][info][20429][DeviceBase.cpp:651] key: AppSlot,value:1
+[03/05 14:43:53.206371][info][20429][DeviceBase.cpp:651] key: HwType,value:R1
+[03/05 14:43:53.206380][info][20429][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[03/05 14:43:53.206386][info][20429][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[03/05 14:43:53.206392][info][20429][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[03/05 14:43:53.206398][info][20429][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[03/05 14:43:53.373274][info][20429][DeviceManager.cpp:193] Device created successfully! Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP FW: 1.6.00
+[03/05 14:43:53.373714][info][20429][Pipeline.cpp:42] [CP1Z841000ZP] Pipeline created with device: {name: Gemini 335, sn: CP1Z841000ZP}, @0x7FFF8402BFD0
+[03/05 14:43:53.433824][warning][20429][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:43:53.435111][warning][20429][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:43:53.435446][info][20429][Pipeline.cpp:216] [CP1Z841000ZP] Check and set config done!
+[03/05 14:43:53.435651][info][20429][Pipeline.cpp:254] [CP1Z841000ZP] Try to start streams!
+[03/05 14:43:53.435655][info][20429][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[03/05 14:43:53.435662][info][20429][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Color
+[03/05 14:43:53.435665][info][20429][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[03/05 14:43:53.438367][info][20429][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[03/05 14:43:53.438375][info][20429][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Depth
+[03/05 14:43:53.438378][info][20429][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Depth, format: Z16, width: 640, height: 480, fps: 30}
+[03/05 14:43:53.441021][info][20429][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Accel
+[03/05 14:43:53.456308][info][20429][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Gyro
+[03/05 14:43:53.457518][info][20429][Pipeline.cpp:270] [CP1Z841000ZP] Start streams done!
+[03/05 14:43:53.457521][info][20429][Pipeline.cpp:238] [CP1Z841000ZP] Pipeline start done!
+[03/05 14:43:53.598022][info][20520][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Accel
+[03/05 14:43:53.598102][info][20520][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Gyro
+[03/05 14:43:54.003346][info][20516][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Color
+[03/05 14:43:54.024088][info][20517][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Depth
+[03/05 14:43:54.026005][warning][20530][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset!
+[03/05 14:43:57.026405][warning][20531][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**95 logs in 3000ms, last: 14:43:56.863216**]
+[03/05 14:43:58.607039][info][20520][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.635269fps
+[03/05 14:43:58.607073][info][20520][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.635269fps
+[03/05 14:43:59.028969][info][20517][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=30.169830fps
+[03/05 14:43:59.029721][info][20530][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=30.181892fps
+[03/05 14:43:59.032046][info][20516][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.827005fps
+[03/05 14:43:59.032354][info][20529][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.856688fps
+[03/05 14:44:03.097485][warning][20539][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**42 logs in 6071ms, last: 14:44:02.970328**]
+[03/05 14:44:03.617807][info][20520][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.395203fps
+[03/05 14:44:03.617835][info][20520][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.395203fps
+[03/05 14:44:04.034838][info][20517][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 14:44:04.035629][info][20530][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.964043fps
+[03/05 14:44:04.037871][info][20516][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.970030fps
+[03/05 14:44:04.038270][info][20529][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.964043fps
+[03/05 14:44:47.906870][info][20827][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 14:44:47.906923][info][20827][DeviceManager.cpp:25] Current found device(s): (1)
+[03/05 14:44:47.906928][info][20827][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:44:47.906933][info][20827][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 14:44:49.915401][info][20827][DeviceManager.cpp:25] Current device(s) list: (1)
+[03/05 14:44:49.915426][info][20827][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:44:50.000118][info][20827][DeviceBase.cpp:651] key: AppSlot,value:1
+[03/05 14:44:50.000214][info][20827][DeviceBase.cpp:651] key: HwType,value:R1
+[03/05 14:44:50.000229][info][20827][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[03/05 14:44:50.000240][info][20827][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[03/05 14:44:50.000249][info][20827][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[03/05 14:44:50.000259][info][20827][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[03/05 14:44:50.174657][info][20827][DeviceManager.cpp:193] Device created successfully! Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP FW: 1.6.00
+[03/05 14:44:50.176112][info][20827][Pipeline.cpp:42] [CP1Z841000ZP] Pipeline created with device: {name: Gemini 335, sn: CP1Z841000ZP}, @0x7FFF8002BFD0
+[03/05 14:44:50.249491][warning][20827][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:44:50.251278][warning][20827][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:44:50.251755][info][20827][Pipeline.cpp:216] [CP1Z841000ZP] Check and set config done!
+[03/05 14:44:50.251939][info][20827][Pipeline.cpp:254] [CP1Z841000ZP] Try to start streams!
+[03/05 14:44:50.251945][info][20827][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[03/05 14:44:50.251954][info][20827][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Color
+[03/05 14:44:50.251958][info][20827][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[03/05 14:44:50.254855][info][20827][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[03/05 14:44:50.254866][info][20827][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Depth
+[03/05 14:44:50.254869][info][20827][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Depth, format: Z16, width: 640, height: 480, fps: 30}
+[03/05 14:44:50.257467][info][20827][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Accel
+[03/05 14:44:50.272502][info][20827][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Gyro
+[03/05 14:44:50.273491][info][20827][Pipeline.cpp:270] [CP1Z841000ZP] Start streams done!
+[03/05 14:44:50.273504][info][20827][Pipeline.cpp:238] [CP1Z841000ZP] Pipeline start done!
+[03/05 14:44:50.414812][info][20918][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Accel
+[03/05 14:44:50.414853][info][20918][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Gyro
+[03/05 14:44:50.816861][info][20914][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Color
+[03/05 14:44:50.839894][info][20915][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Depth
+[03/05 14:44:50.842402][warning][20923][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset!
+[03/05 14:46:54.798158][info][21215][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 14:46:54.798206][info][21215][DeviceManager.cpp:25] Current found device(s): (1)
+[03/05 14:46:54.798210][info][21215][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:46:54.798215][info][21215][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 14:46:56.807739][info][21215][DeviceManager.cpp:25] Current device(s) list: (1)
+[03/05 14:46:56.807770][info][21215][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:46:56.811786][info][21215][DeviceBase.cpp:651] key: AppSlot,value:1
+[03/05 14:46:56.811829][info][21215][DeviceBase.cpp:651] key: HwType,value:R1
+[03/05 14:46:56.811836][info][21215][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[03/05 14:46:56.811841][info][21215][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[03/05 14:46:56.811847][info][21215][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[03/05 14:46:56.811852][info][21215][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[03/05 14:46:56.981376][info][21215][DeviceManager.cpp:193] Device created successfully! Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP FW: 1.6.00
+[03/05 14:46:56.982287][info][21215][Pipeline.cpp:42] [CP1Z841000ZP] Pipeline created with device: {name: Gemini 335, sn: CP1Z841000ZP}, @0x7FFF8402BFD0
+[03/05 14:46:57.049689][warning][21215][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:46:57.050966][warning][21215][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:46:57.051475][info][21215][Pipeline.cpp:216] [CP1Z841000ZP] Check and set config done!
+[03/05 14:46:57.051685][info][21215][Pipeline.cpp:254] [CP1Z841000ZP] Try to start streams!
+[03/05 14:46:57.051710][info][21215][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[03/05 14:46:57.051724][info][21215][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Color
+[03/05 14:46:57.051734][info][21215][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[03/05 14:46:57.054970][info][21215][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[03/05 14:46:57.055009][info][21215][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Depth
+[03/05 14:46:57.055021][info][21215][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Depth, format: Z16, width: 640, height: 480, fps: 30}
+[03/05 14:46:57.058223][info][21215][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Accel
+[03/05 14:46:57.074013][info][21215][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Gyro
+[03/05 14:46:57.075481][info][21215][Pipeline.cpp:270] [CP1Z841000ZP] Start streams done!
+[03/05 14:46:57.075517][info][21215][Pipeline.cpp:238] [CP1Z841000ZP] Pipeline start done!
+[03/05 14:46:57.213953][info][21307][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Accel
+[03/05 14:46:57.214000][info][21307][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Gyro
+[03/05 14:46:57.616985][info][21303][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Color
+[03/05 14:46:57.640606][info][21304][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Depth
+[03/05 14:46:57.646237][warning][21317][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset!
+[03/05 14:47:01.601404][warning][21318][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**74 logs in 3955ms, last: 14:46:57.711393**]
+[03/05 14:47:03.706342][warning][21215][Pipeline.cpp:305] [CP1Z841000ZP] Wait for frame timeout, you can try to increase the wait time! current timeout=1000
+[03/05 14:47:03.706349][info][21316][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=0.821288fps
+[03/05 14:47:03.706442][info][21307][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=18.789465fps
+[03/05 14:47:03.706379][info][21215][Pipeline.cpp:336] [CP1Z841000ZP] Try to stop pipeline!
+[03/05 14:47:03.706479][info][21215][Pipeline.cpp:312] [CP1Z841000ZP] Try to stop streams!
+[03/05 14:47:03.706492][info][21215][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STOPPING@Gyro
+[03/05 14:47:03.706683][info][21215][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STOPPED@Gyro
+[03/05 14:47:03.706690][info][21215][Pipeline.cpp:326] [CP1Z841000ZP] Sensor stream stopped, sensorType=Gyro
+[03/05 14:47:03.706695][info][21215][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STOPPING@Accel
+[03/05 14:47:03.707344][info][21317][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=0.825083fps
+[03/05 14:47:03.707356][info][21307][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=18.789465fps
+[03/05 14:47:03.708407][info][21215][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STOPPED@Accel
+[03/05 14:47:03.708441][info][21215][Pipeline.cpp:326] [CP1Z841000ZP] Sensor stream stopped, sensorType=Accel
+[03/05 14:47:03.708456][info][21215][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STOPPING@Depth
+[03/05 14:47:20.145123][warning][21368][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**8 logs in 18543ms, last: 14:47:03.710183**]
+[03/05 14:47:42.474430][warning][21270][ObException.cpp:8] Resource busy! You can try again later!
+[03/05 14:47:47.743037][info][21215][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STOPPED@Depth
+[03/05 14:47:47.743273][info][21215][Pipeline.cpp:326] [CP1Z841000ZP] Sensor stream stopped, sensorType=Depth
+[03/05 14:47:47.743322][info][21215][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STOPPING@Color
+[03/05 14:53:53.460537][info][22292][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 14:53:53.460585][info][22292][DeviceManager.cpp:25] Current found device(s): (1)
+[03/05 14:53:53.460597][info][22292][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:53:53.460602][info][22292][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 14:53:55.770374][info][22292][DeviceManager.cpp:25] Current device(s) list: (1)
+[03/05 14:53:55.770478][info][22292][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:53:55.854533][info][22292][DeviceBase.cpp:651] key: AppSlot,value:1
+[03/05 14:53:55.854599][info][22292][DeviceBase.cpp:651] key: HwType,value:R1
+[03/05 14:53:55.854614][info][22292][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[03/05 14:53:55.854624][info][22292][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[03/05 14:53:55.854633][info][22292][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[03/05 14:53:55.854643][info][22292][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[03/05 14:53:56.017195][info][22292][DeviceManager.cpp:193] Device created successfully! Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP FW: 1.6.00
+[03/05 14:53:56.017567][info][22292][Pipeline.cpp:42] [CP1Z841000ZP] Pipeline created with device: {name: Gemini 335, sn: CP1Z841000ZP}, @0x7FFF9002BC80
+[03/05 14:53:56.078351][warning][22292][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:53:56.079960][warning][22292][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:53:56.080391][info][22292][Pipeline.cpp:216] [CP1Z841000ZP] Check and set config done!
+[03/05 14:53:56.080620][info][22292][Pipeline.cpp:254] [CP1Z841000ZP] Try to start streams!
+[03/05 14:53:56.080631][info][22292][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[03/05 14:53:56.080644][info][22292][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Color
+[03/05 14:53:56.080651][info][22292][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[03/05 14:53:56.083423][info][22292][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[03/05 14:53:56.083443][info][22292][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Depth
+[03/05 14:53:56.083447][info][22292][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Depth, format: Z16, width: 640, height: 480, fps: 30}
+[03/05 14:53:56.086337][info][22292][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Accel
+[03/05 14:53:56.101331][info][22292][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Gyro
+[03/05 14:53:56.102754][info][22292][Pipeline.cpp:270] [CP1Z841000ZP] Start streams done!
+[03/05 14:53:56.102764][info][22292][Pipeline.cpp:238] [CP1Z841000ZP] Pipeline start done!
+[03/05 14:53:56.245860][info][22392][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Accel
+[03/05 14:53:56.245926][info][22392][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Gyro
+[03/05 14:53:56.646193][info][22388][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Color
+[03/05 14:53:56.670884][info][22389][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Depth
+[03/05 14:53:56.677450][warning][22397][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset!
+[03/05 14:54:03.098295][warning][22398][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**73 logs in 6420ms, last: 14:53:56.739769**]
+[03/05 14:54:03.098399][info][22389][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=0.777726fps
+[03/05 14:54:03.099725][info][22388][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=0.774833fps
+[03/05 14:54:03.100463][info][22392][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=15.900803fps
+[03/05 14:54:03.100640][info][22392][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=15.900803fps
+[03/05 14:54:03.100857][info][22396][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=0.775074fps
+[03/05 14:54:03.101842][info][22397][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=0.778452fps
+[03/05 14:54:03.103458][warning][22389][VideoSensor.cpp:193] [CP1Z841000ZP] This frame will be dropped because the data size does not match the expectation! size=229208, expected=614400 @Depth
+[03/05 14:54:03.104096][warning][22388][VideoSensor.cpp:193] [CP1Z841000ZP] This frame will be dropped because the data size does not match the expectation! size=32650, expected=614400 @Color
+[03/05 14:54:03.104486][warning][22392][ObException.cpp:8] Timestamp anomaly detected, timestamp: 292464173, cacheTimestamp: 286213294 ,currentDiff: 6250879, maxValidTimestampDiff: 5000000
+[03/05 14:54:03.104534][warning][22392][SensorBase.cpp:415] [CP1Z841000ZP] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(415):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 292464173, cacheTimestamp: 286213294 ,currentDiff: 6250879, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor23invalid_value_exceptionE
+[03/05 14:54:03.104538][error][22392][SensorBase.cpp:416] [CP1Z841000ZP] Timestamp anomaly detected, frame: 292464173, sensor: Accel
+[03/05 14:54:03.104559][warning][22392][ObException.cpp:8] Timestamp anomaly detected, timestamp: 292464173, cacheTimestamp: 286213294 ,currentDiff: 6250879, maxValidTimestampDiff: 5000000
+[03/05 14:54:03.104566][warning][22392][SensorBase.cpp:415] [CP1Z841000ZP] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(415):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 292464173, cacheTimestamp: 286213294 ,currentDiff: 6250879, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor23invalid_value_exceptionE
+[03/05 14:54:03.104569][error][22392][SensorBase.cpp:416] [CP1Z841000ZP] Timestamp anomaly detected, frame: 292464173, sensor: Gyro
+[03/05 14:54:03.141250][warning][22389][ObException.cpp:8] Timestamp anomaly detected, timestamp: 292485549, cacheTimestamp: 286279350 ,currentDiff: 6206199, maxValidTimestampDiff: 5000000
+[03/05 14:54:03.141317][warning][22389][SensorBase.cpp:415] [CP1Z841000ZP] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(415):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 292485549, cacheTimestamp: 286279350 ,currentDiff: 6206199, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor23invalid_value_exceptionE
+[03/05 14:54:03.141330][error][22389][SensorBase.cpp:416] [CP1Z841000ZP] Timestamp anomaly detected, frame: 292485549, sensor: Depth
+[03/05 14:54:03.144074][warning][22388][ObException.hpp:48] Update data size(680122) > data buffer size! (614400)
+[03/05 14:54:03.144132][warning][22388][ObLibuvcDevicePort.cpp:444] Execute failure! A libobsensor_exception has occurred!
+ - where: ObLibuvcDevicePort.cpp(444):onFrameCallback
+ - msg: Update data size(680122) > data buffer size! (614400)
+ - type: N11libobsensor16memory_exceptionE
+[03/05 14:54:03.177625][warning][22395][ObException.cpp:8] Timestamp anomaly detected, timestamp: 292518787, cacheTimestamp: 286280179 ,currentDiff: 6238608, maxValidTimestampDiff: 5000000
+[03/05 14:54:03.177671][warning][22395][SensorBase.cpp:415] [CP1Z841000ZP] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(415):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 292518787, cacheTimestamp: 286280179 ,currentDiff: 6238608, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor23invalid_value_exceptionE
+[03/05 14:54:03.177676][error][22395][SensorBase.cpp:416] [CP1Z841000ZP] Timestamp anomaly detected, frame: 292518787, sensor: Color
+[03/05 14:54:06.104240][warning][22449][VideoSensor.cpp:193] [CP1Z841000ZP] This frame will be dropped because the data size does not match the expectation! size=98188, expected=614400 @Depth [**6 logs in 3000ms, last: 14:54:03.127028**]
+[03/05 14:54:08.103634][info][22392][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=205.276840fps
+[03/05 14:54:08.103669][info][22392][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=205.276840fps
+[03/05 14:54:08.113714][info][22389][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=32.103691fps
+[03/05 14:54:08.114597][info][22397][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=30.520647fps
+[03/05 14:54:08.118875][info][22388][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=30.683403fps
+[03/05 14:54:08.119379][info][22396][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=30.284918fps
+[03/05 14:54:09.101128][warning][22447][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**69 logs in 6002ms, last: 14:54:09.086644**]
+[03/05 14:54:13.104597][info][22392][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.359528fps
+[03/05 14:54:13.104636][info][22392][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.359528fps
+[03/05 14:54:13.119519][info][22389][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 14:54:13.119819][info][22388][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.794041fps
+[03/05 14:54:13.120264][info][22396][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.794041fps
+[03/05 14:54:13.120309][info][22397][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.964043fps
+[03/05 14:54:18.105113][info][22392][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.359528fps
+[03/05 14:54:18.105146][info][22392][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.359528fps
+[03/05 14:54:18.125459][info][22389][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 14:54:18.126227][info][22397][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.964043fps
+[03/05 14:54:18.128250][info][22388][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.946098fps
+[03/05 14:54:18.128605][info][22396][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.952078fps
+[03/05 14:54:21.197531][warning][22396][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**91 logs in 12096ms**]
+[03/05 14:54:23.115640][info][22392][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.395203fps
+[03/05 14:54:23.115664][info][22392][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.395203fps
+[03/05 14:54:23.131337][info][22389][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 14:54:23.132358][info][22388][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.776178fps
+[03/05 14:54:23.132463][info][22397][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.964043fps
+[03/05 14:54:23.132662][info][22396][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.776178fps
+[03/05 14:55:09.528742][info][22832][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 14:55:09.528799][info][22832][DeviceManager.cpp:25] Current found device(s): (1)
+[03/05 14:55:09.528804][info][22832][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:55:09.528807][info][22832][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 14:55:11.537014][info][22832][DeviceManager.cpp:25] Current device(s) list: (1)
+[03/05 14:55:11.537044][info][22832][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:55:11.539315][info][22832][DeviceBase.cpp:651] key: AppSlot,value:1
+[03/05 14:55:11.539329][info][22832][DeviceBase.cpp:651] key: HwType,value:R1
+[03/05 14:55:11.539332][info][22832][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[03/05 14:55:11.539334][info][22832][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[03/05 14:55:11.539336][info][22832][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[03/05 14:55:11.539338][info][22832][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[03/05 14:55:11.705989][info][22832][DeviceManager.cpp:193] Device created successfully! Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP FW: 1.6.00
+[03/05 14:55:11.706892][info][22832][Pipeline.cpp:42] [CP1Z841000ZP] Pipeline created with device: {name: Gemini 335, sn: CP1Z841000ZP}, @0x7FFF8C02BFD0
+[03/05 14:55:11.775429][warning][22832][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:55:11.776817][warning][22832][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:55:11.777212][info][22832][Pipeline.cpp:216] [CP1Z841000ZP] Check and set config done!
+[03/05 14:55:11.777427][info][22832][Pipeline.cpp:254] [CP1Z841000ZP] Try to start streams!
+[03/05 14:55:11.777436][info][22832][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[03/05 14:55:11.777446][info][22832][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Color
+[03/05 14:55:11.777452][info][22832][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[03/05 14:55:11.780489][info][22832][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[03/05 14:55:11.780508][info][22832][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Depth
+[03/05 14:55:11.780511][info][22832][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Depth, format: Z16, width: 640, height: 480, fps: 30}
+[03/05 14:55:11.783304][info][22832][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Accel
+[03/05 14:55:11.799949][info][22832][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Gyro
+[03/05 14:55:11.802011][info][22832][Pipeline.cpp:270] [CP1Z841000ZP] Start streams done!
+[03/05 14:55:11.802044][info][22832][Pipeline.cpp:238] [CP1Z841000ZP] Pipeline start done!
+[03/05 14:55:11.941408][info][22924][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Accel
+[03/05 14:55:11.941441][info][22924][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Gyro
+[03/05 14:55:12.342781][info][22920][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Color
+[03/05 14:55:12.366226][info][22921][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Depth
+[03/05 14:55:12.370312][warning][22929][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset!
+[03/05 14:55:18.139718][warning][22930][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**73 logs in 5769ms, last: 14:55:12.437268**]
+[03/05 14:55:18.139774][info][22921][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=0.865951fps
+[03/05 14:55:18.140558][info][22924][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=18.228746fps
+[03/05 14:55:18.141121][info][22920][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=0.862218fps
+[03/05 14:55:18.141318][info][22924][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=18.225807fps
+[03/05 14:55:18.142911][info][22928][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=0.862515fps
+[03/05 14:55:18.144294][info][22929][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=0.866101fps
+[03/05 14:55:18.147163][warning][22924][ObException.cpp:8] Timestamp anomaly detected, timestamp: 43142584, cacheTimestamp: 37563622 ,currentDiff: 5578962, maxValidTimestampDiff: 5000000
+[03/05 14:55:18.147243][warning][22924][SensorBase.cpp:415] [CP1Z841000ZP] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(415):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 43142584, cacheTimestamp: 37563622 ,currentDiff: 5578962, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor23invalid_value_exceptionE
+[03/05 14:55:18.147248][error][22924][SensorBase.cpp:416] [CP1Z841000ZP] Timestamp anomaly detected, frame: 43142584, sensor: Accel
+[03/05 14:55:18.147274][warning][22924][ObException.cpp:8] Timestamp anomaly detected, timestamp: 43142584, cacheTimestamp: 37563622 ,currentDiff: 5578962, maxValidTimestampDiff: 5000000
+[03/05 14:55:18.147282][warning][22924][SensorBase.cpp:415] [CP1Z841000ZP] Execute failure! A libobsensor_exception has occurred!
+ - where: SensorBase.cpp(415):outputFrame
+ - msg: Timestamp anomaly detected, timestamp: 43142584, cacheTimestamp: 37563622 ,currentDiff: 5578962, maxValidTimestampDiff: 5000000
+ - type: N11libobsensor23invalid_value_exceptionE
+[03/05 14:55:18.147285][error][22924][SensorBase.cpp:416] [CP1Z841000ZP] Timestamp anomaly detected, frame: 43142584, sensor: Gyro
+[03/05 14:55:18.147531][warning][22920][VideoSensor.cpp:193] [CP1Z841000ZP] This frame will be dropped because the data size does not match the expectation! size=32642, expected=614400 @Color
+[03/05 14:55:48.533332][info][23219][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 14:55:48.533384][info][23219][DeviceManager.cpp:25] Current found device(s): (1)
+[03/05 14:55:48.533388][info][23219][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:55:48.533392][info][23219][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 14:56:38.415733][info][23407][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 14:56:38.415797][info][23407][DeviceManager.cpp:25] Current found device(s): (1)
+[03/05 14:56:38.415801][info][23407][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:56:38.415805][info][23407][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 14:56:40.424826][info][23407][DeviceManager.cpp:25] Current device(s) list: (1)
+[03/05 14:56:40.424887][info][23407][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 14:56:40.428676][info][23407][DeviceBase.cpp:651] key: AppSlot,value:1
+[03/05 14:56:40.428694][info][23407][DeviceBase.cpp:651] key: HwType,value:R1
+[03/05 14:56:40.428698][info][23407][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[03/05 14:56:40.428701][info][23407][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[03/05 14:56:40.428704][info][23407][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[03/05 14:56:40.428706][info][23407][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[03/05 14:56:40.593362][info][23407][DeviceManager.cpp:193] Device created successfully! Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP FW: 1.6.00
+[03/05 14:56:40.593740][info][23407][Pipeline.cpp:42] [CP1Z841000ZP] Pipeline created with device: {name: Gemini 335, sn: CP1Z841000ZP}, @0x7FFF8C02BFD0
+[03/05 14:56:40.655611][warning][23407][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:56:40.656902][warning][23407][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 14:56:40.657208][info][23407][Pipeline.cpp:216] [CP1Z841000ZP] Check and set config done!
+[03/05 14:56:40.657444][info][23407][Pipeline.cpp:254] [CP1Z841000ZP] Try to start streams!
+[03/05 14:56:40.657451][info][23407][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[03/05 14:56:40.657459][info][23407][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Color
+[03/05 14:56:40.657464][info][23407][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[03/05 14:56:40.660423][info][23407][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[03/05 14:56:40.660453][info][23407][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Depth
+[03/05 14:56:40.660461][info][23407][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Depth, format: Z16, width: 640, height: 480, fps: 30}
+[03/05 14:56:40.663605][info][23407][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Accel
+[03/05 14:56:40.679273][info][23407][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Gyro
+[03/05 14:56:40.680960][info][23407][Pipeline.cpp:270] [CP1Z841000ZP] Start streams done!
+[03/05 14:56:40.680982][info][23407][Pipeline.cpp:238] [CP1Z841000ZP] Pipeline start done!
+[03/05 14:56:40.818423][info][23499][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Accel
+[03/05 14:56:40.818474][info][23499][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Gyro
+[03/05 14:56:41.223988][info][23485][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Color
+[03/05 14:56:41.280799][info][23486][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Depth
+[03/05 14:56:41.287844][warning][23506][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset!
+[03/05 14:56:44.288631][warning][23507][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**103 logs in 3000ms, last: 14:56:44.216610**]
+[03/05 14:56:45.827884][info][23499][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.635269fps
+[03/05 14:56:45.827926][info][23499][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.635269fps
+[03/05 14:56:46.251927][info][23485][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.832935fps
+[03/05 14:56:46.252418][info][23504][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.856688fps
+[03/05 14:56:46.283939][info][23486][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=30.175858fps
+[03/05 14:56:46.318087][info][23506][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=30.218687fps
+[03/05 14:56:50.290215][warning][23504][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**41 logs in 6001ms**]
+[03/05 14:56:50.828316][info][23499][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.359528fps
+[03/05 14:56:50.828347][info][23499][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.359528fps
+[03/05 14:56:51.257743][info][23485][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.964043fps
+[03/05 14:56:51.258163][info][23504][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.964043fps
+[03/05 14:56:51.289850][info][23486][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 14:56:51.324337][info][23506][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.964043fps
+[03/05 14:56:55.829268][info][23499][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.359528fps
+[03/05 14:56:55.829302][info][23499][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.359528fps
+[03/05 14:56:56.268132][info][23485][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.934143fps
+[03/05 14:56:56.268778][info][23504][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.940119fps
+[03/05 14:56:56.295756][info][23486][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 14:56:56.330233][info][23506][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.964043fps
+[03/05 14:57:00.830033][info][23499][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.359528fps
+[03/05 14:57:00.830088][info][23499][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.359528fps
+[03/05 14:57:01.278979][info][23485][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.940119fps
+[03/05 14:57:01.279417][info][23504][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.934143fps
+[03/05 14:57:01.301662][info][23486][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 14:57:01.335795][info][23506][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.970030fps
+[03/05 14:57:02.411296][warning][23504][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**86 logs in 12121ms**]
+[03/05 14:57:05.840575][info][23499][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.395203fps
+[03/05 14:57:05.840626][info][23499][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.395203fps
+[03/05 14:57:06.307658][info][23486][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 14:57:06.309837][info][23485][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.616377fps
+[03/05 14:57:06.310132][info][23504][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.616377fps
+[03/05 14:57:06.341772][info][23506][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.964043fps
+[03/05 14:57:10.841577][info][23499][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.359528fps
+[03/05 14:57:10.841622][info][23499][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.359528fps
+[03/05 14:57:11.313574][info][23486][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 14:57:11.315558][info][23485][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.964043fps
+[03/05 14:57:11.315932][info][23504][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.970030fps
+[03/05 14:57:11.347762][info][23506][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.964043fps
+[03/05 14:57:15.842196][info][23499][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.359528fps
+[03/05 14:57:15.842235][info][23499][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.359528fps
+[03/05 15:01:15.970475][info][24049][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 15:01:15.970521][info][24049][DeviceManager.cpp:25] Current found device(s): (1)
+[03/05 15:01:15.970525][info][24049][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 15:01:15.970529][info][24049][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 15:01:18.272204][info][24049][DeviceManager.cpp:25] Current device(s) list: (1)
+[03/05 15:01:18.272231][info][24049][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 15:01:18.350511][info][24049][DeviceBase.cpp:651] key: AppSlot,value:1
+[03/05 15:01:18.350530][info][24049][DeviceBase.cpp:651] key: HwType,value:R1
+[03/05 15:01:18.350532][info][24049][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[03/05 15:01:18.350534][info][24049][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[03/05 15:01:18.350535][info][24049][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[03/05 15:01:18.350537][info][24049][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[03/05 15:01:18.513570][info][24049][DeviceManager.cpp:193] Device created successfully! Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP FW: 1.6.00
+[03/05 15:01:18.514044][info][24049][Pipeline.cpp:42] [CP1Z841000ZP] Pipeline created with device: {name: Gemini 335, sn: CP1Z841000ZP}, @0x7FFF8402BFD0
+[03/05 15:01:18.572972][warning][24049][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 15:01:18.574193][warning][24049][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 15:01:18.574618][info][24049][Pipeline.cpp:216] [CP1Z841000ZP] Check and set config done!
+[03/05 15:01:18.574800][info][24049][Pipeline.cpp:254] [CP1Z841000ZP] Try to start streams!
+[03/05 15:01:18.574808][info][24049][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[03/05 15:01:18.574818][info][24049][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Color
+[03/05 15:01:18.574824][info][24049][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[03/05 15:01:18.577721][info][24049][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[03/05 15:01:18.577739][info][24049][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Depth
+[03/05 15:01:18.577745][info][24049][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Depth, format: Z16, width: 640, height: 480, fps: 30}
+[03/05 15:01:18.580718][info][24049][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Accel
+[03/05 15:01:18.595161][info][24049][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Gyro
+[03/05 15:01:18.596435][info][24049][Pipeline.cpp:270] [CP1Z841000ZP] Start streams done!
+[03/05 15:01:18.596446][info][24049][Pipeline.cpp:238] [CP1Z841000ZP] Pipeline start done!
+[03/05 15:01:18.733373][info][24142][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Accel
+[03/05 15:01:18.733420][info][24142][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Gyro
+[03/05 15:01:19.139984][info][24138][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Color
+[03/05 15:01:19.163143][info][24139][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Depth
+[03/05 15:01:19.165839][warning][24152][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset!
+[03/05 15:01:22.166354][warning][24153][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**93 logs in 3000ms, last: 15:01:22.103188**]
+[03/05 15:01:23.742970][info][24142][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.635269fps
+[03/05 15:01:23.743004][info][24142][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.594803fps
+[03/05 15:01:24.167651][info][24139][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=30.169830fps
+[03/05 15:01:24.168492][info][24152][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=30.187925fps
+[03/05 15:01:24.172572][info][24138][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.604610fps
+[03/05 15:01:24.172954][info][24151][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.616377fps
+[03/05 15:01:28.268196][warning][24161][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**51 logs in 6101ms, last: 15:01:28.140605**]
+[03/05 15:01:28.743770][info][24142][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.359528fps
+[03/05 15:01:28.753718][info][24142][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.395203fps
+[03/05 15:01:29.173420][info][24139][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=29.964043fps
+[03/05 15:01:29.174394][info][24152][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=29.964043fps
+[03/05 15:01:29.175932][info][24138][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=28.982613fps
+[03/05 15:01:29.176406][info][24151][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=28.976818fps
+[03/05 15:07:16.404627][info][24559][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 15:07:16.404683][info][24559][DeviceManager.cpp:25] Current found device(s): (1)
+[03/05 15:07:16.404688][info][24559][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 15:07:16.404699][info][24559][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 15:07:18.415634][info][24559][DeviceManager.cpp:25] Current device(s) list: (1)
+[03/05 15:07:18.415668][info][24559][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 15:07:18.497250][info][24559][DeviceBase.cpp:651] key: AppSlot,value:1
+[03/05 15:07:18.497327][info][24559][DeviceBase.cpp:651] key: HwType,value:R1
+[03/05 15:07:18.497344][info][24559][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[03/05 15:07:18.497356][info][24559][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[03/05 15:07:18.497368][info][24559][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[03/05 15:07:18.497379][info][24559][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[03/05 15:07:18.663732][info][24559][DeviceManager.cpp:193] Device created successfully! Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP FW: 1.6.00
+[03/05 15:07:18.664248][info][24559][Pipeline.cpp:42] [CP1Z841000ZP] Pipeline created with device: {name: Gemini 335, sn: CP1Z841000ZP}, @0x7FFF7802BFD0
+[03/05 15:07:18.735808][warning][24559][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 15:07:18.737121][warning][24559][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 15:07:18.737549][info][24559][Pipeline.cpp:216] [CP1Z841000ZP] Check and set config done!
+[03/05 15:07:18.737746][info][24559][Pipeline.cpp:254] [CP1Z841000ZP] Try to start streams!
+[03/05 15:07:18.737758][info][24559][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[03/05 15:07:18.737768][info][24559][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Color
+[03/05 15:07:18.737774][info][24559][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[03/05 15:07:18.740686][info][24559][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[03/05 15:07:18.740711][info][24559][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Depth
+[03/05 15:07:18.740715][info][24559][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Depth, format: Z16, width: 640, height: 480, fps: 30}
+[03/05 15:07:18.743563][info][24559][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Accel
+[03/05 15:07:18.758163][info][24559][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Gyro
+[03/05 15:07:18.759445][info][24559][Pipeline.cpp:270] [CP1Z841000ZP] Start streams done!
+[03/05 15:07:18.759461][info][24559][Pipeline.cpp:238] [CP1Z841000ZP] Pipeline start done!
+[03/05 15:07:18.899689][info][24650][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Accel
+[03/05 15:07:18.899727][info][24650][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Gyro
+[03/05 15:07:19.305511][info][24636][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Color
+[03/05 15:07:19.326253][info][24637][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Depth
+[03/05 15:07:19.328814][warning][24655][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset!
+[03/05 15:07:22.329275][warning][24656][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**97 logs in 3000ms, last: 15:07:22.130793**]
+[03/05 15:07:23.909462][info][24650][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.594803fps
+[03/05 15:07:23.909498][info][24650][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.594803fps
+[03/05 15:07:24.330980][info][24637][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=30.169830fps
+[03/05 15:07:24.331939][info][24655][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=30.187925fps
+[03/05 15:07:24.336085][info][24636][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.616377fps
+[03/05 15:07:24.336475][info][24654][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.645842fps
+[03/05 15:07:28.371979][warning][24654][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**46 logs in 6042ms**]
+[03/05 15:07:28.920147][info][24650][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.354813fps
+[03/05 15:07:28.920177][info][24650][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.354813fps
+[03/05 15:08:12.900281][info][24946][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 15:08:12.900331][info][24946][DeviceManager.cpp:25] Current found device(s): (1)
+[03/05 15:08:12.900336][info][24946][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 15:08:12.900340][info][24946][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 15:08:14.910311][info][24946][DeviceManager.cpp:25] Current device(s) list: (1)
+[03/05 15:08:14.910339][info][24946][DeviceManager.cpp:33] 	- Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP, Connection: USB3.2
+[03/05 15:08:14.913189][info][24946][DeviceBase.cpp:651] key: AppSlot,value:1
+[03/05 15:08:14.913211][info][24946][DeviceBase.cpp:651] key: HwType,value:R1
+[03/05 15:08:14.913213][info][24946][DeviceBase.cpp:651] key: HwVer,value:V1.1
+[03/05 15:08:14.913215][info][24946][DeviceBase.cpp:651] key: IspFwVer,value:20250930
+[03/05 15:08:14.913216][info][24946][DeviceBase.cpp:651] key: IspNeedVer,value:20250930
+[03/05 15:08:14.913217][info][24946][DeviceBase.cpp:651] key: PresetVer,value:1.2.2
+[03/05 15:08:15.078495][info][24946][DeviceManager.cpp:193] Device created successfully! Name: Gemini 335, PID: 0x0800, SN/ID: CP1Z841000ZP FW: 1.6.00
+[03/05 15:08:15.078852][info][24946][Pipeline.cpp:42] [CP1Z841000ZP] Pipeline created with device: {name: Gemini 335, sn: CP1Z841000ZP}, @0x7FFF8002BFD0
+[03/05 15:08:15.140505][warning][24946][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 15:08:15.142100][warning][24946][SensorBase.cpp:147] [CP1Z841000ZP] Failed to update default stream profile for sensor due to no matching stream profile found
+[03/05 15:08:15.142573][info][24946][Pipeline.cpp:216] [CP1Z841000ZP] Check and set config done!
+[03/05 15:08:15.142769][info][24946][Pipeline.cpp:254] [CP1Z841000ZP] Try to start streams!
+[03/05 15:08:15.142782][info][24946][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Color, format: BGR, width: 640, height: 480, fps: 30}
+[03/05 15:08:15.142794][info][24946][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Color
+[03/05 15:08:15.142802][info][24946][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Color, format: YUYV, width: 640, height: 480, fps: 30}
+[03/05 15:08:15.145842][info][24946][VideoSensor.cpp:58] [CP1Z841000ZP] Try to start stream: {type: Depth, format: Y16, width: 640, height: 480, fps: 30}
+[03/05 15:08:15.145862][info][24946][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Depth
+[03/05 15:08:15.145866][info][24946][VideoSensor.cpp:127] [CP1Z841000ZP] Start backend stream: {type: Depth, format: Z16, width: 640, height: 480, fps: 30}
+[03/05 15:08:15.148558][info][24946][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Accel
+[03/05 15:08:15.163599][info][24946][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STARTING@Gyro
+[03/05 15:08:15.165301][info][24946][Pipeline.cpp:270] [CP1Z841000ZP] Start streams done!
+[03/05 15:08:15.165314][info][24946][Pipeline.cpp:238] [CP1Z841000ZP] Pipeline start done!
+[03/05 15:08:15.306133][info][25038][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Accel
+[03/05 15:08:15.306166][info][25038][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Gyro
+[03/05 15:08:15.707786][info][25024][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Color
+[03/05 15:08:15.731004][info][25025][SensorBase.cpp:213] [CP1Z841000ZP] Stream state changed to STREAMING@Depth
+[03/05 15:08:15.733574][warning][25043][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset!
+[03/05 15:08:18.734120][warning][25044][Pipeline.cpp:295] [CP1Z841000ZP] Output frameset queue is full, drop oldest frameset! [**96 logs in 3000ms, last: 15:08:18.706572**]
+[03/05 15:08:20.315979][info][25038][SensorBase.cpp:432] [CP1Z841000ZP] Accel Streaming... frameRate=202.635269fps
+[03/05 15:08:20.316017][info][25038][SensorBase.cpp:432] [CP1Z841000ZP] Gyro Streaming... frameRate=202.594803fps
+[03/05 15:08:20.735448][info][25025][VideoSensor.cpp:153] [CP1Z841000ZP] Depth backend frame callback, frameRate=30.163803fps
+[03/05 15:08:20.736442][info][25043][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=30.187925fps
+[03/05 15:08:20.737816][info][25024][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.025845fps
+[03/05 15:08:20.738258][info][25042][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.031618fps

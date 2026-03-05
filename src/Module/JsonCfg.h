@@ -8,7 +8,7 @@ using namespace std;
 using namespace nlohmann;
 
 template <typename T>
-bool jKv(const json &j, const std::string &key, T &v, bool bLog = false)
+bool jKv(const json &j, const string &key, T &v, bool bLog = false)
 {
 	if (!j.is_object())
 	{
@@ -63,9 +63,9 @@ bool jKv(const json &j, const std::string &key, T &v, bool bLog = false)
 }
 
 template <typename T1, typename T2>
-bool jKv(const json &j, const std::string &key, T2 &v, bool bLog = false)
+bool jKv(const json &j, const string &key, T2 &v, bool bLog = false)
 {
-	std::vector<T1> vT;
+	vector<T1> vT;
 	if (jKv(j, key, vT, bLog))
 	{
 		v = vT;

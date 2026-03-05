@@ -8,9 +8,7 @@
 #ifndef OpenKAI_src_SLAM__FastLivo2_H_
 #define OpenKAI_src_SLAM__FastLivo2_H_
 
-#include "../Vision/_VisionBase.h"
 #include "_SLAMbase.h"
-
 #include <array>
 #include <chrono>
 #include <fastlivo2_core/FastLivo2Core.hpp>
@@ -20,9 +18,18 @@ using fastlivo2_core::ImageFrame;
 using fastlivo2_core::ImuSample;
 using fastlivo2_core::LidarPoint;
 using fastlivo2_core::LidarScan;
+using namespace fastlivo2_core;
 
 namespace kai
 {
+	struct FASTLIVO2_CONFIG
+	{
+		int m_nFdownSample = 20;
+		size_t m_nPmax = 300000;
+		double m_voxelLeafSize = 0.1;
+
+	};
+
 	class _FastLivo2 : public _SLAMbase
 	{
 	public:
@@ -35,10 +42,13 @@ namespace kai
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 
+		void reset(void);
+
 		ImageFrame makeTestBGR(double t, int w, int h);
 		LidarScan makeTestScan(double t0, double t1, int npts);
 
 	private:
+		bool setup(void);
 		void updateFastLivo2(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
@@ -48,21 +58,25 @@ namespace kai
 		}
 
 	protected:
-		FastLivo2Core core;
+		FastLivo2Core m_fastLivo;
 
-		// synthetic demo
-		double t;
-		double T_end;
+		// config
+		FASTLIVO2_CONFIG m_config;
 
-		double imu_dt;
-		double scan_dt;
-		double img_dt;
+		// point cloud
+		// extrinsics, IMU<-LiDAR: pImu = ILr * pLidar + ILt
+		array<double, 9> m_aILr = {1, 0, 0, 0, 1, 0, 0, 0, 1};
+		array<double, 3> m_aILt = {0, 0, 0};
 
-		double next_scan;
-		double next_img;
-
-		int W;
-		int H;
+		// img
+		bool m_bImg;
+		vInt2 m_vSizeImg;
+		vDouble2 m_vF; // focal
+		vDouble2 m_vC; // center
+		array<double, 5> m_aDist  = {0.0, 0.0, 0.0, 0.0, 0.0}; // k1,k2,p1,p2,k3
+		// extrinsics, Camera<-LiDAR: pCam = CLr * pLidar + CLt
+		std::array<double, 9> m_aCLr = {1, 0, 0, 0, 1, 0, 0, 0, 1};
+		std::array<double, 3> m_aCLt = {0.05, 0.0, 0.0}; // example 5cm
 
 	};
 

@@ -62,6 +62,7 @@ namespace kai
 
 #ifdef WITH_3D
 		void updatePC(void);
+		bool updateSlam(void);
 #endif
 		void updateTPP(void);
 		static void *getTPP(void *This)
@@ -88,6 +89,11 @@ namespace kai
 
 		shared_ptr<ob::PointCloudFilter> m_spPCF;
 		shared_ptr<ob::Frame> m_spFrame;
+
+		uint64_t m_tDus;
+		uint64_t m_dtDus;
+		uint64_t m_tRGBus;
+		uint64_t m_dtRGBus;
 
 		OrbbecCtrl m_orbbecCtrl;
 	};

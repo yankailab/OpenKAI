@@ -14,6 +14,7 @@ namespace kai
 	{
 		m_bTracking = false;
 		m_nIMUdqMax = 1000;
+		m_tIMUpairToleranceUs = 5000; // 5ms
 	}
 
 	_SLAMbase::~_SLAMbase()
@@ -24,7 +25,8 @@ namespace kai
 	{
 		IF_F(!this->_NavBase::init(j));
 
-		jKv<int>(j, "nIMUdqMax", m_nIMUdqMax);
+		jKv(j, "nIMUdqMax", m_nIMUdqMax);
+		jKv(j, "tIMUpairToleranceUs", m_tIMUpairToleranceUs);
 
 		return true;
 	}
@@ -71,65 +73,44 @@ namespace kai
 			m_dqAcc.pop_front();
 	}
 
-	bool _SLAMbase::getIMUpair(Vector3d *pGyro, Vector3d *pAcc)
+	uint64_t _SLAMbase::getIMUpair(Vector3d *pGyro, Vector3d *pAcc)
 	{
-		const uint64_t MAX_DT = 5000; // 5ms pairing tolerance
+		NULL__(pGyro, 0);
+		NULL__(pAcc, 0);
+
 		while (!m_dqGyro.empty() && !m_dqAcc.empty())
 		{
-			auto tg = m_dqGyro.front().t_us;
-			auto ta = m_dqAcc.front().t_us;
+			uint64_t tG = m_dqGyro.front().t_us;
+			uint64_t tA = m_dqAcc.front().t_us;
 
-			if (tg + MAX_DT < ta)
+			if (tG + m_tIMUpairToleranceUs < tA)
 			{
 				m_dqGyro.pop_front();
 				continue;
 			}
-			if (ta + MAX_DT < tg)
+
+			if (tA + m_tIMUpairToleranceUs < tG)
 			{
 				m_dqAcc.pop_front();
 				continue;
 			}
 
-			ImuSample s;
-			s.t = us_to_s(std::max(tg, ta));
-			s.gyro = m_dqGyro.front().v;
-			s.acc = m_dqAcc.front().v;
-			core.pushImu(s);
+			*pGyro = m_dqGyro.front().v;
+			*pAcc = m_dqAcc.front().v;
 
 			m_dqGyro.pop_front();
 			m_dqAcc.pop_front();
+
+			return max(tG, tA);
 		}
+
+		return false;
 	}
 
-	/*
-			const uint64_t MAX_DT = 5000; // 5ms pairing tolerance
-			while (!m_dqGyro.empty() && !m_dqAcc.empty())
-			{
-				auto tg = m_dqGyro.front().t_us;
-				auto ta = m_dqAcc.front().t_us;
-
-				if (tg + MAX_DT < ta)
-				{
-					m_dqGyro.pop_front();
-					continue;
-				}
-				if (ta + MAX_DT < tg)
-				{
-					m_dqAcc.pop_front();
-					continue;
-				}
-
-				ImuSample s;
-				s.t = us_to_s(std::max(tg, ta));
-				s.gyro = m_dqGyro.front().v;
-				s.acc = m_dqAcc.front().v;
-				core.pushImu(s);
-
-				m_dqGyro.pop_front();
-				m_dqAcc.pop_front();
-			}
-
-	*/
+	void _SLAMbase::pushPointCloud(const LidarScan& ls)
+	{
+		m_LS = ls;
+	}
 
 	bool _SLAMbase::bTracking(void)
 	{
@@ -154,11 +135,17 @@ namespace kai
 		pC->addMsg(msg);
 
 		int nD = 3;
-		TimedVec3 vGyro = m_dqGyro.back();
-		pC->addMsg("vGyro = (" + lf2str(vGyro.v[0], nD) + ", " + lf2str(vGyro.v[1], nD) + ", " + lf2str(vGyro.v[2], nD) + "), t=" + li2str(vGyro.t_us));
+		if (!m_dqGyro.empty())
+		{
+			TimedVec3 vGyro = m_dqGyro.back();
+			pC->addMsg("vGyro = (" + lf2str(vGyro.v[0], nD) + ", " + lf2str(vGyro.v[1], nD) + ", " + lf2str(vGyro.v[2], nD) + "), t=" + li2str(vGyro.t_us));
+		}
 
-		TimedVec3 vAcc = m_dqAcc.back();
-		pC->addMsg("vAcc  = (" + lf2str(vAcc.v[0], nD) + ", " + lf2str(vAcc.v[1], nD) + ", " + lf2str(vAcc.v[2], nD) + "), t=" + li2str(vAcc.t_us));
+		if (!m_dqAcc.empty())
+		{
+			TimedVec3 vAcc = m_dqAcc.back();
+			pC->addMsg("vAcc  = (" + lf2str(vAcc.v[0], nD) + ", " + lf2str(vAcc.v[1], nD) + ", " + lf2str(vAcc.v[2], nD) + "), t=" + li2str(vAcc.t_us));
+		}
 	}
 
 	// void _SLAMbase::detect(void)
