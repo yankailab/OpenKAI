@@ -1242,3 +1242,8 @@
 [03/05 15:08:20.736442][info][25043][SensorBase.cpp:370] [CP1Z841000ZP] Depth Streaming... frameRate=30.187925fps
 [03/05 15:08:20.737816][info][25024][VideoSensor.cpp:153] [CP1Z841000ZP] Color backend frame callback, frameRate=29.025845fps
 [03/05 15:08:20.738258][info][25042][SensorBase.cpp:370] [CP1Z841000ZP] Color Streaming... frameRate=29.031618fps
+[03/05 15:59:15.908128][info][19226][LinuxUsbPal.cpp:335] Create PollingDeviceWatcher!
+[03/05 15:59:15.908589][info][19226][DeviceManager.cpp:25] Current found device(s): (0)
+[03/05 15:59:15.908617][info][19226][DeviceManager.cpp:339] Enable net device enumeration: true
+[03/05 15:59:17.966131][info][19226][DeviceManager.cpp:25] Current device(s) list: (0)
+[03/05 15:59:17.966226][warning][19226][Device.cpp:193] Invalid index value for argument "index"

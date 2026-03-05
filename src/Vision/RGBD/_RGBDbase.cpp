@@ -41,10 +41,6 @@ namespace kai
 #ifdef WITH_3D
 		m_pPCf = nullptr;
 #endif
-
-#ifdef WITH_SLAM
-		m_pSlam = nullptr;
-#endif
 	}
 
 	_RGBDbase::~_RGBDbase()
@@ -93,12 +89,6 @@ namespace kai
 		n = "";
 		jKv(j, "_PCframe", n);
 		m_pPCf = (_PCframe *)(pM->findModule(n));
-#endif
-
-#ifdef WITH_SLAM
-		n = "";
-		jKv(j, "_SLAMbase", n);
-		m_pSlam = (_SLAMbase *)(pM->findModule(n));
 #endif
 
 		return true;

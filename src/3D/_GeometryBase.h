@@ -33,8 +33,8 @@ namespace kai
 
     struct GEOMETRY_POINT
     {
-        vFloat3 m_vP; //pos
-        vFloat3 m_vC; //color
+        vFloat3 m_vP; // pos
+        vFloat3 m_vC; // color
         uint64_t m_tStamp;
 
         void clear(void)
@@ -45,49 +45,64 @@ namespace kai
         }
     };
 
+    struct POINT_CLOUD
+    {
+        vector<GEOMETRY_POINT> m_vP;
+
+        void init(int nPresv)
+        {
+            if (nPresv > 0)
+                m_vP.reserve(nPresv);
+        }
+
+        void clear(void)
+        {
+            m_vP.clear();
+        }
+    };
+
     class _GeometryBase : public _ModuleBase
     {
     public:
         _GeometryBase();
         virtual ~_GeometryBase();
 
-		virtual bool init(const json &j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+        virtual bool init(const json &j);
+        virtual bool link(const json &j, ModuleMgr *pM);
         virtual bool check(void);
         virtual void console(void *pConsole);
 
         virtual GEOMETRY_TYPE getType(void);
-		virtual bool initGeometry(void);
+        virtual bool initGeometry(void);
         virtual void clear(void);
 
         virtual void setTranslation(const vDouble3 &vT);
         virtual void setRotation(const vDouble3 &vR);
         virtual void setQuaternion(const vDouble4 &vQ);
-        virtual void updateTranslationMatrix(bool bUseQuaternion = true, vDouble3* pRa = NULL);
+        virtual void updateTranslationMatrix(bool bUseQuaternion = true, vDouble3 *pRa = NULL);
         virtual void setTranslationMatrix(const Matrix4d &mT);
         virtual Matrix4d getTranslationMatrix(void);
 
-        virtual Matrix4d createTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR, vDouble3* pRa = NULL);
-        virtual Matrix4d createTranslationMatrix(const vDouble3 &vT, const vDouble4 &vQ, vDouble3* pRa = NULL);
+        virtual Matrix4d createTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR, vDouble3 *pRa = NULL);
+        virtual Matrix4d createTranslationMatrix(const vDouble3 &vT, const vDouble4 &vQ, vDouble3 *pRa = NULL);
 
         virtual vDouble3 getTranslation(void);
         virtual vDouble3 getRotation(void);
         virtual vDouble4 getQuaternion(void);
 
-        virtual void addGeometry(void* p, const uint64_t& tExpire = 0);
-        virtual void addPCstream(void* p, const uint64_t& tExpire);
-        virtual void addPCframe(void* p);
-        virtual void addPCgrid(void* p);
+        virtual void addGeometry(void *p, const uint64_t &tExpire = 0);
+        virtual void addPCstream(void *p, const uint64_t &tExpire);
+        virtual void addPCframe(void *p);
+        virtual void addPCgrid(void *p);
 
         virtual void writeSharedMem(void);
         virtual void readSharedMem(void);
 
-        virtual bool save2file(const string& fName);
+        virtual bool save2file(const string &fName);
 
-
-		virtual string getConfigFileName(void);
-		virtual bool loadConfig(const string& fName, json& j);
-		virtual bool saveConfig(const string& fName, json& j);
+        virtual string getConfigFileName(void);
+        virtual bool loadConfig(const string &fName, json &j);
+        virtual bool saveConfig(const string &fName, json &j);
 
     protected:
         void mutexLock(void);
@@ -95,7 +110,7 @@ namespace kai
 
     protected:
         GEOMETRY_TYPE m_type;
-		string m_fConfig;
+        string m_fConfig;
 
         // material overwrite
         vFloat3 m_vColorDefault;
@@ -109,14 +124,14 @@ namespace kai
         vDouble3 m_vT;
         vDouble3 m_vR;
         vDouble4 m_vQ;
-    	Matrix4d m_mT;
+        Matrix4d m_mT;
         Eigen::Affine3d m_A;
 
         // buffer writing protection
-		pthread_mutex_t m_mutex;
+        pthread_mutex_t m_mutex;
 
         // shared mem for data
-        SharedMem* m_pSM;
+        SharedMem *m_pSM;
     };
 
 }

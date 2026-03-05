@@ -62,8 +62,8 @@ namespace kai
 
 #ifdef WITH_3D
 		void updatePC(void);
-		bool updateSlam(void);
 #endif
+		void updateDepth(void);
 		void updateTPP(void);
 		static void *getTPP(void *This)
 		{

@@ -63,6 +63,12 @@ pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-
 snap install cloudcompare
 ```
 
+# Turn off GDB downloading separate debug info
+```bash
+echo "unset DEBUGINFOD_URLS" >> ~/.bashrc
+```
+
+
 
 # (Optional) Jetson inference
 CuDNN, download the latest .deb from NVIDIA site

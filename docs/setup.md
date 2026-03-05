@@ -611,6 +611,15 @@ sudo udevadm trigger
 
 # (Optional) FAST_LIVO2
 ```bash
+sudo apt-get install ninja-build pkg-config libpcl-dev libboost-thread-dev libyaml-cpp-dev
+
+git clone https://github.com/strasdat/Sophus.git
+cd Sophus
+git checkout a621ff
+mkdir build && cd build && cmake ..
+make
+sudo make install
+
 git clone --depth 1 https://github.com/yankailab/FAST-LIVO2.git
 cd FAST-LIVO2
 rm -rf build-core

@@ -85,15 +85,16 @@ namespace kai
     void _PCregistCol::updatePC(void)
     {
         mutexLock();
-        m_sPC.swap();
-        m_sPC.next()->points_.clear();
-        m_sPC.next()->colors_.clear();
-        m_sPC.next()->normals_.clear();
+//TODO:
+        // m_sPC.swap();
+        // m_sPC.next()->points_.clear();
+        // m_sPC.next()->colors_.clear();
+        // m_sPC.next()->normals_.clear();
 
-        m_sPCvd.swap();
-        m_sPCvd.next()->points_.clear();
-        m_sPCvd.next()->colors_.clear();
-        m_sPCvd.next()->normals_.clear();
+        // m_sPCvd.swap();
+        // m_sPCvd.next()->points_.clear();
+        // m_sPCvd.next()->colors_.clear();
+        // m_sPCvd.next()->normals_.clear();
         mutexUnlock();
     }
 
@@ -101,19 +102,20 @@ namespace kai
     {
         NULL_F(m_pPCf);
 
-        PointCloud *pPC = m_sPC.next();
-        m_pPCf->copyTo(pPC);
-        IF_F(pPC->IsEmpty());
-        *m_sPCvd.next() = *pPC->VoxelDownSample(m_rVoxel);
+//TODO:
+        // PointCloud *pPC = m_sPC.next();
+        // m_pPCf->copyTo(pPC);
+        // IF_F(pPC->IsEmpty());
+        // *m_sPCvd.next() = *pPC->VoxelDownSample(m_rVoxel);
 
-        IF__(m_sPCvd.get()->IsEmpty(), true);
+        // IF__(m_sPCvd.get()->IsEmpty(), true);
 
-        IF_F(updateRegistration(m_sPCvd.next(), m_sPCvd.get()) < m_minFit);
+        // IF_F(updateRegistration(m_sPCvd.next(), m_sPCvd.get()) < m_minFit);
 
-        m_sPC.next()->Transform(m_RR.transformation_);
-        m_sPCvd.next()->Transform(m_RR.transformation_);
-        if (m_pTf)
-            m_pTf->setTranslationMatrix(m_RR.transformation_);
+        // m_sPC.next()->Transform(m_RR.transformation_);
+        // m_sPCvd.next()->Transform(m_RR.transformation_);
+        // if (m_pTf)
+        //     m_pTf->setTranslationMatrix(m_RR.transformation_);
 
         return true;
     }

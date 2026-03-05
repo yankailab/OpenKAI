@@ -244,25 +244,23 @@ namespace kai
 		{
 			m_pTpp->sleepT(0);
 
+			updateDepth();
+
+#ifdef WITH_3D
+			updatePC();
+#endif
+		}
+	}
+
+	void _Orbbec::updateDepth(void)
+	{
 #ifdef USE_OPENCV
 			// Mat mZ = Mat(Size(m_vSizeD.x, m_vSizeD.y), CV_16UC1, (void *)m_rsDepth.get_data(), Mat::AUTO_STEP);
 			// Mat mD, mDs;
 			// mZ.convertTo(mD, CV_32FC1);
 			// mDs = mD * m_dScale;
 			// m_fDepth.copy(mDs + m_dOfs);
-
 #endif
-
-#ifdef WITH_3D
-			updatePC();
-
-			if (m_pSlam)
-			{
-				if (updateSlam())
-					m_pSlam->resume();
-			}
-#endif
-		}
 	}
 
 #ifdef WITH_3D
@@ -271,7 +269,7 @@ namespace kai
 		NULL_(m_spFrame);
 		NULL_(m_pPCf);
 
-		PointCloud *pPC = m_pPCf->getNextBuffer();
+		POINT_CLOUD *pPC = m_pPCf->getNextBuffer();
 
 		const int n = int(m_spFrame->dataSize() / sizeof(OBPoint));
 		const OBPoint *pts = (const OBPoint *)m_spFrame->data();
@@ -287,18 +285,18 @@ namespace kai
 			IF_CONT(!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z));
 			IF_CONT(p.z <= 0);
 
-			Eigen::Vector3d vP(p.x, p.y, p.z);
-			vP *= s_b;
-			IF_CONT(vP.z() < m_vRangeD.x);
-			IF_CONT(vP.z() > m_vRangeD.y);
+			GEOMETRY_POINT gP;
+			gP.m_vP.set(p.x * s_b,
+						p.y * s_b,
+						p.z * s_b);
 
-			pPC->points_.push_back(vP);
+			IF_CONT(gP.m_vP.z < m_vRangeD.x);
+			IF_CONT(gP.m_vP.z > m_vRangeD.y);
 
-			// texture color
-			//			Eigen::Vector3d vC(pC[2], pC[1], pC[0]);
-			Eigen::Vector3d vC(255, 255, 255);
-			vC *= c_b;
-			pPC->colors_.push_back(vC);
+			gP.m_vC.set(1,1,1);
+			gP.m_tStamp = m_tDus; //TODO:
+
+			pPC->m_vP.push_back(gP);
 
 			if (nPi++ >= nPmax)
 				break;
@@ -307,49 +305,49 @@ namespace kai
 		m_pPCf->swapBuffer();
 	}
 
-	bool _Orbbec::updateSlam(void)
-	{
-		NULL_F(m_spFrame);
-		NULL_F(m_pSlam);
+	// bool _Orbbec::updateSlam(void)
+	// {
+	// 	NULL_F(m_spFrame);
+	// 	NULL_F(m_pSlam);
 
-		const int n = int(m_spFrame->dataSize() / sizeof(OBPoint));
-		const OBPoint *pts = (const OBPoint *)m_spFrame->data();
+	// 	const int n = int(m_spFrame->dataSize() / sizeof(OBPoint));
+	// 	const OBPoint *pts = (const OBPoint *)m_spFrame->data();
 
-		const float s_b = 1.0 / 1000.0;
-		const float c_b = 1.0 / 255.0;
+	// 	const float s_b = 1.0 / 1000.0;
+	// 	const float c_b = 1.0 / 255.0;
 
-		double dTs = (double)m_dtDus;// * 1e-6;
-		// if (dTs > 1)
-		// 	dTs = 0.03;
+	// 	double dTs = (double)m_dtDus; // * 1e-6;
+	// 	// if (dTs > 1)
+	// 	// 	dTs = 0.03;
 
-		LidarScan scan;
-		scan.t0 = (double)m_tDus;// * 1e-6;
-		scan.t1 = scan.t0 + dTs;
-		scan.pts.reserve(n);
-		double dTp = dTs / n;
+	// 	LidarScan scan;
+	// 	scan.t0 = (double)m_tDus; // * 1e-6;
+	// 	scan.t1 = scan.t0 + dTs;
+	// 	scan.pts.reserve(n);
+	// 	double dTp = dTs / n;
 
-		for (int i = 0; i < n; i++)
-		{
-			const auto &p = pts[i];
-			if (!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z))
-				continue;
-			if (p.z <= 0)
-				continue;
+	// 	for (int i = 0; i < n; i++)
+	// 	{
+	// 		const auto &p = pts[i];
+	// 		if (!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z))
+	// 			continue;
+	// 		if (p.z <= 0)
+	// 			continue;
 
-			// If your device outputs mm, do: float x = 0.001f * p.x; etc.
-			LidarPoint lp;
-			lp.x = (float)p.x * s_b;
-			lp.y = (float)p.y * s_b;
-			lp.z = (float)p.z * s_b;
-			lp.intensity = 1.0f;
-			lp.tag = 0;
-			lp.t = scan.t0 + dTp * i; // snapshot time
-			scan.pts.push_back(lp);
-		}
+	// 		// If your device outputs mm, do: float x = 0.001f * p.x; etc.
+	// 		LidarPoint lp;
+	// 		lp.x = (float)p.x * s_b;
+	// 		lp.y = (float)p.y * s_b;
+	// 		lp.z = (float)p.z * s_b;
+	// 		lp.intensity = 1.0f;
+	// 		lp.tag = 0;
+	// 		lp.t = scan.t0 + dTp * i; // snapshot time
+	// 		scan.pts.push_back(lp);
+	// 	}
 
-		m_pSlam->pushPointCloud(scan);
-		return true;
-	}
+	// 	m_pSlam->pushPointCloud(scan);
+	// 	return true;
+	// }
 
 #endif
 

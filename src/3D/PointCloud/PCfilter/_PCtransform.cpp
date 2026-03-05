@@ -68,7 +68,10 @@ namespace kai
 		IF_(!check());
 
 		//		readPC(m_pInCtx.m_pPCB);
-		m_sPC.next()->Transform(m_mTt);
+
+		//TODO:
+		//		m_sPC.next()->Transform(m_mTt);
+
 		swapBuffer();
 	}
 

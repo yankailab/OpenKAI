@@ -16,7 +16,6 @@ namespace kai
     {
         m_type = pc_frame;
         m_tStamp = 0;
-        m_pGpSM = nullptr;
 
         m_nPresv = 0;
         m_nPresvNext = 0;
@@ -47,41 +46,15 @@ namespace kai
     {
         mutexLock();
 
-        // frame buf reservation
+        // init
         if (m_nPresv > 0)
-        {
-            m_sPC.get()->points_.reserve(m_nPresv);
-            m_sPC.get()->colors_.reserve(m_nPresv);
-        }
+            m_sPC.get()->init(m_nPresv);
 
         if (m_nPresvNext > 0)
-        {
-            m_sPC.next()->points_.reserve(m_nPresvNext);
-            m_sPC.next()->colors_.reserve(m_nPresvNext);
-        }
+            m_sPC.next()->init(m_nPresvNext);
 
-        // init
-        m_sPC.get()->points_.clear();
-        m_sPC.get()->colors_.clear();
-        m_sPC.get()->normals_.clear();
-
-        m_sPC.next()->points_.clear();
-        m_sPC.next()->colors_.clear();
-        m_sPC.next()->normals_.clear();
-
-        // share mem
-        if (m_pSM)
-        {
-            m_pGpSM = new GEOMETRY_POINT[m_nPresv];
-            if (!m_pGpSM)
-            {
-                mutexUnlock();
-                return false;
-            }
-
-            for (int i = 0; i < m_nPresv; i++)
-                m_pGpSM[i].clear();
-        }
+        m_sPC.get()->clear();
+        m_sPC.next()->clear();
 
         mutexUnlock();
 
@@ -92,13 +65,8 @@ namespace kai
     {
         mutexLock();
 
-        m_sPC.get()->points_.clear();
-        m_sPC.get()->colors_.clear();
-        m_sPC.get()->normals_.clear();
-
-        m_sPC.next()->points_.clear();
-        m_sPC.next()->colors_.clear();
-        m_sPC.next()->normals_.clear();
+        m_sPC.get()->clear();
+        m_sPC.next()->clear();
 
         mutexUnlock();
     }
@@ -139,10 +107,8 @@ namespace kai
 
         mutexLock();
 
-        PointCloud *pPC = m_sPC.next();
-        pPC->Clear();
-        pPC->points_.clear();
-        pPC->colors_.clear();
+        POINT_CLOUD *pPC = m_sPC.next();
+        pPC->clear();
 
         pS->copyTo(pPC, tExpire);
 
@@ -173,22 +139,18 @@ namespace kai
         IF_(!m_pSM->bOpen());
         IF_(!m_pSM->bWriter());
 
-        PointCloud *pPC = m_sPC.get();
-        int nPw = pPC->points_.size();
+        POINT_CLOUD *pPC = m_sPC.get();
+        int nPw = pPC->m_vP.size();
         nPw = small<int>(nPw, m_nPresv);
         nPw = small<int>(nPw, m_pSM->nB() / sizeof(GEOMETRY_POINT));
 
-        uint64_t tNow = getTbootUs();
-
+        GEOMETRY_POINT* pGdst = (GEOMETRY_POINT*)m_pSM->p();
         for (int i = 0; i < nPw; i++)
         {
-            GEOMETRY_POINT *pGP = &m_pGpSM[i];
-            pGP->m_vP = e2v((Vector3f)pPC->points_[i].cast<float>());
-            pGP->m_vC = e2v((Vector3f)pPC->colors_[i].cast<float>());
-            pGP->m_tStamp = tNow;
+            pGdst[i] = pPC->m_vP[i];
         }
 
-        memcpy(m_pSM->p(), m_pGpSM, nPw * sizeof(GEOMETRY_POINT));
+//        memcpy(m_pSM->p(), m_pGpSM, nPw * sizeof(GEOMETRY_POINT));
     }
 
     void _PCframe::readSharedMem(void)
@@ -197,23 +159,18 @@ namespace kai
         IF_(!m_pSM->bOpen());
         IF_(m_pSM->bWriter());
 
-        void *pSrc = m_pSM->p();
+        GEOMETRY_POINT* pSrc = (GEOMETRY_POINT*)m_pSM->p();
         NULL_(pSrc);
-
-        memcpy(m_pGpSM, pSrc, m_nPresv * sizeof(GEOMETRY_POINT));
+//        memcpy(m_pGpSM, pSrc, m_nPresv * sizeof(GEOMETRY_POINT));
 
         mutexLock();
 
-        PointCloud *pPC = m_sPC.next();
-        pPC->Clear();
-        pPC->points_.clear();
-        pPC->colors_.clear();
+        POINT_CLOUD *pPC = m_sPC.next();
+        pPC->m_vP.clear();
 
         for (int i = 0; i < m_nPresv; i++)
         {
-            GEOMETRY_POINT *pGP = &m_pGpSM[i];
-            pPC->points_.push_back(v2e(pGP->m_vP).cast<double>());
-            pPC->colors_.push_back(v2e(pGP->m_vC).cast<double>());
+            pPC->m_vP.push_back(pSrc[i]);
         }
 
         mutexUnlock();
@@ -240,43 +197,55 @@ namespace kai
         mutexLock();
 
         m_sPC.swap();
-        m_sPC.next()->points_.clear();
-        m_sPC.next()->colors_.clear();
-        m_sPC.next()->normals_.clear();
+        m_sPC.next()->clear();
 
         mutexUnlock();
     }
 
-    PointCloud *_PCframe::getBuffer(void)
+    POINT_CLOUD *_PCframe::getBuffer(void)
     {
         return m_sPC.get();
     }
 
-    PointCloud *_PCframe::getNextBuffer(void)
+    POINT_CLOUD *_PCframe::getNextBuffer(void)
     {
         return m_sPC.next();
     }
 
-    void _PCframe::copyTo(PointCloud *pPC)
+    void _PCframe::copyTo(POINT_CLOUD *pDst)
     {
         IF_(!check());
-        NULL_(pPC);
+        NULL_(pDst);
 
-        pPC->Clear();
-        pPC->points_.clear();
-        pPC->colors_.clear();
+        *pDst = *m_sPC.get();
+    }
 
-        *pPC = *m_sPC.get();
+    void _PCframe::copyTo(PointCloud *pDst)
+    {
+        IF_(!check());
+        NULL_(pDst);
+
+        pDst->Clear();
+        pDst->points_.clear();
+        pDst->colors_.clear();
+
+        vector<GEOMETRY_POINT>* pvGP = &m_sPC.get()->m_vP;
+        for(int i=0; i<pvGP->size(); i++)
+        {
+            GEOMETRY_POINT* pGp = &(*pvGP)[i];
+			pDst->points_.push_back(v2e(pGp->m_vP).cast<double>());
+			pDst->colors_.push_back(v2e(pGp->m_vC).cast<double>());
+        }
     }
 
     int _PCframe::nP(void)
     {
-        return m_sPC.get()->points_.size();
+        return m_sPC.get()->m_vP.size();
     }
 
     int _PCframe::nPnext(void)
     {
-        return m_sPC.next()->points_.size();
+        return m_sPC.next()->m_vP.size();
     }
 
     int _PCframe::nPmax(void)

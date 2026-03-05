@@ -58,10 +58,16 @@ namespace kai
 		{
 			m_pT->autoFPS();
 
-			PointCloud *pNext = m_sPC.next();
-			pNext->Clear();
-			*pNext = m_pcl;
-			pNext->Transform(m_mT);
+			POINT_CLOUD *pNext = m_sPC.next();
+			pNext->clear();
+
+			for (int i = 0; i < m_pcl.points_.size(); i++)
+			{
+				pNext->m_vP[i].m_vP = m_pcl.points_[i].cast<float>();
+				pNext->m_vP[i].m_vC = m_pcl.colors_[i].cast<float>();
+			}
+
+//			pNext->Transform(m_mT);
 			swapBuffer();
 
 			writeSharedMem();

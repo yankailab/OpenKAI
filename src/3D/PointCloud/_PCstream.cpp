@@ -176,17 +176,29 @@ namespace kai
         return io::WritePointCloudToPLY(fName.c_str(), pc, par);
     }
 
+    void _PCstream::copyTo(POINT_CLOUD *pPC, uint64_t tExpire)
+    {
+        IF_(!check());
+        NULL_(pPC);
+
+        for (int i = 0; i < m_nP; i++)
+        {
+            GEOMETRY_POINT *pP = &m_pP[i];
+            IF_CONT(pP->m_tStamp < tExpire);
+
+            pPC->m_vP.push_back(*pP);
+        }
+    }
+
     void _PCstream::copyTo(PointCloud *pPC, uint64_t tExpire)
     {
         IF_(!check());
         NULL_(pPC);
 
-        uint64_t tNow = getApproxTbootUs();
-
         for (int i = 0; i < m_nP; i++)
         {
             GEOMETRY_POINT *pP = &m_pP[i];
-            IF_CONT(tExpire > 0 && bExpired(pP->m_tStamp, tExpire, tNow));
+            IF_CONT(pP->m_tStamp < tExpire);
 
             pPC->points_.push_back(v2e(pP->m_vP).cast<double>());
             pPC->colors_.push_back(v2e(pP->m_vC).cast<double>());

@@ -19,10 +19,6 @@
 #include "../../3D/PointCloud/_PCframe.h"
 #endif
 
-#ifdef WITH_SLAM
-#include "../../SLAM/_SLAMbase.h"
-#endif
-
 namespace kai
 {
 	class _RGBDbase : public _VisionBase
@@ -85,10 +81,6 @@ namespace kai
 
 #ifdef WITH_3D
 		_PCframe* m_pPCf;
-#endif
-
-#ifdef WITH_SLAM
-		_SLAMbase* m_pSlam;
 #endif
 
 	};

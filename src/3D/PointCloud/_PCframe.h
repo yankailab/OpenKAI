@@ -37,10 +37,12 @@ namespace kai
 
         // _PCframe
 		virtual void swapBuffer(void);
-		virtual PointCloud* getBuffer(void);
-		virtual PointCloud* getNextBuffer(void);
+		virtual POINT_CLOUD* getBuffer(void);
+		virtual POINT_CLOUD* getNextBuffer(void);
 
-   		virtual void copyTo(PointCloud *pPC);
+   		virtual void copyTo(POINT_CLOUD *pDst);
+   		virtual void copyTo(PointCloud *pDst);
+
         virtual int nP(void);
         virtual int nPnext(void);
         virtual int nPmax(void);
@@ -58,10 +60,8 @@ namespace kai
 		// frame buf
 		int m_nPresv;		// max number of reserved point buf
 		int m_nPresvNext;
-		tSwap<PointCloud> m_sPC;
+		tSwap<POINT_CLOUD> m_sPC;
 		uint64_t m_tStamp;
-
-        GEOMETRY_POINT *m_pGpSM;
 	};
 
 }

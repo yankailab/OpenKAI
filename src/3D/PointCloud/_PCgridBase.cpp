@@ -294,11 +294,14 @@ namespace kai
 		NULL_(p);
 		_PCframe *pF = (_PCframe *)p;
 
-		PointCloud *pPC = pF->getBuffer();
-		for (int i = 0; i < pPC->points_.size(); i++)
+		POINT_CLOUD *pPC = pF->getBuffer();
+
+		for (int i = 0; i < pPC->m_vP.size(); i++)
 		{
-			Vector3f vP = pPC->points_[i].cast<float>();
-			PC_GRID_CELL *pC = getCell(vFloat3(vP[0], vP[1], vP[2]));
+			// Vector3f vP = pPC->points_[i].cast<float>();
+			// PC_GRID_CELL *pC = getCell(vFloat3(vP[0], vP[1], vP[2]));
+
+			PC_GRID_CELL *pC = getCell(pPC->m_vP[i].m_vP);
 			IF_CONT(!pC);
 
 			pC->add(1);
