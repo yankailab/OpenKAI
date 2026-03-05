@@ -266,24 +266,18 @@ namespace kai
         return m_vQ;
     }
 
-    void _GeometryBase::addGeometry(void *p, const uint64_t &tExpire)
+    void _GeometryBase::addGeometry(void *p, const uint64_t tExpire)
     {
         NULL_(p);
 
         GEOMETRY_TYPE gt = ((_GeometryBase *)p)->getType();
         if (gt == pc_stream)
             addPCstream(p, tExpire);
-        else if (gt == pc_frame)
-            addPCframe(p);
         else if (gt == pc_grid)
             addPCgrid(p);
     }
 
-    void _GeometryBase::addPCstream(void *p, const uint64_t &tExpire)
-    {
-    }
-
-    void _GeometryBase::addPCframe(void *p)
+    void _GeometryBase::addPCstream(void *p, const uint64_t tExpire)
     {
     }
 

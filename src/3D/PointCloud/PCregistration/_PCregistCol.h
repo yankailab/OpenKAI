@@ -9,14 +9,14 @@
 #define OpenKAI_src_3D_PointCloud_PCregistCol_H_
 
 #include "../PCfilter/_PCtransform.h"
-#include "../_PCframe.h"
+#include "../_PCstream.h"
 #include <open3d/pipelines/registration/ColoredICP.h>
 using namespace open3d::pipelines::registration;
 
 namespace kai
 {
 
-	class _PCregistCol : public _PCframe
+	class _PCregistCol : public _PCstream
 	{
 	public:
 		_PCregistCol();
@@ -53,7 +53,7 @@ namespace kai
 		double m_rVoxel;
 		tSwap<PointCloud> m_sPCvd; //voxel down
 
-		_PCframe *m_pPCf;
+		_PCstream *m_pPC;
 		RegistrationResult m_RR;
 		double m_minFit;
 		_PCtransform *m_pTf;

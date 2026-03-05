@@ -12,7 +12,7 @@ namespace kai
 
 	_SwarmBase::_SwarmBase()
 	{
-		m_tExpire = UINT64_MAX;
+		m_tExpire = 0;
 	}
 
 	_SwarmBase::~_SwarmBase()

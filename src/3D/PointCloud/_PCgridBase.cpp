@@ -264,44 +264,20 @@ namespace kai
 		mutexUnlock();
 	}
 
-	void _PCgridBase::addPCstream(void *p, const uint64_t &tExpire)
+	void _PCgridBase::addPCstream(void *p, const uint64_t tExpire)
 	{
 		IF_(!check());
 		NULL_(p);
 		_PCstream *pS = (_PCstream *)p;
 
-		uint64_t tNow = getApproxTbootUs();
 		int nP = pS->nP();
 
 		for (int i = 0; i < nP; i++)
 		{
 			GEOMETRY_POINT *pP = pS->get(i);
-			if (tExpire)
-			{
-				IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
-			}
+			IF_CONT(pP->m_tStamp < tExpire);
 
 			PC_GRID_CELL *pC = getCell(vFloat3(pP->m_vP[0], pP->m_vP[1], pP->m_vP[2]));
-			IF_CONT(!pC);
-
-			pC->add(1);
-		}
-	}
-
-	void _PCgridBase::addPCframe(void *p)
-	{
-		IF_(!check());
-		NULL_(p);
-		_PCframe *pF = (_PCframe *)p;
-
-		POINT_CLOUD *pPC = pF->getBuffer();
-
-		for (int i = 0; i < pPC->m_vP.size(); i++)
-		{
-			// Vector3f vP = pPC->points_[i].cast<float>();
-			// PC_GRID_CELL *pC = getCell(vFloat3(vP[0], vP[1], vP[2]));
-
-			PC_GRID_CELL *pC = getCell(pPC->m_vP[i].m_vP);
 			IF_CONT(!pC);
 
 			pC->add(1);

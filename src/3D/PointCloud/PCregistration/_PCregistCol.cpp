@@ -13,7 +13,7 @@ namespace kai
 
     _PCregistCol::_PCregistCol()
     {
-        m_pPCf = nullptr;
+        m_pPC = nullptr;
         m_pTf = nullptr;
 
         m_rVoxel = 0.1;
@@ -32,7 +32,7 @@ namespace kai
 
     bool _PCregistCol::init(const json &j)
     {
-        IF_F(!this->_PCframe::init(j));
+        IF_F(!this->_PCstream::init(j));
 
         jKv(j, "rVoxel", m_rVoxel);
         jKv(j, "maxDistance", m_maxDistance);
@@ -51,8 +51,8 @@ namespace kai
         IF_F(!this->BASE::link(j, pM));
 
         string n = "";
-        jKv(j, "_PCframe", n);
-        m_pPCf = (_PCframe *)(pM->findModule(n));
+        jKv(j, "_PCstream", n);
+        m_pPC = (_PCstream *)(pM->findModule(n));
 
         return true;
     }
@@ -100,7 +100,7 @@ namespace kai
 
     bool _PCregistCol::updateRegistration(void)
     {
-        NULL_F(m_pPCf);
+        NULL_F(m_pPC);
 
 //TODO:
         // PointCloud *pPC = m_sPC.next();

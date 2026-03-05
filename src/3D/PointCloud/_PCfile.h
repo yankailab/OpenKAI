@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_3D_PointCloud_PCfile_H_
 #define OpenKAI_src_3D_PointCloud_PCfile_H_
 
-#include "_PCframe.h"
+#include "_PCstream.h"
 
 namespace kai
 {
 
-	class _PCfile : public _PCframe
+	class _PCfile : public _PCstream
 	{
 	public:
 		_PCfile();
@@ -31,7 +31,7 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+	protected:
 		vector<string> m_vfName;
 		PointCloud m_pcl;
 	};

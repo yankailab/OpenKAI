@@ -43,8 +43,8 @@ namespace kai
 		int m_maxNNnormal;
 		int m_maxNNfpfh;
 
-		_PCframe *m_pSrc;
-		_PCframe *m_pTgt;
+		_PCstream *m_pSrc;
+		_PCstream *m_pTgt;
 		RegistrationResult m_RR;
 		_PCtransform *m_pTf;
 		double m_lastFit;

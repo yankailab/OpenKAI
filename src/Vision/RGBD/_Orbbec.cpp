@@ -124,6 +124,7 @@ namespace kai
 
 		m_spPipe->stop();
 		m_bOpen = false;
+		this->_RGBDbase::close();
 	}
 
 	bool _Orbbec::start(void)
@@ -181,8 +182,8 @@ namespace kai
 			if (gf)
 			{
 				auto v = gf->value();
-				if (m_pSlam)
-					m_pSlam->pushGyro(frameTsUs_(g), {v.x, v.y, v.z});
+				if(m_pIMU)
+					m_pIMU->addGyro(frameTsUs_(g), {v.x, v.y, v.z});
 			}
 		}
 
@@ -192,8 +193,8 @@ namespace kai
 			if (af)
 			{
 				auto v = af->value();
-				if (m_pSlam)
-					m_pSlam->pushAcc(frameTsUs_(a), {v.x, v.y, v.z});
+				if(m_pIMU)
+					m_pIMU->addAcc(frameTsUs_(a), {v.x, v.y, v.z});
 			}
 		}
 
@@ -267,9 +268,7 @@ namespace kai
 	void _Orbbec::updatePC(void)
 	{
 		NULL_(m_spFrame);
-		NULL_(m_pPCf);
-
-		POINT_CLOUD *pPC = m_pPCf->getNextBuffer();
+		NULL_(m_pPCstream);
 
 		const int n = int(m_spFrame->dataSize() / sizeof(OBPoint));
 		const OBPoint *pts = (const OBPoint *)m_spFrame->data();
@@ -277,78 +276,23 @@ namespace kai
 		const float s_b = 1.0 / 1000.0;
 		const float c_b = 1.0 / 255.0;
 
-		int nPmax = m_pPCf->nPmax();
-		int nPi = 0;
 		for (int i = 0; i < n; i++)
 		{
 			const auto &p = pts[i];
 			IF_CONT(!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z));
 			IF_CONT(p.z <= 0);
 
-			GEOMETRY_POINT gP;
-			gP.m_vP.set(p.x * s_b,
-						p.y * s_b,
-						p.z * s_b);
+			vFloat3 vP(p.x, p.y, p.z);
+			vP *= s_b;
 
-			IF_CONT(gP.m_vP.z < m_vRangeD.x);
-			IF_CONT(gP.m_vP.z > m_vRangeD.y);
+			IF_CONT(vP.z < m_vRangeD.x);
+			IF_CONT(vP.z > m_vRangeD.y);
 
-			gP.m_vC.set(1,1,1);
-			gP.m_tStamp = m_tDus; //TODO:
+			vFloat3 vC(1,1,1);
 
-			pPC->m_vP.push_back(gP);
-
-			if (nPi++ >= nPmax)
-				break;
+			m_pPCstream->add(vP, vC, m_tDus);
 		}
-
-		m_pPCf->swapBuffer();
 	}
-
-	// bool _Orbbec::updateSlam(void)
-	// {
-	// 	NULL_F(m_spFrame);
-	// 	NULL_F(m_pSlam);
-
-	// 	const int n = int(m_spFrame->dataSize() / sizeof(OBPoint));
-	// 	const OBPoint *pts = (const OBPoint *)m_spFrame->data();
-
-	// 	const float s_b = 1.0 / 1000.0;
-	// 	const float c_b = 1.0 / 255.0;
-
-	// 	double dTs = (double)m_dtDus; // * 1e-6;
-	// 	// if (dTs > 1)
-	// 	// 	dTs = 0.03;
-
-	// 	LidarScan scan;
-	// 	scan.t0 = (double)m_tDus; // * 1e-6;
-	// 	scan.t1 = scan.t0 + dTs;
-	// 	scan.pts.reserve(n);
-	// 	double dTp = dTs / n;
-
-	// 	for (int i = 0; i < n; i++)
-	// 	{
-	// 		const auto &p = pts[i];
-	// 		if (!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z))
-	// 			continue;
-	// 		if (p.z <= 0)
-	// 			continue;
-
-	// 		// If your device outputs mm, do: float x = 0.001f * p.x; etc.
-	// 		LidarPoint lp;
-	// 		lp.x = (float)p.x * s_b;
-	// 		lp.y = (float)p.y * s_b;
-	// 		lp.z = (float)p.z * s_b;
-	// 		lp.intensity = 1.0f;
-	// 		lp.tag = 0;
-	// 		lp.t = scan.t0 + dTp * i; // snapshot time
-	// 		scan.pts.push_back(lp);
-	// 	}
-
-	// 	m_pSlam->pushPointCloud(scan);
-	// 	return true;
-	// }
-
 #endif
 
 	void _Orbbec::console(void *pConsole)
@@ -357,6 +301,9 @@ namespace kai
 		this->_RGBDbase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
+		pC->addMsg("tDus = " + li2str(m_tDus) + ", dtDus = " + li2str(m_dtDus));
+		pC->addMsg("tRGBus = " + li2str(m_tRGBus) + ", dtRGBus = " + li2str(m_dtRGBus));
+
 	}
 
 }

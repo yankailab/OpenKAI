@@ -13,6 +13,7 @@ namespace kai
 	_RGBDbase::_RGBDbase()
 	{
 		m_pTpp = nullptr;
+		m_pIMU = nullptr;
 
 		m_devFPSd = 30;
 		m_vSizeD.set(1280, 720);
@@ -39,7 +40,7 @@ namespace kai
 #endif
 
 #ifdef WITH_3D
-		m_pPCf = nullptr;
+		m_pPCstream = nullptr;
 #endif
 	}
 
@@ -85,10 +86,14 @@ namespace kai
 
 		string n;
 
+		n = "";
+		jKv(j, "_IMUbase", n);
+		m_pIMU = (_IMUbase *)(pM->findModule(n));
+
 #ifdef WITH_3D
 		n = "";
-		jKv(j, "_PCframe", n);
-		m_pPCf = (_PCframe *)(pM->findModule(n));
+		jKv(j, "_PCstream", n);
+		m_pPCstream = (_PCstream *)(pM->findModule(n));
 #endif
 
 		return true;
@@ -114,7 +119,7 @@ namespace kai
 		this->_VisionBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		//		pC->addMsg("", 0);
+
 	}
 
 #ifdef USE_OPENCV

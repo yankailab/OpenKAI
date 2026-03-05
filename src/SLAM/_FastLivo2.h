@@ -8,16 +8,12 @@
 #ifndef OpenKAI_src_SLAM__FastLivo2_H_
 #define OpenKAI_src_SLAM__FastLivo2_H_
 
+#include "../3D/PointCloud/_PCstream.h"
 #include "_SLAMbase.h"
 #include <array>
 #include <chrono>
 #include <fastlivo2_core/FastLivo2Core.hpp>
 
-using fastlivo2_core::FastLivo2Core;
-using fastlivo2_core::ImageFrame;
-using fastlivo2_core::ImuSample;
-using fastlivo2_core::LidarPoint;
-using fastlivo2_core::LidarScan;
 using namespace fastlivo2_core;
 
 namespace kai
@@ -58,6 +54,11 @@ namespace kai
 		}
 
 	protected:
+		_PCstream* m_pPCstream;
+		int m_iP;
+		int m_nPmax;
+		uint64_t m_tStampP;
+
 		FastLivo2Core m_fastLivo;
 
 		// config
@@ -75,8 +76,8 @@ namespace kai
 		vDouble2 m_vC; // center
 		array<double, 5> m_aDist  = {0.0, 0.0, 0.0, 0.0, 0.0}; // k1,k2,p1,p2,k3
 		// extrinsics, Camera<-LiDAR: pCam = CLr * pLidar + CLt
-		std::array<double, 9> m_aCLr = {1, 0, 0, 0, 1, 0, 0, 0, 1};
-		std::array<double, 3> m_aCLt = {0.05, 0.0, 0.0}; // example 5cm
+		array<double, 9> m_aCLr = {1, 0, 0, 0, 1, 0, 0, 0, 1};
+		array<double, 3> m_aCLt = {0.05, 0.0, 0.0}; // example 5cm
 
 	};
 

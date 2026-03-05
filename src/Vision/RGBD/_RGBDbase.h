@@ -9,6 +9,7 @@
 #define OpenKAI_src_Vision_RGBD__RGBDbase_H_
 
 #include "../_VisionBase.h"
+#include "../../Sensor/_IMUbase.h"
 
 #ifdef USE_OPENCV
 #include "../../Utility/utilCV.h"
@@ -16,7 +17,7 @@
 #endif
 
 #ifdef WITH_3D
-#include "../../3D/PointCloud/_PCframe.h"
+#include "../../3D/PointCloud/_PCstream.h"
 #endif
 
 namespace kai
@@ -46,6 +47,7 @@ namespace kai
 	protected:
 		// post processing thread
 		_Thread *m_pTpp;
+		_IMUbase* m_pIMU;
 
 		int m_devFPSd;
 		vInt2 m_vSizeD;
@@ -60,9 +62,8 @@ namespace kai
 		float m_fConfidenceThreshold;
 
 		bool m_bIMU;
-		bool m_bPCd;	// Depth point cloud
-		bool m_bPCrgb;	// RGB point cloud
-
+		bool m_bPCd;   // Depth point cloud
+		bool m_bPCrgb; // RGB point cloud
 
 #ifdef USE_OPENCV
 		Frame m_fDepth;
@@ -80,9 +81,8 @@ namespace kai
 #endif
 
 #ifdef WITH_3D
-		_PCframe* m_pPCf;
+		_PCstream *m_pPCstream;
 #endif
-
 	};
 
 }

@@ -54,7 +54,7 @@ namespace kai
         m_bAccept = b;
     }
 
-    int _MeshStream::addVertex(const Vector3d &vP, uint64_t tStamp)
+    int _MeshStream::addVertex(const Vector3d &vP, const uint64_t tStamp)
     {
         NULL__(m_pP, -1);
         IF__(!m_bAccept, -1);
@@ -62,7 +62,7 @@ namespace kai
         return 0;
     }
 
-    int _MeshStream::addTriangle(const vInt3 &vVertices, uint64_t tStamp)
+    int _MeshStream::addTriangle(const vInt3 &vVertices, const uint64_t tStamp)
     {
         return -1;
     }

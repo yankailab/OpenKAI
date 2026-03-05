@@ -44,8 +44,8 @@ namespace kai
 	protected:
 		float m_thr; // ICP threshold
 		PCREGIST_ICP_EST m_est;
-		_PCframe *m_pSrc;
-		_PCframe *m_pTgt;
+		_PCstream *m_pSrc;
+		_PCstream *m_pTgt;
 		RegistrationResult m_RR;
 		_PCtransform *m_pTf;
 		double m_lastFit;

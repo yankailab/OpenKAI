@@ -48,12 +48,12 @@ namespace kai
 
         n = "";
         jKv(j, "_PCbaseSrc", n);
-        m_pSrc = (_PCframe *)(pM->findModule(n));
+        m_pSrc = (_PCstream *)(pM->findModule(n));
         IF_Le_F(!m_pSrc, "_PCbaseSrc not found: " + n);
 
         n = "";
         jKv(j, "_PCbaseTgt", n);
-        m_pTgt = (_PCframe *)(pM->findModule(n));
+        m_pTgt = (_PCstream *)(pM->findModule(n));
         IF_Le_F(!m_pTgt, "_PCbaseTgt not found: " + n);
 
         n = "";

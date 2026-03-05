@@ -8,13 +8,13 @@
 #ifndef OpenKAI_src_3D_PointCloud_PCtransform_H_
 #define OpenKAI_src_3D_PointCloud_PCtransform_H_
 
-#include "../_PCframe.h"
+#include "../_PCstream.h"
 #include "../../../IO/_File.h"
 
 namespace kai
 {
 
-	class _PCtransform : public _PCframe
+	class _PCtransform : public _PCstream
 	{
 	public:
 		_PCtransform();

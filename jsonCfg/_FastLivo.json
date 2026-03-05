@@ -1,13 +1,13 @@
 {
 	"APP": {
 		"class": "ModuleMgr",
-		"appName": "helloOK",
+		"appName": "FastLivo",
 		"bLog": true,
 		"bStdErr": true
 	},
 	"console": {
 		"class": "_Console",
-		"bON": false,
+		"bON": true,
 		"thread": {
 			"name": "thread",
 			"class": "_Thread",
@@ -44,14 +44,237 @@
 			480
 		]
 	},
+
 	"fastLivo": {
 		"class": "_FastLivo2",
 		"bON": true,
 		"thread": {
-			"name": "thread",
-			"class": "_Thread",
 			"FPS": 30
-		}
-	}
+		},
+		"_IMUbase": "obIMU",
+		"_PCstream": "obPC",
+		"bImg":false,
+		"nPmax":100000,
+		"voxelLeafSize":2.0
+	},
+	"obIMU": {
+		"class": "_IMUbase",
+		"bON": true,
+		"thread": {
+			"FPS": 1
+		},
+		"nIMUdqMax": 1000,
+		"tIMUpairToleranceUs": 5000
+	},
 
+	"GViewer": {
+		"class": "_GeometryViewer",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"threadUI": {
+			"FPS": 30
+		},
+		"vWinSize": [
+			1280,
+			720
+		],
+		"pathRes": "/usr/local/bin/Open3D/resources",
+		"device": "CPU:0",
+		"vCamLookAt": [
+			0,
+			0,
+			0
+		],
+		"vCamEye": [
+			0,
+			0,
+			2
+		],
+		"vCamUp": [
+			0,
+			1,
+			0
+		],
+		"vCamAutoLookAt": [
+			0,
+			0,
+			0
+		],
+		"vCamAutoEye": [
+			0,
+			2,
+			0
+		],
+		"vCamAutoUp": [
+			0,
+			1,
+			0
+		],
+		"vCoR": [
+			0,
+			0,
+			0
+		],
+		"camProjType": 0,
+		"vCamNF": [
+			0,
+			500
+		],
+		"camFov": 80,
+		"camFovType": 1,
+		"vCamLR": [
+			-100,
+			100
+		],
+		"vCamBT": [
+			-100,
+			100
+		],
+		"bFullScreen": 0,
+		"wPanel": 20,
+		"vBtnPadding": [
+			1.6,
+			2.0
+		],
+		"mouseMode": 0,
+		"vDmove": [
+			0.5,
+			5.0
+		],
+		"dHiddenRemove": 100.0,
+		"dirSave": "/home/kai/Documents/",
+		"/dirSave": "/media/lab/",
+		"rVoxel": 0.05,
+		"geometry": [
+			{
+				"_GeometryBase": "Lvx1",
+				"bStatic": false,
+				"nP": 500000,
+				"rDummyDome": 1000.0,
+				"matName": "depth",
+				"/matName": "default",
+				"/matCol": [
+					1,
+					1,
+					1,
+					1
+				],
+				"matPointSize": 1,
+				"matLineWidth": 1
+			}
+		]
+	},
+
+
+
+	"udpLvxDeviceQuery_1": {
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 1
+		},
+		"/addr": "255.255.255.255",
+		"addrRemote": "192.168.1.200",
+		"portRemote": 56000,
+		"portLocal": 0,
+		"bW2R": 0,
+		"bWbroadcast": 0
+	},
+	"udpLvxCtrlCmd_1": {
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"addrRemote": "192.168.1.200",
+		"portRemote": 56100,
+		"portLocal": 56101,
+		"bW2R": 0,
+		"bWbroadcast": 0
+	},
+	"udpLvxPushCmd_1": {
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 1
+		},
+		"addrRemote": "192.168.1.200",
+		"portRemote": 56200,
+		"portLocal": 56201,
+		"bW2R": 0,
+		"bWbroadcast": 0
+	},
+	"udpLvxPCL_1": {
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 1
+		},
+		"bLog": false,
+		"addrRemote": "192.168.1.200",
+		"portRemote": 56300,
+		"portLocal": 56301,
+		"bW2R": 0,
+		"bWbroadcast": 0
+	},
+	"udpLvxIMU_1": {
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 1
+		},
+		"bLog": false,
+		"addrRemote": "192.168.1.200",
+		"portRemote": 56400,
+		"portLocal": 56401,
+		"bW2R": 0,
+		"bWbroadcast": 0
+	},
+	"Lvx1": {
+		"class": "_Livox2",
+		"bON": true,
+		"thread": {
+			"FPS": 1
+		},
+		"threadR": {
+			"FPS": 1
+		},
+		"threadCtrlCmdW": {
+			"FPS": 1
+		},
+		"bLog": false,
+		"_UDPdeviceQuery": "udpLvxDeviceQuery_1",
+		"_UDPctrlCmd": "udpLvxCtrlCmd_1",
+		"_UDPpushCmd": "udpLvxPushCmd_1",
+		"_UDPpcl": "udpLvxPCL_1",
+		"_UDPimu": "udpLvxIMU_1",
+		"_UDPlog": "udpLvxLog_1",
+		"/lvxSN": "47MDLC50020003",
+		"lvxIP": "192.168.1.200",
+		"tOutSec": 10,
+		"lvxPCLdataType": 1,
+		"lvxPatternMode": 0,
+		"lvxHostIP": "192.168.1.100",
+		"lvxHostPortState": 56201,
+		"lvxHostPortPCL": 56301,
+		"lvxHostPortIMU": 56401,
+		"lvxFrameRate": 3,
+		"lvxDetectMode": 1,
+		"lvxWorkModeAfterBoot": 1,
+		"lvxWorkMode": 1,
+		"lvxIMUdataEn": 0,
+		"nP": 256000,
+		"vToffset": [
+			0,
+			0,
+			0
+		],
+		"vRoffset": [
+			0,
+			0,
+			0
+		]
+	}
 }

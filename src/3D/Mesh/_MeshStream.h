@@ -25,8 +25,8 @@ namespace kai
         virtual int nP(void);
         virtual int iP(void);
 
-        virtual int addVertex(const Vector3d &vP, uint64_t tStamp = UINT64_MAX);
-        virtual int addTriangle(const vInt3& vVertices, uint64_t tStamp = UINT64_MAX);
+        virtual int addVertex(const Vector3d &vP, const uint64_t tStamp);
+        virtual int addTriangle(const vInt3& vVertices, const uint64_t tStamp);
 
         virtual void startStream(void);
         virtual void stopStream(void);

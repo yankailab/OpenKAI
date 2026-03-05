@@ -20,7 +20,6 @@
 #ifdef WITH_3D
 #include "../3D/Mesh/_MeshStream.h"
 #include "../3D/PointCloud/_PCstream.h"
-#include "../3D/PointCloud/_PCframe.h"
 #include "../3D/PointCloud/_PCgridBase.h"
 #include "../3D/PointCloud/_PCfile.h"
 #include "../3D/PointCloud/_PCmerge.h"
@@ -200,6 +199,7 @@
 #endif
 
 #ifdef WITH_SENSOR
+#include "../Sensor/_IMUbase.h"
 #include "../Sensor/Distance/_LeddarVu.h"
 #include "../Sensor/Distance/_TOFsense.h"
 #include "../Sensor/Distance/_BenewakeTF.h"

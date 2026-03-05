@@ -13,6 +13,7 @@
 		},
 		"vBASE": [
 			"Orbbec",
+			"/obIMU",
 			"fastLivo"
 		]
 	},
@@ -57,8 +58,8 @@
 			640,
 			480
 		],
-		"_PCframe": "pcFob",
-		"_SLAMbase": "fastLivo",
+		"_PCstream": "obPC",
+		"_IMUbase": "obIMU",
 		"SN": "",
 		"tOutMs": 1000,
 		"bRGB": true,
@@ -74,7 +75,11 @@
 		"thread": {
 			"FPS": 30
 		},
-		"bImg":false
+		"_IMUbase": "obIMU",
+		"_PCstream": "obPC",
+		"bImg":false,
+		"nPmax":100000,
+		"voxelLeafSize":2.0
 	},
 
 
@@ -86,15 +91,23 @@
 		},
 		"_RGBDbase": "Orbbec"
 	},
-	"pcFob": {
-		"class": "_PCframe",
+	"obPC": {
+		"class": "_PCstream",
 		"bON": true,
 		"bLog": true,
 		"thread": {
 			"FPS": 1
 		},
-		"nPresv":500000,
-		"nPresvNext":500000
+		"nP":1000000
+	},
+	"obIMU": {
+		"class": "_IMUbase",
+		"bON": true,
+		"thread": {
+			"FPS": 1
+		},
+		"nIMUdqMax": 1000,
+		"tIMUpairToleranceUs": 5000
 	},
 	"GViewer": {
 		"class": "_GeometryViewer",
@@ -178,7 +191,7 @@
 		"rVoxel": 0.05,
 		"geometry": [
 			{
-				"_GeometryBase": "pcFob",
+				"_GeometryBase": "obPC",
 				"bStatic": false,
 				"nP": 500000,
 				"rDummyDome": 1000.0,

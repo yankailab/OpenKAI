@@ -4,7 +4,6 @@
 #include "../_GeometryBase.h"
 #include "../../Filter/Median.h"
 #include "_PCstream.h"
-#include "_PCframe.h"
 
 namespace kai
 {
@@ -284,8 +283,7 @@ namespace kai
 		virtual void getActiveCellLines(LineSet *pLS, int cIdx);
 
 		// data
-		virtual void addPCstream(void *p, const uint64_t &tExpire);
-		virtual void addPCframe(void *p);
+		virtual void addPCstream(void *p, const uint64_t tExpire = 0);
 
 		// save/load
 

@@ -20,7 +20,7 @@ namespace kai
 
 	bool _PCfile::init(const json &j)
 	{
-		IF_F(!this->_PCframe::init(j));
+		IF_F(!this->_PCstream::init(j));
 
 		jKv(j, "vfName", m_vfName);
 		open();
@@ -58,17 +58,13 @@ namespace kai
 		{
 			m_pT->autoFPS();
 
-			POINT_CLOUD *pNext = m_sPC.next();
-			pNext->clear();
-
 			for (int i = 0; i < m_pcl.points_.size(); i++)
 			{
-				pNext->m_vP[i].m_vP = m_pcl.points_[i].cast<float>();
-				pNext->m_vP[i].m_vC = m_pcl.colors_[i].cast<float>();
-			}
+				add(m_pcl.points_[i],
+					m_pcl.colors_[i].cast<float>(),
+					0);
 
-//			pNext->Transform(m_mT);
-			swapBuffer();
+			}
 
 			writeSharedMem();
 		}

@@ -43,13 +43,13 @@ namespace kai
         string n;
 
         n = "";
-        jKv(j, "_PCframeSrc", n);
-        m_pSrc = (_PCframe *)(pM->findModule(n));
+        jKv(j, "_PCstreamSrc", n);
+        m_pSrc = (_PCstream *)(pM->findModule(n));
         IF_Le_F(!m_pSrc, n + ": not found");
 
         n = "";
-        jKv(j, "_PCframeTgt", n);
-        m_pTgt = (_PCframe *)(pM->findModule(n));
+        jKv(j, "_PCstreamTgt", n);
+        m_pTgt = (_PCstream *)(pM->findModule(n));
         IF_Le_F(!m_pTgt, n + ": not found");
 
         n = "";

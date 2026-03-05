@@ -31,7 +31,6 @@ namespace kai
 #ifdef WITH_3D
 		ADD_MODULE(_MeshStream);
 		ADD_MODULE(_PCstream);
-		ADD_MODULE(_PCframe);
 		ADD_MODULE(_PCgridBase);
 		ADD_MODULE(_PCfile);
 		ADD_MODULE(_PCmerge);
@@ -210,6 +209,7 @@ namespace kai
 #endif
 
 #ifdef WITH_SENSOR
+		ADD_MODULE(_IMUbase);
 		ADD_MODULE(_BenewakeTF);
 		ADD_MODULE(_TOFsense);
 		ADD_MODULE(_LeddarVu);

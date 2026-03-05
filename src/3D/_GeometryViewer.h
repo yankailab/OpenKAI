@@ -9,7 +9,6 @@
 #define OpenKAI_src_3D__GeometryViewer_H_
 
 #include "PointCloud/_PCstream.h"
-#include "PointCloud/_PCframe.h"
 #include "PointCloud/_PCgridBase.h"
 #include "../UI/O3DUI.h"
 
@@ -96,13 +95,6 @@ namespace kai
 				adjustNpoints(&m_PC, m_PC.points_.size(), m_nPbuf);
 				m_tPC = t::geometry::PointCloud::FromLegacy(m_PC, core::Dtype::Float32);
 			}
-			else if (gt == pc_frame)
-			{
-				_PCframe *pF = (_PCframe *)m_pGB;
-				pF->copyTo(&m_PC);
-				adjustNpoints(&m_PC, m_PC.points_.size(), m_nPbuf);
-				m_tPC = t::geometry::PointCloud::FromLegacy(m_PC, core::Dtype::Float32);
-			}
 			else if (gt == pc_grid)
 			{
 				_PCgridBase *p = (_PCgridBase *)m_pGB;
@@ -123,14 +115,10 @@ namespace kai
 			_PCstream *p = (_PCstream *)m_pGB;
 			m_PC.Clear();
 
-			uint64_t tNow = getApproxTbootUs();
 			for (int i = 0; i < p->nP(); i++)
 			{
 				GEOMETRY_POINT *pP = p->get(i);
-				if (tExpire)
-				{
-					IF_CONT(bExpired(pP->m_tStamp, tExpire, tNow));
-				}
+				IF_CONT(pP->m_tStamp < tExpire);
 
 				m_PC.points_.push_back(v2e(pP->m_vP).cast<double>());
 				m_PC.colors_.push_back(v2e(pP->m_vC).cast<double>());

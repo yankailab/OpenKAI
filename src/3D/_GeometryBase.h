@@ -26,7 +26,6 @@ namespace kai
     {
         geometry_unknown = -1,
         pc_stream = 0,
-        pc_frame = 1,
         pc_grid = 2,
         mesh_stream = 4,
     };
@@ -42,22 +41,6 @@ namespace kai
             m_vP = 0;
             m_vC = 0;
             m_tStamp = 0;
-        }
-    };
-
-    struct POINT_CLOUD
-    {
-        vector<GEOMETRY_POINT> m_vP;
-
-        void init(int nPresv)
-        {
-            if (nPresv > 0)
-                m_vP.reserve(nPresv);
-        }
-
-        void clear(void)
-        {
-            m_vP.clear();
         }
     };
 
@@ -90,9 +73,8 @@ namespace kai
         virtual vDouble3 getRotation(void);
         virtual vDouble4 getQuaternion(void);
 
-        virtual void addGeometry(void *p, const uint64_t &tExpire = 0);
-        virtual void addPCstream(void *p, const uint64_t &tExpire);
-        virtual void addPCframe(void *p);
+        virtual void addGeometry(void *p, const uint64_t tExpire = 0);
+        virtual void addPCstream(void *p, const uint64_t tExpire = 0);
         virtual void addPCgrid(void *p);
 
         virtual void writeSharedMem(void);

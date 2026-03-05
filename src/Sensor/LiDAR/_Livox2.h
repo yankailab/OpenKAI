@@ -10,6 +10,7 @@
 
 #include "../../IO/_UDP.h"
 #include "../../3D/PointCloud/_PCstream.h"
+#include "../../Sensor/_IMUbase.h"
 #include "../../Dependencies/SensorFusion/SensorFusion.h"
 #include "../../Dependencies/CRC.h"
 #include "../../Utility/util.h"
@@ -273,6 +274,8 @@ namespace kai
 		// lvx IMU
 		SF m_SF;
 		uint64_t m_tIMU;
+		_IMUbase* m_pIMU;
+
 	};
 
 }

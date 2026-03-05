@@ -12,6 +12,11 @@ namespace kai
 
 	_FastLivo2::_FastLivo2()
 	{
+		m_pPCstream = nullptr;
+		m_iP = 0;
+		m_nPmax = 100000;
+		m_tStampP = 1;
+
 		m_bImg = false;
 		m_vSizeImg.set(640, 480);
 
@@ -26,6 +31,8 @@ namespace kai
 	bool _FastLivo2::init(const json &j)
 	{
 		IF_F(!this->_SLAMbase::init(j));
+
+		jKv(j, "nPmax", m_nPmax);
 
 		jKv(j, "bImg", m_bImg);
 		jKv<int>(j, "vSizeImg", m_vSizeImg);
@@ -61,18 +68,26 @@ namespace kai
 
 	void _FastLivo2::reset(void)
 	{
-
 	}
 
 	bool _FastLivo2::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_SLAMbase::link(j, pM));
 
+		string n;
+
+		n = "";
+		jKv(j, "_PCstream", n);
+		m_pPCstream = (_PCstream *)(pM->findModule(n));
+
 		return true;
 	}
 
 	bool _FastLivo2::check(void)
 	{
+		NULL_F(m_pPCstream);
+		NULL_F(m_pIMU);
+
 		return this->_SLAMbase::check();
 	}
 
@@ -86,9 +101,7 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-//			m_pT->autoFPS();
-
-			m_pT->sleepT(0);
+			m_pT->autoFPS();
 
 			updateFastLivo2();
 		}
@@ -99,19 +112,52 @@ namespace kai
 		IF_(!check());
 
 		// IMU
-		Vector3d vG, vA;
+		vFloat3 vG, vA;
 		uint64_t tIMU;
-		while ((tIMU = this->getIMUpair(&vG, &vA)) > 0)
+		while ((tIMU = m_pIMU->getIMUpair(&vG, &vA)) > 0)
 		{
 			ImuSample imu;
-			imu.t = tIMU;
-			imu.acc = vA;
-			imu.gyro = vG;
+			imu.t = (double)tIMU * 1e-6;
+			imu.acc = v2e(vA).cast<double>();
+			imu.gyro = v2e(vG).cast<double>();
 			m_fastLivo.pushImu(imu);
 		}
 
 		// point cloud
-		m_fastLivo.pushLidar(m_LS);
+		LidarScan LS;
+		int nPring = m_pPCstream->nP();
+		int nP = 0;
+		GEOMETRY_POINT *pGp;
+
+		while (pGp = m_pPCstream->get(m_iP))
+		{
+			if (!pGp)
+				break;
+			if (pGp->m_tStamp < m_tStampP)
+				break;
+			if (nP >= m_nPmax)
+				break;
+
+			LidarPoint lp;
+			lp.x = pGp->m_vP.x;
+			lp.y = pGp->m_vP.y;
+			lp.z = pGp->m_vP.z;
+			lp.intensity = 1.0f;
+			lp.tag = 0;
+			lp.t = (double)pGp->m_tStamp * 1e-6;
+			LS.pts.push_back(lp);
+
+			m_tStampP = pGp->m_tStamp;
+			m_iP = iRing(m_iP, nPring);
+			nP++;
+		}
+
+		IF_(nP <= 0);
+		LS.t0 = LS.pts.front().t; // * 1e-6;
+		LS.t1 = LS.pts.back().t;  // scan.t0 + dTs;
+//		scan.pts.reserve(n);
+//		double dTp = dTs / n;
+		m_fastLivo.pushLidar(LS);
 
 		// image
 		if (m_bImg)
@@ -123,6 +169,7 @@ namespace kai
 		IF_(!m_fastLivo.spinOnce());
 
 		Pose pFL;
+		m_fastLivo.getPose(pFL);
 		m_vT.x = pFL.p[0];
 		m_vT.y = pFL.p[1];
 		m_vT.z = pFL.p[2];

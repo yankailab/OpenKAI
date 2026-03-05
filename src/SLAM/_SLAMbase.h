@@ -9,19 +9,10 @@
 #define OpenKAI_src_SLAM__SLAMbase_H_
 
 #include "../Navigation/_NavBase.h"
-
-#include <fastlivo2_core/FastLivo2Core.hpp>
-using namespace fastlivo2_core;
+#include "../Sensor/_IMUbase.h"
 
 namespace kai
 {
-	static inline double us_to_s(uint64_t us) { return double(us) * 1e-6; }
-
-	struct TimedVec3
-	{
-		uint64_t t_us;
-		Eigen::Vector3d v;
-	};
 
 	class _SLAMbase : public _NavBase
 	{
@@ -37,13 +28,6 @@ namespace kai
 
 		bool bTracking(void);
 
-		void pushGyro(uint64_t t_us, const Eigen::Vector3d &g);
-		void pushAcc(uint64_t t_us, const Eigen::Vector3d &a);
-		uint64_t getIMUpair(Vector3d* pGyro, Vector3d* pAcc);
-
-		void pushPointCloud(const LidarScan& ls);
-
-
 	private:
 		virtual void update(void);
 		static void *getUpdate(void *This)
@@ -53,14 +37,9 @@ namespace kai
 		}
 
 	protected:
+		_IMUbase* m_pIMU;
+
 		bool m_bTracking;
-
-		int m_nIMUdqMax;
-		uint64_t m_tIMUpairToleranceUs;
-		deque<TimedVec3> m_dqGyro;
-		deque<TimedVec3> m_dqAcc;
-
-		LidarScan m_LS;
 
 	};
 

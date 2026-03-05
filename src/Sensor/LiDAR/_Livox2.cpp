@@ -39,6 +39,7 @@ namespace kai
 
         // lvx IMU
         m_tIMU = 0;
+     	m_pIMU = nullptr;
     }
 
     _Livox2::~_Livox2()
@@ -156,6 +157,10 @@ namespace kai
         // jKv(j,"_IObaseLog",n);
         // m_pUDPlog = (_IObase *)(pM->findModule(n));
         // NULL_F(m_pUDPlog);
+
+   		n = "";
+		jKv(j, "_IMUbase", n);
+		m_pIMU = (_IMUbase *)(pM->findModule(n));
 
         return true;
     }

@@ -169,10 +169,6 @@ namespace kai
 				m_pWin->RemoveGeometry(pG->m_name);
 				m_pWin->AddPointCloud(pG->m_name, &pG->m_tPC, &pG->m_mat);
 				break;
-			case pc_frame:
-				m_pWin->RemoveGeometry(pG->m_name);
-				m_pWin->AddPointCloud(pG->m_name, &pG->m_tPC, &pG->m_mat);
-				break;
 			case pc_grid:
 				string n = (pG->m_bStatic) ? ("static" + pG->m_name) : ("dynamic" + pG->m_name + i2str(pG->m_iGridLS));
 				m_pWin->RemoveGeometry(n);
@@ -200,9 +196,6 @@ namespace kai
 			switch (gt)
 			{
 			case pc_stream:
-				m_pWin->UpdatePointCloud(pG->m_name, &pG->m_tPC);
-				break;
-			case pc_frame:
 				m_pWin->UpdatePointCloud(pG->m_name, &pG->m_tPC);
 				break;
 			case pc_grid:

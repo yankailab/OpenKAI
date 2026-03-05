@@ -15,7 +15,7 @@ namespace kai
         m_type = pc_stream;
 
         m_pP = nullptr;
-        m_nP = 256;
+        m_nP = 10000;
         m_iP = 0;
     }
 
@@ -83,8 +83,6 @@ namespace kai
 
     void _PCstream::update(void)
     {
-        //        sleep(1); // temporal, waiting for the data to be written into shared memory
-
         while (m_pT->bAlive())
         {
             m_pT->autoFPS();
@@ -97,8 +95,11 @@ namespace kai
     {
         IF_(!check());
 
-        readSharedMem();
-        writeSharedMem();
+        if (m_pSM)
+        {
+            readSharedMem();
+            writeSharedMem();
+        }
     }
 
     void _PCstream::addPCstream(void *p, uint64_t tExpire)
@@ -117,7 +118,7 @@ namespace kai
             IF_CONT(tExpire > 0 && bExpired(pP->m_tStamp, tExpire, tNow));
 
             m_pP[m_iP] = *pP;
-            m_iP = iInc(m_iP, m_nP);
+            m_iP = iRing(m_iP, m_nP);
         }
 
         mutexUnlock();
@@ -158,39 +159,11 @@ namespace kai
             }
 
             m_pP[m_iP] = p;
-            m_iP = iInc(m_iP, m_nP);
+            m_iP = iRing(m_iP, m_nP);
         }
     }
 
-    bool _PCstream::save2file(const string &fName)
-    {
-        IF_F(fName.empty());
-
-        PointCloud pc;
-        this->copyTo(&pc);
-
-        io::WritePointCloudOption par;
-        par.write_ascii = io::WritePointCloudOption::IsAscii::Binary;
-        par.compressed = io::WritePointCloudOption::Compressed::Uncompressed;
-
-        return io::WritePointCloudToPLY(fName.c_str(), pc, par);
-    }
-
-    void _PCstream::copyTo(POINT_CLOUD *pPC, uint64_t tExpire)
-    {
-        IF_(!check());
-        NULL_(pPC);
-
-        for (int i = 0; i < m_nP; i++)
-        {
-            GEOMETRY_POINT *pP = &m_pP[i];
-            IF_CONT(pP->m_tStamp < tExpire);
-
-            pPC->m_vP.push_back(*pP);
-        }
-    }
-
-    void _PCstream::copyTo(PointCloud *pPC, uint64_t tExpire)
+    void _PCstream::copyTo(PointCloud *pPC, const uint64_t tExpire)
     {
         IF_(!check());
         NULL_(pPC);
@@ -207,12 +180,19 @@ namespace kai
 
     void _PCstream::add(const Vector3d &vP, const Vector3f &vC, const uint64_t &tStamp)
     {
+        add(e2v((Vector3f)vP.cast<float>()),
+            e2v((Vector3f)vC.cast<float>()),
+            tStamp);
+    }
+
+    void _PCstream::add(const vFloat3 &vP, const vFloat3 &vC, const uint64_t &tStamp)
+    {
         GEOMETRY_POINT *pP = &m_pP[m_iP];
-        pP->m_vP = e2v((Vector3f)vP.cast<float>());
-        pP->m_vC = e2v((Vector3f)vC.cast<float>());
+        pP->m_vP = vP;
+        pP->m_vC = vC;
         pP->m_tStamp = tStamp;
 
-        m_iP = iInc(m_iP, m_nP);
+        m_iP = iRing(m_iP, m_nP);
     }
 
     GEOMETRY_POINT *_PCstream::get(int i)
@@ -230,6 +210,20 @@ namespace kai
     int _PCstream::iP(void)
     {
         return m_iP;
+    }
+
+    bool _PCstream::save2file(const string &fName)
+    {
+        IF_F(fName.empty());
+
+        PointCloud pc;
+        this->copyTo(&pc);
+
+        io::WritePointCloudOption par;
+        par.write_ascii = io::WritePointCloudOption::IsAscii::Binary;
+        par.compressed = io::WritePointCloudOption::Compressed::Uncompressed;
+
+        return io::WritePointCloudToPLY(fName.c_str(), pc, par);
     }
 
 }

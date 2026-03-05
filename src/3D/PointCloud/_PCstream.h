@@ -12,7 +12,7 @@
 
 namespace kai
 {
-    inline int iInc(int i, int n)
+    inline int iRing(int i, int n)
     {
         i++;
         if (i >= n)
@@ -42,9 +42,10 @@ namespace kai
         virtual bool save2file(const string &fName);
 
         // _PCstream
-        virtual void copyTo(POINT_CLOUD *pPC, uint64_t tExpire = UINT64_MAX);
-        virtual void copyTo(PointCloud *pPC, uint64_t tExpire = UINT64_MAX);
+        virtual void copyTo(PointCloud *pPC, const uint64_t tExpire = 0);
         virtual void add(const Vector3d &vP, const Vector3f &vC, const uint64_t &tStamp);
+        virtual void add(const vFloat3 &vP, const vFloat3 &vC, const uint64_t &tStamp);
+
         virtual GEOMETRY_POINT *get(int i);
         virtual int nP(void);
         virtual int iP(void);

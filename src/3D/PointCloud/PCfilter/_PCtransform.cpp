@@ -22,7 +22,7 @@ namespace kai
 
 	bool _PCtransform::init(const json &j)
 	{
-		IF_F(!this->_PCframe::init(j));
+		IF_F(!this->_PCstream::init(j));
 
 		// read from external json config file if there is one
 		jKv(j, "jsonCfgFile", m_jsonCfgFile);
@@ -50,7 +50,7 @@ namespace kai
 	{
 		//		NULL_F(m_pInCtx.m_pPCB);
 
-		return this->_PCframe::check();
+		return this->_PCstream::check();
 	}
 
 	void _PCtransform::update(void)
@@ -71,8 +71,6 @@ namespace kai
 
 		//TODO:
 		//		m_sPC.next()->Transform(m_mTt);
-
-		swapBuffer();
 	}
 
 	void _PCtransform::setTranslationMatrix(Matrix4d_u &mTt)
