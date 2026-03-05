@@ -119,6 +119,7 @@ namespace kai
 
 		m_spPipe->stop();
 		m_bOpen = false;
+
 	}
 
 	bool _Orbbec::start(void)
@@ -176,7 +177,7 @@ namespace kai
 			if (gf)
 			{
 				auto v = gf->value();
-				m_IMUpair.pushGyro(frameTsUs_(g), {v.x, v.y, v.z});
+				//				m_IMUpair.pushGyro(frameTsUs_(g), {v.x, v.y, v.z});
 			}
 		}
 
@@ -186,7 +187,7 @@ namespace kai
 			if (af)
 			{
 				auto v = af->value();
-				m_IMUpair.pushAcc(frameTsUs_(a), {v.x, v.y, v.z});
+				//				m_IMUpair.pushAcc(frameTsUs_(a), {v.x, v.y, v.z});
 			}
 		}
 		// Emit paired IMU samples into core (fast)
@@ -242,16 +243,19 @@ namespace kai
 
 #endif
 
-			//            updatePointCloud();
+#ifdef WITH_3D
+			updatePC();
+#endif
 		}
 	}
 
 #ifdef WITH_3D
-	int _Orbbec::getPointCloud(_PCframe *pPCframe, int nPmax)
+	void _Orbbec::updatePC(void)
 	{
-		NULL__(m_spFrame, -1);
-		NULL__(pPCframe, -1);
-		PointCloud *pPC = pPCframe->getNextBuffer();
+		NULL_(m_spFrame);
+		NULL_(m_pPCf);
+
+		PointCloud *pPC = m_pPCf->getNextBuffer();
 
 		const int n = int(m_spFrame->dataSize() / sizeof(OBPoint));
 		const OBPoint *pts = (const OBPoint *)m_spFrame->data();
@@ -259,6 +263,7 @@ namespace kai
 		const float s_b = 1.0 / 1000.0;
 		const float c_b = 1.0 / 255.0;
 
+		int nPmax = m_pPCf->nPmax();
 		int nPi = 0;
 		for (int i = 0; i < n; i++)
 		{
@@ -279,11 +284,11 @@ namespace kai
 			vC *= c_b;
 			pPC->colors_.push_back(vC);
 
-			nPi++;
-			IF__(nPi >= nPmax, nPi);
+			if (nPi++ >= nPmax)
+				break;
 		}
 
-		return nPi;
+		m_pPCf->swapBuffer();
 	}
 #endif
 
@@ -293,13 +298,6 @@ namespace kai
 		this->_RGBDbase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-
-		int nD = 3;
-		TimedVec3 vGyro = m_IMUpair.getGyro();
-		pC->addMsg("vGyro = (" + lf2str(vGyro.v[0], nD) + ", " + lf2str(vGyro.v[1], nD) + ", " + lf2str(vGyro.v[2], nD) + "), t=" + li2str(vGyro.t_us));
-
-		TimedVec3 vAcc = m_IMUpair.getAcc();
-		pC->addMsg("vAcc  = (" + lf2str(vAcc.v[0], nD) + ", " + lf2str(vAcc.v[1], nD) + ", " + lf2str(vAcc.v[2], nD) + "), t=" + li2str(vAcc.t_us));
 	}
 
 }

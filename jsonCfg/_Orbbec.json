@@ -56,6 +56,8 @@
 			640,
 			480
 		],
+		"_PCframe": "pcFob",
+		"_SLAMbase": "fastLivo2",
 		"SN": "",
 		"tOutMs": 1000,
 		"bRGB": true,
@@ -71,6 +73,16 @@
 			"FPS": 30
 		},
 		"_RGBDbase": "Orbbec"
+	},
+	"pcFob": {
+		"class": "_PCframe",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 1
+		},
+		"nPresv":500000,
+		"nPresvNext":500000
 	},
 	"GViewer": {
 		"class": "_GeometryViewer",
@@ -154,7 +166,7 @@
 		"rVoxel": 0.05,
 		"geometry": [
 			{
-				"_GeometryBase": "rgbd2pcf",
+				"_GeometryBase": "pcFob",
 				"bStatic": false,
 				"nP": 500000,
 				"rDummyDome": 1000.0,
@@ -170,14 +182,5 @@
 				"matLineWidth": 1
 			}
 		]
-	},
-	"rgbd2pcf": {
-		"class": "_RGBD2PCframe",
-		"bON": true,
-		"bLog": true,
-		"thread": {
-			"FPS": 10
-		},
-		"_RGBDbase": "Orbbec"
 	}
 }

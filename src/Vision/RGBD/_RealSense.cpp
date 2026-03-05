@@ -399,14 +399,16 @@ namespace kai
             // }
 #endif
 
-            updatePointCloud();
+#ifdef WITH_3D
+            updatePC();
+#endif
         }
     }
 
 #ifdef WITH_3D
-    int _RealSense::getPointCloud(_PCframe *pPCframe, int nPmax)
+    void _RealSense::updatePC(void)
     {
-        NULL__(pPCframe, -1);
+        NULL_(m_pPCf);
         PointCloud *pPC = pPCframe->getNextBuffer();
 
         m_rsPC.map_to(m_rsColor);
@@ -442,8 +444,6 @@ namespace kai
         // 	te *= c_b;
         // 	pPC->colors_.push_back(te);
         // }
-
-        return 0;
     }
 #endif
 

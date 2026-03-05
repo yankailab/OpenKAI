@@ -52,10 +52,6 @@ namespace kai
 		virtual bool open(void);
 		virtual void close(void);
 
-#ifdef WITH_3D
-		virtual int getPointCloud(_PCframe *pPCframe, int nPmax = INT_MAX);
-#endif
-
 		ScCtrl getCamCtrl(void);
 		bool setCamCtrl(const ScCtrl &camCtrl);
 		bool setToFexposureControlMode(bool bAuto);
@@ -70,6 +66,10 @@ namespace kai
 		bool setHDR(bool bON);
 
 	private:
+#ifdef WITH_3D
+		void updatePC(void);
+#endif
+
 		bool updateScRGBD(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)

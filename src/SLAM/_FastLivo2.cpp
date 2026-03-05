@@ -190,19 +190,7 @@ namespace kai
 		this->_SLAMbase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		string msg;
-		if (m_bTracking)
-		{
-			msg = "Tracking";
-		}
-		else
-		{
-			msg = "Tracking lost";
-		}
-		pC->addMsg(msg);
-
-		msg = "Global pos: x=" + f2str(m_vT.x) + ", y=" + f2str(m_vT.y) + ", z=" + f2str(m_vT.z);
-		pC->addMsg(msg);
+//		pC->addMsg("Global pos: x=" + f2str(m_vT.x) + ", y=" + f2str(m_vT.y) + ", z=" + f2str(m_vT.z));
 	}
 
 }

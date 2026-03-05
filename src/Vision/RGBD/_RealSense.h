@@ -8,8 +8,8 @@
 #ifndef OpenKAI_src_Vision_RGBD__RealSense_H_
 #define OpenKAI_src_Vision_RGBD__RealSense_H_
 
-#include "_RGBDbase.h"
 #include <librealsense2/rs.hpp>
+#include "_RGBDbase.h"
 
 namespace kai
 {
@@ -70,10 +70,6 @@ namespace kai
 		virtual bool open(void);
 		virtual void close(void);
 
-#ifdef WITH_3D
-		virtual int getPointCloud(_PCframe *pPCframe, int nPmax = INT_MAX);
-#endif
-
 		bool setSensorOption(const rs2::sensor &sensor, rs2_option option_type, float v);
 		bool setCsensorOption(rs2_option option_type, float v);
 		bool setDsensorOption(rs2_option option_type, float v);
@@ -92,6 +88,9 @@ namespace kai
 			return NULL;
 		}
 
+#ifdef WITH_3D
+		void updatePC(void);
+#endif
 		void updateTPP(void);
 		static void *getTPP(void *This)
 		{

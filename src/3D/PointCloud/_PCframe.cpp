@@ -33,6 +33,13 @@ namespace kai
         jKv(j, "nPresv", m_nPresv);
         jKv(j, "nPresvNext", m_nPresvNext);
 
+        return true;
+    }
+
+    bool _PCframe::link(const json &j, ModuleMgr *pM)
+    {
+        IF_F(!this->_GeometryBase::link(j, pM));
+
         return initGeometry();
     }
 
@@ -63,15 +70,18 @@ namespace kai
         m_sPC.next()->normals_.clear();
 
         // share mem
-        m_pGpSM = new GEOMETRY_POINT[m_nPresv];
-        if (!m_pGpSM)
+        if (m_pSM)
         {
-            mutexUnlock();
-            return false;
-        }
+            m_pGpSM = new GEOMETRY_POINT[m_nPresv];
+            if (!m_pGpSM)
+            {
+                mutexUnlock();
+                return false;
+            }
 
-        for (int i = 0; i < m_nPresv; i++)
-            m_pGpSM[i].clear();
+            for (int i = 0; i < m_nPresv; i++)
+                m_pGpSM[i].clear();
+        }
 
         mutexUnlock();
 
@@ -267,5 +277,10 @@ namespace kai
     int _PCframe::nPnext(void)
     {
         return m_sPC.next()->points_.size();
+    }
+
+    int _PCframe::nPmax(void)
+    {
+        return m_nPresv;
     }
 }

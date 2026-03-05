@@ -34,7 +34,6 @@ namespace kai
 		ADD_MODULE(_PCframe);
 		ADD_MODULE(_PCgridBase);
 		ADD_MODULE(_PCfile);
-		ADD_MODULE(_RGBD2PCframe);
 		ADD_MODULE(_PCmerge);
 		ADD_MODULE(_PCsend);
 		ADD_MODULE(_PCrecv);

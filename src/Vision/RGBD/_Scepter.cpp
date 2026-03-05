@@ -285,9 +285,9 @@ namespace kai
 	}
 
 #ifdef WITH_3D
-	int _Scepter::getPointCloud(_PCframe *pPCframe, int nPmax)
+	void _Scepter::updatePC(void)
 	{
-		NULL__(pPCframe, -1);
+		NULL_(m_pPCf);
 		PointCloud *pPC = pPCframe->getNextBuffer();
 
 		const static float s_b = 1.0 / 1000.0;
@@ -300,6 +300,7 @@ namespace kai
 
 		//		Eigen::Affine3d mA = m_A;
 
+		int nPmax = m_pPCf->nPmax();
 		int nPi = 0;
 		for (int i = 0; i < m_scfDepth.height; i++)
 		{
@@ -327,11 +328,15 @@ namespace kai
 				pPC->colors_.push_back(vC);
 
 				nPi++;
-				IF__(nPi >= nPmax, nPi);
+				if (nPi >= nPmax)
+					break;
 			}
+
+			if (nPi >= nPmax)
+				break;
 		}
 
-		return nPi;
+		m_pPCf->swapBuffer();
 	}
 #endif
 

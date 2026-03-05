@@ -37,6 +37,14 @@ namespace kai
 		m_minHistD = 0.25;
 		m_bDebugDepth = 0;
 #endif
+
+#ifdef WITH_3D
+		m_pPCf = nullptr;
+#endif
+
+#ifdef WITH_SLAM
+		m_pSlam = nullptr;
+#endif
 	}
 
 	_RGBDbase::~_RGBDbase()
@@ -78,6 +86,20 @@ namespace kai
 	bool _RGBDbase::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_VisionBase::link(j, pM));
+
+		string n;
+
+#ifdef WITH_3D
+		n = "";
+		jKv(j, "_PCframe", n);
+		m_pPCf = (_PCframe *)(pM->findModule(n));
+#endif
+
+#ifdef WITH_SLAM
+		n = "";
+		jKv(j, "_SLAMbase", n);
+		m_pSlam = (_SLAMbase *)(pM->findModule(n));
+#endif
 
 		return true;
 	}
@@ -198,12 +220,6 @@ namespace kai
 					Point(r.x + 15, r.y + 25),
 					FONT_HERSHEY_SIMPLEX, 0.6, Scalar(128, 128, 128), 2);
 		}
-	}
-#endif
-
-#ifdef WITH_3D
-	int _RGBDbase::getPointCloud(_PCframe *pPCframe, int nPmax)
-	{
 	}
 #endif
 

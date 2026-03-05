@@ -19,6 +19,10 @@
 #include "../../3D/PointCloud/_PCframe.h"
 #endif
 
+#ifdef WITH_SLAM
+#include "../../SLAM/_SLAMbase.h"
+#endif
+
 namespace kai
 {
 	class _RGBDbase : public _VisionBase
@@ -43,10 +47,6 @@ namespace kai
 		virtual float d(const vFloat4 &bb);
 #endif
 
-#ifdef WITH_3D
-		virtual int getPointCloud(_PCframe *pPCframe, int nPmax = INT_MAX);
-#endif
-
 	protected:
 		// post processing thread
 		_Thread *m_pTpp;
@@ -67,6 +67,7 @@ namespace kai
 		bool m_bPCd;	// Depth point cloud
 		bool m_bPCrgb;	// RGB point cloud
 
+
 #ifdef USE_OPENCV
 		Frame m_fDepth;
 		Frame m_fTfDepth;
@@ -81,6 +82,15 @@ namespace kai
 
 		bool m_bDebugDepth;
 #endif
+
+#ifdef WITH_3D
+		_PCframe* m_pPCf;
+#endif
+
+#ifdef WITH_SLAM
+		_SLAMbase* m_pSlam;
+#endif
+
 	};
 
 }

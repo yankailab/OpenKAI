@@ -21,6 +21,7 @@ namespace kai
 		// BASE
 		virtual bool init(const json &j);
         virtual bool start(void);
+		virtual bool link(const json& j, ModuleMgr* pM);
 		virtual bool check(void);
 
         // _GeometryBase
@@ -42,6 +43,7 @@ namespace kai
    		virtual void copyTo(PointCloud *pPC);
         virtual int nP(void);
         virtual int nPnext(void);
+        virtual int nPmax(void);
 
     private:
         void updatePCframe(void);
@@ -60,7 +62,6 @@ namespace kai
 		uint64_t m_tStamp;
 
         GEOMETRY_POINT *m_pGpSM;
-//        int m_nGpSM;
 	};
 
 }
