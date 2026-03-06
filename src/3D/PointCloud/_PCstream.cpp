@@ -212,7 +212,7 @@ namespace kai
         return m_iP;
     }
 
-    bool _PCstream::save2file(const string &fName)
+    bool _PCstream::saveFile(const string &fName)
     {
         IF_F(fName.empty());
 

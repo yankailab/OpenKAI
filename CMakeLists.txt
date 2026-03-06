@@ -380,7 +380,7 @@ endif()
 
 if(WITH_UI)
   add_definitions(-DWITH_UI)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/UI/_UIbase.cpp src/UI/_WSctrl.cpp)
+  set(OpenKAI_cpp ${OpenKAI_cpp} src/UI/_UIbase.cpp src/UI/_WSconsole.cpp)
   if(USE_OPENCV)
     set(OpenKAI_cpp ${OpenKAI_cpp} src/UI/_GstOutput.cpp)
     set(OpenKAI_cpp ${OpenKAI_cpp} src/UI/_WindowCV.cpp)

@@ -231,7 +231,7 @@
 #endif
 
 #ifdef WITH_UI
-#include "../UI/_WSctrl.h"
+#include "../UI/_WSconsole.h"
 #ifdef USE_OPENCV
 #include "../UI/_GstOutput.h"
 #include "../UI/_WindowCV.h"

@@ -1,23 +1,23 @@
 /*
- * _WSctrl.cpp
+ * _WSconsole.cpp
  *
  *  Created on: May 6, 2026
  *      Author: yankai
  */
 
-#include "_WSctrl.h"
+#include "_WSconsole.h"
 
 namespace kai
 {
-	_WSctrl::_WSctrl()
+	_WSconsole::_WSconsole()
 	{
 	}
 
-	_WSctrl::~_WSctrl()
+	_WSconsole::~_WSconsole()
 	{
 	}
 
-	bool _WSctrl::init(const json &j)
+	bool _WSconsole::init(const json &j)
 	{
 		IF_F(!this->_JSONbase::init(j));
 
@@ -26,7 +26,7 @@ namespace kai
 		return true;
 	}
 
-	bool _WSctrl::link(const json &j, ModuleMgr *pM)
+	bool _WSconsole::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_JSONbase::link(j, pM));
 
@@ -44,7 +44,7 @@ namespace kai
 		return true;
 	}
 
-	bool _WSctrl::start(void)
+	bool _WSconsole::start(void)
 	{
 		NULL_F(m_pT);
 		NULL_F(m_pTr);
@@ -55,12 +55,12 @@ namespace kai
 		return true;
 	}
 
-	bool _WSctrl::check(void)
+	bool _WSconsole::check(void)
 	{
 		return this->_JSONbase::check();
 	}
 
-	void _WSctrl::update(void)
+	void _WSconsole::update(void)
 	{
 		while (m_pT->bAlive())
 		{
@@ -70,7 +70,7 @@ namespace kai
 		}
 	}
 
-	void _WSctrl::send(void)
+	void _WSconsole::send(void)
 	{
 		IF_(!check());
 
@@ -80,7 +80,7 @@ namespace kai
 			sendHeartbeat();
 	}
 
-	void _WSctrl::sendHeartbeat(void)
+	void _WSconsole::sendHeartbeat(void)
 	{
 		IF_(!check());
 
@@ -90,12 +90,12 @@ namespace kai
 		bool r = sendJson(j);
 	}
 
-	void _WSctrl::sendConfig(void)
+	void _WSconsole::sendConfig(void)
 	{
 		IF_(!check());
 	}
 
-	void _WSctrl::updateR(void)
+	void _WSconsole::updateR(void)
 	{
 		string strR = "";
 
@@ -112,23 +112,37 @@ namespace kai
 		}
 	}
 
-	void _WSctrl::handleJson(const string &str)
+	void _WSconsole::handleJson(const string &str)
 	{
 		json j;
 		IF_(!str2JSON(str, j));
 
-		string cmd;
-		IF_(!jKv(j, "cmd", cmd));
+		string m;
+		IF_(!jKv(j, "module", m));
 
-		// if (cmd == "setPosSpd")
-		// 	onSetPosSpd(j);
-		// else if (cmd == "clearAlarm")
-		// 	onClearAlarm(j);
-		// else if (cmd == "initOrigin")
-		// 	onInitOrigin(j);
+		BASE *pB = findModule(m);
+		NULL_(pB);
+
+		json jOut = json::object();
+		if(pB->console(j, &jOut))
+		{
+			sendJson(jOut);
+		}
 	}
 
-	void _WSctrl::console(void *pConsole)
+	BASE *_WSconsole::findModule(const string &n)
+	{
+		for (BASE *pB : m_vpB)
+		{
+			IF_CONT(n != pB->getName());
+
+			return pB;
+		}
+
+		return nullptr;
+	}
+
+	void _WSconsole::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_JSONbase::console(pConsole);

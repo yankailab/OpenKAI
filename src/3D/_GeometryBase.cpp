@@ -293,7 +293,7 @@ namespace kai
     {
     }
 
-    bool _GeometryBase::save2file(const string &fName)
+    bool _GeometryBase::saveFile(const string &fName)
     {
         return false;
     }

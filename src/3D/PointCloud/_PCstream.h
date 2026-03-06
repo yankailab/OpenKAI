@@ -39,7 +39,7 @@ namespace kai
 
         virtual void writeSharedMem(void);
         virtual void readSharedMem(void);
-        virtual bool save2file(const string &fName);
+        virtual bool saveFile(const string &fName);
 
         // _PCstream
         virtual void copyTo(PointCloud *pPC, const uint64_t tExpire = 0);

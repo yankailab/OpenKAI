@@ -25,7 +25,8 @@
 		},
 		"bFullScreen": false,
 		"vBASE": [
-			"cam"
+			"/cam",
+			"uvc"
 		]
 	},
 	"cam": {
@@ -38,6 +39,25 @@
 		"vSizeRGB": [
 			640,
 			480
+		]
+	},
+	"uvc": {
+		"class": "_UVC",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"deviceID": 0,
+		"streamType": 2,
+		"vSizeRGB": [
+			640,
+			480
+		],
+		"vendorID": 11231,
+		"productID": 258,
+		"vRangeDraw": [
+			20,
+			40
 		]
 	},
 
@@ -57,7 +77,7 @@
 		"tOutMs": 10000
 	},
 	"wsCtrl": {
-		"class": "_WSctrl",
+		"class": "_WSconsole",
 		"bON": true,
 		"thread": {
 			"FPS": 1

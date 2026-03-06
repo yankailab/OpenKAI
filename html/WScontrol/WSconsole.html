@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <title>OpenKAI web console</title>
+  <!-- MDB icon -->
+  <link rel="icon" href="img/mdb-favicon.ico" type="image/x-icon" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" />
+  <!-- Google Fonts Roboto -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+  <!-- Dark MDB theme -->
+  <link rel="stylesheet" href="css/mdb.dark.min.css" />
+  <!-- Regular MDB theme -->
+  <!-- <link rel="stylesheet" href="css/mdb.min.css" /> -->
+
+</head>
+
+<body>
+
+  <!-- Start your project here-->
+  <section>
+    <div class="text-center">
+      <h5><strong id="state">State: </strong></h5>
+    </div>
+  </section>
+
+  <section>
+    <div class="text-center">
+      <strong id="msg"></strong>
+    </div>
+
+    <div class="form-outline" data-mdb-input-init>
+      <textarea class="form-control" id="txtMsg" rows="4"></textarea>
+    </div>
+  </section>
+
+  <hr>
+  <section>
+    <div class="text-center">
+      <h5><strong>LIVcalib</strong></h5>
+    </div>
+    <div class="text-center">
+      <button id="btnUpdate" style="WIDTH: 150px; HEIGHT: 50px" type="button" class="btn btn-primary">Update</button>
+      <button id="btnLoadCfg" style="WIDTH: 150px; HEIGHT: 50px" type="button" class="btn btn-primary">Load
+        config</button>
+      <button id="btnSaveCfg" style="WIDTH: 150px; HEIGHT: 50px" type="button" class="btn btn-primary">Save
+        config</button>
+      <button id="btnSavePly" style="WIDTH: 150px; HEIGHT: 50px" type="button" class="btn btn-primary">Save PLY</button>
+    </div>
+  </section>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">
+        </th>
+        <th scope="col">
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <th scope="row">
+          <p style="color:aqua;font-weight: bold;">LIV module</p>
+        </th>
+        <td><input id="mName" style="WIDTH: 300px; HEIGHT: 50px" value="LIVcalib">
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">
+          <p style="color:aqua;font-weight: bold;">Config file</p>
+        </th>
+        <td><input id="fNameCfg" style="WIDTH: 300px; HEIGHT: 50px" value="/home/kai/Documents/LIVcalib.json">
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">
+          <p style="color:aqua;font-weight: bold;">PLY file</p>
+        </th>
+        <td><input id="fNamePly" style="WIDTH: 300px; HEIGHT: 50px" value="/home/kai/Documents/LIVcloud.ply">
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <hr>
+  <section>
+    <div class="text-center">
+      <h5><strong>Camera</strong></h5>
+    </div>
+  </section>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">
+        </th>
+        <th scope="col">
+        </th>
+        <th scope="col">
+        </th>
+        <th scope="col">
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <th scope="row">
+          <p style="color:aqua;font-weight: bold;">C_focal</p>
+        </th>
+        <td>X <input id="Cfx" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+        </td>
+        <td>Y <input id="Cfy" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+        </td>
+        <td>
+        </td>
+      </tr>
+
+      <tr>
+        <th scope="row">
+          <p style="color:aqua;font-weight: bold;">C_center</p>
+        </th>
+        <td>X <input id="Ccx" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+        </td>
+        <td>Y <input id="Ccy" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+        </td>
+        <td>
+        </td>
+      </tr>
+
+      <tr>
+        <th scope="row">
+          <p style="color:aqua;font-weight: bold;">C_distortion</p>
+        </th>
+        <td>k1 <input id="Ck1" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+        </td>
+        <td>k2 <input id="Ck2" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+        </td>
+        <td>
+        </td>
+      </tr>
+
+      <tr>
+        <th scope="row">
+        </th>
+        <td>p1 <input id="Cp1" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+        </td>
+        <td>p2 <input id="Cp2" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+        </td>
+        <td>p3 <input id="Cp3" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+        </td>
+      </tr>
+
+      <tr>
+        <th scope="row">
+          <p style="color:aqua;font-weight: bold;">C_rot</p>
+        </th>
+        <td>X <input id="Crx" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+        </td>
+        <td>Y <input id="Cry" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+        </td>
+        <td>Z <input id="Crz" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+        </td>
+      </tr>
+
+      <tr>
+        <th scope="row">
+          <p style="color:aqua;font-weight: bold;">C_translation</p>
+        </th>
+        <td>X <input id="Ctx" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+        </td>
+        <td>Y <input id="Cty" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+        </td>
+        <td>Z <input id="Ctz" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+
+
+
+
+  <!--    <div id="map"></div> -->
+
+  <!-- End your project here-->
+
+  <!-- MDB -->
+  <script type="text/javascript" src="js/mdb.min.js"></script>
+  <!-- Custom scripts -->
+  <script type="text/javascript"></script>
+  <script src="js/wsUIbase.js"></script>
+  <script src="js/wsUIctrl.js"></script>
+</body>
+
+</html>

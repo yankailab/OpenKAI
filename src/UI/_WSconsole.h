@@ -1,23 +1,23 @@
 /*
- * _WSctrl.h
+ * _WSconsole.h
  *
  *  Created on: May 6, 2026
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_UI__WSctrl_H_
-#define OpenKAI_src_UI__WSctrl_H_
+#ifndef OpenKAI_src_UI__WSconsole_H_
+#define OpenKAI_src_UI__WSconsole_H_
 
 #include "../Protocol/_JSONbase.h"
 
 namespace kai
 {
 
-	class _WSctrl : public _JSONbase
+	class _WSconsole : public _JSONbase
 	{
 	public:
-		_WSctrl();
-		virtual ~_WSctrl();
+		_WSconsole();
+		virtual ~_WSconsole();
 
 		virtual bool init(const json &j);
 		virtual bool link(const json &j, ModuleMgr *pM);
@@ -36,7 +36,7 @@ namespace kai
 		void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_WSctrl *)This)->update();
+			((_WSconsole *)This)->update();
 			return NULL;
 		}
 
@@ -44,9 +44,11 @@ namespace kai
 		void updateR(void);
 		static void *getUpdateR(void *This)
 		{
-			((_WSctrl *)This)->updateR();
+			((_WSconsole *)This)->updateR();
 			return NULL;
 		}
+
+		BASE* findModule(const string& n);
 
 	protected:
 		vector<BASE *> m_vpB;

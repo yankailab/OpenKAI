@@ -32,7 +32,7 @@ namespace kai
 
 		jKv(j, "fName", m_fName);
 
-		if(!m_fName.empty())
+		if (!m_fName.empty())
 			loadConfig(m_fName);
 
 		return true;
@@ -270,4 +270,63 @@ namespace kai
 		string msg;
 		pC->addMsg(msg);
 	}
+
+	bool _LIVcalib::console(const json &j, json *pJout)
+	{
+		string cmd;
+		IF_F(!jKv(j, "cmd", cmd));
+
+		if (cmd == "setParams")
+		{
+			jKv<int>(j, "vCsize", m_vCsize);
+			jKv<double>(j, "vCf", m_vCf);
+			jKv<double>(j, "vCc", m_vCc);
+			jKv(j, "aCdistortion", m_aCdistortion);
+			jKv(j, "aCt", m_aCt);
+
+			vFloat3 vCr;
+			if (jKv<float>(j, "vCr", vCr))
+			{
+				// TODO
+			}
+		}
+		else if (cmd == "update")
+		{
+			NULL_F(pJout);
+
+			json &jr = (*pJout);
+			jr['cmd'] = "update";
+			jr["vCsize"] = {m_vCsize.x, m_vCsize.y};
+			jr["vCf"] = {m_vCf.x, m_vCf.y};
+			jr["vCc"] = {m_vCc.x, m_vCc.y};
+			jr["aCdistortion"] = m_aCdistortion;
+			jr["aCt"] = m_aCt;
+
+			// vFloat3 vCr;
+			// jr["vCr"] = {vCr, };
+
+			return true;
+		}
+		else if (cmd == "loadCfg")
+		{
+			string fCfg;
+			IF_F(!jKv(j, "fNameCfg", fCfg));
+			loadConfig(fCfg);
+		}
+		else if (cmd == "saveCfg")
+		{
+			string fCfg;
+			IF_F(!jKv(j, "fNameCfg", fCfg));
+			saveConfig(fCfg);
+		}
+		else if (cmd == "savePly")
+		{
+			string fPly;
+			IF_F(!jKv(j, "fNamePly", fPly));
+			saveFile(fPly);
+		}
+
+		return false;
+	}
+
 }

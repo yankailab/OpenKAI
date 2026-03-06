@@ -241,7 +241,7 @@ namespace kai
 #endif
 
 #ifdef WITH_UI
-		ADD_MODULE(_WSctrl);
+		ADD_MODULE(_WSconsole);
 #ifdef USE_OPENCV
 		ADD_MODULE(_GstOutput);
 		ADD_MODULE(_WindowCV);

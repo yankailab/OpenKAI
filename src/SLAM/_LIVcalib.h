@@ -26,6 +26,7 @@ namespace kai
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
+		virtual bool console(const json& j, json* pJout = nullptr);
 		//		virtual void draw(void *pFrame);
 
 		virtual bool loadConfig(const string& fName);
@@ -68,7 +69,8 @@ namespace kai
 		vInt2 m_vCsize;
 		vDouble2 m_vCf;		// focal
 		vDouble2 m_vCc;		// center
-		array<double, 5> m_aCdistortion = {0.0, 0.0, 0.0, 0.0, 0.0}; // k1,k2,p1,p2,k3
+		array<double, 5> m_aCdistortion = {0.0, 0.0, 0.0, 0.0, 0.0};
+		// k1,k2,p1,p2,k3
 
 		// extrinsics, Camera<-LiDAR: pCam = CLr * pLidar + CLt
 		array<double, 9> m_aCr = {1, 0, 0,

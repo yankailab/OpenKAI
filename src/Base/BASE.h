@@ -32,6 +32,7 @@ namespace kai
 
 		virtual void draw(void *pFrame);
 		virtual void console(void *pConsole);
+		virtual bool console(const json& j, json* pJout = nullptr);
 
 		void setName(const string& n);
 		string getName(void);

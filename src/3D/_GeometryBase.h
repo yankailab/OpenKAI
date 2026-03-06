@@ -80,7 +80,7 @@ namespace kai
         virtual void writeSharedMem(void);
         virtual void readSharedMem(void);
 
-        virtual bool save2file(const string &fName);
+        virtual bool saveFile(const string &fName);
 
         virtual string getConfigFileName(void);
         virtual bool loadConfig(const string &fName, json &j);
