@@ -85,15 +85,9 @@ namespace kai
         jKv(j, "lvxIMUdataEn", m_lvxCfg.m_imuDataEn);
 
         // Device Type Query
-        IF_Le_F(!j.contains("TdeviceQueryR"), "json: TdeviceQueryR not found");
         DEL(m_pTdeviceQueryR);
-        m_pTdeviceQueryR = new _Thread();
-        if (!m_pTdeviceQueryR->init(jK(j, "TdeviceQueryR")))
-        {
-            DEL(m_pTdeviceQueryR);
-            LOG_E("TdeviceQueryR.init() failed");
-            return false;
-        }
+        m_pTdeviceQueryR = createThread(jK(j, "TdeviceQueryR"), "TdeviceQueryR");
+        NULL_F(m_pTdeviceQueryR);
 
         // Control Command
         DEL(m_pTctrlCmdW);
@@ -248,6 +242,8 @@ namespace kai
         pDataRecv->frame_cnt = pB[9];
         pDataRecv->data_type = pB[10];
         pDataRecv->time_type = pB[11];
+        memcpy(pDataRecv->timestamp, &pB[28], 8);
+
         pDataRecv->crc32 = *((uint32_t *)&pB[24]);
         IF_F(nBr < pDataRecv->length);
 
@@ -697,19 +693,21 @@ namespace kai
 
     void _Livox2::handlePointCloudData(const LIVOX2_DATA &d)
     {
-        // uint64_t tStamp = *((uint64_t *)(pD->timestamp));
-        uint64_t tStamp = getTbootUs();
+        uint64_t tStamp = *((uint64_t *)(d.timestamp));
+//        uint64_t tStamp = getTbootUs();
 
         if (d.data_type == kLivoxLidarCartesianCoordinateHighData)
         {
             LivoxLidarCartesianHighRawPoint *pPd = (LivoxLidarCartesianHighRawPoint *)d.data;
+            uint64_t dT = d.time_interval * 100 / d.dot_num; // 0.1us -> ns
+
             for (uint32_t i = 0; i < d.dot_num; i++)
             {
                 LivoxLidarCartesianHighRawPoint *pP = &pPd[i];
                 Vector3d vP(pP->x, pP->y, pP->z);
                 vP *= 0.001;
-                vP = m_A * vP;
-                add(vP, Vector3f{m_vColorDefault.x, m_vColorDefault.y, m_vColorDefault.z}, tStamp);
+//                vP = m_A * vP;
+                add(vP, Vector3f{m_vColorDefault.x, m_vColorDefault.y, m_vColorDefault.z}, tStamp + (dT*i));
             }
         }
         else if (d.data_type == kLivoxLidarCartesianCoordinateLowData)
@@ -741,14 +739,24 @@ namespace kai
     {
         IF_(!m_lvxCfg.m_imuDataEn);
 
-        //        uint64_t tStamp = *((uint64_t *)d.timestamp);
-        uint64_t tStamp = getTbootNs();
+        LivoxLidarImuRawPoint *pIMU = (LivoxLidarImuRawPoint *)d.data;
+        uint64_t tStamp = *((uint64_t *)d.timestamp);
+//        uint64_t tStamp = getTbootNs();
         uint64_t dT = tStamp - m_tIMU;
         m_tIMU = tStamp;
         if (dT > USEC_1SEC * 1000)
             dT = 0;
 
-        LivoxLidarImuRawPoint *pIMU = (LivoxLidarImuRawPoint *)d.data;
+        if(m_pIMU)
+        {
+            vFloat3 vAcc;
+            vAcc.set(pIMU->acc_x, pIMU->acc_y, pIMU->acc_z);
+            m_pIMU->addAcc(tStamp, vAcc);
+
+            vFloat3 vGyro;
+            vGyro.set(pIMU->gyro_x, pIMU->gyro_y, pIMU->gyro_z);
+            m_pIMU->addGyro(tStamp, vGyro);
+        }
 
         m_SF.MahonyUpdate(
             // m_SF.MadgwickUpdate(

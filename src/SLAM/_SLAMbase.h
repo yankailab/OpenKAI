@@ -38,6 +38,8 @@ namespace kai
 
 	protected:
 		_IMUbase* m_pIMU;
+		double m_tScaleIMU;
+		double m_tScalePC;
 
 		bool m_bTracking;
 

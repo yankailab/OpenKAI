@@ -178,14 +178,14 @@ namespace kai
         }
     }
 
-    void _PCstream::add(const Vector3d &vP, const Vector3f &vC, const uint64_t &tStamp)
+    void _PCstream::add(const Vector3d &vP, const Vector3f &vC, uint64_t tStamp)
     {
         add(e2v((Vector3f)vP.cast<float>()),
             e2v((Vector3f)vC.cast<float>()),
             tStamp);
     }
 
-    void _PCstream::add(const vFloat3 &vP, const vFloat3 &vC, const uint64_t &tStamp)
+    void _PCstream::add(const vFloat3 &vP, const vFloat3 &vC, uint64_t tStamp)
     {
         GEOMETRY_POINT *pP = &m_pP[m_iP];
         pP->m_vP = vP;

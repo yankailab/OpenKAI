@@ -13,6 +13,8 @@ namespace kai
 	_SLAMbase::_SLAMbase()
 	{
 		m_pIMU = nullptr;
+		m_tScaleIMU = 1e-6;
+		m_tScalePC = 1e-6;
 
 		m_bTracking = false;
 	}
@@ -24,6 +26,9 @@ namespace kai
 	bool _SLAMbase::init(const json &j)
 	{
 		IF_F(!this->_NavBase::init(j));
+
+		jKv(j, "tScaleIMU", m_tScaleIMU);
+		jKv(j, "tScalePC", m_tScalePC);
 
 		return true;
 	}

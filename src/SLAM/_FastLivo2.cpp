@@ -12,7 +12,8 @@ namespace kai
 
 	_FastLivo2::_FastLivo2()
 	{
-		m_pPCstream = nullptr;
+		m_pPCin = nullptr;
+		m_pPCout = nullptr;
 		m_iP = 0;
 		m_nPmax = 100000;
 		m_tStampP = 1;
@@ -77,15 +78,19 @@ namespace kai
 		string n;
 
 		n = "";
-		jKv(j, "_PCstream", n);
-		m_pPCstream = (_PCstream *)(pM->findModule(n));
+		jKv(j, "_PCin", n);
+		m_pPCin = (_PCstream *)(pM->findModule(n));
+
+		n = "";
+		jKv(j, "_PCout", n);
+		m_pPCout = (_PCstream *)(pM->findModule(n));
 
 		return true;
 	}
 
 	bool _FastLivo2::check(void)
 	{
-		NULL_F(m_pPCstream);
+		NULL_F(m_pPCin);
 		NULL_F(m_pIMU);
 
 		return this->_SLAMbase::check();
@@ -103,13 +108,16 @@ namespace kai
 		{
 			m_pT->autoFPS();
 
-			updateFastLivo2();
+			if (updateFastLivo2())
+			{
+				updatePointCloud();
+			}
 		}
 	}
 
-	void _FastLivo2::updateFastLivo2(void)
+	bool _FastLivo2::updateFastLivo2(void)
 	{
-		IF_(!check());
+		IF_F(!check());
 
 		// IMU
 		vFloat3 vG, vA;
@@ -117,7 +125,7 @@ namespace kai
 		while ((tIMU = m_pIMU->getIMUpair(&vG, &vA)) > 0)
 		{
 			ImuSample imu;
-			imu.t = (double)tIMU * 1e-6;
+			imu.t = (double)tIMU * m_tScaleIMU;
 			imu.acc = v2e(vA).cast<double>();
 			imu.gyro = v2e(vG).cast<double>();
 			m_fastLivo.pushImu(imu);
@@ -125,11 +133,11 @@ namespace kai
 
 		// point cloud
 		LidarScan LS;
-		int nPring = m_pPCstream->nP();
+		int nPring = m_pPCin->nP();
 		int nP = 0;
 		GEOMETRY_POINT *pGp;
 
-		while (pGp = m_pPCstream->get(m_iP))
+		while (pGp = m_pPCin->get(m_iP))
 		{
 			if (!pGp)
 				break;
@@ -144,7 +152,7 @@ namespace kai
 			lp.z = pGp->m_vP.z;
 			lp.intensity = 1.0f;
 			lp.tag = 0;
-			lp.t = (double)pGp->m_tStamp * 1e-6;
+			lp.t = (double)pGp->m_tStamp * m_tScalePC;
 			LS.pts.push_back(lp);
 
 			m_tStampP = pGp->m_tStamp;
@@ -152,11 +160,11 @@ namespace kai
 			nP++;
 		}
 
-		IF_(nP <= 0);
-		LS.t0 = LS.pts.front().t; // * 1e-6;
-		LS.t1 = LS.pts.back().t;  // scan.t0 + dTs;
-//		scan.pts.reserve(n);
-//		double dTp = dTs / n;
+		IF_F(nP <= 0);
+		LS.t0 = LS.pts.front().t;
+		LS.t1 = LS.pts.back().t; // scan.t0 + dTs;
+								 //		scan.pts.reserve(n);
+								 //		double dTp = dTs / n;
 		m_fastLivo.pushLidar(LS);
 
 		// image
@@ -166,13 +174,44 @@ namespace kai
 			m_fastLivo.pushImage(fImg);
 		}
 
-		IF_(!m_fastLivo.spinOnce());
+		IF_F(!m_fastLivo.spinOnce());
 
 		Pose pFL;
 		m_fastLivo.getPose(pFL);
 		m_vT.x = pFL.p[0];
 		m_vT.y = pFL.p[1];
 		m_vT.z = pFL.p[2];
+
+		return true;
+	}
+
+	void _FastLivo2::updatePointCloud(void)
+	{
+		NULL_(m_pPCout);
+
+		pcl::PointCloud<pcl::PointXYZI>::Ptr pPC = m_fastLivo.getMap();
+		NULL_(pPC);
+		IF_(pPC->points.empty());
+
+		const pcl::PointXYZI *ptr = pPC->points.data();
+		const size_t n = pPC->points.size();
+		for (size_t i = 0; i < n; ++i)
+		{
+			const pcl::PointXYZI &p = ptr[i];
+			vFloat3 vP(p.x, p.y, p.z);
+			vFloat3 vC(p.intensity);
+			m_pPCout->add(vP, vC);
+		}
+
+		// vector<ColoredPoint> vCp = m_fastLivo.getColoredMap();
+		// for (int i = 0; i < vCp.size(); i++)
+		// {
+		// 	ColoredPoint *pCp = &vCp[i];
+		// 	vFloat3 vP(pCp->x, pCp->y, pCp->z);
+		// 	vFloat3 vC(pCp->r, pCp->g, pCp->b);
+
+		// 	m_pPCout->add(vP, vC);
+		// }
 	}
 
 	ImageFrame _FastLivo2::makeTestBGR(double t, int w, int h)

@@ -43,8 +43,8 @@ namespace kai
 
         // _PCstream
         virtual void copyTo(PointCloud *pPC, const uint64_t tExpire = 0);
-        virtual void add(const Vector3d &vP, const Vector3f &vC, const uint64_t &tStamp);
-        virtual void add(const vFloat3 &vP, const vFloat3 &vC, const uint64_t &tStamp);
+        virtual void add(const Vector3d &vP, const Vector3f &vC, uint64_t tStamp = 1);
+        virtual void add(const vFloat3 &vP, const vFloat3 &vC, uint64_t tStamp = 1);
 
         virtual GEOMETRY_POINT *get(int i);
         virtual int nP(void);

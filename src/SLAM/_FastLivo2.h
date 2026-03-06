@@ -45,7 +45,8 @@ namespace kai
 
 	private:
 		bool setup(void);
-		void updateFastLivo2(void);
+		void updatePointCloud(void);
+		bool updateFastLivo2(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -54,11 +55,13 @@ namespace kai
 		}
 
 	protected:
-		_PCstream* m_pPCstream;
+		_PCstream* m_pPCin;
+		_PCstream* m_pPCout;
 		int m_iP;
 		int m_nPmax;
 		uint64_t m_tStampP;
 
+		// core
 		FastLivo2Core m_fastLivo;
 
 		// config
@@ -77,7 +80,7 @@ namespace kai
 		array<double, 5> m_aDist  = {0.0, 0.0, 0.0, 0.0, 0.0}; // k1,k2,p1,p2,k3
 		// extrinsics, Camera<-LiDAR: pCam = CLr * pLidar + CLt
 		array<double, 9> m_aCLr = {1, 0, 0, 0, 1, 0, 0, 0, 1};
-		array<double, 3> m_aCLt = {0.05, 0.0, 0.0}; // example 5cm
+		array<double, 3> m_aCLt = {0.05, 0.0, 0.0}; // example 5c
 
 	};
 

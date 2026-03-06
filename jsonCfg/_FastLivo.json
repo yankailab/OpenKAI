@@ -14,7 +14,9 @@
 			"FPS": 10
 		},
 		"vBASE": [
-			"cam"
+			"Lvx1",
+			"lvIMU",
+			"fastLivo"
 		]
 	},
 	"view": {
@@ -45,19 +47,7 @@
 		]
 	},
 
-	"fastLivo": {
-		"class": "_FastLivo2",
-		"bON": true,
-		"thread": {
-			"FPS": 30
-		},
-		"_IMUbase": "obIMU",
-		"_PCstream": "obPC",
-		"bImg":false,
-		"nPmax":100000,
-		"voxelLeafSize":2.0
-	},
-	"obIMU": {
+	"lvIMU": {
 		"class": "_IMUbase",
 		"bON": true,
 		"thread": {
@@ -66,6 +56,31 @@
 		"nIMUdqMax": 1000,
 		"tIMUpairToleranceUs": 5000
 	},
+	"fastLivo": {
+		"class": "_FastLivo2",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"_IMUbase": "lvIMU",
+		"_PCin": "Lvx1",
+		"_PCout": "PCfl",
+		"bImg":false,
+		"nPmax":100000,
+		"tScaleIMU":0.000000001,
+		"tScalePC":0.000000001,
+		"voxelLeafSize":0.1
+	},
+	"PCfl": {
+		"class": "_PCstream",
+		"bON": true,
+		"bLog": false,
+		"thread": {
+			"FPS": 1
+		},
+		"nP":500000
+	},
+
 
 	"GViewer": {
 		"class": "_GeometryViewer",
@@ -149,7 +164,7 @@
 		"rVoxel": 0.05,
 		"geometry": [
 			{
-				"_GeometryBase": "Lvx1",
+				"_GeometryBase": "PCfl",
 				"bStatic": false,
 				"nP": 500000,
 				"rDummyDome": 1000.0,
@@ -176,7 +191,7 @@
 			"FPS": 1
 		},
 		"/addr": "255.255.255.255",
-		"addrRemote": "192.168.1.200",
+		"addrRemote": "192.168.1.120",
 		"portRemote": 56000,
 		"portLocal": 0,
 		"bW2R": 0,
@@ -188,7 +203,7 @@
 		"thread": {
 			"FPS": 10
 		},
-		"addrRemote": "192.168.1.200",
+		"addrRemote": "192.168.1.120",
 		"portRemote": 56100,
 		"portLocal": 56101,
 		"bW2R": 0,
@@ -200,7 +215,7 @@
 		"thread": {
 			"FPS": 1
 		},
-		"addrRemote": "192.168.1.200",
+		"addrRemote": "192.168.1.120",
 		"portRemote": 56200,
 		"portLocal": 56201,
 		"bW2R": 0,
@@ -213,7 +228,7 @@
 			"FPS": 1
 		},
 		"bLog": false,
-		"addrRemote": "192.168.1.200",
+		"addrRemote": "192.168.1.120",
 		"portRemote": 56300,
 		"portLocal": 56301,
 		"bW2R": 0,
@@ -226,7 +241,7 @@
 			"FPS": 1
 		},
 		"bLog": false,
-		"addrRemote": "192.168.1.200",
+		"addrRemote": "192.168.1.120",
 		"portRemote": 56400,
 		"portLocal": 56401,
 		"bW2R": 0,
@@ -241,7 +256,22 @@
 		"threadR": {
 			"FPS": 1
 		},
-		"threadCtrlCmdW": {
+		"TdeviceQueryR": {
+			"FPS": 1
+		},
+		"TctrlCmdW": {
+			"FPS": 1
+		},
+		"TctrlCmdR": {
+			"FPS": 1
+		},
+		"TpushCmdR": {
+			"FPS": 1
+		},
+		"TpclR": {
+			"FPS": 1
+		},
+		"TimuR": {
 			"FPS": 1
 		},
 		"bLog": false,
@@ -251,8 +281,9 @@
 		"_UDPpcl": "udpLvxPCL_1",
 		"_UDPimu": "udpLvxIMU_1",
 		"_UDPlog": "udpLvxLog_1",
+		"_IMUbase": "lvIMU",
 		"/lvxSN": "47MDLC50020003",
-		"lvxIP": "192.168.1.200",
+		"lvxIP": "192.168.1.120",
 		"tOutSec": 10,
 		"lvxPCLdataType": 1,
 		"lvxPatternMode": 0,
@@ -264,7 +295,7 @@
 		"lvxDetectMode": 1,
 		"lvxWorkModeAfterBoot": 1,
 		"lvxWorkMode": 1,
-		"lvxIMUdataEn": 0,
+		"lvxIMUdataEn": 1,
 		"nP": 256000,
 		"vToffset": [
 			0,
