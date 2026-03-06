@@ -212,6 +212,7 @@
 #ifdef WITH_SLAM &&WITH_NAVIGATION
 #ifdef USE_OPENCV
 #include "../SLAM/_SLAMbase.h"
+#include "../SLAM/_LIVcalib.h"
 #endif
 #ifdef USE_FASTLIVO
 #include "../SLAM/_FastLivo2.h"
@@ -230,6 +231,7 @@
 #endif
 
 #ifdef WITH_UI
+#include "../UI/_WSctrl.h"
 #ifdef USE_OPENCV
 #include "../UI/_GstOutput.h"
 #include "../UI/_WindowCV.h"

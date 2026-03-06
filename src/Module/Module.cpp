@@ -222,6 +222,7 @@ namespace kai
 #ifdef WITH_SLAM &&WITH_NAVIGATION
 #ifdef USE_OPENCV
 		ADD_MODULE(_SLAMbase);
+		ADD_MODULE(_LIVcalib);
 #endif
 #ifdef USE_FASTLIVO
 		ADD_MODULE(_FastLivo2);
@@ -240,6 +241,7 @@ namespace kai
 #endif
 
 #ifdef WITH_UI
+		ADD_MODULE(_WSctrl);
 #ifdef USE_OPENCV
 		ADD_MODULE(_GstOutput);
 		ADD_MODULE(_WindowCV);

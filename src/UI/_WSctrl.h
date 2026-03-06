@@ -1,0 +1,56 @@
+/*
+ * _WSctrl.h
+ *
+ *  Created on: May 6, 2026
+ *      Author: yankai
+ */
+
+#ifndef OpenKAI_src_UI__WSctrl_H_
+#define OpenKAI_src_UI__WSctrl_H_
+
+#include "../Protocol/_JSONbase.h"
+
+namespace kai
+{
+
+	class _WSctrl : public _JSONbase
+	{
+	public:
+		_WSctrl();
+		virtual ~_WSctrl();
+
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
+		virtual bool start(void);
+		virtual bool check(void);
+		virtual void console(void *pConsole);
+
+	protected:
+		void handleJson(const string &str);
+
+	private:
+		// main thread
+		void send(void);
+		void sendHeartbeat(void);
+		void sendConfig(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_WSctrl *)This)->update();
+			return NULL;
+		}
+
+		// UI handler
+		void updateR(void);
+		static void *getUpdateR(void *This)
+		{
+			((_WSctrl *)This)->updateR();
+			return NULL;
+		}
+
+	protected:
+		vector<BASE *> m_vpB;
+	};
+
+}
+#endif

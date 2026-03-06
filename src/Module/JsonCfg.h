@@ -116,8 +116,11 @@ namespace kai
 
 		string getJsonStr(void);
 		bool parseJsonStr(const string &s);
-
 		json& getJson(void);
+
+		void setJson(json& j);
+		void setNdumpSpace(int nD);
+
 		string getName(void);
 
 	protected:
@@ -126,6 +129,7 @@ namespace kai
 	protected:
 		string m_jsonStr;
 		json m_json;
+		int m_nDumpSpace;
 	};
 
 }

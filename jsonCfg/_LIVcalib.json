@@ -1,7 +1,7 @@
 {
 	"APP": {
 		"class": "ModuleMgr",
-		"appName": "FastLivo",
+		"appName": "LIVcalib",
 		"bLog": true,
 		"bStdErr": true
 	},
@@ -13,13 +13,13 @@
 		},
 		"vBASE": [
 			"Lvx1",
-			"lvIMU",
-			"fastLivo"
+			"IMUlv",
+			"LIVcalib"
 		]
 	},
 	"view": {
 		"class": "_WindowCV",
-		"bON": false,
+		"bON": true,
 		"thread": {
 			"FPS": 30
 		},
@@ -30,7 +30,7 @@
 	},
 	"cam": {
 		"class": "_Camera",
-		"bON": false,
+		"bON": true,
 		"thread": {
 			"FPS": 30
 		},
@@ -41,41 +41,49 @@
 		]
 	},
 
-	"lvIMU": {
-		"class": "_IMUbase",
+	"wsServer": {
+		"class": "_WebSocketServer",
+		"bON": true,
+		"bLog": 0,
+		"thread": {
+			"FPS": 10
+		},
+		"threadR": {
+			"FPS": 10
+		},
+		"wsMode": 2,
+		"host": "0.0.0.0",
+		"port": 7890,
+		"tOutMs": 10000
+	},
+	"wsCtrl": {
+		"class": "_WSctrl",
 		"bON": true,
 		"thread": {
 			"FPS": 1
 		},
-		"nIMUdqMax": 1000,
-		"tIMUpairToleranceUs": 5000
-	},
-	"fastLivo": {
-		"class": "_FastLivo2",
-		"bON": true,
-		"thread": {
-			"FPS": 30
+		"threadR": {
+			"FPS": 1
 		},
-		"_IMUbase": "lvIMU",
-		"_PCin": "Lvx1",
-		"_PCout": "PCfl",
-		"bImg":false,
-		"nPmax":100000,
-		"tScaleIMU":0.000000001,
-		"tScalePC":0.000000001,
-		"voxelLeafSize":0.1
+		"vBASE": [
+			"LIVcalib"
+		],
+		"msgFinishSend": "",
+		"msgFinishRecv": "EOJ",
+		"_IObase": "wsServer"
 	},
-	"PCfl": {
-		"class": "_PCstream",
+	"LIVcalib": {
+		"class": "_LIVcalib",
 		"bON": true,
 		"bLog": false,
 		"thread": {
-			"FPS": 1
+			"FPS": 10
 		},
-		"nP":500000
+		"nP": 500000,
+		"_PCin":"Lvx1",
+		"_VisionBase":"cam",
+		"_IMUbase":"IMUlv"
 	},
-
-
 	"GViewer": {
 		"class": "_GeometryViewer",
 		"bON": true,
@@ -158,12 +166,13 @@
 		"rVoxel": 0.05,
 		"geometry": [
 			{
-				"_GeometryBase": "PCfl",
+				"_GeometryBase": "LIVcalib",
+				"/_GeometryBase": "Lvx1",
 				"bStatic": false,
 				"nP": 500000,
 				"rDummyDome": 1000.0,
-				"matName": "depth",
-				"/matName": "default",
+				"/matName": "depth",
+				"matName": "default",
 				"/matCol": [
 					1,
 					1,
@@ -175,9 +184,6 @@
 			}
 		]
 	},
-
-
-
 	"udpLvxDeviceQuery_1": {
 		"class": "_UDP",
 		"bON": true,
@@ -275,7 +281,7 @@
 		"_UDPpcl": "udpLvxPCL_1",
 		"_UDPimu": "udpLvxIMU_1",
 		"_UDPlog": "udpLvxLog_1",
-		"_IMUbase": "lvIMU",
+		"_IMUbase": "IMUlv",
 		"/lvxSN": "47MDLC50020003",
 		"lvxIP": "192.168.1.120",
 		"tOutSec": 10,
@@ -301,5 +307,14 @@
 			0,
 			0
 		]
+	},
+	"IMUlv": {
+		"class": "_IMUbase",
+		"bON": true,
+		"thread": {
+			"FPS": 1
+		},
+		"nIMUdqMax": 1000,
+		"tIMUpairToleranceUs": 5000
 	}
 }

@@ -69,18 +69,18 @@ namespace kai
 
 		// point cloud
 		// extrinsics, IMU<-LiDAR: pImu = ILr * pLidar + ILt
-		array<double, 9> m_aILr = {1, 0, 0, 0, 1, 0, 0, 0, 1};
-		array<double, 3> m_aILt = {0, 0, 0};
+		array<double, 9> m_aIr = {1, 0, 0, 0, 1, 0, 0, 0, 1};
+		array<double, 3> m_aIt = {0, 0, 0};
 
 		// img
 		bool m_bImg;
-		vInt2 m_vSizeImg;
-		vDouble2 m_vF; // focal
-		vDouble2 m_vC; // center
-		array<double, 5> m_aDist  = {0.0, 0.0, 0.0, 0.0, 0.0}; // k1,k2,p1,p2,k3
+		vInt2 m_vCsize;
+		vDouble2 m_vCf; // focal
+		vDouble2 m_vCc; // center
+		array<double, 5> m_aCdistortion  = {0.0, 0.0, 0.0, 0.0, 0.0}; // k1,k2,p1,p2,k3
 		// extrinsics, Camera<-LiDAR: pCam = CLr * pLidar + CLt
-		array<double, 9> m_aCLr = {1, 0, 0, 0, 1, 0, 0, 0, 1};
-		array<double, 3> m_aCLt = {0.05, 0.0, 0.0}; // example 5c
+		array<double, 9> m_aCr = {1, 0, 0, 0, 1, 0, 0, 0, 1};
+		array<double, 3> m_aCt = {0.05, 0.0, 0.0}; // example 5c
 
 	};
 

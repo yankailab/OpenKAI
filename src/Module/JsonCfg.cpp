@@ -7,6 +7,7 @@ namespace kai
 	JsonCfg::JsonCfg(void)
 	{
 		m_jsonStr = "";
+		m_nDumpSpace = 4;
 	}
 
 	JsonCfg::~JsonCfg(void)
@@ -33,7 +34,13 @@ namespace kai
 
 	bool JsonCfg::saveToFile(const string &fName)
 	{
-		// TODO
+		m_jsonStr = m_json.dump(m_nDumpSpace);
+
+		if (!writeFile(fName, m_jsonStr))
+		{
+			LOG_E("Cannot write file: " + fName);
+			return false;
+		}
 
 		return true;
 	}
@@ -84,9 +91,20 @@ namespace kai
 		}
 	}
 
-	json& JsonCfg::getJson(void)
+	json &JsonCfg::getJson(void)
 	{
 		return m_json;
+	}
+
+	void JsonCfg::setJson(json &j)
+	{
+		m_json = j;
+	}
+
+	void JsonCfg::setNdumpSpace(int nD)
+	{
+		IF_(nD <= 0);
+		m_nDumpSpace = nD;
 	}
 
 	string JsonCfg::getName(void)
