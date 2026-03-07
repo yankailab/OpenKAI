@@ -220,13 +220,13 @@ namespace kai
 #endif // sensor
 
 #ifdef WITH_SLAM &&WITH_NAVIGATION
-#ifdef USE_OPENCV
 		ADD_MODULE(_SLAMbase);
+#ifdef USE_OPENCV
 		ADD_MODULE(_LIVcalib);
-#endif
 #ifdef USE_FASTLIVO
 		ADD_MODULE(_FastLivo2);
-#endif
+#endif // fastLivo
+#endif // OpenCV
 #endif
 
 #ifdef WITH_STATE
@@ -270,7 +270,7 @@ namespace kai
 #endif
 #ifdef USE_OPENCV
 		ADD_MODULE(_Camera);
-		ADD_MODULE(_UVC);
+		ADD_MODULE(_HiKthermal);
 		ADD_MODULE(_Contrast);
 		ADD_MODULE(_Crop);
 		ADD_MODULE(_ColorConvert);
@@ -290,6 +290,7 @@ namespace kai
 		ADD_MODULE(_Rotate);
 		ADD_MODULE(_SharedMemImg);
 		ADD_MODULE(_Threshold);
+		ADD_MODULE(_Thermal2RGB);
 		ADD_MODULE(_VideoFile);
 
 #ifdef USE_CUDA

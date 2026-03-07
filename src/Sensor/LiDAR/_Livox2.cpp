@@ -38,8 +38,9 @@ namespace kai
         m_lvxCfg.init();
 
         // lvx IMU
+        m_bIMUstab = false;
         m_tIMU = 0;
-     	m_pIMU = nullptr;
+        m_pIMU = nullptr;
     }
 
     _Livox2::~_Livox2()
@@ -83,6 +84,8 @@ namespace kai
         jKv(j, "lvxWorkModeAfterBoot", m_lvxCfg.m_workModeAfterBoot);
         jKv(j, "lvxWorkMode", m_lvxCfg.m_workMode);
         jKv(j, "lvxIMUdataEn", m_lvxCfg.m_imuDataEn);
+
+        jKv(j, "bIMUstab", m_bIMUstab);
 
         // Device Type Query
         DEL(m_pTdeviceQueryR);
@@ -152,9 +155,9 @@ namespace kai
         // m_pUDPlog = (_IObase *)(pM->findModule(n));
         // NULL_F(m_pUDPlog);
 
-   		n = "";
-		jKv(j, "_IMUbase", n);
-		m_pIMU = (_IMUbase *)(pM->findModule(n));
+        n = "";
+        jKv(j, "_IMUbase", n);
+        m_pIMU = (_IMUbase *)(pM->findModule(n));
 
         return true;
     }
@@ -694,7 +697,7 @@ namespace kai
     void _Livox2::handlePointCloudData(const LIVOX2_DATA &d)
     {
         uint64_t tStamp = *((uint64_t *)(d.timestamp));
-//        uint64_t tStamp = getTbootUs();
+        //        uint64_t tStamp = getTbootUs();
 
         if (d.data_type == kLivoxLidarCartesianCoordinateHighData)
         {
@@ -706,8 +709,11 @@ namespace kai
                 LivoxLidarCartesianHighRawPoint *pP = &pPd[i];
                 Vector3d vP(pP->x, pP->y, pP->z);
                 vP *= 0.001;
-//                vP = m_A * vP;
-                add(vP, Vector3f{m_vColorDefault.x, m_vColorDefault.y, m_vColorDefault.z}, tStamp + (dT*i));
+                if (m_bIMUstab)
+                {
+                    vP = m_A * vP;
+                }
+                add(vP, Vector3f{m_vColorDefault.x, m_vColorDefault.y, m_vColorDefault.z}, tStamp + (dT * i));
             }
         }
         else if (d.data_type == kLivoxLidarCartesianCoordinateLowData)
@@ -741,13 +747,9 @@ namespace kai
 
         LivoxLidarImuRawPoint *pIMU = (LivoxLidarImuRawPoint *)d.data;
         uint64_t tStamp = *((uint64_t *)d.timestamp);
-//        uint64_t tStamp = getTbootNs();
-        uint64_t dT = tStamp - m_tIMU;
-        m_tIMU = tStamp;
-        if (dT > USEC_1SEC * 1000)
-            dT = 0;
+        //        uint64_t tStamp = getTbootNs();
 
-        if(m_pIMU)
+        if (m_pIMU)
         {
             vFloat3 vAcc;
             vAcc.set(pIMU->acc_x, pIMU->acc_y, pIMU->acc_z);
@@ -757,6 +759,13 @@ namespace kai
             vGyro.set(pIMU->gyro_x, pIMU->gyro_y, pIMU->gyro_z);
             m_pIMU->addGyro(tStamp, vGyro);
         }
+
+        IF_(!m_bIMUstab);
+
+        uint64_t dT = tStamp - m_tIMU;
+        m_tIMU = tStamp;
+        if (dT > USEC_1SEC * 1000)
+            dT = 0;
 
         m_SF.MahonyUpdate(
             // m_SF.MadgwickUpdate(

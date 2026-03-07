@@ -45,7 +45,8 @@ namespace kai
 		vision_SharedMemImg,
 		vision_BGR2HSV,
 		vision_depth2Gray,
-		vision_D2RGB
+		vision_D2RGB,
+		vision_thermal2RGB
 	};
 
 	class _VisionBase : public _ModuleBase

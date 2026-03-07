@@ -82,7 +82,7 @@ namespace kai
 
 	bool _LIVcalib::saveConfig(const string &fName)
 	{
-		json j;
+		json j = json::object();
 		j["vCsize"] = {m_vCsize.x, m_vCsize.y};
 		j["vCf"] = {m_vCf.x, m_vCf.y};
 		j["vCc"] = {m_vCc.x, m_vCc.y};
@@ -134,15 +134,9 @@ namespace kai
 
 		Mat mIn = *pF->m();
 		IF_(mIn.empty());
+		IF_(mIn.channels() != 3)
 
-		Mat mImg;
-		if (mIn.channels() == 3)
-			mImg = mIn;
-		else if (mIn.channels() == 1)
-			cvtColor(mIn, mImg, cv::COLOR_GRAY2BGR);
-
-		m_vCsize.set(mImg.cols, mImg.rows);
-		const float cNorm = 1.0 / 255.0;
+		m_vCsize.set(mIn.cols, mIn.rows);
 		int nPring = m_pPCin->nP();
 		int iP = 0;
 		GEOMETRY_POINT *pGp;
@@ -151,13 +145,14 @@ namespace kai
 		{
 			NULL_(pGp);
 
-			vFloat3 vP = pGp->m_vP;
+			vFloat3 vPin = pGp->m_vP;
+			vFloat3 vP(-vPin.y, -vPin.z, vPin.x); // mid360 to cam
 			vInt2 vPimg;
 			IF_CONT(!pt2Pix(m_vCsize, vP, vPimg));
 
-			Vec3b vCol = mImg.at<Vec3b>(vPimg.y, vPimg.x);
+			Vec3b vCol = mIn.at<Vec3b>(vPimg.y, vPimg.x);
 			vFloat3 vC(vCol[2], vCol[1], vCol[0]);
-			vC *= cNorm;
+			vC *= 1.0 / 255.0;
 
 			add(vP, vC);
 		}
@@ -199,10 +194,12 @@ namespace kai
 		const double u = m_vCf.x * xDist + m_vCc.x;
 		const double v = m_vCf.y * yDist + m_vCc.y;
 
-		IF_F(u < 0.0 || u >= vSizeImg.x);
-		IF_F(v < 0.0 || v >= vSizeImg.y);
+		int px = round(u);
+		int py = round(v);
+		IF_F(px < 0 || px >= vSizeImg.x);
+		IF_F(py < 0 || py >= vSizeImg.y);
 
-		vPo.set(round(u), round(v));
+		vPo.set(px, py);
 
 		return true;
 	}
@@ -295,7 +292,7 @@ namespace kai
 			NULL_F(pJout);
 
 			json &jr = (*pJout);
-			jr['cmd'] = "update";
+			jr["cmd"] = "update";
 			jr["vCsize"] = {m_vCsize.x, m_vCsize.y};
 			jr["vCf"] = {m_vCf.x, m_vCf.y};
 			jr["vCc"] = {m_vCc.x, m_vCc.y};
@@ -311,19 +308,59 @@ namespace kai
 		{
 			string fCfg;
 			IF_F(!jKv(j, "fNameCfg", fCfg));
-			loadConfig(fCfg);
+
+			bool bR = loadConfig(fCfg);
+
+			if (pJout)
+			{
+				json &jr = (*pJout);
+				if (bR)
+				{
+					jr["cmd"] = "update";
+					jr["vCsize"] = {m_vCsize.x, m_vCsize.y};
+					jr["vCf"] = {m_vCf.x, m_vCf.y};
+					jr["vCc"] = {m_vCc.x, m_vCc.y};
+					jr["aCdistortion"] = m_aCdistortion;
+					jr["aCt"] = m_aCt;
+				}
+				else
+				{
+					jr["cmd"] = "loadCfg";
+					jr["bSuccess"] = bR;
+				}
+
+				return true;
+			}
 		}
 		else if (cmd == "saveCfg")
 		{
 			string fCfg;
 			IF_F(!jKv(j, "fNameCfg", fCfg));
-			saveConfig(fCfg);
+
+			bool bR = saveConfig(fCfg);
+
+			if (pJout)
+			{
+				json &jr = (*pJout);
+				jr["cmd"] = "saveCfg";
+				jr["bSuccess"] = bR;
+				return true;
+			}
 		}
 		else if (cmd == "savePly")
 		{
 			string fPly;
 			IF_F(!jKv(j, "fNamePly", fPly));
-			saveFile(fPly);
+
+			bool bR = saveFile(fPly);
+
+			if (pJout)
+			{
+				json &jr = (*pJout);
+				jr["cmd"] = "savePly";
+				jr["bSuccess"] = bR;
+				return true;
+			}
 		}
 
 		return false;

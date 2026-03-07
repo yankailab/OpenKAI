@@ -100,13 +100,6 @@ namespace kai
 
 		Frame *pF = (Frame *)pFrame;
 		pF->copy(m_fRGB);
-
-		// Mat *pM = pF->m();
-		// IF_(pM->empty());
-		// Rect r = bb2Rect(bbScale(m_bbDraw, pM->cols, pM->rows));
-		// Mat m;
-		// cv::resize(*m_fRGB.m(), m, Size(r.width, r.height));
-		// m.copyTo((*pM)(r));
 	}
 #endif
 

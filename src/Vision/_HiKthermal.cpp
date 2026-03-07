@@ -1,16 +1,16 @@
 /*
- * _UVC.cpp
+ * _HiKthermal.cpp
  *
  *  Created on: Feb 15, 2025
  *      Author: yankai
  */
 
-#include "_UVC.h"
+#include "_HiKthermal.h"
 
 namespace kai
 {
 
-	_UVC::_UVC()
+	_HiKthermal::_HiKthermal()
 	{
 		m_type = vision_uvc;
 
@@ -26,16 +26,14 @@ namespace kai
 		m_vendorID = 0;
 		m_productID = 0;
 		m_SN = "";
-
-		m_vRangeDraw.set(0, 100);
 	}
 
-	_UVC::~_UVC()
+	_HiKthermal::~_HiKthermal()
 	{
 		close();
 	}
 
-	bool _UVC::init(const json &j)
+	bool _HiKthermal::init(const json &j)
 	{
 		IF_F(!_VisionBase::init(j));
 
@@ -43,12 +41,11 @@ namespace kai
 		jKv(j, "vendorID", m_vendorID);
 		jKv(j, "productID", m_productID);
 		jKv(j, "SN", m_SN);
-		jKv<float>(j, "vRangeDraw", m_vRangeDraw);
 
 		return true;
 	}
 
-	bool _UVC::open(void)
+	bool _HiKthermal::open(void)
 	{
 		IF_F(!check());
 		IF__(m_bOpen, true);
@@ -71,7 +68,7 @@ namespace kai
 		return true;
 	}
 
-	void _UVC::close(void)
+	void _HiKthermal::close(void)
 	{
 		this->_VisionBase::close();
 
@@ -79,7 +76,7 @@ namespace kai
 		UVCclose();
 	}
 
-	bool _UVC::UVCopen(void)
+	bool _HiKthermal::UVCopen(void)
 	{
 		uvc_error_t r;
 
@@ -120,14 +117,28 @@ namespace kai
 		return true;
 	}
 
-	void _UVC::UVCclose(void)
+	void _HiKthermal::UVCclose(void)
 	{
-		uvc_close(m_pHandleDev);
-		uvc_unref_device(m_pDev);
-		uvc_exit(m_pCtx);
+		if (m_pHandleDev)
+		{
+			uvc_close(m_pHandleDev);
+			m_pHandleDev = nullptr;
+		}
+
+		if (m_pDev)
+		{
+			uvc_unref_device(m_pDev);
+			m_pDev = nullptr;
+		}
+
+		if (m_pCtx)
+		{
+			uvc_exit(m_pCtx);
+			m_pCtx = nullptr;
+		}
 	}
 
-	bool _UVC::UVCsetVideoMode(void)
+	bool _HiKthermal::UVCsetVideoMode(void)
 	{
 		int height = 0;
 
@@ -174,7 +185,7 @@ namespace kai
 		return true;
 	}
 
-	bool _UVC::UVCstreamStart(void)
+	bool _HiKthermal::UVCstreamStart(void)
 	{
 		uvc_error_t r;
 
@@ -199,7 +210,7 @@ namespace kai
 		return true;
 	}
 
-	void _UVC::UVCstreamClose(void)
+	void _HiKthermal::UVCstreamClose(void)
 	{
 		IF_(!m_pHandleStream);
 
@@ -207,12 +218,12 @@ namespace kai
 		m_pHandleStream = nullptr;
 	}
 
-	void _UVC::cbGetFrame(uvc_frame *pFrame)
+	void _HiKthermal::cbGetFrame(uvc_frame *pFrame)
 	{
 		NULL_(pFrame);
 	}
 
-	void _UVC::UVCstreamGetFrame(unsigned int tOut)
+	void _HiKthermal::UVCstreamGetFrame(unsigned int tOut)
 	{
 		uvc_error_t r;
 
@@ -220,13 +231,13 @@ namespace kai
 		r = uvc_stream_get_frame(m_pHandleStream, &m_pUVCframe, tOut);
 	}
 
-	bool _UVC::start(void)
+	bool _HiKthermal::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->start(getUpdate, this);
 	}
 
-	void _UVC::update(void)
+	void _HiKthermal::update(void)
 	{
 		while (m_pT->bAlive())
 		{
@@ -274,15 +285,15 @@ namespace kai
 		}
 	}
 
-	int _UVC::USBctrlTransfer(unsigned char bmRequestType, unsigned char bRequest,
-							  unsigned short wValue, unsigned short wIndex,
-							  unsigned char *data, uint16_t wLength, unsigned int timeout)
+	int _HiKthermal::USBctrlTransfer(unsigned char bmRequestType, unsigned char bRequest,
+									 unsigned short wValue, unsigned short wIndex,
+									 unsigned char *data, uint16_t wLength, unsigned int timeout)
 	{
 		return libusb_control_transfer(uvc_get_libusb_handle(m_pHandleDev), bmRequestType, bRequest, wValue, wIndex,
 									   data, wLength, timeout);
 	}
 
-	int _UVC::USBgetLen(unsigned short wValue)
+	int _HiKthermal::USBgetLen(unsigned short wValue)
 	{
 		int r;
 		unsigned char pData[2];
@@ -294,7 +305,7 @@ namespace kai
 		return -1;
 	}
 
-	int _UVC::USBgetCur(unsigned short wValue, unsigned char *pData, unsigned short len)
+	int _HiKthermal::USBgetCur(unsigned short wValue, unsigned char *pData, unsigned short len)
 	{
 		int r, c = 0;
 
@@ -304,7 +315,7 @@ namespace kai
 		return -1;
 	}
 
-	int _UVC::USBgetErrno(void)
+	int _HiKthermal::USBgetErrno(void)
 	{
 		int len;
 		unsigned char pData[4];
@@ -319,7 +330,7 @@ namespace kai
 		return (int)pData[0];
 	}
 
-	int _UVC::USBsetCur(unsigned short wValue, unsigned char *pData, unsigned short len)
+	int _HiKthermal::USBsetCur(unsigned short wValue, unsigned char *pData, unsigned short len)
 	{
 		int r, c = 0;
 
@@ -329,7 +340,7 @@ namespace kai
 		return -1;
 	}
 
-	bool _UVC::USBsetCurFunc(unsigned short csID, unsigned char subID)
+	bool _HiKthermal::USBsetCurFunc(unsigned short csID, unsigned char subID)
 	{
 		int len;
 
@@ -345,7 +356,7 @@ namespace kai
 		return true;
 	}
 
-	int _UVC::USBsetCurData(unsigned short csID, unsigned char *pB)
+	int _HiKthermal::USBsetCurData(unsigned short csID, unsigned char *pB)
 	{
 		int len;
 
@@ -357,7 +368,7 @@ namespace kai
 		return len;
 	}
 
-	int _UVC::USBgetCurData(unsigned short csID, unsigned char *pB)
+	int _HiKthermal::USBgetCurData(unsigned short csID, unsigned char *pB)
 	{
 		int len;
 
@@ -369,7 +380,7 @@ namespace kai
 		return len;
 	}
 
-	bool _UVC::getProtocolVersion(void)
+	bool _HiKthermal::getProtocolVersion(void)
 	{
 		int len;
 		unsigned char pData[4];
@@ -383,7 +394,7 @@ namespace kai
 		return true;
 	}
 
-	bool _UVC::setStreamType(unsigned char type)
+	bool _HiKthermal::setStreamType(unsigned char type)
 	{
 		unsigned char pData[1600] = {0};
 
@@ -405,7 +416,7 @@ namespace kai
 		return false;
 	}
 
-	bool _UVC::getDeviceInfo(void)
+	bool _HiKthermal::getDeviceInfo(void)
 	{
 		unsigned char pB[1600];
 
@@ -433,27 +444,6 @@ namespace kai
 		printf("FW ver = %u\n", fwVer);
 
 		return true;
-	}
-
-	void _UVC::draw(void *pFrame)
-	{
-		NULL_(pFrame);
-		this->_ModuleBase::draw(pFrame);
-		IF_(!check());
-		IF_(m_fRGB.bEmpty());
-
-		Frame *pF = (Frame *)pFrame;
-		Mat mT = *m_fRGB.m();
-
-		Mat mG;
-		float range = m_vRangeDraw.len();
-		float scale = 255.0 / range;
-		mT.convertTo(mG,
-					 CV_8UC1,
-					 scale,
-					 -m_vRangeDraw.x * scale);
-
-		pF->copy(mG);
 	}
 
 }

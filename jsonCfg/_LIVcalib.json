@@ -26,12 +26,13 @@
 		"bFullScreen": false,
 		"vBASE": [
 			"/cam",
-			"uvc"
+			"/HiK",
+			"thermalRGB"
 		]
 	},
 	"cam": {
 		"class": "_Camera",
-		"bON": true,
+		"bON": false,
 		"thread": {
 			"FPS": 30
 		},
@@ -41,8 +42,8 @@
 			480
 		]
 	},
-	"uvc": {
-		"class": "_UVC",
+	"HiK": {
+		"class": "_HiKthermal",
 		"bON": true,
 		"thread": {
 			"FPS": 30
@@ -54,9 +55,17 @@
 			480
 		],
 		"vendorID": 11231,
-		"productID": 258,
-		"vRangeDraw": [
-			20,
+		"productID": 258
+	},
+	"thermalRGB": {
+		"class": "_Thermal2RGB",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"_VisionBase": "HiK",
+		"vTrange": [
+			10,
 			40
 		]
 	},
@@ -99,9 +108,10 @@
 		"thread": {
 			"FPS": 10
 		},
-		"nP": 500000,
+		"nP": 256000,
 		"_PCin":"Lvx1",
-		"_VisionBase":"cam",
+		"/_VisionBase":"cam",
+		"_VisionBase":"thermalRGB",
 		"_IMUbase":"IMUlv"
 	},
 	"GViewer": {
@@ -189,7 +199,7 @@
 				"_GeometryBase": "LIVcalib",
 				"/_GeometryBase": "Lvx1",
 				"bStatic": false,
-				"nP": 500000,
+				"nP": 256000,
 				"rDummyDome": 1000.0,
 				"/matName": "depth",
 				"matName": "default",
@@ -316,6 +326,7 @@
 		"lvxWorkModeAfterBoot": 1,
 		"lvxWorkMode": 1,
 		"lvxIMUdataEn": 1,
+		"bIMUstab": false,
 		"nP": 256000,
 		"vToffset": [
 			0,

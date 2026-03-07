@@ -272,8 +272,10 @@ namespace kai
 		LVX2_CONFIG m_lvxCfg;
 
 		// lvx IMU
+		bool m_bIMUstab;	// enable IMU stabilize
 		SF m_SF;
 		uint64_t m_tIMU;
+
 		_IMUbase* m_pIMU;
 
 	};

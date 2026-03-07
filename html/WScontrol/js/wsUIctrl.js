@@ -26,8 +26,8 @@ window.onload = function () {
         var cmd = {
             cmd: c,
             module: $('#mName').value,
-            fNameCfg : $('#fNameCfg').value,
-            fNamePly : $('#fNamePly').value,
+            fNameCfg: $('#fNameCfg').value,
+            fNamePly: $('#fNamePly').value + getTimestamp() + '.ply',
         };
 
         cmdStr = JSON.stringify(cmd) + strEOJ;
@@ -117,4 +117,38 @@ function cmdHandler(event) {
     $('#txtMsg').value = event.data + "\n\n" + $('#txtMsg').value;
 
     jCmd = JSON.parse(event.data);
-}
+
+    if (jCmd.cmd == 'update')
+    {
+        $('#Cfx').value = jCmd.vCf[0];
+        $('#Cfy').value = jCmd.vCf[1];
+
+        $('#Ccx').value = jCmd.vCc[0];
+        $('#Ccy').value = jCmd.vCc[1];
+
+        $('#Ck1').value = jCmd.aCdistortion[0];
+        $('#Ck2').value = jCmd.aCdistortion[1];
+        $('#Cp1').value = jCmd.aCdistortion[2];
+        $('#Cp2').value = jCmd.aCdistortion[3];
+        $('#Cp3').value = jCmd.aCdistortion[4];
+
+        // $('#Crx').value
+        // $('#Cry').value
+        // $('#Crz').value
+
+        $('#Ctx').value = jCmd.aCt[0];
+        $('#Cty').value = jCmd.aCt[1];
+        $('#Ctz').value = jCmd.aCt[2];
+    }
+};
+
+function getTimestamp() {
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mi = String(d.getMinutes()).padStart(2, '0');
+    const ss = String(d.getSeconds()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}_${hh}-${mi}-${ss}`;
+};

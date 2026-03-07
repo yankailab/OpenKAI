@@ -58,7 +58,7 @@
 		],
 	},
 	"uvc": {
-		"class": "_UVC",
+		"class": "_HiKthermal",
 		"bON": false,
 		"thread": {
 			"FPS": 30,

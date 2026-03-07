@@ -210,13 +210,13 @@
 #endif // sensor
 
 #ifdef WITH_SLAM &&WITH_NAVIGATION
-#ifdef USE_OPENCV
 #include "../SLAM/_SLAMbase.h"
+#ifdef USE_OPENCV
 #include "../SLAM/_LIVcalib.h"
-#endif
 #ifdef USE_FASTLIVO
 #include "../SLAM/_FastLivo2.h"
-#endif
+#endif // fastLivo
+#endif // OpenCV
 #endif
 
 #ifdef WITH_STATE
@@ -260,7 +260,7 @@
 #endif
 #ifdef USE_OPENCV
 #include "../Vision/_Camera.h"
-#include "../Vision/_UVC.h"
+#include "../Vision/_HiKthermal.h"
 #include "../Vision/_VideoFile.h"
 #include "../Vision/_ImgFile.h"
 #include "../Vision/_GStreamer.h"
@@ -281,6 +281,7 @@
 #include "../Vision/ImgFilter/_Remap.h"
 #include "../Vision/ImgFilter/_Rotate.h"
 #include "../Vision/ImgFilter/_Threshold.h"
+#include "../Vision/ImgFilter/_Thermal2RGB.h"
 
 #ifdef USE_CUDA
 #include "../Vision/_DenseFlow.h"

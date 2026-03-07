@@ -1,12 +1,12 @@
 /*
- * _UVC.h
+ * _HiKthermal.h
  *
  *  Created on: Feb 15, 2025
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Vision__UVC_H_
-#define OpenKAI_src_Vision__UVC_H_
+#ifndef OpenKAI_src_Vision__HiKthermal_H_
+#define OpenKAI_src_Vision__HiKthermal_H_
 
 #include "_VisionBase.h"
 #include <libuvc/libuvc.h>
@@ -77,24 +77,24 @@
 namespace kai
 {
 
-	class _UVC : public _VisionBase
+	class _HiKthermal : public _VisionBase
 	{
 	public:
-		_UVC();
-		virtual ~_UVC();
+		_HiKthermal();
+		virtual ~_HiKthermal();
 
 		virtual bool init(const json &j);
 		virtual bool start(void);
+
 		bool open(void);
 		void close(void);
-		virtual void draw(void *pFrame);
 
 		static void sCbGetFrame(uvc_frame *pFrame, void *p)
 		{
 			NULL_(pFrame);
 			NULL_(p);
 
-			((_UVC *)p)->cbGetFrame(pFrame);
+			((_HiKthermal *)p)->cbGetFrame(pFrame);
 		};
 
 	private:
@@ -124,7 +124,7 @@ namespace kai
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_UVC *)This)->update();
+			((_HiKthermal *)This)->update();
 			return NULL;
 		}
 
@@ -147,8 +147,6 @@ namespace kai
 		int m_vendorID;
 		int m_productID;
 		string m_SN;
-
-		vFloat2 m_vRangeDraw;
 
 		/*
 		add 99-hik.rules to /etc/udev/rules.d/
