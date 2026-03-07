@@ -42,12 +42,12 @@ namespace kai
 		jKv(j, "nPmax", m_config.m_nPmax);
 		jKv(j, "voxelLeafSize", m_config.m_voxelLeafSize);
 
-		jKv<double>(j, "vF", m_vCf);
-		jKv<double>(j, "vC", m_vCc);
-		jKv(j, "aILr", m_aIr);
-		jKv(j, "aILt", m_aIt);
-		jKv(j, "aCLr", m_aCr);
-		jKv(j, "aCLt", m_aCt);
+		jKv<double>(j, "vCf", m_vCf);
+		jKv<double>(j, "vCc", m_vCc);
+		jKv(j, "aIr", m_aIr);
+		jKv(j, "aIt", m_aIt);
+		jKv(j, "aCr", m_aCr);
+		jKv(j, "aCt", m_aCt);
 
 		return setup();
 	}
@@ -58,7 +58,7 @@ namespace kai
 
 		m_fastLivo.setImageEnabled(m_bImg);
 
-		IF_F(!m_fastLivo.setCameraPinholeDistorted(m_vCsize.x, m_vCsize.y, m_vCf.x, m_vCf.y, m_vCc.x, m_vCc.y, m_aCdistortion));
+		IF_F(!m_fastLivo.setCameraPinholeDistorted(m_vCsize.x, m_vCsize.y, m_vCf.x, m_vCf.y, m_vCc.x, m_vCc.y, m_aCdist));
 		IF_F(!m_fastLivo.setImuToLidarExtrinsic(m_aIr, m_aIt));
 		IF_F(!m_fastLivo.setLidarToCameraExtrinsic(m_aCr, m_aCt));
 

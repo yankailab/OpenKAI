@@ -80,4 +80,18 @@ namespace kai
 
 		m_fRGB.copy(mC);
 	}
+
+	bool _Thermal2RGB::console(const json &j, json *pJout)
+	{
+		string cmd;
+		IF_F(!jKv(j, "cmd", cmd));
+
+		if (cmd == "setThermal")
+		{
+			jKv<float>(j, "vTrange", m_vTrange);
+		}
+
+		return false;
+	}
+
 }

@@ -222,7 +222,7 @@ namespace kai
 #ifdef WITH_SLAM &&WITH_NAVIGATION
 		ADD_MODULE(_SLAMbase);
 #ifdef USE_OPENCV
-		ADD_MODULE(_LIVcalib);
+		ADD_MODULE(_LCalign);
 #ifdef USE_FASTLIVO
 		ADD_MODULE(_FastLivo2);
 #endif // fastLivo

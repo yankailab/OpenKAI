@@ -1,7 +1,7 @@
 {
 	"APP": {
 		"class": "ModuleMgr",
-		"appName": "LIVcalib",
+		"appName": "LCalign",
 		"bLog": true,
 		"bStdErr": true
 	},
@@ -14,7 +14,7 @@
 		"vBASE": [
 			"Lvx1",
 			"IMUlv",
-			"LIVcalib"
+			"LCalign"
 		]
 	},
 	"view": {
@@ -69,7 +69,6 @@
 			40
 		]
 	},
-
 	"wsServer": {
 		"class": "_WebSocketServer",
 		"bON": true,
@@ -95,24 +94,35 @@
 			"FPS": 1
 		},
 		"vBASE": [
-			"LIVcalib"
+			"LCalign","thermalRGB"
 		],
 		"msgFinishSend": "",
 		"msgFinishRecv": "EOJ",
 		"_IObase": "wsServer"
 	},
-	"LIVcalib": {
-		"class": "_LIVcalib",
+	"LCalign": {
+		"class": "_LCalign",
 		"bON": true,
 		"bLog": false,
 		"thread": {
 			"FPS": 10
 		},
-		"nP": 256000,
-		"_PCin":"Lvx1",
-		"/_VisionBase":"cam",
-		"_VisionBase":"thermalRGB",
-		"_IMUbase":"IMUlv"
+		"nP": 100000,
+		"_PCin": "Lvx1",
+		"/_VisionBase": "cam",
+		"_VisionBase": "thermalRGB",
+		"_IMUbase": "IMUlv",
+		"aCr": [
+			0,
+			-1,
+			0,
+			0,
+			0,
+			-1,
+			1,
+			0,
+			0
+		]
 	},
 	"GViewer": {
 		"class": "_GeometryViewer",
@@ -196,10 +206,10 @@
 		"rVoxel": 0.05,
 		"geometry": [
 			{
-				"_GeometryBase": "LIVcalib",
+				"_GeometryBase": "LCalign",
 				"/_GeometryBase": "Lvx1",
 				"bStatic": false,
-				"nP": 256000,
+				"nP": 100000,
 				"rDummyDome": 1000.0,
 				"/matName": "depth",
 				"matName": "default",
@@ -327,7 +337,7 @@
 		"lvxWorkMode": 1,
 		"lvxIMUdataEn": 1,
 		"bIMUstab": false,
-		"nP": 256000,
+		"nP": 100000,
 		"vToffset": [
 			0,
 			0,

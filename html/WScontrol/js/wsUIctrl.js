@@ -7,22 +7,22 @@ window.onload = function () {
 
     // controls
     $('#btnUpdate').onclick = function (e) {
-        cmdLIVcalib('update');
+        cmdLCalign('update');
     };
 
     $('#btnLoadCfg').onclick = function (e) {
-        cmdLIVcalib('loadCfg');
+        cmdLCalign('loadCfg');
     };
 
     $('#btnSaveCfg').onclick = function (e) {
-        cmdLIVcalib('saveCfg');
+        cmdLCalign('saveCfg');
     };
 
     $('#btnSavePly').onclick = function (e) {
-        cmdLIVcalib('savePly');
+        cmdLCalign('savePly');
     };
 
-    function cmdLIVcalib(c) {
+    function cmdLCalign(c) {
         var cmd = {
             cmd: c,
             module: $('#mName').value,
@@ -101,9 +101,28 @@ window.onload = function () {
             module: $('#mName').value,
             vCf: [parseFloat($('#Cfx').value), parseFloat($('#Cfy').value)],
             vCc: [parseFloat($('#Ccx').value), parseFloat($('#Ccy').value)],
-            aCdistortion: [parseFloat($('#Ck1').value), parseFloat($('#Ck2').value), parseFloat($('#Cp1').value), parseFloat($('#Cp2').value), parseFloat($('#Cp3').value)],
+            aCdist: [parseFloat($('#Ck1').value), parseFloat($('#Ck2').value), parseFloat($('#Cp1').value), parseFloat($('#Cp2').value), parseFloat($('#Cp3').value)],
             vCr: [parseFloat($('#Crx').value), parseFloat($('#Cry').value), parseFloat($('#Crz').value)],
             aCt: [parseFloat($('#Ctx').value), parseFloat($('#Cty').value), parseFloat($('#Ctz').value)],
+        };
+        cmdStr = JSON.stringify(cmd) + strEOJ;
+        wsSocket.send(cmdStr);
+    };
+
+
+    $('#tempLow').oninput = function (e) {
+        cmdSetThermal();
+    };
+
+    $('#tempHigh').oninput = function (e) {
+        cmdSetThermal();
+    };
+
+    function cmdSetThermal() {
+        var cmd = {
+            cmd: 'setThermal',
+            module: $('#mThermal').value,
+            vTrange: [parseFloat($('#tempLow').value), parseFloat($('#tempHigh').value)],
         };
         cmdStr = JSON.stringify(cmd) + strEOJ;
         wsSocket.send(cmdStr);
@@ -118,19 +137,18 @@ function cmdHandler(event) {
 
     jCmd = JSON.parse(event.data);
 
-    if (jCmd.cmd == 'update')
-    {
+    if (jCmd.cmd == 'update') {
         $('#Cfx').value = jCmd.vCf[0];
         $('#Cfy').value = jCmd.vCf[1];
 
         $('#Ccx').value = jCmd.vCc[0];
         $('#Ccy').value = jCmd.vCc[1];
 
-        $('#Ck1').value = jCmd.aCdistortion[0];
-        $('#Ck2').value = jCmd.aCdistortion[1];
-        $('#Cp1').value = jCmd.aCdistortion[2];
-        $('#Cp2').value = jCmd.aCdistortion[3];
-        $('#Cp3').value = jCmd.aCdistortion[4];
+        $('#Ck1').value = jCmd.aCdist[0];
+        $('#Ck2').value = jCmd.aCdist[1];
+        $('#Cp1').value = jCmd.aCdist[2];
+        $('#Cp2').value = jCmd.aCdist[3];
+        $('#Cp3').value = jCmd.aCdist[4];
 
         // $('#Crx').value
         // $('#Cry').value

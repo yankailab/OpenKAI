@@ -212,7 +212,7 @@
 #ifdef WITH_SLAM &&WITH_NAVIGATION
 #include "../SLAM/_SLAMbase.h"
 #ifdef USE_OPENCV
-#include "../SLAM/_LIVcalib.h"
+#include "../SLAM/_LCalign.h"
 #ifdef USE_FASTLIVO
 #include "../SLAM/_FastLivo2.h"
 #endif // fastLivo

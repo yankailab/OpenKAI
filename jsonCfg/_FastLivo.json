@@ -63,7 +63,8 @@
 		"nPmax":100000,
 		"tScaleIMU":0.000000001,
 		"tScalePC":0.000000001,
-		"voxelLeafSize":0.1
+		"voxelLeafSize":0.1,
+		"aIt":[-0.011, -0.02329, 0.04412]
 	},
 	"PCfl": {
 		"class": "_PCstream",

@@ -68,7 +68,7 @@ namespace kai
 		FASTLIVO2_CONFIG m_config;
 
 		// point cloud
-		// extrinsics, IMU<-LiDAR: pImu = ILr * pLidar + ILt
+		// extrinsics, IMU<-LiDAR: pImu = aIr * pLidar + aIt
 		array<double, 9> m_aIr = {1, 0, 0, 0, 1, 0, 0, 0, 1};
 		array<double, 3> m_aIt = {0, 0, 0};
 
@@ -77,8 +77,8 @@ namespace kai
 		vInt2 m_vCsize;
 		vDouble2 m_vCf; // focal
 		vDouble2 m_vCc; // center
-		array<double, 5> m_aCdistortion  = {0.0, 0.0, 0.0, 0.0, 0.0}; // k1,k2,p1,p2,k3
-		// extrinsics, Camera<-LiDAR: pCam = CLr * pLidar + CLt
+		array<double, 5> m_aCdist  = {0.0, 0.0, 0.0, 0.0, 0.0}; // k1,k2,p1,p2,k3
+		// extrinsics, Camera<-LiDAR: pCam = aCr * pLidar + aCt
 		array<double, 9> m_aCr = {1, 0, 0, 0, 1, 0, 0, 0, 1};
 		array<double, 3> m_aCt = {0.05, 0.0, 0.0}; // example 5c
 

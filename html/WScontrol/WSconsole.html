@@ -41,7 +41,7 @@
   <hr>
   <section>
     <div class="text-center">
-      <h5><strong>LIVcalib</strong></h5>
+      <h5><strong>LCalign</strong></h5>
     </div>
     <div class="text-center">
       <button id="btnUpdate" style="WIDTH: 150px; HEIGHT: 50px" type="button" class="btn btn-primary">Update</button>
@@ -50,6 +50,14 @@
       <button id="btnSaveCfg" style="WIDTH: 150px; HEIGHT: 50px" type="button" class="btn btn-primary">Save
         config</button>
       <button id="btnSavePly" style="WIDTH: 150px; HEIGHT: 50px" type="button" class="btn btn-primary">Save PLY</button>
+    </div>
+  </section>
+
+
+  <hr>
+  <section>
+    <div class="text-center">
+      <h5><strong>Config</strong></h5>
     </div>
   </section>
 
@@ -66,27 +74,72 @@
     <tbody>
       <tr>
         <th scope="row">
-          <p style="color:aqua;font-weight: bold;">LIV module</p>
+          <p style="color:aqua;font-weight: bold;">LCalign module</p>
         </th>
-        <td><input id="mName" style="WIDTH: 400px; HEIGHT: 50px" value="LIVcalib">
+        <td><input id="mName" style="WIDTH: 400px; HEIGHT: 50px" value="LCalign">
         </td>
       </tr>
       <tr>
         <th scope="row">
           <p style="color:aqua;font-weight: bold;">Config file</p>
         </th>
-        <td><input id="fNameCfg" style="WIDTH: 400px; HEIGHT: 50px" value="/home/kai/Documents/LIVcalib/LIVcalib.json">
+        <td><input id="fNameCfg" style="WIDTH: 400px; HEIGHT: 50px" value="/home/kai/Documents/LCalign/LCalign.json">
         </td>
       </tr>
       <tr>
         <th scope="row">
           <p style="color:aqua;font-weight: bold;">PLY file dir</p>
         </th>
-        <td><input id="fNamePly" style="WIDTH: 400px; HEIGHT: 50px" value="/home/kai/Documents/LIVcalib/">
+        <td><input id="fNamePly" style="WIDTH: 400px; HEIGHT: 50px" value="/home/kai/Documents/LCalign/">
         </td>
       </tr>
     </tbody>
   </table>
+
+
+
+  <hr>
+  <section>
+    <div class="text-center">
+      <h5><strong>Thermal</strong></h5>
+    </div>
+  </section>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">
+        </th>
+        <th scope="col">
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <th scope="row">
+          <p style="color:aqua;font-weight: bold;">Thermal2RGB module</p>
+        </th>
+        <td><input id="mThermal" style="WIDTH: 400px; HEIGHT: 50px" value="thermalRGB">
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">
+          <p style="color:aqua;font-weight: bold;">Temp. Low</p>
+        </th>
+        <td><input id="tempLow" style="WIDTH: 100px; HEIGHT: 50px" value="0">
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">
+          <p style="color:aqua;font-weight: bold;">Temp. High</p>
+        </th>
+        <td><input id="tempHigh" style="WIDTH: 100px; HEIGHT: 50px" value="40">
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
 
 
   <hr>
