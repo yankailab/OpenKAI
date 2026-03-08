@@ -50,6 +50,7 @@
       <button id="btnSaveCfg" style="WIDTH: 150px; HEIGHT: 50px" type="button" class="btn btn-primary">Save
         config</button>
       <button id="btnSavePly" style="WIDTH: 150px; HEIGHT: 50px" type="button" class="btn btn-primary">Save PLY</button>
+      <button id="btnSaveImg" style="WIDTH: 150px; HEIGHT: 50px" type="button" class="btn btn-primary">Save IMG</button>
     </div>
   </section>
 
@@ -83,14 +84,14 @@
         <th scope="row">
           <p style="color:aqua;font-weight: bold;">Config file</p>
         </th>
-        <td><input id="fNameCfg" style="WIDTH: 400px; HEIGHT: 50px" value="/home/kai/Documents/LCalign/LCalign.json">
+        <td><input id="fNameCfg" style="WIDTH: 400px; HEIGHT: 50px" value="/home/kai/dev/OpenKAI/jsonCfg/_LCalignCfg.json">
         </td>
       </tr>
       <tr>
         <th scope="row">
-          <p style="color:aqua;font-weight: bold;">PLY file dir</p>
+          <p style="color:aqua;font-weight: bold;">Data file dir</p>
         </th>
-        <td><input id="fNamePly" style="WIDTH: 400px; HEIGHT: 50px" value="/home/kai/Documents/LCalign/">
+        <td><input id="dataDir" style="WIDTH: 400px; HEIGHT: 50px" value="/home/kai/Documents/LCalign/">
         </td>
       </tr>
     </tbody>
@@ -127,7 +128,7 @@
         <th scope="row">
           <p style="color:aqua;font-weight: bold;">Temp. Low</p>
         </th>
-        <td><input id="tempLow" style="WIDTH: 100px; HEIGHT: 50px" value="0">
+        <td><input id="tempLow" style="WIDTH: 100px; HEIGHT: 50px" value="20">
         </td>
       </tr>
       <tr>

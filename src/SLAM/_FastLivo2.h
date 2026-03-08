@@ -9,6 +9,7 @@
 #define OpenKAI_src_SLAM__FastLivo2_H_
 
 #include "../3D/PointCloud/_PCstream.h"
+#include "../Vision/_VisionBase.h"
 #include "_SLAMbase.h"
 #include <array>
 #include <chrono>
@@ -44,6 +45,8 @@ namespace kai
 		LidarScan makeTestScan(double t0, double t1, int npts);
 
 	private:
+		bool pushImg(const Mat &mBGR, double tStamp);
+
 		bool setup(void);
 		void updatePointCloud(void);
 		bool updateFastLivo2(void);
@@ -74,6 +77,8 @@ namespace kai
 
 		// img
 		bool m_bImg;
+		_VisionBase* m_pV;
+
 		vInt2 m_vCsize;
 		vDouble2 m_vCf; // focal
 		vDouble2 m_vCc; // center

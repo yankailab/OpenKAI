@@ -27,12 +27,29 @@ window.onload = function () {
             cmd: c,
             module: $('#mName').value,
             fNameCfg: $('#fNameCfg').value,
-            fNamePly: $('#fNamePly').value + getTimestamp() + '.ply',
+            fNamePly: $('#dataDir').value + getTimestamp() + "_tLow" + $('#tempLow').value + "_tHigh" + $('#tempHigh').value + '.ply',
         };
 
         cmdStr = JSON.stringify(cmd) + strEOJ;
         wsSocket.send(cmdStr);
     };
+
+
+    $('#btnSaveImg').onclick = function (e) {
+        cmdThermal('saveImg');
+    };
+
+    function cmdThermal(c) {
+        var cmd = {
+            cmd: c,
+            module: $('#mThermal').value,
+            fNameImg: $('#dataDir').value + getTimestamp() + "_tLow" + $('#tempLow').value + "_tHigh" + $('#tempHigh').value + '.png',
+        };
+
+        cmdStr = JSON.stringify(cmd) + strEOJ;
+        wsSocket.send(cmdStr);
+    };
+
 
     // param set
     $('#Cfx').oninput = function (e) {

@@ -90,6 +90,37 @@ namespace kai
 		this->_ModuleBase::console(pConsole);
 	}
 
+	bool _VisionBase::console(const json &j, json *pJout)
+	{
+		string cmd;
+		IF_F(!jKv(j, "cmd", cmd));
+
+		if (cmd == "saveImg")
+		{
+			string fName;
+			IF_F(!jKv(j, "fNameImg", fName));
+
+			Mat m = *m_fRGB.m();
+			IF_F(m.empty());
+
+			bool bR;
+			if (m.type() == CV_8UC3)
+			{
+				bR = imwrite(fName, m);
+			}
+
+			if (pJout)
+			{
+				json &jr = (*pJout);
+				jr["cmd"] = "saveImg";
+				jr["bSuccess"] = bR;
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 #ifdef USE_OPENCV
 	void _VisionBase::draw(void *pFrame)
 	{

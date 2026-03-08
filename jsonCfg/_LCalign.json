@@ -84,7 +84,7 @@
 		"port": 7890,
 		"tOutMs": 10000
 	},
-	"wsCtrl": {
+	"wsConsole": {
 		"class": "_WSconsole",
 		"bON": true,
 		"thread": {
@@ -112,6 +112,7 @@
 		"/_VisionBase": "cam",
 		"_VisionBase": "thermalRGB",
 		"_IMUbase": "IMUlv",
+		"fName":"/home/kai/dev/OpenKAI/jsonCfg/_LCalignCfg.json",
 		"aCr": [
 			0,
 			-1,
@@ -145,14 +146,14 @@
 			0
 		],
 		"vCamEye": [
+			-2,
 			0,
-			0,
-			2
+			0
 		],
 		"vCamUp": [
 			0,
-			1,
-			0
+			0,
+			1
 		],
 		"vCamAutoLookAt": [
 			0,
@@ -160,14 +161,14 @@
 			0
 		],
 		"vCamAutoEye": [
+			-2,
 			0,
-			2,
 			0
 		],
 		"vCamAutoUp": [
 			0,
-			1,
-			0
+			0,
+			1
 		],
 		"vCoR": [
 			0,
@@ -190,19 +191,12 @@
 			100
 		],
 		"bFullScreen": 0,
-		"wPanel": 20,
-		"vBtnPadding": [
-			1.6,
-			2.0
-		],
 		"mouseMode": 0,
 		"vDmove": [
 			0.5,
 			5.0
 		],
 		"dHiddenRemove": 100.0,
-		"dirSave": "/home/kai/Documents/",
-		"/dirSave": "/media/lab/",
 		"rVoxel": 0.05,
 		"geometry": [
 			{

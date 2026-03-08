@@ -226,4 +226,34 @@ namespace kai
         return io::WritePointCloudToPLY(fName.c_str(), pc, par);
     }
 
+	void _PCstream::console(void *pConsole)
+	{
+		NULL_(pConsole);
+		this->_GeometryBase::console(pConsole);
+	}
+
+	bool _PCstream::console(const json &j, json *pJout)
+	{
+		string cmd;
+		IF_F(!jKv(j, "cmd", cmd));
+
+		if (cmd == "savePly")
+		{
+			string fPly;
+			IF_F(!jKv(j, "fNamePly", fPly));
+
+			bool bR = saveFile(fPly);
+
+			if (pJout)
+			{
+				json &jr = (*pJout);
+				jr["cmd"] = "savePly";
+				jr["bSuccess"] = bR;
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 }

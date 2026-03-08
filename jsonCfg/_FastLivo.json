@@ -7,7 +7,7 @@
 	},
 	"console": {
 		"class": "_Console",
-		"bON": true,
+		"bON": false,
 		"thread": {
 			"FPS": 10
 		},
@@ -25,7 +25,7 @@
 		},
 		"bFullScreen": false,
 		"vBASE": [
-			"cam"
+			"/cam"
 		]
 	},
 	"cam": {
@@ -41,15 +41,6 @@
 		]
 	},
 
-	"lvIMU": {
-		"class": "_IMUbase",
-		"bON": true,
-		"thread": {
-			"FPS": 1
-		},
-		"nIMUdqMax": 1000,
-		"tIMUpairToleranceUs": 5000
-	},
 	"fastLivo": {
 		"class": "_FastLivo2",
 		"bON": true,
@@ -58,24 +49,91 @@
 		},
 		"_IMUbase": "lvIMU",
 		"_PCin": "Lvx1",
-		"_PCout": "PCfl",
+		"_PCout": "PClivo",
+		"_VisionBase": "cam",
 		"bImg":false,
 		"nPmax":100000,
 		"tScaleIMU":0.000000001,
 		"tScalePC":0.000000001,
 		"voxelLeafSize":0.1,
-		"aIt":[-0.011, -0.02329, 0.04412]
+		"aIt":[-0.011, -0.02329, 0.04412],
+        "vCc": [
+            320.0,
+            240.0
+        ],
+        "vCf": [
+            700.0,
+            650.0
+        ],
+        "vCsize": [
+            640,
+            512
+        ],
+		"aCr": [
+			0,
+			-1,
+			0,
+			0,
+			0,
+			-1,
+			1,
+			0,
+			0
+		],
+        "aCt": [
+            0.035,
+            -0.03,
+            -0.02
+        ],
+        "aCdist": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+        ]
 	},
-	"PCfl": {
+	"PClivo": {
 		"class": "_PCstream",
 		"bON": true,
 		"bLog": false,
 		"thread": {
 			"FPS": 1
 		},
-		"nP":500000
+		"nP":1000000
 	},
 
+	"wsServer": {
+		"class": "_WebSocketServer",
+		"bON": true,
+		"bLog": 0,
+		"thread": {
+			"FPS": 10
+		},
+		"threadR": {
+			"FPS": 10
+		},
+		"wsMode": 2,
+		"host": "0.0.0.0",
+		"port": 7890,
+		"tOutMs": 10000
+	},
+	"wsConsole": {
+		"class": "_WSconsole",
+		"bON": true,
+		"thread": {
+			"FPS": 1
+		},
+		"threadR": {
+			"FPS": 1
+		},
+		"vBASE": [
+			"PClivo","cam"
+		],
+		"msgFinishSend": "",
+		"msgFinishRecv": "EOJ",
+		"_IObase": "wsServer"
+	},
 
 	"GViewer": {
 		"class": "_GeometryViewer",
@@ -98,14 +156,14 @@
 			0
 		],
 		"vCamEye": [
-			0,
+			-2,
 			0,
 			2
 		],
 		"vCamUp": [
 			0,
-			1,
-			0
+			0,
+			1
 		],
 		"vCamAutoLookAt": [
 			0,
@@ -113,14 +171,14 @@
 			0
 		],
 		"vCamAutoEye": [
+			-2,
 			0,
-			2,
 			0
 		],
 		"vCamAutoUp": [
 			0,
-			1,
-			0
+			0,
+			1
 		],
 		"vCoR": [
 			0,
@@ -143,23 +201,16 @@
 			100
 		],
 		"bFullScreen": 0,
-		"wPanel": 20,
-		"vBtnPadding": [
-			1.6,
-			2.0
-		],
 		"mouseMode": 0,
 		"vDmove": [
 			0.5,
 			5.0
 		],
 		"dHiddenRemove": 100.0,
-		"dirSave": "/home/kai/Documents/",
-		"/dirSave": "/media/lab/",
 		"rVoxel": 0.05,
 		"geometry": [
 			{
-				"_GeometryBase": "PCfl",
+				"_GeometryBase": "PClivo",
 				"bStatic": false,
 				"nP": 500000,
 				"rDummyDome": 1000.0,
@@ -302,5 +353,15 @@
 			0,
 			0
 		]
+	},
+	"lvIMU": {
+		"class": "_IMUbase",
+		"bON": true,
+		"thread": {
+			"FPS": 1
+		},
+		"nIMUdqMax": 1000,
+		"tIMUpairToleranceUs": 5000
 	}
+
 }

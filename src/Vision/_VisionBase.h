@@ -59,6 +59,7 @@ namespace kai
 		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
+		virtual bool console(const json &j, json *pJout = nullptr);
 		virtual void draw(void *pFrame);
 
 		virtual bool open(void);

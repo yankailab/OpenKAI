@@ -19,6 +19,7 @@ namespace kai
 		m_tStampP = 1;
 
 		m_bImg = false;
+		m_pV = nullptr;
 		m_vCsize.set(640, 480);
 
 		m_vCf.set(520, 520);
@@ -34,20 +35,20 @@ namespace kai
 		IF_F(!this->_SLAMbase::init(j));
 
 		jKv(j, "nPmax", m_nPmax);
-
-		jKv(j, "bImg", m_bImg);
-		jKv<int>(j, "vSizeImg", m_vCsize);
-
 		jKv(j, "nFdownSample", m_config.m_nFdownSample);
 		jKv(j, "nPmax", m_config.m_nPmax);
 		jKv(j, "voxelLeafSize", m_config.m_voxelLeafSize);
 
-		jKv<double>(j, "vCf", m_vCf);
-		jKv<double>(j, "vCc", m_vCc);
 		jKv(j, "aIr", m_aIr);
 		jKv(j, "aIt", m_aIt);
+
+		jKv(j, "bImg", m_bImg);
+		jKv<int>(j, "vSizeImg", m_vCsize);
+		jKv<double>(j, "vCf", m_vCf);
+		jKv<double>(j, "vCc", m_vCc);
 		jKv(j, "aCr", m_aCr);
 		jKv(j, "aCt", m_aCt);
+		jKv(j, "aCdist", m_aCdist);
 
 		return setup();
 	}
@@ -85,6 +86,10 @@ namespace kai
 		jKv(j, "_PCout", n);
 		m_pPCout = (_PCstream *)(pM->findModule(n));
 
+		n = "";
+		jKv(j, "_VisionBase", n);
+		m_pV = (_VisionBase *)(pM->findModule(n));
+
 		return true;
 	}
 
@@ -92,6 +97,10 @@ namespace kai
 	{
 		NULL_F(m_pPCin);
 		NULL_F(m_pIMU);
+		if (m_bImg)
+		{
+			NULL_F(m_pV);
+		}
 
 		return this->_SLAMbase::check();
 	}
@@ -170,8 +179,10 @@ namespace kai
 		// image
 		if (m_bImg)
 		{
-			ImageFrame fImg;
-			m_fastLivo.pushImage(fImg);
+			Frame *pF = m_pV->getFrameRGB();
+			NULL_F(pF);
+
+			pushImg(*pF->m(), LS.t0);
 		}
 
 		IF_F(!m_fastLivo.spinOnce());
@@ -181,6 +192,36 @@ namespace kai
 		m_vT.x = pFL.p[0];
 		m_vT.y = pFL.p[1];
 		m_vT.z = pFL.p[2];
+
+		return true;
+	}
+
+	bool _FastLivo2::pushImg(const Mat &mBGR, double tStamp)
+	{
+		IF_F(!check());
+		IF_F(mBGR.empty());
+		IF_F(mBGR.type() != CV_8UC3);
+
+		ImageFrame f;
+		f.t = tStamp;
+		f.width = mBGR.cols;
+		f.height = mBGR.rows;
+		f.bgr.resize((size_t)f.width * (size_t)f.height * 3);
+
+		if (mBGR.isContinuous())
+		{
+			memcpy(f.bgr.data(), mBGR.data, f.bgr.size());
+		}
+		else
+		{
+			const size_t row_bytes = (size_t)f.width * 3;
+			for (int y = 0; y < f.height; ++y)
+			{
+				memcpy(f.bgr.data() + (size_t)y * row_bytes, mBGR.ptr(y), row_bytes);
+			}
+		}
+
+		m_fastLivo.pushImage(f);
 
 		return true;
 	}

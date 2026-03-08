@@ -91,7 +91,7 @@ namespace kai
 			jKv<float>(j, "vTrange", m_vTrange);
 		}
 
-		return false;
+		return this->_VisionBase::console(j, pJout);
 	}
 
 }

@@ -31,6 +31,8 @@ namespace kai
         virtual bool init(const json &j);
         virtual bool start(void);
         virtual bool check(void);
+        virtual void console(void *pConsole);
+		virtual bool console(const json &j, json *pJout = nullptr);
 
         // _GeometryBase
         virtual bool initGeometry(void);

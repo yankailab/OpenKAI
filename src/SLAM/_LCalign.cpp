@@ -32,8 +32,6 @@ namespace kai
 	{
 		IF_F(!this->_PCstream::init(j));
 
-		jKv(j, "fName", m_fName);
-
 		jKv<int>(j, "vCsize", m_vCsize);
 		jKv<double>(j, "vCf", m_vCf);
 		jKv<double>(j, "vCc", m_vCc);
@@ -41,6 +39,7 @@ namespace kai
 		jKv(j, "aCr", m_aCr);
 		jKv(j, "aCt", m_aCt);
 
+		jKv(j, "fName", m_fName);
 		if (!m_fName.empty())
 			loadConfig(m_fName);
 
