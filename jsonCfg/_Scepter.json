@@ -1,0 +1,206 @@
+{
+	"APP": {
+		"class": "OpenKAI",
+		"appName": "OpenKAI",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"cam",
+			"d2g"
+		]
+	},
+	"RGBview": {
+		"class": "_WindowCV",
+		"bON": true,
+		"thread": {
+			"FPS": 20
+		},
+		"bFullScreen": 0,
+		"vBASE": [
+			"cam"
+		]
+	},
+	"DepthView": {
+		"class": "_WindowCV",
+		"bON": false,
+		"thread": {
+			"FPS": 20
+		},
+		"bFullScreen": 0,
+		"vBASE": [
+			"d2g"
+		]
+	},
+	"SHMscRGB": {
+		"class": "SharedMem",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"shmName": "SHMscRGB",
+		"nB": 5760000,
+		"bWriter": 1
+	},
+	"cam": {
+		"class": "_Scepter",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 30
+		},
+		"threadPP": {
+			"FPS": 30
+		},
+		"URI": "",
+		"vSizeRGB": [
+			1600,
+			1200
+		],
+		"vRangeD": [
+			0,
+			4000
+		],
+		"_PCstream":"scPC",
+		"scPixelFormat": 4,
+		"bRGB": true,
+		"bDepth": true,
+		"btRGB": true,
+		"btDepth": false,
+		"bIR": false,
+		"bDebugDepth": true,
+		"/_SHMrgb": "SHMscRGB"
+	},
+	"d2g": {
+		"class": "_D2G",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"_RGBDbase": "cam"
+	},
+	"d2rgb": {
+		"class": "_D2RGB",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"_RGBDbase": "cam"
+	},
+
+	"scPC": {
+		"class": "_PCstream",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 1
+		},
+		"nP":1000000
+	},
+	"GViewer": {
+		"class": "_GeometryViewer",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"threadUI": {
+			"FPS": 30
+		},
+		"vWinSize": [
+			1280,
+			720
+		],
+		"pathRes": "/usr/local/bin/Open3D/resources",
+		"device": "CPU:0",
+		"vCamLookAt": [
+			0,
+			0,
+			0
+		],
+		"vCamEye": [
+			0,
+			0,
+			2
+		],
+		"vCamUp": [
+			0,
+			1,
+			0
+		],
+		"vCamAutoLookAt": [
+			0,
+			0,
+			0
+		],
+		"vCamAutoEye": [
+			0,
+			2,
+			0
+		],
+		"vCamAutoUp": [
+			0,
+			1,
+			0
+		],
+		"vCoR": [
+			0,
+			0,
+			0
+		],
+		"camProjType": 0,
+		"vCamNF": [
+			0,
+			500
+		],
+		"camFov": 80,
+		"camFovType": 1,
+		"vCamLR": [
+			-100,
+			100
+		],
+		"vCamBT": [
+			-100,
+			100
+		],
+		"bFullScreen": 0,
+		"wPanel": 20,
+		"vBtnPadding": [
+			1.6,
+			2.0
+		],
+		"mouseMode": 0,
+		"vDmove": [
+			0.5,
+			5.0
+		],
+		"dHiddenRemove": 100.0,
+		"dirSave": "/home/kai/Documents/",
+		"/dirSave": "/media/lab/",
+		"rVoxel": 0.05,
+		"geometry": [
+			{
+				"_GeometryBase": "scPC",
+				"bStatic": false,
+				"nP": 500000,
+				"rDummyDome": 1000.0,
+				"/matName": "depth",
+				"matName": "default",
+				"/matCol": [
+					1,
+					1,
+					1,
+					1
+				],
+				"matPointSize": 1,
+				"matLineWidth": 1
+			}
+		]
+	}
+
+}

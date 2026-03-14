@@ -184,6 +184,10 @@ namespace kai
 
 			if (updateScRGBD())
 			{
+#ifdef WITH_3D
+				updatePC();
+#endif
+
 				// m_fDepth.copy(mDs + m_dOfs);
 				// if (m_bDepthShow)
 				// {
@@ -287,8 +291,7 @@ namespace kai
 #ifdef WITH_3D
 	void _Scepter::updatePC(void)
 	{
-		NULL_(m_pPCf);
-		PointCloud *pPC = pPCframe->getNextBuffer();
+		NULL_(m_pPCstream);
 
 		const static float s_b = 1.0 / 1000.0;
 		const static float c_b = 1.0 / 255.0;
@@ -298,10 +301,6 @@ namespace kai
 											  &m_scfDepth,
 											  m_pScVw);
 
-		//		Eigen::Affine3d mA = m_A;
-
-		int nPmax = m_pPCf->nPmax();
-		int nPi = 0;
 		for (int i = 0; i < m_scfDepth.height; i++)
 		{
 			for (int j = 0; j < m_scfDepth.width; j++)
@@ -309,34 +308,23 @@ namespace kai
 				int k = i * m_scfDepth.width + j;
 
 				ScVector3f *pV = &m_pScVw[k];
-				Eigen::Vector3d vP(pV->x, pV->y, pV->z);
+				vFloat3 vP(pV->x, pV->y, pV->z);
 				vP *= s_b;
-				IF_CONT(vP.z() < m_vRangeD.x);
-				IF_CONT(vP.z() > m_vRangeD.y);
-
-				// Eigen::Vector3d vPik = Vector3d(
-				// 	vP[m_vAxisIdx.x] * m_vAxisK.x,
-				// 	vP[m_vAxisIdx.y] * m_vAxisK.y,
-				// 	vP[m_vAxisIdx.z] * m_vAxisK.z);
-				// vP = mA * vPik;
-				pPC->points_.push_back(vP);
+				IF_CONT(vP.z < m_vRangeD.x);
+				IF_CONT(vP.z > m_vRangeD.y);
 
 				// texture color
-				uint8_t *pC = &m_scfTransformedRGB.pFrameData[k * sizeof(uint8_t) * 3];
-				Eigen::Vector3d vC(pC[2], pC[1], pC[0]);
-				vC *= c_b;
-				pPC->colors_.push_back(vC);
+				vFloat3 vC(1);
+				if (m_scfTransformedRGB.pFrameData)
+				{
+					uint8_t *pC = &m_scfTransformedRGB.pFrameData[k * sizeof(uint8_t) * 3];
+					vC = vFloat3(pC[2], pC[1], pC[0]);
+					vC *= c_b;
+				}
 
-				nPi++;
-				if (nPi >= nPmax)
-					break;
+				m_pPCstream->add(vP, vC); //, m_tDus);
 			}
-
-			if (nPi >= nPmax)
-				break;
 		}
-
-		m_pPCf->swapBuffer();
 	}
 #endif
 
