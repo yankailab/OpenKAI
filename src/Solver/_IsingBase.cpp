@@ -45,6 +45,7 @@ namespace kai
 	void _IsingBase::clear(void)
 	{
 		m_cnf = "";
+		m_nV = 0;
 		m_spinAssign.clearAll();
 		m_vJw.clear();
 	}
@@ -69,7 +70,6 @@ namespace kai
 		int i;
 
 		// find header
-		int nV;
 		int nC;
 		for (i = 0; i < vLines.size(); i++)
 		{
@@ -82,12 +82,12 @@ namespace kai
 
 			IF_F(vL[1] != "cnf");
 
-			nV = atoi(vL[2].c_str());
+			m_nV = atoi(vL[2].c_str());		//TODO: need to +1 for const term
 			nC = atoi(vL[3].c_str());
 			break;
 		}
 
-		IF_F((nV <= 0) || (nC <= 0));
+		IF_F((m_nV <= 0) || (nC <= 0));
 
 		// Ising terms
 		int iC = 0;
@@ -154,6 +154,92 @@ namespace kai
 		// }
 
 		LOG_I("Assign: " + s);
+	}
+
+	bool _IsingBase::convetFrom(_SATbase *pS)
+	{
+		NULL_F(pS);
+
+		clear();
+		m_nV = pS->getNvar();
+
+		int iC = 0;
+		SAT_CLAUSE *pC = nullptr;
+		while ((pC = pS->getClause(iC++)))
+		{
+			IF_F(!addSATclause(pC));
+		}
+
+		LOG_I("Converted " + i2str(iC) + " clauses");
+		return true;
+	}
+
+	bool _IsingBase::addSATclause(SAT_CLAUSE *pC, double K)
+	{
+		NULL_F(pC);
+
+		int nL = pC->m_vL.size();
+		uint64_t nTot = (1ULL << nL);
+
+		double Kscale = K / (double)nTot;
+
+		ISING_JW Jw;
+		Jw.init(m_nV);
+
+		for (uint64_t m = 0; m < nTot; m++)
+		{
+			Jw.clear();
+			int nSpin = 0;
+			int etaProd = 1;
+
+			for (int i = 0; i < nL; i++)
+			{
+				IF_CONT(!(m & (1ULL << i)));
+
+				nSpin++;
+				int L = pC->getLiteral(i);
+				IF_F(L == 0);
+
+				Jw.addSpin(abs(L));
+
+				int eta = (L > 0) ? 1 : -1;
+				etaProd *= eta * -1;
+			}
+
+			double c = -Kscale * (double)etaProd;
+			Jw.m_J += c;
+
+			IF_F(addJw(&Jw));
+		}
+
+		// add the const term for the clause
+		Jw.clear();
+		Jw.m_J = K;
+		return addJw(&Jw);
+	}
+
+	bool _IsingBase::addJw(ISING_JW *pJw, bool bMerge)
+	{
+		NULL_F(pJw);
+
+		if (!bMerge)
+		{
+			m_vJw.push_back(*pJw);
+			return true;
+		}
+
+		// merge with existing Jw if existed
+		for (int i = 0; i < m_vJw.size(); i++)
+		{
+			ISING_JW *pJwi = &m_vJw[i];
+			IF_CONT(pJwi->m_w != pJw->m_w);
+
+			pJwi->m_J += pJw->m_J;
+			return true;
+		}
+
+		m_vJw.push_back(*pJw);
+		return true;
 	}
 
 	void _IsingBase::console(void *pConsole)

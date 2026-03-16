@@ -3,6 +3,8 @@
 
 #include "../Base/platform.h"
 
+using namespace std;
+
 namespace kai
 {
 
@@ -49,7 +51,7 @@ namespace kai
 
         void clearAll(void)
         {
-            std::fill(m_vData.begin(), m_vData.end(), 0ULL);
+            fill(m_vData.begin(), m_vData.end(), 0ULL);
         }
 
         inline void set(size_t bit)
@@ -132,6 +134,7 @@ namespace kai
         {
             if (m_nBits != v.m_nBits)
                 return false;
+
             for (size_t i = 0; i < m_nWords; ++i)
             {
                 if (maskedWord(i) != v.maskedWord(i))
@@ -414,18 +417,6 @@ namespace kai
             return m_nBits;
         }
 
-        // Hash (64-bit)
-        uint64_t hash64() const
-        {
-            uint64_t h = 0x9e3779b97f4a7c15ULL ^ (uint64_t)m_nBits;
-            for (size_t i = 0; i + 1 < m_nWords; ++i)
-                h = mix_(h ^ m_vData[i]);
-            if (m_nWords)
-                h = mix_(h ^ maskedWord(m_nWords - 1));
-
-            return h;
-        }
-
         // Batch XOR reduce
         static void xorReduce(vBit &out, const vBit *arr, size_t count)
         {
@@ -494,17 +485,6 @@ namespace kai
             return m_vData[i] & mask;
         }
 
-        static inline uint64_t mix_(uint64_t x)
-        {
-            x ^= x >> 30;
-            x *= 0xbf58476d1ce4e5b9ULL;
-            x ^= x >> 27;
-            x *= 0x94d049bb133111ebULL;
-            x ^= x >> 31;
-
-            return x;
-        }
-
         static inline uint32_t popcount64_(uint64_t x)
         {
             return (uint32_t)__builtin_popcountll(x);
@@ -523,7 +503,7 @@ namespace kai
     private:
         size_t m_nBits;
         size_t m_nWords;
-        std::vector<uint64_t> m_vData;
+        vector<uint64_t> m_vData;
     };
 }
 

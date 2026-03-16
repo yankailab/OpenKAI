@@ -92,7 +92,7 @@ namespace kai
 		// allocate
 		BOOLEAN_VAR v0; // index 0 is not used in cnf input
 		m_vV.push_back(v0);
-		for(int v=0; v<nV; v++)
+		for (int v = 0; v < nV; v++)
 		{
 			m_vV.push_back(v0);
 		}
@@ -171,12 +171,28 @@ namespace kai
 		LOG_I("Assign: " + s);
 	}
 
-	bool _SATbase::convet2Ising(_IsingBase* pI)
+	BOOLEAN_VAR *_SATbase::getVar(int i)
 	{
-		NULL_F(pI);
+		IF_N(m_vV.size() <= i);
 
-		
+		return &m_vV[i];
+	}
 
+	int _SATbase::getNvar(void)
+	{
+		return m_vV.size();
+	}
+
+	SAT_CLAUSE *_SATbase::getClause(int i)
+	{
+		IF_N(m_vC.size() <= i);
+
+		return &m_vC[i];
+	}
+
+	int _SATbase::getNclause(void)
+	{
+		return m_vC.size();
 	}
 
 	void _SATbase::console(void *pConsole)

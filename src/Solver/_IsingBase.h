@@ -5,22 +5,23 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Solver_SAT__IsingBase_H_
-#define OpenKAI_src_Solver_SAT__IsingBase_H_
+#ifndef OpenKAI_src_Solver__IsingBase_H_
+#define OpenKAI_src_Solver__IsingBase_H_
 
 #include "../Base/_ModuleBase.h"
 #include "../Primitive/tSwap.h"
 #include "../Primitive/vBit.h"
 #include "../Utility/utilFile.h"
+#include "_SATbase.h"
 
 namespace kai
 {
 	struct ISING_JW
 	{
 		int m_J;
-		vBit m_w;	// spin multiplication as walsh indices
+		vBit m_w;	// spin indices bit mask
 
-		void init(int J, int nBits)
+		void init(int nBits, int J = 0)
 		{
 			m_J = J;
 			m_w.init(nBits);
@@ -55,11 +56,16 @@ namespace kai
 		double energy(void);
 		void printSolution(void);
 
+		bool convetFrom(_SATbase* pS);
+		bool addSATclause(SAT_CLAUSE* pC, double K = 1.0);
+		bool addJw(ISING_JW* pJw, bool bMerge = true);
+
 	protected:
 		string m_fName;
 		string m_cnf; // problem input
 
-		vBit m_spinAssign;
+		int m_nV;				// real spin number + 1
+		vBit m_spinAssign;		// bit 0 is for constant terms, bit 1~ for spin n
 		vector<ISING_JW> m_vJw;
 	};
 

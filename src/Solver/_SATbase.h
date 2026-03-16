@@ -5,13 +5,12 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Solver_SAT__SATbase_H_
-#define OpenKAI_src_Solver_SAT__SATbase_H_
+#ifndef OpenKAI_src_Solver__SATbase_H_
+#define OpenKAI_src_Solver__SATbase_H_
 
 #include "../Base/_ModuleBase.h"
 #include "../Primitive/tSwap.h"
 #include "../Utility/utilFile.h"
-#include "_IsingBase.h"
 
 namespace kai
 {
@@ -32,7 +31,7 @@ namespace kai
 
 	struct SAT_CLAUSE
 	{
-		vector<int> m_vL; // var index from 0, +/- sign = negation
+		vector<int> m_vL; // var index from 1, +/- sign = negation
 
 		void clear(void)
 		{
@@ -46,8 +45,8 @@ namespace kai
 
 		int getLiteral(int i)
 		{
-			IF__(i < 0, -1);
-			IF__(i >= m_vL.size(), -1);
+			IF__(i < 0, 0);
+			IF__(i >= m_vL.size(), 0);
 
 			return m_vL[i];
 		}
@@ -71,7 +70,10 @@ namespace kai
 		bool bSatisfied(void);
 		void printSolution(void);
 
-		bool convet2Ising(_IsingBase* pI);
+		BOOLEAN_VAR* getVar(int i);
+		int getNvar(void);
+		SAT_CLAUSE* getClause(int i);
+		int getNclause(void);
 
 	protected:
 		string m_fName;
