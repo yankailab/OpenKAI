@@ -595,10 +595,10 @@ git clone --depth 1 https://github.com/orbbec/OrbbecSDK_v2.git
 cd OrbbecSDK_v2
 mkdir build
 cd build
-#cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_SHARED=ON -DOB_BUILD_DOCS=OFF -DOB_BUILD_TOOLS=ON -DOB_INSTALL_EXAMPLES_SOURCE=OFF  ../
-#make -j$(nproc)
-cmake ..
-cmake --build . --config Release
+cmake -DCMAKE_BUILD_TYPE=Release -DOB_BUILD_DOCS=OFF -DOB_BUILD_TOOLS=ON -DOB_INSTALL_EXAMPLES_SOURCE=OFF  ../
+make -j$(nproc)
+#cmake ..
+#cmake --build . --config Release
 sudo make install
 
 cd OrbbecSDK_v2/scripts/env_setup
