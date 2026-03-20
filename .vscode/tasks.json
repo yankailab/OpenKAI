@@ -1,0 +1,12 @@
+// .vscode/tasks.json
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "sudo cmake install",
+      "type": "shell",
+      "command": "sudo cmake --install build",
+      "problemMatcher": []
+    }
+  ]
+}
