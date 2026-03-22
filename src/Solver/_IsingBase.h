@@ -19,7 +19,7 @@ namespace kai
 	struct ISING_JW
 	{
 		int m_J;
-		vBit m_w;	// spin indices bit mask
+		vBit m_w; // spin indices bit mask
 
 		void init(int nBits, int J = 0)
 		{
@@ -35,6 +35,11 @@ namespace kai
 		void addSpin(int i)
 		{
 			m_w.set(i);
+		}
+
+		bool operator<(const ISING_JW &Jw) const
+		{
+			return m_w < Jw.m_w;
 		}
 	};
 
@@ -52,24 +57,24 @@ namespace kai
 		void clear(void);
 		bool readCNF(const string &fName, string *pCNF);
 		bool decodeCNF(const string &cnf);
-		bool convertFrom(_SATbase* pS);
+		bool convertFrom(_SATbase *pS);
 
 		double energy(void);
 		void printSolution(void);
 
 	protected:
-		bool addSATclause(SAT_CLAUSE* pC, double K = 1.0);
-		bool addJw(ISING_JW* pJw, bool bMerge = true);
-		void mergeJw(void);	// merge the identical Jij spin terms
+		bool addSATclause(SAT_CLAUSE *pC, double K = 1.0);
+		bool addJw(ISING_JW *pJw, bool bMerge = true);
+		void mergeJw(void); // merge the identical Jij spin terms
 		void sortJw(void);
-		ISING_JW* getJw(const vBit& vB);
+		ISING_JW *getJw(const vBit &vB);
 
 	protected:
 		string m_fName;
 		string m_cnf; // problem input
 
-		int m_nV;				// real spin number + 1
-		vBit m_spinAssign;		// bit 0 is for constant terms, bit 1~ for spin n
+		int m_nV;		   // real spin number + 1
+		vBit m_spinAssign; // bit 0 is for constant terms, bit 1~ for spin n
 		vector<ISING_JW> m_vJw;
 	};
 

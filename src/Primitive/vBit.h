@@ -153,6 +153,7 @@ namespace kai
         {
             if (m_nBits != v.m_nBits)
                 return m_nBits < v.m_nBits;
+
             for (size_t i = m_nWords; i-- > 0;)
             {
                 const uint64_t a = maskedWord(i);
@@ -162,6 +163,7 @@ namespace kai
                 if (a > b)
                     return false;
             }
+
             return false;
         }
 
@@ -169,10 +171,12 @@ namespace kai
         {
             return v < *this;
         }
+
         bool operator<=(const vBit &v) const
         {
             return !(*this > v);
         }
+
         bool operator>=(const vBit &v) const
         {
             return !(*this < v);
@@ -183,6 +187,7 @@ namespace kai
         {
             if (m_nWords == 0)
                 return 0;
+
             size_t c = 0;
             for (size_t i = 0; i + 1 < m_nWords; ++i)
                 c += popcount64_(m_vData[i]);

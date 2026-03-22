@@ -147,13 +147,13 @@ namespace kai
 	void _IsingBase::printSolution(void)
 	{
 		string s = "";
-		// for (int i = 1; i < m_vV.size(); i++)
-		// {
-		// 	int v = m_vV[i].v();
-		// 	s += i2str(v) + " ";
-		// }
+		for (int i = 1; i < m_spinAssign.nBits(); i++)
+		{
+			int b = m_spinAssign.get(i);
+			s += b ? "1 " : "-1 ";
+		}
 
-		LOG_I("Assign: " + s);
+		LOG_I("Spin assign: " + s);
 	}
 
 	bool _IsingBase::convertFrom(_SATbase *pS)
@@ -262,7 +262,7 @@ namespace kai
 
 	void _IsingBase::sortJw(void)
 	{
-		//TODO:
+		sort(m_vJw.begin(), m_vJw.end());
 	}
 
 	ISING_JW *_IsingBase::getJw(const vBit &vB)
