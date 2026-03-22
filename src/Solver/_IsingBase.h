@@ -52,13 +52,17 @@ namespace kai
 		void clear(void);
 		bool readCNF(const string &fName, string *pCNF);
 		bool decodeCNF(const string &cnf);
+		bool convertFrom(_SATbase* pS);
 
 		double energy(void);
 		void printSolution(void);
 
-		bool convertFrom(_SATbase* pS);
+	protected:
 		bool addSATclause(SAT_CLAUSE* pC, double K = 1.0);
 		bool addJw(ISING_JW* pJw, bool bMerge = true);
+		void mergeJw(void);	// merge the identical Jij spin terms
+		void sortJw(void);
+		ISING_JW* getJw(const vBit& vB);
 
 	protected:
 		string m_fName;

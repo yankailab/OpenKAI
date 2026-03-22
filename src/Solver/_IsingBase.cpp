@@ -82,7 +82,7 @@ namespace kai
 
 			IF_F(vL[1] != "cnf");
 
-			m_nV = atoi(vL[2].c_str());		//TODO: need to +1 for const term
+			m_nV = atoi(vL[2].c_str()); // TODO: need to +1 for const term
 			nC = atoi(vL[3].c_str());
 			break;
 		}
@@ -240,6 +240,42 @@ namespace kai
 
 		m_vJw.push_back(*pJw);
 		return true;
+	}
+
+	void _IsingBase::mergeJw(void)
+	{
+		for (int i = 0; i < m_vJw.size(); i++)
+		{
+			ISING_JW *pJwi = &m_vJw[i];
+
+			for (int j = i - 1; j >= 0; j--)
+			{
+				ISING_JW *pJwj = &m_vJw[j];
+				IF_CONT(pJwi->m_w != pJwj->m_w);
+
+				pJwj->m_J += pJwi->m_J;
+				m_vJw.erase(m_vJw.begin() + i);
+				break;
+			}
+		}
+	}
+
+	void _IsingBase::sortJw(void)
+	{
+		//TODO:
+	}
+
+	ISING_JW *_IsingBase::getJw(const vBit &vB)
+	{
+		for (int i = 0; i < m_vJw.size(); i++)
+		{
+			ISING_JW *pJw = &m_vJw[i];
+			IF_CONT(pJw->m_w != vB);
+
+			return pJw;
+		}
+
+		return nullptr;
 	}
 
 	void _IsingBase::console(void *pConsole)
