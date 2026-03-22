@@ -56,7 +56,7 @@ namespace kai
 		double energy(void);
 		void printSolution(void);
 
-		bool convetFrom(_SATbase* pS);
+		bool convertFrom(_SATbase* pS);
 		bool addSATclause(SAT_CLAUSE* pC, double K = 1.0);
 		bool addJw(ISING_JW* pJw, bool bMerge = true);
 

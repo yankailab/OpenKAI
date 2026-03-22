@@ -156,7 +156,7 @@ namespace kai
 		LOG_I("Assign: " + s);
 	}
 
-	bool _IsingBase::convetFrom(_SATbase *pS)
+	bool _IsingBase::convertFrom(_SATbase *pS)
 	{
 		NULL_F(pS);
 
