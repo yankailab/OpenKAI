@@ -46,10 +46,6 @@ method=manual
 #method=manual
 method=auto
 
---------------
-# Auto start using crontab
-crontab -e
-@reboot /home/lab/start.sh
 
 start.sh--
 #!/bin/bash

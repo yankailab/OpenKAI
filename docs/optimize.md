@@ -1,5 +1,5 @@
-#----------------------------------------------------
 # Clean-up
+```bash
 sudo apt -y remove --purge libreoffice* yelp thunderbird rhythmbox
 sudo systemctl stop ModemManager
 sudo systemctl disable ModemManager
@@ -22,17 +22,21 @@ sudo systemctl disable ntp.service
 sudo systemctl disable dhcpcd.service
 sudo systemctl disable networking.service
 sudo systemctl disable ssh.service
+```
 
 # clear system logs
+```bash
 sudo systemctl stop rsyslog
 sudo systemctl disable rsyslog.service
 sudo systemctl stop systemd-journald.service
 sudo systemctl disable systemd-journald.service
 sudo systemctl mask systemd-journald.service
 sudo truncate /var/log/*.log --size 0
+```
 
-# delete snap
+# Delete snap
 # https://www.baeldung.com/linux/snap-remove-disable
+```bash
 snap --version
 snap list
 snap remove firefox
@@ -52,8 +56,10 @@ sudo apt purge snapd -y
 sudo apt-mark hold snapd
 
 rm -rf ~/snap/
+```
 
 # Preventing Snap Installation Through the apt Command
+```bash
 sudo cat <<EOF | sudo tee /etc/apt/preferences.d/nosnap.pref
 Package: snapd
 Pin: release a=*
@@ -64,85 +70,112 @@ rm -rf ~/snap
 sudo rm -rf /snap
 sudo rm -rf /var/snap
 sudo rm -rf /var/lib/snapd
+```
 
-# clear bash history
+# Clear bash history
+```bash
 history -c && history -w
+```
 
-# ubuntu power mode
+# Ubuntu power mode
+```bash
 cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
 cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+```
 
-# add user to dialout
+# Add user to dialout
+```bash
 sudo adduser $USER dialout
 #sudo gpasswd --add ${USER} dialout
 sudo reboot now
 #sudo chmod 666 /dev/ttyUSB0
+```
 
-#----------------------------------------------------
 # Config
 
 # When using multiple USB-Serial converter
+```bash
 sudo apt remove brltty
+```
 
-#----------------------------------------------------
 # Auto startup
-
 # Copy startup sh into home
+```bash
 sudo chmod a+x $HOME/ok.sh
+```
 
 # For startup on X, insert sleep before running OK to wait for X to be ready
+```bash
 sleep 5
-./OK [kiss]
+./ok.sh
+```
 
 # Auto start up on boot
+```bash
 sudo rm /etc/rc.local
 set +H
 sudo sh -c "echo '#!/bin/sh\n/home/lab/ok.sh\nexit 0\n' >> /etc/rc.local"
 set -H
 sudo chmod a+x /etc/rc.local
+```
 
-#----------------------------------------------------
-# Misc.
+# Auto start using crontab
+```bash
+crontab -e
+@reboot /home/lab/start.sh
+```
 
 # GDB
+```bash
 gdb --args executablename arg1 arg2 arg3
 run
 bt
+```
 
 # Upload to FTP
+```bash
 curl -T FourierToy.swf ftp://193.112.75.123/pub/ --user anonymous
+```
 
 # Test gstreamer
+```bash
 sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=20/1 ! x264enc ! matroskamux ! filesink location=/home/pi/ssd/test.mkv
 sudo gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! fbdevsink
+```
 
-#----------------------------------------------------
 # Screen
 
-# Disable wayland in Ubuntu 22.04
+# Disable wayland in Ubuntu
+```bash
 sudo nano /etc/gdm3/custom.conf
 #WaylandEnable=false
+```
 
 # Screen and touch screen input rotate
+```bash
 export DISPLAY=:0.0
 xrandr -o left
 xinput list
 xinput set-prop 'GXTP7386:00 27C6:0113' 'Coordinate Transformation Matrix' 0 -1 1 1 0 0 0 0 1
+```
 
 # Block unity touch gestures
+```bash
 sudo apt install dconf-editor
 dconf-editor
 com > canonical > unity > gestures
+```
 
 # Block on screen keyboard
+```bash
 sudo apt install gnome-tweaks
 sudo apt install gnome-shell-extensions
 https://extensions.gnome.org/extension/3222/block-caribou-36/
+```
 
-#----------------------------------------------------
-# Make Jetson boot SD image
-
+# Make boot SD image
+```bash
 sudo fdisk -l
 sudo umount /dev/sda
 sudo dd if=/dev/sda of=~/sd.img bs=6M
@@ -150,16 +183,9 @@ sudo dd if=/dev/sda of=~/sd.img bs=6M
 sudo fdisk -l
 sudo umount /dev/sdb
 sudo dd if=~/sd.img of=/dev/sdb bs=6M
+```
 
-#----------------------------------------------------
-# Sunlogin auto startup
-Statup applications
-/usr/local/sunlogin/bin/sunloginclient --cmd=autorun
-# Disable wayland
-sudo nano /etc/gdm3/custom.conf
-#WaylandEnable=false
-
-
-#----------------------------------------------------
-# serial test
+# Serial test
+```bash
 sudo apt-get install cutecom
+```

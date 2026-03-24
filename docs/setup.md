@@ -528,6 +528,7 @@ sudo apt-get -y install python3 python3-pip
 git clone --branch v0.19.0 --depth 1 --recursive https://github.com/intel-isl/Open3D
 cd Open3D
 git submodule update --init --recursive
+mkdir build && cd build
 ```
 
 ## (Optional) Build Filament from source
@@ -546,12 +547,9 @@ sudo apt-get -y install clang libsdl2-dev libxi-dev
 ```
 
 ## Build and install
+For Desktop
 ```bash
-mkdir build && cd build
-
-# (desktop)
 sudo apt-get -y install libc++-dev libc++abi-dev ninja-build
-
 cmake -DCMAKE_BUILD_TYPE=Release \
       -DGLIBCXX_USE_CXX11_ABI=ON \
       -DBUILD_CUDA_MODULE=OFF \
@@ -565,10 +563,41 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       -DBUILD_UNIT_TESTS=OFF \
       -DDEVELOPER_BUILD=OFF \
       -DWITH_SIMD=ON ../
+```
 
-# (Raspberry pi)
-# Headless rendering
+For Raspberry pi headless rendering,
+Patch this file:
+```bash
+/home/lab/dev/Open3D/3rdparty/glew/src/glew.c
+```
+
+Immediately before:
+```c
+#include <GL/osmesa.h>
+```
+
+Make that block look like this:
+```c
+#ifndef GLAPI
+#define GLAPI extern
+#endif
+
+#ifndef GLAPIENTRY
+#define GLAPIENTRY
+#endif
+
+#ifndef APIENTRY
+#define APIENTRY
+#endif
+
+#include <GL/osmesa.h>
+```
+
+```bash
+sudo apt-get -y install xorg-dev libglu1-mesa-dev libgl1-mesa-dev libglfw3-dev
 sudo apt-get -y install libosmesa6-dev
+#sudo apt-get -y install libxkbcommon-dev
+
 cmake -DCMAKE_BUILD_TYPE=Release \
       -DGLIBCXX_USE_CXX11_ABI=ON \
       -DBUILD_CUDA_MODULE=OFF \
@@ -581,13 +610,15 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       -DBUILD_UNIT_TESTS=OFF \
       -DDEVELOPER_BUILD=OFF \
       -DWITH_SIMD=OFF \
-      -DWITH_IPPICV=OFF \
+      -DENABLE_HEADLESS_RENDERING=ON \
+      -DUSE_SYSTEM_GLEW=OFF \
+      -DUSE_SYSTEM_GLFW=OFF \
+      -DWITH_IPP=OFF \
       ../
 
 make -j$(nproc)
 sudo make install
 ```
-
 
 # (Optional) OrbbecSDK_v2
 ```bash
@@ -616,14 +647,18 @@ sudo apt-get install ninja-build pkg-config libpcl-dev libboost-thread-dev libya
 git clone https://github.com/strasdat/Sophus.git
 cd Sophus
 git checkout a621ff
-mkdir build && cd build && cmake ..
-make
+mkdir build && cd build
+cmake ..
+# On AArm NEON
+# cmake .. -DCMAKE_CXX_FLAGS="-Wno-error=class-memaccess"
+make -j$(nproc)
 sudo make install
 
 git clone --depth 1 https://github.com/yankailab/FAST-LIVO2.git
 cd FAST-LIVO2
 rm -rf build-core
 cmake -S core -B build-core -G Ninja -DCMAKE_BUILD_TYPE=Release
+#cmake -S core -B build-core -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-Wno-error=class-memaccess"
 cmake --build build-core
 sudo cmake --install build-core
 sudo ldconfig
