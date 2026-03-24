@@ -189,8 +189,8 @@ sudo ldconfig
 General CMake configs for x86-64 machines
 ```bash
 sudo apt-get -y install libprotobuf-dev protobuf-compiler
-git clone --branch 4.12.0 --depth 1 https://github.com/opencv/opencv.git
-git clone --branch 4.12.0 --depth 1 https://github.com/opencv/opencv_contrib.git
+git clone --branch 4.13.0 --depth 1 https://github.com/opencv/opencv.git
+git clone --branch 4.13.0 --depth 1 https://github.com/opencv/opencv_contrib.git
 cd opencv
 mkdir build && cd build
 cmake -DBUILD_CUDA_STUBS=OFF \
@@ -352,8 +352,8 @@ sudo ldconfig
 For Jetson and Raspberry pi
 ```bash
 sudo apt-get -y install libprotobuf-dev protobuf-compiler
-git clone --branch 4.10.0 --depth 1 https://github.com/opencv/opencv.git
-git clone --branch 4.10.0 --depth 1 https://github.com/opencv/opencv_contrib.git
+git clone --branch 4.13.0 --depth 1 https://github.com/opencv/opencv.git
+git clone --branch 4.13.0 --depth 1 https://github.com/opencv/opencv_contrib.git
 cd opencv
 mkdir build && cd build
 cmake \
