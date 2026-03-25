@@ -55,6 +55,9 @@ namespace kai
         virtual bool check(void);
         virtual void console(void *pConsole);
 
+        virtual bool loadConfig(json *pJ = nullptr, string fName = "");
+        virtual bool saveConfig(json &j, string fName = "");
+
         virtual GEOMETRY_TYPE getType(void);
         virtual bool initGeometry(void);
         virtual void clear(void);
@@ -83,8 +86,6 @@ namespace kai
         virtual bool saveFile(const string &fName);
 
         virtual string getConfigFileName(void);
-        virtual bool loadConfig(const string &fName, json &j);
-        virtual bool saveConfig(const string &fName, json &j);
 
     protected:
         void mutexLock(void);
@@ -92,7 +93,6 @@ namespace kai
 
     protected:
         GEOMETRY_TYPE m_type;
-        string m_fConfig;
 
         // material overwrite
         vFloat3 m_vColorDefault;

@@ -64,16 +64,6 @@ sleep 5
 exit 0
 --
 
---------------
-# clone SD image
-sudo fdisk -l
-sudo umount /dev/sdb1 /dev/sdb2
-sudo dd if=/dev/sdb of=~/RPi.img bs=8M status=progress
-
-
-
-
-
 
 
 

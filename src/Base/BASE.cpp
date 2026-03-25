@@ -29,6 +29,7 @@ namespace kai
 		jKv(j, "name", m_name);
 		jKv(j, "class", m_class);
 		jKv(j, "bLog", m_bLog);
+		jKv(j, "fConfig", m_fConfig);
 
 		IF_Le_F(m_name.empty(), "name empty");
 		IF_Le_F(m_class.empty(), "class empty");
@@ -95,8 +96,37 @@ namespace kai
 		pC->addMsg(this->getName(), COLOR_PAIR(_Console_COL_NAME) | A_BOLD, _Console_X_NAME, 1);
 	}
 
-	bool BASE::console(const json& j, json* pJout)
+	void BASE::console(const json &j, void *pJSONbase)
 	{
+	}
+
+	bool BASE::loadConfig(json *pJ, string fName)
+	{
+		string f = m_fConfig;
+		if(!fName.empty())
+			f = fName;
+
+		IF_Le_F(f.empty(), "JSON config file name empty");
+
+		JsonCfg jCfg;
+		IF_Le_F(!jCfg.parseJsonFile(f), "JSON file parse failed: " + f);
+
+		NULL__(pJ, true);
+
+		*pJ = jCfg.getJson();
+		return true;
+	}
+
+	bool BASE::saveConfig(json &j, string fName)
+	{
+		string f = m_fConfig;
+		if(!fName.empty())
+			f = fName;
+
+		IF_Le_F(f.empty(), "JSON config file name empty");
+
+		string jStr = j.dump();
+		return writeFile(f, jStr);
 	}
 
 }

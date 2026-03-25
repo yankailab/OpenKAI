@@ -259,7 +259,7 @@ namespace kai
 	{
 		NULL_F(pModule);
 		IF_Le_F(findModule(name), "Module already existed: " + name);
-		IF_Le_F(!findJson(name).is_object(), "Module not found in JSON");
+		IF_Le_F(!findJson(name).is_object(), "Module not found in JSON: " + name);
 
 		((BASE*)pModule)->setName(name);
 		m_vModules.push_back(pModule);

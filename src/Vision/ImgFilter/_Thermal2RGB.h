@@ -22,7 +22,7 @@ namespace kai
 		virtual bool init(const json &j);
 		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
-		virtual bool console(const json &j, json *pJout = nullptr);
+		virtual void console(const json &j, void *pJSONbase);
 
 	private:
 		void filter(void);

@@ -50,6 +50,8 @@ namespace kai
 		jKv(j, "nMedWidth", m_nMedWidth);
 		jKv(j, "tExpire", m_tExpire);
 
+		loadConfig();
+
 		return true;
 	}
 
@@ -70,9 +72,10 @@ namespace kai
 		return true;
 	}
 
-	bool _PCgridBase::loadConfig(const string &fName, json &j)
+	bool _PCgridBase::loadConfig(json *pJ, string fName)
 	{
-		IF_F(!this->_GeometryBase::loadConfig(fName, j));
+		json j;
+		IF_F(this->_GeometryBase::loadConfig(&j, fName));
 
 		const json &jG = jK(j, "_PCgridBase");
 		if (jG.is_object())
@@ -93,10 +96,14 @@ namespace kai
 			jKv(jG, "tExpire", m_tExpire);
 		}
 
+		if (pJ)
+		{
+			*pJ = j;
+		}
 		return true;
 	}
 
-	bool _PCgridBase::saveConfig(const string &fName, json &j)
+	bool _PCgridBase::saveConfig(json &j, string fName)
 	{
 		json jG = json::object();
 
@@ -116,7 +123,8 @@ namespace kai
 		jG["tExpire"] = m_tExpire;
 
 		j["_PCgridBase"] = jG;
-		return this->_GeometryBase::saveConfig(fName, j);
+
+		return this->_GeometryBase::saveConfig(j, fName);
 	}
 
 	bool _PCgridBase::initGeometry(void)

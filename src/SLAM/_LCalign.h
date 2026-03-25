@@ -11,6 +11,7 @@
 #include "../3D/PointCloud/_PCstream.h"
 #include "../Vision/_VisionBase.h"
 #include "../Sensor/_IMUbase.h"
+#include "../Protocol/_JSONbase.h"
 
 namespace kai
 {
@@ -26,7 +27,7 @@ namespace kai
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
-		virtual bool console(const json &j, json *pJout = nullptr);
+		virtual void console(const json &j, void *pJSONbase);
 		//		virtual void draw(void *pFrame);
 
 		virtual bool loadConfig(const string &fName);
@@ -34,7 +35,7 @@ namespace kai
 
 		void updateMatrices(void);
 		bool L2C(const vInt2 &vSizeImg, const vFloat3 &vPi, vInt2 &vPo);
-//		bool pt2Pix(const vInt2 &vSizeImg, const vFloat3 &vPi, vInt2 &vPo);
+		//		bool pt2Pix(const vInt2 &vSizeImg, const vFloat3 &vPi, vInt2 &vPo);
 
 		vDouble2 getCamFocal(void);
 		vDouble2 getCamCenter(void);
@@ -67,8 +68,8 @@ namespace kai
 		// Camera
 		// intrinsics
 		vInt2 m_vCsize;
-		vDouble2 m_vCf;												 // focal
-		vDouble2 m_vCc;												 // center
+		vDouble2 m_vCf;										   // focal
+		vDouble2 m_vCc;										   // center
 		array<double, 5> m_aCdist = {0.0, 0.0, 0.0, 0.0, 0.0}; // k1,k2,p1,p2,k3
 
 		// extrinsics, Camera <- LiDAR: pCam = m_aCr * pLidar + m_aCt
@@ -83,8 +84,7 @@ namespace kai
 		Mat m_mRot;
 		Mat m_mvR;
 		Mat m_mvT;
-        pthread_mutex_t m_mtxMat;
-
+		pthread_mutex_t m_mtxMat;
 
 		// IMU
 		// extrinsics, IMU<-LiDAR: pImu = m_aIr * pLidar + m_aIt

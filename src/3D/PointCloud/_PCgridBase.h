@@ -250,13 +250,13 @@ namespace kai
 		virtual ~_PCgridBase();
 
 		virtual bool init(const json &j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
 
 		// config
-		virtual bool loadConfig(const string& fName, json& j);
-		virtual bool saveConfig(const string& fName, json& j);
+		virtual bool loadConfig(json *pJ = nullptr, string fName = "");
+		virtual bool saveConfig(json &j, string fName = "");
 
 		// grid
 		virtual bool initGeometry(void);

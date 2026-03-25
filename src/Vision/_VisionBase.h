@@ -10,6 +10,7 @@
 
 #include "../IPC/SharedMem.h"
 #include "../UI/_Console.h"
+#include "../Protocol/_JSONbase.h"
 
 #ifdef USE_OPENCV
 #include "../Utility/utilCV.h"
@@ -59,7 +60,7 @@ namespace kai
 		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
-		virtual bool console(const json &j, json *pJout = nullptr);
+		virtual void console(const json &j, void *pJSONbase);
 		virtual void draw(void *pFrame);
 
 		virtual bool open(void);

@@ -297,10 +297,12 @@ namespace kai
 		pC->addMsg(msg);
 	}
 
-	bool _LCalign::console(const json &j, json *pJout)
+	void _LCalign::console(const json &j, void *pJSONbase)
 	{
+		_JSONbase *pJb = (_JSONbase *)pJSONbase;
+
 		string cmd;
-		IF_F(!jKv(j, "cmd", cmd));
+		IF_(!jKv(j, "cmd", cmd));
 
 		if (cmd == "setParams")
 		{
@@ -320,9 +322,9 @@ namespace kai
 		}
 		else if (cmd == "update")
 		{
-			NULL_F(pJout);
+			NULL_(pJb);
 
-			json &jr = (*pJout);
+			json jr = json::object();
 			jr["cmd"] = "update";
 			jr["vCsize"] = {m_vCsize.x, m_vCsize.y};
 			jr["vCf"] = {m_vCf.x, m_vCf.y};
@@ -333,68 +335,60 @@ namespace kai
 			// vFloat3 vCr;
 			// jr["vCr"] = {vCr, };
 
-			return true;
+			pJb->sendJson(jr);
 		}
 		else if (cmd == "loadCfg")
 		{
 			string fCfg;
-			IF_F(!jKv(j, "fNameCfg", fCfg));
+			IF_(!jKv(j, "fNameCfg", fCfg));
 
 			bool bR = loadConfig(fCfg);
 
-			if (pJout)
+			NULL_(pJb);
+			json jr = json::object();
+			if (bR)
 			{
-				json &jr = (*pJout);
-				if (bR)
-				{
-					jr["cmd"] = "update";
-					jr["vCsize"] = {m_vCsize.x, m_vCsize.y};
-					jr["vCf"] = {m_vCf.x, m_vCf.y};
-					jr["vCc"] = {m_vCc.x, m_vCc.y};
-					jr["aCdist"] = m_aCdist;
-					jr["aCt"] = m_aCt;
-				}
-				else
-				{
-					jr["cmd"] = "loadCfg";
-					jr["bSuccess"] = bR;
-				}
-
-				return true;
+				jr["cmd"] = "update";
+				jr["vCsize"] = {m_vCsize.x, m_vCsize.y};
+				jr["vCf"] = {m_vCf.x, m_vCf.y};
+				jr["vCc"] = {m_vCc.x, m_vCc.y};
+				jr["aCdist"] = m_aCdist;
+				jr["aCt"] = m_aCt;
 			}
+			else
+			{
+				jr["cmd"] = "loadCfg";
+				jr["bSuccess"] = bR;
+			}
+
+			pJb->sendJson(jr);
 		}
 		else if (cmd == "saveCfg")
 		{
 			string fCfg;
-			IF_F(!jKv(j, "fNameCfg", fCfg));
+			IF_(!jKv(j, "fNameCfg", fCfg));
 
 			bool bR = saveConfig(fCfg);
 
-			if (pJout)
-			{
-				json &jr = (*pJout);
-				jr["cmd"] = "saveCfg";
-				jr["bSuccess"] = bR;
-				return true;
-			}
+			NULL_(pJb);
+			json jr = json::object();
+			jr["cmd"] = "saveCfg";
+			jr["bSuccess"] = bR;
+			pJb->sendJson(jr);
 		}
 		else if (cmd == "savePly")
 		{
 			string fPly;
-			IF_F(!jKv(j, "fNamePly", fPly));
+			IF_(!jKv(j, "fNamePly", fPly));
 
 			bool bR = saveFile(fPly);
 
-			if (pJout)
-			{
-				json &jr = (*pJout);
-				jr["cmd"] = "savePly";
-				jr["bSuccess"] = bR;
-				return true;
-			}
+			NULL_(pJb);
+			json jr = json::object();
+			jr["cmd"] = "savePly";
+			jr["bSuccess"] = bR;
+			pJb->sendJson(jr);
 		}
-
-		return false;
 	}
 
 }

@@ -9,6 +9,7 @@
 #define OpenKAI_src_3D_PointCloud__PCstream_H_
 
 #include "../_GeometryBase.h"
+#include "../../Protocol/_JSONbase.h"
 
 namespace kai
 {
@@ -32,7 +33,7 @@ namespace kai
         virtual bool start(void);
         virtual bool check(void);
         virtual void console(void *pConsole);
-		virtual bool console(const json &j, json *pJout = nullptr);
+		virtual void console(const json &j, void *pJSONbase);
 
         // _GeometryBase
         virtual bool initGeometry(void);

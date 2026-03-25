@@ -81,17 +81,17 @@ namespace kai
 		m_fRGB.copy(mC);
 	}
 
-	bool _Thermal2RGB::console(const json &j, json *pJout)
+	void _Thermal2RGB::console(const json &j, void *pJSONbase)
 	{
 		string cmd;
-		IF_F(!jKv(j, "cmd", cmd));
+		IF_(!jKv(j, "cmd", cmd));
 
 		if (cmd == "setThermal")
 		{
 			jKv<float>(j, "vTrange", m_vTrange);
 		}
 
-		return this->_VisionBase::console(j, pJout);
+		this->_VisionBase::console(j, pJSONbase);
 	}
 
 }

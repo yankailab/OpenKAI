@@ -10,6 +10,7 @@
 
 #include "common.h"
 #include "../Module/ModuleMgr.h"
+#include "../Utility/utilFile.h"
 
 using namespace std;
 
@@ -21,8 +22,8 @@ namespace kai
 		BASE();
 		virtual ~BASE();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
 
@@ -32,15 +33,20 @@ namespace kai
 
 		virtual void draw(void *pFrame);
 		virtual void console(void *pConsole);
-		virtual bool console(const json& j, json* pJout);
+		virtual void console(const json &j, void *pJSONbase);
 
-		void setName(const string& n);
+		virtual bool loadConfig(json *pJ = nullptr, string fName = "");
+		virtual bool saveConfig(json &j, string fName = "");
+
+		void setName(const string &n);
 		string getName(void);
 		string getClass(void);
 
 	protected:
 		string m_class;
 		string m_name;
+
+		string m_fConfig;
 
 		bool m_bLog;
 	};

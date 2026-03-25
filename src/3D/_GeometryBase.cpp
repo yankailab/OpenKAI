@@ -61,13 +61,6 @@ namespace kai
         setRotation(m_vR);
         updateTranslationMatrix();
 
-        jKv(j, "fConfig", m_fConfig);
-        if (!m_fConfig.empty())
-        {
-            json jG;
-            loadConfig(m_fConfig, jG);
-        }
-
         return true;
     }
 
@@ -87,12 +80,10 @@ namespace kai
         return m_fConfig;
     }
 
-    bool _GeometryBase::loadConfig(const string &fName, json &j)
+    bool _GeometryBase::loadConfig(json *pJ, string fName)
     {
-        JsonCfg jCfg;
-        IF_Le_F(!jCfg.parseJsonFile(fName), "JSON file parse failed: " + fName);
-
-        j = jCfg.getJson();
+        json j;
+        IF_F(this->BASE::loadConfig(&j, fName));
 
         const json &jG = jK(j, "_GeometryBase");
         if (jG.is_object())
@@ -136,10 +127,14 @@ namespace kai
             }
         }
 
+        if (pJ)
+        {
+            *pJ = j;
+        }
         return true;
     }
 
-    bool _GeometryBase::saveConfig(const string &fName, json &j)
+    bool _GeometryBase::saveConfig(json &j, string fName)
     {
         json jG = json::object();
         jG["vT"] = {m_vT.x, m_vT.y, m_vT.z};
@@ -153,8 +148,7 @@ namespace kai
 
         j["_GeometryBase"] = jG;
 
-        string f = j.dump();
-        return writeFile(fName, f);
+        return this->BASE::saveConfig(j, fName);
     }
 
     bool _GeometryBase::check(void)

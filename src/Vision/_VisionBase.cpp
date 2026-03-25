@@ -90,18 +90,20 @@ namespace kai
 		this->_ModuleBase::console(pConsole);
 	}
 
-	bool _VisionBase::console(const json &j, json *pJout)
+	void _VisionBase::console(const json &j, void *pJSONbase)
 	{
+		_JSONbase *pJb = (_JSONbase *)pJSONbase;
+
 		string cmd;
-		IF_F(!jKv(j, "cmd", cmd));
+		IF_(!jKv(j, "cmd", cmd));
 
 		if (cmd == "saveImg")
 		{
 			string fName;
-			IF_F(!jKv(j, "fNameImg", fName));
+			IF_(!jKv(j, "fNameImg", fName));
 
 			Mat m = *m_fRGB.m();
-			IF_F(m.empty());
+			IF_(m.empty());
 
 			bool bR;
 			if (m.type() == CV_8UC3)
@@ -109,16 +111,11 @@ namespace kai
 				bR = imwrite(fName, m);
 			}
 
-			if (pJout)
-			{
-				json &jr = (*pJout);
-				jr["cmd"] = "saveImg";
-				jr["bSuccess"] = bR;
-				return true;
-			}
+			NULL_(pJb);
+			json jr = json::object();
+			jr["cmd"] = "saveImg";
+			jr["bSuccess"] = bR;
 		}
-
-		return false;
 	}
 
 #ifdef USE_OPENCV

@@ -123,11 +123,7 @@ namespace kai
 		BASE *pB = findModule(m);
 		NULL_(pB);
 
-		json jOut = json::object();
-		if(pB->console(j, &jOut))
-		{
-			sendJson(jOut);
-		}
+		pB->console(j, (void*)this);
 	}
 
 	BASE *_WSconsole::findModule(const string &n)
