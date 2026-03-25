@@ -9,25 +9,25 @@ systemctl status nginx --no-pager
 Create your web folder and index.html
 
 ```bash
-sudo mkdir -p /var/www/my_site
-sudo tee /var/www/my_site/index.html > /dev/null <<'EOF'
+sudo mkdir -p /var/www/OpenKAI
+
+sudo tee /var/www/OpenKAI/index.html > /dev/null <<'EOF'
 <!doctype html>
 <html>
-  <head><meta charset="utf-8"><title>Hello</title></head>
+  <head><meta charset="utf-8"><title>OpenKAI web console setup</title></head>
   <body><h1>Nginx is serving this page ✅</h1></body>
 </html>
 EOF
 
-sudo chown -R www-data:www-data /var/www/my_site
-sudo chmod -R 755 /var/www/my_site
+sudo chown -R www-data:www-data /var/www/OpenKAI
+sudo chmod -R 755 /var/www/OpenKAI
 ```
 
 Configure an Nginx site for that folder
-
 Create a site config:
 
 ```bash
-sudo nano /etc/nginx/sites-available/my_site
+sudo nano /etc/nginx/sites-available/OpenKAI
 ```
 
 Paste this:
@@ -38,7 +38,7 @@ server {
 
     server_name _;
 
-    root /var/www/my_site;
+    root /var/www/OpenKAI;
     index index.html;
 
     location / {
@@ -48,9 +48,8 @@ server {
 ```
 
 Enable it and reload Nginx:
-
 ```bash
-sudo ln -s /etc/nginx/sites-available/my_site /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/OpenKAI /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 ```
@@ -82,3 +81,6 @@ sudo ufw allow 'Nginx Full'
 ```bash
 sudo ufw allow 80/tcp
 ```
+
+Open from browser to confirm NginX is serving the html correctly.
+Ctrl + F5 for refresh caching.
