@@ -75,7 +75,7 @@ namespace kai
 	bool _PCgridBase::loadConfig(json *pJ, string fName)
 	{
 		json j;
-		IF_F(this->_GeometryBase::loadConfig(&j, fName));
+		IF_F(!this->_GeometryBase::loadConfig(&j, fName));
 
 		const json &jG = jK(j, "_PCgridBase");
 		if (jG.is_object())

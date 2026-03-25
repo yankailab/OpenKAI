@@ -83,7 +83,7 @@ namespace kai
     bool _GeometryBase::loadConfig(json *pJ, string fName)
     {
         json j;
-        IF_F(this->BASE::loadConfig(&j, fName));
+        IF_F(!this->BASE::loadConfig(&j, fName));
 
         const json &jG = jK(j, "_GeometryBase");
         if (jG.is_object())

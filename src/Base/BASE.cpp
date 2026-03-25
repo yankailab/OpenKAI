@@ -15,6 +15,7 @@ namespace kai
 	{
 		m_name = "";
 		m_class = "";
+		m_fConfig = "";
 		m_bLog = false;
 	}
 
