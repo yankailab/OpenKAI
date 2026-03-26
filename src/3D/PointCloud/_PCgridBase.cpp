@@ -278,12 +278,13 @@ namespace kai
 		NULL_(p);
 		_PCstream *pS = (_PCstream *)p;
 
+        uint64_t tNow = getApproxTbootUs();
 		int nP = pS->nP();
 
 		for (int i = 0; i < nP; i++)
 		{
 			GEOMETRY_POINT *pP = pS->get(i);
-			IF_CONT(pP->m_tStamp < tExpire);
+            IF_CONT(tExpire > 0 && bExpired(pP->m_tStamp, tExpire, tNow));
 
 			PC_GRID_CELL *pC = getCell(vFloat3(pP->m_vP[0], pP->m_vP[1], pP->m_vP[2]));
 			IF_CONT(!pC);
