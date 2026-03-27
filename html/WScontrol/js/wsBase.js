@@ -1,3 +1,7 @@
+function $(selector) { return document.querySelector(selector); }
+
+var strEOJ = "EOJ";
+
 function wsInit()
 {
   wsSocket = new WebSocket("ws://127.0.0.1:7890");
@@ -17,4 +21,3 @@ function wsInit()
   };
 
 };
-

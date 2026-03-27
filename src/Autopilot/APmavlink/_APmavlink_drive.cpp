@@ -180,4 +180,27 @@ namespace kai
 		((_Console *)pConsole)->addMsg("yawMode=" + f2str(m_yawMode) + ", yaw=" + i2str(*m_pRcYaw) + ", throttle=" + i2str(*m_pRcThrottle));
 	}
 
+    void _APmavlink_drive::console(const json &j, void *pJSONbase)
+    {
+        _JSONbase *pJb = (_JSONbase *)pJSONbase;
+        string cmd;
+        IF_(!jKv(j, "cmd", cmd));
+
+        if (cmd == "setSteerSpeed")
+        {
+            float steer = 0;
+            jKv(j, "steer", steer);
+            float speed = 0;
+            jKv(j, "speed", speed);
+
+			setSteerSpeed(steer, speed);
+
+            NULL_(pJb);
+            json jr = json::object();
+            jr["cmd"] = "setSteerSpeed";
+            jr["bSuccess"] = true;
+            pJb->sendJson(jr);
+        }
+    }
+
 }

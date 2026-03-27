@@ -1,0 +1,142 @@
+{
+	"APP": {
+		"class": "OpenKAI",
+		"appName": "apDrive",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"serialAP",
+			"apMavlink",
+			"apBase",
+			"apDrive"
+		]
+	},
+	"wsServer": {
+		"class": "_WebSocketServer",
+		"bON": true,
+		"bLog": 0,
+		"thread": {
+			"FPS": 10
+		},
+		"threadR": {
+			"FPS": 10
+		},
+		"wsMode": 2,
+		"host": "0.0.0.0",
+		"port": 7890,
+		"tOutMs": 10000
+	},
+	"wsConsole": {
+		"class": "_WSconsole",
+		"bON": true,
+		"thread": {
+			"FPS": 1
+		},
+		"threadR": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"apBase","apDrive"
+		],
+		"msgFinishSend": "",
+		"msgFinishRecv": "EOJ",
+		"_IObase": "wsServer"
+	},
+
+
+	"serialAP": {
+		"class": "_SerialPort",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"nPacket": 1024,
+		"nPbuffer": 512,
+		"port": "/dev/ttyACM0",
+		"/port": "/dev/ttyAMA0",
+		"//port": "/dev/ttyS0",
+		"baud": 115200
+	},
+	"apMavlink": {
+		"class": "_Mavlink",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"bLog": false,
+		"_IObase": "serialAP",
+		"/devSystemID": 0,
+		"mySystemID": 255,
+		"iMavComm": 0
+	},
+	"apBase": {
+		"class": "_APmavlink_base",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"_StateControl": "state",
+		"_Mavlink": "apMavlink",
+		"apType": 0,
+		"ieSendHB": 1,
+		"ieSendMsgInt": 1,
+		"mavMsgInt": {
+			"heartbeat": {
+				"id": 0,
+				"tInt": 0.2
+			},
+			"attitude": {
+				"id": 30,
+				"tInt": 0.5
+			},
+			"gpsRawINT": {
+				"id": 24,
+				"tInt": 1
+			},
+			"localPosition": {
+				"id": 32,
+				"tInt": 0.3
+			},
+			"globalPosition": {
+				"id": 33,
+				"tInt": 0.3
+			},
+			"homePosition": {
+				"id": 242,
+				"tInt": 10
+			},
+			"batteryStatus": {
+				"id": 147,
+				"tInt": 10
+			},
+			"missionCurrent": {
+				"id": 42,
+				"tInt": 1
+			}
+		}
+	},
+	"apDrive": {
+		"class": "_APmavlink_drive",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 10
+		},
+		"_APmavlink_base": "apBase",
+		"_StateControl": "state",
+		"bSetYawSpeed": false,
+		"yawMode": 1,
+		"bRcChanOverride": true,
+		"iRcYaw": 1,
+		"iRCThrottle": 3,
+		"pwmM": 1500,
+		"pwmD": 500
+	}
+}

@@ -3,6 +3,7 @@
 
 #include "../../Protocol/_Mavlink.h"
 #include "../../State/_StateControl.h"
+#include "../../Protocol/_JSONbase.h"
 #include "../../Utility/utilEvent.h"
 #include "../../Utility/utilVar.h"
 
@@ -103,6 +104,7 @@ namespace kai
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
+		virtual void console(const json &j, void *pJSONbase);
 
 		// mode
 		void setMode(uint32_t iMode);

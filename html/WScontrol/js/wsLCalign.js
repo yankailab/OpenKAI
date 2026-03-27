@@ -1,7 +1,3 @@
-function $(selector) { return document.querySelector(selector); }
-
-var strEOJ = "EOJ";
-
 window.onload = function () {
     wsInit();
 

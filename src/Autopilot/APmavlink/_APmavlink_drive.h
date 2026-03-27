@@ -2,6 +2,7 @@
 #define OpenKAI_src_Autopilot_APmavlink__APmavlink_drive_H_
 
 #include "_APmavlink_base.h"
+#include "../../Protocol/_JSONbase.h"
 
 namespace kai
 {
@@ -18,6 +19,7 @@ namespace kai
 		virtual bool check(void);
 		virtual void update(void);
 		virtual void console(void *pConsole);
+		virtual void console(const json &j, void *pJSONbase);
 
 		virtual void setSteerSpeed(float steer, float spd);
 		virtual void setYawMode(bool bRelative);

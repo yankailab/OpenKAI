@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <title>APdrive</title>
+  <!-- MDB icon -->
+  <link rel="icon" href="img/mdb-favicon.ico" type="image/x-icon" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" />
+  <!-- Google Fonts Roboto -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+  <!-- Dark MDB theme -->
+  <link rel="stylesheet" href="css/mdb.dark.min.css" />
+  <!-- Regular MDB theme -->
+  <!-- <link rel="stylesheet" href="css/mdb.min.css" /> -->
+
+</head>
+
+<body>
+
+  <!-- Start your project here-->
+  <section>
+    <div class="text-center">
+      <h5><strong id="state">State: </strong></h5>
+    </div>
+  </section>
+
+  <section>
+    <div class="text-center">
+      <strong id="msg"></strong>
+    </div>
+
+    <div class="form-outline" data-mdb-input-init>
+      <textarea class="form-control" id="txtMsg" rows="4"></textarea>
+    </div>
+  </section>
+
+
+  <table class="table">
+    <tbody>
+      <tr>
+        <td>
+        </td>
+        <td>
+          <div class="text-center">
+            <button id="btnForward" style="WIDTH: 100px; HEIGHT: 100px" type="button" class="btn btn-primary">FORWARD</button>
+          </div>
+        </td>
+        <td>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="text-center">
+            <button id="btnLeft" style="WIDTH: 100px; HEIGHT: 100px" type="button" class="btn btn-primary">LEFT</button>
+          </div>
+        </td>
+        <td>
+        </td>
+        <td>
+          <div class="text-center">
+            <button id="btnRight" style="WIDTH: 100px; HEIGHT: 100px" type="button" class="btn btn-primary">RIGHT</button>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+        </td>
+        <td>
+          <div class="text-center">
+            <button id="btnBack" style="WIDTH: 100px; HEIGHT: 100px" type="button" class="btn btn-primary">BACK</button>
+          </div>
+        </td>
+        <td>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <section>
+    <div class="text-center">
+      <button id="btnArm" style="WIDTH: 200px; HEIGHT: 50px" type="button" class="btn btn-primary">Arm</button>
+      <button id="btnDisarm" style="WIDTH: 200px; HEIGHT: 50px" type="button" class="btn btn-secondary">Disarm</button>
+      </br>
+    </div>
+  </section>
+
+  <!--    <div id="map"></div> -->
+
+  <!-- End your project here-->
+
+  <!-- MDB -->
+  <script type="text/javascript" src="js/mdb.min.js"></script>
+  <!-- Custom scripts -->
+  <script type="text/javascript"></script>
+  <script src="js/wsBase.js"></script>
+  <script src="js/wsAPdrive.js"></script>
+</body>
+
+</html>

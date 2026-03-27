@@ -399,4 +399,25 @@ namespace kai
 		pC->addMsg("xMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xmag) + ", yMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.ymag) + ", zMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zmag), 1);
 	}
 
+    void _APmavlink_base::console(const json &j, void *pJSONbase)
+    {
+        _JSONbase *pJb = (_JSONbase *)pJSONbase;
+        string cmd;
+        IF_(!jKv(j, "cmd", cmd));
+
+        if (cmd == "setArm")
+        {
+            bool bArm = false;
+            jKv(j, "bArm", bArm);
+
+			setArm(bArm);
+
+            NULL_(pJb);
+            json jr = json::object();
+            jr["cmd"] = "setArm";
+            jr["bSuccess"] = true;
+            pJb->sendJson(jr);
+        }
+    }
+
 }
