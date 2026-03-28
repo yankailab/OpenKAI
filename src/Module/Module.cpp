@@ -213,15 +213,15 @@ namespace kai
 		ADD_MODULE(_BenewakeTF);
 		ADD_MODULE(_TOFsense);
 		ADD_MODULE(_LeddarVu);
-#ifdef WITH_3D &&USE_OPEN3D
+#if defined(WITH_3D) && defined(USE_OPEN3D)
 		ADD_MODULE(_Livox2);
 		ADD_MODULE(_RoboSenseAiry);
 #endif // 3D
 #endif // sensor
 
-#ifdef WITH_SLAM &&WITH_NAVIGATION
+#if defined(WITH_SLAM) && defined(WITH_NAVIGATION)
 		ADD_MODULE(_SLAMbase);
-#ifdef USE_OPENCV
+#if defined(USE_OPENCV) && defined(WITH_3D) && defined(USE_OPEN3D)
 		ADD_MODULE(_LCalign);
 #ifdef USE_FASTLIVO
 		ADD_MODULE(_FastLivo2);

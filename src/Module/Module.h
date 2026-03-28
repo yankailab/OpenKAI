@@ -203,15 +203,15 @@
 #include "../Sensor/Distance/_LeddarVu.h"
 #include "../Sensor/Distance/_TOFsense.h"
 #include "../Sensor/Distance/_BenewakeTF.h"
-#ifdef WITH_3D &&USE_OPEN3D
+#if defined(WITH_3D) && defined(USE_OPEN3D)
 #include "../Sensor/LiDAR/_Livox2.h"
 #include "../Sensor/LiDAR/_RoboSenseAiry.h"
 #endif // 3D
 #endif // sensor
 
-#ifdef WITH_SLAM &&WITH_NAVIGATION
+#if defined(WITH_SLAM) && defined(WITH_NAVIGATION)
 #include "../SLAM/_SLAMbase.h"
-#ifdef USE_OPENCV
+#if defined(USE_OPENCV) && defined(WITH_3D) && defined(USE_OPEN3D)
 #include "../SLAM/_LCalign.h"
 #ifdef USE_FASTLIVO
 #include "../SLAM/_FastLivo2.h"

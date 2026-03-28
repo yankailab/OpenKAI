@@ -361,7 +361,7 @@ endif() # sensor
 if(WITH_SLAM AND WITH_NAVIGATION)
   add_definitions(-DWITH_SLAM)
   set(OpenKAI_cpp ${OpenKAI_cpp} src/SLAM/_SLAMbase.cpp)
-  if(USE_OPENCV)
+  if(USE_OPENCV AND WITH_3D AND USE_OPEN3D)
     set(OpenKAI_cpp ${OpenKAI_cpp} src/SLAM/_LCalign.cpp)
     if(USE_FASTLIVO)
       set(OpenKAI_cpp ${OpenKAI_cpp} src/SLAM/_FastLivo2.cpp)
