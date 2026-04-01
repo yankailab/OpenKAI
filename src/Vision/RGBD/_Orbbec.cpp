@@ -132,8 +132,8 @@ namespace kai
 		NULL_F(m_pT);
 		NULL_F(m_pTpp);
 
-		IF_F(!m_pT->start(getUpdate, this));
-		return m_pTpp->start(getTPP, this);
+		IF_F(!m_pT->startThread(getUpdate, this));
+		return m_pTpp->startThread(getTPP, this);
 	}
 
 	bool _Orbbec::check(void)

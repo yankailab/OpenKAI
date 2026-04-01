@@ -54,7 +54,7 @@ namespace kai
 	bool _DetectNet::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		return m_pT->startThread(getUpdate, this);
 	}
 
 	bool _DetectNet::check(void)

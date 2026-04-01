@@ -42,7 +42,7 @@ namespace kai
 	bool _D2G::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		return m_pT->startThread(getUpdate, this);
 	}
 
 	void _D2G::update(void)

@@ -74,7 +74,7 @@ namespace kai
 		return true;
 	}
 
-	bool _Thread::start(void *(*__start_routine)(void *),
+	bool _Thread::startThread(void *(*__start_routine)(void *),
 						void *__restrict __arg)
 	{
 		IF_F(m_threadID != 0);

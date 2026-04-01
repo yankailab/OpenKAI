@@ -54,10 +54,10 @@ namespace kai
     bool _ROS_fastLio::start(void)
     {
         NULL_F(m_pT);
-        IF_F(!m_pT->start(getUpdate, this));
+        IF_F(!m_pT->startThread(getUpdate, this));
 
         NULL__(m_pTros);
-        IF_F(!m_pTros->start(getUpdateROS, this));
+        IF_F(!m_pTros->startThread(getUpdateROS, this));
 
         return true;
     }

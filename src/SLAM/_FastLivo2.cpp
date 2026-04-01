@@ -108,7 +108,7 @@ namespace kai
 	bool _FastLivo2::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		return m_pT->startThread(getUpdate, this);
 	}
 
 	void _FastLivo2::update(void)

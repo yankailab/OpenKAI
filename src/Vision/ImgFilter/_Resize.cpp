@@ -42,7 +42,7 @@ namespace kai
 	bool _Resize::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		return m_pT->startThread(getUpdate, this);
 	}
 
 	void _Resize::update(void)

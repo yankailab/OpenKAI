@@ -32,7 +32,7 @@ namespace kai
 	bool _xArm::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		return m_pT->startThread(getUpdate, this);
 	}
 
 	bool _xArm::check(void)

@@ -172,13 +172,13 @@ namespace kai
         NULL_F(m_pTpclR);
         NULL_F(m_pTimuR);
 
-        IF_F(!m_pT->start(getUpdateWdeviceQuery, this));
-        IF_F(!m_pTdeviceQueryR->start(getUpdateRdeviceQuery, this));
-        IF_F(!m_pTctrlCmdW->start(getUpdateWctrlCmd, this));
-        IF_F(!m_pTctrlCmdR->start(getUpdateRctrlCmd, this));
-        IF_F(!m_pTpushCmdR->start(getUpdateRpushCmd, this));
-        IF_F(!m_pTpclR->start(getUpdateRpointCloud, this));
-        IF_F(!m_pTimuR->start(getUpdateRimu, this));
+        IF_F(!m_pT->startThread(getUpdateWdeviceQuery, this));
+        IF_F(!m_pTdeviceQueryR->startThread(getUpdateRdeviceQuery, this));
+        IF_F(!m_pTctrlCmdW->startThread(getUpdateWctrlCmd, this));
+        IF_F(!m_pTctrlCmdR->startThread(getUpdateRctrlCmd, this));
+        IF_F(!m_pTpushCmdR->startThread(getUpdateRpushCmd, this));
+        IF_F(!m_pTpclR->startThread(getUpdateRpointCloud, this));
+        IF_F(!m_pTimuR->startThread(getUpdateRimu, this));
 
         return true;
     }

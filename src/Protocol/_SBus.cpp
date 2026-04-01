@@ -51,12 +51,12 @@ namespace kai
 		if (m_bSender)
 		{
 			NULL_F(m_pT);
-			IF_F(!m_pT->start(getUpdateW, this));
+			IF_F(!m_pT->startThread(getUpdateW, this));
 		}
 		else
 		{
 			NULL_F(m_pTr);
-			IF_F(!m_pTr->start(getUpdateR, this));
+			IF_F(!m_pTr->startThread(getUpdateR, this));
 		}
 
 		return true;

@@ -49,8 +49,8 @@ namespace kai
 		NULL_F(m_pT);
 		NULL_F(m_pTr);
 
-		IF_F(!m_pT->start(getUpdate, this));
-		IF_F(!m_pTr->start(getUpdateR, this));
+		IF_F(!m_pT->startThread(getUpdate, this));
+		IF_F(!m_pTr->startThread(getUpdateR, this));
 
 		return true;
 	}

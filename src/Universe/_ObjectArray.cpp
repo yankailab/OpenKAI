@@ -46,7 +46,7 @@ namespace kai
 	bool _ObjectArray::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		return m_pT->startThread(getUpdate, this);
 	}
 
 	void _ObjectArray::update(void)

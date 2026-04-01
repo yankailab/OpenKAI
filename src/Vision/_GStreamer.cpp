@@ -65,7 +65,7 @@ namespace kai
 	bool _GStreamer::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		return m_pT->startThread(getUpdate, this);
 	}
 
 	void _GStreamer::update(void)

@@ -65,7 +65,7 @@ namespace kai
 	bool _YOLOv8::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		return m_pT->startThread(getUpdate, this);
 	}
 
 	bool _YOLOv8::check(void)

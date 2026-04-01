@@ -67,7 +67,7 @@ namespace kai
 	bool _HYMCU_RS485::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		return m_pT->startThread(getUpdate, this);
 	}
 
 	bool _HYMCU_RS485::check(void)

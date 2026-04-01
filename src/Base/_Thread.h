@@ -29,7 +29,7 @@ namespace kai
 
 		virtual bool init(const json &j);
 		virtual bool link(const json &j, ModuleMgr *pM);
-		virtual bool start(void *(*__start_routine)(void *), void *__restrict __arg);
+		virtual bool startThread(void *(*__start_routine)(void *), void *__restrict __arg);
 		virtual void console(void *pConsole);
 
 		bool bAlive(void);

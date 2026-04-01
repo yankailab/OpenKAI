@@ -120,10 +120,10 @@ namespace kai
 	bool _GeometryViewer::start(void)
 	{
 		NULL_F(m_pT);
-		IF_F(!m_pT->start(getUpdate, this));
+		IF_F(!m_pT->startThread(getUpdate, this));
 
 		NULL_F(m_pTui);
-		IF_F(!m_pTui->start(getUpdateUI, this));
+		IF_F(!m_pTui->startThread(getUpdateUI, this));
 
 		return true;
 	}

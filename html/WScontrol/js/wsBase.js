@@ -20,4 +20,8 @@ function wsInit()
     $('#state').innerHTML = 'Disconnected: ' + event.reason;
   };
 
+  wsSocket.onerror = function (event) {
+    $('#state').innerHTML = 'Error: ' + event.reason;
+  };
+
 };

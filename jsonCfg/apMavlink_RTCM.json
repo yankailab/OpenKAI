@@ -13,7 +13,7 @@
 		},
 		"vBASE": [
 			"/serialAP",
-			"mavAP",
+			"/mavAP",
 			"apBase",
 			"tcpNtrip",
 			"RTCMcast",

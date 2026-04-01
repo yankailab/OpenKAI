@@ -48,7 +48,7 @@ namespace kai
 	bool _Mask::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		return m_pT->startThread(getUpdate, this);
 	}
 
 	void _Mask::update(void)

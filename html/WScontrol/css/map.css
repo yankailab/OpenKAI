@@ -1,11 +1,50 @@
+ html,
+ body {
+   height: 100%;
+   margin: 0;
+   padding: 0;
+ }
+
  #map {
-    height: 100%;
-    width: 100%;
-  }
-  
-  html,
-  body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
+   height: 100%;
+   width: 100%;
+ }
+
+ .toolbar {
+   position: fixed;
+   top: 10px;
+   left: 10px;
+   z-index: 1000;
+   background: rgba(255, 255, 255, 0.95);
+   padding: 10px;
+   border-radius: 8px;
+   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+   max-width: 360px;
+   font-family: sans-serif;
+ }
+
+ .toolbar button {
+   margin: 0 6px 6px 0;
+ }
+
+ #status {
+   margin-top: 6px;
+   font-size: 14px;
+ }
+
+ #jsonPreview {
+   margin: 8px 0 0 0;
+   max-height: 180px;
+   overflow: auto;
+   font-size: 12px;
+   white-space: pre-wrap;
+ }
+
+ .vertex-handle {
+   width: 14px;
+   height: 14px;
+   border-radius: 50%;
+   background: #0078ff;
+   border: 2px solid white;
+   box-shadow: 0 0 0 1px #0078ff;
+ }

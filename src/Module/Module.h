@@ -162,6 +162,7 @@
 #ifdef WITH_NAVIGATION
 #include "../Navigation/_GPS.h"
 #include "../Navigation/_RTCMcast.h"
+#include "../Navigation/GeoFence.h"
 #ifdef USE_REALSENSE
 #include "../Navigation/_RStracking.h"
 #endif

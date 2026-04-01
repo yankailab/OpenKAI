@@ -45,7 +45,7 @@ namespace kai
 	bool _Thermal2RGB::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		return m_pT->startThread(getUpdate, this);
 	}
 
 	void _Thermal2RGB::update(void)

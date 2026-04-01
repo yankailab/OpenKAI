@@ -68,7 +68,7 @@ namespace kai
 	bool _MotionDetector::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		return m_pT->startThread(getUpdate, this);
 	}
 
 	bool _MotionDetector::check(void)

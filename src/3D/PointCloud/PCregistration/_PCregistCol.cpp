@@ -61,7 +61,7 @@ namespace kai
     {
         NULL_F(m_pT); // work in none thread mode
 
-        return m_pT->start(getUpdate, this);
+        return m_pT->startThread(getUpdate, this);
     }
 
     bool _PCregistCol::check(void)

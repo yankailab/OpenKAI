@@ -42,7 +42,7 @@ namespace kai
 	bool _ZLAC8015D::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		return m_pT->startThread(getUpdate, this);
 	}
 
 	bool _ZLAC8015D::check(void)

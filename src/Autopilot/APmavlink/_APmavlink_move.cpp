@@ -34,7 +34,7 @@ namespace kai
 	bool _APmavlink_move::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		return m_pT->startThread(getUpdate, this);
 	}
 
 	bool _APmavlink_move::check(void)

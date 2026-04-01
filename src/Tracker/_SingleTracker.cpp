@@ -42,7 +42,7 @@ namespace kai
 	bool _SingleTracker::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		return m_pT->startThread(getUpdate, this);
 	}
 
 	void _SingleTracker::update(void)

@@ -38,8 +38,8 @@ namespace kai
     {
         NULL_F(m_pT);
         NULL_F(m_pTr);
-        IF_F(!m_pT->start(getUpdateW, this));
-        return m_pTr->start(getUpdateR, this);
+        IF_F(!m_pT->startThread(getUpdateW, this));
+        return m_pTr->startThread(getUpdateR, this);
     }
 
     bool _JSONbase::check(void)

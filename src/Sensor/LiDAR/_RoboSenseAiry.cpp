@@ -55,8 +55,8 @@ namespace kai
         NULL_F(m_pT);
         NULL_F(m_pTdifop);
 
-        IF_F(!m_pT->start(getUpdateMSOP, this));
-        IF_F(!m_pTdifop->start(getUpdateDIFOP, this));
+        IF_F(!m_pT->startThread(getUpdateMSOP, this));
+        IF_F(!m_pTdifop->startThread(getUpdateDIFOP, this));
 
         return true;
     }

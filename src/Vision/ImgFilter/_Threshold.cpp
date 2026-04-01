@@ -64,7 +64,7 @@ namespace kai
 	bool _Threshold::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		return m_pT->startThread(getUpdate, this);
 	}
 
 	void _Threshold::update(void)
