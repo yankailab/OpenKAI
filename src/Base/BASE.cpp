@@ -126,7 +126,7 @@ namespace kai
 
 		IF_Le_F(f.empty(), "JSON config file name empty");
 
-		string jStr = j.dump();
+		string jStr = j.dump(4);
 		return writeFile(f, jStr);
 	}
 

@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/OpenKAI",
             "args": [
-                "${workspaceFolder}/jsonCfg/RTCMcast.json"
+                "${workspaceFolder}/jsonCfg/apMavlink_RTCM.json"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

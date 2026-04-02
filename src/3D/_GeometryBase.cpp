@@ -59,7 +59,7 @@ namespace kai
         jKv<double>(j, "vR", m_vR);
         setTranslation(m_vT);
         setRotation(m_vR);
-        updateTranslationMatrix();
+        updateTranslationMatrix(false);
 
         return true;
     }
