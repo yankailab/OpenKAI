@@ -12,21 +12,27 @@ config com1 115200
 config com2 115200
 config com3 115200
 
-mode base time 120 2.5
+mode base time 120 2 2
 gngga com3 1
 gnrmc com3 1
 gngsa com3 1
 gpgst com3 1
 gngsv com3 1
 
-rtcm1006 com1 10
-rtcm1033 com1 10
+rtcm1006 com1 1
+#rtcm1008 com1 1
+rtcm1033 com1 1
 rtcm1074 com1 1
+rtcm1077 com1 1
 rtcm1084 com1 1
+rtcm1087 com1 1
 rtcm1094 com1 1
+rtcm1097 com1 1
 rtcm1114 com1 1
+rtcm1117 com1 1
 rtcm1124 com1 1
-rtcm1230 com1 10
+rtcm1127 com1 1
+#rtcm1230 com1 1
 
 saveconfig
 ```

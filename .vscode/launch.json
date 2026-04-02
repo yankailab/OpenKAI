@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/OpenKAI",
             "args": [
-                "${workspaceFolder}/jsonCfg/apDrive.json"
+                "${workspaceFolder}/jsonCfg/RTCMcast.json"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

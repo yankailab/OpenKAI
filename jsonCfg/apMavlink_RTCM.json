@@ -17,8 +17,8 @@
 			"apBase",
 			"tcpNtrip",
 			"RTCMcast",
-			"udpRTCMsvr",
-			"udpRTCMcli",
+			"/udpRTCMsvr",
+			"/udpRTCMcli",
 			"apRTCM"
 		]
 	},
@@ -123,7 +123,7 @@
 
 	"tcpNtrip": {
 		"class": "_TCPclient",
-		"bON": true,
+		"bON": false,
 		"thread": {
 			"FPS": 30
 		},
@@ -140,13 +140,13 @@
 		},
 		"nPacket": 256,
 		"nPbuffer": 2000,
-		"port": "/dev/ttyACM0",
+		"port": "/dev/ttyUSB0",
 		"baud": 115200
 	},
 
 	"udpRTCMsvr": {
 		"class": "_UDP",
-		"bON": true,
+		"bON": false,
 		"thread": {
 			"FPS": 30
 		},
@@ -161,15 +161,15 @@
 
 	"RTCMcast": {
 		"class": "_RTCMcast",
-		"bON": true,
+		"bON": false,
 		"thread": {
 			"FPS": 1
 		},
 		"threadR": {
 			"FPS": 1
 		},
-		"_IObase": "tcpNtrip",
-		"/_IObase": "serialRTCM",
+		"/_IObase": "tcpNtrip",
+		"_IObase": "serialRTCM",
 		"_IObaseSend": "udpRTCMsvr",
 		"/RTCMmsg": [
 			{

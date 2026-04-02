@@ -1,0 +1,76 @@
+{
+	"APP": {
+		"class": "Startup",
+		"appName": "RTCMcast",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"tcpNtrip",
+			"RTCMcast",
+			"udpRTCMsvr",
+			"udpRTCMcli"
+		]
+	},
+
+
+	"tcpNtrip": {
+		"class": "_TCPclient",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"nPacket": 256,
+		"nPbuffer": 2000,
+		"addr": "127.0.0.1",
+		"port": 24608
+	},
+
+	"serialRTCM": {
+		"class": "_SerialPort",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"nPacket": 256,
+		"nPbuffer": 2000,
+		"port": "/dev/ttyUSB0",
+		"baud": 115200
+	},
+
+	"udpRTCMsvr": {
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"nPacket": 256,
+		"nPbuffer": 2000,
+		"addrRemote": "127.0.0.1",
+		"portRemote": 24609,
+		"/portLocal": 24609,
+		"bW2R": false,
+		"bWbroadcast": false
+	},
+
+	"RTCMcast": {
+		"class": "_RTCMcast",
+		"bON": true,
+		"thread": {
+			"FPS": 1
+		},
+		"threadR": {
+			"FPS": 1
+		},
+		"/_IObase": "tcpNtrip",
+		"_IObase": "serialRTCM",
+		"_IObaseSend": "udpRTCMsvr"
+	}
+
+}
