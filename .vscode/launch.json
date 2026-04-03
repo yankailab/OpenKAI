@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/OpenKAI",
             "args": [
-                "${workspaceFolder}/jsonCfg/apMavlink_RTCM.json"
+                "${workspaceFolder}/jsonCfg/GeoFence.json"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

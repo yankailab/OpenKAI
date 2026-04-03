@@ -1,0 +1,150 @@
+{
+	"APP": {
+		"class": "Startup",
+		"appName": "OpenKAI",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": false,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"/serialAP",
+			"/mavAP",
+			"apBase",
+			"geoFence"
+		]
+	},
+
+	"wsServer": {
+		"class": "_WebSocketServer",
+		"bON": true,
+		"bLog": 0,
+		"thread": {
+			"FPS": 10
+		},
+		"threadR": {
+			"FPS": 10
+		},
+		"wsMode": 2,
+		"host": "0.0.0.0",
+		"port": 7890,
+		"tOutMs": 10000
+	},
+	"wsConsole": {
+		"class": "_WSconsole",
+		"bON": true,
+		"thread": {
+			"FPS": 1
+		},
+		"threadR": {
+			"FPS": 1
+		},
+		"vBASE": [
+			"geoFence"
+		],
+		"msgFinishSend": "",
+		"msgFinishRecv": "EOJ",
+		"_IObase": "wsServer"
+	},
+
+
+	"serialAP": {
+		"class": "_SerialPort",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"nPacket": 256,
+		"nPbuffer": 2000,
+		"port": "/dev/ttyACM0",
+		"baud": 115200
+	},
+	"udpAP": {
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"nPacket": 256,
+		"nPbuffer": 2000,
+		"addrRemote": "192.168.16.203",
+		"portRemote": 24602,
+		"/portLocal": 24600,
+		"bW2R": false,
+		"bWbroadcast": false
+	},
+	"mavAP": {
+		"class": "_Mavlink",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"bLog": false,
+		"_IObase": "udpAP",
+		"/_IObase": "serialAP",
+		"mySystemID": 200,
+		"iMavComm": 0
+	},
+
+	"apBase": {
+		"class": "_APmavlink_base",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"_StateControl": "state",
+		"_Mavlink": "mavAP",
+		"apType": 1,
+		"ieSendHB": 1,
+		"ieSendMsgInt": 1,
+		"mavMsgInt": {
+			"heartbeat": {
+				"id": 0,
+				"tInt": 0.4
+			},
+			"attitude": {
+				"id": 30,
+				"tInt": 0.3
+			},
+			"rcChannels": {
+				"id": 65,
+				"tInt": 1.0
+			},
+			"localPosition": {
+				"id": 32,
+				"tInt": 0.3
+			},
+			"globalPosition": {
+				"id": 33,
+				"tInt": 0.1
+			},
+			"homePosition": {
+				"id": 242,
+				"tInt": 10
+			},
+			"batteryStatus": {
+				"id": 147,
+				"tInt": 10
+			},
+			"missionCurrent": {
+				"id": 42,
+				"tInt": 1
+			}
+		}
+	},
+
+	"geoFence": {
+		"class": "_GeoFence",
+		"bON": true,
+		"thread": {
+			"FPS": 2
+		},
+		"_JSONbase": "",
+		"_APmavlink_base": "apBase",
+		"estD":1
+	}
+}

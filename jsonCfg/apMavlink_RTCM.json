@@ -44,7 +44,7 @@
 		"nPacket": 256,
 		"nPbuffer": 2000,
 		"addrRemote": "192.168.16.203",
-		"portRemote": 24602,
+		"portRemote": 24603,
 		"/portLocal": 24600,
 		"bW2R": false,
 		"bWbroadcast": false
@@ -58,13 +58,13 @@
 		"bLog": false,
 		"_IObase": "udpAP",
 		"/_IObase": "serialAP",
-		"mySystemID": 255,
+		"mySystemID": 200,
 		"iMavComm": 0
 	},
 
 	"apBase": {
 		"class": "_APmavlink_base",
-		"bON": true,
+		"bON": false,
 		"thread": {
 			"FPS": 10
 		},
@@ -123,9 +123,9 @@
 	},
 	"serialRTCM": {
 		"class": "_SerialPort",
-		"bON": false,
+		"bON": true,
 		"thread": {
-			"FPS": 30
+			"FPS": 10
 		},
 		"nPacket": 256,
 		"nPbuffer": 2000,
@@ -173,7 +173,7 @@
 
 	"udpRTCMcli": {
 		"class": "_UDP",
-		"bON": true,
+		"bON": false,
 		"thread": {
 			"FPS": 30
 		},
@@ -194,8 +194,9 @@
 		"threadR": {
 			"FPS": 1
 		},
-		"_IObase": "udpRTCMcli",
-		"/_IObase": "tcpNtrip",
+		"_IObase": "serialRTCM",
+		"/_IObase": "udpRTCMcli",
+		"//_IObase": "tcpNtrip",
 		"_Mavlink": "mavAP"
 	}
 }

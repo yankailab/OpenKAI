@@ -1,69 +1,162 @@
-#include "GeoFence.h"
+#include "_GeoFence.h"
 
 namespace kai
 {
-	GeoFence::GeoFence()
+	_GeoFence::_GeoFence()
 	{
-		m_type = geoFence_polygon;
+		m_pAP = nullptr;
+
+		m_type = _GeoFence_polygon;
+		m_bBreach = false;
+		m_estD = 1;
+		m_hdg = 0;
+		m_rAngle = 0;
+		m_vP.set(0);
+		m_vPnext.set(0);
+		m_pJb = nullptr;
 	}
 
-	GeoFence::~GeoFence()
+	_GeoFence::~_GeoFence()
 	{
 	}
 
-	bool GeoFence::init(const json &j)
+	bool _GeoFence::init(const json &j)
 	{
-		IF_F(!this->BASE::init(j));
+		IF_F(!this->_ModuleBase::init(j));
 
-		//		jKv(j, "next", m_next);
+		jKv(j, "type", m_type);
+		jKv(j, "estD", m_estD);
+		jKv<double>(j, "vP", m_vP);
+		jKv(j, "vPolygon", m_vPolygon);
 
 		return true;
 	}
 
-	bool GeoFence::link(const json &j, ModuleMgr *pM)
+	bool _GeoFence::link(const json &j, ModuleMgr *pM)
 	{
-		IF_F(!this->BASE::link(j, pM));
+		IF_F(!this->_ModuleBase::link(j, pM));
+
+		string n = "";
+		jKv(j, "_JSONbase", n);
+		m_pJb = (_JSONbase *)(pM->findModule(n));
+
+		n = "";
+		jKv(j, "_APmavlink_base", n);
+		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 
 		return true;
 	}
 
-	GEOFENCE_TYPE GeoFence::getType(void)
+	bool _GeoFence::start(void)
+	{
+		NULL_F(m_pT);
+		return m_pT->startThread(getUpdate, this);
+	}
+
+	void _GeoFence::update(void)
+	{
+		while (m_pT->bAlive())
+		{
+			m_pT->autoFPS();
+
+			if(m_pAP)
+			{
+				vDouble4 vPos = m_pAP->getGlobalPos();
+				float hdg = m_pAP->getHdg();
+
+				setPosHdg(vDouble2(vPos.x, vPos.y), hdg);
+			}
+
+			updateFencePolygon();
+			sendFence();
+		}
+	}
+
+	_GeoFence_TYPE _GeoFence::getType(void)
 	{
 		return m_type;
 	}
 
-	void GeoFence::console(void *pConsole)
+	void _GeoFence::sendFence(void)
 	{
-		NULL_(pConsole);
-		this->BASE::console(pConsole);
+		NULL_(m_pJb);
 
-		// _Console *pC = (_Console *)pConsole;
-		// if (!bActive())
-		// 	pC->addMsg("[Inactive]", 0);
-		// else
-		// 	pC->addMsg("[ACTIVE]", 0);
+		json j = json::object();
+		j["cmd"] = "geoFence";
+		j["vP"] = {m_vP.x, m_vP.y}; // lat lon
+		j["vPnext"] = {m_vPnext.x, m_vPnext.y};
+		j["bBreach"] = m_bBreach;
+		m_pJb->sendJson(j);
 	}
 
-	void GeoFence::console(const json &j, void *pJSONbase)
+	void _GeoFence::setPosHdg(const vDouble2 &vP, float hdgDeg)
+	{
+		m_vP = vP;
+		m_hdg = hdgDeg;
+	}
+
+	void _GeoFence::setPolygon(const vector<vector<double>> &vvCoord)
+	{
+		m_vPolygon = vvCoord;
+	}
+
+	bool _GeoFence::bBreach(void)
+	{
+		return m_bBreach;
+	}
+
+	void _GeoFence::getP(vDouble2 *pP, vDouble2 *pPnext)
+	{
+		if (pP)
+		{
+			*pP = m_vP;
+		}
+
+		if (pPnext)
+		{
+			*pPnext = m_vPnext;
+		}
+	}
+
+	void _GeoFence::console(void *pConsole)
+	{
+		NULL_(pConsole);
+		this->_ModuleBase::console(pConsole);
+
+		_Console *pC = (_Console *)pConsole;
+		pC->addMsg("bBreach: " + i2str(m_bBreach));
+		pC->addMsg("nPolygonVertices:" + i2str(m_vPolygon.size()));
+		pC->addMsg("vP: (" + lf2str(m_vP.x, 7) + ", " + lf2str(m_vP.y, 7) + ")");
+		pC->addMsg("hdg: " + f2str(m_hdg));
+	}
+
+	void _GeoFence::console(const json &j, void *pJSONbase)
 	{
 		_JSONbase *pJb = (_JSONbase *)pJSONbase;
 		string cmd;
 		IF_(!jKv(j, "cmd", cmd));
 
-		if (cmd == "setSteerSpeed")
+		if (cmd == "setGeoFence")
 		{
-			float steer = 0;
-			jKv(j, "steer", steer);
-			float speed = 0;
-			jKv(j, "speed", speed);
+			string type;
+			jKv(j, "type", type);
 
-			//			setSteerSpeed(steer, speed);
+			if (type == "polygon")
+			{
+				jKv(j, "vPolygon", m_vPolygon);
+				setPolygon(m_vPolygon);
+			}
+			else if (type == "circle")
+			{
+			}
 
 			NULL_(pJb);
 			json jr = json::object();
-			jr["cmd"] = "setSteerSpeed";
+			jr["cmd"] = "set_GeoFence";
 			jr["bSuccess"] = true;
 			pJb->sendJson(jr);
+
+			m_pJb = pJb;
 		}
 	}
 
@@ -247,45 +340,41 @@ namespace kai
 		return normalizeHeadingDeg(hdgRad * kRadToDeg);
 	}
 
-	bool GeoFence::bBreach(const vector<vDouble2> &vCoord,
-						   const vDouble2 &vPos,
-						   float hdg,
-						   float dist,
-						   float *pRangle)
+	void _GeoFence::updateFencePolygon(void)
 	{
-		if (pRangle)
-			*pRangle = hdg;
-
-		IF_F(vCoord.size() < 3); // invalid polygon
+		IF_(m_vPolygon.size() < 3); // invalid polygon
 
 		// Build local polygon around current position.
 		vector<vDouble2> polyLocal;
-		polyLocal.reserve(vCoord.size());
-		for (const auto &g : vCoord)
-			polyLocal.push_back(geoToLocalMeters(g, vPos));
+		polyLocal.reserve(m_vPolygon.size());
+		for (const auto &g : m_vPolygon)
+			polyLocal.push_back(geoToLocalMeters(vDouble2(g[0], g[1]), m_vP));
 
 		// Current robot position is origin in local frame.
 		const vDouble2 p0{0.0, 0.0};
 
 		// Heading convention: 0=N, 90=E
-		const double hdgRad = static_cast<double>(hdg) * kDegToRad;
+		const double hdgRad = static_cast<double>(m_hdg) * kDegToRad;
 		const vDouble2 moveVec{
-			static_cast<double>(dist) * std::sin(hdgRad), // East
-			static_cast<double>(dist) * std::cos(hdgRad)  // North
+			static_cast<double>(m_estD) * std::sin(hdgRad), // East
+			static_cast<double>(m_estD) * std::cos(hdgRad)	// North
 		};
 
 		const vDouble2 p1 = p0 + moveVec;
 
-		// Compute the new geo position too
-		// Not used directly after this line, but shown for completeness.
-		const vDouble2 newGeo = localMetersToGeo(p1, vPos);
-		(void)newGeo;
+		// Compute the new geo position
+		m_vPnext = localMetersToGeo(p1, m_vP);
 
 		// If new point is still inside (or on edge), no breach.
-		IF_F(pointInPolygonOrOnEdge(polyLocal, p1));
+		if (pointInPolygonOrOnEdge(polyLocal, p1))
+		{
+			m_bBreach = false;
+			m_rAngle = 0;
+			return;
+		}
 
-		// New point is outside => breach.
-		NULL__(pRangle, true);
+		// Breach
+		m_bBreach = true;
 
 		// Compute reflection heading from the crossed edge.
 		double bestT = std::numeric_limits<double>::infinity();
@@ -326,11 +415,9 @@ namespace kai
 			if (norm2(edgeUnit) > kEps && norm2(dirUnit) > kEps)
 			{
 				const vDouble2 refl = reflectAcrossEdgeTangent(dirUnit, edgeUnit);
-				*pRangle = static_cast<float>(vectorToHeadingDeg(refl));
+				m_rAngle = static_cast<float>(vectorToHeadingDeg(refl));
 			}
 		}
-
-		return true;
 	}
 
 }
