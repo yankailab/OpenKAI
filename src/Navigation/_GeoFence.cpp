@@ -4,8 +4,6 @@ namespace kai
 {
 	_GeoFence::_GeoFence()
 	{
-		m_pAP = nullptr;
-
 		m_type = _GeoFence_polygon;
 		m_bBreach = false;
 		m_estD = 1;
@@ -40,10 +38,6 @@ namespace kai
 		jKv(j, "_JSONbase", n);
 		m_pJb = (_JSONbase *)(pM->findModule(n));
 
-		n = "";
-		jKv(j, "_APmavlink_base", n);
-		m_pAP = (_APmavlink_base *)(pM->findModule(n));
-
 		return true;
 	}
 
@@ -58,14 +52,6 @@ namespace kai
 		while (m_pT->bAlive())
 		{
 			m_pT->autoFPS();
-
-			if(m_pAP)
-			{
-				vDouble4 vPos = m_pAP->getGlobalPos();
-				float hdg = m_pAP->getHdg();
-
-				setPosHdg(vDouble2(vPos.x, vPos.y), hdg);
-			}
 
 			updateFencePolygon();
 			sendFence();

@@ -1,4 +1,4 @@
-var map = L.map('map').setView([36.7795232705419, 138.52919832429615], 16);
+var map = L.map('map').setView([36.7793686,138.4152144], 16);
 
 tlGoogleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
         maxZoom: 20,

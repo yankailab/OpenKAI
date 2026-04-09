@@ -41,8 +41,6 @@ namespace kai
 		}
 
 	protected:
-		_APmavlink_base* m_pAP;
-
 		_GeoFence_TYPE m_type;
 		bool m_bBreach;
 
