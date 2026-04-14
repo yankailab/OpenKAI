@@ -66,7 +66,7 @@ namespace kai
 		// cnf file input
 		vector<string> vLines = splitBy(cnf, '\n');
 
-		int i;
+		size_t i;
 
 		// find header
 		int nV;
@@ -98,7 +98,6 @@ namespace kai
 		}
 
 		// clauses
-		int iC = 0;
 		for (i++; i < vLines.size(); i++)
 		{
 			IF_CONT(vLines[i].empty());
@@ -126,7 +125,7 @@ namespace kai
 	bool _SATbase::bSatisfied(void)
 	{
 		int nS = 0;
-		for (int i = 0; i < m_vC.size(); i++)
+		for (size_t i = 0; i < m_vC.size(); i++)
 		{
 			SAT_CLAUSE *pC = &m_vC[i];
 			int nT = 0;
@@ -162,7 +161,7 @@ namespace kai
 	void _SATbase::printSolution(void)
 	{
 		string s = "";
-		for (int i = 1; i < m_vV.size(); i++)
+		for (size_t i = 1; i < m_vV.size(); i++)
 		{
 			int v = m_vV[i].v();
 			s += i2str(v) + " ";

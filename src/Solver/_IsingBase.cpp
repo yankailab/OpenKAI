@@ -67,10 +67,10 @@ namespace kai
 		// cnf file input
 		vector<string> vLines = splitBy(cnf, '\n');
 
-		int i;
+		size_t i;
 
 		// find header
-		int nC;
+		int nT;
 		for (i = 0; i < vLines.size(); i++)
 		{
 			IF_CONT(vLines[i].empty());
@@ -82,15 +82,19 @@ namespace kai
 
 			IF_F(vL[1] != "cnf");
 
-			m_nV = atoi(vL[2].c_str()); // TODO: need to +1 for const term
-			nC = atoi(vL[3].c_str());
+			m_nV = atoi(vL[2].c_str());
+			nT = atoi(vL[3].c_str());
 			break;
 		}
 
-		IF_F((m_nV <= 0) || (nC <= 0));
+		IF_F((m_nV <= 0) || (nT <= 0));
+
+		m_nV++; // need to +1 for const term
 
 		// Ising terms
-		int iC = 0;
+		ISING_JW Jw;
+		Jw.init(m_nV);
+
 		for (i++; i < vLines.size(); i++)
 		{
 			IF_CONT(vLines[i].empty());
@@ -99,17 +103,18 @@ namespace kai
 			IF_CONT(vL[0] == "c");
 			IF_CONT(vL[0] == "p");
 
-			ISING_JW c;
-			c.clear();
+			Jw.clear();
+			Jw.m_J = 1; // TODO: read Jij
+			int iL = 0;
+			while (vL[iL] != "0")
+			{
+				int s = atoi(vL[iL++].c_str());
+				IF_Le_F(s >= m_nV - 1, "Spin exceeds max, line: " + i2str(i));
+				Jw.addSpin(s);
+			}
+			IF_CONT(iL <= 0);
 
-			// int iL = 0;
-			// while (vL[iL] != "0")
-			// {
-			// 	c.addLiteral(atoi(vL[iL++].c_str()));
-			// }
-			// IF_CONT(iL <= 0);
-
-			m_vJw.push_back(c);
+			m_vJw.push_back(Jw);
 		}
 
 		return true;
@@ -118,7 +123,7 @@ namespace kai
 	double _IsingBase::energy(void)
 	{
 		double e = 0;
-		for (int i = 0; i < m_vJw.size(); i++)
+		for (size_t i = 0; i < m_vJw.size(); i++)
 		{
 			ISING_JW *pJw = &m_vJw[i];
 			vBit *pWb = &pJw->m_w;
@@ -147,75 +152,13 @@ namespace kai
 	void _IsingBase::printSolution(void)
 	{
 		string s = "";
-		for (int i = 1; i < m_spinAssign.nBits(); i++)
+		for (size_t i = 1; i < m_spinAssign.nBits(); i++)
 		{
 			int b = m_spinAssign.get(i);
 			s += b ? "1 " : "-1 ";
 		}
 
 		LOG_I("Spin assign: " + s);
-	}
-
-	bool _IsingBase::convertFrom(_SATbase *pS)
-	{
-		NULL_F(pS);
-
-		clear();
-		m_nV = pS->getNvar();
-
-		int iC = 0;
-		SAT_CLAUSE *pC = nullptr;
-		while ((pC = pS->getClause(iC++)))
-		{
-			IF_F(!addSATclause(pC));
-		}
-
-		LOG_I("Converted " + i2str(iC) + " clauses");
-		return true;
-	}
-
-	bool _IsingBase::addSATclause(SAT_CLAUSE *pC, double K)
-	{
-		NULL_F(pC);
-
-		int nL = pC->m_vL.size();
-		uint64_t nTot = (1ULL << nL);
-
-		double Kscale = K / (double)nTot;
-
-		ISING_JW Jw;
-		Jw.init(m_nV);
-
-		for (uint64_t m = 0; m < nTot; m++)
-		{
-			Jw.clear();
-			int nSpin = 0;
-			int etaProd = 1;
-
-			for (int i = 0; i < nL; i++)
-			{
-				IF_CONT(!(m & (1ULL << i)));
-
-				nSpin++;
-				int L = pC->getLiteral(i);
-				IF_F(L == 0);
-
-				Jw.addSpin(abs(L));
-
-				int eta = (L > 0) ? 1 : -1;
-				etaProd *= eta * -1;
-			}
-
-			double c = -Kscale * (double)etaProd;
-			Jw.m_J += c;
-
-			IF_F(addJw(&Jw));
-		}
-
-		// add the const term for the clause
-		Jw.clear();
-		Jw.m_J = K;
-		return addJw(&Jw);
 	}
 
 	bool _IsingBase::addJw(ISING_JW *pJw, bool bMerge)
@@ -229,7 +172,7 @@ namespace kai
 		}
 
 		// merge with existing Jw if existed
-		for (int i = 0; i < m_vJw.size(); i++)
+		for (size_t i = 0; i < m_vJw.size(); i++)
 		{
 			ISING_JW *pJwi = &m_vJw[i];
 			IF_CONT(pJwi->m_w != pJw->m_w);
@@ -244,7 +187,7 @@ namespace kai
 
 	void _IsingBase::mergeJw(void)
 	{
-		for (int i = 0; i < m_vJw.size(); i++)
+		for (size_t i = 0; i < m_vJw.size(); i++)
 		{
 			ISING_JW *pJwi = &m_vJw[i];
 
@@ -267,7 +210,7 @@ namespace kai
 
 	ISING_JW *_IsingBase::getJw(const vBit &vB)
 	{
-		for (int i = 0; i < m_vJw.size(); i++)
+		for (size_t i = 0; i < m_vJw.size(); i++)
 		{
 			ISING_JW *pJw = &m_vJw[i];
 			IF_CONT(pJw->m_w != vB);

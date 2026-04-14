@@ -12,7 +12,6 @@
 #include "../Primitive/tSwap.h"
 #include "../Primitive/vBit.h"
 #include "../Utility/utilFile.h"
-#include "_SATbase.h"
 
 namespace kai
 {
@@ -57,13 +56,11 @@ namespace kai
 		void clear(void);
 		bool readCNF(const string &fName, string *pCNF);
 		bool decodeCNF(const string &cnf);
-		bool convertFrom(_SATbase *pS);
 
 		double energy(void);
 		void printSolution(void);
 
 	protected:
-		bool addSATclause(SAT_CLAUSE *pC, double K = 1.0);
 		bool addJw(ISING_JW *pJw, bool bMerge = true);
 		void mergeJw(void); // merge the identical Jij spin terms
 		void sortJw(void);
@@ -74,7 +71,7 @@ namespace kai
 		string m_cnf; // problem input
 
 		int m_nV;		   // real spin number + 1
-		vBit m_spinAssign; // bit 0 is for constant terms, bit 1~ for spin n
+		vBit m_spinAssign; // bit 0 is for constant terms, bit 1~ for spin n, 0/1 to -1/1
 		vector<ISING_JW> m_vJw;
 	};
 
