@@ -46,7 +46,7 @@ namespace kai
 	{
 		m_cnf = "";
 		m_nV = 0;
-		m_spinAssign.clearAll();
+		m_spinAssign.clear();
 		m_vJw.clear();
 	}
 
@@ -93,7 +93,6 @@ namespace kai
 
 		// Ising terms
 		ISING_JW Jw;
-		Jw.init(m_nV);
 
 		for (i++; i < vLines.size(); i++)
 		{
@@ -126,21 +125,21 @@ namespace kai
 		for (size_t i = 0; i < m_vJw.size(); i++)
 		{
 			ISING_JW *pJw = &m_vJw[i];
-			vBit *pWb = &pJw->m_w;
+			vLbit *pWb = &pJw->m_w;
 
-			int jwS = 1;
-			size_t nB = pWb->nBits();
-			size_t iBp = pWb->findFirstOne();
-			while (iBp < nB)
-			{
-				int8_t s = m_spinAssign.get(iBp);
-				if (s < 0)
-					break;
+			int jwS = 1;	//TODO:
+			// size_t nB = pWb->nBits();
+			// size_t iBp = pWb->findFirstOne();
+			// while (iBp < nB)
+			// {
+			// 	int8_t s = m_spinAssign.get(iBp);
+			// 	if (s < 0)
+			// 		break;
 
-				jwS *= (s << 1) - 1; // 0/1 to -1/1
+			// 	jwS *= (s << 1) - 1; // 0/1 to -1/1
 
-				iBp = pWb->findNextOne(iBp);
-			}
+			// 	iBp = pWb->findNextOne(iBp);
+			// }
 
 			e += pJw->m_J * jwS;
 		}
@@ -152,7 +151,7 @@ namespace kai
 	void _IsingBase::printSolution(void)
 	{
 		string s = "";
-		for (size_t i = 1; i < m_spinAssign.nBits(); i++)
+		for (size_t i = 1; i < m_nV; i++)
 		{
 			int b = m_spinAssign.get(i);
 			s += b ? "1 " : "-1 ";
@@ -208,7 +207,7 @@ namespace kai
 		sort(m_vJw.begin(), m_vJw.end());
 	}
 
-	ISING_JW *_IsingBase::getJw(const vBit &vB)
+	ISING_JW *_IsingBase::getJw(const vLbit &vB)
 	{
 		for (size_t i = 0; i < m_vJw.size(); i++)
 		{

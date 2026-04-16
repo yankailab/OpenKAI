@@ -10,7 +10,7 @@
 
 #include "../Base/_ModuleBase.h"
 #include "../Primitive/tSwap.h"
-#include "../Primitive/vBit.h"
+#include "../Primitive/vLbit.h"
 #include "../Utility/utilFile.h"
 
 namespace kai
@@ -18,17 +18,21 @@ namespace kai
 	struct ISING_JW
 	{
 		int m_J;
-		vBit m_w; // spin indices bit mask
+		vLbit m_w; // spin indices bit mask
 
-		void init(int nBits, int J = 0)
+		void setJ(int J)
 		{
 			m_J = J;
-			m_w.init(nBits);
+		}
+
+		int J(void) const
+		{
+			return m_J;
 		}
 
 		void clear(void)
 		{
-			m_w.clearAll();
+			m_w.clear();
 		}
 
 		void addSpin(int i)
@@ -64,14 +68,14 @@ namespace kai
 		bool addJw(ISING_JW *pJw, bool bMerge = true);
 		void mergeJw(void); // merge the identical Jij spin terms
 		void sortJw(void);
-		ISING_JW *getJw(const vBit &vB);
+		ISING_JW *getJw(const vLbit &vB);
 
 	protected:
 		string m_fName;
-		string m_cnf; // problem input
+		string m_cnf;		// problem input
 
-		int m_nV;		   // real spin number + 1
-		vBit m_spinAssign; // bit 0 is for constant terms, bit 1~ for spin n, 0/1 to -1/1
+		int m_nV;			// real spin number + 1
+		vLbit m_spinAssign;	// bit 0 is for constant terms, bit 1~ for spin n, 0/1 to -1/1
 		vector<ISING_JW> m_vJw;
 	};
 
