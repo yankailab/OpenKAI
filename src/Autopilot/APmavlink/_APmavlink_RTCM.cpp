@@ -63,7 +63,7 @@ namespace kai
 
 		uint64_t tNow = getTbootUs();
 
-		for (int i = 0; i < m_vMsg.size(); i++)
+		for (size_t i = 0; i < m_vMsg.size(); i++)
 		{
 			RTCM_MSG *pM = &m_vMsg[i];
 			uint64_t tLr = pM->m_tLastRecv;
@@ -111,15 +111,21 @@ namespace kai
 	void _APmavlink_RTCM::updateR(void)
 	{
 		RTCM_MSG rtcmMsg;
+		rtcmMsg.init();
 
 		while (m_pTr->bAlive())
 		{
-			IF_CONT(!readMsg(&rtcmMsg));
+			if (readMsg(&rtcmMsg))
+			{
+				handleMsg(rtcmMsg);
+				m_pT->run();
+				rtcmMsg.init();
+				m_nCMDrecv++;
 
-			handleMsg(rtcmMsg);
-			m_pT->run();
-			rtcmMsg.init();
-			m_nCMDrecv++;
+				continue;
+			}
+
+			m_pTr->autoFPS();
 		}
 	}
 
@@ -127,7 +133,7 @@ namespace kai
 	{
 		uint64_t tNow = getTbootUs();
 
-		for (int i = 0; i < m_vMsg.size(); i++)
+		for (size_t i = 0; i < m_vMsg.size(); i++)
 		{
 			RTCM_MSG *pM = &m_vMsg[i];
 			IF_CONT(pM->m_msgID != msg.m_msgID);
