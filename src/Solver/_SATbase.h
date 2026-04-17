@@ -43,7 +43,7 @@ namespace kai
 			m_vL.push_back(L);
 		}
 
-		int getLiteral(int i)
+		int getLiteral(int i) const
 		{
 			IF__(i < 0, 0);
 			IF__(i >= m_vL.size(), 0);

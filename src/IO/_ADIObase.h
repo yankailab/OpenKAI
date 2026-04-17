@@ -15,14 +15,6 @@
 
 namespace kai
 {
-
-	enum ADIO_STATUS
-	{
-		adio_unknown,
-		adio_closed,
-		adio_opened
-	};
-
 	enum ADIO_PORT_TYPE
 	{
 		adio_in = 0,
@@ -62,7 +54,7 @@ namespace kai
 
 		bool writeD(bool v)
 		{
-			m_vW = (v)?1:0;
+			m_vW = (v) ? 1 : 0;
 			return true;
 		}
 
@@ -88,13 +80,9 @@ namespace kai
 		_ADIObase();
 		virtual ~_ADIObase();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual void console(void *pConsole);
-
-		virtual bool open(void);
-		virtual bool bOpen(void);
-		virtual void close(void);
 
 		virtual bool writeD(int iPort, bool b);
 		virtual bool readD(int iPort);
@@ -106,10 +94,8 @@ namespace kai
 		virtual void updateR(void);
 
 	protected:
-		ADIO_STATUS m_status;
 		int m_nPort;
 		vector<ADIO_PORT> m_vPort;
-
 	};
 
 }

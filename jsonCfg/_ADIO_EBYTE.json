@@ -1,0 +1,110 @@
+{
+	"APP": {
+		"class": "Startup",
+		"appName": "OpenKAI",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"ebyte"
+		]
+	},
+	"modbus": {
+		"class": "_Modbus",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 1
+		},
+		"/type": "RTU",
+		"type": "TCP",
+		"rtuPort": "/dev/ttyUSB0",
+		"rtuBaud": 115200,
+		"rtuParity": "N",
+		"tcpAddr": "192.168.3.7",
+		"tcpPort": 502
+	},
+	"ebyte": {
+		"class": "_ADIO_EBYTE",
+		"bON": true,
+		"bLog": false,
+		"thread": {
+			"FPS": 10
+		},
+		"_Modbus": "modbus",
+		"/iID": 32,
+		"iID": 1,
+		"ports": [
+			{
+				"bDigital": 1,
+				"type": 2,
+				"comment": "Dout",
+				"addr": 0,
+				"vW": 1,
+				"vR": 0
+			},
+			{
+				"bDigital": 1,
+				"type": 2,
+				"comment": "Dout",
+				"addr": 1,
+				"vW": 1,
+				"vR": 0
+			},
+			{
+				"bDigital": 1,
+				"type": 2,
+				"comment": "Dout",
+				"addr": 2,
+				"vW": 1,
+				"vR": 0
+			},
+			{
+				"bDigital": 1,
+				"type": 2,
+				"comment": "Dout",
+				"addr": 3,
+				"vW": 1,
+				"vR": 0
+			},
+			{
+				"bDigital": 1,
+				"type": 0,
+				"comment": "Din",
+				"addr": 0,
+				"vW": 0,
+				"vR": 0
+			},
+			{
+				"bDigital": 1,
+				"type": 0,
+				"comment": "Din",
+				"addr": 1,
+				"vW": 0,
+				"vR": 0
+			},
+			{
+				"bDigital": 1,
+				"type": 0,
+				"comment": "Din",
+				"addr": 2,
+				"vW": 0,
+				"vR": 0
+			},
+			{
+				"bDigital": 1,
+				"type": 0,
+				"comment": "Din",
+				"addr": 3,
+				"vW": 0,
+				"vR": 0
+			}
+		]
+	}
+}

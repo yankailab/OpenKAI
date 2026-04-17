@@ -68,15 +68,6 @@ namespace kai
 	{
 		while (m_pT->bAlive())
 		{
-			if (!bOpen())
-			{
-				if (!open())
-				{
-					m_pT->sleepT(SEC_2_USEC);
-					continue;
-				}
-			}
-
 			m_pT->autoFPS();
 
 			updateW();
@@ -130,8 +121,6 @@ namespace kai
 	{
 		NULL_(pConsole);
 		this->_ADIObase::console(pConsole);
-
-		//		((_Console *)pConsole)->addMsg();
 	}
 
 }

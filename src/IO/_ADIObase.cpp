@@ -12,7 +12,6 @@ namespace kai
 
 	_ADIObase::_ADIObase()
 	{
-		m_status = adio_unknown;
 	}
 
 	_ADIObase::~_ADIObase()
@@ -24,7 +23,7 @@ namespace kai
 		IF_F(!this->_ModuleBase::init(j));
 
 		const json &jP = jK(j, "ports");
-		IF__(!jP.is_object(), true);
+		IF__(!jP.is_array(), true);
 
 		for (auto it = jP.begin(); it != jP.end(); it++)
 		{
@@ -50,21 +49,6 @@ namespace kai
 		IF_F(!this->_ModuleBase::link(j, pM));
 
 		return true;
-	}
-
-	bool _ADIObase::open(void)
-	{
-		return false;
-	}
-
-	bool _ADIObase::bOpen(void)
-	{
-		return (m_status == adio_opened);
-	}
-
-	void _ADIObase::close(void)
-	{
-		m_status = adio_closed;
 	}
 
 	void _ADIObase::updateW(void)
