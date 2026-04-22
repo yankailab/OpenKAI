@@ -17,21 +17,12 @@ namespace kai
 {
 	struct ISING_JW
 	{
-		int m_J;
+		int64_t m_J;
 		vLbit m_w; // spin indices bit mask
-
-		void setJ(int J)
-		{
-			m_J = J;
-		}
-
-		int J(void) const
-		{
-			return m_J;
-		}
 
 		void clear(void)
 		{
+			m_J = 0;
 			m_w.clear();
 		}
 
