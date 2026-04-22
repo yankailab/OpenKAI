@@ -43,6 +43,11 @@ namespace kai
             return m_vP.empty() ? nullptr : m_vP.data();
         }
 
+        const vector<uint64_t>& getVp(void) const
+        {
+            return m_vP;
+        }
+
         // set bit = 1
         inline void set(size_t bit)
         {

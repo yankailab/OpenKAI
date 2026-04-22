@@ -55,11 +55,9 @@ namespace kai
 		double energy(void);
 		void printSolution(void);
 
-	protected:
-		bool addJw(ISING_JW *pJw, bool bMerge = true);
-		void mergeJw(void); // merge the identical Jij spin terms
-		void sortJw(void);
-		ISING_JW *getJw(const vLbit &vB);
+		void addJw(const ISING_JW &Jw, vector<ISING_JW>& vJw);
+		void sortJw(vector<ISING_JW>& vJw);
+		ISING_JW *getJw(vector<ISING_JW>& vJw, const vLbit &vB);
 
 	protected:
 		string m_fName;

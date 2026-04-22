@@ -160,58 +160,29 @@ namespace kai
 		LOG_I("Spin assign: " + s);
 	}
 
-	bool _IsingBase::addJw(ISING_JW *pJw, bool bMerge)
+	void _IsingBase::addJw(const ISING_JW &Jw, vector<ISING_JW>& vJw)
 	{
-		NULL_F(pJw);
-
-		if (!bMerge)
+		for (ISING_JW Jwi : vJw)
 		{
-			m_vJw.push_back(*pJw);
-			return true;
+			IF_CONT(Jw.m_w != Jwi.m_w);
+
+			Jwi.m_J += Jw.m_J;
+			return;
 		}
 
-		// merge with existing Jw if existed
-		for (size_t i = 0; i < m_vJw.size(); i++)
-		{
-			ISING_JW *pJwi = &m_vJw[i];
-			IF_CONT(pJwi->m_w != pJw->m_w);
-
-			pJwi->m_J += pJw->m_J;
-			return true;
-		}
-
-		m_vJw.push_back(*pJw);
-		return true;
+		vJw.push_back(Jw);
 	}
 
-	void _IsingBase::mergeJw(void)
+	void _IsingBase::sortJw(vector<ISING_JW>& vJw)
 	{
-		for (size_t i = 0; i < m_vJw.size(); i++)
-		{
-			ISING_JW *pJwi = &m_vJw[i];
-
-			for (int j = i - 1; j >= 0; j--)
-			{
-				ISING_JW *pJwj = &m_vJw[j];
-				IF_CONT(pJwi->m_w != pJwj->m_w);
-
-				pJwj->m_J += pJwi->m_J;
-				m_vJw.erase(m_vJw.begin() + i);
-				break;
-			}
-		}
+		sort(vJw.begin(), vJw.end());
 	}
 
-	void _IsingBase::sortJw(void)
+	ISING_JW *_IsingBase::getJw(vector<ISING_JW>& vJw, const vLbit &vB)
 	{
-		sort(m_vJw.begin(), m_vJw.end());
-	}
-
-	ISING_JW *_IsingBase::getJw(const vLbit &vB)
-	{
-		for (size_t i = 0; i < m_vJw.size(); i++)
+		for (size_t i = 0; i < vJw.size(); i++)
 		{
-			ISING_JW *pJw = &m_vJw[i];
+			ISING_JW *pJw = &vJw[i];
 			IF_CONT(pJw->m_w != vB);
 
 			return pJw;
