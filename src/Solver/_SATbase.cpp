@@ -90,12 +90,8 @@ namespace kai
 		IF_F((nV <= 0) || (nC <= 0));
 
 		// allocate
-		BOOLEAN_VAR v0; // index 0 is not used in cnf input
-		m_vV.push_back(v0);
-		for (int v = 0; v < nV; v++)
-		{
-			m_vV.push_back(v0);
-		}
+		m_nV = nV;
+		m_vV.resize(m_nV + 1);
 
 		// clauses
 		for (i++; i < vLines.size(); i++)
@@ -112,7 +108,9 @@ namespace kai
 			int iL = 0;
 			while (vL[iL] != "0")
 			{
-				c.addLiteral(atoi(vL[iL++].c_str()));
+				int L = atoi(vL[iL++].c_str());
+				IF_Le_F((L <= 0) || (L > m_nV), "Invalid Literal idx in line: " + i2str(i));
+				c.addLiteral(L);
 			}
 			IF_CONT(iL <= 0);
 
@@ -173,18 +171,20 @@ namespace kai
 	BOOLEAN_VAR *_SATbase::getVar(int i)
 	{
 		IF_N(m_vV.size() <= i);
+		IF_N(i < 1);	// var idx starts from 1
 
 		return &m_vV[i];
 	}
 
 	int _SATbase::getNvar(void)
 	{
-		return m_vV.size();
+		return m_nV;
 	}
 
 	SAT_CLAUSE *_SATbase::getClause(int i)
 	{
 		IF_N(m_vC.size() <= i);
+		IF_N(i < 0);
 
 		return &m_vC[i];
 	}

@@ -70,16 +70,17 @@ namespace kai
 		bool bSatisfied(void);
 		void printSolution(void);
 
-		BOOLEAN_VAR* getVar(int i);
+		BOOLEAN_VAR *getVar(int i);
 		int getNvar(void);
-		SAT_CLAUSE* getClause(int i);
+		SAT_CLAUSE *getClause(int i);
 		int getNclause(void);
 
 	protected:
 		string m_fName;
 		string m_cnf; // problem input
 
-		vector<BOOLEAN_VAR> m_vV; // variable index from 1, [0] is not used
+		int m_nV;
+		vector<BOOLEAN_VAR> m_vV; // variable index from 1, m_nV + 1 elems, [0] is not used
 		vector<SAT_CLAUSE> m_vC;  // clauses
 	};
 
