@@ -69,8 +69,8 @@ namespace kai
 		size_t i;
 
 		// find header
-		int nV;
-		int nC;
+		int nV = 0;
+		int nC = 0;
 		for (i = 0; i < vLines.size(); i++)
 		{
 			IF_CONT(vLines[i].empty());
