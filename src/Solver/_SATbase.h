@@ -79,8 +79,7 @@ namespace kai
 		string m_fName;
 		string m_cnf; // problem input
 
-		int m_nV;
-		vector<BOOLEAN_VAR> m_vV; // variable index from 1, m_nV + 1 elems, [0] is not used
+		vector<BOOLEAN_VAR> m_vV; // variable idx = CNF var idx - 1
 		vector<SAT_CLAUSE> m_vC;  // clauses
 	};
 

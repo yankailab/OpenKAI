@@ -90,8 +90,8 @@ namespace kai
 		IF_F((nV <= 0) || (nC <= 0));
 
 		// allocate
-		m_nV = nV;
-		m_vV.resize(m_nV + 1);
+		m_vV.reserve(nV);
+		m_vV.resize(nV);
 
 		// clauses
 		for (i++; i < vLines.size(); i++)
@@ -109,7 +109,7 @@ namespace kai
 			while (vL[iL] != "0")
 			{
 				int L = atoi(vL[iL++].c_str());
-				IF_Le_F((L <= 0) || (L > m_nV), "Invalid Literal idx in line: " + i2str(i));
+				IF_Le_F((L == 0) || (abs(L) > nV), "Invalid Literal idx in line: " + i2str(i) + ", Literal: " + i2str(L));
 				c.addLiteral(L);
 			}
 			IF_CONT(iL <= 0);
@@ -178,7 +178,7 @@ namespace kai
 
 	int _SATbase::getNvar(void)
 	{
-		return m_nV;
+		return m_vV.size();
 	}
 
 	SAT_CLAUSE *_SATbase::getClause(int i)
