@@ -14,7 +14,7 @@ sudo apt-get -y install build-essential cmake cmake-curses-gui git uuid-dev ncur
 ```
 ## (Optional) Video stream in/out functions
 ```bash
-sudo apt-get -y install libunwind-dev gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-alsa gstreamer1.0-gl libv4l-dev v4l-utils libjpeg-dev libpng-dev libtiff-dev libavcodec-dev libavformat-dev libxvidcore-dev x264
+sudo apt-get -y install --no-install-recommends libunwind-dev gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-alsa libv4l-dev v4l-utils libjpeg-dev libpng-dev libtiff-dev libavcodec-dev libavformat-dev libxvidcore-dev x264
 ```
 
 ## (Optional) Desktop renderings
@@ -110,6 +110,11 @@ cmake -DFORCE_LIBUVC=true -DFORCE_RSUSB_BACKEND=ON -DBUILD_WITH_TM2=true -DBUILD
 
 make -j$(nproc)
 sudo make install
+
+# USB reset if needed on auto boot
+sudo uhubctl -a cycle -l 1 -p 1-4
+sudo uhubctl -a cycle -l 2 -p 1-4
+
 ```
 
 
@@ -185,8 +190,17 @@ sudo ldconfig
 ```
 
 
+# (Optional) YOLO
+```bash
+
+```
+
+
+
+
+
 # (Optional) OpenCV
-General CMake configs for x86-64 machines
+## General CMake configs for x86-64 machines
 ```bash
 sudo apt-get -y install libprotobuf-dev protobuf-compiler
 git clone --branch 4.13.0 --depth 1 https://github.com/opencv/opencv.git
@@ -270,7 +284,7 @@ cmake -DBUILD_CUDA_STUBS=OFF \
       -DBUILD_opencv_videoio=ON \
       -DBUILD_opencv_videostab=ON \
       -DBUILD_opencv_world=OFF \
-      -DBUILD_opencv_wechat_qrcode=OFF \
+      -DBUILD_opencv_wechat_qrcode=ON \
       -DBUILD_opencv_xfeatures2d=ON \
       -DBUILD_opencv_ximgproc=ON \
       -DBUILD_opencv_xobjdetect=ON \
@@ -349,7 +363,7 @@ sudo make install
 sudo ldconfig
 ```
 
-For Jetson and Raspberry pi
+## For Jetson and Raspberry pi
 ```bash
 sudo apt-get -y install libprotobuf-dev protobuf-compiler
 git clone --branch 4.13.0 --depth 1 https://github.com/opencv/opencv.git
@@ -434,7 +448,7 @@ cmake \
       -DBUILD_opencv_videoio=ON \
       -DBUILD_opencv_videostab=ON \
       -DBUILD_opencv_world=OFF \
-      -DBUILD_opencv_wechat_qrcode=OFF \
+      -DBUILD_opencv_wechat_qrcode=ON \
       -DBUILD_opencv_xfeatures2d=ON \
       -DBUILD_opencv_ximgproc=ON \
       -DBUILD_opencv_xobjdetect=ON \
@@ -518,20 +532,16 @@ sudo make install
 ```
 
 # (Optional) Open3D
-Install gcc-11 on Ubuntu 24.04 if met compile error.
-
 ```bash
-sudo apt-get -y install libjsoncpp-dev libc++1 gfortran libfmt-dev
-sudo apt-get -y install xorg-dev libxcb-shm0 libglu1-mesa-dev
-sudo apt-get -y install python3 python3-pip
-
 git clone --branch v0.19.0 --depth 1 --recursive https://github.com/intel-isl/Open3D
 cd Open3D
 git submodule update --init --recursive
 mkdir build && cd build
 ```
 
-## (Optional) Build Filament from source
+## Desktop
+Install gcc-11 on Ubuntu 24.04 if met compile error.
+(Optional) Build Filament from source
 ```bash
 sudo apt-get -y install clang libsdl2-dev libxi-dev
     # ML
@@ -546,9 +556,11 @@ sudo apt-get -y install clang libsdl2-dev libxi-dev
     gfortran
 ```
 
-## Build and install
-For Desktop
+Build and install
 ```bash
+sudo apt-get -y install libjsoncpp-dev libc++1 gfortran libfmt-dev
+sudo apt-get -y install xorg-dev libglu1-mesa-dev libxcb-shm0
+sudo apt-get -y install python3 python3-pip
 sudo apt-get -y install libc++-dev libc++abi-dev ninja-build
 cmake -DCMAKE_BUILD_TYPE=Release \
       -DGLIBCXX_USE_CXX11_ABI=ON \
@@ -563,9 +575,12 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       -DBUILD_UNIT_TESTS=OFF \
       -DDEVELOPER_BUILD=OFF \
       -DWITH_SIMD=ON ../
+
+make -j$(nproc)
+sudo make install
 ```
 
-For Raspberry pi headless rendering,
+## For Raspberry pi headless rendering,
 Patch this file:
 ```bash
 /home/lab/dev/Open3D/3rdparty/glew/src/glew.c
@@ -594,9 +609,11 @@ Make that block look like this:
 ```
 
 ```bash
-sudo apt-get -y install xorg-dev libglu1-mesa-dev libgl1-mesa-dev libglfw3-dev
-sudo apt-get -y install libosmesa6-dev
-#sudo apt-get -y install libxkbcommon-dev
+sudo apt-get -y install libjsoncpp-dev libc++1 gfortran libfmt-dev
+sudo apt-get -y install xorg-dev libglu1-mesa-dev
+sudo apt-get -y install libc++-dev libc++abi-dev ninja-build
+
+sudo apt-get -y install libglew-dev libglfw3-dev libosmesa6-dev libxkbcommon-dev
 
 cmake -DCMAKE_BUILD_TYPE=Release \
       -DGLIBCXX_USE_CXX11_ABI=ON \
@@ -693,40 +710,6 @@ In direct connection mode configure the host ip
 IP: 192.168.1.100
 Netmask: 255.255.255.0
 Gateway: 192.168.100.1
-
-
-# (Optional) Qiskit
-https://quantum.cloud.ibm.com/docs/en/guides/install-qiskit-source
-
-Install Rust compiler
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-```
-
-Prerequisites
-```bash
-sudo apt-get install python3-dev
-cargo install --force cbindgen
-```
-
-```bash
-git clone https://github.com/Qiskit/qiskit.git
-cd qiskit
-
-# if you need python
-# python3 -m venv .venv
-# source .venv/bin/activate
-# pip install .
-
-make c
-```
-
-Install Qiskit Runtime
-```bash
-git clone https://github.com/Qiskit/qiskit-ibm-runtime.git
-cd qiskit-ibm-runtime
-pip install .
-```
 
 
 # (Optional) M4RI

@@ -63,12 +63,6 @@ pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-
 snap install cloudcompare
 ```
 
-# Turn off GDB downloading separate debug info
-```bash
-echo "unset DEBUGINFOD_URLS" >> ~/.bashrc
-```
-
-
 
 # (Optional) Jetson inference
 CuDNN, download the latest .deb from NVIDIA site
@@ -130,4 +124,44 @@ make -j$(nproc)
 sudo make install
 # For Jetson and Raspberry Pi
 # remove "-m64" in "FORMAT" line of the Makefile in linux64 directory
+```
+
+
+# Upload to FTP
+```bash
+curl -T FourierToy.swf ftp://193.112.75.123/pub/ --user anonymous
+```
+
+
+# (Optional) Qiskit
+https://quantum.cloud.ibm.com/docs/en/guides/install-qiskit-source
+
+Install Rust compiler
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+Prerequisites
+```bash
+sudo apt-get install python3-dev
+cargo install --force cbindgen
+```
+
+```bash
+git clone https://github.com/Qiskit/qiskit.git
+cd qiskit
+
+# if you need python
+# python3 -m venv .venv
+# source .venv/bin/activate
+# pip install .
+
+make c
+```
+
+Install Qiskit Runtime
+```bash
+git clone https://github.com/Qiskit/qiskit-ibm-runtime.git
+cd qiskit-ibm-runtime
+pip install .
 ```
