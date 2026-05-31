@@ -684,7 +684,7 @@ sudo ldconfig
 
 # (Optional) wsServer
 ```bash
-git clone https://github.com/Theldus/wsServer
+git clone --depth 1 https://github.com/Theldus/wsServer
 cd wsServer/
 make
 sudo make install
@@ -700,7 +700,7 @@ Gateway: 192.168.1.1
 
 # (Optional) ScepterSDK
 ```bash
-git clone https://github.com/ScepterSW/ScepterSDK.git
+git clone --depth 1 https://github.com/ScepterSW/ScepterSDK.git
 set +H
 sudo sh -c "echo '[Path]/ScepterSDK/BaseSDK/Ubuntu/Lib' >> /etc/ld.so.conf"
 set -H
@@ -715,7 +715,7 @@ Gateway: 192.168.100.1
 # (Optional) M4RI
 ```bash
 sudo apt-get install autoconf automake libtool
-git clone https://github.com/malb/m4ri.git
+git clone --depth 1 https://github.com/malb/m4ri.git
 cd m4ri/
 autoreconf --install
 ./configure
