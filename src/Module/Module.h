@@ -111,6 +111,9 @@
 #include "../Detector/_Lane.h"
 #include "../Detector/_YOLOv3.h"
 #include "../Detector/_YOLOv8.h"
+#ifdef USE_ONNXRUNTIME
+#include "../Detector/_YOLO26detectONNX.h"
+#endif
 #include "../Detector/_DNNclassifier.h"
 #include "../Detector/_DNNtext.h"
 #include "../Detector/_IRLock.h"

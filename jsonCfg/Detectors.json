@@ -1,0 +1,261 @@
+{
+	"APP": {
+		"class": "OpenKAI",
+		"appName": "Detectors",
+		"bLog": false,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"vBASE": [
+			"cam",
+			"univ",
+			"YOLO26detectONNX",
+			"/YOLOv8",
+			"/YOLOv3",
+			"/CR"
+		]
+	},
+	"RGBview": {
+		"class": "_WindowCV",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"bFullScreen": false,
+		"vBASE": [
+			"cam",
+			"/gst",
+			"/videoFile",
+			"/imgFile",
+			"/contrast",
+			"/inv",
+			"/hsv",
+			"/inRange",
+			"/morph",
+			"univ"
+		]
+	},
+	"cam": {
+		"class": "_Camera",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"deviceID": 0,
+		"vSizeRGB": [
+			640,
+			480
+		]
+	},
+	"gst": {
+		"class": "_GStreamer",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"pipeline": "v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! appsink",
+		"/pipelineJetson": "nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, width=(int)1280, height=(int)720, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.1.253 port=5678 auto-multicast=false",
+		"/pipelineUdpRecv": "udpsrc port=5678 ! application/x-rtp, media=video, encoding-name=h264, payload=96, clock-rate=90000 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
+		"/pipelineRpiLegacy": "rpicamsrc bitrate=1000000 preview=0 rotation=180 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! omxh264enc ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678"
+	},
+	"videoFile": {
+		"class": "_VideoFile",
+		"bON": false,
+		"thread": {
+			"FPS": 60
+		},
+		"videoFile": "/home/kai/Downloads/DJi.MP4",
+		"vSize": [
+			1280,
+			720
+		]
+	},
+	"imgFile": {
+		"class": "_ImgFile",
+		"bON": false,
+		"thread": {
+			"FPS": 60
+		},
+		"file": "/home/kai/Pictures/test.jpg",
+		"vSize": [
+			1280,
+			720
+		]
+	},
+	"contrast": {
+		"class": "_Contrast",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"_VisionBase": "cam",
+		"alpha": 1.0,
+		"beta": 0.0
+	},
+	"inv": {
+		"class": "_Invert",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"_VisionBase": "contrast"
+	},
+	"hsv": {
+		"class": "_ColorConvert",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"_VisionBase": "inv",
+		"code": 40
+	},
+	"inRange": {
+		"class": "_InRange",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"_VisionBase": "hsv",
+		"vL": [
+			80,
+			20,
+			125
+		],
+		"vH": [
+			100,
+			255,
+			255
+		]
+	},
+	"morph": {
+		"class": "_Morphology",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"_VisionBase": "inRange",
+		"filters": {
+			"open": {
+				"morphOp": 2,
+				"nItr": 1,
+				"kW": 2,
+				"kH": 2,
+				"aX": 1,
+				"aY": 1
+			},
+			"close": {
+				"morphOp": 3,
+				"nItr": 2
+			}
+		}
+	},
+	"CR": {
+		"class": "_Contour",
+		"bON": false,
+		"bLog": false,
+		"thread": {
+			"FPS": 30
+		},
+		"_VisionBase": "morph",
+		"_Universe": "univ"
+	},
+	"univ": {
+		"class": "_Universe",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"bDrawText": true
+	},
+	"YOLO26detectONNX": {
+		"class": "_YOLO26detectONNX",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"bLog": true,
+		"_VisionBase": "cam",
+		"_Universe": "univ",
+		"fModel": "/home/kai/dev/models/YOLO26/yolo26n.onnx",
+		"confidence": 0.25,
+		"score": 0.45,
+		"nms": 0.5,
+		"bLetterBoxForSquare": true,
+		"vModelInputSize": [
+			640,
+			640
+		],
+		"bSwapRB": true,
+		"scale": 0.003921568627,
+		"nThread": 1
+	},
+	"YOLOv8": {
+		"class": "_YOLOv8",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"bLog": true,
+		"_VisionBase": "cam",
+		"_Universe": "univ",
+		"fModel": "/home/kai/dev/models/yolov8n.onnx",
+		"confidence": 0.25,
+		"score": 0.45,
+		"nms": 0.5,
+		"bLetterBoxForSquare": false,
+		"vModelInputSize": [
+			640,
+			640
+		],
+		"bSwapRB": true,
+		"scale": 0.003921568627
+	},
+	"YOLOv3": {
+		"class": "_YOLOv3",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"bLog": true,
+		"_VisionBase": "cam",
+		"_Universe": "univ",
+		"fModel": "/home/kai/dev/models/YOLOv3/yolov3.cfg",
+		"fWeight": "/home/kai/dev/models/YOLOv3/yolov3.weights",
+		"fClass": "/home/kai/dev/models/YOLOv3/coco.names",
+		"bSwapRB": true,
+		"scale": 0.00392,
+		"thr": 0.1,
+		"nms": 0.4,
+		"vBlobSize": [
+			416,
+			416
+		]
+	},
+	"DetectNet": {
+		"class": "_DetectNet",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"bDraw": true,
+		"bLog": true,
+		"_VisionBase": "cam",
+		"_Universe": "univ",
+		"fModel": "/home/lab/dev/jetson-inference/data/networks/SSD-Inception-v2/ssd_inception_v2_coco.uff",
+		"fClass": "/home/lab/dev/jetson-inference/data/networks/SSD-Inception-v2/ssd_coco_labels.txt",
+		"bSwapRB": false,
+		"scale": 1.0,
+		"vDimIn": [
+			3,
+			300,
+			300
+		],
+		"thr": 0.1,
+		"iClassDraw": -1
+	}
+}

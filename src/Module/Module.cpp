@@ -121,6 +121,9 @@ namespace kai
 #ifdef USE_OPENCV
 		ADD_MODULE(_DNNclassifier);
 		ADD_MODULE(_YOLOv8);
+#ifdef USE_ONNXRUNTIME
+		ADD_MODULE(_YOLO26detectONNX);
+#endif
 		ADD_MODULE(_YOLOv3);
 		ADD_MODULE(_DNNtext);
 		ADD_MODULE(_IRLock);

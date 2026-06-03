@@ -191,9 +191,7 @@ sudo ldconfig
 
 
 # (Optional) YOLO
-```bash
-
-```
+See [YOLO26detectONNX.md](YOLO26detectONNX.md) for ONNX Runtime setup and `_YOLO26detectONNX` build/config notes.
 
 
 
