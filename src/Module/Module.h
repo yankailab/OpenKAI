@@ -35,6 +35,9 @@
 #ifdef USE_GUI
 #include "../3D/_GeometryViewer.h"
 #endif
+#ifdef USE_IMGUI
+#include "../3D/Viewer/ImGUIviewer.h"
+#endif
 #endif
 
 #ifdef WITH_ACTUATOR

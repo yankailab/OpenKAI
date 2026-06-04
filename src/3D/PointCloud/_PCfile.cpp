@@ -58,10 +58,14 @@ namespace kai
 		{
 			m_pT->autoFPS();
 
-			for (int i = 0; i < m_pcl.points_.size(); i++)
+			for (size_t i = 0; i < m_pcl.points_.size(); i++)
 			{
+				Vector3f vC = m_vColorDefault.v3f();
+				if (i < m_pcl.colors_.size())
+					vC = m_pcl.colors_[i].cast<float>();
+
 				add(m_pcl.points_[i],
-					m_pcl.colors_[i].cast<float>(),
+					vC,
 					0);
 
 			}

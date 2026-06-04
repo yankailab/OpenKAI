@@ -1,0 +1,77 @@
+{
+	"APP": {
+		"class": "OpenKAI",
+		"appName": "OpenKAI",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"cam",
+			"d2g"
+		]
+	},
+
+	"pcFile": {
+		"class": "_PCfile",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 1
+		},
+		"nP": 1000000,
+		"vColorDefault": [1.0, 1.0, 1.0],
+		"vfName":["data/PointCloud/StanfordBunny/bun000.ply"]
+	},
+
+	"viewer": {
+		"class": "ImGUIviewer",
+		"vWinSize": [
+			1280,
+			720
+		],
+		"bShowPanel": true,
+		"bShowGrid": true,
+		"camFov": 70.0,
+		"vCamLookAt": [
+			0.0,
+			0.0,
+			0.0
+		],
+		"vCamEye": [
+			0.0,
+			-8.0,
+			4.0
+		],
+		"vCamUp": [
+			0.0,
+			0.0,
+			1.0
+		],
+		"thread": {
+			"FPS": 30
+		},
+		"threadUI": {
+			"FPS": 60
+		},
+		"geometry": [
+			{
+				"_GeometryBase": "pcFile",
+				"bStatic": false,
+				"nP": 200000,
+				"matPointSize": 2,
+				"matCol": [
+					1.0,
+					1.0,
+					1.0,
+					1.0
+				]
+			}
+		]
+	}
+}

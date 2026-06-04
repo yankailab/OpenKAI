@@ -108,5 +108,6 @@
         "__tree": "cpp",
         "future": "cpp"
     },
-    "cmake.configureOnOpen": true
+    "cmake.configureOnOpen": true,
+    "cmake.parallelJobs": 6
 }

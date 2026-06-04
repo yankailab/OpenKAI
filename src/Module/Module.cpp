@@ -46,6 +46,9 @@ namespace kai
 #ifdef USE_GUI
 		ADD_MODULE(_GeometryViewer);
 #endif
+#ifdef USE_IMGUI
+		ADD_MODULE(ImGUIviewer);
+#endif
 #endif
 
 #ifdef WITH_ACTUATOR
