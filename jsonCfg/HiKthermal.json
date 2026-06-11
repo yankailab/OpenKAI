@@ -1,0 +1,71 @@
+{
+	"APP": {
+		"class": "OpenKAI",
+		"appName": "CameraTest",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": false,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"cam",
+			"hik",
+			"gst"
+		]
+	},
+	"view": {
+		"class": "_WindowCV",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"bFullScreen": false,
+		"vBASE": [
+			"hik",
+			"thermalRGB"
+		]
+	},
+	"hik": {
+		"class": "_HiKthermal",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"deviceID": 0,
+		"streamType": 2,
+		"vSizeRGB": [
+			640,
+			480
+		],
+		"vendorID": 11231,
+		"productID": 258
+	},
+	"thermalRGB": {
+		"class": "_Thermal2RGB",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"_VisionBase": "hik",
+		"vTrange": [
+			23,
+			39
+		]
+	},
+	"frameRec": {
+		"class": "_Frame2Img",
+		"bON": true,
+		"thread": {
+			"FPS": 5
+		},
+		"_VisionBase": "hik",
+		"dir":"/home/kai/Downloads/HiKrec",
+		"pngCompression":3,
+		"vOffset":50,
+		"vScale":64
+	}
+}

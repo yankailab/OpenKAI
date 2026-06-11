@@ -63,33 +63,6 @@
 			480
 		]
 	},
-	"hik": {
-		"class": "_HiKthermal",
-		"bON": true,
-		"thread": {
-			"FPS": 30
-		},
-		"deviceID": 0,
-		"streamType": 2,
-		"vSizeRGB": [
-			640,
-			480
-		],
-		"vendorID": 11231,
-		"productID": 258
-	},
-	"thermalRGB": {
-		"class": "_Thermal2RGB",
-		"bON": true,
-		"thread": {
-			"FPS": 30
-		},
-		"_VisionBase": "hik",
-		"vTrange": [
-			23,
-			39
-		]
-	},
 
 	"gst": {
 		"class": "_GStreamer",

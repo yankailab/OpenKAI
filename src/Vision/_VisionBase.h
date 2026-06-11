@@ -48,7 +48,7 @@ namespace kai
 		vision_depth2Gray,
 		vision_D2RGB,
 		vision_thermal2RGB,
-		vision_videoRecorder,
+		vision_Frame2Img,
 	};
 
 	class _VisionBase : public _ModuleBase

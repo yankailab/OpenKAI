@@ -1,23 +1,23 @@
 /*
- * _VideoRecorder.h
+ * _Frame2Img.h
  *
  *  Created on: June 11, 2026
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Vision__VideoRecorder_H_
-#define OpenKAI_src_Vision__VideoRecorder_H_
+#ifndef OpenKAI_src_Vision__Frame2Img_H_
+#define OpenKAI_src_Vision__Frame2Img_H_
 
 #include "_VisionBase.h"
 
 namespace kai
 {
 
-	class _VideoRecorder : public _VisionBase
+	class _Frame2Img : public _VisionBase
 	{
 	public:
-		_VideoRecorder();
-		virtual ~_VideoRecorder();
+		_Frame2Img();
+		virtual ~_Frame2Img();
 
 		virtual bool init(const json &j);
 		virtual bool link(const json &j, ModuleMgr *pM);
@@ -29,16 +29,20 @@ namespace kai
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_VideoRecorder *)This)->update();
+			((_Frame2Img *)This)->update();
 			return NULL;
 		}
 
 	protected:
 		_VisionBase *m_pV;
 
-		vInt2 m_vSize;
-		string m_gstOutput;
-		VideoWriter m_gst;
+		string m_dir;
+		string m_dirRec;
+		string m_tRec;
+		int m_iFrame;
+		int m_pngCompression;
+		float m_vOffset;
+		float m_vScale;
 	};
 
 }
