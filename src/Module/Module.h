@@ -273,6 +273,7 @@
 #include "../Vision/_GStreamer.h"
 #include "../Vision/_SharedMemImg.h"
 #include "../Vision/_GPhoto.h"
+#include "../Vision/_VideoRecorder.h"
 #include "../Vision/ImgFilter/_ColorConvert.h"
 #include "../Vision/ImgFilter/_Contrast.h"
 #include "../Vision/ImgFilter/_Crop.h"

@@ -299,6 +299,7 @@ namespace kai
 		ADD_MODULE(_Threshold);
 		ADD_MODULE(_Thermal2RGB);
 		ADD_MODULE(_VideoFile);
+		ADD_MODULE(_VideoRecorder);
 
 #ifdef USE_CUDA
 		ADD_MODULE(_DenseFlow);
