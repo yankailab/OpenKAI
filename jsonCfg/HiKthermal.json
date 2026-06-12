@@ -1,7 +1,7 @@
 {
 	"APP": {
 		"class": "OpenKAI",
-		"appName": "CameraTest",
+		"appName": "RawFrameTest",
 		"bLog": true,
 		"bStdErr": true
 	},
@@ -31,7 +31,7 @@
 	},
 	"hik": {
 		"class": "_HiKthermal",
-		"bON": true,
+		"bON": false,
 		"thread": {
 			"FPS": 30
 		},
@@ -44,21 +44,9 @@
 		"vendorID": 11231,
 		"productID": 258
 	},
-	"thermalRGB": {
-		"class": "_Thermal2RGB",
-		"bON": true,
-		"thread": {
-			"FPS": 30
-		},
-		"_VisionBase": "hik",
-		"vTrange": [
-			23,
-			39
-		]
-	},
-	"frameRec": {
+	"frame2img": {
 		"class": "_Frame2Img",
-		"bON": true,
+		"bON": false,
 		"thread": {
 			"FPS": 5
 		},
@@ -67,5 +55,31 @@
 		"pngCompression":3,
 		"vOffset":50,
 		"vScale":64
+	},
+
+	"img2frame": {
+		"class": "_Img2Frame",
+		"bON": true,
+		"thread": {
+			"FPS": 5
+		},
+		"dir":"/home/kai/Downloads/HiKrec/test",
+		"vOffset":-50,
+		"vScale":64,
+		"bLoop":true
+	},
+
+	"thermalRGB": {
+		"class": "_Thermal2RGB",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"_VisionBase": "img2frame",
+		"vTrange": [
+			23,
+			39
+		]
 	}
+
 }

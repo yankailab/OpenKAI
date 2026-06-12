@@ -274,6 +274,7 @@
 #include "../Vision/_SharedMemImg.h"
 #include "../Vision/_GPhoto.h"
 #include "../Vision/_Frame2Img.h"
+#include "../Vision/_Img2Frame.h"
 #include "../Vision/ImgFilter/_ColorConvert.h"
 #include "../Vision/ImgFilter/_Contrast.h"
 #include "../Vision/ImgFilter/_Crop.h"
