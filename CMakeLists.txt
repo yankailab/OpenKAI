@@ -65,11 +65,7 @@ set(IMGUI_BACKEND "GLFW" CACHE STRING "Dear ImGui platform backend: GLFW or SDL2
 set_property(CACHE IMGUI_BACKEND PROPERTY STRINGS GLFW SDL2)
 set(IMGUI_RENDERER "OPENGL" CACHE STRING "Dear ImGui renderer backend: OPENGL or OPENGLES")
 set_property(CACHE IMGUI_RENDERER PROPERTY STRINGS OPENGL OPENGLES)
-set(IMGUI_DIR "" CACHE PATH "Dear ImGui source root containing imgui.cpp and backends/")
-set(IMGUI_INCLUDE_DIR "" CACHE PATH "Dear ImGui include directory; used when IMGUI_DIR is empty")
-set(IMGUI_BACKENDS_DIR "" CACHE PATH "Dear ImGui backend include/source directory; used when IMGUI_DIR is empty")
-set(IMGUI_LIBRARIES "" CACHE STRING "Dear ImGui prebuilt libraries; used when IMGUI_DIR is empty")
-
+set(IMGUI_DIR "imgui" CACHE PATH "Dear ImGui source root containing imgui.cpp and backends/")
 if(USE_IMGUI AND NOT USE_OPEN3D)
   message(FATAL_ERROR "USE_IMGUI currently requires USE_OPEN3D because OpenKAI 3D geometry classes use Open3D data types")
 endif()
@@ -554,33 +550,15 @@ if(USE_IMGUI)
     message(FATAL_ERROR "IMGUI_RENDERER must be OPENGL or OPENGLES")
   endif()
 
-  if(IMGUI_DIR)
-    set(IMGUI_INCLUDE_DIR ${IMGUI_DIR})
-    set(IMGUI_BACKENDS_DIR ${IMGUI_DIR}/backends)
-    set(OpenKAI_cpp
-      ${OpenKAI_cpp}
-      ${IMGUI_DIR}/imgui.cpp
-      ${IMGUI_DIR}/imgui_draw.cpp
-      ${IMGUI_DIR}/imgui_tables.cpp
-      ${IMGUI_DIR}/imgui_widgets.cpp
-    )
-    if(EXISTS "${IMGUI_DIR}/imgui_demo.cpp")
-      set(OpenKAI_cpp ${OpenKAI_cpp} ${IMGUI_DIR}/imgui_demo.cpp)
-    endif()
-  else()
-    if(NOT IMGUI_INCLUDE_DIR)
-      find_path(IMGUI_INCLUDE_DIR imgui.h PATH_SUFFIXES imgui)
-    endif()
-    if(NOT IMGUI_BACKENDS_DIR)
-      find_path(IMGUI_BACKENDS_DIR imgui_impl_opengl3.h PATH_SUFFIXES imgui/backends backends)
-    endif()
-    if(NOT IMGUI_LIBRARIES)
-      find_library(IMGUI_LIBRARY imgui)
-      if(IMGUI_LIBRARY)
-        set(IMGUI_LIBRARIES ${IMGUI_LIBRARY})
-      endif()
-    endif()
-  endif()
+  set(IMGUI_INCLUDE_DIR ${IMGUI_DIR})
+  set(IMGUI_BACKENDS_DIR ${IMGUI_DIR}/backends)
+  set(OpenKAI_cpp
+    ${OpenKAI_cpp}
+    ${IMGUI_DIR}/imgui.cpp
+    ${IMGUI_DIR}/imgui_draw.cpp
+    ${IMGUI_DIR}/imgui_tables.cpp
+    ${IMGUI_DIR}/imgui_widgets.cpp
+  )
 
   if(NOT IMGUI_INCLUDE_DIR)
     message(FATAL_ERROR "USE_IMGUI requires IMGUI_DIR or IMGUI_INCLUDE_DIR")
@@ -590,9 +568,6 @@ if(USE_IMGUI)
   endif()
 
   set(OpenKAI_include ${OpenKAI_include} ${IMGUI_INCLUDE_DIR} ${IMGUI_BACKENDS_DIR})
-  if(IMGUI_LIBRARIES)
-    set(OpenKAI_lib ${OpenKAI_lib} ${IMGUI_LIBRARIES})
-  endif()
 
   if(IMGUI_BACKEND_UPPER STREQUAL "GLFW")
     add_definitions(-DOKAI_IMGUI_BACKEND_GLFW)
@@ -756,8 +731,9 @@ endif()
 
 if(USE_SCEPTER_SDK)
   add_definitions(-DUSE_SCEPTER_SDK)
-  set(Scepter_include "ScepterSDK/BaseSDK/Ubuntu/Include" CACHE STRING "")
-  set(Scepter_lib "ScepterSDK/BaseSDK/Ubuntu/Lib" CACHE STRING "")
+  set(ScepterSDK_root "ScepterSDK/BaseSDK/Ubuntu" CACHE STRING "")
+  set(Scepter_include ${ScepterSDK_root}/Include)
+  set(Scepter_lib ${ScepterSDK_root}/Lib)
   set(OpenKAI_include ${OpenKAI_include} ${Scepter_include})
   set(OpenKAI_libDir ${OpenKAI_libDir} ${Scepter_lib})
   set(OpenKAI_lib ${OpenKAI_lib} Scepter_api)

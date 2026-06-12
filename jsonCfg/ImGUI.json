@@ -12,8 +12,8 @@
 			"FPS": 10
 		},
 		"vBASE": [
-			"cam",
-			"d2g"
+			"pcFile",
+			"viewer"
 		]
 	},
 
