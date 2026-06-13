@@ -13,8 +13,7 @@
 		},
 		"vBASE": [
 			"cam",
-			"hik",
-			"gst"
+			"hik"
 		]
 	},
 	"view": {
@@ -31,7 +30,7 @@
 	},
 	"hik": {
 		"class": "_HiKthermal",
-		"bON": false,
+		"bON": true,
 		"thread": {
 			"FPS": 30
 		},
@@ -46,7 +45,7 @@
 	},
 	"frame2img": {
 		"class": "_Frame2Img",
-		"bON": false,
+		"bON": true,
 		"thread": {
 			"FPS": 5
 		},
@@ -59,7 +58,7 @@
 
 	"img2frame": {
 		"class": "_Img2Frame",
-		"bON": true,
+		"bON": false,
 		"thread": {
 			"FPS": 5
 		},
@@ -75,7 +74,8 @@
 		"thread": {
 			"FPS": 30
 		},
-		"_VisionBase": "img2frame",
+		"_VisionBase": "hik",
+		"/_VisionBase": "img2frame",
 		"vTrange": [
 			23,
 			39
