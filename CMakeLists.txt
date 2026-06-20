@@ -513,7 +513,6 @@ if(USE_CUDA)
   set(CUDA_include "/usr/local/cuda/include" CACHE STRING "")
   set(OpenKAI_include ${OpenKAI_include} ${CUDA_include})
   set(CUDA_ARCH "72" CACHE STRING "")
-  set(OpenKAI_lib ${OpenKAI_lib} opencv_cudawarping opencv_cudaobjdetect opencv_cudaarithm opencv_cudabgsegm opencv_cudaimgproc opencv_cudaoptflow opencv_cudastereo)
 endif()
 
 if(USE_DYNAMIXEL)
@@ -648,16 +647,47 @@ endif()
 
 if(USE_OPENCV)
   add_definitions(-DUSE_OPENCV)
-  set(OpenCV_include "/usr/local/include/opencv4" CACHE STRING "")
-  set(OpenCV_lib "/usr/local/lib" CACHE STRING "")
-  set(OpenKAI_include ${OpenKAI_include} ${OpenCV_include})
-  set(OpenKAI_libDir ${OpenKAI_libDir} ${OpenCV_lib})
-  set(OpenKAI_lib ${OpenKAI_lib} opencv_core opencv_imgcodecs opencv_highgui opencv_imgproc opencv_videoio opencv_calib3d opencv_objdetect opencv_features2d opencv_dnn)
+
+  set(OpenCV_DIR "/usr/local/lib/cmake/opencv5" CACHE PATH "OpenCV 5 CMake package directory")
+  set(OpenKAI_OPENCV_COMPONENTS
+    core
+    imgcodecs
+    highgui
+    imgproc
+    videoio
+    calib
+    objdetect
+    features
+    dnn
+  )
+
+  if(USE_OPENCV_CONTRIB)
+    list(APPEND OpenKAI_OPENCV_COMPONENTS
+      bgsegm
+      tracking
+      xobjdetect
+    )
+  endif()
+
+  if(USE_CUDA)
+    list(APPEND OpenKAI_OPENCV_COMPONENTS
+      cudawarping
+      cudaobjdetect
+      cudaarithm
+      cudabgsegm
+      cudaimgproc
+      cudaoptflow
+      cudastereo
+    )
+  endif()
+
+  find_package(OpenCV 5 REQUIRED CONFIG COMPONENTS ${OpenKAI_OPENCV_COMPONENTS})
+  set(OpenKAI_include ${OpenKAI_include} ${OpenCV_INCLUDE_DIRS})
+  set(OpenKAI_lib ${OpenKAI_lib} ${OpenCV_LIBS})
 endif()
 
 if(USE_OPENCV_CONTRIB)
   add_definitions(-DUSE_OPENCV_CONTRIB)
-  set(OpenKAI_lib ${OpenKAI_lib} opencv_xobjdetect opencv_tracking opencv_aruco)
 endif()
 
 if(USE_ONNXRUNTIME)

@@ -35,7 +35,8 @@ namespace kai
 		}
 
 	protected:
-		cv::Ptr<cv::aruco::Dictionary> m_pDict;
+		cv::aruco::Dictionary m_dictionary;
+		cv::aruco::ArucoDetector m_detector;
 		uint8_t m_dict;
 		float m_realSize;
 

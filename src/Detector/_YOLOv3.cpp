@@ -39,7 +39,7 @@ namespace kai
 		jKv(j, "iClassDraw", m_iClassDraw);
 		jKv<int>(j, "vMean", m_vMean);
 
-		m_net = readNetFromDarknet(m_fModel, m_fWeight);
+		m_net = readNet(m_fWeight, m_fModel);
 		IF_F(m_net.empty());
 
 		m_net.setPreferableBackend(m_iBackend);

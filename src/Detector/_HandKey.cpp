@@ -37,7 +37,7 @@ namespace kai
 		jKv<int>(j, "vMean", m_vMean);
 		jKv(j, "thr", m_thr);
 
-		m_net = readNetFromCaffe(m_fModel, m_fWeight);
+		m_net = readNet(m_fWeight, m_fModel);
 		IF_F(m_net.empty());
 
 		m_net.setPreferableBackend(m_iBackend);

@@ -26,8 +26,8 @@ namespace kai
 		IF_F(!this->_DetectorBase::init(j));
 
 		jKv(j, "dict", m_dict);
-		m_pDict = cv::Ptr<cv::aruco::Dictionary>(new cv::aruco::Dictionary());
-		*m_pDict = aruco::getPredefinedDictionary(m_dict);
+		m_dictionary = aruco::getPredefinedDictionary(m_dict);
+		m_detector.setDictionary(m_dictionary);
 		jKv(j, "realSize", m_realSize);
 
 		jKv(j, "bPose", m_bPose);
@@ -76,7 +76,7 @@ namespace kai
 
 		vector<int> vID;
 		vector<vector<Point2f>> vvCorner;
-		aruco::detectMarkers(m, m_pDict, vvCorner, vID);
+		m_detector.detectMarkers(m, vvCorner, vID);
 		vector<Vec3d> vvR, vvT;
 
 		if (m_bPose)
@@ -89,13 +89,16 @@ namespace kai
 								 &m_mCscaled);
 			}
 
-			// pose
-			aruco::estimatePoseSingleMarkers(vvCorner,
-											 m_realSize,
-											 m_mCscaled,
-											 m_mD,
-											 vvR,
-											 vvT);
+			vector<Point3f> vMarkerObj{
+				Point3f(-m_realSize * 0.5f, m_realSize * 0.5f, 0),
+				Point3f(m_realSize * 0.5f, m_realSize * 0.5f, 0),
+				Point3f(m_realSize * 0.5f, -m_realSize * 0.5f, 0),
+				Point3f(-m_realSize * 0.5f, -m_realSize * 0.5f, 0)};
+
+			vvR.resize(vvCorner.size());
+			vvT.resize(vvCorner.size());
+			for (unsigned int i = 0; i < vvCorner.size(); i++)
+				solvePnP(vMarkerObj, vvCorner[i], m_mCscaled, m_mD, vvR[i], vvT[i]);
 		}
 
 		_Object o;
