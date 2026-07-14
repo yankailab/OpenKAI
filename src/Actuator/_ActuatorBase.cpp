@@ -70,7 +70,7 @@ namespace kai
 		jKv(j, "tIntReadStatus", m_ieReadStatus.m_tInterval);
 		jKv(j, "tIntSendCMD", m_ieSendCMD.m_tInterval);
 
-		int bf;
+		bool bf;
 
 		bf = 0;
 		jKv(j, "bfSetPower", bf);
