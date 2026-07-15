@@ -22,7 +22,7 @@ namespace kai
 
 	bool _APmavlink_RTCM::link(const json &j, ModuleMgr *pM)
 	{
-		IF_F(!this->_ProtocolBase::link(j, pM));
+		IF_F(!this->_ProtocolBase::link(j, pM));	// Do not use _RTCM::link as we send to _Mavlink thus the _IObaseSend is not needed
 
 		string n = "";
 		jKv(j, "_Mavlink", n);

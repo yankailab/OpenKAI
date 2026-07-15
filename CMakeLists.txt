@@ -662,6 +662,7 @@ if(USE_OPENCV)
   )
 
   if(USE_OPENCV_CONTRIB)
+    add_definitions(-DUSE_OPENCV_CONTRIB)
     list(APPEND OpenKAI_OPENCV_COMPONENTS
       bgsegm
       tracking
@@ -684,10 +685,6 @@ if(USE_OPENCV)
   find_package(OpenCV 5 REQUIRED CONFIG COMPONENTS ${OpenKAI_OPENCV_COMPONENTS})
   set(OpenKAI_include ${OpenKAI_include} ${OpenCV_INCLUDE_DIRS})
   set(OpenKAI_lib ${OpenKAI_lib} ${OpenCV_LIBS})
-endif()
-
-if(USE_OPENCV_CONTRIB)
-  add_definitions(-DUSE_OPENCV_CONTRIB)
 endif()
 
 if(USE_ONNXRUNTIME)

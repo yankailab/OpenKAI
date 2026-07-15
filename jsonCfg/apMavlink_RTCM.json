@@ -133,21 +133,6 @@
 		"baud": 115200
 	},
 
-	"udpRTCMsvr": {
-		"class": "_UDP",
-		"bON": false,
-		"thread": {
-			"FPS": 30
-		},
-		"nPacket": 256,
-		"nPbuffer": 2000,
-		"addrRemote": "127.0.0.1",
-		"portRemote": 24609,
-		"/portLocal": 24609,
-		"bW2R": false,
-		"bWbroadcast": false
-	},
-
 	"RTCMcast": {
 		"class": "_RTCMcast",
 		"bON": false,
@@ -169,6 +154,20 @@
 			}
 		]
 	},
+	"udpRTCMsvr": {
+		"class": "_UDP",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"nPacket": 256,
+		"nPbuffer": 2000,
+		"addrRemote": "127.0.0.1",
+		"portRemote": 24609,
+		"/portLocal": 24609,
+		"bW2R": false,
+		"bWbroadcast": false
+	},
 
 
 	"udpRTCMcli": {
@@ -185,6 +184,7 @@
 		"bW2R": false,
 		"bWbroadcast": false
 	},
+
 	"apRTCM": {
 		"class": "_APmavlink_RTCM",
 		"bON": true,
