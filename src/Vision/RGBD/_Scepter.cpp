@@ -33,13 +33,100 @@ namespace kai
 	{
 		IF_F(!_RGBDbase::init(j));
 
-		jKv(j, "scPixelFormat", m_scCtrl.m_pixelFormat);
+		auto readOptional = [this, &j](const string &key, auto &value)
+		{
+			if (j.find(key) == j.end())
+				return true;
+
+			if (jKv(j, key, value))
+				return true;
+
+			LOG_E("Invalid Scepter config value: " + key);
+			return false;
+		};
+
+		IF_F(!readOptional("scScanTimeMs", m_scCtrl.m_tScan));
+		IF_F(!readOptional("scPixelFormat", m_scCtrl.m_pixelFormat));
+		IF_F(!readOptional("scToFAutoExposure", m_scCtrl.m_bAutoExposureToF));
+		IF_F(!readOptional("scToFExposureTimeUs", m_scCtrl.m_tExposureToF));
+		IF_F(!readOptional("scRGBAutoExposure", m_scCtrl.m_bAutoExposureRGB));
+		IF_F(!readOptional("scRGBExposureTimeUs", m_scCtrl.m_tExposureRGB));
+		IF_F(!readOptional("scTimeFilterEnabled", m_scCtrl.m_bFilTime));
+		IF_F(!readOptional("scTimeFilterThreshold", m_scCtrl.m_filTime));
+		IF_F(!readOptional("scConfidenceFilterEnabled", m_scCtrl.m_bFilConfidence));
+		IF_F(!readOptional("scConfidenceFilterThreshold", m_scCtrl.m_filConfidence));
+		IF_F(!readOptional("scFlyingPixelFilterEnabled", m_scCtrl.m_bFilFlyingPix));
+		IF_F(!readOptional("scFlyingPixelFilterThreshold", m_scCtrl.m_filFlyingPix));
+		IF_F(!readOptional("scFillHoleEnabled", m_scCtrl.m_bFillHole));
+		IF_F(!readOptional("scSpatialFilterEnabled", m_scCtrl.m_bSpatialFilter));
+		IF_F(!readOptional("scHDREnabled", m_scCtrl.m_bHDR));
+		IF_F(!validateCamCtrl());
 
 		DEL(m_pTpp);
 		m_pTpp = createThread(jK(j, "threadPP"), "threadPP");
 		NULL_F(m_pTpp);
 
 		return true;
+	}
+
+	bool _Scepter::validateCamCtrl(void)
+	{
+		IF_Le_F(m_scCtrl.m_tScan <= 0,
+				"scScanTimeMs must be greater than 0");
+		IF_Le_F(!m_scCtrl.m_bAutoExposureToF && !m_scCtrl.m_bHDR &&
+					m_scCtrl.m_tExposureToF <= 0,
+				"scToFExposureTimeUs must be greater than 0");
+		IF_Le_F(!m_scCtrl.m_bAutoExposureRGB && m_scCtrl.m_tExposureRGB <= 0,
+				"scRGBExposureTimeUs must be greater than 0");
+		IF_Le_F(m_scCtrl.m_filTime < 1 || m_scCtrl.m_filTime > 6,
+				"scTimeFilterThreshold must be in [1, 6]");
+		IF_Le_F(m_scCtrl.m_filConfidence < 1 || m_scCtrl.m_filConfidence > 100,
+				"scConfidenceFilterThreshold must be in [1, 100]");
+		IF_Le_F(m_scCtrl.m_filFlyingPix < 1 || m_scCtrl.m_filFlyingPix > 16,
+				"scFlyingPixelFilterThreshold must be in [1, 16]");
+		IF_Le_F(m_scCtrl.m_bAutoExposureToF && m_scCtrl.m_bHDR,
+				"scHDREnabled requires scToFAutoExposure to be false");
+
+		return true;
+	}
+
+	void _Scepter::applyCamCtrl(void)
+	{
+		auto apply = [this](bool bOK, const string &setting)
+		{
+			if (bOK)
+				return;
+
+			LOG_E("Cannot apply Scepter setting: " + setting);
+		};
+
+		if (!m_scCtrl.m_bHDR)
+			apply(setHDR(false), "scHDREnabled");
+
+		apply(setToFexposureControlMode(m_scCtrl.m_bAutoExposureToF),
+			  "scToFAutoExposure");
+		if (!m_scCtrl.m_bAutoExposureToF && !m_scCtrl.m_bHDR)
+			apply(setToFexposureTime(false, m_scCtrl.m_tExposureToF),
+				  "scToFExposureTimeUs");
+		// HDR exposure is configured per frame with scSetExposureTimeOfHDR,
+		// so the ordinary exposure-time value does not apply in HDR mode.
+		if (m_scCtrl.m_bHDR)
+			apply(setHDR(true), "scHDREnabled");
+
+		apply(setRGBexposureControlMode(m_scCtrl.m_bAutoExposureRGB),
+			  "scRGBAutoExposure");
+		if (!m_scCtrl.m_bAutoExposureRGB)
+			apply(setRGBexposureTime(false, m_scCtrl.m_tExposureRGB),
+				  "scRGBExposureTimeUs");
+
+		apply(setTimeFilter(m_scCtrl.m_bFilTime, m_scCtrl.m_filTime),
+			  "scTimeFilter");
+		apply(setConfidenceFilter(m_scCtrl.m_bFilConfidence, m_scCtrl.m_filConfidence),
+			  "scConfidenceFilter");
+		apply(setFlyingPixelFilter(m_scCtrl.m_bFilFlyingPix, m_scCtrl.m_filFlyingPix),
+			  "scFlyingPixelFilter");
+		apply(setFillHole(m_scCtrl.m_bFillHole), "scFillHoleEnabled");
+		apply(setSpatialFilter(m_scCtrl.m_bSpatialFilter), "scSpatialFilterEnabled");
 	}
 
 	bool _Scepter::link(const json &j, ModuleMgr *pM)
@@ -53,7 +140,7 @@ namespace kai
 	{
 		IF__(m_bOpen, true);
 
-		uint32_t m_nDevice = 0;
+		m_nDevice = 0;
 		ScStatus status = scGetDeviceCount(&m_nDevice, m_scCtrl.m_tScan);
 		if (status != ScStatus::SC_OK)
 		{
@@ -67,12 +154,21 @@ namespace kai
 		// scSetHotPlugStatusCallback(HotPlugStateCallback, nullptr);
 
 		m_pScDevListInfo = new ScDeviceInfo[m_nDevice];
+		auto abortOpen = [this](const string &message)
+		{
+			LOG_E(message);
+			if (m_scDevHandle)
+			{
+				scCloseDevice(&m_scDevHandle);
+				m_scDevHandle = 0;
+			}
+			DEL_ARRAY(m_pScDevListInfo);
+			return false;
+		};
+
 		status = scGetDeviceInfoList(m_nDevice, m_pScDevListInfo);
 		if (status != ScStatus::SC_OK)
-		{
-			LOG_E("GetDeviceListInfo failed:" + i2str(status));
-			return false;
-		}
+			return abortOpen("scGetDeviceInfoList failed: " + i2str(status));
 
 		m_scDevHandle = 0;
 		if (m_devURI.empty())
@@ -82,10 +178,7 @@ namespace kai
 
 		status = scOpenDeviceByIP(m_devURI.c_str(), &m_scDevHandle);
 		if (status != ScStatus::SC_OK)
-		{
-			LOG_E("OpenDevice failed");
-			return false;
-		}
+			return abortOpen("scOpenDeviceByIP failed: " + i2str(status));
 
 		status = scGetSensorIntrinsicParameters(m_scDevHandle, SC_TOF_SENSOR, &m_scCamParams);
 		cout << "Get scGetSensorIntrinsicParameters status: " << status << endl;
@@ -110,22 +203,27 @@ namespace kai
 		LOG_I("fw  ==  " + string(fw));
 		LOG_I("sn  ==  " + string(m_pScDevListInfo[0].serialNumber));
 
-		scSetFrameRate(m_scDevHandle, (int)this->m_pT->getTargetFPS());
-		scSetColorResolution(m_scDevHandle, m_vSizeRGB.x, m_vSizeRGB.y);
-		scSetColorPixelFormat(m_scDevHandle, (ScPixelFormat)m_scCtrl.m_pixelFormat);
-		scSetTransformColorImgToDepthSensorEnabled(m_scDevHandle, m_btRGB);
-		scSetTransformDepthImgToColorSensorEnabled(m_scDevHandle, m_btDepth);
-		setToFexposureTime(m_scCtrl.m_bAutoExposureToF, m_scCtrl.m_tExposureToF);
-		setToFexposureControlMode(m_scCtrl.m_bAutoExposureToF);
-		setRGBexposureTime(m_scCtrl.m_bAutoExposureRGB, m_scCtrl.m_tExposureRGB);
-		setRGBexposureControlMode(m_scCtrl.m_bAutoExposureRGB);
-		setTimeFilter(m_scCtrl.m_bFilTime, m_scCtrl.m_filTime);
-		setConfidenceFilter(m_scCtrl.m_bFilConfidence, m_scCtrl.m_filConfidence);
-		setFlyingPixelFilter(m_scCtrl.m_bFilFlyingPix, m_scCtrl.m_filFlyingPix);
-		setFillHole(m_scCtrl.m_bFillHole);
-		setSpatialFilter(m_scCtrl.m_bSpatialFilter);
-		setHDR(m_scCtrl.m_bHDR);
+		auto apply = [this](ScStatus scStatus, const string &setting)
+		{
+			if (scStatus == SC_OK)
+				return;
+
+			LOG_E("Cannot apply Scepter setting " + setting + ": " + i2str(scStatus));
+		};
+
+		apply(scSetFrameRate(m_scDevHandle, (int)this->m_pT->getTargetFPS()),
+			  "thread.FPS");
+		apply(scSetColorResolution(m_scDevHandle, m_vSizeRGB.x, m_vSizeRGB.y),
+			  "vSizeRGB");
+		apply(scSetColorPixelFormat(m_scDevHandle, (ScPixelFormat)m_scCtrl.m_pixelFormat),
+			  "scPixelFormat");
+		apply(scSetTransformColorImgToDepthSensorEnabled(m_scDevHandle, m_btRGB),
+			  "btRGB");
+		apply(scSetTransformDepthImgToColorSensorEnabled(m_scDevHandle, m_btDepth),
+			  "btDepth");
+		applyCamCtrl();
 		status = scStartStream(m_scDevHandle);
+		IF__(status != SC_OK, abortOpen("scStartStream failed: " + i2str(status)));
 
 		m_pScVw = new ScVector3f[m_vSizeRGB.x * m_vSizeRGB.y];
 
@@ -143,8 +241,9 @@ namespace kai
 
 		status = scShutdown();
 
-		DEL(m_pScDevListInfo);
-		DEL(m_pScVw);
+		DEL_ARRAY(m_pScDevListInfo);
+		DEL_ARRAY(m_pScVw);
+		m_bOpen = false;
 	}
 
 	bool _Scepter::start(void)
@@ -405,7 +504,7 @@ namespace kai
 
 		ScFlyingPixelFilterParams p;
 		p.enable = bON;
-		p.threshold;
+		p.threshold = thr;
 		ScStatus ScR = scSetFlyingPixelFilterParams(m_scDevHandle, p);
 		return (ScR == SC_OK) ? true : false;
 	}

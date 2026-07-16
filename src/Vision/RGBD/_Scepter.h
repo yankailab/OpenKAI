@@ -25,13 +25,13 @@ namespace kai
 		int m_tExposureRGB = 4000;
 
 		bool m_bFilTime = false;
-		int m_filTime = 0;
+		int m_filTime = 1;
 
 		bool m_bFilConfidence = true;
 		int m_filConfidence = 1;
 
 		bool m_bFilFlyingPix = false;
-		int m_filFlyingPix = 0;
+		int m_filFlyingPix = 1;
 
 		bool m_bFillHole = false;
 		bool m_bSpatialFilter = false;
@@ -66,6 +66,9 @@ namespace kai
 		bool setHDR(bool bON);
 
 	private:
+		bool validateCamCtrl(void);
+		void applyCamCtrl(void);
+
 #ifdef WITH_3D
 		void updatePC(void);
 #endif

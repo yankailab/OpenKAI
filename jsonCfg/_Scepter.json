@@ -58,7 +58,7 @@
 		"threadPP": {
 			"FPS": 30
 		},
-		"URI": "",
+		"devURI": "",
 		"vSizeRGB": [
 			1600,
 			1200
@@ -68,7 +68,21 @@
 			4000
 		],
 		"_PCstream":"scPC",
+		"scScanTimeMs": 3000,
 		"scPixelFormat": 4,
+		"scToFAutoExposure": true,
+		"scToFExposureTimeUs": 4000,
+		"scRGBAutoExposure": true,
+		"scRGBExposureTimeUs": 4000,
+		"scTimeFilterEnabled": false,
+		"scTimeFilterThreshold": 1,
+		"scConfidenceFilterEnabled": true,
+		"scConfidenceFilterThreshold": 1,
+		"scFlyingPixelFilterEnabled": false,
+		"scFlyingPixelFilterThreshold": 1,
+		"scFillHoleEnabled": false,
+		"scSpatialFilterEnabled": false,
+		"scHDREnabled": false,
 		"bRGB": true,
 		"bDepth": true,
 		"btRGB": true,
