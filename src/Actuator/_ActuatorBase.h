@@ -120,11 +120,13 @@ namespace kai
 		virtual bool start(void);
 		virtual void console(void *pConsole);
 
-		int getID(void);
 		void power(bool bON);
 		void move(bool bMove);
+		void setMode(int mode);
 		void gotoOrigin(void);
 		void clearAlarm(void);
+
+		int getID(void);
 		bool bComplete(void);
 		bool bAlarm(void);
 
@@ -149,6 +151,7 @@ namespace kai
 	protected:
 		int m_ID;
 		float m_origin;
+		int m_mode;
 		ACTUATOR_V m_p; // pos
 		ACTUATOR_V m_s; // speed
 		ACTUATOR_V m_a; // accel

@@ -11,6 +11,8 @@ namespace kai
 	{
 		m_ID = 0;
 		m_origin = 0;
+		m_mode = 0;
+
 		m_p.init();
 		m_s.init();
 		m_a.init();
@@ -146,6 +148,12 @@ namespace kai
 			m_bfSet.set(actuator_move);
 		else
 			m_bfSet.clear(actuator_move);
+	}
+
+	void _ActuatorBase::setMode(int mode)
+	{
+		m_mode = mode;
+		m_bfSet.set(actuator_setMode);
 	}
 
 	void _ActuatorBase::gotoOrigin(void)
