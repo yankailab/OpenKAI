@@ -40,6 +40,8 @@ namespace kai
 		IF_F(!this->_ModuleBase::init(j));
 
 		jKv(j, "ID", m_ID);
+		jKv(j, "mode", m_mode);
+
 
 		jKv(j, "pOrigin", m_origin);
 		jKv(j, "p", m_p.m_v);

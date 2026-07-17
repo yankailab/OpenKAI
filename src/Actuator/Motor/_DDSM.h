@@ -50,8 +50,6 @@ namespace kai
 	protected:
 		_Thread *m_pTr;
 		_IObase *m_pIO;
-
-		DDSM_MODE m_ddsmMode;
 	};
 
 }

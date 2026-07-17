@@ -37,8 +37,8 @@
 		},
 		"bLog": true,
 		"_IObase": "serial",
-		"ID": 4,
-		"ddsmMode": 2,
+		"ID": 1,
+		"mode": 3,
 		"tCmdTimeout": 0,
 		"bfSetPower": true,
 		"bfSetID": false,
@@ -54,6 +54,12 @@
 		"cRange": [
 			-10000,
 			10000
+		],
+		"p": 0,
+		"pTarget": 30000,
+		"pRange": [
+			0,
+			36000
 		]
 	}
 }

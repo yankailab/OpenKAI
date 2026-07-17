@@ -7,7 +7,7 @@ namespace kai
 		m_pTr = nullptr;
 		m_pIO = nullptr;
 
-		m_ddsmMode = ddsm_speed;
+		m_mode = ddsm_speed;
 	}
 
 	_DDSM::~_DDSM()
@@ -18,8 +18,6 @@ namespace kai
 	bool _DDSM::init(const json &j)
 	{
 		IF_F(!this->_ActuatorBase::init(j));
-
-		jKv(j, "ddsmMode", m_ddsmMode);
 
 		DEL(m_pTr);
 		m_pTr = createThread(jK(j, "threadR"), "threadR");
@@ -75,11 +73,11 @@ namespace kai
 					m_bfSet.clear(actuator_setMode);
 			}
 
-			if (m_ddsmMode == ddsm_speed)
+			if (m_mode == ddsm_speed)
 				setOutput(m_s.getTarget());
-			else if (m_ddsmMode == ddsm_current)
+			else if (m_mode == ddsm_current)
 				setOutput(m_c.getTarget());
-			else if (m_ddsmMode == ddsm_pos)
+			else if (m_mode == ddsm_pos)
 				setOutput(m_p.getTarget());
 		}
 	}
@@ -122,7 +120,7 @@ namespace kai
 		pB[6] = 0;
 		pB[7] = 0;
 		pB[8] = 0;
-		pB[9] = m_ddsmMode;
+		pB[9] = m_mode;
 		return m_pIO->write(pB, DDSM_CMD_NB);
 	}
 
