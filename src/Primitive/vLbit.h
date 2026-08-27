@@ -2,6 +2,7 @@
 #define OpenKAI_src_Primitive_vLbit_H_
 
 #include "../Base/platform.h"
+#include <limits>
 
 using namespace std;
 
@@ -10,37 +11,14 @@ namespace kai
     class vLbit
     {
     public:
-        static constexpr size_t npos = static_cast<size_t>(-1);
-
-        vLbit() = default;
-
-        // optional convenience ctor
-        explicit vLbit(const vector<uint64_t> &vPos)
-            : m_vP(vPos)
+        vLbit(void)
         {
-            normalize();
+            clear();
         }
 
-        explicit vLbit(vector<uint64_t> &&vPos)
-            : m_vP(move(vPos))
-        {
-            normalize();
-        }
-
-        // clear all 1-bits
         void clear(void)
         {
             m_vP.clear();
-        }
-
-        size_t popcount() const
-        {
-            return m_vP.size();
-        }
-
-        const uint64_t *raw() const
-        {
-            return m_vP.empty() ? nullptr : m_vP.data();
         }
 
         const vector<uint64_t>& getVp(void) const
@@ -49,27 +27,27 @@ namespace kai
         }
 
         // set bit = 1
-        inline void set(size_t bit)
+        inline void set(uint64_t bit)
         {
-            const uint64_t b = static_cast<uint64_t>(bit);
+            const uint64_t b = bit;
             auto it = lower_bound(m_vP.begin(), m_vP.end(), b);
             if (it == m_vP.end() || *it != b)
                 m_vP.insert(it, b);
         }
 
         // clear bit = 0
-        inline void unset(size_t bit)
+        inline void unset(uint64_t bit)
         {
-            const uint64_t b = static_cast<uint64_t>(bit);
+            const uint64_t b = bit;
             auto it = lower_bound(m_vP.begin(), m_vP.end(), b);
             if (it != m_vP.end() && *it == b)
                 m_vP.erase(it);
         }
 
         // return 1 if set, else 0
-        inline int8_t get(size_t bit) const
+        inline uint8_t get(uint64_t bit) const
         {
-            const uint64_t b = static_cast<uint64_t>(bit);
+            const uint64_t b = bit;
             auto it = lower_bound(m_vP.begin(), m_vP.end(), b);
             return (it != m_vP.end() && *it == b) ? 1 : 0;
         }
@@ -286,99 +264,58 @@ namespace kai
         }
 
         // shift all set-bit positions upward
-        void shiftL(size_t k)
+        void shiftL(uint64_t k)
         {
             if (k == 0 || m_vP.empty())
                 return;
 
-            const uint64_t kk = static_cast<uint64_t>(k);
-            for (auto &p : m_vP)
-                p += kk;
-        }
-
-        // shift all set-bit positions downward, dropping negatives
-        void shiftR(size_t k)
-        {
-            if (k == 0 || m_vP.empty())
-                return;
-
-            const uint64_t kk = static_cast<uint64_t>(k);
-
+            const uint64_t maxP = numeric_limits<uint64_t>::max() - k;
             size_t w = 0;
             for (size_t r = 0; r < m_vP.size(); ++r)
             {
-                if (m_vP[r] >= kk)
-                    m_vP[w++] = m_vP[r] - kk;
+                if (m_vP[r] <= maxP)
+                    m_vP[w++] = m_vP[r] + k;
             }
             m_vP.resize(w);
         }
 
-        vLbit &operator<<=(size_t k)
+        // shift all set-bit positions downward, dropping negatives
+        void shiftR(uint64_t k)
+        {
+            if (k == 0 || m_vP.empty())
+                return;
+
+            size_t w = 0;
+            for (size_t r = 0; r < m_vP.size(); ++r)
+            {
+                if (m_vP[r] >= k)
+                    m_vP[w++] = m_vP[r] - k;
+            }
+            m_vP.resize(w);
+        }
+
+        vLbit &operator<<=(uint64_t k)
         {
             shiftL(k);
             return *this;
         }
 
-        vLbit &operator>>=(size_t k)
+        vLbit &operator>>=(uint64_t k)
         {
             shiftR(k);
             return *this;
         }
 
-        friend vLbit operator<<(vLbit a, size_t k)
+        friend vLbit operator<<(vLbit a, uint64_t k)
         {
             a.shiftL(k);
             return a;
         }
 
-        friend vLbit operator>>(vLbit a, size_t k)
+        friend vLbit operator>>(vLbit a, uint64_t k)
         {
             a.shiftR(k);
             return a;
-        }
-
-        // return npos if not found
-        size_t findFirstOne(void) const
-        {
-            return m_vP.empty() ? npos : static_cast<size_t>(m_vP.front());
-        }
-
-        // return first set bit strictly after pos, or npos
-        size_t findNextOne(size_t pos) const
-        {
-            auto it = upper_bound(m_vP.begin(), m_vP.end(), static_cast<uint64_t>(pos));
-            return (it == m_vP.end()) ? npos : static_cast<size_t>(*it);
-        }
-
-        size_t findLastOne() const
-        {
-            return m_vP.empty() ? npos : static_cast<size_t>(m_vP.back());
-        }
-
-        static void xorReduce(vLbit &out, const vLbit *arr, size_t count)
-        {
-            out.clear();
-            if (count == 0 || arr == nullptr)
-                return;
-
-            for (size_t i = 0; i < count; ++i)
-                out ^= arr[i];
-        }
-
-        static void xorReduceInplace(vLbit &out, const vLbit *arr, size_t count)
-        {
-            if (count == 0 || arr == nullptr)
-                return;
-
-            for (size_t i = 0; i < count; ++i)
-                out ^= arr[i];
-        }
-
-    private:
-        void normalize()
-        {
-            sort(m_vP.begin(), m_vP.end());
-            m_vP.erase(unique(m_vP.begin(), m_vP.end()), m_vP.end());
         }
 
     private:

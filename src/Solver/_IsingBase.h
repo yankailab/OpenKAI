@@ -18,7 +18,7 @@ namespace kai
 	struct ISING_JW
 	{
 		int64_t m_J;
-		vLbit m_w; // spin indices bit mask
+		vLbit m_w; // spin indices bit mask, empty bit mask as DC term
 
 		void clear(void)
 		{
@@ -49,23 +49,23 @@ namespace kai
 		virtual void console(void *pConsole);
 
 		void clear(void);
-		bool readCNF(const string &fName, string *pCNF);
-		bool decodeCNF(const string &cnf);
+		bool readIsing(const string &fName, string *pCNF);
+		bool decodeIsing(const string &cnf);
 
 		double energy(void);
 		void printSolution(void);
 
-		void addJw(const ISING_JW &Jw, vector<ISING_JW>& vJw);
-		void sortJw(vector<ISING_JW>& vJw);
-		ISING_JW *getJw(vector<ISING_JW>& vJw, const vLbit &vB);
+		void addJw(const ISING_JW &Jw, vector<ISING_JW> &vJw);
+		void sortJw(vector<ISING_JW> &vJw);
+		ISING_JW *getJw(vector<ISING_JW> &vJw, const vLbit &vB);
 
 	protected:
 		string m_fName;
-		string m_cnf;		// problem input
+		string m_probIsing; // problem input
 
-		int m_nV;			// real spin number + 1
-		vLbit m_spinAssign;	// bit 0 is for constant terms, bit 1~ for spin n, 0/1 to -1/1
-		vector<ISING_JW> m_vJw;
+		int m_nSpin;			// spin number
+		vector<ISING_JW> m_vJw; // Ising spin interactions
+		vector<uint64_t> m_vSpinAssign;
 	};
 
 }

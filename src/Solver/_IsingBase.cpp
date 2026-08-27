@@ -44,28 +44,28 @@ namespace kai
 
 	void _IsingBase::clear(void)
 	{
-		m_cnf = "";
-		m_nV = 0;
-		m_spinAssign.clear();
+		m_probIsing = "";
+		m_nSpin = 0;
+		m_vSpinAssign.clear();
 		m_vJw.clear();
 	}
 
-	bool _IsingBase::readCNF(const string &fName, string *pCNF)
+	bool _IsingBase::readIsing(const string &fName, string *pIsing)
 	{
-		NULL_F(pCNF);
+		NULL_F(pIsing);
 
-		IF_F(!readFile(fName, pCNF, "\n"));
-		IF_F(pCNF->empty());
+		IF_F(!readFile(fName, pIsing, "\n"));
+		IF_F(pIsing->empty());
 
 		return true;
 	}
 
-	bool _IsingBase::decodeCNF(const string &cnf)
+	bool _IsingBase::decodeIsing(const string &probIsing)
 	{
-		IF_F(cnf.empty());
+		IF_F(probIsing.empty());
 
-		// cnf file input
-		vector<string> vLines = splitBy(cnf, '\n');
+		// probIsing file input
+		vector<string> vLines = splitBy(probIsing, '\n');
 
 		size_t i;
 
@@ -75,21 +75,21 @@ namespace kai
 		{
 			IF_CONT(vLines[i].empty());
 
-			// p cnf <ISING_VARs> <ISING_TERMs>
+			// header format
+			// c comment
+			// p Ising <Ising spin number> <Ising term number>
 			vector<string> vL = splitBy(vLines[i], ' ');
 			IF_CONT(vL[0] == "c");
 			IF_CONT(vL[0] != "p");
 
-			IF_F(vL[1] != "cnf");
+			IF_F(vL[1] != "Ising");
 
-			m_nV = atoi(vL[2].c_str());
+			m_nSpin = atoi(vL[2].c_str());
 			nT = atoi(vL[3].c_str());
 			break;
 		}
 
-		IF_F((m_nV <= 0) || (nT <= 0));
-
-		m_nV++; // need to +1 for const term
+		IF_F((m_nSpin <= 0) || (nT <= 0));
 
 		// Ising terms
 		ISING_JW Jw;
@@ -98,20 +98,29 @@ namespace kai
 		{
 			IF_CONT(vLines[i].empty());
 
+			// line format
+			// <Ising interaction J> <Ising interaction spin indices> 0
+			// Lack of <Ising interaction J> term means DC term in Ising
+
 			vector<string> vL = splitBy(vLines[i], ' ');
+			IF_CONT(vL.size() < 2);
 			IF_CONT(vL[0] == "c");
 			IF_CONT(vL[0] == "p");
 
 			Jw.clear();
-			Jw.m_J = 1; // TODO: read Jij
-			int iL = 0;
+			Jw.m_J = atoll(vL[0].c_str());
+			int iL = 1;
 			while (vL[iL] != "0")
 			{
 				int s = atoi(vL[iL++].c_str());
-				IF_Le_F(s >= m_nV - 1, "Spin exceeds max, line: " + i2str(i));
+				IF_Le_F(s > m_nSpin, "Spin exceeds max index, line: " + i2str(i));
 				Jw.addSpin(s);
+
+				if (iL >= vL.size())
+					break;
 			}
-			IF_CONT(iL <= 0);
+
+			// TODO: check for existing terms in m_vJw, IF_Le_F() to show error and return false if re-defined
 
 			m_vJw.push_back(Jw);
 		}
@@ -127,19 +136,7 @@ namespace kai
 			ISING_JW *pJw = &m_vJw[i];
 			vLbit *pWb = &pJw->m_w;
 
-			int jwS = 1;	//TODO:
-			// size_t nB = pWb->nBits();
-			// size_t iBp = pWb->findFirstOne();
-			// while (iBp < nB)
-			// {
-			// 	int8_t s = m_spinAssign.get(iBp);
-			// 	if (s < 0)
-			// 		break;
-
-			// 	jwS *= (s << 1) - 1; // 0/1 to -1/1
-
-			// 	iBp = pWb->findNextOne(iBp);
-			// }
+			int jwS = 1; // TODO:
 
 			e += pJw->m_J * jwS;
 		}
@@ -151,16 +148,16 @@ namespace kai
 	void _IsingBase::printSolution(void)
 	{
 		string s = "";
-		for (size_t i = 1; i < m_nV; i++)
+		for (size_t i = 1; i < m_nSpin; i++)
 		{
-			int b = m_spinAssign.get(i);
+			int b = m_vSpinAssign[i];
 			s += b ? "1 " : "-1 ";
 		}
 
 		LOG_I("Spin assign: " + s);
 	}
 
-	void _IsingBase::addJw(const ISING_JW &Jw, vector<ISING_JW>& vJw)
+	void _IsingBase::addJw(const ISING_JW &Jw, vector<ISING_JW> &vJw)
 	{
 		for (ISING_JW Jwi : vJw)
 		{
@@ -173,12 +170,12 @@ namespace kai
 		vJw.push_back(Jw);
 	}
 
-	void _IsingBase::sortJw(vector<ISING_JW>& vJw)
+	void _IsingBase::sortJw(vector<ISING_JW> &vJw)
 	{
 		sort(vJw.begin(), vJw.end());
 	}
 
-	ISING_JW *_IsingBase::getJw(vector<ISING_JW>& vJw, const vLbit &vB)
+	ISING_JW *_IsingBase::getJw(vector<ISING_JW> &vJw, const vLbit &vB)
 	{
 		for (size_t i = 0; i < vJw.size(); i++)
 		{
