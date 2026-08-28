@@ -9,7 +9,6 @@
 
 namespace kai
 {
-
 	_IsingBase::_IsingBase()
 	{
 		m_fName = "";
@@ -50,7 +49,7 @@ namespace kai
 		m_vJw.clear();
 	}
 
-	bool _IsingBase::readIsing(const string &fName, string *pIsing)
+	bool _IsingBase::readIsingProb(const string &fName, string *pIsing)
 	{
 		NULL_F(pIsing);
 
@@ -60,7 +59,7 @@ namespace kai
 		return true;
 	}
 
-	bool _IsingBase::decodeIsing(const string &probIsing)
+	bool _IsingBase::decodeIsingProb(const string &probIsing)
 	{
 		IF_F(probIsing.empty());
 
@@ -93,6 +92,7 @@ namespace kai
 
 		// Ising terms
 		ISING_JW Jw;
+		set<vLbit> setJw;
 
 		for (i++; i < vLines.size(); i++)
 		{
@@ -120,7 +120,7 @@ namespace kai
 					break;
 			}
 
-			// TODO: check for existing terms in m_vJw, IF_Le_F() to show error and return false if re-defined
+			IF_Le_F(!setJw.insert(Jw.m_w).second, "Ising term re-defined, line: " + i2str(i));
 
 			m_vJw.push_back(Jw);
 		}
@@ -131,14 +131,41 @@ namespace kai
 	double _IsingBase::energy(void)
 	{
 		double e = 0;
+		vector<int64_t> vSpinJ(m_nSpin + 1, 0);
+		for (const ISING_JW &Jw : m_vSpinAssign)
+		{
+			const vector<uint64_t> &vP = Jw.m_w.getVp();
+			IF_CONT(vP.size() != 1);
+			IF_CONT(vP[0] > (uint64_t)m_nSpin);
+
+			vSpinJ[vP[0]] = Jw.m_J;
+		}
+
 		for (size_t i = 0; i < m_vJw.size(); i++)
 		{
 			ISING_JW *pJw = &m_vJw[i];
 			vLbit *pWb = &pJw->m_w;
 
-			int jwS = 1; // TODO:
+			int64_t J = pJw->m_J;
+			for (uint64_t s : pWb->getVp())
+			{
+				if (s > (uint64_t)m_nSpin)
+				{
+					J = 0;
+					break;
+				}
 
-			e += pJw->m_J * jwS;
+				const int64_t sJ = vSpinJ[s];
+				if (!sJ)
+				{
+					J = 0;
+					break;
+				}
+
+				J *= sJ;
+			}
+
+			e += J;
 		}
 
 		LOG_I("Energy: " + lf2str(e));
@@ -148,18 +175,24 @@ namespace kai
 	void _IsingBase::printSolution(void)
 	{
 		string s = "";
-		for (size_t i = 1; i < m_nSpin; i++)
+		s.reserve(m_vSpinAssign.size() * 4);
+		for (const ISING_JW &Jw : m_vSpinAssign)
 		{
-			int b = m_vSpinAssign[i];
-			s += b ? "1 " : "-1 ";
+			const vector<uint64_t> &vP = Jw.m_w.getVp();
+			IF_CONT(vP.size() != 1);
+
+			if (Jw.m_J < 0)
+				s += "-";
+
+			s += i2str((int)vP[0]) + " ";
 		}
 
-		LOG_I("Spin assign: " + s);
+		LOG_I("Assign: " + s);
 	}
 
-	void _IsingBase::addJw(const ISING_JW &Jw, vector<ISING_JW> &vJw)
+	void _IsingBase::addJw(const ISING_JW &Jw)
 	{
-		for (ISING_JW Jwi : vJw)
+		for (ISING_JW Jwi : m_vJw)
 		{
 			IF_CONT(Jw.m_w != Jwi.m_w);
 
@@ -167,25 +200,78 @@ namespace kai
 			return;
 		}
 
-		vJw.push_back(Jw);
+		m_vJw.push_back(Jw);
 	}
 
-	void _IsingBase::sortJw(vector<ISING_JW> &vJw)
+	void _IsingBase::sortJw(void)
 	{
-		sort(vJw.begin(), vJw.end());
+		sort(m_vJw.begin(), m_vJw.end());
 	}
 
-	ISING_JW *_IsingBase::getJw(vector<ISING_JW> &vJw, const vLbit &vB)
+	ISING_JW *_IsingBase::getJw(const vLbit &w)
 	{
-		for (size_t i = 0; i < vJw.size(); i++)
+		for (size_t i = 0; i < m_vJw.size(); i++)
 		{
-			ISING_JW *pJw = &vJw[i];
-			IF_CONT(pJw->m_w != vB);
+			ISING_JW *pJw = &m_vJw[i];
+			IF_CONT(pJw->m_w != w);
 
 			return pJw;
 		}
 
 		return nullptr;
+	}
+
+	static inline vector<ISING_JW>::iterator lowerBoundSpinAssign(vector<ISING_JW> &vSpinAssign, const vLbit &w)
+	{
+		size_t first = 0;
+		size_t count = vSpinAssign.size();
+
+		while (count > 0)
+		{
+			const size_t step = count >> 1;
+			const size_t i = first + step;
+
+			if (vSpinAssign[i].m_w < w)
+			{
+				first = i + 1;
+				count -= step + 1;
+			}
+			else
+			{
+				count = step;
+			}
+		}
+
+		return vSpinAssign.begin() + first;
+	}
+
+	bool _IsingBase::assignSpin(const vLbit &w, int8_t s)
+	{
+		auto it = lowerBoundSpinAssign(m_vSpinAssign, w);
+		IF_F(it != m_vSpinAssign.end() && it->m_w == w);
+
+		ISING_JW Jw;
+		Jw.m_w = w;
+		Jw.m_J = s;
+		m_vSpinAssign.insert(it, Jw);
+
+		return true;
+	}
+
+	void _IsingBase::clearSpinAssign(const vLbit &w)
+	{
+		auto it = lowerBoundSpinAssign(m_vSpinAssign, w);
+		IF_(it == m_vSpinAssign.end() || it->m_w != w);
+
+		m_vSpinAssign.erase(it);
+	}
+
+	int8_t _IsingBase::getSpinAssign(const vLbit &w)
+	{
+		auto it = lowerBoundSpinAssign(m_vSpinAssign, w);
+		IF__(it == m_vSpinAssign.end() || it->m_w != w, 0);
+
+		return (int8_t)it->m_J;
 	}
 
 	void _IsingBase::console(void *pConsole)

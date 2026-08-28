@@ -12,13 +12,14 @@
 #include "../Primitive/tSwap.h"
 #include "../Primitive/vLbit.h"
 #include "../Utility/utilFile.h"
+#include <set>
 
 namespace kai
 {
 	struct ISING_JW
 	{
 		int64_t m_J;
-		vLbit m_w; // spin indices bit mask, empty bit mask as DC term
+		vLbit m_w; // Ising spin indices, empty indices as DC term
 
 		void clear(void)
 		{
@@ -49,23 +50,26 @@ namespace kai
 		virtual void console(void *pConsole);
 
 		void clear(void);
-		bool readIsing(const string &fName, string *pCNF);
-		bool decodeIsing(const string &cnf);
-
+		bool readIsingProb(const string &fName, string *pCNF);
+		bool decodeIsingProb(const string &cnf);
 		double energy(void);
 		void printSolution(void);
 
-		void addJw(const ISING_JW &Jw, vector<ISING_JW> &vJw);
-		void sortJw(vector<ISING_JW> &vJw);
-		ISING_JW *getJw(vector<ISING_JW> &vJw, const vLbit &vB);
+		void addJw(const ISING_JW &Jw);
+		void sortJw(void);
+		ISING_JW *getJw(const vLbit &w);
+
+		bool assignSpin(const vLbit &w, int8_t s);	// return true if added assignment into m_vSpinAssign, false if already assigned
+		void clearSpinAssign(const vLbit &w);	// delete the element in m_vSpinAssign if existed for w
+		int8_t getSpinAssign(const vLbit &w);	// return the assignment +1/-1 from m_vSpinAssign if existed, return 0 if not assigned in m_vSpinAssign
 
 	protected:
 		string m_fName;
-		string m_probIsing; // problem input
+		string m_probIsing; 			// problem input
 
-		int m_nSpin;			// spin number
-		vector<ISING_JW> m_vJw; // Ising spin interactions
-		vector<uint64_t> m_vSpinAssign;
+		int m_nSpin;					// spin number
+		vector<ISING_JW> m_vJw; 		// Ising spin interaction terms
+		vector<ISING_JW> m_vSpinAssign;	// Ising spin assignment, m_w of single index for single spin assignment, m_J = +1/-1 as its assignment
 	};
 
 }
