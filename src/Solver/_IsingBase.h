@@ -62,6 +62,7 @@ namespace kai
 		bool assignSpin(const vLbit &w, int8_t s);	// return true if added assignment into m_vSpinAssign, false if already assigned
 		void clearSpinAssign(const vLbit &w);	// delete the element in m_vSpinAssign if existed for w
 		int8_t getSpinAssign(const vLbit &w);	// return the assignment +1/-1 from m_vSpinAssign if existed, return 0 if not assigned in m_vSpinAssign
+		vector<ISING_JW>::iterator findSpinAssign(const vLbit &w);
 
 	protected:
 		string m_fName;

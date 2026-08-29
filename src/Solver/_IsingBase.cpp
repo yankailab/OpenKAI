@@ -221,34 +221,10 @@ namespace kai
 		return nullptr;
 	}
 
-	static inline vector<ISING_JW>::iterator lowerBoundSpinAssign(vector<ISING_JW> &vSpinAssign, const vLbit &w)
-	{
-		size_t first = 0;
-		size_t count = vSpinAssign.size();
-
-		while (count > 0)
-		{
-			const size_t step = count >> 1;
-			const size_t i = first + step;
-
-			if (vSpinAssign[i].m_w < w)
-			{
-				first = i + 1;
-				count -= step + 1;
-			}
-			else
-			{
-				count = step;
-			}
-		}
-
-		return vSpinAssign.begin() + first;
-	}
-
 	bool _IsingBase::assignSpin(const vLbit &w, int8_t s)
 	{
-		auto it = lowerBoundSpinAssign(m_vSpinAssign, w);
-		IF_F(it != m_vSpinAssign.end() && it->m_w == w);
+		auto it = findSpinAssign(w);
+		IF_F(it != m_vSpinAssign.end());
 
 		ISING_JW Jw;
 		Jw.m_w = w;
@@ -260,18 +236,30 @@ namespace kai
 
 	void _IsingBase::clearSpinAssign(const vLbit &w)
 	{
-		auto it = lowerBoundSpinAssign(m_vSpinAssign, w);
-		IF_(it == m_vSpinAssign.end() || it->m_w != w);
+		auto it = findSpinAssign(w);
+		IF_(it == m_vSpinAssign.end());
 
 		m_vSpinAssign.erase(it);
 	}
 
 	int8_t _IsingBase::getSpinAssign(const vLbit &w)
 	{
-		auto it = lowerBoundSpinAssign(m_vSpinAssign, w);
-		IF__(it == m_vSpinAssign.end() || it->m_w != w, 0);
+		auto it = findSpinAssign(w);
+		IF__(it == m_vSpinAssign.end(), 0);
 
 		return (int8_t)it->m_J;
+	}
+
+	vector<ISING_JW>::iterator _IsingBase::findSpinAssign(const vLbit &w)
+	{
+		for (auto it = m_vSpinAssign.begin(); it != m_vSpinAssign.end(); ++it)
+		{
+			IF_CONT(it->m_w != w);
+
+			return it;
+		}
+
+		return m_vSpinAssign.end();
 	}
 
 	void _IsingBase::console(void *pConsole)
