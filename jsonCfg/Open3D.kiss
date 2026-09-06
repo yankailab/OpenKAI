@@ -13,7 +13,7 @@
 	"vBASE":["cam","RGBview","pcScan"],
 }
 "GViewer":{
-	"class":"_GeometryViewer",
+	"class":"_GeometryViewerBase",
 	"bON": true,
 "thread":{
 		"FPS":10,
@@ -190,7 +190,7 @@
 	"SharedMem":"shmFileR",
 }
 "pcStream":{
-	"class":"_PCstream",
+	"class":"_PointCloud",
 	"bON": false,
 "thread":{
 		"FPS":30,
@@ -200,7 +200,7 @@
 	"SharedMem":"shmFileR",
 }
 "pcGrid":{
-	"class":"_PCgridBase",
+	"class":"_OctreeBase",
 	"bON": false,
 "thread":{
 		"FPS":10,

@@ -92,7 +92,7 @@ namespace kai
 
 		// Ising terms
 		ISING_JW Jw;
-		set<vLbit> setJw;
+		set<vLongBit> setJw;
 
 		for (i++; i < vLines.size(); i++)
 		{
@@ -144,7 +144,7 @@ namespace kai
 		for (size_t i = 0; i < m_vJw.size(); i++)
 		{
 			ISING_JW *pJw = &m_vJw[i];
-			vLbit *pWb = &pJw->m_w;
+			vLongBit *pWb = &pJw->m_w;
 
 			int64_t J = pJw->m_J;
 			for (uint64_t s : pWb->getVp())
@@ -208,7 +208,7 @@ namespace kai
 		sort(m_vJw.begin(), m_vJw.end());
 	}
 
-	ISING_JW *_IsingBase::getJw(const vLbit &w)
+	ISING_JW *_IsingBase::getJw(const vLongBit &w)
 	{
 		for (size_t i = 0; i < m_vJw.size(); i++)
 		{
@@ -221,7 +221,7 @@ namespace kai
 		return nullptr;
 	}
 
-	bool _IsingBase::assignSpin(const vLbit &w, int8_t s)
+	bool _IsingBase::assignSpin(const vLongBit &w, int8_t s)
 	{
 		auto it = findSpinAssign(w);
 		IF_F(it != m_vSpinAssign.end());
@@ -234,7 +234,7 @@ namespace kai
 		return true;
 	}
 
-	void _IsingBase::clearSpinAssign(const vLbit &w)
+	void _IsingBase::clearSpinAssign(const vLongBit &w)
 	{
 		auto it = findSpinAssign(w);
 		IF_(it == m_vSpinAssign.end());
@@ -242,7 +242,7 @@ namespace kai
 		m_vSpinAssign.erase(it);
 	}
 
-	int8_t _IsingBase::getSpinAssign(const vLbit &w)
+	int8_t _IsingBase::getSpinAssign(const vLongBit &w)
 	{
 		auto it = findSpinAssign(w);
 		IF__(it == m_vSpinAssign.end(), 0);
@@ -250,7 +250,7 @@ namespace kai
 		return (int8_t)it->m_J;
 	}
 
-	vector<ISING_JW>::iterator _IsingBase::findSpinAssign(const vLbit &w)
+	vector<ISING_JW>::iterator _IsingBase::findSpinAssign(const vLongBit &w)
 	{
 		for (auto it = m_vSpinAssign.begin(); it != m_vSpinAssign.end(); ++it)
 		{

@@ -44,9 +44,9 @@ namespace kai
 		return tFromBoot.tv_sec * SEC_2_USEC * 1000 + (tFromBoot.tv_nsec);
 	}
 
-	inline bool bExpired(uint64_t tStamp, uint64_t tExpire, uint64_t tNow)
+	inline bool bExpired(uint64_t tStamp, uint64_t dTexpire, uint64_t tNow)
 	{
-		return (tStamp + tExpire < tNow);
+		return (tStamp + dTexpire < tNow);
 	}
 
 	inline string tFormat(void)

@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_SLAM__LCalign_H_
 #define OpenKAI_src_SLAM__LCalign_H_
 
-#include "../3D/PointCloud/_PCstream.h"
+#include "../3D/PointCloud/_PointCloud.h"
 #include "../Vision/_VisionBase.h"
 #include "../Sensor/_IMUbase.h"
 #include "../Protocol/_JSONbase.h"
@@ -16,7 +16,7 @@
 namespace kai
 {
 
-	class _LCalign : public _PCstream
+	class _LCalign : public _PointCloud
 	{
 	public:
 		_LCalign();
@@ -59,7 +59,7 @@ namespace kai
 		}
 
 	protected:
-		_PCstream *m_pPCin;
+		_PointCloud *m_pPCin;
 		_VisionBase *m_pV;
 		_IMUbase *m_pIMU;
 

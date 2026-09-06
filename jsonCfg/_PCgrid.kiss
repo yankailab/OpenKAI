@@ -13,13 +13,13 @@
 	"vBASE":["pcGrid", "Lvx_1"],
 }
 "pcGrid":{
-	"class":"_PCgridBase",
+	"class":"_OctreeBase",
 	"bON": true,
 "thread":{
 		"FPS":10,
 	}
 
-	/* _PCgridBase */
+	/* _OctreeBase */
 	"nMedWidth":3,
 	"vPorigin":[0,0,0],
 	"vCellRangeX":[-10,10],
@@ -34,7 +34,7 @@
 	"vGeometryBase":["psTest","Lvx1"],
 }
 "geometryViewer":{
-	"class":"_GeometryViewer",
+	"class":"_GeometryViewerBase",
 	"bON": true,
 "thread":{
 		"FPS":10,

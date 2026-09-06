@@ -9,7 +9,7 @@
 #define OpenKAI_src_Sensor_LiDAR__Livox2_H_
 
 #include "../../IO/_UDP.h"
-#include "../../3D/PointCloud/_PCstream.h"
+#include "../../3D/PointCloud/_PointCloud.h"
 #include "../../Sensor/_IMUbase.h"
 #include "../../Dependencies/SensorFusion/SensorFusion.h"
 #include "../../Dependencies/CRC.h"
@@ -152,7 +152,7 @@ namespace kai
 		}
 	};
 
-	class _Livox2 : public _PCstream
+	class _Livox2 : public _PointCloud
 	{
 	public:
 		_Livox2();

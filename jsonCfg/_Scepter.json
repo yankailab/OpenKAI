@@ -67,7 +67,7 @@
 			0,
 			4000
 		],
-		"_PCstream":"scPC",
+		"_PointCloud":"scPC",
 		"scPixelFormat": 4,
 		"bRGB": true,
 		"bDepth": true,
@@ -95,7 +95,7 @@
 	},
 
 	"scPC": {
-		"class": "_PCstream",
+		"class": "_PointCloud",
 		"bON": true,
 		"bLog": true,
 		"thread": {
@@ -104,7 +104,7 @@
 		"nP":1000000
 	},
 	"GViewer": {
-		"class": "_GeometryViewer",
+		"class": "_GeometryViewerBase",
 		"bON": true,
 		"thread": {
 			"FPS": 10

@@ -49,7 +49,7 @@ namespace kai
 
     bool _Livox2::init(const json &j)
     {
-        IF_F(!this->_PCstream::init(j));
+        IF_F(!this->_PointCloud::init(j));
 
         // lvx select
         jKv(j, "lvxSN", m_lvxSN);
@@ -121,7 +121,7 @@ namespace kai
 
     bool _Livox2::link(const json &j, ModuleMgr *pM)
     {
-        IF_F(!this->_PCstream::link(j, pM));
+        IF_F(!this->_PointCloud::link(j, pM));
 
         string n;
 
@@ -192,7 +192,7 @@ namespace kai
         NULL_F(m_pUDPimu);
         //        NULL_F(m_pUDPlog);
 
-        return this->_PCstream::check();
+        return this->_PointCloud::check();
     }
 
     // Common
@@ -803,7 +803,7 @@ namespace kai
     void _Livox2::console(void *pConsole)
     {
         NULL_(pConsole);
-        this->_PCstream::console(pConsole);
+        this->_PointCloud::console(pConsole);
 
         _Console *pC = (_Console *)pConsole;
 

@@ -29,9 +29,9 @@ namespace kai
 		// modules
 
 #ifdef WITH_3D
-		ADD_MODULE(_MeshStream);
-		ADD_MODULE(_PCstream);
-		ADD_MODULE(_PCgridBase);
+		ADD_MODULE(_OctreeBase);
+		ADD_MODULE(_Line);
+		ADD_MODULE(_PointCloud);
 		ADD_MODULE(_PCfile);
 		ADD_MODULE(_PCmerge);
 		ADD_MODULE(_PCsend);
@@ -43,9 +43,7 @@ namespace kai
 		ADD_MODULE(_PCregistCol);
 		ADD_MODULE(_PCregistICP);
 		ADD_MODULE(_PCregistGlobal);
-#ifdef USE_GUI
-		ADD_MODULE(_GeometryViewer);
-#endif
+		ADD_MODULE(_GeometryViewerBase);
 #ifdef USE_IMGUI
 		ADD_MODULE(ImGUIviewer);
 #endif
@@ -79,9 +77,6 @@ namespace kai
 		ADD_MODULE(_APmavlink_drive);
 #ifdef WITH_SENSOR
 		ADD_MODULE(_APmavlink_distLidar);
-#endif
-#ifdef WITH_SWARM
-		ADD_MODULE(_APmavlink_swarm);
 #endif
 #ifdef USE_OPENCV
 		ADD_MODULE(_APmavlink_RTCM);
@@ -133,7 +128,6 @@ namespace kai
 		ADD_MODULE(_OpenPose);
 		ADD_MODULE(_HandKey);
 		ADD_MODULE(_Lane);
-		ADD_MODULE(_Line);
 		ADD_MODULE(_Contour);
 #ifdef USE_OPENCV_CONTRIB
 		ADD_MODULE(_ArUco);
@@ -147,17 +141,6 @@ namespace kai
 		ADD_MODULE(_Chilitags);
 #endif
 #endif // USE_OPENCV
-#endif
-
-#ifdef WITH_DNN
-#ifdef USE_OPENCV
-#ifdef USE_JETSON_INFERENCE
-		ADD_MODULE(_DetectNet);
-#endif
-#ifdef USE_TF - LITE
-		ADD_MODULE(_TFmobileNet);
-#endif
-#endif
 #endif
 
 #ifdef WITH_FILTER
@@ -203,12 +186,6 @@ namespace kai
 #ifdef WITH_SOLVER
 		ADD_MODULE(_SATbase);
 		ADD_MODULE(_IsingBase);
-#ifdef USE_M4RI
-//		ADD_MODULE(_SATbase);
-#endif
-#ifdef USE_QISKIT
-//		ADD_MODULE(_SATbase);
-#endif
 #endif
 
 #ifdef WITH_ROS
@@ -230,9 +207,6 @@ namespace kai
 		ADD_MODULE(_SLAMbase);
 #if defined(USE_OPENCV) && defined(WITH_3D) && defined(USE_OPEN3D)
 		ADD_MODULE(_LCalign);
-#ifdef USE_FASTLIVO
-		ADD_MODULE(_FastLivo2);
-#endif // fastLivo
 #endif // OpenCV
 #endif
 

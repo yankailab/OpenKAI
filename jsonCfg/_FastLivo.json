@@ -94,7 +94,7 @@
         ]
 	},
 	"PClivo": {
-		"class": "_PCstream",
+		"class": "_PointCloud",
 		"bON": true,
 		"bLog": false,
 		"thread": {
@@ -136,7 +136,7 @@
 	},
 
 	"GViewer": {
-		"class": "_GeometryViewer",
+		"class": "_GeometryViewerBase",
 		"bON": true,
 		"thread": {
 			"FPS": 10

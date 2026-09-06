@@ -268,7 +268,7 @@ namespace kai
 	void _Orbbec::updatePC(void)
 	{
 		NULL_(m_spFrame);
-		NULL_(m_pPCstream);
+		NULL_(m_pPointCloud);
 
 		const int n = int(m_spFrame->dataSize() / sizeof(OBPoint));
 		const OBPoint *pts = (const OBPoint *)m_spFrame->data();
@@ -290,7 +290,7 @@ namespace kai
 
 			vFloat3 vC(1,1,1);
 
-			m_pPCstream->add(vP, vC, m_tDus);
+			m_pPointCloud->add(vP, vC, m_tDus);
 		}
 	}
 #endif

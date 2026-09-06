@@ -1,6 +1,6 @@
 # Dear ImGui 3D Viewer
 
-`ImGUIviewer` is a lightweight viewer module for OpenKAI 3D geometry streams. It uses the existing `_GeometryBase`, `_PCstream`, and `_PCgridBase` data path, but renders through Dear ImGui instead of Open3D's GUI.
+`ImGUIviewer` is a lightweight viewer module for OpenKAI 3D geometry streams. It uses the existing `_GeometryBase`, `_PointCloud`, and `_OctreeBase` data path, but renders through Dear ImGui instead of Open3D's GUI.
 
 ## Dear ImGui Install
 

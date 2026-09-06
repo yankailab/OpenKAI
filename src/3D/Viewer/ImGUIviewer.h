@@ -8,8 +8,7 @@
 #ifndef OpenKAI_src_3D_Viewer_ImGUIviewer_H_
 #define OpenKAI_src_3D_Viewer_ImGUIviewer_H_
 
-#include "../PointCloud/_PCstream.h"
-#include "../PointCloud/_PCgridBase.h"
+#include "../PointCloud/_PointCloud.h"
 #include "ImGuiViewerBackend.h"
 
 namespace kai
@@ -57,7 +56,7 @@ namespace kai
 
 		void init(void);
 		void updateGeometry(void);
-		void addPCstream(const uint64_t tExpire = 0);
+		void addPointCloud(const uint64_t tExpire = 0);
 		void addLineSet(const LineSet &ls);
 	};
 

@@ -20,7 +20,7 @@ namespace kai
 
 	bool _PCfile::init(const json &j)
 	{
-		IF_F(!this->_PCstream::init(j));
+		IF_F(!this->_PointCloud::init(j));
 
 		jKv(j, "vfName", m_vfName);
 		open();
@@ -32,16 +32,31 @@ namespace kai
 	{
 		IF_F(m_vfName.empty());
 
-		m_pcl.Clear();
+		m_pc.Clear();
 		PointCloud pc;
 		for (string f : m_vfName)
 		{
 			pc.Clear();
 			//	io::ReadPointCloudOption ro;
 			IF_CONT(!io::ReadPointCloud(f, pc));
-			m_pcl += pc;
+			m_pc += pc;
 			LOG_I("File: " + f + ", Npoints: " + i2str(pc.points_.size()));
 		}
+
+		clear();
+
+        atomicFrom();
+
+		for (size_t i = 0; i < m_pc.points_.size(); i++)
+		{
+			Vector3f vC = {1,1,1};
+			if (i < m_pc.colors_.size())
+				vC = m_pc.colors_[i].cast<float>();
+
+			add(m_pc.points_[i], vC);
+		}
+
+        atomicTo();
 
 		return true;
 	}
@@ -57,20 +72,6 @@ namespace kai
 		while (m_pT->bAlive())
 		{
 			m_pT->autoFPS();
-
-			for (size_t i = 0; i < m_pcl.points_.size(); i++)
-			{
-				Vector3f vC = m_vColorDefault.v3f();
-				if (i < m_pcl.colors_.size())
-					vC = m_pcl.colors_[i].cast<float>();
-
-				add(m_pcl.points_[i],
-					vC,
-					0);
-
-			}
-
-			writeSharedMem();
 		}
 	}
 

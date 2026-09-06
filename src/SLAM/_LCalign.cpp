@@ -30,7 +30,7 @@ namespace kai
 
 	bool _LCalign::init(const json &j)
 	{
-		IF_F(!this->_PCstream::init(j));
+		IF_F(!this->_PointCloud::init(j));
 
 		jKv<int>(j, "vCsize", m_vCsize);
 		jKv<double>(j, "vCf", m_vCf);
@@ -50,12 +50,12 @@ namespace kai
 
 	bool _LCalign::link(const json &j, ModuleMgr *pM)
 	{
-		IF_F(!this->_PCstream::link(j, pM));
+		IF_F(!this->_PointCloud::link(j, pM));
 		string n;
 
 		n = "";
 		jKv(j, "_PCin", n);
-		m_pPCin = (_PCstream *)(pM->findModule(n));
+		m_pPCin = (_PointCloud *)(pM->findModule(n));
 		IF_Le_F(!m_pPCin, "_PCin not found:" + n);
 
 		n = "";
@@ -118,7 +118,7 @@ namespace kai
 		NULL_F(m_pPCin);
 		NULL_F(m_pV);
 
-		return this->_PCstream::check();
+		return this->_PointCloud::check();
 	}
 
 	bool _LCalign::start(void)
@@ -290,7 +290,7 @@ namespace kai
 	void _LCalign::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_PCstream::console(pConsole);
+		this->_PointCloud::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
 		string msg;

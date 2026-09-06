@@ -64,11 +64,11 @@ namespace kai
 		GEOMETRY_TYPE gt = m_pGB->getType();
 		if (gt == pc_stream)
 		{
-			addPCstream();
+			addPointCloud();
 		}
 		else if (gt == pc_grid)
 		{
-			_PCgridBase *p = (_PCgridBase *)m_pGB;
+			_OctreeBase *p = (_OctreeBase *)m_pGB;
 			if (m_bStatic)
 				addLineSet(*p->getGridLines());
 			else
@@ -80,9 +80,9 @@ namespace kai
 		}
 	}
 
-	void IMGUI_VIEWER_OBJ::addPCstream(const uint64_t tExpire)
+	void IMGUI_VIEWER_OBJ::addPointCloud(const uint64_t tExpire)
 	{
-		_PCstream *p = (_PCstream *)m_pGB;
+		_PointCloud *p = (_PointCloud *)m_pGB;
 		m_vP.clear();
 
 		int nP = p->nP();

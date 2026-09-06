@@ -219,7 +219,7 @@
 	"vRoffset":[0,0,0],
 }
 "gv":{
-	"class":"_GeometryViewer",
+	"class":"_GeometryViewerBase",
 	"bON": true,
 "thread":{
 		"FPS":10,

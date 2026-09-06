@@ -46,7 +46,7 @@
 	"nPresvNext":1000000,
 }
 "gv":{
-	"class":"_GeometryViewer",
+	"class":"_GeometryViewerBase",
 	"bON": false,
 "thread":{
 		"FPS":10,

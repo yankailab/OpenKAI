@@ -58,7 +58,7 @@
 			640,
 			480
 		],
-		"_PCstream": "obPC",
+		"_PointCloud": "obPC",
 		"_IMUbase": "obIMU",
 		"SN": "",
 		"tOutMs": 1000,
@@ -76,7 +76,7 @@
 			"FPS": 30
 		},
 		"_IMUbase": "obIMU",
-		"_PCstream": "obPC",
+		"_PointCloud": "obPC",
 		"bImg":false,
 		"nPmax":100000,
 		"voxelLeafSize":2.0
@@ -92,7 +92,7 @@
 		"_RGBDbase": "Orbbec"
 	},
 	"obPC": {
-		"class": "_PCstream",
+		"class": "_PointCloud",
 		"bON": true,
 		"bLog": true,
 		"thread": {
@@ -110,7 +110,7 @@
 		"tIMUpairToleranceUs": 5000
 	},
 	"GViewer": {
-		"class": "_GeometryViewer",
+		"class": "_GeometryViewerBase",
 		"bON": true,
 		"thread": {
 			"FPS": 10

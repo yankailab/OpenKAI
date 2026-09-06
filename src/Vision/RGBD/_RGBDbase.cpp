@@ -40,7 +40,7 @@ namespace kai
 #endif
 
 #ifdef WITH_3D
-		m_pPCstream = nullptr;
+		m_pPointCloud = nullptr;
 #endif
 	}
 
@@ -92,8 +92,8 @@ namespace kai
 
 #ifdef WITH_3D
 		n = "";
-		jKv(j, "_PCstream", n);
-		m_pPCstream = (_PCstream *)(pM->findModule(n));
+		jKv(j, "_PointCloud", n);
+		m_pPointCloud = (_PointCloud *)(pM->findModule(n));
 #endif
 
 		return true;

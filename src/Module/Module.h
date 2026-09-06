@@ -18,23 +18,21 @@
 // modules
 
 #ifdef WITH_3D
-#include "../3D/Mesh/_MeshStream.h"
-#include "../3D/PointCloud/_PCstream.h"
-#include "../3D/PointCloud/_PCgridBase.h"
+#include "../3D/Grid/_OctreeBase.h"
+#include "../3D/Line/_Line.h"
+#include "../3D/PointCloud/_PointCloud.h"
 #include "../3D/PointCloud/_PCfile.h"
-#include "../3D/PointCloud/_PCmerge.h"
-#include "../3D/PointCloud/_PCsend.h"
-#include "../3D/PointCloud/_PCrecv.h"
-#include "../3D/PointCloud/PCfilter/_PCtransform.h"
-#include "../3D/PointCloud/PCfilter/_PCcrop.h"
-#include "../3D/PointCloud/PCfilter/_PCremove.h"
-#include "../3D/PointCloud/PCfilter/_PCdownSample.h"
-#include "../3D/PointCloud/PCregistration/_PCregistCol.h"
-#include "../3D/PointCloud/PCregistration/_PCregistICP.h"
-#include "../3D/PointCloud/PCregistration/_PCregistGlobal.h"
-#ifdef USE_GUI
-#include "../3D/_GeometryViewer.h"
-#endif
+#include "../3D/PointCloud/Pipeline/_PCmerge.h"
+#include "../3D/PointCloud/Pipeline/_PCsend.h"
+#include "../3D/PointCloud/Pipeline/_PCrecv.h"
+#include "../3D/PointCloud/Pipeline/_PCtransform.h"
+#include "../3D/PointCloud/Pipeline/_PCcrop.h"
+#include "../3D/PointCloud/Pipeline/_PCremove.h"
+#include "../3D/PointCloud/Pipeline/_PCdownSample.h"
+#include "../3D/PointCloud/Registration/_PCregistCol.h"
+#include "../3D/PointCloud/Registration/_PCregistICP.h"
+#include "../3D/PointCloud/Registration/_PCregistGlobal.h"
+#include "../3D/_GeometryViewerBase.h"
 #ifdef USE_IMGUI
 #include "../3D/Viewer/ImGUIviewer.h"
 #endif
@@ -120,7 +118,6 @@
 #include "../Detector/_DNNclassifier.h"
 #include "../Detector/_DNNtext.h"
 #include "../Detector/_IRLock.h"
-#include "../Detector/_Line.h"
 #include "../Detector/_OpenPose.h"
 #include "../Detector/_HandKey.h"
 #include "../Detector/_Contour.h"
@@ -134,17 +131,6 @@
 #endif
 #ifdef USE_CHILITAGS
 #include "../Detector/_Chilitags.h"
-#endif
-#endif
-#endif
-
-#ifdef WITH_DNN
-#ifdef USE_OPENCV
-#ifdef USE_JETSON_INFERENCE
-#include "../DNN/JetsonInference/_DetectNet.h"
-#endif
-#ifdef USE_TF - LITE
-#include "../DNN/TensorFlowLite/_TFmobileNet.h"
 #endif
 #endif
 #endif
@@ -193,12 +179,6 @@
 #ifdef WITH_SOLVER
 #include "../Solver/_SATbase.h"
 #include "../Solver/_IsingBase.h"
-#ifdef USE_M4RI
-// #include "../Solver/SAT/_SATbase.h"
-#endif
-#ifdef USE_QISKIT
-// #include "../Solver/SAT/_SATbase.h"
-#endif
 #endif
 
 #ifdef WITH_ROS
@@ -220,9 +200,6 @@
 #include "../SLAM/_SLAMbase.h"
 #if defined(USE_OPENCV) && defined(WITH_3D) && defined(USE_OPEN3D)
 #include "../SLAM/_LCalign.h"
-#ifdef USE_FASTLIVO
-#include "../SLAM/_FastLivo2.h"
-#endif // fastLivo
 #endif // OpenCV
 #endif
 
@@ -275,22 +252,22 @@
 #include "../Vision/_GPhoto.h"
 #include "../Vision/_Frame2Img.h"
 #include "../Vision/_Img2Frame.h"
-#include "../Vision/ImgFilter/_ColorConvert.h"
-#include "../Vision/ImgFilter/_Contrast.h"
-#include "../Vision/ImgFilter/_Crop.h"
 #include "../Vision/RGBD/_D2G.h"
 #include "../Vision/RGBD/_D2RGB.h"
-#include "../Vision/ImgFilter/_Erode.h"
-#include "../Vision/ImgFilter/_HistEqualize.h"
-#include "../Vision/ImgFilter/_Invert.h"
-#include "../Vision/ImgFilter/_InRange.h"
-#include "../Vision/ImgFilter/_Morphology.h"
-#include "../Vision/ImgFilter/_Mask.h"
-#include "../Vision/ImgFilter/_Resize.h"
-#include "../Vision/ImgFilter/_Remap.h"
-#include "../Vision/ImgFilter/_Rotate.h"
-#include "../Vision/ImgFilter/_Threshold.h"
-#include "../Vision/ImgFilter/_Thermal2RGB.h"
+#include "../Vision/Pipeline/_ColorConvert.h"
+#include "../Vision/Pipeline/_Contrast.h"
+#include "../Vision/Pipeline/_Crop.h"
+#include "../Vision/Pipeline/_Erode.h"
+#include "../Vision/Pipeline/_HistEqualize.h"
+#include "../Vision/Pipeline/_Invert.h"
+#include "../Vision/Pipeline/_InRange.h"
+#include "../Vision/Pipeline/_Morphology.h"
+#include "../Vision/Pipeline/_Mask.h"
+#include "../Vision/Pipeline/_Resize.h"
+#include "../Vision/Pipeline/_Remap.h"
+#include "../Vision/Pipeline/_Rotate.h"
+#include "../Vision/Pipeline/_Threshold.h"
+#include "../Vision/Pipeline/_Thermal2RGB.h"
 
 #ifdef USE_CUDA
 #include "../Vision/_DenseFlow.h"

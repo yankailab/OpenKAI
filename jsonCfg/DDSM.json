@@ -37,8 +37,8 @@
 		},
 		"bLog": true,
 		"_IObase": "serial",
-		"ID": 1,
-		"mode": 3,
+		"ID": 4,
+		"mode": 2,
 		"tCmdTimeout": 0,
 		"bfSetPower": true,
 		"bfSetID": false,
@@ -50,13 +50,13 @@
 			100
 		],
 		"c": 0,
-		"cTarget": 2000,
+		"cTarget": 0,
 		"cRange": [
 			-10000,
 			10000
 		],
 		"p": 0,
-		"pTarget": 30000,
+		"pTarget": 0,
 		"pRange": [
 			0,
 			36000

@@ -291,7 +291,7 @@ namespace kai
 #ifdef WITH_3D
 	void _Scepter::updatePC(void)
 	{
-		NULL_(m_pPCstream);
+		NULL_(m_pPointCloud);
 
 		const static float s_b = 1.0 / 1000.0;
 		const static float c_b = 1.0 / 255.0;
@@ -322,7 +322,7 @@ namespace kai
 					vC *= c_b;
 				}
 
-				m_pPCstream->add(vP, vC); //, m_tDus);
+				m_pPointCloud->add(vP, vC); //, m_tDus);
 			}
 		}
 	}

@@ -17,7 +17,7 @@
 #endif
 
 #ifdef WITH_3D
-#include "../../3D/PointCloud/_PCstream.h"
+#include "../../3D/PointCloud/_PointCloud.h"
 #endif
 
 namespace kai
@@ -81,7 +81,7 @@ namespace kai
 #endif
 
 #ifdef WITH_3D
-		_PCstream *m_pPCstream;
+		_PointCloud *m_pPointCloud;
 #endif
 	};
 

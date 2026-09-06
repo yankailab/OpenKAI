@@ -10,7 +10,7 @@
 
 #include "../Base/_ModuleBase.h"
 #include "../Primitive/tSwap.h"
-#include "../Primitive/vLbit.h"
+#include "../Primitive/vLongBit.h"
 #include "../Utility/utilFile.h"
 #include <set>
 
@@ -19,7 +19,7 @@ namespace kai
 	struct ISING_JW
 	{
 		int64_t m_J;
-		vLbit m_w; // Ising spin indices, empty indices as DC term
+		vLongBit m_w; // Ising spin indices, empty indices as DC term
 
 		void clear(void)
 		{
@@ -57,12 +57,12 @@ namespace kai
 
 		void addJw(const ISING_JW &Jw);
 		void sortJw(void);
-		ISING_JW *getJw(const vLbit &w);
+		ISING_JW *getJw(const vLongBit &w);
 
-		bool assignSpin(const vLbit &w, int8_t s);	// return true if added assignment into m_vSpinAssign, false if already assigned
-		void clearSpinAssign(const vLbit &w);	// delete the element in m_vSpinAssign if existed for w
-		int8_t getSpinAssign(const vLbit &w);	// return the assignment +1/-1 from m_vSpinAssign if existed, return 0 if not assigned in m_vSpinAssign
-		vector<ISING_JW>::iterator findSpinAssign(const vLbit &w);
+		bool assignSpin(const vLongBit &w, int8_t s);	// return true if added assignment into m_vSpinAssign, false if already assigned
+		void clearSpinAssign(const vLongBit &w);	// delete the element in m_vSpinAssign if existed for w
+		int8_t getSpinAssign(const vLongBit &w);	// return the assignment +1/-1 from m_vSpinAssign if existed, return 0 if not assigned in m_vSpinAssign
+		vector<ISING_JW>::iterator findSpinAssign(const vLongBit &w);
 
 	protected:
 		string m_fName;

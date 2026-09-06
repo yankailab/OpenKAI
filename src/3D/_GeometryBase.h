@@ -5,42 +5,118 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_3D_PointCloud__GeometryBase_H_
-#define OpenKAI_src_3D_PointCloud__GeometryBase_H_
+#ifndef OpenKAI_src_3D__GeometryBase_H_
+#define OpenKAI_src_3D__GeometryBase_H_
 
 #include "../Base/_ModuleBase.h"
-#include "../IPC/SharedMem.h"
 #include "../Utility/util.h"
-#include "../Utility/utilFile.h"
 #include "../Utility/utilTime.h"
 #include "../UI/_Console.h"
 
-using namespace open3d;
-using namespace open3d::geometry;
-using namespace open3d::visualization;
 using namespace Eigen;
 
 namespace kai
 {
     enum GEOMETRY_TYPE
     {
-        geometry_unknown = -1,
-        pc_stream = 0,
-        pc_grid = 2,
-        mesh_stream = 4,
+        geometry_unknown = 0,
+        geometry_pointCloud = 1,
+        geometry_line = 2,
+        geometry_mesh = 3,
+        geometry_octree = 4,
     };
 
     struct GEOMETRY_POINT
     {
         vFloat3 m_vP; // pos
         vFloat3 m_vC; // color
+        uint8_t m_size;
         uint64_t m_tStamp;
 
         void clear(void)
         {
             m_vP = 0;
             m_vC = 0;
+            m_size = 1;
+            m_tStamp = 0; // time stamp, 0: invalid, >= 1 valid
+        }
+    };
+
+    struct GEOMETRY_LINE
+    {
+        vFloat3 m_vPa;     // line from
+        vFloat3 m_vPb;     // line to
+        vFloat3 m_vC;      // color
+        uint8_t m_width;
+        uint64_t m_tStamp; // time stamp, 0: invalid, >= 1 valid
+
+        void clear(void)
+        {
+            m_vPa = 0;
+            m_vPb = 0;
+            m_vC = 0;
+            m_width = 1;
             m_tStamp = 0;
+        }
+    };
+
+    template <typename T>
+    struct GEOMETRY_RINGBUF
+    {
+        T *m_pP = nullptr;
+        int m_nP = 0;
+        int m_iP = 0;
+
+        bool alloc(int nP)
+        {
+            IF_F(nP <= 0);
+
+            m_pP = new T[nP];
+            NULL_F(m_pP);
+
+            m_nP = nP;
+            return true;
+        }
+
+        void release(void)
+        {
+            DEL(m_pP);
+
+            m_nP = 0;
+            m_iP = 0;
+        }
+
+        void clear(void)
+        {
+            NULL_(m_pP);
+            IF_(m_nP <= 0);
+
+            m_iP = 0;
+            for (int i = 0; i < m_nP; i++)
+                m_pP[i].clear();
+        }
+
+        void add(const T &p)
+        {
+            NULL_(m_pP);
+            IF_(m_nP <= m_iP);
+
+            m_pP[m_iP] = p;
+            iInc();
+        }
+
+        void iInc(void)
+        {
+            if (++m_iP >= m_nP)
+                m_iP = 0;
+        }
+
+        T *get(int i)
+        {
+            NULL_N(m_pP);
+            IF_N(m_nP <= i);
+
+            return &m_pP[i];
         }
     };
 
@@ -59,61 +135,13 @@ namespace kai
         virtual bool saveConfig(json &j, string fName = "");
 
         virtual GEOMETRY_TYPE getType(void);
-        virtual bool initGeometry(void);
         virtual void clear(void);
 
-        virtual void setTranslation(const vDouble3 &vT);
-        virtual void setRotation(const vDouble3 &vR);
-        virtual void setQuaternion(const vDouble4 &vQ);
-        virtual void updateTranslationMatrix(bool bUseQuaternion = true, vDouble3 *pRa = NULL);
-        virtual void setTranslationMatrix(const Matrix4d &mT);
-        virtual Matrix4d getTranslationMatrix(void);
-
-        virtual Matrix4d createTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR, vDouble3 *pRa = NULL);
-        virtual Matrix4d createTranslationMatrix(const vDouble3 &vT, const vDouble4 &vQ, vDouble3 *pRa = NULL);
-
-        virtual vDouble3 getTranslation(void);
-        virtual vDouble3 getRotation(void);
-        virtual vDouble4 getQuaternion(void);
-
-        virtual void addGeometry(void *p, const uint64_t tExpire = 0);
-        virtual void addPCstream(void *p, const uint64_t tExpire = 0);
-        virtual void addPCgrid(void *p);
-
-        virtual void writeSharedMem(void);
-        virtual void readSharedMem(void);
-
-        virtual bool saveFile(const string &fName);
-
-        virtual string getConfigFileName(void);
-
-    protected:
-        void mutexLock(void);
-        void mutexUnlock(void);
+        virtual int get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pGrPout, uint64_t dTexpire = 0);
+        virtual int get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pGrLOut, uint64_t dTexpire = 0);
 
     protected:
         GEOMETRY_TYPE m_type;
-
-        // material overwrite
-        vFloat3 m_vColorDefault;
-        vFloat2 m_vkColR;
-        vFloat2 m_vkColG;
-        vFloat2 m_vkColB;
-        vFloat3 m_vkColOv;
-        bool m_bColOverwrite;
-
-        // transform
-        vDouble3 m_vT;
-        vDouble3 m_vR;
-        vDouble4 m_vQ;
-        Matrix4d m_mT;
-        Eigen::Affine3d m_A;
-
-        // buffer writing protection
-        pthread_mutex_t m_mutex;
-
-        // shared mem for data
-        SharedMem *m_pSM;
     };
 
 }
