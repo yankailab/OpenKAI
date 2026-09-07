@@ -5,8 +5,43 @@
 #include "../_GeometryBase.h"
 #include "../PointCloud/_PointCloud.h"
 
+#define N_OCT 8
+
 namespace kai
 {
+	union uint128
+	{
+		uint8_t m_uint8[16];
+		uint16_t m_uint16[8];
+		uint32_t m_uint32[4];
+		uint64_t m_uint64[2];
+	};
+
+	struct OCTREE_CELL
+	{
+		uint128 m_UGLID;
+		uint8_t m_Lidx;
+
+		OCTREE_CELL *m_pParent;
+		OCTREE_CELL *m_pChild[N_OCT];
+		uint8_t m_nChild;
+
+		bool addChild(int Lidx)
+		{
+		}
+
+		OCTREE_CELL *getChild(int Lidx)
+		{
+		}
+
+		int getLevel(void)
+		{
+		}
+
+		void release(void)
+		{
+		}
+	};
 
 	class _OctreeBase : public _GeometryBase
 	{
@@ -47,14 +82,12 @@ namespace kai
 		}
 
 	protected:
-		// grid generating params
+		// grid generating
 		vDouble3 m_vPorigin;
-
 
 		// point cloud input
 		vector<_GeometryBase *> m_vpGb;
 		uint64_t m_dTexpire;
-
 	};
 
 }

@@ -494,7 +494,6 @@ namespace
 			kai::GEOMETRY_POINT pt;
 			pt.m_vP = 0;
 			pt.m_vC = 1;
-			pt.m_size = 1;
 			pt.m_tStamp = 1;
 
 			for (const PLY_PROPERTY &p : e.m_vProp)

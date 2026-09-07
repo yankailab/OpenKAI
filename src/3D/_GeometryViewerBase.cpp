@@ -15,10 +15,11 @@ namespace kai
 		m_vWinSize.set(1280, 720);
 		m_bFullScreen = false;
 		m_dirSave = "";
-
 		m_vCoR.set(0, 0, 0);
 
 		m_dTexpire = 0;
+		m_nPbuf = 200000;
+		m_nLbuf = 100000;
 	}
 
 	_GeometryViewerBase::~_GeometryViewerBase()
@@ -46,6 +47,14 @@ namespace kai
 
 		jKv<float>(j, "vCoR", m_vCoR);
 		jKv(j, "dTexpire", m_dTexpire);
+
+		jKv(j, "nPbuf", m_nPbuf);
+		jKv(j, "nLbuf", m_nLbuf);
+
+		m_grPt.release();
+		m_grLn.release();
+		IF_Le_F(!m_grPt.alloc(m_nPbuf), "Alloc failed with nPbuf: " + i2str(m_nPbuf));
+		IF_Le_F(!m_grLn.alloc(m_nLbuf), "Alloc failed with nLbuf: " + i2str(m_nLbuf));
 
 		return true;
 	}
@@ -100,7 +109,7 @@ namespace kai
 
 		// override this method in inherited class
 
-		for (_GeometryBase* pGb :m_vpGb)
+		for (_GeometryBase *pGb : m_vpGb)
 		{
 			m_grPt.clear();
 			int nP = pGb->get(&m_grPt, m_dTexpire);

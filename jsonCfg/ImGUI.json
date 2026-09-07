@@ -46,6 +46,8 @@
 		"bShowGrid": true,
 		"camFov": 70.0,
 		"dTexpire": 0,
+		"nPbuf":300000,
+		"nLbuf":100000,
 
 		"vCamLookAt": [
 			0.0,

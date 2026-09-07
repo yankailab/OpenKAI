@@ -68,20 +68,18 @@ namespace kai
         IF_(!check());
     }
 
-    void _PointCloud::add(const Vector3d &vP, const Vector3f &vC, uint8_t size, uint64_t tStamp)
+    void _PointCloud::add(const Vector3d &vP, const Vector3f &vC, uint64_t tStamp)
     {
         add(e2v((Vector3f)vP.cast<float>()),
             e2v((Vector3f)vC.cast<float>()),
-            size,
             tStamp);
     }
 
-    void _PointCloud::add(const vFloat3 &vP, const vFloat3 &vC, uint8_t size, uint64_t tStamp)
+    void _PointCloud::add(const vFloat3 &vP, const vFloat3 &vC, uint64_t tStamp)
     {
         GEOMETRY_POINT gP;
         gP.m_vP = vP;
         gP.m_vC = vC;
-        gP.m_size = size;
         gP.m_tStamp = tStamp;
 
         m_grPt.add(gP);

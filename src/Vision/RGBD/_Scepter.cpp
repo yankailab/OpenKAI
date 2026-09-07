@@ -301,6 +301,7 @@ namespace kai
 											  &m_scfDepth,
 											  m_pScVw);
 
+		m_grPt.clear();
 		for (int i = 0; i < m_scfDepth.height; i++)
 		{
 			for (int j = 0; j < m_scfDepth.width; j++)
@@ -310,8 +311,8 @@ namespace kai
 				ScVector3f *pV = &m_pScVw[k];
 				vFloat3 vP(pV->x, pV->y, pV->z);
 				vP *= s_b;
-				IF_CONT(vP.z < m_vRangeD.x);
-				IF_CONT(vP.z > m_vRangeD.y);
+//				IF_CONT(vP.z < m_vRangeD.x);
+//				IF_CONT(vP.z > m_vRangeD.y);
 
 				// texture color
 				vFloat3 vC(1);
@@ -322,9 +323,15 @@ namespace kai
 					vC *= c_b;
 				}
 
-				m_pPointCloud->add(vP, vC); //, m_tDus);
+				GEOMETRY_POINT gP;
+				gP.m_vP = vP;
+				gP.m_vC = vC;
+				gP.m_tStamp = 1;
+				m_grPt.add(gP);
 			}
 		}
+
+		m_pPointCloud->add(&m_grPt);
 	}
 #endif
 

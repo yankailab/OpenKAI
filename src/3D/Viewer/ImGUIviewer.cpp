@@ -7,10 +7,15 @@
 
 #include "ImGUIviewer.h"
 
+#include "ImGUIviewerGLRenderer.h"
 #include "imgui.h"
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
+
+#if defined(OKAI_IMGUI_RENDERER_OPENGLES) || defined(OKAI_IMGUI_RENDERER_OPENGL)
+#define OKAI_IMGUI_VIEWER_GL 1
+#endif
 
 namespace kai
 {
@@ -73,13 +78,15 @@ namespace kai
 						(int)(std::clamp(alpha, 0.0f, 1.0f) * 255.0f));
 	}
 
-	void IMGUI_VIEWER_OBJ::reserve(void)
+	void IMGUI_VIEWER_OBJ::reserve(int nPbufDefault, int nLbufDefault)
 	{
-		if (m_nPbuf > 0)
-			m_vP.reserve(m_nPbuf);
+		int nP = (m_nPbuf > 0) ? m_nPbuf : nPbufDefault;
+		if (nP > 0)
+			m_vP.reserve(nP);
 
-		if (m_nLbuf > 0)
-			m_vL.reserve(m_nLbuf);
+		int nL = (m_nLbuf > 0) ? m_nLbuf : nLbufDefault;
+		if (nL > 0)
+			m_vL.reserve(nL);
 	}
 
 	void IMGUI_VIEWER_OBJ::clearGeometry(void)
@@ -91,6 +98,7 @@ namespace kai
 	ImGUIviewer::ImGUIviewer()
 	{
 		m_pBackend = nullptr;
+		m_pGLRenderer = nullptr;
 		m_pTui = nullptr;
 		m_bShowPanel = true;
 		m_bShowGrid = true;
@@ -101,8 +109,13 @@ namespace kai
 		m_pointScale = 1.0;
 		m_lineScale = 1.0;
 		m_vBgCol.set(0.05, 0.055, 0.06, 1.0);
-		m_nPbuf = 200000;
-		m_nLbuf = 100000;
+		m_bGpuRender = true;
+		m_snapshotVersion = 0;
+		m_nDrawObjects = 0;
+		m_nDrawPoints = 0;
+		m_nDrawLines = 0;
+		m_vGLCanvasPos.set(0, 0);
+		m_vGLCanvasSize.set(1, 1);
 
 		pthread_mutex_init(&m_snapshotMutex, NULL);
 	}
@@ -118,6 +131,7 @@ namespace kai
 			DEL(m_pBackend);
 		}
 
+		DEL(m_pGLRenderer);
 		DEL(m_pTui);
 		m_grPt.release();
 		m_grLn.release();
@@ -137,15 +151,7 @@ namespace kai
 		jKv(j, "pointScale", m_pointScale);
 		jKv(j, "lineScale", m_lineScale);
 		jKv<float>(j, "vBgCol", m_vBgCol);
-
-		updateBufferLimitsFromConfig(j);
-		updateBufferLimitsFromList(jK(j, "vGeometry"));
-		updateBufferLimitsFromList(jK(j, "geometry"));
-
-		m_grPt.release();
-		m_grLn.release();
-		IF_Le_F(!m_grPt.alloc(m_nPbuf), "Alloc failed with nPbuf: " + i2str(m_nPbuf));
-		IF_Le_F(!m_grLn.alloc(m_nLbuf), "Alloc failed with nLbuf: " + i2str(m_nLbuf));
+		jKv(j, "bGpuRender", m_bGpuRender);
 
 		DEL(m_pTui);
 		m_pTui = createThread(jK(j, "threadUI"), "threadUI");
@@ -210,39 +216,68 @@ namespace kai
 	{
 		IF_(!this->_GeometryViewerBase::check());
 
-		vector<IMGUI_VIEWER_OBJ> vFrame;
-		vFrame.reserve(m_vpGb.size());
+		m_vBuildGO.reserve(m_vpGb.size());
+
+		size_t iOut = 0;
+		size_t nPtotal = 0;
+		size_t nLtotal = 0;
 
 		for (_GeometryBase *pGb : m_vpGb)
 		{
 			IF_CONT(!pGb);
 
 			const IMGUI_VIEWER_OBJ *pStyle = findObject(pGb, pGb->getName());
-			IMGUI_VIEWER_OBJ obj;
+			bool bVisible = pStyle ? pStyle->m_bVisible : true;
+			IF_CONT(!bVisible);
+
+			if (iOut >= m_vBuildGO.size())
+				m_vBuildGO.emplace_back();
+
+			IMGUI_VIEWER_OBJ &obj = m_vBuildGO[iOut];
+			obj.clearGeometry();
 			if (pStyle)
-				obj = *pStyle;
+			{
+				obj.m_name = pStyle->m_name;
+				obj.m_bVisible = pStyle->m_bVisible;
+				obj.m_nPbuf = pStyle->m_nPbuf;
+				obj.m_nLbuf = pStyle->m_nLbuf;
+				obj.m_matPointSize = pStyle->m_matPointSize;
+				obj.m_matLineWidth = pStyle->m_matLineWidth;
+				obj.m_matCol = pStyle->m_matCol;
+			}
 			else
 			{
-				obj.m_pGB = pGb;
 				obj.m_name = pGb->getName();
+				obj.m_bVisible = true;
+				obj.m_nPbuf = 0;
+				obj.m_nLbuf = 0;
+				obj.m_matPointSize = 2.0;
+				obj.m_matLineWidth = 1.0;
+				obj.m_matCol = vFloat4(1, 1, 1, 1);
 			}
-
-			IF_CONT(!obj.m_bVisible);
 
 			obj.m_pGB = pGb;
 			if (obj.m_name.empty())
 				obj.m_name = pGb->getName();
-			obj.clearGeometry();
-			obj.reserve();
+			obj.reserve(m_nPbuf, m_nLbuf);
 
 			collectGeometry(pGb, &obj);
 
 			IF_CONT(obj.m_vP.empty() && obj.m_vL.empty());
-			vFrame.push_back(obj);
+			nPtotal += obj.m_vP.size();
+			nLtotal += obj.m_vL.size();
+			iOut++;
 		}
 
+		if (iOut < m_vBuildGO.size())
+			m_vBuildGO.resize(iOut);
+
 		snapshotLock();
-		m_vDrawGO = vFrame;
+		m_vDrawGO.swap(m_vBuildGO);
+		m_nDrawObjects = m_vDrawGO.size();
+		m_nDrawPoints = nPtotal;
+		m_nDrawLines = nLtotal;
+		m_snapshotVersion++;
 		snapshotUnlock();
 	}
 
@@ -260,12 +295,14 @@ namespace kai
 		NULL_(pObj);
 		NULL_(pObj->m_pGB);
 
-		m_grPt.clear();
-		IF_(pObj->m_pGB->get(&m_grPt, m_dTexpire) <= 0);
+		m_grPt.m_iP = 0;
+		int nGet = pObj->m_pGB->get(&m_grPt, m_dTexpire);
+		IF_(nGet <= 0);
+		nGet = std::min(nGet, m_grPt.m_nP);
 
 		int i = 0;
 		GEOMETRY_POINT *pGp = nullptr;
-		while ((pGp = m_grPt.get(i++)))
+		while (i < nGet && (pGp = m_grPt.get(i++)))
 		{
 			IF_CONT(pGp->m_tStamp == 0);
 			IF_CONT(!bFinite(pGp->m_vP));
@@ -275,7 +312,6 @@ namespace kai
 			IMGUI_VIEWER_POINT p;
 			p.m_vP = pGp->m_vP;
 			p.m_vC = visibleColor(pGp->m_vC, pObj->m_matCol);
-			p.m_size = std::max(1.0f, (float)pGp->m_size);
 			pObj->m_vP.push_back(p);
 		}
 	}
@@ -285,12 +321,14 @@ namespace kai
 		NULL_(pObj);
 		NULL_(pObj->m_pGB);
 
-		m_grLn.clear();
-		IF_(pObj->m_pGB->get(&m_grLn, m_dTexpire) <= 0);
+		m_grLn.m_iP = 0;
+		int nGet = pObj->m_pGB->get(&m_grLn, m_dTexpire);
+		IF_(nGet <= 0);
+		nGet = std::min(nGet, m_grLn.m_nP);
 
 		int i = 0;
 		GEOMETRY_LINE *pGl = nullptr;
-		while ((pGl = m_grLn.get(i++)))
+		while (i < nGet && (pGl = m_grLn.get(i++)))
 		{
 			IF_CONT(pGl->m_tStamp == 0);
 			IF_CONT(!bFinite(pGl->m_vPa));
@@ -302,7 +340,6 @@ namespace kai
 			l.m_vA = pGl->m_vPa;
 			l.m_vB = pGl->m_vPb;
 			l.m_vC = visibleColor(pGl->m_vC, pObj->m_matCol);
-			l.m_width = std::max(1.0f, (float)pGl->m_width);
 			pObj->m_vL.push_back(l);
 		}
 	}
@@ -335,6 +372,8 @@ namespace kai
 			m_pBackend->endFrame(c);
 		}
 
+		if (m_pGLRenderer)
+			m_pGLRenderer->release();
 		m_pBackend->shutdown();
 		DEL(m_pBackend);
 
@@ -384,18 +423,14 @@ namespace kai
 		ImGui::Text("Update: %.1f FPS", m_pT ? m_pT->getFPS() : 0.0f);
 		ImGui::Text("UI: %.1f FPS", m_pTui ? m_pTui->getFPS() : 0.0f);
 
-		vector<IMGUI_VIEWER_OBJ> vGO;
-		copySnapshot(&vGO);
+		snapshotLock();
+		size_t nGO = m_nDrawObjects;
+		size_t nP = m_nDrawPoints;
+		size_t nL = m_nDrawLines;
+		snapshotUnlock();
 
-		size_t nP = 0;
-		size_t nL = 0;
-		for (const IMGUI_VIEWER_OBJ &g : vGO)
-		{
-			nP += g.m_vP.size();
-			nL += g.m_vL.size();
-		}
-
-		ImGui::Text("Geometry: %zu", vGO.size());
+		ImGui::Text("Render: %s", (m_bGpuRender && m_pGLRenderer && m_pGLRenderer->bReady()) ? "GPU" : "CPU");
+		ImGui::Text("Geometry: %zu", nGO);
 		ImGui::Text("Points: %zu", nP);
 		ImGui::Text("Lines: %zu", nL);
 		ImGui::Separator();
@@ -427,10 +462,24 @@ namespace kai
 		if (m_bShowGrid)
 			drawGrid(vCanvasPos, vCanvasSize);
 
-		vector<IMGUI_VIEWER_OBJ> vGO;
-		copySnapshot(&vGO);
+#if defined(OKAI_IMGUI_VIEWER_GL)
+		if (m_bGpuRender)
+			drawSceneGL(vCanvasPos, vCanvasSize);
+		else
+			drawSceneCPU(vCanvasPos, vCanvasSize);
+#else
+		drawSceneCPU(vCanvasPos, vCanvasSize);
+#endif
 
-		for (const IMGUI_VIEWER_OBJ &g : vGO)
+		pDraw->PopClipRect();
+	}
+
+	void ImGUIviewer::drawSceneCPU(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize)
+	{
+		ImDrawList *pDraw = ImGui::GetWindowDrawList();
+
+		snapshotLock();
+		for (const IMGUI_VIEWER_OBJ &g : m_vDrawGO)
 		{
 			for (const IMGUI_VIEWER_LINE &l : g.m_vL)
 			{
@@ -444,7 +493,7 @@ namespace kai
 
 				pDraw->AddLine(ImVec2(a.x, a.y), ImVec2(b.x, b.y),
 							   colU32(l.m_vC, g.m_matCol.w),
-							   std::max(1.0f, l.m_width * g.m_matLineWidth * m_lineScale));
+							   std::max(1.0f, g.m_matLineWidth * m_lineScale));
 			}
 
 			for (const IMGUI_VIEWER_POINT &p : g.m_vP)
@@ -454,13 +503,63 @@ namespace kai
 				if (!projectPoint(p.m_vP, vCanvasPos, vCanvasSize, &vS, &d))
 					continue;
 
-				float r = std::max(1.0f, p.m_size * g.m_matPointSize * m_pointScale);
+				float r = std::max(1.0f, g.m_matPointSize * m_pointScale);
 				pDraw->AddCircleFilled(ImVec2(vS.x, vS.y), r, colU32(p.m_vC, g.m_matCol.w), 8);
 			}
 		}
-
-		pDraw->PopClipRect();
+		snapshotUnlock();
 	}
+
+	void ImGUIviewer::drawSceneGL(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize)
+	{
+		m_vGLCanvasPos = vCanvasPos;
+		m_vGLCanvasSize = vCanvasSize;
+
+		ImDrawList *pDraw = ImGui::GetWindowDrawList();
+		pDraw->AddCallback(drawSceneGLCallback, this);
+		pDraw->AddCallback(ImDrawCallback_ResetRenderState, nullptr);
+	}
+
+	void ImGUIviewer::drawSceneGLCallback(const ImDrawList *, const ImDrawCmd *pCmd)
+	{
+		if (!pCmd || !pCmd->UserCallbackData)
+			return;
+
+		ImGUIviewer *pViewer = (ImGUIviewer *)pCmd->UserCallbackData;
+		pViewer->renderSceneGL(pViewer->m_vGLCanvasPos, pViewer->m_vGLCanvasSize);
+	}
+
+#if defined(OKAI_IMGUI_VIEWER_GL)
+	void ImGUIviewer::renderSceneGL(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize)
+	{
+		if (!m_pGLRenderer)
+			m_pGLRenderer = new ImGUIviewerGLRenderer();
+		NULL_(m_pGLRenderer);
+
+		IMGUI_VIEWER_GL_FRAME frame;
+		frame.m_vCanvasPos = vCanvasPos;
+		frame.m_vCanvasSize = vCanvasSize;
+		frame.m_camPose = m_camPose;
+		frame.m_camProj = m_camProj;
+		frame.m_pointScale = m_pointScale;
+		frame.m_lineScale = m_lineScale;
+		getCameraBasis(&frame.m_vForward, &frame.m_vRight, &frame.m_vUp);
+
+		snapshotLock();
+		bool bSnapshotReady = m_pGLRenderer->prepareSnapshot(m_vDrawGO,
+															 m_nDrawPoints,
+															 m_nDrawLines,
+															 m_snapshotVersion);
+		snapshotUnlock();
+
+		if (!bSnapshotReady || !m_pGLRenderer->render(frame))
+			m_bGpuRender = false;
+	}
+#else
+	void ImGUIviewer::renderSceneGL(const vFloat2 &, const vFloat2 &)
+	{
+	}
+#endif
 
 	void ImGUIviewer::drawGrid(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize)
 	{
@@ -641,54 +740,6 @@ namespace kai
 		}
 
 		return nullptr;
-	}
-
-	void ImGUIviewer::updateBufferLimitsFromConfig(const json &j)
-	{
-		jKv(j, "nP", m_nPbuf);
-		jKv(j, "nPbuf", m_nPbuf);
-		jKv(j, "nL", m_nLbuf);
-		jKv(j, "nLbuf", m_nLbuf);
-
-		m_nPbuf = std::max(1, m_nPbuf);
-		m_nLbuf = std::max(1, m_nLbuf);
-	}
-
-	void ImGUIviewer::updateBufferLimitsFromList(const json &jg)
-	{
-		IF_(jg.is_null());
-
-		auto parseOne = [&](const json &ji)
-		{
-			IF_(!ji.is_object());
-
-			int n = 0;
-			if (jKv(ji, "nP", n) || jKv(ji, "nPbuf", n))
-				m_nPbuf = std::max(m_nPbuf, n);
-
-			n = 0;
-			if (jKv(ji, "nL", n) || jKv(ji, "nLbuf", n))
-				m_nLbuf = std::max(m_nLbuf, n);
-		};
-
-		if (jg.is_array())
-		{
-			for (auto it = jg.begin(); it != jg.end(); it++)
-				parseOne(it.value());
-		}
-		else if (jg.is_object())
-		{
-			if (jg.find("_GeometryBase") != jg.end())
-				parseOne(jg);
-			else
-			{
-				for (auto it = jg.begin(); it != jg.end(); it++)
-					parseOne(it.value());
-			}
-		}
-
-		m_nPbuf = std::max(1, m_nPbuf);
-		m_nLbuf = std::max(1, m_nLbuf);
 	}
 
 	bool ImGUIviewer::projectPoint(const vFloat3 &vP,

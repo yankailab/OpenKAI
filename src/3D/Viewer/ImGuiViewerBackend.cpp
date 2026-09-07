@@ -11,10 +11,13 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#if defined(OKAI_IMGUI_RENDERER_OPENGL)
+#include <GL/glew.h>
+#endif
 #include <GLFW/glfw3.h>
 #if defined(OKAI_IMGUI_RENDERER_OPENGLES)
 #include <GLES3/gl3.h>
-#else
+#elif !defined(OKAI_IMGUI_RENDERER_OPENGL)
 #include <GL/gl.h>
 #endif
 
@@ -67,6 +70,16 @@ namespace kai
 
 			glfwMakeContextCurrent(m_pWin);
 			glfwSwapInterval(1);
+
+#if defined(OKAI_IMGUI_RENDERER_OPENGL)
+			glewExperimental = GL_TRUE;
+			if (glewInit() != GLEW_OK)
+			{
+				shutdown();
+				return false;
+			}
+			glGetError();
+#endif
 
 			IMGUI_CHECKVERSION();
 			ImGui::CreateContext();
@@ -192,10 +205,13 @@ namespace kai
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
+#if defined(OKAI_IMGUI_RENDERER_OPENGL)
+#include <GL/glew.h>
+#endif
 #include <SDL.h>
 #if defined(OKAI_IMGUI_RENDERER_OPENGLES)
 #include <GLES3/gl3.h>
-#else
+#elif !defined(OKAI_IMGUI_RENDERER_OPENGL)
 #include <GL/gl.h>
 #endif
 
@@ -263,6 +279,16 @@ namespace kai
 
 			SDL_GL_MakeCurrent(m_pWin, m_glCtx);
 			SDL_GL_SetSwapInterval(1);
+
+#if defined(OKAI_IMGUI_RENDERER_OPENGL)
+			glewExperimental = GL_TRUE;
+			if (glewInit() != GLEW_OK)
+			{
+				shutdown();
+				return false;
+			}
+			glGetError();
+#endif
 
 			IMGUI_CHECKVERSION();
 			ImGui::CreateContext();

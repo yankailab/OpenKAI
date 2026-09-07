@@ -79,7 +79,7 @@
 	},
 	"d2g": {
 		"class": "_D2G",
-		"bON": true,
+		"bON": false,
 		"thread": {
 			"FPS": 30
 		},
@@ -121,6 +121,9 @@
 		"bShowGrid": true,
 		"camFov": 70.0,
 		"dTexpire": 0,
+		"nPbuf":400000,
+		"nLbuf":100000,
+		"bGpuRender": true,
 
 		"vCamLookAt": [
 			0.0,

@@ -11,13 +11,17 @@
 #include "../_GeometryViewerBase.h"
 #include "ImGuiViewerBackend.h"
 
+struct ImDrawList;
+struct ImDrawCmd;
+
 namespace kai
 {
+	class ImGUIviewerGLRenderer;
+
 	struct IMGUI_VIEWER_POINT
 	{
 		vFloat3 m_vP;
 		vFloat3 m_vC;
-		float m_size = 1.0;
 	};
 
 	struct IMGUI_VIEWER_LINE
@@ -25,7 +29,6 @@ namespace kai
 		vFloat3 m_vA;
 		vFloat3 m_vB;
 		vFloat3 m_vC;
-		float m_width = 1.0;
 	};
 
 	struct IMGUI_VIEWER_OBJ
@@ -43,7 +46,7 @@ namespace kai
 		vector<IMGUI_VIEWER_POINT> m_vP;
 		vector<IMGUI_VIEWER_LINE> m_vL;
 
-		void reserve(void);
+		void reserve(int nPbufDefault = 0, int nLbufDefault = 0);
 		void clearGeometry(void);
 	};
 
@@ -88,6 +91,10 @@ namespace kai
 		void drawStatusPanel(void);
 		void drawGrid(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize);
 		void updateCameraControl(const vFloat2 &vCanvasSize);
+		void drawSceneCPU(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize);
+		void drawSceneGL(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize);
+		void renderSceneGL(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize);
+		static void drawSceneGLCallback(const ImDrawList *pParentList, const ImDrawCmd *pCmd);
 
 		void collectGeometry(_GeometryBase *pGb, IMGUI_VIEWER_OBJ *pObj);
 		void collectPoints(IMGUI_VIEWER_OBJ *pObj);
@@ -100,8 +107,6 @@ namespace kai
 		void applyObjectConfig(IMGUI_VIEWER_OBJ *pObj, const json &j);
 		IMGUI_VIEWER_OBJ *findObject(_GeometryBase *pGb, const string &name = "");
 		const IMGUI_VIEWER_OBJ *findObject(_GeometryBase *pGb, const string &name = "") const;
-		void updateBufferLimitsFromConfig(const json &j);
-		void updateBufferLimitsFromList(const json &jg);
 
 		bool projectPoint(const vFloat3 &vP,
 						  const vFloat2 &vCanvasPos,
@@ -119,9 +124,11 @@ namespace kai
 
 	protected:
 		vector<IMGUI_VIEWER_OBJ> m_vGO;
+		vector<IMGUI_VIEWER_OBJ> m_vBuildGO;
 		vector<IMGUI_VIEWER_OBJ> m_vDrawGO;
 
 		ImGuiViewerBackend *m_pBackend;
+		ImGUIviewerGLRenderer *m_pGLRenderer;
 		_Thread *m_pTui;
 		pthread_mutex_t m_snapshotMutex;
 
@@ -134,8 +141,14 @@ namespace kai
 		float m_pointScale;
 		float m_lineScale;
 		vFloat4 m_vBgCol;
-		int m_nPbuf;
-		int m_nLbuf;
+
+		bool m_bGpuRender;
+		unsigned long long m_snapshotVersion;
+		size_t m_nDrawObjects;
+		size_t m_nDrawPoints;
+		size_t m_nDrawLines;
+		vFloat2 m_vGLCanvasPos;
+		vFloat2 m_vGLCanvasSize;
 	};
 }
 

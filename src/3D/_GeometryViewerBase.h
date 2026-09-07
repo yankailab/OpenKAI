@@ -74,6 +74,8 @@ namespace kai
 		vector<_GeometryBase *> m_vpGb;
 		GEOMETRY_RINGBUF<GEOMETRY_POINT> m_grPt;
         GEOMETRY_RINGBUF<GEOMETRY_LINE> m_grLn;
+		int m_nPbuf;
+		int m_nLbuf;
 		uint64_t m_dTexpire;
 	};
 

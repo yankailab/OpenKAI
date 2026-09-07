@@ -30,14 +30,12 @@ namespace kai
     {
         vFloat3 m_vP; // pos
         vFloat3 m_vC; // color
-        uint8_t m_size;
         uint64_t m_tStamp;
 
         void clear(void)
         {
             m_vP = 0;
             m_vC = 0;
-            m_size = 1;
             m_tStamp = 0; // time stamp, 0: invalid, >= 1 valid
         }
     };
@@ -47,7 +45,6 @@ namespace kai
         vFloat3 m_vPa;     // line from
         vFloat3 m_vPb;     // line to
         vFloat3 m_vC;      // color
-        uint8_t m_width;
         uint64_t m_tStamp; // time stamp, 0: invalid, >= 1 valid
 
         void clear(void)
@@ -55,7 +52,6 @@ namespace kai
             m_vPa = 0;
             m_vPb = 0;
             m_vC = 0;
-            m_width = 1;
             m_tStamp = 0;
         }
     };

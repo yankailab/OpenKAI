@@ -31,8 +31,8 @@ namespace kai
         virtual int get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pGrPout, uint64_t dTexpire = 0);
 
         // data io
-        virtual void add(const Vector3d &vP, const Vector3f &vC, uint8_t size = 1, uint64_t tStamp = 1);
-        virtual void add(const vFloat3 &vP, const vFloat3 &vC, uint8_t size = 1, uint64_t tStamp = 1);
+        virtual void add(const Vector3d &vP, const Vector3f &vC, uint64_t tStamp = 1);
+        virtual void add(const vFloat3 &vP, const vFloat3 &vC, uint64_t tStamp = 1);
         virtual int add(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pGrPin, uint64_t dTexpire = 0);
 
         virtual GEOMETRY_RINGBUF<GEOMETRY_POINT>* getRingBuf(void);

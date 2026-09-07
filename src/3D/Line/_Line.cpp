@@ -68,22 +68,20 @@ namespace kai
         IF_(!check());
     }
 
-    void _Line::add(const Vector3d &vPa, const Vector3d &vPb, const Vector3f &vC, uint8_t width, uint64_t tStamp)
+    void _Line::add(const Vector3d &vPa, const Vector3d &vPb, const Vector3f &vC, uint64_t tStamp)
     {
         add(e2v((Vector3f)vPa.cast<float>()),
             e2v((Vector3f)vPb.cast<float>()),
             e2v((Vector3f)vC.cast<float>()),
-            width,
             tStamp);
     }
 
-    void _Line::add(const vFloat3 &vPa, const vFloat3 &vPb, const vFloat3 &vC, uint8_t width, uint64_t tStamp)
+    void _Line::add(const vFloat3 &vPa, const vFloat3 &vPb, const vFloat3 &vC, uint64_t tStamp)
     {
         GEOMETRY_LINE gL;
         gL.m_vPa = vPa;
         gL.m_vPb = vPb;
         gL.m_vC = vC;
-        gL.m_width = width;
         gL.m_tStamp = tStamp;
 
         m_grLn.add(gL);

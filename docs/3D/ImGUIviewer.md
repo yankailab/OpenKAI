@@ -153,4 +153,6 @@ Run the viewer from the repository root so the relative PLY path resolves:
 
 ## Notes
 
-This first viewer is intentionally simple: points and grid lines are projected into the ImGui draw list. That keeps the dependency surface small and makes backend compatibility easier. If very large point clouds need higher frame rates later, the same class can keep its module/API shape while replacing draw-list points with backend VBO rendering.
+Point size and line width are viewer/material settings (`matPointSize`, `matLineWidth`, `pointScale`, and `lineScale`); individual `GEOMETRY_POINT` and `GEOMETRY_LINE` records only carry geometry, color, and timestamp data.
+
+When OpenGL or OpenGL ES rendering is enabled, the viewer uploads point and line snapshots into GPU buffers and renders them from an ImGui callback. The CPU draw-list path remains available as a fallback for backends without GL support.

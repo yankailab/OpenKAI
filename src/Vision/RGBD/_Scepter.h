@@ -65,12 +65,13 @@ namespace kai
 		bool setSpatialFilter(bool bON);
 		bool setHDR(bool bON);
 
-	private:
+	protected:
+		bool updateScRGBD(void);
 #ifdef WITH_3D
 		void updatePC(void);
 #endif
 
-		bool updateScRGBD(void);
+	private:
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
