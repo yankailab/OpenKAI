@@ -7,6 +7,34 @@
 
 #include "_PCtransform.h"
 
+#include <Eigen/Geometry>
+
+namespace
+{
+	Eigen::Matrix3d rotationMatrixFromXYZ(const Eigen::Vector3d &rotation)
+	{
+		return Eigen::AngleAxisd(rotation(0), Eigen::Vector3d::UnitX()).toRotationMatrix() *
+			   Eigen::AngleAxisd(rotation(1), Eigen::Vector3d::UnitY()).toRotationMatrix() *
+			   Eigen::AngleAxisd(rotation(2), Eigen::Vector3d::UnitZ()).toRotationMatrix();
+	}
+
+	Eigen::Matrix3d rotationMatrixFromAxisAngle(const Eigen::Vector3d &rotation)
+	{
+		const double phi = rotation.norm();
+		if (phi > 0.0)
+			return Eigen::AngleAxisd(phi, rotation / phi).toRotationMatrix();
+
+		return Eigen::Matrix3d::Identity();
+	}
+
+	Eigen::Matrix3d rotationMatrixFromQuaternion(const Eigen::Vector4d &rotation)
+	{
+		return Eigen::Quaterniond(rotation(0), rotation(1), rotation(2), rotation(3))
+			.normalized()
+			.toRotationMatrix();
+	}
+}
+
 namespace kai
 {
 
@@ -137,6 +165,11 @@ namespace kai
 		return this->_PointCloud::check();
 	}
 
+	void _PCtransform::clear(void)
+	{
+		this->_PointCloud::clear();
+	}
+
 	void _PCtransform::update(void)
 	{
 		while (m_pT->bAlive())
@@ -151,23 +184,23 @@ namespace kai
 	{
 		IF_(!check());
 
-        // GEOMETRY_RINGBUF<GEOMETRY_POINT>* pGpr = m_pPS->get();
+        GEOMETRY_RINGBUF<GEOMETRY_POINT>* pGpr = m_pPS->getRingBuf();
 
-        // atomicFrom();
-        // uint64_t tNow = getApproxTbootUs();
+        atomicFrom();
+        uint64_t tNow = getApproxTbootUs();
 
-        // int i=0;
-        // GEOMETRY_POINT* pGp = nullptr;
-        // while(pGp = pGpr->get(i++))
-        // {
-        //     IF_CONT(m_dTexpire > 0 && bExpired(pGp->m_tStamp, m_dTexpire, tNow));
+        int i=0;
+        GEOMETRY_POINT* pGp = nullptr;
+        while((pGp = pGpr->get(i++)))
+        {
+            IF_CONT(m_dTexpire > 0 && bExpired(pGp->m_tStamp, m_dTexpire, tNow));
 
-		// 	//TODO: transform pGp by affine transform m_A;
+			//TODO: transform pGp by affine transform m_A;
 
-        //     m_grPt.add(*pGp);
-        // }
+            m_grPt.add(*pGp);
+        }
 
-        // atomicTo();
+        atomicTo();
 	}
 
 	void _PCtransform::setTranslation(const vDouble3 &vT)
@@ -198,19 +231,18 @@ namespace kai
 	Matrix4d _PCtransform::createTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR, vDouble3 *pRa)
 	{
 		Matrix4d mT = Matrix4d::Identity();
-		// Vector3d eR(vR.x, vR.y, vR.z);
-		// //        mT.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromAxisAngle(eR);
-		// mT.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromXYZ(eR);
-		// mT(0, 3) = vT.x;
-		// mT(1, 3) = vT.y;
-		// mT(2, 3) = vT.z;
+		Vector3d eR(vR.x, vR.y, vR.z);
+		mT.block(0, 0, 3, 3) = rotationMatrixFromXYZ(eR);
+		mT(0, 3) = vT.x;
+		mT(1, 3) = vT.y;
+		mT(2, 3) = vT.z;
 
-		// NULL__(pRa, mT);
+		NULL__(pRa, mT);
 
-		// eR = Vector3d(pRa->x, pRa->y, pRa->z);
-		// Matrix3d mR = Geometry3D::GetRotationMatrixFromAxisAngle(eR);
-		// Matrix3d mTr = mT.block(0, 0, 3, 3);
-		// mT.block(0, 0, 3, 3) = mTr * mR;
+		eR = Vector3d(pRa->x, pRa->y, pRa->z);
+		Matrix3d mR = rotationMatrixFromAxisAngle(eR);
+		Matrix3d mTr = mT.block(0, 0, 3, 3);
+		mT.block(0, 0, 3, 3) = mTr * mR;
 
 		return mT;
 	}
@@ -218,18 +250,18 @@ namespace kai
 	Matrix4d _PCtransform::createTranslationMatrix(const vDouble3 &vT, const vDouble4 &vQ, vDouble3 *pRa)
 	{
 		Matrix4d mT = Matrix4d::Identity();
-		// Vector4d eQ(vQ.x, vQ.y, vQ.z, vQ.w);
-		// mT.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromQuaternion(eQ);
-		// mT(0, 3) = vT.x;
-		// mT(1, 3) = vT.y;
-		// mT(2, 3) = vT.z;
+		Vector4d eQ(vQ.x, vQ.y, vQ.z, vQ.w);
+		mT.block(0, 0, 3, 3) = rotationMatrixFromQuaternion(eQ);
+		mT(0, 3) = vT.x;
+		mT(1, 3) = vT.y;
+		mT(2, 3) = vT.z;
 
-		// NULL__(pRa, mT);
+		NULL__(pRa, mT);
 
-		// Vector3d eR(pRa->x, pRa->y, pRa->z);
-		// Matrix3d mR = Geometry3D::GetRotationMatrixFromAxisAngle(eR);
-		// Matrix3d mTr = mT.block(0, 0, 3, 3);
-		// mT.block(0, 0, 3, 3) = mR * mTr;
+		Vector3d eR(pRa->x, pRa->y, pRa->z);
+		Matrix3d mR = rotationMatrixFromAxisAngle(eR);
+		Matrix3d mTr = mT.block(0, 0, 3, 3);
+		mT.block(0, 0, 3, 3) = mR * mTr;
 
 		return mT;
 	}

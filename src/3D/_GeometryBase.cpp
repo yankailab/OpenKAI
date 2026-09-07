@@ -65,4 +65,14 @@ namespace kai
         _Console *pC = (_Console *)pConsole;
     }
 
+    bool _GeometryBase::loadConfig(json *pJ, string fName)
+    {
+        return this->BASE::loadConfig(pJ, fName);
+    }
+
+    bool _GeometryBase::saveConfig(json &j, string fName)
+    {
+        return this->BASE::saveConfig(j, fName);
+    }
+
 }

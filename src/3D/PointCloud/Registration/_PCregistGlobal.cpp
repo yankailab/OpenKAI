@@ -47,12 +47,12 @@ namespace kai
         string n;
 
         n = "";
-        jKv(j, "_PCbaseSrc", n);
+        jKv(j, "_PointCloudSrc", n);
         m_pSrc = (_PointCloud *)(pM->findModule(n));
         IF_Le_F(!m_pSrc, "_PCbaseSrc not found: " + n);
 
         n = "";
-        jKv(j, "_PCbaseTgt", n);
+        jKv(j, "_PointCloudTgt", n);
         m_pTgt = (_PointCloud *)(pM->findModule(n));
         IF_Le_F(!m_pTgt, "_PCbaseTgt not found: " + n);
 

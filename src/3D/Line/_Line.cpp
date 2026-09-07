@@ -102,6 +102,7 @@ namespace kai
         uint64_t tNow = getApproxTbootUs();
         while (pGl = pGrLin->get(i++))
         {
+            IF_CONT(pGl->m_tStamp == 0);
             IF_CONT(dTexpire > 0 && bExpired(pGl->m_tStamp, dTexpire, tNow));
 
             m_grLn.add(*pGl);
@@ -126,6 +127,7 @@ namespace kai
         uint64_t tNow = getApproxTbootUs();
         while (pGl = m_grLn.get(i++))
         {
+            IF_CONT(pGl->m_tStamp == 0);
             IF_CONT(dTexpire > 0 && bExpired(pGl->m_tStamp, dTexpire, tNow));
 
             pGrLout->add(*pGl);

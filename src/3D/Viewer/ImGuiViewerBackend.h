@@ -19,10 +19,10 @@ namespace kai
 
 		virtual bool init(const std::string &title, int w, int h, bool bFullScreen) = 0;
 		virtual void shutdown(void) = 0;
-		virtual bool bClose(void) = 0;
+		virtual bool bClose(void) const = 0;
 		virtual void beginFrame(void) = 0;
 		virtual void endFrame(const float clearCol[4]) = 0;
-		virtual void getFramebufferSize(int *pW, int *pH) = 0;
+		virtual void getFramebufferSize(int *pW, int *pH) const = 0;
 	};
 
 	ImGuiViewerBackend *createImGuiViewerBackend(void);

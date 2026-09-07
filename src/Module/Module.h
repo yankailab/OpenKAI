@@ -21,6 +21,7 @@
 #include "../3D/Grid/_OctreeBase.h"
 #include "../3D/Line/_Line.h"
 #include "../3D/PointCloud/_PointCloud.h"
+#include "../3D/PointCloud/_PCfile.h"
 #include "../3D/PointCloud/Pipeline/_PCmerge.h"
 #include "../3D/PointCloud/Pipeline/_PCsend.h"
 #include "../3D/PointCloud/Pipeline/_PCrecv.h"
@@ -28,7 +29,6 @@
 #include "../3D/_GeometryViewerBase.h"
 
 #ifdef USE_OPEN3D
-#include "../3D/PointCloud/_PCfile.h"
 #include "../3D/PointCloud/Pipeline/_PCcrop.h"
 #include "../3D/PointCloud/Pipeline/_PCremove.h"
 #include "../3D/PointCloud/Pipeline/_PCdownSample.h"

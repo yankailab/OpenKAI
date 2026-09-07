@@ -32,6 +32,7 @@ namespace kai
 		ADD_MODULE(_OctreeBase);
 		ADD_MODULE(_Line);
 		ADD_MODULE(_PointCloud);
+		ADD_MODULE(_PCfile);
 		ADD_MODULE(_PCmerge);
 		ADD_MODULE(_PCsend);
 		ADD_MODULE(_PCrecv);
@@ -39,7 +40,6 @@ namespace kai
 		ADD_MODULE(_GeometryViewerBase);
 
 #ifdef USE_OPEN3D
-		ADD_MODULE(_PCfile);
 		ADD_MODULE(_PCcrop);
 		ADD_MODULE(_PCremove);
 		ADD_MODULE(_PCdownSample);

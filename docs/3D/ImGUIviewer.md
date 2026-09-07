@@ -1,6 +1,6 @@
 # Dear ImGui 3D Viewer
 
-`ImGUIviewer` is a lightweight viewer module for OpenKAI 3D geometry streams. It uses the existing `_GeometryBase`, `_PointCloud`, and `_OctreeBase` data path, but renders through Dear ImGui instead of Open3D's GUI.
+`ImGUIviewer` is a lightweight viewer module for OpenKAI 3D geometry streams. It derives from `_GeometryViewerBase`, reads geometry through `_GeometryBase::get()` point/line ring buffers, and renders through Dear ImGui without using Open3D viewer APIs.
 
 ## Dear ImGui Install
 
@@ -21,7 +21,6 @@ sudo apt-get install libglfw3-dev libgl1-mesa-dev
 cd OpenKAI/build
 cmake \
   -DWITH_3D=ON \
-  -DUSE_OPEN3D=ON \
   -DUSE_IMGUI=ON \
   -DIMGUI_DIR=$HOME/dev/imgui \
   -DIMGUI_BACKEND=GLFW \
@@ -39,7 +38,6 @@ sudo apt-get install libsdl2-dev libgles2-mesa-dev
 cd OpenKAI/build
 cmake \
   -DWITH_3D=ON \
-  -DUSE_OPEN3D=ON \
   -DUSE_IMGUI=ON \
   -DIMGUI_DIR=$HOME/dev/imgui \
   -DIMGUI_BACKEND=SDL2 \
@@ -58,7 +56,6 @@ mkdir -p build
 cd build
 cmake \
   -DWITH_3D=ON \
-  -DUSE_OPEN3D=ON \
   -DUSE_IMGUI=ON \
   -DIMGUI_DIR=/path/to/imgui \
   -DIMGUI_BACKEND=GLFW \
@@ -67,7 +64,7 @@ cmake \
 make -j$(nproc)
 ```
 
-`USE_OPEN3D` is still required because the current 3D geometry base stores point clouds and line sets with Open3D geometry types. The new viewer does not use Open3D's GUI.
+`USE_OPEN3D` is not required for the viewer. It is only needed when you use optional Open3D-backed modules such as `_PCfile`, crop/downsample filters, or registration.
 
 When using `IMGUI_DIR`, OpenKAI compiles ImGui and the selected backend sources directly. When using `IMGUI_INCLUDE_DIR` and `IMGUI_LIBRARIES`, OpenKAI links the core ImGui library and compiles backend sources if their `.cpp` files are available in `IMGUI_BACKENDS_DIR`.
 
@@ -104,7 +101,7 @@ Use the class name `ImGUIviewer` in JSON:
     "threadUI": {
       "FPS": 60
     },
-    "geometry": [
+    "vGeometry": [
       {
         "_GeometryBase": "lidar_points",
         "bStatic": false,
@@ -123,6 +120,8 @@ Use the class name `ImGUIviewer` in JSON:
 }
 ```
 
+The viewer also accepts the older `geometry` object/array and `vGeometryBase` name-list keys, but `vGeometry` is the preferred key because it matches `_GeometryViewerBase`.
+
 ## Sample PLY Test
 
 `jsonCfg/ImGUI.json` is configured to load:
@@ -131,7 +130,7 @@ Use the class name `ImGUIviewer` in JSON:
 data/PointCloud/StanfordBunny/bun000.ply
 ```
 
-The sample is `bun000.ply`, a 1.9 MB Stanford Bunny range scan mirror from the University of New Mexico public directory:
+This sample uses `_PCfile` for PLY file I/O, so build it with `USE_OPEN3D=ON` if you want to run that exact config. Runtime point-cloud or line modules that fill `GEOMETRY_RINGBUF` data can be viewed without Open3D. The sample is `bun000.ply`, a 1.9 MB Stanford Bunny range scan mirror from the University of New Mexico public directory:
 
 ```bash
 curl -L https://www.cs.unm.edu/~angel/TEST/CODE/Code/BUNNY/data/bun000.ply \

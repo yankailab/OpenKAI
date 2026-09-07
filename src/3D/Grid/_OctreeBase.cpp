@@ -84,6 +84,10 @@ namespace kai
 		return true;
 	}
 
+	void _OctreeBase::addPointCloud(void *p, const uint64_t tExpire)
+	{
+	}
+
 	bool _OctreeBase::start(void)
 	{
 		NULL_F(m_pT);

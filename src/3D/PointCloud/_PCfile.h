@@ -10,9 +10,6 @@
 
 #include "_PointCloud.h"
 
-using namespace open3d;
-using namespace open3d::geometry;
-
 namespace kai
 {
 
@@ -36,7 +33,6 @@ namespace kai
 
 	protected:
 		vector<string> m_vfName;
-		PointCloud m_pc;
 	};
 
 }

@@ -100,6 +100,7 @@ namespace kai
         uint64_t tNow = getApproxTbootUs();
         while (pGp = pGrPin->get(i++))
         {
+            IF_CONT(pGp->m_tStamp == 0);
             IF_CONT(dTexpire > 0 && bExpired(pGp->m_tStamp, dTexpire, tNow));
 
             m_grPt.add(*pGp);
@@ -124,6 +125,7 @@ namespace kai
         uint64_t tNow = getApproxTbootUs();
         while (pGp = m_grPt.get(i++))
         {
+            IF_CONT(pGp->m_tStamp == 0);
             IF_CONT(dTexpire > 0 && bExpired(pGp->m_tStamp, dTexpire, tNow));
 
             pGrPout->add(*pGp);
@@ -169,22 +171,6 @@ namespace kai
 }
 
 /*
-    void _PointCloud::copyTo(PointCloud *pPC, const uint64_t tExpire)
-    {
-        IF_(!check());
-        NULL_(pPC);
-
-        for (int i = 0; i < m_nP; i++)
-        {
-            GEOMETRY_POINT *pP = &m_pP[i];
-            IF_CONT(pP->m_tStamp < tExpire);
-
-            pPC->points_.push_back(v2e(pP->m_vP).cast<double>());
-            pPC->colors_.push_back(v2e(pP->m_vC).cast<double>());
-        }
-    }
-
-
     bool _PointCloud::saveFile(const string &fName)
     {
         IF_F(fName.empty());

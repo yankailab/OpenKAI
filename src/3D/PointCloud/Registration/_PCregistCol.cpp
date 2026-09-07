@@ -84,7 +84,7 @@ namespace kai
 
     void _PCregistCol::updatePC(void)
     {
-        mutexLock();
+        atomicFrom();
 //TODO:
         // m_sPC.swap();
         // m_sPC.next()->points_.clear();
@@ -95,7 +95,7 @@ namespace kai
         // m_sPCvd.next()->points_.clear();
         // m_sPCvd.next()->colors_.clear();
         // m_sPCvd.next()->normals_.clear();
-        mutexUnlock();
+        atomicTo();
     }
 
     bool _PCregistCol::updateRegistration(void)

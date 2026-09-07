@@ -14,7 +14,7 @@ namespace kai
 	{
 		m_vWinSize.set(1280, 720);
 		m_bFullScreen = false;
-		m_dirSave = "/home/lab/";
+		m_dirSave = "";
 
 		m_vCoR.set(0, 0, 0);
 
@@ -42,7 +42,7 @@ namespace kai
 		jKv<float>(j, "vCamLookAt", m_camPose.m_vLookAt);
 		jKv<float>(j, "vCamEye", m_camPose.m_vEye);
 		jKv<float>(j, "vCamUp", m_camPose.m_vUp);
-		m_camPoseDefault;
+		m_camPoseDefault = m_camPose;
 
 		jKv<float>(j, "vCoR", m_vCoR);
 		jKv(j, "dTexpire", m_dTexpire);
@@ -54,16 +54,11 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::link(j, pM));
 
-		const json &jg = jK(j, "vGeometry");
-		IF__(!jg.is_array(), true);
-
-		for (auto it = jg.begin(); it != jg.end(); it++)
+		vector<string> vGb;
+		jKv(j, "vGeometryBase", vGb);
+		m_vpGb.clear();
+		for (string n : vGb)
 		{
-			const json &Ji = it.value();
-			IF_CONT(!Ji.is_object());
-
-			string n = "";
-			jKv(Ji, "_GeometryBase", n);
 			_GeometryBase *pGB = (_GeometryBase *)(pM->findModule(n));
 			IF_CONT(!pGB);
 
