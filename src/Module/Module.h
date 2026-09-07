@@ -21,21 +21,28 @@
 #include "../3D/Grid/_OctreeBase.h"
 #include "../3D/Line/_Line.h"
 #include "../3D/PointCloud/_PointCloud.h"
-#include "../3D/PointCloud/_PCfile.h"
 #include "../3D/PointCloud/Pipeline/_PCmerge.h"
 #include "../3D/PointCloud/Pipeline/_PCsend.h"
 #include "../3D/PointCloud/Pipeline/_PCrecv.h"
 #include "../3D/PointCloud/Pipeline/_PCtransform.h"
+#include "../3D/_GeometryViewerBase.h"
+
+#ifdef USE_OPEN3D
+#include "../3D/PointCloud/_PCfile.h"
 #include "../3D/PointCloud/Pipeline/_PCcrop.h"
 #include "../3D/PointCloud/Pipeline/_PCremove.h"
 #include "../3D/PointCloud/Pipeline/_PCdownSample.h"
 #include "../3D/PointCloud/Registration/_PCregistCol.h"
 #include "../3D/PointCloud/Registration/_PCregistICP.h"
 #include "../3D/PointCloud/Registration/_PCregistGlobal.h"
-#include "../3D/_GeometryViewerBase.h"
+#endif
+
+#ifdef WITH_UI
 #ifdef USE_IMGUI
 #include "../3D/Viewer/ImGUIviewer.h"
 #endif
+#endif
+
 #endif
 
 #ifdef WITH_ACTUATOR

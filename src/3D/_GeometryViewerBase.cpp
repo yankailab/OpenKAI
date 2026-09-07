@@ -88,18 +88,13 @@ namespace kai
 
 	void _GeometryViewerBase::update(void)
 	{
-		// wait for the UI thread to get window ready
-		m_pT->sleepT(USEC_1SEC);
-
-		resetCamPose();
-		updateCamPose();
-
 		while (m_pT->bAlive())
 		{
 			m_pT->autoFPS();
 
 			updateAllGeometries();
 
+			// override this method in inherited class
 			// update front end in the inherited class
 		}
 	}
@@ -107,6 +102,8 @@ namespace kai
 	void _GeometryViewerBase::updateAllGeometries(void)
 	{
 		IF_(!check());
+
+		// override this method in inherited class
 
 		for (_GeometryBase* pGb :m_vpGb)
 		{
@@ -136,10 +133,22 @@ namespace kai
 		return m_camPose;
 	}
 
+	void _GeometryViewerBase::setCamProj(const GVIEWER_CAM_PROJ &camProj)
+	{
+		m_camProj = camProj;
+		updateCamProj();
+	}
+
+	GVIEWER_CAM_PROJ _GeometryViewerBase::getCamProj(void)
+	{
+		return m_camProj;
+	}
+
 	void _GeometryViewerBase::updateCamProj(void)
 	{
 		IF_(!check());
 
+		// override this method in inherited class
 		// update camera projection parameters by m_camProj
 	}
 
@@ -147,6 +156,7 @@ namespace kai
 	{
 		IF_(!check());
 
+		// override this method in inherited class
 		// update camera pose parameters by m_camProj
 	}
 

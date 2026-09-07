@@ -44,10 +44,10 @@ namespace kai
 		virtual void resetCamPose(void);
 		virtual void setCamPose(const GVIEWER_CAM_POSE &camPose);
 		virtual GVIEWER_CAM_POSE getCamPose(void);
+		virtual void setCamProj(const GVIEWER_CAM_PROJ &camProj);
+		virtual GVIEWER_CAM_PROJ getCamProj(void);
 
-	protected:
-		// update thread
-		virtual void updateAllGeometries(void);
+	private:
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -55,6 +55,8 @@ namespace kai
 			return NULL;
 		}
 
+	protected:
+		virtual void updateAllGeometries(void);
 		virtual void updateCamProj(void);
 		virtual void updateCamPose(void);
 

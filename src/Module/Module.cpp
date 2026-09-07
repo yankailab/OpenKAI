@@ -32,20 +32,26 @@ namespace kai
 		ADD_MODULE(_OctreeBase);
 		ADD_MODULE(_Line);
 		ADD_MODULE(_PointCloud);
-		ADD_MODULE(_PCfile);
 		ADD_MODULE(_PCmerge);
 		ADD_MODULE(_PCsend);
 		ADD_MODULE(_PCrecv);
 		ADD_MODULE(_PCtransform);
+		ADD_MODULE(_GeometryViewerBase);
+
+#ifdef USE_OPEN3D
+		ADD_MODULE(_PCfile);
 		ADD_MODULE(_PCcrop);
 		ADD_MODULE(_PCremove);
 		ADD_MODULE(_PCdownSample);
 		ADD_MODULE(_PCregistCol);
 		ADD_MODULE(_PCregistICP);
 		ADD_MODULE(_PCregistGlobal);
-		ADD_MODULE(_GeometryViewerBase);
+#endif
+
+#ifdef WITH_UI
 #ifdef USE_IMGUI
 		ADD_MODULE(ImGUIviewer);
+#endif
 #endif
 #endif
 
