@@ -100,7 +100,7 @@ namespace kai
 
 	void _BenewakeTF::handleCMD(void)
 	{
-		uint8_t cs = verifyCheckSum(m_frame.m_pB, 9);
+		// uint8_t cs = verifyCheckSum(m_frame.m_pB, 9);
 		//		IF_(!cs);
 		uint16_t d = m_frame.m_pB[2];
 		d |= m_frame.m_pB[3] << 8;

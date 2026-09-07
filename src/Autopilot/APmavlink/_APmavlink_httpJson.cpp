@@ -81,7 +81,7 @@ namespace kai
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
-		_Console *pC = (_Console *)pConsole;
+		// _Console *pC = (_Console *)pConsole;
 		//		pC->addMsg("Local NED:");
 	}
 

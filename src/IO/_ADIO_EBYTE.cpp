@@ -79,7 +79,7 @@ namespace kai
 	{
 		IF_(!check());
 
-		for (int i = 0; i < m_vPort.size(); i++)
+		for (size_t i = 0; i < m_vPort.size(); i++)
 		{
 			ADIO_PORT *pP = &m_vPort[i];
 			IF_CONT(pP->m_type < adio_inout);
@@ -99,7 +99,7 @@ namespace kai
 	{
 		IF_(!check());
 
-		for (int i = 0; i < m_vPort.size(); i++)
+		for (size_t i = 0; i < m_vPort.size(); i++)
 		{
 			ADIO_PORT *pP = &m_vPort[i];
 			IF_CONT(pP->m_type > adio_inout);

@@ -109,7 +109,7 @@ namespace kai
 		float kx = 1.0 / m.cols;
 		float ky = 1.0 / m.rows;
 		_Object o;
-		for (int i = 0; i < vContours.size(); i++)
+		for (size_t i = 0; i < vContours.size(); i++)
 		{
 			vector<Point> vContourPoly;
 			approxPolyDP(Mat(vContours[i]), vContourPoly, 3, true);

@@ -301,7 +301,6 @@ namespace kai
 											  &m_scfDepth,
 											  m_pScVw);
 
-		m_grPt.clear();
 		for (int i = 0; i < m_scfDepth.height; i++)
 		{
 			for (int j = 0; j < m_scfDepth.width; j++)
@@ -323,15 +322,9 @@ namespace kai
 					vC *= c_b;
 				}
 
-				GEOMETRY_POINT gP;
-				gP.m_vP = vP;
-				gP.m_vC = vC;
-				gP.m_tStamp = 1;
-				m_grPt.add(gP);
+				m_pPointCloud->add(vP, vC, 1);
 			}
 		}
-
-		m_pPointCloud->add(&m_grPt);
 	}
 #endif
 
@@ -412,7 +405,7 @@ namespace kai
 
 		ScFlyingPixelFilterParams p;
 		p.enable = bON;
-		p.threshold;
+		// p.threshold;
 		ScStatus ScR = scSetFlyingPixelFilterParams(m_scDevHandle, p);
 		return (ScR == SC_OK) ? true : false;
 	}

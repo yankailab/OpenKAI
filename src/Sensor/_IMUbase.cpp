@@ -63,7 +63,7 @@ namespace kai
 	{
 		m_dqGyro.push_back({tStamp, vG});
 
-		while (m_dqGyro.size() > m_nIMUdqMax)
+		while (m_nIMUdqMax >= 0 && m_dqGyro.size() > static_cast<size_t>(m_nIMUdqMax))
 			m_dqGyro.pop_front();
 	}
 
@@ -71,7 +71,7 @@ namespace kai
 	{
 		m_dqAcc.push_back({tStamp, vA});
 
-		while (m_dqAcc.size() > m_nIMUdqMax)
+		while (m_nIMUdqMax >= 0 && m_dqAcc.size() > static_cast<size_t>(m_nIMUdqMax))
 			m_dqAcc.pop_front();
 	}
 

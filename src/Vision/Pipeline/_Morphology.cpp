@@ -93,7 +93,7 @@ namespace kai
 		Mat *pM2 = &m2;
 		Mat *pT;
 
-		for (int i = 0; i < m_vFilter.size(); i++)
+		for (size_t i = 0; i < m_vFilter.size(); i++)
 		{
 			IMG_MORPH *pM = &m_vFilter[i];
 

@@ -41,7 +41,7 @@ namespace kai
 		{
 			FilterBase<T>::add(v);
 
-			if (FilterBase<T>::m_qV.size() < FilterBase<T>::m_nW)
+			if (FilterBase<T>::m_qV.size() < static_cast<size_t>(FilterBase<T>::m_nW))
 			{
 				FilterBase<T>::m_v = v;
 				return FilterBase<T>::m_v;

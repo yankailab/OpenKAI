@@ -19,6 +19,7 @@
 
 #ifdef WITH_3D
 #include "../3D/Grid/_OctreeBase.h"
+#include "../3D/Grid/_OctreeGrid.h"
 #include "../3D/Line/_Line.h"
 #include "../3D/PointCloud/_PointCloud.h"
 #include "../3D/PointCloud/_PCfile.h"

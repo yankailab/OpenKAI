@@ -6,21 +6,21 @@ namespace kai
 	_OctreeBase::_OctreeBase()
 	{
 		m_type = geometry_octree;
-
-		m_vPorigin.clear();
-		m_dTexpire = 0;
+		m_pCell = nullptr;
 	}
 
 	_OctreeBase::~_OctreeBase()
 	{
+		if (m_pCell)
+		{
+			m_pCell->release();
+			delete m_pCell;
+		}
 	}
 
 	bool _OctreeBase::init(const json &j)
 	{
 		IF_F(!this->_GeometryBase::init(j));
-
-		jKv<double>(j, "vPorigin", m_vPorigin);
-		jKv(j, "dTexpire", m_dTexpire);
 
 		loadConfig();
 
@@ -30,16 +30,6 @@ namespace kai
 	bool _OctreeBase::link(const json &j, ModuleMgr *pM)
 	{
 		IF_F(!this->_GeometryBase::link(j, pM));
-
-		vector<string> vGn;
-		jKv(j, "vGeometryBase", vGn);
-		for (string n : vGn)
-		{
-			_GeometryBase *pG = (_GeometryBase *)(pM->findModule(n));
-			IF_CONT(!pG);
-
-			m_vpGb.push_back(pG);
-		}
 
 		return true;
 	}
@@ -52,9 +42,7 @@ namespace kai
 		const json &jG = jK(j, "_OctreeBase");
 		if (jG.is_object())
 		{
-			// grid config
-			jKv<double>(jG, "vPorigin", m_vPorigin);
-			jKv(jG, "dTexpire", m_dTexpire);
+			// octree config
 		}
 
 		if (pJ)
@@ -68,24 +56,9 @@ namespace kai
 	{
 		json jG = json::object();
 
-		// grid config
-		jG["vPorigin"] = {m_vPorigin.x, m_vPorigin.y, m_vPorigin.z};
-
-		jG["dTexpire"] = m_dTexpire;
-
-		j["_OctreeBase"] = jG;
+		// octree config
 
 		return this->_GeometryBase::saveConfig(j, fName);
-	}
-
-	bool _OctreeBase::initGeometry(void)
-	{
-
-		return true;
-	}
-
-	void _OctreeBase::addPointCloud(void *p, const uint64_t tExpire)
-	{
 	}
 
 	bool _OctreeBase::start(void)
@@ -116,7 +89,6 @@ namespace kai
 	void _OctreeBase::updateOctree(void)
 	{
 		IF_(!check());
-
 	}
 
 }

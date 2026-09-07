@@ -65,9 +65,9 @@ namespace kai
 
 		IF_(!m_ieSendHB.updateT(m_pT->getTfrom()));
 
-		int apMode = m_pAP->getMode();
-		vDouble4 vP = m_pAP->getGlobalPos();
-		vFloat3 vA = m_pAP->getAttitude();
+		// int apMode = m_pAP->getMode();
+		// vDouble4 vP = m_pAP->getGlobalPos();
+		// vFloat3 vA = m_pAP->getAttitude();
 
 		// {
 		// 	"cmd":"vUpdate",	// command name
@@ -145,7 +145,7 @@ namespace kai
 		NULL_(pConsole);
 		this->_JSONbase::console(pConsole);
 
-		_Console *pC = (_Console *)pConsole;
+		// _Console *pC = (_Console *)pConsole;
 	}
 
 }

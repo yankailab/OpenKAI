@@ -74,7 +74,7 @@ namespace kai
 		IF_(!check());
 
 		// read all inputs into one ring
-		for (_GeometryBase *pPCB : m_vpGB)
+		// for (_GeometryBase *pPCB : m_vpGB)
 		{
 			//		m_ring.readSrc(pPCB->getRing());
 		}

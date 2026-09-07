@@ -24,6 +24,8 @@ namespace kai
 
 	_GeometryViewerBase::~_GeometryViewerBase()
 	{
+		m_grPt.release();
+		m_grLn.release();
 	}
 
 	bool _GeometryViewerBase::init(const json &j)
@@ -109,14 +111,18 @@ namespace kai
 
 		// override this method in inherited class
 
+		uint64_t tExpire = 0;
+		if(m_dTexpire > 0)
+			tExpire = getApproxTbootUs() - m_dTexpire;
+
 		for (_GeometryBase *pGb : m_vpGb)
 		{
 			m_grPt.clear();
-			int nP = pGb->get(&m_grPt, m_dTexpire);
+			pGb->get(&m_grPt, tExpire);
 			// update the point cloud buffer to frontend ingerited class
 
 			m_grLn.clear();
-			int nL = pGb->get(&m_grLn, m_dTexpire);
+			pGb->get(&m_grLn, tExpire);
 			// update the line buffer to frontend ingerited class
 		}
 	}

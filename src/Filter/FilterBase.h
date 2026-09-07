@@ -26,12 +26,17 @@ namespace kai
 
 		virtual T update(T v)
 		{
+			m_v = v;
+			return m_v;
 		}
 
 		virtual void add(T v)
 		{
 			m_qV.push_back(v);
-			while (m_qV.size() > m_nW)
+			if (m_nW <= 0)
+				return;
+
+			while (m_qV.size() > static_cast<size_t>(m_nW))
 				m_qV.pop_front();
 		}
 
@@ -50,7 +55,7 @@ namespace kai
 	protected:
 		T m_v;				//output
 		std::deque<T> m_qV;	//trajectory
-		int m_nW;			//window length
+		int m_nW = 0;		//window length
 		T m_variance;
 	};
 

@@ -28,13 +28,14 @@ namespace kai
 
         // _GeometryBase
         virtual void clear(void);
-        virtual int get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pGrLout, uint64_t dTexpire = 0);
+        virtual int get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pGrLout, uint64_t tExpire = 0);
 
         // data io
         virtual void add(const Vector3d &vPa, const Vector3d &vPb, const Vector3f &vC, uint64_t tStamp = 1);
         virtual void add(const vFloat3 &vPa, const vFloat3 &vPb, const vFloat3 &vC, uint64_t tStamp = 1);
-        virtual int add(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pGrLIn, uint64_t dTexpire = 0);
 
+    protected:
+        virtual int copy(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pIn, GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut, uint64_t tExpire = 0);
         virtual GEOMETRY_RINGBUF<GEOMETRY_LINE>* getRingBuf(void);
 
     private:

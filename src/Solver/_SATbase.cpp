@@ -128,7 +128,7 @@ namespace kai
 			SAT_CLAUSE *pC = &m_vC[i];
 			int nT = 0;
 
-			for (int j = 0; j < pC->m_vL.size(); j++)
+			for (size_t j = 0; j < pC->m_vL.size(); j++)
 			{
 				int L = pC->getLiteral(j);
 				IF_F(L == 0); // error
@@ -150,7 +150,7 @@ namespace kai
 			}
 		}
 
-		if (nS >= m_vC.size())
+		if (static_cast<size_t>(nS) >= m_vC.size())
 			return true;
 
 		return false;
@@ -170,8 +170,8 @@ namespace kai
 
 	BOOLEAN_VAR *_SATbase::getVar(int i)
 	{
-		IF_N(m_vV.size() <= i);
 		IF_N(i < 1);	// var idx starts from 1
+		IF_N(m_vV.size() <= static_cast<size_t>(i));
 
 		return &m_vV[i];
 	}
@@ -183,8 +183,8 @@ namespace kai
 
 	SAT_CLAUSE *_SATbase::getClause(int i)
 	{
-		IF_N(m_vC.size() <= i);
 		IF_N(i < 0);
+		IF_N(m_vC.size() <= static_cast<size_t>(i));
 
 		return &m_vC[i];
 	}

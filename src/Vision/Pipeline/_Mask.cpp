@@ -81,7 +81,7 @@ namespace kai
 		Mat mV = *m_fIn.m();
 		Mat mM = *m_fMask.m();
 		Mat mBg;
-		mBg.zeros(mV.rows, mV.cols, mV.type());
+		// mBg.zeros(mV.rows, mV.cols, mV.type());
 
 		mV.copyTo(mBg, mM);
 		m_fRGB.copy(mBg);

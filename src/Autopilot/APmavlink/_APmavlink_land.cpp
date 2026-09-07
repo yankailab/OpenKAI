@@ -201,10 +201,10 @@ namespace kai
 
 	AP_LAND_TAG *_APmavlink_land::getTag(int id)
 	{
-		for (int i = 0; i < m_vTags.size(); i++)
+		for (AP_LAND_TAG &tag : m_vTags)
 		{
-			IF_CONT(m_vTags[i].m_id != id);
-			return &m_vTags[i];
+			IF_CONT(tag.m_id != id);
+			return &tag;
 		}
 
 		return NULL;

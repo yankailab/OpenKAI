@@ -82,7 +82,6 @@ namespace kai
 
 #ifdef WITH_3D
 		_PointCloud *m_pPointCloud;
-        GEOMETRY_RINGBUF<GEOMETRY_POINT> m_grPt;
 #endif
 	};
 

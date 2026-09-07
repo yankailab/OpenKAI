@@ -201,9 +201,9 @@ namespace kai
 		uint64_t tNow = getTbootUs();
 
 		_Console *pC = (_Console *)pConsole;
-		for (int i = 0; i < m_vMsg.size(); i++)
+		for (RTCM_MSG &m : m_vMsg)
 		{
-			RTCM_MSG *pM = &m_vMsg[i];
+			RTCM_MSG *pM = &m;
 			pC->addMsg("msgID: " + i2str(pM->m_msgID) + ", nB=" + i2str(pM->m_nB) + ", nRecv=" + i2str(pM->m_nRecv) + ", tIntSec=" + f2str(pM->m_tIntSec, 2) + ", bTout=" + i2str(pM->m_tOutRecv.bTout(tNow)));
 		}
 	}

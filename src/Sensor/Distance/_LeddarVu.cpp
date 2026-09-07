@@ -219,7 +219,7 @@ namespace kai
 	{
 		NULL_F(m_pMb);
 
-		const uint32_t N_REGISTERS = 15 + m_nDiv * 2;
+		const int N_REGISTERS = 15 + m_nDiv * 2;
 		uint16_t reg[N_REGISTERS];
 
 		int nRead = modbus_read_input_registers(m_pMb, 1, N_REGISTERS, reg);
@@ -275,15 +275,15 @@ namespace kai
 			return false;
 		}
 
-		const static float BASE_D = 1.0 / 100.0;
-		const static float BASE_A = 1.0 / 64.0;
+		// const static float BASE_D = 1.0 / 100.0;
+		// const static float BASE_A = 1.0 / 64.0;
 		m_nDetection = rsp[2];
 
 		if (iResponseLength >= 3 + (signed)m_nDetection * 5)
 		{
 			for (uint32_t u = 0; (u < m_nDetection) && (u < LEDDAR_MAX_DETECTIONS); u++)
 			{
-				uint8_t *pDetection = rsp + 3 + 5 * u;
+				// uint8_t *pDetection = rsp + 3 + 5 * u;
 				//			m_pSegment[u].dDistance = (pDetection[0] + (pDetection[1] << 8)) * BASE_D;
 				//			m_pSegment[u].dAmplitude = (pDetection[2] + (pDetection[3] << 8)) * BASE_A;
 
@@ -293,7 +293,7 @@ namespace kai
 
 			if (iResponseLength >= 3 + (signed)m_nDetection * 5 + 6)
 			{
-				uint8_t *pTrailer = rsp + 3 + 5 * m_nDetection;
+				// uint8_t *pTrailer = rsp + 3 + 5 * m_nDetection;
 				//			uTimestamp = pTrailer[0] + (pTrailer[1] << 8) + (pTrailer[2] << 16) + (pTrailer[3] << 24);
 			}
 		}

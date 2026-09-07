@@ -33,17 +33,19 @@ namespace kai
 			return true;
 		}
 
+		using FilterBase<T>::update;
+
 		T update(T v, float dT)
 		{
 			FilterBase<T>::add(v);
 
-			if (FilterBase<T>::m_qV.size() < FilterBase<T>::m_nW)
+			if (FilterBase<T>::m_qV.size() < static_cast<size_t>(FilterBase<T>::m_nW))
 			{
 				FilterBase<T>::m_v = v;
 				return FilterBase<T>::m_v;
 			}
 
-			int s = FilterBase<T>::m_qV.size();
+			size_t s = FilterBase<T>::m_qV.size();
 			T p = FilterBase<T>::m_qV.at(s - 2);
 			T q = FilterBase<T>::m_qV.at(s - 1);
 

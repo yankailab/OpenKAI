@@ -184,23 +184,11 @@ namespace kai
 	{
 		IF_(!check());
 
-        GEOMETRY_RINGBUF<GEOMETRY_POINT>* pGpr = m_pPS->getRingBuf();
+		uint64_t tExpire = 0;
+		if(m_dTexpire > 0)
+			tExpire = getApproxTbootUs() - m_dTexpire;
 
-        atomicFrom();
-        uint64_t tNow = getApproxTbootUs();
-
-        int i=0;
-        GEOMETRY_POINT* pGp = nullptr;
-        while((pGp = pGpr->get(i++)))
-        {
-            IF_CONT(m_dTexpire > 0 && bExpired(pGp->m_tStamp, m_dTexpire, tNow));
-
-			//TODO: transform pGp by affine transform m_A;
-
-            m_grPt.add(*pGp);
-        }
-
-        atomicTo();
+		m_pPS->get(&m_grPt, tExpire);
 	}
 
 	void _PCtransform::setTranslation(const vDouble3 &vT)

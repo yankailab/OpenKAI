@@ -47,12 +47,12 @@ namespace kai
     {
     }
 
-    int _GeometryBase::get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pGrPout, uint64_t dTexpire)
+    int _GeometryBase::get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pGrPout, uint64_t tExpire)
     {
         return 0;
     }
 
-    int _GeometryBase::get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pGrLOut, uint64_t dTexpire)
+    int _GeometryBase::get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pGrLout, uint64_t tExpire)
     {
         return 0;
     }
@@ -62,7 +62,7 @@ namespace kai
         NULL_(pConsole);
         this->_ModuleBase::console(pConsole);
 
-        _Console *pC = (_Console *)pConsole;
+        // _Console *pC = (_Console *)pConsole;
     }
 
     bool _GeometryBase::loadConfig(json *pJ, string fName)

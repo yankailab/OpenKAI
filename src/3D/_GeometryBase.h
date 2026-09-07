@@ -59,60 +59,79 @@ namespace kai
     template <typename T>
     struct GEOMETRY_RINGBUF
     {
-        T *m_pP = nullptr;
-        int m_nP = 0;
-        int m_iP = 0;
+        T *m_pT = nullptr;
+        int m_nT = 0;
+        int m_iT = 0;
 
         bool alloc(int nP)
         {
             IF_F(nP <= 0);
 
-            m_pP = new T[nP];
-            NULL_F(m_pP);
+            m_pT = new T[nP];
+            NULL_F(m_pT);
 
-            m_nP = nP;
+            m_nT = nP;
             return true;
         }
 
         void release(void)
         {
-            DEL(m_pP);
+            DEL(m_pT);
 
-            m_nP = 0;
-            m_iP = 0;
+            m_nT = 0;
+            m_iT = 0;
         }
 
         void clear(void)
         {
-            NULL_(m_pP);
-            IF_(m_nP <= 0);
+            NULL_(m_pT);
+            IF_(m_nT <= 0);
 
-            m_iP = 0;
-            for (int i = 0; i < m_nP; i++)
-                m_pP[i].clear();
+            m_iT = 0;
+            for (int i = 0; i < m_nT; i++)
+                m_pT[i].clear();
         }
 
         void add(const T &p)
         {
-            NULL_(m_pP);
-            IF_(m_nP <= m_iP);
+            NULL_(m_pT);
+            IF_(m_nT <= m_iT);
 
-            m_pP[m_iP] = p;
+            m_pT[m_iT] = p;
             iInc();
         }
 
         void iInc(void)
         {
-            if (++m_iP >= m_nP)
-                m_iP = 0;
+            if (++m_iT >= m_nT)
+                m_iT = 0;
+        }
+
+        int iT(void)
+        {
+            IF__(m_iT <= 0, 0);
+            return m_iT - 1;
+        }
+
+        int nT(void)
+        {
+            return m_nT;
+        }
+
+        int iDec(int i)
+        {
+            if (--i <= 0)
+                i = m_nT - 1;
+
+            return i;
         }
 
         T *get(int i)
         {
-            NULL_N(m_pP);
-            IF_N(m_nP <= i);
+            NULL_N(m_pT);
+            IF_N(m_nT <= i);
 
-            return &m_pP[i];
+            return &m_pT[i];
         }
     };
 
@@ -133,8 +152,8 @@ namespace kai
         virtual GEOMETRY_TYPE getType(void);
         virtual void clear(void);
 
-        virtual int get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pGrPout, uint64_t dTexpire = 0);
-        virtual int get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pGrLOut, uint64_t dTexpire = 0);
+        virtual int get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pGrPout, uint64_t tExpire = 0);
+        virtual int get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pGrLout, uint64_t tExpire = 0);
 
     protected:
         GEOMETRY_TYPE m_type;

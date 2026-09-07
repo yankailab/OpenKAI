@@ -225,10 +225,11 @@ namespace kai
 
 	void _HiKthermal::UVCstreamGetFrame(unsigned int tOut)
 	{
-		uvc_error_t r;
+		// uvc_error_t r;
 
 		m_pUVCframe = NULL;
-		r = uvc_stream_get_frame(m_pHandleStream, &m_pUVCframe, tOut);
+		// r = uvc_stream_get_frame(m_pHandleStream, &m_pUVCframe, tOut);
+		uvc_stream_get_frame(m_pHandleStream, &m_pUVCframe, tOut);
 	}
 
 	bool _HiKthermal::start(void)
@@ -264,7 +265,7 @@ namespace kai
 				continue;
 			}
 
-			if (pFrame->data_bytes != m_uvcSize)
+			if (pFrame->data_bytes != static_cast<size_t>(m_uvcSize))
 			{
 				LOG_I("Frame size wrong, " + i2str(pFrame->data_bytes) + " : " + i2str(m_uvcSize));
 				continue;
@@ -275,7 +276,9 @@ namespace kai
 			//  cv::cvtColor(mYUV, mRGB, COLOR_YUV2RGB_YUY2);
 			//  int nHead = ((uint8_t *)pFrame->data)[4];
 
-			Mat mRaw = cv::Mat(m_vSizeRGB.y, m_vSizeRGB.x, CV_16UC1, ((uint16_t *)(pFrame->data + 4640)), Mat::AUTO_STEP);
+			Mat mRaw = cv::Mat(m_vSizeRGB.y, m_vSizeRGB.x, CV_16UC1,
+								reinterpret_cast<uint16_t *>(static_cast<uint8_t *>(pFrame->data) + 4640),
+								Mat::AUTO_STEP);
 
 			const float tScale = (1.0 / 64.0);
 			Mat mC;
@@ -307,7 +310,8 @@ namespace kai
 
 	int _HiKthermal::USBgetCur(unsigned short wValue, unsigned char *pData, unsigned short len)
 	{
-		int r, c = 0;
+		// int r, c = 0;
+		int r;
 
 		r = USBctrlTransfer(REQ_TYPE_GET, REQ_GET_CUR, wValue, 0x0a00, pData, len, 0);
 		IF__(r == len, len);
@@ -332,7 +336,8 @@ namespace kai
 
 	int _HiKthermal::USBsetCur(unsigned short wValue, unsigned char *pData, unsigned short len)
 	{
-		int r, c = 0;
+		// int r, c = 0;
+		int r;
 
 		r = USBctrlTransfer(REQ_TYPE_SET, REQ_SET_CUR, wValue, 0x0a00, pData, len, 0);
 		IF__(r == len, len);
@@ -421,7 +426,7 @@ namespace kai
 		unsigned char pB[1600];
 
 		printf("\n--- starting getDeviceInfo ----\n");
-		IF_F(USBsetCurFunc(XU_CS_ID_SYSTEM, SYSTEM_DEVICE_INFO) < 0);
+		IF_F(!USBsetCurFunc(XU_CS_ID_SYSTEM, SYSTEM_DEVICE_INFO));
 		IF_F(USBgetCurData(XU_CS_ID_SYSTEM, pB) < 0);
 
 		uint8_t *ptr = pB;

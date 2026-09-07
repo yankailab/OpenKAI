@@ -85,53 +85,35 @@ namespace kai
         m_grPt.add(gP);
     }
 
-    int _PointCloud::add(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pGrPin, uint64_t dTexpire)
+    int _PointCloud::copy(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pIn, GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire)
     {
-        NULL__(pGrPin, 0);
+        NULL__(pIn, 0);
+        NULL__(pOut, 0);
 
         int nP = 0;
-        int i = 0;
-        GEOMETRY_POINT *pGp = nullptr;
+        int nPin = pIn->nT();
+        int iP = pIn->iT();
 
-        atomicFrom();
-
-        uint64_t tNow = getApproxTbootUs();
-        while (pGp = pGrPin->get(i++))
+        while (nP < nPin)
         {
-            IF_CONT(pGp->m_tStamp == 0);
-            IF_CONT(dTexpire > 0 && bExpired(pGp->m_tStamp, dTexpire, tNow));
+            GEOMETRY_POINT* pGp = pIn->get(iP);
+            if(!pGp)
+                break;
+            if(bExpired(pGp->m_tStamp, tExpire))
+                break;
 
-            m_grPt.add(*pGp);
+            pOut->add(*pGp);
             nP++;
-        }
 
-        atomicTo();
+            iP = pIn->iDec(iP);
+        }
 
         return nP;
     }
 
-    int _PointCloud::get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pGrPout, uint64_t dTexpire)
+    int _PointCloud::get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pGrPout, uint64_t tExpire)
     {
-        NULL__(pGrPout, 0);
-
-        int nP = 0;
-        int i = 0;
-        GEOMETRY_POINT *pGp = nullptr;
-
-        atomicFrom();
-
-        uint64_t tNow = getApproxTbootUs();
-        while (pGp = m_grPt.get(i++))
-        {
-            IF_CONT(pGp->m_tStamp == 0);
-            IF_CONT(dTexpire > 0 && bExpired(pGp->m_tStamp, dTexpire, tNow));
-
-            pGrPout->add(*pGp);
-            nP++;
-        }
-
-        atomicTo();
-        return nP;
+        return copy(getRingBuf(), pGrPout, tExpire);
     }
 
     GEOMETRY_RINGBUF<GEOMETRY_POINT> *_PointCloud::getRingBuf(void)
@@ -147,7 +129,7 @@ namespace kai
 
     void _PointCloud::console(const json &j, void *pJSONbase)
     {
-        _JSONbase *pJb = (_JSONbase *)pJSONbase;
+        // _JSONbase *pJb = (_JSONbase *)pJSONbase;
         string cmd;
         IF_(!jKv(j, "cmd", cmd));
 

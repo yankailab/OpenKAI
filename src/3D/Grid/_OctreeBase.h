@@ -1,11 +1,11 @@
 #ifndef OpenKAI_src_3D_Grid__OctreeBase_H_
 #define OpenKAI_src_3D_Grid__OctreeBase_H_
 
-#include "../../Filter/Median.h"
 #include "../_GeometryBase.h"
-#include "../PointCloud/_PointCloud.h"
 
 #define N_OCT 8
+#define octreeCidx(x, y, z) ((uint8_t)((((int8_t)x >> 7) << 2) | (((int8_t)y >> 7) << 1) | ((int8_t)z >> 7)))
+// octreeCidx(iC) indexed by 3 bits: MSB->LSB: x,y,z axis; Each bit: 0/1=positive half/negative half;
 
 namespace kai
 {
@@ -19,27 +19,53 @@ namespace kai
 
 	struct OCTREE_CELL
 	{
-		uint128 m_UGLID;
-		uint8_t m_Lidx;
+		uint128 m_uGLID = {0, 0};
+		OCTREE_CELL *m_pParent = nullptr;
+		OCTREE_CELL *m_pChild[N_OCT] = {};
 
-		OCTREE_CELL *m_pParent;
-		OCTREE_CELL *m_pChild[N_OCT];
-		uint8_t m_nChild;
-
-		bool addChild(int Lidx)
+		bool addChild(uint8_t iC)
 		{
+			IF_F(iC < 0 || iC >= N_OCT);
+			IF__(m_pChild[iC], true);
+
+			OCTREE_CELL *pC = new OCTREE_CELL();
+			pC->m_pParent = this;
+			m_pChild[iC] = pC;
+
+			return true;
 		}
 
-		OCTREE_CELL *getChild(int Lidx)
+		OCTREE_CELL *getChild(uint8_t iC)
 		{
+			IF_N(iC < 0 || iC >= N_OCT);
+
+			return m_pChild[iC];
 		}
 
 		int getLevel(void)
 		{
+			int L = 0;
+			const OCTREE_CELL *pC = m_pParent;
+			while (pC)
+			{
+				L++;
+				pC = pC->m_pParent;
+			}
+
+			return L;
 		}
 
 		void release(void)
 		{
+			for (int i = 0; i < N_OCT; i++)
+			{
+				OCTREE_CELL *pC = m_pChild[i];
+				IF_CONT(!pC);
+
+				pC->release();
+				delete pC;
+				m_pChild[i] = nullptr;
+			}
 		}
 	};
 
@@ -58,18 +84,6 @@ namespace kai
 		virtual bool loadConfig(json *pJ = nullptr, string fName = "");
 		virtual bool saveConfig(json &j, string fName = "");
 
-		// grid
-		virtual bool initGeometry(void);
-
-		// cell
-
-		// drawing
-
-		// data
-		virtual void addPointCloud(void *p, const uint64_t tExpire = 0);
-
-		// save/load
-
 	protected:
 		virtual void updateOctree(void);
 
@@ -82,12 +96,7 @@ namespace kai
 		}
 
 	protected:
-		// grid generating
-		vDouble3 m_vPorigin;
-
-		// point cloud input
-		vector<_GeometryBase *> m_vpGb;
-		uint64_t m_dTexpire;
+		OCTREE_CELL *m_pCell; // root cell
 	};
 
 }

@@ -66,6 +66,8 @@ namespace kai
 			return -1;
 		if (nB == 0)
 			return 0;
+		if (nB < 0 || m_iByte < 0)
+			return -1;
 
 		if (m_buf.size() == 0)
 		{
@@ -74,14 +76,18 @@ namespace kai
 			m_iByte = 0;
 		}
 
-		if (m_iByte + nB >= m_buf.size())
+		size_t iByte = static_cast<size_t>(m_iByte);
+		if (iByte >= m_buf.size())
+			return 0;
+
+		if (iByte + static_cast<size_t>(nB) >= m_buf.size())
 		{
-			nB = m_buf.size() - m_iByte;
+			nB = static_cast<int>(m_buf.size() - iByte);
 		}
 		if (nB <= 0)
 			return 0;
 
-		m_buf.copy((char *)pBuf, nB, m_iByte);
+		m_buf.copy((char *)pBuf, nB, iByte);
 		m_iByte += nB;
 		return nB;
 	}

@@ -61,28 +61,28 @@ namespace kai
 
 	bool _ADIObase::writeD(int iPort, bool b)
 	{
-		IF_F(iPort >= m_vPort.size());
+		IF_F(iPort < 0 || static_cast<size_t>(iPort) >= m_vPort.size());
 
 		return m_vPort[iPort].writeD(b);
 	}
 
 	bool _ADIObase::writeA(int iPort, float v)
 	{
-		IF_F(iPort >= m_vPort.size());
+		IF_F(iPort < 0 || static_cast<size_t>(iPort) >= m_vPort.size());
 
 		return m_vPort[iPort].writeA(v);
 	}
 
 	bool _ADIObase::readD(int iPort)
 	{
-		IF_F(iPort >= m_vPort.size());
+		IF_F(iPort < 0 || static_cast<size_t>(iPort) >= m_vPort.size());
 
 		return m_vPort[iPort].readD();
 	}
 
 	float _ADIObase::readA(int iPort)
 	{
-		IF_F(iPort >= m_vPort.size());
+		IF_F(iPort < 0 || static_cast<size_t>(iPort) >= m_vPort.size());
 
 		return m_vPort[iPort].readA();
 	}
@@ -95,7 +95,7 @@ namespace kai
 		_Console *pC = ((_Console *)pConsole);
 		string str;
 
-		for (int i = 0; i < m_vPort.size(); i++)
+		for (size_t i = 0; i < m_vPort.size(); i++)
 		{
 			ADIO_PORT *pP = &m_vPort[i];
 

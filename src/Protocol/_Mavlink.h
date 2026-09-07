@@ -1,8 +1,15 @@
 #ifndef OpenKAI_src_Protocol__Mavlink_H_
 #define OpenKAI_src_Protocol__Mavlink_H_
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Waddress-of-packed-member"
+#endif
 #include "../Dependencies/c_library_v2/ardupilotmega/mavlink.h"
 #include "../Dependencies/c_library_v2/mavlink_conversions.h"
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 #include "../IO/_IObase.h"
 
 #define MAV_N_PEER 16
@@ -85,12 +92,11 @@ namespace kai
 		{
 			NULL_(pCb);
 
-			for (int i = 0; i < m_vCbRecv.size(); i++)
+			for (auto it = m_vCbRecv.begin(); it != m_vCbRecv.end(); ++it)
 			{
-				MavCallback *pC = &m_vCbRecv[i];
+				MavCallback *pC = &(*it);
 				IF_CONT((pC->m_pCbRecv != pCb) || (pC->m_pCbInst != pInst));
 
-				vector<MavCallback>::iterator it = m_vCbRecv.begin() + i;
 				m_vCbRecv.erase(it);
 
 				return;
@@ -711,7 +717,6 @@ namespace kai
 	{
 	public:
 		mavlink_servo_output_raw_t m_msg;
-		uint16_t *m_pServo[16];
 
 		MavServoOutputRaw()
 		{
@@ -735,23 +740,6 @@ namespace kai
 			m_msg.servo15_raw = 0;
 			m_msg.servo16_raw = 0;
 
-			m_pServo[0] = NULL;
-			m_pServo[1] = &m_msg.servo1_raw;
-			m_pServo[2] = &m_msg.servo2_raw;
-			m_pServo[3] = &m_msg.servo3_raw;
-			m_pServo[4] = &m_msg.servo4_raw;
-			m_pServo[5] = &m_msg.servo5_raw;
-			m_pServo[6] = &m_msg.servo6_raw;
-			m_pServo[7] = &m_msg.servo7_raw;
-			m_pServo[8] = &m_msg.servo8_raw;
-			m_pServo[9] = &m_msg.servo9_raw;
-			m_pServo[10] = &m_msg.servo10_raw;
-			m_pServo[11] = &m_msg.servo11_raw;
-			m_pServo[12] = &m_msg.servo12_raw;
-			m_pServo[13] = &m_msg.servo13_raw;
-			m_pServo[14] = &m_msg.servo14_raw;
-			m_pServo[15] = &m_msg.servo15_raw;
-			m_pServo[16] = &m_msg.servo16_raw;
 		}
 
 		void decode(mavlink_message_t *pM)
@@ -762,10 +750,43 @@ namespace kai
 
 		uint16_t getServo(int iServo)
 		{
-			if (iServo <= 0 || iServo > 18)
+			switch (iServo)
+			{
+			case 1:
+				return m_msg.servo1_raw;
+			case 2:
+				return m_msg.servo2_raw;
+			case 3:
+				return m_msg.servo3_raw;
+			case 4:
+				return m_msg.servo4_raw;
+			case 5:
+				return m_msg.servo5_raw;
+			case 6:
+				return m_msg.servo6_raw;
+			case 7:
+				return m_msg.servo7_raw;
+			case 8:
+				return m_msg.servo8_raw;
+			case 9:
+				return m_msg.servo9_raw;
+			case 10:
+				return m_msg.servo10_raw;
+			case 11:
+				return m_msg.servo11_raw;
+			case 12:
+				return m_msg.servo12_raw;
+			case 13:
+				return m_msg.servo13_raw;
+			case 14:
+				return m_msg.servo14_raw;
+			case 15:
+				return m_msg.servo15_raw;
+			case 16:
+				return m_msg.servo16_raw;
+			default:
 				return 0;
-
-			return *m_pServo[iServo];
+			}
 		}
 	};
 

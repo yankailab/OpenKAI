@@ -1,4 +1,5 @@
 #include "_JSONbase.h"
+#include <openssl/evp.h>
 
 namespace kai
 {
@@ -148,7 +149,7 @@ namespace kai
     bool _JSONbase::str2JSON(const string &str, json &j)
     {
         string err;
-        const char *jsonstr = str.c_str();
+        // const char *jsonstr = str.c_str();
 
         JsonCfg jCfg;
         jCfg.parseJsonStr(str);
@@ -161,10 +162,12 @@ namespace kai
 
     void _JSONbase::md5(const string &str, string *pDigest)
     {
-        unsigned char digest[MD5_DIGEST_LENGTH];
-        MD5((const unsigned char *)str.c_str(), str.length(), digest);
+        unsigned char digest[EVP_MAX_MD_SIZE];
+        unsigned int nDigest = 0;
+        int r = EVP_Digest(str.data(), str.length(), digest, &nDigest, EVP_md5(), nullptr);
+        IF_(!r);
 
-        string strD((char *)digest);
+        string strD(reinterpret_cast<char *>(digest), nDigest);
         *pDigest = strD;
         LOG_I("md5: " + *pDigest);
     }

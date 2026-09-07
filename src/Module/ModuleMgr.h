@@ -5,6 +5,7 @@
 
 namespace kai
 {
+	class BASE;
 
 	class ModuleMgr
 	{
@@ -38,7 +39,7 @@ namespace kai
 		bool m_bLog;
 
 		vector<JsonCfg> m_vJcfg;
-		vector<void *> m_vModules;
+		vector<BASE *> m_vModules;
 		json m_jNull;
 	};
 

@@ -101,8 +101,6 @@ namespace kai
 		void collectLines(IMGUI_VIEWER_OBJ *pObj);
 		void copySnapshot(vector<IMGUI_VIEWER_OBJ> *pVgo);
 
-		bool parseGeometryList(const json &jg, ModuleMgr *pM);
-		bool parseGeometryNames(const json &j, ModuleMgr *pM);
 		bool upsertGeometry(_GeometryBase *pGb, const string &name, const json *pJ = nullptr);
 		void applyObjectConfig(IMGUI_VIEWER_OBJ *pObj, const json &j);
 		IMGUI_VIEWER_OBJ *findObject(_GeometryBase *pGb, const string &name = "");

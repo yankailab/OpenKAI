@@ -30,6 +30,7 @@ namespace kai
 
 #ifdef WITH_3D
 		ADD_MODULE(_OctreeBase);
+		ADD_MODULE(_OctreeGrid);
 		ADD_MODULE(_Line);
 		ADD_MODULE(_PointCloud);
 		ADD_MODULE(_PCfile);

@@ -116,10 +116,10 @@ namespace kai
 				// pose
 				Vec3d v;
 				v = vvT[i];
-				vFloat3 vP{v[0], v[1], v[2]};
+				vFloat3 vP{static_cast<float>(v[0]), static_cast<float>(v[1]), static_cast<float>(v[2])};
 				o.setPos(vP);
 				v = vvR[i];
-				vFloat3 vR{v[0], v[1], v[2]};
+				vFloat3 vR{static_cast<float>(v[0]), static_cast<float>(v[1]), static_cast<float>(v[2])};
 				o.setAttitude(vR);
 			}
 

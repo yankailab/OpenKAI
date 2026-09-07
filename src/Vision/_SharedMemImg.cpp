@@ -45,6 +45,7 @@ namespace kai
     {
         NULL_F(m_pT);
         IF_F(!m_pT->startThread(getUpdate, this));
+        return true;
     }
 
     bool _SharedMemImg::check(void)

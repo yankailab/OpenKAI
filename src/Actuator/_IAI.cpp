@@ -125,6 +125,7 @@ namespace kai
 		// m_s.set(s);
 
 		// LOG_I("step: " + f2str(m_p.get()) + ", speed: " + f2str(m_s.get()));
+		return true;
 	}
 
 	bool _IAI::IAIgotoOrigin(void)
@@ -157,7 +158,7 @@ namespace kai
 		int32_t pErr = m_p.getErrRange();
 		int32_t speed = m_s.getTarget();
 		int32_t accel = m_a.getTarget();
-		int32_t brake = m_b.getTarget();
+		// int32_t brake = m_b.getTarget();
 		int32_t current = m_c.getTarget();
 
 		uint16_t pB[9];

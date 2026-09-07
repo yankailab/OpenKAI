@@ -87,53 +87,35 @@ namespace kai
         m_grLn.add(gL);
     }
 
-    int _Line::add(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pGrLin, uint64_t dTexpire)
+    int _Line::copy(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pIn, GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut, uint64_t tExpire)
     {
-        NULL__(pGrLin, 0);
+        NULL__(pIn, 0);
+        NULL__(pOut, 0);
 
         int nL = 0;
-        int i = 0;
-        GEOMETRY_LINE *pGl = nullptr;
+        int nLin = pIn->nT();
+        int iL = pIn->iT();
 
-        atomicFrom();
-
-        uint64_t tNow = getApproxTbootUs();
-        while (pGl = pGrLin->get(i++))
+        while (nL < nLin)
         {
-            IF_CONT(pGl->m_tStamp == 0);
-            IF_CONT(dTexpire > 0 && bExpired(pGl->m_tStamp, dTexpire, tNow));
+            GEOMETRY_LINE* pGp = pIn->get(iL);
+            if(!pGp)
+                break;
+            if(bExpired(pGp->m_tStamp, tExpire))
+                break;
 
-            m_grLn.add(*pGl);
+            pOut->add(*pGp);
             nL++;
-        }
 
-        atomicTo();
+            iL = pIn->iDec(iL);
+        }
 
         return nL;
     }
 
-    int _Line::get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pGrLout, uint64_t dTexpire)
+    int _Line::get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pGrLout, uint64_t tExpire)
     {
-        NULL__(pGrLout, 0);
-
-        int nL = 0;
-        int i = 0;
-        GEOMETRY_LINE *pGl = nullptr;
-
-        atomicFrom();
-
-        uint64_t tNow = getApproxTbootUs();
-        while (pGl = m_grLn.get(i++))
-        {
-            IF_CONT(pGl->m_tStamp == 0);
-            IF_CONT(dTexpire > 0 && bExpired(pGl->m_tStamp, dTexpire, tNow));
-
-            pGrLout->add(*pGl);
-            nL++;
-        }
-
-        atomicTo();
-        return nL;
+        return copy(getRingBuf(), pGrLout, tExpire);
     }
 
     GEOMETRY_RINGBUF<GEOMETRY_LINE> *_Line::getRingBuf(void)
@@ -149,7 +131,7 @@ namespace kai
 
     void _Line::console(const json &j, void *pJSONbase)
     {
-        _JSONbase *pJb = (_JSONbase *)pJSONbase;
+        // _JSONbase *pJb = (_JSONbase *)pJSONbase;
         string cmd;
         IF_(!jKv(j, "cmd", cmd));
 

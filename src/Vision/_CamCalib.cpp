@@ -59,7 +59,7 @@ namespace kai
         vector<Point2f> vPcorner; // vector to store the pixel coordinates of detected checker board corners
         bool bSuccess;
 
-        for (int i{0}; i < vImgs.size(); i++)
+        for (size_t i = 0; i < vImgs.size(); i++)
         {
             m = imread(vImgs[i]);
             cv::cvtColor(m, mGray, cv::COLOR_BGR2GRAY);

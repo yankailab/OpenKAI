@@ -61,7 +61,7 @@ namespace kai
 	{
 		IF_(!check());
 
-		uint64_t tNow = getTbootUs();
+		// uint64_t tNow = getTbootUs();
 
 		for (size_t i = 0; i < m_vMsg.size(); i++)
 		{
@@ -86,7 +86,7 @@ namespace kai
 
 		int iB = 0;
 		uint8_t iFrag = 0;
-		uint8_t iSeq = 0;
+		// uint8_t iSeq = 0;
 		while (iB < pM->m_nB)
 		{
 			int nB = pM->m_nB - iB;

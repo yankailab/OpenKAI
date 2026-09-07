@@ -87,7 +87,8 @@ namespace kai
 		json j = json::object();
 		j["cmd"] = "hb";
 
-		bool r = sendJson(j);
+		// bool r = sendJson(j);
+		sendJson(j);
 	}
 
 	void _WSconsole::sendConfig(void)

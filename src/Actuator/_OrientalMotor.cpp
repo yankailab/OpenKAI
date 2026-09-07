@@ -84,7 +84,7 @@ namespace kai
 		uint16_t pB[2];
 		pB[0] = 1 << 7;
 		pB[1] = 0;
-		m_pMB->writeRegisters(m_ID, 125, 1, pB);
+		return (m_pMB->writeRegisters(m_ID, 125, 1, pB) == 1);
 	}
 
 	bool _OrientalMotor::readStatus(void)

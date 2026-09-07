@@ -108,9 +108,9 @@ namespace kai
 		// cmd routing
 		vector<int> vNoRouteCmd;
 		jKv(j, "noRouteCmd", vNoRouteCmd);
-		for (int i = 0; i < vNoRouteCmd.size(); i++)
+		for (int cmd : vNoRouteCmd)
 		{
-			setCmdRoute(vNoRouteCmd[i], false);
+			setCmdRoute(cmd, false);
 		}
 
 		return true;
@@ -1022,9 +1022,12 @@ namespace kai
 
 	bool _Mavlink::setMsgInterval(int id, uint64_t tInt)
 	{
+		IF_F(id < 0);
+		uint32_t msgID = static_cast<uint32_t>(id);
+
 		for (MavMsgBase *pM : m_vpMsg)
 		{
-			IF_CONT(pM->m_id != id);
+			IF_CONT(pM->m_id != msgID);
 
 			pM->m_tInterval = tInt;
 			return true;

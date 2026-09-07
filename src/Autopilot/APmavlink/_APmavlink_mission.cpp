@@ -154,7 +154,7 @@ namespace kai
 		NULL_(pMsg);
 		IF_(m_mState != apMission_UL_missionRequestInt);
 
-		MavMissionRequestInt *pM = (MavMissionRequestInt *)pMsg;
+		// MavMissionRequestInt *pM = (MavMissionRequestInt *)pMsg;
 
 		// reply the requested mission item
 		mavlink_mission_item_int_t d;
@@ -172,7 +172,7 @@ namespace kai
 		NULL_(pMsg);
 		IF_(m_mState != apMission_UL_missionRequestInt);
 
-		MavMissionAck *pM = (MavMissionAck *)pMsg;
+		// MavMissionAck *pM = (MavMissionAck *)pMsg;
 
 		// restart timeout
 		m_tOut.reStart();

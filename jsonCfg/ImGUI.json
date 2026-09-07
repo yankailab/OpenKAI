@@ -46,8 +46,9 @@
 		"bShowGrid": true,
 		"camFov": 70.0,
 		"dTexpire": 0,
-		"nPbuf":300000,
+		"nPbuf":400000,
 		"nLbuf":100000,
+		"bGpuRender": true,
 
 		"vCamLookAt": [
 			0.0,

@@ -89,10 +89,10 @@ namespace kai
 
 	int _DetectorBase::getClassIdx(string &className)
 	{
-		for (int i = 0; i < m_vClass.size(); i++)
+		for (size_t i = 0; i < m_vClass.size(); i++)
 		{
 			if (m_vClass[i] == className)
-				return i;
+				return static_cast<int>(i);
 		}
 
 		return -1;
@@ -102,7 +102,7 @@ namespace kai
 	{
 		if (iClass < 0)
 			return "";
-		if (iClass >= m_vClass.size())
+		if (static_cast<size_t>(iClass) >= m_vClass.size())
 			return "";
 
 		return m_vClass[iClass];
@@ -118,7 +118,7 @@ namespace kai
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
-		_Console *pC = (_Console *)pConsole;
+		// _Console *pC = (_Console *)pConsole;
 	}
 
 }

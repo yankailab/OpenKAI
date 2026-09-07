@@ -139,9 +139,9 @@ namespace kai
 	bool _FileBase::bExtension(const string &fName, const vector<string> &vExt)
 	{
 		string ext = getExtension(fName);
-		for (int i = 0; i < vExt.size(); i++)
+		for (const string &e : vExt)
 		{
-			IF__(vExt[i] == ext, true);
+			IF__(e == ext, true);
 		}
 
 		return false;

@@ -77,10 +77,9 @@ namespace kai
             if (m_nSpd < 0.0)
                 m_nStr *= -1.0;
 
-            for (int i = 0; i < m_vM.size(); i++)
+            for (DRIVE_MOTOR &m : m_vM)
             {
-                DRIVE_MOTOR *pM = &m_vM[i];
-                pM->update(m_nSpd * m_nDir, m_nStr);
+                m.update(m_nSpd * m_nDir, m_nStr);
             }
         }
     }
@@ -117,7 +116,7 @@ namespace kai
 
     float _Drive::getMotorSpeed(int iM)
     {
-        IF__(iM >= m_vM.size(), 0.0);
+        IF__(iM < 0 || static_cast<size_t>(iM) >= m_vM.size(), 0.0);
 
         return m_vM[iM].m_spd;
     }
@@ -129,10 +128,10 @@ namespace kai
 
         _Console *pC = (_Console *)pConsole;
         pC->addMsg("nSpd = " + f2str(m_nSpd) + ", nDir = " + f2str(m_nDir) + ", nStr = " + f2str(m_nStr));
-        for (int i = 0; i < m_vM.size(); i++)
+        for (size_t i = 0; i < m_vM.size(); i++)
         {
             DRIVE_MOTOR *pM = &m_vM[i];
-            pC->addMsg("iMotor" + i2str(i) + ": spd=" + f2str(pM->m_spd));
+            pC->addMsg("iMotor" + i2str(static_cast<int>(i)) + ": spd=" + f2str(pM->m_spd));
         }
     }
 

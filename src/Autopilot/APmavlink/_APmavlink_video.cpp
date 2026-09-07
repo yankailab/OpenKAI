@@ -171,9 +171,9 @@ namespace kai
 		IF_(!m_pFvid);
 		IF_(!m_pFmeta->bOpen());
 
-		uint64_t tFrame = getTbootMs() - m_tRecStart;
-		vDouble4 vP = m_pAP->getGlobalPos();
-		vFloat3 vA = m_pAP->getAttitude();
+		// uint64_t tFrame = getTbootMs() - m_tRecStart;
+		// vDouble4 vP = m_pAP->getGlobalPos();
+		// vFloat3 vA = m_pAP->getAttitude();
 
 		// object jo;
 		// JO(jo, "tFrame", (double)tFrame);

@@ -66,7 +66,7 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		for (int i = 0; i < m_vpState.size(); i++)
+		for (size_t i = 0; i < m_vpState.size(); i++)
 		{
 			IF_F(!m_vpState[i]->link(m_vpState[i]->getName(), pM));
 		}
@@ -86,8 +86,8 @@ namespace kai
 		{
 			m_pT->autoFPS();
 
-			IF_CONT(m_iS >= m_vpState.size());
 			IF_CONT(m_iS < 0);
+			IF_CONT(static_cast<size_t>(m_iS) >= m_vpState.size());
 
 			StateBase *pS = getCurrentState();
 			if (pS)
@@ -118,7 +118,7 @@ namespace kai
 	void _StateControl::transit(int iS)
 	{
 		IF_(iS < 0);
-		IF_(iS >= m_vpState.size());
+		IF_(static_cast<size_t>(iS) >= m_vpState.size());
 		IF_(iS == m_iS);
 
 		StateBase *pS = m_vpState[m_iS];
@@ -129,10 +129,10 @@ namespace kai
 
 	int _StateControl::getStateIdxByName(const string &n)
 	{
-		for (int i = 0; i < m_vpState.size(); i++)
+		for (size_t i = 0; i < m_vpState.size(); i++)
 		{
 			if (m_vpState[i]->getName() == n)
-				return i;
+				return static_cast<int>(i);
 		}
 
 		return -1;

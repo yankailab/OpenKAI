@@ -161,7 +161,7 @@ namespace kai
 		NULL_(pConsole);
 		this->_CANbase::console(pConsole);
 
-		_Console *pC = (_Console *)pConsole;
+		// _Console *pC = (_Console *)pConsole;
 	}
 
 }

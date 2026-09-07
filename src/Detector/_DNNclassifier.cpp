@@ -104,7 +104,7 @@ namespace kai
 		m_fRGB.copy(*pBGR);
 		Mat m = *m_fRGB.m();
 
-		for (int i = 0; i < m_vROI.size(); i++)
+		for (size_t i = 0; i < m_vROI.size(); i++)
 		{
 			vFloat4 nBB = m_vROI[i];
 			vFloat4 fBB = nBB;
@@ -171,8 +171,8 @@ namespace kai
 		NULL_(pO);
 
 		int iClass = pO->getTopClass();
-		IF_(iClass >= m_vClass.size());
 		IF_(iClass < 0);
+		IF_(static_cast<size_t>(iClass) >= m_vClass.size());
 
 		string oName = m_vClass[iClass];
 		if (oName.length() > 0)

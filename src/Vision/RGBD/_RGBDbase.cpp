@@ -47,7 +47,6 @@ namespace kai
 	_RGBDbase::~_RGBDbase()
 	{
 		DEL(m_pTpp);
-        m_grPt.release();
 	}
 
 	bool _RGBDbase::init(const json &j)
@@ -76,13 +75,6 @@ namespace kai
 		jKv(j, "iHistFrom", m_iHistFrom);
 		jKv(j, "minHistD", m_minHistD);
 		jKv(j, "bDebugDepth", m_bDebugDepth);
-#endif
-
-#ifdef WITH_3D
-        int nP = m_vSizeD.area();
-        jKv(j, "nP", nP);
-        IF_Le_F(nP <= 0, "Invalid nP: " + i2str(nP));
-        IF_Le_F(!m_grPt.alloc(nP), "Alloc faild with nP: " + i2str(nP));
 #endif
 
 		return true;
@@ -126,7 +118,7 @@ namespace kai
 		NULL_(pConsole);
 		this->_VisionBase::console(pConsole);
 
-		_Console *pC = (_Console *)pConsole;
+		// _Console *pC = (_Console *)pConsole;
 
 	}
 

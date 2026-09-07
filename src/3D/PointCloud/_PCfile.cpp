@@ -755,12 +755,8 @@ namespace kai
 
 		clear();
 
-        atomicFrom();
-
 		for (const GEOMETRY_POINT &p : vPoint)
 			m_grPt.add(p);
-
-        atomicTo();
 
 		return true;
 	}

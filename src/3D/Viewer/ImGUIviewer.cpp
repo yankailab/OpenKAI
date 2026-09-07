@@ -133,8 +133,6 @@ namespace kai
 
 		DEL(m_pGLRenderer);
 		DEL(m_pTui);
-		m_grPt.release();
-		m_grLn.release();
 		pthread_mutex_destroy(&m_snapshotMutex);
 	}
 
@@ -172,10 +170,6 @@ namespace kai
 			IF_CONT(!pGb);
 			upsertGeometry(pGb, pGb->getName());
 		}
-
-		IF_F(!parseGeometryList(jK(j, "vGeometry"), pM));
-		IF_F(!parseGeometryList(jK(j, "geometry"), pM));
-		IF_F(!parseGeometryNames(j, pM));
 
 		NULL_F(m_pTui);
 		IF_F(!m_pTui->link(jK(j, "threadUI"), pM));
@@ -295,10 +289,14 @@ namespace kai
 		NULL_(pObj);
 		NULL_(pObj->m_pGB);
 
-		m_grPt.m_iP = 0;
-		int nGet = pObj->m_pGB->get(&m_grPt, m_dTexpire);
+		uint64_t tExpire = 0;
+		if (m_dTexpire > 0)
+			tExpire = getApproxTbootUs() - m_dTexpire;
+
+		m_grPt.m_iT = 0;
+		int nGet = pObj->m_pGB->get(&m_grPt, tExpire);
 		IF_(nGet <= 0);
-		nGet = std::min(nGet, m_grPt.m_nP);
+		nGet = std::min(nGet, m_grPt.m_nT);
 
 		int i = 0;
 		GEOMETRY_POINT *pGp = nullptr;
@@ -321,10 +319,14 @@ namespace kai
 		NULL_(pObj);
 		NULL_(pObj->m_pGB);
 
-		m_grLn.m_iP = 0;
-		int nGet = pObj->m_pGB->get(&m_grLn, m_dTexpire);
+		uint64_t tExpire = 0;
+		if (m_dTexpire > 0)
+			tExpire = getApproxTbootUs() - m_dTexpire;
+
+		m_grLn.m_iT = 0;
+		int nGet = pObj->m_pGB->get(&m_grLn, tExpire);
 		IF_(nGet <= 0);
-		nGet = std::min(nGet, m_grLn.m_nP);
+		nGet = std::min(nGet, m_grLn.m_nT);
 
 		int i = 0;
 		GEOMETRY_LINE *pGl = nullptr;
@@ -603,61 +605,6 @@ namespace kai
 		snapshotLock();
 		*pVgo = m_vDrawGO;
 		snapshotUnlock();
-	}
-
-	bool ImGUIviewer::parseGeometryList(const json &jg, ModuleMgr *pM)
-	{
-		NULL_F(pM);
-		IF__(jg.is_null(), true);
-
-		auto parseOne = [&](const json &ji) -> bool
-		{
-			IF__(!ji.is_object(), true);
-
-			string n = "";
-			jKv(ji, "_GeometryBase", n);
-			IF__(n.empty(), true);
-
-			_GeometryBase *pGB = (_GeometryBase *)(pM->findModule(n));
-			IF__(!pGB, true);
-
-			return upsertGeometry(pGB, n, &ji);
-		};
-
-		if (jg.is_array())
-		{
-			for (auto it = jg.begin(); it != jg.end(); it++)
-				IF_F(!parseOne(it.value()));
-
-			return true;
-		}
-
-		if (jg.is_object())
-		{
-			if (jg.find("_GeometryBase") != jg.end())
-				return parseOne(jg);
-
-			for (auto it = jg.begin(); it != jg.end(); it++)
-				IF_F(!parseOne(it.value()));
-		}
-
-		return true;
-	}
-
-	bool ImGUIviewer::parseGeometryNames(const json &j, ModuleMgr *pM)
-	{
-		NULL_F(pM);
-
-		vector<string> vGn;
-		jKv(j, "vGeometryBase", vGn);
-		for (const string &n : vGn)
-		{
-			_GeometryBase *pGB = (_GeometryBase *)(pM->findModule(n));
-			IF_CONT(!pGB);
-			IF_F(!upsertGeometry(pGB, n));
-		}
-
-		return true;
 	}
 
 	bool ImGUIviewer::upsertGeometry(_GeometryBase *pGb, const string &name, const json *pJ)

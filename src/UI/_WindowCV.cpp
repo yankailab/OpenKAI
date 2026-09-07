@@ -74,6 +74,7 @@ namespace kai
 		// show window
 		imshow(this->getName(), *m_F.m());
 
-		int key = waitKey(m_waitKey);
+		// int key = waitKey(m_waitKey);
+		waitKey(m_waitKey);
 	}
 }

@@ -178,7 +178,7 @@ namespace kai
 		cli = ws_getaddress(client);
 		port = ws_getport(client);
 
-		IF_(m_vClient.size() >= m_nClientMax);
+		IF_(m_nClientMax >= 0 && m_vClient.size() >= static_cast<size_t>(m_nClientMax));
 
 		json j = json::object();
 		j["name"] = this->getName() + ".WS" + i2str(m_vClient.size());
@@ -252,12 +252,12 @@ namespace kai
 
 	int _WebSocketServer::findWSclientIdx(ws_cli_conn_t wsCli)
 	{
-		for (int i = 0; i < m_vClient.size(); i++)
+		for (size_t i = 0; i < m_vClient.size(); i++)
 		{
 			wsClient *pWSc = &m_vClient[i];
 			IF_CONT(pWSc->m_wsConn != wsCli);
 
-			return i;
+			return static_cast<int>(i);
 		}
 
 		return -1;
@@ -266,7 +266,7 @@ namespace kai
 	wsClient *_WebSocketServer::getWSclient(int i)
 	{
 		IF_N(i < 0);
-		IF_N(m_vClient.size() <= i);
+		IF_N(m_vClient.size() <= static_cast<size_t>(i));
 
 		return &m_vClient[i];
 	}
@@ -274,7 +274,7 @@ namespace kai
 	void _WebSocketServer::delWSclient(int i)
 	{
 		IF_(i < 0);
-		IF_(m_vClient.size() <= i);
+		IF_(m_vClient.size() <= static_cast<size_t>(i));
 
 		// TODO: add mutex
 		m_vClient.erase(m_vClient.begin() + i);

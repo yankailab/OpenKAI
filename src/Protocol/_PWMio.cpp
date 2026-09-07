@@ -21,9 +21,9 @@ namespace kai
 
 		vector<int> vPWM;
 		jKv(j, "vPWM", vPWM);
-		for (int i = 0; i < vPWM.size(); i++)
+		for (size_t i = 0; i < vPWM.size(); i++)
 		{
-			if (i >= m_nCw)
+			if (i >= static_cast<size_t>(m_nCw))
 				break;
 			m_pCw[i].set(vPWM[i]);
 		}

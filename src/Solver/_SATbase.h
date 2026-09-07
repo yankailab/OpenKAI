@@ -46,7 +46,7 @@ namespace kai
 		int getLiteral(int i) const
 		{
 			IF__(i < 0, 0);
-			IF__(i >= m_vL.size(), 0);
+			IF__(static_cast<size_t>(i) >= m_vL.size(), 0);
 
 			return m_vL[i];
 		}

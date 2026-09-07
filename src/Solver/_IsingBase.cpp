@@ -110,14 +110,11 @@ namespace kai
 			Jw.clear();
 			Jw.m_J = atoll(vL[0].c_str());
 			int iL = 1;
-			while (vL[iL] != "0")
+			while (static_cast<size_t>(iL) < vL.size() && vL[iL] != "0")
 			{
 				int s = atoi(vL[iL++].c_str());
 				IF_Le_F(s > m_nSpin, "Spin exceeds max index, line: " + i2str(i));
 				Jw.addSpin(s);
-
-				if (iL >= vL.size())
-					break;
 			}
 
 			IF_Le_F(!setJw.insert(Jw.m_w).second, "Ising term re-defined, line: " + i2str(i));
