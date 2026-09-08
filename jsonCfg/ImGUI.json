@@ -48,7 +48,7 @@
 	},
 
 	"viewer": {
-		"class": "ImGUIviewer",
+		"class": "_ImGUIviewer",
 		"thread": {
 			"FPS": 30
 		},

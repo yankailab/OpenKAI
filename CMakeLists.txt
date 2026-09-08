@@ -145,9 +145,9 @@ if(WITH_3D)
 
     if(WITH_UI)
       if(USE_IMGUI)
-        set(OpenKAI_cpp ${OpenKAI_cpp} src/3D/Viewer/ImGUIviewer.cpp)
+        set(OpenKAI_cpp ${OpenKAI_cpp} src/3D/Viewer/_ImGUIviewer.cpp)
         set(OpenKAI_cpp ${OpenKAI_cpp} src/3D/Viewer/ImGUIviewerGLRenderer.cpp)
-        set(OpenKAI_cpp ${OpenKAI_cpp} src/3D/Viewer/ImGuiViewerBackend.cpp)
+        set(OpenKAI_cpp ${OpenKAI_cpp} src/3D/Viewer/ImGUIviewerBackend.cpp)
       endif() # imgui
     endif() # gui
 

@@ -1,11 +1,11 @@
 /*
- * ImGuiViewerBackend.cpp
+ * ImGUIviewerBackend.cpp
  *
  *  Created on: Jun 4, 2026
  *      Author: Codex
  */
 
-#include "ImGuiViewerBackend.h"
+#include "ImGUIviewerBackend.h"
 
 #ifdef OKAI_IMGUI_BACKEND_GLFW
 #include "imgui.h"
@@ -23,10 +23,10 @@
 
 namespace kai
 {
-	class ImGuiViewerBackendGLFW : public ImGuiViewerBackend
+	class ImGUIviewerBackendGLFW : public ImGUIviewerBackend
 	{
 	public:
-		ImGuiViewerBackendGLFW()
+		ImGUIviewerBackendGLFW()
 		{
 			m_pWin = nullptr;
 			m_bGlfwInit = false;
@@ -35,7 +35,7 @@ namespace kai
 			m_bRendererInit = false;
 		}
 
-		virtual ~ImGuiViewerBackendGLFW()
+		virtual ~ImGUIviewerBackendGLFW()
 		{
 			shutdown();
 		}
@@ -186,12 +186,12 @@ namespace kai
 		bool m_bRendererInit;
 	};
 
-	ImGuiViewerBackend *createImGuiViewerBackend(void)
+	ImGUIviewerBackend *createImGUIviewerBackend(void)
 	{
-		return new ImGuiViewerBackendGLFW();
+		return new ImGUIviewerBackendGLFW();
 	}
 
-	const char *getImGuiViewerBackendName(void)
+	const char *getImGUIviewerBackendName(void)
 	{
 #if defined(OKAI_IMGUI_RENDERER_OPENGLES)
 		return "GLFW + OpenGL ES";
@@ -217,10 +217,10 @@ namespace kai
 
 namespace kai
 {
-	class ImGuiViewerBackendSDL : public ImGuiViewerBackend
+	class ImGUIviewerBackendSDL : public ImGUIviewerBackend
 	{
 	public:
-		ImGuiViewerBackendSDL()
+		ImGUIviewerBackendSDL()
 		{
 			m_pWin = nullptr;
 			m_glCtx = nullptr;
@@ -231,7 +231,7 @@ namespace kai
 			m_bRendererInit = false;
 		}
 
-		virtual ~ImGuiViewerBackendSDL()
+		virtual ~ImGUIviewerBackendSDL()
 		{
 			shutdown();
 		}
@@ -412,12 +412,12 @@ namespace kai
 		bool m_bRendererInit;
 	};
 
-	ImGuiViewerBackend *createImGuiViewerBackend(void)
+	ImGUIviewerBackend *createImGUIviewerBackend(void)
 	{
-		return new ImGuiViewerBackendSDL();
+		return new ImGUIviewerBackendSDL();
 	}
 
-	const char *getImGuiViewerBackendName(void)
+	const char *getImGUIviewerBackendName(void)
 	{
 #if defined(OKAI_IMGUI_RENDERER_OPENGLES)
 		return "SDL2 + OpenGL ES";
@@ -430,7 +430,7 @@ namespace kai
 #else
 namespace kai
 {
-	class ImGuiViewerBackendNull : public ImGuiViewerBackend
+	class ImGUIviewerBackendNull : public ImGUIviewerBackend
 	{
 	public:
 		virtual bool init(const std::string &, int, int, bool)
@@ -460,12 +460,12 @@ namespace kai
 		}
 	};
 
-	ImGuiViewerBackend *createImGuiViewerBackend(void)
+	ImGUIviewerBackend *createImGUIviewerBackend(void)
 	{
-		return new ImGuiViewerBackendNull();
+		return new ImGUIviewerBackendNull();
 	}
 
-	const char *getImGuiViewerBackendName(void)
+	const char *getImGUIviewerBackendName(void)
 	{
 		return "none";
 	}

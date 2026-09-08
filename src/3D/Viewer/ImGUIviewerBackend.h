@@ -1,21 +1,21 @@
 /*
- * ImGuiViewerBackend.h
+ * ImGUIviewerBackend.h
  *
  *  Created on: Jun 4, 2026
  *      Author: Codex
  */
 
-#ifndef OpenKAI_src_3D_Viewer_ImGuiViewerBackend_H_
-#define OpenKAI_src_3D_Viewer_ImGuiViewerBackend_H_
+#ifndef OpenKAI_src_3D_Viewer_ImGUIviewerBackend_H_
+#define OpenKAI_src_3D_Viewer_ImGUIviewerBackend_H_
 
 #include <string>
 
 namespace kai
 {
-	class ImGuiViewerBackend
+	class ImGUIviewerBackend
 	{
 	public:
-		virtual ~ImGuiViewerBackend() {}
+		virtual ~ImGUIviewerBackend() {}
 
 		virtual bool init(const std::string &title, int w, int h, bool bFullScreen) = 0;
 		virtual void shutdown(void) = 0;
@@ -25,8 +25,8 @@ namespace kai
 		virtual void getFramebufferSize(int *pW, int *pH) const = 0;
 	};
 
-	ImGuiViewerBackend *createImGuiViewerBackend(void);
-	const char *getImGuiViewerBackendName(void);
+	ImGUIviewerBackend *createImGUIviewerBackend(void);
+	const char *getImGUIviewerBackendName(void);
 }
 
 #endif

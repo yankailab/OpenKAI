@@ -40,7 +40,7 @@
 
 #ifdef WITH_UI
 #ifdef USE_IMGUI
-#include "../3D/Viewer/ImGUIviewer.h"
+#include "../3D/Viewer/_ImGUIviewer.h"
 #endif
 #endif
 

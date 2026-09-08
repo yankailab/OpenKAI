@@ -1,15 +1,15 @@
 /*
- * ImGUIviewer.h
+ * _ImGUIviewer.h
  *
  *  Created on: Jun 4, 2026
  *      Author: Codex
  */
 
-#ifndef OpenKAI_src_3D_Viewer_ImGUIviewer_H_
-#define OpenKAI_src_3D_Viewer_ImGUIviewer_H_
+#ifndef OpenKAI_src_3D_Viewer__ImGUIviewer_H_
+#define OpenKAI_src_3D_Viewer__ImGUIviewer_H_
 
 #include "../_GeometryViewerBase.h"
-#include "ImGuiViewerBackend.h"
+#include "ImGUIviewerBackend.h"
 
 struct ImDrawList;
 struct ImDrawCmd;
@@ -50,11 +50,11 @@ namespace kai
 		void clearGeometry(void);
 	};
 
-	class ImGUIviewer : public _GeometryViewerBase
+	class _ImGUIviewer : public _GeometryViewerBase
 	{
 	public:
-		ImGUIviewer();
-		virtual ~ImGUIviewer();
+		_ImGUIviewer();
+		virtual ~_ImGUIviewer();
 
 		virtual bool init(const json &j) override;
 		virtual bool link(const json &j, ModuleMgr *pM) override;
@@ -71,7 +71,7 @@ namespace kai
 		virtual void update(void) override;
 		static void *getUpdate(void *This)
 		{
-			((ImGUIviewer *)This)->update();
+			((_ImGUIviewer *)This)->update();
 			return nullptr;
 		}
 
@@ -82,7 +82,7 @@ namespace kai
 		virtual void updateUI(void);
 		static void *getUpdateUI(void *This)
 		{
-			((ImGUIviewer *)This)->updateUI();
+			((_ImGUIviewer *)This)->updateUI();
 			return nullptr;
 		}
 
@@ -125,7 +125,7 @@ namespace kai
 		vector<IMGUI_VIEWER_OBJ> m_vBuildGO;
 		vector<IMGUI_VIEWER_OBJ> m_vDrawGO;
 
-		ImGuiViewerBackend *m_pBackend;
+		ImGUIviewerBackend *m_pBackend;
 		ImGUIviewerGLRenderer *m_pGLRenderer;
 		_Thread *m_pTui;
 		pthread_mutex_t m_snapshotMutex;

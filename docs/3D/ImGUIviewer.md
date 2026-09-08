@@ -1,6 +1,6 @@
 # Dear ImGui 3D Viewer
 
-`ImGUIviewer` is a lightweight viewer module for OpenKAI 3D geometry streams. It derives from `_GeometryViewerBase`, reads geometry through `_GeometryBase::get()` point/line ring buffers, and renders through Dear ImGui without using Open3D viewer APIs.
+`_ImGUIviewer` is a lightweight viewer module for OpenKAI 3D geometry streams. It derives from `_GeometryViewerBase`, reads geometry through `_GeometryBase::get()` point/line ring buffers, and renders through Dear ImGui without using Open3D viewer APIs.
 
 ## Dear ImGui Install
 
@@ -82,12 +82,12 @@ Available backend options:
 
 ## Module Config
 
-Use the class name `ImGUIviewer` in JSON:
+Use the class name `_ImGUIviewer` in JSON:
 
 ```json
 {
   "viewer": {
-    "class": "ImGUIviewer",
+    "class": "_ImGUIviewer",
     "vWinSize": [1280, 720],
     "bShowPanel": true,
     "bShowGrid": true,

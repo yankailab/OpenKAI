@@ -51,7 +51,7 @@ namespace kai
 
 #ifdef WITH_UI
 #ifdef USE_IMGUI
-		ADD_MODULE(ImGUIviewer);
+		ADD_MODULE(_ImGUIviewer);
 #endif
 #endif
 #endif

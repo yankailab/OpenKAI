@@ -1,11 +1,11 @@
 /*
- * ImGUIviewer.cpp
+ * _ImGUIviewer.cpp
  *
  *  Created on: Jun 4, 2026
  *      Author: Codex
  */
 
-#include "ImGUIviewer.h"
+#include "_ImGUIviewer.h"
 
 #include "ImGUIviewerGLRenderer.h"
 #include "imgui.h"
@@ -95,7 +95,7 @@ namespace kai
 		m_vL.clear();
 	}
 
-	ImGUIviewer::ImGUIviewer()
+	_ImGUIviewer::_ImGUIviewer()
 	{
 		m_pBackend = nullptr;
 		m_pGLRenderer = nullptr;
@@ -120,7 +120,7 @@ namespace kai
 		pthread_mutex_init(&m_snapshotMutex, NULL);
 	}
 
-	ImGUIviewer::~ImGUIviewer()
+	_ImGUIviewer::~_ImGUIviewer()
 	{
 		if (m_pTui)
 			m_pTui->stop();
@@ -136,7 +136,7 @@ namespace kai
 		pthread_mutex_destroy(&m_snapshotMutex);
 	}
 
-	bool ImGUIviewer::init(const json &j)
+	bool _ImGUIviewer::init(const json &j)
 	{
 		IF_F(!this->_GeometryViewerBase::init(j));
 
@@ -158,7 +158,7 @@ namespace kai
 		return true;
 	}
 
-	bool ImGUIviewer::link(const json &j, ModuleMgr *pM)
+	bool _ImGUIviewer::link(const json &j, ModuleMgr *pM)
 	{
 		m_vpGb.clear();
 		IF_F(!this->_GeometryViewerBase::link(j, pM));
@@ -177,7 +177,7 @@ namespace kai
 		return true;
 	}
 
-	bool ImGUIviewer::start(void)
+	bool _ImGUIviewer::start(void)
 	{
 		NULL_F(m_pT);
 		IF_F(!m_pT->startThread(getUpdate, this));
@@ -188,7 +188,7 @@ namespace kai
 		return true;
 	}
 
-	bool ImGUIviewer::check(void)
+	bool _ImGUIviewer::check(void)
 	{
 		IF_F(!this->_GeometryViewerBase::check());
 		NULL_F(m_pTui);
@@ -196,7 +196,7 @@ namespace kai
 		return true;
 	}
 
-	void ImGUIviewer::update(void)
+	void _ImGUIviewer::update(void)
 	{
 		while (m_pT->bAlive())
 		{
@@ -206,7 +206,7 @@ namespace kai
 		}
 	}
 
-	void ImGUIviewer::updateAllGeometries(void)
+	void _ImGUIviewer::updateAllGeometries(void)
 	{
 		IF_(!this->_GeometryViewerBase::check());
 
@@ -275,7 +275,7 @@ namespace kai
 		snapshotUnlock();
 	}
 
-	void ImGUIviewer::collectGeometry(_GeometryBase *pGb, IMGUI_VIEWER_OBJ *pObj)
+	void _ImGUIviewer::collectGeometry(_GeometryBase *pGb, IMGUI_VIEWER_OBJ *pObj)
 	{
 		NULL_(pGb);
 		NULL_(pObj);
@@ -284,7 +284,7 @@ namespace kai
 		collectLines(pObj);
 	}
 
-	void ImGUIviewer::collectPoints(IMGUI_VIEWER_OBJ *pObj)
+	void _ImGUIviewer::collectPoints(IMGUI_VIEWER_OBJ *pObj)
 	{
 		NULL_(pObj);
 		NULL_(pObj->m_pGB);
@@ -314,7 +314,7 @@ namespace kai
 		}
 	}
 
-	void ImGUIviewer::collectLines(IMGUI_VIEWER_OBJ *pObj)
+	void _ImGUIviewer::collectLines(IMGUI_VIEWER_OBJ *pObj)
 	{
 		NULL_(pObj);
 		NULL_(pObj->m_pGB);
@@ -346,9 +346,9 @@ namespace kai
 		}
 	}
 
-	void ImGUIviewer::updateUI(void)
+	void _ImGUIviewer::updateUI(void)
 	{
-		m_pBackend = createImGuiViewerBackend();
+		m_pBackend = createImGUIviewerBackend();
 		if (!m_pBackend || !m_pBackend->init(this->getName(), m_vWinSize.x, m_vWinSize.y, m_bFullScreen))
 		{
 			if (m_pBackend)
@@ -385,7 +385,7 @@ namespace kai
 			m_pTui->stop();
 	}
 
-	void ImGUIviewer::drawUI(void)
+	void _ImGUIviewer::drawUI(void)
 	{
 		ImGuiViewport *pViewport = ImGui::GetMainViewport();
 		ImGui::SetNextWindowPos(pViewport->WorkPos);
@@ -416,12 +416,12 @@ namespace kai
 			drawStatusPanel();
 	}
 
-	void ImGUIviewer::drawStatusPanel(void)
+	void _ImGUIviewer::drawStatusPanel(void)
 	{
 		ImGui::SetNextWindowPos(ImVec2(12, 12), ImGuiCond_Once);
 		ImGui::SetNextWindowSize(ImVec2(320, 0), ImGuiCond_Once);
 		ImGui::Begin("Viewer", &m_bShowPanel, ImGuiWindowFlags_AlwaysAutoResize);
-		ImGui::Text("Backend: %s", getImGuiViewerBackendName());
+		ImGui::Text("Backend: %s", getImGUIviewerBackendName());
 		ImGui::Text("Update: %.1f FPS", m_pT ? m_pT->getFPS() : 0.0f);
 		ImGui::Text("UI: %.1f FPS", m_pTui ? m_pTui->getFPS() : 0.0f);
 
@@ -450,7 +450,7 @@ namespace kai
 		ImGui::End();
 	}
 
-	void ImGUIviewer::drawScene(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize)
+	void _ImGUIviewer::drawScene(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize)
 	{
 		ImDrawList *pDraw = ImGui::GetWindowDrawList();
 		ImVec2 p0(vCanvasPos.x, vCanvasPos.y);
@@ -476,7 +476,7 @@ namespace kai
 		pDraw->PopClipRect();
 	}
 
-	void ImGUIviewer::drawSceneCPU(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize)
+	void _ImGUIviewer::drawSceneCPU(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize)
 	{
 		ImDrawList *pDraw = ImGui::GetWindowDrawList();
 
@@ -512,7 +512,7 @@ namespace kai
 		snapshotUnlock();
 	}
 
-	void ImGUIviewer::drawSceneGL(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize)
+	void _ImGUIviewer::drawSceneGL(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize)
 	{
 		m_vGLCanvasPos = vCanvasPos;
 		m_vGLCanvasSize = vCanvasSize;
@@ -522,17 +522,17 @@ namespace kai
 		pDraw->AddCallback(ImDrawCallback_ResetRenderState, nullptr);
 	}
 
-	void ImGUIviewer::drawSceneGLCallback(const ImDrawList *, const ImDrawCmd *pCmd)
+	void _ImGUIviewer::drawSceneGLCallback(const ImDrawList *, const ImDrawCmd *pCmd)
 	{
 		if (!pCmd || !pCmd->UserCallbackData)
 			return;
 
-		ImGUIviewer *pViewer = (ImGUIviewer *)pCmd->UserCallbackData;
+		_ImGUIviewer *pViewer = (_ImGUIviewer *)pCmd->UserCallbackData;
 		pViewer->renderSceneGL(pViewer->m_vGLCanvasPos, pViewer->m_vGLCanvasSize);
 	}
 
 #if defined(OKAI_IMGUI_VIEWER_GL)
-	void ImGUIviewer::renderSceneGL(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize)
+	void _ImGUIviewer::renderSceneGL(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize)
 	{
 		if (!m_pGLRenderer)
 			m_pGLRenderer = new ImGUIviewerGLRenderer();
@@ -558,12 +558,12 @@ namespace kai
 			m_bGpuRender = false;
 	}
 #else
-	void ImGUIviewer::renderSceneGL(const vFloat2 &, const vFloat2 &)
+	void _ImGUIviewer::renderSceneGL(const vFloat2 &, const vFloat2 &)
 	{
 	}
 #endif
 
-	void ImGUIviewer::drawGrid(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize)
+	void _ImGUIviewer::drawGrid(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize)
 	{
 		ImDrawList *pDraw = ImGui::GetWindowDrawList();
 		const float r = 10.0;
@@ -584,7 +584,7 @@ namespace kai
 		}
 	}
 
-	void ImGUIviewer::updateCameraControl(const vFloat2 &vCanvasSize)
+	void _ImGUIviewer::updateCameraControl(const vFloat2 &vCanvasSize)
 	{
 		if (!ImGui::IsItemHovered())
 			return;
@@ -598,7 +598,7 @@ namespace kai
 			zoom(io.MouseWheel);
 	}
 
-	void ImGUIviewer::copySnapshot(vector<IMGUI_VIEWER_OBJ> *pVgo)
+	void _ImGUIviewer::copySnapshot(vector<IMGUI_VIEWER_OBJ> *pVgo)
 	{
 		NULL_(pVgo);
 
@@ -607,7 +607,7 @@ namespace kai
 		snapshotUnlock();
 	}
 
-	bool ImGUIviewer::upsertGeometry(_GeometryBase *pGb, const string &name, const json *pJ)
+	bool _ImGUIviewer::upsertGeometry(_GeometryBase *pGb, const string &name, const json *pJ)
 	{
 		NULL_F(pGb);
 
@@ -646,7 +646,7 @@ namespace kai
 		return true;
 	}
 
-	void ImGUIviewer::applyObjectConfig(IMGUI_VIEWER_OBJ *pObj, const json &j)
+	void _ImGUIviewer::applyObjectConfig(IMGUI_VIEWER_OBJ *pObj, const json &j)
 	{
 		NULL_(pObj);
 		IF_(!j.is_object());
@@ -661,7 +661,7 @@ namespace kai
 		jKv<float>(j, "matCol", pObj->m_matCol);
 	}
 
-	IMGUI_VIEWER_OBJ *ImGUIviewer::findObject(_GeometryBase *pGb, const string &name)
+	IMGUI_VIEWER_OBJ *_ImGUIviewer::findObject(_GeometryBase *pGb, const string &name)
 	{
 		for (IMGUI_VIEWER_OBJ &obj : m_vGO)
 		{
@@ -675,7 +675,7 @@ namespace kai
 		return nullptr;
 	}
 
-	const IMGUI_VIEWER_OBJ *ImGUIviewer::findObject(_GeometryBase *pGb, const string &name) const
+	const IMGUI_VIEWER_OBJ *_ImGUIviewer::findObject(_GeometryBase *pGb, const string &name) const
 	{
 		for (const IMGUI_VIEWER_OBJ &obj : m_vGO)
 		{
@@ -689,7 +689,7 @@ namespace kai
 		return nullptr;
 	}
 
-	bool ImGUIviewer::projectPoint(const vFloat3 &vP,
+	bool _ImGUIviewer::projectPoint(const vFloat3 &vP,
 								   const vFloat2 &vCanvasPos,
 								   const vFloat2 &vCanvasSize,
 								   vFloat2 *pVscreen,
@@ -751,7 +751,7 @@ namespace kai
 		return true;
 	}
 
-	void ImGUIviewer::getCameraBasis(vFloat3 *pForward, vFloat3 *pRight, vFloat3 *pUp)
+	void _ImGUIviewer::getCameraBasis(vFloat3 *pForward, vFloat3 *pRight, vFloat3 *pUp)
 	{
 		vFloat3 f = vNorm(m_camPose.m_vLookAt - m_camPose.m_vEye);
 		if (f.len() <= 1e-6)
@@ -773,7 +773,7 @@ namespace kai
 			*pUp = u;
 	}
 
-	void ImGUIviewer::orbit(float dYaw, float dPitch)
+	void _ImGUIviewer::orbit(float dYaw, float dPitch)
 	{
 		vFloat3 v = m_camPose.m_vEye - m_camPose.m_vLookAt;
 		float r = std::max(0.01f, v.len());
@@ -788,7 +788,7 @@ namespace kai
 		updateCamPose();
 	}
 
-	void ImGUIviewer::pan(float dx, float dy, const vFloat2 &vCanvasSize)
+	void _ImGUIviewer::pan(float dx, float dy, const vFloat2 &vCanvasSize)
 	{
 		vFloat3 f, r, u;
 		getCameraBasis(&f, &r, &u);
@@ -802,7 +802,7 @@ namespace kai
 		updateCamPose();
 	}
 
-	void ImGUIviewer::zoom(float d)
+	void _ImGUIviewer::zoom(float d)
 	{
 		vFloat3 v = m_camPose.m_vEye - m_camPose.m_vLookAt;
 		float s = std::max(0.05f, 1.0f - d * m_sZoom);
@@ -810,7 +810,7 @@ namespace kai
 		updateCamPose();
 	}
 
-	bool ImGUIviewer::camBound(void)
+	bool _ImGUIviewer::camBound(void)
 	{
 		vector<IMGUI_VIEWER_OBJ> vGO;
 		copySnapshot(&vGO);
@@ -857,32 +857,32 @@ namespace kai
 		return true;
 	}
 
-	void ImGUIviewer::resetCamPose(void)
+	void _ImGUIviewer::resetCamPose(void)
 	{
 		this->_GeometryViewerBase::resetCamPose();
 	}
 
-	void ImGUIviewer::setCamPose(const GVIEWER_CAM_POSE &camPose)
+	void _ImGUIviewer::setCamPose(const GVIEWER_CAM_POSE &camPose)
 	{
 		this->_GeometryViewerBase::setCamPose(camPose);
 	}
 
-	GVIEWER_CAM_POSE ImGUIviewer::getCamPose(void)
+	GVIEWER_CAM_POSE _ImGUIviewer::getCamPose(void)
 	{
 		return this->_GeometryViewerBase::getCamPose();
 	}
 
-	void ImGUIviewer::setCamProj(const GVIEWER_CAM_PROJ &camProj)
+	void _ImGUIviewer::setCamProj(const GVIEWER_CAM_PROJ &camProj)
 	{
 		this->_GeometryViewerBase::setCamProj(camProj);
 	}
 
-	GVIEWER_CAM_PROJ ImGUIviewer::getCamProj(void)
+	GVIEWER_CAM_PROJ _ImGUIviewer::getCamProj(void)
 	{
 		return this->_GeometryViewerBase::getCamProj();
 	}
 
-	void ImGUIviewer::updateCamProj(void)
+	void _ImGUIviewer::updateCamProj(void)
 	{
 		IF_(!this->_GeometryViewerBase::check());
 
@@ -890,7 +890,7 @@ namespace kai
 			m_camProj.m_fov = 1.0f;
 	}
 
-	void ImGUIviewer::updateCamPose(void)
+	void _ImGUIviewer::updateCamPose(void)
 	{
 		IF_(!this->_GeometryViewerBase::check());
 
@@ -898,12 +898,12 @@ namespace kai
 			m_camPose.m_vUp.set(0, 1, 0);
 	}
 
-	void ImGUIviewer::snapshotLock(void)
+	void _ImGUIviewer::snapshotLock(void)
 	{
 		pthread_mutex_lock(&m_snapshotMutex);
 	}
 
-	void ImGUIviewer::snapshotUnlock(void)
+	void _ImGUIviewer::snapshotUnlock(void)
 	{
 		pthread_mutex_unlock(&m_snapshotMutex);
 	}

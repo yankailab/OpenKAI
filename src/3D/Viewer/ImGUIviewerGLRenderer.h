@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_3D_Viewer_ImGUIviewerGLRenderer_H_
 #define OpenKAI_src_3D_Viewer_ImGUIviewerGLRenderer_H_
 
-#include "ImGUIviewer.h"
+#include "_ImGUIviewer.h"
 
 namespace kai
 {

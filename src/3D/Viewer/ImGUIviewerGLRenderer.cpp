@@ -498,7 +498,7 @@ namespace kai
 		{
 			char log[1024] = {0};
 			glGetProgramInfoLog(prog, sizeof(log) - 1, nullptr, log);
-			LOG_("ImGUIviewer GL program link failed: " + string(log));
+			LOG_("_ImGUIviewer GL program link failed: " + string(log));
 			glDeleteProgram(prog);
 			return false;
 		}
@@ -542,7 +542,7 @@ namespace kai
 		{
 			char log[1024] = {0};
 			glGetShaderInfoLog(shader, sizeof(log) - 1, nullptr, log);
-			LOG_("ImGUIviewer GL shader compile failed: " + string(log));
+			LOG_("_ImGUIviewer GL shader compile failed: " + string(log));
 			glDeleteShader(shader);
 			return false;
 		}

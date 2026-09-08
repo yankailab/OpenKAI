@@ -121,8 +121,8 @@
 		"vGeometryBase": ["scPC"]
 	},
 
-	"ImGUIviewer": {
-		"class": "ImGUIviewer",
+	"_ImGUIviewer": {
+		"class": "_ImGUIviewer",
 		"bON": true,
 		"thread": {
 			"FPS": 10
