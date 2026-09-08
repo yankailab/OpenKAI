@@ -6,16 +6,10 @@ namespace kai
 	_OctreeBase::_OctreeBase()
 	{
 		m_type = geometry_octree;
-		m_pCell = nullptr;
 	}
 
 	_OctreeBase::~_OctreeBase()
 	{
-		if (m_pCell)
-		{
-			m_pCell->release();
-			delete m_pCell;
-		}
 	}
 
 	bool _OctreeBase::init(const json &j)
@@ -34,32 +28,32 @@ namespace kai
 		return true;
 	}
 
-	bool _OctreeBase::loadConfig(json *pJ, string fName)
-	{
-		json j;
-		IF_F(!this->_GeometryBase::loadConfig(&j, fName));
+	// bool _OctreeBase::loadConfig(json *pJ, string fName)
+	// {
+	// 	json j;
+	// 	IF_F(!this->_GeometryBase::loadConfig(&j, fName));
 
-		const json &jG = jK(j, "_OctreeBase");
-		if (jG.is_object())
-		{
-			// octree config
-		}
+	// 	const json &jG = jK(j, "_OctreeBase");
+	// 	if (jG.is_object())
+	// 	{
+	// 		// octree config
+	// 	}
 
-		if (pJ)
-		{
-			*pJ = j;
-		}
-		return true;
-	}
+	// 	if (pJ)
+	// 	{
+	// 		*pJ = j;
+	// 	}
+	// 	return true;
+	// }
 
-	bool _OctreeBase::saveConfig(json &j, string fName)
-	{
-		json jG = json::object();
+	// bool _OctreeBase::saveConfig(json &j, string fName)
+	// {
+	// 	json jG = json::object();
 
-		// octree config
+	// 	// octree config
 
-		return this->_GeometryBase::saveConfig(j, fName);
-	}
+	// 	return this->_GeometryBase::saveConfig(j, fName);
+	// }
 
 	bool _OctreeBase::start(void)
 	{
@@ -78,11 +72,7 @@ namespace kai
 		{
 			m_pT->autoFPS();
 
-			atomicFrom();
-
 			updateOctree();
-
-			atomicTo();
 		}
 	}
 

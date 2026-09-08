@@ -4,12 +4,12 @@
 #include "../_GeometryBase.h"
 
 #define N_OCT 8
-#define octreeCidx(x, y, z) ((uint8_t)((((int8_t)x >> 7) << 2) | (((int8_t)y >> 7) << 1) | ((int8_t)z >> 7)))
-// octreeCidx(iC) indexed by 3 bits: MSB->LSB: x,y,z axis; Each bit: 0/1=positive half/negative half;
+
+//#define octreeCidx(x, y, z) ((uint8_t)((((int8_t)x >> 7) << 2) | (((int8_t)y >> 7) << 1) | ((int8_t)z >> 7)))
 
 namespace kai
 {
-	union uint128
+	union UUID128
 	{
 		uint8_t m_uint8[16];
 		uint16_t m_uint16[8];
@@ -17,11 +17,14 @@ namespace kai
 		uint64_t m_uint64[2];
 	};
 
+	template <typename T>
 	struct OCTREE_CELL
 	{
-		uint128 m_uGLID = {0, 0};
+//		UUID128 m_ID = {0, 0};	// for later expansion, ignore this at the moment
+		T *m_pT = nullptr;
 		OCTREE_CELL *m_pParent = nullptr;
 		OCTREE_CELL *m_pChild[N_OCT] = {};
+		// Child cells indexed by 3 bits: 4bX+2bY+bZ, bX,bY,bZ: 1: negative half / 1:positive half;
 
 		bool addChild(uint8_t iC)
 		{
@@ -42,6 +45,14 @@ namespace kai
 			return m_pChild[iC];
 		}
 
+		// OCTREE_CELL *getChild(const UUID128& ID)
+		// {
+		// 	// Ignore this function at the moment, for later expansion
+		// 	int iC;
+
+		// 	return m_pChild[iC];
+		// }
+
 		int getLevel(void)
 		{
 			int L = 0;
@@ -55,12 +66,29 @@ namespace kai
 			return L;
 		}
 
+		T *addT(void)
+		{
+			if (m_pT == nullptr)
+				m_pT = new T();
+
+			return m_pT;
+		}
+
+		T *getT(void)
+		{
+			return m_pT;
+		}
+
 		void release(void)
 		{
+//			m_ID = {0, 0};
+			DEL(m_pT);
+			m_pParent = nullptr;
+
 			for (int i = 0; i < N_OCT; i++)
 			{
 				OCTREE_CELL *pC = m_pChild[i];
-				IF_CONT(!pC);
+				IF_CONT(pC == nullptr);
 
 				pC->release();
 				delete pC;
@@ -81,8 +109,8 @@ namespace kai
 		virtual bool check(void);
 
 		// config
-		virtual bool loadConfig(json *pJ = nullptr, string fName = "");
-		virtual bool saveConfig(json &j, string fName = "");
+		// virtual bool loadConfig(json *pJ = nullptr, string fName = "");
+		// virtual bool saveConfig(json &j, string fName = "");
 
 	protected:
 		virtual void updateOctree(void);
@@ -96,7 +124,6 @@ namespace kai
 		}
 
 	protected:
-		OCTREE_CELL *m_pCell; // root cell
 	};
 
 }

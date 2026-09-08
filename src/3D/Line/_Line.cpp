@@ -113,9 +113,9 @@ namespace kai
         return nL;
     }
 
-    int _Line::get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pGrLout, uint64_t tExpire)
+    int _Line::get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut, uint64_t tExpire)
     {
-        return copy(getRingBuf(), pGrLout, tExpire);
+        return copy(getRingBuf(), pOut, tExpire);
     }
 
     GEOMETRY_RINGBUF<GEOMETRY_LINE> *_Line::getRingBuf(void)

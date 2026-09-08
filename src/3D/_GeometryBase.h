@@ -152,8 +152,8 @@ namespace kai
         virtual GEOMETRY_TYPE getType(void);
         virtual void clear(void);
 
-        virtual int get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pGrPout, uint64_t tExpire = 0);
-        virtual int get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pGrLout, uint64_t tExpire = 0);
+        virtual int get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire = 0);
+        virtual int get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut, uint64_t tExpire = 0);
 
     protected:
         GEOMETRY_TYPE m_type;

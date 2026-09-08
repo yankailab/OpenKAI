@@ -111,9 +111,9 @@ namespace kai
         return nP;
     }
 
-    int _PointCloud::get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pGrPout, uint64_t tExpire)
+    int _PointCloud::get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire)
     {
-        return copy(getRingBuf(), pGrPout, tExpire);
+        return copy(getRingBuf(), pOut, tExpire);
     }
 
     GEOMETRY_RINGBUF<GEOMETRY_POINT> *_PointCloud::getRingBuf(void)
