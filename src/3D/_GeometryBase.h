@@ -76,7 +76,8 @@ namespace kai
 
         void release(void)
         {
-            DEL(m_pT);
+            delete[] m_pT;
+            m_pT = nullptr;
 
             m_nT = 0;
             m_iT = 0;

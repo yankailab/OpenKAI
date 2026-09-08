@@ -28,6 +28,9 @@
 #include "../3D/PointCloud/Pipeline/_PCrecv.h"
 #include "../3D/PointCloud/Pipeline/_PCtransform.h"
 #include "../3D/_GeometryViewerBase.h"
+#ifdef USE_WEBVIEWER3D
+#include "../3D/Viewer/_WebViewer3D.h"
+#endif
 
 #ifdef USE_OPEN3D
 #include "../3D/PointCloud/Pipeline/_PCcrop.h"

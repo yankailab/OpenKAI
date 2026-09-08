@@ -1,0 +1,143 @@
+{
+  "APP": {
+    "class": "ModuleMgr",
+    "appName": "WebViewer3D",
+    "bLog": true,
+    "bStdErr": true
+  },
+
+  "pcFile": {
+    "class": "_PCfile",
+		"bON": false,
+		"bLog": true,
+    "thread": {
+      "FPS": 1
+    },
+    "nP": 1000000,
+    "vColorDefault": [
+      1,
+      1,
+      1
+    ],
+    "vfName": [
+      "data/PointCloud/StanfordBunny/bun000.ply"
+    ]
+  },
+
+	"cam": {
+		"class": "_Scepter",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 30
+		},
+		"threadPP": {
+			"FPS": 30
+		},
+		"URI": "",
+		"vSizeRGB": [
+			1600,
+			1200
+		],
+		"vRangeD": [
+			0,
+			4000
+		],
+		"_PointCloud":"scPC",
+		"scPixelFormat": 4,
+		"bRGB": true,
+		"bDepth": true,
+		"btRGB": true,
+		"btDepth": false,
+		"bIR": false
+	},
+
+	"scPC": {
+		"class": "_PointCloud",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 1
+		},
+		"nP":400000
+	},
+
+  "octGrid": {
+    "class": "_OctreeGrid",
+    "thread": {
+      "FPS": 5
+    },
+    "nP": 1000000,
+    "vRootCellSize": [
+      5,
+      5,
+      5
+    ],
+    "nMaxLevel": 4,
+    "nMaxLines": 100000,
+    "dTexpireCell": 500000,
+    "dTexpirePcl": 0,
+    "vColCellOcc": [
+      0.3,
+      0.8,
+      1
+    ],
+    "vGeometryBase": [
+      "pcFile","scPC"
+    ]
+  },
+
+  "viewer": {
+    "class": "_WebViewer3D",
+    "thread": {
+      "FPS": 30
+    },
+    "host": "0.0.0.0",
+    "port": 8080,
+    "nClientMax": 8,
+    "nPbuf": 400000,
+    "nLbuf": 100000,
+    "dTexpire": 0,
+    "bAutoBound": true,
+    "bShowGrid": true,
+    "vCamLookAt": [
+      0,
+      0,
+      0
+    ],
+    "vCamEye": [
+      0,
+      -8,
+      4
+    ],
+    "vCamUp": [
+      0,
+      0,
+      1
+    ],
+    "camFov": 70,
+    "vCamNF": [
+      0.01,
+      1000000
+    ],
+    "vGeometry": [
+      {
+        "_GeometryBase": "scPC",
+        "nP": 400000,
+        "nL": 0,
+        "matPointSize": 2
+      },
+      {
+        "_GeometryBase": "octGrid",
+        "nP": 0,
+        "nL": 100000,
+        "matCol": [
+          0.3,
+          0.8,
+          1,
+          1
+        ]
+      }
+    ]
+  }
+}

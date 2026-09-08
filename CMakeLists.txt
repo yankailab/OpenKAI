@@ -13,6 +13,7 @@ option(USE_DYNAMIXEL "Use Dynamixel" OFF)
 option(USE_FEETECH "Use Feetech" OFF)
 option(USE_GUI "Use GUI" OFF)
 option(USE_IMGUI "Use Dear ImGui 3D viewer" OFF)
+option(USE_WEBVIEWER3D "Use embedded HTTP/WebSocket three.js viewer (Boost headers)" OFF)
 option(USE_GLOG "Use glog" ON)
 option(USE_JETSON_INFERENCE "Use Jetson Inference" OFF)
 option(USE_OPEN3D "Use Open3D" OFF)
@@ -129,6 +130,15 @@ if(WITH_DEFAULT_MODULES)
 endif()
 
 # Optional modules
+if(USE_WEBVIEWER3D)
+  set(WITH_3D ON CACHE BOOL "" FORCE)
+  find_package(Boost 1.70 REQUIRED)
+  add_definitions(-DUSE_WEBVIEWER3D -DBOOST_ERROR_CODE_HEADER_ONLY)
+  list(APPEND OpenKAI_include ${Boost_INCLUDE_DIRS})
+  list(APPEND OpenKAI_cpp src/Net/HttpServer.cpp src/IO/WebSocketStream.cpp
+    src/3D/Viewer/_WebViewer3D.cpp)
+endif()
+
 if(WITH_3D)
   add_definitions(-DWITH_3D)
     set(OpenKAI_cpp ${OpenKAI_cpp} src/3D/_GeometryBase.cpp)
@@ -745,6 +755,12 @@ endif() # build_as_lib
 
 target_link_libraries(OpenKAI ${OpenKAI_lib})
 
+if(USE_WEBVIEWER3D)
+  add_custom_command(TARGET OpenKAI POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${PROJECT_SOURCE_DIR}/html/webViewer3D" "$<TARGET_FILE_DIR:OpenKAI>/html/webViewer3D")
+endif()
+
 # Optional ROS2 configs
 if(USE_ROS)
   find_package(ament_cmake REQUIRED)
@@ -759,6 +775,9 @@ endif()
 
 # Install
 include(GNUInstallDirs)
+if(USE_WEBVIEWER3D)
+  install(DIRECTORY html/webViewer3D DESTINATION ${CMAKE_INSTALL_BINDIR}/html)
+endif()
 set_target_properties(OpenKAI PROPERTIES
   VERSION ${PROJECT_VERSION})
 

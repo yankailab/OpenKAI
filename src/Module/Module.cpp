@@ -39,6 +39,9 @@ namespace kai
 		ADD_MODULE(_PCrecv);
 		ADD_MODULE(_PCtransform);
 		ADD_MODULE(_GeometryViewerBase);
+#ifdef USE_WEBVIEWER3D
+		ADD_MODULE(_WebViewer3D);
+#endif
 
 #ifdef USE_OPEN3D
 		ADD_MODULE(_PCcrop);

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpenKAI · 3D viewer</title>
+  <link rel="stylesheet" href="css/viewer.css">
+  <script defer src="js/launcher.js"></script>
+</head>
+<body>
+  <header>
+    <a class="brand" href="./">OpenKAI <span>3D viewer</span></a>
+    <form id="connection">
+      <label>IP / host <input id="host" value="127.0.0.1" required spellcheck="false" autocomplete="off"></label>
+      <label>Port <input id="port" type="number" min="1" max="65535" value="8080" required></label>
+      <button id="start" type="submit">Start</button>
+      <button id="stop" type="button" disabled>Stop</button>
+    </form>
+    <output id="status" role="status">Ready</output>
+  </header>
+  <main>
+    <div id="viewport" aria-label="Interactive 3D scene"></div>
+    <div id="welcome">Connect to your OpenKAI backend<br><small>Point clouds and lines, live in your browser</small></div>
+    <aside>
+      <div class="tools">
+        <button id="fit" type="button" disabled>Fit scene</button>
+        <button id="reset" type="button" disabled>Reset camera</button>
+        <label><input id="grid" type="checkbox" checked> Grid</label>
+        <label>Point scale <input id="point-scale" type="range" min="0.25" max="5" step="0.25" value="1"></label>
+      </div>
+      <details open><summary>Objects</summary><div id="objects">No geometry sources</div></details>
+    </aside>
+    <footer><span>Drag to orbit · Right drag to pan · Scroll to zoom</span><output id="stats">Waiting for geometry</output></footer>
+  </main>
+</body>
+</html>
