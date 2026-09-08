@@ -104,6 +104,23 @@
 		},
 		"nP":400000
 	},
+	"octGrid": {
+		"class": "_OctreeGrid",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 5
+		},
+		"nP": 1000000,
+		"vRootCellSize": [10.0, 10.0, 10.0],
+		"nMaxLevel": 4,
+		"dTexpireCell": 500000,
+		"dTexpirePcl": 0,
+		"vColCellOcc": [1,1,1],
+		"nMaxLines": 100000,
+		"vGeometryBase": ["scPC"]
+	},
+
 	"ImGUIviewer": {
 		"class": "ImGUIviewer",
 		"bON": true,
@@ -140,7 +157,7 @@
 			0.0,
 			1.0
 		],
-		"vGeometryBase": ["scPC"]
+		"vGeometryBase": ["scPC", "octGrid"]
 	}
 
 }

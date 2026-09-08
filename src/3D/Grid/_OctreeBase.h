@@ -53,6 +53,18 @@ namespace kai
 		// 	return m_pChild[iC];
 		// }
 
+		void deleteChild(uint8_t iC)
+		{
+			IF_(iC < 0 || iC >= N_OCT);
+
+			OCTREE_CELL* pC = m_pChild[iC];
+			NULL_(pC);
+
+			pC->release();
+			delete pC;
+			m_pChild[iC] = nullptr;
+		}
+
 		int getLevel(void)
 		{
 			int L = 0;
@@ -107,10 +119,6 @@ namespace kai
 		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
-
-		// config
-		// virtual bool loadConfig(json *pJ = nullptr, string fName = "");
-		// virtual bool saveConfig(json &j, string fName = "");
 
 	protected:
 		virtual void updateOctree(void);

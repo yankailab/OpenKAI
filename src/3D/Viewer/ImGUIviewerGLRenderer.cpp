@@ -75,6 +75,7 @@ namespace kai
 		m_vLineUpload.clear();
 		m_vPointBatch.clear();
 		m_vLineBatch.clear();
+		m_vDrawCmd.clear();
 		m_vPointUpload.reserve(nP);
 		m_vLineUpload.reserve(nL * 2);
 
@@ -82,36 +83,18 @@ namespace kai
 		{
 			float alpha = std::clamp(g.m_matCol.w, 0.0f, 1.0f);
 
-			float pointPx = std::max(1.0f, g.m_matPointSize);
-			for (const IMGUI_VIEWER_POINT &p : g.m_vP)
-			{
-				if (m_vPointBatch.empty() ||
-					m_vPointBatch.back().m_first + m_vPointBatch.back().m_count != (int)m_vPointUpload.size() ||
-					fabs(m_vPointBatch.back().m_renderPx - pointPx) > 1e-4f)
-				{
-					DRAW_BATCH b;
-					b.m_first = (int)m_vPointUpload.size();
-					b.m_renderPx = pointPx;
-					m_vPointBatch.push_back(b);
-				}
-
-				m_vPointUpload.push_back({p.m_vP.x, p.m_vP.y, p.m_vP.z,
-										   p.m_vC.x, p.m_vC.y, p.m_vC.z, alpha});
-				m_vPointBatch.back().m_count++;
-			}
-
 			if (!g.m_vL.empty())
 			{
 				float linePx = std::max(1.0f, g.m_matLineWidth);
-				if (m_vLineBatch.empty() ||
-					m_vLineBatch.back().m_first + m_vLineBatch.back().m_count != (int)m_vLineUpload.size() ||
-					fabs(m_vLineBatch.back().m_renderPx - linePx) > 1e-4f)
-				{
-					DRAW_BATCH b;
-					b.m_first = (int)m_vLineUpload.size();
-					b.m_renderPx = linePx;
-					m_vLineBatch.push_back(b);
-				}
+				DRAW_BATCH b;
+				b.m_first = (int)m_vLineUpload.size();
+				b.m_renderPx = linePx;
+				m_vLineBatch.push_back(b);
+
+				DRAW_CMD cmd;
+				cmd.m_bLine = true;
+				cmd.m_iBatch = (int)m_vLineBatch.size() - 1;
+				m_vDrawCmd.push_back(cmd);
 
 				for (const IMGUI_VIEWER_LINE &l : g.m_vL)
 				{
@@ -120,6 +103,27 @@ namespace kai
 					m_vLineUpload.push_back({l.m_vB.x, l.m_vB.y, l.m_vB.z,
 											  l.m_vC.x, l.m_vC.y, l.m_vC.z, alpha});
 					m_vLineBatch.back().m_count += 2;
+				}
+			}
+
+			if (!g.m_vP.empty())
+			{
+				float pointPx = std::max(1.0f, g.m_matPointSize);
+				DRAW_BATCH b;
+				b.m_first = (int)m_vPointUpload.size();
+				b.m_renderPx = pointPx;
+				m_vPointBatch.push_back(b);
+
+				DRAW_CMD cmd;
+				cmd.m_bLine = false;
+				cmd.m_iBatch = (int)m_vPointBatch.size() - 1;
+				m_vDrawCmd.push_back(cmd);
+
+				for (const IMGUI_VIEWER_POINT &p : g.m_vP)
+				{
+					m_vPointUpload.push_back({p.m_vP.x, p.m_vP.y, p.m_vP.z,
+											   p.m_vC.x, p.m_vC.y, p.m_vC.z, alpha});
+					m_vPointBatch.back().m_count++;
 				}
 			}
 		}
@@ -187,24 +191,46 @@ namespace kai
 
 		float fbPointScale = std::max(1.0f, std::max(fbScale.x, fbScale.y));
 
-		if (m_nLines > 0 && m_vaoL != 0)
+		bool bLineBound = false;
+		bool bPointBound = false;
+		for (const DRAW_CMD &cmd : m_vDrawCmd)
 		{
-			glUniform1i(m_locRoundPoints, 0);
-			glUniform1f(m_locPointScale, 1.0f);
-			glBindVertexArray(m_vaoL);
-			for (const DRAW_BATCH &b : m_vLineBatch)
+			if (cmd.m_bLine)
 			{
+				IF_CONT(cmd.m_iBatch < 0 || cmd.m_iBatch >= (int)m_vLineBatch.size());
+				IF_CONT(m_nLines <= 0 || m_vaoL == 0);
+
+				const DRAW_BATCH &b = m_vLineBatch[cmd.m_iBatch];
+				IF_CONT(b.m_count <= 0);
+
+				if (!bLineBound)
+				{
+					glBindVertexArray(m_vaoL);
+					bLineBound = true;
+					bPointBound = false;
+				}
+
+				glUniform1i(m_locRoundPoints, 0);
+				glUniform1f(m_locPointScale, 1.0f);
 				glLineWidth(std::max(1.0f, b.m_renderPx * frame.m_lineScale * fbPointScale));
 				glDrawArrays(GL_LINES, b.m_first, b.m_count);
 			}
-		}
-
-		if (m_nPoints > 0 && m_vaoP != 0)
-		{
-			glUniform1i(m_locRoundPoints, 1);
-			glBindVertexArray(m_vaoP);
-			for (const DRAW_BATCH &b : m_vPointBatch)
+			else
 			{
+				IF_CONT(cmd.m_iBatch < 0 || cmd.m_iBatch >= (int)m_vPointBatch.size());
+				IF_CONT(m_nPoints <= 0 || m_vaoP == 0);
+
+				const DRAW_BATCH &b = m_vPointBatch[cmd.m_iBatch];
+				IF_CONT(b.m_count <= 0);
+
+				if (!bPointBound)
+				{
+					glBindVertexArray(m_vaoP);
+					bPointBound = true;
+					bLineBound = false;
+				}
+
+				glUniform1i(m_locRoundPoints, 1);
 				glUniform1f(m_locPointScale, std::max(1.0f, b.m_renderPx * frame.m_pointScale * fbPointScale));
 				glDrawArrays(GL_POINTS, b.m_first, b.m_count);
 			}
@@ -269,6 +295,7 @@ namespace kai
 		m_vLineUpload.clear();
 		m_vPointBatch.clear();
 		m_vLineBatch.clear();
+		m_vDrawCmd.clear();
 		m_nPoints = 0;
 		m_nLines = 0;
 		m_bPendingUpload = false;

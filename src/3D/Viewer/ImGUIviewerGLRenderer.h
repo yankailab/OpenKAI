@@ -54,6 +54,12 @@ namespace kai
 			float m_renderPx = 1.0f;
 		};
 
+		struct DRAW_CMD
+		{
+			bool m_bLine = false;
+			int m_iBatch = 0;
+		};
+
 		bool init(void);
 		bool uploadPreparedSnapshot(void);
 		void bindVertexLayout(void);
@@ -93,6 +99,7 @@ namespace kai
 		vector<VERTEX> m_vLineUpload;
 		vector<DRAW_BATCH> m_vPointBatch;
 		vector<DRAW_BATCH> m_vLineBatch;
+		vector<DRAW_CMD> m_vDrawCmd;
 	};
 }
 

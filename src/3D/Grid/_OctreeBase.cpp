@@ -28,33 +28,6 @@ namespace kai
 		return true;
 	}
 
-	// bool _OctreeBase::loadConfig(json *pJ, string fName)
-	// {
-	// 	json j;
-	// 	IF_F(!this->_GeometryBase::loadConfig(&j, fName));
-
-	// 	const json &jG = jK(j, "_OctreeBase");
-	// 	if (jG.is_object())
-	// 	{
-	// 		// octree config
-	// 	}
-
-	// 	if (pJ)
-	// 	{
-	// 		*pJ = j;
-	// 	}
-	// 	return true;
-	// }
-
-	// bool _OctreeBase::saveConfig(json &j, string fName)
-	// {
-	// 	json jG = json::object();
-
-	// 	// octree config
-
-	// 	return this->_GeometryBase::saveConfig(j, fName);
-	// }
-
 	bool _OctreeBase::start(void)
 	{
 		NULL_F(m_pT);

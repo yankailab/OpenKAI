@@ -120,7 +120,7 @@ namespace kai
 
         int iDec(int i)
         {
-            if (--i <= 0)
+            if (--i < 0)
                 i = m_nT - 1;
 
             return i;

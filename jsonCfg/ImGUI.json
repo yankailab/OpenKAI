@@ -29,6 +29,24 @@
 		"vfName":["data/PointCloud/StanfordBunny/bun000.ply"]
 	},
 
+	"octGrid": {
+		"class": "_OctreeGrid",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 5
+		},
+		"nP": 1000000,
+		"vRootCellSize": [1.0, 1.0, 1.0],
+		"nMaxLevel": 4,
+		"dTexpireCell": 0,
+		"dTexpirePcl": 0,
+		"vColCellOcc": [1,1,1],
+		"nMaxLines": 100000,
+
+		"vGeometryBase": ["pcFile"]
+	},
+
 	"viewer": {
 		"class": "ImGUIviewer",
 		"thread": {
@@ -66,6 +84,6 @@
 			1.0
 		],
 
-		"vGeometryBase": ["pcFile"]
+		"vGeometryBase": ["pcFile", "octGrid"]
 	}
 }
