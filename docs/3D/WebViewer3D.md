@@ -91,6 +91,55 @@ All content is displayed as text, including malformed replies.
 
 ## Configuration
 
+### Grid cell picker
+
+The **Grid cell picker** panel below the camera controls shows the picked-cell
+count and **Clear** / **Send** buttons. Left-click a cell's volume to toggle its
+selection. If the ray crosses several cells, the deepest ID wins; equal-depth
+hits use the nearest cell. Camera drags and multi-touch gestures do not select.
+Selected cells appear as red wire boxes over the scene. Hidden grid objects are
+not pickable.
+
+Selections are independent of streamed occupancy. They remain visible and can
+be deselected after a cell expires or a source disappears, including across
+stream reconnects during the lifetime of the page. **Fit scene** includes visible
+retained selections. **Clear** removes all selections; **Send** keeps them.
+
+When a source's root center, root size, or maximum depth changes, selections are
+remapped by their old world-space volume, allowing a selection to split into
+multiple new IDs. Volumes outside the new root are clipped. Fully covered
+subtrees are represented by a single cell. Boundary cells are refined to the
+new maximum depth and retained if they overlap the old selection, giving the
+smallest representable cover of the selected volume. A coarser new grid can
+expand the covered volume, but does not erase an in-bounds selection. Remapping
+has a 100,000-node work budget to keep very deep boundary cases responsive;
+remaining boundary cells cover the volume at a coarser depth.
+
+**Send** is enabled when there are selections and the independent command socket
+is connected. It calls the existing `wsSendCmd()` once per selected grid source,
+so grids with different root headers never share an ambiguous ID list. The JSON
+contract for the future backend receiver is:
+
+```json
+{
+  "cmd": "gridCellSelection",
+  "module": "octGrid",
+  "vPorigin": ["0", "0", "0"],
+  "vRootCellSize": ["2", "2", "2"],
+  "cellIDs": ["00000000000000000000000000000000"]
+}
+```
+
+Each ID is exactly 32 lowercase ASCII hexadecimal characters, encoding the 16
+bytes in stream order (least-significant byte first). It is **not** a hex dump
+of a single big-endian integer. The example selects the root cell. Header
+coordinates and full root extents are arrays of ordinary ASCII decimal strings
+in metres, using locale-independent formatting. There are no color fields.
+`wsSendCmd()` adds the normal `EOJ` terminator. A successful send means the command
+was submitted to the socket; no backend selection receiver is implemented yet.
+
+### Geometry sources
+
 The existing `vGeometryBase` name list works:
 
 ```json
@@ -168,6 +217,8 @@ are drawn with one shared wire box and one GPU instance per cell.
 | `html/webViewer3D/js/wsCmdHandler.js` | Reply buffering and page-specific JSON command handlers |
 | `html/webViewer3D/js/protocol.js` | Frame validation and typed-array views |
 | `html/webViewer3D/js/viewer3D.js` | Three.js scene, GPU buffers, camera and rendering |
+| `html/webViewer3D/js/gridCellPicker.js` | Click picking, persistent red selections and command payloads |
+| `html/webViewer3D/js/gridSelection.js` | Exact ID encoding and volume remapping between root headers |
 | `html/webViewer3D/js/main.js` | UI, animation loop and render acknowledgements |
 
 HTTP and WebSocket IO run on one asynchronous worker. Geometry collection runs
@@ -281,8 +332,8 @@ publication time. An empty snapshot replaces previous boxes.
 
 Both viewers retain the full ID and box geometry. Browser `GridBoxes.getCell(i)`
 returns the ID bytes, RGB, and a `THREE.Box3` for an instance; ImGui keeps an
-`IMGUI_VIEWER_BOX` with UUID, center, size, and color. A picking UI can use these
-records later. Rendering positions remain float32, so very deep cells can become
+`IMGUI_VIEWER_BOX` with UUID, center, size, and color. The browser picker uses
+these records for selection and command sending. Rendering positions remain float32, so very deep cells can become
 visually indistinguishable even though their 128-bit IDs remain exact.
 
 ## Verification

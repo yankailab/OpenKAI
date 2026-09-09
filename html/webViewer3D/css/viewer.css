@@ -25,6 +25,10 @@ input[type=range] { padding: 0; width: 112px; accent-color: #64dcb5; }
 input[type=checkbox] { accent-color: #64dcb5; }
 details { margin-top: 18px; border-top: 1px solid #2d3c4d; padding-top: 12px; }
 summary { cursor: pointer; color: #c4d6e5; }
+.picker-panel p { font-size: 12px; color: #aabac8; margin: 10px 0; }
+.picker-panel .tools { margin-top: 10px; }
+#picker-count { font-size: 12px; color: #ff7777; }
+#picker-status { display: block; margin-top: 8px; font-size: 12px; color: #aabac8; }
 #objects { padding-top: 10px; font-size: 12px; color: #6d8598; }
 #objects label { margin-bottom: 8px; overflow-wrap: anywhere; }
 .command-panel .tools { margin-top: 12px; gap: 8px; }

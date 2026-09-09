@@ -5,6 +5,7 @@ Requires google-chrome or chromium; writes a screenshot to /tmp.
 """
 import base64
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -220,6 +221,52 @@ def main():
             wait_for("document.querySelector('#status').textContent.includes('retrying')")
             wait_for("document.querySelector('#status').textContent === 'Connected'")
             assert evaluate("wsSocket === savedCmdSocket && wsSocket.readyState === WebSocket.OPEN")
+            picker_source = (Path(__file__).with_name('picker.js')).read_text()
+            picker_source = re.sub(r"import \* as (\w+) from '([^']+)';", r"const \1 = await import('\2');", picker_source)
+            picker_source = re.sub(r"import (\{[^}]+\}) from '([^']+)';", r"const \1 = await import('\2');", picker_source)
+            picker_source = picker_source.replace('export async function', 'async function')
+            print(evaluate('(async () => {' + picker_source + '; return await runPickerTests(); })()'))
+            location = evaluate('(async () => {' + picker_source + '; return await preparePickerUI(); })()')
+            assert evaluate("document.querySelector('#picker-count').textContent") == '0 picked cells'
+            def mouse(kind, x, y, button='left', buttons=0):
+                command('Input.dispatchMouseEvent', {'type': kind, 'x': x, 'y': y, 'button': button, 'buttons': buttons, 'clickCount': 1})
+            x, y = location['x'], location['y']
+            # A drag must never toggle a selection, even when it returns to its start.
+            mouse('mousePressed', x, y, buttons=1)
+            mouse('mouseMoved', x + 20, y, buttons=1)
+            mouse('mouseMoved', x, y, buttons=1)
+            mouse('mouseReleased', x, y)
+            assert evaluate('pickerTestViewer.picker.count') == 0
+            mouse('mousePressed', x, y, buttons=1); mouse('mouseReleased', x, y)
+            wait_for("document.querySelector('#picker-count').textContent === '1 picked cell'")
+            assert evaluate('pickerTestViewer.picker.commands()[0].cellIDs[0]') == location['id']
+            assert not evaluate("document.querySelector('#picker-send').disabled")
+            red_pixels = """(() => {
+              const v = pickerTestViewer; v.render();
+              const gl = v.renderer.getContext(), pixels = new Uint8Array(gl.drawingBufferWidth * gl.drawingBufferHeight * 4);
+              gl.readPixels(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+              let red = 0;
+              for (let i = 0; i < pixels.length; i += 4) if (pixels[i] > 200 && pixels[i + 1] < 20 && pixels[i + 2] < 20) ++red;
+              return red;
+            })()"""
+            assert evaluate(red_pixels) > 20, 'Selected cell was not drawn red'
+            screenshot = command('Page.captureScreenshot', {'format': 'png'})['data']
+            Path('/tmp/openkai-picker.png').write_bytes(base64.b64decode(screenshot))
+            evaluate("document.querySelector('#picker-send').click()")
+            wait_for("testReplies.some(j => j.cmd === 'ackGridCellSelection')")
+            payload = commands.received[-1]
+            assert payload == {'cmd': 'gridCellSelection', 'module': 'Test cloud and lines',
+                               'vPorigin': ['0', '0', '0'], 'vRootCellSize': ['2', '2', '2'], 'cellIDs': [location['id']]}, payload
+            assert evaluate('pickerTestViewer.picker.count') == 1
+            mouse('mousePressed', x, y, buttons=1); mouse('mouseReleased', x, y)
+            assert evaluate('pickerTestViewer.picker.count') == 0
+            assert evaluate(red_pixels) == 0, 'Deselected cell remained red'
+            mouse('mousePressed', x, y, buttons=1); mouse('mouseReleased', x, y)
+            evaluate("document.querySelector('#cmdDisconnect').click()")
+            assert evaluate("document.querySelector('#picker-send').disabled && pickerTestViewer.picker.count === 1")
+            evaluate("document.querySelector('#picker-clear').click()")
+            assert evaluate("pickerTestViewer.picker.count === 0 && document.querySelector('#picker-clear').disabled")
+            print('PASS: real picker mouse events, drag suppression, panel count, independent WebSocket JSON, deselection and Clear')
             assert not exceptions, exceptions
             print('PASS: local-file launcher, WebGL2 rendering, camera/visibility controls, Stop/Start; ' + result)
             print('Screenshot: /tmp/openkai-webviewer.png')

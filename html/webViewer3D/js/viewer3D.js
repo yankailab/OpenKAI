@@ -1,5 +1,6 @@
 import * as THREE from '../vendor/three.module.min.js';
 import { GridBoxes } from './gridBoxes.js';
+import { GridCellPicker } from './gridCellPicker.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 
 export class Viewer3D {
@@ -20,6 +21,7 @@ export class Viewer3D {
     this.axes = this.createOriginAxes();
     this.scene.add(this.axes);
     this.objects = new Map();
+    this.picker = new GridCellPicker(this);
     this.pointScale = 1;
     this.bounds = new THREE.Box3();
     this.resizeObserver = new ResizeObserver(() => this.resize());
@@ -79,6 +81,7 @@ export class Viewer3D {
   }
   configure(config) {
     this.clear();
+    this.picker.configure(config.objects);
     this.config = config;
     this.scene.background.fromArray(config.background);
     this.grid.visible = config.showGrid;
@@ -164,6 +167,7 @@ export class Viewer3D {
       this.upload(o.points, data.points, data.pointColors, data.bounds);
       this.upload(o.lines, data.lines, data.lineColors, data.bounds);
       o.boxes.update(data.grid, data.bounds, data.opacity);
+      this.picker.updateObject(o, data.grid);
       if (o.visible && (data.nP || data.nL || data.nC))
         this.bounds.union(new THREE.Box3(new THREE.Vector3(...data.bounds.slice(0, 3)), new THREE.Vector3(...data.bounds.slice(3))));
     }
@@ -173,14 +177,17 @@ export class Viewer3D {
   setVisible(id, visible) {
     const o = this.objects.get(id);
     if (o) { o.visible = visible; o.points.visible = visible; o.lines.visible = visible; o.boxes.visible = visible; }
+    this.picker.setVisible(id, visible);
   }
   setPointScale(value) {
     this.pointScale = value;
     for (const o of this.objects.values()) o.points.material.size = o.pointSize * value;
   }
   fit() {
-    if (this.bounds.isEmpty()) return;
-    const sphere = this.bounds.getBoundingSphere(new THREE.Sphere());
+    const bounds = this.bounds.clone();
+    this.picker.expandBounds(bounds);
+    if (bounds.isEmpty()) return;
+    const sphere = bounds.getBoundingSphere(new THREE.Sphere());
     const radius = Math.max(sphere.radius, 0.01);
     const direction = this.camera.position.clone().sub(this.controls.target).normalize();
     if (!direction.lengthSq()) direction.set(0, -1, 0.5).normalize();
@@ -201,12 +208,14 @@ export class Viewer3D {
   }
   render() { this.controls.update(); this.renderer.render(this.scene, this.camera); }
   removeObject(o) {
+    this.picker.removeObject(o.id);
     for (const mesh of [o.points, o.lines, o.boxes]) { this.scene.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); }
     this.objects.delete(o.id);
   }
   clear() { for (const o of this.objects.values()) this.removeObject(o); this.bounds.makeEmpty(); }
   dispose() {
     this.clear(); this.resizeObserver.disconnect(); this.controls.dispose();
+    this.picker.dispose();
     this.axes.traverse(object => {
       object.geometry?.dispose();
       object.material?.map?.dispose();

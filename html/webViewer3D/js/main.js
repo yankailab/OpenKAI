@@ -31,7 +31,29 @@ const connection = new GeometryConnection({
 function syncConnectionButtons() {
   $('#start').disabled = connection.running;
   $('#stop').disabled = !connection.running && !window.wsCmdActive();
+  syncPicker();
 }
+function syncPicker() {
+  const count = viewer.picker.count;
+  $('#picker-count').textContent = `${count.toLocaleString()} picked ${count === 1 ? 'cell' : 'cells'}`;
+  $('#picker-clear').disabled = count === 0;
+  $('#picker-send').disabled = count === 0 || window.wsSocket?.readyState !== WebSocket.OPEN;
+  $('#picker-send').title = window.wsSocket?.readyState === WebSocket.OPEN ? '' : 'Connect the command WebSocket to send selections';
+}
+viewer.picker.onChange = () => { $('#picker-status').textContent = ''; syncPicker(); };
+$('#picker-clear').addEventListener('click', () => viewer.picker.clear());
+$('#picker-send').addEventListener('click', () => {
+  let sent = 0;
+  for (const command of viewer.picker.commands()) {
+    if (!window.wsSendCmd(command)) {
+      $('#picker-status').textContent = `Send failed. ${sent} cells sent; selections kept.`;
+      syncPicker();
+      return;
+    }
+    sent += command.cellIDs.length;
+  }
+  $('#picker-status').textContent = `Sent ${sent} ${sent === 1 ? 'cell' : 'cells'}.`;
+});
 function start(event) {
   event?.preventDefault();
   try {
