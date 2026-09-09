@@ -46,8 +46,9 @@ namespace kai
 		virtual bool check(void);
 
 		// grid
-		virtual OCTGRID_PCL_CELL *addCellPoint(const GEOMETRY_POINT &gP, const uint64_t& tNow, int nMaxLevelAt = -1, bool bAdd = true);
-		virtual OCTGRID_PCL_CELL *getCell(const UUID128& id);
+		virtual OCTGRID_PCL_CELL *addCellPoint(const GEOMETRY_POINT &gP, const uint64_t &tNow, int nMaxLevTo = -1, bool bAdd = true);
+		virtual OCTGRID_PCL_CELL *getCell(const vFloat3 &vP, int nMaxLevTo = -1);
+		virtual OCTGRID_PCL_CELL *getCell(const UUID128 &id);
 
 		// drawing
 		virtual int get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire = 0);
@@ -77,17 +78,17 @@ namespace kai
 
 		// data
 		OCTREE_CELL<OCTGRID_PCL_CELL> *m_pCell; // root cell
-		uint64_t m_dTexpireCell;			// remove cell if no point is coming by this duration
+		uint64_t m_dTexpireCell;				// remove cell if no point is coming by this duration
 
 		// point cloud input
 		vector<_GeometryBase *> m_vpGb;
 		GEOMETRY_RINGBUF<GEOMETRY_POINT> m_grPt;
-		uint64_t m_dTexpirePcl;
+		uint64_t m_dTexpirePCL;
 
 		// generated line for grid visualization
+		int m_nMaxLines;
 		GEOMETRY_RINGBUF<GEOMETRY_LINE> m_lnCellOcc;
 		vFloat3 m_vColCellOcc;
-		int m_nMaxLines;
 	};
 
 }

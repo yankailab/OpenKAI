@@ -221,10 +221,10 @@ namespace kai
 
 		m_pCell = nullptr;
 		m_dTexpireCell = 0;
-		m_dTexpirePcl = 0;
+		m_dTexpirePCL = 0;
 
-		m_vColCellOcc.set(1);
 		m_nMaxLines = 100000;
+		m_vColCellOcc.set(1);
 	}
 
 	_OctreeGrid::~_OctreeGrid()
@@ -235,8 +235,8 @@ namespace kai
 			delete m_pCell;
 		}
 
-		m_lnCellOcc.release();
 		m_grPt.release();
+		m_lnCellOcc.release();
 	}
 
 	bool _OctreeGrid::init(const json &j)
@@ -247,9 +247,10 @@ namespace kai
 		jKv<float>(j, "vRootCellSize", m_vRootCellSize);
 		jKv(j, "nMaxLevel", m_nMaxLevel);
 		jKv(j, "dTexpireCell", m_dTexpireCell);
-		jKv(j, "dTexpirePcl", m_dTexpirePcl);
-		jKv<float>(j, "vColCellOcc", m_vColCellOcc);
+		jKv(j, "dTexpirePCL", m_dTexpirePCL);
+
 		jKv(j, "nMaxLines", m_nMaxLines);
+		jKv<float>(j, "vColCellOcc", m_vColCellOcc);
 
 		IF_Le_F(m_nMaxLines <= 0, "Invalid nMaxLines: " + i2str(m_nMaxLines));
 		IF_Le_F(m_nMaxLevel < 0 || m_nMaxLevel > OCTGRID_MAX_LEVEL, "Invalid nMaxLevel: " + i2str(m_nMaxLevel));
@@ -336,8 +337,8 @@ namespace kai
 
 		uint64_t tNow = getApproxTbootUs();
 		uint64_t tExpire = 0;
-		if (m_dTexpirePcl > 0)
-			tExpire = (tNow > m_dTexpirePcl) ? tNow - m_dTexpirePcl : 0;
+		if (m_dTexpirePCL > 0)
+			tExpire = (tNow > m_dTexpirePCL) ? tNow - m_dTexpirePCL : 0;
 
 		for (_GeometryBase *pGb : m_vpGb)
 		{
@@ -360,7 +361,7 @@ namespace kai
 		}
 	}
 
-	OCTGRID_PCL_CELL *_OctreeGrid::addCellPoint(const GEOMETRY_POINT &gP, const uint64_t &tNow, int nMaxLevelAt, bool bAdd)
+	OCTGRID_PCL_CELL *_OctreeGrid::addCellPoint(const GEOMETRY_POINT &gP, const uint64_t &tNow, int nMaxLevTo, bool bAdd)
 	{
 		NULL_N(m_pCell);
 		IF_N(!bInCell(gP.m_vP, m_vPorigin, m_vRootCellSize));
@@ -369,12 +370,12 @@ namespace kai
 		vFloat3 vPc = m_vPorigin;
 		vFloat3 vSize = m_vRootCellSize;
 
-		if (nMaxLevelAt < 0 || nMaxLevelAt > m_nMaxLevel)
-			nMaxLevelAt = m_nMaxLevel;
+		if (nMaxLevTo < 0 || nMaxLevTo > m_nMaxLevel)
+			nMaxLevTo = m_nMaxLevel;
 
-		UUID128 cellID = uint64_t(nMaxLevelAt); // the lower 6bit for max valid level
+		UUID128 cellID = uint64_t(nMaxLevTo); // the lower 6bit for max valid level
 
-		for (int iL = 0; iL <= nMaxLevelAt; iL++)
+		for (int iL = 0; iL <= nMaxLevTo; iL++)
 		{
 			uint8_t iC = childIdx(gP.m_vP, vPc);
 			cellID |= calcCellIDSegment(iC, iL);
@@ -384,7 +385,7 @@ namespace kai
 			NULL_N(pPcl);
 			pPcl->m_ID = cellID;
 			updatePCLcell(pPcl, gP, tNow);
-			IF__(iL >= nMaxLevelAt, pPcl);
+			IF__(iL >= nMaxLevTo, pPcl);
 
 			// go for next level
 			OCTREE_CELL<OCTGRID_PCL_CELL> *pChild = pCell->getChild(iC);
@@ -403,18 +404,51 @@ namespace kai
 		return nullptr;
 	}
 
+	OCTGRID_PCL_CELL *_OctreeGrid::getCell(const vFloat3& vP, int nMaxLevTo)
+	{
+		NULL_N(m_pCell);
+		IF_N(!bInCell(vP, m_vPorigin, m_vRootCellSize));
+
+		OCTREE_CELL<OCTGRID_PCL_CELL> *pCell = m_pCell;
+		vFloat3 vPc = m_vPorigin;
+		vFloat3 vSize = m_vRootCellSize;
+
+		if (nMaxLevTo < 0 || nMaxLevTo > m_nMaxLevel)
+			nMaxLevTo = m_nMaxLevel;
+
+		for (int iL = 0; iL <= nMaxLevTo; iL++)
+		{
+			uint8_t iC = childIdx(vP, vPc);
+
+			// PCL at this level
+			OCTGRID_PCL_CELL *pPcl = pCell->getT();
+			NULL_N(pPcl);
+			IF__(iL >= nMaxLevTo, pPcl);
+
+			// go for next level
+			OCTREE_CELL<OCTGRID_PCL_CELL> *pChild = pCell->getChild(iC);
+			NULL_N(pChild);
+
+			vPc = childCenter(vPc, vSize, iC);
+			vSize = vHalf(vSize);
+			pCell = pChild;
+		}
+
+		return nullptr;
+	}
+
 	OCTGRID_PCL_CELL *_OctreeGrid::getCell(const UUID128 &id)
 	{
 		NULL_N(m_pCell);
 
-		const int nMaxLevelAt = id.m_uint64[0] & 0x3f;
-		IF_N(nMaxLevelAt > OCTGRID_MAX_LEVEL || nMaxLevelAt > m_nMaxLevel);
+		const int nMaxLevTo = id.m_uint64[0] & 0x3f;
+		IF_N(nMaxLevTo > OCTGRID_MAX_LEVEL || nMaxLevTo > m_nMaxLevel);
 		IF_N(id.m_uint64[1] >> 62);
 
 		OCTREE_CELL<OCTGRID_PCL_CELL> *pCell = m_pCell;
 		uint64_t high = id.m_uint64[1];
 		uint64_t low = id.m_uint64[0];
-		for (int iL = 0; iL < nMaxLevelAt; iL++)
+		for (int iL = 0; iL < nMaxLevTo; iL++)
 		{
 			const uint8_t iC = (high >> 59) & 7;
 			pCell = pCell->m_pChild[iC];

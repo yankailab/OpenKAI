@@ -9,11 +9,13 @@ header { display: flex; align-items: center; flex-wrap: wrap; gap: 20px; padding
 label { display: flex; align-items: center; gap: 6px; color: #aabac8; }
 input, button, textarea { font: inherit; border-radius: 5px; border: 1px solid #354659; padding: 7px 10px; }
 input { background: #090f17; color: #e2edf6; min-width: 0; }
-button { color: #dce6ed; background: #202f40; cursor: pointer; }
-button:hover { background: #30475d; }
+button { color: #dce6ed; background: #202f40; cursor: pointer; min-height: 44px; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+button:hover:not(:disabled) { background: #30475d; }
+button:active:not(:disabled) { filter: brightness(.85); }
 button:disabled { opacity: .4; cursor: default; }
 button.primary { color: #071d18; background: #64dcb5; border-color: #64dcb5; }
-button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid #64dcb5; outline-offset: 2px; }
+button.primary:hover:not(:disabled) { background: #85e7c7; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible { outline: 2px solid #64dcb5; outline-offset: 2px; }
 
 /* Page layouts and panels share the viewer's spacing and surface treatment. */
 .workspace { flex: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 16px; }
@@ -21,22 +23,32 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
 .panel-stack { display: grid; gap: 16px; min-width: 0; }
 .panel { min-width: 0; padding: 14px; border: 1px solid #2d3c4d; border-radius: 8px; background: #101923e8; }
 .panel h2 { margin: 0 0 14px; color: #c4d6e5; font-size: 14px; font-weight: 500; }
+.panel-meta { margin-left: 8px; color: #8ba2b5; font-size: 12px; font-weight: 400; }
+.panel-hint { margin: 0; color: #aabac8; font-size: 12px; line-height: 1.5; }
 .tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.console-section { margin-top: 18px; border-top: 1px solid #2d3c4d; padding-top: 12px; }
+.console-panel { padding: 0 14px; }
+.console-panel summary { min-height: 48px; padding: 14px 0; color: #aabac8; cursor: pointer; touch-action: manipulation; }
+.console-panel[open] { padding-bottom: 14px; }
 #msg { display: block; color: #89d6bf; font-size: 12px; font-weight: 400; overflow-wrap: anywhere; }
 #msg:empty { display: none; }
 .console-label { font-size: 12px; margin: 12px 0 6px; }
-#txtMsg { display: block; width: 100%; min-height: 100px; max-height: 240px; resize: vertical; padding: 8px; background: #090f17; color: #aabac8; font: 11px/1.5 ui-monospace, monospace; }
+#cmdState { display: block; width: 100%; min-height: 100px; max-height: 240px; resize: vertical; padding: 8px; background: #090f17; color: #aabac8; font: 12px/1.5 ui-monospace, monospace; }
 
-/* APdrive: preserve the directional arrangement without fixed-width tables. */
-.drive-pad { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; width: 100%; max-width: 324px; margin: 20px auto 24px; }
-.drive-pad button { aspect-ratio: 1; padding: 7px 4px; }
+/* Keep direction and emergency controls in a familiar, touch-friendly cross. */
+.drive-pad { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; max-width: 300px; margin: 0 auto; }
+.drive-pad button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 56px; padding: 6px 4px; font-size: 12px; line-height: 1.25; }
+.direction-icon { font-size: 23px; line-height: 1; }
 #btnForward { grid-column: 2; grid-row: 1; }
 #btnLeft { grid-column: 1; grid-row: 2; }
 #btnRight { grid-column: 3; grid-row: 2; }
 #btnBack { grid-column: 2; grid-row: 3; }
-.drive-actions { justify-content: center; border-top: 1px solid #2d3c4d; padding-top: 14px; }
-.drive-actions button { flex: 1; max-width: 156px; }
+#btnStop { grid-column: 2; grid-row: 2; color: #fff; background: #b52c37; border: 2px solid #ff8c95; font-size: 16px; font-weight: 750; }
+#btnStop:hover { background: #cc3541; }
+.stop-icon { font-size: 14px; line-height: 1; }
+.control-feedback { margin-top: 12px; }
+.selection-status { margin: 12px 0; color: #89d6bf; font-size: 12px; line-height: 1.5; }
+.geofence-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.geofence-actions button { padding: 8px 4px; }
 
 /* LCalign: flexible fields keep paths and camera controls inside the panel. */
 .fields { display: grid; grid-template-columns: 160px minmax(0, 1fr); align-items: center; gap: 10px 16px; }

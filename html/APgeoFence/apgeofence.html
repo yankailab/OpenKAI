@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GeoFence</title>
+  <link rel="stylesheet" href="css/control.css" />
+  <link rel="stylesheet" href="css/leaflet.css" />
+  <link rel="stylesheet" href="css/map.css" />
+  <script src="js/leaflet.js"></script>
+</head>
+
+<body>
+  <header>
+    <div class="brand">OpenKAI <span>GeoFence</span></div>
+    <strong id="state" role="status">Connecting…</strong>
+  </header>
+
+  <main class="workspace map-layout">
+    <div class="map-panel">
+      <div id="map" role="region" aria-label="Geofence map" aria-describedby="geofenceHelp"></div>
+    </div>
+
+    <div class="panel-stack control-panels">
+      <section class="panel geofence-panel" aria-labelledby="geofenceHeading">
+        <h2 id="geofenceHeading">Geofence <span class="panel-meta">Auto mode</span></h2>
+        <p id="geofenceHelp" class="panel-hint">Tap at least 3 points on the map to draw an area. Drag points to adjust it, then select Set.</p>
+        <p id="selectionStatus" class="selection-status" role="status">No points selected</p>
+        <div class="tools geofence-actions">
+          <button id="btnSend" type="button" disabled>Set</button>
+          <button id="btnUndo" type="button" disabled>Undo</button>
+          <button id="btnClear" type="button" disabled>Clear</button>
+          <button id="btnStart" type="button" class="primary" aria-label="Start auto mode" disabled>Start</button>
+        </div>
+      </section>
+      
+      <section class="panel manual-panel" aria-labelledby="manualHeading">
+        <h2 id="manualHeading">Manual control</h2>
+        <div class="drive-pad" role="group" aria-label="Rover movement">
+          <button id="btnForward" type="button">
+            <span class="direction-icon" aria-hidden="true">↑</span>
+            Forward
+          </button>
+          <button id="btnLeft" type="button">
+            <span class="direction-icon" aria-hidden="true">←</span>
+            Left
+          </button>
+          <button id="btnStop" type="button" class="stop-button" aria-label="STOP — emergency stop">
+            <span class="stop-icon" aria-hidden="true">■</span>
+            STOP
+          </button>
+          <button id="btnRight" type="button">
+            <span class="direction-icon" aria-hidden="true">→</span>
+            Right
+          </button>
+          <button id="btnBack" type="button">
+            <span class="direction-icon" aria-hidden="true">↓</span>
+            Backward
+          </button>
+        </div>
+        <p id="controlFeedback" class="panel-hint control-feedback" role="status">Rover controls are not connected yet.</p>
+      </section>
+    </div>
+
+    <details class="panel console-panel">
+      <summary>Console <span class="panel-meta">Debug messages</span></summary>
+      <strong id="msg"></strong>
+      <label class="console-label" for="cmdState">Messages</label>
+      <textarea id="cmdState" rows="4" readonly spellcheck="false"></textarea>
+    </details>
+  </main>
+
+  <script src="js/mapUI.js"></script>
+  <script src="js/wsBase.js"></script>
+  <script src="js/wsGeoFence.js"></script>
+  <script src="js/geoFenceMap.js"></script>
+</body>
+
+</html>

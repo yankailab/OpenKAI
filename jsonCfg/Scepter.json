@@ -115,7 +115,7 @@
 		"vRootCellSize": [10.0, 10.0, 10.0],
 		"nMaxLevel": 4,
 		"dTexpireCell": 500000,
-		"dTexpirePcl": 0,
+		"dTexpirePCL": 0,
 		"vColCellOcc": [1,1,1],
 		"nMaxLines": 100000,
 		"vGeometryBase": ["scPC"]

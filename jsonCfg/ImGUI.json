@@ -40,7 +40,7 @@
 		"vRootCellSize": [1.0, 1.0, 1.0],
 		"nMaxLevel": 4,
 		"dTexpireCell": 0,
-		"dTexpirePcl": 0,
+		"dTexpirePCL": 0,
 		"vColCellOcc": [1,1,1],
 		"nMaxLines": 100000,
 
