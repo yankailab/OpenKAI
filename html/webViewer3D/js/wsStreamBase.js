@@ -1,14 +1,15 @@
+import { PROTOCOL_VERSION } from './protocol.js';
 // Geometry transport only. Application JSON commands use wsCmdBase.js.
 export class GeometryConnection {
-  constructor({ onHello, onFrame, onStatus, onReset }) {
-    Object.assign(this, { onHello, onFrame, onStatus, onReset });
+  constructor({ type, onHello, onFrame, onStatus, onReset }) {
+    Object.assign(this, { type, onHello, onFrame, onStatus, onReset });
     this.socket = null;
     this.timer = null;
     this.running = false;
   }
   start(endpoint) {
     this.stop();
-    this.url = new URL('stream', endpoint);
+    this.url = new URL(`stream/${this.type}`, endpoint);
     this.url.protocol = endpoint.protocol === 'https:' ? 'wss:' : 'ws:';
     this.running = true;
     this.delay = 500;
@@ -26,7 +27,7 @@ export class GeometryConnection {
       try {
         if (typeof event.data === 'string') {
           const hello = JSON.parse(event.data);
-          if (greeted || hello.type !== 'hello' || (hello.version !== 1 && hello.version !== 2)) throw new Error('Incompatible backend');
+          if (greeted || hello.type !== 'hello' || hello.version !== PROTOCOL_VERSION || hello.stream !== this.type) throw new Error('Incompatible backend');
           this.onHello(hello);
           greeted = true;
           clearTimeout(this.timer);
@@ -45,6 +46,7 @@ export class GeometryConnection {
     socket.onclose = () => {
       if (this.socket !== socket || !this.running) return;
       clearTimeout(this.timer);
+      this.onReset();
       this.onStatus(`Disconnected · retrying in ${this.delay / 1000}s`);
       this.timer = setTimeout(() => this.connect(), this.delay);
       this.delay = Math.min(this.delay * 2, 8000);

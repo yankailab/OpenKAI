@@ -20,6 +20,7 @@ export function selectionGrid(header, ids) {
   for (const id of ids.values()) {
     cells.set(id, at);
     cells[at + 16] = 255; // selected cells are red
+    cells[at + 19] = 255; // keep selections visible regardless of source alpha
     at += CELL_BYTES;
   }
   return { ...header, cells };

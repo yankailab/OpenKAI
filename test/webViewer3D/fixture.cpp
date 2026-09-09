@@ -9,21 +9,23 @@
 int main(int argc, char **argv)
 {
     if (argc != 2 && argc != 4) return 1;
-    std::vector<uint8_t> empty;
-    float emptyBounds[6] = {};
-    kai::webviewer3d::begin(empty, 0, 0);
-    kai::webviewer3d::object(empty, 0, 2, 1, emptyBounds, {}, {}, {}, {});
-    kai::webviewer3d::finish(empty, 1);
-    if (empty.size() != 96) return 3;
-    kai::HttpServer http;
-    kai::WebSocketStream stream(http.context(), R"({"type":"hello","version":2,"autoBound":true,"showGrid":true,"background":[0.035,0.045,0.065],"camera":{"eye":[0,-8,4],"target":[0,0,0],"up":[0,0,1],"type":0,"fov":70,"near":0.01,"far":1000000,"lr":[-10,10],"bt":[-10,10]},"objects":[{"id":7,"name":"Test cloud and lines"}]})");
+    using namespace kai::webviewer3d;
+    kai::HttpServer http, secondHttp;
+    std::array<std::unique_ptr<kai::WebSocketStream>, 3> streams, secondStreams;
+    std::vector<std::pair<std::string, kai::WebSocketStream *>> routes, secondRoutes;
+    for (size_t i = 0; i < Types.size(); ++i)
+    {
+        const std::string hello = std::string(R"({"type":"hello","version":4,"stream":")") + name(Types[i]) +
+            R"(","autoBound":true,"showGrid":true,"background":[0.035,0.045,0.065],"camera":{"eye":[0,-8,4],"target":[0,0,0],"up":[0,0,1],"type":0,"fov":70,"near":0.01,"far":1000000,"lr":[-10,10],"bt":[-10,10]},"objects":[{"id":7,"name":"Test cloud and lines"}]})";
+        streams[i] = std::make_unique<kai::WebSocketStream>(http.context(), hello);
+        secondStreams[i] = std::make_unique<kai::WebSocketStream>(secondHttp.context(), hello);
+        routes.emplace_back(std::string("/stream/") + name(Types[i]), streams[i].get());
+        secondRoutes.emplace_back(std::string("/stream/") + name(Types[i]), secondStreams[i].get());
+    }
     std::string error;
-    if (!http.start("127.0.0.1", 0, argv[1], stream.upgradeHandler(), &error))
+    if (!http.start("127.0.0.1", 0, argv[1], kai::WebSocketStream::routes(routes), &error))
     { std::cerr << error << std::endl; return 2; }
-    // The transport test runs two independent listeners in the same process.
-    kai::HttpServer secondHttp;
-    kai::WebSocketStream secondStream(secondHttp.context(), R"({"type":"hello","version":2})");
-    if (argc == 4 && !secondHttp.start("127.0.0.1", 0, argv[2], secondStream.upgradeHandler(), &error))
+    if (argc == 4 && !secondHttp.start("127.0.0.1", 0, argv[2], kai::WebSocketStream::routes(secondRoutes), &error))
     { std::cerr << error << std::endl; return 2; }
     const int nPoints = argc == 4 ? std::stoi(argv[3]) : 10000;
     std::atomic<bool> running{true};
@@ -53,13 +55,18 @@ int main(int argc, char **argv)
         uint32_t sequence = 0;
         while (running)
         {
-            auto frame = std::make_shared<std::vector<uint8_t>>();
-            kai::webviewer3d::begin(*frame, ++sequence, 123456789);
-            kai::webviewer3d::object(*frame, 7, 2, 1, bounds, points, colors,
-                {-1,0,0,1,0,0}, {255,0,0,255,255,0,0,255}, argc == 2 ? &grid : nullptr);
-            kai::webviewer3d::finish(*frame, 1);
-            stream.publish(frame);
-            if (argc == 4) secondStream.publish(frame);
+            ++sequence;
+            for (size_t i = 0; i < Types.size(); ++i)
+            {
+                auto frame = std::make_shared<std::vector<uint8_t>>();
+                begin(*frame, Types[i], sequence, 123456789);
+                if (Types[i] == Type::Points) kai::webviewer3d::points(*frame, 7, 2, 1, bounds, points, colors);
+                else if (Types[i] == Type::Lines) lines(*frame, 7, 1, bounds, {-1,0,0,1,0,0}, {255,0,0,255,255,0,0,255});
+                else cells(*frame, 7, 1, bounds, grid);
+                finish(*frame, 1);
+                streams[i]->publish(frame);
+                if (argc == 4) secondStreams[i]->publish(frame);
+            }
             std::this_thread::sleep_for(std::chrono::milliseconds(20));
         }
     });
@@ -71,7 +78,7 @@ int main(int argc, char **argv)
     running = false;
     producer.join();
     http.stop();
-    stream.stop();
+    for (auto &stream : streams) stream->stop();
     secondHttp.stop();
-    secondStream.stop();
+    for (auto &stream : secondStreams) stream->stop();
 }

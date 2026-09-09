@@ -85,9 +85,6 @@ namespace kai
 		ADD_MODULE(_APmavlink_relay);
 		ADD_MODULE(_APmavlink_servo);
 		ADD_MODULE(_APmavlink_drive);
-#ifdef WITH_SENSOR
-		ADD_MODULE(_APmavlink_distLidar);
-#endif
 #ifdef USE_OPENCV
 		ADD_MODULE(_APmavlink_RTCM);
 		ADD_MODULE(_APmavlink_depthVision);
@@ -102,9 +99,6 @@ namespace kai
 #endif // opencv
 #ifdef WITH_NAVIGATION
 		ADD_MODULE(_APmavlink_visionEstimate);
-#ifdef USE_REALSENSE
-		ADD_MODULE(_APmavlink_GPS);
-#endif
 #endif // nav
 #endif // apMavlink
 

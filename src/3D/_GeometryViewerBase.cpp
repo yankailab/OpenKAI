@@ -55,8 +55,9 @@ namespace kai
 
 		m_grPt.release();
 		m_grLn.release();
-		IF_Le_F(!m_grPt.alloc(m_nPbuf), "Alloc failed with nPbuf: " + i2str(m_nPbuf));
-		IF_Le_F(!m_grLn.alloc(m_nLbuf), "Alloc failed with nLbuf: " + i2str(m_nLbuf));
+		IF_Le_F(m_nPbuf < 0 || m_nLbuf < 0, "Negative geometry buffer limit");
+		IF_Le_F(m_nPbuf && !m_grPt.alloc(m_nPbuf), "Alloc failed with nPbuf: " + i2str(m_nPbuf));
+		IF_Le_F(m_nLbuf && !m_grLn.alloc(m_nLbuf), "Alloc failed with nLbuf: " + i2str(m_nLbuf));
 
 		return true;
 	}

@@ -155,12 +155,18 @@ Run the viewer from the repository root so the relative PLY path resolves:
 
 Point size and line width are viewer/material settings (`matPointSize`, `matLineWidth`, `pointScale`, and `lineScale`); individual `GEOMETRY_POINT` and `GEOMETRY_LINE` records only carry geometry, color, and timestamp data.
 
+Point, line, and occupied-cell colors include alpha in `m_vC.w`. Both GPU and CPU
+rendering multiply it by `matCol[3]`: alpha 0 is invisible, 1 is opaque, and
+intermediate values blend. Existing RGB-only point/line `add()` calls default to
+alpha 1; the `vFloat4` overloads accept explicit alpha. PLY files can supply an
+`alpha` property or packed `rgba`; files without alpha stay opaque.
+
 When OpenGL or OpenGL ES rendering is enabled, the viewer uploads point and line snapshots into GPU buffers and renders them from an ImGui callback. The CPU draw-list path remains available as a fallback for backends without GL support.
 
 ## Occupied octree cells
 
-The grid publishes a root center/size/depth/timestamp header plus 19-byte records
-(16-byte ID and RGB8). ImGui decodes each ID into an `IMGUI_VIEWER_BOX`, retaining
+The grid publishes a root center/size/depth/timestamp header plus 20-byte records
+(16-byte ID and RGBA8). ImGui decodes each ID into an `IMGUI_VIEWER_BOX`, retaining
 its UUID, center, full size, and color for future picking. The GPU renderer and
 CPU fallback generate the twelve edges from those boxes. Camera fitting,
 visibility, line width, and object opacity apply to grid boxes too.
@@ -169,9 +175,14 @@ Use grid `nMaxCells` to cap occupied cells. When omitted, the old `nMaxLines`
 setting supplies a compatibility cap of `floor(nMaxLines / 12)` (default 8333).
 Viewer `nCbuf` defaults to 100000; per-object `vGeometry[].nC` can lower it, and
 zero omits cells. Point and line limits continue to control their own primitives.
-All occupied levels are included. Cell colors come from averaged point RGB unless
-`vColCellOcc` explicitly supplies a uniform override. Empty or expired snapshots
+All occupied levels are included. Cell colors come from averaged point RGBA unless
+`vColCellOcc` explicitly supplies a uniform `[r,g,b,a]` override (a three-component
+override defaults to alpha 1). Empty or expired snapshots
 clear the previous boxes.
 
 See [the cell format and tests](WebViewer3D.md#occupied-cell-interface) for ID
 layout, snapshot semantics, and verification commands.
+
+The viewer accepts `nPbuf: 0` and/or `nLbuf: 0` to disable collection of those
+types. Compact cell collection continues independently, allowing a cells-only
+viewer without point or line scratch buffers.

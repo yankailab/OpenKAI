@@ -22,20 +22,21 @@ namespace kai
 	struct IMGUI_VIEWER_POINT
 	{
 		vFloat3 m_vP;
-		vFloat3 m_vC;
+		vFloat4 m_vC{0, 0, 0, 1};
 	};
 
 	struct IMGUI_VIEWER_LINE
 	{
 		vFloat3 m_vA;
 		vFloat3 m_vB;
-		vFloat3 m_vC;
+		vFloat4 m_vC{0, 0, 0, 1};
 	};
 
 	struct IMGUI_VIEWER_BOX
 	{
 		UUID128 m_ID = 0;
-		vFloat3 m_vCenter, m_vSize, m_vC;
+		vFloat3 m_vCenter, m_vSize;
+		vFloat4 m_vC{0, 0, 0, 1};
 
 		template <typename F> void forEachEdge(F draw) const
 		{

@@ -1,4 +1,5 @@
 import * as THREE from '../vendor/three.module.min.js';
+import { STREAM_TYPES } from './protocol.js';
 import { GridBoxes } from './gridBoxes.js';
 import { GridCellPicker } from './gridCellPicker.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
@@ -23,7 +24,11 @@ export class Viewer3D {
     this.objects = new Map();
     this.picker = new GridCellPicker(this);
     this.pointScale = 1;
+    this.gridMinLevel = 0;
+    this.gridMaxLevel = 40;
+    this.gridSolid = false;
     this.bounds = new THREE.Box3();
+    this.boundTypes = new Set();
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(container);
     this.resize();
@@ -87,6 +92,7 @@ export class Viewer3D {
     this.grid.visible = config.showGrid;
     this.grid.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(...config.camera.up).normalize());
     this.autoBound = config.autoBound;
+    this.boundTypes.clear();
     this.resetCamera();
   }
   resize() {
@@ -121,7 +127,9 @@ export class Viewer3D {
     const points = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ vertexColors: true, sizeAttenuation: false }));
     const lines = new THREE.LineSegments(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ vertexColors: true }));
     const boxes = new GridBoxes();
-    const object = { id, points, lines, boxes, visible: true, pointSize: 2 };
+    boxes.setLevelRange(this.gridMinLevel, this.gridMaxLevel);
+    boxes.setSolid(this.gridSolid);
+    const object = { id, points, lines, boxes, visible: true, pointSize: 2, streams: new Map() };
     this.objects.set(id, object);
     this.scene.add(points, lines, boxes);
     return object;
@@ -150,38 +158,75 @@ export class Viewer3D {
     geometry.setDrawRange(0, count);
   }
   update(frame) {
+    const { type } = frame;
+    if (!STREAM_TYPES.includes(type)) throw new Error('Unknown geometry stream');
     const active = new Set();
-    this.bounds.makeEmpty();
     for (const data of frame.objects) {
       active.add(data.id);
       const o = this.objects.get(data.id) || this.createObject(data.id);
-      o.pointSize = data.pointSize;
-      o.points.material.size = data.pointSize * this.pointScale;
-      for (const mesh of [o.points, o.lines, o.boxes]) {
-        const transparent = data.opacity < 1;
+      // Retain only bounds/counts here; point/line buffers have been uploaded
+      // and should not keep their full received frame alive between updates.
+      o.streams.set(type, { count: data.count, bounds: data.bounds });
+      if (type === 'cells') {
+        o.boxes.update(data.grid, data.bounds, data.opacity);
+        o.boxes.visible = o.visible;
+        this.picker.updateObject(o, data.grid);
+      } else {
+        const mesh = o[type];
+        if (type === 'points') {
+          o.pointSize = data.pointSize;
+          mesh.material.size = data.pointSize * this.pointScale;
+        }
+        let transparent = data.opacity < 1;
+        for (let at = 3; !transparent && at < data.colors.length; at += 4) transparent = data.colors[at] < 255;
         if (mesh.material.transparent !== transparent) { mesh.material.transparent = transparent; mesh.material.needsUpdate = true; }
-        mesh.material.opacity = data.opacity;
         mesh.material.depthWrite = !transparent;
+        mesh.material.opacity = data.opacity;
         mesh.visible = o.visible;
+        this.upload(mesh, data.positions, data.colors, data.bounds);
       }
-      this.upload(o.points, data.points, data.pointColors, data.bounds);
-      this.upload(o.lines, data.lines, data.lineColors, data.bounds);
-      o.boxes.update(data.grid, data.bounds, data.opacity);
-      this.picker.updateObject(o, data.grid);
-      if (o.visible && (data.nP || data.nL || data.nC))
-        this.bounds.union(new THREE.Box3(new THREE.Vector3(...data.bounds.slice(0, 3)), new THREE.Vector3(...data.bounds.slice(3))));
     }
-    for (const [id, object] of this.objects) if (!active.has(id)) this.removeObject(object);
-    if (this.autoBound && !this.bounds.isEmpty()) { this.fit(); this.autoBound = false; }
+    for (const o of this.objects.values()) if (o.streams.has(type) && !active.has(o.id)) this.removeStream(o, type);
+    this.updateBounds();
+    if (this.autoBound && !this.boundTypes.has(type) && frame.objects.some(o => o.count > 0)) {
+      this.fit(); this.boundTypes.add(type);
+    }
+  }
+  removeStream(o, type) {
+    o.streams.delete(type);
+    if (type === 'cells') {
+      o.boxes.update(null, [0, 0, 0, 0, 0, 0], 1);
+      this.picker.removeObject(o.id);
+    } else o[type].geometry.setDrawRange(0, 0);
+    if (!o.streams.size) this.removeObject(o);
+  }
+  clearStream(type) {
+    for (const o of this.objects.values()) if (o.streams.has(type)) this.removeStream(o, type);
+    this.updateBounds();
+  }
+  updateBounds() {
+    this.bounds.makeEmpty();
+    for (const o of this.objects.values()) if (o.visible) for (const data of o.streams.values()) if (data.count)
+      this.bounds.union(new THREE.Box3(new THREE.Vector3(...data.bounds.slice(0, 3)), new THREE.Vector3(...data.bounds.slice(3))));
   }
   setVisible(id, visible) {
     const o = this.objects.get(id);
     if (o) { o.visible = visible; o.points.visible = visible; o.lines.visible = visible; o.boxes.visible = visible; }
     this.picker.setVisible(id, visible);
+    this.updateBounds();
   }
   setPointScale(value) {
     this.pointScale = value;
     for (const o of this.objects.values()) o.points.material.size = o.pointSize * value;
+  }
+  setGridLevelRange(min, max) {
+    this.gridMinLevel = Math.max(0, Math.min(40, Math.round(min)));
+    this.gridMaxLevel = Math.max(this.gridMinLevel, Math.min(40, Math.round(max)));
+    for (const o of this.objects.values()) o.boxes.setLevelRange(this.gridMinLevel, this.gridMaxLevel);
+  }
+  setGridSolid(solid) {
+    this.gridSolid = solid;
+    for (const o of this.objects.values()) o.boxes.setSolid(solid);
   }
   fit() {
     const bounds = this.bounds.clone();
@@ -206,10 +251,17 @@ export class Viewer3D {
     this.camera.updateProjectionMatrix();
     this.controls.update();
   }
-  render() { this.controls.update(); this.renderer.render(this.scene, this.camera); }
+  render() {
+    this.controls.update();
+    this.scene.updateMatrixWorld();
+    this.camera.updateMatrixWorld();
+    for (const o of this.objects.values()) o.boxes.sortCells(this.camera);
+    this.renderer.render(this.scene, this.camera);
+  }
   removeObject(o) {
     this.picker.removeObject(o.id);
-    for (const mesh of [o.points, o.lines, o.boxes]) { this.scene.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); }
+    this.scene.remove(o.boxes); o.boxes.dispose();
+    for (const mesh of [o.points, o.lines]) { this.scene.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); }
     this.objects.delete(o.id);
   }
   clear() { for (const o of this.objects.values()) this.removeObject(o); this.bounds.makeEmpty(); }

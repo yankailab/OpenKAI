@@ -393,7 +393,7 @@ namespace
 		return clamp01(c);
 	}
 
-	void unpackRGB(uint32_t rgb, kai::vFloat3 *pC)
+	void unpackRGB(uint32_t rgb, kai::vFloat4 *pC)
 	{
 		NULL_(pC);
 
@@ -439,9 +439,15 @@ namespace
 			pPt->m_vC.z = normalizeColor(v);
 			return true;
 		}
+		if (n == "alpha" || n == "a" || n == "diffuse_alpha")
+		{
+			pPt->m_vC.w = normalizeColor(v);
+			return true;
+		}
 		if (n == "rgb" || n == "rgba")
 		{
 			unpackRGB((uint32_t)v.m_raw, &pPt->m_vC);
+			if (n == "rgba") pPt->m_vC.w = float((v.m_raw >> 24) & 0xFF) / 255.f;
 			return true;
 		}
 

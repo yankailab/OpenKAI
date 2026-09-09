@@ -101,13 +101,13 @@ def main():
             result = evaluate(f"""(async () => {{
               const {{ decodeFrame }} = await import('http://127.0.0.1:{port}/js/protocol.js');
               const data = await new Promise(resolve => {{
-                const ws = new WebSocket('ws://127.0.0.1:{port}/stream'); ws.binaryType = 'arraybuffer';
+                const ws = new WebSocket('ws://127.0.0.1:{port}/stream/points'); ws.binaryType = 'arraybuffer';
                 ws.onmessage = e => {{ if (typeof e.data === 'string') ws.send('start'); else {{ ws.close(); resolve(e.data); }} }};
               }});
               const f = decodeFrame(data);
-              if (f.objects[0].points.buffer !== data || f.objects[0].lines.length !== 6) throw Error('Incorrect attributes');
+              if (f.type !== 'points' || f.objects[0].positions.buffer !== data || f.objects[0].count !== 10000) throw Error('Incorrect attributes');
               const malformed = [new ArrayBuffer(0), data.slice(0, -1)];
-              for (const [offset, value] of [[0, 0], [4, 99], [12, 1025], [36, 0xffffffff]]) {{
+              for (const [offset, value] of [[0, 0], [4, 3], [8, 0], [8, 4], [16, 1025], [36, 0xffffffff]]) {{
                 const copy = data.slice(0); new DataView(copy).setUint32(offset, value, true); malformed.push(copy);
               }}
               for (const b of malformed) {{ let rejected = false; try {{ decodeFrame(b); }} catch {{ rejected = true; }} if (!rejected) throw Error('Malformed frame accepted'); }}
@@ -119,35 +119,34 @@ def main():
               const {{ GridBoxes }} = await import('/js/gridBoxes.js');
               const THREE = await import('/vendor/three.module.min.js');
               const data = await new Promise(resolve => {{
-                const ws = new WebSocket('ws://127.0.0.1:{port}/stream'); ws.binaryType = 'arraybuffer';
+                const ws = new WebSocket('ws://127.0.0.1:{port}/stream/cells'); ws.binaryType = 'arraybuffer';
                 ws.onmessage = e => {{ if (typeof e.data === 'string') ws.send('start'); else {{ ws.close(); resolve(e.data); }} }};
               }});
               const object = decodeFrame(data).objects[0], grid = object.grid;
-              if (object.nC !== 41 || grid.cells.length !== 41 * 19 || grid.cells.buffer !== data) throw Error('Incorrect cell payload');
+              if (object.count !== 41 || grid.cells.length !== 41 * 20 || grid.cells.buffer !== data) throw Error('Incorrect cell payload');
               for (let depth = 0; depth <= 40; ++depth) {{
                 const box = cellBox(grid, depth), scale = 2 ** -depth;
-                if (box.id.length !== 16 || box.id[0] % 64 !== depth || box.color.join() !== '255,51,0' ||
+                if (box.id.length !== 16 || box.id[0] % 64 !== depth || box.color.join() !== '255,51,0,255' ||
                     box.size.some(x => x !== 2 * scale) || box.center.some(x => x !== 1 - scale)) throw Error('Incorrect cell box');
               }}
-              // Reject malformed counts, metadata, path bits and padding atomically.
-              const start = 32 + 64 + object.nP * 16 + object.nL * 32;
-              const legacy = data.slice(0, start), lv = new DataView(legacy);
-              lv.setUint32(4, 1, true); lv.setUint32(16, legacy.byteLength, true);
-              lv.setUint32(44, 0, true); lv.setUint32(80, 0, true);
-              if (decodeFrame(legacy).objects[0].grid !== null) throw Error('Legacy frame failed');
-              // A grid with 41 unaligned records followed by ordinary geometry.
-              const mixed = new Uint8Array(data.byteLength + legacy.byteLength - 32);
-              mixed.set(new Uint8Array(data)); mixed.set(new Uint8Array(legacy, 32), data.byteLength);
+              // Reject malformed counts, metadata, path bits and old versions atomically.
+              const start = 32 + 40;
+              // Each stream contains only its own type, including across objects.
+              let wrongType = false;
+              try {{ decodeFrame(data, 'points'); }} catch {{ wrongType = true; }}
+              if (!wrongType) throw Error('Cell data accepted on point connection');
+              const mixed = new Uint8Array(data.byteLength * 2 - 32);
+              mixed.set(new Uint8Array(data)); mixed.set(new Uint8Array(data, 32), data.byteLength);
               const mv = new DataView(mixed.buffer);
-              mv.setUint32(12, 2, true); mv.setUint32(16, mixed.byteLength, true);
+              mv.setUint32(16, 2, true); mv.setUint32(20, mixed.byteLength, true);
               mv.setUint32(data.byteLength, 8, true);
               const second = decodeFrame(mixed.buffer).objects[1];
-              if (second.points.buffer !== mixed.buffer || second.points[0] !== 1 || second.nC !== 0) throw Error('Mixed object alignment');
+              if (second.grid.cells.buffer !== mixed.buffer || second.count !== 41) throw Error('Multiple grid object alignment');
               const malformed = [];
-              for (const [at, value] of [[44, 0xffffffff], [80, 2], [start + 24, 41]]) {{
+              for (const [at, value] of [[4, 1], [4, 2], [4, 3], [36, 0xffffffff], [start + 28, 1], [start + 24, 41]]) {{
                 const copy = data.slice(0); new DataView(copy).setUint32(at, value, true); malformed.push(copy);
               }}
-              for (const [at, value] of [[start + 40, 41], [start + 55, 128], [start + 41, 1], [data.byteLength - 1, 1]]) {{
+              for (const [at, value] of [[start + 40, 41], [start + 55, 128], [start + 41, 1]]) {{
                 const copy = data.slice(0); new Uint8Array(copy)[at] = value; malformed.push(copy);
               }}
               const copy = data.slice(0); new DataView(copy).setFloat32(start + 12, -1, true); malformed.push(copy);
@@ -166,8 +165,14 @@ def main():
               let colored = 0;
               for (let i = 0; i < pixels.length; i += 4) if (pixels[i] > 200 && pixels[i + 1] > 30 && pixels[i + 2] < 10) ++colored;
               if (colored < 50) throw Error('No visible colored boxes');
-              const many = {{ ...grid, cells: new Uint8Array(300 * 19) }};
-              for (let i = 0; i < 300; ++i) many.cells.set(grid.cells.subarray(0, 19), i * 19);
+              for (const [min, max] of [[0, 0], [1, 2], [40, 40]]) {{
+                boxes.setLevelRange(min, max); renderer.render(scene, camera);
+                if (renderer.info.render.lines !== (max - min + 1) * 12 || (boxes.getCell(0).id[0] & 63) !== min)
+                  throw Error('Incorrect rendered level range or cell ID');
+              }}
+              boxes.setLevelRange(0, 40);
+              const many = {{ ...grid, cells: new Uint8Array(300 * 20) }};
+              for (let i = 0; i < 300; ++i) many.cells.set(grid.cells.subarray(0, 20), i * 20);
               boxes.update(many, object.bounds, .5); renderer.render(scene, camera);
               if (renderer.info.render.lines !== 300 * 12) throw Error('Instance capacity did not grow');
               boxes.update({{ ...grid, cells: new Uint8Array(0) }}, object.bounds, 1);
@@ -195,32 +200,81 @@ def main():
                 scene.remove(boxes); scene.add(point);
                 pointColor.array.set([...rgb, 255]); pointColor.needsUpdate = true;
                 const expected = screenColor();
-                const cells = new Uint8Array(19); cells.set(rgb, 16);
+                const cells = new Uint8Array(20); cells.set([...rgb, 255], 16);
                 boxes.update({{ ...grid, cells }}, object.bounds, 1);
                 scene.remove(point); scene.add(boxes);
                 const actual = screenColor();
                 if (!expected || actual !== expected) throw Error(`Cell RGB ${{rgb}} rendered as ${{actual}}, point rendered as ${{expected}}`);
               }}
               pointGeometry.dispose(); point.material.dispose();
-              boxes.geometry.dispose(); boxes.material.dispose(); renderer.dispose();
+              boxes.dispose(); renderer.dispose();
               return 'PASS: grid decoding through depth 40, validation, instanced WebGL boxes, point/cell RGB agreement, resizing and clearing';
             }})()""")
             print(grid_result)
+            stream_source = (Path(__file__).with_name('streams.js')).read_text()
+            print(evaluate('(async () => {' + stream_source + '})()'))
+            alpha_source = (Path(__file__).with_name('alpha.js')).read_text()
+            print(evaluate('(async () => {' + alpha_source + '})()'))
             evaluate("document.querySelector('#fit').click(); document.querySelector('#objects input').click(); document.querySelector('#objects input').click();")
             screenshot = command('Page.captureScreenshot', {'format': 'png'})['data']
             Path('/tmp/openkai-webviewer.png').write_bytes(base64.b64decode(screenshot))
             evaluate("document.querySelector('#stop').click()")
             assert evaluate("document.querySelector('#status').textContent") == 'Stopped'
             assert evaluate("wsSocket === null")
-            evaluate("window.TestWebSocket = window.WebSocket; window.WebSocket = class extends window.TestWebSocket { constructor(...args) { super(...args); if (this.url.endsWith('/stream')) window.testSocket = this; } };")
+            # Start with both point and line endpoints unavailable. The cells hello
+            # must configure the page and keep the command connection independent.
+            evaluate("""(async () => {
+              const { Viewer3D } = await import('/js/viewer3D.js');
+              const render = Viewer3D.prototype.render;
+              await new Promise(resolve => {
+                Viewer3D.prototype.render = function () {
+                  Viewer3D.prototype.render = render; window.streamTestViewer = this;
+                  resolve(); return render.call(this);
+                };
+              });
+              window.TestWebSocket = window.WebSocket;
+              window.testSockets = {};
+              window.onlyCells = true;
+              window.WebSocket = class extends window.TestWebSocket {
+                constructor(url, ...args) {
+                  const parsed = new URL(url), type = parsed.pathname.split('/')[2];
+                  if (window.onlyCells && ['points', 'lines'].includes(type)) parsed.pathname = '/unavailable/' + type;
+                  super(parsed, ...args);
+                  if (['points', 'lines', 'cells'].includes(type)) window.testSockets[type] = this;
+                }
+              };
+            })()""")
             evaluate("document.querySelector('#start').click()")
+            wait_for("document.querySelector('#stats').textContent.includes('0 points · 0 lines · 41 cells')")
+            wait_for("wsSocket?.readyState === WebSocket.OPEN")
+            assert evaluate("streamTestViewer.objects.get(7).boxes.geometry.instanceCount") == 41
+            assert evaluate("document.querySelectorAll('#objects input').length") == 1
+            evaluate("window.onlyCells = false")
+            wait_for("document.querySelector('#status').textContent === 'Connected'")
+            wait_for("document.querySelector('#stats').textContent.includes('10,000 points · 1 lines · 41 cells')")
+            evaluate("window.savedCmdSocket = wsSocket; window.savedCellSocket = testSockets.cells; window.savedCamera = streamTestViewer.camera.position.clone(); testSockets.points.close();")
+            wait_for("document.querySelector('#status').textContent.includes('retrying')")
+            assert evaluate("streamTestViewer.objects.get(7).boxes.geometry.instanceCount === 41 && streamTestViewer.objects.get(7).lines.geometry.drawRange.count === 2")
+            wait_for("document.querySelector('#status').textContent === 'Connected'")
+            assert evaluate("wsSocket === savedCmdSocket && wsSocket.readyState === WebSocket.OPEN && testSockets.cells === savedCellSocket")
+            assert evaluate("streamTestViewer.camera.position.distanceTo(savedCamera) < 1e-8")
+            # Feed a packet from the wrong type to the point connection. Only its
+            # decoder/connection stops; cells, lines and commands continue.
+            evaluate("""(async () => {
+              const frame = await new Promise(resolve => {
+                const ws = new TestWebSocket(new URL('/stream/cells', location.href).href.replace('http:', 'ws:'));
+                ws.binaryType = 'arraybuffer';
+                ws.onmessage = e => { if (typeof e.data === 'string') ws.send('start'); else { ws.close(); resolve(e.data); } };
+              });
+              testSockets.points.onmessage({ data: frame });
+            })()""")
+            wait_for("document.querySelector('#status').textContent.includes('Wrong geometry stream type')")
+            wait_for("document.querySelector('#stats').textContent.includes('0 points · 1 lines · 41 cells')")
+            assert evaluate("streamTestViewer.objects.get(7).boxes.geometry.instanceCount === 41 && wsSocket === savedCmdSocket")
+            evaluate("document.querySelector('#stop').click(); document.querySelector('#start').click()")
             wait_for("document.querySelector('#status').textContent === 'Connected'")
             wait_for("wsSocket?.readyState === WebSocket.OPEN")
-            evaluate("window.savedCmdSocket = wsSocket")
-            evaluate("window.testSocket.close()")
-            wait_for("document.querySelector('#status').textContent.includes('retrying')")
-            wait_for("document.querySelector('#status').textContent === 'Connected'")
-            assert evaluate("wsSocket === savedCmdSocket && wsSocket.readyState === WebSocket.OPEN")
+            print('PASS: cells-only WebSocket startup, independent reconnects, malformed stream isolation, camera and command connection preserved')
             picker_source = (Path(__file__).with_name('picker.js')).read_text()
             picker_source = re.sub(r"import \* as (\w+) from '([^']+)';", r"const \1 = await import('\2');", picker_source)
             picker_source = re.sub(r"import (\{[^}]+\}) from '([^']+)';", r"const \1 = await import('\2');", picker_source)
@@ -228,6 +282,12 @@ def main():
             print(evaluate('(async () => {' + picker_source + '; return await runPickerTests(); })()'))
             location = evaluate('(async () => {' + picker_source + '; return await preparePickerUI(); })()')
             assert evaluate("document.querySelector('#picker-count').textContent") == '0 picked cells'
+            assert not evaluate("document.querySelector('#grid-solid').checked")
+            for solid in [True, False, True]:
+                evaluate("document.querySelector('#grid-solid').click(); pickerTestViewer.render();")
+                assert evaluate('pickerTestViewer.gridSolid') == solid
+                assert evaluate('pickerTestViewer.renderer.info.render.triangles') == (36 if solid else 0)
+                assert evaluate('pickerTestViewer.renderer.info.render.lines') == (0 if solid else 36)
             def mouse(kind, x, y, button='left', buttons=0):
                 command('Input.dispatchMouseEvent', {'type': kind, 'x': x, 'y': y, 'button': button, 'buttons': buttons, 'clickCount': 1})
             x, y = location['x'], location['y']
@@ -250,23 +310,39 @@ def main():
               return red;
             })()"""
             assert evaluate(red_pixels) > 20, 'Selected cell was not drawn red'
+            def level_slider(which, value):
+                evaluate(f"document.querySelector('#grid-{which}-level').value = '{value}'; document.querySelector('#grid-{which}-level').dispatchEvent(new Event('input', {{bubbles: true}}));")
+            assert evaluate("[document.querySelector('#grid-min-level').value, document.querySelector('#grid-max-level').value]") == ['0', '40']
+            level_slider('max', 1)
+            assert evaluate('pickerTestViewer.objects.get(7).boxes.geometry.instanceCount') == 2
+            assert evaluate(red_pixels) > 20, 'Level filter hid a selected cell'
+            level_slider('min', 40) # Crossing moves max to min; occupied depths 0-2 all disappear.
+            assert evaluate("document.querySelector('#grid-max-level-value').textContent") == '40'
+            assert evaluate('pickerTestViewer.objects.get(7).boxes.geometry.instanceCount') == 0
+            assert evaluate(red_pixels) > 20
+            assert evaluate('pickerTestViewer.renderer.info.render.lines') == 12, 'Hidden levels still submitted for drawing'
+            level_slider('max', 0) # Crossing in the other direction moves min to max.
+            assert evaluate("document.querySelector('#grid-min-level-value').textContent") == '0'
+            assert evaluate('pickerTestViewer.objects.get(7).boxes.geometry.instanceCount') == 1
             screenshot = command('Page.captureScreenshot', {'format': 'png'})['data']
             Path('/tmp/openkai-picker.png').write_bytes(base64.b64decode(screenshot))
             evaluate("document.querySelector('#picker-send').click()")
-            wait_for("testReplies.some(j => j.cmd === 'ackGridCellSelection')")
+            wait_for("testReplies.some(j => j.cmd === 'octGridCellSelect' && j.bSuccess === true)")
             payload = commands.received[-1]
-            assert payload == {'cmd': 'gridCellSelection', 'module': 'Test cloud and lines',
+            assert payload == {'cmd': 'octGridCellSelect', 'module': 'Test cloud and lines',
                                'vPorigin': ['0', '0', '0'], 'vRootCellSize': ['2', '2', '2'], 'cellIDs': [location['id']]}, payload
             assert evaluate('pickerTestViewer.picker.count') == 1
             mouse('mousePressed', x, y, buttons=1); mouse('mouseReleased', x, y)
             assert evaluate('pickerTestViewer.picker.count') == 0
             assert evaluate(red_pixels) == 0, 'Deselected cell remained red'
+            level_slider('max', 40)
+            assert evaluate('pickerTestViewer.objects.get(7).boxes.geometry.instanceCount') == 3
             mouse('mousePressed', x, y, buttons=1); mouse('mouseReleased', x, y)
             evaluate("document.querySelector('#cmdDisconnect').click()")
             assert evaluate("document.querySelector('#picker-send').disabled && pickerTestViewer.picker.count === 1")
             evaluate("document.querySelector('#picker-clear').click()")
             assert evaluate("pickerTestViewer.picker.count === 0 && document.querySelector('#picker-clear').disabled")
-            print('PASS: real picker mouse events, drag suppression, panel count, independent WebSocket JSON, deselection and Clear')
+            print('PASS: wire/solid switch, grid level sliders, selected boxes outside range, real picker mouse events, drag suppression, panel count, independent WebSocket JSON, deselection and Clear')
             assert not exceptions, exceptions
             print('PASS: local-file launcher, WebGL2 rendering, camera/visibility controls, Stop/Start; ' + result)
             print('Screenshot: /tmp/openkai-webviewer.png')

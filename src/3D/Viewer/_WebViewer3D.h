@@ -3,6 +3,7 @@
 
 #include "../_GeometryViewerBase.h"
 #include "../Grid/OctreeGridCells.h"
+#include "WebViewer3DProtocol.h"
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
@@ -43,8 +44,18 @@ namespace kai
 			float pointSize = 2;
 			vFloat4 color{1, 1, 1, 1};
 		};
-		void collect(const Object &object, std::vector<uint8_t> &frame, uint32_t id, uint64_t expiry);
-		std::string hello() const;
+		struct Stream
+		{
+			webviewer3d::Type type = webviewer3d::Type::Points;
+			std::unique_ptr<WebSocketStream> transport;
+			std::vector<std::shared_ptr<std::vector<uint8_t>>> buffers;
+			uint32_t sequence = 0;
+			std::atomic<size_t> bytes{0};
+		};
+		bool includes(const Object &object, webviewer3d::Type type) const;
+		void collect(const Object &object, webviewer3d::Type type, std::vector<uint8_t> &frame, uint32_t id, uint64_t expiry);
+		void publish(Stream &stream);
+		std::string hello(webviewer3d::Type type) const;
 		std::string m_host = "0.0.0.0", m_root = "html/webViewer3D";
 		int m_port = 8080, m_maxClients = 8, m_nCbuf = 100000;
 		OCTGRID_CELLS m_cells;
@@ -52,16 +63,13 @@ namespace kai
 		bool m_autoBound = true, m_showGrid = true;
 		std::vector<Object> m_objects;
 		std::unique_ptr<HttpServer> m_http;
-		std::unique_ptr<WebSocketStream> m_stream;
+		std::array<Stream, 3> m_streams;
 		std::thread m_worker;
 		std::atomic<bool> m_running{false}, m_paused{false};
 		std::mutex m_waitMutex;
 		std::condition_variable m_wakeup;
-		uint32_t m_sequence = 0;
-		std::atomic<size_t> m_frameBytes{0};
-		std::vector<float> m_points, m_lines;
-		std::vector<uint8_t> m_pointColors, m_lineColors;
-		std::vector<std::shared_ptr<std::vector<uint8_t>>> m_buffers;
+		std::vector<float> m_positions;
+		std::vector<uint8_t> m_colors;
 	};
 }
 #endif

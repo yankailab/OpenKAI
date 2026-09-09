@@ -17,6 +17,7 @@ namespace kai
 		WebSocketStream(boost::asio::io_context &io, std::string hello, size_t maxClients = 8);
 		~WebSocketStream();
 		HttpServer::Upgrade upgradeHandler();
+		static HttpServer::Upgrade routes(const std::vector<std::pair<std::string, WebSocketStream *>> &streams);
 		void publish(Frame frame);
 		size_t nClient() const;
 		// Call after HttpServer::stop(), with the producer joined.

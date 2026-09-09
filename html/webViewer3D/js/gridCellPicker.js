@@ -101,7 +101,9 @@ export class GridCellPicker {
         const centers = mesh.geometry.getAttribute('cellCenter').array;
         const sizes = mesh.geometry.getAttribute('cellSize').array;
         for (let i = 0; i < mesh.geometry.instanceCount; ++i) {
-          const depth = mesh.grid.cells[i * CELL_BYTES] & 63;
+          const at = mesh.cellIndices[i] * CELL_BYTES;
+          if (mesh.grid.cells[at + 19] === 0) continue;
+          const depth = mesh.grid.cells[at] & 63;
           if (best && depth < best.depth) continue;
           let distance = near, end = far;
           for (let axis = 0; axis < 3; ++axis) {
@@ -117,7 +119,7 @@ export class GridCellPicker {
           }
           if (distance > end) continue;
           if (!best || depth > best.depth || distance < best.distance) {
-            best = { source, depth, distance, id: mesh.grid.cells.slice(i * CELL_BYTES, i * CELL_BYTES + 16) };
+            best = { source, depth, distance, id: mesh.grid.cells.slice(at, at + 16) };
           }
         }
       }
@@ -153,7 +155,7 @@ export class GridCellPicker {
   }
   commands() {
     return [...this.sources.values()].filter(source => source.selected.size).map(source => ({
-      cmd: 'gridCellSelection', module: source.module,
+      cmd: 'octGridCellSelect', module: source.module,
       vPorigin: source.header.origin.map(String), vRootCellSize: source.header.size.map(String),
       cellIDs: [...source.selected.keys()]
     }));
@@ -162,7 +164,7 @@ export class GridCellPicker {
     for (const [type, handler] of Object.entries(this.handlers)) this.viewer.renderer.domElement.removeEventListener(type, handler, true);
     for (const source of this.sources.values()) {
       this.viewer.scene.remove(source.overlay);
-      source.overlay.geometry.dispose(); source.overlay.material.dispose();
+      source.overlay.dispose();
     }
     this.sources.clear();
   }

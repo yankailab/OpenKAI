@@ -81,7 +81,7 @@ namespace kai
 
 		for (const IMGUI_VIEWER_OBJ &g : vGO)
 		{
-			float alpha = std::clamp(g.m_matCol.w, 0.0f, 1.0f);
+			const float alpha = std::clamp(std::isfinite(g.m_matCol.w) ? g.m_matCol.w : 1.f, 0.f, 1.f);
 
 			if (!g.m_vL.empty() || !g.m_vBox.empty())
 			{
@@ -99,15 +99,15 @@ namespace kai
 				for (const IMGUI_VIEWER_LINE &l : g.m_vL)
 				{
 					m_vLineUpload.push_back({l.m_vA.x, l.m_vA.y, l.m_vA.z,
-											  l.m_vC.x, l.m_vC.y, l.m_vC.z, alpha});
+											  l.m_vC.x, l.m_vC.y, l.m_vC.z, alpha * l.m_vC.w});
 					m_vLineUpload.push_back({l.m_vB.x, l.m_vB.y, l.m_vB.z,
-											  l.m_vC.x, l.m_vC.y, l.m_vC.z, alpha});
+											  l.m_vC.x, l.m_vC.y, l.m_vC.z, alpha * l.m_vC.w});
 					m_vLineBatch.back().m_count += 2;
 				}
 				for (const auto &box : g.m_vBox)
 					box.forEachEdge([&](const vFloat3 &a, const vFloat3 &b) {
-						m_vLineUpload.push_back({a.x, a.y, a.z, box.m_vC.x, box.m_vC.y, box.m_vC.z, alpha});
-						m_vLineUpload.push_back({b.x, b.y, b.z, box.m_vC.x, box.m_vC.y, box.m_vC.z, alpha});
+						m_vLineUpload.push_back({a.x, a.y, a.z, box.m_vC.x, box.m_vC.y, box.m_vC.z, alpha * box.m_vC.w});
+						m_vLineUpload.push_back({b.x, b.y, b.z, box.m_vC.x, box.m_vC.y, box.m_vC.z, alpha * box.m_vC.w});
 						m_vLineBatch.back().m_count += 2;
 					});
 			}
@@ -128,7 +128,7 @@ namespace kai
 				for (const IMGUI_VIEWER_POINT &p : g.m_vP)
 				{
 					m_vPointUpload.push_back({p.m_vP.x, p.m_vP.y, p.m_vP.z,
-											   p.m_vC.x, p.m_vC.y, p.m_vC.z, alpha});
+											   p.m_vC.x, p.m_vC.y, p.m_vC.z, alpha * p.m_vC.w});
 					m_vPointBatch.back().m_count++;
 				}
 			}

@@ -78,6 +78,11 @@ namespace kai
 
     void _Line::add(const vFloat3 &vPa, const vFloat3 &vPb, const vFloat3 &vC, uint64_t tStamp)
     {
+        add(vPa, vPb, vFloat4(vC.x, vC.y, vC.z, 1), tStamp);
+    }
+
+    void _Line::add(const vFloat3 &vPa, const vFloat3 &vPb, const vFloat4 &vC, uint64_t tStamp)
+    {
         GEOMETRY_LINE gL;
         gL.m_vPa = vPa;
         gL.m_vPb = vPb;

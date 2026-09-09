@@ -15,7 +15,7 @@ namespace kai
 	struct OCTGRID_CELL
 	{
 		uint8_t m_ID[16] = {};
-		uint8_t m_vC[3] = {};
+		uint8_t m_vC[4] = {0, 0, 0, 255}; // RGBA8
 
 		void setID(const UUID128 &id)
 		{
@@ -30,7 +30,7 @@ namespace kai
 			return result;
 		}
 	};
-	static_assert(sizeof(OCTGRID_CELL) == 19, "Grid cells must occupy exactly 19 bytes");
+	static_assert(sizeof(OCTGRID_CELL) == 20, "Grid cells must occupy exactly 20 bytes");
 
 	struct OCTGRID_HEADER
 	{

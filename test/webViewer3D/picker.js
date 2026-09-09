@@ -57,16 +57,29 @@ export async function runPickerTests() {
   picker.configure([{ id: 8, name: 'octGrid' }, { id: 9, name: 'otherGrid' }]);
   const boxes = new GridBoxes();
   const grid = selectionGrid(header, selected(root, idAt(7), idAt(7, 7)));
-  for (let at = 0; at < grid.cells.length; at += 19) { grid.cells[at + 16] = 0; grid.cells[at + 17] = 255; }
+  for (let at = 0; at < grid.cells.length; at += 20) { grid.cells[at + 16] = 0; grid.cells[at + 17] = 255; }
   boxes.update(grid, rootBounds(header), 1);
   picker.updateObject({ id: 8, visible: true, boxes }, grid);
   const ray = new THREE.Ray(new THREE.Vector3(.75, .75, 5), new THREE.Vector3(0, 0, -1));
   let hit = picker.pickRay(ray);
   check(hit?.depth === 2, 'Did not pick deepest overlapped occupied cell');
+  boxes.setLevelRange(1, 1);
+  check(boxes.geometry.instanceCount === 1 && cellIDKey(boxes.getCell(0).id) === cellIDKey(idAt(7)), 'Filtered instance lost its original ID');
+  check(picker.pickRay(ray)?.depth === 1, 'Picked an occupied cell outside the level range');
+  boxes.setLevelRange(3, 40);
+  boxes.update(grid, rootBounds(header), 1);
+  check(boxes.geometry.instanceCount === 0 && boxes.getCell(0) === null && picker.pickRay(ray) === null, 'Empty level range retained occupied cells after update');
+  boxes.setLevelRange(0, 40);
+  grid.cells[2 * 20 + 19] = 0;
+  check(picker.pickRay(ray)?.depth === 1, 'Invisible occupied cell was picked');
+  grid.cells[2 * 20 + 19] = 255;
   check(picker.pickRay(ray, 0, 3) === null, 'Picked a cell beyond the far plane');
   check(picker.pickRay(ray, 4.25, 4.3)?.depth === 2, 'Cell containing the clipped ray interval was not picked');
   picker.toggle(hit.source, hit.id);
-  check(picker.count === 1 && hit.source.overlay.grid.cells[16] === 255 && hit.source.overlay.grid.cells[17] === 0, 'Selection not red');
+  check(picker.count === 1 && hit.source.overlay.grid.cells[16] === 255 && hit.source.overlay.grid.cells[17] === 0 &&
+    hit.source.overlay.grid.cells[19] === 255 && hit.source.overlay.material.transparent && !hit.source.overlay.material.depthWrite, 'Selection not opaque red overlay');
+  boxes.setLevelRange(0, 0);
+  check(hit.source.overlay.geometry.instanceCount === 1 && picker.pickRay(ray)?.depth === 2, 'Level filter hid or disabled a selected cell');
   // Input buffers can be replaced without changing the retained ID.
   const saved = picker.commands()[0].cellIDs[0];
   grid.cells.fill(0);
@@ -88,7 +101,7 @@ export async function runPickerTests() {
   picker.updateObject({ id: 8, visible: true, boxes }, newGrid);
   check(picker.count > 1 && volume(translated, hit.source.selected) === 1, 'Header update did not remap persistent selection');
   const command = picker.commands()[0];
-  check(command.cmd === 'gridCellSelection' && command.module === 'octGrid' && command.vPorigin.join() === '0.25,0.25,0.25' &&
+  check(command.cmd === 'octGridCellSelect' && command.module === 'octGrid' && command.vPorigin.join() === '0.25,0.25,0.25' &&
     command.vRootCellSize.join() === '2,2,2' && command.cellIDs.every(x => /^[0-9a-f]{32}$/.test(x)), 'Wrong command payload');
   check(command.vPorigin.every(x => typeof x === 'string') && !('color' in command), 'Non-text header or color sent');
   picker.updateObject({ id: 9, visible: true, boxes }, empty);
@@ -96,8 +109,19 @@ export async function runPickerTests() {
   check(picker.commands().length === 2, 'Different grids lost their own headers');
   picker.clear();
   check(picker.count === 0 && picker.commands().length === 0 && hit.source.overlay.geometry.instanceCount === 0, 'Clear left selections');
-  boxes.geometry.dispose(); boxes.material.dispose(); viewer.dispose(); container.remove();
-  return 'PASS: picker depth priority, exact IDs, persistence, toggling, volume remapping, multiple grids and clearing';
+  viewer.setGridLevelRange(2, 2);
+  viewer.setGridSolid(true);
+  const checkNewObject = id => {
+    const object = viewer.createObject(id);
+    check(object.boxes.solid.visible && !object.boxes.wire.visible, 'New object ignored solid mode');
+    object.boxes.update(selectionGrid(header, selected(root, idAt(7), idAt(7, 7))), rootBounds(header), 1);
+    check(object.boxes.geometry.instanceCount === 1 && (object.boxes.getCell(0).id[0] & 63) === 2, 'New object ignored the current level range');
+  };
+  checkNewObject(10);
+  viewer.clear(); // Reconnects clear streamed objects, but retain the level range.
+  checkNewObject(11);
+  boxes.dispose(); viewer.dispose(); container.remove();
+  return 'PASS: picker depth priority, exact IDs, level filtering, persistence, toggling, volume remapping, multiple grids and clearing';
 }
 
 // Capture the live viewer for input/UI tests without exposing application globals.
@@ -111,7 +135,7 @@ export async function preparePickerUI() {
   const header = { origin: [0, 0, 0], size: [2, 2, 2], maxLevel: 4 };
   const object = viewer.createObject(7);
   const grid = selectionGrid(header, selected(root, idAt(7), idAt(7, 7)));
-  for (let at = 0; at < grid.cells.length; at += 19) { grid.cells[at + 16] = 0; grid.cells[at + 17] = 255; }
+  for (let at = 0; at < grid.cells.length; at += 20) { grid.cells[at + 16] = 0; grid.cells[at + 17] = 255; }
   object.boxes.update(grid, rootBounds(header), 1);
   viewer.picker.updateObject(object, grid);
   viewer.autoBound = false;

@@ -21,8 +21,8 @@ namespace kai
 		*/
 
 		int m_nP = 0;
-		vFloat3 m_vC = {1, 1, 1}; // default color
-		uint64_t m_tStamp = 0;	  // last updated time stamp
+		vFloat4 m_vC = {1, 1, 1, 1}; // default color
+		uint64_t m_tStamp = 0;		 // last updated time stamp
 
 		void clear(void)
 		{
@@ -43,6 +43,13 @@ namespace kai
 		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
+		virtual void console(void *pConsole);
+		virtual void console(const json &j, void *pJSONbase);
+
+		// config
+		// Load after init, with grid updates stopped; restoring a new root clears old occupancy.
+		virtual bool loadConfig(json *pJ = nullptr, string fName = "");
+		virtual bool saveConfig(json &j, string fName = "");
 
 		// grid
 		virtual OCTGRID_PCL_CELL *addCellPoint(const GEOMETRY_POINT &gP, const uint64_t &tNow, int nMaxLevTo = -1, bool bAdd = true);
@@ -90,8 +97,11 @@ namespace kai
 		OCTGRID_CELLS m_cells;
 		vector<OCTGRID_CELL> m_buildCells;
 		std::mutex m_cellsMutex;
-		vFloat3 m_vColCellOcc;
+		vFloat4 m_vColCellOcc;
 		bool m_bColCellOcc;
+
+		// Selected cells, guarded by m_cellsMutex after initialization.
+		vector<UUID128> m_vSelectedCells;
 	};
 
 }

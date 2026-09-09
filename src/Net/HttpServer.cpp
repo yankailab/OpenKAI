@@ -85,7 +85,7 @@ namespace kai
 			void respond()
 			{
 				auto req = parser.release();
-				if (beast::websocket::is_upgrade(req) && req.target() == "/stream" && server.upgrade)
+				if (beast::websocket::is_upgrade(req) && server.upgrade)
 				{
 					stream.expires_never();
 					server.upgrade(std::move(stream), std::move(req));

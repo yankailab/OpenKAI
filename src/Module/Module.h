@@ -75,9 +75,6 @@
 #include "../Autopilot/APmavlink/_APmavlink_relay.h"
 #include "../Autopilot/APmavlink/_APmavlink_servo.h"
 #include "../Autopilot/APmavlink/_APmavlink_drive.h"
-#ifdef WITH_SENSOR
-#include "../Autopilot/APmavlink/_APmavlink_distLidar.h"
-#endif
 #ifdef USE_OPENCV
 #include "../Autopilot/APmavlink/_APmavlink_RTCM.h"
 #include "../Autopilot/APmavlink/_APmavlink_depthVision.h"
@@ -95,9 +92,6 @@
 #endif
 #ifdef WITH_NAVIGATION
 #include "../Autopilot/APmavlink/_APmavlink_visionEstimate.h"
-#ifdef USE_REALSENSE
-#include "../Autopilot/APmavlink/_APmavlink_GPS.h"
-#endif
 #endif // nav
 #endif // APmavlink
 

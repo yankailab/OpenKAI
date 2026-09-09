@@ -18,6 +18,7 @@ int main()
 			OCTGRID_CELL cell;
 			cell.setID(id);
 			cell.m_vC[0] = 17; cell.m_vC[1] = 128; cell.m_vC[2] = 255;
+			cell.m_vC[3] = uint8_t(depth * 6);
 			assert(cell.id().m_uint64[0] == id.m_uint64[0]);
 			assert(cell.id().m_uint64[1] == id.m_uint64[1]);
 			std::array<float, 3> c, s;
@@ -36,22 +37,28 @@ int main()
 				assert(!octgridCellBox(grid.m_header, invalid, c, s));
 				path |= UUID128(octant) << (123 - depth * 3);
 			}
-			grid.m_vCell.assign(depth % 4, cell); // every possible alignment remainder
+			grid.m_vCell.assign(depth % 4, cell); // empty and multiple-cell snapshots
 			std::vector<uint8_t> frame;
 			float bounds[6] = {};
-			webviewer3d::begin(frame, 1, 2);
-			webviewer3d::object(frame, 0, 2, 1, bounds, {}, {}, {}, {}, &grid);
-			const size_t expected = (32 + 64 + 40 + 19 * grid.m_vCell.size() + 3) & ~size_t(3);
+			webviewer3d::begin(frame, webviewer3d::Type::Cells, 1, 2);
+			assert(frame[4] == 4 && frame[8] == 3);
+			webviewer3d::cells(frame, 0, 1, bounds, grid);
+			const size_t expected = 32 + 40 + 40 + 20 * grid.m_vCell.size();
 			assert(frame.size() == expected);
-			assert(frame[44] == grid.m_vCell.size() && frame[80] == 1);
+			assert(frame[36] == grid.m_vCell.size());
 			if (!grid.m_vCell.empty())
 			{
-				assert(std::memcmp(frame.data() + 136, cell.m_ID, 16) == 0);
-				assert(frame[152] == 17 && frame[153] == 128 && frame[154] == 255);
+				assert(std::memcmp(frame.data() + 112, cell.m_ID, 16) == 0);
+				assert(frame[128] == 17 && frame[129] == 128 && frame[130] == 255);
+				assert(frame[131] == cell.m_vC[3]);
 			}
-			webviewer3d::object(frame, 1, 2, 1, bounds, {1, 2, 3}, {1, 2, 3, 255}, {}, {});
+			bool rejected = false;
+			try { webviewer3d::points(frame, 1, 2, 1, bounds, {1,2,3}, {1,2,3,255}); }
+			catch (const std::invalid_argument &) { rejected = true; }
+			assert(rejected && frame.size() == expected);
+			OCTGRID_CELLS empty; webviewer3d::cells(frame, 1, 1, bounds, empty);
 			assert(frame.size() == expected + 80 && frame[expected] == 1);
 		}
 	}
-	std::cout << "PASS: 19-byte records, depths 0-40 in all octants, canonical IDs, colors and mixed-object alignment\n";
+	std::cout << "PASS: 20-byte records, depths 0-40 in all octants, canonical IDs, colors and typed streams, wrong-type rejection and object alignment\n";
 }

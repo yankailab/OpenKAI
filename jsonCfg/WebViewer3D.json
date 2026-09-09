@@ -5,9 +5,10 @@
     "bLog": true,
     "bStdErr": true
   },
+
   "pcFile": {
     "class": "_PCfile",
-    "bON": false,
+    "bON": true,
     "bLog": true,
     "thread": {
       "FPS": 1
@@ -22,9 +23,10 @@
       "data/PointCloud/StanfordBunny/bun000.ply"
     ]
   },
+
   "cam": {
     "class": "_Scepter",
-    "bON": true,
+    "bON": false,
     "bLog": true,
     "thread": {
       "FPS": 30
@@ -49,15 +51,18 @@
     "btDepth": false,
     "bIR": false
   },
+
   "scPC": {
     "class": "_PointCloud",
-    "bON": true,
+    "bON": false,
     "bLog": true,
     "thread": {
       "FPS": 1
     },
     "nP": 400000
   },
+
+
   "octGrid": {
     "class": "_OctreeGrid",
     "thread": {
@@ -69,8 +74,8 @@
       5,
       5
     ],
-    "nMaxLevel": 4,
-    "nMaxCells": 8333,
+    "nMaxLevel": 5,
+    "nMaxCells": 18333,
     "dTexpireCell": 500000,
     "dTexpirePCL": 0,
     "vGeometryBase": [
@@ -78,6 +83,7 @@
       "scPC"
     ]
   },
+
   "viewer": {
     "class": "_WebViewer3D",
     "thread": {
@@ -119,10 +125,16 @@
         "matPointSize": 2
       },
       {
+        "_GeometryBase": "pcFile",
+        "nP": 4000000,
+        "nL": 0,
+        "matPointSize": 2
+      },
+      {
         "_GeometryBase": "octGrid",
         "nP": 0,
         "nL": 0,
-        "nC": 8333,
+        "nC": 18333,
         "matCol": [
           0.3,
           0.8,
@@ -132,6 +144,8 @@
       }
     ]
   },
+
+
   "wsCmdServer": {
     "class": "_WebSocketServer",
     "host": "0.0.0.0",

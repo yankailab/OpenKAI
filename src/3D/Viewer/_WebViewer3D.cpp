@@ -9,7 +9,8 @@
 
 namespace kai
 {
-	_WebViewer3D::_WebViewer3D() : m_http(new HttpServer) {}
+	_WebViewer3D::_WebViewer3D() : m_http(new HttpServer)
+	{ for (size_t i = 0; i < m_streams.size(); ++i) m_streams[i].type = webviewer3d::Types[i]; }
 	_WebViewer3D::~_WebViewer3D() { stop(); }
 
 	bool _WebViewer3D::init(const json &j)
@@ -24,7 +25,7 @@ namespace kai
 		jKv(j, "bShowGrid", m_showGrid);
 		jKv<float>(j, "vBgCol", m_background);
 		IF_Le_F(m_port < 1 || m_port > 65535 || m_maxClients < 1 || m_maxClients > 64, "Invalid viewer port/client limit");
-		IF_Le_F(m_nPbuf <= 0 || m_nLbuf <= 0 || m_nCbuf < 0, "Invalid geometry buffer limits");
+		IF_Le_F(m_nPbuf < 0 || m_nLbuf < 0 || m_nCbuf < 0, "Invalid geometry buffer limits");
 		// Resolve relative to launch directory, then the executable's copied assets.
 		if (!std::filesystem::is_directory(m_root) && !j.contains("webRoot"))
 		{
@@ -67,7 +68,12 @@ namespace kai
 				std::string name;
 				IF_Le_F(!jKv(config, "_GeometryBase", name), "vGeometry entry needs _GeometryBase");
 				auto source = dynamic_cast<_GeometryBase *>(static_cast<BASE *>(manager->findModule(name)));
-				IF_Le_F(!source, "Geometry source not found: " + name);
+				if(!source)
+				{
+					LOG_I("Geometry source not found: " + name);
+					continue;
+				}
+
 				auto it = std::find_if(m_objects.begin(), m_objects.end(), [source](const Object &o)
 									   { return o.source == source; });
 				if (it == m_objects.end())
@@ -93,23 +99,39 @@ namespace kai
 				it->nL = std::min(it->nL, m_nLbuf);
 				it->nC = std::min(it->nC, m_nCbuf);
 			}
-		// Verify the worst case once, before any threads start.
-		uint64_t bytes = webviewer3d::HeaderBytes;
-		for (const auto &o : m_objects)
-			if (o.visible)
+		// Each type has its own frame budget and buffer pool.
+		IF_Le_F(m_objects.size() > 1024, "Geometry source limit is 1024");
+		for (auto type : webviewer3d::Types)
+		{
+			uint64_t bytes = webviewer3d::HeaderBytes;
+			for (const auto &o : m_objects) if (includes(o, type))
 			{
-				bytes += webviewer3d::ObjectBytes + uint64_t(o.nP) * 16 + uint64_t(o.nL) * 32;
-				if (dynamic_cast<_OctreeGrid *>(o.source))
-					bytes += webviewer3d::GridHeaderBytes + uint64_t(o.nC) * webviewer3d::CellBytes + 3;
+				bytes += webviewer3d::ObjectBytes;
+				if (type == webviewer3d::Type::Points) bytes += uint64_t(o.nP) * 16;
+				else if (type == webviewer3d::Type::Lines) bytes += uint64_t(o.nL) * 32;
+				else bytes += webviewer3d::GridHeaderBytes + uint64_t(o.nC) * webviewer3d::CellBytes;
 			}
-		IF_Le_F(m_objects.size() > 1024 || bytes > webviewer3d::MaxFrameBytes, "Reduce geometry caps: frame limit is 64 MiB / 1024 objects");
+			IF_Le_F(bytes > webviewer3d::MaxFrameBytes, string(webviewer3d::name(type)) + " stream exceeds 64 MiB; reduce its caps");
+		}
 		return true;
 	}
-	std::string _WebViewer3D::hello() const
+	bool _WebViewer3D::includes(const Object &o, webviewer3d::Type type) const
+	{
+		if (!o.visible) return false;
+		switch (type)
+		{
+		case webviewer3d::Type::Points: return o.nP > 0;
+		case webviewer3d::Type::Lines: return o.nL > 0;
+		case webviewer3d::Type::Cells: return dynamic_cast<_OctreeGrid *>(o.source) != nullptr;
+		}
+		return false;
+	}
+	std::string _WebViewer3D::hello(webviewer3d::Type type) const
 	{
 		json j;
 		j["type"] = "hello";
 		j["version"] = webviewer3d::Version;
+		j["stream"] = webviewer3d::name(type);
 		j["autoBound"] = m_autoBound;
 		j["showGrid"] = m_showGrid;
 		j["background"] = {m_background.x, m_background.y, m_background.z};
@@ -131,9 +153,14 @@ namespace kai
 	bool _WebViewer3D::start()
 	{
 		IF_F(m_running || !m_pT);
-		m_stream.reset(new WebSocketStream(m_http->context(), hello(), m_maxClients));
+		std::vector<std::pair<std::string, WebSocketStream *>> routes;
+		for (auto &stream : m_streams)
+		{
+			stream.transport.reset(new WebSocketStream(m_http->context(), hello(stream.type), m_maxClients));
+			routes.emplace_back(string("/stream/") + webviewer3d::name(stream.type), stream.transport.get());
+		}
 		std::string error;
-		IF_Le_F(!m_http->start(m_host, uint16_t(m_port), m_root, m_stream->upgradeHandler(), &error), error);
+		IF_Le_F(!m_http->start(m_host, uint16_t(m_port), m_root, WebSocketStream::routes(routes), &error), error);
 		m_running = true;
 		m_pT->run();
 		try
@@ -145,7 +172,7 @@ namespace kai
 				{
 					auto deadline = std::chrono::steady_clock::now() +
 						std::chrono::microseconds(int64_t(1000000 / m_pT->getTargetFPS()));
-					if (!m_paused && m_stream->nClient()) updateAllGeometries();
+					if (!m_paused) updateAllGeometries();
 					std::unique_lock<std::mutex> lock(m_waitMutex);
 					m_wakeup.wait_until(lock, deadline, [this] { return !m_running; });
 				} });
@@ -166,8 +193,7 @@ namespace kai
 		if (m_worker.joinable())
 			m_worker.join();
 		m_http->stop();
-		if (m_stream)
-			m_stream->stop();
+		for (auto &stream : m_streams) if (stream.transport) stream.transport->stop();
 		if (m_pT)
 			m_pT->stop();
 	}
@@ -175,96 +201,90 @@ namespace kai
 	void _WebViewer3D::resume() { m_paused = false; }
 	void _WebViewer3D::updateAllGeometries()
 	{
+		for (auto &stream : m_streams) if (stream.transport->nClient())
+		{
+			try { publish(stream); }
+			catch (const std::exception &e) { LOG_E(string(webviewer3d::name(stream.type)) + " stream: " + e.what()); }
+		}
+	}
+	void _WebViewer3D::publish(Stream &stream)
+	{
 		std::shared_ptr<std::vector<uint8_t>> frame;
-		for (auto &buffer : m_buffers)
-			if (buffer.use_count() == 1)
-			{
-				frame = buffer;
-				break;
-			}
+		for (auto &buffer : stream.buffers) if (buffer.use_count() == 1) { frame = buffer; break; }
 		if (!frame)
 		{
 			frame = std::make_shared<std::vector<uint8_t>>();
-			m_buffers.push_back(frame); // bounded by connected clients plus producer/latest
+			stream.buffers.push_back(frame);
 		}
 		const uint64_t now = getApproxTbootUs();
 		const uint64_t expiry = m_dTexpire && now > m_dTexpire ? now - m_dTexpire : 0;
-		webviewer3d::begin(*frame, ++m_sequence, now);
+		webviewer3d::begin(*frame, stream.type, ++stream.sequence, now);
 		uint32_t count = 0;
-		for (size_t i = 0; i < m_objects.size(); ++i)
-			if (m_objects[i].visible)
-			{
-				collect(m_objects[i], *frame, uint32_t(i), expiry);
-				++count;
-			}
+		for (size_t i = 0; i < m_objects.size(); ++i) if (includes(m_objects[i], stream.type))
+		{
+			collect(m_objects[i], stream.type, *frame, uint32_t(i), expiry);
+			++count;
+		}
 		webviewer3d::finish(*frame, count);
-		m_frameBytes = frame->size();
-		m_stream->publish(frame);
+		stream.bytes = frame->size();
+		stream.transport->publish(frame);
 	}
-	void _WebViewer3D::collect(const Object &o, std::vector<uint8_t> &frame, uint32_t id, uint64_t expiry)
+	void _WebViewer3D::collect(const Object &o, webviewer3d::Type type, std::vector<uint8_t> &frame, uint32_t id, uint64_t expiry)
 	{
-		m_points.clear();
-		m_lines.clear();
-		m_pointColors.clear();
-		m_lineColors.clear();
+		using webviewer3d::Type;
 		float bounds[6] = {FLT_MAX, FLT_MAX, FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX};
-		auto finite = [](const vFloat3 &p)
-		{ return std::isfinite(p.x) && std::isfinite(p.y) && std::isfinite(p.z); };
-		auto colorByte = [](float c)
-		{ return uint8_t(std::clamp(std::isfinite(c) ? c : 1.f, 0.f, 1.f) * 255.f + 0.5f); };
-		auto vertex = [&](const vFloat3 &p, vFloat3 c, std::vector<float> &positions, std::vector<uint8_t> &colors)
+		auto colorByte = [](float c) { return uint8_t(std::clamp(std::isfinite(c) ? c : 1.f, 0.f, 1.f) * 255.f + .5f); };
+		const float opacity = colorByte(o.color.w) / 255.f;
+		if (type == Type::Cells)
 		{
-			positions.insert(positions.end(), {p.x, p.y, p.z});
-			if (c.x <= 0 && c.y <= 0 && c.z <= 0)
-				c = vFloat3(o.color.x, o.color.y, o.color.z);
-			colors.insert(colors.end(), {colorByte(c.x), colorByte(c.y), colorByte(c.z), 255});
-			bounds[0] = std::min(bounds[0], p.x);
-			bounds[1] = std::min(bounds[1], p.y);
-			bounds[2] = std::min(bounds[2], p.z);
-			bounds[3] = std::max(bounds[3], p.x);
-			bounds[4] = std::max(bounds[4], p.y);
-			bounds[5] = std::max(bounds[5], p.z);
+			static_cast<_OctreeGrid *>(o.source)->get(&m_cells, expiry, size_t(o.nC));
+			for (size_t axis = 0; axis < 3; ++axis)
+			{
+				const float center = m_cells.m_header.m_vPorigin[axis], half = m_cells.m_header.m_vRootCellSize[axis] * .5f;
+				bounds[axis] = center - half; bounds[axis + 3] = center + half;
+			}
+			webviewer3d::cells(frame, id, opacity, bounds, m_cells);
+			return;
+		}
+		m_positions.clear(); m_colors.clear();
+		auto finite = [](const vFloat3 &p) { return std::isfinite(p.x) && std::isfinite(p.y) && std::isfinite(p.z); };
+		auto vertex = [&](const vFloat3 &p, vFloat4 c) {
+			m_positions.insert(m_positions.end(), {p.x, p.y, p.z});
+			if (c.x <= 0 && c.y <= 0 && c.z <= 0) c = vFloat4(o.color.x, o.color.y, o.color.z, c.w);
+			m_colors.insert(m_colors.end(), {colorByte(c.x), colorByte(c.y), colorByte(c.z), colorByte(c.w)});
+			bounds[0] = std::min(bounds[0], p.x); bounds[1] = std::min(bounds[1], p.y); bounds[2] = std::min(bounds[2], p.z);
+			bounds[3] = std::max(bounds[3], p.x); bounds[4] = std::max(bounds[4], p.y); bounds[5] = std::max(bounds[5], p.z);
 		};
-		// Match ImGUIviewer: reset insertion index, respect returned count and buffer capacity.
-		m_grPt.m_iT = 0;
-		int n = o.nP ? std::min(o.source->get(&m_grPt, expiry), m_grPt.m_nT) : 0;
-		for (int i = 0; i < n && m_points.size() / 3 < size_t(o.nP); ++i)
+		if (type == Type::Points)
 		{
-			const auto &p = *m_grPt.get(i);
-			if (p.m_tStamp && p.m_tStamp >= expiry && finite(p.m_vP))
-				vertex(p.m_vP, p.m_vC, m_points, m_pointColors);
+			m_grPt.m_iT = 0;
+			const int count = std::min(o.source->get(&m_grPt, expiry), m_grPt.m_nT);
+			for (int i = 0; i < count && m_positions.size() / 3 < size_t(o.nP); ++i)
+			{
+				const auto &p = *m_grPt.get(i);
+				if (p.m_tStamp && p.m_tStamp >= expiry && finite(p.m_vP)) vertex(p.m_vP, p.m_vC);
+			}
 		}
-		m_grLn.m_iT = 0;
-		n = o.nL ? std::min(o.source->get(&m_grLn, expiry), m_grLn.m_nT) : 0;
-		for (int i = 0; i < n && m_lines.size() / 6 < size_t(o.nL); ++i)
+		else
 		{
-			const auto &l = *m_grLn.get(i);
-			if (!l.m_tStamp || l.m_tStamp < expiry || !finite(l.m_vPa) || !finite(l.m_vPb))
-				continue;
-			vertex(l.m_vPa, l.m_vC, m_lines, m_lineColors);
-			vertex(l.m_vPb, l.m_vC, m_lines, m_lineColors);
+			m_grLn.m_iT = 0;
+			const int count = std::min(o.source->get(&m_grLn, expiry), m_grLn.m_nT);
+			for (int i = 0; i < count && m_positions.size() / 6 < size_t(o.nL); ++i)
+			{
+				const auto &l = *m_grLn.get(i);
+				if (!l.m_tStamp || l.m_tStamp < expiry || !finite(l.m_vPa) || !finite(l.m_vPb)) continue;
+				vertex(l.m_vPa, l.m_vC); vertex(l.m_vPb, l.m_vC);
+			}
 		}
-		OCTGRID_CELLS *cells = nullptr;
-		if (auto *grid = dynamic_cast<_OctreeGrid *>(o.source))
-		{
-			grid->get(&m_cells, expiry, size_t(o.nC));
-			cells = &m_cells;
-			if (!m_cells.m_vCell.empty())
-				for (size_t axis = 0; axis < 3; ++axis)
-				{
-					const float c = m_cells.m_header.m_vPorigin[axis], h = m_cells.m_header.m_vRootCellSize[axis] * 0.5f;
-					bounds[axis] = std::min(bounds[axis], c - h);
-					bounds[axis + 3] = std::max(bounds[axis + 3], c + h);
-				}
-		}
-		if (m_points.empty() && m_lines.empty() && (!cells || cells->m_vCell.empty()))
-			std::fill(bounds, bounds + 6, 0.f);
-		webviewer3d::object(frame, id, o.pointSize, colorByte(o.color.w) / 255.f, bounds, m_points, m_pointColors, m_lines, m_lineColors, cells);
+		if (m_positions.empty()) std::fill(bounds, bounds + 6, 0.f);
+		if (type == Type::Points) webviewer3d::points(frame, id, o.pointSize, opacity, bounds, m_positions, m_colors);
+		else webviewer3d::lines(frame, id, opacity, bounds, m_positions, m_colors);
 	}
 	void _WebViewer3D::console(void *console)
 	{
 		_GeometryViewerBase::console(console);
-		if (console)
-			static_cast<_Console *>(console)->addMsg("Web clients: " + std::to_string(m_stream ? m_stream->nClient() : 0) + ", frame bytes: " + std::to_string(m_frameBytes.load()));
+		if (console) for (const auto &stream : m_streams)
+			static_cast<_Console *>(console)->addMsg(string(webviewer3d::name(stream.type)) + " clients: " +
+				std::to_string(stream.transport ? stream.transport->nClient() : 0) + ", frame bytes: " + std::to_string(stream.bytes.load()));
 	}
 }

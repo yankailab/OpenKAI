@@ -28,7 +28,13 @@
         <button id="fit" type="button" disabled>Fit scene</button>
         <button id="reset" type="button" disabled>Reset camera</button>
         <label><input id="grid" type="checkbox" checked> Grid</label>
+        <label class="grid-mode"><span>Wire-frame</span><input id="grid-solid" type="checkbox" role="switch" aria-label="Solid grid boxes"><span>Solid</span></label>
         <label>Point scale <input id="point-scale" type="range" min="0.25" max="5" step="0.25" value="1"></label>
+        <fieldset class="grid-levels">
+          <legend>Grid levels</legend>
+          <label>Min <input id="grid-min-level" type="range" min="0" max="40" step="1" value="0" aria-label="Minimum grid level"><output id="grid-min-level-value" for="grid-min-level">0</output></label>
+          <label>Max <input id="grid-max-level" type="range" min="0" max="40" step="1" value="40" aria-label="Maximum grid level"><output id="grid-max-level-value" for="grid-max-level">40</output></label>
+        </fieldset>
       </div>
       <details open class="picker-panel">
         <summary>Grid cell picker</summary>

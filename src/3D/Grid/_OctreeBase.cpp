@@ -16,8 +16,6 @@ namespace kai
 	{
 		IF_F(!this->_GeometryBase::init(j));
 
-		loadConfig();
-
 		return true;
 	}
 

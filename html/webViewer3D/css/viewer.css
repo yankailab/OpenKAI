@@ -22,7 +22,18 @@ main { position: relative; flex: 1; min-height: 0; overflow: hidden; }
 aside { position: absolute; top: 16px; right: 16px; width: 240px; padding: 14px; border: 1px solid #2d3c4d; border-radius: 8px; background: #101923e8; max-height: calc(100% - 80px); overflow: auto; }
 .tools { gap: 12px; } .tools label { width: 100%; font-size: 12px; }
 input[type=range] { padding: 0; width: 112px; accent-color: #64dcb5; }
+.grid-levels { width: 100%; min-width: 0; margin: 0; padding: 0; border: 0; }
+.grid-levels legend { padding: 0; margin-bottom: 8px; font-size: 12px; color: #aabac8; }
+.grid-levels label { display: grid; grid-template-columns: 28px minmax(0, 1fr) 2ch; margin-top: 6px; }
+.grid-levels input[type=range] { width: 100%; }
+.grid-levels output { text-align: right; font-variant-numeric: tabular-nums; }
 input[type=checkbox] { accent-color: #64dcb5; }
+.grid-mode { justify-content: space-between; }
+#grid-solid { appearance: none; position: relative; flex: 0 0 36px; height: 20px; margin: 0; padding: 0; border-radius: 12px; background: #354659; cursor: pointer; }
+#grid-solid::before { content: ''; position: absolute; width: 14px; height: 14px; left: 2px; top: 2px; border-radius: 50%; background: #dce6ed; transition: transform .15s; }
+#grid-solid:checked { background: #267e65; border-color: #64dcb5; }
+#grid-solid:checked::before { transform: translateX(16px); }
+#grid-solid:focus-visible { outline: 2px solid #64dcb5; outline-offset: 3px; }
 details { margin-top: 18px; border-top: 1px solid #2d3c4d; padding-top: 12px; }
 summary { cursor: pointer; color: #c4d6e5; }
 .picker-panel p { font-size: 12px; color: #aabac8; margin: 10px 0; }

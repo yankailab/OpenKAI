@@ -41,8 +41,8 @@ class CommandHandler(socketserver.StreamRequestHandler):
                 assert opcode == 1 and payload.endswith(b'EOJ'), payload
                 command = json.loads(payload[:-3])
                 self.server.received.append(command)
-                if command.get('cmd') == 'gridCellSelection':
-                    self.send_text(json.dumps({'cmd': 'ackGridCellSelection', 'module': command['module'], 'nCell': len(command['cellIDs'])}))
+                if command.get('cmd') == 'octGridCellSelect':
+                    self.send_text(json.dumps({'cmd': 'octGridCellSelect', 'bSuccess': True}))
                     continue
                 reply = json.dumps({'cmd': 'ackTest', 'v': command['v'], 'text': 'quoted " } EOJ ' + 'x' * 1024})
                 # Separate text messages, then a split optional terminator and another object.

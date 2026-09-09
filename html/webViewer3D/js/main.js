@@ -1,37 +1,64 @@
 import { GeometryConnection } from './wsStreamBase.js';
-import { decodeFrame } from './protocol.js';
+import { decodeFrame, STREAM_TYPES } from './protocol.js';
 import { Viewer3D } from './viewer3D.js';
 
 const $ = selector => document.querySelector(selector);
 const viewer = new Viewer3D($('#viewport'));
-let pending = null, names = new Map(), visibility = new Map(), objectKey = '';
-let bytes = 0, frames = 0, lastStats = performance.now(), latestCounts = [0, 0, 0];
-const connection = new GeometryConnection({
+const pending = new Map(), names = new Map(), visibility = new Map();
+const counts = Object.fromEntries(STREAM_TYPES.map(type => [type, 0]));
+const states = Object.fromEntries(STREAM_TYPES.map(type => [type, 'Ready']));
+let configured = false, objectKey = '', bytes = 0, frames = 0, lastStats = performance.now();
+const connections = Object.fromEntries(STREAM_TYPES.map(type => [type, new GeometryConnection({
+  type,
   onHello(config) {
-    names = new Map(config.objects.map(o => [o.id, o.name]));
-    visibility.clear();
-    viewer.configure(config);
-    $('#grid').checked = config.showGrid;
+    for (const o of config.objects) names.set(o.id, o.name);
+    if (!configured) {
+      viewer.configure(config);
+      configured = true;
+      $('#grid').checked = config.showGrid;
+    }
+    viewer.picker.configure([...names].map(([id, name]) => ({ id, name })));
     $('#fit').disabled = $('#reset').disabled = false;
     $('#welcome').hidden = true;
+    syncObjects();
   },
-  onFrame(buffer, acknowledge) { pending = { frame: decodeFrame(buffer), acknowledge }; },
+  onFrame(buffer, acknowledge) { pending.set(type, { frame: decodeFrame(buffer, type), acknowledge }); },
   onStatus(text) {
-    $('#status').textContent = text;
+    states[type] = text;
+    $('#status').textContent = STREAM_TYPES.every(t => states[t] === 'Connected') ? 'Connected' :
+      STREAM_TYPES.every(t => states[t] === 'Stopped') ? 'Stopped' :
+      STREAM_TYPES.map(t => `${t[0].toUpperCase() + t.slice(1)}: ${states[t]}`).join(' · ');
     syncConnectionButtons();
   },
   onReset() {
-    pending = null; viewer.clear(); objectKey = '';
-    $('#objects').textContent = 'No geometry sources';
-    $('#fit').disabled = $('#reset').disabled = true;
-    $('#stats').textContent = 'Waiting for geometry';
-    bytes = frames = 0; lastStats = performance.now();
+    pending.delete(type);
+    viewer.clearStream(type);
+    counts[type] = 0;
+    syncObjects();
   }
-});
+})]));
 function syncConnectionButtons() {
-  $('#start').disabled = connection.running;
-  $('#stop').disabled = !connection.running && !window.wsCmdActive();
+  const running = STREAM_TYPES.some(t => connections[t].running);
+  $('#start').disabled = running;
+  $('#stop').disabled = !running && !window.wsCmdActive();
+  $('#fit').disabled = $('#reset').disabled = !configured;
   syncPicker();
+}
+function syncObjects() {
+  const objects = [...viewer.objects.values()].sort((a, b) => a.id - b.id);
+  const key = JSON.stringify(objects.map(o => [o.id, names.get(o.id)]));
+  if (key === objectKey) return;
+  objectKey = key;
+  $('#objects').replaceChildren();
+  if (!objects.length) $('#objects').textContent = 'No geometry sources';
+  for (const o of objects) {
+    const label = document.createElement('label'), checkbox = document.createElement('input');
+    checkbox.type = 'checkbox'; checkbox.checked = visibility.get(o.id) ?? true;
+    checkbox.addEventListener('change', () => { visibility.set(o.id, checkbox.checked); viewer.setVisible(o.id, checkbox.checked); });
+    label.append(checkbox, document.createTextNode(names.get(o.id) || `Object ${o.id}`));
+    $('#objects').append(label);
+    viewer.setVisible(o.id, checkbox.checked);
+  }
 }
 function syncPicker() {
   const count = viewer.picker.count;
@@ -57,58 +84,67 @@ $('#picker-send').addEventListener('click', () => {
 function start(event) {
   event?.preventDefault();
   try {
-    connection.start(window.viewerEndpoint());
+    const endpoint = window.viewerEndpoint();
+    configured = false;
+    viewer.clear(); names.clear(); visibility.clear();
+    bytes = frames = 0; lastStats = performance.now();
+    for (const type of STREAM_TYPES) connections[type].start(endpoint);
     window.wsInit();
     syncConnectionButtons();
   } catch (error) { $('#status').textContent = error.message; }
 }
-function stop() { connection.stop(); window.wsStop(); syncConnectionButtons(); }
+function stop() {
+  for (const type of STREAM_TYPES) connections[type].stop();
+  window.wsStop(); syncConnectionButtons();
+}
 window.addEventListener('wscmdstatechange', syncConnectionButtons);
 $('#connection').addEventListener('submit', start);
 $('#stop').addEventListener('click', stop);
 $('#fit').addEventListener('click', () => viewer.fit());
 $('#reset').addEventListener('click', () => viewer.resetCamera());
 $('#grid').addEventListener('change', () => { viewer.grid.visible = $('#grid').checked; });
+$('#grid-solid').addEventListener('change', () => viewer.setGridSolid($('#grid-solid').checked));
 $('#point-scale').addEventListener('input', () => viewer.setPointScale(Number($('#point-scale').value)));
+for (const id of ['grid-min-level', 'grid-max-level']) {
+  $(`#${id}`).addEventListener('input', () => {
+    const min = $('#grid-min-level'), max = $('#grid-max-level');
+    // Moving one end past the other moves the other end with it.
+    if (Number(min.value) > Number(max.value)) {
+      if (id === 'grid-min-level') max.value = min.value;
+      else min.value = max.value;
+    }
+    $('#grid-min-level-value').textContent = min.value;
+    $('#grid-max-level-value').textContent = max.value;
+    viewer.setGridLevelRange(Number(min.value), Number(max.value));
+  });
+}
 $('#start').disabled = false;
 
 let animation;
 function draw(now) {
+  const credits = [];
+  for (const [type, message] of pending) {
+    pending.delete(type);
+    try {
+      viewer.update(message.frame);
+      bytes += message.frame.bytes;
+      counts[type] = message.frame.objects.reduce((n, o) => n + o.count, 0);
+      credits.push(message.acknowledge);
+    } catch (error) { connections[type].fail(error); }
+  }
   try {
-    if (pending) {
-      const { frame, acknowledge } = pending;
-      pending = null;
-      viewer.update(frame);
-      bytes += frame.bytes; ++frames;
-      latestCounts = frame.objects.reduce((n, o) => [n[0] + o.nP, n[1] + o.nL, n[2] + o.nC], [0, 0, 0]);
-      const key = frame.objects.map(o => o.id).join(',');
-      if (key !== objectKey) {
-        objectKey = key;
-        $('#objects').replaceChildren();
-        if (!frame.objects.length) $('#objects').textContent = 'No geometry sources';
-        for (const o of frame.objects) {
-          const label = document.createElement('label'), checkbox = document.createElement('input');
-          checkbox.type = 'checkbox'; checkbox.checked = visibility.get(o.id) ?? true;
-          checkbox.addEventListener('change', () => { visibility.set(o.id, checkbox.checked); viewer.setVisible(o.id, checkbox.checked); });
-          label.append(checkbox, document.createTextNode(names.get(o.id) || `Object ${o.id}`));
-          $('#objects').append(label);
-          viewer.setVisible(o.id, checkbox.checked);
-        }
-      }
-      viewer.render();
-      acknowledge(); // Credit only after uploading and submitting this frame for rendering.
-    } else viewer.render();
-    if (frames && now - lastStats >= 500) {
+    syncObjects();
+    viewer.render();
+    for (const acknowledge of credits) acknowledge();
+    if (credits.length) ++frames;
+    if (now - lastStats >= 500) {
       const seconds = (now - lastStats) / 1000;
-      $('#stats').textContent = `${latestCounts[0].toLocaleString()} points · ${latestCounts[1].toLocaleString()} lines · ${latestCounts[2].toLocaleString()} cells · ${(frames / seconds).toFixed(1)} fps · ${(bytes / seconds / 1048576).toFixed(1)} MiB/s`;
+      $('#stats').textContent = `${counts.points.toLocaleString()} points · ${counts.lines.toLocaleString()} lines · ${counts.cells.toLocaleString()} cells · ${(frames / seconds).toFixed(1)} fps · ${(bytes / seconds / 1048576).toFixed(1)} MiB/s`;
       bytes = frames = 0; lastStats = now;
     }
-  } catch (error) {
-    connection.fail(error);
-    syncConnectionButtons();
-  }
+  } catch (error) { $('#status').textContent = `Rendering: ${error.message}`; }
   animation = requestAnimationFrame(draw);
 }
 animation = requestAnimationFrame(draw);
-window.addEventListener('pagehide', () => { connection.stop(); cancelAnimationFrame(animation); viewer.dispose(); });
+window.addEventListener('pagehide', () => { for (const type of STREAM_TYPES) connections[type].stop(); cancelAnimationFrame(animation); viewer.dispose(); });
 if (location.hash === '#connect') { history.replaceState(null, '', location.pathname + location.search); start(); }

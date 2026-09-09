@@ -3,14 +3,18 @@
 Usage: python3 test/webViewer3D/native_cells.py build
 Requires CMAKE_EXPORT_COMPILE_COMMANDS=ON and a completed build (Ninja/Makefiles).
 """
+import argparse
 import json
 import shlex
 import subprocess
-import sys
 import tempfile
 from pathlib import Path
 
-build = Path(sys.argv[1]).resolve()
+parser = argparse.ArgumentParser()
+parser.add_argument('build')
+parser.add_argument('--cell-alpha', type=float, help='Expected alpha when testing a temporary grid alpha override')
+args = parser.parse_args()
+build = Path(args.build).resolve()
 source = Path(__file__).with_suffix('.cpp').resolve()
 entry = next(e for e in json.loads((build / 'compile_commands.json').read_text())
              if e['file'].endswith('/Grid/_OctreeGrid.cpp'))
@@ -34,4 +38,4 @@ with tempfile.TemporaryDirectory(prefix='openkai-native-cells-') as tmp:
             if not arg.startswith('-Wl,--dependency-file=')]
     link[link.index('-o') + 1] = binary
     subprocess.run(link, cwd=build, check=True)
-    subprocess.run([binary], check=True)
+    subprocess.run([binary] + ([] if args.cell_alpha is None else [str(args.cell_alpha)]), check=True)

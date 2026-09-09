@@ -1,4 +1,4 @@
-export const CELL_BYTES = 19;
+export const CELL_BYTES = 20; // 16-byte ID + RGBA8
 
 export function validateCellIDs(cells, maxLevel) {
   for (let at = 0; at < cells.length; at += CELL_BYTES) {

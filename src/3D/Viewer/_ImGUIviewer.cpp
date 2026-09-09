@@ -50,15 +50,11 @@ namespace kai
 		return true;
 	}
 
-	static vFloat3 materialColor(const vFloat4 &c)
+	static vFloat4 visibleColor(vFloat4 c, const vFloat4 &matCol)
 	{
-		return vFloat3(c.x, c.y, c.z);
-	}
-
-	static vFloat3 visibleColor(const vFloat3 &c, const vFloat4 &matCol)
-	{
+		c.w = std::clamp(std::isfinite(c.w) ? c.w : 1.f, 0.f, 1.f);
 		if (c.x <= 0.0f && c.y <= 0.0f && c.z <= 0.0f)
-			return materialColor(matCol);
+			return vFloat4(matCol.x, matCol.y, matCol.z, c.w);
 
 		return c;
 	}
@@ -68,15 +64,8 @@ namespace kai
 		return IM_COL32((int)(std::clamp(c.x, 0.0f, 1.0f) * 255.0f),
 						(int)(std::clamp(c.y, 0.0f, 1.0f) * 255.0f),
 						(int)(std::clamp(c.z, 0.0f, 1.0f) * 255.0f),
-						(int)(std::clamp(c.w * alphaScale, 0.0f, 1.0f) * 255.0f));
-	}
-
-	static ImU32 colU32(const vFloat3 &c, float alpha = 1.0)
-	{
-		return IM_COL32((int)(std::clamp(c.x, 0.0f, 1.0f) * 255.0f),
-						(int)(std::clamp(c.y, 0.0f, 1.0f) * 255.0f),
-						(int)(std::clamp(c.z, 0.0f, 1.0f) * 255.0f),
-						(int)(std::clamp(alpha, 0.0f, 1.0f) * 255.0f));
+						(int)(std::clamp(std::isfinite(c.w) ? c.w : 1.f, 0.f, 1.f) *
+							std::clamp(std::isfinite(alphaScale) ? alphaScale : 1.f, 0.f, 1.f) * 255.0f));
 	}
 
 	void IMGUI_VIEWER_OBJ::reserve(int nPbufDefault, int nLbufDefault)
@@ -295,6 +284,7 @@ namespace kai
 	{
 		NULL_(pObj);
 		NULL_(pObj->m_pGB);
+		IF_(m_grPt.m_nT == 0);
 
 		uint64_t tExpire = 0;
 		if (m_dTexpire > 0)
@@ -325,6 +315,7 @@ namespace kai
 	{
 		NULL_(pObj);
 		NULL_(pObj->m_pGB);
+		IF_(m_grLn.m_nT == 0);
 
 		uint64_t tExpire = 0;
 		if (m_dTexpire > 0)
@@ -371,7 +362,7 @@ namespace kai
 			if (!octgridCellBox(m_cells.m_header, box.m_ID, c, size)) continue;
 			box.m_vCenter = vFloat3(c[0], c[1], c[2]);
 			box.m_vSize = vFloat3(size[0], size[1], size[2]);
-			box.m_vC = vFloat3(cell.m_vC[0] / 255.f, cell.m_vC[1] / 255.f, cell.m_vC[2] / 255.f);
+			box.m_vC = vFloat4(cell.m_vC[0] / 255.f, cell.m_vC[1] / 255.f, cell.m_vC[2] / 255.f, cell.m_vC[3] / 255.f);
 			pObj->m_vBox.push_back(box);
 		}
 	}
@@ -513,7 +504,7 @@ namespace kai
 		snapshotLock();
 		for (const IMGUI_VIEWER_OBJ &g : m_vDrawGO)
 		{
-			auto drawLine = [&](const vFloat3 &vA, const vFloat3 &vB, const vFloat3 &color)
+			auto drawLine = [&](const vFloat3 &vA, const vFloat3 &vB, const vFloat4 &color)
 			{
 				vFloat2 a, b;
 				float dA = 0;

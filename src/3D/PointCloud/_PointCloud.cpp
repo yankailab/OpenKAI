@@ -77,6 +77,11 @@ namespace kai
 
     void _PointCloud::add(const vFloat3 &vP, const vFloat3 &vC, uint64_t tStamp)
     {
+        add(vP, vFloat4(vC.x, vC.y, vC.z, 1), tStamp);
+    }
+
+    void _PointCloud::add(const vFloat3 &vP, const vFloat4 &vC, uint64_t tStamp)
+    {
         GEOMETRY_POINT gP;
         gP.m_vP = vP;
         gP.m_vC = vC;

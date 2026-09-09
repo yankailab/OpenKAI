@@ -14,7 +14,7 @@ from pathlib import Path
 
 
 class WebSocket:
-    def __init__(self, port, path='/stream'):
+    def __init__(self, port, path='/stream/points'):
         self.socket = socket.create_connection(('127.0.0.1', port), timeout=3)
         key = base64.b64encode(os.urandom(16)).decode()
         self.socket.sendall((f'GET {path} HTTP/1.1\r\nHost: 127.0.0.1:{port}\r\n'
@@ -23,7 +23,9 @@ class WebSocket:
         header = b''
         while not header.endswith(b'\r\n\r\n'):
             header += self.exact(1)
-        assert header.startswith(b'HTTP/1.1 101 '), header
+        if not header.startswith(b'HTTP/1.1 101 '):
+            self.close()
+            raise AssertionError(header)
         accept = base64.b64encode(hashlib.sha1((key + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11').encode()).digest())
         assert accept.lower() in header.lower()
 
@@ -79,14 +81,39 @@ def request(port, target, method='GET'):
 def check_frame(message):
     opcode, data = message
     assert opcode == 2
-    magic, version, sequence, count, size = struct.unpack_from('<5I', data)
-    assert (magic, version, count, size) == (0x31443357, 2, 1, len(data))
+    magic, version, kind, sequence, count, size = struct.unpack_from('<6I', data)
+    assert (magic, version, kind, count, size) == (0x34443357, 4, 1, 1, len(data))
     assert struct.unpack_from('<Q', data, 24)[0] == 123456789
-    assert struct.unpack_from('<3I', data, 32) == (7, 200000, 1)
-    assert len(data) == 32 + 64 + 200000 * 16 + 32
-    assert struct.unpack_from('<3f', data, 96) == (1, 0, -1)
-    assert data[96 + 2400000:96 + 2400004] == bytes([0, 200, 240, 255])
+    assert struct.unpack_from('<2I', data, 32) == (7, 200000)
+    assert len(data) == 32 + 40 + 200000 * 16
+    assert struct.unpack_from('<3f', data, 72) == (1, 0, -1)
+    assert data[72 + 2400000:72 + 2400004] == bytes([0, 200, 240, 255])
     return sequence
+
+
+def read_frame(data, expected_type):
+    magic, version, kind, sequence, count, size = struct.unpack_from('<6I', data)
+    assert (magic, version, kind, size) == (0x34443357, 4, expected_type, len(data))
+    assert count <= 1024
+    at, objects = 32, []
+    for _ in range(count):
+        object_id, n, point_size, opacity, *bounds = struct.unpack_from('<2I8f', data, at)
+        at += 40
+        obj = {'id': object_id, 'count': n, 'bounds': bounds, 'opacity': opacity}
+        if kind == 3:
+            obj['header'] = struct.unpack_from('<6fIIQ', data, at)
+            at += 40
+            obj['cells'] = memoryview(data)[at:at + n * 20]
+            at += n * 20
+        else:
+            vertices = n * (2 if kind == 2 else 1)
+            obj['positions'] = memoryview(data)[at:at + vertices * 12]
+            at += vertices * 12
+            obj['colors'] = memoryview(data)[at:at + vertices * 4]
+            at += vertices * 4
+        objects.append(obj)
+    assert at == len(data)
+    return objects
 
 
 def main():
@@ -114,11 +141,25 @@ def main():
             for path in ('/../secret', '/%2e%2e/secret', '/escape'):
                 assert request(second, path)[0] == 403
             assert request(second, '/%00')[0] == 400
+            # The old combined endpoint is deliberately gone.
+            try:
+                WebSocket(port, '/stream')
+                raise RuntimeError('Legacy endpoint accepted')
+            except AssertionError as error:
+                assert '404' in str(error)
+            # Type channels advance independently, even with no point ACKs.
+            for kind, code, payload_size in [('lines', 2, 32), ('cells', 3, 40 + 41 * 20)]:
+                typed = WebSocket(port, '/stream/' + kind); clients.append(typed)
+                assert json.loads(typed.receive()[1])['stream'] == kind
+                typed.send('start')
+                _, data = typed.receive()
+                assert struct.unpack_from('<I', data, 8)[0] == code
+                assert len(data) == 32 + 40 + payload_size
             a, b, independent = [WebSocket(p) for p in (port, port, second)]
             clients.extend([a, b, independent])
-            for c in clients:
+            for c in (a, b, independent):
                 opcode, hello = c.receive()
-                assert opcode == 1 and json.loads(hello)['version'] == 2
+                assert opcode == 1 and json.loads(hello)['version'] == 4
                 c.send('start')
                 check_frame(c.receive())
             blocked = WebSocket(port)
@@ -137,6 +178,9 @@ def main():
             for _ in range(3):
                 b.send('next')
                 check_frame(b.receive())
+                for typed, kind in zip(clients[:2], (2, 3)):
+                    typed.send('next')
+                    read_frame(typed.receive()[1], kind)
             a.send('ne', fin=False)
             a.send('xt', opcode=0)
             assert check_frame(a.receive()) > 3

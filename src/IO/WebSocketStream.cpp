@@ -111,6 +111,21 @@ namespace kai
 			session->accept(std::move(request));
 		};
 	}
+	HttpServer::Upgrade WebSocketStream::routes(const std::vector<std::pair<std::string, WebSocketStream *>> &streams)
+	{
+		std::vector<std::pair<std::string, HttpServer::Upgrade>> handlers;
+		for (const auto &entry : streams) handlers.emplace_back(entry.first, entry.second->upgradeHandler());
+		return [handlers = std::move(handlers)](beast::tcp_stream stream, HttpServer::Request request) {
+			for (const auto &entry : handlers)
+				if (request.target() == entry.first) return entry.second(std::move(stream), std::move(request));
+			auto socket = std::make_shared<beast::tcp_stream>(std::move(stream));
+			auto response = std::make_shared<beast::http::response<beast::http::string_body>>(beast::http::status::not_found, request.version());
+			response->body() = "Unknown geometry stream";
+			response->prepare_payload();
+			socket->expires_after(std::chrono::seconds(5));
+			beast::http::async_write(*socket, *response, [socket, response](beast::error_code, size_t) {});
+		};
+	}
 	void WebSocketStream::publish(Frame frame)
 	{
 		std::lock_guard<std::mutex> lock(m_state->mutex);
