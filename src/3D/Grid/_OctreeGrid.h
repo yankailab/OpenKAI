@@ -4,17 +4,30 @@
 #include "_OctreeBase.h"
 #include "../PointCloud/_PointCloud.h"
 #include "../../Filter/Median.h"
+#include "../../Primitive/UUID128.h"
+
+#define OCTGRID_MAX_LEVEL 40
 
 namespace kai
 {
-	struct OCT_PCL_CELL
+	struct OCTGRID_PCL_CELL
 	{
+		UUID128 m_ID = 0;
+		/*
+		cell ID format:
+		128 bit width from MSB to LSB
+		[2 bit] 0
+		[3 bit][3bit]... each 3-bit fragment correspondent to its cell index at the Level from 0 to 39, 40 levels at most (3 bit x 40 = 120 bit)
+		[6 bit] max level valid in the ID
+		*/
+
 		int m_nP = 0;
 		vFloat3 m_vC = {1, 1, 1}; // default color
 		uint64_t m_tStamp = 0;	  // last updated time stamp
 
 		void clear(void)
 		{
+			m_ID = {0, 0};
 			m_nP = 0;
 			m_vC.set(1);
 			m_tStamp = 0;
@@ -32,6 +45,10 @@ namespace kai
 		virtual bool start(void);
 		virtual bool check(void);
 
+		// grid
+		virtual OCTGRID_PCL_CELL *addCellPoint(const GEOMETRY_POINT &gP, const uint64_t& tNow, int nMaxLevelAt = -1, bool bAdd = true);
+		virtual OCTGRID_PCL_CELL *getCell(const UUID128& id);
+
 		// drawing
 		virtual int get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire = 0);
 		virtual int get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut, uint64_t tExpire = 0);
@@ -39,11 +56,9 @@ namespace kai
 	protected:
 		// data
 		virtual void updatePoint(void);
-
-		// grid
-		virtual OCT_PCL_CELL *getCell(const vFloat3 &vP, bool bAdd = true);
-
 		virtual void deleteExpiredCells(void);
+
+		// drawing
 		virtual void updateDrawAssets(void);
 
 	private:
@@ -56,12 +71,12 @@ namespace kai
 		}
 
 	protected:
-		vFloat3 m_vPorigin;	 // cubic center of the root cell in local coordinate
+		vFloat3 m_vPorigin;		 // cubic center of the root cell in local coordinate
 		vFloat3 m_vRootCellSize; // root level cell size in meters
 		int m_nMaxLevel;
 
 		// data
-		OCTREE_CELL<OCT_PCL_CELL> *m_pCell; // root cell
+		OCTREE_CELL<OCTGRID_PCL_CELL> *m_pCell; // root cell
 		uint64_t m_dTexpireCell;			// remove cell if no point is coming by this duration
 
 		// point cloud input

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 project(WebViewer3DTests LANGUAGES CXX)
-find_package(Boost 1.70 REQUIRED)
+find_package(Boost 1.70 CONFIG REQUIRED)
 find_package(Threads REQUIRED)
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
 set(CMAKE_CXX_STANDARD 17)

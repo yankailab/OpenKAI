@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>APdrive</title>
+  <link rel="stylesheet" href="css/control.css" />
+</head>
+
+<body>
+  <header>
+    <div class="brand">OpenKAI <span>APdrive</span></div>
+    <strong id="state">State: </strong>
+  </header>
+
+  <main class="workspace control-layout">
+    <section class="panel drive-panel" aria-label="Drive controls">
+      <h2>Drive controls</h2>
+      <div class="drive-pad">
+        <button id="btnForward" type="button">FORWARD</button>
+        <button id="btnLeft" type="button">LEFT</button>
+        <button id="btnRight" type="button">RIGHT</button>
+        <button id="btnBack" type="button">BACK</button>
+      </div>
+      <div class="tools drive-actions">
+        <button id="btnArm" type="button" class="primary">Arm</button>
+        <button id="btnDisarm" type="button">Disarm</button>
+      </div>
+    </section>
+
+    <section class="panel console-panel" aria-label="Console">
+      <h2>Console</h2>
+      <strong id="msg"></strong>
+      <label class="console-label" for="txtMsg">Messages</label>
+      <textarea id="txtMsg" rows="4"></textarea>
+    </section>
+  </main>
+
+  <!-- Existing scripts retained; this page uses plain CSS for its theme. -->
+  <script type="text/javascript"></script>
+  <script src="js/wsBase.js"></script>
+  <script src="js/wsAPdrive.js"></script>
+</body>
+
+</html>

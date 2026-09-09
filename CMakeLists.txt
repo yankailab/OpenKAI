@@ -132,7 +132,7 @@ endif()
 # Optional modules
 if(USE_WEBVIEWER3D)
   set(WITH_3D ON CACHE BOOL "" FORCE)
-  find_package(Boost 1.70 REQUIRED)
+  find_package(Boost 1.70 CONFIG REQUIRED)
   add_definitions(-DUSE_WEBVIEWER3D -DBOOST_ERROR_CODE_HEADER_ONLY)
   list(APPEND OpenKAI_include ${Boost_INCLUDE_DIRS})
   list(APPEND OpenKAI_cpp src/Net/HttpServer.cpp src/IO/WebSocketStream.cpp

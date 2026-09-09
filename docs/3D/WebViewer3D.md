@@ -2,7 +2,8 @@
 
 `_WebViewer3D` derives from `_GeometryViewerBase` and reads points and lines from
 the same `_GeometryBase::get()` ring buffers as `_ImGUIviewer`. The C++ process
-serves the browser application and a binary WebSocket on one port. All browser
+serves the browser application and a binary WebSocket on one port. A separate
+WebSocket connects JSON application commands to `_WSconsole`. All browser
 assets, including a pinned three.js release, are in `html/webViewer3D/`.
 There is no browser-side installation, npm build, CDN, or separate web server.
 
@@ -18,15 +19,19 @@ cmake --build build-web -j4
 
 This enables `WITH_3D` and requires Boost headers version 1.70 or later in addition
 to OpenKAI's normal build dependencies. Beast and Asio are compiled from headers;
-no Boost runtime library, wsServer, Open3D, ImGui, or desktop GL backend is needed.
-The sample loads the repository's `data/PointCloud/StanfordBunny/bun000.ply` through
-the native `_PCfile` reader and displays `_OctreeGrid` lines alongside it. Run the
-sample from the repository root so its data path resolves.
+no Boost runtime library, wsServer, Open3D, ImGui, or desktop GL backend is needed
+for streaming. The current sample uses `_Scepter` camera geometry and octree
+lines; enable its camera build dependencies when running that configuration.
+The optional `_PCfile` source can load `data/PointCloud/StanfordBunny/bun000.ply`.
+Run from the repository root so relative data paths resolve.
 
 Open `html/webViewer3D/index.html` directly in the browser, enter the backend IP
 and port (default `8080`), and click **Start**. The local launcher navigates to
 the C++ server and automatically connects. Alternatively, visit
-`http://BACKEND_IP:8080/` and click **Start** there.
+`http://BACKEND_IP:8080/` and click **Start** there. **Start** opens the stream
+and command sockets independently; **Stop** closes both. The Commands section
+under Objects has its own Connect/Disconnect buttons and a read-only `cmdState`
+console. A command connection failure leaves geometry streaming active.
 
 The launcher redirects because browsers restrict ES modules loaded from
 `file://`; the renderer and all imports run from the backend's HTTP origin.
@@ -37,6 +42,51 @@ building and installs it under `bin/html/webViewer3D/`. By default the viewer
 looks in the working directory and then beside the executable on Linux. Set
 `webRoot` explicitly for other deployment layouts. Copy the complete frontend
 directory with the executable when deploying offline.
+
+## JSON command connection
+
+The command port defaults to `7890` and uses the IP/host entered in the page.
+Change it in the Commands panel before connecting. The local HTML launcher
+preserves this port when navigating to the C++ server; `?cmdPort=7890` can also be
+used in a hosted page URL. Command Connect/Disconnect affects only that socket.
+After an unexpected command disconnect, use Connect to reconnect; commands are
+never queued or replayed automatically.
+
+For the existing `_WSconsole` backend, enable `WITH_IO`, `USE_WSSERVER`,
+`WITH_PROTOCOL` and `WITH_UI` in addition to your application's build options.
+Include the companion configuration in your application's `APP` block:
+
+```json
+"vInclude": ["jsonCfg/WebViewer3D_commands.json"]
+```
+
+That file defines `_WebSocketServer` on port 7890 in text mode (`wsMode: 2`) and
+`_WSconsole` linked through `_IObase`. Extend its `vBASE` list with the names of
+modules that should receive commands. `_WSconsole` dispatches using the JSON
+`module` field and calls that module's `console(const json &, void *)` method.
+The module implements its own commands and can reply through `_JSONbase::sendJson()`.
+The companion config allows one command client because the existing server's
+read/write interface targets client 0; geometry streaming retains its own
+independent multi-client support.
+
+The classic-script API is intentionally small and reusable:
+
+```javascript
+wsInit(); // Connect using the page's host and command port.
+wsSendCmd({ cmd: 'test', module: 'tester', v: 0 });
+wsStop(); // Disconnect the command socket only.
+```
+
+`wsSocket`, `strEOJ`, `wsInit()` and `cmdHandler(event)` retain the existing scheme.
+`wsSendCmd()` serializes an object with the `EOJ` suffix expected by
+`_JSONbase::recvJson()`. That literal delimiter cannot appear in command strings.
+Default replies are JSON without a delimiter (`msgFinishSend: ""`); the handler
+also accepts an optional trailing EOJ. It assembles replies split across the
+legacy 512-byte WebSocket messages, then dispatches to `handleCmd(jCmd)` in
+`js/wsCmdHandler.js`. Add page-specific reply handling there. Heartbeats
+(`{"cmd":"hb"}`), replies and connection messages appear in `cmdState`.
+Reply buffering is capped at 64 KiB of text and console history at 16 KiB.
+All content is displayed as text, including malformed replies.
 
 ## Configuration
 
@@ -104,7 +154,9 @@ line segments at one pixel wide; thick-line materials are not implemented.
 | `src/3D/Viewer/WebViewer3DProtocol.h` | Versioned little-endian binary encoding |
 | `src/3D/Viewer/_WebViewer3D.*` | Framework configuration, collection, filtering and snapshot publication |
 | `html/webViewer3D/js/launcher.js` | Local-file launcher and endpoint validation |
-| `html/webViewer3D/js/wsBase.js` | Connection, protocol greeting, automatic reconnect and commands |
+| `html/webViewer3D/js/wsStreamBase.js` | Geometry connection, protocol greeting, automatic reconnect and stream acknowledgements |
+| `html/webViewer3D/js/wsCmdBase.js` | Independent JSON command socket, sending and console status |
+| `html/webViewer3D/js/wsCmdHandler.js` | Reply buffering and page-specific JSON command handlers |
 | `html/webViewer3D/js/protocol.js` | Frame validation and typed-array views |
 | `html/webViewer3D/js/viewer3D.js` | Three.js scene, GPU buffers, camera and rendering |
 | `html/webViewer3D/js/main.js` | UI, animation loop and render acknowledgements |
@@ -188,7 +240,10 @@ ctest --test-dir /tmp/openkai-webviewer-tests --output-on-failure
 ```
 
 An optional Chrome/Chromium test also checks the local HTML launcher, real WebGL2
-rendering, protocol rejection, camera/visibility controls, and Stop/Start:
+rendering, protocol rejection, camera/visibility controls, and Stop/Start. A
+separate command fixture emulates `_WSconsole` framing to check JSON + EOJ sends,
+split replies, bounded console history and isolation between command and stream
+connections:
 
 ```bash
 python3 test/webViewer3D/browser.py /tmp/openkai-webviewer-tests/viewer_fixture html/webViewer3D

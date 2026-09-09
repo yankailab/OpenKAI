@@ -5,11 +5,10 @@
     "bLog": true,
     "bStdErr": true
   },
-
   "pcFile": {
     "class": "_PCfile",
-		"bON": false,
-		"bLog": true,
+    "bON": false,
+    "bLog": true,
     "thread": {
       "FPS": 1
     },
@@ -23,45 +22,42 @@
       "data/PointCloud/StanfordBunny/bun000.ply"
     ]
   },
-
-	"cam": {
-		"class": "_Scepter",
-		"bON": true,
-		"bLog": true,
-		"thread": {
-			"FPS": 30
-		},
-		"threadPP": {
-			"FPS": 30
-		},
-		"URI": "",
-		"vSizeRGB": [
-			1600,
-			1200
-		],
-		"vRangeD": [
-			0,
-			4000
-		],
-		"_PointCloud":"scPC",
-		"scPixelFormat": 4,
-		"bRGB": true,
-		"bDepth": true,
-		"btRGB": true,
-		"btDepth": false,
-		"bIR": false
-	},
-
-	"scPC": {
-		"class": "_PointCloud",
-		"bON": true,
-		"bLog": true,
-		"thread": {
-			"FPS": 1
-		},
-		"nP":400000
-	},
-
+  "cam": {
+    "class": "_Scepter",
+    "bON": true,
+    "bLog": true,
+    "thread": {
+      "FPS": 30
+    },
+    "threadPP": {
+      "FPS": 30
+    },
+    "URI": "",
+    "vSizeRGB": [
+      1600,
+      1200
+    ],
+    "vRangeD": [
+      0,
+      4000
+    ],
+    "_PointCloud": "scPC",
+    "scPixelFormat": 4,
+    "bRGB": true,
+    "bDepth": true,
+    "btRGB": true,
+    "btDepth": false,
+    "bIR": false
+  },
+  "scPC": {
+    "class": "_PointCloud",
+    "bON": true,
+    "bLog": true,
+    "thread": {
+      "FPS": 1
+    },
+    "nP": 400000
+  },
   "octGrid": {
     "class": "_OctreeGrid",
     "thread": {
@@ -83,10 +79,10 @@
       1
     ],
     "vGeometryBase": [
-      "pcFile","scPC"
+      "pcFile",
+      "scPC"
     ]
   },
-
   "viewer": {
     "class": "_WebViewer3D",
     "thread": {
@@ -138,6 +134,38 @@
           1
         ]
       }
+    ]
+  },
+  "wsCmdServer": {
+    "class": "_WebSocketServer",
+    "host": "0.0.0.0",
+    "port": 7890,
+    "wsMode": 2,
+    "nClientMax": 1,
+    "tOutMs": 10000,
+    "thread": {
+      "FPS": 30
+    },
+    "threadR": {
+      "FPS": 1
+    }
+  },
+  "wsCmdConsole": {
+    "class": "_WSconsole",
+    "_IObase": "wsCmdServer",
+    "msgFinishSend": "",
+    "msgFinishRecv": "EOJ",
+    "thread": {
+      "FPS": 10
+    },
+    "threadR": {
+      "FPS": 100
+    },
+    "vBASE": [
+      "viewer",
+      "octGrid",
+      "scPC",
+      "pcFile"
     ]
   }
 }

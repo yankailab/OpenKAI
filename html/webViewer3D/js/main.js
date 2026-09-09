@@ -1,4 +1,4 @@
-import { GeometryConnection } from './wsBase.js';
+import { GeometryConnection } from './wsStreamBase.js';
 import { decodeFrame } from './protocol.js';
 import { Viewer3D } from './viewer3D.js';
 
@@ -18,8 +18,7 @@ const connection = new GeometryConnection({
   onFrame(buffer, acknowledge) { pending = { frame: decodeFrame(buffer), acknowledge }; },
   onStatus(text) {
     $('#status').textContent = text;
-    $('#start').disabled = connection.running;
-    $('#stop').disabled = !connection.running;
+    syncConnectionButtons();
   },
   onReset() {
     pending = null; viewer.clear(); objectKey = '';
@@ -29,14 +28,20 @@ const connection = new GeometryConnection({
     bytes = frames = 0; lastStats = performance.now();
   }
 });
+function syncConnectionButtons() {
+  $('#start').disabled = connection.running;
+  $('#stop').disabled = !connection.running && !window.wsCmdActive();
+}
 function start(event) {
   event?.preventDefault();
   try {
     connection.start(window.viewerEndpoint());
-    $('#start').disabled = true; $('#stop').disabled = false;
+    window.wsInit();
+    syncConnectionButtons();
   } catch (error) { $('#status').textContent = error.message; }
 }
-function stop() { connection.stop(); $('#start').disabled = false; $('#stop').disabled = true; }
+function stop() { connection.stop(); window.wsStop(); syncConnectionButtons(); }
+window.addEventListener('wscmdstatechange', syncConnectionButtons);
 $('#connection').addEventListener('submit', start);
 $('#stop').addEventListener('click', stop);
 $('#fit').addEventListener('click', () => viewer.fit());
@@ -78,10 +83,10 @@ function draw(now) {
     }
   } catch (error) {
     connection.fail(error);
-    $('#start').disabled = false; $('#stop').disabled = true;
+    syncConnectionButtons();
   }
   animation = requestAnimationFrame(draw);
 }
 animation = requestAnimationFrame(draw);
 window.addEventListener('pagehide', () => { connection.stop(); cancelAnimationFrame(animation); viewer.dispose(); });
-if (location.hash === '#connect') { history.replaceState(null, '', location.pathname); start(); }
+if (location.hash === '#connect') { history.replaceState(null, '', location.pathname + location.search); start(); }

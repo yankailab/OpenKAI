@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenKAI web console</title>
+  <link rel="stylesheet" href="css/control.css" />
+</head>
+
+<body>
+  <header>
+    <div class="brand">OpenKAI <span>LCalign</span></div>
+    <strong id="state">State: </strong>
+  </header>
+
+  <main class="workspace control-layout">
+    <div class="panel-stack">
+      <section class="panel" aria-label="LCalign actions">
+        <h2>LCalign</h2>
+        <div class="tools">
+          <button id="btnUpdate" type="button" class="primary">Update</button>
+          <button id="btnLoadCfg" type="button">Load config</button>
+          <button id="btnSaveCfg" type="button">Save config</button>
+          <button id="btnSavePly" type="button">Save PLY</button>
+          <button id="btnSaveImg" type="button">Save IMG</button>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="Config">
+        <h2>Config</h2>
+        <div class="fields">
+          <label for="mName">LCalign module</label>
+          <input id="mName" value="LCalign" />
+          <label for="fNameCfg">Config file</label>
+          <input id="fNameCfg" value="/home/kai/dev/OpenKAI/jsonCfg/_LCalignCfg.json" />
+          <label for="dataDir">Data file dir</label>
+          <input id="dataDir" value="/home/kai/Documents/LCalign/" />
+        </div>
+      </section>
+
+      <section class="panel" aria-label="Thermal">
+        <h2>Thermal</h2>
+        <div class="fields">
+          <label for="mThermal">Thermal2RGB module</label>
+          <input id="mThermal" value="thermalRGB" />
+          <label for="tempLow">Temp. Low</label>
+          <input id="tempLow" class="short-input" value="20" />
+          <label for="tempHigh">Temp. High</label>
+          <input id="tempHigh" class="short-input" value="40" />
+        </div>
+      </section>
+
+      <section class="panel" aria-label="Camera">
+        <h2>Camera</h2>
+        <div class="camera-fields">
+          <fieldset>
+            <legend>C_focal</legend>
+            <div class="vector-fields">
+              <label>X <input id="Cfx" value="0" /></label>
+              <label>Y <input id="Cfy" value="0" /></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>C_center</legend>
+            <div class="vector-fields">
+              <label>X <input id="Ccx" value="0" /></label>
+              <label>Y <input id="Ccy" value="0" /></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>C_distortion</legend>
+            <div class="vector-fields">
+              <label>k1 <input id="Ck1" value="0" /></label>
+              <label>k2 <input id="Ck2" value="0" /></label>
+            </div>
+            <div class="vector-fields">
+              <label>p1 <input id="Cp1" value="0" /></label>
+              <label>p2 <input id="Cp2" value="0" /></label>
+              <label>p3 <input id="Cp3" value="0" /></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>C_rot</legend>
+            <div class="vector-fields">
+              <label>X <input id="Crx" value="0" /></label>
+              <label>Y <input id="Cry" value="0" /></label>
+              <label>Z <input id="Crz" value="0" /></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>C_translation</legend>
+            <div class="vector-fields">
+              <label>X <input id="Ctx" value="0" /></label>
+              <label>Y <input id="Cty" value="0" /></label>
+              <label>Z <input id="Ctz" value="0" /></label>
+            </div>
+          </fieldset>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel console-panel" aria-label="Console">
+      <h2>Console</h2>
+      <strong id="msg"></strong>
+      <label class="console-label" for="txtMsg">Messages</label>
+      <textarea id="txtMsg" rows="4"></textarea>
+    </section>
+  </main>
+
+  <!-- Existing scripts retained; this page uses plain CSS for its theme. -->
+  <script type="text/javascript"></script>
+  <script src="js/wsBase.js"></script>
+  <script src="js/wsLCalign.js"></script>
+</body>
+
+</html>

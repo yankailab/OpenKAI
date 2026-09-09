@@ -5,37 +5,28 @@
 
 #define N_OCT 8
 
-//#define octreeCidx(x, y, z) ((uint8_t)((((int8_t)x >> 7) << 2) | (((int8_t)y >> 7) << 1) | ((int8_t)z >> 7)))
-
 namespace kai
 {
-	union UUID128
-	{
-		uint8_t m_uint8[16];
-		uint16_t m_uint16[8];
-		uint32_t m_uint32[4];
-		uint64_t m_uint64[2];
-	};
-
 	template <typename T>
 	struct OCTREE_CELL
 	{
-//		UUID128 m_ID = {0, 0};	// for later expansion, ignore this at the moment
 		T *m_pT = nullptr;
 		OCTREE_CELL *m_pParent = nullptr;
 		OCTREE_CELL *m_pChild[N_OCT] = {};
 		// Child cells indexed by 3 bits: 4bX+2bY+bZ, bX,bY,bZ: 1: negative half / 1:positive half;
 
-		bool addChild(uint8_t iC)
+		OCTREE_CELL *addChild(uint8_t iC)
 		{
-			IF_F(iC < 0 || iC >= N_OCT);
-			IF__(m_pChild[iC], true);
+			IF_N(iC < 0 || iC >= N_OCT);
 
-			OCTREE_CELL *pC = new OCTREE_CELL();
+			OCTREE_CELL *pC = m_pChild[iC];
+			IF__(pC, pC);
+
+			pC = new OCTREE_CELL();
 			pC->m_pParent = this;
 			m_pChild[iC] = pC;
 
-			return true;
+			return pC;
 		}
 
 		OCTREE_CELL *getChild(uint8_t iC)
@@ -44,14 +35,6 @@ namespace kai
 
 			return m_pChild[iC];
 		}
-
-		// OCTREE_CELL *getChild(const UUID128& ID)
-		// {
-		// 	// Ignore this function at the moment, for later expansion
-		// 	int iC;
-
-		// 	return m_pChild[iC];
-		// }
 
 		void deleteChild(uint8_t iC)
 		{
@@ -93,7 +76,6 @@ namespace kai
 
 		void release(void)
 		{
-//			m_ID = {0, 0};
 			DEL(m_pT);
 			m_pParent = nullptr;
 

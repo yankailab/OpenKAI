@@ -76,7 +76,7 @@ namespace kai
 				IF_CONT(!pWS);
 
 				IO_PACKET_FIFO *pPw = pWS->getPacketFIFOw();
-				uint8_t pB[WS_N_BUF];
+				uint8_t pB[WS_N_BUF + 1]; // Room for the text-mode null terminator.
 				int nB;
 				while ((nB = pPw->getPacket(pB, WS_N_BUF)) > 0)
 				{

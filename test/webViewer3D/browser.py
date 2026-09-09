@@ -13,6 +13,7 @@ import time
 import urllib.request
 from pathlib import Path
 from integration import WebSocket
+from command_fixture import CommandServer
 
 
 def main():
@@ -22,6 +23,7 @@ def main():
     server = subprocess.Popen([fixture, root], stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
     browser = None
     client = None
+    commands = CommandServer()
     with tempfile.TemporaryDirectory(prefix='openkai-chrome-') as profile:
         try:
             port = int(server.stdout.readline())
@@ -66,10 +68,34 @@ def main():
             # Opening the local launcher and clicking Start must navigate to the backend.
             command('Page.navigate', {'url': (Path(root).resolve() / 'index.html').as_uri()})
             wait_for("location.protocol === 'file:' && !!window.viewerEndpoint")
-            evaluate(f"document.querySelector('#port').value = '{port}'; document.querySelector('#start').click();")
+            evaluate(f"document.querySelector('#port').value = '{port}'; document.querySelector('#cmdPort').value = '{commands.port}'; document.querySelector('#start').click();")
             wait_for("location.protocol === 'http:' && document.querySelector('#stats')?.textContent.includes('10,000 points')")
             assert evaluate("document.querySelector('#status').textContent") == 'Connected'
             assert evaluate("document.querySelectorAll('#objects input').length") == 1
+            wait_for("window.wsSocket?.readyState === WebSocket.OPEN")
+            assert evaluate("document.querySelector('#cmdPort').value") == str(commands.port)
+            assert evaluate("window.wsSocket.url") == f'ws://127.0.0.1:{commands.port}/'
+            evaluate("window.testReplies = []; const originalHandler = window.handleCmd; window.handleCmd = j => { testReplies.push(j); originalHandler(j); };")
+            assert evaluate("wsSendCmd({cmd: 'test', module: 'tester', v: 7})")
+            wait_for("testReplies.some(j => j.cmd === 'ackTest' && j.v === 7)")
+            assert commands.received == [{'cmd': 'test', 'module': 'tester', 'v': 7}]
+            assert evaluate("testReplies.find(j => j.cmd === 'ackTest').text.length") > 1024
+            wait_for("testReplies.some(j => j.cmd === 'hb') && wsCmdBuffer === ''")
+            assert 'ackTest' in evaluate("document.querySelector('#cmdState').value")
+            # Malformed input and log limits never interrupt streaming or throw globally.
+            evaluate("cmdHandler({data: '{bad json}'}); cmdHandler({data: '{\"cmd\":\"hb\"}'}); wsCmdLog('x'.repeat(20000));")
+            assert evaluate("document.querySelector('#cmdState').value.length") == 16384
+            assert not evaluate("wsSendCmd({cmd: 'test', module: 'tester', v: 'EOJ'})")
+            evaluate("cmdHandler({data: '{\"cmd\":'}); document.querySelector('#cmdDisconnect').click();")
+            assert evaluate("wsCmdBuffer === '' && wsSocket === null")
+            assert not evaluate("wsSendCmd({cmd: 'test', module: 'tester', v: 8})")
+            assert evaluate("document.querySelector('#status').textContent") == 'Connected'
+            # A refused command handshake must leave the binary stream connected.
+            evaluate(f"document.querySelector('#cmdPort').value = '{port}'; document.querySelector('#cmdConnect').click();")
+            wait_for("wsSocket === null")
+            assert evaluate("document.querySelector('#status').textContent") == 'Connected'
+            evaluate(f"document.querySelector('#cmdPort').value = '{commands.port}'; document.querySelector('#cmdConnect').click();")
+            wait_for("wsSocket?.readyState === WebSocket.OPEN")
             # Protocol validation and zero-copy decoding in the actual browser JS engine.
             result = evaluate(f"""(async () => {{
               const {{ decodeFrame }} = await import('http://127.0.0.1:{port}/js/protocol.js');
@@ -91,21 +117,27 @@ def main():
             Path('/tmp/openkai-webviewer.png').write_bytes(base64.b64decode(screenshot))
             evaluate("document.querySelector('#stop').click()")
             assert evaluate("document.querySelector('#status').textContent") == 'Stopped'
-            evaluate("window.TestWebSocket = window.WebSocket; window.WebSocket = class extends window.TestWebSocket { constructor(...args) { super(...args); window.testSocket = this; } };")
+            assert evaluate("wsSocket === null")
+            evaluate("window.TestWebSocket = window.WebSocket; window.WebSocket = class extends window.TestWebSocket { constructor(...args) { super(...args); if (this.url.endsWith('/stream')) window.testSocket = this; } };")
             evaluate("document.querySelector('#start').click()")
             wait_for("document.querySelector('#status').textContent === 'Connected'")
+            wait_for("wsSocket?.readyState === WebSocket.OPEN")
+            evaluate("window.savedCmdSocket = wsSocket")
             evaluate("window.testSocket.close()")
             wait_for("document.querySelector('#status').textContent.includes('retrying')")
             wait_for("document.querySelector('#status').textContent === 'Connected'")
+            assert evaluate("wsSocket === savedCmdSocket && wsSocket.readyState === WebSocket.OPEN")
             assert not exceptions, exceptions
             print('PASS: local-file launcher, WebGL2 rendering, camera/visibility controls, Stop/Start; ' + result)
             print('Screenshot: /tmp/openkai-webviewer.png')
+            print('PASS: independent command port, JSON + EOJ sending, split replies, bounded console, command failure isolation')
         finally:
             if client: client.close()
             if browser:
                 browser.terminate()
                 browser.wait(timeout=5)
             server.communicate('\n', timeout=5)
+            commands.close()
 
 
 if __name__ == '__main__': main()
