@@ -42,7 +42,7 @@
 		"dTexpireCell": 0,
 		"dTexpirePCL": 0,
 		"vColCellOcc": [1,1,1],
-		"nMaxLines": 100000,
+		"nMaxCells": 8333,
 
 		"vGeometryBase": ["pcFile"]
 	},

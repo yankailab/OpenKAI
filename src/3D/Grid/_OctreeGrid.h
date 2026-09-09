@@ -4,9 +4,8 @@
 #include "_OctreeBase.h"
 #include "../PointCloud/_PointCloud.h"
 #include "../../Filter/Median.h"
-#include "../../Primitive/UUID128.h"
-
-#define OCTGRID_MAX_LEVEL 40
+#include "OctreeGridCells.h"
+#include <mutex>
 
 namespace kai
 {
@@ -18,7 +17,7 @@ namespace kai
 		128 bit width from MSB to LSB
 		[2 bit] 0
 		[3 bit][3bit]... each 3-bit fragment correspondent to its cell index at the Level from 0 to 39, 40 levels at most (3 bit x 40 = 120 bit)
-		[6 bit] max level valid in the ID
+		[6 bit] cell depth (0 = root, 40 = deepest); unused path segments are zero
 		*/
 
 		int m_nP = 0;
@@ -53,6 +52,7 @@ namespace kai
 		// drawing
 		virtual int get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire = 0);
 		virtual int get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut, uint64_t tExpire = 0);
+		virtual int get(OCTGRID_CELLS *pOut, uint64_t tExpire = 0, size_t nMaxCells = SIZE_MAX);
 
 	protected:
 		// data
@@ -85,10 +85,13 @@ namespace kai
 		GEOMETRY_RINGBUF<GEOMETRY_POINT> m_grPt;
 		uint64_t m_dTexpirePCL;
 
-		// generated line for grid visualization
-		int m_nMaxLines;
-		GEOMETRY_RINGBUF<GEOMETRY_LINE> m_lnCellOcc;
+		// Compact published snapshot; geometry is constructed by viewers.
+		int m_nMaxCells;
+		OCTGRID_CELLS m_cells;
+		vector<OCTGRID_CELL> m_buildCells;
+		std::mutex m_cellsMutex;
 		vFloat3 m_vColCellOcc;
+		bool m_bColCellOcc;
 	};
 
 }

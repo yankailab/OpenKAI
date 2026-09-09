@@ -112,6 +112,99 @@ def main():
               for (const b of malformed) {{ let rejected = false; try {{ decodeFrame(b); }} catch {{ rejected = true; }} if (!rejected) throw Error('Malformed frame accepted'); }}
               return 'PASS: zero-copy attributes and malformed frames';
             }})()""")
+            grid_result = evaluate(f"""(async () => {{
+              const {{ decodeFrame }} = await import('/js/protocol.js');
+              const {{ cellBox }} = await import('/js/octreeCells.js');
+              const {{ GridBoxes }} = await import('/js/gridBoxes.js');
+              const THREE = await import('/vendor/three.module.min.js');
+              const data = await new Promise(resolve => {{
+                const ws = new WebSocket('ws://127.0.0.1:{port}/stream'); ws.binaryType = 'arraybuffer';
+                ws.onmessage = e => {{ if (typeof e.data === 'string') ws.send('start'); else {{ ws.close(); resolve(e.data); }} }};
+              }});
+              const object = decodeFrame(data).objects[0], grid = object.grid;
+              if (object.nC !== 41 || grid.cells.length !== 41 * 19 || grid.cells.buffer !== data) throw Error('Incorrect cell payload');
+              for (let depth = 0; depth <= 40; ++depth) {{
+                const box = cellBox(grid, depth), scale = 2 ** -depth;
+                if (box.id.length !== 16 || box.id[0] % 64 !== depth || box.color.join() !== '255,51,0' ||
+                    box.size.some(x => x !== 2 * scale) || box.center.some(x => x !== 1 - scale)) throw Error('Incorrect cell box');
+              }}
+              // Reject malformed counts, metadata, path bits and padding atomically.
+              const start = 32 + 64 + object.nP * 16 + object.nL * 32;
+              const legacy = data.slice(0, start), lv = new DataView(legacy);
+              lv.setUint32(4, 1, true); lv.setUint32(16, legacy.byteLength, true);
+              lv.setUint32(44, 0, true); lv.setUint32(80, 0, true);
+              if (decodeFrame(legacy).objects[0].grid !== null) throw Error('Legacy frame failed');
+              // A grid with 41 unaligned records followed by ordinary geometry.
+              const mixed = new Uint8Array(data.byteLength + legacy.byteLength - 32);
+              mixed.set(new Uint8Array(data)); mixed.set(new Uint8Array(legacy, 32), data.byteLength);
+              const mv = new DataView(mixed.buffer);
+              mv.setUint32(12, 2, true); mv.setUint32(16, mixed.byteLength, true);
+              mv.setUint32(data.byteLength, 8, true);
+              const second = decodeFrame(mixed.buffer).objects[1];
+              if (second.points.buffer !== mixed.buffer || second.points[0] !== 1 || second.nC !== 0) throw Error('Mixed object alignment');
+              const malformed = [];
+              for (const [at, value] of [[44, 0xffffffff], [80, 2], [start + 24, 41]]) {{
+                const copy = data.slice(0); new DataView(copy).setUint32(at, value, true); malformed.push(copy);
+              }}
+              for (const [at, value] of [[start + 40, 41], [start + 55, 128], [start + 41, 1], [data.byteLength - 1, 1]]) {{
+                const copy = data.slice(0); new Uint8Array(copy)[at] = value; malformed.push(copy);
+              }}
+              const copy = data.slice(0); new DataView(copy).setFloat32(start + 12, -1, true); malformed.push(copy);
+              for (const b of malformed) {{ let bad = false; try {{ decodeFrame(b); }} catch {{ bad = true; }} if (!bad) throw Error('Invalid grid accepted'); }}
+              const boxes = new GridBoxes();
+              boxes.update(grid, object.bounds, 1);
+              if (boxes.geometry.instanceCount !== 41 || boxes.getCell(1).box.min.toArray().join() !== '0,0,0' || boxes.getCell(41)) throw Error('Box identity/bounds');
+              const renderer = new THREE.WebGLRenderer({{ preserveDrawingBuffer: true }});
+              renderer.setSize(128, 128);
+              const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(60, 1, .1, 100);
+              camera.position.set(0, 0, 5); scene.add(boxes);
+              renderer.render(scene, camera);
+              if (renderer.info.render.lines !== 41 * 12) throw Error('Boxes not rendered as instances');
+              const gl = renderer.getContext(), pixels = new Uint8Array(128 * 128 * 4);
+              gl.readPixels(0, 0, 128, 128, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+              let colored = 0;
+              for (let i = 0; i < pixels.length; i += 4) if (pixels[i] > 200 && pixels[i + 1] > 30 && pixels[i + 2] < 10) ++colored;
+              if (colored < 50) throw Error('No visible colored boxes');
+              const many = {{ ...grid, cells: new Uint8Array(300 * 19) }};
+              for (let i = 0; i < 300; ++i) many.cells.set(grid.cells.subarray(0, 19), i * 19);
+              boxes.update(many, object.bounds, .5); renderer.render(scene, camera);
+              if (renderer.info.render.lines !== 300 * 12) throw Error('Instance capacity did not grow');
+              boxes.update({{ ...grid, cells: new Uint8Array(0) }}, object.bounds, 1);
+              renderer.render(scene, camera);
+              if (boxes.getCell(0) || renderer.info.render.lines !== 0) throw Error('Empty grid left stale boxes');
+              // The same RGB must produce the same screen color for cells and
+              // points. Intermediate channel values expose skipped conversion.
+              const pointGeometry = new THREE.BufferGeometry();
+              pointGeometry.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0], 3));
+              const pointColor = new THREE.BufferAttribute(new Uint8Array(4), 4, true);
+              pointGeometry.setAttribute('color', pointColor);
+              const point = new THREE.Points(pointGeometry, new THREE.PointsMaterial({{ vertexColors: true, size: 8, sizeAttenuation: false }}));
+              const screenColor = () => {{
+                renderer.render(scene, camera);
+                gl.readPixels(0, 0, 128, 128, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+                const counts = new Map();
+                for (let i = 0; i < pixels.length; i += 4) {{
+                  if (!pixels[i] && !pixels[i + 1] && !pixels[i + 2]) continue;
+                  const rgb = pixels.subarray(i, i + 3).join();
+                  counts.set(rgb, (counts.get(rgb) || 0) + 1);
+                }}
+                return [...counts].sort((a, b) => b[1] - a[1])[0]?.[0];
+              }};
+              for (const rgb of [[64, 128, 192], [192, 64, 128], [128, 192, 64]]) {{
+                scene.remove(boxes); scene.add(point);
+                pointColor.array.set([...rgb, 255]); pointColor.needsUpdate = true;
+                const expected = screenColor();
+                const cells = new Uint8Array(19); cells.set(rgb, 16);
+                boxes.update({{ ...grid, cells }}, object.bounds, 1);
+                scene.remove(point); scene.add(boxes);
+                const actual = screenColor();
+                if (!expected || actual !== expected) throw Error(`Cell RGB ${{rgb}} rendered as ${{actual}}, point rendered as ${{expected}}`);
+              }}
+              pointGeometry.dispose(); point.material.dispose();
+              boxes.geometry.dispose(); boxes.material.dispose(); renderer.dispose();
+              return 'PASS: grid decoding through depth 40, validation, instanced WebGL boxes, point/cell RGB agreement, resizing and clearing';
+            }})()""")
+            print(grid_result)
             evaluate("document.querySelector('#fit').click(); document.querySelector('#objects input').click(); document.querySelector('#objects input').click();")
             screenshot = command('Page.captureScreenshot', {'format': 'png'})['data']
             Path('/tmp/openkai-webviewer.png').write_bytes(base64.b64decode(screenshot))

@@ -70,14 +70,9 @@
       5
     ],
     "nMaxLevel": 4,
-    "nMaxLines": 100000,
+    "nMaxCells": 8333,
     "dTexpireCell": 500000,
     "dTexpirePCL": 0,
-    "vColCellOcc": [
-      0.3,
-      0.8,
-      1
-    ],
     "vGeometryBase": [
       "pcFile",
       "scPC"
@@ -126,7 +121,8 @@
       {
         "_GeometryBase": "octGrid",
         "nP": 0,
-        "nL": 100000,
+        "nL": 0,
+        "nC": 8333,
         "matCol": [
           0.3,
           0.8,

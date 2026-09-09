@@ -6,6 +6,7 @@
  */
 
 #include "_ImGUIviewer.h"
+#include "../Grid/_OctreeGrid.h"
 
 #include "ImGUIviewerGLRenderer.h"
 #include "imgui.h"
@@ -93,6 +94,7 @@ namespace kai
 	{
 		m_vP.clear();
 		m_vL.clear();
+		m_vBox.clear();
 	}
 
 	_ImGUIviewer::_ImGUIviewer()
@@ -139,6 +141,8 @@ namespace kai
 	bool _ImGUIviewer::init(const json &j)
 	{
 		IF_F(!this->_GeometryViewerBase::init(j));
+		jKv(j, "nCbuf", m_nCbuf);
+		IF_Le_F(m_nCbuf < 0, "Invalid nCbuf");
 
 		jKv(j, "bShowPanel", m_bShowPanel);
 		jKv(j, "bShowGrid", m_bShowGrid);
@@ -235,6 +239,7 @@ namespace kai
 				obj.m_bVisible = pStyle->m_bVisible;
 				obj.m_nPbuf = pStyle->m_nPbuf;
 				obj.m_nLbuf = pStyle->m_nLbuf;
+				obj.m_nCbuf = pStyle->m_nCbuf;
 				obj.m_matPointSize = pStyle->m_matPointSize;
 				obj.m_matLineWidth = pStyle->m_matLineWidth;
 				obj.m_matCol = pStyle->m_matCol;
@@ -245,6 +250,7 @@ namespace kai
 				obj.m_bVisible = true;
 				obj.m_nPbuf = 0;
 				obj.m_nLbuf = 0;
+				obj.m_nCbuf = -1;
 				obj.m_matPointSize = 2.0;
 				obj.m_matLineWidth = 1.0;
 				obj.m_matCol = vFloat4(1, 1, 1, 1);
@@ -257,9 +263,9 @@ namespace kai
 
 			collectGeometry(pGb, &obj);
 
-			IF_CONT(obj.m_vP.empty() && obj.m_vL.empty());
+			IF_CONT(obj.m_vP.empty() && obj.m_vL.empty() && obj.m_vBox.empty());
 			nPtotal += obj.m_vP.size();
-			nLtotal += obj.m_vL.size();
+			nLtotal += obj.m_vL.size() + obj.m_vBox.size() * 12;
 			iOut++;
 		}
 
@@ -282,6 +288,7 @@ namespace kai
 
 		collectPoints(pObj);
 		collectLines(pObj);
+		collectCells(pObj);
 	}
 
 	void _ImGUIviewer::collectPoints(IMGUI_VIEWER_OBJ *pObj)
@@ -343,6 +350,29 @@ namespace kai
 			l.m_vB = pGl->m_vPb;
 			l.m_vC = visibleColor(pGl->m_vC, pObj->m_matCol);
 			pObj->m_vL.push_back(l);
+		}
+	}
+
+	void _ImGUIviewer::collectCells(IMGUI_VIEWER_OBJ *pObj)
+	{
+		auto *grid = dynamic_cast<_OctreeGrid *>(pObj->m_pGB);
+		if (!grid) return;
+		const uint64_t now = getApproxTbootUs();
+		const uint64_t expiry = m_dTexpire && now > m_dTexpire ? now - m_dTexpire : 0;
+		const size_t limit = pObj->m_nCbuf < 0 ? m_nCbuf : std::min(pObj->m_nCbuf, m_nCbuf);
+		grid->get(&m_cells, expiry, limit);
+		pObj->m_gridHeader = m_cells.m_header;
+		pObj->m_vBox.reserve(m_cells.m_vCell.size());
+		for (const auto &cell : m_cells.m_vCell)
+		{
+			IMGUI_VIEWER_BOX box;
+			box.m_ID = cell.id();
+			std::array<float, 3> c, size;
+			if (!octgridCellBox(m_cells.m_header, box.m_ID, c, size)) continue;
+			box.m_vCenter = vFloat3(c[0], c[1], c[2]);
+			box.m_vSize = vFloat3(size[0], size[1], size[2]);
+			box.m_vC = vFloat3(cell.m_vC[0] / 255.f, cell.m_vC[1] / 255.f, cell.m_vC[2] / 255.f);
+			pObj->m_vBox.push_back(box);
 		}
 	}
 
@@ -483,20 +513,23 @@ namespace kai
 		snapshotLock();
 		for (const IMGUI_VIEWER_OBJ &g : m_vDrawGO)
 		{
-			for (const IMGUI_VIEWER_LINE &l : g.m_vL)
+			auto drawLine = [&](const vFloat3 &vA, const vFloat3 &vB, const vFloat3 &color)
 			{
 				vFloat2 a, b;
 				float dA = 0;
 				float dB = 0;
-				if (!projectPoint(l.m_vA, vCanvasPos, vCanvasSize, &a, &dA))
-					continue;
-				if (!projectPoint(l.m_vB, vCanvasPos, vCanvasSize, &b, &dB))
-					continue;
+				if (!projectPoint(vA, vCanvasPos, vCanvasSize, &a, &dA))
+					return;
+				if (!projectPoint(vB, vCanvasPos, vCanvasSize, &b, &dB))
+					return;
 
 				pDraw->AddLine(ImVec2(a.x, a.y), ImVec2(b.x, b.y),
-							   colU32(l.m_vC, g.m_matCol.w),
+							   colU32(color, g.m_matCol.w),
 							   std::max(1.0f, g.m_matLineWidth * m_lineScale));
-			}
+			};
+			for (const auto &line : g.m_vL) drawLine(line.m_vA, line.m_vB, line.m_vC);
+			for (const auto &box : g.m_vBox)
+				box.forEachEdge([&](const vFloat3 &a, const vFloat3 &b) { drawLine(a, b, box.m_vC); });
 
 			for (const IMGUI_VIEWER_POINT &p : g.m_vP)
 			{
@@ -656,6 +689,8 @@ namespace kai
 		jKv(j, "nPbuf", pObj->m_nPbuf);
 		jKv(j, "nL", pObj->m_nLbuf);
 		jKv(j, "nLbuf", pObj->m_nLbuf);
+		jKv(j, "nC", pObj->m_nCbuf);
+		jKv(j, "nCbuf", pObj->m_nCbuf);
 		jKv(j, "matPointSize", pObj->m_matPointSize);
 		jKv(j, "matLineWidth", pObj->m_matLineWidth);
 		jKv<float>(j, "matCol", pObj->m_matCol);
@@ -841,6 +876,13 @@ namespace kai
 			{
 				expand(l.m_vA);
 				expand(l.m_vB);
+			}
+			for (const auto &box : g.m_vBox)
+			{
+				vFloat3 center = box.m_vCenter, half = box.m_vSize;
+				half *= 0.5f;
+				expand(center - half);
+				expand(center + half);
 			}
 		}
 

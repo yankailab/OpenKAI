@@ -1,5 +1,6 @@
 #include "_WebViewer3D.h"
 #include "WebViewer3DProtocol.h"
+#include "../Grid/_OctreeGrid.h"
 #include "../../Module/ModuleMgr.h"
 #include "../../IO/WebSocketStream.h"
 #include <algorithm>
@@ -18,11 +19,12 @@ namespace kai
 		jKv(j, "port", m_port);
 		jKv(j, "webRoot", m_root);
 		jKv(j, "nClientMax", m_maxClients);
+		jKv(j, "nCbuf", m_nCbuf);
 		jKv(j, "bAutoBound", m_autoBound);
 		jKv(j, "bShowGrid", m_showGrid);
 		jKv<float>(j, "vBgCol", m_background);
 		IF_Le_F(m_port < 1 || m_port > 65535 || m_maxClients < 1 || m_maxClients > 64, "Invalid viewer port/client limit");
-		IF_Le_F(m_nPbuf <= 0 || m_nLbuf <= 0, "Invalid geometry buffer limits");
+		IF_Le_F(m_nPbuf <= 0 || m_nLbuf <= 0 || m_nCbuf < 0, "Invalid geometry buffer limits");
 		// Resolve relative to launch directory, then the executable's copied assets.
 		if (!std::filesystem::is_directory(m_root) && !j.contains("webRoot"))
 		{
@@ -54,6 +56,7 @@ namespace kai
 			o.name = source->getName();
 			o.nP = m_nPbuf;
 			o.nL = m_nLbuf;
+			o.nC = m_nCbuf;
 			m_objects.push_back(o);
 		}
 		// Optional per-source style/caps. The base's vGeometryBase name list still works.
@@ -74,6 +77,7 @@ namespace kai
 					o.name = name;
 					o.nP = m_nPbuf;
 					o.nL = m_nLbuf;
+					o.nC = m_nCbuf;
 					m_objects.push_back(o);
 					it = m_objects.end() - 1;
 					m_vpGb.push_back(source);
@@ -81,17 +85,23 @@ namespace kai
 				jKv(config, "bVisible", it->visible);
 				jKv(config, "nP", it->nP);
 				jKv(config, "nL", it->nL);
+				jKv(config, "nC", it->nC);
 				jKv(config, "matPointSize", it->pointSize);
 				jKv<float>(config, "matCol", it->color);
-				IF_Le_F(it->nP < 0 || it->nL < 0 || !std::isfinite(it->pointSize) || it->pointSize <= 0, "Invalid geometry style/limits");
+				IF_Le_F(it->nP < 0 || it->nL < 0 || it->nC < 0 || !std::isfinite(it->pointSize) || it->pointSize <= 0, "Invalid geometry style/limits");
 				it->nP = std::min(it->nP, m_nPbuf);
 				it->nL = std::min(it->nL, m_nLbuf);
+				it->nC = std::min(it->nC, m_nCbuf);
 			}
 		// Verify the worst case once, before any threads start.
 		uint64_t bytes = webviewer3d::HeaderBytes;
 		for (const auto &o : m_objects)
 			if (o.visible)
+			{
 				bytes += webviewer3d::ObjectBytes + uint64_t(o.nP) * 16 + uint64_t(o.nL) * 32;
+				if (dynamic_cast<_OctreeGrid *>(o.source))
+					bytes += webviewer3d::GridHeaderBytes + uint64_t(o.nC) * webviewer3d::CellBytes + 3;
+			}
 		IF_Le_F(m_objects.size() > 1024 || bytes > webviewer3d::MaxFrameBytes, "Reduce geometry caps: frame limit is 64 MiB / 1024 objects");
 		return true;
 	}
@@ -234,9 +244,22 @@ namespace kai
 			vertex(l.m_vPa, l.m_vC, m_lines, m_lineColors);
 			vertex(l.m_vPb, l.m_vC, m_lines, m_lineColors);
 		}
-		if (m_points.empty() && m_lines.empty())
+		OCTGRID_CELLS *cells = nullptr;
+		if (auto *grid = dynamic_cast<_OctreeGrid *>(o.source))
+		{
+			grid->get(&m_cells, expiry, size_t(o.nC));
+			cells = &m_cells;
+			if (!m_cells.m_vCell.empty())
+				for (size_t axis = 0; axis < 3; ++axis)
+				{
+					const float c = m_cells.m_header.m_vPorigin[axis], h = m_cells.m_header.m_vRootCellSize[axis] * 0.5f;
+					bounds[axis] = std::min(bounds[axis], c - h);
+					bounds[axis + 3] = std::max(bounds[axis + 3], c + h);
+				}
+		}
+		if (m_points.empty() && m_lines.empty() && (!cells || cells->m_vCell.empty()))
 			std::fill(bounds, bounds + 6, 0.f);
-		webviewer3d::object(frame, id, o.pointSize, colorByte(o.color.w) / 255.f, bounds, m_points, m_pointColors, m_lines, m_lineColors);
+		webviewer3d::object(frame, id, o.pointSize, colorByte(o.color.w) / 255.f, bounds, m_points, m_pointColors, m_lines, m_lineColors, cells);
 	}
 	void _WebViewer3D::console(void *console)
 	{

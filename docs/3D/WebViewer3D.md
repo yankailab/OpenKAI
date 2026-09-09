@@ -1,7 +1,8 @@
 # Browser 3D viewer
 
 `_WebViewer3D` derives from `_GeometryViewerBase` and reads points and lines from
-the same `_GeometryBase::get()` ring buffers as `_ImGUIviewer`. The C++ process
+the same `_GeometryBase::get()` ring buffers as `_ImGUIviewer`, plus compact
+`_OctreeGrid::get(OCTGRID_CELLS*)` snapshots. The C++ process
 serves the browser application and a binary WebSocket on one port. A separate
 WebSocket connects JSON application commands to `_WSconsole`. All browser
 assets, including a pinned three.js release, are in `html/webViewer3D/`.
@@ -21,7 +22,7 @@ This enables `WITH_3D` and requires Boost headers version 1.70 or later in addit
 to OpenKAI's normal build dependencies. Beast and Asio are compiled from headers;
 no Boost runtime library, wsServer, Open3D, ImGui, or desktop GL backend is needed
 for streaming. The current sample uses `_Scepter` camera geometry and octree
-lines; enable its camera build dependencies when running that configuration.
+cells; enable its camera build dependencies when running that configuration.
 The optional `_PCfile` source can load `data/PointCloud/StanfordBunny/bun000.ply`.
 Run from the repository root so relative data paths resolve.
 
@@ -126,6 +127,8 @@ Optional `vGeometry` entries add or override individual sources:
 | `webRoot` | `html/webViewer3D` | Directory of browser resources |
 | `nClientMax` | `8` | Maximum simultaneous streaming clients, configurable from 1 to 64 |
 | `thread.FPS` | framework default | Maximum geometry collection/publication rate |
+| `nCbuf` | `100000` | Maximum occupied cells collected per grid source |
+| `vGeometry[].nC` | `nCbuf` | Per-grid cell limit; zero sends an empty grid |
 | `nPbuf`, `nLbuf` | `200000`, `100000` | Scratch ring-buffer capacities, per source |
 | `dTexpire` | `0` | Maximum geometry age in microseconds; zero disables expiry |
 | `bAutoBound`, `bShowGrid` | `true`, `true` | Fit the first nonempty frame; show reference grid |
@@ -140,10 +143,16 @@ orthographic), `camFov`, `vCamNF`, `vCamLR`, `vCamBT`, `vCamEye`, `vCamLookAt`, 
 grid, and point scale are local to each browser. Automatic fitting runs once
 on the first nonempty frame; **Fit scene** can be used subsequently.
 
+World-origin pointers mark `(0, 0, 0)` with an O label and three arrows, each
+exactly 1 metre long: X in red, Y in green, and Z in blue. They remain visible
+when the reference grid is hidden and stay fixed to the world coordinate axes.
+
 Positions are float32. Colors are normalized RGBA8; black source colors use the
 material fallback, matching the ImGui viewer's convention. Invalid timestamps,
 expired geometry, and nonfinite positions are omitted. Lines use native WebGL
 line segments at one pixel wide; thick-line materials are not implemented.
+Grid cells carry RGB8 (including black) and use the object opacity. Their boxes
+are drawn with one shared wire box and one GPU instance per cell.
 
 ## Structure and streaming behavior
 
@@ -195,7 +204,7 @@ does not implement TLS or authentication. To expose it through HTTPS, use a TLS
 endpoint that also forwards `/stream` WebSocket upgrades. The browser selects
 `wss://` when the page is served over HTTPS.
 
-## Binary protocol, version 1
+## Binary protocol, version 2
 
 All integers and IEEE float32 values are little-endian. A WebSocket binary
 message contains one complete snapshot. Reserved fields are zero.
@@ -203,7 +212,7 @@ message contains one complete snapshot. Reserved fields are zero.
 | Frame header offset | Type | Value |
 | --- | --- | --- |
 | 0 | uint32 | `0x31443357` (`W3D1`) |
-| 4 | uint32 | Version `1` |
+| 4 | uint32 | Version `2` |
 | 8 | uint32 | Sequence number, wraps at 2^32 |
 | 12 | uint32 | Object count |
 | 16 | uint32 | Entire message length in bytes |
@@ -215,16 +224,66 @@ Each object starts with a 64-byte header:
 | Object header offset | Type | Value |
 | --- | --- | --- |
 | 0, 4, 8 | uint32 × 3 | Object ID, point count P, line count L |
-| 12 | uint32 | Reserved |
+| 12 | uint32 | Occupied cell count C |
 | 16, 20 | float32 × 2 | Point size, opacity |
 | 24 | float32 × 6 | Axis-aligned bounds: min XYZ, max XYZ |
-| 48–63 | bytes | Reserved |
+| 48 | uint32 | Flags: bit 0 means a grid header is present |
+| 52–63 | bytes | Reserved |
 
 The header is immediately followed by point XYZ (`12P` bytes), point RGBA
 (`4P` bytes), line endpoint XYZ (`24L` bytes, A then B), and line endpoint RGBA
 (`8L` bytes). All sections remain four-byte aligned. Each point costs 16 bytes;
-each line costs 32 bytes. Full snapshots provide simple reconnect and object
-removal behavior; delta updates can be added under a new protocol version.
+each line costs 32 bytes. When flag bit 0 is set, these sections are followed by
+a 40-byte grid header, including when C is zero:
+
+| Grid header offset | Type | Value |
+| --- | --- | --- |
+| 0 | float32 × 3 | Root cell center XYZ (`vPorigin`) |
+| 12 | float32 × 3 | Full root cell extents XYZ (`vRootCellSize`) |
+| 24 | uint32 | Maximum depth, 0–40 |
+| 28 | uint32 | Reserved |
+| 32 | uint64 | Grid snapshot publication timestamp in microseconds |
+
+Next come C interleaved records: 16 ID bytes, then three RGB8 bytes. The ID is
+little-endian, low 64-bit word first. Its top two bits are zero; bits 125–6
+hold up to 40 child indices, three bits per level, starting at bit 123. Bits
+5–0 hold the cell depth. Depth 0 identifies the root (ID zero); only `depth`
+child segments are used and all remaining path bits are zero. A child index
+uses X/Y/Z masks 4/2/1, with a set bit choosing the positive half of that axis.
+
+Each cell costs exactly **19 bytes**, down from 384 bytes for twelve streamed
+lines (about 95% less cell payload). Records have no per-cell padding. Zero to
+three zero bytes follow the whole cell section to align the next object to four
+bytes. Header presence is explicit so an empty grid can clear old boxes.
+
+The browser accepts legacy version 1 point/line frames as well as version 2.
+Point and line sections retain their original encoding. Older browsers must be
+updated alongside the version 2 backend. Full snapshots preserve reconnect and
+object removal behavior.
+
+## Occupied cell interface
+
+`_OctreeGrid::get(OCTGRID_CELLS*, tExpire, nMaxCells)` copies one coherent header
+and its occupied cell records. It includes occupied ancestors, as the previous
+wireframe did, in root-first traversal order. `nMaxCells` in the grid config sets
+the publication cap; if omitted, `floor(nMaxLines / 12)` preserves the old cap
+(default 8333). The viewers have independent `nCbuf` and per-object `nC` caps.
+Point and line interfaces remain available; the grid itself returns no lines.
+
+RGB comes from each cell's averaged point color, clamped and rounded to RGB8.
+An explicitly configured `vColCellOcc` keeps the previous uniform color override.
+The sample omits this setting so cell colors follow the point cloud. Remove it
+from existing configurations to enable per-cell colors. For grid cells, `matCol`
+controls only opacity; its RGB does not tint cells. The box shader uses the same
+output color conversion as the point-cloud material.
+`dTexpireCell` still removes old occupancy; viewer expiry uses the shared snapshot
+publication time. An empty snapshot replaces previous boxes.
+
+Both viewers retain the full ID and box geometry. Browser `GridBoxes.getCell(i)`
+returns the ID bytes, RGB, and a `THREE.Box3` for an instance; ImGui keeps an
+`IMGUI_VIEWER_BOX` with UUID, center, size, and color. A picking UI can use these
+records later. Rendering positions remain float32, so very deep cells can become
+visually indistinguishable even though their 128-bit IDs remain exact.
 
 ## Verification
 
@@ -257,4 +316,13 @@ To verify the real framework collector with the sample point cloud and octree:
 
 ```bash
 python3 test/webViewer3D/backend.py /path/to/build-web/OpenKAI
+python3 test/webViewer3D/octree.py /path/to/build-web/OpenKAI
+```
+
+For a completed build with ImGui and `CMAKE_EXPORT_COMPILE_COMMANDS=ON`, run the
+native grid/viewer API checks (ID lookup and stability through depth 40, colors,
+caps, expiry, and clearing):
+
+```bash
+python3 test/webViewer3D/native_cells.py build
 ```

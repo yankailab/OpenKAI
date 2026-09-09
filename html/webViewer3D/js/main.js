@@ -5,7 +5,7 @@ import { Viewer3D } from './viewer3D.js';
 const $ = selector => document.querySelector(selector);
 const viewer = new Viewer3D($('#viewport'));
 let pending = null, names = new Map(), visibility = new Map(), objectKey = '';
-let bytes = 0, frames = 0, lastStats = performance.now(), latestCounts = [0, 0];
+let bytes = 0, frames = 0, lastStats = performance.now(), latestCounts = [0, 0, 0];
 const connection = new GeometryConnection({
   onHello(config) {
     names = new Map(config.objects.map(o => [o.id, o.name]));
@@ -58,7 +58,7 @@ function draw(now) {
       pending = null;
       viewer.update(frame);
       bytes += frame.bytes; ++frames;
-      latestCounts = frame.objects.reduce((n, o) => [n[0] + o.nP, n[1] + o.nL], [0, 0]);
+      latestCounts = frame.objects.reduce((n, o) => [n[0] + o.nP, n[1] + o.nL, n[2] + o.nC], [0, 0, 0]);
       const key = frame.objects.map(o => o.id).join(',');
       if (key !== objectKey) {
         objectKey = key;
@@ -78,7 +78,7 @@ function draw(now) {
     } else viewer.render();
     if (frames && now - lastStats >= 500) {
       const seconds = (now - lastStats) / 1000;
-      $('#stats').textContent = `${latestCounts[0].toLocaleString()} points · ${latestCounts[1].toLocaleString()} lines · ${(frames / seconds).toFixed(1)} fps · ${(bytes / seconds / 1048576).toFixed(1)} MiB/s`;
+      $('#stats').textContent = `${latestCounts[0].toLocaleString()} points · ${latestCounts[1].toLocaleString()} lines · ${latestCounts[2].toLocaleString()} cells · ${(frames / seconds).toFixed(1)} fps · ${(bytes / seconds / 1048576).toFixed(1)} MiB/s`;
       bytes = frames = 0; lastStats = now;
     }
   } catch (error) {

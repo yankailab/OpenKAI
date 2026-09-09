@@ -21,3 +21,7 @@ Keep application commands out of the stream transport. Add UI controls that call
 `handleCmd(jCmd)`. This preserves `_WSconsole`'s `JSON + EOJ` request scheme.
 An optional backend configuration is in `jsonCfg/WebViewer3D_commands.json`;
 include it from your application's `APP.vInclude` when using commands.
+
+Occupied octree cells stream as 16-byte IDs plus RGB8. The browser reconstructs
+instanced wire boxes and retains IDs and bounds for future picking. See the
+[version 2 format](../../docs/3D/WebViewer3D.md#binary-protocol-version-2).

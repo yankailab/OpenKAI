@@ -10,6 +10,7 @@
 
 #include "../_GeometryViewerBase.h"
 #include "ImGUIviewerBackend.h"
+#include "../Grid/OctreeGridCells.h"
 
 struct ImDrawList;
 struct ImDrawCmd;
@@ -31,6 +32,24 @@ namespace kai
 		vFloat3 m_vC;
 	};
 
+	struct IMGUI_VIEWER_BOX
+	{
+		UUID128 m_ID = 0;
+		vFloat3 m_vCenter, m_vSize, m_vC;
+
+		template <typename F> void forEachEdge(F draw) const
+		{
+			vFloat3 vertices[8];
+			for (unsigned i = 0; i < 8; ++i)
+				vertices[i] = vFloat3(m_vCenter.x + (i & 4 ? 0.5f : -0.5f) * m_vSize.x,
+					m_vCenter.y + (i & 2 ? 0.5f : -0.5f) * m_vSize.y,
+					m_vCenter.z + (i & 1 ? 0.5f : -0.5f) * m_vSize.z);
+			for (unsigned i = 0; i < 8; ++i)
+				for (unsigned bit : {1u, 2u, 4u})
+					if (!(i & bit)) draw(vertices[i], vertices[i | bit]);
+		}
+	};
+
 	struct IMGUI_VIEWER_OBJ
 	{
 		_GeometryBase *m_pGB = nullptr;
@@ -39,12 +58,15 @@ namespace kai
 		bool m_bVisible = true;
 		int m_nPbuf = 0;
 		int m_nLbuf = 0;
+		int m_nCbuf = -1;
 		float m_matPointSize = 2.0;
 		float m_matLineWidth = 1.0;
 		vFloat4 m_matCol = {1, 1, 1, 1};
 
 		vector<IMGUI_VIEWER_POINT> m_vP;
 		vector<IMGUI_VIEWER_LINE> m_vL;
+		OCTGRID_HEADER m_gridHeader;
+		vector<IMGUI_VIEWER_BOX> m_vBox;
 
 		void reserve(int nPbufDefault = 0, int nLbufDefault = 0);
 		void clearGeometry(void);
@@ -99,6 +121,7 @@ namespace kai
 		void collectGeometry(_GeometryBase *pGb, IMGUI_VIEWER_OBJ *pObj);
 		void collectPoints(IMGUI_VIEWER_OBJ *pObj);
 		void collectLines(IMGUI_VIEWER_OBJ *pObj);
+		void collectCells(IMGUI_VIEWER_OBJ *pObj);
 		void copySnapshot(vector<IMGUI_VIEWER_OBJ> *pVgo);
 
 		bool upsertGeometry(_GeometryBase *pGb, const string &name, const json *pJ = nullptr);
@@ -124,6 +147,8 @@ namespace kai
 		vector<IMGUI_VIEWER_OBJ> m_vGO;
 		vector<IMGUI_VIEWER_OBJ> m_vBuildGO;
 		vector<IMGUI_VIEWER_OBJ> m_vDrawGO;
+		OCTGRID_CELLS m_cells;
+		int m_nCbuf = 100000;
 
 		ImGUIviewerBackend *m_pBackend;
 		ImGUIviewerGLRenderer *m_pGLRenderer;

@@ -83,7 +83,7 @@ namespace kai
 		{
 			float alpha = std::clamp(g.m_matCol.w, 0.0f, 1.0f);
 
-			if (!g.m_vL.empty())
+			if (!g.m_vL.empty() || !g.m_vBox.empty())
 			{
 				float linePx = std::max(1.0f, g.m_matLineWidth);
 				DRAW_BATCH b;
@@ -104,6 +104,12 @@ namespace kai
 											  l.m_vC.x, l.m_vC.y, l.m_vC.z, alpha});
 					m_vLineBatch.back().m_count += 2;
 				}
+				for (const auto &box : g.m_vBox)
+					box.forEachEdge([&](const vFloat3 &a, const vFloat3 &b) {
+						m_vLineUpload.push_back({a.x, a.y, a.z, box.m_vC.x, box.m_vC.y, box.m_vC.z, alpha});
+						m_vLineUpload.push_back({b.x, b.y, b.z, box.m_vC.x, box.m_vC.y, box.m_vC.z, alpha});
+						m_vLineBatch.back().m_count += 2;
+					});
 			}
 
 			if (!g.m_vP.empty())

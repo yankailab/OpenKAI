@@ -1,4 +1,5 @@
 import * as THREE from '../vendor/three.module.min.js';
+import { GridBoxes } from './gridBoxes.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 
 export class Viewer3D {
@@ -16,12 +17,65 @@ export class Viewer3D {
     this.controls.enableDamping = true;
     this.grid = new THREE.GridHelper(20, 20, 0x466879, 0x253744);
     this.scene.add(this.grid);
+    this.axes = this.createOriginAxes();
+    this.scene.add(this.axes);
     this.objects = new Map();
     this.pointScale = 1;
     this.bounds = new THREE.Box3();
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(container);
     this.resize();
+  }
+  createOriginAxes() {
+    const axes = new THREE.Group();
+    axes.name = 'World origin axes';
+    const origin = new THREE.Vector3(0, 0, 0);
+    const label = (text, color, position) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 128; canvas.height = 64;
+      const context = canvas.getContext('2d');
+      context.font = 'bold 48px sans-serif';
+      context.textAlign = 'center'; context.textBaseline = 'middle';
+      context.lineWidth = 6; context.strokeStyle = '#090c11';
+      context.strokeText(text, 64, 32);
+      context.fillStyle = `#${color.toString(16).padStart(6, '0')}`;
+      context.fillText(text, 64, 32);
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: texture, sizeAttenuation: false, depthWrite: false
+      }));
+      sprite.name = text;
+      sprite.position.copy(position);
+      sprite.scale.set(0.08, 0.04, 1);
+      axes.add(sprite);
+    };
+    for (const [name, direction, color] of [
+      ['X', new THREE.Vector3(1, 0, 0), 0xff5555],
+      ['Y', new THREE.Vector3(0, 1, 0), 0x55dd77],
+      ['Z', new THREE.Vector3(0, 0, 1), 0x5599ff]
+    ]) {
+      // Scene coordinates are metres; length includes the arrowhead.
+      const arrow = new THREE.ArrowHelper(direction, origin, 1, color, 0.12, 0.06);
+      arrow.name = `${name} axis (1 m)`;
+      axes.add(arrow);
+      label(name, color, direction.clone().multiplyScalar(1.12));
+    }
+    const marker = new THREE.Mesh(new THREE.SphereGeometry(0.025, 12, 8),
+      new THREE.MeshBasicMaterial({ color: 0xffffff }));
+    marker.name = 'Origin (0, 0, 0)';
+    axes.add(marker);
+    label('O', 0xffffff, new THREE.Vector3(-0.1, -0.1, -0.1));
+    // Keep the coordinate reference readable over dense streamed geometry.
+    axes.traverse(object => {
+      object.renderOrder = 1;
+      if (object.material) {
+        object.material.depthTest = false;
+        object.material.depthWrite = false;
+        object.material.transparent = true;
+      }
+    });
+    return axes;
   }
   configure(config) {
     this.clear();
@@ -63,9 +117,10 @@ export class Viewer3D {
   createObject(id) {
     const points = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ vertexColors: true, sizeAttenuation: false }));
     const lines = new THREE.LineSegments(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ vertexColors: true }));
-    const object = { id, points, lines, visible: true, pointSize: 2 };
+    const boxes = new GridBoxes();
+    const object = { id, points, lines, boxes, visible: true, pointSize: 2 };
     this.objects.set(id, object);
-    this.scene.add(points, lines);
+    this.scene.add(points, lines, boxes);
     return object;
   }
   upload(mesh, positions, colors, bounds) {
@@ -99,7 +154,7 @@ export class Viewer3D {
       const o = this.objects.get(data.id) || this.createObject(data.id);
       o.pointSize = data.pointSize;
       o.points.material.size = data.pointSize * this.pointScale;
-      for (const mesh of [o.points, o.lines]) {
+      for (const mesh of [o.points, o.lines, o.boxes]) {
         const transparent = data.opacity < 1;
         if (mesh.material.transparent !== transparent) { mesh.material.transparent = transparent; mesh.material.needsUpdate = true; }
         mesh.material.opacity = data.opacity;
@@ -108,7 +163,8 @@ export class Viewer3D {
       }
       this.upload(o.points, data.points, data.pointColors, data.bounds);
       this.upload(o.lines, data.lines, data.lineColors, data.bounds);
-      if (o.visible && (data.nP || data.nL))
+      o.boxes.update(data.grid, data.bounds, data.opacity);
+      if (o.visible && (data.nP || data.nL || data.nC))
         this.bounds.union(new THREE.Box3(new THREE.Vector3(...data.bounds.slice(0, 3)), new THREE.Vector3(...data.bounds.slice(3))));
     }
     for (const [id, object] of this.objects) if (!active.has(id)) this.removeObject(object);
@@ -116,7 +172,7 @@ export class Viewer3D {
   }
   setVisible(id, visible) {
     const o = this.objects.get(id);
-    if (o) { o.visible = visible; o.points.visible = visible; o.lines.visible = visible; }
+    if (o) { o.visible = visible; o.points.visible = visible; o.lines.visible = visible; o.boxes.visible = visible; }
   }
   setPointScale(value) {
     this.pointScale = value;
@@ -145,12 +201,17 @@ export class Viewer3D {
   }
   render() { this.controls.update(); this.renderer.render(this.scene, this.camera); }
   removeObject(o) {
-    for (const mesh of [o.points, o.lines]) { this.scene.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); }
+    for (const mesh of [o.points, o.lines, o.boxes]) { this.scene.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); }
     this.objects.delete(o.id);
   }
   clear() { for (const o of this.objects.values()) this.removeObject(o); this.bounds.makeEmpty(); }
   dispose() {
     this.clear(); this.resizeObserver.disconnect(); this.controls.dispose();
+    this.axes.traverse(object => {
+      object.geometry?.dispose();
+      object.material?.map?.dispose();
+      object.material?.dispose();
+    });
     this.grid.geometry.dispose(); this.grid.material.dispose(); this.renderer.dispose();
   }
 }

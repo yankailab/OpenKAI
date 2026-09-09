@@ -26,7 +26,7 @@ export class GeometryConnection {
       try {
         if (typeof event.data === 'string') {
           const hello = JSON.parse(event.data);
-          if (greeted || hello.type !== 'hello' || hello.version !== 1) throw new Error('Incompatible backend');
+          if (greeted || hello.type !== 'hello' || (hello.version !== 1 && hello.version !== 2)) throw new Error('Incompatible backend');
           this.onHello(hello);
           greeted = true;
           clearTimeout(this.timer);

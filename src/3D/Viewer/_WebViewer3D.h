@@ -2,6 +2,7 @@
 #define OpenKAI_src_3D_Viewer__WebViewer3D_H_
 
 #include "../_GeometryViewerBase.h"
+#include "../Grid/OctreeGridCells.h"
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
@@ -37,7 +38,7 @@ namespace kai
 		{
 			_GeometryBase *source = nullptr;
 			std::string name;
-			int nP = 0, nL = 0;
+			int nP = 0, nL = 0, nC = 0;
 			bool visible = true;
 			float pointSize = 2;
 			vFloat4 color{1, 1, 1, 1};
@@ -45,7 +46,8 @@ namespace kai
 		void collect(const Object &object, std::vector<uint8_t> &frame, uint32_t id, uint64_t expiry);
 		std::string hello() const;
 		std::string m_host = "0.0.0.0", m_root = "html/webViewer3D";
-		int m_port = 8080, m_maxClients = 8;
+		int m_port = 8080, m_maxClients = 8, m_nCbuf = 100000;
+		OCTGRID_CELLS m_cells;
 		vFloat4 m_background{0.035f, 0.045f, 0.065f, 1};
 		bool m_autoBound = true, m_showGrid = true;
 		std::vector<Object> m_objects;

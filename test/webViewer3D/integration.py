@@ -80,7 +80,7 @@ def check_frame(message):
     opcode, data = message
     assert opcode == 2
     magic, version, sequence, count, size = struct.unpack_from('<5I', data)
-    assert (magic, version, count, size) == (0x31443357, 1, 1, len(data))
+    assert (magic, version, count, size) == (0x31443357, 2, 1, len(data))
     assert struct.unpack_from('<Q', data, 24)[0] == 123456789
     assert struct.unpack_from('<3I', data, 32) == (7, 200000, 1)
     assert len(data) == 32 + 64 + 200000 * 16 + 32
@@ -118,7 +118,7 @@ def main():
             clients.extend([a, b, independent])
             for c in clients:
                 opcode, hello = c.receive()
-                assert opcode == 1 and json.loads(hello)['version'] == 1
+                assert opcode == 1 and json.loads(hello)['version'] == 2
                 c.send('start')
                 check_frame(c.receive())
             blocked = WebSocket(port)

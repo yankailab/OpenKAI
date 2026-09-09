@@ -1,4 +1,6 @@
 #include "_OctreeGrid.h"
+#include <algorithm>
+#include <cmath>
 
 namespace kai
 {
@@ -95,121 +97,23 @@ namespace kai
 			return bHasChild(pCell);
 		}
 
-		static bool addLine(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut,
-							const vFloat3 &vA,
-							const vFloat3 &vB,
-							const vFloat3 &vC,
-							uint64_t tStamp,
-							int *pnLine,
-							int nMaxLine)
+		static void addCellsRecursive(OCTREE_CELL<OCTGRID_PCL_CELL> *pCell,
+			vector<OCTGRID_CELL> &out, size_t limit, const vFloat3 *pColor)
 		{
-			NULL_F(pOut);
-			NULL_F(pOut->m_pT);
-			NULL_F(pnLine);
-			IF_F(*pnLine >= nMaxLine);
-
-			GEOMETRY_LINE l;
-			l.m_vPa = vA;
-			l.m_vPb = vB;
-			l.m_vC = vC;
-			l.m_tStamp = tStamp;
-
-			pOut->add(l);
-			(*pnLine)++;
-
-			return true;
-		}
-
-		static bool addCellLines(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut,
-								 const vFloat3 &vC,
-								 const vFloat3 &vSize,
-								 const vFloat3 &vCol,
-								 uint64_t tStamp,
-								 int *pnLine,
-								 int nMaxLine)
-		{
-			NULL_F(pnLine);
-			IF_F(*pnLine + 12 > nMaxLine);
-
-			vFloat3 vH = vHalf(vSize);
-			vFloat3 vMin(vC.x - vH.x, vC.y - vH.y, vC.z - vH.z);
-			vFloat3 vMax(vC.x + vH.x, vC.y + vH.y, vC.z + vH.z);
-			vFloat3 vV[8] = {
-				vFloat3(vMin.x, vMin.y, vMin.z),
-				vFloat3(vMin.x, vMin.y, vMax.z),
-				vFloat3(vMin.x, vMax.y, vMin.z),
-				vFloat3(vMin.x, vMax.y, vMax.z),
-				vFloat3(vMax.x, vMin.y, vMin.z),
-				vFloat3(vMax.x, vMin.y, vMax.z),
-				vFloat3(vMax.x, vMax.y, vMin.z),
-				vFloat3(vMax.x, vMax.y, vMax.z),
-			};
-
-			static const uint8_t vEdge[12][2] = {
-				{0, 1},
-				{0, 2},
-				{0, 4},
-				{1, 3},
-				{1, 5},
-				{2, 3},
-				{2, 6},
-				{3, 7},
-				{4, 5},
-				{4, 6},
-				{5, 7},
-				{6, 7},
-			};
-
-			for (int i = 0; i < 12; i++)
-			{
-				IF_F(!addLine(pOut,
-							  vV[vEdge[i][0]],
-							  vV[vEdge[i][1]],
-							  vCol,
-							  tStamp,
-							  pnLine,
-							  nMaxLine));
-			}
-
-			return true;
-		}
-
-		static void addCellLinesRecursive(OCTREE_CELL<OCTGRID_PCL_CELL> *pCell,
-										  const vFloat3 &vC,
-										  const vFloat3 &vSize,
-										  GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut,
-										  const vFloat3 &vCol,
-										  uint64_t tStamp,
-										  int *pnLine,
-										  int nMaxLine)
-		{
-			NULL_(pCell);
-			NULL_(pnLine);
-			IF_(*pnLine + 12 > nMaxLine);
-
-			OCTGRID_PCL_CELL *pT = pCell->getT();
+			if (!pCell || out.size() >= limit) return;
+			const auto *pT = pCell->getT();
 			if (pT && pT->m_nP > 0 && pT->m_tStamp > 0)
 			{
-				IF_(!addCellLines(pOut, vC, vSize, vCol, tStamp, pnLine, nMaxLine));
+				OCTGRID_CELL cell;
+				cell.setID(pT->m_ID);
+				const auto &color = pColor ? *pColor : pT->m_vC;
+				const float rgb[] = {color.x, color.y, color.z};
+				for (int i = 0; i < 3; ++i)
+					cell.m_vC[i] = uint8_t(std::clamp(std::isfinite(rgb[i]) ? rgb[i] : 1.f, 0.f, 1.f) * 255.f + 0.5f);
+				out.push_back(cell);
 			}
-
-			vFloat3 vChildSize = vHalf(vSize);
-			for (int i = 0; i < N_OCT; i++)
-			{
-				IF_(*pnLine + 12 > nMaxLine);
-
-				OCTREE_CELL<OCTGRID_PCL_CELL> *pChild = pCell->getChild(i);
-				IF_CONT(!pChild);
-
-				addCellLinesRecursive(pChild,
-									  childCenter(vC, vSize, i),
-									  vChildSize,
-									  pOut,
-									  vCol,
-									  tStamp,
-									  pnLine,
-									  nMaxLine);
-			}
+			for (int i = 0; i < N_OCT && out.size() < limit; ++i)
+				addCellsRecursive(pCell->getChild(i), out, limit, pColor);
 		}
 	}
 
@@ -223,7 +127,8 @@ namespace kai
 		m_dTexpireCell = 0;
 		m_dTexpirePCL = 0;
 
-		m_nMaxLines = 100000;
+		m_nMaxCells = 100000 / 12;
+		m_bColCellOcc = false;
 		m_vColCellOcc.set(1);
 	}
 
@@ -236,7 +141,6 @@ namespace kai
 		}
 
 		m_grPt.release();
-		m_lnCellOcc.release();
 	}
 
 	bool _OctreeGrid::init(const json &j)
@@ -249,12 +153,18 @@ namespace kai
 		jKv(j, "dTexpireCell", m_dTexpireCell);
 		jKv(j, "dTexpirePCL", m_dTexpirePCL);
 
-		jKv(j, "nMaxLines", m_nMaxLines);
-		jKv<float>(j, "vColCellOcc", m_vColCellOcc);
+		// Keep the old line budget as a compatibility default, in complete boxes.
+		int nMaxLines = 100000;
+		jKv(j, "nMaxLines", nMaxLines);
+		m_nMaxCells = nMaxLines / 12;
+		jKv(j, "nMaxCells", m_nMaxCells);
+		m_bColCellOcc = jKv<float>(j, "vColCellOcc", m_vColCellOcc);
 
-		IF_Le_F(m_nMaxLines <= 0, "Invalid nMaxLines: " + i2str(m_nMaxLines));
+		IF_Le_F(nMaxLines <= 0 || m_nMaxCells < 0, "Invalid grid cell limit");
 		IF_Le_F(m_nMaxLevel < 0 || m_nMaxLevel > OCTGRID_MAX_LEVEL, "Invalid nMaxLevel: " + i2str(m_nMaxLevel));
-		IF_Le_F(m_vRootCellSize.x <= 0.0f ||
+		IF_Le_F(!std::isfinite(m_vPorigin.x) || !std::isfinite(m_vPorigin.y) || !std::isfinite(m_vPorigin.z) ||
+					!std::isfinite(m_vRootCellSize.x) || !std::isfinite(m_vRootCellSize.y) || !std::isfinite(m_vRootCellSize.z) ||
+					m_vRootCellSize.x <= 0.0f ||
 					m_vRootCellSize.y <= 0.0f ||
 					m_vRootCellSize.z <= 0.0f,
 				"Invalid vRootCellSize");
@@ -266,9 +176,12 @@ namespace kai
 		IF_Le_F(!m_grPt.alloc(nP), "Alloc failed with nP: " + i2str(nP));
 		m_grPt.clear();
 
-		m_lnCellOcc.release();
-		IF_Le_F(!m_lnCellOcc.alloc(m_nMaxLines), "Alloc failed with nMaxLines: " + i2str(m_nMaxLines));
-		m_lnCellOcc.clear();
+		m_cells.m_vCell.clear();
+		m_cells.m_vCell.reserve(m_nMaxCells);
+		m_buildCells.clear();
+		m_buildCells.reserve(m_nMaxCells);
+		m_cells.m_header = {{m_vPorigin.x, m_vPorigin.y, m_vPorigin.z},
+			{m_vRootCellSize.x, m_vRootCellSize.y, m_vRootCellSize.z}, uint32_t(m_nMaxLevel), 0};
 
 		if (m_pCell)
 		{
@@ -373,21 +286,22 @@ namespace kai
 		if (nMaxLevTo < 0 || nMaxLevTo > m_nMaxLevel)
 			nMaxLevTo = m_nMaxLevel;
 
-		UUID128 cellID = uint64_t(nMaxLevTo); // the lower 6bit for max valid level
+		UUID128 cellID(0); // path to the current node; low six bits hold its depth
 
 		for (int iL = 0; iL <= nMaxLevTo; iL++)
 		{
 			uint8_t iC = childIdx(gP.m_vP, vPc);
-			cellID |= calcCellIDSegment(iC, iL);
 
 			// PCL at this level
 			OCTGRID_PCL_CELL *pPcl = bAdd ? pCell->addT() : pCell->getT();
 			NULL_N(pPcl);
 			pPcl->m_ID = cellID;
+			pPcl->m_ID |= uint64_t(iL);
 			updatePCLcell(pPcl, gP, tNow);
 			IF__(iL >= nMaxLevTo, pPcl);
 
 			// go for next level
+			cellID |= calcCellIDSegment(iC, iL);
 			OCTREE_CELL<OCTGRID_PCL_CELL> *pChild = pCell->getChild(iC);
 			if (!pChild)
 			{
@@ -458,7 +372,10 @@ namespace kai
 			low <<= 3;
 		}
 
-		return pCell->getT();
+		auto *pT = pCell->getT();
+		if (!pT || pT->m_ID.m_uint64[0] != id.m_uint64[0] || pT->m_ID.m_uint64[1] != id.m_uint64[1])
+			return nullptr;
+		return pT;
 	}
 
 	void _OctreeGrid::deleteExpiredCells(void)
@@ -481,22 +398,24 @@ namespace kai
 		IF_(!check());
 		NULL_(m_pCell);
 
-		uint64_t tNow = getApproxTbootUs();
-		int nLine = 0;
+		// Traverse outside the publication lock so viewers only wait for a swap.
+		m_buildCells.clear();
+		addCellsRecursive(m_pCell, m_buildCells, m_nMaxCells, m_bColCellOcc ? &m_vColCellOcc : nullptr);
+		std::lock_guard<std::mutex> lock(m_cellsMutex);
+		m_cells.m_header = {{m_vPorigin.x, m_vPorigin.y, m_vPorigin.z},
+			{m_vRootCellSize.x, m_vRootCellSize.y, m_vRootCellSize.z}, uint32_t(m_nMaxLevel), getApproxTbootUs()};
+		m_cells.m_vCell.swap(m_buildCells);
+	}
 
-		atomicFrom();
-
-		m_lnCellOcc.clear();
-		addCellLinesRecursive(m_pCell,
-							  m_vPorigin,
-							  m_vRootCellSize,
-							  &m_lnCellOcc,
-							  m_vColCellOcc,
-							  tNow,
-							  &nLine,
-							  m_nMaxLines);
-
-		atomicTo();
+	int _OctreeGrid::get(OCTGRID_CELLS *pOut, uint64_t tExpire, size_t nMaxCells)
+	{
+		NULL__(pOut, 0);
+		std::lock_guard<std::mutex> lock(m_cellsMutex);
+		pOut->m_header = m_cells.m_header;
+		const size_t n = bExpired(m_cells.m_header.m_tStamp, tExpire) ? 0 :
+			std::min(nMaxCells, m_cells.m_vCell.size());
+		pOut->m_vCell.assign(m_cells.m_vCell.begin(), m_cells.m_vCell.begin() + n);
+		return int(n);
 	}
 
 	int _OctreeGrid::get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire)
@@ -507,31 +426,7 @@ namespace kai
 
 	int _OctreeGrid::get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut, uint64_t tExpire)
 	{
-		NULL__(pOut, 0);
-
-		// output lines into pOut for drawing the grid cells
-		atomicFrom();
-
-		int nL = 0;
-		int nLin = m_lnCellOcc.nT();
-		int iL = m_lnCellOcc.iT();
-
-		while (nL < nLin)
-		{
-			GEOMETRY_LINE *pGl = m_lnCellOcc.get(iL);
-			if (!pGl)
-				break;
-			if (bExpired(pGl->m_tStamp, tExpire))
-				break;
-
-			pOut->add(*pGl);
-			nL++;
-
-			iL = m_lnCellOcc.iDec(iL);
-		}
-
-		atomicTo();
-
-		return nL;
+		// Kept for _GeometryBase compatibility. Occupied boxes use the cell API.
+		return 0;
 	}
 }
