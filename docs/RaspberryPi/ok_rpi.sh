@@ -12,15 +12,6 @@ sudo apt-get upgrade
 sudo apt-get dist-upgrade
 # sudo rpi-update
 
-
-# Disable unused services
-sudo systemctl disable hciuart
-sudo systemctl stop serial-getty@ttyAMA0.service
-sudo systemctl disable serial-getty@ttyAMA0.service
-sudo systemctl stop getty@ttyAMA0.service
-sudo systemctl disable getty@ttyAMA0.service
-sudo reboot now
-
 --------------
 # Connect to wifi
 # https://www.raspberrypi.com/documentation/computers/configuration.html
@@ -29,23 +20,8 @@ sudo nmcli dev wifi connect <example_ssid>
 # Assign static IP to eth0
 # using nmcli
 sudo nmcli -p connection show
-sudo nmcli con mod "Wired connection 1" ipv4.addresses 192.168.1.5/24 ipv4.gateway 192.168.1.1 ipv4.dns 192.168.1.1 ipv4.method manual
-sudo nmcli c down "Wired connection 1" && sudo nmcli c up "Wired connection 1"
-
-# Alternatively
-sudo nano /etc/NetworkManager/system-connections/Wired\ connection\ 1.nmconnection
-address1=192.168.1.5/24,192.168.1.1
-#dns=192.168.1.1;
-method=manual
-
-# Set different subnet e.g. 192.168.8.xxx when using Wifi ssh and Livox on eth0 in the same time
-# Unplug Livox when connection to internet is needed
-#sudo nano /etc/NetworkManager/system-connections/<SSID>
-#address1=192.168.8.10/24,192.168.8.1
-#dns=192.168.8.1;
-#method=manual
-method=auto
-
+sudo nmcli con mod "netplan-eth0" ipv4.addresses 192.168.16.243/24 ipv4.gateway 192.168.16.1 ipv4.dns 192.168.16.1 ipv4.method manual
+sudo nmcli c down "netplan-eth0" && sudo nmcli c up "netplan-eth0"
 
 start.sh--
 #!/bin/bash
@@ -63,7 +39,6 @@ sleep 5
 
 exit 0
 --
-
 
 
 
@@ -133,22 +108,6 @@ sudo chown pi ssd/
 sudo mount /dev/nvme0n1 /home/pi/ssd
 
 
---------------
-# clone SD image
-sudo fdisk -l
-sudo umount /dev/sdb1 /dev/sdb2
-sudo dd if=/dev/sdb of=~/RPi.img bs=8M status=progress
-
-#wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
-#sudo bash pishrink.sh CM4.img
-
-
-
-
-
-
-
-
 
 
 # USB reset for Realsense
@@ -185,98 +144,3 @@ ant2                    Select antenna 2. CM4 only.
 noant                   Disable both antennas. CM4 only.
 -----------------------
 
-# set static IP
-sudo nano /etc/dhcpcd.conf
------------------------
-interface wlan0/eth0
-static ip_address=192.168.144.100/24
-#static routers=192.168.7.1
-#static domain_name_servers=192.168.1.1
------------------------
-sudo reboot now
-
-# set multiple SSID
-sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
------------------------
-ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-update_config=1
-
-network={
-    ssid="NETWORK NAME1"
-    scan_ssid=1
-    psk="PASSWORD1"
-}
-
-network={
-    ssid="NETWORK NAME2"
-    scan_ssid=1
-    psk="PASSWORD2"
-}
------------------------
-
-#Plug USB wifi and run
-sudo sh -c 'wpa_passphrase (ssid) (passphrase) | grep -v "#psk=" >> /etc/wpa_supplicant/wpa_supplicant.conf'
-sudo reboot now
-
-# overlays
-sudo bash -c 'printf "enable_uart=1\ndisable_splash=1\ndtoverlay=disable-bt\ndtoverlay=disable-wifi\nboot_delay=0\n" >> /boot/config.txt'
-# optional
-#force_turbo=1
-#dtoverlay=sdtweak,overclock_50=100
-
-# remove the msg under splash image
-sudo nano /usr/share/plymouth/themes/pix/pix.script
-remove (or comment out) four lines below:
-message_sprite = Sprite();
-message_sprite.SetPosition(screen_width * 0.1, screen_height * 0.9, 10000);
-
-       my_image = Image.Text(text, 1, 1, 1);
-       message_sprite.SetImage(my_image);
-
-# boot command line
-sudo nano /bool/cmdline.txt
-console=tty1 root=PARTUUID=0157fd94-02 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait quiet splash plymouth.ignore-serial-consoles fastboot
-
-# replace splash image
-sudo cp ~/my_splash.png /usr/share/plymouth/themes/pix/splash.png
-
-# stop services
-sudo systemctl disable rpi-eeprom-update.service
-sudo systemctl disable raspi-config.service
-sudo systemctl disable keyboard-setup.service
-
-# show no cursor
-sudo nano /etc/lightdm/lightdm.conf
-xserver-command=X -nocursor
-
-# show no taskbar
-sudo nano /etc/xdg/lxsession/LXDE-pi/autostart
-#@lxpanel --profile LXDE-pi
-
-# auto start GUI app with systemd
-# disable ncurses (Console)
-[Unit]
-Description=OpenKAI
-After=graphical.target
-
-[Service]
-Environment=DISPLAY=:0.0
-Environment=XAUTHORITY=/home/pi/.Xauthority
-ExecStart=/home/pi/ok.sh
-Restart=always
-RestartSec=2s
-KillMode=process
-TimeoutSec=infinity
-
-[Install]
-WantedBy=graphical.target
-
-
-#!/bin/bash
-/home/pi/dev/OpenKAI/build/OpenKAI /home/pi/ARmeasure/ARmeasure.kiss
-exit 0
-
-
-sudo nano /lib/systemd/system/ok.service
-sudo systemctl daemon-reload
-sudo systemctl enable ok.service

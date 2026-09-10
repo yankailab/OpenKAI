@@ -22,6 +22,11 @@ sudo apt-get -y purge modemmanager
 sudo systemctl stop hciuart.service
 sudo systemctl disable hciuart.service
 
+sudo systemctl stop serial-getty@ttyAMA0.service
+sudo systemctl disable serial-getty@ttyAMA0.service
+sudo systemctl stop getty@ttyAMA0.service
+sudo systemctl disable getty@ttyAMA0.service
+
 sudo systemctl disable apt-daily.service
 sudo systemctl disable apt-daily.timer
 sudo systemctl disable apt-daily-upgrade.timer

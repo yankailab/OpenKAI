@@ -1,9 +1,11 @@
 # Tools
 
+Command line terminal
 ```bash
 sudo apt-get install minicom
 ```
 
+GUI terminal
 ```bash
 sudo apt-get install cutecom
 ```

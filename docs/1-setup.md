@@ -12,6 +12,12 @@ sudo rasp-config
 ```bash
 sudo apt-get -y install build-essential cmake cmake-curses-gui git uuid-dev ncurses-dev libcurl4 curl libssl-dev libuvc-dev libusb-1.0-0-dev
 ```
+
+## (Optional) Boost
+```bash
+sudo apt install --no-install-recommends libboost-dev libboost-system-dev libboost-thread-dev libboost-filesystem-dev
+```
+
 ## (Optional) Video stream in/out functions
 ```bash
 sudo apt-get -y install --no-install-recommends libunwind-dev gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-alsa libv4l-dev v4l-utils libjpeg-dev libpng-dev libtiff-dev libavcodec-dev libavformat-dev libxvidcore-dev x264
@@ -26,23 +32,6 @@ sudo apt-get -y install libglu1-mesa-dev libglu1-mesa libgl1-mesa-dev libglfw3 l
 ## (Optional) Jpeg exif editing
 ```bash
 sudo apt-get -y install libimage-exiftool-perl
-```
-
-# (Optional) CUDA
-```bash
-sudo apt install nvidia-cuda-toolkit
-```
-## (Optional) Select CUDA compatible GCC
-```bash
-sudo apt-get -y install g++-12 gcc-12
-sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12 --slave /usr/bin/g++ g++ /usr/bin/g++-12
-sudo update-alternatives --config gcc
-
-# Update the video driver first with Software and Update
-wget https://developer.download.nvidia.com/compute/cuda/12.3.2/local_installers/cuda_12.3.2_545.23.08_linux.run
-sudo chmod a+x cuda_12.3.2_545.23.08_linux.run
-sudo sh cuda_12.3.2_545.23.08_linux.run
-sudo echo -e "export PATH=/usr/local/cuda-12.3/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda-12.3/lib64:\$LD_LIBRARY_PATH\nexport LC_ALL=en_US.UTF-8" >> ~/.bashrc
 ```
 
 
@@ -63,16 +52,8 @@ sudo make install
 bash
 ```
 
-(Optionally) If using the latest version
-```bash
-wget https://github.com/Kitware/CMake/releases/download/v4.1.2/cmake-4.1.2.tar.gz
-tar xvf cmake-4.1.2.tar.gz
-cd cmake-4.1.2
-```
-
 
 # Eigen 5
-
 OpenKAI requires Eigen 5.x and builds with C++17. If Eigen 5 is already installed
 with its CMake package, skip the installation commands.
 
@@ -90,7 +71,6 @@ cmake -S . -B build \
 
 sudo cmake --install build
 ```
-
 
 
 # (Optional) RealSense
@@ -170,7 +150,6 @@ gphoto2 --abilities
 ```
 
 
-
 # (Optional) YOLO
 See [YOLO26detectONNX.md](YOLO26detectONNX.md) for ONNX Runtime setup and `_YOLO26detectONNX` build/config notes.
 
@@ -187,8 +166,6 @@ mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release -DOB_BUILD_DOCS=OFF -DOB_BUILD_TOOLS=ON -DOB_INSTALL_EXAMPLES_SOURCE=OFF  ../
 make -j$(nproc)
-#cmake ..
-#cmake --build . --config Release
 sudo make install
 
 cd OrbbecSDK_v2/scripts/env_setup
