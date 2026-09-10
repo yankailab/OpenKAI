@@ -7,7 +7,7 @@
 	},
 	"console": {
 		"class": "_Console",
-		"bON": true,
+		"bON": false,
 		"thread": {
 			"FPS": 10
 		},
@@ -140,7 +140,7 @@
 	},
 	"apDrive": {
 		"class": "_APmavlink_drive",
-		"bON": true,
+		"bON": false,
 		"bLog": true,
 		"thread": {
 			"FPS": 10

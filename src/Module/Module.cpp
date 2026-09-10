@@ -88,7 +88,6 @@ namespace kai
 #ifdef USE_OPENCV
 		ADD_MODULE(_APmavlink_RTCM);
 		ADD_MODULE(_APmavlink_depthVision);
-		ADD_MODULE(_APmavlink_video);
 		ADD_MODULE(_APmavlink_videoStream);
 		ADD_MODULE(_APmavlink_photo);
 #ifdef USE_OPENCV_CONTRIB
@@ -121,13 +120,9 @@ namespace kai
 
 #ifdef WITH_DETECTOR
 #ifdef USE_OPENCV
-		ADD_MODULE(_DNNclassifier);
-		ADD_MODULE(_YOLOv8);
 #ifdef USE_ONNXRUNTIME
 		ADD_MODULE(_YOLO26detectONNX);
 #endif
-		ADD_MODULE(_YOLOv3);
-		ADD_MODULE(_DNNtext);
 		ADD_MODULE(_IRLock);
 		ADD_MODULE(_OpenPose);
 		ADD_MODULE(_HandKey);
@@ -137,12 +132,6 @@ namespace kai
 		ADD_MODULE(_ArUco);
 		ADD_MODULE(_MotionDetector);
 		ADD_MODULE(_SingleTracker);
-#endif
-#ifdef USE_CUDA
-		ADD_MODULE(_Cascade);
-#endif
-#ifdef USE_CHILITAGS
-		ADD_MODULE(_Chilitags);
 #endif
 #endif // USE_OPENCV
 #endif

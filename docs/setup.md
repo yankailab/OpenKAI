@@ -53,9 +53,9 @@ sudo apt-get install cmake
 ```
 ## (Optional) Build from source for the latest
 ```bash
-wget https://github.com/Kitware/CMake/releases/download/v3.31.9/cmake-3.31.9.tar.gz
-tar xvf cmake-3.31.9.tar.gz
-cd cmake-3.31.9
+wget https://github.com/Kitware/CMake/releases/download/v3.31.12/cmake-3.31.12.tar.gz
+tar xvf cmake-3.31.12.tar.gz
+cd cmake-3.31.12
 
 ./bootstrap
 make -j$(nproc)
@@ -71,23 +71,26 @@ cd cmake-4.1.2
 ```
 
 
-# Eigen
-```bash
-wget https://gitlab.com/libeigen/eigen/-/archive/3.4.1/eigen-3.4.1.tar.gz
-tar xvf eigen-3.4.1.tar.gz
-cd eigen-3.4.1
+# Eigen 5
 
-mkdir build && cd build
-cmake ../
-sudo make install
+OpenKAI requires Eigen 5.x and builds with C++17. If Eigen 5 is already installed
+with its CMake package, skip the installation commands.
+
+```bash
+wget https://gitlab.com/libeigen/eigen/-/archive/5.0.1/eigen-5.0.1.tar.gz
+tar xf eigen-5.0.1.tar.gz
+cd eigen-5.0.1
+
+cmake -S . -B build \
+    -DCMAKE_INSTALL_PREFIX=/usr/local \
+    -DEIGEN_BUILD_BLAS=OFF \
+    -DEIGEN_BUILD_LAPACK=OFF \
+    -DEIGEN_BUILD_TESTING=OFF \
+    -DBUILD_TESTING=OFF
+
+sudo cmake --install build
 ```
 
-(Optionally) If using the latest version
-```bash
-wget https://gitlab.com/libeigen/eigen/-/archive/5.0.0/eigen-5.0.0.tar.gz
-tar xvf eigen-5.0.0.tar.gz
-cd eigen-5.0.0
-```
 
 
 # (Optional) RealSense
@@ -167,28 +170,6 @@ gphoto2 --abilities
 ```
 
 
-# (Optional) TensorFlow Lite
-```bash
-sudo apt-get install cmake curl
-git clone --branch v2.6.0 --depth 1 https://github.com/tensorflow/tensorflow.git
-cd tensorflow
-./tensorflow/lite/tools/make/download_dependencies.sh
-# Raspberry pi Bullseye 64bit
-#./tensorflow/lite/tools/make/build_aarch64_lib.sh
-./tensorflow/lite/tools/make/build_lib.sh
-# update flatbuffers
-cd tensorflow/lite/tools/make/downloads
-rm -rf flatbuffers
-git clone -b v2.0.0 --depth=1 --recursive https://github.com/google/flatbuffers.git
-cd flatbuffers
-mkdir build
-cd build
-cmake ..
-make -j4
-sudo make install
-sudo ldconfig
-```
-
 
 # (Optional) YOLO
 See [YOLO26detectONNX.md](YOLO26detectONNX.md) for ONNX Runtime setup and `_YOLO26detectONNX` build/config notes.
@@ -197,122 +178,6 @@ See [YOLO26detectONNX.md](YOLO26detectONNX.md) for ONNX Runtime setup and `_YOLO
 # (Optional) OpenCV
 See [opencv.md](opencv.md) for OpenCV build/config notes.
 
-
-# (Optional) Chilitags
-```bash
-git clone --depth 1 https://github.com/chili-epfl/chilitags.git
-cd chilitags
-mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ../
-make -j$(nproc)
-sudo make install
-```
-
-# (Optional) Open3D
-```bash
-git clone --branch v0.19.0 --depth 1 --recursive https://github.com/intel-isl/Open3D
-cd Open3D
-git submodule update --init --recursive
-mkdir build && cd build
-```
-
-## Desktop
-Install gcc-11 on Ubuntu 24.04 if met compile error.
-(Optional) Build Filament from source
-```bash
-sudo apt-get -y install clang libsdl2-dev libxi-dev
-    # ML
-    libtbb-dev
-    # Headless rendering
-    libosmesa6-dev
-    # RealSense
-    libudev-dev
-    autoconf
-    libtool
-# For ARM64
-    gfortran
-```
-
-Build and install
-```bash
-sudo apt-get -y install libjsoncpp-dev libc++1 gfortran libfmt-dev
-sudo apt-get -y install xorg-dev libglu1-mesa-dev libxcb-shm0
-sudo apt-get -y install python3 python3-pip
-sudo apt-get -y install libc++-dev libc++abi-dev ninja-build
-cmake -DCMAKE_BUILD_TYPE=Release \
-      -DGLIBCXX_USE_CXX11_ABI=ON \
-      -DBUILD_CUDA_MODULE=OFF \
-      -DBUILD_EXAMPLES=OFF \
-      -DBUILD_FILAMENT_FROM_SOURCE=OFF \
-      -DBUILD_GUI=ON \
-      -DBUILD_PYTHON_MODULE=OFF \
-      -DBUILD_SHARED_LIBS=ON \
-      -DBUILD_TENSORFLOW_OPS=OFF \
-      -DBUILD_WEBRTC=ON \
-      -DBUILD_UNIT_TESTS=OFF \
-      -DDEVELOPER_BUILD=OFF \
-      -DWITH_SIMD=ON ../
-
-make -j$(nproc)
-sudo make install
-```
-
-## For Raspberry pi headless rendering,
-Patch this file:
-```bash
-/home/lab/dev/Open3D/3rdparty/glew/src/glew.c
-```
-
-Immediately before:
-```c
-#include <GL/osmesa.h>
-```
-
-Make that block look like this:
-```c
-#ifndef GLAPI
-#define GLAPI extern
-#endif
-
-#ifndef GLAPIENTRY
-#define GLAPIENTRY
-#endif
-
-#ifndef APIENTRY
-#define APIENTRY
-#endif
-
-#include <GL/osmesa.h>
-```
-
-```bash
-sudo apt-get -y install libjsoncpp-dev libc++1 gfortran libfmt-dev
-sudo apt-get -y install xorg-dev libglu1-mesa-dev
-sudo apt-get -y install libc++-dev libc++abi-dev ninja-build
-
-sudo apt-get -y install libglew-dev libglfw3-dev libosmesa6-dev libxkbcommon-dev
-
-cmake -DCMAKE_BUILD_TYPE=Release \
-      -DGLIBCXX_USE_CXX11_ABI=ON \
-      -DBUILD_CUDA_MODULE=OFF \
-      -DBUILD_EXAMPLES=OFF \
-      -DBUILD_GUI=OFF \
-      -DBUILD_PYTHON_MODULE=OFF \
-      -DBUILD_SHARED_LIBS=ON \
-      -DBUILD_TENSORFLOW_OPS=OFF \
-      -DBUILD_WEBRTC=OFF \
-      -DBUILD_UNIT_TESTS=OFF \
-      -DDEVELOPER_BUILD=OFF \
-      -DWITH_SIMD=OFF \
-      -DENABLE_HEADLESS_RENDERING=ON \
-      -DUSE_SYSTEM_GLEW=OFF \
-      -DUSE_SYSTEM_GLFW=OFF \
-      -DWITH_IPP=OFF \
-      ../
-
-make -j$(nproc)
-sudo make install
-```
 
 # (Optional) OrbbecSDK_v2
 ```bash
@@ -331,31 +196,6 @@ sudo chmod +x ./install_udev_rules.sh
 sudo ./install_udev_rules.sh
 sudo udevadm control --reload-rules
 sudo udevadm trigger
-```
-
-
-# (Optional) FAST_LIVO2
-```bash
-sudo apt-get install ninja-build pkg-config libpcl-dev libboost-thread-dev libyaml-cpp-dev
-
-git clone https://github.com/strasdat/Sophus.git
-cd Sophus
-git checkout a621ff
-mkdir build && cd build
-cmake ..
-# On AArm NEON
-# cmake .. -DCMAKE_CXX_FLAGS="-Wno-error=class-memaccess"
-make -j$(nproc)
-sudo make install
-
-git clone --depth 1 https://github.com/yankailab/FAST-LIVO2.git
-cd FAST-LIVO2
-rm -rf build-core
-cmake -S core -B build-core -G Ninja -DCMAKE_BUILD_TYPE=Release
-#cmake -S core -B build-core -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-Wno-error=class-memaccess"
-cmake --build build-core
-sudo cmake --install build-core
-sudo ldconfig
 ```
 
 

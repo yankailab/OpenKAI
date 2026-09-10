@@ -20,7 +20,7 @@ Tested but not limited to
 * Kakip (Under testing)
 
 ## Dependencies
-* Mandatory: Pthread, Google glog, Eigen.
+* Mandatory: Pthread, Google glog, Eigen 5.x (C++17 build).
 * Optional: OpenCV, Open3D, OpenCL, etc..
 
 ## Interfaces

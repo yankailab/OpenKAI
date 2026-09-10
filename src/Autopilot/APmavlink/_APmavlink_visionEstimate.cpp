@@ -181,9 +181,9 @@ namespace kai
 		Matrix4f mTsensorPoseSensorRef = m_pNav->mT();
 		Matrix4f mTaeroPoseAeroRef = m_mTsensor2aero * (mTsensorPoseSensorRef * m_mTaero2sensor);
 		Matrix3f mRot = mTaeroPoseAeroRef.block(0, 0, 3, 3);
-		Vector3f vRPY = mRot.eulerAngles(m_vAxisRPY.x,
-										 m_vAxisRPY.y,
-										 m_vAxisRPY.z);
+		// Eigen 5 returns canonical angle ranges for the configured axis order.
+		Vector3f vRPY = mRot.canonicalEulerAngles(
+			m_vAxisRPY.x, m_vAxisRPY.y, m_vAxisRPY.z);
 
 		float vCov[21] = {m_covPose, 0, 0, 0, 0, 0,
 						  m_covPose, 0, 0, 0, 0,

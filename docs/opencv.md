@@ -1,4 +1,8 @@
 # (Optional) OpenCV
+
+Install [Eigen 5](setup.md#eigen-5) first. Both configurations below select its
+installed CMake package; adjust `Eigen3_DIR` if using another installation prefix.
+
 ## General CMake configs for x86-64 machines
 ```bash
 sudo apt-get -y install libprotobuf-dev protobuf-compiler libgoogle-glog-dev
@@ -44,6 +48,7 @@ cmake -DBUILD_CUDA_STUBS=OFF \
       -DWITH_ARAVIS=OFF \
       -DWITH_CLP=OFF \
       -DWITH_EIGEN=ON \
+      -DEigen3_DIR=/usr/local/share/eigen3/cmake \
       -DWITH_FFMPEG=ON \
       -DWITH_FREETYPE=OFF \
       -DWITH_GDAL=OFF \
@@ -143,13 +148,14 @@ cmake -DBUILD_CUDA_STUBS=OFF \
       -DWITH_ARAVIS=OFF \
       -DWITH_CLP=OFF \
       -DWITH_EIGEN=ON \
+      -DEigen3_DIR=/usr/local/share/eigen3/cmake \
       -DWITH_FFMPEG=ON \
       -DWITH_FREETYPE=OFF \
       -DWITH_GDAL=OFF \
       -DWITH_GDCM=OFF \
       -DWITH_GPHOTO2=ON \
       -DWITH_GSTREAMER=ON \
-      -DWITH_GTK=ON \
+      -DWITH_GTK=OFF \
       -DWITH_GTK_2_X=OFF \
       -DWITH_HPX=OFF \
       -DWITH_IPP=OFF \

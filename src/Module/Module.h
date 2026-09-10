@@ -78,7 +78,6 @@
 #ifdef USE_OPENCV
 #include "../Autopilot/APmavlink/_APmavlink_RTCM.h"
 #include "../Autopilot/APmavlink/_APmavlink_depthVision.h"
-#include "../Autopilot/APmavlink/_APmavlink_video.h"
 #include "../Autopilot/APmavlink/_APmavlink_videoStream.h"
 #include "../Autopilot/APmavlink/_APmavlink_photo.h"
 #ifdef USE_OPENCV_CONTRIB
@@ -115,13 +114,9 @@
 #ifdef WITH_DETECTOR
 #ifdef USE_OPENCV
 #include "../Detector/_Lane.h"
-#include "../Detector/_YOLOv3.h"
-#include "../Detector/_YOLOv8.h"
 #ifdef USE_ONNXRUNTIME
 #include "../Detector/_YOLO26detectONNX.h"
 #endif
-#include "../Detector/_DNNclassifier.h"
-#include "../Detector/_DNNtext.h"
 #include "../Detector/_IRLock.h"
 #include "../Detector/_OpenPose.h"
 #include "../Detector/_HandKey.h"
@@ -130,12 +125,6 @@
 #include "../Detector/_ArUco.h"
 #include "../Detector/_MotionDetector.h"
 #include "../Tracker/_SingleTracker.h"
-#endif
-#ifdef USE_CUDA
-#include "../Detector/_Cascade.h"
-#endif
-#ifdef USE_CHILITAGS
-#include "../Detector/_Chilitags.h"
 #endif
 #endif
 #endif
