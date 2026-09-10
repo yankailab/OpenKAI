@@ -21,6 +21,12 @@ namespace kai
 		m_btnPressed = apDrive_btnNone;
 		m_tLastBtn = 0;
 		m_tOutBtn = 100000;
+
+		m_pGfence = nullptr;
+		m_pOctGrid = nullptr;
+		m_octGridOccu = 1;
+		m_speedGo = 0.2;
+		m_steerTurn = 0.2;
 	}
 
 	_APmavlink_drive::~_APmavlink_drive()
@@ -40,6 +46,11 @@ namespace kai
 		jKv(j, "pwmM", m_pwmM);
 		jKv(j, "pwmD", m_pwmD);
 		jKv(j, "tOutBtn", m_tOutBtn);
+
+		jKv(j, "speedGo", m_speedGo);
+		jKv(j, "steerTurn", m_steerTurn);
+		jKv(j, "octGridOccu", m_octGridOccu);
+
 
 		uint16_t *pRC[19];
 		pRC[0] = NULL;
@@ -87,6 +98,16 @@ namespace kai
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
 		IF_Le_F(!m_pAP, "_APmavlink_base not found: " + n);
 
+        n = "";
+        jKv(j, "_OctreeGrid", n);
+        m_pOctGrid = (_OctreeGrid *)(pM->findModule(n));
+        NULL_F(m_pOctGrid);
+
+        n = "";
+        jKv(j, "_GeoFence", n);
+        m_pGfence = (_GeoFence *)(pM->findModule(n));
+        NULL_F(m_pGfence);
+
 		return true;
 	}
 
@@ -118,22 +139,56 @@ namespace kai
 
 	void _APmavlink_drive::onPause(void)
 	{
-		this->_ModuleBase::onPause();
-
 		IF_(!m_bRcChanOverride);
+
 		*m_pRcYaw = 0;
 		*m_pRcThrottle = 0;
 		m_pAP->getMavlink()->rcChannelsOverride(m_rcOverride);
 	}
 
+    bool _APmavlink_drive::updateCtrl(void)
+    {
+        IF_F(!check());
+
+        _Mavlink *pMav = m_pAP->getMavlink();
+
+		bool bObstacle = false;
+		// TODO: read the selected cell list from m_pOctGrid, iterate over them to see if any cell has nP > m_octGridOccu, if yes bObstacle = true
+		//m_pOctGrid->getSelectedCells()
+
+		bool bFenceBreach = false;
+        if (m_pGfence)
+        {
+            vDouble4 vPos = m_pAP->getGlobalPos();
+            float hdg = m_pAP->getHdg();
+            m_pGfence->setPosHdg(vDouble2(vPos.x, vPos.y), hdg);
+
+            bFenceBreach = m_pGfence->bBreach();
+        }
+
+
+		//TODO: button ctrl to speed and steer
+
+
+
+        if (!bObstacle && !bFenceBreach)
+        {
+            // no obstacle nor fence breach, just Go
+            setSteerSpeed(0, m_speedGo);
+        }
+        else
+        {
+            // obstacle on the way or fence breach, make turn
+            setSteerSpeed(m_steerTurn, 0);
+        }
+
+        return true;
+    }
+
 	bool _APmavlink_drive::updateDrive(void)
 	{
-		// The console receives on another thread. Expire even without an AP link.
-		{
-			std::lock_guard<std::mutex> lock(m_btnMutex);
-			if (m_btnPressed != apDrive_btnNone && getTbootUs() - m_tLastBtn > m_tOutBtn)
-				m_btnPressed = apDrive_btnNone;
-		}
+		if (getTbootUs() - m_tLastBtn > m_tOutBtn)
+			m_btnPressed = apDrive_btnNone;
 
 		IF_F(!check());
 
@@ -193,54 +248,57 @@ namespace kai
 		((_Console *)pConsole)->addMsg("yawMode=" + f2str(m_yawMode) + ", yaw=" + i2str(*m_pRcYaw) + ", throttle=" + i2str(*m_pRcThrottle));
 	}
 
-    void _APmavlink_drive::console(const json &j, void *pJSONbase)
-    {
-        _JSONbase *pJb = (_JSONbase *)pJSONbase;
-        string cmd;
-        IF_(!jKv(j, "cmd", cmd));
+	void _APmavlink_drive::console(const json &j, void *pJSONbase)
+	{
+		_JSONbase *pJb = (_JSONbase *)pJSONbase;
+		string cmd;
+		IF_(!jKv(j, "cmd", cmd));
 
-        if (cmd == "setSteerSpeed")
-        {
-            float steer = 0;
-            jKv(j, "steer", steer);
-            float speed = 0;
-            jKv(j, "speed", speed);
+		if (cmd == "setSteerSpeed")
+		{
+			float steer = 0;
+			jKv(j, "steer", steer);
+			float speed = 0;
+			jKv(j, "speed", speed);
 
 			setSteerSpeed(steer, speed);
 
-            NULL_(pJb);
-            json jr = json::object();
-            jr["cmd"] = "setSteerSpeed";
-            jr["bSuccess"] = true;
-            pJb->sendJson(jr);
-        }
-        else if (cmd == "ctrlBtn")
-        {
-            string btn;
-            jKv(j, "btn", btn);
+			NULL_(pJb);
+			json jr = json::object();
+			jr["cmd"] = "setSteerSpeed";
+			jr["bSuccess"] = true;
+			pJb->sendJson(jr);
+		}
+		else if (cmd == "ctrlBtn")
+		{
+			string btn;
+			jKv(j, "btn", btn);
 
-            AP_DRIVE_BTN pressed = apDrive_btnNone;
-            if (btn == "F") pressed = apDrive_btnForward;
-            else if (btn == "L") pressed = apDrive_btnLeft;
-            else if (btn == "R") pressed = apDrive_btnRight;
-            else if (btn == "B") pressed = apDrive_btnBackward;
-            else if (btn == "S") pressed = apDrive_btnStop;
+			AP_DRIVE_BTN pressed = apDrive_btnNone;
+			if (btn == "F")
+				pressed = apDrive_btnForward;
+			else if (btn == "L")
+				pressed = apDrive_btnLeft;
+			else if (btn == "R")
+				pressed = apDrive_btnRight;
+			else if (btn == "B")
+				pressed = apDrive_btnBackward;
+			else if (btn == "S")
+				pressed = apDrive_btnStop;
 
-            const bool bSuccess = pressed != apDrive_btnNone;
-            if (bSuccess)
-            {
-                std::lock_guard<std::mutex> lock(m_btnMutex);
-                m_btnPressed = pressed;
-                m_tLastBtn = getTbootUs();
-            }
+			const bool bSuccess = pressed != apDrive_btnNone;
+			if (bSuccess)
+			{
+				m_btnPressed = pressed;
+				m_tLastBtn = getTbootUs();
+			}
 
-            NULL_(pJb);
-            json jr = json::object();
-            jr["cmd"] = "ctrlBtn";
-            jr["bSuccess"] = bSuccess;
-            pJb->sendJson(jr);
-        }
-
+			NULL_(pJb);
+			json jr = json::object();
+			jr["cmd"] = "ctrlBtn";
+			jr["bSuccess"] = bSuccess;
+			pJb->sendJson(jr);
+		}
 	}
 
 }

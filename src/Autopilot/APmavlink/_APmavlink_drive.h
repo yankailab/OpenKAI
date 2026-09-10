@@ -1,9 +1,11 @@
 #ifndef OpenKAI_src_Autopilot_APmavlink__APmavlink_drive_H_
 #define OpenKAI_src_Autopilot_APmavlink__APmavlink_drive_H_
 
-#include "_APmavlink_base.h"
 #include "../../Protocol/_JSONbase.h"
-#include <mutex>
+#include "../../Navigation/_GeoFence.h"
+#include "../../3D/Grid/_OctreeGrid.h"
+#include "_APmavlink_base.h"
+
 
 namespace kai
 {
@@ -37,6 +39,7 @@ namespace kai
 	protected:
 		virtual void onPause(void);
 
+		bool updateCtrl(void);
 		bool updateDrive(void);
 		static void *getUpdate(void *This)
 		{
@@ -59,10 +62,18 @@ namespace kai
 		uint16_t *m_pRcThrottle;
 		mavlink_rc_channels_override_t m_rcOverride;
 
-		std::mutex m_btnMutex;
 		AP_DRIVE_BTN m_btnPressed;
 		uint64_t m_tLastBtn;
 		uint64_t m_tOutBtn; // time out in usec for the m_btnPressed to be set to apDrive_btnNone, defaults to 100ms
+
+
+		_GeoFence* m_pGfence;
+		_OctreeGrid* m_pOctGrid;
+		float m_octGridOccu;
+		float m_speedGo;
+		float m_steerTurn;
+
+
 	};
 
 }
