@@ -80,6 +80,29 @@ def main():
             assert evaluate("wsSendCmd({cmd: 'test', module: 'tester', v: 7})")
             wait_for("testReplies.some(j => j.cmd === 'ackTest' && j.v === 7)")
             assert commands.received == [{'cmd': 'test', 'module': 'tester', 'v': 7}]
+            # Config inputs are write-only: fixture headers use size 2, but defaults stay 5.
+            grid_inputs = "[...document.querySelectorAll('#grid-config input')]"
+            assert evaluate(grid_inputs + ".map(i => i.value)") == ['0', '0', '0', '5', '5', '5']
+            wait_for("!document.querySelector('#grid-config-update').disabled")
+            assert evaluate("document.querySelector('#grid-config').previousElementSibling.contains(document.querySelector('#point-scale'))")
+            evaluate("document.querySelector('#grid-config-update').click()")
+            wait_for("testReplies.some(j => j.cmd === 'setGridConfig' && j.bSuccess)")
+            expected_config = {'cmd': 'setGridConfig', 'module': 'Test cloud and lines',
+                               'vPorigin': ['0', '0', '0'], 'vRootCellSize': ['5', '5', '5']}
+            assert commands.received[-1] == expected_config
+            assert evaluate("document.querySelector('#grid-config-status').textContent") == 'Updated Test cloud and lines.'
+            evaluate(grid_inputs + ".forEach((input, i) => { input.value = ['1.25','-2.5','0.001','8','4','2'][i]; input.dispatchEvent(new Event('input', {bubbles:true})); })")
+            evaluate("document.querySelector('#grid-config-update').click()")
+            wait_for("testReplies.filter(j => j.cmd === 'setGridConfig').length === 2")
+            assert commands.received[-1] == {**expected_config, 'vPorigin': ['1.25', '-2.5', '0.001'], 'vRootCellSize': ['8', '4', '2']}
+            before_invalid = len(commands.received)
+            for value in ['0', '-1', '', '1e100', '1e-100']:
+                evaluate(f"{{ const input = document.querySelector('#grid-size-x'); input.value = '{value}'; input.dispatchEvent(new Event('input', {{bubbles:true}})); document.querySelector('#grid-config-update').click(); }}")
+                assert not evaluate("document.querySelector('#grid-config').checkValidity()")
+            assert len(commands.received) == before_invalid
+            evaluate("document.querySelector('#grid-size-x').value = '8'; document.querySelector('#grid-size-x').dispatchEvent(new Event('input', {bubbles:true}))")
+            evaluate("cmdHandler({data: JSON.stringify({cmd:'setGridConfig', module:'Test cloud and lines', bSuccess:false})})")
+            assert evaluate("document.querySelector('#grid-config-status').textContent") == 'Update failed for Test cloud and lines.'
             assert evaluate("testReplies.find(j => j.cmd === 'ackTest').text.length") > 1024
             wait_for("testReplies.some(j => j.cmd === 'hb') && wsCmdBuffer === ''")
             assert 'ackTest' in evaluate("document.querySelector('#cmdState').value")
@@ -89,6 +112,7 @@ def main():
             assert not evaluate("wsSendCmd({cmd: 'test', module: 'tester', v: 'EOJ'})")
             evaluate("cmdHandler({data: '{\"cmd\":'}); document.querySelector('#cmdDisconnect').click();")
             assert evaluate("wsCmdBuffer === '' && wsSocket === null")
+            assert evaluate("document.querySelector('#grid-config-update').disabled")
             assert not evaluate("wsSendCmd({cmd: 'test', module: 'tester', v: 8})")
             assert evaluate("document.querySelector('#status').textContent") == 'Connected'
             # A refused command handshake must leave the binary stream connected.
@@ -282,6 +306,12 @@ def main():
             print(evaluate('(async () => {' + picker_source + '; return await runPickerTests(); })()'))
             location = evaluate('(async () => {' + picker_source + '; return await preparePickerUI(); })()')
             assert evaluate("document.querySelector('#picker-count').textContent") == '0 picked cells'
+            assert evaluate("[...document.querySelector('.picker-panel .tools').children].map(b => b.id).join()") == 'picker-load,picker-clear,picker-send'
+            assert evaluate(grid_inputs + ".map(i => i.value)") == ['1.25', '-2.5', '0.001', '8', '4', '2']
+            evaluate("document.querySelector('aside').scrollTop = 0")
+            config_shot = command('Page.captureScreenshot', {'format': 'png'})
+            Path('/tmp/openkai-grid-config.png').write_bytes(base64.b64decode(config_shot['data']))
+            assert not evaluate("document.querySelector('#picker-load').disabled")
             assert not evaluate("document.querySelector('#grid-solid').checked")
             for solid in [True, False, True]:
                 evaluate("document.querySelector('#grid-solid').click(); pickerTestViewer.render();")
@@ -332,6 +362,26 @@ def main():
             assert payload == {'cmd': 'octGridCellSelect', 'module': 'Test cloud and lines',
                                'vPorigin': ['0', '0', '0'], 'vRootCellSize': ['2', '2', '2'], 'cellIDs': [location['id']]}, payload
             assert evaluate('pickerTestViewer.picker.count') == 1
+            evaluate("document.querySelector('#picker-load').click()")
+            wait_for("document.querySelector('#picker-status').textContent.includes('Added 0 cells')")
+            assert commands.received[-1] == {'cmd': 'loadCellSelect', 'module': 'Test cloud and lines'}
+            assert evaluate('pickerTestViewer.picker.count') == 1
+            evaluate("document.querySelector('#picker-clear').click(); document.querySelector('#picker-load').click()")
+            wait_for("document.querySelector('#picker-count').textContent === '1 picked cell'")
+            assert evaluate('pickerTestViewer.picker.commands()[0].cellIDs[0]') == location['id']
+            assert evaluate(red_pixels) > 20, 'Loaded selection was hidden by the level filter'
+            # A large reply is split by the command peer into 512-byte messages.
+            commands.selections['Test cloud and lines'] = {**payload, 'cellIDs': [location['id']] * 3000}
+            evaluate("document.querySelector('#picker-clear').click(); document.querySelector('#picker-load').click()")
+            wait_for("testReplies.some(j => j.cmd === 'cellSelect' && j.cellIDs.length === 3000)")
+            assert evaluate("pickerTestViewer.picker.count === 1 && wsCmdBuffer === ''")
+            commands.selections['Test cloud and lines'] = {**payload, 'cellIDs': []}
+            evaluate("document.querySelector('#picker-load').click()")
+            wait_for("document.querySelector('#picker-status').textContent.includes('Added 0 cells')")
+            assert evaluate('pickerTestViewer.picker.count') == 1
+            commands.selections['Test cloud and lines'] = payload
+            evaluate("cmdHandler({data: JSON.stringify({cmd:'cellSelect', module:'Test cloud and lines', vPorigin:['0','0','0'], vRootCellSize:['2','2','2'], cellIDs:['bad']})})")
+            assert evaluate("document.querySelector('#picker-status').textContent.startsWith('Load failed:') && pickerTestViewer.picker.count === 1")
             mouse('mousePressed', x, y, buttons=1); mouse('mouseReleased', x, y)
             assert evaluate('pickerTestViewer.picker.count') == 0
             assert evaluate(red_pixels) == 0, 'Deselected cell remained red'
@@ -339,14 +389,25 @@ def main():
             assert evaluate('pickerTestViewer.objects.get(7).boxes.geometry.instanceCount') == 3
             mouse('mousePressed', x, y, buttons=1); mouse('mouseReleased', x, y)
             evaluate("document.querySelector('#cmdDisconnect').click()")
-            assert evaluate("document.querySelector('#picker-send').disabled && pickerTestViewer.picker.count === 1")
+            assert evaluate("document.querySelector('#picker-send').disabled && document.querySelector('#picker-load').disabled && pickerTestViewer.picker.count === 1")
             evaluate("document.querySelector('#picker-clear').click()")
             assert evaluate("pickerTestViewer.picker.count === 0 && document.querySelector('#picker-clear').disabled")
+            # Reload the page: local selections vanish, saved backend selections remain.
+            evaluate('window.beforeReload = true')
+            command('Page.reload')
+            wait_for("!window.beforeReload && document.readyState === 'complete' && !!window.viewerEndpoint && !document.querySelector('#start').disabled")
+            evaluate(f"document.querySelector('#cmdPort').value = '{commands.port}'; document.querySelector('#start').click()")
+            wait_for("!document.querySelector('#picker-load').disabled")
+            assert evaluate("document.querySelector('#picker-count').textContent") == '0 picked cells'
+            evaluate("document.querySelector('#picker-load').click()")
+            wait_for("document.querySelector('#picker-count').textContent === '1 picked cell'")
+            print('PASS: Load/Clear/Send order, retained server selections after page reload, duplicate/empty replies, large fragmented cellSelect, malformed data and red selections outside level range')
             print('PASS: wire/solid switch, grid level sliders, selected boxes outside range, real picker mouse events, drag suppression, panel count, independent WebSocket JSON, deselection and Clear')
             assert not exceptions, exceptions
             print('PASS: local-file launcher, WebGL2 rendering, camera/visibility controls, Stop/Start; ' + result)
             print('Screenshot: /tmp/openkai-webviewer.png')
             print('PASS: independent command port, JSON + EOJ sending, split replies, bounded console, command failure isolation')
+            print('PASS: grid config defaults, decimal command fields, validation, ACK status and inputs preserved through stream updates/reconnects')
         finally:
             if client: client.close()
             if browser:

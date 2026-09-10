@@ -3,9 +3,19 @@
 
 #include "_APmavlink_base.h"
 #include "../../Protocol/_JSONbase.h"
+#include <mutex>
 
 namespace kai
 {
+	enum AP_DRIVE_BTN
+	{
+		apDrive_btnNone = 0,
+		apDrive_btnStop = 1,
+		apDrive_btnLeft = 2,
+		apDrive_btnRight = 3,
+		apDrive_btnForward = 4,
+		apDrive_btnBackward = 5,
+	};
 
 	class _APmavlink_drive : public _ModuleBase
 	{
@@ -48,6 +58,11 @@ namespace kai
 		uint16_t *m_pRcYaw;
 		uint16_t *m_pRcThrottle;
 		mavlink_rc_channels_override_t m_rcOverride;
+
+		std::mutex m_btnMutex;
+		AP_DRIVE_BTN m_btnPressed;
+		uint64_t m_tLastBtn;
+		uint64_t m_tOutBtn; // time out in usec for the m_btnPressed to be set to apDrive_btnNone, defaults to 100ms
 	};
 
 }

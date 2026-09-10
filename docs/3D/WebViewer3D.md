@@ -86,10 +86,42 @@ also accepts an optional trailing EOJ. It assembles replies split across the
 legacy 512-byte WebSocket messages, then dispatches to `handleCmd(jCmd)` in
 `js/wsCmdHandler.js`. Add page-specific reply handling there. Heartbeats
 (`{"cmd":"hb"}`), replies and connection messages appear in `cmdState`.
-Reply buffering is capped at 64 KiB of text and console history at 16 KiB.
+Reply buffering is capped at 8 MiB of text and console history at 16 KiB.
 All content is displayed as text, including malformed replies.
 
 ## Configuration
+
+### Grid config
+
+The **Grid config** form below **Point scale** sets the root center and full
+root cell size in metres. Origin X/Y/Z default to 0/0/0; size X/Y/Z default to
+5/5/5. These are input values only: incoming stream headers never overwrite them.
+
+**Update** is enabled after a grid header arrives and the command socket connects.
+It uses `wsSendCmd()` once per known grid module, with decimal-string coordinates:
+
+```json
+{
+  "cmd": "setGridConfig",
+  "module": "octGrid",
+  "vPorigin": ["0", "0", "0"],
+  "vRootCellSize": ["5", "5", "5"]
+}
+```
+
+`_OctreeGrid::console()` validates all six values before applying them. Coordinates
+must be finite float32 values and sizes must be positive. A changed root clears
+old occupancy, publishes the new header with an empty snapshot, and rebuilds from
+point sources on subsequent updates. Root changes are synchronized with the grid
+worker. An unchanged root preserves existing cells.
+
+Backend selections are remapped to preserve their world-space volume, using the
+same clipping and bounded boundary refinement as the browser picker. The browser
+remaps its own selections when the new stream header arrives. The backend replies
+with `{"cmd":"setGridConfig","module":"octGrid","bSuccess":true}` after applying
+the change; invalid requests return `bSuccess: false` and leave the grid unchanged.
+The form displays the result. Update changes runtime configuration; the picker's
+**Send** continues to save the current root and selections through `fConfig`.
 
 ### Grid drawing mode
 
@@ -117,7 +149,7 @@ boxes remain visible and can still be deselected, regardless of their level.
 ### Grid cell picker
 
 The **Grid cell picker** panel below the camera controls shows the picked-cell
-count and **Clear** / **Send** buttons. Left-click a cell's volume to toggle its
+count and **Load** / **Clear** / **Send** buttons. Left-click a cell's volume to toggle its
 selection. If the ray crosses several cells, the deepest ID wins; equal-depth
 hits use the nearest cell. Camera drags and multi-touch gestures do not select.
 Selected cells appear as red wire boxes over the scene. Hidden grid objects are
@@ -168,6 +200,35 @@ lists also return false, leaving the previous selection intact. IDs must be
 canonical and within the grid's maximum level, but need not remain occupied.
 An empty ID array with a matching header clears the backend selection.
 
+**Load** is enabled when the command socket is connected and a grid header has
+arrived, even if the grid has no occupied or selected cells. It calls `wsSendCmd()`
+once per known grid module:
+
+```json
+{"cmd":"loadCellSelect","module":"octGrid"}
+```
+
+The backend snapshots its current root and `m_vSelectedCells` and replies:
+
+```json
+{
+  "cmd": "cellSelect",
+  "module": "octGrid",
+  "nMaxLevel": 40,
+  "vPorigin": ["0", "0", "0"],
+  "vRootCellSize": ["2", "2", "2"],
+  "cellIDs": ["00000000000000000000000000000000"]
+}
+```
+
+`wsCmdHandler.js::handleCmd()` routes this reply to the picker. Valid IDs are
+added to that module's existing selection, ignoring duplicates. An empty reply
+keeps existing selections. If the returned root differs from the current stream
+header, the same volume-remapping rules above apply before merging; IDs deeper
+than the current maximum level are also remapped. Invalid replies leave the
+selection unchanged. Loaded cells retain red outlines even when unoccupied or
+outside the displayed level range.
+
 ### Saving selected cells
 
 `_OctreeGrid::saveConfig(j, fName)` writes the root and selected IDs under
@@ -188,6 +249,12 @@ order as picker commands. `loadConfig(pJ, fName)` restores this state and option
 returns the complete parsed document through `pJ`. Both methods use the module's
 `fConfig` setting when `fName` is empty. Initialization loads that file after the
 grid's root and maximum level are configured.
+
+The `octGridCellSelect` handler calls `saveConfig()` after updating the selection.
+Configure a writable `octGrid.fConfig` path to retain it across backend restarts.
+After reopening the page, **Load** retrieves the backend's current selection,
+including selections restored from that file during startup. The button does
+not reread the file or change the running backend's root or occupancy.
 
 Load explicitly after initialization with grid updates stopped. A restored root
 change clears occupancy tied to the previous root and updates the published grid

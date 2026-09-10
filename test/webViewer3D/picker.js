@@ -109,6 +109,47 @@ export async function runPickerTests() {
   check(picker.commands().length === 2, 'Different grids lost their own headers');
   picker.clear();
   check(picker.count === 0 && picker.commands().length === 0 && hit.source.overlay.geometry.instanceCount === 0, 'Clear left selections');
+  check(picker.loadCommands().map(j => j.module).sort().join() === 'octGrid,otherGrid' &&
+    picker.loadCommands().every(j => j.cmd === 'loadCellSelect'), 'Load requires an existing selection or targets wrong modules');
+  const reply = (module, h, ...ids) => ({ cmd: 'cellSelect', module, vPorigin: h.origin.map(String),
+    vRootCellSize: h.size.map(String), nMaxLevel: h.maxLevel, cellIDs: ids.map(cellIDKey) });
+  const source = picker.sourceFor(8);
+  const retained = idAt(0);
+  picker.toggle(source, retained);
+  const incoming = reply('octGrid', translated, idAt(7));
+  incoming.cellIDs.push(incoming.cellIDs[0].toUpperCase());
+  check(picker.mergeSelection(incoming) === 1 && source.selected.size === 2 && source.selected.has(cellIDKey(retained)), 'Load replaced existing cells or duplicated incoming IDs');
+  check(picker.mergeSelection(incoming) === 0 && source.selected.size === 2, 'Repeated Load duplicated cells');
+  picker.mergeSelection(reply('otherGrid', header, idAt(7)));
+  check(picker.sourceFor(9).selected.size === 1 && source.selected.size === 2, 'Load crossed source modules');
+  check(picker.mergeSelection(reply('octGrid', translated)) === 0 && source.selected.size === 2, 'Empty reply cleared existing selection');
+  const beforeInvalid = [...source.selected.keys()].join();
+  const invalid = [ { ...incoming, module: 'missing' }, { ...incoming, cellIDs: [cellIDKey(root), 'bad'] },
+    { ...incoming, cellIDs: ['40000000000000000000000000000000'] },
+    { ...incoming, vRootCellSize: ['0','2','2'] }, { ...incoming, vPorigin: ['NaN','0','0'] } ];
+  for (const bad of invalid) {
+    let rejected = false; try { picker.mergeSelection(bad); } catch { rejected = true; }
+    check(rejected && [...source.selected.keys()].join() === beforeInvalid, 'Malformed Load partially changed selections');
+  }
+  picker.clear();
+  picker.mergeSelection(reply('octGrid', header, idAt(7)));
+  check(source.selected.size > 1 && volume(translated, source.selected) === 1, 'Loaded translated root changed selected volume');
+  inside(translated, source.selected, [0,0,0], [1,1,1]);
+  check(picker.mergeSelection(reply('octGrid', header, idAt(7))) === 0, 'Remapped Load created duplicates');
+  picker.clear();
+  picker.mergeSelection(reply('octGrid', { ...translated, size: [4,4,4] }, idAt(7,0)));
+  check(source.selected.size === 1 && source.selected.has(cellIDKey(idAt(7))), 'Loaded root size was not remapped');
+  picker.clear();
+  const deepHeader = { ...header, maxLevel: 40 };
+  picker.updateObject({ id: 9, visible: true, boxes }, selectionGrid(deepHeader, selected()));
+  picker.mergeSelection(reply('otherGrid', deepHeader, id));
+  check(picker.sourceFor(9).selected.has(cellIDKey(id)), 'Loaded depth-40 ID lost precision');
+  picker.clear();
+  viewer.setGridLevelRange(0, 0);
+  picker.mergeSelection(reply('octGrid', translated, idAt(7,7)));
+  check(source.overlay.geometry.instanceCount === 1 && source.overlay.grid.cells[16] === 255 && source.overlay.grid.cells[17] === 0,
+    'Loaded cells are not red or were hidden by level filtering');
+  picker.clear();
   viewer.setGridLevelRange(2, 2);
   viewer.setGridSolid(true);
   const checkNewObject = id => {

@@ -27,6 +27,8 @@ namespace kai
 		jKv<double>(j, "vP", m_vP);
 		jKv(j, "vPolygon", m_vPolygon);
 
+		loadConfig();
+
 		return true;
 	}
 
@@ -40,6 +42,27 @@ namespace kai
 
 		return true;
 	}
+
+	bool _GeoFence::loadConfig(json *pJ, string fName)
+	{
+		json j;
+		IF_F(!this->_ModuleBase::loadConfig(&j, fName));
+
+		IF_F(!jKv(j, "vPolygon", m_vPolygon));
+
+		if (pJ)
+		{
+			*pJ = j;
+		}
+		return true;
+	}
+
+	bool _GeoFence::saveConfig(json &j, string fName)
+	{
+		j["vPolygon"] = m_vPolygon;
+		return this->_ModuleBase::saveConfig(j, fName);
+	}
+
 
 	bool _GeoFence::start(void)
 	{
@@ -136,9 +159,12 @@ namespace kai
 			{
 			}
 
+			json Js = json::object();
+			saveConfig(Js);
+
 			NULL_(pJb);
 			json jr = json::object();
-			jr["cmd"] = "set_GeoFence";
+			jr["cmd"] = "setGeoFence";
 			jr["bSuccess"] = true;
 			pJb->sendJson(jr);
 

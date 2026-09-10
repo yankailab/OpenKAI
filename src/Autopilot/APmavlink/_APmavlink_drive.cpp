@@ -17,6 +17,10 @@ namespace kai
 		m_speed = 0.0;
 		m_pwmM = 1500;
 		m_pwmD = 500;
+
+		m_btnPressed = apDrive_btnNone;
+		m_tLastBtn = 0;
+		m_tOutBtn = 100000;
 	}
 
 	_APmavlink_drive::~_APmavlink_drive()
@@ -35,6 +39,7 @@ namespace kai
 		jKv(j, "speed", m_speed);
 		jKv(j, "pwmM", m_pwmM);
 		jKv(j, "pwmD", m_pwmD);
+		jKv(j, "tOutBtn", m_tOutBtn);
 
 		uint16_t *pRC[19];
 		pRC[0] = NULL;
@@ -123,6 +128,13 @@ namespace kai
 
 	bool _APmavlink_drive::updateDrive(void)
 	{
+		// The console receives on another thread. Expire even without an AP link.
+		{
+			std::lock_guard<std::mutex> lock(m_btnMutex);
+			if (m_btnPressed != apDrive_btnNone && getTbootUs() - m_tLastBtn > m_tOutBtn)
+				m_btnPressed = apDrive_btnNone;
+		}
+
 		IF_F(!check());
 
 		if (m_bSetYawSpeed)
@@ -174,6 +186,7 @@ namespace kai
 		this->_ModuleBase::console(pConsole);
 
 		((_Console *)pConsole)->addMsg("steer=" + f2str(m_steer) + ", speed=" + f2str(m_speed));
+		((_Console *)pConsole)->addMsg("btnPressed=" + i2str(m_btnPressed));
 
 		NULL_(m_pRcYaw);
 		NULL_(m_pRcThrottle);
@@ -201,6 +214,33 @@ namespace kai
             jr["bSuccess"] = true;
             pJb->sendJson(jr);
         }
-    }
+        else if (cmd == "ctrlBtn")
+        {
+            string btn;
+            jKv(j, "btn", btn);
+
+            AP_DRIVE_BTN pressed = apDrive_btnNone;
+            if (btn == "F") pressed = apDrive_btnForward;
+            else if (btn == "L") pressed = apDrive_btnLeft;
+            else if (btn == "R") pressed = apDrive_btnRight;
+            else if (btn == "B") pressed = apDrive_btnBackward;
+            else if (btn == "S") pressed = apDrive_btnStop;
+
+            const bool bSuccess = pressed != apDrive_btnNone;
+            if (bSuccess)
+            {
+                std::lock_guard<std::mutex> lock(m_btnMutex);
+                m_btnPressed = pressed;
+                m_tLastBtn = getTbootUs();
+            }
+
+            NULL_(pJb);
+            json jr = json::object();
+            jr["cmd"] = "ctrlBtn";
+            jr["bSuccess"] = bSuccess;
+            pJb->sendJson(jr);
+        }
+
+	}
 
 }

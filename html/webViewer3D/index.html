@@ -30,6 +30,25 @@
         <label><input id="grid" type="checkbox" checked> Grid</label>
         <label class="grid-mode"><span>Wire-frame</span><input id="grid-solid" type="checkbox" role="switch" aria-label="Solid grid boxes"><span>Solid</span></label>
         <label>Point scale <input id="point-scale" type="range" min="0.25" max="5" step="0.25" value="1"></label>
+        <form id="grid-config" class="grid-config">
+          <fieldset>
+            <legend>Grid config</legend>
+            <fieldset class="grid-vector">
+              <legend>Origin (m)</legend>
+              <label>X <input id="grid-origin-x" type="number" step="any" value="0" required aria-label="Grid origin X"></label>
+              <label>Y <input id="grid-origin-y" type="number" step="any" value="0" required aria-label="Grid origin Y"></label>
+              <label>Z <input id="grid-origin-z" type="number" step="any" value="0" required aria-label="Grid origin Z"></label>
+            </fieldset>
+            <fieldset class="grid-vector">
+              <legend>Root level cell size (m)</legend>
+              <label>X <input id="grid-size-x" type="number" step="any" min="0" value="5" required aria-label="Root cell size X"></label>
+              <label>Y <input id="grid-size-y" type="number" step="any" min="0" value="5" required aria-label="Root cell size Y"></label>
+              <label>Z <input id="grid-size-z" type="number" step="any" min="0" value="5" required aria-label="Root cell size Z"></label>
+            </fieldset>
+            <button id="grid-config-update" type="submit" disabled>Update</button>
+            <output id="grid-config-status" role="status"></output>
+          </fieldset>
+        </form>
         <fieldset class="grid-levels">
           <legend>Grid levels</legend>
           <label>Min <input id="grid-min-level" type="range" min="0" max="40" step="1" value="0" aria-label="Minimum grid level"><output id="grid-min-level-value" for="grid-min-level">0</output></label>
@@ -41,6 +60,7 @@
         <p>Click a cell to select or deselect it.</p>
         <output id="picker-count" aria-live="polite">0 picked cells</output>
         <div class="tools">
+          <button id="picker-load" type="button" disabled>Load</button>
           <button id="picker-clear" type="button" disabled>Clear</button>
           <button id="picker-send" type="button" disabled>Send</button>
         </div>

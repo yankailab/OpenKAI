@@ -27,16 +27,17 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus
 .panel-hint { margin: 0; color: #aabac8; font-size: 12px; line-height: 1.5; }
 .tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .console-panel { padding: 0 14px; }
-.console-panel summary { min-height: 48px; padding: 14px 0; color: #aabac8; cursor: pointer; touch-action: manipulation; }
+.console-panel summary { min-height: 44px; padding: 12px 0; color: #aabac8; cursor: pointer; touch-action: manipulation; }
 .console-panel[open] { padding-bottom: 14px; }
 #msg { display: block; color: #89d6bf; font-size: 12px; font-weight: 400; overflow-wrap: anywhere; }
 #msg:empty { display: none; }
 .console-label { font-size: 12px; margin: 12px 0 6px; }
-#cmdState { display: block; width: 100%; min-height: 100px; max-height: 240px; resize: vertical; padding: 8px; background: #090f17; color: #aabac8; font: 12px/1.5 ui-monospace, monospace; }
+#cmdState { display: block; width: 100%; min-height: 100px; max-height: 240px; resize: vertical; padding: 8px; background: #090f17; color: #aabac8; font: 11px/1.5 ui-monospace, monospace; }
 
 /* Keep direction and emergency controls in a familiar, touch-friendly cross. */
 .drive-pad { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; max-width: 300px; margin: 0 auto; }
-.drive-pad button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 56px; padding: 6px 4px; font-size: 12px; line-height: 1.25; }
+.drive-pad button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 56px; padding: 6px 4px; font-size: 12px; line-height: 1.25; touch-action: none; -webkit-touch-callout: none; }
+.drive-pad button.is-held { filter: brightness(.85); }
 .direction-icon { font-size: 23px; line-height: 1; }
 #btnForward { grid-column: 2; grid-row: 1; }
 #btnLeft { grid-column: 1; grid-row: 2; }
@@ -47,8 +48,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus
 .stop-icon { font-size: 14px; line-height: 1; }
 .control-feedback { margin-top: 12px; }
 .selection-status { margin: 12px 0; color: #89d6bf; font-size: 12px; line-height: 1.5; }
-.geofence-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
-.geofence-actions button { padding: 8px 4px; }
+.geofence-actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; width: 100%; }
+.geofence-actions button { width: 100%; padding: 8px 4px; }
 
 /* LCalign: flexible fields keep paths and camera controls inside the panel. */
 .fields { display: grid; grid-template-columns: 160px minmax(0, 1fr); align-items: center; gap: 10px 16px; }

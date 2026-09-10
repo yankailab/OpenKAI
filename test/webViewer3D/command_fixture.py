@@ -41,8 +41,18 @@ class CommandHandler(socketserver.StreamRequestHandler):
                 assert opcode == 1 and payload.endswith(b'EOJ'), payload
                 command = json.loads(payload[:-3])
                 self.server.received.append(command)
+                if command.get('cmd') == 'setGridConfig':
+                    self.send_text(json.dumps({'cmd': 'setGridConfig', 'module': command['module'], 'bSuccess': True}))
+                    continue
                 if command.get('cmd') == 'octGridCellSelect':
+                    self.server.selections[command['module']] = command
                     self.send_text(json.dumps({'cmd': 'octGridCellSelect', 'bSuccess': True}))
+                    continue
+                if command.get('cmd') == 'loadCellSelect':
+                    saved = self.server.selections.get(command['module'], {
+                        'module': command['module'], 'vPorigin': ['0'] * 3, 'vRootCellSize': ['2'] * 3, 'cellIDs': []})
+                    reply = json.dumps({**saved, 'cmd': 'cellSelect'})
+                    for at in range(0, len(reply), 512): self.send_text(reply[at:at + 512])
                     continue
                 reply = json.dumps({'cmd': 'ackTest', 'v': command['v'], 'text': 'quoted " } EOJ ' + 'x' * 1024})
                 # Separate text messages, then a split optional terminator and another object.
@@ -60,6 +70,7 @@ class CommandServer(socketserver.ThreadingTCPServer):
     def __init__(self):
         super().__init__(('127.0.0.1', 0), CommandHandler)
         self.received = []
+        self.selections = {}
         self.worker = threading.Thread(target=self.serve_forever, daemon=True)
         self.worker.start()
 

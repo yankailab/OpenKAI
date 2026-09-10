@@ -43,7 +43,7 @@
 			"FPS": 10
 		},
 		"vBASE": [
-			"apBase","apDrive"
+			"apBase","apDrive","geoFence"
 		],
 		"msgFinishSend": "",
 		"msgFinishRecv": "EOJ",
@@ -154,5 +154,16 @@
 		"iRCThrottle": 3,
 		"pwmM": 1500,
 		"pwmD": 500
+	},
+
+	"geoFence": {
+		"class": "_GeoFence",
+		"bON": true,
+		"thread": {
+			"FPS": 2
+		},
+		"_JSONbase": "",
+		"_APmavlink_base": "apBase",
+		"estD":1
 	}
 }

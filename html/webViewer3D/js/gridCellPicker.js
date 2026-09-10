@@ -1,7 +1,7 @@
 import * as THREE from '../vendor/three.module.min.js';
 import { GridBoxes } from './gridBoxes.js';
 import { CELL_BYTES } from './octreeCells.js';
-import { cellIDKey, remapSelection, rootBounds, sameGridHeader, selectionGrid } from './gridSelection.js';
+import { cellIDKey, decodeSelection, remapSelection, rootBounds, sameGridHeader, selectionGrid } from './gridSelection.js';
 
 export class GridCellPicker {
   constructor(viewer) {
@@ -40,6 +40,7 @@ export class GridCellPicker {
   sourceFor(id) { return this.sources.get(this.names.get(id) ?? String(id)); }
   updateObject(object, grid) {
     let source = this.sourceFor(object.id);
+    const created = !source;
     if (!grid) { if (source) source.occupied = null; return; }
     if (!source) {
       const module = this.names.get(object.id) ?? String(object.id);
@@ -61,7 +62,8 @@ export class GridCellPicker {
     source.occupied = object.boxes;
     source.visible = object.visible;
     source.overlay.visible = object.visible && source.selected.size > 0;
-    if (changed) { this.refresh(source); this.onChange(); }
+    if (changed) this.refresh(source);
+    if (created || changed) this.onChange();
   }
   removeObject(id) {
     const source = this.sourceFor(id);
@@ -159,6 +161,28 @@ export class GridCellPicker {
       vPorigin: source.header.origin.map(String), vRootCellSize: source.header.size.map(String),
       cellIDs: [...source.selected.keys()]
     }));
+  }
+  gridModules() {
+    const modules = new Set(this.names.values());
+    return [...this.sources.values()].filter(source => source.header && modules.has(source.module))
+      .map(source => source.module);
+  }
+  loadCommands() {
+    return this.gridModules().map(module => ({ cmd: 'loadCellSelect', module }));
+  }
+  mergeSelection(command) {
+    const source = this.sources.get(command.module);
+    if (!source?.header || ![...this.names.values()].includes(command.module)) throw new Error('Unknown grid source');
+    let { header, ids } = decodeSelection(command);
+    const sameRoot = header.origin.every((x, i) => x === source.header.origin[i]) &&
+      header.size.every((x, i) => x === source.header.size[i]);
+    if (!sameRoot || [...ids.values()].some(id => (id[0] & 63) > source.header.maxLevel))
+      ids = remapSelection(header, source.header, ids);
+    let added = 0;
+    for (const [key, id] of ids) if (!source.selected.has(key)) { source.selected.set(key, id); ++added; }
+    if (added) this.refresh(source);
+    this.onChange();
+    return added;
   }
   dispose() {
     for (const [type, handler] of Object.entries(this.handlers)) this.viewer.renderer.domElement.removeEventListener(type, handler, true);

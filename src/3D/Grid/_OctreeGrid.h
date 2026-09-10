@@ -11,7 +11,6 @@ namespace kai
 {
 	struct OCTGRID_PCL_CELL
 	{
-		UUID128 m_ID = 0;
 		/*
 		cell ID format:
 		128 bit width from MSB to LSB
@@ -19,6 +18,7 @@ namespace kai
 		[3 bit][3bit]... each 3-bit fragment correspondent to its cell index at the Level from 0 to 39, 40 levels at most (3 bit x 40 = 120 bit)
 		[6 bit] cell depth (0 = root, 40 = deepest); unused path segments are zero
 		*/
+		UUID128 m_ID = 0;
 
 		int m_nP = 0;
 		vFloat4 m_vC = {1, 1, 1, 1}; // default color
@@ -55,6 +55,7 @@ namespace kai
 		virtual OCTGRID_PCL_CELL *addCellPoint(const GEOMETRY_POINT &gP, const uint64_t &tNow, int nMaxLevTo = -1, bool bAdd = true);
 		virtual OCTGRID_PCL_CELL *getCell(const vFloat3 &vP, int nMaxLevTo = -1);
 		virtual OCTGRID_PCL_CELL *getCell(const UUID128 &id);
+		virtual const vector<UUID128>& getSelectedCells(void);
 
 		// drawing
 		virtual int get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire = 0);
@@ -70,6 +71,7 @@ namespace kai
 		virtual void updateDrawAssets(void);
 
 	private:
+		json selectedCellsJSON(const char *idsKey);
 		virtual void updateGrid(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
@@ -96,6 +98,8 @@ namespace kai
 		int m_nMaxCells;
 		OCTGRID_CELLS m_cells;
 		vector<OCTGRID_CELL> m_buildCells;
+		// Serializes live root changes with grid updates; acquire before m_cellsMutex.
+		std::mutex m_gridMutex;
 		std::mutex m_cellsMutex;
 		vFloat4 m_vColCellOcc;
 		bool m_bColCellOcc;

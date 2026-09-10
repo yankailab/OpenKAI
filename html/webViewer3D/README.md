@@ -29,8 +29,15 @@ selected cells keep their red outlines. See the
 [version 4 format](../../docs/3D/WebViewer3D.md#binary-protocol-version-4). Only
 version 4 is supported. Point, line, and cell alpha multiplies object opacity.
 
-The **Grid cell picker** panel supports persistent red selections, Clear, and
-Send over the independent command socket. See the
+The **Grid config** form below Point scale sends root origin and size through
+`setGridConfig` on the command socket. Its defaults are 0/0/0 m and 5/5/5 m, and
+stream updates leave the inputs unchanged. Updating the root rebuilds occupancy
+and preserves selected volumes within the new root.
+
+The **Grid cell picker** panel supports persistent red selections, Load, Clear,
+and Send. Load retrieves backend selections over the independent command socket
+and merges them without duplicate IDs, remapping volumes when root headers differ.
+Set the grid module's `fConfig` to persist selections across backend restarts. See the
 [picker behavior and JSON contract](../../docs/3D/WebViewer3D.md#grid-cell-picker).
 
 Geometry uses `/stream/points`, `/stream/lines` and `/stream/cells` on the same

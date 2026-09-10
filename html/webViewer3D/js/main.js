@@ -62,12 +62,56 @@ function syncObjects() {
 }
 function syncPicker() {
   const count = viewer.picker.count;
+  const canConfigure = window.wsSocket?.readyState === WebSocket.OPEN && viewer.picker.gridModules().length > 0;
   $('#picker-count').textContent = `${count.toLocaleString()} picked ${count === 1 ? 'cell' : 'cells'}`;
   $('#picker-clear').disabled = count === 0;
+  $('#picker-load').disabled = !canConfigure;
+  $('#grid-config-update').disabled = !canConfigure;
+  $('#picker-load').title = 'Retrieve selections from the connected grid sources';
   $('#picker-send').disabled = count === 0 || window.wsSocket?.readyState !== WebSocket.OPEN;
   $('#picker-send').title = window.wsSocket?.readyState === WebSocket.OPEN ? '' : 'Connect the command WebSocket to send selections';
 }
 viewer.picker.onChange = () => { $('#picker-status').textContent = ''; syncPicker(); };
+$('#grid-config').addEventListener('input', event => event.target.setCustomValidity(''));
+$('#grid-config').addEventListener('submit', event => {
+  event.preventDefault();
+  const vector = name => ['x', 'y', 'z'].map(axis => $(`#grid-${name}-${axis}`));
+  const origin = vector('origin'), size = vector('size');
+  for (const input of [...origin, ...size]) {
+    const value = Math.fround(input.valueAsNumber);
+    input.setCustomValidity(!Number.isFinite(value) ? 'Enter a finite coordinate in metres.' :
+      size.includes(input) && value <= 0 ? 'Cell size must be greater than zero.' : '');
+  }
+  if (!event.currentTarget.reportValidity()) return;
+  for (const module of viewer.picker.gridModules()) {
+    if (!window.wsSendCmd({ cmd: 'setGridConfig', module,
+      vPorigin: origin.map(input => String(input.valueAsNumber)),
+      vRootCellSize: size.map(input => String(input.valueAsNumber)) })) {
+      $('#grid-config-status').textContent = 'Update request failed.';
+      return;
+    }
+  }
+  $('#grid-config-status').textContent = 'Updating grid…';
+});
+window.addEventListener('gridconfig', event => {
+  const reply = event.detail;
+  $('#grid-config-status').textContent = reply.bSuccess === true ? `Updated ${reply.module}.` : `Update failed for ${reply.module}.`;
+});
+$('#picker-load').addEventListener('click', () => {
+  for (const command of viewer.picker.loadCommands()) {
+    if (!window.wsSendCmd(command)) { $('#picker-status').textContent = 'Load request failed.'; return; }
+  }
+  $('#picker-status').textContent = 'Loading selected cells…';
+});
+window.addEventListener('cellselect', event => {
+  try {
+    const added = viewer.picker.mergeSelection(event.detail);
+    $('#picker-status').textContent = `Added ${added} ${added === 1 ? 'cell' : 'cells'} from ${event.detail.module}.`;
+  } catch (error) {
+    $('#picker-status').textContent = `Load failed: ${error.message}`;
+    window.wsCmdLog(`cellSelect: ${error.message}`);
+  }
+});
 $('#picker-clear').addEventListener('click', () => viewer.picker.clear());
 $('#picker-send').addEventListener('click', () => {
   let sent = 0;

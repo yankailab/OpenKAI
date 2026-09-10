@@ -22,6 +22,13 @@ main { position: relative; flex: 1; min-height: 0; overflow: hidden; }
 aside { position: absolute; top: 16px; right: 16px; width: 240px; padding: 14px; border: 1px solid #2d3c4d; border-radius: 8px; background: #101923e8; max-height: calc(100% - 80px); overflow: auto; }
 .tools { gap: 12px; } .tools label { width: 100%; font-size: 12px; }
 input[type=range] { padding: 0; width: 112px; accent-color: #64dcb5; }
+.grid-config { display: block; width: 100%; }
+.grid-config fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.grid-config legend { padding: 0; margin-bottom: 8px; font-size: 12px; color: #aabac8; }
+.grid-config .grid-vector { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-bottom: 10px; }
+.grid-config .grid-vector label { display: block; }
+.grid-vector input { display: block; width: 100%; padding: 6px 3px; margin-top: 4px; }
+#grid-config-status { display: block; margin-top: 8px; font-size: 12px; color: #aabac8; }
 .grid-levels { width: 100%; min-width: 0; margin: 0; padding: 0; border: 0; }
 .grid-levels legend { padding: 0; margin-bottom: 8px; font-size: 12px; color: #aabac8; }
 .grid-levels label { display: grid; grid-template-columns: 28px minmax(0, 1fr) 2ch; margin-top: 6px; }
@@ -37,7 +44,8 @@ input[type=checkbox] { accent-color: #64dcb5; }
 details { margin-top: 18px; border-top: 1px solid #2d3c4d; padding-top: 12px; }
 summary { cursor: pointer; color: #c4d6e5; }
 .picker-panel p { font-size: 12px; color: #aabac8; margin: 10px 0; }
-.picker-panel .tools { margin-top: 10px; }
+.picker-panel .tools { margin-top: 10px; gap: 6px; }
+.picker-panel button { padding-inline: 8px; }
 #picker-count { font-size: 12px; color: #ff7777; }
 #picker-status { display: block; margin-top: 8px; font-size: 12px; color: #aabac8; }
 #objects { padding-top: 10px; font-size: 12px; color: #6d8598; }

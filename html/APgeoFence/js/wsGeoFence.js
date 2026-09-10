@@ -1,39 +1,87 @@
+const controlIntervalMs = 100;
+let activeControl = null;
+let controlTimer = null;
+
 window.onload = function () {
-    $('#btnForward').addEventListener('click', onForwardClick);
-    $('#btnLeft').addEventListener('click', onLeftClick);
-    $('#btnRight').addEventListener('click', onRightClick);
-    $('#btnBack').addEventListener('click', onBackwardClick);
-    $('#btnStop').addEventListener('click', onStopClick);
+    bindControlButton('#btnForward', 'F', 'Forward');
+    bindControlButton('#btnLeft', 'L', 'Left');
+    bindControlButton('#btnRight', 'R', 'Right');
+    bindControlButton('#btnBack', 'B', 'Backward');
+    bindControlButton('#btnStop', 'S', 'STOP');
     $('#btnStart').addEventListener('click', onStartClick);
 
+    window.addEventListener('pointerup', endControlPointer);
+    window.addEventListener('pointercancel', endControlPointer);
+    window.addEventListener('blur', stopControl);
+    window.addEventListener('pagehide', stopControl);
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) stopControl();
+    });
+
     wsInit();
+    wsSocket.addEventListener('close', stopControl);
+    wsSocket.addEventListener('error', stopControl);
 };
 
-// Command templates: replace the placeholder feedback when the rover protocol
-// is implemented. These handlers do not send commands or change rover state.
-function onForwardClick() {
-    // TODO: Send the manual forward command.
-    showPendingControl('Forward');
+function bindControlButton(selector, btn, label) {
+    const button = $(selector);
+    button.addEventListener('pointerdown', event => {
+        if (event.button !== 0) return;
+        event.preventDefault();
+        stopControl();
+        activeControl = { button, btn, pointerId: event.pointerId };
+        button.setPointerCapture(event.pointerId);
+        button.classList.add('is-held');
+        $('#controlFeedback').textContent = label + ' · Sending while held';
+        if (sendControl()) controlTimer = setInterval(sendControl, controlIntervalMs);
+    });
+
+    // Touch pointers are captured, so pointerleave alone does not detect a
+    // finger sliding outside the button. Check the bounds during capture too.
+    button.addEventListener('pointermove', event => {
+        if (!activeControl || event.pointerId !== activeControl.pointerId) return;
+        const rect = button.getBoundingClientRect();
+        if (event.buttons === 0 || event.clientX < rect.left || event.clientX >= rect.right ||
+            event.clientY < rect.top || event.clientY >= rect.bottom) stopControl();
+    });
+    button.addEventListener('pointerleave', endControlPointer);
+    button.addEventListener('lostpointercapture', endControlPointer);
+    button.addEventListener('contextmenu', event => event.preventDefault());
 }
 
-function onLeftClick() {
-    // TODO: Send the manual left command.
-    showPendingControl('Left');
+function endControlPointer(event) {
+    if (activeControl && event.pointerId === activeControl.pointerId) stopControl();
 }
 
-function onRightClick() {
-    // TODO: Send the manual right command.
-    showPendingControl('Right');
+function stopControl() {
+    clearInterval(controlTimer);
+    controlTimer = null;
+    const control = activeControl;
+    activeControl = null;
+    if (!control) return;
+    control.button.classList.remove('is-held');
+    if (control.button.hasPointerCapture(control.pointerId)) {
+        control.button.releasePointerCapture(control.pointerId);
+    }
+    $('#controlFeedback').textContent = 'Control released. No commands being sent.';
 }
 
-function onBackwardClick() {
-    // TODO: Send the manual backward command.
-    showPendingControl('Backward');
-}
+function sendControl() {
+    if (!activeControl) return false;
+    if (typeof wsSocket === 'undefined' || wsSocket.readyState !== WebSocket.OPEN) {
+        stopControl();
+        $('#controlFeedback').textContent = 'Rover disconnected. No command sent.';
+        return false;
+    }
 
-function onStopClick() {
-    // TODO: Send an emergency stop that overrides manual and auto movement.
-    showPendingControl('STOP');
+    try {
+        wsSocket.send(JSON.stringify({ cmd: 'ctrlBtn', module: 'apDrive', btn: activeControl.btn }) + strEOJ);
+        return true;
+    } catch (error) {
+        stopControl();
+        $('#controlFeedback').textContent = 'Could not send rover control.';
+        return false;
+    }
 }
 
 function onStartClick() {
@@ -47,9 +95,9 @@ function showPendingControl(action) {
 
 
 function cmdHandler(event) {
-    $('#cmdState').value = event.data + "\n\n" + $('#cmdState').value;
+    $('#cmdState').value = (event.data + "\n\n" + $('#cmdState').value).slice(0, 12000);
 
-    jCmd = JSON.parse(event.data);
+    const jCmd = JSON.parse(event.data);
     if (jCmd.cmd == 'geoFence') {
         updateGeoFenceOverlay(jCmd);
     }

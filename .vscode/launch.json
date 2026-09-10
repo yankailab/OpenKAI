@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/OpenKAI",
             "args": [
-                "${workspaceFolder}/jsonCfg/WebViewer3D.json"
+                "${workspaceFolder}/jsonCfg/apMavlink_drive.json"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

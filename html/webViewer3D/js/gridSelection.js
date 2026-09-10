@@ -1,7 +1,28 @@
-import { cellBox, CELL_BYTES } from './octreeCells.js';
+import { cellBox, CELL_BYTES, validateCellIDs } from './octreeCells.js';
 
 export function cellIDKey(id) {
   return Array.from(id, byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+// Commands use decimal strings for the float32 root and hex in stream byte order.
+export function decodeSelection(command) {
+  const vector = values => {
+    if (!Array.isArray(values) || values.length !== 3 || values.some(x => typeof x !== 'string' ||
+        !/^-?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$/i.test(x))) throw new Error('Invalid selection header');
+    const result = values.map(x => Math.fround(Number(x)));
+    if (!result.every(Number.isFinite)) throw new Error('Invalid selection header');
+    return result;
+  };
+  const header = { origin: vector(command.vPorigin), size: vector(command.vRootCellSize), maxLevel: command.nMaxLevel ?? 40 };
+  if (header.size.some(x => x <= 0) || !Number.isInteger(header.maxLevel) || header.maxLevel < 0 || header.maxLevel > 40 ||
+      !Array.isArray(command.cellIDs)) throw new Error('Invalid selection data');
+  const ids = new Map();
+  for (const key of command.cellIDs) {
+    if (typeof key !== 'string' || !/^[0-9a-f]{32}$/i.test(key)) throw new Error('Invalid selected cell ID');
+    ids.set(key.toLowerCase(), Uint8Array.from({ length: 16 }, (_, i) => parseInt(key.slice(i * 2, i * 2 + 2), 16)));
+  }
+  validateCellIDs(selectionGrid(header, ids).cells, header.maxLevel);
+  return { header, ids };
 }
 
 export function childID(parent, child) {

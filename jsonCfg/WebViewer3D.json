@@ -78,6 +78,7 @@
     "nMaxCells": 18333,
     "dTexpireCell": 500000,
     "dTexpirePCL": 0,
+    "fConfig":"/home/kai/test/octGrid.json",
     "vGeometryBase": [
       "pcFile",
       "scPC"

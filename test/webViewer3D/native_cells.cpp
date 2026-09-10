@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <thread>
 
 using namespace kai;
 class Grid : public _OctreeGrid {
@@ -30,6 +31,119 @@ public:
     void source(BASE *grid) { m_vpB = {grid}; }
     bool sendJson(const json &j) override { reply = j; return true; }
 };
+
+void checkGridConfigCommand() {
+    Grid grid;
+    grid.setName("octGrid");
+    assert(grid.init(json{{"class","_OctreeGrid"}, {"thread",{{"FPS",30}}}, {"nP",1},
+        {"nMaxLevel",4}, {"vPorigin",{0,0,0}}, {"vRootCellSize",{2,2,2}}}));
+    SelectionConsole console;
+    console.source(&grid);
+    auto config = [](std::array<string,3> origin, std::array<string,3> size) {
+        return json{{"cmd","setGridConfig"}, {"module","octGrid"}, {"vPorigin",origin}, {"vRootCellSize",size}};
+    };
+    const json initial = config({"0","0","0"}, {"2","2","2"});
+    auto send = [&](const json &j, bool success = true) {
+        console.handleJson(j.dump());
+        assert(console.reply == json({{"cmd","setGridConfig"}, {"module","octGrid"}, {"bSuccess",success}}));
+    };
+    GEOMETRY_POINT point{vFloat3(.75,.75,.75),vFloat4(1,1,1,1),getApproxTbootUs()};
+    auto populate = [&] { assert(grid.addCellPoint(point, point.m_tStamp)); grid.updateDrawAssets(); };
+    populate();
+    OCTGRID_CELLS snapshot;
+    const int occupied = grid.get(&snapshot);
+    const auto stamp = snapshot.m_header.m_tStamp;
+    // Nested/duplicate selections must contribute volume only once during remapping.
+    auto picked = initial;
+    picked["cmd"] = "octGridCellSelect";
+    picked["cellIDs"] = {"0200000000000000000000000000003f", "01000000000000000000000000000038", "01000000000000000000000000000038"};
+    console.handleJson(picked.dump());
+    assert(console.reply["bSuccess"] == true && grid.selectedCells().size() == 3);
+    send(initial); // An unchanged config must preserve occupancy and exact selections.
+    assert(grid.get(&snapshot) == occupied && snapshot.m_header.m_tStamp == stamp && grid.selectedCells().size() == 3);
+    for (const string field : {"vPorigin", "vRootCellSize"}) {
+        for (const json &value : vector<json>{nullptr, 1, "bad", json::array({"0","0"}),
+             json::array({"NaN","2","2"}), json::array({"1e100","2","2"}), json::array({0,2,2})}) {
+            auto bad = initial; bad[field] = value; send(bad, false);
+            assert(grid.get(&snapshot) == occupied && snapshot.m_header.m_tStamp == stamp && grid.selectedCells().size() == 3);
+        }
+        auto missing = initial; missing.erase(field); send(missing, false);
+    }
+    for (const string value : {"0", "-1", "1e-100"}) {
+        auto bad = initial; bad["vRootCellSize"][0] = value; send(bad, false);
+    }
+    auto selectedVolume = [&] {
+        double volume = 0;
+        for (const auto &id : grid.selectedCells()) {
+            std::array<float,3> center, size;
+            assert(octgridCellBox(snapshot.m_header, id, center, size));
+            volume += double(size[0]) * size[1] * size[2];
+            for (int axis = 0; axis < 3; ++axis)
+                assert(center[axis] - size[axis] * .5 >= 0 && center[axis] + size[axis] * .5 <= 1);
+        }
+        return volume;
+    };
+    send(config({".25",".25",".25"}, {"2","2","2"}));
+    assert(grid.get(&snapshot) == 0 && snapshot.m_header.m_tStamp > 0 && !grid.getCell(UUID128(0)));
+    assert(snapshot.m_header.m_vPorigin == (std::array<float,3>{.25,.25,.25}));
+    assert(grid.selectedCells().size() > 1 && selectedVolume() == 1);
+    grid.updateDrawAssets(); assert(grid.get(&snapshot) == 0); // No stale root or publication buffer.
+    populate(); assert(grid.get(&snapshot) > 0); // Rebuild from points using the new root.
+    send(config({"0","0","0"}, {"4","4","4"}));
+    assert(grid.get(&snapshot) == 0 && grid.selectedCells().size() == 1 && selectedVolume() == 1);
+    send(config({".5",".5",".5"}, {".5",".5",".5"}));
+    assert(grid.get(&snapshot) == 0 && grid.selectedCells().size() == 1 && grid.selectedCells()[0] == uint64_t(0));
+    send(config({"10","-20","30"}, {"8","4","2"}));
+    assert(grid.get(&snapshot) == 0 && grid.selectedCells().empty());
+    assert(!grid.addCellPoint(point, point.m_tStamp));
+    point.m_vP = vFloat3(10,-20,30); populate();
+    assert(grid.get(&snapshot) > 0 && snapshot.m_header.m_vRootCellSize == (std::array<float,3>{8,4,2}));
+    std::cout << "PASS: setGridConfig dispatch/ACK, atomic validation, unchanged config, occupancy reset/rebuild, selection volume preservation, deduplication and clipping\n";
+}
+
+// Run the production grid update loop, with a joinable thread for deterministic teardown.
+class LiveGrid : public Grid {
+    class Thread : public _Thread {
+    public:
+        std::thread worker;
+        bool startThread(void *(*fn)(void *), void *arg) override {
+            m_tFrom = getApproxTbootUs(); m_state = thread_run; m_bSkipSleep = false;
+            run(); worker = std::thread([=] { fn(arg); }); return true;
+        }
+        void join() { stop(); if (worker.joinable()) worker.join(); }
+    };
+    _Thread *createThread(const json &j, const string &name) override {
+        auto *thread = new Thread(); thread->setName(name); assert(thread->init(j)); return thread;
+    }
+public:
+    void source(_GeometryBase *source) { m_vpGb = {source}; }
+    ~LiveGrid() { if (m_pT) static_cast<Thread *>(m_pT)->join(); }
+};
+
+void checkLiveGridConfig() {
+    _PointCloud cloud;
+    cloud.setName("livePoints");
+    assert(cloud.init(json{{"class","_PointCloud"},{"thread",{{"FPS",30}}},{"nP",1000}}));
+    for (int i = 0; i < 1000; ++i) cloud.add(vFloat3(i * .001f, .5, .5), vFloat4(1,1,1,1));
+    LiveGrid grid;
+    grid.setName("liveGrid");
+    assert(grid.init(json{{"class","_OctreeGrid"},{"thread",{{"FPS",100}}},{"nP",1000},
+        {"nMaxLevel",8}, {"vPorigin",{0,0,0}}, {"vRootCellSize",{2,2,2}}}));
+    grid.source(&cloud); assert(grid.start());
+    SelectionConsole console; console.source(&grid);
+    for (int i = 0; i < 100; ++i) {
+        const string origin = i % 2 ? "100" : "0";
+        console.handleJson(json{{"cmd","setGridConfig"}, {"module","liveGrid"},
+            {"vPorigin",{origin,"0","0"}}, {"vRootCellSize",{"2","2","2"}}}.dump());
+        assert(console.reply["bSuccess"] == true);
+        OCTGRID_CELLS snapshot;
+        grid.get(&snapshot);
+        assert(snapshot.m_header.m_vPorigin[0] == std::stof(origin));
+        if (i % 2) assert(snapshot.m_vCell.empty());
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+    std::cout << "PASS: concurrent root changes and grid traversal publish consistent snapshots\n";
+}
 
 void checkSelectionCommand() {
     Grid grid;
@@ -58,6 +172,15 @@ void checkSelectionCommand() {
     auto upper = command;
     upper["cellIDs"][1] = "E8CDAB8967452301EFCDAB8967452321";
     send(upper, true); checkIDs();
+    console.handleJson(json{{"cmd","loadCellSelect"}, {"module","octGrid"}}.dump());
+    assert(console.reply["cmd"] == "cellSelect" && console.reply["module"] == "octGrid");
+    assert(console.reply["cellIDs"] == command["cellIDs"] && console.reply["nMaxLevel"] == 40);
+    for (const string key : {"vPorigin", "vRootCellSize"})
+        for (int i = 0; i < 3; ++i) {
+            assert(console.reply[key][i].is_string());
+            assert(std::stof(console.reply[key][i].get<string>()) == std::stof(command[key][i].get<string>()));
+        }
+    assert(!console.reply.contains("vSelectedCells")); checkIDs();
 
     // A malformed item after a valid one must not partially replace the list.
     const vector<json> badIDs = {nullptr, 7, "", string(31, '0'), string(33, '0'),
@@ -93,6 +216,8 @@ void checkSelectionCommand() {
     send(command, true);
     auto empty = command; empty["cellIDs"] = json::array();
     send(empty, true); assert(grid.selectedCells().empty());
+    console.handleJson(json{{"cmd","loadCellSelect"}, {"module","octGrid"}}.dump());
+    assert(console.reply["cmd"] == "cellSelect" && console.reply["cellIDs"].empty());
     grid.console(command, nullptr); checkIDs();
     grid.console(json{{"cmd","unrelated"}}, nullptr); checkIDs();
     std::cout << "PASS: _WSconsole selection dispatch, exact 128-bit IDs, decimal headers, stale-grid clearing, atomic validation and replies\n";
@@ -189,6 +314,22 @@ void checkSelectionConfig() {
     Grid restored;
     restored.setName("restoredGrid"); assert(restored.init(config));
     assert(restored.selectedCells().empty());
+    SelectionConsole commands;
+    commands.source(&restored);
+    const json picked = {{"cmd","octGridCellSelect"}, {"module","restoredGrid"},
+        {"vPorigin",{"100","200","300"}}, {"vRootCellSize",{"4","2","1"}}, {"cellIDs",{root,deep}}};
+    commands.handleJson(picked.dump()); // Send persists through fConfig.
+    assert(commands.reply["bSuccess"] == true);
+    Grid reopened;
+    reopened.setName("reopenedGrid"); assert(reopened.init(config));
+    assert(reopened.selectedCells().size() == 2);
+    commands.source(&reopened);
+    commands.handleJson(json{{"cmd","loadCellSelect"}, {"module","reopenedGrid"}}.dump());
+    assert(commands.reply["cmd"] == "cellSelect" && commands.reply["module"] == "reopenedGrid");
+    assert(commands.reply["cellIDs"] == picked["cellIDs"]);
+    for (const string key : {"vPorigin", "vRootCellSize"})
+        for (int i = 0; i < 3; ++i)
+            assert(std::stof(commands.reply[key][i].get<string>()) == std::stof(picked[key][i].get<string>()));
     std::filesystem::remove_all(folder);
     std::cout << "PASS: selection config file round-trip, startup restore, precise IDs/root, empty lists, validation, explicit/default paths and I/O errors\n";
 }
@@ -199,6 +340,8 @@ public:
     void buffers() { assert(m_grPt.alloc(16)); assert(m_grLn.alloc(16)); m_dTexpire = 0; }
 };
 int main(int argc, char **argv) {
+    checkGridConfigCommand();
+    checkLiveGridConfig();
     checkSelectionCommand();
     checkSelectionConfig();
     const int firstAlpha = argc > 1 ? int(std::stof(argv[1]) * 255 + .5f) : 64;
