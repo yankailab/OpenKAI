@@ -4,14 +4,8 @@ namespace kai
 {
 	_GeoFence::_GeoFence()
 	{
-		m_type = _GeoFence_polygon;
-		m_bBreach = false;
-		m_estD = 1;
-		m_hdg = 0;
-		m_rAngle = 0;
 		m_vP.set(0);
 		m_vPnext.set(0);
-		m_pJb = nullptr;
 	}
 
 	_GeoFence::~_GeoFence()

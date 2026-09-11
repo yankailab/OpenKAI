@@ -13,7 +13,6 @@ namespace kai
 	_D2G::_D2G()
 	{
 		m_type = vision_depth2Gray;
-		m_pV = nullptr;
 	}
 
 	_D2G::~_D2G()

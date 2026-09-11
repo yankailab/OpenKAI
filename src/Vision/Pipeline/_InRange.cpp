@@ -13,7 +13,6 @@ namespace kai
 	_InRange::_InRange()
 	{
 		m_type = vision_inRange;
-		m_pV = nullptr;
 		m_vL.set(0, 0, 0);
 		m_vH.set(255, 255, 255);
 	}

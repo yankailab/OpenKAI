@@ -56,8 +56,8 @@ namespace kai
 		}
 
 	protected:
-		_PointCloud* m_pPS;
-		uint64_t m_dTexpire;
+		_PointCloud* m_pPS = nullptr;
+		uint64_t m_dTexpire = 0;
 
         // transform
         vDouble3 m_vT;

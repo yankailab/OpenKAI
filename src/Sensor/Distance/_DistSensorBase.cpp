@@ -12,20 +12,7 @@ namespace kai
 
 	_DistSensorBase::_DistSensorBase()
 	{
-		m_pDiv = nullptr;
-		m_nDiv = 1;
-
-		m_fovH = 360;
-		m_fovV = 0.1;
-
-		m_dDeg = 0;
-		m_dDegInv = 0;
-
 		m_vRange.set(0, FLT_MAX);
-		m_calibScale = 1.0;
-		m_calibOffset = 0.0;
-
-		m_bReady = false;
 	}
 
 	_DistSensorBase::~_DistSensorBase()

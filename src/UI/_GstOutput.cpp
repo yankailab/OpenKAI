@@ -12,7 +12,6 @@ namespace kai
 
 	_GstOutput::_GstOutput()
 	{
-		m_gstOutput = "appsrc ! videoconvert ! fbdevsink";
 		m_vSize.set(1280, 720);
 	}
 

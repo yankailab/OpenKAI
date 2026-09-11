@@ -35,12 +35,12 @@ namespace kai
 		string getName(void);
 
 	protected:
-		string m_name;
-		bool m_bLog;
+		string m_name = "ModuleMgr";
+		bool m_bLog = true;
 
 		vector<JsonCfg> m_vJcfg;
 		vector<BASE *> m_vModules;
-		json m_jNull;
+		json m_jNull = nullptr;
 	};
 
 }

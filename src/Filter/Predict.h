@@ -20,7 +20,6 @@ namespace kai
 		Predict<T>()
 		{
 			FilterBase<T>::m_nW = 2;
-			m_kT = 1.0;
 		}
 		virtual ~Predict()
 		{
@@ -54,7 +53,7 @@ namespace kai
 		}
 
 	protected:
-		float m_kT;
+		float m_kT = 1.0;
 	};
 
 }

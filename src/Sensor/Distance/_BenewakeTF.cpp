@@ -9,7 +9,6 @@ namespace kai
 
 	_BenewakeTF::_BenewakeTF()
 	{
-		m_pIO = nullptr;
 		m_nDiv = 1;
 	}
 

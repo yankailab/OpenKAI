@@ -13,7 +13,6 @@ namespace kai
 	_HistEqualize::_HistEqualize()
 	{
 		m_type = vision_histEqualize;
-		m_pV = nullptr;
 	}
 
 	_HistEqualize::~_HistEqualize()

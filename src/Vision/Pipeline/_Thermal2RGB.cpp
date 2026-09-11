@@ -13,7 +13,6 @@ namespace kai
 	_Thermal2RGB::_Thermal2RGB()
 	{
 		m_type = vision_depth2Gray;
-		m_pV = nullptr;
 		m_vTrange.set(0, 40);
 	}
 

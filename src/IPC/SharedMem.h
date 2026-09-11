@@ -33,13 +33,13 @@ namespace kai
 		virtual bool bWriter(void);
 
 	protected:
-		string m_shmName;
-		int m_nB;
-		int m_fd;
-		void* m_pB;
-		bool m_bWriter;
+		string m_shmName = "";
+		int m_nB = 0;
+		int m_fd = 0;
+		void* m_pB = 0;
+		bool m_bWriter = true;
 
-		bool m_bOpen;
+		bool m_bOpen = false;
 
 	};
 

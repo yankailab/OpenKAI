@@ -37,11 +37,11 @@ namespace kai
 		}
 
 	protected:
-		_IMUbase* m_pIMU;
-		double m_tScaleIMU;
-		double m_tScalePC;
+		_IMUbase* m_pIMU = nullptr;
+		double m_tScaleIMU = 1e-6;
+		double m_tScalePC = 1e-6;
 
-		bool m_bTracking;
+		bool m_bTracking = false;
 
 	};
 

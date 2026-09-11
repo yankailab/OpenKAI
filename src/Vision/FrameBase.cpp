@@ -12,7 +12,6 @@ namespace kai
 
 	FrameBase::FrameBase()
 	{
-		m_tStamp = 0;
 	}
 
 	FrameBase::~FrameBase()

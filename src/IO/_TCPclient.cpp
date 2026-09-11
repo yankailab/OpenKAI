@@ -12,10 +12,6 @@ namespace kai
 
 	_TCPclient::_TCPclient()
 	{
-		m_strAddr = "";
-		m_port = 0;
-		m_bClient = true;
-		m_socket = 0;
 		m_ioType = io_tcp;
 		m_ioStatus = io_unknown;
 	}

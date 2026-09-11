@@ -40,11 +40,11 @@ namespace kai
 		}
 
 	protected:
-		_IObase *m_pIO;
+		_IObase *m_pIO = nullptr;
 		uint8_t m_rBuf[IO_BUF_N];
-		int m_nRead;
-		int m_iRead;
-		string m_msg;
+		int m_nRead = 0;
+		int m_iRead = 0;
+		string m_msg = "";
 
 		minmea_sentence_rmc m_rmc;
 		minmea_sentence_gga m_gga;

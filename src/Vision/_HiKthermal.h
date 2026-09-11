@@ -129,24 +129,24 @@ namespace kai
 		}
 
 	protected:
-		uvc_context_t *m_pCtx;
-		uvc_device_t *m_pDev;
-		uvc_device_handle_t *m_pHandleDev;
+		uvc_context_t *m_pCtx = nullptr;
+		uvc_device_t *m_pDev = nullptr;
+		uvc_device_handle_t *m_pHandleDev = nullptr;
 		uvc_stream_ctrl_t m_ctrl;
-		uvc_stream_handle_t *m_pHandleStream;
-		uvc_frame_t *m_pUVCframe;
-		uvc_frame_callback_t *m_pCB; //(uvc_frame_t* frame, void* ptr)
+		uvc_stream_handle_t *m_pHandleStream = nullptr;
+		uvc_frame_t *m_pUVCframe = nullptr;
+		uvc_frame_callback_t *m_pCB = nullptr; //(uvc_frame_t* frame, void* ptr)
 
 		int m_uvcFPS;
 		int m_uvcSize;
 		int m_uvcOffset;
 		int m_uvcLen;
-		unsigned char *m_pFptr;
+		unsigned char *m_pFptr = nullptr;
 
-		int m_streamType;
-		int m_vendorID;
-		int m_productID;
-		string m_SN;
+		int m_streamType = 2;
+		int m_vendorID = 0;
+		int m_productID = 0;
+		string m_SN = "";
 
 		/*
 		add 99-hik.rules to /etc/udev/rules.d/

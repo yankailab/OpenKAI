@@ -12,11 +12,6 @@ namespace kai
 
 	_GPS::_GPS()
 	{
-		m_pIO = nullptr;
-		m_nRead = 0;
-		m_iRead = 0;
-		m_msg = "";
-
 		m_LL.init();
 		m_UTM.init();
 	}

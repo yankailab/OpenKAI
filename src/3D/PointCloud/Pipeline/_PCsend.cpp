@@ -12,11 +12,6 @@ namespace kai
 
     _PCsend::_PCsend()
     {
-        m_pIO = nullptr;
-        m_iPsent = 0;
-        m_pB = nullptr;
-        m_nB = 256;
-        m_tInt = 100000;
     }
 
     _PCsend::~_PCsend()

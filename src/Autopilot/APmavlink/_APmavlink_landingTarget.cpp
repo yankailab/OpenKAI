@@ -5,21 +5,7 @@ namespace kai
 
 	_APmavlink_landingTarget::_APmavlink_landingTarget()
 	{
-		m_pDS = nullptr;
-		m_pU = nullptr;
-		m_vFov = 60 * DEG_2_RAD;
 		m_vPsp.set(0.5, 0.5);
-
-		m_yawRate = 30 * DEG_2_RAD;
-		m_kP = 1.0;
-		m_defaultDtgt = 2.0;
-
-		m_bHdg = false;
-		m_bHdgMoving = false;
-		m_hdgSp = 0.0;
-		m_hdgDz = 10.0;
-		m_dHdg = 0.0;
-		m_hTouchdown = 0.0;
 
 		m_lt.angle_x = 0;
 		m_lt.angle_y = 0;

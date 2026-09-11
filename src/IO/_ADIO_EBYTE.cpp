@@ -11,8 +11,6 @@ namespace kai
 {
 	_ADIO_EBYTE::_ADIO_EBYTE()
 	{
-		m_pMB = nullptr;
-		m_iID = 32;
 	}
 
 	_ADIO_EBYTE::~_ADIO_EBYTE()

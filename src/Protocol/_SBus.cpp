@@ -4,9 +4,6 @@ namespace kai
 {
 	_SBus::_SBus()
 	{
-		m_bSender = false;
-		m_bRawSbus = true;
-
 		m_frame.clear();
 	}
 

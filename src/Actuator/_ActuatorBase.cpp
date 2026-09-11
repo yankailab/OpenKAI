@@ -9,26 +9,18 @@ namespace kai
 
 	_ActuatorBase::_ActuatorBase()
 	{
-		m_ID = 0;
-		m_origin = 0;
-		m_mode = 0;
-
 		m_p.init();
 		m_s.init();
 		m_a.init();
 		m_b.init();
 		m_c.init();
 
-		m_tLastCmd = 0;
-		m_tCmdTimeout = 0;
 		m_ieCheckAlarm.init(100000);
 		m_ieReadStatus.init(50000);
 		m_ieSendCMD.init(50000);
 
 		m_bfStatus.clearAll();
 		m_bfSet.clearAll();
-
-		m_pParent = nullptr;
 	}
 
 	_ActuatorBase::~_ActuatorBase()

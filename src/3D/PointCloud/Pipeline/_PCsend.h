@@ -41,13 +41,13 @@ namespace kai
 		}
 
 	protected:
-		_IObase *m_pIO;
+		_IObase *m_pIO = nullptr;
 
-		int m_iPsent;
+		int m_iPsent = 0;
 
-		uint8_t *m_pB;
-		int m_nB;
-		uint64_t m_tInt;
+		uint8_t *m_pB = nullptr;
+		int m_nB = 256;
+		uint64_t m_tInt = 100000;
 	};
 
 }

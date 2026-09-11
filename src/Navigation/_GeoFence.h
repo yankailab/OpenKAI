@@ -44,17 +44,17 @@ namespace kai
 		}
 
 	protected:
-		_GeoFence_TYPE m_type;
-		bool m_bBreach;
+		_GeoFence_TYPE m_type = _GeoFence_polygon;
+		bool m_bBreach = false;
 
-		float m_estD;
-		float m_hdg;
-		float m_rAngle;		// reflected angle
+		float m_estD = 1;
+		float m_hdg = 0;
+		float m_rAngle = 0;		// reflected angle
 		vDouble2 m_vP;		// vehicle current position, lat, lon order
 		vDouble2 m_vPnext;	// vehicle estimated next position
 		vector<vector<double> > m_vPolygon;
 
-		_JSONbase* m_pJb;
+		_JSONbase* m_pJb = nullptr;
 	};
 
 }

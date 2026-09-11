@@ -99,21 +99,21 @@ namespace kai
 		}
 
 	protected:
-		string m_rsSN;
+		string m_rsSN = "";
 		rs2::config m_rsConfig;
 		rs2::pipeline_profile m_rsProfile;
 		rs2::pipeline m_rsPipe;
 		rs2::frame m_rsColor;
 		rs2::frame m_rsDepth;
-		rs2::align *m_rspAlign;
+		rs2::align *m_rspAlign = nullptr;
 		rs2::spatial_filter m_rsfSpat;
 		rs2::decimation_filter m_rsfDec;
 		RS_CTRL m_rsCtrl;
 
-		int m_rsFPS;
-		int m_rsDFPS;
-		bool m_bAlign;
-		string m_vPreset;
+		int m_rsFPS = 30;
+		int m_rsDFPS = 30;
+		bool m_bAlign = false;
+		string m_vPreset = "High Density";
 
 		rs2_intrinsics m_cIntrinsics;
 		rs2_intrinsics m_dIntrinsics;

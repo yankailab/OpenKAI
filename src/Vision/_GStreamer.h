@@ -33,9 +33,9 @@ namespace kai
 		}
 
 	protected:
-		string m_pipeline;
+		string m_pipeline = "";
 		VideoCapture m_gst;
-		int m_nInitRead;
+		int m_nInitRead = 1;
 	};
 
 }

@@ -27,9 +27,9 @@ namespace kai
 		}
 
 	protected:
-		string m_path;
+		string m_path = "";
 		vInt2 m_vChessBoardSize; // col, row
-		float m_squareSize;
+		float m_squareSize = 1.0;
 
 		Mat m_mC;
 		Mat m_mD;

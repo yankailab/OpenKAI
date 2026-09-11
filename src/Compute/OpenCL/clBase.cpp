@@ -5,16 +5,6 @@ namespace kai
 
     clBase::clBase()
     {
-        m_iTargetPlatformIdx = 0;
-        m_iTargetDevIdx = 0;
-        m_targetPlatformName = "";
-        m_targetDevName = "";
-
-        m_pCLcontextProps = NULL;
-        m_pCLqProp = NULL;
-
-        m_fKernel = "";
-        m_buildOpt = "";
     }
 
     clBase::~clBase()

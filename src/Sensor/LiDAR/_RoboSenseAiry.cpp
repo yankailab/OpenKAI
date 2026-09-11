@@ -9,11 +9,6 @@ namespace kai
 
     _RoboSenseAiry::_RoboSenseAiry()
     {
-        m_pTdifop = nullptr;
-        m_pUDPmsop = nullptr;
-        m_pUDPdifop = nullptr;
-
-        m_tIMU = 0;
     }
 
     _RoboSenseAiry::~_RoboSenseAiry()

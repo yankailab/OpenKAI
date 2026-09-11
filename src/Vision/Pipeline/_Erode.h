@@ -59,7 +59,7 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV;
+		_VisionBase *m_pV = nullptr;
 		Frame m_fIn;
 		vector<IMG_ERODE> m_vFilter;
 	};

@@ -42,9 +42,9 @@ namespace kai
 		}
 
 	protected:
-		_Mavlink *m_pMav;
+		_Mavlink *m_pMav = nullptr;
 
-		uint8_t m_iSeq;
+		uint8_t m_iSeq = 0;
 	};
 
 }

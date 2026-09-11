@@ -5,11 +5,6 @@ namespace kai
 
 	StateBase::StateBase()
 	{
-		m_type = state_base;
-		m_next = "";
-		m_tStamp = 0;
-		m_tTimeout = 0;
-
 		reset();
 	}
 

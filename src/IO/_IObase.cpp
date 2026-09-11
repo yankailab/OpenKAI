@@ -12,8 +12,6 @@ namespace kai
 
 	_IObase::_IObase()
 	{
-		m_ioType = io_none;
-		m_ioStatus = io_unknown;
 	}
 
 	_IObase::~_IObase()

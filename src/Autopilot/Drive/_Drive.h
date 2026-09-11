@@ -63,9 +63,9 @@ namespace kai
         }
 
     protected:
-        float m_nSpd;
-        float m_nDir;
-        float m_nStr;
+        float m_nSpd = 0.0;
+        float m_nDir = 1.0;
+        float m_nStr = 0.0;
 
         vFloat2 m_vSpdRange; // overall speed range
         vFloat2 m_vStrRange; // overall steering range

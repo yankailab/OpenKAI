@@ -9,9 +9,7 @@ namespace kai
 
 	_ZLAC8015D::_ZLAC8015D()
 	{
-		m_pMB = nullptr;
 		m_ID = 1;
-		m_iMode = 3; // speed control
 	}
 
 	_ZLAC8015D::~_ZLAC8015D()

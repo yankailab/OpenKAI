@@ -36,10 +36,10 @@ namespace kai
 		virtual void draw(void *pFrame);
 
 	protected:
-		_APmavlink_base *m_pAP;
-		_RGBDbase *m_pDV;
+		_APmavlink_base *m_pAP = nullptr;
+		_RGBDbase *m_pDV = nullptr;
 
-		int m_nROI;
+		int m_nROI = 0;
 		DEPTH_ROI m_pROI[N_DEPTH_ROI];
 	};
 

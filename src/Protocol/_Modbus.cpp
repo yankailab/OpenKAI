@@ -6,23 +6,6 @@ namespace kai
 	_Modbus::_Modbus()
 	{
 		pthread_mutex_init(&m_mutex, NULL);
-
-		m_pMb = nullptr;
-		m_type = "RTU";
-		m_bModbusDebug = false;
-		m_nErrReconnect = 0;
-
-		m_rtuPort = "";
-		m_rtuParity = 'E';
-		m_rtuBaud = 115200;
-
-		m_tcpAddr = "";
-		m_tcpPort = 0;
-
-		m_bOpen = false;
-		m_tIntervalUsec = 10000;
-		m_tOutSec = 1;
-		m_tOutUSec = 0;
 	}
 
 	_Modbus::~_Modbus()

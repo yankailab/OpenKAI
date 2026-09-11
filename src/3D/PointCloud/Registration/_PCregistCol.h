@@ -42,21 +42,21 @@ namespace kai
 		}
 
 	protected:
-		double m_maxDistance;
-		double m_rNormal;
-		int m_maxNNnormal;
-		double m_rFitness;
-		double m_rRMSE;
-		int m_maxIter;
+		double m_maxDistance = 0.1;
+		double m_rNormal = 0.2;
+		int m_maxNNnormal = 30;
+		double m_rFitness = 1e-6;
+		double m_rRMSE = 1e-6;
+		int m_maxIter = 30;
 
 		// voxel down frame buf
-		double m_rVoxel;
+		double m_rVoxel = 0.1;
 		tSwap<PointCloud> m_sPCvd; //voxel down
 
-		_PointCloud *m_pPC;
+		_PointCloud *m_pPC = nullptr;
 		RegistrationResult m_RR;
-		double m_minFit;
-		_PCtransform *m_pTf;
+		double m_minFit = 0.0;
+		_PCtransform *m_pTf = nullptr;
 	};
 
 }

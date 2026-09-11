@@ -63,8 +63,8 @@ namespace kai
 
 	protected:
 		_StateControl *m_pSC;
-		_Xbee *m_pXb;
-		_SwarmSearch *m_pSwarm;
+		_Xbee *m_pXb = nullptr;
+		_SwarmSearch *m_pSwarm = nullptr;
 		SWARM_SEARCH_STATE_NODE m_state;
 		SWARM_SEARCH_CTRL_NODE m_node;
 

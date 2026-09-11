@@ -12,8 +12,6 @@ namespace kai
 
 	_IMUbase::_IMUbase()
 	{
-		m_nIMUdqMax = 1000;
-		m_tIMUpairToleranceUs = 5000; // 5ms
 	}
 
 	_IMUbase::~_IMUbase()

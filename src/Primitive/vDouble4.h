@@ -9,17 +9,13 @@ namespace kai
 
 	struct vDouble4
 	{
-		double x;
-		double y;
-		double z;
-		double w;
+		double x = 0.0;
+		double y = 0.0;
+		double z = 0.0;
+		double w = 0.0;
 
 		vDouble4(void)
 		{
-			x = 0.0;
-			y = 0.0;
-			z = 0.0;
-			w = 0.0;
 		}
 
 		vDouble4(double v)

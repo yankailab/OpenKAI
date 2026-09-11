@@ -44,9 +44,9 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV;
-		bool m_bReady;
-		string m_fCalib;
+		_VisionBase *m_pV = nullptr;
+		bool m_bReady = false;
+		string m_fCalib = "";
 
 		// original camera matrix
 		Mat m_mC;		// Intrinsic

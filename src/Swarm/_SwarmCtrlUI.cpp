@@ -5,8 +5,6 @@ namespace kai
 
     _SwarmCtrlUI::_SwarmCtrlUI()
     {
-        m_Tr = nullptr;
-        m_pCtrl = nullptr;
         m_pSwarm = nullptr;
     }
 

@@ -56,21 +56,21 @@ namespace kai
 		uint64_t getTto(void);
 
 	protected:
-		pthread_t m_threadID;
+		pthread_t m_threadID = 0;
 		pthread_mutex_t m_wakeupMutex;
 		pthread_cond_t m_wakeupSignal;
 
-		THREAD_STATE m_setState;
-		THREAD_STATE m_state;
-		bool m_bPaused;
+		THREAD_STATE m_setState = thread_stop;
+		THREAD_STATE m_state = thread_stop;
+		bool m_bPaused = false;
 
-		uint64_t m_tFrom;
-		uint64_t m_tTo;
-		float m_targetFPS;
-		float m_targetTframe;
-		float m_dT;
-		float m_FPS;
-		bool m_bSkipSleep;
+		uint64_t m_tFrom = 0;
+		uint64_t m_tTo = 0;
+		float m_targetFPS = DEFAULT_FPS;
+		float m_targetTframe = SEC_2_USEC / m_targetFPS;
+		float m_dT = 1.0;
+		float m_FPS = 0;
+		bool m_bSkipSleep = false;
 
 		// linked
 		vector<_Thread *> m_vRunThread;

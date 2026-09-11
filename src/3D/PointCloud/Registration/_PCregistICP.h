@@ -42,13 +42,13 @@ namespace kai
 		}
 
 	protected:
-		float m_thr; // ICP threshold
-		PCREGIST_ICP_EST m_est;
-		_PointCloud *m_pSrc;
-		_PointCloud *m_pTgt;
+		float m_thr = 0.02; // ICP threshold
+		PCREGIST_ICP_EST m_est = icp_p2point;
+		_PointCloud *m_pSrc = NULL;
+		_PointCloud *m_pTgt = NULL;
 		RegistrationResult m_RR;
-		_PCtransform *m_pTf;
-		double m_lastFit;
+		_PCtransform *m_pTf = NULL;
+		double m_lastFit = 0.0;
 	};
 
 }

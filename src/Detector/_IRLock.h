@@ -55,10 +55,10 @@ namespace kai
 		}
 
 	protected:
-		_IObase *m_pIO;
+		_IObase *m_pIO = nullptr;
 		uint8_t m_pBuf[IRLOCK_N_BUF];
-		int m_iBuf;
-		vFloat2 m_vOvCamSize;
+		int m_iBuf = 0;
+		vFloat2 m_vOvCamSize = {1.0 / 319.0, 1.0 / 199.0};
 	};
 
 }

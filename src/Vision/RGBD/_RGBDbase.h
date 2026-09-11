@@ -46,24 +46,24 @@ namespace kai
 
 	protected:
 		// post processing thread
-		_Thread *m_pTpp;
-		_IMUbase* m_pIMU;
+		_Thread *m_pTpp = nullptr;
+		_IMUbase* m_pIMU = nullptr;
 
-		int m_devFPSd;
+		int m_devFPSd = 30;
 		vInt2 m_vSizeD;
 		vFloat2 m_vRangeD;
 
 		// switchs
-		bool m_bDepth;
-		bool m_bIR;
-		bool m_btRGB;
-		bool m_btDepth;
-		bool m_bConfidence;
-		float m_fConfidenceThreshold;
+		bool m_bDepth = true;
+		bool m_bIR = false;
+		bool m_btRGB = false;
+		bool m_btDepth = false;
+		bool m_bConfidence = true;
+		float m_fConfidenceThreshold = 0.0;
 
-		bool m_bIMU;
-		bool m_bPCd;   // Depth point cloud
-		bool m_bPCrgb; // RGB point cloud
+		bool m_bIMU = false;
+		bool m_bPCd = false;   // Depth point cloud
+		bool m_bPCrgb = false; // RGB point cloud
 
 #ifdef USE_OPENCV
 		Frame m_fDepth;
@@ -71,17 +71,17 @@ namespace kai
 		Frame m_fTfRGB;
 		Frame m_fIR;
 
-		float m_dScale;
-		float m_dOfs;
-		int m_nHistLev;
-		int m_iHistFrom;
-		float m_minHistD;
+		float m_dScale = 1.0;
+		float m_dOfs = 0.0;
+		int m_nHistLev = 128;
+		int m_iHistFrom = 0;
+		float m_minHistD = 0.25;
 
-		bool m_bDebugDepth;
+		bool m_bDebugDepth = 0;
 #endif
 
 #ifdef WITH_3D
-		_PointCloud *m_pPointCloud;
+		_PointCloud *m_pPointCloud = nullptr;
 #endif
 	};
 

@@ -13,7 +13,6 @@ namespace kai
     _SharedMemImg::_SharedMemImg()
     {
         m_type = vision_SharedMemImg;
-        m_matType = CV_8UC3;
     }
 
     _SharedMemImg::~_SharedMemImg()

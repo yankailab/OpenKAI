@@ -9,9 +9,6 @@ namespace kai
 
 	_ObjectArray::_ObjectArray()
 	{
-		m_pO = nullptr;
-		m_nO = 0;
-		m_nBuf = 128;
 	}
 
 	_ObjectArray::~_ObjectArray()

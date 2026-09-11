@@ -12,10 +12,6 @@ namespace kai
 
 	PID::PID()
 	{
-		m_P = 0;
-		m_I = 0;
-		m_Imax = 0;
-		m_D = 0;
 		m_vRin.set(-FLT_MAX, FLT_MAX);
 		m_vRout.set(-FLT_MAX, FLT_MAX);
 		reset();

@@ -40,13 +40,13 @@ namespace kai
 		}
 
 	protected:
-		uint16_t m_listenPort;
-		int m_nListen;
+		uint16_t m_listenPort = 8888;
+		int m_nListen = N_LISTEN;
 
-		int m_socket;
+		int m_socket = 0;
 		struct sockaddr_in m_serverAddr;
 		list<_TCPclient *> m_lClient;
-		unsigned int m_nSocket;
+		unsigned int m_nSocket = N_SOCKET;
 	};
 
 }

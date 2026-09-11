@@ -9,29 +9,6 @@ namespace kai
 
 	_LeddarVu::_LeddarVu()
 	{
-		m_pMb = nullptr;
-		m_port = "";
-		m_baud = 115200;
-		m_slaveAddr = 1;
-		m_bUse0x41 = false;
-		m_showOriginOffsetX = 0.5;
-		m_showOriginOffsetY = 0.5;
-
-		m_nDetection = 0;
-		m_lightSrcPwr = 0;
-
-		m_nAccumulationsExpo = 5;
-		m_nOversamplingsExpo = 1;
-		m_lightSrcPwr = 100;
-		m_nPoint = 18;
-		m_bAutoLightSrcPwr = false;
-		m_bDemergeObj = true;
-		m_bStaticNoiseRemoval = true;
-		m_bPrecision = true;
-		m_bSaturationCompensation = true;
-		m_bOvershootManagement = true;
-		m_oprMode = 1;
-
 		m_nDiv = 8;
 	}
 

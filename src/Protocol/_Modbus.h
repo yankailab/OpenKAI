@@ -38,24 +38,24 @@ namespace kai
 		}
 
 	protected:
-		modbus_t *m_pMb;
-		string m_type; // "RTU", "TCP"
-		bool m_bModbusDebug;
-		int m_nErrReconnect;	// reconnect on n-th error
+		modbus_t *m_pMb = nullptr;
+		string m_type = "RTU"; // "RTU", "TCP"
+		bool m_bModbusDebug = false;
+		int m_nErrReconnect = 0;	// reconnect on n-th error
 		int m_iErr;
 
 		// RTU
-		string m_rtuPort;
-		string m_rtuParity;
-		int m_rtuBaud;
+		string m_rtuPort = "";
+		string m_rtuParity = "E";
+		int m_rtuBaud = 115200;
 		// TCP
-		string m_tcpAddr;
-		int m_tcpPort;
+		string m_tcpAddr = "";
+		int m_tcpPort = 0;
 
-		bool m_bOpen;
-		uint64_t m_tIntervalUsec;
-		uint32_t m_tOutSec;
-		uint32_t m_tOutUSec;
+		bool m_bOpen = false;
+		uint64_t m_tIntervalUsec = 10000;
+		uint32_t m_tOutSec = 1;
+		uint32_t m_tOutUSec = 0;
 
 		pthread_mutex_t m_mutex;
 	};

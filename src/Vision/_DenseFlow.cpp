@@ -12,15 +12,8 @@ namespace kai
 
 	_DenseFlow::_DenseFlow()
 	{
-		m_pV = nullptr;
 		//		m_pGrayFrames = nullptr;
-		m_w = 640;
-		m_h = 480;
 
-		m_nHistLev = 128;
-		m_vRange.x = 0.0;
-		m_vRange.y = 1.0;
-		m_minHistD = 0.25;
 	}
 
 	_DenseFlow::~_DenseFlow()

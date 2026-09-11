@@ -5,9 +5,6 @@ namespace kai
 
     _SwarmCtrl::_SwarmCtrl()
     {
-        m_pXb = nullptr;
-        m_pSwarm = nullptr;
-
         m_ieSendHB.init(USEC_1SEC);
         m_ieSendSetState.init(USEC_1SEC);
         m_ieSendGCupdate.init(USEC_1SEC);

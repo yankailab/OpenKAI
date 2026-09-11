@@ -66,12 +66,12 @@ namespace kai
 		}
 
 	protected:
-		_Universe *m_pU;
-		_TrackerBase *m_pTracker;
+		_Universe *m_pU = nullptr;
+		_TrackerBase *m_pTracker = nullptr;
 		TIME_OUT m_tOutTargetNotFound;
-		bool m_bTarget;
+		bool m_bTarget = false;
 		vFloat4 m_vTargetBB;
-		int m_iClass;
+		int m_iClass = -1;
 
 		// Target detection pos filter
 		FOLLOW_TARGET_FILT m_fX;
@@ -84,12 +84,12 @@ namespace kai
 		vFloat4 m_vPvar; // variable in pitch, roll, alt, yaw (NEDH)
 		vFloat4 m_vPsp;	 // correspondent set point
 		vFloat4 m_vSpd;	 // PID output that goes into speed ctrl
-		uint64_t m_tLastPIDupdate;
+		uint64_t m_tLastPIDupdate = 0;
 
-		PID *m_pPitch;
-		PID *m_pRoll;
-		PID *m_pAlt;
-		PID *m_pYaw;
+		PID *m_pPitch = nullptr;
+		PID *m_pRoll = nullptr;
+		PID *m_pAlt = nullptr;
+		PID *m_pYaw = nullptr;
 
 		// Gimbal mount
 		AP_MOUNT m_apMount;

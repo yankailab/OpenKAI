@@ -6,8 +6,6 @@ namespace kai
 
 	JsonCfg::JsonCfg(void)
 	{
-		m_jsonStr = "";
-		m_nDumpSpace = 4;
 	}
 
 	JsonCfg::~JsonCfg(void)

@@ -12,9 +12,6 @@ namespace kai
 
 	_ArUco::_ArUco()
 	{
-		m_dict = aruco::DICT_4X4_50; // aruco::DICT_APRILTAG_16h5;
-		m_realSize = 0.05;
-		m_bPose = false;
 	}
 
 	_ArUco::~_ArUco()

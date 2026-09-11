@@ -33,8 +33,8 @@ namespace kai
 		}
 
 	protected:
-		int m_nP;
-		double m_r;
+		int m_nP = 16;
+		double m_r = 0.05;
 	};
 
 }

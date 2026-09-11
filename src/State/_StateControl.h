@@ -46,7 +46,7 @@ namespace kai
 
 	protected:
 		vector<StateBase *> m_vpState;
-		int m_iS; // current state
+		int m_iS = 0; // current state
 	};
 
 }

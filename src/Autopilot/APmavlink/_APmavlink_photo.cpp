@@ -5,11 +5,6 @@ namespace kai
 
 	_APmavlink_photo::_APmavlink_photo()
 	{
-		m_pAP = nullptr;
-		m_dir = "/home/";
-		m_subDir = "";
-		m_exifConfig = "";
-		m_iTake = 0;
 	}
 
 	_APmavlink_photo::~_APmavlink_photo()

@@ -33,9 +33,9 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV;
-		double m_alpha;
-		double m_beta;
+		_VisionBase *m_pV = nullptr;
+		double m_alpha = 1.0;
+		double m_beta = 0.0;
 	};
 
 }

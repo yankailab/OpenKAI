@@ -4,8 +4,6 @@ namespace kai
 {
 	_PWMio::_PWMio()
 	{
-		m_nCr = 8;
-		m_nCw = 8;
 	}
 
 	_PWMio::~_PWMio()

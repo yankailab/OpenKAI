@@ -149,17 +149,17 @@ namespace kai
 		}
 
 	protected:
-		int m_ID;
-		float m_origin;
-		int m_mode;
+		int m_ID = 0;
+		float m_origin = 0;
+		int m_mode = 0;
 		ACTUATOR_V m_p; // pos
 		ACTUATOR_V m_s; // speed
 		ACTUATOR_V m_a; // accel
 		ACTUATOR_V m_b; // brake
 		ACTUATOR_V m_c; // current
 
-		uint64_t m_tLastCmd;
-		uint64_t m_tCmdTimeout;
+		uint64_t m_tLastCmd = 0;
+		uint64_t m_tCmdTimeout = 0;
 		INTERVAL_EVENT m_ieCheckAlarm;
 		INTERVAL_EVENT m_ieReadStatus;
 		INTERVAL_EVENT m_ieSendCMD;
@@ -167,7 +167,7 @@ namespace kai
 		BIT_FLAG m_bfStatus;
 		BIT_FLAG m_bfSet;
 
-		_ActuatorBase *m_pParent;
+		_ActuatorBase *m_pParent = nullptr;
 	};
 
 }

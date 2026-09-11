@@ -28,22 +28,22 @@ namespace kai
 		virtual bool setupKernel(void);
 
 	protected:
-		int m_iTargetPlatformIdx;
-		int m_iTargetDevIdx;
+		int m_iTargetPlatformIdx = 0;
+		int m_iTargetDevIdx = 0;
 
-		string m_targetPlatformName;
-		string m_targetDevName;
+		string m_targetPlatformName = "";
+		string m_targetDevName = "";
 
 		cl_device_id m_clDev;
 
 		cl_context m_clContext;
-		cl_context_properties* m_pCLcontextProps;
-  		cl_queue_properties* m_pCLqProp;
+		cl_context_properties* m_pCLcontextProps = NULL;
+		cl_queue_properties* m_pCLqProp = NULL;
 
 		cl_command_queue m_clCmdQ;
 
-		string m_fKernel;
-		string m_buildOpt;
+		string m_fKernel = "";
+		string m_buildOpt = "";
 		string m_kName;
 		cl_program m_clProgram;
 		cl_kernel m_clKernel;

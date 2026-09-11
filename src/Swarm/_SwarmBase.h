@@ -223,7 +223,7 @@ namespace kai
 	protected:
 		vector<SWARM_NODE> m_vNodes;
 
-		uint64_t m_tExpire;
+		uint64_t m_tExpire = 0;
 	};
 
 }

@@ -12,28 +12,7 @@ namespace kai
 
 	_Lane::_Lane()
 	{
-		m_pV = nullptr;
-
-		m_vRoiLT.x = 0.2;
-		m_vRoiLT.y = 0.5;
-		m_vRoiLB.x = 0.0;
-		m_vRoiLB.y = 1.0;
-		m_vRoiRT.x = 0.8;
-		m_vRoiRT.y = 0.5;
-		m_vRoiRB.x = 1.0;
-		m_vRoiRB.y = 1.0;
-
-		m_sizeOverhead.x = 400;
-		m_sizeOverhead.y = 300;
 		m_vSize.clear();
-		m_binMed = 3;
-
-		m_nFilter = 0;
-		m_nLane = 0;
-		m_ppPoint = NULL;
-		m_pNp = NULL;
-		m_bDrawOverhead = false;
-		m_bDrawFilter = false;
 	}
 
 	_Lane::~_Lane()

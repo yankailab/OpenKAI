@@ -12,8 +12,6 @@ namespace kai
 
 	_Mask::_Mask()
 	{
-		m_pV = nullptr;
-		m_pVmask = nullptr;
 	}
 
 	_Mask::~_Mask()

@@ -37,8 +37,8 @@ namespace kai
 		Frame m_F;
 		vInt2 m_vSize;
 
-		int m_waitKey;
-		bool m_bFullScreen;
+		int m_waitKey = 30;
+		bool m_bFullScreen = false;
 	};
 
 }

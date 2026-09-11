@@ -13,18 +13,6 @@ namespace kai
 	_Thread::_Thread()
 	{
 		m_class = "_Thread";
-		m_threadID = 0;
-		m_dT = 1.0;
-		m_FPS = 0;
-		m_targetFPS = DEFAULT_FPS;
-		m_targetTframe = SEC_2_USEC / m_targetFPS;
-		m_tFrom = 0;
-		m_tTo = 0;
-
-		m_state = thread_stop;
-		m_setState = thread_stop;
-		m_bPaused = false;
-		m_bSkipSleep = false;
 
 		pthread_mutex_init(&m_wakeupMutex, NULL);
 		pthread_cond_init(&m_wakeupSignal, NULL);

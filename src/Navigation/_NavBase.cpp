@@ -12,7 +12,6 @@ namespace kai
 
 	_NavBase::_NavBase()
 	{
-		m_scale = 1.0;
 		m_flag.clearAll();
 		m_vAxisIdx.set(0, 1, 2);
 		m_vRoffset.clear();

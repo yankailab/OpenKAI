@@ -13,8 +13,6 @@ namespace kai
 	_GStreamer::_GStreamer()
 	{
 		m_type = vision_gstreamer;
-		m_pipeline = "";
-		m_nInitRead = 1;
 	}
 
 	_GStreamer::~_GStreamer()

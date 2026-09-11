@@ -13,7 +13,6 @@ namespace kai
 	_Invert::_Invert()
 	{
 		m_type = vision_invert;
-		m_pV = nullptr;
 	}
 
 	_Invert::~_Invert()

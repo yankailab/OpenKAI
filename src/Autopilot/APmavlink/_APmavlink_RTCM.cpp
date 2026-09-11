@@ -5,8 +5,6 @@ namespace kai
 
 	_APmavlink_RTCM::_APmavlink_RTCM()
 	{
-		m_pMav = nullptr;
-		m_iSeq = 0;
 	}
 
 	_APmavlink_RTCM::~_APmavlink_RTCM()

@@ -5,20 +5,6 @@ namespace kai
 
 	_Mavlink::_Mavlink()
 	{
-		m_pIO = nullptr;
-
-		m_mySystemID = 255;
-		m_myComponentID = MAV_COMP_ID_MISSIONPLANNER;
-		m_myType = MAV_TYPE_GCS;
-
-		m_devSystemID = -1;
-		m_devComponentID = -1;
-		m_devType = 0;
-
-		m_nRead = 0;
-		m_iRead = 0;
-		m_iMavComm = MAVLINK_COMM_0;
-
 		// msg register
 		m_vpMsg.push_back(&m_attitude);
 		m_vpMsg.push_back(&m_attitudeQuaternion);

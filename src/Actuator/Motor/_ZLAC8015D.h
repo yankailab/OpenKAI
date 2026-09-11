@@ -49,8 +49,8 @@ namespace kai
 		}
 
 	protected:
-		_Modbus *m_pMB;
-		int m_iMode;
+		_Modbus *m_pMB = nullptr;
+		int m_iMode = 3; // speed control
 	};
 
 }

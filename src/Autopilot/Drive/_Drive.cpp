@@ -5,10 +5,6 @@ namespace kai
 
     _Drive::_Drive()
     {
-        m_nSpd = 0.0;
-        m_nDir = 1.0;
-        m_nStr = 0.0;
-
         m_vSpdRange.set(-1.0, 1.0);
         m_vStrRange.set(-1.0, 1.0);
     }

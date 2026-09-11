@@ -13,7 +13,6 @@ namespace kai
 	_Resize::_Resize()
 	{
 		m_type = vision_resize;
-		m_pV = nullptr;
 	}
 
 	_Resize::~_Resize()

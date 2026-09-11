@@ -7,9 +7,6 @@ namespace kai
 
 	ModuleMgr::ModuleMgr(void)
 	{
-		m_name = "ModuleMgr";
-		m_bLog = true;
-		m_jNull = nullptr;
 	}
 
 	ModuleMgr::~ModuleMgr(void)

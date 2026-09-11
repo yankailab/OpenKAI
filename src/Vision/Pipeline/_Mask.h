@@ -33,8 +33,8 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV;
-		_VisionBase *m_pVmask;
+		_VisionBase *m_pV = nullptr;
+		_VisionBase *m_pVmask = nullptr;
 
 		Frame m_fIn;
 		Frame m_fMask;

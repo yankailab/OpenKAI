@@ -12,7 +12,6 @@ namespace kai
 
     _GeometryBase::_GeometryBase()
     {
-        m_type = geometry_unknown;
     }
 
     _GeometryBase::~_GeometryBase()

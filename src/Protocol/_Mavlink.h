@@ -37,11 +37,6 @@ namespace kai
 	public:
 		MavMsgBase()
 		{
-			m_id = 0x7fffffff;
-			m_tStamp = 0;
-			m_tActualInterval = LONG_MAX;
-			m_tIntervalDelayAllowed = 1000;
-			m_tInterval = -1;
 		};
 
 		virtual ~MavMsgBase(void) {};
@@ -109,11 +104,11 @@ namespace kai
 		}
 
 	public:
-		uint32_t m_id;
-		uint64_t m_tStamp;
-		int64_t m_tActualInterval;
-		int m_tIntervalDelayAllowed;
-		int64_t m_tInterval;
+		uint32_t m_id = 0x7fffffff;
+		uint64_t m_tStamp = 0;
+		int64_t m_tActualInterval = LONG_MAX;
+		int m_tIntervalDelayAllowed = 1000;
+		int64_t m_tInterval = -1;
 
 		vector<MavCallback> m_vCbRecv;
 	};
@@ -633,7 +628,13 @@ namespace kai
 	{
 	public:
 		mavlink_rc_channels_t m_msg;
-		uint16_t *m_pChan[19];
+		uint16_t *m_pChan[19] = {
+			NULL, &m_msg.chan1_raw, &m_msg.chan2_raw, &m_msg.chan3_raw,
+			&m_msg.chan4_raw, &m_msg.chan5_raw, &m_msg.chan6_raw, &m_msg.chan7_raw,
+			&m_msg.chan8_raw, &m_msg.chan9_raw, &m_msg.chan10_raw, &m_msg.chan11_raw,
+			&m_msg.chan12_raw, &m_msg.chan13_raw, &m_msg.chan14_raw, &m_msg.chan15_raw,
+			&m_msg.chan16_raw, &m_msg.chan17_raw, &m_msg.chan18_raw
+		};
 
 		MavRcChannels()
 		{
@@ -659,26 +660,6 @@ namespace kai
 			m_msg.chan17_raw = UINT16_MAX;
 			m_msg.chan18_raw = UINT16_MAX;
 			m_msg.rssi = 255;
-
-			m_pChan[0] = NULL;
-			m_pChan[1] = &m_msg.chan1_raw;
-			m_pChan[2] = &m_msg.chan2_raw;
-			m_pChan[3] = &m_msg.chan3_raw;
-			m_pChan[4] = &m_msg.chan4_raw;
-			m_pChan[5] = &m_msg.chan5_raw;
-			m_pChan[6] = &m_msg.chan6_raw;
-			m_pChan[7] = &m_msg.chan7_raw;
-			m_pChan[8] = &m_msg.chan8_raw;
-			m_pChan[9] = &m_msg.chan9_raw;
-			m_pChan[10] = &m_msg.chan10_raw;
-			m_pChan[11] = &m_msg.chan11_raw;
-			m_pChan[12] = &m_msg.chan12_raw;
-			m_pChan[13] = &m_msg.chan13_raw;
-			m_pChan[14] = &m_msg.chan14_raw;
-			m_pChan[15] = &m_msg.chan15_raw;
-			m_pChan[16] = &m_msg.chan16_raw;
-			m_pChan[17] = &m_msg.chan17_raw;
-			m_pChan[18] = &m_msg.chan18_raw;
 		}
 
 		void decode(mavlink_message_t *pM)
@@ -1003,18 +984,18 @@ namespace kai
 		vector<MavMsgBase *> m_vpMsg;
 
 	protected:
-		_IObase *m_pIO;
-		int m_mySystemID;
-		int m_myComponentID;
-		int m_myType;
-		int m_devSystemID;
-		int m_devComponentID;
-		int m_devType;
+		_IObase *m_pIO = nullptr;
+		int m_mySystemID = 255;
+		int m_myComponentID = MAV_COMP_ID_MISSIONPLANNER;
+		int m_myType = MAV_TYPE_GCS;
+		int m_devSystemID = -1;
+		int m_devComponentID = -1;
+		int m_devType = 0;
 
 		uint8_t m_rBuf[MAV_N_BUF];
-		int m_nRead;
-		int m_iRead;
-		uint8_t m_iMavComm;	// Mavlink decode channel index
+		int m_nRead = 0;
+		int m_iRead = 0;
+		uint8_t m_iMavComm = MAVLINK_COMM_0;	// Mavlink decode channel index
 		mavlink_status_t m_status;
 
 		vector<MAVLINK_PEER> m_vPeer;

@@ -13,13 +13,7 @@ namespace kai
 	_GeometryViewerBase::_GeometryViewerBase()
 	{
 		m_vWinSize.set(1280, 720);
-		m_bFullScreen = false;
-		m_dirSave = "";
 		m_vCoR.set(0, 0, 0);
-
-		m_dTexpire = 0;
-		m_nPbuf = 200000;
-		m_nLbuf = 100000;
 	}
 
 	_GeometryViewerBase::~_GeometryViewerBase()

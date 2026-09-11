@@ -11,7 +11,6 @@ namespace kai
 {
 	_IsingBase::_IsingBase()
 	{
-		m_fName = "";
 		clear();
 	}
 

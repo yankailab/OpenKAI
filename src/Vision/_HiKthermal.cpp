@@ -13,19 +13,6 @@ namespace kai
 	_HiKthermal::_HiKthermal()
 	{
 		m_type = vision_uvc;
-
-		m_pCtx = nullptr;
-		m_pDev = nullptr;
-		m_pHandleDev = nullptr;
-		m_pHandleStream = nullptr;
-		m_pUVCframe = nullptr;
-		m_pCB = nullptr;
-		m_pFptr = nullptr;
-
-		m_streamType = 2;
-		m_vendorID = 0;
-		m_productID = 0;
-		m_SN = "";
 	}
 
 	_HiKthermal::~_HiKthermal()

@@ -41,8 +41,8 @@ namespace kai
 		}
 
 	protected:
-		_Modbus *m_pMB;
-		int m_iID;
+		_Modbus *m_pMB = nullptr;
+		int m_iID = 32;
 	};
 
 }

@@ -138,10 +138,10 @@ namespace kai
 		}
 
 	protected:
-		int m_xdDevType;
-		int m_xdProductType;
+		int m_xdDevType = XDYN_DEV_TYPE_TOF_RGB;
+		int m_xdProductType = XDYN_PRODUCT_TYPE_XD_400;
 		XdynCamInfo_t m_xdCamInfo;
-		XDYN_Streamer *m_pXDstream;
+		XDYN_Streamer *m_pXDstream = NULL;
 		XDctrl m_xdCtrl;
 		XDhdl m_xdHDL;
 

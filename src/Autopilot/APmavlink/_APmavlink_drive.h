@@ -59,17 +59,17 @@ namespace kai
 		uint8_t m_iRCsteer = 1;
 		uint8_t m_iRCthrottle = 3;
 
-		AP_DRIVE_BTN m_btnPressed;
-		uint64_t m_tLastBtn;
-		uint64_t m_tOutBtn; // time out in usec for the m_btnPressed to be set to apDrive_btnNone, defaults to 100ms
+		AP_DRIVE_BTN m_btnPressed = apDrive_btnNone;
+		uint64_t m_tLastBtn = 0;
+		uint64_t m_tOutBtn = 100000; // time out in usec for the m_btnPressed to be set to apDrive_btnNone, defaults to 100ms
 
-		AP_DRIVE_MODE m_dMode;
+		AP_DRIVE_MODE m_dMode = apDrive_modeStandby;
 		int m_apModeMove = AP_ROVER_MANUAL;
-		_GeoFence *m_pGfence;
-		_OctreeGrid *m_pOctGrid;
-		float m_octGridOccu;
-		float m_speedGo;
-		float m_steerTurn;
+		_GeoFence *m_pGfence = nullptr;
+		_OctreeGrid *m_pOctGrid = nullptr;
+		float m_octGridOccu = 1;
+		float m_speedGo = 0.2;
+		float m_steerTurn = 0.2;
 	};
 
 }

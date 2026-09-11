@@ -41,17 +41,17 @@ namespace kai
 		}
 
 	protected:
-		int m_w;
-		int m_h;
-		_VisionBase *m_pV;
+		int m_w = 640;
+		int m_h = 480;
+		_VisionBase *m_pV = nullptr;
 //		FrameGroup *m_pGrayFrames;
 		Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
 		GpuMat m_gFlow;
 		Mat m_pFlow[2];
 
-		int m_nHistLev;
-		vDouble2 m_vRange;
-		double m_minHistD;
+		int m_nHistLev = 128;
+		vDouble2 m_vRange = {0.0, 1.0};
+		double m_minHistD = 0.25;
 	};
 
 }

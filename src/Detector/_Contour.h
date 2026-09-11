@@ -34,8 +34,8 @@ namespace kai
 		}
 
 	protected:
-		int m_mode;
-		int m_method;
+		int m_mode = RETR_EXTERNAL;
+		int m_method = CHAIN_APPROX_NONE;
 	};
 
 }

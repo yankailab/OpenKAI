@@ -5,24 +5,15 @@ namespace kai
 
 	_APmavlink_base::_APmavlink_base()
 	{
-		m_pMav = nullptr;
-		m_apType = ardupilot_copter;
-
-		m_bHomeSet = false;
 		m_vHomePos.set(0.0);
 		m_vGlobalPos.set(0.0);
 		m_vLocalPos.clear();
 		m_vSpeed.clear();
 		m_vAtti.clear();
-		m_apHdg = 0.0;
-		m_battery = 0.0;
-		m_gpsFixType = -1;
-		m_gpsHacc = INT32_MAX;
 
 		m_ieSendHB.init(USEC_1SEC);
 		m_ieSendMsgInt.init(USEC_1SEC);
 
-		m_bSyncMode = false;
 		m_wrApMode.init(-1, -1);
 		m_wrbArm.init(false, false);
 	}

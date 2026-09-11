@@ -12,36 +12,8 @@ namespace kai
 
 	_RGBDbase::_RGBDbase()
 	{
-		m_pTpp = nullptr;
-		m_pIMU = nullptr;
-
-		m_devFPSd = 30;
 		m_vSizeD.set(1280, 720);
 		m_vRangeD.set(0, FLT_MAX);
-
-		m_bDepth = true;
-		m_bIR = false;
-		m_btRGB = false;
-		m_btDepth = false;
-		m_bConfidence = true;
-		m_fConfidenceThreshold = 0.0;
-
-		m_bIMU = false;
-		m_bPCd = false;
-		m_bPCrgb = false;
-
-#ifdef USE_OPENCV
-		m_dScale = 1.0;
-		m_dOfs = 0.0;
-		m_nHistLev = 128;
-		m_iHistFrom = 0;
-		m_minHistD = 0.25;
-		m_bDebugDepth = 0;
-#endif
-
-#ifdef WITH_3D
-		m_pPointCloud = nullptr;
-#endif
 	}
 
 	_RGBDbase::~_RGBDbase()

@@ -36,17 +36,17 @@ namespace kai
 
 	protected:
 		// input
-		_VisionBase *m_pV;
+		_VisionBase *m_pV = nullptr;
 
 		// data
 		Frame m_fRGB;
-		_Universe *m_pU;
+		_Universe *m_pU = nullptr;
 
 		// model
-		string m_fModel;
-		string m_fWeight;
-		string m_fMean;
-		string m_fClass;
+		string m_fModel = "";
+		string m_fWeight = "";
+		string m_fMean = "";
+		string m_fClass = "";
 		vector<string> m_vClass;
 	};
 

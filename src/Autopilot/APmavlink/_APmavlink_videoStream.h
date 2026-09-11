@@ -33,18 +33,18 @@ namespace kai
 		}
 
 	protected:
-		_APmavlink_base *m_pAP;
-		_Uploader* m_pCurl;
-		string m_fName;
-		string m_process;
-		string m_dir;
+		_APmavlink_base *m_pAP = NULL;
+		_Uploader* m_pCurl = NULL;
+		string m_fName = "";
+		string m_process = "";
+		string m_dir = "";
 
-		int m_iWP;
+		int m_iWP = INT_MAX;
 		vector<int> m_vWP;
 
-		int m_gstPID;
-		uint64_t m_tVidInt;
-		uint64_t m_tRecStart;
+		int m_gstPID = 0;
+		uint64_t m_tVidInt = 10;
+		uint64_t m_tRecStart = 0;
 	};
 
 }

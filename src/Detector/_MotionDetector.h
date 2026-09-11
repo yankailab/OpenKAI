@@ -35,10 +35,10 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pVision;
-		string m_algorithm;
+		_VisionBase *m_pVision = NULL;
+		string m_algorithm = "";
 		cv::Ptr<cv::BackgroundSubtractor> m_pBS;
-		double m_learningRate;
+		double m_learningRate = -1;
 		Mat m_mFG;
 	};
 

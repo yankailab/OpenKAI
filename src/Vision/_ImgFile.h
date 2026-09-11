@@ -32,7 +32,7 @@ namespace kai
 		}
 
 	protected:
-		string m_file;
+		string m_file = "";
 	};
 
 }

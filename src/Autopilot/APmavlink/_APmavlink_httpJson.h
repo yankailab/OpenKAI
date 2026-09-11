@@ -29,10 +29,10 @@ namespace kai
 		}
 
 	protected:
-		_APmavlink_base *m_pAP;
+		_APmavlink_base *m_pAP = nullptr;
 
 		HttpClient m_httpC;
-		string m_url;
+		string m_url = "";
 	};
 
 }

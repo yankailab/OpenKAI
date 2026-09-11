@@ -60,17 +60,17 @@ namespace kai
 
 	protected:
 		cv::dnn::Net m_net;
-		int m_nW;
-		int m_nH;
-		bool m_bSwapRB;
-		float m_scale;
+		int m_nW = 654;
+		int m_nH = 368;
+		bool m_bSwapRB = false;
+		float m_scale = 1.0 / 255.0;
 		vInt3 m_vMean;
-		float m_thr;
+		float m_thr = 0.01;
 		Mat m_blob;
 		vector<string> m_vLayerName;
 
-		int m_iBackend;
-		int m_iTarget;
+		int m_iBackend = dnn::DNN_BACKEND_OPENCV;
+		int m_iTarget = dnn::DNN_TARGET_CPU;
 
 		Mat m_mDebug;
 	};

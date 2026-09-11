@@ -6,9 +6,6 @@ namespace kai
 	_File::_File(void)
 	{
 		m_ioType = io_file;
-		m_name = "";
-		m_buf = "";
-		m_iByte = 0;
 		m_ioStatus = io_closed;
 	}
 

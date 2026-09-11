@@ -12,17 +12,6 @@ namespace kai
 
 	_Scepter::_Scepter()
 	{
-		m_nDevice = 0;
-		m_pScDevListInfo = nullptr;
-		m_scDevHandle = 0;
-
-		m_scfRGB = {0};
-		m_scfDepth = {0};
-		m_scfTransformedRGB = {0};
-		m_scfTransformedDepth = {0};
-		m_scfIR = {0};
-
-		m_pScVw = NULL;
 	}
 
 	_Scepter::~_Scepter()

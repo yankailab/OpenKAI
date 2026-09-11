@@ -27,10 +27,10 @@ namespace kai
 		bool readAll(string *pStr);
 
 	protected:
-		string m_name;
-		string m_buf;
+		string m_name = "";
+		string m_buf = "";
 		fstream m_file;
-		int m_iByte;
+		int m_iByte = 0;
 	};
 
 }

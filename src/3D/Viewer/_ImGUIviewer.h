@@ -151,26 +151,26 @@ namespace kai
 		OCTGRID_CELLS m_cells;
 		int m_nCbuf = 100000;
 
-		ImGUIviewerBackend *m_pBackend;
-		ImGUIviewerGLRenderer *m_pGLRenderer;
-		_Thread *m_pTui;
+		ImGUIviewerBackend *m_pBackend = nullptr;
+		ImGUIviewerGLRenderer *m_pGLRenderer = nullptr;
+		_Thread *m_pTui = nullptr;
 		pthread_mutex_t m_snapshotMutex;
 
-		bool m_bShowPanel;
-		bool m_bShowGrid;
-		bool m_bAutoBound;
-		float m_sMove;
-		float m_sOrbit;
-		float m_sZoom;
-		float m_pointScale;
-		float m_lineScale;
+		bool m_bShowPanel = true;
+		bool m_bShowGrid = true;
+		bool m_bAutoBound = true;
+		float m_sMove = 0.01;
+		float m_sOrbit = 0.008;
+		float m_sZoom = 0.1;
+		float m_pointScale = 1.0;
+		float m_lineScale = 1.0;
 		vFloat4 m_vBgCol;
 
-		bool m_bGpuRender;
-		unsigned long long m_snapshotVersion;
-		size_t m_nDrawObjects;
-		size_t m_nDrawPoints;
-		size_t m_nDrawLines;
+		bool m_bGpuRender = true;
+		unsigned long long m_snapshotVersion = 0;
+		size_t m_nDrawObjects = 0;
+		size_t m_nDrawPoints = 0;
+		size_t m_nDrawLines = 0;
 		vFloat2 m_vGLCanvasPos;
 		vFloat2 m_vGLCanvasSize;
 	};

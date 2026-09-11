@@ -9,11 +9,6 @@ namespace kai
 
 	_Feetech::_Feetech()
 	{
-		m_port = "";
-		m_baud = 115200;
-		m_bOpen = false;
-		m_ID = 1;
-		m_pA = nullptr;
 		m_ieReadStatus.init(50000);
 	}
 

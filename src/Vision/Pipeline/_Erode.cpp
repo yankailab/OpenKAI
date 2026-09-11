@@ -13,7 +13,6 @@ namespace kai
 	_Erode::_Erode()
 	{
 		m_type = vision_erode;
-		m_pV = nullptr;
 	}
 
 	_Erode::~_Erode()

@@ -127,9 +127,9 @@ namespace kai
 		void delComment(string *pStr);
 
 	protected:
-		string m_jsonStr;
+		string m_jsonStr = "";
 		json m_json;
-		int m_nDumpSpace;
+		int m_nDumpSpace = 4;
 	};
 
 }

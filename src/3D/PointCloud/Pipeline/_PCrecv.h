@@ -41,12 +41,12 @@ namespace kai
 		}
 
 	protected:
-		_IObase *m_pIO;
-		uint64_t m_nCMDrecv;
+		_IObase *m_pIO = nullptr;
+		uint64_t m_nCMDrecv = 0;
 
 		uint8_t m_pBuf[PC_N_BUF];
-		int m_nRead;
-		int m_iRead;
+		int m_nRead = 0;
+		int m_iRead = 0;
 	};
 
 }

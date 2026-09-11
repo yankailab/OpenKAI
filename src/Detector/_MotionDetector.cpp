@@ -12,9 +12,6 @@ namespace kai
 
 	_MotionDetector::_MotionDetector()
 	{
-		m_pVision = NULL;
-		m_algorithm = "";
-		m_learningRate = -1;
 	}
 
 	_MotionDetector::~_MotionDetector()

@@ -117,14 +117,14 @@ namespace kai
 		}
 
 	protected:
-		_Thread *m_pTdifop;
+		_Thread *m_pTdifop = nullptr;
 
-		_UDP *m_pUDPmsop;
-		_UDP *m_pUDPdifop;
+		_UDP *m_pUDPmsop = nullptr;
+		_UDP *m_pUDPdifop = nullptr;
 
 		// IMU
 		SF m_SF;
-		uint64_t m_tIMU;
+		uint64_t m_tIMU = 0;
 	};
 
 }

@@ -12,11 +12,6 @@ namespace kai
 
 	_LCalign::_LCalign()
 	{
-		m_pPCin = nullptr;
-		m_pV = nullptr;
-		m_pIMU = nullptr;
-		m_fName = "";
-
 		m_vCsize.set(640, 480);
 		m_vCf.set(200.0, 200.0);
 		m_vCc.set(320, 240);

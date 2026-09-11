@@ -45,10 +45,10 @@ namespace kai
 		}
 
 	protected:
-		uint8_t m_nCr;
+		uint8_t m_nCr = 8;
 		RC_CHANNEL m_pCr[PWMIO_N_CHAN];
 
-		uint8_t m_nCw;
+		uint8_t m_nCw = 8;
 		RC_CHANNEL m_pCw[PWMIO_N_CHAN];
 	};
 

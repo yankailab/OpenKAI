@@ -48,12 +48,12 @@ namespace kai
 		}
 
 	protected:
-		string m_port;
-		int m_baud;
-		bool m_bOpen;
+		string m_port = "";
+		int m_baud = 115200;
+		bool m_bOpen = false;
 		SMSBL m_servo;
-		uint8_t m_ID;
-		ACTUATOR_AXIS *m_pA;
+		uint8_t m_ID = 1;
+		ACTUATOR_AXIS *m_pA = nullptr;
 
 		INTERVAL_EVENT m_ieReadStatus;
 	};

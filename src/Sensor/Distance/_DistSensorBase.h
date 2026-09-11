@@ -115,20 +115,20 @@ namespace kai
 		virtual float dAvr(float degFrom, float degTo);
 
 	protected:
-		DIST_SENSOR_DIV *m_pDiv;
-		int m_nDiv;
+		DIST_SENSOR_DIV *m_pDiv = nullptr;
+		int m_nDiv = 1;
 
-		float m_fovH;
-		float m_fovV;
+		float m_fovH = 360;
+		float m_fovV = 0.1;
 
-		float m_dDeg;
-		float m_dDegInv;
+		float m_dDeg = 0;
+		float m_dDegInv = 0;
 
 		vFloat2 m_vRange;
-		float m_calibScale;
-		float m_calibOffset;
+		float m_calibScale = 1.0;
+		float m_calibOffset = 0.0;
 
-		uint16_t m_bReady;
+		uint16_t m_bReady = false;
 	};
 
 }

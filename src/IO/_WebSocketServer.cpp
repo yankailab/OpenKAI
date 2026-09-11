@@ -13,14 +13,7 @@ namespace kai
 
 	_WebSocketServer::_WebSocketServer()
 	{
-		m_pTr = nullptr;
 		g_pWSserver = this;
-		m_nClientMax = 128;
-		m_wsMode = wsSocket_txt_bcast;
-
-		m_host = "localhost";
-		m_port = 8080;
-		m_tOutMs = 1000;
 	}
 
 	_WebSocketServer::~_WebSocketServer()

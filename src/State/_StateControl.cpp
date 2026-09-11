@@ -12,7 +12,6 @@ namespace kai
 
 	_StateControl::_StateControl()
 	{
-		m_iS = 0;
 	}
 
 	_StateControl::~_StateControl()

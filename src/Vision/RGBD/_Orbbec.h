@@ -79,13 +79,13 @@ namespace kai
 		}
 
 	protected:
-		string m_SN;
+		string m_SN = "";
 		ob::Context m_ctx;
 		shared_ptr<ob::Device> m_spDev;
 		shared_ptr<ob::Pipeline> m_spPipe;
 		shared_ptr<ob::SensorList> m_spSensorList;
 		shared_ptr<ob::Config> m_spConfig;
-		uint32_t m_tOutMs;
+		uint32_t m_tOutMs = 100;
 
 		shared_ptr<ob::PointCloudFilter> m_spPCF;
 		shared_ptr<ob::Frame> m_spFrame;

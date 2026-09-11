@@ -12,11 +12,6 @@ namespace kai
 
     _ROS_fastLio::_ROS_fastLio()
     {
-        m_pTros = nullptr;
-
-#ifdef WITH_3D
-        m_pPCframe = nullptr;
-#endif
     }
 
     _ROS_fastLio::~_ROS_fastLio()

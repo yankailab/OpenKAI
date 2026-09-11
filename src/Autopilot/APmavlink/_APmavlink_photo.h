@@ -32,11 +32,11 @@ namespace kai
 		}
 
 	protected:
-		_APmavlink_base *m_pAP;
-		int m_iTake;
-		string m_dir;
-		string m_subDir;
-		string m_exifConfig;
+		_APmavlink_base *m_pAP = nullptr;
+		int m_iTake = 0;
+		string m_dir = "/home/";
+		string m_subDir = "";
+		string m_exifConfig = "";
 	};
 
 }

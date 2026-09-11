@@ -13,7 +13,6 @@ namespace kai
 	_Morphology::_Morphology()
 	{
 		m_type = vision_morphology;
-		m_pV = nullptr;
 	}
 
 	_Morphology::~_Morphology()

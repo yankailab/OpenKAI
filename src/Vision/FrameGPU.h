@@ -53,10 +53,10 @@ namespace kai
 		void updateTstampG(uint64_t t);
 
 	protected:
-		uint64_t m_tStamp;
+		uint64_t m_tStamp = 0;
 		Mat m_mat;
 
-		uint64_t m_tStampG;
+		uint64_t m_tStampG = 0;
 		GpuMat m_matG;
 	};
 

@@ -26,14 +26,14 @@ namespace kai
 		virtual double yPoly(int x);
 
 	protected:
-		gsl_multifit_linear_workspace *m_gWS;
-		gsl_matrix *m_gCov, *m_gX;
-		gsl_vector *m_gY, *m_gC;
+		gsl_multifit_linear_workspace *m_gWS = nullptr;
+		gsl_matrix *m_gCov = nullptr, *m_gX = nullptr;
+		gsl_vector *m_gY = nullptr, *m_gC = nullptr;
 
-		int m_n;
-		int m_nDeg;
-		double *m_pY;
-		double *m_pPoly;
+		int m_n = 0;
+		int m_nDeg = 2;
+		double *m_pY = nullptr;
+		double *m_pPoly = nullptr;
 	};
 
 }

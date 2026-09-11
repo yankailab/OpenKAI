@@ -243,40 +243,40 @@ namespace kai
 		}
 
 	protected:
-		_Thread *m_pTdeviceQueryR;
-		_Thread *m_pTctrlCmdW;
-		_Thread *m_pTctrlCmdR;
-		_Thread *m_pTpushCmdR;
-		_Thread *m_pTpclR;
-		_Thread *m_pTimuR;
+		_Thread *m_pTdeviceQueryR = nullptr;
+		_Thread *m_pTctrlCmdW = nullptr;
+		_Thread *m_pTctrlCmdR = nullptr;
+		_Thread *m_pTpushCmdR = nullptr;
+		_Thread *m_pTpclR = nullptr;
+		_Thread *m_pTimuR = nullptr;
 
-		_UDP *m_pUDPdeviceQuery;
-		_UDP *m_pUDPctrlCmd;
-		_UDP *m_pUDPpushCmd;
-		_UDP *m_pUDPpcl;
-		_UDP *m_pUDPimu;
-		_UDP *m_pUDPlog;
+		_UDP *m_pUDPdeviceQuery = nullptr;
+		_UDP *m_pUDPctrlCmd = nullptr;
+		_UDP *m_pUDPpushCmd = nullptr;
+		_UDP *m_pUDPpcl = nullptr;
+		_UDP *m_pUDPimu = nullptr;
+		_UDP *m_pUDPlog = nullptr;
 
 		// lvx state
-		LVX2_STATE m_lvxState;
+		LVX2_STATE m_lvxState = lvxState_deviceQuery;
 		TIME_OUT m_lvxTout;
 
 		// lvx info
-		string m_lvxSN;
+		string m_lvxSN = "";
 		uint8_t m_pLvxSN[16];
-		uint32_t m_lvxIP;
-		uint16_t m_lvxCmdPort;
-		uint8_t m_lvxDevType;
+		uint32_t m_lvxIP = 0;
+		uint16_t m_lvxCmdPort = 0;
+		uint8_t m_lvxDevType = 0;
 
 		// lvx config
 		LVX2_CONFIG m_lvxCfg;
 
 		// lvx IMU
-		bool m_bIMUstab;	// enable IMU stabilize
+		bool m_bIMUstab = false;	// enable IMU stabilize
 		SF m_SF;
-		uint64_t m_tIMU;
+		uint64_t m_tIMU = 0;
 
-		_IMUbase* m_pIMU;
+		_IMUbase* m_pIMU = nullptr;
 
 	};
 

@@ -9,15 +9,7 @@ namespace kai
 
 	_HandKey::_HandKey()
 	{
-		m_nW = 654;
-		m_nH = 368;
-		m_bSwapRB = false;
 		m_vMean.clear();
-		m_scale = 1.0 / 255.0;
-		m_thr = 0.01;
-
-		m_iBackend = dnn::DNN_BACKEND_OPENCV;
-		m_iTarget = dnn::DNN_TARGET_CPU;
 	}
 
 	_HandKey::~_HandKey()

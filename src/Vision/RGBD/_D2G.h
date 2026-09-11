@@ -33,7 +33,7 @@ namespace kai
 		}
 
 	protected:
-		_RGBDbase *m_pV;
+		_RGBDbase *m_pV = nullptr;
 	};
 
 }

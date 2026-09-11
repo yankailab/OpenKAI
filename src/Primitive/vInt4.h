@@ -8,17 +8,13 @@ namespace kai
 
 	struct vInt4
 	{
-		int x;
-		int y;
-		int z;
-		int w;
+		int x = 0;
+		int y = 0;
+		int z = 0;
+		int w = 0;
 
 		vInt4(void)
 		{
-			x = 0;
-			y = 0;
-			z = 0;
-			w = 0;
 		}
 
 		vInt4(int v)

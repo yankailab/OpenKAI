@@ -25,15 +25,6 @@ namespace kai
 	_Frame2Img::_Frame2Img()
 	{
 		m_type = vision_Frame2Img;
-		m_pV = nullptr;
-
-		m_dir = "";
-		m_dirRec = "";
-		m_tRec = "";
-		m_iFrame = 0;
-		m_pngCompression = 3;
-		m_vOffset = 50.0;
-		m_vScale = 64.0;
 	}
 
 	_Frame2Img::~_Frame2Img()

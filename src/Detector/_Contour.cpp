@@ -12,8 +12,6 @@ namespace kai
 
 	_Contour::_Contour()
 	{
-		m_mode = RETR_EXTERNAL;
-		m_method = CHAIN_APPROX_NONE;
 	}
 
 	_Contour::~_Contour()

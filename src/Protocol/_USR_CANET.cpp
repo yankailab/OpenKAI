@@ -5,7 +5,6 @@ namespace kai
 
 	_USR_CANET::_USR_CANET()
 	{
-		m_pIO = nullptr;
 		m_nFrameRecv = 0;
 	}
 

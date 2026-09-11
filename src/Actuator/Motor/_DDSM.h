@@ -48,8 +48,8 @@ namespace kai
 		}
 
 	protected:
-		_Thread *m_pTr;
-		_IObase *m_pIO;
+		_Thread *m_pTr = nullptr;
+		_IObase *m_pIO = nullptr;
 	};
 
 }

@@ -12,7 +12,6 @@ namespace kai
 
 	_SATbase::_SATbase()
 	{
-		m_fName = "";
 		clear();
 	}
 

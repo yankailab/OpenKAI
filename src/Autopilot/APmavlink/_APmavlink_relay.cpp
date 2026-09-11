@@ -5,7 +5,6 @@ namespace kai
 
 	_APmavlink_relay::_APmavlink_relay()
 	{
-		m_pAP = nullptr;
 	}
 
 	_APmavlink_relay::~_APmavlink_relay()

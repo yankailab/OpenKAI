@@ -29,7 +29,7 @@ namespace kai
 		}
 
 	protected:
-		_APmavlink_base *m_pAP;
+		_APmavlink_base *m_pAP = nullptr;
 		RC_CHANNEL m_rcMode;
 		RC_CHANNEL m_rcStickV;
 		RC_CHANNEL m_rcStickH;

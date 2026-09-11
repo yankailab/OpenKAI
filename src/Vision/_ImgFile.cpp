@@ -13,7 +13,6 @@ namespace kai
 	_ImgFile::_ImgFile()
 	{
 		m_type = vision_file;
-		m_file = "";
 	}
 
 	_ImgFile::~_ImgFile()

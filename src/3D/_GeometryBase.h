@@ -157,7 +157,7 @@ namespace kai
         virtual int get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut, uint64_t tExpire = 0);
 
     protected:
-        GEOMETRY_TYPE m_type;
+        GEOMETRY_TYPE m_type = geometry_unknown;
     };
 
 }

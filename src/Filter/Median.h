@@ -20,7 +20,6 @@ namespace kai
 		Median<T>()
 		{
 			FilterBase<T>::m_nW = 3;
-			m_iMid = 1;
 		}
 		virtual ~Median<T>()
 		{
@@ -61,7 +60,7 @@ namespace kai
 		}
 
 	private:
-		int m_iMid;
+		int m_iMid = 1;
 		std::deque<T> m_qSort;
 	};
 

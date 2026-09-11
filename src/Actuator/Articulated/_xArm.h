@@ -36,11 +36,11 @@ namespace kai
 		}
 
 	protected:
-		XArmAPI *m_pArm;
+		XArmAPI *m_pArm = NULL;
 
-		string m_ip;
-		int m_mode;
-		int m_state;
+		string m_ip = "192.168.1.222";
+		int m_mode = 0;
+		int m_state = 0;
 	};
 
 }

@@ -5,10 +5,6 @@ namespace kai
 
 	_APmavlink_mission::_APmavlink_mission()
 	{
-		m_pAP = nullptr;
-		m_mIdxDL = -1;
-		m_mState = apMission_none;
-		m_tOutSec = 10;
 	}
 
 	_APmavlink_mission::~_APmavlink_mission()

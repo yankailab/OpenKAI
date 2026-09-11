@@ -8,15 +8,12 @@ namespace kai
 
 	struct vDouble3
 	{
-		double x;
-		double y;
-		double z;
+		double x = 0.0;
+		double y = 0.0;
+		double z = 0.0;
 
 		vDouble3(void)
 		{
-			x = 0.0;
-			y = 0.0;
-			z = 0.0;
 		}
 
 		vDouble3(double v)

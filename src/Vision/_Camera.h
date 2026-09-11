@@ -33,10 +33,10 @@ namespace kai
 		}
 
 	protected:
-		int m_deviceID;
+		int m_deviceID = 0;
 		VideoCapture m_camera;
-		int m_nInitRead;
-		bool m_bResetCam;
+		int m_nInitRead = 1;
+		bool m_bResetCam = false;
 	};
 
 }

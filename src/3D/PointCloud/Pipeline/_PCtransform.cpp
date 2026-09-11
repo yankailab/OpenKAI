@@ -40,9 +40,6 @@ namespace kai
 
 	_PCtransform::_PCtransform()
 	{
-		m_pPS = nullptr;
-		m_dTexpire = 0;
-
 		m_vT.set(0);
 		m_vR.set(0);
 		m_vQ.clear();

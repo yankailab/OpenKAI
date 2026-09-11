@@ -12,7 +12,6 @@ namespace kai
 
 	_Console::_Console()
 	{
-		m_iY = 0;
 	}
 
 	_Console::~_Console()

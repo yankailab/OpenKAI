@@ -5,9 +5,7 @@ namespace kai
 
     _CamCalib::_CamCalib()
     {
-        m_path = "";
         m_vChessBoardSize.set(9, 6);
-        m_squareSize = 1.0;
     }
 
     _CamCalib::~_CamCalib()

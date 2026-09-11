@@ -83,26 +83,26 @@ namespace kai
 	protected:
 		vFloat3 m_vPorigin;		 // cubic center of the root cell in local coordinate
 		vFloat3 m_vRootCellSize; // root level cell size in meters
-		int m_nMaxLevel;
+		int m_nMaxLevel = 4;
 
 		// data
-		OCTREE_CELL<OCTGRID_PCL_CELL> *m_pCell; // root cell
-		uint64_t m_dTexpireCell;				// remove cell if no point is coming by this duration
+		OCTREE_CELL<OCTGRID_PCL_CELL> *m_pCell = nullptr; // root cell
+		uint64_t m_dTexpireCell = 0;				// remove cell if no point is coming by this duration
 
 		// point cloud input
 		vector<_GeometryBase *> m_vpGb;
 		GEOMETRY_RINGBUF<GEOMETRY_POINT> m_grPt;
-		uint64_t m_dTexpirePCL;
+		uint64_t m_dTexpirePCL = 0;
 
 		// Compact published snapshot; geometry is constructed by viewers.
-		int m_nMaxCells;
+		int m_nMaxCells = 100000 / 12;
 		OCTGRID_CELLS m_cells;
 		vector<OCTGRID_CELL> m_buildCells;
 		// Serializes live root changes with grid updates; acquire before m_cellsMutex.
 		std::mutex m_gridMutex;
 		std::mutex m_cellsMutex;
 		vFloat4 m_vColCellOcc;
-		bool m_bColCellOcc;
+		bool m_bColCellOcc = false;
 
 		// Selected cells, guarded by m_cellsMutex after initialization.
 		vector<UUID128> m_vSelectedCells;

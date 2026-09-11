@@ -146,25 +146,25 @@ namespace kai
 		}
 
 	protected:
-		_Mavlink *m_pMav;
-		AP_TYPE m_apType;
+		_Mavlink *m_pMav = nullptr;
+		AP_TYPE m_apType = ardupilot_copter;
 
-		bool m_bHomeSet;
+		bool m_bHomeSet = false;
 		vDouble3 m_vHomePos;
 		vDouble4 m_vGlobalPos; // lat, lon, alt, relative_alt in meters
 		vDouble3 m_vLocalPos;
 		vFloat3 m_vSpeed;
 		vFloat3 m_vAtti; // yaw, pitch, roll
-		float m_apHdg;	 // heading in degree
-		float m_battery; // remaining percentage
-		int8_t m_gpsFixType;
-		int m_gpsHacc;
+		float m_apHdg = 0.0;	 // heading in degree
+		float m_battery = 0.0; // remaining percentage
+		int8_t m_gpsFixType = -1;
+		int m_gpsHacc = INT32_MAX;
 
 		INTERVAL_EVENT m_ieSendHB;
 		INTERVAL_EVENT m_ieSendMsgInt;
 
 		// set vars
-		bool m_bSyncMode;
+		bool m_bSyncMode = false;
 		VAR_WR<uint32_t> m_wrApMode;
 		VAR_WR<bool> m_wrbArm;
 	};

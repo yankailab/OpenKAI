@@ -93,13 +93,13 @@ namespace kai
 		}
 
 	protected:
-		_Thread *m_pTr;
-		_IObase *m_pIO;
-		uint64_t m_nCMDrecv;
+		_Thread *m_pTr = nullptr;
+		_IObase *m_pIO = nullptr;
+		uint64_t m_nCMDrecv = 0;
 
 		uint8_t m_pBuf[PB_N_BUF];
-		int m_nRead;
-		int m_iRead;
+		int m_nRead = 0;
+		int m_iRead = 0;
 	};
 
 }

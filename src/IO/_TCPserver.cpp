@@ -12,10 +12,6 @@ namespace kai
 
 	_TCPserver::_TCPserver()
 	{
-		m_socket = 0;
-		m_listenPort = 8888;
-		m_nListen = N_LISTEN;
-		m_nSocket = N_SOCKET;
 		m_lClient.clear();
 	}
 

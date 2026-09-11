@@ -95,14 +95,14 @@ namespace kai
 
 	protected:
 		vector<wsClient> m_vClient;
-		int m_nClientMax;
-		WSSOCKET_MODE m_wsMode;
+		int m_nClientMax = 128;
+		WSSOCKET_MODE m_wsMode = wsSocket_txt_bcast;
 
-		string m_host;
-		uint16_t m_port;
-		uint32_t m_tOutMs;
+		string m_host = "localhost";
+		uint16_t m_port = 8080;
+		uint32_t m_tOutMs = 1000;
 
-		_Thread *m_pTr;
+		_Thread *m_pTr = nullptr;
 	};
 
 }

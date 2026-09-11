@@ -12,7 +12,6 @@ namespace kai
 
 	_PCdownSample::_PCdownSample()
 	{
-		m_rVoxel = 0.1;
 	}
 
 	_PCdownSample::~_PCdownSample()

@@ -12,11 +12,6 @@ namespace kai
 
 	_SLAMbase::_SLAMbase()
 	{
-		m_pIMU = nullptr;
-		m_tScaleIMU = 1e-6;
-		m_tScalePC = 1e-6;
-
-		m_bTracking = false;
 	}
 
 	_SLAMbase::~_SLAMbase()

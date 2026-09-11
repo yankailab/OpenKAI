@@ -12,7 +12,6 @@ namespace kai
 
 	_PCmerge::_PCmerge()
 	{
-		m_rVoxel = 0.0;
 	}
 
 	_PCmerge::~_PCmerge()

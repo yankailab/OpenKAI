@@ -4,9 +4,6 @@ namespace kai
 {
 	_DDSM::_DDSM()
 	{
-		m_pTr = nullptr;
-		m_pIO = nullptr;
-
 		m_mode = ddsm_speed;
 	}
 

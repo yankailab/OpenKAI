@@ -9,10 +9,8 @@ namespace kai
 
 	_ZLAC8015::_ZLAC8015()
 	{
-		m_pMB = nullptr;
 		m_ID = 1;
 		m_ieReadStatus.init(50000);
-		m_iMode = 3;
 	}
 
 	_ZLAC8015::~_ZLAC8015()

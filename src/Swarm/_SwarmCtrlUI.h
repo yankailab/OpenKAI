@@ -45,8 +45,8 @@ namespace kai
 		}
 
 	protected:
-		_Thread *m_Tr;
-		_SwarmCtrl *m_pCtrl;
+		_Thread *m_Tr = nullptr;
+		_SwarmCtrl *m_pCtrl = nullptr;
 
 		INTERVAL_EVENT m_ieSendNodeUpdate;
 		INTERVAL_EVENT m_ieSendNodeClearAll;

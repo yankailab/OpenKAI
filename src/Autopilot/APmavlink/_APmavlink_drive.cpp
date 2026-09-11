@@ -5,16 +5,6 @@ namespace kai
 
 	_APmavlink_drive::_APmavlink_drive()
 	{
-		m_btnPressed = apDrive_btnNone;
-		m_tLastBtn = 0;
-		m_tOutBtn = 100000;
-
-		m_dMode = apDrive_modeStandby;
-		m_pGfence = nullptr;
-		m_pOctGrid = nullptr;
-		m_octGridOccu = 1;
-		m_speedGo = 0.2;
-		m_steerTurn = 0.2;
 	}
 
 	_APmavlink_drive::~_APmavlink_drive()

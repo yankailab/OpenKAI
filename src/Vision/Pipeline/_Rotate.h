@@ -33,8 +33,8 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV;
-		int m_code;
+		_VisionBase *m_pV = nullptr;
+		int m_code = 0;
 	};
 
 }

@@ -13,15 +13,6 @@ namespace kai
 
     _PCregistGlobal::_PCregistGlobal()
     {
-        m_pSrc = nullptr;
-        m_pTgt = nullptr;
-        m_pTf = nullptr;
-        m_lastFit = 0.0;
-
-        m_rNormal = 0.2;
-        m_rFeature = 0.5;
-        m_maxNNnormal = 30;
-        m_maxNNfpfh = 100;
     }
 
     _PCregistGlobal::~_PCregistGlobal()

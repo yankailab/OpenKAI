@@ -36,27 +36,27 @@ namespace kai
 		}
 
 	protected:
-		_APmavlink_base *m_pAP;
-		_NavBase *m_pNav;
+		_APmavlink_base *m_pAP = nullptr;
+		_NavBase *m_pNav = nullptr;
 
-		float m_linearAccelCov;
-		float m_angularVelCov;
+		float m_linearAccelCov = 0.01;
+		float m_angularVelCov = 0.01;
 		float m_conf;
 		float m_covPose;
 		float m_covTwist;
 		Matrix4f m_mTsensor2aero;
 		Matrix4f m_mTaero2sensor;
-		float m_thrJumpPos;
-		float m_thrJumpSpd;
+		float m_thrJumpPos = 0.1; // m
+		float m_thrJumpSpd = 20.0; // m/s
 		vFloat3 m_vTprev;
 		vFloat3 m_vVprev;
-		int m_iReset;
+		int m_iReset = 0;
 		vInt3 m_vAxisRPY;
 
-		int m_apModeInError;
-		bool m_bNaN;
-		bool m_bPos;
-		bool m_bSpd;
+		int m_apModeInError = -1;
+		bool m_bNaN = false;
+		bool m_bPos = true;
+		bool m_bSpd = true;
 		mavlink_vision_position_estimate_t m_Dpos;
 		mavlink_vision_speed_estimate_t m_Dspd;
 	};

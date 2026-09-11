@@ -13,8 +13,6 @@ namespace kai
 	_Rotate::_Rotate()
 	{
 		m_type = vision_rotate;
-		m_pV = nullptr;
-		m_code = 0;
 	}
 
 	_Rotate::~_Rotate()

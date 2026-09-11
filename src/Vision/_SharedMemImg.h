@@ -37,7 +37,7 @@ namespace kai
 
 	protected:
 		SharedMem *m_pSHM;
-		int m_matType;
+		int m_matType = CV_8UC3;
 	};
 
 }

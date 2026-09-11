@@ -9,13 +9,6 @@ namespace kai
 
 	_DetectorBase::_DetectorBase()
 	{
-		m_pV = nullptr;
-		m_pU = nullptr;
-
-		m_fModel = "";
-		m_fWeight = "";
-		m_fMean = "";
-		m_fClass = "";
 	}
 
 	_DetectorBase::~_DetectorBase()

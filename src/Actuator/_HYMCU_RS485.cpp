@@ -9,11 +9,6 @@ namespace kai
 
 	_HYMCU_RS485::_HYMCU_RS485()
 	{
-		m_pMB = nullptr;
-		m_iSlave = 1;
-		m_dpr = 1;
-		m_dInit = 20;
-		m_cmdInt = 50000;
 	}
 
 	_HYMCU_RS485::~_HYMCU_RS485()

@@ -65,7 +65,7 @@ namespace kai
 		}
 
 	protected:
-		_APmavlink_base *m_pAP;
+		_APmavlink_base *m_pAP = nullptr;
 
 		mavlink_rc_channels_override_t m_rcOverride;
 		uint16_t *m_pRCchan[19] = {};

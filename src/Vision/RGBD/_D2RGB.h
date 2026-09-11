@@ -25,7 +25,7 @@ namespace kai
 		Frame *getFrameRGB(void);
 
 	protected:
-		_RGBDbase *m_pV;
+		_RGBDbase *m_pV = nullptr;
 	};
 
 }

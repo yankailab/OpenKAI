@@ -76,7 +76,7 @@ namespace kai
 		int getNclause(void);
 
 	protected:
-		string m_fName;
+		string m_fName = "";
 		string m_cnf; // problem input
 
 		vector<BOOLEAN_VAR> m_vV; // variable idx = CNF var idx - 1

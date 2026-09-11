@@ -28,11 +28,6 @@ namespace kai
 	public:
 		ImGUIviewerBackendGLFW()
 		{
-			m_pWin = nullptr;
-			m_bGlfwInit = false;
-			m_bImGuiContext = false;
-			m_bPlatformInit = false;
-			m_bRendererInit = false;
 		}
 
 		virtual ~ImGUIviewerBackendGLFW()
@@ -178,12 +173,12 @@ namespace kai
 		}
 
 	private:
-		GLFWwindow *m_pWin;
+		GLFWwindow *m_pWin = nullptr;
 		std::string m_glslVersion;
-		bool m_bGlfwInit;
-		bool m_bImGuiContext;
-		bool m_bPlatformInit;
-		bool m_bRendererInit;
+		bool m_bGlfwInit = false;
+		bool m_bImGuiContext = false;
+		bool m_bPlatformInit = false;
+		bool m_bRendererInit = false;
 	};
 
 	ImGUIviewerBackend *createImGUIviewerBackend(void)
@@ -222,13 +217,6 @@ namespace kai
 	public:
 		ImGUIviewerBackendSDL()
 		{
-			m_pWin = nullptr;
-			m_glCtx = nullptr;
-			m_bClose = false;
-			m_bSdlInit = false;
-			m_bImGuiContext = false;
-			m_bPlatformInit = false;
-			m_bRendererInit = false;
 		}
 
 		virtual ~ImGUIviewerBackendSDL()
@@ -402,14 +390,14 @@ namespace kai
 		}
 
 	private:
-		SDL_Window *m_pWin;
-		SDL_GLContext m_glCtx;
+		SDL_Window *m_pWin = nullptr;
+		SDL_GLContext m_glCtx = nullptr;
 		std::string m_glslVersion;
-		bool m_bClose;
-		bool m_bSdlInit;
-		bool m_bImGuiContext;
-		bool m_bPlatformInit;
-		bool m_bRendererInit;
+		bool m_bClose = false;
+		bool m_bSdlInit = false;
+		bool m_bImGuiContext = false;
+		bool m_bPlatformInit = false;
+		bool m_bRendererInit = false;
 	};
 
 	ImGUIviewerBackend *createImGUIviewerBackend(void)

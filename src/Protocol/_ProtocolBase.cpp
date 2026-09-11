@@ -5,12 +5,6 @@ namespace kai
 
 	_ProtocolBase::_ProtocolBase()
 	{
-		m_pTr = nullptr;
-		m_pIO = nullptr;
-		m_nCMDrecv = 0;
-
-		m_nRead = 0;
-		m_iRead = 0;
 	}
 
 	_ProtocolBase::~_ProtocolBase()

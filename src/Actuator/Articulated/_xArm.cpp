@@ -5,11 +5,6 @@ namespace kai
 
 	_xArm::_xArm()
 	{
-		m_pArm = NULL;
-
-		m_ip = "192.168.1.222";
-		m_mode = 0;
-		m_state = 0;
 	}
 
 	_xArm::~_xArm()

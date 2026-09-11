@@ -12,16 +12,6 @@ namespace kai
 
 	PolyFit::PolyFit()
 	{
-		m_pY = nullptr;
-		m_pPoly = nullptr;
-		m_n = 0;
-		m_nDeg = 2;
-
-		m_gWS = nullptr;
-		m_gCov = nullptr;
-		m_gX = nullptr;
-		m_gY = nullptr;
-		m_gC = nullptr;
 	}
 
 	PolyFit::~PolyFit()

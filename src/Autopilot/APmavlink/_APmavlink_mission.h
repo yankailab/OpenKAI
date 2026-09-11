@@ -112,7 +112,7 @@ namespace kai
 		void missionItemReached(void);
 
 	protected:
-		_APmavlink_base *m_pAP;
+		_APmavlink_base *m_pAP = nullptr;
 
 		vector<AP_MISSION> m_vMissionUL;
 		int m_iMissionUL;
@@ -121,12 +121,12 @@ namespace kai
 		vector<AP_MISSION> m_vMissionDL;
 		int m_nMissionDL;
 		int m_iMissionDL;
-		int m_mIdxDL; // current mission index
+		int m_mIdxDL = -1; // current mission index
 		uint64_t m_tUpdatedDL;
 
-		AP_MISSION_STATE m_mState;
+		AP_MISSION_STATE m_mState = apMission_none;
 		TIME_OUT m_tOut;
-		int m_tOutSec;
+		int m_tOutSec = 10;
 	};
 
 }

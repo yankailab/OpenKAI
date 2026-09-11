@@ -13,10 +13,6 @@ namespace kai
 	_Contrast::_Contrast()
 	{
 		m_type = vision_contrast;
-		m_pV = nullptr;
-
-		m_alpha = 1.0;
-		m_beta = 0.0;
 	}
 
 	_Contrast::~_Contrast()

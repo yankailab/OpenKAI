@@ -12,7 +12,6 @@ namespace kai
 
     _ModuleBase::_ModuleBase()
     {
-        m_pT = nullptr;
         pthread_mutex_init(&m_mutexAtomic, NULL);
     }
 

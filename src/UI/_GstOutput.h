@@ -35,7 +35,7 @@ namespace kai
 		Frame m_F;
 		vInt2 m_vSize;
 
-		string m_gstOutput;
+		string m_gstOutput = "appsrc ! videoconvert ! fbdevsink";
 		VideoWriter m_gst;
 	};
 }

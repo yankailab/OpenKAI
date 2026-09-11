@@ -52,7 +52,7 @@ namespace kai
 		tSwap<_ObjectArray> m_sO;
 
 		//config
-		float m_minConfidence;
+		float m_minConfidence = 0.0;
 		vFloat2 m_vArea;
 		vFloat2 m_vW;
 		vFloat2 m_vH;
@@ -60,9 +60,9 @@ namespace kai
 		vInt2 m_vClassRange;
 
 		//show
-		bool m_bDrawText;
-		bool m_bDrawPos;
-		bool m_bDrawBB;
+		bool m_bDrawText = false;
+		bool m_bDrawPos = false;
+		bool m_bDrawBB = false;
 	};
 
 }

@@ -34,15 +34,15 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV;
+		_VisionBase *m_pV = nullptr;
 
-		string m_dir;
-		string m_dirRec;
-		string m_tRec;
-		int m_iFrame;
-		int m_pngCompression;
-		float m_vOffset;
-		float m_vScale;
+		string m_dir = "";
+		string m_dirRec = "";
+		string m_tRec = "";
+		int m_iFrame = 0;
+		int m_pngCompression = 3;
+		float m_vOffset = 50.0;
+		float m_vScale = 64.0;
 	};
 
 }

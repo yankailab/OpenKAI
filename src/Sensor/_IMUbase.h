@@ -45,8 +45,8 @@ namespace kai
 
 	protected:
 
-		int m_nIMUdqMax;
-		uint64_t m_tIMUpairToleranceUs;
+		int m_nIMUdqMax = 1000;
+		uint64_t m_tIMUpairToleranceUs = 5000; // 5ms
 		deque<IMU_DATA> m_dqGyro;
 		deque<IMU_DATA> m_dqAcc;
 	};

@@ -12,14 +12,7 @@ namespace kai
 
 	_VisionBase::_VisionBase()
 	{
-		m_type = vision_unknown;
-		m_devURI = "";
-		m_devFPS = 30;
-		m_tFrameInterval = 0;
-		m_bRGB = true;
 		m_vSizeRGB.set(1280, 720);
-		m_bOpen = false;
-		m_psmRGB = nullptr;
 	}
 
 	_VisionBase::~_VisionBase()

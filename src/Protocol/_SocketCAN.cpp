@@ -5,8 +5,6 @@ namespace kai
 
 	_SocketCAN::_SocketCAN()
 	{
-		m_ifName = "can0";
-		m_socket = -1;
 	}
 
 	_SocketCAN::~_SocketCAN()

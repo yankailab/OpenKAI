@@ -41,31 +41,31 @@ namespace kai
 		}
 
 	protected:
-		modbus_t *m_pMb;
-		string m_port;
-		int m_baud;
+		modbus_t *m_pMb = nullptr;
+		string m_port = "";
+		int m_baud = 115200;
 		// Current slave address being used (because modbus_send_raw_request() doesn't use the address set
 		// by modbus_set_slave()):
-		int m_slaveAddr;
+		int m_slaveAddr = 1;
 		// True to use command 0x41 to fetch data; otherwise, we use the standard Modbus registers:
-		bool m_bUse0x41;
-		float m_showOriginOffsetX;
-		float m_showOriginOffsetY;
+		bool m_bUse0x41 = false;
+		float m_showOriginOffsetX = 0.5;
+		float m_showOriginOffsetY = 0.5;
 
-		uint16_t m_nDetection;
+		uint16_t m_nDetection = 0;
 
 		// configurations
-		uint16_t m_nAccumulationsExpo;
-		uint16_t m_nOversamplingsExpo;
-		uint16_t m_lightSrcPwr;
-		uint16_t m_nPoint;
-		uint16_t m_oprMode;
-		bool m_bAutoLightSrcPwr;
-		bool m_bDemergeObj;
-		bool m_bStaticNoiseRemoval;
-		bool m_bPrecision;
-		bool m_bSaturationCompensation;
-		bool m_bOvershootManagement;
+		uint16_t m_nAccumulationsExpo = 5;
+		uint16_t m_nOversamplingsExpo = 1;
+		uint16_t m_lightSrcPwr = 100;
+		uint16_t m_nPoint = 18;
+		uint16_t m_oprMode = 1;
+		bool m_bAutoLightSrcPwr = false;
+		bool m_bDemergeObj = true;
+		bool m_bStaticNoiseRemoval = true;
+		bool m_bPrecision = true;
+		bool m_bSaturationCompensation = true;
+		bool m_bOvershootManagement = true;
 	};
 
 }

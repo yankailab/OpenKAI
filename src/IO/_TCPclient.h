@@ -40,11 +40,11 @@ namespace kai
 
 	protected:
 		struct sockaddr_in m_serverAddr;
-		string m_strAddr;
-		uint16_t m_port;
+		string m_strAddr = "";
+		uint16_t m_port = 0;
 
-		bool m_bClient;
-		int m_socket;
+		bool m_bClient = true;
+		int m_socket = 0;
 	};
 
 }

@@ -37,11 +37,11 @@ namespace kai
 		virtual void updateModules(void);
 
 	protected:
-		STATE_TYPE m_type;
-		string m_next;
+		STATE_TYPE m_type = state_base;
+		string m_next = "";
 		uint64_t m_tStart;
-		uint64_t m_tStamp;
-		uint64_t m_tTimeout;
+		uint64_t m_tStamp = 0;
+		uint64_t m_tTimeout = 0;
 		bool m_bComplete;
 
 		vector<_ModuleBase *> m_vpModulePause;

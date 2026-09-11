@@ -14,13 +14,6 @@ namespace kai
 	{
 		m_ioType = io_udp;
 		m_ioStatus = io_unknown;
-
-		m_addrRemote = "";
-		m_portRemote = 0;
-		m_portLocal = 0;
-		m_bW2R = true;
-		m_bWbroadcast = 0;
-		m_socket = -1;
 	}
 
 	_UDP::~_UDP()

@@ -50,15 +50,15 @@ namespace kai
 		}
 
 	protected:
-		_DistSensorBase* m_pDS;
+		_DistSensorBase* m_pDS = nullptr;
 		vFloat2 m_vDSrange;
 
 		vector<AP_LAND_TAG> m_vTags;
-		AP_LAND_TAG* m_pTag;
+		AP_LAND_TAG* m_pTag = nullptr;
 		vFloat2 m_vFov; // cam FOV horiz/vert
 
 		vFloat4 m_vComplete; // complete condition for vPtarget
-		float m_zrK;
+		float m_zrK = 1.0;
 	};
 }
 #endif

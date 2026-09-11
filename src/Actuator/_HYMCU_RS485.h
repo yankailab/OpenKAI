@@ -75,13 +75,13 @@ namespace kai
 		}
 
 	protected:
-		_Modbus *m_pMB;
-		int m_iSlave;
-		int32_t m_dpr; // distance per round
+		_Modbus *m_pMB = nullptr;
+		int m_iSlave = 1;
+		int32_t m_dpr = 1; // distance per round
 
 		HYMCU_MODBUS_ADDR m_addr;
-		int32_t m_dInit;
-		uint32_t m_cmdInt;
+		int32_t m_dInit = 20;
+		uint32_t m_cmdInt = 50000;
 	};
 
 }

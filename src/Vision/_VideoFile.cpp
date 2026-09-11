@@ -13,7 +13,6 @@ namespace kai
 	_VideoFile::_VideoFile()
 	{
 		m_type = vision_file;
-		m_videoFile = "";
 	}
 
 	_VideoFile::~_VideoFile()

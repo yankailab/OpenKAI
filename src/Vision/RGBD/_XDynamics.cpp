@@ -16,9 +16,6 @@ namespace kai
         m_vSizeD.set(320, 240);
 
         m_devURI = "192.168.31.3";
-        m_xdDevType = XDYN_DEV_TYPE_TOF_RGB;
-        m_xdProductType = XDYN_PRODUCT_TYPE_XD_400;
-        m_pXDstream = NULL;
     }
 
     _XDynamics::~_XDynamics()

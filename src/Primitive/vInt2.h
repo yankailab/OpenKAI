@@ -8,13 +8,11 @@ namespace kai
 
 	struct vInt2
 	{
-		int x;
-		int y;
+		int x = 0;
+		int y = 0;
 
 		vInt2(void)
 		{
-			x = 0;
-			y = 0;
 		}
 
 		vInt2(int v)

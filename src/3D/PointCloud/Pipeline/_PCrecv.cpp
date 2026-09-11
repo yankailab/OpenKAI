@@ -12,11 +12,6 @@ namespace kai
 
 	_PCrecv::_PCrecv()
 	{
-		m_pIO = nullptr;
-		m_nCMDrecv = 0;
-
-		m_nRead = 0;
-		m_iRead = 0;
 	}
 
 	_PCrecv::~_PCrecv()

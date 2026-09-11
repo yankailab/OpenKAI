@@ -46,19 +46,19 @@ namespace kai
 		Ort::Env m_env;
 		Ort::SessionOptions m_sessionOptions;
 		Ort::MemoryInfo m_memoryInfo;
-		Ort::Session *m_pSession;
+		Ort::Session *m_pSession = NULL;
 
 		string m_inputName;
 		string m_outputName;
 
-		float m_confidence;
-		float m_score;
-		float m_nms;
-		bool m_bLetterBoxForSquare;
+		float m_confidence = 0.25;
+		float m_score = 0.45;
+		float m_nms = 0.5;
+		bool m_bLetterBoxForSquare = true;
 		vInt2 m_vModelInputSize;
-		bool m_bSwapRB;
-		float m_scale;
-		int m_nThread;
+		bool m_bSwapRB = true;
+		float m_scale = 1.0 / 255.0;
+		int m_nThread = 1;
 	};
 
 }

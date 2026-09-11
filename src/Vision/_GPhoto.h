@@ -35,7 +35,7 @@ namespace kai
 		}
 
 	protected:
-		string m_cmdUnmount;
+		string m_cmdUnmount = "gio mount -s gphoto2";
 	};
 
 }

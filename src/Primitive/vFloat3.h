@@ -6,15 +6,12 @@ namespace kai
 
 	struct vFloat3
 	{
-		float x;
-		float y;
-		float z;
+		float x = 0.0;
+		float y = 0.0;
+		float z = 0.0;
 
 		vFloat3(void)
 		{
-			x = 0.0;
-			y = 0.0;
-			z = 0.0;
 		}
 
 		vFloat3(float v)

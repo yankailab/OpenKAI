@@ -5,7 +5,6 @@ namespace kai
 
     _Xbee::_Xbee()
     {
-        m_myAddr = 0;
     }
 
     _Xbee::~_Xbee()

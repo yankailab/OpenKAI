@@ -43,17 +43,17 @@ namespace kai
 		vFloat4 *getBB(void);
 
 	protected:
-		_VisionBase *m_pV;
+		_VisionBase *m_pV = nullptr;
 		Rect2d m_rBB;
 		vFloat4 m_bb;
-		float m_margin;
+		float m_margin = 0.0;
 
 		Rect2d m_newBB;
-		uint64_t m_iSet;
-		uint64_t m_iInit;
+		uint64_t m_iSet = 0;
+		uint64_t m_iInit = 0;
 
-		string m_trackerType;
-		TRACK_STATE m_trackState;
+		string m_trackerType = "";
+		TRACK_STATE m_trackState = track_stop;
 	};
 
 }

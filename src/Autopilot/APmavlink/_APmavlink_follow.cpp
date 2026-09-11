@@ -5,23 +5,13 @@ namespace kai
 
 	_APmavlink_follow::_APmavlink_follow()
 	{
-		m_pU = nullptr;
-		m_pTracker = nullptr;
 		m_tOutTargetNotFound.reStartT(0);
 		m_tOutTargetNotFound.setTout(USEC_1SEC / 10);
-		m_iClass = -1;
-		m_bTarget = false;
 		m_vTargetBB.clear();
 
 		m_vPvar.clear();
 		m_vPsp.clear();
 		m_vSpd.set(0);
-		m_tLastPIDupdate = 0;
-
-		m_pPitch = nullptr;
-		m_pRoll = nullptr;
-		m_pAlt = nullptr;
-		m_pYaw = nullptr;
 
 		m_apMount.init();
 	}

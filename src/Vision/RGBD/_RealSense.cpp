@@ -12,12 +12,6 @@ namespace kai
 
     _RealSense::_RealSense()
     {
-        m_rsSN = "";
-        m_rsFPS = 30;
-        m_rsDFPS = 30;
-        m_bAlign = false;
-        m_vPreset = "High Density";
-        m_rspAlign = nullptr;
         m_rsCtrl.clear();
 
         m_vSizeRGB.set(1280, 720);

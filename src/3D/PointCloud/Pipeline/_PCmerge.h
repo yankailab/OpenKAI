@@ -36,7 +36,7 @@ namespace kai
 
 	protected:
 		vector<_GeometryBase *> m_vpGB;
-		float m_rVoxel;
+		float m_rVoxel = 0.0;
 	};
 
 }

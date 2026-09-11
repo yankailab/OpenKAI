@@ -179,8 +179,8 @@ namespace kai
 		virtual IO_PACKET_FIFO* getPacketFIFOw(void);
 
 	protected:
-		IO_TYPE m_ioType;
-		IO_STATUS m_ioStatus;
+		IO_TYPE m_ioType = io_none;
+		IO_STATUS m_ioStatus = io_unknown;
 
 		IO_PACKET_FIFO m_packetW;
 	};

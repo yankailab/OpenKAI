@@ -11,13 +11,6 @@ namespace kai
 {
 	_Uploader::_Uploader()
 	{
-		m_dir = "";
-		m_fName = "";
-		m_bRemoveAfterUpload = true;
-		m_method = uploader_http;
-		m_url = "";
-		m_cmd = "";
-		m_bConfirmCmdResult = false;
 	}
 
 	_Uploader::~_Uploader()

@@ -46,12 +46,12 @@ namespace kai
 		}
 
 	protected:
-		string m_dir;
+		string m_dir = "";
 		vector<Mat> m_frameBuffer;
-		int m_iFrame;
-		float m_vOffset;
-		float m_vScale;
-		bool m_bLoop;
+		int m_iFrame = 0;
+		float m_vOffset = -50.0;
+		float m_vScale = 64.0;
+		bool m_bLoop = true;
 	};
 
 }

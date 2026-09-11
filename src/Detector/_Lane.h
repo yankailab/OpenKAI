@@ -218,30 +218,30 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV;
+		_VisionBase *m_pV = nullptr;
 		vInt2 m_vSize;
 
-		vFloat2 m_vRoiLT;
-		vFloat2 m_vRoiLB;
-		vFloat2 m_vRoiRT;
-		vFloat2 m_vRoiRB;
+		vFloat2 m_vRoiLT = {0.2, 0.5};
+		vFloat2 m_vRoiLB = {0.0, 1.0};
+		vFloat2 m_vRoiRT = {0.8, 0.5};
+		vFloat2 m_vRoiRB = {1.0, 1.0};
 		Mat m_mPerspective;
 		Mat m_mPerspectiveInv;
-		vInt2 m_sizeOverhead;
+		vInt2 m_sizeOverhead = {400, 300};
 		Mat m_mOverhead;
 		Mat m_mBin;
-		int m_binMed;
+		int m_binMed = 3;
 
-		int m_nFilter;
+		int m_nFilter = 0;
 		LANE_FILTER m_pFilter[N_LANE_FILTER];
 
-		int m_nLane;
+		int m_nLane = 0;
 		LANE m_pLane[N_LANE];
 
-		cv::Point **m_ppPoint;
-		int *m_pNp;
-		bool m_bDrawOverhead;
-		bool m_bDrawFilter;
+		cv::Point **m_ppPoint = NULL;
+		int *m_pNp = NULL;
+		bool m_bDrawOverhead = false;
+		bool m_bDrawFilter = false;
 	};
 
 }

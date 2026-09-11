@@ -77,16 +77,16 @@ namespace kai
 #endif
 
 	protected:
-		VISION_TYPE m_type;
-		string m_devURI;
-		int m_devFPS;			   // device native FPS
-		uint64_t m_tFrameInterval; // minimal interval between frame reading
-		bool m_bRGB;
+		VISION_TYPE m_type = vision_unknown;
+		string m_devURI = "";
+		int m_devFPS = 30;			   // device native FPS
+		uint64_t m_tFrameInterval = 0; // minimal interval between frame reading
+		bool m_bRGB = true;
 		vInt2 m_vSizeRGB;
 
-		bool m_bOpen;
+		bool m_bOpen = false;
 
-		SharedMem *m_psmRGB;
+		SharedMem *m_psmRGB = nullptr;
 
 #ifdef USE_OPENCV
 		Frame m_fRGB;

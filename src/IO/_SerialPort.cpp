@@ -5,15 +5,7 @@ namespace kai
 
 	_SerialPort::_SerialPort(void)
 	{
-		m_fd = -1;
 		m_ioType = io_serialPort;
-		m_port = "";
-
-		m_baud = 115200;
-		m_dataBits = 8;
-		m_stopBits = 1;
-		m_parity = false;
-		m_hardwareControl = false;
 	}
 
 	_SerialPort::~_SerialPort()

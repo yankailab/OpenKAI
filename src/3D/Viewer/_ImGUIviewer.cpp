@@ -88,23 +88,7 @@ namespace kai
 
 	_ImGUIviewer::_ImGUIviewer()
 	{
-		m_pBackend = nullptr;
-		m_pGLRenderer = nullptr;
-		m_pTui = nullptr;
-		m_bShowPanel = true;
-		m_bShowGrid = true;
-		m_bAutoBound = true;
-		m_sMove = 0.01;
-		m_sOrbit = 0.008;
-		m_sZoom = 0.1;
-		m_pointScale = 1.0;
-		m_lineScale = 1.0;
 		m_vBgCol.set(0.05, 0.055, 0.06, 1.0);
-		m_bGpuRender = true;
-		m_snapshotVersion = 0;
-		m_nDrawObjects = 0;
-		m_nDrawPoints = 0;
-		m_nDrawLines = 0;
 		m_vGLCanvasPos.set(0, 0);
 		m_vGLCanvasSize.set(1, 1);
 

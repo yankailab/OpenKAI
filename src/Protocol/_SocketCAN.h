@@ -35,8 +35,8 @@ namespace kai
 		}
 
 	protected:
-		string m_ifName;
-		int m_socket;
+		string m_ifName = "can0";
+		int m_socket = -1;
 	};
 
 }

@@ -63,7 +63,7 @@ namespace kai
 		}
 
 	protected:
-		_IObase *m_pIO;
+		_IObase *m_pIO = nullptr;
 		BENEWAKE_FRAME m_frame;
 	};
 

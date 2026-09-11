@@ -5,9 +5,6 @@ namespace kai
 
 	_APmavlink_depthVision::_APmavlink_depthVision()
 	{
-		m_pAP = nullptr;
-		m_pDV = nullptr;
-		m_nROI = 0;
 	}
 
 	_APmavlink_depthVision::~_APmavlink_depthVision()

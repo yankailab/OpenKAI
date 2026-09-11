@@ -41,7 +41,7 @@ namespace kai
 		}
 
 	protected:
-		_APmavlink_base *m_pAP;
+		_APmavlink_base *m_pAP = nullptr;
 		vector<AP_SERVO> m_vServo;
 	};
 

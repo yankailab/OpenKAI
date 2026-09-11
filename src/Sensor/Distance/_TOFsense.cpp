@@ -9,7 +9,6 @@ namespace kai
 
 	_TOFsense::_TOFsense()
 	{
-		m_pIO = nullptr;
 		m_nDiv = 1;
 	}
 

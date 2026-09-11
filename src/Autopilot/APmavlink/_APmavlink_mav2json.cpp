@@ -5,7 +5,6 @@ namespace kai
 
 	_APmavlink_mav2json::_APmavlink_mav2json()
 	{
-		m_pAP = nullptr;
 	}
 
 	_APmavlink_mav2json::~_APmavlink_mav2json()

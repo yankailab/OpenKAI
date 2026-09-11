@@ -12,8 +12,6 @@ namespace kai
 
 	FrameGPU::FrameGPU()
 	{
-		m_tStamp = 0;
-		m_tStampG = 0;
 	}
 
 	FrameGPU::~FrameGPU()

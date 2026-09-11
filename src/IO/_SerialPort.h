@@ -45,13 +45,13 @@ namespace kai
 		}
 
 	protected:
-		int m_fd;
-		string m_port;
-		int m_baud;
-		int m_dataBits;
-		int m_stopBits;
-		bool m_parity;
-		bool m_hardwareControl;
+		int m_fd = -1;
+		string m_port = "";
+		int m_baud = 115200;
+		int m_dataBits = 8;
+		int m_stopBits = 1;
+		bool m_parity = false;
+		bool m_hardwareControl = false;
 	};
 
 }

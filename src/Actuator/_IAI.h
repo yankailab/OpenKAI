@@ -41,7 +41,7 @@ namespace kai
 		}
 
 	protected:
-		_Modbus *m_pMB;
+		_Modbus *m_pMB = nullptr;
 	};
 
 }

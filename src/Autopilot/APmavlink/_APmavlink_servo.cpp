@@ -5,7 +5,6 @@ namespace kai
 
 	_APmavlink_servo::_APmavlink_servo()
 	{
-		m_pAP = nullptr;
 	}
 
 	_APmavlink_servo::~_APmavlink_servo()

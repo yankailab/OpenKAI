@@ -12,8 +12,6 @@ namespace kai
 
 	_PCremove::_PCremove()
 	{
-		m_nP = 16;
-		m_r = 0.05;
 	}
 
 	_PCremove::~_PCremove()

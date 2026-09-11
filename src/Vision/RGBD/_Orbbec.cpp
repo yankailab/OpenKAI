@@ -12,8 +12,6 @@ namespace kai
 
 	_Orbbec::_Orbbec()
 	{
-		m_SN = "";
-		m_tOutMs = 100;
 	}
 
 	_Orbbec::~_Orbbec()

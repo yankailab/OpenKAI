@@ -13,12 +13,6 @@ namespace kai
 
 	SharedMem::SharedMem()
 	{
-		m_shmName = "";
-		m_nB = 0;
-		m_fd = 0;
-		m_pB = 0;
-		m_bWriter = true;
-		m_bOpen = false;
 	}
 
 	SharedMem::~SharedMem()

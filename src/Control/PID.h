@@ -42,10 +42,10 @@ namespace kai
 		void setRangeOut(const vFloat2 &vRout);
 
 	protected:
-		float m_P;
-		float m_I;
-		float m_Imax;
-		float m_D;
+		float m_P = 0;
+		float m_I = 0;
+		float m_Imax = 0;
+		float m_D = 0;
 
 		float m_vVar;
 		float m_vSetPoint;

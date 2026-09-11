@@ -12,7 +12,6 @@ namespace kai
 
 	_SwarmBase::_SwarmBase()
 	{
-		m_tExpire = 0;
 	}
 
 	_SwarmBase::~_SwarmBase()

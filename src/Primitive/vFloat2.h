@@ -6,13 +6,11 @@ namespace kai
 
 	struct vFloat2
 	{
-		float x;
-		float y;
+		float x = 0.0;
+		float y = 0.0;
 
 		vFloat2(void)
 		{
-			x = 0.0;
-			y = 0.0;
 		}
 
 		vFloat2(float v)

@@ -12,8 +12,6 @@ namespace kai
 
 	_WindowCV::_WindowCV()
 	{
-		m_waitKey = 30;
-		m_bFullScreen = false;
 		m_vSize.set(1280, 720);
 	}
 

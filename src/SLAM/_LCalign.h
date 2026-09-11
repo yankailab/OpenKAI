@@ -59,11 +59,11 @@ namespace kai
 		}
 
 	protected:
-		_PointCloud *m_pPCin;
-		_VisionBase *m_pV;
-		_IMUbase *m_pIMU;
+		_PointCloud *m_pPCin = nullptr;
+		_VisionBase *m_pV = nullptr;
+		_IMUbase *m_pIMU = nullptr;
 
-		string m_fName; // calib json save
+		string m_fName = ""; // calib json save
 
 		// Camera
 		// intrinsics

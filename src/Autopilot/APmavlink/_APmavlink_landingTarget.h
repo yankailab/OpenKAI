@@ -38,26 +38,26 @@ namespace kai
 		}
 
 	protected:
-		_DistSensorBase *m_pDS;
-		_Universe *m_pU;
+		_DistSensorBase *m_pDS = nullptr;
+		_Universe *m_pU = nullptr;
 		_Object m_oTarget;
 
-		float m_yawRate;
-		float m_kP;
-		float m_defaultDtgt;
+		float m_yawRate = 30 * DEG_2_RAD;
+		float m_kP = 1.0;
+		float m_defaultDtgt = 2.0;
 		vector<AP_LANDING_TARGET_TAG> m_vTags;
-		vFloat2 m_vFov; // cam FOV horiz/vert
+		vFloat2 m_vFov = 60 * DEG_2_RAD; // cam FOV horiz/vert
 		vFloat2 m_vPsp; // target set point on screen coord
 		mavlink_landing_target_t m_lt;
 
 		// heading adjustment
-		bool m_bHdg;
-		bool m_bHdgMoving;
-		float m_hdgSp;
-		float m_hdgDz;
+		bool m_bHdg = false;
+		bool m_bHdgMoving = false;
+		float m_hdgSp = 0.0;
+		float m_hdgDz = 10.0;
 		float m_hdgDzNav;
-		float m_dHdg;
-		float m_hTouchdown;
+		float m_dHdg = 0.0;
+		float m_hTouchdown = 0.0;
 	};
 }
 #endif

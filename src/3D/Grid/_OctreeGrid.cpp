@@ -204,14 +204,7 @@ namespace kai
 	{
 		m_vPorigin.set(0);
 		m_vRootCellSize.set(10);
-		m_nMaxLevel = 4;
 
-		m_pCell = nullptr;
-		m_dTexpireCell = 0;
-		m_dTexpirePCL = 0;
-
-		m_nMaxCells = 100000 / 12;
-		m_bColCellOcc = false;
 		m_vColCellOcc.set(1);
 	}
 

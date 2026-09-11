@@ -50,8 +50,8 @@ namespace kai
 		}
 
 	protected:
-		string m_msgFinishSend;
-		string m_msgFinishRecv;
+		string m_msgFinishSend = "";
+		string m_msgFinishRecv = "EOJ";
 
 		INTERVAL_EVENT m_ieSendHB;
 	};

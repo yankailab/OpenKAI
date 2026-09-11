@@ -13,7 +13,6 @@ namespace kai
 	_Threshold::_Threshold()
 	{
 		m_type = vision_threshold;
-		m_pV = nullptr;
 	}
 
 	_Threshold::~_Threshold()

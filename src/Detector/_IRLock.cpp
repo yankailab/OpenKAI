@@ -12,11 +12,6 @@ namespace kai
 
 	_IRLock::_IRLock()
 	{
-		m_pIO = nullptr;
-		m_iBuf = 0;
-
-		m_vOvCamSize.x = 1.0 / 319.0;
-		m_vOvCamSize.y = 1.0 / 199.0;
 	}
 
 	_IRLock::~_IRLock()

@@ -63,8 +63,8 @@ namespace kai
 	protected:
 		// rendering
 		vInt2 m_vWinSize;
-		bool m_bFullScreen;
-		string m_dirSave;
+		bool m_bFullScreen = false;
+		string m_dirSave = "";
 
 		GVIEWER_CAM_PROJ m_camProj;
 		GVIEWER_CAM_POSE m_camPose, m_camPoseDefault;
@@ -74,9 +74,9 @@ namespace kai
 		vector<_GeometryBase *> m_vpGb;
 		GEOMETRY_RINGBUF<GEOMETRY_POINT> m_grPt;
         GEOMETRY_RINGBUF<GEOMETRY_LINE> m_grLn;
-		int m_nPbuf;
-		int m_nLbuf;
-		uint64_t m_dTexpire;
+		int m_nPbuf = 200000;
+		int m_nLbuf = 100000;
+		uint64_t m_dTexpire = 0;
 	};
 
 }

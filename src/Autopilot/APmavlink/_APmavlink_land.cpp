@@ -5,14 +5,11 @@ namespace kai
 
 	_APmavlink_land::_APmavlink_land()
 	{
-		m_pDS = nullptr;
 		m_vDSrange.clear();
 
-		m_pTag = nullptr;
 		m_vFov.set(60, 60);
 
 		m_vComplete.set(0.1, 0.1, 0.3, 3.0);
-		m_zrK = 1.0;
 	}
 
 	_APmavlink_land::~_APmavlink_land()

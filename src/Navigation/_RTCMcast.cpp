@@ -12,7 +12,6 @@ namespace kai
 
 	_RTCMcast::_RTCMcast()
 	{
-		m_pIOsend = nullptr;
 	}
 
 	_RTCMcast::~_RTCMcast()

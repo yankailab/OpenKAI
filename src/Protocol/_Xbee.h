@@ -198,7 +198,7 @@ namespace kai
 		}
 
 	protected:
-		uint64_t m_myAddr;
+		uint64_t m_myAddr = 0;
 
 		XBcb_receivePacket m_cbReceivePacket;
 	};

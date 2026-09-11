@@ -62,12 +62,6 @@ namespace kai
 	_Img2Frame::_Img2Frame()
 	{
 		m_type = vision_Img2Frame;
-
-		m_dir = "";
-		m_iFrame = 0;
-		m_vOffset = -50.0;
-		m_vScale = 64.0;
-		m_bLoop = true;
 	}
 
 	_Img2Frame::~_Img2Frame()

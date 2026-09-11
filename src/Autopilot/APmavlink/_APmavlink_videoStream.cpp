@@ -5,17 +5,6 @@ namespace kai
 
 	_APmavlink_videoStream::_APmavlink_videoStream()
 	{
-		m_pAP = NULL;
-		m_pCurl = NULL;
-		m_fName = "";
-		m_process = "";
-		m_dir = "";
-
-		m_iWP = INT_MAX;
-
-		m_gstPID = 0;
-		m_tVidInt = 10;
-		m_tRecStart = 0;
 	}
 
 	_APmavlink_videoStream::~_APmavlink_videoStream()

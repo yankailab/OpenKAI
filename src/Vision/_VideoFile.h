@@ -34,7 +34,7 @@ namespace kai
 
 	protected:
 		VideoCapture m_vc;
-		string m_videoFile;
+		string m_videoFile = "";
 	};
 
 }

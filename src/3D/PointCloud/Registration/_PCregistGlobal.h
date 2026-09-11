@@ -38,16 +38,16 @@ namespace kai
 		}
 
 	protected:
-		double m_rNormal;
-		double m_rFeature;
-		int m_maxNNnormal;
-		int m_maxNNfpfh;
+		double m_rNormal = 0.2;
+		double m_rFeature = 0.5;
+		int m_maxNNnormal = 30;
+		int m_maxNNfpfh = 100;
 
-		_PointCloud *m_pSrc;
-		_PointCloud *m_pTgt;
+		_PointCloud *m_pSrc = nullptr;
+		_PointCloud *m_pTgt = nullptr;
 		RegistrationResult m_RR;
-		_PCtransform *m_pTf;
-		double m_lastFit;
+		_PCtransform *m_pTf = nullptr;
+		double m_lastFit = 0.0;
 	};
 
 }

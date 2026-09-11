@@ -5,8 +5,6 @@ namespace kai
 
 	_APmavlink_httpJson::_APmavlink_httpJson()
 	{
-		m_pAP = nullptr;
-		m_url = "";
 	}
 
 	_APmavlink_httpJson::~_APmavlink_httpJson()

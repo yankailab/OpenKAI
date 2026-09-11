@@ -38,15 +38,15 @@ namespace kai
 		}
 
 	protected:
-		string m_addrRemote;
-		uint16_t m_portRemote;
-		uint16_t m_portLocal;
-		bool m_bW2R;	// write back to the client recevied from
-		int m_bWbroadcast;
+		string m_addrRemote = "";
+		uint16_t m_portRemote = 0;
+		uint16_t m_portLocal = 0;
+		bool m_bW2R = true;	// write back to the client recevied from
+		int m_bWbroadcast = 0;
 
 		sockaddr_in m_sAddrLocal;
 		sockaddr_in m_sAddrRemote;
-		int m_socket;
+		int m_socket = -1;
 	};
 
 }

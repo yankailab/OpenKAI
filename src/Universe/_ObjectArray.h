@@ -39,9 +39,9 @@ namespace kai
 		}
 
 	protected:
-		_Object *m_pO;
-		int m_nBuf;
-		int m_nO;
+		_Object *m_pO = nullptr;
+		int m_nBuf = 128;
+		int m_nO = 0;
 	};
 
 }

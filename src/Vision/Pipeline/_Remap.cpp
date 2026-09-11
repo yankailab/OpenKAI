@@ -13,9 +13,6 @@ namespace kai
 	_Remap::_Remap()
 	{
 		m_type = vision_remap;
-		m_pV = nullptr;
-		m_bReady = false;
-		m_fCalib = "";
 	}
 
 	_Remap::~_Remap()

@@ -9,9 +9,7 @@ namespace kai
 
 	_ZDmotor::_ZDmotor()
 	{
-		m_pMB = nullptr;
 		m_ID = 1;
-		m_iMode = 3; // speed control
 	}
 
 	_ZDmotor::~_ZDmotor()

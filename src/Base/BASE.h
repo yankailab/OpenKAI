@@ -43,12 +43,12 @@ namespace kai
 		string getClass(void);
 
 	protected:
-		string m_class;
-		string m_name;
+		string m_class = "";
+		string m_name = "";
 
-		string m_fConfig;
+		string m_fConfig = "";
 
-		bool m_bLog;
+		bool m_bLog = false;
 	};
 
 }

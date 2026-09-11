@@ -25,33 +25,6 @@ namespace kai
 {
 	ImGUIviewerGLRenderer::ImGUIviewerGLRenderer()
 	{
-		m_bInitTried = false;
-		m_bReady = false;
-		m_bPendingUpload = false;
-		m_program = 0;
-		m_vaoP = 0;
-		m_vboP = 0;
-		m_vaoL = 0;
-		m_vboL = 0;
-		m_attrPos = -1;
-		m_attrCol = -1;
-		m_attrAlpha = -1;
-		m_locEye = -1;
-		m_locRight = -1;
-		m_locUp = -1;
-		m_locForward = -1;
-		m_locCanvasSize = -1;
-		m_locProjType = -1;
-		m_locFovRad = -1;
-		m_locNear = -1;
-		m_locFar = -1;
-		m_locOrtho = -1;
-		m_locPointScale = -1;
-		m_locRoundPoints = -1;
-		m_uploadedVersion = 0;
-		m_pendingVersion = 0;
-		m_nPoints = 0;
-		m_nLines = 0;
 	}
 
 	ImGUIviewerGLRenderer::~ImGUIviewerGLRenderer()

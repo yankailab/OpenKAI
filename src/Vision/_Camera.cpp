@@ -13,9 +13,6 @@ namespace kai
 	_Camera::_Camera()
 	{
 		m_type = vision_camera;
-		m_deviceID = 0;
-		m_nInitRead = 1;
-		m_bResetCam = false;
 	}
 
 	_Camera::~_Camera()

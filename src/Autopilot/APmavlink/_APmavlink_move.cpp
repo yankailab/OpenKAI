@@ -5,7 +5,6 @@ namespace kai
 
 	_APmavlink_move::_APmavlink_move()
 	{
-		m_pAP = nullptr;
 	}
 
 	_APmavlink_move::~_APmavlink_move()

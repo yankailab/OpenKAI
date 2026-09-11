@@ -65,7 +65,7 @@ namespace kai
 		vector<ISING_JW>::iterator findSpinAssign(const vLongBit &w);
 
 	protected:
-		string m_fName;
+		string m_fName = "";
 		string m_probIsing; 			// problem input
 
 		int m_nSpin;					// spin number

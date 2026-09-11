@@ -13,17 +13,6 @@ namespace kai
 
     _PCregistCol::_PCregistCol()
     {
-        m_pPC = nullptr;
-        m_pTf = nullptr;
-
-        m_rVoxel = 0.1;
-        m_maxDistance = 0.1;
-        m_rNormal = 0.2;
-        m_maxNNnormal = 30;
-        m_rFitness = 1e-6;
-        m_rRMSE = 1e-6;
-        m_maxIter = 30;
-        m_minFit = 0.0;
     }
 
     _PCregistCol::~_PCregistCol()

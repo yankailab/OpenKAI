@@ -5,8 +5,6 @@ namespace kai
 
 	_APmavlink_rcChannel::_APmavlink_rcChannel()
 	{
-		m_pAP = nullptr;
-
 		m_rcMode.update();
 		m_rcStickV.update();
 		m_rcStickH.update();

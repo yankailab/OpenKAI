@@ -80,19 +80,19 @@ namespace kai
 		}
 
 	protected:
-		uint32_t m_nDevice;
-		ScDeviceInfo *m_pScDevListInfo;
-		ScDeviceHandle m_scDevHandle;
+		uint32_t m_nDevice = 0;
+		ScDeviceInfo *m_pScDevListInfo = nullptr;
+		ScDeviceHandle m_scDevHandle = 0;
 		ScSensorIntrinsicParameters m_scCamParams;
 		ScCtrl m_scCtrl;
 
-		ScFrame m_scfRGB;
-		ScFrame m_scfDepth;
-		ScFrame m_scfTransformedDepth;
-		ScFrame m_scfTransformedRGB;
-		ScFrame m_scfIR;
+		ScFrame m_scfRGB = {0};
+		ScFrame m_scfDepth = {0};
+		ScFrame m_scfTransformedDepth = {0};
+		ScFrame m_scfTransformedRGB = {0};
+		ScFrame m_scfIR = {0};
 
-		ScVector3f *m_pScVw; // world vector
+		ScVector3f *m_pScVw = NULL; // world vector
 	};
 
 }

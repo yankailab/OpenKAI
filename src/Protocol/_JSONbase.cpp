@@ -6,8 +6,6 @@ namespace kai
 
     _JSONbase::_JSONbase()
     {
-        m_msgFinishSend = "";
-        m_msgFinishRecv = "EOJ";
     }
 
     _JSONbase::~_JSONbase()

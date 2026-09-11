@@ -33,7 +33,7 @@ namespace kai
         }
 
     protected:
-        float m_rVoxel;
+        float m_rVoxel = 0.1;
     };
 
 }

@@ -52,18 +52,18 @@ namespace kai
 		}
 
 	protected:
-		string m_dir;
+		string m_dir = "";
 		vector<string> m_vFiles;
-		string m_fName;
-		bool m_bRemoveAfterUpload;
+		string m_fName = "";
+		bool m_bRemoveAfterUpload = true;
 
-		UPLOADER_METHOD m_method;
-		string m_url;
+		UPLOADER_METHOD m_method = uploader_http;
+		string m_url = "";
 		uint8_t m_pBuf[UPLOADER_NB];
 
 		// Curl etc
-		string m_cmd;
-		bool m_bConfirmCmdResult;
+		string m_cmd = "";
+		bool m_bConfirmCmdResult = false;
 
 		// Http
 		HttpClient m_httpC;

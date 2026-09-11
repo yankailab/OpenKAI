@@ -5,11 +5,6 @@ namespace kai
 
 	_CANbase::_CANbase()
 	{
-		m_bOpen = false;
-		m_nFrameRecv = 0;
-
-		m_iErr = 0;
-		m_nErrReconnect = 1;
 	}
 
 	_CANbase::~_CANbase()

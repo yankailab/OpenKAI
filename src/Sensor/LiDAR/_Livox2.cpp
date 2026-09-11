@@ -9,38 +9,14 @@ namespace kai
 
     _Livox2::_Livox2()
     {
-        m_pTdeviceQueryR = nullptr;
-        m_pTctrlCmdW = nullptr;
-        m_pTctrlCmdR = nullptr;
-        m_pTpushCmdR = nullptr;
-        m_pTpclR = nullptr;
-        m_pTimuR = nullptr;
-
-        m_pUDPdeviceQuery = nullptr;
-        m_pUDPctrlCmd = nullptr;
-        m_pUDPpushCmd = nullptr;
-        m_pUDPpcl = nullptr;
-        m_pUDPimu = nullptr;
-        m_pUDPlog = nullptr;
-
         // lvx state
-        m_lvxState = lvxState_deviceQuery;
         m_lvxTout.setTout(USEC_10SEC);
 
         // lvx info
-        m_lvxSN = "";
         memset(m_pLvxSN, 0, LVX2_N_SN);
-        m_lvxIP = 0;
-        m_lvxCmdPort = 0;
-        m_lvxDevType = 0;
 
         // lvx default config
         m_lvxCfg.init();
-
-        // lvx IMU
-        m_bIMUstab = false;
-        m_tIMU = 0;
-        m_pIMU = nullptr;
     }
 
     _Livox2::~_Livox2()

@@ -13,7 +13,6 @@ namespace kai
 	_D2RGB::_D2RGB()
 	{
 		m_type = vision_D2RGB;
-		m_pV = nullptr;
 	}
 
 	_D2RGB::~_D2RGB()

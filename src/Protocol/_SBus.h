@@ -212,8 +212,8 @@ namespace kai
 		}
 
 	protected:
-		bool m_bSender;
-		bool m_bRawSbus;
+		bool m_bSender = false;
+		bool m_bRawSbus = true;
 
 		SBUS_FRAME m_frame;
 	};

@@ -31,10 +31,6 @@ namespace kai
 	public:
 		ROS_fastLio() : Node("openkai_node")
 		{
-			m_topicPC2 = "";  //"Laser_map";
-			m_topicOdom = ""; //"Odometry";
-			m_topicPath = ""; //"path";
-
 			m_vAxisIdx.set(0, 1, 2);
 			m_vP.set(0);
 			m_vA.set(0);
@@ -60,9 +56,9 @@ namespace kai
 		rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr m_pScPath;
 
 	public:
-		string m_topicPC2;
-		string m_topicOdom;
-		string m_topicPath;
+		string m_topicPC2 = ""; // "Laser_map";
+		string m_topicOdom = ""; // "Odometry";
+		string m_topicPath = ""; // "path";
 
 		vInt3 m_vAxisIdx;
 		vFloat3 m_vP;

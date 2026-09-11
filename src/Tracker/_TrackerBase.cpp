@@ -12,13 +12,7 @@ namespace kai
 
 	_TrackerBase::_TrackerBase()
 	{
-		m_pV = nullptr;
-		m_trackerType = "";
-		m_trackState = track_stop;
 		m_bb.clear();
-		m_iSet = 0;
-		m_iInit = 0;
-		m_margin = 0.0;
 	}
 
 	_TrackerBase::~_TrackerBase()

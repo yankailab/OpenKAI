@@ -5,26 +5,13 @@ namespace kai
 
 	_APmavlink_visionEstimate::_APmavlink_visionEstimate()
 	{
-		m_pAP = nullptr;
-		m_pNav = nullptr;
-
-		m_linearAccelCov = 0.01;
-		m_angularVelCov = 0.01;
 		m_mTsensor2aero = Matrix4f{{0, 0, -1, 0},
 								   {1, 0, 0, 0},
 								   {0, -1, 0, 0},
 								   {0, 0, 0, 1}}; // default for T265
 		m_mTaero2sensor = m_mTsensor2aero.inverse();
 
-		m_thrJumpPos = 0.1;	 // m
-		m_thrJumpSpd = 20.0; // m/s
-		m_iReset = 0;
 		m_vAxisRPY.set(0, 1, 2);
-
-		m_apModeInError = -1;
-		m_bNaN = false;
-		m_bPos = true;
-		m_bSpd = true;
 
 		m_Dspd.x = 0;
 		m_Dspd.y = 0;

@@ -9,7 +9,6 @@ namespace kai
 
 	_IAI::_IAI()
 	{
-		m_pMB = nullptr;
 	}
 
 	_IAI::~_IAI()

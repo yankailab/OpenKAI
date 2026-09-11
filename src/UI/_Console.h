@@ -37,7 +37,7 @@ namespace kai
 
 	protected:
 		vector<BASE *> m_vpB;
-		int m_iY;
+		int m_iY = 0;
 	};
 
 }

@@ -13,13 +13,6 @@ namespace kai
 
     _PCregistICP::_PCregistICP()
     {
-        m_pSrc = NULL;
-        m_pTgt = NULL;
-        m_pTf = NULL;
-        m_lastFit = 0.0;
-
-        m_est = icp_p2point;
-        m_thr = 0.02;
     }
 
     _PCregistICP::~_PCregistICP()

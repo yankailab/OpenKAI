@@ -63,7 +63,7 @@ namespace kai
 		}
 
 	protected:
-		_Thread *m_pT;
+		_Thread *m_pT = nullptr;
 		pthread_mutex_t m_mutexAtomic;
 	};
 

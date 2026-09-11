@@ -9,8 +9,6 @@ namespace kai
 
 	_OrientalMotor::_OrientalMotor()
 	{
-		m_pMB = nullptr;
-		m_iData = 0;
 	}
 
 	_OrientalMotor::~_OrientalMotor()

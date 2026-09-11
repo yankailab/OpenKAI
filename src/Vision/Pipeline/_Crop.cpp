@@ -13,7 +13,6 @@ namespace kai
 	_Crop::_Crop()
 	{
 		m_type = vision_crop;
-		m_pV = nullptr;
 
 		m_vRoi.clear();
 	}
