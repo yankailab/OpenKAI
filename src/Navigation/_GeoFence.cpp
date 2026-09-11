@@ -63,7 +63,6 @@ namespace kai
 		return this->_ModuleBase::saveConfig(j, fName);
 	}
 
-
 	bool _GeoFence::start(void)
 	{
 		NULL_F(m_pT);

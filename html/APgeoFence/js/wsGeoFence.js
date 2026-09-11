@@ -85,12 +85,18 @@ function sendControl() {
 }
 
 function onStartClick() {
-    // TODO: Start auto mode using the geofence set on the rover.
-    showPendingControl('Auto mode');
-}
+    stopControl();
+    if (typeof wsSocket === 'undefined' || wsSocket.readyState !== WebSocket.OPEN) {
+        $('#controlFeedback').textContent = 'Rover disconnected. No command sent.';
+        return;
+    }
 
-function showPendingControl(action) {
-    $('#controlFeedback').textContent = action + ' is not connected yet. No command sent.';
+    try {
+        wsSocket.send(JSON.stringify({ cmd: 'startAuto', module: 'apDrive' }) + strEOJ);
+        $('#controlFeedback').textContent = 'Auto mode start command sent.';
+    } catch (error) {
+        $('#controlFeedback').textContent = 'Could not send auto mode start command.';
+    }
 }
 
 

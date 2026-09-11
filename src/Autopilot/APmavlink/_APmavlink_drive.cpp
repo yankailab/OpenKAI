@@ -5,23 +5,11 @@ namespace kai
 
 	_APmavlink_drive::_APmavlink_drive()
 	{
-		m_pAP = nullptr;
-		m_pRcYaw = nullptr;
-		m_pRcThrottle = nullptr;
-
-		m_yawMode = 1.0;
-		m_bSetYawSpeed = false;
-		m_bRcChanOverride = false;
-
-		m_steer = 0.0;
-		m_speed = 0.0;
-		m_pwmM = 1500;
-		m_pwmD = 500;
-
 		m_btnPressed = apDrive_btnNone;
 		m_tLastBtn = 0;
 		m_tOutBtn = 100000;
 
+		m_dMode = apDrive_modeStandby;
 		m_pGfence = nullptr;
 		m_pOctGrid = nullptr;
 		m_octGridOccu = 1;
@@ -35,78 +23,39 @@ namespace kai
 
 	bool _APmavlink_drive::init(const json &j)
 	{
-		IF_F(!this->_ModuleBase::init(j));
-
-		jKv(j, "bSetYawSpeed", m_bSetYawSpeed);
-		jKv(j, "yawMode", m_yawMode);
-		jKv(j, "bRcChanOverride", m_bRcChanOverride);
+		IF_F(!this->_APmavlink_move::init(j));
 
 		jKv(j, "steer", m_steer);
 		jKv(j, "speed", m_speed);
 		jKv(j, "pwmM", m_pwmM);
 		jKv(j, "pwmD", m_pwmD);
-		jKv(j, "tOutBtn", m_tOutBtn);
+		jKv(j, "iRCsteer", m_iRCsteer);
+		jKv(j, "iRCthrottle", m_iRCthrottle);
 
+		jKv(j, "tOutBtn", m_tOutBtn);
+		jKv(j, "apModeMove", m_apModeMove);
+		jKv(j, "octGridOccu", m_octGridOccu);
 		jKv(j, "speedGo", m_speedGo);
 		jKv(j, "steerTurn", m_steerTurn);
-		jKv(j, "octGridOccu", m_octGridOccu);
-
-
-		uint16_t *pRC[19];
-		pRC[0] = NULL;
-		pRC[1] = &m_rcOverride.chan1_raw;
-		pRC[2] = &m_rcOverride.chan2_raw;
-		pRC[3] = &m_rcOverride.chan3_raw;
-		pRC[4] = &m_rcOverride.chan4_raw;
-		pRC[5] = &m_rcOverride.chan5_raw;
-		pRC[6] = &m_rcOverride.chan6_raw;
-		pRC[7] = &m_rcOverride.chan7_raw;
-		pRC[8] = &m_rcOverride.chan8_raw;
-		pRC[9] = &m_rcOverride.chan9_raw;
-		pRC[10] = &m_rcOverride.chan10_raw;
-		pRC[11] = &m_rcOverride.chan11_raw;
-		pRC[12] = &m_rcOverride.chan12_raw;
-		pRC[13] = &m_rcOverride.chan13_raw;
-		pRC[14] = &m_rcOverride.chan14_raw;
-		pRC[15] = &m_rcOverride.chan15_raw;
-		pRC[16] = &m_rcOverride.chan16_raw;
-		pRC[17] = &m_rcOverride.chan17_raw;
-		pRC[18] = &m_rcOverride.chan18_raw;
-
-		for (int i = 1; i < 19; i++)
-			*pRC[i] = UINT16_MAX;
-
-		int iRcYaw = 1;
-		jKv(j, "iRcYaw", iRcYaw);
-		IF_F(iRcYaw <= 0 || iRcYaw > 18);
-		m_pRcYaw = pRC[iRcYaw];
-
-		int iRcThrottle = 3;
-		jKv(j, "iRcThrottle", iRcThrottle);
-		IF_F(iRcThrottle <= 0 || iRcThrottle > 18);
-		m_pRcThrottle = pRC[iRcThrottle];
 
 		return true;
 	}
 
 	bool _APmavlink_drive::link(const json &j, ModuleMgr *pM)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_APmavlink_move::link(j, pM));
 
-		string n = "";
-		jKv(j, "_APmavlink_base", n);
-		m_pAP = (_APmavlink_base *)(pM->findModule(n));
-		IF_Le_F(!m_pAP, "_APmavlink_base not found: " + n);
+		string n;
 
-        n = "";
-        jKv(j, "_OctreeGrid", n);
-        m_pOctGrid = (_OctreeGrid *)(pM->findModule(n));
-        NULL_F(m_pOctGrid);
+		n = "";
+		jKv(j, "_OctreeGrid", n);
+		m_pOctGrid = (_OctreeGrid *)(pM->findModule(n));
+		IF_Le_F(!m_pOctGrid, "_OctreeGrid not found: " + n);
 
-        n = "";
-        jKv(j, "_GeoFence", n);
-        m_pGfence = (_GeoFence *)(pM->findModule(n));
-        NULL_F(m_pGfence);
+		n = "";
+		jKv(j, "_GeoFence", n);
+		m_pGfence = (_GeoFence *)(pM->findModule(n));
+		IF_Le_F(!m_pGfence, "_GeoFence not found: " + n);
 
 		return true;
 	}
@@ -119,10 +68,10 @@ namespace kai
 
 	bool _APmavlink_drive::check(void)
 	{
-		NULL_F(m_pAP);
-		NULL_F(m_pAP->getMavlink());
+		NULL_F(m_pOctGrid);
+		NULL_F(m_pGfence);
 
-		return this->_ModuleBase::check();
+		return this->_APmavlink_move::check();
 	}
 
 	void _APmavlink_drive::update(void)
@@ -131,7 +80,10 @@ namespace kai
 		{
 			m_pT->autoFPS();
 
-			updateDrive();
+			if (updateCtrl())
+			{
+				updateDrive();
+			}
 
 			ON_PAUSE;
 		}
@@ -139,83 +91,93 @@ namespace kai
 
 	void _APmavlink_drive::onPause(void)
 	{
-		IF_(!m_bRcChanOverride);
-
-		*m_pRcYaw = 0;
-		*m_pRcThrottle = 0;
-		m_pAP->getMavlink()->rcChannelsOverride(m_rcOverride);
+		releaseRCoverride();
 	}
 
-    bool _APmavlink_drive::updateCtrl(void)
-    {
-        IF_F(!check());
-
-        _Mavlink *pMav = m_pAP->getMavlink();
-
-		bool bObstacle = false;
-		// TODO: read the selected cell list from m_pOctGrid, iterate over them to see if any cell has nP > m_octGridOccu, if yes bObstacle = true
-		//m_pOctGrid->getSelectedCells()
-
-		bool bFenceBreach = false;
-        if (m_pGfence)
-        {
-            vDouble4 vPos = m_pAP->getGlobalPos();
-            float hdg = m_pAP->getHdg();
-            m_pGfence->setPosHdg(vDouble2(vPos.x, vPos.y), hdg);
-
-            bFenceBreach = m_pGfence->bBreach();
-        }
-
-
-		//TODO: button ctrl to speed and steer
-
-
-
-        if (!bObstacle && !bFenceBreach)
-        {
-            // no obstacle nor fence breach, just Go
-            setSteerSpeed(0, m_speedGo);
-        }
-        else
-        {
-            // obstacle on the way or fence breach, make turn
-            setSteerSpeed(m_steerTurn, 0);
-        }
-
-        return true;
-    }
-
-	bool _APmavlink_drive::updateDrive(void)
+	bool _APmavlink_drive::updateCtrl(void)
 	{
-		if (getTbootUs() - m_tLastBtn > m_tOutBtn)
-			m_btnPressed = apDrive_btnNone;
-
 		IF_F(!check());
 
-		if (m_bSetYawSpeed)
+		// check btn ctrl
+		if (getTbootUs() - m_tLastBtn > m_tOutBtn)
 		{
-			m_pAP->getMavlink()->clNavSetYawSpeed(m_steer,
-												  m_speed,
-												  m_yawMode);
+			m_btnPressed = apDrive_btnNone;
 		}
 
-		if (m_bRcChanOverride)
+		// switch mode
+		if (m_btnPressed == apDrive_btnNone)
 		{
-			if (m_pRcYaw)
-			{
-				*m_pRcYaw = constrain(m_steer * m_pwmD + m_pwmM,
-									  m_pwmM - m_pwmD,
-									  m_pwmM + m_pwmD);
-			}
+			if (m_dMode == apDrive_modeManual)
+				m_dMode = apDrive_modeStandby;
+		}
+		else if (m_btnPressed == apDrive_btnStop)
+		{
+			m_dMode = apDrive_modeStandby;
+		}
+		else
+		{
+			m_dMode = apDrive_modeManual;
+		}
 
-			if (m_pRcThrottle)
+		// find obstacle
+		bool bObstacle = false;
+		for (const auto &id : m_pOctGrid->getSelectedCells())
+		{
+			const auto *pCell = m_pOctGrid->getCell(id);
+			if (pCell && pCell->m_nP > m_octGridOccu)
 			{
-				*m_pRcThrottle = constrain(m_speed * m_pwmD + m_pwmM,
-										   m_pwmM - m_pwmD,
-										   m_pwmM + m_pwmD);
+				bObstacle = true;
+				break;
 			}
+		}
 
-			m_pAP->getMavlink()->rcChannelsOverride(m_rcOverride);
+		// check fence breach
+		bool bFenceBreach = false;
+		if (m_pGfence)
+		{
+			vDouble4 vPos = m_pAP->getGlobalPos();
+			float hdg = m_pAP->getHdg();
+			m_pGfence->setPosHdg(vDouble2(vPos.x, vPos.y), hdg);
+
+			bFenceBreach = m_pGfence->bBreach();
+		}
+
+		// stop in Standby mode
+		if (m_dMode == apDrive_modeStandby)
+		{
+			setSteerSpeed(0, 0);
+			return true;
+		}
+
+		// check AP mode and arming
+		if (m_pAP->getMode() == m_apModeMove)
+		{
+			if (!m_pAP->bArmed())
+				m_pAP->setArm(true);
+		}
+		else
+		{
+			m_pAP->setMode(m_apModeMove);
+		}
+
+		// move
+		if (m_dMode == apDrive_modeManual)
+		{
+			if (m_btnPressed == apDrive_btnForward)
+				setSteerSpeed(0, m_speedGo);
+			else if (m_btnPressed == apDrive_btnBackward)
+				setSteerSpeed(0, -m_speedGo);
+			else if (m_btnPressed == apDrive_btnLeft)
+				setSteerSpeed(-m_steerTurn, 0);
+			else if (m_btnPressed == apDrive_btnRight)
+				setSteerSpeed(m_steerTurn, 0);
+		}
+		else if (m_dMode == apDrive_modeAuto)
+		{
+			if (!bObstacle)// && !bFenceBreach)
+				setSteerSpeed(0, m_speedGo);
+			else
+				setSteerSpeed(m_steerTurn, 0);
 		}
 
 		return true;
@@ -227,25 +189,21 @@ namespace kai
 		m_speed = spd;
 	}
 
-	void _APmavlink_drive::setYawMode(bool bRelative)
+	void _APmavlink_drive::updateDrive(void)
 	{
-		if (bRelative)
-			m_yawMode = 1.0;
-		else
-			m_yawMode = 0.0;
+		setRCchan(m_iRCsteer, constrain(m_steer * m_pwmD + m_pwmM, m_pwmM - m_pwmD, m_pwmM + m_pwmD), false);
+		setRCchan(m_iRCthrottle, constrain(m_speed * m_pwmD + m_pwmM, m_pwmM - m_pwmD, m_pwmM + m_pwmD), true); // flash cmd to AP mavlink
 	}
 
 	void _APmavlink_drive::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_ModuleBase::console(pConsole);
+		this->_APmavlink_move::console(pConsole);
 
-		((_Console *)pConsole)->addMsg("steer=" + f2str(m_steer) + ", speed=" + f2str(m_speed));
-		((_Console *)pConsole)->addMsg("btnPressed=" + i2str(m_btnPressed));
-
-		NULL_(m_pRcYaw);
-		NULL_(m_pRcThrottle);
-		((_Console *)pConsole)->addMsg("yawMode=" + f2str(m_yawMode) + ", yaw=" + i2str(*m_pRcYaw) + ", throttle=" + i2str(*m_pRcThrottle));
+		_Console *pC = (_Console *)pConsole;
+		pC->addMsg("steer = " + f2str(m_steer) + ", speed = " + f2str(m_speed));
+		pC->addMsg("btnPressed = " + i2str(m_btnPressed));
+		pC->addMsg("dMode = " + i2str(m_dMode));
 	}
 
 	void _APmavlink_drive::console(const json &j, void *pJSONbase)
@@ -256,12 +214,10 @@ namespace kai
 
 		if (cmd == "setSteerSpeed")
 		{
-			float steer = 0;
-			jKv(j, "steer", steer);
-			float speed = 0;
-			jKv(j, "speed", speed);
+			jKv(j, "steer", m_steer);
+			jKv(j, "speed", m_speed);
 
-			setSteerSpeed(steer, speed);
+			setSteerSpeed(m_steer, m_speed);
 
 			NULL_(pJb);
 			json jr = json::object();
@@ -297,6 +253,16 @@ namespace kai
 			json jr = json::object();
 			jr["cmd"] = "ctrlBtn";
 			jr["bSuccess"] = bSuccess;
+			pJb->sendJson(jr);
+		}
+		else if (cmd == "startAuto")
+		{
+			m_dMode = apDrive_modeAuto;
+
+			NULL_(pJb);
+			json jr = json::object();
+			jr["cmd"] = "startAuto";
+			jr["bSuccess"] = true;
 			pJb->sendJson(jr);
 		}
 	}

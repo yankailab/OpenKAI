@@ -6,6 +6,8 @@
 #define IGN_YAW (1 << 10)
 #define IGN_YAW_RATE (1 << 11)
 
+#define APMAV_N_RC 19
+
 namespace kai
 {
 
@@ -15,8 +17,8 @@ namespace kai
 		_APmavlink_move();
 		~_APmavlink_move();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool init(const json &j);
+		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual void update(void);
 		virtual void console(void *pConsole);
@@ -25,30 +27,35 @@ namespace kai
 		virtual void setHold(void);
 
 		virtual void setHdg(float y = 0,
-					float r = 0,
-					bool bYaw = false,
-					bool bYawRate = true,
-					uint8_t frame = MAV_FRAME_BODY_OFFSET_NED);
+							float r = 0,
+							bool bYaw = false,
+							bool bYawRate = true,
+							uint8_t frame = MAV_FRAME_BODY_OFFSET_NED);
 
 		virtual void setVlocal(const vFloat4 &vSpd,
-					   bool bYaw = false,
-					   bool bYawRate = true,
-					   uint8_t frame = MAV_FRAME_BODY_OFFSET_NED);
+							   bool bYaw = false,
+							   bool bYawRate = true,
+							   uint8_t frame = MAV_FRAME_BODY_OFFSET_NED);
 
 		virtual void setPlocal(const vFloat4 &vP,
-					   bool bYaw = false,
-					   bool bYawRate = true,
-					   uint8_t frame = MAV_FRAME_BODY_OFFSET_NED);
+							   bool bYaw = false,
+							   bool bYawRate = true,
+							   uint8_t frame = MAV_FRAME_BODY_OFFSET_NED);
 
 		virtual void setPglobal(const vDouble4 &vP,
-						bool bYaw = true,
-						bool bYawRate = false,
-						uint8_t frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT);
+								bool bYaw = true,
+								bool bYawRate = false,
+								uint8_t frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT);
 
-		virtual void doReposition(const vDouble4 &vP,	//Lat, Lon, Alt, Yaw
-						float speed = -1,
-						float radius = 0,
-						uint8_t frame = MAV_FRAME_GLOBAL);
+		virtual void doReposition(const vDouble4 &vP, // Lat, Lon, Alt, Yaw
+								  float speed = -1,
+								  float radius = 0,
+								  uint8_t frame = MAV_FRAME_GLOBAL);
+
+		virtual void setYawSpeed(float steer, float speed, float yawMode = 1.0);	//1: default: relative
+
+		virtual void setRCchan(uint8_t iChan, uint16_t v, bool bSendCmd = false);
+		virtual void releaseRCoverride(void);
 
 	private:
 		static void *getUpdate(void *This)
@@ -59,6 +66,9 @@ namespace kai
 
 	protected:
 		_APmavlink_base *m_pAP;
+
+		mavlink_rc_channels_override_t m_rcOverride;
+		uint16_t *m_pRCchan[19] = {};
 	};
 
 }

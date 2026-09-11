@@ -148,8 +148,6 @@ namespace kai
 	protected:
 		_Mavlink *m_pMav;
 		AP_TYPE m_apType;
-		// int m_apMode;
-		// bool m_bApArmed;
 
 		bool m_bHomeSet;
 		vDouble3 m_vHomePos;

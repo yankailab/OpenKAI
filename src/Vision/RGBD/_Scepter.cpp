@@ -296,6 +296,8 @@ namespace kai
 		const static float s_b = 1.0 / 1000.0;
 		const static float c_b = 1.0 / 255.0;
 
+		uint64_t tNow = getApproxTbootUs();
+
 		// Convert Depth frame to World vectors.
 		scConvertDepthFrameToPointCloudVector(m_scDevHandle,
 											  &m_scfDepth,
@@ -322,7 +324,7 @@ namespace kai
 					vC *= c_b;
 				}
 
-				m_pPointCloud->add(vP, vC, 1);
+				m_pPointCloud->add(vP, vC, tNow);
 			}
 		}
 	}

@@ -4,8 +4,7 @@
 #include "../../Protocol/_JSONbase.h"
 #include "../../Navigation/_GeoFence.h"
 #include "../../3D/Grid/_OctreeGrid.h"
-#include "_APmavlink_base.h"
-
+#include "_APmavlink_move.h"
 
 namespace kai
 {
@@ -19,7 +18,14 @@ namespace kai
 		apDrive_btnBackward = 5,
 	};
 
-	class _APmavlink_drive : public _ModuleBase
+	enum AP_DRIVE_MODE
+	{
+		apDrive_modeStandby = 0,
+		apDrive_modeManual = 1,
+		apDrive_modeAuto = 2,
+	};
+
+	class _APmavlink_drive : public _APmavlink_move
 	{
 	public:
 		_APmavlink_drive();
@@ -34,13 +40,11 @@ namespace kai
 		virtual void console(const json &j, void *pJSONbase);
 
 		virtual void setSteerSpeed(float steer, float spd);
-		virtual void setYawMode(bool bRelative);
 
 	protected:
 		virtual void onPause(void);
-
-		bool updateCtrl(void);
-		bool updateDrive(void);
+		virtual bool updateCtrl(void);
+		virtual void updateDrive(void);
 		static void *getUpdate(void *This)
 		{
 			((_APmavlink_drive *)This)->update();
@@ -48,32 +52,24 @@ namespace kai
 		}
 
 	protected:
-		_APmavlink_base *m_pAP;
-
-		bool m_bSetYawSpeed;
-		float m_yawMode;
-		bool m_bRcChanOverride;
-
-		float m_steer; // normalized
-		float m_speed; // normalized
-		float m_pwmM;
-		float m_pwmD;
-		uint16_t *m_pRcYaw;
-		uint16_t *m_pRcThrottle;
-		mavlink_rc_channels_override_t m_rcOverride;
+		float m_steer = 0.0; // normalized, [-1, 1]
+		float m_speed = 0.0; // normalized, [-1, 1]
+		float m_pwmM = 1500;
+		float m_pwmD = 500;
+		uint8_t m_iRCsteer = 1;
+		uint8_t m_iRCthrottle = 3;
 
 		AP_DRIVE_BTN m_btnPressed;
 		uint64_t m_tLastBtn;
 		uint64_t m_tOutBtn; // time out in usec for the m_btnPressed to be set to apDrive_btnNone, defaults to 100ms
 
-
-		_GeoFence* m_pGfence;
-		_OctreeGrid* m_pOctGrid;
+		AP_DRIVE_MODE m_dMode;
+		int m_apModeMove = AP_ROVER_MANUAL;
+		_GeoFence *m_pGfence;
+		_OctreeGrid *m_pOctGrid;
 		float m_octGridOccu;
 		float m_speedGo;
 		float m_steerTurn;
-
-
 	};
 
 }

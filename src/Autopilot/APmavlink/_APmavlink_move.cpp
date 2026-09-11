@@ -16,6 +16,29 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
+		m_pRCchan[0] = nullptr;
+		m_pRCchan[1] = &m_rcOverride.chan1_raw;
+		m_pRCchan[2] = &m_rcOverride.chan2_raw;
+		m_pRCchan[3] = &m_rcOverride.chan3_raw;
+		m_pRCchan[4] = &m_rcOverride.chan4_raw;
+		m_pRCchan[5] = &m_rcOverride.chan5_raw;
+		m_pRCchan[6] = &m_rcOverride.chan6_raw;
+		m_pRCchan[7] = &m_rcOverride.chan7_raw;
+		m_pRCchan[8] = &m_rcOverride.chan8_raw;
+		m_pRCchan[9] = &m_rcOverride.chan9_raw;
+		m_pRCchan[10] = &m_rcOverride.chan10_raw;
+		m_pRCchan[11] = &m_rcOverride.chan11_raw;
+		m_pRCchan[12] = &m_rcOverride.chan12_raw;
+		m_pRCchan[13] = &m_rcOverride.chan13_raw;
+		m_pRCchan[14] = &m_rcOverride.chan14_raw;
+		m_pRCchan[15] = &m_rcOverride.chan15_raw;
+		m_pRCchan[16] = &m_rcOverride.chan16_raw;
+		m_pRCchan[17] = &m_rcOverride.chan17_raw;
+		m_pRCchan[18] = &m_rcOverride.chan18_raw;
+
+		for (int i = 1; i < APMAV_N_RC; i++)
+			*m_pRCchan[i] = UINT16_MAX;
+
 		return true;
 	}
 
@@ -26,7 +49,7 @@ namespace kai
 		string n = "";
 		jKv(j, "_APmavlink_base", n);
 		m_pAP = (_APmavlink_base *)(pM->findModule(n));
-		NULL_F(m_pAP);
+		IF_Le_F(!m_pAP, "_APmavlink_base not found: " + n);
 
 		return true;
 	}
@@ -177,13 +200,58 @@ namespace kai
 		m_pAP->getMavlink()->cmdInt(D);
 	}
 
+	void _APmavlink_move::setYawSpeed(float steer, float speed, float yawMode)
+	{
+		IF_(!check());
+
+		m_pAP->getMavlink()->clNavSetYawSpeed(steer,
+											  speed,
+											  yawMode);
+	}
+
+	void _APmavlink_move::setRCchan(uint8_t iChan, uint16_t v, bool bSendCmd)
+	{
+		IF_(iChan < 1);
+		IF_(iChan >= APMAV_N_RC);
+		NULL_(m_pRCchan[iChan]);
+
+		*m_pRCchan[iChan] = v;
+
+		IF_(!bSendCmd);
+		NULL_(m_pAP);
+		m_pAP->getMavlink()->rcChannelsOverride(m_rcOverride);
+	}
+
+	void _APmavlink_move::releaseRCoverride(void)
+	{
+		for (uint16_t *pC : m_pRCchan)
+		{
+			IF_CONT(!pC);
+			*pC = 0;
+		}
+
+		NULL_(m_pAP);
+		m_pAP->getMavlink()->rcChannelsOverride(m_rcOverride);
+	}
+
 	void _APmavlink_move::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
-		// _Console *pC = (_Console *)pConsole;
-		//		pC->addMsg("Local NED:");
+		_Console *pC = (_Console *)pConsole;
+
+		string strRC = "RC chan: ";
+		for (uint16_t *pC : m_pRCchan)
+		{
+			int rc = 0;
+			if (pC)
+				rc = *pC;
+
+			strRC += i2str(rc) + " | ";
+		}
+
+		pC->addMsg(strRC);
 	}
 
 }

@@ -5,55 +5,61 @@
 		"bLog": true,
 		"bStdErr": true
 	},
+
+
 	"console": {
 		"class": "_Console",
-		"bON": false,
+		"bON": true,
 		"thread": {
 			"FPS": 10
 		},
 		"vBASE": [
-			"serialAP",
-			"apMavlink",
+			"/serialAP",
+			"/apMavlink",
 			"apBase",
 			"apDrive"
 		]
 	},
+
 	"wsServer": {
 		"class": "_WebSocketServer",
 		"bON": true,
-		"bLog": 0,
 		"thread": {
-			"FPS": 10
+			"FPS": 30
 		},
 		"threadR": {
-			"FPS": 10
+			"FPS": 1
 		},
-		"wsMode": 2,
 		"host": "0.0.0.0",
 		"port": 7890,
+		"wsMode": 2,
+		"nClientMax": 1,
 		"tOutMs": 10000
 	},
 	"wsConsole": {
 		"class": "_WSconsole",
 		"bON": true,
 		"thread": {
-			"FPS": 1
-		},
-		"threadR": {
 			"FPS": 10
 		},
-		"vBASE": [
-			"apBase","apDrive","geoFence"
-		],
+		"threadR": {
+			"FPS": 30
+		},
+		"_IObase": "wsServer",
 		"msgFinishSend": "",
 		"msgFinishRecv": "EOJ",
-		"_IObase": "wsServer"
+		"vBASE": [
+			"apDrive",
+			"geoFence",
+			"octGrid",
+			"viewer"
+		]
 	},
 
 
 	"serialAP": {
 		"class": "_SerialPort",
-		"bON": true,
+		"bON": false,
 		"thread": {
 			"FPS": 10
 		},
@@ -100,13 +106,13 @@
 		},
 		"_StateControl": "state",
 		"_Mavlink": "apMavlink",
-		"apType": 0,
+		"apType": 1,
 		"ieSendHB": 1,
 		"ieSendMsgInt": 1,
 		"mavMsgInt": {
 			"heartbeat": {
 				"id": 0,
-				"tInt": 0.2
+				"tInt": 1.0
 			},
 			"attitude": {
 				"id": 30,
@@ -138,24 +144,28 @@
 			}
 		}
 	},
+
+
 	"apDrive": {
 		"class": "_APmavlink_drive",
-		"bON": false,
+		"bON": true,
 		"bLog": true,
 		"thread": {
 			"FPS": 10
 		},
 		"_APmavlink_base": "apBase",
-		"_StateControl": "state",
-		"bSetYawSpeed": false,
-		"yawMode": 1,
-		"bRcChanOverride": true,
-		"iRcYaw": 1,
-		"iRCThrottle": 3,
+		"_OctreeGrid": "octGrid",
+		"_GeoFence": "geoFence",
 		"pwmM": 1500,
-		"pwmD": 500
+		"pwmD": 500,
+		"iRCsteer": 1,
+		"iRCthrottle": 3,
+		"tOutBtn": 200000,
+		"speedGo": 0.2,
+		"steerTurn": 0.2,
+		"octGridOccu": 1
 	},
-
+	
 	"geoFence": {
 		"class": "_GeoFence",
 		"bON": true,
@@ -164,6 +174,159 @@
 		},
 		"_JSONbase": "",
 		"_APmavlink_base": "apBase",
-		"estD":1
+		"estD": 1,
+		"fConfig": "/home/kai/test/geoFence.json"
+	},
+
+	
+	"pcFile": {
+		"class": "_PCfile",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 1
+		},
+		"nP": 1000000,
+		"vColorDefault": [
+			1,
+			1,
+			1
+		],
+		"vfName": [
+			"data/PointCloud/StanfordBunny/bun000.ply"
+		]
+	},
+
+	"viewCam": {
+		"class": "_WindowCV",
+		"bON": true,
+		"thread": {
+			"FPS": 20
+		},
+		"bFullScreen": 0,
+		"vBASE": [
+			"cam"
+		]
+	},
+	"cam": {
+		"class": "_Scepter",
+		"bON": false,
+		"bLog": true,
+		"thread": {
+			"FPS": 30
+		},
+		"threadPP": {
+			"FPS": 30
+		},
+		"URI": "",
+		"vSizeRGB": [
+			1600,
+			1200
+		],
+		"vRangeD": [
+			0,
+			4000
+		],
+		"_PointCloud": "scPC",
+		"scPixelFormat": 4,
+		"bRGB": true,
+		"bDepth": true,
+		"btRGB": true,
+		"btDepth": false,
+		"bIR": false
+	},
+	"scPC": {
+		"class": "_PointCloud",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 1
+		},
+		"nP": 400000
+	},
+
+
+	"octGrid": {
+		"class": "_OctreeGrid",
+		"thread": {
+			"FPS": 5
+		},
+		"nP": 400000,
+		"vRootCellSize": [
+			5,
+			5,
+			5
+		],
+		"nMaxLevel": 5,
+		"nMaxCells": 18333,
+		"dTexpireCell": 500000,
+		"dTexpirePCL": 0,
+		"fConfig": "/home/kai/test/octGrid.json",
+		"vGeometryBase": [
+			"pcFile",
+			"scPC"
+		]
+	},
+
+
+	"viewer": {
+		"class": "_WebViewer3D",
+		"thread": {
+			"FPS": 30
+		},
+		"host": "0.0.0.0",
+		"port": 8080,
+		"nClientMax": 8,
+		"nPbuf": 400000,
+		"nLbuf": 100000,
+		"dTexpire": 0,
+		"bAutoBound": true,
+		"bShowGrid": true,
+		"vCamLookAt": [
+			0,
+			0,
+			0
+		],
+		"vCamEye": [
+			0,
+			-8,
+			4
+		],
+		"vCamUp": [
+			0,
+			0,
+			1
+		],
+		"camFov": 70,
+		"vCamNF": [
+			0.01,
+			1000000
+		],
+		"vGeometry": [
+			{
+				"_GeometryBase": "scPC",
+				"nP": 400000,
+				"nL": 0,
+				"matPointSize": 2
+			},
+			{
+				"_GeometryBase": "pcFile",
+				"nP": 4000000,
+				"nL": 0,
+				"matPointSize": 2
+			},
+			{
+				"_GeometryBase": "octGrid",
+				"nP": 0,
+				"nL": 0,
+				"nC": 18333,
+				"matCol": [
+					0.3,
+					0.8,
+					1,
+					1
+				]
+			}
+		]
 	}
 }
