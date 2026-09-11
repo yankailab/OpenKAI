@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ジオフェンス</title>
+  <link rel="stylesheet" href="css/control.css" />
+  <link rel="stylesheet" href="css/leaflet.css" />
+  <link rel="stylesheet" href="css/map.css" />
+  <script src="js/leaflet.js"></script>
+</head>
+
+<body>
+  <header>
+    <div class="brand"><img src="img/OK.png" alt="OpenKAI" width="1300" height="315" /> <span>ジオフェンス</span></div>
+    <strong id="state" role="status">接続中…</strong>
+  </header>
+
+  <main class="workspace map-layout">
+    <div class="map-panel">
+      <div id="map" role="region" aria-label="ジオフェンスの地図" aria-describedby="geofenceHelp"></div>
+    </div>
+
+    <div class="panel-stack control-panels">
+      <section class="panel geofence-panel" aria-labelledby="geofenceHeading">
+        <h2 id="geofenceHeading">ジオフェンス <span class="panel-meta">自動モード</span></h2>
+        <p id="geofenceHelp" class="panel-hint">「読み込み」を選択して保存済みの領域を編集するか、地図上の3地点以上をタップして領域を作成してください。地点をドラッグして調整し、「設定」を選択して保存します。</p>
+        <p id="selectionStatus" class="selection-status" role="status">地点が選択されていません</p>
+        <div class="tools geofence-actions">
+          <button id="btnLoad" type="button">読み込み</button>
+          <button id="btnSend" type="button" disabled>設定</button>
+          <button id="btnUndo" type="button" disabled>元に戻す</button>
+          <button id="btnClear" type="button" disabled>クリア</button>
+          <button id="btnStart" type="button" class="primary" aria-label="自動モードを開始" disabled>開始</button>
+        </div>
+      </section>
+      
+      <section class="panel manual-panel" aria-labelledby="manualHeading">
+        <h2 id="manualHeading">手動操作</h2>
+        <div class="drive-pad" role="group" aria-label="ローバーの移動">
+          <button id="btnForward" type="button">
+            <span class="direction-icon" aria-hidden="true">↑</span>
+            前進
+          </button>
+          <button id="btnLeft" type="button">
+            <span class="direction-icon" aria-hidden="true">←</span>
+            左
+          </button>
+          <button id="btnStop" type="button" class="stop-button" aria-label="停止 — 緊急停止">
+            <span class="stop-icon" aria-hidden="true">■</span>
+            停止
+          </button>
+          <button id="btnRight" type="button">
+            <span class="direction-icon" aria-hidden="true">→</span>
+            右
+          </button>
+          <button id="btnBack" type="button">
+            <span class="direction-icon" aria-hidden="true">↓</span>
+            後退
+          </button>
+        </div>
+        <p id="controlFeedback" class="panel-hint control-feedback" role="status">ボタンを押している間、操作コマンドを送信します。</p>
+      </section>
+
+      <details class="panel console-panel">
+        <summary>コンソール <span class="panel-meta">デバッグメッセージ</span></summary>
+        <strong id="msg"></strong>
+        <label class="console-label" for="cmdState">メッセージ</label>
+        <textarea id="cmdState" rows="4" readonly spellcheck="false"></textarea>
+      </details>
+    </div>
+  </main>
+
+  <script src="js/mapUI.js"></script>
+  <script src="js/wsBase.js"></script>
+  <script src="js/wsGeoFence.js"></script>
+  <script src="js/geoFenceMap.js"></script>
+</body>
+
+</html>
