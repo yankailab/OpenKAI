@@ -169,6 +169,20 @@ namespace kai
 
 			m_pJb = pJb;
 		}
+		if (cmd == "loadGeoFence")
+		{
+			NULL_(pJb);
+
+			json jr = json::object();
+			jr["cmd"] = "loadGeoFence";
+			jr["bSuccess"] = true;
+			jr["type"] = m_type == _GeoFence_polygon ? "polygon" : "circle";
+			jr["vPolygon"] = m_vPolygon;
+			pJb->sendJson(jr);
+
+			m_pJb = pJb;
+		}
+
 	}
 
 	constexpr double kPi = 3.14159265358979323846;

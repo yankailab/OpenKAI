@@ -181,12 +181,12 @@
 	
 	"pcFile": {
 		"class": "_PCfile",
-		"bON": true,
+		"bON": false,
 		"bLog": true,
 		"thread": {
 			"FPS": 1
 		},
-		"nP": 1000000,
+		"nP": 400000,
 		"vColorDefault": [
 			1,
 			1,
@@ -199,7 +199,7 @@
 
 	"viewCam": {
 		"class": "_WindowCV",
-		"bON": true,
+		"bON": false,
 		"thread": {
 			"FPS": 20
 		},
@@ -210,18 +210,18 @@
 	},
 	"cam": {
 		"class": "_Scepter",
-		"bON": false,
+		"bON": true,
 		"bLog": true,
 		"thread": {
-			"FPS": 30
+			"FPS": 10
 		},
 		"threadPP": {
-			"FPS": 30
+			"FPS": 10
 		},
 		"URI": "",
 		"vSizeRGB": [
-			1600,
-			1200
+			640,
+			480
 		],
 		"vRangeD": [
 			0,
@@ -249,7 +249,7 @@
 	"octGrid": {
 		"class": "_OctreeGrid",
 		"thread": {
-			"FPS": 5
+			"FPS": 10
 		},
 		"nP": 400000,
 		"vRootCellSize": [
@@ -259,8 +259,8 @@
 		],
 		"nMaxLevel": 5,
 		"nMaxCells": 18333,
-		"dTexpireCell": 500000,
-		"dTexpirePCL": 0,
+		"dTexpireCell": 300000,
+		"dTexpirePCL": 500000,
 		"fConfig": "/home/kai/test/octGrid.json",
 		"vGeometryBase": [
 			"pcFile",
@@ -289,13 +289,13 @@
 		],
 		"vCamEye": [
 			0,
-			-8,
-			4
+			-1,
+			-4
 		],
 		"vCamUp": [
 			0,
-			0,
-			1
+			-1,
+			0
 		],
 		"camFov": 70,
 		"vCamNF": [
@@ -311,7 +311,7 @@
 			},
 			{
 				"_GeometryBase": "pcFile",
-				"nP": 4000000,
+				"nP": 400000,
 				"nL": 0,
 				"matPointSize": 2
 			},

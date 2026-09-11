@@ -1,3 +1,4 @@
+const loadBtn = $('#btnLoad');
 const sendBtn = $('#btnSend');
 const undoBtn = $('#btnUndo');
 const clearBtn = $('#btnClear');
@@ -85,7 +86,7 @@ function redrawShape() {
     updatePreview();
 }
 
-function addVertex(latlng) {
+function addVertex(latlng, redraw = true) {
     const marker = L.marker(latlng, {
         draggable: true,
         autoPan: true,
@@ -100,7 +101,7 @@ function addVertex(latlng) {
     marker.addTo(vertexLayer);
     vertexMarkers.push(marker);
 
-    redrawShape();
+    if (redraw) redrawShape();
 }
 
 function undoLastVertex() {
@@ -115,6 +116,53 @@ function clearAll() {
     vertexMarkers.forEach(marker => vertexLayer.removeLayer(marker));
     vertexMarkers.length = 0;
     redrawShape();
+}
+
+function loadPolygon() {
+    if (typeof wsSocket === 'undefined' || wsSocket.readyState !== WebSocket.OPEN) {
+        selectionStatusEl.textContent = 'Rover disconnected. Could not load geofence.';
+        return;
+    }
+
+    try {
+        wsSocket.send(JSON.stringify({ cmd: 'loadGeoFence', module: 'geoFence' }) + strEOJ);
+        selectionStatusEl.textContent = 'Loading saved geofence…';
+    } catch (error) {
+        selectionStatusEl.textContent = 'Could not send geofence load command.';
+    }
+}
+
+function loadGeoFencePolygon(msg) {
+    if (msg.bSuccess !== true || msg.type !== 'polygon' || !Array.isArray(msg.vPolygon)) {
+        selectionStatusEl.textContent = 'Could not load a polygon geofence.';
+        return;
+    }
+
+    // Validate the entire response before replacing the current editable area.
+    const latlngs = msg.vPolygon.map(point => {
+        if (!Array.isArray(point) || point.length !== 2 ||
+            !Number.isFinite(point[0]) || !Number.isFinite(point[1]) ||
+            Math.abs(point[0]) > 90 || Math.abs(point[1]) > 180) return null;
+        return L.latLng(point[0], point[1]);
+    });
+    if (latlngs.some(point => point === null)) {
+        selectionStatusEl.textContent = 'Saved geofence contains invalid coordinates.';
+        return;
+    }
+
+    clearAll();
+    latlngs.forEach(latlng => addVertex(latlng, false));
+    redrawShape();
+
+    if (latlngs.length === 0) {
+        selectionStatusEl.textContent = 'No saved geofence. Tap the map to draw an area.';
+        return;
+    }
+
+    map.fitBounds(L.latLngBounds(latlngs), { padding: [24, 24], maxZoom: 20 });
+    if (latlngs.length >= 3) {
+        selectionStatusEl.textContent = latlngs.length + ' points loaded · Drag to edit, then select Set to save';
+    }
 }
 
 function sendPolygon() {
@@ -141,6 +189,7 @@ map.on('click', (e) => {
     addVertex(e.latlng);
 });
 
+loadBtn.addEventListener('click', loadPolygon);
 undoBtn.addEventListener('click', undoLastVertex);
 clearBtn.addEventListener('click', clearAll);
 sendBtn.addEventListener('click', sendPolygon);

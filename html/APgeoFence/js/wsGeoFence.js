@@ -106,5 +106,7 @@ function cmdHandler(event) {
     const jCmd = JSON.parse(event.data);
     if (jCmd.cmd == 'geoFence') {
         updateGeoFenceOverlay(jCmd);
+    } else if (jCmd.cmd == 'loadGeoFence') {
+        loadGeoFencePolygon(jCmd);
     }
 };

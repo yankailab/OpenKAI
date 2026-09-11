@@ -13,7 +13,7 @@
 
 <body>
   <header>
-    <div class="brand">OpenKAI <span>GeoFence</span></div>
+    <div class="brand"><img src="img/OK.png" alt="OpenKAI" width="1300" height="315" /> <span>GeoFence</span></div>
     <strong id="state" role="status">Connecting…</strong>
   </header>
 
@@ -25,9 +25,10 @@
     <div class="panel-stack control-panels">
       <section class="panel geofence-panel" aria-labelledby="geofenceHeading">
         <h2 id="geofenceHeading">Geofence <span class="panel-meta">Auto mode</span></h2>
-        <p id="geofenceHelp" class="panel-hint">Tap at least 3 points on the map to draw an area. Drag points to adjust it, then select Set.</p>
+        <p id="geofenceHelp" class="panel-hint">Select Load to edit the saved area, or tap at least 3 points on the map to draw one. Drag points to adjust it, then select Set to save.</p>
         <p id="selectionStatus" class="selection-status" role="status">No points selected</p>
         <div class="tools geofence-actions">
+          <button id="btnLoad" type="button">Load</button>
           <button id="btnSend" type="button" disabled>Set</button>
           <button id="btnUndo" type="button" disabled>Undo</button>
           <button id="btnClear" type="button" disabled>Clear</button>

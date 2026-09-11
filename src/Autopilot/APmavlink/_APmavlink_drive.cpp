@@ -174,7 +174,7 @@ namespace kai
 		}
 		else if (m_dMode == apDrive_modeAuto)
 		{
-			if (!bObstacle)// && !bFenceBreach)
+			if (!bObstacle && !bFenceBreach)
 				setSteerSpeed(0, m_speedGo);
 			else
 				setSteerSpeed(m_steerTurn, 0);
