@@ -9,6 +9,8 @@ window.onload = function () {
     bindControlButton('#btnBack', 'B', 'Backward');
     bindControlButton('#btnStop', 'S', 'STOP');
     $('#btnStart').addEventListener('click', onStartClick);
+    $('#btnCutterOn').addEventListener('click', () => onCutterClick(1));
+    $('#btnCutterOff').addEventListener('click', () => onCutterClick(0));
 
     window.addEventListener('pointerup', endControlPointer);
     window.addEventListener('pointercancel', endControlPointer);
@@ -100,11 +102,29 @@ function onStartClick() {
 }
 
 
+function onCutterClick(bServoON) {
+    const feedback = $('#cutterFeedback');
+    const isJapanese = document.documentElement.lang === 'ja';
+    if (typeof wsSocket === 'undefined' || wsSocket.readyState !== WebSocket.OPEN) {
+        feedback.textContent = isJapanese ? 'ローバーが未接続のため、コマンドを送信できません。' : 'Rover disconnected. No command sent.';
+        return;
+    }
+
+    try {
+        wsSocket.send(JSON.stringify({ cmd: 'setServo', module: 'apDrive', bServoON }) + strEOJ);
+        const state = bServoON ? 'ON' : 'OFF';
+        feedback.textContent = isJapanese ? `カッター${state}コマンドを送信しました。` : `Cutter ${state} command sent.`;
+    } catch (error) {
+        feedback.textContent = isJapanese ? 'カッターの操作コマンドを送信できませんでした。' : 'Could not send cutter command.';
+    }
+}
+
 function cmdHandler(event) {
     $('#cmdState').value = (event.data + "\n\n" + $('#cmdState').value).slice(0, 12000);
 
     const jCmd = JSON.parse(event.data);
     if (jCmd.cmd == 'geoFence') {
+        updateRobotPosition(jCmd.vP);
         updateGeoFenceOverlay(jCmd);
     } else if (jCmd.cmd == 'loadGeoFence') {
         loadGeoFencePolygon(jCmd);

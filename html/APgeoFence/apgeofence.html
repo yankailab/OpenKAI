@@ -30,12 +30,22 @@
         <div class="tools geofence-actions">
           <button id="btnLoad" type="button">Load</button>
           <button id="btnSend" type="button" disabled>Set</button>
+          <button id="btnAddCurrentPos" type="button" disabled>Add Current Pos</button>
           <button id="btnUndo" type="button" disabled>Undo</button>
           <button id="btnClear" type="button" disabled>Clear</button>
           <button id="btnStart" type="button" class="primary" aria-label="Start auto mode" disabled>Start</button>
         </div>
       </section>
       
+      <section class="panel cutter-panel" aria-labelledby="cutterHeading">
+        <h2 id="cutterHeading">Cutter</h2>
+        <div class="tools cutter-actions">
+          <button id="btnCutterOn" type="button">ON</button>
+          <button id="btnCutterOff" type="button">OFF</button>
+        </div>
+        <p id="cutterFeedback" class="panel-hint control-feedback" role="status">Select ON or OFF to control the cutter.</p>
+      </section>
+
       <section class="panel manual-panel" aria-labelledby="manualHeading">
         <h2 id="manualHeading">Manual control</h2>
         <div class="drive-pad" role="group" aria-label="Rover movement">

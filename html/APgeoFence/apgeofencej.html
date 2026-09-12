@@ -30,12 +30,22 @@
         <div class="tools geofence-actions">
           <button id="btnLoad" type="button">読み込み</button>
           <button id="btnSend" type="button" disabled>設定</button>
+          <button id="btnAddCurrentPos" type="button" disabled>現在位置を追加</button>
           <button id="btnUndo" type="button" disabled>元に戻す</button>
           <button id="btnClear" type="button" disabled>クリア</button>
           <button id="btnStart" type="button" class="primary" aria-label="自動モードを開始" disabled>開始</button>
         </div>
       </section>
       
+      <section class="panel cutter-panel" aria-labelledby="cutterHeading">
+        <h2 id="cutterHeading">カッター</h2>
+        <div class="tools cutter-actions">
+          <button id="btnCutterOn" type="button">ON</button>
+          <button id="btnCutterOff" type="button">OFF</button>
+        </div>
+        <p id="cutterFeedback" class="panel-hint control-feedback" role="status">ONまたはOFFを選択してカッターを操作します。</p>
+      </section>
+
       <section class="panel manual-panel" aria-labelledby="manualHeading">
         <h2 id="manualHeading">手動操作</h2>
         <div class="drive-pad" role="group" aria-label="ローバーの移動">

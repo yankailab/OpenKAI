@@ -1,5 +1,6 @@
 const loadBtn = $('#btnLoad');
 const sendBtn = $('#btnSend');
+const addCurrentPosBtn = $('#btnAddCurrentPos');
 const undoBtn = $('#btnUndo');
 const clearBtn = $('#btnClear');
 const startBtn = $('#btnStart');
@@ -12,6 +13,7 @@ let lineLayer = null;
 
 // Store draggable vertex markers
 const vertexMarkers = [];
+let currentRobotPosition = null;
 
 // A compact visible point inside a larger touch target.
 const vertexIcon = L.divIcon({
@@ -104,6 +106,18 @@ function addVertex(latlng, redraw = true) {
     if (redraw) redrawShape();
 }
 
+function updateRobotPosition(vP) {
+    const valid = Array.isArray(vP) && vP.length === 2 &&
+        Number.isFinite(vP[0]) && Number.isFinite(vP[1]) &&
+        Math.abs(vP[0]) <= 90 && Math.abs(vP[1]) <= 180;
+    currentRobotPosition = valid ? L.latLng(vP[0], vP[1]) : null;
+    addCurrentPosBtn.disabled = !currentRobotPosition;
+}
+
+function addCurrentPosition() {
+    if (currentRobotPosition) addVertex(currentRobotPosition);
+}
+
 function undoLastVertex() {
     const marker = vertexMarkers.pop();
     if (!marker) return;
@@ -190,6 +204,7 @@ map.on('click', (e) => {
 });
 
 loadBtn.addEventListener('click', loadPolygon);
+addCurrentPosBtn.addEventListener('click', addCurrentPosition);
 undoBtn.addEventListener('click', undoLastVertex);
 clearBtn.addEventListener('click', clearAll);
 sendBtn.addEventListener('click', sendPolygon);

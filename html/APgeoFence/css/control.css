@@ -49,8 +49,10 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus
 .stop-icon { font-size: 14px; line-height: 1; }
 .control-feedback { margin-top: 12px; }
 .selection-status { margin: 12px 0; color: #89d6bf; font-size: 12px; line-height: 1.5; }
-.geofence-actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; width: 100%; }
-.geofence-actions button { width: 100%; padding: 8px 4px; }
+.geofence-actions, .cutter-actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; width: 100%; }
+.geofence-actions button, .cutter-actions button { width: 100%; padding: 8px 4px; }
+#btnCutterOn { color: #fff; background: #b52c37; border-color: #ff8c95; }
+#btnCutterOn:hover:not(:disabled) { background: #cc3541; }
 
 /* LCalign: flexible fields keep paths and camera controls inside the panel. */
 .fields { display: grid; grid-template-columns: 160px minmax(0, 1fr); align-items: center; gap: 10px 16px; }

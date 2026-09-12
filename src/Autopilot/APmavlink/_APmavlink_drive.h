@@ -70,6 +70,14 @@ namespace kai
 		float m_octGridOccu = 1;
 		float m_speedGo = 0.2;
 		float m_steerTurn = 0.2;
+
+		bool m_bServoON = false;
+		uint8_t m_iRCservo = 6;
+		float m_pwmServoON = 2000;
+		float m_pwmServoOFF = 1500;
+
+
+
 	};
 
 }

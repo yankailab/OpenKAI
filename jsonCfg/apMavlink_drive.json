@@ -9,7 +9,7 @@
 
 	"console": {
 		"class": "_Console",
-		"bON": true,
+		"bON": false,
 		"thread": {
 			"FPS": 10
 		},
@@ -112,7 +112,7 @@
 		"mavMsgInt": {
 			"heartbeat": {
 				"id": 0,
-				"tInt": 1.0
+				"tInt": 0.3
 			},
 			"attitude": {
 				"id": 30,
@@ -124,11 +124,11 @@
 			},
 			"localPosition": {
 				"id": 32,
-				"tInt": 0.3
+				"tInt": 0.6
 			},
 			"globalPosition": {
 				"id": 33,
-				"tInt": 0.3
+				"tInt": 0.2
 			},
 			"homePosition": {
 				"id": 242,
@@ -161,16 +161,19 @@
 		"iRCsteer": 1,
 		"iRCthrottle": 3,
 		"tOutBtn": 200000,
-		"speedGo": 0.2,
-		"steerTurn": 0.2,
-		"octGridOccu": 1
+		"speedGo": 0.5,
+		"steerTurn": 0.5,
+		"octGridOccu": 10,
+		"iRCservo":6,
+		"pwmServoON":2000,
+		"pwmServoOFF":1500
 	},
-	
+
 	"geoFence": {
 		"class": "_GeoFence",
 		"bON": true,
 		"thread": {
-			"FPS": 2
+			"FPS": 5
 		},
 		"_JSONbase": "",
 		"_APmavlink_base": "apBase",
@@ -178,7 +181,7 @@
 		"fConfig": "/home/kai/test/geoFence.json"
 	},
 
-	
+
 	"pcFile": {
 		"class": "_PCfile",
 		"bON": false,
@@ -261,6 +264,7 @@
 		"nMaxCells": 18333,
 		"dTexpireCell": 300000,
 		"dTexpirePCL": 500000,
+		"nPminBuild":100,
 		"fConfig": "/home/kai/test/octGrid.json",
 		"vGeometryBase": [
 			"pcFile",
@@ -304,13 +308,13 @@
 		],
 		"vGeometry": [
 			{
-				"_GeometryBase": "scPC",
+				"_GeometryBase": "/scPC",
 				"nP": 400000,
 				"nL": 0,
 				"matPointSize": 2
 			},
 			{
-				"_GeometryBase": "pcFile",
+				"_GeometryBase": "/pcFile",
 				"nP": 400000,
 				"nL": 0,
 				"matPointSize": 2

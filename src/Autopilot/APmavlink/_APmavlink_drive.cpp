@@ -28,6 +28,10 @@ namespace kai
 		jKv(j, "speedGo", m_speedGo);
 		jKv(j, "steerTurn", m_steerTurn);
 
+		jKv(j, "iRCservo", m_iRCservo);
+		jKv(j, "pwmServoON", m_pwmServoON);
+		jKv(j, "pwmServoOFF", m_pwmServoOFF);
+
 		return true;
 	}
 
@@ -140,15 +144,18 @@ namespace kai
 		}
 
 		// check AP mode and arming
-		if (m_pAP->getMode() == m_apModeMove)
-		{
-			if (!m_pAP->bArmed())
-				m_pAP->setArm(true);
-		}
-		else
-		{
-			m_pAP->setMode(m_apModeMove);
-		}
+		// if (m_pAP->getMode() == m_apModeMove)
+		// {
+		// 	if (!m_pAP->bArmed())
+		// 		m_pAP->setArm(true);
+		// }
+		// else
+		// {
+		// 	m_pAP->setMode(m_apModeMove);
+		// }
+
+		m_pAP->setMode(m_apModeMove);
+		m_pAP->setArm(true);
 
 		// move
 		if (m_dMode == apDrive_modeManual)
@@ -181,6 +188,7 @@ namespace kai
 
 	void _APmavlink_drive::updateDrive(void)
 	{
+		setRCchan(m_iRCservo, m_bServoON ? m_pwmServoON : m_pwmServoOFF, false);
 		setRCchan(m_iRCsteer, constrain(m_steer * m_pwmD + m_pwmM, m_pwmM - m_pwmD, m_pwmM + m_pwmD), false);
 		setRCchan(m_iRCthrottle, constrain(m_speed * m_pwmD + m_pwmM, m_pwmM - m_pwmD, m_pwmM + m_pwmD), true); // flash cmd to AP mavlink
 	}
@@ -194,6 +202,7 @@ namespace kai
 		pC->addMsg("steer = " + f2str(m_steer) + ", speed = " + f2str(m_speed));
 		pC->addMsg("btnPressed = " + i2str(m_btnPressed));
 		pC->addMsg("dMode = " + i2str(m_dMode));
+		pC->addMsg("bServoON = " + i2str(m_bServoON));
 	}
 
 	void _APmavlink_drive::console(const json &j, void *pJSONbase)
@@ -253,6 +262,20 @@ namespace kai
 			json jr = json::object();
 			jr["cmd"] = "startAuto";
 			jr["bSuccess"] = true;
+			pJb->sendJson(jr);
+		}
+		else if (cmd == "setServo")
+		{
+			const json &servoON = jK(j, "bServoON");
+			const bool bSuccess = servoON.is_boolean() ||
+				(servoON.is_number_integer() && (servoON == 0 || servoON == 1));
+			if (bSuccess)
+				m_bServoON = servoON.is_boolean() ? servoON.get<bool>() : servoON == 1;
+
+			NULL_(pJb);
+			json jr = json::object();
+			jr["cmd"] = "setServo";
+			jr["bSuccess"] = bSuccess;
 			pJb->sendJson(jr);
 		}
 	}

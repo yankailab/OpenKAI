@@ -180,12 +180,15 @@ namespace kai
 		}
 
 		static void addCellsRecursive(OCTREE_CELL<OCTGRID_PCL_CELL> *pCell,
-									  vector<OCTGRID_CELL> &out, size_t limit, const vFloat4 *pColor)
+									  int nPmin,
+									  vector<OCTGRID_CELL> &out,
+									  size_t limit,
+									  const vFloat4 *pColor)
 		{
 			if (!pCell || out.size() >= limit)
 				return;
 			const auto *pT = pCell->getT();
-			if (pT && pT->m_nP > 0 && pT->m_tStamp > 0)
+			if (pT && pT->m_nP > nPmin && pT->m_tStamp > 0)
 			{
 				OCTGRID_CELL cell;
 				cell.setID(pT->m_ID);
@@ -196,7 +199,7 @@ namespace kai
 				out.push_back(cell);
 			}
 			for (int i = 0; i < N_OCT && out.size() < limit; ++i)
-				addCellsRecursive(pCell->getChild(i), out, limit, pColor);
+				addCellsRecursive(pCell->getChild(i), nPmin, out, limit, pColor);
 		}
 	}
 
@@ -252,6 +255,7 @@ namespace kai
 		IF_Le_F(!m_grPt.alloc(nP), "Alloc failed with nP: " + i2str(nP));
 		m_grPt.clear();
 
+		jKv(j, "nPminBuild", m_nPminBuild);
 		m_cells.m_vCell.clear();
 		m_cells.m_vCell.reserve(m_nMaxCells);
 		m_buildCells.clear();
@@ -528,7 +532,7 @@ namespace kai
 
 		const int nMaxLevTo = id.m_uint64[0] & 0x3f;
 		IF_N(nMaxLevTo > OCTGRID_MAX_LEVEL || nMaxLevTo > m_nMaxLevel);
-		IF_N(id.m_uint64[1] >> 62);	// verify if the header is 0x00b
+		IF_N(id.m_uint64[1] >> 62); // verify if the header is 0x00b
 
 		OCTREE_CELL<OCTGRID_PCL_CELL> *pCell = m_pCell;
 		uint64_t high = id.m_uint64[1];
@@ -545,12 +549,12 @@ namespace kai
 
 		auto *pT = pCell->getT();
 		IF_N(!pT || pT->m_nP <= 0 || pT->m_tStamp == 0 ||
-			pT->m_ID.m_uint64[0] != id.m_uint64[0] || pT->m_ID.m_uint64[1] != id.m_uint64[1]);
+			 pT->m_ID.m_uint64[0] != id.m_uint64[0] || pT->m_ID.m_uint64[1] != id.m_uint64[1]);
 
 		return pT;
 	}
 
-	const vector<UUID128>& _OctreeGrid::getSelectedCells(void)
+	const vector<UUID128> &_OctreeGrid::getSelectedCells(void)
 	{
 		return m_vSelectedCells;
 	}
@@ -577,7 +581,7 @@ namespace kai
 
 		// Traverse outside the publication lock so viewers only wait for a swap.
 		m_buildCells.clear();
-		addCellsRecursive(m_pCell, m_buildCells, m_nMaxCells, m_bColCellOcc ? &m_vColCellOcc : nullptr);
+		addCellsRecursive(m_pCell, m_nPminBuild, m_buildCells, m_nMaxCells, m_bColCellOcc ? &m_vColCellOcc : nullptr);
 		std::lock_guard<std::mutex> lock(m_cellsMutex);
 		m_cells.m_header = {{m_vPorigin.x, m_vPorigin.y, m_vPorigin.z},
 							{m_vRootCellSize.x, m_vRootCellSize.y, m_vRootCellSize.z},
@@ -691,7 +695,8 @@ namespace kai
 			jr["module"] = getName();
 			jr["nMaxLevel"] = m_nMaxLevel;
 			for (const char *key : {"vPorigin", "vRootCellSize"})
-				for (auto &coordinate : jr[key]) coordinate = coordinate.dump();
+				for (auto &coordinate : jr[key])
+					coordinate = coordinate.dump();
 
 			pJb->sendJson(jr);
 		}
@@ -699,7 +704,7 @@ namespace kai
 		{
 			vFloat3 origin, size;
 			const bool bSuccess = readSelectionVector(jK(j, "vPorigin"), origin) &&
-				readSelectionVector(jK(j, "vRootCellSize"), size) && size.x > 0 && size.y > 0 && size.z > 0;
+								  readSelectionVector(jK(j, "vRootCellSize"), size) && size.x > 0 && size.y > 0 && size.z > 0;
 			if (bSuccess)
 			{
 				std::lock_guard<std::mutex> gridLock(m_gridMutex);
@@ -707,8 +712,11 @@ namespace kai
 				if (origin != m_vPorigin || size != m_vRootCellSize)
 				{
 					const OCTGRID_HEADER header = {{origin.x, origin.y, origin.z},
-						{size.x, size.y, size.z}, uint32_t(m_nMaxLevel), getApproxTbootUs()};
-					if (m_pCell) m_pCell->release(); // Clear the root's occupancy as well as all eight subtrees.
+												   {size.x, size.y, size.z},
+												   uint32_t(m_nMaxLevel),
+												   getApproxTbootUs()};
+					if (m_pCell)
+						m_pCell->release(); // Clear the root's occupancy as well as all eight subtrees.
 					m_buildCells.clear();
 					m_cells.m_vCell.clear();
 					m_vPorigin = origin;

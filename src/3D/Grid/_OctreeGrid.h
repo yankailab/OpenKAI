@@ -98,6 +98,8 @@ namespace kai
 		int m_nMaxCells = 100000 / 12;
 		OCTGRID_CELLS m_cells;
 		vector<OCTGRID_CELL> m_buildCells;
+		int m_nPminBuild = 1;
+
 		// Serializes live root changes with grid updates; acquire before m_cellsMutex.
 		std::mutex m_gridMutex;
 		std::mutex m_cellsMutex;
