@@ -20,10 +20,13 @@ namespace kai
 
 	_Thread::~_Thread()
 	{
-		IF_(m_threadID == 0);
-		pthread_cancel(m_threadID);
-		//	pthread_join(m_threadID, NULL);
-		m_threadID = 0;
+		if (m_threadID != 0)
+		{
+			stop();
+			pthread_cancel(m_threadID);
+			pthread_join(m_threadID, NULL);
+			m_threadID = 0;
+		}
 
 		pthread_mutex_destroy(&m_wakeupMutex);
 		pthread_cond_destroy(&m_wakeupSignal);
@@ -63,7 +66,7 @@ namespace kai
 	}
 
 	bool _Thread::startThread(void *(*__start_routine)(void *),
-						void *__restrict __arg)
+							  void *__restrict __arg)
 	{
 		IF_F(m_threadID != 0);
 
@@ -77,19 +80,24 @@ namespace kai
 		return true;
 	}
 
-	bool _Thread::bAlive(void)
+	bool _Thread::bStopped(void)
 	{
-		return (m_setState != thread_stop);
+		return (m_state == thread_stop);
 	}
 
-	bool _Thread::bRun(void)
+	bool _Thread::bRunning(void)
 	{
 		return (m_state == thread_run);
 	}
 
-	bool _Thread::bStop(void)
+	bool _Thread::bPaused(void)
 	{
-		return (m_state == thread_stop);
+		return (m_state == thread_pause);
+	}
+
+	bool _Thread::bRun(void)
+	{
+		return (m_setState != thread_stop);
 	}
 
 	void _Thread::run(void)
@@ -106,26 +114,27 @@ namespace kai
 	void _Thread::stop(void)
 	{
 		m_setState = thread_stop;
+		pthread_cond_signal(&m_wakeupSignal);
 	}
 
 	bool _Thread::bOnPause(void)
 	{
-		IF_F(m_bPaused);
 		IF_F(m_setState != thread_pause);
+		IF_F(m_state == thread_pause);
 
-		m_bPaused = true;
+		m_state = thread_pause;
 		return true;
 	}
 
 	bool _Thread::bOnResume(void)
 	{
-		IF_F(!m_bPaused);
+		IF_F(m_state != thread_pause);
+		m_state = thread_run;
 
-		m_bPaused = false;
 		return true;
 	}
 
-	void _Thread::runAll(void)
+	void _Thread::runAllLinkedThreads(void)
 	{
 		for (_Thread *pT : m_vRunThread)
 			pT->run();

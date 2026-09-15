@@ -55,7 +55,7 @@ namespace kai
 	{
 		PROTOCOL_CMD rCMD;
 
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			IF_CONT(!readCMD(&rCMD));
 

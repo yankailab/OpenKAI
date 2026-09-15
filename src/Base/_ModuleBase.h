@@ -36,16 +36,13 @@ namespace kai
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 
-		virtual bool bAlive(void);
 		virtual bool bRun(void);
-		virtual bool bStop(void);
+		virtual bool bRunning(void);
+		virtual bool bStopped(void);
 
 		virtual void pause(void);
 		virtual void resume(void);
 		virtual void stop(void);
-
-		virtual void atomicFrom(void);
-		virtual void atomicTo(void);
 
 	protected:
 		virtual void onPause(void);
@@ -64,7 +61,6 @@ namespace kai
 
 	protected:
 		_Thread *m_pT = nullptr;
-		pthread_mutex_t m_mutexAtomic;
 	};
 
 }

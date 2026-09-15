@@ -112,7 +112,7 @@ namespace kai
 
 	void _Modbus::update(void)
 	{
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			if (!bOpen())
 			{

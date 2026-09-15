@@ -123,7 +123,7 @@ namespace kai
 
 	void _Lane::update(void)
 	{
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
 

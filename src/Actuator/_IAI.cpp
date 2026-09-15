@@ -50,7 +50,7 @@ namespace kai
 
 	void _IAI::update(void)
 	{
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
 			uint64_t t = m_pT->getTfrom();

@@ -58,7 +58,7 @@ namespace kai
 
     void _SharedMemImg::update(void)
     {
-        while (m_pT->bAlive())
+        while (m_pT->bRun())
         {
             if (!m_pSHM->bOpen())
             {

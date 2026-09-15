@@ -50,7 +50,7 @@ namespace kai
 
 	void _GPhoto::update(void)
 	{
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			if (!m_bOpen)
 			{

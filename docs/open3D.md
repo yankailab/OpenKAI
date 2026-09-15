@@ -23,6 +23,7 @@ sudo apt-get -y install clang libsdl2-dev libxi-dev
     gfortran
 ```
 
+
 Build and install
 ```bash
 sudo apt-get -y install libjsoncpp-dev libc++1 gfortran libfmt-dev

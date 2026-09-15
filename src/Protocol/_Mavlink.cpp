@@ -135,7 +135,7 @@ namespace kai
 
 		mavlink_message_t msg;
 
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			IF_CONT(!readMessage(&msg));
 

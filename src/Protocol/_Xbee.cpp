@@ -44,7 +44,7 @@ namespace kai
 
     void _Xbee::updateW(void)
     {
-        while (m_pT->bAlive())
+        while (m_pT->bRun())
         {
             m_pT->autoFPS();
 
@@ -80,7 +80,7 @@ namespace kai
         XBframe xbFrame;
         xbFrame.clear();
 
-        while (m_pTr->bAlive())
+        while (m_pTr->bRun())
         {
             if (readFrame(&xbFrame))
             {

@@ -67,7 +67,7 @@ namespace kai
 
 	void _Erode::update(void)
 	{
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
 

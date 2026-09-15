@@ -46,7 +46,7 @@ namespace kai
 
 	void _BenewakeTF::update(void)
 	{
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			if (!m_pIO)
 			{

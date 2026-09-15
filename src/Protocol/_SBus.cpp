@@ -69,7 +69,7 @@ namespace kai
 
 	void _SBus::updateW(void)
 	{
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
 
@@ -86,7 +86,7 @@ namespace kai
 
 	void _SBus::updateR(void)
 	{
-		while (m_pTr->bAlive())
+		while (m_pTr->bRun())
 		{
 			IF_CONT(!readSbus(&m_frame));
 

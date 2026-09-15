@@ -76,7 +76,7 @@ namespace kai
 
 	void _RTCMcast::updateW(void)
 	{
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
 
@@ -122,7 +122,7 @@ namespace kai
 		RTCM_MSG rtcmMsg;
 		rtcmMsg.init();
 
-		while (m_pTr->bAlive())
+		while (m_pTr->bRun())
 		{
 			if (readMsg(&rtcmMsg))
 			{

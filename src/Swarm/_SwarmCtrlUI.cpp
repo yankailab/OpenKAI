@@ -67,7 +67,7 @@ namespace kai
 
     void _SwarmCtrlUI::updateW(void)
     {
-        while (m_pT->bAlive())
+        while (m_pT->bRun())
         {
             if (!m_pIO)
             {
@@ -145,7 +145,7 @@ namespace kai
 
     void _SwarmCtrlUI::updateR(void)
     {
-        while (m_pTr->bAlive())
+        while (m_pTr->bRun())
         {
             m_pTr->autoFPS();
 

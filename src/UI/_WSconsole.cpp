@@ -62,7 +62,7 @@ namespace kai
 
 	void _WSconsole::update(void)
 	{
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
 
@@ -100,7 +100,7 @@ namespace kai
 	{
 		string strR = "";
 
-		while (m_pTr->bAlive())
+		while (m_pTr->bRun())
 		{
 			m_pTr->autoFPS();
 

@@ -17,8 +17,7 @@ namespace kai
 		thread_stop = 0,
 		thread_run = 1,
 		thread_sleep = 2,
-		thread_pause = 3,
-		thread_resume = 4
+		thread_pause = 3
 	};
 
 	class _Thread : public BASE
@@ -32,17 +31,18 @@ namespace kai
 		virtual bool startThread(void *(*__start_routine)(void *), void *__restrict __arg);
 		virtual void console(void *pConsole);
 
-		bool bAlive(void);
-		bool bRun(void);
-		bool bStop(void);
+		bool bStopped(void);
+		bool bRunning(void);
+		bool bPaused(void);
 
+		bool bRun(void);
 		void run(void);
 		void pause(void);
 		void stop(void);
 
 		bool bOnPause(void);
 		bool bOnResume(void);
-		void runAll(void); // wake up all the other instances
+		void runAllLinkedThreads(void); // wake up all the other instances
 
 		void sleepT(int64_t usec);
 		void skipSleep(void);
@@ -62,7 +62,6 @@ namespace kai
 
 		THREAD_STATE m_setState = thread_stop;
 		THREAD_STATE m_state = thread_stop;
-		bool m_bPaused = false;
 
 		uint64_t m_tFrom = 0;
 		uint64_t m_tTo = 0;

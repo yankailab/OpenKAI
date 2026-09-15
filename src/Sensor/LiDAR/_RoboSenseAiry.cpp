@@ -66,7 +66,7 @@ namespace kai
 
     void _RoboSenseAiry::updateMSOP(void)
     {
-        while (m_pT->bAlive())
+        while (m_pT->bRun())
         {
             recvMSOP();
         }
@@ -92,7 +92,7 @@ namespace kai
 
     void _RoboSenseAiry::updateDIFOP(void)
     {
-        while (m_pTdifop->bAlive())
+        while (m_pTdifop->bRun())
         {
             recvDIFOP();
         }

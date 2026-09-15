@@ -48,7 +48,7 @@ namespace kai
 
 	void _ObjectArray::update(void)
 	{
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
 		}

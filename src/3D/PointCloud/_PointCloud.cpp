@@ -35,11 +35,8 @@ namespace kai
 
     void _PointCloud::clear(void)
     {
-        atomicFrom();
-
+		std::lock_guard<std::mutex> lock(m_mtxPt);
         m_grPt.clear();
-
-        atomicTo();
     }
 
     bool _PointCloud::start(void)
@@ -55,7 +52,7 @@ namespace kai
 
     void _PointCloud::update(void)
     {
-        while (m_pT->bAlive())
+        while (m_pT->bRun())
         {
             m_pT->autoFPS();
 
@@ -156,20 +153,6 @@ namespace kai
 }
 
 /*
-    bool _PointCloud::saveFile(const string &fName)
-    {
-        IF_F(fName.empty());
-
-        PointCloud pc;
-        this->copyTo(&pc);
-
-        io::WritePointCloudOption par;
-        par.write_ascii = io::WritePointCloudOption::IsAscii::Binary;
-        par.compressed = io::WritePointCloudOption::Compressed::Uncompressed;
-
-        return io::WritePointCloudToPLY(fName.c_str(), pc, par);
-    }
-
     void _PointCloud::writeSharedMem(void)
     {
         NULL_(m_pSM);

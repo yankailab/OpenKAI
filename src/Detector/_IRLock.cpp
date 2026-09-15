@@ -60,7 +60,7 @@ namespace kai
 
 	void _IRLock::update(void)
 	{
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
 

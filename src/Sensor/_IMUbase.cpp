@@ -51,7 +51,7 @@ namespace kai
 
 	void _IMUbase::update(void)
 	{
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
 		}

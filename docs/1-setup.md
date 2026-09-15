@@ -24,10 +24,20 @@ sudo apt-get -y install --no-install-recommends libunwind-dev gstreamer1.0-0 gst
 ```
 
 ## (Optional) Desktop renderings
+### OpenCV GTK windows and GStreamer desktop video sinks
 ```bash
 sudo apt-get -y install libgtk-3-dev gstreamer1.0-x gstreamer1.0-gtk3
-sudo apt-get -y install libglu1-mesa-dev libglu1-mesa libgl1-mesa-dev libglfw3 libglfw3-dev libglew-dev mesa-common-dev freeglut3-dev xorg-dev libxt-dev libxi-dev libx11-dev
 ```
+
+### ImGUI with GLFW and desktop OpenGL
+For `USE_GUI=ON`, `USE_IMGUI=ON`, `IMGUI_BACKEND=GLFW`, and `IMGUI_RENDERER=OPENGL`,
+```bash
+sudo apt-get -y install libglfw3-dev libgl1-mesa-dev libglew-dev libglu1-mesa-dev
+```
+
+For SDL2/OpenGL ES dependencies and configuration,
+see [ImGUIviewer.md](3D/ImGUIviewer.md).
+
 
 ## (Optional) Jpeg exif editing
 ```bash

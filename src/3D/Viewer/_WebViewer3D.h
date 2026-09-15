@@ -23,9 +23,9 @@ namespace kai
 		bool init(const json &j) override;
 		bool link(const json &j, ModuleMgr *pM) override;
 		bool start() override;
-		bool bAlive() override { return m_running; }
-		bool bRun() override { return m_running && !m_paused; }
-		bool bStop() override { return !m_running; }
+		bool bRun() override { return m_running; }
+		bool bRunning() override { return m_running && !m_paused; }
+		bool bStopped() override { return !m_running; }
 		void stop() override;
 		void pause() override;
 		void resume() override;

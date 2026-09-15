@@ -241,7 +241,7 @@ namespace kai
     // Device Type Query
     void _Livox2::updateWdeviceQuery(void)
     {
-        while (m_pT->bAlive())
+        while (m_pT->bRun())
         {
             m_pT->autoFPS();
 
@@ -269,7 +269,7 @@ namespace kai
 
     void _Livox2::updateRdeviceQuery(void)
     {
-        while (m_pTdeviceQueryR->bAlive())
+        while (m_pTdeviceQueryR->bRun())
         {
             LIVOX2_CMD cmd;
             if (recvLivoxCmd(m_pUDPdeviceQuery, &cmd))
@@ -316,7 +316,7 @@ namespace kai
     // Control Command
     void _Livox2::updateWctrlCmd(void)
     {
-        while (m_pTctrlCmdW->bAlive())
+        while (m_pTctrlCmdW->bRun())
         {
             m_pTctrlCmdW->autoFPS();
 
@@ -522,7 +522,7 @@ namespace kai
 
     void _Livox2::updateRctrlCmd(void)
     {
-        while (m_pTctrlCmdR->bAlive())
+        while (m_pTctrlCmdR->bRun())
         {
             LIVOX2_CMD cmd;
             if (recvLivoxCmd(m_pUDPctrlCmd, &cmd))
@@ -642,7 +642,7 @@ namespace kai
     // Push command
     void _Livox2::updateRpushCmd(void)
     {
-        while (m_pTpushCmdR->bAlive())
+        while (m_pTpushCmdR->bRun())
         {
             LIVOX2_CMD cmd;
             if (recvLivoxCmd(m_pUDPpushCmd, &cmd))
@@ -660,7 +660,7 @@ namespace kai
     // Point Cloud Data
     void _Livox2::updateRpointCloud(void)
     {
-        while (m_pTpclR->bAlive())
+        while (m_pTpclR->bRun())
         {
             LIVOX2_DATA d;
             if (recvLivoxData(m_pUDPpcl, &d))
@@ -704,7 +704,7 @@ namespace kai
     // IMU
     void _Livox2::updateRimu(void)
     {
-        while (m_pTimuR->bAlive())
+        while (m_pTimuR->bRun())
         {
             LIVOX2_DATA d;
             if (recvLivoxData(m_pUDPimu, &d))

@@ -175,7 +175,7 @@ namespace kai
 
 	void _ImGUIviewer::update(void)
 	{
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
 
@@ -369,7 +369,7 @@ namespace kai
 			return;
 		}
 
-		while (m_pTui->bAlive() && !m_pBackend->bClose())
+		while (m_pTui->bRun() && !m_pBackend->bClose())
 		{
 			m_pTui->autoFPS();
 			m_pBackend->beginFrame();

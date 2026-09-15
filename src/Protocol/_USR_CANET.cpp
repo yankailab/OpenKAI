@@ -65,7 +65,7 @@ namespace kai
 
 	void _USR_CANET::update(void)
 	{
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
 		}

@@ -50,7 +50,7 @@ namespace kai
 
 	void _APmavlink_mav2json::updateW(void)
 	{
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
 
@@ -99,7 +99,7 @@ namespace kai
 	{
 		string strR = "";
 
-		while (m_pTr->bAlive())
+		while (m_pTr->bRun())
 		{
 			IF_CONT(!recvJson(&strR, m_pIO));
 

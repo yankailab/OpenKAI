@@ -68,7 +68,7 @@ namespace kai
 
 	void _GStreamer::update(void)
 	{
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			if (!m_bOpen)
 			{

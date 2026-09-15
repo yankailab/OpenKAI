@@ -35,11 +35,8 @@ namespace kai
 
     void _Line::clear(void)
     {
-        atomicFrom();
-
+		std::lock_guard<std::mutex> lock(m_mtxLn);
         m_grLn.clear();
-
-        atomicTo();
     }
 
     bool _Line::start(void)
@@ -55,7 +52,7 @@ namespace kai
 
     void _Line::update(void)
     {
-        while (m_pT->bAlive())
+        while (m_pT->bRun())
         {
             m_pT->autoFPS();
 

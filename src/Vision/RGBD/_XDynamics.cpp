@@ -235,7 +235,7 @@ namespace kai
 
     void _XDynamics::update(void)
     {
-        while (m_pT->bAlive())
+        while (m_pT->bRun())
         {
             if (!m_bOpen)
             {

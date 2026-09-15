@@ -112,7 +112,7 @@ namespace kai
 
 	void _APmavlink_follow::update(void)
 	{
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
 

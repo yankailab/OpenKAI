@@ -157,7 +157,7 @@ namespace kai
 			return;
 		}
 
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			if (!m_bOpen)
 			{

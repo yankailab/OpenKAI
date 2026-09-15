@@ -39,7 +39,7 @@ namespace kai
 
 	void _PWMio::updateW(void)
 	{
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
 
@@ -71,7 +71,7 @@ namespace kai
 	{
 		PROTOCOL_CMD rCMD;
 
-		while (m_pTr->bAlive())
+		while (m_pTr->bRun())
 		{
 			IF_CONT(!readCMD(&rCMD));
 

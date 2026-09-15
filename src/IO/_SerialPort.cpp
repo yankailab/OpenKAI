@@ -72,7 +72,7 @@ namespace kai
 
 	void _SerialPort::update(void)
 	{
-		while (m_pT->bAlive())
+		while (m_pT->bRun())
 		{
 			if (!bOpen())
 			{

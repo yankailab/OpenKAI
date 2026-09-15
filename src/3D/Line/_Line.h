@@ -50,6 +50,7 @@ namespace kai
 
     protected:
         GEOMETRY_RINGBUF<GEOMETRY_LINE> m_grLn;
+        std::mutex m_mtxLn;
     };
 
 }

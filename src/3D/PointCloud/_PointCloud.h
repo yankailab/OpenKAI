@@ -50,6 +50,7 @@ namespace kai
 
     protected:
         GEOMETRY_RINGBUF<GEOMETRY_POINT> m_grPt;
+        std::mutex m_mtxPt;
     };
 
 }

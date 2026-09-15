@@ -12,13 +12,11 @@ namespace kai
 
     _ModuleBase::_ModuleBase()
     {
-        pthread_mutex_init(&m_mutexAtomic, NULL);
     }
 
     _ModuleBase::~_ModuleBase()
     {
         DEL(m_pT);
-        pthread_mutex_destroy(&m_mutexAtomic);
     }
 
     bool _ModuleBase::init(const json &j)
@@ -84,13 +82,6 @@ namespace kai
     {
     }
 
-    bool _ModuleBase::bAlive(void)
-    {
-        IF_F(!check());
-
-        return m_pT->bAlive();
-    }
-
     bool _ModuleBase::bRun(void)
     {
         IF_F(!check());
@@ -98,11 +89,18 @@ namespace kai
         return m_pT->bRun();
     }
 
-    bool _ModuleBase::bStop(void)
+    bool _ModuleBase::bRunning(void)
     {
         IF_F(!check());
 
-        return m_pT->bStop();
+        return m_pT->bRunning();
+    }
+
+    bool _ModuleBase::bStopped(void)
+    {
+        IF_F(!check());
+
+        return m_pT->bStopped();
     }
 
     void _ModuleBase::pause(void)
@@ -124,16 +122,6 @@ namespace kai
         IF_(!check());
 
         m_pT->stop();
-    }
-
-    void _ModuleBase::atomicFrom(void)
-    {
-        pthread_mutex_lock(&m_mutexAtomic);
-    }
-
-    void _ModuleBase::atomicTo(void)
-    {
-        pthread_mutex_unlock(&m_mutexAtomic);
     }
 
     void _ModuleBase::onPause(void)
