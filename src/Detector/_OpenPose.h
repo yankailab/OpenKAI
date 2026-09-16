@@ -63,7 +63,7 @@ namespace kai
 		int m_nH = 368;
 		bool m_bSwapRB = false;
 		float m_scale = 1.0 / 255.0;
-		vInt3 m_vMean;
+		Vector3i m_vMean = Vector3i::Zero();
 		float m_thr = 0.1;
 		Mat m_blob;
 		vector<string> m_vLayerName;

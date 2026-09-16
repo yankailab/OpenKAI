@@ -35,7 +35,7 @@ namespace kai
 
 	protected:
 		Frame m_F;
-		vInt2 m_vSize;
+		Vector2i m_vSize = Vector2i::Zero();
 
 		int m_waitKey = 30;
 		bool m_bFullScreen = false;

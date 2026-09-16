@@ -150,11 +150,11 @@ namespace kai
 		int32_t step = 0;
 		uint8_t dMode = 1;
 		int32_t speed = m_s.getTarget();
-		vFloat2 vRange = m_p.getRange();
+		Vector2f vRange = m_p.getRange();
 		if (speed > 0)
-			step = vRange.y;
+			step = vRange.y();
 		else if (speed < 0)
-			step = vRange.x;
+			step = vRange.x();
 		else
 			dMode = 3;
 

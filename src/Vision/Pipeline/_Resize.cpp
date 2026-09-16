@@ -62,7 +62,7 @@ namespace kai
 		IF_(pF->bEmpty());
 		IF_(m_fRGB.tStamp() >= pF->tStamp());
 
-		m_fRGB.copy(pF->resize(m_vSizeRGB.x, m_vSizeRGB.y));
+		m_fRGB.copy(pF->resize(m_vSizeRGB.x(), m_vSizeRGB.y()));
 	}
 
 }

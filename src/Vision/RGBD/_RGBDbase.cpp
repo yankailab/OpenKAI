@@ -12,8 +12,8 @@ namespace kai
 
 	_RGBDbase::_RGBDbase()
 	{
-		m_vSizeD.set(1280, 720);
-		m_vRangeD.set(0, FLT_MAX);
+		m_vSizeD = Vector2i(1280, 720);
+		m_vRangeD = Vector2f(0, FLT_MAX);
 	}
 
 	_RGBDbase::~_RGBDbase()
@@ -100,40 +100,40 @@ namespace kai
 		return &m_fDepth;
 	}
 
-	vFloat2 _RGBDbase::getRangeD(void)
+	Vector2f _RGBDbase::getRangeD(void)
 	{
 		return m_vRangeD;
 	}
 
-	float _RGBDbase::d(const vFloat4 &bb)
+	float _RGBDbase::d(const Vector4f &bb)
 	{
 		IF__(m_fDepth.bEmpty(), -1.0);
 
 		Size s = m_fDepth.size();
-		vInt4 vBB;
-		vBB.x = bb.x * s.width;
-		vBB.y = bb.y * s.height;
-		vBB.z = bb.z * s.width;
-		vBB.w = bb.w * s.height;
+		Vector4i vBB = Vector4i::Zero();
+		vBB.x() = bb.x() * s.width;
+		vBB.y() = bb.y() * s.height;
+		vBB.z() = bb.z() * s.width;
+		vBB.w() = bb.w() * s.height;
 
-		if (vBB.x < 0)
-			vBB.x = 0;
-		if (vBB.y < 0)
-			vBB.y = 0;
-		if (vBB.z > s.width)
-			vBB.z = s.width;
-		if (vBB.w > s.height)
-			vBB.w = s.height;
+		if (vBB.x() < 0)
+			vBB.x() = 0;
+		if (vBB.y() < 0)
+			vBB.y() = 0;
+		if (vBB.z() > s.width)
+			vBB.z() = s.width;
+		if (vBB.w() > s.height)
+			vBB.w() = s.height;
 
 		return d(vBB);
 	}
 
-	float _RGBDbase::d(const vInt4 &bb)
+	float _RGBDbase::d(const Vector4i &bb)
 	{
 		IF__(m_fDepth.bEmpty(), -1.0);
 
 		vector<int> vHistLev = {m_nHistLev};
-		vector<float> vRange = {m_vRangeD.x, m_vRangeD.y};
+		vector<float> vRange = {m_vRangeD.x(), m_vRangeD.y()};
 		vector<int> vChannel = {0};
 
 		Rect r = bb2Rect(bb);
@@ -155,7 +155,7 @@ namespace kai
 				break;
 		}
 
-		return (m_vRangeD.x + (((float)i) / (float)m_nHistLev) * m_vRangeD.len());
+		return (m_vRangeD.x() + (((float)i) / (float)m_nHistLev) * m_vRangeD.norm());
 	}
 
 	void _RGBDbase::draw(void *pFrame)
@@ -173,13 +173,13 @@ namespace kai
 			Mat *pM = pF->m();
 			IF_(pM->empty());
 
-			vFloat4 vRoi(0.4, 0.4, 0.6, 0.6);
+			Vector4f vRoi(0.4, 0.4, 0.6, 0.6);
 
-			vFloat4 bb;
-			bb.x = vRoi.x * pM->cols;
-			bb.y = vRoi.y * pM->rows;
-			bb.z = vRoi.z * pM->cols;
-			bb.w = vRoi.w * pM->rows;
+			Vector4f bb = Vector4f::Zero();
+			bb.x() = vRoi.x() * pM->cols;
+			bb.y() = vRoi.y() * pM->rows;
+			bb.z() = vRoi.z() * pM->cols;
+			bb.w() = vRoi.w() * pM->rows;
 			Rect r = bb2Rect(bb);
 			rectangle(*pM, r, Scalar(128, 128, 128), 2);
 

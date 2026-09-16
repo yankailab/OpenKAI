@@ -32,22 +32,22 @@ namespace kai
 							bool bYawRate = true,
 							uint8_t frame = MAV_FRAME_BODY_OFFSET_NED);
 
-		virtual void setVlocal(const vFloat4 &vSpd,
+		virtual void setVlocal(const Vector4f &vSpd,
 							   bool bYaw = false,
 							   bool bYawRate = true,
 							   uint8_t frame = MAV_FRAME_BODY_OFFSET_NED);
 
-		virtual void setPlocal(const vFloat4 &vP,
+		virtual void setPlocal(const Vector4f &vP,
 							   bool bYaw = false,
 							   bool bYawRate = true,
 							   uint8_t frame = MAV_FRAME_BODY_OFFSET_NED);
 
-		virtual void setPglobal(const vDouble4 &vP,
+		virtual void setPglobal(const Vector4d &vP,
 								bool bYaw = true,
 								bool bYawRate = false,
 								uint8_t frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT);
 
-		virtual void doReposition(const vDouble4 &vP, // Lat, Lon, Alt, Yaw
+		virtual void doReposition(const Vector4d &vP, // Lat, Lon, Alt, Yaw
 								  float speed = -1,
 								  float radius = 0,
 								  uint8_t frame = MAV_FRAME_GLOBAL);

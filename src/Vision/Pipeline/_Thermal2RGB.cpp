@@ -13,7 +13,7 @@ namespace kai
 	_Thermal2RGB::_Thermal2RGB()
 	{
 		m_type = vision_depth2Gray;
-		m_vTrange.set(0, 40);
+		m_vTrange = Vector2f(0, 40);
 	}
 
 	_Thermal2RGB::~_Thermal2RGB()
@@ -68,11 +68,11 @@ namespace kai
 		IF_(mT.type() != CV_32FC1);
 
 		Mat mClip;
-		cv::min(cv::max(mT, m_vTrange.x), m_vTrange.y, mClip);
+		cv::min(cv::max(mT, m_vTrange.x()), m_vTrange.y(), mClip);
 
 		Mat mGray;
-		float tR = m_vTrange.y - m_vTrange.x;
-		mClip.convertTo(mGray, CV_8UC1, 255.0 / tR, -m_vTrange.x * 255.0 / tR);
+		float tR = m_vTrange.y() - m_vTrange.x();
+		mClip.convertTo(mGray, CV_8UC1, 255.0 / tR, -m_vTrange.x() * 255.0 / tR);
 
 		Mat mC;
 		applyColorMap(mGray, mC, cv::COLORMAP_JET);

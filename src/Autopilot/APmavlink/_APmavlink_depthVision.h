@@ -13,14 +13,14 @@ namespace kai
 	struct DEPTH_ROI
 	{
 		uint8_t m_orientation;
-		vFloat4 m_roi;
+		Vector4f m_roi = Vector4f::Zero();
 		float m_minD;
 
 		void init(void)
 		{
 			m_minD = 0.0;
 			m_orientation = 0;
-			m_roi.clear();
+			m_roi.setZero();
 		}
 	};
 

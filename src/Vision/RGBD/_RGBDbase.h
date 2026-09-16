@@ -39,9 +39,9 @@ namespace kai
 
 #ifdef USE_OPENCV
 		virtual Frame *getFrameD(void);
-		virtual vFloat2 getRangeD(void);
-		virtual float d(const vInt4 &bb);
-		virtual float d(const vFloat4 &bb);
+		virtual Vector2f getRangeD(void);
+		virtual float d(const Vector4i &bb);
+		virtual float d(const Vector4f &bb);
 #endif
 
 	protected:
@@ -50,8 +50,8 @@ namespace kai
 		_IMUbase* m_pIMU = nullptr;
 
 		int m_devFPSd = 30;
-		vInt2 m_vSizeD;
-		vFloat2 m_vRangeD;
+		Vector2i m_vSizeD = Vector2i::Zero();
+		Vector2f m_vRangeD = Vector2f::Zero();
 
 		// switchs
 		bool m_bDepth = true;

@@ -36,7 +36,7 @@ namespace kai
 	protected:
 		_VisionBase *m_pV = nullptr;
 
-		vFloat2 m_vTrange;	// temperature range to show
+		Vector2f m_vTrange = Vector2f::Zero();	// temperature range to show
 
 	};
 

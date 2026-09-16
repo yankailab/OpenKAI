@@ -21,14 +21,14 @@ namespace kai
 		UUID128 m_ID = 0;
 
 		int m_nP = 0;
-		vFloat4 m_vC = {1, 1, 1, 1}; // default color
-		uint64_t m_tStamp = 0;		 // last updated time stamp
+		Vector4f m_vC = {1, 1, 1, 1}; // default color
+		uint64_t m_tStamp = 0;		  // last updated time stamp
 
 		void clear(void)
 		{
 			m_ID = {0, 0};
 			m_nP = 0;
-			m_vC.set(1);
+			m_vC.setConstant(1);
 			m_tStamp = 0;
 		}
 	};
@@ -53,9 +53,9 @@ namespace kai
 
 		// grid
 		virtual OCTGRID_PCL_CELL *addCellPoint(const GEOMETRY_POINT &gP, const uint64_t &tNow, int nMaxLevTo = -1, bool bAdd = true);
-		virtual OCTGRID_PCL_CELL *getCell(const vFloat3 &vP, int nMaxLevTo = -1);
+		virtual OCTGRID_PCL_CELL *getCell(const Vector3f &vP, int nMaxLevTo = -1);
 		virtual OCTGRID_PCL_CELL *getCell(const UUID128 &id);
-		virtual const vector<UUID128>& getSelectedCells(void);
+		virtual const vector<UUID128> &getSelectedCells(void);
 
 		// drawing
 		virtual int get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire = 0);
@@ -81,13 +81,13 @@ namespace kai
 		}
 
 	protected:
-		vFloat3 m_vPorigin;		 // cubic center of the root cell in local coordinate
-		vFloat3 m_vRootCellSize; // root level cell size in meters
+		Vector3f m_vPorigin = Vector3f::Zero();	 // cubic center of the root cell in local coordinate
+		Vector3f m_vRootCellSize = {10, 10, 10}; // root level cell size in meters
 		int m_nMaxLevel = 4;
 
 		// data
 		OCTREE_CELL<OCTGRID_PCL_CELL> *m_pCell = nullptr; // root cell
-		uint64_t m_dTexpireCell = 0;				// remove cell if no point is coming by this duration
+		uint64_t m_dTexpireCell = 0;					  // remove cell if no point is coming by this duration
 
 		// point cloud input
 		vector<_GeometryBase *> m_vpGb;
@@ -103,7 +103,7 @@ namespace kai
 		// Serializes live root changes with grid updates; acquire before m_cellsMutex.
 		std::mutex m_gridMutex;
 		std::mutex m_cellsMutex;
-		vFloat4 m_vColCellOcc;
+		Vector4f m_vColCellOcc = {1, 1, 1, 1};
 		bool m_bColCellOcc = false;
 
 		// Selected cells, guarded by m_cellsMutex after initialization.

@@ -75,6 +75,22 @@ bool jKv(const json &j, const string &key, T2 &v, bool bLog = false)
 	return false;
 }
 
+// Copy only supplied coefficients, preserving defaults for short config arrays.
+template <typename T1, typename Scalar, int N, int Options, int MaxRows, int MaxCols>
+bool jKv(const json &j, const string &key,
+         Eigen::Matrix<Scalar, N, 1, Options, MaxRows, MaxCols> &v, bool bLog = false)
+{
+    vector<T1> values;
+    if (!jKv(j, key, values, bLog))
+        return false;
+
+    const auto n = std::min(values.size(), static_cast<size_t>(v.size()));
+    for (size_t i = 0; i < n; ++i)
+        v[static_cast<Eigen::Index>(i)] = static_cast<Scalar>(values[i]);
+		
+    return true;
+}
+
 inline const json& jK(const json &j, const std::string &key, bool bLog = false)
 {
 	static const json jNull = nullptr;

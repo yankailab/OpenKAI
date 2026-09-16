@@ -21,30 +21,30 @@ namespace kai
 
 	struct IMGUI_VIEWER_POINT
 	{
-		vFloat3 m_vP;
-		vFloat4 m_vC{0, 0, 0, 1};
+		Vector3f m_vP = Vector3f::Zero();
+		Vector4f m_vC{0, 0, 0, 1};
 	};
 
 	struct IMGUI_VIEWER_LINE
 	{
-		vFloat3 m_vA;
-		vFloat3 m_vB;
-		vFloat4 m_vC{0, 0, 0, 1};
+		Vector3f m_vA = Vector3f::Zero();
+		Vector3f m_vB = Vector3f::Zero();
+		Vector4f m_vC{0, 0, 0, 1};
 	};
 
 	struct IMGUI_VIEWER_BOX
 	{
 		UUID128 m_ID = 0;
-		vFloat3 m_vCenter, m_vSize;
-		vFloat4 m_vC{0, 0, 0, 1};
+		Vector3f m_vCenter = Vector3f::Zero(), m_vSize = Vector3f::Zero();
+		Vector4f m_vC{0, 0, 0, 1};
 
 		template <typename F> void forEachEdge(F draw) const
 		{
-			vFloat3 vertices[8];
+			Vector3f vertices[8];
 			for (unsigned i = 0; i < 8; ++i)
-				vertices[i] = vFloat3(m_vCenter.x + (i & 4 ? 0.5f : -0.5f) * m_vSize.x,
-					m_vCenter.y + (i & 2 ? 0.5f : -0.5f) * m_vSize.y,
-					m_vCenter.z + (i & 1 ? 0.5f : -0.5f) * m_vSize.z);
+				vertices[i] = Vector3f(m_vCenter.x() + (i & 4 ? 0.5f : -0.5f) * m_vSize.x(),
+					m_vCenter.y() + (i & 2 ? 0.5f : -0.5f) * m_vSize.y(),
+					m_vCenter.z() + (i & 1 ? 0.5f : -0.5f) * m_vSize.z());
 			for (unsigned i = 0; i < 8; ++i)
 				for (unsigned bit : {1u, 2u, 4u})
 					if (!(i & bit)) draw(vertices[i], vertices[i | bit]);
@@ -62,7 +62,7 @@ namespace kai
 		int m_nCbuf = -1;
 		float m_matPointSize = 2.0;
 		float m_matLineWidth = 1.0;
-		vFloat4 m_matCol = {1, 1, 1, 1};
+		Vector4f m_matCol = {1, 1, 1, 1};
 
 		vector<IMGUI_VIEWER_POINT> m_vP;
 		vector<IMGUI_VIEWER_LINE> m_vL;
@@ -110,13 +110,13 @@ namespace kai
 		}
 
 		void drawUI(void);
-		void drawScene(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize);
+		void drawScene(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize);
 		void drawStatusPanel(void);
-		void drawGrid(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize);
-		void updateCameraControl(const vFloat2 &vCanvasSize);
-		void drawSceneCPU(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize);
-		void drawSceneGL(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize);
-		void renderSceneGL(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize);
+		void drawGrid(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize);
+		void updateCameraControl(const Vector2f &vCanvasSize);
+		void drawSceneCPU(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize);
+		void drawSceneGL(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize);
+		void renderSceneGL(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize);
 		static void drawSceneGLCallback(const ImDrawList *pParentList, const ImDrawCmd *pCmd);
 
 		void collectGeometry(_GeometryBase *pGb, IMGUI_VIEWER_OBJ *pObj);
@@ -130,14 +130,14 @@ namespace kai
 		IMGUI_VIEWER_OBJ *findObject(_GeometryBase *pGb, const string &name = "");
 		const IMGUI_VIEWER_OBJ *findObject(_GeometryBase *pGb, const string &name = "") const;
 
-		bool projectPoint(const vFloat3 &vP,
-						  const vFloat2 &vCanvasPos,
-						  const vFloat2 &vCanvasSize,
-						  vFloat2 *pVscreen,
+		bool projectPoint(const Vector3f &vP,
+						  const Vector2f &vCanvasPos,
+						  const Vector2f &vCanvasSize,
+						  Vector2f *pVscreen,
 						  float *pDepth);
-		void getCameraBasis(vFloat3 *pForward, vFloat3 *pRight, vFloat3 *pUp);
+		void getCameraBasis(Vector3f *pForward, Vector3f *pRight, Vector3f *pUp);
 		void orbit(float dYaw, float dPitch);
-		void pan(float dx, float dy, const vFloat2 &vCanvasSize);
+		void pan(float dx, float dy, const Vector2f &vCanvasSize);
 		void zoom(float d);
 		bool camBound(void);
 
@@ -164,15 +164,15 @@ namespace kai
 		float m_sZoom = 0.1;
 		float m_pointScale = 1.0;
 		float m_lineScale = 1.0;
-		vFloat4 m_vBgCol;
+		Vector4f m_vBgCol = Vector4f::Zero();
 
 		bool m_bGpuRender = true;
 		unsigned long long m_snapshotVersion = 0;
 		size_t m_nDrawObjects = 0;
 		size_t m_nDrawPoints = 0;
 		size_t m_nDrawLines = 0;
-		vFloat2 m_vGLCanvasPos;
-		vFloat2 m_vGLCanvasSize;
+		Vector2f m_vGLCanvasPos = Vector2f::Zero();
+		Vector2f m_vGLCanvasSize = Vector2f::Zero();
 	};
 }
 

@@ -102,8 +102,8 @@ namespace kai
     {
         SWMSG_HB m;
         m.m_srcID = m_node.m_id;
-        m.m_lat = m_node.m_pos.x * 1e7;
-        m.m_lng = m_node.m_pos.y * 1e7;
+        m.m_lat = m_node.m_pos.x() * 1e7;
+        m.m_lng = m_node.m_pos.y() * 1e7;
         m.m_alt = m_node.m_alt * 1e2;
 
         uint8_t pB[XB_N_PAYLOAD];

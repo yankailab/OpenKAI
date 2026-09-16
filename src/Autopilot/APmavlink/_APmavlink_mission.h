@@ -11,16 +11,16 @@ namespace kai
 	{
 		int m_missionID;
 		uint8_t m_missionType;
-		vDouble4 m_vP; // lat, lng, alt, hdg
-		vDouble4 m_vPlookAt;
+		Vector4d m_vP = Vector4d::Zero(); // lat, lng, alt, hdg
+		Vector4d m_vPlookAt = Vector4d::Zero();
 		float m_spd;
 		uint64_t m_tDelay;
 
 		void clear(void)
 		{
 			m_missionID = -1;
-			m_vP.clear();
-			m_vPlookAt.clear();
+			m_vP.setZero();
+			m_vPlookAt.setZero();
 			m_spd = 0.0;
 			m_tDelay = 0;
 		}

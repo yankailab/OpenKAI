@@ -11,14 +11,14 @@
 
 namespace
 {
-	Eigen::Matrix3d rotationMatrixFromXYZ(const Eigen::Vector3d &rotation)
+	Eigen::Matrix3d rotationMatrixFromXYZ(const Vector3d &rotation)
 	{
-		return Eigen::AngleAxisd(rotation(0), Eigen::Vector3d::UnitX()).toRotationMatrix() *
-			   Eigen::AngleAxisd(rotation(1), Eigen::Vector3d::UnitY()).toRotationMatrix() *
-			   Eigen::AngleAxisd(rotation(2), Eigen::Vector3d::UnitZ()).toRotationMatrix();
+		return Eigen::AngleAxisd(rotation(0), Vector3d::UnitX()).toRotationMatrix() *
+			   Eigen::AngleAxisd(rotation(1), Vector3d::UnitY()).toRotationMatrix() *
+			   Eigen::AngleAxisd(rotation(2), Vector3d::UnitZ()).toRotationMatrix();
 	}
 
-	Eigen::Matrix3d rotationMatrixFromAxisAngle(const Eigen::Vector3d &rotation)
+	Eigen::Matrix3d rotationMatrixFromAxisAngle(const Vector3d &rotation)
 	{
 		const double phi = rotation.norm();
 		if (phi > 0.0)
@@ -27,7 +27,7 @@ namespace
 		return Eigen::Matrix3d::Identity();
 	}
 
-	Eigen::Matrix3d rotationMatrixFromQuaternion(const Eigen::Vector4d &rotation)
+	Eigen::Matrix3d rotationMatrixFromQuaternion(const Vector4d &rotation)
 	{
 		return Eigen::Quaterniond(rotation(0), rotation(1), rotation(2), rotation(3))
 			.normalized()
@@ -40,11 +40,11 @@ namespace kai
 
 	_PCtransform::_PCtransform()
 	{
-		m_vT.set(0);
-		m_vR.set(0);
-		m_vQ.clear();
-		m_mT = Matrix4d::Identity();
-		m_A = Matrix4d::Identity();
+		m_vT.setZero();
+		m_vR.setZero();
+		m_vQ.setZero();
+		m_mT = Eigen::Matrix4d::Identity();
+		m_A = Eigen::Matrix4d::Identity();
 	}
 
 	_PCtransform::~_PCtransform()
@@ -76,9 +76,9 @@ namespace kai
 		const json &jG = jK(j, "_PCtransform");
 		if (jG.is_object())
 		{
-			vDouble3 vT, vR;
-			vT.clear();
-			vR.clear();
+			Vector3d vT = Vector3d::Zero(), vR = Vector3d::Zero();
+			vT.setZero();
+			vR.setZero();
 			jKv<double>(jG, "vT", vT);
 			jKv<double>(jG, "vR", vR);
 
@@ -90,7 +90,7 @@ namespace kai
 			jKv(jG, "mT", vmT);
 			if (vmT.size() >= 16)
 			{
-				Matrix4d mT;
+				Eigen::Matrix4d mT;
 				mT(0, 0) = vmT[0];
 				mT(0, 1) = vmT[1];
 				mT(0, 2) = vmT[2];
@@ -125,10 +125,10 @@ namespace kai
 	bool _PCtransform::saveConfig(json &j, string fName)
 	{
 		json jG = json::object();
-		jG["vT"] = {m_vT.x, m_vT.y, m_vT.z};
-		jG["vR"] = {m_vR.x, m_vR.y, m_vR.z};
+		jG["vT"] = {m_vT.x(), m_vT.y(), m_vT.z()};
+		jG["vR"] = {m_vR.x(), m_vR.y(), m_vR.z()};
 
-		Matrix4d mT = getTranslationMatrix();
+		Eigen::Matrix4d mT = getTranslationMatrix();
 		jG["mT"] = {mT(0, 0), mT(0, 1), mT(0, 2), mT(0, 3),
 					mT(1, 0), mT(1, 1), mT(1, 2), mT(1, 3),
 					mT(2, 0), mT(2, 1), mT(2, 2), mT(2, 3),
@@ -188,22 +188,22 @@ namespace kai
 		m_pPS->get(&m_grPt, tExpire);
 	}
 
-	void _PCtransform::setTranslation(const vDouble3 &vT)
+	void _PCtransform::setTranslation(const Vector3d &vT)
 	{
 		m_vT = vT;
 	}
 
-	void _PCtransform::setRotation(const vDouble3 &vR)
+	void _PCtransform::setRotation(const Vector3d &vR)
 	{
 		m_vR = vR;
 	}
 
-	void _PCtransform::setQuaternion(const vDouble4 &vQ)
+	void _PCtransform::setQuaternion(const Vector4d &vQ)
 	{
 		m_vQ = vQ;
 	}
 
-	void _PCtransform::updateTranslationMatrix(bool bUseQuaternion, vDouble3 *pRa)
+	void _PCtransform::updateTranslationMatrix(bool bUseQuaternion, Vector3d *pRa)
 	{
 		if (bUseQuaternion)
 			m_mT = createTranslationMatrix(m_vT, m_vQ, pRa);
@@ -213,66 +213,66 @@ namespace kai
 		m_A = m_mT;
 	}
 
-	Matrix4d _PCtransform::createTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR, vDouble3 *pRa)
+	Eigen::Matrix4d _PCtransform::createTranslationMatrix(const Vector3d &vT, const Vector3d &vR, Vector3d *pRa)
 	{
-		Matrix4d mT = Matrix4d::Identity();
-		Vector3d eR(vR.x, vR.y, vR.z);
+		Eigen::Matrix4d mT = Eigen::Matrix4d::Identity();
+		Vector3d eR(vR.x(), vR.y(), vR.z());
 		mT.block(0, 0, 3, 3) = rotationMatrixFromXYZ(eR);
-		mT(0, 3) = vT.x;
-		mT(1, 3) = vT.y;
-		mT(2, 3) = vT.z;
+		mT(0, 3) = vT.x();
+		mT(1, 3) = vT.y();
+		mT(2, 3) = vT.z();
 
 		NULL__(pRa, mT);
 
-		eR = Vector3d(pRa->x, pRa->y, pRa->z);
-		Matrix3d mR = rotationMatrixFromAxisAngle(eR);
-		Matrix3d mTr = mT.block(0, 0, 3, 3);
+		eR = Vector3d(pRa->x(), pRa->y(), pRa->z());
+		Eigen::Matrix3d mR = rotationMatrixFromAxisAngle(eR);
+		Eigen::Matrix3d mTr = mT.block(0, 0, 3, 3);
 		mT.block(0, 0, 3, 3) = mTr * mR;
 
 		return mT;
 	}
 
-	Matrix4d _PCtransform::createTranslationMatrix(const vDouble3 &vT, const vDouble4 &vQ, vDouble3 *pRa)
+	Eigen::Matrix4d _PCtransform::createTranslationMatrix(const Vector3d &vT, const Vector4d &vQ, Vector3d *pRa)
 	{
-		Matrix4d mT = Matrix4d::Identity();
-		Vector4d eQ(vQ.x, vQ.y, vQ.z, vQ.w);
+		Eigen::Matrix4d mT = Eigen::Matrix4d::Identity();
+		Vector4d eQ(vQ.x(), vQ.y(), vQ.z(), vQ.w());
 		mT.block(0, 0, 3, 3) = rotationMatrixFromQuaternion(eQ);
-		mT(0, 3) = vT.x;
-		mT(1, 3) = vT.y;
-		mT(2, 3) = vT.z;
+		mT(0, 3) = vT.x();
+		mT(1, 3) = vT.y();
+		mT(2, 3) = vT.z();
 
 		NULL__(pRa, mT);
 
-		Vector3d eR(pRa->x, pRa->y, pRa->z);
-		Matrix3d mR = rotationMatrixFromAxisAngle(eR);
-		Matrix3d mTr = mT.block(0, 0, 3, 3);
+		Vector3d eR(pRa->x(), pRa->y(), pRa->z());
+		Eigen::Matrix3d mR = rotationMatrixFromAxisAngle(eR);
+		Eigen::Matrix3d mTr = mT.block(0, 0, 3, 3);
 		mT.block(0, 0, 3, 3) = mR * mTr;
 
 		return mT;
 	}
 
-	Matrix4d _PCtransform::getTranslationMatrix(void)
+	Eigen::Matrix4d _PCtransform::getTranslationMatrix(void)
 	{
 		return m_mT;
 	}
 
-	void _PCtransform::setTranslationMatrix(const Matrix4d &mT)
+	void _PCtransform::setTranslationMatrix(const Eigen::Matrix4d &mT)
 	{
 		m_mT = mT;
 		m_A = m_mT;
 	}
 
-	vDouble3 _PCtransform::getTranslation(void)
+	Vector3d _PCtransform::getTranslation(void)
 	{
 		return m_vT;
 	}
 
-	vDouble3 _PCtransform::getRotation(void)
+	Vector3d _PCtransform::getRotation(void)
 	{
 		return m_vR;
 	}
 
-	vDouble4 _PCtransform::getQuaternion(void)
+	Vector4d _PCtransform::getQuaternion(void)
 	{
 		return m_vQ;
 	}
@@ -283,9 +283,9 @@ namespace kai
         this->_ModuleBase::console(pConsole);
 
         _Console *pC = (_Console *)pConsole;
-        pC->addMsg("vT = (" + f2str(m_vT.x) + "," + f2str(m_vT.y) + ", " + f2str(m_vT.z) + ")");
-        pC->addMsg("vR = (" + f2str(m_vR.x) + "," + f2str(m_vR.y) + ", " + f2str(m_vR.z) + ")");
-        pC->addMsg("vQ = (" + f2str(m_vQ.x) + "," + f2str(m_vQ.y) + ", " + f2str(m_vQ.z) + ", " + f2str(m_vQ.w) + ")");
+        pC->addMsg("vT = (" + f2str(m_vT.x()) + "," + f2str(m_vT.y()) + ", " + f2str(m_vT.z()) + ")");
+        pC->addMsg("vR = (" + f2str(m_vR.x()) + "," + f2str(m_vR.y()) + ", " + f2str(m_vR.z()) + ")");
+        pC->addMsg("vQ = (" + f2str(m_vQ.x()) + "," + f2str(m_vQ.y()) + ", " + f2str(m_vQ.z()) + ", " + f2str(m_vQ.w()) + ")");
     }
 
 

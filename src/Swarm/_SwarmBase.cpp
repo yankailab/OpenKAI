@@ -51,8 +51,8 @@ namespace kai
 
 		pN->m_srcNetAddr = m.m_srcNetAddr;
 		pN->m_bPosValid = (m.m_lat != 0);
-		pN->m_vPos.x = ((double)m.m_lat) * 1e-7;
-		pN->m_vPos.y = ((double)m.m_lng) * 1e-7;
+		pN->m_vPos.x() = ((double)m.m_lat) * 1e-7;
+		pN->m_vPos.y() = ((double)m.m_lng) * 1e-7;
 		pN->m_alt = ((float)m.m_alt) * 1e-2;
 		pN->m_hdg = ((float)m.m_hdg) * 1e-1;
 		pN->m_spd = ((float)m.m_spd) * 1e-2;
@@ -75,12 +75,12 @@ namespace kai
 		return NULL;
 	}
 
-	SWARM_NODE *_SwarmBase::getNodeByIDrange(vInt2 vID)
+	SWARM_NODE *_SwarmBase::getNodeByIDrange(Vector2i vID)
 	{
 		for (int i = 0; i < m_vNodes.size(); i++)
 		{
 			SWARM_NODE *pN = &(m_vNodes[i]);
-			IF_CONT(!vID.bInside((int)pN->m_id));
+			IF_CONT(((int)pN->m_id < vID.x() || (int)pN->m_id >= vID.y()));
 
 			return pN;
 		}
@@ -165,7 +165,7 @@ namespace kai
 		m_vNodes.shrink_to_fit();
 	}
 
-	SWARM_NODE *_SwarmBase::findClosestNode(vDouble2 vPos)
+	SWARM_NODE *_SwarmBase::findClosestNode(Vector2d vPos)
 	{
 		IF__(m_vNodes.size() <= 0, nullptr);
 
@@ -174,7 +174,7 @@ namespace kai
 		for (int i = 0; i < m_vNodes.size(); i++)
 		{
 			SWARM_NODE *pN = &m_vNodes[i];
-			double d = (pN->m_vPos - vPos).len();
+			double d = (pN->m_vPos - vPos).norm();
 			IF_CONT(d > dMin);
 
 			iN = i;
@@ -184,7 +184,7 @@ namespace kai
 		return &m_vNodes[iN];
 	}
 
-	int _SwarmBase::getNodesWithinRadius(const vDouble2 &vPos, float r)
+	int _SwarmBase::getNodesWithinRadius(const Vector2d &vPos, float r)
 	{
 		return 0;
 	}

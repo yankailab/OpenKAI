@@ -12,8 +12,8 @@ namespace kai
 
 	PID::PID()
 	{
-		m_vRin.set(-FLT_MAX, FLT_MAX);
-		m_vRout.set(-FLT_MAX, FLT_MAX);
+		m_vRin = Vector2f(-FLT_MAX, FLT_MAX);
+		m_vRout = Vector2f(-FLT_MAX, FLT_MAX);
 		reset();
 	}
 
@@ -53,7 +53,7 @@ namespace kai
 		if (dT != 0.0)
 			ovdT = 1.0 / dT;
 
-		m_vVar = m_vRin.constrain(v);
+		m_vVar = std::clamp(v, m_vRin.x(), m_vRin.y());
 		m_vSetPoint = sp;
 
 		m_eOld = m_e;
@@ -63,7 +63,7 @@ namespace kai
 		// P,I,D should be of the same symbol
 		float o = m_P * m_e + m_D * (m_e - m_eOld) * ovdT + constrain(m_I * m_eI, -m_Imax, m_Imax);
 
-		m_vOut = m_vRout.constrain(o);
+		m_vOut = std::clamp(o, m_vRout.x(), m_vRout.y());
 		return m_vOut;
 	}
 
@@ -112,22 +112,22 @@ namespace kai
 		m_D = D;
 	}
 
-	vFloat2 PID::getRangeIn(void)
+	Vector2f PID::getRangeIn(void)
 	{
 		return m_vRin;
 	}
 
-	void PID::setRangeIn(const vFloat2 &vRin)
+	void PID::setRangeIn(const Vector2f &vRin)
 	{
 		m_vRin = vRin;
 	}
 
-	vFloat2 PID::getRangeOut(void)
+	Vector2f PID::getRangeOut(void)
 	{
 		return m_vRout;
 	}
 
-	void PID::setRangeOut(const vFloat2 &vRout)
+	void PID::setRangeOut(const Vector2f &vRout)
 	{
 		m_vRout = vRout;
 	}

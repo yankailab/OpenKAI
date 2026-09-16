@@ -26,10 +26,10 @@ namespace kai
 		bool setCamMat(const Mat &mC, const Mat &mD);
 		bool scaleCamMat(void);
 		//	void updateCamMat(void);
-		vDouble2 getF(void);
-		vDouble2 getC(void);
-		vFloat2 getFf(void);
-		vFloat2 getCf(void);
+		Vector2d getF(void);
+		Vector2d getC(void);
+		Vector2f getFf(void);
+		Vector2f getCf(void);
 		Mat mC(void);
 		Mat mCscaled(void);
 		Mat mD(void);

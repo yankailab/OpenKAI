@@ -13,8 +13,8 @@ namespace kai
 	_InRange::_InRange()
 	{
 		m_type = vision_inRange;
-		m_vL.set(0, 0, 0);
-		m_vH.set(255, 255, 255);
+		m_vL = Vector3i(0, 0, 0);
+		m_vH = Vector3i(255, 255, 255);
 	}
 
 	_InRange::~_InRange()
@@ -69,8 +69,8 @@ namespace kai
 
 		Mat m;
 		cv::inRange(*pF->m(),
-					cv::Scalar(m_vL.x, m_vL.y, m_vL.z),
-					cv::Scalar(m_vH.x, m_vH.y, m_vH.z), m);
+					cv::Scalar(m_vL.x(), m_vL.y(), m_vL.z()),
+					cv::Scalar(m_vH.x(), m_vH.y(), m_vH.z()), m);
 
 		m_fRGB.copy(m);
 	}

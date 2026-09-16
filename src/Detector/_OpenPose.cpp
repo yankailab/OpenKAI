@@ -9,7 +9,7 @@ namespace kai
 
 	_OpenPose::_OpenPose()
 	{
-		m_vMean.clear();
+		m_vMean.setZero();
 	}
 
 	_OpenPose::~_OpenPose()
@@ -76,7 +76,7 @@ namespace kai
 		Mat mIn = *m_fRGB.m();
 
 		m_blob = blobFromImage(mIn, m_scale, Size(m_nW, m_nH),
-							   Scalar(m_vMean.x, m_vMean.y, m_vMean.z), m_bSwapRB, false);
+							   Scalar(m_vMean.x(), m_vMean.y(), m_vMean.z()), m_bSwapRB, false);
 		m_net.setInput(m_blob);
 
 		Mat output = m_net.forward();

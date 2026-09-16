@@ -180,7 +180,7 @@ namespace kai
 		uint64_t m_srcNetAddr = 0;
 		uint16_t m_id = 0;
 		bool m_bPosValid = false;
-		vDouble2 m_vPos = {0, 0};
+		Vector2d m_vPos = {0, 0};
 		float m_alt = 0;
 		float m_hdg = 0;
 		float m_spd = 0;
@@ -204,7 +204,7 @@ namespace kai
 		// swarm msg handlers
 		void handleMsgHB(const SWMSG_HB &m);
 		SWARM_NODE *getNodeByID(uint16_t id);
-		SWARM_NODE *getNodeByIDrange(vInt2 vID);
+		SWARM_NODE *getNodeByIDrange(Vector2i vID);
 		SWARM_NODE *getNode(int i);
 
 	protected:
@@ -217,8 +217,8 @@ namespace kai
 		void deleteNode(int i);
 
 		void deleteExpiredNodes(const uint64_t &tExpire);
-		SWARM_NODE *findClosestNode(vDouble2 vPos);
-		int getNodesWithinRadius(const vDouble2 &vPos, float r);
+		SWARM_NODE *findClosestNode(Vector2d vPos);
+		int getNodesWithinRadius(const Vector2d &vPos, float r);
 
 	protected:
 		vector<SWARM_NODE> m_vNodes;

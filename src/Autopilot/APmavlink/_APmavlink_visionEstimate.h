@@ -3,7 +3,6 @@
 
 #include "../../Navigation/_NavBase.h"
 #include "_APmavlink_base.h"
-using namespace Eigen;
 
 // https://ardupilot.org/copter/docs/common-vio-tracking-camera.html
 
@@ -44,14 +43,14 @@ namespace kai
 		float m_conf;
 		float m_covPose;
 		float m_covTwist;
-		Matrix4f m_mTsensor2aero;
-		Matrix4f m_mTaero2sensor;
+		Eigen::Matrix4f m_mTsensor2aero;
+		Eigen::Matrix4f m_mTaero2sensor;
 		float m_thrJumpPos = 0.1; // m
 		float m_thrJumpSpd = 20.0; // m/s
-		vFloat3 m_vTprev;
-		vFloat3 m_vVprev;
+		Vector3f m_vTprev = Vector3f::Zero();
+		Vector3f m_vVprev = Vector3f::Zero();
 		int m_iReset = 0;
-		vInt3 m_vAxisRPY;
+		Vector3i m_vAxisRPY = Vector3i::Zero();
 
 		int m_apModeInError = -1;
 		bool m_bNaN = false;

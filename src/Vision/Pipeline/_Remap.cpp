@@ -70,11 +70,11 @@ namespace kai
 		IF_(pF->bEmpty());
 		IF_(m_fRGB.tStamp() >= pF->tStamp());
 
-		if (!m_bReady || pF->size() != cv::Size(m_vSizeRGB.x, m_vSizeRGB.y))
+		if (!m_bReady || pF->size() != cv::Size(m_vSizeRGB.x(), m_vSizeRGB.y()))
 		{
 			cv::Size s = pF->size();
-			m_vSizeRGB.x = s.width;
-			m_vSizeRGB.y = s.height;
+			m_vSizeRGB.x() = s.width;
+			m_vSizeRGB.y() = s.height;
 			m_bReady = scaleCamMat();
 		}
 
@@ -122,7 +122,7 @@ namespace kai
 
 	bool _Remap::scaleCamMat(void)
 	{
-		cv::Size s(m_vSizeRGB.x, m_vSizeRGB.y);
+		cv::Size s(m_vSizeRGB.x(), m_vSizeRGB.y());
 		IF_F(!scaleCamMatrices(s,
 							   m_mC,
 							   m_mD,
@@ -137,7 +137,7 @@ namespace kai
 		return true;
 
 		// IF_F(m_mC.empty() || m_mD.empty());
-		// cv::Size s(m_vSize.x, m_vSize.y);
+		// cv::Size s(m_vSize.x(), m_vSize.y());
 		// Mat mCs;
 		// m_mC.copyTo(mCs);
 		// mCs.at<double>(0, 0) *= (double)s.width;  //Fx
@@ -148,43 +148,43 @@ namespace kai
 		// return true;
 	}
 
-	vDouble2 _Remap::getF(void)
+	Vector2d _Remap::getF(void)
 	{
-		vDouble2 vF = {0, 0};
+		Vector2d vF = {0, 0};
 		IF__(m_mCscaled.empty(), vF);
 
-		vF.x = m_mCscaled.at<double>(0, 0);
-		vF.y = m_mCscaled.at<double>(1, 1);
+		vF.x() = m_mCscaled.at<double>(0, 0);
+		vF.y() = m_mCscaled.at<double>(1, 1);
 		return vF;
 	}
 
-	vDouble2 _Remap::getC(void)
+	Vector2d _Remap::getC(void)
 	{
-		vDouble2 vC = {0, 0};
+		Vector2d vC = {0, 0};
 		IF__(m_mCscaled.empty(), vC);
 
-		vC.x = m_mCscaled.at<double>(0, 2);
-		vC.y = m_mCscaled.at<double>(1, 2);
+		vC.x() = m_mCscaled.at<double>(0, 2);
+		vC.y() = m_mCscaled.at<double>(1, 2);
 		return vC;
 	}
 
-	vFloat2 _Remap::getFf(void)
+	Vector2f _Remap::getFf(void)
 	{
-		vFloat2 vF = {0, 0};
+		Vector2f vF = {0, 0};
 		IF__(m_mCscaled.empty(), vF);
 
-		vF.x = (float)m_mCscaled.at<double>(0, 0);
-		vF.y = (float)m_mCscaled.at<double>(1, 1);
+		vF.x() = (float)m_mCscaled.at<double>(0, 0);
+		vF.y() = (float)m_mCscaled.at<double>(1, 1);
 		return vF;
 	}
 
-	vFloat2 _Remap::getCf(void)
+	Vector2f _Remap::getCf(void)
 	{
-		vFloat2 vC = {0, 0};
+		Vector2f vC = {0, 0};
 		IF__(m_mCscaled.empty(), vC);
 
-		vC.x = (float)m_mCscaled.at<double>(0, 2);
-		vC.y = (float)m_mCscaled.at<double>(1, 2);
+		vC.x() = (float)m_mCscaled.at<double>(0, 2);
+		vC.y() = (float)m_mCscaled.at<double>(1, 2);
 		return vC;
 	}
 

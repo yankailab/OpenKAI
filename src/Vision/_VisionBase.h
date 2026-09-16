@@ -69,7 +69,7 @@ namespace kai
 		virtual bool isOpened(void);
 		virtual void close(void);
 
-		virtual vInt2 getSize(void);
+		virtual Vector2i getSize(void);
 		virtual VISION_TYPE getType(void);
 
 #ifdef USE_OPENCV
@@ -82,7 +82,7 @@ namespace kai
 		int m_devFPS = 30;			   // device native FPS
 		uint64_t m_tFrameInterval = 0; // minimal interval between frame reading
 		bool m_bRGB = true;
-		vInt2 m_vSizeRGB;
+		Vector2i m_vSizeRGB = Vector2i::Zero();
 
 		bool m_bOpen = false;
 

@@ -12,8 +12,8 @@ namespace kai
 
     _XDynamics::_XDynamics()
     {
-        m_vSizeRGB.set(320, 240);
-        m_vSizeD.set(320, 240);
+        m_vSizeRGB = Vector2i(320, 240);
+        m_vSizeD = Vector2i(320, 240);
 
         m_devURI = "192.168.31.3";
     }
@@ -52,8 +52,8 @@ namespace kai
 
         jKv(j, "dFlyPixLev", m_xdCtrl.m_dFlyPixLev);
 
-        m_mXDyuv.create(m_vSizeRGB.y * 3 / 2, m_vSizeRGB.x, CV_8UC1);
-        m_mXDd.create(m_vSizeD.y, m_vSizeD.x, CV_16U);
+        m_mXDyuv.create(m_vSizeRGB.y() * 3 / 2, m_vSizeRGB.x(), CV_8UC1);
+        m_mXDd.create(m_vSizeD.y(), m_vSizeD.x(), CV_16U);
 
         return true;
     }
@@ -108,20 +108,20 @@ namespace kai
         }
 
         // config Depth
-        unsigned int phaseInt[4] = {m_xdCtrl.m_vPhaseInt.x,
-                                    m_xdCtrl.m_vPhaseInt.y,
-                                    m_xdCtrl.m_vPhaseInt.z,
-                                    m_xdCtrl.m_vPhaseInt.w};
+        unsigned int phaseInt[4] = {m_xdCtrl.m_vPhaseInt.x(),
+                                    m_xdCtrl.m_vPhaseInt.y(),
+                                    m_xdCtrl.m_vPhaseInt.z(),
+                                    m_xdCtrl.m_vPhaseInt.w()};
 
-        unsigned int spaceInt[4] = {m_xdCtrl.m_vSpaceInt.x,
-                                    m_xdCtrl.m_vSpaceInt.y,
-                                    m_xdCtrl.m_vSpaceInt.z,
-                                    m_xdCtrl.m_vSpaceInt.w};
+        unsigned int spaceInt[4] = {m_xdCtrl.m_vSpaceInt.x(),
+                                    m_xdCtrl.m_vSpaceInt.y(),
+                                    m_xdCtrl.m_vSpaceInt.z(),
+                                    m_xdCtrl.m_vSpaceInt.w()};
 
         // pStream->SetWorkMode();
         pStream->SetFps(m_devFPSd);
         pStream->SetCamInt(phaseInt, spaceInt);
-        pStream->SetCamFreq(m_xdCtrl.m_vFreq.x, m_xdCtrl.m_vFreq.y);
+        pStream->SetCamFreq(m_xdCtrl.m_vFreq.x(), m_xdCtrl.m_vFreq.y());
         pStream->SetCamBinning((XDYN_BINNING_MODE_e)m_xdCtrl.m_binning); // 使用binning 2x2的方法，分辨率为320 * 240
         pStream->SetPhaseMode((XDYN_PHASE_MODE_e)m_xdCtrl.m_phaseMode);
         pStream->SetCamMirror((XDYN_MIRROR_MODE_e)m_xdCtrl.m_mirrorMode);
@@ -137,8 +137,8 @@ namespace kai
 
         // config RGB
         XdynRes_t rgbRes;
-        rgbRes.width = m_vSizeRGB.x;
-        rgbRes.height = m_vSizeRGB.y;
+        rgbRes.width = m_vSizeRGB.x();
+        rgbRes.height = m_vSizeRGB.y();
         rgbRes.stride = m_xdCtrl.m_rgbStride;
         rgbRes.fmt = m_xdCtrl.m_rgbFmt;
         rgbRes.fps = m_devFPS;
@@ -189,7 +189,7 @@ namespace kai
         XdynRegParams_t regParams;
         pStream->GetCaliRegParams(regParams);
 
-        bool r = initHDL(&regParams, m_vSizeD.x, m_vSizeD.y, m_vSizeRGB.x, m_vSizeRGB.y);
+        bool r = initHDL(&regParams, m_vSizeD.x(), m_vSizeD.y(), m_vSizeRGB.x(), m_vSizeRGB.y());
         if (!r)
         {
             LOG_E("initHDL failed");

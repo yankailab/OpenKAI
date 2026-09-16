@@ -12,7 +12,7 @@ namespace kai
 
 	_DistSensorBase::_DistSensorBase()
 	{
-		m_vRange.set(0, FLT_MAX);
+		m_vRange = Vector2f(0, FLT_MAX);
 	}
 
 	_DistSensorBase::~_DistSensorBase()
@@ -59,7 +59,7 @@ namespace kai
 		return m_bReady;
 	}
 
-	vFloat2 _DistSensorBase::range(void)
+	Vector2f _DistSensorBase::range(void)
 	{
 		return m_vRange;
 	}
@@ -81,7 +81,7 @@ namespace kai
 		IF_(!m_bReady);
 		IF_(iDiv < 0 || iDiv >= m_nDiv);
 
-		if (!m_vRange.bInside(d))
+		if ((d < m_vRange.x() || d >= m_vRange.y()))
 			d = -1;
 
 		m_pDiv[iDiv].input(d, a);
@@ -130,7 +130,7 @@ namespace kai
 			return -1.0;
 
 		float degMid = 0.5 * m_fovH;
-		float dist = m_vRange.y;
+		float dist = m_vRange.y();
 		int iMin = -1;
 
 		for (int i = 0; i < m_nDiv; i++)
@@ -209,7 +209,7 @@ namespace kai
 		int iFrom = (int)(degFrom * m_dDegInv);
 		int iTo = (int)(degTo * m_dDegInv);
 
-		float dist = m_vRange.y;
+		float dist = m_vRange.y();
 		int iMin = -1;
 
 		for (int i = iFrom; i < iTo; i++)
@@ -334,7 +334,7 @@ namespace kai
 		for (int i = 0; i < m_nDiv; i++)
 		{
 			float dist = m_pDiv[i].dAvr();
-			IF_CONT(!m_vRange.bInside(dist));
+			IF_CONT((dist < m_vRange.x() || dist >= m_vRange.y()));
 			//			dist *= m_showScale;
 
 			rad += dRad;

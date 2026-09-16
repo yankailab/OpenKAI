@@ -47,8 +47,8 @@ namespace kai
 		}
 		m_fRGB.copy(mCam);
 
-		m_vSizeRGB.x = mCam.cols;
-		m_vSizeRGB.y = mCam.rows;
+		m_vSizeRGB.x() = mCam.cols;
+		m_vSizeRGB.y() = mCam.rows;
 
 		m_bOpen = true;
 		return true;

@@ -33,18 +33,18 @@ namespace kai
 		virtual void clear(void);
 
 		// attitude
-		virtual void setTranslation(const vDouble3 &vT);
-		virtual void setRotation(const vDouble3 &vR);
-		virtual void setQuaternion(const vDouble4 &vQ);
-		virtual void updateTranslationMatrix(bool bUseQuaternion = true, vDouble3 *pRa = NULL);
-		virtual Matrix4d createTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR, vDouble3 *pRa = NULL);
-		virtual Matrix4d createTranslationMatrix(const vDouble3 &vT, const vDouble4 &vQ, vDouble3 *pRa = NULL);
-		virtual void setTranslationMatrix(const Matrix4d &mT);
+		virtual void setTranslation(const Vector3d &vT);
+		virtual void setRotation(const Vector3d &vR);
+		virtual void setQuaternion(const Vector4d &vQ);
+		virtual void updateTranslationMatrix(bool bUseQuaternion = true, Vector3d *pRa = NULL);
+		virtual Eigen::Matrix4d createTranslationMatrix(const Vector3d &vT, const Vector3d &vR, Vector3d *pRa = NULL);
+		virtual Eigen::Matrix4d createTranslationMatrix(const Vector3d &vT, const Vector4d &vQ, Vector3d *pRa = NULL);
+		virtual void setTranslationMatrix(const Eigen::Matrix4d &mT);
 
-		virtual Matrix4d getTranslationMatrix(void);
-		virtual vDouble3 getTranslation(void);
-		virtual vDouble3 getRotation(void);
-		virtual vDouble4 getQuaternion(void);
+		virtual Eigen::Matrix4d getTranslationMatrix(void);
+		virtual Vector3d getTranslation(void);
+		virtual Vector3d getRotation(void);
+		virtual Vector4d getQuaternion(void);
 
 	private:
 		void updateTransform(void);
@@ -60,10 +60,10 @@ namespace kai
 		uint64_t m_dTexpire = 0;
 
         // transform
-        vDouble3 m_vT;
-        vDouble3 m_vR;
-        vDouble4 m_vQ;
-        Matrix4d m_mT;
+        Vector3d m_vT = Vector3d::Zero();
+        Vector3d m_vR = Vector3d::Zero();
+        Vector4d m_vQ = Vector4d::Zero();
+        Eigen::Matrix4d m_mT;
         Eigen::Affine3d m_A;
 
 	};

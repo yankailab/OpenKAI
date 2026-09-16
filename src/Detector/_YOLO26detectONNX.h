@@ -55,7 +55,7 @@ namespace kai
 		float m_score = 0.45;
 		float m_nms = 0.5;
 		bool m_bLetterBoxForSquare = true;
-		vInt2 m_vModelInputSize;
+		Vector2i m_vModelInputSize = Vector2i::Zero();
 		bool m_bSwapRB = true;
 		float m_scale = 1.0 / 255.0;
 		int m_nThread = 1;

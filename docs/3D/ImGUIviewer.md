@@ -155,10 +155,10 @@ Run the viewer from the repository root so the relative PLY path resolves:
 
 Point size and line width are viewer/material settings (`matPointSize`, `matLineWidth`, `pointScale`, and `lineScale`); individual `GEOMETRY_POINT` and `GEOMETRY_LINE` records only carry geometry, color, and timestamp data.
 
-Point, line, and occupied-cell colors include alpha in `m_vC.w`. Both GPU and CPU
+Point, line, and occupied-cell colors include alpha in `m_vC.w()`. Both GPU and CPU
 rendering multiply it by `matCol[3]`: alpha 0 is invisible, 1 is opaque, and
 intermediate values blend. Existing RGB-only point/line `add()` calls default to
-alpha 1; the `vFloat4` overloads accept explicit alpha. PLY files can supply an
+alpha 1; the `Vector4f` overloads accept explicit alpha. PLY files can supply an
 `alpha` property or packed `rgba`; files without alpha stay opaque.
 
 When OpenGL or OpenGL ES rendering is enabled, the viewer uploads point and line snapshots into GPU buffers and renders them from an ImGui callback. The CPU draw-list path remains available as a fallback for backends without GL support.

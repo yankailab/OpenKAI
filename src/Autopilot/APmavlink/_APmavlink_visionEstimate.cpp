@@ -5,13 +5,13 @@ namespace kai
 
 	_APmavlink_visionEstimate::_APmavlink_visionEstimate()
 	{
-		m_mTsensor2aero = Matrix4f{{0, 0, -1, 0},
+		m_mTsensor2aero = Eigen::Matrix4f{{0, 0, -1, 0},
 								   {1, 0, 0, 0},
 								   {0, -1, 0, 0},
 								   {0, 0, 0, 1}}; // default for T265
 		m_mTaero2sensor = m_mTsensor2aero.inverse();
 
-		m_vAxisRPY.set(0, 1, 2);
+		m_vAxisRPY = Vector3i(0, 1, 2);
 
 		m_Dspd.x = 0;
 		m_Dspd.y = 0;
@@ -37,7 +37,7 @@ namespace kai
 		jKv<float>(j, "mTsensor2aero", vT);
 		if (vT.size() == 16)
 		{
-			m_mTsensor2aero = Matrix4f{{vT[0], vT[1], vT[2], vT[3]},
+			m_mTsensor2aero = Eigen::Matrix4f{{vT[0], vT[1], vT[2], vT[3]},
 									   {vT[4], vT[5], vT[6], vT[7]},
 									   {vT[8], vT[9], vT[10], vT[11]},
 									   {vT[12], vT[13], vT[14], vT[15]}};
@@ -130,31 +130,31 @@ namespace kai
 	{
 		IF_F(!check());
 
-		vFloat3 v = m_pNav->t();
-		IF__(isnan(v.x), true);
-		IF__(isnan(v.y), true);
-		IF__(isnan(v.z), true);
+		Vector3f v = m_pNav->t();
+		IF__(isnan(v.x()), true);
+		IF__(isnan(v.y()), true);
+		IF__(isnan(v.z()), true);
 
 		v = m_pNav->v();
-		IF__(isnan(v.x), true);
-		IF__(isnan(v.y), true);
-		IF__(isnan(v.z), true);
+		IF__(isnan(v.x()), true);
+		IF__(isnan(v.y()), true);
+		IF__(isnan(v.z()), true);
 
 		return false;
 	}
 
 	void _APmavlink_visionEstimate::updateResetCounter(void)
 	{
-		vFloat3 vT = m_pNav->t();
-		vFloat3 vV = m_pNav->v();
+		Vector3f vT = m_pNav->t();
+		Vector3f vV = m_pNav->v();
 
-		vFloat3 dvT = vT - m_vTprev;
-		vFloat3 dvV = vV - m_vVprev;
+		Vector3f dvT = vT - m_vTprev;
+		Vector3f dvV = vV - m_vVprev;
 		m_vTprev = vT;
 		m_vVprev = vV;
 
-		float dT = dvT.len();
-		float dV = dvV.len();
+		float dT = dvT.norm();
+		float dV = dvV.norm();
 
 		IF_((dT < m_thrJumpPos) && (dV < m_thrJumpSpd));
 
@@ -165,12 +165,12 @@ namespace kai
 
 	void _APmavlink_visionEstimate::sendPosEstimate(void)
 	{
-		Matrix4f mTsensorPoseSensorRef = m_pNav->mT();
-		Matrix4f mTaeroPoseAeroRef = m_mTsensor2aero * (mTsensorPoseSensorRef * m_mTaero2sensor);
-		Matrix3f mRot = mTaeroPoseAeroRef.block(0, 0, 3, 3);
+		Eigen::Matrix4f mTsensorPoseSensorRef = m_pNav->mT();
+		Eigen::Matrix4f mTaeroPoseAeroRef = m_mTsensor2aero * (mTsensorPoseSensorRef * m_mTaero2sensor);
+		Eigen::Matrix3f mRot = mTaeroPoseAeroRef.block(0, 0, 3, 3);
 		// Eigen 5 returns canonical angle ranges for the configured axis order.
 		Vector3f vRPY = mRot.canonicalEulerAngles(
-			m_vAxisRPY.x, m_vAxisRPY.y, m_vAxisRPY.z);
+			m_vAxisRPY.x(), m_vAxisRPY.y(), m_vAxisRPY.z());
 
 		float vCov[21] = {m_covPose, 0, 0, 0, 0, 0,
 						  m_covPose, 0, 0, 0, 0,
@@ -192,12 +192,12 @@ namespace kai
 
 	void _APmavlink_visionEstimate::sendSpeedEstimate(void)
 	{
-		vFloat3 vV = m_pNav->v();
-		Matrix4f V_aeroRef_aeroBody;
+		Vector3f vV = m_pNav->v();
+		Eigen::Matrix4f V_aeroRef_aeroBody;
 		V_aeroRef_aeroBody.block(0, 0, 3, 3) = Eigen::Quaternionf(1, 0, 0, 0).toRotationMatrix();
-		V_aeroRef_aeroBody(0, 3) = vV.x;
-		V_aeroRef_aeroBody(1, 3) = vV.y;
-		V_aeroRef_aeroBody(2, 3) = vV.z;
+		V_aeroRef_aeroBody(0, 3) = vV.x();
+		V_aeroRef_aeroBody(1, 3) = vV.y();
+		V_aeroRef_aeroBody(2, 3) = vV.z();
 		V_aeroRef_aeroBody = m_mTsensor2aero * V_aeroRef_aeroBody;
 
 		float vCov2[9] = {m_covPose, 0, 0,

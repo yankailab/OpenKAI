@@ -34,7 +34,7 @@ namespace kai
 
 	protected:
 		_VisionBase *m_pV = nullptr;
-		vInt4 m_vRoi;
+		Vector4i m_vRoi = Vector4i::Zero();
 	};
 
 }

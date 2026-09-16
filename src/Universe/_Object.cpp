@@ -27,12 +27,12 @@ namespace kai
 	{
 		m_type = obj_unknown;
 
-		m_vPos.clear();
-		m_vAtti.clear();
-		m_vDim.clear();
+		m_vPos.setZero();
+		m_vAtti.setZero();
+		m_vDim.setZero();
 
-		m_vSpeed.clear();
-		m_vAccel.clear();
+		m_vSpeed.setZero();
+		m_vAccel.setZero();
 
 		m_pTracker = NULL;
 		m_tStamp = 0;
@@ -61,101 +61,101 @@ namespace kai
 		m_vPos += m_vSpeed;
 	}
 
-	void _Object::setPos(const vFloat3 &vP)
+	void _Object::setPos(const Vector3f &vP)
 	{
 		m_vPos = vP;
 	}
 
 	void _Object::setPos(float x, float y, float z)
 	{
-		m_vPos.x = x;
-		m_vPos.y = y;
-		m_vPos.z = z;
+		m_vPos.x() = x;
+		m_vPos.y() = y;
+		m_vPos.z() = z;
 	}
 
-	vFloat3 _Object::getPos(void)
+	Vector3f _Object::getPos(void)
 	{
 		return m_vPos;
 	}
 
-	void _Object::setDim(const vFloat4 &vD)
+	void _Object::setDim(const Vector4f &vD)
 	{
 		m_vDim = vD;
 	}
 
 	void _Object::setDim(float w, float h, float d, float r)
 	{
-		m_vDim.x = w;
-		m_vDim.y = h;
-		m_vDim.z = d;
-		m_vDim.w = r;
+		m_vDim.x() = w;
+		m_vDim.y() = h;
+		m_vDim.z() = d;
+		m_vDim.w() = r;
 	}
 
-	vFloat4 _Object::getDim(void)
+	Vector4f _Object::getDim(void)
 	{
 		return m_vDim;
 	}
 
 	float _Object::getDimArea(void)
 	{
-		return m_vDim.x * m_vDim.y;
+		return m_vDim.x() * m_vDim.y();
 	}
 
 	float _Object::getDimVolume(void)
 	{
-		return m_vDim.x * m_vDim.y * m_vDim.z;
+		return m_vDim.x() * m_vDim.y() * m_vDim.z();
 	}
 
-	void _Object::setAttitude(const vFloat3 &vA)
+	void _Object::setAttitude(const Vector3f &vA)
 	{
 		m_vAtti = vA;
 	}
 
 	void _Object::setAttitude(float r, float p, float y)
 	{
-		m_vAtti.x = r;
-		m_vAtti.y = p;
-		m_vAtti.z = y;
+		m_vAtti.x() = r;
+		m_vAtti.y() = p;
+		m_vAtti.z() = y;
 	}
 
-	vFloat3 _Object::getAttitude(void)
+	Vector3f _Object::getAttitude(void)
 	{
 		return m_vAtti;
 	}
 
-	void _Object::setBB2D(const vFloat4 &vBB, float kX, float kY)
+	void _Object::setBB2D(const Vector4f &vBB, float kX, float kY)
 	{
-		m_vPos.x = (vBB.x + vBB.z) * 0.5 * kX;
-		m_vPos.y = (vBB.y + vBB.w) * 0.5 * kY;
+		m_vPos.x() = (vBB.x() + vBB.z()) * 0.5 * kX;
+		m_vPos.y() = (vBB.y() + vBB.w()) * 0.5 * kY;
 
-		m_vDim.x = (vBB.z - vBB.x) * kX;
-		m_vDim.y = (vBB.w - vBB.y) * kY;
+		m_vDim.x() = (vBB.z() - vBB.x()) * kX;
+		m_vDim.y() = (vBB.w() - vBB.y()) * kY;
 	}
 
 	void _Object::setRect(float l, float t, float w, float h, float kX, float kY)
 	{
-		m_vPos.x = (l + w * 0.5) * kX;
-		m_vPos.y = (t + h * 0.5) * kY;
+		m_vPos.x() = (l + w * 0.5) * kX;
+		m_vPos.y() = (t + h * 0.5) * kY;
 
-		m_vDim.x = w * kX;
-		m_vDim.y = h * kY;
+		m_vDim.x() = w * kX;
+		m_vDim.y() = h * kY;
 	}
 
-	vFloat4 _Object::getBB2D(float kX, float kY)
+	Vector4f _Object::getBB2D(float kX, float kY)
 	{
-		float hw = m_vDim.x * 0.5;
-		float hh = m_vDim.y * 0.5;
+		float hw = m_vDim.x() * 0.5;
+		float hh = m_vDim.y() * 0.5;
 
-		vFloat4 vBB;
-		vBB.x = (m_vPos.x - hw) * kX;
-		vBB.y = (m_vPos.y - hh) * kY;
-		vBB.z = (m_vPos.x + hw) * kX;
-		vBB.w = (m_vPos.y + hh) * kY;
+		Vector4f vBB = Vector4f::Zero();
+		vBB.x() = (m_vPos.x() - hw) * kX;
+		vBB.y() = (m_vPos.y() - hh) * kY;
+		vBB.z() = (m_vPos.x() + hw) * kX;
+		vBB.w() = (m_vPos.y() + hh) * kY;
 
 		return vBB;
 	}
 
-	void _Object::setVertices2D(vFloat2 *pV, int nV, float kX, float kY)
+	void _Object::setVertices2D(Vector2f *pV, int nV, float kX, float kY)
 	{
 		NULL_(pV);
 
@@ -165,17 +165,17 @@ namespace kai
 		vector<Point> vP;
 		for (int i = 0; i < nV; i++)
 		{
-			vFloat2 *pVi = &pV[i];
-			m_vVertices.push_back(vFloat2(pVi->x * kX, pVi->y * kY));
-			vP.push_back(Point(pVi->x, pVi->y));
+			Vector2f *pVi = &pV[i];
+			m_vVertices.push_back(Vector2f(pVi->x() * kX, pVi->y() * kY));
+			vP.push_back(Point(pVi->x(), pVi->y()));
 		}
 
-		vFloat4 vBB = rect2BB<vFloat4>(boundingRect(vP));
+		Vector4f vBB = rect2BB<Vector4f>(boundingRect(vP));
 		setBB2D(vBB, kX, kY);
 #endif
 	}
 
-	vFloat2 *_Object::getVertex(int i)
+	Vector2f *_Object::getVertex(int i)
 	{
 		IF__(i < 0 || static_cast<size_t>(i) >= m_vVertices.size(), nullptr);
 

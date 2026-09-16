@@ -5,11 +5,11 @@ namespace kai
 
 	_APmavlink_land::_APmavlink_land()
 	{
-		m_vDSrange.clear();
+		m_vDSrange.setZero();
 
-		m_vFov.set(60, 60);
+		m_vFov = Vector2f(60, 60);
 
-		m_vComplete.set(0.1, 0.1, 0.3, 3.0);
+		m_vComplete = Vector4f(0.1, 0.1, 0.3, 3.0);
 	}
 
 	_APmavlink_land::~_APmavlink_land()
@@ -102,10 +102,10 @@ namespace kai
 		IF_F(!m_bTarget);
 
 		// NEDH
-		IF_F(abs(m_vPvar.x - m_vPsp.x) > m_vComplete.x);
-		IF_F(abs(m_vPvar.y - m_vPsp.y) > m_vComplete.y);
-		IF_F(abs(m_vPvar.z) > m_vComplete.z);
-		IF_F(abs(dHdg(m_vPvar.w, m_vPsp.w)) > m_vComplete.z);
+		IF_F(abs(m_vPvar.x() - m_vPsp.x()) > m_vComplete.x());
+		IF_F(abs(m_vPvar.y() - m_vPsp.y()) > m_vComplete.y());
+		IF_F(abs(m_vPvar.z()) > m_vComplete.z());
+		IF_F(abs(dHdg(m_vPvar.w(), m_vPsp.w())) > m_vComplete.z());
 
 		return true;
 	}
@@ -121,10 +121,10 @@ namespace kai
 
 		if (!m_bTarget)
 		{
-			m_vSpd.x = 0;
-			m_vSpd.y = 0;
-			m_vSpd.z = m_vPsp.z;
-			m_vSpd.w = 0;
+			m_vSpd.x() = 0;
+			m_vSpd.y() = 0;
+			m_vSpd.z() = m_vPsp.z();
+			m_vSpd.w() = 0;
 			setVlocal(m_vSpd, false, false);
 			return;
 		}
@@ -135,10 +135,10 @@ namespace kai
 
 		// change yaw command
 		// IF_(!m_ieHdgCmd.update(m_pT->getTfrom()));
-		// IF_(abs(m_vSpd.w) < m_vComplete.w);
+		// IF_(abs(m_vSpd.w()) < m_vComplete.w());
 
 		setHold();
-		//		setHdg(m_vSpd.w * DEG_2_RAD, 0, true, false);
+		//		setHdg(m_vSpd.w() * DEG_2_RAD, 0, true, false);
 		m_pT->sleepT(USEC_1SEC);
 	}
 
@@ -168,14 +168,14 @@ namespace kai
 		float dTs = m_pT->getDt() * USEC_2_SEC;
 		if (tO)
 		{
-			vFloat3 vP = tO->getPos();
+			Vector3f vP = tO->getPos();
 			float a = tO->getDimArea();
 
-			vFloat3 vA = tO->getAttitude();
-			float h = vA.x; // use Roll for Aruco!
+			Vector3f vA = tO->getAttitude();
+			float h = vA.x(); // use Roll for Aruco!
 
-			fX = m_fX.update(vP.x, dTs);
-			fY = m_fY.update(vP.y, dTs);
+			fX = m_fX.update(vP.x(), dTs);
+			fY = m_fY.update(vP.y(), dTs);
 			fA = m_fZ.update(a, dTs);
 			fH = m_fH.update(h, dTs);
 
@@ -188,10 +188,10 @@ namespace kai
 		}
 
 		// convert position from screen to world relative
-		m_vPvar.z = (pTag) ? pTag->getDist(fA) : 1.0;
-		m_vPvar.x = m_vPvar.z * tan((fY - 0.5) * m_vFov.y * DEG_2_RAD);
-		m_vPvar.y = m_vPvar.z * tan((fX - 0.5) * m_vFov.x * DEG_2_RAD);
-		m_vPvar.w = fH;
+		m_vPvar.z() = (pTag) ? pTag->getDist(fA) : 1.0;
+		m_vPvar.x() = m_vPvar.z() * tan((fY - 0.5) * m_vFov.y() * DEG_2_RAD);
+		m_vPvar.y() = m_vPvar.z() * tan((fX - 0.5) * m_vFov.x() * DEG_2_RAD);
+		m_vPvar.w() = fH;
 
 		return true;
 	}
@@ -213,22 +213,22 @@ namespace kai
 		float dTs = (!m_tLastPIDupdate) ? 0 : (tNow - m_tLastPIDupdate) * USEC_2_SEC;
 		m_tLastPIDupdate = tNow;
 
-		m_vSpd.x = (m_pPitch) ? m_pPitch->update(m_vPvar.x, m_vPsp.x, dTs) : 0;
-		m_vSpd.y = (m_pRoll) ? m_pRoll->update(m_vPvar.y, m_vPsp.y, dTs) : 0;
+		m_vSpd.x() = (m_pPitch) ? m_pPitch->update(m_vPvar.x(), m_vPsp.x(), dTs) : 0;
+		m_vSpd.y() = (m_pRoll) ? m_pRoll->update(m_vPvar.y(), m_vPsp.y(), dTs) : 0;
 
-		float dH = dHdg<float>(m_vPsp.w, m_vPvar.w);
-		m_vSpd.w = (m_pYaw) ? m_pYaw->update(dH, 0.0, dTs) : dH;
+		float dH = dHdg<float>(m_vPsp.w(), m_vPvar.w());
+		m_vSpd.w() = (m_pYaw) ? m_pYaw->update(dH, 0.0, dTs) : dH;
 
 		if (m_pAlt)
 		{
-			m_vSpd.z = m_pAlt->update(m_vPvar.z, m_vPsp.z, dTs);
+			m_vSpd.z() = m_pAlt->update(m_vPvar.z(), m_vPsp.z(), dTs);
 		}
 		else
 		{
-			float dX = m_vPvar.x - m_vPsp.x;
-			float dY = m_vPvar.y - m_vPsp.y;
+			float dX = m_vPvar.x() - m_vPsp.x();
+			float dY = m_vPvar.y() - m_vPsp.y();
 			float r = sqrt(dX * dX + dY * dY);
-			m_vSpd.z = m_vPsp.z * constrain(1.0 - r * m_zrK, 0.0, 1.0);
+			m_vSpd.z() = m_vPsp.z() * constrain(1.0 - r * m_zrK, 0.0, 1.0);
 		}
 	}
 

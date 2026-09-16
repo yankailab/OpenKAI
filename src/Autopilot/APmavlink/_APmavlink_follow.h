@@ -70,7 +70,7 @@ namespace kai
 		_TrackerBase *m_pTracker = nullptr;
 		TIME_OUT m_tOutTargetNotFound;
 		bool m_bTarget = false;
-		vFloat4 m_vTargetBB;
+		Vector4f m_vTargetBB = Vector4f::Zero();
 		int m_iClass = -1;
 
 		// Target detection pos filter
@@ -81,9 +81,9 @@ namespace kai
 
 		// PID control
 		// make sure var and sp are in the same coordinate unit
-		vFloat4 m_vPvar; // variable in pitch, roll, alt, yaw (NEDH)
-		vFloat4 m_vPsp;	 // correspondent set point
-		vFloat4 m_vSpd;	 // PID output that goes into speed ctrl
+		Vector4f m_vPvar = Vector4f::Zero(); // variable in pitch, roll, alt, yaw (NEDH)
+		Vector4f m_vPsp = Vector4f::Zero();	 // correspondent set point
+		Vector4f m_vSpd = Vector4f::Zero();	 // PID output that goes into speed ctrl
 		uint64_t m_tLastPIDupdate = 0;
 
 		PID *m_pPitch = nullptr;

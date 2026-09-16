@@ -67,8 +67,8 @@ namespace kai
         float m_nDir = 1.0;
         float m_nStr = 0.0;
 
-        vFloat2 m_vSpdRange; // overall speed range
-        vFloat2 m_vStrRange; // overall steering range
+        Vector2f m_vSpdRange = Vector2f::Zero(); // overall speed range
+        Vector2f m_vStrRange = Vector2f::Zero(); // overall steering range
 
         vector<DRIVE_MOTOR> m_vM;
     };

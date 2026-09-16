@@ -78,7 +78,7 @@ namespace kai
 		// int nP = pcIn.points_.size();
 		// for (int i = 0; i < nP; i++)
 		// {
-		// 	Eigen::Vector3d vP = pcIn.points_[i];
+		// 	Vector3d vP = pcIn.points_[i];
 		// 	IF_CONT(!bFilter(vP));
 
 		// 	pOut->points_.push_back(vP);
@@ -86,11 +86,11 @@ namespace kai
 		// }
 	}
 
-	bool _PCcrop::bFilter(Eigen::Vector3d &vP)
+	bool _PCcrop::bFilter(Vector3d &vP)
 	{
 		for (POINTCLOUD_VOL v : m_vFilter)
 		{
-			vFloat3 vf;
+			Vector3f vf = Vector3f::Zero();
 			vf = vP.cast<float>();
 			IF_CONT(v.bValid(vf));
 			return false;

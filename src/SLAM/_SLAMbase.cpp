@@ -108,25 +108,25 @@ namespace kai
 	// 	m_mRwc = m_pose.rowRange(0, 3).colRange(0, 3).t();
 	// 	m_mTwc = -m_mRwc * m_pose.rowRange(0, 3).col(3);
 
-	// 	m_vT.x = (double)m_mTwc.at<float>(0); // Right
-	// 	m_vT.y = (double)m_mTwc.at<float>(1); // Down
-	// 	m_vT.z = (double)m_mTwc.at<float>(2); // Front
+	// 	m_vT.x() = (double)m_mTwc.at<float>(0); // Right
+	// 	m_vT.y() = (double)m_mTwc.at<float>(1); // Down
+	// 	m_vT.z() = (double)m_mTwc.at<float>(2); // Front
 
 	// 	Eigen::Matrix3f mRwc;
 	// 	cv2eigen(m_mRwc, mRwc);
 	// 	Eigen::Quaternionf qW;
 	// 	qW = mRwc;
 
-	// 	m_vQ.x = (double)qW.x();
-	// 	m_vQ.y = (double)qW.y();
-	// 	m_vQ.z = (double)qW.z();
-	// 	m_vQ.w = (double)qW.w();
+	// 	m_vQ.x() = (double)qW.x();
+	// 	m_vQ.y() = (double)qW.y();
+	// 	m_vQ.z() = (double)qW.z();
+	// 	m_vQ.w() = (double)qW.w();
 
 	// 	cout.precision(5);
 	// 	cout << "vT: "
-	// 		 << "  " << fixed << m_vT.x << "  " << fixed << m_vT.y << "  " << fixed << m_vT.z << "  "
+	// 		 << "  " << fixed << m_vT.x() << "  " << fixed << m_vT.y() << "  " << fixed << m_vT.z() << "  "
 	// 		 << "Q: "
-	// 		 << "  " << fixed << m_vQ.x << "  " << fixed << m_vQ.y << "  " << fixed << m_vQ.z << "  " << fixed << m_vQ.w << endl;
+	// 		 << "  " << fixed << m_vQ.x() << "  " << fixed << m_vQ.y() << "  " << fixed << m_vQ.z() << "  " << fixed << m_vQ.w() << endl;
 	// }
 
 }

@@ -9,12 +9,12 @@ namespace kai
 
 	_Universe::_Universe()
 	{
-		m_vArea.set(-FLT_MAX, FLT_MAX);
-		m_vW.set(-FLT_MAX, FLT_MAX);
-		m_vH.set(-FLT_MAX, FLT_MAX);
+		m_vArea = Vector2f(-FLT_MAX, FLT_MAX);
+		m_vW = Vector2f(-FLT_MAX, FLT_MAX);
+		m_vH = Vector2f(-FLT_MAX, FLT_MAX);
 
-		m_vRoi.set(0.0, 0.0, 1.0, 1.0);
-		m_vClassRange.set(-INT_MAX, INT_MAX);
+		m_vRoi = Vector4f(0.0, 0.0, 1.0, 1.0);
+		m_vClassRange = Vector2i(-INT_MAX, INT_MAX);
 
 		clear();
 	}
@@ -32,12 +32,9 @@ namespace kai
 		jKv<float>(j, "vArea", m_vArea);
 		jKv<float>(j, "vW", m_vW);
 		jKv<float>(j, "vH", m_vH);
-		m_vRoi = j.value("vRoi", vector<float>{
-									 0,
-									 0,
-									 1,
-									 1,
-								 });
+		const auto roi = j.value("vRoi", vector<float>{0, 0, 1, 1});
+		for (size_t i = 0; i < std::min(roi.size(), size_t{4}); ++i)
+			m_vRoi[i] = roi[i];
 		jKv<int>(j, "vClassRange", m_vClassRange);
 
 		// draw
@@ -83,16 +80,16 @@ namespace kai
 
 	_Object *_Universe::add(_Object &o)
 	{
-		IF__(!m_vArea.bInside(o.getDimArea()), nullptr);
-		IF__(!m_vW.bInside(o.getDim().x), nullptr);
-		IF__(!m_vH.bInside(o.getDim().y), nullptr);
-		IF__(!m_vClassRange.bInside(o.getTopClass()), nullptr);
+		IF__((o.getDimArea() < m_vArea.x() || o.getDimArea() >= m_vArea.y()), nullptr);
+		IF__((o.getDim().x() < m_vW.x() || o.getDim().x() >= m_vW.y()), nullptr);
+		IF__((o.getDim().y() < m_vH.x() || o.getDim().y() >= m_vH.y()), nullptr);
+		IF__((o.getTopClass() < m_vClassRange.x() || o.getTopClass() >= m_vClassRange.y()), nullptr);
 
-		vFloat3 p = o.getPos();
-		IF__(p.x < m_vRoi.x, nullptr);
-		IF__(p.x > m_vRoi.z, nullptr);
-		IF__(p.y < m_vRoi.y, nullptr);
-		IF__(p.y > m_vRoi.w, nullptr);
+		Vector3f p = o.getPos();
+		IF__(p.x() < m_vRoi.x(), nullptr);
+		IF__(p.x() > m_vRoi.z(), nullptr);
+		IF__(p.y() < m_vRoi.y(), nullptr);
+		IF__(p.y() > m_vRoi.w(), nullptr);
 
 		return m_sO.next()->add(o);
 	}
@@ -137,17 +134,17 @@ namespace kai
 		{
 			if (pO->getType() == obj_tag)
 			{
-				vFloat3 vP = pO->getPos();
-				Point pCenter = Point(vP.x * pM->cols, vP.y * pM->rows);
-				int r = pO->getDim().w; // * pM->cols;
+				Vector3f vP = pO->getPos();
+				Point pCenter = Point(vP.x() * pM->cols, vP.y() * pM->rows);
+				int r = pO->getDim().w(); // * pM->cols;
 
 				circle(*pM, pCenter, r, Scalar(255, 255, 0), 2);
 
-				putText(*pM, "iTag=" + i2str(pO->getTopClass()) + ", angle=" + i2str(pO->getAttitude().x),
+				putText(*pM, "iTag=" + i2str(pO->getTopClass()) + ", angle=" + i2str(pO->getAttitude().x()),
 						pCenter,
 						FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 0);
 
-				double rad = -pO->getAttitude().x * DEG_2_RAD;
+				double rad = -pO->getAttitude().x() * DEG_2_RAD;
 				Point pD = Point(r * sin(rad), r * cos(rad));
 				line(*pM, pCenter + pD, pCenter - pD, Scalar(0, 0, 255), 2);
 			}
@@ -159,13 +156,13 @@ namespace kai
 				oCol = Scalar((col + 85) % 255, (col + 170) % 255, col) + bCol;
 
 				// bb
-				Rect r = bb2Rect<vFloat4>(pO->getBB2D(pM->cols, pM->rows));
+				Rect r = bb2Rect<Vector4f>(pO->getBB2D(pM->cols, pM->rows));
 				rectangle(*pM, r, oCol, 1);
 
 				// position
 				if (m_bDrawPos)
 				{
-					putText(*pM, f2str(pO->getPos().z),
+					putText(*pM, f2str(pO->getPos().z()),
 							Point(r.x + 15, r.y + 25),
 							FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
 				}

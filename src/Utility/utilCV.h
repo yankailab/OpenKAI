@@ -88,10 +88,10 @@ namespace kai
 	inline T rect2BB(cv::Rect r)
 	{
 		T v;
-		v.x = r.x;
-		v.y = r.y;
-		v.z = r.x + r.width;
-		v.w = r.y + r.height;
+		v.x() = r.x;
+		v.y() = r.y;
+		v.z() = r.x + r.width;
+		v.w() = r.y + r.height;
 
 		return v;
 	}
@@ -100,10 +100,10 @@ namespace kai
 	inline cv::Rect bb2Rect(T v)
 	{
 		cv::Rect r;
-		r.x = v.x;
-		r.y = v.y;
-		r.width = v.z - v.x;
-		r.height = v.w - v.y;
+		r.x = v.x();
+		r.y = v.y();
+		r.width = v.z() - v.x();
+		r.height = v.w() - v.y();
 
 		return r;
 	}
@@ -115,7 +115,7 @@ namespace kai
 		return rAND.area() / rOR.area();
 	}
 
-	inline float IoU(vFloat4 &bb1, vFloat4 &bb2)
+	inline float IoU(Vector4f &bb1, Vector4f &bb2)
 	{
 		Rect2f r1 = bb2Rect(bb1);
 		Rect2f r2 = bb2Rect(bb2);
@@ -128,7 +128,7 @@ namespace kai
 		return rAND.area() / small(r1.area(), r2.area());
 	}
 
-	inline float nIoU(vFloat4 &bb1, vFloat4 &bb2)
+	inline float nIoU(Vector4f &bb1, Vector4f &bb2)
 	{
 		Rect2f r1 = bb2Rect(bb1);
 		Rect2f r2 = bb2Rect(bb2);

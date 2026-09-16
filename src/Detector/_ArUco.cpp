@@ -113,10 +113,10 @@ namespace kai
 				// pose
 				Vec3d v;
 				v = vvT[i];
-				vFloat3 vP{static_cast<float>(v[0]), static_cast<float>(v[1]), static_cast<float>(v[2])};
+				Vector3f vP{static_cast<float>(v[0]), static_cast<float>(v[1]), static_cast<float>(v[2])};
 				o.setPos(vP);
 				v = vvR[i];
-				vFloat3 vR{static_cast<float>(v[0]), static_cast<float>(v[1]), static_cast<float>(v[2])};
+				Vector3f vR{static_cast<float>(v[0]), static_cast<float>(v[1]), static_cast<float>(v[2])};
 				o.setAttitude(vR);
 			}
 
@@ -126,11 +126,11 @@ namespace kai
 			Point2f pRB = vvCorner[i][2];
 			Point2f pLB = vvCorner[i][3];
 
-			vFloat2 pV[4];
+			Vector2f pV[4];
 			for (int j = 0; j < 4; j++)
 			{
-				pV[j].x = vvCorner[i][j].x;
-				pV[j].y = vvCorner[i][j].y;
+				pV[j].x() = vvCorner[i][j].x;
+				pV[j].y() = vvCorner[i][j].y;
 			}
 			o.setVertices2D(pV, 4);
 

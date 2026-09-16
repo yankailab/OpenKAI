@@ -25,8 +25,8 @@ namespace kai
 		virtual bool start(void);
 		virtual void draw(void *pFrame);
 
-		vDouble2 vFlow(vInt4 *pROI);
-		vDouble2 vFlow(vDouble4 *pROI);
+		Vector2d vFlow(Vector4i *pROI);
+		Vector2d vFlow(Vector4d *pROI);
 
 	private:
 		bool isFlowCorrect(Point2f u);
@@ -50,7 +50,7 @@ namespace kai
 		Mat m_pFlow[2];
 
 		int m_nHistLev = 128;
-		vDouble2 m_vRange = {0.0, 1.0};
+		Vector2d m_vRange = {0.0, 1.0};
 		double m_minHistD = 0.25;
 	};
 

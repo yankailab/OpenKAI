@@ -42,7 +42,7 @@ namespace kai
 			int nP = 0, nL = 0, nC = 0;
 			bool visible = true;
 			float pointSize = 2;
-			vFloat4 color{1, 1, 1, 1};
+			Vector4f color{1, 1, 1, 1};
 		};
 		struct Stream
 		{
@@ -59,7 +59,7 @@ namespace kai
 		std::string m_host = "0.0.0.0", m_root = "html/webViewer3D";
 		int m_port = 8080, m_maxClients = 8, m_nCbuf = 100000;
 		OCTGRID_CELLS m_cells;
-		vFloat4 m_background{0.035f, 0.045f, 0.065f, 1};
+		Vector4f m_background{0.035f, 0.045f, 0.065f, 1};
 		bool m_autoBound = true, m_showGrid = true;
 		std::vector<Object> m_objects;
 		std::unique_ptr<HttpServer> m_http;

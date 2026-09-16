@@ -57,7 +57,7 @@ namespace kai
 		}
 	}
 
-	void _IMUbase::addGyro(uint64_t tStamp, const vFloat3 &vG)
+	void _IMUbase::addGyro(uint64_t tStamp, const Vector3f &vG)
 	{
 		m_dqGyro.push_back({tStamp, vG});
 
@@ -65,7 +65,7 @@ namespace kai
 			m_dqGyro.pop_front();
 	}
 
-	void _IMUbase::addAcc(uint64_t tStamp, const vFloat3 &vA)
+	void _IMUbase::addAcc(uint64_t tStamp, const Vector3f &vA)
 	{
 		m_dqAcc.push_back({tStamp, vA});
 
@@ -73,7 +73,7 @@ namespace kai
 			m_dqAcc.pop_front();
 	}
 
-	uint64_t _IMUbase::getIMUpair(vFloat3 *pG, vFloat3 *pA)
+	uint64_t _IMUbase::getIMUpair(Vector3f *pG, Vector3f *pA)
 	{
 		NULL__(pG, 0);
 		NULL__(pA, 0);
@@ -118,13 +118,13 @@ namespace kai
 		if (!m_dqGyro.empty())
 		{
 			IMU_DATA G = m_dqGyro.back();
-			pC->addMsg("vGyro = (" + lf2str(G.m_v.x, nD) + ", " + lf2str(G.m_v.y, nD) + ", " + lf2str(G.m_v.z, nD) + "), t=" + li2str(G.m_t));
+			pC->addMsg("vGyro = (" + lf2str(G.m_v.x(), nD) + ", " + lf2str(G.m_v.y(), nD) + ", " + lf2str(G.m_v.z(), nD) + "), t=" + li2str(G.m_t));
 		}
 
 		if (!m_dqAcc.empty())
 		{
 			IMU_DATA A = m_dqAcc.back();
-			pC->addMsg("vAcc  = (" + lf2str(A.m_v.x, nD) + ", " + lf2str(A.m_v.y, nD) + ", " + lf2str(A.m_v.z, nD) + "), t=" + li2str(A.m_t));
+			pC->addMsg("vAcc  = (" + lf2str(A.m_v.x(), nD) + ", " + lf2str(A.m_v.y(), nD) + ", " + lf2str(A.m_v.z(), nD) + "), t=" + li2str(A.m_t));
 		}
 	}
 }

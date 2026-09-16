@@ -74,9 +74,9 @@ namespace kai
 
 		// RGBD streams
 		if (m_bRGB)
-			m_spConfig->enableVideoStream(OB_STREAM_COLOR, m_vSizeRGB.x, m_vSizeRGB.y, m_devFPS, OB_FORMAT_BGR);
+			m_spConfig->enableVideoStream(OB_STREAM_COLOR, m_vSizeRGB.x(), m_vSizeRGB.y(), m_devFPS, OB_FORMAT_BGR);
 		if (m_bDepth)
-			m_spConfig->enableVideoStream(OB_STREAM_DEPTH, m_vSizeD.x, m_vSizeD.y, m_devFPSd, OB_FORMAT_Y16);
+			m_spConfig->enableVideoStream(OB_STREAM_DEPTH, m_vSizeD.x(), m_vSizeD.y(), m_devFPSd, OB_FORMAT_Y16);
 
 		// IMU streams
 		if (m_bIMU)
@@ -205,7 +205,7 @@ namespace kai
 			spFrameRGB = spFS->getFrame(OB_FRAME_COLOR);
 			if (spFrameRGB)
 			{
-				*m_fRGB.m() = Mat(m_vSizeRGB.y, m_vSizeRGB.x, CV_8UC3, spFrameRGB->getData());
+				*m_fRGB.m() = Mat(m_vSizeRGB.y(), m_vSizeRGB.x(), CV_8UC3, spFrameRGB->getData());
 				uint64_t tRGBus = frameTsUs_(spFrameRGB);
 				m_dtRGBus = tRGBus - m_tRGBus;
 				m_tRGBus = tRGBus;
@@ -217,7 +217,7 @@ namespace kai
 			spFrameD = spFS->getFrame(OB_FRAME_DEPTH);
 			if (spFrameD)
 			{
-				*m_fDepth.m() = Mat(m_vSizeD.y, m_vSizeD.x, CV_16UC1, spFrameD->getData());
+				*m_fDepth.m() = Mat(m_vSizeD.y(), m_vSizeD.x(), CV_16UC1, spFrameD->getData());
 				uint64_t tDus = frameTsUs_(spFrameD);
 				m_dtDus = tDus - m_tDus;
 				m_tDus = tDus;
@@ -254,7 +254,7 @@ namespace kai
 	void _Orbbec::updateDepth(void)
 	{
 #ifdef USE_OPENCV
-			// Mat mZ = Mat(Size(m_vSizeD.x, m_vSizeD.y), CV_16UC1, (void *)m_rsDepth.get_data(), Mat::AUTO_STEP);
+			// Mat mZ = Mat(Size(m_vSizeD.x(), m_vSizeD.y()), CV_16UC1, (void *)m_rsDepth.get_data(), Mat::AUTO_STEP);
 			// Mat mD, mDs;
 			// mZ.convertTo(mD, CV_32FC1);
 			// mDs = mD * m_dScale;
@@ -280,13 +280,13 @@ namespace kai
 			IF_CONT(!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z));
 			IF_CONT(p.z <= 0);
 
-			vFloat3 vP(p.x, p.y, p.z);
+			Vector3f vP(p.x, p.y, p.z);
 			vP *= s_b;
 
-			IF_CONT(vP.z < m_vRangeD.x);
-			IF_CONT(vP.z > m_vRangeD.y);
+			IF_CONT(vP.z() < m_vRangeD.x());
+			IF_CONT(vP.z() > m_vRangeD.y());
 
-			vFloat3 vC(1,1,1);
+			Vector3f vC(1,1,1);
 
 			m_pPointCloud->add(vP, vC, m_tDus);
 		}

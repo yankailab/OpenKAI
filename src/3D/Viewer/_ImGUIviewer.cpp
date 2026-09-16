@@ -20,51 +20,49 @@
 
 namespace kai
 {
-	static float vDot(const vFloat3 &a, const vFloat3 &b)
+	static float vDot(const Vector3f &a, const Vector3f &b)
 	{
-		return a.x * b.x + a.y * b.y + a.z * b.z;
+		return a.dot(b);
 	}
 
-	static vFloat3 vCross(const vFloat3 &a, const vFloat3 &b)
+	static Vector3f vCross(const Vector3f &a, const Vector3f &b)
 	{
-		return vFloat3(a.y * b.z - a.z * b.y,
-					   a.z * b.x - a.x * b.z,
-					   a.x * b.y - a.y * b.x);
+		return a.cross(b);
 	}
 
-	static vFloat3 vNorm(const vFloat3 &v)
+	static Vector3f vNorm(const Vector3f &v)
 	{
 		float l = sqrt(vDot(v, v));
 		if (l <= 1e-6)
-			return vFloat3(0, 0, 0);
+			return Vector3f(0, 0, 0);
 
-		return vFloat3(v.x / l, v.y / l, v.z / l);
+		return v / l;
 	}
 
-	static bool bFinite(const vFloat3 &v)
+	static bool bFinite(const Vector3f &v)
 	{
-		IF_F(!std::isfinite(v.x));
-		IF_F(!std::isfinite(v.y));
-		IF_F(!std::isfinite(v.z));
+		IF_F(!std::isfinite(v.x()));
+		IF_F(!std::isfinite(v.y()));
+		IF_F(!std::isfinite(v.z()));
 
 		return true;
 	}
 
-	static vFloat4 visibleColor(vFloat4 c, const vFloat4 &matCol)
+	static Vector4f visibleColor(Vector4f c, const Vector4f &matCol)
 	{
-		c.w = std::clamp(std::isfinite(c.w) ? c.w : 1.f, 0.f, 1.f);
-		if (c.x <= 0.0f && c.y <= 0.0f && c.z <= 0.0f)
-			return vFloat4(matCol.x, matCol.y, matCol.z, c.w);
+		c.w() = std::clamp(std::isfinite(c.w()) ? c.w() : 1.f, 0.f, 1.f);
+		if (c.x() <= 0.0f && c.y() <= 0.0f && c.z() <= 0.0f)
+			return Vector4f(matCol.x(), matCol.y(), matCol.z(), c.w());
 
 		return c;
 	}
 
-	static ImU32 colU32(const vFloat4 &c, float alphaScale = 1.0)
+	static ImU32 colU32(const Vector4f &c, float alphaScale = 1.0)
 	{
-		return IM_COL32((int)(std::clamp(c.x, 0.0f, 1.0f) * 255.0f),
-						(int)(std::clamp(c.y, 0.0f, 1.0f) * 255.0f),
-						(int)(std::clamp(c.z, 0.0f, 1.0f) * 255.0f),
-						(int)(std::clamp(std::isfinite(c.w) ? c.w : 1.f, 0.f, 1.f) *
+		return IM_COL32((int)(std::clamp(c.x(), 0.0f, 1.0f) * 255.0f),
+						(int)(std::clamp(c.y(), 0.0f, 1.0f) * 255.0f),
+						(int)(std::clamp(c.z(), 0.0f, 1.0f) * 255.0f),
+						(int)(std::clamp(std::isfinite(c.w()) ? c.w() : 1.f, 0.f, 1.f) *
 							std::clamp(std::isfinite(alphaScale) ? alphaScale : 1.f, 0.f, 1.f) * 255.0f));
 	}
 
@@ -88,9 +86,9 @@ namespace kai
 
 	_ImGUIviewer::_ImGUIviewer()
 	{
-		m_vBgCol.set(0.05, 0.055, 0.06, 1.0);
-		m_vGLCanvasPos.set(0, 0);
-		m_vGLCanvasSize.set(1, 1);
+		m_vBgCol = Vector4f(0.05, 0.055, 0.06, 1.0);
+		m_vGLCanvasPos = Vector2f(0, 0);
+		m_vGLCanvasSize = Vector2f(1, 1);
 
 		pthread_mutex_init(&m_snapshotMutex, NULL);
 	}
@@ -226,7 +224,7 @@ namespace kai
 				obj.m_nCbuf = -1;
 				obj.m_matPointSize = 2.0;
 				obj.m_matLineWidth = 1.0;
-				obj.m_matCol = vFloat4(1, 1, 1, 1);
+				obj.m_matCol = Vector4f(1, 1, 1, 1);
 			}
 
 			obj.m_pGB = pGb;
@@ -344,9 +342,9 @@ namespace kai
 			box.m_ID = cell.id();
 			std::array<float, 3> c, size;
 			if (!octgridCellBox(m_cells.m_header, box.m_ID, c, size)) continue;
-			box.m_vCenter = vFloat3(c[0], c[1], c[2]);
-			box.m_vSize = vFloat3(size[0], size[1], size[2]);
-			box.m_vC = vFloat4(cell.m_vC[0] / 255.f, cell.m_vC[1] / 255.f, cell.m_vC[2] / 255.f, cell.m_vC[3] / 255.f);
+			box.m_vCenter = Vector3f(c[0], c[1], c[2]);
+			box.m_vSize = Vector3f(size[0], size[1], size[2]);
+			box.m_vC = Vector4f(cell.m_vC[0] / 255.f, cell.m_vC[1] / 255.f, cell.m_vC[2] / 255.f, cell.m_vC[3] / 255.f);
 			pObj->m_vBox.push_back(box);
 		}
 	}
@@ -354,7 +352,7 @@ namespace kai
 	void _ImGUIviewer::updateUI(void)
 	{
 		m_pBackend = createImGUIviewerBackend();
-		if (!m_pBackend || !m_pBackend->init(this->getName(), m_vWinSize.x, m_vWinSize.y, m_bFullScreen))
+		if (!m_pBackend || !m_pBackend->init(this->getName(), m_vWinSize.x(), m_vWinSize.y(), m_bFullScreen))
 		{
 			if (m_pBackend)
 			{
@@ -375,7 +373,7 @@ namespace kai
 			m_pBackend->beginFrame();
 			drawUI();
 
-			float c[4] = {m_vBgCol.x, m_vBgCol.y, m_vBgCol.z, m_vBgCol.w};
+			float c[4] = {m_vBgCol.x(), m_vBgCol.y(), m_vBgCol.z(), m_vBgCol.w()};
 			m_pBackend->endFrame(c);
 		}
 
@@ -413,8 +411,8 @@ namespace kai
 							   ImGuiButtonFlags_MouseButtonLeft |
 								   ImGuiButtonFlags_MouseButtonMiddle |
 								   ImGuiButtonFlags_MouseButtonRight);
-		updateCameraControl(vFloat2(canvasSize.x, canvasSize.y));
-		drawScene(vFloat2(canvasPos.x, canvasPos.y), vFloat2(canvasSize.x, canvasSize.y));
+		updateCameraControl(Vector2f(canvasSize.x, canvasSize.y));
+		drawScene(Vector2f(canvasPos.x, canvasPos.y), Vector2f(canvasSize.x, canvasSize.y));
 		ImGui::End();
 
 		if (m_bShowPanel)
@@ -451,15 +449,15 @@ namespace kai
 		ImGui::Checkbox("Grid", &m_bShowGrid);
 		ImGui::SliderFloat("Point scale", &m_pointScale, 0.25, 8.0);
 		ImGui::SliderFloat("Line scale", &m_lineScale, 0.25, 8.0);
-		ImGui::ColorEdit4("Background", &m_vBgCol.x);
+		ImGui::ColorEdit4("Background", m_vBgCol.data());
 		ImGui::End();
 	}
 
-	void _ImGUIviewer::drawScene(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize)
+	void _ImGUIviewer::drawScene(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize)
 	{
 		ImDrawList *pDraw = ImGui::GetWindowDrawList();
-		ImVec2 p0(vCanvasPos.x, vCanvasPos.y);
-		ImVec2 p1(vCanvasPos.x + vCanvasSize.x, vCanvasPos.y + vCanvasSize.y);
+		ImVec2 p0(vCanvasPos.x(), vCanvasPos.y());
+		ImVec2 p1(vCanvasPos.x() + vCanvasSize.x(), vCanvasPos.y() + vCanvasSize.y());
 		pDraw->AddRectFilled(p0, p1, colU32(m_vBgCol));
 		pDraw->PushClipRect(p0, p1, true);
 
@@ -481,16 +479,16 @@ namespace kai
 		pDraw->PopClipRect();
 	}
 
-	void _ImGUIviewer::drawSceneCPU(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize)
+	void _ImGUIviewer::drawSceneCPU(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize)
 	{
 		ImDrawList *pDraw = ImGui::GetWindowDrawList();
 
 		snapshotLock();
 		for (const IMGUI_VIEWER_OBJ &g : m_vDrawGO)
 		{
-			auto drawLine = [&](const vFloat3 &vA, const vFloat3 &vB, const vFloat4 &color)
+			auto drawLine = [&](const Vector3f &vA, const Vector3f &vB, const Vector4f &color)
 			{
-				vFloat2 a, b;
+				Vector2f a = Vector2f::Zero(), b = Vector2f::Zero();
 				float dA = 0;
 				float dB = 0;
 				if (!projectPoint(vA, vCanvasPos, vCanvasSize, &a, &dA))
@@ -498,29 +496,29 @@ namespace kai
 				if (!projectPoint(vB, vCanvasPos, vCanvasSize, &b, &dB))
 					return;
 
-				pDraw->AddLine(ImVec2(a.x, a.y), ImVec2(b.x, b.y),
-							   colU32(color, g.m_matCol.w),
+				pDraw->AddLine(ImVec2(a.x(), a.y()), ImVec2(b.x(), b.y()),
+							   colU32(color, g.m_matCol.w()),
 							   std::max(1.0f, g.m_matLineWidth * m_lineScale));
 			};
 			for (const auto &line : g.m_vL) drawLine(line.m_vA, line.m_vB, line.m_vC);
 			for (const auto &box : g.m_vBox)
-				box.forEachEdge([&](const vFloat3 &a, const vFloat3 &b) { drawLine(a, b, box.m_vC); });
+				box.forEachEdge([&](const Vector3f &a, const Vector3f &b) { drawLine(a, b, box.m_vC); });
 
 			for (const IMGUI_VIEWER_POINT &p : g.m_vP)
 			{
-				vFloat2 vS;
+				Vector2f vS = Vector2f::Zero();
 				float d = 0;
 				if (!projectPoint(p.m_vP, vCanvasPos, vCanvasSize, &vS, &d))
 					continue;
 
 				float r = std::max(1.0f, g.m_matPointSize * m_pointScale);
-				pDraw->AddCircleFilled(ImVec2(vS.x, vS.y), r, colU32(p.m_vC, g.m_matCol.w), 8);
+				pDraw->AddCircleFilled(ImVec2(vS.x(), vS.y()), r, colU32(p.m_vC, g.m_matCol.w()), 8);
 			}
 		}
 		snapshotUnlock();
 	}
 
-	void _ImGUIviewer::drawSceneGL(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize)
+	void _ImGUIviewer::drawSceneGL(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize)
 	{
 		m_vGLCanvasPos = vCanvasPos;
 		m_vGLCanvasSize = vCanvasSize;
@@ -540,7 +538,7 @@ namespace kai
 	}
 
 #if defined(OKAI_IMGUI_VIEWER_GL)
-	void _ImGUIviewer::renderSceneGL(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize)
+	void _ImGUIviewer::renderSceneGL(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize)
 	{
 		if (!m_pGLRenderer)
 			m_pGLRenderer = new ImGUIviewerGLRenderer();
@@ -566,12 +564,12 @@ namespace kai
 			m_bGpuRender = false;
 	}
 #else
-	void _ImGUIviewer::renderSceneGL(const vFloat2 &, const vFloat2 &)
+	void _ImGUIviewer::renderSceneGL(const Vector2f &, const Vector2f &)
 	{
 	}
 #endif
 
-	void _ImGUIviewer::drawGrid(const vFloat2 &vCanvasPos, const vFloat2 &vCanvasSize)
+	void _ImGUIviewer::drawGrid(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize)
 	{
 		ImDrawList *pDraw = ImGui::GetWindowDrawList();
 		const float r = 10.0;
@@ -579,20 +577,20 @@ namespace kai
 
 		for (int i = -10; i <= 10; i++)
 		{
-			vFloat2 a, b;
+			Vector2f a = Vector2f::Zero(), b = Vector2f::Zero();
 			float dA = 0;
 			float dB = 0;
-			if (projectPoint(vFloat3(i, -r, 0), vCanvasPos, vCanvasSize, &a, &dA) &&
-				projectPoint(vFloat3(i, r, 0), vCanvasPos, vCanvasSize, &b, &dB))
-				pDraw->AddLine(ImVec2(a.x, a.y), ImVec2(b.x, b.y), c, 1.0);
+			if (projectPoint(Vector3f(i, -r, 0), vCanvasPos, vCanvasSize, &a, &dA) &&
+				projectPoint(Vector3f(i, r, 0), vCanvasPos, vCanvasSize, &b, &dB))
+				pDraw->AddLine(ImVec2(a.x(), a.y()), ImVec2(b.x(), b.y()), c, 1.0);
 
-			if (projectPoint(vFloat3(-r, i, 0), vCanvasPos, vCanvasSize, &a, &dA) &&
-				projectPoint(vFloat3(r, i, 0), vCanvasPos, vCanvasSize, &b, &dB))
-				pDraw->AddLine(ImVec2(a.x, a.y), ImVec2(b.x, b.y), c, 1.0);
+			if (projectPoint(Vector3f(-r, i, 0), vCanvasPos, vCanvasSize, &a, &dA) &&
+				projectPoint(Vector3f(r, i, 0), vCanvasPos, vCanvasSize, &b, &dB))
+				pDraw->AddLine(ImVec2(a.x(), a.y()), ImVec2(b.x(), b.y()), c, 1.0);
 		}
 	}
 
-	void _ImGUIviewer::updateCameraControl(const vFloat2 &vCanvasSize)
+	void _ImGUIviewer::updateCameraControl(const Vector2f &vCanvasSize)
 	{
 		if (!ImGui::IsItemHovered())
 			return;
@@ -699,25 +697,25 @@ namespace kai
 		return nullptr;
 	}
 
-	bool _ImGUIviewer::projectPoint(const vFloat3 &vP,
-								   const vFloat2 &vCanvasPos,
-								   const vFloat2 &vCanvasSize,
-								   vFloat2 *pVscreen,
+	bool _ImGUIviewer::projectPoint(const Vector3f &vP,
+								   const Vector2f &vCanvasPos,
+								   const Vector2f &vCanvasSize,
+								   Vector2f *pVscreen,
 								   float *pDepth)
 	{
 		NULL_F(pVscreen);
-		IF_F(vCanvasSize.x <= 1.0f || vCanvasSize.y <= 1.0f);
+		IF_F(vCanvasSize.x() <= 1.0f || vCanvasSize.y() <= 1.0f);
 
-		vFloat3 f, r, u;
+		Vector3f f = Vector3f::Zero(), r = Vector3f::Zero(), u = Vector3f::Zero();
 		getCameraBasis(&f, &r, &u);
 
-		vFloat3 d = {vP.x - m_camPose.m_vEye.x, vP.y - m_camPose.m_vEye.y, vP.z - m_camPose.m_vEye.z};
+		Vector3f d = {vP.x() - m_camPose.m_vEye.x(), vP.y() - m_camPose.m_vEye.y(), vP.z() - m_camPose.m_vEye.z()};
 		float x = vDot(d, r);
 		float y = vDot(d, u);
 		float z = vDot(d, f);
 
-		float zNear = std::max(0.0001f, m_camProj.m_vNF.x);
-		float zFar = m_camProj.m_vNF.y;
+		float zNear = std::max(0.0001f, m_camProj.m_vNF.x());
+		float zFar = m_camProj.m_vNF.y();
 		if (zFar <= zNear)
 			zFar = FLT_MAX;
 
@@ -728,10 +726,10 @@ namespace kai
 		float ny = 0.0;
 		if (m_camProj.m_type == 1)
 		{
-			float l = m_camProj.m_vLR.x;
-			float rr = m_camProj.m_vLR.y;
-			float b = m_camProj.m_vBT.x;
-			float t = m_camProj.m_vBT.y;
+			float l = m_camProj.m_vLR.x();
+			float rr = m_camProj.m_vLR.y();
+			float b = m_camProj.m_vBT.x();
+			float t = m_camProj.m_vBT.y();
 			IF_F(fabs(rr - l) <= 1e-6);
 			IF_F(fabs(t - b) <= 1e-6);
 
@@ -742,7 +740,7 @@ namespace kai
 		{
 			float fov = std::clamp(m_camProj.m_fov, 10.0f, 140.0f) * OK_PI / 180.0;
 			float sy = 1.0 / tan(fov * 0.5);
-			float sx = sy * vCanvasSize.y / std::max(1.0f, vCanvasSize.x);
+			float sx = sy * vCanvasSize.y() / std::max(1.0f, vCanvasSize.x());
 
 			nx = (x * sx) / z;
 			ny = (y * sy) / z;
@@ -752,8 +750,8 @@ namespace kai
 		IF_F(!std::isfinite(ny));
 		IF_F(nx < -1.5 || nx > 1.5 || ny < -1.5 || ny > 1.5);
 
-		pVscreen->x = vCanvasPos.x + (nx * 0.5 + 0.5) * vCanvasSize.x;
-		pVscreen->y = vCanvasPos.y + (-ny * 0.5 + 0.5) * vCanvasSize.y;
+		pVscreen->x() = vCanvasPos.x() + (nx * 0.5 + 0.5) * vCanvasSize.x();
+		pVscreen->y() = vCanvasPos.y() + (-ny * 0.5 + 0.5) * vCanvasSize.y();
 
 		if (pDepth)
 			*pDepth = z;
@@ -761,19 +759,19 @@ namespace kai
 		return true;
 	}
 
-	void _ImGUIviewer::getCameraBasis(vFloat3 *pForward, vFloat3 *pRight, vFloat3 *pUp)
+	void _ImGUIviewer::getCameraBasis(Vector3f *pForward, Vector3f *pRight, Vector3f *pUp)
 	{
-		vFloat3 f = vNorm(m_camPose.m_vLookAt - m_camPose.m_vEye);
-		if (f.len() <= 1e-6)
-			f.set(0, 0, -1);
+		Vector3f f = vNorm(m_camPose.m_vLookAt - m_camPose.m_vEye);
+		if (f.norm() <= 1e-6)
+			f = Vector3f(0, 0, -1);
 
-		vFloat3 r = vNorm(vCross(f, m_camPose.m_vUp));
-		if (r.len() <= 1e-6)
-			r.set(1, 0, 0);
+		Vector3f r = vNorm(vCross(f, m_camPose.m_vUp));
+		if (r.norm() <= 1e-6)
+			r = Vector3f(1, 0, 0);
 
-		vFloat3 u = vNorm(vCross(r, f));
-		if (u.len() <= 1e-6)
-			u.set(0, 1, 0);
+		Vector3f u = vNorm(vCross(r, f));
+		if (u.norm() <= 1e-6)
+			u = Vector3f(0, 1, 0);
 
 		if (pForward)
 			*pForward = f;
@@ -785,28 +783,28 @@ namespace kai
 
 	void _ImGUIviewer::orbit(float dYaw, float dPitch)
 	{
-		vFloat3 v = m_camPose.m_vEye - m_camPose.m_vLookAt;
-		float r = std::max(0.01f, v.len());
-		float yaw = atan2(v.y, v.x) - dYaw;
-		float pitch = asin(std::clamp(v.z / r, -0.99f, 0.99f)) + dPitch;
+		Vector3f v = m_camPose.m_vEye - m_camPose.m_vLookAt;
+		float r = std::max(0.01f, v.norm());
+		float yaw = atan2(v.y(), v.x()) - dYaw;
+		float pitch = asin(std::clamp(v.z() / r, -0.99f, 0.99f)) + dPitch;
 		pitch = std::clamp(pitch, -1.45f, 1.45f);
 
 		float cp = cos(pitch);
-		m_camPose.m_vEye.x = m_camPose.m_vLookAt.x + r * cp * cos(yaw);
-		m_camPose.m_vEye.y = m_camPose.m_vLookAt.y + r * cp * sin(yaw);
-		m_camPose.m_vEye.z = m_camPose.m_vLookAt.z + r * sin(pitch);
+		m_camPose.m_vEye.x() = m_camPose.m_vLookAt.x() + r * cp * cos(yaw);
+		m_camPose.m_vEye.y() = m_camPose.m_vLookAt.y() + r * cp * sin(yaw);
+		m_camPose.m_vEye.z() = m_camPose.m_vLookAt.z() + r * sin(pitch);
 		updateCamPose();
 	}
 
-	void _ImGUIviewer::pan(float dx, float dy, const vFloat2 &vCanvasSize)
+	void _ImGUIviewer::pan(float dx, float dy, const Vector2f &vCanvasSize)
 	{
-		vFloat3 f, r, u;
+		Vector3f f = Vector3f::Zero(), r = Vector3f::Zero(), u = Vector3f::Zero();
 		getCameraBasis(&f, &r, &u);
 
-		float d = std::max(0.01f, (m_camPose.m_vEye - m_camPose.m_vLookAt).len());
-		float sx = dx / std::max(1.0f, vCanvasSize.x);
-		float sy = dy / std::max(1.0f, vCanvasSize.y);
-		vFloat3 move = (r * (-sx * d * m_sMove * 100.0)) + (u * (sy * d * m_sMove * 100.0));
+		float d = std::max(0.01f, (m_camPose.m_vEye - m_camPose.m_vLookAt).norm());
+		float sx = dx / std::max(1.0f, vCanvasSize.x());
+		float sy = dy / std::max(1.0f, vCanvasSize.y());
+		Vector3f move = (r * (-sx * d * m_sMove * 100.0)) + (u * (sy * d * m_sMove * 100.0));
 		m_camPose.m_vEye += move;
 		m_camPose.m_vLookAt += move;
 		updateCamPose();
@@ -814,7 +812,7 @@ namespace kai
 
 	void _ImGUIviewer::zoom(float d)
 	{
-		vFloat3 v = m_camPose.m_vEye - m_camPose.m_vLookAt;
+		Vector3f v = m_camPose.m_vEye - m_camPose.m_vLookAt;
 		float s = std::max(0.05f, 1.0f - d * m_sZoom);
 		m_camPose.m_vEye = m_camPose.m_vLookAt + (v * s);
 		updateCamPose();
@@ -826,19 +824,19 @@ namespace kai
 		copySnapshot(&vGO);
 
 		bool bFound = false;
-		vFloat3 vMin(FLT_MAX, FLT_MAX, FLT_MAX);
-		vFloat3 vMax(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+		Vector3f vMin(FLT_MAX, FLT_MAX, FLT_MAX);
+		Vector3f vMax(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
-		auto expand = [&](const vFloat3 &p)
+		auto expand = [&](const Vector3f &p)
 		{
 			IF_(!bFinite(p));
 
-			vMin.x = std::min(vMin.x, p.x);
-			vMin.y = std::min(vMin.y, p.y);
-			vMin.z = std::min(vMin.z, p.z);
-			vMax.x = std::max(vMax.x, p.x);
-			vMax.y = std::max(vMax.y, p.y);
-			vMax.z = std::max(vMax.z, p.z);
+			vMin.x() = std::min(vMin.x(), p.x());
+			vMin.y() = std::min(vMin.y(), p.y());
+			vMin.z() = std::min(vMin.z(), p.z());
+			vMax.x() = std::max(vMax.x(), p.x());
+			vMax.y() = std::max(vMax.y(), p.y());
+			vMax.z() = std::max(vMax.z(), p.z());
 			bFound = true;
 		};
 
@@ -854,7 +852,7 @@ namespace kai
 			}
 			for (const auto &box : g.m_vBox)
 			{
-				vFloat3 center = box.m_vCenter, half = box.m_vSize;
+				Vector3f center = box.m_vCenter, half = box.m_vSize;
 				half *= 0.5f;
 				expand(center - half);
 				expand(center + half);
@@ -863,9 +861,9 @@ namespace kai
 
 		IF_F(!bFound);
 
-		vFloat3 c = (vMin + vMax) * 0.5;
-		float radius = std::max((vMax - vMin).len() * 0.5f, 1.0f);
-		vFloat3 f, r, u;
+		Vector3f c = (vMin + vMax) * 0.5;
+		float radius = std::max((vMax - vMin).norm() * 0.5f, 1.0f);
+		Vector3f f = Vector3f::Zero(), r = Vector3f::Zero(), u = Vector3f::Zero();
 		getCameraBasis(&f, &r, &u);
 		m_camPose.m_vLookAt = c + m_vCoR;
 		m_camPose.m_vEye = m_camPose.m_vLookAt - (f * (radius * 2.5));
@@ -911,8 +909,8 @@ namespace kai
 	{
 		IF_(!this->_GeometryViewerBase::check());
 
-		if (m_camPose.m_vUp.len() <= 1e-6)
-			m_camPose.m_vUp.set(0, 1, 0);
+		if (m_camPose.m_vUp.norm() <= 1e-6)
+			m_camPose.m_vUp = Vector3f(0, 1, 0);
 	}
 
 	void _ImGUIviewer::snapshotLock(void)

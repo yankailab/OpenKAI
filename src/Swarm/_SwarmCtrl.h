@@ -11,7 +11,7 @@ namespace kai
 	struct SWARM_SEARCH_CTRL_NODE
 	{
 		uint16_t m_id = 0;
-		vDouble2 m_pos = {0, 0};
+		Vector2d m_pos = {0, 0};
 		float m_alt = 0;
 	};
 

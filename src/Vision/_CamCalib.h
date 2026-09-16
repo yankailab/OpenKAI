@@ -28,7 +28,7 @@ namespace kai
 
 	protected:
 		string m_path = "";
-		vInt2 m_vChessBoardSize; // col, row
+		Vector2i m_vChessBoardSize = Vector2i::Zero(); // col, row
 		float m_squareSize = 1.0;
 
 		Mat m_mC;

@@ -74,21 +74,21 @@ namespace kai
 		}
 	}
 
-	void _xArm::gotoPos(vFloat3 &vP)
+	void _xArm::gotoPos(Vector3f &vP)
 	{
 		pthread_mutex_lock(&m_mutex);
-		setPtarget(0, vP.x);
-		setPtarget(1, vP.y);
-		setPtarget(2, vP.z);
+		setPtarget(0, vP.x());
+		setPtarget(1, vP.y());
+		setPtarget(2, vP.z());
 		pthread_mutex_unlock(&m_mutex);
 
 		updatePos();
 	}
 
-	vFloat3 _xArm::getPtarget(void)
+	Vector3f _xArm::getPtarget(void)
 	{
 		pthread_mutex_lock(&m_mutex);
-		vFloat3 v(m_vAxis[0].m_p.m_vTarget,
+		Vector3f v(m_vAxis[0].m_p.m_vTarget,
 				  m_vAxis[1].m_p.m_vTarget,
 				  m_vAxis[2].m_p.m_vTarget);
 		pthread_mutex_unlock(&m_mutex);
@@ -96,10 +96,10 @@ namespace kai
 		return v;
 	}
 
-	vFloat3 _xArm::getP(void)
+	Vector3f _xArm::getP(void)
 	{
 		pthread_mutex_lock(&m_mutex);
-		vFloat3 v(m_vAxis[0].m_p.m_v,
+		Vector3f v(m_vAxis[0].m_p.m_v,
 				  m_vAxis[1].m_p.m_v,
 				  m_vAxis[2].m_p.m_v);
 		pthread_mutex_unlock(&m_mutex);
@@ -107,10 +107,10 @@ namespace kai
 		return v;
 	}
 
-	vFloat3 _xArm::getAtarget(void)
+	Vector3f _xArm::getAtarget(void)
 	{
 		pthread_mutex_lock(&m_mutex);
-		vFloat3 v(m_vAxis[6].m_p.m_vTarget,
+		Vector3f v(m_vAxis[6].m_p.m_vTarget,
 				  m_vAxis[7].m_p.m_vTarget,
 				  m_vAxis[8].m_p.m_vTarget);
 		pthread_mutex_unlock(&m_mutex);
@@ -118,10 +118,10 @@ namespace kai
 		return v;
 	}
 
-	vFloat3 _xArm::getA(void)
+	Vector3f _xArm::getA(void)
 	{
 		pthread_mutex_lock(&m_mutex);
-		vFloat3 v(m_vAxis[6].m_p.m_v,
+		Vector3f v(m_vAxis[6].m_p.m_v,
 				  m_vAxis[7].m_p.m_v,
 				  m_vAxis[8].m_p.m_v);
 		pthread_mutex_unlock(&m_mutex);
@@ -133,8 +133,8 @@ namespace kai
 	{
 		IF_(!check());
 
-		vFloat3 vP = getPtarget();
-		vFloat3 vA = getAtarget();
+		Vector3f vP = getPtarget();
+		Vector3f vA = getAtarget();
 	}
 
 	void _xArm::readState(void)

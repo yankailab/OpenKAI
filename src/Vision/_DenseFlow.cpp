@@ -91,53 +91,53 @@ namespace kai
 		// cv::split(mFlow, m_pFlow);
 	}
 
-	vDouble2 _DenseFlow::vFlow(vDouble4 *pROI)
+	Vector2d _DenseFlow::vFlow(Vector4d *pROI)
 	{
-		vDouble2 vF;
-		vF.clear();
+		Vector2d vF = Vector2d::Zero();
+		vF.setZero();
 		if (!pROI)
 			return vF;
 
-		vInt4 iR;
-		iR.x = pROI->x * m_w;
-		iR.y = pROI->y * m_h;
-		iR.z = pROI->z * m_w;
-		iR.w = pROI->w * m_h;
+		Vector4i iR = Vector4i::Zero();
+		iR.x() = pROI->x() * m_w;
+		iR.y() = pROI->y() * m_h;
+		iR.z() = pROI->z() * m_w;
+		iR.w() = pROI->w() * m_h;
 
-		if (iR.x < 0)
-			iR.x = 0;
-		if (iR.y < 0)
-			iR.y = 0;
+		if (iR.x() < 0)
+			iR.x() = 0;
+		if (iR.y() < 0)
+			iR.y() = 0;
 
-		if (iR.z > m_w)
-			iR.z = m_w;
-		if (iR.w > m_h)
-			iR.w = m_h;
+		if (iR.z() > m_w)
+			iR.z() = m_w;
+		if (iR.w() > m_h)
+			iR.w() = m_h;
 
-		if (iR.z < iR.x)
-			iR.z = iR.x;
-		if (iR.w < iR.y)
-			iR.w = iR.y;
+		if (iR.z() < iR.x())
+			iR.z() = iR.x();
+		if (iR.w() < iR.y())
+			iR.w() = iR.y();
 
 		return vFlow(&iR);
 	}
 
-	vDouble2 _DenseFlow::vFlow(vInt4 *pROI)
+	Vector2d _DenseFlow::vFlow(Vector4i *pROI)
 	{
-		vDouble2 vF;
-		vF.clear();
+		Vector2d vF = Vector2d::Zero();
+		vF.setZero();
 
 		IF__(!pROI, vF);
 		IF__(m_pFlow[0].empty(), vF);
 		IF__(m_pFlow[1].empty(), vF);
 
 		vector<int> vHistLev = {m_nHistLev};
-		vector<float> vRange = {(float)m_vRange.x, (float)m_vRange.y};
+		vector<float> vRange = {(float)m_vRange.x(), (float)m_vRange.y()};
 		vector<int> vChannel = {0};
 
 		Rect roi = bb2Rect(*pROI);
-		double nBase = (m_vRange.y - m_vRange.x) / (double)m_nHistLev;
-		float nMinHist = (float)(m_minHistD * pROI->area());
+		double nBase = (m_vRange.y() - m_vRange.x()) / (double)m_nHistLev;
+		float nMinHist = (float)(m_minHistD * std::abs(((*pROI).z() - (*pROI).x()) * ((*pROI).w() - (*pROI).y())));
 		Mat mHist;
 		int i;
 
@@ -152,7 +152,7 @@ namespace kai
 			if (mHist.at<float>(i) >= nMinHist)
 				break;
 		}
-		vF.x = m_vRange.x + ((double)i) * nBase;
+		vF.x() = m_vRange.x() + ((double)i) * nBase;
 
 		Mat mRoiY = m_pFlow[1](roi);
 		vector<Mat> vRoiY = {mRoiY};
@@ -165,7 +165,7 @@ namespace kai
 			if (mHist.at<float>(i) >= nMinHist)
 				break;
 		}
-		vF.y = m_vRange.x + ((double)i) * nBase;
+		vF.y() = m_vRange.x() + ((double)i) * nBase;
 
 		return vF;
 	}

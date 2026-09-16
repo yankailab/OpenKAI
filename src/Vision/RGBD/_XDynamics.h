@@ -21,9 +21,9 @@ namespace kai
 {
 	struct XDctrl
 	{
-		vInt4 m_vPhaseInt = {1000000, 1000000, 0, 0};
-		vInt4 m_vSpaceInt = {1000000, 1000000, 0, 0};
-		vInt2 m_vFreq = {62, 25};
+		Vector4i m_vPhaseInt = {1000000, 1000000, 0, 0};
+		Vector4i m_vSpaceInt = {1000000, 1000000, 0, 0};
+		Vector2i m_vFreq = {62, 25};
 
 		int m_binning = XDYN_BINNING_MODE_2x2;
 		int m_phaseMode = XDYN_PHASE_MODE_1;

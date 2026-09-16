@@ -14,7 +14,7 @@ namespace kai
 	{
 		m_type = vision_crop;
 
-		m_vRoi.clear();
+		m_vRoi.setZero();
 	}
 
 	_Crop::~_Crop()
@@ -68,13 +68,13 @@ namespace kai
 
 		Mat mIn = *pF->m();
 		Rect r;
-		r.x = constrain(m_vRoi.x, 0, mIn.cols);
-		r.y = constrain(m_vRoi.y, 0, mIn.rows);
-		r.width = m_vRoi.z - r.x;
-		r.height = m_vRoi.w - r.y;
+		r.x = constrain(m_vRoi.x(), 0, mIn.cols);
+		r.y = constrain(m_vRoi.y(), 0, mIn.rows);
+		r.width = m_vRoi.z() - r.x;
+		r.height = m_vRoi.w() - r.y;
 
-		m_vSizeRGB.x = r.width;
-		m_vSizeRGB.y = r.height;
+		m_vSizeRGB.x() = r.width;
+		m_vSizeRGB.y() = r.height;
 
 		m_fRGB.copy(mIn(r));
 	}

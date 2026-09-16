@@ -34,17 +34,17 @@ namespace kai
 		virtual bool saveConfig(const string &fName);
 
 		void updateMatrices(void);
-		bool L2C(const vInt2 &vSizeImg, const vFloat3 &vPi, vInt2 &vPo);
-		//		bool pt2Pix(const vInt2 &vSizeImg, const vFloat3 &vPi, vInt2 &vPo);
+		bool L2C(const Vector2i &vSizeImg, const Vector3f &vPi, Vector2i &vPo);
+		//		bool pt2Pix(const Vector2i &vSizeImg, const Vector3f &vPi, Vector2i &vPo);
 
-		vDouble2 getCamFocal(void);
-		vDouble2 getCamCenter(void);
+		Vector2d getCamFocal(void);
+		Vector2d getCamCenter(void);
 		array<double, 5> getCamDistortion(void);
 		array<double, 9> getCamR(void);
 		array<double, 3> getCamT(void);
 
-		void setCamFocal(const vDouble2 &vF);
-		void setCamCenter(const vDouble2 &vC);
+		void setCamFocal(const Vector2d &vF);
+		void setCamCenter(const Vector2d &vC);
 		void setCamDistortion(const array<double, 5> &aD);
 		void setCamR(const array<double, 9> &aR);
 		void getCamT(const array<double, 3> &aT);
@@ -67,9 +67,9 @@ namespace kai
 
 		// Camera
 		// intrinsics
-		vInt2 m_vCsize;
-		vDouble2 m_vCf;										   // focal
-		vDouble2 m_vCc;										   // center
+		Vector2i m_vCsize = Vector2i::Zero();
+		Vector2d m_vCf = Vector2d::Zero();										   // focal
+		Vector2d m_vCc = Vector2d::Zero();										   // center
 		array<double, 5> m_aCdist = {0.0, 0.0, 0.0, 0.0, 0.0}; // k1,k2,p1,p2,k3
 
 		// extrinsics, Camera <- LiDAR: pCam = m_aCr * pLidar + m_aCt

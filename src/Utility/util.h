@@ -128,24 +128,24 @@ namespace kai
 	inline T bbExpand(T &bb, float k)
 	{
 		float s = abs(1.0 - k) * 0.5;
-		float dW = bb.width() * s;
-		float dH = bb.height() * s;
+		float dW = (bb.z() - bb.x()) * s;
+		float dH = (bb.w() - bb.y()) * s;
 
 		T B = bb;
 
 		if (k > 1.0)
 		{
-			B.x -= dW;
-			B.y -= dH;
-			B.z += dW;
-			B.w += dH;
+			B.x() -= dW;
+			B.y() -= dH;
+			B.z() += dW;
+			B.w() += dH;
 		}
 		else
 		{
-			B.x += dW;
-			B.y += dH;
-			B.z -= dW;
-			B.w -= dH;
+			B.x() += dW;
+			B.y() += dH;
+			B.z() -= dW;
+			B.w() -= dH;
 		}
 
 		return B;
@@ -155,18 +155,18 @@ namespace kai
 	inline T bbScale(T bb, float kx, float ky)
 	{
 		T v;
-		v.x = bb.x * kx;
-		v.y = bb.y * ky;
-		v.z = bb.z * kx;
-		v.w = bb.w * ky;
+		v.x() = bb.x() * kx;
+		v.y() = bb.y() * ky;
+		v.z() = bb.z() * kx;
+		v.w() = bb.w() * ky;
 		return v;
 	}
 
 	template <typename T>
 	inline bool bOverlap(T &pA, T &pB)
 	{
-		IF_F(pA.z < pB.x || pA.x > pB.z);
-		IF_F(pA.w < pB.y || pA.y > pB.w);
+		IF_F(pA.z() < pB.x() || pA.x() > pB.z());
+		IF_F(pA.w() < pB.y() || pA.y() > pB.w());
 
 		return true;
 	}

@@ -38,8 +38,8 @@ namespace kai
 		}
 
 		m_fRGB.copy(m);
-		m_vSizeRGB.x = m.cols;
-		m_vSizeRGB.y = m.rows;
+		m_vSizeRGB.x() = m.cols;
+		m_vSizeRGB.y() = m.rows;
 
 		m_bOpen = true;
 		return true;

@@ -120,8 +120,8 @@ namespace kai
             object o;
             JO(o, "cmd", "ndUpdate");
             JO(o, "id", (double)pN->m_id);
-            JO(o, "lat", lf2str(pN->m_vPos.x, 10));
-            JO(o, "lng", lf2str(pN->m_vPos.y, 10));
+            JO(o, "lat", lf2str(pN->m_vPos.x(), 10));
+            JO(o, "lng", lf2str(pN->m_vPos.y(), 10));
             JO(o, "alt", f2str((double)pN->m_alt, 2));
             JO(o, "hdg", f2str((double)pN->m_hdg, 2));
             JO(o, "spd", f2str((double)pN->m_spd, 2));

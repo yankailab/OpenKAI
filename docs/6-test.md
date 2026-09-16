@@ -1,3 +1,13 @@
+# Eigen vector regression tests
+
+These checks cover vector configuration loading, geometry defaults, and bounding-box operations. They require Eigen 5 and glog.
+
+```bash
+cmake -S test/eigenVectors -B build/eigenVectors
+cmake --build build/eigenVectors
+ctest --test-dir build/eigenVectors --output-on-failure
+```
+
 # GDB
 ```bash
 gdb --args executablename arg1 arg2 arg3

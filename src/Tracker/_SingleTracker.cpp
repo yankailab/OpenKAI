@@ -82,7 +82,7 @@ namespace kai
 			IF_(m_pTracker.empty());
 
 			//		m_pTracker->update(m, m_rBB);
-			//		m_bb = bbScale(rect2BB<vFloat4>(m_rBB), 1.0/m.cols, 1.0/m.rows);
+			//		m_bb = bbScale(rect2BB<Vector4f>(m_rBB), 1.0/m.cols, 1.0/m.rows);
 		}
 	}
 

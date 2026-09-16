@@ -18,28 +18,28 @@ namespace kai
 	{
 	}
 
-	UTM_POS Coordinate::offset(UTM_POS &UTM, vFloat3 &dNEA)
+	UTM_POS Coordinate::offset(UTM_POS &UTM, Vector3f &dNEA)
 	{
 		double hdgRad = UTM.m_hdg * DEG_2_RAD;
 		double sinH = sin(hdgRad);
 		double cosH = cos(hdgRad);
 
 		UTM_POS pUTM = UTM;
-		pUTM.m_northing += dNEA.x * cosH - dNEA.y * sinH;
-		pUTM.m_easting += dNEA.y * cosH + dNEA.x * sinH;
-		pUTM.m_altRel += dNEA.z;
-		pUTM.m_altAbs += dNEA.z;
+		pUTM.m_northing += dNEA.x() * cosH - dNEA.y() * sinH;
+		pUTM.m_easting += dNEA.y() * cosH + dNEA.x() * sinH;
+		pUTM.m_altRel += dNEA.z();
+		pUTM.m_altAbs += dNEA.z();
 
 		return pUTM;
 	}
 
-	LL_POS Coordinate::offset(LL_POS &LL, vFloat3 &dNEA)
+	LL_POS Coordinate::offset(LL_POS &LL, Vector3f &dNEA)
 	{
 		// http://www.edwilliams.org/avform.htm#LL
 
 		LL_POS oLL = LL;
-		double d = sqrt(dNEA.x * dNEA.x + dNEA.y * dNEA.y) * OV_R_EARTH;
-		double tc = oLL.m_hdg * DEG_2_RAD + atan2(dNEA.y, dNEA.x); // true course
+		double d = sqrt(dNEA.x() * dNEA.x() + dNEA.y() * dNEA.y()) * OV_R_EARTH;
+		double tc = oLL.m_hdg * DEG_2_RAD + atan2(dNEA.y(), dNEA.x()); // true course
 
 		double sinLat = sin(LL.m_lat);
 		double cosLat = cos(LL.m_lat);

@@ -21,11 +21,11 @@ namespace kai
 
 	protected:
 		virtual void updatePos(void);
-		virtual void gotoPos(vFloat3 &vP);
-		virtual vFloat3 getPtarget(void);
-		virtual vFloat3 getP(void);
-		virtual vFloat3 getAtarget(void);
-		virtual vFloat3 getA(void);
+		virtual void gotoPos(Vector3f &vP);
+		virtual Vector3f getPtarget(void);
+		virtual Vector3f getP(void);
+		virtual Vector3f getAtarget(void);
+		virtual Vector3f getA(void);
 		virtual void readState(void);
 
 		virtual void update(void);

@@ -13,8 +13,6 @@
 #include "../Utility/utilTime.h"
 #include "../UI/_Console.h"
 
-using namespace Eigen;
-
 namespace kai
 {
     enum GEOMETRY_TYPE
@@ -28,30 +26,30 @@ namespace kai
 
     struct GEOMETRY_POINT
     {
-        vFloat3 m_vP; // pos
-        vFloat4 m_vC{0, 0, 0, 1}; // color with alpha; RGB-only sources are opaque
+        Vector3f m_vP = Vector3f::Zero(); // pos
+        Vector4f m_vC{0, 0, 0, 1};        // color with alpha; RGB-only sources are opaque
         uint64_t m_tStamp;
 
         void clear(void)
         {
-            m_vP = 0;
-            m_vC.clear();
+            m_vP.setZero();
+            m_vC.setZero();
             m_tStamp = 0; // time stamp, 0: invalid, >= 1 valid
         }
     };
 
     struct GEOMETRY_LINE
     {
-        vFloat3 m_vPa;     // line from
-        vFloat3 m_vPb;     // line to
-        vFloat4 m_vC{0, 0, 0, 1}; // color with alpha; RGB-only sources are opaque
-        uint64_t m_tStamp; // time stamp, 0: invalid, >= 1 valid
+        Vector3f m_vPa = Vector3f::Zero(); // line from
+        Vector3f m_vPb = Vector3f::Zero(); // line to
+        Vector4f m_vC{0, 0, 0, 1};         // color with alpha; RGB-only sources are opaque
+        uint64_t m_tStamp;                 // time stamp, 0: invalid, >= 1 valid
 
         void clear(void)
         {
-            m_vPa = 0;
-            m_vPb = 0;
-            m_vC.clear();
+            m_vPa.setZero();
+            m_vPb.setZero();
+            m_vC.setZero();
             m_tStamp = 0;
         }
     };
@@ -156,8 +154,24 @@ namespace kai
         virtual int get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire = 0);
         virtual int get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut, uint64_t tExpire = 0);
 
+        virtual void setPos(const Vector3d &vP);
+        virtual void setPos(double x, double y, double z);
+        virtual void setAngles(const Vector3d &vA);
+        virtual void setAngles(double roll, double pitch, double yaw);
+        virtual void setOrientation(const Quaterniond &vOrt, bool bConvertToEulerAngles = false);
+        virtual void setOrientation(double x, double y, double z, double w, bool bConvertToEulerAngles = false);
+
+    protected:
+        virtual void updatePose(void);
+        virtual void updateEulerAngles(void);
+
     protected:
         GEOMETRY_TYPE m_type = geometry_unknown;
+
+        Vector3d m_vPos;    // position
+        Quaterniond m_vOrt; // orientation quaternion
+        Vector3d m_vAngle;  // euler angles in roll, pitch, yaw order
+        Isometry3d m_mPose; // combined transform
     };
 
 }

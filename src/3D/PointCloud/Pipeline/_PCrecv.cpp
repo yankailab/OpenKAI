@@ -122,14 +122,14 @@ namespace kai
 			x = unpack_int16(&cmd.m_pB[i], false);
 			y = unpack_int16(&cmd.m_pB[i + 2], false);
 			z = unpack_int16(&cmd.m_pB[i + 4], false);
-			Eigen::Vector3d vP(((double)x) * PC_SCALE_INV,
+			Vector3d vP(((double)x) * PC_SCALE_INV,
 							   ((double)y) * PC_SCALE_INV,
 							   ((double)z) * PC_SCALE_INV);
 
 			x = unpack_int16(&cmd.m_pB[i + 6], false);
 			y = unpack_int16(&cmd.m_pB[i + 8], false);
 			z = unpack_int16(&cmd.m_pB[i + 10], false);
-			Eigen::Vector3f vC(((float)x) * PC_SCALE_INV,
+			Vector3f vC(((float)x) * PC_SCALE_INV,
 							   ((float)y) * PC_SCALE_INV,
 							   ((float)z) * PC_SCALE_INV);
 

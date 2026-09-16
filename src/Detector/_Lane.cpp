@@ -12,7 +12,7 @@ namespace kai
 
 	_Lane::_Lane()
 	{
-		m_vSize.clear();
+		m_vSize.setZero();
 	}
 
 	_Lane::~_Lane()
@@ -31,10 +31,10 @@ namespace kai
 		jKv<float>(j, "vRoiLB", m_vRoiLB);
 		jKv<float>(j, "vRoiRT", m_vRoiRT);
 		jKv<float>(j, "vRoiRB", m_vRoiRB);
-		jKv(j, "overheadW", m_sizeOverhead.x);
-		jKv(j, "overheadH", m_sizeOverhead.y);
+		jKv(j, "overheadW", m_sizeOverhead.x());
+		jKv(j, "overheadH", m_sizeOverhead.y());
 
-		m_mOverhead = Mat(Size(m_sizeOverhead.x, m_sizeOverhead.y), CV_8UC3);
+		m_mOverhead = Mat(Size(m_sizeOverhead.x(), m_sizeOverhead.y()), CV_8UC3);
 
 		// color filters
 		m_nFilter = 0;
@@ -77,7 +77,7 @@ namespace kai
 				IF_CONT(!Ji.is_object());
 
 				LANE *pLane = &m_pLane[m_nLane];
-				pLane->init(m_sizeOverhead.y, nAvr, nMed);
+				pLane->init(m_sizeOverhead.y(), nAvr, nMed);
 				jKv<float>(Ji, "vROI", pLane->m_ROI);
 
 				m_nLane++;
@@ -88,8 +88,8 @@ namespace kai
 		m_pNp = new int[m_nLane];
 		for (int i = 0; i < m_nLane; i++)
 		{
-			m_ppPoint[i] = new Point[m_sizeOverhead.y];
-			m_pNp[i] = m_sizeOverhead.y;
+			m_ppPoint[i] = new Point[m_sizeOverhead.y()];
+			m_pNp[i] = m_sizeOverhead.y();
 		}
 
 		return true;
@@ -137,10 +137,10 @@ namespace kai
 		Mat *pM = m_pV->getFrameRGB()->m();
 
 		// Warp transform to get overhead view
-		if (m_vSize.x != pM->cols || m_vSize.y != pM->rows)
+		if (m_vSize.x() != pM->cols || m_vSize.y() != pM->rows)
 		{
-			m_vSize.x = pM->cols;
-			m_vSize.y = pM->rows;
+			m_vSize.x() = pM->cols;
+			m_vSize.y() = pM->rows;
 			updateVisionSize();
 		}
 
@@ -174,22 +174,22 @@ namespace kai
 
 	void _Lane::updateVisionSize(void)
 	{
-		Point2f LT = Point2f((float)(m_vRoiLT.x * m_vSize.x),
-							 (float)(m_vRoiLT.y * m_vSize.y));
-		Point2f LB = Point2f((float)(m_vRoiLB.x * m_vSize.x),
-							 (float)(m_vRoiLB.y * m_vSize.y));
-		Point2f RT = Point2f((float)(m_vRoiRT.x * m_vSize.x),
-							 (float)(m_vRoiRT.y * m_vSize.y));
-		Point2f RB = Point2f((float)(m_vRoiRB.x * m_vSize.x),
-							 (float)(m_vRoiRB.y * m_vSize.y));
+		Point2f LT = Point2f((float)(m_vRoiLT.x() * m_vSize.x()),
+							 (float)(m_vRoiLT.y() * m_vSize.y()));
+		Point2f LB = Point2f((float)(m_vRoiLB.x() * m_vSize.x()),
+							 (float)(m_vRoiLB.y() * m_vSize.y()));
+		Point2f RT = Point2f((float)(m_vRoiRT.x() * m_vSize.x()),
+							 (float)(m_vRoiRT.y() * m_vSize.y()));
+		Point2f RB = Point2f((float)(m_vRoiRB.x() * m_vSize.x()),
+							 (float)(m_vRoiRB.y() * m_vSize.y()));
 
 		// LT, LB, RB, RT
 		Point2f ptsFrom[] = {LT, LB, RB, RT};
 		Point2f ptsTo[] =
 			{cv::Point2f(0, 0),
-			 cv::Point2f(0, (float)m_sizeOverhead.y),
-			 cv::Point2f((float)m_sizeOverhead.x, (float)m_sizeOverhead.y),
-			 cv::Point2f((float)m_sizeOverhead.x, 0)};
+			 cv::Point2f(0, (float)m_sizeOverhead.y()),
+			 cv::Point2f((float)m_sizeOverhead.x(), (float)m_sizeOverhead.y()),
+			 cv::Point2f((float)m_sizeOverhead.x(), 0)};
 
 		m_mPerspective = getPerspectiveTransform(ptsFrom, ptsTo);
 		m_mPerspectiveInv = getPerspectiveTransform(ptsTo, ptsFrom);
@@ -233,7 +233,7 @@ namespace kai
 			pL = &m_pLane[i];
 			IF_CONT(!pL->m_pPoly);
 
-			for (j = 0; j < m_sizeOverhead.y; j++)
+			for (j = 0; j < m_sizeOverhead.y(); j++)
 			{
 				m_ppPoint[i][j] = Point(pL->vPoly(j), j);
 			}
@@ -258,7 +258,7 @@ namespace kai
 				pL = &m_pLane[i];
 				IF_CONT(!pL->m_pPoly);
 
-				for (j = 0; j < m_sizeOverhead.y; j++)
+				for (j = 0; j < m_sizeOverhead.y(); j++)
 				{
 					circle(mO, Point(pL->vPoly(j), j), 1, Scalar(0, 255, 0), 1);
 					circle(mO, Point(pL->vFilter(j), j), 1, Scalar(0, 0, 255), 1);

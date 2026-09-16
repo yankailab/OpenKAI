@@ -37,16 +37,16 @@ namespace kai
 			return false;
 		}
 
-		m_vc.set(CAP_PROP_FRAME_WIDTH, m_vSizeRGB.x);
-		m_vc.set(CAP_PROP_FRAME_HEIGHT, m_vSizeRGB.y);
+		m_vc.set(CAP_PROP_FRAME_WIDTH, m_vSizeRGB.x());
+		m_vc.set(CAP_PROP_FRAME_HEIGHT, m_vSizeRGB.y());
 		m_vc.set(CAP_PROP_FPS, m_pT->getTargetFPS());
 
 		Mat cMat;
 		while (!m_vc.read(cMat))
 			;
 
-		m_vSizeRGB.x = cMat.cols;
-		m_vSizeRGB.y = cMat.rows;
+		m_vSizeRGB.x() = cMat.cols;
+		m_vSizeRGB.y() = cMat.rows;
 
 		m_bOpen = true;
 		return true;

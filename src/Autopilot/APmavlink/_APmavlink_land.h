@@ -12,13 +12,13 @@ namespace kai
 	{
 		int m_id = -1;
 		int m_priority = 0;
-		vFloat2 m_vSize = {0, FLT_MAX}; // effective size range
-		vFloat2 m_vKdist; // translate size into distance
+		Vector2f m_vSize = {0, FLT_MAX}; // effective size range
+		Vector2f m_vKdist = Vector2f::Zero(); // translate size into distance
 
 		float getDist(float s)
 		{
-			float c = m_vSize.constrain(s);
-			return ((m_vSize.y - c) / m_vSize.len()) * m_vKdist.len() + m_vKdist.x;
+			float c = std::clamp(s, m_vSize.x(), m_vSize.y());
+			return ((m_vSize.y() - c) / m_vSize.norm()) * m_vKdist.norm() + m_vKdist.x();
 		}
 	};
 
@@ -51,13 +51,13 @@ namespace kai
 
 	protected:
 		_DistSensorBase* m_pDS = nullptr;
-		vFloat2 m_vDSrange;
+		Vector2f m_vDSrange = Vector2f::Zero();
 
 		vector<AP_LAND_TAG> m_vTags;
 		AP_LAND_TAG* m_pTag = nullptr;
-		vFloat2 m_vFov; // cam FOV horiz/vert
+		Vector2f m_vFov = Vector2f::Zero(); // cam FOV horiz/vert
 
-		vFloat4 m_vComplete; // complete condition for vPtarget
+		Vector4f m_vComplete = Vector4f::Zero(); // complete condition for vPtarget
 		float m_zrK = 1.0;
 	};
 }

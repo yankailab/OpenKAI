@@ -30,7 +30,7 @@ namespace kai
 
 		virtual void updatePC(void);
 
-		double updateRegistration(PointCloud* pSrc, PointCloud* pTgt, Matrix4d_u* pTresult = NULL);
+		double updateRegistration(PointCloud* pSrc, PointCloud* pTgt, Eigen::Matrix4d_u* pTresult = NULL);
 
 	private:
 		bool updateRegistration(void);

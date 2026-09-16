@@ -12,7 +12,7 @@ namespace kai
 	_YOLO26detectONNX::_YOLO26detectONNX() : m_env(ORT_LOGGING_LEVEL_WARNING, "OpenKAI_YOLO26detectONNX"),
 						 m_memoryInfo(Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault))
 	{
-		m_vModelInputSize.set(640, 640);
+		m_vModelInputSize = Vector2i(640, 640);
 		m_vClass = vector<string>{"person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella", "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball", "kite", "baseball bat", "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle", "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake", "chair", "couch", "potted plant", "bed", "dining table", "toilet", "tv", "laptop", "mouse", "remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"};
 	}
 
@@ -103,16 +103,16 @@ namespace kai
 		m_fRGB.copy(*pBGR);
 		Mat mIn = *m_fRGB.m();
 
-		if (m_bLetterBoxForSquare && m_vModelInputSize.x == m_vModelInputSize.y)
+		if (m_bLetterBoxForSquare && m_vModelInputSize.x() == m_vModelInputSize.y())
 			mIn = formatToSquare(mIn);
 
 		Mat mResized;
-		cv::resize(mIn, mResized, cv::Size(m_vModelInputSize.x, m_vModelInputSize.y));
+		cv::resize(mIn, mResized, cv::Size(m_vModelInputSize.x(), m_vModelInputSize.y()));
 
 		vector<float> vTensor;
 		matToTensor(mResized, &vTensor);
 
-		vector<int64_t> vInputShape = {1, 3, m_vModelInputSize.y, m_vModelInputSize.x};
+		vector<int64_t> vInputShape = {1, 3, m_vModelInputSize.y(), m_vModelInputSize.x()};
 		Ort::Value inputTensor = Ort::Value::CreateTensor<float>(
 			m_memoryInfo,
 			vTensor.data(),
@@ -160,8 +160,8 @@ namespace kai
 		vector<Mat> vCHW;
 		cv::split(mFloat, vCHW);
 
-		pvTensor->resize(3 * m_vModelInputSize.x * m_vModelInputSize.y);
-		size_t nChannel = m_vModelInputSize.x * m_vModelInputSize.y;
+		pvTensor->resize(3 * m_vModelInputSize.x() * m_vModelInputSize.y());
+		size_t nChannel = m_vModelInputSize.x() * m_vModelInputSize.y();
 		for (int i = 0; i < 3; i++)
 			memcpy(pvTensor->data() + i * nChannel, vCHW[i].data, nChannel * sizeof(float));
 	}
@@ -173,8 +173,8 @@ namespace kai
 		IF_F(vShape[2] < 6);
 		IF_F(vShape[1] > 1000);
 
-		float kx = (float)mIn.cols / (float)m_vModelInputSize.x;
-		float ky = (float)mIn.rows / (float)m_vModelInputSize.y;
+		float kx = (float)mIn.cols / (float)m_vModelInputSize.x();
+		float ky = (float)mIn.rows / (float)m_vModelInputSize.y();
 		float kBBx = 1.0 / (float)mIn.cols;
 		float kBBy = 1.0 / (float)mIn.rows;
 
@@ -203,7 +203,7 @@ namespace kai
 			o.setTstamp(m_pT->getTfrom());
 			o.setType(obj_bbox);
 			o.setTopClass(iClass, confidence);
-			o.setBB2D(vFloat4(left, top, right - left, bottom - top), kBBx, kBBy);
+			o.setBB2D(Vector4f(left, top, right - left, bottom - top), kBBx, kBBy);
 			o.setText(m_vClass[iClass]);
 
 			m_pU->add(o);
@@ -237,8 +237,8 @@ namespace kai
 		int nClass = nDimension - 4;
 		IF_F(nClass <= 0);
 
-		float kx = (float)mIn.cols / (float)m_vModelInputSize.x;
-		float ky = (float)mIn.rows / (float)m_vModelInputSize.y;
+		float kx = (float)mIn.cols / (float)m_vModelInputSize.x();
+		float ky = (float)mIn.rows / (float)m_vModelInputSize.y();
 
 		vector<int> vClassID;
 		vector<float> vConfidence;
@@ -290,7 +290,7 @@ namespace kai
 			o.setTstamp(m_pT->getTfrom());
 			o.setType(obj_bbox);
 			o.setTopClass(vClassID[idx], vConfidence[idx]);
-			o.setBB2D(rect2BB<vFloat4>(vBox[idx]), kx, ky);
+			o.setBB2D(rect2BB<Vector4f>(vBox[idx]), kx, ky);
 			o.setText(m_vClass[vClassID[idx]]);
 
 			m_pU->add(o);

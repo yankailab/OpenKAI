@@ -29,10 +29,10 @@ namespace kai
 			DEPTH_ROI *pR = &m_pROI[m_nROI];
 			pR->init();
 			jKv(Ji, "orientation", pR->m_orientation);
-			jKv(Ji, "l", pR->m_roi.x);
-			jKv(Ji, "t", pR->m_roi.y);
-			jKv(Ji, "r", pR->m_roi.z);
-			jKv(Ji, "b", pR->m_roi.w);
+			jKv(Ji, "l", pR->m_roi.x());
+			jKv(Ji, "t", pR->m_roi.y());
+			jKv(Ji, "r", pR->m_roi.z());
+			jKv(Ji, "b", pR->m_roi.w());
 
 			m_nROI++;
 		}
@@ -66,7 +66,7 @@ namespace kai
 		_Mavlink *pMavlink = m_pAP->getMavlink();
 		NULL_(m_pDV);
 
-		vFloat2 range = m_pDV->getRangeD();
+		Vector2f range = m_pDV->getRangeD();
 		mavlink_distance_sensor_t D;
 
 		for (int i = 0; i < m_nROI; i++)
@@ -74,15 +74,15 @@ namespace kai
 			DEPTH_ROI *pR = &m_pROI[i];
 
 			float d = m_pDV->d(pR->m_roi);
-			if (d <= range.x)
-				d = range.y;
-			if (d > range.y)
-				d = range.y;
+			if (d <= range.x())
+				d = range.y();
+			if (d > range.y())
+				d = range.y();
 			pR->m_minD = d;
 
 			D.type = 0;
-			D.max_distance = (uint16_t)(range.y * 100); // unit: centimeters
-			D.min_distance = (uint16_t)(range.x * 100);
+			D.max_distance = (uint16_t)(range.y() * 100); // unit: centimeters
+			D.min_distance = (uint16_t)(range.x() * 100);
 			D.current_distance = (uint16_t)(pR->m_minD * 100);
 			D.orientation = pR->m_orientation;
 			D.covariance = 255;
@@ -106,14 +106,14 @@ namespace kai
 		for (int i = 0; i < m_nROI; i++)
 		{
 			DEPTH_ROI *pR = &m_pROI[i];
-			vFloat4 roi = pR->m_roi;
+			Vector4f roi = pR->m_roi;
 			float d = m_pDV->d(roi);
 
 			Rect r;
-			r.x = roi.x * pM->cols;
-			r.y = roi.y * pM->rows;
-			r.width = roi.z * pM->cols - r.x;
-			r.height = roi.w * pM->rows - r.y;
+			r.x = roi.x() * pM->cols;
+			r.y = roi.y() * pM->rows;
+			r.width = roi.z() * pM->cols - r.x;
+			r.height = roi.w() * pM->rows - r.y;
 			rectangle(*pM, r, Scalar(0, 255, 0), 1);
 
 			putText(*pM, f2str(d),

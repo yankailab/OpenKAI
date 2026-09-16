@@ -43,14 +43,14 @@ namespace kai
 		float m_v;
 		float m_vTarget;
 		float m_vErr; // acceptable err range
-		vFloat2 m_vRange;
+		Vector2f m_vRange = Vector2f::Zero();
 
 		void init(void)
 		{
 			m_v = 0.0;
 			m_vTarget = 0.0;
 			m_vErr = 0.0;
-			m_vRange.set(-FLT_MAX, FLT_MAX);
+			m_vRange = Vector2f(-FLT_MAX, FLT_MAX);
 		}
 
 		bool bComplete(void)
@@ -70,12 +70,12 @@ namespace kai
 
 		void setTarget(float v)
 		{
-			m_vTarget = m_vRange.constrain(v);
+			m_vTarget = std::clamp(v, m_vRange.x(), m_vRange.y());
 		}
 
 		void setTargetNormalized(float v)
 		{
-			m_vTarget = m_vRange.x + constrain<float>(v, 0, 1) * (m_vRange.y - m_vRange.x);
+			m_vTarget = m_vRange.x() + constrain<float>(v, 0, 1) * (m_vRange.y() - m_vRange.x());
 		}
 
 		void setTargetCurrent(void)
@@ -93,7 +93,7 @@ namespace kai
 			return m_vTarget - m_v;
 		}
 
-		vFloat2 getRange(void)
+		Vector2f getRange(void)
 		{
 			return m_vRange;
 		}

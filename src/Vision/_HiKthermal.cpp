@@ -132,24 +132,24 @@ namespace kai
 		const uvc_format_desc_t *fmt_desc = uvc_get_format_descs(m_pHandleDev);
 		const uvc_frame_desc_t *frame_desc = fmt_desc->frame_descs;
 
-		m_vSizeRGB.x = frame_desc->wWidth;
+		m_vSizeRGB.x() = frame_desc->wWidth;
 		m_uvcFPS = 10000000 / frame_desc->dwDefaultFrameInterval;
 
 		if (frame_desc->wWidth == 640)
 		{
-			m_vSizeRGB.y = 512;
+			m_vSizeRGB.y() = 512;
 			height = 1033;
 			m_uvcLen = 640 * 512 * 2;
 		}
 		else if (frame_desc->wWidth == 384)
 		{
-			m_vSizeRGB.y = 288;
+			m_vSizeRGB.y() = 288;
 			height = 590;
 			m_uvcLen = 384 * 288 * 2;
 		}
 		else if (frame_desc->wWidth == 256)
 		{
-			m_vSizeRGB.y = 192;
+			m_vSizeRGB.y() = 192;
 			height = 400;
 			m_uvcLen = 256 * 192 * 2;
 		}
@@ -157,15 +157,15 @@ namespace kai
 		m_uvcSize = 4640 + 2 * m_uvcLen;
 		m_uvcOffset = m_uvcLen + 4640;
 
-		LOG_I("width=" + i2str(m_vSizeRGB.x) +
-			  ", height=" + i2str(m_vSizeRGB.y) +
+		LOG_I("width=" + i2str(m_vSizeRGB.x()) +
+			  ", height=" + i2str(m_vSizeRGB.y()) +
 			  ", size=" + i2str(m_uvcSize) +
 			  ", len=" + i2str(m_uvcLen) +
 			  ", offset=" + i2str(m_uvcOffset) +
 			  ", FPS=" + i2str(m_uvcFPS));
 
 		uvc_error r = uvc_get_stream_ctrl_format_size(m_pHandleDev, &m_ctrl, UVC_FRAME_FORMAT_YUYV, // UVC_FRAME_FORMAT_UNKNOWN
-													  m_vSizeRGB.x, height, m_uvcFPS);
+													  m_vSizeRGB.x(), height, m_uvcFPS);
 
 		IF_F(r != UVC_SUCCESS);
 
@@ -259,11 +259,11 @@ namespace kai
 			}
 
 			// Mat mRGB;
-			//  Mat mYUV = cv::Mat(m_vSizeRGB.y, m_vSizeRGB.x, CV_8UC2, ((unsigned char *)pFrame->data) + m_uvcOffset, Mat::AUTO_STEP);
+			//  Mat mYUV = cv::Mat(m_vSizeRGB.y(), m_vSizeRGB.x(), CV_8UC2, ((unsigned char *)pFrame->data) + m_uvcOffset, Mat::AUTO_STEP);
 			//  cv::cvtColor(mYUV, mRGB, COLOR_YUV2RGB_YUY2);
 			//  int nHead = ((uint8_t *)pFrame->data)[4];
 
-			Mat mRaw = cv::Mat(m_vSizeRGB.y, m_vSizeRGB.x, CV_16UC1,
+			Mat mRaw = cv::Mat(m_vSizeRGB.y(), m_vSizeRGB.x(), CV_16UC1,
 								reinterpret_cast<uint16_t *>(static_cast<uint8_t *>(pFrame->data) + 4640),
 								Mat::AUTO_STEP);
 

@@ -134,17 +134,17 @@ namespace kai
 		j["stream"] = webviewer3d::name(type);
 		j["autoBound"] = m_autoBound;
 		j["showGrid"] = m_showGrid;
-		j["background"] = {m_background.x, m_background.y, m_background.z};
+		j["background"] = {m_background.x(), m_background.y(), m_background.z()};
 		j["camera"] = {
-			{"eye", {m_camPose.m_vEye.x, m_camPose.m_vEye.y, m_camPose.m_vEye.z}},
-			{"target", {m_camPose.m_vLookAt.x, m_camPose.m_vLookAt.y, m_camPose.m_vLookAt.z}},
-			{"up", {m_camPose.m_vUp.x, m_camPose.m_vUp.y, m_camPose.m_vUp.z}},
+			{"eye", {m_camPose.m_vEye.x(), m_camPose.m_vEye.y(), m_camPose.m_vEye.z()}},
+			{"target", {m_camPose.m_vLookAt.x(), m_camPose.m_vLookAt.y(), m_camPose.m_vLookAt.z()}},
+			{"up", {m_camPose.m_vUp.x(), m_camPose.m_vUp.y(), m_camPose.m_vUp.z()}},
 			{"type", m_camProj.m_type},
 			{"fov", m_camProj.m_fov},
-			{"near", std::max(0.001f, m_camProj.m_vNF.x)},
-			{"far", m_camProj.m_vNF.y == FLT_MAX ? 1000000.f : m_camProj.m_vNF.y},
-			{"lr", {m_camProj.m_vLR.x, m_camProj.m_vLR.y}},
-			{"bt", {m_camProj.m_vBT.x, m_camProj.m_vBT.y}}};
+			{"near", std::max(0.001f, m_camProj.m_vNF.x())},
+			{"far", m_camProj.m_vNF.y() == FLT_MAX ? 1000000.f : m_camProj.m_vNF.y()},
+			{"lr", {m_camProj.m_vLR.x(), m_camProj.m_vLR.y()}},
+			{"bt", {m_camProj.m_vBT.x(), m_camProj.m_vBT.y()}}};
 		j["objects"] = json::array();
 		for (size_t i = 0; i < m_objects.size(); ++i)
 			j["objects"].push_back({{"id", i}, {"name", m_objects[i].name}});
@@ -234,7 +234,7 @@ namespace kai
 		using webviewer3d::Type;
 		float bounds[6] = {FLT_MAX, FLT_MAX, FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX};
 		auto colorByte = [](float c) { return uint8_t(std::clamp(std::isfinite(c) ? c : 1.f, 0.f, 1.f) * 255.f + .5f); };
-		const float opacity = colorByte(o.color.w) / 255.f;
+		const float opacity = colorByte(o.color.w()) / 255.f;
 		if (type == Type::Cells)
 		{
 			static_cast<_OctreeGrid *>(o.source)->get(&m_cells, expiry, size_t(o.nC));
@@ -247,13 +247,13 @@ namespace kai
 			return;
 		}
 		m_positions.clear(); m_colors.clear();
-		auto finite = [](const vFloat3 &p) { return std::isfinite(p.x) && std::isfinite(p.y) && std::isfinite(p.z); };
-		auto vertex = [&](const vFloat3 &p, vFloat4 c) {
-			m_positions.insert(m_positions.end(), {p.x, p.y, p.z});
-			if (c.x <= 0 && c.y <= 0 && c.z <= 0) c = vFloat4(o.color.x, o.color.y, o.color.z, c.w);
-			m_colors.insert(m_colors.end(), {colorByte(c.x), colorByte(c.y), colorByte(c.z), colorByte(c.w)});
-			bounds[0] = std::min(bounds[0], p.x); bounds[1] = std::min(bounds[1], p.y); bounds[2] = std::min(bounds[2], p.z);
-			bounds[3] = std::max(bounds[3], p.x); bounds[4] = std::max(bounds[4], p.y); bounds[5] = std::max(bounds[5], p.z);
+		auto finite = [](const Vector3f &p) { return std::isfinite(p.x()) && std::isfinite(p.y()) && std::isfinite(p.z()); };
+		auto vertex = [&](const Vector3f &p, Vector4f c) {
+			m_positions.insert(m_positions.end(), {p.x(), p.y(), p.z()});
+			if (c.x() <= 0 && c.y() <= 0 && c.z() <= 0) c = Vector4f(o.color.x(), o.color.y(), o.color.z(), c.w());
+			m_colors.insert(m_colors.end(), {colorByte(c.x()), colorByte(c.y()), colorByte(c.z()), colorByte(c.w())});
+			bounds[0] = std::min(bounds[0], p.x()); bounds[1] = std::min(bounds[1], p.y()); bounds[2] = std::min(bounds[2], p.z());
+			bounds[3] = std::max(bounds[3], p.x()); bounds[4] = std::max(bounds[4], p.y()); bounds[5] = std::max(bounds[5], p.z());
 		};
 		if (type == Type::Points)
 		{

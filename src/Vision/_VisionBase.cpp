@@ -12,7 +12,7 @@ namespace kai
 
 	_VisionBase::_VisionBase()
 	{
-		m_vSizeRGB.set(1280, 720);
+		m_vSizeRGB = Vector2i(1280, 720);
 	}
 
 	_VisionBase::~_VisionBase()
@@ -67,7 +67,7 @@ namespace kai
 		return &m_fRGB;
 	}
 
-	vInt2 _VisionBase::getSize(void)
+	Vector2i _VisionBase::getSize(void)
 	{
 		return m_vSizeRGB;
 	}

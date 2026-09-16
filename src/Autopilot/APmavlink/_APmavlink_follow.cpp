@@ -7,11 +7,11 @@ namespace kai
 	{
 		m_tOutTargetNotFound.reStartT(0);
 		m_tOutTargetNotFound.setTout(USEC_1SEC / 10);
-		m_vTargetBB.clear();
+		m_vTargetBB.setZero();
 
-		m_vPvar.clear();
-		m_vPsp.clear();
-		m_vSpd.set(0);
+		m_vPvar.setZero();
+		m_vPsp.setZero();
+		m_vSpd.setZero();
 
 		m_apMount.init();
 	}
@@ -125,7 +125,7 @@ namespace kai
 			{
 				setHold();
 				clearPID();
-				m_vSpd.set(0);
+				m_vSpd.setZero();
 			}
 
 			ON_PAUSE;
@@ -185,17 +185,17 @@ namespace kai
 			m_fX.reset();
 			m_fZ.reset();
 			m_fH.reset();
-			m_vPvar.set(0);
-			m_vTargetBB.clear();
+			m_vPvar.setZero();
+			m_vTargetBB.setZero();
 			return false;
 		}
 
 		// NEDH (PRAH) order
 		float dT = usec2sec<float>(m_pT->getDt());
-		m_vPvar.x = m_fY.update(m_vTargetBB.midY(), dT);
-		m_vPvar.y = m_fX.update(m_vTargetBB.midX(), dT);
-		m_vPvar.z = m_fZ.update(m_vPsp.z, dT);
-		m_vPvar.w = m_fH.update(m_vPsp.w, dT);
+		m_vPvar.x() = m_fY.update(((m_vTargetBB.y() + m_vTargetBB.w()) / 2), dT);
+		m_vPvar.y() = m_fX.update(((m_vTargetBB.x() + m_vTargetBB.z()) / 2), dT);
+		m_vPvar.z() = m_fZ.update(m_vPsp.z(), dT);
+		m_vPvar.w() = m_fH.update(m_vPsp.w(), dT);
 
 		return true;
 	}
@@ -229,10 +229,10 @@ namespace kai
 		float dTs = (m_tLastPIDupdate == 0) ? 0 : ((float)(tNow - m_tLastPIDupdate)) * USEC_2_SEC;
 		m_tLastPIDupdate = tNow;
 
-		m_vSpd.x = (m_pPitch) ? m_pPitch->update(m_vPvar.x, m_vPsp.x, dTs) : 0;
-		m_vSpd.y = (m_pRoll) ? m_pRoll->update(m_vPvar.y, m_vPsp.y, dTs) : 0;
-		m_vSpd.z = (m_pAlt) ? m_pAlt->update(m_vPvar.z, m_vPsp.z, dTs) : 0;
-		m_vSpd.w = (m_pYaw) ? m_pYaw->update(dHdg<float>(m_vPsp.w, m_vPvar.w), 0.0, dTs) : 0;
+		m_vSpd.x() = (m_pPitch) ? m_pPitch->update(m_vPvar.x(), m_vPsp.x(), dTs) : 0;
+		m_vSpd.y() = (m_pRoll) ? m_pRoll->update(m_vPvar.y(), m_vPsp.y(), dTs) : 0;
+		m_vSpd.z() = (m_pAlt) ? m_pAlt->update(m_vPvar.z(), m_vPsp.z(), dTs) : 0;
+		m_vSpd.w() = (m_pYaw) ? m_pYaw->update(dHdg<float>(m_vPsp.w(), m_vPvar.w()), 0.0, dTs) : 0;
 	}
 
 	void _APmavlink_follow::clearPID(void)
@@ -256,16 +256,16 @@ namespace kai
 
 		_Console *pC = (_Console *)pConsole;
 
-		pC->addMsg("vPsp  = (" + f2str(m_vPsp.x) + ", " + f2str(m_vPsp.y) + ", " + f2str(m_vPsp.z) + ", " + f2str(m_vPsp.w) + ")", 1);
-		pC->addMsg("vPvar = (" + f2str(m_vPvar.x) + ", " + f2str(m_vPvar.y) + ", " + f2str(m_vPvar.z) + ", " + f2str(m_vPvar.w) + ")", 1);
-		pC->addMsg("vSpd  = (" + f2str(m_vSpd.x) + ", " + f2str(m_vSpd.y) + ", " + f2str(m_vSpd.z) + ", " + f2str(m_vSpd.w) + ")", 1);
+		pC->addMsg("vPsp  = (" + f2str(m_vPsp.x()) + ", " + f2str(m_vPsp.y()) + ", " + f2str(m_vPsp.z()) + ", " + f2str(m_vPsp.w()) + ")", 1);
+		pC->addMsg("vPvar = (" + f2str(m_vPvar.x()) + ", " + f2str(m_vPvar.y()) + ", " + f2str(m_vPvar.z()) + ", " + f2str(m_vPvar.w()) + ")", 1);
+		pC->addMsg("vSpd  = (" + f2str(m_vSpd.x()) + ", " + f2str(m_vSpd.y()) + ", " + f2str(m_vSpd.z()) + ", " + f2str(m_vSpd.w()) + ")", 1);
 		pC->addMsg("", 1);
 
-		pC->addMsg("vTbb     = (" + f2str(m_vTargetBB.x) + ", " + f2str(m_vTargetBB.y) + ", " + f2str(m_vTargetBB.z) + ", " + f2str(m_vTargetBB.w) + ")", 1);
-		vFloat2 c = m_vTargetBB.center();
-		pC->addMsg("vTcenter = (" + f2str(c.x) + ", " + f2str(c.y) + ")", 1);
-		pC->addMsg("vTsize   = (" + f2str(m_vTargetBB.width()) + ", " + f2str(m_vTargetBB.height()) + ")", 1);
-		pC->addMsg("vTarea   = " + f2str(m_vTargetBB.area()), 1);
+		pC->addMsg("vTbb     = (" + f2str(m_vTargetBB.x()) + ", " + f2str(m_vTargetBB.y()) + ", " + f2str(m_vTargetBB.z()) + ", " + f2str(m_vTargetBB.w()) + ")", 1);
+		Vector2f c = ((m_vTargetBB.head<2>() + m_vTargetBB.tail<2>()) / 2);
+		pC->addMsg("vTcenter = (" + f2str(c.x()) + ", " + f2str(c.y()) + ")", 1);
+		pC->addMsg("vTsize   = (" + f2str((m_vTargetBB.z() - m_vTargetBB.x())) + ", " + f2str((m_vTargetBB.w() - m_vTargetBB.y())) + ")", 1);
+		pC->addMsg("vTarea   = " + f2str(std::abs((m_vTargetBB.z() - m_vTargetBB.x()) * (m_vTargetBB.w() - m_vTargetBB.y()))), 1);
 		pC->addMsg("", 1);
 
 		if (m_bTarget)

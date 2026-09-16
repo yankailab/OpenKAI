@@ -76,7 +76,7 @@ namespace kai
 			o.clear();
 			o.setType(obj_bbox);
 			o.setTstamp(m_pT->getTfrom());
-			o.setBB2D(rect2BB<vFloat4>(r), kx, ky);
+			o.setBB2D(rect2BB<Vector4f>(r), kx, ky);
 			o.setTopClass(0, o.getDimArea());
 
 			m_pU->add(o);

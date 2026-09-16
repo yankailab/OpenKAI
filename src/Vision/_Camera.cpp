@@ -43,8 +43,8 @@ namespace kai
 			return false;
 		}
 
-		m_camera.set(CAP_PROP_FRAME_WIDTH, m_vSizeRGB.x);
-		m_camera.set(CAP_PROP_FRAME_HEIGHT, m_vSizeRGB.y);
+		m_camera.set(CAP_PROP_FRAME_WIDTH, m_vSizeRGB.x());
+		m_camera.set(CAP_PROP_FRAME_HEIGHT, m_vSizeRGB.y());
 		m_camera.set(CAP_PROP_FPS, m_pT->getTargetFPS());
 
 		Mat mCam;
@@ -55,8 +55,8 @@ namespace kai
 		}
 		m_fRGB.copy(mCam);
 
-		m_vSizeRGB.x = mCam.cols;
-		m_vSizeRGB.y = mCam.rows;
+		m_vSizeRGB.x() = mCam.cols;
+		m_vSizeRGB.y() = mCam.rows;
 
 		m_bOpen = true;
 		return true;

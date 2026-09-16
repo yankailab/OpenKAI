@@ -100,7 +100,7 @@ namespace kai
 		LOG_I("sn  ==  " + string(m_pScDevListInfo[0].serialNumber));
 
 		scSetFrameRate(m_scDevHandle, (int)this->m_pT->getTargetFPS());
-		scSetColorResolution(m_scDevHandle, m_vSizeRGB.x, m_vSizeRGB.y);
+		scSetColorResolution(m_scDevHandle, m_vSizeRGB.x(), m_vSizeRGB.y());
 		scSetColorPixelFormat(m_scDevHandle, (ScPixelFormat)m_scCtrl.m_pixelFormat);
 		scSetTransformColorImgToDepthSensorEnabled(m_scDevHandle, m_btRGB);
 		scSetTransformDepthImgToColorSensorEnabled(m_scDevHandle, m_btDepth);
@@ -116,7 +116,7 @@ namespace kai
 		setHDR(m_scCtrl.m_bHDR);
 		status = scStartStream(m_scDevHandle);
 
-		m_pScVw = new ScVector3f[m_vSizeRGB.x * m_vSizeRGB.y];
+		m_pScVw = new ScVector3f[m_vSizeRGB.x() * m_vSizeRGB.y()];
 
 		m_tFrameInterval = 2 * 1000 / this->m_pT->getTargetFPS();
 		m_bOpen = true;
@@ -212,8 +212,8 @@ namespace kai
 			if (m_scfRGB.pFrameData)
 			{
 				*m_fRGB.m() = cv::Mat(m_scfRGB.height, m_scfRGB.width, CV_8UC3, m_scfRGB.pFrameData);
-				m_vSizeRGB.x = m_scfRGB.width;
-				m_vSizeRGB.y = m_scfRGB.height;
+				m_vSizeRGB.x() = m_scfRGB.width;
+				m_vSizeRGB.y() = m_scfRGB.height;
 
 				// if (m_psmRGB)
 				// 	memcpy(m_psmRGB->p(), m_scfRGB.pFrameData, m_scfRGB.dataLen);
@@ -226,8 +226,8 @@ namespace kai
 			if (m_scfDepth.pFrameData)
 			{
 				*m_fDepth.m() = cv::Mat(m_scfDepth.height, m_scfDepth.width, CV_16UC1, m_scfDepth.pFrameData);
-				m_vSizeD.x = m_scfDepth.width;
-				m_vSizeD.y = m_scfDepth.height;
+				m_vSizeD.x() = m_scfDepth.width;
+				m_vSizeD.y() = m_scfDepth.height;
 
 				// if (m_psmDepth)
 				// 	memcpy(m_psmDepth->p(), m_scfDepth.pFrameData, m_scfDepth.dataLen);
@@ -299,17 +299,17 @@ namespace kai
 				int k = i * m_scfDepth.width + j;
 
 				ScVector3f *pV = &m_pScVw[k];
-				vFloat3 vP(pV->x, pV->y, pV->z);
+				Vector3f vP(pV->x, pV->y, pV->z);
 				vP *= s_b;
-//				IF_CONT(vP.z < m_vRangeD.x);
-//				IF_CONT(vP.z > m_vRangeD.y);
+//				IF_CONT(vP.z() < m_vRangeD.x());
+//				IF_CONT(vP.z() > m_vRangeD.y());
 
 				// texture color
-				vFloat3 vC(1);
+				Vector3f vC = Vector3f::Constant(1);
 				if (m_scfTransformedRGB.pFrameData)
 				{
 					uint8_t *pC = &m_scfTransformedRGB.pFrameData[k * sizeof(uint8_t) * 3];
-					vC = vFloat3(pC[2], pC[1], pC[0]);
+					vC = Vector3f(pC[2], pC[1], pC[0]);
 					vC *= c_b;
 				}
 

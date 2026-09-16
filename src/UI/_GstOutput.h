@@ -33,7 +33,7 @@ namespace kai
 
 	protected:
 		Frame m_F;
-		vInt2 m_vSize;
+		Vector2i m_vSize = Vector2i::Zero();
 
 		string m_gstOutput = "appsrc ! videoconvert ! fbdevsink";
 		VideoWriter m_gst;

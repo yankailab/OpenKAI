@@ -58,7 +58,7 @@ namespace kai
 		_IObase *m_pIO = nullptr;
 		uint8_t m_pBuf[IRLOCK_N_BUF];
 		int m_iBuf = 0;
-		vFloat2 m_vOvCamSize = {1.0 / 319.0, 1.0 / 199.0};
+		Vector2f m_vOvCamSize = {1.0 / 319.0, 1.0 / 199.0};
 	};
 
 }

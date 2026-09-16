@@ -37,15 +37,15 @@ namespace kai
 		virtual void console(void *pConsole);
 
 		virtual void createTracker(void);
-		virtual bool startTrack(vFloat4 &bb);
+		virtual bool startTrack(Vector4f &bb);
 		virtual void stopTrack(void);
 		TRACK_STATE trackState(void);
-		vFloat4 *getBB(void);
+		Vector4f *getBB(void);
 
 	protected:
 		_VisionBase *m_pV = nullptr;
 		Rect2d m_rBB;
-		vFloat4 m_bb;
+		Vector4f m_bb = Vector4f::Zero();
 		float m_margin = 0.0;
 
 		Rect2d m_newBB;

@@ -12,8 +12,8 @@ namespace kai
 
 	_GeometryViewerBase::_GeometryViewerBase()
 	{
-		m_vWinSize.set(1280, 720);
-		m_vCoR.set(0, 0, 0);
+		m_vWinSize = Vector2i(1280, 720);
+		m_vCoR = Vector3f(0, 0, 0);
 	}
 
 	_GeometryViewerBase::~_GeometryViewerBase()

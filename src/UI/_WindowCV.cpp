@@ -12,7 +12,7 @@ namespace kai
 
 	_WindowCV::_WindowCV()
 	{
-		m_vSize.set(1280, 720);
+		m_vSize = Vector2i(1280, 720);
 	}
 
 	_WindowCV::~_WindowCV()
@@ -27,8 +27,8 @@ namespace kai
 		jKv<int>(j, "vSize", m_vSize);
 		m_waitKey = 1000.0f / m_pT->getTargetFPS();
 
-		IF_Le_F(m_vSize.area() <= 0, "Window size too small");
-		m_F.allocate(m_vSize.x, m_vSize.y);
+		IF_Le_F(std::abs(m_vSize.prod()) <= 0, "Window size too small");
+		m_F.allocate(m_vSize.x(), m_vSize.y());
 
 		string wn = this->getName();
 		if (m_bFullScreen)

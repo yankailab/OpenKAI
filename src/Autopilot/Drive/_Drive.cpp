@@ -5,8 +5,8 @@ namespace kai
 
     _Drive::_Drive()
     {
-        m_vSpdRange.set(-1.0, 1.0);
-        m_vStrRange.set(-1.0, 1.0);
+        m_vSpdRange = Vector2f(-1.0, 1.0);
+        m_vStrRange = Vector2f(-1.0, 1.0);
     }
 
     _Drive::~_Drive()
@@ -82,7 +82,7 @@ namespace kai
 
     void _Drive::setSpeed(float nSpd)
     {
-        m_nSpd = m_vSpdRange.constrain(nSpd);
+        m_nSpd = std::clamp(nSpd, m_vSpdRange.x(), m_vSpdRange.y());
     }
 
     void _Drive::setDirection(float nDir)
@@ -92,7 +92,7 @@ namespace kai
 
     void _Drive::setSteering(float nStr)
     {
-        m_nStr = m_vStrRange.constrain(nStr);
+        m_nStr = std::clamp(nStr, m_vStrRange.x(), m_vStrRange.y());
     }
 
     float _Drive::getSpeed(void)

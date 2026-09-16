@@ -132,7 +132,7 @@ namespace kai
 		uint8_t m_workModeAfterBoot;
 		uint8_t m_workMode;
 		uint8_t m_imuDataEn;
-		vFloat2 m_vRz; // z region
+		Vector2f m_vRz = Vector2f::Zero(); // z region
 
 		void init(void)
 		{
@@ -148,7 +148,7 @@ namespace kai
 			m_workMode = kLivoxLidarNormal;
 			m_imuDataEn = 1;
 
-			m_vRz.set(0.0, 500.0);
+			m_vRz = Vector2f(0.0, 500.0);
 		}
 	};
 

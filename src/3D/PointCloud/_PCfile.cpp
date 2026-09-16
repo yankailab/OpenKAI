@@ -393,13 +393,13 @@ namespace
 		return clamp01(c);
 	}
 
-	void unpackRGB(uint32_t rgb, kai::vFloat4 *pC)
+	void unpackRGB(uint32_t rgb, Vector4f *pC)
 	{
 		NULL_(pC);
 
-		pC->x = (float)((rgb >> 16) & 0xFF) / 255.0f;
-		pC->y = (float)((rgb >> 8) & 0xFF) / 255.0f;
-		pC->z = (float)(rgb & 0xFF) / 255.0f;
+		pC->x() = (float)((rgb >> 16) & 0xFF) / 255.0f;
+		pC->y() = (float)((rgb >> 8) & 0xFF) / 255.0f;
+		pC->z() = (float)(rgb & 0xFF) / 255.0f;
 	}
 
 	bool setVertexScalar(const PLY_PROPERTY &p, const PLY_VALUE &v, kai::GEOMETRY_POINT *pPt)
@@ -410,44 +410,44 @@ namespace
 
 		if (n == "x")
 		{
-			pPt->m_vP.x = (float)v.m_v;
+			pPt->m_vP.x() = (float)v.m_v;
 			return true;
 		}
 		if (n == "y")
 		{
-			pPt->m_vP.y = (float)v.m_v;
+			pPt->m_vP.y() = (float)v.m_v;
 			return true;
 		}
 		if (n == "z")
 		{
-			pPt->m_vP.z = (float)v.m_v;
+			pPt->m_vP.z() = (float)v.m_v;
 			return true;
 		}
 
 		if (n == "red" || n == "r" || n == "diffuse_red")
 		{
-			pPt->m_vC.x = normalizeColor(v);
+			pPt->m_vC.x() = normalizeColor(v);
 			return true;
 		}
 		if (n == "green" || n == "g" || n == "diffuse_green")
 		{
-			pPt->m_vC.y = normalizeColor(v);
+			pPt->m_vC.y() = normalizeColor(v);
 			return true;
 		}
 		if (n == "blue" || n == "b" || n == "diffuse_blue")
 		{
-			pPt->m_vC.z = normalizeColor(v);
+			pPt->m_vC.z() = normalizeColor(v);
 			return true;
 		}
 		if (n == "alpha" || n == "a" || n == "diffuse_alpha")
 		{
-			pPt->m_vC.w = normalizeColor(v);
+			pPt->m_vC.w() = normalizeColor(v);
 			return true;
 		}
 		if (n == "rgb" || n == "rgba")
 		{
 			unpackRGB((uint32_t)v.m_raw, &pPt->m_vC);
-			if (n == "rgba") pPt->m_vC.w = float((v.m_raw >> 24) & 0xFF) / 255.f;
+			if (n == "rgba") pPt->m_vC.w() = float((v.m_raw >> 24) & 0xFF) / 255.f;
 			return true;
 		}
 
@@ -498,8 +498,8 @@ namespace
 		for (uint64_t i = 0; i < e.m_n; i++)
 		{
 			kai::GEOMETRY_POINT pt;
-			pt.m_vP = 0;
-			pt.m_vC = 1;
+			pt.m_vP.setZero();
+			pt.m_vC.setOnes();
 			pt.m_tStamp = 1;
 
 			for (const PLY_PROPERTY &p : e.m_vProp)

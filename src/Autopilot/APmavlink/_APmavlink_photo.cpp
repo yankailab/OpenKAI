@@ -74,18 +74,18 @@ namespace kai
 		cmd = "mkdir " + m_subDir;
 		system(cmd.c_str());
 
-		vDouble4 vP;
+		Vector4d vP = Vector4d::Zero();
 		vP = m_pAP->getGlobalPos();
-		string lat = lf2str(vP.x, 7);
-		string lon = lf2str(vP.y, 7);
-		string alt = lf2str(vP.z, 3);
-		string altRel = lf2str(vP.w, 3);
+		string lat = lf2str(vP.x(), 7);
+		string lon = lf2str(vP.y(), 7);
+		string alt = lf2str(vP.z(), 3);
+		string altRel = lf2str(vP.w(), 3);
 
-		vFloat3 vA;
+		Vector3f vA = Vector3f::Zero();
 		vA = m_pAP->getAttitude();
-		//		string yaw = f2str(vA.x * RAD_2_DEG, 3);
-		string pitch = f2str(vA.y * RAD_2_DEG, 3);
-		string roll = f2str(vA.z * RAD_2_DEG, 3);
+		//		string yaw = f2str(vA.x() * RAD_2_DEG, 3);
+		string pitch = f2str(vA.y() * RAD_2_DEG, 3);
+		string roll = f2str(vA.z() * RAD_2_DEG, 3);
 
 		string yaw = f2str(m_pAP->getHdg(), 3);
 

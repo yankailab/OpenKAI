@@ -14,13 +14,13 @@ namespace kai
 {
 	struct IMGUI_VIEWER_GL_FRAME
 	{
-		vFloat2 m_vCanvasPos;
-		vFloat2 m_vCanvasSize;
+		Vector2f m_vCanvasPos = Vector2f::Zero();
+		Vector2f m_vCanvasSize = Vector2f::Zero();
 		GVIEWER_CAM_POSE m_camPose;
 		GVIEWER_CAM_PROJ m_camProj;
-		vFloat3 m_vForward;
-		vFloat3 m_vRight;
-		vFloat3 m_vUp;
+		Vector3f m_vForward = Vector3f::Zero();
+		Vector3f m_vRight = Vector3f::Zero();
+		Vector3f m_vUp = Vector3f::Zero();
 		float m_pointScale = 1.0f;
 		float m_lineScale = 1.0f;
 	};

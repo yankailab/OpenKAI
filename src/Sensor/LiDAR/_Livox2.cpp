@@ -686,7 +686,7 @@ namespace kai
                 Vector3d vP(pP->x, pP->y, pP->z);
                 vP *= 0.001;
                 vP = m_A * vP;
-                add(vP, Vector3f{m_vColorDefault.x, m_vColorDefault.y, m_vColorDefault.z}, tStamp + (dT * i));
+                add(vP, Vector3f{m_vColorDefault.x(), m_vColorDefault.y(), m_vColorDefault.z()}, tStamp + (dT * i));
             }
         }
         else if (d.data_type == kLivoxLidarCartesianCoordinateLowData)
@@ -724,12 +724,10 @@ namespace kai
 
         if (m_pIMU)
         {
-            vFloat3 vAcc;
-            vAcc.set(pIMU->acc_x, pIMU->acc_y, pIMU->acc_z);
+            Vector3f vAcc = Vector3f(pIMU->acc_x, pIMU->acc_y, pIMU->acc_z);
             m_pIMU->addAcc(tStamp, vAcc);
 
-            vFloat3 vGyro;
-            vGyro.set(pIMU->gyro_x, pIMU->gyro_y, pIMU->gyro_z);
+            Vector3f vGyro = Vector3f(pIMU->gyro_x, pIMU->gyro_y, pIMU->gyro_z);
             m_pIMU->addGyro(tStamp, vGyro);
         }
 
@@ -751,16 +749,16 @@ namespace kai
             ((float)dT) * 1e-9);
 
         float *pQ = m_SF.getQuat();
-        vDouble4 vQ(pQ[0], pQ[1], pQ[2], pQ[3]);
+        Vector4d vQ(pQ[0], pQ[1], pQ[2], pQ[3]);
         setQuaternion(vQ);
 
-        vDouble3 vR(m_SF.getRollRadians(), m_SF.getPitchRadians(), m_SF.getYawRadians());
+        Vector3d vR(m_SF.getRollRadians(), m_SF.getPitchRadians(), m_SF.getYawRadians());
         setRotation(vR);
 
         // cancel yaw rot
-        vR.x = 0;
-        vR.y = 0;
-        vR.z = -vR.z;
+        vR.x() = 0;
+        vR.y() = 0;
+        vR.z() = -vR.z();
         updateTranslationMatrix(true, &vR);
 
         LOG_I("IMU, data_num:" + i2str(d.dot_num) + ", data_type:" + i2str(d.data_type) + ", length:" + i2str(d.length) + ", frame_counter:" + i2str(d.frame_cnt));

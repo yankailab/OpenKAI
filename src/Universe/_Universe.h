@@ -53,11 +53,11 @@ namespace kai
 
 		//config
 		float m_minConfidence = 0.0;
-		vFloat2 m_vArea;
-		vFloat2 m_vW;
-		vFloat2 m_vH;
-		vFloat4 m_vRoi;
-		vInt2 m_vClassRange;
+		Vector2f m_vArea = Vector2f::Zero();
+		Vector2f m_vW = Vector2f::Zero();
+		Vector2f m_vH = Vector2f::Zero();
+		Vector4f m_vRoi = Vector4f::Zero();
+		Vector2i m_vClassRange = Vector2i::Zero();
 
 		//show
 		bool m_bDrawText = false;

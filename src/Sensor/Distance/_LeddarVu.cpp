@@ -334,15 +334,15 @@ namespace kai
 		// 	float radTo = ((i + 1) * m_dDeg + m_showDegOffset) * DEG_2_RAD;
 		// 	float d = m_pDiv[i].d() * m_showScale;
 
-		// 	vDouble2 pFrom, pTo;
-		// 	pFrom.x = sin(radFrom);
-		// 	pFrom.y = -cos(radFrom);
-		// 	pTo.x = sin(radTo);
-		// 	pTo.y = -cos(radTo);
+		// 	Vector2d pFrom = Vector2d::Zero(), pTo = Vector2d::Zero();
+		// 	pFrom.x() = sin(radFrom);
+		// 	pFrom.y() = -cos(radFrom);
+		// 	pTo.x() = sin(radTo);
+		// 	pTo.y() = -cos(radTo);
 
-		// 	line(*pM, pCenter + Point(pFrom.x * d, pFrom.y * d), pCenter + Point(pTo.x * d, pTo.y * d), colD, 2);
-		// 	line(*pM, pCenter + Point(pFrom.x * rMax, pFrom.y * rMax), pCenter, col, 1);
-		// 	line(*pM, pCenter, pCenter + Point(pTo.x * rMax, pTo.y * rMax), col, 1);
+		// 	line(*pM, pCenter + Point(pFrom.x() * d, pFrom.y() * d), pCenter + Point(pTo.x() * d, pTo.y() * d), colD, 2);
+		// 	line(*pM, pCenter + Point(pFrom.x() * rMax, pFrom.y() * rMax), pCenter, col, 1);
+		// 	line(*pM, pCenter, pCenter + Point(pTo.x() * rMax, pTo.y() * rMax), col, 1);
 		// }
 #endif
 	}

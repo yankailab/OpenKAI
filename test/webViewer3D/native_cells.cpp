@@ -47,7 +47,7 @@ void checkGridConfigCommand() {
         console.handleJson(j.dump());
         assert(console.reply == json({{"cmd","setGridConfig"}, {"module","octGrid"}, {"bSuccess",success}}));
     };
-    GEOMETRY_POINT point{vFloat3(.75,.75,.75),vFloat4(1,1,1,1),getApproxTbootUs()};
+    GEOMETRY_POINT point{Vector3f(.75,.75,.75),Vector4f(1,1,1,1),getApproxTbootUs()};
     auto populate = [&] { assert(grid.addCellPoint(point, point.m_tStamp)); grid.updateDrawAssets(); };
     populate();
     OCTGRID_CELLS snapshot;
@@ -96,7 +96,7 @@ void checkGridConfigCommand() {
     send(config({"10","-20","30"}, {"8","4","2"}));
     assert(grid.get(&snapshot) == 0 && grid.selectedCells().empty());
     assert(!grid.addCellPoint(point, point.m_tStamp));
-    point.m_vP = vFloat3(10,-20,30); populate();
+    point.m_vP = Vector3f(10,-20,30); populate();
     assert(grid.get(&snapshot) > 0 && snapshot.m_header.m_vRootCellSize == (std::array<float,3>{8,4,2}));
     std::cout << "PASS: setGridConfig dispatch/ACK, atomic validation, unchanged config, occupancy reset/rebuild, selection volume preservation, deduplication and clipping\n";
 }
@@ -124,7 +124,7 @@ void checkLiveGridConfig() {
     _PointCloud cloud;
     cloud.setName("livePoints");
     assert(cloud.init(json{{"class","_PointCloud"},{"thread",{{"FPS",30}}},{"nP",1000}}));
-    for (int i = 0; i < 1000; ++i) cloud.add(vFloat3(i * .001f, .5, .5), vFloat4(1,1,1,1));
+    for (int i = 0; i < 1000; ++i) cloud.add(Vector3f(i * .001f, .5, .5), Vector4f(1,1,1,1));
     LiveGrid grid;
     grid.setName("liveGrid");
     assert(grid.init(json{{"class","_OctreeGrid"},{"thread",{{"FPS",100}}},{"nP",1000},
@@ -263,7 +263,7 @@ void checkSelectionConfig() {
     assert(!grid.saveConfig(badOutput, alternate));
 
     // Invalid files must preserve both the selection and the original root/occupancy.
-    GEOMETRY_POINT point{vFloat3(0,0,0),vFloat4(1,1,1,1),getApproxTbootUs()};
+    GEOMETRY_POINT point{Vector3f(0,0,0),Vector4f(1,1,1,1),getApproxTbootUs()};
     assert(grid.addCellPoint(point,point.m_tStamp)); grid.updateDrawAssets();
     const int count = grid.get(&snapshot);
     assert(count > 0);
@@ -353,7 +353,7 @@ int main(int argc, char **argv) {
         {"vPorigin",{10,-20,30}}, {"vRootCellSize",{8,4,2}}}));
     OCTGRID_CELLS snapshot;
     assert(grid.get(&snapshot) == 0 && snapshot.m_header.m_tStamp == 0);
-    GEOMETRY_POINT point{vFloat3(13.25,-18.375,30.8125),vFloat4(1,0,0,.25),getApproxTbootUs()};
+    GEOMETRY_POINT point{Vector3f(13.25,-18.375,30.8125),Vector4f(1,0,0,.25),getApproxTbootUs()};
     assert(grid.addCellPoint(point, point.m_tStamp));
     for (int depth = 0; depth <= 40; ++depth) {
         auto cell = grid.getCell(point.m_vP, depth);
@@ -370,8 +370,8 @@ int main(int argc, char **argv) {
     assert(grid.get(&snapshot,0,2) == 2);
     assert(grid.get(&snapshot,0,0) == 0 && snapshot.m_header.m_tStamp);
     assert(grid.get(&snapshot,snapshot.m_header.m_tStamp) == 0);
-    point.m_vP = vFloat3(13.375,-18.25,30.875);
-    point.m_vC = vFloat4(0,0,1,.75);
+    point.m_vP = Vector3f(13.375,-18.25,30.875);
+    point.m_vC = Vector4f(0,0,1,.75);
     grid.addCellPoint(point,getApproxTbootUs());
     for (const auto &record : stableCells) {
         auto id = record.id();
@@ -392,11 +392,11 @@ int main(int argc, char **argv) {
     viewer.collectGeometry(&grid,&object);
     assert(object.m_vBox.size() == 2 && object.m_vL.empty());
     assert(object.m_vBox[0].m_ID == uint64_t(0));
-    assert(object.m_vBox[0].m_vCenter.x == 10 && object.m_vBox[0].m_vSize.y == 4);
-    assert(object.m_vBox[0].m_vC.w == meanAlpha / 255.f);
+    assert(object.m_vBox[0].m_vCenter.x() == 10 && object.m_vBox[0].m_vSize.y() == 4);
+    assert(object.m_vBox[0].m_vC.w() == meanAlpha / 255.f);
     int edges = 0;
-    object.m_vBox[0].forEachEdge([&](const vFloat3 &a, const vFloat3 &b) {
-        assert((a.x != b.x) + (a.y != b.y) + (a.z != b.z) == 1);
+    object.m_vBox[0].forEachEdge([&](const Vector3f &a, const Vector3f &b) {
+        assert((a.x() != b.x()) + (a.y() != b.y()) + (a.z() != b.z()) == 1);
         ++edges;
     });
     assert(edges == 12);
@@ -412,14 +412,14 @@ int main(int argc, char **argv) {
     cloud.setName("cloud"); line.setName("line");
     assert(cloud.init(json{{"class","_PointCloud"},{"thread",{{"FPS",30}}},{"nP",16}}));
     assert(line.init(json{{"class","_Line"},{"thread",{{"FPS",30}}},{"nL",16}}));
-    const vFloat3 pos(0,0,0), end(1,0,0);
-    cloud.add(pos, vFloat3(1,0,0));
-    cloud.add(pos, vFloat4(0,0,0,.25)); // RGB fallback must preserve alpha
-    cloud.add(pos, vFloat4(1,0,0,0));
-    line.add(pos, end, vFloat3(1,0,0));
-    line.add(pos, end, vFloat4(0,0,0,.25));
-    line.add(pos, end, vFloat4(1,0,0,0));
-    object.m_matCol = vFloat4(0,1,0,.5);
+    const Vector3f pos(0,0,0), end(1,0,0);
+    cloud.add(pos, Vector3f(1,0,0));
+    cloud.add(pos, Vector4f(0,0,0,.25)); // RGB fallback must preserve alpha
+    cloud.add(pos, Vector4f(1,0,0,0));
+    line.add(pos, end, Vector3f(1,0,0));
+    line.add(pos, end, Vector4f(0,0,0,.25));
+    line.add(pos, end, Vector4f(1,0,0,0));
+    object.m_matCol = Vector4f(0,1,0,.5);
     object.m_pGB = &cloud;
     viewer.collectGeometry(&cloud, &object);
     object.m_pGB = &line;
@@ -427,14 +427,14 @@ int main(int argc, char **argv) {
     assert(object.m_vP.size() == 3 && object.m_vL.size() == 3);
     bool opaque = false, transparent = false, partial = false;
     for (const auto &p : object.m_vP) {
-        opaque |= p.m_vC.w == 1; transparent |= p.m_vC.w == 0;
-        partial |= p.m_vC.w == .25 && p.m_vC.y == 1;
+        opaque |= p.m_vC.w() == 1; transparent |= p.m_vC.w() == 0;
+        partial |= p.m_vC.w() == .25 && p.m_vC.y() == 1;
     }
     assert(opaque && transparent && partial);
     opaque = transparent = partial = false;
     for (const auto &l : object.m_vL) {
-        opaque |= l.m_vC.w == 1; transparent |= l.m_vC.w == 0;
-        partial |= l.m_vC.w == .25 && l.m_vC.y == 1;
+        opaque |= l.m_vC.w() == 1; transparent |= l.m_vC.w() == 0;
+        partial |= l.m_vC.w() == .25 && l.m_vC.y() == 1;
     }
     assert(opaque && transparent && partial);
     std::cout << "PASS: native ID stability/lookup at depths 0-40, RGBA, caps/expiry, ImGUI with zero point/line buffers, cells/points/lines and RGB compatibility\n";

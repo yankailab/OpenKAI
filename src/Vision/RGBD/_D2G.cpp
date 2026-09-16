@@ -64,11 +64,11 @@ namespace kai
 
 		Mat mD = *pF->m();
 		Mat mGray;
-		float scale = 255.0 / m_pV->getRangeD().len();
+		float scale = 255.0 / m_pV->getRangeD().norm();
 		mD.convertTo(mGray,
 					 CV_8UC1,
 					 scale,
-					 -m_pV->getRangeD().x * scale);
+					 -m_pV->getRangeD().x() * scale);
 		m_fRGB.copy(mGray);
 	}
 }

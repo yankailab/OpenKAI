@@ -12,7 +12,7 @@ namespace kai
 
 	_TrackerBase::_TrackerBase()
 	{
-		m_bb.clear();
+		m_bb.setZero();
 	}
 
 	_TrackerBase::~_TrackerBase()
@@ -66,12 +66,12 @@ namespace kai
 		return m_trackState;
 	}
 
-	vFloat4 *_TrackerBase::getBB(void)
+	Vector4f *_TrackerBase::getBB(void)
 	{
 		return &m_bb;
 	}
 
-	bool _TrackerBase::startTrack(vFloat4 &bb)
+	bool _TrackerBase::startTrack(Vector4f &bb)
 	{
 		NULL_F(m_pV);
 		Mat *pM = m_pV->getFrameRGB()->m();
@@ -80,10 +80,10 @@ namespace kai
 		float mBig = 1.0 + m_margin;
 		float mSmall = 1.0 - m_margin;
 
-		bb.x = constrain(bb.x * mSmall, 0.0f, 1.0f);
-		bb.y = constrain(bb.y * mSmall, 0.0f, 1.0f);
-		bb.z = constrain(bb.z * mBig, 0.0f, 1.0f);
-		bb.w = constrain(bb.w * mBig, 0.0f, 1.0f);
+		bb.x() = constrain(bb.x() * mSmall, 0.0f, 1.0f);
+		bb.y() = constrain(bb.y() * mSmall, 0.0f, 1.0f);
+		bb.z() = constrain(bb.z() * mBig, 0.0f, 1.0f);
+		bb.w() = constrain(bb.w() * mBig, 0.0f, 1.0f);
 
 		Rect rBB = bb2Rect(bbScale(bb, pM->cols, pM->rows));
 		IF_F(rBB.width == 0 || rBB.height == 0);
@@ -108,7 +108,7 @@ namespace kai
 			msg = "Update";
 
 		pC->addMsg(msg, 1);
-		pC->addMsg("Tracking pos = (" + f2str(m_bb.midX()) + ", " + f2str(m_bb.midY()) + ")");
+		pC->addMsg("Tracking pos = (" + f2str(((m_bb.x() + m_bb.z()) / 2)) + ", " + f2str(((m_bb.y() + m_bb.w()) / 2)) + ")");
 	}
 
 	void _TrackerBase::draw(void *pFrame)

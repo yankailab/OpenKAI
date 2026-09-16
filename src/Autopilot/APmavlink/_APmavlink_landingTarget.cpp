@@ -5,7 +5,7 @@ namespace kai
 
 	_APmavlink_landingTarget::_APmavlink_landingTarget()
 	{
-		m_vPsp.set(0.5, 0.5);
+		m_vPsp = Vector2f(0.5, 0.5);
 
 		m_lt.angle_x = 0;
 		m_lt.angle_y = 0;
@@ -111,7 +111,7 @@ namespace kai
 			return;
 		}
 
-		m_dHdg = dHdg(m_hdgSp, m_oTarget.getAttitude().x);
+		m_dHdg = dHdg(m_hdgSp, m_oTarget.getAttitude().x());
 		float dHdgAbs = abs(m_dHdg);
 
 		if (m_bHdgMoving)
@@ -141,11 +141,11 @@ namespace kai
 		if (m_pAP->getMode() == AP_COPTER_GUIDED)
 			m_pAP->setMode(AP_COPTER_RTL);
 
-		// vFloat3 vP = m_oTarget.getPos();
-		// m_lt.angle_x = (vP.x - m_vPsp.x) * m_vFov.x * m_kP;
-		// m_lt.angle_y = (vP.y - m_vPsp.y) * m_vFov.y * m_kP;
-		// m_lt.size_x = m_oTarget.getWidth() * m_vFov.x;
-		// m_lt.size_y = m_oTarget.getHeight() * m_vFov.y;
+		// Vector3f vP = m_oTarget.getPos();
+		// m_lt.angle_x = (vP.x() - m_vPsp.x()) * m_vFov.x() * m_kP;
+		// m_lt.angle_y = (vP.y() - m_vPsp.y()) * m_vFov.y() * m_kP;
+		// m_lt.size_x = m_oTarget.getWidth() * m_vFov.x();
+		// m_lt.size_y = m_oTarget.getHeight() * m_vFov.y();
 		// m_lt.position_valid = 0;
 
 		// float h = m_pDS->d(0);

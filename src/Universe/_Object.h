@@ -37,30 +37,30 @@ namespace kai
 		virtual void update(void);
 
 		//pos
-		void setPos(const vFloat3 &vP);
+		void setPos(const Vector3f &vP);
 		void setPos(float x, float y, float z);
-		vFloat3 getPos(void);
+		Vector3f getPos(void);
 
 		//dimension
-		void setDim(const vFloat4 &vD);
+		void setDim(const Vector4f &vD);
 		void setDim(float w, float h, float d, float r);
-		vFloat4 getDim(void);
+		Vector4f getDim(void);
 		float getDimArea(void);
 		float getDimVolume(void);
 
 		//attitude
-		void setAttitude(const vFloat3 &vA);
+		void setAttitude(const Vector3f &vA);
 		void setAttitude(float r, float p, float y);
-		vFloat3 getAttitude(void);
+		Vector3f getAttitude(void);
 
 		//convenient
-		void setBB2D(const vFloat4& vBB, float kX = 1.0, float kY = 1.0);
+		void setBB2D(const Vector4f& vBB, float kX = 1.0, float kY = 1.0);
 		void setRect(float l, float t, float w, float h, float kX = 1.0, float kY = 1.0);
-		vFloat4 getBB2D(float kX = 1.0, float kY = 1.0);
+		Vector4f getBB2D(float kX = 1.0, float kY = 1.0);
 
 		//vertex
-		void setVertices2D(vFloat2 *pV, int nV, float kX = 1.0, float kY = 1.0);
-		vFloat2 *getVertex(int i);
+		void setVertices2D(Vector2f *pV, int nV, float kX = 1.0, float kY = 1.0);
+		Vector2f *getVertex(int i);
 
 		//classification
 		void setType(OBJ_TYPE type);
@@ -96,16 +96,16 @@ namespace kai
 		uint64_t m_tStamp;
 
 		//pos and dim
-		vFloat3 m_vPos;	 //world pos x, y, z
-		vFloat4 m_vDim;	 //width, height, depth, radius
-		vFloat3 m_vAtti; //attitude roll, pith, yaw
+		Vector3f m_vPos = Vector3f::Zero();	 //world pos x, y, z
+		Vector4f m_vDim = Vector4f::Zero();	 //width, height, depth, radius
+		Vector3f m_vAtti = Vector3f::Zero(); //attitude roll, pith, yaw
 
 		//vertex
-		vector<vFloat2> m_vVertices;
+		vector<Vector2f> m_vVertices;
 
 		//kinetics
-		vFloat3 m_vSpeed;
-		vFloat3 m_vAccel;
+		Vector3f m_vSpeed = Vector3f::Zero();
+		Vector3f m_vAccel = Vector3f::Zero();
 
 		//classification
 		OBJ_TYPE m_type;

@@ -22,11 +22,11 @@ namespace kai
 	{
 		IF_F(!this->_DetectorBase::init(j));
 
-		vFloat2 vCamSize;
+		Vector2f vCamSize = Vector2f::Zero();
 		if (jKv<float>(j, "vCamSize", vCamSize))
 		{
-			m_vOvCamSize.x = 1.0 / vCamSize.x;
-			m_vOvCamSize.y = 1.0 / vCamSize.y;
+			m_vOvCamSize.x() = 1.0 / vCamSize.x();
+			m_vOvCamSize.y() = 1.0 / vCamSize.y();
 		}
 
 		return true;
@@ -141,7 +141,7 @@ namespace kai
 		int i = 0;
 		while ((pO = m_pU->get(i++)) != NULL)
 		{
-			msg += f2str(pO->getPos().z) + " | ";
+			msg += f2str(pO->getPos().z()) + " | ";
 		}
 
 		((_Console *)pConsole)->addMsg(msg, 1);

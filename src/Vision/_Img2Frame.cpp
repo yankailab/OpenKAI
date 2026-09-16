@@ -130,8 +130,8 @@ namespace kai
 
 		IF_F(m_frameBuffer.empty());
 
-		m_vSizeRGB.x = m_frameBuffer[0].cols;
-		m_vSizeRGB.y = m_frameBuffer[0].rows;
+		m_vSizeRGB.x() = m_frameBuffer[0].cols;
+		m_vSizeRGB.y() = m_frameBuffer[0].rows;
 		m_fRGB.copy(m_frameBuffer[0]);
 
 		return true;

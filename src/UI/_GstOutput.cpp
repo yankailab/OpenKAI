@@ -12,7 +12,7 @@ namespace kai
 
 	_GstOutput::_GstOutput()
 	{
-		m_vSize.set(1280, 720);
+		m_vSize = Vector2i(1280, 720);
 	}
 
 	_GstOutput::~_GstOutput()
@@ -24,9 +24,9 @@ namespace kai
 		IF_F(!this->_UIbase::init(j));
 
 		jKv<int>(j, "vSize", m_vSize);
-		IF_F(m_vSize.area() <= 0);
+		IF_F(std::abs(m_vSize.prod()) <= 0);
 
-		m_F.allocate(m_vSize.x, m_vSize.y);
+		m_F.allocate(m_vSize.x(), m_vSize.y());
 		*m_F.m() = Scalar(0, 0, 0);
 
 		jKv(j, "gstOutput", m_gstOutput);
@@ -36,7 +36,7 @@ namespace kai
 							CAP_GSTREAMER,
 							0,
 							m_pT->getTargetFPS(),
-							cv::Size(m_vSize.x, m_vSize.y),
+							cv::Size(m_vSize.x(), m_vSize.y()),
 							true))
 			{
 				LOG_E("Cannot open GStreamer output");
@@ -75,11 +75,11 @@ namespace kai
 		}
 
 		Size fs = m_F.size();
-		if (fs.width != m_vSize.x || fs.height != m_vSize.y)
+		if (fs.width != m_vSize.x() || fs.height != m_vSize.y())
 		{
 			Frame F;
 			F.copy(m_F);
-			m_F = F.resize(m_vSize.x, m_vSize.y);
+			m_F = F.resize(m_vSize.x(), m_vSize.y());
 		}
 
 		Mat m = *m_F.m();

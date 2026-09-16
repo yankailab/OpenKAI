@@ -77,8 +77,8 @@ namespace kai
     {
         IF_F(!check());
 
-        m_fRGB.copy(Mat(m_vSizeRGB.y,
-                        m_vSizeRGB.x,
+        m_fRGB.copy(Mat(m_vSizeRGB.y(),
+                        m_vSizeRGB.x(),
                         m_matType,
                         m_pSHM->p()));
 

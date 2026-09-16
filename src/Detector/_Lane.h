@@ -55,7 +55,7 @@ namespace kai
 		Median<float> *m_pMed = NULL;
 		Average<float> *m_pAvr = NULL;
 		double m_deviation;
-		vFloat4 m_ROI;
+		Vector4f m_ROI = Vector4f::Zero();
 
 		double *m_pX = NULL;
 		double *m_pY = NULL;
@@ -69,9 +69,9 @@ namespace kai
 		{
 			m_n = n;
 			m_deviation = 0.0;
-			m_ROI.clear();
-			m_ROI.z = 1.0;
-			m_ROI.w = 1.0;
+			m_ROI.setZero();
+			m_ROI.z() = 1.0;
+			m_ROI.w() = 1.0;
 			m_pMed = new Median<float>[n];
 			m_pAvr = new Average<float>[n];
 
@@ -123,10 +123,10 @@ namespace kai
 			cv::Point iMax;
 
 			cv::Rect r;
-			r.x = m_ROI.x * mBin.cols;
-			r.y = m_ROI.y * mBin.rows;
-			r.width = m_ROI.z * mBin.cols - r.x;
-			r.height = m_ROI.w * mBin.rows - r.y;
+			r.x = m_ROI.x() * mBin.cols;
+			r.y = m_ROI.y() * mBin.rows;
+			r.width = m_ROI.z() * mBin.cols - r.x;
+			r.height = m_ROI.w() * mBin.rows - r.y;
 			Mat mROI = mBin(r);
 
 			cv::Rect rX;
@@ -219,15 +219,15 @@ namespace kai
 
 	protected:
 		_VisionBase *m_pV = nullptr;
-		vInt2 m_vSize;
+		Vector2i m_vSize = Vector2i::Zero();
 
-		vFloat2 m_vRoiLT = {0.2, 0.5};
-		vFloat2 m_vRoiLB = {0.0, 1.0};
-		vFloat2 m_vRoiRT = {0.8, 0.5};
-		vFloat2 m_vRoiRB = {1.0, 1.0};
+		Vector2f m_vRoiLT = {0.2, 0.5};
+		Vector2f m_vRoiLB = {0.0, 1.0};
+		Vector2f m_vRoiRT = {0.8, 0.5};
+		Vector2f m_vRoiRB = {1.0, 1.0};
 		Mat m_mPerspective;
 		Mat m_mPerspectiveInv;
-		vInt2 m_sizeOverhead = {400, 300};
+		Vector2i m_sizeOverhead = {400, 300};
 		Mat m_mOverhead;
 		Mat m_mBin;
 		int m_binMed = 3;

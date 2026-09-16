@@ -99,7 +99,7 @@ namespace kai
 		virtual void draw(void *pFrame);
 
 		bool bReady(void);
-		vFloat2 range(void);
+		Vector2f range(void);
 		void input(float deg, float d, float a);
 		void input(int iDiv, float d, float a);
 		void input(float d, float a = -1);
@@ -124,7 +124,7 @@ namespace kai
 		float m_dDeg = 0;
 		float m_dDegInv = 0;
 
-		vFloat2 m_vRange;
+		Vector2f m_vRange = Vector2f::Zero();
 		float m_calibScale = 1.0;
 		float m_calibOffset = 0.0;
 

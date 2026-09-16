@@ -18,16 +18,16 @@ namespace kai
 		float m_fov = 70.0;
 
 		// rendering boundaries in Ortho mode
-		vFloat2 m_vLR = {-10, 10};
-		vFloat2 m_vBT = {-10, 10};
-		vFloat2 m_vNF = {0, FLT_MAX}; // near & far plane
+		Vector2f m_vLR = {-10, 10};
+		Vector2f m_vBT = {-10, 10};
+		Vector2f m_vNF = {0, FLT_MAX}; // near & far plane
 	};
 
 	struct GVIEWER_CAM_POSE
 	{
-		vFloat3 m_vLookAt = {0, 0, 0};
-		vFloat3 m_vEye = {0, 0, 1};
-		vFloat3 m_vUp = {0, 1, 0};
+		Vector3f m_vLookAt = {0, 0, 0};
+		Vector3f m_vEye = {0, 0, 1};
+		Vector3f m_vUp = {0, 1, 0};
 	};
 
 	class _GeometryViewerBase : public _GeometryBase
@@ -62,13 +62,13 @@ namespace kai
 
 	protected:
 		// rendering
-		vInt2 m_vWinSize;
+		Vector2i m_vWinSize = Vector2i::Zero();
 		bool m_bFullScreen = false;
 		string m_dirSave = "";
 
 		GVIEWER_CAM_PROJ m_camProj;
 		GVIEWER_CAM_POSE m_camPose, m_camPoseDefault;
-		vFloat3 m_vCoR; // center of rotation
+		Vector3f m_vCoR = Vector3f::Zero(); // center of rotation
 
 		// instance and buffer
 		vector<_GeometryBase *> m_vpGb;

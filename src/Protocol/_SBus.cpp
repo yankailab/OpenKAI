@@ -20,16 +20,16 @@ namespace kai
 		jKv(j, "bRawSbus", m_bRawSbus);
 		m_frame.m_nBframe = (m_bRawSbus) ? 25 : SBUS_N_BUF;
 
-		vInt3 vRawRC;
-		vRawRC.set(0);
+		Vector3i vRawRC = Vector3i::Zero();
+		vRawRC.setZero();
 		jKv<int>(j, "vRawRC", vRawRC);
 		for (int i = 0; i < SBUS_NCHAN; i++)
 		{
 			RC_CHANNEL *pC = &m_frame.m_pRC[i];
 			pC->m_iChan = i;
-			pC->m_rawL = vRawRC.x;
-			pC->m_rawM = vRawRC.y;
-			pC->m_rawH = vRawRC.z;
+			pC->m_rawL = vRawRC.x();
+			pC->m_rawM = vRawRC.y();
+			pC->m_rawH = vRawRC.z();
 			pC->update();
 		}
 

@@ -116,17 +116,17 @@ namespace kai
 		m_pAP->getMavlink()->setPositionTargetLocalNED(spt);
 	}
 
-	void _APmavlink_move::setVlocal(const vFloat4 &vSpd, bool bYaw, bool bYawRate, uint8_t frame)
+	void _APmavlink_move::setVlocal(const Vector4f &vSpd, bool bYaw, bool bYawRate, uint8_t frame)
 	{
 		IF_(!check());
 
 		mavlink_set_position_target_local_ned_t spt;
 		spt.coordinate_frame = frame;
-		spt.vx = vSpd.x; // forward
-		spt.vy = vSpd.y; // right
-		spt.vz = vSpd.z; // down
+		spt.vx = vSpd.x(); // forward
+		spt.vy = vSpd.y(); // right
+		spt.vz = vSpd.z(); // down
 		spt.yaw = 0.0;
-		spt.yaw_rate = vSpd.w;
+		spt.yaw_rate = vSpd.w();
 		spt.type_mask = 0b0000000111000111; // AVP
 		if (!bYaw)
 			spt.type_mask |= IGN_YAW;
@@ -136,17 +136,17 @@ namespace kai
 		m_pAP->getMavlink()->setPositionTargetLocalNED(spt);
 	}
 
-	void _APmavlink_move::setPlocal(const vFloat4 &vP, bool bYaw, bool bYawRate, uint8_t frame)
+	void _APmavlink_move::setPlocal(const Vector4f &vP, bool bYaw, bool bYawRate, uint8_t frame)
 	{
 		IF_(!check());
 
 		mavlink_set_position_target_local_ned_t spt;
 		spt.coordinate_frame = frame;
-		spt.x = vP.x; // forward
-		spt.y = vP.y; // right
-		spt.z = vP.z; // down
+		spt.x = vP.x(); // forward
+		spt.y = vP.y(); // right
+		spt.z = vP.z(); // down
 		spt.yaw = 0.0;
-		spt.yaw_rate = vP.w;
+		spt.yaw_rate = vP.w();
 		spt.type_mask = 0b0000000111111000; // AVP
 		if (!bYaw)
 			spt.type_mask |= IGN_YAW;
@@ -156,19 +156,19 @@ namespace kai
 		m_pAP->getMavlink()->setPositionTargetLocalNED(spt);
 	}
 
-	void _APmavlink_move::setPglobal(const vDouble4 &vP, bool bYaw, bool bYawRate, uint8_t frame)
+	void _APmavlink_move::setPglobal(const Vector4d &vP, bool bYaw, bool bYawRate, uint8_t frame)
 	{
 		IF_(!check());
 
 		mavlink_set_position_target_global_int_t spt;
 		spt.coordinate_frame = frame;
-		spt.lat_int = vP.x * 1e7;
-		spt.lon_int = vP.y * 1e7;
-		spt.alt = vP.z;
+		spt.lat_int = vP.x() * 1e7;
+		spt.lon_int = vP.y() * 1e7;
+		spt.alt = vP.z();
 		spt.vx = 0.0;
 		spt.vy = 0.0;
 		spt.vz = 0.0;
-		spt.yaw = vP.w;
+		spt.yaw = vP.w();
 		spt.type_mask = 0b0000000111111000; // AVP
 		if (!bYaw)
 			spt.type_mask |= IGN_YAW;
@@ -178,7 +178,7 @@ namespace kai
 		m_pAP->getMavlink()->setPositionTargetGlobalINT(spt);
 	}
 
-	void _APmavlink_move::doReposition(const vDouble4 &vP,
+	void _APmavlink_move::doReposition(const Vector4d &vP,
 									   float speed,
 									   float radius,
 									   uint8_t frame)
@@ -191,10 +191,10 @@ namespace kai
 		D.param1 = speed;
 		D.param2 = 0;
 		D.param3 = radius;
-		D.param4 = vP.w;
-		D.x = (int32_t)(vP.x * 1e7);
-		D.y = (int32_t)(vP.y * 1e7);
-		D.z = vP.z;
+		D.param4 = vP.w();
+		D.x = (int32_t)(vP.x() * 1e7);
+		D.y = (int32_t)(vP.y() * 1e7);
+		D.z = vP.z();
 
 		m_pAP->getMavlink()->cmdInt(D);
 	}

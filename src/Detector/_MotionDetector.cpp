@@ -116,7 +116,7 @@ namespace kai
 			o.clear();
 			o.setTopClass(-1, 0);
 			//		o.m_tStamp = m_pT->getTfrom();
-			o.setBB2D(rect2BB<vFloat4>(r), kx, ky);
+			o.setBB2D(rect2BB<Vector4f>(r), kx, ky);
 
 			m_pU->add(o);
 		}

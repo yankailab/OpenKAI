@@ -65,8 +65,8 @@ namespace kai
 		IF_(!m_ieSendHB.updateT(m_pT->getTfrom()));
 
 		// int apMode = m_pAP->getMode();
-		// vDouble4 vP = m_pAP->getGlobalPos();
-		// vFloat3 vA = m_pAP->getAttitude();
+		// Vector4d vP = m_pAP->getGlobalPos();
+		// Vector3f vA = m_pAP->getAttitude();
 
 		// {
 		// 	"cmd":"vUpdate",	// command name
@@ -84,12 +84,12 @@ namespace kai
 		// object r;
 		// JO(r, "cmd", "vUpdate");
 		// JO(r, "vID", 0.0);
-		// JO(r, "lon", vP.y);
-		// JO(r, "lat", vP.x);
-		// JO(r, "alt", vP.w);
-		// JO(r, "yaw", vA.x * RAD_2_DEG - 90);
-		// JO(r, "pitch", vA.y);
-		// JO(r, "roll", vA.z);
+		// JO(r, "lon", vP.y());
+		// JO(r, "lat", vP.x());
+		// JO(r, "alt", vP.w());
+		// JO(r, "yaw", vA.x() * RAD_2_DEG - 90);
+		// JO(r, "pitch", vA.y());
+		// JO(r, "roll", vA.z());
 		// JO(r, "batt", m_pAP->getBattery());
 		// JO(r, "hdg", -1.0);
 		// sendJson(r);

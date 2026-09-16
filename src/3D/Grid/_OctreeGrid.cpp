@@ -8,7 +8,7 @@ namespace kai
 {
 	namespace
 	{
-		static bool readConfigVector(const json &j, vFloat3 &v)
+		static bool readConfigVector(const json &j, Vector3f &v)
 		{
 			if (!j.is_array() || j.size() != 3)
 				return false;
@@ -23,7 +23,7 @@ namespace kai
 			return true;
 		}
 
-		static bool readSelectionVector(const json &j, vFloat3 &v)
+		static bool readSelectionVector(const json &j, Vector3f &v)
 		{
 			if (!j.is_array() || j.size() != 3)
 				return false;
@@ -83,40 +83,40 @@ namespace kai
 			return result;
 		}
 
-		static vFloat3 vHalf(const vFloat3 &v)
+		static Vector3f vHalf(const Vector3f &v)
 		{
-			return vFloat3(v.x * 0.5f, v.y * 0.5f, v.z * 0.5f);
+			return Vector3f(v.x() * 0.5f, v.y() * 0.5f, v.z() * 0.5f);
 		}
 
-		static vFloat3 childCenter(const vFloat3 &vPc, const vFloat3 &vSize, uint8_t iC)
+		static Vector3f childCenter(const Vector3f &vPc, const Vector3f &vSize, uint8_t iC)
 		{
 			float kX = (iC & 4) ? 0.25f : -0.25f;
 			float kY = (iC & 2) ? 0.25f : -0.25f;
 			float kZ = (iC & 1) ? 0.25f : -0.25f;
 
-			return vFloat3(vPc.x + vSize.x * kX,
-						   vPc.y + vSize.y * kY,
-						   vPc.z + vSize.z * kZ);
+			return Vector3f(vPc.x() + vSize.x() * kX,
+						   vPc.y() + vSize.y() * kY,
+						   vPc.z() + vSize.z() * kZ);
 		}
 
-		static uint8_t childIdx(const vFloat3 &vP, const vFloat3 &vPc)
+		static uint8_t childIdx(const Vector3f &vP, const Vector3f &vPc)
 		{
 			uint8_t iC = 0;
-			if (vP.x >= vPc.x)
+			if (vP.x() >= vPc.x())
 				iC |= 4;
-			if (vP.y >= vPc.y)
+			if (vP.y() >= vPc.y())
 				iC |= 2;
-			if (vP.z >= vPc.z)
+			if (vP.z() >= vPc.z())
 				iC |= 1;
 
 			return iC;
 		}
 
-		static bool bInCell(const vFloat3 &vP, const vFloat3 &vPc, const vFloat3 &vSize)
+		static bool bInCell(const Vector3f &vP, const Vector3f &vPc, const Vector3f &vSize)
 		{
-			IF_F(fabs(vP.x - vPc.x) > vSize.x * 0.5f);
-			IF_F(fabs(vP.y - vPc.y) > vSize.y * 0.5f);
-			IF_F(fabs(vP.z - vPc.z) > vSize.z * 0.5f);
+			IF_F(fabs(vP.x() - vPc.x()) > vSize.x() * 0.5f);
+			IF_F(fabs(vP.y() - vPc.y()) > vSize.y() * 0.5f);
+			IF_F(fabs(vP.z() - vPc.z()) > vSize.z() * 0.5f);
 
 			return true;
 		}
@@ -129,11 +129,11 @@ namespace kai
 				pCell->m_vC = p.m_vC;
 			else
 			{
-				vFloat4 color = p.m_vC;
+				Vector4f color = p.m_vC;
 				pCell->m_vC = (pCell->m_vC * (float)pCell->m_nP + color) / (float)(pCell->m_nP + 1);
 			}
 
-			pCell->m_vC.w = 0.5f; // temporary alpha test; RGBA maps to x, y, z, w
+			pCell->m_vC.w() = 0.5f; // temporary alpha test; RGBA maps to x, y, z, w
 
 			pCell->m_nP++;
 			pCell->m_tStamp = tNow;
@@ -183,7 +183,7 @@ namespace kai
 									  int nPmin,
 									  vector<OCTGRID_CELL> &out,
 									  size_t limit,
-									  const vFloat4 *pColor)
+									  const Vector4f *pColor)
 		{
 			if (!pCell || out.size() >= limit)
 				return;
@@ -193,7 +193,7 @@ namespace kai
 				OCTGRID_CELL cell;
 				cell.setID(pT->m_ID);
 				const auto &color = pColor ? *pColor : pT->m_vC;
-				const float rgba[] = {color.x, color.y, color.z, color.w};
+				const float rgba[] = {color.x(), color.y(), color.z(), color.w()};
 				for (int i = 0; i < 4; ++i)
 					cell.m_vC[i] = uint8_t(std::clamp(std::isfinite(rgba[i]) ? rgba[i] : 1.f, 0.f, 1.f) * 255.f + 0.5f);
 				out.push_back(cell);
@@ -205,10 +205,6 @@ namespace kai
 
 	_OctreeGrid::_OctreeGrid()
 	{
-		m_vPorigin.set(0);
-		m_vRootCellSize.set(10);
-
-		m_vColCellOcc.set(1);
 	}
 
 	_OctreeGrid::~_OctreeGrid()
@@ -241,11 +237,11 @@ namespace kai
 
 		IF_Le_F(nMaxLines <= 0 || m_nMaxCells < 0, "Invalid grid cell limit");
 		IF_Le_F(m_nMaxLevel < 0 || m_nMaxLevel > OCTGRID_MAX_LEVEL, "Invalid nMaxLevel: " + i2str(m_nMaxLevel));
-		IF_Le_F(!std::isfinite(m_vPorigin.x) || !std::isfinite(m_vPorigin.y) || !std::isfinite(m_vPorigin.z) ||
-					!std::isfinite(m_vRootCellSize.x) || !std::isfinite(m_vRootCellSize.y) || !std::isfinite(m_vRootCellSize.z) ||
-					m_vRootCellSize.x <= 0.0f ||
-					m_vRootCellSize.y <= 0.0f ||
-					m_vRootCellSize.z <= 0.0f,
+		IF_Le_F(!std::isfinite(m_vPorigin.x()) || !std::isfinite(m_vPorigin.y()) || !std::isfinite(m_vPorigin.z()) ||
+					!std::isfinite(m_vRootCellSize.x()) || !std::isfinite(m_vRootCellSize.y()) || !std::isfinite(m_vRootCellSize.z()) ||
+					m_vRootCellSize.x() <= 0.0f ||
+					m_vRootCellSize.y() <= 0.0f ||
+					m_vRootCellSize.z() <= 0.0f,
 				"Invalid vRootCellSize");
 
 		int nP = 100000;
@@ -260,8 +256,8 @@ namespace kai
 		m_cells.m_vCell.reserve(m_nMaxCells);
 		m_buildCells.clear();
 		m_buildCells.reserve(m_nMaxCells);
-		m_cells.m_header = {{m_vPorigin.x, m_vPorigin.y, m_vPorigin.z},
-							{m_vRootCellSize.x, m_vRootCellSize.y, m_vRootCellSize.z},
+		m_cells.m_header = {{m_vPorigin.x(), m_vPorigin.y(), m_vPorigin.z()},
+							{m_vRootCellSize.x(), m_vRootCellSize.y(), m_vRootCellSize.z()},
 							uint32_t(m_nMaxLevel),
 							0};
 
@@ -288,16 +284,16 @@ namespace kai
 
 		const json &jG = jK(j, "_OctreeGrid");
 
-		vFloat3 origin, size;
+		Vector3f origin = Vector3f::Zero(), size = Vector3f::Zero();
 		IF_Le_F(!readConfigVector(jK(jG, "vPorigin"), origin) ||
-					!readConfigVector(jK(jG, "vRootCellSize"), size) || size.x <= 0 || size.y <= 0 || size.z <= 0,
+					!readConfigVector(jK(jG, "vRootCellSize"), size) || size.x() <= 0 || size.y() <= 0 || size.z() <= 0,
 				"Invalid saved grid header");
 
 		const auto &ids = jK(jG, "vSelectedCells");
 		IF_Le_F(!ids.is_array(), "Invalid vSelectedCells");
 
-		const OCTGRID_HEADER header = {{origin.x, origin.y, origin.z},
-									   {size.x, size.y, size.z},
+		const OCTGRID_HEADER header = {{origin.x(), origin.y(), origin.z()},
+									   {size.x(), size.y(), size.z()},
 									   uint32_t(m_nMaxLevel),
 									   0};
 
@@ -350,7 +346,7 @@ namespace kai
 
 	json _OctreeGrid::selectedCellsJSON(const char *idsKey)
 	{
-		vFloat3 origin, size;
+		Vector3f origin = Vector3f::Zero(), size = Vector3f::Zero();
 		vector<UUID128> vCselected;
 
 		{
@@ -361,8 +357,8 @@ namespace kai
 		}
 
 		json jG = json::object();
-		jG["vPorigin"] = {origin.x, origin.y, origin.z};
-		jG["vRootCellSize"] = {size.x, size.y, size.z};
+		jG["vPorigin"] = {origin.x(), origin.y(), origin.z()};
+		jG["vRootCellSize"] = {size.x(), size.y(), size.z()};
 		jG[idsKey] = json::array();
 		for (const auto &id : vCselected)
 			jG[idsKey].push_back(writeSelectionID(id));
@@ -455,8 +451,8 @@ namespace kai
 		IF_N(!bInCell(gP.m_vP, m_vPorigin, m_vRootCellSize));
 
 		OCTREE_CELL<OCTGRID_PCL_CELL> *pCell = m_pCell;
-		vFloat3 vPc = m_vPorigin;
-		vFloat3 vSize = m_vRootCellSize;
+		Vector3f vPc = m_vPorigin;
+		Vector3f vSize = m_vRootCellSize;
 
 		if (nMaxLevTo < 0 || nMaxLevTo > m_nMaxLevel)
 			nMaxLevTo = m_nMaxLevel;
@@ -493,14 +489,14 @@ namespace kai
 		return nullptr;
 	}
 
-	OCTGRID_PCL_CELL *_OctreeGrid::getCell(const vFloat3 &vP, int nMaxLevTo)
+	OCTGRID_PCL_CELL *_OctreeGrid::getCell(const Vector3f &vP, int nMaxLevTo)
 	{
 		NULL_N(m_pCell);
 		IF_N(!bInCell(vP, m_vPorigin, m_vRootCellSize));
 
 		OCTREE_CELL<OCTGRID_PCL_CELL> *pCell = m_pCell;
-		vFloat3 vPc = m_vPorigin;
-		vFloat3 vSize = m_vRootCellSize;
+		Vector3f vPc = m_vPorigin;
+		Vector3f vSize = m_vRootCellSize;
 
 		if (nMaxLevTo < 0 || nMaxLevTo > m_nMaxLevel)
 			nMaxLevTo = m_nMaxLevel;
@@ -583,8 +579,8 @@ namespace kai
 		m_buildCells.clear();
 		addCellsRecursive(m_pCell, m_nPminBuild, m_buildCells, m_nMaxCells, m_bColCellOcc ? &m_vColCellOcc : nullptr);
 		std::lock_guard<std::mutex> lock(m_cellsMutex);
-		m_cells.m_header = {{m_vPorigin.x, m_vPorigin.y, m_vPorigin.z},
-							{m_vRootCellSize.x, m_vRootCellSize.y, m_vRootCellSize.z},
+		m_cells.m_header = {{m_vPorigin.x(), m_vPorigin.y(), m_vPorigin.z()},
+							{m_vRootCellSize.x(), m_vRootCellSize.y(), m_vRootCellSize.z()},
 							uint32_t(m_nMaxLevel),
 							getApproxTbootUs()};
 		m_cells.m_vCell.swap(m_buildCells);
@@ -628,7 +624,7 @@ namespace kai
 
 		if (cmd == "octGridCellSelect")
 		{
-			vFloat3 origin, size;
+			Vector3f origin = Vector3f::Zero(), size = Vector3f::Zero();
 			bool sameHeader = readSelectionVector(jK(j, "vPorigin"), origin) &&
 							  readSelectionVector(jK(j, "vRootCellSize"), size);
 			{
@@ -642,8 +638,8 @@ namespace kai
 			vector<UUID128> vCselected;
 			if (bSuccess)
 			{
-				const OCTGRID_HEADER header = {{origin.x, origin.y, origin.z},
-											   {size.x, size.y, size.z},
+				const OCTGRID_HEADER header = {{origin.x(), origin.y(), origin.z()},
+											   {size.x(), size.y(), size.z()},
 											   uint32_t(m_nMaxLevel),
 											   0};
 				vCselected.reserve(ids.size());
@@ -702,17 +698,17 @@ namespace kai
 		}
 		else if (cmd == "setGridConfig")
 		{
-			vFloat3 origin, size;
+			Vector3f origin = Vector3f::Zero(), size = Vector3f::Zero();
 			const bool bSuccess = readSelectionVector(jK(j, "vPorigin"), origin) &&
-								  readSelectionVector(jK(j, "vRootCellSize"), size) && size.x > 0 && size.y > 0 && size.z > 0;
+								  readSelectionVector(jK(j, "vRootCellSize"), size) && size.x() > 0 && size.y() > 0 && size.z() > 0;
 			if (bSuccess)
 			{
 				std::lock_guard<std::mutex> gridLock(m_gridMutex);
 				std::lock_guard<std::mutex> lock(m_cellsMutex);
 				if (origin != m_vPorigin || size != m_vRootCellSize)
 				{
-					const OCTGRID_HEADER header = {{origin.x, origin.y, origin.z},
-												   {size.x, size.y, size.z},
+					const OCTGRID_HEADER header = {{origin.x(), origin.y(), origin.z()},
+												   {size.x(), size.y(), size.z()},
 												   uint32_t(m_nMaxLevel),
 												   getApproxTbootUs()};
 					if (m_pCell)

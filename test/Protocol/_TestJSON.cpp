@@ -17,7 +17,7 @@ namespace kai
     {
         IF_F(!this->_TestBase::init(j));
 
-        // vector<vInt4> vTest;
+        // vector<Vector4i> vTest;
         // pK->a("avTest", &vTest);
 
         return true;

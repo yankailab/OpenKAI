@@ -121,11 +121,11 @@ namespace kai
 		// status
 		int getGPSfixType(void);
 		int getGPShacc(void);
-		vDouble3 getHomePos(void);
-		vDouble4 getGlobalPos(void);
+		Vector3d getHomePos(void);
+		Vector4d getGlobalPos(void);
 		float getHdg(void);
-		vFloat3 getSpeed(void);
-		vFloat3 getAttitude(void);
+		Vector3f getSpeed(void);
+		Vector3f getAttitude(void);
 		float getBattery(void);
 
 		// mission
@@ -150,11 +150,11 @@ namespace kai
 		AP_TYPE m_apType = ardupilot_copter;
 
 		bool m_bHomeSet = false;
-		vDouble3 m_vHomePos;
-		vDouble4 m_vGlobalPos; // lat, lon, alt, relative_alt in meters
-		vDouble3 m_vLocalPos;
-		vFloat3 m_vSpeed;
-		vFloat3 m_vAtti; // yaw, pitch, roll
+		Vector3d m_vHomePos = Vector3d::Zero();
+		Vector4d m_vGlobalPos = Vector4d::Zero(); // lat, lon, alt, relative_alt in meters
+		Vector3d m_vLocalPos = Vector3d::Zero();
+		Vector3f m_vSpeed = Vector3f::Zero();
+		Vector3f m_vAtti = Vector3f::Zero(); // yaw, pitch, roll
 		float m_apHdg = 0.0;	 // heading in degree
 		float m_battery = 0.0; // remaining percentage
 		int8_t m_gpsFixType = -1;

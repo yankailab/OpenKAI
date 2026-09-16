@@ -54,7 +54,7 @@ namespace kai
 
 		for (const IMGUI_VIEWER_OBJ &g : vGO)
 		{
-			const float alpha = std::clamp(std::isfinite(g.m_matCol.w) ? g.m_matCol.w : 1.f, 0.f, 1.f);
+			const float alpha = std::clamp(std::isfinite(g.m_matCol.w()) ? g.m_matCol.w() : 1.f, 0.f, 1.f);
 
 			if (!g.m_vL.empty() || !g.m_vBox.empty())
 			{
@@ -71,16 +71,16 @@ namespace kai
 
 				for (const IMGUI_VIEWER_LINE &l : g.m_vL)
 				{
-					m_vLineUpload.push_back({l.m_vA.x, l.m_vA.y, l.m_vA.z,
-											  l.m_vC.x, l.m_vC.y, l.m_vC.z, alpha * l.m_vC.w});
-					m_vLineUpload.push_back({l.m_vB.x, l.m_vB.y, l.m_vB.z,
-											  l.m_vC.x, l.m_vC.y, l.m_vC.z, alpha * l.m_vC.w});
+					m_vLineUpload.push_back({l.m_vA.x(), l.m_vA.y(), l.m_vA.z(),
+											  l.m_vC.x(), l.m_vC.y(), l.m_vC.z(), alpha * l.m_vC.w()});
+					m_vLineUpload.push_back({l.m_vB.x(), l.m_vB.y(), l.m_vB.z(),
+											  l.m_vC.x(), l.m_vC.y(), l.m_vC.z(), alpha * l.m_vC.w()});
 					m_vLineBatch.back().m_count += 2;
 				}
 				for (const auto &box : g.m_vBox)
-					box.forEachEdge([&](const vFloat3 &a, const vFloat3 &b) {
-						m_vLineUpload.push_back({a.x, a.y, a.z, box.m_vC.x, box.m_vC.y, box.m_vC.z, alpha * box.m_vC.w});
-						m_vLineUpload.push_back({b.x, b.y, b.z, box.m_vC.x, box.m_vC.y, box.m_vC.z, alpha * box.m_vC.w});
+					box.forEachEdge([&](const Vector3f &a, const Vector3f &b) {
+						m_vLineUpload.push_back({a.x(), a.y(), a.z(), box.m_vC.x(), box.m_vC.y(), box.m_vC.z(), alpha * box.m_vC.w()});
+						m_vLineUpload.push_back({b.x(), b.y(), b.z(), box.m_vC.x(), box.m_vC.y(), box.m_vC.z(), alpha * box.m_vC.w()});
 						m_vLineBatch.back().m_count += 2;
 					});
 			}
@@ -100,8 +100,8 @@ namespace kai
 
 				for (const IMGUI_VIEWER_POINT &p : g.m_vP)
 				{
-					m_vPointUpload.push_back({p.m_vP.x, p.m_vP.y, p.m_vP.z,
-											   p.m_vC.x, p.m_vC.y, p.m_vC.z, alpha * p.m_vC.w});
+					m_vPointUpload.push_back({p.m_vP.x(), p.m_vP.y(), p.m_vP.z(),
+											   p.m_vC.x(), p.m_vC.y(), p.m_vC.z(), alpha * p.m_vC.w()});
 					m_vPointBatch.back().m_count++;
 				}
 			}
@@ -130,10 +130,10 @@ namespace kai
 		int fbH = (int)(pDrawData->DisplaySize.y * fbScale.y);
 		IF__(fbW <= 0 || fbH <= 0, true);
 
-		int x = (int)((frame.m_vCanvasPos.x - pDrawData->DisplayPos.x) * fbScale.x);
-		int yTop = (int)((frame.m_vCanvasPos.y - pDrawData->DisplayPos.y) * fbScale.y);
-		int w = (int)(frame.m_vCanvasSize.x * fbScale.x);
-		int h = (int)(frame.m_vCanvasSize.y * fbScale.y);
+		int x = (int)((frame.m_vCanvasPos.x() - pDrawData->DisplayPos.x) * fbScale.x);
+		int yTop = (int)((frame.m_vCanvasPos.y() - pDrawData->DisplayPos.y) * fbScale.y);
+		int w = (int)(frame.m_vCanvasSize.x() * fbScale.x);
+		int h = (int)(frame.m_vCanvasSize.y() * fbScale.y);
 		IF__(w <= 0 || h <= 0, true);
 
 		if (x < 0)
@@ -532,26 +532,26 @@ namespace kai
 
 	void ImGUIviewerGLRenderer::updateCameraUniforms(const IMGUI_VIEWER_GL_FRAME &frame)
 	{
-		float zNear = std::max(0.0001f, frame.m_camProj.m_vNF.x);
-		float zFar = frame.m_camProj.m_vNF.y;
+		float zNear = std::max(0.0001f, frame.m_camProj.m_vNF.x());
+		float zFar = frame.m_camProj.m_vNF.y();
 		if (!std::isfinite(zFar) || zFar <= zNear || zFar > 1.0e20f)
 			zFar = 1.0e20f;
 
 		float fov = std::clamp(frame.m_camProj.m_fov, 10.0f, 140.0f) * OK_PI / 180.0f;
-		float l = frame.m_camProj.m_vLR.x;
-		float r = frame.m_camProj.m_vLR.y;
-		float b = frame.m_camProj.m_vBT.x;
-		float t = frame.m_camProj.m_vBT.y;
+		float l = frame.m_camProj.m_vLR.x();
+		float r = frame.m_camProj.m_vLR.y();
+		float b = frame.m_camProj.m_vBT.x();
+		float t = frame.m_camProj.m_vBT.y();
 		if (fabs(r - l) <= 1e-6)
 			r = l + 1.0f;
 		if (fabs(t - b) <= 1e-6)
 			t = b + 1.0f;
 
-		glUniform3f(m_locEye, frame.m_camPose.m_vEye.x, frame.m_camPose.m_vEye.y, frame.m_camPose.m_vEye.z);
-		glUniform3f(m_locRight, frame.m_vRight.x, frame.m_vRight.y, frame.m_vRight.z);
-		glUniform3f(m_locUp, frame.m_vUp.x, frame.m_vUp.y, frame.m_vUp.z);
-		glUniform3f(m_locForward, frame.m_vForward.x, frame.m_vForward.y, frame.m_vForward.z);
-		glUniform2f(m_locCanvasSize, std::max(1.0f, frame.m_vCanvasSize.x), std::max(1.0f, frame.m_vCanvasSize.y));
+		glUniform3f(m_locEye, frame.m_camPose.m_vEye.x(), frame.m_camPose.m_vEye.y(), frame.m_camPose.m_vEye.z());
+		glUniform3f(m_locRight, frame.m_vRight.x(), frame.m_vRight.y(), frame.m_vRight.z());
+		glUniform3f(m_locUp, frame.m_vUp.x(), frame.m_vUp.y(), frame.m_vUp.z());
+		glUniform3f(m_locForward, frame.m_vForward.x(), frame.m_vForward.y(), frame.m_vForward.z());
+		glUniform2f(m_locCanvasSize, std::max(1.0f, frame.m_vCanvasSize.x()), std::max(1.0f, frame.m_vCanvasSize.y()));
 		glUniform1i(m_locProjType, frame.m_camProj.m_type);
 		glUniform1f(m_locFovRad, fov);
 		glUniform1f(m_locNear, zNear);

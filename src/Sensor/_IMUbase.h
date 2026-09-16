@@ -16,7 +16,7 @@ namespace kai
 	struct IMU_DATA
 	{
 		uint64_t m_t;
-		vFloat3 m_v;
+		Vector3f m_v = Vector3f::Zero();
 	};
 
 	class _IMUbase : public _ModuleBase
@@ -31,9 +31,9 @@ namespace kai
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 
-		void addGyro(uint64_t tStamp, const vFloat3 &vG);
-		void addAcc(uint64_t tStamp, const vFloat3 &vA);
-		uint64_t getIMUpair(vFloat3* pG, vFloat3* pA);
+		void addGyro(uint64_t tStamp, const Vector3f &vG);
+		void addAcc(uint64_t tStamp, const Vector3f &vA);
+		uint64_t getIMUpair(Vector3f* pG, Vector3f* pA);
 
 	private:
 		virtual void update(void);

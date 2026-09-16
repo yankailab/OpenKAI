@@ -67,17 +67,17 @@ namespace kai
 
     void _PointCloud::add(const Vector3d &vP, const Vector3f &vC, uint64_t tStamp)
     {
-        add(e2v((Vector3f)vP.cast<float>()),
-            e2v((Vector3f)vC.cast<float>()),
+        add(vP.cast<float>().eval(),
+            vC,
             tStamp);
     }
 
-    void _PointCloud::add(const vFloat3 &vP, const vFloat3 &vC, uint64_t tStamp)
+    void _PointCloud::add(const Vector3f &vP, const Vector3f &vC, uint64_t tStamp)
     {
-        add(vP, vFloat4(vC.x, vC.y, vC.z, 1), tStamp);
+        add(vP, Vector4f(vC.x(), vC.y(), vC.z(), 1), tStamp);
     }
 
-    void _PointCloud::add(const vFloat3 &vP, const vFloat4 &vC, uint64_t tStamp)
+    void _PointCloud::add(const Vector3f &vP, const Vector4f &vC, uint64_t tStamp)
     {
         GEOMETRY_POINT gP;
         gP.m_vP = vP;
@@ -175,8 +175,8 @@ namespace kai
         for (int i = 0; i < m_nP; i++)
         {
             GEOMETRY_POINT p = pSM[i];
-            Vector3d eV = m_A * v2e(p.m_vP).cast<double>();
-            p.m_vP = e2v((Vector3f)eV.cast<float>());
+            Vector3d eV = m_A * p.m_vP.cast<double>();
+            p.m_vP = eV.cast<float>().eval();
 
             m_pP[m_iP] = p;
             m_iP = iRing(m_iP, m_nP);

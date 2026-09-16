@@ -35,11 +35,11 @@ namespace kai
 		float getD(void);
 		void setD(float D);
 
-		vFloat2 getRangeIn(void);
-		void setRangeIn(const vFloat2 &vRin);
+		Vector2f getRangeIn(void);
+		void setRangeIn(const Vector2f &vRin);
 
-		vFloat2 getRangeOut(void);
-		void setRangeOut(const vFloat2 &vRout);
+		Vector2f getRangeOut(void);
+		void setRangeOut(const Vector2f &vRout);
 
 	protected:
 		float m_P = 0;
@@ -54,8 +54,8 @@ namespace kai
 		float m_eI; // e integration
 
 		float m_vOut;
-		vFloat2 m_vRin;
-		vFloat2 m_vRout;
+		Vector2f m_vRin = Vector2f::Zero();
+		Vector2f m_vRout = Vector2f::Zero();
 	};
 
 }

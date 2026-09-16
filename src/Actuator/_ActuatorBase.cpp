@@ -226,7 +226,7 @@ namespace kai
 		pV = pos();
 		pC->addMsg("p=" + f2str(pV->m_v) +
 					   ", pT=" + f2str(pV->m_vTarget) +
-					   ", pRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
+					   ", pRange=[" + f2str(pV->m_vRange.x(), nD) + ", " + f2str(pV->m_vRange.y(), nD) + "]" +
 					   ", pOrigin=" + f2str(m_origin) +
 					   ", pE=" + f2str(pV->m_vErr),
 				   1);
@@ -234,28 +234,28 @@ namespace kai
 		pV = speed();
 		pC->addMsg("s=" + f2str(pV->m_v) +
 					   ", sT=" + f2str(pV->m_vTarget) +
-					   ", sRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
+					   ", sRange=[" + f2str(pV->m_vRange.x(), nD) + ", " + f2str(pV->m_vRange.y(), nD) + "]" +
 					   ", sE=" + f2str(pV->m_vErr),
 				   1);
 
 		pV = accel();
 		pC->addMsg("a=" + f2str(pV->m_v) +
 					   ", aT=" + f2str(pV->m_vTarget) +
-					   ", aRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
+					   ", aRange=[" + f2str(pV->m_vRange.x(), nD) + ", " + f2str(pV->m_vRange.y(), nD) + "]" +
 					   ", aE=" + f2str(pV->m_vErr),
 				   1);
 
 		pV = brake();
 		pC->addMsg("b=" + f2str(pV->m_v) +
 					   ", bT=" + f2str(pV->m_vTarget) +
-					   ", bRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
+					   ", bRange=[" + f2str(pV->m_vRange.x(), nD) + ", " + f2str(pV->m_vRange.y(), nD) + "]" +
 					   ", bE=" + f2str(pV->m_vErr),
 				   1);
 
 		pV = current();
 		pC->addMsg("c=" + f2str(pV->m_v) +
 					   ", cT=" + f2str(pV->m_vTarget) +
-					   ", cRange=[" + f2str(pV->m_vRange.x, nD) + ", " + f2str(pV->m_vRange.y, nD) + "]" +
+					   ", cRange=[" + f2str(pV->m_vRange.x(), nD) + ", " + f2str(pV->m_vRange.y(), nD) + "]" +
 					   ", cE=" + f2str(pV->m_vErr),
 				   1);
 	}

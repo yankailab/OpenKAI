@@ -28,10 +28,10 @@ namespace kai
 		virtual bool saveConfig(json &j, string fName = "");
 
 		virtual _GeoFence_TYPE getType(void);
-		void setPosHdg(const vDouble2& vP, float hdgDeg);	// lat lon
+		void setPosHdg(const Vector2d& vP, float hdgDeg);	// lat lon
 		void setPolygon(const vector<vector<double> >& vvCoord);
 		bool bBreach(void);
-		void getP(vDouble2* pP, vDouble2* pPnext);
+		void getP(Vector2d* pP, Vector2d* pPnext);
 
 	private:
 		virtual void sendFence(void);
@@ -50,8 +50,8 @@ namespace kai
 		float m_estD = 1;
 		float m_hdg = 0;
 		float m_rAngle = 0;		// reflected angle
-		vDouble2 m_vP;		// vehicle current position, lat, lon order
-		vDouble2 m_vPnext;	// vehicle estimated next position
+		Vector2d m_vP = Vector2d::Zero();		// vehicle current position, lat, lon order
+		Vector2d m_vPnext = Vector2d::Zero();	// vehicle estimated next position
 		vector<vector<double> > m_vPolygon;
 
 		_JSONbase* m_pJb = nullptr;

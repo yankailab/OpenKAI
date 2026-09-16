@@ -32,8 +32,8 @@ namespace kai
 
         // data io
         virtual void add(const Vector3d &vP, const Vector3f &vC, uint64_t tStamp = 1);
-        virtual void add(const vFloat3 &vP, const vFloat3 &vC, uint64_t tStamp = 1);
-        virtual void add(const vFloat3 &vP, const vFloat4 &vC, uint64_t tStamp = 1);
+        virtual void add(const Vector3f &vP, const Vector3f &vC, uint64_t tStamp = 1);
+        virtual void add(const Vector3f &vP, const Vector4f &vC, uint64_t tStamp = 1);
 
     protected:
         virtual int copy(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pIn, GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire = 0);

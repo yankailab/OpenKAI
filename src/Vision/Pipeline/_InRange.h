@@ -34,8 +34,8 @@ namespace kai
 
 	protected:
 		_VisionBase *m_pV = nullptr;
-		vInt3 m_vL;
-		vInt3 m_vH;
+		Vector3i m_vL = Vector3i::Zero();
+		Vector3i m_vH = Vector3i::Zero();
 	};
 
 }

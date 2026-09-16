@@ -109,7 +109,7 @@ namespace kai
         return true;
     }
 
-    double _PCregistCol::updateRegistration(PointCloud *pSrc, PointCloud *pTgt, Matrix4d_u *pTresult)
+    double _PCregistCol::updateRegistration(PointCloud *pSrc, PointCloud *pTgt, Eigen::Matrix4d_u *pTresult)
     {
         IF__(check() > 0, -1);
         NULL__(pSrc, -1);

@@ -129,9 +129,9 @@ namespace kai
 		bool bFenceBreach = false;
 		if (m_pGfence)
 		{
-			vDouble4 vPos = m_pAP->getGlobalPos();
+			Vector4d vPos = m_pAP->getGlobalPos();
 			float hdg = m_pAP->getHdg();
-			m_pGfence->setPosHdg(vDouble2(vPos.x, vPos.y), hdg);
+			m_pGfence->setPosHdg(Vector2d(vPos.x(), vPos.y()), hdg);
 
 			bFenceBreach = m_pGfence->bBreach();
 		}

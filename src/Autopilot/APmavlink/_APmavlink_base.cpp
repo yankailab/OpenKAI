@@ -5,11 +5,11 @@ namespace kai
 
 	_APmavlink_base::_APmavlink_base()
 	{
-		m_vHomePos.set(0.0);
-		m_vGlobalPos.set(0.0);
-		m_vLocalPos.clear();
-		m_vSpeed.clear();
-		m_vAtti.clear();
+		m_vHomePos.setZero();
+		m_vGlobalPos.setZero();
+		m_vLocalPos.setZero();
+		m_vSpeed.setZero();
+		m_vAtti.setZero();
 
 		m_ieSendHB.init(USEC_1SEC);
 		m_ieSendMsgInt.init(USEC_1SEC);
@@ -113,9 +113,9 @@ namespace kai
 		// Attitude
 		//		if (m_pMav->m_attitude.bReceiving())
 		//		{
-		m_vAtti.x = m_pMav->m_attitude.m_msg.yaw;
-		m_vAtti.y = m_pMav->m_attitude.m_msg.pitch;
-		m_vAtti.z = m_pMav->m_attitude.m_msg.roll;
+		m_vAtti.x() = m_pMav->m_attitude.m_msg.yaw;
+		m_vAtti.y() = m_pMav->m_attitude.m_msg.pitch;
+		m_vAtti.z() = m_pMav->m_attitude.m_msg.roll;
 		//		}
 
 		// TODO:
@@ -126,30 +126,30 @@ namespace kai
 		}
 		else
 		{
-			m_vHomePos.x = ((double)(m_pMav->m_homePosition.m_msg.latitude)) * 1e-7;
-			m_vHomePos.y = ((double)(m_pMav->m_homePosition.m_msg.longitude)) * 1e-7;
-			m_vHomePos.z = ((double)(m_pMav->m_homePosition.m_msg.altitude)) * 1e-3;
+			m_vHomePos.x() = ((double)(m_pMav->m_homePosition.m_msg.latitude)) * 1e-7;
+			m_vHomePos.y() = ((double)(m_pMav->m_homePosition.m_msg.longitude)) * 1e-7;
+			m_vHomePos.z() = ((double)(m_pMav->m_homePosition.m_msg.altitude)) * 1e-3;
 			m_bHomeSet = true;
 		}
 
 		// get position
 		if (m_pMav->m_globalPositionINT.bReceiving())
 		{
-			m_vGlobalPos.x = ((double)(m_pMav->m_globalPositionINT.m_msg.lat)) * 1e-7;
-			m_vGlobalPos.y = ((double)(m_pMav->m_globalPositionINT.m_msg.lon)) * 1e-7;
-			m_vGlobalPos.z = ((double)(m_pMav->m_globalPositionINT.m_msg.alt)) * 1e-3;
-			m_vGlobalPos.w = ((double)(m_pMav->m_globalPositionINT.m_msg.relative_alt)) * 1e-3;
+			m_vGlobalPos.x() = ((double)(m_pMav->m_globalPositionINT.m_msg.lat)) * 1e-7;
+			m_vGlobalPos.y() = ((double)(m_pMav->m_globalPositionINT.m_msg.lon)) * 1e-7;
+			m_vGlobalPos.z() = ((double)(m_pMav->m_globalPositionINT.m_msg.alt)) * 1e-3;
+			m_vGlobalPos.w() = ((double)(m_pMav->m_globalPositionINT.m_msg.relative_alt)) * 1e-3;
 			m_apHdg = ((float)(m_pMav->m_globalPositionINT.m_msg.hdg)) * 1e-2;
 		}
 
 		if (m_pMav->m_localPositionNED.bReceiving())
 		{
-			m_vLocalPos.x = m_pMav->m_localPositionNED.m_msg.x;
-			m_vLocalPos.y = m_pMav->m_localPositionNED.m_msg.y;
-			m_vLocalPos.z = m_pMav->m_localPositionNED.m_msg.z;
-			m_vSpeed.x = m_pMav->m_localPositionNED.m_msg.vx;
-			m_vSpeed.y = m_pMav->m_localPositionNED.m_msg.vy;
-			m_vSpeed.z = m_pMav->m_localPositionNED.m_msg.vz;
+			m_vLocalPos.x() = m_pMav->m_localPositionNED.m_msg.x;
+			m_vLocalPos.y() = m_pMav->m_localPositionNED.m_msg.y;
+			m_vLocalPos.z() = m_pMav->m_localPositionNED.m_msg.z;
+			m_vSpeed.x() = m_pMav->m_localPositionNED.m_msg.vx;
+			m_vSpeed.y() = m_pMav->m_localPositionNED.m_msg.vy;
+			m_vSpeed.z() = m_pMav->m_localPositionNED.m_msg.vz;
 		}
 
 		// Battery status
@@ -278,19 +278,19 @@ namespace kai
 		return m_gpsHacc;
 	}
 
-	vDouble3 _APmavlink_base::getHomePos(void)
+	Vector3d _APmavlink_base::getHomePos(void)
 	{
 		if (!m_bHomeSet)
 		{
-			vDouble3 vH;
-			vH.set(-1.0);
+			Vector3d vH = Vector3d::Zero();
+			vH.setConstant(-1.0);
 			return vH;
 		}
 
 		return m_vHomePos;
 	}
 
-	vDouble4 _APmavlink_base::getGlobalPos(void)
+	Vector4d _APmavlink_base::getGlobalPos(void)
 	{
 		return m_vGlobalPos;
 	}
@@ -300,12 +300,12 @@ namespace kai
 		return m_apHdg;
 	}
 
-	vFloat3 _APmavlink_base::getSpeed(void)
+	Vector3f _APmavlink_base::getSpeed(void)
 	{
 		return m_vSpeed;
 	}
 
-	vFloat3 _APmavlink_base::getAttitude(void)
+	Vector3f _APmavlink_base::getAttitude(void)
 	{
 		return m_vAtti;
 	}
@@ -350,16 +350,16 @@ namespace kai
 		pC->addMsg("apMode = " + i2str(getMode()) + ": " + getModeName(), 1);
 
 		pC->addMsg("Attitude--------------------------", 1);
-		pC->addMsg("y=" + f2str(m_vAtti.x) +
-					   ", p=" + f2str(m_vAtti.y) +
-					   ", r=" + f2str(m_vAtti.z) +
+		pC->addMsg("y=" + f2str(m_vAtti.x()) +
+					   ", p=" + f2str(m_vAtti.y()) +
+					   ", r=" + f2str(m_vAtti.z()) +
 					   ", hdg=" + f2str(m_apHdg),
 				   1);
 
 		pC->addMsg("Global Pos-----------------------", 1);
 		pC->addMsg("GPS fix type=" + i2str(m_gpsFixType) + ", Hacc=" + i2str(m_gpsHacc), 1);
-		pC->addMsg("lat=" + lf2str(m_vGlobalPos.x, 7) + ", lon=" + lf2str(m_vGlobalPos.y, 7), 1);
-		pC->addMsg("alt=" + lf2str(m_vGlobalPos.z, 2) + ", relAlt=" + lf2str(m_vGlobalPos.w, 2), 1);
+		pC->addMsg("lat=" + lf2str(m_vGlobalPos.x(), 7) + ", lon=" + lf2str(m_vGlobalPos.y(), 7), 1);
+		pC->addMsg("alt=" + lf2str(m_vGlobalPos.z(), 2) + ", relAlt=" + lf2str(m_vGlobalPos.w(), 2), 1);
 
 		pC->addMsg("Local Pos-------------------------", 1);
 		pC->addMsg("x=" + f2str(m_pMav->m_localPositionNED.m_msg.x) +
@@ -368,7 +368,7 @@ namespace kai
 				   1);
 
 		pC->addMsg("Home Pos--------------------------", 1);
-		pC->addMsg("lat=" + f2str(m_vHomePos.x, 7) + ", lon=" + f2str(m_vHomePos.y, 7) + ", alt=" + f2str(m_vHomePos.z, 7), 1);
+		pC->addMsg("lat=" + f2str(m_vHomePos.x(), 7) + ", lon=" + f2str(m_vHomePos.y(), 7) + ", alt=" + f2str(m_vHomePos.z(), 7), 1);
 
 		pC->addMsg("Speed-----------------------------", 1);
 		pC->addMsg("vx=" + f2str(m_pMav->m_localPositionNED.m_msg.vx) +

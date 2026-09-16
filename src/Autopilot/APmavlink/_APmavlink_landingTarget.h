@@ -46,8 +46,8 @@ namespace kai
 		float m_kP = 1.0;
 		float m_defaultDtgt = 2.0;
 		vector<AP_LANDING_TARGET_TAG> m_vTags;
-		vFloat2 m_vFov = 60 * DEG_2_RAD; // cam FOV horiz/vert
-		vFloat2 m_vPsp; // target set point on screen coord
+		Vector2f m_vFov = Vector2f::Constant(60 * DEG_2_RAD); // cam FOV horiz/vert
+		Vector2f m_vPsp = Vector2f::Zero(); // target set point on screen coord
 		mavlink_landing_target_t m_lt;
 
 		// heading adjustment

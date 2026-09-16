@@ -22,7 +22,6 @@ using std::placeholders::_1;
 #ifdef WITH_3D
 #include "../3D/PointCloud/_PCframe.h"
 #endif
-using namespace Eigen;
 
 namespace kai
 {
@@ -31,12 +30,12 @@ namespace kai
 	public:
 		ROS_fastLio() : Node("openkai_node")
 		{
-			m_vAxisIdx.set(0, 1, 2);
-			m_vP.set(0);
-			m_vA.set(0);
-			m_vQ.set(0);
+			m_vAxisIdx = Vector3i(0, 1, 2);
+			m_vP.setZero();
+			m_vA.setZero();
+			m_vQ.setZero();
 
-			m_mT = Matrix4f::Identity();
+			m_mT = Eigen::Matrix4f::Identity();
 		}
 
 		virtual bool init(const json &j);
@@ -60,11 +59,11 @@ namespace kai
 		string m_topicOdom = ""; // "Odometry";
 		string m_topicPath = ""; // "path";
 
-		vInt3 m_vAxisIdx;
-		vFloat3 m_vP;
-		vFloat3 m_vA;
-		vFloat4 m_vQ;
-		Matrix4f m_mT;
+		Vector3i m_vAxisIdx = Vector3i::Zero();
+		Vector3f m_vP = Vector3f::Zero();
+		Vector3f m_vA = Vector3f::Zero();
+		Vector4f m_vQ = Vector4f::Zero();
+		Eigen::Matrix4f m_mT;
 
 	protected:
 
