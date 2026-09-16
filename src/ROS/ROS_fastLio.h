@@ -19,8 +19,8 @@ using std::placeholders::_1;
 #include "nav_msgs/msg/path.hpp"
 
 #include "../UI/_Console.h"
-#ifdef WITH_3D
-#include "../3D/PointCloud/_PCframe.h"
+#ifdef WITH_UNIVERSE
+#include "../Universe/Geometry/PointCloud/_PCframe.h"
 #endif
 
 namespace kai
@@ -67,7 +67,7 @@ namespace kai
 
 	protected:
 
-#ifdef WITH_3D
+#ifdef WITH_UNIVERSE
 	public:
 		_PCframe *m_pPCframe = NULL;
 #endif

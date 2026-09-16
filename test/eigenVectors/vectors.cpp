@@ -1,6 +1,6 @@
 #include "../../src/Module/JsonCfg.h"
-#include "../../src/3D/_GeometryBase.h"
-#include "../../src/3D/_GeometryViewerBase.h"
+#include "../../src/Universe/Geometry/_GeometryBase.h"
+#include "../../src/Universe/Geometry/_GeometryViewerBase.h"
 
 #include <cassert>
 

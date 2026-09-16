@@ -98,7 +98,7 @@ namespace kai
 		virtual bool open(void);
 		virtual void close(void);
 
-#ifdef WITH_3D
+#ifdef WITH_UNIVERSE
 		virtual int getPointCloud(_PCframe *pPCframe, int nPmax = INT_MAX);
 #endif
 

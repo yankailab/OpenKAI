@@ -36,7 +36,7 @@ namespace kai
 
 	bool _Contour::check(void)
 	{
-		NULL_F(m_pU);
+		NULL_F(m_pCanvas);
 		NULL_F(m_pV);
 		IF_F(m_pV->getFrameRGB()->bEmpty());
 
@@ -79,11 +79,11 @@ namespace kai
 			o.setBB2D(rect2BB<Vector4f>(r), kx, ky);
 			o.setTopClass(0, o.getDimArea());
 
-			m_pU->add(o);
+			m_pCanvas->add(o);
 			LOG_I("ID: " + i2str(o.getTopClass()));
 		}
 
-		m_pU->swap();
+		m_pCanvas->swap();
 	}
 
 	void _Contour::draw(void *pFrame)

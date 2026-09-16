@@ -19,7 +19,7 @@
 "thread":{
 		"FPS":30,
 	}
-	"vBASE":["cam","univ","/arUco","/YOLO","apFollow"],
+	"vBASE":["cam","canvas","/arUco","/YOLO","apFollow"],
 	"bShow":1,
 }
 "udpAP":{
@@ -131,7 +131,7 @@
 		"FPS":30,
 	}
 	"_VisionBase":"cam",
-	"_Universe":"univ",
+	"_Canvas":"canvas",
 	"dict":17,
 }
 "YOLO":{
@@ -142,13 +142,13 @@
 	}
 	"bLog": true,
 	"_VisionBase":"cam",
-	"_Universe":"univ",
+	"_Canvas":"canvas",
 	"fModel":"/home/kai/dev/models/yolov8n.onnx",
 	"confidence":0.001,
 	"bLetterBoxForSquare":0,
 }
-"univ":{
-	"class":"_Universe",
+"canvas":{
+	"class":"_Canvas",
 	"bON": true,
 "thread":{
 		"FPS":1,
@@ -185,7 +185,7 @@
 		"FPS":10,
 	}
 	"_APmavlink_base":"apBase",
-	"_Universe":"univ",
+	"_Canvas":"canvas",
 	"iClass":0,
 	"tOutTargetNotFound":500000,
 	"vPsp":[0.5, 0.5, 0.3, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */

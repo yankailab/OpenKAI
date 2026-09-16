@@ -36,7 +36,7 @@ namespace kai
         IF_F(!this->_NavBase::link(j, pM));
 
         string n;
-#ifdef WITH_3D
+#ifdef WITH_UNIVERSE
         n = "";
         jKv(j, "_PCframe", n);
         m_pPCframe = (_PCframe *)(pM->findModule(n));

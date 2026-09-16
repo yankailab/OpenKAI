@@ -62,7 +62,7 @@ namespace kai
 		jKv(j, "_IMUbase", n);
 		m_pIMU = (_IMUbase *)(pM->findModule(n));
 
-#ifdef WITH_3D
+#ifdef WITH_UNIVERSE
 		n = "";
 		jKv(j, "_PointCloud", n);
 		m_pPointCloud = (_PointCloud *)(pM->findModule(n));

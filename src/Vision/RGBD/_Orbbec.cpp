@@ -245,7 +245,7 @@ namespace kai
 
 			updateDepth();
 
-#ifdef WITH_3D
+#ifdef WITH_UNIVERSE
 			updatePC();
 #endif
 		}
@@ -262,7 +262,7 @@ namespace kai
 #endif
 	}
 
-#ifdef WITH_3D
+#ifdef WITH_UNIVERSE
 	void _Orbbec::updatePC(void)
 	{
 		NULL_(m_spFrame);

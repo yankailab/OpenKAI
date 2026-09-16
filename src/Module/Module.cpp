@@ -28,7 +28,8 @@ namespace kai
 
 		// modules
 
-#ifdef WITH_3D
+#ifdef WITH_UNIVERSE
+		ADD_MODULE(_ReferenceFrame);
 		ADD_MODULE(_OctreeBase);
 		ADD_MODULE(_OctreeGrid);
 		ADD_MODULE(_SelectableOctGrid);
@@ -191,7 +192,7 @@ namespace kai
 		ADD_MODULE(_BenewakeTF);
 		ADD_MODULE(_TOFsense);
 		ADD_MODULE(_LeddarVu);
-#if defined(WITH_3D) && defined(USE_OPEN3D)
+#if defined(WITH_UNIVERSE) && defined(USE_OPEN3D)
 		ADD_MODULE(_Livox2);
 		ADD_MODULE(_RoboSenseAiry);
 #endif // 3D
@@ -199,7 +200,7 @@ namespace kai
 
 #if defined(WITH_SLAM) && defined(WITH_NAVIGATION)
 		ADD_MODULE(_SLAMbase);
-#if defined(USE_OPENCV) && defined(WITH_3D) && defined(USE_OPEN3D)
+#if defined(USE_OPENCV) && defined(WITH_UNIVERSE) && defined(USE_OPEN3D)
 		ADD_MODULE(_LCalign);
 #endif // OpenCV
 #endif
@@ -225,9 +226,9 @@ namespace kai
 #endif
 #endif
 
-#ifdef WITH_UNIVERSE
+#ifdef WITH_CANVAS
 		ADD_MODULE(_Object);
-		ADD_MODULE(_Universe);
+		ADD_MODULE(_Canvas);
 #endif
 
 #ifdef WITH_VISION

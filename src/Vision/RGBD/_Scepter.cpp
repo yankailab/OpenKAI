@@ -173,7 +173,7 @@ namespace kai
 
 			if (updateScRGBD())
 			{
-#ifdef WITH_3D
+#ifdef WITH_UNIVERSE
 				updatePC();
 #endif
 
@@ -277,7 +277,7 @@ namespace kai
 		return true;
 	}
 
-#ifdef WITH_3D
+#ifdef WITH_UNIVERSE
 	void _Scepter::updatePC(void)
 	{
 		NULL_(m_pPointCloud);

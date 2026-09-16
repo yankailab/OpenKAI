@@ -13,7 +13,7 @@
 		},
 		"vBASE": [
 			"cam",
-			"univ",
+			"canvas",
 			"YOLO26detectONNX",
 			"/YOLOv8",
 			"/YOLOv3",
@@ -37,7 +37,7 @@
 			"/hsv",
 			"/inRange",
 			"/morph",
-			"univ"
+			"canvas"
 		]
 	},
 	"cam": {
@@ -162,10 +162,10 @@
 			"FPS": 30
 		},
 		"_VisionBase": "morph",
-		"_Universe": "univ"
+		"_Canvas": "canvas"
 	},
-	"univ": {
-		"class": "_Universe",
+	"canvas": {
+		"class": "_Canvas",
 		"bON": true,
 		"thread": {
 			"FPS": 10
@@ -180,7 +180,7 @@
 		},
 		"bLog": true,
 		"_VisionBase": "cam",
-		"_Universe": "univ",
+		"_Canvas": "canvas",
 		"fModel": "/home/kai/dev/models/YOLO26/yolo26n.onnx",
 		"confidence": 0.25,
 		"score": 0.45,

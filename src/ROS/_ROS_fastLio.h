@@ -9,8 +9,8 @@
 #define OpenKAI_src_ROS__ROS_fastLio_H_
 
 #include "../Navigation/_NavBase.h"
-#ifdef WITH_3D
-#include "../3D/PointCloud/_PCframe.h"
+#ifdef WITH_UNIVERSE
+#include "../Universe/Geometry/PointCloud/_PCframe.h"
 #endif
 
 #include "ROS_fastLio.h"
@@ -49,7 +49,7 @@ namespace kai
 		_Thread *m_pTros = nullptr;
 		shared_ptr<ROS_fastLio> m_pROSnode;
 
-#ifdef WITH_3D
+#ifdef WITH_UNIVERSE
 		_PCframe *m_pPCframe = nullptr;
 #endif
 	};

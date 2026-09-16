@@ -67,7 +67,7 @@ namespace kai
 
 	protected:
 		bool updateScRGBD(void);
-#ifdef WITH_3D
+#ifdef WITH_UNIVERSE
 		void updatePC(void);
 #endif
 

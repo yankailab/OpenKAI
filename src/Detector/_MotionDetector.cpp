@@ -70,7 +70,7 @@ namespace kai
 
 	bool _MotionDetector::check(void)
 	{
-		NULL_F(m_pU);
+		NULL_F(m_pCanvas);
 		NULL_F(m_pV);
 		IF_F(m_pV->getFrameRGB()->bEmpty());
 
@@ -83,7 +83,7 @@ namespace kai
 		{
 			m_pT->autoFPS();
 
-			m_pU->swap();
+			m_pCanvas->swap();
 			detect();
 
 			ON_PAUSE;
@@ -118,7 +118,7 @@ namespace kai
 			//		o.m_tStamp = m_pT->getTfrom();
 			o.setBB2D(rect2BB<Vector4f>(r), kx, ky);
 
-			m_pU->add(o);
+			m_pCanvas->add(o);
 		}
 	}
 

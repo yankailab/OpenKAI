@@ -17,34 +17,35 @@
 
 // modules
 
-#ifdef WITH_3D
-#include "../3D/Grid/_OctreeBase.h"
-#include "../3D/Grid/_OctreeGrid.h"
-#include "../3D/Grid/_SelectableOctGrid.h"
-#include "../3D/Line/_Line.h"
-#include "../3D/PointCloud/_PointCloud.h"
-#include "../3D/PointCloud/_PCfile.h"
-#include "../3D/PointCloud/Pipeline/_PCmerge.h"
-#include "../3D/PointCloud/Pipeline/_PCsend.h"
-#include "../3D/PointCloud/Pipeline/_PCrecv.h"
-#include "../3D/PointCloud/Pipeline/_PCtransform.h"
-#include "../3D/_GeometryViewerBase.h"
+#ifdef WITH_UNIVERSE
+#include "../Universe/_ReferenceFrame.h"
+#include "../Universe/Grid/_OctreeBase.h"
+#include "../Universe/Grid/_OctreeGrid.h"
+#include "../Universe/Grid/_SelectableOctGrid.h"
+#include "../Universe/Geometry/Line/_Line.h"
+#include "../Universe/Geometry/PointCloud/_PointCloud.h"
+#include "../Universe/Geometry/PointCloud/_PCfile.h"
+#include "../Universe/Geometry/PointCloud/Pipeline/_PCmerge.h"
+#include "../Universe/Geometry/PointCloud/Pipeline/_PCsend.h"
+#include "../Universe/Geometry/PointCloud/Pipeline/_PCrecv.h"
+#include "../Universe/Geometry/PointCloud/Pipeline/_PCtransform.h"
+#include "../Universe/Geometry/_GeometryViewerBase.h"
 #ifdef USE_WEBVIEWER3D
-#include "../3D/Viewer/_WebViewer3D.h"
+#include "../Universe/Geometry/Viewer/_WebViewer3D.h"
 #endif
 
 #ifdef USE_OPEN3D
-#include "../3D/PointCloud/Pipeline/_PCcrop.h"
-#include "../3D/PointCloud/Pipeline/_PCremove.h"
-#include "../3D/PointCloud/Pipeline/_PCdownSample.h"
-#include "../3D/PointCloud/Registration/_PCregistCol.h"
-#include "../3D/PointCloud/Registration/_PCregistICP.h"
-#include "../3D/PointCloud/Registration/_PCregistGlobal.h"
+#include "../Universe/Geometry/PointCloud/Pipeline/_PCcrop.h"
+#include "../Universe/Geometry/PointCloud/Pipeline/_PCremove.h"
+#include "../Universe/Geometry/PointCloud/Pipeline/_PCdownSample.h"
+#include "../Universe/Geometry/PointCloud/Registration/_PCregistCol.h"
+#include "../Universe/Geometry/PointCloud/Registration/_PCregistICP.h"
+#include "../Universe/Geometry/PointCloud/Registration/_PCregistGlobal.h"
 #endif
 
 #ifdef WITH_UI
 #ifdef USE_IMGUI
-#include "../3D/Viewer/_ImGUIviewer.h"
+#include "../Universe/Geometry/Viewer/_ImGUIviewer.h"
 #endif
 #endif
 
@@ -185,7 +186,7 @@
 #include "../Sensor/Distance/_LeddarVu.h"
 #include "../Sensor/Distance/_TOFsense.h"
 #include "../Sensor/Distance/_BenewakeTF.h"
-#if defined(WITH_3D) && defined(USE_OPEN3D)
+#if defined(WITH_UNIVERSE) && defined(USE_OPEN3D)
 #include "../Sensor/LiDAR/_Livox2.h"
 #include "../Sensor/LiDAR/_RoboSenseAiry.h"
 #endif // 3D
@@ -193,7 +194,7 @@
 
 #if defined(WITH_SLAM) && defined(WITH_NAVIGATION)
 #include "../SLAM/_SLAMbase.h"
-#if defined(USE_OPENCV) && defined(WITH_3D) && defined(USE_OPEN3D)
+#if defined(USE_OPENCV) && defined(WITH_UNIVERSE) && defined(USE_OPEN3D)
 #include "../SLAM/_LCalign.h"
 #endif // OpenCV
 #endif
@@ -219,9 +220,9 @@
 #endif
 #endif
 
-#ifdef WITH_UNIVERSE
-#include "../Universe/_Object.h"
-#include "../Universe/_Universe.h"
+#ifdef WITH_CANVAS
+#include "../Canvas/_Object.h"
+#include "../Canvas/_Canvas.h"
 #endif
 
 #ifdef WITH_VISION

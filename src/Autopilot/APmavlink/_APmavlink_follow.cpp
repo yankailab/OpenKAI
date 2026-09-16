@@ -91,8 +91,8 @@ namespace kai
 		m_pTracker = (_TrackerBase *)pM->findModule(n);
 
 		n = "";
-		jKv(j, "_Universe", n);
-		m_pU = (_Universe *)pM->findModule(n);
+		jKv(j, "_Canvas", n);
+		m_pCanvas = (_Canvas *)pM->findModule(n);
 
 		return true;
 	}
@@ -105,7 +105,7 @@ namespace kai
 
 	bool _APmavlink_follow::check(void)
 	{
-		NULL_F(m_pU);
+		NULL_F(m_pCanvas);
 
 		return this->_APmavlink_move::check();
 	}
@@ -208,7 +208,7 @@ namespace kai
 		_Object *tO = NULL;
 		float topProb = 0.0;
 		int i = 0;
-		while ((pO = m_pU->get(i++)) != NULL)
+		while ((pO = m_pCanvas->get(i++)) != NULL)
 		{
 			IF_CONT(pO->getTopClass() != m_iClass);
 			IF_CONT(pO->getTopClassProb() < topProb);

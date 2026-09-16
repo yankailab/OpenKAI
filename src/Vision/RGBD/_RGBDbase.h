@@ -16,8 +16,8 @@
 #include "../../Vision/Frame.h"
 #endif
 
-#ifdef WITH_3D
-#include "../../3D/PointCloud/_PointCloud.h"
+#ifdef WITH_UNIVERSE
+#include "../../Universe/Geometry/PointCloud/_PointCloud.h"
 #endif
 
 namespace kai
@@ -80,7 +80,7 @@ namespace kai
 		bool m_bDebugDepth = 0;
 #endif
 
-#ifdef WITH_3D
+#ifdef WITH_UNIVERSE
 		_PointCloud *m_pPointCloud = nullptr;
 #endif
 	};

@@ -46,7 +46,7 @@ If your Pi uses a 32-bit OS, install a 64-bit OS first or build ONNX Runtime fro
 
 ## Build OpenKAI
 
-Enable OpenCV, detectors, vision, universe, and ONNX Runtime:
+Enable OpenCV, detectors, vision, canvas, and ONNX Runtime:
 
 ```bash
 mkdir -p build
@@ -56,7 +56,7 @@ cmake .. \
   -DUSE_ONNXRUNTIME=ON \
   -DWITH_DETECTOR=ON \
   -DWITH_VISION=ON \
-  -DWITH_UNIVERSE=ON \
+  -DWITH_CANVAS=ON \
   -DONNXRuntime_include=/usr/local/include/onnxruntime \
   -DONNXRuntime_lib=/usr/local/lib
 make -j$(nproc)
@@ -109,7 +109,7 @@ The default YOLO26 export uses end-to-end detection, so `_YOLO26detectONNX` filt
     },
     "bLog": true,
     "_VisionBase":"cam",
-    "_Universe":"univ",
+    "_Canvas":"canvas",
     "fModel":"/home/kai/dev/models/yolo26n.onnx",
     "confidence":0.25,
     "score":0.45,

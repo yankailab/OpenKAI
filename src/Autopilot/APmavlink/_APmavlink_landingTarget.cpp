@@ -66,8 +66,8 @@ namespace kai
 		m_pDS = (_DistSensorBase *)pM->findModule(n);
 
 		n = "";
-		jKv(j, "_Universe", n);
-		m_pU = (_Universe *)pM->findModule(n);
+		jKv(j, "_Canvas", n);
+		m_pCanvas = (_Canvas *)pM->findModule(n);
 
 		return true;
 	}
@@ -81,7 +81,7 @@ namespace kai
 	bool _APmavlink_landingTarget::check(void)
 	{
 		NULL_F(m_pDS);
-		NULL_F(m_pU);
+		NULL_F(m_pCanvas);
 
 		return this->_APmavlink_move::check();
 	}
@@ -171,7 +171,7 @@ namespace kai
 		_Object *tO = NULL;
 		_Object *pO;
 		int i = 0;
-		while ((pO = m_pU->get(i++)) != NULL)
+		while ((pO = m_pCanvas->get(i++)) != NULL)
 		{
 			int id = pO->getTopClass();
 			pTag = getTag(id);

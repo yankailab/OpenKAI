@@ -58,8 +58,8 @@ namespace kai
 		m_pV = (_VisionBase *)(pM->findModule(n));
 
 		n = "";
-		jKv(j, "_Universe", n);
-		m_pU = (_Universe *)(pM->findModule(n));
+		jKv(j, "_Canvas", n);
+		m_pCanvas = (_Canvas *)(pM->findModule(n));
 
 		return true;
 	}
@@ -77,7 +77,7 @@ namespace kai
 	void _DetectorBase::onPause(void)
 	{
 		this->_ModuleBase::onPause();
-		m_pU->clear();
+		m_pCanvas->clear();
 	}
 
 	int _DetectorBase::getClassIdx(string &className)
@@ -101,9 +101,9 @@ namespace kai
 		return m_vClass[iClass];
 	}
 
-	_Universe *_DetectorBase::getU(void)
+	_Canvas *_DetectorBase::getCanvas(void)
 	{
-		return m_pU;
+		return m_pCanvas;
 	}
 
 	void _DetectorBase::console(void *pConsole)

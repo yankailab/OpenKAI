@@ -25,7 +25,7 @@ cmake --build build-web -j4
 ./build-web/OpenKAI jsonCfg/WebViewer3D.json
 ```
 
-This enables `WITH_3D` and requires Boost headers version 1.70 or later in addition
+This enables `WITH_UNIVERSE` and requires Boost headers version 1.70 or later in addition
 to OpenKAI's normal build dependencies. Beast and Asio are compiled from headers;
 no Boost runtime library, wsServer, Open3D, ImGui, or desktop GL backend is needed
 for streaming. The current sample uses `_Scepter` camera geometry and octree
@@ -348,8 +348,8 @@ are drawn with shared wire/solid box geometry and one GPU instance per cell.
 | --- | --- |
 | `src/Net/HttpServer.*` | Static HTTP files, MIME types, request deadlines, path containment, WebSocket upgrade hook |
 | `src/IO/WebSocketStream.*` | Asynchronous WebSocket sessions, shared snapshots, bounded delivery, lifecycle |
-| `src/3D/Viewer/WebViewer3DProtocol.h` | Versioned little-endian binary encoding |
-| `src/3D/Viewer/_WebViewer3D.*` | Framework configuration, collection, filtering and snapshot publication |
+| `src/Universe/Geometry/Viewer/WebViewer3DProtocol.h` | Versioned little-endian binary encoding |
+| `src/Universe/Geometry/Viewer/_WebViewer3D.*` | Framework configuration, collection, filtering and snapshot publication |
 | `html/webViewer3D/js/launcher.js` | Local-file launcher and endpoint validation |
 | `html/webViewer3D/js/wsStreamBase.js` | Geometry connection, protocol greeting, automatic reconnect and stream acknowledgements |
 | `html/webViewer3D/js/wsCmdBase.js` | Independent JSON command socket, sending and console status |

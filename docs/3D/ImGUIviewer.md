@@ -20,7 +20,7 @@ sudo apt-get install libglfw3-dev libgl1-mesa-dev
 
 cd OpenKAI/build
 cmake \
-  -DWITH_3D=ON \
+  -DWITH_UNIVERSE=ON \
   -DUSE_IMGUI=ON \
   -DIMGUI_DIR=$HOME/dev/imgui \
   -DIMGUI_BACKEND=GLFW \
@@ -37,7 +37,7 @@ sudo apt-get install libsdl2-dev libgles2-mesa-dev
 
 cd OpenKAI/build
 cmake \
-  -DWITH_3D=ON \
+  -DWITH_UNIVERSE=ON \
   -DUSE_IMGUI=ON \
   -DIMGUI_DIR=$HOME/dev/imgui \
   -DIMGUI_BACKEND=SDL2 \
@@ -55,7 +55,7 @@ The viewer is optional and is enabled with:
 mkdir -p build
 cd build
 cmake \
-  -DWITH_3D=ON \
+  -DWITH_UNIVERSE=ON \
   -DUSE_IMGUI=ON \
   -DIMGUI_DIR=/path/to/imgui \
   -DIMGUI_BACKEND=GLFW \

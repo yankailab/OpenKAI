@@ -46,7 +46,7 @@ namespace kai
 
 	bool _IRLock::check(void)
 	{
-		NULL_F(m_pU);
+		NULL_F(m_pCanvas);
 		NULL_F(m_pIO);
 
 		return this->_DetectorBase::check();
@@ -86,8 +86,8 @@ namespace kai
 
 		// TODO:distance
 
-		m_pU->add(o);
-		m_pU->swap();
+		m_pCanvas->add(o);
+		m_pCanvas->swap();
 	}
 
 	bool _IRLock::readPacket(void)
@@ -139,7 +139,7 @@ namespace kai
 		string msg = "| ";
 		_Object *pO;
 		int i = 0;
-		while ((pO = m_pU->get(i++)) != NULL)
+		while ((pO = m_pCanvas->get(i++)) != NULL)
 		{
 			msg += f2str(pO->getPos().z()) + " | ";
 		}

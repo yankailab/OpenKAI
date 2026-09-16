@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot_APmavlink__APmavlink_landingTarget_H_
 #define OpenKAI_src_Autopilot_APmavlink__APmavlink_landingTarget_H_
 
-#include "../../Universe/_Universe.h"
+#include "../../Canvas/_Canvas.h"
 #include "../../Sensor/Distance/_DistSensorBase.h"
 #include "../../Utility/util.h"
 #include "_APmavlink_move.h"
@@ -39,7 +39,7 @@ namespace kai
 
 	protected:
 		_DistSensorBase *m_pDS = nullptr;
-		_Universe *m_pU = nullptr;
+		_Canvas *m_pCanvas = nullptr;
 		_Object m_oTarget;
 
 		float m_yawRate = 30 * DEG_2_RAD;

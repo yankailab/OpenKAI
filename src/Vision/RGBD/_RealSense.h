@@ -88,7 +88,7 @@ namespace kai
 			return NULL;
 		}
 
-#ifdef WITH_3D
+#ifdef WITH_UNIVERSE
 		void updatePC(void);
 #endif
 		void updateTPP(void);

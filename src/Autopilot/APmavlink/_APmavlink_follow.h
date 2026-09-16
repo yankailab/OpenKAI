@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot_APmavlink__APmavlink_follow_H_
 #define OpenKAI_src_Autopilot_APmavlink__APmavlink_follow_H_
 
-#include "../../Universe/_Universe.h"
+#include "../../Canvas/_Canvas.h"
 #include "../../Tracker/_TrackerBase.h"
 #include "../../Filter/Median.h"
 #include "../../Filter/Average.h"
@@ -66,7 +66,7 @@ namespace kai
 		}
 
 	protected:
-		_Universe *m_pU = nullptr;
+		_Canvas *m_pCanvas = nullptr;
 		_TrackerBase *m_pTracker = nullptr;
 		TIME_OUT m_tOutTargetNotFound;
 		bool m_bTarget = false;

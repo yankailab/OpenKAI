@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_SLAM__LCalign_H_
 #define OpenKAI_src_SLAM__LCalign_H_
 
-#include "../3D/PointCloud/_PointCloud.h"
+#include "../Universe/Geometry/PointCloud/_PointCloud.h"
 #include "../Vision/_VisionBase.h"
 #include "../Sensor/_IMUbase.h"
 #include "../Protocol/_JSONbase.h"

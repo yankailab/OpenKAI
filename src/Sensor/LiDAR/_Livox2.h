@@ -9,7 +9,7 @@
 #define OpenKAI_src_Sensor_LiDAR__Livox2_H_
 
 #include "../../IO/_UDP.h"
-#include "../../3D/PointCloud/_PointCloud.h"
+#include "../../Universe/Geometry/PointCloud/_PointCloud.h"
 #include "../../Sensor/_IMUbase.h"
 #include "../../Dependencies/SensorFusion/SensorFusion.h"
 #include "../../Dependencies/CRC.h"

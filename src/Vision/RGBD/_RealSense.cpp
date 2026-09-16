@@ -393,13 +393,13 @@ namespace kai
             // }
 #endif
 
-#ifdef WITH_3D
+#ifdef WITH_UNIVERSE
             updatePC();
 #endif
         }
     }
 
-#ifdef WITH_3D
+#ifdef WITH_UNIVERSE
     void _RealSense::updatePC(void)
     {
         NULL_(m_pPCf);

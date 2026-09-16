@@ -1,7 +1,7 @@
-#include "../../src/3D/Grid/_SelectableOctGrid.h"
-#include "../../src/3D/Viewer/_ImGUIviewer.h"
-#include "../../src/3D/PointCloud/_PointCloud.h"
-#include "../../src/3D/Line/_Line.h"
+#include "../../src/Universe/Grid/_SelectableOctGrid.h"
+#include "../../src/Universe/Geometry/Viewer/_ImGUIviewer.h"
+#include "../../src/Universe/Geometry/PointCloud/_PointCloud.h"
+#include "../../src/Universe/Geometry/Line/_Line.h"
 #include "../../src/UI/_WSconsole.h"
 #include <cassert>
 #include <filesystem>

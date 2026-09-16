@@ -417,7 +417,7 @@ namespace kai
         m_xdHDL.release();
     }
 
-#ifdef WITH_3D
+#ifdef WITH_UNIVERSE
     int _XDynamics::getPointCloud(_PCframe *pPCframe, int nPmax)
     {
         NULL__(pPCframe, -1);

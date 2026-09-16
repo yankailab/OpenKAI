@@ -152,7 +152,7 @@ namespace kai
 		_Object *tO = NULL;
 		int i = 0;
 		_Object *pO;
-		while ((pO = m_pU->get(i++)) != NULL)
+		while ((pO = m_pCanvas->get(i++)) != NULL)
 		{
 			int id = pO->getTopClass();
 			pTag = getTag(id);

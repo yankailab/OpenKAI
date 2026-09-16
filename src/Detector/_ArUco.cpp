@@ -47,7 +47,7 @@ namespace kai
 	bool _ArUco::check(void)
 	{
 		NULL_F(m_pV);
-		NULL_F(m_pU);
+		NULL_F(m_pCanvas);
 
 		return this->_DetectorBase::check();
 	}
@@ -149,11 +149,11 @@ namespace kai
 			dy = pLB.y - pLT.y;
 			o.setAttitude(-atan2(dx, dy) * RAD_2_DEG + 180.0, 0, 0); // roll
 
-			m_pU->add(o);
+			m_pCanvas->add(o);
 			LOG_I("ID: " + i2str(o.getTopClass()));
 		}
 
-		m_pU->swap();
+		m_pCanvas->swap();
 	}
 
 	void _ArUco::console(void *pConsole)

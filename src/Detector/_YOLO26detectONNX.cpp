@@ -73,7 +73,7 @@ namespace kai
 	bool _YOLO26detectONNX::check(void)
 	{
 		NULL_F(m_pSession);
-		NULL_F(m_pU);
+		NULL_F(m_pCanvas);
 		NULL_F(m_pV);
 		Frame *pBGR = m_pV->getFrameRGB();
 		NULL_F(pBGR);
@@ -144,7 +144,7 @@ namespace kai
 			return;
 		}
 
-		m_pU->swap();
+		m_pCanvas->swap();
 	}
 
 	void _YOLO26detectONNX::matToTensor(const Mat &mSrc, vector<float> *pvTensor)
@@ -206,7 +206,7 @@ namespace kai
 			o.setBB2D(Vector4f(left, top, right - left, bottom - top), kBBx, kBBy);
 			o.setText(m_vClass[iClass]);
 
-			m_pU->add(o);
+			m_pCanvas->add(o);
 			LOG_I("Class: " + i2str(o.getTopClass()));
 		}
 
@@ -293,7 +293,7 @@ namespace kai
 			o.setBB2D(rect2BB<Vector4f>(vBox[idx]), kx, ky);
 			o.setText(m_vClass[vClassID[idx]]);
 
-			m_pU->add(o);
+			m_pCanvas->add(o);
 			LOG_I("Class: " + i2str(o.getTopClass()));
 		}
 

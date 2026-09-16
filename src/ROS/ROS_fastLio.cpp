@@ -62,7 +62,7 @@ namespace kai
     {
         //        LOG_("received PointCloud2 ");
 
-#ifdef WITH_3D
+#ifdef WITH_UNIVERSE
         NULL_(m_pPCframe);
 
         sensor_msgs::PointCloud2Iterator<float> iter_x(*pMsg, "x");

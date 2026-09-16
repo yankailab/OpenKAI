@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Detector__DetectorBase_H_
 #define OpenKAI_src_Detector__DetectorBase_H_
 
-#include "../Universe/_Universe.h"
+#include "../Canvas/_Canvas.h"
 #include "../Vision/_VisionBase.h"
 #include "../Utility/utilCV.h"
 
@@ -29,7 +29,7 @@ namespace kai
 		virtual bool loadModel(void);
 		virtual int getClassIdx(string &className);
 		virtual string getClassName(int iClass);
-		virtual _Universe *getU(void);
+		virtual _Canvas *getCanvas(void);
 
 	protected:
 		virtual void onPause(void);
@@ -40,7 +40,7 @@ namespace kai
 
 		// data
 		Frame m_fRGB;
-		_Universe *m_pU = nullptr;
+		_Canvas *m_pCanvas = nullptr;
 
 		// model
 		string m_fModel = "";
