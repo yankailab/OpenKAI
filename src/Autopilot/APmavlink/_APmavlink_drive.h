@@ -3,7 +3,7 @@
 
 #include "../../Protocol/_JSONbase.h"
 #include "../../Navigation/_GeoFence.h"
-#include "../../3D/Grid/_OctreeGrid.h"
+#include "../../3D/Grid/_SelectableOctGrid.h"
 #include "_APmavlink_move.h"
 
 namespace kai
@@ -66,7 +66,7 @@ namespace kai
 		AP_DRIVE_MODE m_dMode = apDrive_modeStandby;
 		int m_apModeMove = AP_ROVER_MANUAL;
 		_GeoFence *m_pGfence = nullptr;
-		_OctreeGrid *m_pOctGrid = nullptr;
+		_SelectableOctGrid *m_pOctGrid = nullptr;
 		float m_octGridOccu = 1;
 		float m_speedGo = 0.2;
 		float m_steerTurn = 0.2;

@@ -5,6 +5,7 @@ const container = document.createElement('div');
 container.style.cssText = 'position:fixed;width:128px;height:128px';
 document.body.append(container);
 const viewer = new Viewer3D(container);
+viewer.picker.configure([{ id: 0, name: 'grid', selectableGrid: true }]);
 viewer.renderer.setPixelRatio(1);
 viewer.renderer.setSize(128, 128);
 viewer.scene.background.setRGB(0, 0, 0);

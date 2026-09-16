@@ -41,9 +41,9 @@ def check(executable, name, points, depth, boxes, size=(8, 8, 8),
             'APP': {'class': 'ModuleMgr', 'appName': 'OctreeTest', 'bStdErr': True},
             'points': {'class': '_PCfile', 'thread': {'FPS': 30},
                        'nP': 16, 'vfName': [str(ply)]},
-            'octGrid': {'class': '_OctreeGrid', 'thread': {'FPS': 30},
+            'octGrid': {'class': '_SelectableOctGrid', 'thread': {'FPS': 30},
                         'nP': 16, 'vPorigin': origin, 'vRootCellSize': size,
-                        'nMaxLevel': depth, 'nMaxLines': max_lines,
+                        'nMaxLevel': depth, 'nMaxLines': max_lines, 'nPminBuild': 0,
                         'vGeometryBase': ['points']},
             'viewer': {'class': '_WebViewer3D', 'thread': {'FPS': 30},
                        'host': '127.0.0.1', 'port': port,
@@ -71,7 +71,9 @@ def check(executable, name, points, depth, boxes, size=(8, 8, 8),
                         time.sleep(.05)
                 opcode, hello = client.receive()
                 assert opcode == 1
-                names = {o['id']: o['name'] for o in json.loads(hello)['objects']}
+                sources = json.loads(hello)['objects']
+                assert {o['name'] for o in sources if o['selectableGrid']} == {'octGrid'}
+                names = {o['id']: o['name'] for o in sources}
                 point_client = WebSocket(port, '/stream/points')
                 point_client.receive()
                 point_client.send('start')

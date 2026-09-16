@@ -2,9 +2,7 @@
 #define OpenKAI_src_3D_Grid__OctreeGrid_H_
 
 #include "_OctreeBase.h"
-#include "../PointCloud/_PointCloud.h"
-#include "../../Filter/Median.h"
-#include "OctreeGridCells.h"
+#include "OctreeGridID.h"
 #include <mutex>
 
 namespace kai
@@ -43,36 +41,19 @@ namespace kai
 		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
-		virtual void console(void *pConsole);
-		virtual void console(const json &j, void *pJSONbase);
-
-		// config
-		// Load after init, with grid updates stopped; restoring a new root clears old occupancy.
-		virtual bool loadConfig(json *pJ = nullptr, string fName = "");
-		virtual bool saveConfig(json &j, string fName = "");
 
 		// grid
 		virtual OCTGRID_PCL_CELL *addCellPoint(const GEOMETRY_POINT &gP, const uint64_t &tNow, int nMaxLevTo = -1, bool bAdd = true);
 		virtual OCTGRID_PCL_CELL *getCell(const Vector3f &vP, int nMaxLevTo = -1);
 		virtual OCTGRID_PCL_CELL *getCell(const UUID128 &id);
-		virtual const vector<UUID128> &getSelectedCells(void);
-
-		// drawing
-		virtual int get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire = 0);
-		virtual int get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut, uint64_t tExpire = 0);
-		virtual int get(OCTGRID_CELLS *pOut, uint64_t tExpire = 0, size_t nMaxCells = SIZE_MAX);
 
 	protected:
-		// data
+		// The update loop holds m_gridMutex across calculations and derived work.
+		virtual void updateGrid(void);
 		virtual void updatePoint(void);
 		virtual void deleteExpiredCells(void);
 
-		// drawing
-		virtual void updateDrawAssets(void);
-
 	private:
-		json selectedCellsJSON(const char *idsKey);
-		virtual void updateGrid(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -94,20 +75,8 @@ namespace kai
 		GEOMETRY_RINGBUF<GEOMETRY_POINT> m_grPt;
 		uint64_t m_dTexpirePCL = 0;
 
-		// Compact published snapshot; geometry is constructed by viewers.
-		int m_nMaxCells = 100000 / 12;
-		OCTGRID_CELLS m_cells;
-		vector<OCTGRID_CELL> m_buildCells;
-		int m_nPminBuild = 1;
-
-		// Serializes live root changes with grid updates; acquire before m_cellsMutex.
+		// Serializes grid updates with root changes in derived modules.
 		std::mutex m_gridMutex;
-		std::mutex m_cellsMutex;
-		Vector4f m_vColCellOcc = {1, 1, 1, 1};
-		bool m_bColCellOcc = false;
-
-		// Selected cells, guarded by m_cellsMutex after initialization.
-		vector<UUID128> m_vSelectedCells;
 	};
 
 }

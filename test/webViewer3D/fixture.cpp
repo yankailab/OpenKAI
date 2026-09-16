@@ -16,7 +16,7 @@ int main(int argc, char **argv)
     for (size_t i = 0; i < Types.size(); ++i)
     {
         const std::string hello = std::string(R"({"type":"hello","version":4,"stream":")") + name(Types[i]) +
-            R"(","autoBound":true,"showGrid":true,"background":[0.035,0.045,0.065],"camera":{"eye":[0,-8,4],"target":[0,0,0],"up":[0,0,1],"type":0,"fov":70,"near":0.01,"far":1000000,"lr":[-10,10],"bt":[-10,10]},"objects":[{"id":7,"name":"Test cloud and lines"}]})";
+            R"(","autoBound":true,"showGrid":true,"background":[0.035,0.045,0.065],"camera":{"eye":[0,-8,4],"target":[0,0,0],"up":[0,0,1],"type":0,"fov":70,"near":0.01,"far":1000000,"lr":[-10,10],"bt":[-10,10]},"objects":[{"id":7,"name":"Test cloud and lines","selectableGrid":true}]})";
         streams[i] = std::make_unique<kai::WebSocketStream>(http.context(), hello);
         secondStreams[i] = std::make_unique<kai::WebSocketStream>(secondHttp.context(), hello);
         routes.emplace_back(std::string("/stream/") + name(Types[i]), streams[i].get());

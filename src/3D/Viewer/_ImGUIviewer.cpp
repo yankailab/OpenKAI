@@ -6,7 +6,7 @@
  */
 
 #include "_ImGUIviewer.h"
-#include "../Grid/_OctreeGrid.h"
+#include "../Grid/_SelectableOctGrid.h"
 
 #include "ImGUIviewerGLRenderer.h"
 #include "imgui.h"
@@ -328,7 +328,7 @@ namespace kai
 
 	void _ImGUIviewer::collectCells(IMGUI_VIEWER_OBJ *pObj)
 	{
-		auto *grid = dynamic_cast<_OctreeGrid *>(pObj->m_pGB);
+		auto *grid = dynamic_cast<_SelectableOctGrid *>(pObj->m_pGB);
 		if (!grid) return;
 		const uint64_t now = getApproxTbootUs();
 		const uint64_t expiry = m_dTexpire && now > m_dTexpire ? now - m_dTexpire : 0;

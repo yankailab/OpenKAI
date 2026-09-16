@@ -1,15 +1,13 @@
 #ifndef OpenKAI_src_3D_Grid_OctreeGridCells_H_
 #define OpenKAI_src_3D_Grid_OctreeGridCells_H_
 
-#include "../../Primitive/UUID128.h"
+#include "OctreeGridID.h"
 #include <array>
 #include <cstddef>
 #include <vector>
 
 namespace kai
 {
-	constexpr int OCTGRID_MAX_LEVEL = 40;
-
 	// Byte arrays avoid UUID alignment padding. IDs are always little-endian,
 	// low word first, both in memory and on the wire.
 	struct OCTGRID_CELL

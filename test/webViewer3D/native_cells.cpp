@@ -1,4 +1,4 @@
-#include "../../src/3D/Grid/_OctreeGrid.h"
+#include "../../src/3D/Grid/_SelectableOctGrid.h"
 #include "../../src/3D/Viewer/_ImGUIviewer.h"
 #include "../../src/3D/PointCloud/_PointCloud.h"
 #include "../../src/3D/Line/_Line.h"
@@ -10,10 +10,10 @@
 #include <thread>
 
 using namespace kai;
-class Grid : public _OctreeGrid {
+class Grid : public _SelectableOctGrid {
 public:
-    using _OctreeGrid::updateDrawAssets;
-    using _OctreeGrid::deleteExpiredCells;
+    using _SelectableOctGrid::updateDrawAssets;
+    using _SelectableOctGrid::deleteExpiredCells;
     vector<UUID128> selectedCells() {
         std::lock_guard<std::mutex> lock(m_cellsMutex);
         return m_vSelectedCells;
@@ -32,10 +32,38 @@ public:
     bool sendJson(const json &j) override { reply = j; return true; }
 };
 
+void checkCalculationGrid() {
+    class CalculationGrid : public _OctreeGrid {
+    public:
+        using _OctreeGrid::deleteExpiredCells;
+    } grid;
+    grid.setName("calculationGrid");
+    assert(grid.init(json{{"class","_OctreeGrid"}, {"thread",{{"FPS",30}}}, {"nP",1},
+        {"nMaxLevel",40}, {"dTexpireCell",1}, {"vPorigin",{0,0,0}}, {"vRootCellSize",{2,2,2}}}));
+    GEOMETRY_POINT point{Vector3f(.75,.5,.25), Vector4f(1,0,0,.25),1};
+    assert(grid.addCellPoint(point,1));
+    for (int level = 0; level <= 40; ++level) {
+        auto *cell = grid.getCell(point.m_vP,level);
+        assert(cell && grid.getCell(cell->m_ID) == cell && cell->m_vC.w() == .25);
+    }
+    point.m_vC = Vector4f(0,0,1,.75);
+    auto *cell = grid.addCellPoint(point,1);
+    assert(cell && cell->m_nP == 2 && cell->m_vC == Vector4f(.5,0,.5,.5));
+    assert(!grid.getCell(Vector3f(2,0,0)) && !grid.getCell(UUID128(64)));
+    SelectionConsole console;
+    console.source(&grid);
+    console.handleJson(json{{"cmd","setGridConfig"}, {"module","calculationGrid"},
+        {"vPorigin",{"100","0","0"}}, {"vRootCellSize",{"2","2","2"}}}.dump());
+    assert(console.reply.is_null() && grid.getCell(point.m_vP) == cell);
+    grid.deleteExpiredCells();
+    assert(!grid.getCell(UUID128(0)) && !grid.getCell(point.m_vP));
+    std::cout << "PASS: calculation-only grid lookup, averaging and expiry without interaction handling\n";
+}
+
 void checkGridConfigCommand() {
     Grid grid;
     grid.setName("octGrid");
-    assert(grid.init(json{{"class","_OctreeGrid"}, {"thread",{{"FPS",30}}}, {"nP",1},
+    assert(grid.init(json{{"class","_SelectableOctGrid"}, {"nPminBuild",0}, {"thread",{{"FPS",30}}}, {"nP",1},
         {"nMaxLevel",4}, {"vPorigin",{0,0,0}}, {"vRootCellSize",{2,2,2}}}));
     SelectionConsole console;
     console.source(&grid);
@@ -72,33 +100,30 @@ void checkGridConfigCommand() {
     for (const string value : {"0", "-1", "1e-100"}) {
         auto bad = initial; bad["vRootCellSize"][0] = value; send(bad, false);
     }
-    auto selectedVolume = [&] {
-        double volume = 0;
-        for (const auto &id : grid.selectedCells()) {
-            std::array<float,3> center, size;
-            assert(octgridCellBox(snapshot.m_header, id, center, size));
-            volume += double(size[0]) * size[1] * size[2];
-            for (int axis = 0; axis < 3; ++axis)
-                assert(center[axis] - size[axis] * .5 >= 0 && center[axis] + size[axis] * .5 <= 1);
-        }
-        return volume;
+    const auto retainedIDs = grid.selectedCells();
+    auto sameSelection = [&] {
+        const auto ids = grid.selectedCells();
+        return ids.size() == retainedIDs.size() && std::equal(ids.begin(), ids.end(), retainedIDs.begin(),
+            [](const UUID128 &a, const UUID128 &b) {
+                return a.m_uint64[0] == b.m_uint64[0] && a.m_uint64[1] == b.m_uint64[1];
+            });
     };
     send(config({".25",".25",".25"}, {"2","2","2"}));
     assert(grid.get(&snapshot) == 0 && snapshot.m_header.m_tStamp > 0 && !grid.getCell(UUID128(0)));
     assert(snapshot.m_header.m_vPorigin == (std::array<float,3>{.25,.25,.25}));
-    assert(grid.selectedCells().size() > 1 && selectedVolume() == 1);
+    assert(sameSelection()); // The browser remaps volumes on the next snapshot.
     grid.updateDrawAssets(); assert(grid.get(&snapshot) == 0); // No stale root or publication buffer.
     populate(); assert(grid.get(&snapshot) > 0); // Rebuild from points using the new root.
     send(config({"0","0","0"}, {"4","4","4"}));
-    assert(grid.get(&snapshot) == 0 && grid.selectedCells().size() == 1 && selectedVolume() == 1);
+    assert(grid.get(&snapshot) == 0 && sameSelection());
     send(config({".5",".5",".5"}, {".5",".5",".5"}));
-    assert(grid.get(&snapshot) == 0 && grid.selectedCells().size() == 1 && grid.selectedCells()[0] == uint64_t(0));
+    assert(grid.get(&snapshot) == 0 && sameSelection());
     send(config({"10","-20","30"}, {"8","4","2"}));
-    assert(grid.get(&snapshot) == 0 && grid.selectedCells().empty());
+    assert(grid.get(&snapshot) == 0 && sameSelection());
     assert(!grid.addCellPoint(point, point.m_tStamp));
     point.m_vP = Vector3f(10,-20,30); populate();
     assert(grid.get(&snapshot) > 0 && snapshot.m_header.m_vRootCellSize == (std::array<float,3>{8,4,2}));
-    std::cout << "PASS: setGridConfig dispatch/ACK, atomic validation, unchanged config, occupancy reset/rebuild, selection volume preservation, deduplication and clipping\n";
+    std::cout << "PASS: setGridConfig dispatch/ACK, atomic validation, unchanged config, occupancy reset/rebuild, selection retention for browser remapping\n";
 }
 
 // Run the production grid update loop, with a joinable thread for deterministic teardown.
@@ -127,7 +152,7 @@ void checkLiveGridConfig() {
     for (int i = 0; i < 1000; ++i) cloud.add(Vector3f(i * .001f, .5, .5), Vector4f(1,1,1,1));
     LiveGrid grid;
     grid.setName("liveGrid");
-    assert(grid.init(json{{"class","_OctreeGrid"},{"thread",{{"FPS",100}}},{"nP",1000},
+    assert(grid.init(json{{"class","_SelectableOctGrid"}, {"nPminBuild",0},{"thread",{{"FPS",100}}},{"nP",1000},
         {"nMaxLevel",8}, {"vPorigin",{0,0,0}}, {"vRootCellSize",{2,2,2}}}));
     grid.source(&cloud); assert(grid.start());
     SelectionConsole console; console.source(&grid);
@@ -148,7 +173,7 @@ void checkLiveGridConfig() {
 void checkSelectionCommand() {
     Grid grid;
     grid.setName("octGrid");
-    assert(grid.init(json{{"class","_OctreeGrid"}, {"thread",{{"FPS",30}}}, {"nP",1},
+    assert(grid.init(json{{"class","_SelectableOctGrid"}, {"nPminBuild",0}, {"thread",{{"FPS",30}}}, {"nP",1},
         {"nMaxLevel",40}, {"nMaxCells",0}, {"vPorigin",{.1f,-.2f,1e-6f}}, {"vRootCellSize",{8,4,2}}}));
     SelectionConsole console;
     console.source(&grid);
@@ -233,8 +258,8 @@ void checkSelectionConfig() {
     const json selection = {{"vPorigin",{.1f,-.2f,1e-6f}}, {"vRootCellSize",{8,4,2}},
         {"vSelectedCells",{root,deep}}};
     auto write = [&](const json &j) { std::ofstream out(file); out << j.dump(); assert(out.good()); };
-    write(json{{"_OctreeGrid",selection}});
-    const json config = {{"class","_OctreeGrid"}, {"thread",{{"FPS",30}}}, {"nP",16},
+    write(json{{"_SelectableOctGrid",selection}});
+    const json config = {{"class","_SelectableOctGrid"}, {"nPminBuild",0}, {"thread",{{"FPS",30}}}, {"nP",16},
         {"nMaxLevel",40}, {"nMaxCells",100}, {"fConfig",file},
         {"vPorigin",{10,20,30}}, {"vRootCellSize",{16,16,16}}};
     Grid grid;
@@ -246,6 +271,9 @@ void checkSelectionConfig() {
         assert(ids[1].m_uint64[0] == 0x0123456789abcde8ULL && ids[1].m_uint64[1] == 0x2123456789abcdefULL);
     };
     checkIDs();
+    // Legacy persisted sections remain readable after changing the module class.
+    write(json{{"_OctreeGrid",selection}});
+    assert(grid.loadConfig()); checkIDs();
     OCTGRID_CELLS snapshot;
     assert(grid.get(&snapshot) == 0);
     assert(snapshot.m_header.m_vPorigin == (std::array<float,3>{.1f,-.2f,1e-6f}));
@@ -253,7 +281,7 @@ void checkSelectionConfig() {
     const json other = {{"keep",42}};
     json saved = {{"otherModule",other}};
     assert(grid.saveConfig(saved));
-    assert(saved == json({{"otherModule",other}, {"_OctreeGrid",selection}}));
+    assert(saved == json({{"otherModule",other}, {"_SelectableOctGrid",selection}}));
     json loaded;
     assert(grid.loadConfig(&loaded));
     assert(loaded == saved); checkIDs();
@@ -278,18 +306,18 @@ void checkSelectionConfig() {
         json::array({root,"40000000000000000000000000000000"}),
         json::array({root,"29000000000000000000000000000000"})}) {
         auto bad = saved;
-        bad["_OctreeGrid"]["vPorigin"] = {100,200,300};
-        bad["_OctreeGrid"]["vSelectedCells"] = ids;
+        bad["_SelectableOctGrid"]["vPorigin"] = {100,200,300};
+        bad["_SelectableOctGrid"]["vSelectedCells"] = ids;
         invalid.push_back(bad);
     }
     for (const string key : {"vPorigin", "vRootCellSize"}) {
         for (const auto &value : vector<json>{json::array({1,2}), json::array({1,2,3,4}),
             json::array({"1",2,3}), json::array({1e100,2,3}), nullptr}) {
-            auto bad = saved; bad["_OctreeGrid"][key] = value; invalid.push_back(bad);
+            auto bad = saved; bad["_SelectableOctGrid"][key] = value; invalid.push_back(bad);
         }
     }
-    auto badSize = saved; badSize["_OctreeGrid"]["vRootCellSize"] = {0,4,2}; invalid.push_back(badSize);
-    auto missing = saved; missing["_OctreeGrid"].erase("vSelectedCells"); invalid.push_back(missing);
+    auto badSize = saved; badSize["_SelectableOctGrid"]["vRootCellSize"] = {0,4,2}; invalid.push_back(badSize);
+    auto missing = saved; missing["_SelectableOctGrid"].erase("vSelectedCells"); invalid.push_back(missing);
     invalid.push_back(json::object());
     for (const auto &bad : invalid) {
         write(bad);
@@ -302,15 +330,15 @@ void checkSelectionConfig() {
     assert(grid.loadConfig(nullptr,alternate)); unchanged(); // Explicit filename overrides fConfig.
 
     auto moved = saved;
-    moved["_OctreeGrid"]["vPorigin"] = {100,200,300};
-    moved["_OctreeGrid"]["vRootCellSize"] = {4,2,1};
+    moved["_SelectableOctGrid"]["vPorigin"] = {100,200,300};
+    moved["_SelectableOctGrid"]["vRootCellSize"] = {4,2,1};
     write(moved); assert(grid.loadConfig()); checkIDs();
     assert(grid.get(&snapshot) == 0 && !grid.getCell(UUID128(0)));
     assert(snapshot.m_header.m_vPorigin == (std::array<float,3>{100,200,300}));
     assert(snapshot.m_header.m_vRootCellSize == (std::array<float,3>{4,2,1}));
-    auto empty = moved; empty["_OctreeGrid"]["vSelectedCells"] = json::array();
+    auto empty = moved; empty["_SelectableOctGrid"]["vSelectedCells"] = json::array();
     write(empty); assert(grid.loadConfig()); assert(grid.selectedCells().empty());
-    json emptySaved; assert(grid.saveConfig(emptySaved)); assert(emptySaved["_OctreeGrid"] == empty["_OctreeGrid"]);
+    json emptySaved; assert(grid.saveConfig(emptySaved)); assert(emptySaved["_SelectableOctGrid"] == empty["_SelectableOctGrid"]);
     Grid restored;
     restored.setName("restoredGrid"); assert(restored.init(config));
     assert(restored.selectedCells().empty());
@@ -340,6 +368,7 @@ public:
     void buffers() { assert(m_grPt.alloc(16)); assert(m_grLn.alloc(16)); m_dTexpire = 0; }
 };
 int main(int argc, char **argv) {
+    checkCalculationGrid();
     checkGridConfigCommand();
     checkLiveGridConfig();
     checkSelectionCommand();
@@ -348,7 +377,7 @@ int main(int argc, char **argv) {
     const int meanAlpha = argc > 1 ? firstAlpha : 128;
     Grid grid;
     grid.setName("grid");
-    assert(grid.init(json{{"class","_OctreeGrid"}, {"thread",{{"FPS",30}}}, {"nP",16},
+    assert(grid.init(json{{"class","_SelectableOctGrid"}, {"nPminBuild",0}, {"thread",{{"FPS",30}}}, {"nP",16},
         {"nMaxLevel",40}, {"nMaxCells",100}, {"dTexpireCell",1000},
         {"vPorigin",{10,-20,30}}, {"vRootCellSize",{8,4,2}}}));
     OCTGRID_CELLS snapshot;

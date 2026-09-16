@@ -64,7 +64,7 @@
 
 
   "octGrid": {
-    "class": "_OctreeGrid",
+    "class": "_SelectableOctGrid",
     "thread": {
       "FPS": 5
     },

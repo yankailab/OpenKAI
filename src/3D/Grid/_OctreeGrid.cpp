@@ -1,88 +1,10 @@
 #include "_OctreeGrid.h"
-#include "../../Protocol/_JSONbase.h"
-#include <algorithm>
-#include <charconv>
 #include <cmath>
 
 namespace kai
 {
 	namespace
 	{
-		static bool readConfigVector(const json &j, Vector3f &v)
-		{
-			if (!j.is_array() || j.size() != 3)
-				return false;
-			for (size_t i = 0; i < 3; ++i)
-			{
-				if (!j[i].is_number())
-					return false;
-				v[i] = j[i].get<float>();
-				if (!std::isfinite(v[i]))
-					return false;
-			}
-			return true;
-		}
-
-		static bool readSelectionVector(const json &j, Vector3f &v)
-		{
-			if (!j.is_array() || j.size() != 3)
-				return false;
-			for (size_t i = 0; i < 3; ++i)
-			{
-				if (!j[i].is_string())
-					return false;
-				const auto &s = j[i].get_ref<const string &>();
-				// Parse the browser's ASCII numbers independently of the process locale.
-				const auto result = std::from_chars(s.data(), s.data() + s.size(), v[i]);
-				if (result.ec != std::errc() || result.ptr != s.data() + s.size() || !std::isfinite(v[i]))
-					return false;
-			}
-			return true;
-		}
-
-		static bool readSelectionID(const json &j, UUID128 &id)
-		{
-			if (!j.is_string())
-				return false;
-			const auto &s = j.get_ref<const string &>();
-			if (s.size() != 32)
-				return false;
-			auto hex = [](char c) -> int
-			{
-				if (c >= '0' && c <= '9')
-					return c - '0';
-				if (c >= 'a' && c <= 'f')
-					return c - 'a' + 10;
-				if (c >= 'A' && c <= 'F')
-					return c - 'A' + 10;
-				return -1;
-			};
-			OCTGRID_CELL cell;
-			for (size_t i = 0; i < 16; ++i)
-			{
-				const int high = hex(s[i * 2]), low = hex(s[i * 2 + 1]);
-				if (high < 0 || low < 0)
-					return false;
-				cell.m_ID[i] = uint8_t(high * 16 + low);
-			}
-			id = cell.id(); // Stream byte order: little-endian, low 64-bit word first.
-			return true;
-		}
-
-		static string writeSelectionID(const UUID128 &id)
-		{
-			static const char hex[] = "0123456789abcdef";
-			OCTGRID_CELL cell;
-			cell.setID(id);
-			string result(32, '0');
-			for (size_t i = 0; i < 16; ++i)
-			{
-				result[i * 2] = hex[cell.m_ID[i] >> 4];
-				result[i * 2 + 1] = hex[cell.m_ID[i] & 15];
-			}
-			return result;
-		}
-
 		static Vector3f vHalf(const Vector3f &v)
 		{
 			return Vector3f(v.x() * 0.5f, v.y() * 0.5f, v.z() * 0.5f);
@@ -133,8 +55,6 @@ namespace kai
 				pCell->m_vC = (pCell->m_vC * (float)pCell->m_nP + color) / (float)(pCell->m_nP + 1);
 			}
 
-			pCell->m_vC.w() = 0.5f; // temporary alpha test; RGBA maps to x, y, z, w
-
 			pCell->m_nP++;
 			pCell->m_tStamp = tNow;
 		}
@@ -178,29 +98,6 @@ namespace kai
 			IF__(pCell->getT(), true);
 			return bHasChild(pCell);
 		}
-
-		static void addCellsRecursive(OCTREE_CELL<OCTGRID_PCL_CELL> *pCell,
-									  int nPmin,
-									  vector<OCTGRID_CELL> &out,
-									  size_t limit,
-									  const Vector4f *pColor)
-		{
-			if (!pCell || out.size() >= limit)
-				return;
-			const auto *pT = pCell->getT();
-			if (pT && pT->m_nP > nPmin && pT->m_tStamp > 0)
-			{
-				OCTGRID_CELL cell;
-				cell.setID(pT->m_ID);
-				const auto &color = pColor ? *pColor : pT->m_vC;
-				const float rgba[] = {color.x(), color.y(), color.z(), color.w()};
-				for (int i = 0; i < 4; ++i)
-					cell.m_vC[i] = uint8_t(std::clamp(std::isfinite(rgba[i]) ? rgba[i] : 1.f, 0.f, 1.f) * 255.f + 0.5f);
-				out.push_back(cell);
-			}
-			for (int i = 0; i < N_OCT && out.size() < limit; ++i)
-				addCellsRecursive(pCell->getChild(i), nPmin, out, limit, pColor);
-		}
 	}
 
 	_OctreeGrid::_OctreeGrid()
@@ -228,14 +125,6 @@ namespace kai
 		jKv(j, "dTexpireCell", m_dTexpireCell);
 		jKv(j, "dTexpirePCL", m_dTexpirePCL);
 
-		// Keep the old line budget as a compatibility default, in complete boxes.
-		int nMaxLines = 100000;
-		jKv(j, "nMaxLines", nMaxLines);
-		m_nMaxCells = nMaxLines / 12;
-		jKv(j, "nMaxCells", m_nMaxCells);
-		m_bColCellOcc = jKv<float>(j, "vColCellOcc", m_vColCellOcc);
-
-		IF_Le_F(nMaxLines <= 0 || m_nMaxCells < 0, "Invalid grid cell limit");
 		IF_Le_F(m_nMaxLevel < 0 || m_nMaxLevel > OCTGRID_MAX_LEVEL, "Invalid nMaxLevel: " + i2str(m_nMaxLevel));
 		IF_Le_F(!std::isfinite(m_vPorigin.x()) || !std::isfinite(m_vPorigin.y()) || !std::isfinite(m_vPorigin.z()) ||
 					!std::isfinite(m_vRootCellSize.x()) || !std::isfinite(m_vRootCellSize.y()) || !std::isfinite(m_vRootCellSize.z()) ||
@@ -251,16 +140,6 @@ namespace kai
 		IF_Le_F(!m_grPt.alloc(nP), "Alloc failed with nP: " + i2str(nP));
 		m_grPt.clear();
 
-		jKv(j, "nPminBuild", m_nPminBuild);
-		m_cells.m_vCell.clear();
-		m_cells.m_vCell.reserve(m_nMaxCells);
-		m_buildCells.clear();
-		m_buildCells.reserve(m_nMaxCells);
-		m_cells.m_header = {{m_vPorigin.x(), m_vPorigin.y(), m_vPorigin.z()},
-							{m_vRootCellSize.x(), m_vRootCellSize.y(), m_vRootCellSize.z()},
-							uint32_t(m_nMaxLevel),
-							0};
-
 		if (m_pCell)
 		{
 			m_pCell->release();
@@ -270,99 +149,7 @@ namespace kai
 		m_pCell = new OCTREE_CELL<OCTGRID_PCL_CELL>();
 		NULL_F(m_pCell);
 
-		m_vSelectedCells.clear();
-
-		loadConfig();
-
 		return true;
-	}
-
-	bool _OctreeGrid::loadConfig(json *pJ, string fName)
-	{
-		json j;
-		IF_F(!this->_OctreeBase::loadConfig(&j, fName));
-
-		const json &jG = jK(j, "_OctreeGrid");
-
-		Vector3f origin = Vector3f::Zero(), size = Vector3f::Zero();
-		IF_Le_F(!readConfigVector(jK(jG, "vPorigin"), origin) ||
-					!readConfigVector(jK(jG, "vRootCellSize"), size) || size.x() <= 0 || size.y() <= 0 || size.z() <= 0,
-				"Invalid saved grid header");
-
-		const auto &ids = jK(jG, "vSelectedCells");
-		IF_Le_F(!ids.is_array(), "Invalid vSelectedCells");
-
-		const OCTGRID_HEADER header = {{origin.x(), origin.y(), origin.z()},
-									   {size.x(), size.y(), size.z()},
-									   uint32_t(m_nMaxLevel),
-									   0};
-
-		vector<UUID128> vCselected;
-		vCselected.reserve(ids.size());
-		for (const auto &value : ids)
-		{
-			UUID128 id;
-			std::array<float, 3> center, extent;
-			IF_Le_F(!readSelectionID(value, id) || !octgridCellBox(header, id, center, extent),
-					"Invalid selected cell ID in config");
-			vCselected.push_back(id);
-		}
-
-		{
-			std::lock_guard<std::mutex> gridLock(m_gridMutex);
-			std::lock_guard<std::mutex> lock(m_cellsMutex);
-			// Occupancy belongs to its original root; never reinterpret it under a new one.
-			if (m_vPorigin != origin || m_vRootCellSize != size)
-			{
-				if (m_pCell)
-					m_pCell->release();
-				m_cells.m_vCell.clear();
-				m_buildCells.clear();
-				m_cells.m_header.m_tStamp = 0;
-			}
-
-			m_vPorigin = origin;
-			m_vRootCellSize = size;
-			m_vSelectedCells.swap(vCselected);
-
-			m_cells.m_header.m_vPorigin = header.m_vPorigin;
-			m_cells.m_header.m_vRootCellSize = header.m_vRootCellSize;
-			m_cells.m_header.m_nMaxLevel = header.m_nMaxLevel;
-		}
-
-		if (pJ)
-		{
-			*pJ = j;
-		}
-		return true;
-	}
-
-	bool _OctreeGrid::saveConfig(json &j, string fName)
-	{
-		IF_Le_F(!j.is_null() && !j.is_object(), "Config must be a JSON object");
-		j["_OctreeGrid"] = selectedCellsJSON("vSelectedCells");
-		return this->_OctreeBase::saveConfig(j, fName);
-	}
-
-	json _OctreeGrid::selectedCellsJSON(const char *idsKey)
-	{
-		Vector3f origin = Vector3f::Zero(), size = Vector3f::Zero();
-		vector<UUID128> vCselected;
-
-		{
-			std::lock_guard<std::mutex> lock(m_cellsMutex);
-			origin = m_vPorigin;
-			size = m_vRootCellSize;
-			vCselected = m_vSelectedCells;
-		}
-
-		json jG = json::object();
-		jG["vPorigin"] = {origin.x(), origin.y(), origin.z()};
-		jG["vRootCellSize"] = {size.x(), size.y(), size.z()};
-		jG[idsKey] = json::array();
-		for (const auto &id : vCselected)
-			jG[idsKey].push_back(writeSelectionID(id));
-		return jG;
 	}
 
 	bool _OctreeGrid::link(const json &j, ModuleMgr *pM)
@@ -400,6 +187,7 @@ namespace kai
 		{
 			m_pT->autoFPS();
 
+			std::lock_guard<std::mutex> gridLock(m_gridMutex);
 			updateGrid();
 		}
 	}
@@ -408,10 +196,8 @@ namespace kai
 	{
 		IF_(!check());
 
-		std::lock_guard<std::mutex> gridLock(m_gridMutex);
 		updatePoint();
 		deleteExpiredCells();
-		updateDrawAssets();
 	}
 
 	void _OctreeGrid::updatePoint(void)
@@ -550,11 +336,6 @@ namespace kai
 		return pT;
 	}
 
-	const vector<UUID128> &_OctreeGrid::getSelectedCells(void)
-	{
-		return m_vSelectedCells;
-	}
-
 	void _OctreeGrid::deleteExpiredCells(void)
 	{
 		IF_(!m_pCell);
@@ -570,159 +351,4 @@ namespace kai
 		bKeepCell(m_pCell, tExpire);
 	}
 
-	void _OctreeGrid::updateDrawAssets(void)
-	{
-		IF_(!check());
-		NULL_(m_pCell);
-
-		// Traverse outside the publication lock so viewers only wait for a swap.
-		m_buildCells.clear();
-		addCellsRecursive(m_pCell, m_nPminBuild, m_buildCells, m_nMaxCells, m_bColCellOcc ? &m_vColCellOcc : nullptr);
-		std::lock_guard<std::mutex> lock(m_cellsMutex);
-		m_cells.m_header = {{m_vPorigin.x(), m_vPorigin.y(), m_vPorigin.z()},
-							{m_vRootCellSize.x(), m_vRootCellSize.y(), m_vRootCellSize.z()},
-							uint32_t(m_nMaxLevel),
-							getApproxTbootUs()};
-		m_cells.m_vCell.swap(m_buildCells);
-	}
-
-	int _OctreeGrid::get(OCTGRID_CELLS *pOut, uint64_t tExpire, size_t nMaxCells)
-	{
-		NULL__(pOut, 0);
-		std::lock_guard<std::mutex> lock(m_cellsMutex);
-		pOut->m_header = m_cells.m_header;
-		const size_t n = bExpired(m_cells.m_header.m_tStamp, tExpire) ? 0 : std::min(nMaxCells, m_cells.m_vCell.size());
-		pOut->m_vCell.assign(m_cells.m_vCell.begin(), m_cells.m_vCell.begin() + n);
-		return int(n);
-	}
-
-	int _OctreeGrid::get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire)
-	{
-		// currently the grid itself does not draw points, so we just return 0
-		return 0;
-	}
-
-	int _OctreeGrid::get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut, uint64_t tExpire)
-	{
-		// Kept for _GeometryBase compatibility. Occupied boxes use the cell API.
-		return 0;
-	}
-
-	void _OctreeGrid::console(void *pConsole)
-	{
-		NULL_(pConsole);
-		this->_OctreeBase::console(pConsole);
-
-		//		_Console *pC = (_Console *)pConsole;
-	}
-
-	void _OctreeGrid::console(const json &j, void *pJSONbase)
-	{
-		_JSONbase *pJb = (_JSONbase *)pJSONbase;
-		string cmd;
-		IF_(!jKv(j, "cmd", cmd));
-
-		if (cmd == "octGridCellSelect")
-		{
-			Vector3f origin = Vector3f::Zero(), size = Vector3f::Zero();
-			bool sameHeader = readSelectionVector(jK(j, "vPorigin"), origin) &&
-							  readSelectionVector(jK(j, "vRootCellSize"), size);
-			{
-				std::lock_guard<std::mutex> lock(m_cellsMutex);
-				for (size_t i = 0; sameHeader && i < 3; ++i)
-					sameHeader = origin[i] == m_vPorigin[i] && size[i] == m_vRootCellSize[i] && size[i] > 0;
-			}
-
-			const auto &ids = jK(j, "cellIDs");
-			bool bSuccess = sameHeader && ids.is_array();
-			vector<UUID128> vCselected;
-			if (bSuccess)
-			{
-				const OCTGRID_HEADER header = {{origin.x(), origin.y(), origin.z()},
-											   {size.x(), size.y(), size.z()},
-											   uint32_t(m_nMaxLevel),
-											   0};
-				vCselected.reserve(ids.size());
-				for (const auto &value : ids)
-				{
-					UUID128 id;
-					std::array<float, 3> center, extent;
-
-					// Validate depth/reserved path bits without requiring current occupancy.
-					if (!readSelectionID(value, id) || !octgridCellBox(header, id, center, extent))
-					{
-						bSuccess = false;
-						break;
-					}
-
-					vCselected.push_back(id);
-				}
-			}
-
-			{
-				std::lock_guard<std::mutex> lock(m_cellsMutex);
-				// A live config update may have completed while the IDs were decoded.
-				sameHeader = sameHeader && origin == m_vPorigin && size == m_vRootCellSize;
-				bSuccess = bSuccess && sameHeader;
-				if (!sameHeader)
-					m_vSelectedCells.clear();
-				else if (bSuccess)
-					m_vSelectedCells.swap(vCselected); // Commit only a completely valid list.
-			}
-
-			// save to m_fConfig json file
-			json Jsave = json::object();
-			saveConfig(Jsave);
-
-			NULL_(pJb);
-			json jr = json::object();
-			jr["cmd"] = "octGridCellSelect";
-			jr["bSuccess"] = bSuccess;
-			pJb->sendJson(jr);
-		}
-		else if (cmd == "loadCellSelect")
-		{
-			NULL_(pJb);
-
-			// init() restores fConfig; retrieval snapshots the current selection without
-			// changing the running grid's root or occupancy.
-			json jr = selectedCellsJSON("cellIDs");
-			jr["cmd"] = "cellSelect";
-			jr["module"] = getName();
-			jr["nMaxLevel"] = m_nMaxLevel;
-			for (const char *key : {"vPorigin", "vRootCellSize"})
-				for (auto &coordinate : jr[key])
-					coordinate = coordinate.dump();
-
-			pJb->sendJson(jr);
-		}
-		else if (cmd == "setGridConfig")
-		{
-			Vector3f origin = Vector3f::Zero(), size = Vector3f::Zero();
-			const bool bSuccess = readSelectionVector(jK(j, "vPorigin"), origin) &&
-								  readSelectionVector(jK(j, "vRootCellSize"), size) && size.x() > 0 && size.y() > 0 && size.z() > 0;
-			if (bSuccess)
-			{
-				std::lock_guard<std::mutex> gridLock(m_gridMutex);
-				std::lock_guard<std::mutex> lock(m_cellsMutex);
-				if (origin != m_vPorigin || size != m_vRootCellSize)
-				{
-					const OCTGRID_HEADER header = {{origin.x(), origin.y(), origin.z()},
-												   {size.x(), size.y(), size.z()},
-												   uint32_t(m_nMaxLevel),
-												   getApproxTbootUs()};
-					if (m_pCell)
-						m_pCell->release(); // Clear the root's occupancy as well as all eight subtrees.
-					m_buildCells.clear();
-					m_cells.m_vCell.clear();
-					m_vPorigin = origin;
-					m_vRootCellSize = size;
-					m_cells.m_header = header; // Publish an empty snapshot until the next rebuild.
-				}
-			}
-
-			NULL_(pJb);
-			pJb->sendJson(json{{"cmd", "setGridConfig"}, {"module", getName()}, {"bSuccess", bSuccess}});
-		}
-	}
 }

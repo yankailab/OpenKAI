@@ -42,9 +42,10 @@ namespace kai
 		string n;
 
 		n = "";
-		jKv(j, "_OctreeGrid", n);
-		m_pOctGrid = (_OctreeGrid *)(pM->findModule(n));
-		IF_Le_F(!m_pOctGrid, "_OctreeGrid not found: " + n);
+		if (!jKv(j, "_SelectableOctGrid", n))
+			jKv(j, "_OctreeGrid", n);
+		m_pOctGrid = dynamic_cast<_SelectableOctGrid *>(static_cast<BASE *>(pM->findModule(n)));
+		IF_Le_F(!m_pOctGrid, "_SelectableOctGrid not found: " + n);
 
 		n = "";
 		jKv(j, "_GeoFence", n);

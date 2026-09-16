@@ -17,7 +17,7 @@ args = parser.parse_args()
 build = Path(args.build).resolve()
 source = Path(__file__).with_suffix('.cpp').resolve()
 entry = next(e for e in json.loads((build / 'compile_commands.json').read_text())
-             if e['file'].endswith('/Grid/_OctreeGrid.cpp'))
+             if e['file'].endswith('/Grid/_SelectableOctGrid.cpp'))
 with tempfile.TemporaryDirectory(prefix='openkai-native-cells-') as tmp:
     obj, binary = str(Path(tmp) / 'native.o'), str(Path(tmp) / 'native')
     compile_args = entry.get('arguments') or shlex.split(entry['command'])

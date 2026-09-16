@@ -1,6 +1,6 @@
 #include "_WebViewer3D.h"
 #include "WebViewer3DProtocol.h"
-#include "../Grid/_OctreeGrid.h"
+#include "../Grid/_SelectableOctGrid.h"
 #include "../../Module/ModuleMgr.h"
 #include "../../IO/WebSocketStream.h"
 #include <algorithm>
@@ -122,7 +122,7 @@ namespace kai
 		{
 		case webviewer3d::Type::Points: return o.nP > 0;
 		case webviewer3d::Type::Lines: return o.nL > 0;
-		case webviewer3d::Type::Cells: return dynamic_cast<_OctreeGrid *>(o.source) != nullptr;
+		case webviewer3d::Type::Cells: return dynamic_cast<_SelectableOctGrid *>(o.source) != nullptr;
 		}
 		return false;
 	}
@@ -147,7 +147,8 @@ namespace kai
 			{"bt", {m_camProj.m_vBT.x(), m_camProj.m_vBT.y()}}};
 		j["objects"] = json::array();
 		for (size_t i = 0; i < m_objects.size(); ++i)
-			j["objects"].push_back({{"id", i}, {"name", m_objects[i].name}});
+			j["objects"].push_back({{"id", i}, {"name", m_objects[i].name},
+				{"selectableGrid", dynamic_cast<_SelectableOctGrid *>(m_objects[i].source) != nullptr}});
 		return j.dump();
 	}
 	bool _WebViewer3D::start()
@@ -237,7 +238,7 @@ namespace kai
 		const float opacity = colorByte(o.color.w()) / 255.f;
 		if (type == Type::Cells)
 		{
-			static_cast<_OctreeGrid *>(o.source)->get(&m_cells, expiry, size_t(o.nC));
+			static_cast<_SelectableOctGrid *>(o.source)->get(&m_cells, expiry, size_t(o.nC));
 			for (size_t axis = 0; axis < 3; ++axis)
 			{
 				const float center = m_cells.m_header.m_vPorigin[axis], half = m_cells.m_header.m_vRootCellSize[axis] * .5f;

@@ -6,7 +6,7 @@ container.style.cssText = 'position:fixed;width:128px;height:128px';
 document.body.append(container);
 const viewer = new Viewer3D(container);
 const check = (ok, message) => { if (!ok) throw Error(message); };
-viewer.configure({ objects: [{ id: 7, name: 'grid' }], background: [0, 0, 0], showGrid: false,
+viewer.configure({ objects: [{ id: 7, name: 'grid', selectableGrid: true }], background: [0, 0, 0], showGrid: false,
   autoBound: true, camera: { eye: [0, 0, 5], target: [0, 0, 0], up: [0, 1, 0], type: 0, fov: 60, near: .1, far: 100 } });
 viewer.axes.visible = false;
 const cells = new Uint8Array(20); cells.set([0, 255, 0, 128], 16);

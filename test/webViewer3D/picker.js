@@ -54,11 +54,14 @@ export async function runPickerTests() {
   container.style.cssText = 'position:fixed;left:0;top:0;width:300px;height:300px';
   document.body.append(container);
   const viewer = new Viewer3D(container), picker = viewer.picker;
-  picker.configure([{ id: 8, name: 'octGrid' }, { id: 9, name: 'otherGrid' }]);
+  picker.configure([{ id: 8, name: 'octGrid', selectableGrid: true }, { id: 9, name: 'otherGrid', selectableGrid: true },
+    { id: 10, name: 'calculationGrid', selectableGrid: false }]);
   const boxes = new GridBoxes();
   const grid = selectionGrid(header, selected(root, idAt(7), idAt(7, 7)));
   for (let at = 0; at < grid.cells.length; at += 20) { grid.cells[at + 16] = 0; grid.cells[at + 17] = 255; }
   boxes.update(grid, rootBounds(header), 1);
+  picker.updateObject({ id: 10, visible: true, boxes }, grid);
+  check(picker.sources.size === 0 && picker.gridModules().length === 0, 'Calculation grid exposed interaction controls');
   picker.updateObject({ id: 8, visible: true, boxes }, grid);
   const ray = new THREE.Ray(new THREE.Vector3(.75, .75, 5), new THREE.Vector3(0, 0, -1));
   let hit = picker.pickRay(ray);
@@ -161,6 +164,10 @@ export async function runPickerTests() {
   checkNewObject(10);
   viewer.clear(); // Reconnects clear streamed objects, but retain the level range.
   checkNewObject(11);
+  picker.toggle(source, root);
+  picker.configure([{ id: 8, name: 'octGrid', selectableGrid: false }]);
+  check(picker.commands().length === 0 && picker.loadCommands().length === 0 && picker.pickRay(ray) === null,
+    'Reconnect to a calculation grid retained interaction commands or picking');
   boxes.dispose(); viewer.dispose(); container.remove();
   return 'PASS: picker depth priority, exact IDs, level filtering, persistence, toggling, volume remapping, multiple grids and clearing';
 }

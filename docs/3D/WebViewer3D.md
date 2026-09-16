@@ -2,11 +2,18 @@
 
 `_WebViewer3D` derives from `_GeometryViewerBase` and reads points and lines from
 the same `_GeometryBase::get()` ring buffers as `_ImGUIviewer`, plus compact
-`_OctreeGrid::get(OCTGRID_CELLS*)` snapshots. The C++ process
+`_SelectableOctGrid::get(OCTGRID_CELLS*)` snapshots. The C++ process
 serves the browser application and three independent binary WebSockets on one port. A separate
 WebSocket connects JSON application commands to `_WSconsole`. All browser
 assets, including a pinned three.js release, are in `html/webViewer3D/`.
 There is no browser-side installation, npm build, CDN, or separate web server.
+
+Configure displayed grids with `"class": "_SelectableOctGrid"`. This module
+inherits the `_OctreeGrid` calculation API and the `_ModuleBase` lifecycle, and
+owns viewer snapshots, selection state, saved selections and interaction commands.
+`_OctreeGrid` only ingests points, calculates occupancy, looks up cells and expires
+old cells; it does not publish viewer snapshots or handle grid commands.
+Existing module instance names such as `octGrid` and command names stay the same.
 
 ## Build and run
 
@@ -109,7 +116,7 @@ It uses `wsSendCmd()` once per known grid module, with decimal-string coordinate
 }
 ```
 
-`_OctreeGrid::console()` validates all six values before applying them. Coordinates
+`_SelectableOctGrid::console()` validates all six values before applying them. Coordinates
 must be finite float32 values and sizes must be positive. A changed root clears
 old occupancy, publishes the new header with an empty snapshot, and rebuilds from
 point sources on subsequent updates. Root changes are synchronized with the grid
@@ -173,7 +180,7 @@ remaining boundary cells cover the volume at a coarser depth.
 **Send** is enabled when there are selections and the independent command socket
 is connected. It calls the existing `wsSendCmd()` once per selected grid source,
 so grids with different root headers never share an ambiguous ID list. The JSON
-command received by `_OctreeGrid::console()` through `_WSconsole` is:
+command received by `_SelectableOctGrid::console()` through `_WSconsole` is:
 
 ```json
 {
@@ -231,12 +238,12 @@ outside the displayed level range.
 
 ### Saving selected cells
 
-`_OctreeGrid::saveConfig(j, fName)` writes the root and selected IDs under
-`_OctreeGrid`, preserving other top-level sections already present in `j`:
+`_SelectableOctGrid::saveConfig(j, fName)` writes the root and selected IDs under
+`_SelectableOctGrid`, preserving other top-level sections already present in `j`:
 
 ```json
 {
-  "_OctreeGrid": {
+  "_SelectableOctGrid": {
     "vPorigin": [0, 0, 0],
     "vRootCellSize": [2, 2, 2],
     "vSelectedCells": ["00000000000000000000000000000000"]
@@ -249,6 +256,8 @@ order as picker commands. `loadConfig(pJ, fName)` restores this state and option
 returns the complete parsed document through `pJ`. Both methods use the module's
 `fConfig` setting when `fName` is empty. Initialization loads that file after the
 grid's root and maximum level are configured.
+For migration, `loadConfig()` also accepts the legacy `_OctreeGrid` section when
+`_SelectableOctGrid` is absent. New saves use `_SelectableOctGrid`.
 
 The `octGridCellSelect` handler calls `saveConfig()` after updating the selection.
 Configure a writable `octGrid.fConfig` path to retain it across backend restarts.
@@ -374,6 +383,8 @@ status is shown separately when their connection states differ.
 Each connection receives a JSON `hello` with `version: 4`, its `stream` name
 (`points`, `lines`, or `cells`), all object names and camera settings. Any type's
 hello can initialize the page; later greetings do not reset the scene or camera.
+Each object also has a `selectableGrid` boolean, true for `_SelectableOctGrid`
+sources. The browser enables picking and routes grid commands only to those sources.
 The client sends `start` to subscribe. One complete snapshot of that type is then
 sent; the browser sends `next` on that same socket after uploading and rendering
 it. Each socket has its own credit, so withholding point ACKs does not block cell
@@ -485,7 +496,7 @@ IDs as hexadecimal strings; their JSON format does not change.
 
 ## Occupied cell interface
 
-`_OctreeGrid::get(OCTGRID_CELLS*, tExpire, nMaxCells)` copies one coherent header
+`_SelectableOctGrid::get(OCTGRID_CELLS*, tExpire, nMaxCells)` copies one coherent header
 and its occupied cell records. It includes occupied ancestors, as the previous
 wireframe did, in root-first traversal order. `nMaxCells` in the grid config sets
 the publication cap; if omitted, `floor(nMaxLines / 12)` preserves the old cap

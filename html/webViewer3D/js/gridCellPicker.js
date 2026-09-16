@@ -35,10 +35,21 @@ export class GridCellPicker {
     };
     for (const [type, handler] of Object.entries(this.handlers)) canvas.addEventListener(type, handler, true);
   }
-  configure(objects) { this.names = new Map(objects.map(o => [o.id, o.name])); }
+  configure(objects) {
+    this.names = new Map(objects.filter(o => o.selectableGrid === true).map(o => [o.id, o.name]));
+    const modules = new Set(this.names.values());
+    for (const source of this.sources.values()) {
+      if (!modules.has(source.module)) {
+        source.visible = source.overlay.visible = false;
+        source.occupied = null;
+      }
+    }
+    this.onChange();
+  }
   get count() { return [...this.sources.values()].reduce((sum, source) => sum + source.selected.size, 0); }
   sourceFor(id) { return this.sources.get(this.names.get(id) ?? String(id)); }
   updateObject(object, grid) {
+    if (!this.names.has(object.id)) return;
     let source = this.sourceFor(object.id);
     const created = !source;
     if (!grid) { if (source) source.occupied = null; return; }
@@ -156,7 +167,8 @@ export class GridCellPicker {
     }
   }
   commands() {
-    return [...this.sources.values()].filter(source => source.selected.size).map(source => ({
+    const modules = new Set(this.gridModules());
+    return [...this.sources.values()].filter(source => source.selected.size && modules.has(source.module)).map(source => ({
       cmd: 'octGridCellSelect', module: source.module,
       vPorigin: source.header.origin.map(String), vRootCellSize: source.header.size.map(String),
       cellIDs: [...source.selected.keys()]

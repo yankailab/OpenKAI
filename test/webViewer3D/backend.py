@@ -49,6 +49,7 @@ def check(executable, cells_only, cell_alpha):
                     client = WebSocket(port, '/stream/' + kind); clients.append(client)
                     hello = json.loads(client.receive()[1])
                     assert hello['version'] == 4 and hello['stream'] == kind
+                    assert {o['name'] for o in hello['objects'] if o['selectableGrid']} == {'octGrid'}
                     assert {o['name'] for o in hello['objects']} == ({'octGrid'} if cells_only else {'pcFile', 'octGrid'})
                     client.send('start')
                 for _ in range(100):

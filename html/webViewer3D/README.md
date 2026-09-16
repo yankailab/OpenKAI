@@ -22,6 +22,12 @@ Keep application commands out of the stream transport. Add UI controls that call
 An optional backend configuration is in `jsonCfg/WebViewer3D_commands.json`;
 include it from your application's `APP.vInclude` when using commands.
 
+Use `"class": "_SelectableOctGrid"` for grids displayed by this viewer.
+It inherits `_OctreeGrid` calculations and adds cell snapshots, selection persistence,
+and interaction commands. `_OctreeGrid` itself only calculates occupancy.
+The cells handshake identifies interactive sources with `selectableGrid: true`;
+the picker and Grid config controls target those sources.
+
 Occupied octree cells stream as 16-byte IDs plus RGBA8 (20 bytes per cell). The browser reconstructs
 instanced wire or solid boxes and retains IDs and bounds for cell picking. The
 Wire-frame / Solid switch below Grid enables filled faces with per-cell alpha;
@@ -37,7 +43,9 @@ and preserves selected volumes within the new root.
 The **Grid cell picker** panel supports persistent red selections, Load, Clear,
 and Send. Load retrieves backend selections over the independent command socket
 and merges them without duplicate IDs, remapping volumes when root headers differ.
-Set the grid module's `fConfig` to persist selections across backend restarts. See the
+Set the grid module's `fConfig` to persist selections across backend restarts.
+Saved selections use the `_SelectableOctGrid` section; existing `_OctreeGrid`
+sections can still be loaded. Command names and the binary format are unchanged. See the
 [picker behavior and JSON contract](../../docs/3D/WebViewer3D.md#grid-cell-picker).
 
 Geometry uses `/stream/points`, `/stream/lines` and `/stream/cells` on the same

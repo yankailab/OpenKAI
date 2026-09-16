@@ -17,7 +17,7 @@ const connections = Object.fromEntries(STREAM_TYPES.map(type => [type, new Geome
       configured = true;
       $('#grid').checked = config.showGrid;
     }
-    viewer.picker.configure([...names].map(([id, name]) => ({ id, name })));
+    if (type === 'cells') viewer.picker.configure(config.objects);
     $('#fit').disabled = $('#reset').disabled = false;
     $('#welcome').hidden = true;
     syncObjects();
@@ -68,7 +68,7 @@ function syncPicker() {
   $('#picker-load').disabled = !canConfigure;
   $('#grid-config-update').disabled = !canConfigure;
   $('#picker-load').title = 'Retrieve selections from the connected grid sources';
-  $('#picker-send').disabled = count === 0 || window.wsSocket?.readyState !== WebSocket.OPEN;
+  $('#picker-send').disabled = viewer.picker.commands().length === 0 || window.wsSocket?.readyState !== WebSocket.OPEN;
   $('#picker-send').title = window.wsSocket?.readyState === WebSocket.OPEN ? '' : 'Connect the command WebSocket to send selections';
 }
 viewer.picker.onChange = () => { $('#picker-status').textContent = ''; syncPicker(); };
