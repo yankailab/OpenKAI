@@ -5,12 +5,12 @@
  *      Author: Codex
  */
 
-#ifndef OpenKAI_src_Universe_Geometry_Viewer__ImGUIviewer_H_
-#define OpenKAI_src_Universe_Geometry_Viewer__ImGUIviewer_H_
+#ifndef OpenKAI_src_UI_Viewer__ImGUIviewer_H_
+#define OpenKAI_src_UI_Viewer__ImGUIviewer_H_
 
-#include "../_GeometryViewerBase.h"
+#include "../../Universe/Geometry/_GeometryViewerBase.h"
 #include "ImGUIviewerBackend.h"
-#include "../../Grid/_SelectableOctGrid.h"
+#include "../../Universe/Grid/_SelectableOctGrid.h"
 
 struct ImDrawList;
 struct ImDrawCmd;

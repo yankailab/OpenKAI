@@ -1,8 +1,8 @@
-#ifndef OpenKAI_src_Universe_Geometry_Viewer__WebViewer3D_H_
-#define OpenKAI_src_Universe_Geometry_Viewer__WebViewer3D_H_
+#ifndef OpenKAI_src_UI_Viewer__WebViewer3D_H_
+#define OpenKAI_src_UI_Viewer__WebViewer3D_H_
 
-#include "../_GeometryViewerBase.h"
-#include "../../Grid/_SelectableOctGrid.h"
+#include "../../Universe/Geometry/_GeometryViewerBase.h"
+#include "../../Universe/Grid/_SelectableOctGrid.h"
 #include "WebViewer3DProtocol.h"
 #include <atomic>
 #include <condition_variable>

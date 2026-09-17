@@ -1,6 +1,6 @@
 #include "../../src/Net/HttpServer.h"
 #include "../../src/IO/WebSocketStream.h"
-#include "../../src/Universe/Geometry/Viewer/WebViewer3DProtocol.h"
+#include "../../src/UI/Viewer/WebViewer3DProtocol.h"
 #include <atomic>
 #include <cmath>
 #include <iostream>

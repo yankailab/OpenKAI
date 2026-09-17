@@ -135,7 +135,7 @@ if(USE_WEBVIEWER3D)
   add_definitions(-DUSE_WEBVIEWER3D -DBOOST_ERROR_CODE_HEADER_ONLY)
   list(APPEND OpenKAI_include ${Boost_INCLUDE_DIRS})
   list(APPEND OpenKAI_cpp src/Net/HttpServer.cpp src/IO/WebSocketStream.cpp
-    src/Universe/Geometry/Viewer/_WebViewer3D.cpp)
+    src/UI/Viewer/_WebViewer3D.cpp)
 endif()
 
 if(WITH_UNIVERSE)
@@ -156,9 +156,9 @@ if(WITH_UNIVERSE)
 
     if(WITH_UI)
       if(USE_IMGUI)
-        set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Geometry/Viewer/_ImGUIviewer.cpp)
-        set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Geometry/Viewer/ImGUIviewerGLRenderer.cpp)
-        set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Geometry/Viewer/ImGUIviewerBackend.cpp)
+        set(OpenKAI_cpp ${OpenKAI_cpp} src/UI/Viewer/_ImGUIviewer.cpp)
+        set(OpenKAI_cpp ${OpenKAI_cpp} src/UI/Viewer/ImGUIviewerGLRenderer.cpp)
+        set(OpenKAI_cpp ${OpenKAI_cpp} src/UI/Viewer/ImGUIviewerBackend.cpp)
       endif() # imgui
     endif() # gui
 

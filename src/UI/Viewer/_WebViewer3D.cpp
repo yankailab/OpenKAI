@@ -1,6 +1,6 @@
 #include "_WebViewer3D.h"
-#include "../../../Module/ModuleMgr.h"
-#include "../../../IO/WebSocketStream.h"
+#include "../../Module/ModuleMgr.h"
+#include "../../IO/WebSocketStream.h"
 #include <algorithm>
 #include <cmath>
 #include <filesystem>

@@ -1,4 +1,4 @@
-#include "../../src/Universe/Geometry/Viewer/WebViewer3DProtocol.h"
+#include "../../src/UI/Viewer/WebViewer3DProtocol.h"
 #include <cassert>
 #include <cmath>
 #include <iostream>

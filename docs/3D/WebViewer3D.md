@@ -348,8 +348,8 @@ are drawn with shared wire/solid box geometry and one GPU instance per cell.
 | --- | --- |
 | `src/Net/HttpServer.*` | Static HTTP files, MIME types, request deadlines, path containment, WebSocket upgrade hook |
 | `src/IO/WebSocketStream.*` | Asynchronous WebSocket sessions, shared snapshots, bounded delivery, lifecycle |
-| `src/Universe/Geometry/Viewer/WebViewer3DProtocol.h` | Versioned little-endian binary encoding |
-| `src/Universe/Geometry/Viewer/_WebViewer3D.*` | Framework configuration, collection, filtering and snapshot publication |
+| `src/UI/Viewer/WebViewer3DProtocol.h` | Versioned little-endian binary encoding |
+| `src/UI/Viewer/_WebViewer3D.*` | Framework configuration, collection, filtering and snapshot publication |
 | `html/webViewer3D/js/launcher.js` | Local-file launcher and endpoint validation |
 | `html/webViewer3D/js/wsStreamBase.js` | Geometry connection, protocol greeting, automatic reconnect and stream acknowledgements |
 | `html/webViewer3D/js/wsCmdBase.js` | Independent JSON command socket, sending and console status |

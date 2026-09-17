@@ -5,8 +5,8 @@
  *      Author: Codex
  */
 
-#ifndef OpenKAI_src_Universe_Geometry_Viewer_ImGUIviewerBackend_H_
-#define OpenKAI_src_Universe_Geometry_Viewer_ImGUIviewerBackend_H_
+#ifndef OpenKAI_src_UI_Viewer_ImGUIviewerBackend_H_
+#define OpenKAI_src_UI_Viewer_ImGUIviewerBackend_H_
 
 #include <string>
 

@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Universe_Geometry_Viewer_WebViewer3DProtocol_H_
-#define OpenKAI_src_Universe_Geometry_Viewer_WebViewer3DProtocol_H_
+#ifndef OpenKAI_src_UI_Viewer_WebViewer3DProtocol_H_
+#define OpenKAI_src_UI_Viewer_WebViewer3DProtocol_H_
 
 #include <array>
 #include <cstdint>
@@ -7,7 +7,7 @@
 #include <limits>
 #include <stdexcept>
 #include <vector>
-#include "../../Grid/_SelectableOctGrid.h"
+#include "../../Universe/Grid/_SelectableOctGrid.h"
 
 namespace kai::webviewer3d
 {

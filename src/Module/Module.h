@@ -31,7 +31,7 @@
 #include "../Universe/Geometry/PointCloud/Pipeline/_PCtransform.h"
 #include "../Universe/Geometry/_GeometryViewerBase.h"
 #ifdef USE_WEBVIEWER3D
-#include "../Universe/Geometry/Viewer/_WebViewer3D.h"
+#include "../UI/Viewer/_WebViewer3D.h"
 #endif
 
 #ifdef USE_OPEN3D
@@ -45,7 +45,7 @@
 
 #ifdef WITH_UI
 #ifdef USE_IMGUI
-#include "../Universe/Geometry/Viewer/_ImGUIviewer.h"
+#include "../UI/Viewer/_ImGUIviewer.h"
 #endif
 #endif
 

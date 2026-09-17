@@ -22,14 +22,14 @@ namespace kai
 		bool m_bAutoExposureRGB = true;
 		int m_tExposureRGB = 4000;
 
-		bool m_bFilTime = false;
-		int m_filTime = 0;
+		bool m_bTimeFilter = false;
+		int m_timeFilterThr = 0;
 
-		bool m_bFilConfidence = true;
-		int m_filConfidence = 1;
+		bool m_bConfidenceFilter = true;
+		int m_confidenceFilterThr = 1;
 
-		bool m_bFilFlyingPix = false;
-		int m_filFlyingPix = 0;
+		bool m_bFlyingPixFilter = false;
+		int m_flyingPixFilterThr = 0;
 
 		bool m_bFillHole = false;
 		bool m_bSpatialFilter = false;

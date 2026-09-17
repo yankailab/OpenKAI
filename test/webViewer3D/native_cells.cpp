@@ -1,5 +1,5 @@
 #include "../../src/Universe/Grid/_SelectableOctGrid.h"
-#include "../../src/Universe/Geometry/Viewer/_ImGUIviewer.h"
+#include "../../src/UI/Viewer/_ImGUIviewer.h"
 #include "../../src/Universe/Geometry/PointCloud/_PointCloud.h"
 #include "../../src/Universe/Geometry/Line/_Line.h"
 #include "../../src/UI/_WSconsole.h"
