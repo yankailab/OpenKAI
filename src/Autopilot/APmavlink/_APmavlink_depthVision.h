@@ -33,7 +33,7 @@ namespace kai
 		virtual bool init(const json &j);
 		virtual bool link(const json& j, ModuleMgr* pM);
 		virtual void update(void);
-		virtual void draw(void *pFrame);
+		virtual void draw(void *pMat);
 
 	protected:
 		_APmavlink_base *m_pAP = nullptr;

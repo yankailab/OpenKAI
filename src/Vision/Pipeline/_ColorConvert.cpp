@@ -59,12 +59,11 @@ namespace kai
 	void _ColorConvert::filter(void)
 	{
 		NULL_(m_pV);
-		Frame *pF = m_pV->getFrameRGB();
-		NULL_(pF);
-		IF_(pF->bEmpty());
-		//		IF_(m_fRGB.tStamp() >= pF->tStamp());
+		Mat *pM = m_pV->getMat();
+		NULL_(pM);
+		IF_(pM->empty());
 
-		m_fRGB.copy(pF->cvtColor(m_code));
+		cv::cvtColor(*pM, m_mRGB, m_code);
 	}
 
 }

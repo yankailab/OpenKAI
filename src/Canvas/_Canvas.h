@@ -12,7 +12,7 @@
 #include "../Primitive/tSwap.h"
 
 #ifdef USE_OPENCV
-#include "../Vision/Frame.h"
+#include "../Base/cv.h"
 #endif
 
 namespace kai
@@ -26,7 +26,7 @@ namespace kai
 		virtual bool init(const json& j);
 		virtual bool start(void);
 		virtual void update(void);
-		virtual void draw(void *pFrame);
+		virtual void draw(void *pMat);
 		virtual void console(void *pConsole);
 
 		//io

@@ -116,11 +116,9 @@ namespace kai
 		// if (m_pV)
 		// {
 		// 	//rgb
-		// 	Frame fBGR = *m_pV->getFrameRGB();
+		// 	Mat mBGR = m_pV->getMat()->clone();
 		// 	if (m_bFlipRGB)
-		// 		fBGR = fBGR.flip(-1);
-		// 	Mat mBGR;
-		// 	fBGR.m()->copyTo(mBGR);
+		// 		cv::flip(mBGR, mBGR, -1);
 		// 	IF_(mBGR.empty());
 
 		// 	fName = m_subDir + i2str(m_iTake) + "_rgb.jpg";

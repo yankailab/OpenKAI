@@ -72,7 +72,7 @@ namespace kai
 	{
 		NULL_F(m_pCanvas);
 		NULL_F(m_pV);
-		IF_F(m_pV->getFrameRGB()->bEmpty());
+		IF_F(m_pV->getMat()->empty());
 
 		return this->_DetectorBase::check();
 	}
@@ -94,7 +94,7 @@ namespace kai
 	{
 		IF_(!check());
 
-		Mat m = *m_pVision->getFrameRGB()->m();
+		Mat m = *m_pVision->getMat();
 
 		m_pBS->apply(m, m_mFG, m_learningRate);
 
@@ -122,10 +122,10 @@ namespace kai
 		}
 	}
 
-	void _MotionDetector::draw(void *pFrame)
+	void _MotionDetector::draw(void *pMat)
 	{
-		NULL_(pFrame);
-		this->_DetectorBase::draw(pFrame);
+		NULL_(pMat);
+		this->_DetectorBase::draw(pMat);
 		IF_(!check());
 
 		if (!m_mFG.empty())

@@ -248,8 +248,7 @@
 #include "../Vision/_GPhoto.h"
 #include "../Vision/_Frame2Img.h"
 #include "../Vision/_Img2Frame.h"
-#include "../Vision/RGBD/_D2G.h"
-#include "../Vision/RGBD/_D2RGB.h"
+#include "../Vision/Pipeline/_D2RGB.h"
 #include "../Vision/Pipeline/_ColorConvert.h"
 #include "../Vision/Pipeline/_Contrast.h"
 #include "../Vision/Pipeline/_Crop.h"
@@ -265,9 +264,6 @@
 #include "../Vision/Pipeline/_Threshold.h"
 #include "../Vision/Pipeline/_Thermal2RGB.h"
 
-#ifdef USE_CUDA
-#include "../Vision/_DenseFlow.h"
-#endif
 #endif // opencv
 #endif // vision
 

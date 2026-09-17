@@ -57,14 +57,11 @@ namespace kai
 	void _Invert::filter(void)
 	{
 		NULL_(m_pV);
-		Frame *pF = m_pV->getFrameRGB();
-		NULL_(pF);
-		IF_(pF->bEmpty());
-		IF_(m_fRGB.tStamp() >= pF->tStamp());
+		Mat *pM = m_pV->getMat();
+		NULL_(pM);
+		IF_(pM->empty());
 
-		Mat m;
-		cv::bitwise_not(*pF->m(), m);
-		m_fRGB.copy(m);
+		cv::bitwise_not(*pM, m_mRGB);
 	}
 
 }

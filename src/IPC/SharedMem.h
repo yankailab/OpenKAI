@@ -39,7 +39,7 @@ namespace kai
 		void* m_pB = 0;
 		bool m_bWriter = true;
 
-		bool m_bOpen = false;
+		bool m_bOpened = false;
 
 	};
 

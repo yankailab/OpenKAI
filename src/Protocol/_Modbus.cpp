@@ -78,19 +78,19 @@ namespace kai
 			return false;
 		}
 
-		m_bOpen = true;
+		m_bOpened = true;
 		m_iErr = 0;
 		return true;
 	}
 
 	bool _Modbus::bOpen(void)
 	{
-		return m_bOpen;
+		return m_bOpened;
 	}
 
 	void _Modbus::close(void)
 	{
-		m_bOpen = false;
+		m_bOpened = false;
 		IF_(m_pMb == nullptr);
 
 		modbus_close(m_pMb);

@@ -12,7 +12,6 @@ namespace kai
 
 	_VisionBase::_VisionBase()
 	{
-		m_vSizeRGB = Vector2i(1280, 720);
 	}
 
 	_VisionBase::~_VisionBase()
@@ -35,10 +34,6 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link(j, pM));
 
-		string n = "";
-		jKv(j, "_SHMrgb", n);
-		m_psmRGB = (SharedMem *)(pM->findModule(n));
-
 		return true;
 	}
 
@@ -47,14 +42,29 @@ namespace kai
 		return false;
 	}
 
-	bool _VisionBase::isOpened(void)
+	bool _VisionBase::bOpened(void)
 	{
-		return m_bOpen;
+		return m_bOpened;
 	}
 
 	void _VisionBase::close(void)
 	{
-		m_bOpen = false;
+		m_bOpened = false;
+	}
+
+	int _VisionBase::getData(void *pOut, int iD, int nB)
+	{
+		NULL__(pOut, 0);
+
+#ifdef USE_OPENCV
+		if (nB == 0)
+			nB = m_mRGB.total() * m_mRGB.elemSize();
+
+		memcpy(pOut, m_mRGB.data, nB);
+		return nB;
+#endif
+
+		return 0;
 	}
 
 	bool _VisionBase::check(void)
@@ -62,9 +72,9 @@ namespace kai
 		return _ModuleBase::check();
 	}
 
-	Frame *_VisionBase::getFrameRGB(void)
+	Mat *_VisionBase::getMat(void)
 	{
-		return &m_fRGB;
+		return &m_mRGB;
 	}
 
 	Vector2i _VisionBase::getSize(void)
@@ -95,7 +105,7 @@ namespace kai
 			string fName;
 			IF_(!jKv(j, "fNameImg", fName));
 
-			Mat m = *m_fRGB.m();
+			Mat m = m_mRGB;
 			IF_(m.empty());
 
 			bool bR;
@@ -112,15 +122,15 @@ namespace kai
 	}
 
 #ifdef USE_OPENCV
-	void _VisionBase::draw(void *pFrame)
+	void _VisionBase::draw(void *pMat)
 	{
-		NULL_(pFrame);
-		this->_ModuleBase::draw(pFrame);
+		NULL_(pMat);
+		this->_ModuleBase::draw(pMat);
 		IF_(!check());
-		IF_(m_fRGB.bEmpty());
+		IF_(m_mRGB.empty());
 
-		Frame *pF = (Frame *)pFrame;
-		pF->copy(m_fRGB);
+		Mat *pM = static_cast<Mat *>(pMat);
+		m_mRGB.copyTo(*pM);
 	}
 #endif
 

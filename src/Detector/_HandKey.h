@@ -46,7 +46,7 @@ namespace kai
 
 		virtual bool init(const json& j);
 		virtual bool start(void);
-		virtual void draw(void *pFrame);
+		virtual void draw(void *pMat);
 		virtual bool check(void);
 
 	private:

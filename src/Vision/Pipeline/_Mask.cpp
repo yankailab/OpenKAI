@@ -64,25 +64,24 @@ namespace kai
 		NULL_(m_pV);
 		NULL_(m_pVmask);
 
-		Frame *pF = m_pV->getFrameRGB();
-		NULL_(pF);
-		Frame *pFmask = m_pVmask->getFrameRGB();
-		NULL_(pFmask);
+		Mat *pM = m_pV->getMat();
+		NULL_(pM);
+		Mat *pMmask = m_pVmask->getMat();
+		NULL_(pMmask);
 
-		IF_(pF->bEmpty());
-		IF_(pFmask->bEmpty());
-		IF_(m_fIn.tStamp() >= pF->tStamp());
+		IF_(pM->empty());
+		IF_(pMmask->empty());
 
-		m_fIn.copy(*pF);
-		m_fMask.copy(*pFmask);
+		pM->copyTo(m_mIn);
+		pMmask->copyTo(m_mMask);
 
-		Mat mV = *m_fIn.m();
-		Mat mM = *m_fMask.m();
+		Mat mV = m_mIn;
+		Mat mM = m_mMask;
 		Mat mBg;
 		// mBg.zeros(mV.rows, mV.cols, mV.type());
 
 		mV.copyTo(mBg, mM);
-		m_fRGB.copy(mBg);
+		mBg.copyTo(m_mRGB);
 	}
 
 }

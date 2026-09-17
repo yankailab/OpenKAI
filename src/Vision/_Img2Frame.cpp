@@ -88,10 +88,10 @@ namespace kai
 	bool _Img2Frame::open(void)
 	{
 		IF_F(!check());
-		IF__(m_bOpen, true);
+		IF__(m_bOpened, true);
 		IF_F(!loadFrameBuffer());
 
-		m_bOpen = true;
+		m_bOpened = true;
 		return true;
 	}
 
@@ -132,7 +132,7 @@ namespace kai
 
 		m_vSizeRGB.x() = m_frameBuffer[0].cols;
 		m_vSizeRGB.y() = m_frameBuffer[0].rows;
-		m_fRGB.copy(m_frameBuffer[0]);
+		m_frameBuffer[0].copyTo(m_mRGB);
 
 		return true;
 	}
@@ -175,7 +175,7 @@ namespace kai
 	{
 		while (m_pT->bRun())
 		{
-			if (!m_bOpen)
+			if (!m_bOpened)
 			{
 				if (!open())
 				{
@@ -201,7 +201,7 @@ namespace kai
 			m_iFrame = 0;
 		}
 
-		m_fRGB.copy(m_frameBuffer[m_iFrame]);
+		m_frameBuffer[m_iFrame].copyTo(m_mRGB);
 		m_iFrame++;
 	}
 

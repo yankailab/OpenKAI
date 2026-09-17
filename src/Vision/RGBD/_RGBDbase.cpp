@@ -12,8 +12,6 @@ namespace kai
 
 	_RGBDbase::_RGBDbase()
 	{
-		m_vSizeD = Vector2i(1280, 720);
-		m_vRangeD = Vector2f(0, FLT_MAX);
 	}
 
 	_RGBDbase::~_RGBDbase()
@@ -28,26 +26,19 @@ namespace kai
 		jKv(j, "devFPSd", m_devFPSd);
 		jKv<int>(j, "vSizeD", m_vSizeD);
 		jKv<float>(j, "vRangeD", m_vRangeD);
+		jKv(j, "dScale", m_dScale);
+		jKv(j, "dOfs", m_dOfs);
 
 		jKv(j, "bDepth", m_bDepth);
 		jKv(j, "bIR", m_bIR);
 		jKv(j, "btRGB", m_btRGB);
 		jKv(j, "btDepth", m_btDepth);
 		jKv(j, "bConfidence", m_bConfidence);
-		jKv(j, "fConfidenceThreshold", m_fConfidenceThreshold);
+		jKv(j, "fConfidenceThr", m_fConfidenceThr);
 
 		jKv(j, "bIMU", m_bIMU);
-		jKv(j, "bPCd", m_bPCd);
-		jKv(j, "bPCrgb", m_bPCrgb);
-
-#ifdef USE_OPENCV
-		jKv(j, "dScale", m_dScale);
-		jKv(j, "dOfs", m_dOfs);
-		jKv(j, "nHistLev", m_nHistLev);
-		jKv(j, "iHistFrom", m_iHistFrom);
-		jKv(j, "minHistD", m_minHistD);
-		jKv(j, "bDebugDepth", m_bDebugDepth);
-#endif
+		jKv(j, "bPCL", m_bPCL);
+		jKv(j, "bPCLrgb", m_bPCLrgb);
 
 		return true;
 	}
@@ -71,13 +62,53 @@ namespace kai
 		return true;
 	}
 
-	bool _RGBDbase::open(void)
+	int _RGBDbase::getData(void *pOut, int iD, int nB)
 	{
-		return false;
-	}
+		NULL__(pOut, 0);
 
-	void _RGBDbase::close(void)
-	{
+#ifdef USE_OPENCV
+		if (iD == 0)
+		{
+			// RGB
+			return this->_VisionBase::getData(pOut, iD, nB);
+		}
+		else if (iD == 1)
+		{
+			// Depth
+			if (nB == 0)
+				nB = m_mDepth.total() * m_mDepth.elemSize();
+
+			memcpy(pOut, m_mDepth.data, nB);
+		}
+		else if (iD == 2)
+		{
+			// Transformed depth
+			if (nB == 0)
+				nB = m_mtDepth.total() * m_mtDepth.elemSize();
+
+			memcpy(pOut, m_mtDepth.data, nB);
+		}
+		else if (iD == 3)
+		{
+			// Transformed RGB
+			if (nB == 0)
+				nB = m_mtRGB.total() * m_mtRGB.elemSize();
+
+			memcpy(pOut, m_mtRGB.data, nB);
+		}
+		else if (iD == 4)
+		{
+			// IR
+			if (nB == 0)
+				nB = m_mIR.total() * m_mIR.elemSize();
+
+			memcpy(pOut, m_mIR.data, nB);
+		}
+
+		return nB;
+#endif
+
+		return 0;
 	}
 
 	bool _RGBDbase::check(void)
@@ -91,102 +122,26 @@ namespace kai
 		this->_VisionBase::console(pConsole);
 
 		// _Console *pC = (_Console *)pConsole;
-
 	}
 
 #ifdef USE_OPENCV
-	Frame *_RGBDbase::getFrameD(void)
+	Mat *_RGBDbase::getDepthMat(void)
 	{
-		return &m_fDepth;
+		return &m_mDepth;
 	}
 
-	Vector2f _RGBDbase::getRangeD(void)
+	Vector2f _RGBDbase::getDepthRange(void)
 	{
 		return m_vRangeD;
 	}
 
-	float _RGBDbase::d(const Vector4f &bb)
+	void _RGBDbase::draw(void *pMat)
 	{
-		IF__(m_fDepth.bEmpty(), -1.0);
-
-		Size s = m_fDepth.size();
-		Vector4i vBB = Vector4i::Zero();
-		vBB.x() = bb.x() * s.width;
-		vBB.y() = bb.y() * s.height;
-		vBB.z() = bb.z() * s.width;
-		vBB.w() = bb.w() * s.height;
-
-		if (vBB.x() < 0)
-			vBB.x() = 0;
-		if (vBB.y() < 0)
-			vBB.y() = 0;
-		if (vBB.z() > s.width)
-			vBB.z() = s.width;
-		if (vBB.w() > s.height)
-			vBB.w() = s.height;
-
-		return d(vBB);
-	}
-
-	float _RGBDbase::d(const Vector4i &bb)
-	{
-		IF__(m_fDepth.bEmpty(), -1.0);
-
-		vector<int> vHistLev = {m_nHistLev};
-		vector<float> vRange = {m_vRangeD.x(), m_vRangeD.y()};
-		vector<int> vChannel = {0};
-
-		Rect r = bb2Rect(bb);
-		Mat mRoi = (*m_fDepth.m())(r);
-		vector<Mat> vRoi = {mRoi};
-		Mat mHist;
-		cv::calcHist(vRoi, vChannel, Mat(),
-					 mHist, vHistLev, vRange,
-					 false // accumulate
-		);
-
-		int nMinHist = m_minHistD * mRoi.cols * mRoi.rows;
-		int nPix = 0;
-		int i;
-		for (i = m_iHistFrom; i < m_nHistLev; i++)
-		{
-			nPix += (int)mHist.at<float>(i);
-			if (nPix >= nMinHist)
-				break;
-		}
-
-		return (m_vRangeD.x() + (((float)i) / (float)m_nHistLev) * m_vRangeD.norm());
-	}
-
-	void _RGBDbase::draw(void *pFrame)
-	{
-		NULL_(pFrame);
-		this->_VisionBase::draw(pFrame);
+		NULL_(pMat);
+		this->_VisionBase::draw(pMat);
 		IF_(!check());
-		IF_(m_fRGB.bEmpty());
+		IF_(m_mRGB.empty());
 
-		if (m_bDebugDepth)
-		{
-			Frame *pF = (Frame *)pFrame;
-			//			pF->copy(m_fDepth);
-
-			Mat *pM = pF->m();
-			IF_(pM->empty());
-
-			Vector4f vRoi(0.4, 0.4, 0.6, 0.6);
-
-			Vector4f bb = Vector4f::Zero();
-			bb.x() = vRoi.x() * pM->cols;
-			bb.y() = vRoi.y() * pM->rows;
-			bb.z() = vRoi.z() * pM->cols;
-			bb.w() = vRoi.w() * pM->rows;
-			Rect r = bb2Rect(bb);
-			rectangle(*pM, r, Scalar(128, 128, 128), 2);
-
-			putText(*pM, f2str(d(vRoi)),
-					Point(r.x + 15, r.y + 25),
-					FONT_HERSHEY_SIMPLEX, 0.6, Scalar(128, 128, 128), 2);
-		}
 	}
 #endif
 

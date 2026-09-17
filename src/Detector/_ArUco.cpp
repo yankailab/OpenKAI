@@ -68,7 +68,7 @@ namespace kai
 	{
 		IF_(!check());
 
-		Mat m = *m_pV->getFrameRGB()->m();
+		Mat m = *m_pV->getMat();
 		IF_(m.empty());
 
 		vector<int> vID;
@@ -163,10 +163,10 @@ namespace kai
 		IF_(!check());
 	}
 
-	void _ArUco::draw(void *pFrame)
+	void _ArUco::draw(void *pMat)
 	{
-		NULL_(pFrame);
-		this->_DetectorBase::draw(pFrame);
+		NULL_(pMat);
+		this->_DetectorBase::draw(pMat);
 		IF_(!check());
 	}
 

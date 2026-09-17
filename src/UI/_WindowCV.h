@@ -10,7 +10,7 @@
 
 #include <opencv2/highgui.hpp>
 #include "_UIbase.h"
-#include "../Vision/Frame.h"
+#include "../Base/cv.h"
 #include "../Utility/utilCV.h"
 
 namespace kai
@@ -34,7 +34,7 @@ namespace kai
 		}
 
 	protected:
-		Frame m_F;
+		Mat m_M;
 		Vector2i m_vSize = Vector2i::Zero();
 
 		int m_waitKey = 30;

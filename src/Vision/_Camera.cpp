@@ -34,7 +34,7 @@ namespace kai
 	bool _Camera::open(void)
 	{
 		IF_F(!check());
-		IF__(m_bOpen, true);
+		IF__(m_bOpened, true);
 
 		m_camera.open(m_deviceID);
 		if (!m_camera.isOpened())
@@ -53,12 +53,12 @@ namespace kai
 			while (!m_camera.read(mCam))
 				;
 		}
-		m_fRGB.copy(mCam);
+		mCam.copyTo(m_mRGB);
 
 		m_vSizeRGB.x() = mCam.cols;
 		m_vSizeRGB.y() = mCam.rows;
 
-		m_bOpen = true;
+		m_bOpened = true;
 		return true;
 	}
 
@@ -78,7 +78,7 @@ namespace kai
 	{
 		while (m_pT->bRun())
 		{
-			if (!m_bOpen)
+			if (!m_bOpened)
 			{
 				if (!open())
 				{
@@ -92,12 +92,12 @@ namespace kai
 			Mat mCam;
 			while (!m_camera.read(mCam))
 				;
-			m_fRGB.copy(mCam);
+			mCam.copyTo(m_mRGB);
 
 			if (m_bResetCam)
 			{
 				m_camera.release();
-				m_bOpen = false;
+				m_bOpened = false;
 			}
 		}
 	}

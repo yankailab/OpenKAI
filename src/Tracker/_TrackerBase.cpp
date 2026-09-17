@@ -74,7 +74,7 @@ namespace kai
 	bool _TrackerBase::startTrack(Vector4f &bb)
 	{
 		NULL_F(m_pV);
-		Mat *pM = m_pV->getFrameRGB()->m();
+		Mat *pM = m_pV->getMat();
 		IF_F(pM->empty());
 
 		float mBig = 1.0 + m_margin;
@@ -111,14 +111,13 @@ namespace kai
 		pC->addMsg("Tracking pos = (" + f2str(((m_bb.x() + m_bb.z()) / 2)) + ", " + f2str(((m_bb.y() + m_bb.w()) / 2)) + ")");
 	}
 
-	void _TrackerBase::draw(void *pFrame)
+	void _TrackerBase::draw(void *pMat)
 	{
-		NULL_(pFrame);
-		this->_ModuleBase::draw(pFrame);
+		NULL_(pMat);
+		this->_ModuleBase::draw(pMat);
 		IF_(!check());
 
-		Frame *pF = (Frame *)pFrame;
-		Mat *pM = pF->m();
+		Mat *pM = static_cast<Mat *>(pMat);
 		IF_(pM->empty());
 
 		Scalar col;

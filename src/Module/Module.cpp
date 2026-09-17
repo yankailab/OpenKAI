@@ -250,7 +250,6 @@ namespace kai
 		ADD_MODULE(_Contrast);
 		ADD_MODULE(_Crop);
 		ADD_MODULE(_ColorConvert);
-		ADD_MODULE(_D2G);
 		ADD_MODULE(_D2RGB);
 		ADD_MODULE(_Erode);
 		ADD_MODULE(_GPhoto);
@@ -271,9 +270,6 @@ namespace kai
 		ADD_MODULE(_Frame2Img);
 		ADD_MODULE(_Img2Frame);
 
-#ifdef USE_CUDA
-		ADD_MODULE(_DenseFlow);
-#endif
 #endif // opencv
 #endif // vision
 

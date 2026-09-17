@@ -79,17 +79,16 @@ namespace kai
 	void _Threshold::filter(void)
 	{
 		NULL_(m_pV);
-		Frame *pF = m_pV->getFrameRGB();
-		NULL_(pF);
-		IF_(pF->bEmpty());
-		IF_(m_fIn.tStamp() >= pF->tStamp());
+		Mat *pM = m_pV->getMat();
+		NULL_(pM);
+		IF_(pM->empty());
 
-		if (pF->m()->type() != CV_8UC1)
-			m_fIn.copy(pF->cvtColor(COLOR_RGB2GRAY));
+		if (pM->type() != CV_8UC1)
+			cv::cvtColor(*pM, m_mIn, COLOR_RGB2GRAY);
 		else
-			m_fIn.copy(*pF);
+			pM->copyTo(m_mIn);
 
-		Mat m1 = *m_fIn.m();
+		Mat m1 = m_mIn;
 		Mat m2;
 		Mat *pM1 = &m1;
 		Mat *pM2 = &m2;
@@ -129,7 +128,7 @@ namespace kai
 			SWAP(pM1, pM2, pT);
 		}
 
-		m_fRGB.copy(*pM1);
+		pM1->copyTo(m_mRGB);
 	}
 
 }

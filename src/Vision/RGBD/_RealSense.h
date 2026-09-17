@@ -17,7 +17,7 @@ namespace kai
 	{
 		float m_fDefault;
 
-		float m_fConfidenceThreshold;
+		float m_fConfidenceThr;
 		float m_fDigitalGain;
 		float m_fPostProcessingSharpening;
 		float m_fFilterMagnitude;
@@ -38,7 +38,7 @@ namespace kai
 		{
 			m_fDefault = 10e6;
 
-			m_fConfidenceThreshold = m_fDefault;
+			m_fConfidenceThr = m_fDefault;
 			m_fDigitalGain = m_fDefault;
 			m_fPostProcessingSharpening = m_fDefault;
 			m_fFilterMagnitude = m_fDefault;

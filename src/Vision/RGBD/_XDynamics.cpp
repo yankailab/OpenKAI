@@ -67,7 +67,7 @@ namespace kai
 
     bool _XDynamics::open(void)
     {
-        IF__(m_bOpen, true);
+        IF__(m_bOpened, true);
         int res = XD_SUCCESS;
 
         m_xdHDL.init();
@@ -205,7 +205,7 @@ namespace kai
         }
 
         m_pXDstream = pStream;
-        m_bOpen = true;
+        m_bOpened = true;
         return true;
     }
 
@@ -237,7 +237,7 @@ namespace kai
     {
         while (m_pT->bRun())
         {
-            if (!m_bOpen)
+            if (!m_bOpened)
             {
                 if (!open())
                 {
@@ -260,11 +260,11 @@ namespace kai
         Mat mD, mDs;
         m_mXDd.convertTo(mD, CV_32FC1);
         mDs = mD * m_dScale;
-        m_fDepth.copy(mDs + m_dOfs);
+        cv::add(mDs, m_dOfs, m_mDepth);
 
         cv::Mat mRGB;
         cv::cvtColor(m_mXDyuv, mRGB, COLOR_YUV2BGR_NV12);
-        m_fRGB.copy(mRGB);
+        mRGB.copyTo(m_mRGB);
     }
 
     void _XDynamics::cbStream(MemSinkCfg *pCfg, XdynFrame_t *pData)

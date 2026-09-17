@@ -34,18 +34,18 @@ namespace kai
 
 	bool _CANbase::bOpen(void)
 	{
-		return m_bOpen;
+		return m_bOpened;
 	}
 
 	void _CANbase::close(void)
 	{
-		m_bOpen = false;
+		m_bOpened = false;
 		m_iErr = 0;
 	}
 
 	bool _CANbase::check(void)
 	{
-		IF_F(!m_bOpen);
+		IF_F(!m_bOpened);
 
 		return this->_ModuleBase::check();
 	}
@@ -74,7 +74,7 @@ namespace kai
 		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		pC->addMsg("bOpen = " + i2str(m_bOpen), 1);
+		pC->addMsg("bOpen = " + i2str(m_bOpened), 1);
 		pC->addMsg("nFrameRecv = " + i2str(m_nFrameRecv), 1);
 	}
 

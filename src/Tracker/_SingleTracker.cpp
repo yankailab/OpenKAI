@@ -59,9 +59,9 @@ namespace kai
 	{
 		IF_(!check());
 
-		Frame *pFrame = m_pV->getFrameRGB();
-		IF_(pFrame->bEmpty());
-		Mat m = *pFrame->m();
+		Mat *pM = m_pV->getMat();
+		IF_(pM->empty());
+		Mat m = *pM;
 
 		if (m_iSet > m_iInit)
 		{

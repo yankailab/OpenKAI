@@ -202,7 +202,7 @@ namespace kai
 		virtual bool init(const json &j);
 		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
-		virtual void draw(void *pFrame);
+		virtual void draw(void *pMat);
 		virtual void console(void *pConsole);
 		virtual bool check(void);
 

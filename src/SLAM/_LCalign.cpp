@@ -136,10 +136,10 @@ namespace kai
 	{
 		IF_(!check());
 
-		Frame *pF = m_pV->getFrameRGB();
-		NULL_(pF);
+		Mat *pM = m_pV->getMat();
+		NULL_(pM);
 
-		Mat mIn = *pF->m();
+		Mat mIn = *pM;
 		IF_(mIn.empty());
 		IF_(mIn.channels() != 3)
 

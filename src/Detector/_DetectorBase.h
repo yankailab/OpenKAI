@@ -39,7 +39,7 @@ namespace kai
 		_VisionBase *m_pV = nullptr;
 
 		// data
-		Frame m_fRGB;
+		Mat m_mRGB;
 		_Canvas *m_pCanvas = nullptr;
 
 		// model

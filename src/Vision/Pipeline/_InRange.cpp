@@ -62,17 +62,13 @@ namespace kai
 	void _InRange::filter(void)
 	{
 		NULL_(m_pV);
-		Frame *pF = m_pV->getFrameRGB();
-		NULL_(pF);
-		IF_(pF->bEmpty());
-		//		IF_(m_fRGB.tStamp() >= pF->tStamp());
+		Mat *pM = m_pV->getMat();
+		NULL_(pM);
+		IF_(pM->empty());
 
-		Mat m;
-		cv::inRange(*pF->m(),
+		cv::inRange(*pM,
 					cv::Scalar(m_vL.x(), m_vL.y(), m_vL.z()),
-					cv::Scalar(m_vH.x(), m_vH.y(), m_vH.z()), m);
-
-		m_fRGB.copy(m);
+					cv::Scalar(m_vH.x(), m_vH.y(), m_vH.z()), m_mRGB);
 	}
 
 }

@@ -112,15 +112,14 @@ namespace kai
 		((_Console *)pConsole)->addMsg("nObj=" + i2str(m_sO.get()->size()), 1);
 	}
 
-	void _Canvas::draw(void *pFrame)
+	void _Canvas::draw(void *pMat)
 	{
 #ifdef USE_OPENCV
-		NULL_(pFrame);
-		this->_ModuleBase::draw(pFrame);
+		NULL_(pMat);
+		this->_ModuleBase::draw(pMat);
 		IF_(!check());
 
-		Frame *pF = (Frame *)pFrame;
-		Mat *pM = pF->m();
+		Mat *pM = static_cast<Mat *>(pMat);
 		IF_(pM->empty());
 
 		_Object *pO;

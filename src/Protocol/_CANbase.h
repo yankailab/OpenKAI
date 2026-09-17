@@ -46,7 +46,7 @@ namespace kai
 		virtual void handleFrame(const CAN_F &f);
 
 	protected:
-		bool m_bOpen = false;
+		bool m_bOpened = false;
 		uint64_t m_nFrameRecv = 0;
 
 		int m_nErrReconnect = 1;	// reconnect on n-th error

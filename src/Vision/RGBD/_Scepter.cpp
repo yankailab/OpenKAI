@@ -40,7 +40,7 @@ namespace kai
 
 	bool _Scepter::open(void)
 	{
-		IF__(m_bOpen, true);
+		IF__(m_bOpened, true);
 
 		uint32_t m_nDevice = 0;
 		ScStatus status = scGetDeviceCount(&m_nDevice, m_scCtrl.m_tScan);
@@ -119,7 +119,7 @@ namespace kai
 		m_pScVw = new ScVector3f[m_vSizeRGB.x() * m_vSizeRGB.y()];
 
 		m_tFrameInterval = 2 * 1000 / this->m_pT->getTargetFPS();
-		m_bOpen = true;
+		m_bOpened = true;
 		return true;
 	}
 
@@ -139,7 +139,10 @@ namespace kai
 	bool _Scepter::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->startThread(getUpdate, this);
+		NULL_F(m_pTpp);
+
+		IF_F(!m_pT->startThread(getUpdate, this));
+		return m_pTpp->startThread(getTPP, this);
 	}
 
 	bool _Scepter::check(void)
@@ -159,7 +162,7 @@ namespace kai
 
 		while (m_pT->bRun())
 		{
-			if (!m_bOpen)
+			if (!m_bOpened)
 			{
 				if (!open())
 				{
@@ -173,24 +176,7 @@ namespace kai
 
 			if (updateScRGBD())
 			{
-#ifdef WITH_UNIVERSE
-				updatePC();
-#endif
-
-				// m_fDepth.copy(mDs + m_dOfs);
-				// if (m_bDepthShow)
-				// {
-				//     IF_(m_fDepth.bEmpty());
-
-				//     dispImg = cv::Mat(height, width, CV_16UC1, pData);
-
-				//     dispImg.convertTo(dispImg, CV_8U, 255.0 / slope);
-				//     applyColorMap(dispImg, dispImg, cv::COLORMAP_RAINBOW);
-
-				//     Mat mDColor(Size(m_vDsize.x, m_vDsize.y), CV_8UC3, (void *)dColor.get_data(),
-				//                 Mat::AUTO_STEP);
-				//     m_fDepthShow.copy(mDColor);
-				// }
+				m_pTpp->run();
 			}
 		}
 	}
@@ -202,7 +188,7 @@ namespace kai
 										  m_tFrameInterval,
 										  &sFr);
 		// if(status == cam_lost)
-		// 	m_bOpen = false;
+		// 	m_bOpened = false;
 
 		IF_F(status != SC_OK);
 
@@ -211,12 +197,9 @@ namespace kai
 			status = scGetFrame(m_scDevHandle, SC_COLOR_FRAME, &m_scfRGB);
 			if (m_scfRGB.pFrameData)
 			{
-				*m_fRGB.m() = cv::Mat(m_scfRGB.height, m_scfRGB.width, CV_8UC3, m_scfRGB.pFrameData);
+				m_mRGB = cv::Mat(m_scfRGB.height, m_scfRGB.width, CV_8UC3, m_scfRGB.pFrameData);
 				m_vSizeRGB.x() = m_scfRGB.width;
 				m_vSizeRGB.y() = m_scfRGB.height;
-
-				// if (m_psmRGB)
-				// 	memcpy(m_psmRGB->p(), m_scfRGB.pFrameData, m_scfRGB.dataLen);
 			}
 		}
 
@@ -225,12 +208,9 @@ namespace kai
 			status = scGetFrame(m_scDevHandle, SC_DEPTH_FRAME, &m_scfDepth);
 			if (m_scfDepth.pFrameData)
 			{
-				*m_fDepth.m() = cv::Mat(m_scfDepth.height, m_scfDepth.width, CV_16UC1, m_scfDepth.pFrameData);
+				m_mDepth = cv::Mat(m_scfDepth.height, m_scfDepth.width, CV_16UC1, m_scfDepth.pFrameData);
 				m_vSizeD.x() = m_scfDepth.width;
 				m_vSizeD.y() = m_scfDepth.height;
-
-				// if (m_psmDepth)
-				// 	memcpy(m_psmDepth->p(), m_scfDepth.pFrameData, m_scfDepth.dataLen);
 			}
 		}
 
@@ -239,12 +219,7 @@ namespace kai
 			status = scGetFrame(m_scDevHandle, SC_TRANSFORM_COLOR_IMG_TO_DEPTH_SENSOR_FRAME, &m_scfTransformedRGB);
 			if (m_scfTransformedRGB.pFrameData)
 			{
-				*m_fTfRGB.m() = cv::Mat(m_scfTransformedRGB.height, m_scfTransformedRGB.width, CV_8UC3, m_scfTransformedRGB.pFrameData);
-
-				// if (m_psmTransformedRGB)
-				// 	memcpy(m_psmTransformedRGB->p(),
-				// 		   m_scfTransformedRGB.pFrameData,
-				// 		   m_scfTransformedRGB.dataLen);
+				m_mtRGB = cv::Mat(m_scfTransformedRGB.height, m_scfTransformedRGB.width, CV_8UC3, m_scfTransformedRGB.pFrameData);
 			}
 		}
 
@@ -253,12 +228,7 @@ namespace kai
 			status = scGetFrame(m_scDevHandle, SC_TRANSFORM_DEPTH_IMG_TO_COLOR_SENSOR_FRAME, &m_scfTransformedDepth);
 			if (m_scfTransformedDepth.pFrameData)
 			{
-				*m_fTfDepth.m() = cv::Mat(m_scfTransformedDepth.height, m_scfTransformedDepth.width, CV_16UC1, m_scfTransformedDepth.pFrameData);
-
-				// if (m_psmTransformedDepth)
-				// 	memcpy(m_psmTransformedDepth->p(),
-				// 		   m_scfTransformedDepth.pFrameData,
-				// 		   m_scfTransformedDepth.dataLen);
+				m_mtDepth = cv::Mat(m_scfTransformedDepth.height, m_scfTransformedDepth.width, CV_16UC1, m_scfTransformedDepth.pFrameData);
 			}
 		}
 
@@ -267,19 +237,27 @@ namespace kai
 			status = scGetFrame(m_scDevHandle, SC_IR_FRAME, &m_scfIR);
 			if (m_scfIR.pFrameData)
 			{
-				*m_fIR.m() = cv::Mat(m_scfIR.height, m_scfIR.width, CV_8UC1, m_scfIR.pFrameData);
-
-				// if (m_psmIR)
-				// 	memcpy(m_psmIR->p(), m_scfIR.pFrameData, m_scfIR.dataLen);
+				m_mIR = cv::Mat(m_scfIR.height, m_scfIR.width, CV_8UC1, m_scfIR.pFrameData);
 			}
 		}
 
 		return true;
 	}
 
-#ifdef WITH_UNIVERSE
-	void _Scepter::updatePC(void)
+	void _Scepter::updateTPP(void)
 	{
+		while (m_pTpp->bRun())
+		{
+			m_pTpp->sleepT(0);
+
+			updatePCL();
+		}
+	}
+
+	void _Scepter::updatePCL(void)
+	{
+#ifdef WITH_UNIVERSE
+
 		NULL_(m_pPointCloud);
 
 		const static float s_b = 1.0 / 1000.0;
@@ -301,8 +279,6 @@ namespace kai
 				ScVector3f *pV = &m_pScVw[k];
 				Vector3f vP(pV->x, pV->y, pV->z);
 				vP *= s_b;
-//				IF_CONT(vP.z() < m_vRangeD.x());
-//				IF_CONT(vP.z() > m_vRangeD.y());
 
 				// texture color
 				Vector3f vC = Vector3f::Constant(1);
@@ -316,8 +292,8 @@ namespace kai
 				m_pPointCloud->add(vP, vC, tNow);
 			}
 		}
-	}
 #endif
+	}
 
 	bool _Scepter::setToFexposureControlMode(bool bAuto)
 	{

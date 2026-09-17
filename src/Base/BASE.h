@@ -31,7 +31,7 @@ namespace kai
 		virtual void resume(void);
 		virtual void stop(void);
 
-		virtual void draw(void *pFrame);
+		virtual void draw(void *pMat);
 		virtual void console(void *pConsole);
 		virtual void console(const json &j, void *pJSONbase);
 

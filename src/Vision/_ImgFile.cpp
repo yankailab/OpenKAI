@@ -37,11 +37,11 @@ namespace kai
 			return false;
 		}
 
-		m_fRGB.copy(m);
+		m.copyTo(m_mRGB);
 		m_vSizeRGB.x() = m.cols;
 		m_vSizeRGB.y() = m.rows;
 
-		m_bOpen = true;
+		m_bOpened = true;
 		return true;
 	}
 
@@ -55,7 +55,7 @@ namespace kai
 	{
 		while (m_pT->bRun())
 		{
-			if (!m_bOpen)
+			if (!m_bOpened)
 			{
 				if (!open())
 				{

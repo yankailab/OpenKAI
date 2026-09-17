@@ -62,7 +62,7 @@ namespace kai
 
 	protected:
 		_VisionBase *m_pV = nullptr;
-		Frame m_fIn;
+		Mat m_mIn;
 		vector<IMG_MORPH> m_vFilter;
 	};
 

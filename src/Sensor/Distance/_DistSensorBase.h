@@ -13,7 +13,7 @@
 #include "../../Filter/Median.h"
 #include "../../Filter/Average.h"
 #ifdef USE_OPENCV
-#include "../../Vision/Frame.h"
+#include "../../Base/cv.h"
 #endif
 
 #define MAX_DIST_SENSOR_DIV 720
@@ -96,7 +96,7 @@ namespace kai
 
 		virtual bool init(const json &j);
 		virtual void console(void *pConsole);
-		virtual void draw(void *pFrame);
+		virtual void draw(void *pMat);
 
 		bool bReady(void);
 		Vector2f range(void);

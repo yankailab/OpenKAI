@@ -39,20 +39,20 @@ namespace kai
 
 	bool _Feetech::open(void)
 	{
-		IF__(m_bOpen);
+		IF__(m_bOpened);
 		IF_F(!m_servo.begin(m_baud, m_port.c_str()));
 
 		m_servo.EnableTorque(1, 1);
 
-		m_bOpen = true;
+		m_bOpened = true;
 		return true;
 	}
 
 	void _Feetech::close(void)
 	{
-		IF_(!m_bOpen);
+		IF_(!m_bOpened);
 		m_servo.end();
-		m_bOpen = false;
+		m_bOpened = false;
 	}
 
 	bool _Feetech::start(void)
@@ -63,7 +63,7 @@ namespace kai
 
 	bool _Feetech::check(void)
 	{
-		IF_F(!m_bOpen);
+		IF_F(!m_bOpened);
 		NULL__(m_pA);
 
 		return this->_ActuatorBase::check();
@@ -75,7 +75,7 @@ namespace kai
 		{
 			m_pT->autoFPS();
 
-			if (!m_bOpen)
+			if (!m_bOpened)
 			{
 				if (!open())
 				{

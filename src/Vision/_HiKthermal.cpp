@@ -35,7 +35,7 @@ namespace kai
 	bool _HiKthermal::open(void)
 	{
 		IF_F(!check());
-		IF__(m_bOpen, true);
+		IF__(m_bOpened, true);
 
 		IF_F(!UVCopen());
 
@@ -51,7 +51,7 @@ namespace kai
 		IF_F(!UVCsetVideoMode());
 		IF_F(!UVCstreamStart());
 
-		m_bOpen = true;
+		m_bOpened = true;
 		return true;
 	}
 
@@ -205,9 +205,9 @@ namespace kai
 		m_pHandleStream = nullptr;
 	}
 
-	void _HiKthermal::cbGetFrame(uvc_frame *pFrame)
+	void _HiKthermal::cbGetFrame(uvc_frame *pMat)
 	{
-		NULL_(pFrame);
+		NULL_(pMat);
 	}
 
 	void _HiKthermal::UVCstreamGetFrame(unsigned int tOut)
@@ -229,7 +229,7 @@ namespace kai
 	{
 		while (m_pT->bRun())
 		{
-			if (!m_bOpen)
+			if (!m_bOpened)
 			{
 				if (!open())
 				{
@@ -271,7 +271,7 @@ namespace kai
 			Mat mC;
 			mRaw.convertTo(mC, CV_32FC1, tScale, -50.0);
 
-			m_fRGB.copy(mC);
+			mC.copyTo(m_mRGB);
 		}
 	}
 

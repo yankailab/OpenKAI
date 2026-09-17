@@ -59,14 +59,11 @@ namespace kai
 	void _Rotate::filter(void)
 	{
 		NULL_(m_pV);
-		Frame *pF = m_pV->getFrameRGB();
-		NULL_(pF);
-		IF_(pF->bEmpty());
-		IF_(m_fRGB.tStamp() >= pF->tStamp());
+		Mat *pM = m_pV->getMat();
+		NULL_(pM);
+		IF_(pM->empty());
 
-		Mat m;
-		cv::rotate(*pF->m(), m, m_code);
-		m_fRGB.copy(m);
+		cv::rotate(*pM, m_mRGB, m_code);
 	}
 
 }

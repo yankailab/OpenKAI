@@ -33,7 +33,7 @@ namespace kai
 		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual void update(void);
 		virtual bool check(void);
-		virtual void draw(void *pFrame);
+		virtual void draw(void *pMat);
 		virtual void console(void *pConsole);
 
 		virtual void createTracker(void);

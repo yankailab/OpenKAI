@@ -50,7 +50,7 @@ namespace kai
 		virtual bool start(void);
 		virtual void update(void);
 		virtual void console(void *pConsole);
-		virtual void draw(void *pFrame);
+		virtual void draw(void *pMat);
 
 	protected:
 		virtual void onPause(void);

@@ -116,7 +116,7 @@ namespace kai
 	bool _Lane::check(void)
 	{
 		NULL_F(m_pV);
-		IF_F(m_pV->getFrameRGB()->m()->empty());
+		IF_F(m_pV->getMat()->empty());
 
 		return this->_ModuleBase::check();
 	}
@@ -134,7 +134,7 @@ namespace kai
 	void _Lane::detect(void)
 	{
 		IF_(!check());
-		Mat *pM = m_pV->getFrameRGB()->m();
+		Mat *pM = m_pV->getMat();
 
 		// Warp transform to get overhead view
 		if (m_vSize.x() != pM->cols || m_vSize.y() != pM->rows)
@@ -209,14 +209,13 @@ namespace kai
 		}
 	}
 
-	void _Lane::draw(void *pFrame)
+	void _Lane::draw(void *pMat)
 	{
-		NULL_(pFrame);
-		this->_ModuleBase::draw(pFrame);
+		NULL_(pMat);
+		this->_ModuleBase::draw(pMat);
 		IF_(!check());
 
-		Frame *pF = (Frame *)pFrame;
-		Mat *pM = pF->m();
+		Mat *pM = static_cast<Mat *>(pMat);
 		IF_(pM->empty());
 
 		IF_(m_mPerspectiveInv.empty());

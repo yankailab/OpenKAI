@@ -274,15 +274,14 @@ namespace kai
 			pC->addMsg("Target not found", 1);
 	}
 
-	void _APmavlink_follow::draw(void *pFrame)
+	void _APmavlink_follow::draw(void *pMat)
 	{
-		NULL_(pFrame);
-		this->_APmavlink_move::draw(pFrame);
+		NULL_(pMat);
+		this->_APmavlink_move::draw(pMat);
 		IF_(!check());
 
 #ifdef USE_OPENCV
-		Frame *pF = (Frame *)pFrame;
-		Mat *pM = pF->m();
+		Mat *pM = static_cast<Mat *>(pMat);
 		IF_(pM->empty());
 		IF_(!m_bTarget);
 

@@ -57,12 +57,11 @@ namespace kai
 	void _Resize::filter(void)
 	{
 		NULL_(m_pV);
-		Frame *pF = m_pV->getFrameRGB();
-		NULL_(pF);
-		IF_(pF->bEmpty());
-		IF_(m_fRGB.tStamp() >= pF->tStamp());
+		Mat *pM = m_pV->getMat();
+		NULL_(pM);
+		IF_(pM->empty());
 
-		m_fRGB.copy(pF->resize(m_vSizeRGB.x(), m_vSizeRGB.y()));
+		cv::resize(*pM, m_mRGB, cv::Size(m_vSizeRGB.x(), m_vSizeRGB.y()));
 	}
 
 }

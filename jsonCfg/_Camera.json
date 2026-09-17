@@ -18,6 +18,7 @@
 		]
 	},
 
+
 	"view": {
 		"class": "_WindowCV",
 		"bON": true,
@@ -51,9 +52,10 @@
 		]
 	},
 
+
 	"cam": {
 		"class": "_Camera",
-		"bON": false,
+		"bON": true,
 		"thread": {
 			"FPS": 30
 		},
@@ -63,7 +65,6 @@
 			480
 		]
 	},
-
 	"gst": {
 		"class": "_GStreamer",
 		"bON": false,

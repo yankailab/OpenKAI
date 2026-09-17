@@ -59,13 +59,13 @@ namespace kai
 			return false;
 		}
 
-		m_bOpen = true;
+		m_bOpened = true;
 		return true;
 	}
 
 	void _SocketCAN::close(void)
 	{
-		m_bOpen = false;
+		m_bOpened = false;
 		::close(m_socket);
 		m_iErr = 0;
 	}
@@ -78,7 +78,7 @@ namespace kai
 
 	bool _SocketCAN::check(void)
 	{
-		IF_F(!m_bOpen);
+		IF_F(!m_bOpened);
 
 		return this->_CANbase::check();
 	}

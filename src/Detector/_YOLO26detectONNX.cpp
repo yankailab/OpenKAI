@@ -75,10 +75,9 @@ namespace kai
 		NULL_F(m_pSession);
 		NULL_F(m_pCanvas);
 		NULL_F(m_pV);
-		Frame *pBGR = m_pV->getFrameRGB();
+		Mat *pBGR = m_pV->getMat();
 		NULL_F(pBGR);
-		IF_F(pBGR->bEmpty());
-		IF_F(pBGR->tStamp() <= m_fRGB.tStamp());
+		IF_F(pBGR->empty());
 
 		return this->_DetectorBase::check();
 	}
@@ -99,9 +98,9 @@ namespace kai
 	{
 		IF_(!check());
 
-		Frame *pBGR = m_pV->getFrameRGB();
-		m_fRGB.copy(*pBGR);
-		Mat mIn = *m_fRGB.m();
+		Mat *pBGR = m_pV->getMat();
+		pBGR->copyTo(m_mRGB);
+		Mat mIn = m_mRGB;
 
 		if (m_bLetterBoxForSquare && m_vModelInputSize.x() == m_vModelInputSize.y())
 			mIn = formatToSquare(mIn);

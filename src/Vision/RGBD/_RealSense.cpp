@@ -33,7 +33,7 @@ namespace kai
         jKv(j, "bAlign", m_bAlign);
         jKv(j, "vPreset", m_vPreset);
 
-        jKv(j, "fConfidenceThreshold", m_rsCtrl.m_fConfidenceThreshold);
+        jKv(j, "fConfidenceThreshold", m_rsCtrl.m_fConfidenceThr);
         jKv(j, "fDigitalGain", m_rsCtrl.m_fDigitalGain);
         jKv(j, "fPostProcessingSharpening", m_rsCtrl.m_fPostProcessingSharpening);
         jKv(j, "fFilterMagnitude", m_rsCtrl.m_fFilterMagnitude);
@@ -59,7 +59,7 @@ namespace kai
 
     bool _RealSense::open(void)
     {
-        IF_F(m_bOpen);
+        IF_F(m_bOpened);
 
         try
         {
@@ -95,7 +95,7 @@ namespace kai
                 break;
             }
 
-            setSensorOption(dSensor, RS2_OPTION_CONFIDENCE_THRESHOLD, m_rsCtrl.m_fConfidenceThreshold);
+            setSensorOption(dSensor, RS2_OPTION_CONFIDENCE_THRESHOLD, m_rsCtrl.m_fConfidenceThr);
             //            setSensorOption(dSensor, RS2_OPTION_DIGITAL_GAIN, m_rsCtrl.m_fDigitalGain);
             setSensorOption(dSensor, RS2_OPTION_PRE_PROCESSING_SHARPENING, m_rsCtrl.m_fPostProcessingSharpening);
             setSensorOption(dSensor, RS2_OPTION_FILTER_MAGNITUDE, m_rsCtrl.m_fFilterMagnitude);
@@ -172,7 +172,7 @@ namespace kai
         // m_spImg = std::make_shared<geometry::Image>();
         // m_spImg->Prepare(m_vSizeRGB.x(), m_vSizeRGB.y(), 3, 1);
 
-        m_bOpen = true;
+        m_bOpened = true;
         return true;
     }
 
@@ -283,7 +283,7 @@ namespace kai
     {
         while (m_pT->bRun())
         {
-            if (!m_bOpen)
+            if (!m_bOpened)
             {
                 if (!open())
                 {
@@ -304,7 +304,7 @@ namespace kai
             {
                 sensorReset();
                 m_pT->sleepT(SEC_2_USEC);
-                m_bOpen = false;
+                m_bOpened = false;
             }
         }
     }
@@ -332,7 +332,7 @@ namespace kai
                 }
 
 #ifdef USE_OPENCV
-                m_fRGB.copy(Mat(Size(m_vSizeRGB.x(), m_vSizeRGB.y()), CV_8UC3, (void *)m_rsColor.get_data(), Mat::AUTO_STEP));
+                Mat(Size(m_vSizeRGB.x(), m_vSizeRGB.y()), CV_8UC3, (void *)m_rsColor.get_data(), Mat::AUTO_STEP).copyTo(m_mRGB);
 #endif
             }
             else
@@ -380,16 +380,16 @@ namespace kai
             Mat mD, mDs;
             mZ.convertTo(mD, CV_32FC1);
             mDs = mD * m_dScale;
-            m_fDepth.copy(mDs + m_dOfs);
+            cv::add(mDs, m_dOfs, m_mDepth);
 
             // if (m_bDepthShow)
             // {
-            //     IF_(m_fDepth.bEmpty());
+            //     IF_(m_mDepth.empty());
             //     rs2::colorizer rsColorMap;
             //     rs2::frame dColor = rsColorMap.process(m_rsDepth);
             //     Mat mDColor(Size(m_vDsize.x, m_vDsize.y), CV_8UC3, (void *)dColor.get_data(),
             //                 Mat::AUTO_STEP);
-            //     m_fDepthShow.copy(mDColor);
+            //     mDColor.copyTo(m_mDepthShow);
             // }
 #endif
 

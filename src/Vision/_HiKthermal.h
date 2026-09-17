@@ -119,7 +119,7 @@ namespace kai
 		bool UVCstreamStart(void);
 		void UVCstreamClose(void);
 		void UVCstreamGetFrame(unsigned int tOut);
-		void cbGetFrame(uvc_frame *pFrame);
+		void cbGetFrame(uvc_frame *pMat);
 
 		virtual void update(void);
 		static void *getUpdate(void *This)

@@ -67,15 +67,20 @@ namespace kai
 
 	protected:
 		bool updateScRGBD(void);
-#ifdef WITH_UNIVERSE
-		void updatePC(void);
-#endif
 
 	private:
-		virtual void update(void);
+		void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_Scepter *)This)->update();
+			return NULL;
+		}
+
+		void updatePCL(void);
+		void updateTPP(void);
+		static void *getTPP(void *This)
+		{
+			((_Scepter *)This)->updateTPP();
 			return NULL;
 		}
 
@@ -85,6 +90,7 @@ namespace kai
 		ScDeviceHandle m_scDevHandle = 0;
 		ScSensorIntrinsicParameters m_scCamParams;
 		ScCtrl m_scCtrl;
+		uint64_t m_tFrameInterval = 0; // minimal interval between frame reading
 
 		ScFrame m_scfRGB = {0};
 		ScFrame m_scfDepth = {0};

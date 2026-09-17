@@ -24,7 +24,7 @@ namespace kai
 
 		virtual bool init(const json &j);
 		virtual bool start(void);
-		virtual void draw(void *pFrame);
+		virtual void draw(void *pMat);
 		virtual void console(void *pConsole);
 
 		DIST_SENSOR_TYPE type(void);

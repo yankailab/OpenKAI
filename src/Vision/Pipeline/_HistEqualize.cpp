@@ -57,25 +57,21 @@ namespace kai
 	void _HistEqualize::filter(void)
 	{
 		NULL_(m_pV);
-		Frame *pF = m_pV->getFrameRGB();
-		NULL_(pF);
-		IF_(pF->bEmpty());
-		IF_(m_fRGB.tStamp() >= pF->tStamp());
+		Mat *pM = m_pV->getMat();
+		NULL_(pM);
+		IF_(pM->empty());
 
 		Mat mIn;
-		Mat mOut;
 		vector<Mat> vChannels;
 
 		// Using reference code from:
 		// https://opencv-srf.blogspot.jp/2013/08/histogram-equalization.html
 
-		cv::cvtColor(*pF->m(), mIn, COLOR_BGR2YCrCb); // change the color image from BGR to YCrCb format
+		cv::cvtColor(*pM, mIn, COLOR_BGR2YCrCb); // change the color image from BGR to YCrCb format
 		split(mIn, vChannels);						  // split the image into channels
 		cv::equalizeHist(vChannels[0], vChannels[0]); // equalize histogram on the 1st channel (Y)
 		merge(vChannels, mIn);						  // merge 3 channels including the modified 1st channel into one image
-		cv::cvtColor(mIn, mOut, COLOR_YCrCb2BGR);	  // change the color image from YCrCb to BGR format (to display image properly)
-
-		m_fRGB.copy(mOut);
+		cv::cvtColor(mIn, m_mRGB, COLOR_YCrCb2BGR);  // change the color image from YCrCb to BGR format (to display image properly)
 	}
 
 }

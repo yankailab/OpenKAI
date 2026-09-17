@@ -60,10 +60,10 @@ namespace kai
 	void _Thermal2RGB::filter(void)
 	{
 		NULL_(m_pV);
-		Frame *pF = m_pV->getFrameRGB();
-		NULL_(pF);
+		Mat *pM = m_pV->getMat();
+		NULL_(pM);
 
-		Mat mT = *pF->m();
+		Mat mT = *pM;
 		IF_(mT.empty());
 		IF_(mT.type() != CV_32FC1);
 
@@ -74,10 +74,7 @@ namespace kai
 		float tR = m_vTrange.y() - m_vTrange.x();
 		mClip.convertTo(mGray, CV_8UC1, 255.0 / tR, -m_vTrange.x() * 255.0 / tR);
 
-		Mat mC;
-		applyColorMap(mGray, mC, cv::COLORMAP_JET);
-
-		m_fRGB.copy(mC);
+		cv::applyColorMap(mGray, m_mRGB, cv::COLORMAP_JET);
 	}
 
 	void _Thermal2RGB::console(const json &j, void *pJSONbase)

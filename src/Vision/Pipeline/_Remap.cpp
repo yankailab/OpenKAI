@@ -65,23 +65,22 @@ namespace kai
 	void _Remap::filter(void)
 	{
 		NULL_(m_pV);
-		Frame *pF = m_pV->getFrameRGB();
-		NULL_(pF);
-		IF_(pF->bEmpty());
-		IF_(m_fRGB.tStamp() >= pF->tStamp());
+		Mat *pM = m_pV->getMat();
+		NULL_(pM);
+		IF_(pM->empty());
 
-		if (!m_bReady || pF->size() != cv::Size(m_vSizeRGB.x(), m_vSizeRGB.y()))
+		if (!m_bReady || pM->size() != cv::Size(m_vSizeRGB.x(), m_vSizeRGB.y()))
 		{
-			cv::Size s = pF->size();
+			cv::Size s = pM->size();
 			m_vSizeRGB.x() = s.width;
 			m_vSizeRGB.y() = s.height;
 			m_bReady = scaleCamMat();
 		}
 
 		if (m_bReady)
-			m_fRGB.copy(pF->remap(m_m1, m_m2));
+			cv::remap(*pM, m_mRGB, m_m1, m_m2, cv::INTER_LINEAR);
 		else
-			m_fRGB.copy(*pF);
+			pM->copyTo(m_mRGB);
 	}
 
 	// void _Remap::updateCamMat(void)
@@ -128,11 +127,7 @@ namespace kai
 							   m_mD,
 							   &m_mCscaled));
 
-#ifdef USE_CUDA
-		initUndistortRectifyMap(m_mCscaled, m_mD, Mat(), m_mCscaled, s, CV_32F, m_m1, m_m2);
-#else
 		initUndistortRectifyMap(m_mCscaled, m_mD, Mat(), m_mCscaled, s, CV_16SC2, m_m1, m_m2);
-#endif
 
 		return true;
 

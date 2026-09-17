@@ -42,7 +42,7 @@ namespace kai
 
 	bool SharedMem::open(void)
 	{
-		IF__(m_bOpen, true);
+		IF__(m_bOpened, true);
 
 		if (m_bWriter)
 		{
@@ -60,20 +60,20 @@ namespace kai
 			m_pB = mmap(0, m_nB, PROT_READ, MAP_SHARED, m_fd, 0);
 		}
 
-		m_bOpen = true;
+		m_bOpened = true;
 		return true;
 	}
 
 	bool SharedMem::bOpen(void)
 	{
-		return m_bOpen;
+		return m_bOpened;
 	}
 
 	void SharedMem::close(void)
 	{
-		IF_(!m_bOpen);
+		IF_(!m_bOpened);
 
-		m_bOpen = false;
+		m_bOpened = false;
 		m_pB = NULL;
 
 		if (!m_bWriter)
@@ -89,7 +89,7 @@ namespace kai
 
 	void *SharedMem::p(void)
 	{
-		IF__(!m_bOpen, nullptr);
+		IF__(!m_bOpened, nullptr);
 
 		return m_pB;
 	}

@@ -50,7 +50,7 @@ namespace kai
 	protected:
 		string m_port = "";
 		int m_baud = 115200;
-		bool m_bOpen = false;
+		bool m_bOpened = false;
 		SMSBL m_servo;
 		uint8_t m_ID = 1;
 		ACTUATOR_AXIS *m_pA = nullptr;

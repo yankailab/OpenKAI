@@ -60,14 +60,11 @@ namespace kai
 	void _Contrast::filter(void)
 	{
 		NULL_(m_pV);
-		Frame *pF = m_pV->getFrameRGB();
-		NULL_(pF);
-		IF_(pF->bEmpty());
-		//		IF_(m_fRGB.tStamp() >= pF->tStamp());
+		Mat *pM = m_pV->getMat();
+		NULL_(pM);
+		IF_(pM->empty());
 
-		Mat m;
-		pF->m()->convertTo(m, -1, m_alpha, m_beta);
-		m_fRGB.copy(m);
+		pM->convertTo(m_mRGB, -1, m_alpha, m_beta);
 	}
 
 }

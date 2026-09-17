@@ -85,10 +85,10 @@ namespace kai
 	void _Frame2Img::recFrame(void)
 	{
 		NULL_(m_pV);
-		Frame *pF = m_pV->getFrameRGB();
-		NULL_(pF);
+		Mat *pM = m_pV->getMat();
+		NULL_(pM);
 
-		Mat mT = *pF->m();
+		Mat mT = *pM;
 		IF_(mT.empty());
 		IF_(mT.type() != CV_32FC1);
 

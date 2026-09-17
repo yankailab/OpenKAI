@@ -28,7 +28,7 @@ namespace kai
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 		virtual void console(const json &j, void *pJSONbase);
-		//		virtual void draw(void *pFrame);
+		//		virtual void draw(void *pMat);
 
 		virtual bool loadConfig(const string &fName);
 		virtual bool saveConfig(const string &fName);

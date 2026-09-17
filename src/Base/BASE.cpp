@@ -80,7 +80,7 @@ namespace kai
 		return m_class;
 	}
 
-	void BASE::draw(void *pFrame)
+	void BASE::draw(void *pMat)
 	{
 	}
 

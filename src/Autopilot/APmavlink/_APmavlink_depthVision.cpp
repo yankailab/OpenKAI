@@ -66,19 +66,19 @@ namespace kai
 		_Mavlink *pMavlink = m_pAP->getMavlink();
 		NULL_(m_pDV);
 
-		Vector2f range = m_pDV->getRangeD();
+		Vector2f range = m_pDV->getDepthRange();
 		mavlink_distance_sensor_t D;
 
 		for (int i = 0; i < m_nROI; i++)
 		{
 			DEPTH_ROI *pR = &m_pROI[i];
 
-			float d = m_pDV->d(pR->m_roi);
-			if (d <= range.x())
-				d = range.y();
-			if (d > range.y())
-				d = range.y();
-			pR->m_minD = d;
+			// float d = m_pDV->d(pR->m_roi);
+			// if (d <= range.x())
+			// 	d = range.y();
+			// if (d > range.y())
+			// 	d = range.y();
+			// pR->m_minD = d;
 
 			D.type = 0;
 			D.max_distance = (uint16_t)(range.y() * 100); // unit: centimeters
@@ -92,14 +92,13 @@ namespace kai
 		}
 	}
 
-	void _APmavlink_depthVision::draw(void *pFrame)
+	void _APmavlink_depthVision::draw(void *pMat)
 	{
-		NULL_(pFrame);
-		this->_ModuleBase::draw(pFrame);
+		NULL_(pMat);
+		this->_ModuleBase::draw(pMat);
 		IF_(!check());
 
-		Frame *pF = (Frame *)pFrame;
-		Mat *pM = pF->m();
+		Mat *pM = static_cast<Mat *>(pMat);
 
 		NULL_(m_pDV);
 
@@ -107,7 +106,7 @@ namespace kai
 		{
 			DEPTH_ROI *pR = &m_pROI[i];
 			Vector4f roi = pR->m_roi;
-			float d = m_pDV->d(roi);
+//			float d = m_pDV->d(roi);
 
 			Rect r;
 			r.x = roi.x() * pM->cols;
@@ -116,9 +115,9 @@ namespace kai
 			r.height = roi.w() * pM->rows - r.y;
 			rectangle(*pM, r, Scalar(0, 255, 0), 1);
 
-			putText(*pM, f2str(d),
-					Point(r.x + 15, r.y + 25),
-					FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 255), 1);
+			// putText(*pM, f2str(d),
+			// 		Point(r.x + 15, r.y + 25),
+			// 		FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 255), 1);
 		}
 	}
 

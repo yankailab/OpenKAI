@@ -9,7 +9,7 @@
 #define OpenKAI_src_UI_GstOutput_H_
 
 #include "_UIbase.h"
-#include "../Vision/Frame.h"
+#include "../Base/cv.h"
 
 namespace kai
 {
@@ -32,7 +32,7 @@ namespace kai
 		}
 
 	protected:
-		Frame m_F;
+		Mat m_M;
 		Vector2i m_vSize = Vector2i::Zero();
 
 		string m_gstOutput = "appsrc ! videoconvert ! fbdevsink";

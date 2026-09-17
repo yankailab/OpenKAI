@@ -36,8 +36,8 @@ namespace kai
 		_VisionBase *m_pV = nullptr;
 		_VisionBase *m_pVmask = nullptr;
 
-		Frame m_fIn;
-		Frame m_fMask;
+		Mat m_mIn;
+		Mat m_mMask;
 	};
 
 }

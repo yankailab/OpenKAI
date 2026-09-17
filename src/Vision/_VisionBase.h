@@ -14,7 +14,7 @@
 
 #ifdef USE_OPENCV
 #include "../Utility/utilCV.h"
-#include "Frame.h"
+#include "../Base/cv.h"
 #endif
 
 namespace kai
@@ -63,33 +63,33 @@ namespace kai
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 		virtual void console(const json &j, void *pJSONbase);
-		virtual void draw(void *pFrame);
+		virtual void draw(void *pMat);
 
 		virtual bool open(void);
-		virtual bool isOpened(void);
+		virtual bool bOpened(void);
 		virtual void close(void);
+
+		virtual int getData(void* pOut, int iD = 0, int nB = 0);
 
 		virtual Vector2i getSize(void);
 		virtual VISION_TYPE getType(void);
 
 #ifdef USE_OPENCV
-		virtual Frame *getFrameRGB(void);
+		virtual Mat *getMat(void);
 #endif
 
 	protected:
 		VISION_TYPE m_type = vision_unknown;
+
 		string m_devURI = "";
-		int m_devFPS = 30;			   // device native FPS
-		uint64_t m_tFrameInterval = 0; // minimal interval between frame reading
 		bool m_bRGB = true;
-		Vector2i m_vSizeRGB = Vector2i::Zero();
+		int m_devFPS = 30; // device native FPS
+		Vector2i m_vSizeRGB = Vector2i(1280, 720);
 
-		bool m_bOpen = false;
-
-		SharedMem *m_psmRGB = nullptr;
+		bool m_bOpened = false;
 
 #ifdef USE_OPENCV
-		Frame m_fRGB;
+		Mat m_mRGB;
 #endif
 	};
 

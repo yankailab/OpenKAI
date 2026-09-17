@@ -42,7 +42,7 @@ namespace kai
 
 	bool _Orbbec::open(void)
 	{
-		IF__(m_bOpen, true);
+		IF__(m_bOpened, true);
 
 		shared_ptr<ob::DeviceList> pDL = m_ctx.queryDeviceList();
 		if (m_SN.empty())
@@ -86,7 +86,7 @@ namespace kai
 		}
 
 		// For point cloud generation
-		if (m_bPCrgb)
+		if (m_bPCLrgb)
 		{
 			m_spConfig->setFrameAggregateOutputMode(OB_FRAME_AGGREGATE_OUTPUT_ALL_TYPE_FRAME_REQUIRE);
 			m_spConfig->setAlignMode(ALIGN_D2C_HW_MODE);
@@ -98,11 +98,11 @@ namespace kai
 		// Point cloud filter
 		m_spPCF = std::make_shared<ob::PointCloudFilter>();
 		//		m_spPCF->setCameraParam(m_spPipe->getCameraParam());
-		if (m_bPCrgb)
+		if (m_bPCLrgb)
 		{
 			m_spPCF->setCreatePointFormat(OB_FORMAT_RGB_POINT);
 		}
-		else if (m_bPCd)
+		else if (m_bPCL)
 		{
 			m_spPCF->setCreatePointFormat(OB_FORMAT_POINT);
 		}
@@ -112,16 +112,16 @@ namespace kai
 		m_tRGBus = 0;
 		m_dtRGBus = 0;
 
-		m_bOpen = true;
+		m_bOpened = true;
 		return true;
 	}
 
 	void _Orbbec::close(void)
 	{
-		IF_(!m_bOpen);
+		IF_(!m_bOpened);
 
 		m_spPipe->stop();
-		m_bOpen = false;
+		m_bOpened = false;
 		this->_RGBDbase::close();
 	}
 
@@ -143,7 +143,7 @@ namespace kai
 	{
 		while (m_pT->bRun())
 		{
-			if (!m_bOpen)
+			if (!m_bOpened)
 			{
 				if (!open())
 				{
@@ -205,7 +205,7 @@ namespace kai
 			spFrameRGB = spFS->getFrame(OB_FRAME_COLOR);
 			if (spFrameRGB)
 			{
-				*m_fRGB.m() = Mat(m_vSizeRGB.y(), m_vSizeRGB.x(), CV_8UC3, spFrameRGB->getData());
+				m_mRGB = Mat(m_vSizeRGB.y(), m_vSizeRGB.x(), CV_8UC3, spFrameRGB->getData());
 				uint64_t tRGBus = frameTsUs_(spFrameRGB);
 				m_dtRGBus = tRGBus - m_tRGBus;
 				m_tRGBus = tRGBus;
@@ -217,7 +217,7 @@ namespace kai
 			spFrameD = spFS->getFrame(OB_FRAME_DEPTH);
 			if (spFrameD)
 			{
-				*m_fDepth.m() = Mat(m_vSizeD.y(), m_vSizeD.x(), CV_16UC1, spFrameD->getData());
+				m_mDepth = Mat(m_vSizeD.y(), m_vSizeD.x(), CV_16UC1, spFrameD->getData());
 				uint64_t tDus = frameTsUs_(spFrameD);
 				m_dtDus = tDus - m_tDus;
 				m_tDus = tDus;
@@ -225,11 +225,11 @@ namespace kai
 		}
 
 		// Point cloud
-		if (m_bPCrgb && spFrameRGB && spFrameD)
+		if (m_bPCLrgb && spFrameRGB && spFrameD)
 		{
 			m_spFrame = m_spPCF->process(spFS);
 		}
-		else if (m_bPCd && spFrameD)
+		else if (m_bPCL && spFrameD)
 		{
 			m_spFrame = m_spPCF->process(spFS);
 		}
@@ -258,7 +258,7 @@ namespace kai
 			// Mat mD, mDs;
 			// mZ.convertTo(mD, CV_32FC1);
 			// mDs = mD * m_dScale;
-			// m_fDepth.copy(mDs + m_dOfs);
+			// cv::add(mDs, m_dOfs, m_mDepth);
 #endif
 	}
 

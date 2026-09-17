@@ -91,7 +91,7 @@ namespace kai
 	// 	static const double usecBase = 1.0 / ((double)SEC_2_USEC);
 
 	// 	Mat mGray;
-	// 	m_pV->getFrameRGB()->m()->copyTo(mGray);
+	// 	m_pV->getMat()->copyTo(mGray);
 	// 	IF_(mGray.empty());
 
 	// 	m_pose = m_pOS->TrackMonocular(mGray, t);

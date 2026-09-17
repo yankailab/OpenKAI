@@ -45,12 +45,12 @@ namespace kai
 			while (!m_gst.read(mCam))
 				;
 		}
-		m_fRGB.copy(mCam);
+		mCam.copyTo(m_mRGB);
 
 		m_vSizeRGB.x() = mCam.cols;
 		m_vSizeRGB.y() = mCam.rows;
 
-		m_bOpen = true;
+		m_bOpened = true;
 		return true;
 	}
 
@@ -70,7 +70,7 @@ namespace kai
 	{
 		while (m_pT->bRun())
 		{
-			if (!m_bOpen)
+			if (!m_bOpened)
 			{
 				if (!open())
 				{
@@ -84,7 +84,7 @@ namespace kai
 			Mat mCam;
 			while (!m_gst.read(mCam))
 				;
-			m_fRGB.copy(mCam);
+			mCam.copyTo(m_mRGB);
 		}
 	}
 

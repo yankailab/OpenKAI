@@ -61,12 +61,11 @@ namespace kai
 	void _Crop::filter(void)
 	{
 		NULL_(m_pV);
-		Frame *pF = m_pV->getFrameRGB();
-		NULL_(pF);
-		IF_(pF->bEmpty());
-		//		IF_(m_fRGB.tStamp() >= pF->tStamp());
+		Mat *pM = m_pV->getMat();
+		NULL_(pM);
+		IF_(pM->empty());
 
-		Mat mIn = *pF->m();
+		Mat mIn = *pM;
 		Rect r;
 		r.x = constrain(m_vRoi.x(), 0, mIn.cols);
 		r.y = constrain(m_vRoi.y(), 0, mIn.rows);
@@ -76,7 +75,7 @@ namespace kai
 		m_vSizeRGB.x() = r.width;
 		m_vSizeRGB.y() = r.height;
 
-		m_fRGB.copy(mIn(r));
+		mIn(r).copyTo(m_mRGB);
 	}
 
 }

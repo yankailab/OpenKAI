@@ -78,14 +78,13 @@ namespace kai
 	void _Erode::filter(void)
 	{
 		NULL_(m_pV);
-		Frame *pF = m_pV->getFrameRGB();
-		NULL_(pF);
-		IF_(pF->bEmpty());
-		IF_(m_fIn.tStamp() >= pF->tStamp());
+		Mat *pM = m_pV->getMat();
+		NULL_(pM);
+		IF_(pM->empty());
 
-		m_fIn.copy(*pF);
+		pM->copyTo(m_mIn);
 
-		Mat m1 = *m_fIn.m();
+		Mat m1 = m_mIn;
 		Mat m2;
 		Mat *pM1 = &m1;
 		Mat *pM2 = &m2;
@@ -103,7 +102,7 @@ namespace kai
 			SWAP(pM1, pM2, pT);
 		}
 
-		m_fRGB.copy(*pM1);
+		pM1->copyTo(m_mRGB);
 	}
 
 }

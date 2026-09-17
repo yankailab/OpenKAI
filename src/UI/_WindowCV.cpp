@@ -28,7 +28,7 @@ namespace kai
 		m_waitKey = 1000.0f / m_pT->getTargetFPS();
 
 		IF_Le_F(std::abs(m_vSize.prod()) <= 0, "Window size too small");
-		m_F.allocate(m_vSize.x(), m_vSize.y());
+		m_M = Mat::zeros(m_vSize.y(), m_vSize.x(), CV_8UC3);
 
 		string wn = this->getName();
 		if (m_bFullScreen)
@@ -65,12 +65,12 @@ namespace kai
 		// draw contents
 		for (BASE *pB : m_vpB)
 		{
-			pB->draw((void *)&m_F);
+			pB->draw((void *)&m_M);
 		}
-		IF_(m_F.bEmpty());
+		IF_(m_M.empty());
 
 		// show window
-		imshow(this->getName(), *m_F.m());
+		imshow(this->getName(), m_M);
 
 		// int key = waitKey(m_waitKey);
 		waitKey(m_waitKey);

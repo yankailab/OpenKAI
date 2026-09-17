@@ -52,7 +52,7 @@ namespace kai
 		string m_tcpAddr = "";
 		int m_tcpPort = 0;
 
-		bool m_bOpen = false;
+		bool m_bOpened = false;
 		uint64_t m_tIntervalUsec = 10000;
 		uint32_t m_tOutSec = 1;
 		uint32_t m_tOutUSec = 0;
