@@ -1,6 +1,4 @@
 #include "_WebViewer3D.h"
-#include "WebViewer3DProtocol.h"
-#include "../../Grid/_SelectableOctGrid.h"
 #include "../../../Module/ModuleMgr.h"
 #include "../../../IO/WebSocketStream.h"
 #include <algorithm>

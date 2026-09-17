@@ -7,7 +7,7 @@
 #include <limits>
 #include <stdexcept>
 #include <vector>
-#include "../../Grid/OctreeGridCells.h"
+#include "../../Grid/_SelectableOctGrid.h"
 
 namespace kai::webviewer3d
 {

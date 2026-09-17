@@ -8,10 +8,7 @@
 #ifndef OpenKAI_src_Universe_Geometry__GeometryBase_H_
 #define OpenKAI_src_Universe_Geometry__GeometryBase_H_
 
-#include "../../Base/_ModuleBase.h"
-#include "../../Utility/util.h"
-#include "../../Utility/utilTime.h"
-#include "../../UI/_Console.h"
+#include "../_ReferenceFrame.h"
 
 namespace kai
 {
@@ -134,7 +131,7 @@ namespace kai
         }
     };
 
-    class _GeometryBase : public _ModuleBase
+    class _GeometryBase : public _ReferenceFrame
     {
     public:
         _GeometryBase();
@@ -154,25 +151,9 @@ namespace kai
         virtual int get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire = 0);
         virtual int get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut, uint64_t tExpire = 0);
 
-        virtual void setPos(const Vector3d &vP);
-        virtual void setPos(double x, double y, double z);
-        virtual void setAngles(const Vector3d &vA);
-        virtual void setAngles(double roll, double pitch, double yaw);
-        virtual void setOrientation(const Quaterniond &vOrt, bool bConvertToEulerAngles = false);
-        virtual void setOrientation(double x, double y, double z, double w, bool bConvertToEulerAngles = false);
-
-    protected:
-        virtual void updatePose(void);
-        virtual void updateEulerAngles(void);
-
     protected:
         GEOMETRY_TYPE m_type = geometry_unknown;
 
-        Vector3d m_vPos = Vector3d::Zero();           // position
-        Quaterniond m_vOrt = Quaterniond::Identity(); // orientation quaternion
-        Vector3d m_vAngle = Vector3d::Zero();         // euler angles in roll, pitch, yaw order
-        Isometry3d m_mPose = Isometry3d::Identity();  // combined transform
-        Isometry3f m_mPosef = Isometry3f::Identity(); // for quick calc
     };
 
 }

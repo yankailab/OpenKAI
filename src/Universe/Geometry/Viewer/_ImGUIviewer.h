@@ -10,7 +10,7 @@
 
 #include "../_GeometryViewerBase.h"
 #include "ImGUIviewerBackend.h"
-#include "../../Grid/OctreeGridCells.h"
+#include "../../Grid/_SelectableOctGrid.h"
 
 struct ImDrawList;
 struct ImDrawCmd;
