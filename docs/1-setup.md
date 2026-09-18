@@ -10,7 +10,7 @@ sudo rasp-config
 
 # Install prerequisites
 ```bash
-sudo apt-get -y install build-essential cmake cmake-curses-gui git uuid-dev ncurses-dev libcurl4 curl libssl-dev libuvc-dev libusb-1.0-0-dev
+sudo apt-get -y install build-essential cmake cmake-curses-gui git uuid-dev ncurses-dev libcurl4 curl libssl-dev libuvc-dev libusb-1.0-0-dev ninja-build
 ```
 
 ## (Optional) Boost
