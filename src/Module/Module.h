@@ -87,7 +87,6 @@
 #endif // opencv_contrib
 #endif // opencv
 #ifdef WITH_SWARM
-#include "../Autopilot/APmavlink/_APmavlink_swarm.h"
 #endif
 #ifdef WITH_NAVIGATION
 #include "../Autopilot/APmavlink/_APmavlink_visionEstimate.h"
@@ -204,7 +203,6 @@
 #ifdef WITH_SWARM
 #include "../Swarm/_SwarmBase.h"
 #include "../Swarm/_SwarmCtrl.h"
-#include "../Swarm/_SwarmSearch.h"
 #endif
 
 #ifdef WITH_UI

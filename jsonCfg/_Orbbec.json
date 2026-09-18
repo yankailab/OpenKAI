@@ -17,6 +17,8 @@
 			"fastLivo"
 		]
 	},
+
+
 	"view": {
 		"class": "_WindowCV",
 		"bON": true,
@@ -39,6 +41,8 @@
 			"d2g"
 		]
 	},
+
+
 	"Orbbec": {
 		"class": "_Orbbec",
 		"bON": true,
@@ -69,20 +73,7 @@
 		"bPCrgb": false
 	},
 
-	"fastLivo": {
-		"class": "_FastLivo2",
-		"bON": true,
-		"thread": {
-			"FPS": 30
-		},
-		"_IMUbase": "obIMU",
-		"_PointCloud": "obPC",
-		"bImg":false,
-		"nPmax":100000,
-		"voxelLeafSize":2.0
-	},
-
-
+	
 	"d2g": {
 		"class": "_D2G",
 		"bON": false,
@@ -108,104 +99,5 @@
 		},
 		"nIMUdqMax": 1000,
 		"tIMUpairToleranceUs": 5000
-	},
-	"GViewer": {
-		"class": "_GeometryViewerBase",
-		"bON": true,
-		"thread": {
-			"FPS": 10
-		},
-		"threadUI": {
-			"FPS": 30
-		},
-		"vWinSize": [
-			1280,
-			720
-		],
-		"pathRes": "/usr/local/bin/Open3D/resources",
-		"device": "CPU:0",
-		"vCamLookAt": [
-			0,
-			0,
-			0
-		],
-		"vCamEye": [
-			0,
-			0,
-			2
-		],
-		"vCamUp": [
-			0,
-			1,
-			0
-		],
-		"vCamAutoLookAt": [
-			0,
-			0,
-			0
-		],
-		"vCamAutoEye": [
-			0,
-			2,
-			0
-		],
-		"vCamAutoUp": [
-			0,
-			1,
-			0
-		],
-		"vCoR": [
-			0,
-			0,
-			0
-		],
-		"camProjType": 0,
-		"vCamNF": [
-			0,
-			500
-		],
-		"camFov": 80,
-		"camFovType": 1,
-		"vCamLR": [
-			-100,
-			100
-		],
-		"vCamBT": [
-			-100,
-			100
-		],
-		"bFullScreen": 0,
-		"wPanel": 20,
-		"vBtnPadding": [
-			1.6,
-			2.0
-		],
-		"mouseMode": 0,
-		"vDmove": [
-			0.5,
-			5.0
-		],
-		"dHiddenRemove": 100.0,
-		"dirSave": "/home/kai/Documents/",
-		"/dirSave": "/media/lab/",
-		"rVoxel": 0.05,
-		"geometry": [
-			{
-				"_GeometryBase": "obPC",
-				"bStatic": false,
-				"nP": 500000,
-				"rDummyDome": 1000.0,
-				"matName": "depth",
-				"/matName": "default",
-				"/matCol": [
-					1,
-					1,
-					1,
-					1
-				],
-				"matPointSize": 1,
-				"matLineWidth": 1
-			}
-		]
 	}
 }
