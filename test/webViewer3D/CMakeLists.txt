@@ -12,5 +12,5 @@ enable_testing()
 add_executable(grid_protocol grid_protocol.cpp)
 add_test(NAME grid_protocol COMMAND grid_protocol)
 add_test(NAME webviewer_transport COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/integration.py
-  $<TARGET_FILE:viewer_fixture> ${CMAKE_CURRENT_SOURCE_DIR}/../../html/webViewer3D)
+  $<TARGET_FILE:viewer_fixture> ${CMAKE_CURRENT_SOURCE_DIR}/../../html/viewer/_SelectableOctGrid)
 set_tests_properties(webviewer_transport PROPERTIES TIMEOUT 30)

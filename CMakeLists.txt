@@ -10,7 +10,6 @@ option(USE_DYNAMIXEL "Use Dynamixel" OFF)
 option(USE_FEETECH "Use Feetech" OFF)
 option(USE_GUI "Use GUI" OFF)
 option(USE_IMGUI "Use Dear ImGui 3D viewer" OFF)
-option(USE_WEBVIEWER3D "Use embedded HTTP/WebSocket three.js viewer (Boost headers)" OFF)
 option(USE_GLOG "Use glog" ON)
 option(USE_JETSON_INFERENCE "Use Jetson Inference" OFF)
 option(USE_OPEN3D "Use Open3D" OFF)
@@ -129,17 +128,12 @@ if(WITH_DEFAULT_MODULES)
 endif()
 
 # Optional modules
-if(USE_WEBVIEWER3D)
-  set(WITH_UNIVERSE ON CACHE BOOL "" FORCE)
+if(WITH_UNIVERSE)
   find_package(Boost 1.70 CONFIG REQUIRED)
-  add_definitions(-DUSE_WEBVIEWER3D -DBOOST_ERROR_CODE_HEADER_ONLY)
+  add_definitions(-DWITH_UNIVERSE -DBOOST_ERROR_CODE_HEADER_ONLY)
   list(APPEND OpenKAI_include ${Boost_INCLUDE_DIRS})
   list(APPEND OpenKAI_cpp src/Net/HttpServer.cpp src/IO/WebSocketStream.cpp
     src/UI/Viewer/_WebViewer3D.cpp)
-endif()
-
-if(WITH_UNIVERSE)
-  add_definitions(-DWITH_UNIVERSE)
     set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/_ReferenceFrame.cpp)
     set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Grid/_OctreeBase.cpp)
     set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Grid/_OctreeGrid.cpp)
@@ -296,7 +290,6 @@ if(WITH_NAVIGATION)
   file(GLOB_RECURSE Dependencies_nav src/Dependencies/minmea.c)
   set(OpenKAI_cpp ${OpenKAI_cpp} ${Dependencies_nav})
   set(OpenKAI_cpp ${OpenKAI_cpp} src/Navigation/_NavBase.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Navigation/Coordinate.cpp)
   set(OpenKAI_cpp ${OpenKAI_cpp} src/Navigation/_GPS.cpp)
   set(OpenKAI_cpp ${OpenKAI_cpp} src/Navigation/_RTCMcast.cpp)
   set(OpenKAI_cpp ${OpenKAI_cpp} src/Navigation/_GeoFence.cpp)
@@ -409,9 +402,6 @@ if(WITH_VISION)
     set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/_VideoFile.cpp)
     set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/_ImgFile.cpp)
     set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/_GStreamer.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/_GPhoto.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/_Frame2Img.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/_Img2Frame.cpp)
     set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/Pipeline/_D2RGB.cpp)
     set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/Pipeline/_Contrast.cpp)
     set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/Pipeline/_ColorConvert.cpp)
@@ -724,10 +714,10 @@ endif() # build_as_lib
 
 target_link_libraries(OpenKAI ${OpenKAI_lib})
 
-if(USE_WEBVIEWER3D)
+if(WITH_UNIVERSE)
   add_custom_command(TARGET OpenKAI POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-      "${PROJECT_SOURCE_DIR}/html/webViewer3D" "$<TARGET_FILE_DIR:OpenKAI>/html/webViewer3D")
+      "${PROJECT_SOURCE_DIR}/html/viewer/_SelectableOctGrid" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_SelectableOctGrid")
 endif()
 
 # Optional ROS2 configs
@@ -744,8 +734,8 @@ endif()
 
 # Install
 include(GNUInstallDirs)
-if(USE_WEBVIEWER3D)
-  install(DIRECTORY html/webViewer3D DESTINATION ${CMAKE_INSTALL_BINDIR}/html)
+if(WITH_UNIVERSE)
+  install(DIRECTORY html/viewer/_SelectableOctGrid DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
 endif()
 set_target_properties(OpenKAI PROPERTIES
   VERSION ${PROJECT_VERSION})

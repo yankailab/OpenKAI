@@ -5,7 +5,7 @@ the same `_GeometryBase::get()` ring buffers as `_ImGUIviewer`, plus compact
 `_SelectableOctGrid::get(OCTGRID_CELLS*)` snapshots. The C++ process
 serves the browser application and three independent binary WebSockets on one port. A separate
 WebSocket connects JSON application commands to `_WSconsole`. All browser
-assets, including a pinned three.js release, are in `html/webViewer3D/`.
+assets, including a pinned three.js release, are in `html/viewer/_SelectableOctGrid/`.
 There is no browser-side installation, npm build, CDN, or separate web server.
 
 Configure displayed grids with `"class": "_SelectableOctGrid"`. This module
@@ -17,23 +17,24 @@ Existing module instance names such as `octGrid` and command names stay the same
 
 ## Build and run
 
-Add `-DUSE_WEBVIEWER3D=ON` to your existing CMake configuration. A minimal build is:
+Add `-DWITH_UNIVERSE=ON` to your existing CMake configuration. A minimal build is:
 
 ```bash
-cmake -S . -B build-web -DUSE_WEBVIEWER3D=ON -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build-web -DWITH_UNIVERSE=ON -DCMAKE_BUILD_TYPE=Release
 cmake --build build-web -j4
 ./build-web/OpenKAI jsonCfg/WebViewer3D.json
 ```
 
-This enables `WITH_UNIVERSE` and requires Boost headers version 1.70 or later in addition
-to OpenKAI's normal build dependencies. Beast and Asio are compiled from headers;
+`WITH_UNIVERSE` includes the browser viewer and requires Boost headers version 1.70
+or later in addition to OpenKAI's normal build dependencies. Beast and Asio are
+compiled from headers;
 no Boost runtime library, wsServer, Open3D, ImGui, or desktop GL backend is needed
 for streaming. The current sample uses `_Scepter` camera geometry and octree
 cells; enable its camera build dependencies when running that configuration.
 The optional `_PCfile` source can load `data/PointCloud/StanfordBunny/bun000.ply`.
 Run from the repository root so relative data paths resolve.
 
-Open `html/webViewer3D/index.html` directly in the browser, enter the backend IP
+Open `html/viewer/_SelectableOctGrid/index.html` directly in the browser, enter the backend IP
 and port (default `8080`), and click **Start**. The local launcher navigates to
 the C++ server and automatically connects. Alternatively, visit
 `http://BACKEND_IP:8080/` and click **Start** there. **Start** opens the three geometry sockets
@@ -45,8 +46,8 @@ The launcher redirects because browsers restrict ES modules loaded from
 `file://`; the renderer and all imports run from the backend's HTTP origin.
 See the [three.js installation guide](https://threejs.org/manual/en/installation.html).
 
-CMake copies the frontend next to the executable as `html/webViewer3D/` after
-building and installs it under `bin/html/webViewer3D/`. By default the viewer
+CMake copies the frontend next to the executable as `html/viewer/_SelectableOctGrid/` after
+building and installs it under `bin/html/viewer/_SelectableOctGrid/`. By default the viewer
 looks in the working directory and then beside the executable on Linux. Set
 `webRoot` explicitly for other deployment layouts. Copy the complete frontend
 directory with the executable when deploying offline.
@@ -307,7 +308,7 @@ Optional `vGeometry` entries add or override individual sources:
 | Setting | Default | Meaning |
 | --- | --- | --- |
 | `host`, `port` | `0.0.0.0`, `8080` | HTTP and WebSocket bind address and shared port |
-| `webRoot` | `html/webViewer3D` | Directory of browser resources |
+| `webRoot` | `html/viewer/_SelectableOctGrid` | Directory of browser resources |
 | `nClientMax` | `8` | Maximum clients per geometry endpoint, configurable from 1 to 64 |
 | `thread.FPS` | framework default | Maximum geometry collection/publication rate |
 | `nCbuf` | `100000` | Maximum occupied cells collected per grid source |
@@ -350,15 +351,15 @@ are drawn with shared wire/solid box geometry and one GPU instance per cell.
 | `src/IO/WebSocketStream.*` | Asynchronous WebSocket sessions, shared snapshots, bounded delivery, lifecycle |
 | `src/UI/Viewer/WebViewer3DProtocol.h` | Versioned little-endian binary encoding |
 | `src/UI/Viewer/_WebViewer3D.*` | Framework configuration, collection, filtering and snapshot publication |
-| `html/webViewer3D/js/launcher.js` | Local-file launcher and endpoint validation |
-| `html/webViewer3D/js/wsStreamBase.js` | Geometry connection, protocol greeting, automatic reconnect and stream acknowledgements |
-| `html/webViewer3D/js/wsCmdBase.js` | Independent JSON command socket, sending and console status |
-| `html/webViewer3D/js/wsCmdHandler.js` | Reply buffering and page-specific JSON command handlers |
-| `html/webViewer3D/js/protocol.js` | Frame validation and typed-array views |
-| `html/webViewer3D/js/viewer3D.js` | Three.js scene, GPU buffers, camera and rendering |
-| `html/webViewer3D/js/gridCellPicker.js` | Click picking, persistent red selections and command payloads |
-| `html/webViewer3D/js/gridSelection.js` | Exact ID encoding and volume remapping between root headers |
-| `html/webViewer3D/js/main.js` | UI, animation loop and render acknowledgements |
+| `html/viewer/_SelectableOctGrid/js/launcher.js` | Local-file launcher and endpoint validation |
+| `html/viewer/_SelectableOctGrid/js/wsStreamBase.js` | Geometry connection, protocol greeting, automatic reconnect and stream acknowledgements |
+| `html/viewer/_SelectableOctGrid/js/wsCmdBase.js` | Independent JSON command socket, sending and console status |
+| `html/viewer/_SelectableOctGrid/js/wsCmdHandler.js` | Reply buffering and page-specific JSON command handlers |
+| `html/viewer/_SelectableOctGrid/js/protocol.js` | Frame validation and typed-array views |
+| `html/viewer/_SelectableOctGrid/js/viewer3D.js` | Three.js scene, GPU buffers, camera and rendering |
+| `html/viewer/_SelectableOctGrid/js/gridCellPicker.js` | Click picking, persistent red selections and command payloads |
+| `html/viewer/_SelectableOctGrid/js/gridSelection.js` | Exact ID encoding and volume remapping between root headers |
+| `html/viewer/_SelectableOctGrid/js/main.js` | UI, animation loop and render acknowledgements |
 
 HTTP and WebSocket IO run on one asynchronous worker. Geometry collection runs
 on a separate owned thread, stopped and joined before its resources are released.
@@ -541,12 +542,12 @@ split replies, bounded console history and isolation between command and stream
 connections:
 
 ```bash
-python3 test/webViewer3D/browser.py /tmp/openkai-webviewer-tests/viewer_fixture html/webViewer3D
+python3 test/webViewer3D/browser.py /tmp/openkai-webviewer-tests/viewer_fixture html/viewer/_SelectableOctGrid
 ```
 
 The browser test writes `/tmp/openkai-webviewer.png`. There are no npm or Python
 package dependencies. Vendor provenance and hashes are recorded in
-`html/webViewer3D/vendor/README.md`.
+`html/viewer/_SelectableOctGrid/vendor/README.md`.
 
 To verify the real framework collector with the sample point cloud and octree:
 

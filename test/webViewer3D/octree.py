@@ -1,7 +1,7 @@
 """Check compact octree snapshots and reconstruct their boxes independently.
 
 Run: python3 test/webViewer3D/octree.py build/OpenKAI-0.0.1
-Requires a build with USE_WEBVIEWER3D=ON; uses only the Python standard library.
+Requires a build with WITH_UNIVERSE=ON; uses only the Python standard library.
 """
 from collections import Counter
 from itertools import combinations, product
@@ -47,7 +47,7 @@ def check(executable, name, points, depth, boxes, size=(8, 8, 8),
                         'vGeometryBase': ['points']},
             'viewer': {'class': '_WebViewer3D', 'thread': {'FPS': 30},
                        'host': '127.0.0.1', 'port': port,
-                       'webRoot': str(root / 'html/webViewer3D'),
+                       'webRoot': str(root / 'html/viewer/_SelectableOctGrid'),
                        'nPbuf': 16, 'nLbuf': 1024,
                        'vGeometryBase': ['octGrid', 'points'], 'nCbuf': viewer_cells},
         }

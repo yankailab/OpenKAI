@@ -1,6 +1,6 @@
 """Optional real Chromium smoke test using CDP and the Python standard library.
 
-Usage: python3 browser.py /path/to/viewer_fixture /path/to/html/webViewer3D
+Usage: python3 browser.py /path/to/viewer_fixture /path/to/html/viewer/_SelectableOctGrid
 Requires google-chrome or chromium; writes a screenshot to /tmp.
 """
 import base64

@@ -10,6 +10,7 @@
 
 #include "../_GeometryBase.h"
 #include "../../../Protocol/_JSONbase.h"
+#include <mutex>
 
 namespace kai
 {

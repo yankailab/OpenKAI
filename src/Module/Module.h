@@ -30,9 +30,7 @@
 #include "../Universe/Geometry/PointCloud/Pipeline/_PCrecv.h"
 #include "../Universe/Geometry/PointCloud/Pipeline/_PCtransform.h"
 #include "../Universe/Geometry/_GeometryViewerBase.h"
-#ifdef USE_WEBVIEWER3D
 #include "../UI/Viewer/_WebViewer3D.h"
-#endif
 
 #ifdef USE_OPEN3D
 #include "../Universe/Geometry/PointCloud/Pipeline/_PCcrop.h"
@@ -206,7 +204,6 @@
 #ifdef WITH_SWARM
 #include "../Swarm/_SwarmBase.h"
 #include "../Swarm/_SwarmCtrl.h"
-#include "../Swarm/_SwarmCtrlUI.h"
 #include "../Swarm/_SwarmSearch.h"
 #endif
 
@@ -245,9 +242,6 @@
 #include "../Vision/_ImgFile.h"
 #include "../Vision/_GStreamer.h"
 #include "../Vision/_SharedMemImg.h"
-#include "../Vision/_GPhoto.h"
-#include "../Vision/_Frame2Img.h"
-#include "../Vision/_Img2Frame.h"
 #include "../Vision/Pipeline/_D2RGB.h"
 #include "../Vision/Pipeline/_ColorConvert.h"
 #include "../Vision/Pipeline/_Contrast.h"

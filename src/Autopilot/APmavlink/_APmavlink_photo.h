@@ -2,7 +2,6 @@
 #define OpenKAI_src_Autopilot_APmavlink__APmavlink_photo_H_
 
 #include "../../Vision/RGBD/_RGBDbase.h"
-#include "../../Vision/_GPhoto.h"
 #include "../../Sensor/Distance/_DistSensorBase.h"
 #include "_APmavlink_base.h"
 #include "_APmavlink_move.h"

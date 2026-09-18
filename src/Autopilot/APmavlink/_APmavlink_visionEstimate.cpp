@@ -110,7 +110,7 @@ namespace kai
 		m_bNaN = bNaN();
 		IF_F(m_bNaN);
 
-		IF_F(m_pNav->bError());
+//		IF_F(m_pNav->bError());
 
 		m_conf = m_pNav->confidence();
 		m_covPose = m_linearAccelCov * pow(10, 3 - int(m_conf));
@@ -130,86 +130,86 @@ namespace kai
 	{
 		IF_F(!check());
 
-		Vector3f v = m_pNav->t();
-		IF__(isnan(v.x()), true);
-		IF__(isnan(v.y()), true);
-		IF__(isnan(v.z()), true);
+		// Vector3f v = m_pNav->t();
+		// IF__(isnan(v.x()), true);
+		// IF__(isnan(v.y()), true);
+		// IF__(isnan(v.z()), true);
 
-		v = m_pNav->v();
-		IF__(isnan(v.x()), true);
-		IF__(isnan(v.y()), true);
-		IF__(isnan(v.z()), true);
+		// v = m_pNav->v();
+		// IF__(isnan(v.x()), true);
+		// IF__(isnan(v.y()), true);
+		// IF__(isnan(v.z()), true);
 
 		return false;
 	}
 
 	void _APmavlink_visionEstimate::updateResetCounter(void)
 	{
-		Vector3f vT = m_pNav->t();
-		Vector3f vV = m_pNav->v();
+		// Vector3f vT = m_pNav->t();
+		// Vector3f vV = m_pNav->v();
 
-		Vector3f dvT = vT - m_vTprev;
-		Vector3f dvV = vV - m_vVprev;
-		m_vTprev = vT;
-		m_vVprev = vV;
+		// Vector3f dvT = vT - m_vTprev;
+		// Vector3f dvV = vV - m_vVprev;
+		// m_vTprev = vT;
+		// m_vVprev = vV;
 
-		float dT = dvT.norm();
-		float dV = dvV.norm();
+		// float dT = dvT.norm();
+		// float dV = dvV.norm();
 
-		IF_((dT < m_thrJumpPos) && (dV < m_thrJumpSpd));
+		// IF_((dT < m_thrJumpPos) && (dV < m_thrJumpSpd));
 
-		m_iReset++;
-		if (m_iReset > 255)
-			m_iReset = 1;
+		// m_iReset++;
+		// if (m_iReset > 255)
+		// 	m_iReset = 1;
 	}
 
 	void _APmavlink_visionEstimate::sendPosEstimate(void)
 	{
-		Eigen::Matrix4f mTsensorPoseSensorRef = m_pNav->mT();
-		Eigen::Matrix4f mTaeroPoseAeroRef = m_mTsensor2aero * (mTsensorPoseSensorRef * m_mTaero2sensor);
-		Eigen::Matrix3f mRot = mTaeroPoseAeroRef.block(0, 0, 3, 3);
-		// Eigen 5 returns canonical angle ranges for the configured axis order.
-		Vector3f vRPY = mRot.canonicalEulerAngles(
-			m_vAxisRPY.x(), m_vAxisRPY.y(), m_vAxisRPY.z());
+		// Eigen::Matrix4f mTsensorPoseSensorRef = m_pNav->mT();
+		// Eigen::Matrix4f mTaeroPoseAeroRef = m_mTsensor2aero * (mTsensorPoseSensorRef * m_mTaero2sensor);
+		// Eigen::Matrix3f mRot = mTaeroPoseAeroRef.block(0, 0, 3, 3);
+		// // Eigen 5 returns canonical angle ranges for the configured axis order.
+		// Vector3f vRPY = mRot.canonicalEulerAngles(
+		// 	m_vAxisRPY.x(), m_vAxisRPY.y(), m_vAxisRPY.z());
 
-		float vCov[21] = {m_covPose, 0, 0, 0, 0, 0,
-						  m_covPose, 0, 0, 0, 0,
-						  m_covPose, 0, 0, 0,
-						  m_covTwist, 0, 0,
-						  m_covTwist, 0,
-						  m_covTwist};
+		// float vCov[21] = {m_covPose, 0, 0, 0, 0, 0,
+		// 				  m_covPose, 0, 0, 0, 0,
+		// 				  m_covPose, 0, 0, 0,
+		// 				  m_covTwist, 0, 0,
+		// 				  m_covTwist, 0,
+		// 				  m_covTwist};
 
-		m_Dpos.x = mTaeroPoseAeroRef(0, 3);
-		m_Dpos.y = mTaeroPoseAeroRef(1, 3);
-		m_Dpos.z = mTaeroPoseAeroRef(2, 3);
-		m_Dpos.roll = vRPY(0);
-		m_Dpos.pitch = vRPY(1);
-		m_Dpos.yaw = vRPY(2);
-		memcpy(m_Dpos.covariance, vCov, sizeof(float) * 21);
-		m_Dpos.reset_counter = m_iReset;
-		m_pAP->getMavlink()->visionPositionEstimate(m_Dpos);
+		// m_Dpos.x = mTaeroPoseAeroRef(0, 3);
+		// m_Dpos.y = mTaeroPoseAeroRef(1, 3);
+		// m_Dpos.z = mTaeroPoseAeroRef(2, 3);
+		// m_Dpos.roll = vRPY(0);
+		// m_Dpos.pitch = vRPY(1);
+		// m_Dpos.yaw = vRPY(2);
+		// memcpy(m_Dpos.covariance, vCov, sizeof(float) * 21);
+		// m_Dpos.reset_counter = m_iReset;
+		// m_pAP->getMavlink()->visionPositionEstimate(m_Dpos);
 	}
 
 	void _APmavlink_visionEstimate::sendSpeedEstimate(void)
 	{
-		Vector3f vV = m_pNav->v();
-		Eigen::Matrix4f V_aeroRef_aeroBody;
-		V_aeroRef_aeroBody.block(0, 0, 3, 3) = Eigen::Quaternionf(1, 0, 0, 0).toRotationMatrix();
-		V_aeroRef_aeroBody(0, 3) = vV.x();
-		V_aeroRef_aeroBody(1, 3) = vV.y();
-		V_aeroRef_aeroBody(2, 3) = vV.z();
-		V_aeroRef_aeroBody = m_mTsensor2aero * V_aeroRef_aeroBody;
+		// Vector3f vV = m_pNav->v();
+		// Eigen::Matrix4f V_aeroRef_aeroBody;
+		// V_aeroRef_aeroBody.block(0, 0, 3, 3) = Eigen::Quaternionf(1, 0, 0, 0).toRotationMatrix();
+		// V_aeroRef_aeroBody(0, 3) = vV.x();
+		// V_aeroRef_aeroBody(1, 3) = vV.y();
+		// V_aeroRef_aeroBody(2, 3) = vV.z();
+		// V_aeroRef_aeroBody = m_mTsensor2aero * V_aeroRef_aeroBody;
 
-		float vCov2[9] = {m_covPose, 0, 0,
-						  0, m_covPose, 0,
-						  0, 0, m_covPose};
+		// float vCov2[9] = {m_covPose, 0, 0,
+		// 				  0, m_covPose, 0,
+		// 				  0, 0, m_covPose};
 
-		m_Dspd.x = V_aeroRef_aeroBody(0, 3);
-		m_Dspd.y = V_aeroRef_aeroBody(1, 3);
-		m_Dspd.z = V_aeroRef_aeroBody(2, 3);
-		memcpy(m_Dspd.covariance, vCov2, sizeof(float) * 9);
-		m_Dpos.reset_counter = m_iReset;
-		m_pAP->getMavlink()->visionSpeedEstimate(m_Dspd);
+		// m_Dspd.x = V_aeroRef_aeroBody(0, 3);
+		// m_Dspd.y = V_aeroRef_aeroBody(1, 3);
+		// m_Dspd.z = V_aeroRef_aeroBody(2, 3);
+		// memcpy(m_Dspd.covariance, vCov2, sizeof(float) * 9);
+		// m_Dpos.reset_counter = m_iReset;
+		// m_pAP->getMavlink()->visionSpeedEstimate(m_Dspd);
 	}
 
 	void _APmavlink_visionEstimate::console(void *pConsole)

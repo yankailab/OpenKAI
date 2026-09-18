@@ -1,4 +1,4 @@
-# OpenKAI webViewer3D
+# OpenKAI _SelectableOctGrid viewer
 
 Open `index.html`, enter the C++ backend's IP and stream port, then click **Start**.
 Streaming uses port `8080` by default; the independent command connection uses
@@ -7,7 +7,7 @@ disconnects them. The Commands panel also has independent Connect/Disconnect
 buttons and a bounded `cmdState` console.
 The backend serves this directory itself. No npm, CDN, or extra web server is
 required. The full setup, configuration and wire format are documented in
-[`docs/3D/WebViewer3D.md`](../../docs/3D/WebViewer3D.md).
+[`docs/3D/WebViewer3D.md`](../../../docs/3D/WebViewer3D.md).
 
 - `css/`: viewer styles
 - `js/wsStreamBase.js`: one independent connection and flow control per geometry type
@@ -32,7 +32,7 @@ Occupied octree cells stream as 16-byte IDs plus RGBA8 (20 bytes per cell). The 
 instanced wire or solid boxes and retains IDs and bounds for cell picking. The
 Wire-frame / Solid switch below Grid enables filled faces with per-cell alpha;
 selected cells keep their red outlines. See the
-[version 4 format](../../docs/3D/WebViewer3D.md#binary-protocol-version-4). Only
+[version 4 format](../../../docs/3D/WebViewer3D.md#binary-protocol-version-4). Only
 version 4 is supported. Point, line, and cell alpha multiplies object opacity.
 
 The **Grid config** form below Point scale sends root origin and size through
@@ -46,7 +46,7 @@ and merges them without duplicate IDs, remapping volumes when root headers diffe
 Set the grid module's `fConfig` to persist selections across backend restarts.
 Saved selections use the `_SelectableOctGrid` section; existing `_OctreeGrid`
 sections can still be loaded. Command names and the binary format are unchanged. See the
-[picker behavior and JSON contract](../../docs/3D/WebViewer3D.md#grid-cell-picker).
+[picker behavior and JSON contract](../../../docs/3D/WebViewer3D.md#grid-cell-picker).
 
 Geometry uses `/stream/points`, `/stream/lines` and `/stream/cells` on the same
 HTTP port, with independent snapshots, acknowledgements and reconnects. All

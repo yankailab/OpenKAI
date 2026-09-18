@@ -69,11 +69,11 @@ namespace kai
 
             m_pT->autoFPS();
 
-            update_SharedMemImg();
+            updateSharedMemImg();
         }
     }
 
-    bool _SharedMemImg::update_SharedMemImg(void)
+    bool _SharedMemImg::updateSharedMemImg(void)
     {
         IF_F(!check());
 
@@ -81,16 +81,6 @@ namespace kai
             m_vSizeRGB.x(),
             m_matType,
             m_pSHM->p()).copyTo(m_mRGB);
-
-        // imageMat = cv::Mat(m_vzfDepth.height, m_vzfDepth.width, CV_16UC1, m_vzfDepth.pFrameData);
-        // imageMat.convertTo(imageMat, CV_8U, 255.0 / m_slope);
-        // applyColorMap(imageMat, imageMat, cv::COLORMAP_RAINBOW);
-        //    imageMat.copyTo(m_mRGB);
-
-        // imageMat = cv::Mat(m_vzfTransformedDepth.height, m_vzfTransformedDepth.width, CV_16UC1, m_vzfTransformedDepth.pFrameData);
-
-        //                imageMat = cv::Mat(m_vzfIR.height, m_vzfIR.width, CV_8UC1, m_vzfIR.pFrameData);
-        //                Mat(m_vzfIR.height, m_vzfIR.width, CV_8UC1, m_vzfIR.pFrameData).copyTo(m_mRGB);
 
         return true;
     }

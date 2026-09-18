@@ -10,7 +10,6 @@
 
 #include "../IO/_IObase.h"
 #include "../Dependencies/minmea.h"
-#include "Coordinate.h"
 
 namespace kai
 {
@@ -25,9 +24,6 @@ namespace kai
 		virtual bool link(const json& j, ModuleMgr* pM);
 		virtual bool start(void);
 		virtual void console(void *pConsole);
-
-		LL_POS getLLpos(void);
-		UTM_POS getUTMpos(void);
 
 	private:
 		bool readNMEA(void);
@@ -53,9 +49,6 @@ namespace kai
 		minmea_sentence_vtg m_vtg;
 		minmea_sentence_zda m_zda;
 
-		LL_POS m_LL;
-		UTM_POS m_UTM;
-		Coordinate m_coord;
 	};
 
 }

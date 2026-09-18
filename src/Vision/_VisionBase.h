@@ -40,7 +40,6 @@ namespace kai
 		vision_inRange,
 		vision_colorConvert,
 		vision_crop,
-		vision_gphoto,
 		vision_remap,
 		vision_RSdepth,
 		vision_SharedMemImg,
@@ -48,8 +47,6 @@ namespace kai
 		vision_depth2Gray,
 		vision_D2RGB,
 		vision_thermal2RGB,
-		vision_Frame2Img,
-		vision_Img2Frame,
 	};
 
 	class _VisionBase : public _ModuleBase

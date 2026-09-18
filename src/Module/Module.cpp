@@ -41,9 +41,7 @@ namespace kai
 		ADD_MODULE(_PCrecv);
 		ADD_MODULE(_PCtransform);
 		ADD_MODULE(_GeometryViewerBase);
-#ifdef USE_WEBVIEWER3D
 		ADD_MODULE(_WebViewer3D);
-#endif
 
 #ifdef USE_OPEN3D
 		ADD_MODULE(_PCcrop);
@@ -212,7 +210,6 @@ namespace kai
 #ifdef WITH_SWARM
 		ADD_MODULE(_SwarmBase);
 		ADD_MODULE(_SwarmCtrl);
-		ADD_MODULE(_SwarmCtrlUI);
 		ADD_MODULE(_SwarmSearch);
 #endif
 
@@ -252,7 +249,6 @@ namespace kai
 		ADD_MODULE(_ColorConvert);
 		ADD_MODULE(_D2RGB);
 		ADD_MODULE(_Erode);
-		ADD_MODULE(_GPhoto);
 		ADD_MODULE(_GStreamer);
 		ADD_MODULE(_HistEqualize);
 		ADD_MODULE(_Invert);
@@ -267,8 +263,6 @@ namespace kai
 		ADD_MODULE(_Threshold);
 		ADD_MODULE(_Thermal2RGB);
 		ADD_MODULE(_VideoFile);
-		ADD_MODULE(_Frame2Img);
-		ADD_MODULE(_Img2Frame);
 
 #endif // opencv
 #endif // vision

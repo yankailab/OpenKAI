@@ -12,8 +12,6 @@ namespace kai
 
 	_GPS::_GPS()
 	{
-		m_LL.init();
-		m_UTM.init();
 	}
 
 	_GPS::~_GPS()
@@ -100,10 +98,6 @@ namespace kai
 		{
 			if (minmea_parse_rmc(&m_rmc, m_msg.c_str()))
 			{
-				m_LL.m_lat = minmea_tocoord(&m_rmc.latitude);
-				m_LL.m_lng = minmea_tocoord(&m_rmc.longitude);
-				m_UTM = m_coord.LL2UTM(m_LL);
-
 				LOG_I("$xxRMC: raw coordinates and speed: lat=" + i2str(m_rmc.latitude.value) + "/" + i2str(m_rmc.latitude.scale) + ", lon=" + i2str(m_rmc.longitude.value) + "/" + i2str(m_rmc.longitude.scale) + ", spd=" + i2str(m_rmc.speed.value) + "/" + i2str(m_rmc.speed.scale));
 
 				LOG_I("$xxRMC fixed-point coordinates and speed scaled to three decimal places: lat=" + i2str(minmea_rescale(&m_rmc.latitude, 1000)) + ", lon=" + i2str(minmea_rescale(&m_rmc.longitude, 1000)) + ", spd=" + i2str(minmea_rescale(&m_rmc.speed, 1000)));
@@ -207,16 +201,6 @@ namespace kai
 		}
 		break;
 		}
-	}
-
-	LL_POS _GPS::getLLpos(void)
-	{
-		return m_LL;
-	}
-
-	UTM_POS _GPS::getUTMpos(void)
-	{
-		return m_UTM;
 	}
 
 	void _GPS::console(void *pConsole)

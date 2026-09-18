@@ -37,6 +37,8 @@ namespace kai
         virtual void setOrientation(const Quaterniond &vOrt, bool bConvertToEulerAngles = false);
         virtual void setOrientation(double x, double y, double z, double w, bool bConvertToEulerAngles = false);
 
+        //TODO: add getters
+        
     protected:
         virtual void updatePose(void);
         virtual void updateEulerAngles(void);
@@ -45,6 +47,7 @@ namespace kai
         Vector3d m_vPos = Vector3d::Zero();           // position
         Quaterniond m_vOrt = Quaterniond::Identity(); // orientation quaternion
         Vector3d m_vAngle = Vector3d::Zero();         // euler angles in roll, pitch, yaw order
+
         Isometry3d m_mPose = Isometry3d::Identity();  // combined transform
         Isometry3f m_mPosef = Isometry3f::Identity(); // for quick calc
     };

@@ -12,10 +12,6 @@ namespace kai
 
 	_NavBase::_NavBase()
 	{
-		m_flag.clearAll();
-		m_vAxisIdx = Vector3i(0, 1, 2);
-		m_vRoffset.setZero();
-		resetAll();
 	}
 
 	_NavBase::~_NavBase()
@@ -24,28 +20,20 @@ namespace kai
 
 	bool _NavBase::init(const json &j)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ReferenceFrame::init(j));
 
-		jKv(j, "scale", m_scale);
-		jKv<int>(j, "vAxisIdx", m_vAxisIdx);
-		jKv<float>(j, "vRoffset", m_vRoffset);
+//		jKv(j, "scale", m_scale);
 
 		return true;
 	}
 
-	bool _NavBase::bOpen(void)
+	bool _NavBase::bOpened(void)
 	{
-		return m_flag.b(F_OPEN);
-	}
-
-	bool _NavBase::bError(void)
-	{
-		return m_flag.b(F_ERROR);
+		return m_bOpened;
 	}
 
 	void _NavBase::reset(void)
 	{
-		m_flag.set(F_RESET);
 	}
 
 	float _NavBase::confidence(void)
@@ -55,65 +43,16 @@ namespace kai
 
 	void _NavBase::resetAll(void)
 	{
-		m_vT.setZero();
-		m_vV.setZero();
-		m_vR.setZero();
-		m_vQ.setZero();
-		m_mT = Eigen::Matrix4f::Identity();
 		m_confidence = 0.0;
-	}
-
-	Vector3f _NavBase::t(void)
-	{
-		return m_vT;
-	}
-
-	Vector3f _NavBase::v(void)
-	{
-		return m_vV;
-	}
-
-	Vector3f _NavBase::r(void)
-	{
-		return m_vR;
-	}
-
-	Vector4f _NavBase::q(void)
-	{
-		return m_vQ;
-	}
-
-	const Eigen::Matrix4f &_NavBase::mT(void)
-	{
-		return m_mT;
-	}
-
-	const Eigen::Matrix3f &_NavBase::mR(void)
-	{
-		return m_mR;
 	}
 
 	void _NavBase::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_ModuleBase::console(pConsole);
+		this->_ReferenceFrame::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		string msg;
-		msg = "vT = (" + f2str(m_vT.x(), 3) + ", " + f2str(m_vT.y(), 3) + ", " + f2str(m_vT.z(), 3) + ")";
-		pC->addMsg(msg, 1);
-
-		msg = "vV = (" + f2str(m_vV.x(), 3) + ", " + f2str(m_vV.y(), 3) + ", " + f2str(m_vV.z(), 3) + ")";
-		pC->addMsg(msg, 1);
-
-		msg = "vR = (" + f2str(m_vR.x(), 3) + ", " + f2str(m_vR.y(), 3) + ", " + f2str(m_vR.z(), 3) + ")";
-		pC->addMsg(msg, 1);
-
-		msg = "vQ = (" + f2str(m_vQ.x(), 3) + ", " + f2str(m_vQ.y(), 3) + ", " + f2str(m_vQ.z(), 3) + ", " + f2str(m_vQ.w(), 3) + ")";
-		pC->addMsg(msg, 1);
-
-		msg = "confidence=" + f2str(m_confidence);
-		pC->addMsg(msg, 1);
+		pC->addMsg("confidence=" + f2str(m_confidence));
 	}
 
 }

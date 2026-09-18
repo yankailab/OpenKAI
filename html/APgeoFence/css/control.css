@@ -1,4 +1,4 @@
-/* Match webViewer3D/css/viewer.css while keeping this page self-contained. */
+/* Match viewer/_SelectableOctGrid/css/viewer.css while keeping this page self-contained. */
 :root { color-scheme: dark; font: 14px system-ui, sans-serif; color: #dce6ed; background: #090c11; }
 * { box-sizing: border-box; }
 body { margin: 0; min-height: 100dvh; display: flex; flex-direction: column; }

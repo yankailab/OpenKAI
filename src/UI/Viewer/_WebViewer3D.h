@@ -56,7 +56,7 @@ namespace kai
 		void collect(const Object &object, webviewer3d::Type type, std::vector<uint8_t> &frame, uint32_t id, uint64_t expiry);
 		void publish(Stream &stream);
 		std::string hello(webviewer3d::Type type) const;
-		std::string m_host = "0.0.0.0", m_root = "html/webViewer3D";
+		std::string m_host = "0.0.0.0", m_root = "html/viewer/_SelectableOctGrid";
 		int m_port = 8080, m_maxClients = 8, m_nCbuf = 100000;
 		OCTGRID_CELLS m_cells;
 		Vector4f m_background{0.035f, 0.045f, 0.065f, 1};

@@ -30,7 +30,7 @@ namespace kai
 			std::error_code ec;
 			auto exe = std::filesystem::read_symlink("/proc/self/exe", ec);
 			if (!ec)
-				m_root = (exe.parent_path() / "html/webViewer3D").string();
+				m_root = (exe.parent_path() / "html/viewer/_SelectableOctGrid").string();
 		}
 		IF_Le_F(!std::filesystem::is_regular_file(std::filesystem::path(m_root) / "vendor/three.module.min.js"),
 				"Viewer assets not found in webRoot: " + m_root);
