@@ -1,0 +1,27 @@
+{
+  "slamPoints": {
+    "class": "_PointCloud",
+    "bON": true,
+    "thread": { "FPS": 30 },
+    "nP": 300000
+  },
+  "slamIMU": {
+    "class": "_IMUbase",
+    "bON": true,
+    "thread": { "FPS": 100 },
+    "nIMUdqMax": 4000,
+    "tIMUpairToleranceUs": 5000
+  },
+  "slam": {
+    "class": "_GLIM",
+    "bON": true,
+    "thread": { "FPS": 100 },
+    "_PointCloud": "slamPoints",
+    "_IMUbase": "slamIMU",
+    "configPath": "jsonCfg/glim",
+    "bAutoStart": true,
+    "bMapping": true,
+    "nMinPoints": 100,
+    "tConfidenceTimeoutUs": 1000000
+  }
+}

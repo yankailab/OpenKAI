@@ -152,13 +152,13 @@
 #include "../Navigation/_RStracking.h"
 #endif
 
+#endif
+
 #if defined(WITH_SLAM)
 #include "../SLAM/_SLAMbase.h"
 #if defined(USE_GLIM)
 #include "../SLAM/_GLIM.h"
 #endif
-#endif
-
 #endif
 
 #ifdef WITH_NET

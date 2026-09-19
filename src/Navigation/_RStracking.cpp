@@ -169,7 +169,7 @@ namespace kai
 			auto frames = m_rsPipe.wait_for_frames();
 			auto f = frames.first_or_default(RS2_STREAM_POSE);
 			auto pose = f.as<rs2::pose_frame>().get_pose_data();
-			m_confidence = (float)pose.tracker_confidence * (100.0 / 3);
+			setConfidence((float)pose.tracker_confidence * (100.0 / 3));
 
 			m_vT[m_vAxisIdx.x()] = pose.translation.x * m_scale;
 			m_vT[m_vAxisIdx.y()] = pose.translation.y * m_scale;

@@ -1,4 +1,45 @@
-# (Optional) Open3D
+# GLIM in OpenKAI
+
+Build against the installed GLIM CMake package (the source checkout is not compiled into OpenKAI):
+
+```bash
+cmake -S . -B build-glim -DWITH_SLAM=ON -DUSE_GLIM=ON
+cmake --build build-glim -j4
+```
+
+Use `-DCMAKE_PREFIX_PATH=/your/install/prefix` for a nonstandard installation. `glim::glim` supplies GTSAM, gtsam_points, Eigen, OpenMP, spdlog and Boost dependencies. GLIM is only required when both `WITH_SLAM` and `USE_GLIM` are enabled. SLAM also builds the shared navigation, geometry and IMU base classes if their wider module groups are disabled.
+
+Include `jsonCfg/_GLIM.json` using the application's `APP.vInclude`, or copy its three module definitions into your existing camera configuration. Connect the camera's `_PointCloud` and `_IMUbase` outputs to `slamPoints` and `slamIMU`. Alternatively, change the SLAM module's input names to your existing modules. The example supplies input buffers; it needs a sensor producer to feed them. Paths are relative to the process working directory.
+
+`jsonCfg/glim` contains CPU configuration templates adapted from GLIM 1.2.2, with its MIT license. You can also point `configPath` at a copy of `/home/kai/dev/glim/config`. In that copy, select the CPU odometry, sub-mapping and global-mapping JSON files in `config.json`; the upstream configuration selects GPU modules by default. Every `_GLIM` instance in one process must use the same configuration directory because GLIM configuration is global. Restart the process to reload configuration changes.
+
+Before using a real sensor, set `T_lidar_imu` in `config_sensors.json` to its calibrated IMU-to-point-cloud transform. The example's identity transform is a placeholder. Point coordinates must be in meters; acceleration in m/s² (including gravity); angular velocity in rad/s. Point-cloud and IMU timestamps must increase in microseconds and share one clock. Keep the input point cloud in a fixed sensor frame, and calibrate extrinsics against that frame. Do not feed the estimated pose back into its input `_PointCloud` transform.
+
+The frame interface treats each cloud as a single exposure, with zero per-point time offsets. It suits depth-camera clouds; it does not deskew a scanning LiDAR. Each producer calls `frameStart()`, `add(..., sensorTimestampUs)` for its points, then `frameStop()`. A completed frame remains available while the next one is built, even when its size exceeds the point cloud's history ring. IMU samples use `addGyro(value, timestampUs)` and `addAcc(value, timestampUs)`; pairing consumes those queues, so use one SLAM consumer per IMU buffer.
+
+The CPU odometry example requires an IMU. For IMU-free operation, choose GLIM's `config_odometry_ct.json` and disable `enable_imu` in both mapping configs, or set `bMapping` to false. The adapter checks the selected odometry backend's IMU requirement at session startup. Sensor rates and preprocessing parameters must be tuned for your scene and hardware.
+
+`_SLAMbase` owns input linking, timestamp deduplication, the worker, pose publication and the session lifecycle. `_GLIM` owns preprocessing, odometry, submaps and global mapping. Processing is sequential on the OpenKAI worker; if processing falls behind, it takes the newest completed cloud instead of building an unbounded frame queue. IMU-required odometry waits for a paired IMU sample later than the cloud timestamp.
+
+- `start()` starts the worker and, by default, a session. Set `bAutoStart: false` to start tracking explicitly.
+- `startTracking()` creates a new session, or returns success if one is already active. Initialization may need several seconds of IMU and point-cloud data.
+- `stopTracking()` finishes mapping and retains the last pose and map. Confidence becomes zero.
+- `saveMap(path)` saves the finished GLIM map after `stopTracking()`. The saved map includes global optimization; the navigation pose is continuous local odometry in GLIM's world frame, expressed as `T_world_lidar` for the input cloud frame.
+- `reset()` stops tracking, discards the map, and resets position and orientation. Call `startTracking()` to begin again.
+
+`_NavBase::setConfidence()` uses a 0–100 scale and optionally expires stale updates. SLAM defaults to a one-second `tConfidenceTimeoutUs`; zero disables expiry. GLIM supplies no scalar tracking-quality score, so this adapter reports 100 for an available finite pose and 0 for initialization, insufficient points, stopped tracking or expired updates. It is a pose-availability signal, not an accuracy estimate. `bTracking()` reports whether the session is active, including initialization.
+
+Run the hardware-independent tests with:
+
+```bash
+cmake -S test/slam -B /tmp/openkai-slam-tests
+cmake --build /tmp/openkai-slam-tests -j4
+ctest --test-dir /tmp/openkai-slam-tests --output-on-failure
+```
+
+These exercise completed-frame snapshots, IMU pairing, confidence expiry, real GLIM CPU estimation on a synthetic stationary scene, map saving, and session restart/reset. Live sensor calibration and trajectory accuracy still require a hardware run.
+
+# Installing the dependencies
 ```bash
 sudo apt update
 sudo apt install --no-install-recommends \

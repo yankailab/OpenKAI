@@ -499,7 +499,7 @@ namespace kai
 			{
 				auto v = gf->value();
 				if (m_pIMU)
-					m_pIMU->addGyro(frameTsUs_(g), {v.x, v.y, v.z});
+					m_pIMU->addGyro({v.x, v.y, v.z}, frameTsUs_(g));
 			}
 		}
 
@@ -510,7 +510,7 @@ namespace kai
 			{
 				auto v = af->value();
 				if (m_pIMU)
-					m_pIMU->addAcc(frameTsUs_(a), {v.x, v.y, v.z});
+					m_pIMU->addAcc({v.x, v.y, v.z}, frameTsUs_(a));
 			}
 		}
 
@@ -545,11 +545,11 @@ namespace kai
 		// Point cloud
 		if (m_bPCLrgb && spFrameRGB && spFrameD)
 		{
-			m_spFrame = m_spPCF->process(spFS);
+			std::atomic_store(&m_spFrame, m_spPCF->process(spFS));
 		}
 		else if (m_bPCL && spFrameD)
 		{
-			m_spFrame = m_spPCF->process(spFS);
+			std::atomic_store(&m_spFrame, m_spPCF->process(spFS));
 		}
 
 		return true;
@@ -568,7 +568,7 @@ namespace kai
 	void _Orbbec::updatePCL(void)
 	{
 #ifdef WITH_UNIVERSE
-		const auto spFrame = m_spFrame;
+		const auto spFrame = std::atomic_load(&m_spFrame);
 		NULL_(spFrame);
 		NULL_(m_pPCL);
 

@@ -22,14 +22,25 @@ namespace kai
 	{
 		IF_F(!this->_ReferenceFrame::init(j));
 
-//		jKv(j, "scale", m_scale);
+		jKv(j, "tConfidenceTimeoutUs", m_tConfidenceTimeoutUs);
 
 		return true;
 	}
 
 	float _NavBase::confidence(void)
 	{
+		std::lock_guard<std::mutex> lock(m_mtxConfidence);
+		if (m_tConfidenceTimeoutUs &&
+			getTbootUs() - m_tConfidenceUpdatedUs >= m_tConfidenceTimeoutUs)
+			return 0.0f;
 		return m_confidence;
+	}
+
+	void _NavBase::setConfidence(float confidence)
+	{
+		std::lock_guard<std::mutex> lock(m_mtxConfidence);
+		m_confidence = std::isfinite(confidence) ? std::clamp(confidence, 0.0f, 100.0f) : 0.0f;
+		m_tConfidenceUpdatedUs = getTbootUs();
 	}
 
 	void _NavBase::console(void *pConsole)
@@ -38,7 +49,7 @@ namespace kai
 		this->_ReferenceFrame::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		pC->addMsg("confidence=" + f2str(m_confidence));
+		pC->addMsg("confidence=" + f2str(confidence()));
 	}
 
 }

@@ -56,8 +56,10 @@ namespace kai
         GEOMETRY_RINGBUF<GEOMETRY_POINT> m_grPt;
         std::mutex m_mtxPt;
 
-        int m_iPframeFrom = 0;
-        int m_iPframeTo = 0;
+        // Completed frames remain stable while the producer builds the next one.
+        bool m_bFrame = false;
+        vector<GEOMETRY_POINT> m_vFrameBuilding;
+        vector<GEOMETRY_POINT> m_vFrameLast;
         uint64_t m_tStampFrame = 0;
     };
 

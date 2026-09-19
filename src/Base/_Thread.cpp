@@ -113,8 +113,21 @@ namespace kai
 
 	void _Thread::stop(void)
 	{
+		pthread_mutex_lock(&m_wakeupMutex);
 		m_setState = thread_stop;
 		pthread_cond_signal(&m_wakeupSignal);
+		pthread_mutex_unlock(&m_wakeupMutex);
+	}
+
+	void _Thread::join(void)
+	{
+		stop();
+		if (m_threadID != 0 && !pthread_equal(m_threadID, pthread_self()))
+		{
+			pthread_join(m_threadID, NULL);
+			m_threadID = 0;
+			m_state = thread_stop;
+		}
 	}
 
 	bool _Thread::bOnPause(void)
@@ -157,13 +170,15 @@ namespace kai
 			tTimeout.tv_nsec = nsec - sec * NSEC_1SEC; // % NSEC_1SEC;
 
 			pthread_mutex_lock(&m_wakeupMutex);
-			pthread_cond_timedwait(&m_wakeupSignal, &m_wakeupMutex, &tTimeout);
+			if (m_setState != thread_stop)
+				pthread_cond_timedwait(&m_wakeupSignal, &m_wakeupMutex, &tTimeout);
 			pthread_mutex_unlock(&m_wakeupMutex);
 		}
 		else
 		{
 			pthread_mutex_lock(&m_wakeupMutex);
-			pthread_cond_wait(&m_wakeupSignal, &m_wakeupMutex);
+			if (m_setState != thread_stop)
+				pthread_cond_wait(&m_wakeupSignal, &m_wakeupMutex);
 			pthread_mutex_unlock(&m_wakeupMutex);
 		}
 

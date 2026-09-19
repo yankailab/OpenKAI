@@ -9,6 +9,7 @@
 #define OpenKAI_src_Navigation__NavBase_H_
 
 #include "../Universe/_ReferenceFrame.h"
+#include <mutex>
 
 namespace kai
 {
@@ -23,10 +24,14 @@ namespace kai
 		virtual void console(void *pConsole);
 
 		virtual float confidence(void);
+		// Navigation confidence in percent; zero means unavailable or stale.
+		virtual void setConfidence(float confidence);
 
 	protected:
-		bool m_bOpened = false;
 		float m_confidence = 0.0;
+		uint64_t m_tConfidenceTimeoutUs = 0; // zero disables expiry
+		uint64_t m_tConfidenceUpdatedUs = 0;
+		std::mutex m_mtxConfidence;
 	};
 
 }

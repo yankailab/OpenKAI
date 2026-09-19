@@ -9,6 +9,7 @@
 #define OpenKAI_src_Base__Thread_H_
 
 #include "BASE.h"
+#include <atomic>
 
 namespace kai
 {
@@ -39,6 +40,7 @@ namespace kai
 		void run(void);
 		void pause(void);
 		void stop(void);
+		void join(void); // request stop and wait without cancelling the worker
 
 		bool bOnPause(void);
 		bool bOnResume(void);
@@ -60,8 +62,8 @@ namespace kai
 		pthread_mutex_t m_wakeupMutex;
 		pthread_cond_t m_wakeupSignal;
 
-		THREAD_STATE m_setState = thread_stop;
-		THREAD_STATE m_state = thread_stop;
+		std::atomic<THREAD_STATE> m_setState{thread_stop};
+		std::atomic<THREAD_STATE> m_state{thread_stop};
 
 		uint64_t m_tFrom = 0;
 		uint64_t m_tTo = 0;

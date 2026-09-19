@@ -10,41 +10,56 @@
 
 #include "../Navigation/_NavBase.h"
 #include "../Sensor/_IMUbase.h"
+#include "../Universe/Geometry/PointCloud/_PointCloud.h"
+#include <atomic>
 
 namespace kai
 {
-
 	class _SLAMbase : public _NavBase
 	{
 	public:
 		_SLAMbase();
 		virtual ~_SLAMbase();
 
-		virtual bool init(const json &j);
-		virtual bool link(const json &j, ModuleMgr *pM);
-		virtual bool start(void);
-		virtual bool check(void);
-		virtual void console(void *pConsole);
+		bool init(const json &j) override;
+		bool link(const json &j, ModuleMgr *pM) override;
+		bool start(void) override;
+		void stop(void) override;
+		bool check(void) override;
+		void console(void *pConsole) override;
 
-		bool bTracking(void);
-		virtual void reset(void);
-
-	private:
-		virtual void update(void);
-		static void *getUpdate(void *This)
-		{
-			((_SLAMbase *)This)->update();
-			return NULL;
-		}
+		virtual bool startTracking(void); // new session; no-op if already active
+		virtual bool bTracking(void);
+		virtual void stopTracking(void); // retains the last pose
+		virtual void reset(void);        // stops and clears the pose and session
 
 	protected:
-		_IMUbase* m_pIMU = nullptr;
-		double m_tScaleIMU = 1e-6;
-		double m_tScalePC = 1e-6;
+		// Backend hooks run under m_mtxSLAM, including calls from the worker.
+		virtual bool startSLAM(void);
+		virtual void stopSLAM(void);
+		virtual void resetSLAM(void);
+		virtual void updateSLAM(void);
 
-		bool m_bTracking = false;
+		bool readPointCloud(vector<Vector3f> &points, uint64_t &stamp);
+		bool readIMU(Vector3d &acc, Vector3d &gyro, uint64_t &stamp);
+		bool publishPose(const Isometry3d &pose, float confidence);
 
+		std::mutex m_mtxSLAM;
+		_PointCloud *m_pPCL = nullptr;
+		_IMUbase *m_pIMU = nullptr;
+		uint64_t m_tStampLastFrame = 0;
+		uint64_t m_tStampLastIMU = 0;
+		std::atomic_bool m_bTracking{false};
+		bool m_bAutoStart = true;
+
+	private:
+		void stopTrackingLocked(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			static_cast<_SLAMbase *>(This)->update();
+			return nullptr;
+		}
 	};
-
 }
 #endif

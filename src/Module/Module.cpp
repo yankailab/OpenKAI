@@ -159,13 +159,19 @@ namespace kai
 		ADD_MODULE(_RStracking);
 #endif
 
-#if defined(WITH_SLAM)
-		ADD_MODULE(_SLAMbase);
-#if defined(WITH_GLIM)
-		ADD_MODULE(_GLIM);
-#endif
 #endif
 
+#if defined(WITH_SLAM)
+		ADD_MODULE(_SLAMbase);
+#if !defined(WITH_UNIVERSE)
+		ADD_MODULE(_PointCloud);
+#endif
+#if !defined(WITH_SENSOR)
+		ADD_MODULE(_IMUbase);
+#endif
+#if defined(USE_GLIM)
+		ADD_MODULE(_GLIM);
+#endif
 #endif
 
 #ifdef WITH_NET

@@ -57,16 +57,18 @@ namespace kai
 		}
 	}
 
-	void _IMUbase::addGyro(uint64_t tStamp, const Vector3f &vG)
+	void _IMUbase::addGyro(const Vector3f &vG, uint64_t tStamp)
 	{
+		std::lock_guard<std::mutex> lock(m_mtxIMU);
 		m_dqGyro.push_back({tStamp, vG});
 
 		while (m_nIMUdqMax >= 0 && m_dqGyro.size() > static_cast<size_t>(m_nIMUdqMax))
 			m_dqGyro.pop_front();
 	}
 
-	void _IMUbase::addAcc(uint64_t tStamp, const Vector3f &vA)
+	void _IMUbase::addAcc(const Vector3f &vA, uint64_t tStamp)
 	{
+		std::lock_guard<std::mutex> lock(m_mtxIMU);
 		m_dqAcc.push_back({tStamp, vA});
 
 		while (m_nIMUdqMax >= 0 && m_dqAcc.size() > static_cast<size_t>(m_nIMUdqMax))
@@ -77,6 +79,7 @@ namespace kai
 	{
 		NULL__(pG, 0);
 		NULL__(pA, 0);
+		std::lock_guard<std::mutex> lock(m_mtxIMU);
 
 		while (!m_dqGyro.empty() && !m_dqAcc.empty())
 		{
@@ -113,6 +116,7 @@ namespace kai
 		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
+		std::lock_guard<std::mutex> lock(m_mtxIMU);
 
 		int nD = 3;
 		if (!m_dqGyro.empty())

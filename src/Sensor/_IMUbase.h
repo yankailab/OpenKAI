@@ -10,6 +10,7 @@
 
 #include "../Base/_ModuleBase.h"
 #include "../UI/_Console.h"
+#include <mutex>
 
 namespace kai
 {
@@ -31,8 +32,8 @@ namespace kai
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 
-		void addGyro(uint64_t tStamp, const Vector3f &vG);
-		void addAcc(uint64_t tStamp, const Vector3f &vA);
+		void addGyro(const Vector3f &vG, uint64_t tStamp);
+		void addAcc(const Vector3f &vA, uint64_t tStamp);
 		uint64_t getIMUpair(Vector3f* pG, Vector3f* pA);
 
 	private:
@@ -44,7 +45,7 @@ namespace kai
 		}
 
 	protected:
-
+		std::mutex m_mtxIMU;
 		int m_nIMUdqMax = 1000;
 		uint64_t m_tIMUpairToleranceUs = 5000; // 5ms
 		deque<IMU_DATA> m_dqGyro;

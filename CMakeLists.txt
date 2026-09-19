@@ -299,12 +299,24 @@ if(WITH_NAVIGATION)
   if(USE_REALSENSE)
     set(OpenKAI_cpp ${OpenKAI_cpp} src/Navigation/_RStracking.cpp)
   endif()
-  if(WITH_SLAM)
-    add_definitions(-DWITH_SLAM)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/SLAM/_SLAMbase.cpp)
-    if(USE_GLIM)
-      set(OpenKAI_cpp ${OpenKAI_cpp} src/SLAM/_GLIM.cpp)
-    endif()
+endif()
+
+if(WITH_SLAM)
+  add_definitions(-DWITH_SLAM)
+  list(APPEND OpenKAI_cpp src/SLAM/_SLAMbase.cpp)
+  if(NOT WITH_NAVIGATION)
+    list(APPEND OpenKAI_cpp src/Navigation/_NavBase.cpp)
+  endif()
+  if(NOT WITH_SENSOR)
+    list(APPEND OpenKAI_cpp src/Sensor/_IMUbase.cpp)
+  endif()
+  if(NOT WITH_UNIVERSE)
+    list(APPEND OpenKAI_cpp src/Universe/_ReferenceFrame.cpp
+      src/Universe/Geometry/_GeometryBase.cpp
+      src/Universe/Geometry/PointCloud/_PointCloud.cpp)
+  endif()
+  if(USE_GLIM)
+    list(APPEND OpenKAI_cpp src/SLAM/_GLIM.cpp)
   endif()
 endif()
 
@@ -471,9 +483,18 @@ if(USE_GLOG)
   set(OpenKAI_lib ${OpenKAI_lib} glog)
 endif()
 
-if(USE_GLIM)
+if(WITH_SLAM AND USE_GLIM)
+  find_package(glim REQUIRED CONFIG)
   add_definitions(-DUSE_GLIM)
-  set(OpenKAI_lib ${OpenKAI_lib} ) #TODO: add needed glim libraries
+  list(APPEND OpenKAI_lib glim::glim)
+  # Standalone GLIM installs headers under include/glim, while some releases
+  # export include/glim as their include root (the ROS layout is nested).
+  get_target_property(OpenKAI_GLIM_INCLUDE_HINTS glim::glim INTERFACE_INCLUDE_DIRECTORIES)
+  find_path(OpenKAI_GLIM_INCLUDE_DIR glim/odometry/odometry_estimation_base.hpp
+    HINTS ${OpenKAI_GLIM_INCLUDE_HINTS} ${glim_INCLUDE_DIRS}
+    PATH_SUFFIXES ..
+    REQUIRED)
+  list(APPEND OpenKAI_include ${OpenKAI_GLIM_INCLUDE_DIR})
 endif()
 
 if(USE_IMGUI)
