@@ -166,12 +166,12 @@
 		"dTexpireCell": 500000,
 		"dTexpirePCL": 0,
 		"vColCellOcc": [1,1,1],
-		"nMaxLines": 100000,
+		"nMaxCells": 8333,
 		"vGeometryBase": ["scPC"]
 	},
 
-	"_ImGUIviewer": {
-		"class": "_ImGUIviewer",
+	"_ImGUIselectableOctGrid": {
+		"class": "_ImGUIselectableOctGrid",
 		"bON": true,
 		"thread": {
 			"FPS": 10
@@ -187,10 +187,9 @@
 		"bShowGrid": true,
 		"camFov": 70.0,
 		"dTexpire": 0,
-		"nPbuf":400000,
-		"nLbuf":100000,
+		"nPbuf": 400000,
+		"nLbuf": 100000,
 		"bGpuRender": true,
-
 		"vCamLookAt": [
 			0.0,
 			0.0,
@@ -206,7 +205,16 @@
 			0.0,
 			1.0
 		],
-		"vGeometryBase": ["scPC", "octGrid"]
+		"vGeometry": [
+			{
+				"_GeometryBase": "scPC"
+			}
+		],
+		"vSelectableOctGrid": [
+			{
+				"_SelectableOctGrid": "octGrid"
+			}
+		]
 	}
 
 }

@@ -17,8 +17,8 @@ namespace kai
 			float kZ = (iC & 1) ? 0.25f : -0.25f;
 
 			return Vector3f(vPc.x() + vSize.x() * kX,
-						   vPc.y() + vSize.y() * kY,
-						   vPc.z() + vSize.z() * kZ);
+							vPc.y() + vSize.y() * kY,
+							vPc.z() + vSize.z() * kZ);
 		}
 
 		static uint8_t childIdx(const Vector3f &vP, const Vector3f &vPc)
@@ -48,10 +48,12 @@ namespace kai
 			NULL_(pCell);
 
 			if (pCell->m_nP <= 0)
-				pCell->m_vC = p.m_vC;
+			{
+				pCell->m_vC = Vector4f(p.m_vC.x(), p.m_vC.y(), p.m_vC.z(), 1);
+			}
 			else
 			{
-				Vector4f color = p.m_vC;
+				Vector4f color = Vector4f(p.m_vC.x(), p.m_vC.y(), p.m_vC.z(), 1);
 				pCell->m_vC = (pCell->m_vC * (float)pCell->m_nP + color) / (float)(pCell->m_nP + 1);
 			}
 
@@ -154,6 +156,7 @@ namespace kai
 
 	bool _OctreeGrid::link(const json &j, ModuleMgr *pM)
 	{
+		NULL_F(pM);
 		IF_F(!this->_OctreeBase::link(j, pM));
 
 		vector<string> vGn;
@@ -161,8 +164,10 @@ namespace kai
 		m_vpGb.clear();
 		for (string n : vGn)
 		{
-			_GeometryBase *pG = (_GeometryBase *)(pM->findModule(n));
-			IF_CONT(!pG);
+			auto *pSource = static_cast<BASE *>(pM->findModule(n));
+			IF_CONT(!pSource);
+			auto *pG = dynamic_cast<_GeometryBase *>(pSource);
+			IF_Le_F(!pG, "Grid input is not a geometry source: " + n);
 
 			m_vpGb.push_back(pG);
 		}

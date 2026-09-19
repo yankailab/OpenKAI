@@ -56,8 +56,8 @@ int main()
     kai::GEOMETRY_LINE line;
     assert(point.m_vP.isZero());
     assert(line.m_vPa.isZero() && line.m_vPb.isZero());
-    assert(point.m_vC == Vector4f(0, 0, 0, 1));
-    assert(line.m_vC == Vector4f(0, 0, 0, 1));
+    assert(point.m_vC == Vector3f(0, 0, 0));
+    assert(line.m_vC == Vector3f(0, 0, 0));
     point.m_vP.setOnes();
     line.m_vPa.setOnes();
     line.m_vPb.setOnes();

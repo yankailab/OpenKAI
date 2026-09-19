@@ -48,14 +48,13 @@
 	},
 
 	"viewer": {
-		"class": "_ImGUIviewer",
+		"class": "_ImGUIselectableOctGrid",
 		"thread": {
 			"FPS": 30
 		},
 		"threadUI": {
 			"FPS": 60
 		},
-
 		"vWinSize": [
 			1280,
 			720
@@ -64,10 +63,9 @@
 		"bShowGrid": true,
 		"camFov": 70.0,
 		"dTexpire": 0,
-		"nPbuf":400000,
-		"nLbuf":100000,
+		"nPbuf": 400000,
+		"nLbuf": 100000,
 		"bGpuRender": true,
-
 		"vCamLookAt": [
 			0.0,
 			0.0,
@@ -83,7 +81,15 @@
 			0.0,
 			1.0
 		],
-
-		"vGeometryBase": ["pcFile", "octGrid"]
+		"vGeometry": [
+			{
+				"_GeometryBase": "pcFile"
+			}
+		],
+		"vSelectableOctGrid": [
+			{
+				"_SelectableOctGrid": "octGrid"
+			}
+		]
 	}
 }

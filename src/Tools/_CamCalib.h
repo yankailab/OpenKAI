@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Application_CamCalib__CamCalib_H_
-#define OpenKAI_src_Application_CamCalib__CamCalib_H_
+#ifndef OpenKAI_src_Tools__CamCalib_H_
+#define OpenKAI_src_Tools__CamCalib_H_
 
 #include "../Base/_ModuleBase.h"
 

@@ -23,10 +23,11 @@ def check(executable, cells_only, cell_alpha):
         config['octGrid']['vGeometryBase'] = ['pcFile']
         config['viewer']['vGeometry'] = [
             {'_GeometryBase': 'pcFile', 'nP': 400000, 'nL': 0},
-            {'_GeometryBase': 'octGrid', 'nP': 0, 'nL': 0, 'nC': 8333}]
+            {'_GeometryBase': 'scPC'}]  # Explicitly disabled providers are skipped.
+        config['viewer']['vSelectableOctGrid'] = [{'_SelectableOctGrid': 'octGrid', 'nC': 8333}]
         if cells_only:
             config['viewer']['nPbuf'] = config['viewer']['nLbuf'] = 0
-            config['viewer']['vGeometry'] = config['viewer']['vGeometry'][1:]
+            config['viewer']['vGeometry'] = []
         config['viewer']['host'] = '127.0.0.1'
         config['viewer']['port'] = port
         path = Path(tmp) / 'viewer.json'
@@ -48,7 +49,7 @@ def check(executable, cells_only, cell_alpha):
                 for kind in ['points', 'lines', 'cells']:
                     client = WebSocket(port, '/stream/' + kind); clients.append(client)
                     hello = json.loads(client.receive()[1])
-                    assert hello['version'] == 4 and hello['stream'] == kind
+                    assert hello['version'] == 5 and hello['stream'] == kind
                     assert {o['name'] for o in hello['objects'] if o['selectableGrid']} == {'octGrid'}
                     assert {o['name'] for o in hello['objects']} == ({'octGrid'} if cells_only else {'pcFile', 'octGrid'})
                     client.send('start')
@@ -66,7 +67,7 @@ def check(executable, cells_only, cell_alpha):
                 payload = frames[2][0]['cells']
                 colors = {tuple(payload[i * 20 + 16:(i + 1) * 20]) for i in range(cells)}
                 assert colors == {(255, 255, 255, round(cell_alpha * 255))}, colors
-                print(f'PASS: real _WebViewer3D: {points} points, {cells} cells, independent empty lines' +
+                print(f'PASS: real _WebSelectableOctGrid: {points} points, {cells} cells, independent empty lines' +
                       ('; point/line buffers disabled' if cells_only else ''))
                 process.send_signal(signal.SIGINT)
                 process.wait(timeout=5)

@@ -1,15 +1,21 @@
 #include "../../src/Universe/Grid/_SelectableOctGrid.h"
-#include "../../src/UI/Viewer/_ImGUIviewer.h"
+#include "../../src/UI/Viewer/ImGUI/_ImGUIselectableOctGrid.h"
+#include "../../src/UI/Viewer/Web/_WebSelectableOctGrid.h"
 #include "../../src/Universe/Geometry/PointCloud/_PointCloud.h"
 #include "../../src/Universe/Geometry/Line/_Line.h"
-#include "../../src/UI/_WSconsole.h"
+#include "../../src/Protocol/_WSconsole.h"
 #include <cassert>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <thread>
+#include <type_traits>
 
 using namespace kai;
+static_assert(std::is_base_of_v<_ReferenceFrame, _OctreeBase>);
+static_assert(!std::is_base_of_v<_GeometryBase, _OctreeBase>);
+static_assert(!std::is_convertible_v<_OctreeGrid *, _GeometryBase *>);
+static_assert(!std::is_convertible_v<_SelectableOctGrid *, _GeometryBase *>);
 class Grid : public _SelectableOctGrid {
 public:
     using _SelectableOctGrid::updateDrawAssets;
@@ -40,15 +46,15 @@ void checkCalculationGrid() {
     grid.setName("calculationGrid");
     assert(grid.init(json{{"class","_OctreeGrid"}, {"thread",{{"FPS",30}}}, {"nP",1},
         {"nMaxLevel",40}, {"dTexpireCell",1}, {"vPorigin",{0,0,0}}, {"vRootCellSize",{2,2,2}}}));
-    GEOMETRY_POINT point{Vector3f(.75,.5,.25), Vector4f(1,0,0,.25),1};
+    GEOMETRY_POINT point{Vector3f(.75,.5,.25), Vector3f(1,0,0),1};
     assert(grid.addCellPoint(point,1));
     for (int level = 0; level <= 40; ++level) {
         auto *cell = grid.getCell(point.m_vP,level);
-        assert(cell && grid.getCell(cell->m_ID) == cell && cell->m_vC.w() == .25);
+        assert(cell && grid.getCell(cell->m_ID) == cell && cell->m_vC.w() == 1);
     }
-    point.m_vC = Vector4f(0,0,1,.75);
+    point.m_vC = Vector3f(0,0,1);
     auto *cell = grid.addCellPoint(point,1);
-    assert(cell && cell->m_nP == 2 && cell->m_vC == Vector4f(.5,0,.5,.5));
+    assert(cell && cell->m_nP == 2 && cell->m_vC == Vector4f(.5,0,.5,1));
     assert(!grid.getCell(Vector3f(2,0,0)) && !grid.getCell(UUID128(64)));
     SelectionConsole console;
     console.source(&grid);
@@ -75,7 +81,7 @@ void checkGridConfigCommand() {
         console.handleJson(j.dump());
         assert(console.reply == json({{"cmd","setGridConfig"}, {"module","octGrid"}, {"bSuccess",success}}));
     };
-    GEOMETRY_POINT point{Vector3f(.75,.75,.75),Vector4f(1,1,1,1),getApproxTbootUs()};
+    GEOMETRY_POINT point{Vector3f(.75,.75,.75),Vector3f(1,1,1),getApproxTbootUs()};
     auto populate = [&] { assert(grid.addCellPoint(point, point.m_tStamp)); grid.updateDrawAssets(); };
     populate();
     OCTGRID_CELLS snapshot;
@@ -149,7 +155,7 @@ void checkLiveGridConfig() {
     _PointCloud cloud;
     cloud.setName("livePoints");
     assert(cloud.init(json{{"class","_PointCloud"},{"thread",{{"FPS",30}}},{"nP",1000}}));
-    for (int i = 0; i < 1000; ++i) cloud.add(Vector3f(i * .001f, .5, .5), Vector4f(1,1,1,1));
+    for (int i = 0; i < 1000; ++i) cloud.add(Vector3f(i * .001f, .5, .5), Vector3f(1,1,1));
     LiveGrid grid;
     grid.setName("liveGrid");
     assert(grid.init(json{{"class","_SelectableOctGrid"}, {"nPminBuild",0},{"thread",{{"FPS",100}}},{"nP",1000},
@@ -271,9 +277,9 @@ void checkSelectionConfig() {
         assert(ids[1].m_uint64[0] == 0x0123456789abcde8ULL && ids[1].m_uint64[1] == 0x2123456789abcdefULL);
     };
     checkIDs();
-    // Legacy persisted sections remain readable after changing the module class.
+    // Old section names are no longer accepted.
     write(json{{"_OctreeGrid",selection}});
-    assert(grid.loadConfig()); checkIDs();
+    assert(!grid.loadConfig()); checkIDs();
     OCTGRID_CELLS snapshot;
     assert(grid.get(&snapshot) == 0);
     assert(snapshot.m_header.m_vPorigin == (std::array<float,3>{.1f,-.2f,1e-6f}));
@@ -281,7 +287,8 @@ void checkSelectionConfig() {
     const json other = {{"keep",42}};
     json saved = {{"otherModule",other}};
     assert(grid.saveConfig(saved));
-    assert(saved == json({{"otherModule",other}, {"_SelectableOctGrid",selection}}));
+    assert(saved.at("otherModule") == other && saved.at("_SelectableOctGrid") == selection);
+    assert(saved.at("_ReferenceFrame") == json({{"vPos",{0,0,0}}, {"vOrt",{0,0,0,1}}}));
     json loaded;
     assert(grid.loadConfig(&loaded));
     assert(loaded == saved); checkIDs();
@@ -291,7 +298,7 @@ void checkSelectionConfig() {
     assert(!grid.saveConfig(badOutput, alternate));
 
     // Invalid files must preserve both the selection and the original root/occupancy.
-    GEOMETRY_POINT point{Vector3f(0,0,0),Vector4f(1,1,1,1),getApproxTbootUs()};
+    GEOMETRY_POINT point{Vector3f(0,0,0),Vector3f(1,1,1),getApproxTbootUs()};
     assert(grid.addCellPoint(point,point.m_tStamp)); grid.updateDrawAssets();
     const int count = grid.get(&snapshot);
     assert(count > 0);
@@ -362,19 +369,114 @@ void checkSelectionConfig() {
     std::cout << "PASS: selection config file round-trip, startup restore, precise IDs/root, empty lists, validation, explicit/default paths and I/O errors\n";
 }
 
-class Viewer : public _ImGUIviewer {
+class Viewer : public _ImGUIselectableOctGrid {
 public:
-    using _ImGUIviewer::collectGeometry;
+    using _ImGUIselectableOctGrid::collectGeometry;
+    using _ImGUIselectableOctGrid::collectCells;
+    using _ImGUIselectableOctGrid::updateAllGeometries;
+    using _ImGUIselectableOctGrid::copySnapshot;
+    size_t geometryCount() const { return m_sources.m_vGeometry.size(); }
+    size_t gridCount() const { return m_sources.m_vGrid.size(); }
     void buffers() { assert(m_grPt.alloc(16)); assert(m_grLn.alloc(16)); m_dTexpire = 0; }
 };
+
+void checkViewerSources() {
+    // ModuleMgr normally owns modules; these test sources live on the stack.
+    class Sources : public ModuleMgr {
+    public:
+        void add(BASE *source) { m_vModules.push_back(source); }
+        ~Sources() { m_vModules.clear(); }
+    } sources;
+    Grid grid;
+    _PointCloud points;
+    _ReferenceFrame frame;
+    grid.setName("grid"); points.setName("points"); frame.setName("frame");
+    const json thread = {{"FPS",30}};
+    const json gridConfig = {{"class","_SelectableOctGrid"}, {"thread",thread}, {"nP",16}, {"nMaxLevel",1}, {"nPminBuild",0}};
+    assert(grid.init(gridConfig));
+    assert(points.init(json{{"class","_PointCloud"}, {"thread",thread}, {"nP",16}}));
+    assert(frame.init(json{{"class","_ReferenceFrame"}, {"thread",thread}}));
+    sources.add(&grid); sources.add(&points); sources.add(&frame);
+    points.add(Vector3f(1,1,1),Vector3f(1,0,0));
+    GEOMETRY_POINT point{Vector3f(1,1,1),Vector3f(1,0,0),getApproxTbootUs()};
+    grid.addCellPoint(point,point.m_tStamp); grid.updateDrawAssets();
+
+    auto inputConfig = gridConfig;
+    inputConfig["vGeometryBase"] = {"points"};
+    assert(grid.link(inputConfig,&sources));
+    inputConfig["vGeometryBase"] = {"grid"};
+    assert(!grid.link(inputConfig,&sources)); // A cell provider cannot be a point input.
+
+    Viewer viewer;
+    viewer.setName("viewer");
+    const json viewerConfig = {{"class","_ImGUIselectableOctGrid"}, {"thread",thread}, {"threadUI",thread},
+        {"nPbuf",16}, {"nLbuf",16}, {"nCbuf",16}};
+    assert(viewer.init(viewerConfig));
+    _WebSelectableOctGrid web;
+    web.setName("web");
+    auto webConfig = viewerConfig;
+    webConfig["class"] = "_WebSelectableOctGrid";
+    webConfig["webRoot"] = (std::filesystem::path(__FILE__).parent_path().parent_path().parent_path() /
+        "html/viewer/_SelectableOctGrid").string();
+    assert(web.init(webConfig));
+
+    const json sourceConfig = {
+        {"vGeometry", {{{"_GeometryBase","points"}, {"nP",1}, {"nL",0}}}},
+        {"vSelectableOctGrid", {{{"_SelectableOctGrid","grid"}, {"nC",1}}}}
+    };
+    auto link = [&](const json &settings, bool success) {
+        auto config = viewerConfig; config.update(settings);
+        assert(viewer.link(config,&sources) == success);
+        config = webConfig; config.update(settings);
+        assert(web.link(config,&sources) == success);
+    };
+    link(sourceConfig, true);
+    assert(viewer.geometryCount() == 1 && viewer.gridCount() == 1);
+    viewer.updateAllGeometries();
+    vector<IMGUI_VIEWER_OBJ> objects;
+    viewer.copySnapshot(&objects);
+    assert(objects.size() == 2);
+    assert(objects[0].m_name == "points" && objects[0].m_vP.size() == 1 && objects[0].m_vBox.empty());
+    assert(objects[1].m_name == "grid" && objects[1].m_vP.empty() && objects[1].m_vL.empty() && objects[1].m_vBox.size() == 1);
+    auto zero = sourceConfig;
+    zero["vGeometry"][0]["nP"] = 0;
+    zero["vSelectableOctGrid"][0]["nC"] = 0;
+    link(zero, true); viewer.updateAllGeometries(); viewer.copySnapshot(&objects);
+    assert(objects.empty());
+    auto hidden = sourceConfig;
+    hidden["vGeometry"][0]["bVisible"] = false;
+    hidden["vSelectableOctGrid"][0]["bVisible"] = false;
+    link(hidden, true); viewer.updateAllGeometries(); viewer.copySnapshot(&objects);
+    assert(objects.empty());
+    for (const json &invalid : vector<json>{
+        {{"vReferenceFrame",{"grid","points"}}}, {{"vGeometryBase",{"points"}}},
+        {{"vGeometry", {{{"_ReferenceFrame","grid"}}}}},
+        {{"vGeometry", {{{"_GeometryBase","grid"}}}}},
+        {{"vSelectableOctGrid", {{{"_SelectableOctGrid","points"}}}}},
+        {{"vSelectableOctGrid", {{{"_SelectableOctGrid","frame"}}}}},
+        {{"vGeometry", {{{"_GeometryBase","points"}}, {{"_GeometryBase","points"}}}}},
+        {{"vGeometry", {{{"_GeometryBase","points"}, {"nPbuf",1}}}}},
+        {{"vGeometry", {{{"_GeometryBase","points"}, {"nP",-1}}}}},
+        {{"vSelectableOctGrid", {{{"_SelectableOctGrid","grid"}, {"nC",-1}}}}},
+        {{"vSelectableOctGrid", {{{"_SelectableOctGrid","grid"}, {"nP",1}}}}},
+        {{"vGeometry", {{{"_GeometryBase","missing"}}}}},
+        {{"vGeometry", {"points"}}}
+    }) link(invalid, false);
+    auto obsolete = gridConfig; obsolete["nMaxLines"] = 12;
+    Grid oldGrid; oldGrid.setName("oldGrid"); assert(!oldGrid.init(obsolete));
+    std::cout << "PASS: separate typed sources, caps/visibility, and rejection of wrong providers, duplicates and obsolete configuration\n";
+
+}
+
 int main(int argc, char **argv) {
+    checkViewerSources();
     checkCalculationGrid();
     checkGridConfigCommand();
     checkLiveGridConfig();
     checkSelectionCommand();
     checkSelectionConfig();
-    const int firstAlpha = argc > 1 ? int(std::stof(argv[1]) * 255 + .5f) : 64;
-    const int meanAlpha = argc > 1 ? firstAlpha : 128;
+    const int firstAlpha = argc > 1 ? int(std::stof(argv[1]) * 255 + .5f) : 255;
+    const int meanAlpha = firstAlpha;
     Grid grid;
     grid.setName("grid");
     assert(grid.init(json{{"class","_SelectableOctGrid"}, {"nPminBuild",0}, {"thread",{{"FPS",30}}}, {"nP",16},
@@ -382,7 +484,7 @@ int main(int argc, char **argv) {
         {"vPorigin",{10,-20,30}}, {"vRootCellSize",{8,4,2}}}));
     OCTGRID_CELLS snapshot;
     assert(grid.get(&snapshot) == 0 && snapshot.m_header.m_tStamp == 0);
-    GEOMETRY_POINT point{Vector3f(13.25,-18.375,30.8125),Vector4f(1,0,0,.25),getApproxTbootUs()};
+    GEOMETRY_POINT point{Vector3f(13.25,-18.375,30.8125),Vector3f(1,0,0),getApproxTbootUs()};
     assert(grid.addCellPoint(point, point.m_tStamp));
     for (int depth = 0; depth <= 40; ++depth) {
         auto cell = grid.getCell(point.m_vP, depth);
@@ -400,7 +502,7 @@ int main(int argc, char **argv) {
     assert(grid.get(&snapshot,0,0) == 0 && snapshot.m_header.m_tStamp);
     assert(grid.get(&snapshot,snapshot.m_header.m_tStamp) == 0);
     point.m_vP = Vector3f(13.375,-18.25,30.875);
-    point.m_vC = Vector4f(0,0,1,.75);
+    point.m_vC = Vector3f(0,0,1);
     grid.addCellPoint(point,getApproxTbootUs());
     for (const auto &record : stableCells) {
         auto id = record.id();
@@ -413,12 +515,13 @@ int main(int argc, char **argv) {
     assert(snapshot.m_vCell[0].m_vC[3] == meanAlpha);
     Viewer viewer;
     viewer.setName("viewer");
-    assert(viewer.init(json{{"class","_ImGUIviewer"}, {"thread",{{"FPS",30}}},
+    assert(viewer.init(json{{"class","_ImGUIselectableOctGrid"}, {"thread",{{"FPS",30}}},
         {"threadUI",{{"FPS",30}}}, {"nPbuf",0}, {"nLbuf",0}}));
     IMGUI_VIEWER_OBJ object;
-    object.m_pGB = &grid;
-    object.m_nCbuf = 2;
-    viewer.collectGeometry(&grid,&object);
+    VIEWER_GRID_SOURCE cellSource;
+    cellSource.m_pGrid = &grid;
+    cellSource.m_nC = 2;
+    viewer.collectCells(cellSource,&object,0);
     assert(object.m_vBox.size() == 2 && object.m_vL.empty());
     assert(object.m_vBox[0].m_ID == uint64_t(0));
     assert(object.m_vBox[0].m_vCenter.x() == 10 && object.m_vBox[0].m_vSize.y() == 4);
@@ -429,13 +532,14 @@ int main(int argc, char **argv) {
         ++edges;
     });
     assert(edges == 12);
-    GEOMETRY_RINGBUF<GEOMETRY_LINE> lines;
-    assert(grid.get(&lines) == 0);
+
     grid.age(); grid.deleteExpiredCells(); grid.updateDrawAssets();
     assert(grid.get(&snapshot) == 0 && snapshot.m_vCell.empty());
-    object.clearGeometry(); viewer.collectGeometry(&grid,&object);
+    object.clearGeometry(); viewer.collectCells(cellSource,&object,0);
     assert(object.m_vBox.empty() && object.m_vL.empty());
     viewer.buffers();
+    object.clearGeometry(); viewer.collectCells(cellSource,&object,0);
+    assert(object.m_vP.empty() && object.m_vL.empty() && object.m_vBox.empty());
     _PointCloud cloud;
     _Line line;
     cloud.setName("cloud"); line.setName("line");
@@ -443,28 +547,30 @@ int main(int argc, char **argv) {
     assert(line.init(json{{"class","_Line"},{"thread",{{"FPS",30}}},{"nL",16}}));
     const Vector3f pos(0,0,0), end(1,0,0);
     cloud.add(pos, Vector3f(1,0,0));
-    cloud.add(pos, Vector4f(0,0,0,.25)); // RGB fallback must preserve alpha
-    cloud.add(pos, Vector4f(1,0,0,0));
+    cloud.add(pos, Vector3f(0,0,0)); // Black uses the material RGB fallback
+    cloud.add(pos, Vector3f(0,0,1));
     line.add(pos, end, Vector3f(1,0,0));
-    line.add(pos, end, Vector4f(0,0,0,.25));
-    line.add(pos, end, Vector4f(1,0,0,0));
-    object.m_matCol = Vector4f(0,1,0,.5);
-    object.m_pGB = &cloud;
-    viewer.collectGeometry(&cloud, &object);
-    object.m_pGB = &line;
-    viewer.collectGeometry(&line, &object);
+    line.add(pos, end, Vector3f(0,0,0));
+    line.add(pos, end, Vector3f(0,0,1));
+    VIEWER_GEOMETRY_SOURCE geometrySource;
+    geometrySource.m_matCol = Vector4f(0,1,0,1);
+    geometrySource.m_nP = geometrySource.m_nL = 16;
+    geometrySource.m_pGeometry = &cloud;
+    viewer.collectGeometry(geometrySource, &object,0);
+    geometrySource.m_pGeometry = &line;
+    viewer.collectGeometry(geometrySource, &object,0);
     assert(object.m_vP.size() == 3 && object.m_vL.size() == 3);
-    bool opaque = false, transparent = false, partial = false;
-    for (const auto &p : object.m_vP) {
-        opaque |= p.m_vC.w() == 1; transparent |= p.m_vC.w() == 0;
-        partial |= p.m_vC.w() == .25 && p.m_vC.y() == 1;
-    }
-    assert(opaque && transparent && partial);
-    opaque = transparent = partial = false;
-    for (const auto &l : object.m_vL) {
-        opaque |= l.m_vC.w() == 1; transparent |= l.m_vC.w() == 0;
-        partial |= l.m_vC.w() == .25 && l.m_vC.y() == 1;
-    }
-    assert(opaque && transparent && partial);
+    auto checkRGB = [](const auto &vertices) {
+        bool red = false, green = false, blue = false;
+        for (const auto &v : vertices) {
+            static_assert(decltype(v.m_vC)::SizeAtCompileTime == 3);
+            red |= v.m_vC == Vector3f(1,0,0);
+            green |= v.m_vC == Vector3f(0,1,0);
+            blue |= v.m_vC == Vector3f(0,0,1);
+        }
+        assert(red && green && blue);
+    };
+    checkRGB(object.m_vP);
+    checkRGB(object.m_vL);
     std::cout << "PASS: native ID stability/lookup at depths 0-40, RGBA, caps/expiry, ImGUI with zero point/line buffers, cells/points/lines and RGB compatibility\n";
 }

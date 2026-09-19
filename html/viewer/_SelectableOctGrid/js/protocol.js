@@ -1,5 +1,5 @@
 import { CELL_BYTES, validateCellIDs } from './octreeCells.js';
-export const PROTOCOL_VERSION = 4;
+export const PROTOCOL_VERSION = 5;
 export const STREAM_TYPES = ['points', 'lines', 'cells'];
 export const MAX_FRAME_BYTES = 64 * 1024 * 1024;
 const littleEndian = new Uint8Array(new Uint16Array([1]).buffer)[0] === 1;
@@ -10,7 +10,7 @@ export function decodeFrame(buffer, expectedType) {
   if (!(buffer instanceof ArrayBuffer) || buffer.byteLength < 32 || buffer.byteLength > MAX_FRAME_BYTES)
     throw new Error('Invalid geometry frame length');
   const v = new DataView(buffer);
-  if (v.getUint32(0, true) !== 0x34443357 || v.getUint32(4, true) !== PROTOCOL_VERSION)
+  if (v.getUint32(0, true) !== 0x35443357 || v.getUint32(4, true) !== PROTOCOL_VERSION)
     throw new Error('Unsupported geometry protocol');
   const type = STREAM_TYPES[v.getUint32(8, true) - 1];
   if (!type || (expectedType && type !== expectedType)) throw new Error('Wrong geometry stream type');
@@ -27,12 +27,13 @@ export function decodeFrame(buffer, expectedType) {
   for (let i = 0; i < objectCount; ++i) {
     if (at + 40 > buffer.byteLength) throw new Error('Truncated object header');
     const id = v.getUint32(at, true), count = v.getUint32(at + 4, true);
-    const payload = type === 'cells' ? 40 + count * CELL_BYTES : count * (type === 'points' ? 16 : 32);
+    const payload = type === 'cells' ? 40 + count * CELL_BYTES : Math.ceil(count * (type === 'points' ? 15 : 30) / 4) * 4;
     if (ids.has(id) || at + 40 + payload > buffer.byteLength) throw new Error('Invalid object counts');
     ids.add(id);
     const pointSize = v.getFloat32(at + 8, true), opacity = v.getFloat32(at + 12, true);
     const bounds = Array.from({ length: 6 }, (_, j) => v.getFloat32(at + 16 + j * 4, true));
     if (!Number.isFinite(pointSize) || pointSize <= 0 || !Number.isFinite(opacity) || opacity < 0 || opacity > 1 ||
+        (type !== 'cells' && opacity !== 1) ||
         !bounds.every(Number.isFinite) || bounds.some((x, j) => j < 3 && x > bounds[j + 3]))
       throw new Error('Invalid object style/bounds');
     at += 40;
@@ -50,7 +51,9 @@ export function decodeFrame(buffer, expectedType) {
     } else {
       const vertices = count * (type === 'lines' ? 2 : 1);
       object.positions = floats(vertices * 3);
-      object.colors = bytes(vertices * 4);
+      object.colors = bytes(vertices * 3);
+      const padding = (4 - at % 4) % 4;
+      if (bytes(padding).some(x => x !== 0)) throw new Error('Invalid geometry padding');
     }
     objects.push(object);
   }

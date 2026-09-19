@@ -156,7 +156,7 @@ export async function runPickerTests() {
   viewer.setGridLevelRange(2, 2);
   viewer.setGridSolid(true);
   const checkNewObject = id => {
-    const object = viewer.createObject(id);
+    const object = viewer.createObject(id, 'cells');
     check(object.boxes.solid.visible && !object.boxes.wire.visible, 'New object ignored solid mode');
     object.boxes.update(selectionGrid(header, selected(root, idAt(7), idAt(7, 7))), rootBounds(header), 1);
     check(object.boxes.geometry.instanceCount === 1 && (object.boxes.getCell(0).id[0] & 63) === 2, 'New object ignored the current level range');
@@ -181,7 +181,7 @@ export async function preparePickerUI() {
   viewer.update = () => {}; // Hold a deterministic frame while stream ACKs continue.
   viewer.clear(); viewer.picker.clear();
   const header = { origin: [0, 0, 0], size: [2, 2, 2], maxLevel: 4 };
-  const object = viewer.createObject(7);
+  const object = viewer.createObject(8, 'cells');
   const grid = selectionGrid(header, selected(root, idAt(7), idAt(7, 7)));
   for (let at = 0; at < grid.cells.length; at += 20) { grid.cells[at + 16] = 0; grid.cells[at + 17] = 255; }
   object.boxes.update(grid, rootBounds(header), 1);

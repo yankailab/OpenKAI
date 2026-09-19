@@ -1,12 +1,16 @@
-# Browser 3D viewer
+# Browser selectable octree grid viewer
 
-`_WebViewer3D` derives from `_GeometryViewerBase` and reads points and lines from
-the same `_GeometryBase::get()` ring buffers as `_ImGUIviewer`, plus compact
+`_WebSelectableOctGrid` derives from `_GeometryViewerBase` and reads points and lines from
+the same `_GeometryBase::get()` ring buffers as `_ImGUIselectableOctGrid`, plus compact
 `_SelectableOctGrid::get(OCTGRID_CELLS*)` snapshots. The C++ process
 serves the browser application and three independent binary WebSockets on one port. A separate
 WebSocket connects JSON application commands to `_WSconsole`. All browser
 assets, including a pinned three.js release, are in `html/viewer/_SelectableOctGrid/`.
 There is no browser-side installation, npm build, CDN, or separate web server.
+
+The viewer and its `WebSelectableOctGridProtocol.h` header live in
+`src/UI/Viewer/Web/`. Its name matches the `_SelectableOctGrid` backend module
+and the native viewer `_ImGUIselectableOctGrid` in `src/UI/Viewer/ImGUI/`.
 
 Configure displayed grids with `"class": "_SelectableOctGrid"`. This module
 inherits the `_OctreeGrid` calculation API and the `_ModuleBase` lifecycle, and
@@ -62,7 +66,7 @@ After an unexpected command disconnect, use Connect to reconnect; commands are
 never queued or replayed automatically.
 
 For the existing `_WSconsole` backend, enable `WITH_IO`, `USE_WSSERVER`,
-`WITH_PROTOCOL` and `WITH_UI` in addition to your application's build options.
+and `WITH_PROTOCOL` in addition to your application's build options.
 Include the companion configuration in your application's `APP` block:
 
 ```json
@@ -91,7 +95,7 @@ wsStop(); // Disconnect the command socket only.
 `_JSONbase::recvJson()`. That literal delimiter cannot appear in command strings.
 Default replies are JSON without a delimiter (`msgFinishSend: ""`); the handler
 also accepts an optional trailing EOJ. It assembles replies split across the
-legacy 512-byte WebSocket messages, then dispatches to `handleCmd(jCmd)` in
+512-byte WebSocket messages, then dispatches to `handleCmd(jCmd)` in
 `js/wsCmdHandler.js`. Add page-specific reply handling there. Heartbeats
 (`{"cmd":"hb"}`), replies and connection messages appear in `cmdState`.
 Reply buffering is capped at 8 MiB of text and console history at 16 KiB.
@@ -257,8 +261,7 @@ order as picker commands. `loadConfig(pJ, fName)` restores this state and option
 returns the complete parsed document through `pJ`. Both methods use the module's
 `fConfig` setting when `fName` is empty. Initialization loads that file after the
 grid's root and maximum level are configured.
-For migration, `loadConfig()` also accepts the legacy `_OctreeGrid` section when
-`_SelectableOctGrid` is absent. New saves use `_SelectableOctGrid`.
+Only the `_SelectableOctGrid` section is accepted for saved selections.
 
 The `octGridCellSelect` handler calls `saveConfig()` after updating the selection.
 Configure a writable `octGrid.fConfig` path to retain it across backend restarts.
@@ -273,37 +276,47 @@ returns false and preserves the current root and selections. IDs must fit the
 configured `nMaxLevel`. An empty `vSelectedCells` array is saved and restored as
 an empty selection. File read/write failures also return false.
 
-### Geometry sources
+### Viewer sources
 
-The existing `vGeometryBase` name list works:
+Configure two separate source arrays. `vGeometry` entries retain `_GeometryBase*`
+for point/line collection; `vSelectableOctGrid` entries retain `_SelectableOctGrid*`
+for cell snapshots. Both viewers use the same source parser and settings:
 
 ```json
 {
   "viewer": {
-    "class": "_WebViewer3D",
+    "class": "_WebSelectableOctGrid",
     "thread": { "FPS": 30 },
     "host": "0.0.0.0",
     "port": 8080,
     "nPbuf": 200000,
     "nLbuf": 100000,
-    "dTexpire": 0,
+    "nCbuf": 100000,
     "vCamEye": [0, -8, 4],
     "vCamLookAt": [0, 0, 0],
     "vCamUp": [0, 0, 1],
-    "vGeometryBase": ["points", "lines"]
+    "vGeometry": [
+      { "_GeometryBase": "points", "nP": 200000, "nL": 0, "matPointSize": 2 },
+      { "_GeometryBase": "lines", "nP": 0, "nL": 100000, "matCol": [0.3, 0.8, 1] }
+    ],
+    "vSelectableOctGrid": [
+      { "_SelectableOctGrid": "octGrid", "nC": 100000, "matCol": [1, 1, 1, 0.5] }
+    ]
   }
 }
 ```
 
-Optional `vGeometry` entries add or override individual sources:
+Each source appears once. Wrong provider types, duplicate names, unsupported
+entry settings, and missing modules fail linking. Explicitly disabled modules
+are skipped. Per-source limits are capped by the viewer's corresponding buffer
+limit; zero disables that output. A zero cell limit still publishes its root header.
+The removed `vReferenceFrame`, viewer `vGeometryBase`, `geometry`, and
+`_ReferenceFrame` entry aliases are rejected. Per-source caps use `nP`, `nL`,
+and `nC`, with no `nPbuf`/`nLbuf`/`nCbuf` entry aliases.
 
-```json
-"vGeometry": [
-  { "_GeometryBase": "points", "nP": 200000, "nL": 0, "matPointSize": 2 },
-  { "_GeometryBase": "lines", "nP": 0, "nL": 100000,
-    "matCol": [0.3, 0.8, 1, 0.8], "bVisible": true }
-]
-```
+A calculation-only `_OctreeGrid` does not publish viewer snapshots; use
+`_SelectableOctGrid`. The grid's own `vGeometryBase` input list still selects
+its point clouds.
 
 | Setting | Default | Meaning |
 | --- | --- | --- |
@@ -312,13 +325,13 @@ Optional `vGeometry` entries add or override individual sources:
 | `nClientMax` | `8` | Maximum clients per geometry endpoint, configurable from 1 to 64 |
 | `thread.FPS` | framework default | Maximum geometry collection/publication rate |
 | `nCbuf` | `100000` | Maximum occupied cells collected per grid source |
-| `vGeometry[].nC` | `nCbuf` | Per-grid cell limit; zero sends an empty grid |
+| `vSelectableOctGrid[].nC` | `nCbuf` | Per-grid cell limit; zero sends an empty grid |
 | `nPbuf`, `nLbuf` | `200000`, `100000` | Scratch capacities per source; zero disables collection of that type |
 | `dTexpire` | `0` | Maximum geometry age in microseconds; zero disables expiry |
 | `bAutoBound`, `bShowGrid` | `true`, `true` | Fit the first nonempty frame of each type; show reference grid |
 | `vBgCol` | `[0.035,0.045,0.065,1]` | Background color |
 | `vGeometry[].nP`, `.nL` | scratch capacities | Per-object limits; zero omits that primitive type |
-| `matPointSize`, `matCol` | `2`, `[1,1,1,1]` | Point size in pixels, fallback RGB and object opacity |
+| `matPointSize`, `matCol` | `2`, `[1,1,1,1]` | Point size in pixels, fallback RGB; fourth component controls cell opacity only |
 | `bVisible` | `true` | Exclude an object from streaming when false |
 
 Camera configuration uses the base keys `camProjType` (0 perspective, 1
@@ -333,15 +346,15 @@ World-origin pointers mark `(0, 0, 0)` with an O label and three arrows, each
 exactly 1 metre long: X in red, Y in green, and Z in blue. They remain visible
 when the reference grid is hidden and stay fixed to the world coordinate axes.
 
-Positions are float32. Colors are normalized RGBA8; black source colors use the
-material fallback, matching the ImGui viewer's convention. Invalid timestamps,
-expired geometry, and nonfinite positions are omitted. Lines use native WebGL
-line segments at one pixel wide; thick-line materials are not implemented.
-Points, lines, and grid cells use per-record alpha multiplied by object opacity
-(`matCol[3]`). Alpha 0 is invisible, 1 is opaque, and intermediate values blend
-with the scene. RGB-only sources default to alpha 1. Grid cells carry RGBA8
-(including black). Their boxes
-are drawn with shared wire/solid box geometry and one GPU instance per cell.
+Positions are float32. Point and line colors are normalized RGB8 and render
+opaque; black source colors use the material RGB fallback, matching the ImGui
+viewer. PLY alpha is ignored, including the alpha byte in packed `rgba` colors.
+Invalid timestamps, expired geometry, and nonfinite positions are omitted.
+Lines use native WebGL line segments at one pixel wide; thick-line materials
+are not implemented. Grid cells retain RGBA8 (including black), with per-cell
+alpha multiplied by cell object opacity (`matCol[3]`). Alpha 0 is invisible,
+1 is opaque, and intermediate values blend with the scene. Their boxes use
+shared wire/solid geometry and one GPU instance per cell.
 
 ## Structure and streaming behavior
 
@@ -349,8 +362,9 @@ are drawn with shared wire/solid box geometry and one GPU instance per cell.
 | --- | --- |
 | `src/Net/HttpServer.*` | Static HTTP files, MIME types, request deadlines, path containment, WebSocket upgrade hook |
 | `src/IO/WebSocketStream.*` | Asynchronous WebSocket sessions, shared snapshots, bounded delivery, lifecycle |
-| `src/UI/Viewer/WebViewer3DProtocol.h` | Versioned little-endian binary encoding |
-| `src/UI/Viewer/_WebViewer3D.*` | Framework configuration, collection, filtering and snapshot publication |
+| `src/UI/Viewer/Web/WebSelectableOctGridProtocol.h` | Versioned little-endian binary encoding |
+| `src/UI/Viewer/SelectableOctGridSources.*` | Shared source configuration and separate typed geometry/grid lists |
+| `src/UI/Viewer/Web/_WebSelectableOctGrid.*` | Framework configuration, collection, filtering and snapshot publication |
 | `html/viewer/_SelectableOctGrid/js/launcher.js` | Local-file launcher and endpoint validation |
 | `html/viewer/_SelectableOctGrid/js/wsStreamBase.js` | Geometry connection, protocol greeting, automatic reconnect and stream acknowledgements |
 | `html/viewer/_SelectableOctGrid/js/wsCmdBase.js` | Independent JSON command socket, sending and console status |
@@ -370,18 +384,19 @@ Geometry uses three endpoints on the HTTP port:
 
 | Endpoint | Binary contents |
 | --- | --- |
-| `/stream/points` | Point positions and RGBA8 |
-| `/stream/lines` | Line endpoints and RGBA8 |
+| `/stream/points` | Point positions and RGB8 |
+| `/stream/lines` | Line endpoints and RGB8 |
 | `/stream/cells` | Octree root headers and 20-byte cell records |
 
 Each endpoint owns its latest snapshot, sequence counter, buffer pool and clients.
 The frontend owns a separate connection, pending frame and reconnect timer per
-type. All three update the same scene and canvas. A source can contribute to any
-combination of streams; its object ID is consistent across them. A failed,
+type. All three update the same scene and canvas. Geometry sources can contribute
+points and lines; selectable grids contribute cells. Object IDs are consistent
+across connections. A failed,
 missing, or empty stream does not prevent the other types from drawing. Stream
 status is shown separately when their connection states differ.
 
-Each connection receives a JSON `hello` with `version: 4`, its `stream` name
+Each connection receives a JSON `hello` with `version: 5`, its `stream` name
 (`points`, `lines`, or `cells`), all object names and camera settings. Any type's
 hello can initialize the page; later greetings do not reset the scene or camera.
 Each object also has a `selectableGrid` boolean, true for `_SelectableOctGrid`
@@ -400,8 +415,11 @@ snapshot buffers and browser GPU arrays are reused. Position/color sections
 decode as views into the received ArrayBuffer; the renderer copies them into
 reusable GPU upload arrays and updates only occupied ranges. Empty objects clear
 that type's geometry; absent objects clear that component. A disconnect clears
-only its type. The source's other components and retained red selections remain.
-A source's render resources are released once its last streamed component is gone.
+only its type. The geometry source's other component and retained grid selections remain.
+The browser allocates point/line objects for geometry sources and box instances
+for grid sources. It rejects a stream whose type conflicts with its source.
+Resources are released when the source's last stream disappears; source visibility
+and selected grid cells survive reconnects.
 Each type's configured worst-case snapshot is limited to 64 MiB; the viewer supports
 1024 sources. The byte lengths below apply independently to each stream.
 
@@ -411,19 +429,14 @@ For a cells-only viewer, set `nPbuf` and `nLbuf` to zero and include the grid so
 "nPbuf": 0,
 "nLbuf": 0,
 "nCbuf": 100000,
-"vGeometry": [{ "_GeometryBase": "octGrid", "nC": 100000 }]
+"vSelectableOctGrid": [{ "_SelectableOctGrid": "octGrid", "nC": 100000 }]
 ```
 
 The point/line endpoints then send empty snapshots. The grid can still consume
 point data from its own sources; these viewer limits affect only output.
 
-The existing `_WebSocketServer` and `_WebSocket` remain compatible with their
-current users. They were evaluated for this transport, but their FIFO path uses
-512-byte packets. The installed wsServer library also has a global client table,
-blocking sends and no server shutdown API. Merely increasing the FIFO size would
-not provide cancellable IO or independent slow-client handling. The new transport
-is therefore a separate component under `src/IO`, with no dependency on the
-legacy `USE_WSSERVER` option.
+Geometry transport uses `WebSocketStream` under `src/IO`, independently of
+the command socket and the `USE_WSSERVER` option.
 
 The embedded server provides plain HTTP/WS for local or trusted-network use. It
 does not implement TLS or authentication. To expose it through HTTPS, use a TLS
@@ -431,7 +444,7 @@ endpoint that also forwards `/stream/points`, `/stream/lines` and `/stream/cells
 WebSocket upgrades. The browser selects
 `wss://` when the page is served over HTTPS.
 
-## Binary protocol, version 4
+## Binary protocol, version 5
 
 All integers and IEEE float32 values are little-endian. Each WebSocket binary
 message contains one complete snapshot of exactly one geometry type. An empty
@@ -439,8 +452,8 @@ stream is a 32-byte frame with an object count of zero. Reserved fields are zero
 
 | Frame header offset | Type | Value |
 | --- | --- | --- |
-| 0 | uint32 | `0x34443357` (`W3D4`) |
-| 4 | uint32 | Version `4` |
+| 0 | uint32 | `0x35443357` (`W3D5`) |
+| 4 | uint32 | Version `5` |
 | 8 | uint32 | Type: 1 points, 2 lines, 3 cells; must match the endpoint |
 | 12 | uint32 | Sequence number for this stream, wraps at 2^32 |
 | 16 | uint32 | Object count |
@@ -453,14 +466,16 @@ Each object starts with a 40-byte header:
 | --- | --- | --- |
 | 0 | uint32 | Source object ID, shared across the three streams |
 | 4 | uint32 | Record count N for this geometry type |
-| 8, 12 | float32 × 2 | Point size (1 for lines/cells), object opacity |
+| 8, 12 | float32 × 2 | Point size (1 for lines/cells), cell opacity (must be 1 for points/lines) |
 | 16 | float32 × 6 | Axis-aligned bounds: min XYZ, max XYZ |
 
 The payload immediately follows the object header:
 
-- **Points:** XYZ float32 (`12N` bytes), then RGBA8 (`4N` bytes).
-- **Lines:** endpoint XYZ float32 (`24N` bytes, A then B), then endpoint RGBA8
-  (`8N` bytes, A then B).
+- **Points:** XYZ float32 (`12N` bytes), then RGB8 (`3N` bytes).
+- **Lines:** endpoint XYZ float32 (`24N` bytes, A then B), then endpoint RGB8
+  (`6N` bytes, A then B).
+- Point/line payloads end with 0–3 zero padding bytes to reach a four-byte
+  boundary. Padding is per object, not per vertex, including the last object.
 - **Cells:** the 40-byte grid header below, then N interleaved 20-byte cell records.
   The grid header is always present, including when N is zero, so an empty grid
   can update its root information and remap retained selections.
@@ -484,27 +499,29 @@ hold up to 40 child indices, three bits per level, starting at bit 123. Bits
 child segments are used and all remaining path bits are zero. A child index
 uses X/Y/Z masks 4/2/1, with a set bit choosing the positive half of that axis.
 
-Each cell costs exactly **20 bytes**, down from 384 bytes for twelve streamed
-lines (about 95% less cell payload). All records and sections are four-byte
+Each cell costs exactly **20 bytes**. Cell records and sections are four-byte
 aligned without padding.
 
-Only version 4 is supported. The old combined `/stream` endpoint and older
-binary formats are removed. Update the
-backend and browser assets together. Point and line records remain 16 and 32
-bytes respectively, with per-vertex RGBA8 colors. Full snapshots preserve
-reconnect and object removal behavior. Picker commands still send only 16-byte
-IDs as hexadecimal strings; their JSON format does not change.
+Only version 5 is supported, with an exact version match required for both
+the JSON greeting and binary frames. There is no protocol negotiation or
+conversion. Update the backend and browser assets together.
+Point and line payloads use 15 and 30 bytes per record respectively, plus
+per-object alignment padding. Full snapshots preserve reconnect and object
+removal behavior. Picker commands send 16-byte IDs as hexadecimal strings.
 
 ## Occupied cell interface
 
 `_SelectableOctGrid::get(OCTGRID_CELLS*, tExpire, nMaxCells)` copies one coherent header
 and its occupied cell records. It includes occupied ancestors, as the previous
 wireframe did, in root-first traversal order. `nMaxCells` in the grid config sets
-the publication cap; if omitted, `floor(nMaxLines / 12)` preserves the old cap
-(default 8333). The viewers have independent `nCbuf` and per-object `nC` caps.
-Point and line interfaces remain available; the grid itself returns no lines.
+the publication cap (default 8333). The old `nMaxLines` setting is rejected. The viewers have independent `nCbuf` and per-object `nC` caps.
+`_OctreeBase` derives from `_ReferenceFrame`. Neither it nor its grid subclasses
+expose `_GeometryBase::get()` or a geometry type. `_OctreeGrid` still consumes
+point clouds through its `vGeometryBase` input list; `_SelectableOctGrid` publishes
+only cell IDs, colors, and the root header. Viewers construct the boxes.
 
-RGBA comes from each cell's averaged point color, clamped and rounded to RGBA8.
+Cells average point RGB, initializing cell alpha to 1, then publish their retained
+RGBA color clamped and rounded to RGBA8.
 An explicitly configured `vColCellOcc` keeps the previous uniform color override.
 It accepts `[r,g,b,a]`; a three-component override defaults to alpha 1.
 The sample omits this setting so cell colors follow the point cloud. Remove it
@@ -522,9 +539,9 @@ visually indistinguishable even though their 128-bit IDs remain exact.
 
 ## Verification
 
-The standalone transport suite needs only Boost headers, CMake, a C++17 compiler,
-and Python 3. It exercises independent typed channels, rejection of the removed
-endpoint, real loopback sockets, path traversal (including
+The standalone transport suite needs Boost headers, Eigen 5, glog, CMake,
+a C++17 compiler, and Python 3. It exercises independent typed channels,
+endpoint validation, real loopback sockets, path traversal (including
 symlinks), large and fragmented frames, multiple peers, ACK flow control,
 pause/resume, ping/pong, and shutdown with live connections.
 
@@ -564,6 +581,6 @@ caps, expiry, and clearing):
 python3 test/webViewer3D/native_cells.py build
 ```
 
-When deliberately retaining a temporary cell-alpha override in `updatePCLcell`,
+When deliberately retaining a temporary cell-alpha override in the grid publication path,
 pass `--cell-alpha 0.5` (or its actual value) to the backend, octree and native
-test scripts. Their defaults verify normal source alpha propagation.
+test scripts. Their defaults expect alpha 1 for cells built from RGB points.

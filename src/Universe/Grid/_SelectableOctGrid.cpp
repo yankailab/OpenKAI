@@ -121,14 +121,11 @@ namespace kai
 	{
 		IF_F(!this->_OctreeGrid::init(j));
 
-		// Keep the old line budget as a compatibility default, in complete boxes.
-		int nMaxLines = 100000;
-		jKv(j, "nMaxLines", nMaxLines);
-		m_nMaxCells = nMaxLines / 12;
+		IF_Le_F(j.contains("nMaxLines"), "Use nMaxCells for grid publication limits");
 		jKv(j, "nMaxCells", m_nMaxCells);
 		m_bColCellOcc = jKv<float>(j, "vColCellOcc", m_vColCellOcc);
 
-		IF_Le_F(nMaxLines <= 0 || m_nMaxCells < 0, "Invalid grid cell limit");
+		IF_Le_F(m_nMaxCells < 0, "Invalid grid cell limit");
 
 		jKv(j, "nPminBuild", m_nPminBuild);
 		m_cells.m_vCell.clear();
@@ -188,8 +185,7 @@ namespace kai
 		json j;
 		IF_F(!this->_OctreeGrid::loadConfig(&j, fName));
 
-		// Accept selections saved before rendering and interaction moved to this module.
-		const json &jG = jK(j, j.contains("_SelectableOctGrid") ? "_SelectableOctGrid" : "_OctreeGrid");
+		const json &jG = jK(j, "_SelectableOctGrid");
 
 		Vector3f origin = Vector3f::Zero(), size = Vector3f::Zero();
 		IF_Le_F(!readConfigVector(jK(jG, "vPorigin"), origin) ||

@@ -570,7 +570,7 @@ namespace kai
 #ifdef WITH_UNIVERSE
 		const auto spFrame = m_spFrame;
 		NULL_(spFrame);
-		NULL_(m_pPointCloud);
+		NULL_(m_pPCL);
 
 		const auto format = spFrame->getFormat();
 		IF_(format != OB_FORMAT_POINT && format != OB_FORMAT_RGB_POINT);
@@ -578,6 +578,8 @@ namespace kai
 		// The SDK scale converts point coordinates to millimeters.
 		const float s_b = spFrame->as<ob::PointsFrame>()->getCoordinateValueScale() * 0.001f;
 		const uint64_t tDus = frameTsUs_(spFrame);
+
+		m_pPCL->frameStart();
 
 		if (format == OB_FORMAT_RGB_POINT)
 		{
@@ -594,7 +596,7 @@ namespace kai
 				const Vector3f vP(p.x * s_b, p.y * s_b, p.z * s_b);
 				// The filter preserves the configured BGR stream's channel order.
 				const Vector3f vC(p.b * c_b, p.g * c_b, p.r * c_b);
-				m_pPointCloud->add(vP, vC, tDus);
+				m_pPCL->add(vP, vC, tDus);
 			}
 		}
 		else
@@ -610,9 +612,11 @@ namespace kai
 				IF_CONT(p.z <= 0);
 
 				const Vector3f vP(p.x * s_b, p.y * s_b, p.z * s_b);
-				m_pPointCloud->add(vP, vC, tDus);
+				m_pPCL->add(vP, vC, tDus);
 			}
 		}
+
+		m_pPCL->frameStop();
 #endif
 	}
 

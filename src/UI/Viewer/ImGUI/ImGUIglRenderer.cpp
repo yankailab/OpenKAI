@@ -1,11 +1,11 @@
 /*
- * ImGUIviewerGLRenderer.cpp
+ * ImGUIglRenderer.cpp
  *
  *  Created on: Sep 7, 2026
  *      Author: Codex
  */
 
-#include "ImGUIviewerGLRenderer.h"
+#include "ImGUIglRenderer.h"
 
 #include "imgui.h"
 #include <algorithm>
@@ -23,20 +23,20 @@
 
 namespace kai
 {
-	ImGUIviewerGLRenderer::ImGUIviewerGLRenderer()
+	ImGUIglRenderer::ImGUIglRenderer()
 	{
 	}
 
-	ImGUIviewerGLRenderer::~ImGUIviewerGLRenderer()
+	ImGUIglRenderer::~ImGUIglRenderer()
 	{
 	}
 
-	bool ImGUIviewerGLRenderer::bReady(void) const
+	bool ImGUIglRenderer::bReady(void) const
 	{
 		return m_bReady;
 	}
 
-	bool ImGUIviewerGLRenderer::prepareSnapshot(const vector<IMGUI_VIEWER_OBJ> &vGO,
+	bool ImGUIglRenderer::prepareSnapshot(const vector<IMGUI_VIEWER_OBJ> &vGO,
 												size_t nP,
 												size_t nL,
 												unsigned long long version)
@@ -46,17 +46,20 @@ namespace kai
 
 		m_vPointUpload.clear();
 		m_vLineUpload.clear();
+		m_vCellUpload.clear();
 		m_vPointBatch.clear();
 		m_vLineBatch.clear();
+		m_vCellBatch.clear();
 		m_vDrawCmd.clear();
 		m_vPointUpload.reserve(nP);
-		m_vLineUpload.reserve(nL * 2);
+		size_t cellEdges = 0;
+		for (const auto &g : vGO) cellEdges += g.m_vBox.size() * 12;
+		m_vLineUpload.reserve((nL > cellEdges ? nL - cellEdges : 0) * 2);
+		m_vCellUpload.reserve(cellEdges * 2);
 
 		for (const IMGUI_VIEWER_OBJ &g : vGO)
 		{
-			const float alpha = std::clamp(std::isfinite(g.m_matCol.w()) ? g.m_matCol.w() : 1.f, 0.f, 1.f);
-
-			if (!g.m_vL.empty() || !g.m_vBox.empty())
+			if (!g.m_vL.empty())
 			{
 				float linePx = std::max(1.0f, g.m_matLineWidth);
 				DRAW_BATCH b;
@@ -72,16 +75,30 @@ namespace kai
 				for (const IMGUI_VIEWER_LINE &l : g.m_vL)
 				{
 					m_vLineUpload.push_back({l.m_vA.x(), l.m_vA.y(), l.m_vA.z(),
-											  l.m_vC.x(), l.m_vC.y(), l.m_vC.z(), alpha * l.m_vC.w()});
+											  l.m_vC.x(), l.m_vC.y(), l.m_vC.z()});
 					m_vLineUpload.push_back({l.m_vB.x(), l.m_vB.y(), l.m_vB.z(),
-											  l.m_vC.x(), l.m_vC.y(), l.m_vC.z(), alpha * l.m_vC.w()});
+											  l.m_vC.x(), l.m_vC.y(), l.m_vC.z()});
 					m_vLineBatch.back().m_count += 2;
 				}
+			}
+
+			if (!g.m_vBox.empty())
+			{
+				const float alpha = std::clamp(std::isfinite(g.m_matCol.w()) ? g.m_matCol.w() : 1.f, 0.f, 1.f);
+				DRAW_BATCH batch;
+				batch.m_first = (int)m_vCellUpload.size();
+				batch.m_renderPx = std::max(1.0f, g.m_matLineWidth);
+				m_vCellBatch.push_back(batch);
+				DRAW_CMD cmd;
+				cmd.m_bLine = true;
+				cmd.m_bCell = true;
+				cmd.m_iBatch = (int)m_vCellBatch.size() - 1;
+				m_vDrawCmd.push_back(cmd);
 				for (const auto &box : g.m_vBox)
 					box.forEachEdge([&](const Vector3f &a, const Vector3f &b) {
-						m_vLineUpload.push_back({a.x(), a.y(), a.z(), box.m_vC.x(), box.m_vC.y(), box.m_vC.z(), alpha * box.m_vC.w()});
-						m_vLineUpload.push_back({b.x(), b.y(), b.z(), box.m_vC.x(), box.m_vC.y(), box.m_vC.z(), alpha * box.m_vC.w()});
-						m_vLineBatch.back().m_count += 2;
+						m_vCellUpload.push_back({a.x(), a.y(), a.z(), box.m_vC.x(), box.m_vC.y(), box.m_vC.z(), alpha * box.m_vC.w()});
+						m_vCellUpload.push_back({b.x(), b.y(), b.z(), box.m_vC.x(), box.m_vC.y(), box.m_vC.z(), alpha * box.m_vC.w()});
+						m_vCellBatch.back().m_count += 2;
 					});
 			}
 
@@ -101,7 +118,7 @@ namespace kai
 				for (const IMGUI_VIEWER_POINT &p : g.m_vP)
 				{
 					m_vPointUpload.push_back({p.m_vP.x(), p.m_vP.y(), p.m_vP.z(),
-											   p.m_vC.x(), p.m_vC.y(), p.m_vC.z(), alpha * p.m_vC.w()});
+											   p.m_vC.x(), p.m_vC.y(), p.m_vC.z()});
 					m_vPointBatch.back().m_count++;
 				}
 			}
@@ -113,7 +130,7 @@ namespace kai
 	}
 
 #if defined(OKAI_IMGUI_VIEWER_GL)
-	bool ImGUIviewerGLRenderer::render(const IMGUI_VIEWER_GL_FRAME &frame)
+	bool ImGUIglRenderer::render(const IMGUI_VIEWER_GL_FRAME &frame)
 	{
 		if (!init())
 			return false;
@@ -170,24 +187,26 @@ namespace kai
 
 		float fbPointScale = std::max(1.0f, std::max(fbScale.x, fbScale.y));
 
-		bool bLineBound = false;
-		bool bPointBound = false;
+		unsigned int boundVAO = 0;
 		for (const DRAW_CMD &cmd : m_vDrawCmd)
 		{
 			if (cmd.m_bLine)
 			{
-				IF_CONT(cmd.m_iBatch < 0 || cmd.m_iBatch >= (int)m_vLineBatch.size());
-				IF_CONT(m_nLines <= 0 || m_vaoL == 0);
+				const auto &batches = cmd.m_bCell ? m_vCellBatch : m_vLineBatch;
+				const auto vao = cmd.m_bCell ? m_vaoC : m_vaoL;
+				IF_CONT(cmd.m_iBatch < 0 || cmd.m_iBatch >= (int)batches.size());
+				IF_CONT((cmd.m_bCell ? m_nCellVertices : m_nLines) <= 0 || vao == 0);
 
-				const DRAW_BATCH &b = m_vLineBatch[cmd.m_iBatch];
+				const DRAW_BATCH &b = batches[cmd.m_iBatch];
 				IF_CONT(b.m_count <= 0);
 
-				if (!bLineBound)
+				if (boundVAO != vao)
 				{
-					glBindVertexArray(m_vaoL);
-					bLineBound = true;
-					bPointBound = false;
+					glBindVertexArray(vao);
+					boundVAO = vao;
 				}
+				// Generic attributes are context state and may change after drawing cells.
+				if (!cmd.m_bCell && m_attrAlpha >= 0) glVertexAttrib1f((GLuint)m_attrAlpha, 1.0f);
 
 				glUniform1i(m_locRoundPoints, 0);
 				glUniform1f(m_locPointScale, 1.0f);
@@ -202,12 +221,12 @@ namespace kai
 				const DRAW_BATCH &b = m_vPointBatch[cmd.m_iBatch];
 				IF_CONT(b.m_count <= 0);
 
-				if (!bPointBound)
+				if (boundVAO != m_vaoP)
 				{
 					glBindVertexArray(m_vaoP);
-					bPointBound = true;
-					bLineBound = false;
+					boundVAO = m_vaoP;
 				}
+				if (m_attrAlpha >= 0) glVertexAttrib1f((GLuint)m_attrAlpha, 1.0f);
 
 				glUniform1i(m_locRoundPoints, 1);
 				glUniform1f(m_locPointScale, std::max(1.0f, b.m_renderPx * frame.m_pointScale * fbPointScale));
@@ -220,7 +239,7 @@ namespace kai
 		return true;
 	}
 
-	bool ImGUIviewerGLRenderer::init(void)
+	bool ImGUIglRenderer::init(void)
 	{
 		if (m_bReady)
 			return true;
@@ -248,6 +267,12 @@ namespace kai
 		glBindBuffer(GL_ARRAY_BUFFER, m_vboL);
 		bindVertexLayout();
 
+		glGenVertexArrays(1, &m_vaoC);
+		glGenBuffers(1, &m_vboC);
+		glBindVertexArray(m_vaoC);
+		glBindBuffer(GL_ARRAY_BUFFER, m_vboC);
+		bindVertexLayout(true);
+
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
@@ -255,7 +280,7 @@ namespace kai
 		return true;
 	}
 
-	void ImGUIviewerGLRenderer::release(void)
+	void ImGUIglRenderer::release(void)
 	{
 		if (m_vboP != 0)
 			glDeleteBuffers(1, &m_vboP);
@@ -265,18 +290,27 @@ namespace kai
 			glDeleteBuffers(1, &m_vboL);
 		if (m_vaoL != 0)
 			glDeleteVertexArrays(1, &m_vaoL);
+		if (m_vboC != 0)
+			glDeleteBuffers(1, &m_vboC);
+		if (m_vaoC != 0)
+			glDeleteVertexArrays(1, &m_vaoC);
 
 		m_vaoP = 0;
 		m_vboP = 0;
 		m_vaoL = 0;
 		m_vboL = 0;
+		m_vaoC = 0;
+		m_vboC = 0;
 		m_vPointUpload.clear();
 		m_vLineUpload.clear();
+		m_vCellUpload.clear();
 		m_vPointBatch.clear();
 		m_vLineBatch.clear();
+		m_vCellBatch.clear();
 		m_vDrawCmd.clear();
 		m_nPoints = 0;
 		m_nLines = 0;
+		m_nCellVertices = 0;
 		m_bPendingUpload = false;
 
 		if (m_program != 0)
@@ -291,7 +325,7 @@ namespace kai
 		m_pendingVersion = 0;
 	}
 
-	bool ImGUIviewerGLRenderer::uploadPreparedSnapshot(void)
+	bool ImGUIglRenderer::uploadPreparedSnapshot(void)
 	{
 		if (!m_bPendingUpload)
 			return true;
@@ -310,19 +344,27 @@ namespace kai
 					 GL_DYNAMIC_DRAW);
 		m_nLines = (int)m_vLineUpload.size();
 
+		glBindBuffer(GL_ARRAY_BUFFER, m_vboC);
+		glBufferData(GL_ARRAY_BUFFER,
+					 (GLsizeiptr)(m_vCellUpload.size() * sizeof(CELL_VERTEX)),
+					 m_vCellUpload.empty() ? nullptr : m_vCellUpload.data(),
+					 GL_DYNAMIC_DRAW);
+		m_nCellVertices = (int)m_vCellUpload.size();
+
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		m_uploadedVersion = m_pendingVersion;
 		m_bPendingUpload = false;
 		return true;
 	}
 
-	void ImGUIviewerGLRenderer::bindVertexLayout(void)
+	void ImGUIglRenderer::bindVertexLayout(bool cells)
 	{
+		const size_t stride = cells ? sizeof(CELL_VERTEX) : sizeof(VERTEX);
 		if (m_attrPos >= 0)
 		{
 			glEnableVertexAttribArray((GLuint)m_attrPos);
 			glVertexAttribPointer((GLuint)m_attrPos, 3, GL_FLOAT, GL_FALSE,
-								  sizeof(VERTEX),
+								  stride,
 								  (void *)offsetof(VERTEX, x));
 		}
 
@@ -330,21 +372,23 @@ namespace kai
 		{
 			glEnableVertexAttribArray((GLuint)m_attrCol);
 			glVertexAttribPointer((GLuint)m_attrCol, 3, GL_FLOAT, GL_FALSE,
-								  sizeof(VERTEX),
+								  stride,
 								  (void *)offsetof(VERTEX, r));
 		}
 
-		if (m_attrAlpha >= 0)
+		if (m_attrAlpha >= 0 && cells)
 		{
 			glEnableVertexAttribArray((GLuint)m_attrAlpha);
 			glVertexAttribPointer((GLuint)m_attrAlpha, 1, GL_FLOAT, GL_FALSE,
-								  sizeof(VERTEX),
-								  (void *)offsetof(VERTEX, a));
+								  stride,
+								  (void *)offsetof(CELL_VERTEX, a));
 		}
+		else if (m_attrAlpha >= 0)
+			glDisableVertexAttribArray((GLuint)m_attrAlpha);
 
 	}
 
-	bool ImGUIviewerGLRenderer::compileProgram(void)
+	bool ImGUIglRenderer::compileProgram(void)
 	{
 #if defined(OKAI_IMGUI_RENDERER_OPENGLES)
 		const char *pVs =
@@ -477,7 +521,7 @@ namespace kai
 		{
 			char log[1024] = {0};
 			glGetProgramInfoLog(prog, sizeof(log) - 1, nullptr, log);
-			LOG_("_ImGUIviewer GL program link failed: " + string(log));
+			LOG_("_ImGUIselectableOctGrid GL program link failed: " + string(log));
 			glDeleteProgram(prog);
 			return false;
 		}
@@ -506,7 +550,7 @@ namespace kai
 		return true;
 	}
 
-	bool ImGUIviewerGLRenderer::compileShader(unsigned int type, const char *pSrc, unsigned int *pShader)
+	bool ImGUIglRenderer::compileShader(unsigned int type, const char *pSrc, unsigned int *pShader)
 	{
 		NULL_F(pSrc);
 		NULL_F(pShader);
@@ -521,7 +565,7 @@ namespace kai
 		{
 			char log[1024] = {0};
 			glGetShaderInfoLog(shader, sizeof(log) - 1, nullptr, log);
-			LOG_("_ImGUIviewer GL shader compile failed: " + string(log));
+			LOG_("_ImGUIselectableOctGrid GL shader compile failed: " + string(log));
 			glDeleteShader(shader);
 			return false;
 		}
@@ -530,7 +574,7 @@ namespace kai
 		return true;
 	}
 
-	void ImGUIviewerGLRenderer::updateCameraUniforms(const IMGUI_VIEWER_GL_FRAME &frame)
+	void ImGUIglRenderer::updateCameraUniforms(const IMGUI_VIEWER_GL_FRAME &frame)
 	{
 		float zNear = std::max(0.0001f, frame.m_camProj.m_vNF.x());
 		float zFar = frame.m_camProj.m_vNF.y();
@@ -559,22 +603,24 @@ namespace kai
 		glUniform4f(m_locOrtho, l, r, b, t);
 	}
 #else
-	bool ImGUIviewerGLRenderer::render(const IMGUI_VIEWER_GL_FRAME &)
+	bool ImGUIglRenderer::render(const IMGUI_VIEWER_GL_FRAME &)
 	{
 		return false;
 	}
 
-	bool ImGUIviewerGLRenderer::init(void)
+	bool ImGUIglRenderer::init(void)
 	{
 		return false;
 	}
 
-	void ImGUIviewerGLRenderer::release(void)
+	void ImGUIglRenderer::release(void)
 	{
 		m_vPointUpload.clear();
 		m_vLineUpload.clear();
+		m_vCellUpload.clear();
 		m_vPointBatch.clear();
 		m_vLineBatch.clear();
+		m_vCellBatch.clear();
 		m_bReady = false;
 		m_bInitTried = false;
 		m_bPendingUpload = false;
@@ -582,28 +628,29 @@ namespace kai
 		m_pendingVersion = 0;
 		m_nPoints = 0;
 		m_nLines = 0;
+		m_nCellVertices = 0;
 	}
 
-	bool ImGUIviewerGLRenderer::uploadPreparedSnapshot(void)
+	bool ImGUIglRenderer::uploadPreparedSnapshot(void)
 	{
 		return false;
 	}
 
-	void ImGUIviewerGLRenderer::bindVertexLayout(void)
+	void ImGUIglRenderer::bindVertexLayout(bool)
 	{
 	}
 
-	bool ImGUIviewerGLRenderer::compileProgram(void)
-	{
-		return false;
-	}
-
-	bool ImGUIviewerGLRenderer::compileShader(unsigned int, const char *, unsigned int *)
+	bool ImGUIglRenderer::compileProgram(void)
 	{
 		return false;
 	}
 
-	void ImGUIviewerGLRenderer::updateCameraUniforms(const IMGUI_VIEWER_GL_FRAME &)
+	bool ImGUIglRenderer::compileShader(unsigned int, const char *, unsigned int *)
+	{
+		return false;
+	}
+
+	void ImGUIglRenderer::updateCameraUniforms(const IMGUI_VIEWER_GL_FRAME &)
 	{
 	}
 #endif

@@ -1,14 +1,14 @@
 /*
- * _ImGUIviewer.cpp
+ * _ImGUIselectableOctGrid.cpp
  *
  *  Created on: Jun 4, 2026
  *      Author: Codex
  */
 
-#include "_ImGUIviewer.h"
-#include "../../Universe/Grid/_SelectableOctGrid.h"
+#include "_ImGUIselectableOctGrid.h"
+#include "../../../Universe/Grid/_SelectableOctGrid.h"
 
-#include "ImGUIviewerGLRenderer.h"
+#include "ImGUIglRenderer.h"
 #include "imgui.h"
 #include <algorithm>
 #include <cfloat>
@@ -48,13 +48,19 @@ namespace kai
 		return true;
 	}
 
-	static Vector4f visibleColor(Vector4f c, const Vector4f &matCol)
+	static Vector3f visibleColor(Vector3f c, const Vector4f &matCol)
 	{
-		c.w() = std::clamp(std::isfinite(c.w()) ? c.w() : 1.f, 0.f, 1.f);
 		if (c.x() <= 0.0f && c.y() <= 0.0f && c.z() <= 0.0f)
-			return Vector4f(matCol.x(), matCol.y(), matCol.z(), c.w());
+			return matCol.head<3>();
 
 		return c;
+	}
+
+	static ImU32 colU32(const Vector3f &c)
+	{
+		return IM_COL32((int)(std::clamp(c.x(), 0.0f, 1.0f) * 255.0f),
+						(int)(std::clamp(c.y(), 0.0f, 1.0f) * 255.0f),
+						(int)(std::clamp(c.z(), 0.0f, 1.0f) * 255.0f), 255);
 	}
 
 	static ImU32 colU32(const Vector4f &c, float alphaScale = 1.0)
@@ -66,17 +72,6 @@ namespace kai
 							std::clamp(std::isfinite(alphaScale) ? alphaScale : 1.f, 0.f, 1.f) * 255.0f));
 	}
 
-	void IMGUI_VIEWER_OBJ::reserve(int nPbufDefault, int nLbufDefault)
-	{
-		int nP = (m_nPbuf > 0) ? m_nPbuf : nPbufDefault;
-		if (nP > 0)
-			m_vP.reserve(nP);
-
-		int nL = (m_nLbuf > 0) ? m_nLbuf : nLbufDefault;
-		if (nL > 0)
-			m_vL.reserve(nL);
-	}
-
 	void IMGUI_VIEWER_OBJ::clearGeometry(void)
 	{
 		m_vP.clear();
@@ -84,7 +79,7 @@ namespace kai
 		m_vBox.clear();
 	}
 
-	_ImGUIviewer::_ImGUIviewer()
+	_ImGUIselectableOctGrid::_ImGUIselectableOctGrid()
 	{
 		m_vBgCol = Vector4f(0.05, 0.055, 0.06, 1.0);
 		m_vGLCanvasPos = Vector2f(0, 0);
@@ -93,7 +88,7 @@ namespace kai
 		pthread_mutex_init(&m_snapshotMutex, NULL);
 	}
 
-	_ImGUIviewer::~_ImGUIviewer()
+	_ImGUIselectableOctGrid::~_ImGUIselectableOctGrid()
 	{
 		if (m_pTui)
 			m_pTui->stop();
@@ -109,7 +104,7 @@ namespace kai
 		pthread_mutex_destroy(&m_snapshotMutex);
 	}
 
-	bool _ImGUIviewer::init(const json &j)
+	bool _ImGUIselectableOctGrid::init(const json &j)
 	{
 		IF_F(!this->_GeometryViewerBase::init(j));
 		jKv(j, "nCbuf", m_nCbuf);
@@ -133,18 +128,13 @@ namespace kai
 		return true;
 	}
 
-	bool _ImGUIviewer::link(const json &j, ModuleMgr *pM)
+	bool _ImGUIselectableOctGrid::link(const json &j, ModuleMgr *pM)
 	{
-		m_vpGb.clear();
-		IF_F(!this->_GeometryViewerBase::link(j, pM));
 		NULL_F(pM);
+		IF_F(!this->_GeometryViewerBase::link(j, pM));
 
-		m_vGO.clear();
-		for (_GeometryBase *pGb : m_vpGb)
-		{
-			IF_CONT(!pGb);
-			upsertGeometry(pGb, pGb->getName());
-		}
+		string error;
+		IF_Le_F(!m_sources.link(j, pM, m_nPbuf, m_nLbuf, m_nCbuf, error), error);
 
 		NULL_F(m_pTui);
 		IF_F(!m_pTui->link(jK(j, "threadUI"), pM));
@@ -152,7 +142,7 @@ namespace kai
 		return true;
 	}
 
-	bool _ImGUIviewer::start(void)
+	bool _ImGUIselectableOctGrid::start(void)
 	{
 		NULL_F(m_pT);
 		IF_F(!m_pT->startThread(getUpdate, this));
@@ -163,7 +153,7 @@ namespace kai
 		return true;
 	}
 
-	bool _ImGUIviewer::check(void)
+	bool _ImGUIselectableOctGrid::check(void)
 	{
 		IF_F(!this->_GeometryViewerBase::check());
 		NULL_F(m_pTui);
@@ -171,7 +161,7 @@ namespace kai
 		return true;
 	}
 
-	void _ImGUIviewer::update(void)
+	void _ImGUIselectableOctGrid::update(void)
 	{
 		while (m_pT->bRun())
 		{
@@ -181,99 +171,69 @@ namespace kai
 		}
 	}
 
-	void _ImGUIviewer::updateAllGeometries(void)
+	void _ImGUIselectableOctGrid::updateAllGeometries(void)
 	{
 		IF_(!this->_GeometryViewerBase::check());
-
-		m_vBuildGO.reserve(m_vpGb.size());
-
-		size_t iOut = 0;
-		size_t nPtotal = 0;
-		size_t nLtotal = 0;
-
-		for (_GeometryBase *pGb : m_vpGb)
+		m_vBuildGO.reserve(m_sources.m_vGeometry.size() + m_sources.m_vGrid.size());
+		const uint64_t now = getApproxTbootUs();
+		const uint64_t expiry = m_dTexpire && now > m_dTexpire ? now - m_dTexpire : 0;
+		size_t count = 0, nPoints = 0, nLines = 0;
+		auto prepare = [&](const VIEWER_SOURCE_STYLE &style) -> IMGUI_VIEWER_OBJ *
 		{
-			IF_CONT(!pGb);
-
-			const IMGUI_VIEWER_OBJ *pStyle = findObject(pGb, pGb->getName());
-			bool bVisible = pStyle ? pStyle->m_bVisible : true;
-			IF_CONT(!bVisible);
-
-			if (iOut >= m_vBuildGO.size())
-				m_vBuildGO.emplace_back();
-
-			IMGUI_VIEWER_OBJ &obj = m_vBuildGO[iOut];
-			obj.clearGeometry();
-			if (pStyle)
-			{
-				obj.m_name = pStyle->m_name;
-				obj.m_bVisible = pStyle->m_bVisible;
-				obj.m_nPbuf = pStyle->m_nPbuf;
-				obj.m_nLbuf = pStyle->m_nLbuf;
-				obj.m_nCbuf = pStyle->m_nCbuf;
-				obj.m_matPointSize = pStyle->m_matPointSize;
-				obj.m_matLineWidth = pStyle->m_matLineWidth;
-				obj.m_matCol = pStyle->m_matCol;
-			}
-			else
-			{
-				obj.m_name = pGb->getName();
-				obj.m_bVisible = true;
-				obj.m_nPbuf = 0;
-				obj.m_nLbuf = 0;
-				obj.m_nCbuf = -1;
-				obj.m_matPointSize = 2.0;
-				obj.m_matLineWidth = 1.0;
-				obj.m_matCol = Vector4f(1, 1, 1, 1);
-			}
-
-			obj.m_pGB = pGb;
-			if (obj.m_name.empty())
-				obj.m_name = pGb->getName();
-			obj.reserve(m_nPbuf, m_nLbuf);
-
-			collectGeometry(pGb, &obj);
-
-			IF_CONT(obj.m_vP.empty() && obj.m_vL.empty() && obj.m_vBox.empty());
-			nPtotal += obj.m_vP.size();
-			nLtotal += obj.m_vL.size() + obj.m_vBox.size() * 12;
-			iOut++;
+			if (count == m_vBuildGO.size()) m_vBuildGO.emplace_back();
+			auto &object = m_vBuildGO[count];
+			object.clearGeometry();
+			object.m_name = style.m_name;
+			object.m_matCol = style.m_matCol;
+			object.m_matPointSize = 2;
+			object.m_matLineWidth = style.m_matLineWidth;
+			return &object;
+		};
+		for (const auto &source : m_sources.m_vGeometry)
+		{
+			if (!source.m_bVisible) continue;
+			auto *object = prepare(source);
+			object->m_matPointSize = source.m_matPointSize;
+			collectGeometry(source, object, expiry);
+			if (object->m_vP.empty() && object->m_vL.empty()) continue;
+			nPoints += object->m_vP.size();
+			nLines += object->m_vL.size();
+			++count;
 		}
-
-		if (iOut < m_vBuildGO.size())
-			m_vBuildGO.resize(iOut);
-
+		for (const auto &source : m_sources.m_vGrid)
+		{
+			if (!source.m_bVisible) continue;
+			auto *object = prepare(source);
+			collectCells(source, object, expiry);
+			if (object->m_vBox.empty()) continue;
+			nLines += object->m_vBox.size() * 12;
+			++count;
+		}
+		m_vBuildGO.resize(count);
 		snapshotLock();
 		m_vDrawGO.swap(m_vBuildGO);
-		m_nDrawObjects = m_vDrawGO.size();
-		m_nDrawPoints = nPtotal;
-		m_nDrawLines = nLtotal;
+		m_nDrawObjects = count;
+		m_nDrawPoints = nPoints;
+		m_nDrawLines = nLines;
 		m_snapshotVersion++;
 		snapshotUnlock();
 	}
 
-	void _ImGUIviewer::collectGeometry(_GeometryBase *pGb, IMGUI_VIEWER_OBJ *pObj)
+	void _ImGUIselectableOctGrid::collectGeometry(const VIEWER_GEOMETRY_SOURCE &source, IMGUI_VIEWER_OBJ *pObj, uint64_t expiry)
 	{
-		NULL_(pGb);
-		NULL_(pObj);
-
-		collectPoints(pObj);
-		collectLines(pObj);
-		collectCells(pObj);
+		collectPoints(source, pObj, expiry);
+		collectLines(source, pObj, expiry);
 	}
 
-	void _ImGUIviewer::collectPoints(IMGUI_VIEWER_OBJ *pObj)
+	void _ImGUIselectableOctGrid::collectPoints(const VIEWER_GEOMETRY_SOURCE &source, IMGUI_VIEWER_OBJ *pObj, uint64_t expiry)
 	{
 		NULL_(pObj);
-		NULL_(pObj->m_pGB);
-		IF_(m_grPt.m_nT == 0);
-
-		uint64_t tExpire = 0;
-		if (m_dTexpire > 0)
-			tExpire = getApproxTbootUs() - m_dTexpire;
+		NULL_(source.m_pGeometry);
+		IF_(m_grPt.m_nT == 0 || source.m_nP == 0);
+		pObj->m_vP.reserve(source.m_nP);
 
 		m_grPt.m_iT = 0;
-		int nGet = pObj->m_pGB->get(&m_grPt, tExpire);
+		int nGet = source.m_pGeometry->get(&m_grPt, expiry);
 		IF_(nGet <= 0);
 		nGet = std::min(nGet, m_grPt.m_nT);
 
@@ -281,30 +241,27 @@ namespace kai
 		GEOMETRY_POINT *pGp = nullptr;
 		while (i < nGet && (pGp = m_grPt.get(i++)))
 		{
-			IF_CONT(pGp->m_tStamp == 0);
+			IF_CONT(pGp->m_tStamp == 0 || pGp->m_tStamp < expiry);
 			IF_CONT(!bFinite(pGp->m_vP));
-			if (pObj->m_nPbuf > 0 && (int)pObj->m_vP.size() >= pObj->m_nPbuf)
+			if ((int)pObj->m_vP.size() >= source.m_nP)
 				break;
 
 			IMGUI_VIEWER_POINT p;
 			p.m_vP = pGp->m_vP;
-			p.m_vC = visibleColor(pGp->m_vC, pObj->m_matCol);
+			p.m_vC = visibleColor(pGp->m_vC, source.m_matCol);
 			pObj->m_vP.push_back(p);
 		}
 	}
 
-	void _ImGUIviewer::collectLines(IMGUI_VIEWER_OBJ *pObj)
+	void _ImGUIselectableOctGrid::collectLines(const VIEWER_GEOMETRY_SOURCE &source, IMGUI_VIEWER_OBJ *pObj, uint64_t expiry)
 	{
 		NULL_(pObj);
-		NULL_(pObj->m_pGB);
-		IF_(m_grLn.m_nT == 0);
-
-		uint64_t tExpire = 0;
-		if (m_dTexpire > 0)
-			tExpire = getApproxTbootUs() - m_dTexpire;
+		NULL_(source.m_pGeometry);
+		IF_(m_grLn.m_nT == 0 || source.m_nL == 0);
+		pObj->m_vL.reserve(source.m_nL);
 
 		m_grLn.m_iT = 0;
-		int nGet = pObj->m_pGB->get(&m_grLn, tExpire);
+		int nGet = source.m_pGeometry->get(&m_grLn, expiry);
 		IF_(nGet <= 0);
 		nGet = std::min(nGet, m_grLn.m_nT);
 
@@ -312,28 +269,25 @@ namespace kai
 		GEOMETRY_LINE *pGl = nullptr;
 		while (i < nGet && (pGl = m_grLn.get(i++)))
 		{
-			IF_CONT(pGl->m_tStamp == 0);
+			IF_CONT(pGl->m_tStamp == 0 || pGl->m_tStamp < expiry);
 			IF_CONT(!bFinite(pGl->m_vPa));
 			IF_CONT(!bFinite(pGl->m_vPb));
-			if (pObj->m_nLbuf > 0 && (int)pObj->m_vL.size() >= pObj->m_nLbuf)
+			if ((int)pObj->m_vL.size() >= source.m_nL)
 				break;
 
 			IMGUI_VIEWER_LINE l;
 			l.m_vA = pGl->m_vPa;
 			l.m_vB = pGl->m_vPb;
-			l.m_vC = visibleColor(pGl->m_vC, pObj->m_matCol);
+			l.m_vC = visibleColor(pGl->m_vC, source.m_matCol);
 			pObj->m_vL.push_back(l);
 		}
 	}
 
-	void _ImGUIviewer::collectCells(IMGUI_VIEWER_OBJ *pObj)
+	void _ImGUIselectableOctGrid::collectCells(const VIEWER_GRID_SOURCE &source, IMGUI_VIEWER_OBJ *pObj, uint64_t expiry)
 	{
-		auto *grid = dynamic_cast<_SelectableOctGrid *>(pObj->m_pGB);
-		if (!grid) return;
-		const uint64_t now = getApproxTbootUs();
-		const uint64_t expiry = m_dTexpire && now > m_dTexpire ? now - m_dTexpire : 0;
-		const size_t limit = pObj->m_nCbuf < 0 ? m_nCbuf : std::min(pObj->m_nCbuf, m_nCbuf);
-		grid->get(&m_cells, expiry, limit);
+		NULL_(pObj);
+		NULL_(source.m_pGrid);
+		source.m_pGrid->get(&m_cells, expiry, size_t(source.m_nC));
 		pObj->m_gridHeader = m_cells.m_header;
 		pObj->m_vBox.reserve(m_cells.m_vCell.size());
 		for (const auto &cell : m_cells.m_vCell)
@@ -349,9 +303,9 @@ namespace kai
 		}
 	}
 
-	void _ImGUIviewer::updateUI(void)
+	void _ImGUIselectableOctGrid::updateUI(void)
 	{
-		m_pBackend = createImGUIviewerBackend();
+		m_pBackend = createImGUIbackend();
 		if (!m_pBackend || !m_pBackend->init(this->getName(), m_vWinSize.x(), m_vWinSize.y(), m_bFullScreen))
 		{
 			if (m_pBackend)
@@ -388,7 +342,7 @@ namespace kai
 			m_pTui->stop();
 	}
 
-	void _ImGUIviewer::drawUI(void)
+	void _ImGUIselectableOctGrid::drawUI(void)
 	{
 		ImGuiViewport *pViewport = ImGui::GetMainViewport();
 		ImGui::SetNextWindowPos(pViewport->WorkPos);
@@ -419,12 +373,12 @@ namespace kai
 			drawStatusPanel();
 	}
 
-	void _ImGUIviewer::drawStatusPanel(void)
+	void _ImGUIselectableOctGrid::drawStatusPanel(void)
 	{
 		ImGui::SetNextWindowPos(ImVec2(12, 12), ImGuiCond_Once);
 		ImGui::SetNextWindowSize(ImVec2(320, 0), ImGuiCond_Once);
 		ImGui::Begin("Viewer", &m_bShowPanel, ImGuiWindowFlags_AlwaysAutoResize);
-		ImGui::Text("Backend: %s", getImGUIviewerBackendName());
+		ImGui::Text("Backend: %s", getImGUIbackendName());
 		ImGui::Text("Update: %.1f FPS", m_pT ? m_pT->getFPS() : 0.0f);
 		ImGui::Text("UI: %.1f FPS", m_pTui ? m_pTui->getFPS() : 0.0f);
 
@@ -453,7 +407,7 @@ namespace kai
 		ImGui::End();
 	}
 
-	void _ImGUIviewer::drawScene(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize)
+	void _ImGUIselectableOctGrid::drawScene(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize)
 	{
 		ImDrawList *pDraw = ImGui::GetWindowDrawList();
 		ImVec2 p0(vCanvasPos.x(), vCanvasPos.y());
@@ -479,14 +433,14 @@ namespace kai
 		pDraw->PopClipRect();
 	}
 
-	void _ImGUIviewer::drawSceneCPU(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize)
+	void _ImGUIselectableOctGrid::drawSceneCPU(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize)
 	{
 		ImDrawList *pDraw = ImGui::GetWindowDrawList();
 
 		snapshotLock();
 		for (const IMGUI_VIEWER_OBJ &g : m_vDrawGO)
 		{
-			auto drawLine = [&](const Vector3f &vA, const Vector3f &vB, const Vector4f &color)
+			auto drawLine = [&](const Vector3f &vA, const Vector3f &vB, ImU32 color)
 			{
 				Vector2f a = Vector2f::Zero(), b = Vector2f::Zero();
 				float dA = 0;
@@ -497,12 +451,12 @@ namespace kai
 					return;
 
 				pDraw->AddLine(ImVec2(a.x(), a.y()), ImVec2(b.x(), b.y()),
-							   colU32(color, g.m_matCol.w()),
+							   color,
 							   std::max(1.0f, g.m_matLineWidth * m_lineScale));
 			};
-			for (const auto &line : g.m_vL) drawLine(line.m_vA, line.m_vB, line.m_vC);
+			for (const auto &line : g.m_vL) drawLine(line.m_vA, line.m_vB, colU32(line.m_vC));
 			for (const auto &box : g.m_vBox)
-				box.forEachEdge([&](const Vector3f &a, const Vector3f &b) { drawLine(a, b, box.m_vC); });
+				box.forEachEdge([&](const Vector3f &a, const Vector3f &b) { drawLine(a, b, colU32(box.m_vC, g.m_matCol.w())); });
 
 			for (const IMGUI_VIEWER_POINT &p : g.m_vP)
 			{
@@ -512,13 +466,13 @@ namespace kai
 					continue;
 
 				float r = std::max(1.0f, g.m_matPointSize * m_pointScale);
-				pDraw->AddCircleFilled(ImVec2(vS.x(), vS.y()), r, colU32(p.m_vC, g.m_matCol.w()), 8);
+				pDraw->AddCircleFilled(ImVec2(vS.x(), vS.y()), r, colU32(p.m_vC), 8);
 			}
 		}
 		snapshotUnlock();
 	}
 
-	void _ImGUIviewer::drawSceneGL(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize)
+	void _ImGUIselectableOctGrid::drawSceneGL(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize)
 	{
 		m_vGLCanvasPos = vCanvasPos;
 		m_vGLCanvasSize = vCanvasSize;
@@ -528,20 +482,20 @@ namespace kai
 		pDraw->AddCallback(ImDrawCallback_ResetRenderState, nullptr);
 	}
 
-	void _ImGUIviewer::drawSceneGLCallback(const ImDrawList *, const ImDrawCmd *pCmd)
+	void _ImGUIselectableOctGrid::drawSceneGLCallback(const ImDrawList *, const ImDrawCmd *pCmd)
 	{
 		if (!pCmd || !pCmd->UserCallbackData)
 			return;
 
-		_ImGUIviewer *pViewer = (_ImGUIviewer *)pCmd->UserCallbackData;
+		_ImGUIselectableOctGrid *pViewer = (_ImGUIselectableOctGrid *)pCmd->UserCallbackData;
 		pViewer->renderSceneGL(pViewer->m_vGLCanvasPos, pViewer->m_vGLCanvasSize);
 	}
 
 #if defined(OKAI_IMGUI_VIEWER_GL)
-	void _ImGUIviewer::renderSceneGL(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize)
+	void _ImGUIselectableOctGrid::renderSceneGL(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize)
 	{
 		if (!m_pGLRenderer)
-			m_pGLRenderer = new ImGUIviewerGLRenderer();
+			m_pGLRenderer = new ImGUIglRenderer();
 		NULL_(m_pGLRenderer);
 
 		IMGUI_VIEWER_GL_FRAME frame;
@@ -564,12 +518,12 @@ namespace kai
 			m_bGpuRender = false;
 	}
 #else
-	void _ImGUIviewer::renderSceneGL(const Vector2f &, const Vector2f &)
+	void _ImGUIselectableOctGrid::renderSceneGL(const Vector2f &, const Vector2f &)
 	{
 	}
 #endif
 
-	void _ImGUIviewer::drawGrid(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize)
+	void _ImGUIselectableOctGrid::drawGrid(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize)
 	{
 		ImDrawList *pDraw = ImGui::GetWindowDrawList();
 		const float r = 10.0;
@@ -590,7 +544,7 @@ namespace kai
 		}
 	}
 
-	void _ImGUIviewer::updateCameraControl(const Vector2f &vCanvasSize)
+	void _ImGUIselectableOctGrid::updateCameraControl(const Vector2f &vCanvasSize)
 	{
 		if (!ImGui::IsItemHovered())
 			return;
@@ -604,7 +558,7 @@ namespace kai
 			zoom(io.MouseWheel);
 	}
 
-	void _ImGUIviewer::copySnapshot(vector<IMGUI_VIEWER_OBJ> *pVgo)
+	void _ImGUIselectableOctGrid::copySnapshot(vector<IMGUI_VIEWER_OBJ> *pVgo)
 	{
 		NULL_(pVgo);
 
@@ -613,91 +567,7 @@ namespace kai
 		snapshotUnlock();
 	}
 
-	bool _ImGUIviewer::upsertGeometry(_GeometryBase *pGb, const string &name, const json *pJ)
-	{
-		NULL_F(pGb);
-
-		bool bLinked = false;
-		for (_GeometryBase *pLinked : m_vpGb)
-		{
-			IF_CONT(!pLinked);
-			if (pLinked == pGb || (!name.empty() && pLinked->getName() == name))
-			{
-				bLinked = true;
-				break;
-			}
-		}
-
-		if (!bLinked)
-			m_vpGb.push_back(pGb);
-
-		IMGUI_VIEWER_OBJ *pObj = findObject(pGb, name);
-		if (!pObj)
-		{
-			IMGUI_VIEWER_OBJ obj;
-			obj.m_pGB = pGb;
-			obj.m_name = name.empty() ? pGb->getName() : name;
-			obj.reserve();
-			m_vGO.push_back(obj);
-			pObj = &m_vGO.back();
-		}
-
-		if (pObj->m_name.empty())
-			pObj->m_name = name.empty() ? pGb->getName() : name;
-
-		if (pJ)
-			applyObjectConfig(pObj, *pJ);
-
-		pObj->reserve();
-		return true;
-	}
-
-	void _ImGUIviewer::applyObjectConfig(IMGUI_VIEWER_OBJ *pObj, const json &j)
-	{
-		NULL_(pObj);
-		IF_(!j.is_object());
-
-		jKv(j, "bVisible", pObj->m_bVisible);
-		jKv(j, "nP", pObj->m_nPbuf);
-		jKv(j, "nPbuf", pObj->m_nPbuf);
-		jKv(j, "nL", pObj->m_nLbuf);
-		jKv(j, "nLbuf", pObj->m_nLbuf);
-		jKv(j, "nC", pObj->m_nCbuf);
-		jKv(j, "nCbuf", pObj->m_nCbuf);
-		jKv(j, "matPointSize", pObj->m_matPointSize);
-		jKv(j, "matLineWidth", pObj->m_matLineWidth);
-		jKv<float>(j, "matCol", pObj->m_matCol);
-	}
-
-	IMGUI_VIEWER_OBJ *_ImGUIviewer::findObject(_GeometryBase *pGb, const string &name)
-	{
-		for (IMGUI_VIEWER_OBJ &obj : m_vGO)
-		{
-			if (obj.m_pGB == pGb)
-				return &obj;
-
-			if (!name.empty() && obj.m_name == name)
-				return &obj;
-		}
-
-		return nullptr;
-	}
-
-	const IMGUI_VIEWER_OBJ *_ImGUIviewer::findObject(_GeometryBase *pGb, const string &name) const
-	{
-		for (const IMGUI_VIEWER_OBJ &obj : m_vGO)
-		{
-			if (obj.m_pGB == pGb)
-				return &obj;
-
-			if (!name.empty() && obj.m_name == name)
-				return &obj;
-		}
-
-		return nullptr;
-	}
-
-	bool _ImGUIviewer::projectPoint(const Vector3f &vP,
+	bool _ImGUIselectableOctGrid::projectPoint(const Vector3f &vP,
 								   const Vector2f &vCanvasPos,
 								   const Vector2f &vCanvasSize,
 								   Vector2f *pVscreen,
@@ -759,7 +629,7 @@ namespace kai
 		return true;
 	}
 
-	void _ImGUIviewer::getCameraBasis(Vector3f *pForward, Vector3f *pRight, Vector3f *pUp)
+	void _ImGUIselectableOctGrid::getCameraBasis(Vector3f *pForward, Vector3f *pRight, Vector3f *pUp)
 	{
 		Vector3f f = vNorm(m_camPose.m_vLookAt - m_camPose.m_vEye);
 		if (f.norm() <= 1e-6)
@@ -781,7 +651,7 @@ namespace kai
 			*pUp = u;
 	}
 
-	void _ImGUIviewer::orbit(float dYaw, float dPitch)
+	void _ImGUIselectableOctGrid::orbit(float dYaw, float dPitch)
 	{
 		Vector3f v = m_camPose.m_vEye - m_camPose.m_vLookAt;
 		float r = std::max(0.01f, v.norm());
@@ -796,7 +666,7 @@ namespace kai
 		updateCamPose();
 	}
 
-	void _ImGUIviewer::pan(float dx, float dy, const Vector2f &vCanvasSize)
+	void _ImGUIselectableOctGrid::pan(float dx, float dy, const Vector2f &vCanvasSize)
 	{
 		Vector3f f = Vector3f::Zero(), r = Vector3f::Zero(), u = Vector3f::Zero();
 		getCameraBasis(&f, &r, &u);
@@ -810,7 +680,7 @@ namespace kai
 		updateCamPose();
 	}
 
-	void _ImGUIviewer::zoom(float d)
+	void _ImGUIselectableOctGrid::zoom(float d)
 	{
 		Vector3f v = m_camPose.m_vEye - m_camPose.m_vLookAt;
 		float s = std::max(0.05f, 1.0f - d * m_sZoom);
@@ -818,7 +688,7 @@ namespace kai
 		updateCamPose();
 	}
 
-	bool _ImGUIviewer::camBound(void)
+	bool _ImGUIselectableOctGrid::camBound(void)
 	{
 		vector<IMGUI_VIEWER_OBJ> vGO;
 		copySnapshot(&vGO);
@@ -872,32 +742,32 @@ namespace kai
 		return true;
 	}
 
-	void _ImGUIviewer::resetCamPose(void)
+	void _ImGUIselectableOctGrid::resetCamPose(void)
 	{
 		this->_GeometryViewerBase::resetCamPose();
 	}
 
-	void _ImGUIviewer::setCamPose(const GVIEWER_CAM_POSE &camPose)
+	void _ImGUIselectableOctGrid::setCamPose(const GVIEWER_CAM_POSE &camPose)
 	{
 		this->_GeometryViewerBase::setCamPose(camPose);
 	}
 
-	GVIEWER_CAM_POSE _ImGUIviewer::getCamPose(void)
+	GVIEWER_CAM_POSE _ImGUIselectableOctGrid::getCamPose(void)
 	{
 		return this->_GeometryViewerBase::getCamPose();
 	}
 
-	void _ImGUIviewer::setCamProj(const GVIEWER_CAM_PROJ &camProj)
+	void _ImGUIselectableOctGrid::setCamProj(const GVIEWER_CAM_PROJ &camProj)
 	{
 		this->_GeometryViewerBase::setCamProj(camProj);
 	}
 
-	GVIEWER_CAM_PROJ _ImGUIviewer::getCamProj(void)
+	GVIEWER_CAM_PROJ _ImGUIselectableOctGrid::getCamProj(void)
 	{
 		return this->_GeometryViewerBase::getCamProj();
 	}
 
-	void _ImGUIviewer::updateCamProj(void)
+	void _ImGUIselectableOctGrid::updateCamProj(void)
 	{
 		IF_(!this->_GeometryViewerBase::check());
 
@@ -905,7 +775,7 @@ namespace kai
 			m_camProj.m_fov = 1.0f;
 	}
 
-	void _ImGUIviewer::updateCamPose(void)
+	void _ImGUIselectableOctGrid::updateCamPose(void)
 	{
 		IF_(!this->_GeometryViewerBase::check());
 
@@ -913,12 +783,12 @@ namespace kai
 			m_camPose.m_vUp = Vector3f(0, 1, 0);
 	}
 
-	void _ImGUIviewer::snapshotLock(void)
+	void _ImGUIselectableOctGrid::snapshotLock(void)
 	{
 		pthread_mutex_lock(&m_snapshotMutex);
 	}
 
-	void _ImGUIviewer::snapshotUnlock(void)
+	void _ImGUIselectableOctGrid::snapshotUnlock(void)
 	{
 		pthread_mutex_unlock(&m_snapshotMutex);
 	}

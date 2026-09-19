@@ -72,7 +72,7 @@ def main():
             evaluate(f"document.querySelector('#port').value = '{port}'; document.querySelector('#cmdPort').value = '{commands.port}'; document.querySelector('#start').click();")
             wait_for("location.protocol === 'http:' && document.querySelector('#stats')?.textContent.includes('10,000 points')")
             assert evaluate("document.querySelector('#status').textContent") == 'Connected'
-            assert evaluate("document.querySelectorAll('#objects input').length") == 1
+            assert evaluate("document.querySelectorAll('#objects input').length") == 2
             wait_for("window.wsSocket?.readyState === WebSocket.OPEN")
             assert evaluate("document.querySelector('#cmdPort').value") == str(commands.port)
             assert evaluate("window.wsSocket.url") == f'ws://127.0.0.1:{commands.port}/'
@@ -87,10 +87,10 @@ def main():
             assert evaluate("document.querySelector('#grid-config').previousElementSibling.contains(document.querySelector('#point-scale'))")
             evaluate("document.querySelector('#grid-config-update').click()")
             wait_for("testReplies.some(j => j.cmd === 'setGridConfig' && j.bSuccess)")
-            expected_config = {'cmd': 'setGridConfig', 'module': 'Test cloud and lines',
+            expected_config = {'cmd': 'setGridConfig', 'module': 'Test grid',
                                'vPorigin': ['0', '0', '0'], 'vRootCellSize': ['5', '5', '5']}
             assert commands.received[-1] == expected_config
-            assert evaluate("document.querySelector('#grid-config-status').textContent") == 'Updated Test cloud and lines.'
+            assert evaluate("document.querySelector('#grid-config-status').textContent") == 'Updated Test grid.'
             evaluate(grid_inputs + ".forEach((input, i) => { input.value = ['1.25','-2.5','0.001','8','4','2'][i]; input.dispatchEvent(new Event('input', {bubbles:true})); })")
             evaluate("document.querySelector('#grid-config-update').click()")
             wait_for("testReplies.filter(j => j.cmd === 'setGridConfig').length === 2")
@@ -101,8 +101,8 @@ def main():
                 assert not evaluate("document.querySelector('#grid-config').checkValidity()")
             assert len(commands.received) == before_invalid
             evaluate("document.querySelector('#grid-size-x').value = '8'; document.querySelector('#grid-size-x').dispatchEvent(new Event('input', {bubbles:true}))")
-            evaluate("cmdHandler({data: JSON.stringify({cmd:'setGridConfig', module:'Test cloud and lines', bSuccess:false})})")
-            assert evaluate("document.querySelector('#grid-config-status').textContent") == 'Update failed for Test cloud and lines.'
+            evaluate("cmdHandler({data: JSON.stringify({cmd:'setGridConfig', module:'Test grid', bSuccess:false})})")
+            assert evaluate("document.querySelector('#grid-config-status').textContent") == 'Update failed for Test grid.'
             assert evaluate("testReplies.find(j => j.cmd === 'ackTest').text.length") > 1024
             wait_for("testReplies.some(j => j.cmd === 'hb') && wsCmdBuffer === ''")
             assert 'ackTest' in evaluate("document.querySelector('#cmdState').value")
@@ -130,12 +130,34 @@ def main():
               }});
               const f = decodeFrame(data);
               if (f.type !== 'points' || f.objects[0].positions.buffer !== data || f.objects[0].count !== 10000) throw Error('Incorrect attributes');
+              if (f.objects[0].colors.length !== 30000 || f.objects[0].colors.buffer !== data) throw Error('Incorrect RGB attributes');
               const malformed = [new ArrayBuffer(0), data.slice(0, -1)];
-              for (const [offset, value] of [[0, 0], [4, 3], [8, 0], [8, 4], [16, 1025], [36, 0xffffffff]]) {{
+              // Small RGB objects exercise all four alignment cases, including a
+              // second zero-copy float32 view after the first object's padding.
+              for (let count = 1; count <= 4; ++count) {{
+                const objectBytes = 40 + Math.ceil(count * 15 / 4) * 4;
+                const buffer = new ArrayBuffer(32 + 2 * objectBytes), view = new DataView(buffer);
+                const bytes = new Uint8Array(buffer);
+                bytes.set(new Uint8Array(data, 0, 32));
+                view.setUint32(16, 2, true); view.setUint32(20, buffer.byteLength, true);
+                for (let i = 0; i < 2; ++i) {{
+                  const at = 32 + i * objectBytes;
+                  bytes.set(new Uint8Array(data, 32, 40), at);
+                  view.setUint32(at, i, true); view.setUint32(at + 4, count, true);
+                  new Float32Array(buffer, at + 40, count * 3).set(f.objects[0].positions.subarray(0, count * 3));
+                  bytes.set(f.objects[0].colors.subarray(0, count * 3), at + 40 + count * 12);
+                }}
+                const objects = decodeFrame(buffer).objects;
+                if (objects.length !== 2 || objects.some(o => o.positions.buffer !== buffer || o.colors.length !== count * 3 ||
+                    o.positions[0] !== f.objects[0].positions[0] || o.colors[1] !== 200)) throw Error('RGB object alignment');
+                if (count < 4) {{ bytes[32 + 40 + count * 15] = 1; malformed.push(buffer); }}
+              }}
+              for (const [offset, value] of [[0, 0], [4, 3], [4, 4], [8, 0], [8, 4], [16, 1025], [36, 0xffffffff]]) {{
                 const copy = data.slice(0); new DataView(copy).setUint32(offset, value, true); malformed.push(copy);
               }}
+              const faded = data.slice(0); new DataView(faded).setFloat32(44, .5, true); malformed.push(faded);
               for (const b of malformed) {{ let rejected = false; try {{ decodeFrame(b); }} catch {{ rejected = true; }} if (!rejected) throw Error('Malformed frame accepted'); }}
-              return 'PASS: zero-copy attributes and malformed frames';
+              return 'PASS: zero-copy RGB attributes, multi-object alignment and malformed frames';
             }})()""")
             grid_result = evaluate(f"""(async () => {{
               const {{ decodeFrame }} = await import('/js/protocol.js');
@@ -163,11 +185,11 @@ def main():
               mixed.set(new Uint8Array(data)); mixed.set(new Uint8Array(data, 32), data.byteLength);
               const mv = new DataView(mixed.buffer);
               mv.setUint32(16, 2, true); mv.setUint32(20, mixed.byteLength, true);
-              mv.setUint32(data.byteLength, 8, true);
+              mv.setUint32(data.byteLength, 9, true);
               const second = decodeFrame(mixed.buffer).objects[1];
               if (second.grid.cells.buffer !== mixed.buffer || second.count !== 41) throw Error('Multiple grid object alignment');
               const malformed = [];
-              for (const [at, value] of [[4, 1], [4, 2], [4, 3], [36, 0xffffffff], [start + 28, 1], [start + 24, 41]]) {{
+              for (const [at, value] of [[4, 1], [4, 2], [4, 3], [4, 4], [36, 0xffffffff], [start + 28, 1], [start + 24, 41]]) {{
                 const copy = data.slice(0); new DataView(copy).setUint32(at, value, true); malformed.push(copy);
               }}
               for (const [at, value] of [[start + 40, 41], [start + 55, 128], [start + 41, 1]]) {{
@@ -206,7 +228,7 @@ def main():
               // points. Intermediate channel values expose skipped conversion.
               const pointGeometry = new THREE.BufferGeometry();
               pointGeometry.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0], 3));
-              const pointColor = new THREE.BufferAttribute(new Uint8Array(4), 4, true);
+              const pointColor = new THREE.BufferAttribute(new Uint8Array(3), 3, true);
               pointGeometry.setAttribute('color', pointColor);
               const point = new THREE.Points(pointGeometry, new THREE.PointsMaterial({{ vertexColors: true, size: 8, sizeAttenuation: false }}));
               const screenColor = () => {{
@@ -222,7 +244,7 @@ def main():
               }};
               for (const rgb of [[64, 128, 192], [192, 64, 128], [128, 192, 64]]) {{
                 scene.remove(boxes); scene.add(point);
-                pointColor.array.set([...rgb, 255]); pointColor.needsUpdate = true;
+                pointColor.array.set(rgb); pointColor.needsUpdate = true;
                 const expected = screenColor();
                 const cells = new Uint8Array(20); cells.set([...rgb, 255], 16);
                 boxes.update({{ ...grid, cells }}, object.bounds, 1);
@@ -271,14 +293,15 @@ def main():
             evaluate("document.querySelector('#start').click()")
             wait_for("document.querySelector('#stats').textContent.includes('0 points · 0 lines · 41 cells')")
             wait_for("wsSocket?.readyState === WebSocket.OPEN")
-            assert evaluate("streamTestViewer.objects.get(7).boxes.geometry.instanceCount") == 41
+            assert evaluate("streamTestViewer.objects.get(8).boxes.geometry.instanceCount") == 41
             assert evaluate("document.querySelectorAll('#objects input').length") == 1
             evaluate("window.onlyCells = false")
             wait_for("document.querySelector('#status').textContent === 'Connected'")
             wait_for("document.querySelector('#stats').textContent.includes('10,000 points · 1 lines · 41 cells')")
+            assert evaluate("document.querySelectorAll('#objects input').length") == 2
             evaluate("window.savedCmdSocket = wsSocket; window.savedCellSocket = testSockets.cells; window.savedCamera = streamTestViewer.camera.position.clone(); testSockets.points.close();")
             wait_for("document.querySelector('#status').textContent.includes('retrying')")
-            assert evaluate("streamTestViewer.objects.get(7).boxes.geometry.instanceCount === 41 && streamTestViewer.objects.get(7).lines.geometry.drawRange.count === 2")
+            assert evaluate("streamTestViewer.objects.get(8).boxes.geometry.instanceCount === 41 && streamTestViewer.objects.get(7).lines.geometry.drawRange.count === 2")
             wait_for("document.querySelector('#status').textContent === 'Connected'")
             assert evaluate("wsSocket === savedCmdSocket && wsSocket.readyState === WebSocket.OPEN && testSockets.cells === savedCellSocket")
             assert evaluate("streamTestViewer.camera.position.distanceTo(savedCamera) < 1e-8")
@@ -294,7 +317,7 @@ def main():
             })()""")
             wait_for("document.querySelector('#status').textContent.includes('Wrong geometry stream type')")
             wait_for("document.querySelector('#stats').textContent.includes('0 points · 1 lines · 41 cells')")
-            assert evaluate("streamTestViewer.objects.get(7).boxes.geometry.instanceCount === 41 && wsSocket === savedCmdSocket")
+            assert evaluate("streamTestViewer.objects.get(8).boxes.geometry.instanceCount === 41 && wsSocket === savedCmdSocket")
             evaluate("document.querySelector('#stop').click(); document.querySelector('#start').click()")
             wait_for("document.querySelector('#status').textContent === 'Connected'")
             wait_for("wsSocket?.readyState === WebSocket.OPEN")
@@ -344,49 +367,49 @@ def main():
                 evaluate(f"document.querySelector('#grid-{which}-level').value = '{value}'; document.querySelector('#grid-{which}-level').dispatchEvent(new Event('input', {{bubbles: true}}));")
             assert evaluate("[document.querySelector('#grid-min-level').value, document.querySelector('#grid-max-level').value]") == ['0', '40']
             level_slider('max', 1)
-            assert evaluate('pickerTestViewer.objects.get(7).boxes.geometry.instanceCount') == 2
+            assert evaluate('pickerTestViewer.objects.get(8).boxes.geometry.instanceCount') == 2
             assert evaluate(red_pixels) > 20, 'Level filter hid a selected cell'
             level_slider('min', 40) # Crossing moves max to min; occupied depths 0-2 all disappear.
             assert evaluate("document.querySelector('#grid-max-level-value').textContent") == '40'
-            assert evaluate('pickerTestViewer.objects.get(7).boxes.geometry.instanceCount') == 0
+            assert evaluate('pickerTestViewer.objects.get(8).boxes.geometry.instanceCount') == 0
             assert evaluate(red_pixels) > 20
             assert evaluate('pickerTestViewer.renderer.info.render.lines') == 12, 'Hidden levels still submitted for drawing'
             level_slider('max', 0) # Crossing in the other direction moves min to max.
             assert evaluate("document.querySelector('#grid-min-level-value').textContent") == '0'
-            assert evaluate('pickerTestViewer.objects.get(7).boxes.geometry.instanceCount') == 1
+            assert evaluate('pickerTestViewer.objects.get(8).boxes.geometry.instanceCount') == 1
             screenshot = command('Page.captureScreenshot', {'format': 'png'})['data']
             Path('/tmp/openkai-picker.png').write_bytes(base64.b64decode(screenshot))
             evaluate("document.querySelector('#picker-send').click()")
             wait_for("testReplies.some(j => j.cmd === 'octGridCellSelect' && j.bSuccess === true)")
             payload = commands.received[-1]
-            assert payload == {'cmd': 'octGridCellSelect', 'module': 'Test cloud and lines',
+            assert payload == {'cmd': 'octGridCellSelect', 'module': 'Test grid',
                                'vPorigin': ['0', '0', '0'], 'vRootCellSize': ['2', '2', '2'], 'cellIDs': [location['id']]}, payload
             assert evaluate('pickerTestViewer.picker.count') == 1
             evaluate("document.querySelector('#picker-load').click()")
             wait_for("document.querySelector('#picker-status').textContent.includes('Added 0 cells')")
-            assert commands.received[-1] == {'cmd': 'loadCellSelect', 'module': 'Test cloud and lines'}
+            assert commands.received[-1] == {'cmd': 'loadCellSelect', 'module': 'Test grid'}
             assert evaluate('pickerTestViewer.picker.count') == 1
             evaluate("document.querySelector('#picker-clear').click(); document.querySelector('#picker-load').click()")
             wait_for("document.querySelector('#picker-count').textContent === '1 picked cell'")
             assert evaluate('pickerTestViewer.picker.commands()[0].cellIDs[0]') == location['id']
             assert evaluate(red_pixels) > 20, 'Loaded selection was hidden by the level filter'
             # A large reply is split by the command peer into 512-byte messages.
-            commands.selections['Test cloud and lines'] = {**payload, 'cellIDs': [location['id']] * 3000}
+            commands.selections['Test grid'] = {**payload, 'cellIDs': [location['id']] * 3000}
             evaluate("document.querySelector('#picker-clear').click(); document.querySelector('#picker-load').click()")
             wait_for("testReplies.some(j => j.cmd === 'cellSelect' && j.cellIDs.length === 3000)")
             assert evaluate("pickerTestViewer.picker.count === 1 && wsCmdBuffer === ''")
-            commands.selections['Test cloud and lines'] = {**payload, 'cellIDs': []}
+            commands.selections['Test grid'] = {**payload, 'cellIDs': []}
             evaluate("document.querySelector('#picker-load').click()")
             wait_for("document.querySelector('#picker-status').textContent.includes('Added 0 cells')")
             assert evaluate('pickerTestViewer.picker.count') == 1
-            commands.selections['Test cloud and lines'] = payload
-            evaluate("cmdHandler({data: JSON.stringify({cmd:'cellSelect', module:'Test cloud and lines', vPorigin:['0','0','0'], vRootCellSize:['2','2','2'], cellIDs:['bad']})})")
+            commands.selections['Test grid'] = payload
+            evaluate("cmdHandler({data: JSON.stringify({cmd:'cellSelect', module:'Test grid', vPorigin:['0','0','0'], vRootCellSize:['2','2','2'], cellIDs:['bad']})})")
             assert evaluate("document.querySelector('#picker-status').textContent.startsWith('Load failed:') && pickerTestViewer.picker.count === 1")
             mouse('mousePressed', x, y, buttons=1); mouse('mouseReleased', x, y)
             assert evaluate('pickerTestViewer.picker.count') == 0
             assert evaluate(red_pixels) == 0, 'Deselected cell remained red'
             level_slider('max', 40)
-            assert evaluate('pickerTestViewer.objects.get(7).boxes.geometry.instanceCount') == 3
+            assert evaluate('pickerTestViewer.objects.get(8).boxes.geometry.instanceCount') == 3
             mouse('mousePressed', x, y, buttons=1); mouse('mouseReleased', x, y)
             evaluate("document.querySelector('#cmdDisconnect').click()")
             assert evaluate("document.querySelector('#picker-send').disabled && document.querySelector('#picker-load').disabled && pickerTestViewer.picker.count === 1")

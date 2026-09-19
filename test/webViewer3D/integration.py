@@ -82,18 +82,18 @@ def check_frame(message):
     opcode, data = message
     assert opcode == 2
     magic, version, kind, sequence, count, size = struct.unpack_from('<6I', data)
-    assert (magic, version, kind, count, size) == (0x34443357, 4, 1, 1, len(data))
+    assert (magic, version, kind, count, size) == (0x35443357, 5, 1, 1, len(data))
     assert struct.unpack_from('<Q', data, 24)[0] == 123456789
     assert struct.unpack_from('<2I', data, 32) == (7, 200000)
-    assert len(data) == 32 + 40 + 200000 * 16
+    assert len(data) == 32 + 40 + 200000 * 15
     assert struct.unpack_from('<3f', data, 72) == (1, 0, -1)
-    assert data[72 + 2400000:72 + 2400004] == bytes([0, 200, 240, 255])
+    assert data[72 + 2400000:72 + 2400003] == bytes([0, 200, 240])
     return sequence
 
 
 def read_frame(data, expected_type):
     magic, version, kind, sequence, count, size = struct.unpack_from('<6I', data)
-    assert (magic, version, kind, size) == (0x34443357, 4, expected_type, len(data))
+    assert (magic, version, kind, size) == (0x35443357, 5, expected_type, len(data))
     assert count <= 1024
     at, objects = 32, []
     for _ in range(count):
@@ -109,8 +109,12 @@ def read_frame(data, expected_type):
             vertices = n * (2 if kind == 2 else 1)
             obj['positions'] = memoryview(data)[at:at + vertices * 12]
             at += vertices * 12
-            obj['colors'] = memoryview(data)[at:at + vertices * 4]
-            at += vertices * 4
+            obj['colors'] = memoryview(data)[at:at + vertices * 3]
+            at += vertices * 3
+            padding = (-at) % 4
+            assert not any(data[at:at + padding])
+            at += padding
+            assert opacity == 1
         objects.append(obj)
     assert at == len(data)
     return objects
@@ -159,7 +163,7 @@ def main():
             clients.extend([a, b, independent])
             for c in (a, b, independent):
                 opcode, hello = c.receive()
-                assert opcode == 1 and json.loads(hello)['version'] == 4
+                assert opcode == 1 and json.loads(hello)['version'] == 5
                 c.send('start')
                 check_frame(c.receive())
             blocked = WebSocket(port)

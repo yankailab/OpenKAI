@@ -16,8 +16,8 @@ viewer.camera.lookAt(0, 0, 0);
 const pixels = new Uint8Array(128 * 128 * 4), gl = viewer.renderer.getContext();
 function check(ok, message) { if (!ok) throw Error(message); }
 function render(kind, alpha, opacity = 1) {
-  const colors = new Uint8Array([255, 255, 255, alpha]);
-  const cells = new Uint8Array(20); cells.set(colors, 16);
+  const colors = new Uint8Array([255, 255, 255]);
+  const cells = new Uint8Array(20); cells.set([...colors, alpha], 16);
   const type = kind === 'boxes' ? 'cells' : kind;
   for (const other of ['points', 'lines', 'cells']) if (other !== type) viewer.clearStream(other);
   viewer.update({ type, objects: [{ id: 0, count: 1, pointSize: 12, opacity,
@@ -27,14 +27,14 @@ function render(kind, alpha, opacity = 1) {
     grid: { origin: [0, 0, 0], size: [2, 2, 2], maxLevel: 1, cells }
   }] });
   const mesh = viewer.objects.get(0)[kind];
-  check(mesh.material.transparent === (alpha < 255 || opacity < 1), `${kind}: incorrect blending state`);
+  check(mesh.material.transparent === (kind === 'boxes' && (alpha < 255 || opacity < 1)), `${kind}: incorrect blending state`);
   check(mesh.material.depthWrite === !mesh.material.transparent, `${kind}: incorrect depth writes`);
   viewer.renderer.render(viewer.scene, viewer.camera);
   gl.readPixels(0, 0, 128, 128, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
   return Uint8Array.from({ length: 128 * 128 }, (_, i) => pixels[i * 4]);
 }
 let wirePixels = 0;
-for (const [kind, solid] of [['points', false], ['lines', false], ['boxes', false], ['boxes', true]]) {
+for (const [kind, solid] of [['boxes', false], ['boxes', true]]) {
   viewer.setGridSolid(solid);
   const zero = render(kind, 0), half = render(kind, 128), full = render(kind, 255);
   check(zero.every(x => x === 0), `${kind}: alpha zero remains visible`);
@@ -50,13 +50,15 @@ for (const [kind, solid] of [['points', false], ['lines', false], ['boxes', fals
   const multiplied = render(kind, 128, .5), quarter = render(kind, 64);
   check(multiplied.every((x, i) => Math.abs(x - quarter[i]) <= 2), `${kind}: object opacity did not multiply alpha`);
 }
-// Mixed alphas in one primitive buffer must enable blending, even if first is opaque.
-render('points', 255);
-let object = viewer.objects.get(0);
-viewer.update({ type: 'points', objects: [{ id: 0, count: 2, pointSize: 12, opacity: 1,
-  bounds: [-1, -1, -1, 1, 1, 1], positions: new Float32Array([-1, 0, 0, 1, 0, 0]),
-  colors: new Uint8Array([255, 255, 255, 255, 255, 255, 255, 0]) }] });
-check(object.points.material.transparent && !object.points.material.depthWrite, 'Mixed point alphas ignored');
+// Object opacity applies only to cells; points and lines upload opaque RGB.
+for (const kind of ['points', 'lines']) {
+  const full = render(kind, 255), ignored = render(kind, 0, 0);
+  const mesh = viewer.objects.get(0)[kind];
+  check(mesh.geometry.getAttribute('color').itemSize === 3, `${kind}: non-RGB upload`);
+  check(mesh.material.opacity === 1 && Math.max(...full) === 255, `${kind}: geometry faded`);
+  check(full.every((x, i) => x === ignored[i]), `${kind}: cell opacity affected RGB geometry`);
+}
+let object;
 
 // Two translucent cells entered near-first must blend in camera depth order,
 // retaining ID/color correspondence for picking after the camera reverses.
@@ -65,7 +67,7 @@ const nearID = childID(new Uint8Array(16), 7), farID = childID(new Uint8Array(16
 const cells = new Uint8Array(40);
 cells.set(nearID); cells.set([255, 0, 0, 128], 16);
 cells.set(farID, 20); cells.set([0, 0, 255, 128], 36);
-viewer.clearStream('points');
+viewer.clearStream('points'); viewer.clearStream('lines');
 viewer.update({ type: 'cells', objects: [{ id: 0, count: 2, pointSize: 1, opacity: 1,
   bounds: [-1, -1, -1, 1, 1, 1],
   grid: { origin: [0, 0, 0], size: [2, 2, 2], maxLevel: 1, cells } }] });
@@ -92,4 +94,4 @@ viewer.setGridSolid(true); viewer.setGridLevelRange(2, 40);
 viewer.renderer.render(viewer.scene, viewer.camera);
 check(viewer.renderer.info.render.triangles === 0, 'Filtered solid cells still rendered');
 viewer.dispose(); container.remove();
-return 'PASS: point/line/wire/solid alpha, opacity multiplication, mode switching, camera-depth sorting, exact picking and level filtering';
+return 'PASS: opaque RGB points/lines and wire/solid cell alpha, opacity multiplication, mode switching, camera-depth sorting, exact picking and level filtering';

@@ -23,6 +23,16 @@ An optional backend configuration is in `jsonCfg/WebViewer3D_commands.json`;
 include it from your application's `APP.vInclude` when using commands.
 
 Use `"class": "_SelectableOctGrid"` for grids displayed by this viewer.
+Octree grids derive from `_ReferenceFrame` and publish cell snapshots only.
+Configure separate viewer lists:
+
+```json
+"vGeometry": [{ "_GeometryBase": "points", "nP": 200000, "nL": 0 }],
+"vSelectableOctGrid": [{ "_SelectableOctGrid": "octGrid", "nC": 100000 }]
+```
+
+Generic reference-frame entries and old viewer name lists are no longer accepted.
+A grid's own `vGeometryBase` list still selects the point clouds it consumes.
 It inherits `_OctreeGrid` calculations and adds cell snapshots, selection persistence,
 and interaction commands. `_OctreeGrid` itself only calculates occupancy.
 The cells handshake identifies interactive sources with `selectableGrid: true`;
@@ -32,8 +42,10 @@ Occupied octree cells stream as 16-byte IDs plus RGBA8 (20 bytes per cell). The 
 instanced wire or solid boxes and retains IDs and bounds for cell picking. The
 Wire-frame / Solid switch below Grid enables filled faces with per-cell alpha;
 selected cells keep their red outlines. See the
-[version 4 format](../../../docs/3D/WebViewer3D.md#binary-protocol-version-4). Only
-version 4 is supported. Point, line, and cell alpha multiplies object opacity.
+[version 5 format](../../../docs/3D/WebViewer3D.md#binary-protocol-version-5).
+The backend and browser must both use version 5; there is no protocol negotiation
+or conversion. Points and lines use opaque RGB8. Only cell alpha multiplies
+object opacity.
 
 The **Grid config** form below Point scale sends root origin and size through
 `setGridConfig` on the command socket. Its defaults are 0/0/0 m and 5/5/5 m, and
@@ -44,12 +56,10 @@ The **Grid cell picker** panel supports persistent red selections, Load, Clear,
 and Send. Load retrieves backend selections over the independent command socket
 and merges them without duplicate IDs, remapping volumes when root headers differ.
 Set the grid module's `fConfig` to persist selections across backend restarts.
-Saved selections use the `_SelectableOctGrid` section; existing `_OctreeGrid`
-sections can still be loaded. Command names and the binary format are unchanged. See the
+Saved selections use only the `_SelectableOctGrid` section. See the
 [picker behavior and JSON contract](../../../docs/3D/WebViewer3D.md#grid-cell-picker).
 
 Geometry uses `/stream/points`, `/stream/lines` and `/stream/cells` on the same
 HTTP port, with independent snapshots, acknowledgements and reconnects. All
 available types render on the same canvas; missing or failed streams affect only
-their own geometry. The old combined `/stream` endpoint is removed. Cells-only
-viewers can set both `nPbuf` and `nLbuf` to zero.
+their own geometry. Cells-only viewers can set both `nPbuf` and `nLbuf` to zero.

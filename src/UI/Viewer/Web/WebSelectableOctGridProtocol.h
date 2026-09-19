@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_UI_Viewer_WebViewer3DProtocol_H_
-#define OpenKAI_src_UI_Viewer_WebViewer3DProtocol_H_
+#ifndef OpenKAI_src_UI_Viewer_Web_WebSelectableOctGridProtocol_H_
+#define OpenKAI_src_UI_Viewer_Web_WebSelectableOctGridProtocol_H_
 
 #include <array>
 #include <cstdint>
@@ -7,12 +7,12 @@
 #include <limits>
 #include <stdexcept>
 #include <vector>
-#include "../../Universe/Grid/_SelectableOctGrid.h"
+#include "../../../Universe/Grid/_SelectableOctGrid.h"
 
-namespace kai::webviewer3d
+namespace kai::webselectableoctgrid
 {
-	constexpr uint32_t Magic = 0x34443357; // W3D4; typed streams only
-	constexpr uint32_t Version = 4;
+	constexpr uint32_t Magic = 0x35443357; // W3D5; RGB points/lines, RGBA cells
+	constexpr uint32_t Version = 5;
 	enum class Type : uint32_t { Points = 1, Lines = 2, Cells = 3 };
 	constexpr std::array<Type, 3> Types = {Type::Points, Type::Lines, Type::Cells};
 	inline const char *name(Type type)
@@ -22,6 +22,7 @@ namespace kai::webviewer3d
 	}
 	constexpr size_t HeaderBytes = 32, ObjectBytes = 40, GridHeaderBytes = 40;
 	constexpr size_t CellBytes = sizeof(OCTGRID_CELL), MaxFrameBytes = 64 * 1024 * 1024;
+	inline size_t vertexBytes(size_t count) { return (count * 15 + 3) & ~size_t(3); }
 
 	inline void u32(std::vector<uint8_t> &b, size_t at, uint32_t v)
 	{ for (unsigned i = 0; i < 4; ++i) b.at(at + i) = uint8_t(v >> (8 * i)); }
@@ -58,21 +59,24 @@ namespace kai::webviewer3d
 		f32(b, at + 8, pointSize); f32(b, at + 12, opacity);
 		for (size_t i = 0; i < 6; ++i) f32(b, at + 16 + i * 4, bounds[i]);
 	}
-	inline void vertices(std::vector<uint8_t> &b, Type type, uint32_t id, float pointSize, float opacity,
+	inline void vertices(std::vector<uint8_t> &b, Type type, uint32_t id, float pointSize,
 		const float bounds[6], const std::vector<float> &positions, const std::vector<uint8_t> &colors)
 	{
 		const size_t components = type == Type::Points ? 3 : 6;
-		if (positions.size() % components || colors.size() != positions.size() / 3 * 4)
+		if ((type != Type::Points && type != Type::Lines) || positions.size() % components || colors.size() != positions.size())
 			throw std::invalid_argument("Invalid geometry attribute lengths");
-		objectHeader(b, type, id, positions.size() / components, pointSize, opacity, bounds, positions.size() * 4 + colors.size());
+		const size_t payloadBytes = vertexBytes(positions.size() / 3);
+		objectHeader(b, type, id, positions.size() / components, pointSize, 1, bounds, payloadBytes);
+		const size_t end = b.size() + payloadBytes;
 		floats(b, positions); b.insert(b.end(), colors.begin(), colors.end());
+		b.resize(end, 0); // Align the next object's float32 positions after RGB8.
 	}
-	inline void points(std::vector<uint8_t> &b, uint32_t id, float pointSize, float opacity,
+	inline void points(std::vector<uint8_t> &b, uint32_t id, float pointSize,
 		const float bounds[6], const std::vector<float> &positions, const std::vector<uint8_t> &colors)
-	{ vertices(b, Type::Points, id, pointSize, opacity, bounds, positions, colors); }
-	inline void lines(std::vector<uint8_t> &b, uint32_t id, float opacity,
+	{ vertices(b, Type::Points, id, pointSize, bounds, positions, colors); }
+	inline void lines(std::vector<uint8_t> &b, uint32_t id,
 		const float bounds[6], const std::vector<float> &positions, const std::vector<uint8_t> &colors)
-	{ vertices(b, Type::Lines, id, 1, opacity, bounds, positions, colors); }
+	{ vertices(b, Type::Lines, id, 1, bounds, positions, colors); }
 	inline void cells(std::vector<uint8_t> &b, uint32_t id, float opacity, const float bounds[6], const OCTGRID_CELLS &grid)
 	{
 		objectHeader(b, Type::Cells, id, grid.m_vCell.size(), 1, opacity, bounds, GridHeaderBytes + grid.m_vCell.size() * CellBytes);

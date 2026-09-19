@@ -22,6 +22,7 @@ export class Viewer3D {
     this.axes = this.createOriginAxes();
     this.scene.add(this.axes);
     this.objects = new Map();
+    this.visibility = new Map();
     this.picker = new GridCellPicker(this);
     this.pointScale = 1;
     this.gridMinLevel = 0;
@@ -86,6 +87,8 @@ export class Viewer3D {
   }
   configure(config) {
     this.clear();
+    this.visibility.clear();
+    this.sourceKinds = new Map(config.objects.map(o => [o.id, o.selectableGrid ? 'cells' : 'geometry']));
     this.picker.configure(config.objects);
     this.config = config;
     this.scene.background.fromArray(config.background);
@@ -123,15 +126,19 @@ export class Viewer3D {
     this.controls.update();
     this.resize();
   }
-  createObject(id) {
-    const points = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ vertexColors: true, sizeAttenuation: false }));
-    const lines = new THREE.LineSegments(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ vertexColors: true }));
-    const boxes = new GridBoxes();
-    boxes.setLevelRange(this.gridMinLevel, this.gridMaxLevel);
-    boxes.setSolid(this.gridSolid);
-    const object = { id, points, lines, boxes, visible: true, pointSize: 2, streams: new Map() };
+  createObject(id, kind) {
+    const object = { id, kind, visible: this.visibility.get(id) ?? true, pointSize: 2, streams: new Map() };
+    if (kind === 'cells') {
+      object.boxes = new GridBoxes();
+      object.boxes.setLevelRange(this.gridMinLevel, this.gridMaxLevel);
+      object.boxes.setSolid(this.gridSolid);
+      this.scene.add(object.boxes);
+    } else {
+      object.points = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ vertexColors: true, sizeAttenuation: false }));
+      object.lines = new THREE.LineSegments(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ vertexColors: true }));
+      this.scene.add(object.points, object.lines);
+    }
     this.objects.set(id, object);
-    this.scene.add(points, lines, boxes);
     return object;
   }
   upload(mesh, positions, colors, bounds) {
@@ -142,7 +149,7 @@ export class Viewer3D {
       geometry.dispose();
       geometry = mesh.geometry = new THREE.BufferGeometry();
       geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(capacity * 3), 3).setUsage(THREE.DynamicDrawUsage));
-      geometry.setAttribute('color', new THREE.BufferAttribute(new Uint8Array(capacity * 4), 4, true).setUsage(THREE.DynamicDrawUsage));
+      geometry.setAttribute('color', new THREE.BufferAttribute(new Uint8Array(capacity * 3), 3, true).setUsage(THREE.DynamicDrawUsage));
     }
     if (count) {
       for (const [name, data] of [['position', positions], ['color', colors]]) {
@@ -160,10 +167,15 @@ export class Viewer3D {
   update(frame) {
     const { type } = frame;
     if (!STREAM_TYPES.includes(type)) throw new Error('Unknown geometry stream');
+    const kind = type === 'cells' ? 'cells' : 'geometry';
     const active = new Set();
     for (const data of frame.objects) {
       active.add(data.id);
-      const o = this.objects.get(data.id) || this.createObject(data.id);
+      const expected = this.sourceKinds?.get(data.id);
+      const existing = this.objects.get(data.id);
+      if ((expected && expected !== kind) || (existing && existing.kind !== kind))
+        throw new Error('Source received the wrong stream kind');
+      const o = existing || this.createObject(data.id, kind);
       // Retain only bounds/counts here; point/line buffers have been uploaded
       // and should not keep their full received frame alive between updates.
       o.streams.set(type, { count: data.count, bounds: data.bounds });
@@ -177,11 +189,6 @@ export class Viewer3D {
           o.pointSize = data.pointSize;
           mesh.material.size = data.pointSize * this.pointScale;
         }
-        let transparent = data.opacity < 1;
-        for (let at = 3; !transparent && at < data.colors.length; at += 4) transparent = data.colors[at] < 255;
-        if (mesh.material.transparent !== transparent) { mesh.material.transparent = transparent; mesh.material.needsUpdate = true; }
-        mesh.material.depthWrite = !transparent;
-        mesh.material.opacity = data.opacity;
         mesh.visible = o.visible;
         this.upload(mesh, data.positions, data.colors, data.bounds);
       }
@@ -193,11 +200,9 @@ export class Viewer3D {
     }
   }
   removeStream(o, type) {
+    if (type === 'cells') { this.removeObject(o); return; }
     o.streams.delete(type);
-    if (type === 'cells') {
-      o.boxes.update(null, [0, 0, 0, 0, 0, 0], 1);
-      this.picker.removeObject(o.id);
-    } else o[type].geometry.setDrawRange(0, 0);
+    o[type].geometry.setDrawRange(0, 0);
     if (!o.streams.size) this.removeObject(o);
   }
   clearStream(type) {
@@ -211,22 +216,27 @@ export class Viewer3D {
   }
   setVisible(id, visible) {
     const o = this.objects.get(id);
-    if (o) { o.visible = visible; o.points.visible = visible; o.lines.visible = visible; o.boxes.visible = visible; }
+    this.visibility.set(id, visible);
+    if (o) {
+      o.visible = visible;
+      if (o.kind === 'cells') o.boxes.visible = visible;
+      else o.points.visible = o.lines.visible = visible;
+    }
     this.picker.setVisible(id, visible);
     this.updateBounds();
   }
   setPointScale(value) {
     this.pointScale = value;
-    for (const o of this.objects.values()) o.points.material.size = o.pointSize * value;
+    for (const o of this.objects.values()) if (o.kind === 'geometry') o.points.material.size = o.pointSize * value;
   }
   setGridLevelRange(min, max) {
     this.gridMinLevel = Math.max(0, Math.min(40, Math.round(min)));
     this.gridMaxLevel = Math.max(this.gridMinLevel, Math.min(40, Math.round(max)));
-    for (const o of this.objects.values()) o.boxes.setLevelRange(this.gridMinLevel, this.gridMaxLevel);
+    for (const o of this.objects.values()) if (o.kind === 'cells') o.boxes.setLevelRange(this.gridMinLevel, this.gridMaxLevel);
   }
   setGridSolid(solid) {
     this.gridSolid = solid;
-    for (const o of this.objects.values()) o.boxes.setSolid(solid);
+    for (const o of this.objects.values()) if (o.kind === 'cells') o.boxes.setSolid(solid);
   }
   fit() {
     const bounds = this.bounds.clone();
@@ -255,13 +265,16 @@ export class Viewer3D {
     this.controls.update();
     this.scene.updateMatrixWorld();
     this.camera.updateMatrixWorld();
-    for (const o of this.objects.values()) o.boxes.sortCells(this.camera);
+    for (const o of this.objects.values()) if (o.kind === 'cells') o.boxes.sortCells(this.camera);
     this.renderer.render(this.scene, this.camera);
   }
   removeObject(o) {
-    this.picker.removeObject(o.id);
-    this.scene.remove(o.boxes); o.boxes.dispose();
-    for (const mesh of [o.points, o.lines]) { this.scene.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); }
+    if (o.kind === 'cells') {
+      this.picker.removeObject(o.id);
+      this.scene.remove(o.boxes); o.boxes.dispose();
+    } else {
+      for (const mesh of [o.points, o.lines]) { this.scene.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); }
+    }
     this.objects.delete(o.id);
   }
   clear() { for (const o of this.objects.values()) this.removeObject(o); this.bounds.makeEmpty(); }

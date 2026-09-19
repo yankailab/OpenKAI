@@ -1,35 +1,35 @@
 /*
- * _ImGUIviewer.h
+ * _ImGUIselectableOctGrid.h
  *
  *  Created on: Jun 4, 2026
  *      Author: Codex
  */
 
-#ifndef OpenKAI_src_UI_Viewer__ImGUIviewer_H_
-#define OpenKAI_src_UI_Viewer__ImGUIviewer_H_
+#ifndef OpenKAI_src_UI_Viewer_ImGUI__ImGUIselectableOctGrid_H_
+#define OpenKAI_src_UI_Viewer_ImGUI__ImGUIselectableOctGrid_H_
 
-#include "../../Universe/Geometry/_GeometryViewerBase.h"
-#include "ImGUIviewerBackend.h"
-#include "../../Universe/Grid/_SelectableOctGrid.h"
+#include "../../../Universe/Geometry/_GeometryViewerBase.h"
+#include "ImGUIbackend.h"
+#include "../SelectableOctGridSources.h"
 
 struct ImDrawList;
 struct ImDrawCmd;
 
 namespace kai
 {
-	class ImGUIviewerGLRenderer;
+	class ImGUIglRenderer;
 
 	struct IMGUI_VIEWER_POINT
 	{
 		Vector3f m_vP = Vector3f::Zero();
-		Vector4f m_vC{0, 0, 0, 1};
+		Vector3f m_vC{0, 0, 0};
 	};
 
 	struct IMGUI_VIEWER_LINE
 	{
 		Vector3f m_vA = Vector3f::Zero();
 		Vector3f m_vB = Vector3f::Zero();
-		Vector4f m_vC{0, 0, 0, 1};
+		Vector3f m_vC{0, 0, 0};
 	};
 
 	struct IMGUI_VIEWER_BOX
@@ -51,15 +51,11 @@ namespace kai
 		}
 	};
 
+	// Render snapshot: values only, no module pointers or source configuration.
 	struct IMGUI_VIEWER_OBJ
 	{
-		_GeometryBase *m_pGB = nullptr;
 		string m_name;
 
-		bool m_bVisible = true;
-		int m_nPbuf = 0;
-		int m_nLbuf = 0;
-		int m_nCbuf = -1;
 		float m_matPointSize = 2.0;
 		float m_matLineWidth = 1.0;
 		Vector4f m_matCol = {1, 1, 1, 1};
@@ -69,15 +65,14 @@ namespace kai
 		OCTGRID_HEADER m_gridHeader;
 		vector<IMGUI_VIEWER_BOX> m_vBox;
 
-		void reserve(int nPbufDefault = 0, int nLbufDefault = 0);
 		void clearGeometry(void);
 	};
 
-	class _ImGUIviewer : public _GeometryViewerBase
+	class _ImGUIselectableOctGrid : public _GeometryViewerBase
 	{
 	public:
-		_ImGUIviewer();
-		virtual ~_ImGUIviewer();
+		_ImGUIselectableOctGrid();
+		virtual ~_ImGUIselectableOctGrid();
 
 		virtual bool init(const json &j) override;
 		virtual bool link(const json &j, ModuleMgr *pM) override;
@@ -94,7 +89,7 @@ namespace kai
 		virtual void update(void) override;
 		static void *getUpdate(void *This)
 		{
-			((_ImGUIviewer *)This)->update();
+			((_ImGUIselectableOctGrid *)This)->update();
 			return nullptr;
 		}
 
@@ -105,7 +100,7 @@ namespace kai
 		virtual void updateUI(void);
 		static void *getUpdateUI(void *This)
 		{
-			((_ImGUIviewer *)This)->updateUI();
+			((_ImGUIselectableOctGrid *)This)->updateUI();
 			return nullptr;
 		}
 
@@ -119,16 +114,11 @@ namespace kai
 		void renderSceneGL(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize);
 		static void drawSceneGLCallback(const ImDrawList *pParentList, const ImDrawCmd *pCmd);
 
-		void collectGeometry(_GeometryBase *pGb, IMGUI_VIEWER_OBJ *pObj);
-		void collectPoints(IMGUI_VIEWER_OBJ *pObj);
-		void collectLines(IMGUI_VIEWER_OBJ *pObj);
-		void collectCells(IMGUI_VIEWER_OBJ *pObj);
+		void collectGeometry(const VIEWER_GEOMETRY_SOURCE &source, IMGUI_VIEWER_OBJ *pObj, uint64_t expiry);
+		void collectPoints(const VIEWER_GEOMETRY_SOURCE &source, IMGUI_VIEWER_OBJ *pObj, uint64_t expiry);
+		void collectLines(const VIEWER_GEOMETRY_SOURCE &source, IMGUI_VIEWER_OBJ *pObj, uint64_t expiry);
+		void collectCells(const VIEWER_GRID_SOURCE &source, IMGUI_VIEWER_OBJ *pObj, uint64_t expiry);
 		void copySnapshot(vector<IMGUI_VIEWER_OBJ> *pVgo);
-
-		bool upsertGeometry(_GeometryBase *pGb, const string &name, const json *pJ = nullptr);
-		void applyObjectConfig(IMGUI_VIEWER_OBJ *pObj, const json &j);
-		IMGUI_VIEWER_OBJ *findObject(_GeometryBase *pGb, const string &name = "");
-		const IMGUI_VIEWER_OBJ *findObject(_GeometryBase *pGb, const string &name = "") const;
 
 		bool projectPoint(const Vector3f &vP,
 						  const Vector2f &vCanvasPos,
@@ -145,14 +135,14 @@ namespace kai
 		void snapshotUnlock(void);
 
 	protected:
-		vector<IMGUI_VIEWER_OBJ> m_vGO;
+		SelectableOctGridSources m_sources;
 		vector<IMGUI_VIEWER_OBJ> m_vBuildGO;
 		vector<IMGUI_VIEWER_OBJ> m_vDrawGO;
 		OCTGRID_CELLS m_cells;
 		int m_nCbuf = 100000;
 
-		ImGUIviewerBackend *m_pBackend = nullptr;
-		ImGUIviewerGLRenderer *m_pGLRenderer = nullptr;
+		ImGUIbackend *m_pBackend = nullptr;
+		ImGUIglRenderer *m_pGLRenderer = nullptr;
 		_Thread *m_pTui = nullptr;
 		pthread_mutex_t m_snapshotMutex;
 

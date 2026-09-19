@@ -5,10 +5,10 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_UI__WSconsole_H_
-#define OpenKAI_src_UI__WSconsole_H_
+#ifndef OpenKAI_src_Protocol__WSconsole_H_
+#define OpenKAI_src_Protocol__WSconsole_H_
 
-#include "../Protocol/_JSONbase.h"
+#include "_JSONbase.h"
 
 namespace kai
 {

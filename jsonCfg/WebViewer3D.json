@@ -1,7 +1,7 @@
 {
   "APP": {
     "class": "ModuleMgr",
-    "appName": "WebViewer3D",
+    "appName": "WebSelectableOctGrid",
     "bLog": true,
     "bStdErr": true
   },
@@ -86,7 +86,7 @@
   },
 
   "viewer": {
-    "class": "_WebViewer3D",
+    "class": "_WebSelectableOctGrid",
     "thread": {
       "FPS": 30
     },
@@ -130,18 +130,18 @@
         "nP": 4000000,
         "nL": 0,
         "matPointSize": 2
-      },
+      }
+    ],
+    "vSelectableOctGrid": [
       {
-        "_GeometryBase": "octGrid",
-        "nP": 0,
-        "nL": 0,
         "nC": 18333,
         "matCol": [
           0.3,
           0.8,
           1,
           1
-        ]
+        ],
+        "_SelectableOctGrid": "octGrid"
       }
     ]
   },

@@ -97,7 +97,7 @@ namespace kai
 		bool saveConfig(json &j, string fName = "") override;
 		virtual const vector<UUID128> &getSelectedCells(void);
 
-		using _OctreeGrid::get;
+		// Cell snapshots are the grid's only stream output.
 		virtual int get(OCTGRID_CELLS *pOut, uint64_t tExpire = 0, size_t nMaxCells = SIZE_MAX);
 
 	protected:
@@ -116,7 +116,7 @@ namespace kai
 
 	protected:
 		// Compact published snapshot; viewers construct the geometry.
-		int m_nMaxCells = 100000 / 12;
+		int m_nMaxCells = 8333;
 		OCTGRID_CELLS m_cells;
 		vector<OCTGRID_CELL> m_buildCells;
 		int m_nPminBuild = 1;

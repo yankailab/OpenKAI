@@ -18,7 +18,6 @@ namespace kai
         geometry_pointCloud = 1,
         geometry_line = 2,
         geometry_mesh = 3,
-        geometry_octree = 4,
     };
 
     struct GEOMETRY_POINT

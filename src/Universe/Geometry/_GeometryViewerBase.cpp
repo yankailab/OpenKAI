@@ -58,18 +58,8 @@ namespace kai
 
 	bool _GeometryViewerBase::link(const json &j, ModuleMgr *pM)
 	{
+		NULL_F(pM);
 		IF_F(!this->_GeometryBase::link(j, pM));
-
-		vector<string> vGb;
-		jKv(j, "vGeometryBase", vGb);
-		m_vpGb.clear();
-		for (string n : vGb)
-		{
-			_GeometryBase *pGB = (_GeometryBase *)(pM->findModule(n));
-			IF_CONT(!pGB);
-
-			m_vpGb.push_back(pGB);
-		}
 
 		return true;
 	}
@@ -102,24 +92,7 @@ namespace kai
 
 	void _GeometryViewerBase::updateAllGeometries(void)
 	{
-		IF_(!check());
-
-		// override this method in inherited class
-
-		uint64_t tExpire = 0;
-		if(m_dTexpire > 0)
-			tExpire = getApproxTbootUs() - m_dTexpire;
-
-		for (_GeometryBase *pGb : m_vpGb)
-		{
-			m_grPt.clear();
-			pGb->get(&m_grPt, tExpire);
-			// update the point cloud buffer to frontend ingerited class
-
-			m_grLn.clear();
-			pGb->get(&m_grLn, tExpire);
-			// update the line buffer to frontend ingerited class
-		}
+		// Concrete viewers own and collect their typed sources.
 	}
 
 	void _GeometryViewerBase::resetCamPose(void)

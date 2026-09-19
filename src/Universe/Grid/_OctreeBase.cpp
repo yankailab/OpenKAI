@@ -5,7 +5,6 @@ namespace kai
 
 	_OctreeBase::_OctreeBase()
 	{
-		m_type = geometry_octree;
 	}
 
 	_OctreeBase::~_OctreeBase()
@@ -14,14 +13,14 @@ namespace kai
 
 	bool _OctreeBase::init(const json &j)
 	{
-		IF_F(!this->_GeometryBase::init(j));
+		IF_F(!this->_ReferenceFrame::init(j));
 
 		return true;
 	}
 
 	bool _OctreeBase::link(const json &j, ModuleMgr *pM)
 	{
-		IF_F(!this->_GeometryBase::link(j, pM));
+		IF_F(!this->_ReferenceFrame::link(j, pM));
 
 		return true;
 	}
@@ -34,7 +33,7 @@ namespace kai
 
 	bool _OctreeBase::check(void)
 	{
-		return this->_GeometryBase::check();
+		return this->_ReferenceFrame::check();
 	}
 
 	void _OctreeBase::update(void)

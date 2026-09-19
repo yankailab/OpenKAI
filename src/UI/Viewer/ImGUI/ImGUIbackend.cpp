@@ -1,11 +1,11 @@
 /*
- * ImGUIviewerBackend.cpp
+ * ImGUIbackend.cpp
  *
  *  Created on: Jun 4, 2026
  *      Author: Codex
  */
 
-#include "ImGUIviewerBackend.h"
+#include "ImGUIbackend.h"
 
 #ifdef OKAI_IMGUI_BACKEND_GLFW
 #include "imgui.h"
@@ -23,14 +23,14 @@
 
 namespace kai
 {
-	class ImGUIviewerBackendGLFW : public ImGUIviewerBackend
+	class ImGUIbackendGLFW : public ImGUIbackend
 	{
 	public:
-		ImGUIviewerBackendGLFW()
+		ImGUIbackendGLFW()
 		{
 		}
 
-		virtual ~ImGUIviewerBackendGLFW()
+		virtual ~ImGUIbackendGLFW()
 		{
 			shutdown();
 		}
@@ -181,12 +181,12 @@ namespace kai
 		bool m_bRendererInit = false;
 	};
 
-	ImGUIviewerBackend *createImGUIviewerBackend(void)
+	ImGUIbackend *createImGUIbackend(void)
 	{
-		return new ImGUIviewerBackendGLFW();
+		return new ImGUIbackendGLFW();
 	}
 
-	const char *getImGUIviewerBackendName(void)
+	const char *getImGUIbackendName(void)
 	{
 #if defined(OKAI_IMGUI_RENDERER_OPENGLES)
 		return "GLFW + OpenGL ES";
@@ -212,14 +212,14 @@ namespace kai
 
 namespace kai
 {
-	class ImGUIviewerBackendSDL : public ImGUIviewerBackend
+	class ImGUIbackendSDL : public ImGUIbackend
 	{
 	public:
-		ImGUIviewerBackendSDL()
+		ImGUIbackendSDL()
 		{
 		}
 
-		virtual ~ImGUIviewerBackendSDL()
+		virtual ~ImGUIbackendSDL()
 		{
 			shutdown();
 		}
@@ -400,12 +400,12 @@ namespace kai
 		bool m_bRendererInit = false;
 	};
 
-	ImGUIviewerBackend *createImGUIviewerBackend(void)
+	ImGUIbackend *createImGUIbackend(void)
 	{
-		return new ImGUIviewerBackendSDL();
+		return new ImGUIbackendSDL();
 	}
 
-	const char *getImGUIviewerBackendName(void)
+	const char *getImGUIbackendName(void)
 	{
 #if defined(OKAI_IMGUI_RENDERER_OPENGLES)
 		return "SDL2 + OpenGL ES";
@@ -418,7 +418,7 @@ namespace kai
 #else
 namespace kai
 {
-	class ImGUIviewerBackendNull : public ImGUIviewerBackend
+	class ImGUIbackendNull : public ImGUIbackend
 	{
 	public:
 		virtual bool init(const std::string &, int, int, bool)
@@ -448,12 +448,12 @@ namespace kai
 		}
 	};
 
-	ImGUIviewerBackend *createImGUIviewerBackend(void)
+	ImGUIbackend *createImGUIbackend(void)
 	{
-		return new ImGUIviewerBackendNull();
+		return new ImGUIbackendNull();
 	}
 
-	const char *getImGUIviewerBackendName(void)
+	const char *getImGUIbackendName(void)
 	{
 		return "none";
 	}

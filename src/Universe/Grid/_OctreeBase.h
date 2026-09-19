@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Universe_Grid__OctreeBase_H_
 #define OpenKAI_src_Universe_Grid__OctreeBase_H_
 
-#include "../Geometry/_GeometryBase.h"
+#include "../_ReferenceFrame.h"
 
 #define N_OCT 8
 
@@ -91,7 +91,8 @@ namespace kai
 		}
 	};
 
-	class _OctreeBase : public _GeometryBase
+	// Spatial cell hierarchy; geometry input/output belongs to separate interfaces.
+	class _OctreeBase : public _ReferenceFrame
 	{
 	public:
 		_OctreeBase();

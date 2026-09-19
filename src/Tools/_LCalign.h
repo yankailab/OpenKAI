@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_SLAM__LCalign_H_
-#define OpenKAI_src_SLAM__LCalign_H_
+#ifndef OpenKAI_src_Tools__LCalign_H_
+#define OpenKAI_src_Tools__LCalign_H_
 
 #include "../Universe/Geometry/PointCloud/_PointCloud.h"
 #include "../Vision/_VisionBase.h"

@@ -409,7 +409,7 @@ namespace kai
 	{
 #ifdef WITH_UNIVERSE
 
-		NULL_(m_pPointCloud);
+		NULL_(m_pPCL);
 
 		const static float s_b = 1.0 / 1000.0;
 		const static float c_b = 1.0 / 255.0;
@@ -421,6 +421,7 @@ namespace kai
 											  &m_scfDepth,
 											  m_pScVw);
 
+		m_pPCL->frameStart();
 		for (int i = 0; i < m_scfDepth.height; i++)
 		{
 			for (int j = 0; j < m_scfDepth.width; j++)
@@ -440,9 +441,10 @@ namespace kai
 					vC *= c_b;
 				}
 
-				m_pPointCloud->add(vP, vC, tNow);
+				m_pPCL->add(vP, vC, tNow);
 			}
 		}
+		m_pPCL->frameStop();
 #endif
 	}
 

@@ -41,7 +41,7 @@ namespace kai
 		ADD_MODULE(_PCrecv);
 		ADD_MODULE(_PCtransform);
 		ADD_MODULE(_GeometryViewerBase);
-		ADD_MODULE(_WebViewer3D);
+		ADD_MODULE(_WebSelectableOctGrid);
 
 #ifdef USE_OPEN3D
 		ADD_MODULE(_PCcrop);
@@ -54,7 +54,7 @@ namespace kai
 
 #ifdef WITH_UI
 #ifdef USE_IMGUI
-		ADD_MODULE(_ImGUIviewer);
+		ADD_MODULE(_ImGUIselectableOctGrid);
 #endif
 #endif
 #endif
@@ -168,6 +168,7 @@ namespace kai
 		ADD_MODULE(_SocketCAN);
 		ADD_MODULE(_USR_CANET);
 		ADD_MODULE(_JSONbase);
+		ADD_MODULE(_WSconsole);
 		ADD_MODULE(_Mavlink);
 		ADD_MODULE(_Modbus);
 		ADD_MODULE(_SBus);
@@ -198,9 +199,6 @@ namespace kai
 
 #if defined(WITH_SLAM) && defined(WITH_NAVIGATION)
 		ADD_MODULE(_SLAMbase);
-#if defined(USE_OPENCV) && defined(WITH_UNIVERSE) && defined(USE_OPEN3D)
-		ADD_MODULE(_LCalign);
-#endif // OpenCV
 #endif
 
 #ifdef WITH_STATE
@@ -212,13 +210,19 @@ namespace kai
 		ADD_MODULE(_SwarmCtrl);
 #endif
 
+#ifdef WITH_TOOLS
+#ifdef USE_OPENCV
+		ADD_MODULE(_CamCalib);
+#if defined(WITH_UNIVERSE) && defined(USE_OPEN3D)
+		ADD_MODULE(_LCalign);
+#endif
+#endif // OpenCV
+#endif // tools
+
 #ifdef WITH_UI
-		ADD_MODULE(_WSconsole);
 #ifdef USE_OPENCV
 		ADD_MODULE(_GstOutput);
 		ADD_MODULE(_WindowCV);
-#endif
-#ifdef USE_GUI
 #endif
 #endif
 

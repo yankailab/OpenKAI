@@ -1,6 +1,11 @@
-# Dear ImGui 3D Viewer
+# Dear ImGui selectable octree grid viewer
 
-`_ImGUIviewer` is a lightweight viewer module for OpenKAI 3D geometry streams. It derives from `_GeometryViewerBase`, reads geometry through `_GeometryBase::get()` point/line ring buffers and `_SelectableOctGrid::get(OCTGRID_CELLS*)` cell snapshots, and renders through Dear ImGui without using Open3D viewer APIs.
+`_ImGUIselectableOctGrid` is a lightweight viewer module for OpenKAI 3D geometry streams. It derives from `_GeometryViewerBase`, reads geometry through `_GeometryBase::get()` point/line ring buffers and `_SelectableOctGrid::get(OCTGRID_CELLS*)` cell snapshots, and renders through Dear ImGui without using Open3D viewer APIs.
+
+The viewer lives in `src/UI/Viewer/ImGUI/`: `_ImGUIselectableOctGrid.*` implements
+the module, `ImGUIbackend.*` handles the window/input backend, and
+`ImGUIglRenderer.*` renders its geometry with OpenGL. Its name matches the
+`_SelectableOctGrid` backend module and the browser viewer `_WebSelectableOctGrid`.
 
 ## Dear ImGui Install
 
@@ -82,12 +87,12 @@ Available backend options:
 
 ## Module Config
 
-Use the class name `_ImGUIviewer` in JSON:
+Use the class name `_ImGUIselectableOctGrid` in JSON:
 
 ```json
 {
   "viewer": {
-    "class": "_ImGUIviewer",
+    "class": "_ImGUIselectableOctGrid",
     "vWinSize": [1280, 720],
     "bShowPanel": true,
     "bShowGrid": true,
@@ -104,23 +109,33 @@ Use the class name `_ImGUIviewer` in JSON:
     "vGeometry": [
       {
         "_GeometryBase": "lidar_points",
-        "bStatic": false,
         "nP": 200000,
         "matPointSize": 2,
-        "matCol": [1.0, 1.0, 1.0, 1.0]
-      },
+        "matCol": [1.0, 1.0, 1.0]
+      }
+    ],
+    "vSelectableOctGrid": [
       {
-        "_GeometryBase": "occupancy_grid",
-        "bStatic": true,
+        "_SelectableOctGrid": "occupancy_grid",
+        "nC": 100000,
         "matLineWidth": 1,
-        "matCol": [0.3, 0.8, 1.0, 0.75]
+        "matCol": [0.3, 0.8, 1.0]
       }
     ]
   }
 }
 ```
 
-The viewer also accepts the older `geometry` object/array and `vGeometryBase` name-list keys, but `vGeometry` is the preferred key because it matches `_GeometryViewerBase`.
+`vGeometry` accepts only `_GeometryBase` sources for point/line streams.
+`vSelectableOctGrid` accepts only `_SelectableOctGrid` sources for cell streams.
+The viewer stores these in separate typed lists. Render snapshots contain only
+values and draw assets, with no module pointers. Source configuration and limits
+are shared with the [web viewer](WebViewer3D.md#viewer-sources).
+
+The old source name lists and generic reference-frame entries are removed.
+Per-source caps use `nP`, `nL`, and `nC`; zero disables that output. Octree grids
+have no point/line output API. Their own `vGeometryBase` setting still lists
+point-cloud inputs.
 
 ## Sample PLY Test
 
@@ -155,11 +170,11 @@ Run the viewer from the repository root so the relative PLY path resolves:
 
 Point size and line width are viewer/material settings (`matPointSize`, `matLineWidth`, `pointScale`, and `lineScale`); individual `GEOMETRY_POINT` and `GEOMETRY_LINE` records only carry geometry, color, and timestamp data.
 
-Point, line, and occupied-cell colors include alpha in `m_vC.w()`. Both GPU and CPU
-rendering multiply it by `matCol[3]`: alpha 0 is invisible, 1 is opaque, and
-intermediate values blend. Existing RGB-only point/line `add()` calls default to
-alpha 1; the `Vector4f` overloads accept explicit alpha. PLY files can supply an
-`alpha` property or packed `rgba`; files without alpha stay opaque.
+Point and line colors use `Vector3f` RGB in geometry records, viewer snapshots,
+and GPU buffers. Both GPU and CPU rendering keep them opaque; `matCol` supplies
+only their fallback RGB. PLY `alpha` properties and packed `rgba` alpha bytes
+are ignored. Occupied cells retain `Vector4f` RGBA and multiply cell alpha by
+`matCol[3]`: alpha 0 is invisible, 1 is opaque, and intermediate values blend.
 
 When OpenGL or OpenGL ES rendering is enabled, the viewer uploads point and line snapshots into GPU buffers and renders them from an ImGui callback. The CPU draw-list path remains available as a fallback for backends without GL support.
 
@@ -171,11 +186,10 @@ its UUID, center, full size, and color for future picking. The GPU renderer and
 CPU fallback generate the twelve edges from those boxes. Camera fitting,
 visibility, line width, and object opacity apply to grid boxes too.
 
-Use grid `nMaxCells` to cap occupied cells. When omitted, the old `nMaxLines`
-setting supplies a compatibility cap of `floor(nMaxLines / 12)` (default 8333).
-Viewer `nCbuf` defaults to 100000; per-object `vGeometry[].nC` can lower it, and
+Use grid `nMaxCells` to cap occupied cells (default 8333). `nMaxLines` is no longer accepted.
+Viewer `nCbuf` defaults to 100000; per-object `vSelectableOctGrid[].nC` can lower it, and
 zero omits cells. Point and line limits continue to control their own primitives.
-All occupied levels are included. Cell colors come from averaged point RGBA unless
+All occupied levels are included. Cell colors come from averaged point RGB with initial alpha 1 unless
 `vColCellOcc` explicitly supplies a uniform `[r,g,b,a]` override (a three-component
 override defaults to alpha 1). Empty or expired snapshots
 clear the previous boxes.

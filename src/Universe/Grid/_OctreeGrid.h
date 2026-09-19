@@ -1,9 +1,10 @@
 #ifndef OpenKAI_src_Universe_Grid__OctreeGrid_H_
 #define OpenKAI_src_Universe_Grid__OctreeGrid_H_
 
-#include "_OctreeBase.h"
-#include "../../Primitive/UUID128.h"
 #include <mutex>
+#include "../../Primitive/UUID128.h"
+#include "../Geometry/_GeometryBase.h"
+#include "_OctreeBase.h"
 
 namespace kai
 {

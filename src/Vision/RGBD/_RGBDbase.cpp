@@ -56,7 +56,7 @@ namespace kai
 #ifdef WITH_UNIVERSE
 		n = "";
 		jKv(j, "_PointCloud", n);
-		m_pPointCloud = (_PointCloud *)(pM->findModule(n));
+		m_pPCL = (_PointCloud *)(pM->findModule(n));
 #endif
 
 		return true;

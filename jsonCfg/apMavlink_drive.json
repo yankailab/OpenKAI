@@ -274,7 +274,7 @@
 
 
 	"viewer": {
-		"class": "_WebViewer3D",
+		"class": "_WebSelectableOctGrid",
 		"thread": {
 			"FPS": 30
 		},
@@ -308,28 +308,28 @@
 		],
 		"vGeometry": [
 			{
-				"_GeometryBase": "/scPC",
+				"_GeometryBase": "scPC",
 				"nP": 400000,
 				"nL": 0,
 				"matPointSize": 2
 			},
 			{
-				"_GeometryBase": "/pcFile",
+				"_GeometryBase": "pcFile",
 				"nP": 400000,
 				"nL": 0,
 				"matPointSize": 2
-			},
+			}
+		],
+		"vSelectableOctGrid": [
 			{
-				"_GeometryBase": "octGrid",
-				"nP": 0,
-				"nL": 0,
 				"nC": 18333,
 				"matCol": [
 					0.3,
 					0.8,
 					1,
 					1
-				]
+				],
+				"_SelectableOctGrid": "octGrid"
 			}
 		]
 	}

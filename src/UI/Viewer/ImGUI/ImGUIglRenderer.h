@@ -1,14 +1,14 @@
 /*
- * ImGUIviewerGLRenderer.h
+ * ImGUIglRenderer.h
  *
  *  Created on: Sep 7, 2026
  *      Author: Codex
  */
 
-#ifndef OpenKAI_src_UI_Viewer_ImGUIviewerGLRenderer_H_
-#define OpenKAI_src_UI_Viewer_ImGUIviewerGLRenderer_H_
+#ifndef OpenKAI_src_UI_Viewer_ImGUI_ImGUIglRenderer_H_
+#define OpenKAI_src_UI_Viewer_ImGUI_ImGUIglRenderer_H_
 
-#include "_ImGUIviewer.h"
+#include "_ImGUIselectableOctGrid.h"
 
 namespace kai
 {
@@ -25,11 +25,11 @@ namespace kai
 		float m_lineScale = 1.0f;
 	};
 
-	class ImGUIviewerGLRenderer
+	class ImGUIglRenderer
 	{
 	public:
-		ImGUIviewerGLRenderer();
-		~ImGUIviewerGLRenderer();
+		ImGUIglRenderer();
+		~ImGUIglRenderer();
 
 		bool bReady(void) const;
 		void release(void);
@@ -42,6 +42,12 @@ namespace kai
 
 	private:
 		struct VERTEX
+		{
+			float x, y, z;
+			float r, g, b;
+		};
+
+		struct CELL_VERTEX
 		{
 			float x, y, z;
 			float r, g, b, a;
@@ -57,12 +63,13 @@ namespace kai
 		struct DRAW_CMD
 		{
 			bool m_bLine = false;
+			bool m_bCell = false;
 			int m_iBatch = 0;
 		};
 
 		bool init(void);
 		bool uploadPreparedSnapshot(void);
-		void bindVertexLayout(void);
+		void bindVertexLayout(bool cells = false);
 		bool compileProgram(void);
 		bool compileShader(unsigned int type, const char *pSrc, unsigned int *pShader);
 		void updateCameraUniforms(const IMGUI_VIEWER_GL_FRAME &frame);
@@ -76,6 +83,8 @@ namespace kai
 		unsigned int m_vboP = 0;
 		unsigned int m_vaoL = 0;
 		unsigned int m_vboL = 0;
+		unsigned int m_vaoC = 0;
+		unsigned int m_vboC = 0;
 		int m_attrPos = -1;
 		int m_attrCol = -1;
 		int m_attrAlpha = -1;
@@ -95,10 +104,13 @@ namespace kai
 		unsigned long long m_pendingVersion = 0;
 		int m_nPoints = 0;
 		int m_nLines = 0;
+		int m_nCellVertices = 0;
 		vector<VERTEX> m_vPointUpload;
 		vector<VERTEX> m_vLineUpload;
+		vector<CELL_VERTEX> m_vCellUpload;
 		vector<DRAW_BATCH> m_vPointBatch;
 		vector<DRAW_BATCH> m_vLineBatch;
+		vector<DRAW_BATCH> m_vCellBatch;
 		vector<DRAW_CMD> m_vDrawCmd;
 	};
 }

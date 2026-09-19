@@ -30,7 +30,7 @@
 #include "../Universe/Geometry/PointCloud/Pipeline/_PCrecv.h"
 #include "../Universe/Geometry/PointCloud/Pipeline/_PCtransform.h"
 #include "../Universe/Geometry/_GeometryViewerBase.h"
-#include "../UI/Viewer/_WebViewer3D.h"
+#include "../UI/Viewer/Web/_WebSelectableOctGrid.h"
 
 #ifdef USE_OPEN3D
 #include "../Universe/Geometry/PointCloud/Pipeline/_PCcrop.h"
@@ -43,7 +43,7 @@
 
 #ifdef WITH_UI
 #ifdef USE_IMGUI
-#include "../UI/Viewer/_ImGUIviewer.h"
+#include "../UI/Viewer/ImGUI/_ImGUIselectableOctGrid.h"
 #endif
 #endif
 
@@ -161,6 +161,7 @@
 #include "../Protocol/_USR_CANET.h"
 #include "../Protocol/_SocketCAN.h"
 #include "../Protocol/_JSONbase.h"
+#include "../Protocol/_WSconsole.h"
 #include "../Protocol/_Mavlink.h"
 #include "../Protocol/_PWMio.h"
 #include "../Protocol/_ProtocolBase.h"
@@ -191,9 +192,6 @@
 
 #if defined(WITH_SLAM) && defined(WITH_NAVIGATION)
 #include "../SLAM/_SLAMbase.h"
-#if defined(USE_OPENCV) && defined(WITH_UNIVERSE) && defined(USE_OPEN3D)
-#include "../SLAM/_LCalign.h"
-#endif // OpenCV
 #endif
 
 #ifdef WITH_STATE
@@ -205,13 +203,19 @@
 #include "../Swarm/_SwarmCtrl.h"
 #endif
 
+#ifdef WITH_TOOLS
+#ifdef USE_OPENCV
+#include "../Tools/_CamCalib.h"
+#if defined(WITH_UNIVERSE) && defined(USE_OPEN3D)
+#include "../Tools/_LCalign.h"
+#endif
+#endif // OpenCV
+#endif // tools
+
 #ifdef WITH_UI
-#include "../UI/_WSconsole.h"
 #ifdef USE_OPENCV
 #include "../UI/_GstOutput.h"
 #include "../UI/_WindowCV.h"
-#endif
-#ifdef USE_GUI
 #endif
 #endif
 

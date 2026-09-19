@@ -69,7 +69,7 @@ namespace kai
 #endif
 
 #ifdef WITH_UNIVERSE
-		_PointCloud *m_pPointCloud = nullptr;
+		_PointCloud *m_pPCL = nullptr;
 #endif
 	};
 

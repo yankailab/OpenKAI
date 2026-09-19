@@ -24,7 +24,7 @@ def box_edges(lo, hi):
 
 
 def check(executable, name, points, depth, boxes, size=(8, 8, 8),
-          origin=(0, 0, 0), max_lines=1000, max_cells=None, viewer_cells=100000, color=None, alpha=None):
+          origin=(0, 0, 0), max_cells=1000, viewer_cells=100000, color=None, alpha=None):
     root = Path(__file__).resolve().parents[2]
     expected = sum((box_edges(*box) for box in boxes), Counter())
     with tempfile.TemporaryDirectory(prefix='openkai-octree-') as tmp:
@@ -43,13 +43,14 @@ def check(executable, name, points, depth, boxes, size=(8, 8, 8),
                        'nP': 16, 'vfName': [str(ply)]},
             'octGrid': {'class': '_SelectableOctGrid', 'thread': {'FPS': 30},
                         'nP': 16, 'vPorigin': origin, 'vRootCellSize': size,
-                        'nMaxLevel': depth, 'nMaxLines': max_lines, 'nPminBuild': 0,
+                        'nMaxLevel': depth, 'nPminBuild': 0,
                         'vGeometryBase': ['points']},
-            'viewer': {'class': '_WebViewer3D', 'thread': {'FPS': 30},
+            'viewer': {'class': '_WebSelectableOctGrid', 'thread': {'FPS': 30},
                        'host': '127.0.0.1', 'port': port,
                        'webRoot': str(root / 'html/viewer/_SelectableOctGrid'),
                        'nPbuf': 16, 'nLbuf': 1024,
-                       'vGeometryBase': ['octGrid', 'points'], 'nCbuf': viewer_cells},
+                       'vGeometry': [{'_GeometryBase': 'points'}],
+                       'vSelectableOctGrid': [{'_SelectableOctGrid': 'octGrid'}], 'nCbuf': viewer_cells},
         }
         if max_cells is not None: config['octGrid']['nMaxCells'] = max_cells
         if color is not None: config['octGrid']['vColCellOcc'] = color
@@ -84,8 +85,10 @@ def check(executable, name, points, depth, boxes, size=(8, 8, 8),
                     assert opcode == 2
                     point_objects = read_frame(point_client.receive()[1], 1)
                     n_points = sum(o['count'] for o in point_objects)
+                    assert len(point_objects) == 1 and names[point_objects[0]['id']] == 'points'
                     for obj in point_objects:
-                        assert all(a == (255 if alpha is None else alpha) for a in obj['colors'][3::4])
+                        assert len(obj['colors']) == obj['count'] * 3
+                        assert all(c == 255 for c in obj['colors'])
                     actual = Counter()
                     objects = read_frame(frame, 3)
                     assert len(objects) == 1 and names[objects[0]['id']] == 'octGrid'
@@ -112,7 +115,7 @@ def check(executable, name, points, depth, boxes, size=(8, 8, 8),
                                             tuple(c[a] + extent[a] / 2 for a in range(3)))
                         expected_rgba = bytes(int(x * 255 + .5) for x in color) if color else bytes([255] * 3)
                         if len(expected_rgba) == 3:
-                            expected_rgba += bytes([255 if color or alpha is None else alpha])
+                            expected_rgba += bytes([255])
                         if not color and check.cell_alpha is not None:
                             expected_rgba = expected_rgba[:3] + bytes([int(check.cell_alpha * 255 + .5)])
                         assert record[16:] == expected_rgba, (record[16:], expected_rgba)
@@ -167,13 +170,13 @@ def main():
            ((10, -20, 30), (14, -18, 31)),
            ((12, -19, 30.5), (14, -18, 31))],
           size=(8, 4, 2), origin=(10, -20, 30))
-    check(executable, 'line cap keeps complete boxes', [point], 4,
-          [root_box, positive_boxes[0]], max_lines=25)
+    check(executable, 'cell cap keeps complete boxes', [point], 4,
+          [root_box, positive_boxes[0]], max_cells=2)
     check(executable, 'explicit cell cap and RGB override', [point], 4,
           [root_box, positive_boxes[0]], max_cells=2, color=(1, .2, 0))
     check(executable, 'explicit RGBA override', [point], 0, [root_box], color=(1, .2, 0, .25))
-    check(executable, 'point and cell alpha from PLY', [point], 0, [root_box], alpha=64)
-    check(executable, 'fully transparent point and cell', [point], 0, [root_box], alpha=0)
+    check(executable, 'PLY alpha ignored for RGB points', [point], 0, [root_box], alpha=64)
+    check(executable, 'PLY zero alpha ignored for RGB points', [point], 0, [root_box], alpha=0)
     check(executable, 'viewer cell cap independent of line cap', [point], 4,
           [root_box], viewer_cells=1)
     check(executable, 'zero cell cap retains empty header', [point], 4, [], max_cells=0)

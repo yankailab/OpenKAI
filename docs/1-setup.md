@@ -30,9 +30,9 @@ sudo apt-get -y install libgtk-3-dev gstreamer1.0-x gstreamer1.0-gtk3
 ```
 
 ### ImGUI with GLFW and desktop OpenGL
-For `USE_GUI=ON`, `USE_IMGUI=ON`, `IMGUI_BACKEND=GLFW`, and `IMGUI_RENDERER=OPENGL`,
+For `USE_IMGUI=ON`, `IMGUI_BACKEND=GLFW`, and `IMGUI_RENDERER=OPENGL`,
 ```bash
-sudo apt-get -y install libglfw3-dev libgl1-mesa-dev libglew-dev libglu1-mesa-dev
+sudo apt-get -y install libglfw3-dev libgl1-mesa-dev libglew-dev
 ```
 
 For SDL2/OpenGL ES dependencies and configuration,
