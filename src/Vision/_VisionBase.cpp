@@ -52,32 +52,17 @@ namespace kai
 		m_bOpened = false;
 	}
 
-	int _VisionBase::getData(void *pOut, int iD, int nB)
-	{
-		NULL__(pOut, 0);
-
-#ifdef USE_OPENCV
-		if (nB == 0)
-			nB = m_mRGB.total() * m_mRGB.elemSize();
-
-		memcpy(pOut, m_mRGB.data, nB);
-		return nB;
-#endif
-
-		return 0;
-	}
-
 	bool _VisionBase::check(void)
 	{
 		return _ModuleBase::check();
 	}
 
-	Mat *_VisionBase::getMat(void)
+	Mat *_VisionBase::getMatRGB(void)
 	{
 		return &m_mRGB;
 	}
 
-	Vector2i _VisionBase::getSize(void)
+	Vector2i _VisionBase::getSizeRGB(void)
 	{
 		return m_vSizeRGB;
 	}

@@ -136,7 +136,7 @@ namespace kai
 	{
 		IF_(!check());
 
-		Mat *pM = m_pV->getMat();
+		Mat *pM = m_pV->getMatRGB();
 		NULL_(pM);
 
 		Mat mIn = *pM;

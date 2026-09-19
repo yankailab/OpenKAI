@@ -62,7 +62,7 @@ namespace kai
 	void _D2RGB::filter(void)
 	{
 		NULL_(m_pV);
-		Mat *pM = m_pV->getDepthMat();
+		Mat *pM = m_pV->getMatDepth();
 		NULL_(pM);
 		IF_(pM->empty());
 
@@ -92,13 +92,13 @@ namespace kai
 	Mat *_D2RGB::getMat(void)
 	{
 		NULL_N(m_pV);
-		return m_pV->getDepthMat();
+		return m_pV->getMatDepth();
 	}
 
 	float _D2RGB::d(const Vector4f &bb)
 	{
 		NULL__(m_pV, -1);
-		Mat *pM = m_pV->getDepthMat();
+		Mat *pM = m_pV->getMatDepth();
 		NULL__(pM, -1);
 		IF__(pM->empty(), -1);
 
@@ -124,7 +124,7 @@ namespace kai
 	float _D2RGB::d(const Vector4i &bb)
 	{
 		NULL__(m_pV, -1);
-		Mat *pM = m_pV->getDepthMat();
+		Mat *pM = m_pV->getMatDepth();
 		NULL__(pM, -1);
 		IF__(pM->empty(), -1);
 

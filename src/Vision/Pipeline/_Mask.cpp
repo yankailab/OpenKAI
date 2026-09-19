@@ -64,9 +64,9 @@ namespace kai
 		NULL_(m_pV);
 		NULL_(m_pVmask);
 
-		Mat *pM = m_pV->getMat();
+		Mat *pM = m_pV->getMatRGB();
 		NULL_(pM);
-		Mat *pMmask = m_pVmask->getMat();
+		Mat *pMmask = m_pVmask->getMatRGB();
 		NULL_(pMmask);
 
 		IF_(pM->empty());

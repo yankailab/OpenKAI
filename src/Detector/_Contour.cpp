@@ -38,7 +38,7 @@ namespace kai
 	{
 		NULL_F(m_pCanvas);
 		NULL_F(m_pV);
-		IF_F(m_pV->getMat()->empty());
+		IF_F(m_pV->getMatRGB()->empty());
 
 		return this->_DetectorBase::check();
 	}
@@ -59,7 +59,7 @@ namespace kai
 	{
 		IF_(!check());
 
-		Mat mBGR = *m_pV->getMat();
+		Mat mBGR = *m_pV->getMatRGB();
 		vector<vector<Point>> vvContours;
 		findContours(mBGR, vvContours, m_mode, m_method);
 

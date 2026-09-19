@@ -74,7 +74,7 @@ namespace kai
 	bool _TrackerBase::startTrack(Vector4f &bb)
 	{
 		NULL_F(m_pV);
-		Mat *pM = m_pV->getMat();
+		Mat *pM = m_pV->getMatRGB();
 		IF_F(pM->empty());
 
 		float mBig = 1.0 + m_margin;

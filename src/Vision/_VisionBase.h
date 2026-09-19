@@ -66,13 +66,11 @@ namespace kai
 		virtual bool bOpened(void);
 		virtual void close(void);
 
-		virtual int getData(void* pOut, int iD = 0, int nB = 0);
-
-		virtual Vector2i getSize(void);
 		virtual VISION_TYPE getType(void);
+		virtual Vector2i getSizeRGB(void);
 
 #ifdef USE_OPENCV
-		virtual Mat *getMat(void);
+		virtual Mat *getMatRGB(void);
 #endif
 
 	protected:
@@ -86,7 +84,7 @@ namespace kai
 		bool m_bOpened = false;
 
 #ifdef USE_OPENCV
-		Mat m_mRGB;
+		Mat m_mRGB;	// CV_8UC3
 #endif
 	};
 

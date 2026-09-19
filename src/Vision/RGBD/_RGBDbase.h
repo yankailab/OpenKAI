@@ -29,11 +29,13 @@ namespace kai
 		virtual void console(void *pConsole);
 		virtual void draw(void *pMat);
 
-		virtual int getData(void *pOut, int iD = 0, int nB = 0);
+		virtual Vector2f getDepthRange(void);
 
 #ifdef USE_OPENCV
-		virtual Mat *getDepthMat(void);
-		virtual Vector2f getDepthRange(void);
+		virtual Mat *getMatDepth(void);
+		virtual Mat *getMatTransformedDepth(void);
+		virtual Mat *getMatTransformedRGB(void);
+		virtual Mat *getMatIR(void);
 #endif
 
 	protected:
@@ -44,14 +46,14 @@ namespace kai
 		int m_devFPSd = 30;
 		Vector2i m_vSizeD = Vector2i(1280, 720);
 		Vector2f m_vRangeD = Vector2f(0, FLT_MAX);
-		float m_dScale = 1.0;	// calibration, only apply to CV_32UC1 m_mDepth
-		float m_dOfs = 0.0;
+		float m_dScale = 1.0; // scaling calibration
+		float m_dOfs = 0.0;	  // offset calibration
 
 		// switchs
 		bool m_bDepth = true;
-		bool m_bIR = false;
-		bool m_btRGB = false;
 		bool m_btDepth = false;
+		bool m_btRGB = false;
+		bool m_bIR = false;
 		bool m_bConfidence = true;
 		float m_fConfidenceThr = 0.0;
 
@@ -60,10 +62,10 @@ namespace kai
 		bool m_bPCLrgb = false; // RGB point cloud
 
 #ifdef USE_OPENCV
-		Mat m_mDepth;
-		Mat m_mtDepth;
-		Mat m_mtRGB;
-		Mat m_mIR;
+		Mat m_mDepth;  // device native format, usually CV_16UC1
+		Mat m_mtDepth; // the same as mDepth
+		Mat m_mtRGB;   // CV_8UC3
+		Mat m_mIR;	   // CV_8UC1
 #endif
 
 #ifdef WITH_UNIVERSE

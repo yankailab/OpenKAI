@@ -62,58 +62,14 @@ namespace kai
 		return true;
 	}
 
-	int _RGBDbase::getData(void *pOut, int iD, int nB)
-	{
-		NULL__(pOut, 0);
-
-#ifdef USE_OPENCV
-		if (iD == 0)
-		{
-			// RGB
-			return this->_VisionBase::getData(pOut, iD, nB);
-		}
-		else if (iD == 1)
-		{
-			// Depth
-			if (nB == 0)
-				nB = m_mDepth.total() * m_mDepth.elemSize();
-
-			memcpy(pOut, m_mDepth.data, nB);
-		}
-		else if (iD == 2)
-		{
-			// Transformed depth
-			if (nB == 0)
-				nB = m_mtDepth.total() * m_mtDepth.elemSize();
-
-			memcpy(pOut, m_mtDepth.data, nB);
-		}
-		else if (iD == 3)
-		{
-			// Transformed RGB
-			if (nB == 0)
-				nB = m_mtRGB.total() * m_mtRGB.elemSize();
-
-			memcpy(pOut, m_mtRGB.data, nB);
-		}
-		else if (iD == 4)
-		{
-			// IR
-			if (nB == 0)
-				nB = m_mIR.total() * m_mIR.elemSize();
-
-			memcpy(pOut, m_mIR.data, nB);
-		}
-
-		return nB;
-#endif
-
-		return 0;
-	}
-
 	bool _RGBDbase::check(void)
 	{
 		return _VisionBase::check();
+	}
+
+	Vector2f _RGBDbase::getDepthRange(void)
+	{
+		return m_vRangeD;
 	}
 
 	void _RGBDbase::console(void *pConsole)
@@ -125,14 +81,24 @@ namespace kai
 	}
 
 #ifdef USE_OPENCV
-	Mat *_RGBDbase::getDepthMat(void)
+	Mat *_RGBDbase::getMatDepth(void)
 	{
 		return &m_mDepth;
 	}
 
-	Vector2f _RGBDbase::getDepthRange(void)
+	Mat *_RGBDbase::getMatTransformedDepth(void)
 	{
-		return m_vRangeD;
+		return &m_mtDepth;
+	}
+
+	Mat *_RGBDbase::getMatTransformedRGB(void)
+	{
+		return &m_mtRGB;
+	}
+
+	Mat *_RGBDbase::getMatIR(void)
+	{
+		return &m_mIR;
 	}
 
 	void _RGBDbase::draw(void *pMat)

@@ -302,7 +302,6 @@ namespace kai
 		}
 
 		void updatePCL(void);
-		void updateDepth(void);
 		void updateTPP(void);
 		static void *getTPP(void *This)
 		{
@@ -320,14 +319,14 @@ namespace kai
 	protected:
 		string m_SN = "";
 		ob::Context m_ctx;
-		shared_ptr<ob::Device> m_spDev;
-		shared_ptr<ob::Pipeline> m_spPipe;
-		shared_ptr<ob::SensorList> m_spSensorList;
-		shared_ptr<ob::Config> m_spConfig;
+		shared_ptr<ob::Device> m_spDev = nullptr;
+		shared_ptr<ob::Pipeline> m_spPipe = nullptr;
+		shared_ptr<ob::SensorList> m_spSensorList = nullptr;
+		shared_ptr<ob::Config> m_spConfig = nullptr;
 		uint32_t m_tOutMs = 100;
 
-		shared_ptr<ob::PointCloudFilter> m_spPCF;
-		shared_ptr<ob::Frame> m_spFrame;
+		shared_ptr<ob::PointCloudFilter> m_spPCF = nullptr;
+		shared_ptr<ob::Frame> m_spFrame = nullptr;
 
 		uint64_t m_tDus;
 		uint64_t m_dtDus;

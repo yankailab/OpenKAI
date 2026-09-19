@@ -68,7 +68,7 @@ namespace kai
 	{
 		IF_(!check());
 
-		Mat m = *m_pV->getMat();
+		Mat m = *m_pV->getMatRGB();
 		IF_(m.empty());
 
 		vector<int> vID;

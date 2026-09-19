@@ -65,7 +65,7 @@ namespace kai
 	void _Remap::filter(void)
 	{
 		NULL_(m_pV);
-		Mat *pM = m_pV->getMat();
+		Mat *pM = m_pV->getMatRGB();
 		NULL_(pM);
 		IF_(pM->empty());
 

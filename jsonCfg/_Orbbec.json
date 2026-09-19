@@ -70,7 +70,27 @@
 		"bDepth": true,
 		"bIMU": true,
 		"bPCd": true,
-		"bPCrgb": false
+		"bPCrgb": false,
+
+		"/OrbbecControls": "null preserves the camera setting (OrbbecCtrl default). Set a BOOL option to true/false or an INT/FLOAT option to a supported number to override it.",
+		"OB_PROP_COLOR_AUTO_EXPOSURE_BOOL": null,
+		"OB_PROP_COLOR_EXPOSURE_INT": null,
+		"OB_PROP_COLOR_GAIN_INT": null,
+		"OB_PROP_COLOR_AUTO_WHITE_BALANCE_BOOL": null,
+		"OB_PROP_COLOR_WHITE_BALANCE_INT": null,
+
+		"OB_PROP_DEPTH_AUTO_EXPOSURE_BOOL": null,
+		"OB_PROP_DEPTH_EXPOSURE_INT": null,
+		"OB_PROP_DEPTH_GAIN_INT": null,
+
+		"OB_PROP_LASER_CONTROL_INT": null,
+		"OB_PROP_LASER_POWER_LEVEL_CONTROL_INT": null,
+		"OB_PROP_DEPTH_NOISE_REMOVAL_FILTER_BOOL": null,
+		"OB_PROP_HW_NOISE_REMOVE_FILTER_ENABLE_BOOL": null,
+		"OB_PROP_HW_NOISE_REMOVE_FILTER_THRESHOLD_FLOAT": null,
+
+		"OB_PROP_COLOR_MIRROR_BOOL": null,
+		"OB_PROP_DEPTH_MIRROR_BOOL": null
 	},
 
 	

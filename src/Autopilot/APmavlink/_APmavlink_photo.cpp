@@ -116,7 +116,7 @@ namespace kai
 		// if (m_pV)
 		// {
 		// 	//rgb
-		// 	Mat mBGR = m_pV->getMat()->clone();
+		// 	Mat mBGR = m_pV->getMatRGB()->clone();
 		// 	if (m_bFlipRGB)
 		// 		cv::flip(mBGR, mBGR, -1);
 		// 	IF_(mBGR.empty());

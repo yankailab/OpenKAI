@@ -59,7 +59,7 @@ namespace kai
 	{
 		IF_(!check());
 
-		Mat *pM = m_pV->getMat();
+		Mat *pM = m_pV->getMatRGB();
 		IF_(pM->empty());
 		Mat m = *pM;
 

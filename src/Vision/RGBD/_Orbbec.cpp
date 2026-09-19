@@ -561,50 +561,57 @@ namespace kai
 		{
 			m_pTpp->sleepT(0);
 
-			updateDepth();
-
 			updatePCL();
 		}
-	}
-
-	void _Orbbec::updateDepth(void)
-	{
-#ifdef USE_OPENCV
-		// Mat mZ = Mat(Size(m_vSizeD.x(), m_vSizeD.y()), CV_16UC1, (void *)m_rsDepth.get_data(), Mat::AUTO_STEP);
-		// Mat mD, mDs;
-		// mZ.convertTo(mD, CV_32FC1);
-		// mDs = mD * m_dScale;
-		// cv::add(mDs, m_dOfs, m_mDepth);
-#endif
 	}
 
 	void _Orbbec::updatePCL(void)
 	{
 #ifdef WITH_UNIVERSE
-		NULL_(m_spFrame);
+		const auto spFrame = m_spFrame;
+		NULL_(spFrame);
 		NULL_(m_pPointCloud);
 
-		const int n = int(m_spFrame->dataSize() / sizeof(OBPoint));
-		const OBPoint *pts = (const OBPoint *)m_spFrame->data();
+		const auto format = spFrame->getFormat();
+		IF_(format != OB_FORMAT_POINT && format != OB_FORMAT_RGB_POINT);
 
-		const float s_b = 1.0 / 1000.0;
-		const float c_b = 1.0 / 255.0;
+		// The SDK scale converts point coordinates to millimeters.
+		const float s_b = spFrame->as<ob::PointsFrame>()->getCoordinateValueScale() * 0.001f;
+		const uint64_t tDus = frameTsUs_(spFrame);
 
-		for (int i = 0; i < n; i++)
+		if (format == OB_FORMAT_RGB_POINT)
 		{
-			const auto &p = pts[i];
-			IF_CONT(!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z));
-			IF_CONT(p.z <= 0);
+			const size_t nP = spFrame->getDataSize() / sizeof(OBColorPoint);
+			const auto *pts = reinterpret_cast<const OBColorPoint *>(spFrame->getData());
+			constexpr float c_b = 1.0f / 255.0f;
 
-			Vector3f vP(p.x, p.y, p.z);
-			vP *= s_b;
+			for (size_t i = 0; i < nP; ++i)
+			{
+				const auto &p = pts[i];
+				IF_CONT(!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z));
+				IF_CONT(p.z <= 0);
 
-			IF_CONT(vP.z() < m_vRangeD.x());
-			IF_CONT(vP.z() > m_vRangeD.y());
+				const Vector3f vP(p.x * s_b, p.y * s_b, p.z * s_b);
+				// The filter preserves the configured BGR stream's channel order.
+				const Vector3f vC(p.b * c_b, p.g * c_b, p.r * c_b);
+				m_pPointCloud->add(vP, vC, tDus);
+			}
+		}
+		else
+		{
+			const size_t nP = spFrame->getDataSize() / sizeof(OBPoint);
+			const auto *pts = reinterpret_cast<const OBPoint *>(spFrame->getData());
+			const Vector3f vC(1, 1, 1);
 
-			Vector3f vC(1, 1, 1);
+			for (size_t i = 0; i < nP; ++i)
+			{
+				const auto &p = pts[i];
+				IF_CONT(!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z));
+				IF_CONT(p.z <= 0);
 
-			m_pPointCloud->add(vP, vC, m_tDus);
+				const Vector3f vP(p.x * s_b, p.y * s_b, p.z * s_b);
+				m_pPointCloud->add(vP, vC, tDus);
+			}
 		}
 #endif
 	}
@@ -618,7 +625,6 @@ namespace kai
 		pC->addMsg("tDus = " + li2str(m_tDus) + ", dtDus = " + li2str(m_dtDus));
 		pC->addMsg("tRGBus = " + li2str(m_tRGBus) + ", dtRGBus = " + li2str(m_dtRGBus));
 	}
-
 
 	OrbbecCtrl _Orbbec::getCamCtrl(void) const
 	{

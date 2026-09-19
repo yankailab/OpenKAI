@@ -75,7 +75,7 @@ namespace kai
 		NULL_F(m_pSession);
 		NULL_F(m_pCanvas);
 		NULL_F(m_pV);
-		Mat *pBGR = m_pV->getMat();
+		Mat *pBGR = m_pV->getMatRGB();
 		NULL_F(pBGR);
 		IF_F(pBGR->empty());
 
@@ -98,7 +98,7 @@ namespace kai
 	{
 		IF_(!check());
 
-		Mat *pBGR = m_pV->getMat();
+		Mat *pBGR = m_pV->getMatRGB();
 		pBGR->copyTo(m_mRGB);
 		Mat mIn = m_mRGB;
 
