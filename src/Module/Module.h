@@ -151,6 +151,14 @@
 #ifdef USE_REALSENSE
 #include "../Navigation/_RStracking.h"
 #endif
+
+#if defined(WITH_SLAM)
+#include "../SLAM/_SLAMbase.h"
+#if defined(USE_GLIM)
+#include "../SLAM/_GLIM.h"
+#endif
+#endif
+
 #endif
 
 #ifdef WITH_NET
@@ -189,10 +197,6 @@
 #include "../Sensor/LiDAR/_RoboSenseAiry.h"
 #endif // 3D
 #endif // sensor
-
-#if defined(WITH_SLAM) && defined(WITH_NAVIGATION)
-#include "../SLAM/_SLAMbase.h"
-#endif
 
 #ifdef WITH_STATE
 #include "../State/_StateControl.h"

@@ -24,7 +24,7 @@ git clone --depth 1 --branch 4.3a1 https://github.com/borglab/gtsam.git
 
 Edit
 ```bash
-gtsam/gtsam/geometry/SL4.cpp
+nano gtsam/gtsam/geometry/SL4.cpp
 ```
 add near the top
 
@@ -34,7 +34,7 @@ add near the top
 
 Edit
 ```bash
-gtsam/gtsam/slam/FrobeniusFactor.h
+nano gtsam/gtsam/slam/FrobeniusFactor.h
 ```
 
 Around lines 200–225, replace the evaluateError() implementation with this:

@@ -90,7 +90,7 @@ namespace kai
         m_iPframeTo = m_grPt.iT();
     }
 
-    int _PointCloud::getLastFrame(vector<Vector3f> *pvP, vector<Vector3f> *pvC)
+    int _PointCloud::getLastFrame(vector<Vector3f> *pvP, vector<Vector3f> *pvC, uint64_t& tStamp)
     {
         NULL__(pvP, -1);
         NULL__(pvC, -1);
@@ -113,6 +113,7 @@ namespace kai
                 iFrom = 0;
         }
 
+        tStamp = m_tStampFrame;
         return nP;
     }
 

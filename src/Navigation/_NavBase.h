@@ -22,13 +22,7 @@ namespace kai
 		virtual bool init(const json& j);
 		virtual void console(void *pConsole);
 
-		virtual bool bOpened(void);
-
-		virtual void reset(void);
 		virtual float confidence(void);
-
-	protected:
-		virtual void resetAll(void);
 
 	protected:
 		bool m_bOpened = false;

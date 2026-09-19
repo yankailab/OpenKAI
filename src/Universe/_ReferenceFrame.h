@@ -37,8 +37,13 @@ namespace kai
         virtual void setOrientation(const Quaterniond &vOrt, bool bConvertToEulerAngles = false);
         virtual void setOrientation(double x, double y, double z, double w, bool bConvertToEulerAngles = false);
 
-        //TODO: add getters
-        
+        virtual const Vector3d &getPos(void);
+        virtual void getPos(double &x, double &y, double &z);
+        virtual const Vector3d &getAngles(void);
+        virtual void getAngles(double &roll, double &pitch, double &yaw);
+        virtual const Quaterniond &getOrientation(void);
+        virtual void getOrientation(double &x, double &y, double &z, double &w);
+
     protected:
         virtual void updatePose(void);
         virtual void updateEulerAngles(void);

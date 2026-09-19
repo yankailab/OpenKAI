@@ -27,23 +27,9 @@ namespace kai
 		return true;
 	}
 
-	bool _NavBase::bOpened(void)
-	{
-		return m_bOpened;
-	}
-
-	void _NavBase::reset(void)
-	{
-	}
-
 	float _NavBase::confidence(void)
 	{
 		return m_confidence;
-	}
-
-	void _NavBase::resetAll(void)
-	{
-		m_confidence = 0.0;
 	}
 
 	void _NavBase::console(void *pConsole)

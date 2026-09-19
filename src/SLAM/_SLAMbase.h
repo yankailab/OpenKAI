@@ -27,6 +27,7 @@ namespace kai
 		virtual void console(void *pConsole);
 
 		bool bTracking(void);
+		virtual void reset(void);
 
 	private:
 		virtual void update(void);

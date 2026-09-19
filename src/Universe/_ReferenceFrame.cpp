@@ -112,6 +112,43 @@ namespace kai
         updateEulerAngles();
     }
 
+    const Vector3d &_ReferenceFrame::getPos(void)
+    {
+        return m_vPos;
+    }
+
+    void _ReferenceFrame::getPos(double &x, double &y, double &z)
+    {
+        x = m_vPos.x();
+        y = m_vPos.y();
+        z = m_vPos.z();
+    }
+
+    const Vector3d &_ReferenceFrame::getAngles(void)
+    {
+        return m_vAngle;
+    }
+
+    void _ReferenceFrame::getAngles(double &roll, double &pitch, double &yaw)
+    {
+        roll = m_vAngle.x();
+        pitch = m_vAngle.y();
+        yaw = m_vAngle.z();
+    }
+
+    const Quaterniond &_ReferenceFrame::getOrientation(void)
+    {
+        return m_vOrt;
+    }
+
+    void _ReferenceFrame::getOrientation(double &x, double &y, double &z, double &w)
+    {
+        x = m_vOrt.x();
+        y = m_vOrt.y();
+        z = m_vOrt.z();
+        w = m_vOrt.w();
+    }
+
     void _ReferenceFrame::updatePose(void)
     {
         m_mPose.linear() = m_vOrt.toRotationMatrix();

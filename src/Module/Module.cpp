@@ -158,6 +158,14 @@ namespace kai
 #ifdef USE_REALSENSE
 		ADD_MODULE(_RStracking);
 #endif
+
+#if defined(WITH_SLAM)
+		ADD_MODULE(_SLAMbase);
+#if defined(WITH_GLIM)
+		ADD_MODULE(_GLIM);
+#endif
+#endif
+
 #endif
 
 #ifdef WITH_NET
@@ -196,10 +204,6 @@ namespace kai
 		ADD_MODULE(_RoboSenseAiry);
 #endif // 3D
 #endif // sensor
-
-#if defined(WITH_SLAM) && defined(WITH_NAVIGATION)
-		ADD_MODULE(_SLAMbase);
-#endif
 
 #ifdef WITH_STATE
 		ADD_MODULE(_StateControl);
