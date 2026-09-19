@@ -33,7 +33,6 @@ namespace kai
 
         // data io
         virtual void add(const Vector3f &vPa, const Vector3f &vPb, const Vector3f &vC, uint64_t tStamp = 1);
-        virtual void add(const Vector3f &vPa, const Vector3f &vPb, const Vector4f &vC, uint64_t tStamp = 1);
 
     protected:
         virtual int copy(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pIn, GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut, uint64_t tExpire = 0);

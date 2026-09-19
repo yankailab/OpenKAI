@@ -67,11 +67,6 @@ namespace kai
 
     void _Line::add(const Vector3f &vPa, const Vector3f &vPb, const Vector3f &vC, uint64_t tStamp)
     {
-        add(vPa, vPb, Vector4f(vC.x(), vC.y(), vC.z(), 1), tStamp);
-    }
-
-    void _Line::add(const Vector3f &vPa, const Vector3f &vPb, const Vector4f &vC, uint64_t tStamp)
-    {
         GEOMETRY_LINE gL;
         gL.m_vPa = m_mPosef * vPa;
         gL.m_vPb = m_mPosef * vPb;

@@ -24,7 +24,7 @@ namespace kai
     struct GEOMETRY_POINT
     {
         Vector3f m_vP = Vector3f::Zero(); // pos
-        Vector4f m_vC{0, 0, 0, 1};        // color with alpha; RGB-only sources are opaque
+        Vector3f m_vC{0, 0, 0};           // color
         uint64_t m_tStamp;
 
         void clear(void)
@@ -39,7 +39,7 @@ namespace kai
     {
         Vector3f m_vPa = Vector3f::Zero(); // line from
         Vector3f m_vPb = Vector3f::Zero(); // line to
-        Vector4f m_vC{0, 0, 0, 1};         // color with alpha; RGB-only sources are opaque
+        Vector3f m_vC{0, 0, 0};            // color
         uint64_t m_tStamp;                 // time stamp, 0: invalid, >= 1 valid
 
         void clear(void)

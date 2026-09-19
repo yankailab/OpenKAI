@@ -35,7 +35,7 @@ namespace kai
 
     void _PointCloud::clear(void)
     {
-		std::lock_guard<std::mutex> lock(m_mtxPt);
+        std::lock_guard<std::mutex> lock(m_mtxPt);
         m_grPt.clear();
     }
 
@@ -65,12 +65,12 @@ namespace kai
         IF_(!check());
     }
 
-    void _PointCloud::add(const Vector3f &vP, const Vector3f &vC, uint64_t tStamp)
+    int _PointCloud::get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire)
     {
-        add(vP, Vector4f(vC.x(), vC.y(), vC.z(), 1), tStamp);
+        return copy(&m_grPt, pOut, tExpire);
     }
 
-    void _PointCloud::add(const Vector3f &vP, const Vector4f &vC, uint64_t tStamp)
+    void _PointCloud::add(const Vector3f &vP, const Vector3f &vC, uint64_t tStamp)
     {
         GEOMETRY_POINT gP;
         gP.m_vP = m_mPosef * vP;
@@ -78,6 +78,42 @@ namespace kai
         gP.m_tStamp = tStamp;
 
         m_grPt.add(gP);
+    }
+
+    void _PointCloud::frameStart(void)
+    {
+        m_iPframeFrom = m_grPt.iT();
+    }
+
+    void _PointCloud::frameStop(void)
+    {
+        m_iPframeTo = m_grPt.iT();
+    }
+
+    int _PointCloud::getLastFrame(vector<Vector3f> *pvP, vector<Vector3f> *pvC)
+    {
+        NULL__(pvP, -1);
+        NULL__(pvC, -1);
+
+        int nP = 0;
+        int iFrom = m_iPframeFrom;
+        int iTo = m_iPframeTo;
+
+        while (iFrom != iTo)
+        {
+            GEOMETRY_POINT *pGp = m_grPt.get(iFrom);
+            if (!pGp)
+                break;
+
+            pvP->push_back(pGp->m_vP);
+            pvC->push_back(pGp->m_vC);
+            nP++;
+
+            if (++iFrom >= m_grPt.nT())
+                iFrom = 0;
+        }
+
+        return nP;
     }
 
     int _PointCloud::copy(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pIn, GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire)
@@ -91,10 +127,10 @@ namespace kai
 
         while (nP < nPin)
         {
-            GEOMETRY_POINT* pGp = pIn->get(iP);
-            if(!pGp)
+            GEOMETRY_POINT *pGp = pIn->get(iP);
+            if (!pGp)
                 break;
-            if(bExpired(pGp->m_tStamp, tExpire))
+            if (bExpired(pGp->m_tStamp, tExpire))
                 break;
 
             pOut->add(*pGp);
@@ -104,11 +140,6 @@ namespace kai
         }
 
         return nP;
-    }
-
-    int _PointCloud::get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire)
-    {
-        return copy(getRingBuf(), pOut, tExpire);
     }
 
     GEOMETRY_RINGBUF<GEOMETRY_POINT> *_PointCloud::getRingBuf(void)

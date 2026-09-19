@@ -33,7 +33,11 @@ namespace kai
 
         // data io
         virtual void add(const Vector3f &vP, const Vector3f &vC, uint64_t tStamp = 1);
-        virtual void add(const Vector3f &vP, const Vector4f &vC, uint64_t tStamp = 1);
+
+        // for framed inputs such as RGBD cameras
+        virtual void frameStart(void);
+        virtual void frameStop(void);
+        virtual int getLastFrame(vector<Vector3f> *pvP, vector<Vector3f> *pvC);
 
     protected:
         virtual int copy(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pIn, GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire = 0);
@@ -51,6 +55,10 @@ namespace kai
     protected:
         GEOMETRY_RINGBUF<GEOMETRY_POINT> m_grPt;
         std::mutex m_mtxPt;
+
+        int m_iPframeFrom = 0;
+        int m_iPframeTo = 0;
+        uint64_t m_tStampFrame = 0;
     };
 
 }

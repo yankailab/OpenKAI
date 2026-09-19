@@ -23,7 +23,7 @@ namespace kai
 		UUID128 m_ID = 0;
 
 		int m_nP = 0;
-		Vector4f m_vC = {1, 1, 1, 1}; // default color
+		Vector4f m_vC = {1, 1, 1, 1};	  // default color
 		uint64_t m_tStamp = 0;		  // last updated time stamp
 
 		void clear(void)
