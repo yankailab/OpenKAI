@@ -72,6 +72,16 @@ namespace kai
 		return m_vRangeD;
 	}
 
+	float _RGBDbase::getDepthScale(void)
+	{
+		return m_dScale;
+	}
+
+	float _RGBDbase::getDepthOffset(void)
+	{
+		return m_dOfs;
+	}
+
 	void _RGBDbase::console(void *pConsole)
 	{
 		NULL_(pConsole);
@@ -107,7 +117,6 @@ namespace kai
 		this->_VisionBase::draw(pMat);
 		IF_(!check());
 		IF_(m_mRGB.empty());
-
 	}
 #endif
 

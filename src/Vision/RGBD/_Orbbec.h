@@ -323,7 +323,7 @@ namespace kai
 		shared_ptr<ob::Pipeline> m_spPipe = nullptr;
 		shared_ptr<ob::SensorList> m_spSensorList = nullptr;
 		shared_ptr<ob::Config> m_spConfig = nullptr;
-		uint32_t m_tOutMs = 100;
+		uint32_t m_tOutMs = 1000;
 
 		shared_ptr<ob::PointCloudFilter> m_spPCF = nullptr;
 		shared_ptr<ob::Frame> m_spFrame = nullptr;

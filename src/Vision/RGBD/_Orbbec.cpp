@@ -174,34 +174,12 @@ static void from_json(const json &j, OBDeviceTimestampResetConfig &value)
 		throw std::invalid_argument("Missing or invalid OBDeviceTimestampResetConfig.timestamp_reset_signal_output_enable");
 }
 
-namespace
-{
-	using ::jKv;
-
-	template <typename T>
-	bool jKv(const json &j, const string &key, std::optional<T> &value)
-	{
-		if (!j.is_object() || !j.contains(key))
-			return false;
-		if (j.at(key).is_null())
-		{
-			value.reset();
-			return true;
-		}
-
-		T configured{};
-		if (!::jKv(j, key, configured))
-			throw std::invalid_argument("Invalid Orbbec option: " + key);
-		value = configured;
-		return true;
-	}
-}
-
 namespace kai
 {
 
 	_Orbbec::_Orbbec()
 	{
+		m_dScale = 0.001f;
 	}
 
 	_Orbbec::~_Orbbec()
@@ -576,7 +554,7 @@ namespace kai
 		IF_(format != OB_FORMAT_POINT && format != OB_FORMAT_RGB_POINT);
 
 		// The SDK scale converts point coordinates to millimeters.
-		const float s_b = spFrame->as<ob::PointsFrame>()->getCoordinateValueScale() * 0.001f;
+		const float s_b = spFrame->as<ob::PointsFrame>()->getCoordinateValueScale() * m_dScale;
 		const uint64_t tDus = frameTsUs_(spFrame);
 
 		m_pPCL->frameStart();

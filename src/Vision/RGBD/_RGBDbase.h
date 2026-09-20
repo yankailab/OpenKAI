@@ -30,6 +30,8 @@ namespace kai
 		virtual void draw(void *pMat);
 
 		virtual Vector2f getDepthRange(void);
+		virtual float getDepthScale(void);
+		virtual float getDepthOffset(void);
 
 #ifdef USE_OPENCV
 		virtual Mat *getMatDepth(void);

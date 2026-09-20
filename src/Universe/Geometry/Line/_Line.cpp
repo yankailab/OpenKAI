@@ -83,7 +83,7 @@ namespace kai
 
         int nL = 0;
         int nLin = pIn->nT();
-        int iL = pIn->iT();
+        int iL = pIn->iLastT();
 
         while (nL < nLin)
         {

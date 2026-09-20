@@ -102,7 +102,7 @@ namespace kai
                 m_iT = 0;
         }
 
-        int iT(void)
+        int iLastT(void)
         {
             IF__(m_iT <= 0, 0);
             return m_iT - 1;

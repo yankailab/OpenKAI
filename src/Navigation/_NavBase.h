@@ -27,6 +27,8 @@ namespace kai
 		// Navigation confidence in percent; zero means unavailable or stale.
 		virtual void setConfidence(float confidence);
 
+		//TODO: add global positioning, etc.
+
 	protected:
 		float m_confidence = 0.0;
 		uint64_t m_tConfidenceTimeoutUs = 0; // zero disables expiry

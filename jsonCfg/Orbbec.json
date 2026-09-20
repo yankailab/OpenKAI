@@ -13,8 +13,7 @@
 		},
 		"vBASE": [
 			"Orbbec",
-			"/obIMU",
-			"fastLivo"
+			"obIMU"
 		]
 	},
 
@@ -32,13 +31,13 @@
 	},
 	"viewD": {
 		"class": "_WindowCV",
-		"bON": false,
+		"bON": true,
 		"thread": {
 			"FPS": 30
 		},
 		"bFullScreen": 0,
 		"vBASE": [
-			"d2g"
+			"d2rgb"
 		]
 	},
 
@@ -62,15 +61,15 @@
 			640,
 			480
 		],
-		"_PointCloud": "obPC",
+		"_PointCloud": "obPCL",
 		"_IMUbase": "obIMU",
 		"SN": "",
 		"tOutMs": 1000,
 		"bRGB": true,
 		"bDepth": true,
 		"bIMU": true,
-		"bPCd": true,
-		"bPCrgb": false,
+		"bPCL": false,
+		"bPCLrgb": true,
 
 		"/OrbbecControls": "null preserves the camera setting (OrbbecCtrl default). Set a BOOL option to true/false or an INT/FLOAT option to a supported number to override it.",
 		"OB_PROP_COLOR_AUTO_EXPOSURE_BOOL": null,
@@ -94,15 +93,16 @@
 	},
 
 	
-	"d2g": {
-		"class": "_D2G",
-		"bON": false,
+	"d2rgb": {
+		"class": "_D2RGB",
+		"bON": true,
 		"thread": {
 			"FPS": 30
 		},
-		"_RGBDbase": "Orbbec"
+		"_RGBDbase": "Orbbec",
+		"bMeasure": false
 	},
-	"obPC": {
+	"obPCL": {
 		"class": "_PointCloud",
 		"bON": true,
 		"bLog": true,
@@ -119,5 +119,51 @@
 		},
 		"nIMUdqMax": 1000,
 		"tIMUpairToleranceUs": 5000
+	},
+
+	"viewer": {
+	    "class": "_WebGeometryBase",
+		"bON": false,
+	    "thread": {
+	      "FPS": 30
+	    },
+	    "host": "0.0.0.0",
+	    "port": 8080,
+	    "nClientMax": 8,
+	    "nPbuf": 400000,
+	    "nLbuf": 100000,
+	    "dTexpire": 0,
+	    "bAutoBound": true,
+	    "bShowGrid": true,
+		"bFrame":false,
+
+	    "vCamLookAt": [
+	      0,
+	      0,
+	      0
+	    ],
+	    "vCamEye": [
+	      0,
+	      -8,
+	      4
+	    ],
+	    "vCamUp": [
+	      0,
+	      0,
+	      1
+	    ],
+	    "camFov": 70,
+	    "vCamNF": [
+	      0.01,
+	      1000000
+	    ],
+	    "vGeometry": [
+	      {
+	        "_GeometryBase": "obPCL",
+	        "nP": 400000,
+	        "nL": 0,
+	        "matPointSize": 2
+	      }
+	    ]
 	}
 }

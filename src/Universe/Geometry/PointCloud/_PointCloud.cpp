@@ -37,10 +37,8 @@ namespace kai
     {
         std::lock_guard<std::mutex> lock(m_mtxPt);
         m_grPt.clear();
-        m_bFrame = false;
-        m_vFrameBuilding.clear();
-        m_vFrameLast.clear();
-        m_tStampFrame = 0;
+        m_framing.clear();
+        m_framed.clear();
     }
 
     bool _PointCloud::start(void)
@@ -82,57 +80,73 @@ namespace kai
         gP.m_vP = m_mPosef * vP;
         gP.m_vC = vC;
         gP.m_tStamp = tStamp;
-
         m_grPt.add(gP);
-        if (m_bFrame)
-            m_vFrameBuilding.push_back(gP);
+
+        m_tStamp = tStamp;
     }
 
     void _PointCloud::frameStart(void)
     {
-        std::lock_guard<std::mutex> lock(m_mtxPt);
-        m_vFrameBuilding.clear();
-        m_bFrame = true;
+        m_framing.start(m_grPt.m_iT);
     }
 
     void _PointCloud::frameStop(void)
     {
-        std::lock_guard<std::mutex> lock(m_mtxPt);
-        IF_(!m_bFrame);
-        m_bFrame = false;
-        m_vFrameLast.swap(m_vFrameBuilding);
-        m_tStampFrame = m_vFrameLast.empty() ? 0 : m_vFrameLast.front().m_tStamp;
+        std::lock_guard<std::mutex> lock(m_mtxFrame);
+        m_framing.stop(m_grPt.m_iT, m_grPt.m_nT, m_tStamp);
+        std::swap(m_framing, m_framed);
     }
 
-    int _PointCloud::getLastFrame(vector<Vector3f> *pvP, vector<Vector3f> *pvC, uint64_t &tStamp)
+    int _PointCloud::getLastFrame(vector<Vector3f> *pvP, vector<Vector3f> *pvC, uint64_t& tStamp)
     {
-        std::lock_guard<std::mutex> lock(m_mtxPt);
-        tStamp = m_tStampFrame;
         NULL__(pvP, -1);
-        pvP->clear();
-        pvP->reserve(m_vFrameLast.size());
-        if (pvC)
+
+        int iP;
+        int iPto;
+        int nP = 0;
+
         {
-            pvC->clear();
-            pvC->reserve(m_vFrameLast.size());
-        }
-        for (const auto &point : m_vFrameLast)
-        {
-            pvP->push_back(point.m_vP);
+            std::lock_guard<std::mutex> lock(m_mtxFrame);
+
+            pvP->clear();
+            pvP->reserve(m_framed.m_nP);
             if (pvC)
-                pvC->push_back(point.m_vC);
+            {
+                pvC->clear();
+                pvC->reserve(m_framed.m_nP);
+            }
+
+            iP = m_framed.m_iPfrom;
+            iPto = m_framed.m_iPto;
+            tStamp = m_tStamp;
         }
-        return static_cast<int>(m_vFrameLast.size());
+
+        while (iP != iPto)
+        {
+            GEOMETRY_POINT *pGp = m_grPt.get(iP);
+            if (!pGp)
+                break;
+
+            pvP->push_back(pGp->m_vP);
+            if (pvC)
+                pvC->push_back(pGp->m_vC);
+
+            nP++;
+            if (++iP >= m_grPt.m_nT)
+                iP = 0;
+        }
+
+        return nP;
     }
 
     int _PointCloud::copy(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pIn, GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire)
     {
-        NULL__(pIn, 0);
-        NULL__(pOut, 0);
+        NULL__(pIn, -1);
+        NULL__(pOut, -1);
 
         int nP = 0;
         int nPin = pIn->nT();
-        int iP = pIn->iT();
+        int iP = pIn->iLastT();
 
         while (nP < nPin)
         {
@@ -184,4 +198,3 @@ namespace kai
     }
 
 }
-

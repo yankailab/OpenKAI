@@ -3,6 +3,7 @@
 
 #include "../Base/common.h"
 #include "../Dependencies/json.h"
+#include <optional>
 
 using namespace std;
 using namespace nlohmann;
@@ -78,20 +79,38 @@ bool jKv(const json &j, const string &key, T2 &v, bool bLog = false)
 // Copy only supplied coefficients, preserving defaults for short config arrays.
 template <typename T1, typename Scalar, int N, int Options, int MaxRows, int MaxCols>
 bool jKv(const json &j, const string &key,
-         Eigen::Matrix<Scalar, N, 1, Options, MaxRows, MaxCols> &v, bool bLog = false)
+		 Eigen::Matrix<Scalar, N, 1, Options, MaxRows, MaxCols> &v, bool bLog = false)
 {
-    vector<T1> values;
-    if (!jKv(j, key, values, bLog))
-        return false;
+	vector<T1> values;
+	if (!jKv(j, key, values, bLog))
+		return false;
 
-    const auto n = std::min(values.size(), static_cast<size_t>(v.size()));
-    for (size_t i = 0; i < n; ++i)
-        v[static_cast<Eigen::Index>(i)] = static_cast<Scalar>(values[i]);
-		
-    return true;
+	const auto n = std::min(values.size(), static_cast<size_t>(v.size()));
+	for (size_t i = 0; i < n; ++i)
+		v[static_cast<Eigen::Index>(i)] = static_cast<Scalar>(values[i]);
+
+	return true;
 }
 
-inline const json& jK(const json &j, const std::string &key, bool bLog = false)
+template <typename T>
+bool jKv(const json &j, const string &key, std::optional<T> &value)
+{
+	if (!j.is_object() || !j.contains(key))
+		return false;
+	if (j.at(key).is_null())
+	{
+		value.reset();
+		return true;
+	}
+
+	T configured{};
+	if (!::jKv(j, key, configured))
+		throw std::invalid_argument("Invalid Orbbec option: " + key);
+	value = configured;
+	return true;
+}
+
+inline const json &jK(const json &j, const std::string &key, bool bLog = false)
 {
 	static const json jNull = nullptr;
 
@@ -132,9 +151,9 @@ namespace kai
 
 		string getJsonStr(void);
 		bool parseJsonStr(const string &s);
-		json& getJson(void);
+		json &getJson(void);
 
-		void setJson(json& j);
+		void setJson(json &j);
 		void setNdumpSpace(int nD);
 
 		string getName(void);

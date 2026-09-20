@@ -9,6 +9,7 @@
 #define OpenKAI_src_Vision_Pipeline__D2RGB_H_
 
 #include "../RGBD/_RGBDbase.h"
+#include <mutex>
 
 namespace kai
 {
@@ -24,7 +25,6 @@ namespace kai
 		virtual bool start(void);
 		virtual void draw(void *pMat);
 
-		Mat *getMat(void);
 		virtual float d(const Vector4i &bb);
 		virtual float d(const Vector4f &bb);
 
@@ -40,10 +40,12 @@ namespace kai
 	protected:
 		_RGBDbase *m_pV = nullptr;
 
+		Mat m_mDreal;	// Depth mat in meter unit, CV_32FC1 real valued
+
 		int m_nHistLev = 128;
 		int m_iHistFrom = 0;
 		float m_minHistD = 0.25;
-		bool m_bDebugDepth = true;
+		bool m_bMeasure = true;
 
 	};
 

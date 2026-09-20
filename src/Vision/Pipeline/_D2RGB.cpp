@@ -26,7 +26,7 @@ namespace kai
 		jKv(j, "nHistLev", m_nHistLev);
 		jKv(j, "iHistFrom", m_iHistFrom);
 		jKv(j, "minHistD", m_minHistD);
-		jKv(j, "bDebugDepth", m_bDebugDepth);
+		jKv(j, "bMeasure", m_bMeasure);
 
 		return true;
 	}
@@ -66,43 +66,30 @@ namespace kai
 		NULL_(pM);
 		IF_(pM->empty());
 
-		// this is gray only
-		float scale = 255.0 / m_pV->getDepthRange().norm();
-		pM->convertTo(m_mRGB,
-					  CV_8UC1,
-					  scale,
-					  -m_pV->getDepthRange().x() * scale);
+		Mat mGray;
+		if (pM->type() == CV_16UC1)
+		{
+			pM->convertTo(m_mDreal, CV_32FC1, m_pV->getDepthScale(), m_pV->getDepthOffset());
+		}
+		else if (pM->type() == CV_32FC1)
+		{
+			pM->copyTo(m_mDreal);
+		}
+		else
+		{
+			return;
+		}
 
-		// cv::add(mDs, m_dOfs, m_mDepth);
-		// if (m_bDepthShow)
-		// {
-		//     IF_(m_mDepth.empty());
+		cv::normalize(m_mDreal, mGray, 0, 255, cv::NORM_MINMAX, CV_8UC1);
 
-		//     dispImg = cv::Mat(height, width, CV_16UC1, pData);
-
-		//     dispImg.convertTo(dispImg, CV_8U, 255.0 / slope);
-		//     applyColorMap(dispImg, dispImg, cv::COLORMAP_RAINBOW);
-
-		//     Mat mDColor(Size(m_vDsize.x, m_vDsize.y), CV_8UC3, (void *)dColor.get_data(),
-		//                 Mat::AUTO_STEP);
-		//     mDColor.copyTo(m_mDepthShow);
-		// }
-	}
-
-	Mat *_D2RGB::getMat(void)
-	{
-		NULL_N(m_pV);
-		return m_pV->getMatDepth();
+		cv::applyColorMap(mGray, m_mRGB, cv::COLORMAP_JET);
 	}
 
 	float _D2RGB::d(const Vector4f &bb)
 	{
-		NULL__(m_pV, -1);
-		Mat *pM = m_pV->getMatDepth();
-		NULL__(pM, -1);
-		IF__(pM->empty(), -1);
+		IF__(m_mDreal.empty(), -1);
 
-		Size s = pM->size();
+		Size s = m_mDreal.size();
 		Vector4i vBB = Vector4i::Zero();
 		vBB.x() = bb.x() * s.width;
 		vBB.y() = bb.y() * s.height;
@@ -123,10 +110,7 @@ namespace kai
 
 	float _D2RGB::d(const Vector4i &bb)
 	{
-		NULL__(m_pV, -1);
-		Mat *pM = m_pV->getMatDepth();
-		NULL__(pM, -1);
-		IF__(pM->empty(), -1);
+		IF__(m_mDreal.empty(), -1);
 
 		Vector2f vRangeD = m_pV->getDepthRange();
 
@@ -135,7 +119,7 @@ namespace kai
 		vector<int> vChannel = {0};
 
 		Rect r = bb2Rect(bb);
-		Mat mRoi = (*pM)(r);
+		Mat mRoi = m_mDreal(r);
 		vector<Mat> vRoi = {mRoi};
 		Mat mHist;
 		cv::calcHist(vRoi, vChannel, Mat(),
@@ -163,7 +147,7 @@ namespace kai
 		IF_(!check());
 		IF_(m_mRGB.empty());
 
-		if (m_bDebugDepth)
+		if (m_bMeasure)
 		{
 			Mat *pM = static_cast<Mat *>(pMat);
 			IF_(pM->empty());
