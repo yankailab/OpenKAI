@@ -35,7 +35,7 @@ namespace kai
 
     void _PointCloud::clear(void)
     {
-        std::lock_guard<std::mutex> lock(m_mtxPt);
+        std::scoped_lock lock(m_mtxPt, m_mtxFrame);
         m_grPt.clear();
         m_framing.clear();
         m_framed.clear();
@@ -87,12 +87,13 @@ namespace kai
 
     void _PointCloud::frameStart(void)
     {
+        std::lock_guard<std::mutex> lock(m_mtxPt);
         m_framing.start(m_grPt.m_iT);
     }
 
     void _PointCloud::frameStop(void)
     {
-        std::lock_guard<std::mutex> lock(m_mtxFrame);
+        std::scoped_lock lock(m_mtxPt, m_mtxFrame);
         m_framing.stop(m_grPt.m_iT, m_grPt.m_nT, m_tStamp);
         std::swap(m_framing, m_framed);
     }
@@ -101,13 +102,14 @@ namespace kai
     {
         NULL__(pvP, -1);
 
+        // Keep the completed frame metadata and ring storage stable while copying.
+        std::scoped_lock lock(m_mtxPt, m_mtxFrame);
+
         int iP;
         int iPto;
         int nP = 0;
 
         {
-            std::lock_guard<std::mutex> lock(m_mtxFrame);
-
             pvP->clear();
             pvP->reserve(m_framed.m_nP);
             if (pvC)
@@ -118,7 +120,7 @@ namespace kai
 
             iP = m_framed.m_iPfrom;
             iPto = m_framed.m_iPto;
-            tStamp = m_tStamp;
+            tStamp = m_framed.m_tStamp;
         }
 
         while (iP != iPto)

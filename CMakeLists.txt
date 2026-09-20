@@ -136,7 +136,8 @@ if(WITH_UNIVERSE)
   add_definitions(-DWITH_UNIVERSE -DBOOST_ERROR_CODE_HEADER_ONLY)
   list(APPEND OpenKAI_include ${Boost_INCLUDE_DIRS})
   list(APPEND OpenKAI_cpp src/Net/HttpServer.cpp src/IO/WebSocketStream.cpp
-    src/UI/Viewer/Web/_WebSelectableOctGrid.cpp src/UI/Viewer/SelectableOctGridSources.cpp)
+    src/UI/Viewer/Web/_WebSelectableOctGrid.cpp src/UI/Viewer/SelectableOctGridSources.cpp
+    src/UI/Viewer/Web/_WebGeometryBase.cpp)
     set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/_ReferenceFrame.cpp)
     set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Grid/_OctreeBase.cpp)
     set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Grid/_OctreeGrid.cpp)
@@ -749,7 +750,9 @@ target_link_libraries(OpenKAI ${OpenKAI_lib})
 if(WITH_UNIVERSE)
   add_custom_command(TARGET OpenKAI POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-      "${PROJECT_SOURCE_DIR}/html/viewer/_SelectableOctGrid" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_SelectableOctGrid")
+      "${PROJECT_SOURCE_DIR}/html/viewer/_SelectableOctGrid" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_SelectableOctGrid"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${PROJECT_SOURCE_DIR}/html/viewer/_GeometryBase" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_GeometryBase")
 endif()
 
 # Optional ROS2 configs
@@ -768,6 +771,7 @@ endif()
 include(GNUInstallDirs)
 if(WITH_UNIVERSE)
   install(DIRECTORY html/viewer/_SelectableOctGrid DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
+  install(DIRECTORY html/viewer/_GeometryBase DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
 endif()
 set_target_properties(OpenKAI PROPERTIES
   VERSION ${PROJECT_VERSION})

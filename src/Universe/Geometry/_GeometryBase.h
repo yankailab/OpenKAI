@@ -150,6 +150,9 @@ namespace kai
         virtual int get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire = 0);
         virtual int get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut, uint64_t tExpire = 0);
 
+        // Sources without framed point clouds return an empty frame.
+        virtual int getLastFrame(vector<Vector3f> *pvP, vector<Vector3f> *pvC, uint64_t &tStamp);
+
     protected:
         GEOMETRY_TYPE m_type = geometry_unknown;
 

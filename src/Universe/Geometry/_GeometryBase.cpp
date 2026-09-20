@@ -77,6 +77,14 @@ namespace kai
         return 0;
     }
 
+    int _GeometryBase::getLastFrame(vector<Vector3f> *pvP, vector<Vector3f> *pvC, uint64_t &tStamp)
+    {
+        if (pvP) pvP->clear();
+        if (pvC) pvC->clear();
+        tStamp = 0;
+        return 0;
+    }
+
     void _GeometryBase::console(void *pConsole)
     {
         NULL_(pConsole);

@@ -68,7 +68,7 @@
 		"bRGB": true,
 		"bDepth": true,
 		"bIMU": true,
-		"bPCL": false,
+		"bPCL": true,
 		"bPCLrgb": true,
 
 		"/OrbbecControls": "null preserves the camera setting (OrbbecCtrl default). Set a BOOL option to true/false or an INT/FLOAT option to a supported number to override it.",
@@ -123,7 +123,7 @@
 
 	"viewer": {
 	    "class": "_WebGeometryBase",
-		"bON": false,
+		"bON": true,
 	    "thread": {
 	      "FPS": 30
 	    },
@@ -131,27 +131,27 @@
 	    "port": 8080,
 	    "nClientMax": 8,
 	    "nPbuf": 400000,
-	    "nLbuf": 100000,
+	    "nLbuf": 0,
 	    "dTexpire": 0,
 	    "bAutoBound": true,
 	    "bShowGrid": true,
-		"bFrame":false,
+		"bFrame": true,
 
 	    "vCamLookAt": [
 	      0,
 	      0,
 	      0
 	    ],
-	    "vCamEye": [
-	      0,
-	      -8,
-	      4
-	    ],
-	    "vCamUp": [
-	      0,
-	      0,
-	      1
-	    ],
+		"vCamEye": [
+			0,
+			-1,
+			-4
+		],
+		"vCamUp": [
+			0,
+			-1,
+			0
+		],
 	    "camFov": 70,
 	    "vCamNF": [
 	      0.01,

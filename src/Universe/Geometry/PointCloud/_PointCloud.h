@@ -72,7 +72,7 @@ namespace kai
         // for framed inputs such as RGBD cameras
         virtual void frameStart(void);
         virtual void frameStop(void);
-        virtual int getLastFrame(vector<Vector3f> *pvP, vector<Vector3f> *pvC, uint64_t& tStamp);
+        int getLastFrame(vector<Vector3f> *pvP, vector<Vector3f> *pvC, uint64_t& tStamp) override;
 
     protected:
         virtual int copy(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pIn, GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire = 0);
