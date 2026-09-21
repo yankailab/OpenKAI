@@ -25,7 +25,6 @@ namespace kai
 
 		jKv(j, "bFullScreen", m_bFullScreen);
 		jKv<int>(j, "vSize", m_vSize);
-		m_waitKey = 1000.0f / m_pT->getTargetFPS();
 
 		IF_Le_F(std::abs(m_vSize.prod()) <= 0, "Window size too small");
 		m_M = Mat::zeros(m_vSize.y(), m_vSize.x(), CV_8UC3);
@@ -72,7 +71,8 @@ namespace kai
 		// show window
 		imshow(this->getName(), m_M);
 
-		// int key = waitKey(m_waitKey);
-		waitKey(m_waitKey);
+		// autoFPS() controls the refresh rate. Keep event handling short because
+		// HighGUI serializes these calls across all preview windows.
+		waitKey(1);
 	}
 }

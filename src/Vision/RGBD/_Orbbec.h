@@ -159,6 +159,10 @@ namespace kai
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
+		virtual void console(const json &j, void *pJSONbase);
+
+		virtual bool loadConfig(json *pJ = nullptr, string fName = "");
+		virtual bool saveConfig(json &j, string fName = "");
 
 		virtual bool open(void);
 		virtual void close(void);
@@ -288,6 +292,11 @@ namespace kai
 		bool enableFirmwareLog(bool value);
 
 	private:
+		json configValues(void) const;
+		json controlSchema(void);
+		bool applyConfig(const json &values, bool live, json &errors);
+		void setStreamConfig(const json &values);
+
 		bool setBoolProperty(OBPropertyID propertyId, bool value);
 		bool setIntProperty(OBPropertyID propertyId, int32_t value);
 		bool setFloatProperty(OBPropertyID propertyId, float value);
@@ -319,6 +328,7 @@ namespace kai
 	protected:
 		string m_SN = "";
 		ob::Context m_ctx;
+		bool m_bNetDevEnum = false;
 		shared_ptr<ob::Device> m_spDev = nullptr;
 		shared_ptr<ob::Pipeline> m_spPipe = nullptr;
 		shared_ptr<ob::SensorList> m_spSensorList = nullptr;
@@ -326,13 +336,16 @@ namespace kai
 		uint32_t m_tOutMs = 1000;
 
 		shared_ptr<ob::PointCloudFilter> m_spPCF = nullptr;
-		shared_ptr<ob::Frame> m_spFrame = nullptr;
+		// Keep only the latest RGBD frameset for the slower point-cloud worker.
+		shared_ptr<ob::FrameSet> m_spPCLframe = nullptr;
 
 		uint64_t m_tDus;
 		uint64_t m_dtDus;
 		uint64_t m_tRGBus;
 		uint64_t m_dtRGBus;
 
+		mutable std::recursive_mutex m_mtxDevice;
+		json m_initialConfig = json::object();
 		OrbbecCtrl m_orbbecCtrl;
 	};
 

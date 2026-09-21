@@ -752,7 +752,9 @@ if(WITH_UNIVERSE)
     COMMAND ${CMAKE_COMMAND} -E copy_directory
       "${PROJECT_SOURCE_DIR}/html/viewer/_SelectableOctGrid" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_SelectableOctGrid"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-      "${PROJECT_SOURCE_DIR}/html/viewer/_GeometryBase" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_GeometryBase")
+      "${PROJECT_SOURCE_DIR}/html/viewer/_GeometryBase" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_GeometryBase"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${PROJECT_SOURCE_DIR}/html/viewer/_Orbbec" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_Orbbec")
 endif()
 
 # Optional ROS2 configs
@@ -772,6 +774,7 @@ include(GNUInstallDirs)
 if(WITH_UNIVERSE)
   install(DIRECTORY html/viewer/_SelectableOctGrid DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   install(DIRECTORY html/viewer/_GeometryBase DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
+  install(DIRECTORY html/viewer/_Orbbec DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
 endif()
 set_target_properties(OpenKAI PROPERTIES
   VERSION ${PROJECT_VERSION})

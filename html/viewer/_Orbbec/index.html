@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpenKAI · Orbbec viewer</title>
+  <link rel="stylesheet" href="css/viewer.css">
+  <script defer src="js/wsCmdHandler.js"></script>
+  <script defer src="js/wsCmdBase.js"></script>
+  <script defer src="js/launcher.js"></script>
+</head>
+<body>
+  <header>
+    <a class="brand" href="./"><img src="img/OK.png" alt="OpenKAI" width="1300" height="315"> <span>Orbbec viewer</span></a>
+    <form id="connection">
+      <label>IP / host <input id="host" value="127.0.0.1" required spellcheck="false" autocomplete="off"></label>
+      <label>Stream port <input id="port" type="number" min="1" max="65535" value="8080" required></label>
+      <button id="start" type="submit">Start</button>
+      <button id="stop" type="button" disabled>Stop</button>
+    </form>
+    <output id="status" role="status">Ready</output>
+  </header>
+  <div id="workspace">
+    <aside id="imuPanel" aria-label="IMU preview">
+      <h2>IMU preview</h2>
+      <label>Module <input id="imuModule" value="obIMU" spellcheck="false"></label>
+      <div class="actions"><button id="imuStart" disabled>Start IMU</button><button id="imuStop" disabled>Stop IMU</button></div>
+      <output id="imuStatus" role="status">Stopped</output>
+      <div id="orientation" aria-label="Fused orientation: red X, green Y, blue Z"></div>
+      <div class="axisLegend"><span>X</span><span>Y</span><span>Z</span></div>
+      <output id="angles">Roll — · Pitch — · Yaw —</output>
+      <p class="hint">Orientation is relative; yaw may drift without a heading reference.</p>
+      <div id="imuGraphs"></div>
+    </aside>
+    <main>
+      <div id="viewport" aria-label="Interactive 3D scene"></div>
+      <div id="welcome">Connect to your OpenKAI backend<br><small>Live Orbbec point cloud and camera controls</small></div>
+      <footer><span>Drag to orbit · Right drag to pan · Scroll to zoom</span><output id="stats">Waiting for geometry</output></footer>
+    </main>
+    <aside id="controlPanel" aria-label="Camera controls">
+      <h2>Camera controls</h2>
+      <details open><summary>Command connection</summary>
+        <label>Command port <input id="cmdPort" type="number" min="1" max="65535" value="7890"></label>
+        <label>Camera module <input id="cameraModule" value="Orbbec" spellcheck="false"></label>
+        <div class="actions"><button id="cmdConnect">Connect</button><button id="cmdDisconnect" disabled>Disconnect</button></div>
+      </details>
+      <div class="actions"><button id="loadConfig" disabled>Load config</button><button id="saveConfig" disabled>Save config</button></div>
+      <output id="configStatus" role="status">Connect to load camera parameters</output>
+      <p class="hint">Edits apply immediately. Save config writes them to disk. “Preserve” removes an override and leaves the current camera setting untouched.</p>
+      <fieldset id="cameraFields" disabled><div id="configSections"></div></fieldset>
+      <details><summary>Command log</summary><textarea id="cmdState" readonly aria-label="Command log"></textarea></details>
+    </aside>
+  </div>
+</body>
+</html>

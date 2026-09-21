@@ -16,6 +16,38 @@
 			"obIMU"
 		]
 	},
+	"wsServer": {
+		"class": "_WebSocketServer",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"threadR": {
+			"FPS": 1
+		},
+		"host": "0.0.0.0",
+		"port": 7890,
+		"wsMode": 2,
+		"nClientMax": 1,
+		"tOutMs": 10000
+	},
+	"wsConsole": {
+		"class": "_WSconsole",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"threadR": {
+			"FPS": 30
+		},
+		"_IObase": "wsServer",
+		"msgFinishSend": "",
+		"msgFinishRecv": "EOJ",
+		"vBASE": [
+			"Orbbec",
+			"obIMU"
+		]
+	},
 
 
 	"view": {
@@ -44,6 +76,7 @@
 
 	"Orbbec": {
 		"class": "_Orbbec",
+		"fConfig": "jsonCfg/Orbbec.controls.json",
 		"bON": true,
 		"thread": {
 			"FPS": 200
@@ -113,16 +146,19 @@
 	},
 	"obIMU": {
 		"class": "_IMUbase",
+		"bFusion": true,
 		"bON": true,
 		"thread": {
-			"FPS": 1
+			"FPS": 200
 		},
+		"threadStream": { "FPS": 30 },
 		"nIMUdqMax": 1000,
 		"tIMUpairToleranceUs": 5000
 	},
 
 	"viewer": {
 	    "class": "_WebGeometryBase",
+		"webRoot": "html/viewer/_Orbbec",
 		"bON": true,
 	    "thread": {
 	      "FPS": 30

@@ -37,7 +37,6 @@ namespace kai
 		Mat m_M;
 		Vector2i m_vSize = Vector2i::Zero();
 
-		int m_waitKey = 30;
 		bool m_bFullScreen = false;
 	};
 
