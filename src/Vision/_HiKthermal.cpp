@@ -271,6 +271,7 @@ namespace kai
 			Mat mC;
 			mRaw.convertTo(mC, CV_32FC1, tScale, -50.0);
 
+			std::lock_guard<std::mutex> lock(m_mutexRGB);
 			mC.copyTo(m_mRGB);
 		}
 	}

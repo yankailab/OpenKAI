@@ -57,11 +57,12 @@ namespace kai
 	void _Resize::filter(void)
 	{
 		NULL_(m_pV);
-		Mat *pM = m_pV->getMatRGB();
-		NULL_(pM);
-		IF_(pM->empty());
+		Mat mIn;
+		m_pV->copyMatRGB(mIn);
+		IF_(mIn.empty());
 
-		cv::resize(*pM, m_mRGB, cv::Size(m_vSizeRGB.x(), m_vSizeRGB.y()));
+		std::lock_guard<std::mutex> lock(m_mutexRGB);
+		cv::resize(mIn, m_mRGB, cv::Size(m_vSizeRGB.x(), m_vSizeRGB.y()));
 	}
 
 }

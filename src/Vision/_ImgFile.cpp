@@ -37,7 +37,10 @@ namespace kai
 			return false;
 		}
 
-		m.copyTo(m_mRGB);
+		{
+			std::lock_guard<std::mutex> lock(m_mutexRGB);
+			m.copyTo(m_mRGB);
+		}
 		m_vSizeRGB.x() = m.cols;
 		m_vSizeRGB.y() = m.rows;
 

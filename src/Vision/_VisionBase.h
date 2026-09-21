@@ -71,6 +71,7 @@ namespace kai
 		virtual Vector2i getSizeRGB(void);
 
 #ifdef USE_OPENCV
+		// Raw views require capture to be stopped; use copies for concurrent readers.
 		virtual Mat *getMatRGB(void);
 		virtual void copyMatRGB(Mat &m);
 #endif
@@ -86,6 +87,7 @@ namespace kai
 		bool m_bOpened = false;
 
 #ifdef USE_OPENCV
+		// Hold while reading or writing m_mRGB, including its pixels.
 		std::mutex m_mutexRGB;
 		Mat m_mRGB;	// CV_8UC3
 #endif

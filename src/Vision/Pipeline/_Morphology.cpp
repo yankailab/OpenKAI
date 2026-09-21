@@ -79,11 +79,8 @@ namespace kai
 	void _Morphology::filter(void)
 	{
 		NULL_(m_pV);
-		Mat *pM = m_pV->getMatRGB();
-		NULL_(pM);
-		IF_(pM->empty());
-
-		pM->copyTo(m_mIn);
+		m_pV->copyMatRGB(m_mIn);
+		IF_(m_mIn.empty());
 
 		Mat m1 = m_mIn;
 		Mat m2;
@@ -104,6 +101,7 @@ namespace kai
 			SWAP(pM1, pM2, pT);
 		}
 
+		std::lock_guard<std::mutex> lock(m_mutexRGB);
 		pM1->copyTo(m_mRGB);
 	}
 

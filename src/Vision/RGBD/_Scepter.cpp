@@ -348,7 +348,8 @@ namespace kai
 			status = scGetFrame(m_scDevHandle, SC_COLOR_FRAME, &m_scfRGB);
 			if (m_scfRGB.pFrameData)
 			{
-				m_mRGB = cv::Mat(m_scfRGB.height, m_scfRGB.width, CV_8UC3, m_scfRGB.pFrameData);
+				std::lock_guard<std::mutex> lock(m_mutexRGB);
+				cv::Mat(m_scfRGB.height, m_scfRGB.width, CV_8UC3, m_scfRGB.pFrameData).copyTo(m_mRGB);
 				m_vSizeRGB.x() = m_scfRGB.width;
 				m_vSizeRGB.y() = m_scfRGB.height;
 			}
@@ -359,7 +360,8 @@ namespace kai
 			status = scGetFrame(m_scDevHandle, SC_DEPTH_FRAME, &m_scfDepth);
 			if (m_scfDepth.pFrameData)
 			{
-				m_mDepth = cv::Mat(m_scfDepth.height, m_scfDepth.width, CV_16UC1, m_scfDepth.pFrameData);
+				std::lock_guard<std::mutex> lock(m_mutexDepth);
+				cv::Mat(m_scfDepth.height, m_scfDepth.width, CV_16UC1, m_scfDepth.pFrameData).copyTo(m_mDepth);
 				m_vSizeD.x() = m_scfDepth.width;
 				m_vSizeD.y() = m_scfDepth.height;
 			}
@@ -370,7 +372,8 @@ namespace kai
 			status = scGetFrame(m_scDevHandle, SC_TRANSFORM_COLOR_IMG_TO_DEPTH_SENSOR_FRAME, &m_scfTransformedRGB);
 			if (m_scfTransformedRGB.pFrameData)
 			{
-				m_mtRGB = cv::Mat(m_scfTransformedRGB.height, m_scfTransformedRGB.width, CV_8UC3, m_scfTransformedRGB.pFrameData);
+				std::lock_guard<std::mutex> lock(m_mutexRGB);
+				cv::Mat(m_scfTransformedRGB.height, m_scfTransformedRGB.width, CV_8UC3, m_scfTransformedRGB.pFrameData).copyTo(m_mtRGB);
 			}
 		}
 
@@ -379,7 +382,8 @@ namespace kai
 			status = scGetFrame(m_scDevHandle, SC_TRANSFORM_DEPTH_IMG_TO_COLOR_SENSOR_FRAME, &m_scfTransformedDepth);
 			if (m_scfTransformedDepth.pFrameData)
 			{
-				m_mtDepth = cv::Mat(m_scfTransformedDepth.height, m_scfTransformedDepth.width, CV_16UC1, m_scfTransformedDepth.pFrameData);
+				std::lock_guard<std::mutex> lock(m_mutexDepth);
+				cv::Mat(m_scfTransformedDepth.height, m_scfTransformedDepth.width, CV_16UC1, m_scfTransformedDepth.pFrameData).copyTo(m_mtDepth);
 			}
 		}
 
@@ -388,7 +392,8 @@ namespace kai
 			status = scGetFrame(m_scDevHandle, SC_IR_FRAME, &m_scfIR);
 			if (m_scfIR.pFrameData)
 			{
-				m_mIR = cv::Mat(m_scfIR.height, m_scfIR.width, CV_8UC1, m_scfIR.pFrameData);
+				std::lock_guard<std::mutex> lock(m_mutexDepth);
+				cv::Mat(m_scfIR.height, m_scfIR.width, CV_8UC1, m_scfIR.pFrameData).copyTo(m_mIR);
 			}
 		}
 

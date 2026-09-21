@@ -57,11 +57,12 @@ namespace kai
 	void _Invert::filter(void)
 	{
 		NULL_(m_pV);
-		Mat *pM = m_pV->getMatRGB();
-		NULL_(pM);
-		IF_(pM->empty());
+		Mat mIn;
+		m_pV->copyMatRGB(mIn);
+		IF_(mIn.empty());
 
-		cv::bitwise_not(*pM, m_mRGB);
+		std::lock_guard<std::mutex> lock(m_mutexRGB);
+		cv::bitwise_not(mIn, m_mRGB);
 	}
 
 }

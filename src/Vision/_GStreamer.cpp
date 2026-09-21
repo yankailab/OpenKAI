@@ -45,7 +45,11 @@ namespace kai
 			while (!m_gst.read(mCam))
 				;
 		}
-		mCam.copyTo(m_mRGB);
+		
+		{
+			std::lock_guard<std::mutex> lock(m_mutexRGB);
+			mCam.copyTo(m_mRGB);
+		}
 
 		m_vSizeRGB.x() = mCam.cols;
 		m_vSizeRGB.y() = mCam.rows;
@@ -84,6 +88,7 @@ namespace kai
 			Mat mCam;
 			while (!m_gst.read(mCam))
 				;
+			std::lock_guard<std::mutex> lock(m_mutexRGB);
 			mCam.copyTo(m_mRGB);
 		}
 	}

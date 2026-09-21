@@ -260,10 +260,14 @@ namespace kai
         Mat mD, mDs;
         m_mXDd.convertTo(mD, CV_32FC1);
         mDs = mD * m_dScale;
-        cv::add(mDs, m_dOfs, m_mDepth);
+        {
+            std::lock_guard<std::mutex> lock(m_mutexDepth);
+            cv::add(mDs, m_dOfs, m_mDepth);
+        }
 
         cv::Mat mRGB;
         cv::cvtColor(m_mXDyuv, mRGB, COLOR_YUV2BGR_NV12);
+        std::lock_guard<std::mutex> lock(m_mutexRGB);
         mRGB.copyTo(m_mRGB);
     }
 

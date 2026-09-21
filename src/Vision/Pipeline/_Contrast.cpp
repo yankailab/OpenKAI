@@ -60,11 +60,12 @@ namespace kai
 	void _Contrast::filter(void)
 	{
 		NULL_(m_pV);
-		Mat *pM = m_pV->getMatRGB();
-		NULL_(pM);
-		IF_(pM->empty());
+		Mat mIn;
+		m_pV->copyMatRGB(mIn);
+		IF_(mIn.empty());
 
-		pM->convertTo(m_mRGB, -1, m_alpha, m_beta);
+		std::lock_guard<std::mutex> lock(m_mutexRGB);
+		mIn.convertTo(m_mRGB, -1, m_alpha, m_beta);
 	}
 
 }

@@ -14,7 +14,7 @@
 namespace kai
 {
 
-	class _D2RGB : public _VisionBase
+	class _D2RGB : public _RGBDbase
 	{
 	public:
 		_D2RGB();
@@ -26,7 +26,6 @@ namespace kai
 		virtual void draw(void *pMat);
 
 		virtual float d(const Vector4i &bb);
-		virtual float d(const Vector4f &bb);
 
 	private:
 		void filter(void);
@@ -39,8 +38,6 @@ namespace kai
 
 	protected:
 		_RGBDbase *m_pVd = nullptr;
-
-		Mat m_mDreal;	// Depth mat in meter unit, CV_32FC1 real valued
 
 		int m_nHistLev = 128;
 		int m_iHistFrom = 0;

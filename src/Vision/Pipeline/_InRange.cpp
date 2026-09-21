@@ -62,11 +62,12 @@ namespace kai
 	void _InRange::filter(void)
 	{
 		NULL_(m_pV);
-		Mat *pM = m_pV->getMatRGB();
-		NULL_(pM);
-		IF_(pM->empty());
+		Mat mIn;
+		m_pV->copyMatRGB(mIn);
+		IF_(mIn.empty());
 
-		cv::inRange(*pM,
+		std::lock_guard<std::mutex> lock(m_mutexRGB);
+		cv::inRange(mIn,
 					cv::Scalar(m_vL.x(), m_vL.y(), m_vL.z()),
 					cv::Scalar(m_vH.x(), m_vH.y(), m_vH.z()), m_mRGB);
 	}

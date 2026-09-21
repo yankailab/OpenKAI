@@ -64,16 +64,10 @@ namespace kai
 		NULL_(m_pV);
 		NULL_(m_pVmask);
 
-		Mat *pM = m_pV->getMatRGB();
-		NULL_(pM);
-		Mat *pMmask = m_pVmask->getMatRGB();
-		NULL_(pMmask);
-
-		IF_(pM->empty());
-		IF_(pMmask->empty());
-
-		pM->copyTo(m_mIn);
-		pMmask->copyTo(m_mMask);
+		m_pV->copyMatRGB(m_mIn);
+		IF_(m_mIn.empty());
+		m_pVmask->copyMatRGB(m_mMask);
+		IF_(m_mMask.empty());
 
 		Mat mV = m_mIn;
 		Mat mM = m_mMask;
@@ -81,6 +75,8 @@ namespace kai
 		// mBg.zeros(mV.rows, mV.cols, mV.type());
 
 		mV.copyTo(mBg, mM);
+		
+		std::lock_guard<std::mutex> lock(m_mutexRGB);
 		mBg.copyTo(m_mRGB);
 	}
 

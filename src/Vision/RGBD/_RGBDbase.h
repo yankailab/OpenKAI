@@ -34,11 +34,15 @@ namespace kai
 		virtual float getDepthOffset(void);
 
 #ifdef USE_OPENCV
+		// Raw views require capture to be stopped; use copies for concurrent readers.
 		virtual Mat *getMatDepth(void);
 		virtual void copyMatDepth(Mat &m);
 		virtual Mat *getMatTransformedDepth(void);
+		virtual void copyMatTransformedDepth(Mat &m);
 		virtual Mat *getMatTransformedRGB(void);
+		virtual void copyMatTransformedRGB(Mat &m);
 		virtual Mat *getMatIR(void);
+		virtual void copyMatIR(Mat &m);
 #endif
 
 	protected:
@@ -65,6 +69,7 @@ namespace kai
 		bool m_bPCLrgb = false; // RGB point cloud
 
 #ifdef USE_OPENCV
+		// Guards depth, transformed depth and IR; m_mutexRGB also guards m_mtRGB.
 		std::mutex m_mutexDepth;
 		Mat m_mDepth;  // device native format, usually CV_16UC1
 		Mat m_mtDepth; // the same as mDepth

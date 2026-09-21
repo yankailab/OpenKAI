@@ -77,6 +77,7 @@ namespace kai
     {
         IF_F(!check());
 
+        std::lock_guard<std::mutex> lock(m_mutexRGB);
         Mat(m_vSizeRGB.y(),
             m_vSizeRGB.x(),
             m_matType,

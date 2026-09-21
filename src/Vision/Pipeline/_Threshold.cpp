@@ -79,14 +79,14 @@ namespace kai
 	void _Threshold::filter(void)
 	{
 		NULL_(m_pV);
-		Mat *pM = m_pV->getMatRGB();
-		NULL_(pM);
-		IF_(pM->empty());
+		Mat mIn;
+		m_pV->copyMatRGB(mIn);
+		IF_(mIn.empty());
 
-		if (pM->type() != CV_8UC1)
-			cv::cvtColor(*pM, m_mIn, COLOR_RGB2GRAY);
+		if (mIn.type() != CV_8UC1)
+			cv::cvtColor(mIn, m_mIn, COLOR_RGB2GRAY);
 		else
-			pM->copyTo(m_mIn);
+			m_mIn = mIn;
 
 		Mat m1 = m_mIn;
 		Mat m2;
@@ -128,6 +128,7 @@ namespace kai
 			SWAP(pM1, pM2, pT);
 		}
 
+		std::lock_guard<std::mutex> lock(m_mutexRGB);
 		pM1->copyTo(m_mRGB);
 	}
 

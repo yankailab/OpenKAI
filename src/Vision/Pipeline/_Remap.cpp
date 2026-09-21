@@ -65,22 +65,23 @@ namespace kai
 	void _Remap::filter(void)
 	{
 		NULL_(m_pV);
-		Mat *pM = m_pV->getMatRGB();
-		NULL_(pM);
-		IF_(pM->empty());
+		Mat mIn;
+		m_pV->copyMatRGB(mIn);
+		IF_(mIn.empty());
 
-		if (!m_bReady || pM->size() != cv::Size(m_vSizeRGB.x(), m_vSizeRGB.y()))
+		if (!m_bReady || mIn.size() != cv::Size(m_vSizeRGB.x(), m_vSizeRGB.y()))
 		{
-			cv::Size s = pM->size();
+			cv::Size s = mIn.size();
 			m_vSizeRGB.x() = s.width;
 			m_vSizeRGB.y() = s.height;
 			m_bReady = scaleCamMat();
 		}
 
+		std::lock_guard<std::mutex> lock(m_mutexRGB);
 		if (m_bReady)
-			cv::remap(*pM, m_mRGB, m_m1, m_m2, cv::INTER_LINEAR);
+			cv::remap(mIn, m_mRGB, m_m1, m_m2, cv::INTER_LINEAR);
 		else
-			pM->copyTo(m_mRGB);
+			mIn.copyTo(m_mRGB);
 	}
 
 	// void _Remap::updateCamMat(void)

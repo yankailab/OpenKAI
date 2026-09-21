@@ -332,6 +332,7 @@ namespace kai
                 }
 
 #ifdef USE_OPENCV
+                std::lock_guard<std::mutex> lock(m_mutexRGB);
                 Mat(Size(m_vSizeRGB.x(), m_vSizeRGB.y()), CV_8UC3, (void *)m_rsColor.get_data(), Mat::AUTO_STEP).copyTo(m_mRGB);
 #endif
             }
@@ -380,7 +381,10 @@ namespace kai
             Mat mD, mDs;
             mZ.convertTo(mD, CV_32FC1);
             mDs = mD * m_dScale;
-            cv::add(mDs, m_dOfs, m_mDepth);
+            {
+                std::lock_guard<std::mutex> lock(m_mutexDepth);
+                cv::add(mDs, m_dOfs, m_mDepth);
+            }
 
             // if (m_bDepthShow)
             // {

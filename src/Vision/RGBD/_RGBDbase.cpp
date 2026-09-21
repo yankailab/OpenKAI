@@ -107,14 +107,32 @@ namespace kai
 		return &m_mtDepth;
 	}
 
+	void _RGBDbase::copyMatTransformedDepth(Mat &m)
+	{
+		std::lock_guard<std::mutex> lock(m_mutexDepth);
+		m_mtDepth.copyTo(m);
+	}
+
 	Mat *_RGBDbase::getMatTransformedRGB(void)
 	{
 		return &m_mtRGB;
 	}
 
+	void _RGBDbase::copyMatTransformedRGB(Mat &m)
+	{
+		std::lock_guard<std::mutex> lock(m_mutexRGB);
+		m_mtRGB.copyTo(m);
+	}
+
 	Mat *_RGBDbase::getMatIR(void)
 	{
 		return &m_mIR;
+	}
+
+	void _RGBDbase::copyMatIR(Mat &m)
+	{
+		std::lock_guard<std::mutex> lock(m_mutexDepth);
+		m_mIR.copyTo(m);
 	}
 
 	void _RGBDbase::draw(void *pMat)

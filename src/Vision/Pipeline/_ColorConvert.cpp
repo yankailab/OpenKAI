@@ -59,11 +59,12 @@ namespace kai
 	void _ColorConvert::filter(void)
 	{
 		NULL_(m_pV);
-		Mat *pM = m_pV->getMatRGB();
-		NULL_(pM);
-		IF_(pM->empty());
+		Mat mIn;
+		m_pV->copyMatRGB(mIn);
+		IF_(mIn.empty());
 
-		cv::cvtColor(*pM, m_mRGB, m_code);
+		std::lock_guard<std::mutex> lock(m_mutexRGB);
+		cv::cvtColor(mIn, m_mRGB, m_code);
 	}
 
 }

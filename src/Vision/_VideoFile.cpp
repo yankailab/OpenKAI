@@ -82,6 +82,7 @@ namespace kai
 			Mat mCam;
 			while (!m_vc.read(mCam))
 				;
+			std::lock_guard<std::mutex> lock(m_mutexRGB);
 			mCam.copyTo(m_mRGB);
 		}
 	}
