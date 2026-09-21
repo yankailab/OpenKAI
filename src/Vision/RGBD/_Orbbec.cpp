@@ -179,6 +179,7 @@ namespace kai
 
 	_Orbbec::_Orbbec()
 	{
+		m_vRangeD = {0.0f, 5.0f};
 		m_dScale = 0.001f;
 	}
 
@@ -501,7 +502,11 @@ namespace kai
 			spFrameRGB = spFS->getFrame(OB_FRAME_COLOR);
 			if (spFrameRGB)
 			{
-				m_mRGB = Mat(m_vSizeRGB.y(), m_vSizeRGB.x(), CV_8UC3, spFrameRGB->getData());
+				// Own the pixels before the SDK frame is released, and exclude readers.
+				{
+					std::lock_guard<std::mutex> lock(m_mutexRGB);
+					Mat(m_vSizeRGB.y(), m_vSizeRGB.x(), CV_8UC3, spFrameRGB->getData()).copyTo(m_mRGB);
+				}
 				uint64_t tRGBus = frameTsUs_(spFrameRGB);
 				m_dtRGBus = tRGBus - m_tRGBus;
 				m_tRGBus = tRGBus;
@@ -513,7 +518,10 @@ namespace kai
 			spFrameD = spFS->getFrame(OB_FRAME_DEPTH);
 			if (spFrameD)
 			{
-				m_mDepth = Mat(m_vSizeD.y(), m_vSizeD.x(), CV_16UC1, spFrameD->getData());
+				{
+					std::lock_guard<std::mutex> lock(m_mutexDepth);
+					Mat(m_vSizeD.y(), m_vSizeD.x(), CV_16UC1, spFrameD->getData()).copyTo(m_mDepth);
+				}
 				uint64_t tDus = frameTsUs_(spFrameD);
 				m_dtDus = tDus - m_tDus;
 				m_tDus = tDus;

@@ -38,7 +38,7 @@ namespace kai
 		}
 
 	protected:
-		_RGBDbase *m_pV = nullptr;
+		_RGBDbase *m_pVd = nullptr;
 
 		Mat m_mDreal;	// Depth mat in meter unit, CV_32FC1 real valued
 

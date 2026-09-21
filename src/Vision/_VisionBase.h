@@ -13,6 +13,7 @@
 #include "../Protocol/_JSONbase.h"
 
 #ifdef USE_OPENCV
+#include <mutex>
 #include "../Utility/utilCV.h"
 #include "../Base/cv.h"
 #endif
@@ -71,6 +72,7 @@ namespace kai
 
 #ifdef USE_OPENCV
 		virtual Mat *getMatRGB(void);
+		virtual void copyMatRGB(Mat &m);
 #endif
 
 	protected:
@@ -84,6 +86,7 @@ namespace kai
 		bool m_bOpened = false;
 
 #ifdef USE_OPENCV
+		std::mutex m_mutexRGB;
 		Mat m_mRGB;	// CV_8UC3
 #endif
 	};

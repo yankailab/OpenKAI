@@ -96,6 +96,12 @@ namespace kai
 		return &m_mDepth;
 	}
 
+	void _RGBDbase::copyMatDepth(Mat &m)
+	{
+		std::lock_guard<std::mutex> lock(m_mutexDepth);
+		m_mDepth.copyTo(m);
+	}
+
 	Mat *_RGBDbase::getMatTransformedDepth(void)
 	{
 		return &m_mtDepth;
@@ -116,7 +122,6 @@ namespace kai
 		NULL_(pMat);
 		this->_VisionBase::draw(pMat);
 		IF_(!check());
-		IF_(m_mRGB.empty());
 	}
 #endif
 

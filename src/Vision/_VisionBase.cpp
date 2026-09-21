@@ -62,6 +62,12 @@ namespace kai
 		return &m_mRGB;
 	}
 
+	void _VisionBase::copyMatRGB(Mat &m)
+	{
+		std::lock_guard<std::mutex> lock(m_mutexRGB);
+		m_mRGB.copyTo(m);
+	}
+
 	Vector2i _VisionBase::getSizeRGB(void)
 	{
 		return m_vSizeRGB;
@@ -90,7 +96,11 @@ namespace kai
 			string fName;
 			IF_(!jKv(j, "fNameImg", fName));
 
-			Mat m = m_mRGB;
+			Mat m;
+			{
+				std::lock_guard<std::mutex> lock(m_mutexRGB);
+				m_mRGB.copyTo(m);
+			}
 			IF_(m.empty());
 
 			bool bR;
@@ -112,8 +122,9 @@ namespace kai
 		NULL_(pMat);
 		this->_ModuleBase::draw(pMat);
 		IF_(!check());
-		IF_(m_mRGB.empty());
 
+		std::lock_guard<std::mutex> lock(m_mutexRGB);
+		IF_(m_mRGB.empty());
 		Mat *pM = static_cast<Mat *>(pMat);
 		m_mRGB.copyTo(*pM);
 	}

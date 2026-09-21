@@ -37,8 +37,8 @@ namespace kai
 
 		string n = "";
 		jKv(j, "_RGBDbase", n);
-		m_pV = (_RGBDbase *)(pM->findModule(n));
-		NULL_F(m_pV);
+		m_pVd = (_RGBDbase *)(pM->findModule(n));
+		NULL_F(m_pVd);
 
 		return true;
 	}
@@ -61,19 +61,19 @@ namespace kai
 
 	void _D2RGB::filter(void)
 	{
-		NULL_(m_pV);
-		Mat *pM = m_pV->getMatDepth();
-		NULL_(pM);
-		IF_(pM->empty());
+		NULL_(m_pVd);
+		Mat mDepth;
+		m_pVd->copyMatDepth(mDepth);
+		IF_(mDepth.empty());
 
 		Mat mGray;
-		if (pM->type() == CV_16UC1)
+		if (mDepth.type() == CV_16UC1)
 		{
-			pM->convertTo(m_mDreal, CV_32FC1, m_pV->getDepthScale(), m_pV->getDepthOffset());
+			mDepth.convertTo(m_mDreal, CV_32FC1, m_pVd->getDepthScale(), m_pVd->getDepthOffset());
 		}
-		else if (pM->type() == CV_32FC1)
+		else if (mDepth.type() == CV_32FC1)
 		{
-			pM->copyTo(m_mDreal);
+			m_mDreal = mDepth; // deep copy is not necessary
 		}
 		else
 		{
@@ -82,6 +82,7 @@ namespace kai
 
 		cv::normalize(m_mDreal, mGray, 0, 255, cv::NORM_MINMAX, CV_8UC1);
 
+		std::lock_guard<std::mutex> lock(m_mutexRGB);
 		cv::applyColorMap(mGray, m_mRGB, cv::COLORMAP_JET);
 	}
 
@@ -112,7 +113,7 @@ namespace kai
 	{
 		IF__(m_mDreal.empty(), -1);
 
-		Vector2f vRangeD = m_pV->getDepthRange();
+		Vector2f vRangeD = m_pVd->getDepthRange();
 
 		vector<int> vHistLev = {m_nHistLev};
 		vector<float> vRange = {vRangeD.x(), vRangeD.y()};
@@ -145,7 +146,6 @@ namespace kai
 		NULL_(pMat);
 		this->_VisionBase::draw(pMat);
 		IF_(!check());
-		IF_(m_mRGB.empty());
 
 		if (m_bMeasure)
 		{

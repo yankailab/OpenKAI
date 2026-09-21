@@ -35,6 +35,7 @@ namespace kai
 
 #ifdef USE_OPENCV
 		virtual Mat *getMatDepth(void);
+		virtual void copyMatDepth(Mat &m);
 		virtual Mat *getMatTransformedDepth(void);
 		virtual Mat *getMatTransformedRGB(void);
 		virtual Mat *getMatIR(void);
@@ -64,6 +65,7 @@ namespace kai
 		bool m_bPCLrgb = false; // RGB point cloud
 
 #ifdef USE_OPENCV
+		std::mutex m_mutexDepth;
 		Mat m_mDepth;  // device native format, usually CV_16UC1
 		Mat m_mtDepth; // the same as mDepth
 		Mat m_mtRGB;   // CV_8UC3
