@@ -299,9 +299,7 @@ namespace kai
 
 	_Orbbec::~_Orbbec()
 	{
-		if (m_pT) m_pT->join();
-		if (m_pTpp) m_pTpp->join();
-		close();
+		stop();
 	}
 
 	bool _Orbbec::init(const json &j)
@@ -2949,13 +2947,6 @@ namespace kai
 			if (m_bDepth)
 				m_spConfig->enableVideoStream(OB_STREAM_DEPTH, m_vSizeD.x(), m_vSizeD.y(), m_devFPSd, OB_FORMAT_Y16);
 
-			// IMU streams
-			if (m_bIMU)
-			{
-				m_spConfig->enableAccelStream(OB_ACCEL_FS_4g, OB_SAMPLE_RATE_200_HZ);
-				m_spConfig->enableGyroStream(OB_GYRO_FS_1000dps, OB_SAMPLE_RATE_200_HZ);
-			}
-
 			// For point cloud generation
 			if (m_bPCLrgb)
 			{
@@ -2964,7 +2955,31 @@ namespace kai
 				m_spPipe->enableFrameSync();
 			}
 
-			m_spPipe->start(m_spConfig);
+			if (m_bRGB || m_bDepth)
+				m_spPipe->start(m_spConfig);
+			else
+				m_spPipe.reset(); // IMU-only operation needs no video pipeline.
+
+			// Video framesets retain only one IMU sample per video exposure.
+			// Separate callbacks deliver every sample, even during slow cloud conversion.
+			if (m_bIMU)
+			{
+				m_spAccel = m_spDev->getSensor(OB_SENSOR_ACCEL);
+				m_spGyro = m_spDev->getSensor(OB_SENSOR_GYRO);
+				auto accel = m_spAccel->getStreamProfileList()->getAccelStreamProfile(OB_ACCEL_FS_4g, OB_SAMPLE_RATE_200_HZ);
+				auto gyro = m_spGyro->getStreamProfileList()->getGyroStreamProfile(OB_GYRO_FS_1000dps, OB_SAMPLE_RATE_200_HZ);
+				// No device mutex here: Sensor::stop waits for callbacks to finish.
+				m_spAccel->start(accel, [imu = m_pIMU](shared_ptr<ob::Frame> frame) {
+					if (!imu || !frame) return;
+					const auto v = frame->as<ob::AccelFrame>()->value(); // m/s^2
+					imu->addAcc({v.x, v.y, v.z}, frame->getTimeStampUs());
+				});
+				m_spGyro->start(gyro, [imu = m_pIMU](shared_ptr<ob::Frame> frame) {
+					if (!imu || !frame) return;
+					const auto v = frame->as<ob::GyroFrame>()->value(); // rad/s
+					imu->addGyro({v.x, v.y, v.z}, frame->getTimeStampUs());
+				});
+			}
 
 			// Point cloud filter
 			m_spPCF = std::make_shared<ob::PointCloudFilter>();
@@ -2997,6 +3012,10 @@ namespace kai
 	void _Orbbec::close(void)
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_mtxDevice);
+		for (auto &sensor : {m_spAccel, m_spGyro})
+			if (sensor) try { sensor->stop(); } catch (const ob::Error &e) { LOG_I(e.what()); }
+		m_spAccel.reset();
+		m_spGyro.reset();
 		if (m_spPipe)
 		{
 			try { m_spPipe->stop(); } catch (const ob::Error &e) { LOG_I(e.what()); }
@@ -3015,6 +3034,14 @@ namespace kai
 
 		IF_F(!m_pT->startThread(getUpdate, this));
 		return m_pTpp->startThread(getTPP, this);
+	}
+
+	void _Orbbec::stop(void)
+	{
+		if (m_pT) m_pT->join();
+		if (m_pTpp) m_pTpp->join();
+		// Join SDK callbacks before ModuleMgr can release the linked IMU buffer.
+		close();
 	}
 
 	bool _Orbbec::check(void)
@@ -3048,7 +3075,9 @@ namespace kai
 		uint32_t timeout;
 		{
 			std::lock_guard<std::recursive_mutex> lock(m_mtxDevice);
-			IF_F(!check() || !m_spPipe || !m_bOpened);
+			IF_F(!check() || !m_bOpened);
+			if (!m_bRGB && !m_bDepth) return true;
+			IF_F(!m_spPipe);
 			pipeline = m_spPipe;
 			timeout = m_tOutMs;
 		}
@@ -3067,29 +3096,6 @@ namespace kai
 		std::lock_guard<std::recursive_mutex> lock(m_mtxDevice);
 		if (pipeline != m_spPipe) return true;
 		NULL_F(spFS);
-
-		// IMU, fast stream
-		if (auto g = spFS->getFrame(OB_FRAME_GYRO))
-		{
-			auto gf = g->as<ob::GyroFrame>();
-			if (gf)
-			{
-				auto v = gf->value();
-				if (m_pIMU)
-					m_pIMU->addGyro({v.x, v.y, v.z}, frameTsUs_(g));
-			}
-		}
-
-		if (auto a = spFS->getFrame(OB_FRAME_ACCEL))
-		{
-			auto af = a->as<ob::AccelFrame>();
-			if (af)
-			{
-				auto v = af->value();
-				if (m_pIMU)
-					m_pIMU->addAcc({v.x, v.y, v.z}, frameTsUs_(a));
-			}
-		}
 
 		// Images, slow stream
 		shared_ptr<ob::Frame> spFrameRGB = nullptr;

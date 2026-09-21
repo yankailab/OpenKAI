@@ -15,5 +15,5 @@ target_compile_definitions(slam_integration PRIVATE USE_GLOG WITH_SLAM USE_GLIM)
 target_link_libraries(slam_integration PRIVATE OpenKAI Eigen3::Eigen glim::glim glog::glog)
 enable_testing()
 add_test(NAME slam_integration COMMAND slam_integration
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../jsonCfg/glim ${CMAKE_CURRENT_BINARY_DIR}/fixtures)
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../jsonCfg/glim_orbbec ${CMAKE_CURRENT_BINARY_DIR}/fixtures)
 set_tests_properties(slam_integration PROPERTIES TIMEOUT 90)

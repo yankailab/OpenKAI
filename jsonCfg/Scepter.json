@@ -73,6 +73,7 @@
 
 	"scepter": {
 		"class": "_Scepter",
+		"fConfig": "jsonCfg/Scepter.controls.json",
 		"bON": true,
 		"bLog": false,
 		"thread": {
@@ -173,7 +174,7 @@
 
 	"viewer": {
 	    "class": "_WebGeometryBase",
-		"webRoot": "html/viewer/_GeometryBase",
+		"webRoot": "html/viewer/_Scepter",
 		"bON": true,
 	    "thread": {
 	      "FPS": 30

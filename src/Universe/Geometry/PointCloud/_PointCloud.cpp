@@ -39,6 +39,8 @@ namespace kai
         m_grPt.clear();
         m_framing.clear();
         m_framed.clear();
+        m_bFraming = false;
+        m_tStamp = 0;
     }
 
     bool _PointCloud::start(void)
@@ -80,7 +82,18 @@ namespace kai
         gP.m_vP = m_mPosef * vP;
         gP.m_vC = vC;
         gP.m_tStamp = tStamp;
+        // Do not return mixed old/new points once a completed span is overwritten.
+        if (m_framed.m_nP && m_grPt.m_iT == m_framed.m_iPfrom)
+            m_framed.clear();
         m_grPt.add(gP);
+        if (m_bFraming)
+        {
+            if (m_framing.m_nP < m_grPt.m_nT)
+                ++m_framing.m_nP;
+            else
+                m_framing.m_iPfrom = m_grPt.m_iT;
+            m_framing.m_tStamp = tStamp;
+        }
 
         m_tStamp = tStamp;
     }
@@ -89,56 +102,65 @@ namespace kai
     {
         std::lock_guard<std::mutex> lock(m_mtxPt);
         m_framing.start(m_grPt.m_iT);
+        m_bFraming = true;
     }
 
     void _PointCloud::frameStop(void)
     {
         std::scoped_lock lock(m_mtxPt, m_mtxFrame);
-        m_framing.stop(m_grPt.m_iT, m_grPt.m_nT, m_tStamp);
+        IF_(!m_bFraming);
+        m_framing.stop(m_grPt.m_iT, m_grPt.m_nT, m_framing.m_tStamp);
         std::swap(m_framing, m_framed);
+        m_bFraming = false;
     }
 
     int _PointCloud::getLastFrame(vector<Vector3f> *pvP, vector<Vector3f> *pvC, uint64_t& tStamp)
     {
         NULL__(pvP, -1);
 
-        // Keep the completed frame metadata and ring storage stable while copying.
+        // Keep the completed-frame indices and ring storage stable while copying.
         std::scoped_lock lock(m_mtxPt, m_mtxFrame);
-
-        int iP;
-        int iPto;
-        int nP = 0;
-
+        pvP->clear();
+        pvP->reserve(m_framed.m_nP);
+        if (pvC)
         {
-            pvP->clear();
-            pvP->reserve(m_framed.m_nP);
-            if (pvC)
-            {
-                pvC->clear();
-                pvC->reserve(m_framed.m_nP);
-            }
-
-            iP = m_framed.m_iPfrom;
-            iPto = m_framed.m_iPto;
-            tStamp = m_framed.m_tStamp;
+            pvC->clear();
+            pvC->reserve(m_framed.m_nP);
         }
+        tStamp = m_framed.m_tStamp;
 
-        while (iP != iPto)
+        int iP = m_framed.m_iPfrom;
+        for (int nP = 0; nP < m_framed.m_nP; ++nP)
         {
-            GEOMETRY_POINT *pGp = m_grPt.get(iP);
-            if (!pGp)
-                break;
-
-            pvP->push_back(pGp->m_vP);
-            if (pvC)
-                pvC->push_back(pGp->m_vC);
-
-            nP++;
-            if (++iP >= m_grPt.m_nT)
-                iP = 0;
+            const GEOMETRY_POINT *point = m_grPt.get(iP);
+            if (!point) break;
+            pvP->push_back(point->m_vP);
+            if (pvC) pvC->push_back(point->m_vC);
+            if (++iP >= m_grPt.m_nT) iP = 0;
         }
+        return int(pvP->size());
+    }
 
-        return nP;
+    void _PointCloud::setFrame(const vector<Vector3f> &points, const vector<Vector3f> &colors, uint64_t stamp)
+    {
+        std::scoped_lock lock(m_mtxPt, m_mtxFrame);
+        m_grPt.clear();
+        m_framing.clear();
+        m_framed.start(m_grPt.m_iT);
+        // Like add(), an oversized frame retains only the newest nP points.
+        const size_t count = std::min(points.size(), size_t(m_grPt.m_nT));
+        for (size_t i = points.size() - count; i < points.size(); ++i)
+        {
+            GEOMETRY_POINT point;
+            point.m_vP = m_mPosef * points[i];
+            point.m_vC = i < colors.size() ? colors[i] : Vector3f::Ones();
+            point.m_tStamp = stamp;
+            m_grPt.add(point);
+        }
+        m_framed.m_nP = int(count);
+        m_framed.stop(m_grPt.m_iT, m_grPt.m_nT, stamp);
+        m_tStamp = stamp;
+        m_bFraming = false;
     }
 
     int _PointCloud::copy(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pIn, GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire)

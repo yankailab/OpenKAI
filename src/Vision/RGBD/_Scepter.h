@@ -84,6 +84,11 @@ namespace kai
 		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
+		using _RGBDbase::console;
+		virtual void console(const json &j, void *pJSONbase);
+
+		virtual bool loadConfig(json *pJ = nullptr, string fName = "");
+		virtual bool saveConfig(json &j, string fName = "");
 
 		virtual bool open(void);
 		virtual void close(void);
@@ -130,6 +135,10 @@ namespace kai
 		bool setAIModulePreviewFrameTypeEnabled(ScFrameType frameType, bool bON);
 
 	protected:
+		json configValues(void); // caller holds m_mutexScFrame
+		json controlSchema(void);
+		bool applyConfig(const json &patch, bool device, json &errors, bool all = false);
+		void applyScControls(const ScCtrl &requested, const json &changed, bool all, json &errors);
 		bool updateScRGBD(void);
 
 	private:
@@ -151,7 +160,7 @@ namespace kai
 	protected:
 		// SDK frame buffers remain valid only until the next capture. Serialize
 		// capture/conversion/close; the PCL worker publishes owned data afterwards.
-		std::mutex m_mutexScFrame;
+		std::recursive_mutex m_mutexScFrame;
 		bool m_bPCLframe = false;
 		bool m_bScInitialized = false;
 		int m_pclStride = 1; // Sample every Nth depth pixel in both axes; 1 keeps all points.

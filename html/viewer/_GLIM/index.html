@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpenKAI · GLIM SLAM</title>
+  <link rel="stylesheet" href="css/viewer.css">
+  <script defer src="js/wsCmdHandler.js"></script>
+  <script defer src="js/wsCmdBase.js"></script>
+  <script defer src="js/launcher.js"></script>
+</head>
+<body>
+  <header>
+    <a class="brand" href="./"><img src="img/OK.png" alt="OpenKAI" width="1300" height="315"> <span>GLIM SLAM</span></a>
+    <form id="connection">
+      <label>IP / host <input id="host" value="127.0.0.1" required spellcheck="false" autocomplete="off"></label>
+      <label>Stream port <input id="port" type="number" min="1" max="65535" value="8080" required></label>
+      <button id="start" type="submit">Connect viewer</button>
+      <button id="stop" type="button" disabled>Disconnect viewer</button>
+    </form>
+    <output id="status" role="status">Ready</output>
+  </header>
+  <div id="workspace">
+    <aside id="slamPanel" aria-label="SLAM telemetry">
+      <h2>SLAM status</h2>
+      <output id="slamStatus" role="status" data-state="disconnected">Disconnected</output>
+      <output id="poseStatus">No pose received</output>
+      <h3>Position <small>map · m</small></h3>
+      <dl class="telemetry"><dt>X</dt><dd id="posX">—</dd><dt>Y</dt><dd id="posY">—</dd><dt>Z</dt><dd id="posZ">—</dd></dl>
+      <h3>Angles <small>degrees</small></h3>
+      <dl class="telemetry"><dt>Roll</dt><dd id="roll">—</dd><dt>Pitch</dt><dd id="pitch">—</dd><dt>Yaw</dt><dd id="yaw">—</dd></dl>
+      <h3>Orientation <small>quaternion</small></h3>
+      <dl class="telemetry"><dt>X</dt><dd id="quatX">—</dd><dt>Y</dt><dd id="quatY">—</dd><dt>Z</dt><dd id="quatZ">—</dd><dt>W</dt><dd id="quatW">—</dd></dl>
+      <h3>Mapping</h3>
+      <dl class="telemetry"><dt>Published points</dt><dd id="mapPoints">—</dd><dt>Global submaps</dt><dd id="submaps">—</dd><dt>Recent frames</dt><dd id="liveFrames">—</dd><dt>Processed frames</dt><dd id="frames">—</dd></dl>
+      <h3>Processing</h3>
+      <dl class="telemetry"><dt>Input rate · Hz</dt><dd id="frameRate">—</dd><dt>Last update · ms</dt><dd id="processingMs">—</dd></dl>
+      <p class="hint">Distance colors: warm nearby, cool farther from your viewing position. Map-stage colors: blue global submaps, green recent frames. Gold: sensor / FoV. Red / green / blue axes: X / Y / Z.</p>
+    </aside>
+    <main>
+      <div id="viewport" aria-label="Live SLAM global map and sensor pose"></div>
+      <div id="distanceLegend" hidden aria-label="Point color scale: distance from viewing eye in meters">
+        <div>Distance from viewing eye</div>
+        <div class="distance-gradient"></div>
+        <div class="distance-labels"><span id="distanceNear">—</span><span id="distanceFar">—</span></div>
+      </div>
+      <div id="welcome">Connect to your OpenKAI backend<br><small>Live GLIM map · Camera or LiDAR</small></div>
+      <footer><span>Drag to orbit · Right drag to pan · Scroll to zoom</span><output id="stats">Waiting for geometry</output></footer>
+    </main>
+    <aside id="controlPanel" aria-label="SLAM controls">
+      <h2>SLAM controls</h2>
+      <details open><summary>Command connection</summary>
+        <label>Command port <input id="cmdPort" type="number" min="1" max="65535" value="7890"></label>
+        <label>SLAM module <input id="slamModule" value="GLIM" spellcheck="false"></label>
+        <div class="actions"><button id="cmdConnect">Connect</button><button id="cmdDisconnect" disabled>Disconnect</button></div>
+      </details>
+      <div class="actions"><button id="slamStart" disabled>Start</button><button id="slamStop" disabled>Stop</button><button id="slamReset" disabled>Reset</button></div>
+      <output id="commandStatus" role="status">Connect to control SLAM</output>
+      <p class="hint">Start begins a new map. Stop finishes mapping and keeps the map visible. Reset stops SLAM and clears the map and pose.</p>
+      <details open><summary>Map view</summary>
+        <div class="actions"><button id="fitMap">Fit map</button><button id="resetView">Reset view</button></div>
+        <label>Point colors <select id="pointColorMode"><option value="distance">Distance to eye</option><option value="stage">Map stage</option></select></label>
+        <label>Follow sensor <input id="followSensor" type="checkbox"></label>
+        <label>Show sensor / FoV <input id="showSensor" type="checkbox" checked></label>
+        <label>Forward axis <select id="forwardAxis"><option value="z">+Z (depth camera)</option><option value="x">+X (LiDAR)</option><option value="y">+Y</option><option value="-z">−Z</option><option value="-x">−X</option><option value="-y">−Y</option></select></label>
+        <label>Horizontal FoV (°) <input id="fovH" type="number" min="1" max="179" value="90"></label>
+        <label>Vertical FoV (°) <input id="fovV" type="number" min="1" max="179" value="65"></label>
+        <label>FoV range (m) <input id="fovRange" type="number" min="0.05" max="1000" step="0.1" value="1"></label>
+        <p class="hint">The FoV is a visual guide. Set it and the forward axis for your sensor; these settings do not change SLAM calibration. Pose is expressed in the input point-cloud frame.</p>
+      </details>
+      <details><summary>Command log</summary><textarea id="cmdState" readonly aria-label="Command log"></textarea></details>
+    </aside>
+  </div>
+</body>
+</html>

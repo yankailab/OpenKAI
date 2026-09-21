@@ -69,17 +69,19 @@ namespace kai
 
 	bool _SLAMbase::startTracking(void)
 	{
-		std::lock_guard<std::mutex> lock(m_mtxSLAM);
+		auto lock = lockSLAM();
 		if (m_bTracking)
 			return true;
 		IF_F(!check());
 		m_tStampLastFrame = 0;
+		m_slamError.clear();
 		m_tStampLastIMU = 0;
 		setConfidence(0.0f);
 		try
 		{
 			if (!startSLAM())
 			{
+				m_slamError = "Cannot initialize SLAM; check the backend log and sensor configuration";
 				resetSLAM();
 				return false;
 			}
@@ -89,6 +91,7 @@ namespace kai
 		catch (const std::exception &e)
 		{
 			LOG_E(string("Cannot start SLAM: ") + e.what());
+			m_slamError = e.what();
 			resetSLAM();
 			return false;
 		}
@@ -110,22 +113,24 @@ namespace kai
 		catch (const std::exception &e)
 		{
 			LOG_E(string("Cannot finish SLAM: ") + e.what());
+			m_slamError = e.what();
 			resetSLAM();
 		}
 	}
 
 	void _SLAMbase::stopTracking(void)
 	{
-		std::lock_guard<std::mutex> lock(m_mtxSLAM);
+		auto lock = lockSLAM();
 		stopTrackingLocked();
 	}
 
 	void _SLAMbase::reset(void)
 	{
-		std::lock_guard<std::mutex> lock(m_mtxSLAM);
+		auto lock = lockSLAM();
 		stopTrackingLocked();
 		resetSLAM();
 		m_tStampLastFrame = m_tStampLastIMU = 0;
+		m_slamError.clear();
 		setPos(Vector3d::Zero());
 		setOrientation(Quaterniond::Identity(), true);
 	}
@@ -173,11 +178,20 @@ namespace kai
 	void _SLAMbase::resetSLAM(void) {}
 	void _SLAMbase::updateSLAM(void) {}
 
+	std::unique_lock<std::mutex> _SLAMbase::lockSLAM(void)
+	{
+		++m_controlWaiters;
+		std::unique_lock<std::mutex> lock(m_mtxSLAM);
+		--m_controlWaiters;
+		return lock;
+	}
+
 	void _SLAMbase::update(void)
 	{
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
+			IF_CONT(m_controlWaiters.load() > 0);
 			std::lock_guard<std::mutex> lock(m_mtxSLAM);
 			IF_CONT(!m_pT->bRun() || !m_bTracking);
 			try
@@ -187,6 +201,7 @@ namespace kai
 			catch (const std::exception &e)
 			{
 				LOG_E(string("SLAM processing failed: ") + e.what());
+				m_slamError = e.what();
 				m_bTracking = false;
 				setConfidence(0.0f);
 				resetSLAM();

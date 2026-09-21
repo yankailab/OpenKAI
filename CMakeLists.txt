@@ -310,6 +310,14 @@ if(WITH_SLAM)
   endif()
   if(NOT WITH_SENSOR)
     list(APPEND OpenKAI_cpp src/Sensor/_IMUbase.cpp)
+    file(GLOB_RECURSE SLAM_sensor_fusion src/Dependencies/SensorFusion/*.cpp src/Dependencies/SensorFusion/*.c)
+    list(APPEND OpenKAI_cpp ${SLAM_sensor_fusion})
+  endif()
+  if(NOT WITH_PROTOCOL)
+    list(APPEND OpenKAI_cpp src/Protocol/_ProtocolBase.cpp src/Protocol/_JSONbase.cpp)
+  endif()
+  if(NOT WITH_IO)
+    list(APPEND OpenKAI_cpp src/IO/_IObase.cpp)
   endif()
   if(NOT WITH_UNIVERSE)
     list(APPEND OpenKAI_cpp src/Universe/_ReferenceFrame.cpp
@@ -754,7 +762,11 @@ if(WITH_UNIVERSE)
     COMMAND ${CMAKE_COMMAND} -E copy_directory
       "${PROJECT_SOURCE_DIR}/html/viewer/_GeometryBase" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_GeometryBase"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-      "${PROJECT_SOURCE_DIR}/html/viewer/_Orbbec" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_Orbbec")
+      "${PROJECT_SOURCE_DIR}/html/viewer/_Orbbec" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_Orbbec"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${PROJECT_SOURCE_DIR}/html/viewer/_GLIM" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_GLIM"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${PROJECT_SOURCE_DIR}/html/viewer/_Scepter" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_Scepter")
 endif()
 
 # Optional ROS2 configs
@@ -775,6 +787,8 @@ if(WITH_UNIVERSE)
   install(DIRECTORY html/viewer/_SelectableOctGrid DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   install(DIRECTORY html/viewer/_GeometryBase DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   install(DIRECTORY html/viewer/_Orbbec DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
+  install(DIRECTORY html/viewer/_GLIM DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
+  install(DIRECTORY html/viewer/_Scepter DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
 endif()
 set_target_properties(OpenKAI PROPERTIES
   VERSION ${PROJECT_VERSION})

@@ -43,14 +43,18 @@ namespace kai
 		bool readPointCloud(vector<Vector3f> &points, uint64_t &stamp);
 		bool readIMU(Vector3d &acc, Vector3d &gyro, uint64_t &stamp);
 		bool publishPose(const Isometry3d &pose, float confidence);
+		// Give pending controls/status a turn between expensive SLAM frames.
+		std::unique_lock<std::mutex> lockSLAM(void);
 
 		std::mutex m_mtxSLAM;
+		std::atomic_uint m_controlWaiters{0};
 		_PointCloud *m_pPCL = nullptr;
 		_IMUbase *m_pIMU = nullptr;
 		uint64_t m_tStampLastFrame = 0;
 		uint64_t m_tStampLastIMU = 0;
 		std::atomic_bool m_bTracking{false};
 		bool m_bAutoStart = true;
+		string m_slamError;
 
 	private:
 		void stopTrackingLocked(void);

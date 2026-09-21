@@ -1,0 +1,221 @@
+{
+	"APP": {
+		"class": "OpenKAI",
+		"appName": "GLIM SLAM",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"GLIM",
+			"Orbbec"
+		]
+	},
+	"wsServer": {
+		"class": "_WebSocketServer",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"threadR": {
+			"FPS": 1
+		},
+		"host": "0.0.0.0",
+		"port": 7890,
+		"wsMode": 2,
+		"nClientMax": 1,
+		"tOutMs": 10000
+	},
+	"wsConsole": {
+		"class": "_WSconsole",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"threadR": {
+			"FPS": 30
+		},
+		"_IObase": "wsServer",
+		"msgFinishSend": "",
+		"msgFinishRecv": "EOJ",
+		"vBASE": [
+			"GLIM"
+		]
+	},
+	"view": {
+		"class": "_WindowCV",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"bFullScreen": 0,
+		"vBASE": [
+			"Orbbec"
+		]
+	},
+	"viewD": {
+		"class": "_WindowCV",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"bFullScreen": 0,
+		"vBASE": [
+			"d2rgb"
+		]
+	},
+	"Orbbec": {
+		"class": "_Orbbec",
+		"fConfig": "jsonCfg/Orbbec.controls.json",
+		"bON": true,
+		"thread": {
+			"FPS": 200
+		},
+		"threadPP": {
+			"FPS": 30
+		},
+		"devFPS": 30,
+		"vSizeRGB": [
+			640,
+			480
+		],
+		"devFPSd": 30,
+		"vSizeD": [
+			640,
+			480
+		],
+		"_PointCloud": "obPCL",
+		"_IMUbase": "obIMU",
+		"SN": "",
+		"tOutMs": 1000,
+		"bRGB": false,
+		"bDepth": true,
+		"bIMU": true,
+		"bPCL": true,
+		"bPCLrgb": false,
+		"/OrbbecControls": "null preserves the camera setting (OrbbecCtrl default). Set a BOOL option to true/false or an INT/FLOAT option to a supported number to override it.",
+		"OB_PROP_COLOR_AUTO_EXPOSURE_BOOL": null,
+		"OB_PROP_COLOR_EXPOSURE_INT": null,
+		"OB_PROP_COLOR_GAIN_INT": null,
+		"OB_PROP_COLOR_AUTO_WHITE_BALANCE_BOOL": null,
+		"OB_PROP_COLOR_WHITE_BALANCE_INT": null,
+		"OB_PROP_DEPTH_AUTO_EXPOSURE_BOOL": null,
+		"OB_PROP_DEPTH_EXPOSURE_INT": null,
+		"OB_PROP_DEPTH_GAIN_INT": null,
+		"OB_PROP_LASER_CONTROL_INT": null,
+		"OB_PROP_LASER_POWER_LEVEL_CONTROL_INT": null,
+		"OB_PROP_DEPTH_NOISE_REMOVAL_FILTER_BOOL": null,
+		"OB_PROP_HW_NOISE_REMOVE_FILTER_ENABLE_BOOL": null,
+		"OB_PROP_HW_NOISE_REMOVE_FILTER_THRESHOLD_FLOAT": null,
+		"OB_PROP_COLOR_MIRROR_BOOL": null,
+		"OB_PROP_DEPTH_MIRROR_BOOL": null
+	},
+	"d2rgb": {
+		"class": "_D2RGB",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"_RGBDbase": "Orbbec",
+		"bMeasure": false
+	},
+	"obPCL": {
+		"class": "_PointCloud",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 1
+		},
+		"nP": 1000000
+	},
+	"obIMU": {
+		"class": "_IMUbase",
+		"bFusion": false,
+		"bON": true,
+		"thread": {
+			"FPS": 200
+		},
+		"threadStream": {
+			"FPS": 10
+		},
+		"nIMUdqMax": 4000,
+		"tIMUpairToleranceUs": 1000
+	},
+	"glimPCL": {
+		"class": "_PointCloud",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 1
+		},
+		"nP": 1000000
+	},
+	"viewer": {
+		"class": "_WebGeometryBase",
+		"webRoot": "html/viewer/_GLIM",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"host": "0.0.0.0",
+		"port": 8080,
+		"nClientMax": 8,
+		"nPbuf": 400000,
+		"nLbuf": 0,
+		"dTexpire": 0,
+		"bAutoBound": true,
+		"bShowGrid": true,
+		"bFrame": true,
+		"vCamLookAt": [
+			0,
+			0,
+			0
+		],
+		"vCamEye": [
+			0,
+			-6,
+			3
+		],
+		"vCamUp": [
+			0,
+			0,
+			1
+		],
+		"camFov": 70,
+		"vCamNF": [
+			0.01,
+			1000000
+		],
+		"vGeometry": [
+			{
+				"_GeometryBase": "glimPCL",
+				"nP": 1000000,
+				"nL": 0,
+				"matPointSize": 2
+			}
+		]
+	},
+	"GLIM": {
+		"class": "_GLIM",
+		"bON": true,
+		"thread": {
+			"FPS": 100
+		},
+		"_PointCloud": "obPCL",
+		"_IMUbase": "obIMU",
+		"configPath": "jsonCfg/glim_orbbec",
+		"bAutoStart": false,
+		"bMapping": true,
+		"nMinPoints": 100,
+		"tConfidenceTimeoutUs": 1000000,
+		"globalMapPCL": "glimPCL",
+		"nMapPoints": 400000,
+		"nLiveFrames": 60,
+		"tMapUpdateUs": 200000
+	}
+}

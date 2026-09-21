@@ -18,7 +18,7 @@
     "thread": { "FPS": 100 },
     "_PointCloud": "slamPoints",
     "_IMUbase": "slamIMU",
-    "configPath": "jsonCfg/glim",
+    "configPath": "jsonCfg/glim_orbbec",
     "bAutoStart": true,
     "bMapping": true,
     "nMinPoints": 100,

@@ -157,6 +157,7 @@ namespace kai
 		virtual bool init(const json &j);
 		virtual bool link(const json &j, ModuleMgr *pM);
 		virtual bool start(void);
+		void stop(void) override;
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 		virtual void console(const json &j, void *pJSONbase);
@@ -320,9 +321,9 @@ namespace kai
 
 		uint64_t frameTsUs_(const shared_ptr<ob::Frame> &f)
 		{
-			// Prefer "system timestamp us" if available in your SDK build.
-			// If not, fall back to other timestamp APIs.
-			return f->getSystemTimeStampUs();
+			// Depth and IMU share the device capture clock. Host arrival times
+			// contain USB jitter and can be identical for a batch of IMU samples.
+			return f->getTimeStampUs();
 		}
 
 	protected:
@@ -331,6 +332,7 @@ namespace kai
 		bool m_bNetDevEnum = false;
 		shared_ptr<ob::Device> m_spDev = nullptr;
 		shared_ptr<ob::Pipeline> m_spPipe = nullptr;
+		shared_ptr<ob::Sensor> m_spAccel, m_spGyro;
 		shared_ptr<ob::SensorList> m_spSensorList = nullptr;
 		shared_ptr<ob::Config> m_spConfig = nullptr;
 		uint32_t m_tOutMs = 1000;

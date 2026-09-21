@@ -7,11 +7,176 @@
 
 #include "_Scepter.h"
 #include <cmath>
+#include <filesystem>
+#include <set>
+#include <type_traits>
+#include <arpa/inet.h>
 
 namespace kai
 {
 	namespace
 	{
+
+		// One field list drives JSON persistence, validation and the browser schema.
+		// Function pointers (hot-plug callback/user data) stay in C++ only.
+		template <typename F>
+		void visitScControls(ScCtrl &c, F f)
+		{
+			const char *ip = reinterpret_cast<const char *>(c.m_timeSync.ip);
+			string ntpIP(ip, strnlen(ip, sizeof(c.m_timeSync.ip)));
+			f("scScanTime", c.m_tScan, "Streams and point cloud");
+			f("scPixelFormat", c.m_pixelFormat, "Streams and point cloud");
+			f("scFrameRate", c.m_frameRate, "Streams and point cloud");
+			f("scToFWidth", c.m_resolutionToF.width, "Streams and point cloud");
+			f("scToFHeight", c.m_resolutionToF.height, "Streams and point cloud");
+			f("scColorWidth", c.m_resolutionRGB.width, "Streams and point cloud");
+			f("scColorHeight", c.m_resolutionRGB.height, "Streams and point cloud");
+			f("scTransformColorToDepth", c.m_bTransformRGBToDepth, "Streams and point cloud");
+			f("scTransformDepthToColor", c.m_bTransformDepthToRGB, "Streams and point cloud");
+			f("scWorkMode", c.m_workMode, "Trigger");
+			f("scSoftwareTriggerFrameCount", c.m_softwareTriggerFrameCount, "Trigger");
+			f("scHWTriggerWidth", c.m_hwTrigger.width, "Trigger");
+			f("scHWTriggerInterval", c.m_hwTrigger.interval, "Trigger");
+			f("scHWTriggerPolarity", c.m_hwTrigger.polarity, "Trigger");
+			f("scAutoExposureToF", c.m_bAutoExposureToF, "ToF exposure");
+			f("scExposureTimeToF", c.m_tExposureToF, "ToF exposure");
+			f("scHDR", c.m_bHDR, "ToF exposure");
+			f("scHDRExposureTimes", c.m_tExposureHDR, "ToF exposure");
+			f("scWDR", c.m_bWDR, "ToF exposure");
+			f("scWDRExposureTimes", c.m_tExposureWDR, "ToF exposure");
+			f("scAutoExposureRGB", c.m_bAutoExposureRGB, "Color");
+			f("scExposureTimeRGB", c.m_tExposureRGB, "Color");
+			f("scColorGain", c.m_gainRGB, "Color");
+			f("scColorAECMaxExposureTime", c.m_tAECMaxExposureRGB, "Color");
+			f("scColorAECROIX", c.m_aecROIRGBorigin.x, "Color");
+			f("scColorAECROIY", c.m_aecROIRGBorigin.y, "Color");
+			f("scColorAECROIWidth", c.m_aecROIRGBsize.width, "Color");
+			f("scColorAECROIHeight", c.m_aecROIRGBsize.height, "Color");
+			f("scTimeFilterEnabled", c.m_timeFilter.enable, "Filters and IR");
+			f("scTimeFilterThreshold", c.m_timeFilter.threshold, "Filters and IR");
+			f("scConfidenceFilterEnabled", c.m_confidenceFilter.enable, "Filters and IR");
+			f("scConfidenceFilterThreshold", c.m_confidenceFilter.threshold, "Filters and IR");
+			f("scFlyingPixelFilterEnabled", c.m_flyingPixelFilter.enable, "Filters and IR");
+			f("scFlyingPixelFilterThreshold", c.m_flyingPixelFilter.threshold, "Filters and IR");
+			f("scFillHoleEnabled", c.m_bFillHole, "Filters and IR");
+			f("scSpatialFilterEnabled", c.m_bSpatialFilter, "Filters and IR");
+			f("scIRGMMGain", c.m_irGMMGain, "Filters and IR");
+			f("scIRGMMCorrectionEnabled", c.m_irGMMCorrection.enable, "Filters and IR");
+			f("scIRGMMCorrectionThreshold", c.m_irGMMCorrection.threshold, "Filters and IR");
+			f("scDHCPEnabled", c.m_bDHCP, "Network and time");
+			f("scDeviceIPAddr", c.m_deviceIPAddr, "Network and time");
+			f("scDeviceSubnetMask", c.m_deviceSubnetMask, "Network and time");
+			f("scTimeSyncMode", c.m_timeSync.flag, "Network and time");
+			f("scNTPServerIP", ntpIP, "Network and time");
+			f("scAIModuleEnabled", c.m_bAIModule, "AI module");
+			f("scAIModuleWorkMode", c.m_aiWorkMode, "AI module");
+			f("scAIModuleParams", c.m_aiParams, "AI module");
+			f("scAIModuleInputFrames", c.m_aiInputFrames, "AI module");
+			f("scAIModulePreviewFrames", c.m_aiPreviewFrames, "AI module");
+			f("scParamsJsonFile", c.m_paramsJsonFile, "SDK preset");
+			memset(c.m_timeSync.ip, 0, sizeof(c.m_timeSync.ip));
+			memcpy(c.m_timeSync.ip, ntpIP.data(), std::min(ntpIP.size(), sizeof(c.m_timeSync.ip) - 1));
+		}
+
+		template <typename T>
+		json scFieldSpec(const char *key, const T &, const char *category)
+		{
+			json spec = {{"key", key}, {"category", category}};
+			if constexpr (std::is_same_v<T, bool>) spec["type"] = "bool";
+			else if constexpr (std::is_integral_v<T> || std::is_enum_v<T>)
+			{
+				spec["type"] = "int";
+				spec["min"] = 0;
+				if constexpr (std::is_enum_v<T>) spec["max"] = 2;
+				else spec["max"] = std::numeric_limits<T>::max();
+			}
+			else if constexpr (std::is_floating_point_v<T>)
+			{
+				spec["type"] = "float"; spec["min"] = 0.000001; spec["max"] = std::numeric_limits<T>::max();
+			}
+			else if constexpr (std::is_same_v<T, string>) spec["type"] = "string";
+			else spec["type"] = "pairs";
+			const string k(key);
+			if (k == "scTimeFilterThreshold") { spec["min"] = 1; spec["max"] = 6; }
+			if (k == "scConfidenceFilterThreshold" || k == "scIRGMMCorrectionThreshold") { spec["min"] = 1; spec["max"] = 100; }
+			if (k == "scFlyingPixelFilterThreshold") { spec["min"] = 1; spec["max"] = 16; }
+			if (k == "scSoftwareTriggerFrameCount") { spec["min"] = 1; spec["max"] = 10; }
+			if (k == "scHWTriggerPolarity") spec["max"] = 1;
+			if (k == "scTimeSyncMode") spec["max"] = 2;
+			if (k == "scPixelFormat") { spec["min"] = 3; spec["max"] = 6; spec["hint"] = "3: RGB JPEG, 4: BGR JPEG, 5: RGB, 6: BGR"; }
+			if (k == "scWorkMode") spec["hint"] = "0: active, 1: hardware trigger, 2: software trigger";
+			if (k == "scAIModuleWorkMode") spec["hint"] = "0: continuous, 1: single run, 2: single report";
+			if (k == "scTimeSyncMode") spec["hint"] = "0: off, 1: NTP, 2: PTP";
+			if (k == "scFrameRate" || k == "scScanTime" || k.find("ExposureTime") != string::npos ||
+				k == "scToFWidth" || k == "scToFHeight" || k == "scColorWidth" || k == "scColorHeight" ||
+				k == "scColorAECROIWidth" || k == "scColorAECROIHeight") spec["min"] = 1;
+			if (k == "scDeviceIPAddr" || k == "scDeviceSubnetMask" || k == "scNTPServerIP") spec["maxLength"] = 15;
+			if (k == "scParamsJsonFile") spec["hint"] = "Optional SDK preset path on the backend; applied before explicit controls.";
+			if (k == "scHDRExposureTimes" || k == "scWDRExposureTimes")
+			{
+				spec["example"] = json::array({json::array({0, 4000}), json::array({1, 1000})});
+				spec["hint"] = "JSON pairs [frame index, exposure in microseconds].";
+			}
+			if (k == "scAIModuleParams") { spec["example"] = json::array({json::array({0, json::array({1, 2})})}); spec["hint"] = "JSON pairs [parameter ID, byte array]; IDs depend on the camera."; }
+			if (k == "scAIModuleInputFrames" || k == "scAIModulePreviewFrames")
+			{
+				spec["example"] = json::array({json::array({0, true})});
+				spec["hint"] = "JSON pairs [frame type, enabled]. Types: 0 depth, 1 IR, 3 color, 4 aligned color, 5 aligned depth.";
+			}
+			if (k == "scFrameRate" || k == "scWorkMode" || k == "scPixelFormat" ||
+				k == "scToFWidth" || k == "scToFHeight" || k == "scColorWidth" || k == "scColorHeight" ||
+				k == "scTransformColorToDepth" || k == "scTransformDepthToColor" || k == "scParamsJsonFile") spec["restart"] = true;
+			return spec;
+		}
+
+		bool scInteger(const json &v, double low, double high)
+		{
+			return v.is_number_integer() && v.get<double>() >= low && v.get<double>() <= high;
+		}
+
+		void validateScValue(const json &v, const json &spec)
+		{
+			const string type = spec["type"], key = spec["key"];
+			bool valid = false;
+			if (type == "bool") valid = v.is_boolean();
+			else if (type == "int") valid = scInteger(v, spec["min"].get<double>(), spec["max"].get<double>());
+			else if (type == "float") valid = v.is_number() && std::isfinite(v.get<double>()) && v >= spec["min"] && v <= spec["max"];
+			else if (type == "string")
+			{
+				valid = v.is_string();
+				if (valid)
+				{
+					const auto &text = v.get_ref<const string &>();
+					valid = text.find('\0') == string::npos && text.size() <= spec.value("maxLength", size_t(4096));
+					if (valid && spec.contains("maxLength") && !text.empty())
+					{
+						struct in_addr address;
+						valid = inet_pton(AF_INET, text.c_str(), &address) == 1;
+					}
+				}
+			}
+			else if (type == "pairs")
+			{
+				valid = v.is_array();
+				std::set<uint32_t> seen;
+				if (valid) for (const auto &pair : v)
+				{
+					const bool bytes = key == "scAIModuleParams";
+					const bool frames = key == "scAIModuleInputFrames" || key == "scAIModulePreviewFrames";
+					if (!pair.is_array() || pair.size() != 2 || !scInteger(pair[0], 0, bytes ? UINT32_MAX : frames ? 5 : UINT8_MAX)) { valid = false; break; }
+					const uint32_t index = pair[0].get<uint32_t>();
+					if (!seen.insert(index).second || (frames && index == 2)) { valid = false; break; }
+					if (bytes)
+					{
+						if (!pair[1].is_array() || pair[1].size() > UINT16_MAX) { valid = false; break; }
+						for (const auto &byte : pair[1]) if (!scInteger(byte, 0, UINT8_MAX)) valid = false;
+					}
+					else if (frames ? !pair[1].is_boolean() : !scInteger(pair[1], 1, INT32_MAX)) valid = false;
+				}
+			}
+			if (!valid) throw std::invalid_argument("Invalid value for " + key);
+		}
+
 		bool copyScFrame(const ScFrame &frame, Mat &image)
 		{
 			if (!frame.pFrameData || !frame.width || !frame.height)
@@ -20,13 +185,20 @@ namespace kai
 			int type;
 			switch (frame.pixelFormat)
 			{
-			case SC_PIXEL_FORMAT_DEPTH_MM16: type = CV_16UC1; break;
-			case SC_PIXEL_FORMAT_GRAY_8: type = CV_8UC1; break;
+			case SC_PIXEL_FORMAT_DEPTH_MM16:
+				type = CV_16UC1;
+				break;
+			case SC_PIXEL_FORMAT_GRAY_8:
+				type = CV_8UC1;
+				break;
 			case SC_PIXEL_FORMAT_BGR_888:
 			case SC_PIXEL_FORMAT_BGR_888_JPEG:
 			case SC_PIXEL_FORMAT_RGB_888:
-			case SC_PIXEL_FORMAT_RGB_888_JPEG: type = CV_8UC3; break;
-			default: return false;
+			case SC_PIXEL_FORMAT_RGB_888_JPEG:
+				type = CV_8UC3;
+				break;
+			default:
+				return false;
 			}
 			if (frame.dataLen < size_t(frame.width) * frame.height * CV_ELEM_SIZE(type))
 				return false;
@@ -53,102 +225,36 @@ namespace kai
 
 	_Scepter::~_Scepter()
 	{
-		if (m_pT) m_pT->join();
-		if (m_pTpp) m_pTpp->join();
+		if (m_pT)
+			m_pT->join();
+		if (m_pTpp)
+			m_pTpp->join();
 		close();
-		if (m_bScInitialized) scShutdown();
+		if (m_bScInitialized)
+			scShutdown();
 	}
 
 	bool _Scepter::init(const json &j)
 	{
 		IF_F(!_RGBDbase::init(j));
 
-		if (j.contains("pclStride"))
-		{
-			const auto &stride = j.at("pclStride");
-			IF_Le_F(!stride.is_number_integer() || stride < 1 || stride > UINT16_MAX,
-					"pclStride must be an integer in [1, 65535]");
-			m_pclStride = stride.get<int>();
-		}
-
-		jKv(j, "scScanTime", m_scCtrl.m_tScan);
-		jKv(j, "scPixelFormat", m_scCtrl.m_pixelFormat);
-		jKv(j, "scAutoExposureToF", m_scCtrl.m_bAutoExposureToF);
-		jKv(j, "scExposureTimeToF", m_scCtrl.m_tExposureToF);
-		jKv(j, "scAutoExposureRGB", m_scCtrl.m_bAutoExposureRGB);
-		jKv(j, "scExposureTimeRGB", m_scCtrl.m_tExposureRGB);
-		jKv(j, "scTimeFilterEnabled", m_scCtrl.m_timeFilter.enable);
-		jKv(j, "scTimeFilterThreshold", m_scCtrl.m_timeFilter.threshold);
-		jKv(j, "scConfidenceFilterEnabled", m_scCtrl.m_confidenceFilter.enable);
-		jKv(j, "scConfidenceFilterThreshold", m_scCtrl.m_confidenceFilter.threshold);
-		jKv(j, "scFlyingPixelFilterEnabled", m_scCtrl.m_flyingPixelFilter.enable);
-		jKv(j, "scFlyingPixelFilterThreshold", m_scCtrl.m_flyingPixelFilter.threshold);
-		jKv(j, "scFillHoleEnabled", m_scCtrl.m_bFillHole);
-		jKv(j, "scSpatialFilterEnabled", m_scCtrl.m_bSpatialFilter);
-		jKv(j, "scHDR", m_scCtrl.m_bHDR);
-
-		// Keep existing configurations working; explicit sc options take precedence.
+		// Legacy stream aliases remain valid in the application JSON. Explicit
+		// sc options and the saved snapshot take precedence.
 		jKv(jK(j, "thread"), "FPS", m_scCtrl.m_frameRate);
-		jKv(j, "scFrameRate", m_scCtrl.m_frameRate);
-		IF_Le_F(m_scCtrl.m_frameRate <= 0, "scFrameRate must be positive");
-
-		jKv(j, "scWorkMode", m_scCtrl.m_workMode);
-		jKv(j, "scSoftwareTriggerFrameCount", m_scCtrl.m_softwareTriggerFrameCount);
-		jKv(j, "scHWTriggerWidth", m_scCtrl.m_hwTrigger.width);
-		jKv(j, "scHWTriggerInterval", m_scCtrl.m_hwTrigger.interval);
-		jKv(j, "scHWTriggerPolarity", m_scCtrl.m_hwTrigger.polarity);
-
-		m_vSizeD = Vector2i(m_scCtrl.m_resolutionToF.width, m_scCtrl.m_resolutionToF.height);
-		jKv<int>(j, "vSizeD", m_vSizeD);
 		m_scCtrl.m_resolutionToF = {(uint16_t)m_vSizeD.x(), (uint16_t)m_vSizeD.y()};
+		if (!j.contains("vSizeD")) m_scCtrl.m_resolutionToF = {640, 480};
 		m_scCtrl.m_resolutionRGB = {(uint16_t)m_vSizeRGB.x(), (uint16_t)m_vSizeRGB.y()};
-
-		jKv(j, "scToFWidth", m_scCtrl.m_resolutionToF.width);
-		jKv(j, "scToFHeight", m_scCtrl.m_resolutionToF.height);
-		jKv(j, "scColorWidth", m_scCtrl.m_resolutionRGB.width);
-		jKv(j, "scColorHeight", m_scCtrl.m_resolutionRGB.height);
-
+		m_scCtrl.m_aecROIRGBsize = m_scCtrl.m_resolutionRGB;
 		m_scCtrl.m_bTransformRGBToDepth = m_btRGB;
 		m_scCtrl.m_bTransformDepthToRGB = m_btDepth;
-		jKv(j, "scTransformColorToDepth", m_scCtrl.m_bTransformRGBToDepth);
-		jKv(j, "scTransformDepthToColor", m_scCtrl.m_bTransformDepthToRGB);
-
-		jKv(j, "scIRGMMGain", m_scCtrl.m_irGMMGain);
-		jKv(j, "scIRGMMCorrectionEnabled", m_scCtrl.m_irGMMCorrection.enable);
-		jKv(j, "scIRGMMCorrectionThreshold", m_scCtrl.m_irGMMCorrection.threshold);
-		jKv(j, "scColorGain", m_scCtrl.m_gainRGB);
-		jKv(j, "scColorAECMaxExposureTime", m_scCtrl.m_tAECMaxExposureRGB);
-		jKv(j, "scColorAECROIX", m_scCtrl.m_aecROIRGBorigin.x);
-		jKv(j, "scColorAECROIY", m_scCtrl.m_aecROIRGBorigin.y);
-
-		m_scCtrl.m_aecROIRGBsize = m_scCtrl.m_resolutionRGB;
-		jKv(j, "scColorAECROIWidth", m_scCtrl.m_aecROIRGBsize.width);
-		jKv(j, "scColorAECROIHeight", m_scCtrl.m_aecROIRGBsize.height);
-		jKv(j, "scWDR", m_scCtrl.m_bWDR);
-
-		// Integer-keyed maps use JSON pairs, e.g. [[0, 4000], [1, 1000]].
-		jKv(j, "scHDRExposureTimes", m_scCtrl.m_tExposureHDR);
-		jKv(j, "scWDRExposureTimes", m_scCtrl.m_tExposureWDR);
-
-		jKv(j, "scDHCPEnabled", m_scCtrl.m_bDHCP);
-		jKv(j, "scDeviceIPAddr", m_scCtrl.m_deviceIPAddr);
-		jKv(j, "scDeviceSubnetMask", m_scCtrl.m_deviceSubnetMask);
-		jKv(j, "scTimeSyncMode", m_scCtrl.m_timeSync.flag);
-		string ntpIP;
-		if (jKv(j, "scNTPServerIP", ntpIP))
+		json startup = {{"scFrameRate", m_scCtrl.m_frameRate}}, errors;
+		for (const auto &spec : controlSchema())
 		{
-			IF_Le_F(ntpIP.size() >= sizeof(m_scCtrl.m_timeSync.ip), "scNTPServerIP is too long");
-			memset(m_scCtrl.m_timeSync.ip, 0, sizeof(m_scCtrl.m_timeSync.ip));
-			memcpy(m_scCtrl.m_timeSync.ip, ntpIP.c_str(), ntpIP.size());
+			const string key = spec["key"];
+			if (j.contains(key)) startup[key] = j[key];
 		}
-		jKv(j, "scParamsJsonFile", m_scCtrl.m_paramsJsonFile);
-		// Hot-plug callback and user-data pointers must be supplied from C++.
-
-		jKv(j, "scAIModuleEnabled", m_scCtrl.m_bAIModule);
-		jKv(j, "scAIModuleWorkMode", m_scCtrl.m_aiWorkMode);
-		jKv(j, "scAIModuleParams", m_scCtrl.m_aiParams);
-		jKv(j, "scAIModuleInputFrames", m_scCtrl.m_aiInputFrames);
-		jKv(j, "scAIModulePreviewFrames", m_scCtrl.m_aiPreviewFrames);
+		if (!applyConfig(startup, false, errors)) { LOG_E(errors.dump()); return false; }
+		if (!m_fConfig.empty() && std::filesystem::exists(m_fConfig) && !loadConfig()) return false;
 
 		DEL(m_pTpp);
 		m_pTpp = createThread(jK(j, "threadPP"), "threadPP");
@@ -164,9 +270,248 @@ namespace kai
 		return true;
 	}
 
+	json _Scepter::configValues(void)
+	{
+		json j = {{"bRGB", m_bRGB}, {"bDepth", m_bDepth}, {"bIR", m_bIR},
+			{"bPCL", m_bPCL}, {"bPCLrgb", m_bPCLrgb}, {"pclStride", m_pclStride}, {"dScale", m_dScale}};
+		visitScControls(m_scCtrl, [&](const char *key, auto &value, const char *) { j[key] = value; });
+		return j;
+	}
+
+	json _Scepter::controlSchema(void)
+	{
+		json schema = json::array();
+		for (const char *key : {"bRGB", "bDepth", "bIR", "bPCL", "bPCLrgb"})
+			schema.push_back(scFieldSpec(key, false, "Streams and point cloud"));
+		json stride = scFieldSpec("pclStride", uint16_t(1), "Streams and point cloud");
+		stride["min"] = 1; schema.push_back(stride);
+		schema.push_back(scFieldSpec("dScale", 1.0f, "Streams and point cloud"));
+		visitScControls(m_scCtrl, [&](const char *key, auto &value, const char *category) {
+			schema.push_back(scFieldSpec(key, value, category));
+		});
+		return schema;
+	}
+
+	bool _Scepter::applyConfig(const json &patch, bool device, json &errors, bool all)
+	{
+		errors = json::object();
+		if (!patch.is_object()) { errors["config"] = "Expected a JSON object"; return false; }
+		json specs = json::object();
+		for (const auto &spec : controlSchema()) specs[spec["key"].get<string>()] = spec;
+		for (auto it = patch.begin(); it != patch.end(); ++it)
+		{
+			try
+			{
+				if (!specs.contains(it.key())) throw std::invalid_argument("Unknown parameter");
+				validateScValue(it.value(), specs[it.key()]);
+			}
+			catch (const std::exception &e) { errors[it.key()] = e.what(); }
+		}
+		if (!errors.empty()) return false;
+		if (device && !m_bOpened) { errors["device"] = "Camera is not open"; return false; }
+
+		ScCtrl candidate = m_scCtrl;
+		visitScControls(candidate, [&](const char *key, auto &value, const char *) {
+			if (patch.contains(key)) value = patch[key].get<std::decay_t<decltype(value)>>();
+		});
+		// HDR and auto ToF exposure are mutually exclusive. Selecting either mode
+		// updates the paired control in the reply and in the complete saved snapshot.
+		json changed = patch;
+		if (patch.value("scHDR", false)) { candidate.m_bAutoExposureToF = false; changed["scAutoExposureToF"] = false; }
+		else if (patch.value("scAutoExposureToF", false)) { candidate.m_bHDR = false; changed["scHDR"] = false; }
+		// Keep a full-frame AEC ROI full-frame when changing color resolution.
+		if (m_scCtrl.m_aecROIRGBorigin.x == 0 && m_scCtrl.m_aecROIRGBorigin.y == 0 &&
+			m_scCtrl.m_aecROIRGBsize.width == m_scCtrl.m_resolutionRGB.width &&
+			m_scCtrl.m_aecROIRGBsize.height == m_scCtrl.m_resolutionRGB.height)
+		{
+			if (patch.contains("scColorWidth") && !patch.contains("scColorAECROIWidth"))
+			{
+				candidate.m_aecROIRGBsize.width = candidate.m_resolutionRGB.width;
+				changed["scColorAECROIWidth"] = candidate.m_aecROIRGBsize.width;
+			}
+			if (patch.contains("scColorHeight") && !patch.contains("scColorAECROIHeight"))
+			{
+				candidate.m_aecROIRGBsize.height = candidate.m_resolutionRGB.height;
+				changed["scColorAECROIHeight"] = candidate.m_aecROIRGBsize.height;
+			}
+		}
+		if (uint32_t(candidate.m_aecROIRGBorigin.x) + candidate.m_aecROIRGBsize.width > candidate.m_resolutionRGB.width ||
+			uint32_t(candidate.m_aecROIRGBorigin.y) + candidate.m_aecROIRGBsize.height > candidate.m_resolutionRGB.height)
+		{
+			errors["scColorAECROIWidth"] = "Color AEC ROI must fit inside the color resolution";
+			return false;
+		}
+		bool restart = all;
+		for (auto it = changed.begin(); it != changed.end(); ++it)
+			if (specs[it.key()].value("restart", false)) restart = true;
+		if (device && restart && scStopStream(m_scDevHandle) != SC_OK)
+		{
+			errors["device"] = "Could not stop capture to change stream settings";
+			return false;
+		}
+		if (device)
+		{
+			m_bPCLframe = false;
+			applyScControls(candidate, changed, all, errors);
+			if (restart)
+			{
+				if (scGetSensorIntrinsicParameters(m_scDevHandle, SC_TOF_SENSOR, &m_scCamParams) != SC_OK)
+					errors["calibration"] = "Could not refresh camera calibration";
+				if (scStartStream(m_scDevHandle) != SC_OK)
+				{
+					errors["device"] = "Could not restart camera capture";
+					close();
+				}
+			}
+		}
+		else
+		{
+			m_scCtrl = candidate;
+			m_btRGB = candidate.m_bTransformRGBToDepth;
+			m_btDepth = candidate.m_bTransformDepthToRGB;
+			m_vSizeD = Vector2i(candidate.m_resolutionToF.width, candidate.m_resolutionToF.height);
+			m_vSizeRGB = Vector2i(candidate.m_resolutionRGB.width, candidate.m_resolutionRGB.height);
+		}
+		jKv(patch, "bRGB", m_bRGB); jKv(patch, "bDepth", m_bDepth); jKv(patch, "bIR", m_bIR);
+		jKv(patch, "bPCL", m_bPCL); jKv(patch, "bPCLrgb", m_bPCLrgb);
+		jKv(patch, "pclStride", m_pclStride); jKv(patch, "dScale", m_dScale);
+		return errors.empty();
+	}
+
+	bool _Scepter::loadConfig(json *pJ, string fName)
+	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
+		json loaded, errors;
+		if (!_RGBDbase::loadConfig(&loaded, fName)) return false;
+		// Merge available keys into the current settings, then apply the entire
+		// resulting snapshot, including defaults absent from an older file.
+		if (!applyConfig(loaded, m_bOpened, errors, true)) { LOG_E(errors.dump()); return false; }
+		if (pJ) *pJ = configValues();
+		return true;
+	}
+
+	bool _Scepter::saveConfig(json &j, string fName)
+	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
+		j = configValues();
+		return _RGBDbase::saveConfig(j, fName);
+	}
+
+	ScCtrl _Scepter::getCamCtrl(void)
+	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
+		return m_scCtrl;
+	}
+
+	bool _Scepter::setCamCtrl(const ScCtrl &camCtrl)
+	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
+		ScCtrl candidate = camCtrl;
+		json patch = json::object(), errors;
+		visitScControls(candidate, [&](const char *key, auto &value, const char *) { patch[key] = value; });
+		if (!applyConfig(patch, m_bOpened, errors)) return false;
+		if (camCtrl.m_hotPlugCallback != m_scCtrl.m_hotPlugCallback || camCtrl.m_pHotPlugUserData != m_scCtrl.m_pHotPlugUserData)
+			return setHotPlugStatusCallback(camCtrl.m_hotPlugCallback, camCtrl.m_pHotPlugUserData);
+		return true;
+	}
+
+	void _Scepter::applyScControls(const ScCtrl &requested, const json &changed, bool all, json &errors)
+	{
+		// Setters cache their requested value before calling the SDK. On failure,
+		// restore that control's previous value so the browser sees accepted state.
+		const json before = configValues();
+		const ScCtrl c = requested; // callers may pass m_scCtrl itself
+		m_scCtrl = c;
+		if (!c.m_paramsJsonFile.empty() && changed.contains("scParamsJsonFile")) all = true;
+		json selectedKeys = changed;
+		auto dependent = [&](const char *trigger, std::initializer_list<const char *> keys) {
+			if (changed.contains(trigger)) for (const char *key : keys) selectedKeys[key] = true;
+		};
+		dependent("scWorkMode", {"scSoftwareTriggerFrameCount", "scHWTriggerWidth"});
+		dependent("scAutoExposureToF", {"scExposureTimeToF"});
+		dependent("scHDR", {"scHDRExposureTimes"});
+		dependent("scWDR", {"scWDRExposureTimes"});
+		dependent("scAutoExposureRGB", {"scExposureTimeRGB", "scColorGain", "scColorAECMaxExposureTime", "scColorAECROIX"});
+		dependent("scAIModuleEnabled", {"scAIModuleWorkMode", "scAIModuleParams", "scAIModuleInputFrames", "scAIModulePreviewFrames"});
+		dependent("scDHCPEnabled", {"scDeviceIPAddr", "scDeviceSubnetMask"});
+		auto apply = [&](std::initializer_list<const char *> keys, bool active, auto setter) {
+			bool selected = all;
+			for (const char *key : keys) selected |= selectedKeys.contains(key);
+			if (!selected || !active || setter()) return;
+			for (const char *key : keys) errors[key] = "Device rejected this value or does not support this control";
+			visitScControls(m_scCtrl, [&](const char *key, auto &value, const char *) {
+				for (const char *failed : keys)
+					if (string(key) == failed) value = before[key].get<std::decay_t<decltype(value)>>();
+			});
+		};
+		// Indexed controls can fail independently. Keep successful entries and
+		// restore only the rejected index, rather than undoing the whole cache.
+		auto applyEntries = [&](const char *key, bool active, auto &stored, const auto &entries, auto setter) {
+			if ((!all && !selectedKeys.contains(key)) || !active) return;
+			const auto previous = before[key].get<std::decay_t<decltype(stored)>>();
+			for (const auto &entry : entries)
+			{
+				if (setter(entry.first, entry.second)) continue;
+				errors[key] = "Device rejected one or more indexed values";
+				const auto old = previous.find(entry.first);
+				if (old == previous.end()) stored.erase(entry.first);
+				else stored[entry.first] = old->second;
+			}
+		};
+		apply({"scParamsJsonFile"}, !c.m_paramsJsonFile.empty(), [&] { return setParamsByJson(c.m_paramsJsonFile); });
+		apply({"scFrameRate"}, true, [&] { return setFrameRate(c.m_frameRate); });
+		apply({"scWorkMode"}, true, [&] { return setWorkMode(c.m_workMode); });
+		apply({"scSoftwareTriggerFrameCount"}, m_scCtrl.m_workMode == SC_SOFTWARE_TRIGGER_MODE,
+			[&] { return setSoftwareTriggerParameter(c.m_softwareTriggerFrameCount); });
+		apply({"scHWTriggerWidth", "scHWTriggerInterval", "scHWTriggerPolarity"}, m_scCtrl.m_workMode == SC_HARDWARE_TRIGGER_MODE,
+			[&] { return setInputSignalParamsForHWTrigger(c.m_hwTrigger.width, c.m_hwTrigger.interval, c.m_hwTrigger.polarity); });
+		apply({"scToFWidth", "scToFHeight"}, true, [&] { return setToFResolution(c.m_resolutionToF.width, c.m_resolutionToF.height); });
+		apply({"scColorWidth", "scColorHeight"}, true, [&] { return setColorResolution(c.m_resolutionRGB.width, c.m_resolutionRGB.height); });
+		apply({"scPixelFormat"}, true, [&] { return setColorPixelFormat((ScPixelFormat)c.m_pixelFormat); });
+		apply({"scTransformColorToDepth"}, true, [&] { return setTransformColorImgToDepthSensorEnabled(c.m_bTransformRGBToDepth); });
+		apply({"scTransformDepthToColor"}, true, [&] { return setTransformDepthImgToColorSensorEnabled(c.m_bTransformDepthToRGB); });
+		apply({"scHDR"}, !c.m_bHDR, [&] { return setHDR(false); });
+		apply({"scAutoExposureToF"}, true, [&] { return setToFexposureControlMode(c.m_bAutoExposureToF); });
+		apply({"scExposureTimeToF"}, !m_scCtrl.m_bAutoExposureToF,
+			[&] { return setToFexposureTime(c.m_tExposureToF); });
+		apply({"scHDR"}, c.m_bHDR, [&] { return setHDR(true); });
+		applyEntries("scHDRExposureTimes", m_scCtrl.m_bHDR, m_scCtrl.m_tExposureHDR, c.m_tExposureHDR,
+			[&](auto index, const auto &value) { return setExposureTimeOfHDR(index, value); });
+		apply({"scWDR"}, true, [&] { return setWDR(c.m_bWDR); });
+		applyEntries("scWDRExposureTimes", m_scCtrl.m_bWDR, m_scCtrl.m_tExposureWDR, c.m_tExposureWDR,
+			[&](auto index, const auto &value) { return setExposureTimeOfWDR(index, value); });
+		apply({"scAutoExposureRGB"}, true, [&] { return setRGBexposureControlMode(c.m_bAutoExposureRGB); });
+		apply({"scExposureTimeRGB"}, !m_scCtrl.m_bAutoExposureRGB, [&] { return setRGBexposureTime(c.m_tExposureRGB); });
+		apply({"scColorGain"}, !m_scCtrl.m_bAutoExposureRGB, [&] { return setColorGain(c.m_gainRGB); });
+		apply({"scColorAECMaxExposureTime"}, m_scCtrl.m_bAutoExposureRGB,
+			[&] { return setColorAECMaxExposureTime(c.m_tAECMaxExposureRGB); });
+		apply({"scColorAECROIX", "scColorAECROIY", "scColorAECROIWidth", "scColorAECROIHeight"}, m_scCtrl.m_bAutoExposureRGB,
+			[&] { return setColorAECROI(c.m_aecROIRGBorigin.x, c.m_aecROIRGBorigin.y, c.m_aecROIRGBsize.width, c.m_aecROIRGBsize.height); });
+		apply({"scIRGMMGain"}, true, [&] { return setIRGMMGain(c.m_irGMMGain); });
+		apply({"scIRGMMCorrectionEnabled", "scIRGMMCorrectionThreshold"}, true, [&] { return setIRGMMCorrection(c.m_irGMMCorrection.enable, c.m_irGMMCorrection.threshold); });
+		apply({"scTimeFilterEnabled", "scTimeFilterThreshold"}, true, [&] { return setTimeFilter(c.m_timeFilter.enable, c.m_timeFilter.threshold); });
+		apply({"scConfidenceFilterEnabled", "scConfidenceFilterThreshold"}, true, [&] { return setConfidenceFilter(c.m_confidenceFilter.enable, c.m_confidenceFilter.threshold); });
+		apply({"scFlyingPixelFilterEnabled", "scFlyingPixelFilterThreshold"}, true, [&] { return setFlyingPixelFilter(c.m_flyingPixelFilter.enable, c.m_flyingPixelFilter.threshold); });
+		apply({"scFillHoleEnabled"}, true, [&] { return setFillHole(c.m_bFillHole); });
+		apply({"scSpatialFilterEnabled"}, true, [&] { return setSpatialFilter(c.m_bSpatialFilter); });
+		apply({"scTimeSyncMode", "scNTPServerIP"}, true, [&] { return setRealTimeSyncConfig(c.m_timeSync); });
+		apply({"scAIModuleWorkMode"}, c.m_bAIModule, [&] { return setAIModuleWorkMode(c.m_aiWorkMode); });
+		applyEntries("scAIModuleParams", c.m_bAIModule, m_scCtrl.m_aiParams, c.m_aiParams,
+			[&](auto index, const auto &value) { return setAIModuleParam(index, value); });
+		applyEntries("scAIModuleInputFrames", c.m_bAIModule, m_scCtrl.m_aiInputFrames, c.m_aiInputFrames,
+			[&](auto index, const auto &value) { return setAIModuleInputFrameTypeEnabled(index, value); });
+		applyEntries("scAIModulePreviewFrames", c.m_bAIModule, m_scCtrl.m_aiPreviewFrames, c.m_aiPreviewFrames,
+			[&](auto index, const auto &value) { return setAIModulePreviewFrameTypeEnabled(index, value); });
+		apply({"scAIModuleEnabled"}, true, [&] { return setAIModuleEnabled(c.m_bAIModule); });
+		// Network changes go last because they can disconnect the camera.
+		apply({"scDHCPEnabled"}, true, [&] { return setDeviceDHCPEnabled(c.m_bDHCP); });
+		apply({"scDeviceSubnetMask"}, !c.m_bDHCP && !c.m_deviceSubnetMask.empty(), [&] { return setDeviceSubnetMask(c.m_deviceSubnetMask); });
+		apply({"scDeviceIPAddr"}, !c.m_bDHCP && !c.m_deviceIPAddr.empty(), [&] { return setDeviceIPAddr(c.m_deviceIPAddr); });
+	}
+
 	bool _Scepter::open(void)
 	{
-		std::lock_guard<std::mutex> lock(m_mutexScFrame);
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		IF__(m_bOpened, true);
 
 		if (m_scCtrl.m_hotPlugCallback)
@@ -205,86 +550,11 @@ namespace kai
 			return false;
 		}
 
-		// Load an optional SDK preset first, then apply the configured controls.
-		if (!m_scCtrl.m_paramsJsonFile.empty())
-			setParamsByJson(m_scCtrl.m_paramsJsonFile);
-
-		setFrameRate(m_scCtrl.m_frameRate);
-		setWorkMode(m_scCtrl.m_workMode);
-		if (m_scCtrl.m_workMode == SC_SOFTWARE_TRIGGER_MODE)
-			setSoftwareTriggerParameter(m_scCtrl.m_softwareTriggerFrameCount);
-		if (m_scCtrl.m_workMode == SC_HARDWARE_TRIGGER_MODE)
-			setInputSignalParamsForHWTrigger(m_scCtrl.m_hwTrigger.width,
-											 m_scCtrl.m_hwTrigger.interval,
-											 m_scCtrl.m_hwTrigger.polarity);
-
-		setToFResolution(m_scCtrl.m_resolutionToF.width, m_scCtrl.m_resolutionToF.height);
-		setColorResolution(m_scCtrl.m_resolutionRGB.width, m_scCtrl.m_resolutionRGB.height);
-		setColorPixelFormat((ScPixelFormat)m_scCtrl.m_pixelFormat);
-		setTransformColorImgToDepthSensorEnabled(m_scCtrl.m_bTransformRGBToDepth);
-		setTransformDepthImgToColorSensorEnabled(m_scCtrl.m_bTransformDepthToRGB);
-
-		// HDR requires manual ToF exposure; disable HDR before selecting auto exposure.
-		if (!m_scCtrl.m_bHDR)
-			setHDR(false);
-		setToFexposureControlMode(m_scCtrl.m_bAutoExposureToF && !m_scCtrl.m_bHDR);
-		if (!m_scCtrl.m_bAutoExposureToF)
-			setToFexposureTime(m_scCtrl.m_tExposureToF);
-		if (m_scCtrl.m_bHDR)
-		{
-			setHDR(true);
-			for (const auto &exposure : m_scCtrl.m_tExposureHDR)
-				setExposureTimeOfHDR(exposure.first, exposure.second);
-		}
-		setWDR(m_scCtrl.m_bWDR);
-		if (m_scCtrl.m_bWDR)
-		{
-			for (const auto &exposure : m_scCtrl.m_tExposureWDR)
-				setExposureTimeOfWDR(exposure.first, exposure.second);
-		}
-
-		setRGBexposureControlMode(m_scCtrl.m_bAutoExposureRGB);
-		if (m_scCtrl.m_bAutoExposureRGB)
-		{
-			setColorAECMaxExposureTime(m_scCtrl.m_tAECMaxExposureRGB);
-			setColorAECROI(m_scCtrl.m_aecROIRGBorigin.x, m_scCtrl.m_aecROIRGBorigin.y,
-						   m_scCtrl.m_aecROIRGBsize.width, m_scCtrl.m_aecROIRGBsize.height);
-		}
-		else
-		{
-			setRGBexposureTime(m_scCtrl.m_tExposureRGB);
-			setColorGain(m_scCtrl.m_gainRGB);
-		}
-
-		setIRGMMGain(m_scCtrl.m_irGMMGain);
-		setIRGMMCorrection(m_scCtrl.m_irGMMCorrection.enable, m_scCtrl.m_irGMMCorrection.threshold);
-		setTimeFilter(m_scCtrl.m_timeFilter.enable, m_scCtrl.m_timeFilter.threshold);
-		setConfidenceFilter(m_scCtrl.m_confidenceFilter.enable, m_scCtrl.m_confidenceFilter.threshold);
-		setFlyingPixelFilter(m_scCtrl.m_flyingPixelFilter.enable, m_scCtrl.m_flyingPixelFilter.threshold);
-		setFillHole(m_scCtrl.m_bFillHole);
-		setSpatialFilter(m_scCtrl.m_bSpatialFilter);
-
-		setDeviceDHCPEnabled(m_scCtrl.m_bDHCP);
-		if (!m_scCtrl.m_bDHCP)
-		{
-			if (!m_scCtrl.m_deviceIPAddr.empty())
-				setDeviceIPAddr(m_scCtrl.m_deviceIPAddr);
-			if (!m_scCtrl.m_deviceSubnetMask.empty())
-				setDeviceSubnetMask(m_scCtrl.m_deviceSubnetMask);
-		}
-		setRealTimeSyncConfig(m_scCtrl.m_timeSync);
-
-		if (m_scCtrl.m_bAIModule)
-		{
-			setAIModuleWorkMode(m_scCtrl.m_aiWorkMode);
-			for (const auto &param : m_scCtrl.m_aiParams)
-				setAIModuleParam(param.first, param.second);
-			for (const auto &frame : m_scCtrl.m_aiInputFrames)
-				setAIModuleInputFrameTypeEnabled(frame.first, frame.second);
-			for (const auto &frame : m_scCtrl.m_aiPreviewFrames)
-				setAIModulePreviewFrameTypeEnabled(frame.first, frame.second);
-		}
-		setAIModuleEnabled(m_scCtrl.m_bAIModule);
+		json errors = json::object();
+		applyScControls(m_scCtrl, json::object(), true, errors);
+		// Some cameras lack optional controls; keep capture usable and report
+		// unsupported settings when those controls are edited through the console.
+		if (!errors.empty()) LOG_I("Scepter controls: " + errors.dump());
 
 		// Read calibration after applying the resolution settings.
 		status = scGetSensorIntrinsicParameters(m_scDevHandle, SC_TOF_SENSOR, &m_scCamParams);
@@ -331,7 +601,7 @@ namespace kai
 
 	void _Scepter::close(void)
 	{
-		std::lock_guard<std::mutex> lock(m_mutexScFrame);
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_bOpened = false;
 		m_bPCLframe = false;
 
@@ -392,7 +662,7 @@ namespace kai
 
 	bool _Scepter::updateScRGBD(void)
 	{
-		std::lock_guard<std::mutex> frameLock(m_mutexScFrame);
+		std::lock_guard<std::recursive_mutex> frameLock(m_mutexScFrame);
 		IF_F(!m_bOpened || !m_scDevHandle);
 		// A new capture invalidates the previous SDK buffers, even if it fails.
 		m_bPCLframe = false;
@@ -487,15 +757,16 @@ namespace kai
 #ifdef WITH_UNIVERSE
 
 		NULL_(m_pPCL);
-		IF_(!m_bPCL && !m_bPCLrgb);
 
 		vector<ScVector3f> points;
 		Mat color;
-		int width, height;
+		int width, height, stride;
+		float scale;
 		{
-			std::lock_guard<std::mutex> frameLock(m_mutexScFrame);
+			std::lock_guard<std::recursive_mutex> frameLock(m_mutexScFrame);
 
-			IF_(!m_bOpened || !m_scDevHandle || !m_bPCLframe);
+			IF_(!m_bOpened || !m_scDevHandle || !m_bPCLframe || (!m_bPCL && !m_bPCLrgb));
+			stride = m_pclStride; scale = m_dScale;
 			m_bPCLframe = false;
 
 			// Use this frame's dimensions; the device may reject a requested resolution.
@@ -521,9 +792,9 @@ namespace kai
 		m_pPCL->frameStart();
 		// Sample in image space so XYZ and aligned color use the same original
 		// pixel. Keep SDK conversion at native resolution to preserve calibration.
-		for (int y = 0; y < height; y += m_pclStride)
+		for (int y = 0; y < height; y += stride)
 		{
-			for (int x = 0; x < width; x += m_pclStride)
+			for (int x = 0; x < width; x += stride)
 			{
 				const size_t k = size_t(y) * width + x;
 				const auto &p = points[k];
@@ -531,7 +802,7 @@ namespace kai
 				// Keep validation and scaling scalar, as in Orbbec. Eigen expression
 				// evaluation per pixel is costly in unoptimized camera/debug builds.
 				IF_CONT(!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z) || p.z <= 0 || p.z == UINT16_MAX);
-				const Vector3f vP(p.x * m_dScale, p.y * m_dScale, p.z * m_dScale);
+				const Vector3f vP(p.x * scale, p.y * scale, p.z * scale);
 				Vector3f vC(1.f, 1.f, 1.f);
 				if (!color.empty())
 				{
@@ -545,8 +816,45 @@ namespace kai
 #endif
 	}
 
+	void _Scepter::console(const json &j, void *pJSONbase)
+	{
+		auto *transport = static_cast<_JSONbase *>(pJSONbase);
+		if (!transport || !j.is_object() || !j.contains("cmd") || !j["cmd"].is_string()) return;
+		const string cmd = j["cmd"].get<string>();
+		if (cmd != "loadConfig" && cmd != "setConfig" && cmd != "saveConfig") return;
+		json reply = {{"cmd", cmd}, {"module", getName()}, {"bSuccess", true}};
+		if (j.contains("requestId")) reply["requestId"] = j["requestId"];
+		{
+			std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
+			try
+			{
+				if (cmd == "setConfig")
+				{
+					json errors;
+					reply["bSuccess"] = applyConfig(j.value("config", json()), true, errors);
+					reply["errors"] = errors;
+				}
+				else if (cmd == "saveConfig")
+				{
+					json saved;
+					reply["bSuccess"] = saveConfig(saved);
+					if (!reply["bSuccess"].get<bool>()) reply["error"] = "Could not write fConfig";
+				}
+				// Like the Orbbec viewer, Load config refreshes current parameters;
+				// the C++ loadConfig() reads and applies the saved file.
+				if (cmd == "loadConfig") reply["schema"] = controlSchema();
+			}
+			catch (const std::exception &e) { reply["bSuccess"] = false; reply["error"] = e.what(); }
+			reply["config"] = configValues();
+			reply["deviceOpen"] = m_bOpened;
+		}
+		// Sending may block; never hold up capture on the command transport.
+		transport->sendJson(reply);
+	}
+
 	bool _Scepter::setToFexposureControlMode(bool bAuto)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_bAutoExposureToF = bAuto;
 
 		ScStatus ScR = scSetExposureControlMode(m_scDevHandle,
@@ -558,6 +866,7 @@ namespace kai
 
 	bool _Scepter::setToFexposureTime(int tExposure)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_tExposureToF = tExposure;
 
 		ScStatus ScR = scSetExposureTime(m_scDevHandle,
@@ -569,6 +878,7 @@ namespace kai
 
 	bool _Scepter::setRGBexposureControlMode(bool bAuto)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_bAutoExposureRGB = bAuto;
 
 		ScStatus ScR = scSetExposureControlMode(m_scDevHandle,
@@ -580,6 +890,7 @@ namespace kai
 
 	bool _Scepter::setRGBexposureTime(int tExposure)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_tExposureRGB = tExposure;
 
 		ScStatus ScR = scSetExposureTime(m_scDevHandle,
@@ -591,6 +902,7 @@ namespace kai
 
 	bool _Scepter::setTimeFilter(bool bON, int thr)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_timeFilter = {thr, bON};
 
 		ScStatus ScR = scSetTimeFilterParams(m_scDevHandle, m_scCtrl.m_timeFilter);
@@ -599,6 +911,7 @@ namespace kai
 
 	bool _Scepter::setConfidenceFilter(bool bON, int thr)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_confidenceFilter = {thr, bON};
 
 		ScStatus ScR = scSetConfidenceFilterParams(m_scDevHandle, m_scCtrl.m_confidenceFilter);
@@ -607,6 +920,7 @@ namespace kai
 
 	bool _Scepter::setFlyingPixelFilter(bool bON, int thr)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_flyingPixelFilter = {thr, bON};
 
 		ScStatus ScR = scSetFlyingPixelFilterParams(m_scDevHandle, m_scCtrl.m_flyingPixelFilter);
@@ -615,6 +929,7 @@ namespace kai
 
 	bool _Scepter::setFillHole(bool bON)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_bFillHole = bON;
 
 		ScStatus ScR = scSetFillHoleFilterEnabled(m_scDevHandle, bON);
@@ -623,6 +938,7 @@ namespace kai
 
 	bool _Scepter::setSpatialFilter(bool bON)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_bSpatialFilter = bON;
 
 		ScStatus ScR = scSetSpatialFilterEnabled(m_scDevHandle, bON);
@@ -631,6 +947,7 @@ namespace kai
 
 	bool _Scepter::setHDR(bool bON)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_bHDR = bON;
 
 		ScStatus ScR = scSetHDRModeEnabled(m_scDevHandle, bON);
@@ -639,6 +956,7 @@ namespace kai
 
 	bool _Scepter::setFrameRate(int fps)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		IF_F(fps <= 0);
 		m_scCtrl.m_frameRate = fps;
 
@@ -650,6 +968,7 @@ namespace kai
 
 	bool _Scepter::setWorkMode(ScWorkMode mode)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_workMode = mode;
 
 		ScStatus ScR = scSetWorkMode(m_scDevHandle, mode);
@@ -658,6 +977,7 @@ namespace kai
 
 	bool _Scepter::setSoftwareTriggerParameter(uint8_t frameCount)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_softwareTriggerFrameCount = frameCount;
 
 		ScStatus ScR = scSetSoftwareTriggerParameter(m_scDevHandle, frameCount);
@@ -666,6 +986,7 @@ namespace kai
 
 	bool _Scepter::setInputSignalParamsForHWTrigger(uint32_t width, uint32_t interval, uint8_t polarity)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_hwTrigger = {width, interval, polarity};
 
 		ScStatus ScR = scSetInputSignalParamsForHWTrigger(m_scDevHandle, m_scCtrl.m_hwTrigger);
@@ -674,6 +995,7 @@ namespace kai
 
 	bool _Scepter::setToFResolution(int width, int height)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		IF_F(width <= 0 || width > UINT16_MAX || height <= 0 || height > UINT16_MAX);
 		m_scCtrl.m_resolutionToF = {(uint16_t)width, (uint16_t)height};
 
@@ -685,6 +1007,7 @@ namespace kai
 
 	bool _Scepter::setColorResolution(int width, int height)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		IF_F(width <= 0 || width > UINT16_MAX || height <= 0 || height > UINT16_MAX);
 		m_scCtrl.m_resolutionRGB = {(uint16_t)width, (uint16_t)height};
 
@@ -696,6 +1019,7 @@ namespace kai
 
 	bool _Scepter::setColorPixelFormat(ScPixelFormat pixelFormat)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_pixelFormat = pixelFormat;
 
 		ScStatus ScR = scSetColorPixelFormat(m_scDevHandle, pixelFormat);
@@ -704,6 +1028,7 @@ namespace kai
 
 	bool _Scepter::setTransformColorImgToDepthSensorEnabled(bool bON)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_bTransformRGBToDepth = bON;
 
 		ScStatus ScR = scSetTransformColorImgToDepthSensorEnabled(m_scDevHandle, bON);
@@ -714,6 +1039,7 @@ namespace kai
 
 	bool _Scepter::setTransformDepthImgToColorSensorEnabled(bool bON)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_bTransformDepthToRGB = bON;
 
 		ScStatus ScR = scSetTransformDepthImgToColorSensorEnabled(m_scDevHandle, bON);
@@ -724,6 +1050,7 @@ namespace kai
 
 	bool _Scepter::setIRGMMGain(uint8_t gain)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_irGMMGain = gain;
 
 		ScStatus ScR = scSetIRGMMGain(m_scDevHandle, gain);
@@ -732,6 +1059,7 @@ namespace kai
 
 	bool _Scepter::setIRGMMCorrection(bool bON, int thr)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_irGMMCorrection = {thr, bON};
 
 		ScStatus ScR = scSetIRGMMCorrection(m_scDevHandle, m_scCtrl.m_irGMMCorrection);
@@ -740,6 +1068,7 @@ namespace kai
 
 	bool _Scepter::setColorGain(float gain)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_gainRGB = gain;
 
 		ScStatus ScR = scSetColorGain(m_scDevHandle, gain);
@@ -748,6 +1077,7 @@ namespace kai
 
 	bool _Scepter::setColorAECMaxExposureTime(int tExposure)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_tAECMaxExposureRGB = tExposure;
 
 		ScStatus ScR = scSetColorAECMaxExposureTime(m_scDevHandle, tExposure);
@@ -756,6 +1086,7 @@ namespace kai
 
 	bool _Scepter::setColorAECROI(uint16_t x, uint16_t y, uint16_t width, uint16_t height)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_aecROIRGBorigin = {x, y};
 		m_scCtrl.m_aecROIRGBsize = {width, height};
 
@@ -765,6 +1096,7 @@ namespace kai
 
 	bool _Scepter::setExposureTimeOfHDR(uint8_t frameIndex, int tExposure)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_tExposureHDR[frameIndex] = tExposure;
 
 		ScStatus ScR = scSetExposureTimeOfHDR(m_scDevHandle, frameIndex, tExposure);
@@ -773,6 +1105,7 @@ namespace kai
 
 	bool _Scepter::setWDR(bool bON)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_bWDR = bON;
 
 		ScStatus ScR = scSetWDRModeEnabled(m_scDevHandle, bON);
@@ -781,6 +1114,7 @@ namespace kai
 
 	bool _Scepter::setExposureTimeOfWDR(uint8_t frameIndex, int tExposure)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_tExposureWDR[frameIndex] = tExposure;
 
 		ScStatus ScR = scSetExposureTimeOfWDR(m_scDevHandle, frameIndex, tExposure);
@@ -789,6 +1123,7 @@ namespace kai
 
 	bool _Scepter::setDeviceDHCPEnabled(bool bON)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_bDHCP = bON;
 
 		ScStatus ScR = scSetDeviceDHCPEnabled(m_scDevHandle, bON);
@@ -797,6 +1132,7 @@ namespace kai
 
 	bool _Scepter::setDeviceIPAddr(const string &ipAddr)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		IF_F(ipAddr.empty() || ipAddr.size() >= 16);
 		m_scCtrl.m_deviceIPAddr = ipAddr;
 
@@ -806,6 +1142,7 @@ namespace kai
 
 	bool _Scepter::setDeviceSubnetMask(const string &mask)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		IF_F(mask.empty() || mask.size() >= 16);
 		m_scCtrl.m_deviceSubnetMask = mask;
 
@@ -815,6 +1152,7 @@ namespace kai
 
 	bool _Scepter::setRealTimeSyncConfig(const ScTimeSyncConfig &params)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_timeSync = params;
 
 		ScStatus ScR = scSetRealTimeSyncConfig(m_scDevHandle, params);
@@ -823,6 +1161,7 @@ namespace kai
 
 	bool _Scepter::setParamsByJson(const string &filePath)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_paramsJsonFile = filePath;
 
 		ScStatus ScR = scSetParamsByJson(m_scDevHandle, m_scCtrl.m_paramsJsonFile.data());
@@ -831,6 +1170,7 @@ namespace kai
 
 	bool _Scepter::setHotPlugStatusCallback(PtrHotPlugStatusCallback pCallback, const void *pUserData)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_hotPlugCallback = pCallback;
 		m_scCtrl.m_pHotPlugUserData = pUserData;
 
@@ -840,6 +1180,7 @@ namespace kai
 
 	bool _Scepter::setAIModuleEnabled(bool bON)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_bAIModule = bON;
 
 		ScStatus ScR = scAIModuleSetEnabled(m_scDevHandle, bON);
@@ -848,6 +1189,7 @@ namespace kai
 
 	bool _Scepter::setAIModuleWorkMode(ScAIModuleMode mode)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_aiWorkMode = mode;
 
 		ScStatus ScR = scAIModuleSetWorkMode(m_scDevHandle, mode);
@@ -856,6 +1198,7 @@ namespace kai
 
 	bool _Scepter::setAIModuleParam(uint32_t paramID, const std::vector<uint8_t> &data)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		IF_F(data.size() > UINT16_MAX);
 		m_scCtrl.m_aiParams[paramID] = data;
 
@@ -866,6 +1209,7 @@ namespace kai
 
 	bool _Scepter::setAIModuleInputFrameTypeEnabled(ScFrameType frameType, bool bON)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_aiInputFrames[frameType] = bON;
 
 		ScStatus ScR = scAIModuleSetInputFrameTypeEnabled(m_scDevHandle, frameType, bON);
@@ -874,6 +1218,7 @@ namespace kai
 
 	bool _Scepter::setAIModulePreviewFrameTypeEnabled(ScFrameType frameType, bool bON)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_scCtrl.m_aiPreviewFrames[frameType] = bON;
 
 		ScStatus ScR = scAIModuleSetPreviewFrameTypeEnabled(m_scDevHandle, frameType, bON);

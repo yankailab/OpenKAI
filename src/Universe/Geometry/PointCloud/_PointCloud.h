@@ -42,6 +42,10 @@ namespace kai
             m_iPto = iP;
             m_tStamp = tStamp;
 
+            // Equal indices can also describe a completely full ring.
+            if (m_nP == nPtot)
+                return;
+
             if(m_iPto >= m_iPfrom)
                 m_nP = m_iPto - m_iPfrom;
             else
@@ -69,10 +73,12 @@ namespace kai
         // data io
         virtual void add(const Vector3f &vP, const Vector3f &vC, uint64_t tStamp = 1);
 
-        // for framed inputs such as RGBD cameras
+        // Frames refer to spans in m_grPt; overwritten completed frames expire.
         virtual void frameStart(void);
         virtual void frameStop(void);
         int getLastFrame(vector<Vector3f> *pvP, vector<Vector3f> *pvC, uint64_t& tStamp) override;
+        // Atomically replace the ring and completed-frame indices (e.g. a SLAM map).
+        void setFrame(const vector<Vector3f> &points, const vector<Vector3f> &colors, uint64_t stamp);
 
     protected:
         virtual int copy(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pIn, GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire = 0);
@@ -95,6 +101,7 @@ namespace kai
         std::mutex m_mtxFrame;
         PCL_FRAME m_framing;
         PCL_FRAME m_framed;
+        bool m_bFraming = false;
     };
 
 }
