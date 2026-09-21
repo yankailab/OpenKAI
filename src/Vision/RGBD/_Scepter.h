@@ -149,6 +149,12 @@ namespace kai
 		}
 
 	protected:
+		// SDK frame buffers remain valid only until the next capture. Serialize
+		// capture/conversion/close; the PCL worker publishes owned data afterwards.
+		std::mutex m_mutexScFrame;
+		bool m_bPCLframe = false;
+		bool m_bScInitialized = false;
+		int m_pclStride = 1; // Sample every Nth depth pixel in both axes; 1 keeps all points.
 		uint32_t m_nDevice = 0;
 		ScDeviceInfo *m_pScDevListInfo = nullptr;
 		ScDeviceHandle m_scDevHandle = 0;
@@ -162,7 +168,6 @@ namespace kai
 		ScFrame m_scfTransformedRGB = {0};
 		ScFrame m_scfIR = {0};
 
-		ScVector3f *m_pScVw = NULL; // world vector
 	};
 
 }

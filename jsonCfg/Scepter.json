@@ -7,51 +7,74 @@
 	},
 	"console": {
 		"class": "_Console",
-		"bON": false,
+		"bON": true,
 		"thread": {
 			"FPS": 10
 		},
 		"vBASE": [
-			"cam",
-			"d2g"
+			"scepter"
 		]
 	},
-	"RGBview": {
-		"class": "_WindowCV",
+	"wsServer": {
+		"class": "_WebSocketServer",
 		"bON": true,
-		"thread": {
-			"FPS": 20
-		},
-		"bFullScreen": 0,
-		"vBASE": [
-			"cam"
-		]
-	},
-	"DepthView": {
-		"class": "_WindowCV",
-		"bON": false,
-		"thread": {
-			"FPS": 20
-		},
-		"bFullScreen": 0,
-		"vBASE": [
-			"d2g"
-		]
-	},
-	"SHMscRGB": {
-		"class": "SharedMem",
-		"bON": false,
 		"thread": {
 			"FPS": 30
 		},
-		"shmName": "SHMscRGB",
-		"nB": 5760000,
-		"bWriter": 1
+		"threadR": {
+			"FPS": 1
+		},
+		"host": "0.0.0.0",
+		"port": 7890,
+		"wsMode": 2,
+		"nClientMax": 1,
+		"tOutMs": 10000
 	},
-	"cam": {
+	"wsConsole": {
+		"class": "_WSconsole",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"threadR": {
+			"FPS": 30
+		},
+		"_IObase": "wsServer",
+		"msgFinishSend": "",
+		"msgFinishRecv": "EOJ",
+		"vBASE": [
+			"scepter"
+		]
+	},
+
+
+	"view": {
+		"class": "_WindowCV",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"bFullScreen": 0,
+		"vBASE": [
+			"scepter"
+		]
+	},
+	"viewD": {
+		"class": "_WindowCV",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"bFullScreen": 0,
+		"vBASE": [
+			"d2rgb"
+		]
+	},
+
+	"scepter": {
 		"class": "_Scepter",
 		"bON": true,
-		"bLog": true,
+		"bLog": false,
 		"thread": {
 			"FPS": 30
 		},
@@ -65,9 +88,18 @@
 		],
 		"vRangeD": [
 			0,
-			4000
+			4.0
 		],
-		"_PointCloud":"scPC",
+		"_PointCloud":"scPCL",
+		"bRGB": true,
+		"bDepth": true,
+		"btRGB": true,
+		"btDepth": false,
+		"bIR": false,
+		"bPCL": false,
+		"bPCLrgb": true,
+		"pclStride": 2,
+
 		"scScanTime": 3000,
 		"scPixelFormat": 4,
 		"scAutoExposureToF": true,
@@ -117,34 +149,19 @@
 		"scAIModuleWorkMode": 0,
 		"scAIModuleParams": [],
 		"scAIModuleInputFrames": [],
-		"scAIModulePreviewFrames": [],
-		"bRGB": true,
-		"bDepth": true,
-		"btRGB": true,
-		"btDepth": false,
-		"bIR": false,
-		"bDebugDepth": true,
-		"/_SHMrgb": "SHMscRGB"
+		"scAIModulePreviewFrames": []
 	},
-	"d2g": {
-		"class": "_D2G",
-		"bON": false,
-		"thread": {
-			"FPS": 30
-		},
-		"_RGBDbase": "cam"
-	},
+
 	"d2rgb": {
 		"class": "_D2RGB",
-		"bON": false,
+		"bON": true,
 		"thread": {
 			"FPS": 30
 		},
-		"_RGBDbase": "cam"
+		"_RGBDbase": "scepter",
+		"bMeasure": false
 	},
-
-
-	"scPC": {
+	"scPCL": {
 		"class": "_PointCloud",
 		"bON": true,
 		"bLog": true,
@@ -153,68 +170,51 @@
 		},
 		"nP":400000
 	},
-	"octGrid": {
-		"class": "_SelectableOctGrid",
-		"bON": true,
-		"bLog": true,
-		"thread": {
-			"FPS": 5
-		},
-		"nP": 1000000,
-		"vRootCellSize": [10.0, 10.0, 10.0],
-		"nMaxLevel": 4,
-		"dTexpireCell": 500000,
-		"dTexpirePCL": 0,
-		"vColCellOcc": [1,1,1],
-		"nMaxCells": 8333,
-		"vGeometryBase": ["scPC"]
-	},
 
-	"_ImGUIselectableOctGrid": {
-		"class": "_ImGUIselectableOctGrid",
+	"viewer": {
+	    "class": "_WebGeometryBase",
+		"webRoot": "html/viewer/_GeometryBase",
 		"bON": true,
-		"thread": {
-			"FPS": 10
-		},
-		"threadUI": {
-			"FPS": 30
-		},
-		"vWinSize": [
-			1280,
-			720
-		],
-		"bShowPanel": true,
-		"bShowGrid": true,
-		"camFov": 70.0,
-		"dTexpire": 0,
-		"nPbuf": 400000,
-		"nLbuf": 100000,
-		"bGpuRender": true,
-		"vCamLookAt": [
-			0.0,
-			0.0,
-			0.0
-		],
+	    "thread": {
+	      "FPS": 30
+	    },
+	    "host": "0.0.0.0",
+	    "port": 8080,
+	    "nClientMax": 8,
+	    "nPbuf": 400000,
+	    "nLbuf": 0,
+	    "dTexpire": 0,
+	    "bAutoBound": true,
+	    "bShowGrid": true,
+		"bFrame": true,
+
+	    "vCamLookAt": [
+	      0,
+	      0,
+	      0
+	    ],
 		"vCamEye": [
-			0.0,
-			-8.0,
-			4.0
+			0,
+			-1,
+			-4
 		],
 		"vCamUp": [
-			0.0,
-			0.0,
-			1.0
+			0,
+			-1,
+			0
 		],
-		"vGeometry": [
-			{
-				"_GeometryBase": "scPC"
-			}
-		],
-		"vSelectableOctGrid": [
-			{
-				"_SelectableOctGrid": "octGrid"
-			}
-		]
+	    "camFov": 70,
+	    "vCamNF": [
+	      0.01,
+	      1000000
+	    ],
+	    "vGeometry": [
+	      {
+	        "_GeometryBase": "scPCL",
+	        "nP": 400000,
+	        "nL": 0,
+	        "matPointSize": 2
+	      }
+	    ]
 	}
-
 }

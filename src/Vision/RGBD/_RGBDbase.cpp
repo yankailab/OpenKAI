@@ -87,6 +87,9 @@ namespace kai
 		NULL_(pConsole);
 		this->_VisionBase::console(pConsole);
 
+		NULL_(m_pTpp);
+        m_pTpp->console(pConsole);
+
 		// _Console *pC = (_Console *)pConsole;
 	}
 

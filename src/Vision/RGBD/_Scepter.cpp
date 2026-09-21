@@ -6,21 +6,70 @@
  */
 
 #include "_Scepter.h"
+#include <cmath>
 
 namespace kai
 {
+	namespace
+	{
+		bool copyScFrame(const ScFrame &frame, Mat &image)
+		{
+			if (!frame.pFrameData || !frame.width || !frame.height)
+				return false;
+
+			int type;
+			switch (frame.pixelFormat)
+			{
+			case SC_PIXEL_FORMAT_DEPTH_MM16: type = CV_16UC1; break;
+			case SC_PIXEL_FORMAT_GRAY_8: type = CV_8UC1; break;
+			case SC_PIXEL_FORMAT_BGR_888:
+			case SC_PIXEL_FORMAT_BGR_888_JPEG:
+			case SC_PIXEL_FORMAT_RGB_888:
+			case SC_PIXEL_FORMAT_RGB_888_JPEG: type = CV_8UC3; break;
+			default: return false;
+			}
+			if (frame.dataLen < size_t(frame.width) * frame.height * CV_ELEM_SIZE(type))
+				return false;
+
+			Mat view(frame.height, frame.width, type, frame.pFrameData);
+			if (frame.pixelFormat == SC_PIXEL_FORMAT_RGB_888 || frame.pixelFormat == SC_PIXEL_FORMAT_RGB_888_JPEG)
+				cv::cvtColor(view, image, cv::COLOR_RGB2BGR);
+			else
+				view.copyTo(image);
+
+			// Scepter marks invalid depth with both 0 and 65535. Exposing the
+			// latter as a distance destroys min/max depth-preview contrast.
+			if (frame.pixelFormat == SC_PIXEL_FORMAT_DEPTH_MM16)
+				image.setTo(0, image == UINT16_MAX);
+			return true;
+		}
+	}
 
 	_Scepter::_Scepter()
 	{
+		m_vRangeD = {0.0f, 5.0f};
+		m_dScale = 0.001f; // SDK depth is in millimeters; measurements use meters.
 	}
 
 	_Scepter::~_Scepter()
 	{
+		if (m_pT) m_pT->join();
+		if (m_pTpp) m_pTpp->join();
+		close();
+		if (m_bScInitialized) scShutdown();
 	}
 
 	bool _Scepter::init(const json &j)
 	{
 		IF_F(!_RGBDbase::init(j));
+
+		if (j.contains("pclStride"))
+		{
+			const auto &stride = j.at("pclStride");
+			IF_Le_F(!stride.is_number_integer() || stride < 1 || stride > UINT16_MAX,
+					"pclStride must be an integer in [1, 65535]");
+			m_pclStride = stride.get<int>();
+		}
 
 		jKv(j, "scScanTime", m_scCtrl.m_tScan);
 		jKv(j, "scPixelFormat", m_scCtrl.m_pixelFormat);
@@ -117,12 +166,13 @@ namespace kai
 
 	bool _Scepter::open(void)
 	{
+		std::lock_guard<std::mutex> lock(m_mutexScFrame);
 		IF__(m_bOpened, true);
 
 		if (m_scCtrl.m_hotPlugCallback)
 			setHotPlugStatusCallback(m_scCtrl.m_hotPlugCallback, m_scCtrl.m_pHotPlugUserData);
 
-		uint32_t m_nDevice = 0;
+		m_nDevice = 0;
 		ScStatus status = scGetDeviceCount(&m_nDevice, m_scCtrl.m_tScan);
 		if (status != ScStatus::SC_OK)
 		{
@@ -133,6 +183,7 @@ namespace kai
 		LOG_I("Get device count: " + i2str(m_nDevice));
 		IF_F(m_nDevice == 0);
 
+		delete[] m_pScDevListInfo;
 		m_pScDevListInfo = new ScDeviceInfo[m_nDevice];
 		status = scGetDeviceInfoList(m_nDevice, m_pScDevListInfo);
 		if (status != ScStatus::SC_OK)
@@ -260,12 +311,18 @@ namespace kai
 		LOG_I("sn  ==  " + string(m_pScDevListInfo[0].serialNumber));
 
 		status = scStartStream(m_scDevHandle);
+		if (status != SC_OK)
+		{
+			LOG_E("StartStream failed: " + i2str(status));
+			scCloseDevice(&m_scDevHandle);
+			m_scDevHandle = 0;
+			return false;
+		}
 
 		int width = m_vSizeD.x();
 		int height = m_vSizeD.y();
 		if (scGetToFResolution(m_scDevHandle, &width, &height) == SC_OK)
 			m_vSizeD = Vector2i(width, height);
-		m_pScVw = new ScVector3f[m_vSizeD.x() * m_vSizeD.y()];
 
 		m_tFrameInterval = 2 * 1000 / m_scCtrl.m_frameRate;
 		m_bOpened = true;
@@ -274,17 +331,20 @@ namespace kai
 
 	void _Scepter::close(void)
 	{
+		std::lock_guard<std::mutex> lock(m_mutexScFrame);
 		m_bOpened = false;
+		m_bPCLframe = false;
 
-		ScStatus status = scStopStream(m_scDevHandle);
-		status = scCloseDevice(&m_scDevHandle);
-		m_scDevHandle = 0;
-		LOG_I("CloseDevice status: " + i2str(status));
+		if (m_scDevHandle)
+		{
+			scStopStream(m_scDevHandle);
+			ScStatus status = scCloseDevice(&m_scDevHandle);
+			m_scDevHandle = 0;
+			LOG_I("CloseDevice status: " + i2str(status));
+		}
 
-		status = scShutdown();
-
-		DEL(m_pScDevListInfo);
-		DEL(m_pScVw);
+		delete[] m_pScDevListInfo;
+		m_pScDevListInfo = nullptr;
 	}
 
 	bool _Scepter::start(void)
@@ -310,17 +370,15 @@ namespace kai
 			LOG_E("ScInitialize failed");
 			return;
 		}
+		m_bScInitialized = true;
 
 		while (m_pT->bRun())
 		{
-			if (!m_bOpened)
+			if (!open())
 			{
-				if (!open())
-				{
-					LOG_E("Cannot open Scense");
-					m_pT->sleepT(SEC_2_USEC);
-					continue;
-				}
+				LOG_E("Cannot open Scense");
+				m_pT->sleepT(SEC_2_USEC);
+				continue;
 			}
 
 			m_pT->autoFPS();
@@ -334,6 +392,15 @@ namespace kai
 
 	bool _Scepter::updateScRGBD(void)
 	{
+		std::lock_guard<std::mutex> frameLock(m_mutexScFrame);
+		IF_F(!m_bOpened || !m_scDevHandle);
+		// A new capture invalidates the previous SDK buffers, even if it fails.
+		m_bPCLframe = false;
+		m_scfRGB = {};
+		m_scfDepth = {};
+		m_scfTransformedRGB = {};
+		m_scfTransformedDepth = {};
+		m_scfIR = {};
 		ScFrameReady sFr = {0};
 		ScStatus status = scGetFrameReady(m_scDevHandle,
 										  m_tFrameInterval,
@@ -346,54 +413,58 @@ namespace kai
 		if (m_bRGB && sFr.color == 1)
 		{
 			status = scGetFrame(m_scDevHandle, SC_COLOR_FRAME, &m_scfRGB);
-			if (m_scfRGB.pFrameData)
+			if (status == SC_OK)
 			{
 				std::lock_guard<std::mutex> lock(m_mutexRGB);
-				cv::Mat(m_scfRGB.height, m_scfRGB.width, CV_8UC3, m_scfRGB.pFrameData).copyTo(m_mRGB);
-				m_vSizeRGB.x() = m_scfRGB.width;
-				m_vSizeRGB.y() = m_scfRGB.height;
+				if (copyScFrame(m_scfRGB, m_mRGB))
+					m_vSizeRGB = Vector2i(m_scfRGB.width, m_scfRGB.height);
 			}
 		}
 
 		if (m_bDepth && sFr.depth == 1)
 		{
 			status = scGetFrame(m_scDevHandle, SC_DEPTH_FRAME, &m_scfDepth);
-			if (m_scfDepth.pFrameData)
+			if (status == SC_OK && m_scfDepth.pixelFormat == SC_PIXEL_FORMAT_DEPTH_MM16)
 			{
 				std::lock_guard<std::mutex> lock(m_mutexDepth);
-				cv::Mat(m_scfDepth.height, m_scfDepth.width, CV_16UC1, m_scfDepth.pFrameData).copyTo(m_mDepth);
-				m_vSizeD.x() = m_scfDepth.width;
-				m_vSizeD.y() = m_scfDepth.height;
+				if (copyScFrame(m_scfDepth, m_mDepth))
+				{
+					m_vSizeD = Vector2i(m_scfDepth.width, m_scfDepth.height);
+					m_bPCLframe = true;
+				}
 			}
 		}
 
 		if (m_btRGB && sFr.transformedColor == 1)
 		{
 			status = scGetFrame(m_scDevHandle, SC_TRANSFORM_COLOR_IMG_TO_DEPTH_SENSOR_FRAME, &m_scfTransformedRGB);
-			if (m_scfTransformedRGB.pFrameData)
+			if (status == SC_OK)
 			{
 				std::lock_guard<std::mutex> lock(m_mutexRGB);
-				cv::Mat(m_scfTransformedRGB.height, m_scfTransformedRGB.width, CV_8UC3, m_scfTransformedRGB.pFrameData).copyTo(m_mtRGB);
+				if (!copyScFrame(m_scfTransformedRGB, m_mtRGB))
+					m_scfTransformedRGB = {};
 			}
+			else
+				m_scfTransformedRGB = {};
 		}
 
 		if (m_btDepth && sFr.transformedDepth == 1)
 		{
 			status = scGetFrame(m_scDevHandle, SC_TRANSFORM_DEPTH_IMG_TO_COLOR_SENSOR_FRAME, &m_scfTransformedDepth);
-			if (m_scfTransformedDepth.pFrameData)
+			if (status == SC_OK && m_scfTransformedDepth.pixelFormat == SC_PIXEL_FORMAT_DEPTH_MM16)
 			{
 				std::lock_guard<std::mutex> lock(m_mutexDepth);
-				cv::Mat(m_scfTransformedDepth.height, m_scfTransformedDepth.width, CV_16UC1, m_scfTransformedDepth.pFrameData).copyTo(m_mtDepth);
+				copyScFrame(m_scfTransformedDepth, m_mtDepth);
 			}
 		}
 
 		if (m_bIR && sFr.ir == 1)
 		{
 			status = scGetFrame(m_scDevHandle, SC_IR_FRAME, &m_scfIR);
-			if (m_scfIR.pFrameData)
+			if (status == SC_OK)
 			{
 				std::lock_guard<std::mutex> lock(m_mutexDepth);
-				cv::Mat(m_scfIR.height, m_scfIR.width, CV_8UC1, m_scfIR.pFrameData).copyTo(m_mIR);
+				copyScFrame(m_scfIR, m_mIR);
 			}
 		}
 
@@ -404,7 +475,8 @@ namespace kai
 	{
 		while (m_pTpp->bRun())
 		{
-			m_pTpp->sleepT(0);
+			// Bound the wait so a wakeup during processing cannot strand a frame.
+			m_pTpp->autoFPS();
 
 			updatePCL();
 		}
@@ -415,37 +487,57 @@ namespace kai
 #ifdef WITH_UNIVERSE
 
 		NULL_(m_pPCL);
+		IF_(!m_bPCL && !m_bPCLrgb);
 
-		const static float s_b = 1.0 / 1000.0;
-		const static float c_b = 1.0 / 255.0;
+		vector<ScVector3f> points;
+		Mat color;
+		int width, height;
+		{
+			std::lock_guard<std::mutex> frameLock(m_mutexScFrame);
 
-		uint64_t tNow = getApproxTbootUs();
+			IF_(!m_bOpened || !m_scDevHandle || !m_bPCLframe);
+			m_bPCLframe = false;
 
-		// Convert Depth frame to World vectors.
-		scConvertDepthFrameToPointCloudVector(m_scDevHandle,
-											  &m_scfDepth,
-											  m_pScVw);
+			// Use this frame's dimensions; the device may reject a requested resolution.
+			width = m_scfDepth.width;
+			height = m_scfDepth.height;
+			points.resize(size_t(m_scfDepth.width) * m_scfDepth.height);
+
+			IF_(scConvertDepthFrameToPointCloudVector(m_scDevHandle, &m_scfDepth, points.data()) != SC_OK);
+
+			if (m_bPCLrgb && m_scfTransformedRGB.pFrameData &&
+				m_scfTransformedRGB.width == m_scfDepth.width &&
+				m_scfTransformedRGB.height == m_scfDepth.height)
+			{
+				std::lock_guard<std::mutex> lock(m_mutexRGB);
+				if (m_mtRGB.type() == CV_8UC3)
+					color = m_mtRGB.clone();
+			}
+		}
+
+		constexpr float c_b = 1.0f / 255.0f;
+		const uint64_t tNow = getApproxTbootUs();
 
 		m_pPCL->frameStart();
-		for (int i = 0; i < m_scfDepth.height; i++)
+		// Sample in image space so XYZ and aligned color use the same original
+		// pixel. Keep SDK conversion at native resolution to preserve calibration.
+		for (int y = 0; y < height; y += m_pclStride)
 		{
-			for (int j = 0; j < m_scfDepth.width; j++)
+			for (int x = 0; x < width; x += m_pclStride)
 			{
-				int k = i * m_scfDepth.width + j;
+				const size_t k = size_t(y) * width + x;
+				const auto &p = points[k];
 
-				ScVector3f *pV = &m_pScVw[k];
-				Vector3f vP(pV->x, pV->y, pV->z);
-				vP *= s_b;
-
-				// texture color
-				Vector3f vC = Vector3f::Constant(1);
-				if (m_scfTransformedRGB.pFrameData)
+				// Keep validation and scaling scalar, as in Orbbec. Eigen expression
+				// evaluation per pixel is costly in unoptimized camera/debug builds.
+				IF_CONT(!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z) || p.z <= 0 || p.z == UINT16_MAX);
+				const Vector3f vP(p.x * m_dScale, p.y * m_dScale, p.z * m_dScale);
+				Vector3f vC(1.f, 1.f, 1.f);
+				if (!color.empty())
 				{
-					uint8_t *pC = &m_scfTransformedRGB.pFrameData[k * sizeof(uint8_t) * 3];
-					vC = Vector3f(pC[2], pC[1], pC[0]);
-					vC *= c_b;
+					const uint8_t *pC = color.ptr<uint8_t>() + k * 3;
+					vC = Vector3f(pC[2] * c_b, pC[1] * c_b, pC[0] * c_b);
 				}
-
 				m_pPCL->add(vP, vC, tNow);
 			}
 		}
