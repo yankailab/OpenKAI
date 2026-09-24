@@ -8,6 +8,15 @@ cmake --build build/eigenVectors
 ctest --test-dir build/eigenVectors --output-on-failure
 ```
 
+# Console shutdown regression test
+
+This uses a pseudo-terminal to check that Ctrl+C and initialization failures restore
+the terminal settings and leave the ncurses alternate screen.
+
+```bash
+python3 test/console/shutdown.py build/OpenKAI
+```
+
 # GDB
 ```bash
 gdb --args executablename arg1 arg2 arg3

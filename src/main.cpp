@@ -1,20 +1,16 @@
 #include "Module/ModuleMgr.h"
+#include <csignal>
 
 using namespace kai;
 
-static ModuleMgr *g_pMgr = nullptr;
+static volatile std::sig_atomic_t g_stopRequested = 0;
 
 void signalHandler(int signal)
 {
 	if (signal == SIGINT)
 	{
-		printf("\nSIGINT\n");
-		if (g_pMgr)
-		{
-			g_pMgr->stopAll();
-		}
-
-		exit(0);
+		// Defer cleanup to the main thread; it is not signal-safe.
+		g_stopRequested = 1;
 	}
 }
 
@@ -41,7 +37,6 @@ int main(int argc, char *argv[])
 		goto exit;
 	}
 
-	g_pMgr = pMgr;
 	signal(SIGINT, signalHandler);
 
 #ifdef USE_GLOG
@@ -60,21 +55,31 @@ int main(int argc, char *argv[])
 		freopen("/dev/null", "w", stderr);
 	}
 
-	if (!pMgr->createAll())
+	if (g_stopRequested || !pMgr->createAll())
 		goto exit;
 
-	if (!pMgr->initAll())
+	if (g_stopRequested || !pMgr->initAll())
 		goto exit;
 
-	if (!pMgr->linkAll())
+	if (g_stopRequested || !pMgr->linkAll())
 		goto exit;
 
-	if (!pMgr->startAll())
+	if (g_stopRequested || !pMgr->startAll())
 		goto exit;
 
-	pMgr->waitForComplete();
+	while (!g_stopRequested && !pMgr->bComplete())
+	{
+		sleep(1);
+	}
 
 exit:
-	delete pMgr;
+	if (pMgr)
+	{
+		pMgr->stopAll();
+		delete pMgr;
+	}
+
+	if (g_stopRequested)
+		printf("\nSIGINT\n");
 	return 0;
 }

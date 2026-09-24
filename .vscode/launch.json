@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/OpenKAI",
             "args": [
-                "${workspaceFolder}/jsonCfg/GLIM_orbbec.json"
+                "${workspaceFolder}/jsonCfg/apMavlink_base.json"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

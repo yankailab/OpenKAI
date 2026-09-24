@@ -16,14 +16,15 @@ namespace kai
 
 	_Console::~_Console()
 	{
-		endwin();
+		stop();
 	}
 
 	bool _Console::init(const json &j)
 	{
 		IF_F(!this->_ModuleBase::init(j));
 
-		initscr();
+		IF_F(initscr() == nullptr);
+		m_bInitialized = true;
 		noecho();
 		cbreak();
 		start_color();
@@ -59,6 +60,16 @@ namespace kai
 	{
 		NULL_F(m_pT);
 		return m_pT->startThread(getUpdate, this);
+	}
+
+	void _Console::stop(void)
+	{
+		// A final refresh after endwin() would put the terminal back into curses mode.
+		if (m_pT)
+			m_pT->join();
+
+		if (m_bInitialized && !isendwin())
+			endwin();
 	}
 
 	void _Console::update(void)

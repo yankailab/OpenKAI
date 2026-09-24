@@ -342,52 +342,52 @@ namespace kai
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("State-----------------------------", 1);
 		if (m_wrbArm.getRead())
-			pC->addMsg("ARMED", 1);
+			pC->addMsg("\tARMED", 1);
 		else
-			pC->addMsg("DISARMED", 1);
+			pC->addMsg("\tDISARMED", 1);
 
 		pC->addMsg("Mode------------------------------", 1);
-		pC->addMsg("apMode = " + i2str(getMode()) + ": " + getModeName(), 1);
+		pC->addMsg("\tapMode=\t" + i2str(getMode()) + "\t" + getModeName(), 1);
 
 		pC->addMsg("Attitude--------------------------", 1);
-		pC->addMsg("y=" + f2str(m_vAtti.x()) +
-					   ", p=" + f2str(m_vAtti.y()) +
-					   ", r=" + f2str(m_vAtti.z()) +
-					   ", hdg=" + f2str(m_apHdg),
+		pC->addMsg("\ty=\t" + f2str(m_vAtti.x()) +
+					   "\tp=\t" + f2str(m_vAtti.y()) +
+					   "\tr=\t" + f2str(m_vAtti.z()) +
+					   "\thdg=\t" + f2str(m_apHdg),
 				   1);
 
 		pC->addMsg("Global Pos-----------------------", 1);
-		pC->addMsg("GPS fix type=" + i2str(m_gpsFixType) + ", Hacc=" + i2str(m_gpsHacc), 1);
-		pC->addMsg("lat=" + lf2str(m_vGlobalPos.x(), 7) + ", lon=" + lf2str(m_vGlobalPos.y(), 7), 1);
-		pC->addMsg("alt=" + lf2str(m_vGlobalPos.z(), 2) + ", relAlt=" + lf2str(m_vGlobalPos.w(), 2), 1);
+		pC->addMsg("\tGPS fix type=\t" + i2str(m_gpsFixType) + "\tHacc=\t" + i2str(m_gpsHacc), 1);
+		pC->addMsg("\tlat=\t" + lf2str(m_vGlobalPos.x(), 7) + "\tlon=\t" + lf2str(m_vGlobalPos.y(), 7), 1);
+		pC->addMsg("\talt=\t" + lf2str(m_vGlobalPos.z(), 2) + "\trelAlt=\t" + lf2str(m_vGlobalPos.w(), 2), 1);
 
 		pC->addMsg("Local Pos-------------------------", 1);
-		pC->addMsg("x=" + f2str(m_pMav->m_localPositionNED.m_msg.x) +
-					   ", y=" + f2str(m_pMav->m_localPositionNED.m_msg.y) +
-					   ", z=" + f2str(m_pMav->m_localPositionNED.m_msg.z),
+		pC->addMsg("\tx=\t" + f2str(m_pMav->m_localPositionNED.m_msg.x) +
+					   "\ty=\t" + f2str(m_pMav->m_localPositionNED.m_msg.y) +
+					   "\tz=\t" + f2str(m_pMav->m_localPositionNED.m_msg.z),
 				   1);
 
 		pC->addMsg("Home Pos--------------------------", 1);
-		pC->addMsg("lat=" + f2str(m_vHomePos.x(), 7) + ", lon=" + f2str(m_vHomePos.y(), 7) + ", alt=" + f2str(m_vHomePos.z(), 7), 1);
+		pC->addMsg("\tlat=\t" + f2str(m_vHomePos.x(), 7) + "\tlon=\t" + f2str(m_vHomePos.y(), 7) + "\talt=\t" + f2str(m_vHomePos.z(), 7), 1);
 
 		pC->addMsg("Speed-----------------------------", 1);
-		pC->addMsg("vx=" + f2str(m_pMav->m_localPositionNED.m_msg.vx) +
-					   ", vy=" + f2str(m_pMav->m_localPositionNED.m_msg.vy) +
-					   ", vz=" + f2str(m_pMav->m_localPositionNED.m_msg.vz),
+		pC->addMsg("\tvx=\t" + f2str(m_pMav->m_localPositionNED.m_msg.vx) +
+					   "\tvy=\t" + f2str(m_pMav->m_localPositionNED.m_msg.vy) +
+					   "\tvz=\t" + f2str(m_pMav->m_localPositionNED.m_msg.vz),
 				   1);
 
 		pC->addMsg("System-----------------------------", 1);
-		pC->addMsg("status=" + i2str(m_pMav->m_heartbeat.m_msg.system_status));
+		pC->addMsg("\tstatus=\t" + i2str(m_pMav->m_heartbeat.m_msg.system_status));
 
 		pC->addMsg("Battery-----------------------------", 1);
-		pC->addMsg("batt=" + f2str(m_battery));
+		pC->addMsg("\tbatt=\t" + f2str(m_battery));
 
 		pC->addMsg("Sensor----------------------------", 1);
-		pC->addMsg("xAcc=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xacc) + ", yAcc=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.yacc) + ", zAcc=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zacc), 1);
+		pC->addMsg("\txAcc=\t" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xacc) + "\tyAcc=\t" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.yacc) + "\tzAcc=\t" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zacc), 1);
 
-		pC->addMsg("xGyro=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xgyro) + ", yGyro=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.ygyro) + ", zGyro=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zgyro), 1);
+		pC->addMsg("\txGyro=\t" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xgyro) + "\tyGyro=\t" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.ygyro) + "\tzGyro=\t" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zgyro), 1);
 
-		pC->addMsg("xMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xmag) + ", yMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.ymag) + ", zMag=" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zmag), 1);
+		pC->addMsg("\txMag=\t" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xmag) + "\tyMag=\t" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.ymag) + "\tzMag=\t" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zmag), 1);
 	}
 
     void _APmavlink_base::console(const json &j, void *pJSONbase)

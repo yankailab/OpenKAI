@@ -13,7 +13,6 @@ namespace kai
 	_UDP::_UDP()
 	{
 		m_ioType = io_udp;
-		m_ioStatus = io_unknown;
 	}
 
 	_UDP::~_UDP()
