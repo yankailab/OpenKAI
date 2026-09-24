@@ -213,7 +213,7 @@ The survey covered C++ files in every source folder and its subfolders, includin
 | --- | --- |
 | `Base`, `Module`, `main.cpp` | [BASE.h](../src/Base/BASE.h), [_ModuleBase.cpp](../src/Base/_ModuleBase.cpp), [ModuleMgr.cpp](../src/Module/ModuleMgr.cpp): lifecycle, guard returns, configuration, class layout |
 | `Actuator`, including `Motor` and `Articulated` | [_ActuatorBase.h](../src/Actuator/_ActuatorBase.h): grouped state, struct members, short domain names |
-| `Autopilot`, including `APmavlink` and `Drive` | [_APmavlink_base.h](../src/Autopilot/APmavlink/_APmavlink_base.h), [_Drive.cpp](../src/Autopilot/Drive/_Drive.cpp): module families, configuration, worker methods |
+| `Autopilot`, including `ArduPilot` and `Drive` | [_APmav_base.h](../src/Autopilot/ArduPilot/_APmav_base.h), [_Drive.cpp](../src/Autopilot/Drive/_Drive.cpp): module families, configuration, worker methods |
 | `IO`, `Protocol`, `IPC` | [_IObase.h](../src/IO/_IObase.h), [_ProtocolBase.cpp](../src/Protocol/_ProtocolBase.cpp), [SharedMem.h](../src/IPC/SharedMem.h): buffers, callbacks, resource helpers |
 | `Sensor`, including `Distance` and `LiDAR`; `Navigation` | [_IMUbase.h](../src/Sensor/_IMUbase.h), [_GPS.cpp](../src/Navigation/_GPS.cpp): timestamps, units, grouped device state |
 | `Swarm`, `ROS` | [_SwarmBase.h](../src/Swarm/_SwarmBase.h), [_ROS_fastLio.h](../src/ROS/_ROS_fastLio.h): thread modules and external API adapters |

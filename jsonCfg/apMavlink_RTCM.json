@@ -63,7 +63,7 @@
 	},
 
 	"apBase": {
-		"class": "_APmavlink_base",
+		"class": "_APmav_base",
 		"bON": false,
 		"thread": {
 			"FPS": 10
@@ -186,7 +186,7 @@
 	},
 
 	"apRTCM": {
-		"class": "_APmavlink_RTCM",
+		"class": "_APmav_RTCM",
 		"bON": true,
 		"thread": {
 			"FPS": 1

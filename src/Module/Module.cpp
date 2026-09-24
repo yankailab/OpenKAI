@@ -76,35 +76,36 @@ namespace kai
 #endif
 #endif
 
-#ifdef WITH_APMAVLINK
-		ADD_MODULE(_APmavlink_rcChannel);
-		ADD_MODULE(_APmavlink_base);
-		ADD_MODULE(_APmavlink_httpJson);
-		ADD_MODULE(_APmavlink_mav2json);
-		ADD_MODULE(_APmavlink_mission);
-		ADD_MODULE(_APmavlink_move);
-		ADD_MODULE(_APmavlink_relay);
-		ADD_MODULE(_APmavlink_servo);
-		ADD_MODULE(_APmavlink_drive);
+#ifdef WITH_AUTOPILOT
+		ADD_MODULE(_AutopilotBase);
+		ADD_MODULE(_Drive);
+#endif
+
+#ifdef WITH_ARDUPILOT
+		ADD_MODULE(_APmav_rcChannel);
+		ADD_MODULE(_APmav_base);
+		ADD_MODULE(_APmav_httpJson);
+		ADD_MODULE(_APmav_mav2json);
+		ADD_MODULE(_APmav_mission);
+		ADD_MODULE(_APmav_move);
+		ADD_MODULE(_APmav_relay);
+		ADD_MODULE(_APmav_servo);
+		ADD_MODULE(_APmav_drive);
 #ifdef USE_OPENCV
-		ADD_MODULE(_APmavlink_RTCM);
-		ADD_MODULE(_APmavlink_depthVision);
-		ADD_MODULE(_APmavlink_videoStream);
-		ADD_MODULE(_APmavlink_photo);
+		ADD_MODULE(_APmav_RTCM);
+		ADD_MODULE(_APmav_depthVision);
+		ADD_MODULE(_APmav_videoStream);
+		ADD_MODULE(_APmav_photo);
 #ifdef USE_OPENCV_CONTRIB
-		ADD_MODULE(_APmavlink_follow);
-		ADD_MODULE(_APmavlink_land);
-		ADD_MODULE(_APmavlink_landingTarget);
+		ADD_MODULE(_APmav_follow);
+		ADD_MODULE(_APmav_land);
+		ADD_MODULE(_APmav_landingTarget);
 #endif // opencv_contrib
 #endif // opencv
 #ifdef WITH_NAVIGATION
-		ADD_MODULE(_APmavlink_visionEstimate);
+		ADD_MODULE(_APmav_visionEstimate);
 #endif // nav
 #endif // apMavlink
-
-#ifdef WITH_AUTOPILOT_DRIVE
-		ADD_MODULE(_Drive);
-#endif
 
 #ifdef WITH_COMPUTE
 #ifdef USE_OPENCL

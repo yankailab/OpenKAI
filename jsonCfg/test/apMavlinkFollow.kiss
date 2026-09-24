@@ -68,7 +68,7 @@
 	}
 }
 "apBase":{
-	"class":"_APmavlink_base",
+	"class":"_APmav_base",
 	"bON": true,
 "thread":{
 		"FPS":10,
@@ -179,12 +179,12 @@
 	"vRout":[-0.5,0.5],
 }
 "apFollow":{
-	"class":"_APmavlink_follow",
+	"class":"_APmav_follow",
 	"bON": true,
 "thread":{
 		"FPS":10,
 	}
-	"_APmavlink_base":"apBase",
+	"_APmav_base":"apBase",
 	"_Canvas":"canvas",
 	"iClass":0,
 	"tOutTargetNotFound":500000,

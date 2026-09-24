@@ -82,7 +82,7 @@
 	}
 }
 "apBase":{
-	"class":"_APmavlink_base",
+	"class":"_APmav_base",
 	"bON": true,
 "thread":{
 		"FPS":10,
@@ -147,13 +147,13 @@
 	"vAxisIdx":[0,1,2],
 }
 "apVision":{
-	"class":"_APmavlink_visionEstimate",
+	"class":"_APmav_visionEstimate",
 	"bON": true,
 "thread":{
 		"FPS":30,
 	}
 	"bLog":false,
-	"_APmavlink_base":"apBase",
+	"_APmav_base":"apBase",
 	"_NavBase":"fastLio",
 	"mTsensor2aero":[1,0,0,0, 0,-1,0,0, 0,0,-1,0, 0,0,0,1],
 	"vAxisRPY":[0,1,2],

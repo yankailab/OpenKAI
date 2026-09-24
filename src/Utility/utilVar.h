@@ -15,18 +15,12 @@ namespace kai
 			m_vR = r;
 		}
 
-		void init(void)
-		{
-			m_vW = 0;
-			m_vR = 0;
-		}
-
-		void read(T v)
+		void setRead(T v)
 		{
 			m_vR = v;
 		}
 
-		void write(T v)
+		void setWrite(T v)
 		{
 			m_vW = v;
 		}
@@ -41,9 +35,9 @@ namespace kai
 			return m_vW;
 		}
 
-		bool bW(void)
+		bool bWritten(void)
 		{
-			return (m_vR != m_vW);
+			return (m_vR == m_vW);
 		}
 	};
 

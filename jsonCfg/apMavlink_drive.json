@@ -99,7 +99,7 @@
 		"iMavComm": 0
 	},
 	"apBase": {
-		"class": "_APmavlink_base",
+		"class": "_APmav_base",
 		"bON": true,
 		"thread": {
 			"FPS": 10
@@ -147,13 +147,13 @@
 
 
 	"apDrive": {
-		"class": "_APmavlink_drive",
+		"class": "_APmav_drive",
 		"bON": true,
 		"bLog": true,
 		"thread": {
 			"FPS": 10
 		},
-		"_APmavlink_base": "apBase",
+		"_APmav_base": "apBase",
 		"_SelectableOctGrid": "octGrid",
 		"_GeoFence": "geoFence",
 		"pwmM": 1500,
@@ -176,7 +176,7 @@
 			"FPS": 5
 		},
 		"_JSONbase": "",
-		"_APmavlink_base": "apBase",
+		"_APmav_base": "apBase",
 		"estD": 1,
 		"fConfig": "/home/kai/test/geoFence.json"
 	},

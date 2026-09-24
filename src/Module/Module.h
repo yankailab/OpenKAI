@@ -66,37 +66,38 @@
 #endif
 #endif
 
-#ifdef WITH_APMAVLINK
-#include "../Autopilot/APmavlink/_APmavlink_rcChannel.h"
-#include "../Autopilot/APmavlink/_APmavlink_base.h"
-#include "../Autopilot/APmavlink/_APmavlink_httpJson.h"
-#include "../Autopilot/APmavlink/_APmavlink_mav2json.h"
-#include "../Autopilot/APmavlink/_APmavlink_mission.h"
-#include "../Autopilot/APmavlink/_APmavlink_move.h"
-#include "../Autopilot/APmavlink/_APmavlink_relay.h"
-#include "../Autopilot/APmavlink/_APmavlink_servo.h"
-#include "../Autopilot/APmavlink/_APmavlink_drive.h"
+#ifdef WITH_AUTOPILOT
+#include "../Autopilot/_AutopilotBase.h"
+#include "../Autopilot/Drive/_Drive.h"
+#endif
+
+#ifdef WITH_ARDUPILOT
+#include "../Autopilot/ArduPilot/_APmav_rcChannel.h"
+#include "../Autopilot/ArduPilot/_APmav_base.h"
+#include "../Autopilot/ArduPilot/_APmav_httpJson.h"
+#include "../Autopilot/ArduPilot/_APmav_mav2json.h"
+#include "../Autopilot/ArduPilot/_APmav_mission.h"
+#include "../Autopilot/ArduPilot/_APmav_move.h"
+#include "../Autopilot/ArduPilot/_APmav_relay.h"
+#include "../Autopilot/ArduPilot/_APmav_servo.h"
+#include "../Autopilot/ArduPilot/_APmav_drive.h"
 #ifdef USE_OPENCV
-#include "../Autopilot/APmavlink/_APmavlink_RTCM.h"
-#include "../Autopilot/APmavlink/_APmavlink_depthVision.h"
-#include "../Autopilot/APmavlink/_APmavlink_videoStream.h"
-#include "../Autopilot/APmavlink/_APmavlink_photo.h"
+#include "../Autopilot/ArduPilot/_APmav_RTCM.h"
+#include "../Autopilot/ArduPilot/_APmav_depthVision.h"
+#include "../Autopilot/ArduPilot/_APmav_videoStream.h"
+#include "../Autopilot/ArduPilot/_APmav_photo.h"
 #ifdef USE_OPENCV_CONTRIB
-#include "../Autopilot/APmavlink/_APmavlink_follow.h"
-#include "../Autopilot/APmavlink/_APmavlink_land.h"
-#include "../Autopilot/APmavlink/_APmavlink_landingTarget.h"
+#include "../Autopilot/ArduPilot/_APmav_follow.h"
+#include "../Autopilot/ArduPilot/_APmav_land.h"
+#include "../Autopilot/ArduPilot/_APmav_landingTarget.h"
 #endif // opencv_contrib
 #endif // opencv
 #ifdef WITH_SWARM
 #endif
 #ifdef WITH_NAVIGATION
-#include "../Autopilot/APmavlink/_APmavlink_visionEstimate.h"
+#include "../Autopilot/ArduPilot/_APmav_visionEstimate.h"
 #endif // nav
-#endif // APmavlink
-
-#ifdef WITH_AUTOPILOT_DRIVE
-#include "../Autopilot/Drive/_Drive.h"
-#endif
+#endif // WITH_ARDUPILOT
 
 #ifdef WITH_COMPUTE
 #ifdef USE_OPENCL

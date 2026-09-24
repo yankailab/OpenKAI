@@ -1,0 +1,216 @@
+#include "_APmav_landingTarget.h"
+
+namespace kai
+{
+
+	_APmav_landingTarget::_APmav_landingTarget()
+	{
+		m_vPsp = Vector2f(0.5, 0.5);
+
+		m_lt.angle_x = 0;
+		m_lt.angle_y = 0;
+		m_lt.distance = 0;
+		m_lt.size_x = 0;
+		m_lt.size_y = 0;
+	}
+
+	_APmav_landingTarget::~_APmav_landingTarget()
+	{
+	}
+
+	bool _APmav_landingTarget::init(const json &j)
+	{
+		IF_F(!this->_APmav_move::init(j));
+
+		jKv<float>(j, "vPsp", m_vPsp);
+		jKv(j, "bHdg", m_bHdg);
+		jKv(j, "hdgDz", m_hdgDz);
+		m_hdgDzNav = m_hdgDz / 2;
+		jKv(j, "hdgDzNav", m_hdgDzNav);
+
+		jKv(j, "hTouchdown", m_hTouchdown);
+		jKv(j, "kP", m_kP);
+		jKv(j, "defaultDtgt", m_defaultDtgt);
+
+		if (jKv<float>(j, "vFov", m_vFov))
+			m_vFov *= DEG_2_RAD;
+
+		jKv(j, "yawRate", m_yawRate);
+		m_yawRate *= DEG_2_RAD;
+
+		const json &jc = jK(j, "tags");
+		IF__(!jc.is_object(), true);
+
+		for (auto it = jc.begin(); it != jc.end(); it++)
+		{
+			const json &Ji = it.value();
+			IF_CONT(!Ji.is_object());
+
+			AP_LANDING_TARGET_TAG t;
+			jKv(Ji, "id", t.m_id);
+			jKv(Ji, "priority", t.m_priority);
+			m_vTags.push_back(t);
+		}
+
+		return true;
+	}
+
+	bool _APmav_landingTarget::link(const json &j, ModuleMgr *pM)
+	{
+		IF_F(!this->_APmav_move::link(j, pM));
+
+		string n;
+
+		n = "";
+		jKv(j, "_DistSensorBase", n);
+		m_pDS = (_DistSensorBase *)pM->findModule(n);
+
+		n = "";
+		jKv(j, "_Canvas", n);
+		m_pCanvas = (_Canvas *)pM->findModule(n);
+
+		return true;
+	}
+
+	bool _APmav_landingTarget::start(void)
+	{
+		NULL_F(m_pT);
+		return m_pT->startThread(getUpdate, this);
+	}
+
+	bool _APmav_landingTarget::check(void)
+	{
+		NULL_F(m_pDS);
+		NULL_F(m_pCanvas);
+
+		return this->_APmav_move::check();
+	}
+
+	void _APmav_landingTarget::update(void)
+	{
+		while (m_pT->bRun())
+		{
+			m_pT->autoFPS();
+
+			updateLandingTarget();
+		}
+	}
+
+	void _APmav_landingTarget::updateLandingTarget(void)
+	{
+		IF_(!check());
+
+		if (!findTag())
+		{
+			if (m_pAP->getMode() == AP_COPTER_GUIDED)
+			{
+				setHold();
+				m_pAP->setMode(AP_COPTER_RTL);
+			}
+
+			return;
+		}
+
+		m_dHdg = dHdg(m_hdgSp, m_oTarget.getAttitude().x());
+		float dHdgAbs = abs(m_dHdg);
+
+		if (m_bHdgMoving)
+		{
+			if (dHdgAbs > m_hdgDzNav)
+			{
+				setHdg(0, (m_dHdg > 0) ? m_yawRate : (-m_yawRate));
+				return;
+			}
+
+			setHold();
+			m_bHdgMoving = false;
+		}
+		else if (m_bHdg)
+		{
+			if (dHdgAbs > m_hdgDz)
+			{
+				if (m_pAP->getMode() == AP_COPTER_LAND ||
+					m_pAP->getMode() == AP_COPTER_RTL)
+					m_pAP->setMode(AP_COPTER_GUIDED);
+
+				m_bHdgMoving = true;
+				return;
+			}
+		}
+
+		if (m_pAP->getMode() == AP_COPTER_GUIDED)
+			m_pAP->setMode(AP_COPTER_RTL);
+
+		// Vector3f vP = m_oTarget.getPos();
+		// m_lt.angle_x = (vP.x() - m_vPsp.x()) * m_vFov.x() * m_kP;
+		// m_lt.angle_y = (vP.y() - m_vPsp.y()) * m_vFov.y() * m_kP;
+		// m_lt.size_x = m_oTarget.getWidth() * m_vFov.x();
+		// m_lt.size_y = m_oTarget.getHeight() * m_vFov.y();
+		// m_lt.position_valid = 0;
+
+		// float h = m_pDS->d(0);
+		// if(h > 0)
+		// {
+		// 	IF_(h < m_hTouchdown);
+		// 	m_lt.distance = h;
+		// }
+		// else
+		// {
+		// 	m_lt.distance = m_defaultDtgt;
+		// }
+
+		// m_pAP->getMavlink()->landingTarget(m_lt);
+	}
+
+	bool _APmav_landingTarget::findTag(void)
+	{
+		IF_F(!check());
+
+		AP_LANDING_TARGET_TAG *pTag = NULL;
+		int priority = INT_MAX;
+		_Object *tO = NULL;
+		_Object *pO;
+		int i = 0;
+		while ((pO = m_pCanvas->get(i++)) != NULL)
+		{
+			int id = pO->getTopClass();
+			pTag = getTag(id);
+			IF_CONT(!pTag);
+			IF_CONT(pTag->m_priority > priority);
+
+			tO = pO;
+			priority = pTag->m_priority;
+		}
+
+		NULL_F(tO);
+		m_oTarget = *tO;
+
+		return true;
+	}
+
+	AP_LANDING_TARGET_TAG *_APmav_landingTarget::getTag(int id)
+	{
+		for (AP_LANDING_TARGET_TAG &tag : m_vTags)
+		{
+			IF_CONT(tag.m_id != id);
+			return &tag;
+		}
+
+		return NULL;
+	}
+
+	void _APmav_landingTarget::console(void *pConsole)
+	{
+		NULL_(pConsole);
+		this->_APmav_move::console(pConsole);
+
+		_Console *pC = (_Console *)pConsole;
+
+		pC->addMsg("vAngle = (" + f2str(m_lt.angle_x) + ", " + f2str(m_lt.angle_y) + ")");
+		pC->addMsg("dHdg = " + f2str(m_dHdg));
+		pC->addMsg("Dist = " + f2str(m_lt.distance));
+		pC->addMsg("vSize = (" + f2str(m_lt.size_x) + ", " + f2str(m_lt.size_y) + ")");
+		pC->addMsg("iTag = " + i2str(m_oTarget.getTopClass()));
+	}
+
+}
