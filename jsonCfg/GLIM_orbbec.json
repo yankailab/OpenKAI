@@ -3,7 +3,7 @@
 		"class": "OpenKAI",
 		"appName": "GLIM SLAM",
 		"bLog": true,
-		"bStdErr": true
+		"bStdErr": false
 	},
 	"console": {
 		"class": "_Console",
@@ -156,7 +156,8 @@
 		"nP": 1000000
 	},
 	"viewer": {
-		"class": "_WebGeometryBase",
+		"class": "_WebGLIM",
+		"_GLIM": "GLIM",
 		"webRoot": "html/viewer/_GLIM",
 		"bON": true,
 		"thread": {
@@ -165,12 +166,9 @@
 		"host": "0.0.0.0",
 		"port": 8080,
 		"nClientMax": 8,
-		"nPbuf": 400000,
-		"nLbuf": 0,
-		"dTexpire": 0,
+		"matPointSize": 2,
 		"bAutoBound": true,
 		"bShowGrid": true,
-		"bFrame": true,
 		"vCamLookAt": [
 			0,
 			0,
@@ -190,18 +188,12 @@
 		"vCamNF": [
 			0.01,
 			1000000
-		],
-		"vGeometry": [
-			{
-				"_GeometryBase": "glimPCL",
-				"nP": 1000000,
-				"nL": 0,
-				"matPointSize": 2
-			}
 		]
 	},
 	"GLIM": {
 		"class": "_GLIM",
+		"fConfig": "jsonCfg/GLIM.controls.json",
+		"exportPath": "data/glim",
 		"bON": true,
 		"thread": {
 			"FPS": 100
@@ -211,6 +203,7 @@
 		"configPath": "jsonCfg/glim_orbbec",
 		"bAutoStart": false,
 		"bMapping": true,
+		"bPublishLiveMap": false,
 		"nMinPoints": 100,
 		"tConfidenceTimeoutUs": 1000000,
 		"globalMapPCL": "glimPCL",

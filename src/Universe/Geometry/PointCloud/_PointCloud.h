@@ -77,6 +77,8 @@ namespace kai
         virtual void frameStart(void);
         virtual void frameStop(void);
         int getLastFrame(vector<Vector3f> *pvP, vector<Vector3f> *pvC, uint64_t& tStamp) override;
+        // Check freshness under the ring lock before copying any points.
+        int getLastFrameIfNew(vector<Vector3f> *pvP, vector<Vector3f> *pvC, uint64_t &tStamp, uint64_t afterStamp);
         // Atomically replace the ring and completed-frame indices (e.g. a SLAM map).
         void setFrame(const vector<Vector3f> &points, const vector<Vector3f> &colors, uint64_t stamp);
 
@@ -85,6 +87,7 @@ namespace kai
         virtual GEOMETRY_RINGBUF<GEOMETRY_POINT> *getRingBuf(void);
 
     private:
+        int copyLastFrameLocked(vector<Vector3f> *pvP, vector<Vector3f> *pvC, uint64_t &tStamp);
         void updatePointCloud(void);
         virtual void update(void);
         static void *getUpdate(void *This)

@@ -1,8 +1,8 @@
 # GLIM SLAM viewer
 
-Sensor-independent GLIM viewer derived from `_Orbbec`. It uses the existing
-`_WebGeometryBase` binary point/line streams and `_WSconsole` command connection.
-All Three.js assets are local; no npm build or internet connection is required.
+Sensor-independent GLIM viewer with a dedicated `_WebGLIM` submap stream and
+ordinary `_WSconsole` commands. Three.js assets are local; no npm build or
+internet connection is required.
 
 From the OpenKAI repository root:
 
@@ -15,106 +15,214 @@ cmake --build build -j4
 ./build/OpenKAI jsonCfg/GLIM_orbbec.json
 ```
 
-Open `http://127.0.0.1:8080`, click **Connect viewer**, then **Start** in the SLAM
-panel. Opening `index.html` directly also provides a launcher to the backend's
-HTTP server. Stream and command ports default to 8080 and 7890 respectively.
-`GLIM_orbbec.json` starts with tracking stopped and disables the desktop windows.
-It requires a build with GLIM, Orbbec, OpenCV, Universe, Protocol and WS server
-support. Keep the camera stationary during IMU initialization.
+Open `http://127.0.0.1:8080`, click **Connect viewer**, then **Start**. Opening
+`index.html` directly provides a launcher to the backend HTTP server. Stream and
+command ports default to 8080 and 7890. The example starts stopped, with desktop
+windows disabled. Keep the camera stationary during IMU initialization.
 
-Use the optimized `RelWithDebInfo` build for live SLAM; it retains debug symbols.
-The unoptimized Debug build can drop most camera frames while converting and
-publishing point clouds. The Orbbec profile uses native depth (without RGB
-alignment), a 0.3–6 m input range, 5 cm preprocessing cells and a 25 cm GICP
-search grid. Its IMU-to-depth transform comes from the connected Gemini 335's
-factory calibration. Recalibrate the transform and retune the range/resolutions
-when changing sensors or enabling RGB-aligned clouds. IMU callbacks run separately
-from video framesets so all 200 Hz samples reach SLAM. Both use device capture
-timestamps; host USB arrival times are unsuitable for IMU integration.
+Use `RelWithDebInfo` for live SLAM; it retains debug symbols. In VSCode, select
+**GLIM (optimized with debug symbols)** to configure and build that mode before
+GDB starts. Keep `USE_SCEPTER_SDK=OFF` with the installed Scepter SDK, whose
+exported `spdlog` symbols conflict with GLIM's logger.
 
-The current `build/OpenKAI` configuration has Scepter disabled. Keep
-`USE_SCEPTER_SDK=OFF` when using GLIM with this installed SDK: its exported
-`spdlog` symbols conflict with GLIM's logger.
+## Sensor and viewer connections
 
-Pipeline:
-
-```
-_Orbbec (or another sensor) → obPCL → GLIM → glimPCL → _WebGeometryBase
-                               ↑
-                             obIMU
+```text
+_Orbbec (or another sensor) → _PointCloud → _GLIM → _WebGLIM → browser
+                              _IMUbase ↗    ↓
+                                    optional globalMapPCL
 ```
 
-To use another sensor, connect its point cloud and optional IMU to `_GLIM`, select
-its GLIM configuration, and set `globalMapPCL` to a separate `_PointCloud` output.
-Add the GLIM module name to `_WSconsole.vBASE` and enter that name in the viewer.
-Use `bFrame: true` and `dTexpire: 0` on `_WebGeometryBase`, with its `vGeometry`
-point source set to the map output. `_PointCloud` frames use ring-buffer indices;
-size the input ring to hold at least two maximum-sized sensor frames, and size the
-map ring to at least `nMapPoints`. Oversized frames retain only the newest `nP`
-points; completed frames expire when later writes overwrite their slots.
-Keep input and map buffers at identity
-transforms. SLAM expects metres, m/s², rad/s, calibrated sensor extrinsics and
-synchronized microsecond timestamps. The existing input interface supplies one
-timestamp per whole cloud; it does not deskew a scanning LiDAR.
-
-- **Start** starts a new session (idempotent while active). A new session clears
-  the previous map and pose.
-- **Stop** finalizes and optimizes mapping, retaining the completed map and pose.
-- **Reset** stops and clears both map and pose; click Start to track again.
-- **Disconnect viewer** stops geometry streaming. The separate command connection
-  can still control SLAM. Disconnecting either connection does not stop SLAM.
-- **Fit map**, **Reset view**, and **Follow sensor** control the viewing camera.
-  The sensor marker and FoV box show the input sensor pose in the global map.
-  Set the forward axis, horizontal/vertical FoV and range for your sensor. These
-  are visual guides, not calibration parameters or automatically read intrinsics.
-
-Point colors default to **Distance to eye**: warm colors are nearby, cool colors
-are farther from the viewer's camera. The meter legend automatically adapts to
-the cloud and follows orbit/zoom, including while SLAM is stopped. Coloring runs
-on the GPU; a small sample of the cloud determines the range. This is distance
-from your viewing position, not the tracked sensor. Select **Map stage** to see
-the original blue completed submaps and green recent frames instead.
-
-Completed submaps use their optimized poses. Recent odometry frames use the same map frame,
-so the display updates before the first submap completes. Recent history is
-bounded by `nLiveFrames` (default 100); it is replaced by completed submaps. The
-live poses follow every smoother update instead of waiting for marginalization.
-The published display cloud is uniformly sampled to `nMapPoints` (default 400000)
-and refreshed at most every `tMapUpdateUs` (default 200000). GLIM's internal map
-and saved map are unaffected by this display limit. This adapter does not retain
-RGB in GLIM's map; the Map stage option indicates completed/recent geometry. With `bMapping:
-false`, only the bounded recent odometry frames are available.
-
-The left panel shows map-frame position (metres), orientation (quaternion XYZW),
-roll/pitch/yaw (degrees, ZYX convention), session state, and map/frame counts.
-The gold marker turns gray when the pose is stale or tracking is stopped. Fresh pose
-availability is not a tracking accuracy estimate. The navigation API retains
-continuous odometry; the viewer applies the latest global submap correction to
-align its sensor marker with loop-closure updates.
-
-Commands are ordinary `_WSconsole` JSON, terminated with `EOJ`:
+The viewer links directly to GLIM:
 
 ```json
-{"module":"GLIM","cmd":"start","requestId":"example-1"}
-{"module":"GLIM","cmd":"stop","requestId":"example-2"}
-{"module":"GLIM","cmd":"reset","requestId":"example-3"}
-{"module":"GLIM","cmd":"getStatus","requestId":"example-4"}
+{
+  "class": "_WebGLIM",
+  "_GLIM": "GLIM",
+  "webRoot": "html/viewer/_GLIM",
+  "host": "0.0.0.0",
+  "port": 8080,
+  "thread": {"FPS": 10},
+  "matPointSize": 2
+}
 ```
 
-Replies echo `cmd`, `module`, `requestId`, and include `bSuccess`, optional
-`error`, and `status`. Status contains `state`, `tracking`, `poseValid`,
-`poseFresh`, `position`, `orientation`, `angles`, `frames`, `mapPoints`,
-`submaps`, `liveFrames`, `mapOutput`, `mapping`, and timestamps in microseconds.
-`imuSamples` counts consumed IMU pairs, `maxIMUgapUs` reports the largest gap,
-`frameIntervalMs` reports the latest input-frame interval, and `processingMs`
-reports the last processed frame's work (including any map update). These help
-distinguish a fresh network stream from a SLAM worker that is dropping frames.
-Pose/input timestamps use the sensor clock; map timestamps use backend monotonic
-time. Do not subtract timestamps from these two clocks. The page polls status
-with one outstanding request, handles fragmented JSON replies, and marks stale
-telemetry when replies stop. Points always travel through `_WebGeometryBase`.
+`_WebGLIM` is built when `WITH_SLAM`, `USE_GLIM` and `WITH_UNIVERSE` are enabled.
+It shares the HTTP server and camera configuration with other viewers and owns
+its submap protocol. It does not consume `globalMapPCL`, `vGeometry`, or the
+point/line geometry streams. Add the GLIM module name to `_WSconsole.vBASE` and
+enter that same module name in the viewer's command panel.
 
-Validation:
+For another sensor, connect its `_PointCloud` and optional `_IMUbase` to GLIM and
+select its `configPath`. SLAM expects metres, m/s² including gravity, rad/s,
+calibrated IMU-to-cloud extrinsics, and synchronized capture timestamps in
+microseconds. The input interface gives one timestamp per complete cloud; it
+does not deskew a scanning LiDAR. Keep the input cloud transform fixed in the
+sensor frame. `_PointCloud` frames remain spans in a ring buffer: allocate at
+least two maximum sensor frames so a completed frame survives while the next
+one is written. The freshness check avoids copying the same frame on idle polls.
+
+The Orbbec example uses native depth, a 0.3–6 m range, 5 cm preprocessing cells,
+and a 25 cm GICP grid. Its IMU-to-depth transform is the connected Gemini 335's
+factory calibration. Changing sensors or enabling RGB-aligned clouds requires
+matching extrinsics and settings. Separate IMU callbacks retain the 200 Hz
+samples; depth and IMU use device capture timestamps.
+
+## Map and controls
+
+Only completed submaps appear in the browser. Before the first submap completes,
+the cloud is empty while the sensor marker, FoV and trajectory update. Submap
+completion depends on keyframe selection, motion and the odometry smoother's
+lag; it is not tied to video FPS. **Stop** flushes remaining frames and finishes
+the map. With global mapping disabled, the viewer shows pose and trajectory
+without a completed-submap cloud.
+
+Each completed submap's local points arrive once per connection. The browser
+retains them, adds later submaps, and applies separate pose corrections when
+mapping optimization changes their placement. Reconnection replays the complete
+current session. Slow clients catch up without losing submaps. There is no
+`nMapPoints` cap on this accumulated scene; each individual submap is limited to
+10 million points by the stream protocol.
+
+- **Start** creates a new session and clears the previous map and pose. It is
+  idempotent while tracking.
+- **Stop** finalizes and optimizes mapping, retaining the map and last pose.
+- **Reset** stops and clears the map, pose and session trajectory.
+- **Disconnect viewer** stops the map connection; the separate command
+  connection can still control SLAM. Disconnecting does not stop tracking.
+- **Fit map**, **Reset view**, and **Follow sensor** control the viewing camera.
+- **Show trajectory** displays up to 8192 recent segments sampled from fresh
+  status poses, with breaks across stale telemetry. This browser history is
+  cleared for a new session or command connection; it is not a saved or
+  retrospectively optimized GLIM trajectory.
+
+The left panel shows map-frame position in metres, quaternion XYZW, roll/pitch/
+yaw in degrees (ZYX convention), state and counts. The gold sensor marker turns
+gray when its pose is stale or tracking stops. Pose availability is not an
+accuracy estimate. The navigation API keeps continuous local odometry; status
+applies the latest global correction to align the marker with the map. The FoV,
+range and forward axis are visual settings, independent of sensor calibration.
+
+**Distance to eye** colors nearby points warm and distant points cool, with an
+automatic metre legend following orbit and zoom. Coloring runs on the GPU and
+uses the viewer camera, not the tracked sensor. **Submap** assigns a distinct
+color to each completed map section. GLIM does not preserve camera RGB here.
+
+The optional `globalMapPCL` output remains available to other modules. By default,
+`bPublishLiveMap: false` updates that ring only after a completed-submap change
+or finalization, subject to `tMapUpdateUs`; `nMapPoints` caps that output alone.
+Set `bPublishLiveMap: true` to include the legacy bounded recent-frame preview
+for those consumers. Neither setting changes `_WebGLIM`'s completed-submap
+stream. `nLiveFrames` also bounds unfinished points retained for PLY export.
+
+## Parameters and point-cloud export
+
+Edit SLAM parameters while stopped. **Start** applies edited values before
+starting the session. **Save parameters** validates and applies the values and
+writes the module's `fConfig`; the example uses `jsonCfg/GLIM.controls.json`.
+**Load saved** reloads that file while stopped. On process startup, an existing
+`fConfig` overrides the selected profile and optional module `parameters` object.
+Values applied without saving last only for the current process.
+
+The panel exposes input filtering and supported odometry/submap/global mapping
+controls. Distances and voxel sizes are metres; submap rotation thresholds are
+radians. Backend-specific groups appear only for supported implementations.
+Module selection, IMU calibration and unexposed settings stay in `configPath`.
+Restart OpenKAI after changing those profile files; the editable controls apply
+on the next Start without replacing GLIM's process-global configuration.
+
+**Save point cloud** writes a binary little-endian XYZ/RGB PLY on the backend PC
+using `_PCfile::savePLY`. It snapshots all completed submaps plus retained
+unfinished frames at their current poses, including up to `nLiveFrames` of
+recent history. This export is independent of the display ring's `nMapPoints`
+limit. It contains GLIM's processed points, not all raw sensor samples. Stop first
+to export the finalized, optimized map, or save during tracking for a snapshot.
+
+The example creates files under `data/glim`, controlled by `exportPath`. The
+reply shows the absolute backend path and written point count; this is not a
+browser download. A command may supply an explicit `.ply` path whose parent
+already exists. The default export directory is created automatically.
+
+## WSconsole commands
+
+Send JSON terminated with `EOJ` on the command connection:
+
+```json
+{"module":"GLIM","cmd":"start","requestId":"1"}
+{"module":"GLIM","cmd":"stop","requestId":"2"}
+{"module":"GLIM","cmd":"reset","requestId":"3"}
+{"module":"GLIM","cmd":"getStatus","requestId":"4"}
+{"module":"GLIM","cmd":"getConfig","requestId":"5"}
+{"module":"GLIM","cmd":"setConfig","config":{"preprocess":{"distanceFar":5.0}},"requestId":"6"}
+{"module":"GLIM","cmd":"saveConfig","requestId":"7"}
+{"module":"GLIM","cmd":"loadConfig","requestId":"8"}
+{"module":"GLIM","cmd":"savePointCloud","requestId":"9"}
+{"module":"GLIM","cmd":"savePointCloud","path":"/tmp/glim-map.ply","requestId":"10"}
+```
+
+`setConfig`, `saveConfig` and `loadConfig` require stopped tracking. `setConfig`
+and optional `saveConfig.config` accept partial nested objects and reject unknown
+fields, invalid ranges and incompatible minimum/target/neighbor point counts.
+`saveConfig` without `config` saves current values. Configuration replies include
+`config` and `configFile`; export replies include `path` and `points`.
+
+Replies echo `cmd`, `module`, `requestId`, and include `bSuccess`, optional
+`error`, and normally `status`. Status includes state, pose validity/freshness,
+position/orientation/angles, frame/map/submap counts and `canSavePointCloud`.
+`session` and `revision` are decimal strings matching the submap stream.
+`imuSamples`, `maxIMUgapUs`, `frameIntervalMs`, `processingMs`, cumulative `workMs`,
+`updates`, `inputPoints` and `registrationPoints` support
+[performance measurement](../../../docs/GLIM.md#measuring-performance).
+Sensor pose/input timestamps use the capture clock; map-output timestamps use
+backend monotonic time. Do not subtract values from these different clocks.
+
+## Dedicated submap protocol
+
+Connect a WebSocket to `/stream/glim`. The server first sends a JSON `hello`
+with `protocol: "openkai.glim"`, `version: 1`, `stream: "glim"`, camera/style
+settings, `maxSubmapPoints: 10000000` and `maxChunkPoints: 65536`.
+Send `start` to begin. Acknowledge every subsequent text or binary data message
+with `next` after applying it. `pause` suspends transmission; `start` resumes.
+There is at most one unacknowledged data message. The hello needs no ACK.
+
+Data messages are:
+
+- `reset`: JSON `type`, `session`, `revision`. Clear cached geometry and partial
+  chunks. Sent first on each connection and whenever the SLAM session changes,
+  including resets to an empty map.
+- `submap`: JSON `type`, `session`, `revision`, `id`, `timestampUs`, `pointCount`,
+  `pose`. Allocate immutable local XYZ storage; chunks follow. `pose` is a
+  column-major 4×4 transform from submap-local coordinates to the map frame.
+- Binary chunks: the header below followed by `countPoints × 3` float32 local
+  XYZ values. Chunks are ordered within a submap; display it when complete.
+- `pose`: JSON `type`, `session`, `revision`, `id`, `pose`. Update the existing
+  submap transform without uploading its points again.
+
+JSON `session`, `revision`, `id` and `timestampUs` are decimal strings to preserve
+64-bit values in JavaScript. All binary values are little-endian:
+
+| Offset | Type | Field |
+| ---: | --- | --- |
+| 0 | uint32 | Magic `0x314d4c47` (bytes `GLM1`) |
+| 4 | uint32 | Version `1` |
+| 8 | uint32 | Kind `1` (point chunk) |
+| 12 | uint32 | Header size `56` |
+| 16 | uint64 | Session |
+| 24 | uint64 | Submap ID |
+| 32 | uint64 | Sensor timestamp in microseconds |
+| 40 | uint32 | Total points in this submap |
+| 44 | uint32 | First point offset |
+| 48 | uint32 | Points in this chunk, at most 65536 |
+| 52 | uint32 | Reserved `0` |
+| 56 | float32[] | Interleaved local XYZ |
+
+Revisions can coalesce because each server snapshot retains every completed
+submap. Each connection maintains its own delivery cursor and pose state.
+Clients add geometry only for unseen IDs, keep earlier submaps across revisions,
+and remove them only on reset. The geometry viewer's `/stream/points` and
+`/stream/lines` routes and binary layouts are not accepted by `_WebGLIM`.
+
+## Validation
 
 ```sh
 cmake -S test/slam -B /tmp/openkai-slam-tests
@@ -124,8 +232,9 @@ python3 test/slam/browser.py build/OpenKAI
 python3 test/slam/browser.py build/OpenKAI --hardware
 ```
 
-The browser test needs Chrome/Chromium, local socket access, and (in hardware
-mode) USB access. It uses temporary ports and configuration, runs the real UI and
-WSconsole, and verifies map retention/reset. Hardware mode additionally requires
-live poses and streamed map points. Artifacts: `/tmp/openkai-glim-viewer.png` and
+Transport tests cover slow-client catch-up, chunking, pose-only corrections,
+reconnection, session resets and route isolation with synthetic submaps.
+The browser test needs Chrome/Chromium, local sockets and, in hardware mode,
+USB access. It uses temporary ports/configuration and the actual UI/WSconsole.
+Artifacts: `/tmp/openkai-glim-viewer.png` and
 `/tmp/openkai-glim-browser-backend.log`.

@@ -109,6 +109,7 @@ namespace kai
     {
         std::scoped_lock lock(m_mtxPt, m_mtxFrame);
         IF_(!m_bFraming);
+        
         m_framing.stop(m_grPt.m_iT, m_grPt.m_nT, m_framing.m_tStamp);
         std::swap(m_framing, m_framed);
         m_bFraming = false;
@@ -120,6 +121,26 @@ namespace kai
 
         // Keep the completed-frame indices and ring storage stable while copying.
         std::scoped_lock lock(m_mtxPt, m_mtxFrame);
+        return copyLastFrameLocked(pvP, pvC, tStamp);
+    }
+
+    int _PointCloud::getLastFrameIfNew(vector<Vector3f> *pvP, vector<Vector3f> *pvC, uint64_t &tStamp, uint64_t afterStamp)
+    {
+        NULL__(pvP, -1);
+        std::scoped_lock lock(m_mtxPt, m_mtxFrame);
+        if (m_framed.m_tStamp <= afterStamp)
+        {
+            pvP->clear();
+            if (pvC) pvC->clear();
+            tStamp = m_framed.m_tStamp;
+            return 0;
+        }
+        
+        return copyLastFrameLocked(pvP, pvC, tStamp);
+    }
+
+    int _PointCloud::copyLastFrameLocked(vector<Vector3f> *pvP, vector<Vector3f> *pvC, uint64_t &tStamp)
+    {
         pvP->clear();
         pvP->reserve(m_framed.m_nP);
         if (pvC)
@@ -138,25 +159,41 @@ namespace kai
             if (pvC) pvC->push_back(point->m_vC);
             if (++iP >= m_grPt.m_nT) iP = 0;
         }
+        
         return int(pvP->size());
     }
 
     void _PointCloud::setFrame(const vector<Vector3f> &points, const vector<Vector3f> &colors, uint64_t stamp)
     {
         std::scoped_lock lock(m_mtxPt, m_mtxFrame);
-        m_grPt.clear();
+        m_grPt.m_iT = 0;
         m_framing.clear();
         m_framed.start(m_grPt.m_iT);
+        
         // Like add(), an oversized frame retains only the newest nP points.
         const size_t count = std::min(points.size(), size_t(m_grPt.m_nT));
-        for (size_t i = points.size() - count; i < points.size(); ++i)
+        // get() walks backwards from the newest point and stops at timestamp 0.
+        // A single invalid slot before this span replaces clearing the entire
+        // capacity; unused slots are never visited. A full span overwrites all.
+
+        if (count < size_t(m_grPt.m_nT))
+            m_grPt.m_pT[m_grPt.m_nT - 1].m_tStamp = 0;
+        // SLAM maps are already in world coordinates. Avoid an Eigen transform
+        // per point for the common identity pose, without dropping small poses.
+        
+        const bool identityPose = m_mPosef.matrix().isIdentity(0.0f);
+        const size_t first = points.size() - count;
+        for (size_t destination = 0; destination < count; ++destination)
         {
-            GEOMETRY_POINT point;
-            point.m_vP = m_mPosef * points[i];
+            const size_t i = first + destination;
+            GEOMETRY_POINT &point = m_grPt.m_pT[destination];
+            if (identityPose) point.m_vP = points[i];
+            else point.m_vP = m_mPosef * points[i];
             point.m_vC = i < colors.size() ? colors[i] : Vector3f::Ones();
             point.m_tStamp = stamp;
-            m_grPt.add(point);
         }
+        
+        m_grPt.m_iT = count == size_t(m_grPt.m_nT) ? 0 : int(count);
         m_framed.m_nP = int(count);
         m_framed.stop(m_grPt.m_iT, m_grPt.m_nT, stamp);
         m_tStamp = stamp;
@@ -170,7 +207,8 @@ namespace kai
 
         int nP = 0;
         int nPin = pIn->nT();
-        int iP = pIn->iLastT();
+        // The newest entry precedes the next-write index, including index 0.
+        int iP = pIn->iDec(pIn->m_iT);
 
         while (nP < nPin)
         {

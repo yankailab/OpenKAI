@@ -124,11 +124,57 @@ void sensorTests()
 	cloud.setFrame({Vector3f(1, 2, 3), Vector3f(4, 5, 6)}, {}, 98765);
 	assert(cloud.getLastFrame(&points, &colors, stamp) == 2 && stamp == 98765);
 	assert(points.back().isApprox(Vector3f(4, 5, 6)) && colors.front().isOnes());
+	assert(cloud.getLastFrameIfNew(&points, &colors, stamp, 98764) == 2 && stamp == 98765);
+	assert(cloud.getLastFrameIfNew(&points, &colors, stamp, 98765) == 0);
+	assert(points.empty() && colors.empty() && stamp == 98765);
+	assert(cloud.getLastFrameIfNew(&points, nullptr, stamp, 98766) == 0 && stamp == 98765);
 	cloud.setFrame({Vector3f(0, 0, 0), Vector3f(1, 0, 0), Vector3f(2, 0, 0), Vector3f(3, 0, 0)}, {}, 98766);
-	assert(cloud.getLastFrame(&points, nullptr, stamp) == 3 && stamp == 98766);
+	assert(cloud.getLastFrameIfNew(&points, nullptr, stamp, 98765) == 3 && stamp == 98766);
 	assert(points.front().x() == 1 && points.back().x() == 3); // full-ring span
+	GEOMETRY_RINGBUF<GEOMETRY_POINT> copied;
+	assert(copied.alloc(3));
+	assert(cloud.get(&copied) == 3);
+	assert(copied.get(0)->m_vP.x() == 3 && copied.get(2)->m_vP.x() == 1);
+	// Replacing a full ring with fewer points must not expose the old tail.
+	cloud.setFrame({Vector3f(20, 0, 0)}, {}, 98767);
+	copied.m_iT = 0;
+	assert(cloud.get(&copied) == 1 && copied.get(0)->m_vP.x() == 20);
+	cloud.add(Vector3f(30, 0, 0), color, 98768);
+	copied.m_iT = 0;
+	assert(cloud.get(&copied) == 2 && copied.get(0)->m_vP.x() == 30);
+	cloud.add(Vector3f(40, 0, 0), color, 98769);
+	copied.m_iT = 0;
+	assert(cloud.get(&copied) == 3 && copied.get(0)->m_vP.x() == 40);
+	cloud.add(Vector3f(50, 0, 0), color, 98770);
+	copied.m_iT = 0;
+	assert(cloud.get(&copied) == 3);
+	assert(copied.get(0)->m_vP.x() == 50 && copied.get(2)->m_vP.x() == 30);
 	cloud.setFrame({}, {}, 98766);
 	assert(cloud.getLastFrame(&points, &colors, stamp) == 0 && colors.empty() && stamp == 98766);
+	assert(cloud.get(&copied) == 0);
+	// Unconditional framed reads retain their timestamp-0 behavior; get()
+	// treats those points as invalid and freshness reads reject the timestamp.
+	cloud.setFrame({Vector3f(1, 2, 3)}, {}, 0);
+	assert(cloud.getLastFrame(&points, nullptr, stamp) == 1 && stamp == 0);
+	assert(cloud.getLastFrameIfNew(&points, nullptr, stamp, 0) == 0 && points.empty());
+	assert(cloud.get(&copied) == 0);
+	copied.release();
+	_PointCloud unallocated;
+	unallocated.setFrame({Vector3f(1, 2, 3)}, {}, 123);
+	assert(unallocated.getLastFrame(&points, &colors, stamp) == 0 && stamp == 123);
+	// Atomic replacement still applies nonidentity poses exactly once.
+	cloud.setPos(1, 2, 3);
+	cloud.setOrientation(Quaterniond(Eigen::AngleAxisd(M_PI / 2, Vector3d::UnitZ())));
+	cloud.setFrame({Vector3f(1, 0, 0), Vector3f(0, 2, 1)}, {}, 98771);
+	assert(cloud.getLastFrame(&points, nullptr, stamp) == 2);
+	assert(points[0].isApprox(Vector3f(1, 3, 3), 1e-6));
+	assert(points[1].isApprox(Vector3f(-1, 2, 4), 1e-6));
+	// The identity fast path must not use Eigen's approximate-identity tolerance.
+	cloud.setOrientation(Quaterniond::Identity());
+	cloud.setPos(1e-7, 0, 0);
+	cloud.setFrame({Vector3f::Zero()}, {}, 98772);
+	assert(cloud.getLastFrame(&points, nullptr, stamp) == 1);
+	assert(points[0].x() == float(1e-7));
 
 	_IMUbase imu;
 	assert(imu.init(config("imu", "_IMUbase")));
@@ -199,6 +245,9 @@ int main(int argc, char **argv)
 	j["globalMapPCL"] = "map";
 	j["nMapPoints"] = 800;
 	j["tMapUpdateUs"] = 0;
+	j["bPublishLiveMap"] = true; // Legacy output remains opt-in for other consumers.
+	j["fConfig"] = (fixture / "controls.json").string();
+	fs::remove(fixture / "controls.json");
 	assert(slam.init(j));
 	TestModules modules;
 	modules.add(&cloud, "cloud"); modules.add(&map, "map"); modules.add(&imu, "imu");
@@ -214,14 +263,37 @@ int main(int argc, char **argv)
 	};
 	assert(command("getStatus")["status"]["state"] == "stopped");
 	assert(!command("unsupported")["bSuccess"].get<bool>());
+	const auto defaults = command("getConfig")["config"];
+	auto parameters = [&](const string &cmd, const json &values) {
+		slam.console({{"cmd", cmd}, {"config", values}, {"requestId", 43}}, &replies);
+		assert(replies.last["requestId"] == 43);
+		return replies.last;
+	};
+	assert(!parameters("setConfig", {{"preprocess", {{"threads", 0}}}})["bSuccess"].get<bool>());
+	assert(!parameters("setConfig", {{"preprocess", {{"distanceNear", 9}, {"distanceFar", 1}}}})["bSuccess"].get<bool>());
+	assert(!parameters("setConfig", {{"submap", {{"keyframes", 2.5}}}})["bSuccess"].get<bool>());
+	assert(!parameters("setConfig", {{"unknown", true}})["bSuccess"].get<bool>());
+	assert(command("getConfig")["config"] == defaults); // Invalid edits are atomic.
+	assert(parameters("saveConfig", defaults)["bSuccess"]);
+	assert(fs::exists(fixture / "controls.json"));
+	assert(parameters("setConfig", {{"odometry", {{"iterations", 9}}}})["bSuccess"]);
+	assert(command("getConfig")["config"]["odometry"]["iterations"] == 9);
+	assert(command("loadConfig")["bSuccess"] && command("getConfig")["config"] == defaults);
 	slam.attach(&cloud, nullptr);
 	assert(!slam.startTracking()); // CPU odometry must reject a missing IMU.
 	assert(slam.status()["state"] == "error");
+	assert(command("getConfig")["bSuccess"]); // Controls remain readable after a failed session.
 	slam.attach(&cloud, &imu);
 	assert(slam.startTracking() && slam.startTracking());
 	assert(slam.bTracking() && slam.confidence() == 0);
 	assert(command("start")["bSuccess"] && slam.status()["state"] == "initializing");
 	assert(!slam.saveMap((fixture / "active-map").string()));
+	assert(!parameters("setConfig", {{"bMapping", false}})["bSuccess"].get<bool>());
+	assert(!parameters("saveConfig", defaults)["bSuccess"].get<bool>());
+	assert(!command("loadConfig")["bSuccess"].get<bool>());
+	assert(command("getConfig")["config"] == defaults);
+	const auto initialSnapshot = slam.submapSnapshot(0, 0);
+	assert(initialSnapshot.submaps.empty());
 
 	int frames = 0;
 	const int callback = glim::OdometryEstimationCallbacks::on_insert_frame.add(
@@ -280,12 +352,28 @@ int main(int argc, char **argv)
 	glim::OdometryEstimationCallbacks::on_insert_frame.remove(callback);
 	glim::OdometryEstimationCallbacks::on_update_frames.remove(previewCallback);
 	assert(slam.getPos().norm() < 0.1);
+	size_t exported = 0;
+	string exportError;
+	assert(slam.savePointCloud((fixture / "running.ply").string(), exported, exportError));
+	assert(exported > 800 && fs::file_size(fixture / "running.ply") > exported * 15);
 	std::this_thread::sleep_for(std::chrono::milliseconds(1100));
 	assert(slam.confidence() == 0);
 	const Vector3d pose = slam.getPos();
 	assert(command("stop")["bSuccess"]);
 	assert(!slam.bTracking() && slam.confidence() == 0 && slam.getPos().isApprox(pose));
 	assert(slam.status()["mapPoints"].get<int>() > 0 && slam.status()["submaps"].get<int>() > 0);
+	const auto completed = slam.submapSnapshot(initialSnapshot.session, initialSnapshot.revision);
+	assert(completed.session == initialSnapshot.session && completed.revision > initialSnapshot.revision);
+	assert(!completed.submaps.empty());
+	const auto repeated = slam.submapSnapshot(0, 0);
+	assert(repeated.submaps.front().points == completed.submaps.front().points);
+	assert(slam.submapSnapshot(completed.session, completed.revision).submaps.empty());
+	for (const auto &submap : completed.submaps)
+	{
+		assert(submap.points && !submap.points->empty() && submap.pose.matrix().allFinite());
+		for (const auto &point : *submap.points) assert(point.allFinite());
+	}
+	assert(slam.savePointCloud((fixture / "completed.ply").string(), exported, exportError));
 	assert(slam.saveMap((fixture / "map").string()));
 	assert(fs::exists(fixture / "map" / "graph.bin"));
 	assert(command("reset")["bSuccess"]);
@@ -295,10 +383,16 @@ int main(int argc, char **argv)
 	assert(slam.status()["mapPoints"] == 0 && !slam.status()["poseValid"].get<bool>());
 	assert(slam.getPos().isZero() && slam.getOrientation().isApprox(Quaterniond::Identity()));
 	assert(!slam.saveMap((fixture / "reset-map").string()));
+	const auto cleared = slam.submapSnapshot(completed.session, completed.revision);
+	assert(cleared.session != completed.session && cleared.submaps.empty());
+	assert(!slam.savePointCloud((fixture / "empty.ply").string(), exported, exportError));
+	assert(!fs::exists(fixture / "empty.ply"));
 
 	// Translate 0.5 m and rotate 23 degrees, then return to the starting pose.
 	// Feed independently synthesized 200 Hz IMU measurements and 10 Hz clouds.
 	// This exercises motion through many smoother marginalizations/submaps.
+	assert(parameters("setConfig", {{"submap", {{"keyframes", 2}, {"keyframeStrategy", "DISPLACEMENT"},
+		{"keyframeTranslation", .03}, {"keyframeRotation", .03}}}})["bSuccess"]);
 	assert(slam.startTracking());
 	double maxPositionError = 0, maxAngleError = 0;
 	imuStamp = 9990000;
@@ -340,12 +434,17 @@ int main(int argc, char **argv)
 		assert(slam.confidence() > 0);
 		maxPositionError = std::max(maxPositionError, (slam.getPos() - truth.translation()).norm());
 		maxAngleError = std::max(maxAngleError, Quaterniond(truth.linear()).angularDistance(slam.getOrientation()));
+		assert(map.getLastFrame(&mapPoints, nullptr, mapStamp) > 0);
+		// Moving/rotating sensor points must still lie on the three world planes
+		// after the optimized publication transform and ring replacement.
+		for (const auto &point : mapPoints)
+			assert(point.allFinite() && std::min({std::abs(point.x() - 3),
+				std::abs(point.y() - 3), std::abs(point.z() - 3)}) < .1f);
 		// Until the first marginalization, the first map point must use the
 		// first frame's CURRENT smoothed pose, including later corrections.
 		if (frame == 1)
 		{
 			assert(activeFrames.size() == 2);
-			assert(map.getLastFrame(&mapPoints, nullptr, mapStamp) > 0);
 			const auto &first = activeFrames.front();
 			const Vector3f expected = (first->T_world_sensor() * first->frame->points[0]).head<3>().cast<float>();
 			assert(mapPoints.front().isApprox(expected, 1e-6));
@@ -357,7 +456,34 @@ int main(int argc, char **argv)
 		<< maxAngleError * 180 / M_PI << " degrees\n";
 	assert(maxPositionError < .08 && maxAngleError < .04);
 	assert(slam.status()["imuSamples"].get<int>() > 1800 && slam.status()["maxIMUgapUs"] == 5000);
+	assert(slam.submapSnapshot(0, 0).submaps.size() >= 2); // Edited submap policy takes effect while running.
 	slam.stopTracking();
+
+	// A newly initialized adapter loads saved parameters without rewriting the
+	// source GLIM profile. Default publication has no per-frame preview copies.
+	j["bPublishLiveMap"] = false;
+	j["parameters"] = {{"odometry", {{"iterations", 19}}}};
+	TestGLIM restored;
+	assert(restored.init(j));
+	restored.console({{"cmd", "getConfig"}}, &replies);
+	assert(replies.last["config"] == defaults);
+	restored.attach(&cloud, &imu);
+	assert(restored.startTracking());
+	const uint64_t nextStamp = 20000000;
+	vector<Vector3f> inputPoints;
+	uint64_t inputStamp = 0;
+	assert(cloud.getLastFrame(&inputPoints, nullptr, inputStamp) > 0);
+	cloud.setFrame(inputPoints, {}, nextStamp);
+	for (uint64_t t = nextStamp - 10000; t <= nextStamp + 10000; t += 5000)
+	{
+		imu.addAcc(Vector3f(0, 0, 9.80665), t);
+		imu.addGyro(Vector3f::Zero(), t);
+	}
+	restored.step();
+	assert(restored.status()["frames"] == 1);
+	assert(restored.status()["mapPoints"] == 0 && restored.status()["submaps"] == 0);
+	assert(restored.status()["canSavePointCloud"]);
+	restored.stopTracking();
 
 	// Exercise the real OpenKAI worker and cooperative shutdown too.
 	j["bAutoStart"] = false;

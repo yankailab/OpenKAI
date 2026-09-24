@@ -57,3 +57,12 @@ aside input[type="checkbox"] { width: auto; }
 aside select { width: 150px; font-size: 12px; }
 @media (max-width: 1050px) { #workspace { grid-template-columns: 215px minmax(180px, 1fr) 285px; } aside { padding: 10px; } footer span { display: none; } }
 @media (max-width: 760px) { body { height: auto; min-height: 100dvh; } #workspace { display: flex; flex-direction: column; } #workspace main { order: -1; flex: none; height: 50dvh; } aside { overflow: visible; } }
+
+#mapEmpty { position: absolute; bottom: 58px; left: 16px; right: 16px; text-align: center; color: #aabac8; font-size: 13px; pointer-events: none; line-height: 1.7; }
+#mapEmpty small { color: #8299ac; font-size: 11px; }
+#parameterForm, #parameterFields { display: block; width: 100%; }
+#parameterFields input, #parameterFields select { width: 115px; }
+#parameterFields input[type="checkbox"] { width: auto; }
+#parameterFields h3 { margin-top: 18px; }
+#parameterFields:disabled { opacity: .55; }
+#parameterStatus, #exportStatus { font-size: 11px; line-height: 1.5; margin: 8px 0; }

@@ -22,6 +22,11 @@ namespace kai
 		virtual bool init(const json &j);
 		virtual bool start(void);
 		bool open(void);
+		// Binary little-endian XYZ float32 and RGB uint8. Missing/nonfinite
+		// color channels become white; finite channels are clamped to [0, 1].
+		// The parent directory must exist. Replace the destination only on success.
+		static bool savePLY(const string &path, const vector<Vector3f> &points,
+			const vector<Vector3f> &colors = {}, string *error = nullptr);
 
 	private:
 		virtual void update(void);

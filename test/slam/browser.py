@@ -40,6 +40,8 @@ def main():
         config['Orbbec']['bLog'] = True
         config['GLIM']['bAutoStart'] = False
         config['GLIM']['bLog'] = True
+        config['GLIM']['fConfig'] = str(tmp / 'glim.controls.json')
+        config['GLIM']['exportPath'] = str(tmp / 'exports')
         port, cmd_port = free_port(), free_port()
         config['viewer']['host'] = config['wsServer']['host'] = '127.0.0.1'
         config['viewer']['port'], config['wsServer']['port'] = port, cmd_port
@@ -96,10 +98,17 @@ def main():
                 raise AssertionError(evaluate("({status: document.querySelector('#slamStatus')?.textContent, command: document.querySelector('#commandStatus')?.textContent, log: document.querySelector('#cmdState')?.value, latest: replies.slice(-1)})"))
             command('Runtime.enable'); command('Page.enable')
             command('Page.addScriptToEvaluateOnNewDocument', {'source': '''
-              window.socketURLs = []; window.replies = [];
+              window.socketURLs = []; window.replies = []; window.streamEvents = [];
               const NativeWebSocket = window.WebSocket;
               window.WebSocket = class extends NativeWebSocket {
-                constructor(url, ...args) { super(url, ...args); socketURLs.push(String(url)); }
+                constructor(url, ...args) {
+                  super(url, ...args); socketURLs.push(String(url));
+                  if (new URL(url).pathname === '/stream/glim') this.addEventListener('message', e => {
+                    if (typeof e.data === 'string') streamEvents.push(JSON.parse(e.data));
+                    else { const v = new DataView(e.data); streamEvents.push({type:'chunk', id:v.getBigUint64(24,true).toString(), offset:v.getUint32(44,true), count:v.getUint32(48,true)}); }
+                    if (streamEvents.length > 1000) streamEvents.shift();
+                  });
+                }
               };
               window.addEventListener('slamcommand', e => { replies.push(e.detail); if (replies.length > 200) replies.shift(); });
             '''})
@@ -110,26 +119,75 @@ def main():
             wait_for("document.querySelector('#slamStatus').textContent === 'Stopped' && !document.querySelector('#slamStart').disabled")
             assert evaluate("document.querySelectorAll('#imuPanel, #imuGraphs, #cameraFields').length") == 0
             assert evaluate("document.querySelectorAll('#viewport canvas').length") == 1
-            assert evaluate("socketURLs.filter(u => new URL(u).pathname.startsWith('/stream/')).map(u => new URL(u).pathname)") == ['/stream/points', '/stream/lines']
-            # Check the real renderer's transform convention independently of sensor motion.
+            assert evaluate("socketURLs.filter(u => new URL(u).pathname.startsWith('/stream/')).map(u => new URL(u).pathname)") == ['/stream/glim']
+            wait_for("document.querySelector('#param-nMinPoints') && !document.querySelector('#parameterFields').disabled")
+            original_minimum = evaluate("Number(document.querySelector('#param-nMinPoints').value)")
+            evaluate(f"document.querySelector('#param-nMinPoints').value = {original_minimum + 1}; document.querySelector('#param-nMinPoints').dispatchEvent(new Event('input', {{bubbles:true}}))")
+            time.sleep(.7)
+            assert evaluate("Number(document.querySelector('#param-nMinPoints').value)") == original_minimum + 1
+            evaluate("document.querySelector('#saveParameters').click()")
+            wait_for("replies.some(j => j.cmd === 'saveConfig' && j.bSuccess)")
+            assert (tmp / 'glim.controls.json').exists()
+            assert evaluate("replies.findLast(j => j.cmd === 'saveConfig').config.nMinPoints") == original_minimum + 1
+            # Start must apply pending edits before it starts the estimator.
+            evaluate(f"document.querySelector('#param-nMinPoints').value = {original_minimum}; document.querySelector('#param-nMinPoints').dispatchEvent(new Event('input', {{bubbles:true}}))")
+            # Check real rendering, chunk validation, accumulation and graph corrections.
+
             assert evaluate('''(async () => {
               const {Viewer3D} = await import('./js/viewer3D.js');
+              const {decodeChunk, decodeEvent} = await import('./js/protocol.js');
               const div = document.createElement('div'); div.style.cssText = 'width:400px;height:300px'; document.body.append(div);
               const v = new Viewer3D(div);
+              const identity = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
+              const check = (condition, reason) => { if (!condition) throw new Error(reason); };
+              v.update(decodeEvent(JSON.stringify({type:'reset', session:'7', revision:'1'})));
+              for (const id of ['10','11']) {
+                v.update(decodeEvent(JSON.stringify({type:'submap', session:'7', revision:'2', id, timestampUs:'100', pointCount:2, pose:identity})));
+                for (let offset=0; offset<2; ++offset) {
+                  const bytes = new ArrayBuffer(68), d = new DataView(bytes);
+                  [0x314d4c47,1,1,56].forEach((x,i) => d.setUint32(i*4,x,true));
+                  d.setBigUint64(16,7n,true); d.setBigUint64(24,BigInt(id),true); d.setBigUint64(32,100n,true);
+                  d.setUint32(40,2,true); d.setUint32(44,offset,true); d.setUint32(48,1,true);
+                  [offset,offset,offset].forEach((x,i) => d.setFloat32(56+i*4,x,true));
+                  v.update(decodeChunk(bytes));
+                }
+              }
+              check(v.objects.size === 2 && v.pointCount === 4, 'Submaps did not accumulate');
+              const geometry = v.objects.get('10').points.geometry;
+              const moved = identity.slice(); moved[12] = 20;
+              v.update({type:'pose', session:'7', id:'10', pose:moved}); v.render();
+              check(v.objects.get('10').points.geometry === geometry && v.bounds.max.x === 21, 'Correction reuploaded geometry or missed bounds');
+              check(v.objects.get('10').points.matrixWorld.elements[12] === 20, 'Correction missed renderer transform');
+              const invalid = new ArrayBuffer(56);
+              let rejected = false; try { decodeChunk(invalid); } catch { rejected = true; }
+              check(rejected, 'Accepted unrelated point/line protocol');
               v.configureSensor(90, 60, 2, 'x');
-              v.setSensorPose({poseValid:true, poseFresh:true, position:[1,2,3], orientation:[0,0,Math.SQRT1_2,Math.SQRT1_2]});
-              v.render();
+              const status = {session:'7', poseTimestampUs:1000, poseValid:true, poseFresh:true, position:[1,2,3], orientation:[0,0,Math.SQRT1_2,Math.SQRT1_2]};
+              v.setSensorPose(status); v.render();
               const points = v.frustum.geometry.getAttribute('position');
-              const valid = v.sensor.visible && v.sensor.position.toArray().join() === '1,2,3' && Math.abs(points.getX(1)-2)<1e-5;
-              v.setSensorPose(null); v.render();
-              const hidden = !v.sensor.visible;
-              v.dispose(); div.remove(); return valid && hidden;
+              check(v.sensor.visible && v.sensor.position.toArray().join() === '1,2,3' && Math.abs(points.getX(1)-2)<1e-5, 'Sensor / FoV transform');
+              v.setSensorPose({...status, poseTimestampUs:2000, position:[2,2,3]});
+              v.setSensorPose({...status, poseTimestampUs:2000, position:[2,2,3]});
+              check(v.trajectoryCount === 1, 'Trajectory duplicates an old pose');
+              v.markSensorStale();
+              v.setSensorPose({...status, poseTimestampUs:2500, position:[20,2,3]});
+              check(v.trajectoryCount === 1, 'Trajectory joined across missing telemetry');
+              for(let i=0;i<v.trajectoryCapacity+10;++i) v.setSensorPose({...status, poseTimestampUs:3000+i, position:[i,2,3]});
+              check(v.trajectoryCount === v.trajectoryCapacity, 'Trajectory is unbounded');
+              v.setSensorPose({session:'8', poseValid:false}); v.render();
+              check(v.trajectoryCount === 0 && !v.sensor.visible, 'Session reset retained trajectory');
+              v.update({type:'reset',session:'8',revision:'1'});
+              check(v.pointCount === 0 && v.objects.size === 0, 'Map reset retained geometry');
+              v.dispose(); div.remove(); return true;
             })()''')
             evaluate("document.querySelector('#slamStart').click()")
             wait_for("replies.some(j => j.cmd === 'start' && j.bSuccess) && !document.querySelector('#slamStop').disabled")
+            assert evaluate("replies.findLast(j => j.cmd === 'setConfig').config.nMinPoints") == original_minimum
+            assert evaluate("document.querySelector('#parameterFields').disabled && document.querySelector('#saveParameters').disabled")
+            evaluate("wsSendCmd({cmd:'setConfig',module:'GLIM',requestId:'running-config-test',config:{nMinPoints:123}})")
+            wait_for("replies.some(j => j.requestId === 'running-config-test' && j.bSuccess === false)")
             if hardware:
-                wait_for("replies.some(j => j.status?.poseFresh && j.status.mapPoints > 0)", 60)
-                wait_for("parseInt(document.querySelector('#stats').textContent.replaceAll(',', '')) > 0")
+                wait_for("replies.some(j => j.status?.poseFresh)", 60)
                 before = evaluate("replies.findLast(j => j.status)?.status")
                 time.sleep(3)
                 after = evaluate("replies.findLast(j => j.status)?.status")
@@ -152,6 +210,25 @@ def main():
             if hardware:
                 assert evaluate("replies.findLast(j => j.cmd === 'stop').status.mapPoints > 0")
                 assert evaluate("replies.findLast(j => j.cmd === 'stop').status.submaps > 0")
+                wait_for("parseInt(document.querySelector('#stats').textContent.replaceAll(',', '')) > 0")
+                wait_for("streamEvents.some(e => e.type === 'submap') && streamEvents.some(e => e.type === 'chunk')")
+                # Completed geometry is idle after replay, then replays once on reconnect.
+                time.sleep(1)
+                streamed = evaluate("streamEvents.filter(e => e.type === 'chunk').length")
+                retained_points = evaluate("parseInt(document.querySelector('#stats').textContent.replaceAll(',', ''))")
+                time.sleep(1)
+                assert evaluate("streamEvents.filter(e => e.type === 'chunk').length") == streamed
+                evaluate("document.querySelector('#stop').click(); document.querySelector('#start').click()")
+                wait_for(f"document.querySelector('#status').textContent === 'Connected' && parseInt(document.querySelector('#stats').textContent.replaceAll(',', '')) === {retained_points}")
+                evaluate("document.querySelector('#savePointCloud').click()")
+                wait_for("replies.some(j => j.cmd === 'savePointCloud' && j.bSuccess)", 60)
+                saved = evaluate("replies.findLast(j => j.cmd === 'savePointCloud')")
+                cloud = Path(saved['path']); assert cloud.exists() and cloud.is_relative_to(tmp / 'exports'), saved
+                assert cloud.read_bytes().startswith(b'ply\n') and saved['points'] > 0, saved
+            wait_for("!document.querySelector('#parameterFields').disabled")
+            evaluate("document.querySelector('#loadParameters').click()")
+            wait_for("replies.some(j => j.cmd === 'loadConfig' && j.bSuccess)")
+            assert evaluate("Number(document.querySelector('#param-nMinPoints').value)") == original_minimum + 1
             evaluate("document.querySelector('#slamReset').click()")
             wait_for("replies.some(j => j.cmd === 'reset' && j.bSuccess && j.status.mapPoints === 0 && !j.status.poseValid)")
             wait_for("parseInt(document.querySelector('#stats').textContent.replaceAll(',', '')) === 0")
@@ -170,7 +247,7 @@ def main():
             evaluate("document.querySelector('#stop').click(); document.querySelector('#cmdDisconnect').click()")
             wait_for("document.querySelector('#status').textContent === 'Stopped'")
             assert not exceptions, exceptions
-            print('PASS: GLIM browser, WSconsole lifecycle/status, fragmented replies, map reset, sensor/FoV renderer, reconnect')
+            print('PASS: GLIM browser, submap accumulation/corrections, bounded trajectory, parameter save/load/edit locks, WSconsole lifecycle, renderer and reconnect')
             print('Camera: ' + ('live pose, map stream and completed submaps verified' if hardware else 'disabled for hardware-independent checks'))
         finally:
             if client: client.close()

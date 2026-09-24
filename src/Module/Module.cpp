@@ -172,6 +172,9 @@ namespace kai
 #endif
 #if defined(USE_GLIM)
 		ADD_MODULE(_GLIM);
+#if defined(WITH_UNIVERSE)
+		ADD_MODULE(_WebGLIM);
+#endif
 #endif
 #endif
 

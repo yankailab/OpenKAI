@@ -322,10 +322,15 @@ if(WITH_SLAM)
   if(NOT WITH_UNIVERSE)
     list(APPEND OpenKAI_cpp src/Universe/_ReferenceFrame.cpp
       src/Universe/Geometry/_GeometryBase.cpp
-      src/Universe/Geometry/PointCloud/_PointCloud.cpp)
+      src/Universe/Geometry/PointCloud/_PointCloud.cpp
+      src/Universe/Geometry/PointCloud/_PCfile.cpp)
   endif()
   if(USE_GLIM)
     list(APPEND OpenKAI_cpp src/SLAM/_GLIM.cpp)
+    # WITH_UNIVERSE supplies the common HTTP server and camera configuration.
+    if(WITH_UNIVERSE)
+      list(APPEND OpenKAI_cpp src/UI/Viewer/Web/_WebGLIM.cpp)
+    endif()
   endif()
 endif()
 
@@ -493,6 +498,13 @@ if(USE_GLOG)
 endif()
 
 if(WITH_SLAM AND USE_GLIM)
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(WARNING
+      "GLIM is enabled in Debug: point-cloud processing is unoptimized (-O0) "
+      "and may not keep up with live sensors. For live SLAM with debug symbols, "
+      "use the 'GLIM (optimized with debug symbols)' VSCode launch configuration "
+      "or configure with -DCMAKE_BUILD_TYPE=RelWithDebInfo.")
+  endif()
   find_package(glim REQUIRED CONFIG)
   add_definitions(-DUSE_GLIM)
   list(APPEND OpenKAI_lib glim::glim)

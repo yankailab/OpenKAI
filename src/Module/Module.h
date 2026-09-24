@@ -159,6 +159,9 @@
 #include "../SLAM/_SLAMbase.h"
 #if defined(USE_GLIM)
 #include "../SLAM/_GLIM.h"
+#if defined(WITH_UNIVERSE)
+#include "../UI/Viewer/Web/_WebGLIM.h"
+#endif
 #endif
 #endif
 

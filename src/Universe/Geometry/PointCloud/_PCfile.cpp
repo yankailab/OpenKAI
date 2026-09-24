@@ -9,9 +9,32 @@
 
 #include <cerrno>
 #include <cctype>
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <filesystem>
+#include <limits>
+#include <unistd.h>
 
 namespace
 {
+	struct PLY_OUTPUT_FILE
+	{
+		string path;
+		int descriptor = -1;
+		FILE *stream = nullptr;
+		bool created = false;
+		~PLY_OUTPUT_FILE()
+		{
+			if (stream) fclose(stream);
+			else if (descriptor >= 0) close(descriptor);
+			if (created) std::remove(path.c_str());
+		}
+	};
+
 	enum PLY_FORMAT
 	{
 		ply_format_unknown = 0,
@@ -722,6 +745,85 @@ namespace kai
 
 	_PCfile::~_PCfile()
 	{
+	}
+
+	bool _PCfile::savePLY(const string &path, const vector<Vector3f> &points,
+		const vector<Vector3f> &colors, string *error)
+	{
+		static_assert(sizeof(float) == 4 && std::numeric_limits<float>::is_iec559,
+			"PLY output requires IEEE 754 float32");
+		if (error) error->clear();
+		auto fail = [&](const string &message) {
+			if (error) *error = message;
+			return false;
+		};
+		auto ioError = [&](const string &operation) {
+			const int code = errno;
+			return fail(operation + ": " + std::strerror(code));
+		};
+		try
+		{
+			const std::filesystem::path destination(path);
+			if (path.empty() || path.find('\0') != string::npos || destination.filename().empty() ||
+				destination.filename() == "." || destination.filename() == "..")
+				return fail("Invalid PLY destination path");
+			for (size_t i = 0; i < points.size(); ++i)
+				if (!std::isfinite(points[i].x()) || !std::isfinite(points[i].y()) || !std::isfinite(points[i].z()))
+					return fail("Nonfinite PLY point at index " + std::to_string(i));
+
+			// Keep the temporary file beside the destination so rename is atomic.
+			PLY_OUTPUT_FILE output;
+			output.path = (destination.parent_path() / ".openkai-ply-XXXXXX").string();
+			output.descriptor = mkstemp(output.path.data());
+			if (output.descriptor < 0) return ioError("Cannot create temporary PLY file");
+			output.created = true;
+			output.stream = fdopen(output.descriptor, "wb");
+			if (!output.stream) return ioError("Cannot open temporary PLY stream");
+			const string header = "ply\nformat binary_little_endian 1.0\nelement vertex " + std::to_string(points.size()) +
+				"\nproperty float x\nproperty float y\nproperty float z\nproperty uchar red\nproperty uchar green\nproperty uchar blue\nend_header\n";
+			if (fwrite(header.data(), 1, header.size(), output.stream) != header.size())
+				return ioError("Cannot write PLY header");
+
+			// Pack blocks without struct padding or dependence on host endianness.
+			constexpr size_t vertexBytes = 15;
+			std::array<uint8_t, vertexBytes * 4096> buffer;
+			size_t used = 0;
+			for (size_t i = 0; i < points.size(); ++i)
+			{
+				for (int axis = 0; axis < 3; ++axis)
+				{
+					uint32_t bits;
+					const float value = points[i][axis];
+					std::memcpy(&bits, &value, sizeof(bits));
+					for (int byte = 0; byte < 4; ++byte)
+						buffer[used++] = uint8_t(bits >> (8 * byte));
+				}
+				for (int channel = 0; channel < 3; ++channel)
+				{
+					const float value = i < colors.size() ? colors[i][channel] : 1.0f;
+					buffer[used++] = std::isfinite(value) ? uint8_t(std::clamp(value, 0.0f, 1.0f) * 255.0f + 0.5f) : 255;
+				}
+				if (used == buffer.size())
+				{
+					if (fwrite(buffer.data(), 1, used, output.stream) != used) return ioError("Cannot write PLY vertices");
+					used = 0;
+				}
+			}
+			if (used && fwrite(buffer.data(), 1, used, output.stream) != used) return ioError("Cannot write PLY vertices");
+			if (fflush(output.stream) != 0) return ioError("Cannot flush PLY file");
+			if (fsync(output.descriptor) != 0) return ioError("Cannot synchronize PLY file");
+			FILE *stream = output.stream;
+			output.stream = nullptr;
+			output.descriptor = -1; // fclose closes the descriptor even on failure.
+			if (fclose(stream) != 0) return ioError("Cannot close PLY file");
+			if (std::rename(output.path.c_str(), path.c_str()) != 0) return ioError("Cannot replace PLY destination");
+			output.created = false;
+			return true;
+		}
+		catch (const std::exception &e)
+		{
+			return fail(string("Cannot save PLY: ") + e.what());
+		}
 	}
 
 	bool _PCfile::init(const json &j)

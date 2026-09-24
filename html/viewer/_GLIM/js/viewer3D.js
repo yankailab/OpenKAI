@@ -1,5 +1,4 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { STREAM_TYPES } from './protocol.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 
 export class Viewer3D {
@@ -36,6 +35,24 @@ export class Viewer3D {
     this.sensorValid = false;
     this.lastSensorPosition = null;
     this.objects = new Map();
+    this.pointCount = 0;
+    this.session = null;
+    this.assembling = null;
+    this.trajectorySession = null;
+    this.trajectoryTimestamp = null;
+    this.trajectoryLast = null;
+    this.trajectoryNext = this.trajectoryCount = 0;
+    this.trajectoryCapacity = 8192;
+    this.trajectoryPositions = new Float32Array(this.trajectoryCapacity * 6);
+    const trajectoryGeometry = new THREE.BufferGeometry();
+    trajectoryGeometry.setAttribute('position', new THREE.BufferAttribute(this.trajectoryPositions, 3).setUsage(THREE.DynamicDrawUsage));
+    trajectoryGeometry.setDrawRange(0, 0);
+    this.trajectory = new THREE.LineSegments(trajectoryGeometry,
+      new THREE.LineBasicMaterial({ color: 0xffc56b, transparent: true, opacity: 0.8, depthTest: false, depthWrite: false }));
+    this.trajectory.name = 'Camera trajectory';
+    this.trajectory.frustumCulled = false;
+    this.trajectory.renderOrder = 1;
+    this.scene.add(this.trajectory);
     // Shared uniforms recolor every point on the GPU as the viewing eye moves.
     this.pointColorUniforms = {
       eyeColorEnabled: { value: 1 },
@@ -44,7 +61,7 @@ export class Viewer3D {
     };
     this.hasDistanceRange = false;
     this.bounds = new THREE.Box3();
-    this.boundTypes = new Set();
+    this.didAutoFit = false;
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(container);
     this.resize();
@@ -116,8 +133,12 @@ export class Viewer3D {
   }
   setSensorPose(status) {
     const finite = (v, size) => Array.isArray(v) && v.length === size && v.every(Number.isFinite);
+    if (status?.session !== undefined && String(status.session) !== this.trajectorySession) {
+      this.clearTrajectory(); this.trajectorySession = String(status.session);
+    }
     this.sensorValid = Boolean(status?.poseValid && finite(status.position, 3) && finite(status.orientation, 4));
-    if (!this.sensorValid) { this.sensor.visible = false; this.lastSensorPosition = null; return; }
+    if (!this.sensorValid) { this.sensor.visible = false; this.lastSensorPosition = null; this.trajectoryLast = null; return; }
+    this.appendTrajectory(status);
     this.sensor.position.fromArray(status.position);
     this.sensor.quaternion.fromArray(status.orientation).normalize();
     if (this.followSensor && this.lastSensorPosition) {
@@ -129,6 +150,7 @@ export class Viewer3D {
     this.sensorBody.material.color.setHex(color); this.frustum.material.color.setHex(color);
   }
   markSensorStale() {
+    this.trajectoryLast = null; this.lastSensorPosition = null;
     this.sensorBody.material.color.setHex(0x8799ad); this.frustum.material.color.setHex(0x8799ad);
   }
   configure(config) {
@@ -138,7 +160,7 @@ export class Viewer3D {
     this.grid.visible = config.showGrid;
     this.grid.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(...config.camera.up).normalize());
     this.autoBound = config.autoBound;
-    this.boundTypes.clear();
+    this.didAutoFit = false;
     this.resetCamera();
   }
   resize() {
@@ -170,7 +192,7 @@ export class Viewer3D {
     this.resize();
   }
   createObject(id) {
-    const object = { id, streams: new Map(), distanceSamples: new Float32Array(0) };
+    const object = { id, count: 0, localBounds: new THREE.Box3(), distanceSamples: new Float32Array(0) };
     const material = new THREE.PointsMaterial({ vertexColors: true, sizeAttenuation: false });
     material.onBeforeCompile = shader => {
       Object.assign(shader.uniforms, this.pointColorUniforms);
@@ -194,76 +216,93 @@ export class Viewer3D {
     };
     material.customProgramCacheKey = () => 'glim-eye-distance-v1';
     object.points = new THREE.Points(new THREE.BufferGeometry(), material);
-    object.lines = new THREE.LineSegments(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ vertexColors: true }));
-    this.scene.add(object.points, object.lines);
+    object.points.matrixAutoUpdate = false;
+    this.scene.add(object.points);
     this.objects.set(id, object);
     return object;
   }
-  upload(mesh, positions, colors, bounds) {
-    const count = positions.length / 3;
-    let geometry = mesh.geometry;
-    if (count && (!geometry.getAttribute('position') || geometry.getAttribute('position').count < count)) {
-      const capacity = 2 ** Math.ceil(Math.log2(Math.max(count, 256)));
-      geometry.dispose();
-      geometry = mesh.geometry = new THREE.BufferGeometry();
-      geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(capacity * 3), 3).setUsage(THREE.DynamicDrawUsage));
-      geometry.setAttribute('color', new THREE.BufferAttribute(new Uint8Array(capacity * 3), 3, true).setUsage(THREE.DynamicDrawUsage));
-    }
-    if (count) {
-      for (const [name, data] of [['position', positions], ['color', colors]]) {
-        const attribute = geometry.getAttribute(name);
-        attribute.array.set(data);
-        attribute.clearUpdateRanges();
-        attribute.addUpdateRange(0, data.length);
-        attribute.needsUpdate = true;
+  update(event) {
+    if (event.type === 'reset') {
+      this.clear(); this.session = event.session;
+      if (this.trajectorySession !== event.session) {
+        this.clearTrajectory(); this.trajectorySession = event.session;
       }
-      geometry.boundingBox = new THREE.Box3(new THREE.Vector3(...bounds.slice(0, 3)), new THREE.Vector3(...bounds.slice(3)));
-      geometry.boundingSphere = geometry.boundingBox.getBoundingSphere(new THREE.Sphere());
+      return;
     }
-    geometry.setDrawRange(0, count);
+    if (event.session !== this.session) throw new Error('Submap belongs to a different SLAM session');
+    if (event.type === 'pose') {
+      const object = this.objects.get(event.id);
+      if (object) { object.points.matrix.fromArray(event.pose); object.points.matrixWorldNeedsUpdate = true; this.updateBounds(); }
+      else if (this.assembling?.id === event.id) this.assembling.pose = event.pose;
+      else throw new Error('Pose update refers to an unknown submap');
+      return;
+    }
+    if (event.type === 'submap') {
+      if (this.assembling || this.objects.has(event.id)) throw new Error('Duplicate or unfinished submap');
+      this.assembling = { ...event, received: 0, positions: new Float32Array(event.pointCount * 3) };
+      if (!event.pointCount) this.finishSubmap();
+      return;
+    }
+    const submap = this.assembling;
+    if (event.type !== 'chunk' || !submap || event.id !== submap.id || event.timestampUs !== submap.timestampUs ||
+        event.totalPoints !== submap.pointCount || event.offsetPoints !== submap.received)
+      throw new Error('Unexpected or out-of-order submap chunk');
+    submap.positions.set(event.positions, event.offsetPoints * 3);
+    submap.received += event.countPoints;
+    if (submap.received === submap.pointCount) this.finishSubmap();
   }
-  update(frame) {
-    const { type } = frame;
-    if (!STREAM_TYPES.includes(type)) throw new Error('Unknown geometry stream');
-    const active = new Set();
-    for (const data of frame.objects) {
-      active.add(data.id);
-      const o = this.objects.get(data.id) || this.createObject(data.id);
-      // Retain only bounds/counts here; point/line buffers have been uploaded
-      // and should not keep their full received frame alive between updates.
-      o.streams.set(type, { count: data.count, bounds: data.bounds });
-      const mesh = o[type];
-      if (type === 'points') {
-        mesh.material.size = data.pointSize;
-        // Estimate the color range from a bounded sample, not every map point
-        // on every animation frame. Streamed positions/colors remain untouched.
-        const stride = Math.max(1, Math.ceil(data.count / 512));
-        o.distanceSamples = new Float32Array(Math.ceil(data.count / stride) * 3);
-        for (let i = 0, at = 0; i < data.count; i += stride, at += 3)
-          o.distanceSamples.set(data.positions.subarray(i * 3, i * 3 + 3), at);
-      }
-      this.upload(mesh, data.positions, data.colors, data.bounds);
+  finishSubmap() {
+    const data = this.assembling; this.assembling = null;
+    const object = this.createObject(data.id), mesh = object.points;
+    object.count = data.pointCount;
+    // Immutable local geometry is uploaded once. Graph optimization updates only its matrix.
+    mesh.geometry.setAttribute('position', new THREE.BufferAttribute(data.positions, 3));
+    const colors = new Uint8Array(data.pointCount * 3);
+    const color = new THREE.Color().setHSL((Number(BigInt(data.id) % 29n) * 0.618034) % 1, 0.55, 0.6);
+    for (let i = 0; i < colors.length; i += 3) {
+      colors[i] = Math.round(color.r * 255); colors[i + 1] = Math.round(color.g * 255); colors[i + 2] = Math.round(color.b * 255);
     }
-    for (const o of this.objects.values()) if (o.streams.has(type) && !active.has(o.id)) this.removeStream(o, type);
+    mesh.geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3, true));
+    mesh.geometry.computeBoundingBox(); mesh.geometry.computeBoundingSphere();
+    object.localBounds.copy(mesh.geometry.boundingBox);
+    mesh.material.size = this.config?.pointSize || 2;
+    mesh.matrix.fromArray(data.pose); mesh.matrixWorldNeedsUpdate = true;
+    const stride = Math.max(1, Math.ceil(data.pointCount / 256));
+    object.distanceSamples = new Float32Array(Math.ceil(data.pointCount / stride) * 3);
+    for (let i = 0, at = 0; i < data.pointCount; i += stride, at += 3)
+      object.distanceSamples.set(data.positions.subarray(i * 3, i * 3 + 3), at);
+    this.pointCount += data.pointCount;
     this.updateBounds();
-    if (this.autoBound && !this.boundTypes.has(type) && frame.objects.some(o => o.count > 0)) {
-      this.fit(); this.boundTypes.add(type);
-    }
-  }
-  removeStream(o, type) {
-    o.streams.delete(type);
-    if (type === 'points') o.distanceSamples = new Float32Array(0);
-    o[type].geometry.setDrawRange(0, 0);
-    if (!o.streams.size) this.removeObject(o);
-  }
-  clearStream(type) {
-    for (const o of this.objects.values()) if (o.streams.has(type)) this.removeStream(o, type);
-    this.updateBounds();
+    if (this.autoBound && !this.didAutoFit && this.pointCount) { this.fit(); this.didAutoFit = true; }
   }
   updateBounds() {
     this.bounds.makeEmpty();
-    for (const o of this.objects.values()) for (const data of o.streams.values()) if (data.count)
-      this.bounds.union(new THREE.Box3(new THREE.Vector3(...data.bounds.slice(0, 3)), new THREE.Vector3(...data.bounds.slice(3))));
+    for (const object of this.objects.values()) if (object.count)
+      this.bounds.union(object.localBounds.clone().applyMatrix4(object.points.matrix));
+  }
+  appendTrajectory(status) {
+    if (!status.poseFresh || status.poseTimestampUs === undefined) { this.trajectoryLast = null; return; }
+    const timestamp = BigInt(status.poseTimestampUs);
+    if (this.trajectoryTimestamp !== null && timestamp <= this.trajectoryTimestamp) return;
+    this.trajectoryTimestamp = timestamp;
+    if (this.trajectoryLast) {
+      const at = this.trajectoryNext * 6;
+      this.trajectoryPositions.set(this.trajectoryLast, at);
+      this.trajectoryPositions.set(status.position, at + 3);
+      const attribute = this.trajectory.geometry.getAttribute('position');
+      attribute.addUpdateRange(at, 6); attribute.needsUpdate = true;
+      this.trajectoryNext = (this.trajectoryNext + 1) % this.trajectoryCapacity;
+      this.trajectoryCount = Math.min(this.trajectoryCount + 1, this.trajectoryCapacity);
+      this.trajectory.geometry.setDrawRange(0, this.trajectoryCount * 2);
+    }
+    this.trajectoryLast = status.position.slice();
+  }
+  clearTrajectory() {
+    this.trajectoryTimestamp = this.trajectoryLast = null;
+    this.trajectoryCount = this.trajectoryNext = 0;
+    this.trajectory.geometry.setDrawRange(0, 0);
+    this.trajectory.geometry.getAttribute('position').clearUpdateRanges();
+    this.lastSensorPosition = null;
   }
   fit() {
     const bounds = this.bounds.clone();
@@ -293,10 +332,16 @@ export class Viewer3D {
   updateDistanceRange() {
     let near = Infinity, far = -Infinity;
     const eye = this.camera.position;
-    for (const o of this.objects.values()) {
-      const samples = o.distanceSamples;
+    // Keep color-scale work bounded even when a long session contains many submaps.
+    const objectStride = Math.max(1, Math.ceil(this.objects.size / 32));
+    const sample = new THREE.Vector3();
+    let objectIndex = 0;
+    for (const object of this.objects.values()) {
+      if (objectIndex++ % objectStride) continue;
+      const samples = object.distanceSamples;
       for (let i = 0; i < samples.length; i += 3) {
-        const distance = Math.hypot(samples[i] - eye.x, samples[i + 1] - eye.y, samples[i + 2] - eye.z);
+        sample.fromArray(samples, i).applyMatrix4(object.points.matrix);
+        const distance = sample.distanceTo(eye);
         near = Math.min(near, distance); far = Math.max(far, distance);
       }
     }
@@ -315,11 +360,15 @@ export class Viewer3D {
     if (this.pointColorUniforms.eyeColorEnabled.value) this.updateDistanceRange();
     this.renderer.render(this.scene, this.camera);
   }
-  removeObject(o) {
-    for (const mesh of [o.points, o.lines]) { this.scene.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); }
-    this.objects.delete(o.id);
+  removeObject(object) {
+    this.scene.remove(object.points); object.points.geometry.dispose(); object.points.material.dispose();
+    this.objects.delete(object.id);
   }
-  clear() { for (const o of this.objects.values()) this.removeObject(o); this.bounds.makeEmpty(); this.hasDistanceRange = false; }
+  clear() {
+    for (const object of this.objects.values()) this.removeObject(object);
+    this.assembling = null; this.session = null; this.pointCount = 0; this.didAutoFit = false;
+    this.bounds.makeEmpty(); this.hasDistanceRange = false;
+  }
   dispose() {
     this.clear(); this.resizeObserver.disconnect(); this.controls.dispose();
     this.axes.traverse(object => {
@@ -328,6 +377,7 @@ export class Viewer3D {
       object.material?.dispose();
     });
     this.sensor.traverse(object => { object.geometry?.dispose(); object.material?.dispose(); });
+    this.trajectory.geometry.dispose(); this.trajectory.material.dispose();
     this.grid.geometry.dispose(); this.grid.material.dispose(); this.renderer.dispose();
   }
 }

@@ -9,6 +9,7 @@
 #define OpenKAI_src_SLAM__GLIM_H_
 
 #include "_SLAMbase.h"
+#include <array>
 #include <deque>
 
 namespace glim
@@ -24,6 +25,20 @@ namespace glim
 
 namespace kai
 {
+	// Immutable local submap points shared with viewers; poses may be corrected
+	// when a later submap closes a loop. All snapshots are acquired under SLAM's lock.
+	struct GLIM_SUBMAP
+	{
+		uint64_t id = 0, timestampUs = 0;
+		Isometry3d pose = Isometry3d::Identity();
+		std::shared_ptr<const vector<Vector3f>> points;
+	};
+	struct GLIM_MAP_SNAPSHOT
+	{
+		uint64_t session = 0, revision = 0;
+		vector<GLIM_SUBMAP> submaps;
+	};
+
 	class _GLIM : public _SLAMbase
 	{
 	public:
@@ -34,6 +49,10 @@ namespace kai
 		using _SLAMbase::console;
 		void console(const json &j, void *pJSONbase) override;
 		json status(void);
+		GLIM_MAP_SNAPSHOT submapSnapshot(uint64_t knownSession, uint64_t knownRevision);
+		bool loadConfig(json *pJ = nullptr, string fName = "") override;
+		bool saveConfig(json &j, string fName = "") override;
+		bool savePointCloud(const string &path, size_t &count, string &error);
 
 		// Stop tracking first. The finished map survives stopTracking().
 		bool saveMap(const string &path);
@@ -50,10 +69,19 @@ namespace kai
 		void insertSubmap(const std::shared_ptr<glim::SubMap> &submap);
 		void publishMap(bool force = false);
 		Isometry3d mapCorrection() const;
+		json parameterDefaults() const;
+		json validatedParameters(const json &values) const;
+		void applyParameters(const json &values);
+		void refreshSubmapPoses();
+		void collectMapPoints(vector<Vector3f> &points, vector<Vector3f> &colors,
+			size_t limit, bool includeLive);
 
 		string m_configPath;
 		bool m_bMapping = true;
 		bool m_bRequiresIMU = true;
+		bool m_bPublishLiveMap = false, m_mapDirty = false;
+		json m_parameters;
+		string m_exportPath = "data/glim";
 		int m_nMinPoints = 100;
 		double m_distanceNear = 0.0;
 		double m_distanceFar = 0.0;
@@ -62,8 +90,12 @@ namespace kai
 		std::shared_ptr<glim::SubMappingBase> m_subMapping;
 		std::shared_ptr<glim::GlobalMappingBase> m_globalMapping;
 		std::shared_ptr<glim::RawPoints> m_pendingFrame;
+		vector<Vector3f> m_inputBuffer, m_mapBuffer, m_mapColors;
 		_PointCloud *m_pGlobalMap = nullptr;
 		vector<std::shared_ptr<glim::SubMap>> m_submaps;
+		vector<GLIM_SUBMAP> m_webSubmaps;
+		uint64_t m_session = 0, m_revision = 0;
+		size_t m_submapPoints = 0;
 		struct LiveFrame
 		{
 			std::shared_ptr<glim::EstimationFrame> preview;
@@ -77,6 +109,9 @@ namespace kai
 		size_t m_imuSamples = 0;
 		uint64_t m_maxIMUgapUs = 0;
 		double m_frameIntervalMs = 0.0, m_processingMs = 0.0;
+		// Cumulative work time, including polls that do not produce a pose.
+		std::array<uint64_t, 6> m_stageTimeUs{};
+		size_t m_updates = 0, m_inputPoints = 0, m_registrationPoints = 0;
 		double m_submapStamp = -1.0;
 	};
 }

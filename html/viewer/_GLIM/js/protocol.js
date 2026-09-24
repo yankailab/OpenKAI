@@ -1,49 +1,36 @@
-export const PROTOCOL_VERSION = 5;
-export const STREAM_TYPES = ['points', 'lines'];
-export const MAX_FRAME_BYTES = 64 * 1024 * 1024;
+// Dedicated GLIM submap protocol. Geometry point/line frames are not accepted.
+export const PROTOCOL_VERSION = 1;
+export const PROTOCOL_NAME = 'openkai.glim';
+export const MAX_SUBMAP_POINTS = 10000000;
+export const MAX_CHUNK_POINTS = 65536;
 const littleEndian = new Uint8Array(new Uint16Array([1]).buffer)[0] === 1;
-
-// One complete snapshot of one geometry type. Validate before returning any
-// zero-copy views; other streams are independent of this frame's lifetime.
-export function decodeFrame(buffer, expectedType) {
-  if (!(buffer instanceof ArrayBuffer) || buffer.byteLength < 32 || buffer.byteLength > MAX_FRAME_BYTES)
-    throw new Error('Invalid geometry frame length');
+const id = value => typeof value === 'string' && /^(0|[1-9]\d{0,19})$/.test(value) && BigInt(value) <= 0xffffffffffffffffn;
+const pose = value => Array.isArray(value) && value.length === 16 && value.every(Number.isFinite) &&
+  Math.abs(value[3]) < 1e-9 && Math.abs(value[7]) < 1e-9 && Math.abs(value[11]) < 1e-9 && Math.abs(value[15] - 1) < 1e-9;
+export function decodeEvent(text) {
+  if (text.length > 16384) throw new Error('GLIM metadata exceeds size limit');
+  const event = JSON.parse(text);
+  if (!['reset', 'submap', 'pose'].includes(event.type) || !id(event.session) || !id(event.revision))
+    throw new Error('Invalid GLIM event');
+  if (event.type !== 'reset' && (!id(event.id) || !pose(event.pose))) throw new Error('Invalid submap pose');
+  if (event.type === 'submap' && (!id(event.timestampUs) || !Number.isInteger(event.pointCount) ||
+      event.pointCount < 0 || event.pointCount > MAX_SUBMAP_POINTS)) throw new Error('Invalid submap size');
+  return { ...event, bytes: text.length };
+}
+export function decodeChunk(buffer) {
+  if (!(buffer instanceof ArrayBuffer) || buffer.byteLength < 56 || buffer.byteLength > 56 + MAX_CHUNK_POINTS * 12)
+    throw new Error('Invalid GLIM chunk length');
   const v = new DataView(buffer);
-  if (v.getUint32(0, true) !== 0x35443357 || v.getUint32(4, true) !== PROTOCOL_VERSION)
-    throw new Error('Unsupported geometry protocol');
-  const type = STREAM_TYPES[v.getUint32(8, true) - 1];
-  if (!type || (expectedType && type !== expectedType)) throw new Error('Wrong geometry stream type');
-  const objectCount = v.getUint32(16, true);
-  if (objectCount > 1024 || v.getUint32(20, true) !== buffer.byteLength) throw new Error('Invalid geometry header');
-  let at = 32;
-  const ids = new Set(), objects = [];
-  const floats = n => {
-    const data = littleEndian ? new Float32Array(buffer, at, n) :
-      Float32Array.from({ length: n }, (_, i) => v.getFloat32(at + i * 4, true));
-    at += n * 4; return data;
-  };
-  const bytes = n => { const data = new Uint8Array(buffer, at, n); at += n; return data; };
-  for (let i = 0; i < objectCount; ++i) {
-    if (at + 40 > buffer.byteLength) throw new Error('Truncated object header');
-    const id = v.getUint32(at, true), count = v.getUint32(at + 4, true);
-    const payload = Math.ceil(count * (type === 'points' ? 15 : 30) / 4) * 4;
-    if (ids.has(id) || at + 40 + payload > buffer.byteLength) throw new Error('Invalid object counts');
-    ids.add(id);
-    const pointSize = v.getFloat32(at + 8, true), opacity = v.getFloat32(at + 12, true);
-    const bounds = Array.from({ length: 6 }, (_, j) => v.getFloat32(at + 16 + j * 4, true));
-    if (!Number.isFinite(pointSize) || pointSize <= 0 || !Number.isFinite(opacity) || opacity < 0 || opacity > 1 ||
-        opacity !== 1 ||
-        !bounds.every(Number.isFinite) || bounds.some((x, j) => j < 3 && x > bounds[j + 3]))
-      throw new Error('Invalid object style/bounds');
-    at += 40;
-    const object = { id, count, pointSize, opacity, bounds };
-    const vertices = count * (type === 'lines' ? 2 : 1);
-    object.positions = floats(vertices * 3);
-    object.colors = bytes(vertices * 3);
-    const padding = (4 - at % 4) % 4;
-    if (bytes(padding).some(x => x !== 0)) throw new Error('Invalid geometry padding');
-    objects.push(object);
-  }
-  if (at !== buffer.byteLength) throw new Error('Unexpected trailing geometry bytes');
-  return { type, sequence: v.getUint32(12, true), objects, bytes: buffer.byteLength };
+  if (v.getUint32(0, true) !== 0x314d4c47 || v.getUint32(4, true) !== PROTOCOL_VERSION ||
+      v.getUint32(8, true) !== 1 || v.getUint32(12, true) !== 56 || v.getUint32(52, true) !== 0)
+    throw new Error('Unsupported GLIM chunk');
+  const totalPoints = v.getUint32(40, true), offsetPoints = v.getUint32(44, true), countPoints = v.getUint32(48, true);
+  if (totalPoints > MAX_SUBMAP_POINTS || !countPoints || countPoints > MAX_CHUNK_POINTS ||
+      offsetPoints + countPoints > totalPoints || buffer.byteLength !== 56 + countPoints * 12)
+    throw new Error('Invalid GLIM point counts');
+  const positions = littleEndian ? new Float32Array(buffer, 56) :
+    Float32Array.from({ length: countPoints * 3 }, (_, i) => v.getFloat32(56 + i * 4, true));
+  if (!positions.every(Number.isFinite)) throw new Error('Non-finite submap point');
+  return { type: 'chunk', session: v.getBigUint64(16, true).toString(), id: v.getBigUint64(24, true).toString(),
+    timestampUs: v.getBigUint64(32, true).toString(), totalPoints, offsetPoints, countPoints, positions, bytes: buffer.byteLength };
 }

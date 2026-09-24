@@ -138,7 +138,7 @@ namespace kai
 	bool _SLAMbase::readPointCloud(vector<Vector3f> &points, uint64_t &stamp)
 	{
 		IF_F(!m_pPCL);
-		const int count = m_pPCL->getLastFrame(&points, nullptr, stamp);
+		const int count = m_pPCL->getLastFrameIfNew(&points, nullptr, stamp, m_tStampLastFrame);
 		IF_F(count <= 0 || stamp <= m_tStampLastFrame);
 		m_tStampLastFrame = stamp;
 		return true;
