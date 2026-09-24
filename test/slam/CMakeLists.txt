@@ -21,6 +21,15 @@ add_test(NAME slam_integration COMMAND slam_integration
   ${CMAKE_CURRENT_SOURCE_DIR}/../../jsonCfg/glim_orbbec ${CMAKE_CURRENT_BINARY_DIR}/fixtures)
 set_tests_properties(slam_integration PROPERTIES TIMEOUT 90)
 
+add_executable(slam_imu_free imu_free.cpp)
+target_compile_features(slam_imu_free PRIVATE cxx_std_17)
+target_compile_options(slam_imu_free PRIVATE -UNDEBUG)
+target_compile_definitions(slam_imu_free PRIVATE USE_GLOG WITH_SLAM USE_GLIM)
+target_link_libraries(slam_imu_free PRIVATE OpenKAI Eigen3::Eigen glim::glim glog::glog)
+add_test(NAME slam_imu_free COMMAND slam_imu_free
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../jsonCfg/glim_scepter ${CMAKE_CURRENT_BINARY_DIR}/imu_free_fixtures)
+set_tests_properties(slam_imu_free PROPERTIES TIMEOUT 90)
+
 add_executable(pcfile_test pcfile_test.cpp)
 target_compile_features(pcfile_test PRIVATE cxx_std_17)
 target_compile_options(pcfile_test PRIVATE -UNDEBUG)

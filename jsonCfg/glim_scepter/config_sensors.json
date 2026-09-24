@@ -1,0 +1,14 @@
+{
+  "sensors": {
+    "global_shutter_lidar": true,
+    "T_lidar_imu": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ]
+  }
+}

@@ -7,29 +7,6 @@
       "type": "shell",
       "command": "sudo cmake --install build",
       "problemMatcher": []
-    },
-    {
-      "label": "GLIM: configure optimized build",
-      "type": "process",
-      "command": "cmake",
-      "args": [
-        "-S", "${workspaceFolder}",
-        "-B", "${workspaceFolder}/build",
-        "-DCMAKE_BUILD_TYPE=RelWithDebInfo"
-      ],
-      "problemMatcher": []
-    },
-    {
-      "label": "GLIM: build optimized",
-      "type": "process",
-      "command": "cmake",
-      "args": [
-        "--build", "${workspaceFolder}/build",
-        "--parallel", "4"
-      ],
-      "dependsOn": "GLIM: configure optimized build",
-      "group": "build",
-      "problemMatcher": "$gcc"
     }
   ]
 }

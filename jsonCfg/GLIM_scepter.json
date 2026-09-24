@@ -1,0 +1,235 @@
+{
+	"APP": {
+		"class": "OpenKAI",
+		"appName": "GLIM SLAM — Scepter",
+		"bLog": true,
+		"bStdErr": false
+	},
+	"console": {
+		"class": "_Console",
+		"bON": false,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"GLIM",
+			"scepter"
+		]
+	},
+	"wsServer": {
+		"class": "_WebSocketServer",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"threadR": {
+			"FPS": 1
+		},
+		"host": "0.0.0.0",
+		"port": 7890,
+		"wsMode": 2,
+		"nClientMax": 1,
+		"tOutMs": 10000
+	},
+	"wsConsole": {
+		"class": "_WSconsole",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"threadR": {
+			"FPS": 30
+		},
+		"_IObase": "wsServer",
+		"msgFinishSend": "",
+		"msgFinishRecv": "EOJ",
+		"vBASE": [
+			"GLIM"
+		]
+	},
+	"view": {
+		"class": "_WindowCV",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"bFullScreen": 0,
+		"vBASE": [
+			"scepter"
+		]
+	},
+	"viewD": {
+		"class": "_WindowCV",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"bFullScreen": 0,
+		"vBASE": [
+			"d2rgb"
+		]
+	},
+	"scepter": {
+		"class": "_Scepter",
+		"fConfig": "jsonCfg/glim_scepter/Scepter.controls.json",
+		"bON": true,
+		"bLog": false,
+		"thread": {
+			"FPS": 30
+		},
+		"threadPP": {
+			"FPS": 30
+		},
+		"URI": "",
+		"vSizeRGB": [
+			1600,
+			1200
+		],
+		"vRangeD": [
+			0,
+			4.0
+		],
+		"_PointCloud": "scPCL",
+		"bRGB": false,
+		"bDepth": true,
+		"btRGB": false,
+		"btDepth": false,
+		"bIR": false,
+		"bPCL": true,
+		"bPCLrgb": false,
+		"pclStride": 2,
+		"scScanTime": 3000,
+		"scPixelFormat": 4,
+		"scAutoExposureToF": true,
+		"scExposureTimeToF": 4000,
+		"scAutoExposureRGB": true,
+		"scExposureTimeRGB": 4000,
+		"scTimeFilterEnabled": true,
+		"scTimeFilterThreshold": 1,
+		"scConfidenceFilterEnabled": true,
+		"scConfidenceFilterThreshold": 1,
+		"scFlyingPixelFilterEnabled": true,
+		"scFlyingPixelFilterThreshold": 5,
+		"scFillHoleEnabled": false,
+		"scSpatialFilterEnabled": false,
+		"scHDR": false,
+		"scFrameRate": 30,
+		"scWorkMode": 0,
+		"scSoftwareTriggerFrameCount": 1,
+		"scHWTriggerWidth": 0,
+		"scHWTriggerInterval": 0,
+		"scHWTriggerPolarity": 0,
+		"scToFWidth": 640,
+		"scToFHeight": 480,
+		"scColorWidth": 1600,
+		"scColorHeight": 1200,
+		"scTransformColorToDepth": false,
+		"scTransformDepthToColor": false,
+		"scIRGMMGain": 50,
+		"scIRGMMCorrectionEnabled": false,
+		"scIRGMMCorrectionThreshold": 1,
+		"scColorGain": 1.0,
+		"scColorAECMaxExposureTime": 4000,
+		"scColorAECROIX": 0,
+		"scColorAECROIY": 0,
+		"scColorAECROIWidth": 1600,
+		"scColorAECROIHeight": 1200,
+		"scWDR": true,
+		"scHDRExposureTimes": [],
+		"scWDRExposureTimes": [],
+		"scDHCPEnabled": false,
+		"scDeviceIPAddr": "",
+		"scDeviceSubnetMask": "",
+		"scTimeSyncMode": 0,
+		"scNTPServerIP": "",
+		"scParamsJsonFile": "",
+		"scAIModuleEnabled": false,
+		"scAIModuleWorkMode": 0,
+		"scAIModuleParams": [],
+		"scAIModuleInputFrames": [],
+		"scAIModulePreviewFrames": [],
+		"dScale": 0.001
+	},
+	"d2rgb": {
+		"class": "_D2RGB",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"_RGBDbase": "scepter",
+		"bMeasure": false
+	},
+	"scPCL": {
+		"class": "_PointCloud",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 1
+		},
+		"nP": 400000
+	},
+	"glimPCL": {
+		"class": "_PointCloud",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 1
+		},
+		"nP": 1000000
+	},
+	"viewer": {
+		"class": "_WebGLIM",
+		"_GLIM": "GLIM",
+		"webRoot": "html/viewer/_GLIM",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"host": "0.0.0.0",
+		"port": 8080,
+		"nClientMax": 8,
+		"matPointSize": 2,
+		"bAutoBound": true,
+		"bShowGrid": true,
+		"vCamLookAt": [
+			0,
+			0,
+			0
+		],
+		"vCamEye": [
+			0,
+			-1,
+			-4
+		],
+		"vCamUp": [
+			0,
+			-1,
+			0
+		],
+		"camFov": 70,
+		"vCamNF": [
+			0.01,
+			1000000
+		]
+	},
+	"GLIM": {
+		"class": "_GLIM",
+		"fConfig": "jsonCfg/glim_scepter/GLIM.controls.json",
+		"exportPath": "data/glim_scepter",
+		"bON": true,
+		"thread": {
+			"FPS": 100
+		},
+		"_PointCloud": "scPCL",
+		"configPath": "jsonCfg/glim_scepter",
+		"bAutoStart": false,
+		"bMapping": true,
+		"bPublishLiveMap": false,
+		"nMinPoints": 100,
+		"tConfidenceTimeoutUs": 1000000,
+		"globalMapPCL": "glimPCL",
+		"nMapPoints": 400000,
+		"nLiveFrames": 60,
+		"tMapUpdateUs": 200000
+	}
+}

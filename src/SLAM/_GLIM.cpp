@@ -13,6 +13,7 @@
 #include <glim/preprocess/cloud_preprocessor.hpp>
 #include <glim/odometry/odometry_estimation_base.hpp>
 #include <glim/odometry/odometry_estimation_cpu.hpp>
+#include <glim/odometry/odometry_estimation_ct.hpp>
 #include <glim/mapping/sub_mapping_base.hpp>
 #include <glim/mapping/sub_mapping.hpp>
 #include <glim/mapping/global_mapping_base.hpp>
@@ -25,6 +26,35 @@ namespace kai
 		// GLIM's configuration is process-wide. Never replace it beneath a session.
 		std::mutex configMutex;
 		string configuredPath;
+
+		// Native SubMapping delays one input for IMU interpolation, including when
+		// IMU is disabled. Its end-of-sequence API does not drain that lookahead.
+		class IMUFreeSubMapping : public glim::SubMapping
+		{
+		public:
+			explicit IMUFreeSubMapping(const glim::SubMappingParams &params) : glim::SubMapping(params) {}
+
+			void insert_frame(const glim::EstimationFrame::ConstPtr &frame) override
+			{
+				glim::SubMapping::insert_frame(frame);
+				m_lastFrame = frame;
+			}
+
+			vector<glim::SubMap::Ptr> submit_end_of_sequence() override
+			{
+				// A repeated final frame supplies lookahead only. The real final
+				// frame is processed once; the sentinel dies with this mapper.
+				auto last = std::move(m_lastFrame);
+				if (last) glim::SubMapping::insert_frame(last);
+				auto submaps = glim::SubMapping::get_submaps();
+				const auto tail = glim::SubMapping::submit_end_of_sequence();
+				submaps.insert(submaps.end(), tail.begin(), tail.end());
+				return submaps;
+			}
+
+		private:
+			glim::EstimationFrame::ConstPtr m_lastFrame;
+		};
 
 		glim::Config readConfig(const string &name)
 		{
@@ -99,7 +129,13 @@ namespace kai
 				{"kNeighbors", p.param<int>("preprocess", "k_correspondences", 8)},
 				{"threads", p.param<int>("preprocess", "num_threads", 2)}}}};
 		const auto o = config("config_odometry");
-		if (o.param<string>("odometry_estimation", "so_name", "") == "libodometry_estimation_cpu.so")
+		const auto odometryLibrary = o.param<string>("odometry_estimation", "so_name", "");
+		if (odometryLibrary == "libodometry_estimation_ct.so")
+			result["odometry"] = {
+				{"voxelResolution", o.param<double>("odometry_estimation", "ivox_resolution", 1.0)},
+				{"iterations", o.param<int>("odometry_estimation", "lm_max_iterations", 10)},
+				{"threads", o.param<int>("odometry_estimation", "num_threads", 2)}};
+		else if (odometryLibrary == "libodometry_estimation_cpu.so")
 			result["odometry"] = {
 				{"voxelResolution", o.param<double>("odometry_estimation",
 					o.param<string>("odometry_estimation", "registration_type", "VGICP") == "GICP" ? "ivox_resolution" : "vgicp_resolution", .5)},
@@ -240,7 +276,16 @@ namespace kai
 		const auto odomConfig = readConfig("config_odometry");
 		const auto odomLibrary = odomConfig.param<string>("odometry_estimation", "so_name", "");
 		IF_Le_F(odomLibrary.empty(), "Missing GLIM odometry so_name");
-		if (m_parameters.contains("odometry"))
+		if (odomLibrary == "libodometry_estimation_ct.so")
+		{
+			glim::OdometryEstimationCTParams p;
+			const auto &v = m_parameters["odometry"];
+			p.ivox_resolution = v["voxelResolution"].get<double>();
+			p.lm_max_iterations = v["iterations"].get<int>();
+			p.num_threads = v["threads"].get<int>();
+			m_odometry = std::make_shared<glim::OdometryEstimationCT>(p);
+		}
+		else if (odomLibrary == "libodometry_estimation_cpu.so")
 		{
 			glim::OdometryEstimationCPUParams p;
 			const auto &v = m_parameters["odometry"];
@@ -289,7 +334,8 @@ namespace kai
 				p.keyframe_update_interval_rot = v["keyframeRotation"].get<double>();
 				p.max_keyframe_overlap = v["maxOverlap"].get<double>();
 				p.submap_downsample_resolution = v["voxelResolution"].get<double>();
-				m_subMapping = std::make_shared<glim::SubMapping>(p);
+				if (p.enable_imu) m_subMapping = std::make_shared<glim::SubMapping>(p);
+				else m_subMapping = std::make_shared<IMUFreeSubMapping>(p);
 			}
 			else m_subMapping = glim::SubMappingBase::load_module(subLibrary);
 			if (m_parameters.contains("global"))
@@ -383,6 +429,7 @@ namespace kai
 		++m_processedFrames;
 		if (result)
 		{
+			if (!m_bRequiresIMU) m_activeFrames[result->id] = result;
 			// GLIM has no scalar tracking-quality score: report fresh pose availability.
 			if (publishPose(result->T_world_lidar, 100.0f))
 			{
@@ -415,6 +462,7 @@ namespace kai
 		for (const auto &frame : frames)
 		{
 			IF_CONT(!frame);
+			m_activeFrames.erase(frame->id);
 			// Replace preview poses with the smoother's final marginalized poses.
 			for (auto &live : m_liveFrames) if (live.preview->id == frame->id)
 			{
@@ -556,6 +604,13 @@ namespace kai
 	{
 		if (m_odometry)
 			insertMappingFrames(m_odometry->get_remaining_frames());
+		// CT inherits an empty get_remaining_frames(). Its final window still
+		// belongs in the map, even for scans shorter than the smoother lag.
+		// Frames returned above were erased, so this also avoids duplicate input.
+		vector<glim::EstimationFrame::ConstPtr> remaining;
+		remaining.reserve(m_activeFrames.size());
+		for (const auto &entry : m_activeFrames) remaining.push_back(entry.second);
+		insertMappingFrames(remaining);
 		collectSubmaps();
 		if (m_subMapping && m_globalMapping)
 		{
@@ -574,7 +629,7 @@ namespace kai
 	void _GLIM::resetSLAM(void)
 	{
 		if (m_pGlobalMap) m_pGlobalMap->clear();
-		m_submaps.clear(); m_liveFrames.clear(); m_latestFrame.reset();
+		m_submaps.clear(); m_liveFrames.clear(); m_activeFrames.clear(); m_latestFrame.reset();
 		m_webSubmaps.clear(); m_submapPoints = 0;
 		++m_session; m_revision = 0; m_mapDirty = false;
 		m_mapUpdatedUs = m_mapPoints = m_processedFrames = 0;

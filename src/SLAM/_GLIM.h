@@ -11,6 +11,7 @@
 #include "_SLAMbase.h"
 #include <array>
 #include <deque>
+#include <map>
 
 namespace glim
 {
@@ -33,6 +34,7 @@ namespace kai
 		Isometry3d pose = Isometry3d::Identity();
 		std::shared_ptr<const vector<Vector3f>> points;
 	};
+	
 	struct GLIM_MAP_SNAPSHOT
 	{
 		uint64_t session = 0, revision = 0;
@@ -102,6 +104,9 @@ namespace kai
 			std::weak_ptr<const glim::EstimationFrame> source;
 		};
 		std::deque<LiveFrame> m_liveFrames;
+		// IMU-free backends may not return their active smoothing window on Stop.
+		// Keep the actual frames until mapping consumes them, independent of previews.
+		std::map<long, std::shared_ptr<const glim::EstimationFrame>> m_activeFrames;
 		std::shared_ptr<const glim::EstimationFrame> m_latestFrame;
 		int m_nMapPoints = 400000, m_nLiveFrames = 100;
 		uint64_t m_mapIntervalUs = 200000, m_mapUpdatedUs = 0;

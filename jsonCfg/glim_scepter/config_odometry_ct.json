@@ -1,0 +1,18 @@
+{
+  "odometry_estimation": {
+    "so_name": "libodometry_estimation_ct.so",
+    "ivox_resolution": 0.25,
+    "ivox_min_points_dist": 0.03,
+    "ivox_lru_thresh": 100,
+    "max_correspondence_distance": 0.5,
+    "location_consistency_inf_scale": 0.001,
+    "constant_velocity_inf_scale": 1000.0,
+    "lm_max_iterations": 8,
+    "smoother_lag": 1.0,
+    "use_isam2_dogleg": false,
+    "isam2_relinearize_skip": 1,
+    "isam2_relinearize_thresh": 0.1,
+    "compute_covs": false,
+    "num_threads": 2
+  }
+}

@@ -10,7 +10,7 @@ From the OpenKAI repository root:
 cmake -S . -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo \
   -DWITH_SLAM=ON -DUSE_GLIM=ON -DWITH_VISION=ON -DUSE_OPENCV=ON \
   -DUSE_ORBBEC=ON -DWITH_UNIVERSE=ON -DWITH_PROTOCOL=ON \
-  -DWITH_IO=ON -DWITH_SENSOR=ON -DUSE_WSSERVER=ON -DUSE_SCEPTER_SDK=OFF
+  -DWITH_IO=ON -DWITH_SENSOR=ON -DUSE_WSSERVER=ON
 cmake --build build -j4
 ./build/OpenKAI jsonCfg/GLIM_orbbec.json
 ```
@@ -18,12 +18,27 @@ cmake --build build -j4
 Open `http://127.0.0.1:8080`, click **Connect viewer**, then **Start**. Opening
 `index.html` directly provides a launcher to the backend HTTP server. Stream and
 command ports default to 8080 and 7890. The example starts stopped, with desktop
-windows disabled. Keep the camera stationary during IMU initialization.
+windows disabled. Keep the Orbbec camera stationary during IMU initialization.
 
-Use `RelWithDebInfo` for live SLAM; it retains debug symbols. In VSCode, select
-**GLIM (optimized with debug symbols)** to configure and build that mode before
-GDB starts. Keep `USE_SCEPTER_SDK=OFF` with the installed Scepter SDK, whose
-exported `spdlog` symbols conflict with GLIM's logger.
+For Scepter, enable its SDK in the same build and select the separate application:
+
+```sh
+cmake -S . -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+  -DUSE_SCEPTER_SDK=ON -DScepterSDK_root=/path/to/ScepterSDK/BaseSDK/Ubuntu
+cmake --build build -j4
+./build/OpenKAI jsonCfg/GLIM_scepter.json
+```
+
+Both cameras use this frontend. Scepter uses geometric CT odometry without an
+IMU; it initializes from the first valid depth frame. Its profile and saved
+controls are isolated in [jsonCfg/glim_scepter](../../../jsonCfg/glim_scepter/README.md).
+Select one camera application per process; both examples use the same ports.
+
+Use `RelWithDebInfo` for live SLAM; it retains debug symbols. The VSCode task
+**GLIM: build optimized** configures and builds that mode. The **GLIM Scepter
+(optimized)** launch uses it before starting GDB. CMake links GLIM's spdlog ahead
+of the Scepter SDK, which exports a different bundled spdlog ABI. Preserve that
+order when integrating both libraries into another build.
 
 ## Sensor and viewer connections
 
@@ -54,9 +69,9 @@ point/line geometry streams. Add the GLIM module name to `_WSconsole.vBASE` and
 enter that same module name in the viewer's command panel.
 
 For another sensor, connect its `_PointCloud` and optional `_IMUbase` to GLIM and
-select its `configPath`. SLAM expects metres, m/s² including gravity, rad/s,
-calibrated IMU-to-cloud extrinsics, and synchronized capture timestamps in
-microseconds. The input interface gives one timestamp per complete cloud; it
+select its `configPath`. Clouds use metres and increasing timestamps in
+microseconds. When using an IMU, samples must use m/s² including gravity and
+rad/s, calibrated IMU-to-cloud extrinsics, and the same capture clock as depth. The input interface gives one timestamp per complete cloud; it
 does not deskew a scanning LiDAR. Keep the input cloud transform fixed in the
 sensor frame. `_PointCloud` frames remain spans in a ring buffer: allocate at
 least two maximum sensor frames so a completed frame survives while the next
@@ -67,6 +82,14 @@ and a 25 cm GICP grid. Its IMU-to-depth transform is the connected Gemini 335's
 factory calibration. Changing sensors or enabling RGB-aligned clouds requires
 matching extrinsics and settings. Separate IMU callbacks retain the 200 Hz
 samples; depth and IMU use device capture timestamps.
+
+The Scepter example uses native depth with color/alignment disabled. Geometric
+odometry needs no fabricated IMU samples. With no gravity measurement, its map
+starts in the initial camera's optical frame (X right, Y down, Z forward). The
+viewer up-vector matches that frame. Scepter's complete clouds carry monotonic
+host publication timestamps. Both submapping and global mapping disable IMU
+factors. The final active odometry window and mapper lookahead are flushed on
+Stop, including a scan containing only one valid depth frame.
 
 ## Map and controls
 
@@ -119,7 +142,8 @@ stream. `nLiveFrames` also bounds unfinished points retained for PLY export.
 
 Edit SLAM parameters while stopped. **Start** applies edited values before
 starting the session. **Save parameters** validates and applies the values and
-writes the module's `fConfig`; the example uses `jsonCfg/GLIM.controls.json`.
+writes the module's `fConfig`: `jsonCfg/GLIM.controls.json` for Orbbec and
+`jsonCfg/glim_scepter/GLIM.controls.json` for Scepter.
 **Load saved** reloads that file while stopped. On process startup, an existing
 `fConfig` overrides the selected profile and optional module `parameters` object.
 Values applied without saving last only for the current process.
@@ -138,7 +162,8 @@ recent history. This export is independent of the display ring's `nMapPoints`
 limit. It contains GLIM's processed points, not all raw sensor samples. Stop first
 to export the finalized, optimized map, or save during tracking for a snapshot.
 
-The example creates files under `data/glim`, controlled by `exportPath`. The
+Orbbec creates files under `data/glim`; Scepter uses `data/glim_scepter`.
+The module's `exportPath` controls this directory. The
 reply shows the absolute backend path and written point count; this is not a
 browser download. A command may supply an explicit `.ply` path whose parent
 already exists. The default export directory is created automatically.
@@ -230,11 +255,15 @@ cmake --build /tmp/openkai-slam-tests -j4
 ctest --test-dir /tmp/openkai-slam-tests --output-on-failure
 python3 test/slam/browser.py build/OpenKAI
 python3 test/slam/browser.py build/OpenKAI --hardware
+python3 test/slam/browser.py build/OpenKAI --config jsonCfg/GLIM_scepter.json
+python3 test/slam/browser.py build/OpenKAI --config jsonCfg/GLIM_scepter.json --hardware
 ```
 
 Transport tests cover slow-client catch-up, chunking, pose-only corrections,
 reconnection, session resets and route isolation with synthetic submaps.
 The browser test needs Chrome/Chromium, local sockets and, in hardware mode,
-USB access. It uses temporary ports/configuration and the actual UI/WSconsole.
+camera access (USB or network). It uses temporary ports/configuration and the
+actual UI/WSconsole. The native suite covers CPU odometry with IMU and CT
+odometry without IMU, including complete final-frame mapping on Stop.
 Artifacts: `/tmp/openkai-glim-viewer.png` and
 `/tmp/openkai-glim-browser-backend.log`.

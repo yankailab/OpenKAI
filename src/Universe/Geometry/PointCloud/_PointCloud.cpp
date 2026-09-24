@@ -82,10 +82,13 @@ namespace kai
         gP.m_vP = m_mPosef * vP;
         gP.m_vC = vC;
         gP.m_tStamp = tStamp;
+
         // Do not return mixed old/new points once a completed span is overwritten.
         if (m_framed.m_nP && m_grPt.m_iT == m_framed.m_iPfrom)
             m_framed.clear();
+
         m_grPt.add(gP);
+
         if (m_bFraming)
         {
             if (m_framing.m_nP < m_grPt.m_nT)

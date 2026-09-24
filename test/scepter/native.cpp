@@ -6,6 +6,11 @@
 #include <future>
 #include <set>
 #include <thread>
+#if defined(WITH_SLAM) && defined(USE_GLIM)
+#include <filesystem>
+#include <glim/util/config.hpp>
+#include <glim/util/logging.hpp>
+#endif
 // Exercise the capture and post-processing steps without starting device threads.
 #define private public
 #include "../../src/Vision/RGBD/_Scepter.h"
@@ -101,6 +106,25 @@ public:
 
 int main()
 {
+#if defined(WITH_SLAM) && defined(USE_GLIM)
+    // Scepter exports an incompatible embedded spdlog ABI. Exercise actual
+    // SDK linkage and GLIM's ringbuffer formatting together: incorrect shared
+    // library ordering corrupts the formatter buffer and aborts this check.
+    {
+        char sdkVersion[256] = {};
+        assert(scGetSDKVersion(sdkVersion, sizeof(sdkVersion)) == SC_OK);
+        assert(sdkVersion[0]);
+        const auto profile = std::filesystem::path(__FILE__).parent_path().parent_path().parent_path() /
+                             "jsonCfg/glim_scepter";
+        glim::GlobalConfig::instance(profile.string());
+        auto logger = glim::create_module_logger("scepter_glim_logger_regression");
+        logger->info("Scepter and GLIM logger: {} {:.3f}", 7, 1.25);
+        logger->flush();
+        const auto lines = glim::get_ringbuffer_sink()->last_formatted();
+        assert(!lines.empty());
+        assert(lines.back().find("Scepter and GLIM logger: 7 1.250") != std::string::npos);
+    }
+#endif
     const json config = {{"class", "_Scepter"}, {"thread", {{"FPS", 30}}}, {"threadPP", {{"FPS", 30}}}};
     {
         Camera defaults(nullptr);

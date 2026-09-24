@@ -17,7 +17,9 @@ Before using a real sensor, set `T_lidar_imu` in `config_sensors.json` to its ca
 
 The frame interface treats each cloud as a single exposure, with zero per-point time offsets. It suits depth-camera clouds; it does not deskew a scanning LiDAR. Each producer calls `frameStart()`, `add(..., sensorTimestampUs)` for its points, then `frameStop()`. Frames are index spans in the point cloud's ring buffer. Oversized frames retain the newest `nP` points, and a completed frame becomes unavailable once a subsequent write overwrites its span. Allocate at least two maximum-sized input frames to keep the preceding frame available while the next is built. IMU samples use `addGyro(value, timestampUs)` and `addAcc(value, timestampUs)`; pairing consumes those queues, so use one SLAM consumer per IMU buffer.
 
-The CPU odometry example requires an IMU. For IMU-free operation, choose GLIM's `config_odometry_ct.json` and disable `enable_imu` in both mapping configs, or set `bMapping` to false. The adapter checks the selected odometry backend's IMU requirement at session startup. Sensor rates and preprocessing parameters must be tuned for your scene and hardware.
+The Orbbec CPU odometry example requires an IMU. Run `build/OpenKAI jsonCfg/GLIM_scepter.json` for Scepter cameras without an IMU. Its isolated [glim_scepter profile](../jsonCfg/glim_scepter/README.md) selects CT odometry, disables `enable_imu` in both mapping configs, and uses identity sensor extrinsics. The map starts in the first camera's optical frame, without gravity alignment. No IMU module or synthetic inertial samples are needed. The shared frontend, WSconsole controls, submap stream and PLY export work with both profiles. The adapter checks the selected estimator's IMU requirement at startup.
+
+Scepter and Orbbec SDKs can be enabled in the same build. GLIM's spdlog must precede the Scepter SDK in the link order because the SDK exports an incompatible bundled spdlog; CMake declares the explicit dependency to preserve that order. Camera/SLAM saved controls for Scepter live under `jsonCfg/glim_scepter`, and its PLY output defaults to `data/glim_scepter`. The Orbbec settings remain separate. Sensor rates and preprocessing parameters still need tuning for the scene and camera.
 
 `_SLAMbase` owns input linking, timestamp deduplication, the worker, pose publication and the session lifecycle. `_GLIM` owns preprocessing, odometry, submaps and global mapping. Processing is sequential on the OpenKAI worker; if processing falls behind, it takes the newest completed cloud instead of building an unbounded frame queue. `getLastFrameIfNew()` checks freshness under the ring lock before copying, so idle polls do not recopy the preceding cloud. This input optimization is independent of the viewer. IMU-required odometry waits for a paired IMU sample later than the cloud timestamp.
 
@@ -37,11 +39,13 @@ cmake --build /tmp/openkai-slam-tests -j4
 ctest --test-dir /tmp/openkai-slam-tests --output-on-failure
 ```
 
+The IMU-free test additionally checks immediate CT initialization, stationary and moving depth-only scenes, parameter persistence, and exact final-frame coverage in completed submaps, including a single-frame scan. The adapter retains CT's active smoother window separately from export previews and flushes the native mapper's lookahead when IMU is disabled.
+
 These exercise ring-buffer frame spans and wraparound, IMU pairing, confidence expiry, real GLIM CPU estimation on stationary and moving synthetic scenes, map saving, parameter validation/persistence, PLY writing, dedicated submap transport, and session restart/reset. The motion test translates 0.5 m and rotates 23 degrees before returning, with independently synthesized 200 Hz IMU measurements. Live sensor calibration and trajectory accuracy still require a hardware run.
 
 ## Viewer and completed submaps
 
-`jsonCfg/GLIM_orbbec.json` connects camera → input `_PointCloud` → `_GLIM` →
+`jsonCfg/GLIM_orbbec.json` and `jsonCfg/GLIM_scepter.json` connect camera → input `_PointCloud` → `_GLIM` →
 `_WebGLIM`. The viewer links directly with `"_GLIM": "GLIM"` and uses the shared
 `HttpServer` with its own `/stream/glim` protocol. `_WSconsole` carries controls,
 parameters and pose/status independently. `_WebGLIM` requires `WITH_UNIVERSE`
@@ -84,7 +88,7 @@ for controls, distance coloring, sensor setup and launch instructions.
 The web parameter panel edits a validated JSON object exposed by `getConfig`.
 Common fields are `bMapping`, `nMinPoints`, and `preprocess` fields
 `distanceNear`, `distanceFar`, `voxelResolution`, `targetPoints`, `kNeighbors`,
-and `threads`. Recognized CPU odometry adds `odometry` controls; standard
+and `threads`. Recognized CPU and CT odometry add `odometry` controls; standard
 submapping/global mapping add their corresponding groups. Other selected
 backends still load through GLIM's module factory. Unexposed settings and sensor
 calibration continue to come from the selected profile.
@@ -128,10 +132,11 @@ saves GLIM's native finished map after tracking stops.
 
 ## Measuring performance
 
-Use the **GLIM (optimized with debug symbols)** VSCode launch configuration for
-live SLAM. Its pre-launch task configures `build` as `RelWithDebInfo`, preserving
-the cached component switches, builds `build/OpenKAI`, and starts GDB. The existing
-launch configuration is still available. Debug (`-O0`) retains expensive Eigen
+Use the **GLIM: build optimized** VSCode task for live SLAM. It configures
+`build` as `RelWithDebInfo`, preserves the cached component switches, and builds
+`build/OpenKAI`. The **GLIM Scepter (optimized)** launch runs this task before
+starting GDB with `jsonCfg/GLIM_scepter.json`; enable the SDK first as described
+in the Scepter profile guide. The original Orbbec launch remains available. Debug (`-O0`) retains expensive Eigen
 and container operations in the point-cloud hot path; changing the thread's
 target FPS does not remove that work.
 

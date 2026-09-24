@@ -502,12 +502,20 @@ if(WITH_SLAM AND USE_GLIM)
     message(WARNING
       "GLIM is enabled in Debug: point-cloud processing is unoptimized (-O0) "
       "and may not keep up with live sensors. For live SLAM with debug symbols, "
-      "use the 'GLIM (optimized with debug symbols)' VSCode launch configuration "
+      "use the 'GLIM: build optimized' VSCode task "
       "or configure with -DCMAKE_BUILD_TYPE=RelWithDebInfo.")
   endif()
   find_package(glim REQUIRED CONFIG)
   add_definitions(-DUSE_GLIM)
   list(APPEND OpenKAI_lib glim::glim)
+  if(USE_SCEPTER_SDK AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    # Scepter embeds a different spdlog/fmt ABI. Its own references bind locally
+    # (DT_SYMBOLIC), but its exported symbols must not interpose on GLIM's logger.
+    # Retain GLIM's spdlog before Scepter in DT_NEEDED even when OpenKAI itself
+    # has no direct spdlog calls and the linker enables --as-needed by default.
+    list(APPEND OpenKAI_lib
+      "-Wl,--push-state,--no-as-needed" spdlog::spdlog "-Wl,--pop-state")
+  endif()
   # Standalone GLIM installs headers under include/glim, while some releases
   # export include/glim as their include root (the ROS layout is nested).
   get_target_property(OpenKAI_GLIM_INCLUDE_HINTS glim::glim INTERFACE_INCLUDE_DIRECTORIES)

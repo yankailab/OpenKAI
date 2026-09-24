@@ -1,10 +1,11 @@
-"""Real browser + WSconsole integration for GLIM_orbbec.json.
+"""Real browser + WSconsole integration for either RGBD GLIM profile.
 
-python3 test/slam/browser.py build/OpenKAI [--hardware]
-Without --hardware the sensor is disabled; lifecycle and renderer checks need no USB.
-Hardware mode requires poses and streamed map points from the attached Orbbec.
+python3 test/slam/browser.py build/OpenKAI [--hardware] [--config jsonCfg/GLIM_scepter.json]
+The default profile is GLIM_orbbec.json. Without --hardware the sensor is disabled.
+Hardware mode requires poses and streamed map points from the configured camera.
 Uses temporary ports/configuration; saves a screenshot and backend log under /tmp.
 """
+import argparse
 import base64
 import json
 import shutil
@@ -28,16 +29,29 @@ def free_port():
 
 def main():
     root = Path(__file__).resolve().parents[2]
-    executable = str(Path(sys.argv[1]).resolve())
-    hardware = '--hardware' in sys.argv
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('executable', type=Path)
+    parser.add_argument('--hardware', action='store_true')
+    parser.add_argument('--config', type=Path, default=root / 'jsonCfg/GLIM_orbbec.json')
+    args = parser.parse_args()
+    executable = str(args.executable.resolve())
+    hardware = args.hardware
     chrome = shutil.which('google-chrome') or shutil.which('chromium')
     if not chrome: raise RuntimeError('Chromium is required')
     with tempfile.TemporaryDirectory(prefix='openkai-glim-browser-', ignore_cleanup_errors=True) as folder:
         tmp = Path(folder)
-        config = json.loads((root / 'jsonCfg/GLIM_orbbec.json').read_text())
-        for name in ['console', 'view', 'viewD', 'd2rgb']: config[name]['bON'] = False
-        config['Orbbec']['bON'] = hardware
-        config['Orbbec']['bLog'] = True
+        config = json.loads(args.config.read_text())
+        for name in ['console', 'view', 'viewD', 'd2rgb']:
+            if name in config: config[name]['bON'] = False
+        cameras = [(name, module) for name, module in config.items()
+                   if isinstance(module, dict) and module.get('class') in ('_Orbbec', '_Scepter')]
+        assert len(cameras) == 1, f'Expected one RGBD camera in {args.config}: {cameras}'
+        camera_name, camera = cameras[0]
+        camera['bON'] = hardware
+        camera['bLog'] = True
+        # Camera controls can also persist settings: all tests use isolated files.
+        camera['fConfig'] = str(tmp / 'camera.controls.json')
+        expects_imu = bool(config['GLIM'].get('_IMUbase'))
         config['GLIM']['bAutoStart'] = False
         config['GLIM']['bLog'] = True
         config['GLIM']['fConfig'] = str(tmp / 'glim.controls.json')
@@ -121,6 +135,7 @@ def main():
             assert evaluate("document.querySelectorAll('#viewport canvas').length") == 1
             assert evaluate("socketURLs.filter(u => new URL(u).pathname.startsWith('/stream/')).map(u => new URL(u).pathname)") == ['/stream/glim']
             wait_for("document.querySelector('#param-nMinPoints') && !document.querySelector('#parameterFields').disabled")
+            assert evaluate("['voxelResolution','iterations','threads'].every(key => Number(document.querySelector('#param-odometry-' + key)?.value) > 0)")
             original_minimum = evaluate("Number(document.querySelector('#param-nMinPoints').value)")
             evaluate(f"document.querySelector('#param-nMinPoints').value = {original_minimum + 1}; document.querySelector('#param-nMinPoints').dispatchEvent(new Event('input', {{bubbles:true}}))")
             time.sleep(.7)
@@ -192,15 +207,19 @@ def main():
                 time.sleep(3)
                 after = evaluate("replies.findLast(j => j.status)?.status")
                 elapsed = (after['poseTimestampUs'] - before['poseTimestampUs']) * 1e-6
+                assert elapsed > 0, (before, after)
                 imu_rate = (after['imuSamples'] - before['imuSamples']) / elapsed
                 frame_rate = (after['frames'] - before['frames']) / elapsed
-                assert 150 < imu_rate < 250, (imu_rate, after)
-                assert after['maxIMUgapUs'] < 15000, after
+                if expects_imu:
+                    assert 150 < imu_rate < 250, (imu_rate, after)
+                    assert after['maxIMUgapUs'] < 15000, after
+                else:
+                    assert after['imuSamples'] == 0 and after['maxIMUgapUs'] == 0, after
                 assert frame_rate > 10, (frame_rate, after)
                 assert evaluate("Number.parseFloat(document.querySelector('#frameRate').textContent) > 0")
                 assert evaluate("Number.parseFloat(document.querySelector('#processingMs').textContent) > 0")
                 print('Live status:', after, flush=True)
-                print(f'Capture: {frame_rate:.1f} SLAM frames/s, {imu_rate:.1f} IMU pairs/s', flush=True)
+                print(f'{camera_name}: {frame_rate:.1f} SLAM frames/s, {imu_rate:.1f} IMU pairs/s', flush=True)
             else:
                 wait_for("document.querySelector('#slamStatus').textContent === 'Initializing'")
             screenshot = command('Page.captureScreenshot', {'format': 'png'})
@@ -248,7 +267,7 @@ def main():
             wait_for("document.querySelector('#status').textContent === 'Stopped'")
             assert not exceptions, exceptions
             print('PASS: GLIM browser, submap accumulation/corrections, bounded trajectory, parameter save/load/edit locks, WSconsole lifecycle, renderer and reconnect')
-            print('Camera: ' + ('live pose, map stream and completed submaps verified' if hardware else 'disabled for hardware-independent checks'))
+            print(f'Camera ({camera_name}): ' + ('live pose, map stream and completed submaps verified' if hardware else 'disabled for hardware-independent checks'))
         finally:
             if client: client.close()
             if browser:
