@@ -151,7 +151,7 @@ namespace kai
 							sent.announced = true;
 							sent.pose = pose;
 							return text({{"type", "submap"}, {"session", std::to_string(session)}, {"revision", std::to_string(revision)},
-								{"id", std::to_string(submap.id)}, {"timestampUs", std::to_string(submap.timestampUs)},
+								{"id", std::to_string(submap.id)}, {"timestampNs", std::to_string(submap.timestampNs)},
 								{"pointCount", total}, {"pose", pose}});
 						}
 						if (sent.pose != pose)
@@ -165,7 +165,7 @@ namespace kai
 							const uint32_t count = uint32_t(std::min(total - sent.points, size_t(MaxChunkPoints)));
 							sending.resize(HeaderBytes + size_t(count) * 12);
 							u32(0, Magic); u32(4, Version); u32(8, 1); u32(12, HeaderBytes);
-							u64(16, session); u64(24, submap.id); u64(32, submap.timestampUs);
+							u64(16, session); u64(24, submap.id); u64(32, submap.timestampNs);
 							u32(40, uint32_t(total)); u32(44, uint32_t(sent.points)); u32(48, count); u32(52, 0);
 							for (size_t i = 0; i < count; ++i)
 							{

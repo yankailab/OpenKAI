@@ -61,7 +61,7 @@ namespace kai
 			{
 				if (!open())
 				{
-					m_pT->sleepT(SEC_2_USEC);
+					m_pT->sleepT(NSEC_SEC);
 					continue;
 				}
 			}
@@ -299,7 +299,7 @@ namespace kai
 		msg += "nDiv=" + i2str(m_nDiv);
 		msg += ", nDet=" + i2str(m_nDetection);
 		msg += ", lightSrcPwr=" + i2str(m_lightSrcPwr);
-		msg += ", tStamp=" + i2str((int)m_pT->getTfrom());
+		msg += ", tStamp=" + i2str((int)m_pT->getTfromNs());
 		pC->addMsg(msg);
 
 		msg = "";

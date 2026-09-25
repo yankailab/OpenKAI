@@ -165,7 +165,7 @@ namespace kai
 	bool _ZLAC8015D::readStatus(void)
 	{
 		IF_F(!check());
-		IF__(!m_ieReadStatus.updateT(m_pT->getTfrom()), true);
+		IF__(!m_ieReadStatus.update(m_pT->getTfromNs()), true);
 
 		uint16_t pB[2];
 		int r;
@@ -189,7 +189,7 @@ namespace kai
 	bool _ZLAC8015D::clearAlarm(void)
 	{
 		IF_F(!check());
-		IF__(!m_ieReadStatus.updateT(m_pT->getTfrom()), true);
+		IF__(!m_ieReadStatus.update(m_pT->getTfromNs()), true);
 
 		int r = m_pMB->writeRegister(m_ID, 0x2031, 0x06); // clear alarm
 		IF_F(r != 1);

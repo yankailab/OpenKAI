@@ -319,11 +319,11 @@ namespace kai
 			return NULL;
 		}
 
-		uint64_t frameTsUs_(const shared_ptr<ob::Frame> &f)
+		uint64_t frameTsNs(const shared_ptr<ob::Frame> &f)
 		{
 			// Depth and IMU share the device capture clock. Host arrival times
 			// contain USB jitter and can be identical for a batch of IMU samples.
-			return f->getTimeStampUs();
+			return f->getTimeStampUs() * NSEC_USEC;
 		}
 
 	protected:
@@ -341,10 +341,10 @@ namespace kai
 		// Keep only the latest RGBD frameset for the slower point-cloud worker.
 		shared_ptr<ob::FrameSet> m_spPCLframe = nullptr;
 
-		uint64_t m_tDus;
-		uint64_t m_dtDus;
-		uint64_t m_tRGBus;
-		uint64_t m_dtRGBus;
+		uint64_t m_tDNs;
+		uint64_t m_dtDNs;
+		uint64_t m_tRGBNs;
+		uint64_t m_dtRGBNs;
 
 		mutable std::recursive_mutex m_mtxDevice;
 		json m_initialConfig = json::object();

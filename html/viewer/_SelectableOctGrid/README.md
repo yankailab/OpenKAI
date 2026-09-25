@@ -42,8 +42,8 @@ Occupied octree cells stream as 16-byte IDs plus RGBA8 (20 bytes per cell). The 
 instanced wire or solid boxes and retains IDs and bounds for cell picking. The
 Wire-frame / Solid switch below Grid enables filled faces with per-cell alpha;
 selected cells keep their red outlines. See the
-[version 5 format](../../../docs/3D/WebViewer3D.md#binary-protocol-version-5).
-The backend and browser must both use version 5; there is no protocol negotiation
+[version 6 format](../../../docs/3D/WebViewer3D.md#binary-protocol-version-6).
+The backend and browser must both use version 6; there is no protocol negotiation
 or conversion. Points and lines use opaque RGB8. Only cell alpha multiplies
 object opacity.
 

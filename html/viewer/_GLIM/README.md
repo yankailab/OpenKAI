@@ -70,7 +70,7 @@ enter that same module name in the viewer's command panel.
 
 For another sensor, connect its `_PointCloud` and optional `_IMUbase` to GLIM and
 select its `configPath`. Clouds use metres and increasing timestamps in
-microseconds. When using an IMU, samples must use m/s² including gravity and
+nanoseconds. When using an IMU, samples must use m/s² including gravity and
 rad/s, calibrated IMU-to-cloud extrinsics, and the same capture clock as depth. The input interface gives one timestamp per complete cloud; it
 does not deskew a scanning LiDAR. Keep the input cloud transform fixed in the
 sensor frame. `_PointCloud` frames remain spans in a ring buffer: allocate at
@@ -133,7 +133,7 @@ color to each completed map section. GLIM does not preserve camera RGB here.
 
 The optional `globalMapPCL` output remains available to other modules. By default,
 `bPublishLiveMap: false` updates that ring only after a completed-submap change
-or finalization, subject to `tMapUpdateUs`; `nMapPoints` caps that output alone.
+or finalization, subject to `tMapUpdateNs`; `nMapPoints` caps that output alone.
 Set `bPublishLiveMap: true` to include the legacy bounded recent-frame preview
 for those consumers. Neither setting changes `_WebGLIM`'s completed-submap
 stream. `nLiveFrames` also bounds unfinished points retained for PLY export.
@@ -195,16 +195,17 @@ Replies echo `cmd`, `module`, `requestId`, and include `bSuccess`, optional
 `error`, and normally `status`. Status includes state, pose validity/freshness,
 position/orientation/angles, frame/map/submap counts and `canSavePointCloud`.
 `session` and `revision` are decimal strings matching the submap stream.
-`imuSamples`, `maxIMUgapUs`, `frameIntervalMs`, `processingMs`, cumulative `workMs`,
+`imuSamples`, `maxIMUgapNs`, `frameIntervalMs`, `processingMs`, cumulative `workMs`,
 `updates`, `inputPoints` and `registrationPoints` support
 [performance measurement](../../../docs/GLIM.md#measuring-performance).
-Sensor pose/input timestamps use the capture clock; map-output timestamps use
-backend monotonic time. Do not subtract values from these different clocks.
+`poseTimestampNs`, `inputTimestampNs`, and `mapTimestampNs` are decimal strings
+containing nanoseconds. Sensor pose/input timestamps use the capture clock;
+map-output timestamps use backend monotonic time. Do not subtract values from these different clocks.
 
 ## Dedicated submap protocol
 
 Connect a WebSocket to `/stream/glim`. The server first sends a JSON `hello`
-with `protocol: "openkai.glim"`, `version: 1`, `stream: "glim"`, camera/style
+with `protocol: "openkai.glim"`, `version: 2`, `stream: "glim"`, camera/style
 settings, `maxSubmapPoints: 10000000` and `maxChunkPoints: 65536`.
 Send `start` to begin. Acknowledge every subsequent text or binary data message
 with `next` after applying it. `pause` suspends transmission; `start` resumes.
@@ -215,7 +216,7 @@ Data messages are:
 - `reset`: JSON `type`, `session`, `revision`. Clear cached geometry and partial
   chunks. Sent first on each connection and whenever the SLAM session changes,
   including resets to an empty map.
-- `submap`: JSON `type`, `session`, `revision`, `id`, `timestampUs`, `pointCount`,
+- `submap`: JSON `type`, `session`, `revision`, `id`, `timestampNs`, `pointCount`,
   `pose`. Allocate immutable local XYZ storage; chunks follow. `pose` is a
   column-major 4×4 transform from submap-local coordinates to the map frame.
 - Binary chunks: the header below followed by `countPoints × 3` float32 local
@@ -223,18 +224,18 @@ Data messages are:
 - `pose`: JSON `type`, `session`, `revision`, `id`, `pose`. Update the existing
   submap transform without uploading its points again.
 
-JSON `session`, `revision`, `id` and `timestampUs` are decimal strings to preserve
+JSON `session`, `revision`, `id` and `timestampNs` are decimal strings to preserve
 64-bit values in JavaScript. All binary values are little-endian:
 
 | Offset | Type | Field |
 | ---: | --- | --- |
-| 0 | uint32 | Magic `0x314d4c47` (bytes `GLM1`) |
-| 4 | uint32 | Version `1` |
+| 0 | uint32 | Magic `0x324d4c47` (bytes `GLM2`) |
+| 4 | uint32 | Version `2` |
 | 8 | uint32 | Kind `1` (point chunk) |
 | 12 | uint32 | Header size `56` |
 | 16 | uint64 | Session |
 | 24 | uint64 | Submap ID |
-| 32 | uint64 | Sensor timestamp in microseconds |
+| 32 | uint64 | Sensor timestamp in nanoseconds |
 | 40 | uint32 | Total points in this submap |
 | 44 | uint32 | First point offset |
 | 48 | uint32 | Points in this chunk, at most 65536 |

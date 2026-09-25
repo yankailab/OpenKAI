@@ -285,7 +285,7 @@ namespace kai
 		m_cells.m_header = {{m_vPorigin.x(), m_vPorigin.y(), m_vPorigin.z()},
 							{m_vRootCellSize.x(), m_vRootCellSize.y(), m_vRootCellSize.z()},
 							uint32_t(m_nMaxLevel),
-							getApproxTbootUs()};
+							getTns()};
 		m_cells.m_vCell.swap(m_buildCells);
 	}
 
@@ -393,7 +393,7 @@ namespace kai
 					const OCTGRID_HEADER header = {{origin.x(), origin.y(), origin.z()},
 												   {size.x(), size.y(), size.z()},
 												   uint32_t(m_nMaxLevel),
-												   getApproxTbootUs()};
+												   getTns()};
 					if (m_pCell)
 						m_pCell->release(); // Clear the root's occupancy as well as all eight subtrees.
 					m_buildCells.clear();

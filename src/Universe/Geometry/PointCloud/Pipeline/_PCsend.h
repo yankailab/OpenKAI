@@ -47,7 +47,7 @@ namespace kai
 
 		uint8_t *m_pB = nullptr;
 		int m_nB = 256;
-		uint64_t m_tInt = 100000;
+		uint64_t m_tInt = NSEC_SEC / 10; // nanoseconds
 	};
 
 }

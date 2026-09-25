@@ -47,7 +47,7 @@ namespace kai
 			{
 				if (!power(true))
 				{
-					m_pT->sleepT(SEC_2_USEC);
+					m_pT->sleepT(NSEC_SEC);
 					continue;
 				}
 			}

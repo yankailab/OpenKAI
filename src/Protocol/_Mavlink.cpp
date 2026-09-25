@@ -291,7 +291,7 @@ namespace kai
 	 */
 
 		mavlink_message_t msg;
-		D.usec = getTbootMs();
+		D.usec = getTbootMs() * USEC_MSEC;
 
 		mavlink_msg_global_vision_position_estimate_encode(m_mySystemID,
 														   m_myComponentID, &msg, &D);
@@ -344,7 +344,7 @@ namespace kai
 
 	bool _Mavlink::gpsRawINT(mavlink_gps_raw_int_t &D)
 	{
-		D.time_usec = getApproxTbootUs();
+		D.time_usec = getTbootMs() * USEC_MSEC;
 
 		mavlink_message_t msg;
 		mavlink_msg_gps_raw_int_encode(m_mySystemID, m_myComponentID, &msg, &D);
@@ -364,7 +364,7 @@ namespace kai
 
 	bool _Mavlink::landingTarget(mavlink_landing_target_t &D)
 	{
-		D.time_usec = getApproxTbootUs();
+		D.time_usec = getTbootMs() * USEC_MSEC;
 
 		mavlink_message_t msg;
 		mavlink_msg_landing_target_encode(m_mySystemID, m_myComponentID, &msg, &D);
@@ -727,7 +727,7 @@ namespace kai
 	bool _Mavlink::visionPositionEstimate(mavlink_vision_position_estimate_t &D)
 	{
 		mavlink_message_t msg;
-		D.usec = getTbootMs();
+		D.usec = getTbootMs() * USEC_MSEC;
 
 		mavlink_msg_vision_position_estimate_encode(m_mySystemID, m_myComponentID,
 													&msg, &D);
@@ -740,7 +740,7 @@ namespace kai
 	bool _Mavlink::visionSpeedEstimate(mavlink_vision_speed_estimate_t &D)
 	{
 		mavlink_message_t msg;
-		D.usec = getTbootMs();
+		D.usec = getTbootMs() * USEC_MSEC;
 
 		mavlink_msg_vision_speed_estimate_encode(m_mySystemID, m_myComponentID,
 												 &msg, &D);
@@ -1001,8 +1001,9 @@ namespace kai
 		for (MavMsgBase *pM : m_vpMsg)
 		{
 			IF_CONT(pM->m_tInterval < 0);
-			IF_CONT(pM->bReceiving());
-			clSetMessageInterval(pM->m_id, pM->m_tInterval, 0);
+			IF_CONT(pM->bOnTime());
+			// MAV_CMD_SET_MESSAGE_INTERVAL uses microseconds on the wire.
+			clSetMessageInterval(pM->m_id, pM->m_tInterval / double(NSEC_USEC), 0);
 		}
 	}
 

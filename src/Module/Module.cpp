@@ -78,14 +78,15 @@ namespace kai
 
 #ifdef WITH_AUTOPILOT
 		ADD_MODULE(_AutopilotBase);
-		ADD_MODULE(_Drive);
+		ADD_MODULE(_ApDrive);
 #endif
 
 #ifdef WITH_ARDUPILOT
-		ADD_MODULE(_APmav_rcChannel);
 		ADD_MODULE(_APmav_base);
-		ADD_MODULE(_APmav_httpJson);
-		ADD_MODULE(_APmav_mav2json);
+		ADD_MODULE(_APmav_copter);
+		ADD_MODULE(_APmav_rover);
+
+		ADD_MODULE(_APmav_rcChannel);
 		ADD_MODULE(_APmav_mission);
 		ADD_MODULE(_APmav_move);
 		ADD_MODULE(_APmav_relay);
@@ -94,12 +95,9 @@ namespace kai
 #ifdef USE_OPENCV
 		ADD_MODULE(_APmav_RTCM);
 		ADD_MODULE(_APmav_depthVision);
-		ADD_MODULE(_APmav_videoStream);
-		ADD_MODULE(_APmav_photo);
 #ifdef USE_OPENCV_CONTRIB
 		ADD_MODULE(_APmav_follow);
 		ADD_MODULE(_APmav_land);
-		ADD_MODULE(_APmav_landingTarget);
 #endif // opencv_contrib
 #endif // opencv
 #ifdef WITH_NAVIGATION

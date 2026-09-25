@@ -2972,12 +2972,12 @@ namespace kai
 				m_spAccel->start(accel, [imu = m_pIMU](shared_ptr<ob::Frame> frame) {
 					if (!imu || !frame) return;
 					const auto v = frame->as<ob::AccelFrame>()->value(); // m/s^2
-					imu->addAcc({v.x, v.y, v.z}, frame->getTimeStampUs());
+					imu->addAcc({v.x, v.y, v.z}, frame->getTimeStampUs() * NSEC_USEC);
 				});
 				m_spGyro->start(gyro, [imu = m_pIMU](shared_ptr<ob::Frame> frame) {
 					if (!imu || !frame) return;
 					const auto v = frame->as<ob::GyroFrame>()->value(); // rad/s
-					imu->addGyro({v.x, v.y, v.z}, frame->getTimeStampUs());
+					imu->addGyro({v.x, v.y, v.z}, frame->getTimeStampUs() * NSEC_USEC);
 				});
 			}
 
@@ -2993,10 +2993,10 @@ namespace kai
 				m_spPCF->setCreatePointFormat(OB_FORMAT_POINT);
 			}
 
-			m_tDus = 0;
-			m_dtDus = 0;
-			m_tRGBus = 0;
-			m_dtRGBus = 0;
+			m_tDNs = 0;
+			m_dtDNs = 0;
+			m_tRGBNs = 0;
+			m_dtRGBNs = 0;
 
 			m_bOpened = true;
 			return true;
@@ -3056,7 +3056,7 @@ namespace kai
 			if (!open())
 			{
 				LOG_E("Cannot open Orbbec");
-				m_pT->sleepT(SEC_2_USEC);
+				m_pT->sleepT(NSEC_SEC);
 				continue;
 			}
 
@@ -3111,9 +3111,9 @@ namespace kai
 					std::lock_guard<std::mutex> lock(m_mutexRGB);
 					Mat(m_vSizeRGB.y(), m_vSizeRGB.x(), CV_8UC3, spFrameRGB->getData()).copyTo(m_mRGB);
 				}
-				uint64_t tRGBus = frameTsUs_(spFrameRGB);
-				m_dtRGBus = tRGBus - m_tRGBus;
-				m_tRGBus = tRGBus;
+				uint64_t tRGBNs = frameTsNs(spFrameRGB);
+				m_dtRGBNs = tRGBNs - m_tRGBNs;
+				m_tRGBNs = tRGBNs;
 			}
 		}
 
@@ -3126,9 +3126,9 @@ namespace kai
 					std::lock_guard<std::mutex> lock(m_mutexDepth);
 					Mat(m_vSizeD.y(), m_vSizeD.x(), CV_16UC1, spFrameD->getData()).copyTo(m_mDepth);
 				}
-				uint64_t tDus = frameTsUs_(spFrameD);
-				m_dtDus = tDus - m_tDus;
-				m_tDus = tDus;
+				uint64_t tDNs = frameTsNs(spFrameD);
+				m_dtDNs = tDNs - m_tDNs;
+				m_tDNs = tDNs;
 			}
 		}
 
@@ -3186,7 +3186,7 @@ namespace kai
 
 		// The SDK scale converts point coordinates to millimeters.
 		const float s_b = spFrame->as<ob::PointsFrame>()->getCoordinateValueScale() * scale;
-		const uint64_t tDus = frameTsUs_(spFrame);
+		const uint64_t tDNs = frameTsNs(spFrame);
 
 		points->frameStart();
 
@@ -3205,7 +3205,7 @@ namespace kai
 				const Vector3f vP(p.x * s_b, p.y * s_b, p.z * s_b);
 				// The filter preserves the configured BGR stream's channel order.
 				const Vector3f vC(p.b * c_b, p.g * c_b, p.r * c_b);
-				points->add(vP, vC, tDus);
+				points->add(vP, vC, tDNs);
 			}
 		}
 		else
@@ -3221,7 +3221,7 @@ namespace kai
 				IF_CONT(p.z <= 0);
 
 				const Vector3f vP(p.x * s_b, p.y * s_b, p.z * s_b);
-				points->add(vP, vC, tDus);
+				points->add(vP, vC, tDNs);
 			}
 		}
 
@@ -3236,8 +3236,8 @@ namespace kai
 		this->_RGBDbase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		pC->addMsg("tDus = " + li2str(m_tDus) + ", dtDus = " + li2str(m_dtDus));
-		pC->addMsg("tRGBus = " + li2str(m_tRGBus) + ", dtRGBus = " + li2str(m_dtRGBus));
+		pC->addMsg("tDNs = " + li2str(m_tDNs) + ", dtDNs = " + li2str(m_dtDNs));
+		pC->addMsg("tRGBNs = " + li2str(m_tRGBNs) + ", dtRGBNs = " + li2str(m_dtRGBNs));
 	}
 
 	void _Orbbec::console(const json &j, void *pJSONbase)

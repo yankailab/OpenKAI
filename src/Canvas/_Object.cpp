@@ -57,7 +57,7 @@ namespace kai
 	void _Object::updateKinetics(void)
 	{
 		IF_(!check());
-		m_vSpeed += m_vAccel * m_pT->getDt() * USEC_2_SEC;
+		m_vSpeed += m_vAccel * nsec2sec<float>(m_pT->getDtNs());
 		m_vPos += m_vSpeed;
 	}
 

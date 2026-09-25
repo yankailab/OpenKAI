@@ -42,9 +42,9 @@
 		},
 		"_Modbus": "modbus",
 
-		"tIntSendCMD": 100000,
-		"tIntReadStatus": 100000,
-		"tIntCheckAlarm": 100000,
+		"tIntSendCMD": 100000000,
+		"tIntReadStatus": 100000000,
+		"tIntCheckAlarm": 100000000,
 
 		"bfSetPower": 0,
 		"bfSetID": 0,

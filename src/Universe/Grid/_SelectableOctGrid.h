@@ -35,7 +35,7 @@ namespace kai
 		std::array<float, 3> m_vPorigin = {};			  // root center, not its minimum corner
 		std::array<float, 3> m_vRootCellSize = {1, 1, 1}; // full XYZ extents
 		uint32_t m_nMaxLevel = 0;
-		uint64_t m_tStamp = 0; // publication time, shared by all records
+		uint64_t m_tStamp = 0; // monotonic nanoseconds at publication, shared by all records
 	};
 
 	struct OCTGRID_CELLS

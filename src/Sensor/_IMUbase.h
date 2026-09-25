@@ -18,7 +18,7 @@ namespace kai
 {
 	struct IMU_DATA
 	{
-		uint64_t m_t = 0;
+		uint64_t m_t = 0; // capture timestamp in nanoseconds
 		Vector3f m_v = Vector3f::Zero();
 	};
 
@@ -63,7 +63,7 @@ namespace kai
 	protected:
 		std::mutex m_mtxIMU;
 		int m_nIMUdqMax = 1000;
-		uint64_t m_tIMUpairToleranceUs = 5000; // 5ms
+		uint64_t m_tIMUpairToleranceNs = 5 * NSEC_MSEC; // 5ms
 		deque<IMU_DATA> m_dqGyro;
 		deque<IMU_DATA> m_dqAcc;
 		// Preview fusion must not consume samples requested by SLAM/getIMUpair.

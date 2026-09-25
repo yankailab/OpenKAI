@@ -118,7 +118,7 @@ namespace kai
 			{
 				if (!open())
 				{
-					m_pT->sleepT(SEC_2_USEC);
+					m_pT->sleepT(NSEC_SEC);
 					continue;
 				}
 			}
@@ -129,7 +129,7 @@ namespace kai
 				close();
 				pthread_mutex_unlock(&m_mutex);
 
-				m_pT->sleepT(SEC_2_USEC);
+				m_pT->sleepT(NSEC_SEC);
 				continue;
 			}
 

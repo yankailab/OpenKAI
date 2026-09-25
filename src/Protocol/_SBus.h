@@ -30,7 +30,7 @@ namespace kai
 		bool m_bCh17;
 		bool m_bCh18;
 		RC_CHANNEL m_pRC[SBUS_NCHAN];
-		uint64_t m_timeOutUsec = USEC_1SEC;
+		uint64_t m_timeOutNsec = NSEC_SEC;
 		uint64_t m_tLastRecv;
 
 		void clear(void)
@@ -75,9 +75,9 @@ namespace kai
 		{
 			IF__(m_bFailSafe, true);
 
-			uint64_t t = getApproxTbootUs();
+			uint64_t t = getTns();
 			IF_F(t <= m_tLastRecv);
-			IF__(t - m_tLastRecv > m_timeOutUsec, true);
+			IF__(t - m_tLastRecv > m_timeOutNsec, true);
 
 			return false;
 		}

@@ -11,8 +11,8 @@
 
 namespace kai::webselectableoctgrid
 {
-	constexpr uint32_t Magic = 0x35443357; // W3D5; RGB points/lines, RGBA cells
-	constexpr uint32_t Version = 5;
+	constexpr uint32_t Magic = 0x36443357; // W3D6; RGB points/lines, RGBA cells
+	constexpr uint32_t Version = 6;
 	enum class Type : uint32_t { Points = 1, Lines = 2, Cells = 3 };
 	constexpr std::array<Type, 3> Types = {Type::Points, Type::Lines, Type::Cells};
 	inline const char *name(Type type)
@@ -41,12 +41,12 @@ namespace kai::webselectableoctgrid
 		if (*reinterpret_cast<const uint8_t *>(&endian)) std::memcpy(b.data() + at, v.data(), v.size() * 4);
 		else for (size_t i = 0; i < v.size(); ++i) f32(b, at + i * 4, v[i]);
 	}
-	inline void begin(std::vector<uint8_t> &b, Type type, uint32_t sequence, uint64_t timestampUs)
+	inline void begin(std::vector<uint8_t> &b, Type type, uint32_t sequence, uint64_t timestampNs)
 	{
 		name(type); // validate before writing
 		b.assign(HeaderBytes, 0);
 		u32(b, 0, Magic); u32(b, 4, Version); u32(b, 8, uint32_t(type)); u32(b, 12, sequence);
-		u64(b, 24, timestampUs);
+		u64(b, 24, timestampNs);
 	}
 	inline void objectHeader(std::vector<uint8_t> &b, Type type, uint32_t id, size_t count,
 		float pointSize, float opacity, const float bounds[6], size_t payloadBytes)

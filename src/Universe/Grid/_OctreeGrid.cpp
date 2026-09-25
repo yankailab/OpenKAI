@@ -210,7 +210,7 @@ namespace kai
 		IF_(!check());
 		NULL_(m_pCell);
 
-		uint64_t tNow = getApproxTbootUs();
+		uint64_t tNow = getTns();
 		uint64_t tExpire = 0;
 		if (m_dTexpirePCL > 0)
 			tExpire = (tNow > m_dTexpirePCL) ? tNow - m_dTexpirePCL : 0;
@@ -349,7 +349,7 @@ namespace kai
 		uint64_t tExpire = 0;
 		if (m_dTexpireCell > 0)
 		{
-			uint64_t tNow = getApproxTbootUs();
+			uint64_t tNow = getTns();
 			tExpire = (tNow > m_dTexpireCell) ? tNow - m_dTexpireCell : 0;
 		}
 

@@ -10,12 +10,31 @@
 
 namespace kai
 {
+	static int initMonotonicCond(pthread_cond_t *pCond)
+	{
+		pthread_condattr_t attr;
+
+		int r = pthread_condattr_init(&attr);
+		if (r != 0)
+			return r;
+
+		r = pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
+		if (r == 0)
+		{
+			r = pthread_cond_init(pCond, &attr);
+		}
+
+		pthread_condattr_destroy(&attr);
+		return r;
+	}
+
 	_Thread::_Thread()
 	{
 		m_class = "_Thread";
 
 		pthread_mutex_init(&m_wakeupMutex, NULL);
-		pthread_cond_init(&m_wakeupSignal, NULL);
+
+		initMonotonicCond(&m_wakeupSignal);
 	}
 
 	_Thread::~_Thread()
@@ -71,7 +90,7 @@ namespace kai
 		IF_F(m_threadID != 0);
 
 		m_setState = thread_run;
-		m_tFrom = getApproxTbootUs();
+		m_tFromNs = getTns();
 
 		int r = pthread_create(&m_threadID, 0, __start_routine, __arg);
 		IF_F(r != 0);
@@ -153,25 +172,28 @@ namespace kai
 			pT->run();
 	}
 
-	void _Thread::sleepT(int64_t usec)
+	void _Thread::sleepT(int64_t nsec)
 	{
 		m_state = thread_sleep;
 
-		if (usec > 0)
+		if (nsec > 0)
 		{
-			struct timeval tNow;
-			gettimeofday(&tNow, NULL);
+			struct timespec ts;
+			clock_gettime(CLOCK_MONOTONIC, &ts);
 
-			int64_t nsec = (tNow.tv_usec + usec) * 1000;
-			int64_t sec = nsec / NSEC_1SEC;
+			uint64_t dS = nsec / NSEC_SEC;
+			ts.tv_sec += dS;
+			ts.tv_nsec += nsec - (dS * NSEC_SEC);
 
-			struct timespec tTimeout;
-			tTimeout.tv_sec = tNow.tv_sec + sec;
-			tTimeout.tv_nsec = nsec - sec * NSEC_1SEC; // % NSEC_1SEC;
+			while (ts.tv_nsec >= NSEC_SEC)
+			{
+				ts.tv_sec++;
+				ts.tv_nsec -= NSEC_SEC;
+			}
 
 			pthread_mutex_lock(&m_wakeupMutex);
 			if (m_setState != thread_stop)
-				pthread_cond_timedwait(&m_wakeupSignal, &m_wakeupMutex, &tTimeout);
+				pthread_cond_timedwait(&m_wakeupSignal, &m_wakeupMutex, &ts);
 			pthread_mutex_unlock(&m_wakeupMutex);
 		}
 		else
@@ -192,14 +214,18 @@ namespace kai
 
 	void _Thread::autoFPS(void)
 	{
-		m_tTo = getApproxTbootUs();
+		m_tToNs = getTns();
 
 		if (!m_bSkipSleep)
 		{
-			int uSleep = (int)(m_targetTframe - (m_tTo - m_tFrom));
-			if (uSleep > 1000)
+			const uint64_t elapsedNs = m_tToNs - m_tFromNs;
+			if (elapsedNs < m_targetTns)
 			{
-				sleepT(uSleep);
+				const uint64_t sleepNs = m_targetTns - elapsedNs;
+				if (sleepNs > NSEC_MSEC)
+				{
+					sleepT(sleepNs);
+				}
 			}
 		}
 		else
@@ -211,58 +237,57 @@ namespace kai
 		{
 			m_FPS = 0;
 			sleepT(0);
-			m_tFrom = getApproxTbootUs();
+			m_tFromNs = getTns();
 		}
 
-		uint64_t tNow = getApproxTbootUs();
-		m_dT = (float)(tNow - m_tFrom + 1);
-		m_tFrom = tNow;
-		m_FPS = SEC_2_USEC / m_dT;
+		uint64_t tNow = getTns();
+		m_dTns = tNow - m_tFromNs + 1;
+		m_tFromNs = tNow;
+		m_FPS = NSEC_SEC / m_dTns;
 	}
 
-	float _Thread::getFPS(void)
+	uint64_t _Thread::getFPS(void)
 	{
 		return m_FPS;
 	}
 
-	void _Thread::setTargetFPS(float fps)
+	void _Thread::setTargetFPS(int fps)
 	{
 		IF_(fps <= 0);
 
 		m_targetFPS = fps;
-		m_targetTframe = SEC_2_USEC / m_targetFPS;
+		m_targetTns = NSEC_SEC / m_targetFPS;
 	}
 
-	float _Thread::getTargetFPS(void)
+	uint64_t _Thread::getTargetFPS(void)
 	{
 		return m_targetFPS;
 	}
 
-	uint64_t _Thread::getTfrom(void)
+	uint64_t _Thread::getTfromNs(void)
 	{
-		return m_tFrom;
+		return m_tFromNs;
 	}
 
-	uint64_t _Thread::getTto(void)
+	uint64_t _Thread::getTtoNs(void)
 	{
-		return m_tTo;
+		return m_tToNs;
 	}
 
-	float _Thread::getDt(void)
+	uint64_t _Thread::getDtNs(void)
 	{
-		return m_dT;
+		return m_dTns;
 	}
 
 	void _Thread::console(void *pConsole)
 	{
 		NULL_(pConsole);
 
-		string msg = "FPS: " + f2str(m_FPS, 2);
+		string msg = "FPS: " + i2str(m_FPS);
 		string t = " " + this->getName();
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg(t, COLOR_PAIR(_Console_COL_NAME) | A_BOLD, _Console_X_NAME, 1);
 		pC->addMsg(msg, COLOR_PAIR(_Console_COL_FPS) | A_BOLD, _Console_X_FPS);
 	}
-
 }

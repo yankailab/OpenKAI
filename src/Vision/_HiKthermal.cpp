@@ -234,7 +234,7 @@ namespace kai
 				if (!open())
 				{
 					close(); // keep it, as it may requires several tries to get connected
-					m_pT->sleepT(SEC_2_USEC);
+					m_pT->sleepT(NSEC_SEC);
 					continue;
 				}
 			}
@@ -245,7 +245,7 @@ namespace kai
 			uvc_error_t r;
 
 			// Get pFrame (blocking call)
-			r = uvc_stream_get_frame(m_pHandleStream, &pFrame, USEC_1SEC); // Timeout: 1 second
+			r = uvc_stream_get_frame(m_pHandleStream, &pFrame, USEC_SEC); // Timeout: 1 second
 			if (r < 0 || !pFrame)
 			{
 				LOG_I("uvc_stream_get_frame: " + string(uvc_strerror(r)));

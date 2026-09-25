@@ -74,7 +74,7 @@ namespace kai
 	{
 		IF_(!check());
 
-		uint64_t t = getApproxTbootUs();
+		uint64_t t = getTns();
 
 		if (m_ieSendHB.update(t))
 			sendHeartbeat();

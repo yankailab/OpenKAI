@@ -68,34 +68,32 @@
 
 #ifdef WITH_AUTOPILOT
 #include "../Autopilot/_AutopilotBase.h"
-#include "../Autopilot/Drive/_Drive.h"
+#include "../Autopilot/Ground/_ApDrive.h"
 #endif
 
 #ifdef WITH_ARDUPILOT
-#include "../Autopilot/ArduPilot/_APmav_rcChannel.h"
-#include "../Autopilot/ArduPilot/_APmav_base.h"
-#include "../Autopilot/ArduPilot/_APmav_httpJson.h"
-#include "../Autopilot/ArduPilot/_APmav_mav2json.h"
-#include "../Autopilot/ArduPilot/_APmav_mission.h"
-#include "../Autopilot/ArduPilot/_APmav_move.h"
-#include "../Autopilot/ArduPilot/_APmav_relay.h"
-#include "../Autopilot/ArduPilot/_APmav_servo.h"
-#include "../Autopilot/ArduPilot/_APmav_drive.h"
+#include "../Autopilot/FC/ArduPilot/_APmav_base.h"
+#include "../Autopilot/FC/ArduPilot/_APmav_copter.h"
+#include "../Autopilot/FC/ArduPilot/_APmav_rover.h"
+
+#include "../Autopilot/FC/ArduPilot/_APmav_rcChannel.h"
+#include "../Autopilot/FC/ArduPilot/_APmav_mission.h"
+#include "../Autopilot/FC/ArduPilot/_APmav_move.h"
+#include "../Autopilot/FC/ArduPilot/_APmav_relay.h"
+#include "../Autopilot/FC/ArduPilot/_APmav_servo.h"
+#include "../Autopilot/FC/ArduPilot/_APmav_drive.h"
 #ifdef USE_OPENCV
-#include "../Autopilot/ArduPilot/_APmav_RTCM.h"
-#include "../Autopilot/ArduPilot/_APmav_depthVision.h"
-#include "../Autopilot/ArduPilot/_APmav_videoStream.h"
-#include "../Autopilot/ArduPilot/_APmav_photo.h"
+#include "../Autopilot/FC/ArduPilot/_APmav_RTCM.h"
+#include "../Autopilot/FC/ArduPilot/_APmav_depthVision.h"
 #ifdef USE_OPENCV_CONTRIB
-#include "../Autopilot/ArduPilot/_APmav_follow.h"
-#include "../Autopilot/ArduPilot/_APmav_land.h"
-#include "../Autopilot/ArduPilot/_APmav_landingTarget.h"
+#include "../Autopilot/FC/ArduPilot/_APmav_follow.h"
+#include "../Autopilot/FC/ArduPilot/_APmav_land.h"
 #endif // opencv_contrib
 #endif // opencv
 #ifdef WITH_SWARM
 #endif
 #ifdef WITH_NAVIGATION
-#include "../Autopilot/ArduPilot/_APmav_visionEstimate.h"
+#include "../Autopilot/FC/ArduPilot/_APmav_visionEstimate.h"
 #endif // nav
 #endif // WITH_ARDUPILOT
 

@@ -144,7 +144,7 @@
 			"FPS": 10
 		},
 		"nIMUdqMax": 4000,
-		"tIMUpairToleranceUs": 1000
+		"tIMUpairToleranceNs": 1000000
 	},
 	"glimPCL": {
 		"class": "_PointCloud",
@@ -205,10 +205,10 @@
 		"bMapping": true,
 		"bPublishLiveMap": false,
 		"nMinPoints": 100,
-		"tConfidenceTimeoutUs": 1000000,
+		"tConfidenceTimeoutNs": 1000000000,
 		"globalMapPCL": "glimPCL",
 		"nMapPoints": 400000,
 		"nLiveFrames": 60,
-		"tMapUpdateUs": 200000
+		"tMapUpdateNs": 200000000
 	}
 }

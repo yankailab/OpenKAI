@@ -169,7 +169,7 @@ namespace kai
 	bool _ZDmotor::readStatus(void)
 	{
 		IF_F(!check());
-		IF__(!m_ieReadStatus.updateT(m_pT->getTfrom()), true);
+		IF__(!m_ieReadStatus.update(m_pT->getTfromNs()), true);
 
 		uint16_t pB[2];
 		int r = m_pMB->readRegisters(m_ID, 0x202C, 1, pB);
@@ -185,7 +185,7 @@ namespace kai
 	bool _ZDmotor::clearAlarm(void)
 	{
 		IF_F(!check());
-		//		IF__(!m_ieReadStatus.update(m_pT->getTfrom()));
+		//		IF__(!m_ieReadStatus.update(m_pT->getTfromNs()));
 
 		IF_F(m_pMB->writeRegister(m_ID, 0x2000, 0x07) != 1);
 

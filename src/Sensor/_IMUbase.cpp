@@ -25,7 +25,7 @@ namespace kai
 		IF_F(!_ModuleBase::init(j));
 
 		jKv(j, "nIMUdqMax", m_nIMUdqMax);
-		jKv(j, "tIMUpairToleranceUs", m_tIMUpairToleranceUs);
+		jKv(j, "tIMUpairToleranceNs", m_tIMUpairToleranceNs);
 
 		jKv(j, "bFusion", m_bFusion);
 		IF_Le_F(m_nIMUdqMax < 1 || m_nIMUdqMax > 100000, "Invalid IMU queue size");
@@ -114,7 +114,7 @@ namespace kai
 			const uint64_t previous = m_tStampFusion;
 			m_tStampFusion = t;
 			m_bPreviewDirty = true;
-			if (!previous || t <= previous || t - previous > 500000)
+			if (!previous || t <= previous || t - previous > NSEC_SEC / 2)
 			{
 				m_SF = SF();
 				m_vOrt.setIdentity();
@@ -124,7 +124,7 @@ namespace kai
 			}
 
 			m_SF.MahonyUpdate(gyro.x(), gyro.y(), gyro.z(), acc.x(), acc.y(), acc.z(),
-							  static_cast<float>(t - previous) * 1e-6f);
+							  nsec2sec<float>(t - previous));
 			const float *q = m_SF.getQuat(); // SF order: w, x, y, z.
 			m_vOrt = Quaterniond(q[0], q[1], q[2], q[3]).normalized();
 			// ZYX decomposition returns yaw/pitch/roll; publish roll/pitch/yaw.
@@ -251,13 +251,13 @@ namespace kai
 			uint64_t tG = gyro.front().m_t;
 			uint64_t tA = acc.front().m_t;
 
-			if (tG < tA && tA - tG > m_tIMUpairToleranceUs)
+			if (tG < tA && tA - tG > m_tIMUpairToleranceNs)
 			{
 				gyro.pop_front();
 				continue;
 			}
 
-			if (tA < tG && tG - tA > m_tIMUpairToleranceUs)
+			if (tA < tG && tG - tA > m_tIMUpairToleranceNs)
 			{
 				acc.pop_front();
 				continue;

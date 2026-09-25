@@ -183,7 +183,7 @@ namespace kai
 
 		uint64_t tExpire = 0;
 		if(m_dTexpire > 0)
-			tExpire = getApproxTbootUs() - m_dTexpire;
+			tExpire = getTns() - m_dTexpire;
 
 		m_pPS->get(&m_grPt, tExpire);
 	}

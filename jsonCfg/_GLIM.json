@@ -10,7 +10,7 @@
     "bON": true,
     "thread": { "FPS": 100 },
     "nIMUdqMax": 4000,
-    "tIMUpairToleranceUs": 5000
+    "tIMUpairToleranceNs": 5000000
   },
   "slam": {
     "class": "_GLIM",
@@ -22,6 +22,6 @@
     "bAutoStart": true,
     "bMapping": true,
     "nMinPoints": 100,
-    "tConfidenceTimeoutUs": 1000000
+    "tConfidenceTimeoutNs": 1000000000
   }
 }

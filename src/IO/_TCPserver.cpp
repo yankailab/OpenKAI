@@ -50,7 +50,7 @@ namespace kai
 		{
 			if (!handler())
 			{
-				m_pT->sleepT(SEC_2_USEC);
+				m_pT->sleepT(NSEC_SEC);
 			}
 		}
 	}

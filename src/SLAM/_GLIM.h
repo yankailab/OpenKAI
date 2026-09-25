@@ -30,7 +30,8 @@ namespace kai
 	// when a later submap closes a loop. All snapshots are acquired under SLAM's lock.
 	struct GLIM_SUBMAP
 	{
-		uint64_t id = 0, timestampUs = 0;
+		uint64_t id = 0;
+		uint64_t timestampNs = 0;
 		Isometry3d pose = Isometry3d::Identity();
 		std::shared_ptr<const vector<Vector3f>> points;
 	};
@@ -109,13 +110,14 @@ namespace kai
 		std::map<long, std::shared_ptr<const glim::EstimationFrame>> m_activeFrames;
 		std::shared_ptr<const glim::EstimationFrame> m_latestFrame;
 		int m_nMapPoints = 400000, m_nLiveFrames = 100;
-		uint64_t m_mapIntervalUs = 200000, m_mapUpdatedUs = 0;
+		uint64_t m_mapIntervalNs = 200 * NSEC_MSEC;
+		uint64_t m_mapUpdatedNs = 0;
 		size_t m_mapPoints = 0, m_processedFrames = 0;
 		size_t m_imuSamples = 0;
-		uint64_t m_maxIMUgapUs = 0;
+		uint64_t m_maxIMUgapNs = 0;
 		double m_frameIntervalMs = 0.0, m_processingMs = 0.0;
 		// Cumulative work time, including polls that do not produce a pose.
-		std::array<uint64_t, 6> m_stageTimeUs{};
+		std::array<uint64_t, 6> m_stageTimeNs{};
 		size_t m_updates = 0, m_inputPoints = 0, m_registrationPoints = 0;
 		double m_submapStamp = -1.0;
 	};

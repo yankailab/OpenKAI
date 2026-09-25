@@ -31,8 +31,8 @@ namespace kai
 
 	protected:
 		float m_confidence = 0.0;
-		uint64_t m_tConfidenceTimeoutUs = 0; // zero disables expiry
-		uint64_t m_tConfidenceUpdatedUs = 0;
+		uint64_t m_tConfidenceTimeoutNs = 0; // zero disables expiry
+		uint64_t m_tConfidenceUpdatedNs = 0;
 		std::mutex m_mtxConfidence;
 	};
 

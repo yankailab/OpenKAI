@@ -75,7 +75,7 @@ namespace kai
 		IF_(!readPacket());
 
 		_Object o;
-		//	o.m_tStamp = m_pT->getTfrom();
+		//	o.m_tStamp = m_pT->getTfromNs();
 		o.setTopClass(INT_MAX, 1.0);
 
 		uint16_t x = unpack_uint16(&m_pBuf[8], false);

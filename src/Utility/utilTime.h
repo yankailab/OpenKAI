@@ -10,38 +10,18 @@ namespace kai
 
 	inline uint64_t getTbootMs(void)
 	{
-		// get number of milliseconds since boot
-		struct timespec tFromBoot;
-		clock_gettime(CLOCK_BOOTTIME, &tFromBoot);
+		struct timespec ts;
+		clock_gettime(CLOCK_BOOTTIME, &ts);
 
-		return tFromBoot.tv_sec * 1000 + tFromBoot.tv_nsec / 1000000;
+		return (uint64_t)ts.tv_sec * MSEC_SEC + ts.tv_nsec / NSEC_MSEC;
 	}
 
-	inline uint64_t getApproxTbootUs(void)
+	inline uint64_t getTns(void)
 	{
-		// get number of micro sec since boot
-		struct timespec tFromBoot;
-		clock_gettime(CLOCK_BOOTTIME, &tFromBoot);
+		struct timespec ts;
+		clock_gettime(CLOCK_MONOTONIC, &ts);
 
-		return tFromBoot.tv_sec * SEC_2_USEC + (tFromBoot.tv_nsec >> 10); // / 1000;
-	}
-
-	inline uint64_t getTbootUs(void)
-	{
-		// get number of micro sec since boot
-		struct timespec tFromBoot;
-		clock_gettime(CLOCK_BOOTTIME, &tFromBoot);
-
-		return tFromBoot.tv_sec * SEC_2_USEC + (tFromBoot.tv_nsec / 1000);
-	}
-
-	inline uint64_t getTbootNs(void)
-	{
-		// get number of nano sec since boot
-		struct timespec tFromBoot;
-		clock_gettime(CLOCK_BOOTTIME, &tFromBoot);
-
-		return tFromBoot.tv_sec * SEC_2_USEC * 1000 + (tFromBoot.tv_nsec);
+		return (uint64_t)ts.tv_sec * NSEC_SEC + ts.tv_nsec;
 	}
 
 	inline bool bExpired(uint64_t tStamp, uint64_t tExpire)
@@ -64,15 +44,15 @@ namespace kai
 	}
 
 	template <typename T>
-	inline T usec2sec(uint64_t usec)
+	inline T nsec2sec(uint64_t nsec)
 	{
-		return ((T)usec) * USEC_2_SEC;
+		return ((T)nsec) * SEC_NSEC;
 	}
 
 	template <typename T>
-	inline uint64_t sec2usec(T sec)
+	inline uint64_t sec2nsec(T sec)
 	{
-		return (uint64_t)(sec * SEC_2_USEC);
+		return (uint64_t)(sec * NSEC_SEC);
 	}
 
 }

@@ -15,9 +15,9 @@ namespace kai
 		m_b.init();
 		m_c.init();
 
-		m_ieCheckAlarm.init(100000);
-		m_ieReadStatus.init(50000);
-		m_ieSendCMD.init(50000);
+		m_ieCheckAlarm.init(NSEC_SEC);
+		m_ieReadStatus.init(NSEC_SEC / 10);
+		m_ieSendCMD.init(NSEC_SEC / 50);
 
 		m_bfStatus.clearAll();
 		m_bfSet.clearAll();
@@ -61,7 +61,7 @@ namespace kai
 		jKv(j, "cErr", m_c.m_vErr);
 		jKv<float>(j, "cRange", m_c.m_vRange);
 
-		jKv(j, "tCmdTimeout", m_tCmdTimeout);
+		jKv(j, "tCmdTimeoutNs", m_tCmdTimeoutNs);
 		jKv(j, "tIntCheckAlarm", m_ieCheckAlarm.m_tInterval);
 		jKv(j, "tIntReadStatus", m_ieReadStatus.m_tInterval);
 		jKv(j, "tIntSendCMD", m_ieSendCMD.m_tInterval);
@@ -200,13 +200,13 @@ namespace kai
 
 	void _ActuatorBase::setLastCmdTime(void)
 	{
-		m_tLastCmd = getTbootUs();
+		m_tLastCmdNs = getTns();
 	}
 
 	bool _ActuatorBase::bCmdTimeout(void)
 	{
-		uint64_t t = getTbootUs();
-		IF_F(t - m_tLastCmd < m_tCmdTimeout);
+		uint64_t t = getTns();
+		IF_F(t - m_tLastCmdNs < m_tCmdTimeoutNs);
 
 		return true;
 	}

@@ -36,7 +36,7 @@ namespace kai
 			jKv(Ji, "tOutSec", tOutSec);
 
 			RTCM_MSG m;
-			m.init(ieSendSec * USEC_1SEC, tOutSec * USEC_1SEC);
+			m.init(ieSendSec * NSEC_SEC, tOutSec * NSEC_SEC);
 			jKv(Ji, "ID", m.m_msgID);
 			jKv(Ji, "bSendOnceOnly", m.m_bSendOnceOnly);
 
@@ -88,7 +88,7 @@ namespace kai
 	{
 		IF_(!check());
 
-		uint64_t tNow = getTbootUs();
+		uint64_t tNow = getTns();
 
 		for (size_t i = 0; i < m_vMsg.size(); i++)
 		{
@@ -109,7 +109,7 @@ namespace kai
 			IF_CONT(pM->m_bSendOnceOnly);
 
 			IF_CONT(pM->m_tOutRecv.bTout(tNow));
-			IF_CONT(!pM->m_ieSend.updateT(tNow, false));
+			IF_CONT(!pM->m_ieSend.update(tNow, false));
 			IF_CONT(!m_pIOsend->write(pM->m_pB, pM->m_nB));
 
 			pM->m_tLastSent = tLr;
@@ -167,7 +167,7 @@ namespace kai
 
 	void _RTCMcast::handleMsg(const RTCM_MSG &msg)
 	{
-		uint64_t tNow = getTbootUs();
+		uint64_t tNow = getTns();
 
 		for (size_t i = 0; i < m_vMsg.size(); i++)
 		{
@@ -176,9 +176,9 @@ namespace kai
 
 			pM->updateTo(msg);
 			pM->m_nRecv++;
-			pM->m_tIntSec = ((float)(tNow - pM->m_tLastRecv)) / USEC_1SEC;
+			pM->m_tIntSec = ((float)(tNow - pM->m_tLastRecv)) * SEC_NSEC;
 			pM->m_tLastRecv = tNow;
-			pM->m_tOutRecv.reStart();
+			pM->m_tOutRecv.reStart(tNow);
 			return;
 		}
 
@@ -188,7 +188,7 @@ namespace kai
 		m.updateTo(msg);
 		m.m_nRecv++;
 		m.m_tLastRecv = tNow;
-		m.m_tOutRecv.reStart();
+		m.m_tOutRecv.reStart(tNow);
 		m_vMsg.push_back(m);
 	}
 
@@ -197,7 +197,7 @@ namespace kai
 		NULL_(pConsole);
 		this->_ProtocolBase::console(pConsole);
 
-		uint64_t tNow = getTbootUs();
+		uint64_t tNow = getTns();
 
 		_Console *pC = (_Console *)pConsole;
 		for (RTCM_MSG &m : m_vMsg)

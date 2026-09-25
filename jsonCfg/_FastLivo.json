@@ -361,7 +361,7 @@
 			"FPS": 1
 		},
 		"nIMUdqMax": 1000,
-		"tIMUpairToleranceUs": 5000
+		"tIMUpairToleranceNs": 5000000
 	}
 
 }

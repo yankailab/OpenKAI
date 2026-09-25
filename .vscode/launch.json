@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/OpenKAI",
             "args": [
-                "${workspaceFolder}/jsonCfg/apMavlink_base.json"
+                "${workspaceFolder}/jsonCfg/APmav_copter.json"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

@@ -175,7 +175,7 @@ namespace kai
 	{
 		IF_(!this->_GeometryViewerBase::check());
 		m_vBuildGO.reserve(m_sources.m_vGeometry.size() + m_sources.m_vGrid.size());
-		const uint64_t now = getApproxTbootUs();
+		const uint64_t now = getTns();
 		const uint64_t expiry = m_dTexpire && now > m_dTexpire ? now - m_dTexpire : 0;
 		size_t count = 0, nPoints = 0, nLines = 0;
 		auto prepare = [&](const VIEWER_SOURCE_STYLE &style) -> IMGUI_VIEWER_OBJ *

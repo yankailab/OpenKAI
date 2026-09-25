@@ -153,7 +153,7 @@
 		},
 		"threadStream": { "FPS": 30 },
 		"nIMUdqMax": 1000,
-		"tIMUpairToleranceUs": 5000
+		"tIMUpairToleranceNs": 5000000
 	},
 
 	"viewer": {

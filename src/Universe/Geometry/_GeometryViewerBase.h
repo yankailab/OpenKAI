@@ -75,7 +75,7 @@ namespace kai
         GEOMETRY_RINGBUF<GEOMETRY_LINE> m_grLn;
 		int m_nPbuf = 200000;
 		int m_nLbuf = 100000;
-		uint64_t m_dTexpire = 0;
+		uint64_t m_dTexpire = 0; // nanoseconds; zero disables expiry
 	};
 
 }

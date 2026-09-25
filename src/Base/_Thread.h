@@ -46,16 +46,16 @@ namespace kai
 		bool bOnResume(void);
 		void runAllLinkedThreads(void); // wake up all the other instances
 
-		void sleepT(int64_t usec);
+		void sleepT(int64_t nsec);
 		void skipSleep(void);
 		void autoFPS(void);
 
-		float getFPS(void);
-		void setTargetFPS(float fps);
-		float getTargetFPS(void);
-		float getDt(void);
-		uint64_t getTfrom(void);
-		uint64_t getTto(void);
+		uint64_t getFPS(void);
+		void setTargetFPS(int fps);
+		uint64_t getTargetFPS(void);
+		uint64_t getDtNs(void);
+		uint64_t getTfromNs(void);
+		uint64_t getTtoNs(void);
 
 	protected:
 		pthread_t m_threadID = 0;
@@ -65,12 +65,12 @@ namespace kai
 		std::atomic<THREAD_STATE> m_setState{thread_stop};
 		std::atomic<THREAD_STATE> m_state{thread_stop};
 
-		uint64_t m_tFrom = 0;
-		uint64_t m_tTo = 0;
-		float m_targetFPS = DEFAULT_FPS;
-		float m_targetTframe = SEC_2_USEC / m_targetFPS;
-		float m_dT = 1.0;
-		float m_FPS = 0;
+		uint64_t m_tFromNs = 0;
+		uint64_t m_tToNs = 0;
+		uint64_t m_targetFPS = DEFAULT_FPS;
+		uint64_t m_targetTns = NSEC_SEC / m_targetFPS;
+		uint64_t m_dTns = 1;
+		uint64_t m_FPS = 0;
 		bool m_bSkipSleep = false;
 
 		// linked

@@ -41,7 +41,7 @@ namespace kai
 		bool m_bSendOnceOnly;
 		int m_nRecv;
 
-		void init(uint64_t ieSend = USEC_1SEC, uint64_t tOut = USEC_10SEC)
+		void init(uint64_t ieSend = NSEC_SEC, uint64_t tOut = NSEC_SEC * 10)
 		{
 			m_msgID = 0;
 			m_nPayload = 0;
@@ -51,7 +51,7 @@ namespace kai
 			m_ieSend.reset();
 
 			m_tOutRecv.setTout(tOut);
-			m_tOutRecv.reStartT(0);
+			m_tOutRecv.reStart(getTns());
 
 			m_tLastRecv = 0;
 			m_tLastSent = 0;

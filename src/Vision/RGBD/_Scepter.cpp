@@ -647,7 +647,7 @@ namespace kai
 			if (!open())
 			{
 				LOG_E("Cannot open Scense");
-				m_pT->sleepT(SEC_2_USEC);
+				m_pT->sleepT(NSEC_SEC);
 				continue;
 			}
 
@@ -787,7 +787,7 @@ namespace kai
 		}
 
 		constexpr float c_b = 1.0f / 255.0f;
-		const uint64_t tNow = getApproxTbootUs();
+		const uint64_t tNow = getTns();
 
 		m_pPCL->frameStart();
 		// Sample in image space so XYZ and aligned color use the same original

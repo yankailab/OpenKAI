@@ -158,8 +158,8 @@ namespace kai
 		ACTUATOR_V m_b; // brake
 		ACTUATOR_V m_c; // current
 
-		uint64_t m_tLastCmd = 0;
-		uint64_t m_tCmdTimeout = 0;
+		uint64_t m_tLastCmdNs = 0;
+		uint64_t m_tCmdTimeoutNs = NSEC_SEC;
 		INTERVAL_EVENT m_ieCheckAlarm;
 		INTERVAL_EVENT m_ieReadStatus;
 		INTERVAL_EVENT m_ieSendCMD;

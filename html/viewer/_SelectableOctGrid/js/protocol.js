@@ -1,5 +1,5 @@
 import { CELL_BYTES, validateCellIDs } from './octreeCells.js';
-export const PROTOCOL_VERSION = 5;
+export const PROTOCOL_VERSION = 6;
 export const STREAM_TYPES = ['points', 'lines', 'cells'];
 export const MAX_FRAME_BYTES = 64 * 1024 * 1024;
 const littleEndian = new Uint8Array(new Uint16Array([1]).buffer)[0] === 1;
@@ -10,7 +10,7 @@ export function decodeFrame(buffer, expectedType) {
   if (!(buffer instanceof ArrayBuffer) || buffer.byteLength < 32 || buffer.byteLength > MAX_FRAME_BYTES)
     throw new Error('Invalid geometry frame length');
   const v = new DataView(buffer);
-  if (v.getUint32(0, true) !== 0x35443357 || v.getUint32(4, true) !== PROTOCOL_VERSION)
+  if (v.getUint32(0, true) !== 0x36443357 || v.getUint32(4, true) !== PROTOCOL_VERSION)
     throw new Error('Unsupported geometry protocol');
   const type = STREAM_TYPES[v.getUint32(8, true) - 1];
   if (!type || (expectedType && type !== expectedType)) throw new Error('Wrong geometry stream type');

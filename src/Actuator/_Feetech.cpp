@@ -80,7 +80,7 @@ namespace kai
 				if (!open())
 				{
 					LOG_E("Cannot open");
-					m_pT->sleepT(SEC_2_USEC);
+					m_pT->sleepT(NSEC_SEC);
 					continue;
 				}
 			}
@@ -157,7 +157,7 @@ namespace kai
 	bool _Feetech::readStatus(void)
 	{
 		IF_F(!check());
-		IF__(!m_ieReadStatus.update(m_pT->getTfrom()));
+		IF__(!m_ieReadStatus.update(m_pT->getTfromNs()));
 
 		// uint16_t pB[2];
 		// int r = m_pIO->readRegisters(m_ID, m_addr.m_readStat, 2, pB);

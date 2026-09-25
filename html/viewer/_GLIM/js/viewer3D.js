@@ -244,7 +244,7 @@ export class Viewer3D {
       return;
     }
     const submap = this.assembling;
-    if (event.type !== 'chunk' || !submap || event.id !== submap.id || event.timestampUs !== submap.timestampUs ||
+    if (event.type !== 'chunk' || !submap || event.id !== submap.id || event.timestampNs !== submap.timestampNs ||
         event.totalPoints !== submap.pointCount || event.offsetPoints !== submap.received)
       throw new Error('Unexpected or out-of-order submap chunk');
     submap.positions.set(event.positions, event.offsetPoints * 3);
@@ -281,8 +281,8 @@ export class Viewer3D {
       this.bounds.union(object.localBounds.clone().applyMatrix4(object.points.matrix));
   }
   appendTrajectory(status) {
-    if (!status.poseFresh || status.poseTimestampUs === undefined) { this.trajectoryLast = null; return; }
-    const timestamp = BigInt(status.poseTimestampUs);
+    if (!status.poseFresh || status.poseTimestampNs === undefined) { this.trajectoryLast = null; return; }
+    const timestamp = BigInt(status.poseTimestampNs);
     if (this.trajectoryTimestamp !== null && timestamp <= this.trajectoryTimestamp) return;
     this.trajectoryTimestamp = timestamp;
     if (this.trajectoryLast) {

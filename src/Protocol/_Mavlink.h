@@ -46,16 +46,21 @@ namespace kai
 			m_tInterval = tInterval;
 		}
 
-		bool bReceiving(void)
+		bool bOnTime(void)
 		{
 			IF__(m_tActualInterval < m_tInterval + m_tIntervalDelayAllowed, true);
 
 			return false;
 		}
 
+		bool bValid(void)
+		{
+			return m_tStamp > 0;
+		}
+
 		virtual void decode(mavlink_message_t *pM)
 		{
-			uint64_t tNow = getTbootUs();
+			uint64_t tNow = getTns();
 			m_tActualInterval = tNow - m_tStamp;
 			m_tStamp = tNow;
 
@@ -107,7 +112,7 @@ namespace kai
 		uint32_t m_id = 0x7fffffff;
 		uint64_t m_tStamp = 0;
 		int64_t m_tActualInterval = LONG_MAX;
-		int m_tIntervalDelayAllowed = 1000;
+		int m_tIntervalDelayAllowed = NSEC_SEC;
 		int64_t m_tInterval = -1;
 
 		vector<MavCallback> m_vCbRecv;

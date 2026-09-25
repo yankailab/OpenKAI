@@ -10,7 +10,7 @@ namespace kai
     _Livox2::_Livox2()
     {
         // lvx state
-        m_lvxTout.setTout(USEC_10SEC);
+        m_lvxTout.setTout(NSEC_SEC * 10);
 
         // lvx info
         memset(m_pLvxSN, 0, LVX2_N_SN);
@@ -41,7 +41,7 @@ namespace kai
         // lvx time out
         int tOutSec = 10;
         jKv(j, "tOutSec", tOutSec);
-        m_lvxTout.setTout(USEC_1SEC * tOutSec);
+        m_lvxTout.setTout(NSEC_SEC * tOutSec);
 
         // lvx config
         jKv(j, "lvxPCLdataType", m_lvxCfg.m_pclDataType);
@@ -196,7 +196,7 @@ namespace kai
             IF_F(crc32 != pCmdRecv->crc32_d);
         }
 
-        m_lvxTout.reStart();
+        m_lvxTout.reStart(getTns());
         return true;
     }
 
@@ -234,7 +234,7 @@ namespace kai
 
         memcpy(pDataRecv->data, &pB[36], LVX2_N_DATA);
 
-        m_lvxTout.reStart();
+        m_lvxTout.reStart(getTns());
         return true;
     }
 
@@ -250,7 +250,7 @@ namespace kai
                 sendDeviceQuery();
             }
 
-            if (m_lvxTout.bTout())
+            if (m_lvxTout.bTout(getTns()))
             {
                 m_lvxState = lvxState_deviceQuery; // disconnected
             }
@@ -673,7 +673,7 @@ namespace kai
     void _Livox2::handlePointCloudData(const LIVOX2_DATA &d)
     {
         uint64_t tStamp = *((uint64_t *)(d.timestamp));
-        //        uint64_t tStamp = getTbootUs();
+        //        uint64_t tStamp = getTns();
 
         if (d.data_type == kLivoxLidarCartesianCoordinateHighData)
         {
@@ -720,7 +720,7 @@ namespace kai
 
         LivoxLidarImuRawPoint *pIMU = (LivoxLidarImuRawPoint *)d.data;
         uint64_t tStamp = *((uint64_t *)d.timestamp);
-        //        uint64_t tStamp = getTbootNs();
+        //        uint64_t tStamp = getTns();
 
         if (m_pIMU)
         {
@@ -735,7 +735,7 @@ namespace kai
 
         uint64_t dT = tStamp - m_tIMU;
         m_tIMU = tStamp;
-        if (dT > USEC_1SEC * 1000)
+        if (dT > NSEC_SEC)
             dT = 0;
 
         m_SF.MahonyUpdate(
@@ -746,7 +746,7 @@ namespace kai
             pIMU->acc_x,
             pIMU->acc_y,
             pIMU->acc_z,
-            ((float)dT) * 1e-9);
+            nsec2sec<float>(dT));
 
         float *pQ = m_SF.getQuat();
         Vector4d vQ(pQ[0], pQ[1], pQ[2], pQ[3]);

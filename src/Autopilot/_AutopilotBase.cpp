@@ -5,11 +5,6 @@ namespace kai
 
 	_AutopilotBase::_AutopilotBase()
 	{
-		m_wrMode.init(apMode_unknown, apMode_unknown);
-		m_wrArm.init(apArm_unknown, apArm_unknown);
-
-		m_ieSendHB.init(USEC_1SEC);
-		m_ieSendMsgInt.init(USEC_1SEC);
 	}
 
 	_AutopilotBase::~_AutopilotBase()
@@ -21,13 +16,6 @@ namespace kai
 		IF_F(!this->_ReferenceFrame::init(j));
 
 		jKv(j, "type", m_type);
-
-		float t;
-		if (jKv(j, "ieSendHB", t))
-			m_ieSendHB.init(t * SEC_2_USEC);
-
-		if (jKv(j, "ieSendMsgInt", t))
-			m_ieSendMsgInt.init(t * SEC_2_USEC);
 
 		return true;
 	}
@@ -63,16 +51,6 @@ namespace kai
 	void _AutopilotBase::updateAutopilot(void)
 	{
 		IF_(!check());
-
-		if (!m_wrMode.bWritten())
-		{
-			setMode(m_wrMode.getWrite());
-		}
-
-		if (!m_wrArm.bWritten())
-		{
-			setArm(m_wrArm.getWrite());
-		}
 	}
 
 	AP_TYPE _AutopilotBase::getType(void)
@@ -80,24 +58,24 @@ namespace kai
 		return m_type;
 	}
 
-	void _AutopilotBase::setMode(AP_MODE m)
+	bool _AutopilotBase::setMode(AP_MODE m)
 	{
-		m_wrMode.setWrite(m);
+		m_mode = m;
 	}
 
-	void _AutopilotBase::setArm(AP_ARM a)
+	bool _AutopilotBase::setArm(AP_ARM a)
 	{
-		m_wrArm.setWrite(a);
+		m_arm = a;
 	}
 
 	AP_MODE _AutopilotBase::getMode(void)
 	{
-		return m_wrMode.getRead();
+		return apMode_unknown;
 	}
 
 	AP_ARM _AutopilotBase::getArm(void)
 	{
-		return m_wrArm.getRead();
+		return apArm_unknown;
 	}
 
 	float _AutopilotBase::getRelativeAlt(void)
@@ -105,14 +83,14 @@ namespace kai
 		return m_rAlt;
 	}
 
-	const Vector4d& _AutopilotBase::getHomePos(void)
+	const Vector4d &_AutopilotBase::getHomePos(void)
 	{
 		return m_vHomePos;
 	}
 
-	const Vector3f& _AutopilotBase::getSpeed(void)
+	const Vector3f &_AutopilotBase::getVelocity(void)
 	{
-		return m_vSpeed;
+		return m_vVelocity;
 	}
 
 	float _AutopilotBase::getBattery(void)
@@ -126,22 +104,26 @@ namespace kai
 		this->_ReferenceFrame::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		pC->addMsg("State-----------------------------", 1);
+		pC->addMsg("-State-", 1);
 		pC->addMsg("\tARM:", getArm());
 
-		pC->addMsg("Mode------------------------------", 1);
-		pC->addMsg("\tapMode=" + i2str(getMode()), 1);
+		pC->addMsg("-Mode-", 1);
+		pC->addMsg("\tapMode:" + i2str(getMode()), 1);
 
-		pC->addMsg("Home Pos--------------------------", 1);
+		pC->addMsg("Global Pos-----------------------", 1);
+		pC->addMsg("\tlat=\t" + lf2str(m_vPos.x(), 7) + "\tlon=\t" + lf2str(m_vPos.y(), 7), 1);
+		pC->addMsg("\talt=\t" + lf2str(m_vPos.z(), 2) + "\trelAlt=\t" + lf2str(m_rAlt, 2), 1);
+
+		pC->addMsg("-Home Pos-", 1);
 		pC->addMsg("\tlat=\t" + f2str(m_vHomePos.x(), 7) + "\tlon=\t" + f2str(m_vHomePos.y(), 7) + "\talt=\t" + f2str(m_vHomePos.z(), 7), 1);
 
-		pC->addMsg("Speed-----------------------------", 1);
-		pC->addMsg("\tvx=\t" + f2str(m_vSpeed.x()) +
-					   "\tvy=\t" + f2str(m_vSpeed.y()) +
-					   "\tvz=\t" + f2str(m_vSpeed.z()),
+		pC->addMsg("-Velocity-", 1);
+		pC->addMsg("\tvx=\t" + f2str(m_vVelocity.x()) +
+					   "\tvy=\t" + f2str(m_vVelocity.y()) +
+					   "\tvz=\t" + f2str(m_vVelocity.z()),
 				   1);
 
-		pC->addMsg("Battery-----------------------------", 1);
+		pC->addMsg("-Battery-", 1);
 		pC->addMsg("\tbatt=\t" + f2str(m_battery));
 	}
 
@@ -150,7 +132,6 @@ namespace kai
 		_JSONbase *pJb = (_JSONbase *)pJSONbase;
 		string cmd;
 		IF_(!jKv(j, "cmd", cmd));
-
 	}
 
 }

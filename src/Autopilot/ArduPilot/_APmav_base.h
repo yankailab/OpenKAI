@@ -2,10 +2,7 @@
 #define OpenKAI_src_Autopilot_ArduPilot__APmav_base_H_
 
 #include "../../Protocol/_Mavlink.h"
-#include "../../State/_StateControl.h"
-#include "../../Protocol/_JSONbase.h"
-#include "../../Utility/utilEvent.h"
-#include "../../Utility/utilVar.h"
+#include "../_AutopilotBase.h"
 
 #define AP_N_CUSTOM_MODE 28
 
@@ -87,7 +84,7 @@ namespace kai
 		}
 	};
 
-	class _APmav_base : public _ModuleBase
+	class _APmav_base : public _AutopilotBase
 	{
 	public:
 		_APmav_base();
@@ -100,13 +97,18 @@ namespace kai
 		virtual void console(void *pConsole);
 		virtual void console(const json &j, void *pJSONbase);
 
-		// mode
-		void setMode(uint32_t iMode);
-		int getMode(void);
-		virtual string getModeName(void);
 
-		void setArm(bool bArm);
-		bool bArmed(void);
+		virtual AP_MODE getMode(void);
+		virtual AP_ARM getArm(void);
+
+		virtual void setCustomMode(int32_t m);
+		virtual int32_t getCustomMode(void);
+
+
+
+
+		// mode
+		virtual string getModeName(void);
 		void takeOff(float alt);
 
 		// gimbal, payloads
@@ -115,23 +117,13 @@ namespace kai
 		// status
 		int getGPSfixType(void);
 		int getGPShacc(void);
-		Vector3d getHomePos(void);
-		Vector4d getGlobalPos(void);
-		float getHdg(void);
-		Vector3f getSpeed(void);
-		Vector3f getAttitude(void);
-		float getBattery(void);
-
-		// mission
-		int getWPseq(void);
-		int getWPtotal(void);
 
 		// Mavlink
 		_Mavlink *getMavlink(void);
 
 	private:
-		void updateModeSync(void);
-		void updateBase(void);
+		void updateApMavSend(void);
+		void updateApMavRecv(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -142,24 +134,21 @@ namespace kai
 	protected:
 		_Mavlink *m_pMav = nullptr;
 
-		bool m_bHomeSet = false;
-		Vector3d m_vHomePos = Vector3d::Zero();
-		Vector4d m_vGlobalPos = Vector4d::Zero(); // lat, lon, alt, relative_alt in meters
-		Vector3d m_vLocalPos = Vector3d::Zero();
-		Vector3f m_vSpeed = Vector3f::Zero();
-		Vector3f m_vAtti = Vector3f::Zero(); // yaw, pitch, roll
-		float m_apHdg = 0.0;	 // heading in degree
-		float m_battery = 0.0; // remaining percentage
-		int8_t m_gpsFixType = -1;
-		int m_gpsHacc = INT32_MAX;
-
 		INTERVAL_EVENT m_ieSendHB;
 		INTERVAL_EVENT m_ieSendMsgInt;
 
-		// set vars
-		bool m_bSyncMode = false;
-		VAR_WR<uint32_t> m_wrApMode;
-		VAR_WR<bool> m_wrbArm;
+		// status received from FC
+		AP_MODE m_modeFC = apMode_unknown;
+		AP_ARM m_armFC = apArm_unknown;
+
+		int32_t m_customMode = -1;
+		int32_t m_customModeFC = -1;
+
+
+
+
+		int8_t m_gpsFixType = -1;
+		int m_gpsHacc = INT32_MAX;
 	};
 
 }

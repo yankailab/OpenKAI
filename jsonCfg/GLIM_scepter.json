@@ -226,10 +226,10 @@
 		"bMapping": true,
 		"bPublishLiveMap": false,
 		"nMinPoints": 100,
-		"tConfidenceTimeoutUs": 1000000,
+		"tConfidenceTimeoutNs": 1000000000,
 		"globalMapPCL": "glimPCL",
 		"nMapPoints": 400000,
 		"nLiveFrames": 60,
-		"tMapUpdateUs": 200000
+		"tMapUpdateNs": 200000000
 	}
 }

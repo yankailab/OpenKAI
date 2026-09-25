@@ -68,7 +68,7 @@ namespace kai
             object o;
             JO(o, "id", i2str(1));
             JO(o, "cmd", "heartbeat");
-            JO(o, "t", li2str(m_pT->getTfrom()));
+            JO(o, "t", li2str(m_pT->getTfromNs()));
 
             string msg = picojson::value(o).serialize();
             pWS->write((uint8_t *)msg.c_str(), msg.length());

@@ -50,7 +50,7 @@ configuration), read during initialization.
 Six charts show the latest gyro XYZ and acceleration XYZ over ten seconds. The
 coordinate arrows rotate using the fused quaternion. Gyro values use rad/s and
 acceleration uses m/s², following the [Orbbec SDK IMU units](https://orbbec.github.io/OrbbecSDK/doc/tutorial/English/OrbbecSDK_C%2B%2B_API_user_guide-v1.0.pdf).
-Mahony fusion uses paired sensor timestamps in microseconds, converted to seconds.
+Mahony fusion uses paired sensor timestamps in nanoseconds, converted to seconds. The SDK capture timestamps are converted from microseconds when samples enter OpenKAI.
 Euler angles are roll/pitch/yaw in radians on the wire and degrees on screen.
 Orientation is relative; no magnetometer/absolute yaw reference is available.
 

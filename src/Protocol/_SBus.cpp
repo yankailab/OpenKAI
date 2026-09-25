@@ -16,7 +16,7 @@ namespace kai
 		IF_F(!this->_ProtocolBase::init(j));
 
 		jKv(j, "bSender", m_bSender);
-		jKv(j, "timeOutUsec", m_frame.m_timeOutUsec);
+		jKv(j, "timeOutNsec", m_frame.m_timeOutNsec);
 		jKv(j, "bRawSbus", m_bRawSbus);
 		m_frame.m_nBframe = (m_bRawSbus) ? 25 : SBUS_N_BUF;
 
@@ -95,7 +95,7 @@ namespace kai
 			else
 				m_frame.decode();
 
-			m_frame.m_tLastRecv = getApproxTbootUs();
+			m_frame.m_tLastRecv = getTns();
 			m_frame.clear();
 		}
 	}

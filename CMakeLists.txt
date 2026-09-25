@@ -89,19 +89,26 @@ set(OpenKAI_lib pthread uuid Eigen3::Eigen gsl gslcblas m ncurses ssl crypto rt 
 file(GLOB_RECURSE OpenKAI_cpp src/main.cpp src/Base/*.cpp src/Base/*.cc src/Base/*.c)
 
 file(GLOB_RECURSE Arithmetic_cpp src/Arithmetic/*.cpp src/Arithmetic/*.cc src/Arithmetic/*.c)
-set(OpenKAI_cpp ${OpenKAI_cpp} ${Arithmetic_cpp})
+list(APPEND OpenKAI_cpp
+	${Arithmetic_cpp}
+)
 
 file(GLOB_RECURSE Module_cpp src/Module/*.cpp src/Module/*.cc src/Module/*.c)
-set(OpenKAI_cpp ${OpenKAI_cpp} ${Module_cpp})
+list(APPEND OpenKAI_cpp
+	${Module_cpp}
+)
 
 file(GLOB_RECURSE IPC_cpp src/IPC/*.cpp src/IPC/*.cc src/IPC/*.c)
-set(OpenKAI_cpp ${OpenKAI_cpp} ${IPC_cpp})
+list(APPEND OpenKAI_cpp
+	${IPC_cpp}
+)
 
 file(GLOB_RECURSE Primitive_cpp src/Primitive/*.cpp src/Primitive/*.cc src/Primitive/*.c)
-set(OpenKAI_cpp ${OpenKAI_cpp} ${Primitive_cpp})
-
-set(OpenKAI_cpp ${OpenKAI_cpp} src/UI/_Console.cpp)
-set(OpenKAI_cpp ${OpenKAI_cpp} src/Data/_FileBase.cpp)
+list(APPEND OpenKAI_cpp
+	${Primitive_cpp}
+	src/UI/_Console.cpp
+	src/Data/_FileBase.cpp
+)
 
 
 # Default modules
@@ -135,92 +142,117 @@ if(WITH_UNIVERSE)
   find_package(Boost 1.70 CONFIG REQUIRED)
   add_definitions(-DWITH_UNIVERSE -DBOOST_ERROR_CODE_HEADER_ONLY)
   list(APPEND OpenKAI_include ${Boost_INCLUDE_DIRS})
-  list(APPEND OpenKAI_cpp src/Net/HttpServer.cpp src/IO/WebSocketStream.cpp
-    src/UI/Viewer/Web/_WebSelectableOctGrid.cpp src/UI/Viewer/SelectableOctGridSources.cpp
-    src/UI/Viewer/Web/_WebGeometryBase.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/_ReferenceFrame.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Grid/_OctreeBase.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Grid/_OctreeGrid.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Grid/_SelectableOctGrid.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Geometry/_GeometryBase.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Geometry/Line/_Line.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Geometry/PointCloud/_PointCloud.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Geometry/PointCloud/_PCfile.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Geometry/_GeometryViewerBase.cpp)
+  list(APPEND OpenKAI_cpp
+	src/Net/HttpServer.cpp
+	src/IO/WebSocketStream.cpp
+	src/UI/Viewer/Web/_WebSelectableOctGrid.cpp
+	src/UI/Viewer/SelectableOctGridSources.cpp
+	src/UI/Viewer/Web/_WebGeometryBase.cpp
+	src/Universe/_ReferenceFrame.cpp
+	src/Universe/Grid/_OctreeBase.cpp
+	src/Universe/Grid/_OctreeGrid.cpp
+	src/Universe/Grid/_SelectableOctGrid.cpp
+	src/Universe/Geometry/_GeometryBase.cpp
+	src/Universe/Geometry/Line/_Line.cpp
+	src/Universe/Geometry/PointCloud/_PointCloud.cpp
+	src/Universe/Geometry/PointCloud/_PCfile.cpp
+	src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp
+	src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp
+	src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp
+	src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp
+	src/Universe/Geometry/_GeometryViewerBase.cpp
+  )
 
     if(WITH_UI)
       if(USE_IMGUI)
-        set(OpenKAI_cpp ${OpenKAI_cpp} src/UI/Viewer/ImGUI/_ImGUIselectableOctGrid.cpp)
-        set(OpenKAI_cpp ${OpenKAI_cpp} src/UI/Viewer/ImGUI/ImGUIglRenderer.cpp)
-        set(OpenKAI_cpp ${OpenKAI_cpp} src/UI/Viewer/ImGUI/ImGUIbackend.cpp)
+        list(APPEND OpenKAI_cpp
+			src/UI/Viewer/ImGUI/_ImGUIselectableOctGrid.cpp
+			src/UI/Viewer/ImGUI/ImGUIglRenderer.cpp
+			src/UI/Viewer/ImGUI/ImGUIbackend.cpp
+        )
       endif() # imgui
     endif() # gui
 
     if(USE_OPEN3D)
-      set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Geometry/PointCloud/Pipeline/_PCcrop.cpp)
-      set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Geometry/PointCloud/Pipeline/_PCremove.cpp)
-      set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Geometry/PointCloud/Pipeline/_PCdownSample.cpp)
-      set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp)
-      set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp)
-      set(OpenKAI_cpp ${OpenKAI_cpp} src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp)
+      list(APPEND OpenKAI_cpp
+		src/Universe/Geometry/PointCloud/Pipeline/_PCcrop.cpp
+		src/Universe/Geometry/PointCloud/Pipeline/_PCremove.cpp
+		src/Universe/Geometry/PointCloud/Pipeline/_PCdownSample.cpp
+		src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp
+		src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp
+		src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp
+      )
     endif()
 endif()
 
 if(WITH_ACTUATOR)
   add_definitions(-DWITH_ACTUATOR)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Actuator/_ActuatorBase.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Actuator/_IAI.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Actuator/_OrientalMotor.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Actuator/_HYMCU_RS485.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Actuator/Motor/_ZLAC8015.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Actuator/Motor/_ZLAC8015D.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Actuator/Motor/_ZDmotor.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Actuator/Motor/_DDSM.cpp)
+  list(APPEND OpenKAI_cpp
+	src/Actuator/_ActuatorBase.cpp
+	src/Actuator/_IAI.cpp
+	src/Actuator/_OrientalMotor.cpp
+	src/Actuator/_HYMCU_RS485.cpp
+	src/Actuator/Motor/_ZLAC8015.cpp
+	src/Actuator/Motor/_ZLAC8015D.cpp
+	src/Actuator/Motor/_ZDmotor.cpp
+	src/Actuator/Motor/_DDSM.cpp
+  )
   if(USE_FEETECH)
     add_definitions(-DUSE_FEETECH)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Actuator/_Feetech.cpp)
+    list(APPEND OpenKAI_cpp
+		src/Actuator/_Feetech.cpp
+    )
     file(GLOB_RECURSE Dependencies_Feetech src/Dependencies/Feetech/*.cpp src/Dependencies/Feetech/*.c)
-    set(OpenKAI_cpp ${OpenKAI_cpp} ${Dependencies_Feetech})
+    list(APPEND OpenKAI_cpp
+		${Dependencies_Feetech}
+    )
   endif()
   if(USE_XARM)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Actuator/Articulated/_xArm.cpp)
+    list(APPEND OpenKAI_cpp
+		src/Actuator/Articulated/_xArm.cpp
+    )
   endif()
 endif()
 
 if(WITH_AUTOPILOT)
   add_definitions(-DWITH_AUTOPILOT)
   file(GLOB_RECURSE Autopilot_cpp src/Autopilot/*.cpp src/Autopilot/*.cc src/Autopilot/*.c)
-  set(OpenKAI_cpp ${OpenKAI_cpp} ${Autopilot_cpp})
+  list(APPEND OpenKAI_cpp
+	${Autopilot_cpp}
+	src/Autopilot/Ground/_ApDrive.cpp
+  )
+
 endif()
 
 if(WITH_ARDUPILOT)
   add_definitions(-DWITH_ARDUPILOT)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Autopilot/ArduPilot/_APmav_rcChannel.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Autopilot/ArduPilot/_APmav_base.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Autopilot/ArduPilot/_APmav_httpJson.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Autopilot/ArduPilot/_APmav_mav2json.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Autopilot/ArduPilot/_APmav_mission.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Autopilot/ArduPilot/_APmav_move.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Autopilot/ArduPilot/_APmav_relay.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Autopilot/ArduPilot/_APmav_servo.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Autopilot/ArduPilot/_APmav_drive.cpp)
+  list(APPEND OpenKAI_cpp
+  	src/Autopilot/FC/ArduPilot/_APmav_base.cpp
+  	src/Autopilot/FC/ArduPilot/_APmav_copter.cpp
+  	src/Autopilot/FC/ArduPilot/_APmav_rover.cpp
+  	src/Autopilot/FC/ArduPilot/_APmav_mission.cpp
+  	src/Autopilot/FC/ArduPilot/_APmav_move.cpp
+  	src/Autopilot/FC/ArduPilot/_APmav_rcChannel.cpp
+  	src/Autopilot/FC/ArduPilot/_APmav_relay.cpp
+  	src/Autopilot/FC/ArduPilot/_APmav_servo.cpp
+  	src/Autopilot/FC/ArduPilot/_APmav_drive.cpp
+  )
   if(USE_OPENCV)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Autopilot/ArduPilot/_APmav_depthVision.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Autopilot/ArduPilot/_APmav_videoStream.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Autopilot/ArduPilot/_APmav_photo.cpp)
+    list(APPEND OpenKAI_cpp
+		src/Autopilot/FC/ArduPilot/_APmav_depthVision.cpp
+    )
     if(USE_OPENCV_CONTRIB)
-      set(OpenKAI_cpp ${OpenKAI_cpp} src/Autopilot/ArduPilot/_APmav_follow.cpp)
-      set(OpenKAI_cpp ${OpenKAI_cpp} src/Autopilot/ArduPilot/_APmav_land.cpp)
-      set(OpenKAI_cpp ${OpenKAI_cpp} src/Autopilot/ArduPilot/_APmav_landingTarget.cpp)
+      list(APPEND OpenKAI_cpp
+		src/Autopilot/FC/ArduPilot/_APmav_follow.cpp
+		src/Autopilot/FC/ArduPilot/_APmav_land.cpp
+      )
     endif() #opencv_contrib
   endif() #opencv
   if(WITH_NAVIGATION)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Autopilot/ArduPilot/_APmav_RTCM.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Autopilot/ArduPilot/_APmav_visionEstimate.cpp)
+    list(APPEND OpenKAI_cpp
+		src/Autopilot/FC/ArduPilot/_APmav_RTCM.cpp
+		src/Autopilot/FC/ArduPilot/_APmav_visionEstimate.cpp
+    )
   endif()
   if(WITH_SWARM)
   endif()
@@ -230,33 +262,45 @@ if(WITH_COMPUTE)
   add_definitions(-DWITH_COMPUTE)
   if(USE_OPENCL)
     file(GLOB_RECURSE OCL_cpp src/Compute/OpenCL/*.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} ${OCL_cpp})
+    list(APPEND OpenKAI_cpp
+		${OCL_cpp}
+    )
   endif()
 endif()
 
 if(WITH_CONTROL)
   add_definitions(-DWITH_CONTROL)
   file(GLOB_RECURSE Control_cpp src/Control/*.cpp src/Control/*.cc src/Control/*.c)
-  set(OpenKAI_cpp ${OpenKAI_cpp} ${Control_cpp})
+  list(APPEND OpenKAI_cpp
+	${Control_cpp}
+  )
 endif()
 
 if(WITH_DETECTOR)
   add_definitions(-DWITH_DETECTOR)
   if(USE_OPENCV)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Detector/_DetectorBase.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Detector/_Lane.cpp)
+    list(APPEND OpenKAI_cpp
+		src/Detector/_DetectorBase.cpp
+		src/Detector/_Lane.cpp
+    )
     if(USE_ONNXRUNTIME)
-      set(OpenKAI_cpp ${OpenKAI_cpp} src/Detector/_YOLO26detectONNX.cpp)
+      list(APPEND OpenKAI_cpp
+		src/Detector/_YOLO26detectONNX.cpp
+      )
     endif()
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Detector/_IRLock.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Detector/_OpenPose.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Detector/_HandKey.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Detector/_Contour.cpp)
+    list(APPEND OpenKAI_cpp
+		src/Detector/_IRLock.cpp
+		src/Detector/_OpenPose.cpp
+		src/Detector/_HandKey.cpp
+		src/Detector/_Contour.cpp
+    )
     if(USE_OPENCV_CONTRIB)
-      set(OpenKAI_cpp ${OpenKAI_cpp} src/Detector/_ArUco.cpp)
-      set(OpenKAI_cpp ${OpenKAI_cpp} src/Detector/_MotionDetector.cpp)
-      set(OpenKAI_cpp ${OpenKAI_cpp} src/Tracker/_TrackerBase.cpp)
-      set(OpenKAI_cpp ${OpenKAI_cpp} src/Tracker/_SingleTracker.cpp)
+      list(APPEND OpenKAI_cpp
+		src/Detector/_ArUco.cpp
+		src/Detector/_MotionDetector.cpp
+		src/Tracker/_TrackerBase.cpp
+		src/Tracker/_SingleTracker.cpp
+      )
     endif()
   endif()
 endif()
@@ -268,23 +312,29 @@ endif()
 if(WITH_FILTER)
   add_definitions(-DWITH_FILTER)
   file(GLOB_RECURSE Filter_cpp src/Filter/*.cpp src/Filter/*.cc src/Filter/*.c)
-  set(OpenKAI_cpp ${OpenKAI_cpp} ${Filter_cpp})
+  list(APPEND OpenKAI_cpp
+	${Filter_cpp}
+  )
 endif()
 
 if(WITH_IO)
   add_definitions(-DWITH_IO)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_ADIO_EBYTE.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_ADIObase.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_File.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_IObase.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_SerialPort.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_TCPclient.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_TCPserver.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_UDP.cpp)
+  list(APPEND OpenKAI_cpp
+	src/IO/_ADIO_EBYTE.cpp
+	src/IO/_ADIObase.cpp
+	src/IO/_File.cpp
+	src/IO/_IObase.cpp
+	src/IO/_SerialPort.cpp
+	src/IO/_TCPclient.cpp
+	src/IO/_TCPserver.cpp
+	src/IO/_UDP.cpp
+  )
   if(USE_WSSERVER)
     add_definitions(-DUSE_WSSERVER)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_WebSocket.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/IO/_WebSocketServer.cpp)
+    list(APPEND OpenKAI_cpp
+		src/IO/_WebSocket.cpp
+		src/IO/_WebSocketServer.cpp
+    )
     set(OpenKAI_lib ${OpenKAI_lib} ws)
   endif()
 endif()
@@ -292,168 +342,233 @@ endif()
 if(WITH_NAVIGATION)
   add_definitions(-DWITH_NAVIGATION)
   file(GLOB_RECURSE Dependencies_nav src/Dependencies/minmea.c)
-  set(OpenKAI_cpp ${OpenKAI_cpp} ${Dependencies_nav})
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Navigation/_NavBase.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Navigation/_GPS.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Navigation/_RTCMcast.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Navigation/_GeoFence.cpp)
+  list(APPEND OpenKAI_cpp
+	${Dependencies_nav}
+	src/Navigation/_NavBase.cpp
+	src/Navigation/_GPS.cpp
+	src/Navigation/_RTCMcast.cpp
+	src/Navigation/_GeoFence.cpp
+  )
   if(USE_REALSENSE)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Navigation/_RStracking.cpp)
+    list(APPEND OpenKAI_cpp
+		src/Navigation/_RStracking.cpp
+    )
   endif()
 endif()
 
 if(WITH_SLAM)
   add_definitions(-DWITH_SLAM)
-  list(APPEND OpenKAI_cpp src/SLAM/_SLAMbase.cpp)
+  list(APPEND OpenKAI_cpp
+	src/SLAM/_SLAMbase.cpp
+  )
   if(NOT WITH_NAVIGATION)
-    list(APPEND OpenKAI_cpp src/Navigation/_NavBase.cpp)
+    list(APPEND OpenKAI_cpp
+		src/Navigation/_NavBase.cpp
+    )
   endif()
   if(NOT WITH_SENSOR)
-    list(APPEND OpenKAI_cpp src/Sensor/_IMUbase.cpp)
+    list(APPEND OpenKAI_cpp
+		src/Sensor/_IMUbase.cpp
+    )
     file(GLOB_RECURSE SLAM_sensor_fusion src/Dependencies/SensorFusion/*.cpp src/Dependencies/SensorFusion/*.c)
-    list(APPEND OpenKAI_cpp ${SLAM_sensor_fusion})
+    list(APPEND OpenKAI_cpp
+		${SLAM_sensor_fusion}
+    )
   endif()
   if(NOT WITH_PROTOCOL)
-    list(APPEND OpenKAI_cpp src/Protocol/_ProtocolBase.cpp src/Protocol/_JSONbase.cpp)
+    list(APPEND OpenKAI_cpp
+		src/Protocol/_ProtocolBase.cpp
+		src/Protocol/_JSONbase.cpp
+    )
   endif()
   if(NOT WITH_IO)
-    list(APPEND OpenKAI_cpp src/IO/_IObase.cpp)
+    list(APPEND OpenKAI_cpp
+		src/IO/_IObase.cpp
+    )
   endif()
   if(NOT WITH_UNIVERSE)
-    list(APPEND OpenKAI_cpp src/Universe/_ReferenceFrame.cpp
-      src/Universe/Geometry/_GeometryBase.cpp
-      src/Universe/Geometry/PointCloud/_PointCloud.cpp
-      src/Universe/Geometry/PointCloud/_PCfile.cpp)
+    list(APPEND OpenKAI_cpp
+		src/Universe/_ReferenceFrame.cpp
+		src/Universe/Geometry/_GeometryBase.cpp
+		src/Universe/Geometry/PointCloud/_PointCloud.cpp
+		src/Universe/Geometry/PointCloud/_PCfile.cpp
+    )
   endif()
   if(USE_GLIM)
-    list(APPEND OpenKAI_cpp src/SLAM/_GLIM.cpp)
+    list(APPEND OpenKAI_cpp
+		src/SLAM/_GLIM.cpp
+    )
     # WITH_UNIVERSE supplies the common HTTP server and camera configuration.
     if(WITH_UNIVERSE)
-      list(APPEND OpenKAI_cpp src/UI/Viewer/Web/_WebGLIM.cpp)
+      list(APPEND OpenKAI_cpp
+		src/UI/Viewer/Web/_WebGLIM.cpp
+      )
     endif()
   endif()
 endif()
 
 if(WITH_NET)
   add_definitions(-DWITH_NET)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Net/base64.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Net/_Uploader.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Net/HttpClient.cpp)
+  list(APPEND OpenKAI_cpp
+	src/Net/base64.cpp
+	src/Net/_Uploader.cpp
+	src/Net/HttpClient.cpp
+  )
   set(OpenKAI_lib ${OpenKAI_lib} event event_core)
 endif()
 
 if(WITH_PROTOCOL)
   add_definitions(-DWITH_PROTOCOL)
   file(GLOB_RECURSE Protocol_cpp src/Protocol/*.cpp src/Protocol/*.cc src/Protocol/*.c)
-  set(OpenKAI_cpp ${OpenKAI_cpp} ${Protocol_cpp})
+  list(APPEND OpenKAI_cpp
+	${Protocol_cpp}
+  )
   file(GLOB_RECURSE Dependencies_mdb src/Dependencies/libmodbus/*.cpp src/Dependencies/libmodbus/*.c)
-  set(OpenKAI_cpp ${OpenKAI_cpp} ${Dependencies_mdb})
+  list(APPEND OpenKAI_cpp
+	${Dependencies_mdb}
+  )
   file(GLOB_RECURSE Dependencies_mvl src/Dependencies/c_library_v2/*.cpp src/Dependencies/c_library_v2/*.c)
-  set(OpenKAI_cpp ${OpenKAI_cpp} ${Dependencies_mvl})
+  list(APPEND OpenKAI_cpp
+	${Dependencies_mvl}
+  )
 endif()
 
 if(WITH_SOLVER)
   add_definitions(-DWITH_SOLVER)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Solver/_SATbase.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Solver/_IsingBase.cpp)
+  list(APPEND OpenKAI_cpp
+	src/Solver/_SATbase.cpp
+	src/Solver/_IsingBase.cpp
+  )
 endif()
 
 if(WITH_ROS)
   add_definitions(-DWITH_ROS)
   file(GLOB_RECURSE ROS_cpp src/ROS/*.cpp src/ROS/*.cc src/ROS/*.c)
-  set(OpenKAI_cpp ${OpenKAI_cpp} ${ROS_cpp})
+  list(APPEND OpenKAI_cpp
+	${ROS_cpp}
+  )
 endif()
 
 if(WITH_SENSOR)
   add_definitions(-DWITH_SENSOR)
   file(GLOB_RECURSE Dependencies_sensor src/Dependencies/SensorFusion/*.cpp src/Dependencies/SensorFusion/*.c)
-  set(OpenKAI_cpp ${OpenKAI_cpp} ${Dependencies_sensor})
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/_IMUbase.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/Distance/_DistSensorBase.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/Distance/_LeddarVu.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/Distance/_TOFsense.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/Distance/_BenewakeTF.cpp)
+  list(APPEND OpenKAI_cpp
+	${Dependencies_sensor}
+	src/Sensor/_IMUbase.cpp
+	src/Sensor/Distance/_DistSensorBase.cpp
+	src/Sensor/Distance/_LeddarVu.cpp
+	src/Sensor/Distance/_TOFsense.cpp
+	src/Sensor/Distance/_BenewakeTF.cpp
+  )
   if(WITH_UNIVERSE AND USE_OPEN3D)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/LiDAR/_Livox2.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Sensor/LiDAR/_RoboSenseAiry.cpp)
+    list(APPEND OpenKAI_cpp
+		src/Sensor/LiDAR/_Livox2.cpp
+		src/Sensor/LiDAR/_RoboSenseAiry.cpp
+    )
   endif() # 3D
 endif() # sensor
 
 if(WITH_STATE)
   add_definitions(-DWITH_STATE)
   file(GLOB_RECURSE State_cpp src/State/*.cpp src/State/*.cc src/State/*.c)
-  set(OpenKAI_cpp ${OpenKAI_cpp} ${State_cpp})
+  list(APPEND OpenKAI_cpp
+	${State_cpp}
+  )
 endif()
 
 if(WITH_SWARM)
   add_definitions(-DWITH_SWARM)
   file(GLOB_RECURSE Swarm_cpp src/Swarm/*.cpp src/Swarm/*.cc src/Swarm/*.c)
-  set(OpenKAI_cpp ${OpenKAI_cpp} ${Swarm_cpp})
+  list(APPEND OpenKAI_cpp
+	${Swarm_cpp}
+  )
 endif()
 
 if(WITH_TOOLS)
   add_definitions(-DWITH_TOOLS)
   if(USE_OPENCV)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Tools/_CamCalib.cpp)
+    list(APPEND OpenKAI_cpp
+		src/Tools/_CamCalib.cpp
+    )
     if(WITH_UNIVERSE AND USE_OPEN3D)
-      set(OpenKAI_cpp ${OpenKAI_cpp} src/Tools/_LCalign.cpp)
+      list(APPEND OpenKAI_cpp
+		src/Tools/_LCalign.cpp
+      )
     endif()
   endif()
 endif()
 
 if(WITH_UI)
   add_definitions(-DWITH_UI)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/UI/_UIbase.cpp)
+  list(APPEND OpenKAI_cpp
+	src/UI/_UIbase.cpp
+  )
   if(USE_OPENCV)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/UI/_GstOutput.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/UI/_WindowCV.cpp)
+    list(APPEND OpenKAI_cpp
+		src/UI/_GstOutput.cpp
+		src/UI/_WindowCV.cpp
+    )
   endif()
 endif()
 
 if(WITH_CANVAS)
   add_definitions(-DWITH_CANVAS)
   file(GLOB_RECURSE Canvas_cpp src/Canvas/*.cpp src/Canvas/*.cc src/Canvas/*.c)
-  set(OpenKAI_cpp ${OpenKAI_cpp} ${Canvas_cpp})
+  list(APPEND OpenKAI_cpp
+	${Canvas_cpp}
+  )
 endif()
 
 if(WITH_VISION)
   add_definitions(-DWITH_VISION)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/_VisionBase.cpp)
-  set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/RGBD/_RGBDbase.cpp)
+  list(APPEND OpenKAI_cpp
+	src/Vision/_VisionBase.cpp
+	src/Vision/RGBD/_RGBDbase.cpp
+  )
   if(USE_ORBBEC)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/RGBD/_Orbbec.cpp)
+    list(APPEND OpenKAI_cpp
+		src/Vision/RGBD/_Orbbec.cpp
+    )
   endif()
   if(USE_REALSENSE)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/RGBD/_RealSense.cpp)
+    list(APPEND OpenKAI_cpp
+		src/Vision/RGBD/_RealSense.cpp
+    )
   endif()
   if(USE_SCEPTER_SDK)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/RGBD/_Scepter.cpp)
+    list(APPEND OpenKAI_cpp
+		src/Vision/RGBD/_Scepter.cpp
+    )
   endif()
   if(USE_XDYNAMICS)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/RGBD/_XDynamics.cpp)
+    list(APPEND OpenKAI_cpp
+		src/Vision/RGBD/_XDynamics.cpp
+    )
   endif()
   if(USE_OPENCV)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/_Camera.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/_HiKthermal.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/_SharedMemImg.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/_VideoFile.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/_ImgFile.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/_GStreamer.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/Pipeline/_D2RGB.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/Pipeline/_Contrast.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/Pipeline/_ColorConvert.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/Pipeline/_Crop.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/Pipeline/_Erode.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/Pipeline/_HistEqualize.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/Pipeline/_Invert.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/Pipeline/_InRange.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/Pipeline/_Morphology.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/Pipeline/_Mask.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/Pipeline/_Resize.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/Pipeline/_Remap.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/Pipeline/_Rotate.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/Pipeline/_Threshold.cpp)
-    set(OpenKAI_cpp ${OpenKAI_cpp} src/Vision/Pipeline/_Thermal2RGB.cpp)
+    list(APPEND OpenKAI_cpp
+		src/Vision/_Camera.cpp
+		src/Vision/_HiKthermal.cpp
+		src/Vision/_SharedMemImg.cpp
+		src/Vision/_VideoFile.cpp
+		src/Vision/_ImgFile.cpp
+		src/Vision/_GStreamer.cpp
+		src/Vision/Pipeline/_D2RGB.cpp
+		src/Vision/Pipeline/_Contrast.cpp
+		src/Vision/Pipeline/_ColorConvert.cpp
+		src/Vision/Pipeline/_Crop.cpp
+		src/Vision/Pipeline/_Erode.cpp
+		src/Vision/Pipeline/_HistEqualize.cpp
+		src/Vision/Pipeline/_Invert.cpp
+		src/Vision/Pipeline/_InRange.cpp
+		src/Vision/Pipeline/_Morphology.cpp
+		src/Vision/Pipeline/_Mask.cpp
+		src/Vision/Pipeline/_Resize.cpp
+		src/Vision/Pipeline/_Remap.cpp
+		src/Vision/Pipeline/_Rotate.cpp
+		src/Vision/Pipeline/_Threshold.cpp
+		src/Vision/Pipeline/_Thermal2RGB.cpp
+    )
   endif()
 endif()
 
@@ -461,18 +576,24 @@ endif()
 
 if(WITH_TEST)
   add_definitions(-DWITH_TEST)
-  set(OpenKAI_cpp ${OpenKAI_cpp} test/_TestBase.cpp)
+  list(APPEND OpenKAI_cpp
+	test/_TestBase.cpp
+  )
 
   if(WITH_IO)
     if(USE_WSSERVER)
-      set(OpenKAI_cpp ${OpenKAI_cpp} test/IO/_TestWebSocket.cpp)
+      list(APPEND OpenKAI_cpp
+		test/IO/_TestWebSocket.cpp
+      )
     endif()
   endif()
 
 
   if(WITH_PROTOCOL)
     file(GLOB_RECURSE Test_Protocol test/Protocol/*.cpp test/Protocol/*.c)
-    set(OpenKAI_cpp ${OpenKAI_cpp} ${Test_Protocol})
+    list(APPEND OpenKAI_cpp
+		${Test_Protocol}
+    )
   endif()
 
 endif()
@@ -542,12 +663,11 @@ if(USE_IMGUI)
 
   set(IMGUI_INCLUDE_DIR ${IMGUI_DIR})
   set(IMGUI_BACKENDS_DIR ${IMGUI_DIR}/backends)
-  set(OpenKAI_cpp
-    ${OpenKAI_cpp}
-    ${IMGUI_DIR}/imgui.cpp
-    ${IMGUI_DIR}/imgui_draw.cpp
-    ${IMGUI_DIR}/imgui_tables.cpp
-    ${IMGUI_DIR}/imgui_widgets.cpp
+  list(APPEND OpenKAI_cpp
+	${IMGUI_DIR}/imgui.cpp
+	${IMGUI_DIR}/imgui_draw.cpp
+	${IMGUI_DIR}/imgui_tables.cpp
+	${IMGUI_DIR}/imgui_widgets.cpp
   )
 
   if(NOT IMGUI_INCLUDE_DIR)
@@ -562,7 +682,9 @@ if(USE_IMGUI)
   if(IMGUI_BACKEND_UPPER STREQUAL "GLFW")
     add_definitions(-DOKAI_IMGUI_BACKEND_GLFW)
     if(EXISTS "${IMGUI_BACKENDS_DIR}/imgui_impl_glfw.cpp")
-      set(OpenKAI_cpp ${OpenKAI_cpp} ${IMGUI_BACKENDS_DIR}/imgui_impl_glfw.cpp)
+      list(APPEND OpenKAI_cpp
+		${IMGUI_BACKENDS_DIR}/imgui_impl_glfw.cpp
+      )
     endif()
     find_package(glfw3 QUIET)
     if(glfw3_FOUND)
@@ -573,7 +695,9 @@ if(USE_IMGUI)
   elseif(IMGUI_BACKEND_UPPER STREQUAL "SDL2")
     add_definitions(-DOKAI_IMGUI_BACKEND_SDL)
     if(EXISTS "${IMGUI_BACKENDS_DIR}/imgui_impl_sdl2.cpp")
-      set(OpenKAI_cpp ${OpenKAI_cpp} ${IMGUI_BACKENDS_DIR}/imgui_impl_sdl2.cpp)
+      list(APPEND OpenKAI_cpp
+		${IMGUI_BACKENDS_DIR}/imgui_impl_sdl2.cpp
+      )
     endif()
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(SDL2 REQUIRED sdl2)
@@ -585,7 +709,9 @@ if(USE_IMGUI)
   if(IMGUI_RENDERER_UPPER STREQUAL "OPENGL")
     add_definitions(-DOKAI_IMGUI_RENDERER_OPENGL)
     if(EXISTS "${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp")
-      set(OpenKAI_cpp ${OpenKAI_cpp} ${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp)
+      list(APPEND OpenKAI_cpp
+		${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp
+      )
     endif()
     find_package(OpenGL REQUIRED)
     find_package(GLEW QUIET)
@@ -599,7 +725,9 @@ if(USE_IMGUI)
   elseif(IMGUI_RENDERER_UPPER STREQUAL "OPENGLES")
     add_definitions(-DOKAI_IMGUI_RENDERER_OPENGLES)
     if(EXISTS "${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp")
-      set(OpenKAI_cpp ${OpenKAI_cpp} ${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp)
+      list(APPEND OpenKAI_cpp
+		${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp
+      )
     endif()
     find_library(OPENGLES_LIB GLESv2)
     if(NOT OPENGLES_LIB)

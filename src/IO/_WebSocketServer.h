@@ -23,7 +23,7 @@ namespace kai
 			NULL_F(pWS);
 
 			m_pWS = pWS;
-			m_tStamp = getApproxTbootUs();
+			m_tStamp = getTns();
 			return true;
 		}
 

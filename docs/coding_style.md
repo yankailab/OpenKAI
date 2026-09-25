@@ -20,7 +20,7 @@ Follow these rules when adding or changing code. Existing files contain historic
 | `i` | Index | `m_iFrame` | `iFrame` |
 | `t` | Time or timestamp | `m_tStamp` | `tNow` |
 
-Use familiar abbreviations to keep names short: `cfg`, `ctrl`, `msg`, `buf`, `pos`, `dim`, `src`, `dst`, and `idx` are useful in an appropriate context. Retain enough meaning to distinguish nearby variables. Single-letter names such as `i`, `j`, or `x` suit short loops and mathematical expressions; longer-lived state needs more context. Include units where ambiguous, as in `m_tIMUpairToleranceUs`.
+Use familiar abbreviations to keep names short: `cfg`, `ctrl`, `msg`, `buf`, `pos`, `dim`, `src`, `dst`, and `idx` are useful in an appropriate context. Retain enough meaning to distinguish nearby variables. Single-letter names such as `i`, `j`, or `x` suit short loops and mathematical expressions; longer-lived state needs more context. Include units where ambiguous, as in `m_tIMUpairToleranceNs`.
 
 Classes that run their own threads use a leading underscore, such as `_VisionBase`, `_Camera`, or `_Thread`. The existing module inheritance families also retain that prefix, including base classes whose worker behavior is supplied by a subclass. Ordinary helper classes use names such as `ModuleMgr`, `JsonCfg`, and `SharedMem`. Match the existing family when extending it; legacy exceptions are not a reason to rename public classes during unrelated work.
 
@@ -87,7 +87,7 @@ struct FrameCtrl
 struct FrameStats
 {
 	int m_nFrames = 0;
-	uint64_t m_tLastFrameUs = 0;
+	uint64_t m_tLastFrameNs = 0;
 };
 ```
 
@@ -213,7 +213,7 @@ The survey covered C++ files in every source folder and its subfolders, includin
 | --- | --- |
 | `Base`, `Module`, `main.cpp` | [BASE.h](../src/Base/BASE.h), [_ModuleBase.cpp](../src/Base/_ModuleBase.cpp), [ModuleMgr.cpp](../src/Module/ModuleMgr.cpp): lifecycle, guard returns, configuration, class layout |
 | `Actuator`, including `Motor` and `Articulated` | [_ActuatorBase.h](../src/Actuator/_ActuatorBase.h): grouped state, struct members, short domain names |
-| `Autopilot`, including `ArduPilot` and `Drive` | [_APmav_base.h](../src/Autopilot/ArduPilot/_APmav_base.h), [_Drive.cpp](../src/Autopilot/Drive/_Drive.cpp): module families, configuration, worker methods |
+| `Autopilot`, including `ArduPilot` and `Drive` | [_APmav_base.h](../src/Autopilot/FC/ArduPilot/_APmav_base.h), [_Drive.cpp](../src/Autopilot/Drive/_Drive.cpp): module families, configuration, worker methods |
 | `IO`, `Protocol`, `IPC` | [_IObase.h](../src/IO/_IObase.h), [_ProtocolBase.cpp](../src/Protocol/_ProtocolBase.cpp), [SharedMem.h](../src/IPC/SharedMem.h): buffers, callbacks, resource helpers |
 | `Sensor`, including `Distance` and `LiDAR`; `Navigation` | [_IMUbase.h](../src/Sensor/_IMUbase.h), [_GPS.cpp](../src/Navigation/_GPS.cpp): timestamps, units, grouped device state |
 | `Swarm`, `ROS` | [_SwarmBase.h](../src/Swarm/_SwarmBase.h), [_ROS_fastLio.h](../src/ROS/_ROS_fastLio.h): thread modules and external API adapters |

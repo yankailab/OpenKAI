@@ -43,7 +43,7 @@ OpenKAI. CMake copies and installs both web viewers.
 [`jsonCfg/Orbbec.json`](../../../jsonCfg/Orbbec.json) enables this viewer and colored
 Orbbec point clouds, with `bFrame: true` and the `obPCL` source.
 
-The viewer uses the same [version-5 protocol](../../../docs/3D/WebViewer3D.md#binary-protocol-version-5)
+The viewer uses the same [version-6 protocol](../../../docs/3D/WebViewer3D.md#binary-protocol-version-6)
 as `_SelectableOctGrid`: `/stream/points` and `/stream/lines`, JSON `hello`, binary
 RGB snapshots, and `start`/`next` flow control. Each connection reconnects and
 clears independently. The backend reuses the existing protocol serialization.
@@ -61,4 +61,4 @@ python3 test/webViewer3D/geometry_browser.py /tmp/openkai-web-tests/viewer_fixtu
 
 The native checks use synthetic `_PointCloud` frames and `_Line` data. The browser
 check requires Chromium or Google Chrome and exercises the frontend against the
-existing version-5 fixture, including mouse navigation and cell-frame rejection.
+existing version-6 fixture, including mouse navigation and cell-frame rejection.

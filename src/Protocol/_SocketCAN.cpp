@@ -91,7 +91,7 @@ namespace kai
 			{
 				if (!open())
 				{
-					m_pT->sleepT(SEC_2_USEC);
+					m_pT->sleepT(NSEC_SEC);
 					continue;
 				}
 			}

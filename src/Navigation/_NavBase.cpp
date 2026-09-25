@@ -22,7 +22,7 @@ namespace kai
 	{
 		IF_F(!this->_ReferenceFrame::init(j));
 
-		jKv(j, "tConfidenceTimeoutUs", m_tConfidenceTimeoutUs);
+		jKv(j, "tConfidenceTimeoutNs", m_tConfidenceTimeoutNs);
 
 		return true;
 	}
@@ -30,9 +30,11 @@ namespace kai
 	float _NavBase::confidence(void)
 	{
 		std::lock_guard<std::mutex> lock(m_mtxConfidence);
-		if (m_tConfidenceTimeoutUs &&
-			getTbootUs() - m_tConfidenceUpdatedUs >= m_tConfidenceTimeoutUs)
+		if (m_tConfidenceTimeoutNs &&
+			getTns() - m_tConfidenceUpdatedNs >= m_tConfidenceTimeoutNs)
+		{
 			return 0.0f;
+		}
 		return m_confidence;
 	}
 
@@ -40,7 +42,7 @@ namespace kai
 	{
 		std::lock_guard<std::mutex> lock(m_mtxConfidence);
 		m_confidence = std::isfinite(confidence) ? std::clamp(confidence, 0.0f, 100.0f) : 0.0f;
-		m_tConfidenceUpdatedUs = getTbootUs();
+		m_tConfidenceUpdatedNs = getTns();
 	}
 
 	void _NavBase::console(void *pConsole)

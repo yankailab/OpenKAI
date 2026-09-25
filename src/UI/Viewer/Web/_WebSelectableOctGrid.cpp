@@ -158,7 +158,7 @@ namespace kai
 			frame = std::make_shared<std::vector<uint8_t>>();
 			stream.buffers.push_back(frame);
 		}
-		const uint64_t now = getApproxTbootUs();
+		const uint64_t now = getTns();
 		const uint64_t expiry = m_dTexpire && now > m_dTexpire ? now - m_dTexpire : 0;
 		webselectableoctgrid::begin(*frame, stream.type, ++stream.sequence, now);
 		uint32_t count = 0;

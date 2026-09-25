@@ -133,7 +133,7 @@ namespace kai
 							   ((float)y) * PC_SCALE_INV,
 							   ((float)z) * PC_SCALE_INV);
 
-			add(vP, vC, m_pT->getTfrom());
+			add(vP, vC, m_pT->getTfromNs());
 		}
 	}
 

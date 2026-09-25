@@ -19,7 +19,7 @@ namespace kai
         jKv(j, "msgFinishSend", m_msgFinishSend);
         jKv(j, "msgFinishRecv", m_msgFinishRecv);
 
-        int v = SEC_2_USEC;
+        uint64_t v = NSEC_SEC;
         jKv(j, "ieSendHB", v);
         m_ieSendHB.init(v);
 
@@ -60,7 +60,7 @@ namespace kai
     {
         IF_(!check());
 
-        if (m_ieSendHB.updateT(m_pT->getTfrom()))
+        if (m_ieSendHB.update(m_pT->getTfromNs()))
         {
             //            sendHeartbeat();
         }
@@ -80,7 +80,7 @@ namespace kai
         json j = json::object();
         j["id"] = i2str(1);
         j["cmd"] = "heartbeat";
-        j["t"] = li2str(m_pT->getTfrom());
+        j["t"] = li2str(m_pT->getTfromNs());
 
         sendJson(j);
     }

@@ -30,7 +30,7 @@ namespace kai
         {
             m_vP.setZero();
             m_vC.setZero();
-            m_tStamp = 0; // time stamp, 0: invalid, >= 1 valid
+            m_tStamp = 0; // nanosecond timestamp, 0: invalid, >= 1 valid
         }
     };
 
@@ -39,7 +39,7 @@ namespace kai
         Vector3f m_vPa = Vector3f::Zero(); // line from
         Vector3f m_vPb = Vector3f::Zero(); // line to
         Vector3f m_vC{0, 0, 0};            // color
-        uint64_t m_tStamp;                 // time stamp, 0: invalid, >= 1 valid
+        uint64_t m_tStamp;                 // nanosecond timestamp, 0: invalid, >= 1 valid
 
         void clear(void)
         {

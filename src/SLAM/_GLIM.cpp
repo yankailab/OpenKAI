@@ -83,7 +83,7 @@ namespace kai
 		jKv(j, "nMinPoints", m_nMinPoints);
 		jKv(j, "nMapPoints", m_nMapPoints);
 		jKv(j, "nLiveFrames", m_nLiveFrames);
-		jKv(j, "tMapUpdateUs", m_mapIntervalUs);
+		jKv(j, "tMapUpdateNs", m_mapIntervalNs);
 		jKv(j, "bPublishLiveMap", m_bPublishLiveMap);
 		jKv(j, "exportPath", m_exportPath);
 		IF_Le_F(m_configPath.empty(), "GLIM configPath is required");
@@ -96,7 +96,7 @@ namespace kai
 			if (!m_fConfig.empty() && std::filesystem::exists(m_fConfig) && !loadConfig()) return false;
 		}
 		catch (const std::exception &e) { LOG_E(e.what()); return false; }
-		m_session = getTbootUs();
+		m_session = getTns();
 		return true;
 	}
 
@@ -357,11 +357,11 @@ namespace kai
 
 	void _GLIM::updateSLAM(void)
 	{
-		const uint64_t started = getTbootUs();
+		const uint64_t started = getTns();
 		uint64_t checkpoint = started;
 		auto recordStage = [&](size_t stage) {
-			const uint64_t now = getTbootUs();
-			m_stageTimeUs[stage] += now - checkpoint;
+			const uint64_t now = getTns();
+			m_stageTimeNs[stage] += now - checkpoint;
 			checkpoint = now;
 		};
 		++m_updates;
@@ -370,10 +370,10 @@ namespace kai
 		uint64_t previousIMU = m_tStampLastIMU;
 		while (readIMU(acc, gyro, stamp))
 		{
-			if (previousIMU) m_maxIMUgapUs = std::max(m_maxIMUgapUs, stamp - previousIMU);
+			if (previousIMU) m_maxIMUgapNs = std::max(m_maxIMUgapNs, stamp - previousIMU);
 			previousIMU = stamp;
 			++m_imuSamples;
-			const double seconds = usec2sec<double>(stamp);
+			const double seconds = nsec2sec<double>(stamp);
 			m_odometry->insert_imu(seconds, acc, gyro);
 			if (m_subMapping)
 				m_subMapping->insert_imu(seconds, acc, gyro);
@@ -385,9 +385,9 @@ namespace kai
 		const uint64_t previousFrame = m_tStampLastFrame;
 		if (readPointCloud(m_inputBuffer, stamp))
 		{
-			if (previousFrame) m_frameIntervalMs = (stamp - previousFrame) * 0.001;
+			if (previousFrame) m_frameIntervalMs = (stamp - previousFrame) / double(NSEC_MSEC);
 			auto raw = std::make_shared<glim::RawPoints>();
-			raw->stamp = usec2sec<double>(stamp);
+			raw->stamp = nsec2sec<double>(stamp);
 			raw->points.reserve(m_inputBuffer.size());
 			const double nearSquared = m_distanceNear * m_distanceNear;
 			const double farSquared = m_distanceFar * m_distanceFar;
@@ -406,7 +406,7 @@ namespace kai
 
 		IF_(!m_pendingFrame);
 		// Wait for IMU coverage; keep at most the newest depth frame when lagging.
-		IF_(m_bRequiresIMU && usec2sec<double>(m_tStampLastIMU) <= m_pendingFrame->stamp);
+		IF_(m_bRequiresIMU && nsec2sec<double>(m_tStampLastIMU) <= m_pendingFrame->stamp);
 		auto raw = std::move(m_pendingFrame);
 		m_inputPoints = raw->size();
 		if (raw->size() < m_nMinPoints)
@@ -454,7 +454,7 @@ namespace kai
 		recordStage(4);
 		publishMap();
 		recordStage(5);
-		m_processingMs = (getTbootUs() - started) * 0.001;
+		m_processingMs = (getTns() - started) / double(NSEC_MSEC);
 	}
 
 	void _GLIM::insertMappingFrames(const vector<glim::EstimationFrame::ConstPtr> &frames)
@@ -502,7 +502,7 @@ namespace kai
 		}
 		GLIM_SUBMAP web;
 		web.id = m_webSubmaps.size();
-		web.timestampUs = submap->odom_frames.empty() ? 0 : uint64_t(submap->odom_frames.back()->stamp * 1e6);
+		web.timestampNs = submap->odom_frames.empty() ? 0 : sec2nsec(submap->odom_frames.back()->stamp);
 		web.points = points;
 		m_submapPoints += points->size();
 		m_webSubmaps.push_back(std::move(web));
@@ -542,12 +542,12 @@ namespace kai
 	{
 		IF_(!m_pGlobalMap);
 		IF_(!force && !m_bPublishLiveMap && !m_mapDirty);
-		const uint64_t now = getTbootUs();
-		IF_(!force && m_mapUpdatedUs && now - m_mapUpdatedUs < m_mapIntervalUs);
+		const uint64_t now = getTns();
+		IF_(!force && m_mapUpdatedNs && now - m_mapUpdatedNs < m_mapIntervalNs);
 		collectMapPoints(m_mapBuffer, m_mapColors, size_t(m_nMapPoints), m_bPublishLiveMap);
 		m_pGlobalMap->setFrame(m_mapBuffer, m_mapColors, now);
 		m_mapPoints = m_mapBuffer.size();
-		m_mapUpdatedUs = now;
+		m_mapUpdatedNs = now;
 		m_mapDirty = false;
 	}
 
@@ -632,10 +632,10 @@ namespace kai
 		m_submaps.clear(); m_liveFrames.clear(); m_activeFrames.clear(); m_latestFrame.reset();
 		m_webSubmaps.clear(); m_submapPoints = 0;
 		++m_session; m_revision = 0; m_mapDirty = false;
-		m_mapUpdatedUs = m_mapPoints = m_processedFrames = 0;
-		m_imuSamples = m_maxIMUgapUs = 0;
+		m_mapUpdatedNs = m_mapPoints = m_processedFrames = 0;
+		m_imuSamples = m_maxIMUgapNs = 0;
 		m_frameIntervalMs = m_processingMs = 0.0;
-		m_stageTimeUs.fill(0);
+		m_stageTimeNs.fill(0);
 		m_updates = m_inputPoints = m_registrationPoints = 0;
 		m_inputBuffer.clear(); m_mapBuffer.clear(); m_mapColors.clear();
 		m_submapStamp = -1.0;
@@ -701,18 +701,18 @@ namespace kai
 			{"position", {pose.translation().x(), pose.translation().y(), pose.translation().z()}},
 			{"orientation", {q.x(), q.y(), q.z(), q.w()}},
 			{"angles", {angles.x() * 180 / M_PI, angles.y() * 180 / M_PI, angles.z() * 180 / M_PI}},
-			{"poseTimestampUs", m_latestFrame ? uint64_t(m_latestFrame->stamp * 1e6) : 0},
-			{"inputTimestampUs", m_tStampLastFrame}, {"frames", m_processedFrames},
-			{"imuSamples", m_imuSamples}, {"maxIMUgapUs", m_maxIMUgapUs},
+			{"poseTimestampNs", std::to_string(m_latestFrame ? sec2nsec(m_latestFrame->stamp) : 0)},
+			{"inputTimestampNs", std::to_string(m_tStampLastFrame)}, {"frames", m_processedFrames},
+			{"imuSamples", m_imuSamples}, {"maxIMUgapNs", m_maxIMUgapNs},
 			{"frameIntervalMs", m_frameIntervalMs}, {"processingMs", m_processingMs},
 			{"updates", m_updates}, {"inputPoints", m_inputPoints}, {"registrationPoints", m_registrationPoints},
-			{"workMs", {{"imu", m_stageTimeUs[0] * 0.001}, {"input", m_stageTimeUs[1] * 0.001},
-				{"preprocess", m_stageTimeUs[2] * 0.001}, {"odometry", m_stageTimeUs[3] * 0.001},
-				{"mapping", m_stageTimeUs[4] * 0.001}, {"publishMap", m_stageTimeUs[5] * 0.001}}},
+			{"workMs", {{"imu", m_stageTimeNs[0] / double(NSEC_MSEC)}, {"input", m_stageTimeNs[1] / double(NSEC_MSEC)},
+				{"preprocess", m_stageTimeNs[2] / double(NSEC_MSEC)}, {"odometry", m_stageTimeNs[3] / double(NSEC_MSEC)},
+				{"mapping", m_stageTimeNs[4] / double(NSEC_MSEC)}, {"publishMap", m_stageTimeNs[5] / double(NSEC_MSEC)}}},
 			{"session", std::to_string(m_session)}, {"revision", std::to_string(m_revision)},
 			{"canSavePointCloud", !m_submaps.empty() || !m_liveFrames.empty()},
 			{"mapPoints", m_bPublishLiveMap ? m_mapPoints : m_submapPoints}, {"submaps", m_submaps.size()}, {"liveFrames", m_liveFrames.size()},
-			{"mapTimestampUs", m_mapUpdatedUs}, {"mapOutput", m_pGlobalMap ? m_pGlobalMap->getName() : ""},
+			{"mapTimestampNs", std::to_string(m_mapUpdatedNs)}, {"mapOutput", m_pGlobalMap ? m_pGlobalMap->getName() : ""},
 			{"frame", "map"}};
 	}
 
@@ -751,7 +751,7 @@ namespace kai
 				if (path.empty())
 				{
 					std::filesystem::create_directories(m_exportPath);
-					path = (std::filesystem::path(m_exportPath) / ("map-" + std::to_string(getTbootUs()) + ".ply")).string();
+					path = (std::filesystem::path(m_exportPath) / ("map-" + std::to_string(getTns()) + ".ply")).string();
 				}
 				size_t points = 0;
 				string error;

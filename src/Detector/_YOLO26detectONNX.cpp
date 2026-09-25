@@ -199,7 +199,7 @@ namespace kai
 
 			_Object o;
 			o.clear();
-			o.setTstamp(m_pT->getTfrom());
+			o.setTstamp(m_pT->getTfromNs());
 			o.setType(obj_bbox);
 			o.setTopClass(iClass, confidence);
 			o.setBB2D(Vector4f(left, top, right - left, bottom - top), kBBx, kBBy);
@@ -286,7 +286,7 @@ namespace kai
 
 			_Object o;
 			o.clear();
-			o.setTstamp(m_pT->getTfrom());
+			o.setTstamp(m_pT->getTfromNs());
 			o.setType(obj_bbox);
 			o.setTopClass(vClassID[idx], vConfidence[idx]);
 			o.setBB2D(rect2BB<Vector4f>(vBox[idx]), kx, ky);

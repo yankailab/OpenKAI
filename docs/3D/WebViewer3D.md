@@ -327,7 +327,7 @@ its point clouds.
 | `nCbuf` | `100000` | Maximum occupied cells collected per grid source |
 | `vSelectableOctGrid[].nC` | `nCbuf` | Per-grid cell limit; zero sends an empty grid |
 | `nPbuf`, `nLbuf` | `200000`, `100000` | Scratch capacities per source; zero disables collection of that type |
-| `dTexpire` | `0` | Maximum geometry age in microseconds; zero disables expiry |
+| `dTexpire` | `0` | Maximum geometry age in nanoseconds; zero disables expiry |
 | `bAutoBound`, `bShowGrid` | `true`, `true` | Fit the first nonempty frame of each type; show reference grid |
 | `vBgCol` | `[0.035,0.045,0.065,1]` | Background color |
 | `vGeometry[].nP`, `.nL` | scratch capacities | Per-object limits; zero omits that primitive type |
@@ -444,7 +444,7 @@ endpoint that also forwards `/stream/points`, `/stream/lines` and `/stream/cells
 WebSocket upgrades. The browser selects
 `wss://` when the page is served over HTTPS.
 
-## Binary protocol, version 5
+## Binary protocol, version 6
 
 All integers and IEEE float32 values are little-endian. Each WebSocket binary
 message contains one complete snapshot of exactly one geometry type. An empty
@@ -452,13 +452,13 @@ stream is a 32-byte frame with an object count of zero. Reserved fields are zero
 
 | Frame header offset | Type | Value |
 | --- | --- | --- |
-| 0 | uint32 | `0x35443357` (`W3D5`) |
-| 4 | uint32 | Version `5` |
+| 0 | uint32 | `0x36443357` (`W3D6`) |
+| 4 | uint32 | Version `6` |
 | 8 | uint32 | Type: 1 points, 2 lines, 3 cells; must match the endpoint |
 | 12 | uint32 | Sequence number for this stream, wraps at 2^32 |
 | 16 | uint32 | Object count |
 | 20 | uint32 | Entire message length in bytes |
-| 24 | uint64 | Backend boot-clock timestamp in microseconds |
+| 24 | uint64 | Backend monotonic-clock timestamp in nanoseconds |
 
 Each object starts with a 40-byte header:
 
@@ -489,7 +489,7 @@ All sections and subsequent object headers remain four-byte aligned.
 | 12 | float32 × 3 | Full root cell extents XYZ (`vRootCellSize`) |
 | 24 | uint32 | Maximum depth, 0–40 |
 | 28 | uint32 | Reserved |
-| 32 | uint64 | Grid snapshot publication timestamp in microseconds |
+| 32 | uint64 | Grid snapshot publication timestamp in nanoseconds |
 
 Next come C interleaved records: 16 ID bytes, three RGB8 bytes, and one alpha byte
 (0–255). The ID is
@@ -502,7 +502,7 @@ uses X/Y/Z masks 4/2/1, with a set bit choosing the positive half of that axis.
 Each cell costs exactly **20 bytes**. Cell records and sections are four-byte
 aligned without padding.
 
-Only version 5 is supported, with an exact version match required for both
+Only version 6 is supported, with an exact version match required for both
 the JSON greeting and binary frames. There is no protocol negotiation or
 conversion. Update the backend and browser assets together.
 Point and line payloads use 15 and 30 bytes per record respectively, plus

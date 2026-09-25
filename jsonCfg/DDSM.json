@@ -39,7 +39,7 @@
 		"_IObase": "serial",
 		"ID": 4,
 		"mode": 2,
-		"tCmdTimeout": 0,
+		"tCmdTimeoutNs": 0,
 		"bfSetPower": true,
 		"bfSetID": false,
 		"bfSetMode": true,

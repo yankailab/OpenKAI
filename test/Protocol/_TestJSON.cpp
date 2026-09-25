@@ -67,7 +67,7 @@ namespace kai
 
             object o;
             JO(o, "id", (double)1);
-            JO(o, "t", (double)m_pT->getTfrom());
+            JO(o, "t", (double)m_pT->getTfromNs());
             JO(o, "cmd", "stat");
             JO(o, "stat", "STANDBY");
 

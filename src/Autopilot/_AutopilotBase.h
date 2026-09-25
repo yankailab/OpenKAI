@@ -21,9 +21,9 @@ namespace kai
 	enum AP_MODE
 	{
 		apMode_unknown = 0,
-		apMode_standby = 1,
-		apMode_manual = 2,
-		apMode_auto = 3,
+		apMode_manual = 1,
+		apMode_fc = 2,
+		apMode_ok = 3,
 	};
 
 	enum AP_ARM
@@ -53,15 +53,16 @@ namespace kai
 
 		// general
 		virtual AP_TYPE getType(void);
-		virtual void setMode(AP_MODE m);
-		virtual void setArm(AP_ARM a);
+		virtual bool setMode(AP_MODE m);
+		virtual bool setArm(AP_ARM a);
+
 		virtual AP_MODE getMode(void);
 		virtual AP_ARM getArm(void);
 
 		// status
 		virtual float getRelativeAlt(void);
 		virtual const Vector4d& getHomePos(void);
-		virtual const Vector3f& getSpeed(void);
+		virtual const Vector3f& getVelocity(void);
 
 		virtual float getBattery(void);
 
@@ -78,18 +79,22 @@ namespace kai
 		AP_TYPE m_type = ardupilot_unknown;
 
 		// state control
-		VAR_WR<AP_MODE> m_wrMode;
-		VAR_WR<AP_ARM> m_wrArm;
+		AP_MODE m_mode = apMode_unknown;
+		AP_ARM m_arm = apArm_unknown;
 
 		// read only
 		float m_rAlt;
-		Vector3f m_vSpeed = Vector3f::Zero();
+		Vector3f m_vVelocity = Vector3f::Zero();
 		Vector4d m_vHomePos = Vector4d::Zero();
+		// Reference frame
+        // Vector3d m_vPos;    // position in Lat, Lon, Alt
+        // Quaterniond m_vOrt; // orientation quaternion
+        // Vector3d m_vAngle;  // euler angles (radian) in roll, pitch, yaw (North 0) order
+
+
 
 		int8_t m_battery = -1;	// remaining percentage in integer, -1:unknown
 
-		INTERVAL_EVENT m_ieSendHB;
-		INTERVAL_EVENT m_ieSendMsgInt;
 	};
 
 }

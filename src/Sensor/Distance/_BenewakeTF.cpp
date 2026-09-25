@@ -50,13 +50,13 @@ namespace kai
 		{
 			if (!m_pIO)
 			{
-				m_pT->sleepT(SEC_2_USEC);
+				m_pT->sleepT(NSEC_SEC);
 				continue;
 			}
 
 			if (!m_pIO->bOpen())
 			{
-				m_pT->sleepT(SEC_2_USEC);
+				m_pT->sleepT(NSEC_SEC);
 				continue;
 			}
 

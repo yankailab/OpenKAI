@@ -12,16 +12,16 @@ namespace kai
 	namespace webglim
 	{
 		// Dedicated accumulating-submap protocol, unrelated to geometry snapshots.
-		constexpr uint32_t Magic = 0x314d4c47; // LE bytes "GLM1"
-		constexpr uint32_t Version = 1;
+		constexpr uint32_t Magic = 0x324d4c47; // LE bytes "GLM2"
+		constexpr uint32_t Version = 2;
 		constexpr uint32_t HeaderBytes = 56;
 		constexpr uint32_t MaxChunkPoints = 65536;
 		constexpr uint32_t MaxSubmapPoints = 10000000;
 		// Binary chunk header, all little-endian:
-		// u32 magic,version,kind=1,headerBytes; u64 session,id,timestampUs;
+		// u32 magic,version,kind=1,headerBytes; u64 session,id,timestampNs;
 		// u32 totalPoints,offsetPoints,countPoints,reserved=0; float32 xyz[].
 		// Text data: reset(session,revision), submap(session,revision,id,
-		// timestampUs,pointCount,pose), pose(session,revision,id,pose).
+		// timestampNs,pointCount,pose), pose(session,revision,id,pose).
 		// All u64 JSON fields are decimal strings; pose is column-major 4x4.
 		// Client start/pause/next grants one outstanding data message. Every
 		// text data message and binary chunk requires next; hello does not.

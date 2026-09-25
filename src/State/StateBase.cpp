@@ -58,7 +58,7 @@ namespace kai
 	{
 		IF_(m_bComplete);
 
-		m_tStamp = getApproxTbootUs();
+		m_tStamp = getTns();
 		if (m_tStart <= 0)
 			m_tStart = m_tStamp;
 

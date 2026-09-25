@@ -104,7 +104,7 @@ namespace kai
 		{
 			rs2::device dev = m_rsProfile.get_device();
 			dev.hardware_reset();
-			m_pT->sleepT(SEC_2_USEC);
+			m_pT->sleepT(NSEC_SEC);
 		}
 		catch (const rs2::camera_disconnected_error &e)
 		{
@@ -135,7 +135,7 @@ namespace kai
 				if (!open())
 				{
 					LOG_E("Cannot open RealSense tracking");
-					m_pT->sleepT(SEC_2_USEC);
+					m_pT->sleepT(NSEC_SEC);
 					continue;
 				}
 

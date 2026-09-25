@@ -242,7 +242,7 @@ namespace kai
                 if (!open())
                 {
                     LOG_E("Cannot open");
-                    m_pT->sleepT(SEC_2_USEC);
+                    m_pT->sleepT(NSEC_SEC);
                     continue;
                 }
             }

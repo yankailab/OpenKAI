@@ -53,7 +53,7 @@ namespace kai
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
-			uint64_t t = m_pT->getTfrom();
+			uint64_t t = m_pT->getTfromNs();
 
 			// if (m_ieReadStatus.update(t))
 			// {
@@ -70,7 +70,7 @@ namespace kai
 				IAIgotoOrigin();
 			}
 
-			if (m_ieSendCMD.updateT(t))
+			if (m_ieSendCMD.update(t))
 			{
 				if (m_bfSet.b(actuator_move))
 				{

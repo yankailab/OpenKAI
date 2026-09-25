@@ -33,9 +33,9 @@
 	}
 
 	"_Modbus":"modbus",
-	"tIntSendCMD":100000,
-	"tIntReadStatus":100000,
-	"tIntCheckAlarm":100000,
+	"tIntSendCMD":100000000,
+	"tIntReadStatus":100000000,
+	"tIntCheckAlarm":100000000,
 "channels":{
 "X":{
 			"ID":1,
@@ -78,8 +78,8 @@
 	"_Console":"_Console",
 	"_Modbus":"modbus",
 	"iSlave":6,
-	"tIntCheckAlarm":100000,
-	"tIntReadStatus":100000,
+	"tIntCheckAlarm":100000000,
+	"tIntReadStatus":100000000,
 	"tInt":100000,
 "axis":{
 "WX":{
@@ -107,8 +107,8 @@
 	"_Console":"_Console",
 	"_Modbus":"modbus",
 	"iSlave":7,
-	"tIntCheckAlarm":100000,
-	"tIntReadStatus":100000,
+	"tIntCheckAlarm":100000000,
+	"tIntReadStatus":100000000,
 	"tInt":100000,
 "axis":{
 "WY":{
@@ -136,8 +136,8 @@
 	"_Console":"_Console",
 	"_Modbus":"modbus",
 	"iSlave":1,
-	"tIntCheckAlarm":100000,
-	"tIntReadStatus":100000,
+	"tIntCheckAlarm":100000000,
+	"tIntReadStatus":100000000,
 	"tInt":100000,
 "axis":{
 "Y":{
@@ -165,8 +165,8 @@
 	"_Console":"_Console",
 	"_Modbus":"modbus",
 	"iSlave":3,
-	"tIntCheckAlarm":100000,
-	"tIntReadStatus":100000,
+	"tIntCheckAlarm":100000000,
+	"tIntReadStatus":100000000,
 	"tInt":100000,
 "axis":{
 "Y":{
@@ -194,8 +194,8 @@
 	"_Console":"_Console",
 	"_Modbus":"modbus",
 	"iSlave":2,
-	"tIntCheckAlarm":100000,
-	"tIntReadStatus":100000,
+	"tIntCheckAlarm":100000000,
+	"tIntReadStatus":100000000,
 	"tInt":100000,
 "axis":{
 "X":{

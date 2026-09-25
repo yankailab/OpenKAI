@@ -55,16 +55,16 @@ namespace kai
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
-			uint64_t t = m_pT->getTfrom();
+			uint64_t t = m_pT->getTfromNs();
 
 			clearAlarm();
 
-			if (!m_ieReadStatus.updateT(t))
+			if (!m_ieReadStatus.update(t))
 			{
 				readStatus();
 			}
 
-			if (m_ieSendCMD.updateT(t))
+			if (m_ieSendCMD.update(t))
 			{
 				if (!setPos())
 					m_ieSendCMD.reset();

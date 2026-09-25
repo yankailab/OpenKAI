@@ -11,7 +11,7 @@ namespace kai
 {
 	_SLAMbase::_SLAMbase()
 	{
-		m_tConfidenceTimeoutUs = 1000000;
+		m_tConfidenceTimeoutNs = NSEC_SEC;
 	}
 
 	_SLAMbase::~_SLAMbase()
