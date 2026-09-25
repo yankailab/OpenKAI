@@ -22,6 +22,7 @@
 #define NSEC_MSEC 1000000
 #define NSEC_USEC 1000
 
+#define USEC_NSEC 1e-3
 #define SEC_USEC 1e-6
 #define SEC_NSEC 1e-9
 

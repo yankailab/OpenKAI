@@ -11,7 +11,7 @@
 		"class": "_Console",
 		"bON": true,
 		"thread": {
-			"FPS": 30
+			"FPS": 10
 		},
 		"vBASE": [
 			"/serialAP",
@@ -85,7 +85,7 @@
 		"class": "_Mavlink",
 		"bON": true,
 		"thread": {
-			"FPS": 30
+			"FPS": 10
 		},
 		"bLog": false,
 		"_IObase": "serialAP",
@@ -96,10 +96,10 @@
 	},
 
 	"apBase": {
-		"class": "_APmav_base",
+		"class": "_APmav_copter",
 		"bON": true,
 		"thread": {
-			"FPS": 20
+			"FPS": 10
 		},
 		"_StateControl": "state",
 		"_Mavlink": "apMavlink",

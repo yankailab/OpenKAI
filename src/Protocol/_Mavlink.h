@@ -112,7 +112,7 @@ namespace kai
 		uint32_t m_id = 0x7fffffff;
 		uint64_t m_tStamp = 0;
 		int64_t m_tActualInterval = LONG_MAX;
-		int m_tIntervalDelayAllowed = NSEC_SEC;
+		int m_tIntervalDelayAllowed = NSEC_SEC / 10;
 		int64_t m_tInterval = -1;
 
 		vector<MavCallback> m_vCbRecv;

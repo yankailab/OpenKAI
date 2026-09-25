@@ -137,7 +137,11 @@ namespace kai
 
 		while (m_pT->bRun())
 		{
-			IF_CONT(!readMessage(&msg));
+			if(!readMessage(&msg))
+			{
+				m_pT->autoFPS();
+				continue;
+			}
 
 			if (m_devSystemID < 0)
 				m_devSystemID = msg.sysid;
@@ -1002,8 +1006,9 @@ namespace kai
 		{
 			IF_CONT(pM->m_tInterval < 0);
 			IF_CONT(pM->bOnTime());
+
 			// MAV_CMD_SET_MESSAGE_INTERVAL uses microseconds on the wire.
-			clSetMessageInterval(pM->m_id, pM->m_tInterval / double(NSEC_USEC), 0);
+			clSetMessageInterval(pM->m_id, ((double)pM->m_tInterval) * USEC_NSEC, 0);
 		}
 	}
 
