@@ -20,9 +20,10 @@ namespace kai
 		close();
 	}
 
-	bool _UDP::init(const json &j)
+	bool _UDP::loadConfig(void)
 	{
-		IF_F(!this->_IObase::init(j));
+		IF_F(!this->_IObase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "addrRemote", m_addrRemote);
 		jKv(j, "portRemote", m_portRemote);

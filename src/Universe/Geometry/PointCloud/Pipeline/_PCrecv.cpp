@@ -18,20 +18,21 @@ namespace kai
 	{
 	}
 
-	bool _PCrecv::init(const json &j)
+	bool _PCrecv::loadConfig(void)
 	{
-		IF_F(!this->_PointCloud::init(j));
+		IF_F(!this->_PointCloud::loadConfig());
 
 		return true;
 	}
 
-	bool _PCrecv::link(const json &j, ModuleMgr *pM)
+	bool _PCrecv::link(void)
 	{
-		IF_F(!this->_PointCloud::link(j, pM));
+		IF_F(!this->_PointCloud::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(pM->findModule(n));
+		m_pIO = (_IObase *)(m_pM->findModule(n));
 		IF_Le_F(!m_pIO, "_IObase not found: " + n);
 
 		return true;

@@ -18,9 +18,10 @@ namespace kai
 	{
 	}
 
-	bool _PCdownSample::init(const json &j)
+	bool _PCdownSample::loadConfig(void)
 	{
-		IF_F(!this->_GeometryBase::init(j));
+		IF_F(!this->_GeometryBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "rVoxel", m_rVoxel);
 

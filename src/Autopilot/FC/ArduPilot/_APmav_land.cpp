@@ -16,9 +16,10 @@ namespace kai
 	{
 	}
 
-	bool _APmav_land::init(const json &j)
+	bool _APmav_land::loadConfig(void)
 	{
-		IF_F(!this->_APmav_follow::init(j));
+		IF_F(!this->_APmav_follow::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv<float>(j, "vDSrange", m_vDSrange);
 		jKv<float>(j, "vFov", m_vFov);
@@ -29,8 +30,9 @@ namespace kai
 		// jKv(j,"ieHdgNs",ieHdg);//""
 		// m_ieHdgCmd.init(ieHdg);
 
-		const json &jc = jK(j, "tags");
-		IF__(!jc.is_object(), true);
+		const json *pJc = jK(j, "tags");
+		IF__(!pJc || !pJc->is_object(), true);
+		const json &jc = *pJc;
 
 		for (auto it = jc.begin(); it != jc.end(); it++)
 		{
@@ -48,13 +50,14 @@ namespace kai
 		return true;
 	}
 
-	bool _APmav_land::link(const json &j, ModuleMgr *pM)
+	bool _APmav_land::link(void)
 	{
-		IF_F(!this->_APmav_follow::link(j, pM));
+		IF_F(!this->_APmav_follow::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_DistSensorBase", n);
-		m_pDS = (_DistSensorBase *)pM->findModule(n);
+		m_pDS = (_DistSensorBase *)m_pM->findModule(n);
 
 		return true;
 	}

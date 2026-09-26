@@ -31,7 +31,7 @@ namespace kai
 		virtual ~_Object();
 
 		//general
-		virtual bool init(const json& j);
+		virtual bool loadConfig(void) override;
 		virtual void clear(void);
 		virtual bool start(void);
 		virtual void update(void);

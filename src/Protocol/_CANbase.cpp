@@ -11,18 +11,19 @@ namespace kai
 	{
 	}
 
-	bool _CANbase::init(const json &j)
+	bool _CANbase::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "nErrReconnect", m_nErrReconnect);
 
 		return true;
 	}
 
-	bool _CANbase::link(const json &j, ModuleMgr *pM)
+	bool _CANbase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
 
 		return true;
 	}

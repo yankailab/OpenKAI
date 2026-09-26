@@ -19,7 +19,7 @@ namespace kai
 		_PCfile();
 		virtual ~_PCfile();
 
-		virtual bool init(const json &j);
+		virtual bool loadConfig(void) override;
 		virtual bool start(void);
 		bool open(void);
 		// Binary little-endian XYZ float32 and RGB uint8. Missing/nonfinite

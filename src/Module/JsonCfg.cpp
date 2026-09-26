@@ -12,50 +12,26 @@ namespace kai
 	{
 	}
 
-	bool JsonCfg::parseJsonFile(const string &fName)
-	{
-		IF_F(!readFromFile(fName));
-
-		return parseJsonStr(m_jsonStr);
-	}
-
 	bool JsonCfg::readFromFile(const string &fName)
 	{
-		if (!readFile(fName, &m_jsonStr))
-		{
-			LOG_E("Cannot read file: " + fName);
-			return false;
-		}
+		string jStr;
+		IF_F(!readFile(fName, &jStr));
+		IF_F(!parseStr(jStr));
 
+		m_name = fName;
 		return true;
 	}
 
-	bool JsonCfg::saveToFile(const string &fName)
+	bool JsonCfg::parseStr(const string &s)
 	{
-		m_jsonStr = m_json.dump(m_nDumpSpace);
+		string jStr = s;
+		delComment(&jStr);
 
-		if (!writeFile(fName, m_jsonStr))
-		{
-			LOG_E("Cannot write file: " + fName);
-			return false;
-		}
-
-		return true;
-	}
-
-	string JsonCfg::getJsonStr(void)
-	{
-		return m_jsonStr;
-	}
-
-	bool JsonCfg::parseJsonStr(const string &s)
-	{
-		m_jsonStr = s;
-		delComment(&m_jsonStr);
+		m_json.clear();
 
 		try
 		{
-			m_json = json::parse(m_jsonStr);
+			m_json = json::parse(jStr);
 		}
 		catch (const json::parse_error &e)
 		{
@@ -64,6 +40,50 @@ namespace kai
 		}
 
 		return true;
+	}
+
+	void JsonCfg::setJson(const json &j)
+	{
+		m_json = j;
+	}
+
+	bool JsonCfg::saveToFile(const string &fName)
+	{
+		string n = fName;
+		if (n.empty())
+		{
+			n = m_name;
+		}
+		if (n.empty())
+		{
+			return false;
+		}
+
+		string jStr = m_json.dump(m_nDumpSpace);
+		IF_F(!writeFile(n, jStr));
+
+		return true;
+	}
+
+	json *JsonCfg::getJson(void)
+	{
+		return &m_json;
+	}
+
+	string JsonCfg::getStr(void)
+	{
+		return m_json.dump(m_nDumpSpace);
+	}
+
+	string JsonCfg::getFileName(void) const
+	{
+		return m_name;
+	}
+
+	void JsonCfg::setNdumpSpace(int nD)
+	{
+		IF_(nD <= 0);
+		m_nDumpSpace = nD;
 	}
 
 	void JsonCfg::delComment(string *pStr)
@@ -87,27 +107,6 @@ namespace kai
 			pStr->erase(cFrom, cTo - cFrom + commentTo.length());
 			cFrom = pStr->find(commentFrom);
 		}
-	}
-
-	json &JsonCfg::getJson(void)
-	{
-		return m_json;
-	}
-
-	void JsonCfg::setJson(json &j)
-	{
-		m_json = j;
-	}
-
-	void JsonCfg::setNdumpSpace(int nD)
-	{
-		IF_(nD <= 0);
-		m_nDumpSpace = nD;
-	}
-
-	string JsonCfg::getName(void)
-	{
-		return "Jsonfg";
 	}
 
 }

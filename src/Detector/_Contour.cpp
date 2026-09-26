@@ -18,9 +18,10 @@ namespace kai
 	{
 	}
 
-	bool _Contour::init(const json &j)
+	bool _Contour::loadConfig(void)
 	{
-		IF_F(!this->_DetectorBase::init(j));
+		IF_F(!this->_DetectorBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "mode", m_mode);
 		jKv(j, "method", m_method);

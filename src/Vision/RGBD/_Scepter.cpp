@@ -7,7 +7,6 @@
 
 #include "_Scepter.h"
 #include <cmath>
-#include <filesystem>
 #include <set>
 #include <type_traits>
 #include <arpa/inet.h>
@@ -234,38 +233,63 @@ namespace kai
 			scShutdown();
 	}
 
-	bool _Scepter::init(const json &j)
+	bool _Scepter::loadConfig(void)
 	{
-		IF_F(!_RGBDbase::init(j));
+		if (!_RGBDbase::loadConfig())
+		{
+			return false;
+		}
+		const json &j = *m_pJ;
 
-		// Legacy stream aliases remain valid in the application JSON. Explicit
-		// sc options and the saved snapshot take precedence.
-		jKv(jK(j, "thread"), "FPS", m_scCtrl.m_frameRate);
+		json startup = json::object();
+		for (const auto &spec : controlSchema())
+		{
+			const string key = spec["key"];
+			auto it = j.find(key);
+			if (it != j.end())
+			{
+				startup[key] = *it;
+			}
+		}
+
+		// Explicit sc options take precedence over the common RGBD settings.
+		if (const json *pJthread = jK(j, "thread"))
+		{
+			jKv(*pJthread, "FPS", m_scCtrl.m_frameRate);
+		}
 		m_scCtrl.m_resolutionToF = {(uint16_t)m_vSizeD.x(), (uint16_t)m_vSizeD.y()};
-		if (!j.contains("vSizeD")) m_scCtrl.m_resolutionToF = {640, 480};
+		if (!j.contains("vSizeD"))
+		{
+			m_scCtrl.m_resolutionToF = {640, 480};
+		}
 		m_scCtrl.m_resolutionRGB = {(uint16_t)m_vSizeRGB.x(), (uint16_t)m_vSizeRGB.y()};
 		m_scCtrl.m_aecROIRGBsize = m_scCtrl.m_resolutionRGB;
 		m_scCtrl.m_bTransformRGBToDepth = m_btRGB;
 		m_scCtrl.m_bTransformDepthToRGB = m_btDepth;
-		json startup = {{"scFrameRate", m_scCtrl.m_frameRate}}, errors;
-		for (const auto &spec : controlSchema())
+		if (!startup.contains("scFrameRate"))
 		{
-			const string key = spec["key"];
-			if (j.contains(key)) startup[key] = j[key];
+			startup["scFrameRate"] = m_scCtrl.m_frameRate;
 		}
-		if (!applyConfig(startup, false, errors)) { LOG_E(errors.dump()); return false; }
-		if (!m_fConfig.empty() && std::filesystem::exists(m_fConfig) && !loadConfig()) return false;
+		json errors;
+		if (!applyConfig(startup, false, errors))
+		{
+			LOG_E(errors.dump());
+			return false;
+		}
 
 		DEL(m_pTpp);
-		m_pTpp = createThread(jK(j, "threadPP"), "threadPP");
+		m_pTpp = createThread(jK(*m_pJ, "threadPP"), "threadPP");
 		NULL_F(m_pTpp);
 
 		return true;
 	}
 
-	bool _Scepter::link(const json &j, ModuleMgr *pM)
+	bool _Scepter::link(void)
 	{
-		IF_F(!this->_RGBDbase::link(j, pM));
+		if (!_RGBDbase::link() || !m_pTpp || !m_pTpp->link())
+		{
+			return false;
+		}
 
 		return true;
 	}
@@ -292,7 +316,7 @@ namespace kai
 		return schema;
 	}
 
-	bool _Scepter::applyConfig(const json &patch, bool device, json &errors, bool all)
+	bool _Scepter::applyConfig(const json &patch, bool device, json &errors)
 	{
 		errors = json::object();
 		if (!patch.is_object()) { errors["config"] = "Expected a JSON object"; return false; }
@@ -341,7 +365,7 @@ namespace kai
 			errors["scColorAECROIWidth"] = "Color AEC ROI must fit inside the color resolution";
 			return false;
 		}
-		bool restart = all;
+		bool restart = false;
 		for (auto it = changed.begin(); it != changed.end(); ++it)
 			if (specs[it.key()].value("restart", false)) restart = true;
 		if (device && restart && scStopStream(m_scDevHandle) != SC_OK)
@@ -352,7 +376,7 @@ namespace kai
 		if (device)
 		{
 			m_bPCLframe = false;
-			applyScControls(candidate, changed, all, errors);
+			applyScControls(candidate, changed, false, errors);
 			if (restart)
 			{
 				if (scGetSensorIntrinsicParameters(m_scDevHandle, SC_TOF_SENSOR, &m_scCamParams) != SC_OK)
@@ -378,28 +402,26 @@ namespace kai
 		return errors.empty();
 	}
 
-	bool _Scepter::loadConfig(json *pJ, string fName)
+	bool _Scepter::saveConfig(void)
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
-		json loaded, errors;
-		if (!_RGBDbase::loadConfig(&loaded, fName)) return false;
-		// Merge available keys into the current settings, then apply the entire
-		// resulting snapshot, including defaults absent from an older file.
-		if (!applyConfig(loaded, m_bOpened, errors, true)) { LOG_E(errors.dump()); return false; }
-		if (pJ) *pJ = configValues();
-		return true;
-	}
+		if (!_RGBDbase::saveConfig())
+		{
+			return false;
+		}
 
-	bool _Scepter::saveConfig(json &j, string fName)
-	{
-		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
-		j = configValues();
-		return _RGBDbase::saveConfig(j, fName);
+		m_pJ->update(configValues());
+
+		if (m_pTpp && !m_pTpp->saveConfig())
+		{
+			return false;
+		}
+
+		return m_pJcfg->saveToFile();
 	}
 
 	ScCtrl _Scepter::getCamCtrl(void)
 	{
-		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		return m_scCtrl;
 	}
 
@@ -821,7 +843,7 @@ namespace kai
 		auto *transport = static_cast<_JSONbase *>(pJSONbase);
 		if (!transport || !j.is_object() || !j.contains("cmd") || !j["cmd"].is_string()) return;
 		const string cmd = j["cmd"].get<string>();
-		if (cmd != "loadConfig" && cmd != "setConfig" && cmd != "saveConfig") return;
+		if (cmd != "getConfig" && cmd != "setConfig" && cmd != "saveConfig") return;
 		json reply = {{"cmd", cmd}, {"module", getName()}, {"bSuccess", true}};
 		if (j.contains("requestId")) reply["requestId"] = j["requestId"];
 		{
@@ -836,13 +858,13 @@ namespace kai
 				}
 				else if (cmd == "saveConfig")
 				{
-					json saved;
-					reply["bSuccess"] = saveConfig(saved);
-					if (!reply["bSuccess"].get<bool>()) reply["error"] = "Could not write fConfig";
+					reply["bSuccess"] = saveConfig();
+					if (!reply["bSuccess"].get<bool>())
+					{
+						reply["error"] = "Could not save the launch configuration";
+					}
 				}
-				// Like the Orbbec viewer, Load config refreshes current parameters;
-				// the C++ loadConfig() reads and applies the saved file.
-				if (cmd == "loadConfig") reply["schema"] = controlSchema();
+				if (cmd == "getConfig") reply["schema"] = controlSchema();
 			}
 			catch (const std::exception &e) { reply["bSuccess"] = false; reply["error"] = e.what(); }
 			reply["config"] = configValues();

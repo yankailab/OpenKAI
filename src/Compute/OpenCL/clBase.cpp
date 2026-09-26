@@ -15,9 +15,10 @@ namespace kai
         clReleaseContext(m_clContext);
     }
 
-    bool clBase::init(const json &j)
+    bool clBase::loadConfig(void)
     {
-        IF_F(!this->BASE::init(j));
+        IF_F(!this->BASE::loadConfig());
+        const json &j = *m_pJ;
 
         jKv(j, "fKernel", m_fKernel);
         jKv(j, "buildOpt", m_buildOpt);
@@ -28,13 +29,13 @@ namespace kai
         return true;
     }
 
-    bool clBase::link(const json &j, ModuleMgr *pM)
+    bool clBase::link(void)
     {
-        IF_F(!this->BASE::link(j, pM));
+        IF_F(!this->BASE::link());
 
         // string n = "";
         // j.value("", n);
-        // m_p = ( *)(pM->findModule(n));
+        // m_p = ( *)(m_pM->findModule(n));
         // IF_Fl(!m_p, n + ": not found");
 
         return true;

@@ -17,9 +17,10 @@ namespace kai
 	{
 	}
 
-	bool _Uploader::init(const json &j)
+	bool _Uploader::loadConfig(void)
 	{
-		IF_F(!this->_FileBase::init(j));
+		IF_F(!this->_FileBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "dir", m_dir);
 		m_dir = checkDirName(m_dir);

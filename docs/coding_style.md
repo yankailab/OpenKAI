@@ -155,8 +155,9 @@ Many modules use this lifecycle vocabulary:
 
 | Method | Typical responsibility |
 | --- | --- |
-| `init` | Initialize the base and read local configuration/defaults |
-| `link` | Resolve references to other modules through `ModuleMgr` |
+| `loadConfig` | Load the base first, then read local configuration through the bound module JSON |
+| `saveConfig` | Update the bound module JSON in place, parent first, and save its owning launch file |
+| `link` | Resolve references through the bound `ModuleMgr` and module JSON |
 | `start` | Start the module's worker thread(s) |
 | `check` | Validate prerequisites needed for an operation |
 | `update` | Run the worker loop and call named processing methods |
@@ -188,6 +189,8 @@ Recognize these when reading existing code, and reuse them only where their mean
 ## Configuration, logging, and comments
 
 Group `jKv` configuration reads by the same device or concern as the corresponding member declarations. Retain defaults for optional values and validate required ones. Resolve inter-module references in `link` using the existing manager conventions. Configuration names often mirror member names without `m_`, but existing JSON keys are contracts: do not rename them automatically to match a style rule.
+
+In a `saveConfig` override, call the parent saver first and return `false` if it fails. Update fields in `*m_pJ`, save any embedded objects, and return `m_pJcfg->saveToFile()` to write the owning launch or included JSON file. Update known fields in place to preserve unrelated settings and links.
 
 Use the existing logging helpers where appropriate for the surrounding class. Include enough context to identify the failed operation or device. Do not add repeated logs inside a hot loop without a clear diagnostic purpose.
 

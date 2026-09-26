@@ -16,9 +16,10 @@ namespace kai
 	{
 	}
 
-	bool _Feetech::init(const json &j)
+	bool _Feetech::loadConfig(void)
 	{
-		IF_F(!this->_ActuatorBase::init(j));
+		IF_F(!this->_ActuatorBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "port", m_port);
 		jKv(j, "baud", m_baud);
@@ -30,9 +31,9 @@ namespace kai
 		return true;
 	}
 
-	bool _Feetech::link(const json &j, ModuleMgr *pM)
+	bool _Feetech::link(void)
 	{
-		IF_F(!this->_ActuatorBase::link(j, pM));
+		IF_F(!this->_ActuatorBase::link());
 
 		return true;
 	}

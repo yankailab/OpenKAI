@@ -7,7 +7,6 @@
 
 #include "_Orbbec.h"
 #include <stdexcept>
-#include <filesystem>
 #include <type_traits>
 
 // Reject coercions, truncation and overflow before any device write.
@@ -302,278 +301,44 @@ namespace kai
 		stop();
 	}
 
-	bool _Orbbec::init(const json &j)
+	bool _Orbbec::loadConfig(void)
 	{
-		IF_F(!_RGBDbase::init(j));
-
-		jKv(j, "SN", m_SN);
-		jKv(j, "bNetDevEnum", m_bNetDevEnum);
-		jKv(j, "tOutMs", m_tOutMs);
-
-		try
+		if (!_RGBDbase::loadConfig())
 		{
-			OrbbecCtrl controls;
-			if (j.contains("OB_PROP_LDP_BOOL") && !j["OB_PROP_LDP_BOOL"].is_null())
-				controls.m_ldp = readControl<bool>(j["OB_PROP_LDP_BOOL"]);
-			if (j.contains("OB_PROP_LASER_BOOL") && !j["OB_PROP_LASER_BOOL"].is_null())
-				controls.m_laser = readControl<bool>(j["OB_PROP_LASER_BOOL"]);
-			if (j.contains("OB_PROP_FLOOD_BOOL") && !j["OB_PROP_FLOOD_BOOL"].is_null())
-				controls.m_flood = readControl<bool>(j["OB_PROP_FLOOD_BOOL"]);
-			if (j.contains("OB_PROP_TEMPERATURE_COMPENSATION_BOOL") && !j["OB_PROP_TEMPERATURE_COMPENSATION_BOOL"].is_null())
-				controls.m_temperatureCompensation = readControl<bool>(j["OB_PROP_TEMPERATURE_COMPENSATION_BOOL"]);
-			if (j.contains("OB_PROP_DEPTH_MIRROR_BOOL") && !j["OB_PROP_DEPTH_MIRROR_BOOL"].is_null())
-				controls.m_depthMirror = readControl<bool>(j["OB_PROP_DEPTH_MIRROR_BOOL"]);
-			if (j.contains("OB_PROP_DEPTH_FLIP_BOOL") && !j["OB_PROP_DEPTH_FLIP_BOOL"].is_null())
-				controls.m_depthFlip = readControl<bool>(j["OB_PROP_DEPTH_FLIP_BOOL"]);
-			if (j.contains("OB_PROP_DEPTH_HOLEFILTER_BOOL") && !j["OB_PROP_DEPTH_HOLEFILTER_BOOL"].is_null())
-				controls.m_depthHolefilter = readControl<bool>(j["OB_PROP_DEPTH_HOLEFILTER_BOOL"]);
-			if (j.contains("OB_PROP_IR_MIRROR_BOOL") && !j["OB_PROP_IR_MIRROR_BOOL"].is_null())
-				controls.m_irMirror = readControl<bool>(j["OB_PROP_IR_MIRROR_BOOL"]);
-			if (j.contains("OB_PROP_IR_FLIP_BOOL") && !j["OB_PROP_IR_FLIP_BOOL"].is_null())
-				controls.m_irFlip = readControl<bool>(j["OB_PROP_IR_FLIP_BOOL"]);
-			if (j.contains("OB_PROP_DEPTH_NOISE_REMOVAL_FILTER_BOOL") && !j["OB_PROP_DEPTH_NOISE_REMOVAL_FILTER_BOOL"].is_null())
-				controls.m_depthNoiseRemovalFilter = readControl<bool>(j["OB_PROP_DEPTH_NOISE_REMOVAL_FILTER_BOOL"]);
-			if (j.contains("OB_PROP_DEPTH_NOISE_REMOVAL_FILTER_MAX_DIFF_INT") && !j["OB_PROP_DEPTH_NOISE_REMOVAL_FILTER_MAX_DIFF_INT"].is_null())
-				controls.m_depthNoiseRemovalFilterMaxDiff = readControl<int32_t>(j["OB_PROP_DEPTH_NOISE_REMOVAL_FILTER_MAX_DIFF_INT"]);
-			if (j.contains("OB_PROP_DEPTH_NOISE_REMOVAL_FILTER_MAX_SPECKLE_SIZE_INT") && !j["OB_PROP_DEPTH_NOISE_REMOVAL_FILTER_MAX_SPECKLE_SIZE_INT"].is_null())
-				controls.m_depthNoiseRemovalFilterMaxSpeckleSize = readControl<int32_t>(j["OB_PROP_DEPTH_NOISE_REMOVAL_FILTER_MAX_SPECKLE_SIZE_INT"]);
-			if (j.contains("OB_PROP_DEPTH_ALIGN_HARDWARE_BOOL") && !j["OB_PROP_DEPTH_ALIGN_HARDWARE_BOOL"].is_null())
-				controls.m_depthAlignHardware = readControl<bool>(j["OB_PROP_DEPTH_ALIGN_HARDWARE_BOOL"]);
-			if (j.contains("OB_PROP_DEPTH_ALIGN_HARDWARE_MODE_INT") && !j["OB_PROP_DEPTH_ALIGN_HARDWARE_MODE_INT"].is_null())
-				controls.m_depthAlignHardwareMode = readControl<int32_t>(j["OB_PROP_DEPTH_ALIGN_HARDWARE_MODE_INT"]);
-			if (j.contains("OB_PROP_DEPTH_PRECISION_LEVEL_INT") && !j["OB_PROP_DEPTH_PRECISION_LEVEL_INT"].is_null())
-				controls.m_depthPrecisionLevel = readControl<int32_t>(j["OB_PROP_DEPTH_PRECISION_LEVEL_INT"]);
-			if (j.contains("OB_PROP_COLOR_MIRROR_BOOL") && !j["OB_PROP_COLOR_MIRROR_BOOL"].is_null())
-				controls.m_colorMirror = readControl<bool>(j["OB_PROP_COLOR_MIRROR_BOOL"]);
-			if (j.contains("OB_PROP_COLOR_FLIP_BOOL") && !j["OB_PROP_COLOR_FLIP_BOOL"].is_null())
-				controls.m_colorFlip = readControl<bool>(j["OB_PROP_COLOR_FLIP_BOOL"]);
-			if (j.contains("OB_PROP_DISPARITY_TO_DEPTH_BOOL") && !j["OB_PROP_DISPARITY_TO_DEPTH_BOOL"].is_null())
-				controls.m_disparityToDepth = readControl<bool>(j["OB_PROP_DISPARITY_TO_DEPTH_BOOL"]);
-			if (j.contains("OB_PROP_WATCHDOG_BOOL") && !j["OB_PROP_WATCHDOG_BOOL"].is_null())
-				controls.m_watchdog = readControl<bool>(j["OB_PROP_WATCHDOG_BOOL"]);
-			if (j.contains("OB_PROP_EXTERNAL_SIGNAL_RESET_BOOL") && !j["OB_PROP_EXTERNAL_SIGNAL_RESET_BOOL"].is_null())
-				controls.m_externalSignalReset = readControl<bool>(j["OB_PROP_EXTERNAL_SIGNAL_RESET_BOOL"]);
-			if (j.contains("OB_PROP_HEARTBEAT_BOOL") && !j["OB_PROP_HEARTBEAT_BOOL"].is_null())
-				controls.m_heartbeat = readControl<bool>(j["OB_PROP_HEARTBEAT_BOOL"]);
-			if (j.contains("OB_PROP_LASER_POWER_LEVEL_CONTROL_INT") && !j["OB_PROP_LASER_POWER_LEVEL_CONTROL_INT"].is_null())
-				controls.m_laserPowerLevelControl = readControl<int32_t>(j["OB_PROP_LASER_POWER_LEVEL_CONTROL_INT"]);
-			if (j.contains("OB_PROP_TIMER_RESET_TRIGGER_OUT_ENABLE_BOOL") && !j["OB_PROP_TIMER_RESET_TRIGGER_OUT_ENABLE_BOOL"].is_null())
-				controls.m_timerResetTriggerOutEnable = readControl<bool>(j["OB_PROP_TIMER_RESET_TRIGGER_OUT_ENABLE_BOOL"]);
-			if (j.contains("OB_PROP_TIMER_RESET_DELAY_US_INT") && !j["OB_PROP_TIMER_RESET_DELAY_US_INT"].is_null())
-				controls.m_timerResetDelayUs = readControl<int32_t>(j["OB_PROP_TIMER_RESET_DELAY_US_INT"]);
-			if (j.contains("OB_PROP_IR_RIGHT_MIRROR_BOOL") && !j["OB_PROP_IR_RIGHT_MIRROR_BOOL"].is_null())
-				controls.m_irRightMirror = readControl<bool>(j["OB_PROP_IR_RIGHT_MIRROR_BOOL"]);
-			if (j.contains("OB_PROP_CAPTURE_IMAGE_FRAME_NUMBER_INT") && !j["OB_PROP_CAPTURE_IMAGE_FRAME_NUMBER_INT"].is_null())
-				controls.m_captureImageFrameNumber = readControl<int32_t>(j["OB_PROP_CAPTURE_IMAGE_FRAME_NUMBER_INT"]);
-			if (j.contains("OB_PROP_IR_RIGHT_FLIP_BOOL") && !j["OB_PROP_IR_RIGHT_FLIP_BOOL"].is_null())
-				controls.m_irRightFlip = readControl<bool>(j["OB_PROP_IR_RIGHT_FLIP_BOOL"]);
-			if (j.contains("OB_PROP_COLOR_ROTATE_INT") && !j["OB_PROP_COLOR_ROTATE_INT"].is_null())
-				controls.m_colorRotate = readControl<int32_t>(j["OB_PROP_COLOR_ROTATE_INT"]);
-			if (j.contains("OB_PROP_IR_ROTATE_INT") && !j["OB_PROP_IR_ROTATE_INT"].is_null())
-				controls.m_irRotate = readControl<int32_t>(j["OB_PROP_IR_ROTATE_INT"]);
-			if (j.contains("OB_PROP_IR_RIGHT_ROTATE_INT") && !j["OB_PROP_IR_RIGHT_ROTATE_INT"].is_null())
-				controls.m_irRightRotate = readControl<int32_t>(j["OB_PROP_IR_RIGHT_ROTATE_INT"]);
-			if (j.contains("OB_PROP_DEPTH_ROTATE_INT") && !j["OB_PROP_DEPTH_ROTATE_INT"].is_null())
-				controls.m_depthRotate = readControl<int32_t>(j["OB_PROP_DEPTH_ROTATE_INT"]);
-			if (j.contains("OB_PROP_SYNC_SIGNAL_TRIGGER_OUT_BOOL") && !j["OB_PROP_SYNC_SIGNAL_TRIGGER_OUT_BOOL"].is_null())
-				controls.m_syncSignalTriggerOut = readControl<bool>(j["OB_PROP_SYNC_SIGNAL_TRIGGER_OUT_BOOL"]);
-			if (j.contains("OB_PROP_DEVICE_USB2_REPEAT_IDENTIFY_BOOL") && !j["OB_PROP_DEVICE_USB2_REPEAT_IDENTIFY_BOOL"].is_null())
-				controls.m_deviceUSB2RepeatIdentify = readControl<bool>(j["OB_PROP_DEVICE_USB2_REPEAT_IDENTIFY_BOOL"]);
-			if (j.contains("OB_PROP_LASER_ALWAYS_ON_BOOL") && !j["OB_PROP_LASER_ALWAYS_ON_BOOL"].is_null())
-				controls.m_laserAlwaysOn = readControl<bool>(j["OB_PROP_LASER_ALWAYS_ON_BOOL"]);
-			if (j.contains("OB_PROP_LASER_ON_OFF_PATTERN_INT") && !j["OB_PROP_LASER_ON_OFF_PATTERN_INT"].is_null())
-				controls.m_laserOnOffPattern = readControl<int32_t>(j["OB_PROP_LASER_ON_OFF_PATTERN_INT"]);
-			if (j.contains("OB_PROP_DEPTH_UNIT_FLEXIBLE_ADJUSTMENT_FLOAT") && !j["OB_PROP_DEPTH_UNIT_FLEXIBLE_ADJUSTMENT_FLOAT"].is_null())
-				controls.m_depthUnitFlexibleAdjustment = readControl<float>(j["OB_PROP_DEPTH_UNIT_FLEXIBLE_ADJUSTMENT_FLOAT"]);
-			if (j.contains("OB_PROP_LASER_CONTROL_INT") && !j["OB_PROP_LASER_CONTROL_INT"].is_null())
-				controls.m_laserControl = readControl<int32_t>(j["OB_PROP_LASER_CONTROL_INT"]);
-			if (j.contains("OB_PROP_IR_BRIGHTNESS_INT") && !j["OB_PROP_IR_BRIGHTNESS_INT"].is_null())
-				controls.m_irBrightness = readControl<int32_t>(j["OB_PROP_IR_BRIGHTNESS_INT"]);
-			if (j.contains("OB_PROP_COLOR_AE_MAX_EXPOSURE_INT") && !j["OB_PROP_COLOR_AE_MAX_EXPOSURE_INT"].is_null())
-				controls.m_colorAEMaxExposure = readControl<int32_t>(j["OB_PROP_COLOR_AE_MAX_EXPOSURE_INT"]);
-			if (j.contains("OB_PROP_IR_AE_MAX_EXPOSURE_INT") && !j["OB_PROP_IR_AE_MAX_EXPOSURE_INT"].is_null())
-				controls.m_irAEMaxExposure = readControl<int32_t>(j["OB_PROP_IR_AE_MAX_EXPOSURE_INT"]);
-			if (j.contains("OB_PROP_DISP_SEARCH_RANGE_MODE_INT") && !j["OB_PROP_DISP_SEARCH_RANGE_MODE_INT"].is_null())
-				controls.m_dispSearchRangeMode = readControl<int32_t>(j["OB_PROP_DISP_SEARCH_RANGE_MODE_INT"]);
-			if (j.contains("OB_PROP_DISP_SEARCH_OFFSET_INT") && !j["OB_PROP_DISP_SEARCH_OFFSET_INT"].is_null())
-				controls.m_dispSearchOffset = readControl<int32_t>(j["OB_PROP_DISP_SEARCH_OFFSET_INT"]);
-			if (j.contains("OB_PROP_CPU_TEMPERATURE_CALIBRATION_BOOL") && !j["OB_PROP_CPU_TEMPERATURE_CALIBRATION_BOOL"].is_null())
-				controls.m_cpuTemperatureCalibration = readControl<bool>(j["OB_PROP_CPU_TEMPERATURE_CALIBRATION_BOOL"]);
-			if (j.contains("OB_PROP_FRAME_INTERLEAVE_CONFIG_INDEX_INT") && !j["OB_PROP_FRAME_INTERLEAVE_CONFIG_INDEX_INT"].is_null())
-				controls.m_frameInterleaveConfigIndex = readControl<int32_t>(j["OB_PROP_FRAME_INTERLEAVE_CONFIG_INDEX_INT"]);
-			if (j.contains("OB_PROP_FRAME_INTERLEAVE_ENABLE_BOOL") && !j["OB_PROP_FRAME_INTERLEAVE_ENABLE_BOOL"].is_null())
-				controls.m_frameInterleaveEnable = readControl<bool>(j["OB_PROP_FRAME_INTERLEAVE_ENABLE_BOOL"]);
-			if (j.contains("OB_PROP_FRAME_INTERLEAVE_LASER_PATTERN_SYNC_DELAY_INT") && !j["OB_PROP_FRAME_INTERLEAVE_LASER_PATTERN_SYNC_DELAY_INT"].is_null())
-				controls.m_frameInterleaveLaserPatternSyncDelay = readControl<int32_t>(j["OB_PROP_FRAME_INTERLEAVE_LASER_PATTERN_SYNC_DELAY_INT"]);
-			if (j.contains("OB_PROP_ON_CHIP_CALIBRATION_ENABLE_BOOL") && !j["OB_PROP_ON_CHIP_CALIBRATION_ENABLE_BOOL"].is_null())
-				controls.m_onChipCalibrationEnable = readControl<bool>(j["OB_PROP_ON_CHIP_CALIBRATION_ENABLE_BOOL"]);
-			if (j.contains("OB_PROP_HW_NOISE_REMOVE_FILTER_ENABLE_BOOL") && !j["OB_PROP_HW_NOISE_REMOVE_FILTER_ENABLE_BOOL"].is_null())
-				controls.m_hwNoiseRemoveFilterEnable = readControl<bool>(j["OB_PROP_HW_NOISE_REMOVE_FILTER_ENABLE_BOOL"]);
-			if (j.contains("OB_PROP_HW_NOISE_REMOVE_FILTER_THRESHOLD_FLOAT") && !j["OB_PROP_HW_NOISE_REMOVE_FILTER_THRESHOLD_FLOAT"].is_null())
-				controls.m_hwNoiseRemoveFilterThreshold = readControl<float>(j["OB_PROP_HW_NOISE_REMOVE_FILTER_THRESHOLD_FLOAT"]);
-			if (j.contains("OB_DEVICE_AUTO_CAPTURE_ENABLE_BOOL") && !j["OB_DEVICE_AUTO_CAPTURE_ENABLE_BOOL"].is_null())
-				controls.m_deviceAutoCaptureEnable = readControl<bool>(j["OB_DEVICE_AUTO_CAPTURE_ENABLE_BOOL"]);
-			if (j.contains("OB_DEVICE_AUTO_CAPTURE_INTERVAL_TIME_INT") && !j["OB_DEVICE_AUTO_CAPTURE_INTERVAL_TIME_INT"].is_null())
-				controls.m_deviceAutoCaptureIntervalTime = readControl<int32_t>(j["OB_DEVICE_AUTO_CAPTURE_INTERVAL_TIME_INT"]);
-			if (j.contains("OB_DEVICE_PTP_CLOCK_SYNC_ENABLE_BOOL") && !j["OB_DEVICE_PTP_CLOCK_SYNC_ENABLE_BOOL"].is_null())
-				controls.m_devicePTPClockSyncEnable = readControl<bool>(j["OB_DEVICE_PTP_CLOCK_SYNC_ENABLE_BOOL"]);
-			if (j.contains("OB_PROP_CONFIDENCE_STREAM_FILTER_BOOL") && !j["OB_PROP_CONFIDENCE_STREAM_FILTER_BOOL"].is_null())
-				controls.m_confidenceStreamFilter = readControl<bool>(j["OB_PROP_CONFIDENCE_STREAM_FILTER_BOOL"]);
-			if (j.contains("OB_PROP_CONFIDENCE_STREAM_FILTER_THRESHOLD_INT") && !j["OB_PROP_CONFIDENCE_STREAM_FILTER_THRESHOLD_INT"].is_null())
-				controls.m_confidenceStreamFilterThreshold = readControl<int32_t>(j["OB_PROP_CONFIDENCE_STREAM_FILTER_THRESHOLD_INT"]);
-			if (j.contains("OB_PROP_CONFIDENCE_MIRROR_BOOL") && !j["OB_PROP_CONFIDENCE_MIRROR_BOOL"].is_null())
-				controls.m_confidenceMirror = readControl<bool>(j["OB_PROP_CONFIDENCE_MIRROR_BOOL"]);
-			if (j.contains("OB_PROP_CONFIDENCE_FLIP_BOOL") && !j["OB_PROP_CONFIDENCE_FLIP_BOOL"].is_null())
-				controls.m_confidenceFlip = readControl<bool>(j["OB_PROP_CONFIDENCE_FLIP_BOOL"]);
-			if (j.contains("OB_PROP_CONFIDENCE_ROTATE_INT") && !j["OB_PROP_CONFIDENCE_ROTATE_INT"].is_null())
-				controls.m_confidenceRotate = readControl<int32_t>(j["OB_PROP_CONFIDENCE_ROTATE_INT"]);
-			if (j.contains("OB_PROP_INTRA_CAMERA_SYNC_REFERENCE_INT") && !j["OB_PROP_INTRA_CAMERA_SYNC_REFERENCE_INT"].is_null())
-				controls.m_intraCameraSyncReference = readControl<int32_t>(j["OB_PROP_INTRA_CAMERA_SYNC_REFERENCE_INT"]);
-			if (j.contains("OB_PROP_COLOR_RIGHT_ROTATE_INT") && !j["OB_PROP_COLOR_RIGHT_ROTATE_INT"].is_null())
-				controls.m_colorRightRotate = readControl<int32_t>(j["OB_PROP_COLOR_RIGHT_ROTATE_INT"]);
-			if (j.contains("OB_PROP_COLOR_RIGHT_MIRROR_BOOL") && !j["OB_PROP_COLOR_RIGHT_MIRROR_BOOL"].is_null())
-				controls.m_colorRightMirror = readControl<bool>(j["OB_PROP_COLOR_RIGHT_MIRROR_BOOL"]);
-			if (j.contains("OB_PROP_COLOR_RIGHT_FLIP_BOOL") && !j["OB_PROP_COLOR_RIGHT_FLIP_BOOL"].is_null())
-				controls.m_colorRightFlip = readControl<bool>(j["OB_PROP_COLOR_RIGHT_FLIP_BOOL"]);
-			if (j.contains("OB_PROP_DEVICE_AE_REFERENCE_INT") && !j["OB_PROP_DEVICE_AE_REFERENCE_INT"].is_null())
-				controls.m_deviceAEReference = readControl<int32_t>(j["OB_PROP_DEVICE_AE_REFERENCE_INT"]);
-			if (j.contains("OB_PROP_DEVICE_AE_STRATEGY_INT") && !j["OB_PROP_DEVICE_AE_STRATEGY_INT"].is_null())
-				controls.m_deviceAEStrategy = readControl<int32_t>(j["OB_PROP_DEVICE_AE_STRATEGY_INT"]);
-			if (j.contains("OB_PROP_COLOR_ROI_BRIGHTNESS_INT") && !j["OB_PROP_COLOR_ROI_BRIGHTNESS_INT"].is_null())
-				controls.m_colorROIBrightness = readControl<int32_t>(j["OB_PROP_COLOR_ROI_BRIGHTNESS_INT"]);
-			if (j.contains("OB_PROP_COLOR_LEFT_ROTATE_INT") && !j["OB_PROP_COLOR_LEFT_ROTATE_INT"].is_null())
-				controls.m_colorLeftRotate = readControl<int32_t>(j["OB_PROP_COLOR_LEFT_ROTATE_INT"]);
-			if (j.contains("OB_PROP_COLOR_LEFT_MIRROR_BOOL") && !j["OB_PROP_COLOR_LEFT_MIRROR_BOOL"].is_null())
-				controls.m_colorLeftMirror = readControl<bool>(j["OB_PROP_COLOR_LEFT_MIRROR_BOOL"]);
-			if (j.contains("OB_PROP_COLOR_LEFT_FLIP_BOOL") && !j["OB_PROP_COLOR_LEFT_FLIP_BOOL"].is_null())
-				controls.m_colorLeftFlip = readControl<bool>(j["OB_PROP_COLOR_LEFT_FLIP_BOOL"]);
-			if (j.contains("OB_PROP_COLOR_PRESET_PRIORITY_INT") && !j["OB_PROP_COLOR_PRESET_PRIORITY_INT"].is_null())
-				controls.m_colorPresetPriority = readControl<int32_t>(j["OB_PROP_COLOR_PRESET_PRIORITY_INT"]);
-			if (j.contains("OB_PROP_DEVICE_NETWORK_LLA_BOOL") && !j["OB_PROP_DEVICE_NETWORK_LLA_BOOL"].is_null())
-				controls.m_deviceNetworkLLA = readControl<bool>(j["OB_PROP_DEVICE_NETWORK_LLA_BOOL"]);
-			if (j.contains("OB_PROP_COLOR_ANTI_FLICKER_BOOL") && !j["OB_PROP_COLOR_ANTI_FLICKER_BOOL"].is_null())
-				controls.m_colorAntiFlicker = readControl<bool>(j["OB_PROP_COLOR_ANTI_FLICKER_BOOL"]);
-			if (j.contains("OB_PROP_DEVICE_IP_MODE_INT") && !j["OB_PROP_DEVICE_IP_MODE_INT"].is_null())
-				controls.m_deviceIPMode = readControl<int32_t>(j["OB_PROP_DEVICE_IP_MODE_INT"]);
-			if (j.contains("OB_PROP_DHCP_ASSIGN_IP_TIMEOUT_INT") && !j["OB_PROP_DHCP_ASSIGN_IP_TIMEOUT_INT"].is_null())
-				controls.m_dhcpAssignIPTimeout = readControl<int32_t>(j["OB_PROP_DHCP_ASSIGN_IP_TIMEOUT_INT"]);
-			if (j.contains("OB_PROP_USB_SYNC_VOLTAGE_LEVEL_INT") && !j["OB_PROP_USB_SYNC_VOLTAGE_LEVEL_INT"].is_null())
-				controls.m_usbSyncVoltageLevel = readControl<int32_t>(j["OB_PROP_USB_SYNC_VOLTAGE_LEVEL_INT"]);
-			if (j.contains("OB_PROP_FPS_BOOST_BOOL") && !j["OB_PROP_FPS_BOOST_BOOL"].is_null())
-				controls.m_fpsBoost = readControl<bool>(j["OB_PROP_FPS_BOOST_BOOL"]);
-			if (j.contains("OB_PROP_MJPEG_QUALITY_INT") && !j["OB_PROP_MJPEG_QUALITY_INT"].is_null())
-				controls.m_mjpegQuality = readControl<int32_t>(j["OB_PROP_MJPEG_QUALITY_INT"]);
-			if (j.contains("OB_PROP_COLOR_AUTO_EXPOSURE_BOOL") && !j["OB_PROP_COLOR_AUTO_EXPOSURE_BOOL"].is_null())
-				controls.m_colorAutoExposure = readControl<bool>(j["OB_PROP_COLOR_AUTO_EXPOSURE_BOOL"]);
-			if (j.contains("OB_PROP_COLOR_EXPOSURE_INT") && !j["OB_PROP_COLOR_EXPOSURE_INT"].is_null())
-				controls.m_colorExposure = readControl<int32_t>(j["OB_PROP_COLOR_EXPOSURE_INT"]);
-			if (j.contains("OB_PROP_COLOR_GAIN_INT") && !j["OB_PROP_COLOR_GAIN_INT"].is_null())
-				controls.m_colorGain = readControl<int32_t>(j["OB_PROP_COLOR_GAIN_INT"]);
-			if (j.contains("OB_PROP_COLOR_AUTO_WHITE_BALANCE_BOOL") && !j["OB_PROP_COLOR_AUTO_WHITE_BALANCE_BOOL"].is_null())
-				controls.m_colorAutoWhiteBalance = readControl<bool>(j["OB_PROP_COLOR_AUTO_WHITE_BALANCE_BOOL"]);
-			if (j.contains("OB_PROP_COLOR_WHITE_BALANCE_INT") && !j["OB_PROP_COLOR_WHITE_BALANCE_INT"].is_null())
-				controls.m_colorWhiteBalance = readControl<int32_t>(j["OB_PROP_COLOR_WHITE_BALANCE_INT"]);
-			if (j.contains("OB_PROP_COLOR_BRIGHTNESS_INT") && !j["OB_PROP_COLOR_BRIGHTNESS_INT"].is_null())
-				controls.m_colorBrightness = readControl<int32_t>(j["OB_PROP_COLOR_BRIGHTNESS_INT"]);
-			if (j.contains("OB_PROP_COLOR_SHARPNESS_INT") && !j["OB_PROP_COLOR_SHARPNESS_INT"].is_null())
-				controls.m_colorSharpness = readControl<int32_t>(j["OB_PROP_COLOR_SHARPNESS_INT"]);
-			if (j.contains("OB_PROP_COLOR_SATURATION_INT") && !j["OB_PROP_COLOR_SATURATION_INT"].is_null())
-				controls.m_colorSaturation = readControl<int32_t>(j["OB_PROP_COLOR_SATURATION_INT"]);
-			if (j.contains("OB_PROP_COLOR_CONTRAST_INT") && !j["OB_PROP_COLOR_CONTRAST_INT"].is_null())
-				controls.m_colorContrast = readControl<int32_t>(j["OB_PROP_COLOR_CONTRAST_INT"]);
-			if (j.contains("OB_PROP_COLOR_GAMMA_INT") && !j["OB_PROP_COLOR_GAMMA_INT"].is_null())
-				controls.m_colorGamma = readControl<int32_t>(j["OB_PROP_COLOR_GAMMA_INT"]);
-			if (j.contains("OB_PROP_COLOR_AUTO_EXPOSURE_PRIORITY_INT") && !j["OB_PROP_COLOR_AUTO_EXPOSURE_PRIORITY_INT"].is_null())
-				controls.m_colorAutoExposurePriority = readControl<int32_t>(j["OB_PROP_COLOR_AUTO_EXPOSURE_PRIORITY_INT"]);
-			if (j.contains("OB_PROP_COLOR_BACKLIGHT_COMPENSATION_INT") && !j["OB_PROP_COLOR_BACKLIGHT_COMPENSATION_INT"].is_null())
-				controls.m_colorBacklightCompensation = readControl<int32_t>(j["OB_PROP_COLOR_BACKLIGHT_COMPENSATION_INT"]);
-			if (j.contains("OB_PROP_COLOR_HUE_INT") && !j["OB_PROP_COLOR_HUE_INT"].is_null())
-				controls.m_colorHue = readControl<int32_t>(j["OB_PROP_COLOR_HUE_INT"]);
-			if (j.contains("OB_PROP_COLOR_POWER_LINE_FREQUENCY_INT") && !j["OB_PROP_COLOR_POWER_LINE_FREQUENCY_INT"].is_null())
-				controls.m_colorPowerLineFrequency = readControl<int32_t>(j["OB_PROP_COLOR_POWER_LINE_FREQUENCY_INT"]);
-			if (j.contains("OB_PROP_DEPTH_AUTO_EXPOSURE_BOOL") && !j["OB_PROP_DEPTH_AUTO_EXPOSURE_BOOL"].is_null())
-				controls.m_depthAutoExposure = readControl<bool>(j["OB_PROP_DEPTH_AUTO_EXPOSURE_BOOL"]);
-			if (j.contains("OB_PROP_DEPTH_EXPOSURE_INT") && !j["OB_PROP_DEPTH_EXPOSURE_INT"].is_null())
-				controls.m_depthExposure = readControl<int32_t>(j["OB_PROP_DEPTH_EXPOSURE_INT"]);
-			if (j.contains("OB_PROP_DEPTH_GAIN_INT") && !j["OB_PROP_DEPTH_GAIN_INT"].is_null())
-				controls.m_depthGain = readControl<int32_t>(j["OB_PROP_DEPTH_GAIN_INT"]);
-			if (j.contains("OB_PROP_IR_AUTO_EXPOSURE_BOOL") && !j["OB_PROP_IR_AUTO_EXPOSURE_BOOL"].is_null())
-				controls.m_irAutoExposure = readControl<bool>(j["OB_PROP_IR_AUTO_EXPOSURE_BOOL"]);
-			if (j.contains("OB_PROP_IR_EXPOSURE_INT") && !j["OB_PROP_IR_EXPOSURE_INT"].is_null())
-				controls.m_irExposure = readControl<int32_t>(j["OB_PROP_IR_EXPOSURE_INT"]);
-			if (j.contains("OB_PROP_IR_GAIN_INT") && !j["OB_PROP_IR_GAIN_INT"].is_null())
-				controls.m_irGain = readControl<int32_t>(j["OB_PROP_IR_GAIN_INT"]);
-			if (j.contains("OB_PROP_IR_CHANNEL_DATA_SOURCE_INT") && !j["OB_PROP_IR_CHANNEL_DATA_SOURCE_INT"].is_null())
-				controls.m_irChannelDataSource = readControl<int32_t>(j["OB_PROP_IR_CHANNEL_DATA_SOURCE_INT"]);
-			if (j.contains("OB_PROP_DEPTH_RM_FILTER_BOOL") && !j["OB_PROP_DEPTH_RM_FILTER_BOOL"].is_null())
-				controls.m_depthRMFilter = readControl<bool>(j["OB_PROP_DEPTH_RM_FILTER_BOOL"]);
-			if (j.contains("OB_PROP_COLOR_AE_MAX_GAIN_INT") && !j["OB_PROP_COLOR_AE_MAX_GAIN_INT"].is_null())
-				controls.m_colorAEMaxGain = readControl<int32_t>(j["OB_PROP_COLOR_AE_MAX_GAIN_INT"]);
-			if (j.contains("OB_PROP_DEPTH_AUTO_EXPOSURE_PRIORITY_INT") && !j["OB_PROP_DEPTH_AUTO_EXPOSURE_PRIORITY_INT"].is_null())
-				controls.m_depthAutoExposurePriority = readControl<int32_t>(j["OB_PROP_DEPTH_AUTO_EXPOSURE_PRIORITY_INT"]);
-			if (j.contains("OB_PROP_SDK_DISPARITY_TO_DEPTH_BOOL") && !j["OB_PROP_SDK_DISPARITY_TO_DEPTH_BOOL"].is_null())
-				controls.m_sdkDisparityToDepth = readControl<bool>(j["OB_PROP_SDK_DISPARITY_TO_DEPTH_BOOL"]);
-			if (j.contains("OB_PROP_SDK_ACCEL_FRAME_TRANSFORMED_BOOL") && !j["OB_PROP_SDK_ACCEL_FRAME_TRANSFORMED_BOOL"].is_null())
-				controls.m_sdkAccelFrameTransformed = readControl<bool>(j["OB_PROP_SDK_ACCEL_FRAME_TRANSFORMED_BOOL"]);
-			if (j.contains("OB_PROP_SDK_GYRO_FRAME_TRANSFORMED_BOOL") && !j["OB_PROP_SDK_GYRO_FRAME_TRANSFORMED_BOOL"].is_null())
-				controls.m_sdkGyroFrameTransformed = readControl<bool>(j["OB_PROP_SDK_GYRO_FRAME_TRANSFORMED_BOOL"]);
-			if (j.contains("OB_PROP_DEVICE_PERFORMANCE_MODE_INT") && !j["OB_PROP_DEVICE_PERFORMANCE_MODE_INT"].is_null())
-				controls.m_devicePerformanceMode = readControl<int32_t>(j["OB_PROP_DEVICE_PERFORMANCE_MODE_INT"]);
-			if (j.contains("OB_PROP_COLOR_DENOISING_LEVEL_INT") && !j["OB_PROP_COLOR_DENOISING_LEVEL_INT"].is_null())
-				controls.m_colorDenoisingLevel = readControl<int32_t>(j["OB_PROP_COLOR_DENOISING_LEVEL_INT"]);
-			if (j.contains("OB_STRUCT_MULTI_DEVICE_SYNC_CONFIG") && !j["OB_STRUCT_MULTI_DEVICE_SYNC_CONFIG"].is_null())
-				controls.m_multiDeviceSyncConfig = readControl<OBMultiDeviceSyncConfig>(j["OB_STRUCT_MULTI_DEVICE_SYNC_CONFIG"]);
-			if (j.contains("OB_STRUCT_DEVICE_IP_ADDR_CONFIG") && !j["OB_STRUCT_DEVICE_IP_ADDR_CONFIG"].is_null())
-				controls.m_deviceIPAddrConfig = readControl<OBNetIpConfig>(j["OB_STRUCT_DEVICE_IP_ADDR_CONFIG"]);
-			if (j.contains("OB_STRUCT_DEPTH_HDR_CONFIG") && !j["OB_STRUCT_DEPTH_HDR_CONFIG"].is_null())
-				controls.m_depthHdrConfig = readControl<OBHdrConfig>(j["OB_STRUCT_DEPTH_HDR_CONFIG"]);
-			if (j.contains("OB_STRUCT_COLOR_AE_ROI") && !j["OB_STRUCT_COLOR_AE_ROI"].is_null())
-				controls.m_colorAEROI = readControl<OBRegionOfInterest>(j["OB_STRUCT_COLOR_AE_ROI"]);
-			if (j.contains("OB_STRUCT_DEPTH_AE_ROI") && !j["OB_STRUCT_DEPTH_AE_ROI"].is_null())
-				controls.m_depthAEROI = readControl<OBRegionOfInterest>(j["OB_STRUCT_DEPTH_AE_ROI"]);
-			if (j.contains("OB_STRUCT_DISP_OFFSET_CONFIG") && !j["OB_STRUCT_DISP_OFFSET_CONFIG"].is_null())
-				controls.m_dispOffsetConfig = readControl<OBDispOffsetConfig>(j["OB_STRUCT_DISP_OFFSET_CONFIG"]);
-			if (j.contains("OB_STRUCT_PRESET_RESOLUTION_CONFIG") && !j["OB_STRUCT_PRESET_RESOLUTION_CONFIG"].is_null())
-				controls.m_presetResolutionConfig = readControl<OBPresetResolutionConfig>(j["OB_STRUCT_PRESET_RESOLUTION_CONFIG"]);
-			if (j.contains("OB_STRUCT_DEVICE_IP_ADDR_CONFIG_V2") && !j["OB_STRUCT_DEVICE_IP_ADDR_CONFIG_V2"].is_null())
-				controls.m_deviceIPAddrConfigV2 = readControl<OBNetIpConfigV2>(j["OB_STRUCT_DEVICE_IP_ADDR_CONFIG_V2"]);
-			if (j.contains("obTimestampResetConfig") && !j["obTimestampResetConfig"].is_null())
-				controls.m_timestampResetConfig = readControl<OBDeviceTimestampResetConfig>(j["obTimestampResetConfig"]);
-			if (j.contains("obDepthWorkMode") && !j["obDepthWorkMode"].is_null())
-				controls.m_depthWorkMode = readControl<string>(j["obDepthWorkMode"]);
-			if (j.contains("obColorPreset") && !j["obColorPreset"].is_null())
-				controls.m_colorPreset = readControl<string>(j["obColorPreset"]);
-			if (j.contains("obPreset") && !j["obPreset"].is_null())
-				controls.m_preset = readControl<string>(j["obPreset"]);
-			if (j.contains("obPresetJsonFile") && !j["obPresetJsonFile"].is_null())
-				controls.m_presetJsonFile = readControl<string>(j["obPresetJsonFile"]);
-			if (j.contains("obFrameInterleave") && !j["obFrameInterleave"].is_null())
-				controls.m_frameInterleave = readControl<string>(j["obFrameInterleave"]);
-			if (j.contains("obGlobalTimestamp") && !j["obGlobalTimestamp"].is_null())
-				controls.m_globalTimestamp = readControl<bool>(j["obGlobalTimestamp"]);
-			if (j.contains("obFirmwareLog") && !j["obFirmwareLog"].is_null())
-				controls.m_firmwareLog = readControl<bool>(j["obFirmwareLog"]);
-			m_orbbecCtrl = controls;
-			m_initialConfig = configValues();
-			// A sparse saved file overrides the application's startup configuration.
-			if (!m_fConfig.empty() && std::filesystem::exists(m_fConfig) && !loadConfig()) return false;
+			return false;
 		}
-		catch (const std::exception &e)
+		const json &j = *m_pJ;
+
+		json startup = json::object();
+		const json controls = configValues();
+		for (const auto &field : controls.items())
 		{
-			LOG_E(string("Invalid Orbbec controls: ") + e.what());
+			auto it = j.find(field.key());
+			if (it != j.end())
+			{
+				startup[field.key()] = *it;
+			}
+		}
+		json errors;
+		if (!applyConfig(startup, false, errors))
+		{
+			LOG_E(errors.dump());
 			return false;
 		}
 
 		DEL(m_pTpp);
-		m_pTpp = createThread(jK(j, "threadPP"), "threadPP");
+		m_pTpp = createThread(jK(*m_pJ, "threadPP"), "threadPP");
 		NULL_F(m_pTpp);
 
 		return true;
 	}
 
-	bool _Orbbec::link(const json &j, ModuleMgr *pM)
+	bool _Orbbec::link(void)
 	{
-		IF_F(!this->_RGBDbase::link(j, pM));
+		if (!_RGBDbase::link() || !m_pTpp || !m_pTpp->link())
+		{
+			return false;
+		}
 
 		return true;
 	}
@@ -2885,24 +2650,31 @@ namespace kai
 		return errors.empty();
 	}
 
-	bool _Orbbec::loadConfig(json *pJ, string fName)
+	bool _Orbbec::saveConfig(void)
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_mtxDevice);
-		json j, errors;
-		if (!_RGBDbase::loadConfig(&j, fName) || !applyConfig(j, m_bOpened, errors)) return false;
-		if (pJ) *pJ = configValues();
-		return true;
-	}
+		if (!_RGBDbase::saveConfig())
+		{
+			return false;
+		}
 
-	bool _Orbbec::saveConfig(json &j, string fName)
-	{
-		std::lock_guard<std::recursive_mutex> lock(m_mtxDevice);
-		j = json::object();
 		const json current = configValues();
-		for (auto it = current.begin(); it != current.end(); ++it)
-			if (!it.value().is_null() && (!m_initialConfig.contains(it.key()) || it.value() != m_initialConfig[it.key()]))
-				j[it.key()] = it.value();
-		return _RGBDbase::saveConfig(j, fName);
+		for (const auto &field : current.items())
+		{
+			if (field.value().is_null())
+			{
+				m_pJ->erase(field.key());
+				continue;
+			}
+			(*m_pJ)[field.key()] = field.value();
+		}
+
+		if (m_pTpp && !m_pTpp->saveConfig())
+		{
+			return false;
+		}
+
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _Orbbec::open(void)
@@ -3246,7 +3018,7 @@ namespace kai
 		auto *pJb = static_cast<_JSONbase *>(pJSONbase);
 		if (!pJb || !j.is_object() || !j.contains("cmd") || !j["cmd"].is_string()) return;
 		const string cmd = j["cmd"].get<string>();
-		if (cmd != "loadConfig" && cmd != "setConfig" && cmd != "saveConfig") return;
+		if (cmd != "getConfig" && cmd != "setConfig" && cmd != "saveConfig") return;
 		json reply = {{"cmd", cmd}, {"module", getName()}, {"bSuccess", true}};
 		if (j.contains("requestId")) reply["requestId"] = j["requestId"];
 		try
@@ -3259,14 +3031,15 @@ namespace kai
 			}
 			else if (cmd == "saveConfig")
 			{
-				json saved;
-				reply["bSuccess"] = saveConfig(saved);
-				if (!reply["bSuccess"].get<bool>()) reply["error"] = "Could not write fConfig";
+				reply["bSuccess"] = saveConfig();
+				if (!reply["bSuccess"].get<bool>())
+				{
+					reply["error"] = "Could not save the launch configuration";
+				}
 			}
-			// Load config refreshes the current in-memory state, without discarding
-			// live edits by reading an older file from disk.
+			// Return the current settings and schema for the control panel.
 			reply["config"] = configValues();
-			if (cmd == "loadConfig") reply["schema"] = controlSchema();
+			if (cmd == "getConfig") reply["schema"] = controlSchema();
 			reply["deviceOpen"] = m_bOpened;
 		}
 		catch (const std::exception &e) { reply["bSuccess"] = false; reply["error"] = e.what(); }

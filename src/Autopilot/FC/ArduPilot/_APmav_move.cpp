@@ -11,9 +11,9 @@ namespace kai
 	{
 	}
 
-	bool _APmav_move::init(const json &j)
+	bool _APmav_move::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
 
 		m_pRCchan[0] = nullptr;
 		m_pRCchan[1] = &m_rcOverride.chan1_raw;
@@ -41,13 +41,14 @@ namespace kai
 		return true;
 	}
 
-	bool _APmav_move::link(const json &j, ModuleMgr *pM)
+	bool _APmav_move::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_APmav_base", n);
-		m_pAP = (_APmav_base *)(pM->findModule(n));
+		m_pAP = (_APmav_base *)(m_pM->findModule(n));
 		IF_Le_F(!m_pAP, "_APmav_base not found: " + n);
 
 		return true;

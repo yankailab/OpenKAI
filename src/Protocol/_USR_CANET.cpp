@@ -12,20 +12,21 @@ namespace kai
 	{
 	}
 
-	bool _USR_CANET::init(const json &j)
+	bool _USR_CANET::loadConfig(void)
 	{
-		IF_F(!this->_CANbase::init(j));
+		IF_F(!this->_CANbase::loadConfig());
 
 		return true;
 	}
 
-	bool _USR_CANET::link(const json &j, ModuleMgr *pM)
+	bool _USR_CANET::link(void)
 	{
-		IF_F(!this->_CANbase::link(j, pM));
+		IF_F(!this->_CANbase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(pM->findModule(n));
+		m_pIO = (_IObase *)(m_pM->findModule(n));
 		NULL_F(m_pIO);
 
 		return true;

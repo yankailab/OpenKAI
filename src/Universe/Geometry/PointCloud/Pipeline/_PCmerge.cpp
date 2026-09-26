@@ -18,18 +18,20 @@ namespace kai
 	{
 	}
 
-	bool _PCmerge::init(const json &j)
+	bool _PCmerge::loadConfig(void)
 	{
-		IF_F(!this->_GeometryBase::init(j));
+		IF_F(!this->_GeometryBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "rVoxel", m_rVoxel);
 
 		return true;
 	}
 
-	bool _PCmerge::link(const json &j, ModuleMgr *pM)
+	bool _PCmerge::link(void)
 	{
-		IF_F(!this->_GeometryBase::link(j, pM));
+		IF_F(!this->_GeometryBase::link());
+		const json &j = *m_pJ;
 
 		vector<string> vPCB;
 		jKv(j, "vPCbase", vPCB);
@@ -37,7 +39,7 @@ namespace kai
 
 		for (string p : vPCB)
 		{
-			_GeometryBase *pPCB = (_GeometryBase *)(pM->findModule(p));
+			_GeometryBase *pPCB = (_GeometryBase *)(m_pM->findModule(p));
 			IF_CONT(!pPCB);
 
 			m_vpGB.push_back(pPCB);

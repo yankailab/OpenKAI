@@ -18,7 +18,7 @@ namespace kai
 		_PWMio();
 		~_PWMio();
 
-		virtual bool init(const json& j);
+		virtual bool loadConfig(void) override;
 		virtual bool start(void);
 		virtual void console(void *pConsole);
 

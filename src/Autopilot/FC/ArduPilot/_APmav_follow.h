@@ -44,8 +44,8 @@ namespace kai
 		_APmav_follow();
 		~_APmav_follow();
 
-		virtual bool init(const json &j);
-		virtual bool link(const json &j, ModuleMgr *pM);
+		virtual bool loadConfig(void) override;
+		virtual bool link(void) override;
 		virtual bool check(void);
 		virtual bool start(void);
 		virtual void update(void);

@@ -21,24 +21,26 @@ namespace kai
 			m_pT->join();
 	}
 
-	bool _SLAMbase::init(const json &j)
+	bool _SLAMbase::loadConfig(void)
 	{
-		IF_F(!_NavBase::init(j));
+		IF_F(!_NavBase::loadConfig());
+		const json &j = *m_pJ;
 		jKv(j, "bAutoStart", m_bAutoStart);
 		return true;
 	}
 
-	bool _SLAMbase::link(const json &j, ModuleMgr *pM)
+	bool _SLAMbase::link(void)
 	{
-		IF_F(!_NavBase::link(j, pM));
+		IF_F(!_NavBase::link());
+		const json &j = *m_pJ;
 		string n;
 		jKv(j, "_PointCloud", n);
-		m_pPCL = dynamic_cast<_PointCloud *>(static_cast<BASE *>(pM->findModule(n)));
+		m_pPCL = dynamic_cast<_PointCloud *>(static_cast<BASE *>(m_pM->findModule(n)));
 		IF_Le_F(!m_pPCL, "Cannot find _PointCloud: " + n);
 
 		n.clear();
 		jKv(j, "_IMUbase", n);
-		m_pIMU = n.empty() ? nullptr : dynamic_cast<_IMUbase *>(static_cast<BASE *>(pM->findModule(n)));
+		m_pIMU = n.empty() ? nullptr : dynamic_cast<_IMUbase *>(static_cast<BASE *>(m_pM->findModule(n)));
 		IF_Le_F(!n.empty() && !m_pIMU, "Cannot find _IMUbase: " + n);
 		return true;
 	}

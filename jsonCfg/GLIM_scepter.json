@@ -71,7 +71,6 @@
 	},
 	"scepter": {
 		"class": "_Scepter",
-		"fConfig": "jsonCfg/glim_scepter/Scepter.controls.json",
 		"bON": true,
 		"bLog": false,
 		"thread": {
@@ -214,7 +213,6 @@
 	},
 	"GLIM": {
 		"class": "_GLIM",
-		"fConfig": "jsonCfg/glim_scepter/GLIM.controls.json",
 		"exportPath": "data/glim_scepter",
 		"bON": true,
 		"thread": {

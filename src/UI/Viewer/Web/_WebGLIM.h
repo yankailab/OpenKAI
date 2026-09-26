@@ -16,8 +16,8 @@ namespace kai
 	public:
 		_WebGLIM();
 		~_WebGLIM() override;
-		bool init(const json &j) override;
-		bool link(const json &j, ModuleMgr *manager) override;
+		bool loadConfig(void) override;
+		bool link(void) override;
 		bool start() override;
 		void stop() override;
 		void pause() override;

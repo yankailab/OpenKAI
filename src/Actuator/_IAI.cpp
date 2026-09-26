@@ -15,20 +15,21 @@ namespace kai
 	{
 	}
 
-	bool _IAI::init(const json &j)
+	bool _IAI::loadConfig(void)
 	{
-		IF_F(!this->_ActuatorBase::init(j));
+		IF_F(!this->_ActuatorBase::loadConfig());
 
 		return true;
 	}
 
-	bool _IAI::link(const json &j, ModuleMgr *pM)
+	bool _IAI::link(void)
 	{
-		IF_F(!this->_ActuatorBase::link(j, pM));
+		IF_F(!this->_ActuatorBase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_Modbus", n);
-		m_pMB = (_Modbus *)(pM->findModule(n));
+		m_pMB = (_Modbus *)(m_pM->findModule(n));
 		IF_Le_F(!m_pMB, "_Modbus not found: " + n);
 
 		return true;

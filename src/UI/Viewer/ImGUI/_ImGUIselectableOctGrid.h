@@ -74,8 +74,8 @@ namespace kai
 		_ImGUIselectableOctGrid();
 		virtual ~_ImGUIselectableOctGrid();
 
-		virtual bool init(const json &j) override;
-		virtual bool link(const json &j, ModuleMgr *pM) override;
+		virtual bool loadConfig(void) override;
+		virtual bool link(void) override;
 		virtual bool start(void) override;
 		virtual bool check(void) override;
 

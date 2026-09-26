@@ -18,9 +18,10 @@ namespace kai
 	{
 	}
 
-	bool _NavBase::init(const json &j)
+	bool _NavBase::loadConfig(void)
 	{
-		IF_F(!this->_ReferenceFrame::init(j));
+		IF_F(!this->_ReferenceFrame::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "tConfidenceTimeoutNs", m_tConfidenceTimeoutNs);
 

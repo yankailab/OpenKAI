@@ -13,9 +13,10 @@ namespace kai
 		close();
 	}
 
-	bool _SerialPort::init(const json &j)
+	bool _SerialPort::loadConfig(void)
 	{
-		IF_F(!this->_IObase::init(j));
+		IF_F(!this->_IObase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "port", m_port);
 		jKv(j, "baud", m_baud);
@@ -27,9 +28,9 @@ namespace kai
 		return true;
 	}
 
-	bool _SerialPort::link(const json &j, ModuleMgr *pM)
+	bool _SerialPort::link(void)
 	{
-		IF_F(!this->_IObase::link(j, pM));
+		IF_F(!this->_IObase::link());
 
 		return true;
 	}

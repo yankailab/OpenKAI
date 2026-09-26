@@ -23,9 +23,10 @@ namespace kai
 		pthread_mutex_destroy(&m_mtxMat);
 	}
 
-	bool _LCalign::init(const json &j)
+	bool _LCalign::loadConfig(void)
 	{
-		IF_F(!this->_PointCloud::init(j));
+		IF_F(!this->_PointCloud::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv<int>(j, "vCsize", m_vCsize);
 		jKv<double>(j, "vCf", m_vCf);
@@ -34,51 +35,6 @@ namespace kai
 		jKv(j, "aCr", m_aCr);
 		jKv(j, "aCt", m_aCt);
 
-		jKv(j, "fName", m_fName);
-		if (!m_fName.empty())
-			loadConfig(m_fName);
-
-		updateMatrices();
-
-		return true;
-	}
-
-	bool _LCalign::link(const json &j, ModuleMgr *pM)
-	{
-		IF_F(!this->_PointCloud::link(j, pM));
-		string n;
-
-		n = "";
-		jKv(j, "_PCin", n);
-		m_pPCin = (_PointCloud *)(pM->findModule(n));
-		IF_Le_F(!m_pPCin, "_PCin not found:" + n);
-
-		n = "";
-		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(pM->findModule(n));
-		IF_Le_F(!m_pV, "_VisionBase not found:" + n);
-
-		n = "";
-		jKv(j, "_IMUbase", n);
-		m_pIMU = (_IMUbase *)(pM->findModule(n));
-
-		return true;
-	}
-
-	bool _LCalign::loadConfig(const string &fName)
-	{
-		JsonCfg jCfg;
-		IF_F(!jCfg.parseJsonFile(fName));
-
-		const json &j = jK(jCfg.getJson(), "_LCalign");
-		IF_F(!j.is_object());
-
-		jKv<int>(j, "vCsize", m_vCsize);
-		jKv<double>(j, "vCf", m_vCf);
-		jKv<double>(j, "vCc", m_vCc);
-		jKv(j, "aCdist", m_aCdist);
-		jKv(j, "aCr", m_aCr);
-		jKv(j, "aCt", m_aCt);
 		jKv(j, "aIr", m_aIr);
 		jKv(j, "aIt", m_aIt);
 
@@ -87,9 +43,37 @@ namespace kai
 		return true;
 	}
 
-	bool _LCalign::saveConfig(const string &fName)
+	bool _LCalign::link(void)
 	{
-		json j = json::object();
+		IF_F(!this->_PointCloud::link());
+		const json &j = *m_pJ;
+		string n;
+
+		n = "";
+		jKv(j, "_PCin", n);
+		m_pPCin = (_PointCloud *)(m_pM->findModule(n));
+		IF_Le_F(!m_pPCin, "_PCin not found:" + n);
+
+		n = "";
+		jKv(j, "_VisionBase", n);
+		m_pV = (_VisionBase *)(m_pM->findModule(n));
+		IF_Le_F(!m_pV, "_VisionBase not found:" + n);
+
+		n = "";
+		jKv(j, "_IMUbase", n);
+		m_pIMU = (_IMUbase *)(m_pM->findModule(n));
+
+		return true;
+	}
+
+	bool _LCalign::saveConfig(void)
+	{
+		if (!_PointCloud::saveConfig())
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
 		j["vCsize"] = {m_vCsize.x(), m_vCsize.y()};
 		j["vCf"] = {m_vCf.x(), m_vCf.y()};
 		j["vCc"] = {m_vCc.x(), m_vCc.y()};
@@ -99,13 +83,7 @@ namespace kai
 		j["aIr"] = m_aIr;
 		j["aIt"] = m_aIt;
 
-		json jC;
-		jC["_LCalign"] = j;
-
-		JsonCfg jCfg;
-		jCfg.setJson(jC);
-
-		return jCfg.saveToFile(fName);
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _LCalign::check(void)
@@ -332,38 +310,9 @@ namespace kai
 
 			pJb->sendJson(jr);
 		}
-		else if (cmd == "loadCfg")
-		{
-			string fCfg;
-			IF_(!jKv(j, "fNameCfg", fCfg));
-
-			bool bR = loadConfig(fCfg);
-
-			NULL_(pJb);
-			json jr = json::object();
-			if (bR)
-			{
-				jr["cmd"] = "update";
-				jr["vCsize"] = {m_vCsize.x(), m_vCsize.y()};
-				jr["vCf"] = {m_vCf.x(), m_vCf.y()};
-				jr["vCc"] = {m_vCc.x(), m_vCc.y()};
-				jr["aCdist"] = m_aCdist;
-				jr["aCt"] = m_aCt;
-			}
-			else
-			{
-				jr["cmd"] = "loadCfg";
-				jr["bSuccess"] = bR;
-			}
-
-			pJb->sendJson(jr);
-		}
 		else if (cmd == "saveCfg")
 		{
-			string fCfg;
-			IF_(!jKv(j, "fNameCfg", fCfg));
-
-			bool bR = saveConfig(fCfg);
+			const bool bR = saveConfig();
 
 			NULL_(pJb);
 			json jr = json::object();

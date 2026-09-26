@@ -18,9 +18,10 @@ namespace kai
 	{
 	}
 
-	bool _PCremove::init(const json &j)
+	bool _PCremove::loadConfig(void)
 	{
-		IF_F(!this->_GeometryBase::init(j));
+		IF_F(!this->_GeometryBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "nP", m_nP);
 		jKv(j, "r", m_r);

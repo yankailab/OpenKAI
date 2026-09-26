@@ -20,7 +20,7 @@ namespace kai
 		Destimator();
 		virtual ~Destimator();
 
-		virtual bool init(const json &j);
+		virtual bool loadConfig(void) override;
 		virtual double v(int x);
 
 	protected:

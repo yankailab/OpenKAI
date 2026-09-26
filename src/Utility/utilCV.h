@@ -17,10 +17,12 @@ namespace kai
 		NULL_F(pD);
 
 		JsonCfg jCfg;
-		IF_F(!jCfg.parseJsonFile(fCalib));
+		IF_F(!jCfg.readFromFile(fCalib));
 
-		const json &j = jK(jCfg.getJson(), "calib");
-		IF_F(j.is_object());
+		const json *pJ = jK(*jCfg.getJson(), "calib");
+		NULL_F(pJ);
+		const json &j = *pJ;
+		IF_F(!j.is_object());
 
 		Mat mC = Mat::zeros(3, 3, CV_64FC1);
 		mC.at<double>(0, 0) = j.value("Fx", 0);

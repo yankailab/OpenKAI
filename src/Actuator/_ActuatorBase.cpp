@@ -27,9 +27,10 @@ namespace kai
 	{
 	}
 
-	bool _ActuatorBase::init(const json &j)
+	bool _ActuatorBase::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "ID", m_ID);
 		jKv(j, "mode", m_mode);
@@ -101,13 +102,14 @@ namespace kai
 		return true;
 	}
 
-	bool _ActuatorBase::link(const json &j, ModuleMgr *pM)
+	bool _ActuatorBase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_ActuatorBase", n);
-		m_pParent = (_ActuatorBase *)(pM->findModule(n));
+		m_pParent = (_ActuatorBase *)(m_pM->findModule(n));
 
 		return true;
 	}

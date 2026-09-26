@@ -19,9 +19,10 @@ namespace kai
     {
     }
 
-    bool _PCregistGlobal::init(const json &j)
+    bool _PCregistGlobal::loadConfig(void)
     {
-        IF_F(!this->_ModuleBase::init(j));
+        IF_F(!this->_ModuleBase::loadConfig());
+        const json &j = *m_pJ;
 
         jKv(j, "rNormal", m_rNormal);
         jKv(j, "rFeature", m_rFeature);
@@ -31,25 +32,26 @@ namespace kai
         return true;
     }
 
-    bool _PCregistGlobal::link(const json &j, ModuleMgr *pM)
+    bool _PCregistGlobal::link(void)
     {
-        IF_F(!this->_ModuleBase::link(j, pM));
+        IF_F(!this->_ModuleBase::link());
+        const json &j = *m_pJ;
 
         string n;
 
         n = "";
         jKv(j, "_PointCloudSrc", n);
-        m_pSrc = (_PointCloud *)(pM->findModule(n));
+        m_pSrc = (_PointCloud *)(m_pM->findModule(n));
         IF_Le_F(!m_pSrc, "_PCbaseSrc not found: " + n);
 
         n = "";
         jKv(j, "_PointCloudTgt", n);
-        m_pTgt = (_PointCloud *)(pM->findModule(n));
+        m_pTgt = (_PointCloud *)(m_pM->findModule(n));
         IF_Le_F(!m_pTgt, "_PCbaseTgt not found: " + n);
 
         n = "";
         jKv(j, "_PCtransform", n);
-        m_pTf = (_PCtransform *)(pM->findModule(n));
+        m_pTf = (_PCtransform *)(m_pM->findModule(n));
         IF_Le_F(!m_pTf, "_PCtransform not found: " + n);
 
         return true;

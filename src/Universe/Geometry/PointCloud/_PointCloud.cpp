@@ -20,9 +20,10 @@ namespace kai
         m_grPt.release();
     }
 
-    bool _PointCloud::init(const json &j)
+    bool _PointCloud::loadConfig(void)
     {
-        IF_F(!this->_GeometryBase::init(j));
+        IF_F(!this->_GeometryBase::loadConfig());
+        const json &j = *m_pJ;
 
         int nP = 1000;
         jKv(j, "nP", nP);

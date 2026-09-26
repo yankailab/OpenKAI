@@ -20,7 +20,7 @@ namespace kai
 		_SingleTracker();
 		virtual ~_SingleTracker();
 
-		virtual bool init(const json &j);
+		virtual bool loadConfig(void) override;
 		virtual bool start(void);
 
 		void createTracker(void);

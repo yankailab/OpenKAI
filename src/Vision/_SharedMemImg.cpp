@@ -19,22 +19,24 @@ namespace kai
     {
     }
 
-    bool _SharedMemImg::init(const json &j)
+    bool _SharedMemImg::loadConfig(void)
     {
-        IF_F(!_VisionBase::init(j));
+        IF_F(!_VisionBase::loadConfig());
+        const json &j = *m_pJ;
 
         jKv(j, "matType", m_matType);
 
         return true;
     }
 
-    bool _SharedMemImg::link(const json &j, ModuleMgr *pM)
+    bool _SharedMemImg::link(void)
     {
-        IF_F(!this->_VisionBase::link(j, pM));
+        IF_F(!this->_VisionBase::link());
+        const json &j = *m_pJ;
 
         string n = "";
         jKv(j, "SharedMem", n);
-        m_pSHM = (SharedMem *)(pM->findModule(n));
+        m_pSHM = (SharedMem *)(m_pM->findModule(n));
         NULL_F(m_pSHM);
 
         return true;

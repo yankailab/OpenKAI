@@ -28,8 +28,8 @@ namespace kai
 		_IMUbase();
 		virtual ~_IMUbase();
 
-		virtual bool init(const json &j);
-		virtual bool link(const json &j, ModuleMgr *pM);
+		bool loadConfig(void) override;
+		bool link(void) override;
 		virtual bool start(void);
 		virtual void stop(void);
 		virtual bool check(void);

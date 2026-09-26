@@ -18,9 +18,10 @@ namespace kai
 		m_pMb = nullptr;
 	}
 
-	bool _Modbus::init(const json &j)
+	bool _Modbus::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "bModbusDebug", m_bModbusDebug);
 		jKv(j, "nErrReconnect", m_nErrReconnect);

@@ -12,49 +12,41 @@ namespace kai
 	{
 	}
 
-	bool _GeoFence::init(const json &j)
+	bool _GeoFence::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "type", m_type);
 		jKv(j, "estD", m_estD);
 		jKv<double>(j, "vP", m_vP);
 		jKv(j, "vPolygon", m_vPolygon);
 
-		loadConfig();
-
 		return true;
 	}
 
-	bool _GeoFence::link(const json &j, ModuleMgr *pM)
+	bool _GeoFence::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_JSONbase", n);
-		m_pJb = (_JSONbase *)(pM->findModule(n));
+		m_pJb = (_JSONbase *)(m_pM->findModule(n));
 
 		return true;
 	}
 
-	bool _GeoFence::loadConfig(json *pJ, string fName)
+	bool _GeoFence::saveConfig(void)
 	{
-		json j;
-		IF_F(!this->_ModuleBase::loadConfig(&j, fName));
-
-		IF_F(!jKv(j, "vPolygon", m_vPolygon));
-
-		if (pJ)
+		if (!_ModuleBase::saveConfig())
 		{
-			*pJ = j;
+			return false;
 		}
-		return true;
-	}
 
-	bool _GeoFence::saveConfig(json &j, string fName)
-	{
-		j["vPolygon"] = m_vPolygon;
-		return this->_ModuleBase::saveConfig(j, fName);
+		(*m_pJ)["vPolygon"] = m_vPolygon;
+
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _GeoFence::start(void)
@@ -152,13 +144,12 @@ namespace kai
 			{
 			}
 
-			json Js = json::object();
-			saveConfig(Js);
+			const bool bSuccess = saveConfig();
 
 			NULL_(pJb);
 			json jr = json::object();
 			jr["cmd"] = "setGeoFence";
-			jr["bSuccess"] = true;
+			jr["bSuccess"] = bSuccess;
 			pJb->sendJson(jr);
 
 			m_pJb = pJb;

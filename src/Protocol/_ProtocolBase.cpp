@@ -12,25 +12,26 @@ namespace kai
 		DEL(m_pTr);
 	}
 
-	bool _ProtocolBase::init(const json &j)
+	bool _ProtocolBase::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
 
 		DEL(m_pTr);
-		m_pTr = createThread(jK(j, "threadR"), "threadR");
+		m_pTr = createThread(jK(*m_pJ, "threadR"), "threadR");
 		NULL_F(m_pTr);
 
 		return true;
 	}
 
-	bool _ProtocolBase::link(const json &j, ModuleMgr *pM)
+	bool _ProtocolBase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
-		IF_F(!m_pTr->link(jK(j, "threadR"), pM));
+		IF_F(!this->_ModuleBase::link());
+		const json &j = *m_pJ;
+		IF_F(!m_pTr->link());
 
 		string n = "";
 		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(pM->findModule(n));
+		m_pIO = (_IObase *)(m_pM->findModule(n));
 		NULL_F(m_pIO);
 
 		return true;

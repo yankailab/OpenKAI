@@ -18,9 +18,10 @@ namespace kai
 	{
 	}
 
-	bool _MotionDetector::init(const json &j)
+	bool _MotionDetector::loadConfig(void)
 	{
-		IF_F(!this->_DetectorBase::init(j));
+		IF_F(!this->_DetectorBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "algorithm", m_algorithm);
 		jKv(j, "learningRate", m_learningRate);
@@ -50,13 +51,14 @@ namespace kai
 		return true;
 	}
 
-	bool _MotionDetector::link(const json &j, ModuleMgr *pM)
+	bool _MotionDetector::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_VisionBase", n);
-		m_pVision = (_VisionBase *)(pM->findModule(n));
+		m_pVision = (_VisionBase *)(m_pM->findModule(n));
 		NULL_F(m_pVision);
 
 		return true;

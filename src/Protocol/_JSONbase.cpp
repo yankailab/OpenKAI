@@ -12,9 +12,10 @@ namespace kai
     {
     }
 
-    bool _JSONbase::init(const json &j)
+    bool _JSONbase::loadConfig(void)
     {
-        IF_F(!this->_ProtocolBase::init(j));
+        IF_F(!this->_ProtocolBase::loadConfig());
+        const json &j = *m_pJ;
 
         jKv(j, "msgFinishSend", m_msgFinishSend);
         jKv(j, "msgFinishRecv", m_msgFinishRecv);
@@ -26,9 +27,9 @@ namespace kai
         return true;
     }
 
-    bool _JSONbase::link(const json &j, ModuleMgr *pM)
+    bool _JSONbase::link(void)
     {
-        IF_F(!this->_ProtocolBase::link(j, pM));
+        IF_F(!this->_ProtocolBase::link());
 
         return true;
     }
@@ -62,7 +63,7 @@ namespace kai
 
         if (m_ieSendHB.update(m_pT->getTfromNs()))
         {
-            //            sendHeartbeat();
+            // sendHeartbeat();
         }
     }
 
@@ -137,21 +138,13 @@ namespace kai
 
     void _JSONbase::handleJson(const string &str)
     {
-        // value json;
-        // IF_(!str2JSON(str, &json));
-
-        // object &jo = json.get<object>();
-        // string cmd = jo["cmd"].get<string>();
     }
 
     bool _JSONbase::str2JSON(const string &str, json &j)
     {
-        string err;
-        // const char *jsonstr = str.c_str();
-
         JsonCfg jCfg;
-        jCfg.parseJsonStr(str);
-        j = jCfg.getJson();
+        IF_F(!jCfg.parseStr(str));
+        j = *jCfg.getJson();
 
         IF_F(!j.is_object());
 

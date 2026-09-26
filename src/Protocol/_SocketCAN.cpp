@@ -12,18 +12,19 @@ namespace kai
 		close();
 	}
 
-	bool _SocketCAN::init(const json &j)
+	bool _SocketCAN::loadConfig(void)
 	{
-		IF_F(!this->_CANbase::init(j));
+		IF_F(!this->_CANbase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "ifName", m_ifName);
 
 		return true;
 	}
 
-	bool _SocketCAN::link(const json &j, ModuleMgr *pM)
+	bool _SocketCAN::link(void)
 	{
-		IF_F(!this->_CANbase::link(j, pM));
+		IF_F(!this->_CANbase::link());
 
 		return true;
 	}

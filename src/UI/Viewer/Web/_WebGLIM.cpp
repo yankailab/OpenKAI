@@ -246,14 +246,16 @@ namespace kai
 		}
 	}
 
-	_WebGLIM::_WebGLIM() = default;
-	_WebGLIM::~_WebGLIM() { stop(); }
-	bool _WebGLIM::init(const json &j)
+	_WebGLIM::_WebGLIM()
 	{
-		// Keep common camera configuration without allocating geometry rings.
-		json options = j;
-		options["nPbuf"] = 0; options["nLbuf"] = 0;
-		IF_F(!_GeometryViewerBase::init(options));
+		// GLIM streams submaps directly and does not use the shared geometry rings.
+		m_bGeometryBuffers = false;
+	}
+	_WebGLIM::~_WebGLIM() { stop(); }
+	bool _WebGLIM::loadConfig(void)
+	{
+		IF_F(!_GeometryViewerBase::loadConfig());
+		const json &j = *m_pJ;
 		jKv(j, "host", m_host); jKv(j, "port", m_port);
 		jKv(j, "webRoot", m_root); jKv(j, "nClientMax", m_maxClients);
 		jKv(j, "bAutoBound", m_autoBound); jKv(j, "bShowGrid", m_showGrid);
@@ -269,12 +271,13 @@ namespace kai
 		IF_Le_F(!std::filesystem::is_regular_file(std::filesystem::path(m_root) / "vendor/three.module.min.js"), "GLIM viewer assets not found: " + m_root);
 		return true;
 	}
-	bool _WebGLIM::link(const json &j, ModuleMgr *manager)
+	bool _WebGLIM::link(void)
 	{
-		IF_F(!_GeometryViewerBase::link(j, manager));
+		IF_F(!_GeometryViewerBase::link());
+		const json &j = *m_pJ;
 		string source;
 		jKv(j, "_GLIM", source);
-		m_slam = dynamic_cast<_GLIM *>(static_cast<BASE *>(manager->findModule(source)));
+		m_slam = dynamic_cast<_GLIM *>(static_cast<BASE *>(m_pM->findModule(source)));
 		IF_Le_F(!m_slam, "GLIM viewer source not found: " + source);
 		return true;
 	}

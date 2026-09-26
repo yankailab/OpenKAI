@@ -19,9 +19,10 @@ namespace kai
         DEL(m_pT);
     }
 
-    bool _ModuleBase::init(const json &j)
+    bool _ModuleBase::loadConfig(void)
     {
-        IF_F(!this->BASE::init(j));
+        IF_F(!this->BASE::loadConfig());
+        json &j = *m_pJ;
 
         DEL(m_pT);
         m_pT = createThread(jK(j, "thread"), "thread");
@@ -30,19 +31,46 @@ namespace kai
         return true;
     }
 
-    _Thread *_ModuleBase::createThread(const json &j, const string &name)
+    bool _ModuleBase::saveConfig(void)
     {
-        IF_N(name.empty());
-        IF_Le__(!j.is_object(), "JSON is not an object: " + name, nullptr);
+        if (!BASE::saveConfig())
+        {
+            return false;
+        }
+        if (m_pT && !m_pT->saveConfig())
+        {
+            return false;
+        }
+
+        return m_pJcfg->saveToFile();
+    }
+
+    _Thread *_ModuleBase::createThread(json *pJ, const string &name)
+    {
+        if (name.empty() || !m_pM || !m_pJcfg || !m_pJ)
+        {
+            return nullptr;
+        }
+
+        if (!pJ)
+        {
+            (*m_pJ)[name] = json::object();
+            pJ = &(*m_pJ)[name];
+        }
+        if (!pJ->is_object())
+        {
+            LOG_E("JSON is not an object: " + name);
+            return nullptr;
+        }
 
         _Thread *pT = new _Thread();
-        NULL_N(pT);
+        pT->setModuleMgr(m_pM);
         pT->setName(name);
-
-        if (!pT->init(j))
+        pT->setConfig(m_pJcfg, pJ);
+        if (!pT->loadConfig())
         {
-            DEL(pT);
-            LOG_E("thread.init() failed: " + name);
+            delete pT;
+            LOG_E("thread.loadConfig() failed: " + name);
             return nullptr;
         }
 
@@ -57,10 +85,10 @@ namespace kai
         return m_pT;
     }
 
-    bool _ModuleBase::link(const json &j, ModuleMgr *pM)
+    bool _ModuleBase::link(void)
     {
-        IF_F(!this->BASE::link(j, pM));
-        IF_F(!m_pT->link(jK(j, "thread"), pM));
+        IF_F(!this->BASE::link());
+        IF_F(!m_pT || !m_pT->link());
 
         return true;
     }

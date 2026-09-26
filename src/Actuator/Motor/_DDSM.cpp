@@ -12,25 +12,26 @@ namespace kai
 		DEL(m_pTr);
 	}
 
-	bool _DDSM::init(const json &j)
+	bool _DDSM::loadConfig(void)
 	{
-		IF_F(!this->_ActuatorBase::init(j));
+		IF_F(!this->_ActuatorBase::loadConfig());
 
 		DEL(m_pTr);
-		m_pTr = createThread(jK(j, "threadR"), "threadR");
+		m_pTr = createThread(jK(*m_pJ, "threadR"), "threadR");
 		NULL_F(m_pTr);
 
 		return true;
 	}
 
-	bool _DDSM::link(const json &j, ModuleMgr *pM)
+	bool _DDSM::link(void)
 	{
-		IF_F(!this->_ActuatorBase::link(j, pM));
-		IF_F(!m_pTr->link(jK(j, "threadR"), pM));
+		IF_F(!this->_ActuatorBase::link());
+		const json &j = *m_pJ;
+		IF_F(!m_pTr->link());
 
 		string n = "";
 		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(pM->findModule(n));
+		m_pIO = (_IObase *)(m_pM->findModule(n));
 		IF_Le_F(!m_pIO, "_IObase not found: " + n);
 
 		return true;

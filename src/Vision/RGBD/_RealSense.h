@@ -63,7 +63,7 @@ namespace kai
 		_RealSense();
 		virtual ~_RealSense();
 
-		virtual bool init(const json &j);
+		virtual bool loadConfig(void) override;
 		virtual bool start(void);
 		virtual bool check(void);
 

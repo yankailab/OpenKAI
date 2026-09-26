@@ -11,9 +11,10 @@ namespace kai
 	{
 	}
 
-	bool _SBus::init(const json &j)
+	bool _SBus::loadConfig(void)
 	{
-		IF_F(!this->_ProtocolBase::init(j));
+		IF_F(!this->_ProtocolBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "bSender", m_bSender);
 		jKv(j, "timeOutNsec", m_frame.m_timeOutNsec);
@@ -36,9 +37,9 @@ namespace kai
 		return true;
 	}
 
-	bool _SBus::link(const json &j, ModuleMgr *pM)
+	bool _SBus::link(void)
 	{
-		IF_F(!this->_ProtocolBase::link(j, pM));
+		IF_F(!this->_ProtocolBase::link());
 
 		return true;
 	}

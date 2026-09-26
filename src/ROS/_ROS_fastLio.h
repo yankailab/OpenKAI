@@ -23,8 +23,8 @@ namespace kai
 		_ROS_fastLio();
 		virtual ~_ROS_fastLio();
 
-		virtual bool init(const json &j);
-		virtual bool link(const json &j, ModuleMgr *pM);
+		bool loadConfig(void) override;
+		bool link(void) override;
 		virtual bool check(void);
 		virtual bool start(void);
 		virtual void console(void *pConsole);

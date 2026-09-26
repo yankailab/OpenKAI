@@ -199,8 +199,8 @@ namespace kai
 		_Lane();
 		virtual ~_Lane();
 
-		virtual bool init(const json &j);
-		virtual bool link(const json &j, ModuleMgr *pM);
+		virtual bool loadConfig(void) override;
+		virtual bool link(void) override;
 		virtual bool start(void);
 		virtual void draw(void *pMat);
 		virtual void console(void *pConsole);

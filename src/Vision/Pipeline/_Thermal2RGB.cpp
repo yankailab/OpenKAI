@@ -20,22 +20,24 @@ namespace kai
 	{
 	}
 
-	bool _Thermal2RGB::init(const json &j)
+	bool _Thermal2RGB::loadConfig(void)
 	{
-		IF_F(!_VisionBase::init(j));
+		IF_F(!_VisionBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv<float>(j, "vTrange", m_vTrange);
 
 		return true;
 	}
 
-	bool _Thermal2RGB::link(const json &j, ModuleMgr *pM)
+	bool _Thermal2RGB::link(void)
 	{
-		IF_F(!this->_VisionBase::link(j, pM));
+		IF_F(!this->_VisionBase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(pM->findModule(n));
+		m_pV = (_VisionBase *)(m_pM->findModule(n));
 		NULL_F(m_pV);
 
 		return true;

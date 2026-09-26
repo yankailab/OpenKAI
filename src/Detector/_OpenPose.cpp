@@ -16,9 +16,10 @@ namespace kai
 	{
 	}
 
-	bool _OpenPose::init(const json &j)
+	bool _OpenPose::loadConfig(void)
 	{
-		IF_F(!this->_DetectorBase::init(j));
+		IF_F(!this->_DetectorBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "nW", m_nW);
 		jKv(j, "nH", m_nH);

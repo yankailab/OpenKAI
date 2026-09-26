@@ -826,9 +826,10 @@ namespace kai
 		}
 	}
 
-	bool _PCfile::init(const json &j)
+	bool _PCfile::loadConfig(void)
 	{
-		IF_F(!this->_PointCloud::init(j));
+		IF_F(!this->_PointCloud::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "vfName", m_vfName);
 		open();

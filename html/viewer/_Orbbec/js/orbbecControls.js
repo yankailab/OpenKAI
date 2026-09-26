@@ -11,19 +11,19 @@ export class OrbbecControls {
       const connected = window.wsSocket?.readyState === WebSocket.OPEN;
       if (!connected) { this.clearPending(); this.loaded = false; $('#configStatus').textContent = 'Command connection disconnected'; }
       this.refresh();
-      if (connected && !this.loaded && !this.pending) this.send('loadConfig');
+      if (connected && !this.loaded && !this.pending) this.send('getConfig');
     };
     this.onReply = event => this.reply(event.detail);
     window.addEventListener('wscmdstatechange', this.onState);
     window.addEventListener('orbbeccommand', this.onReply);
-    $('#loadConfig').onclick = () => this.send('loadConfig');
+    $('#getConfig').onclick = () => this.send('getConfig');
     $('#saveConfig').onclick = () => this.send('saveConfig');
     $('#cameraModule').onchange = () => { this.clearPending(); this.loaded = false; this.fields.clear(); $('#configSections').replaceChildren(); this.onState(); };
     this.refresh();
   }
   refresh() {
     const connected = window.wsSocket?.readyState === WebSocket.OPEN;
-    $('#loadConfig').disabled = !connected || !!this.pending;
+    $('#getConfig').disabled = !connected || !!this.pending;
     $('#saveConfig').disabled = !connected || !this.loaded || !!this.pending;
     $('#cameraFields').disabled = !connected || !this.loaded || !!this.pending;
   }
@@ -38,7 +38,7 @@ export class OrbbecControls {
     $('#configStatus').textContent = cmd === 'setConfig' ? 'Applying camera setting…' : cmd === 'saveConfig' ? 'Saving configuration…' : 'Loading current parameters…';
     this.timeout = setTimeout(() => {
       this.pending = null; this.loaded = false; this.refresh();
-      $('#configStatus').textContent = 'No reply. Check the module name, then Load config to refresh.';
+      $('#configStatus').textContent = 'No reply. Check the module name, then Refresh config to refresh.';
     }, 15000);
     this.refresh();
   }

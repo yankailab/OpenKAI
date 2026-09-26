@@ -18,9 +18,10 @@ namespace kai
     {
     }
 
-    bool _ReferenceFrame::init(const json &j)
+    bool _ReferenceFrame::loadConfig(void)
     {
-        IF_F(!this->_ModuleBase::init(j));
+        IF_F(!this->_ModuleBase::loadConfig());
+        const json &j = *m_pJ;
 
         jKv<double>(j, "vPos", m_vPos);
         jKv<double>(j, "vOrt", m_vOrt.coeffs());
@@ -29,39 +30,25 @@ namespace kai
         return true;
     }
 
-    bool _ReferenceFrame::link(const json &j, ModuleMgr *pM)
+    bool _ReferenceFrame::link(void)
     {
-        IF_F(!this->_ModuleBase::link(j, pM));
+        IF_F(!this->_ModuleBase::link());
 
         return true;
     }
 
-    bool _ReferenceFrame::loadConfig(json *pJ, string fName)
+    bool _ReferenceFrame::saveConfig(void)
     {
-        json j;
-        IF_F(!this->_ModuleBase::loadConfig(&j, fName));
-
-        const json &jG = jK(j, "_ReferenceFrame");
-        if (jG.is_object())
+        if (!_ModuleBase::saveConfig())
         {
-            jKv<double>(jG, "vPos", m_vPos);
-            jKv<double>(jG, "vOrt", m_vOrt.coeffs());
-            setOrientation(m_vOrt, true);
+            return false;
         }
 
-        if (pJ)
-            *pJ = std::move(j);
+        json &j = *m_pJ;
+        j["vPos"] = {m_vPos.x(), m_vPos.y(), m_vPos.z()};
+        j["vOrt"] = {m_vOrt.x(), m_vOrt.y(), m_vOrt.z(), m_vOrt.w()};
 
-        return true;
-    }
-
-    bool _ReferenceFrame::saveConfig(json &j, string fName)
-    {
-        j["_ReferenceFrame"] = {
-            {"vPos", {m_vPos.x(), m_vPos.y(), m_vPos.z()}},
-            {"vOrt", {m_vOrt.x(), m_vOrt.y(), m_vOrt.z(), m_vOrt.w()}}};
-
-        return this->_ModuleBase::saveConfig(j, fName);
+        return m_pJcfg->saveToFile();
     }
 
     bool _ReferenceFrame::check(void)

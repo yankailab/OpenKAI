@@ -22,8 +22,8 @@ namespace kai
 		SharedMem();
 		virtual ~SharedMem();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool loadConfig(void) override;
+		virtual bool link(void) override;
 		virtual bool open(void);
 		virtual bool bOpen(void);
 		virtual void close(void);

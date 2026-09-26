@@ -22,7 +22,7 @@ namespace kai
 		_FileBase();
 		~_FileBase();
 
-		virtual bool init(const json& j);
+		virtual bool loadConfig(void) override;
 		virtual bool start(void);
 
 		bool createDir(const string &dir);

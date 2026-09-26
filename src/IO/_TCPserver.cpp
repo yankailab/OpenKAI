@@ -27,9 +27,10 @@ namespace kai
 		m_lClient.clear();
 	}
 
-	bool _TCPserver::init(const json &j)
+	bool _TCPserver::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "port", m_listenPort);
 		jKv(j, "nListen", m_nListen);

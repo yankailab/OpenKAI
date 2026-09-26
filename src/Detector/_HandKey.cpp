@@ -16,9 +16,10 @@ namespace kai
 	{
 	}
 
-	bool _HandKey::init(const json &j)
+	bool _HandKey::loadConfig(void)
 	{
-		IF_F(!this->_DetectorBase::init(j));
+		IF_F(!this->_DetectorBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "nW", m_nW);
 		jKv(j, "nH", m_nH);

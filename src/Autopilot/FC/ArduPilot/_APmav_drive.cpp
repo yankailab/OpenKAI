@@ -11,9 +11,10 @@ namespace kai
 	{
 	}
 
-	bool _APmav_drive::init(const json &j)
+	bool _APmav_drive::loadConfig(void)
 	{
-		IF_F(!this->_APmav_move::init(j));
+		IF_F(!this->_APmav_move::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "steer", m_steer);
 		jKv(j, "speed", m_speed);
@@ -35,21 +36,22 @@ namespace kai
 		return true;
 	}
 
-	bool _APmav_drive::link(const json &j, ModuleMgr *pM)
+	bool _APmav_drive::link(void)
 	{
-		IF_F(!this->_APmav_move::link(j, pM));
+		IF_F(!this->_APmav_move::link());
+		const json &j = *m_pJ;
 
 		string n;
 
 		n = "";
 		if (!jKv(j, "_SelectableOctGrid", n))
 			jKv(j, "_OctreeGrid", n);
-		m_pOctGrid = dynamic_cast<_SelectableOctGrid *>(static_cast<BASE *>(pM->findModule(n)));
+		m_pOctGrid = dynamic_cast<_SelectableOctGrid *>(static_cast<BASE *>(m_pM->findModule(n)));
 		IF_Le_F(!m_pOctGrid, "_SelectableOctGrid not found: " + n);
 
 		n = "";
 		jKv(j, "_GeoFence", n);
-		m_pGfence = (_GeoFence *)(pM->findModule(n));
+		m_pGfence = (_GeoFence *)(m_pM->findModule(n));
 		IF_Le_F(!m_pGfence, "_GeoFence not found: " + n);
 
 		return true;
@@ -267,11 +269,11 @@ namespace kai
 		}
 		else if (cmd == "setServo")
 		{
-			const json &servoON = jK(j, "bServoON");
-			const bool bSuccess = servoON.is_boolean() ||
-				(servoON.is_number_integer() && (servoON == 0 || servoON == 1));
+			const json *servoON = jK(j, "bServoON");
+			const bool bSuccess = servoON && (servoON->is_boolean() ||
+				(servoON->is_number_integer() && (*servoON == 0 || *servoON == 1)));
 			if (bSuccess)
-				m_bServoON = servoON.is_boolean() ? servoON.get<bool>() : servoON == 1;
+				m_bServoON = servoON->is_boolean() ? servoON->get<bool>() : *servoON == 1;
 
 			NULL_(pJb);
 			json jr = json::object();

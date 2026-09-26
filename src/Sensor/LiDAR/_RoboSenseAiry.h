@@ -91,8 +91,8 @@ namespace kai
 		_RoboSenseAiry();
 		~_RoboSenseAiry();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool loadConfig(void) override;
+		virtual bool link(void) override;
 		virtual bool check(void);
 		virtual bool start(void);
 		virtual void console(void *pConsole);

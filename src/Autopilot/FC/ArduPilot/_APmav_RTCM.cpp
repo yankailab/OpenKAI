@@ -11,20 +11,21 @@ namespace kai
 	{
 	}
 
-	bool _APmav_RTCM::init(const json &j)
+	bool _APmav_RTCM::loadConfig(void)
 	{
-		IF_F(!this->_RTCMcast::init(j));
+		IF_F(!this->_RTCMcast::loadConfig());
 
 		return true;
 	}
 
-	bool _APmav_RTCM::link(const json &j, ModuleMgr *pM)
+	bool _APmav_RTCM::link(void)
 	{
-		IF_F(!this->_ProtocolBase::link(j, pM));	// Do not use _RTCM::link as we send to _Mavlink thus the _IObaseSend is not needed
+		IF_F(!this->_ProtocolBase::link());	// Do not use _RTCM::link as we send to _Mavlink thus the _IObaseSend is not needed
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_Mavlink", n);
-		m_pMav = (_Mavlink *)(pM->findModule(n));
+		m_pMav = (_Mavlink *)(m_pM->findModule(n));
 		NULL_F(m_pMav);
 
 		return true;

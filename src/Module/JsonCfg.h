@@ -110,17 +110,15 @@ bool jKv(const json &j, const string &key, std::optional<T> &value)
 	return true;
 }
 
-inline const json &jK(const json &j, const std::string &key, bool bLog = false)
+inline json *jK(json &j, const std::string &key, bool bLog = false)
 {
-	static const json jNull = nullptr;
-
 	if (!j.is_object())
 	{
 		if (bLog)
 		{
 			LOG(INFO) << "JSON is not an object: " + key;
 		}
-		return jNull;
+		return nullptr;
 	}
 
 	auto it = j.find(key);
@@ -130,10 +128,34 @@ inline const json &jK(const json &j, const std::string &key, bool bLog = false)
 		{
 			LOG(INFO) << "Cannot find: " + key;
 		}
-		return jNull;
+		return nullptr;
 	}
 
-	return j.at(key);
+	return &(*it);
+}
+
+inline const json *jK(const json &j, const std::string &key, bool bLog = false)
+{
+	if (!j.is_object())
+	{
+		if (bLog)
+		{
+			LOG(INFO) << "JSON is not an object: " + key;
+		}
+		return nullptr;
+	}
+
+	auto it = j.find(key);
+	if (it == j.end())
+	{
+		if (bLog)
+		{
+			LOG(INFO) << "Cannot find: " + key;
+		}
+		return nullptr;
+	}
+
+	return &(*it);
 }
 
 namespace kai
@@ -145,24 +167,24 @@ namespace kai
 		JsonCfg(void);
 		~JsonCfg(void);
 
-		bool parseJsonFile(const string &fName);
+		// input
 		bool readFromFile(const string &fName);
-		bool saveToFile(const string &fName);
+		bool parseStr(const string &s);
+		void setJson(const json &j);
 
-		string getJsonStr(void);
-		bool parseJsonStr(const string &s);
-		json &getJson(void);
-
-		void setJson(json &j);
+		// output
+		bool saveToFile(const string &fName = "");
+		json *getJson(void);
+		string getStr(void);
+		string getFileName(void) const;
 		void setNdumpSpace(int nD);
-
-		string getName(void);
 
 	protected:
 		void delComment(string *pStr);
 
 	protected:
-		string m_jsonStr = "";
+		string m_name = ""; // .json file name
+
 		json m_json;
 		int m_nDumpSpace = 4;
 	};

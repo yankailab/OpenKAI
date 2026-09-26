@@ -20,9 +20,10 @@ namespace kai
 		DEL(m_pTstream);
 	}
 
-	bool _IMUbase::init(const json &j)
+	bool _IMUbase::loadConfig(void)
 	{
-		IF_F(!_ModuleBase::init(j));
+		IF_F(!_ModuleBase::loadConfig());
+		json &j = *m_pJ;
 
 		jKv(j, "nIMUdqMax", m_nIMUdqMax);
 		jKv(j, "tIMUpairToleranceNs", m_tIMUpairToleranceNs);
@@ -30,24 +31,34 @@ namespace kai
 		jKv(j, "bFusion", m_bFusion);
 		IF_Le_F(m_nIMUdqMax < 1 || m_nIMUdqMax > 100000, "Invalid IMU queue size");
 
-		json jStream = j.value("threadStream", json::object());
+		if (!j.contains("threadStream"))
+		{
+			j["threadStream"] = json::object();
+		}
+		json &jStream = j["threadStream"];
+		if (!jStream.is_object())
+		{
+			return false;
+		}
 		float fpsStream = 30.0f;
 		jKv(jStream, "FPS", fpsStream);
 		if (!std::isfinite(fpsStream) || fpsStream <= 0)
+		{
 			return false;
+		}
 		jStream["FPS"] = fpsStream;
 		DEL(m_pTstream);
-		m_pTstream = createThread(jStream, "threadStream");
+		m_pTstream = createThread(&jStream, "threadStream");
 		NULL_F(m_pTstream);
 
 		return true;
 	}
 
-	bool _IMUbase::link(const json &j, ModuleMgr *pM)
+	bool _IMUbase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
 
-		IF_F(!m_pTstream->link(j.value("threadStream", json::object()), pM));
+		IF_F(!m_pTstream || !m_pTstream->link());
 
 		return true;
 	}

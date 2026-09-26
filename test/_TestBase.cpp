@@ -11,16 +11,16 @@ namespace kai
     {
     }
 
-    bool _TestBase::init(const json &j)
+    bool _TestBase::loadConfig(void)
     {
-        IF_F(!this->_ModuleBase::init(j));
+        IF_F(!this->_ModuleBase::loadConfig());
 
         return true;
     }
 
-    bool _TestBase::link(const json &j, ModuleMgr *pM)
+    bool _TestBase::link(void)
     {
-        IF_F(!this->_ModuleBase::link(j, pM));
+        IF_F(!this->_ModuleBase::link());
 
         return true;
     }

@@ -104,9 +104,10 @@ namespace kai
 		pthread_mutex_destroy(&m_snapshotMutex);
 	}
 
-	bool _ImGUIselectableOctGrid::init(const json &j)
+	bool _ImGUIselectableOctGrid::loadConfig(void)
 	{
-		IF_F(!this->_GeometryViewerBase::init(j));
+		IF_F(!this->_GeometryViewerBase::loadConfig());
+		const json &j = *m_pJ;
 		jKv(j, "nCbuf", m_nCbuf);
 		IF_Le_F(m_nCbuf < 0, "Invalid nCbuf");
 
@@ -122,22 +123,23 @@ namespace kai
 		jKv(j, "bGpuRender", m_bGpuRender);
 
 		DEL(m_pTui);
-		m_pTui = createThread(jK(j, "threadUI"), "threadUI");
+		m_pTui = createThread(jK(*m_pJ, "threadUI"), "threadUI");
 		NULL_F(m_pTui);
 
 		return true;
 	}
 
-	bool _ImGUIselectableOctGrid::link(const json &j, ModuleMgr *pM)
+	bool _ImGUIselectableOctGrid::link(void)
 	{
-		NULL_F(pM);
-		IF_F(!this->_GeometryViewerBase::link(j, pM));
+		NULL_F(m_pM);
+		IF_F(!this->_GeometryViewerBase::link());
+		const json &j = *m_pJ;
 
 		string error;
-		IF_Le_F(!m_sources.link(j, pM, m_nPbuf, m_nLbuf, m_nCbuf, error), error);
+		IF_Le_F(!m_sources.link(j, m_pM, m_nPbuf, m_nLbuf, m_nCbuf, error), error);
 
 		NULL_F(m_pTui);
-		IF_F(!m_pTui->link(jK(j, "threadUI"), pM));
+		IF_F(!m_pTui->link());
 
 		return true;
 	}

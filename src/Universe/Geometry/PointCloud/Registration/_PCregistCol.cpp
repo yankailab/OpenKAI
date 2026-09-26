@@ -19,9 +19,10 @@ namespace kai
     {
     }
 
-    bool _PCregistCol::init(const json &j)
+    bool _PCregistCol::loadConfig(void)
     {
-        IF_F(!this->_PointCloud::init(j));
+        IF_F(!this->_PointCloud::loadConfig());
+        const json &j = *m_pJ;
 
         jKv(j, "rVoxel", m_rVoxel);
         jKv(j, "maxDistance", m_maxDistance);
@@ -35,13 +36,14 @@ namespace kai
         return true;
     }
 
-    bool _PCregistCol::link(const json &j, ModuleMgr *pM)
+    bool _PCregistCol::link(void)
     {
-        IF_F(!this->BASE::link(j, pM));
+        IF_F(!this->BASE::link());
+        const json &j = *m_pJ;
 
         string n = "";
         jKv(j, "_PointCloud", n);
-        m_pPC = (_PointCloud *)(pM->findModule(n));
+        m_pPC = (_PointCloud *)(m_pM->findModule(n));
 
         return true;
     }

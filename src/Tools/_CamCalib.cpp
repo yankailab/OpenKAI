@@ -12,9 +12,10 @@ namespace kai
     {
     }
 
-    bool _CamCalib::init(const json &j)
+    bool _CamCalib::loadConfig(void)
     {
-        IF_F(!this->_ModuleBase::init(j));
+        IF_F(!this->_ModuleBase::loadConfig());
+        const json &j = *m_pJ;
 
         jKv(j, "path", m_path);
         jKv<int>(j, "vChessBoardSize", m_vChessBoardSize);

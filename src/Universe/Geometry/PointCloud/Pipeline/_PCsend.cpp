@@ -19,9 +19,10 @@ namespace kai
         DEL(m_pB);
     }
 
-    bool _PCsend::init(const json &j)
+    bool _PCsend::loadConfig(void)
     {
-        IF_F(!this->_GeometryBase::init(j));
+        IF_F(!this->_GeometryBase::loadConfig());
+        const json &j = *m_pJ;
 
         jKv(j, "tInt", m_tInt);
         jKv(j, "nB", m_nB);
@@ -33,13 +34,14 @@ namespace kai
         return true;
     }
 
-    bool _PCsend::link(const json &j, ModuleMgr *pM)
+    bool _PCsend::link(void)
     {
-        IF_F(!this->_GeometryBase::link(j, pM));
+        IF_F(!this->_GeometryBase::link());
+        const json &j = *m_pJ;
 
         string n = "";
         jKv(j, "_IObase", n);
-        m_pIO = (_IObase *)(pM->findModule(n));
+        m_pIO = (_IObase *)(m_pM->findModule(n));
         IF_Le_F(!m_pIO, "_IObase not found: " + n);
 
         return true;

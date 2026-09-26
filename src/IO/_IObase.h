@@ -161,8 +161,8 @@ namespace kai
 		_IObase();
 		virtual ~_IObase();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool loadConfig(void) override;
+		virtual bool link(void) override;
 		virtual void console(void *pConsole);
 
 		virtual IO_TYPE ioType(void);

@@ -20,9 +20,9 @@ namespace kai
 			m_pTracker.release();
 	}
 
-	bool _SingleTracker::init(const json &j)
+	bool _SingleTracker::loadConfig(void)
 	{
-		IF_F(!this->_TrackerBase::init(j));
+		IF_F(!this->_TrackerBase::loadConfig());
 
 		return true;
 	}

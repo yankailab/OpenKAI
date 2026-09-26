@@ -29,8 +29,8 @@ namespace kai
 		_TrackerBase();
 		virtual ~_TrackerBase();
 
-		virtual bool init(const json &j);
-		virtual bool link(const json &j, ModuleMgr *pM);
+		virtual bool loadConfig(void) override;
+		virtual bool link(void) override;
 		virtual void update(void);
 		virtual bool check(void);
 		virtual void draw(void *pMat);

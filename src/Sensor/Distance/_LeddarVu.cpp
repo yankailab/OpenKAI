@@ -21,9 +21,10 @@ namespace kai
 		}
 	}
 
-	bool _LeddarVu::init(const json &j)
+	bool _LeddarVu::loadConfig(void)
 	{
-		IF_F(!this->_DistSensorBase::init(j));
+		IF_F(!this->_DistSensorBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "port", m_port);
 		jKv(j, "baud", m_baud);

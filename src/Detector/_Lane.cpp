@@ -19,9 +19,10 @@ namespace kai
 	{
 	}
 
-	bool _Lane::init(const json &j)
+	bool _Lane::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "bDrawOverhead", m_bDrawOverhead);
 		jKv(j, "bDrawFilter", m_bDrawFilter);
@@ -38,9 +39,10 @@ namespace kai
 
 		// color filters
 		m_nFilter = 0;
-		const json &jC = jK(j, "colorFilters");
-		if (jC.is_object())
+		const json *pJC = jK(j, "colorFilters");
+		if (pJC && pJC->is_object())
 		{
+			const json &jC = *pJC;
 			for (auto it = jC.begin(); it != jC.end(); it++)
 			{
 				IF_F(m_nFilter >= N_LANE_FILTER);
@@ -66,9 +68,10 @@ namespace kai
 		int nMed = 0;
 		jKv(j, "nMed", nMed);
 		m_nLane = 0;
-		const json &jL = jK(j, "lane");
-		if (jL.is_object())
+		const json *pJL = jK(j, "lane");
+		if (pJL && pJL->is_object())
 		{
+			const json &jL = *pJL;
 			for (auto it = jL.begin(); it != jL.end(); it++)
 			{
 				IF_F(m_nLane >= N_LANE_FILTER);
@@ -95,13 +98,14 @@ namespace kai
 		return true;
 	}
 
-	bool _Lane::link(const json &j, ModuleMgr *pM)
+	bool _Lane::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(pM->findModule(n));
+		m_pV = (_VisionBase *)(m_pM->findModule(n));
 		NULL_F(m_pV);
 
 		return true;

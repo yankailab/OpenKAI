@@ -12,20 +12,21 @@ namespace kai
     {
     }
 
-    bool _TestWebSocket::init(const json &j)
+    bool _TestWebSocket::loadConfig(void)
     {
-        IF_F(!this->_TestBase::init(j));
+        IF_F(!this->_TestBase::loadConfig());
 
         return true;
     }
 
-    bool _TestWebSocket::link(const json &j, ModuleMgr *pM)
+    bool _TestWebSocket::link(void)
     {
-        IF_F(!this->_TestBase::link(j, pM));
+        IF_F(!this->_TestBase::link());
+        const json &j = *m_pJ;
 
         string n = "";
         jKv(j, "_WebSocketServer", n);
-        m_pWSserver = (_WebSocketServer *)(pM->findModule(n));
+        m_pWSserver = (_WebSocketServer *)(m_pM->findModule(n));
         NULL_F(m_pWSserver);
 
         return true;

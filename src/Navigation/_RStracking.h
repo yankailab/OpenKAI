@@ -20,7 +20,7 @@ namespace kai
 		_RStracking();
 		virtual ~_RStracking();
 
-		virtual bool init(const json& j);
+		virtual bool loadConfig(void) override;
 		virtual bool start(void);
 		bool open(void);
 		void close(void);

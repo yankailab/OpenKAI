@@ -18,22 +18,24 @@ namespace kai
 		close();
 	}
 
-	bool _ADIO_EBYTE::init(const json &j)
+	bool _ADIO_EBYTE::loadConfig(void)
 	{
-		IF_F(!this->_ADIObase::init(j));
+		IF_F(!this->_ADIObase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "iID", m_iID);
 
 		return true;
 	}
 
-	bool _ADIO_EBYTE::link(const json &j, ModuleMgr *pM)
+	bool _ADIO_EBYTE::link(void)
 	{
-		IF_F(!this->_ADIObase::link(j, pM));
+		IF_F(!this->_ADIObase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_Modbus", n);
-		m_pMB = (_Modbus *)(pM->findModule(n));
+		m_pMB = (_Modbus *)(m_pM->findModule(n));
 		NULL_F(m_pMB);
 
 		return true;

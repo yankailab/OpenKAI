@@ -40,9 +40,10 @@ namespace kai
 		IF_F(!f.write(str.c_str(), str.length()));
 
 		f.flush();
+		const bool bFlushed = f.good();
 		f.close();
 
-		return true;
+		return bFlushed && f.good();
 	}
 }
 #endif

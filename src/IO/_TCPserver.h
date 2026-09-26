@@ -24,7 +24,7 @@ namespace kai
 		_TCPserver();
 		virtual ~_TCPserver();
 
-		virtual bool init(const json& j);
+		virtual bool loadConfig(void) override;
 		virtual bool start(void);
 		virtual void console(void *pConsole);
 		_TCPclient *getFirstSocket(void);

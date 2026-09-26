@@ -75,9 +75,10 @@ namespace kai
 		stopTracking();
 	}
 
-	bool _GLIM::init(const json &j)
+	bool _GLIM::loadConfig(void)
 	{
-		IF_F(!_SLAMbase::init(j));
+		IF_F(!_SLAMbase::loadConfig());
+		const json &j = *m_pJ;
 		jKv(j, "configPath", m_configPath);
 		jKv(j, "bMapping", m_bMapping);
 		jKv(j, "nMinPoints", m_nMinPoints);
@@ -93,19 +94,19 @@ namespace kai
 		{
 			m_parameters = parameterDefaults();
 			applyParameters(validatedParameters(j.value("parameters", json::object())));
-			if (!m_fConfig.empty() && std::filesystem::exists(m_fConfig) && !loadConfig()) return false;
 		}
 		catch (const std::exception &e) { LOG_E(e.what()); return false; }
 		m_session = getTns();
 		return true;
 	}
 
-	bool _GLIM::link(const json &j, ModuleMgr *pM)
+	bool _GLIM::link(void)
 	{
-		IF_F(!_SLAMbase::link(j, pM));
+		IF_F(!_SLAMbase::link());
+		const json &j = *m_pJ;
 		string name;
 		jKv(j, "globalMapPCL", name);
-		m_pGlobalMap = name.empty() ? nullptr : dynamic_cast<_PointCloud *>(static_cast<BASE *>(pM->findModule(name)));
+		m_pGlobalMap = name.empty() ? nullptr : dynamic_cast<_PointCloud *>(static_cast<BASE *>(m_pM->findModule(name)));
 		IF_Le_F(!name.empty() && !m_pGlobalMap, "Cannot find globalMapPCL: " + name);
 		IF_Le_F(m_pGlobalMap && m_pGlobalMap == m_pPCL, "GLIM input and globalMapPCL must be different buffers");
 		return true;
@@ -234,27 +235,23 @@ namespace kai
 		m_nMinPoints = values["nMinPoints"].get<int>();
 	}
 
-	bool _GLIM::loadConfig(json *pJ, string fName)
+	bool _GLIM::saveConfig(void)
 	{
 		auto lock = lockSLAM();
-		if (m_bTracking) throw std::runtime_error("Stop SLAM before loading parameters");
-		json loaded;
-		if (!BASE::loadConfig(&loaded, fName)) return false;
-		applyParameters(validatedParameters(loaded));
-		if (pJ) *pJ = m_parameters;
-		return true;
-	}
+		if (m_bTracking)
+		{
+			LOG_E("Stop SLAM before saving parameters");
+			return false;
+		}
 
-	bool _GLIM::saveConfig(json &j, string fName)
-	{
-		auto lock = lockSLAM();
-		if (m_bTracking) throw std::runtime_error("Stop SLAM before saving parameters");
-		json candidate = validatedParameters(j.is_null() ? json::object() : j);
-		// Commit the new in-memory values only after the requested file was saved.
-		if (!BASE::saveConfig(candidate, fName)) return false;
-		applyParameters(candidate);
-		j = std::move(candidate);
-		return true;
+		if (!_SLAMbase::saveConfig())
+		{
+			return false;
+		}
+
+		(*m_pJ)["parameters"] = m_parameters;
+
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _GLIM::startSLAM(void)
@@ -736,14 +733,11 @@ namespace kai
 			}
 			else if (cmd == "saveConfig")
 			{
-				json saved = j.value("config", json::object());
-				reply["bSuccess"] = saveConfig(saved);
-				if (!reply["bSuccess"].get<bool>()) reply["error"] = "Could not write GLIM fConfig: " + m_fConfig;
-			}
-			else if (cmd == "loadConfig")
-			{
-				reply["bSuccess"] = loadConfig();
-				if (!reply["bSuccess"].get<bool>()) reply["error"] = "Could not load GLIM fConfig: " + m_fConfig;
+				reply["bSuccess"] = saveConfig();
+				if (!reply["bSuccess"].get<bool>())
+				{
+					reply["error"] = "Could not save the launch configuration";
+				}
 			}
 			else if (cmd == "savePointCloud")
 			{
@@ -766,11 +760,11 @@ namespace kai
 				reply["bSuccess"] = false;
 				reply["error"] = "Unknown GLIM command: " + cmd;
 			}
-			if (cmd == "getConfig" || cmd == "setConfig" || cmd == "saveConfig" || cmd == "loadConfig")
+			if (cmd == "getConfig" || cmd == "setConfig" || cmd == "saveConfig")
 			{
 				auto lock = lockSLAM();
 				reply["config"] = m_parameters;
-				reply["configFile"] = m_fConfig;
+				reply["configFile"] = m_pJcfg->getFileName();
 			}
 			reply["status"] = status();
 			// A previous session failure belongs to status, not to a successful

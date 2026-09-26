@@ -20,7 +20,7 @@ namespace kai
 		PID();
 		virtual ~PID();
 
-		virtual bool init(const json &j);
+		virtual bool loadConfig(void) override;
 		virtual float update(float v, float sp, float dT);
 		virtual double o(void);
 		virtual void console(void *pConsole);

@@ -20,9 +20,10 @@ namespace kai
 		close();
 	}
 
-	bool SharedMem::init(const json &j)
+	bool SharedMem::loadConfig(void)
 	{
-		IF_F(!this->BASE::init(j));
+		IF_F(!this->BASE::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "shmName", m_shmName);
 		jKv(j, "nB", m_nB);
@@ -33,9 +34,9 @@ namespace kai
 		return true;
 	}
 
-	bool SharedMem::link(const json &j, ModuleMgr *pM)
+	bool SharedMem::link(void)
 	{
-		IF_F(!this->BASE::link(j, pM));
+		IF_F(!this->BASE::link());
 
 		return true;
 	}

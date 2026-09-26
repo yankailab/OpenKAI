@@ -19,9 +19,9 @@ namespace kai
 		close();
 	}
 
-	bool _RStracking::init(const json& j)
+	bool _RStracking::loadConfig(void)
 	{
-		IF_F(!this->_NavBase::init(j));
+		IF_F(!this->_NavBase::loadConfig());
 
 		return true;
 	}

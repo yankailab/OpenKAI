@@ -11,12 +11,14 @@ namespace kai
 	{
 	}
 
-	bool _APmav_depthVision::init(const json &j)
+	bool _APmav_depthVision::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
-		const json &jS = jK(j, "sections");
-		IF__(!jS.is_object(), true);
+		const json *pJS = jK(j, "sections");
+		IF__(!pJS || !pJS->is_object(), true);
+		const json &jS = *pJS;
 
 		m_nROI = 0;
 		for (auto it = jS.begin(); it != jS.end(); it++)
@@ -40,20 +42,21 @@ namespace kai
 		return true;
 	}
 
-	bool _APmav_depthVision::link(const json &j, ModuleMgr *pM)
+	bool _APmav_depthVision::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
+		const json &j = *m_pJ;
 
 		string n;
 
 		n = "";
 		jKv(j, "APmavlink_base", n);
-		m_pAP = (_APmav_base *)(pM->findModule(n));
+		m_pAP = (_APmav_base *)(m_pM->findModule(n));
 		NULL_F(m_pAP);
 
 		n = "";
 		jKv(j, "_RGBDbase", n);
-		m_pDV = (_RGBDbase *)(pM->findModule(n));
+		m_pDV = (_RGBDbase *)(m_pM->findModule(n));
 		NULL_F(m_pDV);
 
 		return true;

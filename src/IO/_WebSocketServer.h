@@ -9,12 +9,15 @@
 #define OpenKAI_src_IO__WebSocketServer_H_
 
 #include "_WebSocket.h"
+#include <memory>
 
 namespace kai
 {
 	struct wsClient
 	{
-		_WebSocket *m_pWS;
+		_WebSocket *m_pWS = nullptr;
+		// Accepted connections own transient configuration, outside the launch document.
+		std::shared_ptr<JsonCfg> m_pJcfg;
 		ws_cli_conn_t m_wsConn;
 		uint64_t m_tStamp;
 
@@ -52,8 +55,8 @@ namespace kai
 		_WebSocketServer();
 		virtual ~_WebSocketServer();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		bool loadConfig(void) override;
+		bool link(void) override;
 		virtual bool start(void);
 		virtual void console(void *pConsole);
 

@@ -20,9 +20,10 @@ namespace kai
 		close();
 	}
 
-	bool _HiKthermal::init(const json &j)
+	bool _HiKthermal::loadConfig(void)
 	{
-		IF_F(!_VisionBase::init(j));
+		IF_F(!_VisionBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "streamType", m_streamType);
 		jKv(j, "vendorID", m_vendorID);

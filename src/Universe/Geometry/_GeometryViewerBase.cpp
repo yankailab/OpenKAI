@@ -22,9 +22,10 @@ namespace kai
 		m_grLn.release();
 	}
 
-	bool _GeometryViewerBase::init(const json &j)
+	bool _GeometryViewerBase::loadConfig(void)
 	{
-		IF_F(!this->_GeometryBase::init(j));
+		IF_F(!this->_GeometryBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv<int>(j, "vWinSize", m_vWinSize);
 		jKv(j, "bFullScreen", m_bFullScreen);
@@ -47,6 +48,12 @@ namespace kai
 		jKv(j, "nPbuf", m_nPbuf);
 		jKv(j, "nLbuf", m_nLbuf);
 
+		if (!m_bGeometryBuffers)
+		{
+			m_nPbuf = 0;
+			m_nLbuf = 0;
+		}
+
 		m_grPt.release();
 		m_grLn.release();
 		IF_Le_F(m_nPbuf < 0 || m_nLbuf < 0, "Negative geometry buffer limit");
@@ -56,10 +63,10 @@ namespace kai
 		return true;
 	}
 
-	bool _GeometryViewerBase::link(const json &j, ModuleMgr *pM)
+	bool _GeometryViewerBase::link(void)
 	{
-		NULL_F(pM);
-		IF_F(!this->_GeometryBase::link(j, pM));
+		NULL_F(m_pM);
+		IF_F(!this->_GeometryBase::link());
 
 		return true;
 	}

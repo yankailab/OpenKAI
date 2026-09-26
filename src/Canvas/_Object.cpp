@@ -16,9 +16,9 @@ namespace kai
 	{
 	}
 
-	bool _Object::init(const json &j)
+	bool _Object::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
 
 		return true;
 	}

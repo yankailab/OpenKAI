@@ -80,15 +80,14 @@ namespace kai
 		_Scepter();
 		virtual ~_Scepter();
 
-		virtual bool init(const json &j);
-		virtual bool link(const json &j, ModuleMgr *pM);
+		virtual bool loadConfig(void) override;
+		virtual bool link(void) override;
 		virtual bool start(void);
 		virtual bool check(void);
 		using _RGBDbase::console;
 		virtual void console(const json &j, void *pJSONbase);
 
-		virtual bool loadConfig(json *pJ = nullptr, string fName = "");
-		virtual bool saveConfig(json &j, string fName = "");
+		virtual bool saveConfig(void) override;
 
 		virtual bool open(void);
 		virtual void close(void);
@@ -137,7 +136,7 @@ namespace kai
 	protected:
 		json configValues(void); // caller holds m_mutexScFrame
 		json controlSchema(void);
-		bool applyConfig(const json &patch, bool device, json &errors, bool all = false);
+		bool applyConfig(const json &patch, bool device, json &errors);
 		void applyScControls(const ScCtrl &requested, const json &changed, bool all, json &errors);
 		bool updateScRGBD(void);
 

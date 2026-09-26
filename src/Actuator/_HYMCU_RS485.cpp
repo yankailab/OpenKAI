@@ -15,18 +15,20 @@ namespace kai
 	{
 	}
 
-	bool _HYMCU_RS485::init(const json &j)
+	bool _HYMCU_RS485::loadConfig(void)
 	{
-		IF_F(!this->_ActuatorBase::init(j));
+		IF_F(!this->_ActuatorBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "iSlave", m_iSlave);
 		jKv(j, "dpr", m_dpr);
 		jKv(j, "dInit", m_dInit);
 		jKv(j, "cmdInt", m_cmdInt);
 
-		const json &ja = jK(j, "addr");
-		if (ja.is_object())
+		const json *pJa = jK(j, "addr");
+		if (pJa && pJa->is_object())
 		{
+			const json &ja = *pJa;
 			jKv(ja, "setDPR", m_addr.m_setDPR);
 			jKv(ja, "setDist", m_addr.m_setDist);
 			jKv(ja, "setDir", m_addr.m_setDir);
@@ -47,13 +49,14 @@ namespace kai
 		return true;
 	}
 
-	bool _HYMCU_RS485::link(const json &j, ModuleMgr *pM)
+	bool _HYMCU_RS485::link(void)
 	{
-		IF_F(!this->_ActuatorBase::link(j, pM));
+		IF_F(!this->_ActuatorBase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_Modbus", n);
-		m_pMB = (_Modbus *)(pM->findModule(n));
+		m_pMB = (_Modbus *)(m_pM->findModule(n));
 		IF_Le_F(!m_pMB, "_Modbus not found: " + n);
 
 		return true;

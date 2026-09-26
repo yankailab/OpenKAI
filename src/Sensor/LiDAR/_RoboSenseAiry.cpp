@@ -15,31 +15,33 @@ namespace kai
     {
     }
 
-    bool _RoboSenseAiry::init(const json &j)
+    bool _RoboSenseAiry::loadConfig(void)
     {
-        IF_F(!this->_PointCloud::init(j));
+        IF_F(!this->_PointCloud::loadConfig());
+        const json &j = *m_pJ;
 
         DEL(m_pTdifop);
-        m_pTdifop = createThread(jK(j, "threadDIFOP"), "threadDIFOP");
+        m_pTdifop = createThread(jK(*m_pJ, "threadDIFOP"), "threadDIFOP");
         NULL_F(m_pTdifop);
 
         return true;
     }
 
-    bool _RoboSenseAiry::link(const json &j, ModuleMgr *pM)
+    bool _RoboSenseAiry::link(void)
     {
-        IF_F(!this->_PointCloud::link(j, pM));
+        IF_F(!this->_PointCloud::link());
+        const json &j = *m_pJ;
 
         string n;
 
         n = "";
         jKv(j, "_UDPmsop", n);
-        m_pUDPmsop = (_UDP *)(pM->findModule(n));
+        m_pUDPmsop = (_UDP *)(m_pM->findModule(n));
         NULL_F(m_pUDPmsop);
 
         n = "";
         jKv(j, "_UDPdifop", n);
-        m_pUDPdifop = (_UDP *)(pM->findModule(n));
+        m_pUDPdifop = (_UDP *)(m_pM->findModule(n));
         NULL_F(m_pUDPdifop);
 
         return true;

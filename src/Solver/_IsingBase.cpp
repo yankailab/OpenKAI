@@ -19,18 +19,19 @@ namespace kai
 		clear();
 	}
 
-	bool _IsingBase::init(const json &j)
+	bool _IsingBase::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "fName", m_fName);
 
 		return true;
 	}
 
-	bool _IsingBase::link(const json &j, ModuleMgr *pM)
+	bool _IsingBase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
 
 		return true;
 	}

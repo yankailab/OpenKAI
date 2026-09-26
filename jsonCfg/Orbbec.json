@@ -76,7 +76,6 @@
 
 	"Orbbec": {
 		"class": "_Orbbec",
-		"fConfig": "jsonCfg/Orbbec.controls.json",
 		"bON": true,
 		"thread": {
 			"FPS": 200

@@ -18,9 +18,10 @@ namespace kai
     {
     }
 
-    bool _ROS_fastLio::init(const json &j)
+    bool _ROS_fastLio::loadConfig(void)
     {
-        IF_F(!this->_NavBase::init(j));
+        IF_F(!this->_NavBase::loadConfig());
+        json &j = *m_pJ;
 
         DEL(m_pTros);
         m_pTros = createThread(jK(j, "threadROS"), "threadROS");
@@ -28,18 +29,21 @@ namespace kai
 
         rclcpp::init(0, NULL);
         m_pROSnode = std::make_shared<ROS_fastLio>();
-        return m_pROSnode->init(jK(j, "node"));
+        const json *pJnode = jK(j, "node");
+        return pJnode && m_pROSnode->init(*pJnode);
     }
 
-    bool _ROS_fastLio::link(const json &j, ModuleMgr *pM)
+    bool _ROS_fastLio::link(void)
     {
-        IF_F(!this->_NavBase::link(j, pM));
+        IF_F(!this->_NavBase::link());
+        const json &j = *m_pJ;
+        IF_F(!m_pTros || !m_pTros->link());
 
         string n;
 #ifdef WITH_UNIVERSE
         n = "";
         jKv(j, "_PCframe", n);
-        m_pPCframe = (_PCframe *)(pM->findModule(n));
+        m_pPCframe = (_PCframe *)(m_pM->findModule(n));
         m_pROSnode->m_pPCframe = m_pPCframe;
 #endif
 
@@ -51,7 +55,7 @@ namespace kai
         NULL_F(m_pT);
         IF_F(!m_pT->startThread(getUpdate, this));
 
-        NULL__(m_pTros);
+        NULL_F(m_pTros);
         IF_F(!m_pTros->startThread(getUpdateROS, this));
 
         return true;

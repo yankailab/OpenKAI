@@ -177,8 +177,7 @@
 		},
 		"_JSONbase": "",
 		"_APmav_base": "apBase",
-		"estD": 1,
-		"fConfig": "/home/kai/test/geoFence.json"
+		"estD": 1
 	},
 
 
@@ -265,7 +264,6 @@
 		"dTexpireCell": 300000000,
 		"dTexpirePCL": 500000000,
 		"nPminBuild":100,
-		"fConfig": "/home/kai/test/octGrid.json",
 		"vGeometryBase": [
 			"pcFile",
 			"scPC"

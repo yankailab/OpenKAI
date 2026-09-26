@@ -19,9 +19,10 @@ namespace kai
 		m_vExt.clear();
 	}
 
-	bool _FileBase::init(const json &j)
+	bool _FileBase::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "vExt", m_vExt);
 

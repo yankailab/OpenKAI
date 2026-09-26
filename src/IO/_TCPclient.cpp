@@ -21,9 +21,10 @@ namespace kai
 		close();
 	}
 
-	bool _TCPclient::init(const json &j)
+	bool _TCPclient::loadConfig(void)
 	{
-		IF_F(!this->_IObase::init(j));
+		IF_F(!this->_IObase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "addr", m_strAddr);
 		jKv(j, "port", m_port);

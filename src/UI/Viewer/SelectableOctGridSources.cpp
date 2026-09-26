@@ -46,10 +46,16 @@ namespace kai
 				if (!module)
 				{
 					// Disabled modules can remain in a shared application's viewer config.
-					const auto &config = manager->findJson(style.m_name);
+					const json *pConfig = manager->findJson(style.m_name);
 					int enabled = 1;
-					jKv(config, "bON", enabled);
-					if (config.is_object() && !enabled) continue;
+					if (pConfig)
+					{
+						jKv(*pConfig, "bON", enabled);
+					}
+					if (pConfig && pConfig->is_object() && !enabled)
+					{
+						continue;
+					}
 					return fail("Viewer source not found: " + style.m_name);
 				}
 				if (grid)

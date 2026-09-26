@@ -36,8 +36,8 @@ namespace kai
 		_GeometryViewerBase();
 		virtual ~_GeometryViewerBase();
 
-		virtual bool init(const json &j);
-		virtual bool link(const json &j, ModuleMgr *pM);
+		virtual bool loadConfig(void) override;
+		virtual bool link(void) override;
 		virtual bool start(void);
 		virtual bool check(void);
 
@@ -73,6 +73,7 @@ namespace kai
 		// instance and buffer
 		GEOMETRY_RINGBUF<GEOMETRY_POINT> m_grPt;
         GEOMETRY_RINGBUF<GEOMETRY_LINE> m_grLn;
+		bool m_bGeometryBuffers = true;
 		int m_nPbuf = 200000;
 		int m_nLbuf = 100000;
 		uint64_t m_dTexpire = 0; // nanoseconds; zero disables expiry

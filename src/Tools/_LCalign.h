@@ -22,16 +22,15 @@ namespace kai
 		_LCalign();
 		virtual ~_LCalign();
 
-		virtual bool init(const json &j);
-		virtual bool link(const json &j, ModuleMgr *pM);
+		virtual bool loadConfig(void) override;
+		virtual bool link(void) override;
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 		virtual void console(const json &j, void *pJSONbase);
 		//		virtual void draw(void *pMat);
 
-		virtual bool loadConfig(const string &fName);
-		virtual bool saveConfig(const string &fName);
+		virtual bool saveConfig(void) override;
 
 		void updateMatrices(void);
 		bool L2C(const Vector2i &vSizeImg, const Vector3f &vPi, Vector2i &vPo);
@@ -62,8 +61,6 @@ namespace kai
 		_PointCloud *m_pPCin = nullptr;
 		_VisionBase *m_pV = nullptr;
 		_IMUbase *m_pIMU = nullptr;
-
-		string m_fName = ""; // calib json save
 
 		// Camera
 		// intrinsics

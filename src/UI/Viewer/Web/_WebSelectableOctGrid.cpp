@@ -11,9 +11,10 @@ namespace kai
 	{ for (size_t i = 0; i < m_streams.size(); ++i) m_streams[i].type = webselectableoctgrid::Types[i]; }
 	_WebSelectableOctGrid::~_WebSelectableOctGrid() { stop(); }
 
-	bool _WebSelectableOctGrid::init(const json &j)
+	bool _WebSelectableOctGrid::loadConfig(void)
 	{
-		IF_F(!_GeometryViewerBase::init(j));
+		IF_F(!_GeometryViewerBase::loadConfig());
+		const json &j = *m_pJ;
 		jKv(j, "host", m_host);
 		jKv(j, "port", m_port);
 		jKv(j, "webRoot", m_root);
@@ -36,11 +37,12 @@ namespace kai
 				"Viewer assets not found in webRoot: " + m_root);
 		return true;
 	}
-	bool _WebSelectableOctGrid::link(const json &j, ModuleMgr *manager)
+	bool _WebSelectableOctGrid::link(void)
 	{
-		IF_F(!_GeometryViewerBase::link(j, manager));
+		IF_F(!_GeometryViewerBase::link());
+		const json &j = *m_pJ;
 		string error;
-		IF_Le_F(!m_sources.link(j, manager, m_nPbuf, m_nLbuf, m_nCbuf, error), error);
+		IF_Le_F(!m_sources.link(j, m_pM, m_nPbuf, m_nLbuf, m_nCbuf, error), error);
 		IF_Le_F(m_sources.m_vGeometry.size() + m_sources.m_vGrid.size() > 1024, "Viewer source limit is 1024");
 		for (auto type : webselectableoctgrid::Types)
 		{

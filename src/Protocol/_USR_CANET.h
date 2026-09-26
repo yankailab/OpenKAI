@@ -16,8 +16,8 @@ namespace kai
 		_USR_CANET();
 		~_USR_CANET();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool loadConfig(void) override;
+		virtual bool link(void) override;
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void console(void *pConsole);

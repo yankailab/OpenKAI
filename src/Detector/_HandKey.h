@@ -44,7 +44,7 @@ namespace kai
 		_HandKey();
 		~_HandKey();
 
-		virtual bool init(const json& j);
+		virtual bool loadConfig(void) override;
 		virtual bool start(void);
 		virtual void draw(void *pMat);
 		virtual bool check(void);

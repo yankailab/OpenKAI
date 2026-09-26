@@ -21,8 +21,8 @@ namespace kai
 		_SLAMbase();
 		virtual ~_SLAMbase();
 
-		bool init(const json &j) override;
-		bool link(const json &j, ModuleMgr *pM) override;
+		bool loadConfig(void) override;
+		bool link(void) override;
 		bool start(void) override;
 		void stop(void) override;
 		bool check(void) override;

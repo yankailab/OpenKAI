@@ -22,9 +22,10 @@ namespace kai
 	{
 	}
 
-	bool _APmav_visionEstimate::init(const json &j)
+	bool _APmav_visionEstimate::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "bPos", m_bPos);
 		jKv(j, "bSpd", m_bSpd);
@@ -47,20 +48,21 @@ namespace kai
 		return true;
 	}
 
-	bool _APmav_visionEstimate::link(const json &j, ModuleMgr *pM)
+	bool _APmav_visionEstimate::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
+		const json &j = *m_pJ;
 
 		string n;
 
 		n = "";
 		jKv(j, "_APmav_base", n);
-		m_pAP = (_APmav_base *)(pM->findModule(n));
+		m_pAP = (_APmav_base *)(m_pM->findModule(n));
 		NULL_F(m_pAP);
 
 		n = "";
 		jKv(j, "_NavBase", n);
-		m_pNav = (_NavBase *)(pM->findModule(n));
+		m_pNav = (_NavBase *)(m_pM->findModule(n));
 		NULL_F(m_pNav);
 
 		return true;

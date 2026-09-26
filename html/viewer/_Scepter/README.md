@@ -10,7 +10,7 @@ Open `http://localhost:8080/` and click **Start**.
 Opening `index.html` directly also works: enter the backend host and ports, then
 click **Start** to navigate to the backend's served viewer.
 
-The point cloud uses `_WebGeometryBase`'s version-5 `/stream/points` and
+The point cloud uses `_WebGeometryBase`'s version-6 `/stream/points` and
 `/stream/lines` connections, as in the Orbbec viewer. Camera commands use the
 existing `_WSconsole` connection on port **7890**, with module **scepter**.
 There is no IMU panel or IMU connection. All three.js assets are vendored.
@@ -38,17 +38,15 @@ Integer-keyed maps use JSON pairs, such as `[[0,4000],[1,1000]]` for exposure ti
 and `[[0,true],[3,false]]` for AI frame types. Empty lists store no indexed entries;
 removing entries does not reset the corresponding camera values.
 
-**Load config** refreshes the current backend parameters, as in the Orbbec viewer.
-**Save config** writes a complete snapshot, including defaults, false values and
-empty collections, to `scepter.fConfig` (`jsonCfg/Scepter.controls.json` by default).
-The application file and module links are preserved. Browser commands cannot
-choose the save path. No edits are written to disk until **Save config** is used.
+**Refresh config** refreshes the current backend parameters, as in the Orbbec viewer.
+**Save config** updates the camera module in the original launch JSON file,
+including defaults, false values and empty collections. Module links, thread
+settings and unrelated modules are preserved. Browser commands cannot choose
+the save path. No edits are written to disk until **Save config** is used.
 
-At initialization, the C++ `loadConfig()` reads the snapshot over the application
-settings. Missing keys retain their current values. All resulting controls are
-sent to the camera when it opens. Calling C++ `loadConfig()` while open applies
-the full set immediately. An optional SDK preset is loaded before explicit
-controls. The sample snapshot file is created on the first save.
+`loadConfig()` reads the saved module settings on the next launch. All configured
+controls are sent when the camera opens. An optional SDK preset is loaded before
+explicit controls.
 
 ## JSON messages
 
@@ -56,13 +54,13 @@ Requests are JSON objects followed by `EOJ`; replies can span multiple WebSocket
 text messages. `module` and `requestId` route and correlate replies.
 
 ```json
-{"module":"scepter","cmd":"loadConfig","requestId":"camera-1"}
+{"module":"scepter","cmd":"getConfig","requestId":"camera-1"}
 {"module":"scepter","cmd":"setConfig","config":{"scTimeFilterThreshold":2}}
 {"module":"scepter","cmd":"saveConfig"}
 ```
 
 Replies contain `bSuccess`, `config`, `deviceOpen` and optional `errors`/`error`.
-`loadConfig` replies also contain the categorized control `schema`.
+`getConfig` replies also contain the categorized control `schema`.
 
 ## Checks
 
@@ -74,7 +72,7 @@ python3 test/scepter/browser.py build/OpenKAI
 ```
 
 Native checks use the installed SDK with simulated calls, requiring no camera.
-They cover frame handling, full save/reload, malformed commands, offline edits,
+They cover frame handling, configuration initialization and saving, malformed commands, offline edits,
 SDK rejections, exposure dependencies and stream restart. The browser check needs
 Chromium/Chrome and localhost sockets. It uses temporary ports/config/save files,
 checks the actual WSconsole connection, controls, persistence, fragmented replies

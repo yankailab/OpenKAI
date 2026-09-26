@@ -19,22 +19,23 @@ namespace kai
 	{
 	}
 
-	bool _Remap::init(const json &j)
+	bool _Remap::loadConfig(void)
 	{
-		IF_F(!_VisionBase::init(j));
+		IF_F(!_VisionBase::loadConfig());
 
 		return true;
 	}
 
-	bool _Remap::link(const json &j, ModuleMgr *pM)
+	bool _Remap::link(void)
 	{
-		IF_F(!this->_VisionBase::link(j, pM));
+		IF_F(!this->_VisionBase::link());
+		const json &j = *m_pJ;
 
 		string n;
 
 		n = "";
 		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(pM->findModule(n));
+		m_pV = (_VisionBase *)(m_pM->findModule(n));
 		NULL_F(m_pV);
 
 		n = "";

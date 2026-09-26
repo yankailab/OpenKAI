@@ -14,9 +14,10 @@ namespace kai
 	{
 	}
 
-	bool _APmav_rcChannel::init(const json &j)
+	bool _APmav_rcChannel::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "iRCmodeChan", m_rcMode.m_iChan);
 		jKv<int>(j, "vRCmodeDiv", m_rcMode.m_vDiv);
@@ -33,13 +34,14 @@ namespace kai
 		return true;
 	}
 
-	bool _APmav_rcChannel::link(const json &j, ModuleMgr *pM)
+	bool _APmav_rcChannel::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_APmav_base", n);
-		m_pAP = (_APmav_base *)(pM->findModule(n));
+		m_pAP = (_APmav_base *)(m_pM->findModule(n));
 		NULL_F(m_pAP);
 
 		return true;

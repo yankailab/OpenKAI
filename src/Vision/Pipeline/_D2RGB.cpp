@@ -19,9 +19,10 @@ namespace kai
 	{
 	}
 
-	bool _D2RGB::init(const json &j)
+	bool _D2RGB::loadConfig(void)
 	{
-		IF_F(!_RGBDbase::init(j));
+		IF_F(!_RGBDbase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "nHistLev", m_nHistLev);
 		jKv(j, "iHistFrom", m_iHistFrom);
@@ -31,13 +32,14 @@ namespace kai
 		return true;
 	}
 
-	bool _D2RGB::link(const json &j, ModuleMgr *pM)
+	bool _D2RGB::link(void)
 	{
-		IF_F(!this->_RGBDbase::link(j, pM));
+		IF_F(!this->_RGBDbase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_RGBDbase", n);
-		m_pVd = (_RGBDbase *)(pM->findModule(n));
+		m_pVd = (_RGBDbase *)(m_pM->findModule(n));
 		NULL_F(m_pVd);
 
 		return true;

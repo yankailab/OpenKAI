@@ -21,7 +21,7 @@ namespace kai
 		_WindowCV();
 		virtual ~_WindowCV();
 
-		virtual bool init(const json &j);
+		virtual bool loadConfig(void) override;
 		virtual bool start(void);
 
 	protected:

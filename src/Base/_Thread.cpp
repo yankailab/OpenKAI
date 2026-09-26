@@ -51,9 +51,10 @@ namespace kai
 		pthread_cond_destroy(&m_wakeupSignal);
 	}
 
-	bool _Thread::init(const json &j)
+	bool _Thread::loadConfig(void)
 	{
-		IF_F(!this->BASE::init(j));
+		IF_F(!this->BASE::loadConfig());
+		json &j = *m_pJ;
 
 		float FPS = DEFAULT_FPS;
 		jKv(j, "FPS", FPS);
@@ -62,16 +63,28 @@ namespace kai
 		return true;
 	}
 
-	bool _Thread::link(const json &j, ModuleMgr *pM)
+	bool _Thread::saveConfig(void)
 	{
-		IF_F(!this->BASE::link(j, pM));
+		if (!BASE::saveConfig())
+		{
+			return false;
+		}
+
+		(*m_pJ)["FPS"] = m_targetFPS;
+		return m_pJcfg->saveToFile();
+	}
+
+	bool _Thread::link(void)
+	{
+		IF_F(!this->BASE::link());
+		const json &j = *m_pJ;
 
 		vector<string> vRunT;
 		jKv(j, "vRunThread", vRunT);
 		m_vRunThread.clear();
 		for (string s : vRunT)
 		{
-			_Thread *pT = (_Thread *)(pM->findModule(s));
+			_Thread *pT = (_Thread *)(m_pM->findModule(s));
 			if (!pT)
 			{
 				LOG_I("Instance not found: " + s);

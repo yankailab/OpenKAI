@@ -20,7 +20,7 @@ namespace kai
 		_NavBase();
 		virtual ~_NavBase();
 
-		virtual bool init(const json& j);
+		virtual bool loadConfig(void) override;
 		virtual void console(void *pConsole);
 
 		virtual float confidence(void);

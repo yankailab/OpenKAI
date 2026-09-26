@@ -19,9 +19,10 @@ namespace kai
 		m_packetW.release();
 	}
 
-	bool _IObase::init(const json &j)
+	bool _IObase::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
 		int nPacket = 256;
 		int nPbuffer = 2000;
@@ -32,9 +33,9 @@ namespace kai
 		return true;
 	}
 
-	bool _IObase::link(const json &j, ModuleMgr *pM)
+	bool _IObase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
 
 		return true;
 	}

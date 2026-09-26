@@ -21,9 +21,10 @@ namespace kai
 	{
 	}
 
-	bool PID::init(const json &j)
+	bool PID::loadConfig(void)
 	{
-		IF_F(!this->BASE::init(j));
+		IF_F(!this->BASE::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "P", m_P);
 		jKv(j, "I", m_I);

@@ -11,9 +11,10 @@ namespace kai
     {
     }
 
-    bool _Xbee::init(const json &j)
+    bool _Xbee::loadConfig(void)
     {
-        IF_F(!this->_ProtocolBase::init(j));
+        IF_F(!this->_ProtocolBase::loadConfig());
+        const json &j = *m_pJ;
 
         string addr = "";
         jKv(j, "myAddr", addr);
@@ -22,9 +23,9 @@ namespace kai
         return true;
     }
 
-    bool _Xbee::link(const json &j, ModuleMgr *pM)
+    bool _Xbee::link(void)
     {
-        IF_F(!this->_ProtocolBase::link(j, pM));
+        IF_F(!this->_ProtocolBase::link());
 
         return true;
     }

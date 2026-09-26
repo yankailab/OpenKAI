@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 	google::InitGoogleLogging(argv[0]);
 #endif
 
-	if (!pMgr->parseJsonFile(argStr))
+	if (!pMgr->loadJsonFiles(argStr))
 	{
 		printf("JSON file parse failed: %s\n", argStr.c_str());
 		goto exit;

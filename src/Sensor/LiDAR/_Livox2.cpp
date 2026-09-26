@@ -23,9 +23,10 @@ namespace kai
     {
     }
 
-    bool _Livox2::init(const json &j)
+    bool _Livox2::loadConfig(void)
     {
-        IF_F(!this->_PointCloud::init(j));
+        IF_F(!this->_PointCloud::loadConfig());
+        const json &j = *m_pJ;
 
         // lvx select
         jKv(j, "lvxSN", m_lvxSN);
@@ -65,75 +66,76 @@ namespace kai
 
         // Device Type Query
         DEL(m_pTdeviceQueryR);
-        m_pTdeviceQueryR = createThread(jK(j, "TdeviceQueryR"), "TdeviceQueryR");
+        m_pTdeviceQueryR = createThread(jK(*m_pJ, "TdeviceQueryR"), "TdeviceQueryR");
         NULL_F(m_pTdeviceQueryR);
 
         // Control Command
         DEL(m_pTctrlCmdW);
-        m_pTctrlCmdW = createThread(jK(j, "TctrlCmdW"), "TctrlCmdW");
+        m_pTctrlCmdW = createThread(jK(*m_pJ, "TctrlCmdW"), "TctrlCmdW");
         NULL_F(m_pTctrlCmdW);
 
         DEL(m_pTctrlCmdR);
-        m_pTctrlCmdR = createThread(jK(j, "TctrlCmdR"), "TctrlCmdR");
+        m_pTctrlCmdR = createThread(jK(*m_pJ, "TctrlCmdR"), "TctrlCmdR");
         NULL_F(m_pTctrlCmdR);
 
         // Push command
         DEL(m_pTpushCmdR);
-        m_pTpushCmdR = createThread(jK(j, "TpushCmdR"), "TpushCmdR");
+        m_pTpushCmdR = createThread(jK(*m_pJ, "TpushCmdR"), "TpushCmdR");
         NULL_F(m_pTpushCmdR);
 
         // Point Cloud Data
         DEL(m_pTpclR);
-        m_pTpclR = createThread(jK(j, "TpclR"), "TpclR");
+        m_pTpclR = createThread(jK(*m_pJ, "TpclR"), "TpclR");
         NULL_F(m_pTpclR);
 
         // IMU Data
         DEL(m_pTimuR);
-        m_pTimuR = createThread(jK(j, "TimuR"), "TimuR");
+        m_pTimuR = createThread(jK(*m_pJ, "TimuR"), "TimuR");
         NULL_F(m_pTimuR);
 
         return true;
     }
 
-    bool _Livox2::link(const json &j, ModuleMgr *pM)
+    bool _Livox2::link(void)
     {
-        IF_F(!this->_PointCloud::link(j, pM));
+        IF_F(!this->_PointCloud::link());
+        const json &j = *m_pJ;
 
         string n;
 
         n = "";
         jKv(j, "_UDPdeviceQuery", n);
-        m_pUDPdeviceQuery = (_UDP *)(pM->findModule(n));
+        m_pUDPdeviceQuery = (_UDP *)(m_pM->findModule(n));
         NULL_F(m_pUDPdeviceQuery);
 
         n = "";
         jKv(j, "_UDPctrlCmd", n);
-        m_pUDPctrlCmd = (_UDP *)(pM->findModule(n));
+        m_pUDPctrlCmd = (_UDP *)(m_pM->findModule(n));
         NULL_F(m_pUDPctrlCmd);
 
         n = "";
         jKv(j, "_UDPpushCmd", n);
-        m_pUDPpushCmd = (_UDP *)(pM->findModule(n));
+        m_pUDPpushCmd = (_UDP *)(m_pM->findModule(n));
         NULL_F(m_pUDPpushCmd);
 
         n = "";
         jKv(j, "_UDPpcl", n);
-        m_pUDPpcl = (_UDP *)(pM->findModule(n));
+        m_pUDPpcl = (_UDP *)(m_pM->findModule(n));
         NULL_F(m_pUDPpcl);
 
         n = "";
         jKv(j, "_UDPimu", n);
-        m_pUDPimu = (_UDP *)(pM->findModule(n));
+        m_pUDPimu = (_UDP *)(m_pM->findModule(n));
         NULL_F(m_pUDPimu);
 
         // n = "";
         // jKv(j,"_IObaseLog",n);
-        // m_pUDPlog = (_IObase *)(pM->findModule(n));
+        // m_pUDPlog = (_IObase *)(m_pM->findModule(n));
         // NULL_F(m_pUDPlog);
 
         n = "";
         jKv(j, "_IMUbase", n);
-        m_pIMU = (_IMUbase *)(pM->findModule(n));
+        m_pIMU = (_IMUbase *)(m_pM->findModule(n));
 
         return true;
     }

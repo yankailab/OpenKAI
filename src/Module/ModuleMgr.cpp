@@ -14,23 +14,30 @@ namespace kai
 		cleanAll();
 	}
 
-	bool ModuleMgr::parseJsonFile(const string &fName)
+	bool ModuleMgr::loadJsonFiles(const string &fName)
 	{
+		// Existing modules retain pointers into their owning configuration files.
+		if (!m_vModules.empty())
+		{
+			LOG_E("Cannot reload JSON files while modules exist");
+			return false;
+		}
+
 		JsonCfg jCfg;
-		IF_F(!jCfg.parseJsonFile(fName));
+		IF_F(!jCfg.readFromFile(fName));
 
 		m_vJcfg.clear();
 		m_vJcfg.push_back(jCfg);
 
-		const json& jApp = jK(jCfg.getJson(), "APP");
-		IF__(!jApp.is_object(), true);
+		const json *pJapp = jK(*jCfg.getJson(), "APP");
+		IF__(!pJapp || !pJapp->is_object(), true);
 
 		vector<string> vJsonFiles;
-		jKv(jApp, "vInclude", vJsonFiles);
+		jKv(*pJapp, "vInclude", vJsonFiles);
 		for (string f : vJsonFiles)
 		{
 			JsonCfg jCi;
-			IF_CONT(!jCi.parseJsonFile(f));
+			IF_CONT(!jCi.readFromFile(f));
 
 			m_vJcfg.push_back(jCi);
 		}
@@ -38,9 +45,20 @@ namespace kai
 		return true;
 	}
 
-	string ModuleMgr::getName(void)
+	JsonCfg *ModuleMgr::findJsonCfg(const string &name)
 	{
-		return m_name;
+		for (size_t i = 0; i < m_vJcfg.size(); i++)
+		{
+			JsonCfg *pJc = &m_vJcfg[i];
+			const json *pJ = jK(*pJc->getJson(), name);
+
+			if (pJ && pJ->is_object())
+			{
+				return pJc;
+			}
+		}
+
+		return nullptr;
 	}
 
 	bool ModuleMgr::createAll(void)
@@ -50,7 +68,7 @@ namespace kai
 		for (size_t i = 0; i < m_vJcfg.size(); i++)
 		{
 			JsonCfg *pJc = &m_vJcfg[i];
-			const json& J = pJc->getJson();
+			const json &J = *pJc->getJson();
 			for (auto it = J.begin(); it != J.end(); it++)
 			{
 				const json &Ji = it.value();
@@ -86,15 +104,16 @@ namespace kai
 					continue;
 				}
 
-				BASE *pM = md.createInstance(c);
-				if (pM == nullptr)
+				BASE *pB = md.createInstance(c);
+				if (pB == nullptr)
 				{
 					LOG_I("Instance not created: " + n);
 					continue;
 				}
 
-				pM->setName(n);
-				m_vModules.push_back(pM);
+				pB->setModuleMgr(this);
+				pB->setName(n);
+				m_vModules.push_back(pB);
 				LOG_I("Instance created: " + n);
 			}
 		}
@@ -106,16 +125,9 @@ namespace kai
 	{
 		for (BASE *pB : m_vModules)
 		{
-			const json &j = findJson(pB->getName());
-			if (!j.is_object())
+			if (!pB->loadConfig())
 			{
-				LOG_E(pB->getName() + " is not an JSON object");
-				return false;
-			}
-
-			if (!pB->init(j))
-			{
-				LOG_E(pB->getName() + ".init() failed");
+				LOG_E(pB->getName() + ".loadConfig() failed");
 				return false;
 			}
 
@@ -129,14 +141,7 @@ namespace kai
 	{
 		for (BASE *pB : m_vModules)
 		{
-			const json &j = findJson(pB->getName());
-			if (!j.is_object())
-			{
-				LOG_E(pB->getName() + " is not an json object");
-				return false;
-			}
-
-			if (!pB->link(j, this))
+			if (!pB->link())
 			{
 				LOG_E(pB->getName() + ".link() failed");
 				return false;
@@ -164,19 +169,19 @@ namespace kai
 		return true;
 	}
 
-	void ModuleMgr::resumeAll(void)
-	{
-		for (BASE *pM : m_vModules)
-		{
-			pM->resume();
-		}
-	}
-
 	void ModuleMgr::pauseAll(void)
 	{
 		for (BASE *pM : m_vModules)
 		{
 			pM->pause();
+		}
+	}
+
+	void ModuleMgr::resumeAll(void)
+	{
+		for (BASE *pM : m_vModules)
+		{
+			pM->resume();
 		}
 	}
 
@@ -230,29 +235,32 @@ namespace kai
 		return nullptr;
 	}
 
-	const json& ModuleMgr::findJson(const string &name)
+	json* ModuleMgr::findJson(const string &name)
 	{
 		for (size_t i = 0; i < m_vJcfg.size(); i++)
 		{
 			JsonCfg *pJc = &m_vJcfg[i];
-			const json& j = jK(pJc->getJson(), name);
+			json *pJ = jK(*pJc->getJson(), name);
 
-			if (j.is_object())
-				return j;
+			if (pJ && pJ->is_object())
+			{
+				return pJ;
+			}
 		}
 
-		return m_jNull;
+		return nullptr;
 	}
 
 	bool ModuleMgr::addModule(void *pModule, const string &name)
 	{
 		NULL_F(pModule);
 		IF_Le_F(findModule(name), "Module already existed: " + name);
-		IF_Le_F(!findJson(name).is_object(), "Module not found in JSON: " + name);
+		IF_Le_F(!findJson(name), "Module not found in JSON: " + name);
 
-		BASE *pM = static_cast<BASE *>(pModule);
-		pM->setName(name);
-		m_vModules.push_back(pM);
+		BASE *pB = static_cast<BASE *>(pModule);
+		pB->setModuleMgr(this);
+		pB->setName(name);
+		m_vModules.push_back(pB);
 		LOG_I("Added: " + name);
 
 		return true;
@@ -260,12 +268,20 @@ namespace kai
 
 	bool ModuleMgr::bStdErr(void)
 	{
-		const json& j = findJson("APP");
-		IF__(!j.is_object(), true);
+		const json *pJ = findJson("APP");
+		if (!pJ)
+		{
+			return true;
+		}
 
-		bool bStdErr;
-		jKv(j, "bStdErr", bStdErr);
+		bool bStdErr = true;
+		jKv(*pJ, "bStdErr", bStdErr);
 		return bStdErr;
+	}
+
+	string ModuleMgr::getName(void)
+	{
+		return m_name;
 	}
 
 }

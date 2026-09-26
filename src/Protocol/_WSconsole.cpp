@@ -17,25 +17,26 @@ namespace kai
 	{
 	}
 
-	bool _WSconsole::init(const json &j)
+	bool _WSconsole::loadConfig(void)
 	{
-		IF_F(!this->_JSONbase::init(j));
+		IF_F(!this->_JSONbase::loadConfig());
 
 		// jKv(j, "dirSave", m_dirSave);
 
 		return true;
 	}
 
-	bool _WSconsole::link(const json &j, ModuleMgr *pM)
+	bool _WSconsole::link(void)
 	{
-		IF_F(!this->_JSONbase::link(j, pM));
+		IF_F(!this->_JSONbase::link());
+		const json &j = *m_pJ;
 
 		vector<string> vB;
 		jKv(j, "vBASE", vB);
 		m_vpB.clear();
 		for (string n : vB)
 		{
-			BASE *pB = (BASE *)(pM->findModule(n));
+			BASE *pB = (BASE *)(m_pM->findModule(n));
 			IF_CONT(!pB);
 
 			m_vpB.push_back(pB);

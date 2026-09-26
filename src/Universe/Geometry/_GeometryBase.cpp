@@ -18,39 +18,28 @@ namespace kai
     {
     }
 
-    bool _GeometryBase::init(const json &j)
+    bool _GeometryBase::loadConfig(void)
     {
-        IF_F(!this->_ReferenceFrame::init(j));
+        IF_F(!this->_ReferenceFrame::loadConfig());
 
         return true;
     }
 
-    bool _GeometryBase::link(const json &j, ModuleMgr *pM)
+    bool _GeometryBase::link(void)
     {
-        IF_F(!this->_ReferenceFrame::link(j, pM));
+        IF_F(!this->_ReferenceFrame::link());
 
         return true;
     }
 
-    bool _GeometryBase::loadConfig(json *pJ, string fName)
+    bool _GeometryBase::saveConfig(void)
     {
-        json j;
-        IF_F(!this->_ReferenceFrame::loadConfig(&j, fName));
-
-        const json &jG = jK(j, "_GeometryBase");
-        if (jG.is_object())
+        if (!_ReferenceFrame::saveConfig())
         {
+            return false;
         }
 
-        if (pJ)
-            *pJ = std::move(j);
-
-        return true;
-    }
-
-    bool _GeometryBase::saveConfig(json &j, string fName)
-    {
-        return this->_ReferenceFrame::saveConfig(j, fName);
+        return m_pJcfg->saveToFile();
     }
 
     bool _GeometryBase::check(void)

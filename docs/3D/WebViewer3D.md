@@ -133,7 +133,7 @@ remaps its own selections when the new stream header arrives. The backend replie
 with `{"cmd":"setGridConfig","module":"octGrid","bSuccess":true}` after applying
 the change; invalid requests return `bSuccess: false` and leave the grid unchanged.
 The form displays the result. Update changes runtime configuration; the picker's
-**Send** continues to save the current root and selections through `fConfig`.
+**Send** saves the current root and selections into the original launch JSON file.
 
 ### Grid drawing mode
 
@@ -243,12 +243,13 @@ outside the displayed level range.
 
 ### Saving selected cells
 
-`_SelectableOctGrid::saveConfig(j, fName)` writes the root and selected IDs under
-`_SelectableOctGrid`, preserving other top-level sections already present in `j`:
+`_SelectableOctGrid::saveConfig()` writes the root and selected IDs into its
+module object in the launch JSON file, preserving the remaining configuration:
 
 ```json
 {
-  "_SelectableOctGrid": {
+  "octGrid": {
+    "class": "_SelectableOctGrid",
     "vPorigin": [0, 0, 0],
     "vRootCellSize": [2, 2, 2],
     "vSelectedCells": ["00000000000000000000000000000000"]
@@ -256,25 +257,20 @@ outside the displayed level range.
 }
 ```
 
-The file uses numeric coordinate arrays and the same exact hexadecimal ID byte
-order as picker commands. `loadConfig(pJ, fName)` restores this state and optionally
-returns the complete parsed document through `pJ`. Both methods use the module's
-`fConfig` setting when `fName` is empty. Initialization loads that file after the
-grid's root and maximum level are configured.
-Only the `_SelectableOctGrid` section is accepted for saved selections.
+The module uses numeric coordinate arrays and the same exact hexadecimal ID byte
+order as picker commands. `saveConfig()` updates `vPorigin`, `vRootCellSize` and
+`vSelectedCells` directly in the bound module object, preserving its other fields
+and every other module in the original launch JSON file. `loadConfig()` reads
+those values on the next launch.
 
-The `octGridCellSelect` handler calls `saveConfig()` after updating the selection.
-Configure a writable `octGrid.fConfig` path to retain it across backend restarts.
-After reopening the page, **Load** retrieves the backend's current selection,
-including selections restored from that file during startup. The button does
-not reread the file or change the running backend's root or occupancy.
+The `octGridCellSelect` handler calls `saveConfig()` after validating and updating
+the selection, and reports file write failures to the browser. The launch JSON
+file must be writable. After reopening the page, **Load** retrieves the backend's
+current selection without rereading a file or changing its root or occupancy.
 
-Load explicitly after initialization with grid updates stopped. A restored root
-change clears occupancy tied to the previous root and updates the published grid
-header. All fields and IDs are validated before applying changes; a failed load
-returns false and preserves the current root and selections. IDs must fit the
-configured `nMaxLevel`. An empty `vSelectedCells` array is saved and restored as
-an empty selection. File read/write failures also return false.
+Initialization validates cell IDs against the configured root and `nMaxLevel`.
+Invalid IDs cause initialization to fail. An absent or empty `vSelectedCells`
+array starts with an empty selection. File write failures return false.
 
 ### Viewer sources
 

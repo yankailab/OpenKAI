@@ -117,9 +117,10 @@ namespace kai
 		m_grPt.release();
 	}
 
-	bool _OctreeGrid::init(const json &j)
+	bool _OctreeGrid::loadConfig(void)
 	{
-		IF_F(!this->_OctreeBase::init(j));
+		IF_F(!this->_OctreeBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv<float>(j, "vPorigin", m_vPorigin);
 		jKv<float>(j, "vRootCellSize", m_vRootCellSize);
@@ -154,17 +155,18 @@ namespace kai
 		return true;
 	}
 
-	bool _OctreeGrid::link(const json &j, ModuleMgr *pM)
+	bool _OctreeGrid::link(void)
 	{
-		NULL_F(pM);
-		IF_F(!this->_OctreeBase::link(j, pM));
+		NULL_F(m_pM);
+		IF_F(!this->_OctreeBase::link());
+		const json &j = *m_pJ;
 
 		vector<string> vGn;
 		jKv(j, "vGeometryBase", vGn);
 		m_vpGb.clear();
 		for (string n : vGn)
 		{
-			auto *pSource = static_cast<BASE *>(pM->findModule(n));
+			auto *pSource = static_cast<BASE *>(m_pM->findModule(n));
 			IF_CONT(!pSource);
 			auto *pG = dynamic_cast<_GeometryBase *>(pSource);
 			IF_Le_F(!pG, "Grid input is not a geometry source: " + n);

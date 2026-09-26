@@ -18,14 +18,13 @@ namespace kai
 		_GeoFence();
 		~_GeoFence();
 
-		virtual bool init(const json &j);
-		virtual bool link(const json &j, ModuleMgr *pM);
+		virtual bool loadConfig(void) override;
+		virtual bool link(void) override;
 		virtual bool start(void);
 		virtual void console(void *pConsole);
 		virtual void console(const json &j, void *pJSONbase);
 
-		virtual bool loadConfig(json *pJ = nullptr, string fName = "");
-		virtual bool saveConfig(json &j, string fName = "");
+		virtual bool saveConfig(void) override;
 
 		virtual _GeoFence_TYPE getType(void);
 		void setPosHdg(const Vector2d& vP, float hdgDeg);	// lat lon

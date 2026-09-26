@@ -11,16 +11,16 @@ namespace kai
 	{
 	}
 
-	bool _OctreeBase::init(const json &j)
+	bool _OctreeBase::loadConfig(void)
 	{
-		IF_F(!this->_ReferenceFrame::init(j));
+		IF_F(!this->_ReferenceFrame::loadConfig());
 
 		return true;
 	}
 
-	bool _OctreeBase::link(const json &j, ModuleMgr *pM)
+	bool _OctreeBase::link(void)
 	{
-		IF_F(!this->_ReferenceFrame::link(j, pM));
+		IF_F(!this->_ReferenceFrame::link());
 
 		return true;
 	}

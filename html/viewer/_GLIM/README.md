@@ -141,12 +141,12 @@ stream. `nLiveFrames` also bounds unfinished points retained for PLY export.
 ## Parameters and point-cloud export
 
 Edit SLAM parameters while stopped. **Start** applies edited values before
-starting the session. **Save parameters** validates and applies the values and
-writes the module's `fConfig`: `jsonCfg/GLIM.controls.json` for Orbbec and
-`jsonCfg/glim_scepter/GLIM.controls.json` for Scepter.
-**Load saved** reloads that file while stopped. On process startup, an existing
-`fConfig` overrides the selected profile and optional module `parameters` object.
-Values applied without saving last only for the current process.
+starting the session. **Save parameters** validates and applies the values, then
+updates the module's `parameters` object in the original launch JSON file.
+**Refresh parameters** retrieves the current backend values. Startup loads the
+selected profile defaults and the module's optional `parameters` object. Saved
+values are therefore reused on the next launch. Runtime edits last for the
+current process until saved.
 
 The panel exposes input filtering and supported odometry/submap/global mapping
 controls. Distances and voxel sizes are metres; submap rotation thresholds are
@@ -180,12 +180,11 @@ Send JSON terminated with `EOJ` on the command connection:
 {"module":"GLIM","cmd":"getConfig","requestId":"5"}
 {"module":"GLIM","cmd":"setConfig","config":{"preprocess":{"distanceFar":5.0}},"requestId":"6"}
 {"module":"GLIM","cmd":"saveConfig","requestId":"7"}
-{"module":"GLIM","cmd":"loadConfig","requestId":"8"}
 {"module":"GLIM","cmd":"savePointCloud","requestId":"9"}
 {"module":"GLIM","cmd":"savePointCloud","path":"/tmp/glim-map.ply","requestId":"10"}
 ```
 
-`setConfig`, `saveConfig` and `loadConfig` require stopped tracking. `setConfig`
+`setConfig` and `saveConfig` require stopped tracking. `setConfig`
 and optional `saveConfig.config` accept partial nested objects and reject unknown
 fields, invalid ranges and incompatible minimum/target/neighbor point counts.
 `saveConfig` without `config` saves current values. Configuration replies include

@@ -22,9 +22,10 @@ namespace kai
 		close();
 	}
 
-	bool _WebSocket::init(const json &j)
+	bool _WebSocket::loadConfig(void)
 	{
-		IF_F(!this->_IObase::init(j));
+		IF_F(!this->_IObase::loadConfig());
+		const json &j = *m_pJ;
 
 		int nPacket = 1024;
 		int nPbuffer = 512;

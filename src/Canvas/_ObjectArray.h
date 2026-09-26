@@ -19,7 +19,7 @@ namespace kai
 		_ObjectArray();
 		virtual ~_ObjectArray();
 
-		virtual bool init(const json& j);
+		virtual bool loadConfig(void) override;
 		virtual bool start(void);
 		virtual void update(void);
 

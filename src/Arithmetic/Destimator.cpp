@@ -18,9 +18,9 @@ namespace kai
 	{
 	}
 
-	bool Destimator::init(const json &j)
+	bool Destimator::loadConfig(void)
 	{
-		IF_F(!this->BASE::init(j));
+		IF_F(!this->BASE::loadConfig());
 
 		return true;
 	}

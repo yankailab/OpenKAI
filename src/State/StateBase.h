@@ -24,8 +24,8 @@ namespace kai
 		StateBase();
 		~StateBase();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		bool loadConfig(void) override;
+		bool link(void) override;
 		virtual void console(void *pConsole);
 
 		virtual void reset(void);

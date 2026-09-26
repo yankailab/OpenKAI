@@ -22,8 +22,17 @@ namespace kai
 		BASE();
 		virtual ~BASE();
 
-		virtual bool init(const json &j);
-		virtual bool link(const json &j, ModuleMgr *pM);
+		void setModuleMgr(ModuleMgr *pM);
+		// Embedded objects bind to a node owned by the parent module's JsonCfg.
+		void setConfig(JsonCfg *pJcfg, json *pJ);
+		void setName(const string &n);
+		string getName(void);
+		string getClass(void);
+
+		virtual bool loadConfig(void);
+		virtual bool saveConfig(void);
+
+		virtual bool link(void);
 		virtual bool start(void);
 		virtual bool check(void);
 
@@ -35,18 +44,13 @@ namespace kai
 		virtual void console(void *pConsole);
 		virtual void console(const json &j, void *pJSONbase);
 
-		virtual bool loadConfig(json *pJ = nullptr, string fName = "");
-		virtual bool saveConfig(json &j, string fName = "");
-
-		void setName(const string &n);
-		string getName(void);
-		string getClass(void);
-
 	protected:
+		ModuleMgr *m_pM = nullptr;
+		JsonCfg *m_pJcfg = nullptr;
+		json *m_pJ = nullptr;
+
 		string m_class = "";
 		string m_name = "";
-
-		string m_fConfig = "";
 
 		bool m_bLog = false;
 	};

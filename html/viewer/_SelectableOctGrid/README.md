@@ -55,8 +55,9 @@ and preserves selected volumes within the new root.
 The **Grid cell picker** panel supports persistent red selections, Load, Clear,
 and Send. Load retrieves backend selections over the independent command socket
 and merges them without duplicate IDs, remapping volumes when root headers differ.
-Set the grid module's `fConfig` to persist selections across backend restarts.
-Saved selections use only the `_SelectableOctGrid` section. See the
+Send saves `vPorigin`, `vRootCellSize` and `vSelectedCells` directly into the grid
+module in its original launch JSON file. The file must be writable. Startup reads
+those saved values on the next launch. See the
 [picker behavior and JSON contract](../../../docs/3D/WebViewer3D.md#grid-cell-picker).
 
 Geometry uses `/stream/points`, `/stream/lines` and `/stream/cells` on the same

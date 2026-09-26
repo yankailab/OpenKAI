@@ -11,9 +11,10 @@ namespace kai
     {
     }
 
-    bool _ApDrive::init(const json &j)
+    bool _ApDrive::loadConfig(void)
     {
-        IF_F(!this->_AutopilotBase::init(j));
+        IF_F(!this->_AutopilotBase::loadConfig());
+        const json &j = *m_pJ;
 
         jKv(j, "nSpd", m_nSpd);
         jKv(j, "nDir", m_nDir);
@@ -24,12 +25,14 @@ namespace kai
         return true;
     }
 
-    bool _ApDrive::link(const json &j, ModuleMgr *pM)
+    bool _ApDrive::link(void)
     {
-        IF_F(!this->_AutopilotBase::link(j, pM));
+        IF_F(!this->_AutopilotBase::link());
+        const json &j = *m_pJ;
 
-        const json &jM = jK(j, "motors");
-        IF__(!jM.is_object(), true);
+        const json *pJM = jK(j, "motors");
+        IF__(!pJM || !pJM->is_object(), true);
+        const json &jM = *pJM;
 
         for (auto it = jM.begin(); it != jM.end(); it++)
         {
@@ -42,7 +45,7 @@ namespace kai
 
             string n = "";
             jKv(Ji, "_ActuatorBase", n);
-            m.m_pActuator = (_ActuatorBase *)(pM->findModule(n));
+            m.m_pActuator = (_ActuatorBase *)(m_pM->findModule(n));
 
             m_vM.push_back(m);
         }

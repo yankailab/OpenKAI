@@ -14,9 +14,9 @@ namespace kai
 		close();
 	}
 
-	bool _File::init(const json &j)
+	bool _File::loadConfig(void)
 	{
-		IF_F(!this->_IObase::init(j));
+		IF_F(!this->_IObase::loadConfig());
 
 		return true;
 	}

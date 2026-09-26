@@ -16,9 +16,9 @@ namespace kai
 	{
 	}
 
-	bool _TOFsense::init(const json &j)
+	bool _TOFsense::loadConfig(void)
 	{
-		IF_F(!this->_DistSensorBase::init(j));
+		IF_F(!this->_DistSensorBase::loadConfig());
 
 		m_frame.init(16);
 		m_bReady = 1;
@@ -26,13 +26,14 @@ namespace kai
 		return true;
 	}
 
-	bool _TOFsense::link(const json &j, ModuleMgr *pM)
+	bool _TOFsense::link(void)
 	{
-		IF_F(!this->_DistSensorBase::link(j, pM));
+		IF_F(!this->_DistSensorBase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(pM->findModule(n));
+		m_pIO = (_IObase *)(m_pM->findModule(n));
 		NULL_F(m_pIO);
 
 		return true;

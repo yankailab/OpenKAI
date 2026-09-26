@@ -6,10 +6,6 @@ window.onload = function () {
         cmdLCalign('update');
     };
 
-    $('#btnLoadCfg').onclick = function (e) {
-        cmdLCalign('loadCfg');
-    };
-
     $('#btnSaveCfg').onclick = function (e) {
         cmdLCalign('saveCfg');
     };
@@ -22,7 +18,6 @@ window.onload = function () {
         var cmd = {
             cmd: c,
             module: $('#mName').value,
-            fNameCfg: $('#fNameCfg').value,
             fNamePly: $('#dataDir').value + getTimestamp() + "_tLow" + $('#tempLow').value + "_tHigh" + $('#tempHigh').value + '.ply',
         };
 

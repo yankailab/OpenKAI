@@ -18,12 +18,26 @@ namespace kai
 
 	_WebSocketServer::~_WebSocketServer()
 	{
+		if (m_pT)
+		{
+			m_pT->join();
+		}
+		DEL(m_pTr);
+		for (wsClient &client : m_vClient)
+		{
+			delete client.m_pWS;
+		}
 		m_vClient.clear();
+		if (g_pWSserver == this)
+		{
+			g_pWSserver = nullptr;
+		}
 	}
 
-	bool _WebSocketServer::init(const json &j)
+	bool _WebSocketServer::loadConfig(void)
 	{
-		IF_F(!this->_IObase::init(j));
+		IF_F(!this->_IObase::loadConfig());
+		json &j = *m_pJ;
 
 		jKv(j, "wsMode", m_wsMode);
 		jKv(j, "host", m_host);
@@ -40,9 +54,10 @@ namespace kai
 		return true;
 	}
 
-	bool _WebSocketServer::link(const json &j, ModuleMgr *pM)
+	bool _WebSocketServer::link(void)
 	{
-		IF_F(!this->_IObase::link(j, pM));
+		IF_F(!this->_IObase::link());
+		IF_F(!m_pTr || !m_pTr->link());
 
 		return true;
 	}
@@ -167,9 +182,8 @@ namespace kai
 
 	void _WebSocketServer::cbOpen(ws_cli_conn_t client)
 	{
-		char *cli, *port;
-		cli = ws_getaddress(client);
-		port = ws_getport(client);
+		char *cli = ws_getaddress(client);
+		char *port = ws_getport(client);
 
 		IF_(m_nClientMax >= 0 && m_vClient.size() >= static_cast<size_t>(m_nClientMax));
 
@@ -182,11 +196,22 @@ namespace kai
 		jT["FPS"] = 1;
 		j["thread"] = jT;
 
+		wsClient c;
+		c.m_pJcfg = std::make_shared<JsonCfg>();
+		c.m_pJcfg->setJson(j);
+
 		_WebSocket *pWS = new _WebSocket();
-		pWS->init(j);
+		pWS->setModuleMgr(m_pM);
+		pWS->setName(j["name"].get<string>());
+		pWS->setConfig(c.m_pJcfg.get(), c.m_pJcfg->getJson());
+		if (!pWS->loadConfig() || !pWS->link())
+		{
+			delete pWS;
+			LOG_E("Accepted WebSocket configuration failed");
+			return;
+		}
 		pWS->setIOstatus(io_opened);
 
-		wsClient c;
 		c.init(pWS);
 		c.m_wsConn = client;
 

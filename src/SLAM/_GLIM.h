@@ -47,14 +47,13 @@ namespace kai
 	public:
 		_GLIM();
 		~_GLIM() override;
-		bool init(const json &j) override;
-		bool link(const json &j, ModuleMgr *pM) override;
+		bool loadConfig(void) override;
+		bool link(void) override;
 		using _SLAMbase::console;
 		void console(const json &j, void *pJSONbase) override;
 		json status(void);
 		GLIM_MAP_SNAPSHOT submapSnapshot(uint64_t knownSession, uint64_t knownRevision);
-		bool loadConfig(json *pJ = nullptr, string fName = "") override;
-		bool saveConfig(json &j, string fName = "") override;
+		bool saveConfig(void) override;
 		bool savePointCloud(const string &path, size_t &count, string &error);
 
 		// Stop tracking first. The finished map survives stopTracking().

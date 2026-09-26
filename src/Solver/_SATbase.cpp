@@ -20,18 +20,19 @@ namespace kai
 		clear();
 	}
 
-	bool _SATbase::init(const json &j)
+	bool _SATbase::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "fName", m_fName);
 
 		return true;
 	}
 
-	bool _SATbase::link(const json &j, ModuleMgr *pM)
+	bool _SATbase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
 
 		return true;
 	}

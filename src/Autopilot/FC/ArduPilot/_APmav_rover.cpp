@@ -11,16 +11,16 @@ namespace kai
 	{
 	}
 
-	bool _APmav_rover::init(const json &j)
+	bool _APmav_rover::loadConfig(void)
 	{
-		IF_F(!this->_APmav_base::init(j));
+		IF_F(!this->_APmav_base::loadConfig());
 
 		return true;
 	}
 
-	bool _APmav_rover::link(const json &j, ModuleMgr *pM)
+	bool _APmav_rover::link(void)
 	{
-		IF_F(!this->_APmav_base::link(j, pM));
+		IF_F(!this->_APmav_base::link());
 
 		return true;
 	}

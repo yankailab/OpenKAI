@@ -22,9 +22,10 @@ namespace kai
     {
     }
 
-    bool _XDynamics::init(const json &j)
+    bool _XDynamics::loadConfig(void)
     {
-        IF_F(!_RGBDbase::init(j));
+        IF_F(!_RGBDbase::loadConfig());
+        const json &j = *m_pJ;
 
         jKv(j, "xdDevType", m_xdDevType);
         jKv(j, "xdProductType", m_xdProductType);
@@ -58,9 +59,9 @@ namespace kai
         return true;
     }
 
-    bool _XDynamics::link(const json &j, ModuleMgr *pM)
+    bool _XDynamics::link(void)
     {
-        IF_F(!this->_RGBDbase::link(j, pM));
+        IF_F(!this->_RGBDbase::link());
 
         return true;
     }

@@ -19,9 +19,10 @@ namespace kai
 		DEL(m_pTpp);
 	}
 
-	bool _RGBDbase::init(const json &j)
+	bool _RGBDbase::loadConfig(void)
 	{
-		IF_F(!_VisionBase::init(j));
+		IF_F(!_VisionBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "devFPSd", m_devFPSd);
 		jKv<int>(j, "vSizeD", m_vSizeD);
@@ -43,20 +44,21 @@ namespace kai
 		return true;
 	}
 
-	bool _RGBDbase::link(const json &j, ModuleMgr *pM)
+	bool _RGBDbase::link(void)
 	{
-		IF_F(!this->_VisionBase::link(j, pM));
+		IF_F(!this->_VisionBase::link());
+		const json &j = *m_pJ;
 
 		string n;
 
 		n = "";
 		jKv(j, "_IMUbase", n);
-		m_pIMU = (_IMUbase *)(pM->findModule(n));
+		m_pIMU = (_IMUbase *)(m_pM->findModule(n));
 
 #ifdef WITH_UNIVERSE
 		n = "";
 		jKv(j, "_PointCloud", n);
-		m_pPCL = (_PointCloud *)(pM->findModule(n));
+		m_pPCL = (_PointCloud *)(m_pM->findModule(n));
 #endif
 
 		return true;

@@ -30,8 +30,9 @@ namespace kai
 		_ModuleBase();
 		virtual ~_ModuleBase();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		bool loadConfig(void) override;
+		bool saveConfig(void) override;
+		bool link(void) override;
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
@@ -48,7 +49,7 @@ namespace kai
 		virtual void onPause(void);
 		virtual void onResume(void);
 
-		virtual _Thread* createThread(const json& j, const string& name);
+		virtual _Thread* createThread(json *pJ, const string &name);
 		virtual _Thread* getThread(const string& name);
 
 	private:

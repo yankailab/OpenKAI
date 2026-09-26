@@ -24,9 +24,9 @@ export class SLAMControls {
     for (const cmd of ['stop', 'reset']) listen($(`#slam${cmd[0].toUpperCase()}${cmd.slice(1)}`), 'click', () => this.request(cmd));
     listen($('#savePointCloud'), 'click', () => this.request('savePointCloud'));
     listen($('#saveParameters'), 'click', () => {
-      const config = this.readConfig(); if (config) this.request('saveConfig', { config });
+      const config = this.readConfig(); if (config) this.request('setConfig', { config }, 'saveConfig');
     });
-    listen($('#loadParameters'), 'click', () => this.request('loadConfig'));
+    listen($('#refreshParameters'), 'click', () => this.request('getConfig'));
     listen($('#parameterForm'), 'submit', event => event.preventDefault());
     listen($('#parameterFields'), 'input', () => {
       this.dirty = true; $('#parameterStatus').textContent = 'Unsaved edits · applied on Start'; this.parameterDependencies();
@@ -69,7 +69,7 @@ export class SLAMControls {
     $('#slamModule').disabled = Boolean(busy);
     const editable = ready && !this.status.tracking && this.config;
     $('#parameterFields').disabled = !editable;
-    $('#saveParameters').disabled = $('#loadParameters').disabled = !editable;
+    $('#saveParameters').disabled = $('#refreshParameters').disabled = !editable;
   }
   request(cmd, fields = {}, followup = null) {
     if (!this.connected || (this.pending && this.pending.cmd !== 'getStatus')) return;
@@ -78,7 +78,7 @@ export class SLAMControls {
     const requestId = `glim-${++this.serial}`;
     if (!window.wsSendCmd({ ...fields, cmd, module, requestId })) return;
     this.pending = { cmd, module, requestId, followup, since: performance.now() };
-    const message = { start: 'Starting SLAM…', stop: 'Finishing and optimizing the map…', reset: 'Stopping and clearing the map…', getConfig: 'Loading SLAM parameters…', setConfig: 'Applying parameters…', saveConfig: 'Saving parameters…', loadConfig: 'Loading saved parameters…', savePointCloud: 'Saving point cloud on the backend…' }[cmd];
+    const message = { start: 'Starting SLAM…', stop: 'Finishing and optimizing the map…', reset: 'Stopping and clearing the map…', getConfig: 'Loading SLAM parameters…', setConfig: 'Applying parameters…', saveConfig: 'Saving parameters…', savePointCloud: 'Saving point cloud on the backend…' }[cmd];
     if (message) $('#commandStatus').textContent = message;
     this.buttons();
   }
@@ -88,12 +88,11 @@ export class SLAMControls {
     if (reply.status) { this.status = reply.status; this.display(reply.status); this.viewer.setSensorPose(reply.status); }
     if (reply.bSuccess === false) $('#commandStatus').textContent = reply.error || 'SLAM command failed';
     else {
-      if (reply.config && ['getConfig', 'setConfig', 'saveConfig', 'loadConfig'].includes(cmd)) this.showConfig(reply.config);
+      if (reply.config && ['getConfig', 'setConfig', 'saveConfig'].includes(cmd)) this.showConfig(reply.config);
       if (cmd === 'saveConfig') $('#parameterStatus').textContent = `Saved on backend: ${reply.configFile || 'configuration JSON'}`;
-      else if (cmd === 'loadConfig') $('#parameterStatus').textContent = 'Loaded saved parameters';
       else if (cmd === 'setConfig') $('#parameterStatus').textContent = 'Parameters applied · use Save parameters to keep them';
       if (cmd === 'savePointCloud') $('#exportStatus').textContent = `Saved ${(reply.points || 0).toLocaleString()} points on backend: ${reply.path}`;
-      if (cmd !== 'getStatus') $('#commandStatus').textContent = { start: 'SLAM started', stop: 'Stopped · map retained', reset: 'Map and pose cleared', getConfig: 'Parameters loaded', setConfig: 'Parameters applied', saveConfig: 'Parameters saved', loadConfig: 'Saved parameters loaded', savePointCloud: 'Point cloud saved' }[cmd] || 'Command completed';
+      if (cmd !== 'getStatus') $('#commandStatus').textContent = { start: 'SLAM started', stop: 'Stopped · map retained', reset: 'Map and pose cleared', getConfig: 'Parameters loaded', setConfig: 'Parameters applied', saveConfig: 'Parameters saved', savePointCloud: 'Point cloud saved' }[cmd] || 'Command completed';
       if (followup) this.request(followup);
     }
     this.buttons();

@@ -11,18 +11,19 @@ namespace kai
 	{
 	}
 
-	bool _AutopilotBase::init(const json &j)
+	bool _AutopilotBase::loadConfig(void)
 	{
-		IF_F(!this->_ReferenceFrame::init(j));
+		IF_F(!this->_ReferenceFrame::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "type", m_type);
 
 		return true;
 	}
 
-	bool _AutopilotBase::link(const json &j, ModuleMgr *pM)
+	bool _AutopilotBase::link(void)
 	{
-		IF_F(!this->_ReferenceFrame::link(j, pM));
+		IF_F(!this->_ReferenceFrame::link());
 
 		return true;
 	}

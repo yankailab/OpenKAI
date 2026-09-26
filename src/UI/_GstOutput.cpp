@@ -19,9 +19,10 @@ namespace kai
 	{
 	}
 
-	bool _GstOutput::init(const json &j)
+	bool _GstOutput::loadConfig(void)
 	{
-		IF_F(!this->_UIbase::init(j));
+		IF_F(!this->_UIbase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv<int>(j, "vSize", m_vSize);
 		IF_F(std::abs(m_vSize.prod()) <= 0);

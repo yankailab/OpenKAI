@@ -19,7 +19,7 @@ namespace kai
 		_PCremove();
 		virtual ~_PCremove();
 
-		virtual bool init(const json &j);
+		virtual bool loadConfig(void) override;
 		virtual bool start(void);
 		virtual bool check(void);
 

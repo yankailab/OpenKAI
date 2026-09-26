@@ -22,13 +22,12 @@ namespace kai
         _ReferenceFrame();
         virtual ~_ReferenceFrame();
 
-        virtual bool init(const json &j);
-        virtual bool link(const json &j, ModuleMgr *pM);
+        virtual bool loadConfig(void) override;
+        virtual bool link(void) override;
         virtual bool check(void);
         virtual void console(void *pConsole);
 
-        virtual bool loadConfig(json *pJ = nullptr, string fName = "");
-        virtual bool saveConfig(json &j, string fName = "");
+        virtual bool saveConfig(void) override;
 
         virtual void setPos(const Vector3d &vP);
         virtual void setPos(double x, double y, double z);

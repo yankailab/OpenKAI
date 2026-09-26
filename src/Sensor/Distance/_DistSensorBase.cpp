@@ -22,9 +22,10 @@ namespace kai
 		DEL_ARRAY(m_pDiv);
 	}
 
-	bool _DistSensorBase::init(const json &j)
+	bool _DistSensorBase::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "fovH", m_fovH);
 		IF_F(m_fovH <= 0 || m_fovH > 360);

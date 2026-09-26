@@ -85,16 +85,15 @@ namespace kai
 		_SelectableOctGrid();
 		virtual ~_SelectableOctGrid();
 
-		bool init(const json &j) override;
-		bool link(const json &j, ModuleMgr *pM) override;
+		bool loadConfig(void) override;
+		bool link(void) override;
 		bool start(void) override;
 		bool check(void) override;
 		void console(void *pConsole) override;
 		void console(const json &j, void *pJSONbase) override;
 
 		// Restoring a different root clears occupancy before publishing its header.
-		bool loadConfig(json *pJ = nullptr, string fName = "") override;
-		bool saveConfig(json &j, string fName = "") override;
+		bool saveConfig(void) override;
 		virtual const vector<UUID128> &getSelectedCells(void);
 
 		// Cell snapshots are the grid's only stream output.

@@ -23,9 +23,10 @@ namespace kai
 	{
 	}
 
-	bool _Canvas::init(const json &j)
+	bool _Canvas::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
 		// general
 		jKv(j, "minConfidence", m_minConfidence);

@@ -18,18 +18,18 @@ namespace kai
 	{
 	}
 
-	bool _SwarmBase::init(const json &j)
+	bool _SwarmBase::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
 
 //		jKv(j, "tExpire", m_tExpire);
 
 		return true;
 	}
 
-	bool _SwarmBase::link(const json &j, ModuleMgr *pM)
+	bool _SwarmBase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
 
 		return true;
 	}

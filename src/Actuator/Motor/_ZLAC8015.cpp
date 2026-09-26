@@ -17,9 +17,10 @@ namespace kai
 	{
 	}
 
-	bool _ZLAC8015::init(const json &j)
+	bool _ZLAC8015::loadConfig(void)
 	{
-		IF_F(!this->_ActuatorBase::init(j));
+		IF_F(!this->_ActuatorBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "iMode", m_iMode);
 		jKv(j, "tIntReadStatus", m_ieReadStatus.m_tInterval);
@@ -27,13 +28,14 @@ namespace kai
 		return true;
 	}
 
-	bool _ZLAC8015::link(const json &j, ModuleMgr *pM)
+	bool _ZLAC8015::link(void)
 	{
-		IF_F(!this->_ActuatorBase::link(j, pM));
+		IF_F(!this->_ActuatorBase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_Modbus", n);
-		m_pMB = (_Modbus *)(pM->findModule(n));
+		m_pMB = (_Modbus *)(m_pM->findModule(n));
 		IF_Le_F(!m_pMB, "_Modbuse not found: " + n);
 
 		return true;

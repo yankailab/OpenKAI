@@ -10,9 +10,10 @@ namespace kai
 	{
 	}
 
-	bool _PWMio::init(const json &j)
+	bool _PWMio::loadConfig(void)
 	{
-		IF_F(!this->_ProtocolBase::init(j));
+		IF_F(!this->_ProtocolBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "nCr", m_nCr);
 		jKv(j, "nCw", m_nCw);

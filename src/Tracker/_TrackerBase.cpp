@@ -19,9 +19,10 @@ namespace kai
 	{
 	}
 
-	bool _TrackerBase::init(const json &j)
+	bool _TrackerBase::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "trackerType", m_trackerType);
 		jKv(j, "margin", m_margin);
@@ -29,13 +30,14 @@ namespace kai
 		return true;
 	}
 
-	bool _TrackerBase::link(const json &j, ModuleMgr *pM)
+	bool _TrackerBase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(pM->findModule(n));
+		m_pV = (_VisionBase *)(m_pM->findModule(n));
 		NULL_F(m_pV);
 
 		return true;

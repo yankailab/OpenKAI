@@ -13,9 +13,9 @@ namespace kai
     {
     }
 
-    bool _TestJSON::init(const json &j)
+    bool _TestJSON::loadConfig(void)
     {
-        IF_F(!this->_TestBase::init(j));
+        IF_F(!this->_TestBase::loadConfig());
 
         // vector<Vector4i> vTest;
         // pK->a("avTest", &vTest);
@@ -23,20 +23,21 @@ namespace kai
         return true;
     }
 
-    bool _TestJSON::link(const json &j, ModuleMgr *pM)
+    bool _TestJSON::link(void)
     {
-        IF_F(!this->_TestBase::link(j, pM));
+        IF_F(!this->_TestBase::link());
+        const json &j = *m_pJ;
 
         string n;
 
         n = "";
         jKv(j, "_JSONbaseSender", n);
-        m_pJsender = (_JSONbase *)(pM->findModule(n));
+        m_pJsender = (_JSONbase *)(m_pM->findModule(n));
         NULL_F(m_pJsender);
 
         n = "";
         jKv(j, "_JSONbaseReceiver", n);
-        m_pJreceiver = (_JSONbase *)(pM->findModule(n));
+        m_pJreceiver = (_JSONbase *)(m_pM->findModule(n));
         NULL_F(m_pJreceiver);
 
         return true;

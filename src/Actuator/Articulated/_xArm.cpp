@@ -11,9 +11,10 @@ namespace kai
 	{
 	}
 
-	bool _xArm::init(const json &j)
+	bool _xArm::loadConfig(void)
 	{
-		IF_F(!this->_ActuatorBase::init(j));
+		IF_F(!this->_ActuatorBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "ip", m_ip);
 		jKv(j, "mode", m_mode);

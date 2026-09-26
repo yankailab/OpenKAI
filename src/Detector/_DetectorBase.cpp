@@ -15,9 +15,10 @@ namespace kai
 	{
 	}
 
-	bool _DetectorBase::init(const json &j)
+	bool _DetectorBase::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
 		// model
 		jKv(j, "fModel", m_fModel);
@@ -47,19 +48,20 @@ namespace kai
 		return true;
 	}
 
-	bool _DetectorBase::link(const json &j, ModuleMgr *pM)
+	bool _DetectorBase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
+		const json &j = *m_pJ;
 
 		string n;
 
 		n = "";
 		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(pM->findModule(n));
+		m_pV = (_VisionBase *)(m_pM->findModule(n));
 
 		n = "";
 		jKv(j, "_Canvas", n);
-		m_pCanvas = (_Canvas *)(pM->findModule(n));
+		m_pCanvas = (_Canvas *)(m_pM->findModule(n));
 
 		return true;
 	}

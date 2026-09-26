@@ -18,12 +18,14 @@ namespace kai
 	{
 	}
 
-	bool _RTCMcast::init(const json &j)
+	bool _RTCMcast::loadConfig(void)
 	{
-		IF_F(!this->_ProtocolBase::init(j));
+		IF_F(!this->_ProtocolBase::loadConfig());
+		const json &j = *m_pJ;
 
-		const json &jM = jK(j, "RTCMmsg");
-		IF__(!jM.is_object(), true);
+		const json *pJM = jK(j, "RTCMmsg");
+		IF__(!pJM || !pJM->is_object(), true);
+		const json &jM = *pJM;
 
 		for (auto it = jM.begin(); it != jM.end(); it++)
 		{
@@ -46,13 +48,14 @@ namespace kai
 		return true;
 	}
 
-	bool _RTCMcast::link(const json &j, ModuleMgr *pM)
+	bool _RTCMcast::link(void)
 	{
-		IF_F(!this->_ProtocolBase::link(j, pM));
+		IF_F(!this->_ProtocolBase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_IObaseSend", n);
-		m_pIOsend = (_IObase *)(pM->findModule(n));
+		m_pIOsend = (_IObase *)(m_pM->findModule(n));
 		NULL_F(m_pIOsend);
 
 		return true;

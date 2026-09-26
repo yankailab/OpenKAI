@@ -73,7 +73,6 @@
 
 	"scepter": {
 		"class": "_Scepter",
-		"fConfig": "jsonCfg/Scepter.controls.json",
 		"bON": true,
 		"bLog": false,
 		"thread": {

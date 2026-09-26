@@ -16,9 +16,9 @@ namespace kai
 	{
 	}
 
-	bool _BenewakeTF::init(const json &j)
+	bool _BenewakeTF::loadConfig(void)
 	{
-		IF_F(!this->_DistSensorBase::init(j));
+		IF_F(!this->_DistSensorBase::loadConfig());
 
 		m_frame.init(9);
 		m_bReady = true;
@@ -26,13 +26,14 @@ namespace kai
 		return true;
 	}
 
-	bool _BenewakeTF::link(const json &j, ModuleMgr *pM)
+	bool _BenewakeTF::link(void)
 	{
-		IF_F(!this->_DistSensorBase::link(j, pM));
+		IF_F(!this->_DistSensorBase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(pM->findModule(n));
+		m_pIO = (_IObase *)(m_pM->findModule(n));
 		NULL_F(m_pIO);
 
 		return true;

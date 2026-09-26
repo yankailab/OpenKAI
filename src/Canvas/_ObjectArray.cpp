@@ -16,9 +16,10 @@ namespace kai
 		DEL(m_pO);
 	}
 
-	bool _ObjectArray::init(const json &j)
+	bool _ObjectArray::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "nBuf", m_nBuf);
 		IF_F(m_nBuf <= 0);

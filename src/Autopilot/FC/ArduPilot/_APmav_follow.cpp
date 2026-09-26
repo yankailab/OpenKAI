@@ -20,9 +20,10 @@ namespace kai
 	{
 	}
 
-	bool _APmav_follow::init(const json &j)
+	bool _APmav_follow::loadConfig(void)
 	{
-		IF_F(!this->_APmav_move::init(j));
+		IF_F(!this->_APmav_move::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "iClass", m_iClass);
 		jKv<float>(j, "vPsp", m_vPsp);
@@ -42,8 +43,9 @@ namespace kai
 		IF_F(!m_fZ.init(nWmed, kTpred));
 		IF_F(!m_fH.init(nWmed, kTpred));
 
-		const json &jm = jK(j, "mount");
-		IF__(!jm.is_object(), true);
+		const json *pJm = jK(j, "mount");
+		IF__(!pJm || !pJm->is_object(), true);
+		const json &jm = *pJm;
 
 		jKv(jm, "bEnable", m_apMount.m_bEnable);
 
@@ -64,35 +66,36 @@ namespace kai
 		return true;
 	}
 
-	bool _APmav_follow::link(const json &j, ModuleMgr *pM)
+	bool _APmav_follow::link(void)
 	{
-		IF_F(!this->_APmav_move::link(j, pM));
+		IF_F(!this->_APmav_move::link());
+		const json &j = *m_pJ;
 
 		string n;
 
 		n = "";
 		jKv(j, "PIDpitch", n);
-		m_pPitch = (PID *)(pM->findModule(n));
+		m_pPitch = (PID *)(m_pM->findModule(n));
 
 		n = "";
 		jKv(j, "PIDroll", n);
-		m_pRoll = (PID *)(pM->findModule(n));
+		m_pRoll = (PID *)(m_pM->findModule(n));
 
 		n = "";
 		jKv(j, "PIDalt", n);
-		m_pAlt = (PID *)(pM->findModule(n));
+		m_pAlt = (PID *)(m_pM->findModule(n));
 
 		n = "";
 		jKv(j, "PIDyaw", n);
-		m_pYaw = (PID *)(pM->findModule(n));
+		m_pYaw = (PID *)(m_pM->findModule(n));
 
 		n = "";
 		jKv(j, "_TrackerBase", n);
-		m_pTracker = (_TrackerBase *)pM->findModule(n);
+		m_pTracker = (_TrackerBase *)m_pM->findModule(n);
 
 		n = "";
 		jKv(j, "_Canvas", n);
-		m_pCanvas = (_Canvas *)pM->findModule(n);
+		m_pCanvas = (_Canvas *)m_pM->findModule(n);
 
 		return true;
 	}

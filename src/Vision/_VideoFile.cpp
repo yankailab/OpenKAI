@@ -19,9 +19,10 @@ namespace kai
 	{
 	}
 
-	bool _VideoFile::init(const json &j)
+	bool _VideoFile::loadConfig(void)
 	{
-		IF_F(!_VisionBase::init(j));
+		IF_F(!_VisionBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "videoFile", m_videoFile);
 

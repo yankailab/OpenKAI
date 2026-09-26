@@ -20,9 +20,10 @@ namespace kai
         m_grLn.release();
     }
 
-    bool _Line::init(const json &j)
+    bool _Line::loadConfig(void)
     {
-        IF_F(!this->_GeometryBase::init(j));
+        IF_F(!this->_GeometryBase::loadConfig());
+        const json &j = *m_pJ;
 
         int nL = 1000;
         jKv(j, "nL", nL);

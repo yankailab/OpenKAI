@@ -46,9 +46,10 @@ namespace kai
 	{
 	}
 
-	bool _Mavlink::init(const json &j)
+	bool _Mavlink::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "mySystemID", m_mySystemID);
 		jKv(j, "myComponentID", m_myComponentID);
@@ -65,13 +66,14 @@ namespace kai
 		return true;
 	}
 
-	bool _Mavlink::link(const json &j, ModuleMgr *pM)
+	bool _Mavlink::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(pM->findModule(n));
+		m_pIO = (_IObase *)(m_pM->findModule(n));
 		NULL_F(m_pIO);
 
 		vector<string> vRoutings;
@@ -81,7 +83,7 @@ namespace kai
 		{
 			MAVLINK_PEER mP;
 			mP.init();
-			mP.m_pPeer = pM->findModule(n);
+			mP.m_pPeer = m_pM->findModule(n);
 			if (!mP.m_pPeer)
 			{
 				LOG_I("_Mavlink not found: " + n);

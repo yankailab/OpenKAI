@@ -13,9 +13,10 @@ namespace kai
 	{
 	}
 
-	bool _APmav_base::init(const json &j)
+	bool _APmav_base::loadConfig(void)
 	{
-		IF_F(!this->_AutopilotBase::init(j));
+		IF_F(!this->_AutopilotBase::loadConfig());
+		const json &j = *m_pJ;
 
 		float t;
 		if (jKv(j, "ieSendHB", t))
@@ -27,17 +28,19 @@ namespace kai
 		return true;
 	}
 
-	bool _APmav_base::link(const json &j, ModuleMgr *pM)
+	bool _APmav_base::link(void)
 	{
-		IF_F(!this->_AutopilotBase::link(j, pM));
+		IF_F(!this->_AutopilotBase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_Mavlink", n);
-		m_pMav = (_Mavlink *)(pM->findModule(n));
+		m_pMav = (_Mavlink *)(m_pM->findModule(n));
 		NULL_F(m_pMav);
 
-		const json &jm = jK(j, "mavMsgInt");
-		IF__(!jm.is_object(), true);
+		const json *pJm = jK(j, "mavMsgInt");
+		IF__(!pJm || !pJm->is_object(), true);
+		const json &jm = *pJm;
 
 		for (auto it = jm.begin(); it != jm.end(); it++)
 		{

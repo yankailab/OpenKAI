@@ -15,9 +15,10 @@ namespace kai
 	}
 	_WebGeometryBase::~_WebGeometryBase() { stop(); }
 
-	bool _WebGeometryBase::init(const json &j)
+	bool _WebGeometryBase::loadConfig(void)
 	{
-		IF_F(!_GeometryViewerBase::init(j));
+		IF_F(!_GeometryViewerBase::loadConfig());
+		const json &j = *m_pJ;
 		jKv(j, "host", m_host);
 		jKv(j, "port", m_port);
 		jKv(j, "webRoot", m_root);
@@ -40,17 +41,19 @@ namespace kai
 				"Viewer assets not found in webRoot: " + m_root);
 		return true;
 	}
-	bool _WebGeometryBase::link(const json &j, ModuleMgr *manager)
+	bool _WebGeometryBase::link(void)
 	{
-		IF_F(!_GeometryViewerBase::link(j, manager));
+		IF_F(!_GeometryViewerBase::link());
+		const json &j = *m_pJ;
 		IF_Le_F(j.contains("vSelectableOctGrid") || j.contains("nCbuf"), "WebGeometryBase supports only vGeometry points and lines");
-		const auto &entries = jK(j, "vGeometry");
-		IF_Le_F(!entries.is_null() && !entries.is_array(), "vGeometry must be an array");
+		const json *entries = jK(j, "vGeometry");
+		IF_Le_F(entries && !entries->is_null() && !entries->is_array(), "vGeometry must be an array");
 		std::vector<_GeometryBase *> geometry;
 		std::vector<GeometryStyle> styles;
 		std::set<std::string> names;
-		for (const auto &entry : entries)
+		for (size_t i = 0; entries && i < entries->size(); ++i)
 		{
+			const auto &entry = (*entries)[i];
 			IF_Le_F(!entry.is_object(), "vGeometry entries must be objects");
 			GeometryStyle style;
 			IF_Le_F(!jKv(entry, "_GeometryBase", style.m_name) || style.m_name.empty(), "vGeometry entry needs _GeometryBase");
@@ -65,13 +68,19 @@ namespace kai
 				!std::isfinite(style.m_matPointSize) || style.m_matPointSize <= 0, "Invalid geometry limits/material: " + style.m_name);
 			style.m_nP = std::min(style.m_nP, m_nPbuf);
 			style.m_nL = std::min(style.m_nL, m_nLbuf);
-			auto *module = static_cast<BASE *>(manager->findModule(style.m_name));
+			auto *module = static_cast<BASE *>(m_pM->findModule(style.m_name));
 			if (!module)
 			{
-				const auto &config = manager->findJson(style.m_name);
+				const json *pConfig = m_pM->findJson(style.m_name);
 				int enabled = 1;
-				jKv(config, "bON", enabled);
-				if (config.is_object() && !enabled) continue;
+				if (pConfig)
+				{
+					jKv(*pConfig, "bON", enabled);
+				}
+				if (pConfig && pConfig->is_object() && !enabled)
+				{
+					continue;
+				}
 				LOG_E("Viewer source not found: " + style.m_name);
 				return false;
 			}

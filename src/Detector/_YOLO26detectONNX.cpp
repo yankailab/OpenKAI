@@ -21,9 +21,10 @@ namespace kai
 		DEL(m_pSession);
 	}
 
-	bool _YOLO26detectONNX::init(const json &j)
+	bool _YOLO26detectONNX::loadConfig(void)
 	{
-		IF_F(!this->_DetectorBase::init(j));
+		IF_F(!this->_DetectorBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "confidence", m_confidence);
 		jKv(j, "score", m_score);

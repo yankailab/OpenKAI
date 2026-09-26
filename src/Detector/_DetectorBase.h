@@ -21,8 +21,8 @@ namespace kai
 		_DetectorBase();
 		virtual ~_DetectorBase();
 
-		virtual bool init(const json &j);
-		virtual bool link(const json &j, ModuleMgr *pM);
+		virtual bool loadConfig(void) override;
+		virtual bool link(void) override;
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 

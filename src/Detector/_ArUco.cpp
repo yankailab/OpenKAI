@@ -18,9 +18,10 @@ namespace kai
 	{
 	}
 
-	bool _ArUco::init(const json &j)
+	bool _ArUco::loadConfig(void)
 	{
-		IF_F(!this->_DetectorBase::init(j));
+		IF_F(!this->_DetectorBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "dict", m_dict);
 		m_dictionary = aruco::getPredefinedDictionary(m_dict);

@@ -154,16 +154,15 @@ namespace kai
 		_Orbbec();
 		virtual ~_Orbbec();
 
-		virtual bool init(const json &j);
-		virtual bool link(const json &j, ModuleMgr *pM);
+		virtual bool loadConfig(void) override;
+		virtual bool link(void) override;
 		virtual bool start(void);
 		void stop(void) override;
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 		virtual void console(const json &j, void *pJSONbase);
 
-		virtual bool loadConfig(json *pJ = nullptr, string fName = "");
-		virtual bool saveConfig(json &j, string fName = "");
+		virtual bool saveConfig(void) override;
 
 		virtual bool open(void);
 		virtual void close(void);
@@ -347,7 +346,6 @@ namespace kai
 		uint64_t m_dtRGBNs;
 
 		mutable std::recursive_mutex m_mtxDevice;
-		json m_initialConfig = json::object();
 		OrbbecCtrl m_orbbecCtrl;
 	};
 

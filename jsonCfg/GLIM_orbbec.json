@@ -71,7 +71,6 @@
 	},
 	"Orbbec": {
 		"class": "_Orbbec",
-		"fConfig": "jsonCfg/Orbbec.controls.json",
 		"bON": true,
 		"thread": {
 			"FPS": 200
@@ -192,7 +191,6 @@
 	},
 	"GLIM": {
 		"class": "_GLIM",
-		"fConfig": "jsonCfg/GLIM.controls.json",
 		"exportPath": "data/glim",
 		"bON": true,
 		"thread": {

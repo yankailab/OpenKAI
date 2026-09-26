@@ -18,12 +18,14 @@ namespace kai
 	{
 	}
 
-	bool _ADIObase::init(const json &j)
+	bool _ADIObase::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
-		const json &jP = jK(j, "ports");
-		IF__(!jP.is_array(), true);
+		const json *pJP = jK(j, "ports");
+		IF__(!pJP || !pJP->is_array(), true);
+		const json &jP = *pJP;
 
 		for (auto it = jP.begin(); it != jP.end(); it++)
 		{
@@ -44,9 +46,9 @@ namespace kai
 		return true;
 	}
 
-	bool _ADIObase::link(const json &j, ModuleMgr *pM)
+	bool _ADIObase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
 
 		return true;
 	}

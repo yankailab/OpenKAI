@@ -18,12 +18,14 @@ namespace kai
 	{
 	}
 
-	bool _PCcrop::init(const json &j)
+	bool _PCcrop::loadConfig(void)
 	{
-		IF_F(!this->_GeometryBase::init(j));
+		IF_F(!this->_GeometryBase::loadConfig());
+		const json &j = *m_pJ;
 
-		const json &jF = jK(j, "vFilter");
-		IF_F(!jF.is_object());
+		const json *pJF = jK(j, "vFilter");
+		IF_F(!pJF || !pJF->is_object());
+		const json &jF = *pJF;
 
 		for (auto it = jF.begin(); it != jF.end(); it++)
 		{

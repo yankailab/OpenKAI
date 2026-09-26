@@ -18,20 +18,21 @@ namespace kai
 	{
 	}
 
-	bool _GPS::init(const json &j)
+	bool _GPS::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
 
 		return true;
 	}
 
-	bool _GPS::link(const json &j, ModuleMgr *pM)
+	bool _GPS::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
+		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(pM->findModule(n));
+		m_pIO = (_IObase *)(m_pM->findModule(n));
 		NULL_F(m_pIO);
 
 		return true;

@@ -19,9 +19,10 @@ namespace kai
 	{
 	}
 
-	bool _WindowCV::init(const json &j)
+	bool _WindowCV::loadConfig(void)
 	{
-		IF_F(!this->_UIbase::init(j));
+		IF_F(!this->_UIbase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "bFullScreen", m_bFullScreen);
 		jKv<int>(j, "vSize", m_vSize);

@@ -19,8 +19,8 @@ namespace kai
 		_MotionDetector();
 		virtual ~_MotionDetector();
 
-		virtual bool init(const json& j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool loadConfig(void) override;
+		virtual bool link(void) override;
 		virtual bool start(void);
 		virtual void draw(void *pMat);
 		virtual bool check(void);

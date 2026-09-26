@@ -5,6 +5,7 @@ namespace kai
 
 	StateBase::StateBase()
 	{
+		m_class = "StateBase";
 		reset();
 	}
 
@@ -12,26 +13,30 @@ namespace kai
 	{
 	}
 
-	bool StateBase::init(const json &j)
+	bool StateBase::loadConfig(void)
 	{
-		IF_F(!this->BASE::init(j));
+		IF_F(!this->BASE::loadConfig());
+		json &j = *m_pJ;
 
 		jKv(j, "next", m_next);
 
 		return true;
 	}
 
-	bool StateBase::link(const json &j, ModuleMgr *pM)
+	bool StateBase::link(void)
 	{
-		IF_F(!this->BASE::link(j, pM));
+		IF_F(!this->BASE::link());
+		const json &j = *m_pJ;
 
+		m_vpModuleResume.clear();
+		m_vpModulePause.clear();
 		vector<string> vS;
 
 		vS.clear();
 		jKv(j, "vModuleResume", vS);
 		for (string n : vS)
 		{
-			_ModuleBase *pB = (_ModuleBase *)(pM->findModule(n));
+			_ModuleBase *pB = (_ModuleBase *)(m_pM->findModule(n));
 			IF_CONT(!pB);
 			m_vpModuleResume.push_back(pB);
 		}
@@ -40,7 +45,7 @@ namespace kai
 		jKv(j, "vModulePause", vS);
 		for (string n : vS)
 		{
-			_ModuleBase *pB = (_ModuleBase *)(pM->findModule(n));
+			_ModuleBase *pB = (_ModuleBase *)(m_pM->findModule(n));
 			IF_CONT(!pB);
 			m_vpModulePause.push_back(pB);
 		}

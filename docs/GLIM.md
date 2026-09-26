@@ -94,12 +94,14 @@ backends still load through GLIM's module factory. Unexposed settings and sensor
 calibration continue to come from the selected profile.
 
 Configuration changes require stopped tracking. `setConfig` merges and validates
-partial values in memory; `saveConfig` also writes the configured `fConfig`;
-`loadConfig` reads and validates that file. Startup loads profile defaults, then
-an optional module `parameters` object, then an existing `fConfig`. The example
-persists to `jsonCfg/GLIM.controls.json`. Values take effect on the next Start;
-Start applies unsaved UI edits first. Unknown fields, wrong types, invalid ranges
-and inconsistent point-count limits are rejected.
+partial values in memory; `saveConfig` writes the current values into the module's
+`parameters` object in its original launch JSON file. `getConfig` retrieves
+current values. Startup loads profile defaults and the optional module
+`parameters` object through `loadConfig()`, including values saved previously.
+Values take effect on the next Start; Start applies unsaved UI edits first.
+Unknown fields, wrong types, invalid ranges and inconsistent point-count limits
+are rejected. The Save parameters button applies edits with `setConfig` before
+sending the no-argument `saveConfig` command.
 
 Commands use the usual `_WSconsole` envelope and trailing `EOJ`:
 
@@ -107,7 +109,6 @@ Commands use the usual `_WSconsole` envelope and trailing `EOJ`:
 {"module":"GLIM","cmd":"getConfig","requestId":"1"}
 {"module":"GLIM","cmd":"setConfig","config":{"preprocess":{"distanceFar":5.0}},"requestId":"2"}
 {"module":"GLIM","cmd":"saveConfig","requestId":"3"}
-{"module":"GLIM","cmd":"loadConfig","requestId":"4"}
 {"module":"GLIM","cmd":"savePointCloud","requestId":"5"}
 ```
 

@@ -20,9 +20,10 @@ namespace kai
 		close();
 	}
 
-	bool _GStreamer::init(const json &j)
+	bool _GStreamer::loadConfig(void)
 	{
-		IF_F(!_VisionBase::init(j));
+		IF_F(!_VisionBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "pipeline", m_pipeline);
 		jKv(j, "nInitRead", m_nInitRead);

@@ -19,9 +19,10 @@ namespace kai
 	{
 	}
 
-	bool _ImgFile::init(const json &j)
+	bool _ImgFile::loadConfig(void)
 	{
-		IF_F(!_VisionBase::init(j));
+		IF_F(!_VisionBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "file", m_file);
 

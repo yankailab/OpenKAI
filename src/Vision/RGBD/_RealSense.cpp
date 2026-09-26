@@ -23,9 +23,10 @@ namespace kai
         DEL(m_rspAlign);
     }
 
-    bool _RealSense::init(const json &j)
+    bool _RealSense::loadConfig(void)
     {
-        IF_F(!_RGBDbase::init(j));
+        IF_F(!_RGBDbase::loadConfig());
+        const json &j = *m_pJ;
 
         jKv(j, "rsSN", m_rsSN);
         jKv(j, "rsFPS", m_rsFPS);
@@ -51,7 +52,7 @@ namespace kai
         jKv(j, "fWhiteBalance", m_rsCtrl.m_fWhiteBalance);
 
         DEL(m_pTpp);
-        m_pTpp = createThread(jK(j, "threadPP"), "threadPP");
+        m_pTpp = createThread(jK(*m_pJ, "threadPP"), "threadPP");
         NULL_F(m_pTpp);
 
         return true;

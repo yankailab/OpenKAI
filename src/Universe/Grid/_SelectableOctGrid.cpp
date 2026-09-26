@@ -8,25 +8,11 @@ namespace kai
 {
 	namespace
 	{
-		static bool readConfigVector(const json &j, Vector3f &v)
+		static bool readSelectionVector(const json *pJ, Vector3f &v)
 		{
-			if (!j.is_array() || j.size() != 3)
+			if (!pJ || !pJ->is_array() || pJ->size() != 3)
 				return false;
-			for (size_t i = 0; i < 3; ++i)
-			{
-				if (!j[i].is_number())
-					return false;
-				v[i] = j[i].get<float>();
-				if (!std::isfinite(v[i]))
-					return false;
-			}
-			return true;
-		}
-
-		static bool readSelectionVector(const json &j, Vector3f &v)
-		{
-			if (!j.is_array() || j.size() != 3)
-				return false;
+			const json &j = *pJ;
 			for (size_t i = 0; i < 3; ++i)
 			{
 				if (!j[i].is_string())
@@ -117,9 +103,10 @@ namespace kai
 	{
 	}
 
-	bool _SelectableOctGrid::init(const json &j)
+	bool _SelectableOctGrid::loadConfig(void)
 	{
-		IF_F(!this->_OctreeGrid::init(j));
+		IF_F(!this->_OctreeGrid::loadConfig());
+		const json &j = *m_pJ;
 
 		IF_Le_F(j.contains("nMaxLines"), "Use nMaxCells for grid publication limits");
 		jKv(j, "nMaxCells", m_nMaxCells);
@@ -138,13 +125,28 @@ namespace kai
 							0};
 
 		m_vSelectedCells.clear();
-		loadConfig();
+		const json *ids = jK(j, "vSelectedCells");
+		if (ids)
+		{
+			IF_Le_F(!ids->is_array(), "Invalid vSelectedCells");
+			vector<UUID128> selected;
+			selected.reserve(ids->size());
+			for (const auto &value : *ids)
+			{
+				UUID128 id;
+				std::array<float, 3> center, extent;
+				IF_Le_F(!readSelectionID(value, id) || !octgridCellBox(m_cells.m_header, id, center, extent),
+						"Invalid selected cell ID in config");
+				selected.push_back(id);
+			}
+			m_vSelectedCells.swap(selected);
+		}
 		return true;
 	}
 
-	bool _SelectableOctGrid::link(const json &j, ModuleMgr *pM)
+	bool _SelectableOctGrid::link(void)
 	{
-		return this->_OctreeGrid::link(j, pM);
+		return this->_OctreeGrid::link();
 	}
 
 	bool _SelectableOctGrid::start(void)
@@ -180,71 +182,16 @@ namespace kai
 		this->_OctreeGrid::console(pConsole);
 	}
 
-	bool _SelectableOctGrid::loadConfig(json *pJ, string fName)
+	bool _SelectableOctGrid::saveConfig(void)
 	{
-		json j;
-		IF_F(!this->_OctreeGrid::loadConfig(&j, fName));
-
-		const json &jG = jK(j, "_SelectableOctGrid");
-
-		Vector3f origin = Vector3f::Zero(), size = Vector3f::Zero();
-		IF_Le_F(!readConfigVector(jK(jG, "vPorigin"), origin) ||
-					!readConfigVector(jK(jG, "vRootCellSize"), size) || size.x() <= 0 || size.y() <= 0 || size.z() <= 0,
-				"Invalid saved grid header");
-
-		const auto &ids = jK(jG, "vSelectedCells");
-		IF_Le_F(!ids.is_array(), "Invalid vSelectedCells");
-
-		const OCTGRID_HEADER header = {{origin.x(), origin.y(), origin.z()},
-									   {size.x(), size.y(), size.z()},
-									   uint32_t(m_nMaxLevel),
-									   0};
-
-		vector<UUID128> vCselected;
-		vCselected.reserve(ids.size());
-		for (const auto &value : ids)
+		if (!_OctreeGrid::saveConfig())
 		{
-			UUID128 id;
-			std::array<float, 3> center, extent;
-			IF_Le_F(!readSelectionID(value, id) || !octgridCellBox(header, id, center, extent),
-					"Invalid selected cell ID in config");
-			vCselected.push_back(id);
+			return false;
 		}
 
-		{
-			std::lock_guard<std::mutex> gridLock(m_gridMutex);
-			std::lock_guard<std::mutex> lock(m_cellsMutex);
-			// Occupancy belongs to its original root; never reinterpret it under a new one.
-			if (m_vPorigin != origin || m_vRootCellSize != size)
-			{
-				if (m_pCell)
-					m_pCell->release();
-				m_cells.m_vCell.clear();
-				m_buildCells.clear();
-				m_cells.m_header.m_tStamp = 0;
-			}
+		m_pJ->update(selectedCellsJSON("vSelectedCells"));
 
-			m_vPorigin = origin;
-			m_vRootCellSize = size;
-			m_vSelectedCells.swap(vCselected);
-
-			m_cells.m_header.m_vPorigin = header.m_vPorigin;
-			m_cells.m_header.m_vRootCellSize = header.m_vRootCellSize;
-			m_cells.m_header.m_nMaxLevel = header.m_nMaxLevel;
-		}
-
-		if (pJ)
-		{
-			*pJ = j;
-		}
-		return true;
-	}
-
-	bool _SelectableOctGrid::saveConfig(json &j, string fName)
-	{
-		IF_Le_F(!j.is_null() && !j.is_object(), "Config must be a JSON object");
-		j["_SelectableOctGrid"] = selectedCellsJSON("vSelectedCells");
-		return this->_OctreeGrid::saveConfig(j, fName);
+		return m_pJcfg->saveToFile();
 	}
 
 	json _SelectableOctGrid::selectedCellsJSON(const char *idsKey)
@@ -316,8 +263,8 @@ namespace kai
 					sameHeader = origin[i] == m_vPorigin[i] && size[i] == m_vRootCellSize[i] && size[i] > 0;
 			}
 
-			const auto &ids = jK(j, "cellIDs");
-			bool bSuccess = sameHeader && ids.is_array();
+			const json *ids = jK(j, "cellIDs");
+			bool bSuccess = sameHeader && ids && ids->is_array();
 			vector<UUID128> vCselected;
 			if (bSuccess)
 			{
@@ -325,8 +272,8 @@ namespace kai
 											   {size.x(), size.y(), size.z()},
 											   uint32_t(m_nMaxLevel),
 											   0};
-				vCselected.reserve(ids.size());
-				for (const auto &value : ids)
+				vCselected.reserve(ids->size());
+				for (const auto &value : *ids)
 				{
 					UUID128 id;
 					std::array<float, 3> center, extent;
@@ -353,9 +300,10 @@ namespace kai
 					m_vSelectedCells.swap(vCselected); // Commit only a completely valid list.
 			}
 
-			// save to m_fConfig json file
-			json Jsave = json::object();
-			saveConfig(Jsave);
+			if (bSuccess)
+			{
+				bSuccess = saveConfig();
+			}
 
 			NULL_(pJb);
 			json jr = json::object();
@@ -367,7 +315,7 @@ namespace kai
 		{
 			NULL_(pJb);
 
-			// init() restores fConfig; retrieval snapshots the current selection without
+			// Retrieval snapshots the current selection without
 			// changing the running grid's root or occupancy.
 			json jr = selectedCellsJSON("cellIDs");
 			jr["cmd"] = "cellSelect";

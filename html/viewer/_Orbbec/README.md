@@ -6,13 +6,13 @@ the backend host/ports and click **Start**. The geometry service serves the page
 and the vendored three.js assets; no npm or external web server is needed.
 
 The center is copied from `_GeometryBase` and uses `_WebGeometryBase`'s existing
-version-5 `/stream/points` and `/stream/lines` connections. Camera controls and
+version-6 `/stream/points` and `/stream/lines` connections. Camera controls and
 IMU preview use a separate `_WSconsole` connection on port **7890**. Module names
 default to **Orbbec** and **obIMU**, matching `jsonCfg/Orbbec.json`.
 
 ## Camera controls
 
-**Load config** retrieves the current backend parameters, readable device values,
+**Refresh config** retrieves the current backend parameters, readable device values,
 and supported ranges. The collapsible sections cover stream settings and every
 control in `OrbbecCtrl`. Unsupported scalar controls are marked as unavailable.
 Structured controls accept complete JSON objects using the SDK field names;
@@ -27,16 +27,14 @@ some model-specific properties can still be rejected while streaming.
 
 Blank numeric/string/object controls or **Preserve camera setting** remove that
 override without resetting the camera. Loading device values never turns them
-into overrides. Presets may reset other device properties; use **Load config**
+into overrides. Presets may reset other device properties; use **Refresh config**
 to refresh the device readbacks after applying a preset.
 
-Only **Save config** writes to `Orbbec.fConfig`, configured as
-`jsonCfg/Orbbec.controls.json`. This separate file contains non-null values that
-differ from the application JSON's startup settings. Unchanged/default values
-are omitted. It is loaded over those startup settings at initialization. The
-application JSON, module links and thread settings are not overwritten. Removing
-an override omits it from the saved file, so the next launch uses the startup
-configuration for that setting. A save failure is returned to the browser.
+**Save config** updates the camera module in the original launch JSON file.
+Current controls are saved in place; unset optional overrides are removed.
+Module links, thread settings and unrelated modules are preserved. The saved
+settings are read by `loadConfig()` on the next launch. A save failure is
+returned to the browser.
 
 ## IMU preview
 
@@ -61,7 +59,7 @@ Replies are JSON objects, possibly split across WebSocket text messages. Request
 and replies carry `module` and optional `requestId` for routing/correlation.
 
 ```json
-{"module":"Orbbec","cmd":"loadConfig","requestId":"camera-1"}
+{"module":"Orbbec","cmd":"getConfig","requestId":"camera-1"}
 {"module":"Orbbec","cmd":"setConfig","config":{"OB_PROP_COLOR_EXPOSURE_INT":100}}
 {"module":"Orbbec","cmd":"saveConfig"}
 {"module":"obIMU","cmd":"startStream"}
@@ -69,8 +67,8 @@ and replies carry `module` and optional `requestId` for routing/correlation.
 ```
 
 Camera replies include `bSuccess`, `config` and `deviceOpen`; load also includes
-`schema`. Rejections include `error` or per-field `errors`. `loadConfig` retrieves
-live parameters; the C++ `loadConfig()` method reads the saved override file.
+`schema`. Rejections include `error` or per-field `errors`. `getConfig` retrieves
+live parameters.
 No browser request can select a save-file path.
 
 IMU samples use `cmd: "imuData"`, `gyro: [x,y,z]`, `acc: [x,y,z]`,

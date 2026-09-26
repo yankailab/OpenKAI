@@ -22,7 +22,7 @@ namespace kai
 		_LeddarVu();
 		~_LeddarVu();
 
-		virtual bool init(const json &j);
+		virtual bool loadConfig(void) override;
 		virtual bool start(void);
 		virtual void draw(void *pMat);
 		virtual void console(void *pConsole);

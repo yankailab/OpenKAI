@@ -18,9 +18,10 @@ namespace kai
 	{
 	}
 
-	bool _VisionBase::init(const json &j)
+	bool _VisionBase::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
 
 		jKv(j, "devURI", m_devURI);
 		jKv(j, "devFPS", m_devFPS);
@@ -30,9 +31,9 @@ namespace kai
 		return true;
 	}
 
-	bool _VisionBase::link(const json &j, ModuleMgr *pM)
+	bool _VisionBase::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
 
 		return true;
 	}

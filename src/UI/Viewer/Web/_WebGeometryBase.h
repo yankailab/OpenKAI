@@ -19,8 +19,8 @@ namespace kai
 	public:
 		_WebGeometryBase();
 		~_WebGeometryBase() override;
-		bool init(const json &j) override;
-		bool link(const json &j, ModuleMgr *pM) override;
+		bool loadConfig(void) override;
+		bool link(void) override;
 		bool start() override;
 		bool bRun() override { return m_running; }
 		bool bRunning() override { return m_running && !m_paused; }

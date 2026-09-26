@@ -24,23 +24,34 @@ namespace kai
 		m_vpState.clear();
 	}
 
-	bool _StateControl::init(const json &j)
+	bool _StateControl::loadConfig(void)
 	{
-		IF_F(!this->_ModuleBase::init(j));
+		IF_F(!this->_ModuleBase::loadConfig());
+		json &j = *m_pJ;
 
-		const json &jS = jK(j, "states");
-		IF__(!jS.is_object(), true);
+		for (StateBase *pState : m_vpState)
+		{
+			delete pState;
+		}
+		m_vpState.clear();
+
+		json *pJS = jK(j, "states");
+		IF__(!pJS || !pJS->is_object(), true);
+		json &jS = *pJS;
 
 		for (auto it = jS.begin(); it != jS.end(); it++)
 		{
-			const json &Ji = it.value();
+			json &Ji = it.value();
 			IF_CONT(!Ji.is_object());
 
 			StateBase *pB = new StateBase();
 			NULL_F(pB);
-			if (!pB->init(Ji))
+			pB->setModuleMgr(m_pM);
+			pB->setName(it.key());
+			pB->setConfig(m_pJcfg, &Ji);
+			if (!pB->loadConfig())
 			{
-				LOG_E("Init failed: " + pB->getName());
+				LOG_E("loadConfig failed: " + pB->getName());
 				DEL(pB);
 				return false;
 			}
@@ -54,20 +65,24 @@ namespace kai
 		jKv(j, "start", start);
 		int i = getStateIdxByName(start);
 		if (i < 0)
+		{
 			m_iS = 0;
+		}
 		else
+		{
 			m_iS = i;
+		}
 
 		return true;
 	}
 
-	bool _StateControl::link(const json &j, ModuleMgr *pM)
+	bool _StateControl::link(void)
 	{
-		IF_F(!this->_ModuleBase::link(j, pM));
+		IF_F(!this->_ModuleBase::link());
 
 		for (size_t i = 0; i < m_vpState.size(); i++)
 		{
-			IF_F(!m_vpState[i]->link(m_vpState[i]->getName(), pM));
+			IF_F(!m_vpState[i]->link());
 		}
 
 		return true;

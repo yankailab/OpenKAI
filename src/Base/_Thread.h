@@ -27,8 +27,9 @@ namespace kai
 		_Thread();
 		virtual ~_Thread();
 
-		virtual bool init(const json &j);
-		virtual bool link(const json &j, ModuleMgr *pM);
+		bool loadConfig(void) override;
+		bool saveConfig(void) override;
+		bool link(void) override;
 		virtual bool startThread(void *(*__start_routine)(void *), void *__restrict __arg);
 		virtual void console(void *pConsole);
 
