@@ -124,7 +124,7 @@
     for (const node of nodes) {
       const column = level(node.id);
       const count = columns.get(column) || 0;
-      // Providers are on the right, matching the dependency arrows.
+      // Providers are on the right; arrows flow back to their dependents.
       state.positions[node.id] = { x: -column * 305, y: count };
       const depCount = Math.min(6, node.definition?.dependencies?.length || 0);
       columns.set(column, count + 145 + depCount * 26);
@@ -212,7 +212,7 @@
     state.pending = { sourceId: node.id, dependency };
     state.selected = node.id;
     $('connection-hint').hidden = false;
-    $('connection-hint').textContent = `Connect ${node.name}.${pathLabel(dependency.path)} → ${dependency.targetClass || 'BASE'} provider · Esc cancels`;
+    $('connection-hint').textContent = `Choose a ${dependency.targetClass || 'BASE'} provider for ${node.name}.${pathLabel(dependency.path)} · Esc cancels`;
     renderGraph();
     if (!sameSelection) renderInspector();
   }
@@ -251,7 +251,7 @@
       card.tabIndex = 0;
       card.setAttribute('aria-label', `${node.name}, ${node.className}`);
       card.classList.toggle('selected', node.id === state.selected);
-      card.classList.toggle('disabled-node', node.data.bON === 0);
+      card.classList.toggle('disabled-node', node.data.bON === false);
       card.classList.toggle('compatible', Boolean(state.pending && canConnect(node, state.pending.dependency)));
       card.style.left = `${position.x}px`;
       card.style.top = `${position.y}px`;
@@ -282,7 +282,7 @@
         row.append(element('span', 'dep-label', pathLabel(dependency.path)));
         const port = button('', event => { event.stopPropagation(); }, 'port dependency-port');
         port.dataset.path = pathKey(dependency.path);
-        port.title = `${pathLabel(dependency.path)} → ${dependency.targetClass || 'BASE'}; click or drag to a provider`;
+        port.title = `${dependency.targetClass || 'BASE'} provider → ${pathLabel(dependency.path)}; click or drag to a provider`;
         port.setAttribute('aria-label', `Connect ${pathLabel(dependency.path)} for ${node.name}`);
         port.addEventListener('pointerdown', event => {
           if (event.button !== 0) return;
@@ -310,9 +310,9 @@
     drawEdges();
   }
   function nodeElement(id) { return [...$('nodes').children].find(node => node.dataset.id === id); }
-  function sourcePoint(sourceId, definition) {
-    const card = nodeElement(sourceId);
-    const position = state.positions[sourceId];
+  function dependencyPoint(nodeId, definition) {
+    const card = nodeElement(nodeId);
+    const position = state.positions[nodeId];
     if (!card || !position) return null;
     const port = [...card.querySelectorAll('.dependency-port')].find(item => item.dataset.path === pathKey(definition?.path || []));
     return { x: position.x + card.offsetWidth, y: position.y + (port ? port.parentElement.offsetTop + port.parentElement.offsetHeight / 2 : card.offsetHeight - 16) };
@@ -325,7 +325,7 @@
       const bend = Math.max(65, Math.abs(end.x - start.x) * .45);
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       path.setAttribute('class', `edge ${className}`);
-      path.setAttribute('d', `M ${start.x} ${start.y} C ${start.x + bend} ${start.y}, ${end.x - bend} ${end.y}, ${end.x} ${end.y}`);
+      path.setAttribute('d', `M ${start.x} ${start.y} C ${start.x - bend} ${start.y}, ${end.x + bend} ${end.y}, ${end.x} ${end.y}`);
       const label = document.createElementNS('http://www.w3.org/2000/svg', 'title');
       label.textContent = title;
       path.append(label);
@@ -333,10 +333,11 @@
     }
     for (const edge of state.model.dependencies()) {
       if (!edge.targetId || !state.positions[edge.targetId]) continue;
-      const target = state.positions[edge.targetId];
-      draw(sourcePoint(edge.sourceId, edge.definition), { x: target.x - 2, y: target.y + 30 }, `${edge.compatible === false ? 'invalid' : ''} ${[edge.sourceId, edge.targetId].includes(state.selected) ? 'highlight' : ''}`, `${pathLabel(edge.path)} → ${edge.reference}`);
+      // Model references belong to the dependent; visual arrows start at the provider.
+      const provider = state.positions[edge.targetId];
+      draw({ x: provider.x - 2, y: provider.y + 30 }, dependencyPoint(edge.sourceId, edge.definition), `${edge.compatible === false ? 'invalid' : ''} ${[edge.sourceId, edge.targetId].includes(state.selected) ? 'highlight' : ''}`, `${edge.reference} → ${pathLabel(edge.path)}`);
     }
-    if (state.pending) draw(sourcePoint(state.pending.sourceId, state.pending.dependency), state.pointer, 'pending', 'New dependency');
+    if (state.pending) draw(state.pointer, dependencyPoint(state.pending.sourceId, state.pending.dependency), 'pending', 'New dependency');
   }
 
   function inferType(value) {
@@ -355,7 +356,11 @@
       for (const [text, val] of [['Use runtime default', ''], ['true', 'true'], ['false', 'false']]) {
         const option = element('option', '', text); option.value = val; input.append(option);
       }
-      input.value = absent ? '' : String(value);
+      if (!absent && typeof value !== 'boolean') {
+        const option = element('option', '', `Existing value: ${JSON.stringify(value)}`);
+        option.value = 'invalid'; option.disabled = true; input.append(option);
+      }
+      input.value = absent ? '' : typeof value === 'boolean' ? String(value) : 'invalid';
     } else if (['array', 'object', 'json', 'any', 'unknown'].includes(type)) {
       input = element('textarea');
       input.spellcheck = false;
@@ -397,6 +402,7 @@
     }
     wrapper.append(label, row);
     if (definition.description) wrapper.append(element('div', 'field-meta', definition.description));
+    if (!absent && type === 'boolean' && typeof value !== 'boolean') wrapper.append(element('div', 'field-meta error', `Existing value: ${JSON.stringify(value)}. Choose true or false to correct its type.`));
     if (!absent && type === 'integer' && !Number.isInteger(value)) wrapper.append(element('div', 'field-meta error', `Existing value: ${JSON.stringify(value)}. Enter an integer to correct its type.`));
     if (absent) wrapper.append(element('div', 'field-meta', `Optional · ${type}${own(definition, 'default') ? ` · default ${JSON.stringify(definition.default)}` : ''}`));
     return wrapper;
@@ -454,7 +460,7 @@
       const matching = edges.filter(edge => pathKey(edge.definition?.path || []) === pathKey(definition.path));
       for (const edge of matching) {
         const row = element('div', `dependency-link${edge.resolved ? '' : ' unresolved'}`);
-        row.append(element('span', '', `${edge.resolved ? '↗' : '⚠'} ${String(edge.reference)}${definition.path.includes('*') ? ` (${pathLabel(edge.path)})` : ''}`));
+        row.append(element('span', '', `${edge.resolved ? '←' : '⚠'} ${String(edge.reference)}${definition.path.includes('*') ? ` (${pathLabel(edge.path)})` : ''}`));
         row.append(button('×', () => mutate(() => state.model.disconnect(node.id, edge.path), 'Disconnected dependency.')));
         row.lastChild.setAttribute('aria-label', `Disconnect ${String(edge.reference)}`);
         group.append(row);
@@ -482,7 +488,7 @@
       select.dataset.dependency = pathKey(definition.path);
       const placeholder = element('option', '', 'Choose provider…'); placeholder.value = ''; select.append(placeholder);
       for (const target of state.model.nodes().filter(item => canConnect(item, definition))) {
-        const option = element('option', '', `${target.name} · ${target.className}${target.data.bON === 0 ? ' (disabled)' : ''}`);
+        const option = element('option', '', `${target.name} · ${target.className}${target.data.bON === false ? ' (disabled)' : ''}`);
         option.value = target.id; select.append(option);
       }
       const connect = button('+', () => { if (select.value) mutate(() => state.model.connect(node.id, concreteDependencyPath(definition), select.value), 'Dependency connected.'); });
@@ -622,7 +628,7 @@
     $('new-config').onclick = () => loadDocument(initialConfig(), 'OpenKAI.json');
     $('load-example').onclick = () => loadDocument({
       APP: { class: 'ModuleMgr', appName: 'CameraCrop', bLog: true, bStdErr: true },
-      cam: { class: '_Camera', bON: 1, thread: { FPS: 30 }, deviceID: 0, vSizeRGB: [640, 480] },
+      cam: { class: '_Camera', bON: true, thread: { FPS: 30 }, deviceID: 0, vSizeRGB: [640, 480] },
       crop: { class: '_Crop', thread: { FPS: 30 }, _VisionBase: 'cam', vRoi: [0, 0, 320, 240] },
       view: { class: '_WindowCV', thread: { FPS: 30 }, vBASE: ['cam', 'crop'] }
     }, 'CameraCrop.json');

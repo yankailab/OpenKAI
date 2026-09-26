@@ -5,7 +5,7 @@
         { name: "BASE", creatable: false, baseClasses: [], parameters: [], dependencies: [] },
         { name: "ModuleMgr", creatable: false, baseClasses: [], parameters: [], dependencies: [] },
         { name: "_VisionBase", creatable: false, baseClasses: ["BASE"], parameters: [], dependencies: [] },
-        { name: "Camera", creatable: true, baseClasses: ["_VisionBase"], parameters: [{ path: ["FPS"], type: "number", default: 30 }], dependencies: [] },
+        { name: "Camera", creatable: true, baseClasses: ["_VisionBase"], parameters: [{ path: ["FPS"], type: "number", default: 30 }, { path: ["bON"], type: "boolean", default: true }], dependencies: [] },
         { name: "Serial", creatable: true, baseClasses: ["BASE"], parameters: [], dependencies: [] },
         { name: "Consumer", creatable: true, baseClasses: ["BASE"], parameters: [{ path: ["gain"], type: "number" }], dependencies: [
             { path: ["input"], targetClass: "_VisionBase", multiple: false, required: true },
@@ -135,6 +135,7 @@
             assert.equal(model.addNode("Camera").id, "/camera");
             assert.equal(model.addNode("Camera").id, "/camera2");
             assert.equal(model.getValue("/camera", ["FPS"]), 30);
+            assert.equal(model.getValue("/camera", ["bON"]), true);
             assert.equal(model.addNode("ModuleMgr").id, "/APP");
             assert.throws(() => model.addNode("BASE"));
             assert.throws(() => model.addNode("Camera", "camera"));
@@ -151,12 +152,32 @@
         });
         test("validation surfaces missing, malformed, disabled and incompatible dependencies", () => {
             const model = new Model(schema, {
-                camera: { class: "Camera", bON: 0 }, serial: { class: "Serial" },
+                camera: { class: "Camera", bON: false }, serial: { class: "Serial" },
                 a: { class: "Consumer" }, b: { class: "Consumer", input: "serial", gain: "bad" },
                 c: { class: "Consumer", input: "camera", inputs: [42] },
             });
             const codes = model.validate().map(d => d.code);
             ["missing-dependency", "parameter-type", "incompatible-dependency", "disabled-dependency", "dependency-type"].forEach(code => assert.ok(codes.includes(code), code));
+        });
+        test("boolean bON controls disabled dependencies and preserves imported values", () => {
+            const doc = {
+                disabled: { class: "Camera", bON: false },
+                enabled: { class: "Camera", bON: true },
+                defaultEnabled: { class: "Camera" },
+                legacyDisabled: { class: "Camera", bON: 0 },
+                legacyEnabled: { class: "Camera", bON: 1 },
+                consumer: { class: "Consumer", inputs: ["disabled", "enabled", "defaultEnabled", "legacyDisabled", "legacyEnabled"] },
+            };
+            const model = new Model(schema, doc);
+            assert.deepEqual(JSON.parse(model.export()), doc);
+            assert.deepEqual(model.dependencies().map(edge => edge.targetDisabled), [true, false, false, false, false]);
+            assert.equal(model.validate().filter(d => d.code === "disabled-dependency").length, 1);
+            assert.deepEqual(model.validate().filter(d => d.code === "parameter-type").map(d => d.nodeId), ["/legacyDisabled", "/legacyEnabled"]);
+            model.setValue("/disabled", ["bON"], true);
+            assert.equal(model.validate().filter(d => d.code === "disabled-dependency").length, 0);
+            model.deleteValue("/disabled", ["bON"]);
+            assert.equal(model.dependencies()[0].targetDisabled, false);
+            assert.equal(Object.hasOwn(JSON.parse(model.export()).disabled, "bON"), false);
         });
         test("unsafe JSON keys remain inert own data through import, edit, export and rename", () => {
             const model = new Model(schema, '{"__proto__":{"class":"Camera","polluted":true},"consumer":{"class":"Consumer","input":"__proto__","constructor":{"prototype":{"local":1}}}}');
@@ -189,6 +210,25 @@
         const test = require("node:test"), assert = require("node:assert/strict");
         const fs = require("node:fs"), path = require("node:path");
         suite(Model, test, assert);
+        test("generated catalog declares boolean bON defaults for modules and embedded classes", () => {
+            const catalog = JSON.parse(fs.readFileSync(path.join(__dirname, "../OpenKAI.json"), "utf8"));
+            let switches = 0;
+            for (const definition of catalog.classes) {
+                for (const parameter of definition.parameters || []) {
+                    if (parameter.path.at(-1) !== "bON") continue;
+                    switches++;
+                    assert.equal(parameter.type, "boolean", definition.name + ": " + parameter.path.join("."));
+                    assert.equal(parameter.default, true, definition.name + ": " + parameter.path.join("."));
+                }
+            }
+            assert.ok(switches > 0);
+            const model = new Model(catalog);
+            const camera = model.addNode("_Camera");
+            assert.equal(camera.data.bON, true);
+            model.setValue(camera.id, ["bON"], false);
+            assert.equal(JSON.parse(model.export())[camera.key].bON, false);
+            assert.equal(model.validate().some(d => d.code === "parameter-type" && d.path.at(-1) === "bON"), false);
+        });
         test("every repository jsonCfg document round-trips without dropping fields", () => {
             const repo = path.resolve(__dirname, "../../../..");
             const catalogPath = path.join(__dirname, "../OpenKAI.json");

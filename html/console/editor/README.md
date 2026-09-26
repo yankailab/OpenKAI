@@ -6,7 +6,7 @@ Open **`index.html` directly in a modern browser**. The editor runs entirely in 
 
 1. Find a class in the left library. Categories follow the directories below `src/`. Drag a class onto the canvas or click its **+** button. Enable **Include base / helper classes** to browse classes that are not registered in the runtime factory; these are reference entries rather than addable modules.
 2. Select an instance. Edit its name and parameters in the right panel. Inherited and embedded thread parameters are included. **Available parameters** lists omitted settings; **×** omits a value so the runtime can use its default. Arrays and objects accept JSON. **Parameters inside collections** exposes fields in existing array/map entries. **Instance JSON / custom parameters** supports additional fields.
-3. Click or drag a dependency port on the right of a node to a compatible provider. Arrows run **from the dependent instance to the instance it needs**. The inspector also provides compatible target lists, supports multiple references, and removes individual connections. Array-based dependencies append a row; map-based dependencies provide an object-key field in the inspector (for example, `motors.left`).
+3. Click or drag a dependency port on the right of a node to a compatible provider. Arrows run **from the provider to the dependent instance that retains its pointer** (for example, camera → crop). The inspector also provides compatible target lists, supports multiple references, and removes individual connections. Array-based dependencies append a row; map-based dependencies provide an object-key field in the inspector (for example, `motors.left`).
 4. Use **Arrange**, **Fit**, or the zoom buttons to organize the graph. Drag a node by its header; drag empty canvas space to pan. Scroll to zoom. **Escape** cancels a pending connection.
 5. **Copy** or **Download** exports the usual OpenKAI JSON object. No graph positions, editor settings, or schema metadata are added. Launch it using your compiled executable, for example `./OpenKAI /path/to/CameraCrop.json`.
 
@@ -22,7 +22,7 @@ The current `ModuleMgr::findModule` matches exact top-level runtime names. A mod
 
 Include files are retained as external paths; a browser cannot automatically read arbitrary local include paths. Edit each included file separately. Links into other files appear unresolved. Relative asset and include paths are exported unchanged and remain relative to OpenKAI's working directory.
 
-Use **Config checks** for missing required connections, incompatible providers, unknown classes, and parameter type issues. Availability also depends on the build flags shown in the inspector. These checks do not replace runtime initialization or hardware validation. For the current runtime, use integer `bON: 0` to disable a module and `bON: 1` to enable it; older example configs containing boolean `bON` are retained and flagged.
+Use **Config checks** for missing required connections, incompatible providers, unknown classes, and parameter type issues. Availability also depends on the build flags shown in the inspector. These checks do not replace runtime initialization or hardware validation. Use boolean `bON: false` to disable a module and `bON: true` to enable it; omitting `bON` uses the runtime default of `true`. Older configs containing integer `bON` values are retained and flagged; choose `true` or `false` in the inspector to correct them.
 
 ## History and local drafts
 

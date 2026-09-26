@@ -50,7 +50,7 @@
         <div id="welcome">Build your OpenKAI app<small>Drag classes here. Connect a dependency port to its provider.</small><button id="load-example">Try camera → crop example</button></div>
         <div id="connection-hint" hidden></div>
       </div>
-      <div class="graph-footer"><span>Drag to move · Scroll to zoom · Arrows point to dependencies</span><output id="graph-count"></output></div>
+      <div class="graph-footer"><span>Drag to move · Scroll to zoom · Arrows: provider → dependent</span><output id="graph-count"></output></div>
       <details id="diagnostics-panel"><summary id="diagnostics-summary">Config checks</summary><div id="diagnostics"></div></details>
     </main>
     <aside id="inspector" class="inspector" aria-label="Instance properties"><div class="empty-inspector"><span class="empty-icon">⌘</span><h2>Instance properties</h2><p>Select an instance to edit its parameters and connections.</p></div></aside>
@@ -70,7 +70,7 @@
     <ol>
       <li>Add classes from the library. Categories follow the source folders.</li>
       <li>Select a node to name it and edit its parameters. Optional values can be omitted to use the runtime defaults. Arrays and objects accept JSON.</li>
-      <li>Click or drag a dependency port on the right of a node, then choose a compatible provider. Connections can also be added and removed in the inspector.</li>
+      <li>Click or drag a dependency port on the right of a node, then choose a compatible provider. Arrows point from the provider to the instance that retains its pointer. Connections can also be added and removed in the inspector.</li>
       <li>Open or paste existing JSON to edit it. Use Edit JSON for the whole document, including fields outside module objects.</li>
       <li>Copy or download the usual config JSON and launch OpenKAI with it. Canvas layout is kept separately from the config.</li>
     </ol>

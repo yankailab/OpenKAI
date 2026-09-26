@@ -266,6 +266,19 @@ def run_ui(browser, editor):
             control.value = value;
             control.dispatchEvent(new Event(kind, {bubbles:true}));
         };
+        window.smokeCheckArrow = (providerSelector, dependentSelector) => {
+            const edge = document.querySelector('#edge-paths .edge:not(.pending)');
+            smokeAssert(edge, 'Connected instances must have an arrow');
+            const nearPort = (point, selector) => {
+                const rect = document.querySelector(selector).getBoundingClientRect();
+                const screen = point.matrixTransform(edge.getScreenCTM());
+                return Math.hypot(screen.x - rect.left - rect.width / 2,
+                    screen.y - rect.top - rect.height / 2) < 6;
+            };
+            smokeAssert(nearPort(edge.getPointAtLength(0), providerSelector), 'Arrow must start at the provider');
+            smokeAssert(nearPort(edge.getPointAtLength(edge.getTotalLength()), dependentSelector), 'Arrow must end at the instance retaining the pointer');
+            smokeAssert(getComputedStyle(edge).markerEnd.includes('#arrow'), 'Arrowhead must be at the dependent end');
+        };
         document.getElementById('new-config').click();
         smokeChange('#class-search', '_Camera', 'input');
         const tile = document.querySelector('[data-class="_Camera"]');
@@ -278,6 +291,7 @@ def run_ui(browser, editor):
         canvas.dispatchEvent(new DragEvent('drop', {bubbles:true, cancelable:true, dataTransfer,
             clientX:rect.left + 350, clientY:rect.top + 100}));
         smokeAssert(OpenKAIEditor.model.getNode('/camera').className === '_Camera', 'Dropped class must create a camera');
+        smokeAssert(JSON.parse(OpenKAIEditor.exportConfig()).camera.bON === true, 'New instances must default to boolean bON true');
         smokeChange('#class-search', '_Crop', 'input');
         document.querySelector('[aria-label="Add _Crop"]').click();
         smokeAssert(OpenKAIEditor.model.getNode('/crop').className === '_Crop', 'Add button must create a crop');
@@ -302,12 +316,14 @@ def run_ui(browser, editor):
     click(browser, source)
     click(browser, target)
     browser.evaluate("smokeAssert(OpenKAIEditor.model.getValue('/crop',['_VisionBase']) === 'camera', 'Click ports must connect dependency')")
+    browser.evaluate("smokeCheckArrow(" + json.dumps(target) + "," + json.dumps(source) + ")")
     click(browser, '[data-id="/crop"] .node-header')
     browser.evaluate("document.querySelector('[aria-label=" + json.dumps('Disconnect camera') + "]').click()")
     browser.evaluate("smokeAssert(OpenKAIEditor.model.getValue('/crop',['_VisionBase']) === undefined, 'Scalar dependency must disconnect')")
     drag(browser, source, target)
     browser.evaluate("smokeAssert(OpenKAIEditor.model.getValue('/crop',['_VisionBase']) === 'camera', 'Dragging ports must connect dependency')")
-    checks.append("pointer click and drag connections, scalar disconnect")
+    browser.evaluate("smokeCheckArrow(" + json.dumps(target) + "," + json.dumps(source) + ")")
+    checks.append("pointer click and drag connections, provider-to-dependent arrows, scalar disconnect")
     click(browser, '[data-id="/camera"] .node-header')
     browser.evaluate(r"""(() => {
         smokeChange('#instance-name', 'frontCamera');
@@ -384,6 +400,39 @@ def run_ui(browser, editor):
         smokeAssert(motors && !Array.isArray(motors) && motors['0']._ActuatorBase === 'motor', 'Numeric object-map keys must remain object keys');
     })()""")
     checks.append("object-map row editing, picker/port connections and numeric keys")
+    browser.evaluate(r"""(() => {
+        OpenKAIEditor.loadDocument({APP:{class:'ModuleMgr'},camera:{class:'_Camera',bON:false},
+            crop:{class:'_Crop',_VisionBase:'camera'}});
+        const selector = '[data-path=\'["bON"]\']';
+        const disabledCard = () => document.querySelector('[data-id="/camera"]').classList.contains('disabled-node');
+        const disabledWarning = () => OpenKAIEditor.model.validate().some(item => item.code === 'disabled-dependency');
+        OpenKAIEditor.selectNode('/camera');
+        smokeAssert(document.querySelector(selector).tagName === 'SELECT' && document.querySelector(selector).value === 'false', 'bON must use a boolean selector');
+        smokeAssert(disabledCard() && disabledWarning(), 'bON false must disable the card and warn about dependent instances');
+        OpenKAIEditor.selectNode('/crop');
+        smokeAssert(document.querySelector('[aria-label="Provider for _VisionBase"] option[value="/camera"]').textContent.includes('(disabled)'), 'Provider picker must label a false bON provider disabled');
+        OpenKAIEditor.selectNode('/camera');
+        smokeChange(selector, 'true');
+        smokeAssert(JSON.parse(OpenKAIEditor.exportConfig()).camera.bON === true, 'Enabling a module must export boolean true');
+        smokeAssert(!disabledCard() && !disabledWarning(), 'bON true must enable the card and clear disabled warnings');
+        smokeChange(selector, 'false');
+        smokeAssert(JSON.parse(OpenKAIEditor.exportConfig()).camera.bON === false, 'Disabling a module must export boolean false');
+        smokeAssert(disabledCard() && disabledWarning(), 'Changing bON to false must refresh disabled indicators');
+        smokeChange(selector, '');
+        smokeAssert(!Object.hasOwn(JSON.parse(OpenKAIEditor.exportConfig()).camera, 'bON'), 'Runtime default must omit bON');
+        smokeAssert(!disabledCard() && !disabledWarning(), 'Omitted bON must use the enabled runtime default');
+        const legacy = JSON.parse(OpenKAIEditor.exportConfig());
+        legacy.camera.bON = 0;
+        OpenKAIEditor.loadDocument(legacy);
+        OpenKAIEditor.selectNode('/camera');
+        smokeAssert(document.querySelector(selector).selectedOptions[0].textContent === 'Existing value: 0', 'Legacy integer must remain visible for correction');
+        smokeAssert(JSON.parse(OpenKAIEditor.exportConfig()).camera.bON === 0, 'Import must preserve legacy integer until edited');
+        smokeAssert(OpenKAIEditor.model.validate().some(item => item.code === 'parameter-type' && item.path[0] === 'bON'), 'Legacy integer must be flagged as a type mismatch');
+        smokeChange(selector, 'false');
+        smokeAssert(JSON.parse(OpenKAIEditor.exportConfig()).camera.bON === false, 'Boolean selector must correct the legacy integer');
+        smokeAssert(!OpenKAIEditor.model.validate().some(item => item.code === 'parameter-type' && item.path[0] === 'bON'), 'Boolean correction must clear the type warning');
+    })()""")
+    checks.append("boolean bON defaults, editing/export, disabled indicators and legacy integer correction")
     fixture = editor.parents[3] / 'jsonCfg/helloOK.json'
     root = browser.call("DOM.getDocument")["root"]["nodeId"]
     control = browser.call("DOM.querySelector", nodeId=root, selector="#config-file")["nodeId"]

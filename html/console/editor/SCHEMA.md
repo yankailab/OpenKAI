@@ -92,7 +92,7 @@ Optional metadata includes:
 
 Absence of a default does not mean a field is required. Avoid filling every unknown field with zero or an empty string; omission preserves the application's behavior. Hardware overrides are intentionally left absent until explicitly configured. `name` and `class` identify the instance and should not receive the empty strings found in base-class member initializers. Embedded threads get their runtime name/class from `createThread`; the catalog does not inject duplicate child identities.
 
-`bON` is an integer module switch (`0` disabled, nonzero enabled). Current `ModuleMgr` calls `jKv<int>`; a JSON boolean is not accepted by that conversion. Older example files may therefore need `false` converted to `0` to disable the module reliably.
+`bON` is a boolean module switch (`false` disabled, `true` enabled), with a runtime default of `true`. `ModuleMgr` reads it as a C++ `bool`. Older integer values are preserved on import and flagged as type mismatches; use the inspector to replace them with JSON booleans.
 
 ## Dependencies
 
@@ -108,7 +108,7 @@ Absence of a default does not mean a field is required. Avoid filling every unkn
 }
 ```
 
-A dependency means the owning instance looks up another module by name. It is stored as the ordinary instance-name string in the exported config. The graph draws an arrow from the dependent instance to its provider (dependency socket to provider port). Compatible providers include `targetClass` and derived classes according to the catalog's inheritance tree.
+A dependency means the owning instance looks up another module by name. It is stored as the ordinary instance-name string in the exported config. The graph draws an arrow from the provider to the dependent instance that retains its pointer (provider port to dependency socket). Compatible providers include `targetClass` and derived classes according to the catalog's inheritance tree.
 
 `multiple: true` means the value at `path` is an array of module-name strings, such as `_Console.vBASE` or `_Mavlink.vRoutings`. A path containing a wildcard represents repeated fields; `multiple` still describes **each terminal value**, not the container:
 

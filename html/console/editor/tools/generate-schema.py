@@ -468,7 +468,7 @@ def adapters(records, files, constants, symbol):
     param('ModuleMgr',['bStdErr'],'boolean','src/Module/ModuleMgr.cpp:bStdErr',default=True)
     param('ModuleMgr',['vInclude'],'array','src/Module/ModuleMgr.cpp:loadJsonFiles',description='Additional config paths loaded by the OpenKAI runtime.')
     # ModuleMgr's switch is not read by the individual class.
-    param('BASE',['bON'],'integer','src/Module/ModuleMgr.cpp:createAll',default=1,description='0 disables this instance; nonzero enables it.')
+    param('BASE',['bON'],'boolean','src/Module/ModuleMgr.cpp:createAll',default=True,description='false disables this instance; true enables it.')
     # StateBase objects live under a keyed map, not in the module factory.
     records['_StateControl']['_embedded'].append((['states','*'],'StateBase'))
     records['_StateControl']['containers'].append({'path':['states'],'type':'object'})

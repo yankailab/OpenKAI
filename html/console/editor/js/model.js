@@ -268,7 +268,7 @@
                                 path: entry.path, fieldPath: field.path, reference: entry.value, definition,
                                 index: entry.index, resolved: !!target,
                                 compatible: target ? this.compatible(target.className, definition.targetClass) : false,
-                                targetDisabled: !!target && target.data.bON === 0,
+                                targetDisabled: !!target && target.data.bON === false,
                             });
                         }
                     }
