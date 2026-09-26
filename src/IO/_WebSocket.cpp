@@ -12,6 +12,8 @@ namespace kai
 
 	_WebSocket::_WebSocket()
 	{
+		m_nPacket = 1024;
+		m_nPbuffer = 512;
 		m_ioType = io_webSocket;
 		m_ioStatus = io_unknown;
 	}
@@ -25,17 +27,23 @@ namespace kai
 	bool _WebSocket::loadConfig(void)
 	{
 		IF_F(!this->_IObase::loadConfig());
-		const json &j = *m_pJ;
-
-		int nPacket = 1024;
-		int nPbuffer = 512;
-		jKv(j, "nPacket", nPacket);
-		jKv(j, "nPbuffer", nPbuffer);
-
-//		IF_F(!m_packetW.init(nPbuffer, nPacket));
-		IF_F(!m_packetR.init(nPbuffer, nPacket));
+		IF_F(!m_packetR.init(m_nPbuffer, m_nPacket));
 
 		return true;
+	}
+
+	bool _WebSocket::saveConfig(bool bExport)
+	{
+		if (!_IObase::saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
 	}
 
 	int _WebSocket::read(uint8_t *pBuf, int nB)

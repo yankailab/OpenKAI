@@ -6,6 +6,7 @@
  */
 
 #include "_PCcrop.h"
+#include <set>
 
 namespace kai
 {
@@ -26,6 +27,7 @@ namespace kai
 		const json *pJF = jK(j, "vFilter");
 		IF_F(!pJF || !pJF->is_object());
 		const json &jF = *pJF;
+		m_vFilter.clear();
 
 		for (auto it = jF.begin(); it != jF.end(); it++)
 		{
@@ -34,6 +36,7 @@ namespace kai
 
 			POINTCLOUD_VOL v;
 			v.init();
+			v.m_name = it.key();
 			jKv(Ji, "type", (int&)v.m_type);
 			jKv(Ji, "bInside", v.m_bInside);
 			jKv<float>(Ji, "vX", v.m_vX);
@@ -45,6 +48,57 @@ namespace kai
 		}
 
 		return true;
+	}
+
+	bool _PCcrop::saveConfig(bool bExport)
+	{
+		if (!_GeometryBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		json &filters = j["vFilter"];
+		if (!filters.is_object())
+		{
+			filters = json::object();
+		}
+
+		std::set<string> filterNames;
+		for (const POINTCLOUD_VOL &filter : m_vFilter)
+		{
+			filterNames.insert(filter.m_name);
+			json &entry = filters[filter.m_name];
+			if (!entry.is_object())
+			{
+				entry = json::object();
+			}
+			entry["type"] = static_cast<int>(filter.m_type);
+			entry["bInside"] = filter.m_bInside;
+			entry["vX"] = {filter.m_vX.x(), filter.m_vX.y()};
+			entry["vY"] = {filter.m_vY.x(), filter.m_vY.y()};
+			entry["vZ"] = {filter.m_vZ.x(), filter.m_vZ.y()};
+			entry["vC"] = {filter.m_vC.x(), filter.m_vC.y(), filter.m_vC.z()};
+			entry["vR"] = {filter.m_vR.x(), filter.m_vR.y()};
+		}
+
+		for (auto it = filters.begin(); it != filters.end();)
+		{
+			if (it.value().is_object() && filterNames.count(it.key()) == 0)
+			{
+				it = filters.erase(it);
+			}
+			else
+			{
+				++it;
+			}
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _PCcrop::start(void)

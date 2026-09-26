@@ -44,6 +44,24 @@ namespace kai
 		return true;
 	}
 
+	bool _WindowCV::saveConfig(bool bExport)
+	{
+		if (!_UIbase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["bFullScreen"] = m_bFullScreen;
+		j["vSize"] = {m_vSize.x(), m_vSize.y()};
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _WindowCV::start(void)
 	{
 		NULL_F(m_pT);

@@ -25,6 +25,20 @@ namespace kai
 		return true;
 	}
 
+	bool Destimator::saveConfig(bool bExport)
+	{
+		if (!BASE::saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	double Destimator::v(int x)
 	{
 		return 0.0; // m_vOut;

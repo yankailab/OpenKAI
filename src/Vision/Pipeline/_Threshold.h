@@ -21,6 +21,7 @@ namespace kai
 
 	struct IMG_THRESHOLD
 	{
+		string m_name;
 		int m_type;
 		double m_vMax;
 		int m_method;
@@ -50,6 +51,7 @@ namespace kai
 		virtual ~_Threshold();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual bool start(void);
 

@@ -30,6 +30,23 @@ namespace kai
 		return true;
 	}
 
+	bool _ObjectArray::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["nBuf"] = m_nBuf;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	int _ObjectArray::init(int n)
 	{
 		if (n > 0)

@@ -32,6 +32,7 @@ namespace kai
 
 		//general
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual void clear(void);
 		virtual bool start(void);
 		virtual void update(void);

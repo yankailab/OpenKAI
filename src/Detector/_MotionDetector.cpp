@@ -51,6 +51,24 @@ namespace kai
 		return true;
 	}
 
+	bool _MotionDetector::saveConfig(bool bExport)
+	{
+		if (!_DetectorBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["algorithm"] = m_algorithm;
+		j["learningRate"] = m_learningRate;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _MotionDetector::link(void)
 	{
 		IF_F(!this->_ModuleBase::link());

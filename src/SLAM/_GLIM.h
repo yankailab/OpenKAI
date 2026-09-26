@@ -53,7 +53,7 @@ namespace kai
 		void console(const json &j, void *pJSONbase) override;
 		json status(void);
 		GLIM_MAP_SNAPSHOT submapSnapshot(uint64_t knownSession, uint64_t knownRevision);
-		bool saveConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		bool savePointCloud(const string &path, size_t &count, string &error);
 
 		// Stop tracking first. The finished map survives stopTracking().

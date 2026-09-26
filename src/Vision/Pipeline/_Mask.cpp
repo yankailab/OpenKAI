@@ -25,6 +25,20 @@ namespace kai
 		return true;
 	}
 
+	bool _Mask::saveConfig(bool bExport)
+	{
+		if (!_VisionBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _Mask::link(void)
 	{
 		IF_F(!this->_VisionBase::link());

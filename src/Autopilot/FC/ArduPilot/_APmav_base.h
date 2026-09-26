@@ -33,6 +33,7 @@ namespace kai
 		~_APmav_base();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual bool start(void);
 		virtual bool check(void);

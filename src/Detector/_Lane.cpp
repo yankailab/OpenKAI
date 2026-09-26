@@ -51,6 +51,7 @@ namespace kai
 				IF_CONT(!Ji.is_object());
 
 				LANE_FILTER *pF = &m_pFilter[m_nFilter];
+				pF->m_name = it.key();
 				jKv(Ji, "iColorSpace", pF->m_iColorSpace);
 				jKv(Ji, "iChannel", pF->m_iChannel);
 				jKv(Ji, "nTile", pF->m_nTile);
@@ -63,10 +64,8 @@ namespace kai
 		}
 
 		// lanes
-		int nAvr = 0;
-		jKv(j, "nAvr", nAvr);
-		int nMed = 0;
-		jKv(j, "nMed", nMed);
+		jKv(j, "nAvr", m_nAvr);
+		jKv(j, "nMed", m_nMed);
 		m_nLane = 0;
 		const json *pJL = jK(j, "lane");
 		if (pJL && pJL->is_object())
@@ -80,7 +79,8 @@ namespace kai
 				IF_CONT(!Ji.is_object());
 
 				LANE *pLane = &m_pLane[m_nLane];
-				pLane->init(m_sizeOverhead.y(), nAvr, nMed);
+				pLane->m_name = it.key();
+				pLane->init(m_sizeOverhead.y(), m_nAvr, m_nMed);
 				jKv<float>(Ji, "vROI", pLane->m_ROI);
 
 				m_nLane++;
@@ -96,6 +96,51 @@ namespace kai
 		}
 
 		return true;
+	}
+
+	bool _Lane::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["bDrawOverhead"] = m_bDrawOverhead;
+		j["bDrawFilter"] = m_bDrawFilter;
+		j["binMed"] = m_binMed;
+		j["vRoiLT"] = {m_vRoiLT.x(), m_vRoiLT.y()};
+		j["vRoiLB"] = {m_vRoiLB.x(), m_vRoiLB.y()};
+		j["vRoiRT"] = {m_vRoiRT.x(), m_vRoiRT.y()};
+		j["vRoiRB"] = {m_vRoiRB.x(), m_vRoiRB.y()};
+		j["overheadW"] = m_sizeOverhead.x();
+		j["overheadH"] = m_sizeOverhead.y();
+		j["nAvr"] = m_nAvr;
+		j["nMed"] = m_nMed;
+
+		for (int i = 0; i < m_nFilter; i++)
+		{
+			const LANE_FILTER &filter = m_pFilter[i];
+			json &jFilter = j["colorFilters"][filter.m_name];
+			jFilter["iColorSpace"] = filter.m_iColorSpace;
+			jFilter["iChannel"] = filter.m_iChannel;
+			jFilter["nTile"] = filter.m_nTile;
+			jFilter["thr"] = filter.m_thr;
+			jFilter["clipLim"] = filter.m_clipLim;
+		}
+
+		for (int i = 0; i < m_nLane; i++)
+		{
+			const LANE &lane = m_pLane[i];
+			json &jLane = j["lane"][lane.m_name];
+			jLane["vROI"] = {lane.m_ROI.x(), lane.m_ROI.y(), lane.m_ROI.z(), lane.m_ROI.w()};
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _Lane::link(void)

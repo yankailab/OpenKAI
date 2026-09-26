@@ -59,6 +59,44 @@ namespace kai
         return true;
     }
 
+    bool _XDynamics::saveConfig(bool bExport)
+    {
+        if (!_RGBDbase::saveConfig(false))
+        {
+            return false;
+        }
+
+        json &j = *m_pJ;
+        j["xdDevType"] = m_xdDevType;
+        j["xdProductType"] = m_xdProductType;
+        j["vPhaseInt"] = {m_xdCtrl.m_vPhaseInt.x(), m_xdCtrl.m_vPhaseInt.y(), m_xdCtrl.m_vPhaseInt.z(), m_xdCtrl.m_vPhaseInt.w()};
+        j["vSpaceInt"] = {m_xdCtrl.m_vSpaceInt.x(), m_xdCtrl.m_vSpaceInt.y(), m_xdCtrl.m_vSpaceInt.z(), m_xdCtrl.m_vSpaceInt.w()};
+        j["vFreq"] = {m_xdCtrl.m_vFreq.x(), m_xdCtrl.m_vFreq.y()};
+        j["binning"] = m_xdCtrl.m_binning;
+        j["phaseMode"] = m_xdCtrl.m_phaseMode;
+        j["mirrorMode"] = m_xdCtrl.m_mirrorMode;
+        j["algMode"] = m_xdCtrl.m_algMode;
+        j["rgbStride"] = m_xdCtrl.m_rgbStride;
+        j["rgbFmt"] = m_xdCtrl.m_rgbFmt;
+        j["bAE"] = m_xdCtrl.m_bAE;
+        j["preDist"] = m_xdCtrl.m_preDist;
+        j["DtdnMethod"] = m_xdCtrl.m_DtdnMethod;
+        j["DtdnLev"] = m_xdCtrl.m_DtdnLev;
+        j["DsdnMethod"] = m_xdCtrl.m_DsdnMethod;
+        j["DsdnLev"] = m_xdCtrl.m_DsdnLev;
+        j["GtdnMethod"] = m_xdCtrl.m_GtdnMethod;
+        j["GtdnLev"] = m_xdCtrl.m_GtdnLev;
+        j["GsdnMethod"] = m_xdCtrl.m_GsdnMethod;
+        j["GsdnLev"] = m_xdCtrl.m_GsdnLev;
+        j["dFlyPixLev"] = m_xdCtrl.m_dFlyPixLev;
+
+        if (!bExport)
+        {
+            return true;
+        }
+        return m_pJcfg->saveToFile();
+    }
+
     bool _XDynamics::link(void)
     {
         IF_F(!this->_RGBDbase::link());

@@ -18,6 +18,20 @@ namespace kai
 		return true;
 	}
 
+	bool _APmav_RTCM::saveConfig(bool bExport)
+	{
+		if (!_RTCMcast::saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _APmav_RTCM::link(void)
 	{
 		IF_F(!this->_ProtocolBase::link());	// Do not use _RTCM::link as we send to _Mavlink thus the _IObaseSend is not needed

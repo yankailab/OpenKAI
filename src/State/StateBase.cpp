@@ -23,6 +23,23 @@ namespace kai
 		return true;
 	}
 
+	bool StateBase::saveConfig(bool bExport)
+	{
+		if (!BASE::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["next"] = m_next;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool StateBase::link(void)
 	{
 		IF_F(!this->BASE::link());

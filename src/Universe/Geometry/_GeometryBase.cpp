@@ -32,13 +32,17 @@ namespace kai
         return true;
     }
 
-    bool _GeometryBase::saveConfig(void)
+    bool _GeometryBase::saveConfig(bool bExport)
     {
-        if (!_ReferenceFrame::saveConfig())
+        if (!_ReferenceFrame::saveConfig(false))
         {
             return false;
         }
 
+        if (!bExport)
+        {
+            return true;
+        }
         return m_pJcfg->saveToFile();
     }
 

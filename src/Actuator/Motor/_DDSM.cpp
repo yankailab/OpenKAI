@@ -23,6 +23,25 @@ namespace kai
 		return true;
 	}
 
+	bool _DDSM::saveConfig(bool bExport)
+	{
+		if (!_ActuatorBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		if (m_pTr && !m_pTr->saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _DDSM::link(void)
 	{
 		IF_F(!this->_ActuatorBase::link());

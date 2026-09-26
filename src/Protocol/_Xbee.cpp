@@ -23,6 +23,25 @@ namespace kai
         return true;
     }
 
+    bool _Xbee::saveConfig(bool bExport)
+    {
+        if (!_ProtocolBase::saveConfig(false))
+        {
+            return false;
+        }
+
+        json &j = *m_pJ;
+        std::ostringstream address;
+        address << std::hex << m_myAddr;
+        j["myAddr"] = address.str();
+
+        if (!bExport)
+        {
+            return true;
+        }
+        return m_pJcfg->saveToFile();
+    }
+
     bool _Xbee::link(void)
     {
         IF_F(!this->_ProtocolBase::link());
@@ -177,7 +196,7 @@ namespace kai
 
     uint64_t _Xbee::getAddr(const string &sAddr)
     {
-        return strtol(sAddr.c_str(), NULL, 16);
+        return strtoull(sAddr.c_str(), NULL, 16);
     }
 
     bool _Xbee::setCbReceivePacket(CbXBeeReceivePacket pCb, void *pInst)

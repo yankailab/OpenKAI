@@ -30,6 +30,8 @@ namespace kai
 		// jKv(j,"ieHdgNs",ieHdg);//""
 		// m_ieHdgCmd.init(ieHdg);
 
+		m_pTag = nullptr;
+		m_vTags.clear();
 		const json *pJc = jK(j, "tags");
 		IF__(!pJc || !pJc->is_object(), true);
 		const json &jc = *pJc;
@@ -40,6 +42,7 @@ namespace kai
 			IF_CONT(!Ji.is_object());
 
 			AP_LAND_TAG t;
+			t.m_configKey = it.key();
 			jKv(Ji, "id", t.m_id);
 			jKv(Ji, "priority", t.m_priority);
 			jKv<float>(Ji, "vSize", t.m_vSize);
@@ -48,6 +51,53 @@ namespace kai
 		}
 
 		return true;
+	}
+
+	bool _APmav_land::saveConfig(bool bExport)
+	{
+		if (!_APmav_follow::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["vDSrange"] = {m_vDSrange[0], m_vDSrange[1]};
+		j["vFov"] = {m_vFov[0], m_vFov[1]};
+		j["vComplete"] = {m_vComplete[0], m_vComplete[1], m_vComplete[2], m_vComplete[3]};
+		j["zrK"] = m_zrK;
+
+		json &tags = j["tags"];
+		if (!tags.is_object())
+		{
+			tags = json::object();
+		}
+		for (size_t i = 0; i < m_vTags.size(); ++i)
+		{
+			AP_LAND_TAG &entry = m_vTags[i];
+			if (entry.m_configKey.empty())
+			{
+				entry.m_configKey = std::to_string(i);
+				while (tags.contains(entry.m_configKey))
+				{
+					entry.m_configKey += "_";
+				}
+			}
+			json &value = tags[entry.m_configKey];
+			if (!value.is_object())
+			{
+				value = json::object();
+			}
+			value["id"] = entry.m_id;
+			value["priority"] = entry.m_priority;
+			value["vSize"] = {entry.m_vSize[0], entry.m_vSize[1]};
+			value["vKdist"] = {entry.m_vKdist[0], entry.m_vKdist[1]};
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _APmav_land::link(void)

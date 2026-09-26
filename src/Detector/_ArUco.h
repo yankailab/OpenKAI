@@ -20,6 +20,7 @@ namespace kai
 		virtual ~_ArUco();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void draw(void *pMat);
@@ -42,6 +43,7 @@ namespace kai
 
 		// optional camera matrix
 		bool m_bPose = false;
+		string m_fCalib;
 		Mat m_mC;		// Intrinsic
 		Mat m_mCscaled; // scaled with input image size
 		Mat m_mD;		// Distortion

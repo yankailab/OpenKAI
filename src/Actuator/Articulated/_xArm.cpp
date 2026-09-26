@@ -25,6 +25,25 @@ namespace kai
 		return true;
 	}
 
+	bool _xArm::saveConfig(bool bExport)
+	{
+		if (!_ActuatorBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["ip"] = m_ip;
+		j["mode"] = m_mode;
+		j["state"] = m_state;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _xArm::start(void)
 	{
 		NULL_F(m_pT);

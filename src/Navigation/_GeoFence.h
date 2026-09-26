@@ -24,7 +24,7 @@ namespace kai
 		virtual void console(void *pConsole);
 		virtual void console(const json &j, void *pJSONbase);
 
-		virtual bool saveConfig(void) override;
+		virtual bool saveConfig(bool bExport) override;
 
 		virtual _GeoFence_TYPE getType(void);
 		void setPosHdg(const Vector2d& vP, float hdgDeg);	// lat lon

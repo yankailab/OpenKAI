@@ -27,6 +27,20 @@ namespace kai
 		return true;
 	}
 
+	bool _SingleTracker::saveConfig(bool bExport)
+	{
+		if (!_TrackerBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	void _SingleTracker::createTracker(void)
 	{
 		//	if (m_trackerType == "mil")

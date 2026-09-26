@@ -31,6 +31,7 @@ namespace kai
 		virtual ~_Uploader();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void console(void *pConsole);

@@ -21,6 +21,7 @@ namespace kai
 		virtual ~_D2RGB();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual bool start(void);
 		virtual void draw(void *pMat);

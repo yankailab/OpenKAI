@@ -17,3 +17,13 @@ of unrelated settings, and write failure propagation. Enabled Universe, Scepter,
 Orbbec, and GLIM features additionally exercise save/reload round trips and viewer
 save commands. Optional cases compile only when their dependencies are enabled
 in that build.
+
+Export-control checks verify that `saveConfig(false)` updates the bound JSON
+without changing files, including when the destination cannot be written.
+They cover BASE, inherited geometry settings, and embedded threads;
+`saveConfig(true)` then exports the complete updated configuration.
+
+Additional save-coverage checks change runtime scalar/vector settings, camera and
+RGBD settings, named pipeline filters, nested ports and threads, full-width radio
+addresses, and fractional RTCM intervals. They verify saved files and reloads,
+including settings removed from the source JSON before saving.

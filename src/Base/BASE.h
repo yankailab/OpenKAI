@@ -30,7 +30,7 @@ namespace kai
 		string getClass(void);
 
 		virtual bool loadConfig(void);
-		virtual bool saveConfig(void);
+		virtual bool saveConfig(bool bExport);
 
 		virtual bool link(void);
 		virtual bool start(void);

@@ -37,15 +37,23 @@ namespace kai
 		return true;
 	}
 
-	bool _GeoFence::saveConfig(void)
+	bool _GeoFence::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig())
+		if (!_ModuleBase::saveConfig(false))
 		{
 			return false;
 		}
 
-		(*m_pJ)["vPolygon"] = m_vPolygon;
+		json &j = *m_pJ;
+		j["type"] = m_type;
+		j["estD"] = m_estD;
+		j["vP"] = {m_vP[0], m_vP[1]};
+		j["vPolygon"] = m_vPolygon;
 
+		if (!bExport)
+		{
+			return true;
+		}
 		return m_pJcfg->saveToFile();
 	}
 
@@ -144,7 +152,7 @@ namespace kai
 			{
 			}
 
-			const bool bSuccess = saveConfig();
+			const bool bSuccess = saveConfig(true);
 
 			NULL_(pJb);
 			json jr = json::object();

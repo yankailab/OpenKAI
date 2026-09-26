@@ -837,6 +837,23 @@ namespace kai
 		return true;
 	}
 
+	bool _PCfile::saveConfig(bool bExport)
+	{
+		if (!_PointCloud::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["vfName"] = m_vfName;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _PCfile::open(void)
 	{
 		IF_F(m_vfName.empty());

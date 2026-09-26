@@ -18,6 +18,20 @@ namespace kai
 		return true;
 	}
 
+	bool _APmav_copter::saveConfig(bool bExport)
+	{
+		if (!_APmav_base::saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _APmav_copter::link(void)
 	{
 		IF_F(!this->_APmav_base::link());

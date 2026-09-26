@@ -96,6 +96,71 @@ namespace kai
         return true;
     }
 
+    bool _Livox2::saveConfig(bool bExport)
+    {
+        if (!_PointCloud::saveConfig(false))
+        {
+            return false;
+        }
+
+        json &j = *m_pJ;
+        j["lvxSN"] = m_lvxSN;
+        j["lvxPCLdataType"] = m_lvxCfg.m_pclDataType;
+        j["lvxPatternMode"] = m_lvxCfg.m_patternMode;
+        j["lvxHostPortState"] = m_lvxCfg.m_hostPortState;
+        j["lvxHostPortPCL"] = m_lvxCfg.m_hostPortPCL;
+        j["lvxHostPortIMU"] = m_lvxCfg.m_hostPortIMU;
+        j["lvxFrameRate"] = m_lvxCfg.m_frameRate;
+        j["lvxDetectMode"] = m_lvxCfg.m_detectMode;
+        j["lvxWorkModeAfterBoot"] = m_lvxCfg.m_workModeAfterBoot;
+        j["lvxWorkMode"] = m_lvxCfg.m_workMode;
+        j["lvxIMUdataEn"] = m_lvxCfg.m_imuDataEn;
+        j["bIMUstab"] = m_bIMUstab;
+        const uint8_t *pIP = reinterpret_cast<const uint8_t *>(&m_lvxIP);
+        j["lvxIP"] = std::to_string(pIP[0]) + "." + std::to_string(pIP[1]) + "." +
+            std::to_string(pIP[2]) + "." + std::to_string(pIP[3]);
+        pIP = reinterpret_cast<const uint8_t *>(&m_lvxCfg.m_hostIP);
+        j["lvxHostIP"] = std::to_string(pIP[0]) + "." + std::to_string(pIP[1]) + "." +
+            std::to_string(pIP[2]) + "." + std::to_string(pIP[3]);
+        j["tOutSec"] = m_lvxTout.m_tOut / NSEC_SEC;
+
+        if (m_pTdeviceQueryR && !m_pTdeviceQueryR->saveConfig(false))
+        {
+            return false;
+        }
+
+        if (m_pTctrlCmdW && !m_pTctrlCmdW->saveConfig(false))
+        {
+            return false;
+        }
+
+        if (m_pTctrlCmdR && !m_pTctrlCmdR->saveConfig(false))
+        {
+            return false;
+        }
+
+        if (m_pTpushCmdR && !m_pTpushCmdR->saveConfig(false))
+        {
+            return false;
+        }
+
+        if (m_pTpclR && !m_pTpclR->saveConfig(false))
+        {
+            return false;
+        }
+
+        if (m_pTimuR && !m_pTimuR->saveConfig(false))
+        {
+            return false;
+        }
+
+        if (!bExport)
+        {
+            return true;
+        }
+        return m_pJcfg->saveToFile();
+    }
+
     bool _Livox2::link(void)
     {
         IF_F(!this->_PointCloud::link());

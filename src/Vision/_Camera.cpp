@@ -32,6 +32,25 @@ namespace kai
 		return true;
 	}
 
+	bool _Camera::saveConfig(bool bExport)
+	{
+		if (!_VisionBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["deviceID"] = m_deviceID;
+		j["nInitRead"] = m_nInitRead;
+		j["bResetCam"] = m_bResetCam;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _Camera::open(void)
 	{
 		IF_F(!check());

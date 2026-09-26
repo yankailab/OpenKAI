@@ -34,6 +34,23 @@ namespace kai
         return true;
     }
 
+    bool _PointCloud::saveConfig(bool bExport)
+    {
+        if (!_GeometryBase::saveConfig(false))
+        {
+            return false;
+        }
+
+        json &j = *m_pJ;
+        j["nP"] = m_grPt.m_nT;
+
+        if (!bExport)
+        {
+            return true;
+        }
+        return m_pJcfg->saveToFile();
+    }
+
     void _PointCloud::clear(void)
     {
         std::scoped_lock lock(m_mtxPt, m_mtxFrame);

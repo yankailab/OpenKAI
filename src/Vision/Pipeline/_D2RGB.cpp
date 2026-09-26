@@ -32,6 +32,26 @@ namespace kai
 		return true;
 	}
 
+	bool _D2RGB::saveConfig(bool bExport)
+	{
+		if (!_RGBDbase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["nHistLev"] = m_nHistLev;
+		j["iHistFrom"] = m_iHistFrom;
+		j["minHistD"] = m_minHistD;
+		j["bMeasure"] = m_bMeasure;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _D2RGB::link(void)
 	{
 		IF_F(!this->_RGBDbase::link());

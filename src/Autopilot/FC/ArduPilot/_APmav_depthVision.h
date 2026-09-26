@@ -12,6 +12,7 @@ namespace kai
 
 	struct DEPTH_ROI
 	{
+		string m_configKey;
 		uint8_t m_orientation;
 		Vector4f m_roi = Vector4f::Zero();
 		float m_minD;
@@ -31,6 +32,7 @@ namespace kai
 		~_APmav_depthVision();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual void update(void);
 		virtual void draw(void *pMat);

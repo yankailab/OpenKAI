@@ -24,6 +24,7 @@ namespace kai
 		IF_F(!_VisionBase::loadConfig());
 		const json &j = *m_pJ;
 
+		m_vFilter.clear();
 		const json *pJF = jK(j, "filters");
 		IF__(!pJF || !pJF->is_object(), true);
 		const json &jF = *pJF;
@@ -35,6 +36,7 @@ namespace kai
 
 			IMG_THRESHOLD t;
 			t.init();
+			t.m_name = it.key();
 			jKv(Ji, "type", t.m_type);
 			jKv(Ji, "vMax", t.m_vMax);
 			jKv(Ji, "bAutoThr", t.m_bAutoThr);
@@ -48,6 +50,34 @@ namespace kai
 		}
 
 		return true;
+	}
+
+	bool _Threshold::saveConfig(bool bExport)
+	{
+		if (!_VisionBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		for (const IMG_THRESHOLD &filter : m_vFilter)
+		{
+			json &jFilter = j["filters"][filter.m_name];
+			jFilter["type"] = filter.m_type;
+			jFilter["vMax"] = filter.m_vMax;
+			jFilter["bAutoThr"] = filter.m_bAutoThr;
+			jFilter["thr"] = filter.m_thr;
+			jFilter["method"] = filter.m_method;
+			jFilter["thrType"] = filter.m_thrType;
+			jFilter["blockSize"] = filter.m_blockSize;
+			jFilter["C"] = filter.m_C;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _Threshold::link(void)

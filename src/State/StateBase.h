@@ -25,6 +25,7 @@ namespace kai
 		~StateBase();
 
 		bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		bool link(void) override;
 		virtual void console(void *pConsole);
 

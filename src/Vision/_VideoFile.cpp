@@ -29,6 +29,23 @@ namespace kai
 		return true;
 	}
 
+	bool _VideoFile::saveConfig(bool bExport)
+	{
+		if (!_VisionBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["videoFile"] = m_videoFile;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _VideoFile::open(void)
 	{
 		m_vc.open(m_videoFile);

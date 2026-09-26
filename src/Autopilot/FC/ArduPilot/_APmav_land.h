@@ -10,6 +10,7 @@ namespace kai
 {
 	struct AP_LAND_TAG
 	{
+		string m_configKey;
 		int m_id = -1;
 		int m_priority = 0;
 		Vector2f m_vSize = {0, FLT_MAX}; // effective size range
@@ -29,6 +30,7 @@ namespace kai
 		~_APmav_land();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual bool start(void);
 		virtual bool check(void);

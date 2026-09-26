@@ -47,6 +47,24 @@ namespace kai
 		return true;
 	}
 
+	bool _GstOutput::saveConfig(bool bExport)
+	{
+		if (!_UIbase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["vSize"] = {m_vSize.x(), m_vSize.y()};
+		j["gstOutput"] = m_gstOutput;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _GstOutput::start(void)
 	{
 		NULL_F(m_pT);

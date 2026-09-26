@@ -25,6 +25,20 @@ namespace kai
 		return true;
 	}
 
+	bool _UIbase::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _UIbase::link(void)
 	{
 		IF_F(!this->_ModuleBase::link());

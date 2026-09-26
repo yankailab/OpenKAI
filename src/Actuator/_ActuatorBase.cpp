@@ -102,6 +102,55 @@ namespace kai
 		return true;
 	}
 
+	bool _ActuatorBase::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["ID"] = m_ID;
+		j["mode"] = m_mode;
+		j["pOrigin"] = m_origin;
+		j["p"] = m_p.m_v;
+		j["pTarget"] = m_p.m_vTarget;
+		j["pErr"] = m_p.m_vErr;
+		j["pRange"] = {m_p.m_vRange[0], m_p.m_vRange[1]};
+		j["s"] = m_s.m_v;
+		j["sTarget"] = m_s.m_vTarget;
+		j["sErr"] = m_s.m_vErr;
+		j["sRange"] = {m_s.m_vRange[0], m_s.m_vRange[1]};
+		j["a"] = m_a.m_v;
+		j["aTarget"] = m_a.m_vTarget;
+		j["aErr"] = m_a.m_vErr;
+		j["aRange"] = {m_a.m_vRange[0], m_a.m_vRange[1]};
+		j["b"] = m_b.m_v;
+		j["bTarget"] = m_b.m_vTarget;
+		j["bErr"] = m_b.m_vErr;
+		j["bRange"] = {m_b.m_vRange[0], m_b.m_vRange[1]};
+		j["c"] = m_c.m_v;
+		j["cTarget"] = m_c.m_vTarget;
+		j["cErr"] = m_c.m_vErr;
+		j["cRange"] = {m_c.m_vRange[0], m_c.m_vRange[1]};
+		j["tCmdTimeoutNs"] = m_tCmdTimeoutNs;
+		j["tIntCheckAlarm"] = m_ieCheckAlarm.m_tInterval;
+		j["tIntReadStatus"] = m_ieReadStatus.m_tInterval;
+		j["tIntSendCMD"] = m_ieSendCMD.m_tInterval;
+		j["bfSetPower"] = m_bfSet.b(actuator_power);
+		j["bfSetID"] = m_bfSet.b(actuator_setID);
+		j["bfSetMode"] = m_bfSet.b(actuator_setMode);
+		j["bfGotoOrigin"] = m_bfSet.b(actuator_gotoOrigin);
+		j["bfClearAlarm"] = m_bfSet.b(actuator_clearAlarm);
+		j["bfMove"] = m_bfSet.b(actuator_move);
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _ActuatorBase::link(void)
 	{
 		IF_F(!this->_ModuleBase::link());

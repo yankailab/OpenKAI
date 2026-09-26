@@ -14,6 +14,7 @@ namespace kai
 		~_Modbus();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool start(void);
 		virtual bool check(void);
 		bool open(void);

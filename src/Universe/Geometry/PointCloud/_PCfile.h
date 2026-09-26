@@ -20,6 +20,7 @@ namespace kai
 		virtual ~_PCfile();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool start(void);
 		bool open(void);
 		// Binary little-endian XYZ float32 and RGB uint8. Missing/nonfinite

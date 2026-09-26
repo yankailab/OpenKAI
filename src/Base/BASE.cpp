@@ -83,18 +83,20 @@ namespace kai
 		return true;
 	}
 
-	bool BASE::saveConfig(void)
+	bool BASE::saveConfig(bool bExport)
 	{
 		if (!m_pM || !m_pJcfg || !m_pJ || !m_pJ->is_object())
 		{
 			return false;
 		}
 
-		// Update shared fields in place; derived savers write the owning file.
+		// Update shared fields in place, preserving the rest of the document.
 		(*m_pJ)["name"] = m_name;
 		(*m_pJ)["class"] = m_class;
 		(*m_pJ)["bLog"] = m_bLog;
-		return true;
+
+		IF__(!bExport, true);
+		return m_pJcfg->saveToFile();
 	}
 
 	bool BASE::link(void)

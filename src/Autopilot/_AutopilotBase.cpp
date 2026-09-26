@@ -21,6 +21,23 @@ namespace kai
 		return true;
 	}
 
+	bool _AutopilotBase::saveConfig(bool bExport)
+	{
+		if (!_ReferenceFrame::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["type"] = m_type;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _AutopilotBase::link(void)
 	{
 		IF_F(!this->_ReferenceFrame::link());

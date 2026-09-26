@@ -8,6 +8,7 @@ namespace kai
 {
     struct DRIVE_MOTOR
     {
+        string m_configKey;
         float m_kSpd = 1.0; // velocity +/-
         float m_kStr = 1.0;
         float m_spd = 0.0;;
@@ -29,6 +30,7 @@ namespace kai
         ~_ApDrive();
 
         virtual bool loadConfig(void) override;
+        bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
         virtual bool start(void);
         virtual bool check(void);

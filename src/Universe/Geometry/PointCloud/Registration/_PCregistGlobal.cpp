@@ -32,6 +32,26 @@ namespace kai
         return true;
     }
 
+    bool _PCregistGlobal::saveConfig(bool bExport)
+    {
+        if (!_ModuleBase::saveConfig(false))
+        {
+            return false;
+        }
+
+        json &j = *m_pJ;
+        j["rNormal"] = m_rNormal;
+        j["rFeature"] = m_rFeature;
+        j["maxNNnormal"] = m_maxNNnormal;
+        j["maxNNfpfh"] = m_maxNNfpfh;
+
+        if (!bExport)
+        {
+            return true;
+        }
+        return m_pJcfg->saveToFile();
+    }
+
     bool _PCregistGlobal::link(void)
     {
         IF_F(!this->_ModuleBase::link());

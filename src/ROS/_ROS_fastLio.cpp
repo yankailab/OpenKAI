@@ -33,6 +33,34 @@ namespace kai
         return pJnode && m_pROSnode->init(*pJnode);
     }
 
+    bool _ROS_fastLio::saveConfig(bool bExport)
+    {
+        if (!_NavBase::saveConfig(false))
+        {
+            return false;
+        }
+
+        json &j = *m_pJ;
+        if (m_pROSnode)
+        {
+            json &node = j["node"];
+            node["topicPC2"] = m_pROSnode->m_topicPC2;
+            node["topicOdom"] = m_pROSnode->m_topicOdom;
+            node["topicPath"] = m_pROSnode->m_topicPath;
+        }
+
+        if (m_pTros && !m_pTros->saveConfig(false))
+        {
+            return false;
+        }
+
+        if (!bExport)
+        {
+            return true;
+        }
+        return m_pJcfg->saveToFile();
+    }
+
     bool _ROS_fastLio::link(void)
     {
         IF_F(!this->_NavBase::link());

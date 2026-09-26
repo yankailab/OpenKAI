@@ -21,6 +21,20 @@ namespace kai
 		return true;
 	}
 
+	bool _File::saveConfig(bool bExport)
+	{
+		if (!_IObase::saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _File::open(const string &fName, ios_base::openmode mode)
 	{
 		IF__(m_ioStatus == io_opened, true);

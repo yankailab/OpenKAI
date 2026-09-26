@@ -27,6 +27,26 @@ namespace kai
         return true;
     }
 
+    bool _RoboSenseAiry::saveConfig(bool bExport)
+    {
+        if (!_PointCloud::saveConfig(false))
+        {
+            return false;
+        }
+
+
+        if (m_pTdifop && !m_pTdifop->saveConfig(false))
+        {
+            return false;
+        }
+
+        if (!bExport)
+        {
+            return true;
+        }
+        return m_pJcfg->saveToFile();
+    }
+
     bool _RoboSenseAiry::link(void)
     {
         IF_F(!this->_PointCloud::link());

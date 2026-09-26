@@ -48,6 +48,39 @@ namespace kai
 		return true;
 	}
 
+	bool _LeddarVu::saveConfig(bool bExport)
+	{
+		if (!_DistSensorBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["port"] = m_port;
+		j["baud"] = m_baud;
+		j["slaveAddr"] = m_slaveAddr;
+		j["bUse0x41"] = m_bUse0x41;
+		j["showOriginOffsetX"] = m_showOriginOffsetX;
+		j["showOriginOffsetY"] = m_showOriginOffsetY;
+		j["nAccumulationsExpo"] = m_nAccumulationsExpo;
+		j["nOversamplingsExpo"] = m_nOversamplingsExpo;
+		j["nPoint"] = m_nPoint;
+		j["lightSrcPwr"] = m_lightSrcPwr;
+		j["bAutoLightSrcPwr"] = m_bAutoLightSrcPwr;
+		j["bDemergeObj"] = m_bDemergeObj;
+		j["bStaticNoiseRemoval"] = m_bStaticNoiseRemoval;
+		j["bPrecicion"] = m_bPrecision;
+		j["bSaturationCompensation"] = m_bSaturationCompensation;
+		j["bOvershootManagement"] = m_bOvershootManagement;
+		j["oprMode"] = m_oprMode;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _LeddarVu::start(void)
 	{
 		NULL_F(m_pT);

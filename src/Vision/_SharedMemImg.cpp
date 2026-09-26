@@ -29,6 +29,23 @@ namespace kai
         return true;
     }
 
+    bool _SharedMemImg::saveConfig(bool bExport)
+    {
+        if (!_VisionBase::saveConfig(false))
+        {
+            return false;
+        }
+
+        json &j = *m_pJ;
+        j["matType"] = m_matType;
+
+        if (!bExport)
+        {
+            return true;
+        }
+        return m_pJcfg->saveToFile();
+    }
+
     bool _SharedMemImg::link(void)
     {
         IF_F(!this->_VisionBase::link());

@@ -48,6 +48,27 @@ namespace kai
 		return true;
 	}
 
+	bool _DetectorBase::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["fModel"] = m_fModel;
+		j["fWeight"] = m_fWeight;
+		j["fMean"] = m_fMean;
+		j["fClass"] = m_fClass;
+		j["vClass"] = m_vClass;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _DetectorBase::link(void)
 	{
 		IF_F(!this->_ModuleBase::link());

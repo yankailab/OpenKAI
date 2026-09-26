@@ -75,6 +75,7 @@ namespace kai
 		virtual ~_ImGUIselectableOctGrid();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual bool start(void) override;
 		virtual bool check(void) override;

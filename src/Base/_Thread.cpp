@@ -63,14 +63,18 @@ namespace kai
 		return true;
 	}
 
-	bool _Thread::saveConfig(void)
+	bool _Thread::saveConfig(bool bExport)
 	{
-		if (!BASE::saveConfig())
+		if (!BASE::saveConfig(false))
 		{
 			return false;
 		}
 
 		(*m_pJ)["FPS"] = m_targetFPS;
+		if (!bExport)
+		{
+			return true;
+		}
 		return m_pJcfg->saveToFile();
 	}
 

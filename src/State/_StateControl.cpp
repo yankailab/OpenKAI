@@ -61,9 +61,8 @@ namespace kai
 
 		IF__(m_vpState.empty(), true);
 
-		string start = "";
-		jKv(j, "start", start);
-		int i = getStateIdxByName(start);
+		jKv(j, "start", m_start);
+		int i = getStateIdxByName(m_start);
 		if (i < 0)
 		{
 			m_iS = 0;
@@ -74,6 +73,30 @@ namespace kai
 		}
 
 		return true;
+	}
+
+	bool _StateControl::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["start"] = m_start;
+		for (StateBase *pState : m_vpState)
+		{
+			if (!pState->saveConfig(false))
+			{
+				return false;
+			}
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _StateControl::link(void)

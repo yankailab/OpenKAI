@@ -63,6 +63,37 @@ namespace kai
 		return true;
 	}
 
+	bool _GeometryViewerBase::saveConfig(bool bExport)
+	{
+		if (!_GeometryBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["vWinSize"] = {m_vWinSize.x(), m_vWinSize.y()};
+		j["bFullScreen"] = m_bFullScreen;
+		j["dirSave"] = m_dirSave;
+		j["camProjType"] = m_camProj.m_type;
+		j["camFov"] = m_camProj.m_fov;
+		j["vCamLR"] = {m_camProj.m_vLR.x(), m_camProj.m_vLR.y()};
+		j["vCamBT"] = {m_camProj.m_vBT.x(), m_camProj.m_vBT.y()};
+		j["vCamNF"] = {m_camProj.m_vNF.x(), m_camProj.m_vNF.y()};
+		j["vCamLookAt"] = {m_camPose.m_vLookAt.x(), m_camPose.m_vLookAt.y(), m_camPose.m_vLookAt.z()};
+		j["vCamEye"] = {m_camPose.m_vEye.x(), m_camPose.m_vEye.y(), m_camPose.m_vEye.z()};
+		j["vCamUp"] = {m_camPose.m_vUp.x(), m_camPose.m_vUp.y(), m_camPose.m_vUp.z()};
+		j["vCoR"] = {m_vCoR.x(), m_vCoR.y(), m_vCoR.z()};
+		j["dTexpire"] = m_dTexpire;
+		j["nPbuf"] = m_nPbuf;
+		j["nLbuf"] = m_nLbuf;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _GeometryViewerBase::link(void)
 	{
 		NULL_F(m_pM);

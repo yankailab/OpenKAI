@@ -23,6 +23,7 @@ namespace kai
 		IF_F(!this->_ProtocolBase::loadConfig());
 		const json &j = *m_pJ;
 
+		m_vMsg.clear();
 		const json *pJM = jK(j, "RTCMmsg");
 		IF__(!pJM || !pJM->is_object(), true);
 		const json &jM = *pJM;
@@ -32,13 +33,14 @@ namespace kai
 			const json &Ji = it.value();
 			IF_CONT(!Ji.is_object());
 
-			uint64_t ieSendSec = 1;
+			double ieSendSec = 1.0;
 			jKv(Ji, "ieSendSec", ieSendSec);
-			uint64_t tOutSec = 10;
+			double tOutSec = 10.0;
 			jKv(Ji, "tOutSec", tOutSec);
 
 			RTCM_MSG m;
-			m.init(ieSendSec * NSEC_SEC, tOutSec * NSEC_SEC);
+			m.m_configKey = it.key();
+			m.init(sec2nsec(ieSendSec), sec2nsec(tOutSec));
 			jKv(Ji, "ID", m.m_msgID);
 			jKv(Ji, "bSendOnceOnly", m.m_bSendOnceOnly);
 
@@ -46,6 +48,48 @@ namespace kai
 		}
 
 		return true;
+	}
+
+	bool _RTCMcast::saveConfig(bool bExport)
+	{
+		if (!_ProtocolBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		json &rtcmMsg = j["RTCMmsg"];
+		if (!rtcmMsg.is_object())
+		{
+			rtcmMsg = json::object();
+		}
+		for (size_t i = 0; i < m_vMsg.size(); ++i)
+		{
+			RTCM_MSG &entry = m_vMsg[i];
+			if (entry.m_configKey.empty())
+			{
+				entry.m_configKey = std::to_string(i);
+				while (rtcmMsg.contains(entry.m_configKey))
+				{
+					entry.m_configKey += "_";
+				}
+			}
+			json &value = rtcmMsg[entry.m_configKey];
+			if (!value.is_object())
+			{
+				value = json::object();
+			}
+			value["ieSendSec"] = static_cast<double>(entry.m_ieSend.m_tInterval) / NSEC_SEC;
+			value["tOutSec"] = static_cast<double>(entry.m_tOutRecv.m_tOut) / NSEC_SEC;
+			value["ID"] = entry.m_msgID;
+			value["bSendOnceOnly"] = entry.m_bSendOnceOnly;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _RTCMcast::link(void)

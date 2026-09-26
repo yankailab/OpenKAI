@@ -31,6 +31,26 @@ namespace kai
 		return true;
 	}
 
+	bool _VisionBase::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["devURI"] = m_devURI;
+		j["devFPS"] = m_devFPS;
+		j["bRGB"] = m_bRGB;
+		j["vSizeRGB"] = {m_vSizeRGB.x(), m_vSizeRGB.y()};
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _VisionBase::link(void)
 	{
 		IF_F(!this->_ModuleBase::link());

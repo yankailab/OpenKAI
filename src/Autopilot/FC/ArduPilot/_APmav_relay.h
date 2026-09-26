@@ -9,6 +9,7 @@ namespace kai
 
 	struct AP_relay
 	{
+		string m_configKey;
 		uint8_t m_iChan;
 		bool m_bRelay;
 
@@ -26,6 +27,7 @@ namespace kai
 		~_APmav_relay();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual bool start(void);
 		virtual bool check(void);

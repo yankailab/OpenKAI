@@ -34,6 +34,26 @@ namespace kai
 		return true;
 	}
 
+	bool _APmav_rcChannel::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["iRCmodeChan"] = m_rcMode.m_iChan;
+		j["vRCmodeDiv"] = m_rcMode.m_vDiv;
+		j["iRCstickV"] = m_rcStickV.m_iChan;
+		j["iRCstickH"] = m_rcStickH.m_iChan;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _APmav_rcChannel::link(void)
 	{
 		IF_F(!this->_ModuleBase::link());

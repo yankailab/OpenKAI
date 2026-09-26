@@ -21,6 +21,7 @@ namespace kai
 		virtual ~PID();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual float update(float v, float sp, float dT);
 		virtual double o(void);
 		virtual void console(void *pConsole);

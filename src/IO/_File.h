@@ -15,6 +15,7 @@ namespace kai
 		~_File(void);
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 
 		bool open(ios_base::openmode mode = ios::in | ios::out | ios::app);
 		bool open(const string &fName, ios_base::openmode mode = ios::in | ios::out | ios::app);

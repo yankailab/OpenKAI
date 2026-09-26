@@ -271,6 +271,31 @@ namespace kai
 		IF_Le_F(!std::filesystem::is_regular_file(std::filesystem::path(m_root) / "vendor/three.module.min.js"), "GLIM viewer assets not found: " + m_root);
 		return true;
 	}
+
+	bool _WebGLIM::saveConfig(bool bExport)
+	{
+		if (!_GeometryViewerBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["host"] = m_host;
+		j["port"] = m_port;
+		j["webRoot"] = m_root;
+		j["nClientMax"] = m_maxClients;
+		j["matPointSize"] = m_pointSize;
+		j["bAutoBound"] = m_autoBound;
+		j["bShowGrid"] = m_showGrid;
+		j["vBgCol"] = {m_background.x(), m_background.y(), m_background.z(), m_background.w()};
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _WebGLIM::link(void)
 	{
 		IF_F(!_GeometryViewerBase::link());

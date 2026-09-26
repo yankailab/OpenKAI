@@ -34,6 +34,24 @@ namespace kai
         return true;
     }
 
+    bool _PCsend::saveConfig(bool bExport)
+    {
+        if (!_GeometryBase::saveConfig(false))
+        {
+            return false;
+        }
+
+        json &j = *m_pJ;
+        j["tInt"] = m_tInt;
+        j["nB"] = m_nB;
+
+        if (!bExport)
+        {
+            return true;
+        }
+        return m_pJcfg->saveToFile();
+    }
+
     bool _PCsend::link(void)
     {
         IF_F(!this->_GeometryBase::link());

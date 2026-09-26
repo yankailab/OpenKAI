@@ -30,7 +30,7 @@ namespace kai
 		virtual void console(const json &j, void *pJSONbase);
 		//		virtual void draw(void *pMat);
 
-		virtual bool saveConfig(void) override;
+		virtual bool saveConfig(bool bExport) override;
 
 		void updateMatrices(void);
 		bool L2C(const Vector2i &vSizeImg, const Vector3f &vPi, Vector2i &vPo);

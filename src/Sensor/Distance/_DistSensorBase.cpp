@@ -39,20 +39,42 @@ namespace kai
 		jKv(j, "calibScale", m_calibScale);
 		jKv(j, "calibOffset", m_calibOffset);
 
-		int nMed = 0;
-		jKv(j, "nMed", nMed);
-		int nAvr = 0;
-		jKv(j, "nAvr", nAvr);
+		jKv(j, "nMed", m_nMed);
+		jKv(j, "nAvr", m_nAvr);
 
 		IF_F(m_nDiv >= MAX_DIST_SENSOR_DIV);
 
 		m_pDiv = new DIST_SENSOR_DIV[m_nDiv];
 		for (int i = 0; i < m_nDiv; i++)
 		{
-			m_pDiv[i].init(nAvr, nMed);
+			m_pDiv[i].init(m_nAvr, m_nMed);
 		}
 
 		return true;
+	}
+
+	bool _DistSensorBase::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["fovH"] = m_fovH;
+		j["fovV"] = m_fovV;
+		j["nDiv"] = m_nDiv;
+		j["vRange"] = {m_vRange.x(), m_vRange.y()};
+		j["calibScale"] = m_calibScale;
+		j["calibOffset"] = m_calibOffset;
+		j["nMed"] = m_nMed;
+		j["nAvr"] = m_nAvr;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _DistSensorBase::bReady(void)

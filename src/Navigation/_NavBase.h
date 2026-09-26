@@ -21,6 +21,7 @@ namespace kai
 		virtual ~_NavBase();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual void console(void *pConsole);
 
 		virtual float confidence(void);

@@ -25,11 +25,55 @@ namespace kai
         return true;
     }
 
+    bool _ApDrive::saveConfig(bool bExport)
+    {
+        if (!_AutopilotBase::saveConfig(false))
+        {
+            return false;
+        }
+
+        json &j = *m_pJ;
+        j["nSpd"] = m_nSpd;
+        j["nDir"] = m_nDir;
+        j["nStr"] = m_nStr;
+        j["vSpdRange"] = {m_vSpdRange[0], m_vSpdRange[1]};
+        j["vStrRange"] = {m_vStrRange[0], m_vStrRange[1]};
+        if (!m_vM.empty())
+        {
+            json &motors = j["motors"];
+            if (!motors.is_object())
+            {
+                motors = json::object();
+            }
+            for (const DRIVE_MOTOR &motor : m_vM)
+            {
+                json &value = motors[motor.m_configKey];
+                if (!value.is_object())
+                {
+                    value = json::object();
+                }
+                value["kSpd"] = motor.m_kSpd;
+                value["kStr"] = motor.m_kStr;
+                if (motor.m_pActuator)
+                {
+                    value["_ActuatorBase"] = motor.m_pActuator->getName();
+                }
+            }
+        }
+
+        if (!bExport)
+        {
+            return true;
+        }
+        return m_pJcfg->saveToFile();
+    }
+
     bool _ApDrive::link(void)
     {
         IF_F(!this->_AutopilotBase::link());
         const json &j = *m_pJ;
 
+        m_vM.clear();
         const json *pJM = jK(j, "motors");
         IF__(!pJM || !pJM->is_object(), true);
         const json &jM = *pJM;
@@ -40,6 +84,7 @@ namespace kai
             IF_CONT(!Ji.is_object());
 
             DRIVE_MOTOR m;
+            m.m_configKey = it.key();
             jKv(Ji, "kSpd", m.m_kSpd);
             jKv(Ji, "kStr", m.m_kStr);
 

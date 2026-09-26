@@ -182,15 +182,30 @@ namespace kai
 		this->_OctreeGrid::console(pConsole);
 	}
 
-	bool _SelectableOctGrid::saveConfig(void)
+	bool _SelectableOctGrid::saveConfig(bool bExport)
 	{
-		if (!_OctreeGrid::saveConfig())
+		if (!_OctreeGrid::saveConfig(false))
 		{
 			return false;
 		}
 
-		m_pJ->update(selectedCellsJSON("vSelectedCells"));
+		json &j = *m_pJ;
+		j.update(selectedCellsJSON("vSelectedCells"));
+		j["nMaxCells"] = m_nMaxCells;
+		j["nPminBuild"] = m_nPminBuild;
+		if (m_bColCellOcc)
+		{
+			j["vColCellOcc"] = {m_vColCellOcc.x(), m_vColCellOcc.y(), m_vColCellOcc.z(), m_vColCellOcc.w()};
+		}
+		else
+		{
+			j.erase("vColCellOcc");
+		}
 
+		if (!bExport)
+		{
+			return true;
+		}
 		return m_pJcfg->saveToFile();
 	}
 
@@ -302,7 +317,7 @@ namespace kai
 
 			if (bSuccess)
 			{
-				bSuccess = saveConfig();
+				bSuccess = saveConfig(true);
 			}
 
 			NULL_(pJb);

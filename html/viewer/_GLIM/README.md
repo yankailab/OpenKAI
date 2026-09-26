@@ -184,10 +184,10 @@ Send JSON terminated with `EOJ` on the command connection:
 {"module":"GLIM","cmd":"savePointCloud","path":"/tmp/glim-map.ply","requestId":"10"}
 ```
 
-`setConfig` and `saveConfig` require stopped tracking. `setConfig`
-and optional `saveConfig.config` accept partial nested objects and reject unknown
-fields, invalid ranges and incompatible minimum/target/neighbor point counts.
-`saveConfig` without `config` saves current values. Configuration replies include
+`setConfig` and `saveConfig` require stopped tracking. `setConfig` accepts partial
+nested objects and rejects unknown fields, invalid ranges and incompatible
+minimum/target/neighbor point counts. `saveConfig` saves the current values.
+Configuration replies include
 `config` and `configFile`; export replies include `path` and `points`.
 
 Replies echo `cmd`, `module`, `requestId`, and include `bSuccess`, optional

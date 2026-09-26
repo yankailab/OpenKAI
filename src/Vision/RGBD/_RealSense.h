@@ -64,6 +64,7 @@ namespace kai
 		virtual ~_RealSense();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool start(void);
 		virtual bool check(void);
 

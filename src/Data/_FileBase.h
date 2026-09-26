@@ -23,6 +23,7 @@ namespace kai
 		~_FileBase();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool start(void);
 
 		bool createDir(const string &dir);

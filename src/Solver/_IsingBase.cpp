@@ -29,6 +29,23 @@ namespace kai
 		return true;
 	}
 
+	bool _IsingBase::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["fName"] = m_fName;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _IsingBase::link(void)
 	{
 		IF_F(!this->_ModuleBase::link());

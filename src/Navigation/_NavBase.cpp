@@ -28,6 +28,23 @@ namespace kai
 		return true;
 	}
 
+	bool _NavBase::saveConfig(bool bExport)
+	{
+		if (!_ReferenceFrame::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["tConfidenceTimeoutNs"] = m_tConfidenceTimeoutNs;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	float _NavBase::confidence(void)
 	{
 		std::lock_guard<std::mutex> lock(m_mtxConfidence);

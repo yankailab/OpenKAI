@@ -24,6 +24,7 @@ namespace kai
 		IF_F(!_VisionBase::loadConfig());
 		const json &j = *m_pJ;
 
+		m_vFilter.clear();
 		const json *pJF = jK(j, "filters");
 		IF__(!pJF || !pJF->is_object(), true);
 		const json &jF = *pJF;
@@ -35,6 +36,7 @@ namespace kai
 
 			IMG_ERODE e;
 			e.init();
+			e.m_name = it.key();
 			jKv(Ji, "nItr", e.m_nItr);
 			jKv(Ji, "kShape", e.m_kShape);
 			jKv(Ji, "kW", e.m_kW);
@@ -47,6 +49,32 @@ namespace kai
 		}
 
 		return true;
+	}
+
+	bool _Erode::saveConfig(bool bExport)
+	{
+		if (!_VisionBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		for (const IMG_ERODE &filter : m_vFilter)
+		{
+			json &jFilter = j["filters"][filter.m_name];
+			jFilter["nItr"] = filter.m_nItr;
+			jFilter["kShape"] = filter.m_kShape;
+			jFilter["kW"] = filter.m_kW;
+			jFilter["kH"] = filter.m_kH;
+			jFilter["aX"] = filter.m_aX;
+			jFilter["aY"] = filter.m_aY;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _Erode::link(void)

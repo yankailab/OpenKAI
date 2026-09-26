@@ -45,6 +45,7 @@ namespace kai
 		~_HandKey();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool start(void);
 		virtual void draw(void *pMat);
 		virtual bool check(void);

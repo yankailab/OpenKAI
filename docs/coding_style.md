@@ -156,7 +156,7 @@ Many modules use this lifecycle vocabulary:
 | Method | Typical responsibility |
 | --- | --- |
 | `loadConfig` | Load the base first, then read local configuration through the bound module JSON |
-| `saveConfig` | Update the bound module JSON in place, parent first, and save its owning launch file |
+| `saveConfig(bool bExport)` | Update the bound module JSON in place, parent first, and write its owning launch file only when `bExport` is true |
 | `link` | Resolve references through the bound `ModuleMgr` and module JSON |
 | `start` | Start the module's worker thread(s) |
 | `check` | Validate prerequisites needed for an operation |
@@ -190,7 +190,9 @@ Recognize these when reading existing code, and reuse them only where their mean
 
 Group `jKv` configuration reads by the same device or concern as the corresponding member declarations. Retain defaults for optional values and validate required ones. Resolve inter-module references in `link` using the existing manager conventions. Configuration names often mirror member names without `m_`, but existing JSON keys are contracts: do not rename them automatically to match a style rule.
 
-In a `saveConfig` override, call the parent saver first and return `false` if it fails. Update fields in `*m_pJ`, save any embedded objects, and return `m_pJcfg->saveToFile()` to write the owning launch or included JSON file. Update known fields in place to preserve unrelated settings and links.
+Every setting read by `jKv` in `loadConfig` must be written by the corresponding `saveConfig`, using the same key, JSON shape, and units. Save current configuration members; retain initialization-only values in members when needed, and reverse any load-time conversions.
+
+Declare `saveConfig(bool bExport)` without a default argument. Call the parent saver with `false` first and return `false` if it fails. Update fields in `*m_pJ` and call any embedded-object savers with `false`. Return `true` when `bExport` is false; otherwise, return `m_pJcfg->saveToFile()`. This lets `saveConfig(false)` update configuration in memory without writing files, while the initiating `saveConfig(true)` writes the complete inherited and nested configuration once. Update known fields in place to preserve unrelated settings and links.
 
 Use the existing logging helpers where appropriate for the surrounding class. Include enough context to identify the failed operation or device. Do not add repeated logs inside a hot loop without a clear diagnostic purpose.
 

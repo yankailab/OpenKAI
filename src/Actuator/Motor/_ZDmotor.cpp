@@ -26,6 +26,23 @@ namespace kai
 		return true;
 	}
 
+	bool _ZDmotor::saveConfig(bool bExport)
+	{
+		if (!_ActuatorBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["iMode"] = m_iMode;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _ZDmotor::link(void)
 	{
 		IF_F(!this->_ActuatorBase::link());

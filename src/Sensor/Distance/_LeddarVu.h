@@ -23,6 +23,7 @@ namespace kai
 		~_LeddarVu();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool start(void);
 		virtual void draw(void *pMat);
 		virtual void console(void *pConsole);

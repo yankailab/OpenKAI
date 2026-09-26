@@ -16,6 +16,7 @@ namespace kai
 		IF_F(!this->_ModuleBase::loadConfig());
 		const json &j = *m_pJ;
 
+		m_vRelay.clear();
 		const json *pJc = jK(j, "channels");
 		IF__(!pJc || !pJc->is_object(), true);
 		const json &jc = *pJc;
@@ -26,6 +27,7 @@ namespace kai
 			IF_CONT(!Ji.is_object());
 
 			AP_relay s;
+			s.m_configKey = it.key();
 			s.init();
 			jKv(Ji, "iChan", s.m_iChan);
 			jKv(Ji, "bRelay", s.m_bRelay);
@@ -33,6 +35,46 @@ namespace kai
 		}
 
 		return true;
+	}
+
+	bool _APmav_relay::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		json &channels = j["channels"];
+		if (!channels.is_object())
+		{
+			channels = json::object();
+		}
+		for (size_t i = 0; i < m_vRelay.size(); ++i)
+		{
+			AP_relay &entry = m_vRelay[i];
+			if (entry.m_configKey.empty())
+			{
+				entry.m_configKey = std::to_string(i);
+				while (channels.contains(entry.m_configKey))
+				{
+					entry.m_configKey += "_";
+				}
+			}
+			json &value = channels[entry.m_configKey];
+			if (!value.is_object())
+			{
+				value = json::object();
+			}
+			value["iChan"] = entry.m_iChan;
+			value["bRelay"] = entry.m_bRelay;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _APmav_relay::link(void)

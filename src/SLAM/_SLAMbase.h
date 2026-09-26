@@ -22,6 +22,7 @@ namespace kai
 		virtual ~_SLAMbase();
 
 		bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		bool link(void) override;
 		bool start(void) override;
 		void stop(void) override;

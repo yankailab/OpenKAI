@@ -23,6 +23,7 @@ namespace kai
 		virtual ~_PCrecv();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual bool start(void);
 		virtual bool check(void);

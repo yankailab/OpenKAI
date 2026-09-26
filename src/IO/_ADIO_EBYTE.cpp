@@ -28,6 +28,23 @@ namespace kai
 		return true;
 	}
 
+	bool _ADIO_EBYTE::saveConfig(bool bExport)
+	{
+		if (!_ADIObase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["iID"] = m_iID;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _ADIO_EBYTE::link(void)
 	{
 		IF_F(!this->_ADIObase::link());

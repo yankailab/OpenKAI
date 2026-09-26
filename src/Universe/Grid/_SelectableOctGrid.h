@@ -93,7 +93,7 @@ namespace kai
 		void console(const json &j, void *pJSONbase) override;
 
 		// Restoring a different root clears occupancy before publishing its header.
-		bool saveConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual const vector<UUID128> &getSelectedCells(void);
 
 		// Cell snapshots are the grid's only stream output.

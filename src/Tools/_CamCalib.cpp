@@ -24,6 +24,25 @@ namespace kai
         return true;
     }
 
+    bool _CamCalib::saveConfig(bool bExport)
+    {
+        if (!_ModuleBase::saveConfig(false))
+        {
+            return false;
+        }
+
+        json &j = *m_pJ;
+        j["path"] = m_path;
+        j["vChessBoardSize"] = {m_vChessBoardSize.x(), m_vChessBoardSize.y()};
+        j["squareSize"] = m_squareSize;
+
+        if (!bExport)
+        {
+            return true;
+        }
+        return m_pJcfg->saveToFile();
+    }
+
     bool _CamCalib::start(void)
     {
         NULL_F(m_pT);

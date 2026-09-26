@@ -26,6 +26,20 @@ namespace kai
 		return true;
 	}
 
+	bool _Remap::saveConfig(bool bExport)
+	{
+		if (!_VisionBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _Remap::link(void)
 	{
 		IF_F(!this->_VisionBase::link());

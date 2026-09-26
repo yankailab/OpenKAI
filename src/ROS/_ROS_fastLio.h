@@ -24,6 +24,7 @@ namespace kai
 		virtual ~_ROS_fastLio();
 
 		bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		bool link(void) override;
 		virtual bool check(void);
 		virtual bool start(void);

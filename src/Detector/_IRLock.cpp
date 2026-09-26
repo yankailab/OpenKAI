@@ -33,6 +33,23 @@ namespace kai
 		return true;
 	}
 
+	bool _IRLock::saveConfig(bool bExport)
+	{
+		if (!_DetectorBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["vCamSize"] = {1.0f / m_vOvCamSize.x(), 1.0f / m_vOvCamSize.y()};
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _IRLock::link(void)
 	{
 		IF_F(!this->_DetectorBase::link());

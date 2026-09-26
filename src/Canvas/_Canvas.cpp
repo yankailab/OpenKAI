@@ -44,13 +44,38 @@ namespace kai
 		jKv(j, "bDrawBB", m_bDrawBB);
 
 		// buffer
-		int nB = 16;
-		jKv(j, "nBuf", nB);
-		m_sO.get()->init(nB);
-		m_sO.next()->init(nB);
+		jKv(j, "nBuf", m_nBuf);
+		m_sO.get()->init(m_nBuf);
+		m_sO.next()->init(m_nBuf);
 		clear();
 
 		return true;
+	}
+
+	bool _Canvas::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["minConfidence"] = m_minConfidence;
+		j["vArea"] = {m_vArea.x(), m_vArea.y()};
+		j["vW"] = {m_vW.x(), m_vW.y()};
+		j["vH"] = {m_vH.x(), m_vH.y()};
+		j["vClassRange"] = {m_vClassRange.x(), m_vClassRange.y()};
+		j["bDrawText"] = m_bDrawText;
+		j["bDrawPos"] = m_bDrawPos;
+		j["bDrawBB"] = m_bDrawBB;
+		j["nBuf"] = m_nBuf;
+		j["vRoi"] = {m_vRoi.x(), m_vRoi.y(), m_vRoi.z(), m_vRoi.w()};
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
 	}
 
 	void _Canvas::clear(void)

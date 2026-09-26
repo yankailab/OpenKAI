@@ -21,6 +21,7 @@ namespace kai
 
 	struct LANE_FILTER
 	{
+		string m_name;
 		Mat m_mBin;
 		int m_iColorSpace;
 		int m_iChannel;
@@ -51,6 +52,7 @@ namespace kai
 
 	struct LANE
 	{
+		string m_name;
 		int m_n;
 		Median<float> *m_pMed = NULL;
 		Average<float> *m_pAvr = NULL;
@@ -200,6 +202,7 @@ namespace kai
 		virtual ~_Lane();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual bool start(void);
 		virtual void draw(void *pMat);
@@ -235,6 +238,8 @@ namespace kai
 		int m_nFilter = 0;
 		LANE_FILTER m_pFilter[N_LANE_FILTER];
 
+		int m_nAvr = 0;
+		int m_nMed = 0;
 		int m_nLane = 0;
 		LANE m_pLane[N_LANE];
 

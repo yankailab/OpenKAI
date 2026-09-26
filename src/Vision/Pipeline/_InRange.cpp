@@ -32,6 +32,24 @@ namespace kai
 		return true;
 	}
 
+	bool _InRange::saveConfig(bool bExport)
+	{
+		if (!_VisionBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["vL"] = {m_vL.x(), m_vL.y(), m_vL.z()};
+		j["vH"] = {m_vH.x(), m_vH.y(), m_vH.z()};
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _InRange::link(void)
 	{
 		IF_F(!this->_VisionBase::link());

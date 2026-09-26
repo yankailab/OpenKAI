@@ -35,7 +35,7 @@ namespace kai
 
 		int nWmed = 0;
 		jKv(j, "nWmed", nWmed);
-		int kTpred = 0;
+		float kTpred = 0.0f;
 		jKv(j, "kTpred", kTpred);
 
 		IF_F(!m_fX.init(nWmed, kTpred));
@@ -64,6 +64,41 @@ namespace kai
 		jKv(jm, "mountMode", m_apMount.m_config.mount_mode);
 
 		return true;
+	}
+
+	bool _APmav_follow::saveConfig(bool bExport)
+	{
+		if (!_APmav_move::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["iClass"] = m_iClass;
+		j["vPsp"] = {m_vPsp[0], m_vPsp[1], m_vPsp[2], m_vPsp[3]};
+		j["tOutTargetNotFound"] = m_tOutTargetNotFound.m_tOut;
+		j["nWmed"] = m_fX.m_nWmed;
+		j["kTpred"] = m_fX.m_kTpred;
+
+		json &mount = j["mount"];
+		if (!mount.is_object())
+		{
+			mount = json::object();
+		}
+		mount["bEnable"] = m_apMount.m_bEnable;
+		mount["pitch"] = m_apMount.m_control.input_a / 100.0;
+		mount["roll"] = m_apMount.m_control.input_b / 100.0;
+		mount["yaw"] = m_apMount.m_control.input_c / 100.0;
+		mount["stabPitch"] = m_apMount.m_config.stab_pitch;
+		mount["stabRoll"] = m_apMount.m_config.stab_roll;
+		mount["stabYaw"] = m_apMount.m_config.stab_yaw;
+		mount["mountMode"] = m_apMount.m_config.mount_mode;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _APmav_follow::link(void)

@@ -58,6 +58,42 @@ namespace kai
         return true;
     }
 
+    bool _RealSense::saveConfig(bool bExport)
+    {
+        if (!_RGBDbase::saveConfig(false))
+        {
+            return false;
+        }
+
+        json &j = *m_pJ;
+        j["rsSN"] = m_rsSN;
+        j["rsFPS"] = m_rsFPS;
+        j["rsDFPS"] = m_rsDFPS;
+        j["bAlign"] = m_bAlign;
+        j["vPreset"] = m_vPreset;
+        j["fConfidenceThreshold"] = m_rsCtrl.m_fConfidenceThr;
+        j["fDigitalGain"] = m_rsCtrl.m_fDigitalGain;
+        j["fPostProcessingSharpening"] = m_rsCtrl.m_fPostProcessingSharpening;
+        j["fFilterMagnitude"] = m_rsCtrl.m_fFilterMagnitude;
+        j["fHolesFill"] = m_rsCtrl.m_fHolesFill;
+        j["fEmitter"] = m_rsCtrl.m_fEmitter;
+        j["fLaserPower"] = m_rsCtrl.m_fLaserPower;
+        j["fBrightness"] = m_rsCtrl.m_fBrightness;
+        j["fContrast"] = m_rsCtrl.m_fContrast;
+        j["fGain"] = m_rsCtrl.m_fGain;
+        j["fExposure"] = m_rsCtrl.m_fExposure;
+        j["fHue"] = m_rsCtrl.m_fHue;
+        j["fSaturation"] = m_rsCtrl.m_fSaturation;
+        j["fSharpness"] = m_rsCtrl.m_fSharpness;
+        j["fWhiteBalance"] = m_rsCtrl.m_fWhiteBalance;
+
+        if (!bExport)
+        {
+            return true;
+        }
+        return m_pJcfg->saveToFile();
+    }
+
     bool _RealSense::open(void)
     {
         IF_F(m_bOpened);

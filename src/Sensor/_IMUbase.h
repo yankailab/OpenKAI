@@ -29,6 +29,7 @@ namespace kai
 		virtual ~_IMUbase();
 
 		bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		bool link(void) override;
 		virtual bool start(void);
 		virtual void stop(void);

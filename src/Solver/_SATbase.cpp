@@ -30,6 +30,23 @@ namespace kai
 		return true;
 	}
 
+	bool _SATbase::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["fName"] = m_fName;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _SATbase::link(void)
 	{
 		IF_F(!this->_ModuleBase::link());

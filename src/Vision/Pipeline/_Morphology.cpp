@@ -24,6 +24,7 @@ namespace kai
 		IF_F(!_VisionBase::loadConfig());
 		const json &j = *m_pJ;
 
+		m_vFilter.clear();
 		const json *pJF = jK(j, "filters");
 		IF__(!pJF || !pJF->is_object(), true);
 		const json &jF = *pJF;
@@ -35,6 +36,7 @@ namespace kai
 
 			IMG_MORPH m;
 			m.init();
+			m.m_name = it.key();
 			jKv(Ji, "morphOp", m.m_morphOp);
 			jKv(Ji, "nItr", m.m_nItr);
 			jKv(Ji, "kShape", m.m_kShape);
@@ -48,6 +50,33 @@ namespace kai
 		}
 
 		return true;
+	}
+
+	bool _Morphology::saveConfig(bool bExport)
+	{
+		if (!_VisionBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		for (const IMG_MORPH &filter : m_vFilter)
+		{
+			json &jFilter = j["filters"][filter.m_name];
+			jFilter["morphOp"] = filter.m_morphOp;
+			jFilter["nItr"] = filter.m_nItr;
+			jFilter["kShape"] = filter.m_kShape;
+			jFilter["kW"] = filter.m_kW;
+			jFilter["kH"] = filter.m_kH;
+			jFilter["aX"] = filter.m_aX;
+			jFilter["aY"] = filter.m_aY;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _Morphology::link(void)

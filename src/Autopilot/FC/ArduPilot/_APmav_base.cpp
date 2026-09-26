@@ -18,7 +18,7 @@ namespace kai
 		IF_F(!this->_AutopilotBase::loadConfig());
 		const json &j = *m_pJ;
 
-		float t;
+		double t;
 		if (jKv(j, "ieSendHB", t))
 			m_ieSendHB.init(t * NSEC_SEC);
 
@@ -26,6 +26,24 @@ namespace kai
 			m_ieSendMsgInt.init(t * NSEC_SEC);
 
 		return true;
+	}
+
+	bool _APmav_base::saveConfig(bool bExport)
+	{
+		if (!_AutopilotBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["ieSendHB"] = static_cast<double>(m_ieSendHB.m_tInterval) / NSEC_SEC;
+		j["ieSendMsgInt"] = static_cast<double>(m_ieSendMsgInt.m_tInterval) / NSEC_SEC;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _APmav_base::link(void)

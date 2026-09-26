@@ -19,6 +19,7 @@ namespace kai
 		~_PWMio();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool start(void);
 		virtual void console(void *pConsole);
 

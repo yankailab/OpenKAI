@@ -20,6 +20,7 @@ namespace kai
 		virtual ~_Console();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual bool start(void);
 		virtual void stop(void);

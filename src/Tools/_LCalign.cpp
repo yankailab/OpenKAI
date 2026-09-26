@@ -66,9 +66,9 @@ namespace kai
 		return true;
 	}
 
-	bool _LCalign::saveConfig(void)
+	bool _LCalign::saveConfig(bool bExport)
 	{
-		if (!_PointCloud::saveConfig())
+		if (!_PointCloud::saveConfig(false))
 		{
 			return false;
 		}
@@ -83,6 +83,10 @@ namespace kai
 		j["aIr"] = m_aIr;
 		j["aIt"] = m_aIt;
 
+		if (!bExport)
+		{
+			return true;
+		}
 		return m_pJcfg->saveToFile();
 	}
 
@@ -312,7 +316,7 @@ namespace kai
 		}
 		else if (cmd == "saveCfg")
 		{
-			const bool bR = saveConfig();
+			const bool bR = saveConfig(true);
 
 			NULL_(pJb);
 			json jr = json::object();

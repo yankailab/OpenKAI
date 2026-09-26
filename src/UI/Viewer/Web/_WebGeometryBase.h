@@ -20,6 +20,7 @@ namespace kai
 		_WebGeometryBase();
 		~_WebGeometryBase() override;
 		bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		bool link(void) override;
 		bool start() override;
 		bool bRun() override { return m_running; }

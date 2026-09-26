@@ -95,9 +95,9 @@ namespace kai
 		return true;
 	}
 
-	bool _PCtransform::saveConfig(void)
+	bool _PCtransform::saveConfig(bool bExport)
 	{
-		if (!_PointCloud::saveConfig())
+		if (!_PointCloud::saveConfig(false))
 		{
 			return false;
 		}
@@ -113,6 +113,10 @@ namespace kai
 					mT(2, 0), mT(2, 1), mT(2, 2), mT(2, 3),
 					mT(3, 0), mT(3, 1), mT(3, 2), mT(3, 3)};
 
+		if (!bExport)
+		{
+			return true;
+		}
 		return m_pJcfg->saveToFile();
 	}
 

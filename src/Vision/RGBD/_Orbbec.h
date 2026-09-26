@@ -162,7 +162,7 @@ namespace kai
 		virtual void console(void *pConsole);
 		virtual void console(const json &j, void *pJSONbase);
 
-		virtual bool saveConfig(void) override;
+		virtual bool saveConfig(bool bExport) override;
 
 		virtual bool open(void);
 		virtual void close(void);

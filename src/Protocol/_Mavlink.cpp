@@ -66,6 +66,29 @@ namespace kai
 		return true;
 	}
 
+	bool _Mavlink::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["mySystemID"] = m_mySystemID;
+		j["myComponentID"] = m_myComponentID;
+		j["myType"] = m_myType;
+		j["devSystemID"] = m_devSystemID;
+		j["devComponentID"] = m_devComponentID;
+		j["devType"] = m_devType;
+		j["iMavComm"] = m_iMavComm;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _Mavlink::link(void)
 	{
 		IF_F(!this->_ModuleBase::link());

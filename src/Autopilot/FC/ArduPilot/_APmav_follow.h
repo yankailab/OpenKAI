@@ -17,11 +17,15 @@ namespace kai
 	{
 		Median<float> m_med;
 		Predict<float> m_pred;
+		int m_nWmed = 3;
+		float m_kTpred = 0.0f;
 
 		bool init(int nWmed, float kT)
 		{
-			IF_F(!m_med.init(nWmed));
-			IF_F(!m_pred.init(kT));
+			m_nWmed = std::max(nWmed, 3);
+			m_kTpred = kT;
+			IF_F(!m_med.init(m_nWmed));
+			IF_F(!m_pred.init(m_kTpred));
 
 			return true;
 		}
@@ -45,6 +49,7 @@ namespace kai
 		~_APmav_follow();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual bool check(void);
 		virtual bool start(void);

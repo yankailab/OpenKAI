@@ -29,6 +29,24 @@ namespace kai
         return true;
     }
 
+    bool clBase::saveConfig(bool bExport)
+    {
+        if (!BASE::saveConfig(false))
+        {
+            return false;
+        }
+
+        json &j = *m_pJ;
+        j["fKernel"] = m_fKernel;
+        j["buildOpt"] = m_buildOpt;
+
+        if (!bExport)
+        {
+            return true;
+        }
+        return m_pJcfg->saveToFile();
+    }
+
     bool clBase::link(void)
     {
         IF_F(!this->BASE::link());

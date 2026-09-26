@@ -40,6 +40,30 @@ namespace kai
 		return true;
 	}
 
+	bool _YOLO26detectONNX::saveConfig(bool bExport)
+	{
+		if (!_DetectorBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["confidence"] = m_confidence;
+		j["score"] = m_score;
+		j["nms"] = m_nms;
+		j["bLetterBoxForSquare"] = m_bLetterBoxForSquare;
+		j["vModelInputSize"] = {m_vModelInputSize.x(), m_vModelInputSize.y()};
+		j["bSwapRB"] = m_bSwapRB;
+		j["scale"] = m_scale;
+		j["nThread"] = m_nThread;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _YOLO26detectONNX::loadModel(void)
 	{
 		DEL(m_pSession);

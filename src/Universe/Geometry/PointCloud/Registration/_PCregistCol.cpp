@@ -36,6 +36,30 @@ namespace kai
         return true;
     }
 
+    bool _PCregistCol::saveConfig(bool bExport)
+    {
+        if (!_PointCloud::saveConfig(false))
+        {
+            return false;
+        }
+
+        json &j = *m_pJ;
+        j["rVoxel"] = m_rVoxel;
+        j["maxDistance"] = m_maxDistance;
+        j["rNormal"] = m_rNormal;
+        j["maxNNnormal"] = m_maxNNnormal;
+        j["rFitness"] = m_rFitness;
+        j["rRMSE"] = m_rRMSE;
+        j["maxIter"] = m_maxIter;
+        j["minFit"] = m_minFit;
+
+        if (!bExport)
+        {
+            return true;
+        }
+        return m_pJcfg->saveToFile();
+    }
+
     bool _PCregistCol::link(void)
     {
         IF_F(!this->BASE::link());

@@ -141,7 +141,7 @@ namespace kai
         virtual bool check(void);
         virtual void console(void *pConsole);
 
-        virtual bool saveConfig(void) override;
+        virtual bool saveConfig(bool bExport) override;
 
         virtual GEOMETRY_TYPE getType(void);
         virtual void clear(void);

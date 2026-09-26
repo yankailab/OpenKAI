@@ -31,7 +31,7 @@ namespace kai
 		virtual ~_ModuleBase();
 
 		bool loadConfig(void) override;
-		bool saveConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		bool link(void) override;
 		virtual bool start(void);
 		virtual bool check(void);

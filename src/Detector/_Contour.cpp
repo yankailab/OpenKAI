@@ -29,6 +29,24 @@ namespace kai
 		return true;
 	}
 
+	bool _Contour::saveConfig(bool bExport)
+	{
+		if (!_DetectorBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["mode"] = m_mode;
+		j["method"] = m_method;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _Contour::start(void)
 	{
 		NULL_F(m_pT);

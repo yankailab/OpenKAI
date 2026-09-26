@@ -15,6 +15,7 @@ namespace kai
 
 	struct IMG_MORPH
 	{
+		string m_name;
 		int m_morphOp;
 		int m_nItr;
 		int m_kShape;
@@ -48,6 +49,7 @@ namespace kai
 		virtual ~_Morphology();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual bool start(void);
 

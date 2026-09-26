@@ -22,6 +22,7 @@ namespace kai
 		virtual ~_StateControl();
 
 		bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		bool link(void) override;
 		virtual bool start(void);
 		virtual void console(void *pConsole);
@@ -46,6 +47,7 @@ namespace kai
 
 	protected:
 		vector<StateBase *> m_vpState;
+		string m_start = "";
 		int m_iS = 0; // current state
 	};
 

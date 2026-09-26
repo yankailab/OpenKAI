@@ -27,6 +27,25 @@ namespace kai
         return true;
     }
 
+    bool _JSONbase::saveConfig(bool bExport)
+    {
+        if (!_ProtocolBase::saveConfig(false))
+        {
+            return false;
+        }
+
+        json &j = *m_pJ;
+        j["msgFinishSend"] = m_msgFinishSend;
+        j["msgFinishRecv"] = m_msgFinishRecv;
+        j["ieSendHB"] = m_ieSendHB.m_tInterval;
+
+        if (!bExport)
+        {
+            return true;
+        }
+        return m_pJcfg->saveToFile();
+    }
+
     bool _JSONbase::link(void)
     {
         IF_F(!this->_ProtocolBase::link());

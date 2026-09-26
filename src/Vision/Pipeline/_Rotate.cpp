@@ -29,6 +29,23 @@ namespace kai
 		return true;
 	}
 
+	bool _Rotate::saveConfig(bool bExport)
+	{
+		if (!_VisionBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["code"] = m_code;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _Rotate::link(void)
 	{
 		IF_F(!this->_VisionBase::link());

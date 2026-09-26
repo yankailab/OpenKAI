@@ -34,6 +34,23 @@ namespace kai
         return true;
     }
 
+    bool _Line::saveConfig(bool bExport)
+    {
+        if (!_GeometryBase::saveConfig(false))
+        {
+            return false;
+        }
+
+        json &j = *m_pJ;
+        j["nL"] = m_grLn.m_nT;
+
+        if (!bExport)
+        {
+            return true;
+        }
+        return m_pJcfg->saveToFile();
+    }
+
     void _Line::clear(void)
     {
 		std::lock_guard<std::mutex> lock(m_mtxLn);

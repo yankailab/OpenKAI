@@ -33,6 +33,26 @@ namespace kai
 		return true;
 	}
 
+	bool _HiKthermal::saveConfig(bool bExport)
+	{
+		if (!_VisionBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["streamType"] = m_streamType;
+		j["vendorID"] = m_vendorID;
+		j["productID"] = m_productID;
+		j["SN"] = m_SN;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _HiKthermal::open(void)
 	{
 		IF_F(!check());

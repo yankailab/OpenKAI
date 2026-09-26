@@ -243,7 +243,7 @@ outside the displayed level range.
 
 ### Saving selected cells
 
-`_SelectableOctGrid::saveConfig()` writes the root and selected IDs into its
+`_SelectableOctGrid::saveConfig(true)` writes the root and selected IDs into its
 module object in the launch JSON file, preserving the remaining configuration:
 
 ```json
@@ -258,12 +258,12 @@ module object in the launch JSON file, preserving the remaining configuration:
 ```
 
 The module uses numeric coordinate arrays and the same exact hexadecimal ID byte
-order as picker commands. `saveConfig()` updates `vPorigin`, `vRootCellSize` and
+order as picker commands. `saveConfig(true)` updates `vPorigin`, `vRootCellSize` and
 `vSelectedCells` directly in the bound module object, preserving its other fields
 and every other module in the original launch JSON file. `loadConfig()` reads
 those values on the next launch.
 
-The `octGridCellSelect` handler calls `saveConfig()` after validating and updating
+The `octGridCellSelect` handler calls `saveConfig(true)` after validating and updating
 the selection, and reports file write failures to the browser. The launch JSON
 file must be writable. After reopening the page, **Load** retrieves the backend's
 current selection without rereading a file or changing its root or occupancy.

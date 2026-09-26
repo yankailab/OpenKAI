@@ -29,6 +29,23 @@ namespace kai
 		return true;
 	}
 
+	bool _SLAMbase::saveConfig(bool bExport)
+	{
+		if (!_NavBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["bAutoStart"] = m_bAutoStart;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _SLAMbase::link(void)
 	{
 		IF_F(!_NavBase::link());

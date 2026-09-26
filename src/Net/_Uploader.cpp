@@ -38,6 +38,28 @@ namespace kai
 		return true;
 	}
 
+	bool _Uploader::saveConfig(bool bExport)
+	{
+		if (!_FileBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["dir"] = m_dir;
+		j["bRemoveAfterUpload"] = m_bRemoveAfterUpload;
+		j["method"] = m_method;
+		j["url"] = m_url;
+		j["cmd"] = m_cmd;
+		j["bConfirmCmdResult"] = m_bConfirmCmdResult;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _Uploader::start(void)
 	{
 		NULL_F(m_pT);

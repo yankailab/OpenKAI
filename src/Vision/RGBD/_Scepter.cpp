@@ -402,21 +402,20 @@ namespace kai
 		return errors.empty();
 	}
 
-	bool _Scepter::saveConfig(void)
+	bool _Scepter::saveConfig(bool bExport)
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
-		if (!_RGBDbase::saveConfig())
+		if (!_RGBDbase::saveConfig(false))
 		{
 			return false;
 		}
 
 		m_pJ->update(configValues());
 
-		if (m_pTpp && !m_pTpp->saveConfig())
+		if (!bExport)
 		{
-			return false;
+			return true;
 		}
-
 		return m_pJcfg->saveToFile();
 	}
 
@@ -858,7 +857,7 @@ namespace kai
 				}
 				else if (cmd == "saveConfig")
 				{
-					reply["bSuccess"] = saveConfig();
+					reply["bSuccess"] = saveConfig(true);
 					if (!reply["bSuccess"].get<bool>())
 					{
 						reply["error"] = "Could not save the launch configuration";

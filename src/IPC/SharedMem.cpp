@@ -34,6 +34,25 @@ namespace kai
 		return true;
 	}
 
+	bool SharedMem::saveConfig(bool bExport)
+	{
+		if (!BASE::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["shmName"] = m_shmName;
+		j["nB"] = m_nB;
+		j["bWriter"] = m_bWriter;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool SharedMem::link(void)
 	{
 		IF_F(!this->BASE::link());

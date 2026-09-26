@@ -28,6 +28,28 @@ namespace kai
 		return true;
 	}
 
+	bool _SerialPort::saveConfig(bool bExport)
+	{
+		if (!_IObase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["port"] = m_port;
+		j["baud"] = m_baud;
+		j["dataBits"] = m_dataBits;
+		j["stopBits"] = m_stopBits;
+		j["parity"] = m_parity;
+		j["hardwareControl"] = m_hardwareControl;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _SerialPort::link(void)
 	{
 		IF_F(!this->_IObase::link());

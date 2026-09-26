@@ -129,6 +129,38 @@ namespace kai
 		return true;
 	}
 
+	bool _ImGUIselectableOctGrid::saveConfig(bool bExport)
+	{
+		if (!_GeometryViewerBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["nCbuf"] = m_nCbuf;
+		j["bShowPanel"] = m_bShowPanel;
+		j["bShowGrid"] = m_bShowGrid;
+		j["bAutoBound"] = m_bAutoBound;
+		j["sMove"] = m_sMove;
+		j["sOrbit"] = m_sOrbit;
+		j["sZoom"] = m_sZoom;
+		j["pointScale"] = m_pointScale;
+		j["lineScale"] = m_lineScale;
+		j["vBgCol"] = {m_vBgCol.x(), m_vBgCol.y(), m_vBgCol.z(), m_vBgCol.w()};
+		j["bGpuRender"] = m_bGpuRender;
+
+		if (m_pTui && !m_pTui->saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _ImGUIselectableOctGrid::link(void)
 	{
 		NULL_F(m_pM);

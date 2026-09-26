@@ -54,6 +54,30 @@ namespace kai
 		return true;
 	}
 
+	bool _IMUbase::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["nIMUdqMax"] = m_nIMUdqMax;
+		j["tIMUpairToleranceNs"] = m_tIMUpairToleranceNs;
+		j["bFusion"] = m_bFusion;
+
+		if (m_pTstream && !m_pTstream->saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _IMUbase::link(void)
 	{
 		IF_F(!this->_ModuleBase::link());

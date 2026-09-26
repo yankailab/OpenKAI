@@ -23,6 +23,26 @@ namespace kai
 		return true;
 	}
 
+	bool _ProtocolBase::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+
+		if (m_pTr && !m_pTr->saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _ProtocolBase::link(void)
 	{
 		IF_F(!this->_ModuleBase::link());

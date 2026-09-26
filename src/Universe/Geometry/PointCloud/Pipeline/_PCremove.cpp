@@ -29,6 +29,24 @@ namespace kai
 		return true;
 	}
 
+	bool _PCremove::saveConfig(bool bExport)
+	{
+		if (!_GeometryBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["nP"] = m_nP;
+		j["r"] = m_r;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _PCremove::start(void)
 	{
 		NULL_F(m_pT);

@@ -29,6 +29,23 @@ namespace kai
 		return true;
 	}
 
+	bool _ImgFile::saveConfig(bool bExport)
+	{
+		if (!_VisionBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["file"] = m_file;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _ImgFile::open(void)
 	{
 		Mat m = imread(m_file);

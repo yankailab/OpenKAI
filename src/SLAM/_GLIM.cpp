@@ -235,7 +235,7 @@ namespace kai
 		m_nMinPoints = values["nMinPoints"].get<int>();
 	}
 
-	bool _GLIM::saveConfig(void)
+	bool _GLIM::saveConfig(bool bExport)
 	{
 		auto lock = lockSLAM();
 		if (m_bTracking)
@@ -244,13 +244,34 @@ namespace kai
 			return false;
 		}
 
-		if (!_SLAMbase::saveConfig())
+		if (!_SLAMbase::saveConfig(false))
 		{
 			return false;
 		}
 
-		(*m_pJ)["parameters"] = m_parameters;
+		json &j = *m_pJ;
+		j["configPath"] = m_configPath;
+		j["bMapping"] = m_bMapping;
+		j["nMinPoints"] = m_nMinPoints;
+		j["nMapPoints"] = m_nMapPoints;
+		j["nLiveFrames"] = m_nLiveFrames;
+		j["tMapUpdateNs"] = m_mapIntervalNs;
+		j["bPublishLiveMap"] = m_bPublishLiveMap;
+		j["exportPath"] = m_exportPath;
 
+		json &parameters = j["parameters"];
+		if (!parameters.is_object())
+		{
+			parameters = json::object();
+		}
+		parameters.update(m_parameters, true);
+		parameters["bMapping"] = m_bMapping;
+		parameters["nMinPoints"] = m_nMinPoints;
+
+		if (!bExport)
+		{
+			return true;
+		}
 		return m_pJcfg->saveToFile();
 	}
 
@@ -733,7 +754,7 @@ namespace kai
 			}
 			else if (cmd == "saveConfig")
 			{
-				reply["bSuccess"] = saveConfig();
+				reply["bSuccess"] = saveConfig(true);
 				if (!reply["bSuccess"].get<bool>())
 				{
 					reply["error"] = "Could not save the launch configuration";

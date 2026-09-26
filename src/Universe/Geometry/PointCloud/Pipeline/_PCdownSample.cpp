@@ -28,6 +28,23 @@ namespace kai
 		return true;
 	}
 
+	bool _PCdownSample::saveConfig(bool bExport)
+	{
+		if (!_GeometryBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["rVoxel"] = m_rVoxel;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _PCdownSample::start(void)
 	{
 		NULL_F(m_pT);

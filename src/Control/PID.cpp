@@ -37,6 +37,28 @@ namespace kai
 		return true;
 	}
 
+	bool PID::saveConfig(bool bExport)
+	{
+		if (!BASE::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["P"] = m_P;
+		j["I"] = m_I;
+		j["Imax"] = m_Imax;
+		j["D"] = m_D;
+		j["vRin"] = {m_vRin.x(), m_vRin.y()};
+		j["vRout"] = {m_vRout.x(), m_vRout.y()};
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	void PID::reset(void)
 	{
 		m_vVar = 0.0;

@@ -16,6 +16,7 @@ namespace kai
 		IF_F(!this->_ModuleBase::loadConfig());
 		const json &j = *m_pJ;
 
+		m_vServo.clear();
 		const json *pJc = jK(j, "channels");
 		IF__(!pJc || !pJc->is_object(), true);
 		const json &jc = *pJc;
@@ -26,6 +27,7 @@ namespace kai
 			IF_CONT(!Ji.is_object());
 
 			AP_SERVO s;
+			s.m_configKey = it.key();
 			s.init();
 			jKv(Ji, "iChan", s.m_iChan);
 			jKv(Ji, "pwm", s.m_pwm);
@@ -33,6 +35,46 @@ namespace kai
 		}
 
 		return true;
+	}
+
+	bool _APmav_servo::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		json &channels = j["channels"];
+		if (!channels.is_object())
+		{
+			channels = json::object();
+		}
+		for (size_t i = 0; i < m_vServo.size(); ++i)
+		{
+			AP_SERVO &entry = m_vServo[i];
+			if (entry.m_configKey.empty())
+			{
+				entry.m_configKey = std::to_string(i);
+				while (channels.contains(entry.m_configKey))
+				{
+					entry.m_configKey += "_";
+				}
+			}
+			json &value = channels[entry.m_configKey];
+			if (!value.is_object())
+			{
+				value = json::object();
+			}
+			value["iChan"] = entry.m_iChan;
+			value["pwm"] = entry.m_pwm;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _APmav_servo::link(void)

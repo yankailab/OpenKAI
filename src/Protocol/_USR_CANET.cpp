@@ -19,6 +19,20 @@ namespace kai
 		return true;
 	}
 
+	bool _USR_CANET::saveConfig(bool bExport)
+	{
+		if (!_CANbase::saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _USR_CANET::link(void)
 	{
 		IF_F(!this->_CANbase::link());

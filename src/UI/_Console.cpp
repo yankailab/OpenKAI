@@ -38,6 +38,20 @@ namespace kai
 		return true;
 	}
 
+	bool _Console::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _Console::link(void)
 	{
 		IF_F(!this->_ModuleBase::link());

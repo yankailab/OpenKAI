@@ -21,6 +21,7 @@ namespace kai
 		virtual ~_RStracking();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool start(void);
 		bool open(void);
 		void close(void);

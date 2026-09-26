@@ -31,6 +31,26 @@ namespace kai
 		return true;
 	}
 
+	bool _Feetech::saveConfig(bool bExport)
+	{
+		if (!_ActuatorBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["port"] = m_port;
+		j["baud"] = m_baud;
+		j["iID"] = m_ID;
+		j["tIntReadStatus"] = m_ieReadStatus.m_tInterval;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _Feetech::link(void)
 	{
 		IF_F(!this->_ActuatorBase::link());

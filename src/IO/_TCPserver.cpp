@@ -39,6 +39,25 @@ namespace kai
 		return true;
 	}
 
+	bool _TCPserver::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["port"] = m_listenPort;
+		j["nListen"] = m_nListen;
+		j["nSocket"] = m_nSocket;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _TCPserver::start(void)
 	{
 		NULL_F(m_pT);

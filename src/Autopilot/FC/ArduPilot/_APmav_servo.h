@@ -9,6 +9,7 @@ namespace kai
 
 	struct AP_SERVO
 	{
+		string m_configKey;
 		uint8_t m_iChan;
 		uint16_t m_pwm;
 
@@ -26,6 +27,7 @@ namespace kai
 		~_APmav_servo();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual bool start(void);
 		virtual bool check(void);

@@ -70,6 +70,33 @@ namespace kai
 		return true;
 	}
 
+	bool _Modbus::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["bModbusDebug"] = m_bModbusDebug;
+		j["nErrReconnect"] = m_nErrReconnect;
+		j["rtuPort"] = m_rtuPort;
+		j["rtuParity"] = m_rtuParity;
+		j["rtuBaud"] = m_rtuBaud;
+		j["tcpAddr"] = m_tcpAddr;
+		j["tcpPort"] = m_tcpPort;
+		j["tIntervalUsec"] = m_tIntervalUsec;
+		j["tOutSec"] = m_tOutSec;
+		j["tOutUSec"] = m_tOutUSec;
+		j["type"] = m_type;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _Modbus::open(void)
 	{
 		if (modbus_connect(m_pMb) != 0)

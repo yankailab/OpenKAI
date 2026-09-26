@@ -30,6 +30,23 @@ namespace kai
 		return true;
 	}
 
+	bool _Thermal2RGB::saveConfig(bool bExport)
+	{
+		if (!_VisionBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["vTrange"] = {m_vTrange.x(), m_vTrange.y()};
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _Thermal2RGB::link(void)
 	{
 		IF_F(!this->_VisionBase::link());

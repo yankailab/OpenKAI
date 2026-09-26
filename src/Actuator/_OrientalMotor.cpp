@@ -25,6 +25,23 @@ namespace kai
 		return true;
 	}
 
+	bool _OrientalMotor::saveConfig(bool bExport)
+	{
+		if (!_ActuatorBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["iData"] = m_iData;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _OrientalMotor::link(void)
 	{
 		IF_F(!this->_ActuatorBase::link());

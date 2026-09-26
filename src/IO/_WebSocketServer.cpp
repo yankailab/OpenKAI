@@ -54,6 +54,32 @@ namespace kai
 		return true;
 	}
 
+	bool _WebSocketServer::saveConfig(bool bExport)
+	{
+		if (!_IObase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["wsMode"] = m_wsMode;
+		j["host"] = m_host;
+		j["port"] = m_port;
+		j["tOutMs"] = m_tOutMs;
+		j["nClientMax"] = m_nClientMax;
+
+		if (m_pTr && !m_pTr->saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _WebSocketServer::link(void)
 	{
 		IF_F(!this->_IObase::link());

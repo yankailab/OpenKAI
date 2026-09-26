@@ -49,6 +49,46 @@ namespace kai
 		return true;
 	}
 
+	bool _HYMCU_RS485::saveConfig(bool bExport)
+	{
+		if (!_ActuatorBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["iSlave"] = m_iSlave;
+		j["dpr"] = m_dpr;
+		j["dInit"] = m_dInit;
+		j["cmdInt"] = m_cmdInt;
+
+		json &addr = j["addr"];
+		if (!addr.is_object())
+		{
+			addr = json::object();
+		}
+		addr["setDPR"] = m_addr.m_setDPR;
+		addr["setDist"] = m_addr.m_setDist;
+		addr["setDir"] = m_addr.m_setDir;
+		addr["setSpd"] = m_addr.m_setSpd;
+		addr["setAcc"] = m_addr.m_setAcc;
+		addr["setSlaveID"] = m_addr.m_setSlaveID;
+		addr["setBaudL"] = m_addr.m_setBaudL;
+		addr["setBaudH"] = m_addr.m_setBaudH;
+		addr["bComplete"] = m_addr.m_bComplete;
+		addr["readStat"] = m_addr.m_readStat;
+		addr["run"] = m_addr.m_run;
+		addr["stop"] = m_addr.m_stop;
+		addr["resPos"] = m_addr.m_resPos;
+		addr["saveData"] = m_addr.m_saveData;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _HYMCU_RS485::link(void)
 	{
 		IF_F(!this->_ActuatorBase::link());

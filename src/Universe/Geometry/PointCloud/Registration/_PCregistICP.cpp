@@ -30,6 +30,24 @@ namespace kai
         return true;
     }
 
+    bool _PCregistICP::saveConfig(bool bExport)
+    {
+        if (!_ModuleBase::saveConfig(false))
+        {
+            return false;
+        }
+
+        json &j = *m_pJ;
+        j["est"] = static_cast<int>(m_est);
+        j["thr"] = m_thr;
+
+        if (!bExport)
+        {
+            return true;
+        }
+        return m_pJcfg->saveToFile();
+    }
+
     bool _PCregistICP::link(void)
     {
         IF_F(!this->_ModuleBase::link());

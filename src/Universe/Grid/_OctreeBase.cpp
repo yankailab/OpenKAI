@@ -18,6 +18,20 @@ namespace kai
 		return true;
 	}
 
+	bool _OctreeBase::saveConfig(bool bExport)
+	{
+		if (!_ReferenceFrame::saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _OctreeBase::link(void)
 	{
 		IF_F(!this->_ReferenceFrame::link());

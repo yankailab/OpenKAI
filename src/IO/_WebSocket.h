@@ -22,6 +22,7 @@ namespace kai
 		virtual ~_WebSocket();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual void console(void *pConsole);
 
 		int read(uint8_t *pBuf, int nB);

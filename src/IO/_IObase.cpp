@@ -24,13 +24,29 @@ namespace kai
 		IF_F(!this->_ModuleBase::loadConfig());
 		const json &j = *m_pJ;
 
-		int nPacket = 256;
-		int nPbuffer = 2000;
-		jKv(j, "nPacket", nPacket);
-		jKv(j, "nPbuffer", nPbuffer);
-		IF_F(!m_packetW.init(nPbuffer, nPacket));
+		jKv(j, "nPacket", m_nPacket);
+		jKv(j, "nPbuffer", m_nPbuffer);
+		IF_F(!m_packetW.init(m_nPbuffer, m_nPacket));
 
 		return true;
+	}
+
+	bool _IObase::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["nPacket"] = m_nPacket;
+		j["nPbuffer"] = m_nPbuffer;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _IObase::link(void)

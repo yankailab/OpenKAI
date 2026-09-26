@@ -34,6 +34,27 @@ namespace kai
 		return true;
 	}
 
+	bool _UDP::saveConfig(bool bExport)
+	{
+		if (!_IObase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["addrRemote"] = m_addrRemote;
+		j["portRemote"] = m_portRemote;
+		j["portLocal"] = m_portLocal;
+		j["bW2R"] = m_bW2R;
+		j["bWbroadcast"] = m_bWbroadcast;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _UDP::open(void)
 	{
 		m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);

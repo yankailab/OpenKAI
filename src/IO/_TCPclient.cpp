@@ -33,6 +33,24 @@ namespace kai
 		return true;
 	}
 
+	bool _TCPclient::saveConfig(bool bExport)
+	{
+		if (!_IObase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["addr"] = m_strAddr;
+		j["port"] = m_port;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _TCPclient::open(void)
 	{
 		m_socket = socket(AF_INET, SOCK_STREAM, 0);

@@ -31,6 +31,24 @@ namespace kai
 		return true;
 	}
 
+	bool _GStreamer::saveConfig(bool bExport)
+	{
+		if (!_VisionBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["pipeline"] = m_pipeline;
+		j["nInitRead"] = m_nInitRead;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _GStreamer::open(void)
 	{
 		m_gst.open(m_pipeline, CAP_GSTREAMER);

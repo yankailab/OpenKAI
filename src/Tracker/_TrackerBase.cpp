@@ -30,6 +30,24 @@ namespace kai
 		return true;
 	}
 
+	bool _TrackerBase::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["trackerType"] = m_trackerType;
+		j["margin"] = m_margin;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _TrackerBase::link(void)
 	{
 		IF_F(!this->_ModuleBase::link());

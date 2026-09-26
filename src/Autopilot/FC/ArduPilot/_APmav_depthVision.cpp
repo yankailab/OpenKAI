@@ -16,11 +16,11 @@ namespace kai
 		IF_F(!this->_ModuleBase::loadConfig());
 		const json &j = *m_pJ;
 
+		m_nROI = 0;
 		const json *pJS = jK(j, "sections");
 		IF__(!pJS || !pJS->is_object(), true);
 		const json &jS = *pJS;
 
-		m_nROI = 0;
 		for (auto it = jS.begin(); it != jS.end(); it++)
 		{
 			const json &Ji = it.value();
@@ -30,6 +30,7 @@ namespace kai
 
 			DEPTH_ROI *pR = &m_pROI[m_nROI];
 			pR->init();
+			pR->m_configKey = it.key();
 			jKv(Ji, "orientation", pR->m_orientation);
 			jKv(Ji, "l", pR->m_roi.x());
 			jKv(Ji, "t", pR->m_roi.y());
@@ -40,6 +41,49 @@ namespace kai
 		}
 
 		return true;
+	}
+
+	bool _APmav_depthVision::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		json &sections = j["sections"];
+		if (!sections.is_object())
+		{
+			sections = json::object();
+		}
+		for (int i = 0; i < m_nROI; ++i)
+		{
+			DEPTH_ROI &roi = m_pROI[i];
+			if (roi.m_configKey.empty())
+			{
+				roi.m_configKey = std::to_string(i);
+				while (sections.contains(roi.m_configKey))
+				{
+					roi.m_configKey += "_";
+				}
+			}
+			json &value = sections[roi.m_configKey];
+			if (!value.is_object())
+			{
+				value = json::object();
+			}
+			value["orientation"] = roi.m_orientation;
+			value["l"] = roi.m_roi[0];
+			value["t"] = roi.m_roi[1];
+			value["r"] = roi.m_roi[2];
+			value["b"] = roi.m_roi[3];
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _APmav_depthVision::link(void)

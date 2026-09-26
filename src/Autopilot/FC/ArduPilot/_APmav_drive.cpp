@@ -36,6 +36,36 @@ namespace kai
 		return true;
 	}
 
+	bool _APmav_drive::saveConfig(bool bExport)
+	{
+		if (!_APmav_move::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["steer"] = m_steer;
+		j["speed"] = m_speed;
+		j["pwmM"] = m_pwmM;
+		j["pwmD"] = m_pwmD;
+		j["iRCsteer"] = m_iRCsteer;
+		j["iRCthrottle"] = m_iRCthrottle;
+		j["tOutBtn"] = m_tOutBtn;
+		j["apModeMove"] = m_apModeMove;
+		j["octGridOccu"] = m_octGridOccu;
+		j["speedGo"] = m_speedGo;
+		j["steerTurn"] = m_steerTurn;
+		j["iRCservo"] = m_iRCservo;
+		j["pwmServoON"] = m_pwmServoON;
+		j["pwmServoOFF"] = m_pwmServoOFF;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _APmav_drive::link(void)
 	{
 		IF_F(!this->_APmav_move::link());

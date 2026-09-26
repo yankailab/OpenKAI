@@ -19,6 +19,7 @@ namespace kai
 		virtual ~_UIbase();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual bool start(void);
 

@@ -33,6 +33,7 @@ namespace kai
 		~_CANbase();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual bool check(void);
 		virtual void console(void *pConsole);

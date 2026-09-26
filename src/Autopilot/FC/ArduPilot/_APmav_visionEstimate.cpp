@@ -48,6 +48,37 @@ namespace kai
 		return true;
 	}
 
+	bool _APmav_visionEstimate::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["bPos"] = m_bPos;
+		j["bSpd"] = m_bSpd;
+		j["thrJumpPos"] = m_thrJumpPos;
+		j["thrJumpSpd"] = m_thrJumpSpd;
+		j["apModeInError"] = m_apModeInError;
+		j["vAxisRPY"] = {m_vAxisRPY[0], m_vAxisRPY[1], m_vAxisRPY[2]};
+		json values = json::array();
+		for (int row = 0; row < 4; ++row)
+		{
+			for (int col = 0; col < 4; ++col)
+			{
+				values.push_back(m_mTsensor2aero(row, col));
+			}
+		}
+		j["mTsensor2aero"] = values;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _APmav_visionEstimate::link(void)
 	{
 		IF_F(!this->_ModuleBase::link());

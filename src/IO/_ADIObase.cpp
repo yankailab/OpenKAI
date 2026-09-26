@@ -23,6 +23,7 @@ namespace kai
 		IF_F(!this->_ModuleBase::loadConfig());
 		const json &j = *m_pJ;
 
+		m_vPort.clear();
 		const json *pJP = jK(j, "ports");
 		IF__(!pJP || !pJP->is_array(), true);
 		const json &jP = *pJP;
@@ -44,6 +45,41 @@ namespace kai
 		}
 
 		return true;
+	}
+
+	bool _ADIObase::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		json &ports = j["ports"];
+		if (!ports.is_array())
+		{
+			ports = json::array();
+		}
+		size_t iConfig = 0;
+		for (const ADIO_PORT &port : m_vPort)
+		{
+			while (iConfig < ports.size() && !ports[iConfig].is_object())
+			{
+				++iConfig;
+			}
+			json &entry = ports[iConfig++];
+			entry["bDigital"] = port.m_bDigital;
+			entry["type"] = port.m_type;
+			entry["addr"] = port.m_addr;
+			entry["vW"] = port.m_vW;
+			entry["vR"] = port.m_vR;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _ADIObase::link(void)

@@ -29,14 +29,33 @@ namespace kai
 		jKv(j, "realSize", m_realSize);
 
 		jKv(j, "bPose", m_bPose);
+		jKv(j, "fCalib", m_fCalib);
 		if (m_bPose)
 		{
-			string n = "";
-			jKv(j, "fCalib", n);
-			readCamMatrices(n, &m_mC, &m_mD);
+			readCamMatrices(m_fCalib, &m_mC, &m_mD);
 		}
 
 		return true;
+	}
+
+	bool _ArUco::saveConfig(bool bExport)
+	{
+		if (!_DetectorBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["dict"] = m_dict;
+		j["realSize"] = m_realSize;
+		j["bPose"] = m_bPose;
+		j["fCalib"] = m_fCalib;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
 	}
 
 	bool _ArUco::start(void)

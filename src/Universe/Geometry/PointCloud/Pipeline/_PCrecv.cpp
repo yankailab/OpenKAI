@@ -25,6 +25,20 @@ namespace kai
 		return true;
 	}
 
+	bool _PCrecv::saveConfig(bool bExport)
+	{
+		if (!_PointCloud::saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _PCrecv::link(void)
 	{
 		IF_F(!this->_PointCloud::link());

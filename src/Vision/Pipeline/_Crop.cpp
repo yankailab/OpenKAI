@@ -31,6 +31,23 @@ namespace kai
 		return true;
 	}
 
+	bool _Crop::saveConfig(bool bExport)
+	{
+		if (!_VisionBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["vRoi"] = {m_vRoi.x(), m_vRoi.y(), m_vRoi.z(), m_vRoi.w()};
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _Crop::link(void)
 	{
 		IF_F(!this->_VisionBase::link());

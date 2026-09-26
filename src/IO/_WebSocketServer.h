@@ -56,6 +56,7 @@ namespace kai
 		virtual ~_WebSocketServer();
 
 		bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		bool link(void) override;
 		virtual bool start(void);
 		virtual void console(void *pConsole);

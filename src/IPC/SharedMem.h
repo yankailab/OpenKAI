@@ -23,6 +23,7 @@ namespace kai
 		virtual ~SharedMem();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual bool open(void);
 		virtual bool bOpen(void);

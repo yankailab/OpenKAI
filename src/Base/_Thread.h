@@ -28,7 +28,7 @@ namespace kai
 		virtual ~_Thread();
 
 		bool loadConfig(void) override;
-		bool saveConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		bool link(void) override;
 		virtual bool startThread(void *(*__start_routine)(void *), void *__restrict __arg);
 		virtual void console(void *pConsole);

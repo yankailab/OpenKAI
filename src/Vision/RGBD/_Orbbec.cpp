@@ -2650,10 +2650,10 @@ namespace kai
 		return errors.empty();
 	}
 
-	bool _Orbbec::saveConfig(void)
+	bool _Orbbec::saveConfig(bool bExport)
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_mtxDevice);
-		if (!_RGBDbase::saveConfig())
+		if (!_RGBDbase::saveConfig(false))
 		{
 			return false;
 		}
@@ -2669,11 +2669,10 @@ namespace kai
 			(*m_pJ)[field.key()] = field.value();
 		}
 
-		if (m_pTpp && !m_pTpp->saveConfig())
+		if (!bExport)
 		{
-			return false;
+			return true;
 		}
-
 		return m_pJcfg->saveToFile();
 	}
 
@@ -3031,7 +3030,7 @@ namespace kai
 			}
 			else if (cmd == "saveConfig")
 			{
-				reply["bSuccess"] = saveConfig();
+				reply["bSuccess"] = saveConfig(true);
 				if (!reply["bSuccess"].get<bool>())
 				{
 					reply["error"] = "Could not save the launch configuration";

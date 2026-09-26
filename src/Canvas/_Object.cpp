@@ -23,6 +23,20 @@ namespace kai
 		return true;
 	}
 
+	bool _Object::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	void _Object::clear(void)
 	{
 		m_type = obj_unknown;

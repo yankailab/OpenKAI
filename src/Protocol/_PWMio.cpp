@@ -30,6 +30,29 @@ namespace kai
 		return true;
 	}
 
+	bool _PWMio::saveConfig(bool bExport)
+	{
+		if (!_ProtocolBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["nCr"] = m_nCr;
+		j["nCw"] = m_nCw;
+		j["vPWM"] = json::array();
+		for (int i = 0; i < m_nCw && i < PWMIO_N_CHAN; ++i)
+		{
+			j["vPWM"].push_back(m_pCw[i].m_raw);
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _PWMio::start(void)
 	{
 		NULL_F(m_pT);

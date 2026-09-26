@@ -21,6 +21,23 @@ namespace kai
 		return true;
 	}
 
+	bool _APmav_mission::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["tOutSec"] = m_tOutSec;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _APmav_mission::link(void)
 	{
 		IF_F(!this->_ModuleBase::link());

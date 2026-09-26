@@ -17,6 +17,7 @@ namespace kai
 		_WebGLIM();
 		~_WebGLIM() override;
 		bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		bool link(void) override;
 		bool start() override;
 		void stop() override;

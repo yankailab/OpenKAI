@@ -22,6 +22,7 @@ namespace kai
 
 	struct POINTCLOUD_VOL
 	{
+		string m_name; // Configuration entry key.
 		POINTCLOUD_VOL_TYPE m_type;
 		bool m_bInside; // true: inside valid
 
@@ -94,6 +95,7 @@ namespace kai
 		virtual ~_PCcrop();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool start(void);
 		virtual bool check(void);
 

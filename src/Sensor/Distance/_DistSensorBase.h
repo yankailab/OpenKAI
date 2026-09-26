@@ -95,6 +95,7 @@ namespace kai
 		virtual ~_DistSensorBase();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual void console(void *pConsole);
 		virtual void draw(void *pMat);
 
@@ -116,6 +117,8 @@ namespace kai
 
 	protected:
 		DIST_SENSOR_DIV *m_pDiv = nullptr;
+		int m_nMed = 0;
+		int m_nAvr = 0;
 		int m_nDiv = 1;
 
 		float m_fovH = 360;

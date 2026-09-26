@@ -39,6 +39,30 @@ namespace kai
 		return true;
 	}
 
+	bool _OpenPose::saveConfig(bool bExport)
+	{
+		if (!_DetectorBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["nW"] = m_nW;
+		j["nH"] = m_nH;
+		j["iBackend"] = m_iBackend;
+		j["iTarget"] = m_iTarget;
+		j["bSwapRB"] = m_bSwapRB;
+		j["scale"] = m_scale;
+		j["vMean"] = {m_vMean.x(), m_vMean.y(), m_vMean.z()};
+		j["thr"] = m_thr;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _OpenPose::start(void)
 	{
 		NULL_F(m_pT);

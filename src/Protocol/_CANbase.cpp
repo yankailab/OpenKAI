@@ -21,6 +21,23 @@ namespace kai
 		return true;
 	}
 
+	bool _CANbase::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["nErrReconnect"] = m_nErrReconnect;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _CANbase::link(void)
 	{
 		IF_F(!this->_ModuleBase::link());

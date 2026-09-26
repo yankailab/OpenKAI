@@ -29,6 +29,23 @@ namespace kai
 		return true;
 	}
 
+	bool _FileBase::saveConfig(bool bExport)
+	{
+		if (!_ModuleBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["vExt"] = m_vExt;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _FileBase::start(void)
 	{
 		NULL_F(m_pT);

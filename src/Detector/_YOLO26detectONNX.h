@@ -23,6 +23,7 @@ namespace kai
 		~_YOLO26detectONNX();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void console(void *pConsole);

@@ -26,6 +26,20 @@ namespace kai
 		return true;
 	}
 
+	bool _TOFsense::saveConfig(bool bExport)
+	{
+		if (!_DistSensorBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _TOFsense::link(void)
 	{
 		IF_F(!this->_DistSensorBase::link());

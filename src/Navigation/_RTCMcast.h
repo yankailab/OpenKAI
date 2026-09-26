@@ -26,6 +26,7 @@ namespace kai
 {
 	struct RTCM_MSG
 	{
+		string m_configKey;
 		// rtcm msg data
 		uint16_t m_msgID;
 		uint16_t m_nPayload;
@@ -124,6 +125,7 @@ namespace kai
 		virtual ~_RTCMcast();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual bool start(void);
 		virtual bool check(void);

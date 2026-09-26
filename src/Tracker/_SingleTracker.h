@@ -21,6 +21,7 @@ namespace kai
 		virtual ~_SingleTracker();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool start(void);
 
 		void createTracker(void);

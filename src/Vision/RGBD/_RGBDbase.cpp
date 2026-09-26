@@ -44,6 +44,41 @@ namespace kai
 		return true;
 	}
 
+	bool _RGBDbase::saveConfig(bool bExport)
+	{
+		if (!_VisionBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["devFPSd"] = m_devFPSd;
+		j["vSizeD"] = {m_vSizeD.x(), m_vSizeD.y()};
+		j["vRangeD"] = {m_vRangeD.x(), m_vRangeD.y()};
+		j["dScale"] = m_dScale;
+		j["dOfs"] = m_dOfs;
+		j["bDepth"] = m_bDepth;
+		j["bIR"] = m_bIR;
+		j["btRGB"] = m_btRGB;
+		j["btDepth"] = m_btDepth;
+		j["bConfidence"] = m_bConfidence;
+		j["fConfidenceThr"] = m_fConfidenceThr;
+		j["bIMU"] = m_bIMU;
+		j["bPCL"] = m_bPCL;
+		j["bPCLrgb"] = m_bPCLrgb;
+
+		if (m_pTpp && !m_pTpp->saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _RGBDbase::link(void)
 	{
 		IF_F(!this->_VisionBase::link());

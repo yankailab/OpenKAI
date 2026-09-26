@@ -28,6 +28,24 @@ namespace kai
 		return true;
 	}
 
+	bool _ZLAC8015::saveConfig(bool bExport)
+	{
+		if (!_ActuatorBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["iMode"] = m_iMode;
+		j["tIntReadStatus"] = m_ieReadStatus.m_tInterval;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _ZLAC8015::link(void)
 	{
 		IF_F(!this->_ActuatorBase::link());

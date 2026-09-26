@@ -31,17 +31,21 @@ namespace kai
         return true;
     }
 
-    bool _ModuleBase::saveConfig(void)
+    bool _ModuleBase::saveConfig(bool bExport)
     {
-        if (!BASE::saveConfig())
+        if (!BASE::saveConfig(false))
         {
             return false;
         }
-        if (m_pT && !m_pT->saveConfig())
+        if (m_pT && !m_pT->saveConfig(false))
         {
             return false;
         }
 
+        if (!bExport)
+        {
+            return true;
+        }
         return m_pJcfg->saveToFile();
     }
 

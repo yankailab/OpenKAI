@@ -162,6 +162,7 @@ namespace kai
 		virtual ~_IObase();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual void console(void *pConsole);
 
@@ -182,6 +183,8 @@ namespace kai
 		IO_TYPE m_ioType = io_none;
 		IO_STATUS m_ioStatus = io_unknown;
 
+		int m_nPacket = 256;
+		int m_nPbuffer = 2000;
 		IO_PACKET_FIFO m_packetW;
 	};
 

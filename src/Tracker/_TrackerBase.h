@@ -30,6 +30,7 @@ namespace kai
 		virtual ~_TrackerBase();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual void update(void);
 		virtual bool check(void);

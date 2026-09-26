@@ -27,7 +27,7 @@ namespace kai
         virtual bool check(void);
         virtual void console(void *pConsole);
 
-        virtual bool saveConfig(void) override;
+        virtual bool saveConfig(bool bExport) override;
 
         virtual void setPos(const Vector3d &vP);
         virtual void setPos(double x, double y, double z);

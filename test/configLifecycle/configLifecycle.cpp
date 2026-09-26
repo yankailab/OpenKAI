@@ -1,3 +1,5 @@
+#include "coreSaveCoverage.h"
+#include "visionSaveCoverage.h"
 #include "src/Base/_ModuleBase.h"
 #include "src/Module/ModuleMgr.h"
 
@@ -122,10 +124,24 @@ namespace kai
 		assert(manager.findJson("secondary") ==
 			&(*manager.findJsonCfg("secondary")->getJson())["secondary"]);
 
+		BASE *pPrimary = findModule<BASE>(manager, "primary");
+		manager.findJson("primary")->erase("class");
+		assert(pPrimary->BASE::saveConfig(false));
+		assert((*manager.findJson("primary"))["class"] == "Destimator");
+		assert(readJson("manager.json") == main);
+		assert(pPrimary->BASE::saveConfig(true));
+		assert(readJson("manager.json")["primary"]["name"] == "primary");
+
+		assert(std::filesystem::remove("manager.json"));
+		assert(std::filesystem::create_directory("manager.json"));
+		assert(pPrimary->BASE::saveConfig(false));
+		assert(!pPrimary->BASE::saveConfig(true));
+
 		BASE unbound;
 		assert(!unbound.loadConfig());
 		assert(!unbound.link());
-		assert(!unbound.saveConfig());
+		assert(!unbound.saveConfig(false));
+		assert(!unbound.saveConfig(true));
 	}
 
 	static void testNestedThreads(void)
@@ -151,7 +167,12 @@ namespace kai
 		assert((*manager.findJson("defaults"))["thread"].is_object());
 
 		pConfigured->thread()->setTargetFPS(41);
-		assert(pConfigured->saveConfig());
+		assert(pConfigured->saveConfig(false));
+		assert((*manager.findJson("configured"))["name"] == "configured");
+		assert((*manager.findJson("configured"))["thread"]["FPS"] == 41);
+		assert(readJson("threads-include.json") == included);
+		assert(readJson("threads.json") == main);
+		assert(pConfigured->saveConfig(true));
 		json saved = readJson("threads-include.json");
 		assert(saved["configured"]["thread"]["FPS"] == 41);
 		assert(saved["configured"]["thread"]["threadCustom"] == "keep");
@@ -160,7 +181,7 @@ namespace kai
 		assert(readJson("threads.json") == main);
 
 		pConfigured->thread()->setTargetFPS(53);
-		assert(pConfigured->thread()->saveConfig());
+		assert(pConfigured->thread()->saveConfig(true));
 		assert(readJson("threads-include.json")["configured"]["thread"]["FPS"] == 53);
 		assert(pConfigured->loadConfig());
 		assert(pConfigured->link());
@@ -175,14 +196,14 @@ namespace kai
 		assert(pReloaded->thread()->getTargetFPS() == 53);
 
 		pDefaults->thread()->setTargetFPS(29);
-		assert(pDefaults->saveConfig());
+		assert(pDefaults->saveConfig(true));
 		saved = readJson("threads-include.json");
 		assert(saved["configured"]["thread"]["FPS"] == 53);
 		assert(saved["defaults"]["thread"]["FPS"] == 29);
 		assert(saved["sibling"] == included["sibling"]);
 
 		pConfigured->thread()->setTargetFPS(61);
-		assert(pConfigured->saveConfig());
+		assert(pConfigured->saveConfig(true));
 		saved = readJson("threads-include.json");
 		assert(saved["configured"]["thread"]["FPS"] == 61);
 		assert(saved["defaults"]["thread"]["FPS"] == 29);
@@ -191,8 +212,15 @@ namespace kai
 		// Replacing this temporary destination with a directory forces a write error.
 		assert(std::filesystem::remove("threads-include.json"));
 		assert(std::filesystem::create_directory("threads-include.json"));
-		assert(!pConfigured->saveConfig());
-		assert(!pConfigured->thread()->saveConfig());
+		pConfigured->thread()->setTargetFPS(67);
+		assert(pConfigured->saveConfig(false));
+		assert((*manager.findJson("configured"))["thread"]["FPS"] == 67);
+		pConfigured->thread()->setTargetFPS(71);
+		assert(pConfigured->thread()->saveConfig(false));
+		assert((*manager.findJson("configured"))["thread"]["FPS"] == 71);
+		assert(std::filesystem::is_directory("threads-include.json"));
+		assert(!pConfigured->saveConfig(true));
+		assert(!pConfigured->thread()->saveConfig(true));
 	}
 
 	static void testBufferedWriteFailure(void)
@@ -230,7 +258,7 @@ namespace kai
 		(*manager.findJson("controller"))["states"]["ready"]["next"] = "ready";
 		assert(pState->loadConfig());
 		assert(pState->getNext() == "ready");
-		assert(pController->saveConfig());
+		assert(pController->saveConfig(true));
 		assert(readJson("states.json")["controller"]["states"]["ready"]["next"] == "ready");
 	}
 #endif
@@ -260,13 +288,19 @@ namespace kai
 		_SelectableOctGrid *pGrid = findModule<_SelectableOctGrid>(manager, "grid");
 		assert(pFrame->getPos().isApprox(Vector3d(1.0, 2.0, 3.0)));
 		pFrame->setPos(4.0, 5.0, 6.0);
-		assert(pFrame->saveConfig());
+		assert(pFrame->saveConfig(true));
 		pTransform->setPos(7.0, 8.0, 9.0);
 		Eigen::Matrix4d transform = Eigen::Matrix4d::Identity();
 		transform.block<3, 1>(0, 3) = Vector3d(10.0, 11.0, 12.0);
 		pTransform->setTranslationMatrix(transform);
-		assert(pTransform->saveConfig());
-		assert(pGrid->saveConfig());
+		const json beforeTransform = readJson("geometry.json");
+		assert(pTransform->saveConfig(false));
+		assert((*manager.findJson("transform"))["vPos"] == json({7.0, 8.0, 9.0}));
+		assert((*manager.findJson("transform"))["nP"] == 16);
+		assert((*manager.findJson("transform"))["mT"][3] == 10.0);
+		assert(readJson("geometry.json") == beforeTransform);
+		assert(pTransform->saveConfig(true));
+		assert(pGrid->saveConfig(true));
 
 		json saved = readJson("geometry.json");
 		assert(saved["frame"]["vPos"] == json({4.0, 5.0, 6.0}));
@@ -314,7 +348,7 @@ namespace kai
 		assert(transport.m_reply["bSuccess"] == true);
 		assert(transport.m_reply["requestId"] == "camera-save");
 #else
-		assert(pCamera->saveConfig());
+		assert(pCamera->saveConfig(true));
 #endif
 		json saved = readJson("scepter.json");
 		assert(saved["camera"]["scFrameRate"] == 20);
@@ -353,7 +387,7 @@ namespace kai
 		assert(transport.m_reply["bSuccess"] == true);
 		assert(transport.m_reply["requestId"] == "camera-save");
 #else
-		assert(pCamera->saveConfig());
+		assert(pCamera->saveConfig(true));
 #endif
 		json saved = readJson("orbbec.json");
 		assert(saved["camera"]["OB_PROP_LASER_BOOL"] == true);
@@ -391,7 +425,7 @@ namespace kai
 		pSlam->console({{"cmd", "setConfig"}, {"config", {{"nMinPoints", 80}}}}, &transport);
 		assert(transport.m_reply["bSuccess"] == true);
 		pSlam->setPos(3.0, 4.0, 5.0);
-		assert(pSlam->saveConfig());
+		assert(pSlam->saveConfig(true));
 		json saved = readJson("glim.json");
 		assert(saved["slam"]["parameters"]["nMinPoints"] == 80);
 		assert(saved["slam"]["parameters"]["preprocess"]["distanceFar"] == 17.0);
@@ -413,6 +447,8 @@ namespace kai
 int main(int argc, char **argv)
 {
 	assert(argc == 2);
+	kai::testCoreSaveCoverage();
+	kai::testVisionSaveCoverage();
 	kai::testManager();
 	kai::testNestedThreads();
 	kai::testBufferedWriteFailure();

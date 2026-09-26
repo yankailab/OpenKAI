@@ -15,6 +15,7 @@ namespace kai
 
 	struct IMG_ERODE
 	{
+		string m_name;
 		int m_nItr;
 		int m_kShape;
 		int m_kW;
@@ -46,6 +47,7 @@ namespace kai
 		virtual ~_Erode();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool link(void) override;
 		virtual bool start(void);
 

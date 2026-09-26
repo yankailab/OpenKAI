@@ -26,6 +26,20 @@ namespace kai
 		return true;
 	}
 
+	bool _RStracking::saveConfig(bool bExport)
+	{
+		if (!_NavBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _RStracking::open(void)
 	{
 		IF_F(!m_flag.b(F_OPEN));

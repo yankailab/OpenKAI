@@ -155,6 +155,28 @@ namespace kai
 		return true;
 	}
 
+	bool _OctreeGrid::saveConfig(bool bExport)
+	{
+		if (!_OctreeBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["vPorigin"] = {m_vPorigin.x(), m_vPorigin.y(), m_vPorigin.z()};
+		j["vRootCellSize"] = {m_vRootCellSize.x(), m_vRootCellSize.y(), m_vRootCellSize.z()};
+		j["nMaxLevel"] = m_nMaxLevel;
+		j["dTexpireCell"] = m_dTexpireCell;
+		j["dTexpirePCL"] = m_dTexpirePCL;
+		j["nP"] = m_grPt.m_nT;
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _OctreeGrid::link(void)
 	{
 		NULL_F(m_pM);

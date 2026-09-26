@@ -37,6 +37,26 @@ namespace kai
 		return true;
 	}
 
+	bool _SBus::saveConfig(bool bExport)
+	{
+		if (!_ProtocolBase::saveConfig(false))
+		{
+			return false;
+		}
+
+		json &j = *m_pJ;
+		j["bSender"] = m_bSender;
+		j["timeOutNsec"] = m_frame.m_timeOutNsec;
+		j["bRawSbus"] = m_bRawSbus;
+		j["vRawRC"] = {m_frame.m_pRC[0].m_rawL, m_frame.m_pRC[0].m_rawM, m_frame.m_pRC[0].m_rawH};
+
+		if (!bExport)
+		{
+			return true;
+		}
+		return m_pJcfg->saveToFile();
+	}
+
 	bool _SBus::link(void)
 	{
 		IF_F(!this->_ProtocolBase::link());

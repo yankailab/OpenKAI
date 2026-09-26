@@ -24,6 +24,7 @@ namespace kai
 		virtual ~_Canvas();
 
 		virtual bool loadConfig(void) override;
+		bool saveConfig(bool bExport) override;
 		virtual bool start(void);
 		virtual void update(void);
 		virtual void draw(void *pMat);
@@ -52,6 +53,7 @@ namespace kai
 		tSwap<_ObjectArray> m_sO;
 
 		//config
+		int m_nBuf = 16;
 		float m_minConfidence = 0.0;
 		Vector2f m_vArea = Vector2f::Zero();
 		Vector2f m_vW = Vector2f::Zero();
