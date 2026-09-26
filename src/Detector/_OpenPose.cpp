@@ -41,10 +41,7 @@ namespace kai
 
 	bool _OpenPose::saveConfig(bool bExport)
 	{
-		if (!_DetectorBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_DetectorBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["nW"] = m_nW;
@@ -56,10 +53,7 @@ namespace kai
 		j["vMean"] = {m_vMean.x(), m_vMean.y(), m_vMean.z()};
 		j["thr"] = m_thr;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

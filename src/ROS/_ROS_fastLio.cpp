@@ -35,10 +35,7 @@ namespace kai
 
     bool _ROS_fastLio::saveConfig(bool bExport)
     {
-        if (!_NavBase::saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(!_NavBase::saveConfig(false));
 
         json &j = *m_pJ;
         if (m_pROSnode)
@@ -49,15 +46,9 @@ namespace kai
             node["topicPath"] = m_pROSnode->m_topicPath;
         }
 
-        if (m_pTros && !m_pTros->saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(m_pTros && !m_pTros->saveConfig(false));
 
-        if (!bExport)
-        {
-            return true;
-        }
+        IF__(!bExport, true);
         return m_pJcfg->saveToFile();
     }
 

@@ -98,10 +98,7 @@ namespace kai
 
     bool _Livox2::saveConfig(bool bExport)
     {
-        if (!_PointCloud::saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(!_PointCloud::saveConfig(false));
 
         json &j = *m_pJ;
         j["lvxSN"] = m_lvxSN;
@@ -124,40 +121,19 @@ namespace kai
             std::to_string(pIP[2]) + "." + std::to_string(pIP[3]);
         j["tOutSec"] = m_lvxTout.m_tOut / NSEC_SEC;
 
-        if (m_pTdeviceQueryR && !m_pTdeviceQueryR->saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(m_pTdeviceQueryR && !m_pTdeviceQueryR->saveConfig(false));
 
-        if (m_pTctrlCmdW && !m_pTctrlCmdW->saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(m_pTctrlCmdW && !m_pTctrlCmdW->saveConfig(false));
 
-        if (m_pTctrlCmdR && !m_pTctrlCmdR->saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(m_pTctrlCmdR && !m_pTctrlCmdR->saveConfig(false));
 
-        if (m_pTpushCmdR && !m_pTpushCmdR->saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(m_pTpushCmdR && !m_pTpushCmdR->saveConfig(false));
 
-        if (m_pTpclR && !m_pTpclR->saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(m_pTpclR && !m_pTpclR->saveConfig(false));
 
-        if (m_pTimuR && !m_pTimuR->saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(m_pTimuR && !m_pTimuR->saveConfig(false));
 
-        if (!bExport)
-        {
-            return true;
-        }
+        IF__(!bExport, true);
         return m_pJcfg->saveToFile();
     }
 

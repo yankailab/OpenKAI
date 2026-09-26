@@ -357,8 +357,7 @@ namespace
 		if (!p.m_bList)
 			return readValue(is, p.m_type, format, &v, pErr);
 
-		if (!readValue(is, p.m_typeCount, format, &v, pErr))
-			return false;
+		IF_F(!readValue(is, p.m_typeCount, format, &v, pErr));
 
 		if (v.m_v < 0.0)
 		{
@@ -839,18 +838,12 @@ namespace kai
 
 	bool _PCfile::saveConfig(bool bExport)
 	{
-		if (!_PointCloud::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_PointCloud::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["vfName"] = m_vfName;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

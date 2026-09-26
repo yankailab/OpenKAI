@@ -39,10 +39,7 @@ namespace kai
 
 	bool _APmav_servo::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		json &channels = j["channels"];
@@ -70,10 +67,7 @@ namespace kai
 			value["pwm"] = entry.m_pwm;
 		}
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

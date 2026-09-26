@@ -60,10 +60,7 @@ namespace kai
 
     bool _RealSense::saveConfig(bool bExport)
     {
-        if (!_RGBDbase::saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(!_RGBDbase::saveConfig(false));
 
         json &j = *m_pJ;
         j["rsSN"] = m_rsSN;
@@ -87,10 +84,7 @@ namespace kai
         j["fSharpness"] = m_rsCtrl.m_fSharpness;
         j["fWhiteBalance"] = m_rsCtrl.m_fWhiteBalance;
 
-        if (!bExport)
-        {
-            return true;
-        }
+        IF__(!bExport, true);
         return m_pJcfg->saveToFile();
     }
 

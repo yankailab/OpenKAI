@@ -54,10 +54,7 @@ namespace kai
 
 	bool _Morphology::saveConfig(bool bExport)
 	{
-		if (!_VisionBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_VisionBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		for (const IMG_MORPH &filter : m_vFilter)
@@ -72,10 +69,7 @@ namespace kai
 			jFilter["aY"] = filter.m_aY;
 		}
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

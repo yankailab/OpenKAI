@@ -30,18 +30,12 @@ namespace kai
 
 	bool _NavBase::saveConfig(bool bExport)
 	{
-		if (!_ReferenceFrame::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ReferenceFrame::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["tConfidenceTimeoutNs"] = m_tConfidenceTimeoutNs;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

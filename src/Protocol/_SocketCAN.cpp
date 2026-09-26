@@ -24,18 +24,12 @@ namespace kai
 
 	bool _SocketCAN::saveConfig(bool bExport)
 	{
-		if (!_CANbase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_CANbase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["ifName"] = m_ifName;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

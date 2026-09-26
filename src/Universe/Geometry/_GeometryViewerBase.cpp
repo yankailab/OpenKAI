@@ -65,10 +65,7 @@ namespace kai
 
 	bool _GeometryViewerBase::saveConfig(bool bExport)
 	{
-		if (!_GeometryBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_GeometryBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["vWinSize"] = {m_vWinSize.x(), m_vWinSize.y()};
@@ -87,10 +84,7 @@ namespace kai
 		j["nPbuf"] = m_nPbuf;
 		j["nLbuf"] = m_nLbuf;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

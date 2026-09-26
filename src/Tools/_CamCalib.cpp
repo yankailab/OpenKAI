@@ -26,20 +26,14 @@ namespace kai
 
     bool _CamCalib::saveConfig(bool bExport)
     {
-        if (!_ModuleBase::saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(!_ModuleBase::saveConfig(false));
 
         json &j = *m_pJ;
         j["path"] = m_path;
         j["vChessBoardSize"] = {m_vChessBoardSize.x(), m_vChessBoardSize.y()};
         j["squareSize"] = m_squareSize;
 
-        if (!bExport)
-        {
-            return true;
-        }
+        IF__(!bExport, true);
         return m_pJcfg->saveToFile();
     }
 

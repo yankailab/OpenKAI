@@ -33,19 +33,10 @@ namespace kai
 
     bool _ModuleBase::saveConfig(bool bExport)
     {
-        if (!BASE::saveConfig(false))
-        {
-            return false;
-        }
-        if (m_pT && !m_pT->saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(!BASE::saveConfig(false));
+        IF_F(m_pT && !m_pT->saveConfig(false));
 
-        if (!bExport)
-        {
-            return true;
-        }
+        IF__(!bExport, true);
         return m_pJcfg->saveToFile();
     }
 

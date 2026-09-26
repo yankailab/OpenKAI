@@ -65,16 +65,10 @@ namespace kai
 
 	bool _Thread::saveConfig(bool bExport)
 	{
-		if (!BASE::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!BASE::saveConfig(false));
 
 		(*m_pJ)["FPS"] = m_targetFPS;
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

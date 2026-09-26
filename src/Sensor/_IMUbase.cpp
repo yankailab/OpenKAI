@@ -36,16 +36,10 @@ namespace kai
 			j["threadStream"] = json::object();
 		}
 		json &jStream = j["threadStream"];
-		if (!jStream.is_object())
-		{
-			return false;
-		}
+		IF_F(!jStream.is_object());
 		float fpsStream = 30.0f;
 		jKv(jStream, "FPS", fpsStream);
-		if (!std::isfinite(fpsStream) || fpsStream <= 0)
-		{
-			return false;
-		}
+		IF_F(!std::isfinite(fpsStream) || fpsStream <= 0);
 		jStream["FPS"] = fpsStream;
 		DEL(m_pTstream);
 		m_pTstream = createThread(&jStream, "threadStream");
@@ -56,25 +50,16 @@ namespace kai
 
 	bool _IMUbase::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["nIMUdqMax"] = m_nIMUdqMax;
 		j["tIMUpairToleranceNs"] = m_tIMUpairToleranceNs;
 		j["bFusion"] = m_bFusion;
 
-		if (m_pTstream && !m_pTstream->saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(m_pTstream && !m_pTstream->saveConfig(false));
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

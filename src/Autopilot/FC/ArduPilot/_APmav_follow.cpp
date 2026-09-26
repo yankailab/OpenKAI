@@ -68,10 +68,7 @@ namespace kai
 
 	bool _APmav_follow::saveConfig(bool bExport)
 	{
-		if (!_APmav_move::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_APmav_move::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["iClass"] = m_iClass;
@@ -94,10 +91,7 @@ namespace kai
 		mount["stabYaw"] = m_apMount.m_config.stab_yaw;
 		mount["mountMode"] = m_apMount.m_config.mount_mode;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

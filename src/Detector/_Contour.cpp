@@ -31,19 +31,13 @@ namespace kai
 
 	bool _Contour::saveConfig(bool bExport)
 	{
-		if (!_DetectorBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_DetectorBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["mode"] = m_mode;
 		j["method"] = m_method;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

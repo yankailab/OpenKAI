@@ -56,10 +56,7 @@ namespace kai
 
 	bool _WebSocketServer::saveConfig(bool bExport)
 	{
-		if (!_IObase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_IObase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["wsMode"] = m_wsMode;
@@ -68,15 +65,9 @@ namespace kai
 		j["tOutMs"] = m_tOutMs;
 		j["nClientMax"] = m_nClientMax;
 
-		if (m_pTr && !m_pTr->saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(m_pTr && !m_pTr->saveConfig(false));
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

@@ -35,19 +35,13 @@ namespace kai
 
 	bool _TCPclient::saveConfig(bool bExport)
 	{
-		if (!_IObase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_IObase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["addr"] = m_strAddr;
 		j["port"] = m_port;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

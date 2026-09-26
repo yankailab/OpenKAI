@@ -32,19 +32,13 @@ namespace kai
 
     bool _PCregistICP::saveConfig(bool bExport)
     {
-        if (!_ModuleBase::saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(!_ModuleBase::saveConfig(false));
 
         json &j = *m_pJ;
         j["est"] = static_cast<int>(m_est);
         j["thr"] = m_thr;
 
-        if (!bExport)
-        {
-            return true;
-        }
+        IF__(!bExport, true);
         return m_pJcfg->saveToFile();
     }
 

@@ -20,15 +20,9 @@ namespace kai
 
 	bool _APmav_copter::saveConfig(bool bExport)
 	{
-		if (!_APmav_base::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_APmav_base::saveConfig(false));
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

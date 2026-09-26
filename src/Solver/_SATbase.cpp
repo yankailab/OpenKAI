@@ -32,18 +32,12 @@ namespace kai
 
 	bool _SATbase::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["fName"] = m_fName;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 
@@ -167,8 +161,7 @@ namespace kai
 			}
 		}
 
-		if (static_cast<size_t>(nS) >= m_vC.size())
-			return true;
+		IF__(static_cast<size_t>(nS) >= m_vC.size(), true);
 
 		return false;
 	}

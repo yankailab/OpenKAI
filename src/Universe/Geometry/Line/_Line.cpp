@@ -36,18 +36,12 @@ namespace kai
 
     bool _Line::saveConfig(bool bExport)
     {
-        if (!_GeometryBase::saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(!_GeometryBase::saveConfig(false));
 
         json &j = *m_pJ;
         j["nL"] = m_grLn.m_nT;
 
-        if (!bExport)
-        {
-            return true;
-        }
+        IF__(!bExport, true);
         return m_pJcfg->saveToFile();
     }
 

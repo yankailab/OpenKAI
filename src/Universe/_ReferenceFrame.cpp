@@ -39,19 +39,13 @@ namespace kai
 
     bool _ReferenceFrame::saveConfig(bool bExport)
     {
-        if (!_ModuleBase::saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(!_ModuleBase::saveConfig(false));
 
         json &j = *m_pJ;
         j["vPos"] = {m_vPos.x(), m_vPos.y(), m_vPos.z()};
         j["vOrt"] = {m_vOrt.x(), m_vOrt.y(), m_vOrt.z(), m_vOrt.w()};
 
-        if (!bExport)
-        {
-            return true;
-        }
+        IF__(!bExport, true);
         return m_pJcfg->saveToFile();
     }
 

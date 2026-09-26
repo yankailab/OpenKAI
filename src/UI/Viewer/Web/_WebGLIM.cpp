@@ -274,10 +274,7 @@ namespace kai
 
 	bool _WebGLIM::saveConfig(bool bExport)
 	{
-		if (!_GeometryViewerBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_GeometryViewerBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["host"] = m_host;
@@ -289,10 +286,7 @@ namespace kai
 		j["bShowGrid"] = m_showGrid;
 		j["vBgCol"] = {m_background.x(), m_background.y(), m_background.z(), m_background.w()};
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

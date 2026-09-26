@@ -131,10 +131,7 @@ namespace kai
 
 	bool _ImGUIselectableOctGrid::saveConfig(bool bExport)
 	{
-		if (!_GeometryViewerBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_GeometryViewerBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["nCbuf"] = m_nCbuf;
@@ -149,15 +146,9 @@ namespace kai
 		j["vBgCol"] = {m_vBgCol.x(), m_vBgCol.y(), m_vBgCol.z(), m_vBgCol.w()};
 		j["bGpuRender"] = m_bGpuRender;
 
-		if (m_pTui && !m_pTui->saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(m_pTui && !m_pTui->saveConfig(false));
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

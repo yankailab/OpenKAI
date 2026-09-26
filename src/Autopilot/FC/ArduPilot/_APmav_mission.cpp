@@ -23,18 +23,12 @@ namespace kai
 
 	bool _APmav_mission::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["tOutSec"] = m_tOutSec;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

@@ -28,15 +28,9 @@ namespace kai
 
 	bool _RStracking::saveConfig(bool bExport)
 	{
-		if (!_NavBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_NavBase::saveConfig(false));
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

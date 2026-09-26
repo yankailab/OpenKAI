@@ -72,10 +72,7 @@ namespace kai
 
 	bool _Modbus::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["bModbusDebug"] = m_bModbusDebug;
@@ -90,10 +87,7 @@ namespace kai
 		j["tOutUSec"] = m_tOutUSec;
 		j["type"] = m_type;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

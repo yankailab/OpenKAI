@@ -30,18 +30,12 @@ namespace kai
 
 	bool _PCmerge::saveConfig(bool bExport)
 	{
-		if (!_GeometryBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_GeometryBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["rVoxel"] = m_rVoxel;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

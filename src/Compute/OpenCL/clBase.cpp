@@ -31,19 +31,13 @@ namespace kai
 
     bool clBase::saveConfig(bool bExport)
     {
-        if (!BASE::saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(!BASE::saveConfig(false));
 
         json &j = *m_pJ;
         j["fKernel"] = m_fKernel;
         j["buildOpt"] = m_buildOpt;
 
-        if (!bExport)
-        {
-            return true;
-        }
+        IF__(!bExport, true);
         return m_pJcfg->saveToFile();
     }
 

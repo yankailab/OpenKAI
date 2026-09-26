@@ -25,20 +25,14 @@ namespace kai
 
     bool _Xbee::saveConfig(bool bExport)
     {
-        if (!_ProtocolBase::saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(!_ProtocolBase::saveConfig(false));
 
         json &j = *m_pJ;
         std::ostringstream address;
         address << std::hex << m_myAddr;
         j["myAddr"] = address.str();
 
-        if (!bExport)
-        {
-            return true;
-        }
+        IF__(!bExport, true);
         return m_pJcfg->saveToFile();
     }
 

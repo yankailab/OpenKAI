@@ -77,25 +77,16 @@ namespace kai
 
 	bool _StateControl::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["start"] = m_start;
 		for (StateBase *pState : m_vpState)
 		{
-			if (!pState->saveConfig(false))
-			{
-				return false;
-			}
+			IF_F(!pState->saveConfig(false));
 		}
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

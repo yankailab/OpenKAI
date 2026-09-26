@@ -96,9 +96,9 @@ namespace kai
 					continue;
 				}
 
-				int bON = true;
+				bool bON = true;
 				jKv(Ji, "bON", bON);
-				if (bON == 0)
+				if (!bON)
 				{
 					LOG_I("Module disabled: " + n);
 					continue;
@@ -269,10 +269,7 @@ namespace kai
 	bool ModuleMgr::bStdErr(void)
 	{
 		const json *pJ = findJson("APP");
-		if (!pJ)
-		{
-			return true;
-		}
+		IF__(!pJ, true);
 
 		bool bStdErr = true;
 		jKv(*pJ, "bStdErr", bStdErr);

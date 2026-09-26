@@ -34,15 +34,9 @@ namespace kai
 
     bool _GeometryBase::saveConfig(bool bExport)
     {
-        if (!_ReferenceFrame::saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(!_ReferenceFrame::saveConfig(false));
 
-        if (!bExport)
-        {
-            return true;
-        }
+        IF__(!bExport, true);
         return m_pJcfg->saveToFile();
     }
 

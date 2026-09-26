@@ -28,18 +28,12 @@ namespace kai
 
 	bool _ZLAC8015D::saveConfig(bool bExport)
 	{
-		if (!_ActuatorBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ActuatorBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["iMode"] = m_iMode;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

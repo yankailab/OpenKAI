@@ -22,15 +22,9 @@ namespace kai
 
     bool _SwarmCtrl::saveConfig(bool bExport)
     {
-        if (!_ModuleBase::saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(!_ModuleBase::saveConfig(false));
 
-        if (!bExport)
-        {
-            return true;
-        }
+        IF__(!bExport, true);
         return m_pJcfg->saveToFile();
     }
 

@@ -40,10 +40,7 @@ namespace kai
 
 	bool _ArUco::saveConfig(bool bExport)
 	{
-		if (!_DetectorBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_DetectorBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["dict"] = m_dict;
@@ -51,10 +48,7 @@ namespace kai
 		j["bPose"] = m_bPose;
 		j["fCalib"] = m_fCalib;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

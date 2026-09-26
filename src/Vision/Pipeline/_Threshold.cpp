@@ -54,10 +54,7 @@ namespace kai
 
 	bool _Threshold::saveConfig(bool bExport)
 	{
-		if (!_VisionBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_VisionBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		for (const IMG_THRESHOLD &filter : m_vFilter)
@@ -73,10 +70,7 @@ namespace kai
 			jFilter["C"] = filter.m_C;
 		}
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

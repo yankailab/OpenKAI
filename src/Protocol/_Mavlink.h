@@ -76,8 +76,7 @@ namespace kai
 
 			for (MavCallback c : m_vCbRecv)
 			{
-				if((c.m_pCbRecv == pCb) && (c.m_pCbInst == pInst))
-					return true;
+				IF__((c.m_pCbRecv == pCb) && (c.m_pCbInst == pInst), true);
 			}
 
 			MavCallback cb;

@@ -54,10 +54,7 @@ namespace kai
 		{
 			n = m_name;
 		}
-		if (n.empty())
-		{
-			return false;
-		}
+		IF_F(n.empty());
 
 		string jStr = m_json.dump(m_nDumpSpace);
 		IF_F(!writeFile(n, jStr));

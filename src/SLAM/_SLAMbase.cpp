@@ -31,18 +31,12 @@ namespace kai
 
 	bool _SLAMbase::saveConfig(bool bExport)
 	{
-		if (!_NavBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_NavBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["bAutoStart"] = m_bAutoStart;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 
@@ -89,8 +83,7 @@ namespace kai
 	bool _SLAMbase::startTracking(void)
 	{
 		auto lock = lockSLAM();
-		if (m_bTracking)
-			return true;
+		IF__(m_bTracking, true);
 		IF_F(!check());
 		m_tStampLastFrame = 0;
 		m_slamError.clear();

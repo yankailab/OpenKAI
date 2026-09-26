@@ -244,10 +244,7 @@ namespace kai
 			return false;
 		}
 
-		if (!_SLAMbase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_SLAMbase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["configPath"] = m_configPath;
@@ -268,10 +265,7 @@ namespace kai
 		parameters["bMapping"] = m_bMapping;
 		parameters["nMinPoints"] = m_nMinPoints;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 
@@ -699,7 +693,7 @@ namespace kai
 			collectMapPoints(points, colors, 0, true);
 		}
 		if (points.empty()) { error = "No map points are available to save"; return false; }
-		if (!_PCfile::savePLY(path, points, colors, &error)) return false;
+		IF_F(!_PCfile::savePLY(path, points, colors, &error));
 		count = points.size();
 		return true;
 	}

@@ -68,10 +68,7 @@ namespace kai
 
 	bool _LCalign::saveConfig(bool bExport)
 	{
-		if (!_PointCloud::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_PointCloud::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["vCsize"] = {m_vCsize.x(), m_vCsize.y()};
@@ -83,10 +80,7 @@ namespace kai
 		j["aIr"] = m_aIr;
 		j["aIt"] = m_aIt;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

@@ -38,10 +38,7 @@ namespace kai
 
 	bool _APmav_drive::saveConfig(bool bExport)
 	{
-		if (!_APmav_move::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_APmav_move::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["steer"] = m_steer;
@@ -59,10 +56,7 @@ namespace kai
 		j["pwmServoON"] = m_pwmServoON;
 		j["pwmServoOFF"] = m_pwmServoOFF;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

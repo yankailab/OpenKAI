@@ -29,15 +29,9 @@ namespace kai
 
 	bool _SingleTracker::saveConfig(bool bExport)
 	{
-		if (!_TrackerBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_TrackerBase::saveConfig(false));
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

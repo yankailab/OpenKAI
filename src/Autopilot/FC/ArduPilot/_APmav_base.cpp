@@ -30,19 +30,13 @@ namespace kai
 
 	bool _APmav_base::saveConfig(bool bExport)
 	{
-		if (!_AutopilotBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_AutopilotBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["ieSendHB"] = static_cast<double>(m_ieSendHB.m_tInterval) / NSEC_SEC;
 		j["ieSendMsgInt"] = static_cast<double>(m_ieSendMsgInt.m_tInterval) / NSEC_SEC;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

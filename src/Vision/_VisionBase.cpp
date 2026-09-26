@@ -33,10 +33,7 @@ namespace kai
 
 	bool _VisionBase::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["devURI"] = m_devURI;
@@ -44,10 +41,7 @@ namespace kai
 		j["bRGB"] = m_bRGB;
 		j["vSizeRGB"] = {m_vSizeRGB.x(), m_vSizeRGB.y()};
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

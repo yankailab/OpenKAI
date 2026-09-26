@@ -52,10 +52,7 @@ namespace kai
 
 	bool _RTCMcast::saveConfig(bool bExport)
 	{
-		if (!_ProtocolBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ProtocolBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		json &rtcmMsg = j["RTCMmsg"];
@@ -85,10 +82,7 @@ namespace kai
 			value["bSendOnceOnly"] = entry.m_bSendOnceOnly;
 		}
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

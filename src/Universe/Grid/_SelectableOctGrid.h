@@ -50,8 +50,7 @@ namespace kai
 							   std::array<float, 3> &center, std::array<float, 3> &size)
 	{
 		unsigned depth = id.m_uint64[0] & 63;
-		if (header.m_nMaxLevel > OCTGRID_MAX_LEVEL || depth > header.m_nMaxLevel || id.m_uint64[1] >> 62)
-			return false;
+		IF_F(header.m_nMaxLevel > OCTGRID_MAX_LEVEL || depth > header.m_nMaxLevel || id.m_uint64[1] >> 62);
 		uint64_t high = id.m_uint64[1], low = id.m_uint64[0] & ~uint64_t(63);
 		std::array<double, 3> c = {header.m_vPorigin[0], header.m_vPorigin[1], header.m_vPorigin[2]};
 		std::array<double, 3> s = {header.m_vRootCellSize[0], header.m_vRootCellSize[1], header.m_vRootCellSize[2]};
@@ -67,8 +66,7 @@ namespace kai
 			low <<= 3;
 		}
 		// Consumed path bits may remain in the two reserved high bits.
-		if ((high & (UINT64_MAX >> 2)) || low)
-			return false;
+		IF_F((high & (UINT64_MAX >> 2)) || low);
 		for (unsigned axis = 0; axis < 3; ++axis)
 		{
 			center[axis] = float(c[axis]);

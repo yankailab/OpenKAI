@@ -33,18 +33,12 @@ namespace kai
 
 	bool _Crop::saveConfig(bool bExport)
 	{
-		if (!_VisionBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_VisionBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["vRoi"] = {m_vRoi.x(), m_vRoi.y(), m_vRoi.z(), m_vRoi.w()};
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

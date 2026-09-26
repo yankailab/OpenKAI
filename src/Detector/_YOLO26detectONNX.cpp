@@ -42,10 +42,7 @@ namespace kai
 
 	bool _YOLO26detectONNX::saveConfig(bool bExport)
 	{
-		if (!_DetectorBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_DetectorBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["confidence"] = m_confidence;
@@ -57,10 +54,7 @@ namespace kai
 		j["scale"] = m_scale;
 		j["nThread"] = m_nThread;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

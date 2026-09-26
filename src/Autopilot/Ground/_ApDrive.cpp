@@ -27,10 +27,7 @@ namespace kai
 
     bool _ApDrive::saveConfig(bool bExport)
     {
-        if (!_AutopilotBase::saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(!_AutopilotBase::saveConfig(false));
 
         json &j = *m_pJ;
         j["nSpd"] = m_nSpd;
@@ -61,10 +58,7 @@ namespace kai
             }
         }
 
-        if (!bExport)
-        {
-            return true;
-        }
+        IF__(!bExport, true);
         return m_pJcfg->saveToFile();
     }
 

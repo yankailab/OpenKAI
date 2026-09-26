@@ -2,6 +2,7 @@
 #define OpenKAI_src_Primitive_vLongBit_H_
 
 #include "../Base/platform.h"
+#include "../Base/macro.h"
 #include <limits>
 
 using namespace std;
@@ -184,10 +185,8 @@ namespace kai
 
             while (i > 0 || j > 0)
             {
-                if (i == 0)
-                    return true;
-                if (j == 0)
-                    return false;
+                IF__(i == 0, true);
+                IF_F(j == 0);
 
                 const uint64_t a = m_vP[i - 1];
                 const uint64_t b = v.m_vP[j - 1];
@@ -251,8 +250,7 @@ namespace kai
 
             while (i < m_vP.size() && j < v.m_vP.size())
             {
-                if (m_vP[i] == v.m_vP[j])
-                    return true;
+                IF__(m_vP[i] == v.m_vP[j], true);
 
                 if (m_vP[i] < v.m_vP[j])
                     ++i;

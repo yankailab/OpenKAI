@@ -25,18 +25,12 @@ namespace kai
 
 	bool StateBase::saveConfig(bool bExport)
 	{
-		if (!BASE::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!BASE::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["next"] = m_next;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

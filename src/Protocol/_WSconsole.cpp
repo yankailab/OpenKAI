@@ -28,15 +28,9 @@ namespace kai
 
 	bool _WSconsole::saveConfig(bool bExport)
 	{
-		if (!_JSONbase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_JSONbase::saveConfig(false));
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

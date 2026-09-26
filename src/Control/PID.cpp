@@ -39,10 +39,7 @@ namespace kai
 
 	bool PID::saveConfig(bool bExport)
 	{
-		if (!BASE::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!BASE::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["P"] = m_P;
@@ -52,10 +49,7 @@ namespace kai
 		j["vRin"] = {m_vRin.x(), m_vRin.y()};
 		j["vRout"] = {m_vRout.x(), m_vRout.y()};
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

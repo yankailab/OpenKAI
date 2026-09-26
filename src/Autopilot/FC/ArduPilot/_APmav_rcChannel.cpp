@@ -36,10 +36,7 @@ namespace kai
 
 	bool _APmav_rcChannel::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["iRCmodeChan"] = m_rcMode.m_iChan;
@@ -47,10 +44,7 @@ namespace kai
 		j["iRCstickV"] = m_rcStickV.m_iChan;
 		j["iRCstickH"] = m_rcStickH.m_iChan;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

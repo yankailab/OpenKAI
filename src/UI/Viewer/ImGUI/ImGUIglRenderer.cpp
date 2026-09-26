@@ -41,8 +41,7 @@ namespace kai
 												size_t nL,
 												unsigned long long version)
 	{
-		if (version == m_uploadedVersion || (m_bPendingUpload && version == m_pendingVersion))
-			return true;
+		IF__(version == m_uploadedVersion || (m_bPendingUpload && version == m_pendingVersion), true);
 
 		m_vPointUpload.clear();
 		m_vLineUpload.clear();
@@ -132,15 +131,12 @@ namespace kai
 #if defined(OKAI_IMGUI_VIEWER_GL)
 	bool ImGUIglRenderer::render(const IMGUI_VIEWER_GL_FRAME &frame)
 	{
-		if (!init())
-			return false;
+		IF_F(!init());
 
-		if (!uploadPreparedSnapshot())
-			return false;
+		IF_F(!uploadPreparedSnapshot());
 
 		ImDrawData *pDrawData = ImGui::GetDrawData();
-		if (!pDrawData)
-			return true;
+		IF__(!pDrawData, true);
 
 		ImVec2 fbScale = pDrawData->FramebufferScale;
 		int fbW = (int)(pDrawData->DisplaySize.x * fbScale.x);
@@ -241,10 +237,8 @@ namespace kai
 
 	bool ImGUIglRenderer::init(void)
 	{
-		if (m_bReady)
-			return true;
-		if (m_bInitTried)
-			return false;
+		IF__(m_bReady, true);
+		IF_F(m_bInitTried);
 
 		m_bInitTried = true;
 		m_uploadedVersion = 0;
@@ -327,8 +321,7 @@ namespace kai
 
 	bool ImGUIglRenderer::uploadPreparedSnapshot(void)
 	{
-		if (!m_bPendingUpload)
-			return true;
+		IF__(!m_bPendingUpload, true);
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_vboP);
 		glBufferData(GL_ARRAY_BUFFER,

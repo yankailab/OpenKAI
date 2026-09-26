@@ -50,10 +50,7 @@ namespace kai
 
 	bool _APmav_visionEstimate::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["bPos"] = m_bPos;
@@ -72,10 +69,7 @@ namespace kai
 		}
 		j["mTsensor2aero"] = values;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

@@ -35,10 +35,7 @@ namespace kai
 
 	bool _HiKthermal::saveConfig(bool bExport)
 	{
-		if (!_VisionBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_VisionBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["streamType"] = m_streamType;
@@ -46,10 +43,7 @@ namespace kai
 		j["productID"] = m_productID;
 		j["SN"] = m_SN;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

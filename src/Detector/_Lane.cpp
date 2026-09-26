@@ -100,10 +100,7 @@ namespace kai
 
 	bool _Lane::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["bDrawOverhead"] = m_bDrawOverhead;
@@ -136,10 +133,7 @@ namespace kai
 			jLane["vROI"] = {lane.m_ROI.x(), lane.m_ROI.y(), lane.m_ROI.z(), lane.m_ROI.w()};
 		}
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

@@ -50,10 +50,7 @@ namespace kai
 
 	bool _LeddarVu::saveConfig(bool bExport)
 	{
-		if (!_DistSensorBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_DistSensorBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["port"] = m_port;
@@ -74,10 +71,7 @@ namespace kai
 		j["bOvershootManagement"] = m_bOvershootManagement;
 		j["oprMode"] = m_oprMode;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

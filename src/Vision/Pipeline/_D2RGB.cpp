@@ -34,10 +34,7 @@ namespace kai
 
 	bool _D2RGB::saveConfig(bool bExport)
 	{
-		if (!_RGBDbase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_RGBDbase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["nHistLev"] = m_nHistLev;
@@ -45,10 +42,7 @@ namespace kai
 		j["minHistD"] = m_minHistD;
 		j["bMeasure"] = m_bMeasure;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

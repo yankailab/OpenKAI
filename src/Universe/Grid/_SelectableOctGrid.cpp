@@ -10,29 +10,24 @@ namespace kai
 	{
 		static bool readSelectionVector(const json *pJ, Vector3f &v)
 		{
-			if (!pJ || !pJ->is_array() || pJ->size() != 3)
-				return false;
+			IF_F(!pJ || !pJ->is_array() || pJ->size() != 3);
 			const json &j = *pJ;
 			for (size_t i = 0; i < 3; ++i)
 			{
-				if (!j[i].is_string())
-					return false;
+				IF_F(!j[i].is_string());
 				const auto &s = j[i].get_ref<const string &>();
 				// Parse the browser's ASCII numbers independently of the process locale.
 				const auto result = std::from_chars(s.data(), s.data() + s.size(), v[i]);
-				if (result.ec != std::errc() || result.ptr != s.data() + s.size() || !std::isfinite(v[i]))
-					return false;
+				IF_F(result.ec != std::errc() || result.ptr != s.data() + s.size() || !std::isfinite(v[i]));
 			}
 			return true;
 		}
 
 		static bool readSelectionID(const json &j, UUID128 &id)
 		{
-			if (!j.is_string())
-				return false;
+			IF_F(!j.is_string());
 			const auto &s = j.get_ref<const string &>();
-			if (s.size() != 32)
-				return false;
+			IF_F(s.size() != 32);
 			auto hex = [](char c) -> int
 			{
 				if (c >= '0' && c <= '9')
@@ -47,8 +42,7 @@ namespace kai
 			for (size_t i = 0; i < 16; ++i)
 			{
 				const int high = hex(s[i * 2]), low = hex(s[i * 2 + 1]);
-				if (high < 0 || low < 0)
-					return false;
+				IF_F(high < 0 || low < 0);
 				cell.m_ID[i] = uint8_t(high * 16 + low);
 			}
 			id = cell.id(); // Stream byte order: little-endian, low 64-bit word first.
@@ -184,10 +178,7 @@ namespace kai
 
 	bool _SelectableOctGrid::saveConfig(bool bExport)
 	{
-		if (!_OctreeGrid::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_OctreeGrid::saveConfig(false));
 
 		json &j = *m_pJ;
 		j.update(selectedCellsJSON("vSelectedCells"));
@@ -202,10 +193,7 @@ namespace kai
 			j.erase("vColCellOcc");
 		}
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

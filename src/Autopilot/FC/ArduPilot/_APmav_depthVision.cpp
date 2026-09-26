@@ -45,10 +45,7 @@ namespace kai
 
 	bool _APmav_depthVision::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		json &sections = j["sections"];
@@ -79,10 +76,7 @@ namespace kai
 			value["b"] = roi.m_roi[3];
 		}
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

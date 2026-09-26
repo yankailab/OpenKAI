@@ -157,10 +157,7 @@ namespace kai
 
 	bool _OctreeGrid::saveConfig(bool bExport)
 	{
-		if (!_OctreeBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_OctreeBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["vPorigin"] = {m_vPorigin.x(), m_vPorigin.y(), m_vPorigin.z()};
@@ -170,10 +167,7 @@ namespace kai
 		j["dTexpirePCL"] = m_dTexpirePCL;
 		j["nP"] = m_grPt.m_nT;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

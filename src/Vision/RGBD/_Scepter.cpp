@@ -178,8 +178,7 @@ namespace kai
 
 		bool copyScFrame(const ScFrame &frame, Mat &image)
 		{
-			if (!frame.pFrameData || !frame.width || !frame.height)
-				return false;
+			IF_F(!frame.pFrameData || !frame.width || !frame.height);
 
 			int type;
 			switch (frame.pixelFormat)
@@ -199,8 +198,7 @@ namespace kai
 			default:
 				return false;
 			}
-			if (frame.dataLen < size_t(frame.width) * frame.height * CV_ELEM_SIZE(type))
-				return false;
+			IF_F(frame.dataLen < size_t(frame.width) * frame.height * CV_ELEM_SIZE(type));
 
 			Mat view(frame.height, frame.width, type, frame.pFrameData);
 			if (frame.pixelFormat == SC_PIXEL_FORMAT_RGB_888 || frame.pixelFormat == SC_PIXEL_FORMAT_RGB_888_JPEG)
@@ -235,10 +233,7 @@ namespace kai
 
 	bool _Scepter::loadConfig(void)
 	{
-		if (!_RGBDbase::loadConfig())
-		{
-			return false;
-		}
+		IF_F(!_RGBDbase::loadConfig());
 		const json &j = *m_pJ;
 
 		json startup = json::object();
@@ -286,10 +281,7 @@ namespace kai
 
 	bool _Scepter::link(void)
 	{
-		if (!_RGBDbase::link() || !m_pTpp || !m_pTpp->link())
-		{
-			return false;
-		}
+		IF_F(!_RGBDbase::link() || !m_pTpp || !m_pTpp->link());
 
 		return true;
 	}
@@ -331,7 +323,7 @@ namespace kai
 			}
 			catch (const std::exception &e) { errors[it.key()] = e.what(); }
 		}
-		if (!errors.empty()) return false;
+		IF_F(!errors.empty());
 		if (device && !m_bOpened) { errors["device"] = "Camera is not open"; return false; }
 
 		ScCtrl candidate = m_scCtrl;
@@ -405,17 +397,11 @@ namespace kai
 	bool _Scepter::saveConfig(bool bExport)
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
-		if (!_RGBDbase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_RGBDbase::saveConfig(false));
 
 		m_pJ->update(configValues());
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 
@@ -430,7 +416,7 @@ namespace kai
 		ScCtrl candidate = camCtrl;
 		json patch = json::object(), errors;
 		visitScControls(candidate, [&](const char *key, auto &value, const char *) { patch[key] = value; });
-		if (!applyConfig(patch, m_bOpened, errors)) return false;
+		IF_F(!applyConfig(patch, m_bOpened, errors));
 		if (camCtrl.m_hotPlugCallback != m_scCtrl.m_hotPlugCallback || camCtrl.m_pHotPlugUserData != m_scCtrl.m_pHotPlugUserData)
 			return setHotPlugStatusCallback(camCtrl.m_hotPlugCallback, camCtrl.m_pHotPlugUserData);
 		return true;

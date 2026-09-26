@@ -50,10 +50,7 @@ namespace kai
 
 	bool _DetectorBase::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["fModel"] = m_fModel;
@@ -62,10 +59,7 @@ namespace kai
 		j["fClass"] = m_fClass;
 		j["vClass"] = m_vClass;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

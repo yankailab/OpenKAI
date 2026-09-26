@@ -25,21 +25,12 @@ namespace kai
 
 	bool _ProtocolBase::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ModuleBase::saveConfig(false));
 
 
-		if (m_pTr && !m_pTr->saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(m_pTr && !m_pTr->saveConfig(false));
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

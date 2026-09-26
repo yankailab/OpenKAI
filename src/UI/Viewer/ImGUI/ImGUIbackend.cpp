@@ -6,6 +6,7 @@
  */
 
 #include "ImGUIbackend.h"
+#include "../../../Base/macro.h"
 
 #ifdef OKAI_IMGUI_BACKEND_GLFW
 #include "imgui.h"
@@ -39,8 +40,7 @@ namespace kai
 		{
 			shutdown();
 
-			if (!glfwInit())
-				return false;
+			IF_F(!glfwInit());
 			m_bGlfwInit = true;
 
 #if defined(OKAI_IMGUI_RENDERER_OPENGLES)
@@ -229,8 +229,7 @@ namespace kai
 			shutdown();
 			m_bClose = false;
 
-			if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0)
-				return false;
+			IF_F(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0);
 			m_bSdlInit = true;
 
 #if defined(OKAI_IMGUI_RENDERER_OPENGLES)

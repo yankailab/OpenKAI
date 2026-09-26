@@ -40,10 +40,7 @@ namespace kai
 
 	bool _Uploader::saveConfig(bool bExport)
 	{
-		if (!_FileBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_FileBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["dir"] = m_dir;
@@ -53,10 +50,7 @@ namespace kai
 		j["cmd"] = m_cmd;
 		j["bConfirmCmdResult"] = m_bConfirmCmdResult;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

@@ -82,8 +82,7 @@ bool jKv(const json &j, const string &key,
 		 Eigen::Matrix<Scalar, N, 1, Options, MaxRows, MaxCols> &v, bool bLog = false)
 {
 	vector<T1> values;
-	if (!jKv(j, key, values, bLog))
-		return false;
+	IF_F(!jKv(j, key, values, bLog));
 
 	const auto n = std::min(values.size(), static_cast<size_t>(v.size()));
 	for (size_t i = 0; i < n; ++i)
@@ -95,8 +94,7 @@ bool jKv(const json &j, const string &key,
 template <typename T>
 bool jKv(const json &j, const string &key, std::optional<T> &value)
 {
-	if (!j.is_object() || !j.contains(key))
-		return false;
+	IF_F(!j.is_object() || !j.contains(key));
 	if (j.at(key).is_null())
 	{
 		value.reset();

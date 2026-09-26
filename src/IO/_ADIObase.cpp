@@ -49,10 +49,7 @@ namespace kai
 
 	bool _ADIObase::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		json &ports = j["ports"];
@@ -75,10 +72,7 @@ namespace kai
 			entry["vR"] = port.m_vR;
 		}
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

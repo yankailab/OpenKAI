@@ -28,15 +28,9 @@ namespace kai
 
 	bool _TOFsense::saveConfig(bool bExport)
 	{
-		if (!_DistSensorBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_DistSensorBase::saveConfig(false));
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 
@@ -100,9 +94,9 @@ namespace kai
 				{
 					// m_frame.m_nPayload = ;
 				}
-				else if (m_frame.m_iB >= 16)
+				else
 				{
-					return true;
+					IF__(m_frame.m_iB >= 16, true);
 				}
 			}
 			else if (b == NLINK_BEGIN)

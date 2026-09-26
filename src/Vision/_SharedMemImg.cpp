@@ -31,18 +31,12 @@ namespace kai
 
     bool _SharedMemImg::saveConfig(bool bExport)
     {
-        if (!_VisionBase::saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(!_VisionBase::saveConfig(false));
 
         json &j = *m_pJ;
         j["matType"] = m_matType;
 
-        if (!bExport)
-        {
-            return true;
-        }
+        IF__(!bExport, true);
         return m_pJcfg->saveToFile();
     }
 

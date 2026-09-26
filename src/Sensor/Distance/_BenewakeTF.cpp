@@ -28,15 +28,9 @@ namespace kai
 
 	bool _BenewakeTF::saveConfig(bool bExport)
 	{
-		if (!_DistSensorBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_DistSensorBase::saveConfig(false));
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 
@@ -96,10 +90,7 @@ namespace kai
 				m_frame.m_pB[m_frame.m_iB] = b;
 				m_frame.m_iB++;
 
-				if (m_frame.m_iB >= 9)
-				{
-					return true;
-				}
+				IF__(m_frame.m_iB >= 9, true);
 			}
 			else if (b == BENEWAKE_BEGIN)
 			{

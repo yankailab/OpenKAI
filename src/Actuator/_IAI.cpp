@@ -24,15 +24,9 @@ namespace kai
 
 	bool _IAI::saveConfig(bool bExport)
 	{
-		if (!_ActuatorBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ActuatorBase::saveConfig(false));
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

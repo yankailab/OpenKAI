@@ -38,10 +38,7 @@ namespace kai
 
     bool _PCregistCol::saveConfig(bool bExport)
     {
-        if (!_PointCloud::saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(!_PointCloud::saveConfig(false));
 
         json &j = *m_pJ;
         j["rVoxel"] = m_rVoxel;
@@ -53,10 +50,7 @@ namespace kai
         j["maxIter"] = m_maxIter;
         j["minFit"] = m_minFit;
 
-        if (!bExport)
-        {
-            return true;
-        }
+        IF__(!bExport, true);
         return m_pJcfg->saveToFile();
     }
 

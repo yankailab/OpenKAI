@@ -104,10 +104,7 @@ namespace kai
 
 	bool _ActuatorBase::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["ID"] = m_ID;
@@ -144,10 +141,7 @@ namespace kai
 		j["bfClearAlarm"] = m_bfSet.b(actuator_clearAlarm);
 		j["bfMove"] = m_bfSet.b(actuator_move);
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

@@ -27,18 +27,12 @@ namespace kai
 
 	bool _OrientalMotor::saveConfig(bool bExport)
 	{
-		if (!_ActuatorBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ActuatorBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["iData"] = m_iData;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

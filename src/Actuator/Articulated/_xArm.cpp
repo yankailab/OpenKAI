@@ -27,20 +27,14 @@ namespace kai
 
 	bool _xArm::saveConfig(bool bExport)
 	{
-		if (!_ActuatorBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ActuatorBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["ip"] = m_ip;
 		j["mode"] = m_mode;
 		j["state"] = m_state;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

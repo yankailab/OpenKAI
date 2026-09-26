@@ -55,10 +55,7 @@ namespace kai
 
 	bool _APmav_land::saveConfig(bool bExport)
 	{
-		if (!_APmav_follow::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_APmav_follow::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["vDSrange"] = {m_vDSrange[0], m_vDSrange[1]};
@@ -93,10 +90,7 @@ namespace kai
 			value["vKdist"] = {entry.m_vKdist[0], entry.m_vKdist[1]};
 		}
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

@@ -29,21 +29,12 @@ namespace kai
 
     bool _RoboSenseAiry::saveConfig(bool bExport)
     {
-        if (!_PointCloud::saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(!_PointCloud::saveConfig(false));
 
 
-        if (m_pTdifop && !m_pTdifop->saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(m_pTdifop && !m_pTdifop->saveConfig(false));
 
-        if (!bExport)
-        {
-            return true;
-        }
+        IF__(!bExport, true);
         return m_pJcfg->saveToFile();
     }
 
@@ -100,11 +91,7 @@ namespace kai
 
         uint8_t pB[RS_MSOP_N];
         int nBr = m_pUDPmsop->read(pB, RS_MSOP_N);
-        if (nBr <= 0)
-        {
-
-            return false;
-        }
+        IF_F(nBr <= 0);
 
         // pDataRecv->version = pB[0];
         // memcpy(pDataRecv->data, &pB[36], LVX2_N_DATA);
@@ -126,11 +113,7 @@ namespace kai
 
         uint8_t pB[RS_MSOP_N];
         int nBr = m_pUDPdifop->read(pB, RS_MSOP_N);
-        if (nBr <= 0)
-        {
-
-            return false;
-        }
+        IF_F(nBr <= 0);
 
         // pDataRecv->version = pB[0];
         // memcpy(pDataRecv->data, &pB[36], LVX2_N_DATA);

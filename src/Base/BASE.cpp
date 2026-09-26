@@ -50,27 +50,19 @@ namespace kai
 	bool BASE::loadConfig(void)
 	{
 		// Parent layers establish the manager and mutable configuration first.
-		if (!m_pM || m_name.empty())
-		{
-			return false;
-		}
+		IF_F(!m_pM || m_name.empty());
 
 		if (!m_pJcfg)
 		{
 			m_pJcfg = m_pM->findJsonCfg(m_name);
 		}
-		if (!m_pJcfg)
-		{
-			return false;
-		}
+		NULL_F(m_pJcfg);
+
 		if (!m_pJ)
 		{
 			m_pJ = jK(*m_pJcfg->getJson(), m_name);
 		}
-		if (!m_pJ || !m_pJ->is_object())
-		{
-			return false;
-		}
+		IF_F(!m_pJ || !m_pJ->is_object());
 
 		const json &j = *m_pJ;
 		jKv(j, "name", m_name);
@@ -85,10 +77,7 @@ namespace kai
 
 	bool BASE::saveConfig(bool bExport)
 	{
-		if (!m_pM || !m_pJcfg || !m_pJ || !m_pJ->is_object())
-		{
-			return false;
-		}
+		IF_F(!m_pM || !m_pJcfg || !m_pJ || !m_pJ->is_object());
 
 		// Update shared fields in place, preserving the rest of the document.
 		(*m_pJ)["name"] = m_name;

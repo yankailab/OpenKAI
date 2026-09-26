@@ -34,15 +34,9 @@ namespace kai
 
 	bool _WebSocket::saveConfig(bool bExport)
 	{
-		if (!_IObase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_IObase::saveConfig(false));
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

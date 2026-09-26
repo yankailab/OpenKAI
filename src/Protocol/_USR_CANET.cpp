@@ -21,15 +21,9 @@ namespace kai
 
 	bool _USR_CANET::saveConfig(bool bExport)
 	{
-		if (!_CANbase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_CANbase::saveConfig(false));
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

@@ -51,10 +51,7 @@ namespace kai
 
 	bool _HYMCU_RS485::saveConfig(bool bExport)
 	{
-		if (!_ActuatorBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ActuatorBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["iSlave"] = m_iSlave;
@@ -82,10 +79,7 @@ namespace kai
 		addr["resPos"] = m_addr.m_resPos;
 		addr["saveData"] = m_addr.m_saveData;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

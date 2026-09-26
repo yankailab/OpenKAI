@@ -39,10 +39,7 @@ namespace kai
 
 	bool _GeoFence::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["type"] = m_type;
@@ -50,10 +47,7 @@ namespace kai
 		j["vP"] = {m_vP[0], m_vP[1]};
 		j["vPolygon"] = m_vPolygon;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 
@@ -249,16 +243,13 @@ namespace kai
 		const Vector2d ab = b - a;
 		const Vector2d ap = p - a;
 		const double area2 = std::fabs(cross2(ab, ap));
-		if (area2 > 1e-7)
-			return false;
+		IF_F(area2 > 1e-7);
 
 		const double d = dot2(ap, ab);
-		if (d < -1e-7)
-			return false;
+		IF_F(d < -1e-7);
 
 		const double ab2 = dot2(ab, ab);
-		if (d > ab2 + 1e-7)
-			return false;
+		IF_F(d > ab2 + 1e-7);
 
 		return true;
 	}
@@ -267,8 +258,7 @@ namespace kai
 	bool pointInPolygonOrOnEdge(const vector<Vector2d> &poly, const Vector2d &p)
 	{
 		const size_t n = poly.size();
-		if (n < 3)
-			return false;
+		IF_F(n < 3);
 
 		bool inside = false;
 		for (size_t i = 0, j = n - 1; i < n; j = i++)
@@ -276,8 +266,7 @@ namespace kai
 			const Vector2d &a = poly[j];
 			const Vector2d &b = poly[i];
 
-			if (pointOnSegment(p, a, b))
-				return true;
+			IF__(pointOnSegment(p, a, b), true);
 
 			const bool intersect =
 				((a.y() > p.y()) != (b.y() > p.y())) &&
@@ -306,11 +295,8 @@ namespace kai
 		const double denom = cross2(r, s);
 		const Vector2d ap = a - p0;
 
-		if (std::fabs(denom) < kEps)
-		{
-			// Parallel or collinear: ignore for reflection purposes here.
-			return false;
-		}
+		// Parallel or collinear: ignore for reflection purposes here.
+		IF_F(std::fabs(denom) < kEps);
 
 		const double t = cross2(ap, s) / denom;
 		const double u = cross2(ap, r) / denom;

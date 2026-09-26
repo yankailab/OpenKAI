@@ -40,7 +40,7 @@ template <typename T> static T readControl(const json &j)
 
 template <typename T> static bool requiredControl(const json &j, const string &key, T &value)
 {
-	if (!j.contains(key) || j[key].is_null()) return false;
+	IF_F(!j.contains(key) || j[key].is_null());
 	value = readControl<T>(j[key]);
 	return true;
 }
@@ -303,10 +303,7 @@ namespace kai
 
 	bool _Orbbec::loadConfig(void)
 	{
-		if (!_RGBDbase::loadConfig())
-		{
-			return false;
-		}
+		IF_F(!_RGBDbase::loadConfig());
 		const json &j = *m_pJ;
 
 		json startup = json::object();
@@ -335,10 +332,7 @@ namespace kai
 
 	bool _Orbbec::link(void)
 	{
-		if (!_RGBDbase::link() || !m_pTpp || !m_pTpp->link())
-		{
-			return false;
-		}
+		IF_F(!_RGBDbase::link() || !m_pTpp || !m_pTpp->link());
 
 		return true;
 	}
@@ -1304,7 +1298,7 @@ namespace kai
 			}
 			catch (const std::exception &e) { errors[key] = e.what(); }
 		}
-		if (!errors.empty()) return false;
+		IF_F(!errors.empty());
 		if (next["bPCLrgb"].get<bool>() && (!next["bRGB"].get<bool>() || !next["bDepth"].get<bool>()))
 		{ errors["bPCLrgb"] = "RGB point cloud requires both RGB and depth streams"; return false; }
 		if (next["bPCL"].get<bool>() && !next["bDepth"].get<bool>())
@@ -2653,10 +2647,7 @@ namespace kai
 	bool _Orbbec::saveConfig(bool bExport)
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_mtxDevice);
-		if (!_RGBDbase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_RGBDbase::saveConfig(false));
 
 		const json current = configValues();
 		for (const auto &field : current.items())
@@ -2669,10 +2660,7 @@ namespace kai
 			(*m_pJ)[field.key()] = field.value();
 		}
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 
@@ -2847,7 +2835,7 @@ namespace kai
 		{
 			std::lock_guard<std::recursive_mutex> lock(m_mtxDevice);
 			IF_F(!check() || !m_bOpened);
-			if (!m_bRGB && !m_bDepth) return true;
+			IF__(!m_bRGB && !m_bDepth, true);
 			IF_F(!m_spPipe);
 			pipeline = m_spPipe;
 			timeout = m_tOutMs;
@@ -2860,12 +2848,12 @@ namespace kai
 		catch (const ob::Error &e)
 		{
 			std::lock_guard<std::recursive_mutex> lock(m_mtxDevice);
-			if (pipeline != m_spPipe) return true; // Stream changed during the wait.
+			IF__(pipeline != m_spPipe, true); // Stream changed during the wait.
 			LOG_E(e.what());
 			return false;
 		}
 		std::lock_guard<std::recursive_mutex> lock(m_mtxDevice);
-		if (pipeline != m_spPipe) return true;
+		IF__(pipeline != m_spPipe, true);
 		NULL_F(spFS);
 
 		// Images, slow stream

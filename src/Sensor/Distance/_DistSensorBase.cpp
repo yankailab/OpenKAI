@@ -55,10 +55,7 @@ namespace kai
 
 	bool _DistSensorBase::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["fovH"] = m_fovH;
@@ -70,10 +67,7 @@ namespace kai
 		j["nMed"] = m_nMed;
 		j["nAvr"] = m_nAvr;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

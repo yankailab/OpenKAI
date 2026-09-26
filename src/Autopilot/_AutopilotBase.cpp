@@ -23,18 +23,12 @@ namespace kai
 
 	bool _AutopilotBase::saveConfig(bool bExport)
 	{
-		if (!_ReferenceFrame::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ReferenceFrame::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["type"] = m_type;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

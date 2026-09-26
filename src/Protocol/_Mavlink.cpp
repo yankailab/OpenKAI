@@ -68,10 +68,7 @@ namespace kai
 
 	bool _Mavlink::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["mySystemID"] = m_mySystemID;
@@ -82,10 +79,7 @@ namespace kai
 		j["devType"] = m_devType;
 		j["iMavComm"] = m_iMavComm;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 
@@ -229,12 +223,10 @@ namespace kai
 				m_nRead = 0;
 			}
 
-			if (result == 1)
-			{
-				// Good message decoded
-				return true;
-			}
-			else if (result == 2)
+			// Good message decoded
+			IF__(result == 1, true);
+
+			if (result == 2)
 			{
 				// Bad CRC
 				LOG_I(" -> DROPPED PACKETS:" + i2str(m_status.packet_rx_drop_count));

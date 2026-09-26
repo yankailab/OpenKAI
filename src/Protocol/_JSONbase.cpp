@@ -29,20 +29,14 @@ namespace kai
 
     bool _JSONbase::saveConfig(bool bExport)
     {
-        if (!_ProtocolBase::saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(!_ProtocolBase::saveConfig(false));
 
         json &j = *m_pJ;
         j["msgFinishSend"] = m_msgFinishSend;
         j["msgFinishRecv"] = m_msgFinishRecv;
         j["ieSendHB"] = m_ieSendHB.m_tInterval;
 
-        if (!bExport)
-        {
-            return true;
-        }
+        IF__(!bExport, true);
         return m_pJcfg->saveToFile();
     }
 

@@ -36,20 +36,14 @@ namespace kai
 
 	bool SharedMem::saveConfig(bool bExport)
 	{
-		if (!BASE::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!BASE::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["shmName"] = m_shmName;
 		j["nB"] = m_nB;
 		j["bWriter"] = m_bWriter;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

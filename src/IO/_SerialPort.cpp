@@ -30,10 +30,7 @@ namespace kai
 
 	bool _SerialPort::saveConfig(bool bExport)
 	{
-		if (!_IObase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_IObase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["port"] = m_port;
@@ -43,10 +40,7 @@ namespace kai
 		j["parity"] = m_parity;
 		j["hardwareControl"] = m_hardwareControl;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

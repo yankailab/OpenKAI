@@ -30,18 +30,12 @@ namespace kai
 
 	bool _ADIO_EBYTE::saveConfig(bool bExport)
 	{
-		if (!_ADIObase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ADIObase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["iID"] = m_iID;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

@@ -20,15 +20,9 @@ namespace kai
 
 	bool _APmav_RTCM::saveConfig(bool bExport)
 	{
-		if (!_RTCMcast::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_RTCMcast::saveConfig(false));
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

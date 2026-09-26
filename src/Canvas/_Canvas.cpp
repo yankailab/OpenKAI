@@ -54,10 +54,7 @@ namespace kai
 
 	bool _Canvas::saveConfig(bool bExport)
 	{
-		if (!_ModuleBase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["minConfidence"] = m_minConfidence;
@@ -71,10 +68,7 @@ namespace kai
 		j["nBuf"] = m_nBuf;
 		j["vRoi"] = {m_vRoi.x(), m_vRoi.y(), m_vRoi.z(), m_vRoi.w()};
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

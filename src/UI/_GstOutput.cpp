@@ -49,19 +49,13 @@ namespace kai
 
 	bool _GstOutput::saveConfig(bool bExport)
 	{
-		if (!_UIbase::saveConfig(false))
-		{
-			return false;
-		}
+		IF_F(!_UIbase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["vSize"] = {m_vSize.x(), m_vSize.y()};
 		j["gstOutput"] = m_gstOutput;
 
-		if (!bExport)
-		{
-			return true;
-		}
+		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 

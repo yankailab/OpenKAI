@@ -61,10 +61,7 @@ namespace kai
 
     bool _XDynamics::saveConfig(bool bExport)
     {
-        if (!_RGBDbase::saveConfig(false))
-        {
-            return false;
-        }
+        IF_F(!_RGBDbase::saveConfig(false));
 
         json &j = *m_pJ;
         j["xdDevType"] = m_xdDevType;
@@ -90,10 +87,7 @@ namespace kai
         j["GsdnLev"] = m_xdCtrl.m_GsdnLev;
         j["dFlyPixLev"] = m_xdCtrl.m_dFlyPixLev;
 
-        if (!bExport)
-        {
-            return true;
-        }
+        IF__(!bExport, true);
         return m_pJcfg->saveToFile();
     }
 
