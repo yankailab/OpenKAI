@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>OpenKAI · Config editor</title>
+  <link rel="stylesheet" href="css/editor.css">
+  <script defer src="js/schema-data.js"></script>
+  <script defer src="js/model.js"></script>
+  <script defer src="js/editor.js"></script>
+</head>
+<body>
+  <header>
+    <a class="brand" href="./"><img src="img/OK.png" alt="OpenKAI" width="1300" height="315"><span>Config editor</span></a>
+    <nav aria-label="File actions">
+      <button id="new-config">New</button>
+      <button id="open-config">Open JSON</button>
+      <button id="paste-config">Paste JSON</button>
+      <button id="show-json">Edit JSON</button>
+      <span class="divider"></span>
+      <button id="copy-config">Copy</button>
+      <button id="download-config" class="primary">Download</button>
+    </nav>
+    <button id="help" aria-label="Editor help">Help</button>
+  </header>
+  <div class="workspace">
+    <aside class="library" aria-label="Class library">
+      <div class="panel-heading"><h1>Classes</h1><span id="class-count" class="badge"></span></div>
+      <p class="hint">Drag a class onto the canvas, or click +.</p>
+      <input id="class-search" type="search" placeholder="Find a class or category…" aria-label="Search classes" autocomplete="off">
+      <label class="check-label"><input id="show-helpers" type="checkbox"> Include base / helper classes</label>
+      <div id="class-library"></div>
+      <div class="library-footer"><span id="schema-status">Loading class catalog…</span><button id="load-schema">Load schema</button><a href="SCHEMA.md" target="_blank" rel="noopener">Schema guide ↗</a></div>
+    </aside>
+    <main class="graph-panel">
+      <div class="canvas-toolbar">
+        <input id="filename" value="OpenKAI.json" aria-label="Download filename" spellcheck="false">
+        <button id="undo" title="Undo (Ctrl/Cmd+Z)" disabled>↶</button>
+        <button id="redo" title="Redo (Ctrl/Cmd+Shift+Z)" disabled>↷</button>
+        <span class="toolbar-spacer"></span>
+        <button id="auto-layout">Arrange</button>
+        <button id="fit-view">Fit</button>
+        <button id="zoom-out" aria-label="Zoom out">−</button>
+        <output id="zoom-level">100%</output>
+        <button id="zoom-in" aria-label="Zoom in">+</button>
+      </div>
+      <div id="canvas" tabindex="0" aria-label="Dependency graph. Drag empty space to pan; scroll to zoom.">
+        <div id="world"><svg id="edges" aria-label="Dependency connections"><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs><g id="edge-paths"></g></svg><div id="nodes"></div></div>
+        <div id="welcome">Build your OpenKAI app<small>Drag classes here. Connect a dependency port to its provider.</small><button id="load-example">Try camera → crop example</button></div>
+        <div id="connection-hint" hidden></div>
+      </div>
+      <div class="graph-footer"><span>Drag to move · Scroll to zoom · Arrows point to dependencies</span><output id="graph-count"></output></div>
+      <details id="diagnostics-panel"><summary id="diagnostics-summary">Config checks</summary><div id="diagnostics"></div></details>
+    </main>
+    <aside id="inspector" class="inspector" aria-label="Instance properties"><div class="empty-inspector"><span class="empty-icon">⌘</span><h2>Instance properties</h2><p>Select an instance to edit its parameters and connections.</p></div></aside>
+  </div>
+  <footer class="statusbar"><output id="status" role="status" aria-live="polite">Starting editor…</output><span>Local files · Frontend only</span></footer>
+  <input id="config-file" type="file" accept=".json,application/json" hidden>
+  <input id="schema-file" type="file" accept=".json,application/json" hidden>
+  <dialog id="json-dialog">
+    <div class="dialog-heading"><h2 id="json-title">Edit config JSON</h2><button id="close-json" aria-label="Close JSON editor">✕</button></div>
+    <p id="json-description" class="hint">Apply JSON to rebuild the graph. Unknown fields are preserved.</p>
+    <textarea id="json-text" spellcheck="false" aria-label="Config JSON"></textarea>
+    <p id="json-error" class="error" role="alert"></p>
+    <div class="dialog-actions"><button id="dialog-copy">Copy JSON</button><button id="apply-json" class="primary">Apply JSON</button></div>
+  </dialog>
+  <dialog id="help-dialog">
+    <div class="dialog-heading"><h2>Create an OpenKAI config</h2><button id="close-help" aria-label="Close help">✕</button></div>
+    <ol>
+      <li>Add classes from the library. Categories follow the source folders.</li>
+      <li>Select a node to name it and edit its parameters. Optional values can be omitted to use the runtime defaults. Arrays and objects accept JSON.</li>
+      <li>Click or drag a dependency port on the right of a node, then choose a compatible provider. Connections can also be added and removed in the inspector.</li>
+      <li>Open or paste existing JSON to edit it. Use Edit JSON for the whole document, including fields outside module objects.</li>
+      <li>Copy or download the usual config JSON and launch OpenKAI with it. Canvas layout is kept separately from the config.</li>
+    </ol>
+    <p>Use Arrange / Fit to organize the canvas. Undo and redo cover config edits. Your latest work is saved locally in this browser when storage is available.</p>
+    <p>Class availability depends on your OpenKAI build flags. Include files remain external; references into them appear unresolved. Base and helper classes are listed for reference.</p>
+    <p><a href="README.md" target="_blank" rel="noopener">Editor guide ↗</a> · <a href="SCHEMA.md" target="_blank" rel="noopener">Update the class schema ↗</a></p>
+  </dialog>
+</body>
+</html>
