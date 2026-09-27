@@ -28,6 +28,9 @@ namespace kai
 
 	void BASE::setConfig(JsonCfg *pJcfg, json *pJ)
 	{
+		NULL_(pJcfg);
+		NULL_(pJ);
+
 		m_pJcfg = pJcfg;
 		m_pJ = pJ;
 	}

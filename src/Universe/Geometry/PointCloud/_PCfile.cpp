@@ -871,7 +871,7 @@ namespace kai
 		for (GEOMETRY_POINT p : vPoint)
 		{
 			p.m_vP = m_mPosef * p.m_vP;
-			m_grPt.add(p);
+			m_rPt.add(p);
 		}
 
 		return true;

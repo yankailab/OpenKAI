@@ -78,7 +78,7 @@ namespace kai
 
 		// point cloud input
 		vector<_GeometryBase *> m_vpGb;
-		GEOMETRY_RINGBUF<GEOMETRY_POINT> m_grPt;
+		RingBuffer<GEOMETRY_POINT> m_rPt;
 		uint64_t m_dTexpirePCL = 0;
 
 		// Serializes grid updates with root changes in derived modules.

@@ -7490,7 +7490,7 @@
         },
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
           "type": "string",
           "declaredIn": "_APmav_follow",
@@ -7818,9 +7818,9 @@
         },
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
-          "targetClass": "_Canvas",
+          "targetClass": "_SurfaceBase",
           "multiple": false,
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:127",
@@ -7951,7 +7951,7 @@
         },
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
           "type": "string",
           "declaredIn": "_APmav_follow",
@@ -8411,9 +8411,9 @@
         },
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
-          "targetClass": "_Canvas",
+          "targetClass": "_SurfaceBase",
           "multiple": false,
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:127",
@@ -10895,9 +10895,9 @@
       "configurable": true
     },
     {
-      "name": "_Canvas",
+      "name": "_SurfaceBase",
       "category": "Canvas",
-      "source": "src/Canvas/_Canvas.h:20",
+      "source": "src/Canvas/_SurfaceBase.h:20",
       "baseClasses": [
         "_ModuleBase"
       ],
@@ -10907,8 +10907,8 @@
             "bDrawBB"
           ],
           "type": "boolean",
-          "declaredIn": "_Canvas",
-          "source": "src/Canvas/_Canvas.cpp:44",
+          "declaredIn": "_SurfaceBase",
+          "source": "src/Canvas/_SurfaceBase.cpp:44",
           "typeEvidence": "declaration",
           "cppVariable": "m_bDrawBB",
           "cppType": "bool",
@@ -10919,8 +10919,8 @@
             "bDrawPos"
           ],
           "type": "boolean",
-          "declaredIn": "_Canvas",
-          "source": "src/Canvas/_Canvas.cpp:43",
+          "declaredIn": "_SurfaceBase",
+          "source": "src/Canvas/_SurfaceBase.cpp:43",
           "typeEvidence": "declaration",
           "cppVariable": "m_bDrawPos",
           "cppType": "bool",
@@ -10931,8 +10931,8 @@
             "bDrawText"
           ],
           "type": "boolean",
-          "declaredIn": "_Canvas",
-          "source": "src/Canvas/_Canvas.cpp:42",
+          "declaredIn": "_SurfaceBase",
+          "source": "src/Canvas/_SurfaceBase.cpp:42",
           "typeEvidence": "declaration",
           "cppVariable": "m_bDrawText",
           "cppType": "bool",
@@ -10978,8 +10978,8 @@
             "minConfidence"
           ],
           "type": "number",
-          "declaredIn": "_Canvas",
-          "source": "src/Canvas/_Canvas.cpp:32",
+          "declaredIn": "_SurfaceBase",
+          "source": "src/Canvas/_SurfaceBase.cpp:32",
           "typeEvidence": "declaration",
           "cppVariable": "m_minConfidence",
           "cppType": "float",
@@ -10990,8 +10990,8 @@
             "nBuf"
           ],
           "type": "integer",
-          "declaredIn": "_Canvas",
-          "source": "src/Canvas/_Canvas.cpp:47",
+          "declaredIn": "_SurfaceBase",
+          "source": "src/Canvas/_SurfaceBase.cpp:47",
           "typeEvidence": "declaration",
           "cppVariable": "m_nBuf",
           "cppType": "int",
@@ -11056,8 +11056,8 @@
             "vArea"
           ],
           "type": "array",
-          "declaredIn": "_Canvas",
-          "source": "src/Canvas/_Canvas.cpp:33",
+          "declaredIn": "_SurfaceBase",
+          "source": "src/Canvas/_SurfaceBase.cpp:33",
           "typeEvidence": "declaration",
           "cppVariable": "m_vArea",
           "cppType": "Vector2f",
@@ -11068,8 +11068,8 @@
             "vClassRange"
           ],
           "type": "array",
-          "declaredIn": "_Canvas",
-          "source": "src/Canvas/_Canvas.cpp:39",
+          "declaredIn": "_SurfaceBase",
+          "source": "src/Canvas/_SurfaceBase.cpp:39",
           "typeEvidence": "declaration",
           "cppVariable": "m_vClassRange",
           "cppType": "Vector2i",
@@ -11080,8 +11080,8 @@
             "vH"
           ],
           "type": "array",
-          "declaredIn": "_Canvas",
-          "source": "src/Canvas/_Canvas.cpp:35",
+          "declaredIn": "_SurfaceBase",
+          "source": "src/Canvas/_SurfaceBase.cpp:35",
           "typeEvidence": "declaration",
           "cppVariable": "m_vH",
           "cppType": "Vector2f",
@@ -11092,8 +11092,8 @@
             "vRoi"
           ],
           "type": "array",
-          "source": "src/Canvas/_Canvas.cpp:loadConfig",
-          "declaredIn": "_Canvas",
+          "source": "src/Canvas/_SurfaceBase.cpp:loadConfig",
+          "declaredIn": "_SurfaceBase",
           "extraction": "audited-adapter",
           "default": [
             0,
@@ -11107,8 +11107,8 @@
             "vW"
           ],
           "type": "array",
-          "declaredIn": "_Canvas",
-          "source": "src/Canvas/_Canvas.cpp:34",
+          "declaredIn": "_SurfaceBase",
+          "source": "src/Canvas/_SurfaceBase.cpp:34",
           "typeEvidence": "declaration",
           "cppVariable": "m_vW",
           "cppType": "Vector2f",
@@ -11154,9 +11154,9 @@
       "configurable": true
     },
     {
-      "name": "_Object",
+      "name": "_ObjectBase",
       "category": "Canvas",
-      "source": "src/Canvas/_Object.h:27",
+      "source": "src/Canvas/_ObjectBase.h:27",
       "baseClasses": [
         "_ModuleBase"
       ],
@@ -11817,7 +11817,7 @@
       "parameters": [
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
@@ -12038,9 +12038,9 @@
       "dependencies": [
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
-          "targetClass": "_Canvas",
+          "targetClass": "_SurfaceBase",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:79",
@@ -12105,7 +12105,7 @@
       "parameters": [
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
@@ -12303,9 +12303,9 @@
       "dependencies": [
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
-          "targetClass": "_Canvas",
+          "targetClass": "_SurfaceBase",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:79",
@@ -12369,7 +12369,7 @@
       "parameters": [
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
@@ -12543,9 +12543,9 @@
       "dependencies": [
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
-          "targetClass": "_Canvas",
+          "targetClass": "_SurfaceBase",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:79",
@@ -12604,7 +12604,7 @@
       "parameters": [
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
@@ -12874,9 +12874,9 @@
       "dependencies": [
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
-          "targetClass": "_Canvas",
+          "targetClass": "_SurfaceBase",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:79",
@@ -12940,7 +12940,7 @@
       "parameters": [
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
@@ -13138,9 +13138,9 @@
       "dependencies": [
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
-          "targetClass": "_Canvas",
+          "targetClass": "_SurfaceBase",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:79",
@@ -13624,7 +13624,7 @@
       "parameters": [
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
@@ -13822,9 +13822,9 @@
       "dependencies": [
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
-          "targetClass": "_Canvas",
+          "targetClass": "_SurfaceBase",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:79",
@@ -13890,7 +13890,7 @@
       "parameters": [
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
@@ -14160,9 +14160,9 @@
       "dependencies": [
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
-          "targetClass": "_Canvas",
+          "targetClass": "_SurfaceBase",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:79",
@@ -14226,7 +14226,7 @@
       "parameters": [
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
@@ -14500,9 +14500,9 @@
       "dependencies": [
         {
           "path": [
-            "_Canvas"
+            "_SurfaceBase"
           ],
-          "targetClass": "_Canvas",
+          "targetClass": "_SurfaceBase",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:79",
@@ -44027,10 +44027,10 @@
       "src/Base/macro.h",
       "src/Base/open3d.h",
       "src/Base/platform.h",
-      "src/Canvas/_Canvas.cpp",
-      "src/Canvas/_Canvas.h",
-      "src/Canvas/_Object.cpp",
-      "src/Canvas/_Object.h",
+      "src/Canvas/_SurfaceBase.cpp",
+      "src/Canvas/_SurfaceBase.h",
+      "src/Canvas/_ObjectBase.cpp",
+      "src/Canvas/_ObjectBase.h",
       "src/Canvas/_ObjectArray.cpp",
       "src/Canvas/_ObjectArray.h",
       "src/Compute/OpenCL/clBase.cpp",

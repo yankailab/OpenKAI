@@ -145,7 +145,7 @@ point-cloud inputs.
 data/PointCloud/StanfordBunny/bun000.ply
 ```
 
-This sample uses `_PCfile` for PLY file I/O, so build it with `USE_OPEN3D=ON` if you want to run that exact config. Runtime point-cloud or line modules that fill `GEOMETRY_RINGBUF` data can be viewed without Open3D. The sample is `bun000.ply`, a 1.9 MB Stanford Bunny range scan mirror from the University of New Mexico public directory:
+This sample uses `_PCfile` for PLY file I/O, so build it with `USE_OPEN3D=ON` if you want to run that exact config. Runtime point-cloud or line modules that fill `RingBuffer` data can be viewed without Open3D. The sample is `bun000.ply`, a 1.9 MB Stanford Bunny range scan mirror from the University of New Mexico public directory:
 
 ```bash
 curl -L https://www.cs.unm.edu/~angel/TEST/CODE/Code/BUNNY/data/bun000.ply \

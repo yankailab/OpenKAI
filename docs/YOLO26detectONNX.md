@@ -109,7 +109,7 @@ The default YOLO26 export uses end-to-end detection, so `_YOLO26detectONNX` filt
     },
     "bLog": true,
     "_VisionBase":"cam",
-    "_Canvas":"canvas",
+    "_SurfaceBase":"canvas",
     "fModel":"/home/kai/dev/models/yolo26n.onnx",
     "confidence":0.25,
     "score":0.45,

@@ -254,17 +254,17 @@ namespace kai
 	{
 		NULL_(pObj);
 		NULL_(source.m_pGeometry);
-		IF_(m_grPt.m_nT == 0 || source.m_nP == 0);
+		IF_(m_rPt.m_nT == 0 || source.m_nP == 0);
 		pObj->m_vP.reserve(source.m_nP);
 
-		m_grPt.m_iT = 0;
-		int nGet = source.m_pGeometry->get(&m_grPt, expiry);
+		m_rPt.m_iT = 0;
+		int nGet = source.m_pGeometry->get(&m_rPt, expiry);
 		IF_(nGet <= 0);
-		nGet = std::min(nGet, m_grPt.m_nT);
+		nGet = std::min(nGet, m_rPt.m_nT);
 
 		int i = 0;
 		GEOMETRY_POINT *pGp = nullptr;
-		while (i < nGet && (pGp = m_grPt.get(i++)))
+		while (i < nGet && (pGp = m_rPt.get(i++)))
 		{
 			IF_CONT(pGp->m_tStamp == 0 || pGp->m_tStamp < expiry);
 			IF_CONT(!bFinite(pGp->m_vP));
@@ -282,17 +282,17 @@ namespace kai
 	{
 		NULL_(pObj);
 		NULL_(source.m_pGeometry);
-		IF_(m_grLn.m_nT == 0 || source.m_nL == 0);
+		IF_(m_rLn.m_nT == 0 || source.m_nL == 0);
 		pObj->m_vL.reserve(source.m_nL);
 
-		m_grLn.m_iT = 0;
-		int nGet = source.m_pGeometry->get(&m_grLn, expiry);
+		m_rLn.m_iT = 0;
+		int nGet = source.m_pGeometry->get(&m_rLn, expiry);
 		IF_(nGet <= 0);
-		nGet = std::min(nGet, m_grLn.m_nT);
+		nGet = std::min(nGet, m_rLn.m_nT);
 
 		int i = 0;
 		GEOMETRY_LINE *pGl = nullptr;
-		while (i < nGet && (pGl = m_grLn.get(i++)))
+		while (i < nGet && (pGl = m_rLn.get(i++)))
 		{
 			IF_CONT(pGl->m_tStamp == 0 || pGl->m_tStamp < expiry);
 			IF_CONT(!bFinite(pGl->m_vPa));

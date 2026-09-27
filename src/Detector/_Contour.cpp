@@ -76,7 +76,7 @@ namespace kai
 		vector<vector<Point>> vvContours;
 		findContours(mBGR, vvContours, m_mode, m_method);
 
-		_Object o;
+		_ObjectBase o;
 		vector<Point> vPoly;
 		float kx = 1.0 / (float)mBGR.cols;
 		float ky = 1.0 / (float)mBGR.rows;

@@ -131,7 +131,7 @@
 		"FPS":30,
 	}
 	"_VisionBase":"cam",
-	"_Canvas":"canvas",
+	"_SurfaceBase":"canvas",
 	"dict":17,
 }
 "YOLO":{
@@ -142,13 +142,13 @@
 	}
 	"bLog": true,
 	"_VisionBase":"cam",
-	"_Canvas":"canvas",
+	"_SurfaceBase":"canvas",
 	"fModel":"/home/kai/dev/models/yolov8n.onnx",
 	"confidence":0.001,
 	"bLetterBoxForSquare":0,
 }
 "canvas":{
-	"class":"_Canvas",
+	"class":"_SurfaceBase",
 	"bON": true,
 "thread":{
 		"FPS":1,
@@ -185,7 +185,7 @@
 		"FPS":10,
 	}
 	"_APmav_base":"apBase",
-	"_Canvas":"canvas",
+	"_SurfaceBase":"canvas",
 	"iClass":0,
 	"tOutTargetNotFound":500000000,
 	"vPsp":[0.5, 0.5, 0.3, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */

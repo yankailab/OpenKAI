@@ -75,8 +75,8 @@ namespace kai
 		m_pV = (_VisionBase *)(m_pM->findModule(n));
 
 		n = "";
-		jKv(j, "_Canvas", n);
-		m_pCanvas = (_Canvas *)(m_pM->findModule(n));
+		jKv(j, "_SurfaceBase", n);
+		m_pCanvas = (_SurfaceBase *)(m_pM->findModule(n));
 
 		return true;
 	}
@@ -118,7 +118,7 @@ namespace kai
 		return m_vClass[iClass];
 	}
 
-	_Canvas *_DetectorBase::getCanvas(void)
+	_SurfaceBase *_DetectorBase::getCanvas(void)
 	{
 		return m_pCanvas;
 	}

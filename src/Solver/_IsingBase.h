@@ -9,7 +9,6 @@
 #define OpenKAI_src_Solver__IsingBase_H_
 
 #include "../Base/_ModuleBase.h"
-#include "../Primitive/tSwap.h"
 #include "../Primitive/vLongBit.h"
 #include "../Utility/utilFile.h"
 #include <set>

@@ -17,7 +17,7 @@ namespace kai
 
     _Line::~_Line()
     {
-        m_grLn.release();
+        m_rLn.release();
     }
 
     bool _Line::loadConfig(void)
@@ -28,7 +28,7 @@ namespace kai
         int nL = 1000;
         jKv(j, "nL", nL);
         IF_Le_F(nL <= 0, "Invalid nL: " + i2str(nL));
-        IF_Le_F(!m_grLn.alloc(nL), "Alloc faild with nL: " + i2str(nL));
+        IF_Le_F(!m_rLn.alloc(nL), "Alloc faild with nL: " + i2str(nL));
 
         clear();
         return true;
@@ -39,7 +39,7 @@ namespace kai
         IF_F(!_GeometryBase::saveConfig(false));
 
         json &j = *m_pJ;
-        j["nL"] = m_grLn.m_nT;
+        j["nL"] = m_rLn.m_nT;
 
         IF__(!bExport, true);
         return m_pJcfg->saveToFile();
@@ -48,7 +48,7 @@ namespace kai
     void _Line::clear(void)
     {
 		std::lock_guard<std::mutex> lock(m_mtxLn);
-        m_grLn.clear();
+        m_rLn.clear();
     }
 
     bool _Line::start(void)
@@ -85,10 +85,10 @@ namespace kai
         gL.m_vC = vC;
         gL.m_tStamp = tStamp;
 
-        m_grLn.add(gL);
+        m_rLn.add(gL);
     }
 
-    int _Line::copy(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pIn, GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut, uint64_t tExpire)
+    int _Line::copy(RingBuffer<GEOMETRY_LINE> *pIn, RingBuffer<GEOMETRY_LINE> *pOut, uint64_t tExpire)
     {
         NULL__(pIn, 0);
         NULL__(pOut, 0);
@@ -114,14 +114,14 @@ namespace kai
         return nL;
     }
 
-    int _Line::get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut, uint64_t tExpire)
+    int _Line::get(RingBuffer<GEOMETRY_LINE> *pOut, uint64_t tExpire)
     {
         return copy(getRingBuf(), pOut, tExpire);
     }
 
-    GEOMETRY_RINGBUF<GEOMETRY_LINE> *_Line::getRingBuf(void)
+    RingBuffer<GEOMETRY_LINE> *_Line::getRingBuf(void)
     {
-        return &m_grLn;
+        return &m_rLn;
     }
 
     void _Line::console(void *pConsole)

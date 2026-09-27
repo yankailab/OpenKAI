@@ -87,7 +87,7 @@ namespace kai
 	{
 		IF_(!readPacket());
 
-		_Object o;
+		_ObjectBase o;
 		//	o.m_tStamp = m_pT->getTfromNs();
 		o.setTopClass(INT_MAX, 1.0);
 
@@ -150,7 +150,7 @@ namespace kai
 		this->_DetectorBase::console(pConsole);
 
 		string msg = "| ";
-		_Object *pO;
+		_ObjectBase *pO;
 		int i = 0;
 		while ((pO = m_pCanvas->get(i++)) != NULL)
 		{

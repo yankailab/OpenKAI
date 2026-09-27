@@ -112,7 +112,7 @@ namespace kai
 				solvePnP(vMarkerObj, vvCorner[i], m_mCscaled, m_mD, vvR[i], vvT[i]);
 		}
 
-		_Object o;
+		_ObjectBase o;
 		float kx = 1.0 / (float)m.cols;
 		float ky = 1.0 / (float)m.rows;
 

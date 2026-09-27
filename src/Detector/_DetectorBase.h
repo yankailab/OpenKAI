@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Detector__DetectorBase_H_
 #define OpenKAI_src_Detector__DetectorBase_H_
 
-#include "../Canvas/_Canvas.h"
+#include "../Canvas/_SurfaceBase.h"
 #include "../Vision/_VisionBase.h"
 #include "../Utility/utilCV.h"
 
@@ -30,7 +30,7 @@ namespace kai
 		virtual bool loadModel(void);
 		virtual int getClassIdx(string &className);
 		virtual string getClassName(int iClass);
-		virtual _Canvas *getCanvas(void);
+		virtual _SurfaceBase *getCanvas(void);
 
 	protected:
 		virtual void onPause(void);
@@ -41,7 +41,7 @@ namespace kai
 
 		// data
 		Mat m_mRGB;
-		_Canvas *m_pCanvas = nullptr;
+		_SurfaceBase *m_pCanvas = nullptr;
 
 		// model
 		string m_fModel = "";

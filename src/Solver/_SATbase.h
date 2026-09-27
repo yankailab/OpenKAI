@@ -9,7 +9,6 @@
 #define OpenKAI_src_Solver__SATbase_H_
 
 #include "../Base/_ModuleBase.h"
-#include "../Primitive/tSwap.h"
 #include "../Utility/utilFile.h"
 
 namespace kai

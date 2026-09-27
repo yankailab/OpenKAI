@@ -149,7 +149,9 @@ if(WITH_UNIVERSE)
 	src/UI/Viewer/SelectableOctGridSources.cpp
 	src/UI/Viewer/Web/_WebGeometryBase.cpp
 	src/Universe/_ReferenceFrame.cpp
-	src/Universe/Grid/_OctreeBase.cpp
+	src/Universe/Object/_ObjectBase.cpp
+	src/Universe/Surface/_SurfaceBase.cpp
+  src/Universe/Grid/_OctreeBase.cpp
 	src/Universe/Grid/_OctreeGrid.cpp
 	src/Universe/Grid/_SelectableOctGrid.cpp
 	src/Universe/Geometry/_GeometryBase.cpp
@@ -509,14 +511,6 @@ if(WITH_UI)
 		src/UI/_WindowCV.cpp
     )
   endif()
-endif()
-
-if(WITH_CANVAS)
-  add_definitions(-DWITH_CANVAS)
-  file(GLOB_RECURSE Canvas_cpp src/Canvas/*.cpp src/Canvas/*.cc src/Canvas/*.c)
-  list(APPEND OpenKAI_cpp
-	${Canvas_cpp}
-  )
 endif()
 
 if(WITH_VISION)

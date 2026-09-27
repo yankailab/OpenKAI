@@ -114,7 +114,7 @@ namespace kai
 			delete m_pCell;
 		}
 
-		m_grPt.release();
+		m_rPt.release();
 	}
 
 	bool _OctreeGrid::loadConfig(void)
@@ -139,9 +139,9 @@ namespace kai
 		int nP = 100000;
 		jKv(j, "nP", nP);
 		IF_Le_F(nP <= 0, "Invalid nP: " + i2str(nP));
-		m_grPt.release();
-		IF_Le_F(!m_grPt.alloc(nP), "Alloc failed with nP: " + i2str(nP));
-		m_grPt.clear();
+		m_rPt.release();
+		IF_Le_F(!m_rPt.alloc(nP), "Alloc failed with nP: " + i2str(nP));
+		m_rPt.clear();
 
 		if (m_pCell)
 		{
@@ -165,7 +165,7 @@ namespace kai
 		j["nMaxLevel"] = m_nMaxLevel;
 		j["dTexpireCell"] = m_dTexpireCell;
 		j["dTexpirePCL"] = m_dTexpirePCL;
-		j["nP"] = m_grPt.m_nT;
+		j["nP"] = m_rPt.m_nT;
 
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
@@ -235,15 +235,15 @@ namespace kai
 
 		for (_GeometryBase *pGb : m_vpGb)
 		{
-			m_grPt.clear();
-			int nP = pGb->get(&m_grPt, tExpire);
+			m_rPt.clear();
+			int nP = pGb->get(&m_rPt, tExpire);
 			IF_CONT(nP <= 0);
-			nP = small<int>(nP, m_grPt.nT());
+			nP = small<int>(nP, m_rPt.nT());
 
 			int i = 0;
 			while (i < nP)
 			{
-				GEOMETRY_POINT *pGp = m_grPt.get(i++);
+				GEOMETRY_POINT *pGp = m_rPt.get(i++);
 				if (pGp == nullptr)
 					break;
 				if (pGp->m_tStamp == 0)

@@ -54,12 +54,12 @@ namespace kai
     {
     }
 
-    int _GeometryBase::get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire)
+    int _GeometryBase::get(RingBuffer<GEOMETRY_POINT> *pOut, uint64_t tExpire)
     {
         return 0;
     }
 
-    int _GeometryBase::get(GEOMETRY_RINGBUF<GEOMETRY_LINE> *pOut, uint64_t tExpire)
+    int _GeometryBase::get(RingBuffer<GEOMETRY_LINE> *pOut, uint64_t tExpire)
     {
         return 0;
     }

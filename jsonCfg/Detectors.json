@@ -162,10 +162,10 @@
 			"FPS": 30
 		},
 		"_VisionBase": "morph",
-		"_Canvas": "canvas"
+		"_SurfaceBase": "canvas"
 	},
 	"canvas": {
-		"class": "_Canvas",
+		"class": "_SurfaceBase",
 		"bON": true,
 		"thread": {
 			"FPS": 10
@@ -180,7 +180,7 @@
 		},
 		"bLog": true,
 		"_VisionBase": "cam",
-		"_Canvas": "canvas",
+		"_SurfaceBase": "canvas",
 		"fModel": "/home/kai/dev/models/YOLO26/yolo26n.onnx",
 		"confidence": 0.25,
 		"score": 0.45,

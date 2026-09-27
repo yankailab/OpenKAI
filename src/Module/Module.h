@@ -19,6 +19,8 @@
 
 #ifdef WITH_UNIVERSE
 #include "../Universe/_ReferenceFrame.h"
+#include "../Universe/Object/_ObjectBase.h"
+#include "../Universe/Surface/_SurfaceBase.h"
 #include "../Universe/Grid/_OctreeBase.h"
 #include "../Universe/Grid/_OctreeGrid.h"
 #include "../Universe/Grid/_SelectableOctGrid.h"
@@ -224,11 +226,6 @@
 #include "../UI/_GstOutput.h"
 #include "../UI/_WindowCV.h"
 #endif
-#endif
-
-#ifdef WITH_CANVAS
-#include "../Canvas/_Object.h"
-#include "../Canvas/_Canvas.h"
 #endif
 
 #ifdef WITH_VISION

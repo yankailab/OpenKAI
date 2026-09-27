@@ -196,9 +196,9 @@ namespace kai
 		// find target
 		AP_LAND_TAG *pTag = NULL;
 		int priority = INT_MAX;
-		_Object *tO = NULL;
+		_ObjectBase *tO = NULL;
 		int i = 0;
-		_Object *pO;
+		_ObjectBase *pO;
 		while ((pO = m_pCanvas->get(i++)) != NULL)
 		{
 			int id = pO->getTopClass();

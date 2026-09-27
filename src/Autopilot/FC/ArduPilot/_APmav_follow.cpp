@@ -123,8 +123,8 @@ namespace kai
 		m_pTracker = (_TrackerBase *)m_pM->findModule(n);
 
 		n = "";
-		jKv(j, "_Canvas", n);
-		m_pCanvas = (_Canvas *)m_pM->findModule(n);
+		jKv(j, "_SurfaceBase", n);
+		m_pCanvas = (_SurfaceBase *)m_pM->findModule(n);
 
 		return true;
 	}
@@ -238,8 +238,8 @@ namespace kai
 	{
 		IF_F(!check());
 
-		_Object *pO;
-		_Object *tO = NULL;
+		_ObjectBase *pO;
+		_ObjectBase *tO = NULL;
 		float topProb = 0.0;
 		int i = 0;
 		while ((pO = m_pCanvas->get(i++)) != NULL)

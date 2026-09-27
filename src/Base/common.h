@@ -9,11 +9,6 @@
 #include "cv.h"
 #endif
 
-#ifdef USE_MATHGL
-#include <mgl2/mgl.h>
-#include <mgl2/fltk.h>
-#endif
-
 #ifdef USE_GLOG
 #include <glog/logging.h>
 #endif
@@ -24,7 +19,7 @@ using namespace Eigen;
 #include "platform.h"
 #include "macro.h"
 #include "constant.h"
-#include "../Primitive/tSwap.h"
+#include "../Primitive/RingBuffer.h"
 #include "../Utility/util.h"
 #include "../Utility/utilTime.h"
 #include "../Utility/utilEvent.h"

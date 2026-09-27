@@ -216,7 +216,7 @@ namespace kai
 			bottom = std::max(0, std::min(bottom, mIn.rows - 1));
 			IF_CONT(right <= left || bottom <= top);
 
-			_Object o;
+			_ObjectBase o;
 			o.clear();
 			o.setTstamp(m_pT->getTfromNs());
 			o.setType(obj_bbox);
@@ -303,7 +303,7 @@ namespace kai
 		{
 			int idx = nmsResult[i];
 
-			_Object o;
+			_ObjectBase o;
 			o.clear();
 			o.setTstamp(m_pT->getTfromNs());
 			o.setType(obj_bbox);

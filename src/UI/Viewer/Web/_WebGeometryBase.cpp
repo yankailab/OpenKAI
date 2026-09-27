@@ -258,22 +258,22 @@ namespace kai
 			}
 			else
 			{
-				m_grPt.m_iT = 0;
-				const int count = std::min(geometry->get(&m_grPt, expiry), m_grPt.m_nT);
+				m_rPt.m_iT = 0;
+				const int count = std::min(geometry->get(&m_rPt, expiry), m_rPt.m_nT);
 				for (int i = 0; i < count && m_positions.size() / 3 < size_t(o.m_nP); ++i)
 				{
-					const auto &p = *m_grPt.get(i);
+					const auto &p = *m_rPt.get(i);
 					if (p.m_tStamp && p.m_tStamp >= expiry && finite(p.m_vP)) vertex(p.m_vP, p.m_vC);
 				}
 			}
 		}
 		else
 		{
-			m_grLn.m_iT = 0;
-			const int count = std::min(geometry->get(&m_grLn, expiry), m_grLn.m_nT);
+			m_rLn.m_iT = 0;
+			const int count = std::min(geometry->get(&m_rLn, expiry), m_rLn.m_nT);
 			for (int i = 0; i < count && m_positions.size() / 6 < size_t(o.m_nL); ++i)
 			{
-				const auto &l = *m_grLn.get(i);
+				const auto &l = *m_rLn.get(i);
 				if (!l.m_tStamp || l.m_tStamp < expiry || !finite(l.m_vPa) || !finite(l.m_vPb)) continue;
 				vertex(l.m_vPa, l.m_vC); vertex(l.m_vPb, l.m_vC);
 			}

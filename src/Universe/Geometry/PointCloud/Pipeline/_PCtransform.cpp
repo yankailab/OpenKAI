@@ -161,7 +161,7 @@ namespace kai
 		if(m_dTexpire > 0)
 			tExpire = getTns() - m_dTexpire;
 
-		m_pPS->get(&m_grPt, tExpire);
+		m_pPS->get(&m_rPt, tExpire);
 	}
 
 	void _PCtransform::setTranslation(const Vector3d &vT)

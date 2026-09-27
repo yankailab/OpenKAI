@@ -72,8 +72,8 @@ namespace kai
 		Vector3f m_vCoR = Vector3f::Zero(); // center of rotation
 
 		// instance and buffer
-		GEOMETRY_RINGBUF<GEOMETRY_POINT> m_grPt;
-        GEOMETRY_RINGBUF<GEOMETRY_LINE> m_grLn;
+		RingBuffer<GEOMETRY_POINT> m_rPt;
+        RingBuffer<GEOMETRY_LINE> m_rLn;
 		bool m_bGeometryBuffers = true;
 		int m_nPbuf = 200000;
 		int m_nLbuf = 100000;

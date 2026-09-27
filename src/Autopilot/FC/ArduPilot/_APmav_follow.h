@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot_FC_ArduPilot__APmav_follow_H_
 #define OpenKAI_src_Autopilot_FC_ArduPilot__APmav_follow_H_
 
-#include "../../../Canvas/_Canvas.h"
+#include "../../../Canvas/_SurfaceBase.h"
 #include "../../../Tracker/_TrackerBase.h"
 #include "../../../Filter/Median.h"
 #include "../../../Filter/Average.h"
@@ -71,7 +71,7 @@ namespace kai
 		}
 
 	protected:
-		_Canvas *m_pCanvas = nullptr;
+		_SurfaceBase *m_pCanvas = nullptr;
 		_TrackerBase *m_pTracker = nullptr;
 		TIME_OUT m_tOutTargetNotFound;
 		bool m_bTarget = false;

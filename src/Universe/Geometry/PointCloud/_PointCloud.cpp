@@ -17,7 +17,7 @@ namespace kai
 
     _PointCloud::~_PointCloud()
     {
-        m_grPt.release();
+        m_rPt.release();
     }
 
     bool _PointCloud::loadConfig(void)
@@ -28,7 +28,7 @@ namespace kai
         int nP = 1000;
         jKv(j, "nP", nP);
         IF_Le_F(nP <= 0, "Invalid nP: " + i2str(nP));
-        IF_Le_F(!m_grPt.alloc(nP), "Alloc faild with nP: " + i2str(nP));
+        IF_Le_F(!m_rPt.alloc(nP), "Alloc faild with nP: " + i2str(nP));
 
         clear();
         return true;
@@ -39,7 +39,7 @@ namespace kai
         IF_F(!_GeometryBase::saveConfig(false));
 
         json &j = *m_pJ;
-        j["nP"] = m_grPt.m_nT;
+        j["nP"] = m_rPt.m_nT;
 
         IF__(!bExport, true);
         return m_pJcfg->saveToFile();
@@ -48,7 +48,7 @@ namespace kai
     void _PointCloud::clear(void)
     {
         std::scoped_lock lock(m_mtxPt, m_mtxFrame);
-        m_grPt.clear();
+        m_rPt.clear();
         m_framing.clear();
         m_framed.clear();
         m_bFraming = false;
@@ -81,10 +81,10 @@ namespace kai
         IF_(!check());
     }
 
-    int _PointCloud::get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire)
+    int _PointCloud::get(RingBuffer<GEOMETRY_POINT> *pOut, uint64_t tExpire)
     {
         std::lock_guard<std::mutex> lock(m_mtxPt);
-        return copy(&m_grPt, pOut, tExpire);
+        return copy(&m_rPt, pOut, tExpire);
     }
 
     void _PointCloud::add(const Vector3f &vP, const Vector3f &vC, uint64_t tStamp)
@@ -96,17 +96,17 @@ namespace kai
         gP.m_tStamp = tStamp;
 
         // Do not return mixed old/new points once a completed span is overwritten.
-        if (m_framed.m_nP && m_grPt.m_iT == m_framed.m_iPfrom)
+        if (m_framed.m_nP && m_rPt.m_iT == m_framed.m_iPfrom)
             m_framed.clear();
 
-        m_grPt.add(gP);
+        m_rPt.add(gP);
 
         if (m_bFraming)
         {
-            if (m_framing.m_nP < m_grPt.m_nT)
+            if (m_framing.m_nP < m_rPt.m_nT)
                 ++m_framing.m_nP;
             else
-                m_framing.m_iPfrom = m_grPt.m_iT;
+                m_framing.m_iPfrom = m_rPt.m_iT;
             m_framing.m_tStamp = tStamp;
         }
 
@@ -116,7 +116,7 @@ namespace kai
     void _PointCloud::frameStart(void)
     {
         std::lock_guard<std::mutex> lock(m_mtxPt);
-        m_framing.start(m_grPt.m_iT);
+        m_framing.start(m_rPt.m_iT);
         m_bFraming = true;
     }
 
@@ -125,7 +125,7 @@ namespace kai
         std::scoped_lock lock(m_mtxPt, m_mtxFrame);
         IF_(!m_bFraming);
         
-        m_framing.stop(m_grPt.m_iT, m_grPt.m_nT, m_framing.m_tStamp);
+        m_framing.stop(m_rPt.m_iT, m_rPt.m_nT, m_framing.m_tStamp);
         std::swap(m_framing, m_framed);
         m_bFraming = false;
     }
@@ -168,11 +168,11 @@ namespace kai
         int iP = m_framed.m_iPfrom;
         for (int nP = 0; nP < m_framed.m_nP; ++nP)
         {
-            const GEOMETRY_POINT *point = m_grPt.get(iP);
+            const GEOMETRY_POINT *point = m_rPt.get(iP);
             if (!point) break;
             pvP->push_back(point->m_vP);
             if (pvC) pvC->push_back(point->m_vC);
-            if (++iP >= m_grPt.m_nT) iP = 0;
+            if (++iP >= m_rPt.m_nT) iP = 0;
         }
         
         return int(pvP->size());
@@ -181,18 +181,18 @@ namespace kai
     void _PointCloud::setFrame(const vector<Vector3f> &points, const vector<Vector3f> &colors, uint64_t stamp)
     {
         std::scoped_lock lock(m_mtxPt, m_mtxFrame);
-        m_grPt.m_iT = 0;
+        m_rPt.m_iT = 0;
         m_framing.clear();
-        m_framed.start(m_grPt.m_iT);
+        m_framed.start(m_rPt.m_iT);
         
         // Like add(), an oversized frame retains only the newest nP points.
-        const size_t count = std::min(points.size(), size_t(m_grPt.m_nT));
+        const size_t count = std::min(points.size(), size_t(m_rPt.m_nT));
         // get() walks backwards from the newest point and stops at timestamp 0.
         // A single invalid slot before this span replaces clearing the entire
         // capacity; unused slots are never visited. A full span overwrites all.
 
-        if (count < size_t(m_grPt.m_nT))
-            m_grPt.m_pT[m_grPt.m_nT - 1].m_tStamp = 0;
+        if (count < size_t(m_rPt.m_nT))
+            m_rPt.m_pT[m_rPt.m_nT - 1].m_tStamp = 0;
         // SLAM maps are already in world coordinates. Avoid an Eigen transform
         // per point for the common identity pose, without dropping small poses.
         
@@ -201,21 +201,21 @@ namespace kai
         for (size_t destination = 0; destination < count; ++destination)
         {
             const size_t i = first + destination;
-            GEOMETRY_POINT &point = m_grPt.m_pT[destination];
+            GEOMETRY_POINT &point = m_rPt.m_pT[destination];
             if (identityPose) point.m_vP = points[i];
             else point.m_vP = m_mPosef * points[i];
             point.m_vC = i < colors.size() ? colors[i] : Vector3f::Ones();
             point.m_tStamp = stamp;
         }
         
-        m_grPt.m_iT = count == size_t(m_grPt.m_nT) ? 0 : int(count);
+        m_rPt.m_iT = count == size_t(m_rPt.m_nT) ? 0 : int(count);
         m_framed.m_nP = int(count);
-        m_framed.stop(m_grPt.m_iT, m_grPt.m_nT, stamp);
+        m_framed.stop(m_rPt.m_iT, m_rPt.m_nT, stamp);
         m_tStamp = stamp;
         m_bFraming = false;
     }
 
-    int _PointCloud::copy(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pIn, GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire)
+    int _PointCloud::copy(RingBuffer<GEOMETRY_POINT> *pIn, RingBuffer<GEOMETRY_POINT> *pOut, uint64_t tExpire)
     {
         NULL__(pIn, -1);
         NULL__(pOut, -1);
@@ -242,9 +242,9 @@ namespace kai
         return nP;
     }
 
-    GEOMETRY_RINGBUF<GEOMETRY_POINT> *_PointCloud::getRingBuf(void)
+    RingBuffer<GEOMETRY_POINT> *_PointCloud::getRingBuf(void)
     {
-        return &m_grPt;
+        return &m_rPt;
     }
 
     void _PointCloud::console(void *pConsole)

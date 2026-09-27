@@ -55,7 +55,7 @@
 
 	"serialAP": {
 		"class": "_SerialPort",
-		"bON": true,
+		"bON": false,
 		"thread": {
 			"FPS": 10
 		},
@@ -68,13 +68,13 @@
 	},
 	"udpAP": {
 		"class": "_UDP",
-		"bON": false,
+		"bON": true,
 		"thread": {
 			"FPS": 30
 		},
 		"nPacket": 256,
 		"nPbuffer": 2000,
-		"addrRemote": "192.168.16.203",
+		"addrRemote": "192.168.8.250",
 		"portRemote": 24602,
 		"/portLocal": 24600,
 		"bW2R": false,
@@ -88,8 +88,8 @@
 			"FPS": 10
 		},
 		"bLog": false,
-		"_IObase": "serialAP",
-		"/_IObase": "udpAP",
+		"/_IObase": "serialAP",
+		"_IObase": "udpAP",
 		"/devSystemID": 0,
 		"mySystemID": 255,
 		"iMavComm": 0

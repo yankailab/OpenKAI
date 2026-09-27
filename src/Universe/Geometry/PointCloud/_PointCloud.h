@@ -69,12 +69,12 @@ namespace kai
 
         // _GeometryBase
         virtual void clear(void);
-        virtual int get(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire = 0);
+        virtual int get(RingBuffer<GEOMETRY_POINT> *pOut, uint64_t tExpire = 0);
 
         // data io
         virtual void add(const Vector3f &vP, const Vector3f &vC, uint64_t tStamp = 1);
 
-        // Frames refer to spans in m_grPt; overwritten completed frames expire.
+        // Frames refer to spans in m_rPt; overwritten completed frames expire.
         virtual void frameStart(void);
         virtual void frameStop(void);
         int getLastFrame(vector<Vector3f> *pvP, vector<Vector3f> *pvC, uint64_t& tStamp) override;
@@ -84,8 +84,8 @@ namespace kai
         void setFrame(const vector<Vector3f> &points, const vector<Vector3f> &colors, uint64_t stamp);
 
     protected:
-        virtual int copy(GEOMETRY_RINGBUF<GEOMETRY_POINT> *pIn, GEOMETRY_RINGBUF<GEOMETRY_POINT> *pOut, uint64_t tExpire = 0);
-        virtual GEOMETRY_RINGBUF<GEOMETRY_POINT> *getRingBuf(void);
+        virtual int copy(RingBuffer<GEOMETRY_POINT> *pIn, RingBuffer<GEOMETRY_POINT> *pOut, uint64_t tExpire = 0);
+        virtual RingBuffer<GEOMETRY_POINT> *getRingBuf(void);
 
     private:
         int copyLastFrameLocked(vector<Vector3f> *pvP, vector<Vector3f> *pvC, uint64_t &tStamp);
@@ -99,7 +99,7 @@ namespace kai
 
     protected:
         std::mutex m_mtxPt;
-        GEOMETRY_RINGBUF<GEOMETRY_POINT> m_grPt;
+        RingBuffer<GEOMETRY_POINT> m_rPt;
         uint64_t m_tStamp = 0;  // last point added tStamp
 
         std::mutex m_mtxFrame;

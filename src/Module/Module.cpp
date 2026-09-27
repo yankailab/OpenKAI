@@ -30,6 +30,8 @@ namespace kai
 
 #ifdef WITH_UNIVERSE
 		ADD_MODULE(_ReferenceFrame);
+		ADD_MODULE(_ObjectBase);
+		ADD_MODULE(_SurfaceBase);
 		ADD_MODULE(_OctreeBase);
 		ADD_MODULE(_OctreeGrid);
 		ADD_MODULE(_SelectableOctGrid);
@@ -237,11 +239,6 @@ namespace kai
 		ADD_MODULE(_GstOutput);
 		ADD_MODULE(_WindowCV);
 #endif
-#endif
-
-#ifdef WITH_CANVAS
-		ADD_MODULE(_Object);
-		ADD_MODULE(_Canvas);
 #endif
 
 #ifdef WITH_VISION
