@@ -6,6 +6,7 @@
  */
 
 #include "_SLAMbase.h"
+#include <stdexcept>
 
 namespace kai
 {
@@ -45,14 +46,14 @@ namespace kai
 		IF_F(!_NavBase::link(pM));
 		const json &j = *m_pJ;
 		string n;
-		jKv(j, "_PointCloud", n);
-		m_pPCL = dynamic_cast<_PointCloud *>(static_cast<BASE *>(pM->findModule(n)));
-		IF_Le_F(!m_pPCL, "Cannot find _PointCloud: " + n);
+		jKv(j, "PCLframeIn", n);
+		m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		IF_Le_F(!m_pPCL, "Cannot find PCLframeIn: " + n);
 
 		n.clear();
-		jKv(j, "_IMUbase", n);
-		m_pIMU = n.empty() ? nullptr : dynamic_cast<_IMUbase *>(static_cast<BASE *>(pM->findModule(n)));
-		IF_Le_F(!n.empty() && !m_pIMU, "Cannot find _IMUbase: " + n);
+		jKv(j, "IMUstream", n);
+		m_pIMU = n.empty() ? nullptr : dynamic_cast<IMUstream *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		IF_Le_F(!n.empty() && !m_pIMU, "Cannot find IMUstream: " + n);
 		return true;
 	}
 
@@ -86,6 +87,14 @@ namespace kai
 		IF__(m_bTracking, true);
 		IF_F(!check());
 		m_tStampLastFrame = 0;
+		m_pointRevision = 0;
+		m_imuSnapshot.reset();
+		m_gyroSequence = 0;
+		m_accSequence = 0;
+		m_tStampLastGyro = 0;
+		m_tStampLastAcc = 0;
+		m_iGyro = 0;
+		m_iAcc = 0;
 		m_slamError.clear();
 		m_tStampLastIMU = 0;
 		setConfidence(0.0f);
@@ -141,33 +150,123 @@ namespace kai
 		auto lock = lockSLAM();
 		stopTrackingLocked();
 		resetSLAM();
-		m_tStampLastFrame = m_tStampLastIMU = 0;
+		m_tStampLastFrame = 0;
+		m_tStampLastIMU = 0;
+		m_pointRevision = 0;
+		m_imuSnapshot.reset();
+		m_gyroSequence = 0;
+		m_accSequence = 0;
+		m_tStampLastGyro = 0;
+		m_tStampLastAcc = 0;
+		m_iGyro = 0;
+		m_iAcc = 0;
 		m_slamError.clear();
 		setPos(Vector3d::Zero());
 		setOrientation(Quaterniond::Identity(), true);
 	}
 
-	bool _SLAMbase::readPointCloud(vector<Vector3f> &points, uint64_t &stamp)
+	PCLframe::SnapshotPtr _SLAMbase::readPointCloud(void)
 	{
-		IF_F(!m_pPCL);
-		const int count = m_pPCL->getLastFrameIfNew(&points, nullptr, stamp, m_tStampLastFrame);
-		IF_F(count <= 0 || stamp <= m_tStampLastFrame);
-		m_tStampLastFrame = stamp;
-		return true;
+		if (!m_pPCL)
+		{
+			return nullptr;
+		}
+		auto frame = m_pPCL->get();
+		if (frame->m_revision == m_pointRevision)
+		{
+			return nullptr;
+		}
+		m_pointRevision = frame->m_revision;
+		// Clearing a stream is not a sensor measurement and must not advance
+		// the estimator clock (the clear may use the host clock).
+		if (frame->m_vPoints.empty())
+		{
+			return nullptr;
+		}
+		if (frame->m_tStamp < m_tStampLastFrame)
+		{
+			throw std::runtime_error("Point-cloud clock reset; restart SLAM tracking");
+		}
+		if (frame->m_tStamp == m_tStampLastFrame)
+		{
+			return nullptr;
+		}
+		m_tStampLastFrame = frame->m_tStamp;
+		return frame;
 	}
 
 	bool _SLAMbase::readIMU(Vector3d &acc, Vector3d &gyro, uint64_t &stamp)
 	{
-		IF_F(!m_pIMU);
-		Vector3f a, g;
-		while ((stamp = m_pIMU->getIMUpair(&g, &a)) != 0)
+		if (!m_pIMU)
 		{
-			IF_CONT(stamp <= m_tStampLastIMU || !a.allFinite() || !g.allFinite());
+			return false;
+		}
+		if (!m_imuSnapshot)
+		{
+			// One history snapshot per processing batch, shared across this loop's
+			// calls. Independent estimators retain their own sequence positions.
+			m_imuSnapshot = m_pIMU->get();
+			m_iGyro = 0;
+			m_iAcc = 0;
+			while (m_iGyro < m_imuSnapshot->m_dqGyro.size() &&
+				m_imuSnapshot->m_dqGyro[m_iGyro].m_sequence <= m_gyroSequence)
+			{
+				++m_iGyro;
+			}
+			while (m_iAcc < m_imuSnapshot->m_dqAcc.size() &&
+				m_imuSnapshot->m_dqAcc[m_iAcc].m_sequence <= m_accSequence)
+			{
+				++m_iAcc;
+			}
+		}
+
+		constexpr uint64_t toleranceNs = 5 * NSEC_MSEC;
+		while (m_iGyro < m_imuSnapshot->m_dqGyro.size() && m_iAcc < m_imuSnapshot->m_dqAcc.size())
+		{
+			const auto &g = m_imuSnapshot->m_dqGyro[m_iGyro];
+			const auto &a = m_imuSnapshot->m_dqAcc[m_iAcc];
+			// Detect independently resetting sensor clocks before discarding an
+			// unmatched sample. The paired maximum hides a reset in one channel.
+			if (g.m_t < m_tStampLastGyro || a.m_t < m_tStampLastAcc)
+			{
+				throw std::runtime_error("IMU clock reset; restart SLAM tracking");
+			}
+			if (g.m_t < a.m_t && a.m_t - g.m_t > toleranceNs)
+			{
+				m_gyroSequence = g.m_sequence;
+				m_tStampLastGyro = g.m_t;
+				++m_iGyro;
+				continue;
+			}
+			if (a.m_t < g.m_t && g.m_t - a.m_t > toleranceNs)
+			{
+				m_accSequence = a.m_sequence;
+				m_tStampLastAcc = a.m_t;
+				++m_iAcc;
+				continue;
+			}
+
+			m_gyroSequence = g.m_sequence;
+			m_accSequence = a.m_sequence;
+			m_tStampLastGyro = g.m_t;
+			m_tStampLastAcc = a.m_t;
+			++m_iGyro;
+			++m_iAcc;
+			stamp = std::max(g.m_t, a.m_t);
+			if (stamp < m_tStampLastIMU)
+			{
+				throw std::runtime_error("IMU clock reset; restart SLAM tracking");
+			}
+			if (stamp == m_tStampLastIMU)
+			{
+				continue;
+			}
 			m_tStampLastIMU = stamp;
-			acc = a.cast<double>();
-			gyro = g.cast<double>();
+			acc = a.m_v.cast<double>();
+			gyro = g.m_v.cast<double>();
 			return true;
 		}
+		m_imuSnapshot.reset();
 		return false;
 	}
 

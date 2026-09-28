@@ -4,13 +4,13 @@
     const schema = { classes: [
         { name: "BASE", creatable: false, baseClasses: [], parameters: [], dependencies: [] },
         { name: "InstanceMgr", creatable: false, baseClasses: [], parameters: [], dependencies: [] },
-        { name: "_VisionBase", creatable: false, baseClasses: ["BASE"], parameters: [], dependencies: [] },
-        { name: "Camera", creatable: true, baseClasses: ["_VisionBase"], parameters: [{ path: ["FPS"], type: "number", default: 30 }, { path: ["bON"], type: "boolean", default: true }], dependencies: [] },
+        { name: "_RGBbase", creatable: false, baseClasses: ["BASE"], parameters: [], dependencies: [] },
+        { name: "Camera", creatable: true, baseClasses: ["_RGBbase"], parameters: [{ path: ["FPS"], type: "number", default: 30 }, { path: ["bON"], type: "boolean", default: true }], dependencies: [] },
         { name: "Serial", creatable: true, baseClasses: ["BASE"], parameters: [], dependencies: [] },
         { name: "Consumer", creatable: true, baseClasses: ["BASE"], parameters: [{ path: ["gain"], type: "number" }], dependencies: [
-            { path: ["input"], targetClass: "_VisionBase", multiple: false, required: true },
+            { path: ["input"], targetClass: "_RGBbase", multiple: false, required: true },
             { path: ["inputs"], targetClass: "BASE", multiple: true },
-            { path: ["rows", "*", "source"], targetClass: "_VisionBase", multiple: false, containers: [{ path: ["rows"], type: "array" }] },
+            { path: ["rows", "*", "source"], targetClass: "_RGBbase", multiple: false, containers: [{ path: ["rows"], type: "array" }] },
             { path: ["states", "*", "source"], targetClass: "BASE", multiple: false, containers: [{ path: ["states"], type: "object" }] },
             { path: ["groups", "*", "members", "*", "source"], targetClass: "BASE", multiple: false, containers: [{ path: ["groups", "*", "members"], type: "object" }, { path: ["groups"], type: "array" }] },
         ] },

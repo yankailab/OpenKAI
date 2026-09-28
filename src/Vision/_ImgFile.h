@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Vision__ImgFile_H_
 #define OpenKAI_src_Vision__ImgFile_H_
 
-#include "_VisionBase.h"
+#include "_RGBbase.h"
 
 namespace kai
 {
 
-	class _ImgFile : public _VisionBase
+	class _ImgFile : public _RGBbase
 	{
 	public:
 		_ImgFile();

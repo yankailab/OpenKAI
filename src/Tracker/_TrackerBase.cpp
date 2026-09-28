@@ -6,6 +6,7 @@
  */
 
 #include "_TrackerBase.h"
+#include "../UI/_Console.h"
 
 namespace kai
 {
@@ -48,9 +49,9 @@ namespace kai
 		const json &j = *m_pJ;
 
 		string n = "";
-		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(pM->findModule(n));
-		NULL_F(m_pV);
+		jKv(j, "RGBframeIn", n);
+		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		NULL_F(m_pRGBin);
 
 		return true;
 	}
@@ -61,7 +62,7 @@ namespace kai
 
 	bool _TrackerBase::check(void)
 	{
-		NULL_F(m_pV);
+		NULL_F(m_pRGBin);
 
 		return this->_ModuleBase::check();
 	}
@@ -87,9 +88,10 @@ namespace kai
 
 	bool _TrackerBase::startTrack(Vector4f &bb)
 	{
-		NULL_F(m_pV);
-		Mat *pM = m_pV->getMatRGB();
-		IF_F(pM->empty());
+		NULL_F(m_pRGBin);
+		const auto frame = m_pRGBin->get();
+		const Mat &image = frame->m_mRGB;
+		IF_F(image.empty());
 
 		float mBig = 1.0 + m_margin;
 		float mSmall = 1.0 - m_margin;
@@ -99,7 +101,7 @@ namespace kai
 		bb.z() = constrain(bb.z() * mBig, 0.0f, 1.0f);
 		bb.w() = constrain(bb.w() * mBig, 0.0f, 1.0f);
 
-		Rect rBB = bb2Rect(bbScale(bb, pM->cols, pM->rows));
+		Rect rBB = bb2Rect(bbScale(bb, image.cols, image.rows));
 		IF_F(rBB.width == 0 || rBB.height == 0);
 
 		m_newBB = rBB;
@@ -128,7 +130,6 @@ namespace kai
 	void _TrackerBase::draw(void *pMat)
 	{
 		NULL_(pMat);
-		this->_ModuleBase::draw(pMat);
 		IF_(!check());
 
 		Mat *pM = static_cast<Mat *>(pMat);

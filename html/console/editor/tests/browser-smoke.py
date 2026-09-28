@@ -204,6 +204,25 @@ def run(browser, editor):
             JSON.parse(model.export());
             created++;
         }
+        const image = new OpenKAIModel(OPENKAI_SCHEMA);
+        image.addNode('RGBframe', 'image');
+        image.addNode('_Crop', 'crop');
+        image.connect('/crop', ['RGBframeIn'], '/image');
+        if (image.toJSON().image.type !== 'dataStream' || image.toJSON().crop.RGBframeIn !== 'image')
+            throw Error('Image streams must create and connect through DataStream references');
+        if (image.getClass('_Crop').dependencies.some(dep => dep.path[0] === '_RGBbase'))
+            throw Error('Legacy image module references must not remain in the catalog');
+        const grid = new OpenKAIModel(OPENKAI_SCHEMA);
+        grid.addNode('PCLframe', 'points');
+        grid.addNode('_OctreeGrid', 'grid');
+        grid.addNode('_SelectableOctGrid', 'selectable');
+        grid.connect('/grid', ['vPCLframes'], '/points');
+        grid.connect('/selectable', ['vPCLframes'], '/points');
+        grid.renameNode('/points', 'cloud');
+        for (const name of ['grid', 'selectable']) {
+            if (JSON.stringify(grid.toJSON()[name].vPCLframes) !== '["cloud"]')
+                throw Error('Grid stream arrays must connect and follow stream renames');
+        }
         return {classes: source.classes.length, created};
     })()""")
     fixtures = [
@@ -295,6 +314,10 @@ def run_ui(browser, editor):
         smokeChange('#class-search', '_Crop', 'input');
         document.querySelector('[aria-label="Add _Crop"]').click();
         smokeAssert(OpenKAIEditor.model.getNode('/crop').className === '_Crop', 'Add button must create a crop');
+        smokeChange('#class-search', 'RGBframe', 'input');
+        document.querySelector('[aria-label="Add RGBframe"]').click();
+        smokeChange('#instance-name', 'cameraFrame');
+        smokeAssert(JSON.parse(OpenKAIEditor.exportConfig()).cameraFrame.type === 'dataStream', 'New streams must select the DataStream factory');
         smokeChange('#class-search', '', 'input');
         document.getElementById('auto-layout').click();
     })()""")
@@ -311,58 +334,58 @@ def run_ui(browser, editor):
         smokeChange('[data-path=\'["vSizeRGB"]\']', '[800,600]');
     })()""")
     checks.append("typed parameter editing and invalid-value preservation")
-    source = '[data-id="/crop"] .dependency-port[data-path=\'["_VisionBase"]\']'
-    target = '[data-id="/camera"] .provider-port'
+    source = '[data-id="/crop"] .dependency-port[data-path=\'["RGBframeIn"]\']'
+    target = '[data-id="/cameraFrame"] .provider-port'
     click(browser, source)
     click(browser, target)
-    browser.evaluate("smokeAssert(OpenKAIEditor.model.getValue('/crop',['_VisionBase']) === 'camera', 'Click ports must connect dependency')")
+    browser.evaluate("smokeAssert(OpenKAIEditor.model.getValue('/crop',['RGBframeIn']) === 'cameraFrame', 'Click ports must connect dependency')")
     browser.evaluate("smokeCheckArrow(" + json.dumps(target) + "," + json.dumps(source) + ")")
     click(browser, '[data-id="/crop"] .node-header')
-    browser.evaluate("document.querySelector('[aria-label=" + json.dumps('Disconnect camera') + "]').click()")
-    browser.evaluate("smokeAssert(OpenKAIEditor.model.getValue('/crop',['_VisionBase']) === undefined, 'Scalar dependency must disconnect')")
+    browser.evaluate("document.querySelector('[aria-label=" + json.dumps('Disconnect cameraFrame') + "]').click()")
+    browser.evaluate("smokeAssert(OpenKAIEditor.model.getValue('/crop',['RGBframeIn']) === undefined, 'Scalar dependency must disconnect')")
     drag(browser, source, target)
-    browser.evaluate("smokeAssert(OpenKAIEditor.model.getValue('/crop',['_VisionBase']) === 'camera', 'Dragging ports must connect dependency')")
+    browser.evaluate("smokeAssert(OpenKAIEditor.model.getValue('/crop',['RGBframeIn']) === 'cameraFrame', 'Dragging ports must connect dependency')")
     browser.evaluate("smokeCheckArrow(" + json.dumps(target) + "," + json.dumps(source) + ")")
     checks.append("pointer click and drag connections, provider-to-dependent arrows, scalar disconnect")
-    click(browser, '[data-id="/camera"] .node-header')
+    click(browser, '[data-id="/cameraFrame"] .node-header')
     browser.evaluate(r"""(() => {
-        smokeChange('#instance-name', 'frontCamera');
-        smokeAssert(OpenKAIEditor.model.getValue('/crop',['_VisionBase']) === 'frontCamera', 'Rename must update references');
+        smokeChange('#instance-name', 'frontFrame');
+        smokeAssert(OpenKAIEditor.model.getValue('/crop',['RGBframeIn']) === 'frontFrame', 'Rename must update references');
         document.getElementById('undo').click();
-        smokeAssert(OpenKAIEditor.model.getValue('/crop',['_VisionBase']) === 'camera', 'Undo must restore references');
+        smokeAssert(OpenKAIEditor.model.getValue('/crop',['RGBframeIn']) === 'cameraFrame', 'Undo must restore references');
         document.getElementById('redo').click();
-        smokeAssert(OpenKAIEditor.model.getValue('/crop',['_VisionBase']) === 'frontCamera', 'Redo must restore rename');
+        smokeAssert(OpenKAIEditor.model.getValue('/crop',['RGBframeIn']) === 'frontFrame', 'Redo must restore rename');
         document.getElementById('auto-layout').click();
     })()""")
-    position = browser.evaluate("document.querySelector('[data-id=\"/frontCamera\"]').style.cssText")
-    drag(browser, '[data-id="/frontCamera"] .node-header', offset=(22, 15))
-    assert browser.evaluate("document.querySelector('[data-id=\"/frontCamera\"]').style.cssText") != position
+    position = browser.evaluate("document.querySelector('[data-id=\"/frontFrame\"]').style.cssText")
+    drag(browser, '[data-id="/frontFrame"] .node-header', offset=(22, 15))
+    assert browser.evaluate("document.querySelector('[data-id=\"/frontFrame\"]').style.cssText") != position
     checks.append("rename reference updates, undo/redo, node dragging")
     browser.evaluate(r"""(() => {
         smokeChange('#class-search', '_Console', 'input');
         document.querySelector('[aria-label="Add _Console"]').click();
-        smokeChange('[aria-label="Provider for vBASE"]', '/frontCamera');
+        smokeChange('[aria-label="Provider for vBASE"]', '/camera');
         document.querySelector('[aria-label="Add connection for vBASE"]').click();
         smokeChange('[aria-label="Provider for vBASE"]', '/crop');
         document.querySelector('[aria-label="Add connection for vBASE"]').click();
-        smokeAssert(JSON.stringify(OpenKAIEditor.model.getValue('/console',['vBASE'])) === '["frontCamera","crop"]', 'List dependency must append providers');
-        document.querySelector('[aria-label="Disconnect frontCamera"]').click();
+        smokeAssert(JSON.stringify(OpenKAIEditor.model.getValue('/console',['vBASE'])) === '["camera","crop"]', 'List dependency must append providers');
+        document.querySelector('[aria-label="Disconnect camera"]').click();
         smokeAssert(JSON.stringify(OpenKAIEditor.model.getValue('/console',['vBASE'])) === '["crop"]', 'Disconnect must remove exactly one list reference');
         smokeChange('#class-search', '', 'input');
     })()""")
     checks.append("multiple dependency append and single-reference removal")
     browser.evaluate(r"""(() => {
-        OpenKAIEditor.loadDocument({APP:{class:'InstanceMgr'}, points:{class:'_PointCloud'},
-            web:{class:'_WebGeometryBase',vGeometry:[{_GeometryBase:'points',label:'preserve'}]},
+        OpenKAIEditor.loadDocument({APP:{class:'InstanceMgr'}, points:{type:'dataStream',class:'PCLframe'},
+            web:{class:'_WebGeometryBase',vGeometry:[{PCLframe:'points',label:'preserve'}]},
             extension:{release:17}, future:{class:'_FuturePlugin',opaque:{rows:[1,{text:'custom'}]},'/comment':'keep'}});
         OpenKAIEditor.selectNode('/web');
-        smokeChange('[aria-label="Provider for vGeometry.*._GeometryBase"]', '/points');
-        document.querySelector('[aria-label="Add connection for vGeometry.*._GeometryBase"]').click();
+        smokeChange('[aria-label="Provider for vGeometry.*.PCLframe"]', '/points');
+        document.querySelector('[aria-label="Add connection for vGeometry.*.PCLframe"]').click();
         let config = JSON.parse(OpenKAIEditor.exportConfig());
         smokeAssert(config.web.vGeometry.length === 2 && config.web.vGeometry[0].label === 'preserve', 'Wildcard connect must preserve sibling metadata');
         document.querySelector('[aria-label="Disconnect points"]').click();
         config = JSON.parse(OpenKAIEditor.exportConfig());
-        smokeAssert(config.web.vGeometry[0].label === 'preserve' && !('_GeometryBase' in config.web.vGeometry[0]), 'Wildcard disconnect must preserve its object');
+        smokeAssert(config.web.vGeometry[0].label === 'preserve' && !('PCLframe' in config.web.vGeometry[0]), 'Wildcard disconnect must preserve its object');
         smokeAssert(config.future.opaque.rows[1].text === 'custom' && config.extension.release === 17, 'Unknown fields must survive graph editing');
         document.getElementById('paste-config').click();
         document.getElementById('json-text').value = '{bad';
@@ -401,8 +424,8 @@ def run_ui(browser, editor):
     })()""")
     checks.append("object-map row editing, picker/port connections and numeric keys")
     browser.evaluate(r"""(() => {
-        OpenKAIEditor.loadDocument({APP:{class:'InstanceMgr'},camera:{class:'_Camera',bON:false},
-            crop:{class:'_Crop',_VisionBase:'camera'}});
+        OpenKAIEditor.loadDocument({APP:{class:'InstanceMgr'},camera:{type:'dataStream',class:'RGBframe',bON:false},
+            crop:{class:'_Crop',RGBframeIn:'camera'}});
         const selector = '[data-path=\'["bON"]\']';
         const disabledCard = () => document.querySelector('[data-id="/camera"]').classList.contains('disabled-node');
         const disabledWarning = () => OpenKAIEditor.model.validate().some(item => item.code === 'disabled-dependency');
@@ -410,7 +433,7 @@ def run_ui(browser, editor):
         smokeAssert(document.querySelector(selector).tagName === 'SELECT' && document.querySelector(selector).value === 'false', 'bON must use a boolean selector');
         smokeAssert(disabledCard() && disabledWarning(), 'bON false must disable the card and warn about dependent instances');
         OpenKAIEditor.selectNode('/crop');
-        smokeAssert(document.querySelector('[aria-label="Provider for _VisionBase"] option[value="/camera"]').textContent.includes('(disabled)'), 'Provider picker must label a false bON provider disabled');
+        smokeAssert(document.querySelector('[aria-label="Provider for RGBframeIn"] option[value="/camera"]').textContent.includes('(disabled)'), 'Provider picker must label a false bON provider disabled');
         OpenKAIEditor.selectNode('/camera');
         smokeChange(selector, 'true');
         smokeAssert(JSON.parse(OpenKAIEditor.exportConfig()).camera.bON === true, 'Enabling a module must export boolean true');

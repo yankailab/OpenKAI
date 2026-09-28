@@ -72,10 +72,21 @@ namespace kai
 							std::clamp(std::isfinite(alphaScale) ? alphaScale : 1.f, 0.f, 1.f) * 255.0f));
 	}
 
+	const vector<IMGUI_VIEWER_POINT> &IMGUI_VIEWER_OBJ::points(void) const
+	{
+		static const vector<IMGUI_VIEWER_POINT> empty;
+		return m_geometry ? m_geometry->m_vP : empty;
+	}
+
+	const vector<IMGUI_VIEWER_LINE> &IMGUI_VIEWER_OBJ::lines(void) const
+	{
+		static const vector<IMGUI_VIEWER_LINE> empty;
+		return m_geometry ? m_geometry->m_vL : empty;
+	}
+
 	void IMGUI_VIEWER_OBJ::clearGeometry(void)
 	{
-		m_vP.clear();
-		m_vL.clear();
+		m_geometry.reset();
 		m_vBox.clear();
 	}
 
@@ -196,114 +207,117 @@ namespace kai
 
 	void _ImGUIselectableOctGrid::updateAllGeometries(void)
 	{
-		IF_(!this->_GeometryViewerBase::check());
+		if (!_GeometryViewerBase::check())
+		{
+			return;
+		}
+		m_vBuildGO.clear();
 		m_vBuildGO.reserve(m_sources.m_vGeometry.size() + m_sources.m_vGrid.size());
+		m_vGeometryCache.resize(m_sources.m_vGeometry.size());
 		const uint64_t now = getTns();
 		const uint64_t expiry = m_dTexpire && now > m_dTexpire ? now - m_dTexpire : 0;
-		size_t count = 0, nPoints = 0, nLines = 0;
-		auto prepare = [&](const VIEWER_SOURCE_STYLE &style) -> IMGUI_VIEWER_OBJ *
+		size_t nPoints = 0;
+		size_t nLines = 0;
+		bool changed = false;
+		for (size_t i = 0; i < m_sources.m_vGeometry.size(); ++i)
 		{
-			if (count == m_vBuildGO.size()) m_vBuildGO.emplace_back();
-			auto &object = m_vBuildGO[count];
-			object.clearGeometry();
-			object.m_name = style.m_name;
-			object.m_matCol = style.m_matCol;
-			object.m_matPointSize = 2;
-			object.m_matLineWidth = style.m_matLineWidth;
-			return &object;
-		};
-		for (const auto &source : m_sources.m_vGeometry)
-		{
-			if (!source.m_bVisible) continue;
-			auto *object = prepare(source);
-			object->m_matPointSize = source.m_matPointSize;
-			collectGeometry(source, object, expiry);
-			if (object->m_vP.empty() && object->m_vL.empty()) continue;
-			nPoints += object->m_vP.size();
-			nLines += object->m_vL.size();
-			++count;
+			const auto &source = m_sources.m_vGeometry[i];
+			if (!source.m_bVisible)
+			{
+				continue;
+			}
+			IMGUI_VIEWER_OBJ object;
+			object.m_name = source.m_name;
+			object.m_matCol = source.m_matCol;
+			object.m_matPointSize = source.m_matPointSize;
+			object.m_matLineWidth = source.m_matLineWidth;
+			changed = collectGeometry(source, m_vGeometryCache[i], object, expiry) || changed;
+			nPoints += object.points().size();
+			nLines += object.lines().size();
+			m_vBuildGO.push_back(std::move(object));
 		}
 		for (const auto &source : m_sources.m_vGrid)
 		{
-			if (!source.m_bVisible) continue;
-			auto *object = prepare(source);
-			collectCells(source, object, expiry);
-			if (object->m_vBox.empty()) continue;
-			nLines += object->m_vBox.size() * 12;
-			++count;
+			if (!source.m_bVisible)
+			{
+				continue;
+			}
+			IMGUI_VIEWER_OBJ object;
+			object.m_name = source.m_name;
+			object.m_matCol = source.m_matCol;
+			object.m_matLineWidth = source.m_matLineWidth;
+			collectCells(source, &object, expiry);
+			nLines += object.m_vBox.size() * 12;
+			m_vBuildGO.push_back(std::move(object));
+			changed = true;
 		}
-		m_vBuildGO.resize(count);
+		if (!changed)
+		{
+			return;
+		}
+
 		snapshotLock();
 		m_vDrawGO.swap(m_vBuildGO);
-		m_nDrawObjects = count;
+		m_nDrawObjects = m_vDrawGO.size();
 		m_nDrawPoints = nPoints;
 		m_nDrawLines = nLines;
 		m_snapshotVersion++;
 		snapshotUnlock();
 	}
 
-	void _ImGUIselectableOctGrid::collectGeometry(const VIEWER_GEOMETRY_SOURCE &source, IMGUI_VIEWER_OBJ *pObj, uint64_t expiry)
+	bool _ImGUIselectableOctGrid::collectGeometry(const VIEWER_GEOMETRY_SOURCE &source,
+		GeometryCache &cache, IMGUI_VIEWER_OBJ &object, uint64_t expiry)
 	{
-		collectPoints(source, pObj, expiry);
-		collectLines(source, pObj, expiry);
-	}
-
-	void _ImGUIselectableOctGrid::collectPoints(const VIEWER_GEOMETRY_SOURCE &source, IMGUI_VIEWER_OBJ *pObj, uint64_t expiry)
-	{
-		NULL_(pObj);
-		NULL_(source.m_pGeometry);
-		IF_(m_rPt.m_nT == 0 || source.m_nP == 0);
-		pObj->m_vP.reserve(source.m_nP);
-
-		m_rPt.m_iT = 0;
-		int nGet = source.m_pGeometry->get(&m_rPt, expiry);
-		IF_(nGet <= 0);
-		nGet = std::min(nGet, m_rPt.m_nT);
-
-		int i = 0;
-		GEOMETRY_POINT *pGp = nullptr;
-		while (i < nGet && (pGp = m_rPt.get(i++)))
+		const auto points = source.m_pPCLframe ? source.m_pPCLframe->get() : nullptr;
+		const auto lines = source.m_pLineFrame ? source.m_pLineFrame->get() : nullptr;
+		if (cache.m_geometry && cache.m_points == points && cache.m_lines == lines && expiry <= cache.m_tFirstVisible)
 		{
-			IF_CONT(pGp->m_tStamp == 0 || pGp->m_tStamp < expiry);
-			IF_CONT(!bFinite(pGp->m_vP));
-			if ((int)pObj->m_vP.size() >= source.m_nP)
-				break;
-
-			IMGUI_VIEWER_POINT p;
-			p.m_vP = pGp->m_vP;
-			p.m_vC = visibleColor(pGp->m_vC, source.m_matCol);
-			pObj->m_vP.push_back(p);
+			object.m_geometry = cache.m_geometry;
+			return false;
 		}
-	}
 
-	void _ImGUIselectableOctGrid::collectLines(const VIEWER_GEOMETRY_SOURCE &source, IMGUI_VIEWER_OBJ *pObj, uint64_t expiry)
-	{
-		NULL_(pObj);
-		NULL_(source.m_pGeometry);
-		IF_(m_rLn.m_nT == 0 || source.m_nL == 0);
-		pObj->m_vL.reserve(source.m_nL);
-
-		m_rLn.m_iT = 0;
-		int nGet = source.m_pGeometry->get(&m_rLn, expiry);
-		IF_(nGet <= 0);
-		nGet = std::min(nGet, m_rLn.m_nT);
-
-		int i = 0;
-		GEOMETRY_LINE *pGl = nullptr;
-		while (i < nGet && (pGl = m_rLn.get(i++)))
+		auto geometry = std::make_shared<IMGUI_VIEWER_GEOMETRY>();
+		uint64_t firstVisible = UINT64_MAX;
+		if (points && source.m_nP > 0)
 		{
-			IF_CONT(pGl->m_tStamp == 0 || pGl->m_tStamp < expiry);
-			IF_CONT(!bFinite(pGl->m_vPa));
-			IF_CONT(!bFinite(pGl->m_vPb));
-			if ((int)pObj->m_vL.size() >= source.m_nL)
-				break;
-
-			IMGUI_VIEWER_LINE l;
-			l.m_vA = pGl->m_vPa;
-			l.m_vB = pGl->m_vPb;
-			l.m_vC = visibleColor(pGl->m_vC, source.m_matCol);
-			pObj->m_vL.push_back(l);
+			geometry->m_vP.reserve(std::min(points->m_vPoints.size(), size_t(source.m_nP)));
+			for (const auto &point : points->m_vPoints)
+			{
+				if (geometry->m_vP.size() >= size_t(source.m_nP))
+				{
+					break;
+				}
+				if (!point.m_tStamp || point.m_tStamp < expiry || !bFinite(point.m_vP))
+				{
+					continue;
+				}
+				geometry->m_vP.push_back({point.m_vP, visibleColor(point.m_vC, source.m_matCol)});
+				firstVisible = std::min(firstVisible, point.m_tStamp);
+			}
 		}
+		if (lines && source.m_nL > 0)
+		{
+			geometry->m_vL.reserve(std::min(lines->m_vLines.size(), size_t(source.m_nL)));
+			for (const auto &line : lines->m_vLines)
+			{
+				if (geometry->m_vL.size() >= size_t(source.m_nL))
+				{
+					break;
+				}
+				if (!line.m_tStamp || line.m_tStamp < expiry || !bFinite(line.m_vPa) || !bFinite(line.m_vPb))
+				{
+					continue;
+				}
+				geometry->m_vL.push_back({line.m_vPa, line.m_vPb, visibleColor(line.m_vC, source.m_matCol)});
+				firstVisible = std::min(firstVisible, line.m_tStamp);
+			}
+		}
+		cache.m_points = points;
+		cache.m_lines = lines;
+		cache.m_tFirstVisible = firstVisible;
+		cache.m_geometry = std::move(geometry);
+		object.m_geometry = cache.m_geometry;
+		return true;
 	}
 
 	void _ImGUIselectableOctGrid::collectCells(const VIEWER_GRID_SOURCE &source, IMGUI_VIEWER_OBJ *pObj, uint64_t expiry)
@@ -477,11 +491,11 @@ namespace kai
 							   color,
 							   std::max(1.0f, g.m_matLineWidth * m_lineScale));
 			};
-			for (const auto &line : g.m_vL) drawLine(line.m_vA, line.m_vB, colU32(line.m_vC));
+			for (const auto &line : g.lines()) drawLine(line.m_vA, line.m_vB, colU32(line.m_vC));
 			for (const auto &box : g.m_vBox)
 				box.forEachEdge([&](const Vector3f &a, const Vector3f &b) { drawLine(a, b, colU32(box.m_vC, g.m_matCol.w())); });
 
-			for (const IMGUI_VIEWER_POINT &p : g.m_vP)
+			for (const IMGUI_VIEWER_POINT &p : g.points())
 			{
 				Vector2f vS = Vector2f::Zero();
 				float d = 0;
@@ -735,10 +749,10 @@ namespace kai
 
 		for (const IMGUI_VIEWER_OBJ &g : vGO)
 		{
-			for (const IMGUI_VIEWER_POINT &p : g.m_vP)
+			for (const IMGUI_VIEWER_POINT &p : g.points())
 				expand(p.m_vP);
 
-			for (const IMGUI_VIEWER_LINE &l : g.m_vL)
+			for (const IMGUI_VIEWER_LINE &l : g.lines())
 			{
 				expand(l.m_vA);
 				expand(l.m_vB);

@@ -60,7 +60,7 @@ namespace kai
 
 	bool _ArUco::check(void)
 	{
-		NULL_F(m_pV);
+		NULL_F(m_pRGBin);
 		NULL_F(m_pCanvas);
 
 		return this->_DetectorBase::check();
@@ -82,7 +82,8 @@ namespace kai
 	{
 		IF_(!check());
 
-		Mat m = *m_pV->getMatRGB();
+		const auto frame = m_pRGBin->get();
+		const Mat &m = frame->m_mRGB;
 		IF_(m.empty());
 
 		vector<int> vID;
@@ -180,7 +181,6 @@ namespace kai
 	void _ArUco::draw(void *pMat)
 	{
 		NULL_(pMat);
-		this->_DetectorBase::draw(pMat);
 		IF_(!check());
 	}
 

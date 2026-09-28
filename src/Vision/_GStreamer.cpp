@@ -12,7 +12,6 @@ namespace kai
 
 	_GStreamer::_GStreamer()
 	{
-		m_type = vision_gstreamer;
 	}
 
 	_GStreamer::~_GStreamer()
@@ -22,7 +21,7 @@ namespace kai
 
 	bool _GStreamer::loadConfig(void)
 	{
-		IF_F(!_VisionBase::loadConfig());
+		IF_F(!_RGBbase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "pipeline", m_pipeline);
@@ -33,7 +32,7 @@ namespace kai
 
 	bool _GStreamer::saveConfig(bool bExport)
 	{
-		IF_F(!_VisionBase::saveConfig(false));
+		IF_F(!_RGBbase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["pipeline"] = m_pipeline;
@@ -59,9 +58,9 @@ namespace kai
 				;
 		}
 		
+		if (m_pRGB)
 		{
-			std::lock_guard<std::mutex> lock(m_mutexRGB);
-			mCam.copyTo(m_mRGB);
+			m_pRGB->set(mCam);
 		}
 
 		m_vSizeRGB.x() = mCam.cols;
@@ -73,7 +72,7 @@ namespace kai
 
 	void _GStreamer::close(void)
 	{
-		this->_VisionBase::close();
+		this->_RGBbase::close();
 		m_gst.release();
 	}
 
@@ -101,8 +100,10 @@ namespace kai
 			Mat mCam;
 			while (!m_gst.read(mCam))
 				;
-			std::lock_guard<std::mutex> lock(m_mutexRGB);
-			mCam.copyTo(m_mRGB);
+			if (m_pRGB)
+			{
+				m_pRGB->set(mCam);
+			}
 		}
 	}
 

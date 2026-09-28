@@ -36,7 +36,6 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pVision = NULL;
 		string m_algorithm = "";
 		cv::Ptr<cv::BackgroundSubtractor> m_pBS;
 		double m_learningRate = -1;

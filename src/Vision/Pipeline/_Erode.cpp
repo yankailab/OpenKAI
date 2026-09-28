@@ -12,7 +12,6 @@ namespace kai
 
 	_Erode::_Erode()
 	{
-		m_type = vision_erode;
 	}
 
 	_Erode::~_Erode()
@@ -21,7 +20,7 @@ namespace kai
 
 	bool _Erode::loadConfig(void)
 	{
-		IF_F(!_VisionBase::loadConfig());
+		IF_F(!_RGBbase::loadConfig());
 		const json &j = *m_pJ;
 
 		m_vFilter.clear();
@@ -53,7 +52,7 @@ namespace kai
 
 	bool _Erode::saveConfig(bool bExport)
 	{
-		IF_F(!_VisionBase::saveConfig(false));
+		IF_F(!_RGBbase::saveConfig(false));
 
 		json &j = *m_pJ;
 		for (const IMG_ERODE &filter : m_vFilter)
@@ -73,13 +72,13 @@ namespace kai
 
 	bool _Erode::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_VisionBase::link(pM));
+		IF_F(!this->_RGBbase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
-		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(pM->findModule(n));
-		NULL_F(m_pV);
+		jKv(j, "RGBframeIn", n);
+		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		NULL_F(m_pRGBin);
 
 		return true;
 	}
@@ -102,15 +101,16 @@ namespace kai
 
 	void _Erode::filter(void)
 	{
-		NULL_(m_pV);
-		m_pV->copyMatRGB(m_mIn);
-		IF_(m_mIn.empty());
+		NULL_(m_pRGB);
+		NULL_(m_pRGBin);
+		const RGBframe::SnapshotPtr frame = m_pRGBin->get();
+		const Mat &mIn = frame->m_mRGB;
+		IF_(mIn.empty());
 
-		Mat m1 = m_mIn;
+		Mat m1;
 		Mat m2;
-		Mat *pM1 = &m1;
-		Mat *pM2 = &m2;
-		Mat *pT;
+		const Mat *pM1 = &mIn;
+		Mat *pM2 = &m1;
 
 		for (size_t i = 0; i < m_vFilter.size(); i++)
 		{
@@ -121,11 +121,11 @@ namespace kai
 					  cv::Point(pI->m_aX, pI->m_aY),
 					  pI->m_nItr);
 
-			SWAP(pM1, pM2, pT);
+			pM1 = pM2;
+			pM2 = (pM2 == &m1) ? &m2 : &m1;
 		}
 
-		std::lock_guard<std::mutex> lock(m_mutexRGB);
-		pM1->copyTo(m_mRGB);
+		m_pRGB->set(*pM1, frame->m_tStamp);
 	}
 
 }

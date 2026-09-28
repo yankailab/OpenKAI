@@ -170,11 +170,8 @@ namespace kai
 		ScCtrl m_scCtrl;
 		uint64_t m_tFrameInterval = 0; // minimal interval between frame reading
 
-		ScFrame m_scfRGB = {0};
 		ScFrame m_scfDepth = {0};
-		ScFrame m_scfTransformedDepth = {0};
 		ScFrame m_scfTransformedRGB = {0};
-		ScFrame m_scfIR = {0};
 
 	};
 

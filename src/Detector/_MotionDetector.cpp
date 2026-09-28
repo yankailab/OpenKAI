@@ -65,15 +65,7 @@ namespace kai
 
 	bool _MotionDetector::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_ModuleBase::link(pM));
-		const json &j = *m_pJ;
-
-		string n = "";
-		jKv(j, "_VisionBase", n);
-		m_pVision = (_VisionBase *)(pM->findModule(n));
-		NULL_F(m_pVision);
-
-		return true;
+		return _DetectorBase::link(pM);
 	}
 
 	bool _MotionDetector::start(void)
@@ -85,8 +77,8 @@ namespace kai
 	bool _MotionDetector::check(void)
 	{
 		NULL_F(m_pCanvas);
-		NULL_F(m_pV);
-		IF_F(m_pV->getMatRGB()->empty());
+		NULL_F(m_pRGBin);
+		IF_F(m_pBS.empty());
 
 		return this->_DetectorBase::check();
 	}
@@ -108,7 +100,9 @@ namespace kai
 	{
 		IF_(!check());
 
-		Mat m = *m_pVision->getMatRGB();
+		const auto frame = m_pRGBin->get();
+		const Mat &m = frame->m_mRGB;
+		IF_(m.empty());
 
 		m_pBS->apply(m, m_mFG, m_learningRate);
 
@@ -139,7 +133,6 @@ namespace kai
 	void _MotionDetector::draw(void *pMat)
 	{
 		NULL_(pMat);
-		this->_DetectorBase::draw(pMat);
 		IF_(!check());
 
 		if (!m_mFG.empty())

@@ -12,6 +12,7 @@ namespace kai
 
     _XDynamics::_XDynamics()
     {
+        m_xdHDL.init();
         m_vSizeRGB = Vector2i(320, 240);
         m_vSizeD = Vector2i(320, 240);
 
@@ -20,6 +21,7 @@ namespace kai
 
     _XDynamics::~_XDynamics()
     {
+        stop();
     }
 
     bool _XDynamics::loadConfig(void)
@@ -52,9 +54,6 @@ namespace kai
         jKv(j, "GsdnLev", m_xdCtrl.m_GsdnLev);
 
         jKv(j, "dFlyPixLev", m_xdCtrl.m_dFlyPixLev);
-
-        m_mXDyuv.create(m_vSizeRGB.y() * 3 / 2, m_vSizeRGB.x(), CV_8UC1);
-        m_mXDd.create(m_vSizeD.y(), m_vSizeD.x(), CV_16U);
 
         return true;
     }
@@ -249,14 +248,26 @@ namespace kai
             m_pXDstream->StopStreaming();
             m_pXDstream->CloseCamera();
             DestroyStreamer(m_pXDstream);
+            m_pXDstream = nullptr;
+            releaseHDL();
+            XdynContextUninit();
         }
-        XdynContextUninit();
+        _RGBDbase::close();
     }
 
     bool _XDynamics::start(void)
     {
         NULL_F(m_pT);
         return m_pT->startThread(getUpdate, this);
+    }
+
+    void _XDynamics::stop(void)
+    {
+        if (m_pT)
+        {
+            m_pT->join();
+        }
+        close();
     }
 
     bool _XDynamics::check(void)
@@ -281,73 +292,64 @@ namespace kai
             }
 
             m_pT->autoFPS();
-
-            updateXDynamics();
         }
-    }
-
-    void _XDynamics::updateXDynamics(void)
-    {
-        IF_(!check());
-
-        Mat mD, mDs;
-        m_mXDd.convertTo(mD, CV_32FC1);
-        mDs = mD * m_dScale;
-        {
-            std::lock_guard<std::mutex> lock(m_mutexDepth);
-            cv::add(mDs, m_dOfs, m_mDepth);
-        }
-
-        cv::Mat mRGB;
-        cv::cvtColor(m_mXDyuv, mRGB, COLOR_YUV2BGR_NV12);
-        std::lock_guard<std::mutex> lock(m_mutexRGB);
-        mRGB.copyTo(m_mRGB);
     }
 
     void _XDynamics::cbStream(MemSinkCfg *pCfg, XdynFrame_t *pData)
     {
-        IF_(!check());
-        IF_(!m_xdHDL.m_bInit);
+        IF_(!check() || !pCfg || !pData);
+        const uint64_t tStamp = getTns();
+        Mat mDepth;
+        Mat mRGB;
+        XdynFrame_t *pD = nullptr;
+        XdynFrame_t *pRGB = nullptr;
+        XdynFrame_t *pConf = nullptr;
 
-        XdynFrame_t *pD = NULL;
-        XdynFrame_t *pRGB = NULL;
-        XdynFrame_t *pConf = NULL;
-
-        bool bD = pCfg->isUsed[MEM_AGENT_SINK_DEPTH];
-        bool bRGB = pCfg->isUsed[MEM_AGENT_SINK_RGB];
-        bool bConf = pCfg->isUsed[MEM_AGENT_SINK_CONFID];
-
-        if (bD)
+        if (pCfg->isUsed[MEM_AGENT_SINK_DEPTH])
         {
             pD = &pData[MEM_AGENT_SINK_DEPTH];
-            if (pD->ex)
+            if (pD->addr && pD->ex && pD->size >= m_vSizeD.prod() * sizeof(uint16_t))
             {
-                XdynDepthFrameInfo_t *pDepthInfo = (XdynDepthFrameInfo_t *)pD->ex;
-                m_dScale = pDepthInfo->fUnitOfDepth * 0.001;
-                memcpy(m_mXDd.data, pD->addr, pD->size);
+                auto *pDepthInfo = static_cast<XdynDepthFrameInfo_t *>(pD->ex);
+                m_dScale = pDepthInfo->fUnitOfDepth * 0.001f;
+                Mat mRaw(m_vSizeD.y(), m_vSizeD.x(), CV_16UC1, pD->addr);
+                mRaw.convertTo(mDepth, CV_32FC1, m_dScale, m_dOfs);
+                if (m_pD)
+                {
+                    m_pD->set(mDepth, tStamp);
+                }
             }
         }
 
-        if (bRGB)
+        if (pCfg->isUsed[MEM_AGENT_SINK_RGB])
         {
             pRGB = &pData[MEM_AGENT_SINK_RGB];
-            memcpy(m_mXDyuv.data, pRGB->addr, pRGB->size);
+            if (pRGB->addr && pRGB->size >= m_vSizeRGB.prod() * 3 / 2)
+            {
+                Mat mYuv(m_vSizeRGB.y() * 3 / 2, m_vSizeRGB.x(), CV_8UC1, pRGB->addr);
+                cv::cvtColor(mYuv, mRGB, COLOR_YUV2BGR_NV12);
+                if (m_pRGB)
+                {
+                    m_pRGB->set(mRGB, tStamp);
+                }
+            }
         }
 
-        if (bConf)
+        if (m_pRGBD && !mRGB.empty() && !mDepth.empty())
+        {
+            m_pRGBD->set(mRGB, mDepth, tStamp);
+        }
+        if (pCfg->isUsed[MEM_AGENT_SINK_CONFID])
         {
             pConf = &pData[MEM_AGENT_SINK_CONFID];
-            //            memcpy(m_mXDyuv.data, pRGB->addr, pRGB->size);
         }
-
-        if (bD && bRGB && bConf)
+        if (m_pPCL && (m_bPCL || m_bPCLrgb) && m_xdHDL.m_bInit &&
+            !mDepth.empty() && !mRGB.empty() && pConf && pConf->addr)
         {
-            runHDL((unsigned short *)pD->addr,
-                   (unsigned char *)pRGB->addr,
-                   (unsigned char *)pConf->addr);
+            runHDL(reinterpret_cast<unsigned short *>(pD->addr),
+                   reinterpret_cast<unsigned char *>(pRGB->addr),
+                   reinterpret_cast<unsigned char *>(pConf->addr));
         }
-
-        m_pT->run();
     }
 
     void _XDynamics::runHDL(unsigned short *pD,
@@ -366,23 +368,21 @@ namespace kai
 
         LOG_I("nP:" + i2str(m_xdHDL.m_out.uiOutRGBDLen));
 
-        PointCloud *m_pPC = m_pPCframe->getNextBuffer();
-        for (int i = 0; i < m_xdHDL.m_out.uiOutRGBDLen; i++)
+        vector<GEOMETRY_POINT> vPCL;
+        vPCL.reserve(m_xdHDL.m_out.uiOutRGBDLen);
+        const uint64_t tStamp = getTns();
+        for (unsigned int i = 0; i < m_xdHDL.m_out.uiOutRGBDLen; i++)
         {
-            RGBD_POINT_CLOUD *pP = &m_xdHDL.m_out.pstrRGBD[i];
-            Vector3d vP(pP->fX, pP->fY, pP->fZ);
-            //            IF_CONT(pP->fX == 0);
-            //            vP = {i, 0, 0};
-            m_pPC->points_.push_back(vP * 0.001);
-
-            Vector3d vC(pP->r, pP->g, pP->b);
-            //            vC = {255,255,255};
-            m_pPC->colors_.push_back(vC * (1.0 / 255.0));
-
-            LOG_I("P: " + f2str(pP->fX) + ", " + f2str(pP->fY) + ", " + f2str(pP->fZ) + "; " + i2str(pP->r) + ", " + i2str(pP->g) + ", " + i2str(pP->b));
+            const RGBD_POINT_CLOUD &p = m_xdHDL.m_out.pstrRGBD[i];
+            const Vector3f vP = Vector3f(p.fX, p.fY, p.fZ) * 0.001f;
+            if (!vP.allFinite() || vP.z() <= 0)
+            {
+                continue;
+            }
+            const Vector3f vC = Vector3f(p.r, p.g, p.b) / 255.0f;
+            vPCL.push_back({vP, vC, tStamp});
         }
-
-        m_pPCframe->swapBuffer();
+        m_pPCL->set(std::move(vPCL), tStamp);
     }
 
     bool _XDynamics::initHDL(XdynRegParams_t *regParams, uint16_t tofW, uint16_t tofH, uint16_t rgbW, uint16_t rgbH)
@@ -454,15 +454,6 @@ namespace kai
         m_xdHDL.release();
     }
 
-#ifdef WITH_UNIVERSE
-    int _XDynamics::getPointCloud(_PCframe *pPCframe, int nPmax)
-    {
-        NULL__(pPCframe, -1);
-        PointCloud *pPC = pPCframe->getNextBuffer();
-
-        return 0;
-    }
-#endif
 
     void _XDynamics::console(void *pConsole)
     {

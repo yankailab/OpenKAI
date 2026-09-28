@@ -55,9 +55,9 @@ namespace kai
 		IF_Le_F(!m_pPCin, "_PCin not found:" + n);
 
 		n = "";
-		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(pM->findModule(n));
-		IF_Le_F(!m_pV, "_VisionBase not found:" + n);
+		jKv(j, "_RGBbase", n);
+		m_pV = (_RGBbase *)(pM->findModule(n));
+		IF_Le_F(!m_pV, "_RGBbase not found:" + n);
 
 		n = "";
 		jKv(j, "_IMUbase", n);

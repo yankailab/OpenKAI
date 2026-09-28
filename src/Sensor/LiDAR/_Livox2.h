@@ -10,7 +10,7 @@
 
 #include "../../IO/_UDP.h"
 #include "../../Universe/Geometry/PointCloud/_PointCloud.h"
-#include "../../Sensor/_IMUbase.h"
+#include "../../DataStream/IMUstream.h"
 #include "../../Dependencies/SensorFusion/SensorFusion.h"
 #include "../../Dependencies/CRC.h"
 #include "../../Utility/util.h"
@@ -164,6 +164,7 @@ namespace kai
 		virtual bool check(void);
 		virtual bool start(void);
 		virtual void console(void *pConsole);
+		void clear(void) override;
 
 		LVX2_CONFIG getConfig(void);
 		void setConfig(const LVX2_CONFIG &cfg);
@@ -277,7 +278,17 @@ namespace kai
 		SF m_SF;
 		uint64_t m_tIMU = 0;
 
-		_IMUbase* m_pIMU = nullptr;
+		IMUstream *m_pIMU = nullptr;
+		std::mutex m_poseMutex;
+
+		// Unpublished device frame; the mutex also serializes explicit clearing.
+		std::mutex m_frameMutex;
+		vector<GEOMETRY_POINT> m_vFramePoints;
+		Vector3f m_vColorDefault = Vector3f::Ones();
+		int m_nMaxFramePoints = 100000;
+		uint64_t m_tPCLframe = 0;
+		uint8_t m_iPCLframe = 0;
+		bool m_bPCLframe = false;
 
 	};
 

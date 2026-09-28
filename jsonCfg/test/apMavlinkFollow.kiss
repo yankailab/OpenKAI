@@ -130,7 +130,7 @@
 "thread":{
 		"FPS":30,
 	}
-	"_VisionBase":"cam",
+	"_RGBbase":"cam",
 	"_SurfaceBase":"canvas",
 	"dict":17,
 }
@@ -141,7 +141,7 @@
 		"FPS":30,
 	}
 	"bLog": true,
-	"_VisionBase":"cam",
+	"_RGBbase":"cam",
 	"_SurfaceBase":"canvas",
 	"fModel":"/home/kai/dev/models/yolov8n.onnx",
 	"confidence":0.001,

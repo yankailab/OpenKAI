@@ -1,7 +1,8 @@
 #ifndef OpenKAI_src_UI_Viewer_SelectableOctGridSources_H_
 #define OpenKAI_src_UI_Viewer_SelectableOctGridSources_H_
 
-#include "../../Universe/Geometry/_GeometryBase.h"
+#include "../../DataStream/PCLframe.h"
+#include "../../DataStream/LineFrame.h"
 #include "../../Universe/Grid/_SelectableOctGrid.h"
 
 namespace kai
@@ -16,8 +17,10 @@ namespace kai
 
 	struct VIEWER_GEOMETRY_SOURCE : VIEWER_SOURCE_STYLE
 	{
-		_GeometryBase *m_pGeometry = nullptr;
-		int m_nP = 0, m_nL = 0;
+		PCLframe *m_pPCLframe = nullptr;
+		LineFrame *m_pLineFrame = nullptr;
+		int m_nP = 0;
+		int m_nL = 0;
 		float m_matPointSize = 2;
 	};
 

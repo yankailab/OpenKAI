@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Vision__VideoFile_H_
 #define OpenKAI_src_Vision__VideoFile_H_
 
-#include "_VisionBase.h"
+#include "_RGBbase.h"
 
 namespace kai
 {
 
-	class _VideoFile : public _VisionBase
+	class _VideoFile : public _RGBbase
 	{
 	public:
 		_VideoFile();

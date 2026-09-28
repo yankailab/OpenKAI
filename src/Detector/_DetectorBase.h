@@ -9,7 +9,7 @@
 #define OpenKAI_src_Detector__DetectorBase_H_
 
 #include "../Universe/Surface/_SurfaceBase.h"
-#include "../Vision/_VisionBase.h"
+#include "../DataStream/RGBframe.h"
 #include "../Utility/utilCV.h"
 
 namespace kai
@@ -37,10 +37,9 @@ namespace kai
 
 	protected:
 		// input
-		_VisionBase *m_pV = nullptr;
+		RGBframe *m_pRGBin = nullptr;
 
 		// data
-		Mat m_mRGB;
 		_SurfaceBase *m_pCanvas = nullptr;
 
 		// model

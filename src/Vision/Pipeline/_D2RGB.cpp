@@ -6,13 +6,13 @@
  */
 
 #include "_D2RGB.h"
+#include "../../Utility/utilCV.h"
 
 namespace kai
 {
 
 	_D2RGB::_D2RGB()
 	{
-		m_type = vision_D2RGB;
 	}
 
 	_D2RGB::~_D2RGB()
@@ -52,9 +52,9 @@ namespace kai
 		const json &j = *m_pJ;
 
 		string n = "";
-		jKv(j, "_RGBDbase", n);
-		m_pVd = (_RGBDbase *)(pM->findModule(n));
-		NULL_F(m_pVd);
+		jKv(j, "DframeIn", n);
+		m_pDin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		NULL_F(m_pDin);
 
 		return true;
 	}
@@ -77,50 +77,43 @@ namespace kai
 
 	void _D2RGB::filter(void)
 	{
-		NULL_(m_pVd);
-		Mat mDepth;
-		m_pVd->copyMatDepth(mDepth);
-		IF_(mDepth.empty());
+		NULL_(m_pDin);
+		const RGBframe::SnapshotPtr frame = m_pDin->get();
+		const Mat &mDepth = frame->m_mRGB;
+		IF_(mDepth.empty() || mDepth.type() != CV_32FC1);
 
-		// Measurements and drawing share these depth and RGB buffers.
 		Mat mGray;
+		Mat mRGB;
+		cv::normalize(mDepth, mGray, 0, 255, cv::NORM_MINMAX, CV_8UC1);
+		cv::applyColorMap(mGray, mRGB, cv::COLORMAP_JET);
 
+		if (m_pRGB)
 		{
-			std::lock_guard<std::mutex> lock(m_mutexDepth);
-			if (mDepth.type() == CV_16UC1)
-			{
-				mDepth.convertTo(m_mDepth, CV_32FC1, m_pVd->getDepthScale(), m_pVd->getDepthOffset());
-			}
-			else if (mDepth.type() == CV_32FC1)
-			{
-				mDepth.copyTo(m_mDepth);
-			}
-			else
-			{
-				return;
-			}
-
-			cv::normalize(m_mDepth, mGray, 0, 255, cv::NORM_MINMAX, CV_8UC1);
+			m_pRGB->set(mRGB, frame->m_tStamp);
 		}
-
+		if (m_pD)
 		{
-			std::lock_guard<std::mutex> lock(m_mutexRGB);
-			cv::applyColorMap(mGray, m_mRGB, cv::COLORMAP_JET);
+			m_pD->set(mDepth, frame->m_tStamp);
+		}
+		if (m_pRGBD)
+		{
+			m_pRGBD->set(mRGB, mDepth, frame->m_tStamp);
 		}
 	}
 
 	float _D2RGB::d(const Vector4i &bb)
 	{
-		Rect r = bb2Rect(bb);
-		Mat mRoi;
-		{
-			std::lock_guard<std::mutex> lock(m_mutexDepth);
-			IF__(m_mDepth.empty(), -1);
+		NULL__(m_pDin, -1);
+		const RGBframe::SnapshotPtr frame = m_pDin->get();
+		const Mat &mDepth = frame->m_mRGB;
+		IF__(mDepth.empty() || mDepth.type() != CV_32FC1, -1);
+		IF__(m_nHistLev <= 0 || m_iHistFrom < 0 || m_iHistFrom >= m_nHistLev, -1);
+		IF__(!m_vRangeD.allFinite() || m_vRangeD.x() >= m_vRangeD.y(), -1);
 
-			mRoi = m_mDepth(r);
-		}
-
-		Vector2f vRangeD = m_pVd->getDepthRange();
+		Rect r = bb2Rect(bb) & Rect(0, 0, mDepth.cols, mDepth.rows);
+		IF__(r.empty(), -1);
+		Mat mRoi = mDepth(r);
+		Vector2f vRangeD = m_vRangeD;
 		vector<int> vHistLev = {m_nHistLev};
 		vector<float> vRange = {vRangeD.x(), vRangeD.y()};
 		vector<int> vChannel = {0};
@@ -139,16 +132,17 @@ namespace kai
 		{
 			nPix += (int)mHist.at<float>(i);
 			if (nPix >= nMinHist)
+			{
 				break;
+			}
 		}
 
-		return (vRangeD.x() + (((float)i) / (float)m_nHistLev) * vRangeD.norm());
+		return (vRangeD.x() + (((float)i) / (float)m_nHistLev) * (vRangeD.y() - vRangeD.x()));
 	}
 
 	void _D2RGB::draw(void *pMat)
 	{
 		NULL_(pMat);
-		this->_RGBDbase::draw(pMat);
 		IF_(!check());
 
 		if (m_bMeasure)

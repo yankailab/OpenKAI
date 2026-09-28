@@ -9,7 +9,7 @@
 #define OpenKAI_src_Tools__LCalign_H_
 
 #include "../Universe/Geometry/PointCloud/_PointCloud.h"
-#include "../Vision/_VisionBase.h"
+#include "../Vision/_RGBbase.h"
 #include "../Sensor/_IMUbase.h"
 #include "../Protocol/_JSONbase.h"
 
@@ -59,7 +59,7 @@ namespace kai
 
 	protected:
 		_PointCloud *m_pPCin = nullptr;
-		_VisionBase *m_pV = nullptr;
+		_RGBbase *m_pV = nullptr;
 		_IMUbase *m_pIMU = nullptr;
 
 		// Camera

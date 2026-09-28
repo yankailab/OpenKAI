@@ -9,7 +9,6 @@
 #define OpenKAI_src_Vision_Pipeline__D2RGB_H_
 
 #include "../RGBD/_RGBDbase.h"
-#include <mutex>
 
 namespace kai
 {
@@ -38,8 +37,9 @@ namespace kai
 		}
 
 	protected:
-		_RGBDbase *m_pVd = nullptr;
+		RGBframe *m_pDin = nullptr; // calibrated float depth input
 
+		// Histogram limits use this filter's vRangeD configuration.
 		int m_nHistLev = 128;
 		int m_iHistFrom = 0;
 		float m_minHistD = 0.25;

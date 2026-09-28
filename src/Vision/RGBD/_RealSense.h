@@ -66,6 +66,7 @@ namespace kai
 		virtual bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
 		virtual bool start(void);
+		void stop(void) override;
 		virtual bool check(void);
 
 		virtual bool open(void);
@@ -89,9 +90,7 @@ namespace kai
 			return NULL;
 		}
 
-#ifdef WITH_UNIVERSE
-		void updatePC(void);
-#endif
+		void updatePC(const rs2::frame &depth, const rs2::frame &color, const Mat &mRGB, uint64_t tStamp);
 		void updateTPP(void);
 		static void *getTPP(void *This)
 		{
@@ -104,9 +103,7 @@ namespace kai
 		rs2::config m_rsConfig;
 		rs2::pipeline_profile m_rsProfile;
 		rs2::pipeline m_rsPipe;
-		rs2::frame m_rsColor;
-		rs2::frame m_rsDepth;
-		rs2::align *m_rspAlign = nullptr;
+		rs2::frame_queue m_rsFrames{1}; // SDK-owned frames awaiting processing
 		rs2::spatial_filter m_rsfSpat;
 		rs2::decimation_filter m_rsfDec;
 		RS_CTRL m_rsCtrl;
@@ -121,8 +118,6 @@ namespace kai
 
 		// point cloud
 		rs2::pointcloud m_rsPC;
-		rs2::points m_rsPoints;
-		//		shared_ptr<Image> m_spImg;
 	};
 
 }

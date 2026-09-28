@@ -51,6 +51,12 @@ namespace kai
 		}
 	};
 
+	struct IMGUI_VIEWER_GEOMETRY
+	{
+		vector<IMGUI_VIEWER_POINT> m_vP;
+		vector<IMGUI_VIEWER_LINE> m_vL;
+	};
+
 	// Render snapshot: values only, no module pointers or source configuration.
 	struct IMGUI_VIEWER_OBJ
 	{
@@ -60,11 +66,12 @@ namespace kai
 		float m_matLineWidth = 1.0;
 		Vector4f m_matCol = {1, 1, 1, 1};
 
-		vector<IMGUI_VIEWER_POINT> m_vP;
-		vector<IMGUI_VIEWER_LINE> m_vL;
+		std::shared_ptr<const IMGUI_VIEWER_GEOMETRY> m_geometry;
 		OCTGRID_HEADER m_gridHeader;
 		vector<IMGUI_VIEWER_BOX> m_vBox;
 
+		const vector<IMGUI_VIEWER_POINT> &points(void) const;
+		const vector<IMGUI_VIEWER_LINE> &lines(void) const;
 		void clearGeometry(void);
 	};
 
@@ -115,9 +122,15 @@ namespace kai
 		void renderSceneGL(const Vector2f &vCanvasPos, const Vector2f &vCanvasSize);
 		static void drawSceneGLCallback(const ImDrawList *pParentList, const ImDrawCmd *pCmd);
 
-		void collectGeometry(const VIEWER_GEOMETRY_SOURCE &source, IMGUI_VIEWER_OBJ *pObj, uint64_t expiry);
-		void collectPoints(const VIEWER_GEOMETRY_SOURCE &source, IMGUI_VIEWER_OBJ *pObj, uint64_t expiry);
-		void collectLines(const VIEWER_GEOMETRY_SOURCE &source, IMGUI_VIEWER_OBJ *pObj, uint64_t expiry);
+		struct GeometryCache
+		{
+			PCLframe::SnapshotPtr m_points;
+			LineFrame::SnapshotPtr m_lines;
+			std::shared_ptr<const IMGUI_VIEWER_GEOMETRY> m_geometry;
+			uint64_t m_tFirstVisible = UINT64_MAX;
+		};
+
+		bool collectGeometry(const VIEWER_GEOMETRY_SOURCE &source, GeometryCache &cache, IMGUI_VIEWER_OBJ &object, uint64_t expiry);
 		void collectCells(const VIEWER_GRID_SOURCE &source, IMGUI_VIEWER_OBJ *pObj, uint64_t expiry);
 		void copySnapshot(vector<IMGUI_VIEWER_OBJ> *pVgo);
 
@@ -137,6 +150,7 @@ namespace kai
 
 	protected:
 		SelectableOctGridSources m_sources;
+		vector<GeometryCache> m_vGeometryCache;
 		vector<IMGUI_VIEWER_OBJ> m_vBuildGO;
 		vector<IMGUI_VIEWER_OBJ> m_vDrawGO;
 		OCTGRID_CELLS m_cells;

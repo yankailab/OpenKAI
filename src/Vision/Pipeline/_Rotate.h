@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Vision__Rotate_H_
 #define OpenKAI_src_Vision__Rotate_H_
 
-#include "../_VisionBase.h"
+#include "../_RGBbase.h"
 
 namespace kai
 {
 
-	class _Rotate : public _VisionBase
+	class _Rotate : public _RGBbase
 	{
 	public:
 		_Rotate();
@@ -34,7 +34,7 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV = nullptr;
+		RGBframe *m_pRGBin = nullptr;
 		int m_code = 0;
 	};
 

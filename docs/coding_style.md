@@ -22,7 +22,7 @@ Follow these rules when adding or changing code. Existing files contain historic
 
 Use familiar abbreviations to keep names short: `cfg`, `ctrl`, `msg`, `buf`, `pos`, `dim`, `src`, `dst`, and `idx` are useful in an appropriate context. Retain enough meaning to distinguish nearby variables. Single-letter names such as `i`, `j`, or `x` suit short loops and mathematical expressions; longer-lived state needs more context. Include units where ambiguous, as in `m_tIMUpairToleranceNs`.
 
-Classes that run their own threads use a leading underscore, such as `_VisionBase`, `_Camera`, or `_Thread`. The existing module inheritance families also retain that prefix, including base classes whose worker behavior is supplied by a subclass. Ordinary helper classes use names such as `InstanceMgr`, `JsonCfg`, and `SharedMem`. Match the existing family when extending it; legacy exceptions are not a reason to rename public classes during unrelated work.
+Classes that run their own threads use a leading underscore, such as `_RGBbase`, `_Camera`, or `_Thread`. The existing module inheritance families also retain that prefix, including base classes whose worker behavior is supplied by a subclass. Ordinary helper classes use names such as `InstanceMgr`, `JsonCfg`, and `SharedMem`. Match the existing family when extending it; legacy exceptions are not a reason to rename public classes during unrelated work.
 
 Type names have several established families: class-style names such as `ScCtrl`, and uppercase struct/enum names such as `IMU_DATA`, `ACTUATOR_V`, and `THREAD_STATE`. Enum values also follow their local family, such as `thread_run` and `actuator_ready`. Match nearby related types rather than renaming an established family. The lower camel case rule concerns variables and functions, not these existing type or constant names.
 
@@ -47,12 +47,12 @@ else
 
 Tabs are the dominant indentation in the repository; use one tab per nesting level in new files. Some existing files consistently use four spaces; preserve their indentation when editing them. Do not mix indentation styles within a block. Indent the contents of `namespace kai`, classes, functions, and control-flow blocks. Class access labels align with the class's opening brace; members are indented one level further.
 
-Use a space after control keywords, around binary and assignment operators, and after commas. Do not add a space between a function name and `(` or inside ordinary parentheses. Prefer pointer/reference spacing such as `_VisionBase *pVisionBase` and `const json &j`; retain consistent local spacing in existing declarations.
+Use a space after control keywords, around binary and assignment operators, and after commas. Do not add a space between a function name and `(` or inside ordinary parentheses. Prefer pointer/reference spacing such as `_RGBbase *pVisionBase` and `const json &j`; retain consistent local spacing in existing declarations.
 
 ```cpp
 int nFrames = 0;
 float scale = width / inputWidth;
-_VisionBase *pVisionBase = nullptr;
+_RGBbase *pVisionBase = nullptr;
 
 for (int i = 0; i < nFrames; i++)
 {
@@ -102,8 +102,8 @@ int a = 0;
 int b = 1;
 int c = 2;
 
-_VisionBase *pInput = nullptr;
-_VisionBase *pOutput = nullptr;
+_RGBbase *pInput = nullptr;
+_RGBbase *pOutput = nullptr;
 ```
 
 Do not write `int a = 0, b = 1, c = 2;`, `a = 0; b = 1;`, or `if (bReady) return true;`. The three clauses of a normal `for` header, function parameter lists, and aggregate initializers are not multiple standalone statements; do not split them mechanically. Still avoid declaring several loop variables in one declaration.
@@ -222,7 +222,7 @@ The survey covered C++ files in every source folder and its subfolders, includin
 | `IO`, `Protocol`, `IPC` | [_IObase.h](../src/IO/_IObase.h), [_ProtocolBase.cpp](../src/Protocol/_ProtocolBase.cpp), [SharedMem.h](../src/IPC/SharedMem.h): buffers, callbacks, resource helpers |
 | `Sensor`, including `Distance` and `LiDAR`; `Navigation` | [_IMUbase.h](../src/Sensor/_IMUbase.h), [_GPS.cpp](../src/Navigation/_GPS.cpp): timestamps, units, grouped device state |
 | `Swarm`, `ROS` | [_SwarmBase.h](../src/Swarm/_SwarmBase.h), [_ROS_fastLio.h](../src/ROS/_ROS_fastLio.h): thread modules and external API adapters |
-| `Vision`, including `RGBD` and `Pipeline`; `Detector`, `Tracker` | [_VisionBase.h](../src/Vision/_VisionBase.h), [_Scepter.h](../src/Vision/RGBD/_Scepter.h), [_DetectorBase.cpp](../src/Detector/_DetectorBase.cpp), [_TrackerBase.h](../src/Tracker/_TrackerBase.h): optional name hints, device options, module inheritance |
+| `Vision`, including `RGBD` and `Pipeline`; `Detector`, `Tracker` | [_RGBbase.h](../src/Vision/_RGBbase.h), [_Scepter.h](../src/Vision/RGBD/_Scepter.h), [_DetectorBase.cpp](../src/Detector/_DetectorBase.cpp), [_TrackerBase.h](../src/Tracker/_TrackerBase.h): optional name hints, device options, module inheritance |
 | `SLAM`, `Universe`, including `Grid`, `Geometry`, and point-cloud pipelines/registration | [_SLAMbase.h](../src/SLAM/_SLAMbase.h), [_GeometryBase.h](../src/Universe/Geometry/_GeometryBase.h), [_PCtransform.cpp](../src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp): geometry state, feature guards, formatting variations |
 | `Canvas`, `Tools`, `UI`, including `Viewer`, `Web`, and `ImGUI` | [_ObjectBase.h](../src/Canvas/_ObjectBase.h), [_CamCalib.cpp](../src/Tools/_CamCalib.cpp), [_UIbase.h](../src/UI/_UIbase.h), [WebGLIMProtocol.h](../src/UI/Viewer/Web/WebGLIMProtocol.h): grouped methods, comments, specialized helper namespaces |
 | `Arithmetic`, `Control`, `Filter`, `Primitive` | [Destimator.h](../src/Arithmetic/Destimator.h), [PID.h](../src/Control/PID.h), [Average.h](../src/Filter/Average.h), [tSwap.h](../src/Primitive/tSwap.h): mathematical abbreviations and header-only helpers |

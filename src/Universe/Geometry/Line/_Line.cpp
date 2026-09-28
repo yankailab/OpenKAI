@@ -9,133 +9,38 @@
 
 namespace kai
 {
-
     _Line::_Line()
     {
-        m_type = geometry_line;
     }
 
     _Line::~_Line()
     {
-        m_rLn.release();
     }
 
-    bool _Line::loadConfig(void)
+    bool _Line::link(InstanceMgr *pM)
     {
-        IF_F(!this->_GeometryBase::loadConfig());
-        const json &j = *m_pJ;
+        if (!_GeometryBase::link(pM))
+        {
+            return false;
+        }
 
-        int nL = 1000;
-        jKv(j, "nL", nL);
-        IF_Le_F(nL <= 0, "Invalid nL: " + i2str(nL));
-        IF_Le_F(!m_rLn.alloc(nL), "Alloc faild with nL: " + i2str(nL));
-
-        clear();
+        string name;
+        jKv(*m_pJ, "LineFrame", name);
+        m_pLine = dynamic_cast<LineFrame *>(static_cast<DataStreamBase *>(pM->findDataStream(name)));
+        IF_Le_F(!m_pLine, "LineFrame not found: " + name);
         return true;
-    }
-
-    bool _Line::saveConfig(bool bExport)
-    {
-        IF_F(!_GeometryBase::saveConfig(false));
-
-        json &j = *m_pJ;
-        j["nL"] = m_rLn.m_nT;
-
-        IF__(!bExport, true);
-        return m_pJcfg->saveToFile();
-    }
-
-    void _Line::clear(void)
-    {
-		std::lock_guard<std::mutex> lock(m_mtxLn);
-        m_rLn.clear();
-    }
-
-    bool _Line::start(void)
-    {
-        NULL_F(m_pT);
-        return m_pT->startThread(getUpdate, this);
     }
 
     bool _Line::check(void)
     {
-        return this->_GeometryBase::check();
+        return m_pLine && _GeometryBase::check();
     }
 
-    void _Line::update(void)
+    void _Line::clear(void)
     {
-        while (m_pT->bRun())
+        if (m_pLine)
         {
-            m_pT->autoFPS();
-
-            updateLine();
+            m_pLine->set({});
         }
     }
-
-    void _Line::updateLine(void)
-    {
-        IF_(!check());
-    }
-
-    void _Line::add(const Vector3f &vPa, const Vector3f &vPb, const Vector3f &vC, uint64_t tStamp)
-    {
-        GEOMETRY_LINE gL;
-        gL.m_vPa = m_mPosef * vPa;
-        gL.m_vPb = m_mPosef * vPb;
-        gL.m_vC = vC;
-        gL.m_tStamp = tStamp;
-
-        m_rLn.add(gL);
-    }
-
-    int _Line::copy(RingBuffer<GEOMETRY_LINE> *pIn, RingBuffer<GEOMETRY_LINE> *pOut, uint64_t tExpire)
-    {
-        NULL__(pIn, 0);
-        NULL__(pOut, 0);
-
-        int nL = 0;
-        int nLin = pIn->nT();
-        int iL = pIn->iLastT();
-
-        while (nL < nLin)
-        {
-            GEOMETRY_LINE* pGp = pIn->get(iL);
-            if(!pGp)
-                break;
-            if(bExpired(pGp->m_tStamp, tExpire))
-                break;
-
-            pOut->add(*pGp);
-            nL++;
-
-            iL = pIn->iDec(iL);
-        }
-
-        return nL;
-    }
-
-    int _Line::get(RingBuffer<GEOMETRY_LINE> *pOut, uint64_t tExpire)
-    {
-        return copy(getRingBuf(), pOut, tExpire);
-    }
-
-    RingBuffer<GEOMETRY_LINE> *_Line::getRingBuf(void)
-    {
-        return &m_rLn;
-    }
-
-    void _Line::console(void *pConsole)
-    {
-        NULL_(pConsole);
-        this->_GeometryBase::console(pConsole);
-    }
-
-    void _Line::console(const json &j, void *pJSONbase)
-    {
-        // _JSONbase *pJb = (_JSONbase *)pJSONbase;
-        string cmd;
-        IF_(!jKv(j, "cmd", cmd));
-
-    }
-
 }

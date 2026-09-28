@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Vision__Thermal2RGB_H_
 #define OpenKAI_src_Vision__Thermal2RGB_H_
 
-#include "../_VisionBase.h"
+#include "../_RGBbase.h"
 
 namespace kai
 {
 
-	class _Thermal2RGB : public _VisionBase
+	class _Thermal2RGB : public _RGBbase
 	{
 	public:
 		_Thermal2RGB();
@@ -35,7 +35,7 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV = nullptr;
+		RGBframe *m_pRGBin = nullptr;
 
 		Vector2f m_vTrange = Vector2f::Zero();	// temperature range to show
 

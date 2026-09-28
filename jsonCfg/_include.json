@@ -4,7 +4,9 @@
 		"appName": "includeTest",
 		"bLog": true,
 		"bStdErr": true,
-		"vInclude":["/home/kai/dev/OpenKAI/jsonCfg/_include2.json"]
+		"vInclude": [
+			"/home/kai/dev/OpenKAI/jsonCfg/_include2.json"
+		]
 	},
 	"console": {
 		"class": "_Console",
@@ -23,12 +25,6 @@
 			"FPS": 30
 		},
 		"bFullScreen": 0,
-		"vBASE": [
-			"cam",
-			"/uvc",
-			"/crop",
-			"/contrast",
-			"/resize"
-		]
+		"RGBframeIn": "camRGB"
 	}
 }

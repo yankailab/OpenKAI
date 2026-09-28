@@ -12,8 +12,6 @@ namespace kai
 
 	_Crop::_Crop()
 	{
-		m_type = vision_crop;
-
 		m_vRoi.setZero();
 	}
 
@@ -23,7 +21,7 @@ namespace kai
 
 	bool _Crop::loadConfig(void)
 	{
-		IF_F(!_VisionBase::loadConfig());
+		IF_F(!_RGBbase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv<int>(j, "vRoi", m_vRoi);
@@ -33,7 +31,7 @@ namespace kai
 
 	bool _Crop::saveConfig(bool bExport)
 	{
-		IF_F(!_VisionBase::saveConfig(false));
+		IF_F(!_RGBbase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["vRoi"] = {m_vRoi.x(), m_vRoi.y(), m_vRoi.z(), m_vRoi.w()};
@@ -44,13 +42,13 @@ namespace kai
 
 	bool _Crop::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_VisionBase::link(pM));
+		IF_F(!this->_RGBbase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
-		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(pM->findModule(n));
-		NULL_F(m_pV);
+		jKv(j, "RGBframeIn", n);
+		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		NULL_F(m_pRGBin);
 
 		return true;
 	}
@@ -73,9 +71,10 @@ namespace kai
 
 	void _Crop::filter(void)
 	{
-		NULL_(m_pV);
-		Mat mIn;
-		m_pV->copyMatRGB(mIn);
+		NULL_(m_pRGB);
+		NULL_(m_pRGBin);
+		const RGBframe::SnapshotPtr frame = m_pRGBin->get();
+		const Mat &mIn = frame->m_mRGB;
 		IF_(mIn.empty());
 
 		Rect r;
@@ -87,8 +86,7 @@ namespace kai
 		m_vSizeRGB.x() = r.width;
 		m_vSizeRGB.y() = r.height;
 
-		std::lock_guard<std::mutex> lock(m_mutexRGB);
-		mIn(r).copyTo(m_mRGB);
+		m_pRGB->set(mIn(r), frame->m_tStamp);
 	}
 
 }

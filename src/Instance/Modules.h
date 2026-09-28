@@ -192,7 +192,7 @@
 #include "../Sensor/Distance/_LeddarVu.h"
 #include "../Sensor/Distance/_TOFsense.h"
 #include "../Sensor/Distance/_BenewakeTF.h"
-#if defined(WITH_UNIVERSE) && defined(USE_OPEN3D)
+#if defined(WITH_UNIVERSE)
 #include "../Sensor/LiDAR/_Livox2.h"
 #include "../Sensor/LiDAR/_RoboSenseAiry.h"
 #endif // 3D
@@ -224,25 +224,12 @@
 #endif
 
 #ifdef WITH_VISION
-#ifdef USE_ORBBEC
-#include "../Vision/RGBD/_Orbbec.h"
-#endif
-#ifdef USE_REALSENSE
-#include "../Vision/RGBD/_RealSense.h"
-#endif
-#ifdef USE_SCEPTER_SDK
-#include "../Vision/RGBD/_Scepter.h"
-#endif
-#ifdef USE_XDYNAMICS
-#include "../Vision/RGBD/_XDynamics.h"
-#endif
 #ifdef USE_OPENCV
 #include "../Vision/_Camera.h"
 #include "../Vision/_HiKthermal.h"
 #include "../Vision/_VideoFile.h"
 #include "../Vision/_ImgFile.h"
 #include "../Vision/_GStreamer.h"
-#include "../Vision/_SharedMemImg.h"
 #include "../Vision/Pipeline/_D2RGB.h"
 #include "../Vision/Pipeline/_ColorConvert.h"
 #include "../Vision/Pipeline/_Contrast.h"
@@ -258,6 +245,18 @@
 #include "../Vision/Pipeline/_Rotate.h"
 #include "../Vision/Pipeline/_Threshold.h"
 #include "../Vision/Pipeline/_Thermal2RGB.h"
+#ifdef USE_ORBBEC
+#include "../Vision/RGBD/_Orbbec.h"
+#endif
+#ifdef USE_REALSENSE
+#include "../Vision/RGBD/_RealSense.h"
+#endif
+#ifdef USE_SCEPTER_SDK
+#include "../Vision/RGBD/_Scepter.h"
+#endif
+#ifdef USE_XDYNAMICS
+#include "../Vision/RGBD/_XDynamics.h"
+#endif
 
 #endif // opencv
 #endif // vision

@@ -65,10 +65,7 @@ namespace kai
 
 	bool _HandKey::check(void)
 	{
-		NULL_F(m_pV);
-		Mat *pBGR = m_pV->getMatRGB();
-		NULL_F(pBGR);
-		IF_F(pBGR->empty());
+		NULL_F(m_pRGBin);
 
 		return this->_DetectorBase::check();
 	}
@@ -89,9 +86,9 @@ namespace kai
 	{
 		IF_(!check());
 
-		Mat *pBGR = m_pV->getMatRGB();
-		pBGR->copyTo(m_mRGB);
-		Mat mIn = m_mRGB;
+		const auto frame = m_pRGBin->get();
+		const Mat &mIn = frame->m_mRGB;
+		IF_(mIn.empty());
 
 		m_blob = blobFromImage(mIn, m_scale, Size(m_nW, m_nH), Scalar(m_vMean.x(), m_vMean.y(), m_vMean.z()), m_bSwapRB, false);
 		m_net.setInput(m_blob);
@@ -148,7 +145,6 @@ namespace kai
 	void _HandKey::draw(void *pMat)
 	{
 		NULL_(pMat);
-		this->_DetectorBase::draw(pMat);
 		IF_(!check());
 
 		if (!m_mDebug.empty())

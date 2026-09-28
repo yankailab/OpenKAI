@@ -1,27 +1,29 @@
 {
   "slamPoints": {
-    "class": "_PointCloud",
-    "bON": true,
-    "thread": { "FPS": 30 },
-    "nP": 300000
+    "type": "dataStream",
+    "class": "PCLframe"
   },
   "slamIMU": {
-    "class": "_IMUbase",
-    "bON": true,
-    "thread": { "FPS": 100 },
-    "nIMUdqMax": 4000,
-    "tIMUpairToleranceNs": 5000000
+    "type": "dataStream",
+    "class": "IMUstream"
   },
   "slam": {
     "class": "_GLIM",
     "bON": true,
-    "thread": { "FPS": 100 },
-    "_PointCloud": "slamPoints",
-    "_IMUbase": "slamIMU",
+    "thread": {
+      "FPS": 100
+    },
+    "PCLframeIn": "slamPoints",
+    "IMUstream": "slamIMU",
     "configPath": "jsonCfg/glim_orbbec",
     "bAutoStart": true,
     "bMapping": true,
     "nMinPoints": 100,
-    "tConfidenceTimeoutNs": 1000000000
+    "tConfidenceTimeoutNs": 1000000000,
+    "PCLmap": "slamMap"
+  },
+  "slamMap": {
+    "type": "dataStream",
+    "class": "PCLmap"
   }
 }

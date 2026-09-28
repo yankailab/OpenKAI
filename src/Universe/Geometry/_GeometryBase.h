@@ -12,44 +12,6 @@
 
 namespace kai
 {
-    enum GEOMETRY_TYPE
-    {
-        geometry_unknown = 0,
-        geometry_pointCloud = 1,
-        geometry_line = 2,
-        geometry_mesh = 3,
-    };
-
-    struct GEOMETRY_POINT
-    {
-        Vector3f m_vP = Vector3f::Zero(); // pos
-        Vector3f m_vC{0, 0, 0};           // color
-        uint64_t m_tStamp;
-
-        void clear(void)
-        {
-            m_vP.setZero();
-            m_vC.setZero();
-            m_tStamp = 0; // nanosecond timestamp, 0: invalid, >= 1 valid
-        }
-    };
-
-    struct GEOMETRY_LINE
-    {
-        Vector3f m_vPa = Vector3f::Zero(); // line from
-        Vector3f m_vPb = Vector3f::Zero(); // line to
-        Vector3f m_vC{0, 0, 0};            // color
-        uint64_t m_tStamp;                 // nanosecond timestamp, 0: invalid, >= 1 valid
-
-        void clear(void)
-        {
-            m_vPa.setZero();
-            m_vPb.setZero();
-            m_vC.setZero();
-            m_tStamp = 0;
-        }
-    };
-
     class _GeometryBase : public _ReferenceFrame
     {
     public:
@@ -57,23 +19,14 @@ namespace kai
         virtual ~_GeometryBase();
 
         virtual bool loadConfig(void) override;
+        virtual bool saveConfig(bool bExport) override;
         virtual bool link(InstanceMgr *pM) override;
         virtual bool check(void);
         virtual void console(void *pConsole);
 
-        virtual bool saveConfig(bool bExport) override;
-
-        virtual GEOMETRY_TYPE getType(void);
         virtual void clear(void);
 
-        virtual int get(RingBuffer<GEOMETRY_POINT> *pOut, uint64_t tExpire = 0);
-        virtual int get(RingBuffer<GEOMETRY_LINE> *pOut, uint64_t tExpire = 0);
-
-        // Sources without framed point clouds return an empty frame.
-        virtual int getLastFrame(vector<Vector3f> *pvP, vector<Vector3f> *pvC, uint64_t &tStamp);
-
     protected:
-        GEOMETRY_TYPE m_type = geometry_unknown;
 
     };
 

@@ -12,7 +12,6 @@ namespace kai
 
 	_Thermal2RGB::_Thermal2RGB()
 	{
-		m_type = vision_depth2Gray;
 		m_vTrange = Vector2f(0, 40);
 	}
 
@@ -22,7 +21,7 @@ namespace kai
 
 	bool _Thermal2RGB::loadConfig(void)
 	{
-		IF_F(!_VisionBase::loadConfig());
+		IF_F(!_RGBbase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv<float>(j, "vTrange", m_vTrange);
@@ -32,7 +31,7 @@ namespace kai
 
 	bool _Thermal2RGB::saveConfig(bool bExport)
 	{
-		IF_F(!_VisionBase::saveConfig(false));
+		IF_F(!_RGBbase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["vTrange"] = {m_vTrange.x(), m_vTrange.y()};
@@ -43,13 +42,13 @@ namespace kai
 
 	bool _Thermal2RGB::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_VisionBase::link(pM));
+		IF_F(!this->_RGBbase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
-		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(pM->findModule(n));
-		NULL_F(m_pV);
+		jKv(j, "RGBframeIn", n);
+		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		NULL_F(m_pRGBin);
 
 		return true;
 	}
@@ -72,9 +71,11 @@ namespace kai
 
 	void _Thermal2RGB::filter(void)
 	{
-		NULL_(m_pV);
-		Mat mT;
-		m_pV->copyMatRGB(mT);
+		Mat mOut;
+		NULL_(m_pRGB);
+		NULL_(m_pRGBin);
+		const RGBframe::SnapshotPtr frame = m_pRGBin->get();
+		const Mat &mT = frame->m_mRGB;
 		IF_(mT.empty());
 		IF_(mT.type() != CV_32FC1);
 
@@ -85,8 +86,8 @@ namespace kai
 		float tR = m_vTrange.y() - m_vTrange.x();
 		mClip.convertTo(mGray, CV_8UC1, 255.0 / tR, -m_vTrange.x() * 255.0 / tR);
 
-		std::lock_guard<std::mutex> lock(m_mutexRGB);
-		cv::applyColorMap(mGray, m_mRGB, cv::COLORMAP_JET);
+		cv::applyColorMap(mGray, mOut, cv::COLORMAP_JET);
+		m_pRGB->set(mOut, frame->m_tStamp);
 	}
 
 	void _Thermal2RGB::console(const json &j, void *pJSONbase)
@@ -99,7 +100,7 @@ namespace kai
 			jKv<float>(j, "vTrange", m_vTrange);
 		}
 
-		this->_VisionBase::console(j, pJSONbase);
+		this->_RGBbase::console(j, pJSONbase);
 	}
 
 }

@@ -9,7 +9,6 @@
 
 namespace kai
 {
-
 	_PCrecv::_PCrecv()
 	{
 	}
@@ -20,29 +19,28 @@ namespace kai
 
 	bool _PCrecv::loadConfig(void)
 	{
-		IF_F(!this->_PointCloud::loadConfig());
-
+		IF_F(!_PointCloud::loadConfig());
+		jKv(*m_pJ, "nPmax", m_nPmax);
+		IF_Le_F(m_nPmax == 0, "nPmax must be positive");
+		m_vPacket.reserve(pcstream::maxPacketBytes);
 		return true;
 	}
 
 	bool _PCrecv::saveConfig(bool bExport)
 	{
 		IF_F(!_PointCloud::saveConfig(false));
-
+		(*m_pJ)["nPmax"] = m_nPmax;
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
 	}
 
 	bool _PCrecv::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_PointCloud::link(pM));
-		const json &j = *m_pJ;
-
-		string n = "";
-		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(pM->findModule(n));
-		IF_Le_F(!m_pIO, "_IObase not found: " + n);
-
+		IF_F(!_PointCloud::link(pM));
+		string name;
+		jKv(*m_pJ, "_IObase", name);
+		m_pIO = static_cast<_IObase *>(pM->findModule(name));
+		IF_Le_F(!m_pIO, "_IObase not found: " + name);
 		return true;
 	}
 
@@ -54,96 +52,120 @@ namespace kai
 
 	bool _PCrecv::check(void)
 	{
-		NULL_F(m_pIO);
-		IF_F(!m_pIO->bOpen());
-
-		return this->_PointCloud::check();
+		return m_pIO && m_pIO->bOpen() && _PointCloud::check();
 	}
 
 	void _PCrecv::update(void)
 	{
-		PROTOCOL_CMD rCMD;
-
+		uint8_t bytes[pcstream::maxPacketBytes];
 		while (m_pT->bRun())
 		{
-			IF_CONT(!readCMD(&rCMD));
-
-			handleCMD(rCMD);
-			rCMD.clear();
-			m_nCMDrecv++;
-		}
-	}
-
-	bool _PCrecv::readCMD(PROTOCOL_CMD *pCmd)
-	{
-		IF_F(!check());
-		NULL_F(pCmd);
-
-		if (m_nRead == 0)
-		{
-			m_nRead = m_pIO->read(m_pBuf, PB_N_BUF);
-			IF_F(m_nRead <= 0);
-			m_iRead = 0;
-		}
-
-		while (m_iRead < m_nRead)
-		{
-			bool r = pCmd->input(m_pBuf[m_iRead++]);
-			if (m_iRead == m_nRead)
+			m_pT->autoFPS();
+			if (!check())
 			{
-				m_iRead = 0;
-				m_nRead = 0;
+				m_vPacket.clear();
+				m_vPendingPoints.clear();
+				m_pendingRevision = 0;
+				continue;
 			}
 
-			IF__(r, true);
+			const int count = m_pIO->read(bytes, sizeof(bytes));
+			if (count > 0)
+			{
+				// Drain transport bursts without delaying every packet by one frame.
+				m_pT->skipSleep();
+			}
+			for (int i = 0; i < count; ++i)
+			{
+				inputByte(bytes[i]);
+			}
 		}
-
-		return false;
 	}
 
-	void _PCrecv::handleCMD(const PROTOCOL_CMD &cmd)
+	void _PCrecv::inputByte(uint8_t byte)
 	{
-		switch (cmd.m_pB[1])
+		if (m_vPacket.size() < sizeof(pcstream::magic))
 		{
-		case PC_STREAM:
-		{
-			decodeStream(cmd);
-			break;
+			if (byte != pcstream::magic[m_vPacket.size()])
+			{
+				m_vPacket.clear();
+				if (byte == pcstream::magic[0])
+				{
+					m_vPacket.push_back(byte);
+				}
+				return;
+			}
 		}
-		case PC_FRAME_END:
+		m_vPacket.push_back(byte);
+		if (m_vPacket.size() == 8)
 		{
-			break;
+			m_nPacketBytes = pcstream::unpackUint(m_vPacket.data() + 4, 4);
+			if (m_nPacketBytes < pcstream::headerBytes || m_nPacketBytes > pcstream::maxPacketBytes ||
+				(m_nPacketBytes - pcstream::headerBytes) % pcstream::pointBytes != 0)
+			{
+				m_vPacket.clear();
+				m_vPendingPoints.clear();
+				m_pendingRevision = 0;
+				return;
+			}
 		}
-		default:
-			break;
+		if (m_vPacket.size() >= pcstream::headerBytes && m_vPacket.size() == m_nPacketBytes)
+		{
+			decodePacket();
+			m_vPacket.clear();
 		}
 	}
 
-	void _PCrecv::decodeStream(const PROTOCOL_CMD &cmd)
+	void _PCrecv::decodePacket(void)
 	{
-		const double PC_SCALE_INV = 0.001;
-		int16_t x, y, z;
-
-		for (int i = PC_N_HDR; i < cmd.m_nPayload + PC_N_HDR; i += 12)
+		const uint8_t *pBytes = m_vPacket.data();
+		const uint64_t revision = pcstream::unpackUint(pBytes + 8, 8);
+		const uint64_t stamp = pcstream::unpackUint(pBytes + 16, 8);
+		const uint32_t total = pcstream::unpackUint(pBytes + 24, 4);
+		const uint32_t first = pcstream::unpackUint(pBytes + 28, 4);
+		const size_t count = (m_vPacket.size() - pcstream::headerBytes) / pcstream::pointBytes;
+		if (revision == 0 || total > m_nPmax || first > total || count > total - first ||
+			(count == 0 && total != 0))
 		{
-			IF_(i + 12 > PC_N_BUF);
+			m_vPendingPoints.clear();
+			m_pendingRevision = 0;
+			return;
+		}
 
-			x = unpack_int16(&cmd.m_pB[i], false);
-			y = unpack_int16(&cmd.m_pB[i + 2], false);
-			z = unpack_int16(&cmd.m_pB[i + 4], false);
-			Vector3f vP(((float)x) * PC_SCALE_INV,
-							   ((float)y) * PC_SCALE_INV,
-							   ((float)z) * PC_SCALE_INV);
+		if (first == 0)
+		{
+			m_vPendingPoints.clear();
+			m_vPendingPoints.reserve(total);
+			m_pendingRevision = revision;
+			m_tPendingStamp = stamp;
+			m_nPendingPoints = total;
+		}
+		if (revision != m_pendingRevision || stamp != m_tPendingStamp ||
+			total != m_nPendingPoints || first != m_vPendingPoints.size())
+		{
+			m_vPendingPoints.clear();
+			m_pendingRevision = 0;
+			return;
+		}
 
-			x = unpack_int16(&cmd.m_pB[i + 6], false);
-			y = unpack_int16(&cmd.m_pB[i + 8], false);
-			z = unpack_int16(&cmd.m_pB[i + 10], false);
-			Vector3f vC(((float)x) * PC_SCALE_INV,
-							   ((float)y) * PC_SCALE_INV,
-							   ((float)z) * PC_SCALE_INV);
-
-			add(vP, vC, m_pT->getTfromNs());
+		for (size_t i = 0; i < count; ++i)
+		{
+			const uint8_t *pPoint = pBytes + pcstream::headerBytes + i * pcstream::pointBytes;
+			GEOMETRY_POINT point;
+			for (int axis = 0; axis < 3; ++axis)
+			{
+				point.m_vP[axis] = pcstream::unpackFloat(pPoint + axis * 4);
+				point.m_vC[axis] = pcstream::unpackFloat(pPoint + 12 + axis * 4);
+			}
+			point.m_vP = m_mPosef * point.m_vP;
+			point.m_tStamp = pcstream::unpackUint(pPoint + 24, 8);
+			m_vPendingPoints.push_back(point);
+		}
+		if (m_vPendingPoints.size() == total)
+		{
+			m_pPCL->set(std::move(m_vPendingPoints), stamp);
+			m_vPendingPoints.clear();
+			m_pendingRevision = 0;
 		}
 	}
-
 }

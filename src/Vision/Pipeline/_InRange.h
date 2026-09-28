@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Vision__InRange_H_
 #define OpenKAI_src_Vision__InRange_H_
 
-#include "../_VisionBase.h"
+#include "../_RGBbase.h"
 
 namespace kai
 {
 
-	class _InRange : public _VisionBase
+	class _InRange : public _RGBbase
 	{
 	public:
 		_InRange();
@@ -34,7 +34,7 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV = nullptr;
+		RGBframe *m_pRGBin = nullptr;
 		Vector3i m_vL = Vector3i::Zero();
 		Vector3i m_vH = Vector3i::Zero();
 	};

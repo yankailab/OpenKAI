@@ -113,8 +113,6 @@ namespace kai
 			m_pCell->release();
 			delete m_pCell;
 		}
-
-		m_rPt.release();
 	}
 
 	bool _OctreeGrid::loadConfig(void)
@@ -127,6 +125,7 @@ namespace kai
 		jKv(j, "nMaxLevel", m_nMaxLevel);
 		jKv(j, "dTexpireCell", m_dTexpireCell);
 		jKv(j, "dTexpirePCL", m_dTexpirePCL);
+		jKv(j, "vPCLframes", m_vPCLframes);
 
 		IF_Le_F(m_nMaxLevel < 0 || m_nMaxLevel > OCTGRID_MAX_LEVEL, "Invalid nMaxLevel: " + i2str(m_nMaxLevel));
 		IF_Le_F(!std::isfinite(m_vPorigin.x()) || !std::isfinite(m_vPorigin.y()) || !std::isfinite(m_vPorigin.z()) ||
@@ -136,12 +135,7 @@ namespace kai
 					m_vRootCellSize.z() <= 0.0f,
 				"Invalid vRootCellSize");
 
-		int nP = 100000;
-		jKv(j, "nP", nP);
-		IF_Le_F(nP <= 0, "Invalid nP: " + i2str(nP));
-		m_rPt.release();
-		IF_Le_F(!m_rPt.alloc(nP), "Alloc failed with nP: " + i2str(nP));
-		m_rPt.clear();
+		resetPointInputs();
 
 		if (m_pCell)
 		{
@@ -165,7 +159,9 @@ namespace kai
 		j["nMaxLevel"] = m_nMaxLevel;
 		j["dTexpireCell"] = m_dTexpireCell;
 		j["dTexpirePCL"] = m_dTexpirePCL;
-		j["nP"] = m_rPt.m_nT;
+		j["vPCLframes"] = m_vPCLframes;
+		j.erase("nP");
+		j.erase("vGeometryBase");
 
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
@@ -174,19 +170,14 @@ namespace kai
 	bool _OctreeGrid::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_OctreeBase::link(pM));
-		const json &j = *m_pJ;
-
-		vector<string> vGn;
-		jKv(j, "vGeometryBase", vGn);
-		m_vpGb.clear();
-		for (string n : vGn)
+		m_vPointInputs.clear();
+		m_vPointInputs.reserve(m_vPCLframes.size());
+		for (const string &name : m_vPCLframes)
 		{
-			auto *pSource = static_cast<BASE *>(pM->findModule(n));
-			IF_CONT(!pSource);
-			auto *pG = dynamic_cast<_GeometryBase *>(pSource);
-			IF_Le_F(!pG, "Grid input is not a geometry source: " + n);
+			auto *pFrame = dynamic_cast<PCLframe *>(static_cast<DataStreamBase *>(pM->findDataStream(name)));
+			IF_Le_F(!pFrame, "Grid input is not a PCLframe: " + name);
 
-			m_vpGb.push_back(pG);
+			m_vPointInputs.push_back({pFrame, 0});
 		}
 
 		return true;
@@ -222,33 +213,43 @@ namespace kai
 		deleteExpiredCells();
 	}
 
+	void _OctreeGrid::resetPointInputs(void)
+	{
+		for (PointInput &input : m_vPointInputs)
+		{
+			input.m_revision = 0;
+		}
+	}
+
 	void _OctreeGrid::updatePoint(void)
 	{
 		IF_(!check());
 		NULL_(m_pCell);
 
-		uint64_t tNow = getTns();
+		const uint64_t tNow = getTns();
 		uint64_t tExpire = 0;
 		if (m_dTexpirePCL > 0)
-			tExpire = (tNow > m_dTexpirePCL) ? tNow - m_dTexpirePCL : 0;
-
-		for (_GeometryBase *pGb : m_vpGb)
 		{
-			m_rPt.clear();
-			int nP = pGb->get(&m_rPt, tExpire);
-			IF_CONT(nP <= 0);
-			nP = small<int>(nP, m_rPt.nT());
+			tExpire = (tNow > m_dTexpirePCL) ? tNow - m_dTexpirePCL : 0;
+		}
 
-			int i = 0;
-			while (i < nP)
+		for (PointInput &input : m_vPointInputs)
+		{
+			const PCLframe::SnapshotPtr frame = input.m_pFrame->get();
+			if (frame->m_revision == input.m_revision)
 			{
-				GEOMETRY_POINT *pGp = m_rPt.get(i++);
-				if (pGp == nullptr)
-					break;
-				if (pGp->m_tStamp == 0)
-					break;
+				continue;
+			}
+			input.m_revision = frame->m_revision;
 
-				addCellPoint(*pGp, tNow, m_nMaxLevel, true);
+			for (const GEOMETRY_POINT &point : frame->m_vPoints)
+			{
+				if (bExpired(point.m_tStamp, tExpire) || !point.m_vP.allFinite())
+				{
+					continue;
+				}
+
+				addCellPoint(point, tNow, m_nMaxLevel, true);
 			}
 		}
 	}

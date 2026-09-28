@@ -6,6 +6,7 @@
  */
 
 #include "_Lane.h"
+#include "../UI/_Console.h"
 
 namespace kai
 {
@@ -143,9 +144,9 @@ namespace kai
 		const json &j = *m_pJ;
 
 		string n = "";
-		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(pM->findModule(n));
-		NULL_F(m_pV);
+		jKv(j, "RGBframeIn", n);
+		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		NULL_F(m_pRGBin);
 
 		return true;
 	}
@@ -158,8 +159,7 @@ namespace kai
 
 	bool _Lane::check(void)
 	{
-		NULL_F(m_pV);
-		IF_F(m_pV->getMatRGB()->empty());
+		NULL_F(m_pRGBin);
 
 		return this->_ModuleBase::check();
 	}
@@ -177,17 +177,19 @@ namespace kai
 	void _Lane::detect(void)
 	{
 		IF_(!check());
-		Mat *pM = m_pV->getMatRGB();
+		const auto frame = m_pRGBin->get();
+		const Mat &image = frame->m_mRGB;
+		IF_(image.empty());
 
 		// Warp transform to get overhead view
-		if (m_vSize.x() != pM->cols || m_vSize.y() != pM->rows)
+		if (m_vSize.x() != image.cols || m_vSize.y() != image.rows)
 		{
-			m_vSize.x() = pM->cols;
-			m_vSize.y() = pM->rows;
+			m_vSize.x() = image.cols;
+			m_vSize.y() = image.rows;
 			updateVisionSize();
 		}
 
-		cv::warpPerspective(*pM, m_mOverhead, m_mPerspective,
+		cv::warpPerspective(image, m_mOverhead, m_mPerspective,
 							m_mOverhead.size(), cv::INTER_LINEAR);
 
 		// Filter image to get binary view
@@ -255,7 +257,6 @@ namespace kai
 	void _Lane::draw(void *pMat)
 	{
 		NULL_(pMat);
-		this->_ModuleBase::draw(pMat);
 		IF_(!check());
 
 		Mat *pM = static_cast<Mat *>(pMat);

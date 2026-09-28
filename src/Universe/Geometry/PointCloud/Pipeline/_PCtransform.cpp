@@ -120,8 +120,13 @@ namespace kai
         const json &j = *m_pJ;
 
         string n = "";
-        jKv(j, "_PointCloud", n);
-        m_pPS = (_PointCloud *)(pM->findModule(n));
+        jKv(j, "PCLframeIn", n);
+        m_pPCLin = dynamic_cast<PCLframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+        IF_Le_F(!m_pPCLin, "PCLframeIn not found: " + n);
+        IF_Le_F(m_pPCLin == m_pPCL, "PCLframeIn must differ from PCLframe");
+        m_inputRevision = 0;
+        m_tNextExpire = 0;
+        m_bTransformChanged = true;
 
         return true;
     }
@@ -134,13 +139,16 @@ namespace kai
 
 	bool _PCtransform::check(void)
 	{
-		NULL_F(m_pPS);
+		NULL_F(m_pPCLin);
 		return this->_PointCloud::check();
 	}
 
 	void _PCtransform::clear(void)
 	{
 		this->_PointCloud::clear();
+		m_inputRevision = 0;
+		m_tNextExpire = 0;
+		m_bTransformChanged = true;
 	}
 
 	void _PCtransform::update(void)
@@ -157,11 +165,47 @@ namespace kai
 	{
 		IF_(!check());
 
-		uint64_t tExpire = 0;
-		if(m_dTexpire > 0)
-			tExpire = getTns() - m_dTexpire;
+		const PCLframe::SnapshotPtr frame = m_pPCLin->get();
+		if (frame->m_revision == 0)
+		{
+			return;
+		}
 
-		m_pPS->get(&m_rPt, tExpire);
+		const uint64_t now = getTns();
+		if (frame->m_revision == m_inputRevision && !m_bTransformChanged &&
+			(m_tNextExpire == 0 || now < m_tNextExpire))
+		{
+			return;
+		}
+
+		const uint64_t expiry = m_dTexpire > 0 && now > m_dTexpire ? now - m_dTexpire : 0;
+		const Eigen::Affine3f transform = m_mPosef * m_A.cast<float>();
+		vector<GEOMETRY_POINT> points;
+		points.reserve(frame->m_vPoints.size());
+		m_tNextExpire = 0;
+		for (const GEOMETRY_POINT &point : frame->m_vPoints)
+		{
+			if (point.m_tStamp == 0 || (expiry > 0 && point.m_tStamp <= expiry))
+			{
+				continue;
+			}
+
+			GEOMETRY_POINT transformed = point;
+			transformed.m_vP = transform * point.m_vP;
+			points.push_back(transformed);
+			if (m_dTexpire > 0 && point.m_tStamp <= UINT64_MAX - m_dTexpire)
+			{
+				const uint64_t expires = point.m_tStamp + m_dTexpire;
+				if (m_tNextExpire == 0 || expires < m_tNextExpire)
+				{
+					m_tNextExpire = expires;
+				}
+			}
+		}
+
+		m_pPCL->set(std::move(points), frame->m_tStamp);
+		m_inputRevision = frame->m_revision;
+		m_bTransformChanged = false;
 	}
 
 	void _PCtransform::setTranslation(const Vector3d &vT)
@@ -187,6 +231,7 @@ namespace kai
 			m_mT = createTranslationMatrix(m_vT, m_vR, pRa);
 
 		m_A = m_mT;
+		m_bTransformChanged = true;
 	}
 
 	Eigen::Matrix4d _PCtransform::createTranslationMatrix(const Vector3d &vT, const Vector3d &vR, Vector3d *pRa)
@@ -236,6 +281,7 @@ namespace kai
 	{
 		m_mT = mT;
 		m_A = m_mT;
+		m_bTransformChanged = true;
 	}
 
 	Vector3d _PCtransform::getTranslation(void)

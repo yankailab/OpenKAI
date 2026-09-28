@@ -628,9 +628,11 @@
     $('new-config').onclick = () => loadDocument(initialConfig(), 'OpenKAI.json');
     $('load-example').onclick = () => loadDocument({
       APP: { class: 'InstanceMgr', appName: 'CameraCrop', bLog: true, bStdErr: true },
-      cam: { class: '_Camera', bON: true, thread: { FPS: 30 }, deviceID: 0, vSizeRGB: [640, 480] },
-      crop: { class: '_Crop', thread: { FPS: 30 }, _VisionBase: 'cam', vRoi: [0, 0, 320, 240] },
-      view: { class: '_WindowCV', thread: { FPS: 30 }, vBASE: ['cam', 'crop'] }
+      cam: { class: '_Camera', bON: true, thread: { FPS: 30 }, deviceID: 0, vSizeRGB: [640, 480], RGBframe: 'camRGB' },
+      crop: { class: '_Crop', thread: { FPS: 30 }, RGBframeIn: 'camRGB', RGBframe: 'cropRGB', vRoi: [0, 0, 320, 240] },
+      view: { class: '_WindowCV', thread: { FPS: 30 }, RGBframeIn: 'cropRGB' },
+      camRGB: { type: 'dataStream', class: 'RGBframe' },
+      cropRGB: { type: 'dataStream', class: 'RGBframe' }
     }, 'CameraCrop.json');
     $('open-config').onclick = () => $('config-file').click();
     $('config-file').onchange = async event => {

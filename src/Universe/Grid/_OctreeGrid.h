@@ -3,7 +3,7 @@
 
 #include <mutex>
 #include "../../Primitive/UUID128.h"
-#include "../Geometry/_GeometryBase.h"
+#include "../../DataStream/PCLframe.h"
 #include "_OctreeBase.h"
 
 namespace kai
@@ -58,6 +58,7 @@ namespace kai
 		virtual void updateGrid(void);
 		virtual void updatePoint(void);
 		virtual void deleteExpiredCells(void);
+		void resetPointInputs(void);
 
 	private:
 		virtual void update(void);
@@ -76,9 +77,14 @@ namespace kai
 		OCTREE_CELL<OCTGRID_PCL_CELL> *m_pCell = nullptr; // root cell
 		uint64_t m_dTexpireCell = 0;					  // remove cell if no point is coming by this duration
 
-		// point cloud input
-		vector<_GeometryBase *> m_vpGb;
-		RingBuffer<GEOMETRY_POINT> m_rPt;
+		struct PointInput
+		{
+			PCLframe *m_pFrame = nullptr;
+			uint64_t m_revision = 0;
+		};
+
+		vector<string> m_vPCLframes;
+		vector<PointInput> m_vPointInputs;
 		uint64_t m_dTexpirePCL = 0;
 
 		// Serializes grid updates with root changes in derived modules.

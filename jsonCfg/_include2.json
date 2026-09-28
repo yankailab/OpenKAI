@@ -15,6 +15,11 @@
 		"vSizeRGB": [
 			640,
 			480
-		]
+		],
+		"RGBframe": "camRGB"
+	},
+	"camRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
 	}
 }

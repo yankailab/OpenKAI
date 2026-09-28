@@ -332,7 +332,7 @@ namespace kai
 
 	bool _Orbbec::link(InstanceMgr *pM)
 	{
-		IF_F(!_RGBDbase::link(pM) || !m_pTpp || !m_pTpp->link());
+		IF_F(!_RGBDbase::link(pM) || !m_pTpp);
 
 		return true;
 	}
@@ -2731,12 +2731,12 @@ namespace kai
 				m_spAccel->start(accel, [imu = m_pIMU](shared_ptr<ob::Frame> frame) {
 					if (!imu || !frame) return;
 					const auto v = frame->as<ob::AccelFrame>()->value(); // m/s^2
-					imu->addAcc({v.x, v.y, v.z}, frame->getTimeStampUs() * NSEC_USEC);
+					imu->set(IMUstream::Type::Acc, {v.x, v.y, v.z}, frame->getTimeStampUs() * NSEC_USEC);
 				});
 				m_spGyro->start(gyro, [imu = m_pIMU](shared_ptr<ob::Frame> frame) {
 					if (!imu || !frame) return;
 					const auto v = frame->as<ob::GyroFrame>()->value(); // rad/s
-					imu->addGyro({v.x, v.y, v.z}, frame->getTimeStampUs() * NSEC_USEC);
+					imu->set(IMUstream::Type::Gyro, {v.x, v.y, v.z}, frame->getTimeStampUs() * NSEC_USEC);
 				});
 			}
 
@@ -2856,21 +2856,24 @@ namespace kai
 		IF__(pipeline != m_spPipe, true);
 		NULL_F(spFS);
 
-		// Images, slow stream
-		shared_ptr<ob::Frame> spFrameRGB = nullptr;
-		shared_ptr<ob::Frame> spFrameD = nullptr;
+		shared_ptr<ob::Frame> spFrameRGB;
+		shared_ptr<ob::Frame> spFrameD;
+		Mat mRGB;
+		Mat mDepth;
+		uint64_t tDepth = 0;
 
 		if (m_bRGB)
 		{
 			spFrameRGB = spFS->getFrame(OB_FRAME_COLOR);
 			if (spFrameRGB)
 			{
-				// Own the pixels before the SDK frame is released, and exclude readers.
-				{
-					std::lock_guard<std::mutex> lock(m_mutexRGB);
-					Mat(m_vSizeRGB.y(), m_vSizeRGB.x(), CV_8UC3, spFrameRGB->getData()).copyTo(m_mRGB);
-				}
+				auto frame = spFrameRGB->as<ob::VideoFrame>();
+				mRGB = Mat(frame->getHeight(), frame->getWidth(), CV_8UC3, frame->getData());
 				uint64_t tRGBNs = frameTsNs(spFrameRGB);
+				if (m_pRGB)
+				{
+					m_pRGB->set(mRGB, tRGBNs);
+				}
 				m_dtRGBNs = tRGBNs - m_tRGBNs;
 				m_tRGBNs = tRGBNs;
 			}
@@ -2881,23 +2884,36 @@ namespace kai
 			spFrameD = spFS->getFrame(OB_FRAME_DEPTH);
 			if (spFrameD)
 			{
+				auto frame = spFrameD->as<ob::DepthFrame>();
+				Mat mRaw(frame->getHeight(), frame->getWidth(), CV_16UC1, frame->getData());
+				mRaw.convertTo(mDepth, CV_32FC1, frame->getValueScale() * m_dScale, m_dOfs);
+				tDepth = frameTsNs(spFrameD);
+				if (m_pD)
 				{
-					std::lock_guard<std::mutex> lock(m_mutexDepth);
-					Mat(m_vSizeD.y(), m_vSizeD.x(), CV_16UC1, spFrameD->getData()).copyTo(m_mDepth);
+					m_pD->set(mDepth, tDepth);
 				}
-				uint64_t tDNs = frameTsNs(spFrameD);
-				m_dtDNs = tDNs - m_tDNs;
-				m_tDNs = tDNs;
+				m_dtDNs = tDepth - m_tDNs;
+				m_tDNs = tDepth;
+			}
+		}
+
+		if (!mRGB.empty() && !mDepth.empty())
+		{
+			if (m_pRGBD)
+			{
+				m_pRGBD->set(mRGB, mDepth, tDepth);
+			}
+			if (m_bPCLrgb && m_pRGBDtRGB)
+			{
+				m_pRGBDtRGB->set(mRGB, mDepth, tDepth);
 			}
 		}
 
 		// Capture must not wait for point conversion or per-point insertion.
 		// Replacing this slot drops obsolete work when the cloud worker is slower.
-#ifdef WITH_UNIVERSE
 		if (m_pPCL && ((m_bPCLrgb && spFrameRGB && spFrameD) ||
 			(!m_bPCLrgb && m_bPCL && spFrameD)))
 			m_spPCLframe = spFS;
-#endif
 
 		return true;
 	}
@@ -2915,10 +2931,9 @@ namespace kai
 
 	void _Orbbec::updatePCL(void)
 	{
-#ifdef WITH_UNIVERSE
 		shared_ptr<ob::FrameSet> frames;
 		shared_ptr<ob::PointCloudFilter> filter;
-		_PointCloud *points;
+		PCLframe *points;
 		float scale;
 		{
 			std::lock_guard<std::recursive_mutex> lock(m_mtxDevice);
@@ -2947,11 +2962,12 @@ namespace kai
 		const float s_b = spFrame->as<ob::PointsFrame>()->getCoordinateValueScale() * scale;
 		const uint64_t tDNs = frameTsNs(spFrame);
 
-		points->frameStart();
+		vector<GEOMETRY_POINT> vPCL;
 
 		if (format == OB_FORMAT_RGB_POINT)
 		{
 			const size_t nP = spFrame->getDataSize() / sizeof(OBColorPoint);
+			vPCL.reserve(nP);
 			const auto *pts = reinterpret_cast<const OBColorPoint *>(spFrame->getData());
 			constexpr float c_b = 1.0f / 255.0f;
 
@@ -2964,12 +2980,13 @@ namespace kai
 				const Vector3f vP(p.x * s_b, p.y * s_b, p.z * s_b);
 				// The filter preserves the configured BGR stream's channel order.
 				const Vector3f vC(p.b * c_b, p.g * c_b, p.r * c_b);
-				points->add(vP, vC, tDNs);
+				vPCL.push_back({vP, vC, tDNs});
 			}
 		}
 		else
 		{
 			const size_t nP = spFrame->getDataSize() / sizeof(OBPoint);
+			vPCL.reserve(nP);
 			const auto *pts = reinterpret_cast<const OBPoint *>(spFrame->getData());
 			const Vector3f vC(1, 1, 1);
 
@@ -2980,12 +2997,11 @@ namespace kai
 				IF_CONT(p.z <= 0);
 
 				const Vector3f vP(p.x * s_b, p.y * s_b, p.z * s_b);
-				points->add(vP, vC, tDNs);
+				vPCL.push_back({vP, vC, tDNs});
 			}
 		}
 
-		points->frameStop();
-#endif
+		points->set(std::move(vPCL), tDNs);
 	}
 
 	void _Orbbec::console(void *pConsole)

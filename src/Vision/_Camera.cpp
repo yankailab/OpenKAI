@@ -12,7 +12,6 @@ namespace kai
 
 	_Camera::_Camera()
 	{
-		m_type = vision_camera;
 	}
 
 	_Camera::~_Camera()
@@ -22,24 +21,20 @@ namespace kai
 
 	bool _Camera::loadConfig(void)
 	{
-		IF_F(!_VisionBase::loadConfig());
+		IF_F(!_RGBbase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "deviceID", m_deviceID);
-		jKv(j, "nInitRead", m_nInitRead);
-		jKv(j, "bResetCam", m_bResetCam);
 
 		return true;
 	}
 
 	bool _Camera::saveConfig(bool bExport)
 	{
-		IF_F(!_VisionBase::saveConfig(false));
+		IF_F(!_RGBbase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["deviceID"] = m_deviceID;
-		j["nInitRead"] = m_nInitRead;
-		j["bResetCam"] = m_bResetCam;
 
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
@@ -61,28 +56,13 @@ namespace kai
 		m_camera.set(CAP_PROP_FRAME_HEIGHT, m_vSizeRGB.y());
 		m_camera.set(CAP_PROP_FPS, m_pT->getTargetFPS());
 
-		Mat mCam;
-		for (int i = 0; i < m_nInitRead; i++)
-		{
-			while (!m_camera.read(mCam))
-				;
-		}
-		
-		{
-			std::lock_guard<std::mutex> lock(m_mutexRGB);
-			mCam.copyTo(m_mRGB);
-		}
-
-		m_vSizeRGB.x() = mCam.cols;
-		m_vSizeRGB.y() = mCam.rows;
-
 		m_bOpened = true;
 		return true;
 	}
 
 	void _Camera::close(void)
 	{
-		this->_VisionBase::close();
+		this->_RGBbase::close();
 		m_camera.release();
 	}
 
@@ -107,18 +87,10 @@ namespace kai
 
 			m_pT->autoFPS();
 
-			Mat mCam;
-			while (!m_camera.read(mCam))
-				;
+			Mat m;
+			if (m_camera.read(m) && m_pRGB)
 			{
-				std::lock_guard<std::mutex> lock(m_mutexRGB);
-				mCam.copyTo(m_mRGB);
-			}
-
-			if (m_bResetCam)
-			{
-				m_camera.release();
-				m_bOpened = false;
+				m_pRGB->set(m);
 			}
 		}
 	}

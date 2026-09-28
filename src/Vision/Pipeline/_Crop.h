@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Vision__Crop_H_
 #define OpenKAI_src_Vision__Crop_H_
 
-#include "../_VisionBase.h"
+#include "../_RGBbase.h"
 
 namespace kai
 {
 
-	class _Crop : public _VisionBase
+	class _Crop : public _RGBbase
 	{
 	public:
 		_Crop();
@@ -34,7 +34,7 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV = nullptr;
+		RGBframe *m_pRGBin = nullptr;
 		Vector4i m_vRoi = Vector4i::Zero();
 	};
 

@@ -68,13 +68,11 @@ namespace kai
 		string m_dirSave = "";
 
 		GVIEWER_CAM_PROJ m_camProj;
-		GVIEWER_CAM_POSE m_camPose, m_camPoseDefault;
+		GVIEWER_CAM_POSE m_camPose;
+		GVIEWER_CAM_POSE m_camPoseDefault;
 		Vector3f m_vCoR = Vector3f::Zero(); // center of rotation
 
-		// instance and buffer
-		RingBuffer<GEOMETRY_POINT> m_rPt;
-        RingBuffer<GEOMETRY_LINE> m_rLn;
-		bool m_bGeometryBuffers = true;
+		// Per-source rendering limits; input storage belongs to DataStreams.
 		int m_nPbuf = 200000;
 		int m_nLbuf = 100000;
 		uint64_t m_dTexpire = 0; // nanoseconds; zero disables expiry

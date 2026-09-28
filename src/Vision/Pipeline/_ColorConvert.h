@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Vision__ColorConvert_H_
 #define OpenKAI_src_Vision__ColorConvert_H_
 
-#include "../_VisionBase.h"
+#include "../_RGBbase.h"
 
 namespace kai
 {
 
-	class _ColorConvert : public _VisionBase
+	class _ColorConvert : public _RGBbase
 	{
 	public:
 		_ColorConvert();
@@ -34,7 +34,7 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV = nullptr;
+		RGBframe *m_pRGBin = nullptr;
 		int m_code = COLOR_RGB2GRAY;
 	};
 

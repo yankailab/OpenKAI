@@ -55,13 +55,12 @@ function cmdHandler(event) {
     cmdResetFrame();
     try {
       const jCmd = JSON.parse(text);
-      if (jCmd.cmd !== 'imuData' && jCmd.cmd !== 'hb') wsCmdLog(text);
+      if (jCmd.cmd !== 'hb') wsCmdLog(text);
       handleCmd(jCmd);
     } catch (error) { wsCmdLog('Command reply error: ' + error.message); }
   }
 }
 
 function handleCmd(jCmd) {
-  if (jCmd.cmd === 'imuData') window.dispatchEvent(new CustomEvent('imudata', { detail: jCmd }));
-  else if (jCmd.cmd !== 'hb') window.dispatchEvent(new CustomEvent('orbbeccommand', { detail: jCmd }));
+  if (jCmd.cmd !== 'hb') window.dispatchEvent(new CustomEvent('orbbeccommand', { detail: jCmd }));
 }

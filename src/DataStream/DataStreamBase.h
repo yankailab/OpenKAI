@@ -20,12 +20,6 @@ namespace kai
 		DataStreamBase();
 		virtual ~DataStreamBase();
 
-		virtual void updateTstamp(uint64_t tStamp = 0);
-		virtual uint64_t getTstamp(void);
-
-	protected:
-		uint64_t m_tStamp = 0;
-
 	};
 
 }

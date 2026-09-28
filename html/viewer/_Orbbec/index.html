@@ -21,17 +21,6 @@
     <output id="status" role="status">Ready</output>
   </header>
   <div id="workspace">
-    <aside id="imuPanel" aria-label="IMU preview">
-      <h2>IMU preview</h2>
-      <label>Module <input id="imuModule" value="obIMU" spellcheck="false"></label>
-      <div class="actions"><button id="imuStart" disabled>Start IMU</button><button id="imuStop" disabled>Stop IMU</button></div>
-      <output id="imuStatus" role="status">Stopped</output>
-      <div id="orientation" aria-label="Fused orientation: red X, green Y, blue Z"></div>
-      <div class="axisLegend"><span>X</span><span>Y</span><span>Z</span></div>
-      <output id="angles">Roll — · Pitch — · Yaw —</output>
-      <p class="hint">Orientation is relative; yaw may drift without a heading reference.</p>
-      <div id="imuGraphs"></div>
-    </aside>
     <main>
       <div id="viewport" aria-label="Interactive 3D scene"></div>
       <div id="welcome">Connect to your OpenKAI backend<br><small>Live Orbbec point cloud and camera controls</small></div>

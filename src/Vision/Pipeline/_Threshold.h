@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Vision__Threshold_H_
 #define OpenKAI_src_Vision__Threshold_H_
 
-#include "../_VisionBase.h"
+#include "../_RGBbase.h"
 
 namespace kai
 {
@@ -44,7 +44,7 @@ namespace kai
 		}
 	};
 
-	class _Threshold : public _VisionBase
+	class _Threshold : public _RGBbase
 	{
 	public:
 		_Threshold();
@@ -65,8 +65,7 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV = nullptr;
-		Mat m_mIn;
+		RGBframe *m_pRGBin = nullptr;
 		vector<IMG_THRESHOLD> m_vFilter;
 	};
 

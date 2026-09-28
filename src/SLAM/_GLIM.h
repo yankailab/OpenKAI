@@ -9,6 +9,7 @@
 #define OpenKAI_src_SLAM__GLIM_H_
 
 #include "_SLAMbase.h"
+#include "../DataStream/PCLmap.h"
 #include <array>
 #include <deque>
 #include <map>
@@ -26,22 +27,6 @@ namespace glim
 
 namespace kai
 {
-	// Immutable local submap points shared with viewers; poses may be corrected
-	// when a later submap closes a loop. All snapshots are acquired under SLAM's lock.
-	struct GLIM_SUBMAP
-	{
-		uint64_t id = 0;
-		uint64_t timestampNs = 0;
-		Isometry3d pose = Isometry3d::Identity();
-		std::shared_ptr<const vector<Vector3f>> points;
-	};
-	
-	struct GLIM_MAP_SNAPSHOT
-	{
-		uint64_t session = 0, revision = 0;
-		vector<GLIM_SUBMAP> submaps;
-	};
-
 	class _GLIM : public _SLAMbase
 	{
 	public:
@@ -52,7 +37,6 @@ namespace kai
 		using _SLAMbase::console;
 		void console(const json &j, void *pJSONbase) override;
 		json status(void);
-		GLIM_MAP_SNAPSHOT submapSnapshot(uint64_t knownSession, uint64_t knownRevision);
 		bool saveConfig(bool bExport) override;
 		bool savePointCloud(const string &path, size_t &count, string &error);
 
@@ -75,8 +59,7 @@ namespace kai
 		json validatedParameters(const json &values) const;
 		void applyParameters(const json &values);
 		void refreshSubmapPoses();
-		void collectMapPoints(vector<Vector3f> &points, vector<Vector3f> &colors,
-			size_t limit, bool includeLive);
+		void collectMapPoints(vector<GEOMETRY_POINT> &points, size_t limit, bool includeLive, uint64_t tStamp);
 
 		string m_configPath;
 		bool m_bMapping = true;
@@ -92,10 +75,9 @@ namespace kai
 		std::shared_ptr<glim::SubMappingBase> m_subMapping;
 		std::shared_ptr<glim::GlobalMappingBase> m_globalMapping;
 		std::shared_ptr<glim::RawPoints> m_pendingFrame;
-		vector<Vector3f> m_inputBuffer, m_mapBuffer, m_mapColors;
-		_PointCloud *m_pGlobalMap = nullptr;
+		PCLframe *m_pGlobalMap = nullptr;
+		PCLmap *m_pSubmapStream = nullptr;
 		vector<std::shared_ptr<glim::SubMap>> m_submaps;
-		vector<GLIM_SUBMAP> m_webSubmaps;
 		uint64_t m_session = 0, m_revision = 0;
 		size_t m_submapPoints = 0;
 		struct LiveFrame

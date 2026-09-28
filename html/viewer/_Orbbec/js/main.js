@@ -1,5 +1,4 @@
 import { OrbbecControls } from './orbbecControls.js';
-import { IMUPreview } from './imuPreview.js';
 import { GeometryConnection } from './wsStreamBase.js';
 import { decodeFrame, STREAM_TYPES } from './protocol.js';
 import { Viewer3D } from './viewer3D.js';
@@ -7,7 +6,6 @@ import { Viewer3D } from './viewer3D.js';
 const $ = selector => document.querySelector(selector);
 const viewer = new Viewer3D($('#viewport'));
 const cameraControls = new OrbbecControls();
-const imuPreview = new IMUPreview();
 const pending = new Map();
 const counts = Object.fromEntries(STREAM_TYPES.map(type => [type, 0]));
 const states = Object.fromEntries(STREAM_TYPES.map(type => [type, 'Ready']));
@@ -66,7 +64,6 @@ function draw(now) {
   }
   try {
     viewer.render();
-    imuPreview.render(now);
     for (const acknowledge of credits) acknowledge();
     if (credits.length) ++frames;
     if (now - lastStats >= 500) {
@@ -78,5 +75,5 @@ function draw(now) {
   animation = requestAnimationFrame(draw);
 }
 animation = requestAnimationFrame(draw);
-window.addEventListener('pagehide', () => { stop(); cancelAnimationFrame(animation); viewer.dispose(); imuPreview.dispose(); cameraControls.dispose(); });
+window.addEventListener('pagehide', () => { stop(); cancelAnimationFrame(animation); viewer.dispose(); cameraControls.dispose(); });
 if (location.hash === '#connect') { history.replaceState(null, '', location.pathname + location.search); start(); }

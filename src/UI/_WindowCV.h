@@ -11,7 +11,6 @@
 #include <opencv2/highgui.hpp>
 #include "_UIbase.h"
 #include "../Base/cv.h"
-#include "../Utility/utilCV.h"
 
 namespace kai
 {
@@ -35,7 +34,6 @@ namespace kai
 		}
 
 	protected:
-		Mat m_M;
 		Vector2i m_vSize = Vector2i::Zero();
 
 		bool m_bFullScreen = false;

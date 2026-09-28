@@ -179,7 +179,7 @@ def registration(text):
                 stack[-1] = op + (' ' + condition if condition else '')
             elif op == 'endif' and stack:
                 stack.pop()
-        for m in re.finditer(r'\bADD_MODULE\(\s*(\w+)\s*\)', line):
+        for m in re.finditer(r'\bADD_(?:MODULE|DATA_STREAM)\(\s*(\w+)\s*\)', line):
             result.setdefault(m[1], []).append(list(stack))
     return result
 
@@ -214,6 +214,7 @@ def generate():
         if method['class'] in records:
             records[method['class']]['_methods'].append(method)
     registered = registration(files['src/Instance/Modules.cpp'])
+    registered.update(registration(files['src/Instance/DataStreams.cpp']))
     missing_registered = sorted(set(registered) - set(classes))
     # Scalar and vector constructors can establish defaults after in-class initializers.
     for name, record in records.items():
@@ -270,7 +271,7 @@ def generate():
                 events.append((m.start(), 'range', m))
             for m in re.finditer(r'\bjKv(?:<([^>]+)>)?\s*\(', body):
                 events.append((m.start(), 'read', m))
-            for m in re.finditer(r'\bfindModule\s*\(', body):
+            for m in re.finditer(r'\bfind(?:Module|DataStream)\s*\(', body):
                 events.append((m.start(), 'dependency', m))
             def resolve(expr):
                 expr = expr.strip()
@@ -364,7 +365,7 @@ def generate():
                     statement = body[statement_start:statement_end]
                     casts = re.findall(r'(?:dynamic_cast|static_cast)\s*<\s*(\w+)\s*\*', statement)
                     casts += re.findall(r'\(\s*(\w+)\s*\*\s*\)', statement)
-                    target = next((c for c in casts if c != 'BASE'), casts[0] if casts else 'BASE')
+                    target = next((c for c in casts if c not in ('BASE', 'DataStreamBase')), casts[0] if casts else 'BASE')
                     if target == 'BASE' and path[-1] in records:
                         target = path[-1]
                     elif target == 'BASE' and path[-1].startswith('v') and '_'+path[-1][1:] in records:
@@ -469,22 +470,34 @@ def adapters(records, files, constants, symbol):
     param('InstanceMgr',['vInclude'],'array','src/Instance/InstanceMgr.cpp:loadJsonFiles',description='Additional config paths loaded by the OpenKAI runtime.')
     # InstanceMgr's switch is not read by the individual class.
     param('BASE',['bON'],'boolean','src/Instance/InstanceMgr.cpp:createAll',default=True,description='false disables this instance; true enables it.')
+    param('DataStreamBase',['type'],'string','src/Instance/InstanceMgr.cpp:createAll',default='dataStream',description='Create an independent DataStream rather than a worker module.')
     # StateBase objects live under a keyed map, not in the module factory.
     records['_StateControl']['_embedded'].append((['states','*'],'StateBase'))
     records['_StateControl']['containers'].append({'path':['states'],'type':'object'})
     # A shared helper chooses keys at runtime and is called by both viewer classes.
     helper='src/UI/Viewer/SelectableOctGridSources.cpp:link'
-    for name in ('_WebSelectableOctGrid','_ImGUIselectableOctGrid'):
-        for key,target in (('vGeometry','_GeometryBase'),('vSelectableOctGrid','_SelectableOctGrid')):
+    for name in ('_WebGeometryBase','_WebSelectableOctGrid','_ImGUIselectableOctGrid'):
+        keys = ['vGeometry'] if name == '_WebGeometryBase' else ['vGeometry','vSelectableOctGrid']
+        for key in keys:
             records[name]['containers'].append({'path':[key],'type':'array'})
             param(name,[key],'array',helper)
-            dep(name,[key,'*',target],target,helper)
-            param(name,[key,'*',target],'string',helper,dependency=True)
+            targets = ['_SelectableOctGrid'] if key == 'vSelectableOctGrid' else ['PCLframe','LineFrame']
+            for target in targets:
+                dep(name,[key,'*',target],target,helper)
+                param(name,[key,'*',target],'string',helper,dependency=True)
+            if key == 'vGeometry':
+                param(name,[key,'*','name'],'string',helper)
             for field,type_,default in [('bVisible','boolean',True),('matCol','array',[1,1,1,1]),('matLineWidth','number',1)]:
                 param(name,[key,'*',field],type_,helper,default=default)
             fields=['nC'] if key == 'vSelectableOctGrid' else ['nP','nL','matPointSize']
             for field in fields:
                 param(name,[key,'*',field],'number' if field=='matPointSize' else 'integer',helper,**({'default':2} if field=='matPointSize' else {}))
+    # Grid input names are read in loadConfig and resolved from a member in link.
+    dep('_OctreeGrid',['vPCLframes'],'PCLframe','src/Universe/Grid/_OctreeGrid.cpp:link',multiple=True)
+    for parameter in records['_OctreeGrid']['parameters']:
+        if parameter['path'] == ['vPCLframes']:
+            parameter['dependency'] = True
+            parameter['extraction'] = 'audited-adapter'
     # Preserve the more specific runtime peer cast used by the routing consumer.
     for dependency in records['_Mavlink']['dependencies']:
         if dependency['path'] == ['vRoutings']:
@@ -536,6 +549,8 @@ def adapters(records, files, constants, symbol):
         for diagnostic in record['diagnostics']:
             if name=='SelectableOctGridSources':
                 diagnostic['resolution']='Covered by the viewer adapters in this generator.'
+            elif name=='_OctreeGrid' and diagnostic.get('expression')=='name' and diagnostic.get('kind')=='unresolved-module-reference':
+                diagnostic['resolution']='Covered by the vPCLframes DataStream adapter; names are loaded before link.'
             elif name=='_WebGeometryBase' and diagnostic.get('expression')=='*pConfig':
                 diagnostic['resolution']='Reads bON from the referenced module, not this instance.'
     # The field below is read by UUID-specific helpers rather than jKv.

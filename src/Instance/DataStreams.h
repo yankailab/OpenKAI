@@ -8,10 +8,16 @@
 #ifndef OpenKAI_src_Instance_DataStreams_H_
 #define OpenKAI_src_Instance_DataStreams_H_
 
-// DataStreamss
+// Data streams
 #include "../DataStream/BytePacket.h"
+#include "../DataStream/PCLframe.h"
+#include "../DataStream/PCLmap.h"
+#include "../DataStream/LineFrame.h"
+#include "../DataStream/IMUstream.h"
+#ifdef USE_OPENCV
 #include "../DataStream/RGBframe.h"
 #include "../DataStream/RGBDframe.h"
+#endif
 
 
 #define ADD_DATA_STREAM(x)     \

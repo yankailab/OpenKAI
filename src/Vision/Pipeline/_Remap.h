@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Vision__Remap_H_
 #define OpenKAI_src_Vision__Remap_H_
 
-#include "../_VisionBase.h"
+#include "../_RGBbase.h"
 
 namespace kai
 {
 
-	class _Remap : public _VisionBase
+	class _Remap : public _RGBbase
 	{
 	public:
 		_Remap();
@@ -45,7 +45,7 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV = nullptr;
+		RGBframe *m_pRGBin = nullptr;
 		bool m_bReady = false;
 		string m_fCalib = "";
 

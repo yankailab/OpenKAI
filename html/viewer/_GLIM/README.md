@@ -43,17 +43,16 @@ order when integrating both libraries into another build.
 ## Sensor and viewer connections
 
 ```text
-_Orbbec (or another sensor) → _PointCloud → _GLIM → _WebGLIM → browser
-                              _IMUbase ↗    ↓
-                                    optional globalMapPCL
+sensor → PCLframe → _GLIM → PCLmap → _WebGLIM → browser
+       IMUstream ↗       ↘ optional PCLframe output
 ```
 
-The viewer links directly to GLIM:
+The viewer reads an independent submap DataStream:
 
 ```json
 {
   "class": "_WebGLIM",
-  "_GLIM": "GLIM",
+  "PCLmapIn": "slamMap",
   "webRoot": "html/viewer/_GLIM",
   "host": "0.0.0.0",
   "port": 8080,
@@ -64,18 +63,19 @@ The viewer links directly to GLIM:
 
 `_WebGLIM` is built when `WITH_SLAM`, `USE_GLIM` and `WITH_UNIVERSE` are enabled.
 It shares the HTTP server and camera configuration with other viewers and owns
-its submap protocol. It does not consume `globalMapPCL`, `vGeometry`, or the
+its submap protocol. It reads `PCLmapIn` rather than the flat `PCLframe` output or
 point/line geometry streams. Add the GLIM module name to `_WSconsole.vBASE` and
 enter that same module name in the viewer's command panel.
 
-For another sensor, connect its `_PointCloud` and optional `_IMUbase` to GLIM and
+For another sensor, connect its `PCLframe` and optional `IMUstream` to GLIM and
 select its `configPath`. Clouds use metres and increasing timestamps in
 nanoseconds. When using an IMU, samples must use m/s² including gravity and
 rad/s, calibrated IMU-to-cloud extrinsics, and the same capture clock as depth. The input interface gives one timestamp per complete cloud; it
 does not deskew a scanning LiDAR. Keep the input cloud transform fixed in the
-sensor frame. `_PointCloud` frames remain spans in a ring buffer: allocate at
-least two maximum sensor frames so a completed frame survives while the next
-one is written. The freshness check avoids copying the same frame on idle polls.
+sensor frame. Point clouds are immutable completed snapshots. A reader retains
+its snapshot while the producer publishes the next one; revision checks avoid
+copying unchanged data on idle polls. Configure GLIM's `PCLmap` output and the
+viewer's `PCLmapIn` with the same DataStream name.
 
 The Orbbec example uses native depth, a 0.3–6 m range, 5 cm preprocessing cells,
 and a 25 cm GICP grid. Its IMU-to-depth transform is the connected Gemini 335's
@@ -131,10 +131,10 @@ automatic metre legend following orbit and zoom. Coloring runs on the GPU and
 uses the viewer camera, not the tracked sensor. **Submap** assigns a distinct
 color to each completed map section. GLIM does not preserve camera RGB here.
 
-The optional `globalMapPCL` output remains available to other modules. By default,
-`bPublishLiveMap: false` updates that ring only after a completed-submap change
+The optional `PCLframe` output remains available to other modules. By default,
+`bPublishLiveMap: false` updates that snapshot only after a completed-submap change
 or finalization, subject to `tMapUpdateNs`; `nMapPoints` caps that output alone.
-Set `bPublishLiveMap: true` to include the legacy bounded recent-frame preview
+Set `bPublishLiveMap: true` to include the bounded recent-frame preview
 for those consumers. Neither setting changes `_WebGLIM`'s completed-submap
 stream. `nLiveFrames` also bounds unfinished points retained for PLY export.
 
@@ -158,7 +158,7 @@ on the next Start without replacing GLIM's process-global configuration.
 **Save point cloud** writes a binary little-endian XYZ/RGB PLY on the backend PC
 using `_PCfile::savePLY`. It snapshots all completed submaps plus retained
 unfinished frames at their current poses, including up to `nLiveFrames` of
-recent history. This export is independent of the display ring's `nMapPoints`
+recent history. This export is independent of the display snapshot's `nMapPoints`
 limit. It contains GLIM's processed points, not all raw sensor samples. Stop first
 to export the finalized, optimized map, or save during tracking for a snapshot.
 

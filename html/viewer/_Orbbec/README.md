@@ -6,9 +6,9 @@ the backend host/ports and click **Start**. The geometry service serves the page
 and the vendored three.js assets; no npm or external web server is needed.
 
 The center is copied from `_GeometryBase` and uses `_WebGeometryBase`'s existing
-version-6 `/stream/points` and `/stream/lines` connections. Camera controls and
-IMU preview use a separate `_WSconsole` connection on port **7890**. Module names
-default to **Orbbec** and **obIMU**, matching `jsonCfg/Orbbec.json`.
+version-6 `/stream/points` and `/stream/lines` connections. Camera controls use a
+separate `_WSconsole` connection on port **7890**. The camera module name defaults
+to **Orbbec**, matching `jsonCfg/Orbbec.json`.
 
 ## Camera controls
 
@@ -36,21 +36,9 @@ Module links, thread settings and unrelated modules are preserved. The saved
 settings are read by `loadConfig()` on the next launch. A save failure is
 returned to the browser.
 
-## IMU preview
-
-**Start IMU** subscribes to `_IMUbase`'s slower `threadStream` (30 Hz in the sample
-configuration); **Stop IMU** unsubscribes. Camera IMU acquisition and the fast
-fusion thread continue independently. Enable `Orbbec.bIMU`, link `_IMUbase`, and
-set `obIMU.bFusion: true` to get orientation. Fusion runs at full speed without
-an FPS sleep. Preview pacing comes from `obIMU.threadStream.FPS` (30 in the sample
-configuration), read during initialization.
-
-Six charts show the latest gyro XYZ and acceleration XYZ over ten seconds. The
-coordinate arrows rotate using the fused quaternion. Gyro values use rad/s and
-acceleration uses m/s², following the [Orbbec SDK IMU units](https://orbbec.github.io/OrbbecSDK/doc/tutorial/English/OrbbecSDK_C%2B%2B_API_user_guide-v1.0.pdf).
-Mahony fusion uses paired sensor timestamps in nanoseconds, converted to seconds. The SDK capture timestamps are converted from microseconds when samples enter OpenKAI.
-Euler angles are roll/pitch/yaw in radians on the wire and degrees on screen.
-Orientation is relative; no magnetometer/absolute yaw reference is available.
+Camera IMU capture publishes to the configured `IMUstream` for independent
+consumers such as SLAM. This page displays the camera point cloud and camera
+controls; the former `_IMUbase` preview commands are removed.
 
 ## JSON messages
 
@@ -62,8 +50,6 @@ and replies carry `module` and optional `requestId` for routing/correlation.
 {"module":"Orbbec","cmd":"getConfig","requestId":"camera-1"}
 {"module":"Orbbec","cmd":"setConfig","config":{"OB_PROP_COLOR_EXPOSURE_INT":100}}
 {"module":"Orbbec","cmd":"saveConfig"}
-{"module":"obIMU","cmd":"startStream"}
-{"module":"obIMU","cmd":"stopStream"}
 ```
 
 Camera replies include `bSuccess`, `config` and `deviceOpen`; load also includes
@@ -71,30 +57,6 @@ Camera replies include `bSuccess`, `config` and `deviceOpen`; load also includes
 live parameters.
 No browser request can select a save-file path.
 
-IMU samples use `cmd: "imuData"`, `gyro: [x,y,z]`, `acc: [x,y,z]`,
-`quaternion: [w,x,y,z]`, `rpy: [roll,pitch,yaw]`, `tGyro`, `tAcc`, `tFusion`,
-`fusion` and `orientationValid`. Raw preview samples are retained separately from
-fusion queues. Fusion publishes orientation through a nonblocking snapshot;
-preview JSON construction and sending happen after releasing the snapshot locks.
-Eigen's canonical ZYX decomposition supplies roll/pitch/yaw. Invalid input samples
-are discarded; timestamp resets and long fusion gaps restart integration. Stop
-replies are serialized after prior samples.
-
-## Checks
-
-```sh
-cmake --build build -j 4
-python3 test/orbbec/native.py build
-python3 test/orbbec/browser.py build/OpenKAI
-```
-
-The native test needs the installed SDK but no camera. It checks command
-validation, sparse save/reload, IMU pairing, fusion timing and stream stop. It also
-checks preview FPS, negative-yaw angles, and continued fusion while preview reading
-and transport sending are deliberately blocked.
-The browser test needs Chrome/Chromium and runs a temporary headless version of
-`jsonCfg/Orbbec.json` with temporary ports and save files. With a camera, it checks
-real point clouds, fused IMU data, and live/save separation; without one, it checks
-offline command rejection. Fragmented IMU JSON also exercises all six graphs and
-orientation independently of hardware. A screenshot is written to
-`/tmp/openkai-orbbec-viewer.png`.
+The shared geometry snapshot regression checks are documented in
+[`../tests/README.md`](../tests/README.md). Camera hardware is required to validate
+live capture and device property changes.

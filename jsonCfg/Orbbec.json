@@ -12,8 +12,7 @@
 			"FPS": 10
 		},
 		"vBASE": [
-			"Orbbec",
-			"obIMU"
+			"Orbbec"
 		]
 	},
 	"wsServer": {
@@ -44,12 +43,9 @@
 		"msgFinishSend": "",
 		"msgFinishRecv": "EOJ",
 		"vBASE": [
-			"Orbbec",
-			"obIMU"
+			"Orbbec"
 		]
 	},
-
-
 	"view": {
 		"class": "_WindowCV",
 		"bON": true,
@@ -57,9 +53,7 @@
 			"FPS": 30
 		},
 		"bFullScreen": 0,
-		"vBASE": [
-			"Orbbec"
-		]
+		"RGBframeIn": "OrbbecRGB"
 	},
 	"viewD": {
 		"class": "_WindowCV",
@@ -68,12 +62,8 @@
 			"FPS": 30
 		},
 		"bFullScreen": 0,
-		"vBASE": [
-			"d2rgb"
-		]
+		"RGBframeIn": "d2rgbRGB"
 	},
-
-
 	"Orbbec": {
 		"class": "_Orbbec",
 		"bON": true,
@@ -93,8 +83,8 @@
 			640,
 			480
 		],
-		"_PointCloud": "obPCL",
-		"_IMUbase": "obIMU",
+		"PCLframe": "obPCL",
+		"IMUframe": "obIMU",
 		"SN": "",
 		"tOutMs": 1000,
 		"bRGB": true,
@@ -102,81 +92,63 @@
 		"bIMU": true,
 		"bPCL": true,
 		"bPCLrgb": true,
-
 		"/OrbbecControls": "null preserves the camera setting (OrbbecCtrl default). Set a BOOL option to true/false or an INT/FLOAT option to a supported number to override it.",
 		"OB_PROP_COLOR_AUTO_EXPOSURE_BOOL": null,
 		"OB_PROP_COLOR_EXPOSURE_INT": null,
 		"OB_PROP_COLOR_GAIN_INT": null,
 		"OB_PROP_COLOR_AUTO_WHITE_BALANCE_BOOL": null,
 		"OB_PROP_COLOR_WHITE_BALANCE_INT": null,
-
 		"OB_PROP_DEPTH_AUTO_EXPOSURE_BOOL": null,
 		"OB_PROP_DEPTH_EXPOSURE_INT": null,
 		"OB_PROP_DEPTH_GAIN_INT": null,
-
 		"OB_PROP_LASER_CONTROL_INT": null,
 		"OB_PROP_LASER_POWER_LEVEL_CONTROL_INT": null,
 		"OB_PROP_DEPTH_NOISE_REMOVAL_FILTER_BOOL": null,
 		"OB_PROP_HW_NOISE_REMOVE_FILTER_ENABLE_BOOL": null,
 		"OB_PROP_HW_NOISE_REMOVE_FILTER_THRESHOLD_FLOAT": null,
-
 		"OB_PROP_COLOR_MIRROR_BOOL": null,
-		"OB_PROP_DEPTH_MIRROR_BOOL": null
+		"OB_PROP_DEPTH_MIRROR_BOOL": null,
+		"RGBframe": "OrbbecRGB",
+		"Dframe": "OrbbecDepth"
 	},
-
-	
 	"d2rgb": {
 		"class": "_D2RGB",
 		"bON": true,
 		"thread": {
 			"FPS": 30
 		},
-		"_RGBDbase": "Orbbec",
-		"bMeasure": false
+		"bMeasure": false,
+		"DframeIn": "OrbbecDepth",
+		"RGBframe": "d2rgbRGB"
 	},
 	"obPCL": {
-		"class": "_PointCloud",
-		"bON": true,
-		"bLog": true,
-		"thread": {
-			"FPS": 1
-		},
-		"nP":1000000
+		"type": "dataStream",
+		"class": "PCLframe"
 	},
 	"obIMU": {
-		"class": "_IMUbase",
-		"bFusion": true,
-		"bON": true,
-		"thread": {
-			"FPS": 200
-		},
-		"threadStream": { "FPS": 30 },
-		"nIMUdqMax": 1000,
-		"tIMUpairToleranceNs": 5000000
+		"type": "dataStream",
+		"class": "IMUstream"
 	},
-
 	"viewer": {
-	    "class": "_WebGeometryBase",
+		"class": "_WebGeometryBase",
 		"webRoot": "html/viewer/_Orbbec",
 		"bON": true,
-	    "thread": {
-	      "FPS": 30
-	    },
-	    "host": "0.0.0.0",
-	    "port": 8080,
-	    "nClientMax": 8,
-	    "nPbuf": 400000,
-	    "nLbuf": 0,
-	    "dTexpire": 0,
-	    "bAutoBound": true,
-	    "bShowGrid": true,
-		"bFrame": true,
-
-	    "vCamLookAt": [
-	      0,
-	      0,
-	      0
-	    ],
+		"thread": {
+			"FPS": 30
+		},
+		"host": "0.0.0.0",
+		"port": 8080,
+		"nClientMax": 8,
+		"nPbuf": 400000,
+		"nLbuf": 0,
+		"dTexpire": 0,
+		"bAutoBound": true,
+		"bShowGrid": true,
+		"vCamLookAt": [
+			0,
+			0,
+			0
+		],
 		"vCamEye": [
 			0,
 			-1,
@@ -187,18 +159,30 @@
 			-1,
 			0
 		],
-	    "camFov": 70,
-	    "vCamNF": [
-	      0.01,
-	      1000000
-	    ],
-	    "vGeometry": [
-	      {
-	        "_GeometryBase": "obPCL",
-	        "nP": 400000,
-	        "nL": 0,
-	        "matPointSize": 2
-	      }
-	    ]
+		"camFov": 70,
+		"vCamNF": [
+			0.01,
+			1000000
+		],
+		"vGeometry": [
+			{
+				"PCLframe": "obPCL",
+				"nP": 400000,
+				"nL": 0,
+				"matPointSize": 2
+			}
+		]
+	},
+	"OrbbecRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"OrbbecDepth": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"d2rgbRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
 	}
 }

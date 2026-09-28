@@ -20,7 +20,7 @@ namespace kai
 
     _RealSense::~_RealSense()
     {
-        DEL(m_rspAlign);
+        stop();
     }
 
     bool _RealSense::loadConfig(void)
@@ -147,37 +147,34 @@ namespace kai
 
             // Confirm the frame is received
             rs2::frameset rsFrameset = m_rsPipe.wait_for_frames();
+            rs2::frame rsColor;
+            rs2::frame rsDepth;
 
             if (m_bRGB)
             {
                 if (m_bAlign)
                 {
-                    m_rspAlign = new rs2::align(rs2_stream::RS2_STREAM_COLOR);
-                    rs2::frameset rsFramesetAlign = m_rspAlign->process(rsFrameset);
-                    m_rsColor = rsFramesetAlign.get_color_frame();
-                    m_rsDepth = rsFramesetAlign.get_depth_frame();
+                    rs2::align align(RS2_STREAM_COLOR);
+                    rs2::frameset rsFramesetAlign = align.process(rsFrameset);
+                    rsColor = rsFramesetAlign.get_color_frame();
+                    rsDepth = rsFramesetAlign.get_depth_frame();
                 }
                 else
                 {
-                    m_rsColor = rsFrameset.get_color_frame();
-                    m_rsDepth = rsFrameset.get_depth_frame();
+                    rsColor = rsFrameset.get_color_frame();
+                    rsDepth = rsFrameset.get_depth_frame();
                 }
 
-                m_vSizeRGB.x() = m_rsColor.as<rs2::video_frame>().get_width();
-                m_vSizeRGB.y() = m_rsColor.as<rs2::video_frame>().get_height();
+                m_vSizeRGB.x() = rsColor.as<rs2::video_frame>().get_width();
+                m_vSizeRGB.y() = rsColor.as<rs2::video_frame>().get_height();
             }
             else
             {
-                m_rsDepth = rsFrameset.get_depth_frame();
+                rsDepth = rsFrameset.get_depth_frame();
             }
 
-            if (m_rsCtrl.m_fFilterMagnitude < m_rsCtrl.m_fDefault)
-                m_rsDepth = m_rsfDec.process(m_rsDepth);
-            if (m_rsCtrl.m_fHolesFill < m_rsCtrl.m_fDefault)
-                m_rsDepth = m_rsfSpat.process(m_rsDepth);
-
-            m_vSizeD.x() = m_rsDepth.as<rs2::video_frame>().get_width();
-            m_vSizeD.y() = m_rsDepth.as<rs2::video_frame>().get_height();
+            m_vSizeD.x() = rsDepth.as<rs2::video_frame>().get_width();
+            m_vSizeD.y() = rsDepth.as<rs2::video_frame>().get_height();
         }
         catch (const rs2::camera_disconnected_error &e)
         {
@@ -199,9 +196,6 @@ namespace kai
             LOG_E("Realsense exception");
             return false;
         }
-
-        // m_spImg = std::make_shared<geometry::Image>();
-        // m_spImg->Prepare(m_vSizeRGB.x(), m_vSizeRGB.y(), 3, 1);
 
         m_bOpened = true;
         return true;
@@ -293,8 +287,18 @@ namespace kai
 
     void _RealSense::close(void)
     {
+        if (m_bOpened)
+        {
+            try
+            {
+                m_rsPipe.stop();
+            }
+            catch (const rs2::error &e)
+            {
+                LOG_E(e.what());
+            }
+        }
         this->_RGBDbase::close();
-        m_rsPipe.stop();
     }
 
     bool _RealSense::start(void)
@@ -303,6 +307,19 @@ namespace kai
         NULL_F(m_pTpp);
         IF_F(!m_pT->startThread(getUpdate, this));
         return m_pTpp->startThread(getTPP, this);
+    }
+
+    void _RealSense::stop(void)
+    {
+        if (m_pT)
+        {
+            m_pT->join();
+        }
+        if (m_pTpp)
+        {
+            m_pTpp->join();
+        }
+        close();
     }
 
     bool _RealSense::check(void)
@@ -329,7 +346,7 @@ namespace kai
 
             if (updateRS())
             {
-                m_pTpp->wakeUp();
+                m_pTpp->run();
             }
             else
             {
@@ -346,31 +363,8 @@ namespace kai
 
         try
         {
-            rs2::frameset rsFrameset = m_rsPipe.wait_for_frames();
-
-            if (m_bRGB)
-            {
-                if (m_bAlign)
-                {
-                    rs2::frameset rsFramesetAlign = m_rspAlign->process(rsFrameset);
-                    m_rsColor = rsFramesetAlign.get_color_frame();
-                    m_rsDepth = rsFramesetAlign.get_depth_frame();
-                }
-                else
-                {
-                    m_rsColor = rsFrameset.get_color_frame();
-                    m_rsDepth = rsFrameset.get_depth_frame();
-                }
-
-#ifdef USE_OPENCV
-                std::lock_guard<std::mutex> lock(m_mutexRGB);
-                Mat(Size(m_vSizeRGB.x(), m_vSizeRGB.y()), CV_8UC3, (void *)m_rsColor.get_data(), Mat::AUTO_STEP).copyTo(m_mRGB);
-#endif
-            }
-            else
-            {
-                m_rsDepth = rsFrameset.get_depth_frame();
-            }
+            rs2::frameset frames = m_rsPipe.wait_for_frames();
+            m_rsFrames.enqueue(frames);
         }
         catch (const rs2::camera_disconnected_error &e)
         {
@@ -398,100 +392,115 @@ namespace kai
 
     void _RealSense::updateTPP(void)
     {
+        rs2::align align(RS2_STREAM_COLOR);
         while (m_pTpp->bRun())
         {
-            m_pTpp->sleepT(0);
-
-            if (m_rsCtrl.m_fFilterMagnitude < m_rsCtrl.m_fDefault)
-                m_rsDepth = m_rsfDec.process(m_rsDepth);
-            if (m_rsCtrl.m_fHolesFill < m_rsCtrl.m_fDefault)
-                m_rsDepth = m_rsfSpat.process(m_rsDepth);
-
-#ifdef USE_OPENCV
-            Mat mZ = Mat(Size(m_vSizeD.x(), m_vSizeD.y()), CV_16UC1, (void *)m_rsDepth.get_data(), Mat::AUTO_STEP);
-            Mat mD, mDs;
-            mZ.convertTo(mD, CV_32FC1);
-            mDs = mD * m_dScale;
+            m_pTpp->autoFPS();
+            rs2::frameset frames;
+            if (!m_rsFrames.poll_for_frame(&frames))
             {
-                std::lock_guard<std::mutex> lock(m_mutexDepth);
-                cv::add(mDs, m_dOfs, m_mDepth);
+                continue;
             }
 
-            // if (m_bDepthShow)
-            // {
-            //     IF_(m_mDepth.empty());
-            //     rs2::colorizer rsColorMap;
-            //     rs2::frame dColor = rsColorMap.process(m_rsDepth);
-            //     Mat mDColor(Size(m_vDsize.x, m_vDsize.y), CV_8UC3, (void *)dColor.get_data(),
-            //                 Mat::AUTO_STEP);
-            //     mDColor.copyTo(m_mDepthShow);
-            // }
-#endif
+            try
+            {
+                if (m_bRGB && m_bAlign)
+                {
+                    frames = align.process(frames);
+                }
+                rs2::frame color = frames.get_color_frame();
+                rs2::frame depth = frames.get_depth_frame();
+                if (!depth)
+                {
+                    continue;
+                }
+                if (m_rsCtrl.m_fFilterMagnitude < m_rsCtrl.m_fDefault)
+                {
+                    depth = m_rsfDec.process(depth);
+                }
+                if (m_rsCtrl.m_fHolesFill < m_rsCtrl.m_fDefault)
+                {
+                    depth = m_rsfSpat.process(depth);
+                }
 
-#ifdef WITH_UNIVERSE
-            updatePC();
-#endif
+                const auto videoDepth = depth.as<rs2::video_frame>();
+                const uint64_t tStamp = static_cast<uint64_t>(depth.get_timestamp() * NSEC_MSEC);
+                Mat mRaw(videoDepth.get_height(), videoDepth.get_width(), CV_16UC1,
+                         const_cast<void *>(depth.get_data()), videoDepth.get_stride_in_bytes());
+                Mat mDepth;
+                mRaw.convertTo(mDepth, CV_32FC1, m_dScale, m_dOfs);
+                if (m_pD)
+                {
+                    m_pD->set(mDepth, tStamp);
+                }
+
+                Mat mRGB;
+                if (m_bRGB && color)
+                {
+                    const auto videoColor = color.as<rs2::video_frame>();
+                    mRGB = Mat(videoColor.get_height(), videoColor.get_width(), CV_8UC3,
+                               const_cast<void *>(color.get_data()), videoColor.get_stride_in_bytes());
+                    if (m_pRGB)
+                    {
+                        m_pRGB->set(mRGB, static_cast<uint64_t>(color.get_timestamp() * NSEC_MSEC));
+                    }
+                    if (m_pRGBD)
+                    {
+                        m_pRGBD->set(mRGB, mDepth, tStamp);
+                    }
+                    if (m_bAlign && m_pRGBDtRGB)
+                    {
+                        m_pRGBDtRGB->set(mRGB, mDepth, tStamp);
+                    }
+                }
+                updatePC(depth, color, mRGB, tStamp);
+            }
+            catch (const rs2::error &e)
+            {
+                LOG_E(e.what());
+            }
         }
     }
 
-#ifdef WITH_UNIVERSE
-    void _RealSense::updatePC(void)
+    void _RealSense::updatePC(const rs2::frame &depth, const rs2::frame &color, const Mat &mRGB, uint64_t tStamp)
     {
-        NULL_(m_pPCf);
-        PointCloud *pPC = pPCframe->getNextBuffer();
+        if (!m_pPCL || (!m_bPCL && !m_bPCLrgb))
+        {
+            return;
+        }
 
-        m_rsPC.map_to(m_rsColor);
-        m_rsPoints = m_rsPC.calculate(m_rsDepth);
+        if (m_bPCLrgb && color)
+        {
+            m_rsPC.map_to(color);
+        }
+        const rs2::points points = m_rsPC.calculate(depth);
+        const auto *vertices = points.get_vertices();
+        const auto *texCoords = points.get_texture_coordinates();
+        vector<GEOMETRY_POINT> vPCL;
+        vPCL.reserve(points.size());
+        for (size_t i = 0; i < points.size(); ++i)
+        {
+            const auto &p = vertices[i];
+            if (!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z) || p.z <= 0)
+            {
+                continue;
+            }
 
-        // memcpy(m_spImg->data_.data(),
-        // 	   m_rsColor.get_data(),
-        // 	   std::abs(m_vSizeRGB.prod()) * 3);
-
-        // auto rspVertex = m_rsPoints.get_vertices();
-        // auto rspTexCoord = m_rsPoints.get_texture_coordinates();
-        // int nP = m_rsPoints.size();
-
-        // PointCloud *pPC = m_sPC.next();
-
-        // const static float c_b = 1.0 / 255.0;
-
-        // for (int i = 0; i < nP; i++)
-        // {
-        // 	rs2::vertex vr = rspVertex[i];
-        // 	IF_CONT(vr.z < m_vRz.x());
-        // 	IF_CONT(vr.z > m_vRz.y());
-
-        // 	Vector3d ve(vr.x, vr.y, vr.z);
-        // 	pPC->points_.push_back(ve);
-
-        // 	rs2::texture_coordinate tc = rspTexCoord[i];
-        // 	int tx = constrain<int>(tc.u * m_vSizeRGB.x(), 0, m_vSizeRGB.x() - 1);
-        // 	int ty = constrain<int>(tc.v * m_vSizeRGB.y(), 0, m_vSizeRGB.y() - 1);
-        // 	Vector3d te((double)*m_spImg->PointerAt<uint8_t>(tx, ty, 2),
-        // 					   (double)*m_spImg->PointerAt<uint8_t>(tx, ty, 1),
-        // 					   (double)*m_spImg->PointerAt<uint8_t>(tx, ty, 0));
-        // 	te *= c_b;
-        // 	pPC->colors_.push_back(te);
-        // }
+            Vector3f vC(1, 1, 1);
+            if (m_bPCLrgb && !mRGB.empty())
+            {
+                const auto &uv = texCoords[i];
+                if (std::isfinite(uv.u) && std::isfinite(uv.v))
+                {
+                    const int x = constrain<int>(uv.u * mRGB.cols, 0, mRGB.cols - 1);
+                    const int y = constrain<int>(uv.v * mRGB.rows, 0, mRGB.rows - 1);
+                    const Vec3b c = mRGB.at<Vec3b>(y, x);
+                    vC = Vector3f(c[2], c[1], c[0]) / 255.0f;
+                }
+            }
+            vPCL.push_back({Vector3f(p.x, p.y, p.z), vC, tStamp});
+        }
+        m_pPCL->set(std::move(vPCL), tStamp);
     }
-#endif
-
-    //		auto cIntr = m_pRS->m_cIntrinsics;
-    //		auto dIntr = m_pRS->m_dIntrinsics;
-    //		dIntr = cIntr;
-    //		m_imgD.Prepare(dIntr.width, dIntr.height, 1, 2);
-    //		m_imgRGB.Prepare(cIntr.width, cIntr.height, 3, 1);
-    //		memcpy(m_imgD.data_.data(), m_pRS->m_rsDepth.get_data(), dIntr.width * dIntr.height * 2);
-    //		memcpy(m_imgRGB.data_.data(), m_pRS->m_rsColor.get_data(), cIntr.width * cIntr.height * 3);
-    //
-    //		shared_ptr<RGBDImage> imgRGBD = RGBDImage::CreateFromColorAndDepth(m_imgRGB, m_imgD, 1.0/m_pRS->m_dScale, m_pRS->m_vRange.y(), false);
-    //        camera::PinholeCameraIntrinsic camInt(dIntr.width,
-    //        										dIntr.height,
-    //												dIntr.fx,
-    //												dIntr.fy,
-    //												dIntr.ppx,
-    //												dIntr.ppy);
-    //        m_spPC = PointCloud::CreateFromRGBDImage(*imgRGBD, camInt);
-    //        m_pPC = m_spPC;
 
 }

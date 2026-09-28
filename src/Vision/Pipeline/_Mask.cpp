@@ -20,14 +20,14 @@ namespace kai
 
 	bool _Mask::loadConfig(void)
 	{
-		IF_F(!_VisionBase::loadConfig());
+		IF_F(!_RGBbase::loadConfig());
 
 		return true;
 	}
 
 	bool _Mask::saveConfig(bool bExport)
 	{
-		IF_F(!_VisionBase::saveConfig(false));
+		IF_F(!_RGBbase::saveConfig(false));
 
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
@@ -35,19 +35,19 @@ namespace kai
 
 	bool _Mask::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_VisionBase::link(pM));
+		IF_F(!this->_RGBbase::link(pM));
 		const json &j = *m_pJ;
 
 		string n;
 		n = "";
-		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(pM->findModule(n));
-		NULL_F(m_pV);
+		jKv(j, "RGBframeIn", n);
+		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		NULL_F(m_pRGBin);
 
 		n = "";
-		jKv(j, "_VisionBaseMask", n);
-		m_pVmask = (_VisionBase *)(pM->findModule(n));
-		NULL_F(m_pVmask);
+		jKv(j, "RGBframeMask", n);
+		m_pMask = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		NULL_F(m_pMask);
 
 		return true;
 	}
@@ -70,23 +70,22 @@ namespace kai
 
 	void _Mask::filter(void)
 	{
-		NULL_(m_pV);
-		NULL_(m_pVmask);
+		NULL_(m_pRGB);
+		NULL_(m_pRGBin);
+		NULL_(m_pMask);
 
-		m_pV->copyMatRGB(m_mIn);
-		IF_(m_mIn.empty());
-		m_pVmask->copyMatRGB(m_mMask);
-		IF_(m_mMask.empty());
+		const RGBframe::SnapshotPtr frame = m_pRGBin->get();
+		const Mat &mIn = frame->m_mRGB;
+		IF_(mIn.empty());
+		const RGBframe::SnapshotPtr maskFrame = m_pMask->get();
+		const Mat &mMask = maskFrame->m_mRGB;
+		IF_(mMask.empty());
 
-		Mat mV = m_mIn;
-		Mat mM = m_mMask;
 		Mat mBg;
-		// mBg.zeros(mV.rows, mV.cols, mV.type());
 
-		mV.copyTo(mBg, mM);
-		
-		std::lock_guard<std::mutex> lock(m_mutexRGB);
-		mBg.copyTo(m_mRGB);
+		mIn.copyTo(mBg, mMask);
+
+		m_pRGB->set(mBg, frame->m_tStamp);
 	}
 
 }

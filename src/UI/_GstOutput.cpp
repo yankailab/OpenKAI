@@ -25,9 +25,7 @@ namespace kai
 		const json &j = *m_pJ;
 
 		jKv<int>(j, "vSize", m_vSize);
-		IF_F(std::abs(m_vSize.prod()) <= 0);
-
-		m_M = Mat::zeros(m_vSize.y(), m_vSize.x(), CV_8UC3);
+		IF_Le_F(m_vSize.x() <= 0 || m_vSize.y() <= 0, "Invalid GStreamer output size");
 
 		jKv(j, "gstOutput", m_gstOutput);
 		if (!m_gstOutput.empty())
@@ -79,25 +77,11 @@ namespace kai
 	{
 		IF_(!m_gst.isOpened());
 
-		// draw contents
-		m_M = Scalar(0);
-		for (BASE *pB : m_vpB)
-		{
-			pB->draw((void *)&m_M);
-		}
+		NULL_(m_pRGBin);
+		const RGBframe::SnapshotPtr frame = m_pRGBin->get();
+		const Mat image = prepareImage(frame->m_mRGB, m_vSize);
+		IF_(image.empty());
 
-		Size fs = m_M.size();
-		if (fs.width != m_vSize.x() || fs.height != m_vSize.y())
-		{
-			cv::resize(m_M, m_M, cv::Size(m_vSize.x(), m_vSize.y()));
-		}
-
-		Mat m = m_M;
-		if (m.type() != CV_8UC3)
-		{
-			cv::cvtColor(m_M, m, COLOR_GRAY2BGR);
-		}
-
-		m_gst << m;
+		m_gst << image;
 	}
 }

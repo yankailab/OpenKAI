@@ -94,14 +94,11 @@ namespace kai
 		virtual bool link(InstanceMgr *pM) override;
 		virtual bool check(void);
 		virtual bool start(void);
+		void stop(void) override;
 		virtual void console(void *pConsole);
 
 		virtual bool open(void);
 		virtual void close(void);
-
-#ifdef WITH_UNIVERSE
-		virtual int getPointCloud(_PCframe *pPCframe, int nPmax = INT_MAX);
-#endif
 
 		static void sCbEvent(void *pHandle, int event, void *pData)
 		{
@@ -130,7 +127,6 @@ namespace kai
 		bool initHDL(XdynRegParams_t *pRegParams, uint16_t tofW, uint16_t tofH, uint16_t rgbW, uint16_t rgbH);
 		void releaseHDL(void);
 
-		void updateXDynamics(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -146,8 +142,6 @@ namespace kai
 		XDctrl m_xdCtrl;
 		XDhdl m_xdHDL;
 
-		Mat m_mXDyuv;
-		Mat m_mXDd;
 	};
 
 }

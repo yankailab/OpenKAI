@@ -93,10 +93,7 @@ namespace kai
 	{
 		NULL_F(m_pSession);
 		NULL_F(m_pCanvas);
-		NULL_F(m_pV);
-		Mat *pBGR = m_pV->getMatRGB();
-		NULL_F(pBGR);
-		IF_F(pBGR->empty());
+		NULL_F(m_pRGBin);
 
 		return this->_DetectorBase::check();
 	}
@@ -117,12 +114,11 @@ namespace kai
 	{
 		IF_(!check());
 
-		Mat *pBGR = m_pV->getMatRGB();
-		pBGR->copyTo(m_mRGB);
-		Mat mIn = m_mRGB;
-
-		if (m_bLetterBoxForSquare && m_vModelInputSize.x() == m_vModelInputSize.y())
-			mIn = formatToSquare(mIn);
+		const auto frame = m_pRGBin->get();
+		const Mat &input = frame->m_mRGB;
+		IF_(input.empty());
+		const Mat mIn = m_bLetterBoxForSquare && m_vModelInputSize.x() == m_vModelInputSize.y()
+			? formatToSquare(input) : input;
 
 		Mat mResized;
 		cv::resize(mIn, mResized, cv::Size(m_vModelInputSize.x(), m_vModelInputSize.y()));

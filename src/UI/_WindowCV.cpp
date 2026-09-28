@@ -27,8 +27,7 @@ namespace kai
 		jKv(j, "bFullScreen", m_bFullScreen);
 		jKv<int>(j, "vSize", m_vSize);
 
-		IF_Le_F(std::abs(m_vSize.prod()) <= 0, "Window size too small");
-		m_M = Mat::zeros(m_vSize.y(), m_vSize.x(), CV_8UC3);
+		IF_Le_F(m_vSize.x() <= 0 || m_vSize.y() <= 0, "Window size too small");
 
 		string wn = this->getName();
 		if (m_bFullScreen)
@@ -74,15 +73,12 @@ namespace kai
 
 	void _WindowCV::updateWindow(void)
 	{
-		// draw contents
-		for (BASE *pB : m_vpB)
-		{
-			pB->draw((void *)&m_M);
-		}
-		IF_(m_M.empty());
+		NULL_(m_pRGBin);
+		const RGBframe::SnapshotPtr frame = m_pRGBin->get();
+		const Mat image = prepareImage(frame->m_mRGB, m_vSize);
+		IF_(image.empty());
 
-		// show window
-		imshow(this->getName(), m_M);
+		imshow(this->getName(), image);
 
 		// autoFPS() controls the refresh rate. Keep event handling short because
 		// HighGUI serializes these calls across all preview windows.

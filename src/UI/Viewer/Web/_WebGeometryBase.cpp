@@ -23,7 +23,6 @@ namespace kai
 		jKv(j, "port", m_port);
 		jKv(j, "webRoot", m_root);
 		jKv(j, "nClientMax", m_maxClients);
-		jKv(j, "bFrame", m_bFrame);
 		jKv(j, "bAutoBound", m_autoBound);
 		jKv(j, "bShowGrid", m_showGrid);
 		jKv<float>(j, "vBgCol", m_background);
@@ -51,7 +50,6 @@ namespace kai
 		j["port"] = m_port;
 		j["webRoot"] = m_root;
 		j["nClientMax"] = m_maxClients;
-		j["bFrame"] = m_bFrame;
 		j["bAutoBound"] = m_autoBound;
 		j["bShowGrid"] = m_showGrid;
 		j["vBgCol"] = {m_background.x(), m_background.y(), m_background.z(), m_background.w()};
@@ -65,63 +63,20 @@ namespace kai
 		IF_F(!_GeometryViewerBase::link(pM));
 		const json &j = *m_pJ;
 		IF_Le_F(j.contains("vSelectableOctGrid") || j.contains("nCbuf"), "WebGeometryBase supports only vGeometry points and lines");
-		const json *entries = jK(j, "vGeometry");
-		IF_Le_F(entries && !entries->is_null() && !entries->is_array(), "vGeometry must be an array");
-		std::vector<_GeometryBase *> geometry;
-		std::vector<GeometryStyle> styles;
-		std::set<std::string> names;
-		for (size_t i = 0; entries && i < entries->size(); ++i)
-		{
-			const auto &entry = (*entries)[i];
-			IF_Le_F(!entry.is_object(), "vGeometry entries must be objects");
-			GeometryStyle style;
-			IF_Le_F(!jKv(entry, "_GeometryBase", style.m_name) || style.m_name.empty(), "vGeometry entry needs _GeometryBase");
-			IF_Le_F(!names.insert(style.m_name).second, "Duplicate viewer source: " + style.m_name);
-			style.m_nP = m_nPbuf; style.m_nL = m_nLbuf;
-			jKv(entry, "nP", style.m_nP);
-			jKv(entry, "nL", style.m_nL);
-			jKv(entry, "bVisible", style.m_bVisible);
-			jKv(entry, "matPointSize", style.m_matPointSize);
-			jKv<float>(entry, "matCol", style.m_matCol);
-			IF_Le_F(style.m_nP < 0 || style.m_nL < 0 || !style.m_matCol.allFinite() ||
-				!std::isfinite(style.m_matPointSize) || style.m_matPointSize <= 0, "Invalid geometry limits/material: " + style.m_name);
-			style.m_nP = std::min(style.m_nP, m_nPbuf);
-			style.m_nL = std::min(style.m_nL, m_nLbuf);
-			auto *module = static_cast<BASE *>(pM->findModule(style.m_name));
-			if (!module)
-			{
-				const json *pConfig = pM->findJson(style.m_name);
-				int enabled = 1;
-				if (pConfig)
-				{
-					jKv(*pConfig, "bON", enabled);
-				}
-				if (pConfig && pConfig->is_object() && !enabled)
-				{
-					continue;
-				}
-				LOG_E("Viewer source not found: " + style.m_name);
-				return false;
-			}
-			auto *source = dynamic_cast<_GeometryBase *>(module);
-			IF_Le_F(!source || source == this, "Not a geometry source: " + style.m_name);
-			geometry.push_back(source);
-			styles.push_back(style);
-		}
-		IF_Le_F(geometry.size() > 1024, "Viewer source limit is 1024");
+		string error;
+		IF_Le_F(!m_sources.link(j, pM, m_nPbuf, m_nLbuf, 0, error), error);
+		IF_Le_F(m_sources.m_vGeometry.size() > 1024, "Viewer source limit is 1024");
 		for (const auto &stream : m_streams)
 		{
 			uint64_t bytes = webselectableoctgrid::HeaderBytes;
-			for (const auto &source : styles) if (includes(source, stream.type))
+			for (const auto &source : m_sources.m_vGeometry) if (includes(source, stream.type))
 				bytes += webselectableoctgrid::ObjectBytes + webselectableoctgrid::vertexBytes(
 					stream.type == webselectableoctgrid::Type::Points ? size_t(source.m_nP) : size_t(source.m_nL) * 2);
 			IF_Le_F(bytes > webselectableoctgrid::MaxFrameBytes, string(webselectableoctgrid::name(stream.type)) + " stream exceeds 64 MiB; reduce its caps");
 		}
-		m_vGeometry = std::move(geometry);
-		m_styles = std::move(styles);
 		return true;
 	}
-	bool _WebGeometryBase::includes(const GeometryStyle &source, webselectableoctgrid::Type type) const
+	bool _WebGeometryBase::includes(const VIEWER_GEOMETRY_SOURCE &source, webselectableoctgrid::Type type) const
 	{
 		return source.m_bVisible && (type == webselectableoctgrid::Type::Points ? source.m_nP > 0 : source.m_nL > 0);
 	}
@@ -146,7 +101,7 @@ namespace kai
 			{"bt", {m_camProj.m_vBT.x(), m_camProj.m_vBT.y()}}};
 		j["objects"] = json::array();
 		uint32_t id = 0;
-		for (const auto &source : m_styles)
+		for (const auto &source : m_sources.m_vGeometry)
 			j["objects"].push_back({{"id", id++}, {"name", source.m_name}, {"selectableGrid", false}});
 		return j.dump();
 	}
@@ -156,6 +111,8 @@ namespace kai
 		std::vector<std::pair<std::string, WebSocketStream *>> routes;
 		for (auto &stream : m_streams)
 		{
+			stream.m_geometry.clear();
+			stream.m_bPublished = false;
 			stream.transport.reset(new WebSocketStream(m_http->context(), hello(stream.type), m_maxClients));
 			routes.emplace_back(string("/stream/") + webselectableoctgrid::name(stream.type), stream.transport.get());
 		}
@@ -209,78 +166,58 @@ namespace kai
 	}
 	void _WebGeometryBase::publish(Stream &stream)
 	{
+		const uint64_t now = getTns();
+		const uint64_t expiry = m_dTexpire && now > m_dTexpire ? now - m_dTexpire : 0;
+		bool changed = !stream.m_bPublished;
+		stream.m_geometry.resize(m_sources.m_vGeometry.size());
+		if (stream.type != webselectableoctgrid::Type::Cells)
+		{
+			for (size_t i = 0; i < m_sources.m_vGeometry.size(); ++i)
+			{
+				const auto &source = m_sources.m_vGeometry[i];
+				if (includes(source, stream.type))
+				{
+					changed = stream.m_geometry[i].refresh(source, stream.type, uint32_t(i), expiry) || changed;
+				}
+			}
+			if (!changed)
+			{
+				return;
+			}
+		}
+
 		std::shared_ptr<std::vector<uint8_t>> frame;
-		for (auto &buffer : stream.buffers) if (buffer.use_count() == 1) { frame = buffer; break; }
+		for (auto &buffer : stream.buffers)
+		{
+			if (buffer.use_count() == 1)
+			{
+				frame = buffer;
+				break;
+			}
+		}
 		if (!frame)
 		{
 			frame = std::make_shared<std::vector<uint8_t>>();
 			stream.buffers.push_back(frame);
 		}
-		const uint64_t now = getTns();
-		const uint64_t expiry = m_dTexpire && now > m_dTexpire ? now - m_dTexpire : 0;
 		webselectableoctgrid::begin(*frame, stream.type, ++stream.sequence, now);
 		uint32_t count = 0;
-		for (size_t i = 0; i < m_vGeometry.size(); ++i)
+
 		{
-			const auto &source = m_styles[i];
-			if (!includes(source, stream.type)) continue;
-			collectGeometry(m_vGeometry[i], source, stream.type, *frame, uint32_t(i), expiry);
-			++count;
+			for (size_t i = 0; i < m_sources.m_vGeometry.size(); ++i)
+			{
+				if (!includes(m_sources.m_vGeometry[i], stream.type))
+				{
+					continue;
+				}
+				stream.m_geometry[i].appendTo(*frame);
+				++count;
+			}
 		}
 		webselectableoctgrid::finish(*frame, count);
 		stream.bytes = frame->size();
 		stream.transport->publish(frame);
-	}
-	void _WebGeometryBase::collectGeometry(_GeometryBase *geometry, const GeometryStyle &o, webselectableoctgrid::Type type, std::vector<uint8_t> &frame, uint32_t id, uint64_t expiry)
-	{
-		using webselectableoctgrid::Type;
-		float bounds[6] = {FLT_MAX, FLT_MAX, FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX};
-		auto colorByte = [](float c) { return uint8_t(std::clamp(std::isfinite(c) ? c : 1.f, 0.f, 1.f) * 255.f + .5f); };
-		m_positions.clear(); m_colors.clear();
-		auto finite = [](const Vector3f &p) { return std::isfinite(p.x()) && std::isfinite(p.y()) && std::isfinite(p.z()); };
-		auto vertex = [&](const Vector3f &p, Vector3f c) {
-			m_positions.insert(m_positions.end(), {p.x(), p.y(), p.z()});
-			if (c.x() <= 0 && c.y() <= 0 && c.z() <= 0) c = o.m_matCol.head<3>();
-			m_colors.insert(m_colors.end(), {colorByte(c.x()), colorByte(c.y()), colorByte(c.z())});
-			bounds[0] = std::min(bounds[0], p.x()); bounds[1] = std::min(bounds[1], p.y()); bounds[2] = std::min(bounds[2], p.z());
-			bounds[3] = std::max(bounds[3], p.x()); bounds[4] = std::max(bounds[4], p.y()); bounds[5] = std::max(bounds[5], p.z());
-		};
-		if (type == Type::Points)
-		{
-			if (m_bFrame)
-			{
-				m_framePositions.clear(); m_frameColors.clear();
-				uint64_t timestamp = 0;
-				const int count = geometry->getLastFrame(&m_framePositions, &m_frameColors, timestamp);
-				if (count > 0 && timestamp && timestamp >= expiry)
-					for (size_t i = 0; i < std::min(size_t(count), m_framePositions.size()) && m_positions.size() / 3 < size_t(o.m_nP); ++i)
-						if (finite(m_framePositions[i])) vertex(m_framePositions[i], i < m_frameColors.size() ? m_frameColors[i] : o.m_matCol.head<3>());
-			}
-			else
-			{
-				m_rPt.m_iT = 0;
-				const int count = std::min(geometry->get(&m_rPt, expiry), m_rPt.m_nT);
-				for (int i = 0; i < count && m_positions.size() / 3 < size_t(o.m_nP); ++i)
-				{
-					const auto &p = *m_rPt.get(i);
-					if (p.m_tStamp && p.m_tStamp >= expiry && finite(p.m_vP)) vertex(p.m_vP, p.m_vC);
-				}
-			}
-		}
-		else
-		{
-			m_rLn.m_iT = 0;
-			const int count = std::min(geometry->get(&m_rLn, expiry), m_rLn.m_nT);
-			for (int i = 0; i < count && m_positions.size() / 6 < size_t(o.m_nL); ++i)
-			{
-				const auto &l = *m_rLn.get(i);
-				if (!l.m_tStamp || l.m_tStamp < expiry || !finite(l.m_vPa) || !finite(l.m_vPb)) continue;
-				vertex(l.m_vPa, l.m_vC); vertex(l.m_vPb, l.m_vC);
-			}
-		}
-		if (m_positions.empty()) std::fill(bounds, bounds + 6, 0.f);
-		if (type == Type::Points) webselectableoctgrid::points(frame, id, o.m_matPointSize, bounds, m_positions, m_colors);
-		else webselectableoctgrid::lines(frame, id, bounds, m_positions, m_colors);
+		stream.m_bPublished = true;
 	}
 	void _WebGeometryBase::console(void *console)
 	{

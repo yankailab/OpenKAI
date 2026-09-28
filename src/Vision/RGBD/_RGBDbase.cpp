@@ -21,7 +21,7 @@ namespace kai
 
 	bool _RGBDbase::loadConfig(void)
 	{
-		IF_F(!_VisionBase::loadConfig());
+		IF_F(!_RGBbase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "devFPSd", m_devFPSd);
@@ -46,7 +46,7 @@ namespace kai
 
 	bool _RGBDbase::saveConfig(bool bExport)
 	{
-		IF_F(!_VisionBase::saveConfig(false));
+		IF_F(!_RGBbase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["devFPSd"] = m_devFPSd;
@@ -72,27 +72,52 @@ namespace kai
 
 	bool _RGBDbase::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_VisionBase::link(pM));
+		IF_F(!this->_RGBbase::link(pM));
 		const json &j = *m_pJ;
 
 		string n;
 
 		n = "";
-		jKv(j, "_IMUbase", n);
-		m_pIMU = (_IMUbase *)(pM->findModule(n));
+		jKv(j, "RGBDframe", n);
+		m_pRGBD = dynamic_cast<RGBDframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		IF_Le_F(!n.empty() && !m_pRGBD, "Data stream not found: " + n);
 
-#ifdef WITH_UNIVERSE
 		n = "";
-		jKv(j, "_PointCloud", n);
-		m_pPCL = (_PointCloud *)(pM->findModule(n));
-#endif
+		jKv(j, "RGBDtRGBframe", n);
+		m_pRGBDtRGB = dynamic_cast<RGBDframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		IF_Le_F(!n.empty() && !m_pRGBDtRGB, "Data stream not found: " + n);
+
+		n = "";
+		jKv(j, "RGBDtDframe", n);
+		m_pRGBDtD = dynamic_cast<RGBDframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		IF_Le_F(!n.empty() && !m_pRGBDtD, "Data stream not found: " + n);
+
+		n = "";
+		jKv(j, "Dframe", n);
+		m_pD = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		IF_Le_F(!n.empty() && !m_pD, "Data stream not found: " + n);
+
+		n = "";
+		jKv(j, "IRframe", n);
+		m_pIR = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		IF_Le_F(!n.empty() && !m_pIR, "Data stream not found: " + n);
+
+		n = "";
+		jKv(j, "PCLframe", n);
+		m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		IF_Le_F(!n.empty() && !m_pPCL, "Data stream not found: " + n);
+
+		n = "";
+		jKv(j, "IMUframe", n);
+		m_pIMU = dynamic_cast<IMUstream *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		IF_Le_F(!n.empty() && !m_pIMU, "Data stream not found: " + n);
 
 		return true;
 	}
 
 	bool _RGBDbase::check(void)
 	{
-		return _VisionBase::check();
+		return _RGBbase::check();
 	}
 
 	Vector2f _RGBDbase::getDepthRange(void)
@@ -113,65 +138,11 @@ namespace kai
 	void _RGBDbase::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_VisionBase::console(pConsole);
+		this->_RGBbase::console(pConsole);
 
 		NULL_(m_pTpp);
         m_pTpp->console(pConsole);
-
-		// _Console *pC = (_Console *)pConsole;
 	}
 
-#ifdef USE_OPENCV
-	Mat *_RGBDbase::getMatDepth(void)
-	{
-		return &m_mDepth;
-	}
-
-	void _RGBDbase::copyMatDepth(Mat &m)
-	{
-		std::lock_guard<std::mutex> lock(m_mutexDepth);
-		m_mDepth.copyTo(m);
-	}
-
-	Mat *_RGBDbase::getMatTransformedDepth(void)
-	{
-		return &m_mtDepth;
-	}
-
-	void _RGBDbase::copyMatTransformedDepth(Mat &m)
-	{
-		std::lock_guard<std::mutex> lock(m_mutexDepth);
-		m_mtDepth.copyTo(m);
-	}
-
-	Mat *_RGBDbase::getMatTransformedRGB(void)
-	{
-		return &m_mtRGB;
-	}
-
-	void _RGBDbase::copyMatTransformedRGB(Mat &m)
-	{
-		std::lock_guard<std::mutex> lock(m_mutexRGB);
-		m_mtRGB.copyTo(m);
-	}
-
-	Mat *_RGBDbase::getMatIR(void)
-	{
-		return &m_mIR;
-	}
-
-	void _RGBDbase::copyMatIR(Mat &m)
-	{
-		std::lock_guard<std::mutex> lock(m_mutexDepth);
-		m_mIR.copyTo(m);
-	}
-
-	void _RGBDbase::draw(void *pMat)
-	{
-		NULL_(pMat);
-		this->_VisionBase::draw(pMat);
-		IF_(!check());
-	}
-#endif
 
 }

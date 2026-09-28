@@ -48,7 +48,6 @@ option(WITH_STATE "" OFF)
 option(WITH_SWARM "" OFF)
 option(WITH_TOOLS "Build calibration tools" OFF)
 option(WITH_UI "" OFF)
-option(WITH_CANVAS "" OFF)
 option(WITH_VISION "" OFF)
 option(WITH_TEST "Build with unit test modules" OFF)
 
@@ -91,9 +90,6 @@ file(GLOB_RECURSE OpenKAI_cpp src/main.cpp src/Base/*.cpp src/Base/*.cc src/Base
 file(GLOB_RECURSE Arithmetic_cpp src/Arithmetic/*.cpp src/Arithmetic/*.cc src/Arithmetic/*.c)
 list(APPEND OpenKAI_cpp ${Arithmetic_cpp})
 
-file(GLOB_RECURSE DataStream_cpp src/DataStream/*.cpp src/DataStream/*.cc src/DataStream/*.c)
-list(APPEND OpenKAI_cpp	${DataStream_cpp})
-
 file(GLOB_RECURSE Instance_cpp src/Instance/*.cpp src/Instance/*.cc src/Instance/*.c)
 list(APPEND OpenKAI_cpp	${Instance_cpp})
 
@@ -107,6 +103,14 @@ list(APPEND OpenKAI_cpp
 	src/File/_FileBase.cpp
 )
 
+list(APPEND OpenKAI_cpp
+  src/DataStream/DataStreamBase.cpp
+  src/DataStream/IMUstream.cpp
+  src/DataStream/BytePacket.cpp
+  src/DataStream/LineFrame.cpp
+  src/DataStream/PCLframe.cpp
+  src/DataStream/PCLmap.cpp
+)
 
 # Default modules
 if(WITH_DEFAULT_MODULES)
@@ -130,8 +134,14 @@ if(WITH_DEFAULT_MODULES)
   set(WITH_SWARM ON CACHE BOOL "" FORCE)
   set(WITH_UI ON CACHE BOOL "" FORCE)
   set(WITH_UNIVERSE ON CACHE BOOL "" FORCE)
-  set(WITH_CANVAS ON CACHE BOOL "" FORCE)
   set(WITH_VISION ON CACHE BOOL "" FORCE)
+endif()
+
+if(USE_OPENCV)
+list(APPEND OpenKAI_cpp
+  src/DataStream/RGBframe.cpp
+  src/DataStream/RGBDframe.cpp
+)
 endif()
 
 # Optional modules
@@ -364,15 +374,6 @@ if(WITH_SLAM)
 		src/Navigation/_NavBase.cpp
     )
   endif()
-  if(NOT WITH_SENSOR)
-    list(APPEND OpenKAI_cpp
-		src/Sensor/_IMUbase.cpp
-    )
-    file(GLOB_RECURSE SLAM_sensor_fusion src/Dependencies/SensorFusion/*.cpp src/Dependencies/SensorFusion/*.c)
-    list(APPEND OpenKAI_cpp
-		${SLAM_sensor_fusion}
-    )
-  endif()
   if(NOT WITH_PROTOCOL)
     list(APPEND OpenKAI_cpp
 		src/Protocol/_ProtocolBase.cpp
@@ -458,7 +459,7 @@ if(WITH_SENSOR)
 	src/Sensor/Distance/_TOFsense.cpp
 	src/Sensor/Distance/_BenewakeTF.cpp
   )
-  if(WITH_UNIVERSE AND USE_OPEN3D)
+  if(WITH_UNIVERSE)
     list(APPEND OpenKAI_cpp
 		src/Sensor/LiDAR/_Livox2.cpp
 		src/Sensor/LiDAR/_RoboSenseAiry.cpp
@@ -498,11 +499,9 @@ endif()
 
 if(WITH_UI)
   add_definitions(-DWITH_UI)
-  list(APPEND OpenKAI_cpp
-	src/UI/_UIbase.cpp
-  )
   if(USE_OPENCV)
     list(APPEND OpenKAI_cpp
+		src/UI/_UIbase.cpp
 		src/UI/_GstOutput.cpp
 		src/UI/_WindowCV.cpp
     )
@@ -511,35 +510,12 @@ endif()
 
 if(WITH_VISION)
   add_definitions(-DWITH_VISION)
-  list(APPEND OpenKAI_cpp
-	src/Vision/_VisionBase.cpp
-	src/Vision/RGBD/_RGBDbase.cpp
-  )
-  if(USE_ORBBEC)
-    list(APPEND OpenKAI_cpp
-		src/Vision/RGBD/_Orbbec.cpp
-    )
-  endif()
-  if(USE_REALSENSE)
-    list(APPEND OpenKAI_cpp
-		src/Vision/RGBD/_RealSense.cpp
-    )
-  endif()
-  if(USE_SCEPTER_SDK)
-    list(APPEND OpenKAI_cpp
-		src/Vision/RGBD/_Scepter.cpp
-    )
-  endif()
-  if(USE_XDYNAMICS)
-    list(APPEND OpenKAI_cpp
-		src/Vision/RGBD/_XDynamics.cpp
-    )
-  endif()
   if(USE_OPENCV)
     list(APPEND OpenKAI_cpp
+	  src/Vision/_RGBbase.cpp
+	  src/Vision/RGBD/_RGBDbase.cpp
 		src/Vision/_Camera.cpp
 		src/Vision/_HiKthermal.cpp
-		src/Vision/_SharedMemImg.cpp
 		src/Vision/_VideoFile.cpp
 		src/Vision/_ImgFile.cpp
 		src/Vision/_GStreamer.cpp
@@ -559,7 +535,19 @@ if(WITH_VISION)
 		src/Vision/Pipeline/_Threshold.cpp
 		src/Vision/Pipeline/_Thermal2RGB.cpp
     )
-  endif()
+    if(USE_ORBBEC)
+     list(APPEND OpenKAI_cpp src/Vision/RGBD/_Orbbec.cpp)
+    endif()
+    if(USE_REALSENSE)
+     list(APPEND OpenKAI_cpp src/Vision/RGBD/_RealSense.cpp)
+     endif()
+    if(USE_SCEPTER_SDK)
+     list(APPEND OpenKAI_cpp src/Vision/RGBD/_Scepter.cpp)
+     endif()
+    if(USE_XDYNAMICS)
+     list(APPEND OpenKAI_cpp src/Vision/RGBD/_XDynamics.cpp)
+   endif()
+  endif() # opencv
 endif()
 
 # Test modules

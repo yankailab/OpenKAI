@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Vision__Erode_H_
 #define OpenKAI_src_Vision__Erode_H_
 
-#include "../_VisionBase.h"
+#include "../_RGBbase.h"
 
 namespace kai
 {
@@ -40,7 +40,7 @@ namespace kai
 		}
 	};
 
-	class _Erode : public _VisionBase
+	class _Erode : public _RGBbase
 	{
 	public:
 		_Erode();
@@ -61,8 +61,7 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV = nullptr;
-		Mat m_mIn;
+		RGBframe *m_pRGBin = nullptr;
 		vector<IMG_ERODE> m_vFilter;
 	};
 

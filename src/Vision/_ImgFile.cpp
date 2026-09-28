@@ -12,7 +12,6 @@ namespace kai
 
 	_ImgFile::_ImgFile()
 	{
-		m_type = vision_file;
 	}
 
 	_ImgFile::~_ImgFile()
@@ -21,7 +20,7 @@ namespace kai
 
 	bool _ImgFile::loadConfig(void)
 	{
-		IF_F(!_VisionBase::loadConfig());
+		IF_F(!_RGBbase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "file", m_file);
@@ -31,7 +30,7 @@ namespace kai
 
 	bool _ImgFile::saveConfig(bool bExport)
 	{
-		IF_F(!_VisionBase::saveConfig(false));
+		IF_F(!_RGBbase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["file"] = m_file;
@@ -49,9 +48,9 @@ namespace kai
 			return false;
 		}
 
+		if (m_pRGB)
 		{
-			std::lock_guard<std::mutex> lock(m_mutexRGB);
-			m.copyTo(m_mRGB);
+			m_pRGB->set(m);
 		}
 		m_vSizeRGB.x() = m.cols;
 		m_vSizeRGB.y() = m.rows;

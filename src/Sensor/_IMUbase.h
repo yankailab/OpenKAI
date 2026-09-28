@@ -67,6 +67,7 @@ namespace kai
 		uint64_t m_tIMUpairToleranceNs = 5 * NSEC_MSEC; // 5ms
 		deque<IMU_DATA> m_dqGyro;
 		deque<IMU_DATA> m_dqAcc;
+
 		// Preview fusion must not consume samples requested by SLAM/getIMUpair.
 		deque<IMU_DATA> m_dqFusionGyro;
 		deque<IMU_DATA> m_dqFusionAcc;

@@ -12,7 +12,6 @@ namespace kai
 
 	_Rotate::_Rotate()
 	{
-		m_type = vision_rotate;
 	}
 
 	_Rotate::~_Rotate()
@@ -21,7 +20,7 @@ namespace kai
 
 	bool _Rotate::loadConfig(void)
 	{
-		IF_F(!_VisionBase::loadConfig());
+		IF_F(!_RGBbase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "code", m_code);
@@ -31,7 +30,7 @@ namespace kai
 
 	bool _Rotate::saveConfig(bool bExport)
 	{
-		IF_F(!_VisionBase::saveConfig(false));
+		IF_F(!_RGBbase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["code"] = m_code;
@@ -42,13 +41,13 @@ namespace kai
 
 	bool _Rotate::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_VisionBase::link(pM));
+		IF_F(!this->_RGBbase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
-		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(pM->findModule(n));
-		NULL_F(m_pV);
+		jKv(j, "RGBframeIn", n);
+		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		NULL_F(m_pRGBin);
 
 		return true;
 	}
@@ -71,13 +70,15 @@ namespace kai
 
 	void _Rotate::filter(void)
 	{
-		NULL_(m_pV);
-		Mat mIn;
-		m_pV->copyMatRGB(mIn);
+		Mat mOut;
+		NULL_(m_pRGB);
+		NULL_(m_pRGBin);
+		const RGBframe::SnapshotPtr frame = m_pRGBin->get();
+		const Mat &mIn = frame->m_mRGB;
 		IF_(mIn.empty());
 
-		std::lock_guard<std::mutex> lock(m_mutexRGB);
-		cv::rotate(mIn, m_mRGB, m_code);
+		cv::rotate(mIn, mOut, m_code);
+		m_pRGB->set(mOut, frame->m_tStamp);
 	}
 
 }

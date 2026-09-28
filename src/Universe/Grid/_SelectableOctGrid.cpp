@@ -347,6 +347,7 @@ namespace kai
 												   getTns()};
 					if (m_pCell)
 						m_pCell->release(); // Clear the root's occupancy as well as all eight subtrees.
+					resetPointInputs();
 					m_buildCells.clear();
 					m_cells.m_vCell.clear();
 					m_vPorigin = origin;

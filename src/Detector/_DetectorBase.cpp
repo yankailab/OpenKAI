@@ -71,8 +71,9 @@ namespace kai
 		string n;
 
 		n = "";
-		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(pM->findModule(n));
+		jKv(j, "RGBframeIn", n);
+		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		IF_Le_F(m_pRGBin == nullptr && !n.empty(), "RGBframeIn not found: " + n);
 
 		n = "";
 		jKv(j, "_SurfaceBase", n);

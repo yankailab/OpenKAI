@@ -3,7 +3,7 @@
 
 #include "../../../Universe/Geometry/_GeometryViewerBase.h"
 #include "../SelectableOctGridSources.h"
-#include "WebSelectableOctGridProtocol.h"
+#include "WebGeometrySnapshot.h"
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
@@ -41,11 +41,12 @@ namespace kai
 			webselectableoctgrid::Type type = webselectableoctgrid::Type::Points;
 			std::unique_ptr<WebSocketStream> transport;
 			std::vector<std::shared_ptr<std::vector<uint8_t>>> buffers;
+			std::vector<WebGeometrySnapshot> m_geometry;
+			bool m_bPublished = false;
 			uint32_t sequence = 0;
 			std::atomic<size_t> bytes{0};
 		};
 		bool includes(const VIEWER_GEOMETRY_SOURCE &object, webselectableoctgrid::Type type) const;
-		void collectGeometry(const VIEWER_GEOMETRY_SOURCE &object, webselectableoctgrid::Type type, std::vector<uint8_t> &frame, uint32_t id, uint64_t expiry);
 		void collectCells(const VIEWER_GRID_SOURCE &object, std::vector<uint8_t> &frame, uint32_t id, uint64_t expiry);
 		void publish(Stream &stream);
 		std::string hello(webselectableoctgrid::Type type) const;
@@ -61,8 +62,6 @@ namespace kai
 		std::atomic<bool> m_running{false}, m_paused{false};
 		std::mutex m_waitMutex;
 		std::condition_variable m_wakeup;
-		std::vector<float> m_positions;
-		std::vector<uint8_t> m_colors;
 	};
 }
 #endif

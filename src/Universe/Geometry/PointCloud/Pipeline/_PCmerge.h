@@ -8,13 +8,12 @@
 #ifndef OpenKAI_src_Universe_Geometry_PointCloud_PCmerge_H_
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCmerge_H_
 
-#include "../../../../Base/common.h"
-#include "../../_GeometryBase.h"
+#include "../_PointCloud.h"
 
 namespace kai
 {
 
-	class _PCmerge : public _GeometryBase
+	class _PCmerge : public _PointCloud
 	{
 	public:
 		_PCmerge();
@@ -36,7 +35,8 @@ namespace kai
 		}
 
 	protected:
-		vector<_GeometryBase *> m_vpGB;
+		vector<PCLframe *> m_vpPCL;
+		vector<uint64_t> m_vInputRevision;
 		float m_rVoxel = 0.0;
 	};
 

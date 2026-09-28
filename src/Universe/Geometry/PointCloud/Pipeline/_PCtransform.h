@@ -54,7 +54,10 @@ namespace kai
 		}
 
 	protected:
-		_PointCloud* m_pPS = nullptr;
+		PCLframe *m_pPCLin = nullptr;
+		uint64_t m_inputRevision = 0;
+		uint64_t m_tNextExpire = 0;
+		bool m_bTransformChanged = true;
 		uint64_t m_dTexpire = 0;
 
         // transform

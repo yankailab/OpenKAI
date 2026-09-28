@@ -2,13 +2,12 @@
 #define OpenKAI_src_UI_Viewer_Web_WebGLIMProtocol_H_
 
 #include "../../../Net/HttpServer.h"
+#include "../../../DataStream/PCLmap.h"
 #include <cstdint>
 #include <memory>
 
 namespace kai
 {
-	struct GLIM_MAP_SNAPSHOT;
-
 	namespace webglim
 	{
 		// Dedicated accumulating-submap protocol, unrelated to geometry snapshots.
@@ -33,7 +32,7 @@ namespace kai
 			HttpServer::Upgrade upgradeHandler();
 			// Full descriptor set for a revision; unchanged point arrays are shared.
 			// Coalescing revisions cannot drop previously completed submaps.
-			void publish(GLIM_MAP_SNAPSHOT snapshot);
+			void publish(PCLmap::SnapshotPtr snapshot);
 			size_t nClient() const;
 			// Stop producer and HttpServer before calling stop().
 			void stop();

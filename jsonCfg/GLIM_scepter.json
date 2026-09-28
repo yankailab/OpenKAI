@@ -1,7 +1,7 @@
 {
 	"APP": {
 		"class": "OpenKAI",
-		"appName": "GLIM SLAM — Scepter",
+		"appName": "GLIM SLAM \u2014 Scepter",
 		"bLog": true,
 		"bStdErr": false
 	},
@@ -54,9 +54,7 @@
 			"FPS": 30
 		},
 		"bFullScreen": 0,
-		"vBASE": [
-			"scepter"
-		]
+		"RGBframeIn": "scepterRGB"
 	},
 	"viewD": {
 		"class": "_WindowCV",
@@ -65,9 +63,7 @@
 			"FPS": 30
 		},
 		"bFullScreen": 0,
-		"vBASE": [
-			"d2rgb"
-		]
+		"RGBframeIn": "d2rgbRGB"
 	},
 	"scepter": {
 		"class": "_Scepter",
@@ -88,7 +84,7 @@
 			0,
 			4.0
 		],
-		"_PointCloud": "scPCL",
+		"PCLframe": "scPCL",
 		"bRGB": false,
 		"bDepth": true,
 		"btRGB": false,
@@ -147,7 +143,9 @@
 		"scAIModuleParams": [],
 		"scAIModuleInputFrames": [],
 		"scAIModulePreviewFrames": [],
-		"dScale": 0.001
+		"dScale": 0.001,
+		"RGBframe": "scepterRGB",
+		"Dframe": "scepterDepth"
 	},
 	"d2rgb": {
 		"class": "_D2RGB",
@@ -155,30 +153,20 @@
 		"thread": {
 			"FPS": 30
 		},
-		"_RGBDbase": "scepter",
-		"bMeasure": false
+		"bMeasure": false,
+		"DframeIn": "scepterDepth",
+		"RGBframe": "d2rgbRGB"
 	},
 	"scPCL": {
-		"class": "_PointCloud",
-		"bON": true,
-		"bLog": true,
-		"thread": {
-			"FPS": 1
-		},
-		"nP": 400000
+		"type": "dataStream",
+		"class": "PCLframe"
 	},
 	"glimPCL": {
-		"class": "_PointCloud",
-		"bON": true,
-		"bLog": true,
-		"thread": {
-			"FPS": 1
-		},
-		"nP": 1000000
+		"type": "dataStream",
+		"class": "PCLframe"
 	},
 	"viewer": {
 		"class": "_WebGLIM",
-		"_GLIM": "GLIM",
 		"webRoot": "html/viewer/_GLIM",
 		"bON": true,
 		"thread": {
@@ -209,7 +197,8 @@
 		"vCamNF": [
 			0.01,
 			1000000
-		]
+		],
+		"PCLmapIn": "GLIMMap"
 	},
 	"GLIM": {
 		"class": "_GLIM",
@@ -218,16 +207,33 @@
 		"thread": {
 			"FPS": 100
 		},
-		"_PointCloud": "scPCL",
+		"PCLframeIn": "scPCL",
 		"configPath": "jsonCfg/glim_scepter",
 		"bAutoStart": false,
 		"bMapping": true,
 		"bPublishLiveMap": false,
 		"nMinPoints": 100,
 		"tConfidenceTimeoutNs": 1000000000,
-		"globalMapPCL": "glimPCL",
+		"PCLframe": "glimPCL",
 		"nMapPoints": 400000,
 		"nLiveFrames": 60,
-		"tMapUpdateNs": 200000000
+		"tMapUpdateNs": 200000000,
+		"PCLmap": "GLIMMap"
+	},
+	"scepterRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"scepterDepth": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"d2rgbRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"GLIMMap": {
+		"type": "dataStream",
+		"class": "PCLmap"
 	}
 }

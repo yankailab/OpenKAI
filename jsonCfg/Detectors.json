@@ -27,18 +27,7 @@
 			"FPS": 30
 		},
 		"bFullScreen": false,
-		"vBASE": [
-			"cam",
-			"/gst",
-			"/videoFile",
-			"/imgFile",
-			"/contrast",
-			"/inv",
-			"/hsv",
-			"/inRange",
-			"/morph",
-			"canvas"
-		]
+		"RGBframeIn": "camRGB"
 	},
 	"cam": {
 		"class": "_Camera",
@@ -50,7 +39,8 @@
 		"vSizeRGB": [
 			640,
 			480
-		]
+		],
+		"RGBframe": "camRGB"
 	},
 	"gst": {
 		"class": "_GStreamer",
@@ -61,7 +51,8 @@
 		"pipeline": "v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! appsink",
 		"/pipelineJetson": "nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, width=(int)1280, height=(int)720, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.1.253 port=5678 auto-multicast=false",
 		"/pipelineUdpRecv": "udpsrc port=5678 ! application/x-rtp, media=video, encoding-name=h264, payload=96, clock-rate=90000 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
-		"/pipelineRpiLegacy": "rpicamsrc bitrate=1000000 preview=0 rotation=180 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! omxh264enc ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678"
+		"/pipelineRpiLegacy": "rpicamsrc bitrate=1000000 preview=0 rotation=180 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! omxh264enc ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
+		"RGBframe": "gstRGB"
 	},
 	"videoFile": {
 		"class": "_VideoFile",
@@ -73,7 +64,8 @@
 		"vSize": [
 			1280,
 			720
-		]
+		],
+		"RGBframe": "videoFileRGB"
 	},
 	"imgFile": {
 		"class": "_ImgFile",
@@ -85,7 +77,8 @@
 		"vSize": [
 			1280,
 			720
-		]
+		],
+		"RGBframe": "imgFileRGB"
 	},
 	"contrast": {
 		"class": "_Contrast",
@@ -93,9 +86,10 @@
 		"thread": {
 			"FPS": 30
 		},
-		"_VisionBase": "cam",
 		"alpha": 1.0,
-		"beta": 0.0
+		"beta": 0.0,
+		"RGBframe": "contrastRGB",
+		"RGBframeIn": "camRGB"
 	},
 	"inv": {
 		"class": "_Invert",
@@ -103,7 +97,8 @@
 		"thread": {
 			"FPS": 30
 		},
-		"_VisionBase": "contrast"
+		"RGBframe": "invRGB",
+		"RGBframeIn": "contrastRGB"
 	},
 	"hsv": {
 		"class": "_ColorConvert",
@@ -111,8 +106,9 @@
 		"thread": {
 			"FPS": 30
 		},
-		"_VisionBase": "inv",
-		"code": 40
+		"code": 40,
+		"RGBframe": "hsvRGB",
+		"RGBframeIn": "invRGB"
 	},
 	"inRange": {
 		"class": "_InRange",
@@ -120,7 +116,6 @@
 		"thread": {
 			"FPS": 30
 		},
-		"_VisionBase": "hsv",
 		"vL": [
 			80,
 			20,
@@ -130,7 +125,9 @@
 			100,
 			255,
 			255
-		]
+		],
+		"RGBframe": "inRangeRGB",
+		"RGBframeIn": "hsvRGB"
 	},
 	"morph": {
 		"class": "_Morphology",
@@ -138,7 +135,6 @@
 		"thread": {
 			"FPS": 30
 		},
-		"_VisionBase": "inRange",
 		"filters": {
 			"open": {
 				"morphOp": 2,
@@ -152,7 +148,9 @@
 				"morphOp": 3,
 				"nItr": 2
 			}
-		}
+		},
+		"RGBframe": "morphRGB",
+		"RGBframeIn": "inRangeRGB"
 	},
 	"CR": {
 		"class": "_Contour",
@@ -161,8 +159,8 @@
 		"thread": {
 			"FPS": 30
 		},
-		"_VisionBase": "morph",
-		"_SurfaceBase": "canvas"
+		"_SurfaceBase": "canvas",
+		"RGBframeIn": "morphRGB"
 	},
 	"canvas": {
 		"class": "_SurfaceBase",
@@ -179,7 +177,6 @@
 			"FPS": 30
 		},
 		"bLog": true,
-		"_VisionBase": "cam",
 		"_SurfaceBase": "canvas",
 		"fModel": "/home/kai/dev/models/YOLO26/yolo26n.onnx",
 		"confidence": 0.25,
@@ -192,6 +189,43 @@
 		],
 		"bSwapRB": true,
 		"scale": 0.003921568627,
-		"nThread": 1
+		"nThread": 1,
+		"RGBframeIn": "camRGB"
+	},
+	"camRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"gstRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"videoFileRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"imgFileRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"contrastRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"invRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"hsvRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"inRangeRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"morphRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
 	}
 }

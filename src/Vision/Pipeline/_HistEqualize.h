@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Vision__HistEqualize_H_
 #define OpenKAI_src_Vision__HistEqualize_H_
 
-#include "../_VisionBase.h"
+#include "../_RGBbase.h"
 
 namespace kai
 {
 
-	class _HistEqualize : public _VisionBase
+	class _HistEqualize : public _RGBbase
 	{
 	public:
 		_HistEqualize();
@@ -34,7 +34,7 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV = nullptr;
+		RGBframe *m_pRGBin = nullptr;
 	};
 
 }

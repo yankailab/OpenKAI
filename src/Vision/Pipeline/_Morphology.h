@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Vision__Morphology_H_
 #define OpenKAI_src_Vision__Morphology_H_
 
-#include "../_VisionBase.h"
+#include "../_RGBbase.h"
 
 namespace kai
 {
@@ -42,7 +42,7 @@ namespace kai
 		}
 	};
 
-	class _Morphology : public _VisionBase
+	class _Morphology : public _RGBbase
 	{
 	public:
 		_Morphology();
@@ -63,8 +63,7 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV = nullptr;
-		Mat m_mIn;
+		RGBframe *m_pRGBin = nullptr;
 		vector<IMG_MORPH> m_vFilter;
 	};
 

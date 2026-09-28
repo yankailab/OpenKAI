@@ -13,15 +13,10 @@
     "thread": {
       "FPS": 1
     },
-    "nP": 1000000,
-    "vColorDefault": [
-      1,
-      1,
-      1
-    ],
     "vfName": [
       "data/PointCloud/StanfordBunny/bun000.ply"
-    ]
+    ],
+    "PCLframe": "pcFilePoints"
   },
 
   "cam": {
@@ -43,7 +38,7 @@
       0,
       4000
     ],
-    "_PointCloud": "scPC",
+    "PCLframe": "scPC",
     "scPixelFormat": 4,
     "bRGB": true,
     "bDepth": true,
@@ -53,13 +48,8 @@
   },
 
   "scPC": {
-    "class": "_PointCloud",
-    "bON": false,
-    "bLog": true,
-    "thread": {
-      "FPS": 1
-    },
-    "nP": 400000
+    "type": "dataStream",
+    "class": "PCLframe"
   },
 
 
@@ -68,7 +58,6 @@
     "thread": {
       "FPS": 5
     },
-    "nP": 1000000,
     "vRootCellSize": [
       5,
       5,
@@ -76,10 +65,10 @@
     ],
     "nMaxLevel": 5,
     "nMaxCells": 18333,
-    "dTexpireCell": 500000000,
+    "dTexpireCell": 0,
     "dTexpirePCL": 0,
-    "vGeometryBase": [
-      "pcFile",
+    "vPCLframes": [
+      "pcFilePoints",
       "scPC"
     ]
   },
@@ -119,13 +108,13 @@
     ],
     "vGeometry": [
       {
-        "_GeometryBase": "scPC",
+        "PCLframe": "scPC",
         "nP": 400000,
         "nL": 0,
         "matPointSize": 2
       },
       {
-        "_GeometryBase": "pcFile",
+        "PCLframe": "pcFilePoints",
         "nP": 4000000,
         "nL": 0,
         "matPointSize": 2
@@ -174,8 +163,11 @@
     "vBASE": [
       "viewer",
       "octGrid",
-      "scPC",
       "pcFile"
     ]
+  },
+  "pcFilePoints": {
+    "type": "dataStream",
+    "class": "PCLframe"
   }
 }

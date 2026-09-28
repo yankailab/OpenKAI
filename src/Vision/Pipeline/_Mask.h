@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Vision__Mask_H_
 #define OpenKAI_src_Vision__Mask_H_
 
-#include "../_VisionBase.h"
+#include "../_RGBbase.h"
 
 namespace kai
 {
 
-	class _Mask : public _VisionBase
+	class _Mask : public _RGBbase
 	{
 	public:
 		_Mask();
@@ -34,11 +34,9 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV = nullptr;
-		_VisionBase *m_pVmask = nullptr;
+		RGBframe *m_pRGBin = nullptr;
+		RGBframe *m_pMask = nullptr;
 
-		Mat m_mIn;
-		Mat m_mMask;
 	};
 
 }

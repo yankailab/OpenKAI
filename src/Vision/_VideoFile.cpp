@@ -12,7 +12,6 @@ namespace kai
 
 	_VideoFile::_VideoFile()
 	{
-		m_type = vision_file;
 	}
 
 	_VideoFile::~_VideoFile()
@@ -21,7 +20,7 @@ namespace kai
 
 	bool _VideoFile::loadConfig(void)
 	{
-		IF_F(!_VisionBase::loadConfig());
+		IF_F(!_RGBbase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "videoFile", m_videoFile);
@@ -31,7 +30,7 @@ namespace kai
 
 	bool _VideoFile::saveConfig(bool bExport)
 	{
-		IF_F(!_VisionBase::saveConfig(false));
+		IF_F(!_RGBbase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["videoFile"] = m_videoFile;
@@ -66,7 +65,7 @@ namespace kai
 
 	void _VideoFile::close(void)
 	{
-		this->_VisionBase::close();
+		this->_RGBbase::close();
 		m_vc.release();
 	}
 
@@ -94,8 +93,10 @@ namespace kai
 			Mat mCam;
 			while (!m_vc.read(mCam))
 				;
-			std::lock_guard<std::mutex> lock(m_mutexRGB);
-			mCam.copyTo(m_mRGB);
+			if (m_pRGB)
+			{
+				m_pRGB->set(mCam);
+			}
 		}
 	}
 

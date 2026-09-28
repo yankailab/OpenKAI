@@ -54,9 +54,7 @@
 			"FPS": 30
 		},
 		"bFullScreen": 0,
-		"vBASE": [
-			"Orbbec"
-		]
+		"RGBframeIn": "OrbbecRGB"
 	},
 	"viewD": {
 		"class": "_WindowCV",
@@ -65,9 +63,7 @@
 			"FPS": 30
 		},
 		"bFullScreen": 0,
-		"vBASE": [
-			"d2rgb"
-		]
+		"RGBframeIn": "d2rgbRGB"
 	},
 	"Orbbec": {
 		"class": "_Orbbec",
@@ -88,8 +84,8 @@
 			640,
 			480
 		],
-		"_PointCloud": "obPCL",
-		"_IMUbase": "obIMU",
+		"PCLframe": "obPCL",
+		"IMUframe": "obIMU",
 		"SN": "",
 		"tOutMs": 1000,
 		"bRGB": false,
@@ -112,7 +108,9 @@
 		"OB_PROP_HW_NOISE_REMOVE_FILTER_ENABLE_BOOL": null,
 		"OB_PROP_HW_NOISE_REMOVE_FILTER_THRESHOLD_FLOAT": null,
 		"OB_PROP_COLOR_MIRROR_BOOL": null,
-		"OB_PROP_DEPTH_MIRROR_BOOL": null
+		"OB_PROP_DEPTH_MIRROR_BOOL": null,
+		"RGBframe": "OrbbecRGB",
+		"Dframe": "OrbbecDepth"
 	},
 	"d2rgb": {
 		"class": "_D2RGB",
@@ -120,43 +118,24 @@
 		"thread": {
 			"FPS": 30
 		},
-		"_RGBDbase": "Orbbec",
-		"bMeasure": false
+		"bMeasure": false,
+		"DframeIn": "OrbbecDepth",
+		"RGBframe": "d2rgbRGB"
 	},
 	"obPCL": {
-		"class": "_PointCloud",
-		"bON": true,
-		"bLog": true,
-		"thread": {
-			"FPS": 1
-		},
-		"nP": 1000000
+		"type": "dataStream",
+		"class": "PCLframe"
 	},
 	"obIMU": {
-		"class": "_IMUbase",
-		"bFusion": false,
-		"bON": true,
-		"thread": {
-			"FPS": 200
-		},
-		"threadStream": {
-			"FPS": 10
-		},
-		"nIMUdqMax": 4000,
-		"tIMUpairToleranceNs": 1000000
+		"type": "dataStream",
+		"class": "IMUstream"
 	},
 	"glimPCL": {
-		"class": "_PointCloud",
-		"bON": true,
-		"bLog": true,
-		"thread": {
-			"FPS": 1
-		},
-		"nP": 1000000
+		"type": "dataStream",
+		"class": "PCLframe"
 	},
 	"viewer": {
 		"class": "_WebGLIM",
-		"_GLIM": "GLIM",
 		"webRoot": "html/viewer/_GLIM",
 		"bON": true,
 		"thread": {
@@ -187,7 +166,8 @@
 		"vCamNF": [
 			0.01,
 			1000000
-		]
+		],
+		"PCLmapIn": "GLIMMap"
 	},
 	"GLIM": {
 		"class": "_GLIM",
@@ -196,17 +176,34 @@
 		"thread": {
 			"FPS": 100
 		},
-		"_PointCloud": "obPCL",
-		"_IMUbase": "obIMU",
+		"PCLframeIn": "obPCL",
+		"IMUstream": "obIMU",
 		"configPath": "jsonCfg/glim_orbbec",
 		"bAutoStart": false,
 		"bMapping": true,
 		"bPublishLiveMap": false,
 		"nMinPoints": 100,
 		"tConfidenceTimeoutNs": 1000000000,
-		"globalMapPCL": "glimPCL",
+		"PCLframe": "glimPCL",
 		"nMapPoints": 400000,
 		"nLiveFrames": 60,
-		"tMapUpdateNs": 200000000
+		"tMapUpdateNs": 200000000,
+		"PCLmap": "GLIMMap"
+	},
+	"OrbbecRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"OrbbecDepth": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"d2rgbRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"GLIMMap": {
+		"type": "dataStream",
+		"class": "PCLmap"
 	}
 }

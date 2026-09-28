@@ -10,7 +10,6 @@
 
 namespace kai
 {
-	class _GLIM;
 	class _WebGLIM : public _GeometryViewerBase
 	{
 	public:
@@ -30,7 +29,7 @@ namespace kai
 	private:
 		void publish();
 		std::string hello() const;
-		_GLIM *m_slam = nullptr;
+		PCLmap *m_pPCLmap = nullptr;
 		std::string m_host = "0.0.0.0", m_root = "html/viewer/_GLIM";
 		int m_port = 8080, m_maxClients = 8;
 		float m_pointSize = 2;

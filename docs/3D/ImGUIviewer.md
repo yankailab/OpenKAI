@@ -1,6 +1,6 @@
 # Dear ImGui selectable octree grid viewer
 
-`_ImGUIselectableOctGrid` is a lightweight viewer module for OpenKAI 3D geometry streams. It derives from `_GeometryViewerBase`, reads geometry through `_GeometryBase::get()` point/line ring buffers and `_SelectableOctGrid::get(OCTGRID_CELLS*)` cell snapshots, and renders through Dear ImGui without using Open3D viewer APIs.
+`_ImGUIselectableOctGrid` is a lightweight viewer module for OpenKAI 3D geometry streams. It derives from `_GeometryViewerBase`, reads geometry through immutable `PCLframe` and `LineFrame` DataStreams and `_SelectableOctGrid::get(OCTGRID_CELLS*)` cell snapshots, and renders through Dear ImGui without using Open3D viewer APIs.
 
 The viewer lives in `src/UI/Viewer/ImGUI/`: `_ImGUIselectableOctGrid.*` implements
 the module, `ImGUIbackend.*` handles the window/input backend, and
@@ -69,7 +69,8 @@ cmake \
 make -j$(nproc)
 ```
 
-`USE_OPEN3D` is not required for the viewer. It is only needed when you use optional Open3D-backed modules such as `_PCfile`, crop/downsample filters, or registration.
+`USE_OPEN3D` is not required for the viewer or `_PCfile` PLY input. Optional
+Open3D-backed processing and registration modules remain separate.
 
 When using `IMGUI_DIR`, OpenKAI compiles ImGui and the selected backend sources directly. When using `IMGUI_INCLUDE_DIR` and `IMGUI_LIBRARIES`, OpenKAI links the core ImGui library and compiles backend sources if their `.cpp` files are available in `IMGUI_BACKENDS_DIR`.
 
@@ -108,7 +109,7 @@ Use the class name `_ImGUIselectableOctGrid` in JSON:
     },
     "vGeometry": [
       {
-        "_GeometryBase": "lidar_points",
+        "PCLframe": "lidar_points",
         "nP": 200000,
         "matPointSize": 2,
         "matCol": [1.0, 1.0, 1.0]
@@ -126,16 +127,19 @@ Use the class name `_ImGUIselectableOctGrid` in JSON:
 }
 ```
 
-`vGeometry` accepts only `_GeometryBase` sources for point/line streams.
+`vGeometry` entries name `PCLframe` and/or `LineFrame` DataStreams.
 `vSelectableOctGrid` accepts only `_SelectableOctGrid` sources for cell streams.
 The viewer stores these in separate typed lists. Render snapshots contain only
-values and draw assets, with no module pointers. Source configuration and limits
+shared immutable draw assets, with no producer module pointers. Point/line
+conversion is cached per input snapshot and expiry boundary, so unchanged
+geometry is retained across UI frames. Empty publications clear prior geometry.
+Source configuration and limits
 are shared with the [web viewer](WebViewer3D.md#viewer-sources).
 
 The old source name lists and generic reference-frame entries are removed.
 Per-source caps use `nP`, `nL`, and `nC`; zero disables that output. Octree grids
-have no point/line output API. Their own `vGeometryBase` setting still lists
-point-cloud inputs.
+have no point/line output API. Their `vPCLframes` setting lists
+point-cloud DataStream names.
 
 ## Sample PLY Test
 
@@ -145,7 +149,8 @@ point-cloud inputs.
 data/PointCloud/StanfordBunny/bun000.ply
 ```
 
-This sample uses `_PCfile` for PLY file I/O, so build it with `USE_OPEN3D=ON` if you want to run that exact config. Runtime point-cloud or line modules that fill `RingBuffer` data can be viewed without Open3D. The sample is `bun000.ply`, a 1.9 MB Stanford Bunny range scan mirror from the University of New Mexico public directory:
+This sample uses `_PCfile` for PLY file I/O and publishes an independent
+`PCLframe`. The sample and runtime point/line viewers work without Open3D. The sample is `bun000.ply`, a 1.9 MB Stanford Bunny range scan mirror from the University of New Mexico public directory:
 
 ```bash
 curl -L https://www.cs.unm.edu/~angel/TEST/CODE/Code/BUNNY/data/bun000.ply \
@@ -199,4 +204,4 @@ layout, snapshot semantics, and verification commands.
 
 The viewer accepts `nPbuf: 0` and/or `nLbuf: 0` to disable collection of those
 types. Compact cell collection continues independently, allowing a cells-only
-viewer without point or line scratch buffers.
+viewer without collecting point or line snapshots.

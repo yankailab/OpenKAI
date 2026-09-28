@@ -100,6 +100,10 @@ The default YOLO26 export uses end-to-end detection, so `_YOLO26detectONNX` filt
 
 ## Config Example
 
+Declare `camRGB` as `{ "type": "dataStream", "class": "RGBframe" }` and set the
+camera's `RGBframe` output to `camRGB`. The detector retains an immutable image
+snapshot while inference runs; input pixels are shared without copying.
+
 ```json
 "YOLO26detectONNX":{
     "class":"_YOLO26detectONNX",
@@ -108,7 +112,7 @@ The default YOLO26 export uses end-to-end detection, so `_YOLO26detectONNX` filt
         "FPS":30,
     },
     "bLog": true,
-    "_VisionBase":"cam",
+    "RGBframeIn":"camRGB",
     "_SurfaceBase":"canvas",
     "fModel":"/home/kai/dev/models/yolo26n.onnx",
     "confidence":0.25,

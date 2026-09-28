@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Vision__HiKthermal_H_
 #define OpenKAI_src_Vision__HiKthermal_H_
 
-#include "_VisionBase.h"
+#include "_RGBbase.h"
 #include <libuvc/libuvc.h>
 #include <libusb-1.0/libusb.h>
 
@@ -77,7 +77,7 @@
 namespace kai
 {
 
-	class _HiKthermal : public _VisionBase
+	class _HiKthermal : public _RGBbase
 	{
 	public:
 		_HiKthermal();
@@ -119,7 +119,6 @@ namespace kai
 		bool UVCsetVideoMode(void);
 		bool UVCstreamStart(void);
 		void UVCstreamClose(void);
-		void UVCstreamGetFrame(unsigned int tOut);
 		void cbGetFrame(uvc_frame *pMat);
 
 		virtual void update(void);
@@ -135,14 +134,12 @@ namespace kai
 		uvc_device_handle_t *m_pHandleDev = nullptr;
 		uvc_stream_ctrl_t m_ctrl;
 		uvc_stream_handle_t *m_pHandleStream = nullptr;
-		uvc_frame_t *m_pUVCframe = nullptr;
 		uvc_frame_callback_t *m_pCB = nullptr; //(uvc_frame_t* frame, void* ptr)
 
 		int m_uvcFPS;
 		int m_uvcSize;
 		int m_uvcOffset;
 		int m_uvcLen;
-		unsigned char *m_pFptr = nullptr;
 
 		int m_streamType = 2;
 		int m_vendorID = 0;

@@ -9,8 +9,8 @@
 
 namespace kai
 {
-
 	RGBframe::RGBframe()
+		: m_snapshot(make_shared<Snapshot>())
 	{
 	}
 
@@ -18,25 +18,25 @@ namespace kai
 	{
 	}
 
-	void RGBframe::copyFrom(const Mat &src)
+	RGBframe::SnapshotPtr RGBframe::get(void) const
 	{
-		Mat m = src.clone();
-
-		{
-			std::unique_lock lock(m_sMutex);
-			swap(m, m_mRGB);
-		}
+		std::shared_lock lock(m_sMutex);
+		return m_snapshot;
 	}
 
-	void RGBframe::copyTo(Mat &dest)
+	void RGBframe::set(const Mat &rgb, uint64_t tStamp)
 	{
-		Mat m;
+		auto next = make_shared<Snapshot>();
+		next->m_mRGB = rgb.clone();
+		next->m_tStamp = tStamp ? tStamp : getTns();
+		SnapshotPtr previous;
 		{
-			std::shared_lock lock(m_sMutex);
-			m = m_mRGB;
+			std::unique_lock lock(m_sMutex);
+			next->m_revision = m_snapshot->m_revision + 1;
+			previous = std::move(m_snapshot);
+			m_snapshot = std::move(next);
 		}
-
-		m.copyTo(dest);
+		// A replaced image is released outside the publication lock.
 	}
 
 	void RGBframe::console(void *pConsole)

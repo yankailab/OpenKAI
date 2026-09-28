@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Vision__Contrast_H_
 #define OpenKAI_src_Vision__Contrast_H_
 
-#include "../_VisionBase.h"
+#include "../_RGBbase.h"
 
 namespace kai
 {
 
-	class _Contrast : public _VisionBase
+	class _Contrast : public _RGBbase
 	{
 	public:
 		_Contrast();
@@ -34,7 +34,7 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV = nullptr;
+		RGBframe *m_pRGBin = nullptr;
 		double m_alpha = 1.0;
 		double m_beta = 0.0;
 	};

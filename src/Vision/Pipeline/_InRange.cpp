@@ -12,7 +12,6 @@ namespace kai
 
 	_InRange::_InRange()
 	{
-		m_type = vision_inRange;
 		m_vL = Vector3i(0, 0, 0);
 		m_vH = Vector3i(255, 255, 255);
 	}
@@ -23,7 +22,7 @@ namespace kai
 
 	bool _InRange::loadConfig(void)
 	{
-		IF_F(!_VisionBase::loadConfig());
+		IF_F(!_RGBbase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv<int>(j, "vL", m_vL);
@@ -34,7 +33,7 @@ namespace kai
 
 	bool _InRange::saveConfig(bool bExport)
 	{
-		IF_F(!_VisionBase::saveConfig(false));
+		IF_F(!_RGBbase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["vL"] = {m_vL.x(), m_vL.y(), m_vL.z()};
@@ -46,13 +45,13 @@ namespace kai
 
 	bool _InRange::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_VisionBase::link(pM));
+		IF_F(!this->_RGBbase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
-		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(pM->findModule(n));
-		NULL_F(m_pV);
+		jKv(j, "RGBframeIn", n);
+		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		NULL_F(m_pRGBin);
 
 		return true;
 	}
@@ -75,15 +74,17 @@ namespace kai
 
 	void _InRange::filter(void)
 	{
-		NULL_(m_pV);
-		Mat mIn;
-		m_pV->copyMatRGB(mIn);
+		Mat mOut;
+		NULL_(m_pRGB);
+		NULL_(m_pRGBin);
+		const RGBframe::SnapshotPtr frame = m_pRGBin->get();
+		const Mat &mIn = frame->m_mRGB;
 		IF_(mIn.empty());
 
-		std::lock_guard<std::mutex> lock(m_mutexRGB);
 		cv::inRange(mIn,
 					cv::Scalar(m_vL.x(), m_vL.y(), m_vL.z()),
-					cv::Scalar(m_vH.x(), m_vH.y(), m_vH.z()), m_mRGB);
+					cv::Scalar(m_vH.x(), m_vH.y(), m_vH.z()), mOut);
+		m_pRGB->set(mOut, frame->m_tStamp);
 	}
 
 }

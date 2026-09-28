@@ -9,6 +9,7 @@
 #define OpenKAI_src_UI_UIbase_H_
 
 #include "../Base/_ModuleBase.h"
+#include "../DataStream/RGBframe.h"
 
 namespace kai
 {
@@ -24,6 +25,7 @@ namespace kai
 		virtual bool start(void);
 
 	protected:
+		static Mat prepareImage(const Mat &image, const Vector2i &size);
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -32,7 +34,7 @@ namespace kai
 		}
 
 	protected:
-		vector<BASE *> m_vpB;
+		RGBframe *m_pRGBin = nullptr;
 
 	};
 }

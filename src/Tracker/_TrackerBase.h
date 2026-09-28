@@ -10,8 +10,8 @@
 
 #include <opencv2/tracking.hpp>
 #include "../Base/_ModuleBase.h"
-#include "../Detector/_DetectorBase.h"
-#include "../Vision/_VisionBase.h"
+#include "../Utility/utilCV.h"
+#include "../DataStream/RGBframe.h"
 
 namespace kai
 {
@@ -44,7 +44,7 @@ namespace kai
 		Vector4f *getBB(void);
 
 	protected:
-		_VisionBase *m_pV = nullptr;
+		RGBframe *m_pRGBin = nullptr;
 		Rect2d m_rBB;
 		Vector4f m_bb = Vector4f::Zero();
 		float m_margin = 0.0;

@@ -12,7 +12,6 @@ namespace kai
 
 	_Invert::_Invert()
 	{
-		m_type = vision_invert;
 	}
 
 	_Invert::~_Invert()
@@ -21,14 +20,14 @@ namespace kai
 
 	bool _Invert::loadConfig(void)
 	{
-		IF_F(!_VisionBase::loadConfig());
+		IF_F(!_RGBbase::loadConfig());
 
 		return true;
 	}
 
 	bool _Invert::saveConfig(bool bExport)
 	{
-		IF_F(!_VisionBase::saveConfig(false));
+		IF_F(!_RGBbase::saveConfig(false));
 
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
@@ -36,13 +35,13 @@ namespace kai
 
 	bool _Invert::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_VisionBase::link(pM));
+		IF_F(!this->_RGBbase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
-		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(pM->findModule(n));
-		NULL_F(m_pV);
+		jKv(j, "RGBframeIn", n);
+		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		NULL_F(m_pRGBin);
 
 		return true;
 	}
@@ -65,13 +64,15 @@ namespace kai
 
 	void _Invert::filter(void)
 	{
-		NULL_(m_pV);
-		Mat mIn;
-		m_pV->copyMatRGB(mIn);
+		Mat mOut;
+		NULL_(m_pRGB);
+		NULL_(m_pRGBin);
+		const RGBframe::SnapshotPtr frame = m_pRGBin->get();
+		const Mat &mIn = frame->m_mRGB;
 		IF_(mIn.empty());
 
-		std::lock_guard<std::mutex> lock(m_mutexRGB);
-		cv::bitwise_not(mIn, m_mRGB);
+		cv::bitwise_not(mIn, mOut);
+		m_pRGB->set(mOut, frame->m_tStamp);
 	}
 
 }

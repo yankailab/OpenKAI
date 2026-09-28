@@ -12,7 +12,6 @@ namespace kai
 
 	_HiKthermal::_HiKthermal()
 	{
-		m_type = vision_uvc;
 	}
 
 	_HiKthermal::~_HiKthermal()
@@ -22,7 +21,7 @@ namespace kai
 
 	bool _HiKthermal::loadConfig(void)
 	{
-		IF_F(!_VisionBase::loadConfig());
+		IF_F(!_RGBbase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "streamType", m_streamType);
@@ -35,7 +34,7 @@ namespace kai
 
 	bool _HiKthermal::saveConfig(bool bExport)
 	{
-		IF_F(!_VisionBase::saveConfig(false));
+		IF_F(!_RGBbase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["streamType"] = m_streamType;
@@ -72,7 +71,7 @@ namespace kai
 
 	void _HiKthermal::close(void)
 	{
-		this->_VisionBase::close();
+		this->_RGBbase::close();
 
 		UVCstreamClose();
 		UVCclose();
@@ -225,15 +224,6 @@ namespace kai
 		NULL_(pMat);
 	}
 
-	void _HiKthermal::UVCstreamGetFrame(unsigned int tOut)
-	{
-		// uvc_error_t r;
-
-		m_pUVCframe = NULL;
-		// r = uvc_stream_get_frame(m_pHandleStream, &m_pUVCframe, tOut);
-		uvc_stream_get_frame(m_pHandleStream, &m_pUVCframe, tOut);
-	}
-
 	bool _HiKthermal::start(void)
 	{
 		NULL_F(m_pT);
@@ -286,8 +276,10 @@ namespace kai
 			Mat mC;
 			mRaw.convertTo(mC, CV_32FC1, tScale, -50.0);
 
-			std::lock_guard<std::mutex> lock(m_mutexRGB);
-			mC.copyTo(m_mRGB);
+			if (m_pRGB)
+			{
+				m_pRGB->set(mC);
+			}
 		}
 	}
 

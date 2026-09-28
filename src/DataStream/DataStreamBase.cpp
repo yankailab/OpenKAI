@@ -18,17 +18,4 @@ namespace kai
 	{
 	}
 
-	void DataStreamBase::updateTstamp(uint64_t tStamp)
-	{
-		if(tStamp == 0)
-			m_tStamp = getTns();
-		else
-			m_tStamp = tStamp;
-	}
-
-	uint64_t DataStreamBase::getTstamp(void)
-	{
-		return m_tStamp;
-	}
-
 }

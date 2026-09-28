@@ -23,10 +23,7 @@
 			"FPS": 30
 		},
 		"bFullScreen": false,
-		"vBASE": [
-			"hik",
-			"thermalRGB"
-		]
+		"RGBframeIn": "thermalRGBRGB"
 	},
 	"hik": {
 		"class": "_HiKthermal",
@@ -41,21 +38,28 @@
 			480
 		],
 		"vendorID": 11231,
-		"productID": 258
+		"productID": 258,
+		"RGBframe": "hikRGB"
 	},
-
 	"thermalRGB": {
 		"class": "_Thermal2RGB",
 		"bON": true,
 		"thread": {
 			"FPS": 30
 		},
-		"_VisionBase": "hik",
-		"/_VisionBase": "img2frame",
 		"vTrange": [
 			23,
 			39
-		]
+		],
+		"RGBframe": "thermalRGBRGB",
+		"RGBframeIn": "hikRGB"
+	},
+	"hikRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"thermalRGBRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
 	}
-
 }

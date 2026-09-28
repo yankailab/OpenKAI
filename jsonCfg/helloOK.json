@@ -26,9 +26,7 @@
 			"FPS": 30
 		},
 		"bFullScreen": false,
-		"vBASE": [
-			"cam"
-		]
+		"RGBframeIn": "camRGB"
 	},
 	"cam": {
 		"class": "_Camera",
@@ -42,6 +40,11 @@
 		"vSizeRGB": [
 			640,
 			480
-		]
+		],
+		"RGBframe": "camRGB"
+	},
+	"camRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
 	}
 }

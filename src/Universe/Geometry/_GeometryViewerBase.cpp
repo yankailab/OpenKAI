@@ -18,8 +18,7 @@ namespace kai
 
 	_GeometryViewerBase::~_GeometryViewerBase()
 	{
-		m_rPt.release();
-		m_rLn.release();
+
 	}
 
 	bool _GeometryViewerBase::loadConfig(void)
@@ -48,17 +47,7 @@ namespace kai
 		jKv(j, "nPbuf", m_nPbuf);
 		jKv(j, "nLbuf", m_nLbuf);
 
-		if (!m_bGeometryBuffers)
-		{
-			m_nPbuf = 0;
-			m_nLbuf = 0;
-		}
-
-		m_rPt.release();
-		m_rLn.release();
-		IF_Le_F(m_nPbuf < 0 || m_nLbuf < 0, "Negative geometry buffer limit");
-		IF_Le_F(m_nPbuf && !m_rPt.alloc(m_nPbuf), "Alloc failed with nPbuf: " + i2str(m_nPbuf));
-		IF_Le_F(m_nLbuf && !m_rLn.alloc(m_nLbuf), "Alloc failed with nLbuf: " + i2str(m_nLbuf));
+		IF_Le_F(m_nPbuf < 0 || m_nLbuf < 0, "Negative geometry rendering limit");
 
 		return true;
 	}

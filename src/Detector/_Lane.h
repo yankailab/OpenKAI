@@ -8,7 +8,9 @@
 #ifndef OpenKAI_src_Detector__Lane_H_
 #define OpenKAI_src_Detector__Lane_H_
 
-#include "../Vision/_VisionBase.h"
+#include "../Base/_ModuleBase.h"
+#include "../DataStream/RGBframe.h"
+#include "../Utility/utilCV.h"
 #include "../Filter/Median.h"
 #include "../Filter/Average.h"
 #include <gsl/gsl_multifit.h>
@@ -221,7 +223,7 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV = nullptr;
+		RGBframe *m_pRGBin = nullptr;
 		Vector2i m_vSize = Vector2i::Zero();
 
 		Vector2f m_vRoiLT = {0.2, 0.5};

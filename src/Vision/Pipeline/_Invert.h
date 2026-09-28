@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Vision__Invert_H_
 #define OpenKAI_src_Vision__Invert_H_
 
-#include "../_VisionBase.h"
+#include "../_RGBbase.h"
 
 namespace kai
 {
 
-	class _Invert : public _VisionBase
+	class _Invert : public _RGBbase
 	{
 	public:
 		_Invert();
@@ -34,7 +34,7 @@ namespace kai
 		}
 
 	protected:
-		_VisionBase *m_pV = nullptr;
+		RGBframe *m_pRGBin = nullptr;
 	};
 
 }

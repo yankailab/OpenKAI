@@ -9,137 +9,126 @@
 
 namespace kai
 {
+	_PCsend::_PCsend()
+	{
+	}
 
-    _PCsend::_PCsend()
-    {
-    }
+	_PCsend::~_PCsend()
+	{
+	}
 
-    _PCsend::~_PCsend()
-    {
-        DEL(m_pB);
-    }
+	bool _PCsend::loadConfig(void)
+	{
+		IF_F(!_GeometryBase::loadConfig());
+		jKv(*m_pJ, "tInt", m_tInt);
+		jKv(*m_pJ, "nB", m_nB);
+		IF_Le_F(m_nB < int(pcstream::headerBytes + pcstream::pointBytes) ||
+			m_nB > int(pcstream::maxPacketBytes), "Invalid PCL1 packet size nB");
+		m_vPacket.resize(m_nB);
+		return true;
+	}
 
-    bool _PCsend::loadConfig(void)
-    {
-        IF_F(!this->_GeometryBase::loadConfig());
-        const json &j = *m_pJ;
+	bool _PCsend::saveConfig(bool bExport)
+	{
+		IF_F(!_GeometryBase::saveConfig(false));
+		(*m_pJ)["tInt"] = m_tInt;
+		(*m_pJ)["nB"] = m_nB;
+		IF__(!bExport, true);
+		return m_pJcfg->saveToFile();
+	}
 
-        jKv(j, "tInt", m_tInt);
-        jKv(j, "nB", m_nB);
+	bool _PCsend::link(InstanceMgr *pM)
+	{
+		IF_F(!_GeometryBase::link(pM));
+		string name;
+		jKv(*m_pJ, "_IObase", name);
+		m_pIO = static_cast<_IObase *>(pM->findModule(name));
+		IF_Le_F(!m_pIO, "_IObase not found: " + name);
 
-        DEL(m_pB);
-        m_pB = new uint8_t[m_nB];
-        NULL_F(m_pB);
+		name.clear();
+		jKv(*m_pJ, "PCLframeIn", name);
+		m_pPCLin = dynamic_cast<PCLframe *>(static_cast<DataStreamBase *>(pM->findDataStream(name)));
+		IF_Le_F(!m_pPCLin, "PCLframeIn not found: " + name);
+		m_inputRevision = 0;
+		return true;
+	}
 
-        return true;
-    }
+	bool _PCsend::start(void)
+	{
+		NULL_F(m_pT);
+		return m_pT->startThread(getUpdate, this);
+	}
 
-    bool _PCsend::saveConfig(bool bExport)
-    {
-        IF_F(!_GeometryBase::saveConfig(false));
+	bool _PCsend::check(void)
+	{
+		return m_pIO && m_pIO->bOpen() && m_pPCLin && !m_vPacket.empty() && _GeometryBase::check();
+	}
 
-        json &j = *m_pJ;
-        j["tInt"] = m_tInt;
-        j["nB"] = m_nB;
+	void _PCsend::update(void)
+	{
+		while (m_pT->bRun())
+		{
+			m_pT->autoFPS();
+			sendPC();
+		}
+	}
 
-        IF__(!bExport, true);
-        return m_pJcfg->saveToFile();
-    }
+	void _PCsend::sendPC(void)
+	{
+		if (!check())
+		{
+			m_inputRevision = 0;
+			return;
+		}
 
-    bool _PCsend::link(InstanceMgr *pM)
-    {
-        IF_F(!this->_GeometryBase::link(pM));
-        const json &j = *m_pJ;
+		const PCLframe::SnapshotPtr frame = m_pPCLin->get();
+		if (frame->m_revision == m_inputRevision || frame->m_vPoints.size() > UINT32_MAX)
+		{
+			return;
+		}
 
-        string n = "";
-        jKv(j, "_IObase", n);
-        m_pIO = (_IObase *)(pM->findModule(n));
-        IF_Le_F(!m_pIO, "_IObase not found: " + n);
+		const size_t pointsPerPacket = (m_vPacket.size() - pcstream::headerBytes) / pcstream::pointBytes;
+		size_t first = 0;
+		do
+		{
+			const size_t count = std::min(pointsPerPacket, frame->m_vPoints.size() - first);
+			const size_t bytes = pcstream::headerBytes + count * pcstream::pointBytes;
+			uint8_t *pBytes = m_vPacket.data();
+			std::memcpy(pBytes, pcstream::magic, sizeof(pcstream::magic));
+			pcstream::packUint(pBytes + 4, bytes, 4);
+			pcstream::packUint(pBytes + 8, frame->m_revision, 8);
+			pcstream::packUint(pBytes + 16, frame->m_tStamp, 8);
+			pcstream::packUint(pBytes + 24, frame->m_vPoints.size(), 4);
+			pcstream::packUint(pBytes + 28, first, 4);
+			for (size_t i = 0; i < count; ++i)
+			{
+				const GEOMETRY_POINT &point = frame->m_vPoints[first + i];
+				uint8_t *pPoint = pBytes + pcstream::headerBytes + i * pcstream::pointBytes;
+				for (int axis = 0; axis < 3; ++axis)
+				{
+					pcstream::packFloat(pPoint + axis * 4, point.m_vP[axis]);
+					pcstream::packFloat(pPoint + 12 + axis * 4, point.m_vC[axis]);
+				}
+				pcstream::packUint(pPoint + 24, point.m_tStamp, 8);
+			}
 
-        return true;
-    }
+			// On failure retry the entire snapshot next iteration. Its first
+			// packet resets any incomplete frame at the receiver.
+			if (!m_pIO->write(pBytes, static_cast<int>(bytes)))
+			{
+				return;
+			}
+			first += count;
+		}
+		while (first < frame->m_vPoints.size() && m_pT->bRun());
 
-    bool _PCsend::start(void)
-    {
-        NULL_F(m_pT);
-        return m_pT->startThread(getUpdate, this);
-    }
-
-    bool _PCsend::check(void)
-    {
-        NULL_F(m_pIO);
-        IF_F(!m_pIO->bOpen());
-
-        return this->_GeometryBase::check();
-    }
-
-    void _PCsend::update(void)
-    {
-        while (m_pT->bRun())
-        {
-            m_pT->autoFPS();
-
-            sendPC();
-        }
-    }
-
-    void _PCsend::sendPC(void)
-    {
-        IF_(!check());
-        //    IF_(m_iPsent == m_ring.m_iP);
-
-        const double PC_SCALE = 1000;
-        const int PC_DB = 2;
-        m_pB[0] = PB_BEGIN;
-        m_pB[1] = PC_STREAM;
-        int iB = PC_N_HDR;
-
-        //	while(m_iPsent != m_ring.m_iP)
-        {
-            Vector3d vP;
-            Vector3d vC;
-            //        IF_CONT(!m_ring.get(&vP, &vC, &m_iPsent));
-
-            pack_int16(&m_pB[iB], (int16_t)(vP.x() * PC_SCALE), false);
-            iB += PC_DB;
-            pack_int16(&m_pB[iB], (int16_t)(vP.y() * PC_SCALE), false);
-            iB += PC_DB;
-            pack_int16(&m_pB[iB], (int16_t)(vP.z() * PC_SCALE), false);
-            iB += PC_DB;
-
-            pack_int16(&m_pB[iB], (int16_t)(vC.x() * PC_SCALE), false);
-            iB += PC_DB;
-            pack_int16(&m_pB[iB], (int16_t)(vC.y() * PC_SCALE), false);
-            iB += PC_DB;
-            pack_int16(&m_pB[iB], (int16_t)(vC.z() * PC_SCALE), false);
-            iB += PC_DB;
-
-            if (iB + PC_DB * 6 > m_nB)
-            {
-                pack_int16(&m_pB[2], (int16_t)(iB - PC_N_HDR), false);
-                while (!m_pIO->write(m_pB, iB))
-                    m_pT->sleepT(m_tInt);
-
-                iB = PC_N_HDR;
-            }
-        }
-
-        if (iB > PC_N_HDR)
-        {
-            pack_int16(&m_pB[2], (int16_t)(iB - PC_N_HDR), false);
-            while (!m_pIO->write(m_pB, iB))
-                m_pT->sleepT(m_tInt);
-        }
-
-        m_pT->sleepT(m_tInt);
-
-        // frame sync
-        m_pB[0] = PB_BEGIN;
-        m_pB[1] = PC_FRAME_END;
-        m_pB[2] = 0;
-        m_pB[3] = 0;
-        while (!m_pIO->write(m_pB, PC_N_HDR))
-            m_pT->sleepT(m_tInt);
-    }
-
+		if (first == frame->m_vPoints.size())
+		{
+			m_inputRevision = frame->m_revision;
+		}
+		if (m_tInt > 0)
+		{
+			m_pT->sleepT(m_tInt);
+		}
+	}
 }

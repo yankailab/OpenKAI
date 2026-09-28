@@ -33,7 +33,6 @@ namespace kai
 		}
 
 	protected:
-		Mat m_M;
 		Vector2i m_vSize = Vector2i::Zero();
 
 		string m_gstOutput = "appsrc ! videoconvert ! fbdevsink";

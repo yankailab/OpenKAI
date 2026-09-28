@@ -1,7 +1,7 @@
 # Browser selectable octree grid viewer
 
 `_WebSelectableOctGrid` derives from `_GeometryViewerBase` and reads points and lines from
-the same `_GeometryBase::get()` ring buffers as `_ImGUIselectableOctGrid`, plus compact
+the same immutable `PCLframe` and `LineFrame` DataStreams as `_ImGUIselectableOctGrid`, plus compact
 `_SelectableOctGrid::get(OCTGRID_CELLS*)` snapshots. The C++ process
 serves the browser application and three independent binary WebSockets on one port. A separate
 WebSocket connects JSON application commands to `_WSconsole`. All browser
@@ -274,8 +274,8 @@ array starts with an empty selection. File write failures return false.
 
 ### Viewer sources
 
-Configure two separate source arrays. `vGeometry` entries retain `_GeometryBase*`
-for point/line collection; `vSelectableOctGrid` entries retain `_SelectableOctGrid*`
+Configure two separate source arrays. `vGeometry` entries retain independent
+`PCLframe*` and/or `LineFrame*` data streams; `vSelectableOctGrid` entries retain `_SelectableOctGrid*`
 for cell snapshots. Both viewers use the same source parser and settings:
 
 ```json
@@ -292,8 +292,8 @@ for cell snapshots. Both viewers use the same source parser and settings:
     "vCamLookAt": [0, 0, 0],
     "vCamUp": [0, 0, 1],
     "vGeometry": [
-      { "_GeometryBase": "points", "nP": 200000, "nL": 0, "matPointSize": 2 },
-      { "_GeometryBase": "lines", "nP": 0, "nL": 100000, "matCol": [0.3, 0.8, 1] }
+      { "PCLframe": "points", "nP": 200000, "nL": 0, "matPointSize": 2 },
+      { "LineFrame": "lines", "nP": 0, "nL": 100000, "matCol": [0.3, 0.8, 1] }
     ],
     "vSelectableOctGrid": [
       { "_SelectableOctGrid": "octGrid", "nC": 100000, "matCol": [1, 1, 1, 0.5] }
@@ -303,16 +303,19 @@ for cell snapshots. Both viewers use the same source parser and settings:
 ```
 
 Each source appears once. Wrong provider types, duplicate names, unsupported
-entry settings, and missing modules fail linking. Explicitly disabled modules
-are skipped. Per-source limits are capped by the viewer's corresponding buffer
+entry settings, and missing DataStreams or grid modules fail linking. Explicitly
+disabled grid modules are skipped. An optional `name` gives a geometry source its
+display label. Declare the named streams and connect producers to them as shown
+in [the DataStream migration guide](../DataStreamGeometry.md).
+Per-source limits are capped by the viewer's corresponding rendering
 limit; zero disables that output. A zero cell limit still publishes its root header.
 The removed `vReferenceFrame`, viewer `vGeometryBase`, `geometry`, and
 `_ReferenceFrame` entry aliases are rejected. Per-source caps use `nP`, `nL`,
 and `nC`, with no `nPbuf`/`nLbuf`/`nCbuf` entry aliases.
 
 A calculation-only `_OctreeGrid` does not publish viewer snapshots; use
-`_SelectableOctGrid`. The grid's own `vGeometryBase` input list still selects
-its point clouds.
+`_SelectableOctGrid`. The grid's `vPCLframes` input list names
+the point-cloud DataStreams it consumes.
 
 | Setting | Default | Meaning |
 | --- | --- | --- |
@@ -322,11 +325,11 @@ its point clouds.
 | `thread.FPS` | framework default | Maximum geometry collection/publication rate |
 | `nCbuf` | `100000` | Maximum occupied cells collected per grid source |
 | `vSelectableOctGrid[].nC` | `nCbuf` | Per-grid cell limit; zero sends an empty grid |
-| `nPbuf`, `nLbuf` | `200000`, `100000` | Scratch capacities per source; zero disables collection of that type |
+| `nPbuf`, `nLbuf` | `200000`, `100000` | Rendering caps per source; zero disables collection of that type |
 | `dTexpire` | `0` | Maximum geometry age in nanoseconds; zero disables expiry |
 | `bAutoBound`, `bShowGrid` | `true`, `true` | Fit the first nonempty frame of each type; show reference grid |
 | `vBgCol` | `[0.035,0.045,0.065,1]` | Background color |
-| `vGeometry[].nP`, `.nL` | scratch capacities | Per-object limits; zero omits that primitive type |
+| `vGeometry[].nP`, `.nL` | rendering caps | Per-object limits; zero omits that primitive type |
 | `matPointSize`, `matCol` | `2`, `[1,1,1,1]` | Point size in pixels, fallback RGB; fourth component controls cell opacity only |
 | `bVisible` | `true` | Exclude an object from streaming when false |
 
@@ -373,8 +376,10 @@ shared wire/solid geometry and one GPU instance per cell.
 
 HTTP and WebSocket IO run on one asynchronous worker. Geometry collection runs
 on a separate owned thread, stopped and joined before its resources are released.
-The network thread never calls geometry providers. Providers retain responsibility
-for synchronizing concurrent writes with their `get()` methods, as with ImGui.
+The network thread never calls geometry providers. Point and line sources expose
+immutable snapshots; readers retain those snapshots safely across publications.
+Each source is encoded only when its snapshot changes or visible records expire.
+Empty publications clear that source. Grids retain their synchronized cell API.
 
 Geometry uses three endpoints on the HTTP port:
 
@@ -392,7 +397,7 @@ across connections. A failed,
 missing, or empty stream does not prevent the other types from drawing. Stream
 status is shown separately when their connection states differ.
 
-Each connection receives a JSON `hello` with `version: 5`, its `stream` name
+Each connection receives a JSON `hello` with `version: 6`, its `stream` name
 (`points`, `lines`, or `cells`), all object names and camera settings. Any type's
 hello can initialize the page; later greetings do not reset the scene or camera.
 Each object also has a `selectableGrid` boolean, true for `_SelectableOctGrid`
@@ -513,7 +518,7 @@ wireframe did, in root-first traversal order. `nMaxCells` in the grid config set
 the publication cap (default 8333). The old `nMaxLines` setting is rejected. The viewers have independent `nCbuf` and per-object `nC` caps.
 `_OctreeBase` derives from `_ReferenceFrame`. Neither it nor its grid subclasses
 expose `_GeometryBase::get()` or a geometry type. `_OctreeGrid` still consumes
-point clouds through its `vGeometryBase` input list; `_SelectableOctGrid` publishes
+point-cloud DataStreams through its `vPCLframes` input list; `_SelectableOctGrid` publishes
 only cell IDs, colors, and the root header. Viewers construct the boxes.
 
 Cells average point RGB, initializing cell alpha to 1, then publish their retained
@@ -535,48 +540,18 @@ visually indistinguishable even though their 128-bit IDs remain exact.
 
 ## Verification
 
-The standalone transport suite needs Boost headers, Eigen 5, glog, CMake,
-a C++17 compiler, and Python 3. It exercises independent typed channels,
-endpoint validation, real loopback sockets, path traversal (including
-symlinks), large and fragmented frames, multiple peers, ACK flow control,
-pause/resume, ping/pong, and shutdown with live connections.
+The standalone regression suite uses CMake, a C++17 compiler, Eigen, glog and
+Python 3. Chrome is needed for frontend checks.
 
 ```bash
-cmake -S test/webViewer3D -B /tmp/openkai-webviewer-tests
-cmake --build /tmp/openkai-webviewer-tests -j2
-ctest --test-dir /tmp/openkai-webviewer-tests --output-on-failure
+cmake -S test/DataStream -B /tmp/openkai-stream-tests
+cmake --build /tmp/openkai-stream-tests -j2
+ctest --test-dir /tmp/openkai-stream-tests --output-on-failure
+python3 html/viewer/tests/run.py /tmp/openkai-stream-tests/viewer_snapshot_test
 ```
 
-An optional Chrome/Chromium test also checks the local HTML launcher, real WebGL2
-rendering, cells-only startup, per-stream disconnect/error isolation, protocol
-rejection, camera/visibility controls, alpha, solid boxes, picking and Stop/Start. A
-separate command fixture emulates `_WSconsole` framing to check JSON + EOJ sends,
-split replies, bounded console history and isolation between command and stream
-connections:
-
-```bash
-python3 test/webViewer3D/browser.py /tmp/openkai-webviewer-tests/viewer_fixture html/viewer/_SelectableOctGrid
-```
-
-The browser test writes `/tmp/openkai-webviewer.png`. There are no npm or Python
-package dependencies. Vendor provenance and hashes are recorded in
-`html/viewer/_SelectableOctGrid/vendor/README.md`.
-
-To verify the real framework collector with the sample point cloud and octree:
-
-```bash
-python3 test/webViewer3D/backend.py /path/to/build-web/OpenKAI
-python3 test/webViewer3D/octree.py /path/to/build-web/OpenKAI
-```
-
-For a completed build with ImGui and `CMAKE_EXPORT_COMPILE_COMMANDS=ON`, run the
-native grid/viewer API checks (ID lookup and stability through depth 40, colors,
-caps, expiry, and clearing):
-
-```bash
-python3 test/webViewer3D/native_cells.py build
-```
-
-When deliberately retaining a temporary cell-alpha override in the grid publication path,
-pass `--cell-alpha 0.5` (or its actual value) to the backend, octree and native
-test scripts. Their defaults expect alpha 1 for cells built from RGB points.
+The C++ viewer checks cover snapshot identity, timestamp-independent updates,
+empty publications, filtering, caps and expiry boundaries. Browser checks decode
+actual C++ point/line frames, reject unsupported protocol versions, and exercise
+both viewers' geometry update paths, including independent empty clears. See
+[`html/viewer/tests`](../../html/viewer/tests/README.md) for details.

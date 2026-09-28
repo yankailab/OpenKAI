@@ -8,20 +8,21 @@
 #ifndef OpenKAI_src_Vision__Camera_H_
 #define OpenKAI_src_Vision__Camera_H_
 
-#include "_VisionBase.h"
+#include "_RGBbase.h"
 
 namespace kai
 {
 
-	class _Camera : public _VisionBase
+	class _Camera : public _RGBbase
 	{
 	public:
 		_Camera();
 		virtual ~_Camera();
 
 		virtual bool loadConfig(void) override;
-		bool saveConfig(bool bExport) override;
+		virtual bool saveConfig(bool bExport) override;
 		virtual bool start(void);
+
 		bool open(void);
 		void close(void);
 
@@ -36,8 +37,6 @@ namespace kai
 	protected:
 		int m_deviceID = 0;
 		VideoCapture m_camera;
-		int m_nInitRead = 1;
-		bool m_bResetCam = false;
 	};
 
 }

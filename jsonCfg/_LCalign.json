@@ -63,7 +63,7 @@
 		"thread": {
 			"FPS": 30
 		},
-		"_VisionBase": "HiK",
+		"_RGBbase": "HiK",
 		"vTrange": [
 			10,
 			40
@@ -109,8 +109,8 @@
 		},
 		"nP": 100000,
 		"_PCin": "Lvx1",
-		"/_VisionBase": "cam",
-		"_VisionBase": "thermalRGB",
+		"/_RGBbase": "cam",
+		"_RGBbase": "thermalRGB",
 		"_IMUbase": "IMUlv",
 		"aCdist": [0.0, 0.0, 0.0, 0.0, 0.0],
 		"aCr": [0.0, -1.0, 0.0, 0.0, 0.0, -1.0, 1.0, 0.0, 0.0],

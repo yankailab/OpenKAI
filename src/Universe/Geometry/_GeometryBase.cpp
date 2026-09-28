@@ -25,13 +25,6 @@ namespace kai
         return true;
     }
 
-    bool _GeometryBase::link(InstanceMgr *pM)
-    {
-        IF_F(!this->_ReferenceFrame::link(pM));
-
-        return true;
-    }
-
     bool _GeometryBase::saveConfig(bool bExport)
     {
         IF_F(!_ReferenceFrame::saveConfig(false));
@@ -40,36 +33,20 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
+    bool _GeometryBase::link(InstanceMgr *pM)
+    {
+        IF_F(!this->_ReferenceFrame::link(pM));
+
+        return true;
+    }
+
     bool _GeometryBase::check(void)
     {
         return this->_ReferenceFrame::check();
     }
 
-    GEOMETRY_TYPE _GeometryBase::getType(void)
-    {
-        return m_type;
-    }
-
     void _GeometryBase::clear(void)
     {
-    }
-
-    int _GeometryBase::get(RingBuffer<GEOMETRY_POINT> *pOut, uint64_t tExpire)
-    {
-        return 0;
-    }
-
-    int _GeometryBase::get(RingBuffer<GEOMETRY_LINE> *pOut, uint64_t tExpire)
-    {
-        return 0;
-    }
-
-    int _GeometryBase::getLastFrame(vector<Vector3f> *pvP, vector<Vector3f> *pvC, uint64_t &tStamp)
-    {
-        if (pvP) pvP->clear();
-        if (pvC) pvC->clear();
-        tStamp = 0;
-        return 0;
     }
 
     void _GeometryBase::console(void *pConsole)
@@ -77,7 +54,6 @@ namespace kai
         NULL_(pConsole);
         this->_ReferenceFrame::console(pConsole);
 
-//        _Console *pC = (_Console *)pConsole;
     }
 
 }

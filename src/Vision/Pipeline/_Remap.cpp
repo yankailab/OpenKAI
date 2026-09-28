@@ -6,13 +6,13 @@
  */
 
 #include "_Remap.h"
+#include "../../Utility/utilCV.h"
 
 namespace kai
 {
 
 	_Remap::_Remap()
 	{
-		m_type = vision_remap;
 	}
 
 	_Remap::~_Remap()
@@ -21,14 +21,14 @@ namespace kai
 
 	bool _Remap::loadConfig(void)
 	{
-		IF_F(!_VisionBase::loadConfig());
+		IF_F(!_RGBbase::loadConfig());
 
 		return true;
 	}
 
 	bool _Remap::saveConfig(bool bExport)
 	{
-		IF_F(!_VisionBase::saveConfig(false));
+		IF_F(!_RGBbase::saveConfig(false));
 
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
@@ -36,15 +36,15 @@ namespace kai
 
 	bool _Remap::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_VisionBase::link(pM));
+		IF_F(!this->_RGBbase::link(pM));
 		const json &j = *m_pJ;
 
 		string n;
 
 		n = "";
-		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(pM->findModule(n));
-		NULL_F(m_pV);
+		jKv(j, "RGBframeIn", n);
+		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		NULL_F(m_pRGBin);
 
 		n = "";
 		jKv(j, "fCalib", m_fCalib);
@@ -73,9 +73,11 @@ namespace kai
 
 	void _Remap::filter(void)
 	{
-		NULL_(m_pV);
-		Mat mIn;
-		m_pV->copyMatRGB(mIn);
+		Mat mOut;
+		NULL_(m_pRGB);
+		NULL_(m_pRGBin);
+		const RGBframe::SnapshotPtr frame = m_pRGBin->get();
+		const Mat &mIn = frame->m_mRGB;
 		IF_(mIn.empty());
 
 		if (!m_bReady || mIn.size() != cv::Size(m_vSizeRGB.x(), m_vSizeRGB.y()))
@@ -86,11 +88,15 @@ namespace kai
 			m_bReady = scaleCamMat();
 		}
 
-		std::lock_guard<std::mutex> lock(m_mutexRGB);
 		if (m_bReady)
-			cv::remap(mIn, m_mRGB, m_m1, m_m2, cv::INTER_LINEAR);
+		{
+			cv::remap(mIn, mOut, m_m1, m_m2, cv::INTER_LINEAR);
+		}
 		else
-			mIn.copyTo(m_mRGB);
+		{
+			mOut = mIn;
+		}
+		m_pRGB->set(mOut, frame->m_tStamp);
 	}
 
 	// void _Remap::updateCamMat(void)

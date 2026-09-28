@@ -58,7 +58,7 @@ namespace kai
 
 		for (const IMGUI_VIEWER_OBJ &g : vGO)
 		{
-			if (!g.m_vL.empty())
+			if (!g.lines().empty())
 			{
 				float linePx = std::max(1.0f, g.m_matLineWidth);
 				DRAW_BATCH b;
@@ -71,7 +71,7 @@ namespace kai
 				cmd.m_iBatch = (int)m_vLineBatch.size() - 1;
 				m_vDrawCmd.push_back(cmd);
 
-				for (const IMGUI_VIEWER_LINE &l : g.m_vL)
+				for (const IMGUI_VIEWER_LINE &l : g.lines())
 				{
 					m_vLineUpload.push_back({l.m_vA.x(), l.m_vA.y(), l.m_vA.z(),
 											  l.m_vC.x(), l.m_vC.y(), l.m_vC.z()});
@@ -101,7 +101,7 @@ namespace kai
 					});
 			}
 
-			if (!g.m_vP.empty())
+			if (!g.points().empty())
 			{
 				float pointPx = std::max(1.0f, g.m_matPointSize);
 				DRAW_BATCH b;
@@ -114,7 +114,7 @@ namespace kai
 				cmd.m_iBatch = (int)m_vPointBatch.size() - 1;
 				m_vDrawCmd.push_back(cmd);
 
-				for (const IMGUI_VIEWER_POINT &p : g.m_vP)
+				for (const IMGUI_VIEWER_POINT &p : g.points())
 				{
 					m_vPointUpload.push_back({p.m_vP.x(), p.m_vP.y(), p.m_vP.z(),
 											   p.m_vC.x(), p.m_vC.y(), p.m_vC.z()});

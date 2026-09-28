@@ -12,7 +12,6 @@ namespace kai
 
 	_HistEqualize::_HistEqualize()
 	{
-		m_type = vision_histEqualize;
 	}
 
 	_HistEqualize::~_HistEqualize()
@@ -21,14 +20,14 @@ namespace kai
 
 	bool _HistEqualize::loadConfig(void)
 	{
-		IF_F(!_VisionBase::loadConfig());
+		IF_F(!_RGBbase::loadConfig());
 
 		return true;
 	}
 
 	bool _HistEqualize::saveConfig(bool bExport)
 	{
-		IF_F(!_VisionBase::saveConfig(false));
+		IF_F(!_RGBbase::saveConfig(false));
 
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
@@ -36,13 +35,13 @@ namespace kai
 
 	bool _HistEqualize::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_VisionBase::link(pM));
+		IF_F(!this->_RGBbase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
-		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(pM->findModule(n));
-		NULL_F(m_pV);
+		jKv(j, "RGBframeIn", n);
+		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		NULL_F(m_pRGBin);
 
 		return true;
 	}
@@ -65,9 +64,11 @@ namespace kai
 
 	void _HistEqualize::filter(void)
 	{
-		NULL_(m_pV);
-		Mat mRGB;
-		m_pV->copyMatRGB(mRGB);
+		Mat mOut;
+		NULL_(m_pRGB);
+		NULL_(m_pRGBin);
+		const RGBframe::SnapshotPtr frame = m_pRGBin->get();
+		const Mat &mRGB = frame->m_mRGB;
 		IF_(mRGB.empty());
 
 		Mat mIn;
@@ -81,8 +82,8 @@ namespace kai
 		cv::equalizeHist(vChannels[0], vChannels[0]); // equalize histogram on the 1st channel (Y)
 		merge(vChannels, mIn);						  // merge 3 channels including the modified 1st channel into one image
 		
-		std::lock_guard<std::mutex> lock(m_mutexRGB);
-		cv::cvtColor(mIn, m_mRGB, COLOR_YCrCb2BGR);  // change the color image from YCrCb to BGR format (to display image properly)
+		cv::cvtColor(mIn, mOut, COLOR_YCrCb2BGR);  // change the color image from YCrCb to BGR format (to display image properly)
+		m_pRGB->set(mOut, frame->m_tStamp);
 	}
 
 }

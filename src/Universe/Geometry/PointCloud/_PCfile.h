@@ -21,13 +21,14 @@ namespace kai
 
 		virtual bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
+		bool link(InstanceMgr *pM) override;
 		virtual bool start(void);
 		bool open(void);
-		// Binary little-endian XYZ float32 and RGB uint8. Missing/nonfinite
+		// Binary little-endian XYZ float32 and RGB uint8. Nonfinite
 		// color channels become white; finite channels are clamped to [0, 1].
 		// The parent directory must exist. Replace the destination only on success.
-		static bool savePLY(const string &path, const vector<Vector3f> &points,
-			const vector<Vector3f> &colors = {}, string *error = nullptr);
+		static bool savePLY(const string &path, const vector<GEOMETRY_POINT> &points,
+			string *error = nullptr);
 
 	private:
 		virtual void update(void);

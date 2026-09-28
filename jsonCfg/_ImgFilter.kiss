@@ -98,7 +98,7 @@
 "thread":{
 		"FPS":30,
 	}
-	"_VisionBase":"d2g",
+	"_RGBbase":"d2g",
 	"vL":[0,0,0],
 	"vH":[30,30,30],
 }
@@ -108,7 +108,7 @@
 "thread":{
 		"FPS":30,
 	}
-	"_VisionBase":"cam",
+	"_RGBbase":"cam",
 	"_VisionBaseMask":"inRange",
 }
 "thr":{
@@ -117,8 +117,8 @@
 "thread":{
 		"FPS":30,
 	}
-	"_VisionBase":"d2g",
-	"/_VisionBase":"cam",
+	"_RGBbase":"d2g",
+	"/_RGBbase":"cam",
 
 	{
 		"type":0,
@@ -134,7 +134,7 @@
 "thread":{
 		"FPS":30,
 	}
-	"_VisionBase":"cam",
+	"_RGBbase":"cam",
 }
 "contrast":{
 	"class":"_Contrast",
@@ -142,7 +142,7 @@
 "thread":{
 		"FPS":30,
 	}
-	"_VisionBase":"cam",
+	"_RGBbase":"cam",
 	"alpha":1.5,
 	"beta":0.0,
 }
@@ -152,7 +152,7 @@
 "thread":{
 		"FPS":30,
 	}
-	"_VisionBase":"d2g",
+	"_RGBbase":"d2g",
 	"w":1920,
 	"h":1080,
 }
@@ -162,7 +162,7 @@
 "thread":{
 		"FPS":30,
 	}
-	"_VisionBase":"cam",
+	"_RGBbase":"cam",
 
 	{
 		"bON": true,
@@ -186,7 +186,7 @@
 "thread":{
 		"FPS":30,
 	}
-	"_VisionBase":"inRange",
+	"_RGBbase":"inRange",
 
 	{
 		"nItr":1,

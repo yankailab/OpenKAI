@@ -67,9 +67,9 @@ namespace kai
 	{
 		IF_(!check());
 
-		Mat *pM = m_pV->getMatRGB();
-		IF_(pM->empty());
-		Mat m = *pM;
+		const auto frame = m_pRGBin->get();
+		const Mat &m = frame->m_mRGB;
+		IF_(m.empty());
 
 		if (m_iSet > m_iInit)
 		{

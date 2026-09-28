@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Vision__GStreamer_H_
 #define OpenKAI_src_Vision__GStreamer_H_
 
-#include "_VisionBase.h"
+#include "_RGBbase.h"
 
 namespace kai
 {
 
-	class _GStreamer : public _VisionBase
+	class _GStreamer : public _RGBbase
 	{
 	public:
 		_GStreamer();

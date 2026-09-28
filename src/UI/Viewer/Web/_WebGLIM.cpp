@@ -1,10 +1,8 @@
-#include "WebGLIMProtocol.h"
+#include "_WebGLIM.h"
 #include <boost/asio/post.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
-#include "_WebGLIM.h"
 #include "../../../Instance/InstanceMgr.h"
-#include "../../../SLAM/_GLIM.h"
 #include <algorithm>
 #include <array>
 #include <cstring>
@@ -28,7 +26,7 @@ namespace kai
 			const size_t limit;
 			std::atomic<size_t> clients{0};
 			std::mutex mutex;
-			std::shared_ptr<const GLIM_MAP_SNAPSHOT> latest;
+			PCLmap::SnapshotPtr latest;
 			bool notification = false;
 			std::unordered_map<Session *, std::weak_ptr<Session>> sessions;
 			State(net::io_context &i, std::string h, size_t n) : io(i), hello(std::move(h)), limit(n) {}
@@ -40,6 +38,7 @@ namespace kai
 					bool announced = false;
 					size_t points = 0;
 					std::array<double, 16> pose{};
+					std::shared_ptr<const std::vector<Vector3f>> m_source;
 				};
 				std::shared_ptr<State> state;
 				ws::stream<beast::tcp_stream, false> socket;
@@ -116,60 +115,84 @@ namespace kai
 				{
 					for (size_t i = 0; i < 8; ++i) sending[at + i] = uint8_t(value >> (8 * i));
 				}
+				bool needsReset(const PCLmap::Snapshot &snapshot) const
+				{
+					if (revision == snapshot.m_revision)
+					{
+						return false;
+					}
+					size_t found = 0;
+					for (const auto &submap : snapshot.m_vSubmaps)
+					{
+						const auto entry = delivered.find(submap.m_id);
+						if (entry == delivered.end())
+						{
+							continue;
+						}
+						if (entry->second.m_source != submap.m_points)
+						{
+							return true;
+						}
+						++found;
+					}
+					return found != delivered.size();
+				}
+
 				void send()
 				{
 					if (closed || writing || !enabled || awaitingAck) return;
-					std::shared_ptr<const GLIM_MAP_SNAPSHOT> snapshot;
+					PCLmap::SnapshotPtr snapshot;
 					{
 						std::lock_guard<std::mutex> lock(state->mutex);
 						snapshot = state->latest;
 					}
 					if (!snapshot) return;
-					if (!haveSession || session != snapshot->session)
+					if (!haveSession || session != snapshot->m_session || needsReset(*snapshot))
 					{
 						haveSession = true;
-						session = snapshot->session;
-						revision = snapshot->revision;
+						session = snapshot->m_session;
+						revision = snapshot->m_revision;
 						cursor = 0;
 						delivered.clear();
 						return text({{"type", "reset"}, {"session", std::to_string(session)}, {"revision", std::to_string(revision)}});
 					}
-					if (revision != snapshot->revision)
+					if (revision != snapshot->m_revision)
 					{
-						revision = snapshot->revision;
+						revision = snapshot->m_revision;
 						cursor = 0;
 					}
-					for (; cursor < snapshot->submaps.size(); ++cursor)
+					for (; cursor < snapshot->m_vSubmaps.size(); ++cursor)
 					{
-						const auto &submap = snapshot->submaps[cursor];
-						auto &sent = delivered[submap.id];
-						const size_t total = submap.points ? submap.points->size() : 0;
+						const auto &submap = snapshot->m_vSubmaps[cursor];
+						auto &sent = delivered[submap.m_id];
+						const size_t total = submap.m_points ? submap.m_points->size() : 0;
 						std::array<double, 16> pose;
-						std::copy_n(submap.pose.data(), 16, pose.begin());
+						std::copy_n(submap.m_pose.data(), 16, pose.begin());
 						if (!sent.announced)
 						{
 							sent.announced = true;
+							sent.m_source = submap.m_points;
 							sent.pose = pose;
 							return text({{"type", "submap"}, {"session", std::to_string(session)}, {"revision", std::to_string(revision)},
-								{"id", std::to_string(submap.id)}, {"timestampNs", std::to_string(submap.timestampNs)},
+								{"id", std::to_string(submap.m_id)}, {"timestampNs", std::to_string(submap.m_tStamp)},
 								{"pointCount", total}, {"pose", pose}});
 						}
 						if (sent.pose != pose)
 						{
 							sent.pose = pose;
 							return text({{"type", "pose"}, {"session", std::to_string(session)}, {"revision", std::to_string(revision)},
-								{"id", std::to_string(submap.id)}, {"pose", pose}});
+								{"id", std::to_string(submap.m_id)}, {"pose", pose}});
 						}
 						if (sent.points < total)
 						{
 							const uint32_t count = uint32_t(std::min(total - sent.points, size_t(MaxChunkPoints)));
 							sending.resize(HeaderBytes + size_t(count) * 12);
 							u32(0, Magic); u32(4, Version); u32(8, 1); u32(12, HeaderBytes);
-							u64(16, session); u64(24, submap.id); u64(32, submap.timestampNs);
+							u64(16, session); u64(24, submap.m_id); u64(32, submap.m_tStamp);
 							u32(40, uint32_t(total)); u32(44, uint32_t(sent.points)); u32(48, count); u32(52, 0);
 							for (size_t i = 0; i < count; ++i)
 							{
-								const float *p = (*submap.points)[sent.points + i].data();
+								const float *p = (*submap.m_points)[sent.points + i].data();
 								for (size_t axis = 0; axis < 3; ++axis)
 								{
 									uint32_t bits;
@@ -207,17 +230,17 @@ namespace kai
 				session->accept(std::move(request));
 			};
 		}
-		void Stream::publish(GLIM_MAP_SNAPSHOT snapshot)
+		void Stream::publish(PCLmap::SnapshotPtr snapshot)
 		{
 			std::unordered_set<uint64_t> ids;
-			for (const auto &submap : snapshot.submaps)
+			for (const auto &submap : snapshot->m_vSubmaps)
 			{
-				if (!ids.insert(submap.id).second || !submap.pose.matrix().allFinite() ||
-					(submap.points && submap.points->size() > MaxSubmapPoints))
+				if (!ids.insert(submap.m_id).second || !submap.m_pose.matrix().allFinite() ||
+					(submap.m_points && submap.m_points->size() > MaxSubmapPoints))
 					throw std::runtime_error("Invalid or oversized GLIM submap descriptor");
 			}
 			std::lock_guard<std::mutex> lock(m_state->mutex);
-			m_state->latest = std::make_shared<GLIM_MAP_SNAPSHOT>(std::move(snapshot));
+			m_state->latest = std::move(snapshot);
 			if (m_state->notification) return;
 			m_state->notification = true;
 			net::post(m_state->io, [state = m_state] {
@@ -248,8 +271,7 @@ namespace kai
 
 	_WebGLIM::_WebGLIM()
 	{
-		// GLIM streams submaps directly and does not use the shared geometry rings.
-		m_bGeometryBuffers = false;
+		// GLIM streams its dedicated submap snapshots directly.
 	}
 	_WebGLIM::~_WebGLIM() { stop(); }
 	bool _WebGLIM::loadConfig(void)
@@ -295,9 +317,9 @@ namespace kai
 		IF_F(!_GeometryViewerBase::link(pM));
 		const json &j = *m_pJ;
 		string source;
-		jKv(j, "_GLIM", source);
-		m_slam = dynamic_cast<_GLIM *>(static_cast<BASE *>(pM->findModule(source)));
-		IF_Le_F(!m_slam, "GLIM viewer source not found: " + source);
+		jKv(j, "PCLmapIn", source);
+		m_pPCLmap = dynamic_cast<PCLmap *>(static_cast<DataStreamBase *>(pM->findDataStream(source)));
+		IF_Le_F(!m_pPCLmap, "PCLmap viewer source not found: " + source);
 		return true;
 	}
 	std::string _WebGLIM::hello() const
@@ -315,7 +337,7 @@ namespace kai
 	}
 	bool _WebGLIM::start()
 	{
-		IF_F(m_running || !m_pT || !m_slam);
+		IF_F(m_running || !m_pT || !m_pPCLmap);
 		m_http = std::make_unique<HttpServer>();
 		m_stream = std::make_unique<webglim::Stream>(m_http->context(), hello(), m_maxClients);
 		m_session = m_revision = UINT64_MAX;
@@ -345,11 +367,14 @@ namespace kai
 	}
 	void _WebGLIM::publish()
 	{
-		auto snapshot = m_slam->submapSnapshot(m_session, m_revision);
-		if (snapshot.session == m_session && snapshot.revision == m_revision) return;
-		const auto session = snapshot.session, revision = snapshot.revision;
-		m_stream->publish(std::move(snapshot));
-		m_session = session; m_revision = revision;
+		const auto snapshot = m_pPCLmap->get();
+		if (snapshot->m_session == m_session && snapshot->m_revision == m_revision)
+		{
+			return;
+		}
+		m_stream->publish(snapshot);
+		m_session = snapshot->m_session;
+		m_revision = snapshot->m_revision;
 	}
 	void _WebGLIM::stop()
 	{

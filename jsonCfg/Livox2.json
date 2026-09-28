@@ -1,0 +1,145 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "Livox2",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"livoxPoints": {
+		"type": "dataStream",
+		"class": "PCLframe"
+	},
+	"livoxIMU": {
+		"type": "dataStream",
+		"class": "IMUstream"
+	},
+	"udpLvxDeviceQuery_1": {
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 1
+		},
+		"/addr": "255.255.255.255",
+		"addrRemote": "192.168.1.120",
+		"portRemote": 56000,
+		"portLocal": 0,
+		"bW2R": 0,
+		"bWbroadcast": 0
+	},
+	"udpLvxCtrlCmd_1": {
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"addrRemote": "192.168.1.120",
+		"portRemote": 56100,
+		"portLocal": 56101,
+		"bW2R": 0,
+		"bWbroadcast": 0
+	},
+	"udpLvxPushCmd_1": {
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 1
+		},
+		"addrRemote": "192.168.1.120",
+		"portRemote": 56200,
+		"portLocal": 56201,
+		"bW2R": 0,
+		"bWbroadcast": 0
+	},
+	"udpLvxPCL_1": {
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 1
+		},
+		"bLog": false,
+		"addrRemote": "192.168.1.120",
+		"portRemote": 56300,
+		"portLocal": 56301,
+		"bW2R": 0,
+		"bWbroadcast": 0
+	},
+	"udpLvxIMU_1": {
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 1
+		},
+		"bLog": false,
+		"addrRemote": "192.168.1.120",
+		"portRemote": 56400,
+		"portLocal": 56401,
+		"bW2R": 0,
+		"bWbroadcast": 0
+	},
+	"Lvx1": {
+		"class": "_Livox2",
+		"bON": true,
+		"thread": {
+			"FPS": 1
+		},
+		"TdeviceQueryR": {
+			"FPS": 1
+		},
+		"TctrlCmdW": {
+			"FPS": 1
+		},
+		"TctrlCmdR": {
+			"FPS": 1
+		},
+		"TpushCmdR": {
+			"FPS": 1
+		},
+		"TpclR": {
+			"FPS": 1
+		},
+		"TimuR": {
+			"FPS": 1
+		},
+		"bLog": false,
+		"_UDPdeviceQuery": "udpLvxDeviceQuery_1",
+		"_UDPctrlCmd": "udpLvxCtrlCmd_1",
+		"_UDPpushCmd": "udpLvxPushCmd_1",
+		"_UDPpcl": "udpLvxPCL_1",
+		"_UDPimu": "udpLvxIMU_1",
+		"/lvxSN": "47MDLC50020003",
+		"lvxIP": "192.168.1.120",
+		"tOutSec": 10,
+		"lvxPCLdataType": 1,
+		"lvxPatternMode": 0,
+		"lvxHostIP": "192.168.1.100",
+		"lvxHostPortState": 56201,
+		"lvxHostPortPCL": 56301,
+		"lvxHostPortIMU": 56401,
+		"lvxFrameRate": 3,
+		"lvxDetectMode": 1,
+		"lvxWorkModeAfterBoot": 1,
+		"lvxWorkMode": 1,
+		"lvxIMUdataEn": 1,
+		"bIMUstab": false,
+		"PCLframe": "livoxPoints",
+		"IMUstream": "livoxIMU",
+		"nMaxFramePoints": 100000
+	},
+	"viewer": {
+		"class": "_WebGeometryBase",
+		"thread": {
+			"FPS": 30
+		},
+		"host": "0.0.0.0",
+		"port": 8080,
+		"nPbuf": 100000,
+		"nLbuf": 0,
+		"vGeometry": [
+			{
+				"PCLframe": "livoxPoints",
+				"nP": 100000,
+				"matPointSize": 2
+			}
+		]
+	}
+}

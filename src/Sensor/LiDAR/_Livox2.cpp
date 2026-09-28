@@ -63,6 +63,13 @@ namespace kai
         jKv(j, "lvxIMUdataEn", m_lvxCfg.m_imuDataEn);
 
         jKv(j, "bIMUstab", m_bIMUstab);
+        jKv<float>(j, "vColorDefault", m_vColorDefault);
+        jKv(j, "nMaxFramePoints", m_nMaxFramePoints);
+        IF_Le_F(m_nMaxFramePoints <= 0, "Invalid nMaxFramePoints");
+        m_vFramePoints.clear();
+        m_vFramePoints.reserve(m_nMaxFramePoints);
+        m_tPCLframe = 0;
+        m_bPCLframe = false;
 
         // Device Type Query
         DEL(m_pTdeviceQueryR);
@@ -113,6 +120,8 @@ namespace kai
         j["lvxWorkMode"] = m_lvxCfg.m_workMode;
         j["lvxIMUdataEn"] = m_lvxCfg.m_imuDataEn;
         j["bIMUstab"] = m_bIMUstab;
+        j["vColorDefault"] = {m_vColorDefault.x(), m_vColorDefault.y(), m_vColorDefault.z()};
+        j["nMaxFramePoints"] = m_nMaxFramePoints;
         const uint8_t *pIP = reinterpret_cast<const uint8_t *>(&m_lvxIP);
         j["lvxIP"] = std::to_string(pIP[0]) + "." + std::to_string(pIP[1]) + "." +
             std::to_string(pIP[2]) + "." + std::to_string(pIP[3]);
@@ -175,8 +184,9 @@ namespace kai
         // NULL_F(m_pUDPlog);
 
         n = "";
-        jKv(j, "_IMUbase", n);
-        m_pIMU = (_IMUbase *)(pM->findModule(n));
+        jKv(j, "IMUstream", n);
+        m_pIMU = dynamic_cast<IMUstream *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+        IF_Le_F(!n.empty() && !m_pIMU, "IMUstream not found: " + n);
 
         return true;
     }
@@ -256,6 +266,11 @@ namespace kai
             return false;
         }
 
+        if (nBr < 36)
+        {
+            return false;
+        }
+
         pDataRecv->version = pB[0];
         pDataRecv->length = *((uint16_t *)&pB[1]);
         pDataRecv->time_interval = *((uint16_t *)&pB[3]);
@@ -267,7 +282,10 @@ namespace kai
         memcpy(pDataRecv->timestamp, &pB[28], 8);
 
         pDataRecv->crc32 = *((uint32_t *)&pB[24]);
-        IF_F(nBr < pDataRecv->length);
+        if (pDataRecv->length < 36 || pDataRecv->length > nBr)
+        {
+            return false;
+        }
 
         if (bParity)
         {
@@ -275,7 +293,7 @@ namespace kai
             IF_F(crc32 != pDataRecv->crc32);
         }
 
-        memcpy(pDataRecv->data, &pB[36], LVX2_N_DATA);
+        memcpy(pDataRecv->data, &pB[36], pDataRecv->length - 36);
 
         m_lvxTout.reStart(getTns());
         return true;
@@ -715,33 +733,61 @@ namespace kai
 
     void _Livox2::handlePointCloudData(const LIVOX2_DATA &d)
     {
-        uint64_t tStamp = *((uint64_t *)(d.timestamp));
-        //        uint64_t tStamp = getTns();
-
-        if (d.data_type == kLivoxLidarCartesianCoordinateHighData)
+        if (!m_pPCL || d.data_type != kLivoxLidarCartesianCoordinateHighData ||
+            d.dot_num == 0 || d.dot_num > LVX2_N_DATA / sizeof(LivoxLidarCartesianHighRawPoint) ||
+            d.length < 36 + d.dot_num * sizeof(LivoxLidarCartesianHighRawPoint))
         {
-            LivoxLidarCartesianHighRawPoint *pPd = (LivoxLidarCartesianHighRawPoint *)d.data;
-            uint64_t dT = d.time_interval * 100 / d.dot_num; // 0.1us -> ns
-
-            for (uint32_t i = 0; i < d.dot_num; i++)
-            {
-                LivoxLidarCartesianHighRawPoint *pP = &pPd[i];
-                Vector3d vP(pP->x, pP->y, pP->z);
-                vP *= 0.001;
-                vP = m_A * vP;
-                add(vP, Vector3f{m_vColorDefault.x(), m_vColorDefault.y(), m_vColorDefault.z()}, tStamp + (dT * i));
-            }
-        }
-        else if (d.data_type == kLivoxLidarCartesianCoordinateLowData)
-        {
-            LivoxLidarCartesianLowRawPoint *pP = (LivoxLidarCartesianLowRawPoint *)d.data;
-        }
-        else if (d.data_type == kLivoxLidarSphericalCoordinateData)
-        {
-            LivoxLidarSpherPoint *pP = (LivoxLidarSpherPoint *)d.data;
+            return;
         }
 
-        LOG_I("PCL data_num: " + i2str(d.dot_num) + ", data_type: " + i2str(d.data_type) + ", length: " + i2str(d.length) + ", frame_counter: " + i2str(d.frame_cnt));
+        uint64_t tStamp = 0;
+        memcpy(&tStamp, d.timestamp, sizeof(tStamp));
+        if (!tStamp)
+        {
+            return;
+        }
+
+        std::lock_guard<std::mutex> frameLock(m_frameMutex);
+        if (m_bPCLframe && d.frame_cnt != m_iPCLframe)
+        {
+            m_pPCL->set(std::move(m_vFramePoints), m_tPCLframe);
+            m_vFramePoints.clear();
+            m_vFramePoints.reserve(m_nMaxFramePoints);
+            m_bPCLframe = false;
+        }
+        if (!m_bPCLframe)
+        {
+            m_iPCLframe = d.frame_cnt;
+            m_tPCLframe = tStamp;
+            m_bPCLframe = true;
+        }
+
+        Isometry3f pose;
+        {
+            std::lock_guard<std::mutex> lock(m_poseMutex);
+            pose = m_mPosef;
+        }
+
+        const uint64_t dT = uint64_t(d.time_interval) * 100 / d.dot_num;
+        for (size_t i = 0; i < d.dot_num && m_vFramePoints.size() < size_t(m_nMaxFramePoints); ++i)
+        {
+            LivoxLidarCartesianHighRawPoint raw;
+            memcpy(&raw, d.data + i * sizeof(raw), sizeof(raw));
+            GEOMETRY_POINT point;
+            point.m_vP = pose * (Vector3f(raw.x, raw.y, raw.z) * 0.001f);
+            point.m_vC = m_vColorDefault;
+            point.m_tStamp = tStamp + dT * i;
+            m_vFramePoints.push_back(point);
+        }
+    }
+
+    void _Livox2::clear(void)
+    {
+        std::lock_guard<std::mutex> lock(m_frameMutex);
+        m_vFramePoints.clear();
+        m_tPCLframe = 0;
+        m_bPCLframe = false;
+        _PointCloud::clear();
     }
 
     // IMU
@@ -759,19 +805,24 @@ namespace kai
 
     void _Livox2::handleIMUdata(const LIVOX2_DATA &d)
     {
-        IF_(!m_lvxCfg.m_imuDataEn);
+        if (!m_lvxCfg.m_imuDataEn || d.length < 36 + sizeof(LivoxLidarImuRawPoint))
+        {
+            return;
+        }
 
-        LivoxLidarImuRawPoint *pIMU = (LivoxLidarImuRawPoint *)d.data;
-        uint64_t tStamp = *((uint64_t *)d.timestamp);
-        //        uint64_t tStamp = getTns();
+        LivoxLidarImuRawPoint imu;
+        memcpy(&imu, d.data, sizeof(imu));
+        const LivoxLidarImuRawPoint *pIMU = &imu;
+        uint64_t tStamp = 0;
+        memcpy(&tStamp, d.timestamp, sizeof(tStamp));
 
         if (m_pIMU)
         {
             Vector3f vAcc = Vector3f(pIMU->acc_x, pIMU->acc_y, pIMU->acc_z);
-            m_pIMU->addAcc(vAcc, tStamp);
+            m_pIMU->set(IMUstream::Type::Acc, vAcc, tStamp);
 
             Vector3f vGyro = Vector3f(pIMU->gyro_x, pIMU->gyro_y, pIMU->gyro_z);
-            m_pIMU->addGyro(vGyro, tStamp);
+            m_pIMU->set(IMUstream::Type::Gyro, vGyro, tStamp);
         }
 
         IF_(!m_bIMUstab);
@@ -791,18 +842,11 @@ namespace kai
             pIMU->acc_z,
             nsec2sec<float>(dT));
 
-        float *pQ = m_SF.getQuat();
-        Vector4d vQ(pQ[0], pQ[1], pQ[2], pQ[3]);
-        setQuaternion(vQ);
-
-        Vector3d vR(m_SF.getRollRadians(), m_SF.getPitchRadians(), m_SF.getYawRadians());
-        setRotation(vR);
-
-        // cancel yaw rot
-        vR.x() = 0;
-        vR.y() = 0;
-        vR.z() = -vR.z();
-        updateTranslationMatrix(true, &vR);
+        // Stabilize roll and pitch while cancelling the IMU's yaw rotation.
+        {
+            std::lock_guard<std::mutex> lock(m_poseMutex);
+            setAngles(m_SF.getRollRadians(), m_SF.getPitchRadians(), 0.0);
+        }
 
         LOG_I("IMU, data_num:" + i2str(d.dot_num) + ", data_type:" + i2str(d.data_type) + ", length:" + i2str(d.length) + ", frame_counter:" + i2str(d.frame_cnt));
     }

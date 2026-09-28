@@ -5,8 +5,6 @@
 		"bLog": true,
 		"bStdErr": true
 	},
-
-
 	"console": {
 		"class": "_Console",
 		"bON": false,
@@ -20,7 +18,6 @@
 			"apDrive"
 		]
 	},
-
 	"wsServer": {
 		"class": "_WebSocketServer",
 		"bON": true,
@@ -55,8 +52,6 @@
 			"viewer"
 		]
 	},
-
-
 	"serialAP": {
 		"class": "_SerialPort",
 		"bON": false,
@@ -84,7 +79,6 @@
 		"bW2R": false,
 		"bWbroadcast": false
 	},
-
 	"apMavlink": {
 		"class": "_Mavlink",
 		"bON": true,
@@ -144,8 +138,6 @@
 			}
 		}
 	},
-
-
 	"apDrive": {
 		"class": "_APmav_drive",
 		"bON": true,
@@ -164,11 +156,10 @@
 		"speedGo": 0.5,
 		"steerTurn": 0.5,
 		"octGridOccu": 10,
-		"iRCservo":6,
-		"pwmServoON":2000,
-		"pwmServoOFF":1500
+		"iRCservo": 6,
+		"pwmServoON": 2000,
+		"pwmServoOFF": 1500
 	},
-
 	"geoFence": {
 		"class": "_GeoFence",
 		"bON": true,
@@ -179,8 +170,6 @@
 		"_APmav_base": "apBase",
 		"estD": 1
 	},
-
-
 	"pcFile": {
 		"class": "_PCfile",
 		"bON": false,
@@ -188,17 +177,11 @@
 		"thread": {
 			"FPS": 1
 		},
-		"nP": 400000,
-		"vColorDefault": [
-			1,
-			1,
-			1
-		],
 		"vfName": [
 			"data/PointCloud/StanfordBunny/bun000.ply"
-		]
+		],
+		"PCLframe": "pcFilePoints"
 	},
-
 	"viewCam": {
 		"class": "_WindowCV",
 		"bON": false,
@@ -206,9 +189,7 @@
 			"FPS": 20
 		},
 		"bFullScreen": 0,
-		"vBASE": [
-			"cam"
-		]
+		"RGBframeIn": "camRGB"
 	},
 	"cam": {
 		"class": "_Scepter",
@@ -229,31 +210,25 @@
 			0,
 			4000
 		],
-		"_PointCloud": "scPC",
+		"PCLframe": "scPC",
 		"scPixelFormat": 4,
 		"bRGB": true,
 		"bDepth": true,
 		"btRGB": true,
 		"btDepth": false,
-		"bIR": false
+		"bIR": false,
+		"RGBframe": "camRGB",
+		"Dframe": "camDepth"
 	},
 	"scPC": {
-		"class": "_PointCloud",
-		"bON": true,
-		"bLog": true,
-		"thread": {
-			"FPS": 1
-		},
-		"nP": 400000
+		"type": "dataStream",
+		"class": "PCLframe"
 	},
-
-
 	"octGrid": {
 		"class": "_SelectableOctGrid",
 		"thread": {
 			"FPS": 10
 		},
-		"nP": 400000,
 		"vRootCellSize": [
 			5,
 			5,
@@ -263,14 +238,12 @@
 		"nMaxCells": 18333,
 		"dTexpireCell": 300000000,
 		"dTexpirePCL": 500000000,
-		"nPminBuild":100,
-		"vGeometryBase": [
-			"pcFile",
+		"nPminBuild": 100,
+		"vPCLframes": [
+			"pcFilePoints",
 			"scPC"
 		]
 	},
-
-
 	"viewer": {
 		"class": "_WebSelectableOctGrid",
 		"thread": {
@@ -306,13 +279,13 @@
 		],
 		"vGeometry": [
 			{
-				"_GeometryBase": "scPC",
+				"PCLframe": "scPC",
 				"nP": 400000,
 				"nL": 0,
 				"matPointSize": 2
 			},
 			{
-				"_GeometryBase": "pcFile",
+				"PCLframe": "pcFilePoints",
 				"nP": 400000,
 				"nL": 0,
 				"matPointSize": 2
@@ -330,5 +303,17 @@
 				"_SelectableOctGrid": "octGrid"
 			}
 		]
+	},
+	"pcFilePoints": {
+		"type": "dataStream",
+		"class": "PCLframe"
+	},
+	"camRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"camDepth": {
+		"type": "dataStream",
+		"class": "RGBframe"
 	}
 }

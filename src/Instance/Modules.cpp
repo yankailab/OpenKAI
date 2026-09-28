@@ -163,12 +163,6 @@ namespace kai
 
 #if defined(WITH_SLAM)
 		ADD_MODULE(_SLAMbase);
-#if !defined(WITH_UNIVERSE)
-		ADD_MODULE(_PointCloud);
-#endif
-#if !defined(WITH_SENSOR)
-		ADD_MODULE(_IMUbase);
-#endif
 #if defined(USE_GLIM)
 		ADD_MODULE(_GLIM);
 #if defined(WITH_UNIVERSE)
@@ -208,7 +202,7 @@ namespace kai
 		ADD_MODULE(_BenewakeTF);
 		ADD_MODULE(_TOFsense);
 		ADD_MODULE(_LeddarVu);
-#if defined(WITH_UNIVERSE) && defined(USE_OPEN3D)
+#if defined(WITH_UNIVERSE)
 		ADD_MODULE(_Livox2);
 		ADD_MODULE(_RoboSenseAiry);
 #endif // 3D
@@ -240,18 +234,6 @@ namespace kai
 #endif
 
 #ifdef WITH_VISION
-#ifdef USE_ORBBEC
-		ADD_MODULE(_Orbbec);
-#endif
-#ifdef USE_REALSENSE
-		ADD_MODULE(_RealSense);
-#endif
-#ifdef USE_SCEPTER_SDK
-		ADD_MODULE(_Scepter);
-#endif
-#ifdef USE_XDYNAMICS
-		ADD_MODULE(_XDynamics);
-#endif
 #ifdef USE_OPENCV
 		ADD_MODULE(_Camera);
 		ADD_MODULE(_HiKthermal);
@@ -270,10 +252,21 @@ namespace kai
 		ADD_MODULE(_Resize);
 		ADD_MODULE(_Remap);
 		ADD_MODULE(_Rotate);
-		ADD_MODULE(_SharedMemImg);
 		ADD_MODULE(_Threshold);
 		ADD_MODULE(_Thermal2RGB);
 		ADD_MODULE(_VideoFile);
+#ifdef USE_ORBBEC
+		ADD_MODULE(_Orbbec);
+#endif
+#ifdef USE_REALSENSE
+		ADD_MODULE(_RealSense);
+#endif
+#ifdef USE_SCEPTER_SDK
+		ADD_MODULE(_Scepter);
+#endif
+#ifdef USE_XDYNAMICS
+		ADD_MODULE(_XDynamics);
+#endif
 
 #endif // opencv
 #endif // vision

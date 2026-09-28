@@ -7,21 +7,26 @@ cmake -S . -B build-glim -DWITH_SLAM=ON -DUSE_GLIM=ON -DCMAKE_BUILD_TYPE=RelWith
 cmake --build build-glim -j4
 ```
 
-Use `-DCMAKE_PREFIX_PATH=/your/install/prefix` for a nonstandard installation. `glim::glim` supplies GTSAM, gtsam_points, Eigen, OpenMP, spdlog and Boost dependencies. GLIM is only required when both `WITH_SLAM` and `USE_GLIM` are enabled. SLAM also builds the shared navigation, geometry and IMU base classes if their wider module groups are disabled.
+Use `-DCMAKE_PREFIX_PATH=/your/install/prefix` for a nonstandard installation. `glim::glim` supplies GTSAM, gtsam_points, Eigen, OpenMP, spdlog and Boost dependencies. GLIM is only required when both `WITH_SLAM` and `USE_GLIM` are enabled. SLAM also builds its shared navigation, geometry, and DataStream dependencies when their wider module groups are disabled.
 
-Include `jsonCfg/_GLIM.json` using the application's `APP.vInclude`, or copy its three module definitions into your existing camera configuration. Connect the camera's `_PointCloud` and `_IMUbase` outputs to `slamPoints` and `slamIMU`. Alternatively, change the SLAM module's input names to your existing modules. The example supplies input buffers; it needs a sensor producer to feed them. Paths are relative to the process working directory.
+Include `jsonCfg/_GLIM.json` using the application's `APP.vInclude`, or copy its SLAM module and DataStream declarations into your camera configuration. Connect the camera's `PCLframe` output to `slamPoints` and its IMU output to `slamIMU` (`IMUframe` for RGBD cameras, `IMUstream` for Livox). SLAM reads them through `PCLframeIn` and `IMUstream`. The example declares input streams; it needs a sensor producer to populate them. Paths are relative to the process working directory. See [Geometry DataStreams](DataStreamGeometry.md) for the complete configuration mapping.
 
 `jsonCfg/glim_orbbec` contains CPU configuration templates adapted from GLIM 1.2.2, with its MIT license. You can also point `configPath` at a copy of `/home/kai/dev/glim/config`. In that copy, select the CPU odometry, sub-mapping and global-mapping JSON files in `config.json`; the upstream configuration selects GPU modules by default. Every `_GLIM` instance in one process must use the same configuration directory because GLIM configuration is global. Restart the process after editing those profile files. The supported web controls use per-instance constructor parameters and apply on the next session without replacing global configuration.
 
-Before using a real sensor, set `T_lidar_imu` in `config_sensors.json` to its calibrated IMU-to-point-cloud transform. The `glim_orbbec` profile now contains the attached Gemini 335's factory IMU-to-native-depth transform: translation `[0.000246, 0.000065, -0.016948]` meters and identity rotation. This is device/frame-specific; RGB-aligned clouds require IMU-to-color calibration instead. Point coordinates must be in meters; acceleration in m/s² (including gravity); angular velocity in rad/s. Point-cloud and IMU timestamps must increase in nanoseconds and share one capture clock. `_Orbbec` uses device timestamps and separate 200 Hz IMU callbacks, avoiding sample loss and USB-arrival jitter from video framesets. Keep the input point cloud in a fixed sensor frame, and calibrate extrinsics against that frame. Do not feed the estimated pose back into its input `_PointCloud` transform.
+Before using a real sensor, set `T_lidar_imu` in `config_sensors.json` to its calibrated IMU-to-point-cloud transform. The `glim_orbbec` profile now contains the attached Gemini 335's factory IMU-to-native-depth transform: translation `[0.000246, 0.000065, -0.016948]` meters and identity rotation. This is device/frame-specific; RGB-aligned clouds require IMU-to-color calibration instead. Point coordinates must be in meters; acceleration in m/s² (including gravity); angular velocity in rad/s. Point-cloud and IMU timestamps must increase in nanoseconds and share one capture clock. `_Orbbec` uses device timestamps and separate 200 Hz IMU callbacks, avoiding sample loss and USB-arrival jitter from video framesets. Keep the input point cloud in a fixed sensor frame, and calibrate extrinsics against that frame. Do not feed the estimated pose back into the producer of its input `PCLframe`.
 
-The frame interface treats each cloud as a single exposure, with zero per-point time offsets. It suits depth-camera clouds; it does not deskew a scanning LiDAR. Each producer calls `frameStart()`, `add(..., sensorTimestampNs)` for its points, then `frameStop()`. Frames are index spans in the point cloud's ring buffer. Oversized frames retain the newest `nP` points, and a completed frame becomes unavailable once a subsequent write overwrites its span. Allocate at least two maximum-sized input frames to keep the preceding frame available while the next is built. IMU samples use `addGyro(value, timestampNs)` and `addAcc(value, timestampNs)`; pairing consumes those queues, so use one SLAM consumer per IMU buffer.
+The GLIM adapter treats each cloud as a single exposure, with zero per-point time offsets. It suits depth-camera clouds; it does not deskew a scanning LiDAR. Producers publish complete vectors through `PCLframe::set(std::move(points), sensorTimestampNs)`. Immutable snapshots remain valid while readers hold them, even after replacement, and there are no ring-buffer frame spans or wraparound limits. `IMUstream` accepts `set(IMUstream::Type::Gyro, value, timestampNs)` and
+`set(IMUstream::Type::Acc, value, timestampNs)`. `get()` returns immutable
+bounded gyro/acceleration history with a timestamp and revision. SLAM owns its
+pairing cursor; several readers consume the same history independently.
+Publishing appends in constant time. Each `get()` call copies the bounded
+history; SLAM retains one snapshot while draining a batch.
 
 The Orbbec CPU odometry example requires an IMU. Run `build/OpenKAI jsonCfg/GLIM_scepter.json` for Scepter cameras without an IMU. Its isolated [glim_scepter profile](../jsonCfg/glim_scepter/README.md) selects CT odometry, disables `enable_imu` in both mapping configs, and uses identity sensor extrinsics. The map starts in the first camera's optical frame, without gravity alignment. No IMU module or synthetic inertial samples are needed. The shared frontend, WSconsole controls, submap stream and PLY export work with both profiles. The adapter checks the selected estimator's IMU requirement at startup.
 
 Scepter and Orbbec SDKs can be enabled in the same build. GLIM's spdlog must precede the Scepter SDK in the link order because the SDK exports an incompatible bundled spdlog; CMake declares the explicit dependency to preserve that order. Camera/SLAM saved controls for Scepter live under `jsonCfg/glim_scepter`, and its PLY output defaults to `data/glim_scepter`. The Orbbec settings remain separate. Sensor rates and preprocessing parameters still need tuning for the scene and camera.
 
-`_SLAMbase` owns input linking, timestamp deduplication, the worker, pose publication and the session lifecycle. `_GLIM` owns preprocessing, odometry, submaps and global mapping. Processing is sequential on the OpenKAI worker; if processing falls behind, it takes the newest completed cloud instead of building an unbounded frame queue. `getLastFrameIfNew()` checks freshness under the ring lock before copying, so idle polls do not recopy the preceding cloud. This input optimization is independent of the viewer. IMU-required odometry waits for a paired IMU sample later than the cloud timestamp.
+`_SLAMbase` owns DataStream linking, revision tracking, the worker, pose publication and the session lifecycle. `_GLIM` owns preprocessing, odometry, submaps and global mapping. Processing is sequential on the OpenKAI worker; if processing falls behind, it takes the latest completed cloud. Reading a snapshot does not copy its points. SLAM rejects empty clouds and non-increasing capture timestamps without advancing the estimator clock. IMU-required odometry waits for a paired IMU sample later than the cloud timestamp.
 
 - `start()` starts the worker and, by default, a session. Set `bAutoStart: false` to start tracking explicitly.
 - `startTracking()` creates a new session, or returns success if one is already active. Initialization may need several seconds of IMU and point-cloud data.
@@ -31,25 +36,21 @@ Scepter and Orbbec SDKs can be enabled in the same build. GLIM's spdlog must pre
 
 `_NavBase::setConfidence()` uses a 0–100 scale and optionally expires stale updates. SLAM defaults to a one-second `tConfidenceTimeoutNs`; zero disables expiry. GLIM supplies no scalar tracking-quality score, so this adapter reports 100 for an available finite pose and 0 for initialization, insufficient points, stopped tracking or expired updates. It is a pose-availability signal, not an accuracy estimate. `bTracking()` reports whether the session is active, including initialization.
 
-Run the hardware-independent tests with:
-
-```bash
-cmake -S test/slam -B /tmp/openkai-slam-tests
-cmake --build /tmp/openkai-slam-tests -j4
-ctest --test-dir /tmp/openkai-slam-tests --output-on-failure
-```
-
-The IMU-free test additionally checks immediate CT initialization, stationary and moving depth-only scenes, parameter persistence, and exact final-frame coverage in completed submaps, including a single-frame scan. The adapter retains CT's active smoother window separately from export previews and flushes the native mapper's lookahead when IMU is disabled.
-
-These exercise ring-buffer frame spans and wraparound, IMU pairing, confidence expiry, real GLIM CPU estimation on stationary and moving synthetic scenes, map saving, parameter validation/persistence, PLY writing, dedicated submap transport, and session restart/reset. The motion test translates 0.5 m and rotates 23 degrees before returning, with independently synthesized 200 Hz IMU measurements. Live sensor calibration and trajectory accuracy still require a hardware run.
+Run the hardware-independent DataStream and SLAM-input checks using the commands in
+[Geometry DataStreams](DataStreamGeometry.md#point-transport-and-validation).
+They cover snapshot lifetime, replacement and empty frames, independent IMU
+readers, input freshness, viewer transport, and Grid/LiDAR frame handling. These
+checks do not validate real GLIM estimation, live sensor calibration, or trajectory
+accuracy; those require a GLIM-enabled integration or hardware run.
 
 ## Viewer and completed submaps
 
-`jsonCfg/GLIM_orbbec.json` and `jsonCfg/GLIM_scepter.json` connect camera → input `_PointCloud` → `_GLIM` →
-`_WebGLIM`. The viewer links directly with `"_GLIM": "GLIM"` and uses the shared
-`HttpServer` with its own `/stream/glim` protocol. `_WSconsole` carries controls,
-parameters and pose/status independently. `_WebGLIM` requires `WITH_UNIVERSE`
-(the existing web support), `WITH_SLAM`, and `USE_GLIM`.
+`jsonCfg/GLIM_orbbec.json` and `jsonCfg/GLIM_scepter.json` connect camera →
+`PCLframe` → `_GLIM` → `PCLmap` → `_WebGLIM`. GLIM publishes submaps to its
+`PCLmap` stream; the viewer names that same stream with `PCLmapIn`. The viewer
+uses the shared `HttpServer` with its own `/stream/glim` protocol. `_WSconsole`
+carries controls, parameters and pose/status independently. The viewer reads
+only the DataStream and does not depend on the GLIM estimator class or SDK.
 
 The backend caches each completed submap's immutable local points once, with a
 stable session-local ID and current map pose. The browser accumulates those
@@ -68,14 +69,13 @@ geometry. Revisions may update poses without changing IDs or point arrays.
 The dedicated layout and routes are separate from geometry point/line streams;
 see the [wire contract](../html/viewer/_GLIM/README.md#dedicated-submap-protocol).
 
-`globalMapPCL` remains an optional `_PointCloud` output for other modules. With
+`PCLframe` names an optional flat point-cloud output for other modules. With
 `bPublishLiveMap: false` (default), only completed-submap changes and finalization
-refresh this output, subject to `tMapUpdateNs`. `nMapPoints` caps this ring output
+refresh this output, subject to `tMapUpdateNs`. `nMapPoints` caps this snapshot
 and does not limit the dedicated viewer's accumulated submaps. Set
-`bPublishLiveMap: true` to retain the prior continuous recent-frame preview for
-other consumers. `nLiveFrames` bounds retained unfinished history; `_WebGLIM`
-never streams those individual frames. Keep the optional map ring at least
-`nMapPoints` large and its transform at identity.
+`bPublishLiveMap: true` to include the continuous recent-frame preview for other
+consumers. `nLiveFrames` bounds retained unfinished history; `_WebGLIM` never
+streams those individual frames. The flat output must differ from `PCLframeIn`.
 
 The browser trajectory is a bounded history of fresh status poses, not GLIM's
 optimized historical trajectory. Completed-submap pose corrections update the
@@ -120,7 +120,7 @@ in status are decimal strings shared with the submap protocol.
 `savePointCloud` uses `_PCfile::savePLY` to write binary little-endian XYZ float32
 and RGB uint8. It snapshots all completed submaps at their latest optimized
 poses plus retained unfinished frames, up to `nLiveFrames` of recent history.
-It bypasses `nMapPoints` and the optional display ring; it still exports GLIM's
+It bypasses `nMapPoints` and the optional display snapshot; it still exports GLIM's
 processed map points, not every raw depth sample. Snapshot collection holds the
 estimator lock and file I/O occurs after releasing it. Saving is allowed during
 tracking; stop first when a finalized, optimized export is desired.
@@ -142,32 +142,26 @@ and container operations in the point-cloud hot path; changing the thread's
 target FPS does not remove that work.
 
 The dedicated viewer transfers immutable submaps when they complete and small
-pose updates when needed. The optional map-ring publication reuses conversion
-buffers, caches affine coefficients per source cloud, and replaces the ring
-without clearing its unused capacity. Identity output poses skip a second
-transform. Input freshness remains checked under the ring lock before copying.
-`_PointCloud` still stores frames as ring indices; replacement and wraparound
-semantics are covered by the SLAM integration test.
+pose updates when needed. `PCLmap` shares each submap's local point storage
+between publications; map optimization changes the poses. The optional flat
+`PCLframe` output transfers its built vector into an immutable snapshot. Input
+readers compare revisions and retain the published vector without copying it.
+Snapshot replacement and retained-reader lifetime are covered by the independent
+DataStream tests.
 
-Measure the real camera with an active point-cloud stream:
-
-```sh
-python3 test/slam/profile.py build/OpenKAI --warmup 10 --seconds 30 --output /tmp/glim-profile.json
-```
-
-The profiler uses temporary ports/configuration, starts and stops its own backend,
-and writes raw status samples, per-stage results, and a sibling `.log` file. Keep
-the camera still during initialization. Compare runs with the same sensor,
-scene, mapping settings and compiler settings. Run long enough to produce
-completed submaps before comparing sustained mapping and stream throughput;
-network traffic is event-driven rather than one point cloud per video frame.
+Measure the real camera with an active point-cloud stream and collect `getStatus`
+samples after a warmup period. Keep the camera still during initialization.
+Compare runs with the same sensor, scene, mapping settings and compiler settings.
+Run long enough to produce completed submaps before comparing sustained mapping
+and stream throughput; network traffic is event-driven rather than one point
+cloud per video frame.
 
 `getStatus` exposes cumulative `workMs` for IMU ingestion, input copying/conversion,
 preprocessing, odometry, mapping and map publication. Subtract two readings and
 divide by the change in `frames` for amortized milliseconds per processed frame.
 These totals include polls that did not produce a pose; they exclude worker sleep,
 command-lock waiting and asynchronous HTTP/WebSocket serialization. `publishMap`
-measures the optional ring output, not the dedicated stream. `inputPoints`,
+measures the optional flat cloud output, not the dedicated stream. `inputPoints`,
 `registrationPoints` and `updates` show
 the workload. `processingMs` is the last frame's work time, so periodic samples
 of it are not a per-frame timing distribution.

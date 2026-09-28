@@ -46,8 +46,6 @@
 			"scepter"
 		]
 	},
-
-
 	"view": {
 		"class": "_WindowCV",
 		"bON": true,
@@ -55,9 +53,7 @@
 			"FPS": 30
 		},
 		"bFullScreen": 0,
-		"vBASE": [
-			"scepter"
-		]
+		"RGBframeIn": "scepterRGB"
 	},
 	"viewD": {
 		"class": "_WindowCV",
@@ -66,11 +62,8 @@
 			"FPS": 30
 		},
 		"bFullScreen": 0,
-		"vBASE": [
-			"d2rgb"
-		]
+		"RGBframeIn": "d2rgbRGB"
 	},
-
 	"scepter": {
 		"class": "_Scepter",
 		"bON": true,
@@ -90,7 +83,7 @@
 			0,
 			4.0
 		],
-		"_PointCloud":"scPCL",
+		"PCLframe": "scPCL",
 		"bRGB": true,
 		"bDepth": true,
 		"btRGB": true,
@@ -99,7 +92,6 @@
 		"bPCL": false,
 		"bPCLrgb": true,
 		"pclStride": 2,
-
 		"scScanTime": 3000,
 		"scPixelFormat": 4,
 		"scAutoExposureToF": true,
@@ -149,50 +141,44 @@
 		"scAIModuleWorkMode": 0,
 		"scAIModuleParams": [],
 		"scAIModuleInputFrames": [],
-		"scAIModulePreviewFrames": []
+		"scAIModulePreviewFrames": [],
+		"RGBframe": "scepterRGB",
+		"Dframe": "scepterDepth"
 	},
-
 	"d2rgb": {
 		"class": "_D2RGB",
 		"bON": true,
 		"thread": {
 			"FPS": 30
 		},
-		"_RGBDbase": "scepter",
-		"bMeasure": false
+		"bMeasure": false,
+		"DframeIn": "scepterDepth",
+		"RGBframe": "d2rgbRGB"
 	},
 	"scPCL": {
-		"class": "_PointCloud",
-		"bON": true,
-		"bLog": true,
-		"thread": {
-			"FPS": 1
-		},
-		"nP":400000
+		"type": "dataStream",
+		"class": "PCLframe"
 	},
-
 	"viewer": {
-	    "class": "_WebGeometryBase",
+		"class": "_WebGeometryBase",
 		"webRoot": "html/viewer/_Scepter",
 		"bON": true,
-	    "thread": {
-	      "FPS": 30
-	    },
-	    "host": "0.0.0.0",
-	    "port": 8080,
-	    "nClientMax": 8,
-	    "nPbuf": 400000,
-	    "nLbuf": 0,
-	    "dTexpire": 0,
-	    "bAutoBound": true,
-	    "bShowGrid": true,
-		"bFrame": true,
-
-	    "vCamLookAt": [
-	      0,
-	      0,
-	      0
-	    ],
+		"thread": {
+			"FPS": 30
+		},
+		"host": "0.0.0.0",
+		"port": 8080,
+		"nClientMax": 8,
+		"nPbuf": 400000,
+		"nLbuf": 0,
+		"dTexpire": 0,
+		"bAutoBound": true,
+		"bShowGrid": true,
+		"vCamLookAt": [
+			0,
+			0,
+			0
+		],
 		"vCamEye": [
 			0,
 			-1,
@@ -203,18 +189,30 @@
 			-1,
 			0
 		],
-	    "camFov": 70,
-	    "vCamNF": [
-	      0.01,
-	      1000000
-	    ],
-	    "vGeometry": [
-	      {
-	        "_GeometryBase": "scPCL",
-	        "nP": 400000,
-	        "nL": 0,
-	        "matPointSize": 2
-	      }
-	    ]
+		"camFov": 70,
+		"vCamNF": [
+			0.01,
+			1000000
+		],
+		"vGeometry": [
+			{
+				"PCLframe": "scPCL",
+				"nP": 400000,
+				"nL": 0,
+				"matPointSize": 2
+			}
+		]
+	},
+	"scepterRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"scepterDepth": {
+		"type": "dataStream",
+		"class": "RGBframe"
+	},
+	"d2rgbRGB": {
+		"type": "dataStream",
+		"class": "RGBframe"
 	}
 }

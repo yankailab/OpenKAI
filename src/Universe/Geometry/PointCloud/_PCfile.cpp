@@ -746,8 +746,8 @@ namespace kai
 	{
 	}
 
-	bool _PCfile::savePLY(const string &path, const vector<Vector3f> &points,
-		const vector<Vector3f> &colors, string *error)
+	bool _PCfile::savePLY(const string &path, const vector<GEOMETRY_POINT> &points,
+		string *error)
 	{
 		static_assert(sizeof(float) == 4 && std::numeric_limits<float>::is_iec559,
 			"PLY output requires IEEE 754 float32");
@@ -767,8 +767,12 @@ namespace kai
 				destination.filename() == "." || destination.filename() == "..")
 				return fail("Invalid PLY destination path");
 			for (size_t i = 0; i < points.size(); ++i)
-				if (!std::isfinite(points[i].x()) || !std::isfinite(points[i].y()) || !std::isfinite(points[i].z()))
+			{
+				if (!points[i].m_vP.allFinite())
+				{
 					return fail("Nonfinite PLY point at index " + std::to_string(i));
+				}
+			}
 
 			// Keep the temporary file beside the destination so rename is atomic.
 			PLY_OUTPUT_FILE output;
@@ -792,14 +796,14 @@ namespace kai
 				for (int axis = 0; axis < 3; ++axis)
 				{
 					uint32_t bits;
-					const float value = points[i][axis];
+					const float value = points[i].m_vP[axis];
 					std::memcpy(&bits, &value, sizeof(bits));
 					for (int byte = 0; byte < 4; ++byte)
 						buffer[used++] = uint8_t(bits >> (8 * byte));
 				}
 				for (int channel = 0; channel < 3; ++channel)
 				{
-					const float value = i < colors.size() ? colors[i][channel] : 1.0f;
+					const float value = points[i].m_vC[channel];
 					buffer[used++] = std::isfinite(value) ? uint8_t(std::clamp(value, 0.0f, 1.0f) * 255.0f + 0.5f) : 255;
 				}
 				if (used == buffer.size())
@@ -831,7 +835,6 @@ namespace kai
 		const json &j = *m_pJ;
 
 		jKv(j, "vfName", m_vfName);
-		open();
 
 		return true;
 	}
@@ -847,12 +850,23 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
+	bool _PCfile::link(InstanceMgr *pM)
+	{
+		if (!_PointCloud::link(pM))
+		{
+			return false;
+		}
+
+		return open();
+	}
+
 	bool _PCfile::open(void)
 	{
-		IF_F(m_vfName.empty());
+		IF_F(!m_pPCL || m_vfName.empty());
 
 		vector<GEOMETRY_POINT> vPoint;
-		for (string f : m_vfName)
+		bool loaded = false;
+		for (const string &f : m_vfName)
 		{
 			vector<GEOMETRY_POINT> vPointFile;
 			string err;
@@ -862,18 +876,23 @@ namespace kai
 				continue;
 			}
 
+			loaded = true;
 			vPoint.insert(vPoint.end(), vPointFile.begin(), vPointFile.end());
 			LOG_I("File: " + f + ", Npoints: " + u642str(vPointFile.size()));
 		}
 
-		clear();
-
-		for (GEOMETRY_POINT p : vPoint)
+		if (!loaded)
 		{
-			p.m_vP = m_mPosef * p.m_vP;
-			m_rPt.add(p);
+			return false;
 		}
 
+		const uint64_t stamp = getTns();
+		for (GEOMETRY_POINT &point : vPoint)
+		{
+			point.m_vP = m_mPosef * point.m_vP;
+			point.m_tStamp = stamp;
+		}
+		m_pPCL->set(std::move(vPoint), stamp);
 		return true;
 	}
 
