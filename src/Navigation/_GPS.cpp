@@ -33,14 +33,14 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _GPS::link(void)
+	bool _GPS::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ModuleBase::link());
+		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(m_pM->findModule(n));
+		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 
 		return true;

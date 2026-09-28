@@ -72,29 +72,6 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _Thread::link(void)
-	{
-		IF_F(!this->BASE::link());
-		const json &j = *m_pJ;
-
-		vector<string> vRunT;
-		jKv(j, "vRunThread", vRunT);
-		m_vRunThread.clear();
-		for (string s : vRunT)
-		{
-			_Thread *pT = (_Thread *)(m_pM->findModule(s));
-			if (!pT)
-			{
-				LOG_I("Instance not found: " + s);
-				continue;
-			}
-
-			m_vRunThread.push_back(pT);
-		}
-
-		return true;
-	}
-
 	bool _Thread::startThread(void *(*__start_routine)(void *),
 							  void *__restrict __arg)
 	{
@@ -175,12 +152,6 @@ namespace kai
 		m_state = thread_run;
 
 		return true;
-	}
-
-	void _Thread::runAllLinkedThreads(void)
-	{
-		for (_Thread *pT : m_vRunThread)
-			pT->run();
 	}
 
 	void _Thread::sleepT(int64_t nsec)

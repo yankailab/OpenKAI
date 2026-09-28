@@ -34,16 +34,16 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _Remap::link(void)
+	bool _Remap::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_VisionBase::link());
+		IF_F(!this->_VisionBase::link(pM));
 		const json &j = *m_pJ;
 
 		string n;
 
 		n = "";
 		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(m_pM->findModule(n));
+		m_pV = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pV);
 
 		n = "";

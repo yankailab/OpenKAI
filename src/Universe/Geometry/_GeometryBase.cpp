@@ -25,9 +25,9 @@ namespace kai
         return true;
     }
 
-    bool _GeometryBase::link(void)
+    bool _GeometryBase::link(ModuleMgr *pM)
     {
-        IF_F(!this->_ReferenceFrame::link());
+        IF_F(!this->_ReferenceFrame::link(pM));
 
         return true;
     }

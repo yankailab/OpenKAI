@@ -29,7 +29,6 @@ namespace kai
 
 		bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
-		bool link(void) override;
 		virtual bool startThread(void *(*__start_routine)(void *), void *__restrict __arg);
 		virtual void console(void *pConsole);
 
@@ -45,7 +44,6 @@ namespace kai
 
 		bool bOnPause(void);
 		bool bOnResume(void);
-		void runAllLinkedThreads(void); // wake up all the other instances
 
 		void sleepT(int64_t nsec);
 		void skipSleep(void);
@@ -73,9 +71,6 @@ namespace kai
 		uint64_t m_dTns = 1;
 		uint64_t m_FPS = 0;
 		bool m_bSkipSleep = false;
-
-		// linked
-		vector<_Thread *> m_vRunThread;
 	};
 
 }

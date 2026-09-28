@@ -23,21 +23,21 @@ namespace kai
         return true;
     }
 
-    bool _TestJSON::link(void)
+    bool _TestJSON::link(ModuleMgr *pM)
     {
-        IF_F(!this->_TestBase::link());
+        IF_F(!this->_TestBase::link(pM));
         const json &j = *m_pJ;
 
         string n;
 
         n = "";
         jKv(j, "_JSONbaseSender", n);
-        m_pJsender = (_JSONbase *)(m_pM->findModule(n));
+        m_pJsender = (_JSONbase *)(pM->findModule(n));
         NULL_F(m_pJsender);
 
         n = "";
         jKv(j, "_JSONbaseReceiver", n);
-        m_pJreceiver = (_JSONbase *)(m_pM->findModule(n));
+        m_pJreceiver = (_JSONbase *)(pM->findModule(n));
         NULL_F(m_pJreceiver);
 
         return true;

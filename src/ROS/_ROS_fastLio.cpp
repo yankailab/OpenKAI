@@ -52,9 +52,9 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool _ROS_fastLio::link(void)
+    bool _ROS_fastLio::link(ModuleMgr *pM)
     {
-        IF_F(!this->_NavBase::link());
+        IF_F(!this->_NavBase::link(pM));
         const json &j = *m_pJ;
         IF_F(!m_pTros || !m_pTros->link());
 
@@ -62,7 +62,7 @@ namespace kai
 #ifdef WITH_UNIVERSE
         n = "";
         jKv(j, "_PCframe", n);
-        m_pPCframe = (_PCframe *)(m_pM->findModule(n));
+        m_pPCframe = (_PCframe *)(pM->findModule(n));
         m_pROSnode->m_pPCframe = m_pPCframe;
 #endif
 

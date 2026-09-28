@@ -40,14 +40,14 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool _SharedMemImg::link(void)
+    bool _SharedMemImg::link(ModuleMgr *pM)
     {
-        IF_F(!this->_VisionBase::link());
+        IF_F(!this->_VisionBase::link(pM));
         const json &j = *m_pJ;
 
         string n = "";
         jKv(j, "SharedMem", n);
-        m_pSHM = (SharedMem *)(m_pM->findModule(n));
+        m_pSHM = (SharedMem *)(pM->findModule(n));
         NULL_F(m_pSHM);
 
         return true;

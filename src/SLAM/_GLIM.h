@@ -48,7 +48,7 @@ namespace kai
 		_GLIM();
 		~_GLIM() override;
 		bool loadConfig(void) override;
-		bool link(void) override;
+		bool link(ModuleMgr *pM) override;
 		using _SLAMbase::console;
 		void console(const json &j, void *pJSONbase) override;
 		json status(void);

@@ -1,6 +1,5 @@
 #include "ModuleMgr.h"
 #include "Module.h"
-#include "../Base/BASE.h"
 
 namespace kai
 {
@@ -16,12 +15,7 @@ namespace kai
 
 	bool ModuleMgr::loadJsonFiles(const string &fName)
 	{
-		// Existing modules retain pointers into their owning configuration files.
-		if (!m_vModules.empty())
-		{
-			LOG_E("Cannot reload JSON files while modules exist");
-			return false;
-		}
+		IF_Le_F(!m_vModules.empty(), "Cannot reload JSON files while modules exist");
 
 		JsonCfg jCfg;
 		IF_F(!jCfg.readFromFile(fName));
@@ -68,11 +62,11 @@ namespace kai
 		for (size_t i = 0; i < m_vJcfg.size(); i++)
 		{
 			JsonCfg *pJc = &m_vJcfg[i];
-			const json &J = *pJc->getJson();
-			for (auto it = J.begin(); it != J.end(); it++)
+			json* pJ = pJc->getJson();
+			for (auto it = pJ->begin(); it != pJ->end(); it++)
 			{
-				const json &Ji = it.value();
-				IF_CONT(!Ji.is_object());
+				json* pJi = &it.value();
+				IF_CONT(!pJi->is_object());
 
 				string n = it.key();
 				if (n.empty())
@@ -88,7 +82,7 @@ namespace kai
 				}
 
 				string c = "";
-				jKv(Ji, "class", c);
+				jKv(*pJi, "class", c);
 				IF_CONT(c == "ModuleMgr");
 				if (c.empty())
 				{
@@ -97,23 +91,23 @@ namespace kai
 				}
 
 				bool bON = true;
-				jKv(Ji, "bON", bON);
+				jKv(*pJi, "bON", bON);
 				if (!bON)
 				{
 					LOG_I("Module disabled: " + n);
 					continue;
 				}
 
-				BASE *pB = md.createInstance(c);
-				if (pB == nullptr)
+				_ModuleBase *pM = md.createInstance(c);
+				if (pM == nullptr)
 				{
 					LOG_I("Instance not created: " + n);
 					continue;
 				}
 
-				pB->setModuleMgr(this);
-				pB->setName(n);
-				m_vModules.push_back(pB);
+				pM->setName(n);
+				pM->setConfig(pJc, pJi);
+				m_vModules.push_back(pM);
 				LOG_I("Instance created: " + n);
 			}
 		}
@@ -123,15 +117,15 @@ namespace kai
 
 	bool ModuleMgr::initAll(void)
 	{
-		for (BASE *pB : m_vModules)
+		for (_ModuleBase *pM : m_vModules)
 		{
-			if (!pB->loadConfig())
+			if (!pM->loadConfig())
 			{
-				LOG_E(pB->getName() + ".loadConfig() failed");
+				LOG_E(pM->getName() + ".loadConfig() failed");
 				return false;
 			}
 
-			LOG_I("Initialized: " + pB->getName());
+			LOG_I("Initialized: " + pM->getName());
 		}
 
 		return true;
@@ -139,15 +133,15 @@ namespace kai
 
 	bool ModuleMgr::linkAll(void)
 	{
-		for (BASE *pB : m_vModules)
+		for (_ModuleBase *pM : m_vModules)
 		{
-			if (!pB->link())
+			if (!pM->link(this))
 			{
-				LOG_E(pB->getName() + ".link() failed");
+				LOG_E(pM->getName() + ".link() failed");
 				return false;
 			}
 
-			LOG_I("Linked: " + pB->getName());
+			LOG_I("Linked: " + pM->getName());
 		}
 
 		return true;
@@ -155,15 +149,15 @@ namespace kai
 
 	bool ModuleMgr::startAll(void)
 	{
-		for (BASE *pB : m_vModules)
+		for (_ModuleBase *pM : m_vModules)
 		{
-			if (!pB->start())
+			if (!pM->start())
 			{
-				LOG_E(pB->getName() + ".start() failed");
+				LOG_E(pM->getName() + ".start() failed");
 				return false;
 			}
 
-			LOG_I("Started: " + pB->getName());
+			LOG_I("Started: " + pM->getName());
 		}
 
 		return true;
@@ -171,7 +165,7 @@ namespace kai
 
 	void ModuleMgr::pauseAll(void)
 	{
-		for (BASE *pM : m_vModules)
+		for (_ModuleBase *pM : m_vModules)
 		{
 			pM->pause();
 		}
@@ -179,7 +173,7 @@ namespace kai
 
 	void ModuleMgr::resumeAll(void)
 	{
-		for (BASE *pM : m_vModules)
+		for (_ModuleBase *pM : m_vModules)
 		{
 			pM->resume();
 		}
@@ -187,7 +181,7 @@ namespace kai
 
 	void ModuleMgr::stopAll(void)
 	{
-		for (BASE *pM : m_vModules)
+		for (_ModuleBase *pM : m_vModules)
 		{
 			pM->stop();
 		}
@@ -212,7 +206,7 @@ namespace kai
 
 	void ModuleMgr::cleanAll(void)
 	{
-		for (BASE *pM : m_vModules)
+		for (_ModuleBase *pM : m_vModules)
 		{
 			DEL(pM);
 		}
@@ -224,7 +218,7 @@ namespace kai
 	{
 		IF_N(name.empty());
 
-		for (BASE *pM : m_vModules)
+		for (_ModuleBase *pM : m_vModules)
 		{
 			if (name == pM->getName())
 			{
@@ -257,10 +251,9 @@ namespace kai
 		IF_Le_F(findModule(name), "Module already existed: " + name);
 		IF_Le_F(!findJson(name), "Module not found in JSON: " + name);
 
-		BASE *pB = static_cast<BASE *>(pModule);
-		pB->setModuleMgr(this);
-		pB->setName(name);
-		m_vModules.push_back(pB);
+		_ModuleBase *pM = static_cast<_ModuleBase *>(pModule);
+		pM->setName(name);
+		m_vModules.push_back(pM);
 		LOG_I("Added: " + name);
 
 		return true;

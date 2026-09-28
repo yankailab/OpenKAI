@@ -27,14 +27,14 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _USR_CANET::link(void)
+	bool _USR_CANET::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_CANbase::link());
+		IF_F(!this->_CANbase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(m_pM->findModule(n));
+		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 
 		return true;

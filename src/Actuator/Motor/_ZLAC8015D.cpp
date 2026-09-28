@@ -37,14 +37,14 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _ZLAC8015D::link(void)
+	bool _ZLAC8015D::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ActuatorBase::link());
+		IF_F(!this->_ActuatorBase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_Modbus", n);
-		m_pMB = (_Modbus *)(m_pM->findModule(n));
+		m_pMB = (_Modbus *)(pM->findModule(n));
 		IF_Le_F(!m_pMB, "_Modbuse not found: " + n);
 
 		return true;

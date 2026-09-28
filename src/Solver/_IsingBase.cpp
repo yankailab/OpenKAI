@@ -40,9 +40,9 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _IsingBase::link(void)
+	bool _IsingBase::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ModuleBase::link());
+		IF_F(!this->_ModuleBase::link(pM));
 
 		return true;
 	}

@@ -60,9 +60,9 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _WebGeometryBase::link(void)
+	bool _WebGeometryBase::link(ModuleMgr *pM)
 	{
-		IF_F(!_GeometryViewerBase::link());
+		IF_F(!_GeometryViewerBase::link(pM));
 		const json &j = *m_pJ;
 		IF_Le_F(j.contains("vSelectableOctGrid") || j.contains("nCbuf"), "WebGeometryBase supports only vGeometry points and lines");
 		const json *entries = jK(j, "vGeometry");
@@ -87,10 +87,10 @@ namespace kai
 				!std::isfinite(style.m_matPointSize) || style.m_matPointSize <= 0, "Invalid geometry limits/material: " + style.m_name);
 			style.m_nP = std::min(style.m_nP, m_nPbuf);
 			style.m_nL = std::min(style.m_nL, m_nLbuf);
-			auto *module = static_cast<BASE *>(m_pM->findModule(style.m_name));
+			auto *module = static_cast<BASE *>(pM->findModule(style.m_name));
 			if (!module)
 			{
-				const json *pConfig = m_pM->findJson(style.m_name);
+				const json *pConfig = pM->findJson(style.m_name);
 				int enabled = 1;
 				if (pConfig)
 				{

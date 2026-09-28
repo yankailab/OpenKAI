@@ -290,13 +290,13 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _WebGLIM::link(void)
+	bool _WebGLIM::link(ModuleMgr *pM)
 	{
-		IF_F(!_GeometryViewerBase::link());
+		IF_F(!_GeometryViewerBase::link(pM));
 		const json &j = *m_pJ;
 		string source;
 		jKv(j, "_GLIM", source);
-		m_slam = dynamic_cast<_GLIM *>(static_cast<BASE *>(m_pM->findModule(source)));
+		m_slam = dynamic_cast<_GLIM *>(static_cast<BASE *>(pM->findModule(source)));
 		IF_Le_F(!m_slam, "GLIM viewer source not found: " + source);
 		return true;
 	}

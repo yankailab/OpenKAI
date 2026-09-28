@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot_FC_ArduPilot__APmav_follow_H_
 #define OpenKAI_src_Autopilot_FC_ArduPilot__APmav_follow_H_
 
-#include "../../../Canvas/_SurfaceBase.h"
+#include "../../../Universe/Surface/_SurfaceBase.h"
 #include "../../../Tracker/_TrackerBase.h"
 #include "../../../Filter/Median.h"
 #include "../../../Filter/Average.h"
@@ -50,7 +50,7 @@ namespace kai
 
 		virtual bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
-		virtual bool link(void) override;
+		virtual bool link(ModuleMgr *pM) override;
 		virtual bool check(void);
 		virtual bool start(void);
 		virtual void update(void);

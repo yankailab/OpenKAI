@@ -95,36 +95,36 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _APmav_follow::link(void)
+	bool _APmav_follow::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_APmav_move::link());
+		IF_F(!this->_APmav_move::link(pM));
 		const json &j = *m_pJ;
 
 		string n;
 
 		n = "";
 		jKv(j, "PIDpitch", n);
-		m_pPitch = (PID *)(m_pM->findModule(n));
+		m_pPitch = (PID *)(pM->findModule(n));
 
 		n = "";
 		jKv(j, "PIDroll", n);
-		m_pRoll = (PID *)(m_pM->findModule(n));
+		m_pRoll = (PID *)(pM->findModule(n));
 
 		n = "";
 		jKv(j, "PIDalt", n);
-		m_pAlt = (PID *)(m_pM->findModule(n));
+		m_pAlt = (PID *)(pM->findModule(n));
 
 		n = "";
 		jKv(j, "PIDyaw", n);
-		m_pYaw = (PID *)(m_pM->findModule(n));
+		m_pYaw = (PID *)(pM->findModule(n));
 
 		n = "";
 		jKv(j, "_TrackerBase", n);
-		m_pTracker = (_TrackerBase *)m_pM->findModule(n);
+		m_pTracker = (_TrackerBase *)pM->findModule(n);
 
 		n = "";
 		jKv(j, "_SurfaceBase", n);
-		m_pCanvas = (_SurfaceBase *)m_pM->findModule(n);
+		m_pCanvas = (_SurfaceBase *)pM->findModule(n);
 
 		return true;
 	}

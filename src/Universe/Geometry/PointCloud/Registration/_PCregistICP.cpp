@@ -42,26 +42,26 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool _PCregistICP::link(void)
+    bool _PCregistICP::link(ModuleMgr *pM)
     {
-        IF_F(!this->_ModuleBase::link());
+        IF_F(!this->_ModuleBase::link(pM));
         const json &j = *m_pJ;
 
         string n;
 
         n = "";
         jKv(j, "_PointCloudSrc", n);
-        m_pSrc = (_PointCloud *)(m_pM->findModule(n));
+        m_pSrc = (_PointCloud *)(pM->findModule(n));
         IF_Le_F(!m_pSrc, n + ": not found");
 
         n = "";
         jKv(j, "_PointCloudTgt", n);
-        m_pTgt = (_PointCloud *)(m_pM->findModule(n));
+        m_pTgt = (_PointCloud *)(pM->findModule(n));
         IF_Le_F(!m_pTgt, n + ": not found");
 
         n = "";
         jKv(j, "_PCtransform", n);
-        m_pTf = (_PCtransform *)(m_pM->findModule(n));
+        m_pTf = (_PCtransform *)(pM->findModule(n));
         IF_Le_F(!m_pTf, n + ": not found");
 
         return true;

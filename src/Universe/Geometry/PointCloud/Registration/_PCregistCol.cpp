@@ -54,14 +54,14 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool _PCregistCol::link(void)
+    bool _PCregistCol::link(ModuleMgr *pM)
     {
-        IF_F(!this->BASE::link());
+        IF_F(!this->BASE::link(pM));
         const json &j = *m_pJ;
 
         string n = "";
         jKv(j, "_PointCloud", n);
-        m_pPC = (_PointCloud *)(m_pM->findModule(n));
+        m_pPC = (_PointCloud *)(pM->findModule(n));
 
         return true;
     }

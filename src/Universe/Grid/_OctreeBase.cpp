@@ -26,9 +26,9 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _OctreeBase::link(void)
+	bool _OctreeBase::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ReferenceFrame::link());
+		IF_F(!this->_ReferenceFrame::link(pM));
 
 		return true;
 	}

@@ -71,9 +71,9 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _WebSocketServer::link(void)
+	bool _WebSocketServer::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_IObase::link());
+		IF_F(!this->_IObase::link(pM));
 		IF_F(!m_pTr || !m_pTr->link());
 
 		return true;

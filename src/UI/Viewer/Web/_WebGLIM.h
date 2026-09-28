@@ -18,7 +18,7 @@ namespace kai
 		~_WebGLIM() override;
 		bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
-		bool link(void) override;
+		bool link(ModuleMgr *pM) override;
 		bool start() override;
 		void stop() override;
 		void pause() override;

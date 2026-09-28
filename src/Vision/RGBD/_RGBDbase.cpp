@@ -70,21 +70,21 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _RGBDbase::link(void)
+	bool _RGBDbase::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_VisionBase::link());
+		IF_F(!this->_VisionBase::link(pM));
 		const json &j = *m_pJ;
 
 		string n;
 
 		n = "";
 		jKv(j, "_IMUbase", n);
-		m_pIMU = (_IMUbase *)(m_pM->findModule(n));
+		m_pIMU = (_IMUbase *)(pM->findModule(n));
 
 #ifdef WITH_UNIVERSE
 		n = "";
 		jKv(j, "_PointCloud", n);
-		m_pPCL = (_PointCloud *)(m_pM->findModule(n));
+		m_pPCL = (_PointCloud *)(pM->findModule(n));
 #endif
 
 		return true;

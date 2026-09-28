@@ -41,13 +41,13 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool clBase::link(void)
+    bool clBase::link(ModuleMgr *pM)
     {
-        IF_F(!this->BASE::link());
+        IF_F(!this->BASE::link(pM));
 
         // string n = "";
         // j.value("", n);
-        // m_p = ( *)(m_pM->findModule(n));
+        // m_p = ( *)(pM->findModule(n));
         // IF_Fl(!m_p, n + ": not found");
 
         return true;

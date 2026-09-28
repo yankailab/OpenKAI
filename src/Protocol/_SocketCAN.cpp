@@ -33,9 +33,9 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _SocketCAN::link(void)
+	bool _SocketCAN::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_CANbase::link());
+		IF_F(!this->_CANbase::link(pM));
 
 		return true;
 	}

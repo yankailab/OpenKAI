@@ -34,14 +34,14 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _BenewakeTF::link(void)
+	bool _BenewakeTF::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_DistSensorBase::link());
+		IF_F(!this->_DistSensorBase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(m_pM->findModule(n));
+		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 
 		return true;

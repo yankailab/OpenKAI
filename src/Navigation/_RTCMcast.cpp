@@ -86,14 +86,14 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _RTCMcast::link(void)
+	bool _RTCMcast::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ProtocolBase::link());
+		IF_F(!this->_ProtocolBase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_IObaseSend", n);
-		m_pIOsend = (_IObase *)(m_pM->findModule(n));
+		m_pIOsend = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIOsend);
 
 		return true;

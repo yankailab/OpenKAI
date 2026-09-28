@@ -91,9 +91,9 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool _XDynamics::link(void)
+    bool _XDynamics::link(ModuleMgr *pM)
     {
-        IF_F(!this->_RGBDbase::link());
+        IF_F(!this->_RGBDbase::link(pM));
 
         return true;
     }

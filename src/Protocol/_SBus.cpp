@@ -51,9 +51,9 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _SBus::link(void)
+	bool _SBus::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ProtocolBase::link());
+		IF_F(!this->_ProtocolBase::link(pM));
 
 		return true;
 	}

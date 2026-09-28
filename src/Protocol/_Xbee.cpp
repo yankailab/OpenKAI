@@ -36,9 +36,9 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool _Xbee::link(void)
+    bool _Xbee::link(ModuleMgr *pM)
     {
-        IF_F(!this->_ProtocolBase::link());
+        IF_F(!this->_ProtocolBase::link(pM));
 
         return true;
     }

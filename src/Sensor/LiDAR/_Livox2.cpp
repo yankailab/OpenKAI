@@ -137,46 +137,46 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool _Livox2::link(void)
+    bool _Livox2::link(ModuleMgr *pM)
     {
-        IF_F(!this->_PointCloud::link());
+        IF_F(!this->_PointCloud::link(pM));
         const json &j = *m_pJ;
 
         string n;
 
         n = "";
         jKv(j, "_UDPdeviceQuery", n);
-        m_pUDPdeviceQuery = (_UDP *)(m_pM->findModule(n));
+        m_pUDPdeviceQuery = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPdeviceQuery);
 
         n = "";
         jKv(j, "_UDPctrlCmd", n);
-        m_pUDPctrlCmd = (_UDP *)(m_pM->findModule(n));
+        m_pUDPctrlCmd = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPctrlCmd);
 
         n = "";
         jKv(j, "_UDPpushCmd", n);
-        m_pUDPpushCmd = (_UDP *)(m_pM->findModule(n));
+        m_pUDPpushCmd = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPpushCmd);
 
         n = "";
         jKv(j, "_UDPpcl", n);
-        m_pUDPpcl = (_UDP *)(m_pM->findModule(n));
+        m_pUDPpcl = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPpcl);
 
         n = "";
         jKv(j, "_UDPimu", n);
-        m_pUDPimu = (_UDP *)(m_pM->findModule(n));
+        m_pUDPimu = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPimu);
 
         // n = "";
         // jKv(j,"_IObaseLog",n);
-        // m_pUDPlog = (_IObase *)(m_pM->findModule(n));
+        // m_pUDPlog = (_IObase *)(pM->findModule(n));
         // NULL_F(m_pUDPlog);
 
         n = "";
         jKv(j, "_IMUbase", n);
-        m_pIMU = (_IMUbase *)(m_pM->findModule(n));
+        m_pIMU = (_IMUbase *)(pM->findModule(n));
 
         return true;
     }

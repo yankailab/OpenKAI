@@ -32,9 +32,9 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _AutopilotBase::link(void)
+	bool _AutopilotBase::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ReferenceFrame::link());
+		IF_F(!this->_ReferenceFrame::link(pM));
 
 		return true;
 	}

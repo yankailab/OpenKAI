@@ -30,9 +30,9 @@ namespace kai
         return true;
     }
 
-    bool _ReferenceFrame::link(void)
+    bool _ReferenceFrame::link(ModuleMgr *pM)
     {
-        IF_F(!this->_ModuleBase::link());
+        IF_F(!this->_ModuleBase::link(pM));
 
         return true;
     }

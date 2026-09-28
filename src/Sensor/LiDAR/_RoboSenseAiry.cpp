@@ -38,21 +38,21 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool _RoboSenseAiry::link(void)
+    bool _RoboSenseAiry::link(ModuleMgr *pM)
     {
-        IF_F(!this->_PointCloud::link());
+        IF_F(!this->_PointCloud::link(pM));
         const json &j = *m_pJ;
 
         string n;
 
         n = "";
         jKv(j, "_UDPmsop", n);
-        m_pUDPmsop = (_UDP *)(m_pM->findModule(n));
+        m_pUDPmsop = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPmsop);
 
         n = "";
         jKv(j, "_UDPdifop", n);
-        m_pUDPdifop = (_UDP *)(m_pM->findModule(n));
+        m_pUDPdifop = (_UDP *)(pM->findModule(n));
         NULL_F(m_pUDPdifop);
 
         return true;

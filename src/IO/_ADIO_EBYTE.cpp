@@ -39,14 +39,14 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _ADIO_EBYTE::link(void)
+	bool _ADIO_EBYTE::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ADIObase::link());
+		IF_F(!this->_ADIObase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_Modbus", n);
-		m_pMB = (_Modbus *)(m_pM->findModule(n));
+		m_pMB = (_Modbus *)(pM->findModule(n));
 		NULL_F(m_pMB);
 
 		return true;

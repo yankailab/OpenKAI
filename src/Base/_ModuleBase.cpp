@@ -42,24 +42,16 @@ namespace kai
 
     _Thread *_ModuleBase::createThread(json *pJ, const string &name)
     {
-        if (name.empty() || !m_pM || !m_pJcfg || !m_pJ)
-        {
-            return nullptr;
-        }
+        IF_N(name.empty() || !m_pJcfg || !m_pJ)
 
         if (!pJ)
         {
             (*m_pJ)[name] = json::object();
             pJ = &(*m_pJ)[name];
         }
-        if (!pJ->is_object())
-        {
-            LOG_E("JSON is not an object: " + name);
-            return nullptr;
-        }
+        IF_Le__(!pJ->is_object(), "JSON is not an object: " + name, nullptr);
 
         _Thread *pT = new _Thread();
-        pT->setModuleMgr(m_pM);
         pT->setName(name);
         pT->setConfig(m_pJcfg, pJ);
         if (!pT->loadConfig())
@@ -80,10 +72,9 @@ namespace kai
         return m_pT;
     }
 
-    bool _ModuleBase::link(void)
+    bool _ModuleBase::link(ModuleMgr *pM)
     {
-        IF_F(!this->BASE::link());
-        IF_F(!m_pT || !m_pT->link());
+        NULL_F(pM);
 
         return true;
     }
@@ -98,7 +89,7 @@ namespace kai
     {
         NULL_F(m_pT);
 
-        return BASE::check();
+        return true;
     }
 
     void _ModuleBase::update(void)

@@ -90,9 +90,9 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _StateControl::link(void)
+	bool _StateControl::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ModuleBase::link());
+		IF_F(!this->_ModuleBase::link(pM));
 
 		for (size_t i = 0; i < m_vpState.size(); i++)
 		{

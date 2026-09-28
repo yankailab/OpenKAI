@@ -39,9 +39,9 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _PCmerge::link(void)
+	bool _PCmerge::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_GeometryBase::link());
+		IF_F(!this->_GeometryBase::link(pM));
 		const json &j = *m_pJ;
 
 		vector<string> vPCB;
@@ -50,7 +50,7 @@ namespace kai
 
 		for (string p : vPCB)
 		{
-			_GeometryBase *pPCB = (_GeometryBase *)(m_pM->findModule(p));
+			_GeometryBase *pPCB = (_GeometryBase *)(pM->findModule(p));
 			IF_CONT(!pPCB);
 
 			m_vpGB.push_back(pPCB);

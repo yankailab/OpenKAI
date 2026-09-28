@@ -44,14 +44,14 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _IRLock::link(void)
+	bool _IRLock::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_DetectorBase::link());
+		IF_F(!this->_DetectorBase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(m_pM->findModule(n));
+		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 
 		return true;

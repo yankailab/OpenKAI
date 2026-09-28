@@ -62,9 +62,9 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool _ApDrive::link(void)
+    bool _ApDrive::link(ModuleMgr *pM)
     {
-        IF_F(!this->_AutopilotBase::link());
+        IF_F(!this->_AutopilotBase::link(pM));
         const json &j = *m_pJ;
 
         m_vM.clear();
@@ -84,7 +84,7 @@ namespace kai
 
             string n = "";
             jKv(Ji, "_ActuatorBase", n);
-            m.m_pActuator = (_ActuatorBase *)(m_pM->findModule(n));
+            m.m_pActuator = (_ActuatorBase *)(pM->findModule(n));
 
             m_vM.push_back(m);
         }

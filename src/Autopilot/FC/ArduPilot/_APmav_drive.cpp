@@ -60,9 +60,9 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _APmav_drive::link(void)
+	bool _APmav_drive::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_APmav_move::link());
+		IF_F(!this->_APmav_move::link(pM));
 		const json &j = *m_pJ;
 
 		string n;
@@ -70,12 +70,12 @@ namespace kai
 		n = "";
 		if (!jKv(j, "_SelectableOctGrid", n))
 			jKv(j, "_OctreeGrid", n);
-		m_pOctGrid = dynamic_cast<_SelectableOctGrid *>(static_cast<BASE *>(m_pM->findModule(n)));
+		m_pOctGrid = dynamic_cast<_SelectableOctGrid *>(static_cast<BASE *>(pM->findModule(n)));
 		IF_Le_F(!m_pOctGrid, "_SelectableOctGrid not found: " + n);
 
 		n = "";
 		jKv(j, "_GeoFence", n);
-		m_pGfence = (_GeoFence *)(m_pM->findModule(n));
+		m_pGfence = (_GeoFence *)(pM->findModule(n));
 		IF_Le_F(!m_pGfence, "_GeoFence not found: " + n);
 
 		return true;

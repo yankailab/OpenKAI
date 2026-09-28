@@ -73,21 +73,21 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _APmav_visionEstimate::link(void)
+	bool _APmav_visionEstimate::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ModuleBase::link());
+		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;
 
 		string n;
 
 		n = "";
 		jKv(j, "_APmav_base", n);
-		m_pAP = (_APmav_base *)(m_pM->findModule(n));
+		m_pAP = (_APmav_base *)(pM->findModule(n));
 		NULL_F(m_pAP);
 
 		n = "";
 		jKv(j, "_NavBase", n);
-		m_pNav = (_NavBase *)(m_pM->findModule(n));
+		m_pNav = (_NavBase *)(pM->findModule(n));
 		NULL_F(m_pNav);
 
 		return true;

@@ -46,14 +46,14 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _D2RGB::link(void)
+	bool _D2RGB::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_RGBDbase::link());
+		IF_F(!this->_RGBDbase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_RGBDbase", n);
-		m_pVd = (_RGBDbase *)(m_pM->findModule(n));
+		m_pVd = (_RGBDbase *)(pM->findModule(n));
 		NULL_F(m_pVd);
 
 		return true;

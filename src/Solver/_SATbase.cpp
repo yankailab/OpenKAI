@@ -41,9 +41,9 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _SATbase::link(void)
+	bool _SATbase::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ModuleBase::link());
+		IF_F(!this->_ModuleBase::link(pM));
 
 		return true;
 	}

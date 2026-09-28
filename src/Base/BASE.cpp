@@ -19,13 +19,6 @@ namespace kai
 	{
 	}
 
-	void BASE::setModuleMgr(ModuleMgr *pM)
-	{
-		NULL_(pM);
-
-		m_pM = pM;
-	}
-
 	void BASE::setConfig(JsonCfg *pJcfg, json *pJ)
 	{
 		NULL_(pJcfg);
@@ -52,15 +45,7 @@ namespace kai
 
 	bool BASE::loadConfig(void)
 	{
-		// Parent layers establish the manager and mutable configuration first.
-		IF_F(!m_pM || m_name.empty());
-
-		if (!m_pJcfg)
-		{
-			m_pJcfg = m_pM->findJsonCfg(m_name);
-		}
 		NULL_F(m_pJcfg);
-
 		if (!m_pJ)
 		{
 			m_pJ = jK(*m_pJcfg->getJson(), m_name);
@@ -80,7 +65,7 @@ namespace kai
 
 	bool BASE::saveConfig(bool bExport)
 	{
-		IF_F(!m_pM || !m_pJcfg || !m_pJ || !m_pJ->is_object());
+		IF_F(!m_pJcfg || !m_pJ || !m_pJ->is_object());
 
 		// Update shared fields in place, preserving the rest of the document.
 		(*m_pJ)["name"] = m_name;
@@ -89,41 +74,6 @@ namespace kai
 
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
-	}
-
-	bool BASE::link(void)
-	{
-		NULL_F(m_pM);
-		NULL_F(m_pJcfg);
-		NULL_F(m_pJ);
-
-		/*
-		 in each level of inheritance use m_pM to find the pointer to link modules
-		 */
-
-		return true;
-	}
-
-	bool BASE::start(void)
-	{
-		return true;
-	}
-
-	bool BASE::check(void)
-	{
-		return true;
-	}
-
-	void BASE::pause(void)
-	{
-	}
-
-	void BASE::resume(void)
-	{
-	}
-
-	void BASE::stop(void)
-	{
 	}
 
 	void BASE::draw(void *pMat)

@@ -19,14 +19,14 @@ namespace kai
         return true;
     }
 
-    bool _TestWebSocket::link(void)
+    bool _TestWebSocket::link(ModuleMgr *pM)
     {
-        IF_F(!this->_TestBase::link());
+        IF_F(!this->_TestBase::link(pM));
         const json &j = *m_pJ;
 
         string n = "";
         jKv(j, "_WebSocketServer", n);
-        m_pWSserver = (_WebSocketServer *)(m_pM->findModule(n));
+        m_pWSserver = (_WebSocketServer *)(pM->findModule(n));
         NULL_F(m_pWSserver);
 
         return true;

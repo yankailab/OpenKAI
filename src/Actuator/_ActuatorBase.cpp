@@ -145,14 +145,14 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _ActuatorBase::link(void)
+	bool _ActuatorBase::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ModuleBase::link());
+		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_ActuatorBase", n);
-		m_pParent = (_ActuatorBase *)(m_pM->findModule(n));
+		m_pParent = (_ActuatorBase *)(pM->findModule(n));
 
 		return true;
 	}

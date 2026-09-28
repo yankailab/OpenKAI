@@ -63,20 +63,20 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _DetectorBase::link(void)
+	bool _DetectorBase::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ModuleBase::link());
+		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;
 
 		string n;
 
 		n = "";
 		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(m_pM->findModule(n));
+		m_pV = (_VisionBase *)(pM->findModule(n));
 
 		n = "";
 		jKv(j, "_SurfaceBase", n);
-		m_pCanvas = (_SurfaceBase *)(m_pM->findModule(n));
+		m_pCanvas = (_SurfaceBase *)(pM->findModule(n));
 
 		return true;
 	}

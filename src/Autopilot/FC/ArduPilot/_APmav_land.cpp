@@ -94,14 +94,14 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _APmav_land::link(void)
+	bool _APmav_land::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_APmav_follow::link());
+		IF_F(!this->_APmav_follow::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_DistSensorBase", n);
-		m_pDS = (_DistSensorBase *)m_pM->findModule(n);
+		m_pDS = (_DistSensorBase *)pM->findModule(n);
 
 		return true;
 	}

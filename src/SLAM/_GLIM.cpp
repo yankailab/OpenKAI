@@ -100,13 +100,13 @@ namespace kai
 		return true;
 	}
 
-	bool _GLIM::link(void)
+	bool _GLIM::link(ModuleMgr *pM)
 	{
-		IF_F(!_SLAMbase::link());
+		IF_F(!_SLAMbase::link(pM));
 		const json &j = *m_pJ;
 		string name;
 		jKv(j, "globalMapPCL", name);
-		m_pGlobalMap = name.empty() ? nullptr : dynamic_cast<_PointCloud *>(static_cast<BASE *>(m_pM->findModule(name)));
+		m_pGlobalMap = name.empty() ? nullptr : dynamic_cast<_PointCloud *>(static_cast<BASE *>(pM->findModule(name)));
 		IF_Le_F(!name.empty() && !m_pGlobalMap, "Cannot find globalMapPCL: " + name);
 		IF_Le_F(m_pGlobalMap && m_pGlobalMap == m_pPCL, "GLIM input and globalMapPCL must be different buffers");
 		return true;

@@ -56,12 +56,12 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _WebSelectableOctGrid::link(void)
+	bool _WebSelectableOctGrid::link(ModuleMgr *pM)
 	{
-		IF_F(!_GeometryViewerBase::link());
+		IF_F(!_GeometryViewerBase::link(pM));
 		const json &j = *m_pJ;
 		string error;
-		IF_Le_F(!m_sources.link(j, m_pM, m_nPbuf, m_nLbuf, m_nCbuf, error), error);
+		IF_Le_F(!m_sources.link(j, pM, m_nPbuf, m_nLbuf, m_nCbuf, error), error);
 		IF_Le_F(m_sources.m_vGeometry.size() + m_sources.m_vGrid.size() > 1024, "Viewer source limit is 1024");
 		for (auto type : webselectableoctgrid::Types)
 		{

@@ -83,14 +83,14 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _Mavlink::link(void)
+	bool _Mavlink::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ModuleBase::link());
+		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(m_pM->findModule(n));
+		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 
 		vector<string> vRoutings;
@@ -100,7 +100,7 @@ namespace kai
 		{
 			MAVLINK_PEER mP;
 			mP.init();
-			mP.m_pPeer = m_pM->findModule(n);
+			mP.m_pPeer = pM->findModule(n);
 			if (!mP.m_pPeer)
 			{
 				LOG_I("_Mavlink not found: " + n);

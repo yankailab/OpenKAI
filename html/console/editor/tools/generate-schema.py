@@ -498,7 +498,7 @@ def adapters(records, files, constants, symbol):
     records['_ROS_fastLio']['_embedded'].append((['node'],'ROS_fastLio'))
     records['_ROS_fastLio']['containers'].append({'path':['node'],'type':'object'})
     param('_ROS_fastLio',['node'],'object','src/ROS/_ROS_fastLio.cpp:loadConfig')
-    param('_SurfaceBase',['vRoi'],'array','src/Canvas/_SurfaceBase.cpp:loadConfig',default=[0,0,1,1])
+    param('_SurfaceBase',['vRoi'],'array','src/Universe/Surface/_SurfaceBase.cpp:loadConfig',default=[0,0,1,1])
     # Scepter startup consumes every key exposed by visitScControls, not jKv calls.
     sc_path='src/Vision/RGBD/_Scepter.cpp'
     for match in re.finditer(r'\bf\("([^\"]+)",\s*([^,]+),\s*"([^\"]+)"\)', files[sc_path]):

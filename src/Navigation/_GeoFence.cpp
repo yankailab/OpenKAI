@@ -25,14 +25,14 @@ namespace kai
 		return true;
 	}
 
-	bool _GeoFence::link(void)
+	bool _GeoFence::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ModuleBase::link());
+		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_JSONbase", n);
-		m_pJb = (_JSONbase *)(m_pM->findModule(n));
+		m_pJb = (_JSONbase *)(pM->findModule(n));
 
 		return true;
 	}

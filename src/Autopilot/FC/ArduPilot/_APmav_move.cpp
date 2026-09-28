@@ -49,14 +49,14 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _APmav_move::link(void)
+	bool _APmav_move::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ModuleBase::link());
+		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_APmav_base", n);
-		m_pAP = (_APmav_base *)(m_pM->findModule(n));
+		m_pAP = (_APmav_base *)(pM->findModule(n));
 		IF_Le_F(!m_pAP, "_APmav_base not found: " + n);
 
 		return true;

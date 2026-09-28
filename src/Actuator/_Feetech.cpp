@@ -45,9 +45,9 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _Feetech::link(void)
+	bool _Feetech::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ActuatorBase::link());
+		IF_F(!this->_ActuatorBase::link(pM));
 
 		return true;
 	}

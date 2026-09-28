@@ -34,9 +34,9 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool StateBase::link(void)
+	bool StateBase::link(ModuleMgr *pM)
 	{
-		IF_F(!this->BASE::link());
+		IF_F(!this->BASE::link(pM));
 		const json &j = *m_pJ;
 
 		m_vpModuleResume.clear();
@@ -47,7 +47,7 @@ namespace kai
 		jKv(j, "vModuleResume", vS);
 		for (string n : vS)
 		{
-			_ModuleBase *pB = (_ModuleBase *)(m_pM->findModule(n));
+			_ModuleBase *pB = (_ModuleBase *)(pM->findModule(n));
 			IF_CONT(!pB);
 			m_vpModuleResume.push_back(pB);
 		}
@@ -56,7 +56,7 @@ namespace kai
 		jKv(j, "vModulePause", vS);
 		for (string n : vS)
 		{
-			_ModuleBase *pB = (_ModuleBase *)(m_pM->findModule(n));
+			_ModuleBase *pB = (_ModuleBase *)(pM->findModule(n));
 			IF_CONT(!pB);
 			m_vpModulePause.push_back(pB);
 		}

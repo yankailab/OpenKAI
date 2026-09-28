@@ -8,6 +8,7 @@
 #ifndef OpenKAI_src_Base__ModuleBase_H_
 #define OpenKAI_src_Base__ModuleBase_H_
 
+#include "../Module/ModuleMgr.h"
 #include "_Thread.h"
 
 #define ON_PAUSE          \
@@ -32,7 +33,7 @@ namespace kai
 
 		bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
-		bool link(void) override;
+		virtual bool link(ModuleMgr *pM);
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void console(void *pConsole);

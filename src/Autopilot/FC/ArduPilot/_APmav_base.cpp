@@ -40,14 +40,14 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _APmav_base::link(void)
+	bool _APmav_base::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_AutopilotBase::link());
+		IF_F(!this->_AutopilotBase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_Mavlink", n);
-		m_pMav = (_Mavlink *)(m_pM->findModule(n));
+		m_pMav = (_Mavlink *)(pM->findModule(n));
 		NULL_F(m_pMav);
 
 		const json *pJm = jK(j, "mavMsgInt");

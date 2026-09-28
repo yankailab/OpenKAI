@@ -26,14 +26,14 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _APmav_RTCM::link(void)
+	bool _APmav_RTCM::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ProtocolBase::link());	// Do not use _RTCM::link as we send to _Mavlink thus the _IObaseSend is not needed
+		IF_F(!this->_ProtocolBase::link(pM));	// Do not use _RTCM::link as we send to _Mavlink thus the _IObaseSend is not needed
 		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_Mavlink", n);
-		m_pMav = (_Mavlink *)(m_pM->findModule(n));
+		m_pMav = (_Mavlink *)(pM->findModule(n));
 		NULL_F(m_pMav);
 
 		return true;

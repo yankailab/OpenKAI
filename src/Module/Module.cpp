@@ -18,12 +18,10 @@ namespace kai
 	{
 	}
 
-	BASE *Module::createInstance(const string &name)
+	_ModuleBase *Module::createInstance(const string &name)
 	{
 		IF_N(name.empty());
 
-		ADD_MODULE(SharedMem);
-		ADD_MODULE(Destimator);
 		ADD_MODULE(_Console);
 
 		// modules
@@ -114,7 +112,7 @@ namespace kai
 #endif
 
 #ifdef WITH_CONTROL
-		ADD_MODULE(PID);
+//		ADD_MODULE(PID);
 #endif
 
 #ifdef WITH_FILE
@@ -300,7 +298,7 @@ namespace kai
 	}
 
 	template <typename T>
-	BASE *Module::createInst(void)
+	_ModuleBase *Module::createInst(void)
 	{
 		T *pInst = new T();
 		return pInst;

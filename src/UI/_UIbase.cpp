@@ -33,9 +33,9 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _UIbase::link(void)
+	bool _UIbase::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ModuleBase::link());
+		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;
 
 		vector<string> vB;
@@ -43,7 +43,7 @@ namespace kai
 		m_vpB.clear();
 		for (string n : vB)
 		{
-			BASE *pB = (BASE *)(m_pM->findModule(n));
+			BASE *pB = (BASE *)(pM->findModule(n));
 			IF_CONT(!pB);
 
 			m_vpB.push_back(pB);

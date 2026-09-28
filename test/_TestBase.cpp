@@ -18,9 +18,9 @@ namespace kai
         return true;
     }
 
-    bool _TestBase::link(void)
+    bool _TestBase::link(ModuleMgr *pM)
     {
-        IF_F(!this->_ModuleBase::link());
+        IF_F(!this->_ModuleBase::link(pM));
 
         return true;
     }

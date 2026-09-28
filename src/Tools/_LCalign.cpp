@@ -43,25 +43,25 @@ namespace kai
 		return true;
 	}
 
-	bool _LCalign::link(void)
+	bool _LCalign::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_PointCloud::link());
+		IF_F(!this->_PointCloud::link(pM));
 		const json &j = *m_pJ;
 		string n;
 
 		n = "";
 		jKv(j, "_PCin", n);
-		m_pPCin = (_PointCloud *)(m_pM->findModule(n));
+		m_pPCin = (_PointCloud *)(pM->findModule(n));
 		IF_Le_F(!m_pPCin, "_PCin not found:" + n);
 
 		n = "";
 		jKv(j, "_VisionBase", n);
-		m_pV = (_VisionBase *)(m_pM->findModule(n));
+		m_pV = (_VisionBase *)(pM->findModule(n));
 		IF_Le_F(!m_pV, "_VisionBase not found:" + n);
 
 		n = "";
 		jKv(j, "_IMUbase", n);
-		m_pIMU = (_IMUbase *)(m_pM->findModule(n));
+		m_pIMU = (_IMUbase *)(pM->findModule(n));
 
 		return true;
 	}

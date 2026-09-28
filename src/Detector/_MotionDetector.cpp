@@ -63,14 +63,14 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _MotionDetector::link(void)
+	bool _MotionDetector::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ModuleBase::link());
+		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_VisionBase", n);
-		m_pVision = (_VisionBase *)(m_pM->findModule(n));
+		m_pVision = (_VisionBase *)(pM->findModule(n));
 		NULL_F(m_pVision);
 
 		return true;

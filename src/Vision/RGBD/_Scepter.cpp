@@ -279,9 +279,9 @@ namespace kai
 		return true;
 	}
 
-	bool _Scepter::link(void)
+	bool _Scepter::link(ModuleMgr *pM)
 	{
-		IF_F(!_RGBDbase::link() || !m_pTpp || !m_pTpp->link());
+		IF_F(!_RGBDbase::link(pM) || !m_pTpp || !m_pTpp->link());
 
 		return true;
 	}

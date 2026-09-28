@@ -9,10 +9,6 @@
 #define OpenKAI_src_Config_Module_H_
 
 #include "../Base/common.h"
-#include "../Base/BASE.h"
-
-#include "../Arithmetic/Destimator.h"
-#include "../IPC/SharedMem.h"
 #include "../UI/_Console.h"
 
 // modules
@@ -106,7 +102,7 @@
 #endif
 
 #ifdef WITH_CONTROL
-#include "../Control/PID.h"
+//#include "../Control/PID.h"
 #endif
 
 #ifdef WITH_FILE
@@ -297,11 +293,11 @@ namespace kai
 	public:
 		Module();
 		virtual ~Module();
-		BASE *createInstance(const string &name);
+		_ModuleBase *createInstance(const string &name);
 
 	private:
 		template <typename T>
-		BASE *createInst(void);
+		_ModuleBase *createInst(void);
 	};
 
 }

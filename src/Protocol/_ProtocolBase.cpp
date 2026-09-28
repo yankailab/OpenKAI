@@ -34,15 +34,15 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _ProtocolBase::link(void)
+	bool _ProtocolBase::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ModuleBase::link());
+		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;
 		IF_F(!m_pTr->link());
 
 		string n = "";
 		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(m_pM->findModule(n));
+		m_pIO = (_IObase *)(pM->findModule(n));
 		NULL_F(m_pIO);
 
 		return true;

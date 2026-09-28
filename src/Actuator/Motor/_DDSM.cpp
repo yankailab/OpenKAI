@@ -33,15 +33,14 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _DDSM::link(void)
+	bool _DDSM::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ActuatorBase::link());
+		IF_F(!this->_ActuatorBase::link(pM));
 		const json &j = *m_pJ;
-		IF_F(!m_pTr->link());
 
 		string n = "";
 		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(m_pM->findModule(n));
+		m_pIO = (_IObase *)(pM->findModule(n));
 		IF_Le_F(!m_pIO, "_IObase not found: " + n);
 
 		return true;

@@ -63,9 +63,9 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _IMUbase::link(void)
+	bool _IMUbase::link(ModuleMgr *pM)
 	{
-		IF_F(!this->_ModuleBase::link());
+		IF_F(!this->_ModuleBase::link(pM));
 
 		IF_F(!m_pTstream || !m_pTstream->link());
 

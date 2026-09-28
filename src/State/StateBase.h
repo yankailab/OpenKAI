@@ -18,7 +18,7 @@ namespace kai
 		state_takeoff,
 	};
 
-	class StateBase : public BASE
+	class StateBase : public _ModuleBase
 	{
 	public:
 		StateBase();
@@ -26,7 +26,7 @@ namespace kai
 
 		bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
-		bool link(void) override;
+		bool link(ModuleMgr *pM) override;
 		virtual void console(void *pConsole);
 
 		virtual void reset(void);

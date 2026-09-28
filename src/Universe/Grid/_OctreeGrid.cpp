@@ -171,10 +171,9 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _OctreeGrid::link(void)
+	bool _OctreeGrid::link(ModuleMgr *pM)
 	{
-		NULL_F(m_pM);
-		IF_F(!this->_OctreeBase::link());
+		IF_F(!this->_OctreeBase::link(pM));
 		const json &j = *m_pJ;
 
 		vector<string> vGn;
@@ -182,7 +181,7 @@ namespace kai
 		m_vpGb.clear();
 		for (string n : vGn)
 		{
-			auto *pSource = static_cast<BASE *>(m_pM->findModule(n));
+			auto *pSource = static_cast<BASE *>(pM->findModule(n));
 			IF_CONT(!pSource);
 			auto *pG = dynamic_cast<_GeometryBase *>(pSource);
 			IF_Le_F(!pG, "Grid input is not a geometry source: " + n);
