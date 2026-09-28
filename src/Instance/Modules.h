@@ -1,12 +1,12 @@
 /*
- * Module.h
+ * Modules.h
  *
  *  Created on: Nov 22, 2016
  *      Author: root
  */
 
-#ifndef OpenKAI_src_Config_Module_H_
-#define OpenKAI_src_Config_Module_H_
+#ifndef OpenKAI_src_Instance_Modules_H_
+#define OpenKAI_src_Instance_Modules_H_
 
 #include "../Base/common.h"
 #include "../UI/_Console.h"
@@ -131,7 +131,6 @@
 
 #ifdef WITH_IO
 #include "../IO/_ADIO_EBYTE.h"
-#include "../IO/_File.h"
 #include "../IO/_TCPserver.h"
 #include "../IO/_TCPclient.h"
 #include "../IO/_SerialPort.h"
@@ -288,11 +287,11 @@
 namespace kai
 {
 
-	class Module
+	class Modules
 	{
 	public:
-		Module();
-		virtual ~Module();
+		Modules();
+		virtual ~Modules();
 		_ModuleBase *createInstance(const string &name);
 
 	private:

@@ -7,7 +7,7 @@
   const pathLabel = path => path.map(String).join('.');
   const pathKey = path => JSON.stringify(path);
   const read = (object, path) => path.reduce((value, key) => value != null && own(value, key) ? value[key] : undefined, object);
-  const initialConfig = () => ({ APP: { class: 'ModuleMgr', appName: 'MyOpenKAI', bLog: true, bStdErr: true } });
+  const initialConfig = () => ({ APP: { class: 'InstanceMgr', appName: 'MyOpenKAI', bLog: true, bStdErr: true } });
   const STORAGE_KEY = 'openkai-config-editor-v1';
   const state = { schema: null, model: null, positions: {}, selected: null, scale: 1, pan: { x: 35, y: 35 }, history: [], cursor: -1, pending: null, drag: null, pointer: { x: 0, y: 0 } };
   let saving = null;
@@ -157,7 +157,7 @@
   function renderLibrary() {
     const query = $('class-search').value.toLowerCase().trim();
     const helpers = $('show-helpers').checked;
-    const classes = state.schema.classes.filter(item => (helpers || item.creatable || item.name === 'ModuleMgr') && `${item.name} ${item.category}`.toLowerCase().includes(query));
+    const classes = state.schema.classes.filter(item => (helpers || item.creatable || item.name === 'InstanceMgr') && `${item.name} ${item.category}`.toLowerCase().includes(query));
     $('class-count').textContent = classes.length;
     $('class-library').replaceChildren();
     const groups = new Map();
@@ -168,16 +168,16 @@
     }
     for (const [category, items] of [...groups].sort(([a], [b]) => a.localeCompare(b))) {
       const group = element('details', 'category');
-      group.open = Boolean(query) || ['Base', 'Module', 'Vision', 'Vision/Pipeline', 'UI'].includes(category);
+      group.open = Boolean(query) || ['Base', 'Instance', 'Vision', 'Vision/Pipeline', 'UI'].includes(category);
       const summary = element('summary', '', category);
       summary.append(element('span', 'badge', items.length));
       group.append(summary);
       for (const definition of items.sort((a, b) => a.name.localeCompare(b.name))) {
-        const creatable = definition.creatable || definition.name === 'ModuleMgr';
+        const creatable = definition.creatable || definition.name === 'InstanceMgr';
         const item = element('div', `class-item${creatable ? '' : ' reference'}`);
         item.draggable = creatable;
         item.dataset.class = definition.name;
-        item.title = creatable ? `${definition.source || ''}\nDrag to add ${definition.name}` : `${definition.source || ''}\nBase/helper class; not registered in Module::createInstance.`;
+        item.title = creatable ? `${definition.source || ''}\nDrag to add ${definition.name}` : `${definition.source || ''}\nBase/helper class; not registered in Modules::createInstance.`;
         const info = element('div', 'class-info');
         info.append(element('div', 'class-name', definition.name), element('div', 'class-base', creatable ? (definition.baseClasses || []).join(' · ') || category : 'Base / helper · reference'));
         item.append(info);
@@ -204,7 +204,7 @@
     renderInspector();
   }
   function canConnect(node, dependency) {
-    return !node.nested && node.className !== 'ModuleMgr' && state.model.compatible(node.className, dependency.targetClass || 'BASE');
+    return !node.nested && node.className !== 'InstanceMgr' && state.model.compatible(node.className, dependency.targetClass || 'BASE');
   }
   function beginConnection(node, dependency, event) {
     if (event) event.stopPropagation();
@@ -268,7 +268,7 @@
         renderInspector();
       });
       card.append(heading, element('div', 'node-category', `${node.nested ? 'Embedded · ' : ''}${node.definition?.category || 'Unknown class'}`));
-      if (!node.nested && node.className !== 'ModuleMgr') {
+      if (!node.nested && node.className !== 'InstanceMgr') {
         const provider = button('', event => { event.stopPropagation(); if (state.pending) finishConnection(node.id); else selectNode(node.id); }, 'port provider-port');
         provider.title = 'Dependency provider: connect a class to this instance';
         provider.setAttribute('aria-label', `Connect to ${node.name}`);
@@ -276,7 +276,7 @@
         card.append(provider);
       }
       const dependencies = node.definition?.dependencies || [];
-      if (!dependencies.length) card.append(element('div', 'node-summary', node.className === 'ModuleMgr' ? node.data.appName || 'Application settings' : `${Object.keys(node.data).filter(key => key !== 'class').length} configured properties`));
+      if (!dependencies.length) card.append(element('div', 'node-summary', node.className === 'InstanceMgr' ? node.data.appName || 'Application settings' : `${Object.keys(node.data).filter(key => key !== 'class').length} configured properties`));
       for (const dependency of dependencies.slice(0, 6)) {
         const row = element('div', 'node-dependency');
         row.append(element('span', 'dep-label', pathLabel(dependency.path)));
@@ -304,7 +304,7 @@
       });
       $('nodes').append(card);
     });
-    $('welcome').hidden = nodes.some(node => node.className !== 'ModuleMgr');
+    $('welcome').hidden = nodes.some(node => node.className !== 'InstanceMgr');
     $('graph-count').value = `${nodes.length} instances · ${edges.filter(edge => edge.resolved).length} links`;
     setTransform();
     drawEdges();
@@ -427,7 +427,7 @@
       state.positions[added.id] = { x: (state.positions[node.id]?.x || 0) + 35, y: (state.positions[node.id]?.y || 0) + 45 };
       state.selected = added.id;
     }, 'Duplicated instance.')));
-    actions.lastChild.disabled = node.nested || (!node.definition?.creatable && node.className !== 'ModuleMgr');
+    actions.lastChild.disabled = node.nested || (!node.definition?.creatable && node.className !== 'InstanceMgr');
     actions.append(button('Delete instance', () => mutate(() => { state.model.removeNode(node.id); delete state.positions[node.id]; state.selected = null; }, 'Removed instance. References to it remain visible as unresolved.'), 'small danger'));
     inspector.append(actions);
     const nameField = element('div', 'field');
@@ -627,7 +627,7 @@
     $('show-helpers').addEventListener('change', renderLibrary);
     $('new-config').onclick = () => loadDocument(initialConfig(), 'OpenKAI.json');
     $('load-example').onclick = () => loadDocument({
-      APP: { class: 'ModuleMgr', appName: 'CameraCrop', bLog: true, bStdErr: true },
+      APP: { class: 'InstanceMgr', appName: 'CameraCrop', bLog: true, bStdErr: true },
       cam: { class: '_Camera', bON: true, thread: { FPS: 30 }, deviceID: 0, vSizeRGB: [640, 480] },
       crop: { class: '_Crop', thread: { FPS: 30 }, _VisionBase: 'cam', vRoi: [0, 0, 320, 240] },
       view: { class: '_WindowCV', thread: { FPS: 30 }, vBASE: ['cam', 'crop'] }

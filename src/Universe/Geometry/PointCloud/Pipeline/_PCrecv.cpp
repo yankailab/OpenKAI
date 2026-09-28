@@ -33,7 +33,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _PCrecv::link(ModuleMgr *pM)
+	bool _PCrecv::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_PointCloud::link(pM));
 		const json &j = *m_pJ;

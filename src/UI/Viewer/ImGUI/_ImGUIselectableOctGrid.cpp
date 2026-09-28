@@ -152,7 +152,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _ImGUIselectableOctGrid::link(ModuleMgr *pM)
+	bool _ImGUIselectableOctGrid::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_GeometryViewerBase::link(pM));
 		const json &j = *m_pJ;

@@ -18,7 +18,7 @@ namespace kai
         return true;
     }
 
-    bool _TestBase::link(ModuleMgr *pM)
+    bool _TestBase::link(InstanceMgr *pM)
     {
         IF_F(!this->_ModuleBase::link(pM));
 

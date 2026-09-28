@@ -45,7 +45,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _VisionBase::link(ModuleMgr *pM)
+	bool _VisionBase::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(pM));
 
@@ -86,11 +86,6 @@ namespace kai
 	Vector2i _VisionBase::getSizeRGB(void)
 	{
 		return m_vSizeRGB;
-	}
-
-	VISION_TYPE _VisionBase::getType(void)
-	{
-		return m_type;
 	}
 
 	void _VisionBase::console(void *pConsole)

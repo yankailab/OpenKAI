@@ -43,7 +43,7 @@ namespace kai
 		return true;
 	}
 
-	bool _LCalign::link(ModuleMgr *pM)
+	bool _LCalign::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_PointCloud::link(pM));
 		const json &j = *m_pJ;

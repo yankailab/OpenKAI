@@ -39,7 +39,7 @@ namespace kai
 		}
 
 		virtual bool init(const json &j);
-		virtual bool link(const json& j, ModuleMgr* pM);
+		virtual bool link(const json& j, InstanceMgr* pM);
 		virtual void console(void *pConsole);
 
 		int createSubscriptions(void);

@@ -100,7 +100,7 @@ namespace kai
 		return true;
 	}
 
-	bool _GLIM::link(ModuleMgr *pM)
+	bool _GLIM::link(InstanceMgr *pM)
 	{
 		IF_F(!_SLAMbase::link(pM));
 		const json &j = *m_pJ;

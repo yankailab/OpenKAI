@@ -46,7 +46,7 @@ namespace kai
 
 			StateBase *pB = new StateBase();
 			NULL_F(pB);
-			pB->setModuleMgr(m_pM);
+			pB->setInstanceMgr(m_pM);
 			pB->setName(it.key());
 			pB->setConfig(m_pJcfg, &Ji);
 			if (!pB->loadConfig())
@@ -90,7 +90,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _StateControl::link(ModuleMgr *pM)
+	bool _StateControl::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(pM));
 

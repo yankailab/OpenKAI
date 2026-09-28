@@ -73,7 +73,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _Morphology::link(ModuleMgr *pM)
+	bool _Morphology::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_VisionBase::link(pM));
 		const json &j = *m_pJ;

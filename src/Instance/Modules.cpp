@@ -1,24 +1,24 @@
 /*
- * Module.cpp
+ * Modules.cpp
  *
  *  Created on: Nov 22, 2016
  *      Author: yankai
  */
 
-#include "Module.h"
+#include "Modules.h"
 
 namespace kai
 {
 
-	Module::Module()
+	Modules::Modules()
 	{
 	}
 
-	Module::~Module()
+	Modules::~Modules()
 	{
 	}
 
-	_ModuleBase *Module::createInstance(const string &name)
+	_ModuleBase *Modules::createInstance(const string &name)
 	{
 		IF_N(name.empty());
 
@@ -298,7 +298,7 @@ namespace kai
 	}
 
 	template <typename T>
-	_ModuleBase *Module::createInst(void)
+	_ModuleBase *Modules::createInst(void)
 	{
 		T *pInst = new T();
 		return pInst;

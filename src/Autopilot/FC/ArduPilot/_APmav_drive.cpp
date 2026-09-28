@@ -60,7 +60,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _APmav_drive::link(ModuleMgr *pM)
+	bool _APmav_drive::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_APmav_move::link(pM));
 		const json &j = *m_pJ;

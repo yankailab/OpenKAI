@@ -40,7 +40,7 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool _SharedMemImg::link(ModuleMgr *pM)
+    bool _SharedMemImg::link(InstanceMgr *pM)
     {
         IF_F(!this->_VisionBase::link(pM));
         const json &j = *m_pJ;

@@ -1,12 +1,12 @@
 #include "SelectableOctGridSources.h"
-#include "../../Module/ModuleMgr.h"
+#include "../../Instance/InstanceMgr.h"
 #include <algorithm>
 #include <cmath>
 #include <set>
 
 namespace kai
 {
-	bool SelectableOctGridSources::link(const json &j, ModuleMgr *manager, int nP, int nL, int nC, string &error)
+	bool SelectableOctGridSources::link(const json &j, InstanceMgr *manager, int nP, int nL, int nC, string &error)
 	{
 		auto fail = [&](const string &message) { error = message; return false; };
 		if (!manager || nP < 0 || nL < 0 || nC < 0)

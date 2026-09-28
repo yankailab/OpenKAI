@@ -19,7 +19,7 @@ namespace kai
 		~_GeoFence();
 
 		virtual bool loadConfig(void) override;
-		virtual bool link(ModuleMgr *pM) override;
+		virtual bool link(InstanceMgr *pM) override;
 		virtual bool start(void);
 		virtual void console(void *pConsole);
 		virtual void console(const json &j, void *pJSONbase);

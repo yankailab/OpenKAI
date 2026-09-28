@@ -33,7 +33,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _GPS::link(ModuleMgr *pM)
+	bool _GPS::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;

@@ -28,7 +28,7 @@ namespace kai
 
 		virtual bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
-		virtual bool link(ModuleMgr *pM) override;
+		virtual bool link(InstanceMgr *pM) override;
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void update(void);

@@ -23,7 +23,7 @@ namespace kai
         return true;
     }
 
-    bool _TestJSON::link(ModuleMgr *pM)
+    bool _TestJSON::link(InstanceMgr *pM)
     {
         IF_F(!this->_TestBase::link(pM));
         const json &j = *m_pJ;

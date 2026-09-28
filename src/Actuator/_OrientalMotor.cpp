@@ -36,7 +36,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _OrientalMotor::link(ModuleMgr *pM)
+	bool _OrientalMotor::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ActuatorBase::link(pM));
 		const json &j = *m_pJ;

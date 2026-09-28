@@ -19,7 +19,7 @@ namespace kai
         return true;
     }
 
-    bool _TestWebSocket::link(ModuleMgr *pM)
+    bool _TestWebSocket::link(InstanceMgr *pM)
     {
         IF_F(!this->_TestBase::link(pM));
         const json &j = *m_pJ;

@@ -34,7 +34,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _WSconsole::link(ModuleMgr *pM)
+	bool _WSconsole::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_JSONbase::link(pM));
 		const json &j = *m_pJ;

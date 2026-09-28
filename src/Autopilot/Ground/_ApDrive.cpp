@@ -62,7 +62,7 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool _ApDrive::link(ModuleMgr *pM)
+    bool _ApDrive::link(InstanceMgr *pM)
     {
         IF_F(!this->_AutopilotBase::link(pM));
         const json &j = *m_pJ;

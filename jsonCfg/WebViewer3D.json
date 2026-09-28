@@ -1,6 +1,6 @@
 {
   "APP": {
-    "class": "ModuleMgr",
+    "class": "InstanceMgr",
     "appName": "WebSelectableOctGrid",
     "bLog": true,
     "bStdErr": true

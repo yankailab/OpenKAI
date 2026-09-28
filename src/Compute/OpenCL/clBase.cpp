@@ -41,7 +41,7 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool clBase::link(ModuleMgr *pM)
+    bool clBase::link(InstanceMgr *pM)
     {
         IF_F(!this->BASE::link(pM));
 

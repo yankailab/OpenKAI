@@ -35,7 +35,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _SwarmBase::link(ModuleMgr *pM)
+	bool _SwarmBase::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(pM));
 

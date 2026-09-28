@@ -91,7 +91,7 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool _XDynamics::link(ModuleMgr *pM)
+    bool _XDynamics::link(InstanceMgr *pM)
     {
         IF_F(!this->_RGBDbase::link(pM));
 

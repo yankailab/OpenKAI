@@ -44,7 +44,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _IRLock::link(ModuleMgr *pM)
+	bool _IRLock::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_DetectorBase::link(pM));
 		const json &j = *m_pJ;

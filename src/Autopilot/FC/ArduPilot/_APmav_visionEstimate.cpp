@@ -73,7 +73,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _APmav_visionEstimate::link(ModuleMgr *pM)
+	bool _APmav_visionEstimate::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;

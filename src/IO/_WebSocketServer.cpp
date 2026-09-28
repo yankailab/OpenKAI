@@ -71,10 +71,10 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _WebSocketServer::link(ModuleMgr *pM)
+	bool _WebSocketServer::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_IObase::link(pM));
-		IF_F(!m_pTr || !m_pTr->link());
+		NULL_F(m_pTr);
 
 		return true;
 	}
@@ -218,7 +218,7 @@ namespace kai
 		c.m_pJcfg->setJson(j);
 
 		_WebSocket *pWS = new _WebSocket();
-		pWS->setModuleMgr(m_pM);
+		pWS->setInstanceMgr(m_pM);
 		pWS->setName(j["name"].get<string>());
 		pWS->setConfig(c.m_pJcfg.get(), c.m_pJcfg->getJson());
 		if (!pWS->loadConfig() || !pWS->link())

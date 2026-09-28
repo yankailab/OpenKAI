@@ -89,19 +89,16 @@ set(OpenKAI_lib pthread uuid Eigen3::Eigen gsl gslcblas m ncurses ssl crypto rt 
 file(GLOB_RECURSE OpenKAI_cpp src/main.cpp src/Base/*.cpp src/Base/*.cc src/Base/*.c)
 
 file(GLOB_RECURSE Arithmetic_cpp src/Arithmetic/*.cpp src/Arithmetic/*.cc src/Arithmetic/*.c)
-list(APPEND OpenKAI_cpp
-	${Arithmetic_cpp}
-)
+list(APPEND OpenKAI_cpp ${Arithmetic_cpp})
 
-file(GLOB_RECURSE Module_cpp src/Module/*.cpp src/Module/*.cc src/Module/*.c)
-list(APPEND OpenKAI_cpp
-	${Module_cpp}
-)
+file(GLOB_RECURSE DataStream_cpp src/DataStream/*.cpp src/DataStream/*.cc src/DataStream/*.c)
+list(APPEND OpenKAI_cpp	${DataStream_cpp})
+
+file(GLOB_RECURSE Instance_cpp src/Instance/*.cpp src/Instance/*.cc src/Instance/*.c)
+list(APPEND OpenKAI_cpp	${Instance_cpp})
 
 file(GLOB_RECURSE IPC_cpp src/IPC/*.cpp src/IPC/*.cc src/IPC/*.c)
-list(APPEND OpenKAI_cpp
-	${IPC_cpp}
-)
+list(APPEND OpenKAI_cpp	${IPC_cpp})
 
 file(GLOB_RECURSE Primitive_cpp src/Primitive/*.cpp src/Primitive/*.cc src/Primitive/*.c)
 list(APPEND OpenKAI_cpp
@@ -324,7 +321,6 @@ if(WITH_IO)
   list(APPEND OpenKAI_cpp
 	src/IO/_ADIO_EBYTE.cpp
 	src/IO/_ADIObase.cpp
-	src/IO/_File.cpp
 	src/IO/_IObase.cpp
 	src/IO/_SerialPort.cpp
 	src/IO/_TCPclient.cpp

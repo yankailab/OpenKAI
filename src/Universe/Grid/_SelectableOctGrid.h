@@ -84,7 +84,7 @@ namespace kai
 		virtual ~_SelectableOctGrid();
 
 		bool loadConfig(void) override;
-		bool link(ModuleMgr *pM) override;
+		bool link(InstanceMgr *pM) override;
 		bool start(void) override;
 		bool check(void) override;
 		void console(void *pConsole) override;

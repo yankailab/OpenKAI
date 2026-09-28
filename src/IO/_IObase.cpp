@@ -43,7 +43,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _IObase::link(ModuleMgr *pM)
+	bool _IObase::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(pM));
 

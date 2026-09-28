@@ -42,7 +42,7 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool _PCregistICP::link(ModuleMgr *pM)
+    bool _PCregistICP::link(InstanceMgr *pM)
     {
         IF_F(!this->_ModuleBase::link(pM));
         const json &j = *m_pJ;

@@ -34,7 +34,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _BenewakeTF::link(ModuleMgr *pM)
+	bool _BenewakeTF::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_DistSensorBase::link(pM));
 		const json &j = *m_pJ;

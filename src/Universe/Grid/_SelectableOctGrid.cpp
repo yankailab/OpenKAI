@@ -138,7 +138,7 @@ namespace kai
 		return true;
 	}
 
-	bool _SelectableOctGrid::link(ModuleMgr *pM)
+	bool _SelectableOctGrid::link(InstanceMgr *pM)
 	{
 		return this->_OctreeGrid::link(pM);
 	}

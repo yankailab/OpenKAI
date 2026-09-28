@@ -33,7 +33,7 @@ namespace kai
 		vector<VIEWER_GEOMETRY_SOURCE> m_vGeometry;
 		vector<VIEWER_GRID_SOURCE> m_vGrid;
 
-		bool link(const json &j, ModuleMgr *manager, int nP, int nL, int nC, string &error);
+		bool link(const json &j, InstanceMgr *manager, int nP, int nL, int nC, string &error);
 	};
 }
 #endif

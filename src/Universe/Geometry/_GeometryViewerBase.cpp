@@ -88,7 +88,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _GeometryViewerBase::link(ModuleMgr *pM)
+	bool _GeometryViewerBase::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_GeometryBase::link(pM));
 

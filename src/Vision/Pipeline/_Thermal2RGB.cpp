@@ -41,7 +41,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _Thermal2RGB::link(ModuleMgr *pM)
+	bool _Thermal2RGB::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_VisionBase::link(pM));
 		const json &j = *m_pJ;

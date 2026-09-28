@@ -34,7 +34,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _HistEqualize::link(ModuleMgr *pM)
+	bool _HistEqualize::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_VisionBase::link(pM));
 		const json &j = *m_pJ;

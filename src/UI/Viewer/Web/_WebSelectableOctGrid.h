@@ -22,7 +22,7 @@ namespace kai
 		~_WebSelectableOctGrid() override;
 		bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
-		bool link(ModuleMgr *pM) override;
+		bool link(InstanceMgr *pM) override;
 		bool start() override;
 		bool bRun() override { return m_running; }
 		bool bRunning() override { return m_running && !m_paused; }

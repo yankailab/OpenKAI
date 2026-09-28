@@ -47,7 +47,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool SharedMem::link(ModuleMgr *pM)
+	bool SharedMem::link(InstanceMgr *pM)
 	{
 		IF_F(!this->BASE::link(pM));
 

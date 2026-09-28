@@ -40,7 +40,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _APmav_base::link(ModuleMgr *pM)
+	bool _APmav_base::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_AutopilotBase::link(pM));
 		const json &j = *m_pJ;

@@ -46,7 +46,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _D2RGB::link(ModuleMgr *pM)
+	bool _D2RGB::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_RGBDbase::link(pM));
 		const json &j = *m_pJ;

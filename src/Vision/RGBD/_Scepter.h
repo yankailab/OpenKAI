@@ -81,7 +81,7 @@ namespace kai
 		virtual ~_Scepter();
 
 		virtual bool loadConfig(void) override;
-		virtual bool link(ModuleMgr *pM) override;
+		virtual bool link(InstanceMgr *pM) override;
 		virtual bool start(void);
 		virtual bool check(void);
 		using _RGBDbase::console;

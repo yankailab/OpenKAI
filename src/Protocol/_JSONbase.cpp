@@ -40,7 +40,7 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool _JSONbase::link(ModuleMgr *pM)
+    bool _JSONbase::link(InstanceMgr *pM)
     {
         IF_F(!this->_ProtocolBase::link(pM));
 

@@ -23,7 +23,7 @@ namespace kai
         virtual ~_ReferenceFrame();
 
         virtual bool loadConfig(void) override;
-        virtual bool link(ModuleMgr *pM) override;
+        virtual bool link(InstanceMgr *pM) override;
         virtual bool check(void);
         virtual void console(void *pConsole);
 

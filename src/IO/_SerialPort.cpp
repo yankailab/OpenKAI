@@ -44,7 +44,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _SerialPort::link(ModuleMgr *pM)
+	bool _SerialPort::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_IObase::link(pM));
 

@@ -1,6 +1,6 @@
 {
 	"APP": {
-		"class": "ModuleMgr",
+		"class": "InstanceMgr",
 		"appName": "helloOK",
 		"bLog": true,
 		"bStdErr": true

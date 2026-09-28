@@ -10,7 +10,6 @@
 
 #include "../_PointCloud.h"
 #include "../../../../Utility/utilFile.h"
-#include "../../../../IO/_File.h"
 
 namespace kai
 {
@@ -22,7 +21,7 @@ namespace kai
 		virtual ~_PCtransform();
 
 		virtual bool loadConfig(void) override;
-        virtual bool link(ModuleMgr *pM) override;
+        virtual bool link(InstanceMgr *pM) override;
 		virtual bool start(void);
 		virtual bool check(void);
         virtual void console(void *pConsole);

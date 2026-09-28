@@ -40,7 +40,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _Rotate::link(ModuleMgr *pM)
+	bool _Rotate::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_VisionBase::link(pM));
 		const json &j = *m_pJ;

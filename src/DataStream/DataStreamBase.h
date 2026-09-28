@@ -1,5 +1,5 @@
 /*
- * VisionBase.h
+ * DataStreamBase.h
  *
  *  Created on: Sep 28, 2026
  *      Author: yankai
@@ -9,6 +9,8 @@
 #define OpenKAI_src__DataStream__DataStreamBase__H_
 
 #include "../Base/BASE.h"
+#include <mutex>
+#include <shared_mutex>
 
 namespace kai
 {
@@ -18,10 +20,11 @@ namespace kai
 		DataStreamBase();
 		virtual ~DataStreamBase();
 
-		virtual uint64_t tStamp(void);
+		virtual void updateTstamp(uint64_t tStamp = 0);
+		virtual uint64_t getTstamp(void);
 
 	protected:
-		uint64_t m_tStamp;
+		uint64_t m_tStamp = 0;
 
 	};
 

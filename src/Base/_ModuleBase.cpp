@@ -72,7 +72,7 @@ namespace kai
         return m_pT;
     }
 
-    bool _ModuleBase::link(ModuleMgr *pM)
+    bool _ModuleBase::link(InstanceMgr *pM)
     {
         NULL_F(pM);
 

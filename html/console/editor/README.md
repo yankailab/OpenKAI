@@ -18,7 +18,7 @@ Use **Open JSON** to choose a file, **Paste JSON** to import clipboard text, or 
 
 The graph shows objects containing a `class` string, including embedded objects. Embedded nodes are editable but cannot be used as top-level dependency providers. Configs without class-tagged objects can still be edited using **Edit JSON**.
 
-The current `ModuleMgr::findModule` matches exact top-level runtime names. A module's explicit `name` overrides its root key. Thus a reference such as `/cam` does not resolve to `cam`; it is preserved and reported as unresolved. Renaming an instance updates references that resolved to it. Deleting one leaves its references visible for correction. References in unknown/custom fields are preserved but cannot be automatically interpreted.
+The current `InstanceMgr::findModule` matches exact top-level runtime names. A module's explicit `name` overrides its root key. Thus a reference such as `/cam` does not resolve to `cam`; it is preserved and reported as unresolved. Renaming an instance updates references that resolved to it. Deleting one leaves its references visible for correction. References in unknown/custom fields are preserved but cannot be automatically interpreted.
 
 Include files are retained as external paths; a browser cannot automatically read arbitrary local include paths. Edit each included file separately. Links into other files appear unresolved. Relative asset and include paths are exported unchanged and remain relative to OpenKAI's working directory.
 

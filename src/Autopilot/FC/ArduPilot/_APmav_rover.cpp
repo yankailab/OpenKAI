@@ -26,7 +26,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _APmav_rover::link(ModuleMgr *pM)
+	bool _APmav_rover::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_APmav_base::link(pM));
 

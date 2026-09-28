@@ -1,6 +1,6 @@
 {
 	"APP": {
-		"class": "ModuleMgr",
+		"class": "InstanceMgr",
 		"appName": "LCalign",
 		"bLog": true,
 		"bStdErr": true

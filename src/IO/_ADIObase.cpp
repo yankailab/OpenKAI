@@ -76,7 +76,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _ADIObase::link(ModuleMgr *pM)
+	bool _ADIObase::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(pM));
 

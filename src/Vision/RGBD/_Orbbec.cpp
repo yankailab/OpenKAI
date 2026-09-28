@@ -330,7 +330,7 @@ namespace kai
 		return true;
 	}
 
-	bool _Orbbec::link(ModuleMgr *pM)
+	bool _Orbbec::link(InstanceMgr *pM)
 	{
 		IF_F(!_RGBDbase::link(pM) || !m_pTpp || !m_pTpp->link());
 
@@ -2799,7 +2799,7 @@ namespace kai
 	{
 		if (m_pT) m_pT->join();
 		if (m_pTpp) m_pTpp->join();
-		// Join SDK callbacks before ModuleMgr can release the linked IMU buffer.
+		// Join SDK callbacks before InstanceMgr can release the linked IMU buffer.
 		close();
 	}
 

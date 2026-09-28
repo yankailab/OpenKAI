@@ -213,7 +213,7 @@ def generate():
     for method in all_methods:
         if method['class'] in records:
             records[method['class']]['_methods'].append(method)
-    registered = registration(files['src/Module/Module.cpp'])
+    registered = registration(files['src/Instance/Modules.cpp'])
     missing_registered = sorted(set(registered) - set(classes))
     # Scalar and vector constructors can establish defaults after in-class initializers.
     for name, record in records.items():
@@ -445,10 +445,10 @@ def generate():
             'description':'Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.',
             'generator':'tools/generate-schema.py','sourceDigest':digest.hexdigest(),
             'categories':sorted({c['category'] for c in catalog}), 'classes':catalog,
-            'application':{'key':'APP','class':'ModuleMgr','parameters':[
-                {'path':['class'],'type':'string','default':'ModuleMgr'},
-                {'path':['bStdErr'],'type':'boolean','default':True,'source':'src/Module/ModuleMgr.cpp:bStdErr'},
-                {'path':['vInclude'],'type':'array','description':'Additional JSON paths resolved by OpenKAI at launch; the browser does not load them automatically.','source':'src/Module/ModuleMgr.cpp:loadJsonFiles'}]},
+            'application':{'key':'APP','class':'InstanceMgr','parameters':[
+                {'path':['class'],'type':'string','default':'InstanceMgr'},
+                {'path':['bStdErr'],'type':'boolean','default':True,'source':'src/Instance/InstanceMgr.cpp:bStdErr'},
+                {'path':['vInclude'],'type':'array','description':'Additional JSON paths resolved by OpenKAI at launch; the browser does not load them automatically.','source':'src/Instance/InstanceMgr.cpp:loadJsonFiles'}]},
             'audit':{'sourceFiles':len(paths),'classCount':len(catalog),'classDeclarations':sum(len(v) for v in variants.values()),'creatableClassCount':sum(c['creatable'] for c in catalog),'factoryClassesWithoutDeclaration':missing_registered,
                      'sourceFilesScanned':[str(p.relative_to(ROOT)) for p in paths],**dict(audit),
                      'diagnosticsCount':sum(len(c['diagnostics']) for c in records.values()),
@@ -465,10 +465,10 @@ def adapters(records, files, constants, symbol):
         records[name]['parameters'].append({'path':path,'type':type_,'source':source,'declaredIn':name,'extraction':'audited-adapter',**extra})
     def dep(name,path,target,source,multiple=False):
         records[name]['dependencies'].append({'path':path,'targetClass':target,'multiple':multiple,'source':source,'declaredIn':name,'extraction':'audited-adapter'})
-    param('ModuleMgr',['bStdErr'],'boolean','src/Module/ModuleMgr.cpp:bStdErr',default=True)
-    param('ModuleMgr',['vInclude'],'array','src/Module/ModuleMgr.cpp:loadJsonFiles',description='Additional config paths loaded by the OpenKAI runtime.')
-    # ModuleMgr's switch is not read by the individual class.
-    param('BASE',['bON'],'boolean','src/Module/ModuleMgr.cpp:createAll',default=True,description='false disables this instance; true enables it.')
+    param('InstanceMgr',['bStdErr'],'boolean','src/Instance/InstanceMgr.cpp:bStdErr',default=True)
+    param('InstanceMgr',['vInclude'],'array','src/Instance/InstanceMgr.cpp:loadJsonFiles',description='Additional config paths loaded by the OpenKAI runtime.')
+    # InstanceMgr's switch is not read by the individual class.
+    param('BASE',['bON'],'boolean','src/Instance/InstanceMgr.cpp:createAll',default=True,description='false disables this instance; true enables it.')
     # StateBase objects live under a keyed map, not in the module factory.
     records['_StateControl']['_embedded'].append((['states','*'],'StateBase'))
     records['_StateControl']['containers'].append({'path':['states'],'type':'object'})

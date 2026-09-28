@@ -137,7 +137,7 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool _Livox2::link(ModuleMgr *pM)
+    bool _Livox2::link(InstanceMgr *pM)
     {
         IF_F(!this->_PointCloud::link(pM));
         const json &j = *m_pJ;

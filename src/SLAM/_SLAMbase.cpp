@@ -40,7 +40,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _SLAMbase::link(ModuleMgr *pM)
+	bool _SLAMbase::link(InstanceMgr *pM)
 	{
 		IF_F(!_NavBase::link(pM));
 		const json &j = *m_pJ;

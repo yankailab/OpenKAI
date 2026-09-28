@@ -27,7 +27,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _USR_CANET::link(ModuleMgr *pM)
+	bool _USR_CANET::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_CANbase::link(pM));
 		const json &j = *m_pJ;

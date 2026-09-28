@@ -80,7 +80,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _APmav_depthVision::link(ModuleMgr *pM)
+	bool _APmav_depthVision::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;

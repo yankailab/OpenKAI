@@ -34,7 +34,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool StateBase::link(ModuleMgr *pM)
+	bool StateBase::link(InstanceMgr *pM)
 	{
 		IF_F(!this->BASE::link(pM));
 		const json &j = *m_pJ;

@@ -9,7 +9,7 @@
 #define OpenKAI_src_Base_BASE_H_
 
 #include "common.h"
-#include "../Module/JsonCfg.h"
+#include "../Instance/JsonCfg.h"
 
 using namespace std;
 
@@ -29,7 +29,6 @@ namespace kai
 		virtual bool loadConfig(void);
 		virtual bool saveConfig(bool bExport = false);
 
-		virtual void draw(void *pMat);
 		virtual void console(void *pConsole);
 		virtual void console(const json &j, void *pJSONbase);
 

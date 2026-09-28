@@ -34,7 +34,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _Invert::link(ModuleMgr *pM)
+	bool _Invert::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_VisionBase::link(pM));
 		const json &j = *m_pJ;

@@ -171,7 +171,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _OctreeGrid::link(ModuleMgr *pM)
+	bool _OctreeGrid::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_OctreeBase::link(pM));
 		const json &j = *m_pJ;

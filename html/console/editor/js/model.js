@@ -164,10 +164,10 @@
             return visit(className);
         }
 
-        /** ModuleMgr::findModule compares exact names; /foo is not an alias for foo. */
+        /** InstanceMgr::findModule compares exact names; /foo is not an alias for foo. */
         resolveReference(reference) {
             if (typeof reference !== "string" || !reference) return null;
-            return this.nodes().filter(node => !node.nested && node.className !== "ModuleMgr")
+            return this.nodes().filter(node => !node.nested && node.className !== "InstanceMgr")
                 .sort((a, b) => a.key < b.key ? -1 : a.key > b.key ? 1 : 0)
                 .find(node => node.name === reference) || null;
         }
@@ -175,13 +175,13 @@
         addNode(className, name, parentPath = []) {
             const definition = this.getClass(className);
             if (!definition) throw new Error("Unknown class: " + className);
-            if (!parentPath.length && definition.creatable === false && className !== "ModuleMgr") {
+            if (!parentPath.length && definition.creatable === false && className !== "InstanceMgr") {
                 throw new Error(className + " is not registered as a top-level module.");
             }
             const parent = get(this.document, parentPath);
             if (!object(parent)) throw new Error("New instances need an object container.");
             const runtimeNames = new Set(parentPath.length ? [] : this.nodes().filter(node => !node.nested).map(node => node.name));
-            let key = name || (className === "ModuleMgr" ? "APP" : className.replace(/^_+/, "").replace(/^[A-Z]/, ch => ch.toLowerCase()));
+            let key = name || (className === "InstanceMgr" ? "APP" : className.replace(/^_+/, "").replace(/^[A-Z]/, ch => ch.toLowerCase()));
             if (!name) {
                 const base = key || "instance";
                 for (let n = 2; own(parent, key) || runtimeNames.has(key); n++) key = base + n;
@@ -288,7 +288,7 @@
             const source = this.getNode(sourceId), target = this.getNode(targetId);
             const definition = this.dependencyDefinition(source, dependencyPath);
             if (!definition) throw new Error("This path is not a known dependency.");
-            if (target.nested || target.className === "ModuleMgr") throw new Error("Only top-level runtime modules can be dependency targets.");
+            if (target.nested || target.className === "InstanceMgr") throw new Error("Only top-level runtime modules can be dependency targets.");
             if (target.definition && target.definition.creatable === false) throw new Error(target.className + " is not registered as a runtime module.");
             if (!target.name) throw new Error("The target needs a nonempty runtime module name.");
             if (this.nodes().some(other => !other.nested && other.id !== targetId && other.name === target.name)) throw new Error("More than one module uses that runtime name.");
@@ -349,8 +349,8 @@
             if (Array.isArray(includes) && includes.length) report("info", "includes", "Included files are preserved but are not loaded by the browser. Their references may appear unresolved.", null, ["APP", "vInclude"]);
             for (const node of nodes) {
                 if (!node.definition) report("warning", "unknown-class", "Class " + node.className + " is not in the catalog; its configuration is preserved.", node);
-                else if (!node.nested && node.className !== "ModuleMgr" && node.definition.creatable === false) report("warning", "not-creatable", node.className + " is not registered as a top-level module.", node);
-                if (!node.nested && node.className !== "ModuleMgr") {
+                else if (!node.nested && node.className !== "InstanceMgr" && node.definition.creatable === false) report("warning", "not-creatable", node.className + " is not registered as a top-level module.", node);
+                if (!node.nested && node.className !== "InstanceMgr") {
                     if (names.has(node.name)) report("error", "duplicate-name", "Runtime module name " + node.name + " is also used by " + names.get(node.name) + ".", node);
                     else names.set(node.name, node.key);
                     if (!node.name) report("error", "empty-name", "Runtime module names cannot be empty.", node);

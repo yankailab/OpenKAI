@@ -46,7 +46,7 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool _PCsend::link(ModuleMgr *pM)
+    bool _PCsend::link(InstanceMgr *pM)
     {
         IF_F(!this->_GeometryBase::link(pM));
         const json &j = *m_pJ;

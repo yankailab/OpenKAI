@@ -26,7 +26,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _APmav_RTCM::link(ModuleMgr *pM)
+	bool _APmav_RTCM::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ProtocolBase::link(pM));	// Do not use _RTCM::link as we send to _Mavlink thus the _IObaseSend is not needed
 		const json &j = *m_pJ;

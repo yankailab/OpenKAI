@@ -1,5 +1,5 @@
 #include "_WebGeometryBase.h"
-#include "../../../Module/ModuleMgr.h"
+#include "../../../Instance/InstanceMgr.h"
 #include "../../../IO/WebSocketStream.h"
 #include <algorithm>
 #include <cmath>
@@ -60,7 +60,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _WebGeometryBase::link(ModuleMgr *pM)
+	bool _WebGeometryBase::link(InstanceMgr *pM)
 	{
 		IF_F(!_GeometryViewerBase::link(pM));
 		const json &j = *m_pJ;

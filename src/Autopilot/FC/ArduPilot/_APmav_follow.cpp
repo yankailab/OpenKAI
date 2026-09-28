@@ -95,7 +95,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _APmav_follow::link(ModuleMgr *pM)
+	bool _APmav_follow::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_APmav_move::link(pM));
 		const json &j = *m_pJ;

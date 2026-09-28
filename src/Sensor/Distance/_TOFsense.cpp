@@ -34,7 +34,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _TOFsense::link(ModuleMgr *pM)
+	bool _TOFsense::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_DistSensorBase::link(pM));
 		const json &j = *m_pJ;

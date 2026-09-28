@@ -52,7 +52,7 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool _ROS_fastLio::link(ModuleMgr *pM)
+    bool _ROS_fastLio::link(InstanceMgr *pM)
     {
         IF_F(!this->_NavBase::link(pM));
         const json &j = *m_pJ;

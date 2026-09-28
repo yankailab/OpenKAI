@@ -38,7 +38,7 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool _RoboSenseAiry::link(ModuleMgr *pM)
+    bool _RoboSenseAiry::link(InstanceMgr *pM)
     {
         IF_F(!this->_PointCloud::link(pM));
         const json &j = *m_pJ;

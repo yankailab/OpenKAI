@@ -45,7 +45,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _Feetech::link(ModuleMgr *pM)
+	bool _Feetech::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ActuatorBase::link(pM));
 

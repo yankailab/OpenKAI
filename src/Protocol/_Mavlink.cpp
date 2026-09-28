@@ -83,7 +83,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _Mavlink::link(ModuleMgr *pM)
+	bool _Mavlink::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;

@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Module_JsonCfg_H_
-#define OpenKAI_src_Module_JsonCfg_H_
+#ifndef OpenKAI_src_Instance_JsonCfg_H_
+#define OpenKAI_src_Instance_JsonCfg_H_
 
 #include "../Base/common.h"
 #include "../Dependencies/json.h"

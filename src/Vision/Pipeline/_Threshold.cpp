@@ -74,7 +74,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _Threshold::link(ModuleMgr *pM)
+	bool _Threshold::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_VisionBase::link(pM));
 		const json &j = *m_pJ;

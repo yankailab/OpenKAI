@@ -137,7 +137,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _Lane::link(ModuleMgr *pM)
+	bool _Lane::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;

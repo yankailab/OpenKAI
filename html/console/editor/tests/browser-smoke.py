@@ -352,7 +352,7 @@ def run_ui(browser, editor):
     })()""")
     checks.append("multiple dependency append and single-reference removal")
     browser.evaluate(r"""(() => {
-        OpenKAIEditor.loadDocument({APP:{class:'ModuleMgr'}, points:{class:'_PointCloud'},
+        OpenKAIEditor.loadDocument({APP:{class:'InstanceMgr'}, points:{class:'_PointCloud'},
             web:{class:'_WebGeometryBase',vGeometry:[{_GeometryBase:'points',label:'preserve'}]},
             extension:{release:17}, future:{class:'_FuturePlugin',opaque:{rows:[1,{text:'custom'}]},'/comment':'keep'}});
         OpenKAIEditor.selectNode('/web');
@@ -375,7 +375,7 @@ def run_ui(browser, editor):
     })()""")
     checks.append("wildcard dependencies, unknown fields, valid/invalid paste import")
     browser.evaluate(r"""(() => {
-        OpenKAIEditor.loadDocument({APP:{class:'ModuleMgr'},motor:{class:'_DDSM'},
+        OpenKAIEditor.loadDocument({APP:{class:'InstanceMgr'},motor:{class:'_DDSM'},
             drive:{class:'_ApDrive',motors:{left:{kSpd:2,label:'keep'}}}});
         OpenKAIEditor.selectNode('/drive');
         smokeChange('[data-path=\'["motors","left","kSpd"]\']', '3');
@@ -389,7 +389,7 @@ def run_ui(browser, editor):
          '[data-id="/motor"] .provider-port')
     browser.evaluate(r"""(() => {
         smokeAssert(OpenKAIEditor.model.getValue('/drive',['motors','right','_ActuatorBase']) === 'motor', 'Map port connection must use the selected key');
-        OpenKAIEditor.loadDocument({APP:{class:'ModuleMgr'},motor:{class:'_DDSM'},drive:{class:'_ApDrive'}});
+        OpenKAIEditor.loadDocument({APP:{class:'InstanceMgr'},motor:{class:'_DDSM'},drive:{class:'_ApDrive'}});
         OpenKAIEditor.selectNode('/drive');
         smokeChange('[aria-label="Provider for motors.*._ActuatorBase"]', '/motor');
         document.querySelector('[aria-label="Add connection for motors.*._ActuatorBase"]').click();
@@ -401,7 +401,7 @@ def run_ui(browser, editor):
     })()""")
     checks.append("object-map row editing, picker/port connections and numeric keys")
     browser.evaluate(r"""(() => {
-        OpenKAIEditor.loadDocument({APP:{class:'ModuleMgr'},camera:{class:'_Camera',bON:false},
+        OpenKAIEditor.loadDocument({APP:{class:'InstanceMgr'},camera:{class:'_Camera',bON:false},
             crop:{class:'_Crop',_VisionBase:'camera'}});
         const selector = '[data-path=\'["bON"]\']';
         const disabledCard = () => document.querySelector('[data-id="/camera"]').classList.contains('disabled-node');
@@ -454,10 +454,10 @@ def run_ui(browser, editor):
         assert json.loads(target_file.read_text()) == json.loads(fixture.read_text())
     checks.append("clipboard action and actual JSON file download")
     browser.evaluate(r"""(() => {
-        OpenKAIEditor.loadDocument({APP:{class:'ModuleMgr'},camera:{class:'_Camera',thread:{class:'_Thread',FPS:30}}});
+        OpenKAIEditor.loadDocument({APP:{class:'InstanceMgr'},camera:{class:'_Camera',thread:{class:'_Thread',FPS:30}}});
         OpenKAIEditor.selectNode('/camera/thread');
         document.getElementById('show-json').click();
-        document.getElementById('json-text').value = JSON.stringify({APP:{class:'ModuleMgr'},camera:{class:'_Camera',sentinel:21}});
+        document.getElementById('json-text').value = JSON.stringify({APP:{class:'InstanceMgr'},camera:{class:'_Camera',sentinel:21}});
         document.getElementById('apply-json').click();
         smokeAssert(OpenKAIEditor.model.nodes().length === 2, 'Replacing document must remove deleted nested nodes');
         smokeAssert(!document.querySelector('.graph-node.selected'), 'Replacing selected nested node must clear selection');

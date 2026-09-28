@@ -1,6 +1,6 @@
 {
 	"APP": {
-		"class": "ModuleMgr",
+		"class": "InstanceMgr",
 		"appName": "IAI",
 		"bLog": true,
 		"bStdErr": true

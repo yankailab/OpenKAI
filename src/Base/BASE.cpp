@@ -76,10 +76,6 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	void BASE::draw(void *pMat)
-	{
-	}
-
 	void BASE::console(void *pConsole)
 	{
 		NULL_(pConsole);

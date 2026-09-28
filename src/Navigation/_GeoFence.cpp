@@ -25,7 +25,7 @@ namespace kai
 		return true;
 	}
 
-	bool _GeoFence::link(ModuleMgr *pM)
+	bool _GeoFence::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;

@@ -39,7 +39,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _ADIO_EBYTE::link(ModuleMgr *pM)
+	bool _ADIO_EBYTE::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ADIObase::link(pM));
 		const json &j = *m_pJ;

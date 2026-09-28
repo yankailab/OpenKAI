@@ -155,7 +155,7 @@ namespace kai
 		virtual ~_Orbbec();
 
 		virtual bool loadConfig(void) override;
-		virtual bool link(ModuleMgr *pM) override;
+		virtual bool link(InstanceMgr *pM) override;
 		virtual bool start(void);
 		void stop(void) override;
 		virtual bool check(void);

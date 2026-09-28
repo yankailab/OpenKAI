@@ -1,4 +1,4 @@
-#include "Module/ModuleMgr.h"
+#include "Instance/InstanceMgr.h"
 #include <csignal>
 
 using namespace kai;
@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 
 	printf("Using JSON file: %s\n", argStr.c_str());
 
-	ModuleMgr *pMgr = new ModuleMgr();
+	InstanceMgr *pMgr = new InstanceMgr();
 	if (pMgr == nullptr)
 	{
 		goto exit;

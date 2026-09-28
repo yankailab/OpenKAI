@@ -22,7 +22,7 @@ Follow these rules when adding or changing code. Existing files contain historic
 
 Use familiar abbreviations to keep names short: `cfg`, `ctrl`, `msg`, `buf`, `pos`, `dim`, `src`, `dst`, and `idx` are useful in an appropriate context. Retain enough meaning to distinguish nearby variables. Single-letter names such as `i`, `j`, or `x` suit short loops and mathematical expressions; longer-lived state needs more context. Include units where ambiguous, as in `m_tIMUpairToleranceNs`.
 
-Classes that run their own threads use a leading underscore, such as `_VisionBase`, `_Camera`, or `_Thread`. The existing module inheritance families also retain that prefix, including base classes whose worker behavior is supplied by a subclass. Ordinary helper classes use names such as `ModuleMgr`, `JsonCfg`, and `SharedMem`. Match the existing family when extending it; legacy exceptions are not a reason to rename public classes during unrelated work.
+Classes that run their own threads use a leading underscore, such as `_VisionBase`, `_Camera`, or `_Thread`. The existing module inheritance families also retain that prefix, including base classes whose worker behavior is supplied by a subclass. Ordinary helper classes use names such as `InstanceMgr`, `JsonCfg`, and `SharedMem`. Match the existing family when extending it; legacy exceptions are not a reason to rename public classes during unrelated work.
 
 Type names have several established families: class-style names such as `ScCtrl`, and uppercase struct/enum names such as `IMU_DATA`, `ACTUATOR_V`, and `THREAD_STATE`. Enum values also follow their local family, such as `thread_run` and `actuator_ready`. Match nearby related types rather than renaming an established family. The lower camel case rule concerns variables and functions, not these existing type or constant names.
 
@@ -157,7 +157,7 @@ Many modules use this lifecycle vocabulary:
 | --- | --- |
 | `loadConfig` | Load the base first, then read local configuration through the bound module JSON |
 | `saveConfig(bool bExport)` | Update the bound module JSON in place, parent first, and write its owning launch file only when `bExport` is true |
-| `link` | Resolve references through the bound `ModuleMgr` and module JSON |
+| `link` | Resolve references through the bound `InstanceMgr` and module JSON |
 | `start` | Start the module's worker thread(s) |
 | `check` | Validate prerequisites needed for an operation |
 | `update` | Run the worker loop and call named processing methods |
@@ -216,7 +216,7 @@ The survey covered C++ files in every source folder and its subfolders, includin
 
 | Areas reviewed | Representative references and patterns |
 | --- | --- |
-| `Base`, `Module`, `main.cpp` | [BASE.h](../src/Base/BASE.h), [_ModuleBase.cpp](../src/Base/_ModuleBase.cpp), [ModuleMgr.cpp](../src/Module/ModuleMgr.cpp): lifecycle, guard returns, configuration, class layout |
+| `Base`, `Instance`, `main.cpp` | [BASE.h](../src/Base/BASE.h), [_ModuleBase.cpp](../src/Base/_ModuleBase.cpp), [InstanceMgr.cpp](../src/Instance/InstanceMgr.cpp): lifecycle, guard returns, configuration, class layout |
 | `Actuator`, including `Motor` and `Articulated` | [_ActuatorBase.h](../src/Actuator/_ActuatorBase.h): grouped state, struct members, short domain names |
 | `Autopilot`, including `ArduPilot` and `Drive` | [_APmav_base.h](../src/Autopilot/FC/ArduPilot/_APmav_base.h), [_Drive.cpp](../src/Autopilot/Drive/_Drive.cpp): module families, configuration, worker methods |
 | `IO`, `Protocol`, `IPC` | [_IObase.h](../src/IO/_IObase.h), [_ProtocolBase.cpp](../src/Protocol/_ProtocolBase.cpp), [SharedMem.h](../src/IPC/SharedMem.h): buffers, callbacks, resource helpers |

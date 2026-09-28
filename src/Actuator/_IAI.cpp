@@ -30,7 +30,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _IAI::link(ModuleMgr *pM)
+	bool _IAI::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ActuatorBase::link(pM));
 		const json &j = *m_pJ;

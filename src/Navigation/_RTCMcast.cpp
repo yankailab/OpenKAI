@@ -86,7 +86,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _RTCMcast::link(ModuleMgr *pM)
+	bool _RTCMcast::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ProtocolBase::link(pM));
 		const json &j = *m_pJ;

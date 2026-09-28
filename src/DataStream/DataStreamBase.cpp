@@ -18,18 +18,17 @@ namespace kai
 	{
 	}
 
-	void DataStreamBase::console(void *pConsole)
+	void DataStreamBase::updateTstamp(uint64_t tStamp)
 	{
-		NULL_(pConsole);
-		this->_ModuleBase::console(pConsole);
+		if(tStamp == 0)
+			m_tStamp = getTns();
+		else
+			m_tStamp = tStamp;
 	}
 
-	void DataStreamBase::console(const json &j, void *pJSONbase)
+	uint64_t DataStreamBase::getTstamp(void)
 	{
-		_JSONbase *pJb = (_JSONbase *)pJSONbase;
-
-		string cmd;
-		IF_(!jKv(j, "cmd", cmd));
+		return m_tStamp;
 	}
 
 }

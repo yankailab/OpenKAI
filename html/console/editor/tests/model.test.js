@@ -3,7 +3,7 @@
     "use strict";
     const schema = { classes: [
         { name: "BASE", creatable: false, baseClasses: [], parameters: [], dependencies: [] },
-        { name: "ModuleMgr", creatable: false, baseClasses: [], parameters: [], dependencies: [] },
+        { name: "InstanceMgr", creatable: false, baseClasses: [], parameters: [], dependencies: [] },
         { name: "_VisionBase", creatable: false, baseClasses: ["BASE"], parameters: [], dependencies: [] },
         { name: "Camera", creatable: true, baseClasses: ["_VisionBase"], parameters: [{ path: ["FPS"], type: "number", default: 30 }, { path: ["bON"], type: "boolean", default: true }], dependencies: [] },
         { name: "Serial", creatable: true, baseClasses: ["BASE"], parameters: [], dependencies: [] },
@@ -18,7 +18,7 @@
 
     function suite(Model, test, assert) {
         test("import preserves unknown classes, includes, extension data, nested values and comment-like strings", () => {
-            const doc = { APP: { class: "ModuleMgr", vInclude: ["another.json"] }, mysterious: { class: "Custom", object: { empty: [], value: null, text: "http://host/*literal*/" } }, number: 5 };
+            const doc = { APP: { class: "InstanceMgr", vInclude: ["another.json"] }, mysterious: { class: "Custom", object: { empty: [], value: null, text: "http://host/*literal*/" } }, number: 5 };
             const model = new Model(schema, doc);
             assert.deepEqual(model.toJSON(), doc);
             assert.deepEqual(JSON.parse(model.export()), doc);
@@ -47,7 +47,7 @@
         });
         test("dependency resolution follows exact runtime name overrides, without treating slash as root syntax", () => {
             const model = new Model(schema, {
-                APP: { class: "ModuleMgr" }, camera: { class: "Camera", name: "capture" },
+                APP: { class: "InstanceMgr" }, camera: { class: "Camera", name: "capture" },
                 consumer: { class: "Consumer", input: "capture", inputs: ["camera", "/capture", "APP"] },
             });
             assert.equal(model.resolveReference("capture").id, "/camera");
@@ -57,7 +57,7 @@
             assert.deepEqual(model.dependencies().map(edge => edge.resolved), [true, false, false, false]);
         });
         test("compatible targets include inherited classes and reject unrelated or nested modules", () => {
-            const model = new Model(schema, { camera: { class: "Camera", nested: { class: "Camera" } }, serial: { class: "Serial" }, consumer: { class: "Consumer" }, APP: { class: "ModuleMgr" } });
+            const model = new Model(schema, { camera: { class: "Camera", nested: { class: "Camera" } }, serial: { class: "Serial" }, consumer: { class: "Consumer" }, APP: { class: "InstanceMgr" } });
             model.connect("/consumer", ["input"], "/camera");
             assert.equal(model.getValue("/consumer", ["input"]), "camera");
             assert.throws(() => model.connect("/consumer", ["input"], "/serial"));
@@ -136,7 +136,7 @@
             assert.equal(model.addNode("Camera").id, "/camera2");
             assert.equal(model.getValue("/camera", ["FPS"]), 30);
             assert.equal(model.getValue("/camera", ["bON"]), true);
-            assert.equal(model.addNode("ModuleMgr").id, "/APP");
+            assert.equal(model.addNode("InstanceMgr").id, "/APP");
             assert.throws(() => model.addNode("BASE"));
             assert.throws(() => model.addNode("Camera", "camera"));
             assert.throws(() => model.renameNode("/camera", "camera2"));

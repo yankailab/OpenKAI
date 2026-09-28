@@ -15,7 +15,7 @@ python3 html/console/editor/tools/generate-schema.py --check
 
 The first command writes the JSON catalog and JavaScript mirror. The second regenerates them in memory and fails if either checked-in artifact differs. Generation is deterministic: no clock timestamps, absolute source paths, network access, C++ build, or SDK installation are used. `sourceDigest` hashes the relative paths and bytes of every scanned source file, so even a source-only change causes `--check` to request regeneration.
 
-The current tree contains 346 scanned `.h`/`.cpp` files, 202 explicit class declarations representing 201 distinct names, and 128 factory-creatable classes. Other supported C++ extensions are `.hpp`, `.hh`, `.cc`, and `.cxx`. `src/Dependencies` is excluded. The two declarations of `_APmav_base` are recorded in `declarations`; the active `Autopilot/FC/ArduPilot` definition matches `Module.h`. `_TestJSON` and `_TestWebSocket` remain factory registrations without source declarations and are listed in the audit, rather than offered as fabricated classes.
+The current tree contains 346 scanned `.h`/`.cpp` files, 202 explicit class declarations representing 201 distinct names, and 128 factory-creatable classes. Other supported C++ extensions are `.hpp`, `.hh`, `.cc`, and `.cxx`. `src/Dependencies` is excluded. The two declarations of `_APmav_base` are recorded in `declarations`; the active `Autopilot/FC/ArduPilot` definition matches `Modules.h`. `_TestJSON` and `_TestWebSocket` remain factory registrations without source declarations and are listed in the audit, rather than offered as fabricated classes.
 
 ## Top-level fields
 
@@ -27,7 +27,7 @@ The current tree contains 346 scanned `.h`/`.cpp` files, 202 explicit class decl
 | `sourceDigest` | SHA-256 of scanned source names and contents. |
 | `categories` | Sorted folder paths relative to `src`, such as `Vision` or `Vision/Pipeline`. |
 | `classes` | Array of class records described below. |
-| `application` | Special `APP` / `ModuleMgr` settings: `bStdErr` and `vInclude`. |
+| `application` | Special `APP` / `InstanceMgr` settings: `bStdErr` and `vInclude`. |
 | `audit` | File inventory, extraction counts, diagnostics, missing factory definitions, and limitations. |
 
 ## Class records
@@ -52,7 +52,7 @@ The example shows the record shape; generated records contain the actual paramet
 
 `baseClasses` lists direct C++ base types. Parameters, dependencies, and container shapes are **already flattened** through inheritance, with a derived path replacing the inherited path. Consumers should not merge inherited field arrays again. Embedded `_Thread`, `StateBase`, and ROS node configuration is flattened at its actual JSON path. Fields retain `declaredIn`, and embedded fields also carry `embeddedClass`.
 
-`creatable` means the class is registered by `ADD_MODULE` in `Module::createInstance`. Helper classes, base classes, and templates remain discoverable but cannot be instantiated by the current launch factory. `ModuleMgr` is the special application block, not a normal factory module. `buildConditions` records alternative preprocessor stacks at factory registration; it does **not** say that a user's binary enabled those features. A class can be creatable in the catalog and unavailable in a particular build.
+`creatable` means the class is registered by `ADD_MODULE` in `Modules::createInstance`. Helper classes, base classes, and templates remain discoverable but cannot be instantiated by the current launch factory. `InstanceMgr` is the special application block, not a normal factory module. `buildConditions` records alternative preprocessor stacks at factory registration; it does **not** say that a user's binary enabled those features. A class can be creatable in the catalog and unavailable in a particular build.
 
 ## Parameters and paths
 
@@ -92,7 +92,7 @@ Optional metadata includes:
 
 Absence of a default does not mean a field is required. Avoid filling every unknown field with zero or an empty string; omission preserves the application's behavior. Hardware overrides are intentionally left absent until explicitly configured. `name` and `class` identify the instance and should not receive the empty strings found in base-class member initializers. Embedded threads get their runtime name/class from `createThread`; the catalog does not inject duplicate child identities.
 
-`bON` is a boolean module switch (`false` disabled, `true` enabled), with a runtime default of `true`. `ModuleMgr` reads it as a C++ `bool`. Older integer values are preserved on import and flagged as type mismatches; use the inspector to replace them with JSON booleans.
+`bON` is a boolean module switch (`false` disabled, `true` enabled), with a runtime default of `true`. `InstanceMgr` reads it as a C++ `bool`. Older integer values are preserved on import and flagged as type mismatches; use the inspector to replace them with JSON booleans.
 
 ## Dependencies
 
@@ -137,7 +137,7 @@ The source inventory is comprehensive for explicit `class` declarations; structs
 
 ## Extending the catalog
 
-Prefer adding ordinary parameters to `loadConfig`, dependencies to `link`, and factory modules to `Module.cpp`; regeneration handles the common patterns automatically. For a new helper or dynamic reader, extend `adapters()` in `tools/generate-schema.py` and cite the source reader. Keep the adapter small and avoid invented defaults. For a newly supported parser pattern, check representative flat, nested-array, and object-map paths after regeneration.
+Prefer adding ordinary parameters to `loadConfig`, dependencies to `link`, and factory modules to `Modules.cpp`; regeneration handles the common patterns automatically. For a new helper or dynamic reader, extend `adapters()` in `tools/generate-schema.py` and cite the source reader. Keep the adapter small and avoid invented defaults. For a newly supported parser pattern, check representative flat, nested-array, and object-map paths after regeneration.
 
 A project-specific override file can also be applied without changing the scanner:
 

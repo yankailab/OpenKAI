@@ -163,7 +163,7 @@ namespace kai
 
 		virtual bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
-		virtual bool link(ModuleMgr *pM) override;
+		virtual bool link(InstanceMgr *pM) override;
 		virtual void console(void *pConsole);
 
 		virtual IO_TYPE ioType(void);
