@@ -30,8 +30,21 @@
 			"thermalRGB"
 		]
 	},
+	"camRGB": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"thermalRaw": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"thermalColor": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
 	"cam": {
 		"class": "_Camera",
+		"RGBframe": "camRGB",
 		"bON": false,
 		"thread": {
 			"FPS": 30
@@ -44,6 +57,7 @@
 	},
 	"HiK": {
 		"class": "_HiKthermal",
+		"RGBframe": "thermalRaw",
 		"bON": true,
 		"thread": {
 			"FPS": 30
@@ -63,7 +77,8 @@
 		"thread": {
 			"FPS": 30
 		},
-		"_RGBbase": "HiK",
+		"RGBframeIn": "thermalRaw",
+		"RGBframe": "thermalColor",
 		"vTrange": [
 			10,
 			40
@@ -107,10 +122,10 @@
 		"thread": {
 			"FPS": 10
 		},
-		"nP": 100000,
-		"_PCin": "Lvx1",
-		"/_RGBbase": "cam",
-		"_RGBbase": "thermalRGB",
+		"PCLframe": "alignedPoints",
+		"PCLframeIn": "lidarPoints",
+		"/RGBframeIn": "camRGB",
+		"RGBframeIn": "thermalColor",
 		"_IMUbase": "IMUlv",
 		"aCdist": [0.0, 0.0, 0.0, 0.0, 0.0],
 		"aCr": [0.0, -1.0, 0.0, 0.0, 0.0, -1.0, 1.0, 0.0, 0.0],
@@ -277,8 +292,17 @@
 		"bW2R": 0,
 		"bWbroadcast": 0
 	},
+	"lidarPoints": {
+		"type": "dataObject",
+		"class": "PCLframe"
+	},
+	"alignedPoints": {
+		"type": "dataObject",
+		"class": "PCLframe"
+	},
 	"Lvx1": {
 		"class": "_Livox2",
+		"PCLframe": "lidarPoints",
 		"bON": true,
 		"thread": {
 			"FPS": 1

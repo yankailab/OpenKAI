@@ -174,7 +174,7 @@ namespace kai
 		m_vPointInputs.reserve(m_vPCLframes.size());
 		for (const string &name : m_vPCLframes)
 		{
-			auto *pFrame = dynamic_cast<PCLframe *>(static_cast<DataStreamBase *>(pM->findDataStream(name)));
+			auto *pFrame = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
 			IF_Le_F(!pFrame, "Grid input is not a PCLframe: " + name);
 
 			m_vPointInputs.push_back({pFrame, 0});
@@ -217,7 +217,7 @@ namespace kai
 	{
 		for (PointInput &input : m_vPointInputs)
 		{
-			input.m_revision = 0;
+			input.m_tStamp = 0;
 		}
 	}
 
@@ -235,14 +235,18 @@ namespace kai
 
 		for (PointInput &input : m_vPointInputs)
 		{
-			const PCLframe::SnapshotPtr frame = input.m_pFrame->get();
-			if (frame->m_revision == input.m_revision)
+			if (input.m_pFrame->getTstamp() == input.m_tStamp)
 			{
 				continue;
 			}
-			input.m_revision = frame->m_revision;
+			const uint64_t stamp = input.m_pFrame->get(m_vInputPoints);
+			if (stamp == input.m_tStamp)
+			{
+				continue;
+			}
+			input.m_tStamp = stamp;
 
-			for (const GEOMETRY_POINT &point : frame->m_vPoints)
+			for (const GEOMETRY_POINT &point : m_vInputPoints)
 			{
 				if (bExpired(point.m_tStamp, tExpire) || !point.m_vP.allFinite())
 				{

@@ -158,11 +158,11 @@
 		"RGBframe": "d2rgbRGB"
 	},
 	"scPCL": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "PCLframe"
 	},
 	"glimPCL": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "PCLframe"
 	},
 	"viewer": {
@@ -221,19 +221,19 @@
 		"PCLmap": "GLIMMap"
 	},
 	"scepterRGB": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	},
 	"scepterDepth": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	},
 	"d2rgbRGB": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	},
 	"GLIMMap": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "PCLmap"
 	}
 }

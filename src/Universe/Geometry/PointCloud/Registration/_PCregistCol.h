@@ -9,14 +9,15 @@
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCregistCol_H_
 
 #include "../Pipeline/_PCtransform.h"
-#include "../_PointCloud.h"
+#include "../../../_ReferenceFrame.h"
+#include "../../../../DataObject/PCLframe.h"
 #include <open3d/pipelines/registration/ColoredICP.h>
 using namespace open3d::pipelines::registration;
 
 namespace kai
 {
 
-	class _PCregistCol : public _PointCloud
+	class _PCregistCol : public _ReferenceFrame
 	{
 	public:
 		_PCregistCol();
@@ -27,11 +28,12 @@ namespace kai
 		virtual bool link(InstanceMgr *pM) override;
 		virtual bool start(void);
 		virtual bool check(void);
+		virtual void clear(void);
 		virtual void console(void *pConsole);
 
 		virtual void updatePC(void);
 
-		double updateRegistration(PointCloud* pSrc, PointCloud* pTgt, Eigen::Matrix4d_u* pTresult = NULL);
+		double updateRegistration(open3d::geometry::PointCloud* pSrc, open3d::geometry::PointCloud* pTgt, Eigen::Matrix4d* pTresult = NULL);
 
 	private:
 		bool updateRegistration(void);
@@ -52,9 +54,9 @@ namespace kai
 
 		// voxel down frame buf
 		double m_rVoxel = 0.1;
-		tSwap<PointCloud> m_sPCvd; //voxel down
 
-		_PointCloud *m_pPC = nullptr;
+		PCLframe *m_pPCL = nullptr;
+		PCLframe *m_pPCLin = nullptr;
 		RegistrationResult m_RR;
 		double m_minFit = 0.0;
 		_PCtransform *m_pTf = nullptr;

@@ -1,8 +1,8 @@
 #ifndef OpenKAI_src_UI_Viewer_SelectableOctGridSources_H_
 #define OpenKAI_src_UI_Viewer_SelectableOctGridSources_H_
 
-#include "../../DataStream/PCLframe.h"
-#include "../../DataStream/LineFrame.h"
+#include "../../DataObject/PCLframe.h"
+#include "../../DataObject/LineFrame.h"
 #include "../../Universe/Grid/_SelectableOctGrid.h"
 
 namespace kai

@@ -9,7 +9,7 @@
 #define OpenKAI_src_Detector__DetectorBase_H_
 
 #include "../Universe/Surface/_SurfaceBase.h"
-#include "../DataStream/RGBframe.h"
+#include "../DataObject/RGBframe.h"
 #include "../Utility/utilCV.h"
 
 namespace kai

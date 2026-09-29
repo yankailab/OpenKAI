@@ -40,7 +40,7 @@ namespace kai
 
 		string n = "";
 		jKv(j, "RGBframeIn", n);
-		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		NULL_F(m_pRGBin);
 
 		return true;
@@ -67,8 +67,8 @@ namespace kai
 		Mat mOut;
 		NULL_(m_pRGB);
 		NULL_(m_pRGBin);
-		const RGBframe::SnapshotPtr frame = m_pRGBin->get();
-		const Mat &mRGB = frame->m_mRGB;
+		Mat mRGB;
+		const uint64_t tStamp = m_pRGBin->get(mRGB);
 		IF_(mRGB.empty());
 
 		Mat mIn;
@@ -83,7 +83,7 @@ namespace kai
 		merge(vChannels, mIn);						  // merge 3 channels including the modified 1st channel into one image
 		
 		cv::cvtColor(mIn, mOut, COLOR_YCrCb2BGR);  // change the color image from YCrCb to BGR format (to display image properly)
-		m_pRGB->set(mOut, frame->m_tStamp);
+		m_pRGB->set(mOut, tStamp);
 	}
 
 }

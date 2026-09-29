@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Instance_InstanceMgr_H_
 #define OpenKAI_src_Instance_InstanceMgr_H_
 
-#include "../DataStream/DataStreamBase.h"
+#include "../DataObject/DataObjBase.h"
 #include "JsonCfg.h"
 
 namespace kai
@@ -29,10 +29,10 @@ namespace kai
 		void cleanAll(void);
 
 		bool addModule(const string& name, JsonCfg* pJc, json* pJ);
-		bool addDataStream(const string& name, JsonCfg* pJc, json* pJ);
+		bool addDataObject(const string& name, JsonCfg* pJc, json* pJ);
 
 		void *findModule(const string &name);
-		void *findDataStream(const string &name);
+		void *findDataObject(const string &name);
 		JsonCfg *findJsonCfg(const string &name);
 		json *findJson(const string &name);
 
@@ -47,7 +47,7 @@ namespace kai
 
 		vector<JsonCfg> m_vJcfg;		  // correspondent to each .json file
 		vector<_ModuleBase *> m_vModules; // hold flat from all the .json files
-		vector<DataStreamBase *> m_vDataStreams;
+		vector<DataObjBase *> m_vDataStreams;
 	};
 
 }

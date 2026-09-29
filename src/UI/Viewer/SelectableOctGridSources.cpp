@@ -26,7 +26,7 @@ namespace kai
 		{
 			if (j.contains(key))
 			{
-				return sourceError(error, string("Unsupported viewer key: ") + key + "; use vGeometry DataStreams and vSelectableOctGrid");
+				return sourceError(error, string("Unsupported viewer key: ") + key + "; use vGeometry DataObjects and vSelectableOctGrid");
 			}
 		}
 
@@ -125,7 +125,7 @@ namespace kai
 				static_cast<VIEWER_SOURCE_STYLE &>(source) = style;
 				if (!pointName.empty())
 				{
-					source.m_pPCLframe = dynamic_cast<PCLframe *>(static_cast<DataStreamBase *>(manager->findDataStream(pointName)));
+					source.m_pPCLframe = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(manager->findDataObject(pointName)));
 					if (!source.m_pPCLframe)
 					{
 						return sourceError(error, "PCLframe not found: " + pointName);
@@ -133,7 +133,7 @@ namespace kai
 				}
 				if (!lineName.empty())
 				{
-					source.m_pLineFrame = dynamic_cast<LineFrame *>(static_cast<DataStreamBase *>(manager->findDataStream(lineName)));
+					source.m_pLineFrame = dynamic_cast<LineFrame *>(static_cast<DataObjBase *>(manager->findDataObject(lineName)));
 					if (!source.m_pLineFrame)
 					{
 						return sourceError(error, "LineFrame not found: " + lineName);

@@ -6,6 +6,7 @@
  */
 
 #include "_LCalign.h"
+#include "../Universe/Geometry/PointCloud/_PCfile.h"
 
 namespace kai
 {
@@ -25,7 +26,7 @@ namespace kai
 
 	bool _LCalign::loadConfig(void)
 	{
-		IF_F(!this->_PointCloud::loadConfig());
+		IF_F(!this->_ReferenceFrame::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv<int>(j, "vCsize", m_vCsize);
@@ -45,19 +46,25 @@ namespace kai
 
 	bool _LCalign::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_PointCloud::link(pM));
+		IF_F(!this->_ReferenceFrame::link(pM));
 		const json &j = *m_pJ;
 		string n;
 
 		n = "";
-		jKv(j, "_PCin", n);
-		m_pPCin = (_PointCloud *)(pM->findModule(n));
-		IF_Le_F(!m_pPCin, "_PCin not found:" + n);
+		jKv(j, "PCLframe", n);
+		m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!m_pPCL, "PCLframe not found: " + n);
 
 		n = "";
-		jKv(j, "_RGBbase", n);
-		m_pV = (_RGBbase *)(pM->findModule(n));
-		IF_Le_F(!m_pV, "_RGBbase not found:" + n);
+		jKv(j, "PCLframeIn", n);
+		m_pPCLin = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!m_pPCLin, "PCLframeIn not found: " + n);
+		IF_Le_F(m_pPCLin == m_pPCL, "PCLframeIn must differ from PCLframe");
+
+		n = "";
+		jKv(j, "RGBframeIn", n);
+		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!m_pRGBin, "RGBframeIn not found: " + n);
 
 		n = "";
 		jKv(j, "_IMUbase", n);
@@ -68,7 +75,7 @@ namespace kai
 
 	bool _LCalign::saveConfig(bool bExport)
 	{
-		IF_F(!_PointCloud::saveConfig(false));
+		IF_F(!_ReferenceFrame::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["vCsize"] = {m_vCsize.x(), m_vCsize.y()};
@@ -86,10 +93,19 @@ namespace kai
 
 	bool _LCalign::check(void)
 	{
-		NULL_F(m_pPCin);
-		NULL_F(m_pV);
+		NULL_F(m_pPCL);
+		NULL_F(m_pPCLin);
+		NULL_F(m_pRGBin);
 
-		return this->_PointCloud::check();
+		return this->_ReferenceFrame::check();
+	}
+
+	void _LCalign::clear(void)
+	{
+		if (m_pPCL)
+		{
+			m_pPCL->set({});
+		}
 	}
 
 	bool _LCalign::start(void)
@@ -112,23 +128,23 @@ namespace kai
 	{
 		IF_(!check());
 
-		Mat *pM = m_pV->getMatRGB();
-		NULL_(pM);
-
-		Mat mIn = *pM;
+		Mat mIn;
+		m_pRGBin->get(mIn);
 		IF_(mIn.empty());
 		IF_(mIn.channels() != 3)
 
 		m_vCsize = Vector2i(mIn.cols, mIn.rows);
-		int nPring = m_pPCin->nP();
-		int iP = 0;
-		GEOMETRY_POINT *pGp;
+		vector<GEOMETRY_POINT> input;
+		const uint64_t tStamp = m_pPCLin->get(input);
+		IF_(tStamp == 0);
+		vector<GEOMETRY_POINT> output;
+		output.reserve(input.size());
 
-		while (pGp = m_pPCin->get(iP++))
+		for (const GEOMETRY_POINT &point : input)
 		{
-			NULL_(pGp);
+			IF_CONT(point.m_tStamp == 0);
 
-			Vector3f vP = pGp->m_vP;
+			Vector3f vP = point.m_vP;
 			//			Vector3f vP(-vPin.y(), -vPin.z(), vPin.x()); // mid360 to cam
 
 			Vector2i vPimg = Vector2i::Zero();
@@ -138,8 +154,13 @@ namespace kai
 			Vector3f vC(vCol[2], vCol[1], vCol[0]);
 			vC *= 1.0 / 255.0;
 
-			add(vP, vC);
+			GEOMETRY_POINT colored = point;
+			colored.m_vP = m_mPosef * vP;
+			colored.m_vC = vC;
+			output.push_back(colored);
 		}
+
+		m_pPCL->set(output, tStamp);
 	}
 
 	bool _LCalign::L2C(const Vector2i &vSizeImg, const Vector3f &vPi, Vector2i &vPo)
@@ -218,17 +239,17 @@ namespace kai
 		return m_vCc;
 	}
 
-	array<double, 5> _LCalign::getCamDistortion(void)
+	std::array<double, 5> _LCalign::getCamDistortion(void)
 	{
 		return m_aCdist;
 	}
 
-	array<double, 9> _LCalign::getCamR(void)
+	std::array<double, 9> _LCalign::getCamR(void)
 	{
 		return m_aCr;
 	}
 
-	array<double, 3> _LCalign::getCamT(void)
+	std::array<double, 3> _LCalign::getCamT(void)
 	{
 		return m_aCt;
 	}
@@ -243,17 +264,17 @@ namespace kai
 		m_vCc = vC;
 	}
 
-	void _LCalign::setCamDistortion(const array<double, 5> &aD)
+	void _LCalign::setCamDistortion(const std::array<double, 5> &aD)
 	{
 		m_aCdist = aD;
 	}
 
-	void _LCalign::setCamR(const array<double, 9> &aR)
+	void _LCalign::setCamR(const std::array<double, 9> &aR)
 	{
 		m_aCr = aR;
 	}
 
-	void _LCalign::getCamT(const array<double, 3> &aT)
+	void _LCalign::getCamT(const std::array<double, 3> &aT)
 	{
 		m_aCt = aT;
 	}
@@ -261,7 +282,7 @@ namespace kai
 	void _LCalign::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_PointCloud::console(pConsole);
+		this->_ReferenceFrame::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
 		string msg;
@@ -323,7 +344,12 @@ namespace kai
 			string fPly;
 			IF_(!jKv(j, "fNamePly", fPly));
 
-			bool bR = saveFile(fPly);
+			vector<GEOMETRY_POINT> points;
+			if (m_pPCL)
+			{
+				m_pPCL->get(points);
+			}
+			bool bR = m_pPCL && _PCfile::savePLY(fPly, points);
 
 			NULL_(pJb);
 			json jr = json::object();

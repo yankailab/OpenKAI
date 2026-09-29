@@ -9,7 +9,7 @@
 #define OpenKAI_src_UI_UIbase_H_
 
 #include "../Base/_ModuleBase.h"
-#include "../DataStream/RGBframe.h"
+#include "../DataObject/RGBframe.h"
 
 namespace kai
 {

@@ -3,7 +3,7 @@
 
 #include <mutex>
 #include "../../Primitive/UUID128.h"
-#include "../../DataStream/PCLframe.h"
+#include "../../DataObject/PCLframe.h"
 #include "_OctreeBase.h"
 
 namespace kai
@@ -80,11 +80,12 @@ namespace kai
 		struct PointInput
 		{
 			PCLframe *m_pFrame = nullptr;
-			uint64_t m_revision = 0;
+			uint64_t m_tStamp = 0;
 		};
 
 		vector<string> m_vPCLframes;
 		vector<PointInput> m_vPointInputs;
+		vector<GEOMETRY_POINT> m_vInputPoints;
 		uint64_t m_dTexpirePCL = 0;
 
 		// Serializes grid updates with root changes in derived modules.

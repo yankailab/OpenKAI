@@ -72,7 +72,7 @@ namespace kai
 
 		n = "";
 		jKv(j, "RGBframeIn", n);
-		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		IF_Le_F(m_pRGBin == nullptr && !n.empty(), "RGBframeIn not found: " + n);
 
 		n = "";

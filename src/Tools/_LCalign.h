@@ -8,15 +8,17 @@
 #ifndef OpenKAI_src_Tools__LCalign_H_
 #define OpenKAI_src_Tools__LCalign_H_
 
-#include "../Universe/Geometry/PointCloud/_PointCloud.h"
-#include "../Vision/_RGBbase.h"
+#include "../Universe/_ReferenceFrame.h"
+#include "../DataObject/PCLframe.h"
+#include "../Base/cv.h"
+#include "../DataObject/RGBframe.h"
 #include "../Sensor/_IMUbase.h"
 #include "../Protocol/_JSONbase.h"
 
 namespace kai
 {
 
-	class _LCalign : public _PointCloud
+	class _LCalign : public _ReferenceFrame
 	{
 	public:
 		_LCalign();
@@ -26,6 +28,7 @@ namespace kai
 		virtual bool link(InstanceMgr *pM) override;
 		virtual bool start(void);
 		virtual bool check(void);
+		virtual void clear(void);
 		virtual void console(void *pConsole);
 		virtual void console(const json &j, void *pJSONbase);
 		//		virtual void draw(void *pMat);
@@ -38,15 +41,15 @@ namespace kai
 
 		Vector2d getCamFocal(void);
 		Vector2d getCamCenter(void);
-		array<double, 5> getCamDistortion(void);
-		array<double, 9> getCamR(void);
-		array<double, 3> getCamT(void);
+		std::array<double, 5> getCamDistortion(void);
+		std::array<double, 9> getCamR(void);
+		std::array<double, 3> getCamT(void);
 
 		void setCamFocal(const Vector2d &vF);
 		void setCamCenter(const Vector2d &vC);
-		void setCamDistortion(const array<double, 5> &aD);
-		void setCamR(const array<double, 9> &aR);
-		void getCamT(const array<double, 3> &aT);
+		void setCamDistortion(const std::array<double, 5> &aD);
+		void setCamR(const std::array<double, 9> &aR);
+		void getCamT(const std::array<double, 3> &aT);
 
 	private:
 		virtual void updateCalib(void);
@@ -58,8 +61,9 @@ namespace kai
 		}
 
 	protected:
-		_PointCloud *m_pPCin = nullptr;
-		_RGBbase *m_pV = nullptr;
+		PCLframe *m_pPCL = nullptr;
+		PCLframe *m_pPCLin = nullptr;
+		RGBframe *m_pRGBin = nullptr;
 		_IMUbase *m_pIMU = nullptr;
 
 		// Camera
@@ -67,13 +71,13 @@ namespace kai
 		Vector2i m_vCsize = Vector2i::Zero();
 		Vector2d m_vCf = Vector2d::Zero();										   // focal
 		Vector2d m_vCc = Vector2d::Zero();										   // center
-		array<double, 5> m_aCdist = {0.0, 0.0, 0.0, 0.0, 0.0}; // k1,k2,p1,p2,k3
+		std::array<double, 5> m_aCdist = {0.0, 0.0, 0.0, 0.0, 0.0}; // k1,k2,p1,p2,k3
 
 		// extrinsics, Camera <- LiDAR: pCam = m_aCr * pLidar + m_aCt
-		array<double, 9> m_aCr = {1, 0, 0,
+		std::array<double, 9> m_aCr = {1, 0, 0,
 								  0, 1, 0,
 								  0, 0, 1};
-		array<double, 3> m_aCt = {0.0, 0.0, 0.0};
+		std::array<double, 3> m_aCt = {0.0, 0.0, 0.0};
 
 		// prebuilt matrices for pLC
 		Mat m_mCam;
@@ -85,11 +89,11 @@ namespace kai
 
 		// IMU
 		// extrinsics, IMU<-LiDAR: pImu = m_aIr * pLidar + m_aIt
-		array<double, 9>
+		std::array<double, 9>
 			m_aIr = {1, 0, 0,
 					 0, 1, 0,
 					 0, 0, 1};
-		array<double, 3> m_aIt = {0, 0, 0};
+		std::array<double, 3> m_aIt = {0, 0, 0};
 	};
 
 }

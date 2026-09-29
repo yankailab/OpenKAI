@@ -100,9 +100,9 @@ The default YOLO26 export uses end-to-end detection, so `_YOLO26detectONNX` filt
 
 ## Config Example
 
-Declare `camRGB` as `{ "type": "dataStream", "class": "RGBframe" }` and set the
-camera's `RGBframe` output to `camRGB`. The detector retains an immutable image
-snapshot while inference runs; input pixels are shared without copying.
+Declare `camRGB` as `{ "type": "dataObject", "class": "RGBframe" }` and set the
+camera's `RGBframe` output to `camRGB`. The detector keeps a local image
+copy while inference runs; stream pixels remain independent.
 
 ```json
 "YOLO26detectONNX":{

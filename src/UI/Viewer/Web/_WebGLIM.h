@@ -35,7 +35,7 @@ namespace kai
 		float m_pointSize = 2;
 		Vector4f m_background{0.035f, 0.045f, 0.065f, 1};
 		bool m_autoBound = true, m_showGrid = true;
-		uint64_t m_session = UINT64_MAX, m_revision = UINT64_MAX;
+		uint64_t m_tStamp = UINT64_MAX;
 		std::unique_ptr<HttpServer> m_http;
 		std::unique_ptr<webglim::Stream> m_stream;
 		std::thread m_worker;

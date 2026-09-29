@@ -136,31 +136,31 @@
 		"RGBframeIn": "camRGB"
 	},
 	"camRGB": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	},
 	"gstRGB": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	},
 	"videoFileRGB": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	},
 	"imgFileRGB": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	},
 	"contrastRGB": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	},
 	"cropRGB": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	},
 	"resizeRGB": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	}
 }

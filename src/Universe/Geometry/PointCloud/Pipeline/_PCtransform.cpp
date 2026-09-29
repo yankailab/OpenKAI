@@ -53,7 +53,7 @@ namespace kai
 
 	bool _PCtransform::loadConfig(void)
 	{
-		IF_F(!this->_PointCloud::loadConfig());
+		IF_F(!this->_ReferenceFrame::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "dTexpire", m_dTexpire);
@@ -97,7 +97,7 @@ namespace kai
 
 	bool _PCtransform::saveConfig(bool bExport)
 	{
-		IF_F(!_PointCloud::saveConfig(false));
+		IF_F(!_ReferenceFrame::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["dTexpire"] = m_dTexpire;
@@ -116,15 +116,20 @@ namespace kai
 
     bool _PCtransform::link(InstanceMgr *pM)
     {
-        IF_F(!this->_PointCloud::link(pM));
+        IF_F(!this->_ReferenceFrame::link(pM));
         const json &j = *m_pJ;
 
         string n = "";
+        jKv(j, "PCLframe", n);
+        m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        IF_Le_F(!m_pPCL, "PCLframe not found: " + n);
+
+        n.clear();
         jKv(j, "PCLframeIn", n);
-        m_pPCLin = dynamic_cast<PCLframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+        m_pPCLin = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
         IF_Le_F(!m_pPCLin, "PCLframeIn not found: " + n);
         IF_Le_F(m_pPCLin == m_pPCL, "PCLframeIn must differ from PCLframe");
-        m_inputRevision = 0;
+        m_tInput = 0;
         m_tNextExpire = 0;
         m_bTransformChanged = true;
 
@@ -140,13 +145,16 @@ namespace kai
 	bool _PCtransform::check(void)
 	{
 		NULL_F(m_pPCLin);
-		return this->_PointCloud::check();
+		return m_pPCL && _ReferenceFrame::check();
 	}
 
 	void _PCtransform::clear(void)
 	{
-		this->_PointCloud::clear();
-		m_inputRevision = 0;
+		if (m_pPCL)
+		{
+			m_pPCL->set({});
+		}
+		m_tInput = 0;
 		m_tNextExpire = 0;
 		m_bTransformChanged = true;
 	}
@@ -165,15 +173,17 @@ namespace kai
 	{
 		IF_(!check());
 
-		const PCLframe::SnapshotPtr frame = m_pPCLin->get();
-		if (frame->m_revision == 0)
+		const uint64_t now = getTns();
+		const bool changed = m_pPCLin->getTstamp() != m_tInput;
+		if (!changed && !m_bTransformChanged && (m_tNextExpire == 0 || now < m_tNextExpire))
 		{
 			return;
 		}
-
-		const uint64_t now = getTns();
-		if (frame->m_revision == m_inputRevision && !m_bTransformChanged &&
-			(m_tNextExpire == 0 || now < m_tNextExpire))
+		if (changed)
+		{
+			m_tInput = m_pPCLin->get(m_vInputPoints);
+		}
+		if (m_tInput == 0)
 		{
 			return;
 		}
@@ -181,9 +191,9 @@ namespace kai
 		const uint64_t expiry = m_dTexpire > 0 && now > m_dTexpire ? now - m_dTexpire : 0;
 		const Eigen::Affine3f transform = m_mPosef * m_A.cast<float>();
 		vector<GEOMETRY_POINT> points;
-		points.reserve(frame->m_vPoints.size());
+		points.reserve(m_vInputPoints.size());
 		m_tNextExpire = 0;
-		for (const GEOMETRY_POINT &point : frame->m_vPoints)
+		for (const GEOMETRY_POINT &point : m_vInputPoints)
 		{
 			if (point.m_tStamp == 0 || (expiry > 0 && point.m_tStamp <= expiry))
 			{
@@ -203,8 +213,9 @@ namespace kai
 			}
 		}
 
-		m_pPCL->set(std::move(points), frame->m_tStamp);
-		m_inputRevision = frame->m_revision;
+		// Preserve the capture clock for downstream sensor fusion. Changes to
+		// this same capture keep its timestamp and are not new sensor frames.
+		m_pPCL->set(points, m_tInput);
 		m_bTransformChanged = false;
 	}
 

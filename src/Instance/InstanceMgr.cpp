@@ -1,6 +1,6 @@
 #include "InstanceMgr.h"
 #include "Modules.h"
-#include "DataStreams.h"
+#include "DataObjects.h"
 
 namespace kai
 {
@@ -74,9 +74,9 @@ namespace kai
 				{
 					addModule(n, pJc, pJ);
 				}
-				else if (t == "dataStream")
+				else if (t == "dataObject")
 				{
-					addDataStream(n, pJc, pJ);
+					addDataObject(n, pJc, pJ);
 				}
 			}
 		}
@@ -181,7 +181,7 @@ namespace kai
 		}
 		m_vModules.clear();
 
-		for (DataStreamBase *pD : m_vDataStreams)
+		for (DataObjBase *pD : m_vDataStreams)
 		{
 			DEL(pD);
 		}
@@ -209,17 +209,17 @@ namespace kai
 		return true;
 	}
 
-	bool InstanceMgr::addDataStream(const string &name, JsonCfg *pJc, json *pJ)
+	bool InstanceMgr::addDataObject(const string &name, JsonCfg *pJc, json *pJ)
 	{
-		IF_Le_F(findDataStream(name), "Data stream already existed: " + name);
+		IF_Le_F(findDataObject(name), "Data stream already existed: " + name);
 
 		string c = "";
 		jKv(*pJ, "class", c);
 
 		IF_Le_F(c.empty(), "Class name is empty: " + name);
 
-		DataStreams ds;
-		DataStreamBase *pD = ds.createInstance(c);
+		DataObjects ds;
+		DataObjBase *pD = ds.createInstance(c);
 		IF_Le_F(pD == nullptr, "Data stream not created: " + name);
 
 		pD->setName(name);
@@ -242,11 +242,11 @@ namespace kai
 		return nullptr;
 	}
 
-	void *InstanceMgr::findDataStream(const string &name)
+	void *InstanceMgr::findDataObject(const string &name)
 	{
 		IF_N(name.empty());
 
-		for (DataStreamBase *pD : m_vDataStreams)
+		for (DataObjBase *pD : m_vDataStreams)
 		{
 			IF__(name == pD->getName(), pD);
 		}

@@ -3001,7 +3001,7 @@ namespace kai
 			}
 		}
 
-		points->set(std::move(vPCL), tDNs);
+		points->set(vPCL, tDNs);
 	}
 
 	void _Orbbec::console(void *pConsole)

@@ -8,12 +8,13 @@
 #ifndef OpenKAI_src_Universe_Geometry_PointCloud_PCfile_H_
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCfile_H_
 
-#include "_PointCloud.h"
+#include "../../_ReferenceFrame.h"
+#include "../../../DataObject/PCLframe.h"
 
 namespace kai
 {
 
-	class _PCfile : public _PointCloud
+	class _PCfile : public _ReferenceFrame
 	{
 	public:
 		_PCfile();
@@ -22,6 +23,8 @@ namespace kai
 		virtual bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
 		bool link(InstanceMgr *pM) override;
+		bool check(void) override;
+		virtual void clear(void);
 		virtual bool start(void);
 		bool open(void);
 		// Binary little-endian XYZ float32 and RGB uint8. Nonfinite
@@ -39,6 +42,7 @@ namespace kai
 		}
 
 	protected:
+		PCLframe *m_pPCL = nullptr;
 		vector<string> m_vfName;
 	};
 

@@ -631,8 +631,8 @@
       cam: { class: '_Camera', bON: true, thread: { FPS: 30 }, deviceID: 0, vSizeRGB: [640, 480], RGBframe: 'camRGB' },
       crop: { class: '_Crop', thread: { FPS: 30 }, RGBframeIn: 'camRGB', RGBframe: 'cropRGB', vRoi: [0, 0, 320, 240] },
       view: { class: '_WindowCV', thread: { FPS: 30 }, RGBframeIn: 'cropRGB' },
-      camRGB: { type: 'dataStream', class: 'RGBframe' },
-      cropRGB: { type: 'dataStream', class: 'RGBframe' }
+      camRGB: { type: 'dataObject', class: 'RGBframe' },
+      cropRGB: { type: 'dataObject', class: 'RGBframe' }
     }, 'CameraCrop.json');
     $('open-config').onclick = () => $('config-file').click();
     $('config-file').onchange = async event => {

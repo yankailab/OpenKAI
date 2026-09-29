@@ -48,7 +48,7 @@
   },
 
   "scPC": {
-    "type": "dataStream",
+    "type": "dataObject",
     "class": "PCLframe"
   },
 
@@ -167,7 +167,7 @@
     ]
   },
   "pcFilePoints": {
-    "type": "dataStream",
+    "type": "dataObject",
     "class": "PCLframe"
   }
 }

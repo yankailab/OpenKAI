@@ -123,15 +123,15 @@
 		"RGBframe": "d2rgbRGB"
 	},
 	"obPCL": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "PCLframe"
 	},
 	"obIMU": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "IMUstream"
 	},
 	"glimPCL": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "PCLframe"
 	},
 	"viewer": {
@@ -191,19 +191,19 @@
 		"PCLmap": "GLIMMap"
 	},
 	"OrbbecRGB": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	},
 	"OrbbecDepth": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	},
 	"d2rgbRGB": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	},
 	"GLIMMap": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "PCLmap"
 	}
 }

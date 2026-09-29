@@ -500,7 +500,7 @@ namespace kai
             }
             vPCL.push_back({Vector3f(p.x, p.y, p.z), vC, tStamp});
         }
-        m_pPCL->set(std::move(vPCL), tStamp);
+        m_pPCL->set(vPCL, tStamp);
     }
 
 }

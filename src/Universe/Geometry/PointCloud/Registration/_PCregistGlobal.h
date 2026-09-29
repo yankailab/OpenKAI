@@ -9,6 +9,7 @@
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCregistGlobal_H_
 
 #include "../Pipeline/_PCtransform.h"
+#include "../../../../DataObject/PCLframe.h"
 #include <open3d/pipelines/registration/FastGlobalRegistration.h>
 using namespace open3d::pipelines::registration;
 
@@ -29,7 +30,7 @@ namespace kai
 		virtual void console(void *pConsole);
 
 	private:
-		std::shared_ptr<Feature> preprocess(PointCloud &pc);
+		std::shared_ptr<Feature> preprocess(open3d::geometry::PointCloud &pc);
 		void updateRegistration(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
@@ -44,8 +45,8 @@ namespace kai
 		int m_maxNNnormal = 30;
 		int m_maxNNfpfh = 100;
 
-		_PointCloud *m_pSrc = nullptr;
-		_PointCloud *m_pTgt = nullptr;
+		PCLframe *m_pSrc = nullptr;
+		PCLframe *m_pTgt = nullptr;
 		RegistrationResult m_RR;
 		_PCtransform *m_pTf = nullptr;
 		double m_lastFit = 0.0;

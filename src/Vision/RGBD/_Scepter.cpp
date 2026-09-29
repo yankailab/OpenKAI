@@ -822,6 +822,7 @@ namespace kai
 
 		vector<GEOMETRY_POINT> vPCL;
 		vPCL.reserve(points.size());
+
 		// Sample in image space so XYZ and aligned color use the same original
 		// pixel. Keep SDK conversion at native resolution to preserve calibration.
 		for (int y = 0; y < height; y += stride)
@@ -844,16 +845,20 @@ namespace kai
 				vPCL.push_back({vP, vC, tNow});
 			}
 		}
-		m_pPCL->set(std::move(vPCL), tNow);
+
+		m_pPCL->set(vPCL, tNow);
 	}
 
 	void _Scepter::console(const json &j, void *pJSONbase)
 	{
 		auto *transport = static_cast<_JSONbase *>(pJSONbase);
 		if (!transport || !j.is_object() || !j.contains("cmd") || !j["cmd"].is_string()) return;
+
 		const string cmd = j["cmd"].get<string>();
 		if (cmd != "getConfig" && cmd != "setConfig" && cmd != "saveConfig") return;
+
 		json reply = {{"cmd", cmd}, {"module", getName()}, {"bSuccess", true}};
+		
 		if (j.contains("requestId")) reply["requestId"] = j["requestId"];
 		{
 			std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
@@ -879,6 +884,7 @@ namespace kai
 			reply["config"] = configValues();
 			reply["deviceOpen"] = m_bOpened;
 		}
+
 		// Sending may block; never hold up capture on the command transport.
 		transport->sendJson(reply);
 	}

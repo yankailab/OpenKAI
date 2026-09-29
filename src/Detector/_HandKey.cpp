@@ -86,8 +86,8 @@ namespace kai
 	{
 		IF_(!check());
 
-		const auto frame = m_pRGBin->get();
-		const Mat &mIn = frame->m_mRGB;
+		Mat mIn;
+		m_pRGBin->get(mIn);
 		IF_(mIn.empty());
 
 		m_blob = blobFromImage(mIn, m_scale, Size(m_nW, m_nH), Scalar(m_vMean.x(), m_vMean.y(), m_vMean.z()), m_bSwapRB, false);
@@ -98,7 +98,7 @@ namespace kai
 		int H = output.size[2];
 		int W = output.size[3];
 
-		m_mDebug = mIn.clone();
+		m_mDebug = mIn;
 
 		// find the position of the body parts
 		vector<Point> points(HANDKEY_N_P);

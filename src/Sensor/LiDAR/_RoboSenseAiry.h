@@ -9,7 +9,8 @@
 #define OpenKAI_src_Sensor_LiDAR__RoboSenseAiry_H_
 
 #include "../../IO/_UDP.h"
-#include "../../Universe/Geometry/PointCloud/_PointCloud.h"
+#include "../../Universe/_ReferenceFrame.h"
+#include "../../DataObject/PCLframe.h"
 #include "../../Dependencies/SensorFusion/SensorFusion.h"
 #include "../../Dependencies/CRC.h"
 #include "../../Utility/util.h"
@@ -85,7 +86,7 @@ namespace kai
 		uint8_t m_pFend[2];		// 0x0F 0xF0
 	};
 
-	class _RoboSenseAiry : public _PointCloud
+	class _RoboSenseAiry : public _ReferenceFrame
 	{
 	public:
 		_RoboSenseAiry();
@@ -97,6 +98,7 @@ namespace kai
 		virtual bool check(void);
 		virtual bool start(void);
 		virtual void console(void *pConsole);
+		virtual void clear(void);
 
 	private:
 		// MSOP
@@ -118,6 +120,7 @@ namespace kai
 		}
 
 	protected:
+        PCLframe *m_pPCL = nullptr;
 		_Thread *m_pTdifop = nullptr;
 
 		_UDP *m_pUDPmsop = nullptr;

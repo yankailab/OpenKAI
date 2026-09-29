@@ -19,7 +19,7 @@ namespace kai
 
 	bool _PCrecv::loadConfig(void)
 	{
-		IF_F(!_PointCloud::loadConfig());
+		IF_F(!_ReferenceFrame::loadConfig());
 		jKv(*m_pJ, "nPmax", m_nPmax);
 		IF_Le_F(m_nPmax == 0, "nPmax must be positive");
 		m_vPacket.reserve(pcstream::maxPacketBytes);
@@ -28,7 +28,7 @@ namespace kai
 
 	bool _PCrecv::saveConfig(bool bExport)
 	{
-		IF_F(!_PointCloud::saveConfig(false));
+		IF_F(!_ReferenceFrame::saveConfig(false));
 		(*m_pJ)["nPmax"] = m_nPmax;
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
@@ -36,8 +36,13 @@ namespace kai
 
 	bool _PCrecv::link(InstanceMgr *pM)
 	{
-		IF_F(!_PointCloud::link(pM));
+		IF_F(!_ReferenceFrame::link(pM));
 		string name;
+		jKv(*m_pJ, "PCLframe", name);
+		m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
+		IF_Le_F(!m_pPCL, "PCLframe not found: " + name);
+
+		name.clear();
 		jKv(*m_pJ, "_IObase", name);
 		m_pIO = static_cast<_IObase *>(pM->findModule(name));
 		IF_Le_F(!m_pIO, "_IObase not found: " + name);
@@ -52,7 +57,15 @@ namespace kai
 
 	bool _PCrecv::check(void)
 	{
-		return m_pIO && m_pIO->bOpen() && _PointCloud::check();
+		return m_pIO && m_pIO->bOpen() && m_pPCL && _ReferenceFrame::check();
+	}
+
+	void _PCrecv::clear(void)
+	{
+		if (m_pPCL)
+		{
+			m_pPCL->set({});
+		}
 	}
 
 	void _PCrecv::update(void)
@@ -65,7 +78,7 @@ namespace kai
 			{
 				m_vPacket.clear();
 				m_vPendingPoints.clear();
-				m_pendingRevision = 0;
+				m_tPendingStamp = 0;
 				continue;
 			}
 
@@ -105,7 +118,7 @@ namespace kai
 			{
 				m_vPacket.clear();
 				m_vPendingPoints.clear();
-				m_pendingRevision = 0;
+				m_tPendingStamp = 0;
 				return;
 			}
 		}
@@ -119,16 +132,15 @@ namespace kai
 	void _PCrecv::decodePacket(void)
 	{
 		const uint8_t *pBytes = m_vPacket.data();
-		const uint64_t revision = pcstream::unpackUint(pBytes + 8, 8);
-		const uint64_t stamp = pcstream::unpackUint(pBytes + 16, 8);
-		const uint32_t total = pcstream::unpackUint(pBytes + 24, 4);
-		const uint32_t first = pcstream::unpackUint(pBytes + 28, 4);
+		const uint64_t stamp = pcstream::unpackUint(pBytes + 8, 8);
+		const uint32_t total = pcstream::unpackUint(pBytes + 16, 4);
+		const uint32_t first = pcstream::unpackUint(pBytes + 20, 4);
 		const size_t count = (m_vPacket.size() - pcstream::headerBytes) / pcstream::pointBytes;
-		if (revision == 0 || total > m_nPmax || first > total || count > total - first ||
+		if (stamp == 0 || total > m_nPmax || first > total || count > total - first ||
 			(count == 0 && total != 0))
 		{
 			m_vPendingPoints.clear();
-			m_pendingRevision = 0;
+			m_tPendingStamp = 0;
 			return;
 		}
 
@@ -136,15 +148,14 @@ namespace kai
 		{
 			m_vPendingPoints.clear();
 			m_vPendingPoints.reserve(total);
-			m_pendingRevision = revision;
 			m_tPendingStamp = stamp;
 			m_nPendingPoints = total;
 		}
-		if (revision != m_pendingRevision || stamp != m_tPendingStamp ||
+		if (stamp != m_tPendingStamp ||
 			total != m_nPendingPoints || first != m_vPendingPoints.size())
 		{
 			m_vPendingPoints.clear();
-			m_pendingRevision = 0;
+			m_tPendingStamp = 0;
 			return;
 		}
 
@@ -163,9 +174,9 @@ namespace kai
 		}
 		if (m_vPendingPoints.size() == total)
 		{
-			m_pPCL->set(std::move(m_vPendingPoints), stamp);
+			m_pPCL->set(m_vPendingPoints, stamp);
 			m_vPendingPoints.clear();
-			m_pendingRevision = 0;
+			m_tPendingStamp = 0;
 		}
 	}
 }

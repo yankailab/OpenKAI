@@ -114,8 +114,8 @@ namespace kai
 	{
 		IF_(!check());
 
-		const auto frame = m_pRGBin->get();
-		const Mat &input = frame->m_mRGB;
+		Mat input;
+		m_pRGBin->get(input);
 		IF_(input.empty());
 		const Mat mIn = m_bLetterBoxForSquare && m_vModelInputSize.x() == m_vModelInputSize.y()
 			? formatToSquare(input) : input;

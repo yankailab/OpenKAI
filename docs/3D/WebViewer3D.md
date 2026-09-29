@@ -1,7 +1,7 @@
 # Browser selectable octree grid viewer
 
 `_WebSelectableOctGrid` derives from `_GeometryViewerBase` and reads points and lines from
-the same immutable `PCLframe` and `LineFrame` DataStreams as `_ImGUIselectableOctGrid`, plus compact
+the same copying `PCLframe` and `LineFrame` DataObjects as `_ImGUIselectableOctGrid`, plus compact
 `_SelectableOctGrid::get(OCTGRID_CELLS*)` snapshots. The C++ process
 serves the browser application and three independent binary WebSockets on one port. A separate
 WebSocket connects JSON application commands to `_WSconsole`. All browser
@@ -303,10 +303,10 @@ for cell snapshots. Both viewers use the same source parser and settings:
 ```
 
 Each source appears once. Wrong provider types, duplicate names, unsupported
-entry settings, and missing DataStreams or grid modules fail linking. Explicitly
+entry settings, and missing DataObjects or grid modules fail linking. Explicitly
 disabled grid modules are skipped. An optional `name` gives a geometry source its
 display label. Declare the named streams and connect producers to them as shown
-in [the DataStream migration guide](../DataStreamGeometry.md).
+in [the DataObject migration guide](../DataStreamGeometry.md).
 Per-source limits are capped by the viewer's corresponding rendering
 limit; zero disables that output. A zero cell limit still publishes its root header.
 The removed `vReferenceFrame`, viewer `vGeometryBase`, `geometry`, and
@@ -315,7 +315,7 @@ and `nC`, with no `nPbuf`/`nLbuf`/`nCbuf` entry aliases.
 
 A calculation-only `_OctreeGrid` does not publish viewer snapshots; use
 `_SelectableOctGrid`. The grid's `vPCLframes` input list names
-the point-cloud DataStreams it consumes.
+the point-cloud DataObjects it consumes.
 
 | Setting | Default | Meaning |
 | --- | --- | --- |
@@ -376,10 +376,12 @@ shared wire/solid geometry and one GPU instance per cell.
 
 HTTP and WebSocket IO run on one asynchronous worker. Geometry collection runs
 on a separate owned thread, stopped and joined before its resources are released.
-The network thread never calls geometry providers. Point and line sources expose
-immutable snapshots; readers retain those snapshots safely across publications.
-Each source is encoded only when its snapshot changes or visible records expire.
-Empty publications clear that source. Grids retain their synchronized cell API.
+The network thread never calls geometry providers. Point and line readers poll
+`getTstamp()` and copy changed payloads with `get(records)`. Each source is
+encoded when its timestamp changes or visible records expire. The viewer keeps
+its own copied records for expiry checks. Empty publications with changed
+timestamps clear that source; repeated timestamps are indistinguishable.
+Grids retain their synchronized cell API.
 
 Geometry uses three endpoints on the HTTP port:
 
@@ -516,9 +518,9 @@ removal behavior. Picker commands send 16-byte IDs as hexadecimal strings.
 and its occupied cell records. It includes occupied ancestors, as the previous
 wireframe did, in root-first traversal order. `nMaxCells` in the grid config sets
 the publication cap (default 8333). The old `nMaxLines` setting is rejected. The viewers have independent `nCbuf` and per-object `nC` caps.
-`_OctreeBase` derives from `_ReferenceFrame`. Neither it nor its grid subclasses
-expose `_GeometryBase::get()` or a geometry type. `_OctreeGrid` still consumes
-point-cloud DataStreams through its `vPCLframes` input list; `_SelectableOctGrid` publishes
+`_OctreeBase` and its grid subclasses inherit pose handling from `_ReferenceFrame`.
+`_OctreeGrid` consumes
+point-cloud DataObjects through its `vPCLframes` input list; `_SelectableOctGrid` publishes
 only cell IDs, colors, and the root header. Viewers construct the boxes.
 
 Cells average point RGB, initializing cell alpha to 1, then publish their retained
@@ -544,13 +546,13 @@ The standalone regression suite uses CMake, a C++17 compiler, Eigen, glog and
 Python 3. Chrome is needed for frontend checks.
 
 ```bash
-cmake -S test/DataStream -B /tmp/openkai-stream-tests
+cmake -S test/DataObject -B /tmp/openkai-stream-tests
 cmake --build /tmp/openkai-stream-tests -j2
 ctest --test-dir /tmp/openkai-stream-tests --output-on-failure
-python3 html/viewer/tests/run.py /tmp/openkai-stream-tests/viewer_snapshot_test
+python3 html/viewer/tests/run.py /tmp/openkai-stream-tests/viewer_cache_test
 ```
 
-The C++ viewer checks cover snapshot identity, timestamp-independent updates,
+The C++ viewer checks cover timestamp-based cache reuse, equal-timestamp no-ops,
 empty publications, filtering, caps and expiry boundaries. Browser checks decode
 actual C++ point/line frames, reject unsupported protocol versions, and exercise
 both viewers' geometry update paths, including independent empty clears. See

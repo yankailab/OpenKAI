@@ -10,11 +10,11 @@ namespace kai
 {
 	namespace pcstream
 	{
-		// PCL1 only. All values are little-endian, with no native struct padding.
-		// Header: magic, packet bytes (u32), revision (u64), stamp (u64),
+		// PCL2 only. All values are little-endian, with no native struct padding.
+		// Header: magic, packet bytes (u32), stamp (u64),
 		// total points (u32), first point (u32). Records: XYZRGB (f32), stamp (u64).
-		constexpr uint8_t magic[4] = {'P', 'C', 'L', '1'};
-		constexpr size_t headerBytes = 32;
+		constexpr uint8_t magic[4] = {'P', 'C', 'L', '2'};
+		constexpr size_t headerBytes = 24;
 		constexpr size_t pointBytes = 32;
 		constexpr size_t maxPacketBytes = 2000;
 
@@ -39,7 +39,7 @@ namespace kai
 		inline void packFloat(uint8_t *pBytes, float value)
 		{
 			static_assert(sizeof(float) == 4 && std::numeric_limits<float>::is_iec559,
-				"PCL1 requires IEEE 754 float32");
+				"PCL2 requires IEEE 754 float32");
 			uint32_t bits;
 			std::memcpy(&bits, &value, sizeof(bits));
 			packUint(pBytes, bits, sizeof(bits));

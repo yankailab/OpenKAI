@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Tracker__SingleTracker_H_
 #define OpenKAI_src_Tracker__SingleTracker_H_
 
-#include "../DataStream/RGBframe.h"
+#include "../DataObject/RGBframe.h"
 #include "_TrackerBase.h"
 
 namespace kai

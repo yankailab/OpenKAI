@@ -10,7 +10,7 @@
 
 #include "../Base/cv.h"
 
-#include "../DataStream/RGBframe.h"
+#include "../DataObject/RGBframe.h"
 
 #include "../UI/_Console.h"
 #include "../Protocol/_JSONbase.h"

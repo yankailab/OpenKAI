@@ -9,7 +9,7 @@
 #define OpenKAI_src_Detector__Lane_H_
 
 #include "../Base/_ModuleBase.h"
-#include "../DataStream/RGBframe.h"
+#include "../DataObject/RGBframe.h"
 #include "../Utility/utilCV.h"
 #include "../Filter/Median.h"
 #include "../Filter/Average.h"

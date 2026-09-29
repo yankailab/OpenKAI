@@ -29,18 +29,19 @@ OpenKAI. CMake copies and installs both web viewers.
 }
 ```
 
-`vGeometry` resolves independent `PCLframe` and `LineFrame` DataStreams. Declare
+`vGeometry` resolves independent `PCLframe` and `LineFrame` DataObjects. Declare
 those streams in the launch configuration and connect producers to the same
 names. A source entry may contain either or both stream types; `name` optionally
 sets its display label. Per-source `nP` and `nL` are capped by `nPbuf` and
 `nLbuf`; zero disables that type for the source. `bVisible` and the fallback
 color `matCol` control rendering.
 
-Each publication replaces the complete point or line snapshot, including empty
-publications that clear the display. `dTexpire` filters individual record
-timestamps in nanoseconds; zero disables expiry. The backend retains immutable
-source snapshots and reuses encoded data until a source changes or records
-expire. `bFrame` and module-based geometry sources are no longer used.
+Each changed stream timestamp replaces the complete point or line frame,
+including empty publications that clear the display. `dTexpire` filters individual
+record timestamps in nanoseconds; zero disables expiry. The backend copies
+source records with `get` and reuses those copies and encoded data until the
+stream timestamp changes or records expire. Equal timestamps cannot signal a
+changed payload. `bFrame` and module-based geometry sources are no longer used.
 
 The viewer uses the same [version-6 protocol](../../../docs/3D/WebViewer3D.md#binary-protocol-version-6)
 as `_SelectableOctGrid`: `/stream/points` and `/stream/lines`, JSON `hello`, binary

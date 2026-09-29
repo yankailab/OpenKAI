@@ -44,7 +44,7 @@
 		"RGBframe": "camRGB"
 	},
 	"camRGB": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	}
 }

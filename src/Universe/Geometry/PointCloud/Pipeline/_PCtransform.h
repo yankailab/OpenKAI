@@ -8,13 +8,14 @@
 #ifndef OpenKAI_src_Universe_Geometry_PointCloud_PCtransform_H_
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCtransform_H_
 
-#include "../_PointCloud.h"
+#include "../../../_ReferenceFrame.h"
+#include "../../../../DataObject/PCLframe.h"
 #include "../../../../Utility/utilFile.h"
 
 namespace kai
 {
 
-	class _PCtransform : public _PointCloud
+	class _PCtransform : public _ReferenceFrame
 	{
 	public:
 		_PCtransform();
@@ -54,8 +55,10 @@ namespace kai
 		}
 
 	protected:
+		PCLframe *m_pPCL = nullptr;
 		PCLframe *m_pPCLin = nullptr;
-		uint64_t m_inputRevision = 0;
+		uint64_t m_tInput = 0;
+		vector<GEOMETRY_POINT> m_vInputPoints;
 		uint64_t m_tNextExpire = 0;
 		bool m_bTransformChanged = true;
 		uint64_t m_dTexpire = 0;

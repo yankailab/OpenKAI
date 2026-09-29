@@ -1,6 +1,6 @@
 # Dear ImGui selectable octree grid viewer
 
-`_ImGUIselectableOctGrid` is a lightweight viewer module for OpenKAI 3D geometry streams. It derives from `_GeometryViewerBase`, reads geometry through immutable `PCLframe` and `LineFrame` DataStreams and `_SelectableOctGrid::get(OCTGRID_CELLS*)` cell snapshots, and renders through Dear ImGui without using Open3D viewer APIs.
+`_ImGUIselectableOctGrid` is a lightweight viewer module for OpenKAI 3D geometry streams. It derives from `_GeometryViewerBase`, copies geometry from `PCLframe` and `LineFrame` DataObjects and `_SelectableOctGrid::get(OCTGRID_CELLS*)` cell snapshots, and renders through Dear ImGui without using Open3D viewer APIs.
 
 The viewer lives in `src/UI/Viewer/ImGUI/`: `_ImGUIselectableOctGrid.*` implements
 the module, `ImGUIbackend.*` handles the window/input backend, and
@@ -127,19 +127,21 @@ Use the class name `_ImGUIselectableOctGrid` in JSON:
 }
 ```
 
-`vGeometry` entries name `PCLframe` and/or `LineFrame` DataStreams.
+`vGeometry` entries name `PCLframe` and/or `LineFrame` DataObjects.
 `vSelectableOctGrid` accepts only `_SelectableOctGrid` sources for cell streams.
 The viewer stores these in separate typed lists. Render snapshots contain only
 shared immutable draw assets, with no producer module pointers. Point/line
-conversion is cached per input snapshot and expiry boundary, so unchanged
-geometry is retained across UI frames. Empty publications clear prior geometry.
+conversion is cached per input timestamp and expiry boundary, so unchanged
+geometry is retained across UI frames. Source vectors are copied with `get`
+when `getTstamp()` changes. Empty publications with changed timestamps clear
+prior geometry; repeated timestamps cannot signal updates.
 Source configuration and limits
 are shared with the [web viewer](WebViewer3D.md#viewer-sources).
 
 The old source name lists and generic reference-frame entries are removed.
 Per-source caps use `nP`, `nL`, and `nC`; zero disables that output. Octree grids
 have no point/line output API. Their `vPCLframes` setting lists
-point-cloud DataStream names.
+point-cloud DataObject names.
 
 ## Sample PLY Test
 

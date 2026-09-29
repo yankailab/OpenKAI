@@ -9,8 +9,8 @@
 #define OpenKAI_src_SLAM__SLAMbase_H_
 
 #include "../Navigation/_NavBase.h"
-#include "../DataStream/IMUstream.h"
-#include "../DataStream/PCLframe.h"
+#include "../DataObject/IMUstream.h"
+#include "../DataObject/PCLframe.h"
 #include "../Protocol/_JSONbase.h"
 #include <atomic>
 
@@ -42,7 +42,7 @@ namespace kai
 		virtual void resetSLAM(void);
 		virtual void updateSLAM(void);
 
-		PCLframe::SnapshotPtr readPointCloud(void);
+		bool readPointCloud(vector<GEOMETRY_POINT> &points, uint64_t &stamp);
 		bool readIMU(Vector3d &acc, Vector3d &gyro, uint64_t &stamp);
 		bool publishPose(const Isometry3d &pose, float confidence);
 		// Give pending controls/status a turn between expensive SLAM frames.
@@ -51,11 +51,11 @@ namespace kai
 		std::mutex m_mtxSLAM;
 		std::atomic_uint m_controlWaiters{0};
 		PCLframe *m_pPCL = nullptr;
-		uint64_t m_pointRevision = 0;
+		uint64_t m_tPointInput = 0;
 		IMUstream *m_pIMU = nullptr;
-		IMUstream::SnapshotPtr m_imuSnapshot;
-		uint64_t m_gyroSequence = 0;
-		uint64_t m_accSequence = 0;
+		deque<IMUstream::IMU_DATA> m_dqGyro;
+		deque<IMUstream::IMU_DATA> m_dqAcc;
+		bool m_bIMUbatch = false;
 		uint64_t m_tStampLastGyro = 0;
 		uint64_t m_tStampLastAcc = 0;
 		size_t m_iGyro = 0;

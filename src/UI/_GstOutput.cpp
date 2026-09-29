@@ -78,8 +78,9 @@ namespace kai
 		IF_(!m_gst.isOpened());
 
 		NULL_(m_pRGBin);
-		const RGBframe::SnapshotPtr frame = m_pRGBin->get();
-		const Mat image = prepareImage(frame->m_mRGB, m_vSize);
+		Mat input;
+		m_pRGBin->get(input);
+		const Mat image = prepareImage(input, m_vSize);
 		IF_(image.empty());
 
 		m_gst << image;

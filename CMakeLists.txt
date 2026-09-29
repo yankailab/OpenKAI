@@ -104,13 +104,22 @@ list(APPEND OpenKAI_cpp
 )
 
 list(APPEND OpenKAI_cpp
-  src/DataStream/DataStreamBase.cpp
-  src/DataStream/IMUstream.cpp
-  src/DataStream/BytePacket.cpp
-  src/DataStream/LineFrame.cpp
-  src/DataStream/PCLframe.cpp
-  src/DataStream/PCLmap.cpp
+  src/DataObject/BBoxStream.cpp
+  src/DataObject/BytePacket.cpp
+  src/DataObject/DataObjBase.cpp
+  src/DataObject/IMUstream.cpp
+  src/DataObject/LineFrame.cpp
+  src/DataObject/PCLframe.cpp
+  src/DataObject/PCLmap.cpp
+  src/DataObject/UGLIDcellStream.cpp
 )
+
+if(USE_OPENCV)
+list(APPEND OpenKAI_cpp
+  src/DataObject/RGBframe.cpp
+  src/DataObject/RGBDframe.cpp
+)
+endif()
 
 # Default modules
 if(WITH_DEFAULT_MODULES)
@@ -137,13 +146,6 @@ if(WITH_DEFAULT_MODULES)
   set(WITH_VISION ON CACHE BOOL "" FORCE)
 endif()
 
-if(USE_OPENCV)
-list(APPEND OpenKAI_cpp
-  src/DataStream/RGBframe.cpp
-  src/DataStream/RGBDframe.cpp
-)
-endif()
-
 # Optional modules
 if(WITH_UNIVERSE)
   find_package(Boost 1.70 CONFIG REQUIRED)
@@ -156,14 +158,10 @@ if(WITH_UNIVERSE)
 	src/UI/Viewer/SelectableOctGridSources.cpp
 	src/UI/Viewer/Web/_WebGeometryBase.cpp
 	src/Universe/_ReferenceFrame.cpp
-	src/Universe/Object/_ObjectBase.cpp
 	src/Universe/Surface/_SurfaceBase.cpp
   src/Universe/Grid/_OctreeBase.cpp
 	src/Universe/Grid/_OctreeGrid.cpp
 	src/Universe/Grid/_SelectableOctGrid.cpp
-	src/Universe/Geometry/_GeometryBase.cpp
-	src/Universe/Geometry/Line/_Line.cpp
-	src/Universe/Geometry/PointCloud/_PointCloud.cpp
 	src/Universe/Geometry/PointCloud/_PCfile.cpp
 	src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp
 	src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp
@@ -388,8 +386,6 @@ if(WITH_SLAM)
   if(NOT WITH_UNIVERSE)
     list(APPEND OpenKAI_cpp
 		src/Universe/_ReferenceFrame.cpp
-		src/Universe/Geometry/_GeometryBase.cpp
-		src/Universe/Geometry/PointCloud/_PointCloud.cpp
 		src/Universe/Geometry/PointCloud/_PCfile.cpp
     )
   endif()

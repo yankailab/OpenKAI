@@ -208,10 +208,32 @@ def run(browser, editor):
         image.addNode('RGBframe', 'image');
         image.addNode('_Crop', 'crop');
         image.connect('/crop', ['RGBframeIn'], '/image');
-        if (image.toJSON().image.type !== 'dataStream' || image.toJSON().crop.RGBframeIn !== 'image')
-            throw Error('Image streams must create and connect through DataStream references');
+        if (image.toJSON().image.type !== 'dataObject' || image.toJSON().crop.RGBframeIn !== 'image')
+            throw Error('Image streams must create and connect through DataObject references');
         if (image.getClass('_Crop').dependencies.some(dep => dep.path[0] === '_RGBbase'))
             throw Error('Legacy image module references must not remain in the catalog');
+        if (OPENKAI_SCHEMA.classes.some(definition => ['_PointCloud', '_GeometryBase', '_Line'].includes(definition.name)))
+            throw Error('Removed geometry base classes must not remain in the catalog');
+        const producers = new OpenKAIModel(OPENKAI_SCHEMA);
+        producers.addNode('PCLframe', 'points');
+        for (const name of ['_PCfile', '_PCtransform', '_PCmerge', '_PCrecv',
+                            '_Livox2', '_RoboSenseAiry', '_PCregistCol', '_LCalign']) {
+            const definition = producers.getClass(name);
+            if (JSON.stringify(definition.baseClasses) !== '["_ReferenceFrame"]')
+                throw Error(name + ' must directly inherit _ReferenceFrame');
+            const output = definition.dependencies.find(dep => dep.path.join('.') === 'PCLframe');
+            if (!output || output.targetClass !== 'PCLframe' || output.declaredIn !== name)
+                throw Error(name + ' must declare its own PCLframe output');
+            producers.addNode(name, name);
+            producers.connect('/' + name, ['PCLframe'], '/points');
+            if (producers.toJSON()[name].PCLframe !== 'points')
+                throw Error(name + ' must connect to a PCLframe DataObject');
+        }
+        for (const name of ['_GeometryViewerBase', '_PCsend', '_PCcrop', '_PCremove', '_PCdownSample']) {
+            const definition = producers.getClass(name);
+            if (JSON.stringify(definition.baseClasses) !== '["_ReferenceFrame"]')
+                throw Error(name + ' must directly inherit _ReferenceFrame');
+        }
         const grid = new OpenKAIModel(OPENKAI_SCHEMA);
         grid.addNode('PCLframe', 'points');
         grid.addNode('_OctreeGrid', 'grid');
@@ -317,7 +339,7 @@ def run_ui(browser, editor):
         smokeChange('#class-search', 'RGBframe', 'input');
         document.querySelector('[aria-label="Add RGBframe"]').click();
         smokeChange('#instance-name', 'cameraFrame');
-        smokeAssert(JSON.parse(OpenKAIEditor.exportConfig()).cameraFrame.type === 'dataStream', 'New streams must select the DataStream factory');
+        smokeAssert(JSON.parse(OpenKAIEditor.exportConfig()).cameraFrame.type === 'dataObject', 'New streams must select the DataObject factory');
         smokeChange('#class-search', '', 'input');
         document.getElementById('auto-layout').click();
     })()""")
@@ -375,7 +397,7 @@ def run_ui(browser, editor):
     })()""")
     checks.append("multiple dependency append and single-reference removal")
     browser.evaluate(r"""(() => {
-        OpenKAIEditor.loadDocument({APP:{class:'InstanceMgr'}, points:{type:'dataStream',class:'PCLframe'},
+        OpenKAIEditor.loadDocument({APP:{class:'InstanceMgr'}, points:{type:'dataObject',class:'PCLframe'},
             web:{class:'_WebGeometryBase',vGeometry:[{PCLframe:'points',label:'preserve'}]},
             extension:{release:17}, future:{class:'_FuturePlugin',opaque:{rows:[1,{text:'custom'}]},'/comment':'keep'}});
         OpenKAIEditor.selectNode('/web');
@@ -424,7 +446,7 @@ def run_ui(browser, editor):
     })()""")
     checks.append("object-map row editing, picker/port connections and numeric keys")
     browser.evaluate(r"""(() => {
-        OpenKAIEditor.loadDocument({APP:{class:'InstanceMgr'},camera:{type:'dataStream',class:'RGBframe',bON:false},
+        OpenKAIEditor.loadDocument({APP:{class:'InstanceMgr'},camera:{type:'dataObject',class:'RGBframe',bON:false},
             crop:{class:'_Crop',RGBframeIn:'camera'}});
         const selector = '[data-path=\'["bON"]\']';
         const disabledCard = () => document.querySelector('[data-id="/camera"]').classList.contains('disabled-node');

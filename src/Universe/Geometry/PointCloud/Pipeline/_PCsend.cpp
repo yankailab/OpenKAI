@@ -19,18 +19,18 @@ namespace kai
 
 	bool _PCsend::loadConfig(void)
 	{
-		IF_F(!_GeometryBase::loadConfig());
+		IF_F(!_ReferenceFrame::loadConfig());
 		jKv(*m_pJ, "tInt", m_tInt);
 		jKv(*m_pJ, "nB", m_nB);
 		IF_Le_F(m_nB < int(pcstream::headerBytes + pcstream::pointBytes) ||
-			m_nB > int(pcstream::maxPacketBytes), "Invalid PCL1 packet size nB");
+			m_nB > int(pcstream::maxPacketBytes), "Invalid PCL2 packet size nB");
 		m_vPacket.resize(m_nB);
 		return true;
 	}
 
 	bool _PCsend::saveConfig(bool bExport)
 	{
-		IF_F(!_GeometryBase::saveConfig(false));
+		IF_F(!_ReferenceFrame::saveConfig(false));
 		(*m_pJ)["tInt"] = m_tInt;
 		(*m_pJ)["nB"] = m_nB;
 		IF__(!bExport, true);
@@ -39,7 +39,7 @@ namespace kai
 
 	bool _PCsend::link(InstanceMgr *pM)
 	{
-		IF_F(!_GeometryBase::link(pM));
+		IF_F(!_ReferenceFrame::link(pM));
 		string name;
 		jKv(*m_pJ, "_IObase", name);
 		m_pIO = static_cast<_IObase *>(pM->findModule(name));
@@ -47,9 +47,9 @@ namespace kai
 
 		name.clear();
 		jKv(*m_pJ, "PCLframeIn", name);
-		m_pPCLin = dynamic_cast<PCLframe *>(static_cast<DataStreamBase *>(pM->findDataStream(name)));
+		m_pPCLin = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
 		IF_Le_F(!m_pPCLin, "PCLframeIn not found: " + name);
-		m_inputRevision = 0;
+		m_tInput = 0;
 		return true;
 	}
 
@@ -61,7 +61,7 @@ namespace kai
 
 	bool _PCsend::check(void)
 	{
-		return m_pIO && m_pIO->bOpen() && m_pPCLin && !m_vPacket.empty() && _GeometryBase::check();
+		return m_pIO && m_pIO->bOpen() && m_pPCLin && !m_vPacket.empty() && _ReferenceFrame::check();
 	}
 
 	void _PCsend::update(void)
@@ -77,12 +77,16 @@ namespace kai
 	{
 		if (!check())
 		{
-			m_inputRevision = 0;
+			m_tInput = 0;
 			return;
 		}
 
-		const PCLframe::SnapshotPtr frame = m_pPCLin->get();
-		if (frame->m_revision == m_inputRevision || frame->m_vPoints.size() > UINT32_MAX)
+		if (m_pPCLin->getTstamp() == m_tInput)
+		{
+			return;
+		}
+		const uint64_t stamp = m_pPCLin->get(m_vPoints);
+		if (stamp == m_tInput || m_vPoints.size() > UINT32_MAX)
 		{
 			return;
 		}
@@ -91,18 +95,17 @@ namespace kai
 		size_t first = 0;
 		do
 		{
-			const size_t count = std::min(pointsPerPacket, frame->m_vPoints.size() - first);
+			const size_t count = std::min(pointsPerPacket, m_vPoints.size() - first);
 			const size_t bytes = pcstream::headerBytes + count * pcstream::pointBytes;
 			uint8_t *pBytes = m_vPacket.data();
 			std::memcpy(pBytes, pcstream::magic, sizeof(pcstream::magic));
 			pcstream::packUint(pBytes + 4, bytes, 4);
-			pcstream::packUint(pBytes + 8, frame->m_revision, 8);
-			pcstream::packUint(pBytes + 16, frame->m_tStamp, 8);
-			pcstream::packUint(pBytes + 24, frame->m_vPoints.size(), 4);
-			pcstream::packUint(pBytes + 28, first, 4);
+			pcstream::packUint(pBytes + 8, stamp, 8);
+			pcstream::packUint(pBytes + 16, m_vPoints.size(), 4);
+			pcstream::packUint(pBytes + 20, first, 4);
 			for (size_t i = 0; i < count; ++i)
 			{
-				const GEOMETRY_POINT &point = frame->m_vPoints[first + i];
+				const GEOMETRY_POINT &point = m_vPoints[first + i];
 				uint8_t *pPoint = pBytes + pcstream::headerBytes + i * pcstream::pointBytes;
 				for (int axis = 0; axis < 3; ++axis)
 				{
@@ -112,7 +115,7 @@ namespace kai
 				pcstream::packUint(pPoint + 24, point.m_tStamp, 8);
 			}
 
-			// On failure retry the entire snapshot next iteration. Its first
+			// On failure retry the entire frame next iteration. Its first
 			// packet resets any incomplete frame at the receiver.
 			if (!m_pIO->write(pBytes, static_cast<int>(bytes)))
 			{
@@ -120,11 +123,11 @@ namespace kai
 			}
 			first += count;
 		}
-		while (first < frame->m_vPoints.size() && m_pT->bRun());
+		while (first < m_vPoints.size() && m_pT->bRun());
 
-		if (first == frame->m_vPoints.size())
+		if (first == m_vPoints.size())
 		{
-			m_inputRevision = frame->m_revision;
+			m_tInput = stamp;
 		}
 		if (m_tInt > 0)
 		{

@@ -9,7 +9,7 @@
 #define OpenKAI_src_SLAM__GLIM_H_
 
 #include "_SLAMbase.h"
-#include "../DataStream/PCLmap.h"
+#include "../DataObject/PCLmap.h"
 #include <array>
 #include <deque>
 #include <map>
@@ -78,7 +78,9 @@ namespace kai
 		PCLframe *m_pGlobalMap = nullptr;
 		PCLmap *m_pSubmapStream = nullptr;
 		vector<std::shared_ptr<glim::SubMap>> m_submaps;
-		uint64_t m_session = 0, m_revision = 0;
+		uint64_t m_session = 0;
+		uint64_t m_tSubmapUpdated = 0;
+		vector<GEOMETRY_POINT> m_vInputPoints;
 		size_t m_submapPoints = 0;
 		struct LiveFrame
 		{

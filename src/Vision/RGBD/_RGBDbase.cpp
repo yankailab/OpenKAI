@@ -79,37 +79,37 @@ namespace kai
 
 		n = "";
 		jKv(j, "RGBDframe", n);
-		m_pRGBD = dynamic_cast<RGBDframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		m_pRGBD = dynamic_cast<RGBDframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		IF_Le_F(!n.empty() && !m_pRGBD, "Data stream not found: " + n);
 
 		n = "";
 		jKv(j, "RGBDtRGBframe", n);
-		m_pRGBDtRGB = dynamic_cast<RGBDframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		m_pRGBDtRGB = dynamic_cast<RGBDframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		IF_Le_F(!n.empty() && !m_pRGBDtRGB, "Data stream not found: " + n);
 
 		n = "";
 		jKv(j, "RGBDtDframe", n);
-		m_pRGBDtD = dynamic_cast<RGBDframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		m_pRGBDtD = dynamic_cast<RGBDframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		IF_Le_F(!n.empty() && !m_pRGBDtD, "Data stream not found: " + n);
 
 		n = "";
 		jKv(j, "Dframe", n);
-		m_pD = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		m_pD = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		IF_Le_F(!n.empty() && !m_pD, "Data stream not found: " + n);
 
 		n = "";
 		jKv(j, "IRframe", n);
-		m_pIR = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		m_pIR = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		IF_Le_F(!n.empty() && !m_pIR, "Data stream not found: " + n);
 
 		n = "";
 		jKv(j, "PCLframe", n);
-		m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		IF_Le_F(!n.empty() && !m_pPCL, "Data stream not found: " + n);
 
 		n = "";
 		jKv(j, "IMUframe", n);
-		m_pIMU = dynamic_cast<IMUstream *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		m_pIMU = dynamic_cast<IMUstream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		IF_Le_F(!n.empty() && !m_pIMU, "Data stream not found: " + n);
 
 		return true;

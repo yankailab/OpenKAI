@@ -26,7 +26,10 @@ namespace kai
 			const size_t limit;
 			std::atomic<size_t> clients{0};
 			std::mutex mutex;
-			PCLmap::SnapshotPtr latest;
+			std::vector<PCLmap::Submap> m_submaps;
+			uint64_t m_session = 0;
+			uint64_t m_tStamp = 0;
+			bool m_haveData = false;
 			bool notification = false;
 			std::unordered_map<Session *, std::weak_ptr<Session>> sessions;
 			State(net::io_context &i, std::string h, size_t n) : io(i), hello(std::move(h)), limit(n) {}
@@ -38,14 +41,16 @@ namespace kai
 					bool announced = false;
 					size_t points = 0;
 					std::array<double, 16> pose{};
-					std::shared_ptr<const std::vector<Vector3f>> m_source;
+					uint64_t m_tStamp = 0;
+					size_t m_totalPoints = 0;
 				};
 				std::shared_ptr<State> state;
 				ws::stream<beast::tcp_stream, false> socket;
 				beast::flat_buffer input{4096};
 				std::vector<uint8_t> sending;
 				std::unordered_map<uint64_t, Delivered> delivered;
-				uint64_t session = 0, revision = 0;
+				uint64_t session = 0;
+				uint64_t m_tStamp = 0;
 				size_t cursor = 0;
 				bool haveSession = false, writing = true, enabled = false, awaitingAck = false, closed = false;
 
@@ -115,21 +120,21 @@ namespace kai
 				{
 					for (size_t i = 0; i < 8; ++i) sending[at + i] = uint8_t(value >> (8 * i));
 				}
-				bool needsReset(const PCLmap::Snapshot &snapshot) const
+				bool needsReset() const
 				{
-					if (revision == snapshot.m_revision)
+					if (m_tStamp == state->m_tStamp)
 					{
 						return false;
 					}
 					size_t found = 0;
-					for (const auto &submap : snapshot.m_vSubmaps)
+					for (const auto &submap : state->m_submaps)
 					{
 						const auto entry = delivered.find(submap.m_id);
 						if (entry == delivered.end())
 						{
 							continue;
 						}
-						if (entry->second.m_source != submap.m_points)
+						if (entry->second.m_tStamp != submap.m_tStamp || entry->second.m_totalPoints != submap.m_points.size())
 						{
 							return true;
 						}
@@ -141,46 +146,46 @@ namespace kai
 				void send()
 				{
 					if (closed || writing || !enabled || awaitingAck) return;
-					PCLmap::SnapshotPtr snapshot;
+					std::lock_guard<std::mutex> lock(state->mutex);
+					if (!state->m_haveData)
 					{
-						std::lock_guard<std::mutex> lock(state->mutex);
-						snapshot = state->latest;
+						return;
 					}
-					if (!snapshot) return;
-					if (!haveSession || session != snapshot->m_session || needsReset(*snapshot))
+					if (!haveSession || session != state->m_session || needsReset())
 					{
 						haveSession = true;
-						session = snapshot->m_session;
-						revision = snapshot->m_revision;
+						session = state->m_session;
+						m_tStamp = state->m_tStamp;
 						cursor = 0;
 						delivered.clear();
-						return text({{"type", "reset"}, {"session", std::to_string(session)}, {"revision", std::to_string(revision)}});
+						return text({{"type", "reset"}, {"session", std::to_string(session)}, {"mapTimestampNs", std::to_string(m_tStamp)}});
 					}
-					if (revision != snapshot->m_revision)
+					if (m_tStamp != state->m_tStamp)
 					{
-						revision = snapshot->m_revision;
+						m_tStamp = state->m_tStamp;
 						cursor = 0;
 					}
-					for (; cursor < snapshot->m_vSubmaps.size(); ++cursor)
+					for (; cursor < state->m_submaps.size(); ++cursor)
 					{
-						const auto &submap = snapshot->m_vSubmaps[cursor];
+						const auto &submap = state->m_submaps[cursor];
 						auto &sent = delivered[submap.m_id];
-						const size_t total = submap.m_points ? submap.m_points->size() : 0;
+						const size_t total = submap.m_points.size();
 						std::array<double, 16> pose;
 						std::copy_n(submap.m_pose.data(), 16, pose.begin());
 						if (!sent.announced)
 						{
 							sent.announced = true;
-							sent.m_source = submap.m_points;
+							sent.m_tStamp = submap.m_tStamp;
+							sent.m_totalPoints = total;
 							sent.pose = pose;
-							return text({{"type", "submap"}, {"session", std::to_string(session)}, {"revision", std::to_string(revision)},
+							return text({{"type", "submap"}, {"session", std::to_string(session)}, {"mapTimestampNs", std::to_string(m_tStamp)},
 								{"id", std::to_string(submap.m_id)}, {"timestampNs", std::to_string(submap.m_tStamp)},
 								{"pointCount", total}, {"pose", pose}});
 						}
 						if (sent.pose != pose)
 						{
 							sent.pose = pose;
-							return text({{"type", "pose"}, {"session", std::to_string(session)}, {"revision", std::to_string(revision)},
+							return text({{"type", "pose"}, {"session", std::to_string(session)}, {"mapTimestampNs", std::to_string(m_tStamp)},
 								{"id", std::to_string(submap.m_id)}, {"pose", pose}});
 						}
 						if (sent.points < total)
@@ -192,7 +197,7 @@ namespace kai
 							u32(40, uint32_t(total)); u32(44, uint32_t(sent.points)); u32(48, count); u32(52, 0);
 							for (size_t i = 0; i < count; ++i)
 							{
-								const float *p = (*submap.m_points)[sent.points + i].data();
+								const float *p = submap.m_points[sent.points + i].data();
 								for (size_t axis = 0; axis < 3; ++axis)
 								{
 									uint32_t bits;
@@ -230,17 +235,22 @@ namespace kai
 				session->accept(std::move(request));
 			};
 		}
-		void Stream::publish(PCLmap::SnapshotPtr snapshot)
+		void Stream::publish(std::vector<PCLmap::Submap> submaps, uint64_t session, uint64_t timestamp)
 		{
 			std::unordered_set<uint64_t> ids;
-			for (const auto &submap : snapshot->m_vSubmaps)
+			for (const auto &submap : submaps)
 			{
 				if (!ids.insert(submap.m_id).second || !submap.m_pose.matrix().allFinite() ||
-					(submap.m_points && submap.m_points->size() > MaxSubmapPoints))
+					submap.m_points.size() > MaxSubmapPoints)
+				{
 					throw std::runtime_error("Invalid or oversized GLIM submap descriptor");
+				}
 			}
 			std::lock_guard<std::mutex> lock(m_state->mutex);
-			m_state->latest = std::move(snapshot);
+			m_state->m_submaps = std::move(submaps);
+			m_state->m_session = session;
+			m_state->m_tStamp = timestamp;
+			m_state->m_haveData = true;
 			if (m_state->notification) return;
 			m_state->notification = true;
 			net::post(m_state->io, [state = m_state] {
@@ -265,13 +275,14 @@ namespace kai
 				else m_state->sessions.erase(it);
 			}
 			std::lock_guard<std::mutex> lock(m_state->mutex);
-			m_state->latest.reset();
+			m_state->m_submaps.clear();
+			m_state->m_haveData = false;
 		}
 	}
 
 	_WebGLIM::_WebGLIM()
 	{
-		// GLIM streams its dedicated submap snapshots directly.
+		// GLIM uses the dedicated accumulating-submap transport.
 	}
 	_WebGLIM::~_WebGLIM() { stop(); }
 	bool _WebGLIM::loadConfig(void)
@@ -318,7 +329,7 @@ namespace kai
 		const json &j = *m_pJ;
 		string source;
 		jKv(j, "PCLmapIn", source);
-		m_pPCLmap = dynamic_cast<PCLmap *>(static_cast<DataStreamBase *>(pM->findDataStream(source)));
+		m_pPCLmap = dynamic_cast<PCLmap *>(static_cast<DataObjBase *>(pM->findDataObject(source)));
 		IF_Le_F(!m_pPCLmap, "PCLmap viewer source not found: " + source);
 		return true;
 	}
@@ -340,7 +351,7 @@ namespace kai
 		IF_F(m_running || !m_pT || !m_pPCLmap);
 		m_http = std::make_unique<HttpServer>();
 		m_stream = std::make_unique<webglim::Stream>(m_http->context(), hello(), m_maxClients);
-		m_session = m_revision = UINT64_MAX;
+		m_tStamp = UINT64_MAX;
 		std::string error;
 		IF_Le_F(!m_http->start(m_host, uint16_t(m_port), m_root, m_stream->upgradeHandler(), &error), error);
 		m_running = true;
@@ -367,15 +378,17 @@ namespace kai
 	}
 	void _WebGLIM::publish()
 	{
-		const auto snapshot = m_pPCLmap->get();
-		if (snapshot->m_session == m_session && snapshot->m_revision == m_revision)
+		if (m_pPCLmap->getTstamp() == m_tStamp)
 		{
 			return;
 		}
-		m_stream->publish(snapshot);
-		m_session = snapshot->m_session;
-		m_revision = snapshot->m_revision;
+		std::vector<PCLmap::Submap> submaps;
+		uint64_t session;
+		const uint64_t timestamp = m_pPCLmap->get(submaps, session);
+		m_stream->publish(std::move(submaps), session, timestamp);
+		m_tStamp = timestamp;
 	}
+
 	void _WebGLIM::stop()
 	{
 		m_running = false;

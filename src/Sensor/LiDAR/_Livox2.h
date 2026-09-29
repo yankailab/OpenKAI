@@ -9,8 +9,9 @@
 #define OpenKAI_src_Sensor_LiDAR__Livox2_H_
 
 #include "../../IO/_UDP.h"
-#include "../../Universe/Geometry/PointCloud/_PointCloud.h"
-#include "../../DataStream/IMUstream.h"
+#include "../../Universe/_ReferenceFrame.h"
+#include "../../DataObject/PCLframe.h"
+#include "../../DataObject/IMUstream.h"
 #include "../../Dependencies/SensorFusion/SensorFusion.h"
 #include "../../Dependencies/CRC.h"
 #include "../../Utility/util.h"
@@ -152,7 +153,7 @@ namespace kai
 		}
 	};
 
-	class _Livox2 : public _PointCloud
+	class _Livox2 : public _ReferenceFrame
 	{
 	public:
 		_Livox2();
@@ -164,7 +165,7 @@ namespace kai
 		virtual bool check(void);
 		virtual bool start(void);
 		virtual void console(void *pConsole);
-		void clear(void) override;
+		virtual void clear(void);
 
 		LVX2_CONFIG getConfig(void);
 		void setConfig(const LVX2_CONFIG &cfg);
@@ -245,6 +246,8 @@ namespace kai
 		}
 
 	protected:
+        PCLframe *m_pPCL = nullptr;
+
 		_Thread *m_pTdeviceQueryR = nullptr;
 		_Thread *m_pTctrlCmdW = nullptr;
 		_Thread *m_pTctrlCmdR = nullptr;

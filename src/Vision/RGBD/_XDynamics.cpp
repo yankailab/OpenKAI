@@ -382,7 +382,7 @@ namespace kai
             const Vector3f vC = Vector3f(p.r, p.g, p.b) / 255.0f;
             vPCL.push_back({vP, vC, tStamp});
         }
-        m_pPCL->set(std::move(vPCL), tStamp);
+        m_pPCL->set(vPCL, tStamp);
     }
 
     bool _XDynamics::initHDL(XdynRegParams_t *regParams, uint16_t tofW, uint16_t tofH, uint16_t rgbW, uint16_t rgbH)

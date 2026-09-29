@@ -145,7 +145,7 @@ namespace kai
 
 		string n = "";
 		jKv(j, "RGBframeIn", n);
-		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		NULL_F(m_pRGBin);
 
 		return true;
@@ -177,8 +177,8 @@ namespace kai
 	void _Lane::detect(void)
 	{
 		IF_(!check());
-		const auto frame = m_pRGBin->get();
-		const Mat &image = frame->m_mRGB;
+		Mat image;
+		m_pRGBin->get(image);
 		IF_(image.empty());
 
 		// Warp transform to get overhead view

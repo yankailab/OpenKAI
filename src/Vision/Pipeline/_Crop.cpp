@@ -47,7 +47,7 @@ namespace kai
 
 		string n = "";
 		jKv(j, "RGBframeIn", n);
-		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		NULL_F(m_pRGBin);
 
 		return true;
@@ -73,8 +73,8 @@ namespace kai
 	{
 		NULL_(m_pRGB);
 		NULL_(m_pRGBin);
-		const RGBframe::SnapshotPtr frame = m_pRGBin->get();
-		const Mat &mIn = frame->m_mRGB;
+		Mat mIn;
+		const uint64_t tStamp = m_pRGBin->get(mIn);
 		IF_(mIn.empty());
 
 		Rect r;
@@ -86,7 +86,7 @@ namespace kai
 		m_vSizeRGB.x() = r.width;
 		m_vSizeRGB.y() = r.height;
 
-		m_pRGB->set(mIn(r), frame->m_tStamp);
+		m_pRGB->set(mIn(r), tStamp);
 	}
 
 }

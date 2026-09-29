@@ -17,7 +17,7 @@ namespace kai
 
     bool _RoboSenseAiry::loadConfig(void)
     {
-        IF_F(!this->_PointCloud::loadConfig());
+        IF_F(!this->_ReferenceFrame::loadConfig());
         const json &j = *m_pJ;
 
         DEL(m_pTdifop);
@@ -29,7 +29,7 @@ namespace kai
 
     bool _RoboSenseAiry::saveConfig(bool bExport)
     {
-        IF_F(!_PointCloud::saveConfig(false));
+        IF_F(!_ReferenceFrame::saveConfig(false));
 
 
         IF_F(m_pTdifop && !m_pTdifop->saveConfig(false));
@@ -40,10 +40,14 @@ namespace kai
 
     bool _RoboSenseAiry::link(InstanceMgr *pM)
     {
-        IF_F(!this->_PointCloud::link(pM));
+        IF_F(!this->_ReferenceFrame::link(pM));
         const json &j = *m_pJ;
 
         string n;
+
+        jKv(j, "PCLframe", n);
+        m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        IF_Le_F(!m_pPCL, "PCLframe not found: " + n);
 
         n = "";
         jKv(j, "_UDPmsop", n);
@@ -71,10 +75,19 @@ namespace kai
 
     bool _RoboSenseAiry::check(void)
     {
+        NULL_F(m_pPCL);
         NULL_F(m_pUDPmsop);
         NULL_F(m_pUDPdifop);
 
-        return this->_PointCloud::check();
+        return this->_ReferenceFrame::check();
+    }
+
+    void _RoboSenseAiry::clear(void)
+    {
+        if (m_pPCL)
+        {
+            m_pPCL->set({});
+        }
     }
 
     void _RoboSenseAiry::updateMSOP(void)
@@ -124,7 +137,7 @@ namespace kai
     void _RoboSenseAiry::console(void *pConsole)
     {
         NULL_(pConsole);
-        this->_PointCloud::console(pConsole);
+        this->_ReferenceFrame::console(pConsole);
 
         _Console *pC = (_Console *)pConsole;
 

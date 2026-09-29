@@ -268,20 +268,29 @@ namespace kai
 	bool _ImGUIselectableOctGrid::collectGeometry(const VIEWER_GEOMETRY_SOURCE &source,
 		GeometryCache &cache, IMGUI_VIEWER_OBJ &object, uint64_t expiry)
 	{
-		const auto points = source.m_pPCLframe ? source.m_pPCLframe->get() : nullptr;
-		const auto lines = source.m_pLineFrame ? source.m_pLineFrame->get() : nullptr;
-		if (cache.m_geometry && cache.m_points == points && cache.m_lines == lines && expiry <= cache.m_tFirstVisible)
+		const uint64_t points = source.m_pPCLframe ? source.m_pPCLframe->getTstamp() : 0;
+		const uint64_t lines = source.m_pLineFrame ? source.m_pLineFrame->getTstamp() : 0;
+		if (cache.m_geometry && cache.m_tPoints == points && cache.m_tLines == lines && expiry <= cache.m_tFirstVisible)
 		{
 			object.m_geometry = cache.m_geometry;
 			return false;
 		}
 
+		if (source.m_pPCLframe && (!cache.m_geometry || cache.m_tPoints != points))
+		{
+			cache.m_tPoints = source.m_pPCLframe->get(cache.m_points);
+		}
+		if (source.m_pLineFrame && (!cache.m_geometry || cache.m_tLines != lines))
+		{
+			cache.m_tLines = source.m_pLineFrame->get(cache.m_lines);
+		}
+
 		auto geometry = std::make_shared<IMGUI_VIEWER_GEOMETRY>();
 		uint64_t firstVisible = UINT64_MAX;
-		if (points && source.m_nP > 0)
+		if (source.m_nP > 0)
 		{
-			geometry->m_vP.reserve(std::min(points->m_vPoints.size(), size_t(source.m_nP)));
-			for (const auto &point : points->m_vPoints)
+			geometry->m_vP.reserve(std::min(cache.m_points.size(), size_t(source.m_nP)));
+			for (const auto &point : cache.m_points)
 			{
 				if (geometry->m_vP.size() >= size_t(source.m_nP))
 				{
@@ -295,10 +304,10 @@ namespace kai
 				firstVisible = std::min(firstVisible, point.m_tStamp);
 			}
 		}
-		if (lines && source.m_nL > 0)
+		if (source.m_nL > 0)
 		{
-			geometry->m_vL.reserve(std::min(lines->m_vLines.size(), size_t(source.m_nL)));
-			for (const auto &line : lines->m_vLines)
+			geometry->m_vL.reserve(std::min(cache.m_lines.size(), size_t(source.m_nL)));
+			for (const auto &line : cache.m_lines)
 			{
 				if (geometry->m_vL.size() >= size_t(source.m_nL))
 				{
@@ -312,8 +321,6 @@ namespace kai
 				firstVisible = std::min(firstVisible, line.m_tStamp);
 			}
 		}
-		cache.m_points = points;
-		cache.m_lines = lines;
 		cache.m_tFirstVisible = firstVisible;
 		cache.m_geometry = std::move(geometry);
 		object.m_geometry = cache.m_geometry;

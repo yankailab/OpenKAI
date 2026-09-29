@@ -221,7 +221,7 @@
 		"Dframe": "camDepth"
 	},
 	"scPC": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "PCLframe"
 	},
 	"octGrid": {
@@ -305,15 +305,15 @@
 		]
 	},
 	"pcFilePoints": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "PCLframe"
 	},
 	"camRGB": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	},
 	"camDepth": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	}
 }

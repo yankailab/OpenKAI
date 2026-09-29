@@ -29,6 +29,6 @@ wire fields keep the units required by their external APIs.
 
 GLIM timestamp status fields use the `Ns` suffix and decimal strings to preserve
 64-bit values in JavaScript. `frameIntervalMs`, `processingMs`, and `workMs`
-remain milliseconds for display. The GLIM submap protocol is version 2 (`GLM2`)
+remain milliseconds for display. The GLIM submap protocol is version 3 (`GLM3`)
 and the geometry protocol is version 6 (`W3D6`); update backend and browser assets
 together.

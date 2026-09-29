@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Universe_Geometry__GeometryViewerBase_H_
 #define OpenKAI_src_Universe_Geometry__GeometryViewerBase_H_
 
-#include "_GeometryBase.h"
+#include "../_ReferenceFrame.h"
 
 namespace kai
 {
@@ -30,7 +30,7 @@ namespace kai
 		Vector3f m_vUp = {0, 1, 0};
 	};
 
-	class _GeometryViewerBase : public _GeometryBase
+	class _GeometryViewerBase : public _ReferenceFrame
 	{
 	public:
 		_GeometryViewerBase();
@@ -72,7 +72,7 @@ namespace kai
 		GVIEWER_CAM_POSE m_camPoseDefault;
 		Vector3f m_vCoR = Vector3f::Zero(); // center of rotation
 
-		// Per-source rendering limits; input storage belongs to DataStreams.
+		// Per-source rendering limits; input storage belongs to DataObjects.
 		int m_nPbuf = 200000;
 		int m_nLbuf = 100000;
 		uint64_t m_dTexpire = 0; // nanoseconds; zero disables expiry

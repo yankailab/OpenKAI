@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "7833b1c41c9757f6daf8762973b1e8fe45b5b73ba7cf87ea024f5d09936e64be",
+  "sourceDigest": "969b3a3a33358f79b758cb5babe9bc05954ed02ae18846952c8039183d29d5b5",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -15,7 +15,7 @@
     "Base",
     "Compute/OpenCL",
     "Control",
-    "DataStream",
+    "DataObject",
     "Detector",
     "File",
     "Filter",
@@ -41,12 +41,10 @@
     "UI/Viewer/Web",
     "Universe",
     "Universe/Geometry",
-    "Universe/Geometry/Line",
     "Universe/Geometry/PointCloud",
     "Universe/Geometry/PointCloud/Pipeline",
     "Universe/Geometry/PointCloud/Registration",
     "Universe/Grid",
-    "Universe/Object",
     "Universe/Surface",
     "Vision",
     "Vision/Pipeline",
@@ -10130,11 +10128,11 @@
       "configurable": true
     },
     {
-      "name": "BytePacket",
-      "category": "DataStream",
-      "source": "src/DataStream/BytePacket.h:15",
+      "name": "BBoxStream",
+      "category": "DataObject",
+      "source": "src/DataObject/BBoxStream.h:104",
       "baseClasses": [
-        "DataStreamBase"
+        "DataObjBase"
       ],
       "parameters": [
         {
@@ -10190,10 +10188,10 @@
           ],
           "type": "string",
           "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "DataStreamBase",
+          "declaredIn": "DataObjBase",
           "extraction": "audited-adapter",
-          "default": "dataStream",
-          "description": "Create an independent DataStream rather than a worker module."
+          "default": "dataObject",
+          "description": "Create an independent DataObject rather than a worker module."
         }
       ],
       "dependencies": [],
@@ -10206,9 +10204,85 @@
       "configurable": true
     },
     {
-      "name": "DataStreamBase",
-      "category": "DataStream",
-      "source": "src/DataStream/DataStreamBase.h:17",
+      "name": "BytePacket",
+      "category": "DataObject",
+      "source": "src/DataObject/BytePacket.h:15",
+      "baseClasses": [
+        "DataObjBase"
+      ],
+      "parameters": [
+        {
+          "path": [
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false
+        },
+        {
+          "path": [
+            "bON"
+          ],
+          "type": "boolean",
+          "source": "src/Instance/InstanceMgr.cpp:createAll",
+          "declaredIn": "BASE",
+          "extraction": "audited-adapter",
+          "default": true,
+          "description": "false disables this instance; true enables it."
+        },
+        {
+          "path": [
+            "class"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:57",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_class",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "name"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:56",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_name",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "type"
+          ],
+          "type": "string",
+          "source": "src/Instance/InstanceMgr.cpp:createAll",
+          "declaredIn": "DataObjBase",
+          "extraction": "audited-adapter",
+          "default": "dataObject",
+          "description": "Create an independent DataObject rather than a worker module."
+        }
+      ],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": true,
+      "buildConditions": [
+        []
+      ],
+      "configurable": true
+    },
+    {
+      "name": "DataObjBase",
+      "category": "DataObject",
+      "source": "src/DataObject/DataObjBase.h:18",
       "baseClasses": [
         "BASE"
       ],
@@ -10266,10 +10340,10 @@
           ],
           "type": "string",
           "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "DataStreamBase",
+          "declaredIn": "DataObjBase",
           "extraction": "audited-adapter",
-          "default": "dataStream",
-          "description": "Create an independent DataStream rather than a worker module."
+          "default": "dataObject",
+          "description": "Create an independent DataObject rather than a worker module."
         }
       ],
       "dependencies": [],
@@ -10281,10 +10355,10 @@
     },
     {
       "name": "IMUstream",
-      "category": "DataStream",
-      "source": "src/DataStream/IMUstream.h:16",
+      "category": "DataObject",
+      "source": "src/DataObject/IMUstream.h:15",
       "baseClasses": [
-        "DataStreamBase"
+        "DataObjBase"
       ],
       "parameters": [
         {
@@ -10340,10 +10414,10 @@
           ],
           "type": "string",
           "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "DataStreamBase",
+          "declaredIn": "DataObjBase",
           "extraction": "audited-adapter",
-          "default": "dataStream",
-          "description": "Create an independent DataStream rather than a worker module."
+          "default": "dataObject",
+          "description": "Create an independent DataObject rather than a worker module."
         }
       ],
       "dependencies": [],
@@ -10357,10 +10431,10 @@
     },
     {
       "name": "LineFrame",
-      "category": "DataStream",
-      "source": "src/DataStream/LineFrame.h:32",
+      "category": "DataObject",
+      "source": "src/DataObject/LineFrame.h:31",
       "baseClasses": [
-        "DataStreamBase"
+        "DataObjBase"
       ],
       "parameters": [
         {
@@ -10416,10 +10490,10 @@
           ],
           "type": "string",
           "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "DataStreamBase",
+          "declaredIn": "DataObjBase",
           "extraction": "audited-adapter",
-          "default": "dataStream",
-          "description": "Create an independent DataStream rather than a worker module."
+          "default": "dataObject",
+          "description": "Create an independent DataObject rather than a worker module."
         }
       ],
       "dependencies": [],
@@ -10433,10 +10507,10 @@
     },
     {
       "name": "PCLframe",
-      "category": "DataStream",
-      "source": "src/DataStream/PCLframe.h:30",
+      "category": "DataObject",
+      "source": "src/DataObject/PCLframe.h:29",
       "baseClasses": [
-        "DataStreamBase"
+        "DataObjBase"
       ],
       "parameters": [
         {
@@ -10492,10 +10566,10 @@
           ],
           "type": "string",
           "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "DataStreamBase",
+          "declaredIn": "DataObjBase",
           "extraction": "audited-adapter",
-          "default": "dataStream",
-          "description": "Create an independent DataStream rather than a worker module."
+          "default": "dataObject",
+          "description": "Create an independent DataObject rather than a worker module."
         }
       ],
       "dependencies": [],
@@ -10509,10 +10583,10 @@
     },
     {
       "name": "PCLmap",
-      "category": "DataStream",
-      "source": "src/DataStream/PCLmap.h:10",
+      "category": "DataObject",
+      "source": "src/DataObject/PCLmap.h:8",
       "baseClasses": [
-        "DataStreamBase"
+        "DataObjBase"
       ],
       "parameters": [
         {
@@ -10568,10 +10642,10 @@
           ],
           "type": "string",
           "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "DataStreamBase",
+          "declaredIn": "DataObjBase",
           "extraction": "audited-adapter",
-          "default": "dataStream",
-          "description": "Create an independent DataStream rather than a worker module."
+          "default": "dataObject",
+          "description": "Create an independent DataObject rather than a worker module."
         }
       ],
       "dependencies": [],
@@ -10585,10 +10659,10 @@
     },
     {
       "name": "RGBDframe",
-      "category": "DataStream",
-      "source": "src/DataStream/RGBDframe.h:16",
+      "category": "DataObject",
+      "source": "src/DataObject/RGBDframe.h:15",
       "baseClasses": [
-        "DataStreamBase"
+        "DataObjBase"
       ],
       "parameters": [
         {
@@ -10644,10 +10718,10 @@
           ],
           "type": "string",
           "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "DataStreamBase",
+          "declaredIn": "DataObjBase",
           "extraction": "audited-adapter",
-          "default": "dataStream",
-          "description": "Create an independent DataStream rather than a worker module."
+          "default": "dataObject",
+          "description": "Create an independent DataObject rather than a worker module."
         }
       ],
       "dependencies": [],
@@ -10663,10 +10737,10 @@
     },
     {
       "name": "RGBframe",
-      "category": "DataStream",
-      "source": "src/DataStream/RGBframe.h:16",
+      "category": "DataObject",
+      "source": "src/DataObject/RGBframe.h:15",
       "baseClasses": [
-        "DataStreamBase"
+        "DataObjBase"
       ],
       "parameters": [
         {
@@ -10722,10 +10796,10 @@
           ],
           "type": "string",
           "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "DataStreamBase",
+          "declaredIn": "DataObjBase",
           "extraction": "audited-adapter",
-          "default": "dataStream",
-          "description": "Create an independent DataStream rather than a worker module."
+          "default": "dataObject",
+          "description": "Create an independent DataObject rather than a worker module."
         }
       ],
       "dependencies": [],
@@ -10736,6 +10810,82 @@
         [
           "ifdef USE_OPENCV"
         ]
+      ],
+      "configurable": true
+    },
+    {
+      "name": "UGLIDcellStream",
+      "category": "DataObject",
+      "source": "src/DataObject/UGLIDcellStream.h:15",
+      "baseClasses": [
+        "DataObjBase"
+      ],
+      "parameters": [
+        {
+          "path": [
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false
+        },
+        {
+          "path": [
+            "bON"
+          ],
+          "type": "boolean",
+          "source": "src/Instance/InstanceMgr.cpp:createAll",
+          "declaredIn": "BASE",
+          "extraction": "audited-adapter",
+          "default": true,
+          "description": "false disables this instance; true enables it."
+        },
+        {
+          "path": [
+            "class"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:57",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_class",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "name"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:56",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_name",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "type"
+          ],
+          "type": "string",
+          "source": "src/Instance/InstanceMgr.cpp:createAll",
+          "declaredIn": "DataObjBase",
+          "extraction": "audited-adapter",
+          "default": "dataObject",
+          "description": "Create an independent DataObject rather than a worker module."
+        }
+      ],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": true,
+      "buildConditions": [
+        []
       ],
       "configurable": true
     },
@@ -15016,9 +15166,9 @@
       "configurable": true
     },
     {
-      "name": "DataStreams",
+      "name": "DataObjects",
       "category": "Instance",
-      "source": "src/Instance/DataStreams.h:32",
+      "source": "src/Instance/DataObjects.h:34",
       "baseClasses": [],
       "parameters": [],
       "dependencies": [],
@@ -15078,7 +15228,7 @@
     {
       "name": "Modules",
       "category": "Instance",
-      "source": "src/Instance/Modules.h:289",
+      "source": "src/Instance/Modules.h:287",
       "baseClasses": [],
       "parameters": [],
       "dependencies": [],
@@ -20682,9 +20832,9 @@
     {
       "name": "_Livox2",
       "category": "Sensor/LiDAR",
-      "source": "src/Sensor/LiDAR/_Livox2.h:155",
+      "source": "src/Sensor/LiDAR/_Livox2.h:156",
       "baseClasses": [
-        "_PointCloud"
+        "_ReferenceFrame"
       ],
       "parameters": [
         {
@@ -20693,7 +20843,7 @@
           ],
           "type": "string",
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:187",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:162",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -20704,10 +20854,10 @@
             "PCLframe"
           ],
           "type": "string",
-          "declaredIn": "_PointCloud",
-          "source": "src/Universe/Geometry/PointCloud/_PointCloud.cpp:28",
+          "declaredIn": "_Livox2",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:157",
           "typeEvidence": "declaration",
-          "cppVariable": "name",
+          "cppVariable": "n",
           "cppType": "string",
           "dependency": true
         },
@@ -20885,7 +21035,7 @@
           ],
           "type": "string",
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:162",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:172",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -20897,7 +21047,7 @@
           ],
           "type": "string",
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:157",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:167",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -20909,7 +21059,7 @@
           ],
           "type": "string",
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:177",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:187",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -20921,7 +21071,7 @@
           ],
           "type": "string",
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:172",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:182",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -20933,7 +21083,7 @@
           ],
           "type": "string",
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:167",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:177",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -21237,7 +21387,7 @@
           "targetClass": "IMUstream",
           "multiple": false,
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:188",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:163",
           "required": true,
           "containers": []
         },
@@ -21247,8 +21397,8 @@
           ],
           "targetClass": "PCLframe",
           "multiple": false,
-          "declaredIn": "_PointCloud",
-          "source": "src/Universe/Geometry/PointCloud/_PointCloud.cpp:29",
+          "declaredIn": "_Livox2",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:158",
           "required": true,
           "containers": []
         },
@@ -21259,7 +21409,7 @@
           "targetClass": "_UDP",
           "multiple": false,
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:163",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:173",
           "required": true,
           "containers": []
         },
@@ -21270,7 +21420,7 @@
           "targetClass": "_UDP",
           "multiple": false,
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:158",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:168",
           "required": true,
           "containers": []
         },
@@ -21281,7 +21431,7 @@
           "targetClass": "_UDP",
           "multiple": false,
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:178",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:188",
           "required": true,
           "containers": []
         },
@@ -21292,7 +21442,7 @@
           "targetClass": "_UDP",
           "multiple": false,
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:173",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:183",
           "required": true,
           "containers": []
         },
@@ -21303,7 +21453,7 @@
           "targetClass": "_UDP",
           "multiple": false,
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:168",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:178",
           "required": true,
           "containers": []
         }
@@ -21365,9 +21515,9 @@
     {
       "name": "_RoboSenseAiry",
       "category": "Sensor/LiDAR",
-      "source": "src/Sensor/LiDAR/_RoboSenseAiry.h:88",
+      "source": "src/Sensor/LiDAR/_RoboSenseAiry.h:89",
       "baseClasses": [
-        "_PointCloud"
+        "_ReferenceFrame"
       ],
       "parameters": [
         {
@@ -21375,10 +21525,10 @@
             "PCLframe"
           ],
           "type": "string",
-          "declaredIn": "_PointCloud",
-          "source": "src/Universe/Geometry/PointCloud/_PointCloud.cpp:28",
+          "declaredIn": "_RoboSenseAiry",
+          "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:48",
           "typeEvidence": "declaration",
-          "cppVariable": "name",
+          "cppVariable": "n",
           "cppType": "string",
           "dependency": true
         },
@@ -21388,7 +21538,7 @@
           ],
           "type": "string",
           "declaredIn": "_RoboSenseAiry",
-          "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:54",
+          "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:58",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -21400,7 +21550,7 @@
           ],
           "type": "string",
           "declaredIn": "_RoboSenseAiry",
-          "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:49",
+          "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:53",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -21539,8 +21689,8 @@
           ],
           "targetClass": "PCLframe",
           "multiple": false,
-          "declaredIn": "_PointCloud",
-          "source": "src/Universe/Geometry/PointCloud/_PointCloud.cpp:29",
+          "declaredIn": "_RoboSenseAiry",
+          "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:49",
           "required": true,
           "containers": []
         },
@@ -21551,7 +21701,7 @@
           "targetClass": "_UDP",
           "multiple": false,
           "declaredIn": "_RoboSenseAiry",
-          "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:55",
+          "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:59",
           "required": true,
           "containers": []
         },
@@ -21562,7 +21712,7 @@
           "targetClass": "_UDP",
           "multiple": false,
           "declaredIn": "_RoboSenseAiry",
-          "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:50",
+          "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:54",
           "required": true,
           "containers": []
         }
@@ -22593,21 +22743,48 @@
     {
       "name": "_LCalign",
       "category": "Tools",
-      "source": "src/Tools/_LCalign.h:19",
+      "source": "src/Tools/_LCalign.h:21",
       "baseClasses": [
-        "_PointCloud"
+        "_ReferenceFrame"
       ],
       "parameters": [
         {
           "path": [
             "PCLframe"
           ],
-          "type": "string",
-          "declaredIn": "_PointCloud",
-          "source": "src/Universe/Geometry/PointCloud/_PointCloud.cpp:28",
-          "typeEvidence": "declaration",
-          "cppVariable": "name",
-          "cppType": "string",
+          "type": "json",
+          "declaredIn": "_LCalign",
+          "source": "src/Tools/_LCalign.cpp:54",
+          "typeEvidence": "unresolved",
+          "cppVariable": "n",
+          "cppType": "m_pRGBi",
+          "defaultExpression": "\"\"",
+          "dependency": true
+        },
+        {
+          "path": [
+            "PCLframeIn"
+          ],
+          "type": "json",
+          "declaredIn": "_LCalign",
+          "source": "src/Tools/_LCalign.cpp:59",
+          "typeEvidence": "unresolved",
+          "cppVariable": "n",
+          "cppType": "m_pRGBi",
+          "defaultExpression": "\"\"",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeIn"
+          ],
+          "type": "json",
+          "declaredIn": "_LCalign",
+          "source": "src/Tools/_LCalign.cpp:65",
+          "typeEvidence": "unresolved",
+          "cppVariable": "n",
+          "cppType": "m_pRGBi",
+          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -22616,34 +22793,10 @@
           ],
           "type": "string",
           "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:63",
+          "source": "src/Tools/_LCalign.cpp:70",
           "typeEvidence": "key-convention",
           "cppVariable": "n",
-          "cppType": "m_pPCi",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_PCin"
-          ],
-          "type": "string",
-          "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:53",
-          "typeEvidence": "key-convention",
-          "cppVariable": "n",
-          "cppType": "m_pPCi",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_RGBbase"
-          ],
-          "type": "string",
-          "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:58",
-          "typeEvidence": "key-convention",
-          "cppVariable": "n",
-          "cppType": "m_pPCi",
+          "cppType": "m_pRGBi",
           "dependency": true
         },
         {
@@ -22652,10 +22805,10 @@
           ],
           "type": "array",
           "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:34",
+          "source": "src/Tools/_LCalign.cpp:35",
           "typeEvidence": "declaration",
           "cppVariable": "m_aCdist",
-          "cppType": "array<double, 5>",
+          "cppType": "std::array<double, 5>",
           "default": [
             0.0,
             0.0,
@@ -22670,10 +22823,10 @@
           ],
           "type": "array",
           "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:35",
+          "source": "src/Tools/_LCalign.cpp:36",
           "typeEvidence": "declaration",
           "cppVariable": "m_aCr",
-          "cppType": "array<double, 9>",
+          "cppType": "std::array<double, 9>",
           "default": [
             1,
             0,
@@ -22692,10 +22845,10 @@
           ],
           "type": "array",
           "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:36",
+          "source": "src/Tools/_LCalign.cpp:37",
           "typeEvidence": "declaration",
           "cppVariable": "m_aCt",
-          "cppType": "array<double, 3>",
+          "cppType": "std::array<double, 3>",
           "default": [
             0.0,
             0.0,
@@ -22708,10 +22861,10 @@
           ],
           "type": "array",
           "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:38",
+          "source": "src/Tools/_LCalign.cpp:39",
           "typeEvidence": "declaration",
           "cppVariable": "m_aIr",
-          "cppType": "array<double, 9>",
+          "cppType": "std::array<double, 9>",
           "default": [
             1,
             0,
@@ -22730,10 +22883,10 @@
           ],
           "type": "array",
           "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:39",
+          "source": "src/Tools/_LCalign.cpp:40",
           "typeEvidence": "declaration",
           "cppVariable": "m_aIt",
-          "cppType": "array<double, 3>",
+          "cppType": "std::array<double, 3>",
           "default": [
             0,
             0,
@@ -22821,7 +22974,7 @@
           ],
           "type": "array",
           "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:33",
+          "source": "src/Tools/_LCalign.cpp:34",
           "typeEvidence": "declaration",
           "cppVariable": "m_vCc",
           "cppType": "Vector2d",
@@ -22836,7 +22989,7 @@
           ],
           "type": "array",
           "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:32",
+          "source": "src/Tools/_LCalign.cpp:33",
           "typeEvidence": "declaration",
           "cppVariable": "m_vCf",
           "cppType": "Vector2d",
@@ -22851,7 +23004,7 @@
           ],
           "type": "array",
           "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:31",
+          "source": "src/Tools/_LCalign.cpp:32",
           "typeEvidence": "declaration",
           "cppVariable": "m_vCsize",
           "cppType": "Vector2i",
@@ -22890,8 +23043,30 @@
           ],
           "targetClass": "PCLframe",
           "multiple": false,
-          "declaredIn": "_PointCloud",
-          "source": "src/Universe/Geometry/PointCloud/_PointCloud.cpp:29",
+          "declaredIn": "_LCalign",
+          "source": "src/Tools/_LCalign.cpp:55",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "PCLframeIn"
+          ],
+          "targetClass": "PCLframe",
+          "multiple": false,
+          "declaredIn": "_LCalign",
+          "source": "src/Tools/_LCalign.cpp:60",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "RGBframeIn"
+          ],
+          "targetClass": "RGBframe",
+          "multiple": false,
+          "declaredIn": "_LCalign",
+          "source": "src/Tools/_LCalign.cpp:66",
           "required": true,
           "containers": []
         },
@@ -22902,29 +23077,7 @@
           "targetClass": "_IMUbase",
           "multiple": false,
           "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:64",
-          "containers": []
-        },
-        {
-          "path": [
-            "_PCin"
-          ],
-          "targetClass": "_PointCloud",
-          "multiple": false,
-          "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:54",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "_RGBbase"
-          ],
-          "targetClass": "_RGBbase",
-          "multiple": false,
-          "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:59",
-          "required": true,
+          "source": "src/Tools/_LCalign.cpp:71",
           "containers": []
         }
       ],
@@ -25236,7 +25389,7 @@
           ],
           "type": "string",
           "declaredIn": "_WebGLIM",
-          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:320",
+          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:331",
           "typeEvidence": "declaration",
           "cppVariable": "source",
           "cppType": "string",
@@ -25248,7 +25401,7 @@
           ],
           "type": "boolean",
           "declaredIn": "_WebGLIM",
-          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:283",
+          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:294",
           "typeEvidence": "declaration",
           "cppVariable": "m_autoBound",
           "cppType": "bool",
@@ -25295,7 +25448,7 @@
           ],
           "type": "boolean",
           "declaredIn": "_WebGLIM",
-          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:283",
+          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:294",
           "typeEvidence": "declaration",
           "cppVariable": "m_showGrid",
           "cppType": "bool",
@@ -25367,7 +25520,7 @@
           ],
           "type": "string",
           "declaredIn": "_WebGLIM",
-          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:281",
+          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:292",
           "typeEvidence": "declaration",
           "cppVariable": "m_host",
           "cppType": "std::string",
@@ -25379,7 +25532,7 @@
           ],
           "type": "number",
           "declaredIn": "_WebGLIM",
-          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:284",
+          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:295",
           "typeEvidence": "declaration",
           "cppVariable": "m_pointSize",
           "cppType": "float",
@@ -25391,7 +25544,7 @@
           ],
           "type": "integer",
           "declaredIn": "_WebGLIM",
-          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:282",
+          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:293",
           "typeEvidence": "declaration",
           "cppVariable": "m_maxClients",
           "cppType": "int",
@@ -25439,7 +25592,7 @@
           ],
           "type": "integer",
           "declaredIn": "_WebGLIM",
-          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:281",
+          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:292",
           "typeEvidence": "declaration",
           "cppVariable": "m_port",
           "cppType": "int",
@@ -25479,7 +25632,7 @@
           ],
           "type": "array",
           "declaredIn": "_WebGLIM",
-          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:284",
+          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:295",
           "typeEvidence": "declaration",
           "cppVariable": "m_background",
           "cppType": "Vector4f",
@@ -25639,7 +25792,7 @@
           ],
           "type": "string",
           "declaredIn": "_WebGLIM",
-          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:282",
+          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:293",
           "typeEvidence": "declaration",
           "cppVariable": "m_root",
           "cppType": "std::string",
@@ -25654,7 +25807,7 @@
           "targetClass": "PCLmap",
           "multiple": false,
           "declaredIn": "_WebGLIM",
-          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:321",
+          "source": "src/UI/Viewer/Web/_WebGLIM.cpp:332",
           "required": true,
           "containers": []
         }
@@ -26387,9 +26540,9 @@
       "configurable": false
     },
     {
-      "name": "WebGeometrySnapshot",
+      "name": "WebGeometryCache",
       "category": "UI/Viewer/Web",
-      "source": "src/UI/Viewer/Web/WebGeometrySnapshot.h:13",
+      "source": "src/UI/Viewer/Web/WebGeometryCache.h:13",
       "baseClasses": [],
       "parameters": [],
       "dependencies": [],
@@ -26524,131 +26677,11 @@
       "configurable": true
     },
     {
-      "name": "_GeometryBase",
-      "category": "Universe/Geometry",
-      "source": "src/Universe/Geometry/_GeometryBase.h:15",
-      "baseClasses": [
-        "_ReferenceFrame"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vOrt"
-          ],
-          "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vOrt.coeffs()"
-        },
-        {
-          "path": [
-            "vPos"
-          ],
-          "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vPos",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
-        }
-      ],
-      "dependencies": [],
-      "containers": [
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": true
-    },
-    {
       "name": "_GeometryViewerBase",
       "category": "Universe/Geometry",
       "source": "src/Universe/Geometry/_GeometryViewerBase.h:33",
       "baseClasses": [
-        "_GeometryBase"
+        "_ReferenceFrame"
       ],
       "parameters": [
         {
@@ -26973,159 +27006,11 @@
       "configurable": true
     },
     {
-      "name": "_Line",
-      "category": "Universe/Geometry/Line",
-      "source": "src/Universe/Geometry/Line/_Line.h:16",
-      "baseClasses": [
-        "_GeometryBase"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "LineFrame"
-          ],
-          "type": "string",
-          "declaredIn": "_Line",
-          "source": "src/Universe/Geometry/Line/_Line.cpp:28",
-          "typeEvidence": "declaration",
-          "cppVariable": "name",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vOrt"
-          ],
-          "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vOrt.coeffs()"
-        },
-        {
-          "path": [
-            "vPos"
-          ],
-          "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vPos",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
-        }
-      ],
-      "dependencies": [
-        {
-          "path": [
-            "LineFrame"
-          ],
-          "targetClass": "LineFrame",
-          "multiple": false,
-          "declaredIn": "_Line",
-          "source": "src/Universe/Geometry/Line/_Line.cpp:29",
-          "required": true,
-          "containers": []
-        }
-      ],
-      "containers": [
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": true,
-      "buildConditions": [
-        [
-          "ifdef WITH_UNIVERSE"
-        ]
-      ],
-      "configurable": true
-    },
-    {
       "name": "_PCfile",
       "category": "Universe/Geometry/PointCloud",
-      "source": "src/Universe/Geometry/PointCloud/_PCfile.h:16",
+      "source": "src/Universe/Geometry/PointCloud/_PCfile.h:17",
       "baseClasses": [
-        "_PointCloud"
+        "_ReferenceFrame"
       ],
       "parameters": [
         {
@@ -27133,8 +27018,8 @@
             "PCLframe"
           ],
           "type": "string",
-          "declaredIn": "_PointCloud",
-          "source": "src/Universe/Geometry/PointCloud/_PointCloud.cpp:28",
+          "declaredIn": "_PCfile",
+          "source": "src/Universe/Geometry/PointCloud/_PCfile.cpp:861",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -27256,156 +27141,8 @@
           ],
           "targetClass": "PCLframe",
           "multiple": false,
-          "declaredIn": "_PointCloud",
-          "source": "src/Universe/Geometry/PointCloud/_PointCloud.cpp:29",
-          "required": true,
-          "containers": []
-        }
-      ],
-      "containers": [
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": true,
-      "buildConditions": [
-        [
-          "ifdef WITH_UNIVERSE"
-        ]
-      ],
-      "configurable": true
-    },
-    {
-      "name": "_PointCloud",
-      "category": "Universe/Geometry/PointCloud",
-      "source": "src/Universe/Geometry/PointCloud/_PointCloud.h:16",
-      "baseClasses": [
-        "_GeometryBase"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "PCLframe"
-          ],
-          "type": "string",
-          "declaredIn": "_PointCloud",
-          "source": "src/Universe/Geometry/PointCloud/_PointCloud.cpp:28",
-          "typeEvidence": "declaration",
-          "cppVariable": "name",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vOrt"
-          ],
-          "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vOrt.coeffs()"
-        },
-        {
-          "path": [
-            "vPos"
-          ],
-          "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vPos",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
-        }
-      ],
-      "dependencies": [
-        {
-          "path": [
-            "PCLframe"
-          ],
-          "targetClass": "PCLframe",
-          "multiple": false,
-          "declaredIn": "_PointCloud",
-          "source": "src/Universe/Geometry/PointCloud/_PointCloud.cpp:29",
+          "declaredIn": "_PCfile",
+          "source": "src/Universe/Geometry/PointCloud/_PCfile.cpp:862",
           "required": true,
           "containers": []
         }
@@ -27432,7 +27169,7 @@
       "category": "Universe/Geometry/PointCloud/Pipeline",
       "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCcrop.h:91",
       "baseClasses": [
-        "_GeometryBase"
+        "_ReferenceFrame"
       ],
       "parameters": [
         {
@@ -27667,7 +27404,7 @@
       "category": "Universe/Geometry/PointCloud/Pipeline",
       "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCdownSample.h:16",
       "baseClasses": [
-        "_GeometryBase"
+        "_ReferenceFrame"
       ],
       "parameters": [
         {
@@ -27802,9 +27539,9 @@
     {
       "name": "_PCmerge",
       "category": "Universe/Geometry/PointCloud/Pipeline",
-      "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.h:16",
+      "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.h:17",
       "baseClasses": [
-        "_PointCloud"
+        "_ReferenceFrame"
       ],
       "parameters": [
         {
@@ -27812,10 +27549,10 @@
             "PCLframe"
           ],
           "type": "string",
-          "declaredIn": "_PointCloud",
-          "source": "src/Universe/Geometry/PointCloud/_PointCloud.cpp:28",
+          "declaredIn": "_PCmerge",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp:90",
           "typeEvidence": "declaration",
-          "cppVariable": "name",
+          "cppVariable": "outputName",
           "cppType": "string",
           "dependency": true
         },
@@ -27922,7 +27659,7 @@
           ],
           "type": "array",
           "declaredIn": "_PCmerge",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp:90",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp:95",
           "typeEvidence": "declaration",
           "cppVariable": "names",
           "cppType": "vector<string>",
@@ -27948,8 +27685,8 @@
           ],
           "targetClass": "PCLframe",
           "multiple": false,
-          "declaredIn": "_PointCloud",
-          "source": "src/Universe/Geometry/PointCloud/_PointCloud.cpp:29",
+          "declaredIn": "_PCmerge",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp:91",
           "required": true,
           "containers": []
         },
@@ -27960,7 +27697,7 @@
           "targetClass": "PCLframe",
           "multiple": true,
           "declaredIn": "_PCmerge",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp:95",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp:100",
           "containers": []
         }
       ],
@@ -27984,9 +27721,9 @@
     {
       "name": "_PCrecv",
       "category": "Universe/Geometry/PointCloud/Pipeline",
-      "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.h:17",
+      "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.h:18",
       "baseClasses": [
-        "_PointCloud"
+        "_ReferenceFrame"
       ],
       "parameters": [
         {
@@ -27994,8 +27731,8 @@
             "PCLframe"
           ],
           "type": "string",
-          "declaredIn": "_PointCloud",
-          "source": "src/Universe/Geometry/PointCloud/_PointCloud.cpp:28",
+          "declaredIn": "_PCrecv",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:41",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -28007,7 +27744,7 @@
           ],
           "type": "string",
           "declaredIn": "_PCrecv",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:41",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:46",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -28130,8 +27867,8 @@
           ],
           "targetClass": "PCLframe",
           "multiple": false,
-          "declaredIn": "_PointCloud",
-          "source": "src/Universe/Geometry/PointCloud/_PointCloud.cpp:29",
+          "declaredIn": "_PCrecv",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:42",
           "required": true,
           "containers": []
         },
@@ -28142,7 +27879,7 @@
           "targetClass": "_IObase",
           "multiple": false,
           "declaredIn": "_PCrecv",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:42",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:47",
           "required": true,
           "containers": []
         }
@@ -28169,7 +27906,7 @@
       "category": "Universe/Geometry/PointCloud/Pipeline",
       "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCremove.h:16",
       "baseClasses": [
-        "_GeometryBase"
+        "_ReferenceFrame"
       ],
       "parameters": [
         {
@@ -28318,7 +28055,7 @@
       "category": "Universe/Geometry/PointCloud/Pipeline",
       "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.h:18",
       "baseClasses": [
-        "_GeometryBase"
+        "_ReferenceFrame"
       ],
       "parameters": [
         {
@@ -28511,21 +28248,22 @@
     {
       "name": "_PCtransform",
       "category": "Universe/Geometry/PointCloud/Pipeline",
-      "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.h:17",
+      "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.h:18",
       "baseClasses": [
-        "_PointCloud"
+        "_ReferenceFrame"
       ],
       "parameters": [
         {
           "path": [
             "PCLframe"
           ],
-          "type": "string",
-          "declaredIn": "_PointCloud",
-          "source": "src/Universe/Geometry/PointCloud/_PointCloud.cpp:28",
-          "typeEvidence": "declaration",
-          "cppVariable": "name",
-          "cppType": "string",
+          "type": "json",
+          "declaredIn": "_PCtransform",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp:123",
+          "typeEvidence": "unresolved",
+          "cppVariable": "n",
+          "cppType": "m_pPCLi",
+          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -28534,10 +28272,10 @@
           ],
           "type": "json",
           "declaredIn": "_PCtransform",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp:123",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp:128",
           "typeEvidence": "unresolved",
           "cppVariable": "n",
-          "cppType": "m_inputRevisio",
+          "cppType": "m_pPCLi",
           "defaultExpression": "\"\"",
           "dependency": true
         },
@@ -28693,8 +28431,8 @@
           ],
           "targetClass": "PCLframe",
           "multiple": false,
-          "declaredIn": "_PointCloud",
-          "source": "src/Universe/Geometry/PointCloud/_PointCloud.cpp:29",
+          "declaredIn": "_PCtransform",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp:124",
           "required": true,
           "containers": []
         },
@@ -28705,7 +28443,7 @@
           "targetClass": "PCLframe",
           "multiple": false,
           "declaredIn": "_PCtransform",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp:124",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp:129",
           "required": true,
           "containers": []
         }
@@ -28730,33 +28468,35 @@
     {
       "name": "_PCregistCol",
       "category": "Universe/Geometry/PointCloud/Registration",
-      "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.h:19",
+      "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.h:20",
       "baseClasses": [
-        "_PointCloud"
+        "_ReferenceFrame"
       ],
       "parameters": [
         {
           "path": [
             "PCLframe"
           ],
-          "type": "string",
-          "declaredIn": "_PointCloud",
-          "source": "src/Universe/Geometry/PointCloud/_PointCloud.cpp:28",
-          "typeEvidence": "declaration",
-          "cppVariable": "name",
-          "cppType": "string",
+          "type": "json",
+          "declaredIn": "_PCregistCol",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:63",
+          "typeEvidence": "unresolved",
+          "cppVariable": "n",
+          "cppType": "m_pPCLi",
+          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
           "path": [
-            "_PointCloud"
+            "PCLframeIn"
           ],
-          "type": "string",
+          "type": "json",
           "declaredIn": "_PCregistCol",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:63",
-          "typeEvidence": "declaration",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:68",
+          "typeEvidence": "unresolved",
           "cppVariable": "n",
-          "cppType": "string",
+          "cppType": "m_pPCLi",
+          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -28960,19 +28700,20 @@
           ],
           "targetClass": "PCLframe",
           "multiple": false,
-          "declaredIn": "_PointCloud",
-          "source": "src/Universe/Geometry/PointCloud/_PointCloud.cpp:29",
+          "declaredIn": "_PCregistCol",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:64",
           "required": true,
           "containers": []
         },
         {
           "path": [
-            "_PointCloud"
+            "PCLframeIn"
           ],
-          "targetClass": "_PointCloud",
+          "targetClass": "PCLframe",
           "multiple": false,
           "declaredIn": "_PCregistCol",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:64",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:69",
+          "required": true,
           "containers": []
         }
       ],
@@ -28997,42 +28738,42 @@
     {
       "name": "_PCregistGlobal",
       "category": "Universe/Geometry/PointCloud/Registration",
-      "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.h:18",
+      "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.h:19",
       "baseClasses": [
         "_ModuleBase"
       ],
       "parameters": [
         {
           "path": [
+            "PCLframeSrc"
+          ],
+          "type": "string",
+          "declaredIn": "_PCregistGlobal",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "PCLframeTgt"
+          ],
+          "type": "string",
+          "declaredIn": "_PCregistGlobal",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:63",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
             "_PCtransform"
           ],
           "type": "string",
           "declaredIn": "_PCregistGlobal",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:67",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_PointCloudSrc"
-          ],
-          "type": "string",
-          "declaredIn": "_PCregistGlobal",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_PointCloudTgt"
-          ],
-          "type": "string",
-          "declaredIn": "_PCregistGlobal",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:62",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:68",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -29079,7 +28820,7 @@
           ],
           "type": "integer",
           "declaredIn": "_PCregistGlobal",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:30",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:31",
           "typeEvidence": "declaration",
           "cppVariable": "m_maxNNfpfh",
           "cppType": "int",
@@ -29091,7 +28832,7 @@
           ],
           "type": "integer",
           "declaredIn": "_PCregistGlobal",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:29",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:30",
           "typeEvidence": "declaration",
           "cppVariable": "m_maxNNnormal",
           "cppType": "int",
@@ -29115,7 +28856,7 @@
           ],
           "type": "number",
           "declaredIn": "_PCregistGlobal",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:28",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:29",
           "typeEvidence": "declaration",
           "cppVariable": "m_rFeature",
           "cppType": "double",
@@ -29127,7 +28868,7 @@
           ],
           "type": "number",
           "declaredIn": "_PCregistGlobal",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:27",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:28",
           "typeEvidence": "declaration",
           "cppVariable": "m_rNormal",
           "cppType": "double",
@@ -29165,34 +28906,34 @@
       "dependencies": [
         {
           "path": [
+            "PCLframeSrc"
+          ],
+          "targetClass": "PCLframe",
+          "multiple": false,
+          "declaredIn": "_PCregistGlobal",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:59",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "PCLframeTgt"
+          ],
+          "targetClass": "PCLframe",
+          "multiple": false,
+          "declaredIn": "_PCregistGlobal",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:64",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
             "_PCtransform"
           ],
           "targetClass": "_PCtransform",
           "multiple": false,
           "declaredIn": "_PCregistGlobal",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:68",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "_PointCloudSrc"
-          ],
-          "targetClass": "_PointCloud",
-          "multiple": false,
-          "declaredIn": "_PCregistGlobal",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:58",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "_PointCloudTgt"
-          ],
-          "targetClass": "_PointCloud",
-          "multiple": false,
-          "declaredIn": "_PCregistGlobal",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:63",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:69",
           "required": true,
           "containers": []
         }
@@ -29218,42 +28959,42 @@
     {
       "name": "_PCregistICP",
       "category": "Universe/Geometry/PointCloud/Registration",
-      "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.h:23",
+      "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.h:24",
       "baseClasses": [
         "_ModuleBase"
       ],
       "parameters": [
         {
           "path": [
+            "PCLframeSrc"
+          ],
+          "type": "string",
+          "declaredIn": "_PCregistICP",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:54",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "PCLframeTgt"
+          ],
+          "type": "string",
+          "declaredIn": "_PCregistICP",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:59",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
             "_PCtransform"
           ],
           "type": "string",
           "declaredIn": "_PCregistICP",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:63",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_PointCloudSrc"
-          ],
-          "type": "string",
-          "declaredIn": "_PCregistICP",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:53",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_PointCloudTgt"
-          ],
-          "type": "string",
-          "declaredIn": "_PCregistICP",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:58",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:64",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -29300,7 +29041,7 @@
           ],
           "type": "integer",
           "declaredIn": "_PCregistICP",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:27",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:28",
           "typeEvidence": "declaration",
           "cppVariable": "(int &)m_est",
           "cppType": "int"
@@ -29323,7 +29064,7 @@
           ],
           "type": "number",
           "declaredIn": "_PCregistICP",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:28",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:29",
           "typeEvidence": "declaration",
           "cppVariable": "m_thr",
           "cppType": "float",
@@ -29361,34 +29102,34 @@
       "dependencies": [
         {
           "path": [
+            "PCLframeSrc"
+          ],
+          "targetClass": "PCLframe",
+          "multiple": false,
+          "declaredIn": "_PCregistICP",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:55",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "PCLframeTgt"
+          ],
+          "targetClass": "PCLframe",
+          "multiple": false,
+          "declaredIn": "_PCregistICP",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:60",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
             "_PCtransform"
           ],
           "targetClass": "_PCtransform",
           "multiple": false,
           "declaredIn": "_PCregistICP",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:64",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "_PointCloudSrc"
-          ],
-          "targetClass": "_PointCloud",
-          "multiple": false,
-          "declaredIn": "_PCregistICP",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:54",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "_PointCloudTgt"
-          ],
-          "targetClass": "_PointCloud",
-          "multiple": false,
-          "declaredIn": "_PCregistICP",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:59",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:65",
           "required": true,
           "containers": []
         }
@@ -29744,7 +29485,7 @@
           "source": "src/Universe/Grid/_OctreeGrid.cpp:177",
           "kind": "unresolved-module-reference",
           "expression": "name",
-          "resolution": "Covered by the vPCLframes DataStream adapter; names are loaded before link."
+          "resolution": "Covered by the vPCLframes DataObject adapter; names are loaded before link."
         }
       ],
       "creatable": true,
@@ -30014,108 +29755,6 @@
             "vSelectedCells"
           ],
           "type": "array"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": true,
-      "buildConditions": [
-        [
-          "ifdef WITH_UNIVERSE"
-        ]
-      ],
-      "configurable": true
-    },
-    {
-      "name": "_ObjectBase",
-      "category": "Universe/Object",
-      "source": "src/Universe/Object/_ObjectBase.h:28",
-      "baseClasses": [
-        "_ModuleBase"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        }
-      ],
-      "dependencies": [],
-      "containers": [
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
         }
       ],
       "diagnostics": [],
@@ -40382,11 +40021,12 @@
     ]
   },
   "audit": {
-    "sourceFiles": 359,
-    "classCount": 208,
-    "classDeclarations": 208,
-    "creatableClassCount": 131,
+    "sourceFiles": 356,
+    "classCount": 206,
+    "classDeclarations": 206,
+    "creatableClassCount": 130,
     "factoryClassesWithoutDeclaration": [
+      "_ObjectBase",
       "_TestJSON",
       "_TestWebSocket"
     ],
@@ -40463,22 +40103,26 @@
       "src/Compute/OpenCL/clBase.h",
       "src/Control/PID.cpp",
       "src/Control/PID.h",
-      "src/DataStream/BytePacket.cpp",
-      "src/DataStream/BytePacket.h",
-      "src/DataStream/DataStreamBase.cpp",
-      "src/DataStream/DataStreamBase.h",
-      "src/DataStream/IMUstream.cpp",
-      "src/DataStream/IMUstream.h",
-      "src/DataStream/LineFrame.cpp",
-      "src/DataStream/LineFrame.h",
-      "src/DataStream/PCLframe.cpp",
-      "src/DataStream/PCLframe.h",
-      "src/DataStream/PCLmap.cpp",
-      "src/DataStream/PCLmap.h",
-      "src/DataStream/RGBDframe.cpp",
-      "src/DataStream/RGBDframe.h",
-      "src/DataStream/RGBframe.cpp",
-      "src/DataStream/RGBframe.h",
+      "src/DataObject/BBoxStream.cpp",
+      "src/DataObject/BBoxStream.h",
+      "src/DataObject/BytePacket.cpp",
+      "src/DataObject/BytePacket.h",
+      "src/DataObject/DataObjBase.cpp",
+      "src/DataObject/DataObjBase.h",
+      "src/DataObject/IMUstream.cpp",
+      "src/DataObject/IMUstream.h",
+      "src/DataObject/LineFrame.cpp",
+      "src/DataObject/LineFrame.h",
+      "src/DataObject/PCLframe.cpp",
+      "src/DataObject/PCLframe.h",
+      "src/DataObject/PCLmap.cpp",
+      "src/DataObject/PCLmap.h",
+      "src/DataObject/RGBDframe.cpp",
+      "src/DataObject/RGBDframe.h",
+      "src/DataObject/RGBframe.cpp",
+      "src/DataObject/RGBframe.h",
+      "src/DataObject/UGLIDcellStream.cpp",
+      "src/DataObject/UGLIDcellStream.h",
       "src/Detector/_ArUco.cpp",
       "src/Detector/_ArUco.h",
       "src/Detector/_Contour.cpp",
@@ -40525,8 +40169,8 @@
       "src/IO/_WebSocketServer.h",
       "src/IPC/SharedMem.cpp",
       "src/IPC/SharedMem.h",
-      "src/Instance/DataStreams.cpp",
-      "src/Instance/DataStreams.h",
+      "src/Instance/DataObjects.cpp",
+      "src/Instance/DataObjects.h",
       "src/Instance/InstanceMgr.cpp",
       "src/Instance/InstanceMgr.h",
       "src/Instance/JsonCfg.cpp",
@@ -40628,7 +40272,7 @@
       "src/UI/Viewer/SelectableOctGridSources.cpp",
       "src/UI/Viewer/SelectableOctGridSources.h",
       "src/UI/Viewer/Web/WebGLIMProtocol.h",
-      "src/UI/Viewer/Web/WebGeometrySnapshot.h",
+      "src/UI/Viewer/Web/WebGeometryCache.h",
       "src/UI/Viewer/Web/WebSelectableOctGridProtocol.h",
       "src/UI/Viewer/Web/_WebGLIM.cpp",
       "src/UI/Viewer/Web/_WebGLIM.h",
@@ -40644,8 +40288,6 @@
       "src/UI/_UIbase.h",
       "src/UI/_WindowCV.cpp",
       "src/UI/_WindowCV.h",
-      "src/Universe/Geometry/Line/_Line.cpp",
-      "src/Universe/Geometry/Line/_Line.h",
       "src/Universe/Geometry/PointCloud/Pipeline/PCstreamProtocol.h",
       "src/Universe/Geometry/PointCloud/Pipeline/_PCcrop.cpp",
       "src/Universe/Geometry/PointCloud/Pipeline/_PCcrop.h",
@@ -40661,6 +40303,7 @@
       "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.h",
       "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp",
       "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.h",
+      "src/Universe/Geometry/PointCloud/Registration/PCLframeToOpen3D.h",
       "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp",
       "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.h",
       "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp",
@@ -40669,10 +40312,6 @@
       "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.h",
       "src/Universe/Geometry/PointCloud/_PCfile.cpp",
       "src/Universe/Geometry/PointCloud/_PCfile.h",
-      "src/Universe/Geometry/PointCloud/_PointCloud.cpp",
-      "src/Universe/Geometry/PointCloud/_PointCloud.h",
-      "src/Universe/Geometry/_GeometryBase.cpp",
-      "src/Universe/Geometry/_GeometryBase.h",
       "src/Universe/Geometry/_GeometryViewerBase.cpp",
       "src/Universe/Geometry/_GeometryViewerBase.h",
       "src/Universe/Grid/_OctreeBase.cpp",
@@ -40681,8 +40320,6 @@
       "src/Universe/Grid/_OctreeGrid.h",
       "src/Universe/Grid/_SelectableOctGrid.cpp",
       "src/Universe/Grid/_SelectableOctGrid.h",
-      "src/Universe/Object/_ObjectBase.cpp",
-      "src/Universe/Object/_ObjectBase.h",
       "src/Universe/Surface/_SurfaceBase.cpp",
       "src/Universe/Surface/_SurfaceBase.h",
       "src/Universe/_ReferenceFrame.cpp",
@@ -40751,10 +40388,10 @@
       "src/Vision/_VideoFile.h",
       "src/main.cpp"
     ],
-    "configReads": 677,
-    "resolvedReads": 665,
-    "moduleLookups": 108,
-    "resolvedLookups": 104,
+    "configReads": 683,
+    "resolvedReads": 671,
+    "moduleLookups": 114,
+    "resolvedLookups": 110,
     "unresolvedReads": 12,
     "unresolvedLookups": 4,
     "diagnosticsCount": 16,
@@ -40880,7 +40517,7 @@
         "source": "src/Universe/Grid/_OctreeGrid.cpp:177",
         "kind": "unresolved-module-reference",
         "expression": "name",
-        "resolution": "Covered by the vPCLframes DataStream adapter; names are loaded before link.",
+        "resolution": "Covered by the vPCLframes DataObject adapter; names are loaded before link.",
         "className": "_OctreeGrid"
       }
     ],

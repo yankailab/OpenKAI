@@ -20,8 +20,6 @@
 #include "../Universe/Grid/_OctreeBase.h"
 #include "../Universe/Grid/_OctreeGrid.h"
 #include "../Universe/Grid/_SelectableOctGrid.h"
-#include "../Universe/Geometry/Line/_Line.h"
-#include "../Universe/Geometry/PointCloud/_PointCloud.h"
 #include "../Universe/Geometry/PointCloud/_PCfile.h"
 #include "../Universe/Geometry/PointCloud/Pipeline/_PCmerge.h"
 #include "../Universe/Geometry/PointCloud/Pipeline/_PCsend.h"

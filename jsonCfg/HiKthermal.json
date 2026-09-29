@@ -55,11 +55,11 @@
 		"RGBframeIn": "hikRGB"
 	},
 	"hikRGB": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	},
 	"thermalRGBRGB": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	}
 }

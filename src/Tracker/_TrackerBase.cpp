@@ -50,7 +50,7 @@ namespace kai
 
 		string n = "";
 		jKv(j, "RGBframeIn", n);
-		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		NULL_F(m_pRGBin);
 
 		return true;
@@ -89,8 +89,8 @@ namespace kai
 	bool _TrackerBase::startTrack(Vector4f &bb)
 	{
 		NULL_F(m_pRGBin);
-		const auto frame = m_pRGBin->get();
-		const Mat &image = frame->m_mRGB;
+		Mat image;
+		m_pRGBin->get(image);
 		IF_F(image.empty());
 
 		float mBig = 1.0 + m_margin;

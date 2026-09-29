@@ -3,7 +3,7 @@
 
 #include "../../../Universe/Geometry/_GeometryViewerBase.h"
 #include "../SelectableOctGridSources.h"
-#include "WebGeometrySnapshot.h"
+#include "WebGeometryCache.h"
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
@@ -41,7 +41,7 @@ namespace kai
 			webselectableoctgrid::Type type = webselectableoctgrid::Type::Points;
 			std::unique_ptr<WebSocketStream> transport;
 			std::vector<std::shared_ptr<std::vector<uint8_t>>> buffers;
-			std::vector<WebGeometrySnapshot> m_geometry;
+			std::vector<WebGeometryCache> m_geometry;
 			bool m_bPublished = false;
 			uint32_t sequence = 0;
 			std::atomic<size_t> bytes{0};

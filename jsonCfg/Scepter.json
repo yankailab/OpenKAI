@@ -156,7 +156,7 @@
 		"RGBframe": "d2rgbRGB"
 	},
 	"scPCL": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "PCLframe"
 	},
 	"viewer": {
@@ -204,15 +204,15 @@
 		]
 	},
 	"scepterRGB": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	},
 	"scepterDepth": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	},
 	"d2rgbRGB": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "RGBframe"
 	}
 }

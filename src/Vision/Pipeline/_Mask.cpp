@@ -41,12 +41,12 @@ namespace kai
 		string n;
 		n = "";
 		jKv(j, "RGBframeIn", n);
-		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		NULL_F(m_pRGBin);
 
 		n = "";
 		jKv(j, "RGBframeMask", n);
-		m_pMask = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		m_pMask = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		NULL_F(m_pMask);
 
 		return true;
@@ -74,18 +74,18 @@ namespace kai
 		NULL_(m_pRGBin);
 		NULL_(m_pMask);
 
-		const RGBframe::SnapshotPtr frame = m_pRGBin->get();
-		const Mat &mIn = frame->m_mRGB;
+		Mat mIn;
+		const uint64_t tStamp = m_pRGBin->get(mIn);
 		IF_(mIn.empty());
-		const RGBframe::SnapshotPtr maskFrame = m_pMask->get();
-		const Mat &mMask = maskFrame->m_mRGB;
+		Mat mMask;
+		m_pMask->get(mMask);
 		IF_(mMask.empty());
 
 		Mat mBg;
 
 		mIn.copyTo(mBg, mMask);
 
-		m_pRGB->set(mBg, frame->m_tStamp);
+		m_pRGB->set(mBg, tStamp);
 	}
 
 }

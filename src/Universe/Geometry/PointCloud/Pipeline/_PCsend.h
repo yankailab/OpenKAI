@@ -8,14 +8,14 @@
 #ifndef OpenKAI_src_Universe_Geometry_PointCloud_PCsend_H_
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCsend_H_
 
-#include "../../_GeometryBase.h"
-#include "../../../../DataStream/PCLframe.h"
+#include "../../../_ReferenceFrame.h"
+#include "../../../../DataObject/PCLframe.h"
 #include "../../../../IO/_IObase.h"
 #include "PCstreamProtocol.h"
 
 namespace kai
 {
-	class _PCsend : public _GeometryBase
+	class _PCsend : public _ReferenceFrame
 	{
 	public:
 		_PCsend();
@@ -39,7 +39,8 @@ namespace kai
 	protected:
 		_IObase *m_pIO = nullptr;
 		PCLframe *m_pPCLin = nullptr;
-		uint64_t m_inputRevision = 0;
+		uint64_t m_tInput = 0;
+		vector<GEOMETRY_POINT> m_vPoints;
 		vector<uint8_t> m_vPacket;
 		int m_nB = 2000;
 		uint64_t m_tInt = NSEC_SEC / 10;

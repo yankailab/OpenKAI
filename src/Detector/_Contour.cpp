@@ -71,8 +71,8 @@ namespace kai
 	{
 		IF_(!check());
 
-		const auto frame = m_pRGBin->get();
-		const Mat &mBGR = frame->m_mRGB;
+		Mat mBGR;
+		m_pRGBin->get(mBGR);
 		IF_(mBGR.empty());
 		vector<vector<Point>> vvContours;
 		findContours(mBGR, vvContours, m_mode, m_method);

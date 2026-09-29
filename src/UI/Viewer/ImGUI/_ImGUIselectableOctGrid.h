@@ -124,8 +124,10 @@ namespace kai
 
 		struct GeometryCache
 		{
-			PCLframe::SnapshotPtr m_points;
-			LineFrame::SnapshotPtr m_lines;
+			vector<GEOMETRY_POINT> m_points;
+			uint64_t m_tPoints = 0;
+			vector<GEOMETRY_LINE> m_lines;
+			uint64_t m_tLines = 0;
 			std::shared_ptr<const IMGUI_VIEWER_GEOMETRY> m_geometry;
 			uint64_t m_tFirstVisible = UINT64_MAX;
 		};

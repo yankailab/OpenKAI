@@ -1,10 +1,10 @@
 {
   "slamPoints": {
-    "type": "dataStream",
+    "type": "dataObject",
     "class": "PCLframe"
   },
   "slamIMU": {
-    "type": "dataStream",
+    "type": "dataObject",
     "class": "IMUstream"
   },
   "slam": {
@@ -23,7 +23,7 @@
     "PCLmap": "slamMap"
   },
   "slamMap": {
-    "type": "dataStream",
+    "type": "dataObject",
     "class": "PCLmap"
   }
 }

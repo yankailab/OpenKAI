@@ -100,8 +100,8 @@ namespace kai
 	{
 		IF_(!check());
 
-		const auto frame = m_pRGBin->get();
-		const Mat &m = frame->m_mRGB;
+		Mat m;
+		m_pRGBin->get(m);
 		IF_(m.empty());
 
 		m_pBS->apply(m, m_mFG, m_learningRate);

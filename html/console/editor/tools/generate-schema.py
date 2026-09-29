@@ -214,7 +214,7 @@ def generate():
         if method['class'] in records:
             records[method['class']]['_methods'].append(method)
     registered = registration(files['src/Instance/Modules.cpp'])
-    registered.update(registration(files['src/Instance/DataStreams.cpp']))
+    registered.update(registration(files['src/Instance/DataObjects.cpp']))
     missing_registered = sorted(set(registered) - set(classes))
     # Scalar and vector constructors can establish defaults after in-class initializers.
     for name, record in records.items():
@@ -271,7 +271,7 @@ def generate():
                 events.append((m.start(), 'range', m))
             for m in re.finditer(r'\bjKv(?:<([^>]+)>)?\s*\(', body):
                 events.append((m.start(), 'read', m))
-            for m in re.finditer(r'\bfind(?:Module|DataStream)\s*\(', body):
+            for m in re.finditer(r'\bfind(?:Module|DataObject)\s*\(', body):
                 events.append((m.start(), 'dependency', m))
             def resolve(expr):
                 expr = expr.strip()
@@ -365,7 +365,7 @@ def generate():
                     statement = body[statement_start:statement_end]
                     casts = re.findall(r'(?:dynamic_cast|static_cast)\s*<\s*(\w+)\s*\*', statement)
                     casts += re.findall(r'\(\s*(\w+)\s*\*\s*\)', statement)
-                    target = next((c for c in casts if c not in ('BASE', 'DataStreamBase')), casts[0] if casts else 'BASE')
+                    target = next((c for c in casts if c not in ('BASE', 'DataObjBase')), casts[0] if casts else 'BASE')
                     if target == 'BASE' and path[-1] in records:
                         target = path[-1]
                     elif target == 'BASE' and path[-1].startswith('v') and '_'+path[-1][1:] in records:
@@ -470,7 +470,7 @@ def adapters(records, files, constants, symbol):
     param('InstanceMgr',['vInclude'],'array','src/Instance/InstanceMgr.cpp:loadJsonFiles',description='Additional config paths loaded by the OpenKAI runtime.')
     # InstanceMgr's switch is not read by the individual class.
     param('BASE',['bON'],'boolean','src/Instance/InstanceMgr.cpp:createAll',default=True,description='false disables this instance; true enables it.')
-    param('DataStreamBase',['type'],'string','src/Instance/InstanceMgr.cpp:createAll',default='dataStream',description='Create an independent DataStream rather than a worker module.')
+    param('DataObjBase',['type'],'string','src/Instance/InstanceMgr.cpp:createAll',default='dataObject',description='Create an independent DataObject rather than a worker module.')
     # StateBase objects live under a keyed map, not in the module factory.
     records['_StateControl']['_embedded'].append((['states','*'],'StateBase'))
     records['_StateControl']['containers'].append({'path':['states'],'type':'object'})
@@ -550,7 +550,7 @@ def adapters(records, files, constants, symbol):
             if name=='SelectableOctGridSources':
                 diagnostic['resolution']='Covered by the viewer adapters in this generator.'
             elif name=='_OctreeGrid' and diagnostic.get('expression')=='name' and diagnostic.get('kind')=='unresolved-module-reference':
-                diagnostic['resolution']='Covered by the vPCLframes DataStream adapter; names are loaded before link.'
+                diagnostic['resolution']='Covered by the vPCLframes DataObject adapter; names are loaded before link.'
             elif name=='_WebGeometryBase' and diagnostic.get('expression')=='*pConfig':
                 diagnostic['resolution']='Reads bON from the referenced module, not this instance.'
     # The field below is read by UUID-specific helpers rather than jKv.

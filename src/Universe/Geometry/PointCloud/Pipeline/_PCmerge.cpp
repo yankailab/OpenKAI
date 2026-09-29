@@ -62,7 +62,7 @@ namespace kai
 
 	bool _PCmerge::loadConfig(void)
 	{
-		IF_F(!this->_PointCloud::loadConfig());
+		IF_F(!this->_ReferenceFrame::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "rVoxel", m_rVoxel);
@@ -72,7 +72,7 @@ namespace kai
 
 	bool _PCmerge::saveConfig(bool bExport)
 	{
-		IF_F(!_PointCloud::saveConfig(false));
+		IF_F(!_ReferenceFrame::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["rVoxel"] = m_rVoxel;
@@ -83,8 +83,13 @@ namespace kai
 
 	bool _PCmerge::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_PointCloud::link(pM));
+		IF_F(!this->_ReferenceFrame::link(pM));
 		const json &j = *m_pJ;
+
+		string outputName;
+		jKv(j, "PCLframe", outputName);
+		m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(outputName)));
+		IF_Le_F(!m_pPCL, "PCLframe not found: " + outputName);
 
 		vector<string> names;
 		jKv(j, "vPCLframes", names);
@@ -92,12 +97,13 @@ namespace kai
 		m_vpPCL.clear();
 		for (const string &name : names)
 		{
-			PCLframe *pFrame = dynamic_cast<PCLframe *>(static_cast<DataStreamBase *>(pM->findDataStream(name)));
+			PCLframe *pFrame = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
 			IF_Le_F(!pFrame, "PCLframe not found: " + name);
 			IF_Le_F(pFrame == m_pPCL, "Merge input must differ from PCLframe output");
 			m_vpPCL.push_back(pFrame);
 		}
-		m_vInputRevision.assign(m_vpPCL.size(), 0);
+		m_vInputStamps.assign(m_vpPCL.size(), 0);
+		m_vInputPoints.resize(m_vpPCL.size());
 
 		return true;
 	}
@@ -110,7 +116,15 @@ namespace kai
 
 	bool _PCmerge::check(void)
 	{
-		return this->_PointCloud::check();
+		return m_pPCL && _ReferenceFrame::check();
+	}
+
+	void _PCmerge::clear(void)
+	{
+		if (m_pPCL)
+		{
+			m_pPCL->set({});
+		}
 	}
 
 	void _PCmerge::update(void)
@@ -127,18 +141,19 @@ namespace kai
 	{
 		IF_(!check());
 
-		vector<PCLframe::SnapshotPtr> frames;
-		frames.reserve(m_vpPCL.size());
 		bool changed = false;
 		size_t count = 0;
 		uint64_t stamp = 0;
 		for (size_t i = 0; i < m_vpPCL.size(); ++i)
 		{
-			PCLframe::SnapshotPtr frame = m_vpPCL[i]->get();
-			changed = changed || frame->m_revision != m_vInputRevision[i];
-			count += frame->m_vPoints.size();
-			stamp = std::max(stamp, frame->m_tStamp);
-			frames.push_back(std::move(frame));
+			if (m_vpPCL[i]->getTstamp() != m_vInputStamps[i])
+			{
+				const uint64_t inputStamp = m_vpPCL[i]->get(m_vInputPoints[i]);
+				changed = changed || inputStamp != m_vInputStamps[i];
+				m_vInputStamps[i] = inputStamp;
+			}
+			count += m_vInputPoints[i].size();
+			stamp = std::max(stamp, m_vInputStamps[i]);
 		}
 		if (!changed)
 		{
@@ -149,9 +164,9 @@ namespace kai
 		points.reserve(count);
 		std::unordered_map<MergeVoxel, size_t, MergeVoxelHash> voxels;
 		vector<size_t> voxelCounts;
-		for (const PCLframe::SnapshotPtr &frame : frames)
+		for (const vector<GEOMETRY_POINT> &input : m_vInputPoints)
 		{
-			for (const GEOMETRY_POINT &point : frame->m_vPoints)
+			for (const GEOMETRY_POINT &point : input)
 			{
 				if (point.m_tStamp == 0)
 				{
@@ -188,11 +203,9 @@ namespace kai
 			}
 		}
 
-		m_pPCL->set(std::move(points), stamp);
-		for (size_t i = 0; i < frames.size(); ++i)
-		{
-			m_vInputRevision[i] = frames[i]->m_revision;
-		}
+		// Keep the input clock domain. Equal merged timestamps are unchanged
+		// to downstream timestamp consumers, including changes to older inputs.
+		m_pPCL->set(points, stamp);
 	}
 
 }

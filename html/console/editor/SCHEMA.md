@@ -52,7 +52,7 @@ The example shows the record shape; generated records contain the actual paramet
 
 `baseClasses` lists direct C++ base types. Parameters, dependencies, and container shapes are **already flattened** through inheritance, with a derived path replacing the inherited path. Consumers should not merge inherited field arrays again. Embedded `_Thread`, `StateBase`, and ROS node configuration is flattened at its actual JSON path. Fields retain `declaredIn`, and embedded fields also carry `embeddedClass`.
 
-`creatable` means the class is registered by `ADD_MODULE` in `Modules::createInstance` or `ADD_DATA_STREAM` in `DataStreams::createInstance`. DataStreams inherit `type: "dataStream"` in their generated defaults so new editor nodes select the stream factory. Helper classes, base classes, and templates remain discoverable but cannot be instantiated by the current launch factory. `InstanceMgr` is the special application block, not a normal factory module. `buildConditions` records alternative preprocessor stacks at factory registration; it does **not** say that a user's binary enabled those features. A class can be creatable in the catalog and unavailable in a particular build.
+`creatable` means the class is registered by `ADD_MODULE` in `Modules::createInstance` or `ADD_DATA_STREAM` in `DataObjects::createInstance`. DataObjects inherit `type: "dataObject"` in their generated defaults so new editor nodes select the stream factory. Helper classes, base classes, and templates remain discoverable but cannot be instantiated by the current launch factory. `InstanceMgr` is the special application block, not a normal factory module. `buildConditions` records alternative preprocessor stacks at factory registration; it does **not** say that a user's binary enabled those features. A class can be creatable in the catalog and unavailable in a particular build.
 
 ## Parameters and paths
 
@@ -108,7 +108,7 @@ Absence of a default does not mean a field is required. Avoid filling every unkn
 }
 ```
 
-A dependency means the owning instance looks up a module or DataStream by name. It is stored as the ordinary instance-name string in the exported config. The graph draws an arrow from the provider to the dependent instance that retains its pointer (provider port to dependency socket). Compatible providers include `targetClass` and derived classes according to the catalog's inheritance tree.
+A dependency means the owning instance looks up a module or DataObject by name. It is stored as the ordinary instance-name string in the exported config. The graph draws an arrow from the provider to the dependent instance that retains its pointer (provider port to dependency socket). Compatible providers include `targetClass` and derived classes according to the catalog's inheritance tree.
 
 `multiple: true` means the value at `path` is an array of instance-name strings, such as `_Console.vBASE` or `_Mavlink.vRoutings`. A path containing a wildcard represents repeated fields; `multiple` still describes **each terminal value**, not the container:
 
@@ -127,7 +127,7 @@ The resulting launch value is `"vGeometry": [{"PCLframe": "cloud"}]`. `_ApDrive.
 
 ## Extraction and audit boundaries
 
-The scanner removes comments, identifies explicit class/struct declarations, reads factory registration guards, and scans `loadConfig`/`link` bodies. It resolves `jKv` reads, `jK` child aliases, iterator/range loops, immediate `findModule` and `findDataStream` calls, scalar/vector declarations, and embedded `createThread` calls. The composed `ROS_fastLio::init` reader is included explicitly. Runtime console command payloads are not launch configuration.
+The scanner removes comments, identifies explicit class/struct declarations, reads factory registration guards, and scans `loadConfig`/`link` bodies. It resolves `jKv` reads, `jK` child aliases, iterator/range loops, immediate `findModule` and `findDataObject` calls, scalar/vector declarations, and embedded `createThread` calls. The composed `ROS_fastLio::init` reader is included explicitly. Runtime console command payloads are not launch configuration.
 
 Audited adapters cover the shared selectable-grid viewer source reader, `_StateControl` embedded states, application/module switches, `_SurfaceBase.vRoi`, grid point-stream input lists, selected grid UUIDs, grid-reference aliases, Mavlink routing type, and the source-defined Scepter/Orbbec control catalogs. The generator reads the hardware-control key lists directly from source so additions appear on regeneration. SDK-dependent ranges, supported controls, C++ enum conversions, custom object validators, and general arbitrary C++ execution are not reproduced. Complex hardware objects remain editable as JSON.
 
@@ -137,7 +137,7 @@ The source inventory is comprehensive for explicit `class` declarations; structs
 
 ## Extending the catalog
 
-Prefer adding ordinary parameters to `loadConfig`, dependencies to `link`, and factory modules to `Modules.cpp` or streams to `DataStreams.cpp`; regeneration handles the common patterns automatically. For a new helper or dynamic reader, extend `adapters()` in `tools/generate-schema.py` and cite the source reader. Keep the adapter small and avoid invented defaults. For a newly supported parser pattern, check representative flat, nested-array, and object-map paths after regeneration.
+Prefer adding ordinary parameters to `loadConfig`, dependencies to `link`, and factory modules to `Modules.cpp` or streams to `DataObjects.cpp`; regeneration handles the common patterns automatically. For a new helper or dynamic reader, extend `adapters()` in `tools/generate-schema.py` and cite the source reader. Keep the adapter small and avoid invented defaults. For a newly supported parser pattern, check representative flat, nested-array, and object-map paths after regeneration.
 
 A project-specific override file can also be applied without changing the scanner:
 

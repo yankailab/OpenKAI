@@ -7,6 +7,7 @@
 
 #ifdef USE_OPEN3D
 #include "_PCregistGlobal.h"
+#include "PCLframeToOpen3D.h"
 
 namespace kai
 {
@@ -54,14 +55,14 @@ namespace kai
         string n;
 
         n = "";
-        jKv(j, "_PointCloudSrc", n);
-        m_pSrc = (_PointCloud *)(pM->findModule(n));
-        IF_Le_F(!m_pSrc, "_PCbaseSrc not found: " + n);
+        jKv(j, "PCLframeSrc", n);
+        m_pSrc = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        IF_Le_F(!m_pSrc, "PCLframeSrc not found: " + n);
 
         n = "";
-        jKv(j, "_PointCloudTgt", n);
-        m_pTgt = (_PointCloud *)(pM->findModule(n));
-        IF_Le_F(!m_pTgt, "_PCbaseTgt not found: " + n);
+        jKv(j, "PCLframeTgt", n);
+        m_pTgt = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        IF_Le_F(!m_pTgt, "PCLframeTgt not found: " + n);
 
         n = "";
         jKv(j, "_PCtransform", n);
@@ -100,10 +101,8 @@ namespace kai
     {
         IF_(!check());
 
-        PointCloud pcSrc;
-        m_pSrc->copyTo(&pcSrc);
-        PointCloud pcTgt;
-        m_pTgt->copyTo(&pcTgt);
+        open3d::geometry::PointCloud pcSrc = pclFrameToOpen3D(*m_pSrc);
+        open3d::geometry::PointCloud pcTgt = pclFrameToOpen3D(*m_pTgt);
 
         IF_(pcSrc.IsEmpty());
         IF_(pcTgt.IsEmpty());
@@ -124,12 +123,12 @@ namespace kai
         // m_pTf->setTranslationMatrix(m_RR.transformation_);
     }
 
-    std::shared_ptr<Feature> _PCregistGlobal::preprocess(PointCloud &pc)
+    std::shared_ptr<Feature> _PCregistGlobal::preprocess(open3d::geometry::PointCloud &pc)
     {
-        pc.EstimateNormals(KDTreeSearchParamHybrid(m_rNormal, m_maxNNnormal));
+        pc.EstimateNormals(open3d::geometry::KDTreeSearchParamHybrid(m_rNormal, m_maxNNnormal));
         return ComputeFPFHFeature(
             pc,
-            KDTreeSearchParamHybrid(m_rFeature, m_maxNNfpfh));
+            open3d::geometry::KDTreeSearchParamHybrid(m_rFeature, m_maxNNfpfh));
     }
 
     void _PCregistGlobal::console(void *pConsole)

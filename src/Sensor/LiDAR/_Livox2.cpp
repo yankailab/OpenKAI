@@ -25,7 +25,7 @@ namespace kai
 
     bool _Livox2::loadConfig(void)
     {
-        IF_F(!this->_PointCloud::loadConfig());
+        IF_F(!this->_ReferenceFrame::loadConfig());
         const json &j = *m_pJ;
 
         // lvx select
@@ -105,7 +105,7 @@ namespace kai
 
     bool _Livox2::saveConfig(bool bExport)
     {
-        IF_F(!_PointCloud::saveConfig(false));
+        IF_F(!_ReferenceFrame::saveConfig(false));
 
         json &j = *m_pJ;
         j["lvxSN"] = m_lvxSN;
@@ -124,10 +124,10 @@ namespace kai
         j["nMaxFramePoints"] = m_nMaxFramePoints;
         const uint8_t *pIP = reinterpret_cast<const uint8_t *>(&m_lvxIP);
         j["lvxIP"] = std::to_string(pIP[0]) + "." + std::to_string(pIP[1]) + "." +
-            std::to_string(pIP[2]) + "." + std::to_string(pIP[3]);
+                     std::to_string(pIP[2]) + "." + std::to_string(pIP[3]);
         pIP = reinterpret_cast<const uint8_t *>(&m_lvxCfg.m_hostIP);
         j["lvxHostIP"] = std::to_string(pIP[0]) + "." + std::to_string(pIP[1]) + "." +
-            std::to_string(pIP[2]) + "." + std::to_string(pIP[3]);
+                         std::to_string(pIP[2]) + "." + std::to_string(pIP[3]);
         j["tOutSec"] = m_lvxTout.m_tOut / NSEC_SEC;
 
         IF_F(m_pTdeviceQueryR && !m_pTdeviceQueryR->saveConfig(false));
@@ -148,10 +148,20 @@ namespace kai
 
     bool _Livox2::link(InstanceMgr *pM)
     {
-        IF_F(!this->_PointCloud::link(pM));
+        IF_F(!this->_ReferenceFrame::link(pM));
         const json &j = *m_pJ;
 
         string n;
+
+        n = "";
+        jKv(j, "PCLframe", n);
+        m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        IF_Le_F(!m_pPCL, "PCLframe not found: " + n);
+
+        n = "";
+        jKv(j, "IMUstream", n);
+        m_pIMU = dynamic_cast<IMUstream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        IF_Le_F(!n.empty() && !m_pIMU, "IMUstream not found: " + n);
 
         n = "";
         jKv(j, "_UDPdeviceQuery", n);
@@ -183,11 +193,6 @@ namespace kai
         // m_pUDPlog = (_IObase *)(pM->findModule(n));
         // NULL_F(m_pUDPlog);
 
-        n = "";
-        jKv(j, "IMUstream", n);
-        m_pIMU = dynamic_cast<IMUstream *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
-        IF_Le_F(!n.empty() && !m_pIMU, "IMUstream not found: " + n);
-
         return true;
     }
 
@@ -214,6 +219,7 @@ namespace kai
 
     bool _Livox2::check(void)
     {
+        NULL_F(m_pPCL);
         NULL_F(m_pUDPdeviceQuery);
         NULL_F(m_pUDPctrlCmd);
         NULL_F(m_pUDPpushCmd);
@@ -221,7 +227,7 @@ namespace kai
         NULL_F(m_pUDPimu);
         //        NULL_F(m_pUDPlog);
 
-        return this->_PointCloud::check();
+        return this->_ReferenceFrame::check();
     }
 
     // Common
@@ -750,7 +756,7 @@ namespace kai
         std::lock_guard<std::mutex> frameLock(m_frameMutex);
         if (m_bPCLframe && d.frame_cnt != m_iPCLframe)
         {
-            m_pPCL->set(std::move(m_vFramePoints), m_tPCLframe);
+            m_pPCL->set(m_vFramePoints, m_tPCLframe);
             m_vFramePoints.clear();
             m_vFramePoints.reserve(m_nMaxFramePoints);
             m_bPCLframe = false;
@@ -787,7 +793,10 @@ namespace kai
         m_vFramePoints.clear();
         m_tPCLframe = 0;
         m_bPCLframe = false;
-        _PointCloud::clear();
+        if (m_pPCL)
+        {
+            m_pPCL->set({});
+        }
     }
 
     // IMU
@@ -864,7 +873,7 @@ namespace kai
     void _Livox2::console(void *pConsole)
     {
         NULL_(pConsole);
-        this->_PointCloud::console(pConsole);
+        this->_ReferenceFrame::console(pConsole);
 
         _Console *pC = (_Console *)pConsole;
 

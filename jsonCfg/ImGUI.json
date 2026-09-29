@@ -102,7 +102,7 @@
 		]
 	},
 	"pcFilePoints": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "PCLframe"
 	}
 }

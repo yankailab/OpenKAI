@@ -11,7 +11,7 @@
 #include <opencv2/tracking.hpp>
 #include "../Base/_ModuleBase.h"
 #include "../Utility/utilCV.h"
-#include "../DataStream/RGBframe.h"
+#include "../DataObject/RGBframe.h"
 
 namespace kai
 {

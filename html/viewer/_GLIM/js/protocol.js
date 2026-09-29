@@ -1,5 +1,5 @@
 // Dedicated GLIM submap protocol. Geometry point/line frames are not accepted.
-export const PROTOCOL_VERSION = 2;
+export const PROTOCOL_VERSION = 3;
 export const PROTOCOL_NAME = 'openkai.glim';
 export const MAX_SUBMAP_POINTS = 10000000;
 export const MAX_CHUNK_POINTS = 65536;
@@ -10,7 +10,7 @@ const pose = value => Array.isArray(value) && value.length === 16 && value.every
 export function decodeEvent(text) {
   if (text.length > 16384) throw new Error('GLIM metadata exceeds size limit');
   const event = JSON.parse(text);
-  if (!['reset', 'submap', 'pose'].includes(event.type) || !id(event.session) || !id(event.revision))
+  if (!['reset', 'submap', 'pose'].includes(event.type) || !id(event.session) || !id(event.mapTimestampNs))
     throw new Error('Invalid GLIM event');
   if (event.type !== 'reset' && (!id(event.id) || !pose(event.pose))) throw new Error('Invalid submap pose');
   if (event.type === 'submap' && (!id(event.timestampNs) || !Number.isInteger(event.pointCount) ||
@@ -21,7 +21,7 @@ export function decodeChunk(buffer) {
   if (!(buffer instanceof ArrayBuffer) || buffer.byteLength < 56 || buffer.byteLength > 56 + MAX_CHUNK_POINTS * 12)
     throw new Error('Invalid GLIM chunk length');
   const v = new DataView(buffer);
-  if (v.getUint32(0, true) !== 0x324d4c47 || v.getUint32(4, true) !== PROTOCOL_VERSION ||
+  if (v.getUint32(0, true) !== 0x334d4c47 || v.getUint32(4, true) !== PROTOCOL_VERSION ||
       v.getUint32(8, true) !== 1 || v.getUint32(12, true) !== 56 || v.getUint32(52, true) !== 0)
     throw new Error('Unsupported GLIM chunk');
   const totalPoints = v.getUint32(40, true), offsetPoints = v.getUint32(44, true), countPoints = v.getUint32(48, true);

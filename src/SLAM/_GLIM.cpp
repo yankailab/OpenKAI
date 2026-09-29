@@ -106,12 +106,12 @@ namespace kai
 		const json &j = *m_pJ;
 		string name;
 		jKv(j, "PCLframe", name);
-		m_pGlobalMap = name.empty() ? nullptr : dynamic_cast<PCLframe *>(static_cast<DataStreamBase *>(pM->findDataStream(name)));
+		m_pGlobalMap = name.empty() ? nullptr : dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
 		IF_Le_F(!name.empty() && !m_pGlobalMap, "Cannot find PCLframe: " + name);
 		IF_Le_F(m_pGlobalMap && m_pGlobalMap == m_pPCL, "GLIM input and output must be different PCLframe streams");
 		name.clear();
 		jKv(j, "PCLmap", name);
-		m_pSubmapStream = dynamic_cast<PCLmap *>(static_cast<DataStreamBase *>(pM->findDataStream(name)));
+		m_pSubmapStream = dynamic_cast<PCLmap *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
 		IF_Le_F(!name.empty() && !m_pSubmapStream, "Cannot find PCLmap: " + name);
 		return true;
 	}
@@ -399,17 +399,15 @@ namespace kai
 		recordStage(0);
 
 		const uint64_t previousFrame = m_tStampLastFrame;
-		const auto input = readPointCloud();
-		if (input)
+		if (readPointCloud(m_vInputPoints, stamp))
 		{
-			stamp = input->m_tStamp;
 			if (previousFrame) m_frameIntervalMs = (stamp - previousFrame) / double(NSEC_MSEC);
 			auto raw = std::make_shared<glim::RawPoints>();
 			raw->stamp = nsec2sec<double>(stamp);
-			raw->points.reserve(input->m_vPoints.size());
+			raw->points.reserve(m_vInputPoints.size());
 			const double nearSquared = m_distanceNear * m_distanceNear;
 			const double farSquared = m_distanceFar * m_distanceFar;
-			for (const auto &point : input->m_vPoints)
+			for (const auto &point : m_vInputPoints)
 			{
 				IF_CONT(!point.m_tStamp);
 				const float *p = point.m_vP.data();
@@ -518,56 +516,48 @@ namespace kai
 
 	void _GLIM::refreshSubmapPoses()
 	{
-		++m_revision;
 		m_mapDirty = true;
-		if (!m_pSubmapStream)
-		{
-			m_submapPoints = 0;
-			for (const auto &submap : m_submaps)
-			{
-				if (submap->frame)
-				{
-					m_submapPoints += submap->frame->size();
-				}
-			}
-			return;
-		}
-
-		const auto previous = m_pSubmapStream->get();
-		vector<PCLmap::Submap> submaps;
-		if (previous->m_session == m_session)
-		{
-			submaps = previous->m_vSubmaps;
-		}
-		submaps.resize(m_submaps.size());
+		m_tSubmapUpdated = getTns();
 		m_submapPoints = 0;
+		vector<PCLmap::Submap> submaps;
+		if (m_pSubmapStream)
+		{
+			submaps.reserve(m_submaps.size());
+		}
 		for (size_t i = 0; i < m_submaps.size(); ++i)
 		{
 			const auto &source = m_submaps[i];
-			auto &submap = submaps[i];
+			if (!m_pSubmapStream)
+			{
+				if (source->frame)
+				{
+					m_submapPoints += source->frame->size();
+				}
+				continue;
+			}
+			PCLmap::Submap submap;
 			submap.m_id = i;
 			submap.m_pose = source->T_world_origin;
 			submap.m_tStamp = source->odom_frames.empty() ? 0 : sec2nsec(source->odom_frames.back()->stamp);
-			if (!submap.m_points)
+			if (source->frame && source->frame->points)
 			{
-				auto points = make_shared<vector<Vector3f>>();
-				if (source->frame && source->frame->points)
+				submap.m_points.reserve(source->frame->size());
+				for (size_t j = 0; j < source->frame->size(); ++j)
 				{
-					points->reserve(source->frame->size());
-					for (size_t j = 0; j < source->frame->size(); ++j)
+					const Vector3f point = source->frame->points[j].head<3>().cast<float>();
+					if (point.allFinite())
 					{
-						const Vector3f point = source->frame->points[j].head<3>().cast<float>();
-						if (point.allFinite())
-						{
-							points->push_back(point);
-						}
+						submap.m_points.push_back(point);
 					}
 				}
-				submap.m_points = std::move(points);
 			}
-			m_submapPoints += submap.m_points->size();
+			m_submapPoints += submap.m_points.size();
+			submaps.push_back(std::move(submap));
 		}
-		m_pSubmapStream->set(std::move(submaps), m_session);
+		if (m_pSubmapStream)
+		{
+			m_pSubmapStream->set(submaps, m_session, m_tSubmapUpdated);
+		}
 	}
 
 	Isometry3d _GLIM::mapCorrection() const
@@ -586,7 +576,7 @@ namespace kai
 		vector<GEOMETRY_POINT> points;
 		collectMapPoints(points, size_t(m_nMapPoints), m_bPublishLiveMap, now);
 		m_mapPoints = points.size();
-		m_pGlobalMap->set(std::move(points), now);
+		m_pGlobalMap->set(points, now);
 		m_mapUpdatedNs = now;
 		m_mapDirty = false;
 	}
@@ -673,11 +663,11 @@ namespace kai
 		m_submaps.clear(); m_liveFrames.clear(); m_activeFrames.clear(); m_latestFrame.reset();
 		m_submapPoints = 0;
 		++m_session;
-		m_revision = 0;
+		m_tSubmapUpdated = getTns();
 		m_mapDirty = false;
 		if (m_pSubmapStream)
 		{
-			m_pSubmapStream->set({}, m_session);
+			m_pSubmapStream->set({}, m_session, m_tSubmapUpdated);
 		}
 		m_mapUpdatedNs = m_mapPoints = m_processedFrames = 0;
 		m_imuSamples = m_maxIMUgapNs = 0;
@@ -722,7 +712,7 @@ namespace kai
 		vector<GEOMETRY_POINT> points;
 		{
 			auto lock = lockSLAM();
-			// Snapshot all completed submaps and the retained unfinished preview.
+			// Copy all completed submaps and the retained unfinished preview.
 			// File IO happens after releasing the estimator's lock.
 			collectMapPoints(points, 0, true, getTns());
 		}
@@ -755,7 +745,7 @@ namespace kai
 			{"workMs", {{"imu", m_stageTimeNs[0] / double(NSEC_MSEC)}, {"input", m_stageTimeNs[1] / double(NSEC_MSEC)},
 				{"preprocess", m_stageTimeNs[2] / double(NSEC_MSEC)}, {"odometry", m_stageTimeNs[3] / double(NSEC_MSEC)},
 				{"mapping", m_stageTimeNs[4] / double(NSEC_MSEC)}, {"publishMap", m_stageTimeNs[5] / double(NSEC_MSEC)}}},
-			{"session", std::to_string(m_session)}, {"revision", std::to_string(m_pSubmapStream ? m_pSubmapStream->get()->m_revision : m_revision)},
+			{"session", std::to_string(m_session)}, {"submapTimestampNs", std::to_string(m_tSubmapUpdated)},
 			{"canSavePointCloud", !m_submaps.empty() || !m_liveFrames.empty()},
 			{"mapPoints", m_bPublishLiveMap ? m_mapPoints : m_submapPoints}, {"submaps", m_submaps.size()}, {"liveFrames", m_liveFrames.size()},
 			{"mapTimestampNs", std::to_string(m_mapUpdatedNs)}, {"mapOutput", m_pGlobalMap ? m_pGlobalMap->getName() : ""},

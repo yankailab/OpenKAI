@@ -8,9 +8,9 @@
 #ifndef OpenKAI_src_Vision_RGBD__RGBDbase_H_
 #define OpenKAI_src_Vision_RGBD__RGBDbase_H_
 
-#include "../../DataStream/RGBDframe.h"
-#include "../../DataStream/PCLframe.h"
-#include "../../DataStream/IMUstream.h"
+#include "../../DataObject/RGBDframe.h"
+#include "../../DataObject/PCLframe.h"
+#include "../../DataObject/IMUstream.h"
 
 #include "../_RGBbase.h"
 

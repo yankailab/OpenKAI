@@ -6,11 +6,11 @@
 		"bStdErr": true
 	},
 	"livoxPoints": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "PCLframe"
 	},
 	"livoxIMU": {
-		"type": "dataStream",
+		"type": "dataObject",
 		"class": "IMUstream"
 	},
 	"udpLvxDeviceQuery_1": {

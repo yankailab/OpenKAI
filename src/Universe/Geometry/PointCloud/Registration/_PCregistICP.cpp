@@ -7,6 +7,7 @@
 
 #ifdef USE_OPEN3D
 #include "_PCregistICP.h"
+#include "PCLframeToOpen3D.h"
 
 namespace kai
 {
@@ -50,13 +51,13 @@ namespace kai
         string n;
 
         n = "";
-        jKv(j, "_PointCloudSrc", n);
-        m_pSrc = (_PointCloud *)(pM->findModule(n));
+        jKv(j, "PCLframeSrc", n);
+        m_pSrc = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
         IF_Le_F(!m_pSrc, n + ": not found");
 
         n = "";
-        jKv(j, "_PointCloudTgt", n);
-        m_pTgt = (_PointCloud *)(pM->findModule(n));
+        jKv(j, "PCLframeTgt", n);
+        m_pTgt = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
         IF_Le_F(!m_pTgt, n + ": not found");
 
         n = "";
@@ -96,10 +97,8 @@ namespace kai
     {
         IF_(!check());
 
-        PointCloud pcSrc;
-        m_pSrc->copyTo(&pcSrc);
-        PointCloud pcTgt;
-        m_pTgt->copyTo(&pcTgt);
+        open3d::geometry::PointCloud pcSrc = pclFrameToOpen3D(*m_pSrc);
+        open3d::geometry::PointCloud pcTgt = pclFrameToOpen3D(*m_pTgt);
 
         IF_(pcSrc.IsEmpty());
         IF_(pcTgt.IsEmpty());
@@ -116,6 +115,7 @@ namespace kai
         }
         else if (m_est == icp_p2plane)
         {
+            pcTgt.EstimateNormals();
             m_RR = RegistrationICP(
                 pcSrc,
                 pcTgt,

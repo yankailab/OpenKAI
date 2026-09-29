@@ -831,7 +831,7 @@ namespace kai
 
 	bool _PCfile::loadConfig(void)
 	{
-		IF_F(!this->_PointCloud::loadConfig());
+		IF_F(!this->_ReferenceFrame::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "vfName", m_vfName);
@@ -841,7 +841,7 @@ namespace kai
 
 	bool _PCfile::saveConfig(bool bExport)
 	{
-		IF_F(!_PointCloud::saveConfig(false));
+		IF_F(!_ReferenceFrame::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["vfName"] = m_vfName;
@@ -852,12 +852,30 @@ namespace kai
 
 	bool _PCfile::link(InstanceMgr *pM)
 	{
-		if (!_PointCloud::link(pM))
+		if (!_ReferenceFrame::link(pM))
 		{
 			return false;
 		}
 
+		string name;
+		jKv(*m_pJ, "PCLframe", name);
+		m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
+		IF_Le_F(!m_pPCL, "PCLframe not found: " + name);
+
 		return open();
+	}
+
+	bool _PCfile::check(void)
+	{
+		return m_pPCL && _ReferenceFrame::check();
+	}
+
+	void _PCfile::clear(void)
+	{
+		if (m_pPCL)
+		{
+			m_pPCL->set({});
+		}
 	}
 
 	bool _PCfile::open(void)
@@ -892,7 +910,7 @@ namespace kai
 			point.m_vP = m_mPosef * point.m_vP;
 			point.m_tStamp = stamp;
 		}
-		m_pPCL->set(std::move(vPoint), stamp);
+		m_pPCL->set(vPoint, stamp);
 		return true;
 	}
 

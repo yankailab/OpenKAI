@@ -47,7 +47,7 @@ sensor → PCLframe → _GLIM → PCLmap → _WebGLIM → browser
        IMUstream ↗       ↘ optional PCLframe output
 ```
 
-The viewer reads an independent submap DataStream:
+The viewer reads an independent submap DataObject:
 
 ```json
 {
@@ -72,10 +72,10 @@ select its `configPath`. Clouds use metres and increasing timestamps in
 nanoseconds. When using an IMU, samples must use m/s² including gravity and
 rad/s, calibrated IMU-to-cloud extrinsics, and the same capture clock as depth. The input interface gives one timestamp per complete cloud; it
 does not deskew a scanning LiDAR. Keep the input cloud transform fixed in the
-sensor frame. Point clouds are immutable completed snapshots. A reader retains
-its snapshot while the producer publishes the next one; revision checks avoid
-copying unchanged data on idle polls. Configure GLIM's `PCLmap` output and the
-viewer's `PCLmapIn` with the same DataStream name.
+sensor frame. DataObject setters and getters copy complete clouds. Readers poll
+`getTstamp()` and copy a changed frame with `get(points)`; repeated timestamps
+cannot signal a changed payload. Configure GLIM's `PCLmap` output and the
+viewer's `PCLmapIn` with the same DataObject name.
 
 The Orbbec example uses native depth, a 0.3–6 m range, 5 cm preprocessing cells,
 and a 25 cm GICP grid. Its IMU-to-depth transform is the connected Gemini 335's
@@ -132,7 +132,7 @@ uses the viewer camera, not the tracked sensor. **Submap** assigns a distinct
 color to each completed map section. GLIM does not preserve camera RGB here.
 
 The optional `PCLframe` output remains available to other modules. By default,
-`bPublishLiveMap: false` updates that snapshot only after a completed-submap change
+`bPublishLiveMap: false` updates that output cloud only after a completed-submap change
 or finalization, subject to `tMapUpdateNs`; `nMapPoints` caps that output alone.
 Set `bPublishLiveMap: true` to include the bounded recent-frame preview
 for those consumers. Neither setting changes `_WebGLIM`'s completed-submap
@@ -158,7 +158,7 @@ on the next Start without replacing GLIM's process-global configuration.
 **Save point cloud** writes a binary little-endian XYZ/RGB PLY on the backend PC
 using `_PCfile::savePLY`. It snapshots all completed submaps plus retained
 unfinished frames at their current poses, including up to `nLiveFrames` of
-recent history. This export is independent of the display snapshot's `nMapPoints`
+recent history. This export is independent of the display cloud's `nMapPoints`
 limit. It contains GLIM's processed points, not all raw sensor samples. Stop first
 to export the finalized, optimized map, or save during tracking for a snapshot.
 
@@ -193,18 +193,19 @@ Configuration replies include
 Replies echo `cmd`, `module`, `requestId`, and include `bSuccess`, optional
 `error`, and normally `status`. Status includes state, pose validity/freshness,
 position/orientation/angles, frame/map/submap counts and `canSavePointCloud`.
-`session` and `revision` are decimal strings matching the submap stream.
+`session` identifies the SLAM lifecycle. `submapTimestampNs` is the submap
+output timestamp used as `mapTimestampNs` by the viewer protocol.
 `imuSamples`, `maxIMUgapNs`, `frameIntervalMs`, `processingMs`, cumulative `workMs`,
 `updates`, `inputPoints` and `registrationPoints` support
 [performance measurement](../../../docs/GLIM.md#measuring-performance).
-`poseTimestampNs`, `inputTimestampNs`, and `mapTimestampNs` are decimal strings
+`poseTimestampNs`, `inputTimestampNs`, `mapTimestampNs`, and `submapTimestampNs` are decimal strings
 containing nanoseconds. Sensor pose/input timestamps use the capture clock;
 map-output timestamps use backend monotonic time. Do not subtract values from these different clocks.
 
 ## Dedicated submap protocol
 
 Connect a WebSocket to `/stream/glim`. The server first sends a JSON `hello`
-with `protocol: "openkai.glim"`, `version: 2`, `stream: "glim"`, camera/style
+with `protocol: "openkai.glim"`, `version: 3`, `stream: "glim"`, camera/style
 settings, `maxSubmapPoints: 10000000` and `maxChunkPoints: 65536`.
 Send `start` to begin. Acknowledge every subsequent text or binary data message
 with `next` after applying it. `pause` suspends transmission; `start` resumes.
@@ -212,24 +213,24 @@ There is at most one unacknowledged data message. The hello needs no ACK.
 
 Data messages are:
 
-- `reset`: JSON `type`, `session`, `revision`. Clear cached geometry and partial
+- `reset`: JSON `type`, `session`, `mapTimestampNs`. Clear cached geometry and partial
   chunks. Sent first on each connection and whenever the SLAM session changes,
   including resets to an empty map.
-- `submap`: JSON `type`, `session`, `revision`, `id`, `timestampNs`, `pointCount`,
+- `submap`: JSON `type`, `session`, `mapTimestampNs`, `id`, `timestampNs`, `pointCount`,
   `pose`. Allocate immutable local XYZ storage; chunks follow. `pose` is a
   column-major 4×4 transform from submap-local coordinates to the map frame.
 - Binary chunks: the header below followed by `countPoints × 3` float32 local
   XYZ values. Chunks are ordered within a submap; display it when complete.
-- `pose`: JSON `type`, `session`, `revision`, `id`, `pose`. Update the existing
+- `pose`: JSON `type`, `session`, `mapTimestampNs`, `id`, `pose`. Update the existing
   submap transform without uploading its points again.
 
-JSON `session`, `revision`, `id` and `timestampNs` are decimal strings to preserve
+JSON `session`, `mapTimestampNs`, `id` and `timestampNs` are decimal strings to preserve
 64-bit values in JavaScript. All binary values are little-endian:
 
 | Offset | Type | Field |
 | ---: | --- | --- |
-| 0 | uint32 | Magic `0x324d4c47` (bytes `GLM2`) |
-| 4 | uint32 | Version `2` |
+| 0 | uint32 | Magic `0x334d4c47` (bytes `GLM3`) |
+| 4 | uint32 | Version `3` |
 | 8 | uint32 | Kind `1` (point chunk) |
 | 12 | uint32 | Header size `56` |
 | 16 | uint64 | Session |
@@ -241,10 +242,14 @@ JSON `session`, `revision`, `id` and `timestampNs` are decimal strings to preser
 | 52 | uint32 | Reserved `0` |
 | 56 | float32[] | Interleaved local XYZ |
 
-Revisions can coalesce because each server snapshot retains every completed
+Map updates can coalesce because the server retains its copied map of every completed
 submap. Each connection maintains its own delivery cursor and pose state.
-Clients add geometry only for unseen IDs, keep earlier submaps across revisions,
-and remove them only on reset. The geometry viewer's `/stream/points` and
+Clients add geometry only for unseen IDs, keep earlier submaps across timestamp updates,
+and remove them only on reset. DataObject map timestamps control update detection;
+repeating a timestamp does not notify the viewer. Completed submap geometry is
+fixed for its ID and sensor timestamp. A producer replacing that geometry must
+change the submap timestamp; changed geometry or removed IDs trigger a reset.
+Only GLM3 is accepted. The geometry viewer's `/stream/points` and
 `/stream/lines` routes and binary layouts are not accepted by `_WebGLIM`.
 
 ## Validation

@@ -53,7 +53,7 @@ namespace kai
 
 		string n = "";
 		jKv(j, "DframeIn", n);
-		m_pDin = dynamic_cast<RGBframe *>(static_cast<DataStreamBase *>(pM->findDataStream(n)));
+		m_pDin = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		NULL_F(m_pDin);
 
 		return true;
@@ -78,8 +78,8 @@ namespace kai
 	void _D2RGB::filter(void)
 	{
 		NULL_(m_pDin);
-		const RGBframe::SnapshotPtr frame = m_pDin->get();
-		const Mat &mDepth = frame->m_mRGB;
+		Mat mDepth;
+		const uint64_t tStamp = m_pDin->get(mDepth);
 		IF_(mDepth.empty() || mDepth.type() != CV_32FC1);
 
 		Mat mGray;
@@ -89,23 +89,23 @@ namespace kai
 
 		if (m_pRGB)
 		{
-			m_pRGB->set(mRGB, frame->m_tStamp);
+			m_pRGB->set(mRGB, tStamp);
 		}
 		if (m_pD)
 		{
-			m_pD->set(mDepth, frame->m_tStamp);
+			m_pD->set(mDepth, tStamp);
 		}
 		if (m_pRGBD)
 		{
-			m_pRGBD->set(mRGB, mDepth, frame->m_tStamp);
+			m_pRGBD->set(mRGB, mDepth, tStamp);
 		}
 	}
 
 	float _D2RGB::d(const Vector4i &bb)
 	{
 		NULL__(m_pDin, -1);
-		const RGBframe::SnapshotPtr frame = m_pDin->get();
-		const Mat &mDepth = frame->m_mRGB;
+		Mat mDepth;
+		m_pDin->get(mDepth);
 		IF__(mDepth.empty() || mDepth.type() != CV_32FC1, -1);
 		IF__(m_nHistLev <= 0 || m_iHistFrom < 0 || m_iHistFrom >= m_nHistLev, -1);
 		IF__(!m_vRangeD.allFinite() || m_vRangeD.x() >= m_vRangeD.y(), -1);
