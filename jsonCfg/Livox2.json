@@ -126,7 +126,7 @@
 		"nMaxFramePoints": 100000
 	},
 	"viewer": {
-		"class": "_WebGeometryBase",
+		"class": "_WebGeometry",
 		"thread": {
 			"FPS": 30
 		},

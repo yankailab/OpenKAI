@@ -476,8 +476,8 @@ def adapters(records, files, constants, symbol):
     records['_StateControl']['containers'].append({'path':['states'],'type':'object'})
     # A shared helper chooses keys at runtime and is called by both viewer classes.
     helper='src/UI/Viewer/SelectableOctGridSources.cpp:link'
-    for name in ('_WebGeometryBase','_WebSelectableOctGrid','_ImGUIselectableOctGrid'):
-        keys = ['vGeometry'] if name == '_WebGeometryBase' else ['vGeometry','vSelectableOctGrid']
+    for name in ('_WebGeometry','_WebSelectableOctGrid','_ImGUIselectableOctGrid'):
+        keys = ['vGeometry'] if name == '_WebGeometry' else ['vGeometry','vSelectableOctGrid']
         for key in keys:
             records[name]['containers'].append({'path':[key],'type':'array'})
             param(name,[key],'array',helper)
@@ -551,7 +551,7 @@ def adapters(records, files, constants, symbol):
                 diagnostic['resolution']='Covered by the viewer adapters in this generator.'
             elif name=='_OctreeGrid' and diagnostic.get('expression')=='name' and diagnostic.get('kind')=='unresolved-module-reference':
                 diagnostic['resolution']='Covered by the vPCLframes DataObject adapter; names are loaded before link.'
-            elif name=='_WebGeometryBase' and diagnostic.get('expression')=='*pConfig':
+            elif name=='_WebGeometry' and diagnostic.get('expression')=='*pConfig':
                 diagnostic['resolution']='Reads bON from the referenced module, not this instance.'
     # The field below is read by UUID-specific helpers rather than jKv.
     param('_SelectableOctGrid',['vSelectedCells'],'array','src/Universe/Grid/_SelectableOctGrid.cpp:loadConfig',description='Selected cell UUID strings; each ID must refer to the configured grid.')

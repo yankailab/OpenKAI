@@ -28,8 +28,6 @@ namespace kai
 
 #ifdef WITH_UNIVERSE
 		ADD_MODULE(_ReferenceFrame);
-		ADD_MODULE(_ObjectBase);
-		ADD_MODULE(_SurfaceBase);
 		ADD_MODULE(_OctreeBase);
 		ADD_MODULE(_OctreeGrid);
 		ADD_MODULE(_SelectableOctGrid);
@@ -40,7 +38,7 @@ namespace kai
 		ADD_MODULE(_PCtransform);
 		ADD_MODULE(_GeometryViewerBase);
 		ADD_MODULE(_WebSelectableOctGrid);
-		ADD_MODULE(_WebGeometryBase);
+		ADD_MODULE(_WebGeometry);
 
 #ifdef USE_OPEN3D
 		ADD_MODULE(_PCcrop);
@@ -121,14 +119,9 @@ namespace kai
 #ifdef USE_ONNXRUNTIME
 		ADD_MODULE(_YOLO26detectONNX);
 #endif
-		ADD_MODULE(_IRLock);
-		ADD_MODULE(_OpenPose);
-		ADD_MODULE(_HandKey);
-		ADD_MODULE(_Lane);
 		ADD_MODULE(_Contour);
 #ifdef USE_OPENCV_CONTRIB
 		ADD_MODULE(_ArUco);
-		ADD_MODULE(_MotionDetector);
 		ADD_MODULE(_SingleTracker);
 #endif
 #endif // USE_OPENCV

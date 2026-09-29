@@ -15,6 +15,7 @@
 #include "../DataObject/LineFrame.h"
 #include "../DataObject/PCLframe.h"
 #include "../DataObject/PCLmap.h"
+#include "../DataObject/SharedMemoryFrame.h"
 #include "../DataObject/UGLIDcellStream.h"
 #ifdef USE_OPENCV
 #include "../DataObject/RGBframe.h"

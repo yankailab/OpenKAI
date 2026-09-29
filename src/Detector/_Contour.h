@@ -23,7 +23,6 @@ namespace kai
 		bool saveConfig(bool bExport) override;
 		virtual bool start(void);
 		virtual bool check(void);
-		virtual void draw(void *pMat);
 
 	private:
 		void detect(void);

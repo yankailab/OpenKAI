@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "969b3a3a33358f79b758cb5babe9bc05954ed02ae18846952c8039183d29d5b5",
+  "sourceDigest": "d161852581c840f678ce219f11e1db7b8824530a1db0dfe80a39f1fa4d4ab770",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -15067,9 +15067,9 @@
       "configurable": false
     },
     {
-      "name": "SharedMem",
+      "name": "SharedMemoryFrame",
       "category": "IPC",
-      "source": "src/IPC/SharedMem.h:19",
+      "source": "src/IPC/SharedMemoryFrame.h:19",
       "baseClasses": [
         "BASE"
       ],
@@ -15102,8 +15102,8 @@
             "bWriter"
           ],
           "type": "boolean",
-          "declaredIn": "SharedMem",
-          "source": "src/IPC/SharedMem.cpp:30",
+          "declaredIn": "SharedMemoryFrame",
+          "source": "src/IPC/SharedMemoryFrame.cpp:30",
           "typeEvidence": "declaration",
           "cppVariable": "m_bWriter",
           "cppType": "bool",
@@ -15126,8 +15126,8 @@
             "nB"
           ],
           "type": "integer",
-          "declaredIn": "SharedMem",
-          "source": "src/IPC/SharedMem.cpp:29",
+          "declaredIn": "SharedMemoryFrame",
+          "source": "src/IPC/SharedMemoryFrame.cpp:29",
           "typeEvidence": "declaration",
           "cppVariable": "m_nB",
           "cppType": "int",
@@ -15150,8 +15150,8 @@
             "shmName"
           ],
           "type": "string",
-          "declaredIn": "SharedMem",
-          "source": "src/IPC/SharedMem.cpp:28",
+          "declaredIn": "SharedMemoryFrame",
+          "source": "src/IPC/SharedMemoryFrame.cpp:28",
           "typeEvidence": "declaration",
           "cppVariable": "m_shmName",
           "cppType": "string",
@@ -24792,9 +24792,9 @@
       "configurable": false
     },
     {
-      "name": "_WebGeometryBase",
+      "name": "_WebGeometry",
       "category": "UI/Viewer/Web",
-      "source": "src/UI/Viewer/Web/_WebGeometryBase.h:17",
+      "source": "src/UI/Viewer/Web/_WebGeometry.h:17",
       "baseClasses": [
         "_GeometryViewerBase"
       ],
@@ -24804,8 +24804,8 @@
             "bAutoBound"
           ],
           "type": "boolean",
-          "declaredIn": "_WebGeometryBase",
-          "source": "src/UI/Viewer/Web/_WebGeometryBase.cpp:26",
+          "declaredIn": "_WebGeometry",
+          "source": "src/UI/Viewer/Web/_WebGeometry.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_autoBound",
           "cppType": "bool",
@@ -24851,8 +24851,8 @@
             "bShowGrid"
           ],
           "type": "boolean",
-          "declaredIn": "_WebGeometryBase",
-          "source": "src/UI/Viewer/Web/_WebGeometryBase.cpp:27",
+          "declaredIn": "_WebGeometry",
+          "source": "src/UI/Viewer/Web/_WebGeometry.cpp:27",
           "typeEvidence": "declaration",
           "cppVariable": "m_showGrid",
           "cppType": "bool",
@@ -24923,8 +24923,8 @@
             "host"
           ],
           "type": "string",
-          "declaredIn": "_WebGeometryBase",
-          "source": "src/UI/Viewer/Web/_WebGeometryBase.cpp:22",
+          "declaredIn": "_WebGeometry",
+          "source": "src/UI/Viewer/Web/_WebGeometry.cpp:22",
           "typeEvidence": "declaration",
           "cppVariable": "m_host",
           "cppType": "std::string",
@@ -24935,8 +24935,8 @@
             "nClientMax"
           ],
           "type": "integer",
-          "declaredIn": "_WebGeometryBase",
-          "source": "src/UI/Viewer/Web/_WebGeometryBase.cpp:25",
+          "declaredIn": "_WebGeometry",
+          "source": "src/UI/Viewer/Web/_WebGeometry.cpp:25",
           "typeEvidence": "declaration",
           "cppVariable": "m_maxClients",
           "cppType": "int",
@@ -24983,8 +24983,8 @@
             "port"
           ],
           "type": "integer",
-          "declaredIn": "_WebGeometryBase",
-          "source": "src/UI/Viewer/Web/_WebGeometryBase.cpp:23",
+          "declaredIn": "_WebGeometry",
+          "source": "src/UI/Viewer/Web/_WebGeometry.cpp:23",
           "typeEvidence": "declaration",
           "cppVariable": "m_port",
           "cppType": "int",
@@ -25023,8 +25023,8 @@
             "vBgCol"
           ],
           "type": "array",
-          "declaredIn": "_WebGeometryBase",
-          "source": "src/UI/Viewer/Web/_WebGeometryBase.cpp:28",
+          "declaredIn": "_WebGeometry",
+          "source": "src/UI/Viewer/Web/_WebGeometry.cpp:28",
           "typeEvidence": "declaration",
           "cppVariable": "m_background",
           "cppType": "Vector4f",
@@ -25147,7 +25147,7 @@
           ],
           "type": "array",
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
-          "declaredIn": "_WebGeometryBase",
+          "declaredIn": "_WebGeometry",
           "extraction": "audited-adapter"
         },
         {
@@ -25158,7 +25158,7 @@
           ],
           "type": "string",
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
-          "declaredIn": "_WebGeometryBase",
+          "declaredIn": "_WebGeometry",
           "extraction": "audited-adapter",
           "dependency": true
         },
@@ -25170,7 +25170,7 @@
           ],
           "type": "string",
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
-          "declaredIn": "_WebGeometryBase",
+          "declaredIn": "_WebGeometry",
           "extraction": "audited-adapter",
           "dependency": true
         },
@@ -25182,7 +25182,7 @@
           ],
           "type": "boolean",
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
-          "declaredIn": "_WebGeometryBase",
+          "declaredIn": "_WebGeometry",
           "extraction": "audited-adapter",
           "default": true
         },
@@ -25194,7 +25194,7 @@
           ],
           "type": "array",
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
-          "declaredIn": "_WebGeometryBase",
+          "declaredIn": "_WebGeometry",
           "extraction": "audited-adapter",
           "default": [
             1,
@@ -25211,7 +25211,7 @@
           ],
           "type": "number",
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
-          "declaredIn": "_WebGeometryBase",
+          "declaredIn": "_WebGeometry",
           "extraction": "audited-adapter",
           "default": 1
         },
@@ -25223,7 +25223,7 @@
           ],
           "type": "number",
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
-          "declaredIn": "_WebGeometryBase",
+          "declaredIn": "_WebGeometry",
           "extraction": "audited-adapter",
           "default": 2
         },
@@ -25235,7 +25235,7 @@
           ],
           "type": "integer",
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
-          "declaredIn": "_WebGeometryBase",
+          "declaredIn": "_WebGeometry",
           "extraction": "audited-adapter"
         },
         {
@@ -25246,7 +25246,7 @@
           ],
           "type": "integer",
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
-          "declaredIn": "_WebGeometryBase",
+          "declaredIn": "_WebGeometry",
           "extraction": "audited-adapter"
         },
         {
@@ -25257,7 +25257,7 @@
           ],
           "type": "string",
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
-          "declaredIn": "_WebGeometryBase",
+          "declaredIn": "_WebGeometry",
           "extraction": "audited-adapter"
         },
         {
@@ -25302,8 +25302,8 @@
             "webRoot"
           ],
           "type": "string",
-          "declaredIn": "_WebGeometryBase",
-          "source": "src/UI/Viewer/Web/_WebGeometryBase.cpp:24",
+          "declaredIn": "_WebGeometry",
+          "source": "src/UI/Viewer/Web/_WebGeometry.cpp:24",
           "typeEvidence": "declaration",
           "cppVariable": "m_root",
           "cppType": "std::string",
@@ -25320,7 +25320,7 @@
           "targetClass": "LineFrame",
           "multiple": false,
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
-          "declaredIn": "_WebGeometryBase",
+          "declaredIn": "_WebGeometry",
           "extraction": "audited-adapter",
           "containers": [
             {
@@ -25340,7 +25340,7 @@
           "targetClass": "PCLframe",
           "multiple": false,
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
-          "declaredIn": "_WebGeometryBase",
+          "declaredIn": "_WebGeometry",
           "extraction": "audited-adapter",
           "containers": [
             {
@@ -40167,8 +40167,8 @@
       "src/IO/_WebSocket.h",
       "src/IO/_WebSocketServer.cpp",
       "src/IO/_WebSocketServer.h",
-      "src/IPC/SharedMem.cpp",
-      "src/IPC/SharedMem.h",
+      "src/IPC/SharedMemoryFrame.cpp",
+      "src/IPC/SharedMemoryFrame.h",
       "src/Instance/DataObjects.cpp",
       "src/Instance/DataObjects.h",
       "src/Instance/InstanceMgr.cpp",
@@ -40276,8 +40276,8 @@
       "src/UI/Viewer/Web/WebSelectableOctGridProtocol.h",
       "src/UI/Viewer/Web/_WebGLIM.cpp",
       "src/UI/Viewer/Web/_WebGLIM.h",
-      "src/UI/Viewer/Web/_WebGeometryBase.cpp",
-      "src/UI/Viewer/Web/_WebGeometryBase.h",
+      "src/UI/Viewer/Web/_WebGeometry.cpp",
+      "src/UI/Viewer/Web/_WebGeometry.h",
       "src/UI/Viewer/Web/_WebSelectableOctGrid.cpp",
       "src/UI/Viewer/Web/_WebSelectableOctGrid.h",
       "src/UI/_Console.cpp",

@@ -107,8 +107,8 @@ matrices. `PCLframe::get(vector<GEOMETRY_POINT> &points)` and
 An empty `set` clears the stored payload; give it a changed timestamp so
 polling consumers observe the clear.
 
-`IMUstream::set(Type::Gyro, value, stamp)` and
-`set(Type::Acc, value, stamp)` append samples in constant time.
+`IMUstream::addGyro(value, stamp)` and
+`addAcc(value, stamp)` append samples in constant time.
 `get(deque<IMU_DATA> &gyro, deque<IMU_DATA> &acc)` copies both bounded histories,
 each capped at 1000 samples, and returns their common update timestamp. Sample
 pairing and timestamp cursors belong to consumers such as SLAM. Gyro and

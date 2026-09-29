@@ -1,26 +1,25 @@
 /*
- * SharedMem.cpp
+ * SharedMemoryFrame.cpp
  *
  *  Created on: Sept 20, 2022
  *      Author: yankai
  */
 
-#include "SharedMem.h"
-#include "../UI/_Console.h"
+#include "SharedMemoryFrame.h"
 
 namespace kai
 {
 
-	SharedMem::SharedMem()
+	SharedMemoryFrame::SharedMemoryFrame()
 	{
 	}
 
-	SharedMem::~SharedMem()
+	SharedMemoryFrame::~SharedMemoryFrame()
 	{
 		close();
 	}
 
-	bool SharedMem::loadConfig(void)
+	bool SharedMemoryFrame::loadConfig(void)
 	{
 		IF_F(!this->BASE::loadConfig());
 		const json &j = *m_pJ;
@@ -34,7 +33,7 @@ namespace kai
 		return true;
 	}
 
-	bool SharedMem::saveConfig(bool bExport)
+	bool SharedMemoryFrame::saveConfig(bool bExport)
 	{
 		IF_F(!BASE::saveConfig(false));
 
@@ -47,14 +46,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool SharedMem::link(InstanceMgr *pM)
-	{
-		IF_F(!this->BASE::link(pM));
-
-		return true;
-	}
-
-	bool SharedMem::open(void)
+	bool SharedMemoryFrame::open(void)
 	{
 		IF__(m_bOpened, true);
 
@@ -78,12 +70,12 @@ namespace kai
 		return true;
 	}
 
-	bool SharedMem::bOpen(void)
+	bool SharedMemoryFrame::bOpen(void)
 	{
 		return m_bOpened;
 	}
 
-	void SharedMem::close(void)
+	void SharedMemoryFrame::close(void)
 	{
 		IF_(!m_bOpened);
 
@@ -96,19 +88,19 @@ namespace kai
 		}
 	}
 
-	int SharedMem::nB(void)
+	int SharedMemoryFrame::nB(void)
 	{
 		return m_nB;
 	}
 
-	void *SharedMem::p(void)
+	void *SharedMemoryFrame::p(void)
 	{
 		IF__(!m_bOpened, nullptr);
 
 		return m_pB;
 	}
 
-	bool SharedMem::bWriter(void)
+	bool SharedMemoryFrame::bWriter(void)
 	{
 		return m_bWriter;
 	}

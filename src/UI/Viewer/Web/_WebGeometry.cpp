@@ -1,4 +1,4 @@
-#include "_WebGeometryBase.h"
+#include "_WebGeometry.h"
 #include "../../../Instance/InstanceMgr.h"
 #include "../../../IO/WebSocketStream.h"
 #include <algorithm>
@@ -8,14 +8,14 @@
 
 namespace kai
 {
-	_WebGeometryBase::_WebGeometryBase() : m_http(new HttpServer)
+	_WebGeometry::_WebGeometry() : m_http(new HttpServer)
 	{
 		m_streams[0].type = webselectableoctgrid::Type::Points;
 		m_streams[1].type = webselectableoctgrid::Type::Lines;
 	}
-	_WebGeometryBase::~_WebGeometryBase() { stop(); }
+	_WebGeometry::~_WebGeometry() { stop(); }
 
-	bool _WebGeometryBase::loadConfig(void)
+	bool _WebGeometry::loadConfig(void)
 	{
 		IF_F(!_GeometryViewerBase::loadConfig());
 		const json &j = *m_pJ;
@@ -41,7 +41,7 @@ namespace kai
 		return true;
 	}
 
-	bool _WebGeometryBase::saveConfig(bool bExport)
+	bool _WebGeometry::saveConfig(bool bExport)
 	{
 		IF_F(!_GeometryViewerBase::saveConfig(false));
 
@@ -58,11 +58,11 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _WebGeometryBase::link(InstanceMgr *pM)
+	bool _WebGeometry::link(InstanceMgr *pM)
 	{
 		IF_F(!_GeometryViewerBase::link(pM));
 		const json &j = *m_pJ;
-		IF_Le_F(j.contains("vSelectableOctGrid") || j.contains("nCbuf"), "WebGeometryBase supports only vGeometry points and lines");
+		IF_Le_F(j.contains("vSelectableOctGrid") || j.contains("nCbuf"), "WebGeometry supports only vGeometry points and lines");
 		string error;
 		IF_Le_F(!m_sources.link(j, pM, m_nPbuf, m_nLbuf, 0, error), error);
 		IF_Le_F(m_sources.m_vGeometry.size() > 1024, "Viewer source limit is 1024");
@@ -76,11 +76,11 @@ namespace kai
 		}
 		return true;
 	}
-	bool _WebGeometryBase::includes(const VIEWER_GEOMETRY_SOURCE &source, webselectableoctgrid::Type type) const
+	bool _WebGeometry::includes(const VIEWER_GEOMETRY_SOURCE &source, webselectableoctgrid::Type type) const
 	{
 		return source.m_bVisible && (type == webselectableoctgrid::Type::Points ? source.m_nP > 0 : source.m_nL > 0);
 	}
-	std::string _WebGeometryBase::hello(webselectableoctgrid::Type type) const
+	std::string _WebGeometry::hello(webselectableoctgrid::Type type) const
 	{
 		json j;
 		j["type"] = "hello";
@@ -105,7 +105,7 @@ namespace kai
 			j["objects"].push_back({{"id", id++}, {"name", source.m_name}, {"selectableGrid", false}});
 		return j.dump();
 	}
-	bool _WebGeometryBase::start()
+	bool _WebGeometry::start()
 	{
 		IF_F(m_running || !m_pT);
 		std::vector<std::pair<std::string, WebSocketStream *>> routes;
@@ -140,10 +140,10 @@ namespace kai
 			LOG_E(e.what());
 			return false;
 		}
-		LOG_I("WebGeometryBase: http://" + m_host + ":" + i2str(m_port) + "/");
+		LOG_I("WebGeometry: http://" + m_host + ":" + i2str(m_port) + "/");
 		return true;
 	}
-	void _WebGeometryBase::stop()
+	void _WebGeometry::stop()
 	{
 		m_running = false;
 		m_wakeup.notify_all();
@@ -154,9 +154,9 @@ namespace kai
 		if (m_pT)
 			m_pT->stop();
 	}
-	void _WebGeometryBase::pause() { m_paused = true; }
-	void _WebGeometryBase::resume() { m_paused = false; }
-	void _WebGeometryBase::updateAllGeometries()
+	void _WebGeometry::pause() { m_paused = true; }
+	void _WebGeometry::resume() { m_paused = false; }
+	void _WebGeometry::updateAllGeometries()
 	{
 		for (auto &stream : m_streams) if (stream.transport->nClient())
 		{
@@ -164,7 +164,7 @@ namespace kai
 			catch (const std::exception &e) { LOG_E(string(webselectableoctgrid::name(stream.type)) + " stream: " + e.what()); }
 		}
 	}
-	void _WebGeometryBase::publish(Stream &stream)
+	void _WebGeometry::publish(Stream &stream)
 	{
 		const uint64_t now = getTns();
 		const uint64_t expiry = m_dTexpire && now > m_dTexpire ? now - m_dTexpire : 0;
@@ -219,7 +219,7 @@ namespace kai
 		stream.transport->publish(frame);
 		stream.m_bPublished = true;
 	}
-	void _WebGeometryBase::console(void *console)
+	void _WebGeometry::console(void *console)
 	{
 		_GeometryViewerBase::console(console);
 		if (console) for (const auto &stream : m_streams)

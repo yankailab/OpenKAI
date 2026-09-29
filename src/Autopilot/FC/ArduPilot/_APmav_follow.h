@@ -1,7 +1,6 @@
 #ifndef OpenKAI_src_Autopilot_FC_ArduPilot__APmav_follow_H_
 #define OpenKAI_src_Autopilot_FC_ArduPilot__APmav_follow_H_
 
-#include "../../../Universe/Surface/_SurfaceBase.h"
 #include "../../../Tracker/_TrackerBase.h"
 #include "../../../Filter/Median.h"
 #include "../../../Filter/Average.h"

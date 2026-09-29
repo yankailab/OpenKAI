@@ -15,8 +15,6 @@
 
 #ifdef WITH_UNIVERSE
 #include "../Universe/_ReferenceFrame.h"
-#include "../Universe/Object/_ObjectBase.h"
-#include "../Universe/Surface/_SurfaceBase.h"
 #include "../Universe/Grid/_OctreeBase.h"
 #include "../Universe/Grid/_OctreeGrid.h"
 #include "../Universe/Grid/_SelectableOctGrid.h"
@@ -27,7 +25,7 @@
 #include "../Universe/Geometry/PointCloud/Pipeline/_PCtransform.h"
 #include "../Universe/Geometry/_GeometryViewerBase.h"
 #include "../UI/Viewer/Web/_WebSelectableOctGrid.h"
-#include "../UI/Viewer/Web/_WebGeometryBase.h"
+#include "../UI/Viewer/Web/_WebGeometry.h"
 
 #ifdef USE_OPEN3D
 #include "../Universe/Geometry/PointCloud/Pipeline/_PCcrop.h"
@@ -108,17 +106,12 @@
 
 #ifdef WITH_DETECTOR
 #ifdef USE_OPENCV
-#include "../Detector/_Lane.h"
+#include "../Detector/_Contour.h"
 #ifdef USE_ONNXRUNTIME
 #include "../Detector/_YOLO26detectONNX.h"
 #endif
-#include "../Detector/_IRLock.h"
-#include "../Detector/_OpenPose.h"
-#include "../Detector/_HandKey.h"
-#include "../Detector/_Contour.h"
 #ifdef USE_OPENCV_CONTRIB
 #include "../Detector/_ArUco.h"
-#include "../Detector/_MotionDetector.h"
 #include "../Tracker/_SingleTracker.h"
 #endif
 #endif

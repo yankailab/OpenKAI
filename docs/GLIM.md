@@ -17,8 +17,8 @@ Before using a real sensor, set `T_lidar_imu` in `config_sensors.json` to its ca
 
 The GLIM adapter treats each cloud as a single exposure, with zero per-point time offsets. It suits depth-camera clouds; it does not deskew a scanning LiDAR. Producers copy complete vectors into `PCLframe::set(points, sensorTimestampNs)`. Consumers use `get(points)` to copy a cloud and its matching timestamp. `getTstamp()` allows idle polls to skip that copy. There are no shared DataObject snapshots or revision counters; updates with the same timestamp are indistinguishable.
 
-`IMUstream` accepts `set(IMUstream::Type::Gyro, value, timestampNs)` and
-`set(IMUstream::Type::Acc, value, timestampNs)`. `get(gyro, acc)` copies the
+`IMUstream` accepts `addGyro(value, timestampNs)` and
+`addAcc(value, timestampNs)`. `get(gyro, acc)` copies the
 bounded histories and returns their update timestamp. SLAM owns its pairing
 cursor; several readers consume independent copies of the same history.
 Publishing appends in constant time; each `get` copies the bounded history.
@@ -177,7 +177,7 @@ in one 52,196-byte binary chunk with no stream errors. This stationary run check
 throughput and finalization; the synthetic motion and transport tests exercise
 multiple submaps, corrections, slow clients and resets during a transfer.
 
-Historical measurements of the preceding `_WebGeometryBase` display pipeline
+Historical measurements of the preceding `_WebGeometry` display pipeline
 on the attached Gemini 335 and Intel Core i9-14900KF, with 10 seconds of warmup
 followed by 30 seconds of sampling and an active geometry stream:
 

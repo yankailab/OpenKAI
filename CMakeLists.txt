@@ -111,6 +111,7 @@ list(APPEND OpenKAI_cpp
   src/DataObject/LineFrame.cpp
   src/DataObject/PCLframe.cpp
   src/DataObject/PCLmap.cpp
+  src/DataObject/SharedMemoryFrame.cpp
   src/DataObject/UGLIDcellStream.cpp
 )
 
@@ -156,9 +157,8 @@ if(WITH_UNIVERSE)
 	src/IO/WebSocketStream.cpp
 	src/UI/Viewer/Web/_WebSelectableOctGrid.cpp
 	src/UI/Viewer/SelectableOctGridSources.cpp
-	src/UI/Viewer/Web/_WebGeometryBase.cpp
+	src/UI/Viewer/Web/_WebGeometry.cpp
 	src/Universe/_ReferenceFrame.cpp
-	src/Universe/Surface/_SurfaceBase.cpp
   src/Universe/Grid/_OctreeBase.cpp
 	src/Universe/Grid/_OctreeGrid.cpp
 	src/Universe/Grid/_SelectableOctGrid.cpp
@@ -287,26 +287,20 @@ if(WITH_DETECTOR)
   add_definitions(-DWITH_DETECTOR)
   if(USE_OPENCV)
     list(APPEND OpenKAI_cpp
-		src/Detector/_DetectorBase.cpp
-		src/Detector/_Lane.cpp
+  		src/Detector/_DetectorBase.cpp
+  		src/Detector/_Contour.cpp
     )
     if(USE_ONNXRUNTIME)
       list(APPEND OpenKAI_cpp
-		src/Detector/_YOLO26detectONNX.cpp
+		    src/Detector/_YOLO26detectONNX.cpp
       )
     endif()
-    list(APPEND OpenKAI_cpp
-		src/Detector/_IRLock.cpp
-		src/Detector/_OpenPose.cpp
-		src/Detector/_HandKey.cpp
-		src/Detector/_Contour.cpp
-    )
+
     if(USE_OPENCV_CONTRIB)
       list(APPEND OpenKAI_cpp
-		src/Detector/_ArUco.cpp
-		src/Detector/_MotionDetector.cpp
-		src/Tracker/_TrackerBase.cpp
-		src/Tracker/_SingleTracker.cpp
+    		src/Detector/_ArUco.cpp
+	    	src/Tracker/_TrackerBase.cpp
+	    	src/Tracker/_SingleTracker.cpp
       )
     endif()
   endif()

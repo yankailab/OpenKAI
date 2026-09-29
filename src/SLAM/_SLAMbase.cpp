@@ -202,6 +202,7 @@ namespace kai
 		{
 			return false;
 		}
+
 		if (!m_bIMUbatch)
 		{
 			// Copy history once per batch. The two sensor channels can arrive
@@ -212,16 +213,20 @@ namespace kai
 			{
 				throw std::runtime_error("IMU clock reset; restart SLAM tracking");
 			}
+
 			m_iGyro = 0;
 			m_iAcc = 0;
+			
 			while (m_iGyro < m_dqGyro.size() && m_dqGyro[m_iGyro].m_t <= m_tStampLastGyro)
 			{
 				++m_iGyro;
 			}
+			
 			while (m_iAcc < m_dqAcc.size() && m_dqAcc[m_iAcc].m_t <= m_tStampLastAcc)
 			{
 				++m_iAcc;
 			}
+			
 			m_bIMUbatch = true;
 		}
 
@@ -247,20 +252,25 @@ namespace kai
 			m_tStampLastAcc = a.m_t;
 			++m_iGyro;
 			++m_iAcc;
+
 			stamp = std::max(g.m_t, a.m_t);
 			if (stamp < m_tStampLastIMU)
 			{
 				throw std::runtime_error("IMU clock reset; restart SLAM tracking");
 			}
+
 			if (stamp == m_tStampLastIMU)
 			{
 				continue;
 			}
+
 			m_tStampLastIMU = stamp;
 			acc = a.m_v.cast<double>();
 			gyro = g.m_v.cast<double>();
+			
 			return true;
 		}
+
 		m_bIMUbatch = false;
 		return false;
 	}

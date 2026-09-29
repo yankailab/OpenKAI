@@ -49,9 +49,6 @@ namespace kai
 
 	bool _Contour::check(void)
 	{
-		NULL_F(m_pCanvas);
-		NULL_F(m_pRGBin);
-
 		return this->_DetectorBase::check();
 	}
 
@@ -73,36 +70,27 @@ namespace kai
 
 		Mat mBGR;
 		m_pRGBin->get(mBGR);
+
 		IF_(mBGR.empty());
 		vector<vector<Point>> vvContours;
 		findContours(mBGR, vvContours, m_mode, m_method);
 
-		_ObjectBase o;
-		vector<Point> vPoly;
-		float kx = 1.0 / (float)mBGR.cols;
-		float ky = 1.0 / (float)mBGR.rows;
+		vector<BBOX_OBJ> vBB;
 		for (unsigned int i = 0; i < vvContours.size(); i++)
 		{
-			vPoly.clear();
+			vector<Point> vPoly;
 			approxPolyDP(vvContours[i], vPoly, 3, true);
 			Rect r = boundingRect(vPoly);
 
-			o.clear();
-			o.setType(obj_bbox);
-			o.setTstamp(m_pT->getTfromNs());
-			o.setBB2D(rect2BB<Vector4f>(r), kx, ky);
-			o.setTopClass(0, o.getDimArea());
+			BBOX_OBJ bb;
+			bb.setType(obj_bbox);
+			bb.setPos(Vector3f(r.x, r.y, 0));
+			bb.setDim(Vector3f(r.width, r.height, 0));
+			bb.addClass(0);
 
-			m_pCanvas->add(o);
-			LOG_I("ID: " + i2str(o.getTopClass()));
+			vBB.push_back(bb);
 		}
 
-		m_pCanvas->swap();
-	}
-
-	void _Contour::draw(void *pMat)
-	{
-		NULL_(pMat);
-		IF_(!check());
+		m_pBBout->add(vBB);
 	}
 }

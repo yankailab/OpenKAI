@@ -28,6 +28,7 @@ namespace kai
 		ADD_DATA_STREAM(LineFrame);
 		ADD_DATA_STREAM(PCLframe);
 		ADD_DATA_STREAM(PCLmap);
+		ADD_DATA_STREAM(SharedMemoryFrame);
 		ADD_DATA_STREAM(UGLIDcellStream);
 #ifdef USE_OPENCV
 		ADD_DATA_STREAM(RGBframe);

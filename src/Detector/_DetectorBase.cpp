@@ -73,11 +73,12 @@ namespace kai
 		n = "";
 		jKv(j, "RGBframeIn", n);
 		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		IF_Le_F(m_pRGBin == nullptr && !n.empty(), "RGBframeIn not found: " + n);
+		IF_Le_F(m_pRGBin == nullptr, "RGBframeIn not found: " + n);
 
 		n = "";
-		jKv(j, "_SurfaceBase", n);
-		m_pCanvas = (_SurfaceBase *)(pM->findModule(n));
+		jKv(j, "BBoxStreamOut", n);
+		m_pBBout = dynamic_cast<BBoxStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(m_pBBout == nullptr, "BBoxStreamOut not found: " + n);
 
 		return true;
 	}
@@ -89,13 +90,10 @@ namespace kai
 
 	bool _DetectorBase::check(void)
 	{
-		return this->_ModuleBase::check();
-	}
+		NULL_F(m_pRGBin);
+		NULL_F(m_pBBout);
 
-	void _DetectorBase::onPause(void)
-	{
-		this->_ModuleBase::onPause();
-		m_pCanvas->clear();
+		return this->_ModuleBase::check();
 	}
 
 	int _DetectorBase::getClassIdx(string &className)
@@ -117,11 +115,6 @@ namespace kai
 			return "";
 
 		return m_vClass[iClass];
-	}
-
-	_SurfaceBase *_DetectorBase::getCanvas(void)
-	{
-		return m_pCanvas;
 	}
 
 	void _DetectorBase::console(void *pConsole)

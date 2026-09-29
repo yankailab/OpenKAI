@@ -398,7 +398,7 @@ def run_ui(browser, editor):
     checks.append("multiple dependency append and single-reference removal")
     browser.evaluate(r"""(() => {
         OpenKAIEditor.loadDocument({APP:{class:'InstanceMgr'}, points:{type:'dataObject',class:'PCLframe'},
-            web:{class:'_WebGeometryBase',vGeometry:[{PCLframe:'points',label:'preserve'}]},
+            web:{class:'_WebGeometry',vGeometry:[{PCLframe:'points',label:'preserve'}]},
             extension:{release:17}, future:{class:'_FuturePlugin',opaque:{rows:[1,{text:'custom'}]},'/comment':'keep'}});
         OpenKAIEditor.selectNode('/web');
         smokeChange('[aria-label="Provider for vGeometry.*.PCLframe"]', '/points');

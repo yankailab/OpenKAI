@@ -1,33 +1,31 @@
 /*
- * SharedMem.h
+ * SharedMemoryFrame.h
  *
  *  Created on: Sept 20, 2022
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_IPCSharedMemBase_H_
-#define OpenKAI_src_IPCSharedMemBase_H_
+#ifndef OpenKAI_src_DataObject_SharedMem_H_
+#define OpenKAI_src_DataObject_SharedMem_H_
 
-#include "../Base/BASE.h"
+#include "DataObjBase.h"
+
 #include <sys/shm.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
 
 namespace kai
 {
-
-	class SharedMem : public BASE
+	class SharedMemoryFrame : public DataObjBase
 	{
 	public:
-		SharedMem();
-		virtual ~SharedMem();
+		SharedMemoryFrame();
+		virtual ~SharedMemoryFrame();
 
 		virtual bool loadConfig(void) override;
-		bool saveConfig(bool bExport) override;
-		virtual bool link(InstanceMgr *pM) override;
-		virtual bool open(void);
-		virtual bool bOpen(void);
-		virtual void close(void);
+		virtual bool saveConfig(bool bExport) override;
+
+
 
 		virtual int nB(void);
 		virtual void* p(void);

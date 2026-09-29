@@ -828,10 +828,10 @@ namespace kai
         if (m_pIMU)
         {
             Vector3f vAcc = Vector3f(pIMU->acc_x, pIMU->acc_y, pIMU->acc_z);
-            m_pIMU->set(IMUstream::Type::Acc, vAcc, tStamp);
+            m_pIMU->addAcc(vAcc, tStamp);
 
             Vector3f vGyro = Vector3f(pIMU->gyro_x, pIMU->gyro_y, pIMU->gyro_z);
-            m_pIMU->set(IMUstream::Type::Gyro, vGyro, tStamp);
+            m_pIMU->addGyro(vGyro, tStamp);
         }
 
         IF_(!m_bIMUstab);

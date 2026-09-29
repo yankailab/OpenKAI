@@ -2731,12 +2731,12 @@ namespace kai
 				m_spAccel->start(accel, [imu = m_pIMU](shared_ptr<ob::Frame> frame) {
 					if (!imu || !frame) return;
 					const auto v = frame->as<ob::AccelFrame>()->value(); // m/s^2
-					imu->set(IMUstream::Type::Acc, {v.x, v.y, v.z}, frame->getTimeStampUs() * NSEC_USEC);
+					imu->addAcc({v.x, v.y, v.z}, frame->getTimeStampUs() * NSEC_USEC);
 				});
 				m_spGyro->start(gyro, [imu = m_pIMU](shared_ptr<ob::Frame> frame) {
 					if (!imu || !frame) return;
 					const auto v = frame->as<ob::GyroFrame>()->value(); // rad/s
-					imu->set(IMUstream::Type::Gyro, {v.x, v.y, v.z}, frame->getTimeStampUs() * NSEC_USEC);
+					imu->addGyro({v.x, v.y, v.z}, frame->getTimeStampUs() * NSEC_USEC);
 				});
 			}
 

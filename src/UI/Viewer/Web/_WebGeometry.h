@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_UI_Viewer_Web__WebGeometryBase_H_
-#define OpenKAI_src_UI_Viewer_Web__WebGeometryBase_H_
+#ifndef OpenKAI_src_UI_Viewer_Web__WebGeometry_H_
+#define OpenKAI_src_UI_Viewer_Web__WebGeometry_H_
 
 #include "../../../Universe/Geometry/_GeometryViewerBase.h"
 #include "WebGeometryCache.h"
@@ -14,11 +14,11 @@ namespace kai
 	class HttpServer;
 	class WebSocketStream;
 
-	class _WebGeometryBase : public _GeometryViewerBase
+	class _WebGeometry : public _GeometryViewerBase
 	{
 	public:
-		_WebGeometryBase();
-		~_WebGeometryBase() override;
+		_WebGeometry();
+		~_WebGeometry() override;
 		bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
 		bool link(InstanceMgr *pM) override;
@@ -45,16 +45,21 @@ namespace kai
 			uint32_t sequence = 0;
 			std::atomic<size_t> bytes{0};
 		};
+
 		bool includes(const VIEWER_GEOMETRY_SOURCE &source, webselectableoctgrid::Type type) const;
 		void publish(Stream &stream);
 		std::string hello(webselectableoctgrid::Type type) const;
+
 		std::string m_host = "0.0.0.0", m_root = "html/viewer/_GeometryBase";
 		int m_port = 8080, m_maxClients = 8;
+
 		Vector4f m_background{0.035f, 0.045f, 0.065f, 1};
 		bool m_autoBound = true, m_showGrid = true;
+
 		SelectableOctGridSources m_sources;
 		std::unique_ptr<HttpServer> m_http;
 		std::array<Stream, 2> m_streams;
+
 		std::thread m_worker;
 		std::atomic<bool> m_running{false}, m_paused{false};
 		std::mutex m_waitMutex;

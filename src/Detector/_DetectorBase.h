@@ -8,8 +8,10 @@
 #ifndef OpenKAI_src_Detector__DetectorBase_H_
 #define OpenKAI_src_Detector__DetectorBase_H_
 
-#include "../Universe/Surface/_SurfaceBase.h"
 #include "../DataObject/RGBframe.h"
+#include "../DataObject/BBoxStream.h"
+
+#include "../Base/_ModuleBase.h"
 #include "../Utility/utilCV.h"
 
 namespace kai
@@ -22,7 +24,7 @@ namespace kai
 		virtual ~_DetectorBase();
 
 		virtual bool loadConfig(void) override;
-		bool saveConfig(bool bExport) override;
+		virtual bool saveConfig(bool bExport) override;
 		virtual bool link(InstanceMgr *pM) override;
 		virtual bool check(void);
 		virtual void console(void *pConsole);
@@ -30,17 +32,11 @@ namespace kai
 		virtual bool loadModel(void);
 		virtual int getClassIdx(string &className);
 		virtual string getClassName(int iClass);
-		virtual _SurfaceBase *getCanvas(void);
-
-	protected:
-		virtual void onPause(void);
 
 	protected:
 		// input
 		RGBframe *m_pRGBin = nullptr;
-
-		// data
-		_SurfaceBase *m_pCanvas = nullptr;
+		BBoxStream* m_pBBout = nullptr;
 
 		// model
 		string m_fModel = "";

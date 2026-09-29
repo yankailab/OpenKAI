@@ -10,7 +10,7 @@ Open `http://localhost:8080/` and click **Start**.
 Opening `index.html` directly also works: enter the backend host and ports, then
 click **Start** to navigate to the backend's served viewer.
 
-The point cloud uses `_WebGeometryBase`'s version-6 `/stream/points` and
+The point cloud uses `_WebGeometry`'s version-6 `/stream/points` and
 `/stream/lines` connections, as in the Orbbec viewer. Camera commands use the
 existing `_WSconsole` connection on port **7890**, with module **scepter**.
 There is no IMU panel or IMU connection. All three.js assets are vendored.

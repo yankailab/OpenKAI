@@ -29,7 +29,7 @@ namespace kai
 	{
 		OBJ_TYPE m_type = obj_unknown;
 		Vector3f m_vPos = Vector3f::Zero();
-		Vector3f m_vDim = Vector3f::Zero(); // w,h,d
+		Vector3f m_vDim = Vector3f::Zero(); // w,h,d, d = 0 for 2D surface
 		vector<OBJ_CLASS> m_vClass;
 		uint64_t m_tStamp = 0;
 
@@ -41,6 +41,11 @@ namespace kai
 		OBJ_TYPE getType(void)
 		{
 			return m_type;
+		}
+
+		void setPos(const Vector3f &vP)
+		{
+			m_vPos = vP;
 		}
 
 		void setDim(const Vector3f &vD)
@@ -107,13 +112,17 @@ namespace kai
 		BBoxStream();
 		virtual ~BBoxStream();
 
-		void set(const vector<BBOX_OBJ>& vSrc, uint64_t tStamp = 0);
-		uint64_t get(vector<BBOX_OBJ>& vDest);
+		bool loadConfig(void);
+		bool saveConfig(bool bExport = false);
+
+		void add(const vector<BBOX_OBJ> &vSrc, uint64_t tStamp = 0);
+		uint64_t get(vector<BBOX_OBJ> &vDest);
 
 	protected:
+		int m_nBuf = 1000;
+		Vector3f m_vContainerDim = Vector3f::Zero(); // w,h,d, d=0 for 2D surface
+
 		vector<BBOX_OBJ> m_vObj;
-		int m_nMaxObj;
-		Vector3f m_vContainerSize;
 
 		std::shared_mutex m_sMutex;
 	};

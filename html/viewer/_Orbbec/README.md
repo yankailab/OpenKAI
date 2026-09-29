@@ -5,7 +5,7 @@ From the repository root, run `build/OpenKAI jsonCfg/Orbbec.json`, then open
 the backend host/ports and click **Start**. The geometry service serves the page
 and the vendored three.js assets; no npm or external web server is needed.
 
-The center is copied from `_GeometryBase` and uses `_WebGeometryBase`'s existing
+The center is copied from `_GeometryBase` and uses `_WebGeometry`'s existing
 version-6 `/stream/points` and `/stream/lines` connections. Camera controls use a
 separate `_WSconsole` connection on port **7890**. The camera module name defaults
 to **Orbbec**, matching `jsonCfg/Orbbec.json`.

@@ -160,7 +160,7 @@
 		"class": "PCLframe"
 	},
 	"viewer": {
-		"class": "_WebGeometryBase",
+		"class": "_WebGeometry",
 		"webRoot": "html/viewer/_Scepter",
 		"bON": true,
 		"thread": {

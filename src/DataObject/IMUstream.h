@@ -21,24 +21,23 @@ namespace kai
 			Vector3f m_v = Vector3f::Zero();
 		};
 
-		enum class Type
-		{
-			Gyro,
-			Acc
-		};
-
 		IMUstream();
 		virtual ~IMUstream();
 		void console(void *pConsole) override;
 
-		// Append a sample; retain the latest 1000 samples of each sensor type.
-		void set(Type type, const Vector3f &value, uint64_t tStamp);
+		bool loadConfig(void);
+		bool saveConfig(bool bExport = false);
+
+		void addGyro(const Vector3f &value, uint64_t tStamp);
+		void addAcc(const Vector3f &value, uint64_t tStamp);
 		uint64_t get(deque<IMU_DATA> &gyro, deque<IMU_DATA> &acc);
 
 	private:
-		std::shared_mutex m_sMutex;
+		int m_nBuf = 1000;
+
 		deque<IMU_DATA> m_dqGyro;
 		deque<IMU_DATA> m_dqAcc;
+		std::shared_mutex m_sMutex;
 	};
 
 }

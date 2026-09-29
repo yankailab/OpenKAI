@@ -12,7 +12,7 @@ OpenKAI. CMake copies and installs both web viewers.
 
 ```json
 "viewer": {
-  "class": "_WebGeometryBase",
+  "class": "_WebGeometry",
   "bON": true,
   "thread": { "FPS": 30 },
   "host": "0.0.0.0",
