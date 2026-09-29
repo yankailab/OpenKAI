@@ -325,41 +325,4 @@ namespace kai
 		((_Console *)pConsole)->addMsg(msg);
 	}
 
-	void _DistSensorBase::draw(void *pMat)
-	{
-#ifdef USE_OPENCV
-		NULL_(pMat);
-		this->_ModuleBase::draw(pMat);
-		IF_(!check());
-
-		Mat *pM = static_cast<Mat *>(pMat);
-		IF_(pM->empty());
-
-		IF_(!m_bReady);
-		IF_(m_nDiv <= 0);
-
-		// Plot center as vehicle position
-		Point pCenter(pM->cols / 2, pM->rows / 2);
-		circle(*pM, pCenter, 10, Scalar(0, 0, 255), 2);
-
-		// Plot lidar result
-		float rad = 0.0;
-		float dRad = m_dDeg * DEG_2_RAD;
-
-		for (int i = 0; i < m_nDiv; i++)
-		{
-			float dist = m_pDiv[i].dAvr();
-			IF_CONT((dist < m_vRange.x() || dist >= m_vRange.y()));
-			//			dist *= m_showScale;
-
-			rad += dRad;
-			int pX = dist * sin(rad);
-			int pY = -dist * cos(rad);
-
-			Scalar col = Scalar(0, 255, 0);
-			circle(*pM, pCenter + Point(pX, pY), 1, col, 2);
-		}
-#endif
-	}
-
 }

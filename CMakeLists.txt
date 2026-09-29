@@ -44,7 +44,6 @@ option(WITH_SOLVER "" OFF)
 option(WITH_ROS "" OFF)
 option(WITH_SENSOR "" OFF)
 option(WITH_SLAM "" OFF)
-option(WITH_STATE "" OFF)
 option(WITH_SWARM "" OFF)
 option(WITH_TOOLS "Build calibration tools" OFF)
 option(WITH_UI "" OFF)
@@ -139,7 +138,6 @@ if(WITH_DEFAULT_MODULES)
   set(WITH_PROTOCOL ON CACHE BOOL "" FORCE)
   set(WITH_SENSOR ON CACHE BOOL "" FORCE)
   set(WITH_SLAM ON CACHE BOOL "" FORCE)
-  set(WITH_STATE ON CACHE BOOL "" FORCE)
   set(WITH_SOLVER ON CACHE BOOL "" FORCE)
   set(WITH_SWARM ON CACHE BOOL "" FORCE)
   set(WITH_UI ON CACHE BOOL "" FORCE)
@@ -456,14 +454,6 @@ if(WITH_SENSOR)
     )
   endif() # 3D
 endif() # sensor
-
-if(WITH_STATE)
-  add_definitions(-DWITH_STATE)
-  file(GLOB_RECURSE State_cpp src/State/*.cpp src/State/*.cc src/State/*.c)
-  list(APPEND OpenKAI_cpp
-	${State_cpp}
-  )
-endif()
 
 if(WITH_SWARM)
   add_definitions(-DWITH_SWARM)

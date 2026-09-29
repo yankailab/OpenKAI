@@ -34,9 +34,10 @@ namespace kai
 		virtual string getClassName(int iClass);
 
 	protected:
-		// input
+		// input/output DataObjects
 		RGBframe *m_pRGBin = nullptr;
-		BBoxStream* m_pBBout = nullptr;
+		BBoxStream *m_pBBout = nullptr;
+		uint64_t m_tLastInput = 0;
 
 		// model
 		string m_fModel = "";

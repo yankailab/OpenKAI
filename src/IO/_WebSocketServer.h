@@ -98,6 +98,7 @@ namespace kai
 		}
 
 	protected:
+		InstanceMgr* m_pM = nullptr;
 		vector<wsClient> m_vClient;
 		int m_nClientMax = 128;
 		WSSOCKET_MODE m_wsMode = wsSocket_txt_bcast;

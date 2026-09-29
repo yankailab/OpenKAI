@@ -120,11 +120,19 @@ namespace kai
 
 		n = "";
 		jKv(j, "_TrackerBase", n);
-		m_pTracker = (_TrackerBase *)pM->findModule(n);
+		m_pTracker = dynamic_cast<_TrackerBase *>(static_cast<_ModuleBase *>(pM->findModule(n)));
+		IF_Le_F(!n.empty() && !m_pTracker, "_TrackerBase not found: " + n);
 
 		n = "";
-		jKv(j, "_SurfaceBase", n);
-		m_pCanvas = (_SurfaceBase *)pM->findModule(n);
+		jKv(j, "BBoxStreamIn", n);
+		m_pBBin = dynamic_cast<BBoxStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(m_pBBin == nullptr, "BBoxStreamIn not found: " + n);
+
+		n = "";
+		jKv(j, "BBoxStreamTrackIn", n);
+		m_pBBtrackIn = dynamic_cast<BBoxStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F((m_pTracker || !n.empty()) && !m_pBBtrackIn, "BBoxStreamTrackIn not found: " + n);
+		IF_Le_F(m_pTracker && m_pBBtrackIn == m_pBBin, "Detection and tracking BBoxStreams must be distinct");
 
 		return true;
 	}
@@ -137,7 +145,8 @@ namespace kai
 
 	bool _APmav_follow::check(void)
 	{
-		NULL_F(m_pCanvas);
+		NULL_F(m_pBBin);
+		IF_F(m_pTracker && (!m_pBBtrackIn || m_pBBtrackIn == m_pBBin));
 
 		return this->_APmav_move::check();
 	}
@@ -168,6 +177,11 @@ namespace kai
 	{
 		clearPID();
 		m_bTarget = false;
+		m_tTargetUpdate = 0;
+		m_tLastDetection = 0;
+		m_tTrackStart = 0;
+		m_tTrackWatermark = 0;
+		m_tOutTargetNotFound.reStart(0);
 		if (m_pTracker)
 			m_pTracker->stopTrack();
 	}
@@ -181,40 +195,67 @@ namespace kai
 
 		bool bFound = findTarget();
 
-		// use tracker if available
+		// Seed once per new detection observation; old tracking history stays intact.
 		if (m_pTracker)
 		{
-			if (bFound)
-				m_pTracker->startTrack(m_vTargetBB);
-
-			if (m_pTracker->trackState() == track_update)
+			if (bFound && m_tTargetUpdate > m_tLastDetection)
 			{
-				m_vTargetBB = *m_pTracker->getBB();
-				bFound = true;
+				m_tLastDetection = m_tTargetUpdate;
+				if (m_pTracker->startTrack(m_vTargetBB))
+				{
+					m_tTrackStart = m_tTargetUpdate;
+					m_tTrackWatermark = m_tTrackStart;
+					vector<BBOX_OBJ> vPrevious;
+					m_pBBtrackIn->get(vPrevious);
+					uint64_t tNow = getTns();
+					for (const BBOX_OBJ &object : vPrevious)
+					{
+						IF_CONT(!bTargetFresh(object, tNow));
+						m_tTrackWatermark = std::max(m_tTrackWatermark, object.m_tStamp);
+					}
+				}
+			}
+
+			vector<BBOX_OBJ> vTracked;
+			Vector3f vDim;
+			if (m_tTrackStart && readTargetObjects(m_pBBtrackIn, vTracked, vDim))
+			{
+				uint64_t tNow = getTns();
+				uint64_t tNewest = bFound ? m_tTargetUpdate : 0;
+				int topProb = INT_MAX;
+				for (const BBOX_OBJ &object : vTracked)
+				{
+					IF_CONT(!bTargetFresh(object, tNow));
+					IF_CONT(object.m_tStamp <= m_tTrackStart || object.m_tStamp <= m_tTrackWatermark);
+					IF_CONT(object.m_tStamp < tNewest);
+					IF_CONT(object.m_tStamp == tNewest && object.getTopClassProb() < topProb);
+					IF_CONT(!getTargetBB(object, vDim, m_vTargetBB));
+					tNewest = object.m_tStamp;
+					topProb = object.getTopClassProb();
+					m_tTargetUpdate = object.m_tStamp;
+					bFound = true;
+				}
 			}
 		}
 
 		uint64_t tNow = getTns();
-
 		if (bFound)
 		{
-			// target found or tracked
-			m_bTarget = true;
-			m_tOutTargetNotFound.reStart(tNow);
-		}
-		else if (!m_tOutTargetNotFound.bTout(tNow))
-		{
-			// both detection and tracking failed but hold for timeout
+			// Re-reading history must not extend the selected observation's deadline.
+			m_tOutTargetNotFound.reStart(m_tTargetUpdate);
 			m_bTarget = true;
 		}
 		else
 		{
-			// both detection and tracking failed and time is out
-			m_bTarget = false;
+			m_bTarget = m_tOutTargetNotFound.bStarted() && !m_tOutTargetNotFound.bTout(tNow);
 		}
 
 		if (!m_bTarget)
 		{
+			if (m_pTracker && m_tTrackStart)
+				m_pTracker->stopTrack();
+			m_tTrackStart = 0;
+			m_tTrackWatermark = 0;
 			m_fY.reset();
 			m_fX.reset();
 			m_fZ.reset();
@@ -234,26 +275,57 @@ namespace kai
 		return true;
 	}
 
+	bool _APmav_follow::readTargetObjects(BBoxStream *pStream, vector<BBOX_OBJ> &vObjects, Vector3f &vDim)
+	{
+		NULL_F(pStream);
+		pStream->get(vObjects);
+		vDim = pStream->getContainerDim();
+		IF_F(!vDim.allFinite() || vDim.x() <= 0 || vDim.y() <= 0);
+		return true;
+	}
+
+	bool _APmav_follow::bTargetFresh(const BBOX_OBJ &object, uint64_t tNow) const
+	{
+		// Zero disables loss grace, while allowing the normal 100 ms capture latency.
+		uint64_t tMaxAge = m_tOutTargetNotFound.m_tOut ? m_tOutTargetNotFound.m_tOut : NSEC_SEC / 10;
+		IF_F(!object.m_tStamp || object.m_tStamp > tNow || tNow - object.m_tStamp > tMaxAge);
+		return true;
+	}
+
+	bool _APmav_follow::getTargetBB(const BBOX_OBJ &object, const Vector3f &vDim, Vector4f &vBB)
+	{
+		IF_F(!vDim.allFinite() || vDim.x() <= 0 || vDim.y() <= 0);
+		IF_F(object.m_type != obj_bbox && object.m_type != obj_tag);
+		Vector4f bb = object.getBB2D();
+		IF_F(!bb.allFinite() || bb.z() <= bb.x() || bb.w() <= bb.y());
+		// PID setpoints and tracker commands use normalized image coordinates.
+		vBB = bb.cwiseQuotient(Vector4f(vDim.x(), vDim.y(), vDim.x(), vDim.y()));
+		return true;
+	}
+
 	bool _APmav_follow::findTarget(void)
 	{
 		IF_F(!check());
 
-		_ObjectBase *pO;
-		_ObjectBase *tO = NULL;
-		float topProb = 0.0;
-		int i = 0;
-		while ((pO = m_pCanvas->get(i++)) != NULL)
-		{
-			IF_CONT(pO->getTopClass() != m_iClass);
-			IF_CONT(pO->getTopClassProb() < topProb);
+		vector<BBOX_OBJ> vObjects;
+		Vector3f vDim;
+		IF_F(!readTargetObjects(m_pBBin, vObjects, vDim));
 
-			tO = pO;
-			topProb = pO->getTopClassProb();
+		uint64_t tNow = getTns();
+		uint64_t tNewest = 0;
+		int topProb = -1;
+		for (const BBOX_OBJ &object : vObjects)
+		{
+			IF_CONT(object.getTopClass() != m_iClass || !bTargetFresh(object, tNow));
+			IF_CONT(object.m_tStamp < tNewest);
+			IF_CONT(object.m_tStamp == tNewest && object.getTopClassProb() < topProb);
+			IF_CONT(!getTargetBB(object, vDim, m_vTargetBB));
+			tNewest = object.m_tStamp;
+			topProb = object.getTopClassProb();
 		}
 
-		NULL_F(tO);
-		m_vTargetBB = tO->getBB2D();
-
+		IF_F(!tNewest);
+		m_tTargetUpdate = tNewest;
 		return true;
 	}
 
@@ -311,7 +383,6 @@ namespace kai
 	void _APmav_follow::draw(void *pMat)
 	{
 		NULL_(pMat);
-		this->_APmav_move::draw(pMat);
 		IF_(!check());
 
 #ifdef USE_OPENCV

@@ -133,33 +133,4 @@ namespace kai
 		}
 	}
 
-	void _APmav_depthVision::draw(void *pMat)
-	{
-		NULL_(pMat);
-		this->_ModuleBase::draw(pMat);
-		IF_(!check());
-
-		Mat *pM = static_cast<Mat *>(pMat);
-
-		NULL_(m_pDV);
-
-		for (int i = 0; i < m_nROI; i++)
-		{
-			DEPTH_ROI *pR = &m_pROI[i];
-			Vector4f roi = pR->m_roi;
-//			float d = m_pDV->d(roi);
-
-			Rect r;
-			r.x = roi.x() * pM->cols;
-			r.y = roi.y() * pM->rows;
-			r.width = roi.z() * pM->cols - r.x;
-			r.height = roi.w() * pM->rows - r.y;
-			rectangle(*pM, r, Scalar(0, 255, 0), 1);
-
-			// putText(*pM, f2str(d),
-			// 		Point(r.x + 15, r.y + 25),
-			// 		FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 255), 1);
-		}
-	}
-
 }

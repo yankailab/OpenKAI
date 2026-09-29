@@ -35,7 +35,6 @@ namespace kai
 		bool saveConfig(bool bExport) override;
 		virtual bool link(InstanceMgr *pM) override;
 		virtual void update(void);
-		virtual void draw(void *pMat);
 
 	protected:
 		_APmav_base *m_pAP = nullptr;

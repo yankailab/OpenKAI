@@ -13,7 +13,6 @@
 		},
 		"vBASE": [
 			"cam",
-			"canvas",
 			"YOLO26detectONNX",
 			"/YOLOv8",
 			"/YOLOv3",
@@ -159,16 +158,12 @@
 		"thread": {
 			"FPS": 30
 		},
-		"_SurfaceBase": "canvas",
+		"BBoxStreamOut": "detections",
 		"RGBframeIn": "morphRGB"
 	},
-	"canvas": {
-		"class": "_SurfaceBase",
-		"bON": true,
-		"thread": {
-			"FPS": 10
-		},
-		"bDrawText": true
+	"detections": {
+		"type": "dataObject",
+		"class": "BBoxStream"
 	},
 	"YOLO26detectONNX": {
 		"class": "_YOLO26detectONNX",
@@ -177,7 +172,7 @@
 			"FPS": 30
 		},
 		"bLog": true,
-		"_SurfaceBase": "canvas",
+		"BBoxStreamOut": "detections",
 		"fModel": "/home/kai/dev/models/YOLO26/yolo26n.onnx",
 		"confidence": 0.25,
 		"score": 0.45,

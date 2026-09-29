@@ -2,7 +2,6 @@
 #define OpenKAI_src_Autopilot__AutopilotBase_H_
 
 #include "../Universe/_ReferenceFrame.h"
-#include "../State/_StateControl.h"
 #include "../Protocol/_JSONbase.h"
 #include "../Utility/utilEvent.h"
 #include "../Utility/utilVar.h"

@@ -12,6 +12,7 @@
 #include "../Base/_ModuleBase.h"
 #include "../Utility/utilCV.h"
 #include "../DataObject/RGBframe.h"
+#include "../DataObject/BBoxStream.h"
 
 namespace kai
 {
@@ -38,18 +39,20 @@ namespace kai
 		virtual void console(void *pConsole);
 
 		virtual void createTracker(void);
-		virtual bool startTrack(Vector4f &bb);
+		virtual bool startTrack(const Vector4f &bb);
 		virtual void stopTrack(void);
-		TRACK_STATE trackState(void);
-		Vector4f *getBB(void);
 
 	protected:
 		RGBframe *m_pRGBin = nullptr;
-		Rect2d m_rBB;
+		BBoxStream *m_pBBout = nullptr;
+		std::mutex m_mutex;
+		uint64_t m_tFrame = 0;
+		uint64_t m_tPublished = 0;
+		Rect m_rBB;
 		Vector4f m_bb = Vector4f::Zero();
 		float m_margin = 0.0;
 
-		Rect2d m_newBB;
+		Rect m_newBB;
 		uint64_t m_iSet = 0;
 		uint64_t m_iInit = 0;
 

@@ -138,9 +138,8 @@ namespace kai
 
 	void _APmav_land::onPause(void)
 	{
-		this->_ModuleBase::onPause();
-
-		clearPID();
+		this->_APmav_follow::onPause();
+		m_pTag = nullptr;
 	}
 
 	bool _APmav_land::bComplete(void)
@@ -192,50 +191,45 @@ namespace kai
 	bool _APmav_land::findTag(void)
 	{
 		IF_F(!check());
+		m_pTag = nullptr;
+		m_vPvar = m_vPsp;
 
-		// find target
-		AP_LAND_TAG *pTag = NULL;
+		vector<BBOX_OBJ> vObjects;
+		Vector3f vDim;
+		IF_F(!readTargetObjects(m_pBBin, vObjects, vDim));
+
+		uint64_t tNow = getTns();
+		uint64_t tNewest = 0;
+		const BBOX_OBJ *pTarget = nullptr;
 		int priority = INT_MAX;
-		_ObjectBase *tO = NULL;
-		int i = 0;
-		_ObjectBase *pO;
-		while ((pO = m_pCanvas->get(i++)) != NULL)
+		for (const BBOX_OBJ &object : vObjects)
 		{
-			int id = pO->getTopClass();
-			pTag = getTag(id);
-			IF_CONT(!pTag);
-			IF_CONT(pTag->m_priority > priority);
+			IF_CONT(object.m_type != obj_tag || !object.m_vPos.allFinite() || !bTargetFresh(object, tNow));
+			AP_LAND_TAG *pTag = getTag(object.getTopClass());
+			IF_CONT(!pTag || object.m_tStamp < tNewest);
+			IF_CONT(object.m_tStamp == tNewest && pTag->m_priority > priority);
+			IF_CONT(!getTargetBB(object, vDim, m_vTargetBB));
 
-			tO = pO;
+			pTarget = &object;
+			tNewest = object.m_tStamp;
+			m_pTag = pTag;
 			priority = pTag->m_priority;
 		}
+		NULL_F(pTarget);
 
-		// filter the position
-		float fX, fY, fA, fH;
+		// Tags store pixel center/radius and heading in pos.z (degrees).
+		float x = pTarget->m_vPos.x() / vDim.x();
+		float y = pTarget->m_vPos.y() / vDim.y();
+		float area = (m_vTargetBB.z() - m_vTargetBB.x()) * (m_vTargetBB.w() - m_vTargetBB.y());
 		float dTs = m_pT->getDtNs() * SEC_NSEC;
-		if (tO)
-		{
-			Vector3f vP = tO->getPos();
-			float a = tO->getDimArea();
+		float fX = m_fX.update(x, dTs);
+		float fY = m_fY.update(y, dTs);
+		float fA = m_fZ.update(area, dTs);
+		float fH = m_fH.update(pTarget->m_vPos.z(), dTs);
+		m_tTargetUpdate = pTarget->m_tStamp;
 
-			Vector3f vA = tO->getAttitude();
-			float h = vA.x(); // use Roll for Aruco!
-
-			fX = m_fX.update(vP.x(), dTs);
-			fY = m_fY.update(vP.y(), dTs);
-			fA = m_fZ.update(a, dTs);
-			fH = m_fH.update(h, dTs);
-
-			m_vTargetBB = tO->getBB2D();
-		}
-		else
-		{
-			m_vPvar = m_vPsp;
-			return false;
-		}
-
-		// convert position from screen to world relative
-		m_vPvar.z() = (pTag) ? pTag->getDist(fA) : 1.0;
+		// Convert normalized image position to world-relative position.
+		m_vPvar.z() = m_pTag->getDist(fA);
 		m_vPvar.x() = m_vPvar.z() * tan((fY - 0.5) * m_vFov.y() * DEG_2_RAD);
 		m_vPvar.y() = m_vPvar.z() * tan((fX - 0.5) * m_vFov.x() * DEG_2_RAD);
 		m_vPvar.w() = fH;

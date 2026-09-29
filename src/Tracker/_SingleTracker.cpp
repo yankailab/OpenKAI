@@ -66,31 +66,68 @@ namespace kai
 	void _SingleTracker::track(void)
 	{
 		IF_(!check());
+		std::lock_guard lock(m_mutex);
+		IF_(m_trackState == track_stop);
 
 		Mat m;
-		m_pRGBin->get(m);
-		IF_(m.empty());
-
-		if (m_iSet > m_iInit)
+		const uint64_t tStamp = m_pRGBin->get(m);
+		if (m.empty())
 		{
-			// init a new track target
-			if (!m_pTracker.empty())
-				m_pTracker.release();
+			m_trackState = track_stop;
+			m_bb.setZero();
+			return;
+		}
 
-			createTracker();
-			m_pTracker->init(m, m_newBB);
-			m_trackState = track_update;
-			m_rBB = m_newBB;
+		const bool bInit = m_iSet > m_iInit;
+		IF_(!bInit && tStamp == m_tFrame);
+		m_tFrame = tStamp;
+		bool bTracked = false;
+		try
+		{
+			if (bInit)
+			{
+				if (!m_pTracker.empty())
+					m_pTracker.release();
+
+				createTracker();
+				m_rBB = m_newBB & Rect(0, 0, m.cols, m.rows);
+				if (!m_pTracker.empty() && m_rBB.area() > 0)
+				{
+					m_pTracker->init(m, m_rBB);
+					bTracked = true;
+				}
+				m_iInit = m_iSet;
+			}
+			else if (!m_pTracker.empty())
+			{
+				bTracked = m_pTracker->update(m, m_rBB);
+			}
+
+		}
+		catch (const cv::Exception &)
+		{
+			bTracked = false;
 			m_iInit = m_iSet;
 		}
-		else
-		{
-			// track update
-			IF_(m_trackState != track_update);
-			IF_(m_pTracker.empty());
+		m_rBB &= Rect(0, 0, m.cols, m.rows);
+		bTracked = bTracked && m_rBB.area() > 0;
 
-			//		m_pTracker->update(m, m_rBB);
-			//		m_bb = bbScale(rect2BB<Vector4f>(m_rBB), 1.0/m.cols, 1.0/m.rows);
+		m_trackState = bTracked ? track_update : track_stop;
+		m_bb.setZero();
+		if (bTracked)
+		{
+			BBOX_OBJ bb;
+			bb.setType(obj_bbox);
+			bb.setPos(Vector3f(m_rBB.x, m_rBB.y, 0));
+			bb.setDim(Vector3f(m_rBB.width, m_rBB.height, 0));
+			m_bb = bbScale(bb.getBB2D(), 1.0f / m.cols, 1.0f / m.rows);
+			// A restart may initialize the same capture again; publish each capture once.
+			if (tStamp != m_tPublished)
+			{
+				m_pBBout->setContainerDim(Vector3f(m.cols, m.rows, 0));
+				m_pBBout->add({bb}, tStamp);
+				m_tPublished = tStamp;
+			}
 		}
 	}
 

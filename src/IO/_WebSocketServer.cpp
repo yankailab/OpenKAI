@@ -76,6 +76,8 @@ namespace kai
 		IF_F(!this->_IObase::link(pM));
 		NULL_F(m_pTr);
 
+		m_pM = pM;
+
 		return true;
 	}
 
@@ -218,10 +220,9 @@ namespace kai
 		c.m_pJcfg->setJson(j);
 
 		_WebSocket *pWS = new _WebSocket();
-		pWS->setInstanceMgr(m_pM);
 		pWS->setName(j["name"].get<string>());
 		pWS->setConfig(c.m_pJcfg.get(), c.m_pJcfg->getJson());
-		if (!pWS->loadConfig() || !pWS->link())
+		if (!pWS->loadConfig() || !pWS->link(m_pM))
 		{
 			delete pWS;
 			LOG_E("Accepted WebSocket configuration failed");

@@ -70,11 +70,6 @@ namespace kai
 		return true;
 	}
 
-	bool SharedMemoryFrame::bOpen(void)
-	{
-		return m_bOpened;
-	}
-
 	void SharedMemoryFrame::close(void)
 	{
 		IF_(!m_bOpened);
@@ -88,21 +83,22 @@ namespace kai
 		}
 	}
 
-	int SharedMemoryFrame::nB(void)
+	void SharedMemoryFrame::set(uint8_t *pB, int nB, uint64_t tStamp)
 	{
-		return m_nB;
+		NULL_(pB);
+		
+		//TODO
+
+		updateTstamp(tStamp);
 	}
 
-	void *SharedMemoryFrame::p(void)
+	uint64_t SharedMemoryFrame::get(uint8_t *pB, int nB)
 	{
-		IF__(!m_bOpened, nullptr);
+		NULL__(pB, 0);
 
-		return m_pB;
-	}
+		//TODO
 
-	bool SharedMemoryFrame::bWriter(void)
-	{
-		return m_bWriter;
+		return getTstamp();
 	}
 
 }

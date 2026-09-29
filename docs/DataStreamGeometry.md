@@ -1,8 +1,8 @@
 # DataObject ownership and interfaces
 
-Images, depth, points, lines, maps, and IMU samples are owned by independent DataObjects. Image and geometry producers publish complete frames, while IMU producers append samples. Consumers resolve a stream name through `InstanceMgr::findDataObject` instead of calling a producer module. `OCTREE_CELL` and selectable-grid cell interfaces remain grid-owned.
+Images, depth, points, lines, maps, detections, tracked boxes, and IMU samples are owned by independent DataObjects. `*Frame` classes replace complete payloads with `set(...)` and copy them with `get(...)`. `*Stream` classes append timestamped elements with `add(...)` and copy retained histories with `get(...)`. Detection and tracking outputs use `BBoxStream`; IMU channels use `IMUstream`. Consumers resolve a DataObject name through `InstanceMgr::findDataObject` instead of calling a producer module. `OCTREE_CELL` and selectable-grid cell interfaces remain grid-owned.
 
-Declare each stream as a top-level launch object. Streams have no worker thread:
+Declare each DataObject as a top-level launch object. DataObjects have no worker thread:
 
 ```json
 {
@@ -11,11 +11,12 @@ Declare each stream as a top-level launch object. Streams have no worker thread:
   "points": { "type": "dataObject", "class": "PCLframe" },
   "lines": { "type": "dataObject", "class": "LineFrame" },
   "imu": { "type": "dataObject", "class": "IMUstream" },
+  "detections": { "type": "dataObject", "class": "BBoxStream" },
   "map": { "type": "dataObject", "class": "PCLmap" }
 }
 ```
 
-A stream can remain enabled when its producer is disabled: readers then copy an empty initial payload. Stream names must be unique, and configured readers require the matching stream type.
+A DataObject can remain enabled when its producer is disabled: readers then copy an empty initial payload. DataObject names must be unique, and configured readers require the matching type.
 
 ## Module configuration
 
@@ -24,7 +25,9 @@ A stream can remain enabled when its producer is disabled: readers then copy an 
 | Camera/image producers | Device or file | `RGBframe` |
 | Image filters | `RGBframeIn` (depth filter: `DframeIn`) | `RGBframe` |
 | `_WindowCV`, `_GstOutput` | `RGBframeIn` | Window or video output |
-| Image detectors and trackers | `RGBframeIn` | Existing detection/tracking outputs |
+| `_Contour`, `_ArUco`, `_YOLO26detectONNX` | `RGBframeIn` | `BBoxStreamOut` |
+| `_SingleTracker` | `RGBframeIn`, target commands through `_TrackerBase` | `BBoxStreamOut` |
+| `_APmav_follow`, `_APmav_land` | `BBoxStreamIn`; optional `_TrackerBase` and `BBoxStreamTrackIn` | Existing autopilot controls |
 | `_PCfile`, `_PCrecv` | File or transport as configured | `PCLframe` |
 | `_PCtransform` | `PCLframeIn` | `PCLframe` |
 | `_PCmerge` | `vPCLframes` array | `PCLframe` |
@@ -75,16 +78,100 @@ For example, a file, grid, and viewer can share one cloud without referring to t
 
 Both web and ImGUI geometry viewers retain `vGeometry`. Each entry names `PCLframe`, `LineFrame`, or both, with an optional display `name`. Existing `nP`, `nL`, visibility, and material settings remain viewer limits and styling. The old `_GeometryBase` entry and `bFrame` setting are removed. `vSelectableOctGrid` remains unchanged. `_WebGLIM` reads the stream named by `PCLmapIn`; its source `_GLIM` writes that same stream through `PCLmap`.
 
+## Bounding box and target streams
+
+Replace detection canvas storage with a `BBoxStream` DataObject and remove its
+worker-thread and drawing settings. Detectors and trackers resolve the stream
+named by `BBoxStreamOut`; `_APmav_follow` and `_APmav_land` resolve detections
+through `BBoxStreamIn`. DataObjects do not belong in a console's `vBASE` module
+list. Each detector or tracker appends timestamped elements; existing history is
+retained until the configured `nBuf` capacity evicts older elements.
+
+`BBoxStream` owns copied `BBOX_OBJ` records. A record's `m_type` determines the
+meaning of its position and dimensions:
+
+| Type | `m_vPos` | `m_vDim` |
+| --- | --- | --- |
+| `obj_bbox` | Pixel coordinates `(left, top, 0)` | Pixel dimensions `(width, height, 0)` |
+| `obj_tag` | Pixel center `(x, y)` and tag angle in degrees in `z` | Pixel radius in `x`; `y` and `z` are zero |
+
+`m_vClass` stores class IDs (tag IDs for ArUco) and integer confidence percentages
+from 0 to 100. `m_tStamp` records the element's capture or append time in
+nanoseconds. Do not normalize detector output before appending it.
+
+Producers use `add(objects, timestamp)` to append copies of detected or tracked
+objects. The timestamp is assigned to the new elements; a zero/default timestamp
+uses the current host clock. The stream keeps at most `nBuf` elements (default
+1000), retaining the newest appended entries. Append order is preserved; element
+timestamps may repeat or arrive out of order. An empty `add` does nothing and
+preserves prior history and its timestamp. Missing detections, inference failure,
+and stopped tracking therefore do not erase earlier records.
+
+`get(objects)` copies the retained history and returns the timestamp from the
+last nonempty append. Consumers determine validity, expiry, and selection from
+each record's `m_tStamp`; the stream's update timestamp does not make older
+elements fresh. Multiple appends can share one timestamp, and the last appended
+element need not have the newest capture time. Consumers also own deduplication
+or timestamp cursors when processing history and must not assume timestamp order.
+
+Container dimensions are separate metadata:
+`setContainerDim(Vector3f(width, height, 0))` sets them and
+`getContainerDim()` returns them. Changing dimensions neither clears history nor
+updates element timestamps. Target controllers use these image dimensions to
+normalize pixel coordinates. The dimensions apply to all retained records;
+keep a consistent image source and coordinate system for a stream's history.
+Use separate streams for producers with different image dimensions or coordinate
+systems. Reading dimensions and history is separate; they do not form an atomic
+combined result.
+
+Target control timestamps must use the host monotonic nanosecond clock returned
+by `getTns()`. Detectors and trackers preserve image capture timestamps;
+re-reading history cannot refresh an element's age. `_APmav_follow` and
+`_APmav_land` reject records with future timestamps and records older than
+`tOutTargetNotFound` (100 ms by default). A zero timeout disables the follower's
+target-loss hold while retaining a 100 ms element freshness limit. Set this limit
+with the expected camera and inference latency in mind.
+
+Optional tracking uses a separate output stream. Configure a `_SingleTracker`
+with `RGBframeIn` and `BBoxStreamOut`, then configure the follower's
+`_TrackerBase` with that tracker module and `BBoxStreamTrackIn` with the same
+output stream. The tracker stream must differ from `BBoxStreamIn`. Starting
+and stopping a track remain tracker commands; target geometry is read from the
+DataObject. Tracking boxes use the same pixel
+convention as detection boxes.
+
+For landing tags, normalized area is the radius bounding square's area,
+`4 * radius * radius / (image width * image height)`. Review existing `vSize`
+and `vKdist` tag calibration when migrating: the former generic dimension-area
+calculation returned zero for radius-only tag dimensions.
+
+Run the focused bounding-box stream, tracker, and target-control checks from the repository root:
+
+```sh
+cmake -S test/DataObject -B /tmp/openkai-bbox-tests
+cmake --build /tmp/openkai-bbox-tests --parallel 2
+ctest --test-dir /tmp/openkai-bbox-tests --output-on-failure
+
+cmake -S test/Tracker -B /tmp/openkai-tracker-tests
+cmake --build /tmp/openkai-tracker-tests --parallel 2
+ctest --test-dir /tmp/openkai-tracker-tests --output-on-failure
+
+cmake -S test/Autopilot -B /tmp/openkai-target-tests
+cmake --build /tmp/openkai-target-tests --parallel 2
+ctest --test-dir /tmp/openkai-target-tests --output-on-failure
+```
+
 ## Frame ownership and timing
 
-RGBframe, RGBDframe, PCLframe, LineFrame, PCLmap, and IMUstream use copying
-`set(...)` and `get(...)` interfaces. `set` copies caller-owned data into the
-stream; `get` copies it into caller-owned output buffers. Later writes to either
-copy do not change the other. Streams have no shared snapshot objects or
-revision counters.
+RGBframe, RGBDframe, PCLframe, LineFrame, and PCLmap use copying `set(...)` and
+`get(...)` interfaces. `set` replaces the complete stored payload with a copy of
+caller-owned data; `get` copies that payload into caller-owned output buffers.
+Later writes to either copy do not change the other. BBoxStream and IMUstream
+use append/get history interfaces instead. DataObjects have no shared snapshot
+objects or revision counters.
 
-`getTstamp()` cheaply reads the stream's current timestamp. Consumers can skip
-`get` when it matches their last timestamp. Because a writer can run between
+For whole-frame DataObjects, `getTstamp()` cheaply reads the current timestamp.
+Consumers can skip `get` when it matches their last timestamp. Because a writer can run between
 these calls, record the timestamp returned by `get`: it is read under the same
 lock as the copied payload. Timestamp zero denotes the initial empty stream.
 A zero/default timestamp passed to image or geometry `set` uses the current
@@ -110,18 +197,20 @@ polling consumers observe the clear.
 `IMUstream::addGyro(value, stamp)` and
 `addAcc(value, stamp)` append samples in constant time.
 `get(deque<IMU_DATA> &gyro, deque<IMU_DATA> &acc)` copies both bounded histories,
-each capped at 1000 samples, and returns their common update timestamp. Sample
-pairing and timestamp cursors belong to consumers such as SLAM. Gyro and
+each capped by `nBuf` (default 1000), and returns their common update timestamp.
+Sample pairing, validity checks, and timestamp cursors belong to consumers such
+as SLAM. A repeated or older timestamp appends without resetting the channel's
+history; each consumer decides whether it can use the sample. Gyro and
 accelerometer samples can arrive separately with the same timestamp, so an IMU
 reader must inspect both copied histories and track each channel's sample
 timestamps. Do not skip an entire IMU read merely because `getTstamp()` matches
 the previous value.
 
-These are latest-frame streams, not queues: a slow consumer can skip updates.
-Change detection uses timestamps only. Repeated timestamps are indistinguishable
-even when the payload changed. Producers must supply changed timestamps for
-updates that readers should observe. SLAM additionally requires increasing
-capture times. `_PCtransform` preserves the input capture timestamp and
+Whole-frame DataObjects retain one complete payload, so a slow consumer can skip
+updates. Their change detection uses timestamps only. Repeated timestamps are
+indistinguishable even when the payload changed. Frame producers must supply
+changed timestamps for updates that readers should observe. SLAM additionally
+requires increasing capture times. `_PCtransform` preserves the input capture timestamp and
 `_PCmerge` uses the largest input timestamp. Transform configuration or expiry
 changes with the same timestamp therefore remain invisible to timestamp-gated
 consumers until a new capture timestamp arrives. These modules do not substitute
@@ -147,9 +236,9 @@ uses GLM3 with map timestamps. Legacy wire decoders are not supported.
 
 ## Examples and scope
 
-Updated launches include `WebViewer3D.json`, `ImGUI.json`, `APmav_drive.json`, `Orbbec.json`, `Scepter.json`, `GLIM_orbbec.json`, `GLIM_scepter.json`, and `_GLIM.json`. `Livox2.json` is a standalone LiDAR example; configure its host/device IP addresses for the local network. Build LiDAR with `WITH_SENSOR`, `WITH_UNIVERSE`, and `WITH_IO` enabled; Open3D is not required. `_GLIM.json` declares input streams but needs a producer to populate them.
+Updated launches include `Detectors.json`, `WebViewer3D.json`, `ImGUI.json`, `APmav_drive.json`, `Orbbec.json`, `Scepter.json`, `GLIM_orbbec.json`, `GLIM_scepter.json`, and `_GLIM.json`. `Livox2.json` is a standalone LiDAR example; configure its host/device IP addresses for the local network. Build LiDAR with `WITH_SENSOR`, `WITH_UNIVERSE`, and `WITH_IO` enabled; Open3D is not required. `_GLIM.json` declares input streams but needs a producer to populate them.
 
-The old `_IMUbase` preview modules are absent from the migrated examples; camera and LiDAR IMU data go to `IMUstream`. The `_LCalign.json` launch now uses point and image DataObjects but retains legacy viewer and IMU settings. Legacy `.kiss` launches still reference older Tools/Open3D/ROS interfaces and are not migrated examples. Open3D point registration now uses the point stream keys above, while its registration and visualization algorithms still require `USE_OPEN3D`. Other `USE_OPEN3D` interfaces, `Universe/Object`, and `Universe/Surface` remain outside this migration.
+The old `_IMUbase` preview modules are absent from the migrated examples; camera and LiDAR IMU data go to `IMUstream`. The `_LCalign.json` launch now uses point and image DataObjects but retains legacy viewer and IMU settings. Legacy `.kiss` launches still reference older Tools/Open3D/ROS interfaces and are not migrated examples. The historical `test/apMavlinkFollow.kiss` has updated bounding-box stream links, but its older syntax and remaining module settings still need migration before use. Open3D point registration now uses the point stream keys above, while its registration and visualization algorithms still require `USE_OPEN3D`. Other `USE_OPEN3D` interfaces remain outside this migration.
 
 ## Point transport and validation
 

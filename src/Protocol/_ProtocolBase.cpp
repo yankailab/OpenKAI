@@ -38,7 +38,6 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;
-		IF_F(!m_pTr->link());
 
 		string n = "";
 		jKv(j, "_IObase", n);

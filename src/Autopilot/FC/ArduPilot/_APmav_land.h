@@ -2,7 +2,6 @@
 #define OpenKAI_src_Autopilot_FC_ArduPilot__APmav_land_H_
 
 #include "_APmav_follow.h"
-#include "../../../Detector/_DetectorBase.h"
 #include "../../../Utility/utilEvent.h"
 #include "../../../Sensor/Distance/_DistSensorBase.h"
 

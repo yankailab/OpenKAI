@@ -33,7 +33,7 @@ namespace kai
 		uint64_t get(deque<IMU_DATA> &gyro, deque<IMU_DATA> &acc);
 
 	private:
-		int m_nBuf = 1000;
+		uint32_t m_nBuf = 1000;
 
 		deque<IMU_DATA> m_dqGyro;
 		deque<IMU_DATA> m_dqAcc;

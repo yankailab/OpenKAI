@@ -26,20 +26,21 @@ namespace kai
 		virtual bool saveConfig(bool bExport) override;
 
 
+		bool open(void);
+		void close(void);
 
-		virtual int nB(void);
-		virtual void* p(void);
-		virtual bool bWriter(void);
+		void set(uint8_t* pB, int nB, uint64_t tStamp = 0);
+		uint64_t get(uint8_t* pB, int nB);
 
 	protected:
 		string m_shmName = "";
 		int m_nB = 0;
+
 		int m_fd = 0;
 		void* m_pB = 0;
+
 		bool m_bWriter = true;
-
 		bool m_bOpened = false;
-
 	};
 
 }

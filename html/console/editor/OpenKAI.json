@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "d161852581c840f678ce219f11e1db7b8824530a1db0dfe80a39f1fa4d4ab770",
+  "sourceDigest": "438e87112ee7447e9c31683a70567571f6a582bb62c76c1908a5675b5d89a784",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -20,7 +20,6 @@
     "File",
     "Filter",
     "IO",
-    "IPC",
     "Instance",
     "Navigation",
     "Net",
@@ -45,7 +44,6 @@
     "Universe/Geometry/PointCloud/Pipeline",
     "Universe/Geometry/PointCloud/Registration",
     "Universe/Grid",
-    "Universe/Surface",
     "Vision",
     "Vision/Pipeline",
     "Vision/RGBD"
@@ -6889,14 +6887,35 @@
       "parameters": [
         {
           "path": [
+            "BBoxStreamIn"
+          ],
+          "type": "string",
+          "declaredIn": "_APmav_follow",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:127",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BBoxStreamTrackIn"
+          ],
+          "type": "string",
+          "declaredIn": "_APmav_follow",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:132",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
             "PIDalt"
           ],
           "type": "string",
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:114",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
@@ -6906,9 +6925,8 @@
           "type": "string",
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:106",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
@@ -6918,9 +6936,8 @@
           "type": "string",
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:110",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
@@ -6930,9 +6947,8 @@
           "type": "string",
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:118",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
@@ -6949,26 +6965,14 @@
         },
         {
           "path": [
-            "_SurfaceBase"
-          ],
-          "type": "string",
-          "declaredIn": "_APmav_follow",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:126",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
             "_TrackerBase"
           ],
           "type": "string",
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:122",
-          "typeEvidence": "declaration",
+          "typeEvidence": "key-convention",
           "cppVariable": "n",
-          "cppType": "string",
+          "cppType": "m_pBBtrackI",
           "dependency": true
         },
         {
@@ -7212,6 +7216,26 @@
       "dependencies": [
         {
           "path": [
+            "BBoxStreamIn"
+          ],
+          "targetClass": "BBoxStream",
+          "multiple": false,
+          "declaredIn": "_APmav_follow",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:128",
+          "containers": []
+        },
+        {
+          "path": [
+            "BBoxStreamTrackIn"
+          ],
+          "targetClass": "BBoxStream",
+          "multiple": false,
+          "declaredIn": "_APmav_follow",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:133",
+          "containers": []
+        },
+        {
+          "path": [
             "PIDalt"
           ],
           "targetClass": "PID",
@@ -7263,22 +7287,13 @@
         },
         {
           "path": [
-            "_SurfaceBase"
-          ],
-          "targetClass": "_SurfaceBase",
-          "multiple": false,
-          "declaredIn": "_APmav_follow",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:127",
-          "containers": []
-        },
-        {
-          "path": [
             "_TrackerBase"
           ],
           "targetClass": "_TrackerBase",
           "multiple": false,
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:123",
+          "required": true,
           "containers": []
         }
       ],
@@ -7310,11 +7325,33 @@
     {
       "name": "_APmav_land",
       "category": "Autopilot/FC/ArduPilot",
-      "source": "src/Autopilot/FC/ArduPilot/_APmav_land.h:26",
+      "source": "src/Autopilot/FC/ArduPilot/_APmav_land.h:25",
       "baseClasses": [
         "_APmav_follow"
       ],
       "parameters": [
+        {
+          "path": [
+            "BBoxStreamIn"
+          ],
+          "type": "string",
+          "declaredIn": "_APmav_follow",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:127",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BBoxStreamTrackIn"
+          ],
+          "type": "string",
+          "declaredIn": "_APmav_follow",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:132",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
         {
           "path": [
             "PIDalt"
@@ -7322,9 +7359,8 @@
           "type": "string",
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:114",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
@@ -7334,9 +7370,8 @@
           "type": "string",
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:106",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
@@ -7346,9 +7381,8 @@
           "type": "string",
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:110",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
@@ -7358,9 +7392,8 @@
           "type": "string",
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:118",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
@@ -7389,26 +7422,14 @@
         },
         {
           "path": [
-            "_SurfaceBase"
-          ],
-          "type": "string",
-          "declaredIn": "_APmav_follow",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:126",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
             "_TrackerBase"
           ],
           "type": "string",
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:122",
-          "typeEvidence": "declaration",
+          "typeEvidence": "key-convention",
           "cppVariable": "n",
-          "cppType": "string",
+          "cppType": "m_pBBtrackI",
           "dependency": true
         },
         {
@@ -7772,6 +7793,26 @@
       "dependencies": [
         {
           "path": [
+            "BBoxStreamIn"
+          ],
+          "targetClass": "BBoxStream",
+          "multiple": false,
+          "declaredIn": "_APmav_follow",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:128",
+          "containers": []
+        },
+        {
+          "path": [
+            "BBoxStreamTrackIn"
+          ],
+          "targetClass": "BBoxStream",
+          "multiple": false,
+          "declaredIn": "_APmav_follow",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:133",
+          "containers": []
+        },
+        {
+          "path": [
             "PIDalt"
           ],
           "targetClass": "PID",
@@ -7833,22 +7874,13 @@
         },
         {
           "path": [
-            "_SurfaceBase"
-          ],
-          "targetClass": "_SurfaceBase",
-          "multiple": false,
-          "declaredIn": "_APmav_follow",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:127",
-          "containers": []
-        },
-        {
-          "path": [
             "_TrackerBase"
           ],
           "targetClass": "_TrackerBase",
           "multiple": false,
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:123",
+          "required": true,
           "containers": []
         }
       ],
@@ -10130,7 +10162,7 @@
     {
       "name": "BBoxStream",
       "category": "DataObject",
-      "source": "src/DataObject/BBoxStream.h:104",
+      "source": "src/DataObject/BBoxStream.h:131",
       "baseClasses": [
         "DataObjBase"
       ],
@@ -10172,6 +10204,18 @@
         },
         {
           "path": [
+            "nBuf"
+          ],
+          "type": "integer",
+          "declaredIn": "BBoxStream",
+          "source": "src/DataObject/BBoxStream.cpp:24",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_nBuf",
+          "cppType": "int",
+          "default": 1000
+        },
+        {
+          "path": [
             "name"
           ],
           "type": "string",
@@ -10192,6 +10236,18 @@
           "extraction": "audited-adapter",
           "default": "dataObject",
           "description": "Create an independent DataObject rather than a worker module."
+        },
+        {
+          "path": [
+            "vContainerDim"
+          ],
+          "type": "array",
+          "declaredIn": "BBoxStream",
+          "source": "src/DataObject/BBoxStream.cpp:25",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_vContainerDim",
+          "cppType": "Vector3f",
+          "defaultExpression": "Vector3f::Zero()"
         }
       ],
       "dependencies": [],
@@ -10395,6 +10451,18 @@
           "cppVariable": "m_class",
           "cppType": "string",
           "default": ""
+        },
+        {
+          "path": [
+            "nBuf"
+          ],
+          "type": "integer",
+          "declaredIn": "IMUstream",
+          "source": "src/DataObject/IMUstream.cpp:26",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_nBuf",
+          "cppType": "int",
+          "default": 1000
         },
         {
           "path": [
@@ -10814,6 +10882,118 @@
       "configurable": true
     },
     {
+      "name": "SharedMemoryFrame",
+      "category": "DataObject",
+      "source": "src/DataObject/SharedMemoryFrame.h:19",
+      "baseClasses": [
+        "DataObjBase"
+      ],
+      "parameters": [
+        {
+          "path": [
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false
+        },
+        {
+          "path": [
+            "bON"
+          ],
+          "type": "boolean",
+          "source": "src/Instance/InstanceMgr.cpp:createAll",
+          "declaredIn": "BASE",
+          "extraction": "audited-adapter",
+          "default": true,
+          "description": "false disables this instance; true enables it."
+        },
+        {
+          "path": [
+            "bWriter"
+          ],
+          "type": "boolean",
+          "declaredIn": "SharedMemoryFrame",
+          "source": "src/DataObject/SharedMemoryFrame.cpp:29",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bWriter",
+          "cppType": "bool",
+          "default": true
+        },
+        {
+          "path": [
+            "class"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:57",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_class",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "nB"
+          ],
+          "type": "integer",
+          "declaredIn": "SharedMemoryFrame",
+          "source": "src/DataObject/SharedMemoryFrame.cpp:28",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_nB",
+          "cppType": "int",
+          "default": 0
+        },
+        {
+          "path": [
+            "name"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:56",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_name",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "shmName"
+          ],
+          "type": "string",
+          "declaredIn": "SharedMemoryFrame",
+          "source": "src/DataObject/SharedMemoryFrame.cpp:27",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_shmName",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "type"
+          ],
+          "type": "string",
+          "source": "src/Instance/InstanceMgr.cpp:createAll",
+          "declaredIn": "DataObjBase",
+          "extraction": "audited-adapter",
+          "default": "dataObject",
+          "description": "Create an independent DataObject rather than a worker module."
+        }
+      ],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": true,
+      "buildConditions": [
+        []
+      ],
+      "configurable": true
+    },
+    {
       "name": "UGLIDcellStream",
       "category": "DataObject",
       "source": "src/DataObject/UGLIDcellStream.h:15",
@@ -10899,27 +11079,24 @@
       "parameters": [
         {
           "path": [
-            "RGBframeIn"
-          ],
-          "type": "json",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:74",
-          "typeEvidence": "unresolved",
-          "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_SurfaceBase"
+            "BBoxStreamOut"
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:79",
-          "typeEvidence": "key-convention",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeIn"
+          ],
+          "type": "string",
+          "declaredIn": "_DetectorBase",
+          "source": "src/Detector/_DetectorBase.cpp:74",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
           "dependency": true
         },
         {
@@ -10947,18 +11124,6 @@
         },
         {
           "path": [
-            "bPose"
-          ],
-          "type": "boolean",
-          "declaredIn": "_ArUco",
-          "source": "src/Detector/_ArUco.cpp:31",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bPose",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
             "class"
           ],
           "type": "string",
@@ -10980,17 +11145,6 @@
           "cppVariable": "m_dict",
           "cppType": "uint8_t",
           "defaultExpression": "aruco::DICT_4X4_50"
-        },
-        {
-          "path": [
-            "fCalib"
-          ],
-          "type": "string",
-          "declaredIn": "_ArUco",
-          "source": "src/Detector/_ArUco.cpp:32",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fCalib",
-          "cppType": "string"
         },
         {
           "path": [
@@ -11107,22 +11261,22 @@
       "dependencies": [
         {
           "path": [
+            "BBoxStreamOut"
+          ],
+          "targetClass": "BBoxStream",
+          "multiple": false,
+          "declaredIn": "_DetectorBase",
+          "source": "src/Detector/_DetectorBase.cpp:80",
+          "containers": []
+        },
+        {
+          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:75",
-          "containers": []
-        },
-        {
-          "path": [
-            "_SurfaceBase"
-          ],
-          "targetClass": "_SurfaceBase",
-          "multiple": false,
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:80",
           "containers": []
         }
       ],
@@ -11155,27 +11309,24 @@
       "parameters": [
         {
           "path": [
-            "RGBframeIn"
-          ],
-          "type": "json",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:74",
-          "typeEvidence": "unresolved",
-          "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_SurfaceBase"
+            "BBoxStreamOut"
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:79",
-          "typeEvidence": "key-convention",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeIn"
+          ],
+          "type": "string",
+          "declaredIn": "_DetectorBase",
+          "source": "src/Detector/_DetectorBase.cpp:74",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
           "dependency": true
         },
         {
@@ -11340,22 +11491,22 @@
       "dependencies": [
         {
           "path": [
+            "BBoxStreamOut"
+          ],
+          "targetClass": "BBoxStream",
+          "multiple": false,
+          "declaredIn": "_DetectorBase",
+          "source": "src/Detector/_DetectorBase.cpp:80",
+          "containers": []
+        },
+        {
+          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:75",
-          "containers": []
-        },
-        {
-          "path": [
-            "_SurfaceBase"
-          ],
-          "targetClass": "_SurfaceBase",
-          "multiple": false,
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:80",
           "containers": []
         }
       ],
@@ -11380,34 +11531,31 @@
     {
       "name": "_DetectorBase",
       "category": "Detector",
-      "source": "src/Detector/_DetectorBase.h:18",
+      "source": "src/Detector/_DetectorBase.h:20",
       "baseClasses": [
         "_ModuleBase"
       ],
       "parameters": [
         {
           "path": [
-            "RGBframeIn"
-          ],
-          "type": "json",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:74",
-          "typeEvidence": "unresolved",
-          "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_SurfaceBase"
+            "BBoxStreamOut"
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:79",
-          "typeEvidence": "key-convention",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeIn"
+          ],
+          "type": "string",
+          "declaredIn": "_DetectorBase",
+          "source": "src/Detector/_DetectorBase.cpp:74",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
           "dependency": true
         },
         {
@@ -11548,22 +11696,22 @@
       "dependencies": [
         {
           "path": [
+            "BBoxStreamOut"
+          ],
+          "targetClass": "BBoxStream",
+          "multiple": false,
+          "declaredIn": "_DetectorBase",
+          "source": "src/Detector/_DetectorBase.cpp:80",
+          "containers": []
+        },
+        {
+          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:75",
-          "containers": []
-        },
-        {
-          "path": [
-            "_SurfaceBase"
-          ],
-          "targetClass": "_SurfaceBase",
-          "multiple": false,
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:80",
           "containers": []
         }
       ],
@@ -11581,1467 +11729,6 @@
       "configurable": true
     },
     {
-      "name": "_HandKey",
-      "category": "Detector",
-      "source": "src/Detector/_HandKey.h:41",
-      "baseClasses": [
-        "_DetectorBase"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "RGBframeIn"
-          ],
-          "type": "json",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:74",
-          "typeEvidence": "unresolved",
-          "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_SurfaceBase"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:79",
-          "typeEvidence": "key-convention",
-          "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "dependency": true
-        },
-        {
-          "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "bSwapRB"
-          ],
-          "type": "boolean",
-          "declaredIn": "_HandKey",
-          "source": "src/Detector/_HandKey.cpp:28",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bSwapRB",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "fClass"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:27",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fClass",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "fMean"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fMean",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "fModel"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:24",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fModel",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "fWeight"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:25",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fWeight",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "iBackend"
-          ],
-          "type": "integer",
-          "declaredIn": "_HandKey",
-          "source": "src/Detector/_HandKey.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_iBackend",
-          "cppType": "int",
-          "defaultExpression": "dnn::DNN_BACKEND_OPENCV"
-        },
-        {
-          "path": [
-            "iTarget"
-          ],
-          "type": "integer",
-          "declaredIn": "_HandKey",
-          "source": "src/Detector/_HandKey.cpp:27",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_iTarget",
-          "cppType": "int",
-          "defaultExpression": "dnn::DNN_TARGET_CPU"
-        },
-        {
-          "path": [
-            "nH"
-          ],
-          "type": "integer",
-          "declaredIn": "_HandKey",
-          "source": "src/Detector/_HandKey.cpp:25",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nH",
-          "cppType": "int",
-          "default": 368
-        },
-        {
-          "path": [
-            "nW"
-          ],
-          "type": "integer",
-          "declaredIn": "_HandKey",
-          "source": "src/Detector/_HandKey.cpp:24",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nW",
-          "cppType": "int",
-          "default": 654
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "scale"
-          ],
-          "type": "number",
-          "declaredIn": "_HandKey",
-          "source": "src/Detector/_HandKey.cpp:29",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_scale",
-          "cppType": "float",
-          "default": 0.00392156862745098
-        },
-        {
-          "path": [
-            "thr"
-          ],
-          "type": "number",
-          "declaredIn": "_HandKey",
-          "source": "src/Detector/_HandKey.cpp:31",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_thr",
-          "cppType": "float",
-          "default": 0.01
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vClass"
-          ],
-          "type": "array",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:45",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vClass",
-          "cppType": "vector<string>"
-        },
-        {
-          "path": [
-            "vMean"
-          ],
-          "type": "array",
-          "declaredIn": "_HandKey",
-          "source": "src/Detector/_HandKey.cpp:30",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vMean",
-          "cppType": "Vector3i",
-          "defaultExpression": "Vector3i::Zero()"
-        }
-      ],
-      "dependencies": [
-        {
-          "path": [
-            "RGBframeIn"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:75",
-          "containers": []
-        },
-        {
-          "path": [
-            "_SurfaceBase"
-          ],
-          "targetClass": "_SurfaceBase",
-          "multiple": false,
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:80",
-          "containers": []
-        }
-      ],
-      "containers": [
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": true,
-      "buildConditions": [
-        [
-          "ifdef WITH_DETECTOR",
-          "ifdef USE_OPENCV"
-        ]
-      ],
-      "configurable": true
-    },
-    {
-      "name": "_IRLock",
-      "category": "Detector",
-      "source": "src/Detector/_IRLock.h:35",
-      "baseClasses": [
-        "_DetectorBase"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "RGBframeIn"
-          ],
-          "type": "json",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:74",
-          "typeEvidence": "unresolved",
-          "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_IObase"
-          ],
-          "type": "string",
-          "declaredIn": "_IRLock",
-          "source": "src/Detector/_IRLock.cpp:53",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_SurfaceBase"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:79",
-          "typeEvidence": "key-convention",
-          "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "dependency": true
-        },
-        {
-          "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "fClass"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:27",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fClass",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "fMean"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fMean",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "fModel"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:24",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fModel",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "fWeight"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:25",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fWeight",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vCamSize"
-          ],
-          "type": "array",
-          "declaredIn": "_IRLock",
-          "source": "src/Detector/_IRLock.cpp:27",
-          "typeEvidence": "declaration",
-          "cppVariable": "vCamSize",
-          "cppType": "Vector2f",
-          "defaultExpression": "Vector2f::Zero()"
-        },
-        {
-          "path": [
-            "vClass"
-          ],
-          "type": "array",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:45",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vClass",
-          "cppType": "vector<string>"
-        }
-      ],
-      "dependencies": [
-        {
-          "path": [
-            "RGBframeIn"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:75",
-          "containers": []
-        },
-        {
-          "path": [
-            "_IObase"
-          ],
-          "targetClass": "_IObase",
-          "multiple": false,
-          "declaredIn": "_IRLock",
-          "source": "src/Detector/_IRLock.cpp:54",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "_SurfaceBase"
-          ],
-          "targetClass": "_SurfaceBase",
-          "multiple": false,
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:80",
-          "containers": []
-        }
-      ],
-      "containers": [
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": true,
-      "buildConditions": [
-        [
-          "ifdef WITH_DETECTOR",
-          "ifdef USE_OPENCV"
-        ]
-      ],
-      "configurable": true
-    },
-    {
-      "name": "_Lane",
-      "category": "Detector",
-      "source": "src/Detector/_Lane.h:200",
-      "baseClasses": [
-        "_ModuleBase"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "RGBframeIn"
-          ],
-          "type": "json",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:147",
-          "typeEvidence": "unresolved",
-          "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
-          "dependency": true
-        },
-        {
-          "path": [
-            "bDrawFilter"
-          ],
-          "type": "boolean",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:29",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bDrawFilter",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bDrawOverhead"
-          ],
-          "type": "boolean",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:28",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bDrawOverhead",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "binMed"
-          ],
-          "type": "integer",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:30",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_binMed",
-          "cppType": "int",
-          "default": 3
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "colorFilters"
-          ],
-          "type": "object",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:43"
-        },
-        {
-          "path": [
-            "colorFilters",
-            "*",
-            "clipLim"
-          ],
-          "type": "number",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "pF->m_clipLim",
-          "cppType": "double"
-        },
-        {
-          "path": [
-            "colorFilters",
-            "*",
-            "iChannel"
-          ],
-          "type": "integer",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "pF->m_iChannel",
-          "cppType": "int"
-        },
-        {
-          "path": [
-            "colorFilters",
-            "*",
-            "iColorSpace"
-          ],
-          "type": "integer",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "pF->m_iColorSpace",
-          "cppType": "int"
-        },
-        {
-          "path": [
-            "colorFilters",
-            "*",
-            "nTile"
-          ],
-          "type": "integer",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "pF->m_nTile",
-          "cppType": "int"
-        },
-        {
-          "path": [
-            "colorFilters",
-            "*",
-            "thr"
-          ],
-          "type": "integer",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:59",
-          "typeEvidence": "declaration",
-          "cppVariable": "pF->m_thr",
-          "cppType": "int"
-        },
-        {
-          "path": [
-            "lane"
-          ],
-          "type": "object",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:71"
-        },
-        {
-          "path": [
-            "lane",
-            "*",
-            "vROI"
-          ],
-          "type": "array",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:85",
-          "typeEvidence": "declaration",
-          "cppVariable": "pLane->m_ROI",
-          "cppType": "Vector4f",
-          "defaultExpression": "Vector4f::Zero()"
-        },
-        {
-          "path": [
-            "nAvr"
-          ],
-          "type": "integer",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:68",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nAvr",
-          "cppType": "int",
-          "default": 0
-        },
-        {
-          "path": [
-            "nMed"
-          ],
-          "type": "integer",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:69",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nMed",
-          "cppType": "int",
-          "default": 0
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "overheadH"
-          ],
-          "type": "integer",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:37",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_sizeOverhead.y()",
-          "cppType": "int"
-        },
-        {
-          "path": [
-            "overheadW"
-          ],
-          "type": "integer",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:36",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_sizeOverhead.x()",
-          "cppType": "int"
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vRoiLB"
-          ],
-          "type": "array",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:33",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vRoiLB",
-          "cppType": "Vector2f",
-          "default": [
-            0.0,
-            1.0
-          ]
-        },
-        {
-          "path": [
-            "vRoiLT"
-          ],
-          "type": "array",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:32",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vRoiLT",
-          "cppType": "Vector2f",
-          "default": [
-            0.2,
-            0.5
-          ]
-        },
-        {
-          "path": [
-            "vRoiRB"
-          ],
-          "type": "array",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:35",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vRoiRB",
-          "cppType": "Vector2f",
-          "default": [
-            1.0,
-            1.0
-          ]
-        },
-        {
-          "path": [
-            "vRoiRT"
-          ],
-          "type": "array",
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:34",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vRoiRT",
-          "cppType": "Vector2f",
-          "default": [
-            0.8,
-            0.5
-          ]
-        }
-      ],
-      "dependencies": [
-        {
-          "path": [
-            "RGBframeIn"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_Lane",
-          "source": "src/Detector/_Lane.cpp:148",
-          "required": true,
-          "containers": []
-        }
-      ],
-      "containers": [
-        {
-          "path": [
-            "colorFilters"
-          ],
-          "type": "object"
-        },
-        {
-          "path": [
-            "lane"
-          ],
-          "type": "object"
-        },
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": true,
-      "buildConditions": [
-        [
-          "ifdef WITH_DETECTOR",
-          "ifdef USE_OPENCV"
-        ]
-      ],
-      "configurable": true
-    },
-    {
-      "name": "_MotionDetector",
-      "category": "Detector",
-      "source": "src/Detector/_MotionDetector.h:16",
-      "baseClasses": [
-        "_DetectorBase"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "RGBframeIn"
-          ],
-          "type": "json",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:74",
-          "typeEvidence": "unresolved",
-          "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_SurfaceBase"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:79",
-          "typeEvidence": "key-convention",
-          "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "dependency": true
-        },
-        {
-          "path": [
-            "algorithm"
-          ],
-          "type": "string",
-          "declaredIn": "_MotionDetector",
-          "source": "src/Detector/_MotionDetector.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_algorithm",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "fClass"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:27",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fClass",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "fMean"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fMean",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "fModel"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:24",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fModel",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "fWeight"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:25",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fWeight",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "learningRate"
-          ],
-          "type": "number",
-          "declaredIn": "_MotionDetector",
-          "source": "src/Detector/_MotionDetector.cpp:27",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_learningRate",
-          "cppType": "double",
-          "default": -1
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vClass"
-          ],
-          "type": "array",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:45",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vClass",
-          "cppType": "vector<string>"
-        }
-      ],
-      "dependencies": [
-        {
-          "path": [
-            "RGBframeIn"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:75",
-          "containers": []
-        },
-        {
-          "path": [
-            "_SurfaceBase"
-          ],
-          "targetClass": "_SurfaceBase",
-          "multiple": false,
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:80",
-          "containers": []
-        }
-      ],
-      "containers": [
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": true,
-      "buildConditions": [
-        [
-          "ifdef WITH_DETECTOR",
-          "ifdef USE_OPENCV",
-          "ifdef USE_OPENCV_CONTRIB"
-        ]
-      ],
-      "configurable": true
-    },
-    {
-      "name": "_OpenPose",
-      "category": "Detector",
-      "source": "src/Detector/_OpenPose.h:40",
-      "baseClasses": [
-        "_DetectorBase"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "RGBframeIn"
-          ],
-          "type": "json",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:74",
-          "typeEvidence": "unresolved",
-          "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_SurfaceBase"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:79",
-          "typeEvidence": "key-convention",
-          "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "dependency": true
-        },
-        {
-          "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "bSwapRB"
-          ],
-          "type": "boolean",
-          "declaredIn": "_OpenPose",
-          "source": "src/Detector/_OpenPose.cpp:28",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bSwapRB",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "fClass"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:27",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fClass",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "fMean"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fMean",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "fModel"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:24",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fModel",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "fWeight"
-          ],
-          "type": "string",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:25",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fWeight",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "iBackend"
-          ],
-          "type": "integer",
-          "declaredIn": "_OpenPose",
-          "source": "src/Detector/_OpenPose.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_iBackend",
-          "cppType": "int",
-          "defaultExpression": "dnn::DNN_BACKEND_OPENCV"
-        },
-        {
-          "path": [
-            "iTarget"
-          ],
-          "type": "integer",
-          "declaredIn": "_OpenPose",
-          "source": "src/Detector/_OpenPose.cpp:27",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_iTarget",
-          "cppType": "int",
-          "defaultExpression": "dnn::DNN_TARGET_CPU"
-        },
-        {
-          "path": [
-            "nH"
-          ],
-          "type": "integer",
-          "declaredIn": "_OpenPose",
-          "source": "src/Detector/_OpenPose.cpp:25",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nH",
-          "cppType": "int",
-          "default": 368
-        },
-        {
-          "path": [
-            "nW"
-          ],
-          "type": "integer",
-          "declaredIn": "_OpenPose",
-          "source": "src/Detector/_OpenPose.cpp:24",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nW",
-          "cppType": "int",
-          "default": 368
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "scale"
-          ],
-          "type": "number",
-          "declaredIn": "_OpenPose",
-          "source": "src/Detector/_OpenPose.cpp:29",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_scale",
-          "cppType": "float",
-          "default": 0.00392156862745098
-        },
-        {
-          "path": [
-            "thr"
-          ],
-          "type": "number",
-          "declaredIn": "_OpenPose",
-          "source": "src/Detector/_OpenPose.cpp:31",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_thr",
-          "cppType": "float",
-          "default": 0.1
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vClass"
-          ],
-          "type": "array",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:45",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vClass",
-          "cppType": "vector<string>"
-        },
-        {
-          "path": [
-            "vMean"
-          ],
-          "type": "array",
-          "declaredIn": "_OpenPose",
-          "source": "src/Detector/_OpenPose.cpp:30",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vMean",
-          "cppType": "Vector3i",
-          "defaultExpression": "Vector3i::Zero()"
-        }
-      ],
-      "dependencies": [
-        {
-          "path": [
-            "RGBframeIn"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:75",
-          "containers": []
-        },
-        {
-          "path": [
-            "_SurfaceBase"
-          ],
-          "targetClass": "_SurfaceBase",
-          "multiple": false,
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:80",
-          "containers": []
-        }
-      ],
-      "containers": [
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": true,
-      "buildConditions": [
-        [
-          "ifdef WITH_DETECTOR",
-          "ifdef USE_OPENCV"
-        ]
-      ],
-      "configurable": true
-    },
-    {
       "name": "_YOLO26detectONNX",
       "category": "Detector",
       "source": "src/Detector/_YOLO26detectONNX.h:19",
@@ -13051,27 +11738,24 @@
       "parameters": [
         {
           "path": [
-            "RGBframeIn"
-          ],
-          "type": "json",
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:74",
-          "typeEvidence": "unresolved",
-          "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_SurfaceBase"
+            "BBoxStreamOut"
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:79",
-          "typeEvidence": "key-convention",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeIn"
+          ],
+          "type": "string",
+          "declaredIn": "_DetectorBase",
+          "source": "src/Detector/_DetectorBase.cpp:74",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
           "dependency": true
         },
         {
@@ -13312,22 +11996,22 @@
       "dependencies": [
         {
           "path": [
+            "BBoxStreamOut"
+          ],
+          "targetClass": "BBoxStream",
+          "multiple": false,
+          "declaredIn": "_DetectorBase",
+          "source": "src/Detector/_DetectorBase.cpp:80",
+          "containers": []
+        },
+        {
+          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:75",
-          "containers": []
-        },
-        {
-          "path": [
-            "_SurfaceBase"
-          ],
-          "targetClass": "_SurfaceBase",
-          "multiple": false,
-          "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:80",
           "containers": []
         }
       ],
@@ -15067,108 +13751,9 @@
       "configurable": false
     },
     {
-      "name": "SharedMemoryFrame",
-      "category": "IPC",
-      "source": "src/IPC/SharedMemoryFrame.h:19",
-      "baseClasses": [
-        "BASE"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "bWriter"
-          ],
-          "type": "boolean",
-          "declaredIn": "SharedMemoryFrame",
-          "source": "src/IPC/SharedMemoryFrame.cpp:30",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bWriter",
-          "cppType": "bool",
-          "default": true
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "nB"
-          ],
-          "type": "integer",
-          "declaredIn": "SharedMemoryFrame",
-          "source": "src/IPC/SharedMemoryFrame.cpp:29",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nB",
-          "cppType": "int",
-          "default": 0
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "shmName"
-          ],
-          "type": "string",
-          "declaredIn": "SharedMemoryFrame",
-          "source": "src/IPC/SharedMemoryFrame.cpp:28",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_shmName",
-          "cppType": "string",
-          "default": ""
-        }
-      ],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": true
-    },
-    {
       "name": "DataObjects",
       "category": "Instance",
-      "source": "src/Instance/DataObjects.h:34",
+      "source": "src/Instance/DataObjects.h:35",
       "baseClasses": [],
       "parameters": [],
       "dependencies": [],
@@ -15228,7 +13813,7 @@
     {
       "name": "Modules",
       "category": "Instance",
-      "source": "src/Instance/Modules.h:287",
+      "source": "src/Instance/Modules.h:280",
       "baseClasses": [],
       "parameters": [],
       "dependencies": [],
@@ -22752,39 +21337,33 @@
           "path": [
             "PCLframe"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_LCalign",
           "source": "src/Tools/_LCalign.cpp:54",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
           "path": [
             "PCLframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_LCalign",
           "source": "src/Tools/_LCalign.cpp:59",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
           "path": [
             "RGBframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_LCalign",
           "source": "src/Tools/_LCalign.cpp:65",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -23110,15 +21689,24 @@
       "parameters": [
         {
           "path": [
+            "BBoxStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_TrackerBase",
+          "source": "src/Tracker/_TrackerBase.cpp:57",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
             "RGBframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_TrackerBase",
           "source": "src/Tracker/_TrackerBase.cpp:52",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -23224,13 +21812,22 @@
       "dependencies": [
         {
           "path": [
+            "BBoxStreamOut"
+          ],
+          "targetClass": "BBoxStream",
+          "multiple": false,
+          "declaredIn": "_TrackerBase",
+          "source": "src/Tracker/_TrackerBase.cpp:58",
+          "containers": []
+        },
+        {
+          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_TrackerBase",
           "source": "src/Tracker/_TrackerBase.cpp:53",
-          "required": true,
           "containers": []
         }
       ],
@@ -23256,22 +21853,31 @@
     {
       "name": "_TrackerBase",
       "category": "Tracker",
-      "source": "src/Tracker/_TrackerBase.h:26",
+      "source": "src/Tracker/_TrackerBase.h:27",
       "baseClasses": [
         "_ModuleBase"
       ],
       "parameters": [
         {
           "path": [
+            "BBoxStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_TrackerBase",
+          "source": "src/Tracker/_TrackerBase.cpp:57",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
             "RGBframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_TrackerBase",
           "source": "src/Tracker/_TrackerBase.cpp:52",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -23377,13 +21983,22 @@
       "dependencies": [
         {
           "path": [
+            "BBoxStreamOut"
+          ],
+          "targetClass": "BBoxStream",
+          "multiple": false,
+          "declaredIn": "_TrackerBase",
+          "source": "src/Tracker/_TrackerBase.cpp:58",
+          "containers": []
+        },
+        {
+          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_TrackerBase",
           "source": "src/Tracker/_TrackerBase.cpp:53",
-          "required": true,
           "containers": []
         }
       ],
@@ -28257,26 +26872,22 @@
           "path": [
             "PCLframe"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_PCtransform",
           "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp:123",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pPCLi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
           "path": [
             "PCLframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_PCtransform",
           "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp:128",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pPCLi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -28477,26 +27088,22 @@
           "path": [
             "PCLframe"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_PCregistCol",
           "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:63",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pPCLi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
           "path": [
             "PCLframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_PCregistCol",
           "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:68",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pPCLi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -29767,191 +28374,6 @@
       "configurable": true
     },
     {
-      "name": "_SurfaceBase",
-      "category": "Universe/Surface",
-      "source": "src/Universe/Surface/_SurfaceBase.h:20",
-      "baseClasses": [
-        "_ReferenceFrame"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "bDrawBB"
-          ],
-          "type": "boolean",
-          "declaredIn": "_SurfaceBase",
-          "source": "src/Universe/Surface/_SurfaceBase.cpp:27",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bDrawBB",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bDrawPos"
-          ],
-          "type": "boolean",
-          "declaredIn": "_SurfaceBase",
-          "source": "src/Universe/Surface/_SurfaceBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bDrawPos",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bDrawText"
-          ],
-          "type": "boolean",
-          "declaredIn": "_SurfaceBase",
-          "source": "src/Universe/Surface/_SurfaceBase.cpp:25",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bDrawText",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "nBuf"
-          ],
-          "type": "json",
-          "declaredIn": "_SurfaceBase",
-          "source": "src/Universe/Surface/_SurfaceBase.cpp:30",
-          "typeEvidence": "unresolved",
-          "cppVariable": "m_nBuf"
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vOrt"
-          ],
-          "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vOrt.coeffs()"
-        },
-        {
-          "path": [
-            "vPos"
-          ],
-          "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vPos",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
-        },
-        {
-          "path": [
-            "vRoi"
-          ],
-          "type": "array",
-          "source": "src/Universe/Surface/_SurfaceBase.cpp:loadConfig",
-          "declaredIn": "_SurfaceBase",
-          "extraction": "audited-adapter",
-          "default": [
-            0,
-            0,
-            1,
-            1
-          ]
-        }
-      ],
-      "dependencies": [],
-      "containers": [
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": true,
-      "buildConditions": [
-        [
-          "ifdef WITH_UNIVERSE"
-        ]
-      ],
-      "configurable": true
-    },
-    {
       "name": "_Camera",
       "category": "Vision",
       "source": "src/Vision/_Camera.h:16",
@@ -31146,13 +29568,11 @@
           "path": [
             "RGBframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_ColorConvert",
           "source": "src/Vision/Pipeline/_ColorConvert.cpp:48",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -31360,13 +29780,11 @@
           "path": [
             "RGBframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_Contrast",
           "source": "src/Vision/Pipeline/_Contrast.cpp:50",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -31586,13 +30004,11 @@
           "path": [
             "RGBframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_Crop",
           "source": "src/Vision/Pipeline/_Crop.cpp:49",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -31800,13 +30216,11 @@
           "path": [
             "DframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_D2RGB",
           "source": "src/Vision/Pipeline/_D2RGB.cpp:55",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pDi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -32382,13 +30796,11 @@
           "path": [
             "RGBframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_Erode",
           "source": "src/Vision/Pipeline/_Erode.cpp:79",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -32676,13 +31088,11 @@
           "path": [
             "RGBframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_HistEqualize",
           "source": "src/Vision/Pipeline/_HistEqualize.cpp:42",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -32878,13 +31288,11 @@
           "path": [
             "RGBframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_InRange",
           "source": "src/Vision/Pipeline/_InRange.cpp:52",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -33112,13 +31520,11 @@
           "path": [
             "RGBframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_Invert",
           "source": "src/Vision/Pipeline/_Invert.cpp:42",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -33314,26 +31720,22 @@
           "path": [
             "RGBframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_Mask",
           "source": "src/Vision/Pipeline/_Mask.cpp:43",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
           "path": [
             "RGBframeMask"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_Mask",
           "source": "src/Vision/Pipeline/_Mask.cpp:48",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -33540,13 +31942,11 @@
           "path": [
             "RGBframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_Morphology",
           "source": "src/Vision/Pipeline/_Morphology.cpp:81",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -33847,13 +32247,11 @@
           "path": [
             "RGBframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_Remap",
           "source": "src/Vision/Pipeline/_Remap.cpp:45",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -34061,13 +32459,11 @@
           "path": [
             "RGBframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_Resize",
           "source": "src/Vision/Pipeline/_Resize.cpp:42",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -34263,13 +32659,11 @@
           "path": [
             "RGBframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_Rotate",
           "source": "src/Vision/Pipeline/_Rotate.cpp:48",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -34477,13 +32871,11 @@
           "path": [
             "RGBframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_Thermal2RGB",
           "source": "src/Vision/Pipeline/_Thermal2RGB.cpp:49",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -34694,13 +33086,11 @@
           "path": [
             "RGBframeIn"
           ],
-          "type": "json",
+          "type": "string",
           "declaredIn": "_Threshold",
           "source": "src/Vision/Pipeline/_Threshold.cpp:82",
-          "typeEvidence": "unresolved",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "m_pRGBi",
-          "defaultExpression": "\"\"",
           "dependency": true
         },
         {
@@ -40021,12 +38411,11 @@
     ]
   },
   "audit": {
-    "sourceFiles": 356,
-    "classCount": 206,
-    "classDeclarations": 206,
-    "creatableClassCount": 130,
+    "sourceFiles": 344,
+    "classCount": 200,
+    "classDeclarations": 200,
+    "creatableClassCount": 125,
     "factoryClassesWithoutDeclaration": [
-      "_ObjectBase",
       "_TestJSON",
       "_TestWebSocket"
     ],
@@ -40121,6 +38510,8 @@
       "src/DataObject/RGBDframe.h",
       "src/DataObject/RGBframe.cpp",
       "src/DataObject/RGBframe.h",
+      "src/DataObject/SharedMemoryFrame.cpp",
+      "src/DataObject/SharedMemoryFrame.h",
       "src/DataObject/UGLIDcellStream.cpp",
       "src/DataObject/UGLIDcellStream.h",
       "src/Detector/_ArUco.cpp",
@@ -40129,16 +38520,6 @@
       "src/Detector/_Contour.h",
       "src/Detector/_DetectorBase.cpp",
       "src/Detector/_DetectorBase.h",
-      "src/Detector/_HandKey.cpp",
-      "src/Detector/_HandKey.h",
-      "src/Detector/_IRLock.cpp",
-      "src/Detector/_IRLock.h",
-      "src/Detector/_Lane.cpp",
-      "src/Detector/_Lane.h",
-      "src/Detector/_MotionDetector.cpp",
-      "src/Detector/_MotionDetector.h",
-      "src/Detector/_OpenPose.cpp",
-      "src/Detector/_OpenPose.h",
       "src/Detector/_YOLO26detectONNX.cpp",
       "src/Detector/_YOLO26detectONNX.h",
       "src/File/_FileBase.cpp",
@@ -40167,8 +38548,6 @@
       "src/IO/_WebSocket.h",
       "src/IO/_WebSocketServer.cpp",
       "src/IO/_WebSocketServer.h",
-      "src/IPC/SharedMemoryFrame.cpp",
-      "src/IPC/SharedMemoryFrame.h",
       "src/Instance/DataObjects.cpp",
       "src/Instance/DataObjects.h",
       "src/Instance/InstanceMgr.cpp",
@@ -40320,8 +38699,6 @@
       "src/Universe/Grid/_OctreeGrid.h",
       "src/Universe/Grid/_SelectableOctGrid.cpp",
       "src/Universe/Grid/_SelectableOctGrid.h",
-      "src/Universe/Surface/_SurfaceBase.cpp",
-      "src/Universe/Surface/_SurfaceBase.h",
       "src/Universe/_ReferenceFrame.cpp",
       "src/Universe/_ReferenceFrame.h",
       "src/Utility/BitFlag.h",
@@ -40388,8 +38765,8 @@
       "src/Vision/_VideoFile.h",
       "src/main.cpp"
     ],
-    "configReads": 683,
-    "resolvedReads": 671,
+    "configReads": 644,
+    "resolvedReads": 632,
     "moduleLookups": 114,
     "resolvedLookups": 110,
     "unresolvedReads": 12,

@@ -23,7 +23,6 @@ namespace kai
 		bool saveConfig(bool bExport) override;
 		virtual bool start(void);
 		virtual bool check(void);
-		virtual void draw(void *pMat);
 		virtual void console(void *pConsole);
 
 	private:
@@ -41,12 +40,6 @@ namespace kai
 		uint8_t m_dict = aruco::DICT_4X4_50; // aruco::DICT_APRILTAG_16h5;
 		float m_realSize = 0.05;
 
-		// optional camera matrix
-		bool m_bPose = false;
-		string m_fCalib;
-		Mat m_mC;		// Intrinsic
-		Mat m_mCscaled; // scaled with input image size
-		Mat m_mD;		// Distortion
 	};
 
 }

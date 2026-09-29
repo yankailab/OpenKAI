@@ -26,7 +26,7 @@ namespace kai
 
 		void createTracker(void);
 
-	private:
+	protected:
 		void track(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)

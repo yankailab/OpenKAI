@@ -34,8 +34,8 @@ namespace kai
 		Mat formatToSquare(const Mat &mSrc);
 		void detect(void);
 		void matToTensor(const Mat &mSrc, vector<float> *pvTensor);
-		bool parseEnd2End(float *pData, const vector<int64_t> &vShape, const Mat &mIn);
-		bool parseOneToMany(float *pData, const vector<int64_t> &vShape, const Mat &mIn);
+		bool parseEnd2End(float *pData, const vector<int64_t> &vShape, const Mat &mIn, vector<BBOX_OBJ> &vBB);
+		bool parseOneToMany(float *pData, const vector<int64_t> &vShape, const Mat &mIn, vector<BBOX_OBJ> &vBB);
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{

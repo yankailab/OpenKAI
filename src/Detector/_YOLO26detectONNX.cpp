@@ -92,8 +92,6 @@ namespace kai
 	bool _YOLO26detectONNX::check(void)
 	{
 		NULL_F(m_pSession);
-		NULL_F(m_pCanvas);
-		NULL_F(m_pRGBin);
 
 		return this->_DetectorBase::check();
 	}
@@ -115,8 +113,11 @@ namespace kai
 		IF_(!check());
 
 		Mat input;
-		m_pRGBin->get(input);
+		uint64_t tStamp = m_pRGBin->get(input);
+		IF_(tStamp == m_tLastInput);
+		m_tLastInput = tStamp;
 		IF_(input.empty());
+		m_pBBout->setContainerDim(Vector3f(input.cols, input.rows, 0));
 		const Mat mIn = m_bLetterBoxForSquare && m_vModelInputSize.x() == m_vModelInputSize.y()
 			? formatToSquare(input) : input;
 
@@ -136,6 +137,7 @@ namespace kai
 
 		const char *pInputName[] = {m_inputName.c_str()};
 		const char *pOutputName[] = {m_outputName.c_str()};
+		vector<BBOX_OBJ> vBB;
 
 		try
 		{
@@ -149,8 +151,8 @@ namespace kai
 			float *pData = vOutput[0].GetTensorMutableData<float>();
 			vector<int64_t> vShape = vOutput[0].GetTensorTypeAndShapeInfo().GetShape();
 
-			if (!parseEnd2End(pData, vShape, mIn))
-				parseOneToMany(pData, vShape, mIn);
+			if (!parseEnd2End(pData, vShape, mIn, vBB))
+				parseOneToMany(pData, vShape, mIn, vBB);
 		}
 		catch (const Ort::Exception &e)
 		{
@@ -158,7 +160,22 @@ namespace kai
 			return;
 		}
 
-		m_pCanvas->swap();
+		// Letterboxing pads the bottom/right; publish only boxes within the source image.
+		vBB.erase(std::remove_if(vBB.begin(), vBB.end(), [&input](BBOX_OBJ &bb)
+		{
+			float left = std::max(0.0f, bb.m_vPos.x());
+			float top = std::max(0.0f, bb.m_vPos.y());
+			float right = std::min(static_cast<float>(input.cols), bb.m_vPos.x() + bb.m_vDim.x());
+			float bottom = std::min(static_cast<float>(input.rows), bb.m_vPos.y() + bb.m_vDim.y());
+			if (right <= left || bottom <= top)
+				return true;
+
+			bb.setPos(Vector3f(left, top, 0));
+			bb.setDim(Vector3f(right - left, bottom - top, 0));
+			return false;
+		}), vBB.end());
+
+		m_pBBout->add(vBB, tStamp);
 	}
 
 	void _YOLO26detectONNX::matToTensor(const Mat &mSrc, vector<float> *pvTensor)
@@ -180,7 +197,7 @@ namespace kai
 			memcpy(pvTensor->data() + i * nChannel, vCHW[i].data, nChannel * sizeof(float));
 	}
 
-	bool _YOLO26detectONNX::parseEnd2End(float *pData, const vector<int64_t> &vShape, const Mat &mIn)
+	bool _YOLO26detectONNX::parseEnd2End(float *pData, const vector<int64_t> &vShape, const Mat &mIn, vector<BBOX_OBJ> &vBB)
 	{
 		NULL_F(pData);
 		IF_F(vShape.size() != 3);
@@ -189,8 +206,6 @@ namespace kai
 
 		float kx = (float)mIn.cols / (float)m_vModelInputSize.x();
 		float ky = (float)mIn.rows / (float)m_vModelInputSize.y();
-		float kBBx = 1.0 / (float)mIn.cols;
-		float kBBy = 1.0 / (float)mIn.rows;
 
 		for (int i = 0; i < vShape[1]; i++)
 		{
@@ -212,22 +227,20 @@ namespace kai
 			bottom = std::max(0, std::min(bottom, mIn.rows - 1));
 			IF_CONT(right <= left || bottom <= top);
 
-			_ObjectBase o;
-			o.clear();
-			o.setTstamp(m_pT->getTfromNs());
-			o.setType(obj_bbox);
-			o.setTopClass(iClass, confidence);
-			o.setBB2D(Vector4f(left, top, right - left, bottom - top), kBBx, kBBy);
-			o.setText(m_vClass[iClass]);
+			BBOX_OBJ bb;
+			bb.setType(obj_bbox);
+			bb.setPos(Vector3f(left, top, 0));
+			bb.setDim(Vector3f(right - left, bottom - top, 0));
+			bb.addClass(iClass, static_cast<int8_t>(std::max(0.0f, std::min(1.0f, confidence)) * 100.0f + 0.5f));
 
-			m_pCanvas->add(o);
-			LOG_I("Class: " + i2str(o.getTopClass()));
+			vBB.push_back(bb);
+			LOG_I("Class: " + i2str(bb.getTopClass()));
 		}
 
 		return true;
 	}
 
-	bool _YOLO26detectONNX::parseOneToMany(float *pData, const vector<int64_t> &vShape, const Mat &mIn)
+	bool _YOLO26detectONNX::parseOneToMany(float *pData, const vector<int64_t> &vShape, const Mat &mIn, vector<BBOX_OBJ> &vBB)
 	{
 		NULL_F(pData);
 		IF_F(vShape.size() != 3);
@@ -293,22 +306,19 @@ namespace kai
 		vector<int> nmsResult;
 		cv::dnn::NMSBoxes(vBox, vConfidence, m_score, m_nms, nmsResult);
 
-		kx = 1.0 / (float)mIn.cols;
-		ky = 1.0 / (float)mIn.rows;
 		for (unsigned long i = 0; i < nmsResult.size(); i++)
 		{
 			int idx = nmsResult[i];
 
-			_ObjectBase o;
-			o.clear();
-			o.setTstamp(m_pT->getTfromNs());
-			o.setType(obj_bbox);
-			o.setTopClass(vClassID[idx], vConfidence[idx]);
-			o.setBB2D(rect2BB<Vector4f>(vBox[idx]), kx, ky);
-			o.setText(m_vClass[vClassID[idx]]);
+			const cv::Rect &r = vBox[idx];
+			BBOX_OBJ bb;
+			bb.setType(obj_bbox);
+			bb.setPos(Vector3f(r.x, r.y, 0));
+			bb.setDim(Vector3f(r.width, r.height, 0));
+			bb.addClass(vClassID[idx], static_cast<int8_t>(std::max(0.0f, std::min(1.0f, vConfidence[idx])) * 100.0f + 0.5f));
 
-			m_pCanvas->add(o);
-			LOG_I("Class: " + i2str(o.getTopClass()));
+			vBB.push_back(bb);
+			LOG_I("Class: " + i2str(bb.getTopClass()));
 		}
 
 		return true;

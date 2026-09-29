@@ -47,13 +47,9 @@ namespace kai
 		}
 
 		std::unique_lock lock(m_sMutex);
-		if (!m_dqGyro.empty() && tStamp <= m_dqGyro.back().m_t)
-		{
-			m_dqGyro.clear();
-		}
 		m_dqGyro.push_back({tStamp, value});
 
-		if (m_dqGyro.size() > m_nBuf)
+		while (m_dqGyro.size() > m_nBuf)
 		{
 			m_dqGyro.pop_front();
 		}
@@ -69,13 +65,9 @@ namespace kai
 		}
 
 		std::unique_lock lock(m_sMutex);
-		if (!m_dqAcc.empty() && tStamp <= m_dqAcc.back().m_t)
-		{
-			m_dqAcc.clear();
-		}
 		m_dqAcc.push_back({tStamp, value});
 
-		if (m_dqAcc.size() > m_nBuf)
+		while (m_dqAcc.size() > m_nBuf)
 		{
 			m_dqAcc.pop_front();
 		}

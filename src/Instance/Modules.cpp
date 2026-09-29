@@ -199,10 +199,6 @@ namespace kai
 #endif // 3D
 #endif // sensor
 
-#ifdef WITH_STATE
-		ADD_MODULE(_StateControl);
-#endif
-
 #ifdef WITH_SWARM
 		ADD_MODULE(_SwarmBase);
 		ADD_MODULE(_SwarmCtrl);

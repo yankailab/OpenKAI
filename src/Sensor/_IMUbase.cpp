@@ -66,8 +66,7 @@ namespace kai
 	bool _IMUbase::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(pM));
-
-		IF_F(!m_pTstream || !m_pTstream->link());
+		IF_F(!m_pTstream);
 
 		return true;
 	}

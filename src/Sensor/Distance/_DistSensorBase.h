@@ -97,7 +97,6 @@ namespace kai
 		virtual bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
 		virtual void console(void *pConsole);
-		virtual void draw(void *pMat);
 
 		bool bReady(void);
 		Vector2f range(void);

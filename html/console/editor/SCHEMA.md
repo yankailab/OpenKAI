@@ -11,6 +11,7 @@ From the repository root, with Python 3 and no third-party packages:
 ```sh
 python3 html/console/editor/tools/generate-schema.py
 python3 html/console/editor/tools/generate-schema.py --check
+python3 html/console/editor/tests/schema.test.py
 ```
 
 The first command writes the JSON catalog and JavaScript mirror. The second regenerates them in memory and fails if either checked-in artifact differs. Generation is deterministic: no clock timestamps, absolute source paths, network access, C++ build, or SDK installation are used. `sourceDigest` hashes the relative paths and bytes of every scanned source file, so even a source-only change causes `--check` to request regeneration.
@@ -85,7 +86,7 @@ Optional metadata includes:
 
 - `default`: a safely parsed source literal, vector initializer, or simple constant expression. It is a convenience for adding instances, not proof of an SDK/device's runtime value. Inherited constructor assignments override known source defaults. Dynamic expressions are not executed.
 - `defaultExpression`: an unresolved C++ initializer or a value assigned from runtime state; never evaluate this as JavaScript.
-- `cppType`, `cppVariable`, `typeEvidence`: extraction provenance. `typeEvidence: "key-convention"` is weaker than an actual declaration.
+- `cppType`, `cppVariable`, `typeEvidence`: extraction provenance. `typeEvidence: "key-convention"` is weaker than an actual declaration. `typeEvidence: "instance-lookup"` identifies a scalar module/DataObject lookup that establishes a string name even when local declaration inference is unresolved.
 - `description`, `group`: help text and source-defined control grouping.
 - `dependency: true`: the value also has a dependency record and should be edited as a module reference.
 - `extraction: "audited-adapter"`: a composed or dynamic C++ reader handled explicitly by the generator.
@@ -129,7 +130,7 @@ The resulting launch value is `"vGeometry": [{"PCLframe": "cloud"}]`. `_ApDrive.
 
 The scanner removes comments, identifies explicit class/struct declarations, reads factory registration guards, and scans `loadConfig`/`link` bodies. It resolves `jKv` reads, `jK` child aliases, iterator/range loops, immediate `findModule` and `findDataObject` calls, scalar/vector declarations, and embedded `createThread` calls. The composed `ROS_fastLio::init` reader is included explicitly. Runtime console command payloads are not launch configuration.
 
-Audited adapters cover the shared selectable-grid viewer source reader, `_StateControl` embedded states, application/module switches, `_SurfaceBase.vRoi`, grid point-stream input lists, selected grid UUIDs, grid-reference aliases, Mavlink routing type, and the source-defined Scepter/Orbbec control catalogs. The generator reads the hardware-control key lists directly from source so additions appear on regeneration. SDK-dependent ranges, supported controls, C++ enum conversions, custom object validators, and general arbitrary C++ execution are not reproduced. Complex hardware objects remain editable as JSON.
+Audited adapters cover the shared selectable-grid viewer source reader, `_StateControl` embedded states, application/module switches, grid point-stream input lists, selected grid UUIDs, grid-reference aliases, Mavlink routing type, and the source-defined Scepter/Orbbec control catalogs. The generator reads the hardware-control key lists directly from source so additions appear on regeneration. SDK-dependent ranges, supported controls, C++ enum conversions, custom object validators, and general arbitrary C++ execution are not reproduced. Complex hardware objects remain editable as JSON.
 
 The generated audit records resolved and unresolved configuration reads and instance lookups. Dynamic shared viewer readers are covered by explicit adapters; unresolved patterns retain source references and resolution notes. These counts concern recognized function bodies, not a guarantee that future arbitrary C++ patterns will be inferred. All diagnostics, including struct-helper diagnostics, appear under `audit.diagnostics`; a class also carries its local diagnostics.
 

@@ -69,14 +69,17 @@ namespace kai
 		IF_(!check());
 
 		Mat mBGR;
-		m_pRGBin->get(mBGR);
+		const uint64_t tStamp = m_pRGBin->get(mBGR);
 
+		IF_(tStamp == m_tLastInput);
+		m_tLastInput = tStamp;
 		IF_(mBGR.empty());
+		m_pBBout->setContainerDim(Vector3f(mBGR.cols, mBGR.rows, 0));
 		vector<vector<Point>> vvContours;
 		findContours(mBGR, vvContours, m_mode, m_method);
 
 		vector<BBOX_OBJ> vBB;
-		for (unsigned int i = 0; i < vvContours.size(); i++)
+		for (size_t i = 0; i < vvContours.size(); i++)
 		{
 			vector<Point> vPoly;
 			approxPolyDP(vvContours[i], vPoly, 3, true);
@@ -91,6 +94,6 @@ namespace kai
 			vBB.push_back(bb);
 		}
 
-		m_pBBout->add(vBB);
+		m_pBBout->add(vBB, tStamp);
 	}
 }

@@ -46,11 +46,11 @@ namespace kai
 		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		NULL_F(m_pRGBin);
 
-		n = "";
-		jKv(j, "fCalib", m_fCalib);
-		Mat mC, mD;
-		IF_F(!readCamMatrices(m_fCalib, &mC, &mD));
-		m_bReady = setCamMat(mC, mD);
+		// n = "";
+		// jKv(j, "fCalib", m_fCalib);
+		// Mat mC, mD;
+		// IF_F(!readCamMatrices(m_fCalib, &mC, &mD));
+		// m_bReady = setCamMat(mC, mD);
 
 		return true;
 	}
@@ -138,10 +138,10 @@ namespace kai
 	bool _Remap::scaleCamMat(void)
 	{
 		cv::Size s(m_vSizeRGB.x(), m_vSizeRGB.y());
-		IF_F(!scaleCamMatrices(s,
-							   m_mC,
-							   m_mD,
-							   &m_mCscaled));
+		// IF_F(!scaleCamMatrices(s,
+		// 					   m_mC,
+		// 					   m_mD,
+		// 					   &m_mCscaled));
 
 		initUndistortRectifyMap(m_mCscaled, m_mD, Mat(), m_mCscaled, s, CV_16SC2, m_m1, m_m2);
 

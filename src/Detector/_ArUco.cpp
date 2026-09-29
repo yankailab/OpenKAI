@@ -28,13 +28,6 @@ namespace kai
 		m_detector.setDictionary(m_dictionary);
 		jKv(j, "realSize", m_realSize);
 
-		jKv(j, "bPose", m_bPose);
-		jKv(j, "fCalib", m_fCalib);
-		if (m_bPose)
-		{
-			readCamMatrices(m_fCalib, &m_mC, &m_mD);
-		}
-
 		return true;
 	}
 
@@ -45,8 +38,6 @@ namespace kai
 		json &j = *m_pJ;
 		j["dict"] = m_dict;
 		j["realSize"] = m_realSize;
-		j["bPose"] = m_bPose;
-		j["fCalib"] = m_fCalib;
 
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
@@ -61,7 +52,6 @@ namespace kai
 	bool _ArUco::check(void)
 	{
 		NULL_F(m_pRGBin);
-		NULL_F(m_pCanvas);
 
 		return this->_DetectorBase::check();
 	}
@@ -73,8 +63,6 @@ namespace kai
 			m_pT->autoFPS();
 
 			detect();
-
-			ON_PAUSE;
 		}
 	}
 
@@ -83,104 +71,63 @@ namespace kai
 		IF_(!check());
 
 		Mat m;
-		m_pRGBin->get(m);
+		const uint64_t tStamp = m_pRGBin->get(m);
+		IF_(tStamp == m_tLastInput);
+		m_tLastInput = tStamp;
 		IF_(m.empty());
-
+		m_pBBout->setContainerDim(Vector3f(m.cols, m.rows, 0));
 		vector<int> vID;
 		vector<vector<Point2f>> vvCorner;
 		m_detector.detectMarkers(m, vvCorner, vID);
 		vector<Vec3d> vvR, vvT;
 
-		if (m_bPose)
+		vector<BBOX_OBJ> vBB;
+		for (size_t i = 0; i < vID.size(); i++)
 		{
-			if (m_mCscaled.empty())
-			{
-				scaleCamMatrices(cv::Size(m.cols, m.rows),
-								 m_mC,
-								 m_mD,
-								 &m_mCscaled);
-			}
-
-			vector<Point3f> vMarkerObj{
-				Point3f(-m_realSize * 0.5f, m_realSize * 0.5f, 0),
-				Point3f(m_realSize * 0.5f, m_realSize * 0.5f, 0),
-				Point3f(m_realSize * 0.5f, -m_realSize * 0.5f, 0),
-				Point3f(-m_realSize * 0.5f, -m_realSize * 0.5f, 0)};
-
-			vvR.resize(vvCorner.size());
-			vvT.resize(vvCorner.size());
-			for (unsigned int i = 0; i < vvCorner.size(); i++)
-				solvePnP(vMarkerObj, vvCorner[i], m_mCscaled, m_mD, vvR[i], vvT[i]);
-		}
-
-		_ObjectBase o;
-		float kx = 1.0 / (float)m.cols;
-		float ky = 1.0 / (float)m.rows;
-
-		for (unsigned int i = 0; i < vID.size(); i++)
-		{
-			o.clear();
-			o.setType(obj_tag);
-			o.setTopClass(vID[i], 1.0);
-
-			if (m_bPose)
-			{
-				// pose
-				Vec3d v;
-				v = vvT[i];
-				Vector3f vP{static_cast<float>(v[0]), static_cast<float>(v[1]), static_cast<float>(v[2])};
-				o.setPos(vP);
-				v = vvR[i];
-				Vector3f vR{static_cast<float>(v[0]), static_cast<float>(v[1]), static_cast<float>(v[2])};
-				o.setAttitude(vR);
-			}
-
 			// bbox
 			Point2f pLT = vvCorner[i][0];
 			Point2f pRT = vvCorner[i][1];
 			Point2f pRB = vvCorner[i][2];
 			Point2f pLB = vvCorner[i][3];
 
+			// center position
+			float cx = (float)(pLT.x + pRT.x + pRB.x + pLB.x) * 0.25;
+			float cy = (float)(pLT.y + pRT.y + pRB.y + pLB.y) * 0.25;
+
+			// radius
+			float dx = cx - pLT.x;
+			float dy = cy - pLT.y;
+			float r = sqrt(dx * dx + dy * dy);
+
+			// angle in deg
+			dx = pLB.x - pLT.x;
+			dy = pLB.y - pLT.y;
+			float a = -atan2(dx, dy) * RAD_2_DEG + 180.0;
+
+			// vertices
 			Vector2f pV[4];
 			for (int j = 0; j < 4; j++)
 			{
 				pV[j].x() = vvCorner[i][j].x;
 				pV[j].y() = vvCorner[i][j].y;
 			}
-			o.setVertices2D(pV, 4);
 
-			// center position
-			float dx = (float)(pLT.x + pRT.x + pRB.x + pLB.x) * 0.25;
-			float dy = (float)(pLT.y + pRT.y + pRB.y + pLB.y) * 0.25;
-			o.setPos(dx * kx, dy * ky, 0);
+			BBOX_OBJ bb;
+			bb.setType(obj_tag);
+			bb.setPos(Vector3f(cx, cy, a));
+			bb.setDim(Vector3f(r, 0, 0));
+			bb.addClass(vID[i]);
 
-			// radius
-			dx -= pLT.x;
-			dy -= pLT.y;
-			o.setDim(0, 0, 0, sqrt(dx * dx + dy * dy)); // vDim.w = radius
-
-			// angle in deg
-			dx = pLB.x - pLT.x;
-			dy = pLB.y - pLT.y;
-			o.setAttitude(-atan2(dx, dy) * RAD_2_DEG + 180.0, 0, 0); // roll
-
-			m_pCanvas->add(o);
-			LOG_I("ID: " + i2str(o.getTopClass()));
+			vBB.push_back(bb);
 		}
 
-		m_pCanvas->swap();
+		m_pBBout->add(vBB, tStamp);
 	}
 
 	void _ArUco::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_DetectorBase::console(pConsole);
-		IF_(!check());
-	}
-
-	void _ArUco::draw(void *pMat)
-	{
-		NULL_(pMat);
 		IF_(!check());
 	}
 

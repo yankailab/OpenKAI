@@ -432,11 +432,19 @@ def generate():
         return result
     catalog = [flatten(name) for name in sorted(classes,key=lambda n:(classes[n]['category'],n.lower()))]
     for entry in catalog:
-        dep_paths = {tuple(d['path']) for d in entry['dependencies']}
+        dep_paths = {tuple(d['path']):d for d in entry['dependencies']}
         for parameter in entry['parameters']:
-            if tuple(parameter['path']) in dep_paths:
+            dependency = dep_paths.get(tuple(parameter['path']))
+            if dependency is not None:
                 parameter['dependency'] = True
                 parameter.pop('default',None)
+                # Scalar instance lookups always consume a name string, even
+                # when declaration inference cannot resolve the local variable.
+                if not dependency['multiple'] and parameter['type'] != 'string':
+                    parameter['type'] = 'string'
+                    parameter['typeEvidence'] = 'instance-lookup'
+                    parameter.pop('cppType',None)
+                    parameter.pop('defaultExpression',None)
         for dep in entry['dependencies']:
             dep['containers'] = [c for c in entry['containers'] if dep['path'][:len(c['path'])] == c['path']]
     digest = hashlib.sha256()
@@ -511,7 +519,6 @@ def adapters(records, files, constants, symbol):
     records['_ROS_fastLio']['_embedded'].append((['node'],'ROS_fastLio'))
     records['_ROS_fastLio']['containers'].append({'path':['node'],'type':'object'})
     param('_ROS_fastLio',['node'],'object','src/ROS/_ROS_fastLio.cpp:loadConfig')
-    param('_SurfaceBase',['vRoi'],'array','src/Universe/Surface/_SurfaceBase.cpp:loadConfig',default=[0,0,1,1])
     # Scepter startup consumes every key exposed by visitScControls, not jKv calls.
     sc_path='src/Vision/RGBD/_Scepter.cpp'
     for match in re.finditer(r'\bf\("([^\"]+)",\s*([^,]+),\s*"([^\"]+)"\)', files[sc_path]):

@@ -189,10 +189,6 @@
 #endif // 3D
 #endif // sensor
 
-#ifdef WITH_STATE
-#include "../State/_StateControl.h"
-#endif
-
 #ifdef WITH_SWARM
 #include "../Swarm/_SwarmBase.h"
 #include "../Swarm/_SwarmCtrl.h"

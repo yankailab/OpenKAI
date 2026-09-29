@@ -46,7 +46,7 @@ If your Pi uses a 32-bit OS, install a 64-bit OS first or build ONNX Runtime fro
 
 ## Build OpenKAI
 
-Enable OpenCV, detectors, vision, canvas, and ONNX Runtime:
+Enable OpenCV, detectors, vision, and ONNX Runtime:
 
 ```bash
 mkdir -p build
@@ -56,7 +56,6 @@ cmake .. \
   -DUSE_ONNXRUNTIME=ON \
   -DWITH_DETECTOR=ON \
   -DWITH_VISION=ON \
-  -DWITH_CANVAS=ON \
   -DONNXRuntime_include=/usr/local/include/onnxruntime \
   -DONNXRuntime_lib=/usr/local/lib
 make -j$(nproc)
@@ -101,28 +100,36 @@ The default YOLO26 export uses end-to-end detection, so `_YOLO26detectONNX` filt
 ## Config Example
 
 Declare `camRGB` as `{ "type": "dataObject", "class": "RGBframe" }` and set the
-camera's `RGBframe` output to `camRGB`. The detector keeps a local image
-copy while inference runs; stream pixels remain independent.
+camera's `RGBframe` output to `camRGB`. Declare a `BBoxStream` DataObject for
+`BBoxStreamOut`; consumers such as `_APmav_follow` read it through `BBoxStreamIn`.
+The detector keeps a local image copy while inference runs and appends detected
+objects to the stream's bounded history. Empty results preserve existing history;
+consumers filter each object's timestamp to discard stale targets. Boxes use
+pixel coordinates and capture timestamps. Container dimensions are separate
+stream metadata and assume a consistent image source for the retained history;
+see [DataObject interfaces](DataStreamGeometry.md#bounding-box-and-target-streams).
 
 ```json
-"YOLO26detectONNX":{
-    "class":"_YOLO26detectONNX",
+{
+  "camRGB": { "type": "dataObject", "class": "RGBframe" },
+  "detections": { "type": "dataObject", "class": "BBoxStream" },
+  "YOLO26detectONNX": {
+    "class": "_YOLO26detectONNX",
     "bON": true,
-"thread":{
-        "FPS":30,
-    },
+    "thread": { "FPS": 30 },
     "bLog": true,
-    "RGBframeIn":"camRGB",
-    "_SurfaceBase":"canvas",
-    "fModel":"/home/kai/dev/models/yolo26n.onnx",
-    "confidence":0.25,
-    "score":0.45,
-    "nms":0.5,
-    "bLetterBoxForSquare":true,
-    "vModelInputSize":[640,640],
-    "bSwapRB":true,
-    "scale":0.003921568627,
-    "nThread":1,
+    "RGBframeIn": "camRGB",
+    "BBoxStreamOut": "detections",
+    "fModel": "/home/kai/dev/models/yolo26n.onnx",
+    "confidence": 0.25,
+    "score": 0.45,
+    "nms": 0.5,
+    "bLetterBoxForSquare": true,
+    "vModelInputSize": [640, 640],
+    "bSwapRB": true,
+    "scale": 0.003921568627,
+    "nThread": 1
+  }
 }
 ```
 
