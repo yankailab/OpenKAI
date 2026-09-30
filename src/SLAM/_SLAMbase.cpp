@@ -92,6 +92,7 @@ namespace kai
 		m_dqAcc.clear();
 		m_bIMUbatch = false;
 		m_tStampLastGyro = 0;
+		m_tStampLatestGyro = 0;
 		m_tStampLastAcc = 0;
 		m_iGyro = 0;
 		m_iAcc = 0;
@@ -157,6 +158,7 @@ namespace kai
 		m_dqAcc.clear();
 		m_bIMUbatch = false;
 		m_tStampLastGyro = 0;
+		m_tStampLatestGyro = 0;
 		m_tStampLastAcc = 0;
 		m_iGyro = 0;
 		m_iAcc = 0;
@@ -208,7 +210,7 @@ namespace kai
 			// Copy history once per batch. The two sensor channels can arrive
 			// separately with equal capture times, so inspect both histories.
 			m_pIMUin->get(m_dqGyro, m_dqAcc);
-			if ((!m_dqGyro.empty() && m_dqGyro.back().m_t < m_tStampLastGyro) ||
+			if ((!m_dqGyro.empty() && m_dqGyro.back().m_t < m_tStampLatestGyro) ||
 				(!m_dqAcc.empty() && m_dqAcc.back().m_t < m_tStampLastAcc))
 			{
 				throw std::runtime_error("IMU clock reset; restart SLAM tracking");
@@ -216,58 +218,70 @@ namespace kai
 
 			m_iGyro = 0;
 			m_iAcc = 0;
-			
+			if (!m_dqAcc.empty()) m_tStampLastAcc = m_dqAcc.back().m_t;
+			if (!m_dqGyro.empty()) m_tStampLatestGyro = m_dqGyro.back().m_t;
 			while (m_iGyro < m_dqGyro.size() && m_dqGyro[m_iGyro].m_t <= m_tStampLastGyro)
 			{
 				++m_iGyro;
 			}
-			
-			while (m_iAcc < m_dqAcc.size() && m_dqAcc[m_iAcc].m_t <= m_tStampLastAcc)
-			{
-				++m_iAcc;
-			}
-			
 			m_bIMUbatch = true;
 		}
 
-		constexpr uint64_t toleranceNs = 5 * NSEC_MSEC;
+		// Accelerometers and gyroscopes can run at different rates (for example
+		// 100/200 Hz). Preserve each gyro sample and interpolate acceleration
+		// at its capture time, retaining both bracketing samples across batches.
+		constexpr uint64_t maxAccGapNs = 100 * NSEC_MSEC;
 		while (m_iGyro < m_dqGyro.size() && m_iAcc < m_dqAcc.size())
 		{
 			const auto &g = m_dqGyro[m_iGyro];
-			const auto &a = m_dqAcc[m_iAcc];
-			if (g.m_t < a.m_t && a.m_t - g.m_t > toleranceNs)
+			if (g.m_t <= m_tStampLastGyro)
 			{
+				++m_iGyro;
+				continue;
+			}
+			while (m_iAcc + 1 < m_dqAcc.size() && m_dqAcc[m_iAcc + 1].m_t <= g.m_t)
+			{
+				++m_iAcc;
+			}
+			const auto &before = m_dqAcc[m_iAcc];
+			if (g.m_t < before.m_t)
+			{
+				// No earlier accelerometer sample remains in the bounded history.
 				m_tStampLastGyro = g.m_t;
 				++m_iGyro;
 				continue;
 			}
-			if (a.m_t < g.m_t && g.m_t - a.m_t > toleranceNs)
+			if (g.m_t == before.m_t)
 			{
-				m_tStampLastAcc = a.m_t;
-				++m_iAcc;
-				continue;
+				acc = before.m_v.cast<double>();
+			}
+			else
+			{
+				// Wait for the next acceleration callback; never extrapolate or
+				// consume this gyro sample while its upper bracket is missing.
+				if (m_iAcc + 1 == m_dqAcc.size()) break;
+				const auto &after = m_dqAcc[m_iAcc + 1];
+				const uint64_t interval = after.m_t - before.m_t;
+				if (interval > maxAccGapNs)
+				{
+					m_tStampLastGyro = g.m_t;
+					++m_iGyro;
+					continue;
+				}
+				const double weight = double(g.m_t - before.m_t) / double(interval);
+				acc = (1.0 - weight) * before.m_v.cast<double>() + weight * after.m_v.cast<double>();
 			}
 
 			m_tStampLastGyro = g.m_t;
-			m_tStampLastAcc = a.m_t;
 			++m_iGyro;
-			++m_iAcc;
-
-			stamp = std::max(g.m_t, a.m_t);
+			stamp = g.m_t;
 			if (stamp < m_tStampLastIMU)
 			{
 				throw std::runtime_error("IMU clock reset; restart SLAM tracking");
 			}
-
-			if (stamp == m_tStampLastIMU)
-			{
-				continue;
-			}
-
+			if (stamp == m_tStampLastIMU) continue;
 			m_tStampLastIMU = stamp;
-			acc = a.m_v.cast<double>();
 			gyro = g.m_v.cast<double>();
-			
 			return true;
 		}
 

@@ -87,7 +87,7 @@ sudo cmake --install build
 ```bash
 sudo apt-get install libusb-1.0-0-dev libusb-dev libudev-dev
 
-git clone --depth 1 https://github.com/IntelRealSense/librealsense.git
+git clone --depth 1 https://github.com/realsenseai/librealsense
 # git clone --depth 1 --branch v2.53.1 https://github.com/IntelRealSense/librealsense.git # for T265, L535
 cd librealsense
 sudo ./scripts/setup_udev_rules.sh

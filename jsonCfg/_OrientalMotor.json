@@ -1,0 +1,324 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "OpenKAI",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"modbus",
+			"omL",
+			"omL_Y"
+		]
+	},
+	"modbus": {
+		"class": "_Modbus",
+		"bON": true,
+		"bLog": false,
+		"thread": {
+			"FPS": 10
+		},
+		"tOutSec": 2,
+		"/type": "RTU",
+		"/migration": "RTU is the module default. Leave type unset: InstanceMgr reserves it for module/dataObject dispatch.",
+		"rtuPort": "/dev/ttyUSB0",
+		"rtuBaud": 230400,
+		"rtuParity": "E"
+	},
+	"omL": {
+		"class": "_OrientalMotor",
+		"bON": true,
+		"bLog": false,
+		"thread": {
+			"FPS": 1
+		},
+		"_Modbus": "modbus",
+		"tIntSendCMD": 100000000,
+		"tIntReadStatus": 100000000,
+		"tIntCheckAlarm": 100000000,
+		"ID": 1,
+		"pOrigin": 100,
+		"pTarget": 0,
+		"pErr": 10,
+		"pRange": [
+			0,
+			85000
+		],
+		"sTarget": 15000,
+		"sRange": [
+			0,
+			15000
+		],
+		"aTarget": 1000000,
+		"aRange": [
+			1,
+			1000000
+		],
+		"bTarget": 1000000,
+		"bRange": [
+			1,
+			1000000
+		],
+		"cTarget": 1000,
+		"cRange": [
+			1,
+			1000
+		]
+	},
+	"omWX": {
+		"class": "_OrientalMotor",
+		"bON": false,
+		"bLog": false,
+		"_Modbus": "modbus",
+		"tIntCheckAlarm": 100000000,
+		"tIntReadStatus": 100000000,
+		"pOrigin": 20000,
+		"pTarget": 20000,
+		"pErr": 10,
+		"pRange": [
+			20000,
+			39000
+		],
+		"sTarget": 1000,
+		"sRange": [
+			0,
+			8000
+		],
+		"aTarget": 1000000,
+		"aRange": [
+			1,
+			1000000
+		],
+		"bTarget": 1000000,
+		"bRange": [
+			1,
+			1000000
+		],
+		"cTarget": 1000,
+		"cRange": [
+			1,
+			1000
+		],
+		"ID": 6,
+		"thread": {
+			"FPS": 30
+		},
+		"/Window": "OKview",
+		"/_Console": "_Console",
+		"/tInt": 100000
+	},
+	"omWY": {
+		"class": "_OrientalMotor",
+		"bON": false,
+		"bLog": false,
+		"_Modbus": "modbus",
+		"tIntCheckAlarm": 100000000,
+		"tIntReadStatus": 100000000,
+		"pOrigin": 0,
+		"pTarget": 0,
+		"pErr": 10,
+		"pRange": [
+			0,
+			30000
+		],
+		"sTarget": 1000,
+		"sRange": [
+			0,
+			8000
+		],
+		"aTarget": 1000000,
+		"aRange": [
+			1,
+			1000000
+		],
+		"bTarget": 1000000,
+		"bRange": [
+			1,
+			1000000
+		],
+		"cTarget": 1000,
+		"cRange": [
+			1,
+			1000
+		],
+		"ID": 7,
+		"thread": {
+			"FPS": 30
+		},
+		"/Window": "OKview",
+		"/_Console": "_Console",
+		"/tInt": 100000
+	},
+	"omR": {
+		"class": "_OrientalMotor",
+		"bON": false,
+		"bLog": false,
+		"_Modbus": "modbus",
+		"tIntCheckAlarm": 100000000,
+		"tIntReadStatus": 100000000,
+		"pOrigin": 100,
+		"pTarget": 100,
+		"pErr": 10,
+		"pRange": [
+			10,
+			85000
+		],
+		"sTarget": 1000,
+		"sRange": [
+			0,
+			15000
+		],
+		"aTarget": 1000000,
+		"aRange": [
+			1,
+			1000000
+		],
+		"bTarget": 1000000,
+		"bRange": [
+			1,
+			1000000
+		],
+		"cTarget": 1000,
+		"cRange": [
+			1,
+			1000
+		],
+		"ID": 1,
+		"thread": {
+			"FPS": 30
+		},
+		"/Window": "OKview",
+		"/_Console": "_Console",
+		"/tInt": 100000
+	},
+	"omL_OrientalMotor": {
+		"class": "_OrientalMotor",
+		"bON": false,
+		"bLog": false,
+		"_Modbus": "modbus",
+		"tIntCheckAlarm": 100000000,
+		"tIntReadStatus": 100000000,
+		"pOrigin": 100,
+		"pTarget": 100,
+		"pErr": 10,
+		"pRange": [
+			10,
+			85000
+		],
+		"sTarget": 1000,
+		"sRange": [
+			0,
+			15000
+		],
+		"aTarget": 1000000,
+		"aRange": [
+			1,
+			1000000
+		],
+		"bTarget": 1000000,
+		"bRange": [
+			1,
+			1000000
+		],
+		"cTarget": 1000,
+		"cRange": [
+			1,
+			1000
+		],
+		"ID": 3,
+		"thread": {
+			"FPS": 30
+		},
+		"/Window": "OKview",
+		"/_Console": "_Console",
+		"/tInt": 100000
+	},
+	"omM": {
+		"class": "_OrientalMotor",
+		"bON": false,
+		"bLog": false,
+		"_Modbus": "modbus",
+		"tIntCheckAlarm": 100000000,
+		"tIntReadStatus": 100000000,
+		"pOrigin": 43000,
+		"pTarget": 43000,
+		"pErr": 10,
+		"pRange": [
+			10,
+			85000
+		],
+		"sTarget": 1000,
+		"sRange": [
+			0,
+			15000
+		],
+		"aTarget": 1000000,
+		"aRange": [
+			1,
+			1000000
+		],
+		"bTarget": 1000000,
+		"bRange": [
+			1,
+			1000000
+		],
+		"cTarget": 1000,
+		"cRange": [
+			1,
+			1000
+		],
+		"ID": 2,
+		"thread": {
+			"FPS": 30
+		},
+		"/Window": "OKview",
+		"/_Console": "_Console",
+		"/tInt": 100000
+	},
+	"omL_Y": {
+		"class": "_OrientalMotor",
+		"bON": true,
+		"bLog": false,
+		"thread": {
+			"FPS": 1
+		},
+		"_Modbus": "modbus",
+		"tIntSendCMD": 100000000,
+		"tIntReadStatus": 100000000,
+		"tIntCheckAlarm": 100000000,
+		"ID": 2,
+		"pOrigin": 100,
+		"pTarget": 0,
+		"pErr": 10,
+		"pRange": [
+			0,
+			85000
+		],
+		"sTarget": 15000,
+		"sRange": [
+			0,
+			15000
+		],
+		"aTarget": 1000000,
+		"aRange": [
+			1,
+			1000000
+		],
+		"bTarget": 1000000,
+		"bRange": [
+			1,
+			1000000
+		],
+		"cTarget": 1000,
+		"cRange": [
+			1,
+			1000
+		]
+	}
+}

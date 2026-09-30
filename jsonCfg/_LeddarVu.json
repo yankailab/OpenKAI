@@ -1,0 +1,162 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "OpenKAI",
+		"bLog": false,
+		"bStdErr": true,
+		"/bWindow": 1,
+		"/bDraw": 1,
+		"/waitKey": 30
+	},
+	"OK_Console": {
+		"class": "_Console",
+		"bON": true,
+		"vBASE": [
+			"camera",
+			"leddarVu0"
+		]
+	},
+	"OKview": {
+		"class": "Window",
+		"bON": true,
+		"bDrawMsg": 1,
+		"bFullScreen": 0,
+		"/gstOutput": "appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.201 port=5678 auto-multicast=false",
+		"/gstOutput_2": "appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false"
+	},
+	"camera": {
+		"class": "_Camera",
+		"bON": false,
+		"deviceID": 0,
+		"thread": {
+			"FPS": 30
+		},
+		"vSizeRGB": [
+			640,
+			480
+		],
+		"RGBframeOut": "cameraRGB",
+		"/Window": "OKview",
+		"/_Console": "OK_Console"
+	},
+	"leddarVu0": {
+		"class": "_LeddarVu",
+		"bON": true,
+		"bLog": true,
+		"fovH": 48,
+		"fovV": 0.3,
+		"nDiv": 8,
+		"showOriginOffsetX": 0.5,
+		"showOriginOffsetY": 1.0,
+		"port": "/dev/ttyACM0",
+		"baud": 115200,
+		"bUse0x41": false,
+		"slaveAddr": 1,
+		"nAccumulationsExpo": 5,
+		"nOversamplingsExpo": 1,
+		"nPoint": 20,
+		"lightSrcPwr": 100,
+		"bAutoLightSrcPwr": false,
+		"bDemergeObj": true,
+		"bStaticNoiseRemoval": true,
+		"bSaturationCompensation": true,
+		"bOvershootManagement": true,
+		"oprMode": 1,
+		"nAvr": 3,
+		"nMed": 3,
+		"thread": {
+			"FPS": 30
+		},
+		"vRange": [
+			0.1,
+			100.0
+		],
+		"bPrecicion": true,
+		"/Window": "OKview",
+		"/_Console": "OK_Console",
+		"/showScale": 30.0,
+		"/showDegOffset": -24.0,
+		"/_RGBbase": "camera"
+	},
+	"leddarVu1": {
+		"class": "_LeddarVu",
+		"bON": false,
+		"bLog": true,
+		"fovH": 48,
+		"fovV": 0.3,
+		"nDiv": 8,
+		"showOriginOffsetX": 0.5,
+		"showOriginOffsetY": 1.0,
+		"port": "/dev/ttyACM1",
+		"baud": 115200,
+		"bUse0x41": false,
+		"slaveAddr": 1,
+		"nAccumulationsExpo": 5,
+		"nOversamplingsExpo": 1,
+		"nPoint": 20,
+		"lightSrcPwr": 100,
+		"bAutoLightSrcPwr": false,
+		"bDemergeObj": true,
+		"bStaticNoiseRemoval": true,
+		"bSaturationCompensation": true,
+		"bOvershootManagement": true,
+		"oprMode": 1,
+		"nAvr": 3,
+		"nMed": 3,
+		"thread": {
+			"FPS": 30
+		},
+		"vRange": [
+			0.1,
+			100.0
+		],
+		"bPrecicion": true,
+		"/Window": "OKview",
+		"/showScale": 30.0,
+		"/showDegOffset": -24.0,
+		"/_RGBbase": "camera"
+	},
+	"leddarVu2": {
+		"class": "_LeddarVu",
+		"bON": false,
+		"bLog": true,
+		"fovH": 48,
+		"fovV": 0.3,
+		"nDiv": 8,
+		"showOriginOffsetX": 0.5,
+		"showOriginOffsetY": 1.0,
+		"port": "/dev/ttyACM2",
+		"baud": 115200,
+		"bUse0x41": false,
+		"slaveAddr": 1,
+		"nAccumulationsExpo": 5,
+		"nOversamplingsExpo": 1,
+		"nPoint": 20,
+		"lightSrcPwr": 100,
+		"bAutoLightSrcPwr": false,
+		"bDemergeObj": true,
+		"bStaticNoiseRemoval": true,
+		"bSaturationCompensation": true,
+		"bOvershootManagement": true,
+		"oprMode": 1,
+		"nAvr": 3,
+		"nMed": 3,
+		"thread": {
+			"FPS": 30
+		},
+		"vRange": [
+			0.1,
+			100.0
+		],
+		"bPrecicion": true,
+		"/Window": "OKview",
+		"/showScale": 30.0,
+		"/showDegOffset": -24.0,
+		"/_RGBbase": "camera"
+	},
+	"cameraRGB": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"/migration": "Format-only modules without a current implementation: Window. Their original class names and settings are preserved."
+}

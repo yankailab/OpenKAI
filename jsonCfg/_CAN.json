@@ -1,0 +1,68 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "OpenKAI",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": false,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"udp",
+			"tcp",
+			"CANET",
+			"socketCAN"
+		]
+	},
+	"udp": {
+		"class": "_UDP",
+		"bON": true,
+		"bLog": false,
+		"thread": {
+			"FPS": 1
+		},
+		"nPacket": 1024,
+		"nPbuffer": 512,
+		"addrRemote": "192.168.0.7",
+		"portRemote": 20001,
+		"portLocal": 20001,
+		"bW2R": true,
+		"bWbroadcast": 0,
+		"/bServer": 0
+	},
+	"tcp": {
+		"class": "_TCPclient",
+		"bON": false,
+		"bLog": false,
+		"thread": {
+			"FPS": 1
+		},
+		"nPacket": 1024,
+		"nPbuffer": 512,
+		"addr": "192.168.0.7",
+		"port": 20001
+	},
+	"CANET": {
+		"class": "_USR_CANET",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 1
+		},
+		"_IObase": "udp",
+		"/_IObase": "tcp"
+	},
+	"socketCAN": {
+		"class": "_SocketCAN",
+		"bON": false,
+		"bLog": true,
+		"thread": {
+			"FPS": 1
+		},
+		"ifName": "can0"
+	}
+}

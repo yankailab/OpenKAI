@@ -347,11 +347,6 @@ if(WITH_NAVIGATION)
 	src/Navigation/_RTCMcast.cpp
 	src/Navigation/_GeoFence.cpp
   )
-  if(USE_REALSENSE)
-    list(APPEND OpenKAI_cpp
-		src/Navigation/_RStracking.cpp
-    )
-  endif()
 endif()
 
 if(WITH_SLAM)
@@ -436,11 +431,15 @@ if(WITH_ROS)
   )
 endif()
 
+# RealSense's embedded IMU preview also uses the shared orientation filter.
+if(WITH_SENSOR OR USE_REALSENSE)
+  file(GLOB_RECURSE Dependencies_sensor src/Dependencies/SensorFusion/*.cpp src/Dependencies/SensorFusion/*.c)
+  list(APPEND OpenKAI_cpp ${Dependencies_sensor})
+endif()
+
 if(WITH_SENSOR)
   add_definitions(-DWITH_SENSOR)
-  file(GLOB_RECURSE Dependencies_sensor src/Dependencies/SensorFusion/*.cpp src/Dependencies/SensorFusion/*.c)
   list(APPEND OpenKAI_cpp
-	${Dependencies_sensor}
 	src/Sensor/_IMUbase.cpp
 	src/Sensor/Distance/_DistSensorBase.cpp
 	src/Sensor/Distance/_LeddarVu.cpp
@@ -792,7 +791,8 @@ endif()
 
 if(USE_REALSENSE)
   add_definitions(-DUSE_REALSENSE)
-  set(OpenKAI_lib ${OpenKAI_lib} realsense2)
+  find_package(realsense2 2.58.4 REQUIRED CONFIG)
+  list(APPEND OpenKAI_lib realsense2::realsense2)
 endif()
 
 if(USE_SCEPTER_SDK)
@@ -868,6 +868,8 @@ if(WITH_UNIVERSE)
     COMMAND ${CMAKE_COMMAND} -E copy_directory
       "${PROJECT_SOURCE_DIR}/html/viewer/_Orbbec" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_Orbbec"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${PROJECT_SOURCE_DIR}/html/viewer/_RealSense" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_RealSense"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
       "${PROJECT_SOURCE_DIR}/html/viewer/_GLIM" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_GLIM"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
       "${PROJECT_SOURCE_DIR}/html/viewer/_Scepter" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_Scepter")
@@ -891,6 +893,7 @@ if(WITH_UNIVERSE)
   install(DIRECTORY html/viewer/_SelectableOctGrid DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   install(DIRECTORY html/viewer/_GeometryBase DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   install(DIRECTORY html/viewer/_Orbbec DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
+  install(DIRECTORY html/viewer/_RealSense DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   install(DIRECTORY html/viewer/_GLIM DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   install(DIRECTORY html/viewer/_Scepter DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
 endif()

@@ -1,0 +1,118 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "OpenKAI",
+		"bLog": false,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"vBASE": [
+			"modbus",
+			"stepperX",
+			"stepperY"
+		]
+	},
+	"modbus": {
+		"class": "_Modbus",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"bLog": false,
+		"/type": "RTU",
+		"/migration": "RTU is the module default. Leave type unset: InstanceMgr reserves it for module/dataObject dispatch.",
+		"rtuPort": "/dev/ttyUSB0",
+		"/rtuBaud": 9600,
+		"rtuBaud": 115200,
+		"rtuParity": "N"
+	},
+	"stepperX": {
+		"class": "_HYMCU_RS485",
+		"bON": true,
+		"thread": {
+			"FPS": 5
+		},
+		"bLog": true,
+		"_Modbus": "modbus",
+		"iSlave": 2,
+		"dpr": 1,
+		"dInit": 5,
+		"addr": {
+			"setDPR": 4,
+			"setDist": 9,
+			"setDir": 11,
+			"setSpd": 8,
+			"setAcc": 2,
+			"bComplete": 12,
+			"readStat": 22,
+			"run": 7,
+			"stop": 3,
+			"resPos": 10
+		},
+		"pOrigin": 0.0,
+		"pTarget": 5.0,
+		"pErr": 0.01,
+		"pRange": [
+			0,
+			15
+		],
+		"sTarget": 300.0,
+		"sRange": [
+			0,
+			300
+		],
+		"aTarget": 100.0,
+		"aRange": [
+			1,
+			300
+		],
+		"/bFeedback": 1
+	},
+	"stepperY": {
+		"class": "_HYMCU_RS485",
+		"bON": true,
+		"thread": {
+			"FPS": 5
+		},
+		"bLog": true,
+		"_Modbus": "modbus",
+		"iSlave": 3,
+		"dpr": 1,
+		"dInit": 5,
+		"addr": {
+			"setDPR": 4,
+			"setDist": 9,
+			"setDir": 11,
+			"setSpd": 8,
+			"setAcc": 2,
+			"bComplete": 12,
+			"readStat": 22,
+			"run": 7,
+			"stop": 3,
+			"resPos": 10
+		},
+		"pOrigin": 0.0,
+		"pTarget": 5.0,
+		"pErr": 0.01,
+		"pRange": [
+			0,
+			15
+		],
+		"sTarget": 300.0,
+		"sRange": [
+			0,
+			300
+		],
+		"aTarget": 100.0,
+		"aRange": [
+			1,
+			300
+		],
+		"/bFeedback": 1
+	}
+}

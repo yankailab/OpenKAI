@@ -1,0 +1,158 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "OpenKAI",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"vBASE": [
+			"fastLio"
+		]
+	},
+	"view": {
+		"class": "_OCVwindow",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"RGBframeIn": "viewRGB",
+		"/vBASE": [
+			"fastLio"
+		]
+	},
+	"fastLio": {
+		"class": "_ROS_fastLio",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"threadROS": {
+			"FPS": 1
+		},
+		"node": {
+			"/topicPC2": "Laser_map",
+			"topicOdom": "Odometry",
+			"/topicPath": "path"
+		},
+		"/_PCframe": "pcFrame",
+		"/migration": "The ROS adapter still expects the removed _PCframe module. Its optional point-cloud link remains commented; odometry settings are preserved."
+	},
+	"pcFrame": {
+		"class": "PCLframe",
+		"type": "dataObject",
+		"/bON": false,
+		"/thread": {
+			"FPS": 30
+		},
+		"/nPresv": 1000000,
+		"/nPresvNext": 1000000,
+		"/migration": "No PCLframe producer is configured: the current ROS adapter still uses the removed _PCframe module interface."
+	},
+	"gv": {
+		"class": "_ImGUIselectableOctGrid",
+		"bON": false,
+		"thread": {
+			"FPS": 10
+		},
+		"vWinSize": [
+			1920,
+			1080
+		],
+		"vCamLookAt": [
+			0,
+			0,
+			0
+		],
+		"vCamEye": [
+			0,
+			2,
+			0
+		],
+		"vCamUp": [
+			0,
+			0,
+			1
+		],
+		"vCoR": [
+			0,
+			0,
+			0
+		],
+		"camFov": 75,
+		"vCamNF": [
+			0,
+			500
+		],
+		"bFullScreen": false,
+		"dirSave": "/home/kai/Documents/",
+		"/dirSave": "/media/lab/",
+		"/migration": "The legacy geometry frontend is replaced by the current ImGUI viewer. Original geometry and unsupported frontend settings are retained as comment keys.",
+		"/pathRes": "/usr/local/bin/Open3D/resources",
+		"/device": "CPU:0",
+		"/vCamAutoLookAt": [
+			0,
+			0,
+			0
+		],
+		"/vCamAutoEye": [
+			0,
+			2,
+			0
+		],
+		"/vCamAutoUp": [
+			0,
+			0,
+			1
+		],
+		"/camFovType": 1,
+		"/wPanel": 20,
+		"/vBtnPadding": [
+			1.6,
+			2.0
+		],
+		"/mouseMode": 0,
+		"/vDmove": [
+			0.5,
+			5.0
+		],
+		"/dHiddenRemove": 100.0,
+		"/rVoxel": 0.05,
+		"/geometry": [
+			{
+				"_GeometryBase": "pcFrame",
+				"bStatic": 0,
+				"nP": 1000000,
+				"rDummyDome": 1000.0,
+				"matName": "defaultUnlit",
+				"matPointSize": 1
+			}
+		],
+		"/class": "_GeometryViewerBase",
+		"threadUI": {
+			"FPS": 30
+		},
+		"vGeometry": [
+			{
+				"PCLframeIn": "pcFrame",
+				"nP": 1000000,
+				"matPointSize": 1
+			}
+		],
+		"nPbuf": 1000000,
+		"nLbuf": 0,
+		"nCbuf": 0,
+		"bAutoBound": false
+	},
+	"viewRGB": {
+		"type": "dataObject",
+		"class": "RGBframe",
+		"/migration": "The original window had no compatible image producer. Connect an RGBframe producer before enabling it."
+	},
+	"/migration": "Legacy point storage is now a PCLframe DataObject; data objects have no worker thread."
+}

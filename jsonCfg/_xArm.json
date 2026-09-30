@@ -1,0 +1,36 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "OpenKAI",
+		"bLog": true,
+		"bStdErr": false,
+		"/bWindow": 0,
+		"/bDraw": 1,
+		"/waitKey": 30
+	},
+	"OpenKAI": {
+		"class": "_Console",
+		"bON": true,
+		"vBASE": [
+			"xArm"
+		]
+	},
+	"OKview": {
+		"class": "Window",
+		"bON": false,
+		"bFullScreen": 0
+	},
+	"xArm": {
+		"class": "_xArm",
+		"bON": true,
+		"bLog": true,
+		"ip": "192.168.1.222",
+		"mode": 3,
+		"thread": {
+			"FPS": 30
+		},
+		"/Window": "OKview",
+		"/_Console": "OpenKAI"
+	},
+	"/migration": "Format-only modules without a current implementation: Window. Their original class names and settings are preserved."
+}

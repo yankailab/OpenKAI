@@ -1,0 +1,39 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "OpenKAI",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": false,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"wsServer"
+		]
+	},
+	"wsServer": {
+		"class": "_WebSocketServer",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 10
+		},
+		"wsMode": 3,
+		"host": "localhost",
+		"port": 7890,
+		"tOutMs": 10000
+	},
+	"TestWebSocket": {
+		"class": "_TestWebSocket",
+		"bON": true,
+		"bLog": true,
+		"thread": {
+			"FPS": 1
+		},
+		"_WebSocketServer": "wsServer"
+	}
+}

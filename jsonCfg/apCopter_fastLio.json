@@ -1,0 +1,189 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "OpenKAI",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"vBASE": [
+			"serialAP",
+			"apBase",
+			"apVision",
+			"fastLio"
+		]
+	},
+	"serialAP": {
+		"class": "_SerialPort",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"nPacket": 1024,
+		"nPbuffer": 512,
+		"/port": "/dev/ttyACM2",
+		"port": "/dev/ttyAMA0",
+		"/port_2": "/dev/ttyTHS1",
+		"/baud": 115200,
+		"baud": 921600
+	},
+	"udpAP": {
+		"class": "_UDP",
+		"bON": false,
+		"thread": {
+			"FPS": 100
+		},
+		"/addrRemote": "192.168.1.14",
+		"portLocal": 2024
+	},
+	"mavAP": {
+		"class": "_Mavlink",
+		"bON": true,
+		"thread": {
+			"FPS": 100
+		},
+		"bLog": false,
+		"_IObase": "serialAP",
+		"/_IObase": "udpAP",
+		"devSystemID": 1,
+		"mySystemID": 200,
+		"iMavComm": 0,
+		"/noRouteCmd": [],
+		"vRoutings": [
+			"mavUDP"
+		]
+	},
+	"udpMav": {
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"portLocal": 19840
+	},
+	"mavUDP": {
+		"class": "_Mavlink",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"bLog": false,
+		"_IObase": "udpMav",
+		"/noRouteCmd": [],
+		"vRoutings": [
+			"mavAP"
+		]
+	},
+	"apBase": {
+		"class": "_APmav_base",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"_Mavlink": "mavAP",
+		"ieSendHB": 1,
+		"ieSendMsgInt": 1,
+		"mavMsgInt": {
+			"heartbeat": {
+				"id": 0,
+				"tInt": 1
+			},
+			"attitude": {
+				"id": 30,
+				"tInt": 0.5
+			},
+			"rcChannels": {
+				"id": 65,
+				"tInt": 1.0
+			},
+			"localPosition": {
+				"id": 32,
+				"tInt": 0.5
+			},
+			"globalPosition": {
+				"id": 33,
+				"tInt": 0.5
+			},
+			"homePosition": {
+				"id": 242,
+				"tInt": 10
+			},
+			"batteryStatus": {
+				"id": 147,
+				"tInt": 10
+			},
+			"missionCurrent": {
+				"id": 42,
+				"tInt": 1
+			}
+		},
+		"/_StateControl": "state",
+		"/apType": 0
+	},
+	"fastLio": {
+		"class": "_ROS_fastLio",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"threadROS": {
+			"FPS": 1
+		},
+		"node": {
+			"/topicPC2": "Laser_map",
+			"topicOdom": "Odometry",
+			"/topicPath": "path"
+		},
+		"/_PCframe": "pcFrame",
+		"/migration": "The ROS adapter still expects the removed _PCframe module. Its optional point-cloud link remains commented; odometry settings are preserved.",
+		"/scale": 1.0,
+		"/vAxisIdx": [
+			0,
+			1,
+			2
+		]
+	},
+	"apVision": {
+		"class": "_APmav_visionEstimate",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"bLog": false,
+		"_APmav_base": "apBase",
+		"_NavBase": "fastLio",
+		"mTsensor2aero": [
+			1,
+			0,
+			0,
+			0,
+			0,
+			-1,
+			0,
+			0,
+			0,
+			0,
+			-1,
+			0,
+			0,
+			0,
+			0,
+			1
+		],
+		"vAxisRPY": [
+			0,
+			1,
+			2
+		],
+		"bPos": true,
+		"bSpd": false,
+		"thrJumpPos": 0.1,
+		"thrJumpSpd": 20.0,
+		"apModeInError": 9
+	}
+}

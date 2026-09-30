@@ -1,0 +1,142 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "OpenKAI",
+		"bLog": false,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"vBASE": [
+			"zlac8015_LF",
+			"zlac8015_LB",
+			"zlac8015_RF",
+			"zlac8015_RB"
+		]
+	},
+	"modbus": {
+		"class": "_Modbus",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"bLog": false,
+		"/type": "RTU",
+		"/migration": "RTU is the module default. Leave type unset: InstanceMgr reserves it for module/dataObject dispatch.",
+		"rtuPort": "/dev/ttyUSB0",
+		"rtuBaud": 115200,
+		"rtuParity": "N"
+	},
+	"zlac8015_LF": {
+		"class": "_ZLAC8015",
+		"bON": true,
+		"thread": {
+			"FPS": 5
+		},
+		"bLog": true,
+		"_Modbus": "modbus",
+		"pOrigin": 0.0,
+		"pTarget": 0.0,
+		"pErr": 0.01,
+		"pRange": [
+			0,
+			15
+		],
+		"sTarget": 160.0,
+		"sRange": [
+			0,
+			300
+		],
+		"aTarget": 0.0,
+		"aRange": [
+			10,
+			300
+		],
+		"ID": 1
+	},
+	"zlac8015_LB": {
+		"class": "_ZLAC8015",
+		"bON": true,
+		"thread": {
+			"FPS": 5
+		},
+		"bLog": true,
+		"_Modbus": "modbus",
+		"pOrigin": 0.0,
+		"pTarget": 0.0,
+		"pErr": 0.01,
+		"pRange": [
+			0,
+			15
+		],
+		"sTarget": 160.0,
+		"sRange": [
+			0,
+			300
+		],
+		"aTarget": 0.0,
+		"aRange": [
+			10,
+			300
+		],
+		"ID": 2
+	},
+	"zlac8015_RF": {
+		"class": "_ZLAC8015",
+		"bON": true,
+		"thread": {
+			"FPS": 5
+		},
+		"bLog": true,
+		"_Modbus": "modbus",
+		"pOrigin": 0.0,
+		"pTarget": 0.0,
+		"pErr": 0.01,
+		"pRange": [
+			0,
+			15
+		],
+		"sTarget": -160.0,
+		"sRange": [
+			0,
+			300
+		],
+		"aTarget": 0.0,
+		"aRange": [
+			10,
+			300
+		],
+		"ID": 3
+	},
+	"zlac8015_RB": {
+		"class": "_ZLAC8015",
+		"bON": true,
+		"thread": {
+			"FPS": 5
+		},
+		"bLog": true,
+		"_Modbus": "modbus",
+		"pOrigin": 0.0,
+		"pTarget": 0.0,
+		"pErr": 0.01,
+		"pRange": [
+			0,
+			15
+		],
+		"sTarget": -160.0,
+		"sRange": [
+			0,
+			300
+		],
+		"aTarget": 0.0,
+		"aRange": [
+			10,
+			300
+		],
+		"ID": 4
+	}
+}

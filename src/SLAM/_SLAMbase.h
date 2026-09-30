@@ -56,8 +56,9 @@ namespace kai
 		deque<IMUstream::IMU_DATA> m_dqGyro;
 		deque<IMUstream::IMU_DATA> m_dqAcc;
 		bool m_bIMUbatch = false;
-		uint64_t m_tStampLastGyro = 0;
-		uint64_t m_tStampLastAcc = 0;
+		uint64_t m_tStampLastGyro = 0; // last consumed gyro sample
+		uint64_t m_tStampLastAcc = 0;  // latest observed acceleration sample
+		uint64_t m_tStampLatestGyro = 0; // includes samples waiting for acceleration
 		size_t m_iGyro = 0;
 		size_t m_iAcc = 0;
 		uint64_t m_tStampLastFrame = 0;

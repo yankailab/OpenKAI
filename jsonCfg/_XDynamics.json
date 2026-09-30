@@ -1,0 +1,338 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "OpenKAI",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"vBASE": [
+			"XD"
+		]
+	},
+	"view": {
+		"class": "_OCVwindow",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"bFullScreen": false,
+		"RGBframeIn": "XDRGB",
+		"/vBASE": [
+			"XD",
+			"d2g"
+		]
+	},
+	"XD_400": {
+		"name": "XD_400",
+		"class": "_XDynamics",
+		"thread": {
+			"FPS": 10
+		},
+		"bON": false,
+		"bLog": true,
+		"devURI": "192.168.31.3",
+		"xdDevType": 2,
+		"xdProductType": 2048,
+		"binning": 3,
+		"mirrorMode": 0,
+		"algMode": 0,
+		"vRangeD": [
+			0,
+			3
+		],
+		"devFPS": 15,
+		"devFPSd": 15,
+		"vSizeRGB": [
+			320,
+			240
+		],
+		"vSizeD": [
+			320,
+			240
+		],
+		"bRGB": true,
+		"bDepth": true,
+		"bConfidence": true,
+		"btRGB": false,
+		"btDepth": false,
+		"bIR": false,
+		"RGBframeOut": "XD_400RGB",
+		"bPCL": true,
+		"PCLframeOut": "pcRGBD",
+		"DframeOut": "XD_400Depth"
+	},
+	"XD_500": {
+		"name": "XD_500",
+		"class": "_XDynamics",
+		"thread": {
+			"FPS": 1
+		},
+		"bON": false,
+		"bLog": true,
+		"xdDevType": 0,
+		"xdProductType": 0,
+		"vFreq": [
+			99,
+			18
+		],
+		"binning": 3,
+		"mirrorMode": 0,
+		"vRangeD": [
+			0,
+			6
+		],
+		"devFPS": 10,
+		"devFPSd": 10,
+		"vSizeRGB": [
+			320,
+			240
+		],
+		"vSizeD": [
+			320,
+			240
+		],
+		"bRGB": true,
+		"bDepth": true,
+		"bConfidence": false,
+		"btRGB": false,
+		"btDepth": false,
+		"bIR": false,
+		"/_SHMrgb": "SHMxdRGB",
+		"RGBframeOut": "XD_500RGB",
+		"devURI": "192.168.31.3",
+		"DframeOut": "XD_500Depth"
+	},
+	"XD_1000": {
+		"name": "XD_1000",
+		"class": "_XDynamics",
+		"thread": {
+			"FPS": 1
+		},
+		"bON": false,
+		"bLog": false,
+		"xdDevType": 0,
+		"xdProductType": 1027,
+		"vFreq": [
+			62,
+			25
+		],
+		"binning": 3,
+		"mirrorMode": 0,
+		"vRangeD": [
+			0,
+			10
+		],
+		"devFPS": 10,
+		"devFPSd": 10,
+		"vSizeRGB": [
+			320,
+			240
+		],
+		"vSizeD": [
+			320,
+			240
+		],
+		"bRGB": false,
+		"bDepth": true,
+		"bConfidence": false,
+		"btRGB": false,
+		"btDepth": false,
+		"bIR": false,
+		"/_SHMrgb": "SHMxdRGB",
+		"RGBframeOut": "XD_1000RGB",
+		"devURI": "192.168.31.3",
+		"DframeOut": "XD_1000Depth"
+	},
+	"XD": {
+		"name": "XD",
+		"class": "_XDynamics",
+		"thread": {
+			"FPS": 10
+		},
+		"bON": true,
+		"bLog": true,
+		"devURI": "192.168.31.8",
+		"xdDevType": 2,
+		"xdProductType": 1124,
+		"binning": 3,
+		"mirrorMode": 0,
+		"algMode": 1,
+		"vRangeD": [
+			0,
+			5
+		],
+		"devFPS": 5,
+		"devFPSd": 5,
+		"vSizeRGB": [
+			320,
+			240
+		],
+		"vSizeD": [
+			320,
+			240
+		],
+		"bRGB": true,
+		"bDepth": true,
+		"bConfidence": true,
+		"btRGB": false,
+		"btDepth": false,
+		"bIR": false,
+		"RGBframeOut": "XDRGB",
+		"bPCL": true,
+		"PCLframeOut": "pcRGBD",
+		"DframeOut": "XDDepth"
+	},
+	"d2g": {
+		"class": "_D2G",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"_RGBDbase": "XD"
+	},
+	"pcRGBD": {
+		"class": "PCLframe",
+		"type": "dataObject",
+		"/bON": true,
+		"/thread": {
+			"FPS": 30
+		},
+		"/nPresv": 76800,
+		"/nPresvNext": 76800
+	},
+	"gv": {
+		"class": "_ImGUIselectableOctGrid",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"vWinSize": [
+			1920,
+			1080
+		],
+		"vCamLookAt": [
+			0,
+			0,
+			0
+		],
+		"vCamEye": [
+			0,
+			0,
+			2
+		],
+		"vCamUp": [
+			0,
+			1,
+			0
+		],
+		"vCoR": [
+			0,
+			0,
+			0
+		],
+		"camFov": 75,
+		"vCamNF": [
+			0,
+			500
+		],
+		"bFullScreen": false,
+		"dirSave": "/home/kai/Documents/",
+		"/dirSave": "/media/lab/",
+		"/migration": "The legacy geometry frontend is replaced by the current ImGUI viewer. Original geometry and unsupported frontend settings are retained as comment keys.",
+		"/pathRes": "/usr/local/bin/Open3D/resources",
+		"/device": "CPU:0",
+		"/vCamAutoLookAt": [
+			0,
+			0,
+			0
+		],
+		"/vCamAutoEye": [
+			0,
+			0,
+			2
+		],
+		"/vCamAutoUp": [
+			0,
+			1,
+			0
+		],
+		"/camFovType": 1,
+		"/wPanel": 20,
+		"/vBtnPadding": [
+			1.6,
+			2.0
+		],
+		"/mouseMode": 0,
+		"/vDmove": [
+			0.5,
+			5.0
+		],
+		"/dHiddenRemove": 100.0,
+		"/rVoxel": 0.05,
+		"/geometry": [
+			{
+				"_GeometryBase": "pcRGBD",
+				"bStatic": 0,
+				"nP": 80000,
+				"rDummyDome": 1000.0,
+				"matName": "defaultUnlit",
+				"/matName": "depth",
+				"matPointSize": 1
+			}
+		],
+		"/class": "_GeometryViewerBase",
+		"threadUI": {
+			"FPS": 30
+		},
+		"vGeometry": [
+			{
+				"PCLframeIn": "pcRGBD",
+				"nP": 80000,
+				"matPointSize": 1
+			}
+		],
+		"nPbuf": 80000,
+		"nLbuf": 0,
+		"nCbuf": 0,
+		"bAutoBound": false
+	},
+	"XD_400RGB": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"XD_400Depth": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"XD_500RGB": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"XD_500Depth": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"XD_1000RGB": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"XD_1000Depth": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"XDRGB": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"XDDepth": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"/migration": "Legacy point storage is now a PCLframe DataObject; data objects have no worker thread. Format-only modules without a current implementation: _D2G. Their original class names and settings are preserved."
+}

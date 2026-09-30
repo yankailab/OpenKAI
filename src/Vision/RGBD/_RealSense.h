@@ -1,124 +1,83 @@
-/*
- * _RealSense.h
- *
- *  Created on: Apr 6, 2018
- *      Author: yankai
- */
-
+/* RealSense SDK 2 camera, motion streams and runtime controls. */
 #ifndef OpenKAI_src_Vision_RGBD__RealSense_H_
 #define OpenKAI_src_Vision_RGBD__RealSense_H_
 
 #include <librealsense2/rs.hpp>
+#include <atomic>
+#include <map>
+#include <mutex>
+#include <set>
 #include "_RGBDbase.h"
+#include "RealSenseIMU.h"
 
 namespace kai
 {
-	struct RS_CTRL
-	{
-		float m_fDefault;
+    class _RealSense : public _RGBDbase
+    {
+    public:
+        _RealSense();
+        ~_RealSense() override;
+        bool loadConfig(void) override;
+        bool saveConfig(bool bExport) override;
+        bool start(void) override;
+        void stop(void) override;
+        bool open(void) override;
+        void close(void) override;
+        void console(void *pConsole) override;
+        void console(const json &j, void *pJSONbase) override;
 
-		float m_fConfidenceThr;
-		float m_fDigitalGain;
-		float m_fPostProcessingSharpening;
-		float m_fFilterMagnitude;
-		float m_fHolesFill;
-		float m_fEmitter;
-		float m_fLaserPower;
+    private:
+        std::unique_lock<std::recursive_mutex> lockDeviceForWork() const;
+        json configValues() const;
+        json controlSchema();
+        json imuValues() const;
+        bool applyConfig(const json &patch, bool live, json &errors);
+        void setConfigValues(const json &values);
+        void discoverOptions();
+        void applyOptions();
+        std::map<string, rs2::options> optionTargets();
+        void receiveFrame(rs2::frame frame);
+        void processFrames(rs2::frameset frames);
+        void updatePC(const rs2::frame &depth, const rs2::frame &color, const Mat &rgb, uint64_t stamp);
+        void update();
+        void updateTPP();
+        static void *getUpdate(void *self) { static_cast<_RealSense *>(self)->update(); return nullptr; }
+        static void *getTPP(void *self) { static_cast<_RealSense *>(self)->updateTPP(); return nullptr; }
 
-		float m_fBrightness;
-		float m_fContrast;
-		float m_fGain;
-		float m_fExposure;
-		float m_fHue;
-		float m_fSaturation;
-		float m_fSharpness;
-		float m_fWhiteBalance;
-
-		void clear(void)
-		{
-			m_fDefault = 10e6;
-
-			m_fConfidenceThr = m_fDefault;
-			m_fDigitalGain = m_fDefault;
-			m_fPostProcessingSharpening = m_fDefault;
-			m_fFilterMagnitude = m_fDefault;
-			m_fHolesFill = m_fDefault;
-			m_fEmitter = m_fDefault;
-			m_fLaserPower = m_fDefault;
-
-			m_fBrightness = m_fDefault;
-			m_fContrast = m_fDefault;
-			m_fGain = m_fDefault;
-			m_fExposure = m_fDefault;
-			m_fHue = m_fDefault;
-			m_fSaturation = m_fDefault;
-			m_fSharpness = m_fDefault;
-			m_fWhiteBalance = m_fDefault;
-		}
-	};
-
-	class _RealSense : public _RGBDbase
-	{
-	public:
-		_RealSense();
-		virtual ~_RealSense();
-
-		virtual bool loadConfig(void) override;
-		bool saveConfig(bool bExport) override;
-		virtual bool start(void);
-		void stop(void) override;
-		virtual bool check(void);
-
-		virtual bool open(void);
-		virtual void close(void);
-
-		bool setSensorOption(const rs2::sensor &sensor, rs2_option option_type, float v);
-		bool setCsensorOption(rs2_option option_type, float v);
-		bool setDsensorOption(rs2_option option_type, float v);
-
-		bool getSensorOption(const rs2::sensor &sensor, rs2_option option_type, rs2::option_range *pR);
-		bool getCsensorOption(rs2_option option_type, rs2::option_range *pR);
-		bool getDsensorOption(rs2_option option_type, rs2::option_range *pR);
-
-	private:
-		void sensorReset(void);
-		bool updateRS(void);
-		virtual void update(void);
-		static void *getUpdate(void *This)
-		{
-			((_RealSense *)This)->update();
-			return NULL;
-		}
-
-		void updatePC(const rs2::frame &depth, const rs2::frame &color, const Mat &mRGB, uint64_t tStamp);
-		void updateTPP(void);
-		static void *getTPP(void *This)
-		{
-			((_RealSense *)This)->updateTPP();
-			return NULL;
-		}
-
-	protected:
-		string m_rsSN = "";
-		rs2::config m_rsConfig;
-		rs2::pipeline_profile m_rsProfile;
-		rs2::pipeline m_rsPipe;
-		rs2::frame_queue m_rsFrames{1}; // SDK-owned frames awaiting processing
-		rs2::spatial_filter m_rsfSpat;
-		rs2::decimation_filter m_rsfDec;
-		RS_CTRL m_rsCtrl;
-
-		int m_rsFPS = 30;
-		int m_rsDFPS = 30;
-		bool m_bAlign = false;
-		string m_vPreset = "High Density";
-
-		rs2_intrinsics m_cIntrinsics;
-		rs2_intrinsics m_dIntrinsics;
-
-		// point cloud
-		rs2::pointcloud m_rsPC;
-	};
-
+        mutable std::mutex m_deviceAdmission;
+        mutable std::recursive_mutex m_deviceMutex;
+        string m_SN;
+        int m_accelFPS = 0;
+        int m_gyroFPS = 0;
+        int m_tOutMs = 1000;
+        bool m_bAlign = false;
+        bool m_bDecimation = false;
+        bool m_bSpatial = false;
+        bool m_bTemporal = false;
+        bool m_bHoleFilling = false;
+        bool m_bThreshold = false;
+        bool m_pipelineStarted = false;
+        json m_sensorOptions = json::object();
+        std::set<string> m_preStreamWritable;
+        string m_lastError;
+        rs2::pipeline m_pipeline;
+        rs2::pipeline_profile m_profile;
+        std::map<string, rs2::sensor> m_sensors;
+        rs2::frame_queue m_frames{1};
+        rs2::decimation_filter m_decimation;
+        rs2::spatial_filter m_spatial;
+        rs2::temporal_filter m_temporal;
+        rs2::hole_filling_filter m_holeFilling;
+        rs2::threshold_filter m_threshold;
+        rs2::align m_align{RS2_STREAM_COLOR};
+        rs2::pointcloud m_pointcloud;
+        realsense::IMUPreview m_imuPreview;
+        std::atomic<uint64_t> m_lastVideo{0};
+        std::atomic<uint64_t> m_lastAccel{0};
+        std::atomic<uint64_t> m_lastGyro{0};
+        std::atomic<uint64_t> m_nVideo{0};
+        std::atomic<uint64_t> m_nAccel{0};
+        std::atomic<uint64_t> m_nGyro{0};
+    };
 }
 #endif

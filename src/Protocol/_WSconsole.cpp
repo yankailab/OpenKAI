@@ -15,6 +15,8 @@ namespace kai
 
 	_WSconsole::~_WSconsole()
 	{
+		// Join before the derived vtable, dispatch targets and JSON state die.
+		stop();
 	}
 
 	bool _WSconsole::loadConfig(void)
@@ -59,9 +61,23 @@ namespace kai
 		NULL_F(m_pTr);
 
 		IF_F(!m_pT->startThread(getUpdate, this));
-		IF_F(!m_pTr->startThread(getUpdateR, this));
+		if (!m_pTr->startThread(getUpdateR, this))
+		{
+			m_pT->join();
+			return false;
+		}
 
 		return true;
+	}
+
+	void _WSconsole::stop(void)
+	{
+		// Stop remains valid after IO closes and before link()/start() succeeds.
+		// Signal both workers before joining: the receiver can wake the sender.
+		if (m_pT) m_pT->stop();
+		if (m_pTr) m_pTr->stop();
+		if (m_pTr) m_pTr->join();
+		if (m_pT) m_pT->join();
 	}
 
 	bool _WSconsole::check(void)
@@ -74,6 +90,7 @@ namespace kai
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
+			if (!m_pT->bRun()) break;
 
 			send();
 		}
@@ -112,6 +129,7 @@ namespace kai
 		while (m_pTr->bRun())
 		{
 			m_pTr->autoFPS();
+			if (!m_pTr->bRun()) break;
 
 			IF_CONT(!recvJson(&strR, m_pIO));
 

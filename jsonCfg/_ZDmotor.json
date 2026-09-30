@@ -1,0 +1,142 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "OpenKAI",
+		"bLog": false,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"vBASE": [
+			"ZDmotor_LF",
+			"ZDmotor_LB",
+			"ZDmotor_RF",
+			"ZDmotor_RB"
+		]
+	},
+	"modbus": {
+		"class": "_Modbus",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"bLog": false,
+		"/type": "RTU",
+		"/migration": "RTU is the module default. Leave type unset: InstanceMgr reserves it for module/dataObject dispatch.",
+		"rtuPort": "/dev/ttyUSB0",
+		"rtuBaud": 19200,
+		"rtuParity": "N"
+	},
+	"ZDmotor_LF": {
+		"class": "_ZDmotor",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"bLog": true,
+		"_Modbus": "modbus",
+		"pOrigin": 0.0,
+		"pTarget": 0.0,
+		"pErr": 0.01,
+		"pRange": [
+			0,
+			15
+		],
+		"sTarget": 3000.0,
+		"sRange": [
+			0,
+			3000
+		],
+		"aTarget": 0.0,
+		"aRange": [
+			10,
+			300
+		],
+		"ID": 1
+	},
+	"ZDmotor_LB": {
+		"class": "_ZDmotor",
+		"bON": false,
+		"thread": {
+			"FPS": 5
+		},
+		"bLog": true,
+		"_Modbus": "modbus",
+		"pOrigin": 0.0,
+		"pTarget": 0.0,
+		"pErr": 0.01,
+		"pRange": [
+			0,
+			15
+		],
+		"sTarget": 160.0,
+		"sRange": [
+			0,
+			300
+		],
+		"aTarget": 0.0,
+		"aRange": [
+			10,
+			300
+		],
+		"ID": 2
+	},
+	"ZDmotor_RF": {
+		"class": "_ZDmotor",
+		"bON": false,
+		"thread": {
+			"FPS": 5
+		},
+		"bLog": true,
+		"_Modbus": "modbus",
+		"pOrigin": 0.0,
+		"pTarget": 0.0,
+		"pErr": 0.01,
+		"pRange": [
+			0,
+			15
+		],
+		"sTarget": -160.0,
+		"sRange": [
+			0,
+			300
+		],
+		"aTarget": 0.0,
+		"aRange": [
+			10,
+			300
+		],
+		"ID": 3
+	},
+	"ZDmotor_RB": {
+		"class": "_ZDmotor",
+		"bON": false,
+		"thread": {
+			"FPS": 5
+		},
+		"bLog": true,
+		"_Modbus": "modbus",
+		"pOrigin": 0.0,
+		"pTarget": 0.0,
+		"pErr": 0.01,
+		"pRange": [
+			0,
+			15
+		],
+		"sTarget": -160.0,
+		"sRange": [
+			0,
+			300
+		],
+		"aTarget": 0.0,
+		"aRange": [
+			10,
+			300
+		],
+		"ID": 4
+	}
+}

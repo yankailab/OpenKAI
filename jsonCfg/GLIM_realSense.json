@@ -1,0 +1,209 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "GLIM SLAM — RealSense",
+		"bLog": true,
+		"bStdErr": false
+	},
+	"console": {
+		"class": "_Console",
+		"bON": false,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"GLIM",
+			"RealSense"
+		]
+	},
+	"wsServer": {
+		"class": "_WebSocketServer",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"threadR": {
+			"FPS": 1
+		},
+		"host": "0.0.0.0",
+		"port": 7890,
+		"wsMode": 2,
+		"nClientMax": 1,
+		"tOutMs": 10000
+	},
+	"wsConsole": {
+		"class": "_WSconsole",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"threadR": {
+			"FPS": 30
+		},
+		"_IObase": "wsServer",
+		"msgFinishSend": "",
+		"msgFinishRecv": "EOJ",
+		"vBASE": [
+			"GLIM"
+		]
+	},
+	"view": {
+		"class": "_OCVwindow",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"bFullScreen": 0,
+		"RGBframeIn": "rsRGB"
+	},
+	"viewD": {
+		"class": "_OCVwindow",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"bFullScreen": 0,
+		"RGBframeIn": "d2rgbRGB"
+	},
+	"RealSense": {
+		"class": "_RealSense",
+		"bON": true,
+		"thread": {
+			"FPS": 200
+		},
+		"threadPP": {
+			"FPS": 30
+		},
+		"SN": "",
+		"devFPS": 30,
+		"devFPSd": 30,
+		"accelFPS": 250,
+		"gyroFPS": 200,
+		"tOutMs": 1000,
+		"vSizeRGB": [
+			640,
+			480
+		],
+		"vSizeD": [
+			640,
+			480
+		],
+		"vRangeD": [
+			0.3,
+			6.0
+		],
+		"bRGB": false,
+		"bDepth": true,
+		"bIMU": true,
+		"bPCL": true,
+		"bPCLrgb": false,
+		"bAlign": false,
+		"PCLframeOut": "rsPCL",
+		"IMUstreamOut": "rsIMU",
+		"RGBframeOut": "rsRGB",
+		"DframeOut": "rsDepth",
+		"/sensorOptions": "Keep all active streams on the camera hardware capture clock for synchronized depth/IMU SLAM.",
+		"sensorOptions": {
+			"depth": {
+				"RS2_OPTION_GLOBAL_TIME_ENABLED": 0
+			},
+			"motion": {
+				"RS2_OPTION_GLOBAL_TIME_ENABLED": 0
+			}
+		}
+	},
+	"d2rgb": {
+		"class": "_D2RGB",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"bMeasure": false,
+		"DframeIn": "rsDepth",
+		"RGBframeOut": "d2rgbRGB"
+	},
+	"glimPCL": {
+		"type": "dataObject",
+		"class": "PCLframe"
+	},
+	"viewer": {
+		"class": "_WebGLIM",
+		"webRoot": "html/viewer/_GLIM",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"host": "0.0.0.0",
+		"port": 8080,
+		"nClientMax": 8,
+		"matPointSize": 2,
+		"bAutoBound": true,
+		"bShowGrid": true,
+		"vCamLookAt": [
+			0,
+			0,
+			0
+		],
+		"vCamEye": [
+			0,
+			-6,
+			3
+		],
+		"vCamUp": [
+			0,
+			0,
+			1
+		],
+		"camFov": 70,
+		"vCamNF": [
+			0.01,
+			1000000
+		],
+		"PCLmapIn": "GLIMMap"
+	},
+	"GLIM": {
+		"class": "_GLIM",
+		"exportPath": "data/glim_realSense",
+		"bON": true,
+		"thread": {
+			"FPS": 100
+		},
+		"PCLframeIn": "rsPCL",
+		"IMUstreamIn": "rsIMU",
+		"configPath": "jsonCfg/glim_realSense",
+		"bAutoStart": false,
+		"bMapping": true,
+		"bPublishLiveMap": false,
+		"nMinPoints": 100,
+		"tConfidenceTimeoutNs": 1000000000,
+		"PCLframeOut": "glimPCL",
+		"nMapPoints": 400000,
+		"nLiveFrames": 60,
+		"tMapUpdateNs": 200000000,
+		"PCLmapOut": "GLIMMap"
+	},
+	"d2rgbRGB": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"GLIMMap": {
+		"type": "dataObject",
+		"class": "PCLmap"
+	},
+	"rsPCL": {
+		"type": "dataObject",
+		"class": "PCLframe"
+	},
+	"rsIMU": {
+		"type": "dataObject",
+		"class": "IMUstream"
+	},
+	"rsRGB": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"rsDepth": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	}
+}

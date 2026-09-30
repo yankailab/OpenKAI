@@ -136,10 +136,6 @@
 #include "../Navigation/_GPS.h"
 #include "../Navigation/_RTCMcast.h"
 #include "../Navigation/_GeoFence.h"
-#ifdef USE_REALSENSE
-#include "../Navigation/_RStracking.h"
-#endif
-
 #endif
 
 #if defined(WITH_SLAM)

@@ -1,0 +1,504 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "OpenKAI",
+		"bLog": true,
+		"bStdErr": true,
+		"/bWindow": 1,
+		"/bDraw": 1,
+		"/waitKey": 30
+	},
+	"OK_Console": {
+		"class": "_Console",
+		"bON": true,
+		"vBASE": [
+			"camera",
+			"pcf",
+			"pcDS",
+			"pcDS2",
+			"tfRRglobal",
+			"pcRegistGlobal",
+			"tfRRicp",
+			"pcRegistICP"
+		]
+	},
+	"OKview": {
+		"class": "Window",
+		"bON": false,
+		"bFullScreen": 0,
+		"/gstOutput": "appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
+		"/gstOutput_2": "appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false"
+	},
+	"camera": {
+		"class": "_Camera",
+		"bON": false,
+		"deviceID": 0,
+		"thread": {
+			"FPS": 30
+		},
+		"vSizeRGB": [
+			640,
+			480
+		],
+		"RGBframeOut": "cameraRGB",
+		"/Window": "OKview",
+		"/_Console": "OK_Console"
+	},
+	"pcv": {
+		"class": "_PCviewer",
+		"bON": true,
+		"_Console": "OK_Console",
+		"vWinSize": [
+			1920,
+			1080
+		],
+		"fov": 100,
+		"thread": {
+			"FPS": 30
+		}
+	},
+	"pcf": {
+		"class": "_PCfile",
+		"bON": true,
+		"bLog": true,
+		"/_PCviewer": "pcv",
+		"thread": {
+			"FPS": 30
+		},
+		"vfName": [
+			"/home/kai/dev/Open3D/examples/test_data/fragment.pcd"
+		],
+		"PCLframeOut": "pcfPCL",
+		"/migration": "The current _PCfile reader accepts PLY data. Convert the external PCD file to PLY and update vfName before use; the original path is preserved here.",
+		"/_Console": "OK_Console"
+	},
+	"tfPcf": {
+		"class": "_PCtransform",
+		"bON": true,
+		"vT": [
+			1,
+			0.8,
+			0.9
+		],
+		"vR": [
+			0.5,
+			0.3,
+			0.5
+		],
+		"thread": {
+			"FPS": 30
+		},
+		"PCLframeIn": "pcfPCL",
+		"PCLframeOut": "tfPcfPCL",
+		"/_PCviewer": "pcv",
+		"/nMt": 1,
+		"/vColOvrr": [
+			0,
+			0,
+			1.0
+		],
+		"/paramKiss": "/home/kai/config/tf1.kiss"
+	},
+	"pcDS": {
+		"class": "_PCdownSample",
+		"bON": true,
+		"/_PCviewer": "pcv",
+		"thread": {
+			"FPS": 30
+		},
+		"rVoxel": 0.1,
+		"/migration": "The current _PCdownSample has no point-stream input/output implementation; the old source link is retained as /_PCbase.",
+		"/_Console": "OK_Console",
+		"/_PCbase": "pcf"
+	},
+	"pcDS2": {
+		"class": "_PCdownSample",
+		"bON": true,
+		"/_PCviewer": "pcv",
+		"thread": {
+			"FPS": 30
+		},
+		"rVoxel": 0.1,
+		"/migration": "The current _PCdownSample has no point-stream input/output implementation; the old source link is retained as /_PCbase.",
+		"/_Console": "OK_Console",
+		"/_PCbase": "tfPcf"
+	},
+	"tfRRglobal": {
+		"class": "_PCtransform",
+		"bON": true,
+		"/_PCviewer": "pcv",
+		"vT": [
+			0,
+			0,
+			0
+		],
+		"vR": [
+			0,
+			0,
+			0
+		],
+		"thread": {
+			"FPS": 30
+		},
+		"PCLframeIn": "pcfPCL",
+		"PCLframeOut": "tfRRglobalPCL",
+		"/_Console": "OK_Console",
+		"/nMt": 1,
+		"/paramKiss": "/home/kai/config/tfRRglobal.kiss"
+	},
+	"pcRegistGlobal": {
+		"class": "_PCregistGlobal",
+		"bON": true,
+		"_PCtransform": "tfRRglobal",
+		"rNormal": 0.2,
+		"rFeature": 0.5,
+		"maxNNnormal": 30,
+		"maxNNfpfh": 100,
+		"thread": {
+			"FPS": 30
+		},
+		"PCLframeSrcIn": "pcfPCL",
+		"PCLframeTgtIn": "tfPcfPCL",
+		"/_Console": "OK_Console",
+		"/iMt": 0,
+		"/rVoxel": 0.1
+	},
+	"tfRRicp": {
+		"class": "_PCtransform",
+		"bON": true,
+		"vT": [
+			0,
+			0,
+			0
+		],
+		"vR": [
+			0,
+			0,
+			0
+		],
+		"thread": {
+			"FPS": 30
+		},
+		"PCLframeIn": "tfRRglobalPCL",
+		"PCLframeOut": "tfRRicpPCL",
+		"/_Console": "OK_Console",
+		"/_PCviewer": "pcv",
+		"/nMt": 1,
+		"/vColOvrr": [
+			0,
+			1.0,
+			0.0
+		],
+		"/paramKiss": "/home/kai/config/tfRRicp.kiss"
+	},
+	"pcRegistICP": {
+		"class": "_PCregistICP",
+		"bON": true,
+		"_PCtransform": "tfRRicp",
+		"thr": 0.2,
+		"thread": {
+			"FPS": 30
+		},
+		"/class": "_PCregistGlobal",
+		"PCLframeSrcIn": "tfRRglobalPCL",
+		"PCLframeTgtIn": "tfPcfPCL",
+		"/_Console": "OK_Console",
+		"/iMt": 0
+	},
+	"rs1": {
+		"class": "_RealSensePC",
+		"bON": false,
+		"bLog": true,
+		"_Console": "OK_Console",
+		"vPreset": "Short Range",
+		"rsRGB": 1,
+		"vWHcol": [
+			1280,
+			720
+		],
+		"rsFPS": 30,
+		"vWHd": [
+			640,
+			480
+		],
+		"rsDFPS": 30,
+		"vRange": [
+			0.1,
+			15.0
+		],
+		"bAlign": 0,
+		"fEmitter": 1.0,
+		"fLaserPower": 1.0,
+		"rsSN": "f0210205",
+		"/_PCviewer": "pcv",
+		"vRz": [
+			0,
+			1000.0
+		],
+		"thread": {
+			"FPS": 30
+		}
+	},
+	"tf1": {
+		"class": "_PCtransform",
+		"bON": false,
+		"vT": [
+			0,
+			0,
+			0
+		],
+		"vR": [
+			0,
+			0,
+			0
+		],
+		"thread": {
+			"FPS": 30
+		},
+		"PCLframeIn": "rs1PCL",
+		"PCLframeOut": "tf1PCL",
+		"/_PCviewer": "pcv",
+		"/nMt": 1,
+		"/paramKiss": "/home/kai/config/tf1.kiss"
+	},
+	"rs2": {
+		"class": "_RealSensePC",
+		"FPS": 30,
+		"bON": false,
+		"bLog": true,
+		"_Console": "OK_Console",
+		"vPreset": "Short Range",
+		"rsRGB": 1,
+		"vWHcol": [
+			1280,
+			720
+		],
+		"rsFPS": 30,
+		"vWHd": [
+			640,
+			480
+		],
+		"rsDFPS": 30,
+		"vRange": [
+			0.1,
+			15.0
+		],
+		"bAlign": 0,
+		"fEmitter": 1.0,
+		"fLaserPower": 1.0,
+		"rsSN": "f0210237",
+		"/_PCviewer": "pcv",
+		"vRz": [
+			0,
+			1000.0
+		],
+		"thread": {
+			"FPS": 30
+		}
+	},
+	"tf2": {
+		"class": "_PCtransform",
+		"bON": false,
+		"vT": [
+			0,
+			0,
+			0
+		],
+		"vR": [
+			0,
+			0,
+			0
+		],
+		"PCLframeIn": "rs2PCL",
+		"PCLframeOut": "tf2PCL",
+		"/_PCviewer": "pcv",
+		"/nMt": 1,
+		"/paramKiss": "/home/kai/config/tf2.kiss"
+	},
+	"rs3": {
+		"class": "_RealSensePC",
+		"bON": false,
+		"bLog": true,
+		"_Console": "OK_Console",
+		"vPreset": "Short Range",
+		"rsRGB": 1,
+		"vWHcol": [
+			1280,
+			720
+		],
+		"rsFPS": 30,
+		"vWHd": [
+			640,
+			480
+		],
+		"rsDFPS": 30,
+		"vRange": [
+			0.1,
+			15.0
+		],
+		"bAlign": 0,
+		"fEmitter": 1.0,
+		"fLaserPower": 1.0,
+		"rsSN": "f0211594",
+		"/_PCviewer": "pcv",
+		"vRz": [
+			0,
+			1000.0
+		],
+		"thread": {
+			"FPS": 30
+		}
+	},
+	"tf3": {
+		"class": "_PCtransform",
+		"bON": false,
+		"vT": [
+			0,
+			0,
+			0
+		],
+		"vR": [
+			0,
+			0,
+			0
+		],
+		"PCLframeIn": "rs3PCL",
+		"PCLframeOut": "tf3PCL",
+		"/_PCviewer": "pcv",
+		"/nMt": 1,
+		"/paramKiss": "/home/kai/config/tf3.kiss"
+	},
+	"ws": {
+		"class": "_WebSocket",
+		"bON": false,
+		"bLog": false,
+		"thread": {
+			"FPS": 100
+		},
+		"/Window": "OKview",
+		"/_wakeUp": "ui",
+		"/threadR": {
+			"FPS": 1
+		}
+	},
+	"ui": {
+		"class": "_PCui",
+		"bON": false,
+		"Window": "OKview",
+		"_Console": "OK_Console",
+		"_IObase": "ws",
+		"PCT": [
+			"tf1",
+			"tf2",
+			"tf3"
+		],
+		"thread": {
+			"FPS": 1
+		}
+	},
+	"UDPsend": {
+		"class": "_UDP",
+		"bON": false,
+		"bLog": false,
+		"thread": {
+			"FPS": 30
+		},
+		"addrRemote": "127.0.0.1",
+		"portRemote": 19840,
+		"portLocal": 0,
+		"/Window": "OKview",
+		"/_Console": "OpenKAI",
+		"/nFIFO": 1280000
+	},
+	"PCsend": {
+		"class": "_PCsend",
+		"bON": false,
+		"bLog": true,
+		"_IObase": "UDPsend",
+		"nB": 256,
+		"tInt": 100000,
+		"thread": {
+			"FPS": 30
+		},
+		"PCLframeIn": "rs1PCL",
+		"/Window": "OKview",
+		"/_Console": "OpenKAI"
+	},
+	"UDPrecv": {
+		"class": "_UDP",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"portLocal": 19840,
+		"/Window": "OKview",
+		"/_Console": "OpenKAI",
+		"/nFIFO": 1280000,
+		"/_wakeUp": "PCrecv"
+	},
+	"PCrecv": {
+		"class": "_PCrecv",
+		"bON": false,
+		"_IObase": "UDPrecv",
+		"/_PCviewer": "pcv",
+		"thread": {
+			"FPS": 30
+		},
+		"PCLframeOut": "PCrecvPCL",
+		"/Window": "OKview",
+		"/_Console": "OpenKAI",
+		"/nB": 1280
+	},
+	"cameraRGB": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"pcfPCL": {
+		"type": "dataObject",
+		"class": "PCLframe"
+	},
+	"tfPcfPCL": {
+		"type": "dataObject",
+		"class": "PCLframe"
+	},
+	"tfRRglobalPCL": {
+		"type": "dataObject",
+		"class": "PCLframe"
+	},
+	"tfRRicpPCL": {
+		"type": "dataObject",
+		"class": "PCLframe"
+	},
+	"rs1PCL": {
+		"type": "dataObject",
+		"class": "PCLframe",
+		"/migration": "No current producer: legacy _RealSensePC is preserved as format-only. Connect a compatible producer before use."
+	},
+	"tf1PCL": {
+		"type": "dataObject",
+		"class": "PCLframe"
+	},
+	"rs2PCL": {
+		"type": "dataObject",
+		"class": "PCLframe",
+		"/migration": "No current producer: legacy _RealSensePC is preserved as format-only. Connect a compatible producer before use."
+	},
+	"tf2PCL": {
+		"type": "dataObject",
+		"class": "PCLframe"
+	},
+	"rs3PCL": {
+		"type": "dataObject",
+		"class": "PCLframe",
+		"/migration": "No current producer: legacy _RealSensePC is preserved as format-only. Connect a compatible producer before use."
+	},
+	"tf3PCL": {
+		"type": "dataObject",
+		"class": "PCLframe"
+	},
+	"PCrecvPCL": {
+		"type": "dataObject",
+		"class": "PCLframe"
+	},
+	"/migration": "Format-only modules without a current implementation: Window, _PCui, _PCviewer, _RealSensePC. Their original class names and settings are preserved."
+}

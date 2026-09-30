@@ -1,0 +1,285 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "RealSense",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": false,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"RealSense"
+		]
+	},
+	"wsServer": {
+		"class": "_WebSocketServer",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"threadR": {
+			"FPS": 1
+		},
+		"host": "0.0.0.0",
+		"port": 7890,
+		"wsMode": 2,
+		"nClientMax": 1,
+		"tOutMs": 10000
+	},
+	"wsConsole": {
+		"class": "_WSconsole",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"threadR": {
+			"FPS": 30
+		},
+		"_IObase": "wsServer",
+		"msgFinishSend": "",
+		"msgFinishRecv": "EOJ",
+		"vBASE": [
+			"RealSense"
+		]
+	},
+	"view": {
+		"class": "_OCVwindow",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"bFullScreen": 0,
+		"RGBframeIn": "rsRGB"
+	},
+	"viewD": {
+		"class": "_OCVwindow",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"bFullScreen": 0,
+		"RGBframeIn": "d2rgbRGB"
+	},
+	"d2rgb": {
+		"class": "_D2RGB",
+		"bON": false,
+		"thread": {
+			"FPS": 30
+		},
+		"bMeasure": false,
+		"DframeIn": "rsDepth",
+		"RGBframeOut": "d2rgbRGB"
+	},
+	"rsPCL": {
+		"type": "dataObject",
+		"class": "PCLframe"
+	},
+	"rsIMU": {
+		"type": "dataObject",
+		"class": "IMUstream"
+	},
+	"rsRGB": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"rsDepth": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"d2rgbRGB": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"viewer": {
+		"class": "_WebGeometry",
+		"webRoot": "html/viewer/_RealSense",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"host": "0.0.0.0",
+		"port": 8080,
+		"nClientMax": 8,
+		"nPbuf": 400000,
+		"nLbuf": 0,
+		"dTexpire": 0,
+		"bAutoBound": true,
+		"bShowGrid": true,
+		"vCamLookAt": [
+			0,
+			0,
+			0
+		],
+		"vCamEye": [
+			0,
+			-1,
+			-4
+		],
+		"vCamUp": [
+			0,
+			-1,
+			0
+		],
+		"camFov": 70,
+		"vCamNF": [
+			0.01,
+			1000000
+		],
+		"vGeometry": [
+			{
+				"PCLframeIn": "rsPCL",
+				"nP": 400000,
+				"nL": 0,
+				"matPointSize": 2
+			}
+		]
+	},
+	"RealSense": {
+		"class": "_RealSense",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"threadPP": {
+			"FPS": 30
+		},
+		"SN": "",
+		"tOutMs": 2000,
+		"devFPS": 30,
+		"devFPSd": 30,
+		"accelFPS": 250,
+		"gyroFPS": 200,
+		"vSizeRGB": [
+			640,
+			480
+		],
+		"vSizeD": [
+			640,
+			480
+		],
+		"vRangeD": [
+			0.1,
+			15.0
+		],
+		"dOfs": 0.0,
+		"bRGB": true,
+		"bDepth": true,
+		"bIR": false,
+		"bIMU": true,
+		"bPCL": true,
+		"bPCLrgb": true,
+		"bAlign": false,
+		"bDecimation": false,
+		"bSpatial": false,
+		"bTemporal": false,
+		"bHoleFilling": false,
+		"bThreshold": false,
+		"RGBframeOut": "rsRGB",
+		"DframeOut": "rsDepth",
+		"PCLframeOut": "rsPCL",
+		"IMUstreamOut": "rsIMU",
+		"/IMUpreview": "The left viewer panel reads getIMU snapshots from this RealSense module. Preview Start/Stop only controls display polling; embedded IMU capture continues to rsIMU for SLAM.",
+		"/sensorOptions": "Null preserves the device value; every supported SDK option is discovered and included on save. Domains separate independent sensor/filter settings. Read-only telemetry is exposed in the viewer. SDK default IMU rates can be selected with accelFPS/gyroFPS 0.",
+		"sensorOptions": {
+			"color": {
+				"RS2_OPTION_AUTO_EXPOSURE_PRIORITY": null,
+				"RS2_OPTION_BACKLIGHT_COMPENSATION": null,
+				"RS2_OPTION_BRIGHTNESS": null,
+				"RS2_OPTION_CONTRAST": null,
+				"RS2_OPTION_ENABLE_AUTO_EXPOSURE": null,
+				"RS2_OPTION_ENABLE_AUTO_WHITE_BALANCE": null,
+				"RS2_OPTION_EXPOSURE": null,
+				"RS2_OPTION_FRAMES_QUEUE_SIZE": null,
+				"RS2_OPTION_GAIN": null,
+				"RS2_OPTION_GAMMA": null,
+				"RS2_OPTION_GLOBAL_TIME_ENABLED": 0,
+				"RS2_OPTION_HUE": null,
+				"RS2_OPTION_POWER_LINE_FREQUENCY": null,
+				"RS2_OPTION_SATURATION": null,
+				"RS2_OPTION_SHARPNESS": null,
+				"RS2_OPTION_WHITE_BALANCE": null
+			},
+			"decimation": {
+				"RS2_OPTION_FILTER_MAGNITUDE": null,
+				"RS2_OPTION_FRAMES_QUEUE_SIZE": null,
+				"RS2_OPTION_STREAM_FILTER": null,
+				"RS2_OPTION_STREAM_FORMAT_FILTER": null,
+				"RS2_OPTION_STREAM_INDEX_FILTER": null
+			},
+			"depth": {
+				"RS2_OPTION_ASIC_TEMPERATURE": null,
+				"RS2_OPTION_AUTO_EXPOSURE_LIMIT": null,
+				"RS2_OPTION_AUTO_EXPOSURE_LIMIT_TOGGLE": null,
+				"RS2_OPTION_AUTO_GAIN_LIMIT": null,
+				"RS2_OPTION_AUTO_GAIN_LIMIT_TOGGLE": null,
+				"RS2_OPTION_DEPTH_AUTO_EXPOSURE_MODE": null,
+				"RS2_OPTION_DEPTH_UNITS": null,
+				"RS2_OPTION_EMITTER_ALWAYS_ON": null,
+				"RS2_OPTION_EMITTER_ENABLED": null,
+				"RS2_OPTION_EMITTER_FREQUENCY": null,
+				"RS2_OPTION_EMITTER_ON_OFF": null,
+				"RS2_OPTION_ENABLE_AUTO_EXPOSURE": null,
+				"RS2_OPTION_ERROR_POLLING_ENABLED": null,
+				"RS2_OPTION_EXPOSURE": null,
+				"RS2_OPTION_FRAMES_QUEUE_SIZE": null,
+				"RS2_OPTION_GAIN": null,
+				"RS2_OPTION_GLOBAL_TIME_ENABLED": 0,
+				"RS2_OPTION_HDR_ENABLED": null,
+				"RS2_OPTION_INTER_CAM_SYNC_MODE": null,
+				"RS2_OPTION_LASER_POWER": null,
+				"RS2_OPTION_OUTPUT_TRIGGER_ENABLED": null,
+				"RS2_OPTION_PROJECTOR_TEMPERATURE": null,
+				"RS2_OPTION_SEQUENCE_ID": null,
+				"RS2_OPTION_SEQUENCE_NAME": null,
+				"RS2_OPTION_SEQUENCE_SIZE": null,
+				"RS2_OPTION_STEREO_BASELINE": null,
+				"RS2_OPTION_THERMAL_COMPENSATION": null,
+				"RS2_OPTION_VISUAL_PRESET": null
+			},
+			"holeFilling": {
+				"RS2_OPTION_FRAMES_QUEUE_SIZE": null,
+				"RS2_OPTION_HOLES_FILL": null,
+				"RS2_OPTION_STREAM_FILTER": null,
+				"RS2_OPTION_STREAM_FORMAT_FILTER": null,
+				"RS2_OPTION_STREAM_INDEX_FILTER": null
+			},
+			"motion": {
+				"RS2_OPTION_ENABLE_MOTION_CORRECTION": null,
+				"RS2_OPTION_FRAMES_QUEUE_SIZE": null,
+				"RS2_OPTION_GLOBAL_TIME_ENABLED": 0,
+				"RS2_OPTION_GYRO_SENSITIVITY": null
+			},
+			"spatial": {
+				"RS2_OPTION_FILTER_MAGNITUDE": null,
+				"RS2_OPTION_FILTER_SMOOTH_ALPHA": null,
+				"RS2_OPTION_FILTER_SMOOTH_DELTA": null,
+				"RS2_OPTION_FRAMES_QUEUE_SIZE": null,
+				"RS2_OPTION_HOLES_FILL": null,
+				"RS2_OPTION_STREAM_FILTER": null,
+				"RS2_OPTION_STREAM_FORMAT_FILTER": null,
+				"RS2_OPTION_STREAM_INDEX_FILTER": null
+			},
+			"temporal": {
+				"RS2_OPTION_FILTER_SMOOTH_ALPHA": null,
+				"RS2_OPTION_FILTER_SMOOTH_DELTA": null,
+				"RS2_OPTION_FRAMES_QUEUE_SIZE": null,
+				"RS2_OPTION_HOLES_FILL": null,
+				"RS2_OPTION_STREAM_FILTER": null,
+				"RS2_OPTION_STREAM_FORMAT_FILTER": null,
+				"RS2_OPTION_STREAM_INDEX_FILTER": null
+			},
+			"threshold": {
+				"RS2_OPTION_FRAMES_QUEUE_SIZE": null,
+				"RS2_OPTION_MAX_DISTANCE": null,
+				"RS2_OPTION_MIN_DISTANCE": null,
+				"RS2_OPTION_STREAM_FILTER": null,
+				"RS2_OPTION_STREAM_FORMAT_FILTER": null,
+				"RS2_OPTION_STREAM_INDEX_FILTER": null
+			}
+		}
+	}
+}

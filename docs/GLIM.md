@@ -15,15 +15,24 @@ Include `jsonCfg/_GLIM.json` using the application's `APP.vInclude`, or copy its
 
 Before using a real sensor, set `T_lidar_imu` in `config_sensors.json` to its calibrated IMU-to-point-cloud transform. The `glim_orbbec` profile now contains the attached Gemini 335's factory IMU-to-native-depth transform: translation `[0.000246, 0.000065, -0.016948]` meters and identity rotation. This is device/frame-specific; RGB-aligned clouds require IMU-to-color calibration instead. Point coordinates must be in meters; acceleration in m/s² (including gravity); angular velocity in rad/s. Point-cloud and IMU timestamps must increase in nanoseconds and share one capture clock. `_Orbbec` uses device timestamps and separate 200 Hz IMU callbacks, avoiding sample loss and USB-arrival jitter from video framesets. Keep the input point cloud in a fixed sensor frame, and calibrate extrinsics against that frame. Do not feed the estimated pose back into the producer of its input `PCLframe`.
 
+Run `build/OpenKAI jsonCfg/GLIM_realSense.json` for a RealSense D455 with its embedded IMU. Enable `WITH_VISION`, `USE_OPENCV`, `USE_REALSENSE`, `WITH_SLAM`, and `USE_GLIM` when building. The independent `jsonCfg/glim_realSense` profile uses the same CPU odometry and IMU-enabled mapping modules as Orbbec. Open `http://localhost:8080/` and press Start; keep the camera stationary during initialization. Parameter saves update the `GLIM.parameters` object in the launch JSON; PLY exports go to `data/glim_realSense`.
+
+The RealSense launch captures native depth at 640×480/30 Hz, acceleration at 250 Hz and gyro at 200 Hz, matching the attached D455's supported profiles. Other models may require different `accelFPS`/`gyroFPS`; zero lets the SDK choose a supported rate. Color, alignment, and local image windows are disabled. `RS2_OPTION_GLOBAL_TIME_ENABLED` is disabled on the depth and motion sensors so both use the hardware capture clock. Do not enable it for only one sensor. The driver publishes point clouds in native depth optical coordinates (X right, Y down, Z forward), independently of color alignment.
+
+`glim_realSense/config_sensors.json` contains the attached D455's factory IMU-to-depth transform, queried through librealsense: translation `[0.03022, -0.0074, -0.01602]` meters and identity quaternion. Both acceleration and gyro profiles reported this transform. Verify `T_lidar_imu` against the SDK calibration when using another device; this is a D455 profile, not a universal RealSense transform. The raw SDK motion vectors already have the depth optical axis orientation; retain the IMU origin offset in GLIM rather than rotating the vectors again.
+
 The GLIM adapter treats each cloud as a single exposure, with zero per-point time offsets. It suits depth-camera clouds; it does not deskew a scanning LiDAR. Producers copy complete vectors into `PCLframe::set(points, sensorTimestampNs)`. Consumers use `get(points)` to copy a cloud and its matching timestamp. `getTstamp()` allows idle polls to skip that copy. There are no shared DataObject snapshots or revision counters; updates with the same timestamp are indistinguishable.
 
 `IMUstream` accepts `addGyro(value, timestampNs)` and
 `addAcc(value, timestampNs)`. `get(gyro, acc)` copies the
-bounded histories and returns their update timestamp. SLAM owns its pairing
+bounded histories and returns their update timestamp. SLAM owns its interpolation
 cursor; several readers consume independent copies of the same history.
 Publishing appends in constant time; each `get` copies the bounded history.
 SLAM checks the two histories independently because gyro and acceleration can
-arrive separately with the same timestamp.
+arrive separately with the same timestamp. Acceleration is linearly interpolated
+at each gyro timestamp, preserving the gyro rate when the sensor rates differ.
+An unmatched gyro sample waits for a later acceleration sample; SLAM does not
+extrapolate or bridge acceleration outages longer than 100 ms.
 
 
 The Orbbec CPU odometry example requires an IMU. Run `build/OpenKAI jsonCfg/GLIM_scepter.json` for Scepter cameras without an IMU. Its isolated [glim_scepter profile](../jsonCfg/glim_scepter/README.md) selects CT odometry, disables `enable_imu` in both mapping configs, and uses identity sensor extrinsics. The map starts in the first camera's optical frame, without gravity alignment. No IMU module or synthetic inertial samples are needed. The shared frontend, WSconsole controls, submap stream and PLY export work with both profiles. The adapter checks the selected estimator's IMU requirement at startup.
@@ -40,16 +49,25 @@ Scepter and Orbbec SDKs can be enabled in the same build. GLIM's spdlog must pre
 
 `_NavBase::setConfidence()` uses a 0–100 scale and optionally expires stale updates. SLAM defaults to a one-second `tConfidenceTimeoutNs`; zero disables expiry. GLIM supplies no scalar tracking-quality score, so this adapter reports 100 for an available finite pose and 0 for initialization, insufficient points, stopped tracking or expired updates. It is a pose-availability signal, not an accuracy estimate. `bTracking()` reports whether the session is active, including initialization.
 
-Run the hardware-independent DataObject and SLAM-input checks using the commands in
+Run the hardware-independent DataObject checks using the commands in
 [Geometry DataObjects](DataStreamGeometry.md#point-transport-and-validation).
-They cover independent copies, replacement and empty frames, independent IMU
-readers, input freshness, viewer transport, and Grid/LiDAR frame handling. These
-checks do not validate real GLIM estimation, live sensor calibration, or trajectory
-accuracy; those require a GLIM-enabled integration or hardware run.
+The dedicated SLAM IMU regression checks unequal rates (including D455's 250/200
+Hz), interpolation, callback delays, duplicate samples, independent readers,
+acceleration outages, and capture-clock resets:
+
+```sh
+cmake -S test/SLAM -B /tmp/openkai-slam-tests
+cmake --build /tmp/openkai-slam-tests --parallel 4
+ctest --test-dir /tmp/openkai-slam-tests --output-on-failure
+```
+
+These checks do not validate real GLIM estimation, live sensor calibration, or
+trajectory accuracy; those require a GLIM-enabled integration or hardware run.
 
 ## Viewer and completed submaps
 
-`jsonCfg/GLIM_orbbec.json` and `jsonCfg/GLIM_scepter.json` connect camera →
+`jsonCfg/GLIM_orbbec.json`, `jsonCfg/GLIM_realSense.json`, and
+`jsonCfg/GLIM_scepter.json` connect camera →
 `PCLframe` → `_GLIM` → `PCLmap` → `_WebGLIM`. GLIM publishes submaps to its
 `PCLmapOut` stream; the viewer names that same stream with `PCLmapIn`. The viewer
 uses the shared `HttpServer` with its own `/stream/glim` protocol. `_WSconsole`

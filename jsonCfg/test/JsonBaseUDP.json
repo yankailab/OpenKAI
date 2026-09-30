@@ -1,0 +1,110 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "OpenKAI",
+		"bLog": true,
+		"bStdErr": false
+	},
+	"console": {
+		"class": "_Console",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"udpClient",
+			"udpServer",
+			"JsonSender",
+			"JsonReceiver",
+			"TestJSON"
+		]
+	},
+	"udpClient": {
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"nPacket": 10,
+		"nPbuffer": 512,
+		"bW2R": true,
+		"bWbroadcast": 0,
+		"addrRemote": "127.0.0.1",
+		"portRemote": 19840,
+		"portLocal": 0,
+		"/bServer": 0
+	},
+	"udpServer": {
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"nPacket": 10,
+		"nPbuffer": 512,
+		"bW2R": true,
+		"bWbroadcast": 0,
+		"portLocal": 19840,
+		"/bServer": 1
+	},
+	"JsonSender": {
+		"class": "_JSONbase",
+		"bON": true,
+		"bLog": false,
+		"thread": {
+			"FPS": 1
+		},
+		"threadR": {
+			"FPS": 1
+		},
+		"msgFinishSend": "EOJ",
+		"msgFinishRecv": "EOJ",
+		"_IObase": "udpClient"
+	},
+	"JsonReceiver": {
+		"class": "_JSONbase",
+		"bON": true,
+		"bLog": false,
+		"thread": {
+			"FPS": 1
+		},
+		"threadR": {
+			"FPS": 1
+		},
+		"msgFinishSend": "EOJ",
+		"msgFinishRecv": "EOJ",
+		"_IObase": "udpServer"
+	},
+	"TestJSON": {
+		"class": "_TestJSON",
+		"bON": true,
+		"bLog": false,
+		"thread": {
+			"FPS": 1
+		},
+		"_JSONbaseSender": "JsonSender",
+		"_JSONbaseReceiver": "JsonReceiver",
+		"/avTest": [
+			[
+				1,
+				2,
+				3,
+				4
+			],
+			[
+				5,
+				6,
+				7,
+				8
+			],
+			[
+				9,
+				10,
+				11,
+				12
+			]
+		],
+		"/_IObaseClient": "udpClient",
+		"/_IObaseServer": "udpServer"
+	}
+}

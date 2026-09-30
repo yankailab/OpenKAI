@@ -146,10 +146,6 @@ namespace kai
 		ADD_MODULE(_RTCMcast);
 		ADD_MODULE(_GPS);
 		ADD_MODULE(_GeoFence);
-#ifdef USE_REALSENSE
-		ADD_MODULE(_RStracking);
-#endif
-
 #endif
 
 #if defined(WITH_SLAM)

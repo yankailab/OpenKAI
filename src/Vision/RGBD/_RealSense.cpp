@@ -1,506 +1,617 @@
-/*
- * _RealSense.cpp
- *
- *  Created on: Apr 6, 2018
- *      Author: yankai
- */
-
 #include "_RealSense.h"
+#include "RealSenseOptions.h"
+#include "../../Protocol/_JSONbase.h"
+#include <chrono>
 
 namespace kai
 {
+    namespace
+    {
+        uint64_t steadyNs()
+        {
+            return std::chrono::duration_cast<std::chrono::nanoseconds>(
+                std::chrono::steady_clock::now().time_since_epoch()).count();
+        }
+
+        uint64_t frameNs(const rs2::frame &frame)
+        {
+            const double ns = frame.get_timestamp() * NSEC_MSEC;
+            if (!std::isfinite(ns) || ns <= 0 || ns >= static_cast<double>(UINT64_MAX)) return 0;
+            return static_cast<uint64_t>(ns);
+        }
+
+        int optionPriority(const string &key, const json &value)
+        {
+            if (key == "RS2_OPTION_VISUAL_PRESET") return 0;
+            if (key == "RS2_OPTION_ENABLE_AUTO_EXPOSURE" || key == "RS2_OPTION_ENABLE_AUTO_WHITE_BALANCE")
+            {
+                const bool enabled = value.is_boolean() ? value.get<bool>() : value.is_number() && value.get<double>() != 0;
+                return enabled ? 3 : 1;
+            }
+            if (key == "RS2_OPTION_HDR_ENABLED" || key == "RS2_OPTION_SEQUENCE_ID" ||
+                key == "RS2_OPTION_AUTO_EXPOSURE_LIMIT_TOGGLE" || key == "RS2_OPTION_AUTO_GAIN_LIMIT_TOGGLE") return 1;
+            return 2;
+        }
+
+    }
 
     _RealSense::_RealSense()
     {
-        m_rsCtrl.clear();
-
-        m_vSizeRGB = Vector2i(1280, 720);
+        m_vSizeRGB = Vector2i(640, 480);
         m_vSizeD = Vector2i(640, 480);
     }
 
-    _RealSense::~_RealSense()
+    _RealSense::~_RealSense() { stop(); }
+
+    std::unique_lock<std::recursive_mutex> _RealSense::lockDeviceForWork() const
     {
-        stop();
+        // Only outer worker/console entrypoints use admission. A waiter holds
+        // it until the current frame releases the device, preventing the frame
+        // loop from immediately reacquiring an unfair mutex when over budget.
+        // Nested config/open/close calls use the recursive device mutex directly.
+        std::lock_guard<std::mutex> admission(m_deviceAdmission);
+        return std::unique_lock<std::recursive_mutex>(m_deviceMutex);
     }
 
-    bool _RealSense::loadConfig(void)
+    json _RealSense::configValues() const
     {
-        IF_F(!_RGBDbase::loadConfig());
-        const json &j = *m_pJ;
+        std::lock_guard<std::recursive_mutex> lock(m_deviceMutex);
+        return {{"SN", m_SN}, {"devFPS", m_devFPS}, {"devFPSd", m_devFPSd},
+            {"accelFPS", m_accelFPS}, {"gyroFPS", m_gyroFPS}, {"tOutMs", m_tOutMs},
+            {"vSizeRGB", {m_vSizeRGB.x(), m_vSizeRGB.y()}}, {"vSizeD", {m_vSizeD.x(), m_vSizeD.y()}},
+            {"vRangeD", {m_vRangeD.x(), m_vRangeD.y()}}, {"dOfs", m_dOfs},
+            {"bRGB", m_bRGB}, {"bDepth", m_bDepth}, {"bIR", m_bIR}, {"bIMU", m_bIMU},
+            {"bPCL", m_bPCL}, {"bPCLrgb", m_bPCLrgb}, {"bAlign", m_bAlign},
+            {"bDecimation", m_bDecimation}, {"bSpatial", m_bSpatial}, {"bTemporal", m_bTemporal},
+            {"bHoleFilling", m_bHoleFilling}, {"bThreshold", m_bThreshold}, {"sensorOptions", m_sensorOptions}};
+    }
 
-        jKv(j, "rsSN", m_rsSN);
-        jKv(j, "rsFPS", m_rsFPS);
-        jKv(j, "rsDFPS", m_rsDFPS);
-        jKv(j, "bAlign", m_bAlign);
-        jKv(j, "vPreset", m_vPreset);
+    void _RealSense::setConfigValues(const json &j)
+    {
+        m_SN = j.at("SN").get<string>();
+        m_devFPS = j.at("devFPS"); m_devFPSd = j.at("devFPSd");
+        m_accelFPS = j.at("accelFPS"); m_gyroFPS = j.at("gyroFPS"); m_tOutMs = j.at("tOutMs");
+        m_vSizeRGB = Vector2i(j.at("vSizeRGB")[0].get<int>(), j.at("vSizeRGB")[1].get<int>());
+        m_vSizeD = Vector2i(j.at("vSizeD")[0].get<int>(), j.at("vSizeD")[1].get<int>());
+        m_vRangeD = Vector2f(j.at("vRangeD")[0].get<float>(), j.at("vRangeD")[1].get<float>());
+        m_dOfs = j.at("dOfs");
+        m_bRGB = j.at("bRGB"); m_bDepth = j.at("bDepth"); m_bIR = j.at("bIR"); m_bIMU = j.at("bIMU");
+        m_bPCL = j.at("bPCL"); m_bPCLrgb = j.at("bPCLrgb"); m_bAlign = j.at("bAlign");
+        m_bDecimation = j.at("bDecimation"); m_bSpatial = j.at("bSpatial"); m_bTemporal = j.at("bTemporal");
+        m_bHoleFilling = j.at("bHoleFilling"); m_bThreshold = j.at("bThreshold");
+        m_sensorOptions = j.at("sensorOptions");
+    }
 
-        jKv(j, "fConfidenceThreshold", m_rsCtrl.m_fConfidenceThr);
-        jKv(j, "fDigitalGain", m_rsCtrl.m_fDigitalGain);
-        jKv(j, "fPostProcessingSharpening", m_rsCtrl.m_fPostProcessingSharpening);
-        jKv(j, "fFilterMagnitude", m_rsCtrl.m_fFilterMagnitude);
-        jKv(j, "fHolesFill", m_rsCtrl.m_fHolesFill);
-        jKv(j, "fEmitter", m_rsCtrl.m_fEmitter);
-        jKv(j, "fLaserPower", m_rsCtrl.m_fLaserPower);
-
-        jKv(j, "fBrightness", m_rsCtrl.m_fBrightness);
-        jKv(j, "fContrast", m_rsCtrl.m_fContrast);
-        jKv(j, "fGain", m_rsCtrl.m_fGain);
-        jKv(j, "fExposure", m_rsCtrl.m_fExposure);
-        jKv(j, "fHue", m_rsCtrl.m_fHue);
-        jKv(j, "fSaturation", m_rsCtrl.m_fSaturation);
-        jKv(j, "fSharpness", m_rsCtrl.m_fSharpness);
-        jKv(j, "fWhiteBalance", m_rsCtrl.m_fWhiteBalance);
-
+    bool _RealSense::loadConfig()
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_deviceMutex);
+        IF_F(!_ModuleBase::loadConfig());
+        // Camera settings use the same validated schema as console updates.
+        json patch = json::object(), errors;
+        const json values = configValues();
+        for (const auto &entry : values.items())
+            if (m_pJ->contains(entry.key())) patch[entry.key()] = (*m_pJ)[entry.key()];
+        if (!applyConfig(patch, false, errors)) { LOG_E(errors.dump()); return false; }
         DEL(m_pTpp);
         m_pTpp = createThread(jK(*m_pJ, "threadPP"), "threadPP");
-        NULL_F(m_pTpp);
-
-        return true;
+        return m_pTpp != nullptr;
     }
 
     bool _RealSense::saveConfig(bool bExport)
     {
-        IF_F(!_RGBDbase::saveConfig(false));
-
-        json &j = *m_pJ;
-        j["rsSN"] = m_rsSN;
-        j["rsFPS"] = m_rsFPS;
-        j["rsDFPS"] = m_rsDFPS;
-        j["bAlign"] = m_bAlign;
-        j["vPreset"] = m_vPreset;
-        j["fConfidenceThreshold"] = m_rsCtrl.m_fConfidenceThr;
-        j["fDigitalGain"] = m_rsCtrl.m_fDigitalGain;
-        j["fPostProcessingSharpening"] = m_rsCtrl.m_fPostProcessingSharpening;
-        j["fFilterMagnitude"] = m_rsCtrl.m_fFilterMagnitude;
-        j["fHolesFill"] = m_rsCtrl.m_fHolesFill;
-        j["fEmitter"] = m_rsCtrl.m_fEmitter;
-        j["fLaserPower"] = m_rsCtrl.m_fLaserPower;
-        j["fBrightness"] = m_rsCtrl.m_fBrightness;
-        j["fContrast"] = m_rsCtrl.m_fContrast;
-        j["fGain"] = m_rsCtrl.m_fGain;
-        j["fExposure"] = m_rsCtrl.m_fExposure;
-        j["fHue"] = m_rsCtrl.m_fHue;
-        j["fSaturation"] = m_rsCtrl.m_fSaturation;
-        j["fSharpness"] = m_rsCtrl.m_fSharpness;
-        j["fWhiteBalance"] = m_rsCtrl.m_fWhiteBalance;
-
-        IF__(!bExport, true);
-        return m_pJcfg->saveToFile();
+        std::lock_guard<std::recursive_mutex> lock(m_deviceMutex);
+        IF_F(!_ModuleBase::saveConfig(false));
+        IF_F(m_pTpp && !m_pTpp->saveConfig(false));
+        m_pJ->update(configValues());
+        return !bExport || m_pJcfg->saveToFile();
     }
 
-    bool _RealSense::open(void)
+    std::map<string, rs2::options> _RealSense::optionTargets()
     {
-        IF_F(m_bOpened);
+        std::map<string, rs2::options> targets;
+        for (const auto &entry : m_sensors) targets.emplace(entry.first, entry.second);
+        targets.emplace("decimation", m_decimation); targets.emplace("spatial", m_spatial);
+        targets.emplace("temporal", m_temporal); targets.emplace("holeFilling", m_holeFilling);
+        targets.emplace("threshold", m_threshold);
+        return targets;
+    }
 
+    void _RealSense::discoverOptions()
+    {
+        for (auto &target : optionTargets())
+            for (auto option : target.second.get_supported_options())
+            {
+                const string key = realsense::optionName(option);
+                try
+                {
+                    if (!target.second.is_option_read_only(option)) m_preStreamWritable.insert(target.first + "." + key);
+                }
+                catch (const std::exception &) {}
+                if (!m_sensorOptions.contains(target.first)) m_sensorOptions[target.first] = json::object();
+                if (!m_sensorOptions[target.first].contains(key)) m_sensorOptions[target.first][key] = nullptr;
+            }
+    }
+
+    void _RealSense::applyOptions()
+    {
+        auto targets = optionTargets();
+        for (const auto &domain : m_sensorOptions.items())
+        {
+            // Disable automatic modes before manual values: toggling auto off
+            // can restore the camera's cached exposure. Enable auto modes last.
+            vector<string> keys;
+            for (const auto &entry : domain.value().items()) if (!entry.value().is_null()) keys.push_back(entry.key());
+            std::stable_sort(keys.begin(), keys.end(), [&](const string &a, const string &b) {
+                return optionPriority(a, domain.value()[a]) < optionPriority(b, domain.value()[b]);
+            });
+            for (const auto &key : keys)
+            {
+                try
+                {
+                    auto target = targets.find(domain.key());
+                    if (target == targets.end()) throw std::invalid_argument("Sensor is unavailable on this device");
+                    realsense::setOption(target->second, realsense::optionId(key), domain.value()[key]);
+                }
+                catch (const std::exception &e) { throw std::runtime_error(domain.key() + "." + key + ": " + e.what()); }
+            }
+        }
+    }
+
+    bool _RealSense::applyConfig(const json &patch, bool live, json &errors)
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_deviceMutex);
+        errors = json::object();
+        if (!patch.is_object()) { errors["config"] = "Expected an object"; return false; }
+        const json before = configValues();
+        json next = before;
+        // rs2::options is a non-owning view. Retain the sensor/filter owners
+        // through close/reopen and rollback so their option handles stay valid.
+        const auto sensorsBefore = m_sensors;
+        const auto decimationBefore = m_decimation;
+        const auto spatialBefore = m_spatial;
+        const auto temporalBefore = m_temporal;
+        const auto holeFillingBefore = m_holeFilling;
+        const auto thresholdBefore = m_threshold;
+        auto targets = optionTargets();
+        const std::set<string> domains = {"depth", "color", "motion", "decimation", "spatial", "temporal", "holeFilling", "threshold"};
+        for (const auto &entry : patch.items())
+        {
+            const auto &key = entry.key(); const auto &v = entry.value();
+            try
+            {
+                if (!before.contains(key)) throw std::invalid_argument("Unknown parameter");
+                if (key == "sensorOptions")
+                {
+                    if (!v.is_object()) throw std::invalid_argument("Expected an object of option domains");
+                    for (const auto &domain : v.items())
+                    {
+                        if (!domains.count(domain.key()) || !domain.value().is_object()) throw std::invalid_argument("Unknown domain or invalid options: " + domain.key());
+                        for (const auto &opt : domain.value().items())
+                        {
+                            const string path = domain.key() + "." + opt.key();
+                            try
+                            {
+                                const auto id = realsense::optionId(opt.key());
+                                if (id == RS2_OPTION_COUNT) throw std::invalid_argument("Unknown SDK option");
+                                if (!opt.value().is_null())
+                                {
+                                    if (!opt.value().is_number() && !opt.value().is_boolean() && !opt.value().is_string() && !opt.value().is_array())
+                                        throw std::invalid_argument("Expected a number, boolean, string, rectangle array or null");
+                                    auto target = targets.find(domain.key());
+                                    if (target != targets.end()) realsense::validateOption(target->second, id, opt.value(), !m_preStreamWritable.count(path));
+                                    else if (live && m_bOpened) throw std::invalid_argument("Sensor is unavailable");
+                                }
+                                next[key][domain.key()][opt.key()] = opt.value();
+                            }
+                            catch (const std::exception &e) { errors[path] = e.what(); }
+                        }
+                    }
+                    continue;
+                }
+                if (before[key].is_boolean() && !v.is_boolean()) throw std::invalid_argument("Expected a boolean");
+                if (before[key].is_string() && !v.is_string()) throw std::invalid_argument("Expected a string");
+                if (before[key].is_number_integer())
+                {
+                    const int minimum = key == "accelFPS" || key == "gyroFPS" ? 0 : 1;
+                    const int maximum = key == "tOutMs" ? 60000 : 2000;
+                    if (!v.is_number_integer() || v.get<double>() < minimum || v.get<double>() > maximum) throw std::invalid_argument("Integer outside supported bounds");
+                }
+                if (key == "dOfs" && (!v.is_number() || !std::isfinite(v.get<float>()))) throw std::invalid_argument("Expected a finite distance");
+                if (before[key].is_array())
+                {
+                    if (!v.is_array() || v.size() != 2) throw std::invalid_argument("Expected two numbers");
+                    for (const auto &n : v)
+                    {
+                        if (!n.is_number() || !std::isfinite(n.get<float>())) throw std::invalid_argument("Expected finite numbers");
+                        if (key != "vRangeD" && (!n.is_number_integer() || n.get<double>() < 1 || n.get<double>() > 16384)) throw std::invalid_argument("Invalid image dimensions");
+                    }
+                    if (key == "vRangeD" && (v[0].get<double>() < 0 || v[1].get<double>() <= v[0].get<double>())) throw std::invalid_argument("Expected 0 <= minimum < maximum");
+                }
+                next[key] = v;
+            }
+            catch (const std::exception &e) { errors[key] = e.what(); }
+        }
+        if (!next["bRGB"].get<bool>() && (next["bAlign"].get<bool>() || next["bPCLrgb"].get<bool>())) errors["bRGB"] = "RGB is required for alignment or colored points";
+        if (!next["bDepth"].get<bool>() && (next["bAlign"].get<bool>() || next["bPCL"].get<bool>() || next["bPCLrgb"].get<bool>())) errors["bDepth"] = "Depth is required for alignment or point clouds";
+        if (!next["bRGB"].get<bool>() && !next["bDepth"].get<bool>() && !next["bIR"].get<bool>() && !next["bIMU"].get<bool>()) errors["config"] = "Enable at least one stream";
+        if (!errors.empty()) return false;
+        if (before == next) return true;
+        const bool reopen = live && m_bOpened;
+        json hardwareBefore = json::object();
+        if (reopen)
+        {
+            for (auto &target : targets)
+                for (auto id : target.second.get_supported_options())
+                    try
+                    {
+                        if (!target.second.is_option_read_only(id) || m_preStreamWritable.count(target.first + "." + realsense::optionName(id)))
+                            hardwareBefore[target.first][realsense::optionName(id)] = realsense::optionValue(target.second, id);
+                    }
+                    catch (const std::exception &) {} // Volatile/unavailable telemetry is not restorable.
+            close();
+        }
+        setConfigValues(next);
+        // Reopen for hardware changes: some SDK options are only writable before
+        // streaming. A failed profile or option rolls back the requested config.
+        if (reopen && !open())
+        {
+            errors["device"] = m_lastError;
+            setConfigValues(before);
+            // open() has released stream ownership; restore values changed by
+            // earlier setters before reapplying the original requested config.
+            for (auto &target : targets)
+            {
+                if (!hardwareBefore.contains(target.first)) continue;
+                auto restore = [&](const string &key) {
+                    try
+                    {
+                        const auto id = realsense::optionId(key);
+                        const auto &value = hardwareBefore[target.first][key];
+                        if (realsense::optionValue(target.second, id) != value)
+                            realsense::setOption(target.second, id, value);
+                    }
+                    catch (const std::exception &e) { errors["rollback." + target.first + "." + key] = e.what(); }
+                };
+                const auto &saved = hardwareBefore[target.first];
+                vector<string> keys;
+                for (const auto &option : saved.items()) keys.push_back(option.key());
+                std::stable_sort(keys.begin(), keys.end(), [&](const string &a, const string &b) {
+                    return optionPriority(a, saved[a]) < optionPriority(b, saved[b]);
+                });
+                for (const auto &key : keys) restore(key);
+            }
+            if (!open()) errors["rollback"] = m_lastError;
+            return false;
+        }
+        return true;
+    }
+
+    json _RealSense::controlSchema()
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_deviceMutex);
+        json schema = json::array();
+        const json values = configValues();
+        for (const auto &entry : values.items())
+        {
+            if (entry.key() == "sensorOptions") continue;
+            const auto &v = entry.value();
+            json field = {{"key", entry.key()}, {"category", "Streams and point cloud"}, {"nullable", false}, {"restart", true},
+                {"type", v.is_boolean() ? "bool" : v.is_string() ? "string" : v.is_array() ? (entry.key() == "vRangeD" ? "range" : "size") : v.is_number_integer() ? "int" : "float"}};
+            if (v.is_number_integer()) { field["min"] = (entry.key() == "accelFPS" || entry.key() == "gyroFPS") ? 0 : 1; field["max"] = entry.key() == "tOutMs" ? 60000 : 2000; }
+            schema.push_back(field);
+        }
+        auto targets = optionTargets();
+        for (const auto &domain : m_sensorOptions.items())
+            for (const auto &entry : domain.value().items())
+            {
+                auto target = targets.find(domain.key());
+                json field = {{"key", entry.key()}, {"type", "float"}, {"nullable", true}, {"supported", false}};
+                if (target != targets.end() && target->second.supports(realsense::optionId(entry.key())))
+                    try { field = realsense::optionSchema(target->second, realsense::optionId(entry.key())); }
+                    catch (const std::exception &e) { field["note"] = e.what(); }
+                if (m_preStreamWritable.count(domain.key() + "." + entry.key())) field["readOnly"] = false;
+                field["domain"] = domain.key(); field["category"] = domain.key(); field["restart"] = true;
+                schema.push_back(field);
+            }
+        return schema;
+    }
+
+    bool _RealSense::open()
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_deviceMutex);
+        if (m_bOpened) return true;
         try
         {
-            if (!m_rsSN.empty())
-                m_rsConfig.enable_device(m_rsSN);
-
-            m_rsConfig.enable_stream(RS2_STREAM_DEPTH, m_vSizeD.x(), m_vSizeD.y(), RS2_FORMAT_Z16, m_rsDFPS);
-            if (m_bRGB)
-                m_rsConfig.enable_stream(RS2_STREAM_COLOR, m_vSizeRGB.x(), m_vSizeRGB.y(), RS2_FORMAT_BGR8, m_rsFPS);
-
-            m_rsProfile = m_rsPipe.start(m_rsConfig);
-            rs2::device dev = m_rsProfile.get_device();
-            LOG_I("Device Name:" + string(dev.get_info(RS2_CAMERA_INFO_NAME)));
-            LOG_I("Firmware Version:" + string(dev.get_info(RS2_CAMERA_INFO_FIRMWARE_VERSION)));
-            LOG_I("Serial Number:" + string(dev.get_info(RS2_CAMERA_INFO_SERIAL_NUMBER)));
-            LOG_I("Product Id:" + string(dev.get_info(RS2_CAMERA_INFO_PRODUCT_ID)));
-
-            auto cStream = m_rsProfile.get_stream(RS2_STREAM_COLOR).as<rs2::video_stream_profile>();
-            m_cIntrinsics = cStream.get_intrinsics();
-            auto dStream = m_rsProfile.get_stream(RS2_STREAM_DEPTH).as<rs2::video_stream_profile>();
-            m_dIntrinsics = dStream.get_intrinsics();
-
-            // Depth sensor config
-            auto dSensor = m_rsProfile.get_device().first<rs2::depth_sensor>();
-            m_dScale = dSensor.get_depth_scale();
-
-            auto range = dSensor.get_option_range(RS2_OPTION_VISUAL_PRESET);
-            for (auto i = range.min; i <= range.max; i += range.step)
+            rs2::config config;
+            config.disable_all_streams();
+            if (!m_SN.empty()) config.enable_device(m_SN);
+            if (m_bDepth) config.enable_stream(RS2_STREAM_DEPTH, m_vSizeD.x(), m_vSizeD.y(), RS2_FORMAT_Z16, m_devFPSd);
+            if (m_bRGB) config.enable_stream(RS2_STREAM_COLOR, m_vSizeRGB.x(), m_vSizeRGB.y(), RS2_FORMAT_BGR8, m_devFPS);
+            if (m_bIR) config.enable_stream(RS2_STREAM_INFRARED, 1, m_vSizeD.x(), m_vSizeD.y(), RS2_FORMAT_Y8, m_devFPSd);
+            if (m_bIMU)
             {
-                string preset = std::string(dSensor.get_option_value_description(RS2_OPTION_VISUAL_PRESET, i));
-                IF_CONT(preset != m_vPreset);
-                dSensor.set_option(RS2_OPTION_VISUAL_PRESET, i);
-                break;
+                config.enable_stream(RS2_STREAM_ACCEL, RS2_FORMAT_MOTION_XYZ32F, m_accelFPS);
+                config.enable_stream(RS2_STREAM_GYRO, RS2_FORMAT_MOTION_XYZ32F, m_gyroFPS);
             }
-
-            setSensorOption(dSensor, RS2_OPTION_CONFIDENCE_THRESHOLD, m_rsCtrl.m_fConfidenceThr);
-            //            setSensorOption(dSensor, RS2_OPTION_DIGITAL_GAIN, m_rsCtrl.m_fDigitalGain);
-            setSensorOption(dSensor, RS2_OPTION_PRE_PROCESSING_SHARPENING, m_rsCtrl.m_fPostProcessingSharpening);
-            setSensorOption(dSensor, RS2_OPTION_FILTER_MAGNITUDE, m_rsCtrl.m_fFilterMagnitude);
-            setSensorOption(dSensor, RS2_OPTION_HOLES_FILL, m_rsCtrl.m_fHolesFill);
-            setSensorOption(dSensor, RS2_OPTION_EMITTER_ENABLED, m_rsCtrl.m_fEmitter);
-            setSensorOption(dSensor, RS2_OPTION_LASER_POWER, m_rsCtrl.m_fLaserPower);
-
-            // RGB sensor config
-            auto cSensor = m_rsProfile.get_device().first<rs2::color_sensor>();
-            setSensorOption(cSensor, RS2_OPTION_BRIGHTNESS, m_rsCtrl.m_fBrightness);
-            setSensorOption(cSensor, RS2_OPTION_CONTRAST, m_rsCtrl.m_fContrast);
-            setSensorOption(cSensor, RS2_OPTION_GAIN, m_rsCtrl.m_fGain);
-            setSensorOption(cSensor, RS2_OPTION_BRIGHTNESS, m_rsCtrl.m_fExposure);
-            setSensorOption(cSensor, RS2_OPTION_HUE, m_rsCtrl.m_fHue);
-            setSensorOption(cSensor, RS2_OPTION_SATURATION, m_rsCtrl.m_fSaturation);
-            setSensorOption(cSensor, RS2_OPTION_SHARPNESS, m_rsCtrl.m_fSharpness);
-            setSensorOption(cSensor, RS2_OPTION_WHITE_BALANCE, m_rsCtrl.m_fWhiteBalance);
-
-            // Confirm the frame is received
-            rs2::frameset rsFrameset = m_rsPipe.wait_for_frames();
-            rs2::frame rsColor;
-            rs2::frame rsDepth;
-
-            if (m_bRGB)
+            m_profile = config.resolve(m_pipeline);
+            m_sensors.clear();
+            for (auto sensor : m_profile.get_device().query_sensors())
             {
-                if (m_bAlign)
+                string domain;
+                for (const auto &profile : sensor.get_stream_profiles())
                 {
-                    rs2::align align(RS2_STREAM_COLOR);
-                    rs2::frameset rsFramesetAlign = align.process(rsFrameset);
-                    rsColor = rsFramesetAlign.get_color_frame();
-                    rsDepth = rsFramesetAlign.get_depth_frame();
+                    if (profile.stream_type() == RS2_STREAM_DEPTH) { domain = "depth"; break; }
+                    if (profile.stream_type() == RS2_STREAM_COLOR) domain = "color";
+                    if (profile.stream_type() == RS2_STREAM_ACCEL || profile.stream_type() == RS2_STREAM_GYRO) domain = "motion";
                 }
-                else
-                {
-                    rsColor = rsFrameset.get_color_frame();
-                    rsDepth = rsFrameset.get_depth_frame();
-                }
-
-                m_vSizeRGB.x() = rsColor.as<rs2::video_frame>().get_width();
-                m_vSizeRGB.y() = rsColor.as<rs2::video_frame>().get_height();
+                if (!domain.empty()) m_sensors.emplace(domain, sensor);
             }
-            else
-            {
-                rsDepth = rsFrameset.get_depth_frame();
-            }
-
-            m_vSizeD.x() = rsDepth.as<rs2::video_frame>().get_width();
-            m_vSizeD.y() = rsDepth.as<rs2::video_frame>().get_height();
-        }
-        catch (const rs2::camera_disconnected_error &e)
-        {
-            LOG_E("Realsense disconnected");
-            return false;
-        }
-        catch (const rs2::recoverable_error &e)
-        {
-            LOG_E("Realsense open failed");
-            return false;
-        }
-        catch (const rs2::error &e)
-        {
-            LOG_E("Realsense error");
-            return false;
+            // Stateful processing blocks must not carry frames across a restart.
+            m_temporal = rs2::temporal_filter(); m_align = rs2::align(RS2_STREAM_COLOR);
+            m_pointcloud = rs2::pointcloud();
+            m_preStreamWritable.clear();
+            discoverOptions();
+            applyOptions();
+            m_lastVideo = m_lastAccel = m_lastGyro = steadyNs();
+            m_profile = m_pipeline.start(config, [this](rs2::frame frame) { receiveFrame(std::move(frame)); });
+            m_pipelineStarted = true;
+            if (m_bDepth) m_dScale = m_profile.get_device().first<rs2::depth_sensor>().get_depth_scale();
+            m_bOpened = true;
+            m_lastError.clear();
+            LOG_I(string("RealSense opened: ") + m_profile.get_device().get_info(RS2_CAMERA_INFO_NAME));
+            return true;
         }
         catch (const std::exception &e)
         {
-            LOG_E("Realsense exception");
+            m_lastError = e.what(); LOG_E("RealSense open: " + m_lastError);
+            close();
             return false;
         }
-
-        m_bOpened = true;
-        return true;
     }
 
-    bool _RealSense::setSensorOption(const rs2::sensor &sensor, rs2_option option_type, float v)
+    void _RealSense::close()
     {
-        if (!sensor.supports(option_type))
+        std::lock_guard<std::recursive_mutex> lock(m_deviceMutex);
+        if (m_pipelineStarted)
         {
-            LOG_E("This option is not supported by this sensor");
-            return false;
+            try { m_pipeline.stop(); } catch (const std::exception &e) { LOG_E(e.what()); }
+            m_pipelineStarted = false;
         }
+        rs2::frame old;
+        while (m_frames.poll_for_frame(&old)) {}
+        m_sensors.clear();
+        m_imuPreview.reset();
+        _RGBDbase::close();
+    }
 
-        rs2::option_range range = sensor.get_option_range(option_type);
-        if (v >= m_rsCtrl.m_fDefault)
-        {
-            v = range.def;
-        }
-        else
-        {
-            Vector2f vRange(range.min, range.max);
-            v = std::clamp(v, vRange.x(), vRange.y());
-        }
-
+    void _RealSense::receiveFrame(rs2::frame frame)
+    {
+        // SDK callbacks may run on different sensor threads. Never acquire the
+        // device mutex here: stop() holds it while joining SDK callbacks.
         try
         {
-            sensor.set_option(option_type, v);
-        }
-        catch (const rs2::error &e)
-        {
-            LOG_E("Failed to set option: " + i2str(option_type) + ": " + string(e.what()));
-            return false;
-        }
-
-        return true;
-    }
-
-    bool _RealSense::setCsensorOption(rs2_option option_type, float v)
-    {
-        auto cSensor = m_rsProfile.get_device().first<rs2::color_sensor>();
-        setSensorOption(cSensor, option_type, v);
-    }
-
-    bool _RealSense::setDsensorOption(rs2_option option_type, float v)
-    {
-        auto dSensor = m_rsProfile.get_device().first<rs2::depth_sensor>();
-        m_dScale = dSensor.get_depth_scale();
-
-        setSensorOption(dSensor, option_type, v);
-    }
-
-    bool _RealSense::getSensorOption(const rs2::sensor &sensor, rs2_option option_type, rs2::option_range *pR)
-    {
-        NULL_F(pR);
-
-        if (!sensor.supports(option_type))
-        {
-            LOG_E("This option is not supported by this sensor");
-            return false;
-        }
-
-        *pR = sensor.get_option_range(option_type);
-
-        return true;
-    }
-
-    bool _RealSense::getCsensorOption(rs2_option option_type, rs2::option_range *pR)
-    {
-        auto cSensor = m_rsProfile.get_device().first<rs2::color_sensor>();
-        IF_F(!getSensorOption(cSensor, option_type, pR));
-
-        return true;
-    }
-
-    bool _RealSense::getDsensorOption(rs2_option option_type, rs2::option_range *pR)
-    {
-        auto dSensor = m_rsProfile.get_device().first<rs2::depth_sensor>();
-        IF_F(!getSensorOption(dSensor, option_type, pR));
-
-        return true;
-    }
-
-    void _RealSense::sensorReset(void)
-    {
-        //    m_rsConfig.resolve(m_rsPipe).get_device().hardware_reset();
-        rs2::device dev = m_rsProfile.get_device();
-        dev.hardware_reset();
-    }
-
-    void _RealSense::close(void)
-    {
-        if (m_bOpened)
-        {
-            try
+            if (auto motion = frame.as<rs2::motion_frame>())
             {
-                m_rsPipe.stop();
+                const auto v = motion.get_motion_data();
+                const uint64_t stamp = frameNs(motion);
+                if (motion.get_profile().stream_type() == RS2_STREAM_ACCEL)
+                {
+                    m_lastAccel = steadyNs(); ++m_nAccel;
+                    if (m_pIMUout) m_pIMUout->addAcc({v.x, v.y, v.z}, stamp);
+                    m_imuPreview.addAcc({v.x, v.y, v.z}, stamp);
+                }
+                else if (motion.get_profile().stream_type() == RS2_STREAM_GYRO)
+                {
+                    m_lastGyro = steadyNs(); ++m_nGyro;
+                    if (m_pIMUout) m_pIMUout->addGyro({v.x, v.y, v.z}, stamp);
+                    m_imuPreview.addGyro({v.x, v.y, v.z}, stamp);
+                }
             }
-            catch (const rs2::error &e)
+            else if (auto frames = frame.as<rs2::frameset>())
             {
-                LOG_E(e.what());
+                m_lastVideo = steadyNs(); ++m_nVideo;
+                m_frames.enqueue(std::move(frames));
             }
         }
-        this->_RGBDbase::close();
+        catch (const std::exception &e) { LOG_E(string("RealSense callback: ") + e.what()); }
     }
 
-    bool _RealSense::start(void)
+    bool _RealSense::start()
     {
-        NULL_F(m_pT);
-        NULL_F(m_pTpp);
-        IF_F(!m_pT->startThread(getUpdate, this));
-        return m_pTpp->startThread(getTPP, this);
+        if (!m_pT || !m_pTpp) return false;
+        if (!m_pTpp->startThread(getTPP, this)) return false;
+        if (!m_pT->startThread(getUpdate, this)) { m_pTpp->join(); return false; }
+        return true;
     }
 
-    void _RealSense::stop(void)
+    void _RealSense::stop()
     {
-        if (m_pT)
-        {
-            m_pT->join();
-        }
-        if (m_pTpp)
-        {
-            m_pTpp->join();
-        }
+        if (m_pT) m_pT->stop();
+        if (m_pTpp) m_pTpp->stop();
+        if (m_pT) m_pT->join();
+        if (m_pTpp) m_pTpp->join();
         close();
     }
 
-    bool _RealSense::check(void)
-    {
-        return _RGBDbase::check();
-    }
-
-    void _RealSense::update(void)
+    void _RealSense::update()
     {
         while (m_pT->bRun())
         {
-            if (!m_bOpened)
+            bool retry = false;
             {
-                if (!open())
+                auto lock = lockDeviceForWork();
+                if (!m_bOpened) retry = !open();
+                else
                 {
-                    LOG_E("Cannot open RealSense");
-                    sensorReset();
-                    m_pT->sleepT(NSEC_SEC);
-                    continue;
+                    const uint64_t now = steadyNs(), timeout = uint64_t(m_tOutMs) * NSEC_MSEC;
+                    // A callback can publish a newer time after 'now' is read.
+                    // Guard subtraction so that race cannot underflow into a timeout.
+                    const auto expired = [now, timeout](uint64_t last) { return now > last && now - last > timeout; };
+                    if (((m_bRGB || m_bDepth || m_bIR) && expired(m_lastVideo.load())) ||
+                        (m_bIMU && (expired(m_lastAccel.load()) || expired(m_lastGyro.load()))))
+                    {
+                        m_lastError = "Camera stream timed out"; LOG_E(m_lastError); close(); retry = true;
+                    }
                 }
             }
-
+            if (retry) m_pT->sleepT(NSEC_SEC);
             m_pT->autoFPS();
-
-            if (updateRS())
-            {
-                m_pTpp->run();
-            }
-            else
-            {
-                sensorReset();
-                m_pT->sleepT(NSEC_SEC);
-                m_bOpened = false;
-            }
         }
     }
 
-    bool _RealSense::updateRS(void)
+    void _RealSense::updateTPP()
     {
-        IF_F(!check());
-
-        try
-        {
-            rs2::frameset frames = m_rsPipe.wait_for_frames();
-            m_rsFrames.enqueue(frames);
-        }
-        catch (const rs2::camera_disconnected_error &e)
-        {
-            LOG_E("Realsense disconnected");
-            return false;
-        }
-        catch (const rs2::recoverable_error &e)
-        {
-            LOG_E("Realsense open failed");
-            return false;
-        }
-        catch (const rs2::error &e)
-        {
-            LOG_E("Realsense error");
-            return false;
-        }
-        catch (const std::exception &e)
-        {
-            LOG_E("Realsense exception");
-            return false;
-        }
-
-        return true;
-    }
-
-    void _RealSense::updateTPP(void)
-    {
-        rs2::align align(RS2_STREAM_COLOR);
         while (m_pTpp->bRun())
         {
+            {
+                auto lock = lockDeviceForWork();
+                rs2::frameset frames;
+                if (m_bOpened && m_frames.poll_for_frame(&frames))
+                    try { processFrames(std::move(frames)); }
+                    catch (const std::exception &e) { LOG_E(string("RealSense processing: ") + e.what()); }
+            }
             m_pTpp->autoFPS();
-            rs2::frameset frames;
-            if (!m_rsFrames.poll_for_frame(&frames))
-            {
-                continue;
-            }
-
-            try
-            {
-                if (m_bRGB && m_bAlign)
-                {
-                    frames = align.process(frames);
-                }
-                rs2::frame color = frames.get_color_frame();
-                rs2::frame depth = frames.get_depth_frame();
-                if (!depth)
-                {
-                    continue;
-                }
-                if (m_rsCtrl.m_fFilterMagnitude < m_rsCtrl.m_fDefault)
-                {
-                    depth = m_rsfDec.process(depth);
-                }
-                if (m_rsCtrl.m_fHolesFill < m_rsCtrl.m_fDefault)
-                {
-                    depth = m_rsfSpat.process(depth);
-                }
-
-                const auto videoDepth = depth.as<rs2::video_frame>();
-                const uint64_t tStamp = static_cast<uint64_t>(depth.get_timestamp() * NSEC_MSEC);
-                Mat mRaw(videoDepth.get_height(), videoDepth.get_width(), CV_16UC1,
-                         const_cast<void *>(depth.get_data()), videoDepth.get_stride_in_bytes());
-                Mat mDepth;
-                mRaw.convertTo(mDepth, CV_32FC1, m_dScale, m_dOfs);
-                if (m_pDout)
-                {
-                    m_pDout->set(mDepth, tStamp);
-                }
-
-                Mat mRGB;
-                if (m_bRGB && color)
-                {
-                    const auto videoColor = color.as<rs2::video_frame>();
-                    mRGB = Mat(videoColor.get_height(), videoColor.get_width(), CV_8UC3,
-                               const_cast<void *>(color.get_data()), videoColor.get_stride_in_bytes());
-                    if (m_pRGBout)
-                    {
-                        m_pRGBout->set(mRGB, static_cast<uint64_t>(color.get_timestamp() * NSEC_MSEC));
-                    }
-                    if (m_pRGBDout)
-                    {
-                        m_pRGBDout->set(mRGB, mDepth, tStamp);
-                    }
-                    if (m_bAlign && m_pRGBDtRGBout)
-                    {
-                        m_pRGBDtRGBout->set(mRGB, mDepth, tStamp);
-                    }
-                }
-                updatePC(depth, color, mRGB, tStamp);
-            }
-            catch (const rs2::error &e)
-            {
-                LOG_E(e.what());
-            }
         }
     }
 
-    void _RealSense::updatePC(const rs2::frame &depth, const rs2::frame &color, const Mat &mRGB, uint64_t tStamp)
+    void _RealSense::processFrames(rs2::frameset frames)
     {
-        if (!m_pPCLout || (!m_bPCL && !m_bPCLrgb))
+        rs2::frame color = frames.get_color_frame();
+        rs2::frame depth = frames.get_depth_frame();
+        Mat rgb;
+        if (color)
         {
-            return;
+            const auto video = color.as<rs2::video_frame>();
+            rgb = Mat(video.get_height(), video.get_width(), CV_8UC3, const_cast<void *>(color.get_data()), video.get_stride_in_bytes());
+            if (m_pRGBout) m_pRGBout->set(rgb, frameNs(color));
         }
+        if (m_bIR && m_pIRout)
+            if (auto ir = frames.get_infrared_frame(1))
+            {
+                Mat pixels(ir.get_height(), ir.get_width(), CV_8UC1, const_cast<void *>(ir.get_data()), ir.get_stride_in_bytes());
+                m_pIRout->set(pixels, frameNs(ir));
+            }
+        if (!depth) return;
+        if (m_bDecimation) depth = m_decimation.process(depth);
+        if (m_bThreshold) depth = m_threshold.process(depth);
+        if (m_bSpatial) depth = m_spatial.process(depth);
+        if (m_bTemporal) depth = m_temporal.process(depth);
+        if (m_bHoleFilling) depth = m_holeFilling.process(depth);
+        const uint64_t stamp = frameNs(depth);
+        // Points always use the depth optical frame, including when display
+        // alignment is enabled. GLIM's IMU extrinsics therefore stay valid.
+        updatePC(depth, color, rgb, stamp);
+        if (m_bAlign && color)
+        {
+            // Keep display alignment and point clouds on the same filtered
+            // measurement. A composite frame retains the original color and
+            // replaces only depth, including the decimated camera intrinsics.
+            rs2::filter compose([depth, color](rs2::frame, rs2::frame_source &source) {
+                source.frame_ready(source.allocate_composite_frame({depth, color}));
+            });
+            depth = m_align.process(compose.process(frames).as<rs2::frameset>()).get_depth_frame();
+        }
+        const auto video = depth.as<rs2::video_frame>();
+        Mat raw(video.get_height(), video.get_width(), CV_16UC1, const_cast<void *>(depth.get_data()), video.get_stride_in_bytes());
+        Mat distance;
+        raw.convertTo(distance, CV_32FC1, depth.as<rs2::depth_frame>().get_units(), m_dOfs);
+        distance.setTo(0, raw == 0);
+        if (m_pDout) m_pDout->set(distance, stamp);
+        if (!rgb.empty())
+        {
+            if (m_pRGBDout) m_pRGBDout->set(rgb, distance, stamp);
+            if (m_bAlign && m_pRGBDtRGBout) m_pRGBDtRGBout->set(rgb, distance, stamp);
+        }
+    }
 
-        if (m_bPCLrgb && color)
-        {
-            m_rsPC.map_to(color);
-        }
-        const rs2::points points = m_rsPC.calculate(depth);
+    void _RealSense::updatePC(const rs2::frame &depth, const rs2::frame &color, const Mat &rgb, uint64_t stamp)
+    {
+        if (!m_pPCLout || (!m_bPCL && !m_bPCLrgb)) return;
+        if (m_bPCLrgb && color) m_pointcloud.map_to(color);
+        const rs2::points points = m_pointcloud.calculate(depth);
         const auto *vertices = points.get_vertices();
-        const auto *texCoords = points.get_texture_coordinates();
-        vector<GEOMETRY_POINT> vPCL;
-        vPCL.reserve(points.size());
+        const auto *uvs = points.get_texture_coordinates();
+        vector<GEOMETRY_POINT> cloud;
+        cloud.reserve(points.size());
         for (size_t i = 0; i < points.size(); ++i)
         {
             const auto &p = vertices[i];
-            if (!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z) || p.z <= 0)
+            if (!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z) || p.z <= 0) continue;
+            const float z = p.z + m_dOfs;
+            if (z <= 0 || z < m_vRangeD.x() || z > m_vRangeD.y()) continue;
+            Vector3f point(p.x * z / p.z, p.y * z / p.z, z), c(1, 1, 1);
+            if (m_bPCLrgb && !rgb.empty())
             {
-                continue;
-            }
-
-            Vector3f vC(1, 1, 1);
-            if (m_bPCLrgb && !mRGB.empty())
-            {
-                const auto &uv = texCoords[i];
-                if (std::isfinite(uv.u) && std::isfinite(uv.v))
+                const auto &uv = uvs[i];
+                if (std::isfinite(uv.u) && std::isfinite(uv.v) && uv.u >= 0 && uv.u < 1 && uv.v >= 0 && uv.v < 1)
                 {
-                    const int x = constrain<int>(uv.u * mRGB.cols, 0, mRGB.cols - 1);
-                    const int y = constrain<int>(uv.v * mRGB.rows, 0, mRGB.rows - 1);
-                    const Vec3b c = mRGB.at<Vec3b>(y, x);
-                    vC = Vector3f(c[2], c[1], c[0]) / 255.0f;
+                    const Vec3b pixel = rgb.at<Vec3b>(int(uv.v * rgb.rows), int(uv.u * rgb.cols));
+                    c = Vector3f(pixel[2], pixel[1], pixel[0]) / 255.0f;
                 }
             }
-            vPCL.push_back({Vector3f(p.x, p.y, p.z), vC, tStamp});
+            cloud.push_back({point, c, stamp});
         }
-        m_pPCLout->set(vPCL, tStamp);
+        m_pPCLout->set(cloud, stamp);
     }
 
+    json _RealSense::imuValues() const
+    {
+        // Called with the device lock held; SDK callbacks only take the preview
+        // mutex. Reading this snapshot never consumes the IMUstream used by SLAM.
+        const auto sample = m_imuPreview.snapshot();
+        const uint64_t now = steadyNs();
+        const auto fresh = [now](uint64_t last) {
+            return last && (last >= now || now - last <= NSEC_SEC / 2);
+        };
+        const bool available = m_bOpened && m_bIMU && sample.tGyro && sample.tAcc &&
+            fresh(m_lastGyro.load()) && fresh(m_lastAccel.load());
+        return {{"enabled", m_bIMU}, {"deviceOpen", m_bOpened}, {"available", available},
+            // Strings preserve capture-clock nanoseconds beyond JS integer precision.
+            {"tGyro", std::to_string(sample.tGyro)}, {"tAcc", std::to_string(sample.tAcc)},
+            {"tFusion", std::to_string(sample.tFusion)},
+            {"gyro", {sample.gyro.x(), sample.gyro.y(), sample.gyro.z()}},
+            {"acc", {sample.acc.x(), sample.acc.y(), sample.acc.z()}},
+            {"quaternion", {sample.quaternion.w(), sample.quaternion.x(), sample.quaternion.y(), sample.quaternion.z()}},
+            {"rpy", {sample.rpy.x(), sample.rpy.y(), sample.rpy.z()}},
+            {"fusion", true}, {"orientationValid", available && sample.orientationValid}};
+    }
+
+    void _RealSense::console(void *pConsole)
+    {
+        auto lock = lockDeviceForWork();
+        _RGBDbase::console(pConsole);
+        if (pConsole) static_cast<_Console *>(pConsole)->addMsg("RealSense frames=" + std::to_string(m_nVideo.load()) +
+            " accel=" + std::to_string(m_nAccel.load()) + " gyro=" + std::to_string(m_nGyro.load()));
+    }
+
+    void _RealSense::console(const json &j, void *pJSONbase)
+    {
+        auto lock = lockDeviceForWork();
+        auto *endpoint = static_cast<_JSONbase *>(pJSONbase);
+        if (!endpoint || !j.is_object() || !j.contains("cmd") || !j["cmd"].is_string()) return;
+        const string cmd = j["cmd"].get<string>();
+        if (cmd != "getConfig" && cmd != "setConfig" && cmd != "saveConfig" && cmd != "getIMU") return;
+        json reply = {{"cmd", cmd}, {"module", getName()}, {"bSuccess", true}};
+        if (j.contains("requestId")) reply["requestId"] = j["requestId"];
+        try
+        {
+            if (cmd == "getIMU") reply.update(imuValues());
+            else
+            {
+                if (cmd == "setConfig")
+                {
+                    json errors;
+                    reply["bSuccess"] = applyConfig(j.value("config", json()), true, errors);
+                    reply["errors"] = errors;
+                }
+                else if (cmd == "saveConfig") reply["bSuccess"] = saveConfig(true);
+                reply["config"] = configValues(); reply["schema"] = controlSchema();
+                reply["deviceOpen"] = m_bOpened;
+                reply["status"] = {{"videoFrames", m_nVideo.load()}, {"accelSamples", m_nAccel.load()}, {"gyroSamples", m_nGyro.load()}, {"lastError", m_lastError}};
+                if (!m_lastError.empty()) reply["error"] = m_lastError;
+            }
+        }
+        catch (const std::exception &e) { reply["bSuccess"] = false; reply["error"] = e.what(); }
+        endpoint->sendJson(reply);
+    }
 }

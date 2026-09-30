@@ -37,7 +37,7 @@ namespace kai
 		jKv(j, "tOutSec", m_tOutSec);
 		jKv(j, "tOutUSec", m_tOutUSec);
 
-		jKv(j, "type", m_type);
+		jKv(j, "modbusType", m_type);
 		if (m_type == "RTU")
 		{
 			m_pMb = modbus_new_rtu(m_rtuPort.c_str(), m_rtuBaud, *m_rtuParity.c_str(), 8, 1);
