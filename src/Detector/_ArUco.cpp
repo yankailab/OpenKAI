@@ -116,7 +116,8 @@ namespace kai
 			bb.setType(obj_tag);
 			bb.setPos(Vector3f(cx, cy, a));
 			bb.setDim(Vector3f(r, 0, 0));
-			bb.addClass(vID[i]);
+			const string name = getClassName(vID[i]);
+			bb.addClass(vID[i], name.empty() ? "tag " + i2str(vID[i]) : name);
 
 			vBB.push_back(bb);
 		}

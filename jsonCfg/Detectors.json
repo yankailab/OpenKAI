@@ -1,6 +1,6 @@
 {
 	"APP": {
-		"class": "OpenKAI",
+		"class": "InstanceMgr",
 		"appName": "Detectors",
 		"bLog": false,
 		"bStdErr": true
@@ -13,21 +13,23 @@
 		},
 		"vBASE": [
 			"cam",
-			"YOLO26detectONNX",
-			"/YOLOv8",
-			"/YOLOv3",
-			"/CR"
+			"YOLO26detectONNX"
 		]
 	},
-	"RGBview": {
-		"class": "_WindowCV",
+
+
+	"view": {
+		"class": "_OCVwindow",
 		"bON": true,
 		"thread": {
 			"FPS": 30
 		},
 		"bFullScreen": false,
-		"RGBframeIn": "camRGB"
+		"RGBframeIn": "camRGB",
+		"BBoxStreamIn": "detections"
 	},
+
+
 	"cam": {
 		"class": "_Camera",
 		"bON": true,
@@ -39,7 +41,7 @@
 			640,
 			480
 		],
-		"RGBframe": "camRGB"
+		"RGBframeOut": "camRGB"
 	},
 	"gst": {
 		"class": "_GStreamer",
@@ -51,7 +53,7 @@
 		"/pipelineJetson": "nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, width=(int)1280, height=(int)720, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.1.253 port=5678 auto-multicast=false",
 		"/pipelineUdpRecv": "udpsrc port=5678 ! application/x-rtp, media=video, encoding-name=h264, payload=96, clock-rate=90000 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
 		"/pipelineRpiLegacy": "rpicamsrc bitrate=1000000 preview=0 rotation=180 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! omxh264enc ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
-		"RGBframe": "gstRGB"
+		"RGBframeOut": "gstRGB"
 	},
 	"videoFile": {
 		"class": "_VideoFile",
@@ -60,11 +62,11 @@
 			"FPS": 60
 		},
 		"videoFile": "/home/kai/Downloads/DJi.MP4",
-		"vSize": [
+		"vSizeRGB": [
 			1280,
 			720
 		],
-		"RGBframe": "videoFileRGB"
+		"RGBframeOut": "videoFileRGB"
 	},
 	"imgFile": {
 		"class": "_ImgFile",
@@ -73,11 +75,11 @@
 			"FPS": 60
 		},
 		"file": "/home/kai/Pictures/test.jpg",
-		"vSize": [
+		"vSizeRGB": [
 			1280,
 			720
 		],
-		"RGBframe": "imgFileRGB"
+		"RGBframeOut": "imgFileRGB"
 	},
 	"contrast": {
 		"class": "_Contrast",
@@ -87,16 +89,17 @@
 		},
 		"alpha": 1.0,
 		"beta": 0.0,
-		"RGBframe": "contrastRGB",
+		"RGBframeOut": "contrastRGB",
 		"RGBframeIn": "camRGB"
 	},
+
 	"inv": {
 		"class": "_Invert",
 		"bON": false,
 		"thread": {
 			"FPS": 30
 		},
-		"RGBframe": "invRGB",
+		"RGBframeOut": "invRGB",
 		"RGBframeIn": "contrastRGB"
 	},
 	"hsv": {
@@ -106,7 +109,7 @@
 			"FPS": 30
 		},
 		"code": 40,
-		"RGBframe": "hsvRGB",
+		"RGBframeOut": "hsvRGB",
 		"RGBframeIn": "invRGB"
 	},
 	"inRange": {
@@ -125,7 +128,7 @@
 			255,
 			255
 		],
-		"RGBframe": "inRangeRGB",
+		"RGBframeOut": "inRangeRGB",
 		"RGBframeIn": "hsvRGB"
 	},
 	"morph": {
@@ -148,9 +151,11 @@
 				"nItr": 2
 			}
 		},
-		"RGBframe": "morphRGB",
+		"RGBframeOut": "morphRGB",
 		"RGBframeIn": "inRangeRGB"
 	},
+
+
 	"CR": {
 		"class": "_Contour",
 		"bON": false,
@@ -161,17 +166,15 @@
 		"BBoxStreamOut": "detections",
 		"RGBframeIn": "morphRGB"
 	},
-	"detections": {
-		"type": "dataObject",
-		"class": "BBoxStream"
-	},
+
 	"YOLO26detectONNX": {
 		"class": "_YOLO26detectONNX",
 		"bON": true,
+		"bLog": false,
 		"thread": {
 			"FPS": 30
 		},
-		"bLog": true,
+		"RGBframeIn": "camRGB",
 		"BBoxStreamOut": "detections",
 		"fModel": "/home/kai/dev/models/YOLO26/yolo26n.onnx",
 		"confidence": 0.25,
@@ -184,9 +187,16 @@
 		],
 		"bSwapRB": true,
 		"scale": 0.003921568627,
-		"nThread": 1,
-		"RGBframeIn": "camRGB"
+		"nThread": 1
 	},
+
+
+	"detections": {
+		"type": "dataObject",
+		"class": "BBoxStream",
+		"nBuf": 10
+	},
+
 	"camRGB": {
 		"type": "dataObject",
 		"class": "RGBframe"

@@ -63,18 +63,19 @@ The viewer reads an independent submap DataObject:
 
 `_WebGLIM` is built when `WITH_SLAM`, `USE_GLIM` and `WITH_UNIVERSE` are enabled.
 It shares the HTTP server and camera configuration with other viewers and owns
-its submap protocol. It reads `PCLmapIn` rather than the flat `PCLframe` output or
+its submap protocol. It reads `PCLmapIn` rather than the flat `PCLframeOut` output or
 point/line geometry streams. Add the GLIM module name to `_WSconsole.vBASE` and
 enter that same module name in the viewer's command panel.
 
-For another sensor, connect its `PCLframe` and optional `IMUstream` to GLIM and
+For another sensor, connect its `PCLframeOut` and optional `IMUstreamOut` to GLIM through
+`PCLframeIn` and `IMUstreamIn` and
 select its `configPath`. Clouds use metres and increasing timestamps in
 nanoseconds. When using an IMU, samples must use m/s² including gravity and
 rad/s, calibrated IMU-to-cloud extrinsics, and the same capture clock as depth. The input interface gives one timestamp per complete cloud; it
 does not deskew a scanning LiDAR. Keep the input cloud transform fixed in the
 sensor frame. DataObject setters and getters copy complete clouds. Readers poll
 `getTstamp()` and copy a changed frame with `get(points)`; repeated timestamps
-cannot signal a changed payload. Configure GLIM's `PCLmap` output and the
+cannot signal a changed payload. Configure GLIM's `PCLmapOut` output and the
 viewer's `PCLmapIn` with the same DataObject name.
 
 The Orbbec example uses native depth, a 0.3–6 m range, 5 cm preprocessing cells,
@@ -131,7 +132,7 @@ automatic metre legend following orbit and zoom. Coloring runs on the GPU and
 uses the viewer camera, not the tracked sensor. **Submap** assigns a distinct
 color to each completed map section. GLIM does not preserve camera RGB here.
 
-The optional `PCLframe` output remains available to other modules. By default,
+The optional `PCLframeOut` output remains available to other modules. By default,
 `bPublishLiveMap: false` updates that output cloud only after a completed-submap change
 or finalization, subject to `tMapUpdateNs`; `nMapPoints` caps that output alone.
 Set `bPublishLiveMap: true` to include the bounded recent-frame preview

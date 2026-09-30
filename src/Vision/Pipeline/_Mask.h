@@ -35,7 +35,7 @@ namespace kai
 
 	protected:
 		RGBframe *m_pRGBin = nullptr;
-		RGBframe *m_pMask = nullptr;
+		RGBframe *m_pMaskin = nullptr;
 
 	};
 

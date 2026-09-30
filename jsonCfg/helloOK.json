@@ -18,7 +18,7 @@
 		]
 	},
 	"view": {
-		"class": "_WindowCV",
+		"class": "_OCVwindow",
 		"bON": true,
 		"thread": {
 			"name": "thread",
@@ -41,7 +41,7 @@
 			640,
 			480
 		],
-		"RGBframe": "camRGB"
+		"RGBframeOut": "camRGB"
 	},
 	"camRGB": {
 		"type": "dataObject",

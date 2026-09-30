@@ -78,39 +78,39 @@ namespace kai
 		string n;
 
 		n = "";
-		jKv(j, "RGBDframe", n);
-		m_pRGBD = dynamic_cast<RGBDframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		IF_Le_F(!n.empty() && !m_pRGBD, "Data stream not found: " + n);
+		jKv(j, "RGBDframeOut", n);
+		m_pRGBDout = dynamic_cast<RGBDframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!n.empty() && !m_pRGBDout, "RGBDframeOut not found: " + n);
 
 		n = "";
-		jKv(j, "RGBDtRGBframe", n);
-		m_pRGBDtRGB = dynamic_cast<RGBDframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		IF_Le_F(!n.empty() && !m_pRGBDtRGB, "Data stream not found: " + n);
+		jKv(j, "RGBDtRGBframeOut", n);
+		m_pRGBDtRGBout = dynamic_cast<RGBDframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!n.empty() && !m_pRGBDtRGBout, "RGBDtRGBframeOut not found: " + n);
 
 		n = "";
-		jKv(j, "RGBDtDframe", n);
-		m_pRGBDtD = dynamic_cast<RGBDframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		IF_Le_F(!n.empty() && !m_pRGBDtD, "Data stream not found: " + n);
+		jKv(j, "RGBDtDframeOut", n);
+		m_pRGBDtDout = dynamic_cast<RGBDframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!n.empty() && !m_pRGBDtDout, "RGBDtDframeOut not found: " + n);
 
 		n = "";
-		jKv(j, "Dframe", n);
-		m_pD = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		IF_Le_F(!n.empty() && !m_pD, "Data stream not found: " + n);
+		jKv(j, "DframeOut", n);
+		m_pDout = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!n.empty() && !m_pDout, "DframeOut not found: " + n);
 
 		n = "";
-		jKv(j, "IRframe", n);
-		m_pIR = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		IF_Le_F(!n.empty() && !m_pIR, "Data stream not found: " + n);
+		jKv(j, "IRframeOut", n);
+		m_pIRout = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!n.empty() && !m_pIRout, "IRframeOut not found: " + n);
 
 		n = "";
-		jKv(j, "PCLframe", n);
-		m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		IF_Le_F(!n.empty() && !m_pPCL, "Data stream not found: " + n);
+		jKv(j, "PCLframeOut", n);
+		m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!n.empty() && !m_pPCLout, "PCLframeOut not found: " + n);
 
 		n = "";
-		jKv(j, "IMUframe", n);
-		m_pIMU = dynamic_cast<IMUstream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		IF_Le_F(!n.empty() && !m_pIMU, "Data stream not found: " + n);
+		jKv(j, "IMUstreamOut", n);
+		m_pIMUout = dynamic_cast<IMUstream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!n.empty() && !m_pIMUout, "IMUstreamOut not found: " + n);
 
 		return true;
 	}

@@ -51,9 +51,9 @@ namespace kai
 		const json &j = *m_pJ;
 
 		string n = "";
-		jKv(j, "RGBframe", n);
-		m_pRGB = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		IF_Le_F(!n.empty() && !m_pRGB, "Data stream not found: " + n);
+		jKv(j, "RGBframeOut", n);
+		m_pRGBout = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!n.empty() && !m_pRGBout, "RGBframeOut not found: " + n);
 
 		return true;
 	}

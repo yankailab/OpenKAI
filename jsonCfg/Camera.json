@@ -1,6 +1,6 @@
 {
 	"APP": {
-		"class": "OpenKAI",
+		"class": "InstanceMgr",
 		"appName": "CameraTest",
 		"bLog": true,
 		"bStdErr": true
@@ -17,28 +17,19 @@
 			"gst"
 		]
 	},
+
+
 	"view": {
-		"class": "_WindowCV",
+		"class": "_OCVwindow",
 		"bON": true,
 		"thread": {
 			"FPS": 30
 		},
 		"bFullScreen": false,
+		"/gstOutput": "appsrc ! v4l2convert ! fbdevsink",
 		"RGBframeIn": "camRGB"
 	},
-	"FB": {
-		"class": "_GstOutput",
-		"bON": false,
-		"thread": {
-			"FPS": 2
-		},
-		"gstOutput": "appsrc ! v4l2convert ! fbdevsink",
-		"vSize": [
-			1280,
-			720
-		],
-		"RGBframeIn": "cropRGB"
-	},
+
 	"cam": {
 		"class": "_Camera",
 		"bON": true,
@@ -50,7 +41,7 @@
 			640,
 			480
 		],
-		"RGBframe": "camRGB"
+		"RGBframeOut": "camRGB"
 	},
 	"gst": {
 		"class": "_GStreamer",
@@ -68,7 +59,7 @@
 		"/8pipeline": "videotestsrc ! x264enc ! rtph264pay ! queue ! rtph264depay ! queue ! avdec_h264 ! videoconvert ! video/x-raw, format=BGR ! appsink",
 		"/9pipeline": "videotestsrc ! video/x-raw, width=1280, height=720 ! x264enc ! rtph264pay ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720 ! videoconvert ! appsink",
 		"/10pipeline": "videotestsrc ! video/x-raw, width=1280, height=720, format=I420 ! x264enc ! rtph264pay ! queue ! rtph264depay ! queue ! avdec_h264 ! video/x-raw, width=1280, height=720, format=I420 ! videoconvert ! appsink",
-		"RGBframe": "gstRGB"
+		"RGBframeOut": "gstRGB"
 	},
 	"videoFile": {
 		"class": "_VideoFile",
@@ -77,11 +68,11 @@
 			"FPS": 30
 		},
 		"videoFile": "/home/kai/Videos/sz.ts",
-		"vSize": [
+		"vSizeRGB": [
 			1280,
 			720
 		],
-		"RGBframe": "videoFileRGB"
+		"RGBframeOut": "videoFileRGB"
 	},
 	"imgFile": {
 		"class": "_ImgFile",
@@ -90,12 +81,14 @@
 			"FPS": 30
 		},
 		"file": "/home/kai/Pictures/test.jpg",
-		"vSize": [
+		"vSizeRGB": [
 			1280,
 			720
 		],
-		"RGBframe": "imgFileRGB"
+		"RGBframeOut": "imgFileRGB"
 	},
+
+	
 	"contrast": {
 		"class": "_Contrast",
 		"bON": false,
@@ -104,7 +97,7 @@
 		},
 		"alpha": 2.5,
 		"beta": 0.0,
-		"RGBframe": "contrastRGB",
+		"RGBframeOut": "contrastRGB",
 		"RGBframeIn": "camRGB"
 	},
 	"crop": {
@@ -119,7 +112,7 @@
 			1280,
 			720
 		],
-		"RGBframe": "cropRGB",
+		"RGBframeOut": "cropRGB",
 		"RGBframeIn": "camRGB"
 	},
 	"resize": {
@@ -128,13 +121,15 @@
 		"thread": {
 			"FPS": 30
 		},
-		"vSize": [
+		"vSizeRGB": [
 			640,
 			512
 		],
-		"RGBframe": "resizeRGB",
+		"RGBframeOut": "resizeRGB",
 		"RGBframeIn": "camRGB"
 	},
+
+	
 	"camRGB": {
 		"type": "dataObject",
 		"class": "RGBframe"

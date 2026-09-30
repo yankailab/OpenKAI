@@ -79,11 +79,11 @@ namespace kai
 
 		struct PointInput
 		{
-			PCLframe *m_pFrame = nullptr;
+			PCLframe *m_pFramein = nullptr;
 			uint64_t m_tStamp = 0;
 		};
 
-		vector<string> m_vPCLframes;
+		vector<string> m_vPCLframesIn;
 		vector<PointInput> m_vPointInputs;
 		vector<GEOMETRY_POINT> m_vInputPoints;
 		uint64_t m_dTexpirePCL = 0;

@@ -205,7 +205,7 @@ namespace kai
 		for (const BBOX_OBJ &object : vObjects)
 		{
 			IF_CONT(object.m_type != obj_tag || !object.m_vPos.allFinite() || !bTargetFresh(object, tNow));
-			AP_LAND_TAG *pTag = getTag(object.getTopClass());
+			AP_LAND_TAG *pTag = getTag(object.getTopClassID());
 			IF_CONT(!pTag || object.m_tStamp < tNewest);
 			IF_CONT(object.m_tStamp == tNewest && pTag->m_priority > priority);
 			IF_CONT(!getTargetBB(object, vDim, m_vTargetBB));

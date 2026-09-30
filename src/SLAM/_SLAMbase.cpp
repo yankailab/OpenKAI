@@ -47,19 +47,19 @@ namespace kai
 		const json &j = *m_pJ;
 		string n;
 		jKv(j, "PCLframeIn", n);
-		m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		IF_Le_F(!m_pPCL, "Cannot find PCLframeIn: " + n);
+		m_pPCLin = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!m_pPCLin, "Cannot find PCLframeIn: " + n);
 
 		n.clear();
-		jKv(j, "IMUstream", n);
-		m_pIMU = n.empty() ? nullptr : dynamic_cast<IMUstream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		IF_Le_F(!n.empty() && !m_pIMU, "Cannot find IMUstream: " + n);
+		jKv(j, "IMUstreamIn", n);
+		m_pIMUin = n.empty() ? nullptr : dynamic_cast<IMUstream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!n.empty() && !m_pIMUin, "Cannot find IMUstreamIn: " + n);
 		return true;
 	}
 
 	bool _SLAMbase::check(void)
 	{
-		return m_pPCL && _NavBase::check();
+		return m_pPCLin && _NavBase::check();
 	}
 
 	bool _SLAMbase::start(void)
@@ -167,11 +167,11 @@ namespace kai
 
 	bool _SLAMbase::readPointCloud(vector<GEOMETRY_POINT> &points, uint64_t &stamp)
 	{
-		if (!m_pPCL || m_pPCL->getTstamp() == m_tPointInput)
+		if (!m_pPCLin || m_pPCLin->getTstamp() == m_tPointInput)
 		{
 			return false;
 		}
-		stamp = m_pPCL->get(points);
+		stamp = m_pPCLin->get(points);
 		if (stamp == m_tPointInput)
 		{
 			return false;
@@ -198,7 +198,7 @@ namespace kai
 
 	bool _SLAMbase::readIMU(Vector3d &acc, Vector3d &gyro, uint64_t &stamp)
 	{
-		if (!m_pIMU)
+		if (!m_pIMUin)
 		{
 			return false;
 		}
@@ -207,7 +207,7 @@ namespace kai
 		{
 			// Copy history once per batch. The two sensor channels can arrive
 			// separately with equal capture times, so inspect both histories.
-			m_pIMU->get(m_dqGyro, m_dqAcc);
+			m_pIMUin->get(m_dqGyro, m_dqAcc);
 			if ((!m_dqGyro.empty() && m_dqGyro.back().m_t < m_tStampLastGyro) ||
 				(!m_dqAcc.empty() && m_dqAcc.back().m_t < m_tStampLastAcc))
 			{

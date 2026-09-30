@@ -32,6 +32,7 @@ namespace kai
 			ifstream ifs(m_fClass.c_str());
 			IF_F(!ifs.is_open());
 
+			m_vClass.clear();
 			string line;
 			while (std::getline(ifs, line))
 			{

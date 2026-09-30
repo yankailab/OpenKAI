@@ -1,6 +1,6 @@
 {
 	"APP": {
-		"class": "Startup",
+		"class": "InstanceMgr",
 		"appName": "OpenKAI",
 		"bLog": true,
 		"bStdErr": true

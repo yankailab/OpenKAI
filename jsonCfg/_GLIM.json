@@ -14,13 +14,13 @@
       "FPS": 100
     },
     "PCLframeIn": "slamPoints",
-    "IMUstream": "slamIMU",
+    "IMUstreamIn": "slamIMU",
     "configPath": "jsonCfg/glim_orbbec",
     "bAutoStart": true,
     "bMapping": true,
     "nMinPoints": 100,
     "tConfidenceTimeoutNs": 1000000000,
-    "PCLmap": "slamMap"
+    "PCLmapOut": "slamMap"
   },
   "slamMap": {
     "type": "dataObject",

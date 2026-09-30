@@ -246,7 +246,7 @@ namespace kai
 		}
 
 	protected:
-        PCLframe *m_pPCL = nullptr;
+        PCLframe *m_pPCLout = nullptr;
 
 		_Thread *m_pTdeviceQueryR = nullptr;
 		_Thread *m_pTctrlCmdW = nullptr;
@@ -281,7 +281,7 @@ namespace kai
 		SF m_SF;
 		uint64_t m_tIMU = 0;
 
-		IMUstream *m_pIMU = nullptr;
+		IMUstream *m_pIMUout = nullptr;
 		std::mutex m_poseMutex;
 
 		// Unpublished device frame; the mutex also serializes explicit clearing.

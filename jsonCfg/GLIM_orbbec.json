@@ -1,6 +1,6 @@
 {
 	"APP": {
-		"class": "OpenKAI",
+		"class": "InstanceMgr",
 		"appName": "GLIM SLAM",
 		"bLog": true,
 		"bStdErr": false
@@ -48,7 +48,7 @@
 		]
 	},
 	"view": {
-		"class": "_WindowCV",
+		"class": "_OCVwindow",
 		"bON": false,
 		"thread": {
 			"FPS": 30
@@ -57,7 +57,7 @@
 		"RGBframeIn": "OrbbecRGB"
 	},
 	"viewD": {
-		"class": "_WindowCV",
+		"class": "_OCVwindow",
 		"bON": false,
 		"thread": {
 			"FPS": 30
@@ -84,8 +84,8 @@
 			640,
 			480
 		],
-		"PCLframe": "obPCL",
-		"IMUframe": "obIMU",
+		"PCLframeOut": "obPCL",
+		"IMUstreamOut": "obIMU",
 		"SN": "",
 		"tOutMs": 1000,
 		"bRGB": false,
@@ -109,8 +109,8 @@
 		"OB_PROP_HW_NOISE_REMOVE_FILTER_THRESHOLD_FLOAT": null,
 		"OB_PROP_COLOR_MIRROR_BOOL": null,
 		"OB_PROP_DEPTH_MIRROR_BOOL": null,
-		"RGBframe": "OrbbecRGB",
-		"Dframe": "OrbbecDepth"
+		"RGBframeOut": "OrbbecRGB",
+		"DframeOut": "OrbbecDepth"
 	},
 	"d2rgb": {
 		"class": "_D2RGB",
@@ -120,7 +120,7 @@
 		},
 		"bMeasure": false,
 		"DframeIn": "OrbbecDepth",
-		"RGBframe": "d2rgbRGB"
+		"RGBframeOut": "d2rgbRGB"
 	},
 	"obPCL": {
 		"type": "dataObject",
@@ -177,18 +177,18 @@
 			"FPS": 100
 		},
 		"PCLframeIn": "obPCL",
-		"IMUstream": "obIMU",
+		"IMUstreamIn": "obIMU",
 		"configPath": "jsonCfg/glim_orbbec",
 		"bAutoStart": false,
 		"bMapping": true,
 		"bPublishLiveMap": false,
 		"nMinPoints": 100,
 		"tConfidenceTimeoutNs": 1000000000,
-		"PCLframe": "glimPCL",
+		"PCLframeOut": "glimPCL",
 		"nMapPoints": 400000,
 		"nLiveFrames": 60,
 		"tMapUpdateNs": 200000000,
-		"PCLmap": "GLIMMap"
+		"PCLmapOut": "GLIMMap"
 	},
 	"OrbbecRGB": {
 		"type": "dataObject",

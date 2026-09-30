@@ -87,17 +87,17 @@ namespace kai
 		cv::normalize(mDepth, mGray, 0, 255, cv::NORM_MINMAX, CV_8UC1);
 		cv::applyColorMap(mGray, mRGB, cv::COLORMAP_JET);
 
-		if (m_pRGB)
+		if (m_pRGBout)
 		{
-			m_pRGB->set(mRGB, tStamp);
+			m_pRGBout->set(mRGB, tStamp);
 		}
-		if (m_pD)
+		if (m_pDout)
 		{
-			m_pD->set(mDepth, tStamp);
+			m_pDout->set(mDepth, tStamp);
 		}
-		if (m_pRGBD)
+		if (m_pRGBDout)
 		{
-			m_pRGBD->set(mRGB, mDepth, tStamp);
+			m_pRGBDout->set(mRGB, mDepth, tStamp);
 		}
 	}
 

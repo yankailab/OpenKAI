@@ -10,6 +10,7 @@ Follow these rules when adding or changing code. Existing files contain historic
 - Local variables and parameters do **not** have the `m_` prefix: `pVisionBase`, `vInputs`, `frameRate`.
 - Use lower camel case for variable and function names: `readFrame`, `setTargetFPS`, `getName`, `bRunning`. Start lowercase and capitalize subsequent words. Preserve established domain acronyms and SDK spelling where appropriate.
 - Short type or role hints are recommended when they make a name clearer; they are not compulsory. Do not build a complicated prefix system or infer ownership from a prefix.
+- End DataObject pointer names with lowercase `in` or `out` according to their direction, such as `m_pRGBin`, `m_pPCLout`, and `pFramein`. Their configuration keys use `In` or `Out`, such as `RGBframeIn` and `PCLframeOut`; DataObject class names stay unchanged.
 
 | Hint | Common meaning | Member example | Local example |
 | --- | --- | --- | --- |

@@ -16,7 +16,7 @@
 			640,
 			480
 		],
-		"RGBframe": "camRGB"
+		"RGBframeOut": "camRGB"
 	},
 	"camRGB": {
 		"type": "dataObject",

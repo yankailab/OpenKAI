@@ -20,34 +20,36 @@ A DataObject can remain enabled when its producer is disabled: readers then copy
 
 ## Module configuration
 
+DataObject link keys end in `In` for inputs and `Out` for outputs. The suffix describes the module's use of the object; DataObject class names stay unchanged. Corresponding C++ pointer names end in lowercase `in` or `out`, such as `m_pRGBin` and `m_pRGBout`.
+
 | Module | Input | Output |
 | --- | --- | --- |
-| Camera/image producers | Device or file | `RGBframe` |
-| Image filters | `RGBframeIn` (depth filter: `DframeIn`) | `RGBframe` |
-| `_WindowCV`, `_GstOutput` | `RGBframeIn` | Window or video output |
+| Camera/image producers | Device or file | `RGBframeOut` |
+| Image filters | `RGBframeIn` (depth filter: `DframeIn`; mask: `RGBframeMaskIn`) | `RGBframeOut` |
+| `_OCVwindow`, `_GstOutput` | `RGBframeIn` | Window or video output |
 | `_Contour`, `_ArUco`, `_YOLO26detectONNX` | `RGBframeIn` | `BBoxStreamOut` |
 | `_SingleTracker` | `RGBframeIn`, target commands through `_TrackerBase` | `BBoxStreamOut` |
 | `_APmav_follow`, `_APmav_land` | `BBoxStreamIn`; optional `_TrackerBase` and `BBoxStreamTrackIn` | Existing autopilot controls |
-| `_PCfile`, `_PCrecv` | File or transport as configured | `PCLframe` |
-| `_PCtransform` | `PCLframeIn` | `PCLframe` |
-| `_PCmerge` | `vPCLframes` array | `PCLframe` |
+| `_PCfile`, `_PCrecv` | File or transport as configured | `PCLframeOut` |
+| `_PCtransform` | `PCLframeIn` | `PCLframeOut` |
+| `_PCmerge` | `vPCLframesIn` array | `PCLframeOut` |
 | `_PCsend` | `PCLframeIn` | Existing transport module |
-| `_PCregistCol` | `PCLframeIn` | `PCLframe` |
-| `_LCalign` | `PCLframeIn`, `RGBframeIn` | `PCLframe` |
-| `_PCregistICP`, `_PCregistGlobal` | `PCLframeSrc`, `PCLframeTgt` | Existing registration result |
-| `_OctreeGrid`, `_SelectableOctGrid` | `vPCLframes` array | Existing cell interface |
-| `_Livox2` | Existing UDP modules | `PCLframe`; optional `IMUstream` |
-| `_RoboSenseAiry` | Existing UDP modules | `PCLframe` |
-| `_SLAMbase`, `_GLIM` | `PCLframeIn`; optional `IMUstream` | `_GLIM`: optional `PCLframe` and `PCLmap` |
-| RGBD camera modules | Device | `PCLframe`; IMU output key is `IMUframe` |
+| `_PCregistCol` | `PCLframeIn` | `PCLframeOut` |
+| `_LCalign` | `PCLframeIn`, `RGBframeIn` | `PCLframeOut` |
+| `_PCregistICP`, `_PCregistGlobal` | `PCLframeSrcIn`, `PCLframeTgtIn` | Existing registration result |
+| `_OctreeGrid`, `_SelectableOctGrid` | `vPCLframesIn` array | Existing cell interface |
+| `_Livox2` | Existing UDP modules | `PCLframeOut`; optional `IMUstreamOut` |
+| `_RoboSenseAiry` | Existing UDP modules | `PCLframeOut` |
+| `_SLAMbase`, `_GLIM` | `PCLframeIn`; optional `IMUstreamIn` | `_GLIM`: optional `PCLframeOut` and `PCLmapOut` |
+| RGBD camera modules | Device | `RGBframeOut`, `DframeOut`, `IRframeOut`, `RGBDframeOut`, `RGBDtRGBframeOut`, `RGBDtDframeOut`, `PCLframeOut`, `IMUstreamOut` |
 | `_WebGLIM` | `PCLmapIn` | Browser map stream |
 
 Point pipeline inputs and outputs must use different streams. Replace old `_PointCloud`, `_GeometryBase`, `globalMapPCL`, and `vGeometryBase` data references with the applicable keys above. A former `_PointCloud` object used only for storage becomes a `PCLframe` DataObject declaration; remove its `thread` and `nP` settings.
 
 The `_PointCloud`, `_GeometryBase`, and `_Line` module classes have been removed.
 Remaining former geometry subclasses inherit directly from `_ReferenceFrame`. Point-cloud producers
-each declare their own `PCLframe *m_pPCL` output pointer,
-resolved from the `PCLframe` configuration key. The referenced DataObject owns
+each declare their own `PCLframe *m_pPCLout` output pointer,
+resolved from the `PCLframeOut` configuration key. The referenced DataObject owns
 the point data and remains managed by `InstanceMgr`. Use a `LineFrame` DataObject
 declaration for line storage. Geometry viewers retain their existing typed input
 streams and camera settings.
@@ -59,24 +61,24 @@ For example, a file, grid, and viewer can share one cloud without referring to t
   "filePoints": { "type": "dataObject", "class": "PCLframe" },
   "pcFile": {
     "class": "_PCfile",
-    "PCLframe": "filePoints",
+    "PCLframeOut": "filePoints",
     "vfName": ["data/PointCloud/StanfordBunny/bun000.ply"]
   },
   "octGrid": {
     "class": "_SelectableOctGrid",
-    "vPCLframes": ["filePoints"],
+    "vPCLframesIn": ["filePoints"],
     "dTexpireCell": 0
   },
   "viewer": {
     "class": "_WebSelectableOctGrid",
     "port": 8080,
-    "vGeometry": [{ "PCLframe": "filePoints", "nP": 400000 }],
+    "vGeometry": [{ "PCLframeIn": "filePoints", "nP": 400000 }],
     "vSelectableOctGrid": [{ "_SelectableOctGrid": "octGrid" }]
   }
 }
 ```
 
-Both web and ImGUI geometry viewers retain `vGeometry`. Each entry names `PCLframe`, `LineFrame`, or both, with an optional display `name`. Existing `nP`, `nL`, visibility, and material settings remain viewer limits and styling. The old `_GeometryBase` entry and `bFrame` setting are removed. `vSelectableOctGrid` remains unchanged. `_WebGLIM` reads the stream named by `PCLmapIn`; its source `_GLIM` writes that same stream through `PCLmap`.
+Both web and ImGUI geometry viewers retain `vGeometry`. Each entry names `PCLframeIn`, `LineFrameIn`, or both, with an optional display `name`. Existing `nP`, `nL`, visibility, and material settings remain viewer limits and styling. The old `_GeometryBase` entry and `bFrame` setting are removed. `vSelectableOctGrid` remains unchanged. `_WebGLIM` reads the stream named by `PCLmapIn`; its source `_GLIM` writes that same stream through `PCLmapOut`.
 
 ## Bounding box and target streams
 

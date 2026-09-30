@@ -41,7 +41,7 @@ namespace kai
 		}
 
 	protected:
-		PCLframe *m_pPCL = nullptr;
+		PCLframe *m_pPCLout = nullptr;
 		_IObase *m_pIO = nullptr;
 		vector<uint8_t> m_vPacket;
 		size_t m_nPacketBytes = 0;

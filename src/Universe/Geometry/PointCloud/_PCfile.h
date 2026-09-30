@@ -42,7 +42,7 @@ namespace kai
 		}
 
 	protected:
-		PCLframe *m_pPCL = nullptr;
+		PCLframe *m_pPCLout = nullptr;
 		vector<string> m_vfName;
 	};
 

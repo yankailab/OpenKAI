@@ -9,7 +9,7 @@ cmake --build build-glim -j4
 
 Use `-DCMAKE_PREFIX_PATH=/your/install/prefix` for a nonstandard installation. `glim::glim` supplies GTSAM, gtsam_points, Eigen, OpenMP, spdlog and Boost dependencies. GLIM is only required when both `WITH_SLAM` and `USE_GLIM` are enabled. SLAM also builds its shared navigation, geometry, and DataObject dependencies when their wider module groups are disabled.
 
-Include `jsonCfg/_GLIM.json` using the application's `APP.vInclude`, or copy its SLAM module and DataObject declarations into your camera configuration. Connect the camera's `PCLframe` output to `slamPoints` and its IMU output to `slamIMU` (`IMUframe` for RGBD cameras, `IMUstream` for Livox). SLAM reads them through `PCLframeIn` and `IMUstream`. The example declares input streams; it needs a sensor producer to populate them. Paths are relative to the process working directory. See [Geometry DataObjects](DataStreamGeometry.md) for the complete configuration mapping.
+Include `jsonCfg/_GLIM.json` using the application's `APP.vInclude`, or copy its SLAM module and DataObject declarations into your camera configuration. Connect the camera's `PCLframeOut` output to `slamPoints` and its IMU output to `slamIMU` (`IMUstreamOut` for RGBD cameras and Livox). SLAM reads them through `PCLframeIn` and `IMUstreamIn`. The example declares input streams; it needs a sensor producer to populate them. Paths are relative to the process working directory. See [Geometry DataObjects](DataStreamGeometry.md) for the complete configuration mapping.
 
 `jsonCfg/glim_orbbec` contains CPU configuration templates adapted from GLIM 1.2.2, with its MIT license. You can also point `configPath` at a copy of `/home/kai/dev/glim/config`. In that copy, select the CPU odometry, sub-mapping and global-mapping JSON files in `config.json`; the upstream configuration selects GPU modules by default. Every `_GLIM` instance in one process must use the same configuration directory because GLIM configuration is global. Restart the process after editing those profile files. The supported web controls use per-instance constructor parameters and apply on the next session without replacing global configuration.
 
@@ -51,7 +51,7 @@ accuracy; those require a GLIM-enabled integration or hardware run.
 
 `jsonCfg/GLIM_orbbec.json` and `jsonCfg/GLIM_scepter.json` connect camera →
 `PCLframe` → `_GLIM` → `PCLmap` → `_WebGLIM`. GLIM publishes submaps to its
-`PCLmap` stream; the viewer names that same stream with `PCLmapIn`. The viewer
+`PCLmapOut` stream; the viewer names that same stream with `PCLmapIn`. The viewer
 uses the shared `HttpServer` with its own `/stream/glim` protocol. `_WSconsole`
 carries controls, parameters and pose/status independently. The viewer reads
 only the DataObject and does not depend on the GLIM estimator class or SDK.
@@ -74,7 +74,7 @@ geometry. New map timestamps may update poses without changing IDs or point arra
 The dedicated layout and routes are separate from geometry point/line streams;
 see the [wire contract](../html/viewer/_GLIM/README.md#dedicated-submap-protocol).
 
-`PCLframe` names an optional flat point-cloud output for other modules. With
+`PCLframeOut` names an optional flat point-cloud output for other modules. With
 `bPublishLiveMap: false` (default), only completed-submap changes and finalization
 refresh this output, subject to `tMapUpdateNs`. `nMapPoints` caps this output cloud
 and does not limit the dedicated viewer's accumulated submaps. Set

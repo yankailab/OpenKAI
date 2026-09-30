@@ -45,8 +45,8 @@ namespace kai
 		int m_maxNNnormal = 30;
 		int m_maxNNfpfh = 100;
 
-		PCLframe *m_pSrc = nullptr;
-		PCLframe *m_pTgt = nullptr;
+		PCLframe *m_pSrcin = nullptr;
+		PCLframe *m_pTgtin = nullptr;
 		RegistrationResult m_RR;
 		_PCtransform *m_pTf = nullptr;
 		double m_lastFit = 0.0;

@@ -18,8 +18,8 @@ namespace kai
 		{
 			const bool points = type == webselectableoctgrid::Type::Points;
 			const uint64_t stamp = points
-				? (source.m_pPCLframe ? source.m_pPCLframe->getTstamp() : 0)
-				: (source.m_pLineFrame ? source.m_pLineFrame->getTstamp() : 0);
+				? (source.m_pPCLframein ? source.m_pPCLframein->getTstamp() : 0)
+				: (source.m_pLineFramein ? source.m_pLineFramein->getTstamp() : 0);
 			const bool changed = m_bytes.empty() || stamp != m_tStamp;
 			if (!changed && expiry <= m_tFirstVisible)
 			{
@@ -29,13 +29,13 @@ namespace kai
 			if (changed)
 			{
 				m_tStamp = stamp;
-				if (points && source.m_pPCLframe)
+				if (points && source.m_pPCLframein)
 				{
-					m_tStamp = source.m_pPCLframe->get(m_points);
+					m_tStamp = source.m_pPCLframein->get(m_points);
 				}
-				else if (!points && source.m_pLineFrame)
+				else if (!points && source.m_pLineFramein)
 				{
-					m_tStamp = source.m_pLineFrame->get(m_lines);
+					m_tStamp = source.m_pLineFramein->get(m_lines);
 				}
 			}
 

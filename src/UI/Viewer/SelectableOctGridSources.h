@@ -17,8 +17,8 @@ namespace kai
 
 	struct VIEWER_GEOMETRY_SOURCE : VIEWER_SOURCE_STYLE
 	{
-		PCLframe *m_pPCLframe = nullptr;
-		LineFrame *m_pLineFrame = nullptr;
+		PCLframe *m_pPCLframein = nullptr;
+		LineFrame *m_pLineFramein = nullptr;
 		int m_nP = 0;
 		int m_nL = 0;
 		float m_matPointSize = 2;

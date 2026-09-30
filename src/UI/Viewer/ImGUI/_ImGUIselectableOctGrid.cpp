@@ -268,21 +268,21 @@ namespace kai
 	bool _ImGUIselectableOctGrid::collectGeometry(const VIEWER_GEOMETRY_SOURCE &source,
 		GeometryCache &cache, IMGUI_VIEWER_OBJ &object, uint64_t expiry)
 	{
-		const uint64_t points = source.m_pPCLframe ? source.m_pPCLframe->getTstamp() : 0;
-		const uint64_t lines = source.m_pLineFrame ? source.m_pLineFrame->getTstamp() : 0;
+		const uint64_t points = source.m_pPCLframein ? source.m_pPCLframein->getTstamp() : 0;
+		const uint64_t lines = source.m_pLineFramein ? source.m_pLineFramein->getTstamp() : 0;
 		if (cache.m_geometry && cache.m_tPoints == points && cache.m_tLines == lines && expiry <= cache.m_tFirstVisible)
 		{
 			object.m_geometry = cache.m_geometry;
 			return false;
 		}
 
-		if (source.m_pPCLframe && (!cache.m_geometry || cache.m_tPoints != points))
+		if (source.m_pPCLframein && (!cache.m_geometry || cache.m_tPoints != points))
 		{
-			cache.m_tPoints = source.m_pPCLframe->get(cache.m_points);
+			cache.m_tPoints = source.m_pPCLframein->get(cache.m_points);
 		}
-		if (source.m_pLineFrame && (!cache.m_geometry || cache.m_tLines != lines))
+		if (source.m_pLineFramein && (!cache.m_geometry || cache.m_tLines != lines))
 		{
-			cache.m_tLines = source.m_pLineFrame->get(cache.m_lines);
+			cache.m_tLines = source.m_pLineFramein->get(cache.m_lines);
 		}
 
 		auto geometry = std::make_shared<IMGUI_VIEWER_GEOMETRY>();

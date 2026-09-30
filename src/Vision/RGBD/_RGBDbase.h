@@ -35,15 +35,15 @@ namespace kai
 
 	protected:
 		// Output frames own their pixels; depth channels are calibrated CV_32FC1.
-		RGBDframe *m_pRGBD = nullptr;
-		RGBDframe *m_pRGBDtRGB = nullptr;	// RGBD transformed to RGB
-		RGBDframe *m_pRGBDtD = nullptr;		// RGBD transformed to D
+		RGBDframe *m_pRGBDout = nullptr;
+		RGBDframe *m_pRGBDtRGBout = nullptr;	// RGBD transformed to RGB
+		RGBDframe *m_pRGBDtDout = nullptr;		// RGBD transformed to D
 
-		RGBframe *m_pD = nullptr;			// real distance unit float mat
-		RGBframe *m_pIR = nullptr;
+		RGBframe *m_pDout = nullptr;			// real distance unit float mat
+		RGBframe *m_pIRout = nullptr;
 
-		PCLframe *m_pPCL = nullptr;
-		IMUstream *m_pIMU = nullptr;
+		PCLframe *m_pPCLout = nullptr;
+		IMUstream *m_pIMUout = nullptr;
 
 		// post processing thread
 		_Thread *m_pTpp = nullptr;

@@ -37,8 +37,8 @@ namespace kai
 		}
 
 	protected:
-		PCLframe *m_pPCL = nullptr;
-		vector<PCLframe *> m_vpPCL;
+		PCLframe *m_pPCLout = nullptr;
+		vector<PCLframe *> m_vpPCLin;
 		vector<uint64_t> m_vInputStamps;
 		vector<vector<GEOMETRY_POINT>> m_vInputPoints;
 		float m_rVoxel = 0.0;

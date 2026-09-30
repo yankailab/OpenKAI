@@ -93,9 +93,9 @@ namespace kai
 			Mat mCam;
 			while (!m_vc.read(mCam))
 				;
-			if (m_pRGB)
+			if (m_pRGBout)
 			{
-				m_pRGB->set(mCam);
+				m_pRGBout->set(mCam);
 			}
 		}
 	}

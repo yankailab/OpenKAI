@@ -231,10 +231,10 @@ namespace kai
 			bb.setType(obj_bbox);
 			bb.setPos(Vector3f(left, top, 0));
 			bb.setDim(Vector3f(right - left, bottom - top, 0));
-			bb.addClass(iClass, static_cast<int8_t>(std::max(0.0f, std::min(1.0f, confidence)) * 100.0f + 0.5f));
+			bb.addClass(iClass, m_vClass[iClass], static_cast<int8_t>(std::max(0.0f, std::min(1.0f, confidence)) * 100.0f + 0.5f));
 
 			vBB.push_back(bb);
-			LOG_I("Class: " + i2str(bb.getTopClass()));
+			LOG_I("Class: " + i2str(bb.getTopClassID()));
 		}
 
 		return true;
@@ -315,10 +315,10 @@ namespace kai
 			bb.setType(obj_bbox);
 			bb.setPos(Vector3f(r.x, r.y, 0));
 			bb.setDim(Vector3f(r.width, r.height, 0));
-			bb.addClass(vClassID[idx], static_cast<int8_t>(std::max(0.0f, std::min(1.0f, vConfidence[idx])) * 100.0f + 0.5f));
+			bb.addClass(vClassID[idx], m_vClass[vClassID[idx]], static_cast<int8_t>(std::max(0.0f, std::min(1.0f, vConfidence[idx])) * 100.0f + 0.5f));
 
 			vBB.push_back(bb);
-			LOG_I("Class: " + i2str(bb.getTopClass()));
+			LOG_I("Class: " + i2str(bb.getTopClassID()));
 		}
 
 		return true;

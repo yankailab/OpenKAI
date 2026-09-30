@@ -215,8 +215,7 @@ namespace kai
 
 #ifdef WITH_UI
 #ifdef USE_OPENCV
-		ADD_MODULE(_GstOutput);
-		ADD_MODULE(_WindowCV);
+		ADD_MODULE(_OCVwindow);
 #endif
 #endif
 

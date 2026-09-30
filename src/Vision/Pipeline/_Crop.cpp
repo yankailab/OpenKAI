@@ -71,7 +71,7 @@ namespace kai
 
 	void _Crop::filter(void)
 	{
-		NULL_(m_pRGB);
+		NULL_(m_pRGBout);
 		NULL_(m_pRGBin);
 		Mat mIn;
 		const uint64_t tStamp = m_pRGBin->get(mIn);
@@ -86,7 +86,7 @@ namespace kai
 		m_vSizeRGB.x() = r.width;
 		m_vSizeRGB.y() = r.height;
 
-		m_pRGB->set(mIn(r), tStamp);
+		m_pRGBout->set(mIn(r), tStamp);
 	}
 
 }

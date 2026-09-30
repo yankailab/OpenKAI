@@ -13,7 +13,7 @@
 	"vBASE":["rs","gst","T265"],
 }
 "RGBview":{
-	"class":"_WindowCV",
+	"class":"_OCVwindow",
 	"bON": true,
 	"bFullScreen":0,
 "thread":{
@@ -22,7 +22,7 @@
 	"vBASE":["rs","gst"],
 }
 "depthView":{
-	"class":"_WindowCV",
+	"class":"_OCVwindow",
 	"bON": false,
 	"bFullScreen":0,
 "thread":{

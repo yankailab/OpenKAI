@@ -87,23 +87,23 @@ namespace kai
 		const json &j = *m_pJ;
 
 		string outputName;
-		jKv(j, "PCLframe", outputName);
-		m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(outputName)));
-		IF_Le_F(!m_pPCL, "PCLframe not found: " + outputName);
+		jKv(j, "PCLframeOut", outputName);
+		m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(outputName)));
+		IF_Le_F(!m_pPCLout, "PCLframeOut not found: " + outputName);
 
 		vector<string> names;
-		jKv(j, "vPCLframes", names);
-		IF_Le_F(names.empty(), "vPCLframes must contain at least one input");
-		m_vpPCL.clear();
+		jKv(j, "vPCLframesIn", names);
+		IF_Le_F(names.empty(), "vPCLframesIn must contain at least one input");
+		m_vpPCLin.clear();
 		for (const string &name : names)
 		{
-			PCLframe *pFrame = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
-			IF_Le_F(!pFrame, "PCLframe not found: " + name);
-			IF_Le_F(pFrame == m_pPCL, "Merge input must differ from PCLframe output");
-			m_vpPCL.push_back(pFrame);
+			PCLframe *pFramein = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
+			IF_Le_F(!pFramein, "vPCLframesIn input not found: " + name);
+			IF_Le_F(pFramein == m_pPCLout, "Merge input must differ from PCLframeOut");
+			m_vpPCLin.push_back(pFramein);
 		}
-		m_vInputStamps.assign(m_vpPCL.size(), 0);
-		m_vInputPoints.resize(m_vpPCL.size());
+		m_vInputStamps.assign(m_vpPCLin.size(), 0);
+		m_vInputPoints.resize(m_vpPCLin.size());
 
 		return true;
 	}
@@ -116,14 +116,14 @@ namespace kai
 
 	bool _PCmerge::check(void)
 	{
-		return m_pPCL && _ReferenceFrame::check();
+		return m_pPCLout && _ReferenceFrame::check();
 	}
 
 	void _PCmerge::clear(void)
 	{
-		if (m_pPCL)
+		if (m_pPCLout)
 		{
-			m_pPCL->set({});
+			m_pPCLout->set({});
 		}
 	}
 
@@ -144,11 +144,11 @@ namespace kai
 		bool changed = false;
 		size_t count = 0;
 		uint64_t stamp = 0;
-		for (size_t i = 0; i < m_vpPCL.size(); ++i)
+		for (size_t i = 0; i < m_vpPCLin.size(); ++i)
 		{
-			if (m_vpPCL[i]->getTstamp() != m_vInputStamps[i])
+			if (m_vpPCLin[i]->getTstamp() != m_vInputStamps[i])
 			{
-				const uint64_t inputStamp = m_vpPCL[i]->get(m_vInputPoints[i]);
+				const uint64_t inputStamp = m_vpPCLin[i]->get(m_vInputPoints[i]);
 				changed = changed || inputStamp != m_vInputStamps[i];
 				m_vInputStamps[i] = inputStamp;
 			}
@@ -205,7 +205,7 @@ namespace kai
 
 		// Keep the input clock domain. Equal merged timestamps are unchanged
 		// to downstream timestamp consumers, including changes to older inputs.
-		m_pPCL->set(points, stamp);
+		m_pPCLout->set(points, stamp);
 	}
 
 }

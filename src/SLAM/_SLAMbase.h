@@ -50,9 +50,9 @@ namespace kai
 
 		std::mutex m_mtxSLAM;
 		std::atomic_uint m_controlWaiters{0};
-		PCLframe *m_pPCL = nullptr;
+		PCLframe *m_pPCLin = nullptr;
 		uint64_t m_tPointInput = 0;
-		IMUstream *m_pIMU = nullptr;
+		IMUstream *m_pIMUin = nullptr;
 		deque<IMUstream::IMU_DATA> m_dqGyro;
 		deque<IMUstream::IMU_DATA> m_dqAcc;
 		bool m_bIMUbatch = false;

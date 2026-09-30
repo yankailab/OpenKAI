@@ -19,7 +19,7 @@
 		]
 	},
 	"view": {
-		"class": "_WindowCV",
+		"class": "_OCVwindow",
 		"bON": true,
 		"thread": {
 			"FPS": 30

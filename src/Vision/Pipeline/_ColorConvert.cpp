@@ -71,14 +71,14 @@ namespace kai
 	void _ColorConvert::filter(void)
 	{
 		Mat mOut;
-		NULL_(m_pRGB);
+		NULL_(m_pRGBout);
 		NULL_(m_pRGBin);
 		Mat mIn;
 		const uint64_t tStamp = m_pRGBin->get(mIn);
 		IF_(mIn.empty());
 
 		cv::cvtColor(mIn, mOut, m_code);
-		m_pRGB->set(mOut, tStamp);
+		m_pRGBout->set(mOut, tStamp);
 	}
 
 }

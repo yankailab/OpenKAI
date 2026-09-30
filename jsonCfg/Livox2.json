@@ -121,8 +121,8 @@
 		"lvxWorkMode": 1,
 		"lvxIMUdataEn": 1,
 		"bIMUstab": false,
-		"PCLframe": "livoxPoints",
-		"IMUstream": "livoxIMU",
+		"PCLframeOut": "livoxPoints",
+		"IMUstreamOut": "livoxIMU",
 		"nMaxFramePoints": 100000
 	},
 	"viewer": {
@@ -136,7 +136,7 @@
 		"nLbuf": 0,
 		"vGeometry": [
 			{
-				"PCLframe": "livoxPoints",
+				"PCLframeIn": "livoxPoints",
 				"nP": 100000,
 				"matPointSize": 2
 			}

@@ -1,6 +1,6 @@
 {
 	"APP": {
-		"class": "Startup",
+		"class": "InstanceMgr",
 		"appName": "RTCMcast",
 		"bLog": true,
 		"bStdErr": true

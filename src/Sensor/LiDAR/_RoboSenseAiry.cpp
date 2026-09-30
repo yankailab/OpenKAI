@@ -45,9 +45,9 @@ namespace kai
 
         string n;
 
-        jKv(j, "PCLframe", n);
-        m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-        IF_Le_F(!m_pPCL, "PCLframe not found: " + n);
+        jKv(j, "PCLframeOut", n);
+        m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        IF_Le_F(!m_pPCLout, "PCLframeOut not found: " + n);
 
         n = "";
         jKv(j, "_UDPmsop", n);
@@ -75,7 +75,7 @@ namespace kai
 
     bool _RoboSenseAiry::check(void)
     {
-        NULL_F(m_pPCL);
+        NULL_F(m_pPCLout);
         NULL_F(m_pUDPmsop);
         NULL_F(m_pUDPdifop);
 
@@ -84,9 +84,9 @@ namespace kai
 
     void _RoboSenseAiry::clear(void)
     {
-        if (m_pPCL)
+        if (m_pPCLout)
         {
-            m_pPCL->set({});
+            m_pPCLout->set({});
         }
     }
 

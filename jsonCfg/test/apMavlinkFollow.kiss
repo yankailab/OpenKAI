@@ -15,7 +15,7 @@
 	"vBASE":["/udpAP","/serialAP","/mavAP","apBase","arUco","YOLO","apFollow"],
 }
 "CVwindow":{
-	"class":"_WindowCV",
+	"class":"_OCVwindow",
 	"bON": true,
 	"bFullScreen":0,
 "thread":{

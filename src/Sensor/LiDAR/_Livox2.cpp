@@ -154,14 +154,14 @@ namespace kai
         string n;
 
         n = "";
-        jKv(j, "PCLframe", n);
-        m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-        IF_Le_F(!m_pPCL, "PCLframe not found: " + n);
+        jKv(j, "PCLframeOut", n);
+        m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        IF_Le_F(!m_pPCLout, "PCLframeOut not found: " + n);
 
         n = "";
-        jKv(j, "IMUstream", n);
-        m_pIMU = dynamic_cast<IMUstream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-        IF_Le_F(!n.empty() && !m_pIMU, "IMUstream not found: " + n);
+        jKv(j, "IMUstreamOut", n);
+        m_pIMUout = dynamic_cast<IMUstream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        IF_Le_F(!n.empty() && !m_pIMUout, "IMUstreamOut not found: " + n);
 
         n = "";
         jKv(j, "_UDPdeviceQuery", n);
@@ -219,7 +219,7 @@ namespace kai
 
     bool _Livox2::check(void)
     {
-        NULL_F(m_pPCL);
+        NULL_F(m_pPCLout);
         NULL_F(m_pUDPdeviceQuery);
         NULL_F(m_pUDPctrlCmd);
         NULL_F(m_pUDPpushCmd);
@@ -739,7 +739,7 @@ namespace kai
 
     void _Livox2::handlePointCloudData(const LIVOX2_DATA &d)
     {
-        if (!m_pPCL || d.data_type != kLivoxLidarCartesianCoordinateHighData ||
+        if (!m_pPCLout || d.data_type != kLivoxLidarCartesianCoordinateHighData ||
             d.dot_num == 0 || d.dot_num > LVX2_N_DATA / sizeof(LivoxLidarCartesianHighRawPoint) ||
             d.length < 36 + d.dot_num * sizeof(LivoxLidarCartesianHighRawPoint))
         {
@@ -756,7 +756,7 @@ namespace kai
         std::lock_guard<std::mutex> frameLock(m_frameMutex);
         if (m_bPCLframe && d.frame_cnt != m_iPCLframe)
         {
-            m_pPCL->set(m_vFramePoints, m_tPCLframe);
+            m_pPCLout->set(m_vFramePoints, m_tPCLframe);
             m_vFramePoints.clear();
             m_vFramePoints.reserve(m_nMaxFramePoints);
             m_bPCLframe = false;
@@ -793,9 +793,9 @@ namespace kai
         m_vFramePoints.clear();
         m_tPCLframe = 0;
         m_bPCLframe = false;
-        if (m_pPCL)
+        if (m_pPCLout)
         {
-            m_pPCL->set({});
+            m_pPCLout->set({});
         }
     }
 
@@ -825,13 +825,13 @@ namespace kai
         uint64_t tStamp = 0;
         memcpy(&tStamp, d.timestamp, sizeof(tStamp));
 
-        if (m_pIMU)
+        if (m_pIMUout)
         {
             Vector3f vAcc = Vector3f(pIMU->acc_x, pIMU->acc_y, pIMU->acc_z);
-            m_pIMU->addAcc(vAcc, tStamp);
+            m_pIMUout->addAcc(vAcc, tStamp);
 
             Vector3f vGyro = Vector3f(pIMU->gyro_x, pIMU->gyro_y, pIMU->gyro_z);
-            m_pIMU->addGyro(vGyro, tStamp);
+            m_pIMUout->addGyro(vGyro, tStamp);
         }
 
         IF_(!m_bIMUstab);

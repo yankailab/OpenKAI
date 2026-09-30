@@ -105,14 +105,14 @@ namespace kai
 		IF_F(!_SLAMbase::link(pM));
 		const json &j = *m_pJ;
 		string name;
-		jKv(j, "PCLframe", name);
-		m_pGlobalMap = name.empty() ? nullptr : dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
-		IF_Le_F(!name.empty() && !m_pGlobalMap, "Cannot find PCLframe: " + name);
-		IF_Le_F(m_pGlobalMap && m_pGlobalMap == m_pPCL, "GLIM input and output must be different PCLframe streams");
+		jKv(j, "PCLframeOut", name);
+		m_pGlobalMapout = name.empty() ? nullptr : dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
+		IF_Le_F(!name.empty() && !m_pGlobalMapout, "Cannot find PCLframeOut: " + name);
+		IF_Le_F(m_pGlobalMapout && m_pGlobalMapout == m_pPCLin, "GLIM input and output must be different PCLframe streams");
 		name.clear();
-		jKv(j, "PCLmap", name);
-		m_pSubmapStream = dynamic_cast<PCLmap *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
-		IF_Le_F(!name.empty() && !m_pSubmapStream, "Cannot find PCLmap: " + name);
+		jKv(j, "PCLmapOut", name);
+		m_pSubmapStreamout = dynamic_cast<PCLmap *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
+		IF_Le_F(!name.empty() && !m_pSubmapStreamout, "Cannot find PCLmapOut: " + name);
 		return true;
 	}
 
@@ -313,7 +313,7 @@ namespace kai
 		else m_odometry = glim::OdometryEstimationBase::load_module(odomLibrary);
 		IF_Le_F(!m_odometry, "Cannot load GLIM odometry: " + odomLibrary);
 		m_bRequiresIMU = m_odometry->requires_imu();
-		IF_Le_F(m_bRequiresIMU && !m_pIMU, "Selected GLIM odometry requires IMUstream");
+		IF_Le_F(m_bRequiresIMU && !m_pIMUin, "Selected GLIM odometry requires IMUstreamIn");
 
 		glim::CloudPreprocessorParams params;
 		const auto &pre = m_parameters["preprocess"];
@@ -334,9 +334,9 @@ namespace kai
 		{
 			const auto subConfig = readConfig("config_sub_mapping");
 			const auto globalConfig = readConfig("config_global_mapping");
-			IF_Le_F(!m_pIMU && (subConfig.param<bool>("sub_mapping", "enable_imu", true) ||
+			IF_Le_F(!m_pIMUin && (subConfig.param<bool>("sub_mapping", "enable_imu", true) ||
 				globalConfig.param<bool>("global_mapping", "enable_imu", true)),
-				"GLIM mapping with enable_imu requires IMUstream");
+				"GLIM mapping with enable_imu requires IMUstreamIn");
 			const auto subLibrary = subConfig.param<string>("sub_mapping", "so_name", "");
 			const auto globalLibrary = globalConfig.param<string>("global_mapping", "so_name", "");
 			IF_Le_F(subLibrary.empty() || globalLibrary.empty(), "Missing GLIM mapping so_name");
@@ -520,14 +520,14 @@ namespace kai
 		m_tSubmapUpdated = getTns();
 		m_submapPoints = 0;
 		vector<PCLmap::Submap> submaps;
-		if (m_pSubmapStream)
+		if (m_pSubmapStreamout)
 		{
 			submaps.reserve(m_submaps.size());
 		}
 		for (size_t i = 0; i < m_submaps.size(); ++i)
 		{
 			const auto &source = m_submaps[i];
-			if (!m_pSubmapStream)
+			if (!m_pSubmapStreamout)
 			{
 				if (source->frame)
 				{
@@ -554,9 +554,9 @@ namespace kai
 			m_submapPoints += submap.m_points.size();
 			submaps.push_back(std::move(submap));
 		}
-		if (m_pSubmapStream)
+		if (m_pSubmapStreamout)
 		{
-			m_pSubmapStream->set(submaps, m_session, m_tSubmapUpdated);
+			m_pSubmapStreamout->set(submaps, m_session, m_tSubmapUpdated);
 		}
 	}
 
@@ -569,14 +569,14 @@ namespace kai
 
 	void _GLIM::publishMap(bool force)
 	{
-		IF_(!m_pGlobalMap);
+		IF_(!m_pGlobalMapout);
 		IF_(!force && !m_bPublishLiveMap && !m_mapDirty);
 		const uint64_t now = getTns();
 		IF_(!force && m_mapUpdatedNs && now - m_mapUpdatedNs < m_mapIntervalNs);
 		vector<GEOMETRY_POINT> points;
 		collectMapPoints(points, size_t(m_nMapPoints), m_bPublishLiveMap, now);
 		m_mapPoints = points.size();
-		m_pGlobalMap->set(points, now);
+		m_pGlobalMapout->set(points, now);
 		m_mapUpdatedNs = now;
 		m_mapDirty = false;
 	}
@@ -656,18 +656,18 @@ namespace kai
 
 	void _GLIM::resetSLAM(void)
 	{
-		if (m_pGlobalMap)
+		if (m_pGlobalMapout)
 		{
-			m_pGlobalMap->set({});
+			m_pGlobalMapout->set({});
 		}
 		m_submaps.clear(); m_liveFrames.clear(); m_activeFrames.clear(); m_latestFrame.reset();
 		m_submapPoints = 0;
 		++m_session;
 		m_tSubmapUpdated = getTns();
 		m_mapDirty = false;
-		if (m_pSubmapStream)
+		if (m_pSubmapStreamout)
 		{
-			m_pSubmapStream->set({}, m_session, m_tSubmapUpdated);
+			m_pSubmapStreamout->set({}, m_session, m_tSubmapUpdated);
 		}
 		m_mapUpdatedNs = m_mapPoints = m_processedFrames = 0;
 		m_imuSamples = m_maxIMUgapNs = 0;
@@ -748,7 +748,7 @@ namespace kai
 			{"session", std::to_string(m_session)}, {"submapTimestampNs", std::to_string(m_tSubmapUpdated)},
 			{"canSavePointCloud", !m_submaps.empty() || !m_liveFrames.empty()},
 			{"mapPoints", m_bPublishLiveMap ? m_mapPoints : m_submapPoints}, {"submaps", m_submaps.size()}, {"liveFrames", m_liveFrames.size()},
-			{"mapTimestampNs", std::to_string(m_mapUpdatedNs)}, {"mapOutput", m_pGlobalMap ? m_pGlobalMap->getName() : ""},
+			{"mapTimestampNs", std::to_string(m_mapUpdatedNs)}, {"mapOutput", m_pGlobalMapout ? m_pGlobalMapout->getName() : ""},
 			{"frame", "map"}};
 	}
 

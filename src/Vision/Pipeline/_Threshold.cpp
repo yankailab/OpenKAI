@@ -104,7 +104,7 @@ namespace kai
 
 	void _Threshold::filter(void)
 	{
-		NULL_(m_pRGB);
+		NULL_(m_pRGBout);
 		NULL_(m_pRGBin);
 		
 		Mat mIn;
@@ -158,7 +158,7 @@ namespace kai
 			pM2 = (pM2 == &m1) ? &m2 : &m1;
 		}
 
-		m_pRGB->set(*pM1, tStamp);
+		m_pRGBout->set(*pM1, tStamp);
 	}
 
 }

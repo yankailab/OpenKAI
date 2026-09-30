@@ -38,7 +38,7 @@ namespace kai
 
 	protected:
 		// output
-		RGBframe *m_pRGB = nullptr;
+		RGBframe *m_pRGBout = nullptr;
 
 		// config
 		string m_devURI = "";

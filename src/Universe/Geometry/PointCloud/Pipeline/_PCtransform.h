@@ -55,7 +55,7 @@ namespace kai
 		}
 
 	protected:
-		PCLframe *m_pPCL = nullptr;
+		PCLframe *m_pPCLout = nullptr;
 		PCLframe *m_pPCLin = nullptr;
 		uint64_t m_tInput = 0;
 		vector<GEOMETRY_POINT> m_vInputPoints;

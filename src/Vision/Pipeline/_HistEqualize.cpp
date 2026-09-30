@@ -65,7 +65,7 @@ namespace kai
 	void _HistEqualize::filter(void)
 	{
 		Mat mOut;
-		NULL_(m_pRGB);
+		NULL_(m_pRGBout);
 		NULL_(m_pRGBin);
 		Mat mRGB;
 		const uint64_t tStamp = m_pRGBin->get(mRGB);
@@ -83,7 +83,7 @@ namespace kai
 		merge(vChannels, mIn);						  // merge 3 channels including the modified 1st channel into one image
 		
 		cv::cvtColor(mIn, mOut, COLOR_YCrCb2BGR);  // change the color image from YCrCb to BGR format (to display image properly)
-		m_pRGB->set(mOut, tStamp);
+		m_pRGBout->set(mOut, tStamp);
 	}
 
 }

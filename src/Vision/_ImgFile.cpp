@@ -48,9 +48,9 @@ namespace kai
 			return false;
 		}
 
-		if (m_pRGB)
+		if (m_pRGBout)
 		{
-			m_pRGB->set(m);
+			m_pRGBout->set(m);
 		}
 		m_vSizeRGB.x() = m.cols;
 		m_vSizeRGB.y() = m.rows;

@@ -23,13 +23,14 @@ OpenKAI. CMake copies and installs both web viewers.
   "bAutoBound": true,
   "bShowGrid": true,
   "vGeometry": [
-    { "PCLframe": "points", "nP": 400000, "nL": 0, "matPointSize": 2 },
-    { "LineFrame": "lines", "nP": 0, "nL": 10000 }
+    { "PCLframeIn": "points", "nP": 400000, "nL": 0, "matPointSize": 2 },
+    { "LineFrameIn": "lines", "nP": 0, "nL": 10000 }
   ]
 }
 ```
 
-`vGeometry` resolves independent `PCLframe` and `LineFrame` DataObjects. Declare
+`vGeometry` resolves independent `PCLframe` and `LineFrame` DataObjects through
+`PCLframeIn` and `LineFrameIn`. Declare
 those streams in the launch configuration and connect producers to the same
 names. A source entry may contain either or both stream types; `name` optionally
 sets its display label. Per-source `nP` and `nL` are capped by `nPbuf` and

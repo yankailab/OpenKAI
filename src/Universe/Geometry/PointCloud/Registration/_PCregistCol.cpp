@@ -60,15 +60,15 @@ namespace kai
         const json &j = *m_pJ;
 
         string n = "";
-        jKv(j, "PCLframe", n);
-        m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-        IF_Le_F(!m_pPCL, "PCLframe not found: " + n);
+        jKv(j, "PCLframeOut", n);
+        m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        IF_Le_F(!m_pPCLout, "PCLframeOut not found: " + n);
 
         n = "";
         jKv(j, "PCLframeIn", n);
         m_pPCLin = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
         IF_Le_F(!m_pPCLin, "PCLframeIn not found: " + n);
-        IF_Le_F(m_pPCLin == m_pPCL, "PCLframeIn must differ from PCLframe");
+        IF_Le_F(m_pPCLin == m_pPCLout, "PCLframeIn must differ from PCLframeOut");
 
         return true;
     }
@@ -82,14 +82,14 @@ namespace kai
 
     bool _PCregistCol::check(void)
     {
-        return m_pPCL && m_pPCLin && _ReferenceFrame::check();
+        return m_pPCLout && m_pPCLin && _ReferenceFrame::check();
     }
 
     void _PCregistCol::clear(void)
     {
-        if (m_pPCL)
+        if (m_pPCLout)
         {
-            m_pPCL->set({});
+            m_pPCLout->set({});
         }
     }
 
@@ -108,7 +108,7 @@ namespace kai
 
     void _PCregistCol::updatePC(void)
     {
-        // TODO: publish the registered point cloud to m_pPCL.
+        // TODO: publish the registered point cloud to m_pPCLout.
     }
 
     bool _PCregistCol::updateRegistration(void)

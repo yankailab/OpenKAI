@@ -45,9 +45,9 @@ namespace kai
 		NULL_F(m_pRGBin);
 
 		n = "";
-		jKv(j, "RGBframeMask", n);
-		m_pMask = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		NULL_F(m_pMask);
+		jKv(j, "RGBframeMaskIn", n);
+		m_pMaskin = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		NULL_F(m_pMaskin);
 
 		return true;
 	}
@@ -70,22 +70,22 @@ namespace kai
 
 	void _Mask::filter(void)
 	{
-		NULL_(m_pRGB);
+		NULL_(m_pRGBout);
 		NULL_(m_pRGBin);
-		NULL_(m_pMask);
+		NULL_(m_pMaskin);
 
 		Mat mIn;
 		const uint64_t tStamp = m_pRGBin->get(mIn);
 		IF_(mIn.empty());
 		Mat mMask;
-		m_pMask->get(mMask);
+		m_pMaskin->get(mMask);
 		IF_(mMask.empty());
 
 		Mat mBg;
 
 		mIn.copyTo(mBg, mMask);
 
-		m_pRGB->set(mBg, tStamp);
+		m_pRGBout->set(mBg, tStamp);
 	}
 
 }

@@ -16,7 +16,7 @@
     "vfName": [
       "data/PointCloud/StanfordBunny/bun000.ply"
     ],
-    "PCLframe": "pcFilePoints"
+    "PCLframeOut": "pcFilePoints"
   },
 
   "cam": {
@@ -29,19 +29,20 @@
     "threadPP": {
       "FPS": 30
     },
-    "URI": "",
+    "devURI": "",
     "vSizeRGB": [
       1600,
       1200
     ],
     "vRangeD": [
       0,
-      4000
+      4.0
     ],
-    "PCLframe": "scPC",
+    "PCLframeOut": "scPC",
     "scPixelFormat": 4,
     "bRGB": true,
     "bDepth": true,
+    "bPCL": true,
     "btRGB": true,
     "btDepth": false,
     "bIR": false
@@ -67,7 +68,7 @@
     "nMaxCells": 18333,
     "dTexpireCell": 0,
     "dTexpirePCL": 0,
-    "vPCLframes": [
+    "vPCLframesIn": [
       "pcFilePoints",
       "scPC"
     ]
@@ -108,13 +109,13 @@
     ],
     "vGeometry": [
       {
-        "PCLframe": "scPC",
+        "PCLframeIn": "scPC",
         "nP": 400000,
         "nL": 0,
         "matPointSize": 2
       },
       {
-        "PCLframe": "pcFilePoints",
+        "PCLframeIn": "pcFilePoints",
         "nP": 4000000,
         "nL": 0,
         "matPointSize": 2

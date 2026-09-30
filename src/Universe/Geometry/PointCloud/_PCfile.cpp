@@ -858,29 +858,29 @@ namespace kai
 		}
 
 		string name;
-		jKv(*m_pJ, "PCLframe", name);
-		m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
-		IF_Le_F(!m_pPCL, "PCLframe not found: " + name);
+		jKv(*m_pJ, "PCLframeOut", name);
+		m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
+		IF_Le_F(!m_pPCLout, "PCLframeOut not found: " + name);
 
 		return open();
 	}
 
 	bool _PCfile::check(void)
 	{
-		return m_pPCL && _ReferenceFrame::check();
+		return m_pPCLout && _ReferenceFrame::check();
 	}
 
 	void _PCfile::clear(void)
 	{
-		if (m_pPCL)
+		if (m_pPCLout)
 		{
-			m_pPCL->set({});
+			m_pPCLout->set({});
 		}
 	}
 
 	bool _PCfile::open(void)
 	{
-		IF_F(!m_pPCL || m_vfName.empty());
+		IF_F(!m_pPCLout || m_vfName.empty());
 
 		vector<GEOMETRY_POINT> vPoint;
 		bool loaded = false;
@@ -910,7 +910,7 @@ namespace kai
 			point.m_vP = m_mPosef * point.m_vP;
 			point.m_tStamp = stamp;
 		}
-		m_pPCL->set(vPoint, stamp);
+		m_pPCLout->set(vPoint, stamp);
 		return true;
 	}
 

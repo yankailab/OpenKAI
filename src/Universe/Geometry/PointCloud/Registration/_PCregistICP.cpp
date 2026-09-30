@@ -51,14 +51,14 @@ namespace kai
         string n;
 
         n = "";
-        jKv(j, "PCLframeSrc", n);
-        m_pSrc = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-        IF_Le_F(!m_pSrc, n + ": not found");
+        jKv(j, "PCLframeSrcIn", n);
+        m_pSrcin = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        IF_Le_F(!m_pSrcin, n + ": not found");
 
         n = "";
-        jKv(j, "PCLframeTgt", n);
-        m_pTgt = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-        IF_Le_F(!m_pTgt, n + ": not found");
+        jKv(j, "PCLframeTgtIn", n);
+        m_pTgtin = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        IF_Le_F(!m_pTgtin, n + ": not found");
 
         n = "";
         jKv(j, "_PCtransform", n);
@@ -76,8 +76,8 @@ namespace kai
 
     bool _PCregistICP::check(void)
     {
-        NULL_F(m_pSrc);
-        NULL_F(m_pTgt);
+        NULL_F(m_pSrcin);
+        NULL_F(m_pTgtin);
         NULL_F(m_pTf);
 
         return _ModuleBase::check();
@@ -97,8 +97,8 @@ namespace kai
     {
         IF_(!check());
 
-        open3d::geometry::PointCloud pcSrc = pclFrameToOpen3D(*m_pSrc);
-        open3d::geometry::PointCloud pcTgt = pclFrameToOpen3D(*m_pTgt);
+        open3d::geometry::PointCloud pcSrc = pclFrameToOpen3D(*m_pSrcin);
+        open3d::geometry::PointCloud pcTgt = pclFrameToOpen3D(*m_pTgtin);
 
         IF_(pcSrc.IsEmpty());
         IF_(pcTgt.IsEmpty());

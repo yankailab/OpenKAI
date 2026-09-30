@@ -2728,15 +2728,15 @@ namespace kai
 				auto accel = m_spAccel->getStreamProfileList()->getAccelStreamProfile(OB_ACCEL_FS_4g, OB_SAMPLE_RATE_200_HZ);
 				auto gyro = m_spGyro->getStreamProfileList()->getGyroStreamProfile(OB_GYRO_FS_1000dps, OB_SAMPLE_RATE_200_HZ);
 				// No device mutex here: Sensor::stop waits for callbacks to finish.
-				m_spAccel->start(accel, [imu = m_pIMU](shared_ptr<ob::Frame> frame) {
-					if (!imu || !frame) return;
+				m_spAccel->start(accel, [pIMUout = m_pIMUout](shared_ptr<ob::Frame> frame) {
+					if (!pIMUout || !frame) return;
 					const auto v = frame->as<ob::AccelFrame>()->value(); // m/s^2
-					imu->addAcc({v.x, v.y, v.z}, frame->getTimeStampUs() * NSEC_USEC);
+					pIMUout->addAcc({v.x, v.y, v.z}, frame->getTimeStampUs() * NSEC_USEC);
 				});
-				m_spGyro->start(gyro, [imu = m_pIMU](shared_ptr<ob::Frame> frame) {
-					if (!imu || !frame) return;
+				m_spGyro->start(gyro, [pIMUout = m_pIMUout](shared_ptr<ob::Frame> frame) {
+					if (!pIMUout || !frame) return;
 					const auto v = frame->as<ob::GyroFrame>()->value(); // rad/s
-					imu->addGyro({v.x, v.y, v.z}, frame->getTimeStampUs() * NSEC_USEC);
+					pIMUout->addGyro({v.x, v.y, v.z}, frame->getTimeStampUs() * NSEC_USEC);
 				});
 			}
 
@@ -2870,9 +2870,9 @@ namespace kai
 				auto frame = spFrameRGB->as<ob::VideoFrame>();
 				mRGB = Mat(frame->getHeight(), frame->getWidth(), CV_8UC3, frame->getData());
 				uint64_t tRGBNs = frameTsNs(spFrameRGB);
-				if (m_pRGB)
+				if (m_pRGBout)
 				{
-					m_pRGB->set(mRGB, tRGBNs);
+					m_pRGBout->set(mRGB, tRGBNs);
 				}
 				m_dtRGBNs = tRGBNs - m_tRGBNs;
 				m_tRGBNs = tRGBNs;
@@ -2888,9 +2888,9 @@ namespace kai
 				Mat mRaw(frame->getHeight(), frame->getWidth(), CV_16UC1, frame->getData());
 				mRaw.convertTo(mDepth, CV_32FC1, frame->getValueScale() * m_dScale, m_dOfs);
 				tDepth = frameTsNs(spFrameD);
-				if (m_pD)
+				if (m_pDout)
 				{
-					m_pD->set(mDepth, tDepth);
+					m_pDout->set(mDepth, tDepth);
 				}
 				m_dtDNs = tDepth - m_tDNs;
 				m_tDNs = tDepth;
@@ -2899,19 +2899,19 @@ namespace kai
 
 		if (!mRGB.empty() && !mDepth.empty())
 		{
-			if (m_pRGBD)
+			if (m_pRGBDout)
 			{
-				m_pRGBD->set(mRGB, mDepth, tDepth);
+				m_pRGBDout->set(mRGB, mDepth, tDepth);
 			}
-			if (m_bPCLrgb && m_pRGBDtRGB)
+			if (m_bPCLrgb && m_pRGBDtRGBout)
 			{
-				m_pRGBDtRGB->set(mRGB, mDepth, tDepth);
+				m_pRGBDtRGBout->set(mRGB, mDepth, tDepth);
 			}
 		}
 
 		// Capture must not wait for point conversion or per-point insertion.
 		// Replacing this slot drops obsolete work when the cloud worker is slower.
-		if (m_pPCL && ((m_bPCLrgb && spFrameRGB && spFrameD) ||
+		if (m_pPCLout && ((m_bPCLrgb && spFrameRGB && spFrameD) ||
 			(!m_bPCLrgb && m_bPCL && spFrameD)))
 			m_spPCLframe = spFS;
 
@@ -2933,16 +2933,16 @@ namespace kai
 	{
 		shared_ptr<ob::FrameSet> frames;
 		shared_ptr<ob::PointCloudFilter> filter;
-		PCLframe *points;
+		PCLframe *pPCLout;
 		float scale;
 		{
 			std::lock_guard<std::recursive_mutex> lock(m_mtxDevice);
 			frames = std::move(m_spPCLframe);
 			filter = m_spPCF;
-			points = m_pPCL;
+			pPCLout = m_pPCLout;
 			scale = m_dScale;
 		}
-		if (!frames || !filter || !points) return;
+		if (!frames || !filter || !pPCLout) return;
 
 		// The shared pointers keep this job alive if capture restarts. Neither the
 		// SDK filter nor cloud insertion may hold the camera's device mutex.
@@ -3001,7 +3001,7 @@ namespace kai
 			}
 		}
 
-		points->set(vPCL, tDNs);
+		pPCLout->set(vPCL, tDNs);
 	}
 
 	void _Orbbec::console(void *pConsole)

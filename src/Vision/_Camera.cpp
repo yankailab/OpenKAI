@@ -88,9 +88,9 @@ namespace kai
 			m_pT->autoFPS();
 
 			Mat m;
-			if (m_camera.read(m) && m_pRGB)
+			if (m_camera.read(m) && m_pRGBout)
 			{
-				m_pRGB->set(m);
+				m_pRGBout->set(m);
 			}
 		}
 	}

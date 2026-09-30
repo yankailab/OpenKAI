@@ -429,9 +429,9 @@ namespace kai
                          const_cast<void *>(depth.get_data()), videoDepth.get_stride_in_bytes());
                 Mat mDepth;
                 mRaw.convertTo(mDepth, CV_32FC1, m_dScale, m_dOfs);
-                if (m_pD)
+                if (m_pDout)
                 {
-                    m_pD->set(mDepth, tStamp);
+                    m_pDout->set(mDepth, tStamp);
                 }
 
                 Mat mRGB;
@@ -440,17 +440,17 @@ namespace kai
                     const auto videoColor = color.as<rs2::video_frame>();
                     mRGB = Mat(videoColor.get_height(), videoColor.get_width(), CV_8UC3,
                                const_cast<void *>(color.get_data()), videoColor.get_stride_in_bytes());
-                    if (m_pRGB)
+                    if (m_pRGBout)
                     {
-                        m_pRGB->set(mRGB, static_cast<uint64_t>(color.get_timestamp() * NSEC_MSEC));
+                        m_pRGBout->set(mRGB, static_cast<uint64_t>(color.get_timestamp() * NSEC_MSEC));
                     }
-                    if (m_pRGBD)
+                    if (m_pRGBDout)
                     {
-                        m_pRGBD->set(mRGB, mDepth, tStamp);
+                        m_pRGBDout->set(mRGB, mDepth, tStamp);
                     }
-                    if (m_bAlign && m_pRGBDtRGB)
+                    if (m_bAlign && m_pRGBDtRGBout)
                     {
-                        m_pRGBDtRGB->set(mRGB, mDepth, tStamp);
+                        m_pRGBDtRGBout->set(mRGB, mDepth, tStamp);
                     }
                 }
                 updatePC(depth, color, mRGB, tStamp);
@@ -464,7 +464,7 @@ namespace kai
 
     void _RealSense::updatePC(const rs2::frame &depth, const rs2::frame &color, const Mat &mRGB, uint64_t tStamp)
     {
-        if (!m_pPCL || (!m_bPCL && !m_bPCLrgb))
+        if (!m_pPCLout || (!m_bPCL && !m_bPCLrgb))
         {
             return;
         }
@@ -500,7 +500,7 @@ namespace kai
             }
             vPCL.push_back({Vector3f(p.x, p.y, p.z), vC, tStamp});
         }
-        m_pPCL->set(vPCL, tStamp);
+        m_pPCLout->set(vPCL, tStamp);
     }
 
 }

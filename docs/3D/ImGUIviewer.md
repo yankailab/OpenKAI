@@ -109,7 +109,7 @@ Use the class name `_ImGUIselectableOctGrid` in JSON:
     },
     "vGeometry": [
       {
-        "PCLframe": "lidar_points",
+        "PCLframeIn": "lidar_points",
         "nP": 200000,
         "matPointSize": 2,
         "matCol": [1.0, 1.0, 1.0]
@@ -127,7 +127,7 @@ Use the class name `_ImGUIselectableOctGrid` in JSON:
 }
 ```
 
-`vGeometry` entries name `PCLframe` and/or `LineFrame` DataObjects.
+`vGeometry` entries name `PCLframe` and/or `LineFrame` DataObjects through `PCLframeIn` and `LineFrameIn`.
 `vSelectableOctGrid` accepts only `_SelectableOctGrid` sources for cell streams.
 The viewer stores these in separate typed lists. Render snapshots contain only
 shared immutable draw assets, with no producer module pointers. Point/line
@@ -140,7 +140,7 @@ are shared with the [web viewer](WebViewer3D.md#viewer-sources).
 
 The old source name lists and generic reference-frame entries are removed.
 Per-source caps use `nP`, `nL`, and `nC`; zero disables that output. Octree grids
-have no point/line output API. Their `vPCLframes` setting lists
+have no point/line output API. Their `vPCLframesIn` setting lists
 point-cloud DataObject names.
 
 ## Sample PLY Test

@@ -55,7 +55,7 @@ namespace kai
 		// voxel down frame buf
 		double m_rVoxel = 0.1;
 
-		PCLframe *m_pPCL = nullptr;
+		PCLframe *m_pPCLout = nullptr;
 		PCLframe *m_pPCLin = nullptr;
 		RegistrationResult m_RR;
 		double m_minFit = 0.0;

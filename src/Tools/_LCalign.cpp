@@ -51,15 +51,15 @@ namespace kai
 		string n;
 
 		n = "";
-		jKv(j, "PCLframe", n);
-		m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		IF_Le_F(!m_pPCL, "PCLframe not found: " + n);
+		jKv(j, "PCLframeOut", n);
+		m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!m_pPCLout, "PCLframeOut not found: " + n);
 
 		n = "";
 		jKv(j, "PCLframeIn", n);
 		m_pPCLin = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		IF_Le_F(!m_pPCLin, "PCLframeIn not found: " + n);
-		IF_Le_F(m_pPCLin == m_pPCL, "PCLframeIn must differ from PCLframe");
+		IF_Le_F(m_pPCLin == m_pPCLout, "PCLframeIn must differ from PCLframeOut");
 
 		n = "";
 		jKv(j, "RGBframeIn", n);
@@ -93,7 +93,7 @@ namespace kai
 
 	bool _LCalign::check(void)
 	{
-		NULL_F(m_pPCL);
+		NULL_F(m_pPCLout);
 		NULL_F(m_pPCLin);
 		NULL_F(m_pRGBin);
 
@@ -102,9 +102,9 @@ namespace kai
 
 	void _LCalign::clear(void)
 	{
-		if (m_pPCL)
+		if (m_pPCLout)
 		{
-			m_pPCL->set({});
+			m_pPCLout->set({});
 		}
 	}
 
@@ -160,7 +160,7 @@ namespace kai
 			output.push_back(colored);
 		}
 
-		m_pPCL->set(output, tStamp);
+		m_pPCLout->set(output, tStamp);
 	}
 
 	bool _LCalign::L2C(const Vector2i &vSizeImg, const Vector3f &vPi, Vector2i &vPo)
@@ -345,11 +345,11 @@ namespace kai
 			IF_(!jKv(j, "fNamePly", fPly));
 
 			vector<GEOMETRY_POINT> points;
-			if (m_pPCL)
+			if (m_pPCLout)
 			{
-				m_pPCL->get(points);
+				m_pPCLout->get(points);
 			}
-			bool bR = m_pPCL && _PCfile::savePLY(fPly, points);
+			bool bR = m_pPCLout && _PCfile::savePLY(fPly, points);
 
 			NULL_(pJb);
 			json jr = json::object();

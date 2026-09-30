@@ -276,9 +276,9 @@ namespace kai
 			Mat mC;
 			mRaw.convertTo(mC, CV_32FC1, tScale, -50.0);
 
-			if (m_pRGB)
+			if (m_pRGBout)
 			{
-				m_pRGB->set(mC);
+				m_pRGBout->set(mC);
 			}
 		}
 	}

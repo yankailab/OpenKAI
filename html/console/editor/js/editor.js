@@ -628,9 +628,9 @@
     $('new-config').onclick = () => loadDocument(initialConfig(), 'OpenKAI.json');
     $('load-example').onclick = () => loadDocument({
       APP: { class: 'InstanceMgr', appName: 'CameraCrop', bLog: true, bStdErr: true },
-      cam: { class: '_Camera', bON: true, thread: { FPS: 30 }, deviceID: 0, vSizeRGB: [640, 480], RGBframe: 'camRGB' },
-      crop: { class: '_Crop', thread: { FPS: 30 }, RGBframeIn: 'camRGB', RGBframe: 'cropRGB', vRoi: [0, 0, 320, 240] },
-      view: { class: '_WindowCV', thread: { FPS: 30 }, RGBframeIn: 'cropRGB' },
+      cam: { class: '_Camera', bON: true, thread: { FPS: 30 }, deviceID: 0, vSizeRGB: [640, 480], RGBframeOut: 'camRGB' },
+      crop: { class: '_Crop', thread: { FPS: 30 }, RGBframeIn: 'camRGB', RGBframeOut: 'cropRGB', vRoi: [0, 0, 320, 240] },
+      view: { class: '_OCVwindow', thread: { FPS: 30 }, RGBframeIn: 'cropRGB' },
       camRGB: { type: 'dataObject', class: 'RGBframe' },
       cropRGB: { type: 'dataObject', class: 'RGBframe' }
     }, 'CameraCrop.json');

@@ -64,7 +64,7 @@ namespace kai
 		virtual void updatePID(void);
 		virtual bool updateTarget(void);
 		virtual bool findTarget(void);
-		bool readTargetObjects(BBoxStream *pStream, vector<BBOX_OBJ> &vObjects, Vector3f &vDim);
+		bool readTargetObjects(BBoxStream *pStreamin, vector<BBOX_OBJ> &vObjects, Vector3f &vDim);
 		bool bTargetFresh(const BBOX_OBJ &object, uint64_t tNow) const;
 		static bool getTargetBB(const BBOX_OBJ &object, const Vector3f &vDim, Vector4f &vBB);
 		static void *getUpdate(void *This)
@@ -75,7 +75,7 @@ namespace kai
 
 	protected:
 		BBoxStream *m_pBBin = nullptr;
-		BBoxStream *m_pBBtrackIn = nullptr;
+		BBoxStream *m_pBBtrackin = nullptr;
 		uint64_t m_tTargetUpdate = 0;
 		uint64_t m_tLastDetection = 0;
 		uint64_t m_tTrackStart = 0;

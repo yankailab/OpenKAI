@@ -46,7 +46,7 @@ namespace kai
 			const bool grid = string(key) == "vSelectableOctGrid";
 			const std::set<string> allowed = grid
 				? std::set<string>{"_SelectableOctGrid", "nC", "bVisible", "matCol", "matLineWidth"}
-				: std::set<string>{"PCLframe", "LineFrame", "name", "nP", "nL", "bVisible", "matCol", "matPointSize", "matLineWidth"};
+				: std::set<string>{"PCLframeIn", "LineFrameIn", "name", "nP", "nL", "bVisible", "matCol", "matPointSize", "matLineWidth"};
 			for (const auto &entry : entries)
 			{
 				if (!entry.is_object())
@@ -69,11 +69,11 @@ namespace kai
 				}
 				else
 				{
-					jKv(entry, "PCLframe", pointName);
-					jKv(entry, "LineFrame", lineName);
+					jKv(entry, "PCLframeIn", pointName);
+					jKv(entry, "LineFrameIn", lineName);
 					if (pointName.empty() && lineName.empty())
 					{
-						return sourceError(error, "vGeometry entry needs PCLframe or LineFrame");
+						return sourceError(error, "vGeometry entry needs PCLframeIn or LineFrameIn");
 					}
 					style.m_name = pointName.empty() ? lineName : pointName;
 					jKv(entry, "name", style.m_name);
@@ -125,18 +125,18 @@ namespace kai
 				static_cast<VIEWER_SOURCE_STYLE &>(source) = style;
 				if (!pointName.empty())
 				{
-					source.m_pPCLframe = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(manager->findDataObject(pointName)));
-					if (!source.m_pPCLframe)
+					source.m_pPCLframein = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(manager->findDataObject(pointName)));
+					if (!source.m_pPCLframein)
 					{
-						return sourceError(error, "PCLframe not found: " + pointName);
+						return sourceError(error, "PCLframeIn not found: " + pointName);
 					}
 				}
 				if (!lineName.empty())
 				{
-					source.m_pLineFrame = dynamic_cast<LineFrame *>(static_cast<DataObjBase *>(manager->findDataObject(lineName)));
-					if (!source.m_pLineFrame)
+					source.m_pLineFramein = dynamic_cast<LineFrame *>(static_cast<DataObjBase *>(manager->findDataObject(lineName)));
+					if (!source.m_pLineFramein)
 					{
-						return sourceError(error, "LineFrame not found: " + lineName);
+						return sourceError(error, "LineFrameIn not found: " + lineName);
 					}
 				}
 				source.m_nP = nP;
@@ -148,8 +148,8 @@ namespace kai
 				{
 					return sourceError(error, "Invalid geometry limits/material: " + style.m_name);
 				}
-				source.m_nP = source.m_pPCLframe ? std::min(source.m_nP, nP) : 0;
-				source.m_nL = source.m_pLineFrame ? std::min(source.m_nL, nL) : 0;
+				source.m_nP = source.m_pPCLframein ? std::min(source.m_nP, nP) : 0;
+				source.m_nL = source.m_pLineFramein ? std::min(source.m_nL, nL) : 0;
 				sources.m_vGeometry.push_back(source);
 			}
 		}

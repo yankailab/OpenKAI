@@ -1,6 +1,6 @@
 {
 	"APP": {
-		"class": "OpenKAI",
+		"class": "InstanceMgr",
 		"appName": "apDrive",
 		"bLog": true,
 		"bStdErr": true

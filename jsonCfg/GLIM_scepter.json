@@ -1,6 +1,6 @@
 {
 	"APP": {
-		"class": "OpenKAI",
+		"class": "InstanceMgr",
 		"appName": "GLIM SLAM \u2014 Scepter",
 		"bLog": true,
 		"bStdErr": false
@@ -48,7 +48,7 @@
 		]
 	},
 	"view": {
-		"class": "_WindowCV",
+		"class": "_OCVwindow",
 		"bON": false,
 		"thread": {
 			"FPS": 30
@@ -57,7 +57,7 @@
 		"RGBframeIn": "scepterRGB"
 	},
 	"viewD": {
-		"class": "_WindowCV",
+		"class": "_OCVwindow",
 		"bON": false,
 		"thread": {
 			"FPS": 30
@@ -75,7 +75,7 @@
 		"threadPP": {
 			"FPS": 30
 		},
-		"URI": "",
+		"devURI": "",
 		"vSizeRGB": [
 			1600,
 			1200
@@ -84,7 +84,7 @@
 			0,
 			4.0
 		],
-		"PCLframe": "scPCL",
+		"PCLframeOut": "scPCL",
 		"bRGB": false,
 		"bDepth": true,
 		"btRGB": false,
@@ -144,8 +144,8 @@
 		"scAIModuleInputFrames": [],
 		"scAIModulePreviewFrames": [],
 		"dScale": 0.001,
-		"RGBframe": "scepterRGB",
-		"Dframe": "scepterDepth"
+		"RGBframeOut": "scepterRGB",
+		"DframeOut": "scepterDepth"
 	},
 	"d2rgb": {
 		"class": "_D2RGB",
@@ -155,7 +155,7 @@
 		},
 		"bMeasure": false,
 		"DframeIn": "scepterDepth",
-		"RGBframe": "d2rgbRGB"
+		"RGBframeOut": "d2rgbRGB"
 	},
 	"scPCL": {
 		"type": "dataObject",
@@ -214,11 +214,11 @@
 		"bPublishLiveMap": false,
 		"nMinPoints": 100,
 		"tConfidenceTimeoutNs": 1000000000,
-		"PCLframe": "glimPCL",
+		"PCLframeOut": "glimPCL",
 		"nMapPoints": 400000,
 		"nLiveFrames": 60,
 		"tMapUpdateNs": 200000000,
-		"PCLmap": "GLIMMap"
+		"PCLmapOut": "GLIMMap"
 	},
 	"scepterRGB": {
 		"type": "dataObject",

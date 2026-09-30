@@ -38,9 +38,9 @@ namespace kai
 	{
 		IF_F(!_ReferenceFrame::link(pM));
 		string name;
-		jKv(*m_pJ, "PCLframe", name);
-		m_pPCL = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
-		IF_Le_F(!m_pPCL, "PCLframe not found: " + name);
+		jKv(*m_pJ, "PCLframeOut", name);
+		m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
+		IF_Le_F(!m_pPCLout, "PCLframeOut not found: " + name);
 
 		name.clear();
 		jKv(*m_pJ, "_IObase", name);
@@ -57,14 +57,14 @@ namespace kai
 
 	bool _PCrecv::check(void)
 	{
-		return m_pIO && m_pIO->bOpen() && m_pPCL && _ReferenceFrame::check();
+		return m_pIO && m_pIO->bOpen() && m_pPCLout && _ReferenceFrame::check();
 	}
 
 	void _PCrecv::clear(void)
 	{
-		if (m_pPCL)
+		if (m_pPCLout)
 		{
-			m_pPCL->set({});
+			m_pPCLout->set({});
 		}
 	}
 
@@ -174,7 +174,7 @@ namespace kai
 		}
 		if (m_vPendingPoints.size() == total)
 		{
-			m_pPCL->set(m_vPendingPoints, stamp);
+			m_pPCLout->set(m_vPendingPoints, stamp);
 			m_vPendingPoints.clear();
 			m_tPendingStamp = 0;
 		}

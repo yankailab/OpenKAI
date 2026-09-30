@@ -1,3 +1,15 @@
+# DataObject initialization regression test
+
+Loads the detection stream from `jsonCfg/Detectors.json` without starting the
+camera, window, or inference. Checks `nBuf=1`, DataObject initialization before
+modules, and failure propagation. Requires Eigen 5, glog, and ncurses.
+
+```bash
+cmake -S test/instance -B build/instance-tests
+cmake --build build/instance-tests
+ctest --test-dir build/instance-tests --output-on-failure
+```
+
 # Eigen vector regression tests
 
 These checks cover vector configuration loading, geometry defaults, and bounding-box operations. They require Eigen 5 and glog.

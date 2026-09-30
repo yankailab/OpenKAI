@@ -1,6 +1,6 @@
 {
 	"APP": {
-		"class": "OpenKAI",
+		"class": "InstanceMgr",
 		"appName": "ImGUI",
 		"bLog": true,
 		"bStdErr": true
@@ -27,7 +27,7 @@
 		"vfName": [
 			"data/PointCloud/StanfordBunny/bun000.ply"
 		],
-		"PCLframe": "pcFilePoints"
+		"PCLframeOut": "pcFilePoints"
 	},
 
 	"octGrid": {
@@ -51,7 +51,7 @@
 			1
 		],
 		"nMaxCells": 8333,
-		"vPCLframes": [
+		"vPCLframesIn": [
 			"pcFilePoints"
 		]
 	},
@@ -92,7 +92,7 @@
 		],
 		"vGeometry": [
 			{
-				"PCLframe": "pcFilePoints"
+				"PCLframeIn": "pcFilePoints"
 			}
 		],
 		"vSelectableOctGrid": [

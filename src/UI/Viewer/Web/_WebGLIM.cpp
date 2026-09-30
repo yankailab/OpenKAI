@@ -329,8 +329,8 @@ namespace kai
 		const json &j = *m_pJ;
 		string source;
 		jKv(j, "PCLmapIn", source);
-		m_pPCLmap = dynamic_cast<PCLmap *>(static_cast<DataObjBase *>(pM->findDataObject(source)));
-		IF_Le_F(!m_pPCLmap, "PCLmap viewer source not found: " + source);
+		m_pPCLmapin = dynamic_cast<PCLmap *>(static_cast<DataObjBase *>(pM->findDataObject(source)));
+		IF_Le_F(!m_pPCLmapin, "PCLmap viewer source not found: " + source);
 		return true;
 	}
 	std::string _WebGLIM::hello() const
@@ -348,7 +348,7 @@ namespace kai
 	}
 	bool _WebGLIM::start()
 	{
-		IF_F(m_running || !m_pT || !m_pPCLmap);
+		IF_F(m_running || !m_pT || !m_pPCLmapin);
 		m_http = std::make_unique<HttpServer>();
 		m_stream = std::make_unique<webglim::Stream>(m_http->context(), hello(), m_maxClients);
 		m_tStamp = UINT64_MAX;
@@ -378,13 +378,13 @@ namespace kai
 	}
 	void _WebGLIM::publish()
 	{
-		if (m_pPCLmap->getTstamp() == m_tStamp)
+		if (m_pPCLmapin->getTstamp() == m_tStamp)
 		{
 			return;
 		}
 		std::vector<PCLmap::Submap> submaps;
 		uint64_t session;
-		const uint64_t timestamp = m_pPCLmap->get(submaps, session);
+		const uint64_t timestamp = m_pPCLmapin->get(submaps, session);
 		m_stream->publish(std::move(submaps), session, timestamp);
 		m_tStamp = timestamp;
 	}

@@ -13,7 +13,7 @@
 	"vBASE":["fastLio"],
 }
 "view":{
-	"class":"_WindowCV",
+	"class":"_OCVwindow",
 	"bON": false,
 "thread":{
 		"FPS":30,

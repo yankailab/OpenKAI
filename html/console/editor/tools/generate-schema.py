@@ -479,9 +479,6 @@ def adapters(records, files, constants, symbol):
     # InstanceMgr's switch is not read by the individual class.
     param('BASE',['bON'],'boolean','src/Instance/InstanceMgr.cpp:createAll',default=True,description='false disables this instance; true enables it.')
     param('DataObjBase',['type'],'string','src/Instance/InstanceMgr.cpp:createAll',default='dataObject',description='Create an independent DataObject rather than a worker module.')
-    # StateBase objects live under a keyed map, not in the module factory.
-    records['_StateControl']['_embedded'].append((['states','*'],'StateBase'))
-    records['_StateControl']['containers'].append({'path':['states'],'type':'object'})
     # A shared helper chooses keys at runtime and is called by both viewer classes.
     helper='src/UI/Viewer/SelectableOctGridSources.cpp:link'
     for name in ('_WebGeometry','_WebSelectableOctGrid','_ImGUIselectableOctGrid'):
@@ -491,8 +488,9 @@ def adapters(records, files, constants, symbol):
             param(name,[key],'array',helper)
             targets = ['_SelectableOctGrid'] if key == 'vSelectableOctGrid' else ['PCLframe','LineFrame']
             for target in targets:
-                dep(name,[key,'*',target],target,helper)
-                param(name,[key,'*',target],'string',helper,dependency=True)
+                input_key = target if key == 'vSelectableOctGrid' else target+'In'
+                dep(name,[key,'*',input_key],target,helper)
+                param(name,[key,'*',input_key],'string',helper,dependency=True)
             if key == 'vGeometry':
                 param(name,[key,'*','name'],'string',helper)
             for field,type_,default in [('bVisible','boolean',True),('matCol','array',[1,1,1,1]),('matLineWidth','number',1)]:
@@ -501,9 +499,9 @@ def adapters(records, files, constants, symbol):
             for field in fields:
                 param(name,[key,'*',field],'number' if field=='matPointSize' else 'integer',helper,**({'default':2} if field=='matPointSize' else {}))
     # Grid input names are read in loadConfig and resolved from a member in link.
-    dep('_OctreeGrid',['vPCLframes'],'PCLframe','src/Universe/Grid/_OctreeGrid.cpp:link',multiple=True)
+    dep('_OctreeGrid',['vPCLframesIn'],'PCLframe','src/Universe/Grid/_OctreeGrid.cpp:link',multiple=True)
     for parameter in records['_OctreeGrid']['parameters']:
-        if parameter['path'] == ['vPCLframes']:
+        if parameter['path'] == ['vPCLframesIn']:
             parameter['dependency'] = True
             parameter['extraction'] = 'audited-adapter'
     # Preserve the more specific runtime peer cast used by the routing consumer.
@@ -557,7 +555,7 @@ def adapters(records, files, constants, symbol):
             if name=='SelectableOctGridSources':
                 diagnostic['resolution']='Covered by the viewer adapters in this generator.'
             elif name=='_OctreeGrid' and diagnostic.get('expression')=='name' and diagnostic.get('kind')=='unresolved-module-reference':
-                diagnostic['resolution']='Covered by the vPCLframes DataObject adapter; names are loaded before link.'
+                diagnostic['resolution']='Covered by the vPCLframesIn DataObject adapter; names are loaded before link.'
             elif name=='_WebGeometry' and diagnostic.get('expression')=='*pConfig':
                 diagnostic['resolution']='Reads bON from the referenced module, not this instance.'
     # The field below is read by UUID-specific helpers rather than jKv.

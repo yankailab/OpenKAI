@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "438e87112ee7447e9c31683a70567571f6a582bb62c76c1908a5675b5d89a784",
+  "sourceDigest": "ba8773ae768c87671ab09bc341de8e069de31100aff12a8c8b24e8385348e6bf",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -31,7 +31,6 @@
     "Sensor/Distance",
     "Sensor/LiDAR",
     "Solver",
-    "State",
     "Swarm",
     "Tools",
     "Tracker",
@@ -5703,7 +5702,7 @@
     {
       "name": "_AutopilotBase",
       "category": "Autopilot",
-      "source": "src/Autopilot/_AutopilotBase.h:41",
+      "source": "src/Autopilot/_AutopilotBase.h:40",
       "baseClasses": [
         "_ReferenceFrame"
       ],
@@ -6972,7 +6971,7 @@
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:122",
           "typeEvidence": "key-convention",
           "cppVariable": "n",
-          "cppType": "m_pBBtrackI",
+          "cppType": "m_pBBtracki",
           "dependency": true
         },
         {
@@ -7429,7 +7428,7 @@
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:122",
           "typeEvidence": "key-convention",
           "cppVariable": "n",
-          "cppType": "m_pBBtrackI",
+          "cppType": "m_pBBtracki",
           "dependency": true
         },
         {
@@ -8818,7 +8817,7 @@
           ],
           "type": "string",
           "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:44",
+          "source": "src/Protocol/_ProtocolBase.cpp:43",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -8960,7 +8959,7 @@
           "targetClass": "_IObase",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:45",
+          "source": "src/Protocol/_ProtocolBase.cpp:44",
           "required": true,
           "containers": []
         },
@@ -10162,7 +10161,7 @@
     {
       "name": "BBoxStream",
       "category": "DataObject",
-      "source": "src/DataObject/BBoxStream.h:131",
+      "source": "src/DataObject/BBoxStream.h:152",
       "baseClasses": [
         "DataObjBase"
       ],
@@ -10211,7 +10210,7 @@
           "source": "src/DataObject/BBoxStream.cpp:24",
           "typeEvidence": "declaration",
           "cppVariable": "m_nBuf",
-          "cppType": "int",
+          "cppType": "uint32_t",
           "default": 1000
         },
         {
@@ -10461,7 +10460,7 @@
           "source": "src/DataObject/IMUstream.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_nBuf",
-          "cppType": "int",
+          "cppType": "uint32_t",
           "default": 1000
         },
         {
@@ -11083,7 +11082,7 @@
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:79",
+          "source": "src/Detector/_DetectorBase.cpp:80",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -11094,7 +11093,7 @@
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:74",
+          "source": "src/Detector/_DetectorBase.cpp:75",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -11252,7 +11251,7 @@
           ],
           "type": "array",
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:45",
+          "source": "src/Detector/_DetectorBase.cpp:46",
           "typeEvidence": "declaration",
           "cppVariable": "m_vClass",
           "cppType": "vector<string>"
@@ -11266,7 +11265,7 @@
           "targetClass": "BBoxStream",
           "multiple": false,
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:80",
+          "source": "src/Detector/_DetectorBase.cpp:81",
           "containers": []
         },
         {
@@ -11276,7 +11275,7 @@
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:75",
+          "source": "src/Detector/_DetectorBase.cpp:76",
           "containers": []
         }
       ],
@@ -11313,7 +11312,7 @@
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:79",
+          "source": "src/Detector/_DetectorBase.cpp:80",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -11324,7 +11323,7 @@
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:74",
+          "source": "src/Detector/_DetectorBase.cpp:75",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -11482,7 +11481,7 @@
           ],
           "type": "array",
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:45",
+          "source": "src/Detector/_DetectorBase.cpp:46",
           "typeEvidence": "declaration",
           "cppVariable": "m_vClass",
           "cppType": "vector<string>"
@@ -11496,7 +11495,7 @@
           "targetClass": "BBoxStream",
           "multiple": false,
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:80",
+          "source": "src/Detector/_DetectorBase.cpp:81",
           "containers": []
         },
         {
@@ -11506,7 +11505,7 @@
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:75",
+          "source": "src/Detector/_DetectorBase.cpp:76",
           "containers": []
         }
       ],
@@ -11542,7 +11541,7 @@
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:79",
+          "source": "src/Detector/_DetectorBase.cpp:80",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -11553,7 +11552,7 @@
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:74",
+          "source": "src/Detector/_DetectorBase.cpp:75",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -11687,7 +11686,7 @@
           ],
           "type": "array",
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:45",
+          "source": "src/Detector/_DetectorBase.cpp:46",
           "typeEvidence": "declaration",
           "cppVariable": "m_vClass",
           "cppType": "vector<string>"
@@ -11701,7 +11700,7 @@
           "targetClass": "BBoxStream",
           "multiple": false,
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:80",
+          "source": "src/Detector/_DetectorBase.cpp:81",
           "containers": []
         },
         {
@@ -11711,7 +11710,7 @@
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:75",
+          "source": "src/Detector/_DetectorBase.cpp:76",
           "containers": []
         }
       ],
@@ -11742,7 +11741,7 @@
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:79",
+          "source": "src/Detector/_DetectorBase.cpp:80",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -11753,7 +11752,7 @@
           ],
           "type": "string",
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:74",
+          "source": "src/Detector/_DetectorBase.cpp:75",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -11971,7 +11970,7 @@
           ],
           "type": "array",
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:45",
+          "source": "src/Detector/_DetectorBase.cpp:46",
           "typeEvidence": "declaration",
           "cppVariable": "m_vClass",
           "cppType": "vector<string>",
@@ -12001,7 +12000,7 @@
           "targetClass": "BBoxStream",
           "multiple": false,
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:80",
+          "source": "src/Detector/_DetectorBase.cpp:81",
           "containers": []
         },
         {
@@ -12011,7 +12010,7 @@
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_DetectorBase",
-          "source": "src/Detector/_DetectorBase.cpp:75",
+          "source": "src/Detector/_DetectorBase.cpp:76",
           "containers": []
         }
       ],
@@ -13813,7 +13812,7 @@
     {
       "name": "Modules",
       "category": "Instance",
-      "source": "src/Instance/Modules.h:280",
+      "source": "src/Instance/Modules.h:275",
       "baseClasses": [],
       "parameters": [],
       "dependencies": [],
@@ -14466,7 +14465,7 @@
           ],
           "type": "string",
           "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:44",
+          "source": "src/Protocol/_ProtocolBase.cpp:43",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -14596,7 +14595,7 @@
           "targetClass": "_IObase",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:45",
+          "source": "src/Protocol/_ProtocolBase.cpp:44",
           "required": true,
           "containers": []
         },
@@ -14989,7 +14988,7 @@
           ],
           "type": "string",
           "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:44",
+          "source": "src/Protocol/_ProtocolBase.cpp:43",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -15143,7 +15142,7 @@
           "targetClass": "_IObase",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:45",
+          "source": "src/Protocol/_ProtocolBase.cpp:44",
           "required": true,
           "containers": []
         }
@@ -15663,7 +15662,7 @@
           ],
           "type": "string",
           "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:44",
+          "source": "src/Protocol/_ProtocolBase.cpp:43",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -15781,7 +15780,7 @@
           "targetClass": "_IObase",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:45",
+          "source": "src/Protocol/_ProtocolBase.cpp:44",
           "required": true,
           "containers": []
         }
@@ -15823,7 +15822,7 @@
           ],
           "type": "string",
           "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:44",
+          "source": "src/Protocol/_ProtocolBase.cpp:43",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -15976,7 +15975,7 @@
           "targetClass": "_IObase",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:45",
+          "source": "src/Protocol/_ProtocolBase.cpp:44",
           "required": true,
           "containers": []
         }
@@ -16018,7 +16017,7 @@
           ],
           "type": "string",
           "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:44",
+          "source": "src/Protocol/_ProtocolBase.cpp:43",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -16184,7 +16183,7 @@
           "targetClass": "_IObase",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:45",
+          "source": "src/Protocol/_ProtocolBase.cpp:44",
           "required": true,
           "containers": []
         }
@@ -16490,7 +16489,7 @@
           ],
           "type": "string",
           "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:44",
+          "source": "src/Protocol/_ProtocolBase.cpp:43",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -16656,7 +16655,7 @@
           "targetClass": "_IObase",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:45",
+          "source": "src/Protocol/_ProtocolBase.cpp:44",
           "required": true,
           "containers": []
         },
@@ -16708,7 +16707,7 @@
           ],
           "type": "string",
           "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:44",
+          "source": "src/Protocol/_ProtocolBase.cpp:43",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -16838,7 +16837,7 @@
           "targetClass": "_IObase",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:45",
+          "source": "src/Protocol/_ProtocolBase.cpp:44",
           "required": true,
           "containers": []
         }
@@ -17686,19 +17685,29 @@
       "parameters": [
         {
           "path": [
-            "IMUstream"
+            "IMUstreamIn"
           ],
           "type": "string",
           "declaredIn": "_SLAMbase",
           "source": "src/SLAM/_SLAMbase.cpp:54",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
           "path": [
-            "PCLframe"
+            "PCLframeIn"
+          ],
+          "type": "string",
+          "declaredIn": "_SLAMbase",
+          "source": "src/SLAM/_SLAMbase.cpp:49",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "PCLframeOut"
           ],
           "type": "string",
           "declaredIn": "_GLIM",
@@ -17710,19 +17719,7 @@
         },
         {
           "path": [
-            "PCLframeIn"
-          ],
-          "type": "string",
-          "declaredIn": "_SLAMbase",
-          "source": "src/SLAM/_SLAMbase.cpp:49",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "PCLmap"
+            "PCLmapOut"
           ],
           "type": "string",
           "declaredIn": "_GLIM",
@@ -17952,23 +17949,12 @@
       "dependencies": [
         {
           "path": [
-            "IMUstream"
+            "IMUstreamIn"
           ],
           "targetClass": "IMUstream",
           "multiple": false,
           "declaredIn": "_SLAMbase",
           "source": "src/SLAM/_SLAMbase.cpp:55",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "PCLframe"
-          ],
-          "targetClass": "PCLframe",
-          "multiple": false,
-          "declaredIn": "_GLIM",
-          "source": "src/SLAM/_GLIM.cpp:109",
           "required": true,
           "containers": []
         },
@@ -17985,7 +17971,18 @@
         },
         {
           "path": [
-            "PCLmap"
+            "PCLframeOut"
+          ],
+          "targetClass": "PCLframe",
+          "multiple": false,
+          "declaredIn": "_GLIM",
+          "source": "src/SLAM/_GLIM.cpp:109",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "PCLmapOut"
           ],
           "targetClass": "PCLmap",
           "multiple": false,
@@ -18023,14 +18020,13 @@
       "parameters": [
         {
           "path": [
-            "IMUstream"
+            "IMUstreamIn"
           ],
           "type": "string",
           "declaredIn": "_SLAMbase",
           "source": "src/SLAM/_SLAMbase.cpp:54",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
@@ -18040,9 +18036,8 @@
           "type": "string",
           "declaredIn": "_SLAMbase",
           "source": "src/SLAM/_SLAMbase.cpp:49",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
@@ -18170,7 +18165,7 @@
       "dependencies": [
         {
           "path": [
-            "IMUstream"
+            "IMUstreamIn"
           ],
           "targetClass": "IMUstream",
           "multiple": false,
@@ -19424,7 +19419,7 @@
       "parameters": [
         {
           "path": [
-            "IMUstream"
+            "IMUstreamOut"
           ],
           "type": "string",
           "declaredIn": "_Livox2",
@@ -19436,7 +19431,7 @@
         },
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "type": "string",
           "declaredIn": "_Livox2",
@@ -19967,7 +19962,7 @@
       "dependencies": [
         {
           "path": [
-            "IMUstream"
+            "IMUstreamOut"
           ],
           "targetClass": "IMUstream",
           "multiple": false,
@@ -19978,7 +19973,7 @@
         },
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
@@ -20107,7 +20102,7 @@
       "parameters": [
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "type": "string",
           "declaredIn": "_RoboSenseAiry",
@@ -20270,7 +20265,7 @@
       "dependencies": [
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
@@ -20552,431 +20547,6 @@
           "ifdef WITH_SOLVER"
         ]
       ],
-      "configurable": true
-    },
-    {
-      "name": "_StateControl",
-      "category": "State",
-      "source": "src/State/_StateControl.h:18",
-      "baseClasses": [
-        "_ModuleBase"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "start"
-          ],
-          "type": "string",
-          "declaredIn": "_StateControl",
-          "source": "src/State/_StateControl.cpp:64",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_start",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "states"
-          ],
-          "type": "object",
-          "declaredIn": "_StateControl",
-          "source": "src/State/_StateControl.cpp:38"
-        },
-        {
-          "path": [
-            "states",
-            "*",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "StateBase"
-        },
-        {
-          "path": [
-            "states",
-            "*",
-            "next"
-          ],
-          "type": "string",
-          "declaredIn": "StateBase",
-          "source": "src/State/StateBase.cpp:21",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_next",
-          "cppType": "string",
-          "default": "",
-          "embeddedClass": "StateBase"
-        },
-        {
-          "path": [
-            "states",
-            "*",
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "StateBase"
-        },
-        {
-          "path": [
-            "states",
-            "*",
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "StateBase"
-        },
-        {
-          "path": [
-            "states",
-            "*",
-            "vModulePause"
-          ],
-          "type": "array",
-          "declaredIn": "StateBase",
-          "source": "src/State/StateBase.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "vS",
-          "cppType": "vector<string>",
-          "embeddedClass": "StateBase",
-          "dependency": true
-        },
-        {
-          "path": [
-            "states",
-            "*",
-            "vModuleResume"
-          ],
-          "type": "array",
-          "declaredIn": "StateBase",
-          "source": "src/State/StateBase.cpp:47",
-          "typeEvidence": "declaration",
-          "cppVariable": "vS",
-          "cppType": "vector<string>",
-          "embeddedClass": "StateBase",
-          "dependency": true
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        }
-      ],
-      "dependencies": [
-        {
-          "path": [
-            "states",
-            "*",
-            "vModulePause"
-          ],
-          "targetClass": "_ModuleBase",
-          "multiple": true,
-          "declaredIn": "StateBase",
-          "source": "src/State/StateBase.cpp:59",
-          "embeddedClass": "StateBase",
-          "containers": [
-            {
-              "path": [
-                "states"
-              ],
-              "type": "object"
-            }
-          ]
-        },
-        {
-          "path": [
-            "states",
-            "*",
-            "vModuleResume"
-          ],
-          "targetClass": "_ModuleBase",
-          "multiple": true,
-          "declaredIn": "StateBase",
-          "source": "src/State/StateBase.cpp:50",
-          "embeddedClass": "StateBase",
-          "containers": [
-            {
-              "path": [
-                "states"
-              ],
-              "type": "object"
-            }
-          ]
-        }
-      ],
-      "containers": [
-        {
-          "path": [
-            "states"
-          ],
-          "type": "object"
-        },
-        {
-          "path": [
-            "states",
-            "*",
-            "thread"
-          ],
-          "type": "object",
-          "embeddedClass": "StateBase"
-        },
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": true,
-      "buildConditions": [
-        [
-          "ifdef WITH_STATE"
-        ]
-      ],
-      "configurable": true
-    },
-    {
-      "name": "StateBase",
-      "category": "State",
-      "source": "src/State/StateBase.h:21",
-      "baseClasses": [
-        "_ModuleBase"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": "StateBase"
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "next"
-          ],
-          "type": "string",
-          "declaredIn": "StateBase",
-          "source": "src/State/StateBase.cpp:21",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_next",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vModulePause"
-          ],
-          "type": "array",
-          "declaredIn": "StateBase",
-          "source": "src/State/StateBase.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "vS",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "vModuleResume"
-          ],
-          "type": "array",
-          "declaredIn": "StateBase",
-          "source": "src/State/StateBase.cpp:47",
-          "typeEvidence": "declaration",
-          "cppVariable": "vS",
-          "cppType": "vector<string>",
-          "dependency": true
-        }
-      ],
-      "dependencies": [
-        {
-          "path": [
-            "vModulePause"
-          ],
-          "targetClass": "_ModuleBase",
-          "multiple": true,
-          "declaredIn": "StateBase",
-          "source": "src/State/StateBase.cpp:59",
-          "containers": []
-        },
-        {
-          "path": [
-            "vModuleResume"
-          ],
-          "targetClass": "_ModuleBase",
-          "multiple": true,
-          "declaredIn": "StateBase",
-          "source": "src/State/StateBase.cpp:50",
-          "containers": []
-        }
-      ],
-      "containers": [
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
       "configurable": true
     },
     {
@@ -21335,22 +20905,22 @@
       "parameters": [
         {
           "path": [
-            "PCLframe"
+            "PCLframeIn"
           ],
           "type": "string",
           "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:54",
+          "source": "src/Tools/_LCalign.cpp:59",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
         },
         {
           "path": [
-            "PCLframeIn"
+            "PCLframeOut"
           ],
           "type": "string",
           "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:59",
+          "source": "src/Tools/_LCalign.cpp:54",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -21618,23 +21188,23 @@
       "dependencies": [
         {
           "path": [
-            "PCLframe"
-          ],
-          "targetClass": "PCLframe",
-          "multiple": false,
-          "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:55",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
             "PCLframeIn"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
           "declaredIn": "_LCalign",
           "source": "src/Tools/_LCalign.cpp:60",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "PCLframeOut"
+          ],
+          "targetClass": "PCLframe",
+          "multiple": false,
+          "declaredIn": "_LCalign",
+          "source": "src/Tools/_LCalign.cpp:55",
           "required": true,
           "containers": []
         },
@@ -22139,299 +21709,33 @@
       "configurable": true
     },
     {
-      "name": "_GstOutput",
+      "name": "_OCVwindow",
       "category": "UI",
-      "source": "src/UI/_GstOutput.h:16",
-      "baseClasses": [
-        "_UIbase"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "RGBframeIn"
-          ],
-          "type": "string",
-          "declaredIn": "_UIbase",
-          "source": "src/UI/_UIbase.cpp:43",
-          "typeEvidence": "declaration",
-          "cppVariable": "name",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "gstOutput"
-          ],
-          "type": "string",
-          "declaredIn": "_GstOutput",
-          "source": "src/UI/_GstOutput.cpp:30",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_gstOutput",
-          "cppType": "string",
-          "default": "appsrc ! videoconvert ! fbdevsink"
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vSize"
-          ],
-          "type": "array",
-          "declaredIn": "_GstOutput",
-          "source": "src/UI/_GstOutput.cpp:27",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vSize",
-          "cppType": "Vector2i",
-          "default": [
-            1280,
-            720
-          ]
-        }
-      ],
-      "dependencies": [
-        {
-          "path": [
-            "RGBframeIn"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_UIbase",
-          "source": "src/UI/_UIbase.cpp:44",
-          "required": true,
-          "containers": []
-        }
-      ],
-      "containers": [
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": true,
-      "buildConditions": [
-        [
-          "ifdef WITH_UI",
-          "ifdef USE_OPENCV"
-        ]
-      ],
-      "configurable": true
-    },
-    {
-      "name": "_UIbase",
-      "category": "UI",
-      "source": "src/UI/_UIbase.h:16",
+      "source": "src/UI/_OCVwindow.h:21",
       "baseClasses": [
         "_ModuleBase"
       ],
       "parameters": [
         {
           "path": [
-            "RGBframeIn"
+            "BBoxStreamIn"
           ],
           "type": "string",
-          "declaredIn": "_UIbase",
-          "source": "src/UI/_UIbase.cpp:43",
-          "typeEvidence": "declaration",
-          "cppVariable": "name",
-          "cppType": "string",
+          "declaredIn": "_OCVwindow",
+          "source": "src/UI/_OCVwindow.cpp:88",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
           "dependency": true
         },
         {
           "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        }
-      ],
-      "dependencies": [
-        {
-          "path": [
-            "RGBframeIn"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_UIbase",
-          "source": "src/UI/_UIbase.cpp:44",
-          "required": true,
-          "containers": []
-        }
-      ],
-      "containers": [
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": true
-    },
-    {
-      "name": "_WindowCV",
-      "category": "UI",
-      "source": "src/UI/_WindowCV.h:17",
-      "baseClasses": [
-        "_UIbase"
-      ],
-      "parameters": [
-        {
-          "path": [
             "RGBframeIn"
           ],
           "type": "string",
-          "declaredIn": "_UIbase",
-          "source": "src/UI/_UIbase.cpp:43",
-          "typeEvidence": "declaration",
-          "cppVariable": "name",
-          "cppType": "string",
+          "declaredIn": "_OCVwindow",
+          "source": "src/UI/_OCVwindow.cpp:84",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
           "dependency": true
         },
         {
@@ -22439,8 +21743,8 @@
             "bFullScreen"
           ],
           "type": "boolean",
-          "declaredIn": "_WindowCV",
-          "source": "src/UI/_WindowCV.cpp:27",
+          "declaredIn": "_OCVwindow",
+          "source": "src/UI/_OCVwindow.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_bFullScreen",
           "cppType": "bool",
@@ -22483,6 +21787,18 @@
         },
         {
           "path": [
+            "gstOutput"
+          ],
+          "type": "string",
+          "declaredIn": "_OCVwindow",
+          "source": "src/UI/_OCVwindow.cpp:46",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_gstOutput",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
             "name"
           ],
           "type": "string",
@@ -22526,8 +21842,8 @@
             "vSize"
           ],
           "type": "array",
-          "declaredIn": "_WindowCV",
-          "source": "src/UI/_WindowCV.cpp:28",
+          "declaredIn": "_OCVwindow",
+          "source": "src/UI/_OCVwindow.cpp:42",
           "typeEvidence": "declaration",
           "cppVariable": "m_vSize",
           "cppType": "Vector2i",
@@ -22540,12 +21856,22 @@
       "dependencies": [
         {
           "path": [
+            "BBoxStreamIn"
+          ],
+          "targetClass": "BBoxStream",
+          "multiple": false,
+          "declaredIn": "_OCVwindow",
+          "source": "src/UI/_OCVwindow.cpp:89",
+          "containers": []
+        },
+        {
+          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
-          "declaredIn": "_UIbase",
-          "source": "src/UI/_UIbase.cpp:44",
+          "declaredIn": "_OCVwindow",
+          "source": "src/UI/_OCVwindow.cpp:85",
           "required": true,
           "containers": []
         }
@@ -23019,7 +22345,7 @@
           "path": [
             "vGeometry",
             "*",
-            "LineFrame"
+            "LineFrameIn"
           ],
           "type": "string",
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
@@ -23031,7 +22357,7 @@
           "path": [
             "vGeometry",
             "*",
-            "PCLframe"
+            "PCLframeIn"
           ],
           "type": "string",
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
@@ -23241,7 +22567,7 @@
           "path": [
             "vGeometry",
             "*",
-            "LineFrame"
+            "LineFrameIn"
           ],
           "targetClass": "LineFrame",
           "multiple": false,
@@ -23261,7 +22587,7 @@
           "path": [
             "vGeometry",
             "*",
-            "PCLframe"
+            "PCLframeIn"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
@@ -23769,7 +23095,7 @@
           "path": [
             "vGeometry",
             "*",
-            "LineFrame"
+            "LineFrameIn"
           ],
           "type": "string",
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
@@ -23781,7 +23107,7 @@
           "path": [
             "vGeometry",
             "*",
-            "PCLframe"
+            "PCLframeIn"
           ],
           "type": "string",
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
@@ -23930,7 +23256,7 @@
           "path": [
             "vGeometry",
             "*",
-            "LineFrame"
+            "LineFrameIn"
           ],
           "targetClass": "LineFrame",
           "multiple": false,
@@ -23950,7 +23276,7 @@
           "path": [
             "vGeometry",
             "*",
-            "PCLframe"
+            "PCLframeIn"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
@@ -24821,7 +24147,7 @@
           "path": [
             "vGeometry",
             "*",
-            "LineFrame"
+            "LineFrameIn"
           ],
           "type": "string",
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
@@ -24833,7 +24159,7 @@
           "path": [
             "vGeometry",
             "*",
-            "PCLframe"
+            "PCLframeIn"
           ],
           "type": "string",
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
@@ -25055,7 +24381,7 @@
           "path": [
             "vGeometry",
             "*",
-            "LineFrame"
+            "LineFrameIn"
           ],
           "targetClass": "LineFrame",
           "multiple": false,
@@ -25075,7 +24401,7 @@
           "path": [
             "vGeometry",
             "*",
-            "PCLframe"
+            "PCLframeIn"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
@@ -25630,7 +24956,7 @@
       "parameters": [
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "type": "string",
           "declaredIn": "_PCfile",
@@ -25752,7 +25078,7 @@
       "dependencies": [
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
@@ -26161,7 +25487,7 @@
       "parameters": [
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "type": "string",
           "declaredIn": "_PCmerge",
@@ -26270,7 +25596,7 @@
         },
         {
           "path": [
-            "vPCLframes"
+            "vPCLframesIn"
           ],
           "type": "array",
           "declaredIn": "_PCmerge",
@@ -26296,7 +25622,7 @@
       "dependencies": [
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
@@ -26307,7 +25633,7 @@
         },
         {
           "path": [
-            "vPCLframes"
+            "vPCLframesIn"
           ],
           "targetClass": "PCLframe",
           "multiple": true,
@@ -26343,7 +25669,7 @@
       "parameters": [
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "type": "string",
           "declaredIn": "_PCrecv",
@@ -26478,7 +25804,7 @@
       "dependencies": [
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
@@ -26870,22 +26196,22 @@
       "parameters": [
         {
           "path": [
-            "PCLframe"
+            "PCLframeIn"
           ],
           "type": "string",
           "declaredIn": "_PCtransform",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp:123",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp:128",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
         },
         {
           "path": [
-            "PCLframeIn"
+            "PCLframeOut"
           ],
           "type": "string",
           "declaredIn": "_PCtransform",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp:128",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp:123",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -27038,23 +26364,23 @@
       "dependencies": [
         {
           "path": [
-            "PCLframe"
-          ],
-          "targetClass": "PCLframe",
-          "multiple": false,
-          "declaredIn": "_PCtransform",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp:124",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
             "PCLframeIn"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
           "declaredIn": "_PCtransform",
           "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp:129",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "PCLframeOut"
+          ],
+          "targetClass": "PCLframe",
+          "multiple": false,
+          "declaredIn": "_PCtransform",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp:124",
           "required": true,
           "containers": []
         }
@@ -27086,22 +26412,22 @@
       "parameters": [
         {
           "path": [
-            "PCLframe"
+            "PCLframeIn"
           ],
           "type": "string",
           "declaredIn": "_PCregistCol",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:63",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:68",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
         },
         {
           "path": [
-            "PCLframeIn"
+            "PCLframeOut"
           ],
           "type": "string",
           "declaredIn": "_PCregistCol",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:68",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:63",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -27303,23 +26629,23 @@
       "dependencies": [
         {
           "path": [
-            "PCLframe"
-          ],
-          "targetClass": "PCLframe",
-          "multiple": false,
-          "declaredIn": "_PCregistCol",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:64",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
             "PCLframeIn"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
           "declaredIn": "_PCregistCol",
           "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:69",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "PCLframeOut"
+          ],
+          "targetClass": "PCLframe",
+          "multiple": false,
+          "declaredIn": "_PCregistCol",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:64",
           "required": true,
           "containers": []
         }
@@ -27352,26 +26678,24 @@
       "parameters": [
         {
           "path": [
-            "PCLframeSrc"
+            "PCLframeSrcIn"
           ],
           "type": "string",
           "declaredIn": "_PCregistGlobal",
           "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:58",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
           "path": [
-            "PCLframeTgt"
+            "PCLframeTgtIn"
           ],
           "type": "string",
           "declaredIn": "_PCregistGlobal",
           "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:63",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
@@ -27381,9 +26705,9 @@
           "type": "string",
           "declaredIn": "_PCregistGlobal",
           "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:68",
-          "typeEvidence": "declaration",
+          "typeEvidence": "key-convention",
           "cppVariable": "n",
-          "cppType": "string",
+          "cppType": "m_pTgti",
           "dependency": true
         },
         {
@@ -27513,7 +26837,7 @@
       "dependencies": [
         {
           "path": [
-            "PCLframeSrc"
+            "PCLframeSrcIn"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
@@ -27524,7 +26848,7 @@
         },
         {
           "path": [
-            "PCLframeTgt"
+            "PCLframeTgtIn"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
@@ -27573,26 +26897,24 @@
       "parameters": [
         {
           "path": [
-            "PCLframeSrc"
+            "PCLframeSrcIn"
           ],
           "type": "string",
           "declaredIn": "_PCregistICP",
           "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:54",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
           "path": [
-            "PCLframeTgt"
+            "PCLframeTgtIn"
           ],
           "type": "string",
           "declaredIn": "_PCregistICP",
           "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:59",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
@@ -27602,9 +26924,9 @@
           "type": "string",
           "declaredIn": "_PCregistICP",
           "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:64",
-          "typeEvidence": "declaration",
+          "typeEvidence": "key-convention",
           "cppVariable": "n",
-          "cppType": "string",
+          "cppType": "m_pTgti",
           "dependency": true
         },
         {
@@ -27709,7 +27031,7 @@
       "dependencies": [
         {
           "path": [
-            "PCLframeSrc"
+            "PCLframeSrcIn"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
@@ -27720,7 +27042,7 @@
         },
         {
           "path": [
-            "PCLframeTgt"
+            "PCLframeTgtIn"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
@@ -28014,13 +27336,13 @@
         },
         {
           "path": [
-            "vPCLframes"
+            "vPCLframesIn"
           ],
           "type": "array",
           "declaredIn": "_OctreeGrid",
           "source": "src/Universe/Grid/_OctreeGrid.cpp:128",
           "typeEvidence": "declaration",
-          "cppVariable": "m_vPCLframes",
+          "cppVariable": "m_vPCLframesIn",
           "cppType": "vector<string>",
           "dependency": true,
           "extraction": "audited-adapter"
@@ -28069,7 +27391,7 @@
       "dependencies": [
         {
           "path": [
-            "vPCLframes"
+            "vPCLframesIn"
           ],
           "targetClass": "PCLframe",
           "multiple": true,
@@ -28092,7 +27414,7 @@
           "source": "src/Universe/Grid/_OctreeGrid.cpp:177",
           "kind": "unresolved-module-reference",
           "expression": "name",
-          "resolution": "Covered by the vPCLframes DataObject adapter; names are loaded before link."
+          "resolution": "Covered by the vPCLframesIn DataObject adapter; names are loaded before link."
         }
       ],
       "creatable": true,
@@ -28275,13 +27597,13 @@
         },
         {
           "path": [
-            "vPCLframes"
+            "vPCLframesIn"
           ],
           "type": "array",
           "declaredIn": "_OctreeGrid",
           "source": "src/Universe/Grid/_OctreeGrid.cpp:128",
           "typeEvidence": "declaration",
-          "cppVariable": "m_vPCLframes",
+          "cppVariable": "m_vPCLframesIn",
           "cppType": "vector<string>",
           "dependency": true,
           "extraction": "audited-adapter"
@@ -28340,7 +27662,7 @@
       "dependencies": [
         {
           "path": [
-            "vPCLframes"
+            "vPCLframesIn"
           ],
           "targetClass": "PCLframe",
           "multiple": true,
@@ -28383,7 +27705,7 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBbase",
@@ -28535,7 +27857,7 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -28573,7 +27895,7 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBbase",
@@ -28737,7 +28059,7 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -28775,7 +28097,7 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBbase",
@@ -28963,7 +28285,7 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -29001,7 +28323,7 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBbase",
@@ -29153,7 +28475,7 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -29191,7 +28513,7 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBbase",
@@ -29331,7 +28653,7 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -29364,7 +28686,7 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBbase",
@@ -29516,7 +28838,7 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -29554,18 +28876,6 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "type": "string",
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:54",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "type": "string",
@@ -29573,6 +28883,18 @@
           "source": "src/Vision/Pipeline/_ColorConvert.cpp:48",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:54",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
           "dependency": true
         },
         {
@@ -29717,23 +29039,23 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_ColorConvert",
           "source": "src/Vision/Pipeline/_ColorConvert.cpp:49",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "targetClass": "RGBframe",
+          "multiple": false,
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:55",
           "required": true,
           "containers": []
         }
@@ -29766,18 +29088,6 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "type": "string",
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:54",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "type": "string",
@@ -29785,6 +29095,18 @@
           "source": "src/Vision/Pipeline/_Contrast.cpp:50",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:54",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
           "dependency": true
         },
         {
@@ -29941,23 +29263,23 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_Contrast",
           "source": "src/Vision/Pipeline/_Contrast.cpp:51",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "targetClass": "RGBframe",
+          "multiple": false,
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:55",
           "required": true,
           "containers": []
         }
@@ -29990,18 +29312,6 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "type": "string",
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:54",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "type": "string",
@@ -30009,6 +29319,18 @@
           "source": "src/Vision/Pipeline/_Crop.cpp:49",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:54",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
           "dependency": true
         },
         {
@@ -30153,23 +29475,23 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_Crop",
           "source": "src/Vision/Pipeline/_Crop.cpp:50",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "targetClass": "RGBframe",
+          "multiple": false,
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:55",
           "required": true,
           "containers": []
         }
@@ -30202,18 +29524,6 @@
       "parameters": [
         {
           "path": [
-            "Dframe"
-          ],
-          "type": "string",
-          "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:96",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
             "DframeIn"
           ],
           "type": "string",
@@ -30225,7 +29535,19 @@
         },
         {
           "path": [
-            "IMUframe"
+            "DframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBDbase",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:96",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "IMUstreamOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -30237,7 +29559,7 @@
         },
         {
           "path": [
-            "IRframe"
+            "IRframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -30249,7 +29571,7 @@
         },
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -30261,7 +29583,7 @@
         },
         {
           "path": [
-            "RGBDframe"
+            "RGBDframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -30273,7 +29595,7 @@
         },
         {
           "path": [
-            "RGBDtDframe"
+            "RGBDtDframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -30285,7 +29607,7 @@
         },
         {
           "path": [
-            "RGBDtRGBframe"
+            "RGBDtRGBframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -30297,7 +29619,7 @@
         },
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBbase",
@@ -30656,17 +29978,6 @@
       "dependencies": [
         {
           "path": [
-            "Dframe"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:97",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
             "DframeIn"
           ],
           "targetClass": "RGBframe",
@@ -30678,7 +29989,18 @@
         },
         {
           "path": [
-            "IMUframe"
+            "DframeOut"
+          ],
+          "targetClass": "RGBframe",
+          "multiple": false,
+          "declaredIn": "_RGBDbase",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:97",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "IMUstreamOut"
           ],
           "targetClass": "IMUstream",
           "multiple": false,
@@ -30689,7 +30011,7 @@
         },
         {
           "path": [
-            "IRframe"
+            "IRframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -30700,7 +30022,7 @@
         },
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
@@ -30711,7 +30033,7 @@
         },
         {
           "path": [
-            "RGBDframe"
+            "RGBDframeOut"
           ],
           "targetClass": "RGBDframe",
           "multiple": false,
@@ -30722,7 +30044,7 @@
         },
         {
           "path": [
-            "RGBDtDframe"
+            "RGBDtDframeOut"
           ],
           "targetClass": "RGBDframe",
           "multiple": false,
@@ -30733,7 +30055,7 @@
         },
         {
           "path": [
-            "RGBDtRGBframe"
+            "RGBDtRGBframeOut"
           ],
           "targetClass": "RGBDframe",
           "multiple": false,
@@ -30744,7 +30066,7 @@
         },
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -30782,18 +30104,6 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "type": "string",
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:54",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "type": "string",
@@ -30801,6 +30111,18 @@
           "source": "src/Vision/Pipeline/_Erode.cpp:79",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:54",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
           "dependency": true
         },
         {
@@ -31019,23 +30341,23 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_Erode",
           "source": "src/Vision/Pipeline/_Erode.cpp:80",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "targetClass": "RGBframe",
+          "multiple": false,
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:55",
           "required": true,
           "containers": []
         }
@@ -31074,18 +30396,6 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "type": "string",
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:54",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "type": "string",
@@ -31093,6 +30403,18 @@
           "source": "src/Vision/Pipeline/_HistEqualize.cpp:42",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:54",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
           "dependency": true
         },
         {
@@ -31225,23 +30547,23 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_HistEqualize",
           "source": "src/Vision/Pipeline/_HistEqualize.cpp:43",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "targetClass": "RGBframe",
+          "multiple": false,
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:55",
           "required": true,
           "containers": []
         }
@@ -31274,18 +30596,6 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "type": "string",
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:54",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "type": "string",
@@ -31293,6 +30603,18 @@
           "source": "src/Vision/Pipeline/_InRange.cpp:52",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:54",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
           "dependency": true
         },
         {
@@ -31457,23 +30779,23 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_InRange",
           "source": "src/Vision/Pipeline/_InRange.cpp:53",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "targetClass": "RGBframe",
+          "multiple": false,
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:55",
           "required": true,
           "containers": []
         }
@@ -31506,18 +30828,6 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "type": "string",
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:54",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "type": "string",
@@ -31525,6 +30835,18 @@
           "source": "src/Vision/Pipeline/_Invert.cpp:42",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:54",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
           "dependency": true
         },
         {
@@ -31657,23 +30979,23 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_Invert",
           "source": "src/Vision/Pipeline/_Invert.cpp:43",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "targetClass": "RGBframe",
+          "multiple": false,
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:55",
           "required": true,
           "containers": []
         }
@@ -31706,18 +31028,6 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "type": "string",
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:54",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "type": "string",
@@ -31729,13 +31039,25 @@
         },
         {
           "path": [
-            "RGBframeMask"
+            "RGBframeMaskIn"
           ],
           "type": "string",
           "declaredIn": "_Mask",
           "source": "src/Vision/Pipeline/_Mask.cpp:48",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:54",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
           "dependency": true
         },
         {
@@ -31868,17 +31190,6 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
@@ -31890,12 +31201,23 @@
         },
         {
           "path": [
-            "RGBframeMask"
+            "RGBframeMaskIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_Mask",
           "source": "src/Vision/Pipeline/_Mask.cpp:49",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "targetClass": "RGBframe",
+          "multiple": false,
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:55",
           "required": true,
           "containers": []
         }
@@ -31928,18 +31250,6 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "type": "string",
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:54",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "type": "string",
@@ -31947,6 +31257,18 @@
           "source": "src/Vision/Pipeline/_Morphology.cpp:81",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:54",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
           "dependency": true
         },
         {
@@ -32178,23 +31500,23 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_Morphology",
           "source": "src/Vision/Pipeline/_Morphology.cpp:82",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "targetClass": "RGBframe",
+          "multiple": false,
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:55",
           "required": true,
           "containers": []
         }
@@ -32233,18 +31555,6 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "type": "string",
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:54",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "type": "string",
@@ -32252,6 +31562,18 @@
           "source": "src/Vision/Pipeline/_Remap.cpp:45",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:54",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
           "dependency": true
         },
         {
@@ -32327,18 +31649,6 @@
         },
         {
           "path": [
-            "fCalib"
-          ],
-          "type": "string",
-          "declaredIn": "_Remap",
-          "source": "src/Vision/Pipeline/_Remap.cpp:50",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fCalib",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
             "name"
           ],
           "type": "string",
@@ -32396,23 +31706,23 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_Remap",
           "source": "src/Vision/Pipeline/_Remap.cpp:46",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "targetClass": "RGBframe",
+          "multiple": false,
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:55",
           "required": true,
           "containers": []
         }
@@ -32445,18 +31755,6 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "type": "string",
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:54",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "type": "string",
@@ -32464,6 +31762,18 @@
           "source": "src/Vision/Pipeline/_Resize.cpp:42",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:54",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
           "dependency": true
         },
         {
@@ -32596,23 +31906,23 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_Resize",
           "source": "src/Vision/Pipeline/_Resize.cpp:43",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "targetClass": "RGBframe",
+          "multiple": false,
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:55",
           "required": true,
           "containers": []
         }
@@ -32645,18 +31955,6 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "type": "string",
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:54",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "type": "string",
@@ -32664,6 +31962,18 @@
           "source": "src/Vision/Pipeline/_Rotate.cpp:48",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:54",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
           "dependency": true
         },
         {
@@ -32808,23 +32118,23 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_Rotate",
           "source": "src/Vision/Pipeline/_Rotate.cpp:49",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "targetClass": "RGBframe",
+          "multiple": false,
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:55",
           "required": true,
           "containers": []
         }
@@ -32857,18 +32167,6 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "type": "string",
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:54",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "type": "string",
@@ -32876,6 +32174,18 @@
           "source": "src/Vision/Pipeline/_Thermal2RGB.cpp:49",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:54",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
           "dependency": true
         },
         {
@@ -33023,23 +32333,23 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_Thermal2RGB",
           "source": "src/Vision/Pipeline/_Thermal2RGB.cpp:50",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "targetClass": "RGBframe",
+          "multiple": false,
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:55",
           "required": true,
           "containers": []
         }
@@ -33072,18 +32382,6 @@
       "parameters": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "type": "string",
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:54",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "type": "string",
@@ -33091,6 +32389,18 @@
           "source": "src/Vision/Pipeline/_Threshold.cpp:82",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:54",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
           "dependency": true
         },
         {
@@ -33335,23 +32645,23 @@
       "dependencies": [
         {
           "path": [
-            "RGBframe"
-          ],
-          "targetClass": "RGBframe",
-          "multiple": false,
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_Threshold",
           "source": "src/Vision/Pipeline/_Threshold.cpp:83",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "RGBframeOut"
+          ],
+          "targetClass": "RGBframe",
+          "multiple": false,
+          "declaredIn": "_RGBbase",
+          "source": "src/Vision/_RGBbase.cpp:55",
           "required": true,
           "containers": []
         }
@@ -33390,7 +32700,7 @@
       "parameters": [
         {
           "path": [
-            "Dframe"
+            "DframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -33402,7 +32712,7 @@
         },
         {
           "path": [
-            "IMUframe"
+            "IMUstreamOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -33414,7 +32724,7 @@
         },
         {
           "path": [
-            "IRframe"
+            "IRframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -34658,7 +33968,7 @@
         },
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -34670,7 +33980,7 @@
         },
         {
           "path": [
-            "RGBDframe"
+            "RGBDframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -34682,7 +33992,7 @@
         },
         {
           "path": [
-            "RGBDtDframe"
+            "RGBDtDframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -34694,7 +34004,7 @@
         },
         {
           "path": [
-            "RGBDtRGBframe"
+            "RGBDtRGBframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -34706,7 +34016,7 @@
         },
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBbase",
@@ -35139,7 +34449,7 @@
       "dependencies": [
         {
           "path": [
-            "Dframe"
+            "DframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -35150,7 +34460,7 @@
         },
         {
           "path": [
-            "IMUframe"
+            "IMUstreamOut"
           ],
           "targetClass": "IMUstream",
           "multiple": false,
@@ -35161,7 +34471,7 @@
         },
         {
           "path": [
-            "IRframe"
+            "IRframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -35172,7 +34482,7 @@
         },
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
@@ -35183,7 +34493,7 @@
         },
         {
           "path": [
-            "RGBDframe"
+            "RGBDframeOut"
           ],
           "targetClass": "RGBDframe",
           "multiple": false,
@@ -35194,7 +34504,7 @@
         },
         {
           "path": [
-            "RGBDtDframe"
+            "RGBDtDframeOut"
           ],
           "targetClass": "RGBDframe",
           "multiple": false,
@@ -35205,7 +34515,7 @@
         },
         {
           "path": [
-            "RGBDtRGBframe"
+            "RGBDtRGBframeOut"
           ],
           "targetClass": "RGBDframe",
           "multiple": false,
@@ -35216,7 +34526,7 @@
         },
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -35261,7 +34571,7 @@
       "parameters": [
         {
           "path": [
-            "Dframe"
+            "DframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -35273,7 +34583,7 @@
         },
         {
           "path": [
-            "IMUframe"
+            "IMUstreamOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -35285,7 +34595,7 @@
         },
         {
           "path": [
-            "IRframe"
+            "IRframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -35297,7 +34607,7 @@
         },
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -35309,7 +34619,7 @@
         },
         {
           "path": [
-            "RGBDframe"
+            "RGBDframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -35321,7 +34631,7 @@
         },
         {
           "path": [
-            "RGBDtDframe"
+            "RGBDtDframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -35333,7 +34643,7 @@
         },
         {
           "path": [
-            "RGBDtRGBframe"
+            "RGBDtRGBframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -35345,7 +34655,7 @@
         },
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBbase",
@@ -35909,7 +35219,7 @@
       "dependencies": [
         {
           "path": [
-            "Dframe"
+            "DframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -35920,7 +35230,7 @@
         },
         {
           "path": [
-            "IMUframe"
+            "IMUstreamOut"
           ],
           "targetClass": "IMUstream",
           "multiple": false,
@@ -35931,7 +35241,7 @@
         },
         {
           "path": [
-            "IRframe"
+            "IRframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -35942,7 +35252,7 @@
         },
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
@@ -35953,7 +35263,7 @@
         },
         {
           "path": [
-            "RGBDframe"
+            "RGBDframeOut"
           ],
           "targetClass": "RGBDframe",
           "multiple": false,
@@ -35964,7 +35274,7 @@
         },
         {
           "path": [
-            "RGBDtDframe"
+            "RGBDtDframeOut"
           ],
           "targetClass": "RGBDframe",
           "multiple": false,
@@ -35975,7 +35285,7 @@
         },
         {
           "path": [
-            "RGBDtRGBframe"
+            "RGBDtRGBframeOut"
           ],
           "targetClass": "RGBDframe",
           "multiple": false,
@@ -35986,7 +35296,7 @@
         },
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -36031,7 +35341,7 @@
       "parameters": [
         {
           "path": [
-            "Dframe"
+            "DframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -36043,7 +35353,7 @@
         },
         {
           "path": [
-            "IMUframe"
+            "IMUstreamOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -36055,7 +35365,7 @@
         },
         {
           "path": [
-            "IRframe"
+            "IRframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -36067,7 +35377,7 @@
         },
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -36079,7 +35389,7 @@
         },
         {
           "path": [
-            "RGBDframe"
+            "RGBDframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -36091,7 +35401,7 @@
         },
         {
           "path": [
-            "RGBDtDframe"
+            "RGBDtDframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -36103,7 +35413,7 @@
         },
         {
           "path": [
-            "RGBDtRGBframe"
+            "RGBDtRGBframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -36115,7 +35425,7 @@
         },
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBbase",
@@ -36426,7 +35736,7 @@
       "dependencies": [
         {
           "path": [
-            "Dframe"
+            "DframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -36437,7 +35747,7 @@
         },
         {
           "path": [
-            "IMUframe"
+            "IMUstreamOut"
           ],
           "targetClass": "IMUstream",
           "multiple": false,
@@ -36448,7 +35758,7 @@
         },
         {
           "path": [
-            "IRframe"
+            "IRframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -36459,7 +35769,7 @@
         },
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
@@ -36470,7 +35780,7 @@
         },
         {
           "path": [
-            "RGBDframe"
+            "RGBDframeOut"
           ],
           "targetClass": "RGBDframe",
           "multiple": false,
@@ -36481,7 +35791,7 @@
         },
         {
           "path": [
-            "RGBDtDframe"
+            "RGBDtDframeOut"
           ],
           "targetClass": "RGBDframe",
           "multiple": false,
@@ -36492,7 +35802,7 @@
         },
         {
           "path": [
-            "RGBDtRGBframe"
+            "RGBDtRGBframeOut"
           ],
           "targetClass": "RGBDframe",
           "multiple": false,
@@ -36503,7 +35813,7 @@
         },
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -36536,7 +35846,7 @@
       "parameters": [
         {
           "path": [
-            "Dframe"
+            "DframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -36548,7 +35858,7 @@
         },
         {
           "path": [
-            "IMUframe"
+            "IMUstreamOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -36560,7 +35870,7 @@
         },
         {
           "path": [
-            "IRframe"
+            "IRframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -36572,7 +35882,7 @@
         },
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -36584,7 +35894,7 @@
         },
         {
           "path": [
-            "RGBDframe"
+            "RGBDframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -36596,7 +35906,7 @@
         },
         {
           "path": [
-            "RGBDtDframe"
+            "RGBDtDframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -36608,7 +35918,7 @@
         },
         {
           "path": [
-            "RGBDtRGBframe"
+            "RGBDtRGBframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -36620,7 +35930,7 @@
         },
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBbase",
@@ -37480,7 +36790,7 @@
       "dependencies": [
         {
           "path": [
-            "Dframe"
+            "DframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -37491,7 +36801,7 @@
         },
         {
           "path": [
-            "IMUframe"
+            "IMUstreamOut"
           ],
           "targetClass": "IMUstream",
           "multiple": false,
@@ -37502,7 +36812,7 @@
         },
         {
           "path": [
-            "IRframe"
+            "IRframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -37513,7 +36823,7 @@
         },
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
@@ -37524,7 +36834,7 @@
         },
         {
           "path": [
-            "RGBDframe"
+            "RGBDframeOut"
           ],
           "targetClass": "RGBDframe",
           "multiple": false,
@@ -37535,7 +36845,7 @@
         },
         {
           "path": [
-            "RGBDtDframe"
+            "RGBDtDframeOut"
           ],
           "targetClass": "RGBDframe",
           "multiple": false,
@@ -37546,7 +36856,7 @@
         },
         {
           "path": [
-            "RGBDtRGBframe"
+            "RGBDtRGBframeOut"
           ],
           "targetClass": "RGBDframe",
           "multiple": false,
@@ -37557,7 +36867,7 @@
         },
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -37602,7 +36912,7 @@
       "parameters": [
         {
           "path": [
-            "Dframe"
+            "DframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -37710,7 +37020,7 @@
         },
         {
           "path": [
-            "IMUframe"
+            "IMUstreamOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -37722,7 +37032,7 @@
         },
         {
           "path": [
-            "IRframe"
+            "IRframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -37734,7 +37044,7 @@
         },
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -37746,7 +37056,7 @@
         },
         {
           "path": [
-            "RGBDframe"
+            "RGBDframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -37758,7 +37068,7 @@
         },
         {
           "path": [
-            "RGBDtDframe"
+            "RGBDtDframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -37770,7 +37080,7 @@
         },
         {
           "path": [
-            "RGBDtRGBframe"
+            "RGBDtRGBframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
@@ -37782,7 +37092,7 @@
         },
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "type": "string",
           "declaredIn": "_RGBbase",
@@ -38274,7 +37584,7 @@
       "dependencies": [
         {
           "path": [
-            "Dframe"
+            "DframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -38285,7 +37595,7 @@
         },
         {
           "path": [
-            "IMUframe"
+            "IMUstreamOut"
           ],
           "targetClass": "IMUstream",
           "multiple": false,
@@ -38296,7 +37606,7 @@
         },
         {
           "path": [
-            "IRframe"
+            "IRframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -38307,7 +37617,7 @@
         },
         {
           "path": [
-            "PCLframe"
+            "PCLframeOut"
           ],
           "targetClass": "PCLframe",
           "multiple": false,
@@ -38318,7 +37628,7 @@
         },
         {
           "path": [
-            "RGBDframe"
+            "RGBDframeOut"
           ],
           "targetClass": "RGBDframe",
           "multiple": false,
@@ -38329,7 +37639,7 @@
         },
         {
           "path": [
-            "RGBDtDframe"
+            "RGBDtDframeOut"
           ],
           "targetClass": "RGBDframe",
           "multiple": false,
@@ -38340,7 +37650,7 @@
         },
         {
           "path": [
-            "RGBDtRGBframe"
+            "RGBDtRGBframeOut"
           ],
           "targetClass": "RGBDframe",
           "multiple": false,
@@ -38351,7 +37661,7 @@
         },
         {
           "path": [
-            "RGBframe"
+            "RGBframeOut"
           ],
           "targetClass": "RGBframe",
           "multiple": false,
@@ -38411,10 +37721,10 @@
     ]
   },
   "audit": {
-    "sourceFiles": 344,
-    "classCount": 200,
-    "classDeclarations": 200,
-    "creatableClassCount": 125,
+    "sourceFiles": 336,
+    "classCount": 196,
+    "classDeclarations": 196,
+    "creatableClassCount": 123,
     "factoryClassesWithoutDeclaration": [
       "_TestJSON",
       "_TestWebSocket"
@@ -38626,10 +37936,6 @@
       "src/Solver/_IsingBase.h",
       "src/Solver/_SATbase.cpp",
       "src/Solver/_SATbase.h",
-      "src/State/StateBase.cpp",
-      "src/State/StateBase.h",
-      "src/State/_StateControl.cpp",
-      "src/State/_StateControl.h",
       "src/Swarm/_SwarmBase.cpp",
       "src/Swarm/_SwarmBase.h",
       "src/Swarm/_SwarmCtrl.cpp",
@@ -38661,12 +37967,8 @@
       "src/UI/Viewer/Web/_WebSelectableOctGrid.h",
       "src/UI/_Console.cpp",
       "src/UI/_Console.h",
-      "src/UI/_GstOutput.cpp",
-      "src/UI/_GstOutput.h",
-      "src/UI/_UIbase.cpp",
-      "src/UI/_UIbase.h",
-      "src/UI/_WindowCV.cpp",
-      "src/UI/_WindowCV.h",
+      "src/UI/_OCVwindow.cpp",
+      "src/UI/_OCVwindow.h",
       "src/Universe/Geometry/PointCloud/Pipeline/PCstreamProtocol.h",
       "src/Universe/Geometry/PointCloud/Pipeline/_PCcrop.cpp",
       "src/Universe/Geometry/PointCloud/Pipeline/_PCcrop.h",
@@ -38765,10 +38067,10 @@
       "src/Vision/_VideoFile.h",
       "src/main.cpp"
     ],
-    "configReads": 644,
-    "resolvedReads": 632,
-    "moduleLookups": 114,
-    "resolvedLookups": 110,
+    "configReads": 640,
+    "resolvedReads": 628,
+    "moduleLookups": 113,
+    "resolvedLookups": 109,
     "unresolvedReads": 12,
     "unresolvedLookups": 4,
     "diagnosticsCount": 16,
@@ -38785,7 +38087,7 @@
         "source": "src/UI/Viewer/SelectableOctGridSources.cpp:72",
         "kind": "unresolved-json-alias",
         "expression": "entry",
-        "key": "PCLframe",
+        "key": "PCLframeIn",
         "resolution": "Covered by the viewer adapters in this generator.",
         "className": "SelectableOctGridSources"
       },
@@ -38793,7 +38095,7 @@
         "source": "src/UI/Viewer/SelectableOctGridSources.cpp:73",
         "kind": "unresolved-json-alias",
         "expression": "entry",
-        "key": "LineFrame",
+        "key": "LineFrameIn",
         "resolution": "Covered by the viewer adapters in this generator.",
         "className": "SelectableOctGridSources"
       },
@@ -38894,7 +38196,7 @@
         "source": "src/Universe/Grid/_OctreeGrid.cpp:177",
         "kind": "unresolved-module-reference",
         "expression": "name",
-        "resolution": "Covered by the vPCLframes DataObject adapter; names are loaded before link.",
+        "resolution": "Covered by the vPCLframesIn DataObject adapter; names are loaded before link.",
         "className": "_OctreeGrid"
       }
     ],

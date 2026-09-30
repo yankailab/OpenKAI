@@ -23,6 +23,7 @@ namespace kai
 	{
 		int16_t m_iClass = -1;
 		int8_t m_prob = 0;
+		string m_name = "";
 	};
 
 	struct BBOX_OBJ
@@ -55,12 +56,13 @@ namespace kai
 			m_vDim = vD;
 		}
 
-		void addClass(int16_t iClass, int8_t prob = 100)
+		void addClass(int16_t iClass, const string &name = "", int8_t prob = 100)
 		{
 			for (OBJ_CLASS &objClass : m_vClass)
 			{
 				if (objClass.m_iClass == iClass)
 				{
+					objClass.m_name = name;
 					objClass.m_prob = prob;
 					return;
 				}
@@ -69,13 +71,13 @@ namespace kai
 			m_vClass.emplace_back();
 			OBJ_CLASS &objClass = m_vClass.back();
 			objClass.m_iClass = iClass;
+			objClass.m_name = name;
 			objClass.m_prob = prob;
 		}
 
-		int getTopClass(void) const
+		const OBJ_CLASS* getTopClass(void) const
 		{
-			if (m_vClass.empty())
-				return -1;
+			IF_N(m_vClass.empty());
 
 			const OBJ_CLASS *pTop = &m_vClass.front();
 			for (const OBJ_CLASS &objClass : m_vClass)
@@ -84,7 +86,25 @@ namespace kai
 					pTop = &objClass;
 			}
 
-			return pTop->m_iClass;
+			return pTop;
+		}
+
+		int getTopClassID(void) const
+		{
+			const OBJ_CLASS* pC = getTopClass();
+			NULL__(pC, -1);
+
+			return pC->m_iClass;
+		}
+
+		const string& getTopClassName(void) const
+		{
+			const OBJ_CLASS* pC = getTopClass();
+			if (pC)
+				return pC->m_name;
+
+			static const string emptyName;
+			return emptyName;
 		}
 
 		int getTopClassProb(void) const
@@ -92,6 +112,7 @@ namespace kai
 			int prob = 0;
 			for (const OBJ_CLASS &objClass : m_vClass)
 				prob = std::max(prob, static_cast<int>(objClass.m_prob));
+
 			return prob;
 		}
 

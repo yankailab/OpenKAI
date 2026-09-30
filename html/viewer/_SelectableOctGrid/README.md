@@ -27,13 +27,13 @@ Octree grids derive from `_ReferenceFrame` and publish cell snapshots only.
 Configure separate viewer lists:
 
 ```json
-"vGeometry": [{ "PCLframe": "points", "nP": 200000, "nL": 0 }],
+"vGeometry": [{ "PCLframeIn": "points", "nP": 200000, "nL": 0 }],
 "vSelectableOctGrid": [{ "_SelectableOctGrid": "octGrid", "nC": 100000 }]
 ```
 
 Generic reference-frame entries and old viewer name lists are no longer accepted.
-A grid's `vPCLframes` list names the independent point-cloud streams it consumes.
-Viewer geometry entries use `PCLframe` and/or `LineFrame` stream names; they
+A grid's `vPCLframesIn` list names the independent point-cloud streams it consumes.
+Viewer geometry entries use `PCLframeIn` and/or `LineFrameIn` stream names; they
 never resolve producer modules. Each publication replaces the corresponding
 geometry, and an empty publication clears it. Encoded point/line snapshots are
 reused until their source changes or records expire.

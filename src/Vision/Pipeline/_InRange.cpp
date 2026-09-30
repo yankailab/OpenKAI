@@ -75,7 +75,7 @@ namespace kai
 	void _InRange::filter(void)
 	{
 		Mat mOut;
-		NULL_(m_pRGB);
+		NULL_(m_pRGBout);
 		NULL_(m_pRGBin);
 		Mat mIn;
 		const uint64_t tStamp = m_pRGBin->get(mIn);
@@ -84,7 +84,7 @@ namespace kai
 		cv::inRange(mIn,
 					cv::Scalar(m_vL.x(), m_vL.y(), m_vL.z()),
 					cv::Scalar(m_vH.x(), m_vH.y(), m_vH.z()), mOut);
-		m_pRGB->set(mOut, tStamp);
+		m_pRGBout->set(mOut, tStamp);
 	}
 
 }

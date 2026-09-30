@@ -100,7 +100,7 @@ The default YOLO26 export uses end-to-end detection, so `_YOLO26detectONNX` filt
 ## Config Example
 
 Declare `camRGB` as `{ "type": "dataObject", "class": "RGBframe" }` and set the
-camera's `RGBframe` output to `camRGB`. Declare a `BBoxStream` DataObject for
+camera's `RGBframeOut` output to `camRGB`. Declare a `BBoxStream` DataObject for
 `BBoxStreamOut`; consumers such as `_APmav_follow` read it through `BBoxStreamIn`.
 The detector keeps a local image copy while inference runs and appends detected
 objects to the stream's bounded history. Empty results preserve existing history;

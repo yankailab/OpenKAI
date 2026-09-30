@@ -73,14 +73,14 @@ namespace kai
 	void _Contrast::filter(void)
 	{
 		Mat mOut;
-		NULL_(m_pRGB);
+		NULL_(m_pRGBout);
 		NULL_(m_pRGBin);
 		Mat mIn;
 		const uint64_t tStamp = m_pRGBin->get(mIn);
 		IF_(mIn.empty());
 
 		mIn.convertTo(mOut, -1, m_alpha, m_beta);
-		m_pRGB->set(mOut, tStamp);
+		m_pRGBout->set(mOut, tStamp);
 	}
 
 }

@@ -292,8 +292,8 @@ for cell snapshots. Both viewers use the same source parser and settings:
     "vCamLookAt": [0, 0, 0],
     "vCamUp": [0, 0, 1],
     "vGeometry": [
-      { "PCLframe": "points", "nP": 200000, "nL": 0, "matPointSize": 2 },
-      { "LineFrame": "lines", "nP": 0, "nL": 100000, "matCol": [0.3, 0.8, 1] }
+      { "PCLframeIn": "points", "nP": 200000, "nL": 0, "matPointSize": 2 },
+      { "LineFrameIn": "lines", "nP": 0, "nL": 100000, "matCol": [0.3, 0.8, 1] }
     ],
     "vSelectableOctGrid": [
       { "_SelectableOctGrid": "octGrid", "nC": 100000, "matCol": [1, 1, 1, 0.5] }
@@ -314,7 +314,7 @@ The removed `vReferenceFrame`, viewer `vGeometryBase`, `geometry`, and
 and `nC`, with no `nPbuf`/`nLbuf`/`nCbuf` entry aliases.
 
 A calculation-only `_OctreeGrid` does not publish viewer snapshots; use
-`_SelectableOctGrid`. The grid's `vPCLframes` input list names
+`_SelectableOctGrid`. The grid's `vPCLframesIn` input list names
 the point-cloud DataObjects it consumes.
 
 | Setting | Default | Meaning |
@@ -520,7 +520,7 @@ wireframe did, in root-first traversal order. `nMaxCells` in the grid config set
 the publication cap (default 8333). The old `nMaxLines` setting is rejected. The viewers have independent `nCbuf` and per-object `nC` caps.
 `_OctreeBase` and its grid subclasses inherit pose handling from `_ReferenceFrame`.
 `_OctreeGrid` consumes
-point-cloud DataObjects through its `vPCLframes` input list; `_SelectableOctGrid` publishes
+point-cloud DataObjects through its `vPCLframesIn` input list; `_SelectableOctGrid` publishes
 only cell IDs, colors, and the root header. Viewers construct the boxes.
 
 Cells average point RGB, initializing cell alpha to 1, then publish their retained

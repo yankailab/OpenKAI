@@ -29,7 +29,7 @@ namespace kai
 	private:
 		void publish();
 		std::string hello() const;
-		PCLmap *m_pPCLmap = nullptr;
+		PCLmap *m_pPCLmapin = nullptr;
 		std::string m_host = "0.0.0.0", m_root = "html/viewer/_GLIM";
 		int m_port = 8080, m_maxClients = 8;
 		float m_pointSize = 2;

@@ -314,9 +314,9 @@ namespace kai
                 m_dScale = pDepthInfo->fUnitOfDepth * 0.001f;
                 Mat mRaw(m_vSizeD.y(), m_vSizeD.x(), CV_16UC1, pD->addr);
                 mRaw.convertTo(mDepth, CV_32FC1, m_dScale, m_dOfs);
-                if (m_pD)
+                if (m_pDout)
                 {
-                    m_pD->set(mDepth, tStamp);
+                    m_pDout->set(mDepth, tStamp);
                 }
             }
         }
@@ -328,22 +328,22 @@ namespace kai
             {
                 Mat mYuv(m_vSizeRGB.y() * 3 / 2, m_vSizeRGB.x(), CV_8UC1, pRGB->addr);
                 cv::cvtColor(mYuv, mRGB, COLOR_YUV2BGR_NV12);
-                if (m_pRGB)
+                if (m_pRGBout)
                 {
-                    m_pRGB->set(mRGB, tStamp);
+                    m_pRGBout->set(mRGB, tStamp);
                 }
             }
         }
 
-        if (m_pRGBD && !mRGB.empty() && !mDepth.empty())
+        if (m_pRGBDout && !mRGB.empty() && !mDepth.empty())
         {
-            m_pRGBD->set(mRGB, mDepth, tStamp);
+            m_pRGBDout->set(mRGB, mDepth, tStamp);
         }
         if (pCfg->isUsed[MEM_AGENT_SINK_CONFID])
         {
             pConf = &pData[MEM_AGENT_SINK_CONFID];
         }
-        if (m_pPCL && (m_bPCL || m_bPCLrgb) && m_xdHDL.m_bInit &&
+        if (m_pPCLout && (m_bPCL || m_bPCLrgb) && m_xdHDL.m_bInit &&
             !mDepth.empty() && !mRGB.empty() && pConf && pConf->addr)
         {
             runHDL(reinterpret_cast<unsigned short *>(pD->addr),
@@ -382,7 +382,7 @@ namespace kai
             const Vector3f vC = Vector3f(p.r, p.g, p.b) / 255.0f;
             vPCL.push_back({vP, vC, tStamp});
         }
-        m_pPCL->set(vPCL, tStamp);
+        m_pPCLout->set(vPCL, tStamp);
     }
 
     bool _XDynamics::initHDL(XdynRegParams_t *regParams, uint16_t tofW, uint16_t tofH, uint16_t rgbW, uint16_t rgbH)

@@ -72,7 +72,7 @@ namespace kai
 	void _Thermal2RGB::filter(void)
 	{
 		Mat mOut;
-		NULL_(m_pRGB);
+		NULL_(m_pRGBout);
 		NULL_(m_pRGBin);
 		Mat mT;
 		const uint64_t tStamp = m_pRGBin->get(mT);
@@ -87,7 +87,7 @@ namespace kai
 		mClip.convertTo(mGray, CV_8UC1, 255.0 / tR, -m_vTrange.x() * 255.0 / tR);
 
 		cv::applyColorMap(mGray, mOut, cv::COLORMAP_JET);
-		m_pRGB->set(mOut, tStamp);
+		m_pRGBout->set(mOut, tStamp);
 	}
 
 	void _Thermal2RGB::console(const json &j, void *pJSONbase)

@@ -1,6 +1,6 @@
 {
 	"APP": {
-		"class": "OpenKAI",
+		"class": "InstanceMgr",
 		"appName": "apDrive",
 		"bLog": true,
 		"bStdErr": true
@@ -180,10 +180,10 @@
 		"vfName": [
 			"data/PointCloud/StanfordBunny/bun000.ply"
 		],
-		"PCLframe": "pcFilePoints"
+		"PCLframeOut": "pcFilePoints"
 	},
 	"viewCam": {
-		"class": "_WindowCV",
+		"class": "_OCVwindow",
 		"bON": false,
 		"thread": {
 			"FPS": 20
@@ -201,24 +201,25 @@
 		"threadPP": {
 			"FPS": 10
 		},
-		"URI": "",
+		"devURI": "",
 		"vSizeRGB": [
 			640,
 			480
 		],
 		"vRangeD": [
 			0,
-			4000
+			4.0
 		],
-		"PCLframe": "scPC",
+		"PCLframeOut": "scPC",
+		"bPCL": true,
 		"scPixelFormat": 4,
 		"bRGB": true,
 		"bDepth": true,
 		"btRGB": true,
 		"btDepth": false,
 		"bIR": false,
-		"RGBframe": "camRGB",
-		"Dframe": "camDepth"
+		"RGBframeOut": "camRGB",
+		"DframeOut": "camDepth"
 	},
 	"scPC": {
 		"type": "dataObject",
@@ -239,7 +240,7 @@
 		"dTexpireCell": 300000000,
 		"dTexpirePCL": 500000000,
 		"nPminBuild": 100,
-		"vPCLframes": [
+		"vPCLframesIn": [
 			"pcFilePoints",
 			"scPC"
 		]
@@ -279,13 +280,13 @@
 		],
 		"vGeometry": [
 			{
-				"PCLframe": "scPC",
+				"PCLframeIn": "scPC",
 				"nP": 400000,
 				"nL": 0,
 				"matPointSize": 2
 			},
 			{
-				"PCLframe": "pcFilePoints",
+				"PCLframeIn": "pcFilePoints",
 				"nP": 400000,
 				"nL": 0,
 				"matPointSize": 2

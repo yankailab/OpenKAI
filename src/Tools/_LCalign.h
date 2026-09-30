@@ -61,7 +61,7 @@ namespace kai
 		}
 
 	protected:
-		PCLframe *m_pPCL = nullptr;
+		PCLframe *m_pPCLout = nullptr;
 		PCLframe *m_pPCLin = nullptr;
 		RGBframe *m_pRGBin = nullptr;
 		_IMUbase *m_pIMU = nullptr;

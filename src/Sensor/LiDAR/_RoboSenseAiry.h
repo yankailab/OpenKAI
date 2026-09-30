@@ -120,7 +120,7 @@ namespace kai
 		}
 
 	protected:
-        PCLframe *m_pPCL = nullptr;
+        PCLframe *m_pPCLout = nullptr;
 		_Thread *m_pTdifop = nullptr;
 
 		_UDP *m_pUDPmsop = nullptr;

@@ -125,7 +125,7 @@ namespace kai
 		jKv(j, "nMaxLevel", m_nMaxLevel);
 		jKv(j, "dTexpireCell", m_dTexpireCell);
 		jKv(j, "dTexpirePCL", m_dTexpirePCL);
-		jKv(j, "vPCLframes", m_vPCLframes);
+		jKv(j, "vPCLframesIn", m_vPCLframesIn);
 
 		IF_Le_F(m_nMaxLevel < 0 || m_nMaxLevel > OCTGRID_MAX_LEVEL, "Invalid nMaxLevel: " + i2str(m_nMaxLevel));
 		IF_Le_F(!std::isfinite(m_vPorigin.x()) || !std::isfinite(m_vPorigin.y()) || !std::isfinite(m_vPorigin.z()) ||
@@ -159,7 +159,7 @@ namespace kai
 		j["nMaxLevel"] = m_nMaxLevel;
 		j["dTexpireCell"] = m_dTexpireCell;
 		j["dTexpirePCL"] = m_dTexpirePCL;
-		j["vPCLframes"] = m_vPCLframes;
+		j["vPCLframesIn"] = m_vPCLframesIn;
 		j.erase("nP");
 		j.erase("vGeometryBase");
 
@@ -171,13 +171,13 @@ namespace kai
 	{
 		IF_F(!this->_OctreeBase::link(pM));
 		m_vPointInputs.clear();
-		m_vPointInputs.reserve(m_vPCLframes.size());
-		for (const string &name : m_vPCLframes)
+		m_vPointInputs.reserve(m_vPCLframesIn.size());
+		for (const string &name : m_vPCLframesIn)
 		{
-			auto *pFrame = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
-			IF_Le_F(!pFrame, "Grid input is not a PCLframe: " + name);
+			auto *pFramein = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
+			IF_Le_F(!pFramein, "Grid input is not a PCLframe: " + name);
 
-			m_vPointInputs.push_back({pFrame, 0});
+			m_vPointInputs.push_back({pFramein, 0});
 		}
 
 		return true;
@@ -235,11 +235,11 @@ namespace kai
 
 		for (PointInput &input : m_vPointInputs)
 		{
-			if (input.m_pFrame->getTstamp() == input.m_tStamp)
+			if (input.m_pFramein->getTstamp() == input.m_tStamp)
 			{
 				continue;
 			}
-			const uint64_t stamp = input.m_pFrame->get(m_vInputPoints);
+			const uint64_t stamp = input.m_pFramein->get(m_vInputPoints);
 			if (stamp == input.m_tStamp)
 			{
 				continue;

@@ -36,7 +36,7 @@ Module links, thread settings and unrelated modules are preserved. The saved
 settings are read by `loadConfig()` on the next launch. A save failure is
 returned to the browser.
 
-Camera IMU capture publishes to the configured `IMUstream` for independent
+Camera IMU capture publishes to the `IMUstream` named by `IMUstreamOut` for independent
 consumers such as SLAM. This page displays the camera point cloud and camera
 controls; the former `_IMUbase` preview commands are removed.
 

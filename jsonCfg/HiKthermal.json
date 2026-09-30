@@ -1,6 +1,6 @@
 {
 	"APP": {
-		"class": "OpenKAI",
+		"class": "InstanceMgr",
 		"appName": "RawFrameTest",
 		"bLog": true,
 		"bStdErr": true
@@ -17,7 +17,7 @@
 		]
 	},
 	"view": {
-		"class": "_WindowCV",
+		"class": "_OCVwindow",
 		"bON": true,
 		"thread": {
 			"FPS": 30
@@ -39,7 +39,7 @@
 		],
 		"vendorID": 11231,
 		"productID": 258,
-		"RGBframe": "hikRGB"
+		"RGBframeOut": "hikRGB"
 	},
 	"thermalRGB": {
 		"class": "_Thermal2RGB",
@@ -51,7 +51,7 @@
 			23,
 			39
 		],
-		"RGBframe": "thermalRGBRGB",
+		"RGBframeOut": "thermalRGBRGB",
 		"RGBframeIn": "hikRGB"
 	},
 	"hikRGB": {

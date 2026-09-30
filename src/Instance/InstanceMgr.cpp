@@ -86,6 +86,17 @@ namespace kai
 
 	bool InstanceMgr::initAll(void)
 	{
+		for (DataObjBase *pD : m_vDataStreams)
+		{
+			if (!pD->loadConfig())
+			{
+				LOG_E(pD->getName() + ".loadConfig() failed");
+				return false;
+			}
+
+			LOG_I("Initialized: " + pD->getName());
+		}
+
 		for (_ModuleBase *pM : m_vModules)
 		{
 			if (!pM->loadConfig())

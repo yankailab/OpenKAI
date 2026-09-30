@@ -46,8 +46,8 @@ namespace kai
 	protected:
 		float m_thr = 0.02; // ICP threshold
 		PCREGIST_ICP_EST m_est = icp_p2point;
-		PCLframe *m_pSrc = NULL;
-		PCLframe *m_pTgt = NULL;
+		PCLframe *m_pSrcin = NULL;
+		PCLframe *m_pTgtin = NULL;
 		RegistrationResult m_RR;
 		_PCtransform *m_pTf = NULL;
 		double m_lastFit = 0.0;

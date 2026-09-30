@@ -73,11 +73,14 @@ namespace kai
 
 		IF_(tStamp == m_tLastInput);
 		m_tLastInput = tStamp;
+		
 		IF_(mBGR.empty());
 		m_pBBout->setContainerDim(Vector3f(mBGR.cols, mBGR.rows, 0));
 		vector<vector<Point>> vvContours;
 		findContours(mBGR, vvContours, m_mode, m_method);
 
+		const string className = getClassName(0);
+		const string name = className.empty() ? "contour" : className;
 		vector<BBOX_OBJ> vBB;
 		for (size_t i = 0; i < vvContours.size(); i++)
 		{
@@ -89,7 +92,7 @@ namespace kai
 			bb.setType(obj_bbox);
 			bb.setPos(Vector3f(r.x, r.y, 0));
 			bb.setDim(Vector3f(r.width, r.height, 0));
-			bb.addClass(0);
+			bb.addClass(0, name);
 
 			vBB.push_back(bb);
 		}

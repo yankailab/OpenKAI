@@ -74,7 +74,7 @@ namespace kai
 	void _Remap::filter(void)
 	{
 		Mat mOut;
-		NULL_(m_pRGB);
+		NULL_(m_pRGBout);
 		NULL_(m_pRGBin);
 		Mat mIn;
 		const uint64_t tStamp = m_pRGBin->get(mIn);
@@ -96,7 +96,7 @@ namespace kai
 		{
 			mOut = mIn;
 		}
-		m_pRGB->set(mOut, tStamp);
+		m_pRGBout->set(mOut, tStamp);
 	}
 
 	// void _Remap::updateCamMat(void)

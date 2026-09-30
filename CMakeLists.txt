@@ -481,9 +481,7 @@ if(WITH_UI)
   add_definitions(-DWITH_UI)
   if(USE_OPENCV)
     list(APPEND OpenKAI_cpp
-		src/UI/_UIbase.cpp
-		src/UI/_GstOutput.cpp
-		src/UI/_WindowCV.cpp
+		src/UI/_OCVwindow.cpp
     )
   endif()
 endif()

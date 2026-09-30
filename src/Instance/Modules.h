@@ -205,8 +205,7 @@
 
 #ifdef WITH_UI
 #ifdef USE_OPENCV
-#include "../UI/_GstOutput.h"
-#include "../UI/_WindowCV.h"
+#include "../UI/_OCVwindow.h"
 #endif
 #endif
 

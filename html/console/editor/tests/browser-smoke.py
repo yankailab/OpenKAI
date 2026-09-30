@@ -221,12 +221,12 @@ def run(browser, editor):
             const definition = producers.getClass(name);
             if (JSON.stringify(definition.baseClasses) !== '["_ReferenceFrame"]')
                 throw Error(name + ' must directly inherit _ReferenceFrame');
-            const output = definition.dependencies.find(dep => dep.path.join('.') === 'PCLframe');
+            const output = definition.dependencies.find(dep => dep.path.join('.') === 'PCLframeOut');
             if (!output || output.targetClass !== 'PCLframe' || output.declaredIn !== name)
-                throw Error(name + ' must declare its own PCLframe output');
+                throw Error(name + ' must declare its own PCLframeOut output');
             producers.addNode(name, name);
-            producers.connect('/' + name, ['PCLframe'], '/points');
-            if (producers.toJSON()[name].PCLframe !== 'points')
+            producers.connect('/' + name, ['PCLframeOut'], '/points');
+            if (producers.toJSON()[name].PCLframeOut !== 'points')
                 throw Error(name + ' must connect to a PCLframe DataObject');
         }
         for (const name of ['_GeometryViewerBase', '_PCsend', '_PCcrop', '_PCremove', '_PCdownSample']) {
@@ -238,11 +238,11 @@ def run(browser, editor):
         grid.addNode('PCLframe', 'points');
         grid.addNode('_OctreeGrid', 'grid');
         grid.addNode('_SelectableOctGrid', 'selectable');
-        grid.connect('/grid', ['vPCLframes'], '/points');
-        grid.connect('/selectable', ['vPCLframes'], '/points');
+        grid.connect('/grid', ['vPCLframesIn'], '/points');
+        grid.connect('/selectable', ['vPCLframesIn'], '/points');
         grid.renameNode('/points', 'cloud');
         for (const name of ['grid', 'selectable']) {
-            if (JSON.stringify(grid.toJSON()[name].vPCLframes) !== '["cloud"]')
+            if (JSON.stringify(grid.toJSON()[name].vPCLframesIn) !== '["cloud"]')
                 throw Error('Grid stream arrays must connect and follow stream renames');
         }
         return {classes: source.classes.length, created};
@@ -398,16 +398,16 @@ def run_ui(browser, editor):
     checks.append("multiple dependency append and single-reference removal")
     browser.evaluate(r"""(() => {
         OpenKAIEditor.loadDocument({APP:{class:'InstanceMgr'}, points:{type:'dataObject',class:'PCLframe'},
-            web:{class:'_WebGeometry',vGeometry:[{PCLframe:'points',label:'preserve'}]},
+            web:{class:'_WebGeometry',vGeometry:[{PCLframeIn:'points',label:'preserve'}]},
             extension:{release:17}, future:{class:'_FuturePlugin',opaque:{rows:[1,{text:'custom'}]},'/comment':'keep'}});
         OpenKAIEditor.selectNode('/web');
-        smokeChange('[aria-label="Provider for vGeometry.*.PCLframe"]', '/points');
-        document.querySelector('[aria-label="Add connection for vGeometry.*.PCLframe"]').click();
+        smokeChange('[aria-label="Provider for vGeometry.*.PCLframeIn"]', '/points');
+        document.querySelector('[aria-label="Add connection for vGeometry.*.PCLframeIn"]').click();
         let config = JSON.parse(OpenKAIEditor.exportConfig());
         smokeAssert(config.web.vGeometry.length === 2 && config.web.vGeometry[0].label === 'preserve', 'Wildcard connect must preserve sibling metadata');
         document.querySelector('[aria-label="Disconnect points"]').click();
         config = JSON.parse(OpenKAIEditor.exportConfig());
-        smokeAssert(config.web.vGeometry[0].label === 'preserve' && !('PCLframe' in config.web.vGeometry[0]), 'Wildcard disconnect must preserve its object');
+        smokeAssert(config.web.vGeometry[0].label === 'preserve' && !('PCLframeIn' in config.web.vGeometry[0]), 'Wildcard disconnect must preserve its object');
         smokeAssert(config.future.opaque.rows[1].text === 'custom' && config.extension.release === 17, 'Unknown fields must survive graph editing');
         document.getElementById('paste-config').click();
         document.getElementById('json-text').value = '{bad';

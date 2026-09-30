@@ -75,8 +75,8 @@ namespace kai
 		std::shared_ptr<glim::SubMappingBase> m_subMapping;
 		std::shared_ptr<glim::GlobalMappingBase> m_globalMapping;
 		std::shared_ptr<glim::RawPoints> m_pendingFrame;
-		PCLframe *m_pGlobalMap = nullptr;
-		PCLmap *m_pSubmapStream = nullptr;
+		PCLframe *m_pGlobalMapout = nullptr;
+		PCLmap *m_pSubmapStreamout = nullptr;
 		vector<std::shared_ptr<glim::SubMap>> m_submaps;
 		uint64_t m_session = 0;
 		uint64_t m_tSubmapUpdated = 0;

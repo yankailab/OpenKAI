@@ -699,9 +699,9 @@ namespace kai
 			if (status == SC_OK && copyScFrame(scfRGB, mRGB))
 			{
 				m_vSizeRGB = Vector2i(mRGB.cols, mRGB.rows);
-				if (m_pRGB)
+				if (m_pRGBout)
 				{
-					m_pRGB->set(mRGB, tStamp);
+					m_pRGBout->set(mRGB, tStamp);
 				}
 			}
 		}
@@ -715,9 +715,9 @@ namespace kai
 				m_vSizeD = Vector2i(mDepth.cols, mDepth.rows);
 				m_bPCLframe = true;
 				mDepth.convertTo(mDepth, CV_32FC1, m_dScale, m_dOfs);
-				if (m_pD)
+				if (m_pDout)
 				{
-					m_pD->set(mDepth, tStamp);
+					m_pDout->set(mDepth, tStamp);
 				}
 			}
 		}
@@ -741,30 +741,30 @@ namespace kai
 			}
 		}
 
-		if (m_bIR && sFr.ir == 1 && m_pIR)
+		if (m_bIR && sFr.ir == 1 && m_pIRout)
 		{
 			Mat mIR;
 			status = scGetFrame(m_scDevHandle, SC_IR_FRAME, &scfIR);
 			if (status == SC_OK && copyScFrame(scfIR, mIR))
 			{
-				m_pIR->set(mIR, tStamp);
+				m_pIRout->set(mIR, tStamp);
 			}
 		}
 
 		// Publish pairs from this capture together; never combine stale channels.
-		if (m_pRGBD && !mRGB.empty() && !mDepth.empty())
+		if (m_pRGBDout && !mRGB.empty() && !mDepth.empty())
 		{
-			m_pRGBD->set(mRGB, mDepth, tStamp);
+			m_pRGBDout->set(mRGB, mDepth, tStamp);
 		}
 
-		if (m_pRGBDtD && !mtRGB.empty() && !mDepth.empty())
+		if (m_pRGBDtDout && !mtRGB.empty() && !mDepth.empty())
 		{
-			m_pRGBDtD->set(mtRGB, mDepth, tStamp);
+			m_pRGBDtDout->set(mtRGB, mDepth, tStamp);
 		}
 
-		if (m_pRGBDtRGB && !mRGB.empty() && !mtDepth.empty())
+		if (m_pRGBDtRGBout && !mRGB.empty() && !mtDepth.empty())
 		{
-			m_pRGBDtRGB->set(mRGB, mtDepth, tStamp);
+			m_pRGBDtRGBout->set(mRGB, mtDepth, tStamp);
 		}
 
 		return true;
@@ -783,7 +783,7 @@ namespace kai
 
 	void _Scepter::updatePCL(void)
 	{
-		NULL_(m_pPCL);
+		NULL_(m_pPCLout);
 
 		vector<ScVector3f> points;
 		Mat color;
@@ -846,7 +846,7 @@ namespace kai
 			}
 		}
 
-		m_pPCL->set(vPCL, tNow);
+		m_pPCLout->set(vPCL, tNow);
 	}
 
 	void _Scepter::console(const json &j, void *pJSONbase)

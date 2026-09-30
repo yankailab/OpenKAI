@@ -1,6 +1,6 @@
 {
 	"APP": {
-		"class": "OpenKAI",
+		"class": "InstanceMgr",
 		"appName": "Orbbec",
 		"bLog": true,
 		"bStdErr": true
@@ -15,6 +15,8 @@
 			"Orbbec"
 		]
 	},
+
+
 	"wsServer": {
 		"class": "_WebSocketServer",
 		"bON": true,
@@ -46,8 +48,10 @@
 			"Orbbec"
 		]
 	},
+
+
 	"view": {
-		"class": "_WindowCV",
+		"class": "_OCVwindow",
 		"bON": true,
 		"thread": {
 			"FPS": 30
@@ -56,7 +60,7 @@
 		"RGBframeIn": "OrbbecRGB"
 	},
 	"viewD": {
-		"class": "_WindowCV",
+		"class": "_OCVwindow",
 		"bON": true,
 		"thread": {
 			"FPS": 30
@@ -64,6 +68,8 @@
 		"bFullScreen": 0,
 		"RGBframeIn": "d2rgbRGB"
 	},
+
+
 	"Orbbec": {
 		"class": "_Orbbec",
 		"bON": true,
@@ -83,8 +89,8 @@
 			640,
 			480
 		],
-		"PCLframe": "obPCL",
-		"IMUframe": "obIMU",
+		"PCLframeOut": "obPCL",
+		"IMUstreamOut": "obIMU",
 		"SN": "",
 		"tOutMs": 1000,
 		"bRGB": true,
@@ -108,9 +114,10 @@
 		"OB_PROP_HW_NOISE_REMOVE_FILTER_THRESHOLD_FLOAT": null,
 		"OB_PROP_COLOR_MIRROR_BOOL": null,
 		"OB_PROP_DEPTH_MIRROR_BOOL": null,
-		"RGBframe": "OrbbecRGB",
-		"Dframe": "OrbbecDepth"
+		"RGBframeOut": "OrbbecRGB",
+		"DframeOut": "OrbbecDepth"
 	},
+
 	"d2rgb": {
 		"class": "_D2RGB",
 		"bON": true,
@@ -119,7 +126,7 @@
 		},
 		"bMeasure": false,
 		"DframeIn": "OrbbecDepth",
-		"RGBframe": "d2rgbRGB"
+		"RGBframeOut": "d2rgbRGB"
 	},
 	"obPCL": {
 		"type": "dataObject",
@@ -129,6 +136,19 @@
 		"type": "dataObject",
 		"class": "IMUstream"
 	},
+	"OrbbecRGB": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"OrbbecDepth": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"d2rgbRGB": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+
 	"viewer": {
 		"class": "_WebGeometry",
 		"webRoot": "html/viewer/_Orbbec",
@@ -166,23 +186,11 @@
 		],
 		"vGeometry": [
 			{
-				"PCLframe": "obPCL",
+				"PCLframeIn": "obPCL",
 				"nP": 400000,
 				"nL": 0,
 				"matPointSize": 2
 			}
 		]
-	},
-	"OrbbecRGB": {
-		"type": "dataObject",
-		"class": "RGBframe"
-	},
-	"OrbbecDepth": {
-		"type": "dataObject",
-		"class": "RGBframe"
-	},
-	"d2rgbRGB": {
-		"type": "dataObject",
-		"class": "RGBframe"
 	}
 }

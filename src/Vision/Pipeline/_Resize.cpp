@@ -65,14 +65,14 @@ namespace kai
 	void _Resize::filter(void)
 	{
 		Mat mOut;
-		NULL_(m_pRGB);
+		NULL_(m_pRGBout);
 		NULL_(m_pRGBin);
 		Mat mIn;
 		const uint64_t tStamp = m_pRGBin->get(mIn);
 		IF_(mIn.empty());
 
 		cv::resize(mIn, mOut, cv::Size(m_vSizeRGB.x(), m_vSizeRGB.y()));
-		m_pRGB->set(mOut, tStamp);
+		m_pRGBout->set(mOut, tStamp);
 	}
 
 }

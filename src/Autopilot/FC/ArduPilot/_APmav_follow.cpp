@@ -130,9 +130,9 @@ namespace kai
 
 		n = "";
 		jKv(j, "BBoxStreamTrackIn", n);
-		m_pBBtrackIn = dynamic_cast<BBoxStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		IF_Le_F((m_pTracker || !n.empty()) && !m_pBBtrackIn, "BBoxStreamTrackIn not found: " + n);
-		IF_Le_F(m_pTracker && m_pBBtrackIn == m_pBBin, "Detection and tracking BBoxStreams must be distinct");
+		m_pBBtrackin = dynamic_cast<BBoxStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F((m_pTracker || !n.empty()) && !m_pBBtrackin, "BBoxStreamTrackIn not found: " + n);
+		IF_Le_F(m_pTracker && m_pBBtrackin == m_pBBin, "Detection and tracking BBoxStreams must be distinct");
 
 		return true;
 	}
@@ -146,7 +146,7 @@ namespace kai
 	bool _APmav_follow::check(void)
 	{
 		NULL_F(m_pBBin);
-		IF_F(m_pTracker && (!m_pBBtrackIn || m_pBBtrackIn == m_pBBin));
+		IF_F(m_pTracker && (!m_pBBtrackin || m_pBBtrackin == m_pBBin));
 
 		return this->_APmav_move::check();
 	}
@@ -206,7 +206,7 @@ namespace kai
 					m_tTrackStart = m_tTargetUpdate;
 					m_tTrackWatermark = m_tTrackStart;
 					vector<BBOX_OBJ> vPrevious;
-					m_pBBtrackIn->get(vPrevious);
+					m_pBBtrackin->get(vPrevious);
 					uint64_t tNow = getTns();
 					for (const BBOX_OBJ &object : vPrevious)
 					{
@@ -218,7 +218,7 @@ namespace kai
 
 			vector<BBOX_OBJ> vTracked;
 			Vector3f vDim;
-			if (m_tTrackStart && readTargetObjects(m_pBBtrackIn, vTracked, vDim))
+			if (m_tTrackStart && readTargetObjects(m_pBBtrackin, vTracked, vDim))
 			{
 				uint64_t tNow = getTns();
 				uint64_t tNewest = bFound ? m_tTargetUpdate : 0;
@@ -275,11 +275,11 @@ namespace kai
 		return true;
 	}
 
-	bool _APmav_follow::readTargetObjects(BBoxStream *pStream, vector<BBOX_OBJ> &vObjects, Vector3f &vDim)
+	bool _APmav_follow::readTargetObjects(BBoxStream *pStreamin, vector<BBOX_OBJ> &vObjects, Vector3f &vDim)
 	{
-		NULL_F(pStream);
-		pStream->get(vObjects);
-		vDim = pStream->getContainerDim();
+		NULL_F(pStreamin);
+		pStreamin->get(vObjects);
+		vDim = pStreamin->getContainerDim();
 		IF_F(!vDim.allFinite() || vDim.x() <= 0 || vDim.y() <= 0);
 		return true;
 	}
@@ -316,7 +316,7 @@ namespace kai
 		int topProb = -1;
 		for (const BBOX_OBJ &object : vObjects)
 		{
-			IF_CONT(object.getTopClass() != m_iClass || !bTargetFresh(object, tNow));
+			IF_CONT(object.getTopClassID() != m_iClass || !bTargetFresh(object, tNow));
 			IF_CONT(object.m_tStamp < tNewest);
 			IF_CONT(object.m_tStamp == tNewest && object.getTopClassProb() < topProb);
 			IF_CONT(!getTargetBB(object, vDim, m_vTargetBB));
