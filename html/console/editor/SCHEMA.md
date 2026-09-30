@@ -40,6 +40,7 @@ The catalog scans repository C++ headers and sources, excluding `src/Dependencie
   "source": "src/Vision/Pipeline/_Crop.h:16",
   "baseClasses": ["_RGBbase"],
   "creatable": true,
+  "instanceKind": "module",
   "buildConditions": [["ifdef WITH_VISION", "ifdef USE_OPENCV"]],
   "configurable": true,
   "parameters": [],
@@ -53,7 +54,7 @@ The example shows the record shape; generated records contain the actual paramet
 
 `baseClasses` lists direct C++ base types. Parameters, dependencies, and container shapes are **already flattened** through inheritance, with a derived path replacing the inherited path. Consumers should not merge inherited field arrays again. Embedded `_Thread`, `StateBase`, and ROS node configuration is flattened at its actual JSON path. Fields retain `declaredIn`, and embedded fields also carry `embeddedClass`.
 
-`creatable` means the class is registered by `ADD_MODULE` in `Modules::createInstance` or `ADD_DATA_STREAM` in `DataObjects::createInstance`. DataObjects inherit `type: "dataObject"` in their generated defaults so new editor nodes select the stream factory. Helper classes, base classes, and templates remain discoverable but cannot be instantiated by the current launch factory. `InstanceMgr` is the special application block, not a normal factory module. `buildConditions` records alternative preprocessor stacks at factory registration; it does **not** say that a user's binary enabled those features. A class can be creatable in the catalog and unavailable in a particular build.
+`creatable` means the class is registered by `ADD_MODULE` in `Modules::createInstance` or `ADD_DATA_STREAM` in `DataObjects::createInstance`. `instanceKind` identifies the registered factory (`module` or `dataObject`). DataObjects inherit `type: "dataObject"` in their generated defaults so new editor nodes select the stream factory. The editor reports a class whose configured `type` selects the wrong factory. Helper classes, base classes, and templates remain discoverable but cannot be instantiated by the current launch factory. `InstanceMgr` is the special application block, not a normal factory module. `buildConditions` records alternative preprocessor stacks at factory registration; it does **not** say that a user's binary enabled those features. A class can be creatable in the catalog and unavailable in a particular build.
 
 ## Parameters and paths
 
@@ -101,6 +102,7 @@ Absence of a default does not mean a field is required. Avoid filling every unkn
 {
   "path": ["RGBframeIn"],
   "targetClass": "RGBframe",
+  "targetKind": "dataObject",
   "multiple": false,
   "required": true,
   "declaredIn": "_Crop",
@@ -109,7 +111,7 @@ Absence of a default does not mean a field is required. Avoid filling every unkn
 }
 ```
 
-A dependency means the owning instance looks up a module or DataObject by name. It is stored as the ordinary instance-name string in the exported config. The graph draws an arrow from the provider to the dependent instance that retains its pointer (provider port to dependency socket). Compatible providers include `targetClass` and derived classes according to the catalog's inheritance tree.
+A dependency means the owning instance looks up a module or DataObject by name. It is stored as the ordinary instance-name string in the exported config. The graph draws an arrow from the provider to the dependent instance that retains its pointer (provider port to dependency socket). Compatible providers include `targetClass` and derived classes according to the catalog's inheritance tree. `targetKind` records which runtime lookup is used: `module` for `findModule`, `dataObject` for `findDataObject`. Providers must also select the correct factory through their `type` setting (omitted means `module`). A generic `BASE` module dependency cannot use a DataObject, even though both share that C++ base. Older catalogs without kind metadata retain class-only compatibility.
 
 `multiple: true` means the value at `path` is an array of instance-name strings, such as `_Console.vBASE` or `_Mavlink.vRoutings`. A path containing a wildcard represents repeated fields; `multiple` still describes **each terminal value**, not the container:
 
@@ -124,13 +126,13 @@ A dependency means the owning instance looks up a module or DataObject by name. 
 
 The resulting launch value is `"vGeometry": [{"PCLframeIn": "cloud"}]`. `_ApDrive.motors` uses an object map instead, for example `"motors": {"left": {"_ActuatorBase": "motor"}}`.
 
-`required: true` is emitted only for a clear, immediate unconditional scalar-link failure check. Its absence does not guarantee an optional link; conditional validation and hardware state remain in C++. `_APmav_drive` supports `_SelectableOctGrid` with `_OctreeGrid` as a legacy fallback, so neither alias is independently marked required. Thread scheduling references describe the source as written; the editor cannot make an embedded `_Thread` factory-creatable.
+`required: true` is emitted only for a clear, immediate unconditional scalar-link failure check. A guard that fails only when a supplied name cannot be resolved does not make an omitted connection required. Its absence does not guarantee an optional link; conditional validation and hardware state remain in C++. `_APmav_drive` supports `_SelectableOctGrid` with `_OctreeGrid` as a legacy fallback, so neither alias is independently marked required. Thread scheduling references describe the source as written; the editor cannot make an embedded `_Thread` factory-creatable.
 
 ## Extraction and audit boundaries
 
-The scanner removes comments, identifies explicit class/struct declarations, reads factory registration guards, and scans `loadConfig`/`link` bodies. It resolves `jKv` reads, `jK` child aliases, iterator/range loops, immediate `findModule` and `findDataObject` calls, scalar/vector declarations, and embedded `createThread` calls. The composed `ROS_fastLio::init` reader is included explicitly. Runtime console command payloads are not launch configuration.
+The scanner removes comments, identifies explicit class/struct declarations, reads factory registration guards, and scans `loadConfig`/`link` bodies. It resolves `jKv` reads, `jK` child aliases, iterator/range loops, immediate `findModule` and `findDataObject` calls, scalar/vector declarations, and embedded `createThread` calls. Thread creation through a resolved JSON alias is included as well as direct `jK` calls, with explicit parent settings overriding embedded defaults. The composed `ROS_fastLio::init` reader is included explicitly. Runtime console command payloads are not launch configuration.
 
-Audited adapters cover the shared selectable-grid viewer source reader, `_StateControl` embedded states, application/module switches, grid point-stream input lists, selected grid UUIDs, grid-reference aliases, Mavlink routing type, and the source-defined Scepter/Orbbec control catalogs. The generator reads the hardware-control key lists directly from source so additions appear on regeneration. SDK-dependent ranges, supported controls, C++ enum conversions, custom object validators, and general arbitrary C++ execution are not reproduced. Complex hardware objects remain editable as JSON.
+Audited adapters cover the shared selectable-grid viewer source reader, `_StateControl` embedded states, application/module switches, grid point-stream input lists, selected grid UUIDs, grid-reference aliases, Mavlink routing type, and the source-defined Scepter/Orbbec/RealSense control catalogs and GLIM parameter groups. The generator reads the hardware-control key lists directly from source so additions appear on regeneration. RealSense uses its validated `configValues` reader in place of the inherited camera readers; only its accepted settings and inherited stream links are offered. Its `sensorOptions` domains remain optional JSON maps of device-dependent SDK options. GLIM `parameters` leaves have no generated defaults because their runtime values come from external files under `configPath`; some groups depend on the selected GLIM plugins. SDK-dependent ranges, supported controls, C++ enum conversions, custom object validators, and general arbitrary C++ execution are not reproduced. Complex hardware objects remain editable as JSON.
 
 The generated audit records resolved and unresolved configuration reads and instance lookups. Dynamic shared viewer readers are covered by explicit adapters; unresolved patterns retain source references and resolution notes. These counts concern recognized function bodies, not a guarantee that future arbitrary C++ patterns will be inferred. All diagnostics, including struct-helper diagnostics, appear under `audit.diagnostics`; a class also carries its local diagnostics.
 

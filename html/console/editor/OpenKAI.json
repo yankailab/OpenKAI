@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "5e62e82cd89e33de8169fb51f7bb009d31b20910d18c13a1f8dcc06ea125122b",
+  "sourceDigest": "9f7c4138aa3a2c33219722e66c7e9ea84ae272e8d6e41727bcd578406aec3e9e",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -528,6 +528,7 @@
             "_ActuatorBase"
           ],
           "targetClass": "_ActuatorBase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:155",
@@ -1063,6 +1064,7 @@
             "_ActuatorBase"
           ],
           "targetClass": "_ActuatorBase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:155",
@@ -1079,6 +1081,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ACTUATOR",
@@ -1817,6 +1820,7 @@
             "_ActuatorBase"
           ],
           "targetClass": "_ActuatorBase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:155",
@@ -1827,6 +1831,7 @@
             "_Modbus"
           ],
           "targetClass": "_Modbus",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_HYMCU_RS485",
           "source": "src/Actuator/_HYMCU_RS485.cpp:93",
@@ -1850,6 +1855,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ACTUATOR"
@@ -2349,6 +2355,7 @@
             "_ActuatorBase"
           ],
           "targetClass": "_ActuatorBase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:155",
@@ -2359,6 +2366,7 @@
             "_Modbus"
           ],
           "targetClass": "_Modbus",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_IAI",
           "source": "src/Actuator/_IAI.cpp:40",
@@ -2376,6 +2384,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ACTUATOR"
@@ -2887,6 +2896,7 @@
             "_ActuatorBase"
           ],
           "targetClass": "_ActuatorBase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:155",
@@ -2897,6 +2907,7 @@
             "_Modbus"
           ],
           "targetClass": "_Modbus",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_OrientalMotor",
           "source": "src/Actuator/_OrientalMotor.cpp:46",
@@ -2914,6 +2925,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ACTUATOR"
@@ -3425,6 +3437,7 @@
             "_ActuatorBase"
           ],
           "targetClass": "_ActuatorBase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:155",
@@ -3441,6 +3454,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ACTUATOR",
@@ -3969,6 +3983,7 @@
             "_ActuatorBase"
           ],
           "targetClass": "_ActuatorBase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:155",
@@ -3979,6 +3994,7 @@
             "_IObase"
           ],
           "targetClass": "_IObase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_DDSM",
           "source": "src/Actuator/Motor/_DDSM.cpp:43",
@@ -4002,6 +4018,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ACTUATOR"
@@ -4513,6 +4530,7 @@
             "_ActuatorBase"
           ],
           "targetClass": "_ActuatorBase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:155",
@@ -4523,6 +4541,7 @@
             "_Modbus"
           ],
           "targetClass": "_Modbus",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ZDmotor",
           "source": "src/Actuator/Motor/_ZDmotor.cpp:47",
@@ -4540,6 +4559,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ACTUATOR"
@@ -5051,6 +5071,7 @@
             "_ActuatorBase"
           ],
           "targetClass": "_ActuatorBase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:155",
@@ -5061,6 +5082,7 @@
             "_Modbus"
           ],
           "targetClass": "_Modbus",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ZLAC8015",
           "source": "src/Actuator/Motor/_ZLAC8015.cpp:50",
@@ -5078,6 +5100,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ACTUATOR"
@@ -5589,6 +5612,7 @@
             "_ActuatorBase"
           ],
           "targetClass": "_ActuatorBase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:155",
@@ -5599,6 +5623,7 @@
             "_Modbus"
           ],
           "targetClass": "_Modbus",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ZLAC8015D",
           "source": "src/Actuator/Motor/_ZLAC8015D.cpp:47",
@@ -5616,6 +5641,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ACTUATOR"
@@ -5828,6 +5854,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_AUTOPILOT"
@@ -6029,6 +6056,7 @@
             "_Mavlink"
           ],
           "targetClass": "_Mavlink",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_base",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:50",
@@ -6052,6 +6080,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ARDUPILOT"
@@ -6253,6 +6282,7 @@
             "_Mavlink"
           ],
           "targetClass": "_Mavlink",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_base",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:50",
@@ -6276,6 +6306,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ARDUPILOT"
@@ -6470,6 +6501,7 @@
             "APmavlink_base"
           ],
           "targetClass": "_APmav_base",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_depthVision",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_depthVision.cpp:92",
@@ -6481,6 +6513,7 @@
             "_RGBDbase"
           ],
           "targetClass": "_RGBDbase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_depthVision",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_depthVision.cpp:97",
@@ -6504,6 +6537,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ARDUPILOT",
@@ -6818,6 +6852,7 @@
             "_APmav_base"
           ],
           "targetClass": "_APmav_base",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_move",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_move.cpp:59",
@@ -6829,6 +6864,7 @@
             "_GeoFence"
           ],
           "targetClass": "_GeoFence",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_drive",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:78",
@@ -6840,6 +6876,7 @@
             "_OctreeGrid"
           ],
           "targetClass": "_SelectableOctGrid",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_drive",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:73",
@@ -6851,6 +6888,7 @@
             "_SelectableOctGrid"
           ],
           "targetClass": "_SelectableOctGrid",
+          "targetKind": "module",
           "multiple": false,
           "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:link",
           "declaredIn": "_APmav_drive",
@@ -6869,6 +6907,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ARDUPILOT"
@@ -7218,6 +7257,7 @@
             "BBoxStreamIn"
           ],
           "targetClass": "BBoxStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:128",
@@ -7228,6 +7268,7 @@
             "BBoxStreamTrackIn"
           ],
           "targetClass": "BBoxStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:133",
@@ -7238,6 +7279,7 @@
             "PIDalt"
           ],
           "targetClass": "PID",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:115",
@@ -7248,6 +7290,7 @@
             "PIDpitch"
           ],
           "targetClass": "PID",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:107",
@@ -7258,6 +7301,7 @@
             "PIDroll"
           ],
           "targetClass": "PID",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:111",
@@ -7268,6 +7312,7 @@
             "PIDyaw"
           ],
           "targetClass": "PID",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:119",
@@ -7278,6 +7323,7 @@
             "_APmav_base"
           ],
           "targetClass": "_APmav_base",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_move",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_move.cpp:59",
@@ -7289,10 +7335,10 @@
             "_TrackerBase"
           ],
           "targetClass": "_TrackerBase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:123",
-          "required": true,
           "containers": []
         }
       ],
@@ -7312,6 +7358,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ARDUPILOT",
@@ -7795,6 +7842,7 @@
             "BBoxStreamIn"
           ],
           "targetClass": "BBoxStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:128",
@@ -7805,6 +7853,7 @@
             "BBoxStreamTrackIn"
           ],
           "targetClass": "BBoxStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:133",
@@ -7815,6 +7864,7 @@
             "PIDalt"
           ],
           "targetClass": "PID",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:115",
@@ -7825,6 +7875,7 @@
             "PIDpitch"
           ],
           "targetClass": "PID",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:107",
@@ -7835,6 +7886,7 @@
             "PIDroll"
           ],
           "targetClass": "PID",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:111",
@@ -7845,6 +7897,7 @@
             "PIDyaw"
           ],
           "targetClass": "PID",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:119",
@@ -7855,6 +7908,7 @@
             "_APmav_base"
           ],
           "targetClass": "_APmav_base",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_move",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_move.cpp:59",
@@ -7866,6 +7920,7 @@
             "_DistSensorBase"
           ],
           "targetClass": "_DistSensorBase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_land",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_land.cpp:104",
@@ -7876,10 +7931,10 @@
             "_TrackerBase"
           ],
           "targetClass": "_TrackerBase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_follow",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp:123",
-          "required": true,
           "containers": []
         }
       ],
@@ -7905,6 +7960,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ARDUPILOT",
@@ -8028,6 +8084,7 @@
             "_APmav_base"
           ],
           "targetClass": "_APmav_base",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_mission",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_mission.cpp:42",
@@ -8045,6 +8102,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ARDUPILOT"
@@ -8154,6 +8212,7 @@
             "_APmav_base"
           ],
           "targetClass": "_APmav_base",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_move",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_move.cpp:59",
@@ -8171,6 +8230,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ARDUPILOT"
@@ -8327,6 +8387,7 @@
             "_APmav_base"
           ],
           "targetClass": "_APmav_base",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_rcChannel",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_rcChannel.cpp:58",
@@ -8344,6 +8405,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ARDUPILOT"
@@ -8487,6 +8549,7 @@
             "_APmav_base"
           ],
           "targetClass": "_APmav_base",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_relay",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_relay.cpp:81",
@@ -8510,6 +8573,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ARDUPILOT"
@@ -8711,6 +8775,7 @@
             "_Mavlink"
           ],
           "targetClass": "_Mavlink",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_base",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:50",
@@ -8734,6 +8799,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ARDUPILOT"
@@ -8957,6 +9023,7 @@
             "_IObase"
           ],
           "targetClass": "_IObase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:44",
@@ -8968,6 +9035,7 @@
             "_IObaseSend"
           ],
           "targetClass": "_IObase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_RTCMcast",
           "source": "src/Navigation/_RTCMcast.cpp:96",
@@ -8979,6 +9047,7 @@
             "_Mavlink"
           ],
           "targetClass": "_Mavlink",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_RTCM",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_RTCM.cpp:36",
@@ -9008,6 +9077,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ARDUPILOT",
@@ -9152,6 +9222,7 @@
             "_APmav_base"
           ],
           "targetClass": "_APmav_base",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_servo",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_servo.cpp:81",
@@ -9175,6 +9246,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ARDUPILOT"
@@ -9383,6 +9455,7 @@
             "_APmav_base"
           ],
           "targetClass": "_APmav_base",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_visionEstimate",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_visionEstimate.cpp:85",
@@ -9394,6 +9467,7 @@
             "_NavBase"
           ],
           "targetClass": "_NavBase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_visionEstimate",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_visionEstimate.cpp:90",
@@ -9411,6 +9485,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ARDUPILOT",
@@ -9661,6 +9736,7 @@
             "_ActuatorBase"
           ],
           "targetClass": "_ActuatorBase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ApDrive",
           "source": "src/Autopilot/Ground/_ApDrive.cpp:87",
@@ -9690,6 +9766,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_AUTOPILOT"
@@ -10015,6 +10092,7 @@
       "containers": [],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_COMPUTE",
@@ -10253,6 +10331,7 @@
       "containers": [],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "dataObject",
       "buildConditions": [
         []
       ],
@@ -10329,6 +10408,7 @@
       "containers": [],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "dataObject",
       "buildConditions": [
         []
       ],
@@ -10491,6 +10571,7 @@
       "containers": [],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "dataObject",
       "buildConditions": [
         []
       ],
@@ -10567,6 +10648,7 @@
       "containers": [],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "dataObject",
       "buildConditions": [
         []
       ],
@@ -10643,6 +10725,7 @@
       "containers": [],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "dataObject",
       "buildConditions": [
         []
       ],
@@ -10719,6 +10802,7 @@
       "containers": [],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "dataObject",
       "buildConditions": [
         []
       ],
@@ -10795,6 +10879,7 @@
       "containers": [],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "dataObject",
       "buildConditions": [
         [
           "ifdef USE_OPENCV"
@@ -10873,6 +10958,7 @@
       "containers": [],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "dataObject",
       "buildConditions": [
         [
           "ifdef USE_OPENCV"
@@ -10987,6 +11073,7 @@
       "containers": [],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "dataObject",
       "buildConditions": [
         []
       ],
@@ -11063,6 +11150,7 @@
       "containers": [],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "dataObject",
       "buildConditions": [
         []
       ],
@@ -11263,6 +11351,7 @@
             "BBoxStreamOut"
           ],
           "targetClass": "BBoxStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:81",
@@ -11273,6 +11362,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:76",
@@ -11289,6 +11379,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_DETECTOR",
@@ -11493,6 +11584,7 @@
             "BBoxStreamOut"
           ],
           "targetClass": "BBoxStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:81",
@@ -11503,6 +11595,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:76",
@@ -11519,6 +11612,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_DETECTOR",
@@ -11698,6 +11792,7 @@
             "BBoxStreamOut"
           ],
           "targetClass": "BBoxStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:81",
@@ -11708,6 +11803,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:76",
@@ -12107,6 +12203,7 @@
             "DframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_YOLO26depthEstONNX",
           "source": "src/Detector/_YOLO26depthEstONNX.cpp:162",
@@ -12118,6 +12215,7 @@
             "PCLframeOut"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_YOLO26depthEstONNX",
           "source": "src/Detector/_YOLO26depthEstONNX.cpp:168",
@@ -12128,6 +12226,7 @@
             "RGBDframeOut"
           ],
           "targetClass": "RGBDframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_YOLO26depthEstONNX",
           "source": "src/Detector/_YOLO26depthEstONNX.cpp:157",
@@ -12139,6 +12238,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_YOLO26depthEstONNX",
           "source": "src/Detector/_YOLO26depthEstONNX.cpp:152",
@@ -12162,6 +12262,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_DETECTOR",
@@ -12442,6 +12543,7 @@
             "BBoxStreamOut"
           ],
           "targetClass": "BBoxStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:81",
@@ -12452,6 +12554,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_DetectorBase",
           "source": "src/Detector/_DetectorBase.cpp:76",
@@ -12468,6 +12571,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_DETECTOR",
@@ -12831,6 +12935,7 @@
             "_Modbus"
           ],
           "targetClass": "_Modbus",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ADIO_EBYTE",
           "source": "src/IO/_ADIO_EBYTE.cpp:49",
@@ -12854,6 +12959,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_IO"
@@ -13351,6 +13457,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_IO"
@@ -13501,6 +13608,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_IO"
@@ -13639,6 +13747,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_IO"
@@ -13825,6 +13934,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_IO"
@@ -13951,6 +14061,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_IO",
@@ -14172,6 +14283,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_IO",
@@ -14415,6 +14527,7 @@
             "_JSONbase"
           ],
           "targetClass": "_JSONbase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_GeoFence",
           "source": "src/Navigation/_GeoFence.cpp:35",
@@ -14431,6 +14544,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_NAVIGATION"
@@ -14540,6 +14654,7 @@
             "_IObase"
           ],
           "targetClass": "_IObase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_GPS",
           "source": "src/Navigation/_GPS.cpp:43",
@@ -14557,6 +14672,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_NAVIGATION"
@@ -14900,6 +15016,7 @@
             "_IObase"
           ],
           "targetClass": "_IObase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:44",
@@ -14911,6 +15028,7 @@
             "_IObaseSend"
           ],
           "targetClass": "_IObase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_RTCMcast",
           "source": "src/Navigation/_RTCMcast.cpp:96",
@@ -14940,6 +15058,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_NAVIGATION"
@@ -15125,6 +15244,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_NET"
@@ -15447,6 +15567,7 @@
             "_IObase"
           ],
           "targetClass": "_IObase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:44",
@@ -15470,6 +15591,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_PROTOCOL"
@@ -15686,6 +15808,7 @@
             "_IObase"
           ],
           "targetClass": "_IObase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_Mavlink",
           "source": "src/Protocol/_Mavlink.cpp:93",
@@ -15697,6 +15820,7 @@
             "vRoutings"
           ],
           "targetClass": "_Mavlink",
+          "targetKind": "module",
           "multiple": true,
           "declaredIn": "_Mavlink",
           "source": "src/Protocol/_Mavlink.cpp:103",
@@ -15714,6 +15838,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_PROTOCOL"
@@ -15948,6 +16073,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_PROTOCOL"
@@ -16085,6 +16211,7 @@
             "_IObase"
           ],
           "targetClass": "_IObase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:44",
@@ -16108,6 +16235,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_PROTOCOL"
@@ -16280,6 +16408,7 @@
             "_IObase"
           ],
           "targetClass": "_IObase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:44",
@@ -16303,6 +16432,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_PROTOCOL"
@@ -16488,6 +16618,7 @@
             "_IObase"
           ],
           "targetClass": "_IObase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:44",
@@ -16511,6 +16642,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_PROTOCOL"
@@ -16637,6 +16769,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_PROTOCOL"
@@ -16758,6 +16891,7 @@
             "_IObase"
           ],
           "targetClass": "_IObase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_USR_CANET",
           "source": "src/Protocol/_USR_CANET.cpp:37",
@@ -16775,6 +16909,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_PROTOCOL"
@@ -16960,6 +17095,7 @@
             "_IObase"
           ],
           "targetClass": "_IObase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:44",
@@ -16971,6 +17107,7 @@
             "vBASE"
           ],
           "targetClass": "BASE",
+          "targetKind": "module",
           "multiple": true,
           "declaredIn": "_WSconsole",
           "source": "src/Protocol/_WSconsole.cpp:49",
@@ -16993,6 +17130,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_PROTOCOL"
@@ -17142,6 +17280,7 @@
             "_IObase"
           ],
           "targetClass": "_IObase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:44",
@@ -17165,6 +17304,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_PROTOCOL"
@@ -17895,6 +18035,7 @@
             "_PCframe"
           ],
           "targetClass": "_PCframe",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ROS_fastLio",
           "source": "src/ROS/_ROS_fastLio.cpp:65",
@@ -17923,6 +18064,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_ROS"
@@ -18180,6 +18322,281 @@
         },
         {
           "path": [
+            "parameters"
+          ],
+          "type": "object",
+          "source": "src/SLAM/_GLIM.cpp:loadConfig",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter",
+          "description": "Optional overrides of the GLIM configuration loaded from configPath."
+        },
+        {
+          "path": [
+            "parameters",
+            "bMapping"
+          ],
+          "type": "boolean",
+          "source": "src/SLAM/_GLIM.cpp:loadConfig",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter",
+          "description": "Overrides the top-level bMapping setting."
+        },
+        {
+          "path": [
+            "parameters",
+            "global"
+          ],
+          "type": "object",
+          "source": "src/SLAM/_GLIM.cpp:160",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter",
+          "description": "Overrides values from the external GLIM configuration. Available with the standard global_mapping plugin."
+        },
+        {
+          "path": [
+            "parameters",
+            "global",
+            "loopDistance"
+          ],
+          "type": "number",
+          "source": "src/SLAM/_GLIM.cpp:162",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter"
+        },
+        {
+          "path": [
+            "parameters",
+            "global",
+            "loopOverlap"
+          ],
+          "type": "number",
+          "source": "src/SLAM/_GLIM.cpp:163",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter"
+        },
+        {
+          "path": [
+            "parameters",
+            "global",
+            "voxelResolution"
+          ],
+          "type": "number",
+          "source": "src/SLAM/_GLIM.cpp:161",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter"
+        },
+        {
+          "path": [
+            "parameters",
+            "nMinPoints"
+          ],
+          "type": "integer",
+          "source": "src/SLAM/_GLIM.cpp:loadConfig",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter",
+          "description": "Overrides the top-level nMinPoints setting."
+        },
+        {
+          "path": [
+            "parameters",
+            "odometry"
+          ],
+          "type": "object",
+          "source": "src/SLAM/_GLIM.cpp:144",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter",
+          "description": "Overrides values from the external GLIM configuration. Available with the CT or CPU odometry plugin."
+        },
+        {
+          "path": [
+            "parameters",
+            "odometry",
+            "iterations"
+          ],
+          "type": "integer",
+          "source": "src/SLAM/_GLIM.cpp:147",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter"
+        },
+        {
+          "path": [
+            "parameters",
+            "odometry",
+            "threads"
+          ],
+          "type": "integer",
+          "source": "src/SLAM/_GLIM.cpp:148",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter"
+        },
+        {
+          "path": [
+            "parameters",
+            "odometry",
+            "voxelResolution"
+          ],
+          "type": "number",
+          "source": "src/SLAM/_GLIM.cpp:145",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter"
+        },
+        {
+          "path": [
+            "parameters",
+            "preprocess"
+          ],
+          "type": "object",
+          "source": "src/SLAM/_GLIM.cpp:129",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter",
+          "description": "Overrides values from the external GLIM configuration."
+        },
+        {
+          "path": [
+            "parameters",
+            "preprocess",
+            "distanceFar"
+          ],
+          "type": "number",
+          "source": "src/SLAM/_GLIM.cpp:131",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter"
+        },
+        {
+          "path": [
+            "parameters",
+            "preprocess",
+            "distanceNear"
+          ],
+          "type": "number",
+          "source": "src/SLAM/_GLIM.cpp:130",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter"
+        },
+        {
+          "path": [
+            "parameters",
+            "preprocess",
+            "kNeighbors"
+          ],
+          "type": "integer",
+          "source": "src/SLAM/_GLIM.cpp:134",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter"
+        },
+        {
+          "path": [
+            "parameters",
+            "preprocess",
+            "targetPoints"
+          ],
+          "type": "integer",
+          "source": "src/SLAM/_GLIM.cpp:133",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter"
+        },
+        {
+          "path": [
+            "parameters",
+            "preprocess",
+            "threads"
+          ],
+          "type": "integer",
+          "source": "src/SLAM/_GLIM.cpp:135",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter"
+        },
+        {
+          "path": [
+            "parameters",
+            "preprocess",
+            "voxelResolution"
+          ],
+          "type": "number",
+          "source": "src/SLAM/_GLIM.cpp:132",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter"
+        },
+        {
+          "path": [
+            "parameters",
+            "submap"
+          ],
+          "type": "object",
+          "source": "src/SLAM/_GLIM.cpp:151",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter",
+          "description": "Overrides values from the external GLIM configuration. Available with the standard sub_mapping plugin."
+        },
+        {
+          "path": [
+            "parameters",
+            "submap",
+            "keyframeRotation"
+          ],
+          "type": "number",
+          "source": "src/SLAM/_GLIM.cpp:155",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter"
+        },
+        {
+          "path": [
+            "parameters",
+            "submap",
+            "keyframeStrategy"
+          ],
+          "type": "string",
+          "source": "src/SLAM/_GLIM.cpp:153",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter",
+          "description": "OVERLAP or DISPLACEMENT."
+        },
+        {
+          "path": [
+            "parameters",
+            "submap",
+            "keyframeTranslation"
+          ],
+          "type": "number",
+          "source": "src/SLAM/_GLIM.cpp:154",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter"
+        },
+        {
+          "path": [
+            "parameters",
+            "submap",
+            "keyframes"
+          ],
+          "type": "integer",
+          "source": "src/SLAM/_GLIM.cpp:152",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter"
+        },
+        {
+          "path": [
+            "parameters",
+            "submap",
+            "maxOverlap"
+          ],
+          "type": "number",
+          "source": "src/SLAM/_GLIM.cpp:156",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter"
+        },
+        {
+          "path": [
+            "parameters",
+            "submap",
+            "voxelResolution"
+          ],
+          "type": "number",
+          "source": "src/SLAM/_GLIM.cpp:157",
+          "declaredIn": "_GLIM",
+          "extraction": "audited-adapter"
+        },
+        {
+          "path": [
             "tConfidenceTimeoutNs"
           ],
           "type": "integer",
@@ -18259,10 +18676,10 @@
             "IMUstreamIn"
           ],
           "targetClass": "IMUstream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_SLAMbase",
           "source": "src/SLAM/_SLAMbase.cpp:55",
-          "required": true,
           "containers": []
         },
         {
@@ -18270,6 +18687,7 @@
             "PCLframeIn"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_SLAMbase",
           "source": "src/SLAM/_SLAMbase.cpp:50",
@@ -18281,10 +18699,10 @@
             "PCLframeOut"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_GLIM",
           "source": "src/SLAM/_GLIM.cpp:109",
-          "required": true,
           "containers": []
         },
         {
@@ -18292,14 +18710,48 @@
             "PCLmapOut"
           ],
           "targetClass": "PCLmap",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_GLIM",
           "source": "src/SLAM/_GLIM.cpp:114",
-          "required": true,
           "containers": []
         }
       ],
       "containers": [
+        {
+          "path": [
+            "parameters"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "parameters",
+            "global"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "parameters",
+            "odometry"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "parameters",
+            "preprocess"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "parameters",
+            "submap"
+          ],
+          "type": "object"
+        },
         {
           "path": [
             "thread"
@@ -18309,6 +18761,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "if defined(WITH_SLAM)",
@@ -18475,10 +18928,10 @@
             "IMUstreamIn"
           ],
           "targetClass": "IMUstream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_SLAMbase",
           "source": "src/SLAM/_SLAMbase.cpp:55",
-          "required": true,
           "containers": []
         },
         {
@@ -18486,6 +18939,7 @@
             "PCLframeIn"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_SLAMbase",
           "source": "src/SLAM/_SLAMbase.cpp:50",
@@ -18503,6 +18957,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "if defined(WITH_SLAM)"
@@ -18656,6 +19111,20 @@
           "cppVariable": "fpsStream",
           "cppType": "float",
           "default": 30.0
+        },
+        {
+          "path": [
+            "threadStream",
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false,
+          "embeddedClass": "_Thread"
         }
       ],
       "dependencies": [],
@@ -18665,10 +19134,17 @@
             "thread"
           ],
           "type": "object"
+        },
+        {
+          "path": [
+            "threadStream"
+          ],
+          "type": "object"
         }
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_SENSOR"
@@ -18874,6 +19350,7 @@
             "_IObase"
           ],
           "targetClass": "_IObase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_BenewakeTF",
           "source": "src/Sensor/Distance/_BenewakeTF.cpp:44",
@@ -18891,6 +19368,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_SENSOR"
@@ -19487,6 +19965,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_SENSOR"
@@ -19692,6 +20171,7 @@
             "_IObase"
           ],
           "targetClass": "_IObase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_TOFsense",
           "source": "src/Sensor/Distance/_TOFsense.cpp:44",
@@ -19709,6 +20189,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_SENSOR"
@@ -20272,10 +20753,10 @@
             "IMUstreamOut"
           ],
           "targetClass": "IMUstream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Livox2",
           "source": "src/Sensor/LiDAR/_Livox2.cpp:163",
-          "required": true,
           "containers": []
         },
         {
@@ -20283,6 +20764,7 @@
             "PCLframeOut"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Livox2",
           "source": "src/Sensor/LiDAR/_Livox2.cpp:158",
@@ -20294,6 +20776,7 @@
             "_UDPctrlCmd"
           ],
           "targetClass": "_UDP",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_Livox2",
           "source": "src/Sensor/LiDAR/_Livox2.cpp:173",
@@ -20305,6 +20788,7 @@
             "_UDPdeviceQuery"
           ],
           "targetClass": "_UDP",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_Livox2",
           "source": "src/Sensor/LiDAR/_Livox2.cpp:168",
@@ -20316,6 +20800,7 @@
             "_UDPimu"
           ],
           "targetClass": "_UDP",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_Livox2",
           "source": "src/Sensor/LiDAR/_Livox2.cpp:188",
@@ -20327,6 +20812,7 @@
             "_UDPpcl"
           ],
           "targetClass": "_UDP",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_Livox2",
           "source": "src/Sensor/LiDAR/_Livox2.cpp:183",
@@ -20338,6 +20824,7 @@
             "_UDPpushCmd"
           ],
           "targetClass": "_UDP",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_Livox2",
           "source": "src/Sensor/LiDAR/_Livox2.cpp:178",
@@ -20391,6 +20878,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_SENSOR",
@@ -20575,6 +21063,7 @@
             "PCLframeOut"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RoboSenseAiry",
           "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:49",
@@ -20586,6 +21075,7 @@
             "_UDPdifop"
           ],
           "targetClass": "_UDP",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_RoboSenseAiry",
           "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:59",
@@ -20597,6 +21087,7 @@
             "_UDPmsop"
           ],
           "targetClass": "_UDP",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_RoboSenseAiry",
           "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:54",
@@ -20620,6 +21111,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_SENSOR",
@@ -20735,6 +21227,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_SOLVER"
@@ -20849,6 +21342,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_SOLVER"
@@ -20951,6 +21445,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_SWARM"
@@ -21053,6 +21548,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_SWARM"
@@ -21194,6 +21690,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_TOOLS",
@@ -21498,6 +21995,7 @@
             "PCLframeIn"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_LCalign",
           "source": "src/Tools/_LCalign.cpp:60",
@@ -21509,6 +22007,7 @@
             "PCLframeOut"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_LCalign",
           "source": "src/Tools/_LCalign.cpp:55",
@@ -21520,6 +22019,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_LCalign",
           "source": "src/Tools/_LCalign.cpp:66",
@@ -21531,6 +22031,7 @@
             "_IMUbase"
           ],
           "targetClass": "_IMUbase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_LCalign",
           "source": "src/Tools/_LCalign.cpp:71",
@@ -21547,6 +22048,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_TOOLS",
@@ -21692,6 +22194,7 @@
             "BBoxStreamOut"
           ],
           "targetClass": "BBoxStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_TrackerBase",
           "source": "src/Tracker/_TrackerBase.cpp:58",
@@ -21702,6 +22205,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_TrackerBase",
           "source": "src/Tracker/_TrackerBase.cpp:53",
@@ -21718,6 +22222,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_DETECTOR",
@@ -21863,6 +22368,7 @@
             "BBoxStreamOut"
           ],
           "targetClass": "BBoxStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_TrackerBase",
           "source": "src/Tracker/_TrackerBase.cpp:58",
@@ -21873,6 +22379,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_TrackerBase",
           "source": "src/Tracker/_TrackerBase.cpp:53",
@@ -21994,6 +22501,7 @@
             "vBASE"
           ],
           "targetClass": "BASE",
+          "targetKind": "module",
           "multiple": true,
           "declaredIn": "_Console",
           "source": "src/UI/_Console.cpp:59",
@@ -22010,6 +22518,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         []
       ],
@@ -22166,6 +22675,7 @@
             "BBoxStreamIn"
           ],
           "targetClass": "BBoxStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_OCVwindow",
           "source": "src/UI/_OCVwindow.cpp:89",
@@ -22176,6 +22686,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_OCVwindow",
           "source": "src/UI/_OCVwindow.cpp:85",
@@ -22193,6 +22704,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UI",
@@ -22877,6 +23389,7 @@
             "LineFrameIn"
           ],
           "targetClass": "LineFrame",
+          "targetKind": "dataObject",
           "multiple": false,
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
           "declaredIn": "_ImGUIselectableOctGrid",
@@ -22897,6 +23410,7 @@
             "PCLframeIn"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
           "declaredIn": "_ImGUIselectableOctGrid",
@@ -22917,6 +23431,7 @@
             "_SelectableOctGrid"
           ],
           "targetClass": "_SelectableOctGrid",
+          "targetKind": "module",
           "multiple": false,
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
           "declaredIn": "_ImGUIselectableOctGrid",
@@ -22959,6 +23474,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UNIVERSE",
@@ -23566,6 +24082,7 @@
             "LineFrameIn"
           ],
           "targetClass": "LineFrame",
+          "targetKind": "dataObject",
           "multiple": false,
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
           "declaredIn": "_WebGeometry",
@@ -23586,6 +24103,7 @@
             "PCLframeIn"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
           "declaredIn": "_WebGeometry",
@@ -23616,6 +24134,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UNIVERSE"
@@ -24053,6 +24572,7 @@
             "PCLmapIn"
           ],
           "targetClass": "PCLmap",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_WebGLIM",
           "source": "src/UI/Viewer/Web/_WebGLIM.cpp:332",
@@ -24070,6 +24590,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "if defined(WITH_SLAM)",
@@ -24691,6 +25212,7 @@
             "LineFrameIn"
           ],
           "targetClass": "LineFrame",
+          "targetKind": "dataObject",
           "multiple": false,
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
           "declaredIn": "_WebSelectableOctGrid",
@@ -24711,6 +25233,7 @@
             "PCLframeIn"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
           "declaredIn": "_WebSelectableOctGrid",
@@ -24731,6 +25254,7 @@
             "_SelectableOctGrid"
           ],
           "targetClass": "_SelectableOctGrid",
+          "targetKind": "module",
           "multiple": false,
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
           "declaredIn": "_WebSelectableOctGrid",
@@ -24767,6 +25291,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UNIVERSE"
@@ -24917,6 +25442,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UNIVERSE"
@@ -25246,6 +25772,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UNIVERSE"
@@ -25388,6 +25915,7 @@
             "PCLframeOut"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCfile",
           "source": "src/Universe/Geometry/PointCloud/_PCfile.cpp:862",
@@ -25405,6 +25933,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UNIVERSE"
@@ -25639,6 +26168,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UNIVERSE",
@@ -25776,6 +26306,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UNIVERSE",
@@ -25932,6 +26463,7 @@
             "PCLframeOut"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCmerge",
           "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp:91",
@@ -25943,6 +26475,7 @@
             "vPCLframesIn"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": true,
           "declaredIn": "_PCmerge",
           "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp:100",
@@ -25959,6 +26492,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UNIVERSE"
@@ -26114,6 +26648,7 @@
             "PCLframeOut"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCrecv",
           "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:42",
@@ -26125,6 +26660,7 @@
             "_IObase"
           ],
           "targetClass": "_IObase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_PCrecv",
           "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:47",
@@ -26142,6 +26678,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UNIVERSE"
@@ -26290,6 +26827,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UNIVERSE",
@@ -26458,6 +26996,7 @@
             "PCLframeIn"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCsend",
           "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp:50",
@@ -26469,6 +27008,7 @@
             "_IObase"
           ],
           "targetClass": "_IObase",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_PCsend",
           "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp:45",
@@ -26486,6 +27026,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UNIVERSE"
@@ -26674,6 +27215,7 @@
             "PCLframeIn"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCtransform",
           "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp:129",
@@ -26685,6 +27227,7 @@
             "PCLframeOut"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCtransform",
           "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp:124",
@@ -26702,6 +27245,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UNIVERSE"
@@ -26939,6 +27483,7 @@
             "PCLframeIn"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCregistCol",
           "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:69",
@@ -26950,6 +27495,7 @@
             "PCLframeOut"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCregistCol",
           "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:64",
@@ -26967,6 +27513,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UNIVERSE",
@@ -27147,6 +27694,7 @@
             "PCLframeSrcIn"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCregistGlobal",
           "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:59",
@@ -27158,6 +27706,7 @@
             "PCLframeTgtIn"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCregistGlobal",
           "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:64",
@@ -27169,6 +27718,7 @@
             "_PCtransform"
           ],
           "targetClass": "_PCtransform",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_PCregistGlobal",
           "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp:69",
@@ -27186,6 +27736,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UNIVERSE",
@@ -27341,6 +27892,7 @@
             "PCLframeSrcIn"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCregistICP",
           "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:55",
@@ -27352,6 +27904,7 @@
             "PCLframeTgtIn"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCregistICP",
           "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:60",
@@ -27363,6 +27916,7 @@
             "_PCtransform"
           ],
           "targetClass": "_PCtransform",
+          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_PCregistICP",
           "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp:65",
@@ -27380,6 +27934,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UNIVERSE",
@@ -27505,6 +28060,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UNIVERSE"
@@ -27701,6 +28257,7 @@
             "vPCLframesIn"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": true,
           "source": "src/Universe/Grid/_OctreeGrid.cpp:link",
           "declaredIn": "_OctreeGrid",
@@ -27725,6 +28282,7 @@
         }
       ],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UNIVERSE"
@@ -27972,6 +28530,7 @@
             "vPCLframesIn"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": true,
           "source": "src/Universe/Grid/_OctreeGrid.cpp:link",
           "declaredIn": "_OctreeGrid",
@@ -27995,6 +28554,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_UNIVERSE"
@@ -28167,10 +28727,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -28184,6 +28744,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -28369,10 +28930,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -28386,6 +28947,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -28595,10 +29157,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -28612,6 +29174,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -28785,10 +29348,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -28802,6 +29365,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -28963,10 +29527,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -29148,10 +29712,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -29165,6 +29729,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -29349,6 +29914,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_ColorConvert",
           "source": "src/Vision/Pipeline/_ColorConvert.cpp:49",
@@ -29360,10 +29926,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -29377,6 +29943,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -29573,6 +30140,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Contrast",
           "source": "src/Vision/Pipeline/_Contrast.cpp:51",
@@ -29584,10 +30152,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -29601,6 +30169,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -29785,6 +30354,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Crop",
           "source": "src/Vision/Pipeline/_Crop.cpp:50",
@@ -29796,10 +30366,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -29813,6 +30383,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -30288,6 +30859,7 @@
             "DframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_D2RGB",
           "source": "src/Vision/Pipeline/_D2RGB.cpp:57",
@@ -30299,10 +30871,10 @@
             "DframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:97",
-          "required": true,
           "containers": []
         },
         {
@@ -30310,10 +30882,10 @@
             "IMUstreamOut"
           ],
           "targetClass": "IMUstream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:112",
-          "required": true,
           "containers": []
         },
         {
@@ -30321,10 +30893,10 @@
             "IRframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:102",
-          "required": true,
           "containers": []
         },
         {
@@ -30332,10 +30904,10 @@
             "PCLframeOut"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:107",
-          "required": true,
           "containers": []
         },
         {
@@ -30343,10 +30915,10 @@
             "RGBDframeOut"
           ],
           "targetClass": "RGBDframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:82",
-          "required": true,
           "containers": []
         },
         {
@@ -30354,10 +30926,10 @@
             "RGBDtDframeOut"
           ],
           "targetClass": "RGBDframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:92",
-          "required": true,
           "containers": []
         },
         {
@@ -30365,10 +30937,10 @@
             "RGBDtRGBframeOut"
           ],
           "targetClass": "RGBDframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:87",
-          "required": true,
           "containers": []
         },
         {
@@ -30376,10 +30948,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -30393,6 +30965,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -30651,6 +31224,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Erode",
           "source": "src/Vision/Pipeline/_Erode.cpp:80",
@@ -30662,10 +31236,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -30685,6 +31259,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -30857,6 +31432,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_HistEqualize",
           "source": "src/Vision/Pipeline/_HistEqualize.cpp:43",
@@ -30868,10 +31444,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -30885,6 +31461,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -31089,6 +31666,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_InRange",
           "source": "src/Vision/Pipeline/_InRange.cpp:53",
@@ -31100,10 +31678,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -31117,6 +31695,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -31289,6 +31868,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Invert",
           "source": "src/Vision/Pipeline/_Invert.cpp:43",
@@ -31300,10 +31880,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -31317,6 +31897,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -31500,6 +32081,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Mask",
           "source": "src/Vision/Pipeline/_Mask.cpp:44",
@@ -31511,6 +32093,7 @@
             "RGBframeMaskIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Mask",
           "source": "src/Vision/Pipeline/_Mask.cpp:49",
@@ -31522,10 +32105,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -31539,6 +32122,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -31810,6 +32394,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Morphology",
           "source": "src/Vision/Pipeline/_Morphology.cpp:82",
@@ -31821,10 +32406,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -31844,6 +32429,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -32016,6 +32602,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Remap",
           "source": "src/Vision/Pipeline/_Remap.cpp:46",
@@ -32027,10 +32614,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -32044,6 +32631,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -32216,6 +32804,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Resize",
           "source": "src/Vision/Pipeline/_Resize.cpp:43",
@@ -32227,10 +32816,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -32244,6 +32833,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -32428,6 +33018,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Rotate",
           "source": "src/Vision/Pipeline/_Rotate.cpp:49",
@@ -32439,10 +33030,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -32456,6 +33047,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -32643,6 +33235,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Thermal2RGB",
           "source": "src/Vision/Pipeline/_Thermal2RGB.cpp:50",
@@ -32654,10 +33247,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -32671,6 +33264,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -32955,6 +33549,7 @@
             "RGBframeIn"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Threshold",
           "source": "src/Vision/Pipeline/_Threshold.cpp:83",
@@ -32966,10 +33561,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -32989,6 +33584,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -34759,10 +35355,10 @@
             "DframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:97",
-          "required": true,
           "containers": []
         },
         {
@@ -34770,10 +35366,10 @@
             "IMUstreamOut"
           ],
           "targetClass": "IMUstream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:112",
-          "required": true,
           "containers": []
         },
         {
@@ -34781,10 +35377,10 @@
             "IRframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:102",
-          "required": true,
           "containers": []
         },
         {
@@ -34792,10 +35388,10 @@
             "PCLframeOut"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:107",
-          "required": true,
           "containers": []
         },
         {
@@ -34803,10 +35399,10 @@
             "RGBDframeOut"
           ],
           "targetClass": "RGBDframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:82",
-          "required": true,
           "containers": []
         },
         {
@@ -34814,10 +35410,10 @@
             "RGBDtDframeOut"
           ],
           "targetClass": "RGBDframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:92",
-          "required": true,
           "containers": []
         },
         {
@@ -34825,10 +35421,10 @@
             "RGBDtRGBframeOut"
           ],
           "targetClass": "RGBDframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:87",
-          "required": true,
           "containers": []
         },
         {
@@ -34836,10 +35432,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -34859,6 +35455,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -34974,38 +35571,92 @@
         },
         {
           "path": [
-            "bConfidence"
+            "SN"
+          ],
+          "type": "string",
+          "source": "src/Vision/RGBD/_RealSense.cpp:59",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_SN",
+          "cppType": "string",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "accelFPS"
+          ],
+          "type": "integer",
+          "source": "src/Vision/RGBD/_RealSense.cpp:60",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_accelFPS",
+          "cppType": "int",
+          "typeEvidence": "declaration",
+          "default": 0
+        },
+        {
+          "path": [
+            "bAlign"
           ],
           "type": "boolean",
-          "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:37",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bConfidence",
+          "source": "src/Vision/RGBD/_RealSense.cpp:64",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_bAlign",
           "cppType": "bool",
-          "default": true
+          "typeEvidence": "declaration",
+          "default": false
+        },
+        {
+          "path": [
+            "bDecimation"
+          ],
+          "type": "boolean",
+          "source": "src/Vision/RGBD/_RealSense.cpp:65",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_bDecimation",
+          "cppType": "bool",
+          "typeEvidence": "declaration",
+          "default": false
         },
         {
           "path": [
             "bDepth"
           ],
           "type": "boolean",
-          "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:33",
-          "typeEvidence": "declaration",
+          "source": "src/Vision/RGBD/_RealSense.cpp:63",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
           "cppVariable": "m_bDepth",
           "cppType": "bool",
+          "typeEvidence": "declaration",
           "default": true
+        },
+        {
+          "path": [
+            "bHoleFilling"
+          ],
+          "type": "boolean",
+          "source": "src/Vision/RGBD/_RealSense.cpp:66",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_bHoleFilling",
+          "cppType": "bool",
+          "typeEvidence": "declaration",
+          "default": false
         },
         {
           "path": [
             "bIMU"
           ],
           "type": "boolean",
-          "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:40",
-          "typeEvidence": "declaration",
+          "source": "src/Vision/RGBD/_RealSense.cpp:63",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
           "cppVariable": "m_bIMU",
           "cppType": "bool",
+          "typeEvidence": "declaration",
           "default": false
         },
         {
@@ -35013,11 +35664,12 @@
             "bIR"
           ],
           "type": "boolean",
-          "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:34",
-          "typeEvidence": "declaration",
+          "source": "src/Vision/RGBD/_RealSense.cpp:63",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
           "cppVariable": "m_bIR",
           "cppType": "bool",
+          "typeEvidence": "declaration",
           "default": false
         },
         {
@@ -35048,11 +35700,12 @@
             "bPCL"
           ],
           "type": "boolean",
-          "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:41",
-          "typeEvidence": "declaration",
+          "source": "src/Vision/RGBD/_RealSense.cpp:64",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
           "cppVariable": "m_bPCL",
           "cppType": "bool",
+          "typeEvidence": "declaration",
           "default": false
         },
         {
@@ -35060,11 +35713,12 @@
             "bPCLrgb"
           ],
           "type": "boolean",
-          "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:42",
-          "typeEvidence": "declaration",
+          "source": "src/Vision/RGBD/_RealSense.cpp:64",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
           "cppVariable": "m_bPCLrgb",
           "cppType": "bool",
+          "typeEvidence": "declaration",
           "default": false
         },
         {
@@ -35072,35 +35726,51 @@
             "bRGB"
           ],
           "type": "boolean",
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:28",
-          "typeEvidence": "declaration",
+          "source": "src/Vision/RGBD/_RealSense.cpp:63",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
           "cppVariable": "m_bRGB",
           "cppType": "bool",
+          "typeEvidence": "declaration",
           "default": true
         },
         {
           "path": [
-            "btDepth"
+            "bSpatial"
           ],
           "type": "boolean",
-          "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:36",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_btDepth",
+          "source": "src/Vision/RGBD/_RealSense.cpp:65",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_bSpatial",
           "cppType": "bool",
+          "typeEvidence": "declaration",
           "default": false
         },
         {
           "path": [
-            "btRGB"
+            "bTemporal"
           ],
           "type": "boolean",
-          "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:35",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_btRGB",
+          "source": "src/Vision/RGBD/_RealSense.cpp:65",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_bTemporal",
           "cppType": "bool",
+          "typeEvidence": "declaration",
+          "default": false
+        },
+        {
+          "path": [
+            "bThreshold"
+          ],
+          "type": "boolean",
+          "source": "src/Vision/RGBD/_RealSense.cpp:66",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_bThreshold",
+          "cppType": "bool",
+          "typeEvidence": "declaration",
           "default": false
         },
         {
@@ -35120,35 +35790,25 @@
             "dOfs"
           ],
           "type": "number",
-          "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:31",
-          "typeEvidence": "declaration",
+          "source": "src/Vision/RGBD/_RealSense.cpp:62",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
           "cppVariable": "m_dOfs",
           "cppType": "float",
-          "default": 0.0
-        },
-        {
-          "path": [
-            "dScale"
-          ],
-          "type": "number",
-          "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:30",
           "typeEvidence": "declaration",
-          "cppVariable": "m_dScale",
-          "cppType": "float",
-          "default": 1.0
+          "default": 0.0
         },
         {
           "path": [
             "devFPS"
           ],
           "type": "integer",
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:27",
-          "typeEvidence": "declaration",
+          "source": "src/Vision/RGBD/_RealSense.cpp:59",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
           "cppVariable": "m_devFPS",
           "cppType": "int",
+          "typeEvidence": "declaration",
           "default": 30
         },
         {
@@ -35156,36 +35816,26 @@
             "devFPSd"
           ],
           "type": "integer",
-          "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:27",
-          "typeEvidence": "declaration",
+          "source": "src/Vision/RGBD/_RealSense.cpp:59",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
           "cppVariable": "m_devFPSd",
           "cppType": "int",
+          "typeEvidence": "declaration",
           "default": 30
         },
         {
           "path": [
-            "devURI"
+            "gyroFPS"
           ],
-          "type": "string",
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:26",
+          "type": "integer",
+          "source": "src/Vision/RGBD/_RealSense.cpp:60",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_gyroFPS",
+          "cppType": "int",
           "typeEvidence": "declaration",
-          "cppVariable": "m_devURI",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "fConfidenceThr"
-          ],
-          "type": "number",
-          "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:38",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fConfidenceThr",
-          "cppType": "float",
-          "default": 0.0
+          "default": 0
         },
         {
           "path": [
@@ -35198,6 +35848,224 @@
           "cppVariable": "m_name",
           "cppType": "string",
           "default": ""
+        },
+        {
+          "path": [
+            "sensorOptions"
+          ],
+          "type": "object",
+          "source": "src/Vision/RGBD/_RealSense.cpp:66",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_sensorOptions",
+          "cppType": "json",
+          "typeEvidence": "declaration",
+          "description": "Optional SDK overrides grouped by sensor or filter. Omit an option or use null to keep its device value."
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "color"
+          ],
+          "type": "object",
+          "source": "src/Vision/RGBD/_RealSense.cpp:176",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "description": "SDK option names (RS2_OPTION_*) for color. Supported options depend on the connected device."
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "color",
+            "*"
+          ],
+          "type": "json",
+          "source": "src/Vision/RGBD/_RealSense.cpp:176",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "nullable": true,
+          "description": "SDK option value: number, boolean, string, rectangle array, or null to retain the device value."
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "decimation"
+          ],
+          "type": "object",
+          "source": "src/Vision/RGBD/_RealSense.cpp:176",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "description": "SDK option names (RS2_OPTION_*) for decimation. Supported options depend on the connected device."
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "decimation",
+            "*"
+          ],
+          "type": "json",
+          "source": "src/Vision/RGBD/_RealSense.cpp:176",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "nullable": true,
+          "description": "SDK option value: number, boolean, string, rectangle array, or null to retain the device value."
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "depth"
+          ],
+          "type": "object",
+          "source": "src/Vision/RGBD/_RealSense.cpp:176",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "description": "SDK option names (RS2_OPTION_*) for depth. Supported options depend on the connected device."
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "depth",
+            "*"
+          ],
+          "type": "json",
+          "source": "src/Vision/RGBD/_RealSense.cpp:176",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "nullable": true,
+          "description": "SDK option value: number, boolean, string, rectangle array, or null to retain the device value."
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "holeFilling"
+          ],
+          "type": "object",
+          "source": "src/Vision/RGBD/_RealSense.cpp:176",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "description": "SDK option names (RS2_OPTION_*) for holeFilling. Supported options depend on the connected device."
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "holeFilling",
+            "*"
+          ],
+          "type": "json",
+          "source": "src/Vision/RGBD/_RealSense.cpp:176",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "nullable": true,
+          "description": "SDK option value: number, boolean, string, rectangle array, or null to retain the device value."
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "motion"
+          ],
+          "type": "object",
+          "source": "src/Vision/RGBD/_RealSense.cpp:176",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "description": "SDK option names (RS2_OPTION_*) for motion. Supported options depend on the connected device."
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "motion",
+            "*"
+          ],
+          "type": "json",
+          "source": "src/Vision/RGBD/_RealSense.cpp:176",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "nullable": true,
+          "description": "SDK option value: number, boolean, string, rectangle array, or null to retain the device value."
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "spatial"
+          ],
+          "type": "object",
+          "source": "src/Vision/RGBD/_RealSense.cpp:176",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "description": "SDK option names (RS2_OPTION_*) for spatial. Supported options depend on the connected device."
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "spatial",
+            "*"
+          ],
+          "type": "json",
+          "source": "src/Vision/RGBD/_RealSense.cpp:176",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "nullable": true,
+          "description": "SDK option value: number, boolean, string, rectangle array, or null to retain the device value."
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "temporal"
+          ],
+          "type": "object",
+          "source": "src/Vision/RGBD/_RealSense.cpp:176",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "description": "SDK option names (RS2_OPTION_*) for temporal. Supported options depend on the connected device."
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "temporal",
+            "*"
+          ],
+          "type": "json",
+          "source": "src/Vision/RGBD/_RealSense.cpp:176",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "nullable": true,
+          "description": "SDK option value: number, boolean, string, rectangle array, or null to retain the device value."
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "threshold"
+          ],
+          "type": "object",
+          "source": "src/Vision/RGBD/_RealSense.cpp:176",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "description": "SDK option names (RS2_OPTION_*) for threshold. Supported options depend on the connected device."
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "threshold",
+            "*"
+          ],
+          "type": "json",
+          "source": "src/Vision/RGBD/_RealSense.cpp:176",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "nullable": true,
+          "description": "SDK option value: number, boolean, string, rectangle array, or null to retain the device value."
+        },
+        {
+          "path": [
+            "tOutMs"
+          ],
+          "type": "integer",
+          "source": "src/Vision/RGBD/_RealSense.cpp:60",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_tOutMs",
+          "cppType": "int",
+          "typeEvidence": "declaration",
+          "default": 1000
         },
         {
           "path": [
@@ -35260,11 +36128,12 @@
             "vRangeD"
           ],
           "type": "array",
-          "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:29",
-          "typeEvidence": "declaration",
+          "source": "src/Vision/RGBD/_RealSense.cpp:62",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
           "cppVariable": "m_vRangeD",
           "cppType": "Vector2f",
+          "typeEvidence": "declaration",
           "defaultExpression": "Vector2f(0, FLT_MAX)"
         },
         {
@@ -35272,11 +36141,12 @@
             "vSizeD"
           ],
           "type": "array",
-          "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:28",
-          "typeEvidence": "declaration",
+          "source": "src/Vision/RGBD/_RealSense.cpp:61",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
           "cppVariable": "m_vSizeD",
           "cppType": "Vector2i",
+          "typeEvidence": "declaration",
           "default": [
             640,
             480
@@ -35287,11 +36157,12 @@
             "vSizeRGB"
           ],
           "type": "array",
-          "declaredIn": "_RGBbase",
-          "source": "src/Vision/_RGBbase.cpp:29",
-          "typeEvidence": "declaration",
+          "source": "src/Vision/RGBD/_RealSense.cpp:61",
+          "declaredIn": "_RealSense",
+          "extraction": "audited-adapter",
           "cppVariable": "m_vSizeRGB",
           "cppType": "Vector2i",
+          "typeEvidence": "declaration",
           "default": [
             640,
             480
@@ -35304,10 +36175,10 @@
             "DframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:97",
-          "required": true,
           "containers": []
         },
         {
@@ -35315,10 +36186,10 @@
             "IMUstreamOut"
           ],
           "targetClass": "IMUstream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:112",
-          "required": true,
           "containers": []
         },
         {
@@ -35326,10 +36197,10 @@
             "IRframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:102",
-          "required": true,
           "containers": []
         },
         {
@@ -35337,10 +36208,10 @@
             "PCLframeOut"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:107",
-          "required": true,
           "containers": []
         },
         {
@@ -35348,10 +36219,10 @@
             "RGBDframeOut"
           ],
           "targetClass": "RGBDframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:82",
-          "required": true,
           "containers": []
         },
         {
@@ -35359,10 +36230,10 @@
             "RGBDtDframeOut"
           ],
           "targetClass": "RGBDframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:92",
-          "required": true,
           "containers": []
         },
         {
@@ -35370,10 +36241,10 @@
             "RGBDtRGBframeOut"
           ],
           "targetClass": "RGBDframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:87",
-          "required": true,
           "containers": []
         },
         {
@@ -35381,14 +36252,76 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
       "containers": [
+        {
+          "path": [
+            "sensorOptions"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "color"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "decimation"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "depth"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "holeFilling"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "motion"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "spatial"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "temporal"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "sensorOptions",
+            "threshold"
+          ],
+          "type": "object"
+        },
         {
           "path": [
             "thread"
@@ -35404,6 +36337,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -35821,10 +36755,10 @@
             "DframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:97",
-          "required": true,
           "containers": []
         },
         {
@@ -35832,10 +36766,10 @@
             "IMUstreamOut"
           ],
           "targetClass": "IMUstream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:112",
-          "required": true,
           "containers": []
         },
         {
@@ -35843,10 +36777,10 @@
             "IRframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:102",
-          "required": true,
           "containers": []
         },
         {
@@ -35854,10 +36788,10 @@
             "PCLframeOut"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:107",
-          "required": true,
           "containers": []
         },
         {
@@ -35865,10 +36799,10 @@
             "RGBDframeOut"
           ],
           "targetClass": "RGBDframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:82",
-          "required": true,
           "containers": []
         },
         {
@@ -35876,10 +36810,10 @@
             "RGBDtDframeOut"
           ],
           "targetClass": "RGBDframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:92",
-          "required": true,
           "containers": []
         },
         {
@@ -35887,10 +36821,10 @@
             "RGBDtRGBframeOut"
           ],
           "targetClass": "RGBDframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:87",
-          "required": true,
           "containers": []
         },
         {
@@ -35898,10 +36832,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -36875,10 +37809,10 @@
             "DframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:97",
-          "required": true,
           "containers": []
         },
         {
@@ -36886,10 +37820,10 @@
             "IMUstreamOut"
           ],
           "targetClass": "IMUstream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:112",
-          "required": true,
           "containers": []
         },
         {
@@ -36897,10 +37831,10 @@
             "IRframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:102",
-          "required": true,
           "containers": []
         },
         {
@@ -36908,10 +37842,10 @@
             "PCLframeOut"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:107",
-          "required": true,
           "containers": []
         },
         {
@@ -36919,10 +37853,10 @@
             "RGBDframeOut"
           ],
           "targetClass": "RGBDframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:82",
-          "required": true,
           "containers": []
         },
         {
@@ -36930,10 +37864,10 @@
             "RGBDtDframeOut"
           ],
           "targetClass": "RGBDframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:92",
-          "required": true,
           "containers": []
         },
         {
@@ -36941,10 +37875,10 @@
             "RGBDtRGBframeOut"
           ],
           "targetClass": "RGBDframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:87",
-          "required": true,
           "containers": []
         },
         {
@@ -36952,10 +37886,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -36975,6 +37909,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -37669,10 +38604,10 @@
             "DframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:97",
-          "required": true,
           "containers": []
         },
         {
@@ -37680,10 +38615,10 @@
             "IMUstreamOut"
           ],
           "targetClass": "IMUstream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:112",
-          "required": true,
           "containers": []
         },
         {
@@ -37691,10 +38626,10 @@
             "IRframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:102",
-          "required": true,
           "containers": []
         },
         {
@@ -37702,10 +38637,10 @@
             "PCLframeOut"
           ],
           "targetClass": "PCLframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:107",
-          "required": true,
           "containers": []
         },
         {
@@ -37713,10 +38648,10 @@
             "RGBDframeOut"
           ],
           "targetClass": "RGBDframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:82",
-          "required": true,
           "containers": []
         },
         {
@@ -37724,10 +38659,10 @@
             "RGBDtDframeOut"
           ],
           "targetClass": "RGBDframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:92",
-          "required": true,
           "containers": []
         },
         {
@@ -37735,10 +38670,10 @@
             "RGBDtRGBframeOut"
           ],
           "targetClass": "RGBDframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
           "source": "src/Vision/RGBD/_RGBDbase.cpp:87",
-          "required": true,
           "containers": []
         },
         {
@@ -37746,10 +38681,10 @@
             "RGBframeOut"
           ],
           "targetClass": "RGBframe",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
-          "required": true,
           "containers": []
         }
       ],
@@ -37763,6 +38698,7 @@
       ],
       "diagnostics": [],
       "creatable": true,
+      "instanceKind": "module",
       "buildConditions": [
         [
           "ifdef WITH_VISION",
@@ -38299,7 +39235,7 @@
     ],
     "limitations": [
       "Static extraction does not evaluate C++ preprocessing or validate a particular binary build.",
-      "Methods other than loadConfig/link are not treated as configuration; runtime console commands are excluded.",
+      "Ordinary extraction reads loadConfig/link; composed startup readers use explicit adapters. Runtime console commands are excluded.",
       "Only safely parsed literal/arithmetic defaults are emitted. Missing default means unknown, not required.",
       "Dynamic/composed readers use audited adapters; diagnostics identify unresolved readers. Keep unknown JSON fields when round-tripping.",
       "A wildcard path can denote an array item or object member; containers records the parent shape."

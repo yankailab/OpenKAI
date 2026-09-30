@@ -204,7 +204,7 @@
     renderInspector();
   }
   function canConnect(node, dependency) {
-    return !node.nested && node.className !== 'InstanceMgr' && state.model.compatible(node.className, dependency.targetClass || 'BASE');
+    return state.model.compatibleTarget(node, dependency);
   }
   function beginConnection(node, dependency, event) {
     if (event) event.stopPropagation();

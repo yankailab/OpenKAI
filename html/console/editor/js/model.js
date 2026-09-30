@@ -164,10 +164,25 @@
             return visit(className);
         }
 
-        /** InstanceMgr::findModule compares exact names; /foo is not an alias for foo. */
-        resolveReference(reference) {
+        /** InstanceMgr defaults to the module factory; dataObject is case-sensitive. */
+        instanceKind(node) {
+            return own(node.data, "type") && typeof node.data.type === "string" ? node.data.type : "module";
+        }
+
+        compatibleTarget(node, dependency) {
+            const kind = this.instanceKind(node);
+            return !node.nested && node.className !== "InstanceMgr" &&
+                (!node.definition || node.definition.creatable !== false) &&
+                (!dependency.targetKind || dependency.targetKind === kind) &&
+                (!node.definition || !node.definition.instanceKind || node.definition.instanceKind === kind) &&
+                this.compatible(node.className, dependency.targetClass);
+        }
+
+        /** Runtime factories have separate exact-name lookups; /foo is not an alias. */
+        resolveReference(reference, targetKind) {
             if (typeof reference !== "string" || !reference) return null;
-            return this.nodes().filter(node => !node.nested && node.className !== "InstanceMgr")
+            return this.nodes().filter(node => !node.nested && node.className !== "InstanceMgr" &&
+                (!targetKind || this.instanceKind(node) === targetKind))
                 .sort((a, b) => a.key < b.key ? -1 : a.key > b.key ? 1 : 0)
                 .find(node => node.name === reference) || null;
         }
@@ -262,12 +277,12 @@
                             const identity = pointer(fullPath);
                             if (seen.has(identity)) continue;
                             seen.add(identity);
-                            const target = this.resolveReference(entry.value);
+                            const target = this.resolveReference(entry.value, definition.targetKind);
                             result.push({
                                 id: identity, sourceId: node.id, sourcePath: node.path, targetId: target ? target.id : null,
                                 path: entry.path, fieldPath: field.path, reference: entry.value, definition,
                                 index: entry.index, resolved: !!target,
-                                compatible: target ? this.compatible(target.className, definition.targetClass) : false,
+                                compatible: target ? this.compatibleTarget(target, definition) : false,
                                 targetDisabled: !!target && target.data.bON === false,
                             });
                         }
@@ -289,7 +304,12 @@
             const definition = this.dependencyDefinition(source, dependencyPath);
             if (!definition) throw new Error("This path is not a known dependency.");
             if (target.nested || target.className === "InstanceMgr") throw new Error("Only top-level runtime modules can be dependency targets.");
-            if (target.definition && target.definition.creatable === false) throw new Error(target.className + " is not registered as a runtime module.");
+            if (target.definition && target.definition.creatable === false) throw new Error(target.className + " is not registered as a runtime instance.");
+            const kind = this.instanceKind(target);
+            if (definition.targetKind && kind !== definition.targetKind) throw new Error("This dependency requires a " + definition.targetKind + " instance.");
+            if (target.definition && target.definition.instanceKind && kind !== target.definition.instanceKind) {
+                throw new Error(target.className + " must use type " + JSON.stringify(target.definition.instanceKind) + ".");
+            }
             if (!target.name) throw new Error("The target needs a nonempty runtime module name.");
             if (this.nodes().some(other => !other.nested && other.id !== targetId && other.name === target.name)) throw new Error("More than one module uses that runtime name.");
             if (!this.compatible(target.className, definition.targetClass)) throw new Error("Expected " + definition.targetClass + ", but " + target.className + " is incompatible.");
@@ -350,6 +370,10 @@
             for (const node of nodes) {
                 if (!node.definition) report("warning", "unknown-class", "Class " + node.className + " is not in the catalog; its configuration is preserved.", node);
                 else if (!node.nested && node.className !== "InstanceMgr" && node.definition.creatable === false) report("warning", "not-creatable", node.className + " is not registered as a top-level module.", node);
+                if (!node.nested && node.definition && node.definition.creatable && node.definition.instanceKind &&
+                    this.instanceKind(node) !== node.definition.instanceKind) {
+                    report("error", "instance-kind", node.className + " requires type " + JSON.stringify(node.definition.instanceKind) + ".", node, ["type"]);
+                }
                 if (!node.nested && node.className !== "InstanceMgr") {
                     if (names.has(node.name)) report("error", "duplicate-name", "Runtime module name " + node.name + " is also used by " + names.get(node.name) + ".", node);
                     else names.set(node.name, node.key);

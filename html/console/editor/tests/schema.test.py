@@ -2,6 +2,7 @@
 """Run with python3 html/console/editor/tests/schema.test.py."""
 import importlib.util
 from pathlib import Path
+import re
 import unittest
 
 
@@ -14,7 +15,140 @@ spec.loader.exec_module(generator)
 class StreamReferenceSchemaTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.classes = {entry["name"]: entry for entry in generator.generate()["classes"]}
+        cls.schema = generator.generate()
+        cls.classes = {entry["name"]: entry for entry in cls.schema["classes"]}
+
+    def parameters(self, name):
+        return {tuple(p["path"]): p for p in self.classes[name]["parameters"]}
+
+    def dependencies(self, name):
+        return {tuple(d["path"]): d for d in self.classes[name]["dependencies"]}
+
+    def test_all_declared_factory_classes_are_creatable(self):
+        registered = set()
+        for filename in ("Modules.cpp", "DataObjects.cpp"):
+            source = (generator.ROOT / "src" / "Instance" / filename).read_text()
+            registered.update(re.findall(r"^\s*ADD_(?:MODULE|DATA_STREAM)\(\s*(\w+)\s*\)", source, re.M))
+        self.assertEqual(
+            {name for name, entry in self.classes.items() if entry["creatable"]},
+            registered.intersection(self.classes),
+        )
+        self.assertEqual(set(self.schema["audit"]["factoryClassesWithoutDeclaration"]), registered.difference(self.classes))
+
+    def test_data_object_factories_and_configuration_defaults(self):
+        names = {"BBoxStream", "BytePacket", "IMUstream", "LineFrame", "PCLframe", "PCLmap",
+                 "RGBframe", "RGBDframe", "SharedMemoryFrame", "UGLIDcellStream"}
+        self.assertEqual(
+            {name for name, entry in self.classes.items() if entry["category"] == "DataObject" and entry["creatable"]},
+            names,
+        )
+        for name in names:
+            with self.subTest(class_name=name):
+                record, parameters = self.classes[name], self.parameters(name)
+                self.assertEqual(record["baseClasses"], ["DataObjBase"])
+                self.assertEqual(record["instanceKind"], "dataObject")
+                self.assertEqual(parameters[("type",)]["default"], "dataObject")
+                self.assertEqual(parameters[("type",)]["type"], "string")
+                self.assertIs(parameters[("bON",)]["default"], True)
+                self.assertIs(parameters[("bLog",)]["default"], False)
+                guards = [["ifdef USE_OPENCV"]] if name in {"RGBframe", "RGBDframe"} else [[]]
+                self.assertEqual(record["buildConditions"], guards)
+        self.assertFalse(self.classes["DataObjBase"]["creatable"])
+        for name in ("BBoxStream", "IMUstream"):
+            self.assertEqual(self.parameters(name)[("nBuf",)]["type"], "integer")
+            self.assertEqual(self.parameters(name)[("nBuf",)]["default"], 1000)
+        self.assertEqual(self.parameters("BBoxStream")[("vContainerDim",)]["type"], "array")
+        shared = self.parameters("SharedMemoryFrame")
+        for key, value in {"shmName": "", "nB": 0, "bWriter": True}.items():
+            self.assertEqual(shared[(key,)]["default"], value)
+
+    def test_realsense_validated_configuration_and_option_domains(self):
+        parameters = self.parameters("_RealSense")
+        expected = {
+            "SN": "string", "devFPS": "integer", "devFPSd": "integer",
+            "accelFPS": "integer", "gyroFPS": "integer", "tOutMs": "integer",
+            "vSizeRGB": "array", "vSizeD": "array", "vRangeD": "array", "dOfs": "number",
+            "bRGB": "boolean", "bDepth": "boolean", "bIR": "boolean", "bIMU": "boolean",
+            "bPCL": "boolean", "bPCLrgb": "boolean", "bAlign": "boolean", "bDecimation": "boolean",
+            "bSpatial": "boolean", "bTemporal": "boolean", "bHoleFilling": "boolean", "bThreshold": "boolean",
+            "sensorOptions": "object",
+        }
+        for key, kind in expected.items():
+            with self.subTest(key=key):
+                self.assertEqual(parameters[(key,)]["type"], kind)
+        for key in ("devURI", "dScale", "btRGB", "btDepth", "bConfidence", "fConfidenceThr"):
+            self.assertNotIn((key,), parameters)
+        for key, value in {"accelFPS": 0, "gyroFPS": 0, "tOutMs": 1000, "bAlign": False,
+                           "vSizeRGB": [640, 480], "vSizeD": [640, 480]}.items():
+            self.assertEqual(parameters[(key,)]["default"], value)
+        containers = {tuple(c["path"]): c["type"] for c in self.classes["_RealSense"]["containers"]}
+        self.assertEqual(containers[("sensorOptions",)], "object")
+        for domain in ("depth", "color", "motion", "decimation", "spatial", "temporal", "holeFilling", "threshold"):
+            with self.subTest(domain=domain):
+                self.assertEqual(containers[("sensorOptions", domain)], "object")
+                option = parameters[("sensorOptions", domain, "*")]
+                self.assertEqual(option["type"], "json")
+                self.assertTrue(option["nullable"])
+                self.assertNotIn("default", option)
+
+    def test_glim_nested_parameters_preserve_external_defaults(self):
+        parameters = self.parameters("_GLIM")
+        expected = {
+            ("bMapping",): "boolean", ("nMinPoints",): "integer",
+            ("preprocess", "distanceNear"): "number", ("preprocess", "distanceFar"): "number",
+            ("preprocess", "voxelResolution"): "number", ("preprocess", "targetPoints"): "integer",
+            ("preprocess", "kNeighbors"): "integer", ("preprocess", "threads"): "integer",
+            ("odometry", "voxelResolution"): "number", ("odometry", "iterations"): "integer",
+            ("odometry", "threads"): "integer", ("submap", "keyframes"): "integer",
+            ("submap", "keyframeStrategy"): "string", ("submap", "keyframeTranslation"): "number",
+            ("submap", "keyframeRotation"): "number", ("submap", "maxOverlap"): "number",
+            ("submap", "voxelResolution"): "number", ("global", "voxelResolution"): "number",
+            ("global", "loopDistance"): "number", ("global", "loopOverlap"): "number",
+        }
+        self.assertEqual(parameters[("parameters",)]["type"], "object")
+        for path, kind in expected.items():
+            with self.subTest(path=path):
+                self.assertEqual(parameters[("parameters",) + path]["type"], kind)
+        for path, parameter in parameters.items():
+            if path[0] == "parameters":
+                self.assertNotIn("default", parameter, path)
+
+    def test_imu_stream_thread_configuration_is_embedded(self):
+        parameters = self.parameters("_IMUbase")
+        containers = {tuple(c["path"]): c["type"] for c in self.classes["_IMUbase"]["containers"]}
+        self.assertEqual(containers[("threadStream",)], "object")
+        self.assertEqual(parameters[("threadStream", "FPS")]["type"], "number")
+        self.assertEqual(parameters[("threadStream", "FPS")]["default"], 30)
+        self.assertEqual(parameters[("threadStream", "bLog")]["type"], "boolean")
+        self.assertIs(parameters[("threadStream", "bLog")]["default"], False)
+        self.assertNotIn(("threadStream", "class"), parameters)
+        self.assertNotIn(("threadStream", "name"), parameters)
+
+    def test_optional_stream_links_do_not_block_valid_configurations(self):
+        optional = {
+            "_Camera": ("RGBframeOut",),
+            "_RealSense": ("RGBframeOut", "RGBDframeOut", "RGBDtRGBframeOut", "RGBDtDframeOut",
+                           "DframeOut", "IRframeOut", "PCLframeOut", "IMUstreamOut"),
+            "_GLIM": ("PCLframeOut", "PCLmapOut", "IMUstreamIn"),
+        }
+        for name, keys in optional.items():
+            for key in keys:
+                with self.subTest(class_name=name, key=key):
+                    self.assertFalse(self.dependencies(name)[(key,)].get("required", False))
+        for name, key in (("_GLIM", "PCLframeIn"), ("_Crop", "RGBframeIn"), ("_WebGLIM", "PCLmapIn")):
+            self.assertTrue(self.dependencies(name)[(key,)]["required"])
+
+    def test_dependencies_identify_the_runtime_factory(self):
+        for record in self.classes.values():
+            if record["creatable"] and record["category"] != "DataObject":
+                self.assertEqual(record["instanceKind"], "module", record["name"])
+            for dependency in record["dependencies"]:
+                with self.subTest(class_name=record["name"], path=dependency["path"]):
+                    self.assertIn(dependency["targetKind"], ("module", "dataObject"))
+        self.assertEqual(self.dependencies("_Console")[("vBASE",)]["targetKind"], "module")
+        for name, path in (("_Camera", ("RGBframeOut",)), ("_GLIM", ("PCLmapOut",)),
+                           ("_PCmerge", ("vPCLframesIn",)), ("_WebGeometry", ("vGeometry", "*", "PCLframeIn"))):
+            self.assertEqual(self.dependencies(name)[path]["targetKind"], "dataObject")
 
     def test_detection_and_tracking_references_are_name_strings(self):
         classes = self.classes

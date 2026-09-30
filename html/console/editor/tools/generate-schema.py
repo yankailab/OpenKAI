@@ -214,7 +214,8 @@ def generate():
         if method['class'] in records:
             records[method['class']]['_methods'].append(method)
     registered = registration(files['src/Instance/Modules.cpp'])
-    registered.update(registration(files['src/Instance/DataObjects.cpp']))
+    data_registered = registration(files['src/Instance/DataObjects.cpp'])
+    registered.update(data_registered)
     missing_registered = sorted(set(registered) - set(classes))
     # Scalar and vector constructors can establish defaults after in-class initializers.
     for name, record in records.items():
@@ -375,15 +376,28 @@ def generate():
                         next_cast = re.search(r'dynamic_cast\s*<\s*(\w+)\s*\*',body[statement_end:statement_end+1400])
                         if next_cast:
                             target = next_cast[1]
-                    dep = {'path':path,'targetClass':target,'multiple':arg in vector_items,'declaredIn':name,'source':ref(pos)}
+                    target_kind = 'dataObject' if m[0].startswith('findDataObject') else 'module'
+                    dep = {'path':path,'targetClass':target,'targetKind':target_kind,'multiple':arg in vector_items,'declaredIn':name,'source':ref(pos)}
                     tail=body[statement_end+1:body.find(';',statement_end+1)+1]
-                    if not dep['multiple'] and '*' not in path and re.match(r'\s*(?:NULL_F\(|IF_Le_F\(!)',tail):
+                    # A guard on a supplied name (or a feature flag) makes the
+                    # reference conditional, not an unconditionally required link.
+                    unconditional = re.match(r'\s*(?:NULL_F\(\s*\w+\s*\)|IF_Le_F\(\s*!\s*\w+\s*,)',tail)
+                    if not dep['multiple'] and '*' not in path and unconditional:
                         dep['required']=True
                     record['dependencies'].append(dep)
                     audit['resolvedLookups'] += 1
-            for m in re.finditer(r'createThread\s*\(\s*jK\s*\([^,]+,\s*"([^"]+)"\s*\)',body):
-                record['_embedded'].append(([m[1]], '_Thread'))
-                record['containers'].append({'path':[m[1]],'type':'object'})
+            for m in re.finditer(r'\bcreateThread\s*\(',body):
+                start = m.end()-1
+                args = split_args(body[start+1:closing(body,start,'(',')')])
+                child = re.fullmatch(r'jK\s*\(\s*([^,]+),\s*"([^"]+)"\s*\)',args[0])
+                if child:
+                    parent = resolve(child[1])
+                    path = parent+[child[2]] if parent is not None else None
+                else:
+                    path = resolve(args[0])
+                if path is not None:
+                    record['_embedded'].append((path, '_Thread'))
+                    record['containers'].append({'path':path,'type':'object'})
 
     # Audited adapters for composed/dynamic readers that are not simple jKv aliases.
     adapters(records, files, constants, symbol)
@@ -401,8 +415,12 @@ def generate():
                 if base in records:
                     for item in flatten(base,trail+(name,))[field]:
                         entries[tuple(item['path'])] = copy.deepcopy(item)
-            for item in own[field]:
-                entries[tuple(item['path'])] = copy.deepcopy(item)
+            # RealSense replaces the camera readers with its validated
+            # configValues catalog, but still inherits the RGBD link method.
+            if name == '_RealSense' and field == 'parameters':
+                link_paths = {tuple(d['path']) for d in flatten('_RGBDbase')['dependencies']}
+                entries = {path:item for path,item in entries.items()
+                           if item['declaredIn'] not in ('_RGBbase','_RGBDbase') or path in link_paths}
             for prefix, embedded in own['_embedded']:
                 for item in flatten(embedded,trail+(name,))[field]:
                     if item['path'] in (['name'],['class'],['bON']):
@@ -411,6 +429,10 @@ def generate():
                     item['path'] = prefix+item['path']
                     item['embeddedClass'] = embedded
                     entries[tuple(item['path'])] = item
+            # Explicit parent settings (e.g. IMU stream FPS=30) take precedence
+            # over generic embedded thread defaults.
+            for item in own[field]:
+                entries[tuple(item['path'])] = copy.deepcopy(item)
             result[field] = sorted(entries.values(),key=lambda i:tuple(i['path']))
         for parameter in result['parameters']:
             variable=parameter.get('cppVariable')
@@ -426,6 +448,8 @@ def generate():
         if len(variants.get(name,[]))>1:
             result['declarations']=variants[name]
         result['creatable'] = name in registered
+        if result['creatable']:
+            result['instanceKind'] = 'dataObject' if name in data_registered else 'module'
         result['buildConditions'] = registered.get(name,[])
         result['configurable'] = bool(result['parameters'] or result['dependencies'])
         flattened[name] = result
@@ -473,7 +497,7 @@ def generate():
                      'diagnosticsCount':sum(len(c['diagnostics']) for c in records.values()),
                      'diagnostics':[dict(d,className=c['name']) for c in records.values() for d in c['diagnostics']],
                      'limitations':['Static extraction does not evaluate C++ preprocessing or validate a particular binary build.',
-                                    'Methods other than loadConfig/link are not treated as configuration; runtime console commands are excluded.',
+                                    'Ordinary extraction reads loadConfig/link; composed startup readers use explicit adapters. Runtime console commands are excluded.',
                                     'Only safely parsed literal/arithmetic defaults are emitted. Missing default means unknown, not required.',
                                     'Dynamic/composed readers use audited adapters; diagnostics identify unresolved readers. Keep unknown JSON fields when round-tripping.',
                                     'A wildcard path can denote an array item or object member; containers records the parent shape.']}}
@@ -482,8 +506,8 @@ def generate():
 def adapters(records, files, constants, symbol):
     def param(name,path,type_,source,**extra):
         records[name]['parameters'].append({'path':path,'type':type_,'source':source,'declaredIn':name,'extraction':'audited-adapter',**extra})
-    def dep(name,path,target,source,multiple=False):
-        records[name]['dependencies'].append({'path':path,'targetClass':target,'multiple':multiple,'source':source,'declaredIn':name,'extraction':'audited-adapter'})
+    def dep(name,path,target,source,multiple=False,target_kind='module'):
+        records[name]['dependencies'].append({'path':path,'targetClass':target,'targetKind':target_kind,'multiple':multiple,'source':source,'declaredIn':name,'extraction':'audited-adapter'})
     param('InstanceMgr',['bStdErr'],'boolean','src/Instance/InstanceMgr.cpp:bStdErr',default=True)
     param('InstanceMgr',['vInclude'],'array','src/Instance/InstanceMgr.cpp:loadJsonFiles',description='Additional config paths loaded by the OpenKAI runtime.')
     # InstanceMgr's switch is not read by the individual class.
@@ -499,7 +523,7 @@ def adapters(records, files, constants, symbol):
             targets = ['_SelectableOctGrid'] if key == 'vSelectableOctGrid' else ['PCLframe','LineFrame']
             for target in targets:
                 input_key = target if key == 'vSelectableOctGrid' else target+'In'
-                dep(name,[key,'*',input_key],target,helper)
+                dep(name,[key,'*',input_key],target,helper,target_kind='module' if target=='_SelectableOctGrid' else 'dataObject')
                 param(name,[key,'*',input_key],'string',helper,dependency=True)
             if key == 'vGeometry':
                 param(name,[key,'*','name'],'string',helper)
@@ -509,7 +533,7 @@ def adapters(records, files, constants, symbol):
             for field in fields:
                 param(name,[key,'*',field],'number' if field=='matPointSize' else 'integer',helper,**({'default':2} if field=='matPointSize' else {}))
     # Grid input names are read in loadConfig and resolved from a member in link.
-    dep('_OctreeGrid',['vPCLframesIn'],'PCLframe','src/Universe/Grid/_OctreeGrid.cpp:link',multiple=True)
+    dep('_OctreeGrid',['vPCLframesIn'],'PCLframe','src/Universe/Grid/_OctreeGrid.cpp:link',multiple=True,target_kind='dataObject')
     for parameter in records['_OctreeGrid']['parameters']:
         if parameter['path'] == ['vPCLframesIn']:
             parameter['dependency'] = True
@@ -559,6 +583,69 @@ def adapters(records, files, constants, symbol):
             sym=symbol(records['_Orbbec'],variable,{})
             type_,_=infer_type(sym.get('cppType',''),variable,key)
             param('_Orbbec',[key],type_,ob_path+':configValues')
+    # RealSense loadConfig passes configValues() through the validated startup
+    # reader instead of calling the RGB/RGBD base readers. Extract its current
+    # keys directly, including vector pairs and inherited member defaults.
+    rs = records['_RealSense']
+    method = next(m for m in rs['_methods'] if m['name']=='configValues')
+    for match in re.finditer(r'\{\s*"([^"]+)",\s*\{?(m_\w+)\b',method['body']):
+        key,variable = match.groups()
+        sym = symbol(rs,variable,{})
+        type_,evidence = infer_type(sym.get('cppType',''),variable,key)
+        extra = {'cppVariable':variable,'cppType':sym.get('cppType',''),'typeEvidence':evidence}
+        expression = sym.get('expr')
+        if key=='sensorOptions':
+            type_='object'
+            extra['description']='Optional SDK overrides grouped by sensor or filter. Omit an option or use null to keep its device value.'
+        elif expression:
+            value=literal(expression,constants)
+            if value is not MISSING:
+                extra['default']=value
+            else:
+                extra['defaultExpression']=expression
+        param('_RealSense',[key],type_,source_ref(method['file'],method['full'],method['offset']+match.start()),**extra)
+    rs['containers'].append({'path':['sensorOptions'],'type':'object'})
+    method = next(m for m in rs['_methods'] if m['name']=='applyConfig')
+    domains = re.search(r'\bdomains\s*=\s*\{([^}]+)\}',method['body'])
+    for domain in re.findall(r'"([^"]+)"',domains[1]):
+        path=['sensorOptions',domain]
+        source=source_ref(method['file'],method['full'],method['offset']+domains.start())
+        rs['containers'].append({'path':path,'type':'object'})
+        param('_RealSense',path,'object',source,description='SDK option names (RS2_OPTION_*) for '+domain+'. Supported options depend on the connected device.')
+        param('_RealSense',path+['*'],'json',source,nullable=True,
+              description='SDK option value: number, boolean, string, rectangle array, or null to retain the device value.')
+
+    # GLIM accepts a nested patch over values loaded from configPath. Read the
+    # field names and types from parameterDefaults, but do not inject fallback
+    # literals: external config files and the selected plugins own the defaults.
+    glim = records['_GLIM']
+    method = next(m for m in glim['_methods'] if m['name']=='parameterDefaults')
+    source = method['file']+':loadConfig'
+    param('_GLIM',['parameters'],'object',source,description='Optional overrides of the GLIM configuration loaded from configPath.')
+    glim['containers'].append({'path':['parameters'],'type':'object'})
+    for key,type_ in (('bMapping','boolean'),('nMinPoints','integer')):
+        param('_GLIM',['parameters',key],type_,source,description='Overrides the top-level '+key+' setting.')
+    groups = re.finditer(r'(?:\{"(preprocess)",\s*|result\["(\w+)"\]\s*=\s*)\{',method['body'])
+    for group in groups:
+        name=group[1] or group[2]
+        path=['parameters',name]
+        source=source_ref(method['file'],method['full'],method['offset']+group.start())
+        description='Overrides values from the external GLIM configuration.'
+        if name=='odometry':
+            description+=' Available with the CT or CPU odometry plugin.'
+        elif name in ('submap','global'):
+            description+=' Available with the standard '+('sub_mapping' if name=='submap' else 'global_mapping')+' plugin.'
+        param('_GLIM',path,'object',source,description=description)
+        glim['containers'].append({'path':path,'type':'object'})
+        start=group.end()-1
+        body=method['body'][start+1:closing(method['body'],start)]
+        for field in re.finditer(r'\{"([^"]+)",\s*\w+\.param<(\w+)>',body):
+            type_,_=infer_type(field[2],'',field[1])
+            extra={}
+            if field[1]=='keyframeStrategy':
+                extra['description']='OVERLAP or DISPLACEMENT.'
+            param('_GLIM',path+[field[1]],type_,source_ref(method['file'],method['full'],method['offset']+start+1+field.start()),**extra)
+
     # Document nonlocal reads and dynamic helper reads without attributing them to callers.
     for name,record in records.items():
         for diagnostic in record['diagnostics']:

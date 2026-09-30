@@ -7,6 +7,12 @@
         { name: "_RGBbase", creatable: false, baseClasses: ["BASE"], parameters: [], dependencies: [] },
         { name: "Camera", creatable: true, baseClasses: ["_RGBbase"], parameters: [{ path: ["FPS"], type: "number", default: 30 }, { path: ["bON"], type: "boolean", default: true }], dependencies: [] },
         { name: "Serial", creatable: true, baseClasses: ["BASE"], parameters: [], dependencies: [] },
+        { name: "DataObjBase", creatable: false, baseClasses: ["BASE"], parameters: [], dependencies: [] },
+        { name: "Frame", creatable: true, instanceKind: "dataObject", baseClasses: ["DataObjBase"], parameters: [{ path: ["type"], type: "string", default: "dataObject" }], dependencies: [] },
+        { name: "TypedConsumer", creatable: true, instanceKind: "module", baseClasses: ["BASE"], parameters: [], dependencies: [
+            { path: ["frame"], targetClass: "Frame", targetKind: "dataObject" },
+            { path: ["module"], targetClass: "BASE", targetKind: "module" },
+        ] },
         { name: "Consumer", creatable: true, baseClasses: ["BASE"], parameters: [{ path: ["gain"], type: "number" }], dependencies: [
             { path: ["input"], targetClass: "_RGBbase", multiple: false, required: true },
             { path: ["inputs"], targetClass: "BASE", multiple: true },
@@ -64,6 +70,61 @@
             assert.throws(() => model.connect("/consumer", ["input"], "/camera/nested"));
             assert.throws(() => model.connect("/consumer", ["inputs"], "/APP"));
             assert.equal(model.getValue("/consumer", ["input"]), "camera");
+        });
+        test("module and DataObject dependencies use their own factories", () => {
+            const model = new Model(schema, {
+                camera: { class: "Camera" },
+                frame: { class: "Frame", type: "dataObject" },
+                missingType: { class: "Frame" },
+                wrongCase: { class: "Frame", type: "DataObject" },
+                consumer: { class: "TypedConsumer" },
+            });
+            const frameDependency = model.getClass("TypedConsumer").dependencies[0];
+            const moduleDependency = model.getClass("TypedConsumer").dependencies[1];
+            assert.equal(model.addNode("Frame").data.type, "dataObject");
+            assert.equal(model.compatibleTarget(model.getNode("/frame"), frameDependency), true);
+            assert.equal(model.compatibleTarget(model.getNode("/frame"), moduleDependency), false);
+            assert.equal(model.compatibleTarget(model.getNode("/missingType"), frameDependency), false);
+            assert.equal(model.compatibleTarget(model.getNode("/missingType"), moduleDependency), false);
+            assert.equal(model.compatibleTarget(model.getNode("/wrongCase"), frameDependency), false);
+            assert.deepEqual(model.validate().filter(issue => issue.code === "instance-kind").map(issue => issue.nodeId), ["/missingType", "/wrongCase"]);
+            model.connect("/consumer", ["frame"], "/frame");
+            model.connect("/consumer", ["module"], "/camera");
+            const before = model.export();
+            assert.throws(() => model.connect("/consumer", ["module"], "/frame"));
+            assert.throws(() => model.connect("/consumer", ["frame"], "/missingType"));
+            assert.throws(() => model.connect("/consumer", ["module"], "/missingType"));
+            assert.throws(() => model.connect("/consumer", ["frame"], "/wrongCase"));
+            assert.equal(model.export(), before);
+            assert.deepEqual(model.dependencies().map(edge => edge.compatible), [true, true]);
+            model.setValue("/consumer", ["frame"], "missingType");
+            assert.equal(model.dependencies("/consumer")[0].resolved, false);
+            assert.ok(model.validate().some(issue => issue.code === "unresolved-dependency" && issue.path[0] === "frame"));
+            model.setValue("/missingType", ["type"], "dataObject");
+            model.setValue("/wrongCase", ["type"], "dataObject");
+            assert.equal(model.validate().some(issue => issue.code === "instance-kind"), false);
+            assert.equal(model.dependencies("/consumer")[0].resolved, true);
+            model.setValue("/consumer", ["type"], "dataObject");
+            assert.deepEqual(model.validate().filter(issue => issue.code === "instance-kind").map(issue => issue.nodeId), ["/consumer"]);
+            model.deleteValue("/consumer", ["type"]);
+            assert.equal(model.validate().some(issue => issue.code === "instance-kind"), false);
+        });
+        test("factory lookups select the correct namespace and preserve legacy catalogs", () => {
+            const model = new Model(schema, {
+                camera: { class: "Camera", name: "shared" },
+                frame: { class: "Frame", type: "dataObject", name: "shared" },
+                consumer: { class: "TypedConsumer", frame: "shared", module: "shared" },
+                legacy: { class: "Consumer" },
+                legacyFrame: { class: "Frame", type: "dataObject" },
+            });
+            assert.equal(model.resolveReference("shared", "module").id, "/camera");
+            assert.equal(model.resolveReference("shared", "dataObject").id, "/frame");
+            assert.deepEqual(model.dependencies("/consumer").map(edge => edge.targetId), ["/frame", "/camera"]);
+            model.connect("/legacy", ["inputs"], "/legacyFrame");
+            assert.equal(model.dependencies("/legacy")[0].compatible, true);
+            model.renameNode("/frame", "renamedFrame");
+            assert.equal(model.getValue("/consumer", ["frame"]), "renamedFrame");
+            assert.equal(model.getValue("/consumer", ["module"]), "shared");
         });
         test("array dependency edits preserve sibling metadata and disconnect only selected entries", () => {
             const model = new Model(schema, { a: { class: "Camera" }, b: { class: "Camera" }, consumer: { class: "Consumer", rows: [{ source: "a", color: [1, 2, 3] }], inputs: ["a"] } });
