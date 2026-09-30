@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "ba8773ae768c87671ab09bc341de8e069de31100aff12a8c8b24e8385348e6bf",
+  "sourceDigest": "34667bfc5139c0af7e3e41753e24af7aca9ac1472b80d35c36cdfbfd811612cb",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -11728,6 +11728,416 @@
       "configurable": true
     },
     {
+      "name": "_YOLO26depthEstONNX",
+      "category": "Detector",
+      "source": "src/Detector/_YOLO26depthEstONNX.h:18",
+      "baseClasses": [
+        "_DetectorBase"
+      ],
+      "parameters": [
+        {
+          "path": [
+            "DframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:144",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "PCLframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:149",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBDframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:140",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "RGBframeIn"
+          ],
+          "type": "string",
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:136",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false
+        },
+        {
+          "path": [
+            "bON"
+          ],
+          "type": "boolean",
+          "source": "src/Instance/InstanceMgr.cpp:createAll",
+          "declaredIn": "BASE",
+          "extraction": "audited-adapter",
+          "default": true,
+          "description": "false disables this instance; true enables it."
+        },
+        {
+          "path": [
+            "bPCL"
+          ],
+          "type": "boolean",
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:85",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bPCL",
+          "cppType": "bool",
+          "default": false
+        },
+        {
+          "path": [
+            "bPCLrgb"
+          ],
+          "type": "boolean",
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:86",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bPCLrgb",
+          "cppType": "bool",
+          "default": false
+        },
+        {
+          "path": [
+            "bSwapRB"
+          ],
+          "type": "boolean",
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:79",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bSwapRB",
+          "cppType": "bool",
+          "default": true
+        },
+        {
+          "path": [
+            "class"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:57",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_class",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "dOfs"
+          ],
+          "type": "number",
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:84",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_dOfs",
+          "cppType": "float",
+          "default": 0.0
+        },
+        {
+          "path": [
+            "dScale"
+          ],
+          "type": "number",
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:83",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_dScale",
+          "cppType": "float",
+          "default": 1.0
+        },
+        {
+          "path": [
+            "fClass"
+          ],
+          "type": "string",
+          "declaredIn": "_DetectorBase",
+          "source": "src/Detector/_DetectorBase.cpp:27",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_fClass",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "fMean"
+          ],
+          "type": "string",
+          "declaredIn": "_DetectorBase",
+          "source": "src/Detector/_DetectorBase.cpp:26",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_fMean",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "fModel"
+          ],
+          "type": "string",
+          "declaredIn": "_DetectorBase",
+          "source": "src/Detector/_DetectorBase.cpp:24",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_fModel",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "fWeight"
+          ],
+          "type": "string",
+          "declaredIn": "_DetectorBase",
+          "source": "src/Detector/_DetectorBase.cpp:25",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_fWeight",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "nPCLstep"
+          ],
+          "type": "integer",
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:90",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_nPCLstep",
+          "cppType": "int",
+          "default": 1
+        },
+        {
+          "path": [
+            "nThread"
+          ],
+          "type": "integer",
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:81",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_nThread",
+          "cppType": "int",
+          "default": 0
+        },
+        {
+          "path": [
+            "name"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:56",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_name",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "scale"
+          ],
+          "type": "number",
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:80",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_scale",
+          "cppType": "float",
+          "default": 0.00392156862745098
+        },
+        {
+          "path": [
+            "thread",
+            "FPS"
+          ],
+          "type": "number",
+          "declaredIn": "_Thread",
+          "source": "src/Base/_Thread.cpp:60",
+          "typeEvidence": "declaration",
+          "cppVariable": "FPS",
+          "cppType": "float",
+          "default": 30,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "thread",
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "vClass"
+          ],
+          "type": "array",
+          "declaredIn": "_DetectorBase",
+          "source": "src/Detector/_DetectorBase.cpp:46",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_vClass",
+          "cppType": "vector<string>"
+        },
+        {
+          "path": [
+            "vFocal"
+          ],
+          "type": "array",
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:87",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_vFocal",
+          "cppType": "Vector2f",
+          "defaultExpression": "Vector2f::Zero()"
+        },
+        {
+          "path": [
+            "vModelInputSize"
+          ],
+          "type": "array",
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:78",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_vModelInputSize",
+          "cppType": "Vector2i",
+          "default": [
+            768,
+            768
+          ]
+        },
+        {
+          "path": [
+            "vPrincipal"
+          ],
+          "type": "array",
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:88",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_vPrincipal",
+          "cppType": "Vector2f",
+          "defaultExpression": "Vector2f::Zero()"
+        },
+        {
+          "path": [
+            "vRangeD"
+          ],
+          "type": "array",
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:82",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_vRangeD",
+          "cppType": "Vector2f",
+          "defaultExpression": "Vector2f(0, FLT_MAX)"
+        },
+        {
+          "path": [
+            "vSizeCalib"
+          ],
+          "type": "array",
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:89",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_vSizeCalib",
+          "cppType": "Vector2i",
+          "defaultExpression": "Vector2i::Zero()"
+        }
+      ],
+      "dependencies": [
+        {
+          "path": [
+            "DframeOut"
+          ],
+          "targetClass": "RGBframe",
+          "multiple": false,
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:145",
+          "extraction": "audited-adapter",
+          "containers": []
+        },
+        {
+          "path": [
+            "PCLframeOut"
+          ],
+          "targetClass": "PCLframe",
+          "multiple": false,
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:150",
+          "containers": []
+        },
+        {
+          "path": [
+            "RGBDframeOut"
+          ],
+          "targetClass": "RGBDframe",
+          "multiple": false,
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:141",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "RGBframeIn"
+          ],
+          "targetClass": "RGBframe",
+          "multiple": false,
+          "declaredIn": "_YOLO26depthEstONNX",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:137",
+          "required": true,
+          "containers": []
+        }
+      ],
+      "containers": [
+        {
+          "path": [
+            "thread"
+          ],
+          "type": "object"
+        }
+      ],
+      "diagnostics": [],
+      "creatable": true,
+      "buildConditions": [
+        [
+          "ifdef WITH_DETECTOR",
+          "ifdef USE_OPENCV",
+          "ifdef USE_ONNXRUNTIME"
+        ]
+      ],
+      "configurable": true
+    },
+    {
       "name": "_YOLO26detectONNX",
       "category": "Detector",
       "source": "src/Detector/_YOLO26detectONNX.h:19",
@@ -13812,7 +14222,7 @@
     {
       "name": "Modules",
       "category": "Instance",
-      "source": "src/Instance/Modules.h:275",
+      "source": "src/Instance/Modules.h:272",
       "baseClasses": [],
       "parameters": [],
       "dependencies": [],
@@ -14250,143 +14660,6 @@
       "diagnostics": [],
       "creatable": false,
       "buildConditions": [],
-      "configurable": true
-    },
-    {
-      "name": "_RStracking",
-      "category": "Navigation",
-      "source": "src/Navigation/_RStracking.h:17",
-      "baseClasses": [
-        "_NavBase"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "tConfidenceTimeoutNs"
-          ],
-          "type": "integer",
-          "declaredIn": "_NavBase",
-          "source": "src/Navigation/_NavBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_tConfidenceTimeoutNs",
-          "cppType": "uint64_t",
-          "default": 0
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vOrt"
-          ],
-          "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vOrt.coeffs()"
-        },
-        {
-          "path": [
-            "vPos"
-          ],
-          "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vPos",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
-        }
-      ],
-      "dependencies": [],
-      "containers": [
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": true,
-      "buildConditions": [
-        [
-          "ifdef WITH_NAVIGATION",
-          "ifdef USE_REALSENSE"
-        ]
-      ],
       "configurable": true
     },
     {
@@ -15471,6 +15744,18 @@
         },
         {
           "path": [
+            "modbusType"
+          ],
+          "type": "string",
+          "declaredIn": "_Modbus",
+          "source": "src/Protocol/_Modbus.cpp:40",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_type",
+          "cppType": "string",
+          "default": "RTU"
+        },
+        {
+          "path": [
             "nErrReconnect"
           ],
           "type": "integer",
@@ -15616,18 +15901,6 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "type"
-          ],
-          "type": "string",
-          "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:40",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_type",
-          "cppType": "string",
-          "default": "RTU"
         }
       ],
       "dependencies": [],
@@ -16640,7 +16913,7 @@
           ],
           "type": "array",
           "declaredIn": "_WSconsole",
-          "source": "src/Protocol/_WSconsole.cpp:43",
+          "source": "src/Protocol/_WSconsole.cpp:45",
           "typeEvidence": "declaration",
           "cppVariable": "vB",
           "cppType": "vector<string>",
@@ -16666,7 +16939,7 @@
           "targetClass": "BASE",
           "multiple": true,
           "declaredIn": "_WSconsole",
-          "source": "src/Protocol/_WSconsole.cpp:47",
+          "source": "src/Protocol/_WSconsole.cpp:49",
           "containers": []
         }
       ],
@@ -29528,7 +29801,7 @@
           ],
           "type": "string",
           "declaredIn": "_D2RGB",
-          "source": "src/Vision/Pipeline/_D2RGB.cpp:55",
+          "source": "src/Vision/Pipeline/_D2RGB.cpp:56",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -29983,7 +30256,7 @@
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_D2RGB",
-          "source": "src/Vision/Pipeline/_D2RGB.cpp:56",
+          "source": "src/Vision/Pipeline/_D2RGB.cpp:57",
           "required": true,
           "containers": []
         },
@@ -34564,7 +34837,7 @@
     {
       "name": "_RealSense",
       "category": "Vision/RGBD",
-      "source": "src/Vision/RGBD/_RealSense.h:60",
+      "source": "src/Vision/RGBD/_RealSense.h:15",
       "baseClasses": [
         "_RGBDbase"
       ],
@@ -34664,18 +34937,6 @@
           "cppVariable": "n",
           "cppType": "string",
           "dependency": true
-        },
-        {
-          "path": [
-            "bAlign"
-          ],
-          "type": "boolean",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:34",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bAlign",
-          "cppType": "bool",
-          "default": false
         },
         {
           "path": [
@@ -34882,17 +35143,6 @@
         },
         {
           "path": [
-            "fBrightness"
-          ],
-          "type": "number",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:45",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_rsCtrl.m_fBrightness",
-          "cppType": "float"
-        },
-        {
-          "path": [
             "fConfidenceThr"
           ],
           "type": "number",
@@ -34902,160 +35152,6 @@
           "cppVariable": "m_fConfidenceThr",
           "cppType": "float",
           "default": 0.0
-        },
-        {
-          "path": [
-            "fConfidenceThreshold"
-          ],
-          "type": "number",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:37",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_rsCtrl.m_fConfidenceThr",
-          "cppType": "float"
-        },
-        {
-          "path": [
-            "fContrast"
-          ],
-          "type": "number",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:46",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_rsCtrl.m_fContrast",
-          "cppType": "float"
-        },
-        {
-          "path": [
-            "fDigitalGain"
-          ],
-          "type": "number",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:38",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_rsCtrl.m_fDigitalGain",
-          "cppType": "float"
-        },
-        {
-          "path": [
-            "fEmitter"
-          ],
-          "type": "number",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:42",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_rsCtrl.m_fEmitter",
-          "cppType": "float"
-        },
-        {
-          "path": [
-            "fExposure"
-          ],
-          "type": "number",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:48",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_rsCtrl.m_fExposure",
-          "cppType": "float"
-        },
-        {
-          "path": [
-            "fFilterMagnitude"
-          ],
-          "type": "number",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:40",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_rsCtrl.m_fFilterMagnitude",
-          "cppType": "float"
-        },
-        {
-          "path": [
-            "fGain"
-          ],
-          "type": "number",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:47",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_rsCtrl.m_fGain",
-          "cppType": "float"
-        },
-        {
-          "path": [
-            "fHolesFill"
-          ],
-          "type": "number",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:41",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_rsCtrl.m_fHolesFill",
-          "cppType": "float"
-        },
-        {
-          "path": [
-            "fHue"
-          ],
-          "type": "number",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:49",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_rsCtrl.m_fHue",
-          "cppType": "float"
-        },
-        {
-          "path": [
-            "fLaserPower"
-          ],
-          "type": "number",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:43",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_rsCtrl.m_fLaserPower",
-          "cppType": "float"
-        },
-        {
-          "path": [
-            "fPostProcessingSharpening"
-          ],
-          "type": "number",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:39",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_rsCtrl.m_fPostProcessingSharpening",
-          "cppType": "float"
-        },
-        {
-          "path": [
-            "fSaturation"
-          ],
-          "type": "number",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:50",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_rsCtrl.m_fSaturation",
-          "cppType": "float"
-        },
-        {
-          "path": [
-            "fSharpness"
-          ],
-          "type": "number",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:51",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_rsCtrl.m_fSharpness",
-          "cppType": "float"
-        },
-        {
-          "path": [
-            "fWhiteBalance"
-          ],
-          "type": "number",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:52",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_rsCtrl.m_fWhiteBalance",
-          "cppType": "float"
         },
         {
           "path": [
@@ -35071,42 +35167,6 @@
         },
         {
           "path": [
-            "rsDFPS"
-          ],
-          "type": "integer",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:33",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_rsDFPS",
-          "cppType": "int",
-          "default": 30
-        },
-        {
-          "path": [
-            "rsFPS"
-          ],
-          "type": "integer",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:32",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_rsFPS",
-          "cppType": "int",
-          "default": 30
-        },
-        {
-          "path": [
-            "rsSN"
-          ],
-          "type": "string",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:31",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_rsSN",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
             "thread",
             "FPS"
           ],
@@ -35160,18 +35220,6 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vPreset"
-          ],
-          "type": "string",
-          "declaredIn": "_RealSense",
-          "source": "src/Vision/RGBD/_RealSense.cpp:35",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vPreset",
-          "cppType": "string",
-          "default": "High Density"
         },
         {
           "path": [
@@ -35211,8 +35259,8 @@
           "cppVariable": "m_vSizeRGB",
           "cppType": "Vector2i",
           "default": [
-            1280,
-            720
+            640,
+            480
           ]
         }
       ],
@@ -37689,6 +37737,19 @@
         ]
       ],
       "configurable": true
+    },
+    {
+      "name": "IMUPreview",
+      "category": "Vision/RGBD",
+      "source": "src/Vision/RGBD/RealSenseIMU.h:14",
+      "baseClasses": [],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
     }
   ],
   "application": {
@@ -37721,9 +37782,9 @@
     ]
   },
   "audit": {
-    "sourceFiles": 336,
-    "classCount": 196,
-    "classDeclarations": 196,
+    "sourceFiles": 338,
+    "classCount": 197,
+    "classDeclarations": 197,
     "creatableClassCount": 123,
     "factoryClassesWithoutDeclaration": [
       "_TestJSON",
@@ -37830,6 +37891,8 @@
       "src/Detector/_Contour.h",
       "src/Detector/_DetectorBase.cpp",
       "src/Detector/_DetectorBase.h",
+      "src/Detector/_YOLO26depthEstONNX.cpp",
+      "src/Detector/_YOLO26depthEstONNX.h",
       "src/Detector/_YOLO26detectONNX.cpp",
       "src/Detector/_YOLO26detectONNX.h",
       "src/File/_FileBase.cpp",
@@ -37872,8 +37935,6 @@
       "src/Navigation/_GeoFence.h",
       "src/Navigation/_NavBase.cpp",
       "src/Navigation/_NavBase.h",
-      "src/Navigation/_RStracking.cpp",
-      "src/Navigation/_RStracking.h",
       "src/Navigation/_RTCMcast.cpp",
       "src/Navigation/_RTCMcast.h",
       "src/Net/HttpClient.cpp",
@@ -38043,6 +38104,8 @@
       "src/Vision/Pipeline/_Thermal2RGB.h",
       "src/Vision/Pipeline/_Threshold.cpp",
       "src/Vision/Pipeline/_Threshold.h",
+      "src/Vision/RGBD/RealSenseIMU.h",
+      "src/Vision/RGBD/RealSenseOptions.h",
       "src/Vision/RGBD/_Orbbec.cpp",
       "src/Vision/RGBD/_Orbbec.h",
       "src/Vision/RGBD/_RGBDbase.cpp",
@@ -38067,10 +38130,10 @@
       "src/Vision/_VideoFile.h",
       "src/main.cpp"
     ],
-    "configReads": 640,
-    "resolvedReads": 628,
-    "moduleLookups": 113,
-    "resolvedLookups": 109,
+    "configReads": 637,
+    "resolvedReads": 625,
+    "moduleLookups": 117,
+    "resolvedLookups": 113,
     "unresolvedReads": 12,
     "unresolvedLookups": 4,
     "diagnosticsCount": 16,

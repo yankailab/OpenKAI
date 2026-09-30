@@ -109,6 +109,7 @@
 #include "../Detector/_Contour.h"
 #ifdef USE_ONNXRUNTIME
 #include "../Detector/_YOLO26detectONNX.h"
+#include "../Detector/_YOLO26depthEstONNX.h"
 #endif
 #ifdef USE_OPENCV_CONTRIB
 #include "../Detector/_ArUco.h"

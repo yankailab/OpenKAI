@@ -432,6 +432,16 @@ def generate():
         return result
     catalog = [flatten(name) for name in sorted(classes,key=lambda n:(classes[n]['category'],n.lower()))]
     for entry in catalog:
+        # Audited link override: this detector bypasses _DetectorBase::link,
+        # emits RGBD rather than boxes, and accepts an omitted depth-only alias.
+        # Source: src/Detector/_YOLO26depthEstONNX.cpp:link
+        if entry['name'] == '_YOLO26depthEstONNX':
+            for field in ('parameters', 'dependencies'):
+                entry[field] = [item for item in entry[field] if item['path'] != ['BBoxStreamOut']]
+            for dependency in entry['dependencies']:
+                if dependency['path'] == ['DframeOut']:
+                    dependency.pop('required', None)
+                    dependency['extraction'] = 'audited-adapter'
         dep_paths = {tuple(d['path']):d for d in entry['dependencies']}
         for parameter in entry['parameters']:
             dependency = dep_paths.get(tuple(parameter['path']))

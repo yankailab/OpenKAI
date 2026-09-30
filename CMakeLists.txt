@@ -291,6 +291,7 @@ if(WITH_DETECTOR)
     if(USE_ONNXRUNTIME)
       list(APPEND OpenKAI_cpp
 		    src/Detector/_YOLO26detectONNX.cpp
+		    src/Detector/_YOLO26depthEstONNX.cpp
       )
     endif()
 

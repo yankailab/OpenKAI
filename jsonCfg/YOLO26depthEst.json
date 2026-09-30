@@ -1,0 +1,127 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "YOLO26depthEst",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"cam",
+			"YOLO26depthEstONNX"
+		]
+	},
+	"cam": {
+		"class": "_Camera",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"deviceID": 0,
+		"vSizeRGB": [
+			640,
+			480
+		],
+		"RGBframeOut": "camRGB"
+	},
+	"YOLO26depthEstONNX": {
+		"class": "_YOLO26depthEstONNX",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"RGBframeIn": "camRGB",
+		"RGBDframeOut": "estimatedRGBD",
+		"DframeOut": "estimatedDepth",
+		"PCLframeOut": "estimatedPCL",
+		"fModel": "/home/kai/dev/models/YOLO26/yolo26n-depth.onnx",
+		"vModelInputSize": [
+			768,
+			768
+		],
+		"bSwapRB": true,
+		"scale": 0.00392156862745098,
+		"nThread": 0,
+		"/cpuThreads": "0 uses ONNX Runtime automatic physical-core threading. Set a positive worker count to limit CPU use; benchmark 4 or 8 when sharing the CPU with other components.",
+		"/depthUnits": "Depth is CV_32FC1 in metres. dScale and dOfs calibrate the model prediction; verify metric accuracy for your camera and scene.",
+		"dScale": 1.0,
+		"dOfs": 0.0,
+		"vRangeD": [
+			0.1,
+			80.0
+		],
+		"bPCL": true,
+		"bPCLrgb": true,
+		"nPCLstep": 2,
+		"/intrinsics": "EXAMPLE VALUES: replace vFocal [fx,fy] and vPrincipal [cx,cy] with calibrated intrinsics in pixels at vSizeCalib before using the point cloud for measurement. Intrinsics scale to the input frame size. Use undistorted RGB input.",
+		"vFocal": [
+			600.0,
+			600.0
+		],
+		"vPrincipal": [
+			319.5,
+			239.5
+		],
+		"vSizeCalib": [
+			640,
+			480
+		]
+	},
+	"view": {
+		"class": "_OCVwindow",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"bFullScreen": false,
+		"RGBframeIn": "camRGB"
+	},
+	"d2rgb": {
+		"class": "_D2RGB",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"bMeasure": false,
+		"vRangeD": [
+			0.1,
+			80.0
+		],
+		"DframeIn": "estimatedDepth",
+		"RGBframeOut": "depthPreviewRGB"
+	},
+	"viewD": {
+		"class": "_OCVwindow",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"bFullScreen": false,
+		"RGBframeIn": "depthPreviewRGB"
+	},
+	"camRGB": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"estimatedRGBD": {
+		"type": "dataObject",
+		"class": "RGBDframe"
+	},
+	"estimatedDepth": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	},
+	"estimatedPCL": {
+		"type": "dataObject",
+		"class": "PCLframe"
+	},
+	"depthPreviewRGB": {
+		"type": "dataObject",
+		"class": "RGBframe"
+	}
+}

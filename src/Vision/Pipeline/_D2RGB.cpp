@@ -28,6 +28,7 @@ namespace kai
 		jKv(j, "iHistFrom", m_iHistFrom);
 		jKv(j, "minHistD", m_minHistD);
 		jKv(j, "bMeasure", m_bMeasure);
+		m_tLastInput = 0;
 
 		return true;
 	}
@@ -78,9 +79,13 @@ namespace kai
 	void _D2RGB::filter(void)
 	{
 		NULL_(m_pDin);
+		// Depth inference can update much slower than the preview thread.
+		// Avoid cloning and colorizing a frame that was already published.
+		const uint64_t tAvailable = m_pDin->getTstamp();
+		IF_(!tAvailable || tAvailable == m_tLastInput);
 		Mat mDepth;
 		const uint64_t tStamp = m_pDin->get(mDepth);
-		IF_(mDepth.empty() || mDepth.type() != CV_32FC1);
+		IF_(!tStamp || tStamp == m_tLastInput || mDepth.empty() || mDepth.type() != CV_32FC1);
 
 		Mat mGray;
 		Mat mRGB;
@@ -99,6 +104,7 @@ namespace kai
 		{
 			m_pRGBDout->set(mRGB, mDepth, tStamp);
 		}
+		m_tLastInput = tStamp;
 	}
 
 	float _D2RGB::d(const Vector4i &bb)

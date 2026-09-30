@@ -43,6 +43,10 @@ class StreamReferenceSchemaTest(unittest.TestCase):
     def test_directional_data_object_references(self):
         expected = {
             "_Camera": {"RGBframeOut": "RGBframe"},
+            "_YOLO26depthEstONNX": {
+                "RGBframeIn": "RGBframe", "RGBDframeOut": "RGBDframe",
+                "DframeOut": "RGBframe", "PCLframeOut": "PCLframe",
+            },
             "_Crop": {"RGBframeIn": "RGBframe", "RGBframeOut": "RGBframe"},
             "_Mask": {"RGBframeMaskIn": "RGBframe"},
             "_Orbbec": {
@@ -66,6 +70,17 @@ class StreamReferenceSchemaTest(unittest.TestCase):
                     self.assertFalse(dependencies[(key,)]["multiple"])
             for old in ("RGBframe", "RGBframeMask", "Dframe", "IRframe", "RGBDframe", "RGBDtRGBframe", "RGBDtDframe", "PCLframe", "PCLmap", "IMUframe", "IMUstream", "PCLframeSrc", "PCLframeTgt"):
                 self.assertNotIn((old,), dependencies, name)
+
+    def test_depth_detector_link_override(self):
+        record = self.classes['_YOLO26depthEstONNX']
+        parameters = {tuple(p['path']): p for p in record['parameters']}
+        dependencies = {tuple(d['path']): d for d in record['dependencies']}
+        self.assertNotIn(('BBoxStreamOut',), parameters)
+        self.assertNotIn(('BBoxStreamOut',), dependencies)
+        self.assertTrue(dependencies[('RGBframeIn',)]['required'])
+        self.assertTrue(dependencies[('RGBDframeOut',)]['required'])
+        self.assertFalse(dependencies[('DframeOut',)].get('required', False))
+        self.assertFalse(dependencies[('PCLframeOut',)].get('required', False))
 
     def test_directional_list_and_viewer_adapters(self):
         for name in ("_OctreeGrid", "_SelectableOctGrid", "_PCmerge"):

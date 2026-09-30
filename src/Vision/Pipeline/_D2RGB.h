@@ -38,6 +38,7 @@ namespace kai
 
 	protected:
 		RGBframe *m_pDin = nullptr; // calibrated float depth input
+		uint64_t m_tLastInput = 0;
 
 		// Histogram limits use this filter's vRangeD configuration.
 		int m_nHistLev = 128;

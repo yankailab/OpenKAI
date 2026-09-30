@@ -118,6 +118,7 @@ namespace kai
 #ifdef USE_OPENCV
 #ifdef USE_ONNXRUNTIME
 		ADD_MODULE(_YOLO26detectONNX);
+		ADD_MODULE(_YOLO26depthEstONNX);
 #endif
 		ADD_MODULE(_Contour);
 #ifdef USE_OPENCV_CONTRIB
