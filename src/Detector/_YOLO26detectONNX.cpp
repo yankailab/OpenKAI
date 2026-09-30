@@ -103,8 +103,6 @@ namespace kai
 			m_pT->autoFPS();
 
 			detect();
-
-			ON_PAUSE;
 		}
 	}
 

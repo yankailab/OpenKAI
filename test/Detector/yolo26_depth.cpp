@@ -1,8 +1,13 @@
 #include "Detector/_YOLO26depthEstONNX.h"
+#include <atomic>
 #include <cmath>
+#include <chrono>
+#include <condition_variable>
 #include <iostream>
 #include <limits>
+#include <mutex>
 #include <stdexcept>
+#include <thread>
 
 using namespace kai;
 
@@ -25,6 +30,7 @@ namespace
         using _YOLO26depthEstONNX::detect;
         using _YOLO26depthEstONNX::estimateDepth;
         using _YOLO26depthEstONNX::makePointCloud;
+        using _YOLO26depthEstONNX::updatePCL;
 
         bool model(const string &filename)
         {
@@ -47,6 +53,8 @@ namespace
         }
         void step(int value) { m_nPCLstep = value; }
         void color(bool enabled) { m_bPCLrgb = enabled; }
+        bool pointWorkerRunning() const { return m_pTpp && m_pTpp->bRun(); }
+        void joinInference() { if (m_pT) m_pT->join(); }
         void outputs(RGBframe &input, RGBDframe &rgbd, RGBframe &depth, PCLframe &points)
         {
             m_pRGBin = &input;
@@ -55,6 +63,78 @@ namespace
             m_pPCLout = &points;
             if (!m_pT) m_pT = new _Thread();
         }
+    };
+
+    template <class Predicate>
+    void waitUntil(Predicate ready, const string &message)
+    {
+        const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(3);
+        while (!ready())
+        {
+            require(std::chrono::steady_clock::now() < deadline, message);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+    }
+
+    json workerSettings(const string &fixtures)
+    {
+        return {{"name", "depth"}, {"class", "_YOLO26depthEstONNX"},
+                {"fModel", fixtures + "/channels_4d_static.onnx"}, {"nThread", 1},
+                {"thread", {{"FPS", 1000}}}, {"threadPP", {{"FPS", 1}}},
+                {"bPCL", true}, {"bPCLrgb", true}, {"nPCLstep", 1},
+                {"vFocal", {2.f, 4.f}}, {"vPrincipal", {.5f, .5f}}, {"vSizeCalib", {4, 2}}};
+    }
+
+    class GatedDepthProbe : public DepthProbe
+    {
+    public:
+        ~GatedDepthProbe() override
+        {
+            allow(std::numeric_limits<size_t>::max());
+            stop(); // Join before destroying the gate used by the virtual callback.
+        }
+
+        void allow(size_t count)
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            m_allowed = count;
+            m_ready.notify_all();
+        }
+
+        uint64_t waitForCloud(size_t index) const
+        {
+            std::unique_lock<std::mutex> lock(m_mutex);
+            require(m_ready.wait_for(lock, std::chrono::seconds(3), [&] {
+                return m_started.size() > index;
+            }), "Point-cloud worker did not wake for the next completed depth frame");
+            return m_started[index];
+        }
+
+        vector<uint64_t> started() const
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            return m_started;
+        }
+
+    protected:
+        void makePointCloud(const Mat &rgb, const Mat &depth, uint64_t stamp,
+                            vector<GEOMETRY_POINT> &cloud) const override
+        {
+            {
+                std::unique_lock<std::mutex> lock(m_mutex);
+                m_started.push_back(stamp);
+                const size_t count = m_started.size();
+                m_ready.notify_all();
+                m_ready.wait(lock, [&] { return m_allowed >= count; });
+            }
+            DepthProbe::makePointCloud(rgb, depth, stamp, cloud);
+        }
+
+    private:
+        mutable std::mutex m_mutex;
+        mutable std::condition_variable m_ready;
+        mutable vector<uint64_t> m_started;
+        size_t m_allowed = 0;
     };
 
     void testInference(const string &fixtures)
@@ -211,6 +291,7 @@ namespace
         const Mat rgb(2, 4, CV_8UC3, Scalar(51, 102, 153));
         input.set(rgb, 100);
         detector.detect();
+        detector.updatePCL();
         Mat color, depth, standaloneDepth;
         vector<GEOMETRY_POINT> points;
         require(rgbdOutput.get(color, depth) == 100, "RGBD timestamp must equal input timestamp");
@@ -234,6 +315,174 @@ namespace
         near(depth.at<float>(0, 0), 2.f, "Fresh frame inference did not update depth");
     }
 
+    void testAsynchronousPointCloud(const string &fixtures)
+    {
+        JsonCfg owner;
+        json settings = workerSettings(fixtures);
+        RGBframe input, depthOutput;
+        RGBDframe rgbdOutput;
+        PCLframe pointOutput;
+        GatedDepthProbe detector; // Destroy the worker before its output frames.
+        detector.setConfig(&owner, &settings);
+        require(detector.loadConfig(), "Could not configure asynchronous detector");
+        detector.outputs(input, rgbdOutput, depthOutput, pointOutput);
+        require(detector.start(), "Could not start native detector and point-cloud threads");
+        require(detector.pointWorkerRunning(), "Point-cloud worker was not started");
+
+        const Mat first(2, 4, CV_8UC3, Scalar(51, 102, 153));
+        input.set(first, 201);
+        require(detector.waitForCloud(0) == 201, "Point-cloud worker started with the wrong capture");
+        require(rgbdOutput.getTstamp() == 201 && depthOutput.getTstamp() == 201,
+                "Depth outputs must be published before point-cloud completion");
+        require(pointOutput.getTstamp() == 0, "Blocked cloud should not already be published");
+
+        // Keep the first cloud blocked while inference completes two more
+        // captures. This proves overlap without relying on timing comparisons.
+        input.set(Mat(2, 4, CV_8UC3, Scalar::all(0)), 202);
+        waitUntil([&] { return depthOutput.getTstamp() == 202; },
+                  "Inference waited for the blocked point-cloud worker");
+        const Mat latest(2, 4, CV_8UC3, Scalar(5, 10, 15));
+        input.set(latest, 203);
+        waitUntil([&] { return depthOutput.getTstamp() == 203; },
+                  "Inference did not replace the pending point-cloud capture");
+        // Join only inference so its last detect() has completed the handoff.
+        // The point-cloud worker remains blocked until explicitly released.
+        detector.joinInference();
+
+        detector.allow(1);
+        require(detector.waitForCloud(1) == 203,
+                "Busy point-cloud worker must process the newest pending capture");
+        vector<GEOMETRY_POINT> points;
+        require(pointOutput.get(points) == 201 && points.size() == first.total(),
+                "First completed cloud lost its original capture");
+        for (const auto &point : points)
+        {
+            require(point.m_tStamp == 201, "In-flight point timestamp was replaced");
+            near(point.m_vP.z(), 26.6f, "In-flight cloud used another capture's depth");
+            require(point.m_vC.isApprox(Vector3f(.6f, .4f, .2f), 1e-6f),
+                    "In-flight cloud used another capture's RGB");
+        }
+
+        detector.allow(2);
+        waitUntil([&] { return pointOutput.getTstamp() == 203; },
+                  "Latest pending cloud was not published");
+        require(pointOutput.get(points) == 203 && points.size() == latest.total(),
+                "Latest cloud has the wrong timestamp or point count");
+        for (const auto &point : points)
+        {
+            require(point.m_tStamp == 203, "Latest point timestamp differs from its frame");
+            near(point.m_vP.z(), 2.f + 615.f / 255.f, "Latest cloud used stale depth");
+            require(point.m_vC.isApprox(Vector3f(15.f, 10.f, 5.f) / 255.f, 1e-6f),
+                    "Latest cloud used stale RGB");
+        }
+        detector.stop();
+        require(detector.started() == vector<uint64_t>({201, 203}),
+                "Point-cloud worker processed a stale pending capture or duplicate frame");
+        require(!detector.pointWorkerRunning(), "Stopping the detector left the point-cloud worker active");
+    }
+
+    void testStopActiveWorker(const string &fixtures)
+    {
+        JsonCfg owner;
+        json settings = workerSettings(fixtures);
+        RGBframe input, depthOutput;
+        RGBDframe rgbdOutput;
+        PCLframe pointOutput;
+        GatedDepthProbe detector;
+        detector.setConfig(&owner, &settings);
+        require(detector.loadConfig(), "Could not configure active worker shutdown test");
+        detector.outputs(input, rgbdOutput, depthOutput, pointOutput);
+        require(detector.start(), "Could not start active worker shutdown test");
+        const Mat rgb(2, 4, CV_8UC3, Scalar(51, 102, 153));
+        input.set(rgb, 401);
+        require(detector.waitForCloud(0) == 401, "First cloud did not reach shutdown gate");
+        input.set(rgb, 402);
+        waitUntil([&] { return depthOutput.getTstamp() == 402; },
+                  "Could not queue a second cloud before shutdown");
+        detector.joinInference();
+
+        std::atomic<bool> stopped{false};
+        std::thread stopping([&] { detector.stop(); stopped = true; });
+        bool returnedWhileBlocked;
+        try
+        {
+            waitUntil([&] { return !detector.pointWorkerRunning(); },
+                      "Stop did not request point-cloud shutdown");
+            returnedWhileBlocked = stopped.load();
+        }
+        catch (...)
+        {
+            detector.allow(1);
+            stopping.join();
+            throw;
+        }
+        detector.allow(1);
+        stopping.join();
+        require(!returnedWhileBlocked, "Stop returned while point-cloud processing was still active");
+        require(detector.started() == vector<uint64_t>({401}),
+                "Stopping processed a pending cloud after the active cloud finished");
+
+        detector.allow(2);
+        input.set(rgb, 403);
+        require(detector.start(), "Could not restart after stopping an active worker");
+        waitUntil([&] { return pointOutput.getTstamp() == 403; },
+                  "Restart after active shutdown did not publish the new cloud");
+        detector.stop();
+        require(detector.started() == vector<uint64_t>({401, 403}),
+                "Restart reused a stale cloud pending before shutdown");
+    }
+
+    void testWorkerLifecycle(const string &fixtures)
+    {
+        JsonCfg owner;
+        json settings = workerSettings(fixtures);
+        RGBframe input, depthOutput;
+        RGBDframe rgbdOutput;
+        PCLframe pointOutput;
+        DepthProbe detector;
+        detector.setConfig(&owner, &settings);
+        require(detector.loadConfig(), "Could not configure point-cloud lifecycle test");
+        detector.outputs(input, rgbdOutput, depthOutput, pointOutput);
+        require(detector.saveConfig(false) && settings["threadPP"]["FPS"] == 1,
+                "Point-cloud thread configuration did not survive saving");
+        const Mat rgb(2, 4, CV_8UC3, Scalar(51, 102, 153));
+
+        // Exercise idle waiting, wakeup, joining and starting the same worker.
+        for (uint64_t stamp = 301; stamp < 306; ++stamp)
+        {
+            require(detector.start(), "Stopped detector threads could not restart");
+            input.set(rgb, stamp);
+            waitUntil([&] { return pointOutput.getTstamp() == stamp; },
+                      "Point-cloud worker lost a wakeup after startup or restart");
+            detector.stop();
+            detector.stop(); // An already stopped detector must be safe to stop again.
+            require(!detector.pointWorkerRunning(), "Point-cloud worker did not join");
+        }
+
+        require(detector.start(), "Could not start before configuration reload");
+        settings["nPCLstep"] = 2;
+        require(detector.loadConfig(), "Live detector configuration reload failed");
+        require(!detector.pointWorkerRunning(), "Reload must join the old point-cloud worker");
+        input.set(rgb, 306);
+        require(detector.start(), "Could not restart after configuration reload");
+        waitUntil([&] { return pointOutput.getTstamp() == 306; },
+                  "Reloaded point-cloud worker did not publish a frame");
+        vector<GEOMETRY_POINT> points;
+        require(pointOutput.get(points) == 306 && points.size() == 2,
+                "Point-cloud worker did not use reloaded subsampling configuration");
+        detector.stop();
+
+        settings["bPCL"] = settings["bPCLrgb"] = false;
+        require(detector.loadConfig(), "Depth-only reload failed");
+        input.set(rgb, 307);
+        require(detector.start(), "Depth-only detector did not start");
+        waitUntil([&] { return depthOutput.getTstamp() == 307; },
+                  "Depth-only detector failed to publish depth");
+        require(!detector.pointWorkerRunning(), "Disabled point-cloud output started an unnecessary worker");
+        detector.stop();
+        require(pointOutput.getTstamp() == 306, "Depth-only detection changed the point-cloud output");
+    }
+
     void testRealModel(const string &filename)
     {
         DepthProbe detector;
@@ -249,6 +498,7 @@ namespace
                 rgb.at<Vec3b>(y, x) = Vec3b(x % 256, y % 256, (x + y) % 256);
         input.set(rgb, 123456789);
         detector.detect();
+        detector.updatePCL();
         Mat color, depth, standaloneDepth;
         vector<GEOMETRY_POINT> points;
         require(rgbdOutput.get(color, depth) == 123456789 &&
@@ -349,9 +599,12 @@ int main(int argc, char **argv)
         testReducedOutputAndPadding(argv[1]);
         testPointCloud();
         testFrameOutputs(argv[1]);
+        testAsynchronousPointCloud(argv[1]);
+        testStopActiveWorker(argv[1]);
+        testWorkerLifecycle(argv[1]);
         testLinkWithoutBoundingBoxes();
         testAutomaticThreadConfig(argv[1]);
-        std::cout << "PASS: ONNX inference/preprocessing, metric depth, invalids, point cloud geometry/colors, frame timestamps and depth-only linking\n";
+        std::cout << "PASS: ONNX inference/preprocessing, metric depth, invalids, point cloud geometry/colors, frame timestamps, asynchronous worker overlap/lifecycle and depth-only linking\n";
     }
     catch (const std::exception &error)
     {

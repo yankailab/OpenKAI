@@ -79,13 +79,10 @@ namespace kai
 	void _D2RGB::filter(void)
 	{
 		NULL_(m_pDin);
-		// Depth inference can update much slower than the preview thread.
-		// Avoid cloning and colorizing a frame that was already published.
-		const uint64_t tAvailable = m_pDin->getTstamp();
-		IF_(!tAvailable || tAvailable == m_tLastInput);
+
 		Mat mDepth;
 		const uint64_t tStamp = m_pDin->get(mDepth);
-		IF_(!tStamp || tStamp == m_tLastInput || mDepth.empty() || mDepth.type() != CV_32FC1);
+		IF_(!tStamp || tStamp <= m_tLastInput || mDepth.empty() || mDepth.type() != CV_32FC1);
 
 		Mat mGray;
 		Mat mRGB;
@@ -96,14 +93,17 @@ namespace kai
 		{
 			m_pRGBout->set(mRGB, tStamp);
 		}
+
 		if (m_pDout)
 		{
 			m_pDout->set(mDepth, tStamp);
 		}
+
 		if (m_pRGBDout)
 		{
 			m_pRGBDout->set(mRGB, mDepth, tStamp);
 		}
+
 		m_tLastInput = tStamp;
 	}
 

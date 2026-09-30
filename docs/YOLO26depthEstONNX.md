@@ -91,12 +91,18 @@ cmake --build build -j
 | `dScale`, `dOfs` | Optional correction `depth_metres = predicted_depth * dScale + dOfs`. Defaults are 1 and 0. |
 | `vRangeD` | Accepted depth interval in metres; invalid or out-of-range depth becomes 0 and is omitted from clouds. |
 | `nThread` | ONNX Runtime CPU inference workers: 0 (default) selects the physical-core pool; a positive value limits the count. |
+| `thread.FPS` | Target rate for the main depth detection loop. |
+| `threadPP` | Point-cloud worker thread settings. This worker wakes on completed depth estimates; `threadPP.FPS` does not cap its processing rate. |
 
 Preprocessing uses centered letterboxing with value 114, BGR-to-RGB conversion (`bSwapRB: true`), and a `1/255` scale. The official exported depth head already applies its exponential and checkpoint calibration. Its output is metric depth; OpenKAI removes letterbox padding and resizes it back to the source image without applying another exponential or per-frame normalization. See the [Ultralytics depth head](https://github.com/ultralytics/ultralytics/blob/main/ultralytics/nn/modules/head.py) and [depth predictor](https://github.com/ultralytics/ultralytics/blob/main/ultralytics/models/yolo/depth/predict.py).
 
 Point clouds use the pinhole equations `X = (u - cx) * Z / fx`, `Y = (v - cy) * Z / fy`, with `Z` the estimated depth in metres: X points right, Y down, and Z forward. Camera intrinsics determine the rays; they do not make monocular depth physically measured. Validate metric scale against known distances in your operating scene and adjust `dScale`/`dOfs` or calibrate the model when needed. Use an undistorted camera image with matching intrinsics when lens distortion is significant.
 
 The published data uses the source frame timestamp so downstream components can apply their normal freshness checks. Zero means invalid depth. Consumers can use the same DataObject interfaces as hardware depth cameras, while accounting for monocular estimation error and inference latency.
+
+Depth inference and RGBD/depth publication run in the main detector thread. When cloud output is enabled, each completed estimate wakes the `m_pTpp` worker to run `makePointCloud()` on a matching RGB/depth snapshot. The main thread can start the next inference while the worker builds and publishes the cloud. Cloud output therefore arrives after its depth output and retains the same source capture timestamp; consumers that need corresponding outputs should match timestamps.
+
+The worker keeps at most one pending snapshot alongside the frame it is processing. If inference finishes multiple frames while the worker is busy, the newest replaces the pending frame; the in-progress frame stays intact. This bounds queued work, so cloud output can skip depth frames under load. Pausing the main detector stops new estimates, while queued or in-progress cloud work may finish. Configuration/model reload and destruction stop and join both threads before changing shared state.
 
 Official model and export documentation: [Ultralytics monocular depth estimation](https://docs.ultralytics.com/tasks/depth/).
 
@@ -119,9 +125,9 @@ To also exercise all five real models through the C++ inference and DataObject p
 
 ## CPU performance
 
-The detector enables `ORT_ENABLE_ALL`, including CPU layout optimizations, and defaults to `nThread: 0` for automatic physical-core threading. The example configuration uses this setting. Set a positive count, such as 4 or 8, when sharing the CPU with other busy modules; measure the full pipeline because the best count depends on CPU topology and workload. `thread.FPS` controls loop pacing, not inference parallelism.
+The detector enables `ORT_ENABLE_ALL`, including CPU layout optimizations, and defaults to `nThread: 0` for automatic physical-core threading. The example configuration uses this setting. Set a positive count, such as 4 or 8, when sharing the CPU with other busy modules; measure the full pipeline because the best count depends on CPU topology and workload. `thread.FPS` controls inference loop pacing. The separate point-cloud worker wakes immediately when an estimate is ready and can overlap the next inference; its `threadPP.FPS` setting does not introduce a wait or rate limit.
 
-On the development Intel Core i9-14900KF, with C++ ONNX Runtime 1.26.0, the nano FP32 768x768 model, synthetic 640x480 BGR input, and colored point clouds at stride 2, the following medians were measured after two warmups over five frames. Camera acquisition and GUI display are excluded; full detector time includes frame copies, preprocessing, inference, depth restoration, point-cloud generation, and output publication. The standalone benchmark uses one OpenCV worker for repeatability.
+The following historical results were measured before the asynchronous point-cloud worker was added, when cloud generation ran synchronously in `detect()`. On the development Intel Core i9-14900KF, with C++ ONNX Runtime 1.26.0, the nano FP32 768x768 model, synthetic 640x480 BGR input, and colored point clouds at stride 2, these are medians after two warmups over five frames. Camera acquisition and GUI display are excluded; full detector time includes frame copies, preprocessing, inference, depth restoration, point-cloud generation, and output publication. The standalone benchmark uses one OpenCV worker for repeatability.
 
 | Configuration | Inference only | Full detector | Processing FPS |
 | --- | ---: | ---: | ---: |
@@ -131,11 +137,11 @@ On the development Intel Core i9-14900KF, with C++ ONNX Runtime 1.26.0, the nano
 
 These are local processing benchmarks, not guaranteed live-camera frame rates. The optimized graph/thread sweep changed depth values by at most about 0.00053% relative on the test tensor. Input resolution and model precision are unchanged. Scalar arithmetic also reduced Debug point-cloud generation from about 20.5 ms to 4.2 ms. `_D2RGB` now skips unchanged frames rather than repeatedly colorizing them at the preview thread rate.
 
-The standard thread console truncates FPS to an integer, so the original 507 ms cycle appeared as 1 FPS. The depth detector now additionally displays fractional processing FPS and preprocessing, inference, postprocessing, and PCL times in milliseconds. These describe the last processed frame and exclude waiting for the next input.
+The standard thread console truncates FPS to an integer, so the original 507 ms cycle appeared as 1 FPS. Use the standalone benchmark below to measure processing latency independently of loop pacing and display refresh.
 
 The [Ultralytics depth benchmark](https://docs.ultralytics.com/tasks/depth/) reports warmed inference alone on a 32-core Xeon Skylake, excluding preprocessing and output work. Its [published ONNX profiler](https://docs.ultralytics.com/reference/utils/benchmarks/#ultralytics.utils.benchmarks.ProfileModels.profile_onnx_model) uses all graph optimizations and eight workers; the depth table does not specify its worker count. See ONNX Runtime's [graph optimization](https://onnxruntime.ai/docs/performance/model-optimizations/graph-optimizations.html) and [CPU threading](https://onnxruntime.ai/docs/performance/tune-performance/threading.html) documentation.
 
-To reproduce a full-pipeline benchmark without changing the application's existing build mode:
+To benchmark the current pipeline without changing the application's existing build mode:
 
 ```bash
 cmake -S test/Detector -B /tmp/openkai-depth-perf -DCMAKE_BUILD_TYPE=RelWithDebInfo
@@ -145,4 +151,6 @@ cmake --build /tmp/openkai-depth-perf -j4
   --threads 0 --graph default --warmup 2 --iterations 10
 ```
 
-Use `--threads 8` to compare a bounded pool; `--stage detect` measures only the complete detector loop. The benchmark also exposes `--graph extended` to reproduce the previous runtime optimization level. For application throughput beyond the Debug results, build OpenKAI with `-DCMAKE_BUILD_TYPE=RelWithDebInfo`; this retains debug symbols while optimizing the per-pixel C++ work. The current application build was kept in Debug and rebuilt with the code/config improvements above.
+Use `--threads 8` to compare a bounded pool. `--stage detect` reports `detect_and_enqueue`, the main-thread time through depth publication and cloud handoff, and `detect_to_point_cloud`, the time through publication of the matching asynchronous cloud. The benchmark waits for that cloud outside the main-thread timing before starting each sample; these are per-frame latency measurements, not steady throughput with overlapping frames.
+
+The benchmark also exposes `--graph extended` to compare the previous runtime optimization level. For application throughput beyond the Debug results, build OpenKAI with `-DCMAKE_BUILD_TYPE=RelWithDebInfo`; this retains debug symbols while optimizing the per-pixel C++ work.

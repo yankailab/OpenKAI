@@ -19,12 +19,15 @@ namespace kai
 
         bool depthShape(const vector<int64_t> &shape, bool dynamic)
         {
-            if (shape.size() < 2 || shape.size() > 4) return false;
+            if (shape.size() < 2 || shape.size() > 4)
+                return false;
             for (size_t i = 0; i + 2 < shape.size(); ++i)
-                if (shape[i] != 1 && !(dynamic && shape[i] < 0)) return false;
+                if (shape[i] != 1 && !(dynamic && shape[i] < 0))
+                    return false;
             for (size_t i = shape.size() - 2; i < shape.size(); ++i)
                 if ((shape[i] <= 0 && !(dynamic && shape[i] < 0)) ||
-                    shape[i] > std::numeric_limits<int>::max()) return false;
+                    shape[i] > std::numeric_limits<int>::max())
+                    return false;
             return true;
         }
 
@@ -67,13 +70,20 @@ namespace kai
 
     _YOLO26depthEstONNX::~_YOLO26depthEstONNX()
     {
-        // Join inference before releasing the session and its environment.
+        // Join both workers while their frame storage and model still exist.
+        stop();
+        DEL(m_pTpp);
         DEL(m_pT);
     }
 
     bool _YOLO26depthEstONNX::loadConfig(void)
     {
+        // No worker may read calibration or the model while either is replaced.
+        stop();
+        DEL(m_pTpp);
         IF_F(!_DetectorBase::loadConfig());
+        m_pTpp = createThread(jK(*m_pJ, "threadPP"), "threadPP");
+        NULL_F(m_pTpp);
         const json &j = *m_pJ;
         jKv<int>(j, "vModelInputSize", m_vModelInputSize);
         jKv(j, "bSwapRB", m_bSwapRB);
@@ -92,18 +102,20 @@ namespace kai
         IF_Le_F(m_nThread < 0 || m_vModelInputSize.minCoeff() <= 0 ||
                     !std::isfinite(m_scale) || m_scale <= 0,
                 "Invalid ONNX input size, scale or nThread (0 = automatic, positive = worker count)");
+
         IF_Le_F(!m_vRangeD.allFinite() || m_vRangeD.x() < 0 ||
                     m_vRangeD.y() <= m_vRangeD.x() || !std::isfinite(m_dScale) ||
                     m_dScale <= 0 || !std::isfinite(m_dOfs),
                 "Invalid depth range, dScale or dOfs");
+
         IF_Le_F(m_nPCLstep < 1, "nPCLstep must be positive");
+
         IF_Le_F((m_bPCL || m_bPCLrgb) &&
                     (!m_vFocal.allFinite() || m_vFocal.minCoeff() <= 0 ||
                      !m_vPrincipal.allFinite() || m_vSizeCalib.minCoeff() <= 0),
                 "Point clouds require calibrated vFocal, vPrincipal and vSizeCalib");
 
         m_tLastInput = 0;
-        m_msPreprocess = m_msInference = m_msPostprocess = m_msPCL = m_msFrame = 0;
         return loadModel();
     }
 
@@ -124,6 +136,8 @@ namespace kai
         j["vPrincipal"] = {m_vPrincipal.x(), m_vPrincipal.y()};
         j["vSizeCalib"] = {m_vSizeCalib.x(), m_vSizeCalib.y()};
         j["nPCLstep"] = m_nPCLstep;
+        IF_F(m_pTpp && !m_pTpp->saveConfig(false));
+
         return !bExport || m_pJcfg->saveToFile();
     }
 
@@ -132,62 +146,77 @@ namespace kai
         // Depth detectors share model/RGB structures but do not produce boxes.
         IF_F(!_ModuleBase::link(pM));
         const json &j = *m_pJ;
+
         string n;
         jKv(j, "RGBframeIn", n);
         m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
         IF_Le_F(!m_pRGBin, "RGBframeIn not found: " + n);
+
         n.clear();
         jKv(j, "RGBDframeOut", n);
         m_pDout = dynamic_cast<RGBDframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
         IF_Le_F(!m_pDout, "RGBDframeOut not found: " + n);
+
         n.clear();
         jKv(j, "DframeOut", n);
         m_pDepthOut = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
         IF_Le_F(!n.empty() && !m_pDepthOut, "DframeOut not found: " + n);
         IF_Le_F(m_pDepthOut == m_pRGBin, "DframeOut must differ from RGBframeIn");
+
         n.clear();
         jKv(j, "PCLframeOut", n);
         m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
         IF_Le_F((!n.empty() || m_bPCL || m_bPCLrgb) && !m_pPCLout,
                 "PCLframeOut not found: " + n);
+
         return true;
     }
 
     bool _YOLO26depthEstONNX::loadModel(void)
     {
         m_pSession.reset();
+
         try
         {
             m_sessionOptions.SetIntraOpNumThreads(m_nThread);
+
             // ALL also enables CPU layout optimizations (including NCHWc).
             m_sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
+
             auto session = std::make_unique<Ort::Session>(m_env, m_fModel.c_str(), m_sessionOptions);
             IF_Le_F(session->GetInputCount() != 1 || session->GetOutputCount() != 1,
                     "Depth ONNX must have exactly one image input and one depth output");
+
             const auto inType = session->GetInputTypeInfo(0);
             const auto outType = session->GetOutputTypeInfo(0);
             IF_Le_F(inType.GetONNXType() != ONNX_TYPE_TENSOR || outType.GetONNXType() != ONNX_TYPE_TENSOR,
                     "Depth ONNX input/output must be tensors");
+
             const auto inInfo = inType.GetTensorTypeAndShapeInfo();
             const auto outInfo = outType.GetTensorTypeAndShapeInfo();
             const auto inShape = inInfo.GetShape();
+
             IF_Le_F(inInfo.GetElementType() != ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT ||
                         inShape.size() != 4 || (inShape[0] != 1 && inShape[0] >= 0) || inShape[1] != 3,
                     "Depth ONNX requires float32 NCHW input with batch 1 and 3 channels");
+
             IF_Le_F(outInfo.GetElementType() != ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT ||
                         !depthShape(outInfo.GetShape(), true),
                     "Depth ONNX requires float32 [1,1,H,W], [1,H,W] or [H,W] output");
+
             for (int i = 2; i < 4; ++i)
             {
                 IF_Le_F(inShape[i] == 0 || inShape[i] > std::numeric_limits<int>::max(),
                         "Invalid ONNX spatial input dimensions");
-                if (inShape[i] > 0) m_vModelInputSize[3 - i] = static_cast<int>(inShape[i]);
+                if (inShape[i] > 0)
+                    m_vModelInputSize[3 - i] = static_cast<int>(inShape[i]);
             }
             IF_Le_F(m_vModelInputSize.minCoeff() <= 0, "Dynamic ONNX requires vModelInputSize");
 
             Ort::AllocatorWithDefaultOptions allocator;
             const auto task = session->GetModelMetadata().LookupCustomMetadataMapAllocated("task", allocator);
             IF_Le_F(task && string(task.get()) != "depth", "ONNX model task must be depth");
+
             m_inputName = session->GetInputNameAllocated(0, allocator).get();
             m_outputName = session->GetOutputNameAllocated(0, allocator).get();
             m_pSession = std::move(session);
@@ -203,7 +232,51 @@ namespace kai
     bool _YOLO26depthEstONNX::start(void)
     {
         IF_F(!check());
-        return m_pT->startThread(getUpdate, this);
+        IF_F(m_pT->bRun() || (m_pTpp && m_pTpp->bRun()));
+        if (m_bPCL || m_bPCLrgb)
+        {
+            NULL_F(m_pTpp);
+            if (!m_pTpp->startThread(getTPP, this))
+            {
+                stop();
+                return false;
+            }
+        }
+        if (!m_pT->startThread(getUpdate, this))
+        {
+            stop();
+            return false;
+        }
+        return true;
+    }
+
+    void _YOLO26depthEstONNX::stop(void)
+    {
+        // Do not use check(): partial initialization must also be stoppable.
+        if (m_pT)
+            m_pT->stop();
+        {
+            std::lock_guard<std::mutex> lock(m_mtxPCL);
+            if (m_pTpp)
+                m_pTpp->stop();
+        }
+        m_cvPCL.notify_all();
+        if (m_pT)
+            m_pT->join();
+        if (m_pTpp)
+            m_pTpp->join();
+
+        std::lock_guard<std::mutex> lock(m_mtxPCL);
+        m_pendingRGB.release();
+        m_pendingDepth.release();
+        m_pendingStamp = 0;
+    }
+
+    _Thread *_YOLO26depthEstONNX::getThread(const string &name)
+    {
+        if (name == "threadPP")
+            return m_pTpp;
+        return _DetectorBase::getThread(name);
     }
 
     bool _YOLO26depthEstONNX::check(void)
@@ -217,14 +290,33 @@ namespace kai
         while (m_pT->bRun())
         {
             m_pT->autoFPS();
+
             detect();
-            ON_PAUSE;
         }
+    }
+
+    void _YOLO26depthEstONNX::detect(void)
+    {
+        IF_(!check());
+
+        Mat input;
+        const uint64_t stamp = m_pRGBin->get(input);
+        IF_(!stamp || stamp == m_tLastInput || input.empty());
+
+        m_tLastInput = stamp;
+        Mat depth;
+        IF_(!estimateDepth(input, depth));
+
+        // Publish depth immediately; cloud generation overlaps the next inference.
+        m_pDout->set(input, depth, stamp);
+        if (m_pDepthOut)
+            m_pDepthOut->set(depth, stamp);
+        if (m_pPCLout && (m_bPCL || m_bPCLrgb))
+            queuePointCloud(input, depth, stamp);
     }
 
     bool _YOLO26depthEstONNX::estimateDepth(const Mat &input, Mat &depth)
     {
-        const uint64_t tStart = getTns();
         depth.release();
         IF_Le_F(!m_pSession || input.empty() || input.type() != CV_8UC3,
                 "Depth inference requires a loaded model and CV_8UC3 BGR input");
@@ -237,29 +329,35 @@ namespace kai
             const int left = (w - rw) / 2, top = (h - rh) / 2;
             const cv::Rect content(left, top, rw, rh);
             Mat resized, padded;
+
             cv::resize(input, resized, cv::Size(rw, rh), 0, 0, cv::INTER_LINEAR);
             cv::copyMakeBorder(resized, padded, top, h - rh - top, left, w - rw - left,
                                cv::BORDER_CONSTANT, cv::Scalar(114, 114, 114));
+
             Mat floats;
             padded.convertTo(floats, CV_32FC3, m_scale);
-            if (m_bSwapRB) cv::cvtColor(floats, floats, cv::COLOR_BGR2RGB);
+            if (m_bSwapRB)
+                cv::cvtColor(floats, floats, cv::COLOR_BGR2RGB);
+
             vector<Mat> channels;
             cv::split(floats, channels);
             const size_t plane = static_cast<size_t>(w) * h;
             vector<float> tensor(3 * plane);
             for (int c = 0; c < 3; ++c)
                 std::memcpy(tensor.data() + c * plane, channels[c].ptr<float>(), plane * sizeof(float));
+
             const int64_t shape[] = {1, 3, h, w};
             auto image = Ort::Value::CreateTensor<float>(m_memoryInfo, tensor.data(), tensor.size(), shape, 4);
             const char *inputs[] = {m_inputName.c_str()}, *outputs[] = {m_outputName.c_str()};
-            const uint64_t tInference = getTns();
+
             auto result = m_pSession->Run(Ort::RunOptions{nullptr}, inputs, &image, 1, outputs, 1);
-            const uint64_t tPostprocess = getTns();
             IF_Le_F(result.empty() || !result[0].IsTensor(), "Depth ONNX did not return a tensor");
+
             const auto info = result[0].GetTensorTypeAndShapeInfo();
             const auto dims = info.GetShape();
             IF_Le_F(info.GetElementType() != ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT || !depthShape(dims, false),
                     "Unexpected depth ONNX output shape/type");
+
             const int dh = static_cast<int>(dims[dims.size() - 2]);
             const int dw = static_cast<int>(dims.back());
             Mat raw(dh, dw, CV_32FC1, result[0].GetTensorMutableData<float>()), modelDepth;
@@ -277,12 +375,11 @@ namespace kai
                     const float rawDepth = row[x];
                     const float z = rawDepth * m_dScale + m_dOfs;
                     row[x] = std::isfinite(rawDepth) && rawDepth > 0 && std::isfinite(z) &&
-                             z > 0 && z >= minDepth && z <= maxDepth ? z : 0;
+                                     z > 0 && z >= minDepth && z <= maxDepth
+                                 ? z
+                                 : 0;
                 }
             }
-            m_msPreprocess.store((tInference - tStart) * 1e-6, std::memory_order_relaxed);
-            m_msInference.store((tPostprocess - tInference) * 1e-6, std::memory_order_relaxed);
-            m_msPostprocess.store((getTns() - tPostprocess) * 1e-6, std::memory_order_relaxed);
         }
         catch (const Ort::Exception &e)
         {
@@ -299,13 +396,66 @@ namespace kai
         return true;
     }
 
+    void _YOLO26depthEstONNX::queuePointCloud(const Mat &rgb, const Mat &depth, uint64_t stamp)
+    {
+        {
+            std::lock_guard<std::mutex> lock(m_mtxPCL);
+            // detect() owns fresh Mats each time. Retaining their references
+            // keeps this matched snapshot immutable without copying its pixels.
+            m_pendingRGB = rgb;
+            m_pendingDepth = depth;
+            m_pendingStamp = stamp;
+        }
+        m_cvPCL.notify_one();
+    }
+
+    void _YOLO26depthEstONNX::updateTPP(void)
+    {
+        while (true)
+        {
+            {
+                std::unique_lock<std::mutex> lock(m_mtxPCL);
+                // The predicate retains work even if notification precedes wait.
+                m_cvPCL.wait(lock, [this]
+                             { return m_pendingStamp != 0 || !m_pTpp->bRun(); });
+                if (!m_pTpp->bRun())
+                    break;
+            }
+            // Track worker FPS without adding a delay to frame-ready wakeups.
+            m_pTpp->skipSleep();
+            m_pTpp->autoFPS();
+            updatePCL();
+        }
+    }
+
+    void _YOLO26depthEstONNX::updatePCL(void)
+    {
+        Mat rgb, depth;
+        uint64_t stamp;
+        {
+            std::lock_guard<std::mutex> lock(m_mtxPCL);
+            IF_(!m_pendingStamp);
+            rgb = std::move(m_pendingRGB);
+            depth = std::move(m_pendingDepth);
+            stamp = m_pendingStamp;
+            m_pendingStamp = 0;
+        }
+
+        // Inference only holds the handoff mutex briefly, never during PCL work.
+        vector<GEOMETRY_POINT> cloud;
+        makePointCloud(rgb, depth, stamp, cloud);
+        if (m_pPCLout)
+            m_pPCLout->set(cloud, stamp);
+    }
+
     void _YOLO26depthEstONNX::makePointCloud(const Mat &rgb, const Mat &depth, uint64_t stamp,
-                                           vector<GEOMETRY_POINT> &cloud) const
+                                             vector<GEOMETRY_POINT> &cloud) const
     {
         cloud.clear();
         const float sx = float(depth.cols) / m_vSizeCalib.x();
         const float sy = float(depth.rows) / m_vSizeCalib.y();
         const float fx = m_vFocal.x() * sx, fy = m_vFocal.y() * sy;
+
         // Pixel-centre convention matches OpenCV resizing of the calibrated image.
         const float cx = (m_vPrincipal.x() + 0.5f) * sx - 0.5f;
         const float cy = (m_vPrincipal.y() + 0.5f) * sy - 0.5f;
@@ -317,9 +467,11 @@ namespace kai
             for (int x = 0; x < depth.cols; x += m_nPCLstep)
             {
                 const float z = row[x];
-                if (!std::isfinite(z) || z <= 0) continue;
+                if (!std::isfinite(z) || z <= 0)
+                    continue;
                 const float px = (x - cx) * z / fx, py = (y - cy) * z / fy;
-                if (!std::isfinite(px) || !std::isfinite(py)) continue;
+                if (!std::isfinite(px) || !std::isfinite(py))
+                    continue;
                 const Vector3f point(px, py, z);
                 Vector3f color(1, 1, 1);
                 if (m_bPCLrgb)
@@ -332,37 +484,11 @@ namespace kai
         }
     }
 
-    void _YOLO26depthEstONNX::detect(void)
-    {
-        IF_(!check());
-        const uint64_t tStart = getTns();
-        Mat input;
-        const uint64_t stamp = m_pRGBin->get(input);
-        IF_(!stamp || stamp == m_tLastInput || input.empty());
-        m_tLastInput = stamp;
-        Mat depth;
-        IF_(!estimateDepth(input, depth));
-        vector<GEOMETRY_POINT> cloud;
-        const uint64_t tPCL = getTns();
-        if (m_bPCL || m_bPCLrgb) makePointCloud(input, depth, stamp, cloud);
-        m_msPCL.store((getTns() - tPCL) * 1e-6, std::memory_order_relaxed);
-        m_pDout->set(input, depth, stamp);
-        if (m_pDepthOut) m_pDepthOut->set(depth, stamp);
-        if (m_pPCLout && (m_bPCL || m_bPCLrgb)) m_pPCLout->set(cloud, stamp);
-        m_msFrame.store((getTns() - tStart) * 1e-6, std::memory_order_relaxed);
-    }
-
     void _YOLO26depthEstONNX::console(void *pConsole)
     {
         NULL_(pConsole);
         _DetectorBase::console(pConsole);
-        auto *console = static_cast<_Console *>(pConsole);
-        const double frameMs = m_msFrame.load(std::memory_order_relaxed);
-        console->addMsg("Depth processing: " + lf2str(frameMs, 1) + " ms (" +
-                        lf2str(frameMs > 0 ? 1000.0 / frameMs : 0, 1) + " FPS)");
-        console->addMsg("Depth ms: pre=" + lf2str(m_msPreprocess.load(std::memory_order_relaxed), 1) +
-                        " infer=" + lf2str(m_msInference.load(std::memory_order_relaxed), 1) +
-                        " post=" + lf2str(m_msPostprocess.load(std::memory_order_relaxed), 1) +
-                        " PCL=" + lf2str(m_msPCL.load(std::memory_order_relaxed), 1));
+        if (m_pTpp)
+            m_pTpp->console(pConsole);
     }
 }

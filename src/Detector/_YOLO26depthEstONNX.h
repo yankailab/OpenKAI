@@ -11,7 +11,8 @@
 #include "../DataObject/PCLframe.h"
 #include <onnxruntime_cxx_api.h>
 #include <memory>
-#include <atomic>
+#include <condition_variable>
+#include <mutex>
 
 namespace kai
 {
@@ -25,20 +26,49 @@ namespace kai
         bool saveConfig(bool bExport) override;
         bool link(InstanceMgr *pM) override;
         bool start(void) override;
+        void stop(void) override;
         bool check(void) override;
         bool loadModel(void) override;
         void console(void *pConsole) override;
 
     protected:
         bool estimateDepth(const Mat &input, Mat &depth);
-        void makePointCloud(const Mat &rgb, const Mat &depth, uint64_t stamp,
+        virtual void makePointCloud(const Mat &rgb, const Mat &depth, uint64_t stamp,
                             vector<GEOMETRY_POINT> &cloud) const;
         void detect(void);
+        void queuePointCloud(const Mat &rgb, const Mat &depth, uint64_t stamp);
+        void updatePCL(void);
+        _Thread *getThread(const string &name) override;
 
+    private:
+        void update(void) override;
+        static void *getUpdate(void *This)
+        {
+            static_cast<_YOLO26depthEstONNX *>(This)->update();
+            return nullptr;
+        }
+
+        // One pending snapshot; the worker owns its current job independently.
+        std::mutex m_mtxPCL;
+        std::condition_variable m_cvPCL;
+        Mat m_pendingRGB;
+        Mat m_pendingDepth;
+        uint64_t m_pendingStamp = 0;
+
+        void updateTPP(void);
+        static void *getTPP(void *This)
+        {
+            static_cast<_YOLO26depthEstONNX *>(This)->updateTPP();
+            return nullptr;
+        }
+
+    protected:
         // Depth is aligned to the input RGB, CV_32FC1 in metres; zero is invalid.
         RGBDframe *m_pDout = nullptr;
         RGBframe *m_pDepthOut = nullptr; // Optional depth-only output for _D2RGB.
         PCLframe *m_pPCLout = nullptr;
+
+        _Thread *m_pTpp = nullptr;
 
         Ort::Env m_env;
         Ort::SessionOptions m_sessionOptions;
@@ -62,20 +92,6 @@ namespace kai
         Vector2i m_vSizeCalib = Vector2i::Zero();
         int m_nPCLstep = 1;
 
-    private:
-        // The UI reads these while the inference thread updates them.
-        std::atomic<double> m_msPreprocess{0};
-        std::atomic<double> m_msInference{0};
-        std::atomic<double> m_msPostprocess{0};
-        std::atomic<double> m_msPCL{0};
-        std::atomic<double> m_msFrame{0};
-
-        void update(void) override;
-        static void *getUpdate(void *This)
-        {
-            static_cast<_YOLO26depthEstONNX *>(This)->update();
-            return nullptr;
-        }
     };
 }
 #endif

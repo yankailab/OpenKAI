@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "34667bfc5139c0af7e3e41753e24af7aca9ac1472b80d35c36cdfbfd811612cb",
+  "sourceDigest": "5e62e82cd89e33de8169fb51f7bb009d31b20910d18c13a1f8dcc06ea125122b",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -11730,7 +11730,7 @@
     {
       "name": "_YOLO26depthEstONNX",
       "category": "Detector",
-      "source": "src/Detector/_YOLO26depthEstONNX.h:18",
+      "source": "src/Detector/_YOLO26depthEstONNX.h:19",
       "baseClasses": [
         "_DetectorBase"
       ],
@@ -11741,7 +11741,7 @@
           ],
           "type": "string",
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:144",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:161",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -11752,7 +11752,7 @@
           ],
           "type": "string",
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:149",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:167",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -11763,7 +11763,7 @@
           ],
           "type": "string",
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:140",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:156",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -11774,7 +11774,7 @@
           ],
           "type": "string",
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:136",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:151",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -11808,7 +11808,7 @@
           ],
           "type": "boolean",
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:85",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:95",
           "typeEvidence": "declaration",
           "cppVariable": "m_bPCL",
           "cppType": "bool",
@@ -11820,7 +11820,7 @@
           ],
           "type": "boolean",
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:86",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:96",
           "typeEvidence": "declaration",
           "cppVariable": "m_bPCLrgb",
           "cppType": "bool",
@@ -11832,7 +11832,7 @@
           ],
           "type": "boolean",
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:79",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:89",
           "typeEvidence": "declaration",
           "cppVariable": "m_bSwapRB",
           "cppType": "bool",
@@ -11856,7 +11856,7 @@
           ],
           "type": "number",
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:84",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:94",
           "typeEvidence": "declaration",
           "cppVariable": "m_dOfs",
           "cppType": "float",
@@ -11868,7 +11868,7 @@
           ],
           "type": "number",
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:83",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:93",
           "typeEvidence": "declaration",
           "cppVariable": "m_dScale",
           "cppType": "float",
@@ -11928,7 +11928,7 @@
           ],
           "type": "integer",
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:90",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:100",
           "typeEvidence": "declaration",
           "cppVariable": "m_nPCLstep",
           "cppType": "int",
@@ -11940,7 +11940,7 @@
           ],
           "type": "integer",
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:81",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:91",
           "typeEvidence": "declaration",
           "cppVariable": "m_nThread",
           "cppType": "int",
@@ -11964,7 +11964,7 @@
           ],
           "type": "number",
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:80",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:90",
           "typeEvidence": "declaration",
           "cppVariable": "m_scale",
           "cppType": "float",
@@ -12000,6 +12000,34 @@
         },
         {
           "path": [
+            "threadPP",
+            "FPS"
+          ],
+          "type": "number",
+          "declaredIn": "_Thread",
+          "source": "src/Base/_Thread.cpp:60",
+          "typeEvidence": "declaration",
+          "cppVariable": "FPS",
+          "cppType": "float",
+          "default": 30,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "threadPP",
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
             "vClass"
           ],
           "type": "array",
@@ -12015,7 +12043,7 @@
           ],
           "type": "array",
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:87",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:97",
           "typeEvidence": "declaration",
           "cppVariable": "m_vFocal",
           "cppType": "Vector2f",
@@ -12027,7 +12055,7 @@
           ],
           "type": "array",
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:78",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:88",
           "typeEvidence": "declaration",
           "cppVariable": "m_vModelInputSize",
           "cppType": "Vector2i",
@@ -12042,7 +12070,7 @@
           ],
           "type": "array",
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:88",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:98",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPrincipal",
           "cppType": "Vector2f",
@@ -12054,7 +12082,7 @@
           ],
           "type": "array",
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:82",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:92",
           "typeEvidence": "declaration",
           "cppVariable": "m_vRangeD",
           "cppType": "Vector2f",
@@ -12066,7 +12094,7 @@
           ],
           "type": "array",
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:89",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:99",
           "typeEvidence": "declaration",
           "cppVariable": "m_vSizeCalib",
           "cppType": "Vector2i",
@@ -12081,7 +12109,7 @@
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:145",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:162",
           "extraction": "audited-adapter",
           "containers": []
         },
@@ -12092,7 +12120,7 @@
           "targetClass": "PCLframe",
           "multiple": false,
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:150",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:168",
           "containers": []
         },
         {
@@ -12102,7 +12130,7 @@
           "targetClass": "RGBDframe",
           "multiple": false,
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:141",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:157",
           "required": true,
           "containers": []
         },
@@ -12113,7 +12141,7 @@
           "targetClass": "RGBframe",
           "multiple": false,
           "declaredIn": "_YOLO26depthEstONNX",
-          "source": "src/Detector/_YOLO26depthEstONNX.cpp:137",
+          "source": "src/Detector/_YOLO26depthEstONNX.cpp:152",
           "required": true,
           "containers": []
         }
@@ -12122,6 +12150,12 @@
         {
           "path": [
             "thread"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "threadPP"
           ],
           "type": "object"
         }

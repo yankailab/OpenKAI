@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
+#include <thread>
 
 using namespace kai;
 
@@ -37,6 +38,7 @@ namespace
                   << "       [--stage all|raw|estimate|pcl|detect]\n"
                   << "Uses synthetic 640x480 BGR input and the model's static input size (768x768 if dynamic).\n"
                   << "PCL uses stride 2 and RGB colors. Timings exclude model loading, input acquisition and warmup.\n"
+                  << "detect reports RGBD publication/enqueue and completion through matching asynchronous PCL output separately.\n"
                   << "ONNX Runtime defaults to automatic threading (0); OpenCV defaults to one worker.\n";
     }
 
@@ -111,6 +113,16 @@ namespace
             m_pDepthOut = &depth;
             m_pPCLout = &points;
             if (!m_pT) m_pT = new _Thread();
+        }
+
+        bool startPointCloudWorker()
+        {
+            // Start the production worker with an empty input, then join only
+            // inference so the benchmark can time each explicit detect() call.
+            if (!m_pTpp) m_pTpp = new _Thread();
+            if (!start()) return false;
+            m_pT->join();
+            return true;
         }
 
         Vector2i inputSize() const { return m_vModelInputSize; }
@@ -226,7 +238,7 @@ int main(int argc, char **argv)
             if (depth.empty()) require(detector.estimateDepth(rgb, depth), "Depth inference failed");
             size_t count = 0;
             measure("point_cloud_stride2", options, nothing, [&] {
-                // detect allocates a new vector for each frame; include that cost.
+                // The point-cloud worker allocates a vector per frame; include that cost.
                 vector<GEOMETRY_POINT> cloud;
                 detector.makePointCloud(rgb, depth, 1, cloud);
                 count = cloud.size();
@@ -239,14 +251,28 @@ int main(int argc, char **argv)
             RGBDframe rgbdOutput;
             PCLframe pointOutput;
             detector.outputs(input, rgbdOutput, depthOutput, pointOutput);
+            struct StopWorker
+            {
+                DepthProbe &detector;
+                ~StopWorker() { detector.stop(); }
+            } stopWorker{detector}; // Join before the local output frames die, including on failure.
+            require(detector.startPointCloudWorker(), "Could not start the native point-cloud worker");
             uint64_t stamp = 0;
-            measure("detect_and_publish", options,
-                    [&] { input.set(rgb, ++stamp); }, [&] { detector.detect(); },
-                    [&] {
-                        Mat color, publishedDepth;
-                        require(rgbdOutput.get(color, publishedDepth) == stamp,
-                                "Detector did not publish the current frame");
-                    });
+            const auto inputFrame = [&] { input.set(rgb, ++stamp); };
+            const auto waitPointCloud = [&] {
+                const auto deadline = Clock::now() + std::chrono::seconds(30);
+                while (pointOutput.getTstamp() != stamp)
+                {
+                    require(Clock::now() < deadline, "Point-cloud worker did not publish the current frame");
+                    std::this_thread::sleep_for(std::chrono::microseconds(100));
+                }
+                require(rgbdOutput.getTstamp() == stamp && depthOutput.getTstamp() == stamp,
+                        "Detector did not publish matching depth outputs");
+            };
+            measure("detect_and_enqueue", options, inputFrame,
+                    [&] { detector.detect(); }, waitPointCloud);
+            measure("detect_to_point_cloud", options, inputFrame,
+                    [&] { detector.detect(); waitPointCloud(); }, nothing);
         }
     }
     catch (const std::exception &error)
